@@ -67,13 +67,15 @@ void C4Network2ClientDlg::UpdateText()
 		// get client (may be NULL for local info)
 		C4Network2Client *pNetClient = pClient->getNetClient();
 		// show some info
-		StdCopyStrBuf strActivated(LoadResStr(pClient->isActivated() ? "IDS_MSG_ACTIVE" : "IDS_MSG_INACTIVE"));
-		StdCopyStrBuf strLocal(LoadResStr(pClient->isLocal() ? "IDS_MSG_LOCAL" : "IDS_MSG_REMOTE"));
-		StdCopyStrBuf strHost(LoadResStr(pClient->isHost() ? "IDS_MSG_HOST" : "IDS_MSG_CLIENT"));
-		AddLineFmt(LoadResStr("IDS_NET_CLIENT_INFO_FORMAT"),
-		           strActivated.getData(), strLocal.getData(), strHost.getData(),
-		           pClient->getName(), iClientID,
-		           ::Network.isHost() && pNetClient && !pNetClient->isReady() ? " (!ack)" : "");
+		StdCopyStrBuf strInfo;
+		if (!pClient->isActivated()) { strInfo.Append(LoadResStr("IDS_MSG_INACTIVE")); strInfo.Append(" "); }
+		if (pClient->isLocal()) { strInfo.Append(LoadResStr("IDS_MSG_LOCAL")); strInfo.Append(" "); }
+		strInfo.AppendFormat("%s %s (ID #%d)%s",
+			LoadResStr(pClient->isHost() ? "IDS_MSG_HOST" : "IDS_MSG_CLIENT"),
+			pClient->getName(),
+			iClientID,
+			::Network.isHost() && pNetClient && !pNetClient->isReady() ? " (!ack)" : "");
+		AddLine(strInfo.getData());
 		// show addresses
 		int iCnt;
 		if ((iCnt=pNetClient->getAddrCnt()))
