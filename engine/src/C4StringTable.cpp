@@ -23,31 +23,43 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Aul.h>
+#include <C4Game.h>
 #endif
+
+// *** C4Set
+template<> template<>
+unsigned int C4Set<C4String *>::Hash<const char *>(const char * s)
+	{
+	// Fowler/Noll/Vo hash
+	unsigned int h = 2166136261u;
+	while (*s)
+		h = (h ^ *(s++)) * 16777619;
+	return h;
+	}
+
+template<> template<>
+bool C4Set<C4String *>::Equals<const char *>(C4String * a, const char * b)
+	{
+	return a->GetData() == b;
+	}
 
 // *** C4String
 
-C4String::C4String(C4StringTable *pnTable)
-	: Data(NULL), iRefCnt(0), Hold(false), iEnumID(-1), pTable(NULL)
-	{
-	// reg
-	Reg(pnTable);
-	}
-
-C4String::C4String(StdStrBuf strString, C4StringTable *pnTable)
-	: iRefCnt(0), Hold(false), iEnumID(-1), pTable(NULL)
+C4String::C4String(StdStrBuf strString)
+	: iRefCnt(0)
 	{
 	// take string
 	Data.Take(strString);
+	Hash = C4Set<C4String*>::Hash(Data.getData());
 	// reg
-	Reg(pnTable);
+	Game.ScriptEngine.Strings.Set.Add(this);
 	}
 
 C4String::~C4String()
 	{
 	// unreg
 	iRefCnt = 1;
-	if(pTable) UnReg();
+	Game.ScriptEngine.Strings.Set.Remove(this);
 	}
 
 void C4String::IncRef()
@@ -58,46 +70,6 @@ void C4String::IncRef()
 void C4String::DecRef()
 	{
 	--iRefCnt;
-
-	// delete if ref cnt is 0 and the Hold-Flag isn't set
-	if(iRefCnt <= 0 && !Hold)
-		delete this;
-	}
-
-void C4String::Reg(C4StringTable *pnTable)
-	{
-	if(pTable) UnReg();
-
-	// add string to tail of table
-	Prev = pnTable->Last;
-	Next = NULL;
-
-	if(Prev)
-		Prev->Next = this;
-	else
-		pnTable->First = this;
-	pnTable->Last = this;
-
-	pTable = pnTable;
-	}
-
-void C4String::UnReg()
-	{
-	if(!pTable) return;
-
-	if(Next)
-		Next->Prev = Prev;
-	else
-		pTable->Last = Prev;
-	if(Prev)
-		Prev->Next = Next;
-	else
-		pTable->First = Next;
-
-	pTable = NULL;
-
-	// delete hold flag if table is lost and check for delete
-	Hold = false;
 	if(iRefCnt <= 0)
 		delete this;
 	}
@@ -105,33 +77,20 @@ void C4String::UnReg()
 // *** C4StringTable
 
 C4StringTable::C4StringTable()
-	: First(NULL), Last(NULL)
 	{
 	}
 
 C4StringTable::~C4StringTable()
 	{
-	// unreg all remaining strings
-	// (hold strings will delete themselves)
-	while(First) First->UnReg();
+	Clear();
+	assert(!Set.GetSize());
 	}
 
 void C4StringTable::Clear()
 	{
-	bool bContinue;
-	do
-		{
-		bContinue = false;
-		// find string to delete / unreg
-		for(C4String *pAct = First; pAct; pAct = pAct->Next)
-			if(pAct->Hold)
-				{
-				pAct->UnReg();
-				bContinue = true;
-				break;
-				}
-		}
-	while(bContinue);
+	for (unsigned int i = 0; i < Stringstxt.size(); ++i)
+		Stringstxt[i]->DecRef();
+	Stringstxt.clear();
 	}
 
 C4String *C4StringTable::RegString(StdStrBuf String)
@@ -140,35 +99,31 @@ C4String *C4StringTable::RegString(StdStrBuf String)
 	if (s)
 		return s;
 	else
-		return new C4String(String, this);
+		return new C4String(String);
 	}
 
 C4String *C4StringTable::FindString(const char *strString)
 	{
-	for(C4String *pAct = First; pAct; pAct = pAct->Next)
-		if(SEqual(pAct->Data.getData(), strString))
-			return pAct;
-	return NULL;
+	return Set.Get(strString);
 	}
 
 C4String *C4StringTable::FindString(C4String *pString)
 	{
-	for(C4String *pAct = First; pAct; pAct = pAct->Next)
-		if(pAct == pString)
-			return pAct;
-	return NULL;
+	for (C4String * const * i = Set.First(); i; i = Set.Next(i))
+		if (*i == pString)
+			return pString;
 	}
 
 C4String *C4StringTable::FindString(int iEnumID)
 	{
-	for(C4String *pAct = First; pAct; pAct = pAct->Next)
-		if(pAct->iEnumID == iEnumID)
-			return pAct;
+	if (iEnumID >= 0 && iEnumID < int(Stringstxt.size()))
+		return Stringstxt[iEnumID];
 	return NULL;
 	}
 
 bool C4StringTable::Load(C4Group& ParentGroup)
 	{
+	Clear();
 	// read data
 	char *pData;
 	if(!ParentGroup.LoadEntry(C4CFN_Strings, &pData, NULL, 1))
@@ -180,9 +135,9 @@ bool C4StringTable::Load(C4Group& ParentGroup)
 		SReplaceChar(strBuf, 0x0D, 0x00);
 		// add string to list
 		C4String *pnString;
-		if(!(pnString = FindString(strBuf)))
-			pnString = RegString(StdStrBuf(strBuf));
-		pnString->iEnumID = i;
+		pnString = RegString(StdStrBuf(strBuf));
+		pnString->IncRef();
+		Stringstxt.push_back(pnString);
 		}
 	// delete data
 	delete[] pData;

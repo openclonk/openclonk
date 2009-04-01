@@ -261,6 +261,7 @@ C4V_Type C4Value::GuessType()
 	// object?
 	if (Game.Objects.ObjectNumber(Data.Obj))
 		{
+		assert(false);
 		Type = C4V_C4Object;
 		// With the type now known, the destructor will clean up the reference
 		// which only works if the reference is added first
@@ -271,6 +272,7 @@ C4V_Type C4Value::GuessType()
 	// string?
 	if (Game.ScriptEngine.Strings.FindString(Data.Str))
 		{
+		assert(false);
 		Type = C4V_String;
 		// see above
 		AddDataRef();
@@ -797,7 +799,7 @@ bool C4Value::operator == (const C4Value& Value2) const
 		case C4V_C4Object:
 			return Data == Value2.Data && Type == Value2.Type;
 		case C4V_String:
-			return Type == Value2.Type && Data.Str->Data == Value2.Data.Str->Data;
+			return Type == Value2.Type && Data.Str == Value2.Data.Str;
 		case C4V_Array:
 			return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
 		default:

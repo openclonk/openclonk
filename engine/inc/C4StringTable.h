@@ -24,11 +24,15 @@ class C4StringTable;
 
 class C4String
 	{
-	C4String(C4StringTable *pTable);
-	C4String(StdStrBuf strString, C4StringTable *pTable);
+	explicit C4String(StdStrBuf strString);
+	explicit C4String(const char *strString);
+
+	StdCopyStrBuf Data; // string data
+	int iRefCnt; // reference count on string (by C4Value)
+	
 	friend class C4StringTable;
 public:
-	virtual ~C4String();
+	~C4String();
 
 	// increment/decrement reference count on this string
 	void IncRef();
@@ -36,38 +40,139 @@ public:
 
 	const char * GetCStr() const { return Data.getData(); }
 	StdStrBuf GetData() const { return Data.getRef(); }
-	StdCopyStrBuf Data; // string data
-	int iRefCnt; // reference count on string (by C4Value)
-	bool Hold;  // string stays hold when RefCnt reaches 0 (for in-script strings)
 
-	int iEnumID;
-
-	C4String *Next, *Prev; // double-linked list
-
-	C4StringTable *pTable; // owning table
-
-	void Reg(C4StringTable *pTable);
-	void UnReg();
+	unsigned int Hash;
 	};
 
+template<typename T> class C4Set
+	{
+	unsigned int Capacity;
+	unsigned int Size;
+	T * Table;
+	void AddInternal(T e)
+		{
+		unsigned int h = Hash(e);
+		T * p = &Table[h % Capacity];
+		while (*p && *p != e)
+			{
+			p = &Table[++h % Capacity];
+			}
+		*p = e;
+		}
+public:
+	template<typename H> static unsigned int Hash(H);
+	template<typename H> static bool Equals(T, H);
+	static bool Equals(T a, T b) { return a == b; }
+	// FIXME: Profile for initial size
+	C4Set(): Capacity(16), Size(0), Table(new T[Capacity])
+		{
+		Clear();
+		}
+	~C4Set()
+		{
+		delete[] Table;
+		}
+	void Clear()
+		{
+		for (unsigned int i = 0; i < Capacity; ++i)
+			Table[i] = 0;
+		}
+	template<typename H> T Get(H e)
+		{
+		unsigned int h = Hash(e);
+		T r = Table[h % Capacity];
+		while (r && !Equals(r, e))
+			{
+			r = Table[++h % Capacity];
+			}
+		return r;
+		}
+	unsigned int GetSize() { return Size; }
+	void Add(T e)
+		{
+		// FIXME: Profile for load factor
+		if (Size > Capacity / 2)
+			{
+			unsigned int OCapacity = Capacity;
+			Capacity *= 2;
+			T * OTable = Table;
+			Table = new T[Capacity];
+			Clear();
+			//memset(Table, 0, sizeof (T *) * NCapacity);
+			for (unsigned int i = 0; i < OCapacity; ++i)
+				{
+				if (OTable[i])
+					AddInternal(OTable[i]);
+				}
+			delete [] OTable;
+			}
+		AddInternal(e);
+		++Size;
+		}
+	template<typename H> void Remove(H e)
+		{
+		unsigned int h = Hash(e);
+		T * r = &Table[h % Capacity];
+		while (*r && !Equals(*r, e))
+			{
+			r = &Table[++h % Capacity];
+			}
+		assert(*r);
+		*r = 0;
+		--Size;
+		// Move entries which might have collided with e
+		while (*(r = &Table[++h % Capacity]))
+			{
+			T m = *r;
+			*r = 0;
+			AddInternal(m);
+			}
+		}
+	T const * First() const { return Next(Table - 1); }
+	T const * Next(T const * p) const
+		{
+		while (++p != &Table[Capacity])
+			{
+			if (*p) return p;
+			}
+		return 0;
+		}
+	};
 
+template<> template<>
+inline unsigned int C4Set<C4String *>::Hash<const C4String *>(const C4String * e)
+	{
+	return e->Hash;
+	}
+template<> template<>
+inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * e)
+	{
+	return e->Hash;
+	}
+
+// There is only one Stringtable in Game.ScriptEngine
 class C4StringTable
 	{
-public:
 	C4StringTable();
+	friend class C4AulScriptEngine;
+public:
 	virtual ~C4StringTable();
 
 	void Clear();
 
 	C4String *RegString(StdStrBuf String);
 	C4String *RegString(const char * s) { return RegString(StdStrBuf(s)); }
+	// Find existing C4String
 	C4String *FindString(const char *strString);
+	// Check wether the pointer is a C4String
 	C4String *FindString(C4String *pString);
+	// Get a string from the Strings.txt
 	C4String *FindString(int iEnumID);
 
 	bool Load(C4Group& ParentGroup);
 
-	C4String *First, *Last; // string list
+	C4Set<C4String *> Set;
+	std::vector<C4String *> Stringstxt;
 	};
 
 #endif

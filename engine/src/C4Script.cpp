@@ -2961,7 +2961,7 @@ static const int32_t CSPF_FixedAttributes = 1<<0,
 static bool FnCreateScriptPlayer(C4AulContext *cthr, C4String *szName, long dwColor, long idTeam, long dwFlags, C4ID idExtra)
 	{
 	// safety
-	if (!szName || !szName->Data.getLength()) return false;
+	if (!szName || !szName->GetData().getLength()) return false;
 	// this script command puts a new script player info into the list
 	// the actual join will be delayed and synchronized via queue
 	// processed by control host only - clients/replay/etc. will perform the join via queue
@@ -3910,7 +3910,7 @@ static C4Value FnGetLength(C4AulContext *cthr, C4Value *pPars)
 		return C4VInt(pArray->GetSize());
 	C4String * pStr = pPars->getStr();
 	if (pStr)
-		return C4VInt(pStr->Data.getLength());
+		return C4VInt(pStr->GetData().getLength());
 	throw new C4AulExecError(cthr->Obj, "func \"GetLength\" par 0 cannot be converted to string or array");
 }
 
@@ -6295,7 +6295,7 @@ static bool FnPauseGame(C4AulContext *ctx, bool fToggle)
 
 static bool FnSetNextMission(C4AulContext *ctx, C4String *szNextMission, C4String *szNextMissionText, C4String *szNextMissionDesc)
 	{
-	if (!szNextMission || !szNextMission->Data.getLength())
+	if (!szNextMission || !szNextMission->GetData().getLength())
 	{
 		// param empty: clear next mission
 		Game.NextMission.Clear();
@@ -6304,10 +6304,10 @@ static bool FnSetNextMission(C4AulContext *ctx, C4String *szNextMission, C4Strin
 	else
 	{
 		// set next mission, button and button desc if given
-		Game.NextMission.Copy(szNextMission->Data);
+		Game.NextMission.Copy(szNextMission->GetData());
 		if (szNextMissionText && szNextMissionText->GetCStr())
 		{
-			Game.NextMissionText.Copy(szNextMissionText->Data);
+			Game.NextMissionText.Copy(szNextMissionText->GetData());
 		}
 		else
 		{
@@ -6315,7 +6315,7 @@ static bool FnSetNextMission(C4AulContext *ctx, C4String *szNextMission, C4Strin
 		}
 		if (szNextMissionDesc && szNextMissionDesc->GetCStr())
 		{
-			Game.NextMissionDesc.Copy(szNextMissionDesc->Data);
+			Game.NextMissionDesc.Copy(szNextMissionDesc->GetData());
 		}
 		else
 		{

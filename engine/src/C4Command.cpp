@@ -2280,7 +2280,7 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	if(pComp->isDecompiler())
 		{
 		if(Text)
-			TextBuf.Ref(Text->Data);
+			TextBuf.Ref(Text->GetData());
 		else
 			TextBuf.Ref("0");
 		}
