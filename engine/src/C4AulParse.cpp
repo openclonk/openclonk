@@ -795,7 +795,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					if(HoldStrings == Discard) return ATT_STRING;
 					// reg string (if not already done so)
 					C4String *pString;
-					pString = a->Engine->Strings.RegString(StdStrBuf(StrBuff,static_cast<long>(pStrPos - StrBuff)));
+					pString = Strings.RegString(StdStrBuf(StrBuff,static_cast<long>(pStrPos - StrBuff)));
 					// return pointer on string object
 					*pInt = (long) pString;
 					return ATT_STRING;
@@ -2905,7 +2905,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 				}
 			if (Type == PARSER)
 				{
-				pName = Game.ScriptEngine.Strings.RegString(Idtf);
+				pName = Strings.RegString(Idtf);
 				}
 			// add call chunk
 			Shift();

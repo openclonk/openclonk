@@ -22,8 +22,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Group.h>
 #include <C4Components.h>
-#include <C4Aul.h>
-#include <C4Game.h>
+//#include <C4Aul.h>
 #endif
 
 // *** C4Set
@@ -52,14 +51,14 @@ C4String::C4String(StdStrBuf strString)
 	Data.Take(strString);
 	Hash = C4Set<C4String*>::Hash(Data.getData());
 	// reg
-	Game.ScriptEngine.Strings.Set.Add(this);
+	Strings.Set.Add(this);
 	}
 
 C4String::~C4String()
 	{
 	// unreg
 	iRefCnt = 1;
-	Game.ScriptEngine.Strings.Set.Remove(this);
+	Strings.Set.Remove(this);
 	}
 
 void C4String::IncRef()
@@ -132,8 +131,8 @@ bool C4StringTable::Load(C4Group& ParentGroup)
 	if(!ParentGroup.LoadEntry(C4CFN_Strings, &pData, NULL, 1))
 		return false;
 	// read all strings
-	char strBuf[C4AUL_MAX_String + 1];
-	for(int i = 0; SCopySegment(pData, i, strBuf, 0x0A, C4AUL_MAX_String); i++)
+	char strBuf[1024 + 1]; // 1024 was the last used value to write the Strings.txt
+	for(int i = 0; SCopySegment(pData, i, strBuf, 0x0A, 1024); i++)
 		{
 		SReplaceChar(strBuf, 0x0D, 0x00);
 		// add string to list
@@ -146,3 +145,5 @@ bool C4StringTable::Load(C4Group& ParentGroup)
 	delete[] pData;
 	return true;
 	}
+
+C4StringTable Strings;

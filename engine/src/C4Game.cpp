@@ -230,7 +230,7 @@ BOOL C4Game::OpenScenario()
 
 	// Load Strings (since kept objects aren't denumerated in sect-load, no problems should occur...)
 	if (ScenarioFile.FindEntry(C4CFN_Strings))
-		if (!ScriptEngine.Strings.Load(ScenarioFile))
+		if (!Strings.Load(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_ERR_STRINGS")); return FALSE; }
 	SetInitProgress(4);
 

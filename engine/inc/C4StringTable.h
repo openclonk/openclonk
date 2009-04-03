@@ -168,9 +168,8 @@ P_LAST };
 // There is only one Stringtable in Game.ScriptEngine
 class C4StringTable
 	{
-	C4StringTable();
-	friend class C4AulScriptEngine;
 public:
+	C4StringTable();
 	virtual ~C4StringTable();
 
 	void Clear();
@@ -190,5 +189,7 @@ public:
 	std::vector<C4String *> Stringstxt;
 	C4String * P[P_LAST];
 	};
+
+extern C4StringTable Strings;
 
 #endif

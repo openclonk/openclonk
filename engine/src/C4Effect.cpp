@@ -771,7 +771,7 @@ int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t
 
 C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber)
 	{
-	return Game.ScriptEngine.Strings.RegString(LoadResStr("IDS_OBJ_BURNS"));
+	return Strings.RegString(LoadResStr("IDS_OBJ_BURNS"));
 	}
 
 

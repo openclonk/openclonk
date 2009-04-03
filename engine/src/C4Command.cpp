@@ -2292,7 +2292,7 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 		if(TextBuf == "0")
 			{ Text = NULL; }
 		else
-			{ Text = Game.ScriptEngine.Strings.RegString(TextBuf); Text->IncRef(); }
+			{ Text = Strings.RegString(TextBuf); Text->IncRef(); }
 		}
   }
 

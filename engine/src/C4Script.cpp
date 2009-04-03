@@ -49,7 +49,7 @@ inline const static char *FnStringPar(C4String *pString)
 }
 inline C4String *String(const char * str)
 {
-	return str ? Game.ScriptEngine.Strings.RegString(str) : NULL;
+	return str ? Strings.RegString(str) : NULL;
 }
 
 static StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * Par0=0, C4Value * Par1=0, C4Value * Par2=0, C4Value * Par3=0,

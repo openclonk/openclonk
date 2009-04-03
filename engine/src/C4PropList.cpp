@@ -82,6 +82,6 @@ void C4PropList::SetProperty(C4String * k, C4Value & to)
 		C4Property p = { k, to };
 		Properties.Add(p);
 		}
-	if (k == Game.ScriptEngine.Strings.P[P_PROTOTYPE])
+	if (k == Strings.P[P_PROTOTYPE])
 		prototype = to.getPropList();
 	}

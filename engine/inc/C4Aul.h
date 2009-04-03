@@ -536,8 +536,6 @@ class C4AulScriptEngine : public C4AulScript
 		C4ValueMapNames GlobalNamedNames;
 		C4ValueMapData GlobalNamed;
 
-		C4StringTable Strings;
-
 		// global constants (such as "static const C4D_Structure = 2;")
 		// cannot share var lists, because it's so closely tied to the data lists
 		// constants are used by the Parser only, anyway, so it's not
