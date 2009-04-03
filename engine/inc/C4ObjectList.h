@@ -104,8 +104,6 @@ class C4ObjectList
 		void SetOCF();
 		void GetIDList(C4IDList &rList, int32_t dwCategory=C4D_All);
 		void ClearInfo(C4ObjectInfo *pInfo);
-		void ClearDefPointers(C4Def *pDef); // clear all pointers into definition
-		void UpdateDefPointers(C4Def *pDef); // restore any cleared pointers after def reload
 
 		typedef int SortProc(C4Object *, C4Object *);
 

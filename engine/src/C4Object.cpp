@@ -160,7 +160,7 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	LastEnergyLossCausePlayer=NO_OWNER;
   Info=pInfo;
   Def=pDef;
-	if (Info) Name = pInfo->Name; else Name = pDef->Name;
+	if (Info) SetName(pInfo->Name);
   Category=Def->Category;
 	Def->Count++;
 	if (pCreator) pLayer=pCreator->pLayer;
@@ -1236,8 +1236,6 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	SetDir(0); // will drop any outdated flipdir
   if (pSolidMaskData) { pSolidMaskData->Remove(true, false); delete pSolidMaskData; pSolidMaskData=NULL; }
 	Def->Count--;
-	// change the name to the name of the new def, if the name of the old def was in use before
-	if (Name.getData() == Def->Name.getData()) Name = pDef->Name;
   // Def change
   Def=pDef;
 	id=pDef->id;
@@ -2065,18 +2063,13 @@ FIXED C4Object::GetSpeed()
   return cobjspd;
   }
 
-const char* C4Object::GetName()
-  {
-	return Name.getData();
-  }
-
-void C4Object::SetName(const char* NewName)
-  {
-	if(!NewName)
-		if (Info) Name = Info->Name; else Name = Def->Name;
+void C4Object::SetName(const char * NewName)
+	{
+	if(!NewName && Info)
+		C4PropList::SetName(Info->Name);
 	else
-		Name.Copy(NewName);
-  }
+		C4PropList::SetName(NewName);
+	}
 
 int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
   {
@@ -2661,12 +2654,12 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 
 	// Write the name only if the object has an individual name, use def name as default for reading.
 	// (Info may overwrite later, see C4Player::MakeCrewMember)
-	if (pComp->isCompiler())
+	/*if (pComp->isCompiler())
 		pComp->Value(mkNamingAdapt(Name, "Name", Def->Name));
 	else if (!Name.isRef())
 		// Write the name only if the object has an individual name
 		// 2do: And what about binary compilers?
-		pComp->Value(mkNamingAdapt(Name, "Name"));
+		pComp->Value(mkNamingAdapt(Name, "Name"));*/
 
 	pComp->Value(mkNamingAdapt( Number,														"Number",							-1								));
 	pComp->Value(mkNamingAdapt( Status,														"Status",							1									));
@@ -3155,7 +3148,6 @@ void C4Object::ClearInfo(C4ObjectInfo *pInfo)
 	{
 	if (Info==pInfo)
 		{
-		if (Info) if (Name.getData() == Info->Name) Name = Def->Name;
 		Info=NULL;
 		}
 	}
@@ -5574,7 +5566,7 @@ BOOL C4Object::GrabInfo(C4Object *pFrom)
 	// set info
 	Info = pFrom->Info; pFrom->ClearInfo (pFrom->Info);
 	// set name
-	if(Name.isRef()) Name = Info->Name;
+	if(!Properties.Has(Strings.P[P_Name])) SetName(Info->Name);
 	// retire from old crew
 	Info->Retire();
 	// set death status
@@ -6007,7 +5999,7 @@ bool C4Object::CanConcatPictureWith(C4Object *pOtherObject)
 	if (!(allow_picture_stack & APS_Name))
 	{
 		// check name, so zagabar's sandwiches don't stack
-		if (Name.getData() != pOtherObject->Name.getData()) if (Name != pOtherObject->Name) return false;
+		if (GetName() != pOtherObject->GetName()) return false;
 	}
 	if (!(allow_picture_stack & APS_Overlay))
 	{

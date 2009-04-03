@@ -21,13 +21,19 @@ class C4PropList {
 	void AddRef(C4Value *pRef);
 	void DelRef(const C4Value *pRef, C4Value * pNextRef);
 	void AssignRemoval();
-	const char *GetName() { return "FIXME"; }
+	const char *GetName();
+	virtual void SetName (const char *NewName = 0);
 
 	bool GetProperty(C4String * k, C4Value & to);
-	void SetProperty(C4String * k, C4Value & to);
+	C4String * GetPropertyStr(C4PropertyName k);
+	int32_t GetPropertyInt(C4PropertyName k);
+	void SetProperty(C4String * k, const C4Value & to);
+	void ResetProperty(C4String * k);
+
 	C4PropList();
 	virtual ~C4PropList();
-	private:
+
+	protected:
 	C4Value *FirstRef; // No-Save
 
 	C4Set<C4Property> Properties;

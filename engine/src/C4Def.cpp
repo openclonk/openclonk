@@ -1487,8 +1487,6 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	// backup graphics names and pointers
 	// GfxBackup-dtor will ensure that upon loading-failure all graphics are reset to default
 	C4DefGraphicsPtrBackup GfxBackup(&pDef->Graphics);
-	// clear any pointers into def (name)
-	Game.Objects.ClearDefPointers(pDef);
 #endif
 	// Clear def
 	pDef->Clear(); // Assume filename is being kept
@@ -1504,8 +1502,6 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	Game.ScriptEngine.ReLink(this);
 #endif
 #ifdef C4ENGINE
-	// update definition pointers
-	Game.Objects.UpdateDefPointers(pDef);
 	// restore graphics
 	GfxBackup.AssignUpdate(&pDef->Graphics);
 #endif

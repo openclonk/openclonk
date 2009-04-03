@@ -77,7 +77,8 @@ void C4String::DecRef()
 
 C4StringTable::C4StringTable()
 	{
-	P[P_PROTOTYPE] = RegString("Prototype");
+	P[P_Prototype] = RegString("Prototype");
+	P[P_Name] = RegString("Name");
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
 	}
 

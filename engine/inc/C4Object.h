@@ -110,7 +110,6 @@ class C4Object: public C4PropList
 		C4Object();
 		~C4Object();
 		C4ID id;
-		StdStrBuf Name;
 		int32_t RemovalDelay; // NoSave //
 		int32_t Owner;
 		int32_t Controller;
@@ -332,7 +331,6 @@ class C4Object: public C4PropList
 		FIXED GetSpeed();
 		C4PhysicalInfo *GetPhysical(bool fPermanent=false);
 		bool TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
-		const char *GetName();
 		void SetName (const char *NewName = 0);
 		int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 		void DirectCom(BYTE byCom, int32_t iData);

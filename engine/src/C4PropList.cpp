@@ -40,6 +40,28 @@ C4PropList::~C4PropList()
 	while (FirstRef) FirstRef->Set(0);
 	}
 
+
+
+const char * C4PropList::GetName()
+	{
+	C4String * s = GetPropertyStr(P_Name);
+	if (!s) return "";
+	return s->GetCStr();
+	}
+
+void C4PropList::SetName(const char* NewName)
+	{
+	if(!NewName)
+		ResetProperty(Strings.P[P_Name]);
+	else
+		{
+		C4Value v = C4VString(NewName);
+		SetProperty(Strings.P[P_Name], v);
+		}
+	}
+
+
+
 template<> template<>
 unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * e)
 	{
@@ -59,6 +81,12 @@ unsigned int C4Set<C4Property>::Hash<C4Property>(C4Property p)
 	}
 bool C4PropList::GetProperty(C4String * k, C4Value & to)
 	{
+	// The prototype is special
+	if (k == Strings.P[P_Prototype])
+		{
+		to = C4VPropList(prototype);
+		return true;
+		}
 	if (Properties.Has(k))
 		{
 		to.SetRef(&Properties.Get(k).Value);
@@ -71,8 +99,41 @@ bool C4PropList::GetProperty(C4String * k, C4Value & to)
 	return false;
 	}
 
-void C4PropList::SetProperty(C4String * k, C4Value & to)
+C4String * C4PropList::GetPropertyStr(C4PropertyName n)
 	{
+	C4String * k = Strings.P[n];
+	if (Properties.Has(k))
+		{
+		return Properties.Get(k).Value.getStr();
+		}
+	if (prototype)
+		{
+		return prototype->GetPropertyStr(n);
+		}
+	return 0;
+	}
+
+int32_t C4PropList::GetPropertyInt(C4PropertyName n)
+	{
+	C4String * k = Strings.P[n];
+	if (Properties.Has(k))
+		{
+		return Properties.Get(k).Value.getInt();
+		}
+	if (prototype)
+		{
+		return prototype->GetPropertyInt(n);
+		}
+	return 0;
+	}
+
+void C4PropList::SetProperty(C4String * k, const C4Value & to)
+	{
+	if (k == Strings.P[P_Prototype] && to.GetType() == C4V_PropList)
+		{
+		prototype = to.GetData().PropList;
+		return;
+		}
 	if (Properties.Has(k))
 		{
 		Properties.Get(k).Value = to;
@@ -82,6 +143,9 @@ void C4PropList::SetProperty(C4String * k, C4Value & to)
 		C4Property p = { k, to };
 		Properties.Add(p);
 		}
-	if (k == Strings.P[P_PROTOTYPE])
-		prototype = to.getPropList();
+	}
+
+void C4PropList::ResetProperty(C4String * k)
+	{
+	Properties.Remove(k);
 	}

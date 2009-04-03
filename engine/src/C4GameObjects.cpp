@@ -865,20 +865,6 @@ void C4GameObjects::FixObjectOrder()
 	// objects fixed!
 	}
 
-void C4GameObjects::ClearDefPointers(C4Def *pDef)
-	{
-	// call in sublists
-	C4ObjectList::ClearDefPointers(pDef);
-	InactiveObjects.ClearDefPointers(pDef);
-	}
-
-void C4GameObjects::UpdateDefPointers(C4Def *pDef)
-	{
-	// call in sublists
-	C4ObjectList::UpdateDefPointers(pDef);
-	InactiveObjects.UpdateDefPointers(pDef);
-	}
-
 void C4GameObjects::ResortUnsorted()
 	{
   C4ObjectLink *clnk=First; C4Object *cObj;
