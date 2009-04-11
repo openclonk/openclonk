@@ -163,6 +163,7 @@ inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * e)
 enum C4PropertyName {
 P_Prototype,
 P_Name,
+P_Collectible,
 P_LAST };
 
 // There is only one Stringtable in Game.ScriptEngine

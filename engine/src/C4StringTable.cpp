@@ -79,6 +79,7 @@ C4StringTable::C4StringTable()
 	{
 	P[P_Prototype] = RegString("Prototype");
 	P[P_Name] = RegString("Name");
+	P[P_Collectible] = RegString("Collectible");
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
 	}
 

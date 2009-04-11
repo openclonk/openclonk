@@ -804,11 +804,13 @@ BOOL C4Def::Load(C4Group &hGroup,
 
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  // Temporary flag
-  if (dwLoadWhat & C4D_Load_Temporary) Temporary=TRUE;
-
-  return TRUE;
-  }
+	// Temporary flag
+	if (dwLoadWhat & C4D_Load_Temporary) Temporary=TRUE;
+	
+	if (Carryable) SetProperty(Strings.P[P_Collectible], C4VTrue);
+  
+	return TRUE;
+	}
 
 BOOL C4Def::LoadActMap(C4Group &hGroup)
 	{

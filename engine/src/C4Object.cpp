@@ -618,7 +618,7 @@ void C4Object::SetOCF()
   if (Def->Grab && !(Category & C4D_StaticBack))
       OCF|=OCF_Grab;
   // OCF_Carryable: Can be picked up
-  if (Def->Carryable)
+  if (GetPropertyInt(P_Collectible))
     OCF|=OCF_Carryable;
   // OCF_OnFire: Is burning
   if (OnFire)
@@ -748,11 +748,14 @@ void C4Object::UpdateOCF()
 	else
 		InMat = GBackMat(GetX(), GetY());
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
-	OCF=OCF & (OCF_Normal | OCF_Carryable | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
+	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
 	       /*| OCF_Chop - now updated regularly, see below */
 					 | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Living | OCF_Alive
 	         | OCF_LineConstruct | OCF_Prey | OCF_CrewMember | OCF_AttractLightning
 	         | OCF_PowerConsumer);
+  // OCF_Carryable: Can be picked up
+  if (GetPropertyInt(P_Collectible))
+    OCF|=OCF_Carryable;
   // OCF_Construct: Can be built outside
   if (Def->Constructable && (Con<FullCon)
     && (r==0) && !OnFire)

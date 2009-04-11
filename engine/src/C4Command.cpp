@@ -612,7 +612,7 @@ void C4Command::Exit()
 			if (cObj->Contained->GetEntranceArea(ex,ey,ewdt,ehgt))
 				{ cObj->Exit(ex+ewdt/2,ey+ehgt+cObj->Shape.GetY()-1); Finish(TRUE); return; }
 		// Exit jump out of collection area
-		if (cObj->Def->Carryable)
+		if (cObj->GetPropertyInt(P_Collectible))
 			if (cObj->Contained->Def->Collection.Wdt)
 				{
 				cObj->Exit(cObj->Contained->GetX(),cObj->Contained->GetY()+cObj->Contained->Def->Collection.y-1);
