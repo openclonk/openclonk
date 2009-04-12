@@ -145,7 +145,7 @@ void C4Object::Default()
 	iLastAttachMovementFrame=-1;
 	}
 
-BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
+BOOL C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 										int32_t iOwner, C4ObjectInfo *pInfo,
 										int32_t nx, int32_t ny, int32_t nr,
 										FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController)
@@ -154,13 +154,13 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	Initializing=TRUE;
 
 	// Def & basics
-	id=pDef->id;
   Owner=iOwner;
 	if (iController > NO_OWNER) Controller = iController; else Controller=iOwner;
 	LastEnergyLossCausePlayer=NO_OWNER;
   Info=pInfo;
-  Def=pDef;
+  Def=pDef->GetDef();assert(Def);
 	prototype = pDef;
+	id=Def->id;
 	if (Info) SetName(pInfo->Name);
   Category=Def->Category;
 	Def->Count++;
@@ -214,7 +214,7 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	SetOCF();
 
 	// local named vars
-	LocalNamed.SetNameList(&pDef->Script.LocalNamed);
+	LocalNamed.SetNameList(&Def->Script.LocalNamed);
 
 	// finished initializing
 	Initializing=FALSE;
@@ -1820,10 +1820,10 @@ BOOL C4Object::Lift(FIXED tydir, FIXED dforce)
   return TRUE;
   }
 
-C4Object* C4Object::CreateContents(C4ID n_id)
+C4Object* C4Object::CreateContents(C4PropList * PropList)
   {
   C4Object *nobj;
-  if (!(nobj=Game.CreateObject(n_id,this,Owner))) return NULL;
+  if (!(nobj=Game.CreateObject(PropList,this,Owner))) return NULL;
   if (!nobj->Enter(this)) { nobj->AssignRemoval(); return NULL; }
   return nobj;
   }
@@ -1833,7 +1833,7 @@ BOOL C4Object::CreateContentsByList(C4IDList &idlist)
   int32_t cnt,cnt2;
   for (cnt=0; idlist.GetID(cnt); cnt++)
     for (cnt2=0; cnt2<idlist.GetCount(cnt); cnt2++)
-      if (!CreateContents(idlist.GetID(cnt)))
+      if (!CreateContents(C4Id2Def(idlist.GetID(cnt))))
         return FALSE;
   return TRUE;
   }
@@ -3716,7 +3716,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	// Create composed object
 	// the object is created with default components instead of builder components
 	// this is done because some objects (e.g. arrow packs) will set custom components during initialization, which should not be overriden
-	return CreateContents(id);
+	return CreateContents(C4Id2Def(id));
 	}
 
 void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)

@@ -294,6 +294,7 @@ class C4Def: public C4PropList
 		void Synchronize();
 #endif
 		const char *GetDesc() { return Desc.GetData(); }
+		virtual C4Def* GetDef() { return this; }
   protected:
 	  bool LoadPortraits(C4Group &hGroup);
 		BOOL ColorizeByMaterial(class C4MaterialMap &rMats, BYTE bGBM);

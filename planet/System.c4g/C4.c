@@ -29,6 +29,8 @@ global func GetActMapVal(string strEntry, string strAction, id idDef, int iEntry
   return GetProperty(strEntry, GetProperty(strAction, idDef));
 }
 
+global func CastC4ID(x) { return x; }
+
 // Abgelöst durch SetPosition
 global func ForcePosition(object obj, int x, int y) { return SetPosition(x, y, obj); }
 

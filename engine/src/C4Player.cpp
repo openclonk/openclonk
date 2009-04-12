@@ -578,7 +578,7 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
         ctx=tx; cty=ty;
 				if (Game.C4S.PlrStart[PlrStartIndex].EnforcePosition
   			 || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,def->Category,20))
-          if (cbase=Game.CreateObjectConstruction(cid,NULL,Number,ctx,cty,FullCon,TRUE))
+          if (cbase=Game.CreateObjectConstruction(C4Id2Def(cid),NULL,Number,ctx,cty,FullCon,TRUE))
             {
 						// FirstBase
             if (!(*pFirstBase)) if (cbase->Def->CanBeBase)

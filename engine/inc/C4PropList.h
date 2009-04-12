@@ -24,6 +24,9 @@ class C4PropList {
 	const char *GetName();
 	virtual void SetName (const char *NewName = 0);
 
+	virtual C4Def * GetDef();
+	C4PropList * GetPrototype() { return prototype; }
+
 	bool GetProperty(C4String * k, C4Value & to);
 	C4String * GetPropertyStr(C4PropertyName k);
 	int32_t GetPropertyInt(C4PropertyName k);

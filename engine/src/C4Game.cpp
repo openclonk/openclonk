@@ -1012,7 +1012,7 @@ bool C4Game::IsPaused()
 	}
 
 
-C4Object* C4Game::NewObject( C4Def *pDef, C4Object *pCreator,
+C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
                              int32_t iOwner, C4ObjectInfo *pInfo,
                              int32_t iX, int32_t iY, int32_t iR,
                              FIXED xdir, FIXED ydir, FIXED rdir,
@@ -1076,7 +1076,22 @@ C4Object* C4Game::CreateObject(C4ID id, C4Object *pCreator, int32_t iOwner,
                    FullCon, iController);
   }
 
-C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner,
+C4Object* C4Game::CreateObject(C4PropList * PropList, C4Object *pCreator, int32_t iOwner,
+                               int32_t x, int32_t y, int32_t r,
+                               FIXED xdir, FIXED ydir, FIXED rdir, int32_t iController)                  
+  {
+  C4Def *pDef;
+  // Get pDef
+  if (!PropList || !(pDef=PropList->GetDef())) return NULL;
+  // Create object
+  return NewObject(pDef,pCreator,
+                   iOwner,NULL,
+                   x,y,r,
+                   xdir,ydir,rdir,
+                   FullCon, iController);
+  }
+
+C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner, 
                                    int32_t tx, int32_t ty)
   {
   C4Def *def;
@@ -1092,18 +1107,19 @@ C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner,
                     FullCon, NO_OWNER );
   }
 
-C4Object* C4Game::CreateObjectConstruction(C4ID id,
-																					 C4Object *pCreator,
+C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
+                                           C4Object *pCreator,
                                            int32_t iOwner,
                                            int32_t iX, int32_t iBY,
                                            int32_t iCon,
-																					 BOOL fTerrain)
+                                           BOOL fTerrain)
   {
   C4Def *pDef;
   C4Object *pObj;
 
   // Get def
-  if (!(pDef=C4Id2Def(id))) return NULL;
+  if (!PropList) return NULL;
+  if (!(pDef=PropList->GetDef())) return NULL;
 
   int32_t dx,dy,dwdt,dhgt;
   dwdt=pDef->Shape.Wdt; dhgt=pDef->Shape.Hgt;
@@ -2695,7 +2711,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 					{
 					if (!pDef->Growth) iGrowth=FullCon;
 					iTy+=5;
-					return CreateObjectConstruction(id,NULL,NO_OWNER,iTx,iTy,iGrowth);
+					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
 					}
 				}
 			break;
@@ -2712,7 +2728,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 			if (!SemiAboveSolid(iTx,iTy)) return NULL;
 			iTy+=3;
 			// Create object
-			return CreateObjectConstruction(id,NULL,NO_OWNER,iTx,iTy,iGrowth);
+			return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
 
 		}
 

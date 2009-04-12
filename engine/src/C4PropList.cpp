@@ -67,6 +67,14 @@ void C4PropList::SetName(const char* NewName)
 
 
 
+C4Def * C4PropList::GetDef()
+	{
+	if (prototype) return prototype->GetDef();
+	return 0;
+	}
+
+
+
 template<> template<>
 unsigned int C4Set<C4Property>::Hash<C4String *>(C4String * e)
 	{

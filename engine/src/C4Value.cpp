@@ -254,10 +254,6 @@ C4V_Type C4Value::GuessType()
 
 	if (Type != C4V_Any) return Type;
 
-	// C4ID?
-	if (LooksLikeID(Data.Int) && Data.Int >= 10000)
-		return Type = C4V_C4ID;
-
 #ifdef C4ENGINE
 	// object?
 	if (Game.Objects.ObjectNumber(Data.Obj))
@@ -297,8 +293,6 @@ const char* GetC4VName(const C4V_Type Type)
 		return "bool";
 	case C4V_C4Object:
 		return "object";
-	case C4V_C4ID:
-		return "id";
 	case C4V_String:
 		return "string";
 	case C4V_Array:
@@ -324,8 +318,6 @@ char GetC4VID(const C4V_Type Type)
 		return 'b';
 	case C4V_C4Object:
 		return 'o';
-	case C4V_C4ID:
-		return 'I';
 	case C4V_String:
 		return 's';
 	case C4V_pC4Value:
@@ -352,8 +344,6 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_Bool;
 	case 'o':
 		return C4V_C4Object;
-	case 'I':
-		return C4V_C4ID;
 	case 's':
 		return C4V_String;
 	case 'V':
@@ -420,20 +410,10 @@ bool C4Value::FnCnvGuess(C4Value *Val, C4V_Type toType, BOOL fStrict)
 		}
 	}
 
-bool C4Value::FnCnvInt2Id(C4Value *Val, C4V_Type toType, BOOL fStrict)
-	{
-	// inside range?
-	if (!Inside<long>(Val->Data.Int, 0, 9999)) return FALSE;
-	// convert
-	Val->Type = C4V_C4ID;
-	return TRUE;
-	}
-
 // Type conversion table
 #define CnvOK        0, false								// allow conversion by same value
 #define CnvError     FnCnvError, true
 #define CnvGuess     C4Value::FnCnvGuess, false
-#define CnvInt2Id    C4Value::FnCnvInt2Id, false
 #define CnvDirectOld FnCnvDirectOld, true
 #define CnvDeref     FnCnvDeref, false
 #define CnvObject    FnCnvObject, false
@@ -443,98 +423,79 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK			}, // any        same
 		{ CnvGuess		}, // int
 		{ CnvGuess		}, // Bool
-		{ CnvGuess		}, // C4ID
+		{ CnvGuess		}, // PropList
 		{ CnvGuess		}, // C4Object
 		{ CnvGuess		}, // String
 		{ CnvGuess		}, // Array
-		{ CnvGuess		}, // PropList
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_Int
 		{ CnvOK			}, // any
 		{ CnvOK			}, // int        same
 		{ CnvOK			}, // Bool
-		{ CnvInt2Id		}, // C4ID       numerical ID?
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_Bool
 		{ CnvOK			}, // any
 		{ CnvOK			}, // int        might be used
 		{ CnvOK			}, // Bool       same
-		{ CnvDirectOld	}, // C4ID       #strict forbid
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // pC4Value
 	},
-	{ // C4V_C4ID
+	{ // C4V_PropList
 		{ CnvOK			}, // any
-		{ CnvDirectOld	}, // int        #strict forbid
+		{ CnvError		}, // int        NEVER!
 		{ CnvOK			}, // Bool
-		{ CnvOK			}, // C4ID       same
-		{ CnvError		}, // C4Object   NEVER!
+		{ CnvOK			}, // PropList   same
+		{ CnvObject		}, // C4Object
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // PropList   NEVER!
-		{ CnvError		}, // pC4Value
+		{ CnvError		}, // pC4Value   NEVER!
 	},
 	{ // C4V_Object
 		{ CnvOK			}, // any
 		{ CnvDirectOld	}, // int        #strict forbid
 		{ CnvOK			}, // Bool
-		{ CnvError		}, // C4ID       Senseless, thus error
+		{ CnvOK			}, // PropList
 		{ CnvOK			}, // C4Object   same
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
-		{ CnvOK			}, // PropList
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_String
 		{ CnvOK			}, // any
 		{ CnvDirectOld	}, // int        #strict forbid
 		{ CnvOK			}, // Bool
-		{ CnvError		}, // C4ID       Sensless, thus error
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvOK			}, // String     same
 		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_Array
 		{ CnvOK			}, // any
 		{ CnvError		}, // int        NEVER!
 		{ CnvOK			}, // Bool
-		{ CnvError		}, // C4ID       NEVER!
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvOK			}, // Array      same
-		{ CnvError		}, // PropList   NEVER!
-		{ CnvError		}, // pC4Value   NEVER!
-	},
-	{ // C4V_PropList
-		{ CnvOK			}, // any
-		{ CnvError		}, // int        NEVER!
-		{ CnvOK			}, // Bool
-		{ CnvError		}, // C4ID       NEVER!
-		{ CnvObject		}, // C4Object   NEVER!
-		{ CnvError		}, // String     NEVER!
-		{ CnvError		}, // Array      NEVER!
-		{ CnvOK			}, // PropList   same
 		{ CnvError		}, // pC4Value   NEVER!
 	},
 	{ // C4V_pC4Value - resolve reference and retry type check
 		{ CnvDeref		}, // any
 		{ CnvDeref		}, // int
 		{ CnvDeref		}, // Bool
-		{ CnvDeref		}, // C4ID
+		{ CnvDeref		}, // PropList
 		{ CnvDeref		}, // C4Object
 		{ CnvDeref		}, // String
-		{ CnvDeref		}, // PropList
 		{ CnvDeref		}, // Array
 		{ CnvOK			}, // pC4Value   same
 	},
@@ -561,8 +522,6 @@ StdStrBuf C4Value::GetDataString()
 		return FormatString("%ld", Data.Int);
 	case C4V_Bool:
 		return StdStrBuf(Data ? "true" : "false");
-	case C4V_C4ID:
-		return StdCopyStrBuf(C4IdText(Data.Int));
 #ifdef C4ENGINE
 	case C4V_C4Object:
 		{
@@ -714,7 +673,6 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	case C4V_Any:
 	case C4V_Int:
 	case C4V_Bool:
-	case C4V_C4ID:
 
 		// these are 32-bit integers
 		iTmp = Data.Int;
@@ -798,10 +756,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 				case C4V_Int:
 				case C4V_Bool:
 					return Data == Value2.Data;
-					case C4V_C4ID:
-					if (Inside<long>(Value2.Data.Int, 0, 9999))
-						return Data == Value2.Data;
-					return false;
 				default:
 					return false;
 				}
@@ -815,21 +769,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 				case C4V_Bool:
 					return Data == Value2.Data;
 					default:
-					return false;
-				}
-		case C4V_C4ID:
-			switch (Value2.Type)
-				{
-				case C4V_Any:
-					assert(!Value2.Data);
-					return Data == Value2.Data;
-				case C4V_C4ID:
-					return Data == Value2.Data;
-					case C4V_Int:
-					if (Inside<long>(Value2.Data.Int, 0, 9999))
-						return Data == Value2.Data;
-					return false;
-				default:
 					return false;
 				}
 		case C4V_C4Object: case C4V_PropList:
@@ -849,4 +788,14 @@ bool C4Value::operator != (const C4Value& Value2) const
 {
 	// Fixme: implement faster
 	return !(*this == Value2);
+}
+
+C4Value C4VID(C4ID iVal) { return C4Value(Game.Defs.ID2Def(iVal)); }
+C4ID C4Value::getC4ID()
+{
+	C4PropList * p = getPropList();
+	if(!p) return 0;
+	C4Def * d = p->GetDef();
+	if (!d) return 0;
+	return d->id;
 }

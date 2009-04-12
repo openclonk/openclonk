@@ -1667,12 +1667,12 @@ void C4Command::Construct()
 		{ cObj->AddCommand(C4CMD_MoveTo,NULL,Tx,Ty,50); return; }
 
 	// Check construction site
-	if (!ConstructionCheck(Data,Tx._getInt(),Ty,cObj))
+	if (!ConstructionCheck(C4Id2Def(Data),Tx._getInt(),Ty,cObj))
 		// Site no good: fail
 		{ Finish(); return; }
 
 	// Create construction
-	C4Object *pConstruction = Game.CreateObjectConstruction(Data,NULL,cObj->Owner,Tx._getInt(),Ty,1,TRUE);
+	C4Object *pConstruction = Game.CreateObjectConstruction(C4Id2Def(Data),NULL,cObj->Owner,Tx._getInt(),Ty,1,TRUE);
 
 	// Remove conkit
 	pKit->AssignRemoval();

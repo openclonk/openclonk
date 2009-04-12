@@ -343,7 +343,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 
 				case AB_C4ID:
-					PushValue(C4VID(pCPos->Par.i));
+					PushValue(C4VPropList(C4Id2Def(pCPos->Par.i)));
 					break;
 
 				case AB_EOFN:
@@ -980,15 +980,15 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 						pDestObj = pTargetVal->_getObj();
 						pDestDef = pDestObj->Def;
 						}
-					else if(pTargetVal->ConvertTo(C4V_C4ID))
+					else if(pTargetVal->ConvertTo(C4V_PropList) && pTargetVal->_getPropList())
 						{
 						// definition call
 						pDestObj = NULL;
-						pDestDef = C4Id2Def(pTargetVal->_getC4ID());
+						pDestDef = pTargetVal->_getPropList()->GetDef();
 						// definition must be known
 						if(!pDestDef)
 							throw new C4AulExecError(pCurCtx->Obj,
-								FormatString("Definition call: Definition for id %s not found!", C4IdText(pTargetVal->_getC4ID())).getData());
+								FormatString("Definition call: Definition for %s not found!", pTargetVal->_getPropList()->GetName()).getData());
 						}
 					else
 						throw new C4AulExecError(pCurCtx->Obj,

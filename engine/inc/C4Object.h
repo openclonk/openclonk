@@ -231,7 +231,7 @@ class C4Object: public C4PropList
 		void DenumeratePointers();
 		void EnumeratePointers();
 		void Default();
-		BOOL Init(C4Def *ndef, C4Object *pCreator,
+		BOOL Init(C4PropList *ndef, C4Object *pCreator,
 							int32_t owner, C4ObjectInfo *info,
 							int32_t nx, int32_t ny, int32_t nr,
 							FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController);
@@ -316,7 +316,7 @@ class C4Object: public C4PropList
 		BOOL Push(FIXED txdir, FIXED dforce, BOOL fStraighten);
 		BOOL Lift(FIXED tydir, FIXED dforce);
 		void Fling(FIXED txdir, FIXED tydir, bool fAddSpeed); // set/add given speed to current, setting jump/tumble-actions
-		C4Object* CreateContents(C4ID n_id);
+		C4Object* CreateContents(C4PropList *);
 		BOOL CreateContentsByList(C4IDList &idlist);
 		BYTE GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
 		inline int32_t addtop() { return Max<int32_t>(18-Shape.Hgt,0); } // Minimum top action size for build check

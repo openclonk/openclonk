@@ -1574,7 +1574,7 @@ void C4AulParseState::Parse_FuncHead()
 			// type identifier?
 			if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_C4ID; Shift(Discard,false); }
+			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(Discard,false); }
@@ -2687,7 +2687,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 							case C4V_String:
 								AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
 								break;
-							case C4V_C4ID:   AddBCC(AB_C4ID,   val.GetData().Int); break;
+							case C4V_PropList:   AddBCC(AB_C4ID,   C4ValueConv<C4ID>::FromC4V(val)); break;
 							case C4V_Any:
 								// any: allow zero; add it as int
 								if (!val.GetData())
@@ -3130,7 +3130,7 @@ void C4AulParseState::Parse_Const()
 				case ATT_INT: vGlobalValue.SetInt(cInt); break;
 				case ATT_BOOL: vGlobalValue.SetBool(!!cInt); break;
 				case ATT_STRING: vGlobalValue.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
-				case ATT_C4ID: vGlobalValue.SetC4ID(cInt); break;
+				//FIXME case ATT_C4ID: vGlobalValue.SetC4ID(cInt); break;
 				case ATT_IDTF:
 					// identifier is only OK if it's another constant
 					if (!a->Engine->GetGlobalConstant(Idtf, &vGlobalValue))

@@ -883,7 +883,7 @@ void C4ControlEMMoveObject::Execute() const
 			for (int i=0; i<iObjectNum; ++i)
 				if (pObj = Game.Objects.SafeObjectPointer(pObjects[i]))
 					{
-					pObj = Game.CreateObject(pObj->id, pObj, pObj->Owner, pObj->GetX(), pObj->GetY());
+					pObj = Game.CreateObject(pObj->GetPrototype(), pObj, pObj->Owner, pObj->GetX(), pObj->GetY());
 					if (pObj && fLocalCall) Console.EditCursor.GetSelection().Add(pObj, C4ObjectList::stNone);
 					}
 			// update status
