@@ -621,7 +621,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			break;
 
 		case MODE_Action: // graphics of specified action
-			{
+/*FIXME			{
 			// Find act in ActMap of object
 			int32_t cnt;
 			for (cnt=0; cnt<pDef->ActNum; cnt++)
@@ -632,7 +632,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			// doesn't catch any special action parameters (FacetBase, etc.)...
 			C4ActionDef *pAct = pDef->ActMap+cnt;
 			fctBlit.Set(pSourceGfx->GetBitmap(), pAct->Facet.x, pAct->Facet.y, pAct->Facet.Wdt, pAct->Facet.Hgt);
-			}
+			}*/
 			break;
 
 		case MODE_IngamePicture:

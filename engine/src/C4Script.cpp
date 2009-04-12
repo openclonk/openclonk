@@ -729,8 +729,8 @@ static bool FnSetBridgeActionData(C4AulContext *cthr, long iBridgeLength, bool f
 	{
 	if (!pObj) pObj=cthr->Obj; if (!pObj || !pObj->Status) return FALSE;
 	// action must be BRIDGE
-	if (pObj->Action.Act <= ActIdle) return FALSE;
-	if (pObj->Def->ActMap[pObj->Action.Act].Procedure != DFA_BRIDGE) return FALSE;
+	if (!pObj->Action.pActionDef) return FALSE;
+	if (pObj->Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_BRIDGE) return FALSE;
 	// set data
 	pObj->Action.SetBridgeData(iBridgeLength, fMoveClonk, fWall, iBridgeMaterial);
 	return TRUE;
@@ -740,10 +740,10 @@ static bool FnSetActionData(C4AulContext *cthr, long iData, C4Object *pObj)
 	{
 	if (!pObj) pObj=cthr->Obj; if (!pObj || !pObj->Status) return FALSE;
 	// bridge: Convert from old style
-	if ((pObj->Action.Act > ActIdle) && (pObj->Def->ActMap[pObj->Action.Act].Procedure == DFA_BRIDGE))
+	if (pObj->Action.pActionDef && (pObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_BRIDGE))
 		return FnSetBridgeActionData(cthr, 0, false, false, iData, pObj);
 	// attach: check for valid vertex indices
-	if ((pObj->Action.Act > ActIdle) && (pObj->Def->ActMap[pObj->Action.Act].Procedure == DFA_ATTACH)) // Fixed Action.Act check here... matthes
+	if (pObj->Action.pActionDef && (pObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)) // Fixed Action.Act check here... matthes
 		if (((iData&255) >= C4D_MaxVertex) || ((iData>>8) >= C4D_MaxVertex))
 			return FALSE;
 	// set data
@@ -960,8 +960,8 @@ static C4Value FnPlayerObjectCommand(C4AulContext *cthr, C4Value *pPars)
 static C4String *FnGetAction(C4AulContext *cthr, C4Object *pObj)
   {
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
-  if (pObj->Action.Act<=ActIdle) return String("Idle");
-  return String(pObj->Def->ActMap[pObj->Action.Act].Name);
+  if (!pObj->Action.pActionDef) return String("Idle");
+  return String(pObj->Action.pActionDef->GetName());
   }
 
 static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
@@ -1856,7 +1856,7 @@ static C4Object *FnFindOtherContents(C4AulContext *cthr, C4ID c_id, C4Object *pO
 static bool FnActIdle(C4AulContext *cthr, C4Object *pObj)
   {
   if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
-  if (pObj->Action.Act==ActIdle) return TRUE;
+  if (!pObj->Action.pActionDef) return TRUE;
   return FALSE;
   }
 
@@ -3847,9 +3847,9 @@ static C4String *FnGetProcedure(C4AulContext *cthr, C4Object *pObj)
 	// local/safety
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return NULL;
 	// no action?
-	if (pObj->Action.Act <= ActIdle) return NULL;
+	if (!pObj->Action.pActionDef) return NULL;
 	// get proc
-	long iProc = pObj->Def->ActMap[pObj->Action.Act].Procedure;
+	long iProc = pObj->Action.pActionDef->GetPropertyInt(P_Procedure);
 	// NONE?
 	if (iProc <= DFA_NONE) return NULL;
 	// return procedure name
@@ -4342,37 +4342,6 @@ static C4Value FnGetObjectInfoCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V,
 
 	// get value
 	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*pObjInfoCore, "ObjectInfo"));
-}
-
-static C4Value FnGetActMapVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strAction_C4V, C4Value* idDef_C4V, C4Value *iEntryNr_C4V)
-{
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strAction = FnStringPar(strAction_C4V->getStr());
-	C4ID idDef = idDef_C4V->getC4ID();
-	long iEntryNr = iEntryNr_C4V->getInt();
-
-	if(!idDef) if(cthr->Def) idDef = cthr->Def->id;
-	if(!idDef) return C4Value();
-
-	C4Def* pDef = C4Id2Def(idDef);
-
-	if(!pDef) return C4Value();
-
-	C4ActionDef* pAct = pDef->ActMap;
-
-	if(!pAct) return C4Value();
-
-	long iAct;
-	for(iAct = 0; iAct < pDef->ActNum; iAct++, pAct++)
-		if(SEqual(pAct->Name, strAction))
-			break;
-
-	// not found?
-	if(iAct >= pDef->ActNum)
-		return C4Value();
-
-	// get value
-	return GetValByStdCompiler(strEntry, NULL, iEntryNr, *pAct);
 }
 
 static C4Value FnGetScenarioVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
@@ -7264,7 +7233,6 @@ C4ScriptFnDef C4ScriptFnMap[]={
 
 
 	{ "GetDefCoreVal",				1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_C4ID		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetDefCoreVal,              0 },
-	{ "GetActMapVal",					1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_C4ID		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetActMapVal,               0 },
 	{ "GetObjectVal",					1	,C4V_Any			,{ C4V_String	,C4V_String ,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetObjectVal,               0 },
 	{ "GetObjectInfoCoreVal",	1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetObjectInfoCoreVal,       0 },
 	{ "GetScenarioVal",				1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetScenarioVal,             0 },

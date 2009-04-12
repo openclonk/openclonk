@@ -1181,8 +1181,8 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 									{
 									if (cObj->Category & C4D_Vehicle)
 										continue;
-									if (cObj->Action.Act>=0)
-										if (cObj->Def->ActMap[cObj->Action.Act].Procedure == DFA_FLOAT)
+									if (cObj->Action.pActionDef)
+										if (cObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_FLOAT)
 											continue;
 									}
 								if (cObj->Category & C4D_Living)
@@ -1285,9 +1285,9 @@ C4Object* C4Game::FindObject(C4ID id,
 		// Exclude
 		if (cObj!=pExclude)
 		// Action
-		if (!szAction || !szAction[0]  || (bFindActIdle && cObj->Action.Act<=ActIdle) || ((cObj->Action.Act>ActIdle) && SEqual(szAction,cObj->Def->ActMap[cObj->Action.Act].Name)) )
+		if (!szAction || !szAction[0]  || (bFindActIdle && !cObj->Action.pActionDef) || (cObj->Action.pActionDef && SEqual(szAction,cObj->Action.pActionDef->GetName())) )
 		// ActionTarget
-		if(!pActionTarget || ((cObj->Action.Act>ActIdle) && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
+		if(!pActionTarget || (cObj->Action.pActionDef && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
 		// Container
 		if ( !pContainer || (cObj->Contained == pContainer) || ((reinterpret_cast<long>(pContainer)==NO_CONTAINER) && !cObj->Contained) || ((reinterpret_cast<long>(pContainer)==ANY_CONTAINER) && cObj->Contained) )
 		// Owner
@@ -1439,9 +1439,9 @@ int32_t C4Game::ObjectCount(C4ID id,
 		// Exclude
 		if (cObj!=pExclude)
 		// Action
-		if (!szAction || !szAction[0] || (bFindActIdle && cObj->Action.Act<=ActIdle) || ((cObj->Action.Act>ActIdle) && SEqual(szAction,cObj->Def->ActMap[cObj->Action.Act].Name)) )
+		if (!szAction || !szAction[0]  || (bFindActIdle && !cObj->Action.pActionDef) || (cObj->Action.pActionDef && SEqual(szAction,cObj->Action.pActionDef->GetName())) )
 		// ActionTarget
-		if (!pActionTarget || ((cObj->Action.Act>ActIdle) && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
+		if(!pActionTarget || (cObj->Action.pActionDef && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
 		// Container
 		if ( !pContainer || (cObj->Contained == pContainer) || ((reinterpret_cast<long>(pContainer)==NO_CONTAINER) && !cObj->Contained) || ((reinterpret_cast<long>(pContainer)==ANY_CONTAINER) && cObj->Contained) )
 		// Owner

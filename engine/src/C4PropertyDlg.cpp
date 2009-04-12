@@ -212,11 +212,11 @@ BOOL C4PropertyDlg::Update()
 				Output.Append(static_cast<const StdStrBuf &>(cobj->Contents.GetNameList(Game.Defs)));
 				}
 			// Action
-			if (cobj->Action.Act!=ActIdle)
+			if (cobj->Action.pActionDef)
 				{
 				Output.Append(LineFeed);
 				Output.Append(LoadResStr("IDS_CNS_ACTION"));
-				Output.Append(cobj->Def->ActMap[cobj->Action.Act].Name);
+				Output.Append(cobj->Action.pActionDef->GetName());
 				}
 			// Locals
 			int cnt; bool fFirstLocal = true;

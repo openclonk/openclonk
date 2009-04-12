@@ -65,73 +65,6 @@ const char *ProcedureName[C4D_MaxDFA]={ "WALK",
 																				"PULL"
 																			};
 
-//-------------------------------- C4ActionDef --------------------------------------------
-
-C4ActionDef::C4ActionDef()
-	{
-	Default();
-	}
-
-void C4ActionDef::Default()
-	{
-	ZeroMem(this,sizeof(C4ActionDef));
-	Procedure=DFA_NONE;
-	NextAction=ActIdle;
-	Directions=1;
-	FlipDir=0;
-	Length=1;
-	Delay=0;
-	FacetBase=0;
-	Step=1;
-	StartCall=PhaseCall=EndCall=AbortCall=NULL;
-	}
-
-void C4ActionDef::CompileFunc(StdCompiler *pComp)
-	{
-	pComp->Value(mkNamingAdapt(toC4CStr(Name),						"Name",								""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(ProcedureName),		"Procedure",					""								));
-	pComp->Value(mkNamingAdapt(Directions,								"Directions",         1									));
-	pComp->Value(mkNamingAdapt(FlipDir,	                  "FlipDir",            0                 ));
-	pComp->Value(mkNamingAdapt(Length,										"Length",							1									));
-
-	StdBitfieldEntry<int32_t> CNATs[] = {
-
-		{ "CNAT_None"                 ,CNAT_None                  },
-		{ "CNAT_Left"                 ,CNAT_Left                  },
-		{ "CNAT_Right"                ,CNAT_Right                 },
-		{ "CNAT_Top"                  ,CNAT_Top                   },
-		{ "CNAT_Bottom"               ,CNAT_Bottom                },
-		{ "CNAT_Center"               ,CNAT_Center                },
-		{ "CNAT_MultiAttach"          ,CNAT_MultiAttach           },
-		{ "CNAT_NoCollision"          ,CNAT_NoCollision           },
-
-		{ NULL												,0													}
-
-	};
-
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(Attach, CNATs),
-																												"Attach",							0									));
-
-	pComp->Value(mkNamingAdapt(Delay,											"Delay",							0									));
-	pComp->Value(mkNamingAdapt(Facet,											"Facet",							TargetRect0				));
-	pComp->Value(mkNamingAdapt(FacetBase,									"FacetBase",					0									));
-	pComp->Value(mkNamingAdapt(FacetTopFace,							"FacetTopFace",				0									));
-	pComp->Value(mkNamingAdapt(FacetTargetStretch,				"FacetTargetStretch",	0									));
-	pComp->Value(mkNamingAdapt(toC4CStr(NextActionName),	"NextAction",					""								));
-	pComp->Value(mkNamingAdapt(NoOtherAction,							"NoOtherAction",			0									));
-	pComp->Value(mkNamingAdapt(toC4CStr(SStartCall),			"StartCall",					""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(SEndCall),				"EndCall",						""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(SAbortCall),			"AbortCall",					""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(SPhaseCall),			"PhaseCall",					""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(Sound),						"Sound",							""								));
-	pComp->Value(mkNamingAdapt(Disabled,									"ObjectDisabled",			0									));
-	pComp->Value(mkNamingAdapt(DigFree,										"DigFree",						0									));
-	pComp->Value(mkNamingAdapt(EnergyUsage,								"EnergyUsage",				0									));
-	pComp->Value(mkNamingAdapt(toC4CStr(InLiquidAction),	"InLiquidAction",			""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(TurnAction),			"TurnAction",					""								));
-	pComp->Value(mkNamingAdapt(Reverse,										"Reverse",						0									));
-	pComp->Value(mkNamingAdapt(Step,											"Step",								1									));
-	}
 
 //--------------------------------- C4DefCore ----------------------------------------------
 
@@ -489,8 +422,6 @@ void C4Def::Default()
   Picture=NULL;
   Image=NULL;
 #endif
-  ActNum=0;
-  ActMap=NULL;
   Next=NULL;
   Temporary=FALSE;
 	Maker[0]=0;
@@ -541,10 +472,8 @@ void C4Def::Clear()
 
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-  if (ActMap) delete [] ActMap; ActMap=NULL;
 	Desc.Clear();
-
-  }
+	}
 
 BOOL C4Def::Load(C4Group &hGroup,
                  DWORD dwLoadWhat,
@@ -677,16 +606,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 #endif
 
 #ifdef C4ENGINE
-  // Read ActMap
-  if (dwLoadWhat & C4D_Load_ActMap)
-		if (!LoadActMap(hGroup))
-			{
-			DebugLogF("  Error loading ActMap of %s (%s)", hGroup.GetFullName().getData(), C4IdText(id));
-      return FALSE;
-			}
-#endif
-
-#ifdef C4ENGINE
   // Read script
   if (dwLoadWhat & C4D_Load_Script)
 		{
@@ -810,61 +729,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 	if (Carryable) SetProperty(Strings.P[P_Collectible], C4VTrue);
   
 	return TRUE;
-	}
-
-BOOL C4Def::LoadActMap(C4Group &hGroup)
-	{
-	// New format
-	StdStrBuf Data;
-	if (hGroup.LoadEntryString(C4CFN_DefActMap, Data))
-		{
-		// Get action count (hacky), create buffer
-		int actnum;
-		if(!(actnum = SCharCount('[', Data.getData()))
-			|| !(ActMap = new C4ActionDef [actnum]))
-				return FALSE;
-		// Compile
-		if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-				mkNamingAdapt(mkArrayAdapt(ActMap, actnum), "Action"),
-				Data,
-				(hGroup.GetFullName() + DirSep C4CFN_DefActMap).getData()))
-			return FALSE;
-		ActNum = actnum;
-		// Process map
-		CrossMapActMap();
-		return TRUE;
-		}
-
-	// No act map in group: okay
-	return TRUE;
-	}
-
-void C4Def::CrossMapActMap()
-	{
-	int32_t cnt,cnt2;
-	for (cnt=0; cnt<ActNum; cnt++)
-		{
-		// Map standard procedures
-		ActMap[cnt].Procedure=DFA_NONE;
-		for (cnt2=0; cnt2<C4D_MaxDFA; cnt2++)
-			if (SEqual(ActMap[cnt].ProcedureName,ProcedureName[cnt2]))
-				ActMap[cnt].Procedure=cnt2;
-    // Map next action
-    if (ActMap[cnt].NextActionName[0])
-      {
-      if (SEqualNoCase(ActMap[cnt].NextActionName,"Hold"))
-        ActMap[cnt].NextAction=ActHold;
-      else
-        for (cnt2=0; cnt2<ActNum; cnt2++)
-          if (SEqual(ActMap[cnt].NextActionName,ActMap[cnt2].Name))
-            ActMap[cnt].NextAction=cnt2;
-      }
-    // Check act calls
-    if (SEqualNoCase(ActMap[cnt].SStartCall,"None"))	ActMap[cnt].SStartCall[0]=0;
-    if (SEqualNoCase(ActMap[cnt].SPhaseCall,"None"))	ActMap[cnt].SPhaseCall[0]=0;
-    if (SEqualNoCase(ActMap[cnt].SEndCall,"None"))	ActMap[cnt].SEndCall[0]=0;
-    if (SEqualNoCase(ActMap[cnt].SAbortCall,"None"))	ActMap[cnt].SAbortCall[0]=0;
-		}
 	}
 
 BOOL C4Def::ColorizeByMaterial(C4MaterialMap &rMats, BYTE bGBM)

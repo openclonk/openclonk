@@ -273,8 +273,8 @@ void C4Object::AssignRemoval(BOOL fExitContents)
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
 	// Action idle
-  SetAction(ActIdle);
-  // Object system operation
+	SetAction(0);
+	// Object system operation
 	if (Status == C4OS_INACTIVE)
 		{
 		// object was inactive: activate first, then delete
@@ -408,9 +408,9 @@ void C4Object::UpdateFlipDir()
 	{
 	int32_t iFlipDir;
 	// We're active
-	if (Action.Act > ActIdle)
+	if (Action.pActionDef)
 		// Get flipdir value from action
-		if (iFlipDir = Def->ActMap[Action.Act].FlipDir)
+		if (iFlipDir = Action.pActionDef->GetPropertyInt(P_FlipDir))
 			// Action dir is in flipdir range
 			if (Action.Dir >= iFlipDir)
 				{
@@ -500,7 +500,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 	const float swdt = float(Action.Facet.Wdt);
 	const float shgt = float(Action.Facet.Hgt);
 	int32_t iPhase = Action.Phase;
-	if (Def->ActMap[Action.Act].Reverse) iPhase = Def->ActMap[Action.Act].Length - 1 - Action.Phase;
+	if (Action.pActionDef->GetPropertyInt(P_Reverse)) iPhase = Action.pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
 
 	// Grow Type Display
 	float fx = float(Action.Facet.X + swdt * iPhase);
@@ -658,7 +658,7 @@ void C4Object::SetOCF()
   if ((OCF & OCF_FullCon) || Def->IncompleteActivity)
     if ((Def->Collection.Wdt>0) && (Def->Collection.Hgt>0))
       if (!Def->CollectionLimit || (Contents.ObjectCount()<Def->CollectionLimit) )
-        if ((Action.Act<=ActIdle) || (!Def->ActMap[Action.Act].Disabled))
+        if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
           if (NoCollectDelay==0)
             OCF|=OCF_Collection;
   // OCF_Living
@@ -669,7 +669,7 @@ void C4Object::SetOCF()
 		}
   // OCF_FightReady
   if (OCF & OCF_Alive)
-    if ((Action.Act<=ActIdle) || (!Def->ActMap[Action.Act].Disabled))
+    if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
 			if (!Def->NoFight)
 				OCF|=OCF_FightReady;
 	// OCF_LineConstruct
@@ -779,12 +779,12 @@ void C4Object::UpdateOCF()
   if ((OCF & OCF_FullCon) || Def->IncompleteActivity)
     if ((Def->Collection.Wdt>0) && (Def->Collection.Hgt>0))
       if (!Def->CollectionLimit || (Contents.ObjectCount()<Def->CollectionLimit) )
-        if ((Action.Act<=ActIdle) || (!Def->ActMap[Action.Act].Disabled))
+        if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
           if (NoCollectDelay==0)
             OCF|=OCF_Collection;
   // OCF_FightReady
   if (OCF & OCF_Alive)
-    if ((Action.Act<=ActIdle) || (!Def->ActMap[Action.Act].Disabled))
+    if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
 			if (!Def->NoFight)
 				OCF|=OCF_FightReady;
 	// OCF_NotContained
@@ -1234,9 +1234,9 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	C4Object *pContainer=Contained;
 	// Exit container (no Ejection/Departure)
 	if (Contained) Exit(0,0,0,Fix0,Fix0,Fix0,FALSE);
-  // Pre change resets
-  SetAction(ActIdle);
-	Action.Act=ActIdle; // Enforce ActIdle because SetAction may have failed due to NoOtherAction
+	// Pre change resets
+	SetAction(0);
+	Action.pActionDef = 0; // Enforce ActIdle because SetAction may have failed due to NoOtherAction
 	SetDir(0); // will drop any outdated flipdir
   if (pSolidMaskData) { pSolidMaskData->Remove(true, false); delete pSolidMaskData; pSolidMaskData=NULL; }
 	Def->Count--;
@@ -1443,11 +1443,11 @@ void C4Object::DoCon(int32_t iChange, BOOL fInitial, bool fNoComponentChange)
 			// No energy need
 			NeedEnergy=0;
 			}
-    // Decay from full stop action
-    if (fWasFull && (Con<FullCon))
+		// Decay from full stop action
+		if (fWasFull && (Con<FullCon))
 			if (!Def->IncompleteActivity)
-				SetAction(ActIdle);
-    }
+				SetAction(0);
+		}
 	else
 		// set first position
 		if (fInitial) UpdatePos();
@@ -2191,9 +2191,8 @@ C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPas
 
 BOOL C4Object::SetPhase(int32_t iPhase)
 	{
-  if (Action.Act<=ActIdle) return FALSE;
-	C4ActionDef *actdef=&(Def->ActMap[Action.Act]);
-  Action.Phase=BoundBy<int32_t>(iPhase,0,actdef->Length);
+	if (!Action.pActionDef) return FALSE;
+	Action.Phase=BoundBy<int32_t>(iPhase,0,Action.pActionDef->GetPropertyInt(P_Length));
 	return TRUE;
 	}
 
@@ -2219,8 +2218,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	float offX = cgo.X + fixtof(fix_x) - cotx, offY = cgo.Y + fixtof(fix_y) - coty;
 
 	BOOL fYStretchObject=FALSE;
-	if (Action.Act>ActIdle)
-		if (Def->ActMap[Action.Act].FacetTargetStretch)
+	if (Action.pActionDef)
+		if (Action.pActionDef->GetPropertyInt(P_FacetTargetStretch))
 			fYStretchObject=TRUE;
 
 	// Set audibility
@@ -2228,7 +2227,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 
   // Output boundary
 	if (!fYStretchObject && !eDrawMode)
-		if (Action.Act>ActIdle && !r && !Def->ActMap[Action.Act].FacetBase && Con<=FullCon)
+		if (Action.pActionDef && !r && !Action.pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
 			{
 			// active
 			if ( !Inside<float>(cox+Action.FacetX,1-Action.Facet.Wdt,cgo.Wdt)
@@ -2371,7 +2370,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (ColorMod || BlitMode) if (!eDrawMode) PrepareDrawing();
 
 	// Not active or rotated: BaseFace only
-	if ((Action.Act<=ActIdle))
+	if (!Action.pActionDef)
 		{
 		DrawFace(cgo, offX, offY);
 		}
@@ -2380,11 +2379,11 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	else
 		{
 		// FacetBase
-		if (Def->ActMap[Action.Act].FacetBase)
+		if (Action.pActionDef->GetPropertyInt(P_FacetBase))
 			DrawFace(cgo, offX, offY, 0, Action.DrawDir);
 
 		// Special: stretched action facet
-		if (Action.Facet.Surface && Def->ActMap[Action.Act].FacetTargetStretch)
+		if (Action.Facet.Surface && Action.pActionDef->GetPropertyInt(P_FacetTargetStretch))
 			{
 			if (Action.Target)
 				lpDDraw->Blit(Action.Facet.Surface,
@@ -2460,10 +2459,10 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 
 	if (Game.GraphicsSystem.ShowAction) if (eDrawMode!=ODM_BaseOnly)
 		{
-		if (Action.Act>ActIdle)
+		if (Action.pActionDef)
 			{
 			StdStrBuf str;
-			str.Format("%s (%d)",Def->ActMap[Action.Act].Name,Action.Phase);
+			str.Format("%s (%d)",Action.pActionDef->GetName(),Action.Phase);
 			int32_t cmwdt,cmhgt; Game.GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
 			Application.DDraw->TextOut(str.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-cmhgt,InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
 			}
@@ -2547,13 +2546,12 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			fctConSign.Wdt, fctConSign.Hgt, TRUE);
 		}
 	// FacetTopFace: Override TopFace.GetX()/GetY()
-	if ((Action.Act>ActIdle) && Def->ActMap[Action.Act].FacetTopFace)
+	if (Action.pActionDef && Action.pActionDef->GetPropertyInt(P_FacetTopFace))
 		{
-		C4ActionDef *actdef = &Def->ActMap[Action.Act];
 		int32_t iPhase = Action.Phase;
-		if (actdef->Reverse) iPhase = actdef->Length - 1 - Action.Phase;
-		TopFace.X = actdef->Facet.x + Def->TopFace.x + actdef->Facet.Wdt * iPhase;
-		TopFace.Y = actdef->Facet.y + Def->TopFace.y + actdef->Facet.Hgt * Action.DrawDir;
+		if (Action.pActionDef->GetPropertyInt(P_Reverse)) iPhase = Action.pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
+		TopFace.X = Action.pActionDef->GetPropertyInt(P_X) + Def->TopFace.x + Action.pActionDef->GetPropertyInt(P_Wdt) * iPhase;
+		TopFace.Y = Action.pActionDef->GetPropertyInt(P_Y) + Def->TopFace.y + Action.pActionDef->GetPropertyInt(P_Hgt) * Action.DrawDir;
 		}
 	// ensure correct color is set
 	if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
@@ -2784,12 +2782,12 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	  int32_t iTime=Action.Time;
 	  int32_t iPhase=Action.Phase;
 	  int32_t iPhaseDelay=Action.PhaseDelay;
-	  if (SetActionByName(Action.Name,0,0,FALSE))
+	  /* FIXME if (SetActionByName(Action.pActionDef->GetName(),0,0,FALSE)) 
 		  {
 		  Action.Time=iTime;
 		  Action.Phase=iPhase; // No checking for valid phase
 		  Action.PhaseDelay=iPhaseDelay;
-		  }
+		  }*/
 
 	  // if on fire but no effect is present (old-style savegames), re-incinerate
 	  int32_t iFireNumber;
@@ -4021,176 +4019,159 @@ void C4Object::Resort()
 	// Must not immediately resort - link change/removal would crash Game::ExecObjects
 	}
 
-BOOL C4Object::SetAction(int32_t iAct, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
-  {
-  int32_t iLastAction=Action.Act;
+BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
+	{
+	C4PropList * LastAction = Action.pActionDef;
 	int32_t iLastPhase=Action.Phase;
-  C4ActionDef *pAction;
-
-	// Def lost actmap: idle (safety)
-	if (!Def->ActMap) iLastAction = ActIdle;
-
-  // No other action
-  if (iLastAction>ActIdle)
-    if (Def->ActMap[iLastAction].NoOtherAction && !fForce)
-      if (iAct!=iLastAction)
-        return FALSE;
-
-  // Invalid action
-  if (Def && !Inside<int32_t>(iAct,ActIdle,Def->ActNum-1))
-		return FALSE;
-
-  // Stop previous act sound
-  if (iLastAction>ActIdle)
-    if (iAct!=iLastAction)
-      if (Def->ActMap[iLastAction].Sound[0])
-        StopSoundEffect(Def->ActMap[iLastAction].Sound,this);
-
-  // Unfullcon objects no action
-  if (Con<FullCon)
+	// No other action
+	if (LastAction)
+		if (LastAction->GetPropertyInt(P_NoOtherAction) && !fForce)
+			if (Act != LastAction)
+				return FALSE;
+	// Stop previous act sound
+	if (LastAction)
+		if (Act != LastAction)
+			if (LastAction->GetPropertyStr(P_Sound))
+				StopSoundEffect(LastAction->GetPropertyStr(P_Sound)->GetCStr(),this);
+	// Unfullcon objects no action
+	if (Con<FullCon)
 		if (!Def->IncompleteActivity)
-			iAct = ActIdle;
-
-  // Reset action time on change
-  if (iAct!=iLastAction)
+			Act = 0;
+	// Reset action time on change
+	if (Act!=LastAction)
 		{
 		Action.Time=0;
 		// reset action data if procedure is changed
-		if (((iAct>ActIdle) ? Def->ActMap[iAct].Procedure : DFA_NONE)
-			!= ((iLastAction>ActIdle) ? Def->ActMap[iLastAction].Procedure : DFA_NONE))
-				Action.Data=0;
+		if ((Act ? Act->GetPropertyInt(P_Procedure) : DFA_NONE)
+			!= (LastAction ? LastAction->GetPropertyInt(P_Procedure) : DFA_NONE))
+				Action.Data = 0;
 		}
-
-  // Set new action
-  Action.Act=iAct;
-	ZeroMem(Action.Name,C4D_MaxIDLen+1);
-	if (Action.Act>ActIdle) SCopy(Def->ActMap[Action.Act].Name,Action.Name);
-  Action.Phase=Action.PhaseDelay=0;
-
+	// Set new action
+	Action.pActionDef = Act;
+	Action.Phase=Action.PhaseDelay=0;
 	// Set target if specified
-  if (pTarget) Action.Target=pTarget;
-  if (pTarget2) Action.Target2=pTarget2;
-
+	if (pTarget) Action.Target=pTarget;
+	if (pTarget2) Action.Target2=pTarget2;
 	// Set Action Facet
 	UpdateActionFace();
-
 	// update flipdir
-	if (((iLastAction>ActIdle) ? Def->ActMap[iLastAction].FlipDir : 0)
-	 != ((iAct       >ActIdle) ? Def->ActMap[iAct       ].FlipDir : 0)) UpdateFlipDir();
-
-  // Start act sound
-  if (Action.Act>ActIdle)
-    if (Action.Act!=iLastAction)
-      if (Def->ActMap[Action.Act].Sound[0])
-        StartSoundEffect(Def->ActMap[Action.Act].Sound,+1,100,this);
-
-  // Reset OCF
-  SetOCF();
-
+	if ((LastAction ? LastAction->GetPropertyInt(P_FlipDir) : 0)
+	 != (Act ? Act->GetPropertyInt(P_FlipDir) : 0)) UpdateFlipDir();
+	// Start act sound
+	if (Action.pActionDef)
+		if (Action.pActionDef != LastAction)
+			if (Action.pActionDef->GetPropertyStr(P_Sound))
+				StartSoundEffect(Action.pActionDef->GetPropertyStr(P_Sound)->GetCStr(),+1,100,this);
+	// Reset OCF
+	SetOCF();
 	// issue calls
-
-  // Execute StartCall
+	// Execute StartCall
 	if (iCalls & SAC_StartCall)
-		if (Action.Act>ActIdle)
+		if (Action.pActionDef)
 			{
-			pAction=&(Def->ActMap[Action.Act]);
-			if (pAction->StartCall)
+			if (Action.pActionDef->GetPropertyStr(P_StartCall))
 				{
 				C4Def *pOldDef = Def;
-				pAction->StartCall->Exec(this);
+				Call(Action.pActionDef->GetPropertyStr(P_StartCall)->GetCStr());
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return TRUE;
 				}
 			}
-
-  // Execute EndCall
-	if(iCalls & SAC_EndCall && !fForce)
-		if(iLastAction > ActIdle)
+	// Execute EndCall
+	if (iCalls & SAC_EndCall && !fForce)
+		if (LastAction)
 			{
-			pAction=&(Def->ActMap[iLastAction]);
-			if (pAction->EndCall)
+			if (LastAction->GetPropertyStr(P_EndCall))
 				{
 				C4Def *pOldDef = Def;
-				pAction->EndCall->Exec(this);
+				Call(LastAction->GetPropertyStr(P_EndCall)->GetCStr());
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return TRUE;
 				}
 			}
-
-  // Execute AbortCall
-	if(iCalls & SAC_AbortCall && !fForce)
-		if(iLastAction > ActIdle)
+	// Execute AbortCall
+	if (iCalls & SAC_AbortCall && !fForce)
+		if (LastAction)
 			{
-			pAction=&(Def->ActMap[iLastAction]);
-			if (pAction->AbortCall)
+			if (LastAction->GetPropertyStr(P_AbortCall))
 				{
 				C4Def *pOldDef = Def;
-				pAction->AbortCall->Exec(this, &C4AulParSet(C4VInt(iLastPhase)));
+				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase)));
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return TRUE;
 				}
 			}
-
-  return TRUE;
-  }
+	return TRUE;
+	}
 
 void C4Object::UpdateActionFace()
 	{
 	// Default: no action face
 	Action.Facet.Default();
 	// Active: get action facet from action definition
-  if (Action.Act>ActIdle)
-    {
-    C4ActionDef *pAction=&(Def->ActMap[Action.Act]);
-    if (pAction->Facet.Wdt>0)
-      {
-			Action.Facet.Set(GetGraphics()->GetBitmap(Color),pAction->Facet.x,pAction->Facet.y,pAction->Facet.Wdt,pAction->Facet.Hgt);
-      Action.FacetX=pAction->Facet.tx;
-      Action.FacetY=pAction->Facet.ty;
-      }
-    }
+	if (Action.pActionDef)
+		{
+		if (Action.pActionDef->GetPropertyInt(P_Wdt)>0)
+			{
+			Action.Facet.Set(GetGraphics()->GetBitmap(Color),
+				Action.pActionDef->GetPropertyInt(P_X),Action.pActionDef->GetPropertyInt(P_Y),
+				Action.pActionDef->GetPropertyInt(P_Wdt),Action.pActionDef->GetPropertyInt(P_Hgt));
+			Action.FacetX=Action.pActionDef->GetPropertyInt(P_OffX);
+			Action.FacetY=Action.pActionDef->GetPropertyInt(P_OffY);
+			}
+		}
 	}
 
-BOOL C4Object::SetActionByName(const char *szActName,
+bool C4Object::SetActionByName(C4String * ActName,
 															 C4Object *pTarget, C4Object *pTarget2,
 															 int32_t iCalls, bool fForce)
-  {
-  int32_t cnt;
-  // Check for ActIdle passed by name
-  if (SEqual(szActName,"ActIdle") || SEqual(szActName,"Idle"))
-    return SetAction(ActIdle,0,0,SAC_StartCall | SAC_AbortCall,fForce);
-  // Find act in ActMap of object
-  for (cnt=0; cnt<Def->ActNum; cnt++)
-    if (SEqual(szActName,Def->ActMap[cnt].Name))
-      return SetAction(cnt,pTarget,pTarget2,iCalls,fForce);
-  return FALSE;
-  }
+	{
+	int32_t cnt;
+	// Check for ActIdle passed by name
+	if (ActName == Strings.P[P_Idle])
+		return SetAction(0,0,0,iCalls,fForce);
+	C4Value ActMap; GetProperty(Strings.P[P_ActMap], ActMap);
+	if (!ActMap.getPropList()) return false;
+	C4Value Action; ActMap.getPropList()->GetProperty(ActName, Action);
+	if (!Action.getPropList()) return false;
+	return SetAction(Action.getPropList(),pTarget,pTarget2,iCalls,fForce);      
+	}
+
+bool C4Object::SetActionByName(const char * szActName, 
+															 C4Object *pTarget, C4Object *pTarget2, 
+															 int32_t iCalls, bool fForce)
+	{
+	C4String * ActName = Strings.RegString(szActName);
+	ActName->IncRef();
+	bool r = SetActionByName(ActName);
+	ActName->DecRef();
+	return r;
+	}
 
 void C4Object::SetDir(int32_t iDir)
   {
 	// Not active
-  if (Action.Act<=ActIdle) return;
+	if (!Action.pActionDef) return;
 	// Invalid direction
-  if (!Inside<int32_t>(iDir,0,Def->ActMap[Action.Act].Directions-1)) return;
+	if (!Inside<int32_t>(iDir,0,Action.pActionDef->GetPropertyInt(P_Directions)-1)) return;
 	// Execute turn action
-	C4ActionDef *pAction=&(Def->ActMap[Action.Act]);
 	if (iDir != Action.Dir)
-	  if (pAction->TurnAction[0])
-      { SetActionByName(pAction->TurnAction); }
+		if (Action.pActionDef->GetPropertyStr(P_TurnAction))
+			{ SetActionByName(Action.pActionDef->GetPropertyStr(P_TurnAction)); }
 	// Set dir
-  Action.Dir=iDir;
+	Action.Dir=iDir;
 	// update by flipdir?
-	if (Def->ActMap[Action.Act].FlipDir)
+	if (Action.pActionDef->GetPropertyInt(P_FlipDir))
 		UpdateFlipDir();
 	else
 		Action.DrawDir=iDir;
   }
 
 int32_t C4Object::GetProcedure()
-  {
-  if (Action.Act<=ActIdle) return DFA_NONE;
-  return Def->ActMap[Action.Act].Procedure;
-  }
+	{
+	if (!Action.pActionDef) return DFA_NONE;
+	return Action.pActionDef->GetPropertyInt(P_Procedure);
+	}
 
 void GrabLost(C4Object *cObj)
 	{
@@ -4210,7 +4191,7 @@ void DoGravity(C4Object *cobj, BOOL fFloatFriction=TRUE);
 void C4Object::NoAttachAction()
 	{
 	// Active objects
-	if (Action.Act > ActIdle)
+	if (Action.pActionDef)
 		{
 		int32_t iProcedure = GetProcedure();
 		// Scaling upwards: corner scale
@@ -4250,9 +4231,9 @@ void C4Object::ContactAction()
 	C4PhysicalInfo *pPhysical=GetPhysical();
 
 	// Determine Procedure
-	if (Action.Act<=ActIdle) return;
-	int32_t iProcedure=Def->ActMap[Action.Act].Procedure;
-	int32_t fDisabled=Def->ActMap[Action.Act].Disabled;
+	if (!Action.pActionDef) return;
+	int32_t iProcedure=Action.pActionDef->GetPropertyInt(P_Procedure);
+	int32_t fDisabled=Action.pActionDef->GetPropertyInt(P_ObjectDisabled);
 
 	//------------------------------- Hit Bottom ---------------------------------------------
 	if (t_contact & CNAT_Bottom)
@@ -4616,30 +4597,30 @@ void C4Object::ExecAction()
         Mobile=1;
         }
 
-  // Idle objects do natural gravity only
-  if (Action.Act<=ActIdle)
-    {
-    if (Mobile) DoGravity(this);
-    return;
-    }
-
+	// Idle objects do natural gravity only
+	if (!Action.pActionDef)
+		{
+		if (Mobile) DoGravity(this);
+		return;
+		}
+  
 	// No IncompleteActivity? Reset action
 	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity)
-		{ SetAction(ActIdle); return; }
+		{ SetAction(0); return; }
 
-  // Determine ActDef & Physical Info
-  C4ActionDef *pAction=&(Def->ActMap[Action.Act]);
-  C4PhysicalInfo *pPhysical=GetPhysical();
-  FIXED lLimit;
+	// Determine ActDef & Physical Info
+	C4PropList * pAction = Action.pActionDef;
+	C4PhysicalInfo *pPhysical=GetPhysical();
+	FIXED lLimit;
 	FIXED fWalk,fMove;
-  int32_t smpx,smpy;
+	int32_t smpx,smpy;
 
 	// Energy usage
 	if (Game.Rules & C4RULE_StructuresNeedEnergy)
-		if (pAction->EnergyUsage)
-			if (pAction->EnergyUsage <= Energy )
+		if (pAction->GetPropertyInt(P_EnergyUsage))
+			if (pAction->GetPropertyInt(P_EnergyUsage) <= Energy ) 
 				{
-				Energy -= pAction->EnergyUsage;
+				Energy -= pAction->GetPropertyInt(P_EnergyUsage); 
 				// No general DoEnergy-Process
 				NeedEnergy=0;
 				}
@@ -4647,34 +4628,34 @@ void C4Object::ExecAction()
 			else
 				{
 				NeedEnergy=1;
-		    if (Mobile) DoGravity(this);
+				if (Mobile) DoGravity(this);
 				return;
 				}
 
 	// Action time advance
-  Action.Time++;
-
-  // InLiquidAction check
-  if (InLiquid)
-	  if (pAction->InLiquidAction[0])
-      { SetActionByName(pAction->InLiquidAction); return; }
+	Action.Time++;
+  
+	// InLiquidAction check
+	if (InLiquid)
+		if (pAction->GetPropertyStr(P_InLiquidAction))
+			{ SetActionByName(pAction->GetPropertyStr(P_InLiquidAction)); return; }
 
 	// assign extra action attachment (CNAT_MultiAttach)
 	// regular attachment values cannot be set for backwards compatibility reasons
 	// this parameter had always been ignored for actions using an internal procedure,
 	// but is for some obscure reasons set in the KneelDown-actions of the golems
-	Action.t_attach |= (pAction->Attach & CNAT_MultiAttach);
+	Action.t_attach |= (pAction->GetPropertyInt(P_Attach) & CNAT_MultiAttach);
 
 	// if an object is in controllable state, so it can be assumed that if it dies later because of NO_OWNER's cause,
 	// it has been its own fault and not the fault of the last one who threw a flint on it
 	// do not reset for burning objects to make sure the killer is set correctly if they fall out of the map while burning
-	if (!pAction->Disabled && pAction->Procedure != DFA_FLIGHT && !OnFire)
+	if (!pAction->GetPropertyInt(P_ObjectDisabled) && pAction->GetPropertyInt(P_Procedure) != DFA_FLIGHT && !OnFire)
 		LastEnergyLossCausePlayer = NO_OWNER;
 
-  // Handle Default Action Procedure: evaluates Procedure and Action.ComDir
-  // Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
-  switch (pAction->Procedure)
-    {
+	// Handle Default Action Procedure: evaluates Procedure and Action.ComDir
+	// Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
+	switch (pAction->GetPropertyInt(P_Procedure))
+		{
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_WALK:
       lLimit=ValByPhysical(280, pPhysical->Walk);
@@ -5135,7 +5116,7 @@ void C4Object::ExecAction()
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_LIFT:
       // Valid check
-      if (!Action.Target) { SetAction(ActIdle); return; }
+      if (!Action.Target) { SetAction(0); return; }
       // Target lifting force
       lftspeed=itofix(2); tydir=0;
       switch (Action.ComDir)
@@ -5146,7 +5127,7 @@ void C4Object::ExecAction()
         }
       // Lift object
       if (!Action.Target->Lift(tydir,FIXED100(50)))
-        { SetAction(ActIdle); return; }
+        { SetAction(0); return; }
       // Check LiftTop
       if (Def->LiftTop)
         if (Action.Target->GetY()<=(GetY()+Def->LiftTop))
@@ -5187,7 +5168,7 @@ void C4Object::ExecAction()
 				{
 				if (Status)
 					{
-					SetAction(ActIdle);
+					SetAction(0);
 					Call(PSF_AttachTargetLost);
 					}
 				return;
@@ -5196,7 +5177,7 @@ void C4Object::ExecAction()
 			// Target incomplete and no incomplete activity
 			if (!(Action.Target->OCF & OCF_FullCon))
 				if (!Action.Target->Def->IncompleteActivity)
-          { SetAction(ActIdle); return; }
+					{ SetAction(0); return; }
 
       // Force containment
       if (Action.Target->Contained!=Contained)
@@ -5292,11 +5273,11 @@ void C4Object::ExecAction()
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     default:
 			// Attach
-			if (pAction->Attach)
+			if (pAction->GetPropertyInt(P_Attach))
 				{
-				Action.t_attach|=pAction->Attach;
-				xdir=ydir=0;
-				Mobile=1;
+				Action.t_attach |= pAction->GetPropertyInt(P_Attach);
+				xdir = ydir = 0;
+				Mobile = 1;
 				}
 			// Free gravity
 			else
@@ -5305,35 +5286,36 @@ void C4Object::ExecAction()
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     }
 
-  // Phase Advance (zero delay means no phase advance)
-  if (pAction->Delay)
-  	{
+	// Phase Advance (zero delay means no phase advance)
+	if (pAction->GetPropertyInt(P_Delay))
+		{  
 		Action.PhaseDelay+=iPhaseAdvance;
-		if (Action.PhaseDelay>=pAction->Delay)
+		if (Action.PhaseDelay >= pAction->GetPropertyInt(P_Delay))
 			{
 			// Advance Phase
 			Action.PhaseDelay=0;
-			Action.Phase += pAction->Step;
+			Action.Phase += pAction->GetPropertyInt(P_Step);
 			// Phase call
-			if (pAction->PhaseCall)
+			if (pAction->GetPropertyStr(P_PhaseCall))
 				{
-				pAction->PhaseCall->Exec(this);
+				Call(pAction->GetPropertyStr(P_PhaseCall)->GetCStr());
 				}
 			// Phase end
-			if (Action.Phase>=pAction->Length)
+			if (Action.Phase>=pAction->GetPropertyInt(P_Length)) 
 				{
 				// set new action if it's not Hold
-				if (pAction->NextAction==ActHold)
-					Action.Phase = pAction->Length-1;
+				if (pAction->GetPropertyStr(P_NextAction) == Strings.P[P_Hold])
+					Action.Phase = pAction->GetPropertyInt(P_Length)-1;
 				else
+					{
 					// Set new action
-					SetAction(pAction->NextAction, NULL, NULL, SAC_StartCall | SAC_EndCall);
+					SetActionByName(pAction->GetPropertyStr(P_NextAction), NULL, NULL, SAC_StartCall | SAC_EndCall);
+					}
 				}
-			}
+			}  
 		}
-
-  return;
-  }
+	return;
+	}
 
 
 BOOL C4Object::SetOwner(int32_t iOwner)
@@ -5368,7 +5350,7 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	// this automatically updates controller
 	Controller = Owner;
 	// if this is a flag flying on a base, the base must be updated
-	if (id == C4ID_Flag) if (SEqual(Action.Name, "FlyBase")) if (Action.Target && Action.Target->Status)
+	if (id == C4ID_Flag) if (SEqual(Action.pActionDef->GetName(), "FlyBase")) if (Action.Target && Action.Target->Status)
 		if (Action.Target->Base == iOldOwner)
 			{
 			Action.Target->Base = Owner;
@@ -5531,9 +5513,9 @@ BOOL C4Object::Collect(C4Object *pObj)
 	// Special: attached Flag may not be collectable
 	if (pObj->Def->id==C4ID_Flag)
 		if (!(Game.Rules & C4RULE_FlagRemoveable))
-			if (pObj->Action.Act>ActIdle)
-				if (SEqual(pObj->Def->ActMap[pObj->Action.Act].Name,"FlyBase"))
-					return FALSE;
+			if (pObj->Action.pActionDef)
+				if (SEqual(pObj->Action.pActionDef->GetName(),"FlyBase"))
+					return FALSE;       
 	// Object enter container
 	bool fRejectCollect;
 	if(!pObj->Enter(this, TRUE, false, &fRejectCollect))

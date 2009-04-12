@@ -78,13 +78,12 @@ class C4SolidMask;
 
 
 class C4Action
-  {
-  public:
-    C4Action();
-    ~C4Action();
-  public:
-    char Name[C4D_MaxIDLen+1];
-    int32_t Act; // NoSave //
+	{
+	public:
+		C4Action();
+		~C4Action();
+	public:
+		C4PropList * pActionDef;
     int32_t Dir;
 		int32_t DrawDir; // NoSave // - needs to be calculated for old-style objects.txt anyway
     int32_t ComDir;
@@ -287,8 +286,9 @@ class C4Object: public C4PropList
 		BOOL Contact(int32_t cnat);
 		void TargetBounds(int32_t &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 		enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4, };
-		BOOL SetAction(int32_t iAct, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
-		BOOL SetActionByName(const char *szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+		BOOL SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+		bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+		bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 		void SetDir(int32_t tdir);
 		void SetCategory(int32_t Category) { this->Category = Category; Resort(); SetOCF(); }
 		int32_t GetProcedure();
@@ -406,7 +406,7 @@ class C4Object: public C4PropList
 				&& !(Category & (C4D_StaticBack | C4D_Structure))
 				&& !Contained
 				&& ((~Category & C4D_Vehicle) || (OCF & OCF_Grab))
-				&& (Action.Act<=ActIdle || Def->ActMap[Action.Act].Procedure != DFA_FLOAT)
+				&& (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_FLOAT)
 				;
 			}
 
