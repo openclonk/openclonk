@@ -190,6 +190,8 @@ enum C4AulBCCType
 	AB_STRING,	// constant: string
 	AB_C4ID,		// constant: C4ID
 	AB_ARRAY,		// semi-constant: array
+	AB_PROPLIST,		// create a new proplist
+	AB_PROPSET,		// set a property of a proplist
 	AB_IVARN,		// initialization of named var
 	AB_JUMP,		// jump
 	AB_JUMPAND,		// jump if zero, else pop the stack

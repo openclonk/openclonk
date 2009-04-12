@@ -184,6 +184,12 @@ class C4AulExec
 			CheckOverflow(1);
 			(++pCurVal)->SetArray(Array);
 		}
+		
+		void PushPropList(C4PropList * PropList)
+		{
+			CheckOverflow(1);
+			(++pCurVal)->SetPropList(PropList);
+		}
 
 		void PushValue(const C4Value &rVal)
 		{
@@ -750,6 +756,23 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					else
 						PushArray(pArray);
 
+					break;
+					}
+
+				case AB_PROPLIST:
+					{
+					PushPropList(new C4PropList);
+					break;
+					}
+				case AB_PROPSET:
+					{
+					C4Value *pPropSet = pCurVal - 2, *pKey = pCurVal -1, *pValue = pCurVal;
+					if(!pPropSet->ConvertTo(C4V_PropList))
+						throw new C4AulExecError(pCurCtx->Obj, FormatString("Propset: proplist expected, got %s!", pPropSet->GetTypeName()).getData());
+					if(!pKey->ConvertTo(C4V_String))
+						throw new C4AulExecError(pCurCtx->Obj, FormatString("Propset: string expected, got %s!", pPropSet->GetTypeName()).getData());
+					pPropSet->_getPropList()->SetProperty(pKey->_getStr(), *pValue);
+					PopValues(2);
 					break;
 					}
 

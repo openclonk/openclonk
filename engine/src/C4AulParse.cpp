@@ -141,6 +141,7 @@ class C4AulParseState
 	void Parse_Block();
 	int Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc = 0);
 	void Parse_Array();
+	void Parse_PropList();
 	void Parse_While();
 	void Parse_If();
 	void Parse_For();
@@ -909,6 +910,8 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_STRING: return "STRING";	// constant: string
 	case AB_C4ID: return "C4ID";		// constant: C4ID
 	case AB_ARRAY: return "ARRAY";		// semi-constant: array
+	case AB_PROPLIST: return "PROPLIST";		// semi-constant: array
+	case AB_PROPSET: return "PROPSET";
 	case AB_IVARN: return "IVARN";		// initialization of named var
 	case AB_JUMP: return "JUMP";		// jump
 	case AB_JUMPAND: return "JUMPAND";
@@ -1021,6 +1024,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_BOOL:
 		case AB_STRING:
 		case AB_C4ID:
+		case AB_PROPLIST:
 		case AB_VARN_R:
 		case AB_VARN_V:
 		case AB_PARN_R:
@@ -1110,6 +1114,10 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 
 		case AB_ARRAY:
 			iStack-=X-1;
+			break;
+
+		case AB_PROPSET:
+			iStack -= 2;
 			break;
 
 		default:
@@ -2296,6 +2304,43 @@ void C4AulParseState::Parse_Array()
 	AddBCC(AB_ARRAY, size);
 	}
 
+void C4AulParseState::Parse_PropList()
+	{
+	AddBCC(AB_PROPLIST);
+	Shift();
+	// insert block in byte code
+	while (1)
+		{
+		if (TokenType == ATT_BLCLOSE)
+			{
+			Shift();
+			return;
+			}
+		C4String * pKey;
+		if (TokenType == ATT_IDTF)
+			{
+			pKey = Strings.RegString(Idtf);
+			AddBCC(AB_STRING, (intptr_t) pKey);
+			Shift();
+			}
+		else if (TokenType == ATT_STRING)
+			{
+			AddBCC(AB_STRING, cInt);
+			Shift();
+			}
+		else UnexpectedToken("string or identifier");
+		if (TokenType != ATT_COLON && (TokenType != ATT_OPERATOR || !SEqual(C4ScriptOpMap[cInt].Identifier,"=")))
+			UnexpectedToken("':' or '='");
+		Shift();
+		Parse_Expression();
+		AddBCC(AB_PROPSET);
+		if (TokenType == ATT_COMMA)
+			Shift();
+		else if (TokenType != ATT_BLCLOSE)
+			UnexpectedToken("'}' or ','");
+		}
+	}
+
 void C4AulParseState::Parse_While()
 	{
 	// Save position for later jump back
@@ -2739,6 +2784,11 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			if(!Fn->pOrgScript->Strict)
 				throw new C4AulParseError(this, "unexpected '['");
 			Parse_Array();
+			break;
+			}
+		case ATT_BLOPEN:
+			{
+			Parse_PropList();
 			break;
 			}
 		default:
