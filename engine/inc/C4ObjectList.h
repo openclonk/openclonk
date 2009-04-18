@@ -82,7 +82,6 @@ class C4ObjectList
 		iterator begin();
 		const iterator end();
 
-		void SortByCategory();
 		void Default();
 		void Clear();
 		void Sort();
@@ -98,11 +97,6 @@ class C4ObjectList
 		void CloseMenus();
 		void UpdateGraphics(bool fGraphicsChanged);
 		void UpdateFaces(bool bUpdateShape);
-		void SyncClearance();
-		void ResetAudibility();
-		void UpdateTransferZones();
-		void SetOCF();
-		void GetIDList(C4IDList &rList, int32_t dwCategory=C4D_All);
 		void ClearInfo(C4ObjectInfo *pInfo);
 
 		typedef int SortProc(C4Object *, C4Object *);
@@ -113,7 +107,6 @@ class C4ObjectList
 
 		BOOL AssignInfo();
 		BOOL ValidateOwners();
-		BOOL AssignPlrViewRange();
 		StdStrBuf GetNameList(C4DefList &rDefs, DWORD dwCategory=C4D_All);
 		BOOL IsClear() const;
 		BOOL DenumerateRead();

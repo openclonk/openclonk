@@ -83,6 +83,12 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		bool ValidateOwners();
 		bool AssignInfo();
+		void AssignPlrViewRange();
+		void SortByCategory();
+		void SyncClearance();
+		void ResetAudibility();
+		void UpdateTransferZones();
+		void SetOCF();
 	protected:
 		C4Set<C4PropList *> PropLists;
 		friend class C4PropList;

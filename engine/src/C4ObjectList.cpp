@@ -608,16 +608,6 @@ BOOL C4ObjectList::AssignInfo()
 	return TRUE;
 	}
 
-BOOL C4ObjectList::AssignPlrViewRange()
-	{
-  C4ObjectLink *cLnk;
-  for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->AssignPlrViewRange();
-	return TRUE;
-
-	}
-
 void C4ObjectList::ClearInfo(C4ObjectInfo *pInfo)
 	{
   C4ObjectLink *cLnk;
@@ -727,14 +717,6 @@ void C4NotifyingObjectList::RemoveLink(C4ObjectLink *pLnk)
 	ObjectListChangeListener.OnObjectRemove(this, pLnk);
 	}
 
-void C4ObjectList::SyncClearance()
-	{
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj)
-			cLnk->Obj->SyncClearance();
-	}
-
 void C4ObjectList::UpdateGraphics(bool fGraphicsChanged)
 	{
   C4ObjectLink *cLnk;
@@ -758,30 +740,11 @@ void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo, float Zoom)
 		cLnk->Obj->DrawSelectMark(cgo, Zoom);
 	}
 
-void C4ObjectList::GetIDList(C4IDList &rList, int32_t dwCategory)
-	{
-	C4ObjectLink *clnk;
-	C4Def *pDef;
-	rList.Clear();
-  for (clnk=First; clnk && clnk->Obj; clnk=clnk->Next)
-		if (clnk->Obj->Status)
-			if ((dwCategory==C4D_All) || ( (pDef=C4Id2Def(clnk->Obj->Def->id)) && (pDef->Category & dwCategory) ))
-				rList.IncreaseIDCount(clnk->Obj->Def->id);
-	}
-
 void C4ObjectList::CloseMenus()
 	{
   C4Object *cobj; C4ObjectLink *clnk;
   for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
     cobj->CloseMenu(true);
-	}
-
-void C4ObjectList::SetOCF()
-	{
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->SetOCF();
 	}
 
 void C4ObjectList::Copy(const C4ObjectList &rList)
@@ -796,40 +759,6 @@ void C4ObjectList::Default()
   First=Last=NULL;
   Mass=0;
 	pEnumerated=NULL;
-	}
-
-void C4ObjectList::UpdateTransferZones()
-	{
-  C4Object *cobj; C4ObjectLink *clnk;
-  for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->Call(PSF_UpdateTransferZone);
-	}
-
-void C4ObjectList::ResetAudibility()
-	{
-  C4Object *cobj; C4ObjectLink *clnk;
-  for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->Audible=cobj->AudiblePan=0;
-	}
-
-void C4ObjectList::SortByCategory()
-	{
-  C4ObjectLink *cLnk;
-	BOOL fSorted;
-	// Sort by category
-	do
-		{
-		fSorted = TRUE;
-		for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
-			if ((cLnk->Obj->Category & C4D_SortLimit) < (cLnk->Next->Obj->Category & C4D_SortLimit))
-				{
-				RemoveLink(cLnk);
-				InsertLink(cLnk,cLnk->Next);
-				fSorted = FALSE;
-				break;
-				}
-		}
-	while (!fSorted);
 	}
 
 BOOL C4ObjectList::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)

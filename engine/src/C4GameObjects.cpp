@@ -942,3 +942,61 @@ bool C4GameObjects::AssignInfo()
 	if (!InactiveObjects.AssignInfo()) fSucc = false;
 	return fSucc;
 	}
+
+void C4GameObjects::AssignPlrViewRange()
+	{
+	C4ObjectLink *cLnk;
+	for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
+		if (cLnk->Obj->Status)
+			cLnk->Obj->AssignPlrViewRange();
+	}
+
+void C4GameObjects::SortByCategory()
+	{
+	C4ObjectLink *cLnk;
+	BOOL fSorted;
+	// Sort by category
+	do
+		{
+		fSorted = TRUE;
+		for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
+			if ((cLnk->Obj->Category & C4D_SortLimit) < (cLnk->Next->Obj->Category & C4D_SortLimit))
+				{			
+				RemoveLink(cLnk);
+				InsertLink(cLnk,cLnk->Next);
+				fSorted = FALSE;
+				break;
+				}
+		}
+	while (!fSorted);
+	}
+
+void C4GameObjects::SyncClearance()
+	{
+	C4ObjectLink *cLnk;
+	for (cLnk=First; cLnk; cLnk=cLnk->Next)
+		if (cLnk->Obj)
+			cLnk->Obj->SyncClearance();
+	}
+
+void C4GameObjects::UpdateTransferZones()
+	{
+	C4Object *cobj; C4ObjectLink *clnk;
+	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+		cobj->Call(PSF_UpdateTransferZone);
+	}
+
+void C4GameObjects::ResetAudibility()
+	{
+	C4Object *cobj; C4ObjectLink *clnk;
+	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+		cobj->Audible=cobj->AudiblePan=0;
+	}
+
+void C4GameObjects::SetOCF()
+	{
+	C4ObjectLink *cLnk;
+	for (cLnk=First; cLnk; cLnk=cLnk->Next)
+		if (cLnk->Obj->Status)
+			cLnk->Obj->SetOCF();
+	}
