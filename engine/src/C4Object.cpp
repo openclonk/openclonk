@@ -229,7 +229,6 @@ C4Object::~C4Object()
 #if defined(_DEBUG)
 	// debug: mustn't be listed in any list now
 	assert(!Game.Objects.ObjectNumber(this));
-	assert(!Game.Objects.InactiveObjects.ObjectNumber(this));
 	Game.Objects.Sectors.AssertObjectNotInList(this);
 #endif
   }

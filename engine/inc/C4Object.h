@@ -420,6 +420,9 @@ class C4Object: public C4PropList
 		// This function is used for:
 		// -Objects that are not to be saved in "SaveScenario"-mode
 		bool IsUserPlayerObject();// true for any object that belongs to any player (NO_OWNER) or a specified player
+
+		// overloaded from C4PropList
+		virtual C4Object * GetObject() { return this; }
   };
 
 #endif

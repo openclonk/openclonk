@@ -53,7 +53,10 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		C4Object *FindInternal(C4ID id); // find object in first sector
 		virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
-		long ObjectNumber(C4PropList *pObj); // object number by pointer
+		int32_t ObjectNumber(C4PropList *pObj); // object number by pointer
+		C4Object* SafeObjectPointer(int32_t iNumber);
+		C4Object* Denumerated(C4Object *pObj);
+		C4Object* Enumerated(C4Object *pObj);
 
 		C4ObjectList &ObjectsInt(); // return object list containing system objects
 
@@ -80,6 +83,9 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		bool ValidateOwners();
 		bool AssignInfo();
+	protected:
+		C4Set<C4PropList *> PropLists;
+		friend class C4PropList;
 	};
 
 class C4AulFunc;

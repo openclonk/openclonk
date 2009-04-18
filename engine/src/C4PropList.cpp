@@ -32,17 +32,20 @@ void C4PropList::AssignRemoval()
 C4PropList::C4PropList():
 	FirstRef(NULL), prototype(0)
 	{
+	Game.Objects.PropLists.Add(this);
 	}
 
 C4PropList::C4PropList(C4PropList * prototype):
 	FirstRef(NULL), prototype(prototype)
 	{
+	Game.Objects.PropLists.Add(this);
 	}
 
 C4PropList::~C4PropList()
 	{
 	assert(!FirstRef);
 	while (FirstRef) FirstRef->Set(0);
+	Game.Objects.PropLists.Remove(this);
 	}
 
 
@@ -66,6 +69,12 @@ void C4PropList::SetName(const char* NewName)
 	}
 
 
+
+C4Object * C4PropList::GetObject()
+	{
+	if (prototype) return prototype->GetObject();
+	return 0;
+	}
 
 C4Def * C4PropList::GetDef()
 	{
@@ -161,4 +170,35 @@ void C4PropList::SetProperty(C4String * k, const C4Value & to)
 void C4PropList::ResetProperty(C4String * k)
 	{
 	Properties.Remove(k);
+	}
+
+
+
+template<> template<>
+unsigned int C4Set<C4PropList *>::Hash<int>(int e)
+	{       
+	unsigned int hash = 4, tmp;
+	hash += e >> 16;
+        tmp   = ((e & 0xffff) << 11) ^ hash;
+        hash  = (hash << 16) ^ tmp;
+        hash += hash >> 11;
+	hash ^= hash << 3;
+	hash += hash >> 5;
+	hash ^= hash << 4;
+	hash += hash >> 17;
+	hash ^= hash << 25;
+	hash += hash >> 6;
+	return hash;
+	}
+
+template<> template<>
+unsigned int C4Set<C4PropList *>::Hash<C4PropList *>(C4PropList * e)
+	{
+	return Hash(e->Number);
+	}
+
+template<> template<>
+bool C4Set<C4PropList *>::Equals<int>(C4PropList * a, int b)
+	{
+	return a->Number == b;
 	}

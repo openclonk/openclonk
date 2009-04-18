@@ -457,16 +457,6 @@ void C4ObjectList::Enumerate()
 			cLnk->Obj->EnumeratePointers();
 	}
 
-long C4ObjectList::ObjectNumber(C4PropList *pObj)
-	{
-  C4ObjectLink *cLnk;
-	if(!pObj) return 0;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj==pObj)
-			return cLnk->Obj->Number;
-	return 0;
-	}
-
 bool C4ObjectList::IsContained(C4Object *pObj)
 	{
   C4ObjectLink *cLnk;
@@ -479,12 +469,6 @@ bool C4ObjectList::IsContained(C4Object *pObj)
 BOOL C4ObjectList::IsClear() const
 	{
 	return (ObjectCount()==0);
-	}
-
-BOOL C4ObjectList::ReadEnumerated(const char *szSource)
-	{
-	assert(false);
-	return FALSE;
 	}
 
 BOOL C4ObjectList::DenumerateRead()
@@ -587,22 +571,6 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSaveRefs, bool fSkipPla
     }
 	}
 
-C4Object* C4ObjectList::ObjectPointer(int32_t iNumber)
-	{
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Number==iNumber)
-			return cLnk->Obj;
-	return NULL;
-	}
-
-C4Object *C4ObjectList::SafeObjectPointer(int32_t iNumber)
-	{
-	C4Object *pObj = ObjectPointer(iNumber);
-	if (pObj) if (!pObj->Status) return NULL;
-	return pObj;
-	}
-
 StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs, DWORD dwCategory)
 	{
 	int cpos,idcount;
@@ -656,25 +624,6 @@ void C4ObjectList::ClearInfo(C4ObjectInfo *pInfo)
   for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->ClearInfo(pInfo);
-	}
-
-C4Object* C4ObjectList::Enumerated(C4Object *pObj)
-	{
-	int iPtrNum;
-	// If object is enumerated, convert to enumerated pointer
-	if (iPtrNum = ObjectNumber(pObj))
-		return (C4Object*) (C4EnumPointer1 + iPtrNum);
-	// Oops!
-	return 0;
-	}
-
-C4Object* C4ObjectList::Denumerated(C4Object *pObj)
-	{
-	// If valid enumeration, convert to pointer
-	if (Inside( (long) pObj, C4EnumPointer1, C4EnumPointer2 ))
-		return ObjectPointer( (long) pObj - C4EnumPointer1 );
-	// Oops!
-	return NULL;
 	}
 
 void C4ObjectList::DrawList(C4Facet &cgo, int iSelection, DWORD dwCategory)

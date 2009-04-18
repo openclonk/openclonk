@@ -524,21 +524,20 @@ StdStrBuf C4Value::GetDataString()
 		return StdStrBuf(Data ? "true" : "false");
 #ifdef C4ENGINE
 	case C4V_C4Object:
+	case C4V_PropList:
 		{
 		// obj exists?
-		if(!Game.Objects.ObjectNumber(Data.Obj) && !Game.Objects.InactiveObjects.ObjectNumber(Data.Obj))
+		if(!Game.Objects.ObjectNumber(Data.PropList))
 			return FormatString("%ld", Data.Int);
 		else
-			if (Data.Obj)
+			if (Data.PropList)
 				if (Data.Obj->Status == C4OS_NORMAL)
-					return FormatString("%s #%d", Data.Obj->GetName(), (int) Data.Obj->Number);
+					return FormatString("%s #%d", Data.PropList->GetName(), (int) Data.PropList->Number);
 				else
-					return FormatString("{%s #%d}", Data.Obj->GetName(), (int) Data.Obj->Number);
+					return FormatString("{%s #%d}", Data.PropList->GetName(), (int) Data.PropList->Number);
 			else
 				return StdStrBuf("0"); // (impossible)
 		}
-	case C4V_PropList:
-		return StdStrBuf("FIXME");
 	case C4V_String:
 		return (Data.Str && Data.Str->GetCStr()) ? FormatString("\"%s\"", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
 	case C4V_Array:
@@ -592,13 +591,9 @@ void C4Value::DenumeratePointer()
 	}
 	// object types only
 	if(Type != C4V_C4ObjectEnum && Type != C4V_Any) return;
-	// in range?
-	if(Type != C4V_C4ObjectEnum && !Inside(Data.Int, C4EnumPointer1, C4EnumPointer2)) return;
 	// get obj id, search object
-	int iObjID = (Data.Int >= C4EnumPointer1 ? Data.Int - C4EnumPointer1 : Data.Int);
+	int iObjID = Data.Int;
 	C4PropList *pObj = Game.Objects.ObjectPointer(iObjID);
-	if (!pObj)
-		pObj = Game.Objects.InactiveObjects.ObjectPointer(iObjID);
 	if(pObj)
 		// set
 		SetPropList(pObj);

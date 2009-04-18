@@ -116,22 +116,16 @@ class C4ObjectList
 		BOOL AssignPlrViewRange();
 		StdStrBuf GetNameList(C4DefList &rDefs, DWORD dwCategory=C4D_All);
 		BOOL IsClear() const;
-		BOOL ReadEnumerated(const char *szSource);
 		BOOL DenumerateRead();
 		BOOL Write(char *szTarget);
 		void CompileFunc(StdCompiler *pComp, bool fSaveRefs = true, bool fSkipPlayerObjects = false);
 
-		long ObjectNumber(C4PropList *pObj);
 		bool IsContained(C4Object *pObj);
 		int ClearPointers(C4Object *pObj);
 		int ObjectCount(C4ID id=C4ID_None, int32_t dwCategory=C4D_All) const;
 		int MassCount();
 		int ListIDCount(int32_t dwCategory);
-
-		C4Object* Denumerated(C4Object *pObj);
-		C4Object* Enumerated(C4Object *pObj);
-		virtual C4Object* ObjectPointer(int32_t iNumber);
-		C4Object* SafeObjectPointer(int32_t iNumber);
+		
 		C4Object* GetObject(int Index=0);
 		C4Object* Find(C4ID id, int iOwner=ANY_OWNER, DWORD dwOCF=OCF_All);
 		C4Object* FindOther(C4ID id, int iOwner=ANY_OWNER);

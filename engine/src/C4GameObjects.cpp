@@ -277,19 +277,44 @@ C4Object *C4GameObjects::FindInternal(C4ID id)
 C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 	{
 	// search own list
-	C4Object *pObj = C4ObjectList::ObjectPointer(iNumber);
-	if (pObj) return pObj;
-	// search deactivated
-	return InactiveObjects.ObjectPointer(iNumber);
+	C4PropList *pObj = PropLists.Get(iNumber);
+	if (pObj) return pObj->GetObject();
 	}
 
-long C4GameObjects::ObjectNumber(C4PropList * pObj)
+int32_t C4GameObjects::ObjectNumber(C4PropList *pObj)
 	{
-	// search own list
-	long iNum = C4ObjectList::ObjectNumber(pObj);
-	if (iNum) return iNum;
-	// search deactivated
-	return InactiveObjects.ObjectNumber(pObj);
+	if(!pObj) return 0;
+	C4PropList * const * p = PropLists.First();
+	while (p)
+		{
+		if(*p == pObj) return (*p)->Number;
+		p = PropLists.Next(p);
+		}
+	return 0;
+	}
+
+C4Object *C4GameObjects::SafeObjectPointer(int32_t iNumber)
+	{
+	C4Object *pObj = ObjectPointer(iNumber); 
+	if (pObj) if (!pObj->Status) return NULL;
+	return pObj;
+	}
+
+const uint32_t C4EnumPointer1 = 1000000000;
+C4Object* C4GameObjects::Enumerated(C4Object *pObj)
+	{
+	uint32_t iPtrNum;
+	// If object is enumerated, convert to enumerated pointer
+	if (iPtrNum = ObjectNumber(pObj)) 
+		return (C4Object*) (C4EnumPointer1 + iPtrNum);
+	// Oops!
+	return (C4Object*)-1;
+	}
+
+C4Object* C4GameObjects::Denumerated(C4Object *pObj)
+	{
+	// convert to pointer
+	return ObjectPointer((uint32_t)(intptr_t) pObj - C4EnumPointer1);
 	}
 
 C4ObjectList &C4GameObjects::ObjectsInt()
