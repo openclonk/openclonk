@@ -35,15 +35,14 @@ void C4PropList::AssignRemoval()
 	Game.ClearPointers(this);
 	}
 
-C4PropList::C4PropList():
-	FirstRef(NULL), prototype(0)
-	{
-	Game.Objects.PropLists.Add(this);
-	}
-
 C4PropList::C4PropList(C4PropList * prototype):
+	Number(-1), Status(1),
 	FirstRef(NULL), prototype(prototype)
 	{
+	// Enumerate object
+	do
+		Number = ++Game.ObjectEnumerationIndex;
+	while (Game.Objects.PropLists.Get(Game.ObjectEnumerationIndex));
 	Game.Objects.PropLists.Add(this);
 	}
 
@@ -52,6 +51,7 @@ C4PropList::~C4PropList()
 	assert(!FirstRef);
 	while (FirstRef) FirstRef->Set(0);
 	Game.Objects.PropLists.Remove(this);
+	assert(!Game.Objects.ObjectNumber(this));
 	}
 
 

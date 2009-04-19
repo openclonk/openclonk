@@ -1032,8 +1032,6 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
   if (!(pObj=new C4Object)) return NULL;
 	// Initialize object
 	pObj->Init(	pDef,pCreator,iOwner,pInfo,iX,iY,iR,xdir,ydir,rdir, iController );
-	// Enumerate object
-	pObj->Number = ++ObjectEnumerationIndex;
 	// Add to object list
   if (!Objects.Add(pObj)) { delete pObj; return NULL; }
 	// ---- From now on, object is ready to be used in scripts!

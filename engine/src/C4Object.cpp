@@ -77,8 +77,6 @@ C4Object::C4Object()
 void C4Object::Default()
 	{
 	id=C4ID_None;
-	Number=-1;
-	Status=1;
 	nInfo.Clear();
 	RemovalDelay=0;
 	Owner=NO_OWNER;
@@ -228,7 +226,6 @@ C4Object::~C4Object()
 
 #if defined(_DEBUG)
 	// debug: mustn't be listed in any list now
-	assert(!Game.Objects.ObjectNumber(this));
 	Game.Objects.Sectors.AssertObjectNotInList(this);
 #endif
   }
