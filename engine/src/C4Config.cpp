@@ -835,7 +835,6 @@ const char* C4Config::AtDataReadPath(const char *szFilename, bool fPreferWorkdir
 
 const char* C4Config::AtDataReadPathCore(const char *szFilename, bool fPreferWorkdir)
 	{
-	const char *szPath;
 	if (fPreferWorkdir && FileExists(szFilename))
 		{
 		SCopy(GetWorkingDirectory(),AtPathFilename,_MAX_PATH-1);

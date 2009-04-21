@@ -1102,6 +1102,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_EOF:
 		case AB_JUMP:
 		case AB_CALLNS:
+		case AB_DEBUG:
 			break;
 
 		case AB_STACK:
@@ -1777,6 +1778,7 @@ void C4AulParseState::Parse_Function()
 				C4AulBCC * CPos = a->GetCodeByPos(Max(a->GetCodePos() - 1,0));
 				if (!CPos || CPos->bccType != AB_RETURN || fJump)
 					{
+					AddBCC(AB_DEBUG);
 					AddBCC(AB_INT);
 					AddBCC(AB_RETURN);
 					}
@@ -1819,6 +1821,7 @@ void C4AulParseState::Parse_Block()
 	}
 void C4AulParseState::Parse_Statement()
 	{
+	AddBCC(AB_DEBUG);
 	switch (TokenType)
 		{
 		// do we have a block start?

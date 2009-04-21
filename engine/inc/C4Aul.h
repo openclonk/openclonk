@@ -42,6 +42,7 @@ class C4AulScriptFunc;
 class C4AulDefFunc;
 class C4AulScript;
 class C4AulScriptEngine;
+class C4AulDebug;
 
 struct C4AulContext;
 struct C4AulBCC;
@@ -198,6 +199,7 @@ enum C4AulBCCType
 	AB_FOREACH_NEXT, // foreach: next element
 	AB_RETURN,	// return statement
 	AB_ERR,			// parse error at this position
+	AB_DEBUG,		// debug break
 	AB_EOFN,		// end of function
 	AB_EOF,			// end of file
 	};
@@ -248,13 +250,16 @@ struct C4AulScriptContext : public C4AulContext
 	C4Value *Return;
 	C4Value *Pars;
 	C4Value *Vars;
-	C4AulScriptFunc *Func;
+	C4AulFunc *Func;
 	bool TemporaryScript;
 	C4ValueList NumVars;
 	C4AulBCC *CPos;
 	time_t tTime; // initialized only by profiler if active
 
+	C4AulScriptFunc *SFunc();
 	int ParCnt() const { return Vars - Pars; }
+	StdStrBuf Dump(StdStrBuf Dump = StdStrBuf(""));
+	StdStrBuf DumpVerbose(StdStrBuf Dump = StdStrBuf(""));
 	void dump(StdStrBuf Dump = StdStrBuf(""));
 	};
 
@@ -297,6 +302,8 @@ class C4AulFunc
 		void DestroyLinked(); // destroys linked functions
 
 	};
+
+inline C4AulScriptFunc *C4AulScriptContext::SFunc() { return Func->SFunc(); }
 
 // script function class
 class C4AulScriptFunc : public C4AulFunc
@@ -350,7 +357,6 @@ class C4AulScriptFunc : public C4AulFunc
 
 		friend class C4AulScript;
 	};
-
 
 // defined function class
 class C4AulDefFunc : C4AulFunc
@@ -518,7 +524,6 @@ class C4AulScript
 		friend class C4AulParseState;
 	};
 
-
 // holds all C4AulScripts
 class C4AulScriptEngine : public C4AulScript
 	{
@@ -526,6 +531,7 @@ class C4AulScriptEngine : public C4AulScript
 		C4AList itbl; // include table
 		C4AList atbl; // append table
 		C4AulFuncMap FuncLookUp;
+		C4AulDebug *pDebug;
 
 	public:
 		int warnCnt, errCnt; // number of warnings/errors
@@ -568,6 +574,10 @@ class C4AulScriptEngine : public C4AulScript
 
 		BOOL DenumerateVariablePointers();
 		void UnLink(); // called when a script is being reloaded (clears string table)
+
+		bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
+		C4AulDebug *GetDebugger() const { return pDebug; }
+
 		// Compile scenario script data (without strings and constants)
 		void CompileFunc(StdCompiler *pComp);
 

@@ -19,6 +19,7 @@
 
 #include <C4Include.h>
 #include <C4Log.h>
+#include <C4AulDebug.h>
 
 #ifndef BIG_C4INCLUDE
 #include <C4Console.h>
@@ -149,6 +150,10 @@ bool Log(const char *szMessage)
 	if (iDisableLog) return true;
 	// security
 	if(!szMessage) return false;
+
+	// Pass on to debugger
+	if(C4AulDebug *pDebug = Game.ScriptEngine.GetDebugger())
+		pDebug->OnLog(szMessage);
 	// Pass on to console
 	Console.Out(szMessage);
 	// pass on to lobby

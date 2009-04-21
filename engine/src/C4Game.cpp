@@ -1706,6 +1706,10 @@ void C4Game::Default()
 	pNetworkStatistics = NULL;
 	iMusicLevel = 100;
 	PlayList.Clear();
+	DebugPort = 0;
+	DebugPassword.Clear();
+	DebugHost.Clear();
+	DebugWait = false;
 	}
 
 void C4Game::Evaluate()
@@ -2475,6 +2479,11 @@ BOOL C4Game::LinkScriptEngine()
 	// Set name list for globals
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
 
+	// Activate debugger if requested
+	if(DebugPort)
+		if(!ScriptEngine.InitDebug(DebugPort, DebugPassword.getData(), DebugHost.getData(), DebugWait))
+			return false;
+
 	return TRUE;
 	}
 
@@ -2967,6 +2976,15 @@ void C4Game::ParseCommandLine(const char *szCmdLine)
 		// additional read-only data path
 		if (SEqual2NoCase(szParameter, "/data:"))
 			Config.General.AddAdditionalDataPath(szParameter + 6);
+		// debug options
+		if (SEqual2NoCase(szParameter, "/debug:"))
+			DebugPort = atoi(szParameter + 7);
+		if (SEqual2NoCase(szParameter, "/debugpass:"))
+			DebugPassword = szParameter + 11;
+		if (SEqual2NoCase(szParameter, "/debughost:"))
+			DebugHost = szParameter + 11;
+		if (SEqual2NoCase(szParameter, "/debugwait"))
+			DebugWait = true;
 #ifdef _DEBUG
 		// debug configs
 		if (SEqualNoCase(szParameter, "/host"))

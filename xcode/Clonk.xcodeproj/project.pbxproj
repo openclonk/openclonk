@@ -27,6 +27,7 @@
 		AFFAA14E0C2A896200444B95 /* C4ChatDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFFAA14B0C2A896200444B95 /* C4ChatDlg.cpp */; };
 		AFFAA14F0C2A896200444B95 /* C4InteractiveThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFFAA14C0C2A896200444B95 /* C4InteractiveThread.cpp */; };
 		AFFAA1500C2A896200444B95 /* C4Network2IRC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFFAA14D0C2A896200444B95 /* C4Network2IRC.cpp */; };
+		D0AEFAD70FBF8EC400E2229D /* C4AulDebug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0AEFAD60FBF8EC400E2229D /* C4AulDebug.cpp */; };
 		D406269A0BB9440C00815E5D /* c4group_ng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D40626990BB9440C00815E5D /* c4group_ng.cpp */; };
 		D40626A00BB9477A00815E5D /* C4Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D439CADC0B8CB129001D508B /* C4Config.cpp */; };
 		D40626A10BB9477A00815E5D /* C4Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D439CAF80B8CB12A001D508B /* C4Group.cpp */; };
@@ -284,6 +285,9 @@
 		AFFAA14B0C2A896200444B95 /* C4ChatDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4ChatDlg.cpp; sourceTree = "<group>"; };
 		AFFAA14C0C2A896200444B95 /* C4InteractiveThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4InteractiveThread.cpp; sourceTree = "<group>"; };
 		AFFAA14D0C2A896200444B95 /* C4Network2IRC.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4Network2IRC.cpp; sourceTree = "<group>"; };
+		D0AEFAA10FBF8E5500E2229D /* C4AulDebug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4AulDebug.h; sourceTree = "<group>"; };
+		D0AEFAA20FBF8E5500E2229D /* C4AulExec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4AulExec.h; sourceTree = "<group>"; };
+		D0AEFAD60FBF8EC400E2229D /* C4AulDebug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4AulDebug.cpp; sourceTree = "<group>"; };
 		D40626910BB9418400815E5D /* c4group */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c4group; sourceTree = BUILT_PRODUCTS_DIR; };
 		D40626990BB9440C00815E5D /* c4group_ng.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = c4group_ng.cpp; path = ../group/c4group_ng.cpp; sourceTree = SOURCE_ROOT; };
 		D40626AA0BB947A700815E5D /* C4Update.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = C4Update.cpp; sourceTree = "<group>"; };
@@ -886,6 +890,7 @@
 		D439CAD10B8CB129001D508B /* src */ = {
 			isa = PBXGroup;
 			children = (
+				D0AEFAD60FBF8EC400E2229D /* C4AulDebug.cpp */,
 				3562890E0DA62F9000FB1482 /* C4MainMenu.cpp */,
 				3562890F0DA62F9000FB1482 /* C4ObjectMenu.cpp */,
 				3588FB750DA0FFD2001544C0 /* C4FileSelDlg.cpp */,
@@ -1068,6 +1073,8 @@
 		D45B48A40D6B333A001A7AE2 /* inc */ = {
 			isa = PBXGroup;
 			children = (
+				D0AEFAA10FBF8E5500E2229D /* C4AulDebug.h */,
+				D0AEFAA20FBF8E5500E2229D /* C4AulExec.h */,
 				356289130DA62FA600FB1482 /* C4MainMenu.h */,
 				356288E60DA62CAD00FB1482 /* C4ObjectMenu.h */,
 				3588FB730DA0FFBE001544C0 /* C4FileSelDlg.h */,
@@ -1515,6 +1522,7 @@
 				356289100DA62F9000FB1482 /* C4MainMenu.cpp in Sources */,
 				356289110DA62F9000FB1482 /* C4ObjectMenu.cpp in Sources */,
 				3514CB3A0DBCCE5F00534809 /* OpenURL.cpp in Sources */,
+				D0AEFAD70FBF8EC400E2229D /* C4AulDebug.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

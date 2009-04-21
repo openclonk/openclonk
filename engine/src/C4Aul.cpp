@@ -18,8 +18,11 @@
 
 #include <C4Include.h>
 #include <C4Aul.h>
+#include <C4AulExec.h>
+#include <C4AulDebug.h>
 
 #ifndef BIG_C4INCLUDE
+#include <C4Application.h>
 #include <C4Config.h>
 #include <C4Def.h>
 #include <C4Log.h>
@@ -421,6 +424,8 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
+
+	pDebug = NULL;
 	}
 
 
@@ -428,6 +433,8 @@ C4AulScriptEngine::~C4AulScriptEngine() { Clear(); }
 
 void C4AulScriptEngine::Clear()
 	{
+	// stop debugger
+	delete pDebug; pDebug = NULL;
 	// clear inherited
 	C4AulScript::Clear();
 	// clear own stuff
@@ -490,6 +497,7 @@ BOOL C4AulScriptEngine::DenumerateVariablePointers()
 	// runtime data only: don't denumerate consts
 	return TRUE;
 	}
+
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
   {
 	pComp->Value(mkNamingAdapt(Global,         "Globals"                , C4ValueList()));
@@ -497,6 +505,33 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(GlobalNamed,    "GlobalNamed"            , GlobalNamedDefault));
   }
+
+bool C4AulScriptEngine::InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait)
+	{
+	// Create debug object
+	if(!pDebug) pDebug = new C4AulDebug();
+	// Initialize
+	pDebug->SetPassword(szPassword);
+	pDebug->SetAllowed(szHost);
+	pDebug->SetEngine(&AulExec);
+	if(!pDebug->Init(iPort))
+		{ LogFatal("C4Aul debugger failed to initialize!"); return false; }
+	// Log
+	LogF("C4Aul debugger initialized on port %d", iPort);
+	// Add to application
+	Application.Add(pDebug);
+	// Wait for connection
+	if(fWait)
+		{
+		Log("C4Aul debugger waiting for connection...");
+		while(!pDebug->isConnected())
+			if(!Application.ScheduleProcs())
+				return false;
+		}
+	// Done
+	return true;
+	}
+
 /*--- C4AulFuncMap ---*/
 static const size_t CapacityInc = 1024;
 

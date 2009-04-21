@@ -1405,7 +1405,7 @@ static long FnGetBase(C4AulContext *cthr, C4Object *pObj)
 
 static C4ID FnGetMenu(C4AulContext *cthr, C4Object *pObj)
 	{
-  if (!pObj) pObj=cthr->Obj; if (!pObj) return C4ID(-1);
+  if (!pObj) pObj=cthr->Obj; if (!pObj) return C4ID(0);
 	if (pObj->Menu && pObj->Menu->IsActive())
 		return pObj->Menu->GetIdentification();
 	return C4MN_None;
@@ -4637,7 +4637,7 @@ static C4Value FnEval(C4AulContext *cthr, C4Value *strScript_C4V)
 	// execute script in the same object
 	enum C4AulScript::Strict Strict = C4AulScript::MAXSTRICT;
 	if (cthr->Caller)
-		Strict = cthr->Caller->Func->pOrgScript->Strict;
+		Strict = cthr->Caller->SFunc()->pOrgScript->Strict;
 	if (cthr->Obj)
 		return cthr->Obj->Def->Script.DirectExec(cthr->Obj, FnStringPar(strScript_C4V->getStr()), "eval", true, Strict);
 	else if (cthr->Def)
@@ -4715,7 +4715,7 @@ static C4Value FnVarN(C4AulContext *cthr, C4Value *strName_C4V)
 	if(!cthr->Caller) return C4VNull;
 
 	// find variable
-	int32_t iID = cthr->Caller->Func->VarNamed.GetItemNr(strName);
+	int32_t iID = cthr->Caller->SFunc()->VarNamed.GetItemNr(strName);
 	if(iID < 0)
 		return C4VNull;
 
