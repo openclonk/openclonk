@@ -106,7 +106,7 @@ class CStdD3D : public CStdDDraw
 		SHIDX_ColoredFoW = 2,
 		SHIDX_Size = 4,
 		};
-	(CStdD3DShader *)pShaders[SHIDX_Size];
+	CStdD3DShader *pShaders[SHIDX_Size];
 		BITMAPINFO					sfcBmpInfo;		// surface bits as bitmap bits info
 		bool SceneOpen;									// set if a scene has begun
   public:

@@ -484,7 +484,7 @@ public:
     //assert(iChars <= strlen(pnData));
     Grow(iChars);
     Write(pnData, iChars, iSize - iChars - 1);
-		}
+	}
   void Append(const char *pnData)
   {
     Append(pnData, strlen(pnData));
