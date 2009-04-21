@@ -546,10 +546,6 @@ void C4Network2::OnSec1Timer()
 
 void C4Network2::Execute()
 {
-  if(pLeagueClient)
-    pLeagueClient->Execute(0);
-	if(pStreamer)
-		pStreamer->Execute(0);
 
 	// client connections
 	Clients.DoConnectAttempts();
@@ -1915,6 +1911,9 @@ bool C4Network2::InitLeague(bool *pCancel)
     return false;
   }
 
+	// Add to message loop
+	Application.Add(pLeagueClient);
+
   // OK
   return true;
 }
@@ -1925,7 +1924,11 @@ void C4Network2::DeinitLeague()
 	MasterServerAddress.Clear();
   Game.Parameters.League.Clear();
   Game.Parameters.LeagueAddress.Clear();
-  if (pLeagueClient) delete pLeagueClient; pLeagueClient = NULL;
+  if (pLeagueClient)
+		{
+		Application.Remove(pLeagueClient);
+		delete pLeagueClient; pLeagueClient = NULL;
+		}
 	}
 
 bool C4Network2::LeagueStart(bool *pCancel)
@@ -1990,7 +1993,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
 			return false;
     }
     // Check if league server has responded
-    if(!pLeagueClient->Execute(0))
+    if(!pLeagueClient->Execute(100))
       break;
   }
   // Close dialog
@@ -2746,8 +2749,8 @@ bool C4Network2::StartStreaming(C4Record *pRecord)
 	pStreamer = new C4Network2HTTPClient();
 	if(!pStreamer->Init())
 		return false;
+	Application.Add(pStreamer);
 
-	// ... more initialization?
 	return true;
 	}
 
@@ -2773,6 +2776,7 @@ bool C4Network2::StopStreaming()
 	if(!fStreaming) return false;
 
 	// Clear
+	Application.Remove(pStreamer);
 	fStreaming = false;
 	pStreamedRecord = NULL;
 	deflateEnd(&StreamCompressor);
