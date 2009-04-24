@@ -294,8 +294,8 @@ bool C4Game::PreInit()
 	// load GUI
 	if(!pGUI)
 		{
-		int32_t iGuiResX = Min<int32_t>(Config.Graphics.GuiResX, Config.Graphics.ResX);
-		int32_t iGuiResY = Min<int32_t>(Config.Graphics.GuiResY, Config.Graphics.ResY);
+		int32_t iGuiResX = Config.Graphics.ResX;
+		int32_t iGuiResY = Config.Graphics.ResY;
 		pGUI = new C4GUIScreen(0, 0, iGuiResX, iGuiResY);
 		}
 
