@@ -40,25 +40,33 @@ public:
 class CGLibProc: public StdSchedulerProc
 {
 public:
-	CGLibProc(GMainContext *context): context(context), checked(true) { fds.resize(1); g_main_context_ref(context); }
+	CGLibProc(GMainContext *context): context(context), query_time(-1) { fds.resize(1); g_main_context_ref(context); }
 	~CGLibProc() { g_main_context_unref(context); }
 
 	GMainContext *context;
 	std::vector<pollfd> fds;
-	bool checked;
+	int query_time;
 	int timeout;
 	int max_priority;
 
 	void query()
 	{
-		if (!checked) return;
+		// If Execute() has not yet been called, then finish the current iteration first.
+		// Note that we cannot simply ignore the query() call, as new
+		// FDs or Timeouts may have been added to the Glib loop in the meanwhile
+		if (query_time >= 0)
+			g_main_context_check(context, max_priority, (GPollFD*) &fds[0], fds.size());
+
 		g_main_context_prepare (context, &max_priority);
 		unsigned int fd_count;
+		if(fds.empty()) fds.resize(1);
 		while ((fd_count = g_main_context_query(context, max_priority, &timeout, (GPollFD*) &fds[0], fds.size())) > fds.size())
 		{
 			fds.resize(fd_count);
 		}
-		checked = false;
+		// Make sure we don't report more FDs than there are available
+		fds.resize(fd_count);
+		query_time = timeGetTime();
 	}
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & rfds)
@@ -69,13 +77,14 @@ public:
 	virtual int GetNextTick(int Now)
 	{
 		query();
-		return Now + timeout;
+		if(timeout < 0) return timeout;
+		return query_time + timeout;
 	}
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0) {
-		if (checked) return true;
+		if (query_time < 0) return true;
 		g_main_context_check(context, max_priority, readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
 		g_main_context_dispatch(context);
-		checked = true;
+		query_time = -1;
 		return true;
 	}
 };
