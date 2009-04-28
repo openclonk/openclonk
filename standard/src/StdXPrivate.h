@@ -49,7 +49,7 @@ public:
 	int timeout;
 	int max_priority;
 
-	void query()
+	void query(int Now)
 	{
 		// If Execute() has not yet been called, then finish the current iteration first.
 		// Note that we cannot simply ignore the query() call, as new
@@ -66,17 +66,17 @@ public:
 		}
 		// Make sure we don't report more FDs than there are available
 		fds.resize(fd_count);
-		query_time = timeGetTime();
+		query_time = Now;
 	}
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & rfds)
 	{
-		query();
+		if (query_time < 0) query(timeGetTime());
 		rfds.insert(rfds.end(), fds.begin(), fds.end());
 	}
 	virtual int GetNextTick(int Now)
 	{
-		query();
+		query(Now);
 		if(timeout < 0) return timeout;
 		return query_time + timeout;
 	}
