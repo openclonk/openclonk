@@ -3655,8 +3655,7 @@ BOOL C4Game::CheckObjectEnumeration()
 		cObj = clnk->Obj;
 		if (cObj->Number<1)
 			{
-			LogF("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, C4IdText(cObj->id), cObj->GetX());
-			return FALSE;
+			LogFatal(FormatString("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, C4IdText(cObj->id), cObj->GetX()).getData()); return FALSE;
 			}
 		// Max
 		if (cObj->Number>iMax) iMax=cObj->Number;
@@ -3664,11 +3663,11 @@ BOOL C4Game::CheckObjectEnumeration()
 		for (clnk2=Objects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
 			if (cObj2!=cObj)
 				if (cObj->Number==cObj2->Number)
-					{ LogF("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()); return FALSE; }
+					{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return FALSE; }
 		for (clnk2=Objects.InactiveObjects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
 			if (cObj2!=cObj)
 				if (cObj->Number==cObj2->Number)
-					{ LogF("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()); return FALSE; }
+					{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return FALSE; }
 		// next
 		if (!clnk->Next)
 			if (clnk == Objects.Last) clnk=Objects.InactiveObjects.First; else clnk=NULL;

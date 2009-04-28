@@ -5654,16 +5654,16 @@ void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C
 	// get drawing pos, then subtract original target pos to get drawing pos on landscape
 	if (!iParX && GetX()<0)
 		// HUD element at right viewport pos
-		riX=float(GetX())+tx+fctViewport.Wdt;
+		riX=fixtof(fix_x)+tx+fctViewport.Wdt;
 	else
 		// regular parallaxity
-		riX=float(GetX())-(tx*(iParX-100)/100);
+		riX=fixtof(fix_x)-(tx*(iParX-100)/100);
 	if (!iParY && GetY()<0)
 		// HUD element at bottom viewport pos
-		riY=float(GetY())+ty+fctViewport.Hgt;
+		riY=fixtof(fix_y)+ty+fctViewport.Hgt;
 	else
 		// regular parallaxity
-		riY=float(GetY())-(ty*(iParY-100)/100);
+		riY=fixtof(fix_y)-(ty*(iParY-100)/100);
 	}
 
 bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)

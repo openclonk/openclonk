@@ -108,7 +108,6 @@ public:
 			T * OTable = Table;
 			Table = new T[Capacity];
 			Clear();
-			//memset(Table, 0, sizeof (T *) * NCapacity);
 			for (unsigned int i = 0; i < OCapacity; ++i)
 				{
 				if (OTable[i])
