@@ -22,6 +22,7 @@ static const DFA_ATTACH  =14;
 static const DFA_FIGHT   =15;
 static const DFA_CONNECT =16;
 static const DFA_PULL    =17;
+static Action;
 
 global func GetActMapVal(string strEntry, string strAction, id idDef, int iEntryNr) {
   if (!idDef) idDef = GetID();

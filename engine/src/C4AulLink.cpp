@@ -265,6 +265,14 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// update material pointers
 		Game.Material.UpdateScriptPointers();
 
+		// FIXME: move this to script
+		C4PropList * Action = new C4PropList;
+		Action->SetProperty(Strings.P[P_Length], C4VInt(1));
+		Action->SetProperty(Strings.P[P_Directions], C4VInt(1));
+		Action->SetProperty(Strings.P[P_Step], C4VInt(1));
+		Action->SetProperty(Strings.P[P_Procedure], C4VInt(DFA_NONE));
+		GlobalNamed.GetItem("Action")->SetPropList(Action);
+
 		rDefs->CallEveryDefinition();
 		// display state
 		LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
