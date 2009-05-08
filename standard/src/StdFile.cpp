@@ -878,6 +878,7 @@ int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *)) {
 #else
 	if (fHasWildcard) fprintf(stderr, "Warning: ForEachFile with * (%s)", szDirName);
 	DIR * d = opendir(szDirName);
+	if (!d) return 0;
 	dirent * ent;
 	while ((ent = readdir(d))) {
 		SCopy(ent->d_name,GetFilename(szFilename));
