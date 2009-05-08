@@ -13,20 +13,11 @@
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ACLOCAL_AMFLAGS = -I autotools --install
 
-noinst_PROGRAMS = clonk
+bin_PROGRAMS = clonk
 
-EXTRA_PROGRAMS = tstc4netio puncher c4group gunzip4c4group anigrab_
+EXTRA_PROGRAMS = tstc4netio puncher c4group gunzip4c4group
 
-noinst_LIBRARIES = libstandard.a libzlib.a
-if INTERNAL_JPEG
-noinst_LIBRARIES += libjpeg.a
-endif
-if INTERNAL_PNG
-noinst_LIBRARIES += libpng.a
-endif
-if INTERNAL_FREETYPE
-noinst_LIBRARIES += libfreetype.a
-endif
+noinst_LIBRARIES = libstandard.a
 
 # Some defines and warning options
 if RECENT_GCC
@@ -52,17 +43,12 @@ AM_CFLAGS = -Wall $(GCC_FLAGS)
 AM_CPPFLAGS = \
   -I$(builddir) \
   -I$(srcdir)/standard \
-  -I$(srcdir)/standard/zlib \
   -I$(srcdir)/standard/inc \
   -I$(srcdir)/engine \
   -I$(srcdir)/engine/inc \
   -I$(srcdir)/engine/sec \
-  -DC4ENGINE -DGLEW_STATIC \
+  -DC4ENGINE \
   $(GTK_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS)
-
-if USE_FMOD
-AM_CPPFLAGS += -I$(srcdir)/engine/fmod
-endif
 
 #various hacks to get dependency tracking working with a precompiled C4Include
 if RECENT_GCC
@@ -390,7 +376,7 @@ clonk_SOURCES = \
   engine/inc/C4RoundResults.h \
   engine/src/C4RoundResults.cpp \
   engine/res/Brush.h \
-  engine/res/c4x.h \
+  engine/res/c4x.xpm \
   engine/res/Cursor.h \
   engine/res/Dynamic.h \
   engine/res/Exact.h \
@@ -410,30 +396,15 @@ clonk_SOURCES += engine/src/C4FileClasses.cpp
 clonk_SOURCES += engine/res/engine.rc engine/res/resource.h
 endif
 
-if USE_FMOD
-clonk_SOURCES += engine/fmod/fmod.h engine/fmod/fmod_errors.h engine/fmod/fmoddyn.h engine/fmod/wincompat.h
-endif
-
 clonk_LDADD = \
   libstandard.a \
-  libzlib.a \
-  $(LIBICONV) $(GTK_LIBS) $(FREETYPE_LIBS) $(SDL_LIBS) $(PTHREAD_LIBS) $(CLONK_LIBS) $(OPENSSL_LIBS)
-
-if INTERNAL_JPEG
-clonk_LDADD += libjpeg.a
-endif
-
-if INTERNAL_PNG
-clonk_LDADD += libpng.a
-endif
-
-if INTERNAL_FREETYPE
-clonk_LDADD += libfreetype.a
-endif
-
-if USE_FMOD
-clonk_LDADD += $(srcdir)/engine/fmod/libfmod.a
-endif
+  $(LIBICONV) \
+  $(GTK_LIBS) \
+  $(FREETYPE_LIBS) \
+  $(SDL_LIBS) \
+  $(PTHREAD_LIBS) \
+  $(CLONK_LIBS) \
+  $(OPENSSL_LIBS)
 
 # build the resources
 .rc.o:
@@ -441,11 +412,9 @@ endif
 
 ## standard
 
+#  standard/src/StdBitmap.cpp \
+#
 libstandard_a_SOURCES = \
-  standard/gl/glew.c \
-  standard/gl/glew.h \
-  standard/gl/glxew.h \
-  standard/gl/wglew.h \
   standard/src/Bitmap256.cpp \
   standard/src/CStdFile.cpp \
   standard/src/Fixed.cpp \
@@ -454,7 +423,6 @@ libstandard_a_SOURCES = \
   standard/src/PathFinder.cpp \
   standard/src/Standard.cpp \
   standard/src/StdBase64.cpp \
-  standard/src/StdBitmap.cpp \
   standard/src/StdBuf.cpp \
   standard/src/StdConfig.cpp \
   standard/src/StdCompiler.cpp \
@@ -506,7 +474,9 @@ libstandard_a_SOURCES = \
   standard/inc/StdSurface8.h \
   standard/inc/StdSync.h \
   standard/inc/StdVideo.h \
-  standard/inc/StdWindow.h
+  standard/inc/StdWindow.h \
+  standard/zlib/gzio.c \
+  standard/zlib/zutil.h
 
 if WIN32
 libstandard_a_SOURCES += standard/src/StdWindow.cpp standard/src/StdJoystick.cpp standard/inc/StdJoystick.h
@@ -522,484 +492,10 @@ if DEVELOPER_MODE
 libstandard_a_SOURCES += standard/src/StdGtkWindow.cpp standard/inc/StdGtkWindow.h
 endif
 
-libpng_a_SOURCES = \
-  standard/lpng121/png.c \
-  standard/lpng121/pngerror.c \
-  standard/lpng121/pnggccrd.c \
-  standard/lpng121/pngget.c \
-  standard/lpng121/pngmem.c \
-  standard/lpng121/pngpread.c \
-  standard/lpng121/pngread.c \
-  standard/lpng121/pngrio.c \
-  standard/lpng121/pngrtran.c \
-  standard/lpng121/pngrutil.c \
-  standard/lpng121/pngset.c \
-  standard/lpng121/pngtrans.c \
-  standard/lpng121/pngvcrd.c \
-  standard/lpng121/pngwio.c \
-  standard/lpng121/pngwrite.c \
-  standard/lpng121/pngwtran.c \
-  standard/lpng121/pngwutil.c \
-  standard/lpng121/png.h \
-  standard/lpng121/pngconf.h
-
-libjpeg_a_SOURCES = \
-  standard/jpeglib/jcapimin.c \
-  standard/jpeglib/jconfig.h \
-  standard/jpeglib/jdct.h \
-  standard/jpeglib/jdtrans.c \
-  standard/jpeglib/jmemmgr.c \
-  standard/jpeglib/jcapistd.c \
-  standard/jpeglib/jcparam.c \
-  standard/jpeglib/jddctmgr.c \
-  standard/jpeglib/jerror.c \
-  standard/jpeglib/jmemsys.h \
-  standard/jpeglib/jccoefct.c \
-  standard/jpeglib/jcphuff.c \
-  standard/jpeglib/jdhuff.c \
-  standard/jpeglib/jerror.h \
-  standard/jpeglib/jmorecfg.h \
-  standard/jpeglib/jccolor.c \
-  standard/jpeglib/jcprepct.c \
-  standard/jpeglib/jdhuff.h \
-  standard/jpeglib/jfdctflt.c \
-  standard/jpeglib/jpegint.h \
-  standard/jpeglib/jcdctmgr.c \
-  standard/jpeglib/jcsample.c \
-  standard/jpeglib/jdinput.c \
-  standard/jpeglib/jfdctfst.c \
-  standard/jpeglib/jpeglib.h \
-  standard/jpeglib/jchuff.c \
-  standard/jpeglib/jctrans.c \
-  standard/jpeglib/jdmainct.c \
-  standard/jpeglib/jfdctint.c \
-  standard/jpeglib/jquant1.c \
-  standard/jpeglib/jchuff.h \
-  standard/jpeglib/jdapimin.c \
-  standard/jpeglib/jdmarker.c \
-  standard/jpeglib/jidctflt.c \
-  standard/jpeglib/jquant2.c \
-  standard/jpeglib/jcinit.c \
-  standard/jpeglib/jdapistd.c \
-  standard/jpeglib/jdmaster.c \
-  standard/jpeglib/jidctfst.c \
-  standard/jpeglib/jutils.c \
-  standard/jpeglib/jcmainct.c \
-  standard/jpeglib/jdatadst.c \
-  standard/jpeglib/jdmerge.c \
-  standard/jpeglib/jidctint.c \
-  standard/jpeglib/jversion.h \
-  standard/jpeglib/jcmarker.c \
-  standard/jpeglib/jdatasrc.c \
-  standard/jpeglib/jdphuff.c \
-  standard/jpeglib/jidctred.c \
-  standard/jpeglib/jcmaster.c \
-  standard/jpeglib/jdcoefct.c \
-  standard/jpeglib/jdpostct.c \
-  standard/jpeglib/jinclude.h \
-  standard/jpeglib/jcomapi.c \
-  standard/jpeglib/jdcolor.c \
-  standard/jpeglib/jdsample.c \
-  standard/jpeglib/jmemansi.c
-
-libzlib_a_SOURCES = \
-  standard/zlib/adler32.c \
-  standard/zlib/compress.c \
-  standard/zlib/crc32.c \
-  standard/zlib/deflate.c \
-  standard/zlib/gzio.c \
-  standard/zlib/infback.c \
-  standard/zlib/inffast.c \
-  standard/zlib/inflate.c \
-  standard/zlib/inftrees.c \
-  standard/zlib/trees.c \
-  standard/zlib/uncompr.c \
-  standard/zlib/zutil.c \
-  standard/zlib/crc32.h \
-  standard/zlib/inffast.h \
-  standard/zlib/inflate.h \
-  standard/zlib/trees.h \
-  standard/zlib/zlib.h \
-  standard/zlib/deflate.h \
-  standard/zlib/inffixed.h \
-  standard/zlib/inftrees.h \
-  standard/zlib/zconf.h \
-  standard/zlib/zutil.h
-
-libfreetype_a_SOURCES = \
-  standard/freetype2/src/autofit/autofit.c \
-  standard/freetype2/src/base/ftbase.c \
-  standard/freetype2/src/base/ftbitmap.c \
-  standard/freetype2/src/base/ftglyph.c \
-  standard/freetype2/src/base/ftinit.c \
-  standard/freetype2/src/base/ftmm.c \
-  standard/freetype2/src/base/ftsystem.c \
-  standard/freetype2/src/base/fttrigon.c \
-  standard/freetype2/src/base/fttype1.c \
-  standard/freetype2/src/base/ftutil.c \
-  standard/freetype2/src/base/ftwinfnt.c \
-  standard/freetype2/src/base/ftxf86.c \
-  standard/freetype2/src/bdf/bdf.c \
-  standard/freetype2/src/cache/ftcache.c \
-  standard/freetype2/src/cff/cff.c \
-  standard/freetype2/src/cid/type1cid.c \
-  standard/freetype2/src/gzip/ftgzip.c \
-  standard/freetype2/src/lzw/ftlzw.c \
-  standard/freetype2/src/otvalid/otvalid.c \
-  standard/freetype2/src/pcf/pcf.c \
-  standard/freetype2/src/pfr/pfr.c \
-  standard/freetype2/src/psaux/psaux.c \
-  standard/freetype2/src/pshinter/pshinter.c \
-  standard/freetype2/src/psnames/psnames.c \
-  standard/freetype2/src/raster/raster.c \
-  standard/freetype2/src/sfnt/sfnt.c \
-  standard/freetype2/src/smooth/smooth.c \
-  standard/freetype2/src/truetype/truetype.c \
-  standard/freetype2/src/type1/type1.c \
-  standard/freetype2/src/type42/type42.c \
-  standard/freetype2/src/winfonts/winfnt.c
-
-libfreetype_a_CPPFLAGS = $(AM_CPPFLAGS) -DFT2_BUILD_LIBRARY
-
-EXTRA_DIST = \
-  standard/freetype2/freetype/config/ftconfig.h \
-  standard/freetype2/freetype/config/ftheader.h \
-  standard/freetype2/freetype/config/ftmodule.h \
-  standard/freetype2/freetype/config/ftoption.h \
-  standard/freetype2/freetype/config/ftstdlib.h \
-  standard/freetype2/freetype/freetype.h \
-  standard/freetype2/freetype/ftbbox.h \
-  standard/freetype2/freetype/ftbdf.h \
-  standard/freetype2/freetype/ftbitmap.h \
-  standard/freetype2/freetype/ftcache.h \
-  standard/freetype2/freetype/ftchapters.h \
-  standard/freetype2/freetype/fterrdef.h \
-  standard/freetype2/freetype/fterrors.h \
-  standard/freetype2/freetype/ftgasp.h \
-  standard/freetype2/freetype/ftglyph.h \
-  standard/freetype2/freetype/ftgxval.h \
-  standard/freetype2/freetype/ftgzip.h \
-  standard/freetype2/freetype/ftimage.h \
-  standard/freetype2/freetype/ftincrem.h \
-  standard/freetype2/freetype/ftlcdfil.h \
-  standard/freetype2/freetype/ftlist.h \
-  standard/freetype2/freetype/ftlzw.h \
-  standard/freetype2/freetype/ftmac.h \
-  standard/freetype2/freetype/ftmm.h \
-  standard/freetype2/freetype/ftmodapi.h \
-  standard/freetype2/freetype/ftmoderr.h \
-  standard/freetype2/freetype/ftotval.h \
-  standard/freetype2/freetype/ftoutln.h \
-  standard/freetype2/freetype/ftpfr.h \
-  standard/freetype2/freetype/ftrender.h \
-  standard/freetype2/freetype/ftsizes.h \
-  standard/freetype2/freetype/ftsnames.h \
-  standard/freetype2/freetype/ftstroke.h \
-  standard/freetype2/freetype/ftsynth.h \
-  standard/freetype2/freetype/ftsystem.h \
-  standard/freetype2/freetype/fttrigon.h \
-  standard/freetype2/freetype/fttypes.h \
-  standard/freetype2/freetype/ftwinfnt.h \
-  standard/freetype2/freetype/ftxf86.h \
-  standard/freetype2/freetype/internal/autohint.h \
-  standard/freetype2/freetype/internal/ftcalc.h \
-  standard/freetype2/freetype/internal/ftdebug.h \
-  standard/freetype2/freetype/internal/ftdriver.h \
-  standard/freetype2/freetype/internal/ftgloadr.h \
-  standard/freetype2/freetype/internal/ftmemory.h \
-  standard/freetype2/freetype/internal/ftobjs.h \
-  standard/freetype2/freetype/internal/ftrfork.h \
-  standard/freetype2/freetype/internal/ftserv.h \
-  standard/freetype2/freetype/internal/ftstream.h \
-  standard/freetype2/freetype/internal/fttrace.h \
-  standard/freetype2/freetype/internal/ftvalid.h \
-  standard/freetype2/freetype/internal/internal.h \
-  standard/freetype2/freetype/internal/pcftypes.h \
-  standard/freetype2/freetype/internal/psaux.h \
-  standard/freetype2/freetype/internal/pshints.h \
-  standard/freetype2/freetype/internal/services/svbdf.h \
-  standard/freetype2/freetype/internal/services/svgldict.h \
-  standard/freetype2/freetype/internal/services/svgxval.h \
-  standard/freetype2/freetype/internal/services/svkern.h \
-  standard/freetype2/freetype/internal/services/svmm.h \
-  standard/freetype2/freetype/internal/services/svotval.h \
-  standard/freetype2/freetype/internal/services/svpfr.h \
-  standard/freetype2/freetype/internal/services/svpostnm.h \
-  standard/freetype2/freetype/internal/services/svpscmap.h \
-  standard/freetype2/freetype/internal/services/svpsinfo.h \
-  standard/freetype2/freetype/internal/services/svsfnt.h \
-  standard/freetype2/freetype/internal/services/svttcmap.h \
-  standard/freetype2/freetype/internal/services/svtteng.h \
-  standard/freetype2/freetype/internal/services/svwinfnt.h \
-  standard/freetype2/freetype/internal/services/svxf86nm.h \
-  standard/freetype2/freetype/internal/sfnt.h \
-  standard/freetype2/freetype/internal/t1types.h \
-  standard/freetype2/freetype/internal/tttypes.h \
-  standard/freetype2/freetype/t1tables.h \
-  standard/freetype2/freetype/ttnameid.h \
-  standard/freetype2/freetype/tttables.h \
-  standard/freetype2/freetype/tttags.h \
-  standard/freetype2/freetype/ttunpat.h \
-  standard/freetype2/ft2build.h \
-  standard/freetype2/src/autofit/afangles.c \
-  standard/freetype2/src/autofit/afangles.h \
-  standard/freetype2/src/autofit/afcjk.c \
-  standard/freetype2/src/autofit/afcjk.h \
-  standard/freetype2/src/autofit/afdummy.c \
-  standard/freetype2/src/autofit/afdummy.h \
-  standard/freetype2/src/autofit/aferrors.h \
-  standard/freetype2/src/autofit/afglobal.c \
-  standard/freetype2/src/autofit/afglobal.h \
-  standard/freetype2/src/autofit/afhints.c \
-  standard/freetype2/src/autofit/afhints.h \
-  standard/freetype2/src/autofit/aflatin.c \
-  standard/freetype2/src/autofit/aflatin.h \
-  standard/freetype2/src/autofit/afloader.c \
-  standard/freetype2/src/autofit/afloader.h \
-  standard/freetype2/src/autofit/afmodule.c \
-  standard/freetype2/src/autofit/afmodule.h \
-  standard/freetype2/src/autofit/aftypes.h \
-  standard/freetype2/src/autofit/afwarp.c \
-  standard/freetype2/src/autofit/afwarp.h \
-  standard/freetype2/src/base/ftapi.c \
-  standard/freetype2/src/base/ftbbox.c \
-  standard/freetype2/src/base/ftbdf.c \
-  standard/freetype2/src/base/ftcalc.c \
-  standard/freetype2/src/base/ftdbgmem.c \
-  standard/freetype2/src/base/ftdebug.c \
-  standard/freetype2/src/base/ftgasp.c \
-  standard/freetype2/src/base/ftgloadr.c \
-  standard/freetype2/src/base/ftgxval.c \
-  standard/freetype2/src/base/ftlcdfil.c \
-  standard/freetype2/src/base/ftmac.c \
-  standard/freetype2/src/base/ftnames.c \
-  standard/freetype2/src/base/ftobjs.c \
-  standard/freetype2/src/base/ftotval.c \
-  standard/freetype2/src/base/ftoutln.c \
-  standard/freetype2/src/base/ftpfr.c \
-  standard/freetype2/src/base/ftrfork.c \
-  standard/freetype2/src/base/ftstream.c \
-  standard/freetype2/src/base/ftstroke.c \
-  standard/freetype2/src/base/ftsynth.c \
-  standard/freetype2/src/bdf/bdf.h \
-  standard/freetype2/src/bdf/bdfdrivr.c \
-  standard/freetype2/src/bdf/bdfdrivr.h \
-  standard/freetype2/src/bdf/bdferror.h \
-  standard/freetype2/src/bdf/bdflib.c \
-  standard/freetype2/src/cache/ftcbasic.c \
-  standard/freetype2/src/cache/ftccache.c \
-  standard/freetype2/src/cache/ftccache.h \
-  standard/freetype2/src/cache/ftccback.h \
-  standard/freetype2/src/cache/ftccmap.c \
-  standard/freetype2/src/cache/ftcerror.h \
-  standard/freetype2/src/cache/ftcglyph.c \
-  standard/freetype2/src/cache/ftcglyph.h \
-  standard/freetype2/src/cache/ftcimage.c \
-  standard/freetype2/src/cache/ftcimage.h \
-  standard/freetype2/src/cache/ftcmanag.c \
-  standard/freetype2/src/cache/ftcmanag.h \
-  standard/freetype2/src/cache/ftcmru.c \
-  standard/freetype2/src/cache/ftcmru.h \
-  standard/freetype2/src/cache/ftcsbits.c \
-  standard/freetype2/src/cache/ftcsbits.h \
-  standard/freetype2/src/cff/cffcmap.c \
-  standard/freetype2/src/cff/cffcmap.h \
-  standard/freetype2/src/cff/cffdrivr.c \
-  standard/freetype2/src/cff/cffdrivr.h \
-  standard/freetype2/src/cff/cfferrs.h \
-  standard/freetype2/src/cff/cffgload.c \
-  standard/freetype2/src/cff/cffgload.h \
-  standard/freetype2/src/cff/cffload.c \
-  standard/freetype2/src/cff/cffload.h \
-  standard/freetype2/src/cff/cffobjs.c \
-  standard/freetype2/src/cff/cffobjs.h \
-  standard/freetype2/src/cff/cffparse.c \
-  standard/freetype2/src/cff/cffparse.h \
-  standard/freetype2/src/cff/cfftoken.h \
-  standard/freetype2/src/cff/cfftypes.h \
-  standard/freetype2/src/cid/ciderrs.h \
-  standard/freetype2/src/cid/cidgload.c \
-  standard/freetype2/src/cid/cidgload.h \
-  standard/freetype2/src/cid/cidload.c \
-  standard/freetype2/src/cid/cidload.h \
-  standard/freetype2/src/cid/cidobjs.c \
-  standard/freetype2/src/cid/cidobjs.h \
-  standard/freetype2/src/cid/cidparse.c \
-  standard/freetype2/src/cid/cidparse.h \
-  standard/freetype2/src/cid/cidriver.c \
-  standard/freetype2/src/cid/cidriver.h \
-  standard/freetype2/src/cid/cidtoken.h \
-  standard/freetype2/src/gxvalid/gxvalid.c \
-  standard/freetype2/src/gxvalid/gxvalid.h \
-  standard/freetype2/src/gxvalid/gxvbsln.c \
-  standard/freetype2/src/gxvalid/gxvcommn.c \
-  standard/freetype2/src/gxvalid/gxvcommn.h \
-  standard/freetype2/src/gxvalid/gxverror.h \
-  standard/freetype2/src/gxvalid/gxvfeat.c \
-  standard/freetype2/src/gxvalid/gxvfeat.h \
-  standard/freetype2/src/gxvalid/gxvfgen.c \
-  standard/freetype2/src/gxvalid/gxvjust.c \
-  standard/freetype2/src/gxvalid/gxvkern.c \
-  standard/freetype2/src/gxvalid/gxvlcar.c \
-  standard/freetype2/src/gxvalid/gxvmod.c \
-  standard/freetype2/src/gxvalid/gxvmod.h \
-  standard/freetype2/src/gxvalid/gxvmort.c \
-  standard/freetype2/src/gxvalid/gxvmort.h \
-  standard/freetype2/src/gxvalid/gxvmort0.c \
-  standard/freetype2/src/gxvalid/gxvmort1.c \
-  standard/freetype2/src/gxvalid/gxvmort2.c \
-  standard/freetype2/src/gxvalid/gxvmort4.c \
-  standard/freetype2/src/gxvalid/gxvmort5.c \
-  standard/freetype2/src/gxvalid/gxvmorx.c \
-  standard/freetype2/src/gxvalid/gxvmorx.h \
-  standard/freetype2/src/gxvalid/gxvmorx0.c \
-  standard/freetype2/src/gxvalid/gxvmorx1.c \
-  standard/freetype2/src/gxvalid/gxvmorx2.c \
-  standard/freetype2/src/gxvalid/gxvmorx4.c \
-  standard/freetype2/src/gxvalid/gxvmorx5.c \
-  standard/freetype2/src/gxvalid/gxvopbd.c \
-  standard/freetype2/src/gxvalid/gxvprop.c \
-  standard/freetype2/src/gxvalid/gxvtrak.c \
-  standard/freetype2/src/lzw/ftzopen.c \
-  standard/freetype2/src/lzw/ftzopen.h \
-  standard/freetype2/src/lzw/zopen.c \
-  standard/freetype2/src/lzw/zopen.h \
-  standard/freetype2/src/otvalid/otvalid.h \
-  standard/freetype2/src/otvalid/otvbase.c \
-  standard/freetype2/src/otvalid/otvcommn.c \
-  standard/freetype2/src/otvalid/otvcommn.h \
-  standard/freetype2/src/otvalid/otverror.h \
-  standard/freetype2/src/otvalid/otvgdef.c \
-  standard/freetype2/src/otvalid/otvgpos.c \
-  standard/freetype2/src/otvalid/otvgpos.h \
-  standard/freetype2/src/otvalid/otvgsub.c \
-  standard/freetype2/src/otvalid/otvjstf.c \
-  standard/freetype2/src/otvalid/otvmod.c \
-  standard/freetype2/src/otvalid/otvmod.h \
-  standard/freetype2/src/pcf/pcf.h \
-  standard/freetype2/src/pcf/pcfdrivr.c \
-  standard/freetype2/src/pcf/pcfdrivr.h \
-  standard/freetype2/src/pcf/pcferror.h \
-  standard/freetype2/src/pcf/pcfread.c \
-  standard/freetype2/src/pcf/pcfread.h \
-  standard/freetype2/src/pcf/pcfutil.c \
-  standard/freetype2/src/pcf/pcfutil.h \
-  standard/freetype2/src/pfr/pfrcmap.c \
-  standard/freetype2/src/pfr/pfrcmap.h \
-  standard/freetype2/src/pfr/pfrdrivr.c \
-  standard/freetype2/src/pfr/pfrdrivr.h \
-  standard/freetype2/src/pfr/pfrerror.h \
-  standard/freetype2/src/pfr/pfrgload.c \
-  standard/freetype2/src/pfr/pfrgload.h \
-  standard/freetype2/src/pfr/pfrload.c \
-  standard/freetype2/src/pfr/pfrload.h \
-  standard/freetype2/src/pfr/pfrobjs.c \
-  standard/freetype2/src/pfr/pfrobjs.h \
-  standard/freetype2/src/pfr/pfrsbit.c \
-  standard/freetype2/src/pfr/pfrsbit.h \
-  standard/freetype2/src/pfr/pfrtypes.h \
-  standard/freetype2/src/psaux/afmparse.c \
-  standard/freetype2/src/psaux/afmparse.h \
-  standard/freetype2/src/psaux/psauxerr.h \
-  standard/freetype2/src/psaux/psauxmod.c \
-  standard/freetype2/src/psaux/psauxmod.h \
-  standard/freetype2/src/psaux/psconv.c \
-  standard/freetype2/src/psaux/psconv.h \
-  standard/freetype2/src/psaux/psobjs.c \
-  standard/freetype2/src/psaux/psobjs.h \
-  standard/freetype2/src/psaux/t1cmap.c \
-  standard/freetype2/src/psaux/t1cmap.h \
-  standard/freetype2/src/psaux/t1decode.c \
-  standard/freetype2/src/psaux/t1decode.h \
-  standard/freetype2/src/pshinter/pshalgo.c \
-  standard/freetype2/src/pshinter/pshalgo.h \
-  standard/freetype2/src/pshinter/pshglob.c \
-  standard/freetype2/src/pshinter/pshglob.h \
-  standard/freetype2/src/pshinter/pshmod.c \
-  standard/freetype2/src/pshinter/pshmod.h \
-  standard/freetype2/src/pshinter/pshnterr.h \
-  standard/freetype2/src/pshinter/pshrec.c \
-  standard/freetype2/src/pshinter/pshrec.h \
-  standard/freetype2/src/psnames/psmodule.c \
-  standard/freetype2/src/psnames/psmodule.h \
-  standard/freetype2/src/psnames/psnamerr.h \
-  standard/freetype2/src/psnames/pstables.h \
-  standard/freetype2/src/raster/ftmisc.h \
-  standard/freetype2/src/raster/ftraster.c \
-  standard/freetype2/src/raster/ftraster.h \
-  standard/freetype2/src/raster/ftrend1.c \
-  standard/freetype2/src/raster/ftrend1.h \
-  standard/freetype2/src/raster/rasterrs.h \
-  standard/freetype2/src/sfnt/sfdriver.c \
-  standard/freetype2/src/sfnt/sfdriver.h \
-  standard/freetype2/src/sfnt/sferrors.h \
-  standard/freetype2/src/sfnt/sfobjs.c \
-  standard/freetype2/src/sfnt/sfobjs.h \
-  standard/freetype2/src/sfnt/ttbdf.c \
-  standard/freetype2/src/sfnt/ttbdf.h \
-  standard/freetype2/src/sfnt/ttcmap.c \
-  standard/freetype2/src/sfnt/ttcmap.h \
-  standard/freetype2/src/sfnt/ttkern.c \
-  standard/freetype2/src/sfnt/ttkern.h \
-  standard/freetype2/src/sfnt/ttload.c \
-  standard/freetype2/src/sfnt/ttload.h \
-  standard/freetype2/src/sfnt/ttmtx.c \
-  standard/freetype2/src/sfnt/ttmtx.h \
-  standard/freetype2/src/sfnt/ttpost.c \
-  standard/freetype2/src/sfnt/ttpost.h \
-  standard/freetype2/src/sfnt/ttsbit.c \
-  standard/freetype2/src/sfnt/ttsbit.h \
-  standard/freetype2/src/sfnt/ttsbit0.c \
-  standard/freetype2/src/sfnt/ttsbit0.h \
-  standard/freetype2/src/smooth/ftgrays.c \
-  standard/freetype2/src/smooth/ftgrays.h \
-  standard/freetype2/src/smooth/ftsmerrs.h \
-  standard/freetype2/src/smooth/ftsmooth.c \
-  standard/freetype2/src/smooth/ftsmooth.h \
-  standard/freetype2/src/truetype/ttdriver.c \
-  standard/freetype2/src/truetype/ttdriver.h \
-  standard/freetype2/src/truetype/tterrors.h \
-  standard/freetype2/src/truetype/ttgload.c \
-  standard/freetype2/src/truetype/ttgload.h \
-  standard/freetype2/src/truetype/ttgxvar.c \
-  standard/freetype2/src/truetype/ttgxvar.h \
-  standard/freetype2/src/truetype/ttinterp.c \
-  standard/freetype2/src/truetype/ttinterp.h \
-  standard/freetype2/src/truetype/ttobjs.c \
-  standard/freetype2/src/truetype/ttobjs.h \
-  standard/freetype2/src/truetype/ttpload.c \
-  standard/freetype2/src/truetype/ttpload.h \
-  standard/freetype2/src/type1/t1afm.c \
-  standard/freetype2/src/type1/t1afm.h \
-  standard/freetype2/src/type1/t1driver.c \
-  standard/freetype2/src/type1/t1driver.h \
-  standard/freetype2/src/type1/t1errors.h \
-  standard/freetype2/src/type1/t1gload.c \
-  standard/freetype2/src/type1/t1gload.h \
-  standard/freetype2/src/type1/t1load.c \
-  standard/freetype2/src/type1/t1load.h \
-  standard/freetype2/src/type1/t1objs.c \
-  standard/freetype2/src/type1/t1objs.h \
-  standard/freetype2/src/type1/t1parse.c \
-  standard/freetype2/src/type1/t1parse.h \
-  standard/freetype2/src/type1/t1tokens.h \
-  standard/freetype2/src/type42/t42drivr.c \
-  standard/freetype2/src/type42/t42drivr.h \
-  standard/freetype2/src/type42/t42error.h \
-  standard/freetype2/src/type42/t42objs.c \
-  standard/freetype2/src/type42/t42objs.h \
-  standard/freetype2/src/type42/t42parse.c \
-  standard/freetype2/src/type42/t42parse.h \
-  standard/freetype2/src/type42/t42types.h \
-  standard/freetype2/src/winfonts/fnterrs.h \
-  standard/freetype2/src/winfonts/winfnt.h
-## c4group
-
 c4group_CPPFLAGS = \
   -I$(builddir) \
   -I$(srcdir)/standard \
   -I$(srcdir)/standard/inc \
-  -I$(srcdir)/standard/zlib \
   -I$(srcdir)/engine/inc \
   -I$(srcdir)/engine/sec \
   -DC4GROUP -DUSE_CONSOLE
@@ -1026,8 +522,9 @@ c4group_SOURCES = \
   standard/src/StdConfig.cpp
 
 c4group_LDADD = \
-  libzlib.a \
-  $(LIBICONV) $(OPENSSL_LIBS) $(PTHREAD_LIBS)
+  $(LIBICONV) \
+  $(OPENSSL_LIBS) \
+  $(PTHREAD_LIBS)
 
 ## gunzip4c4group
 
@@ -1036,7 +533,6 @@ gunzip4c4group_SOURCES = \
 
 gunzip4c4group_LDADD = \
   libstandard.a \
-  libzlib.a \
   $(PTHREAD_LIBS)
 
 ## puncher
@@ -1048,7 +544,6 @@ puncher_SOURCES = \
 
 puncher_LDADD = \
   libstandard.a \
-  libzlib.a \
   $(PTHREAD_LIBS)
 
 if WIN32
@@ -1071,51 +566,16 @@ if WIN32
 tstc4netio_LDADD += -lwinmm -lws2_32
 endif
 
-## anigrab
-
-anigrab__SOURCES = \
-  anigrab/anigrab.cpp \
-  anigrab/loadpng/common.cpp \
-  anigrab/loadpng/loadpng.cpp \
-  anigrab/loadpng/savepng.cpp \
-  anigrab/loadpng/bmphed.h \
-  anigrab/loadpng/common.h \
-  anigrab/loadpng/loadpng.h \
-  anigrab/loadpng/savepng.h
-
-anigrab__LDADD = \
-  libstandard.a \
-  libzlib.a
-
-if INTERNAL_PNG
-anigrab__LDADD += libpng.a
-else
-anigrab__LDADD += -lpng
-endif
-
 ## other stuff
 
-EXTRA_DIST += \
+EXTRA_DIST = \
   clonk.anjuta \
-  BUILD \
-  clonk.dsw \
-  clonk.vc7.sln \
-  credits.txt \
-  editor \
   licenses \
   README.linux \
   xcode \
-  anigrab/anigrab.dsp \
-  anigrab/anigrab.dsw \
-  engine/engine_con.dsp \
-  engine/engine.dsp \
-  engine/engine.vc7.vcproj \
-  engine/fmod/fmod.dll \
-  engine/fmod/fmodvc.lib \
   engine/netio/NetIO.dsp \
   netpuncher/Puncher.dsp \
   engine/res/Brush_Trans.png \
-  engine/res/c4x.png \
   engine/res/Cursor_Trans.png \
   engine/res/cz.ico \
   engine/res/Dynamic_Trans.png \
@@ -1131,8 +591,6 @@ EXTRA_DIST += \
   engine/res/Rect_Trans.png \
   engine/res/Static_Trans.png \
   group/c4group_cmdl.cpp \
-  group/c4group.dsp \
-  group/c4group.vc7.vcproj \
   group/resource.h \
   group/Resource.rc \
   engine/res/brush1.bmp \
@@ -1173,29 +631,5 @@ EXTRA_DIST += \
   engine/res/Fill.bmp \
   engine/res/IFT.bmp \
   engine/res/picker1.bmp \
-  engine/res/static1.bmp \
-  standard/lpng121/LICENSE \
-  standard/lpng121/pngtest.c \
-  standard/openssl
+  engine/res/static1.bmp
 
-binary-tarball: all clonk$(EXEEXT) c4group$(EXEEXT)
-	linuxdistname=clonk-linux-$$(sed -e 's/.define C4XVERBUILD \([1-9][0-9][0-9]*\)/\1/p;d' $(srcdir)/engine/inc/C4Version.h) && \
-	rm -rf $${linuxdistname} && \
-	mkdir $${linuxdistname} && \
-	cp ObjectsNET2.c4d GraphicsNET2.c4g SystemNET2.c4g $${linuxdistname} && \
-	cp clonk$(EXEEXT) c4group$(EXEEXT) $${linuxdistname} && \
-	cp ../binaries/linux/LGPL.txt ../binaries/linux/cr.png ../binaries/linux/install.sh $${linuxdistname} && \
-	strip $${linuxdistname}/clonk$(EXEEXT) && \
-	strip $${linuxdistname}/c4group$(EXEEXT) && \
-	cp $(srcdir)/README.linux $${linuxdistname}/README && \
-	tar -cvzf $${linuxdistname}.tar.gz $${linuxdistname} && \
-	rm -rf $${linuxdistname}
-
-binary-zip: all clonk$(EXEEXT)
-	windowsdistname=$$(sed -e 's/.define C4VERSIONBUILDNAME "\(..*\)"/\1/p;d' $(srcdir)/engine/inc/C4Version.h) && \
-	rm -rf $${windowsdistname} && \
-	mkdir $${windowsdistname} && \
-	cp clonk$(EXEEXT) $${windowsdistname} && \
-	strip $${windowsdistname}/clonk$(EXEEXT) && \
-	zip -r $${windowsdistname}.zip $${windowsdistname} && \
-	rm -rf $${windowsdistname}

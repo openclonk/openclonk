@@ -15,20 +15,16 @@ dnl Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.59)
 AC_INIT(clonk, m4_format([[[%s.%s.%s.%s]]], m4_include(version)))
-AC_COPYRIGHT([©2005, 2006, 2007 Günther Brammer])
+AC_COPYRIGHT([©2005-2009 Günther Brammer])
 AC_CONFIG_SRCDIR([engine/src/C4Map.cpp])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
 AC_CANONICAL_HOST
 dnl foreign to tell automake to shut up,
-dnl no-dist because we do not need dist
 dnl and subdir-objects because it makes the Makefile smaller.
 dnl no-define because PACKAGE and VERSION are not used
-AM_INIT_AUTOMAKE([foreign subdir-objects nostdinc no-dist no-define 1.10])
-
-dnl The new every random file in the repos policy
-AM_MAINTAINER_MODE
+AM_INIT_AUTOMAKE([foreign subdir-objects nostdinc no-define 1.10])
 
 AC_PROG_CXX
 AC_LANG([C++])
@@ -89,12 +85,12 @@ AC_ARG_ENABLE([sound],
 AC_ARG_WITH([gtk],
   [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=no]])],
   , [with_gtk=no])
-if test $with_gtk = yes; then
+AS_IF([test $with_gtk = yes],[
   PKG_CHECK_MODULES(GTK, glib-2.0 >= 2.4 gtk+-2.0 >= 2.4)
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
   DEVELOPER_MODE=true
-fi
+])
 AM_CONDITIONAL(DEVELOPER_MODE, [test $with_gtk = yes])
 
 AC_ARG_WITH([sdl],
@@ -148,73 +144,34 @@ else
 fi
 
 # Check for libjpeg
-AC_ARG_WITH([internal-libjpeg],
-  [AC_HELP_STRING([--with-internal-libjpeg], [Use the included copy of libjpeg [default=no]])])
-if test "$with_internal_libjpeg" != yes; then
-  AC_CHECK_LIB(jpeg, jpeg_read_header, [
-    CLONK_LIBS="-ljpeg $CLONK_LIBS"
-    with_internal_libjpeg=no
-  ], [
-    if test "$with_internal_libjpeg" = no; then
-      AC_MSG_ERROR([libjpeg not found.])
-    else
-      with_internal_libjpeg=yes
-    fi
-  ])
-fi
-if test "$with_internal_libjpeg" = yes; then
-  INCLUDES="$INCLUDES -I\$(top_srcdir)/standard/jpeglib"
-fi
-AM_CONDITIONAL(INTERNAL_JPEG, [test $with_internal_libjpeg = yes])
+AC_CHECK_LIB(jpeg, jpeg_read_header, [
+  CLONK_LIBS="-ljpeg $CLONK_LIBS"
+  with_internal_libjpeg=no
+], [
+  AC_MSG_ERROR([libjpeg not found.])
+])
 
 # Check for libpng
-AC_ARG_WITH([internal-libpng],
-  [AC_HELP_STRING([--with-internal-libpng], [Use the included copy of libpng [default=no]])])
-if test "$with_internal_libpng" != yes; then
-  AC_CHECK_LIB(png, png_read_image, [
-    CLONK_LIBS="-lpng $CLONK_LIBS"
-    with_internal_libpng=no
-  ], [
-    if test "$with_internal_libpng" = no; then
-      AC_MSG_ERROR([libpng not found.])
-    else
-      with_internal_libpng=yes
-    fi
-  ], [-lz])
-fi
-if test "$with_internal_libpng" = yes; then
-  INCLUDES="$INCLUDES -I\$(top_srcdir)/standard/lpng121"
-fi
-AM_CONDITIONAL(INTERNAL_PNG, [test $with_internal_libpng = yes])
+AC_CHECK_LIB(png, png_read_image, [
+  CLONK_LIBS="-lpng $CLONK_LIBS"
+  with_internal_libpng=no
+], [
+  AC_MSG_ERROR([libpng not found.])
+], [-lz])
 
 # Check for libfreetype
-AC_ARG_WITH([internal-libfreetype],
-  [AC_HELP_STRING([--with-internal-libfreetype], [Use the included copy of libfreetype [default=no]])])
-if test "$with_internal_libfreetype" != yes && test $enable_console = no; then
+if test $enable_console = no; then
   if test "$cross_compiling" = no; then
     AC_CHECK_PROG(FREETYPE_CONFIG, freetype-config, freetype-config)
   fi
   if test $FREETYPE_CONFIG; then
     AC_SUBST(FREETYPE_CFLAGS, [`$FREETYPE_CONFIG --cflags`])
     AC_SUBST(FREETYPE_LIBS, [`$FREETYPE_CONFIG --libs`])
-    with_internal_libfreetype=no
   else
-    if test "$with_internal_libfreetype" = no; then
-      AC_MSG_ERROR([libfreetype not found.])
-    else
-      with_internal_libfreetype=yes
-    fi
+    PKG_CHECK_MODULES(FREETYPE, freetype2)
   fi
-fi
-if test "$with_internal_libfreetype" = yes; then
-  INCLUDES="$INCLUDES -I\$(top_srcdir)/standard/freetype2"
-fi
-AM_CONDITIONAL(INTERNAL_FREETYPE, [test $with_internal_libfreetype = yes])
-if test "$with_internal_libfreetype" = yes || test $enable_console = no; then
   AC_DEFINE(HAVE_FREETYPE, 1, [Define to 1 if you have FreeType2.])
 fi
-
-AC_SUBST(INCLUDES)
 
 # X11, Xpm, Xrandr
 AC_PATH_XTRA
@@ -245,11 +202,15 @@ if test $with_gl = yes; then
       [AC_MSG_ERROR([opengl32 not found.])])
     AC_CHECK_LIB(glu32, main, [CLONK_LIBS="-lglu32 $CLONK_LIBS"],
       [AC_MSG_ERROR([glu32 not found.])])
+    AC_CHECK_LIB(GLEW, main, [CLONK_LIBS="-lGLEW $CLONK_LIBS"],
+      [AC_MSG_ERROR([glew not found.])])
   else
     AC_CHECK_LIB(GL, glBegin, [CLONK_LIBS="-lGL $CLONK_LIBS"],
       [AC_MSG_ERROR([libGL not found.])])
     AC_CHECK_LIB(GLU, gluOrtho2D, [CLONK_LIBS="-lGLU $CLONK_LIBS"],
       [AC_MSG_ERROR([libGLU not found.])])
+    AC_CHECK_LIB(GLEW, glewInit, [CLONK_LIBS="-lGLEW $CLONK_LIBS"],
+      [AC_MSG_ERROR([glew not found.])])
   fi
   AC_DEFINE([USE_GL], 1, [OpenGL graphics])
 fi
@@ -264,11 +225,11 @@ if test "$with_directx" = yes; then
   AC_DEFINE([USE_DIRECTX], 1, [DirectX graphics])
 fi
 
-if test $win32 = false; then
-  # OpenSSL
-  AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
-    [AC_MSG_ERROR([libcrypto (OpenSSL) not found.])])
+# OpenSSL
+AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
+  [AC_MSG_ERROR([libcrypto (OpenSSL) not found.])])
 
+if test $win32 = false; then
   # pthread
   ACX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
   AC_SUBST(PTHREAD_LIBS)
@@ -282,8 +243,6 @@ if test $win32 = false; then
   # FMod is used for windows only
   AM_CONDITIONAL(USE_FMOD, false)
 else
-  # Link openssl statically, always
-  OPENSSL_LIBS='$(srcdir)/standard/openssl/libcrypto.a'
   # Windows
   for WIN32LIB in gdi32 comdlg32 winmm ws2_32 vfw32
   do
@@ -296,7 +255,7 @@ else
   fi
   AM_CONDITIONAL(USE_FMOD, test "$enable_sound" = yes)
 
-  # windres (check needed for crosscompilation)
+  # windres
   AC_CHECK_TOOL(WINDRES, windres, no)
   if test $WINDRES = no; then
     AC_MSG_ERROR([windres not found.])
@@ -331,10 +290,4 @@ echo "Configuration:
 
 if test "$enable_sdlmainloop" = yes; then echo "  SDL:  	mainloop";
 else echo "  SDL:  	$with_sdl"; fi
-if test "$with_internal_libjpeg" = yes; then echo "  libjpeg:	internal";
-else echo "  libjpeg:	external"; fi
-if test "$with_internal_libpng" = yes; then echo "  libpng:	internal";
-else echo "  libpng:	external"; fi
-if test "$with_internal_libfreetype" = yes; then echo "  freetype:	internal";
-else if test $FREETYPE_CONFIG; then echo "  freetype:	external";
-else echo "  freetype:	no"; fi fi
+

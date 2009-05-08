@@ -999,6 +999,7 @@ int ZEXPORT gzclose (file)
    errnum is set to Z_ERRNO and the application may consult errno
    to get the exact error code.
 */
+#if 0
 const char * ZEXPORT gzerror (file, errnum)
     gzFile file;
     int *errnum;
@@ -1025,6 +1026,7 @@ const char * ZEXPORT gzerror (file, errnum)
     strcat(s->msg, m);
     return (const char*)s->msg;
 }
+#endif
 
 /* ===========================================================================
      Clear the error and end-of-file flags, and do the same for the real file.
