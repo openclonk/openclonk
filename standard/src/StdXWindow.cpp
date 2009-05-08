@@ -75,13 +75,8 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 
 // Various properties
 	XSetWindowAttributes attr;
-	// Hide the mouse cursor
-	XColor cursor_color;
-	// We do not care what color the invisible cursor has
-	memset(&cursor_color, 0, sizeof(cursor_color));
-	Pixmap bitmap = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy), "\000", 1, 1);
-	attr.cursor = XCreatePixmapCursor(dpy, bitmap, bitmap, &cursor_color, &cursor_color, 0, 0);
 	attr.border_pixel = 0;
+	attr.background_pixel = 0;
 	// Which events we want to receive
 	attr.event_mask =
 		//EnterWindowMask |
@@ -93,18 +88,28 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 		PointerMotionMask |
 		ButtonPressMask |
 		ButtonReleaseMask;
-	attr.background_pixmap = None;
-	attr.border_pixmap = None;
 	attr.colormap = XCreateColormap(dpy, DefaultRootWindow(dpy), ((XVisualInfo*)Info)->visual, AllocNone);
-	unsigned long attrmask = CWBackPixmap  | CWBorderPixmap | CWColormap | CWEventMask;
-	if (HideCursor) attrmask |= CWCursor;
+	unsigned long attrmask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
+	Pixmap bitmap;
+	if (HideCursor)
+		{
+		// Hide the mouse cursor
+		XColor cursor_color;
+		// We do not care what color the invisible cursor has
+		memset(&cursor_color, 0, sizeof(cursor_color));
+		bitmap = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy), "\000", 1, 1);
+		attr.cursor = XCreatePixmapCursor(dpy, bitmap, bitmap, &cursor_color, &cursor_color, 0, 0);
+		attrmask |= CWCursor;
+		}
 
 	wnd = XCreateWindow(dpy, DefaultRootWindow(dpy),
 		0, 0, 640, 480, 0, ((XVisualInfo*)Info)->depth, InputOutput, ((XVisualInfo*)Info)->visual,
-		attrmask,
-		&attr);
-	XFreeCursor(dpy, attr.cursor);
-	XFreePixmap(dpy, bitmap);
+		attrmask, &attr);
+	if (HideCursor)
+		{
+		XFreeCursor(dpy, attr.cursor);
+		XFreePixmap(dpy, bitmap);
+		}
 	if (!wnd) {
 		Log("Error creating window.");
 		return 0;
@@ -190,11 +195,12 @@ bool CStdWindow::FindInfo()
 	// get an appropriate visual
 	// attributes for a single buffered visual in RGBA format with at least 4 bits per color
 	static int attrListSgl[] = { GLX_RGBA,
-		GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4, //GLX_DEPTH_SIZE, 16,
+		GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
 		None };
 	// attributes for a double buffered visual in RGBA format with at least 4 bits per color
 	static int attrListDbl[] = { GLX_RGBA, GLX_DOUBLEBUFFER,
-		GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4, //GLX_DEPTH_SIZE, 16,
+		GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
+		GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
 		None };
 	// doublebuffered is the best
 	Info = glXChooseVisual(dpy, DefaultScreen(dpy), attrListDbl);
