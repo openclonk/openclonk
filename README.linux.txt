@@ -3,10 +3,11 @@ Requirements
 
 To build on Linux you need the following packages (Debian names given):
 
-build-essential gcc-4.1 g++-4.1
+make gcc-4.1 g++-4.1
 automake autoconf
-libx11-dev libxxf86vm-dev libxpm-dev libgl1-mesa-dev libpng12-dev libssl-dev
-libsdl1.2-dev libsdl-mixer1.2-dev libssl-dev libgtk2.0-dev libjpeg62-dev
+libc6-dev libx11-dev libxxf86vm-dev libxpm-dev libglew1.5-dev libgl1-mesa-dev
+libpng12-dev libssl-dev libsdl1.2-dev libsdl-mixer1.2-dev libssl-dev
+libgtk2.0-dev libjpeg62-dev zlib1g-dev
 
 Build
 =====
