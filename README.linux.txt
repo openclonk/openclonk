@@ -12,7 +12,11 @@ libgtk2.0-dev libjpeg62-dev zlib1g-dev
 Build
 =====
 
-Open a shell, cd into the source directory, and run:
+If you build from version control, you need to run this:
+
+  autoreconf -i && ./configure 'CXX=g++-4.1' && make
+
+To build from tarball, run this:
 
   ./configure 'CXX=g++-4.1' && make
 
@@ -21,12 +25,3 @@ If you want a debug build, pass --enable-debug to configure, for the developer m
 
 On subsequent build runs, you only have to execute make.
 
-If you want to edit the build files, pass --enable-maintainer-mode to configure.
-When you do that, make will automatically update the build system.
-
-The following additional arguments to configure are currently used for release builds:
-
-'--with-gtk' '--with-internal-libpng' '--without-internal-libjpeg' \
-'CFLAGS=-Os -g -finline-functions -ffast-math -DBIG_C4INCLUDE' \
-'CXXFLAGS=-Os -g -finline-functions -ffast-math -DBIG_C4INCLUDE' \
-'OPENSSL_LIBS=/usr/lib/libcrypto.a -ldl'
