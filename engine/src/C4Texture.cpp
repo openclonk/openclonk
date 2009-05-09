@@ -35,7 +35,6 @@
 C4Texture::C4Texture()
   {
   Name[0]=0;
-  Surface8=NULL;
   Surface32=NULL;
   Next=NULL;
   }
@@ -43,7 +42,6 @@ C4Texture::C4Texture()
 C4Texture::~C4Texture()
   {
 #ifdef C4ENGINE
-  delete Surface8;
   delete Surface32;
 #endif
   }
@@ -101,10 +99,7 @@ bool C4TexMapEntry::Init()
 	if (iOverlayType & C4MatOv_Exact) iZoom=1;
 	if (iOverlayType & C4MatOv_HugeZoom) iZoom=4;
 	// Create pattern
-	if (sfcTexture->Surface32)
-		MatPattern.Set(sfcTexture->Surface32, iZoom, fMono);
-	else
-		MatPattern.Set(sfcTexture->Surface8, iZoom, fMono);
+	MatPattern.Set(sfcTexture->Surface32, iZoom, fMono);
 	MatPattern.SetColors(pMaterial->Color, pMaterial->Alpha);
 #endif
 	return true;
@@ -149,17 +144,6 @@ BOOL C4TextureMap::AddTexture(const char *szTexture, CSurface * sfcSurface)
   if (!(pTexture=new C4Texture)) return FALSE;
   SCopy(szTexture,pTexture->Name,C4M_MaxName);
   pTexture->Surface32=sfcSurface;
-  pTexture->Next=FirstTexture;
-  FirstTexture=pTexture;
-  return TRUE;
-  }
-
-BOOL C4TextureMap::AddTexture(const char *szTexture, CSurface8 * sfcSurface)
-  {
-  C4Texture *pTexture;
-  if (!(pTexture=new C4Texture)) return FALSE;
-  SCopy(szTexture,pTexture->Name,C4M_MaxName);
-  pTexture->Surface8=sfcSurface;
   pTexture->Next=FirstTexture;
   FirstTexture=pTexture;
   return TRUE;
@@ -288,53 +272,32 @@ bool C4TextureMap::SaveMap(C4Group &hGroup, const char *szEntryName)
 	}
 
 int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
-  {
-  int32_t texnum=0;
-
+	{
+	int32_t texnum=0;
 #ifdef C4ENGINE
-
 	// overload: load from other file
 	if (OverloadFile) texnum+=LoadTextures(*OverloadFile);
 
-  char texname[256+1];
+	char texname[256+1];
 	C4Surface *ctex;
-  size_t binlen;
+	size_t binlen;
 	// newgfx: load PNG-textures first
-  hGroup.ResetSearch();
-  while (hGroup.AccessNextEntry(C4CFN_PNGFiles,&binlen,texname))
-		{
-		// check if it already exists in the map
-    SReplaceChar(texname,'.',0);
-		if (GetTexture(texname)) continue;
-		SAppend(".png", texname);
-		// load
-    if (ctex=GroupReadSurfacePNG(hGroup))
-      {
-      SReplaceChar(texname,'.',0);
-      if (AddTexture(texname,ctex)) texnum++;
-      else delete ctex;
-      }
-		}
-	// Load all bitmap files from group
 	hGroup.ResetSearch();
-	CSurface8 *ctex8;
-	while (hGroup.AccessNextEntry(C4CFN_BitmapFiles,&binlen,texname))
+	while (hGroup.AccessNextEntry(C4CFN_PNGFiles,&binlen,texname))
 		{
 		// check if it already exists in the map
 		SReplaceChar(texname,'.',0);
 		if (GetTexture(texname)) continue;
-		SAppend(".bmp", texname);
-		if (ctex8=GroupReadSurface8(hGroup))
+		SAppend(".png", texname);
+		// load
+		if (ctex=GroupReadSurfacePNG(hGroup))
 			{
-			ctex8->AllowColor(0,2,TRUE);
 			SReplaceChar(texname,'.',0);
-			if (AddTexture(texname,ctex8)) texnum++;
+			if (AddTexture(texname,ctex)) texnum++;
 			else delete ctex;
 			}
 		}
-
 #endif
-
 	return texnum;
 	}
 

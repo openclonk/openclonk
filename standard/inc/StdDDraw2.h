@@ -124,7 +124,6 @@ class CPattern
 	private:
 		// pattern surface for new-style patterns
 		class CSurface *sfcPattern32;
-		class CSurface8 *sfcPattern8;
 		// Faster access
 		uint32_t * CachedPattern; int Wdt; int Hgt;
 		// pattern zoom factor; 0 means no zoom

@@ -29,7 +29,6 @@ class C4Texture
     C4Texture();
     ~C4Texture();
     CSurface * Surface32;
-    CSurface8 * Surface8;
   protected:
     char Name[C4M_MaxName+1];
     C4Texture *Next;
@@ -91,7 +90,6 @@ class C4TextureMap
 		BOOL AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
   protected:
     BOOL AddTexture(const char *szTexture, CSurface * sfcSurface);
-    BOOL AddTexture(const char *szTexture, CSurface8 * sfcSurface);
   };
 
 #endif

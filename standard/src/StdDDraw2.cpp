@@ -99,7 +99,6 @@ CPattern& CPattern::operator=(const CPattern& nPattern)
 	{
 	pClrs = nPattern.pClrs;
 	pAlpha = nPattern.pAlpha;
-	sfcPattern8 = nPattern.sfcPattern8;
 	sfcPattern32 = nPattern.sfcPattern32;
 	if (sfcPattern32) sfcPattern32->Lock();
 	delete [] CachedPattern;
@@ -144,29 +143,10 @@ bool CPattern::Set(SURFACE sfcSource, int iZoom, bool fMonochrome)
 	return true;
 	}
 
-bool CPattern::Set(CSurface8 * sfcSource, int iZoom, bool fMonochrome)
-	{
-	// Safety
-	if (!sfcSource) return false;
-	// Clear existing pattern
-	Clear();
-	// new style: simply store pattern for modulation or shifting, which will be decided upon use
-	sfcPattern8=sfcSource;
-	Wdt = sfcPattern8->Wdt;
-	Hgt = sfcPattern8->Hgt;
-	// set zoom
-	Zoom=iZoom;
-	// set flags
-	Monochrome=fMonochrome;
-	CachedPattern = 0;
-	return true;
-	}
-
 CPattern::CPattern()
 	{
 	// disable
 	sfcPattern32=NULL;
-	sfcPattern8=NULL;
 	CachedPattern = 0;
 	Zoom=0;
 	Monochrome=false;
@@ -183,52 +163,27 @@ void CPattern::Clear()
 		// clear field
 		sfcPattern32=NULL;
 		}
-	sfcPattern8 = NULL;
 	delete[] CachedPattern; CachedPattern = 0;
 	}
 
 bool CPattern::PatternClr(int iX, int iY, BYTE &byClr, DWORD &dwClr, CStdPalette &rPal) const
 	{
-	// pattern assigned?
-	if (!sfcPattern32 && !sfcPattern8) return false;
+	if (!CachedPattern) return false;
 	// position zoomed?
 	if (Zoom) { iX/=Zoom; iY/=Zoom; }
 	// modulate position
 	((unsigned int &)iX) %= Wdt; ((unsigned int &)iY) %= Hgt;
-	// new style: modulate clr
-	if (CachedPattern)
+	// modulate clr
+	DWORD dwPix = CachedPattern[iY * Wdt + iX];
+	if (byClr)
 		{
-		DWORD dwPix = CachedPattern[iY * Wdt + iX];
-		if (byClr)
-			{
-			if (Monochrome)
-				ModulateClrMonoA(dwClr, BYTE(dwPix), BYTE(dwPix>>24));
-			else
-				ModulateClrA(dwClr, dwPix);
-			LightenClr(dwClr);
-			}
-		else dwClr=dwPix;
-		}
-	// old style?
-	else if (sfcPattern8)
-		{
-		// if color triplet is given, use it
-		BYTE byShift = sfcPattern8->GetPix(iX, iY);
-		if (pClrs)
-			{
-			// IFT (alpha only)
-			int iAShift=0; if (byClr & 0xf0) iAShift = 3;
-			// compose color
-			dwClr = RGB(pClrs[byShift*3+2], pClrs[byShift*3+1], pClrs[byShift*3])+(pAlpha[byShift+iAShift]<<24);
-			}
+		if (Monochrome)
+			ModulateClrMonoA(dwClr, BYTE(dwPix), BYTE(dwPix>>24));
 		else
-			{
-			// shift color index and return indexed color
-			byClr+=byShift;
-			dwClr=rPal.GetClr(byClr);
-			}
+			ModulateClrA(dwClr, dwPix);
+		LightenClr(dwClr);
 		}
-	// success
+	else dwClr=dwPix;
 	return true;
 	}
 
