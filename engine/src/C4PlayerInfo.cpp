@@ -1709,7 +1709,7 @@ bool C4PlayerInfoList::SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fS
 										for (int ch = 128; ch < 256; ++ch)
 										{
 												const char* hexChars = "0123456789abcdef";
-												char old[] = { ch, 0 };
+												char old[] = { char(ch), 0 };
 												char safe[] = { '%', 'x', 'x', 0 };
 												safe[1] = hexChars[ch / 16];
 												safe[2] = hexChars[ch % 16];

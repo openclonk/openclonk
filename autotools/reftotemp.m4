@@ -8,7 +8,7 @@ AC_DEFUN([AX_PROG_CXX_REFTOTEMP],
 struct Foo {
     operator Foo & () { return *this; }
 };
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
+#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (defined(__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)))
 void frobnicate(Foo &&) { }
 #else
 void frobnicate(Foo &) { }

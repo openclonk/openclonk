@@ -19,8 +19,6 @@ You can build on Windows using either:
 	plus MSYS (or any other shell that can run configure and make)
 	plus DXSDK 9 (if you want DirectX support)
 	this is currently only tested by crosscompiling from Linux.
-	only g++-4.1 and older can compile clonk, g++-4.2 and newer are incompatible.
-
 
 NoNetwork
 =========
@@ -39,37 +37,31 @@ To build using MinGW, you need from http://www.mingw.org/:
 With MinGW-*.exe, install from the "current" distribution the MinGW base tools
 and g++, the C++ compiler. Then install msys.
 
-If you want to edit the build files (for example for a new source file), you
-need the MSYS DTK, Autoconf 2.6x and Automake 1.10.x. You might need to build
-the last two from source.
+You also need the MSYS DTK, Autoconf 2.6x and Automake 1.10.x. You might need
+to build the last two from source.
 
 If you want DirectX support, get a DirectX 9 SDK from Microsoft. Copy the
-contents of it's include dir to the include dir of your MinGW installation,
+contents of its include dir to the include dir of your MinGW installation,
 and pass --with-directx to configure below.
 
 Open a shell (the MSYS one under windows), cd to this directory, and execute:
 
-   ./configure && make
+  autoreconf -i && ./configure && make
 
-If you want a debugbuild, pass --enable-debug to configure. Other options are
-listed by configure --help.
+To use g++ version 4.3 or newer, you need to pass 'CXX=g++ -std=gnu++0x'
+to configure. g++ version 4.2 is not able to compile Clonk.
 
-If you get an error like "directx/dxfile.h:240: stray '\32' in program", then
-delete that char from that file (Whyever someone would want an ASCII 32 in a
-header is beyond me). Some editors (SciTE for example) display such unusual
-characters instead of representing them with space.
+To compile a debugbuild, pass --enable-debug to configure. Other options are
+listed by ./configure --help.
 
 On subsequent build runs, you only have to execute make.
-
-If you want to edit the build files, pass --enable-maintainer-mode to configure.
-When you do that, make will automatically update the build system.
 
 If you want to separate the source directory and the output files, you can call
 configure from another directory. You can call configure by it's relative path,
 but using the full path helps gdb find the source files. Example:
 
-    mkdir build
-    cd build
-    /path/to/clonksource/configure --with-directx CXXFLAGS='-Os'
-    make
+  mkdir build
+  cd build
+  /path/to/clonksource/configure --with-directx CXXFLAGS='-Os'
+  make
 

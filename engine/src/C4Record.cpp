@@ -253,10 +253,10 @@ bool C4Record::Rec(int iFrame, const StdBuf &sBuf, C4RecordChunkType eType)
 	while(iFrame > iLastFrame + 0xff)
 		Rec(iLastFrame + 0xff, StdBuf(), RCT_Frame);
 	// get frame difference
-	uint32_t iFrameDiff = Max<uint32_t>(0, iFrame - iLastFrame);
+	uint8_t iFrameDiff = Max<uint8_t>(0, iFrame - iLastFrame);
 	iLastFrame += iFrameDiff;
-  // create head
-  C4RecordChunkHead Head = { iFrameDiff, eType };
+	// create head
+	C4RecordChunkHead Head = { iFrameDiff, uint8_t(eType) };
 	// pack
 	CtrlRec.Write(&Head, sizeof(Head));
 	CtrlRec.Write(sBuf.getData(), sBuf.getSize());

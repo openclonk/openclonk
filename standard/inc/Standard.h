@@ -81,18 +81,22 @@ typedef __int32 intptr_t;
 #error Could not find integer datatypes!
 #endif
 
-#if defined(__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
-// Temporary-To-Reference-Fix
-#define ALLOW_TEMP_TO_REF(ClassName) operator ClassName & () { return *this; }
+#if defined(__GNUC__)
 // Allow checks for correct printf-usage
 #define GNUC_FORMAT_ATTRIBUTE __attribute__ ((format (printf, 1, 2)))
 #define GNUC_FORMAT_ATTRIBUTE_O __attribute__ ((format (printf, 2, 3)))
 #define GNUC_ALWAYS_INLINE inline __attribute__ ((always_inline))
 #else
-#define ALLOW_TEMP_TO_REF(ClassName)
 #define GNUC_FORMAT_ATTRIBUTE
 #define GNUC_FORMAT_ATTRIBUTE_O
 #define GNUC_ALWAYS_INLINE inline
+#endif
+
+// Temporary-To-Reference-Fix
+#if defined(__GNUC__) && ((__GNUC__ < 4) || (__GNUC__ == 4 && __GNUC_MINOR__ < 3))
+#define ALLOW_TEMP_TO_REF(ClassName) operator ClassName & () { return *this; }
+#else
+#define ALLOW_TEMP_TO_REF(ClassName)
 #endif
 
 #if defined(__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))

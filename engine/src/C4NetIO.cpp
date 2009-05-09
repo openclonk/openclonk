@@ -2145,7 +2145,7 @@ void C4NetIOUDP::OnPacket(const C4NetIOPacket &Packet, C4NetIO *pNetIO)
 		// ping? answer without creating a connection
 		if((Packet.getStatus() & 0x7F) == IPID_Ping)
 		{
-			PacketHdr PingPacket = { IPID_Ping | (Packet.getStatus() & 0x80), 0 };
+			PacketHdr PingPacket = { int8_t(IPID_Ping | (Packet.getStatus() & 0x80)), 0 };
 			SendDirect(C4NetIOPacket(&PingPacket, sizeof(PingPacket), false, Packet.getAddr()));
 			return;
 		}

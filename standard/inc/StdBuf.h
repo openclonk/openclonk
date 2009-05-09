@@ -53,6 +53,14 @@ public:
     else
       Ref(Buf2);
   }
+  StdBuf(const StdBuf & Buf2, bool fCopy = true)
+    : fRef(true), pData(NULL), iSize(0)
+  {
+    if(fCopy)
+      Copy(Buf2);
+    else
+      Ref(Buf2);
+  }
 
   // Set by constant data. Copies data if desired.
   StdBuf(const void *pData, size_t iSize, bool fCopy = false)
@@ -375,6 +383,9 @@ public:
 
 	// See StdBuf::StdBuf. Will take data if possible.
   StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
+    : StdBuf(Buf2, fCopy)
+  { }
+  StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
     : StdBuf(Buf2, fCopy)
   { }
 

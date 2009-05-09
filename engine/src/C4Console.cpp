@@ -93,6 +93,9 @@ namespace {
 	class ImplicitStrBuf: public StdStrBuf {
 		public:
 		ImplicitStrBuf(StdStrBuf RREF Buf2): StdStrBuf(Buf2, false) { }
+		ImplicitStrBuf(const StdStrBuf & Buf2): StdStrBuf(Buf2) { }
+		ImplicitStrBuf(ImplicitStrBuf RREF Buf2): StdStrBuf(Buf2) { }
+		ImplicitStrBuf(const ImplicitStrBuf & Buf2): StdStrBuf(Buf2) { }
 		operator const char *() const { return getData(); }
 	};
 
