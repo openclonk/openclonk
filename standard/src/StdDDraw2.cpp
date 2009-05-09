@@ -1544,7 +1544,7 @@ bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr)
   return true;
   }
 
-void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern1, CPattern & Pattern2, CStdPalette &rPal)
+void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern, CStdPalette &rPal)
 	{
 	if (!sfcDest->Lock()) return;
 	for (int ycnt = -r; ycnt < r; ycnt++)
@@ -1555,8 +1555,7 @@ void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE c
 			{
 			// apply both patterns
 			DWORD dwClr=rPal.GetClr(col);
-			Pattern1.PatternClr(xcnt, y + ycnt, col, dwClr, rPal);
-			Pattern2.PatternClr(xcnt, y + ycnt, col, dwClr, rPal);
+			Pattern.PatternClr(xcnt, y + ycnt, col, dwClr, rPal);
 			sfcDest->SetPixDw(xcnt, y + ycnt, dwClr);
 			}
 		}

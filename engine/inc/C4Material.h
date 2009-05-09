@@ -147,7 +147,6 @@ class C4Material: public C4MaterialCore
     int32_t AboveTempConvertTo; // MatTex
 #ifdef C4ENGINE
 		int32_t DefaultMatTex;			// texture used for single pixel values
-		CPattern MatPattern;
 		C4Facet PXSFace;				// loose pixel facet
 
 		void UpdateScriptPointers(); // set all material script pointers

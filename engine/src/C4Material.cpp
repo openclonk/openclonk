@@ -406,14 +406,6 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
 		// search/create entry in texmap
 		Map[cnt].DefaultMatTex = Game.TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, TRUE,
 			FormatString("DefaultMatTex of mat %s", Map[cnt].Name).getData());
-		const C4TexMapEntry *pTex = Game.TextureMap.GetEntry(Map[cnt].DefaultMatTex);
-		if (pTex)
-			{
-			// take pattern
-			Map[cnt].MatPattern = pTex->getPattern();
-			// special zooming for overlay
-			Map[cnt].MatPattern.SetZoom((Map[cnt].OverlayType & C4MatOv_Exact) ? 1 : 2);
-			}
 		// init PXS facet
 		SURFACE sfcTexture;
 		C4Texture * Texture;

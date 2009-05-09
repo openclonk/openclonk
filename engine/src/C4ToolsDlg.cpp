@@ -655,13 +655,12 @@ void C4ToolsDlg::UpdatePreview()
 	Application.DDraw->DrawBox(sfcPreview,0,0,iPrvWdt-1,iPrvHgt-1,CGray4);
 #endif
 	BYTE bCol = 0;
-	CPattern Pattern1;
-	CPattern Pattern2;
+	CPattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(Material,C4TLS_MatSky))
 		{
-		Pattern1.SetColors(0, 0);
-		Pattern1.Set(Game.Landscape.Sky.Surface, 0, false);
+		Pattern.SetColors(0, 0);
+		Pattern.Set(Game.Landscape.Sky.Surface, 0, false);
 		}
 	// Material-Texture
 	else
@@ -677,13 +676,7 @@ void C4ToolsDlg::UpdatePreview()
 			if(pTex)
 				{
 				// Set drawing pattern
-				Pattern2 = pTex->getPattern();
-				// get and set extended texture of material
-				C4Material *pMat = pTex->GetMaterial();
-				if (pMat && !(pMat->OverlayType & C4MatOv_None))
-					{
-					Pattern1 = pMat->MatPattern;
-					}
+				Pattern = pTex->getPattern();
 				}
 			}
 		}
@@ -697,7 +690,7 @@ void C4ToolsDlg::UpdatePreview()
 		Application.DDraw->DrawPatternedCircle(	sfcPreview,
 							iPrvWdt/2,iPrvHgt/2,
 							Grade,
-							bCol, Pattern1, Pattern2, *Game.Landscape.GetPal());
+							bCol, Pattern, *Game.Landscape.GetPal());
 
 	Application.DDraw->AttachPrimaryPalette(sfcPreview);
 

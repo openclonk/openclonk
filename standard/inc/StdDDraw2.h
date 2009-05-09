@@ -314,7 +314,7 @@ class CStdDDraw
 		void DrawBox(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, BYTE byCol);  // calls DrawBoxDw
 		void DrawBoxDw(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, DWORD dwClr); // calls DrawBoxFade
 		void DrawBoxFade(SURFACE sfcDest, float iX, float iY, float iWdt, float iHgt, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4, int iBoxOffX, int iBoxOffY); // calls DrawQuadDw
-		void DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern1, CPattern & Pattern2, CStdPalette &rPal);
+		void DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern, CStdPalette &rPal);
 		void DrawHorizontalLine(SURFACE sfcDest, int x1, int x2, int y, BYTE col);
 		void DrawVerticalLine(SURFACE sfcDest, int x, int y1, int y2, BYTE col);
 		void DrawFrame(SURFACE sfcDest, int x1, int y1, int x2, int y2, BYTE col);

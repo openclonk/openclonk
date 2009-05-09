@@ -2560,8 +2560,6 @@ DWORD C4Landscape::GetClrByTex(int32_t iX, int32_t iY)
 		{
 		// pattern color
 		pTex->getPattern().PatternClr(iX, iY, pix, dwPix, Application.DDraw->Pal);
-		if(pTex->GetMaterial())
-			pTex->GetMaterial()->MatPattern.PatternClr(iX, iY, pix, dwPix, Application.DDraw->Pal);
 		}
 	return dwPix;
 	}
