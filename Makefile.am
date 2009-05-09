@@ -451,7 +451,6 @@ libstandard_a_SOURCES = \
   standard/inc/Standard.h \
   standard/inc/StdAdaptors.h \
   standard/inc/StdBase64.h \
-  standard/inc/StdBitmap.h \
   standard/inc/StdBuf.h \
   standard/inc/StdColors.h \
   standard/inc/StdConfig.h \

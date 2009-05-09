@@ -80,7 +80,7 @@ AC_ARG_ENABLE([console],
 
 AC_ARG_ENABLE([sound],
   [AC_HELP_STRING([--enable-sound],[compile with sound support [default=yes]])],
-  , [if test $enable_console = yes; then enable_sound=no; else enable_sound=yes; fi])
+  , [if test $enable_console = yes; then enable_sound=no; else if test $win32 = true; then enable_sound=no; else enable_sound=yes; fi; fi])
 
 AC_ARG_WITH([gtk],
   [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=no]])],
@@ -115,6 +115,8 @@ if test $with_sdl = yes; then
   AC_ARG_ENABLE(sdlmainloop,
     [AC_HELP_STRING([--enable-sdlmainloop],[use SDL instead of X11 or Win32 [default=no]])],
     , [if test $osx = true; then enable_sdlmainloop=yes; else enable_sdlmainloop=no; fi ])
+else
+  enable_sdlmainloop=no
 fi
 if test $enable_sdlmainloop = yes; then
   with_x=no
@@ -202,7 +204,7 @@ if test $with_gl = yes; then
       [AC_MSG_ERROR([opengl32 not found.])])
     AC_CHECK_LIB(glu32, main, [CLONK_LIBS="-lglu32 $CLONK_LIBS"],
       [AC_MSG_ERROR([glu32 not found.])])
-    AC_CHECK_LIB(GLEW, main, [CLONK_LIBS="-lGLEW $CLONK_LIBS"],
+    AC_CHECK_LIB(glew32, main, [CLONK_LIBS="-lglew32 $CLONK_LIBS"],
       [AC_MSG_ERROR([glew not found.])])
   else
     AC_CHECK_LIB(GL, glBegin, [CLONK_LIBS="-lGL $CLONK_LIBS"],
