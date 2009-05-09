@@ -515,6 +515,7 @@ static int ToNumber(char c)
 	if (c >= '0' && c <= '9') return c - '0';
 	if (c >= 'a' && c <= 'z') return 10 + c - 'a';
 	if (c >= 'A' && c <= 'Z') return 10 + c - 'A';
+	assert(false);
 	return 0;
 	}
 
@@ -2850,6 +2851,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			C4ID idNS = 0;
 			if(TokenType == ATT_C4ID)
 				{
+				Warn("->C4ID::function is broken");
 				// from now on, stupid func names must stay outside ;P
 				idNS = (C4ID) cInt;
 				Shift();
