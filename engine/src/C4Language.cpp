@@ -172,6 +172,7 @@ StdStrBuf C4Language::Iconv(const char * string, iconv_t cd)
 		return StdStrBuf(string, true);
 	}
 	StdStrBuf r;
+	if (!string) return r;
 	size_t inlen = strlen(string);
 	size_t outlen = strlen(string);
 	r.SetLength(inlen);
