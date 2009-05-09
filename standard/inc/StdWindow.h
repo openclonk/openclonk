@@ -438,7 +438,6 @@ protected:
 	bool IsShiftDown() { return KeyMask & MK_SHIFT; }
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
 	bool IsAltDown() { return KeyMask & (1<<3); }
-	bool SignalNetworkEvent();
 	bool AssertMainThread()
 		{
 		assert(MainThread == pthread_self());
@@ -448,7 +447,6 @@ protected:
 	// the glib main loop that are in an anonymous namespace in
 	// StdXApp.cpp.
 	void OnXInput();
-	void OnPipeInput();
 	void OnStdInInput();
 protected:
 #if defined(USE_SDL_MAINLOOP)

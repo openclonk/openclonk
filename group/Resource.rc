@@ -51,7 +51,7 @@ BEGIN
             VALUE "SpecialBuild", C4BUILDOPT "\0"
             VALUE "ProductVersion", C4VERSION "\0"
             VALUE "Comments", "\0"
-            VALUE "CompanyName", "RedWolf Design GmbH\0"
+            VALUE "CompanyName", C4COPYRIGHT_COMPANY "\0"
             VALUE "InternalName", "c4group\0"
             VALUE "LegalCopyright", "Copyright © 2003-2007 RedWolf Design GmbH\0"
             VALUE "LegalTrademarks", "\0"

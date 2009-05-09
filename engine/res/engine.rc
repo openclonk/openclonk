@@ -105,7 +105,7 @@ BEGIN
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", C4ENGINENAME "\0"
             VALUE "Comments", "\0"
-            VALUE "CompanyName", "RedWolf Design GmbH\0"
+            VALUE "CompanyName", C4COPYRIGHT_COMPANY "\0"
         END
     END
     BLOCK "VarFileInfo"

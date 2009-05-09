@@ -205,10 +205,6 @@ C4AppHandleResult CStdApp::HandleMessage(unsigned int iTimeout, bool fCheckTimer
 		return HR_Timeout;
 
 		default:
-		// flush pipe
-		if(FD_ISSET(Priv->Pipe[0], &rfds)) {
-			OnPipeInput();
-		}
 #ifdef USE_CONSOLE
 		// handle commands
 		if(FD_ISSET(0, &rfds))
@@ -221,12 +217,6 @@ C4AppHandleResult CStdApp::HandleMessage(unsigned int iTimeout, bool fCheckTimer
 #endif
 		return HR_Message;
 	}
-}
-
-bool CStdApp::SignalNetworkEvent() {
-	char c = 1;
-	write(Priv->Pipe[1], &c, 1);
-	return true;
 }
 
 bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor) {
@@ -304,14 +294,6 @@ bool CStdDDraw::SaveDefaultGammaRamp(CStdWindow * pWindow)
 	{
 	return true;
 	}
-
-void CStdApp::OnPipeInput()
-{
-	char c;
-	::read(Priv->Pipe[0], &c, 1);
-	// call network class to handle it
-	OnNetworkEvents();
-}
 
 void CStdApp::OnStdInInput()
 {

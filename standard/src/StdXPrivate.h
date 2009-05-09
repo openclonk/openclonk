@@ -84,12 +84,6 @@ public:
 class CStdAppPrivate {
 	public:
 #ifdef WITH_GLIB
-	GMainLoop* loop;
-
-	// IOChannels required to wake up the main loop
-	GIOChannel* pipe_channel;
-	GIOChannel* x_channel;
-	GIOChannel* stdin_channel;
 	CGLibProc GLibProc;
 #endif
 
@@ -129,8 +123,6 @@ class CStdAppPrivate {
 	CX11Proc X11Proc;
 #endif
 	int argc; char ** argv;
-	// Used to signal a network event
-	int Pipe[2];
 };
 
 #endif // INC_STD_X_PRIVATE_H

@@ -1087,8 +1087,7 @@ BOOL C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 
 			if((dwFlags & OFN_FILEMUSTEXIST) && !g_file_test(filename, G_FILE_TEST_IS_REGULAR))
 			{
-				sprintf(OSTR, "File \"%s\" does not exist", filename);
-				Message(OSTR, false);
+				Message(FormatString("File \"%s\" does not exist", filename).getData(), false);
 				error = true;
 			}
 
@@ -1207,9 +1206,6 @@ BOOL C4Console::FileQuit()
 	Close();
 	return TRUE;
 	}
-
-#define C4COPYRIGHT_YEAR	 "2008" // might make this dynamic some time...
-#define C4COPYRIGHT_COMPANY "RedWolf Design GmbH"
 
 void C4Console::HelpAbout()
 	{
@@ -1800,8 +1796,7 @@ void C4Console::OnPlrJoin(GtkWidget* item, gpointer data)
 
 void C4Console::OnPlrQuit(GtkWidget* item, gpointer data)
 {
-	sprintf(OSTR, "EliminatePlayer(%d)", GPOINTER_TO_INT(data));
-	Game.Control.Input.Add(CID_Script, new C4ControlScript(OSTR));
+	Game.Control.Input.Add(CID_Script, new C4ControlScript(FormatString("EliminatePlayer(%d)", GPOINTER_TO_INT(data)).getData()));
 }
 
 void C4Console::OnViewNew(GtkWidget* item, gpointer data)

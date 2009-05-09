@@ -186,10 +186,6 @@ C4AppHandleResult CStdApp::HandleMessage(unsigned int iTimeout, bool fCheckTimer
 		return HR_Timeout;
 
 		default:
-		// flush pipe
-		if(FD_ISSET(this->Pipe[0], &rfds)) {
-			OnPipeInput();
-		}
 		return HR_Message;
 	}
 }
@@ -280,19 +276,6 @@ bool CStdApp::ReadStdInCommand() {
 	} else if(isprint((unsigned char)c))
 		CmdBuf.AppendChar(c);
 	return true;
-}
-
-bool CStdApp::SignalNetworkEvent() {
-	char c = 1;
-	write(this->Pipe[1], &c, 1);
-	return true;
-}
-
-void CStdApp::OnPipeInput() {
-	char c;
-	::read(this->Pipe[0], &c, 1);
-	// call network class to handle it
-	OnNetworkEvents();
 }
 
 void CStdApp::MessageDialog(const char * message)

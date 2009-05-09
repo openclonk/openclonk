@@ -75,27 +75,6 @@ static CStdApp * readline_callback_use_this_app = 0;
 
 namespace
 {
-#ifdef WITH_GLIB
-	// Callbacks from Glib main loop
-	gboolean OnXInputStatic(GIOChannel* channel, GIOCondition condition, gpointer data)
-	{
-		static_cast<CStdApp*>(data)->OnXInput();
-		return TRUE;
-	}
-
-	gboolean OnPipeInputStatic(GIOChannel* channel, GIOCondition condition, gpointer data)
-	{
-		static_cast<CStdApp*>(data)->OnPipeInput();
-		return TRUE;
-	}
-
-	gboolean OnStdInInputStatic(GIOChannel* channel, GIOCondition condition, gpointer data)
-	{
-		static_cast<CStdApp*>(data)->OnStdInInput();
-		return TRUE;
-	}
-#endif
-
 	unsigned int KeyMaskFromKeyEvent(Display* dpy, XKeyEvent* xkey)
 	{
 		unsigned int mask = xkey->state;
@@ -159,14 +138,6 @@ bool CStdApp::Init(int argc, char * argv[]) {
 	s.append("\"");
 	szCmdLine = s.c_str();
 
-#ifdef WITH_GLIB
-	Priv->loop = g_main_loop_new(NULL, FALSE);
-
-	Priv->pipe_channel = NULL;
-	Priv->x_channel = NULL;
-	Priv->stdin_channel = NULL;
-#endif
-
 	if(!(dpy = XOpenDisplay (0))) {
 		Log("Error opening display.");
 		return false;
@@ -205,10 +176,6 @@ bool CStdApp::Init(int argc, char * argv[]) {
 		"_NET_WM_STATE_DEMANDS_ATTENTION" };
 	XInternAtoms(dpy, const_cast<char **>(PrefetchAtomnames), 8, true, PrefetchAtoms);
 
-#ifdef WITH_GLIB
-	Priv->x_channel = g_io_channel_unix_new(XConnectionNumber(dpy));
-	g_io_add_watch(Priv->x_channel, G_IO_IN, &OnXInputStatic, this);
-#endif
 #if USE_CONSOLE && HAVE_LIBREADLINE
 	rl_callback_handler_install (">", readline_callback);
 	readline_callback_use_this_app = this;
@@ -217,16 +184,6 @@ bool CStdApp::Init(int argc, char * argv[]) {
 	Priv->stdin_channel = g_io_channel_unix_new(STDIN_FILENO);
 	g_io_add_watch(Priv->stdin_channel, G_IO_IN, &OnStdInInputStatic, this);
 #endif
-#endif
-	// create pipe
-	if(pipe(Priv->Pipe) != 0) {
-		Log("Error creating Pipe");
-		return false;
-	}
-
-#ifdef WITH_GLIB
-	Priv->pipe_channel = g_io_channel_unix_new(Priv->Pipe[0]);
-	g_io_add_watch(Priv->pipe_channel, G_IO_IN, &OnPipeInputStatic, this);
 #endif
 
 	// Custom initialization
@@ -239,23 +196,10 @@ void CStdApp::Clear() {
 #if USE_CONSOLE && HAVE_LIBREADLINE
 	rl_callback_handler_remove();
 #endif
-	// close pipe
-	close(Priv->Pipe[0]);
-	close(Priv->Pipe[1]);
-#ifdef WITH_GLIB
-	g_main_loop_unref(Priv->loop);
-
-	if(Priv->pipe_channel) g_io_channel_unref(Priv->pipe_channel);
-	if(Priv->x_channel) g_io_channel_unref(Priv->x_channel);
-	if(Priv->stdin_channel) g_io_channel_unref(Priv->stdin_channel);
-#endif
 }
 
 void CStdApp::Quit() {
 	fQuitMsgReceived = true;
-#ifdef WITH_GLIB
-	//g_main_loop_quit(Priv->loop);
-#endif
 }
 
 bool CStdApp::FlushMessages() {
@@ -267,178 +211,12 @@ bool CStdApp::FlushMessages() {
 	return Priv->X11Proc.Execute(0);
 }
 
-/*
-void CStdApp::Execute () {
-	time_t seconds = LastExecute.tv_sec;
-	timeval tv;
-	gettimeofday(&tv, 0);
-	// Too slow?
-	if(DoNotDelay) {
-		DoNotDelay = false;
-		LastExecute = tv;
-	} else if (LastExecute.tv_sec < tv.tv_sec - 2) {
-		LastExecute = tv;
-	} else {
-		LastExecute.tv_usec += Delay;
-		if (LastExecute.tv_usec > 1000000) {
-			++LastExecute.tv_sec;
-			LastExecute.tv_usec -= 1000000;
-		}
-	}
-	// This will make the FPS look "prettier" in some situations
-	// But who cares...
-	if (seconds != LastExecute.tv_sec) {
-		pWindow->Sec1Timer();
-	}
-}
-void CStdApp::NextTick(bool fYield) {
-	DoNotDelay = true;
-}*/
-/*
-void CStdApp::Run() {
-	// Main message loop
-	while (true) if (HandleMessage(INFINITE, true) == HR_Failure) return;
-}
-void CStdApp::ResetTimer(unsigned int d) { Delay = 1000 * d; }
-*/
-
 #ifdef WITH_GLIB
 namespace {
 	// Just indicate that the timeout elapsed
 	gboolean HandleMessageTimeout(gpointer data) { *static_cast<bool*>(data) = true; return FALSE; }
 }
 #endif
-/*
-C4AppHandleResult CStdApp::HandleMessage(unsigned int iTimeout, bool fCheckTimer) {
-	// quit check for nested HandleMessage-calls
-	if (fQuitMsgReceived) return HR_Failure;
-	bool do_execute = fCheckTimer;
-	// Wait Delay microseconds.
-	timeval tv = { 0, 0 };
-	if (DoNotDelay) {
-		// nothing to do
-	} else if (fCheckTimer) {
-		gettimeofday(&tv, 0);
-		tv.tv_usec = LastExecute.tv_usec - tv.tv_usec + Delay
-			- 1000000 * (tv.tv_sec - LastExecute.tv_sec);
-		// Check if the given timeout comes first
-		// (don't call Execute then, because it assumes it has been called because of a timer event!)
-		if (iTimeout != INFINITE && iTimeout * 1000 < tv.tv_usec) {
-			tv.tv_usec = iTimeout * 1000;
-			do_execute = false;
-		}
-		if (tv.tv_usec < 0)
-			tv.tv_usec = 0;
-		tv.tv_sec = 0;
-	} else {
-		tv.tv_usec = iTimeout * 1000;
-	}
-
-	// Handle pending X messages
-	//while (XEventsQueued(dpy, QueuedAlready)) {
-	while (XPending(dpy)) {
-		HandleXMessage();
-	}
-
-#ifdef WITH_GLIB
-	// Timeout in milliseconds
-	unsigned int timeout = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	bool timeout_elapsed = false;
-	guint timeout_handle = 0;
-
-	// Guarantee that we do not block until something interesting occurs
-	// when using a timeout
-	if(fCheckTimer || iTimeout != INFINITE)
-	{
-		// The timeout handler sets timeout_elapsed to true when
-		// the timeout elpased, this is required for a correct return
-		// value.
-		timeout_handle = g_timeout_add_full(
-			G_PRIORITY_HIGH,
-			timeout,
-			&HandleMessageTimeout,
-			&timeout_elapsed,
-			NULL
-		);
-	}
-
-	g_main_context_iteration(g_main_loop_get_context(Priv->loop), TRUE);
-
-	if(timeout_handle && !timeout_elapsed)
-	{
-		// FIXME: do not add a new timeout instead of deleting the old one in the next call
-		g_source_remove(timeout_handle);
-	}
-
-	if(timeout_elapsed && do_execute)
-	{
-		Execute();
-	}
-	while(g_main_context_pending(g_main_loop_get_context(Priv->loop)))
-		g_main_context_iteration(g_main_loop_get_context(Priv->loop), FALSE);
-
-	return timeout_elapsed ? (do_execute ? HR_Timer : HR_Timeout) : HR_Message;
-#else // WITH_GLIB
-	// Watch dpy to see when it has input.
-	int max_fd = 0;
-	fd_set rfds;
-	FD_ZERO(&rfds);
-
-	// Stop waiting for the next frame when more events arrive
-	XFlush(dpy);
-	FD_SET(XConnectionNumber(dpy), &rfds);
-	max_fd = Max(XConnectionNumber(dpy), max_fd);
-#ifdef USE_CONSOLE
-	// Wait for commands from stdin
-	FD_SET(0, &rfds);
-#endif
-	// And for events from the network thread
-	FD_SET(Priv->Pipe[0], &rfds);
-	max_fd = Max(Priv->Pipe[0], max_fd);
-	switch (select(max_fd + 1, &rfds, NULL, NULL, (fCheckTimer || iTimeout != INFINITE) ? &tv : NULL)) {
-		// error
-		case -1:
-		if (errno == EINTR) return HR_Message;
-		Log(strerror(errno));
-		Log("select error.");
-		return HR_Failure;
-
-		// timeout
-		case 0:
-		if (do_execute) {
-			Execute();
-			return HR_Timer;
-		}
-		return HR_Timeout;
-
-		default:
-		// flush pipe
-		if(FD_ISSET(Priv->Pipe[0], &rfds)) {
-			OnPipeInput();
-		}
-		if(FD_ISSET(XConnectionNumber(dpy), &rfds)) {
-		  OnXInput();
-		}
-#ifdef USE_CONSOLE
-		// handle commands
-		if(FD_ISSET(0, &rfds))
-		{
-			// Do not call OnStdInInput to be able to return
-			// HR_Failure when ReadStdInCommand returns false
-			if(!ReadStdInCommand())
-				return HR_Failure;
-		}
-#endif
-		return HR_Message;
-	}
-#endif // !WITH_GLIB
-}
-*/
-bool CStdApp::SignalNetworkEvent() {
-	char c = 1;
-	write(Priv->Pipe[1], &c, 1);
-	return true;
-}
 
 void CStdApp::HandleXMessage() {
 	XEvent event;
@@ -837,14 +615,6 @@ void CStdApp::OnXInput()
 		Priv->tasked_out = true;
 		Priv->pending_desktop = false;
 	}
-}
-
-void CStdApp::OnPipeInput()
-{
-	char c;
-	::read(Priv->Pipe[0], &c, 1);
-	// call network class to handle it
-	/*OnNetworkEvents();*/
 }
 
 void CStdApp::OnStdInInput()
