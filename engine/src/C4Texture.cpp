@@ -283,18 +283,21 @@ int32_t C4TextureMap::LoadTextures(C4Group &hGroup, C4Group* OverloadFile)
 	size_t binlen;
 	// newgfx: load PNG-textures first
 	hGroup.ResetSearch();
-	while (hGroup.AccessNextEntry(C4CFN_PNGFiles,&binlen,texname))
+	while (hGroup.AccessNextEntry("*",&binlen,texname))
 		{
 		// check if it already exists in the map
-		SReplaceChar(texname,'.',0);
-		if (GetTexture(texname)) continue;
-		SAppend(".png", texname);
-		// load
-		if (ctex=GroupReadSurfacePNG(hGroup))
+		if (GetTexture(GetFilenameOnly(texname))) continue;
+		// create surface
+		ctex = new C4Surface();
+		if (ctex->Read(hGroup, GetExtension(texname)))
 			{
 			SReplaceChar(texname,'.',0);
 			if (AddTexture(texname,ctex)) texnum++;
 			else delete ctex;
+			}
+		else
+			{
+			delete ctex;
 			}
 		}
 #endif

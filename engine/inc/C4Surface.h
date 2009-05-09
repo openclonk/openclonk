@@ -44,6 +44,7 @@ class C4Surface: public CSurface
 		BOOL Save(C4Group &hGroup, const char *szFilename);
 		BOOL SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
 		BOOL Copy(C4Surface &fromSfc);
+		bool Read(CStdStream &hGroup, const char * extension, bool fOwnPal=false);
 		BOOL ReadPNG(CStdStream &hGroup);
 		bool ReadJPEG(CStdStream &hGroup);
 	};

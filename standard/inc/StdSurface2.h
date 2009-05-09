@@ -240,8 +240,7 @@ class CSurface
 		void Default();
 		void Clip(int iX, int iY, int iX2, int iY2);
 		void NoClip();
-		bool Read(class CStdStream &hGroup, bool fOwnPal=false);
-		BOOL Save(const char *szFilename);
+		bool ReadBMP(class CStdStream &hGroup, bool fOwnPal=false);
 		bool SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly);
 		BOOL AttachPalette();
 		BOOL Wipe(); // empty to transparent

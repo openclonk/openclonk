@@ -765,7 +765,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 		if (hGroup.AccessEntry(C4CFN_RankFaces))
 			{
 			pRankSymbols = new C4FacetSurface();
-			if (!pRankSymbols->GetFace().Read(hGroup)) { delete pRankSymbols; pRankSymbols=NULL; }
+			if (!pRankSymbols->GetFace().ReadBMP(hGroup)) { delete pRankSymbols; pRankSymbols=NULL; }
 			}
 		// set size
 		if (pRankSymbols)

@@ -493,7 +493,7 @@ IDirect3DSurface9 *CSurface::GetSurface()
 	}
 #endif //USE_DIRECTX
 
-bool CSurface::Read(CStdStream &hGroup, bool fOwnPal)
+bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 	{
 	int lcnt,iLineRest;
 	CBitmap256Info BitmapInfo;
