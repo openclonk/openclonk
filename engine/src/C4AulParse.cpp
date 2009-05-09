@@ -941,13 +941,26 @@ void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 		}
 	// store chunk
 	CPos->bccType = eType;
-	CPos->bccX = X;
+	CPos->Par.X = X;
 	CPos->SPos = SPos;
+	switch (eType)
+		{
+		case AB_STRING: case AB_CALL: case AB_CALLFS:
+			CPos->Par.s->IncRef();
+		}
 	CPos++; CodeSize++;
 	}
 
 void C4AulScript::ClearCode()
 	{
+	for (int i = 0; i < CodeSize; ++i)
+		{
+		switch (Code[i].bccType)
+			{
+			case AB_STRING: case AB_CALL: case AB_CALLFS:
+				Code[i].Par.s->DecRef();
+			}
+		}
 	delete[] Code;
 	Code = 0;
 	CodeSize = CodeBufSize = 0;
@@ -1117,11 +1130,11 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		if(eType == AB_STACK &&
 				a->CPos > a->Code &&
 				(a->CPos-1)->bccType == AB_STACK
-				&& (X <= 0 || (a->CPos-1)->bccX >= 0))
+				&& (X <= 0 || (a->CPos-1)->Par.i >= 0))
 			{
-			(a->CPos-1)->bccX += X;
+			(a->CPos-1)->Par.i += X;
 			// Empty? Remove it.
-			if(!(a->CPos-1)->bccX)
+			if(!(a->CPos-1)->Par.i)
 				{
 				a->CPos--;
 				a->CodeSize--;
@@ -1166,7 +1179,7 @@ void C4AulParseState::SetJumpHere(int iJumpOp)
 	// Set target
 	C4AulBCC *pBCC = a->GetCodeByPos(iJumpOp);
 	assert(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN);
-	pBCC->bccX = a->GetCodePos() - iJumpOp;
+	pBCC->Par.i = a->GetCodePos() - iJumpOp;
 	// Set flag so the next generated code chunk won't get joined
 	fJump = true;
 	}
@@ -1177,7 +1190,7 @@ void C4AulParseState::SetJump(int iJumpOp, int iWhere)
 	// Set target
 	C4AulBCC *pBCC = a->GetCodeByPos(iJumpOp);
 	assert(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN);
-	pBCC->bccX = iWhere - iJumpOp;
+	pBCC->Par.i = iWhere - iJumpOp;
 	}
 
 void C4AulParseState::AddJump(C4AulBCCType eType, int iWhere)
@@ -2197,9 +2210,9 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 					case AB_STRING: from = C4V_String; break;
 					case AB_ARRAY: from = C4V_Array; break;
 					case AB_BOOL: from = C4V_Bool; break;
-					case AB_UNOP: case AB_BINOP: from = C4ScriptOpMap[(a->CPos-1)->bccX].RetType; break;
+					case AB_UNOP: case AB_BINOP: from = C4ScriptOpMap[(a->CPos-1)->Par.i].RetType; break;
 					case AB_FUNC: case AB_CALL: case AB_CALLFS:
-						if((a->CPos-1)->bccX) from = reinterpret_cast<C4AulFunc *>((a->CPos-1)->bccX)->GetRetType(); break;
+						if((a->CPos-1)->Par.i) from = reinterpret_cast<C4AulFunc *>((a->CPos-1)->Par.i)->GetRetType(); break;
 					case AB_ARRAYA_R: case AB_PAR_R: case AB_VAR_R: case AB_PARN_R: case AB_VARN_R: case AB_LOCALN_R: case AB_GLOBALN_R:
 						from = C4V_pC4Value; break;
 					}
@@ -2624,7 +2637,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 							{
 							case C4V_Int:    AddBCC(AB_INT,    val.GetData().Int); break;
 							case C4V_Bool:   AddBCC(AB_BOOL,   val.GetData().Int); break;
-							case C4V_String: AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val.GetData().Str)); break;
+							case C4V_String:
+								AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
+								break;
 							case C4V_C4ID:   AddBCC(AB_C4ID,   val.GetData().Int); break;
 							case C4V_Any:
 								// any: allow zero; add it as int
@@ -2701,7 +2716,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			if(Type == PARSER && SEqual(C4ScriptOpMap[OpID].Identifier, "-"))
 				if((a->CPos - 1)->bccType == AB_INT)
 					{
-					(a->CPos - 1)->bccX = -(a->CPos - 1)->bccX;
+					(a->CPos - 1)->Par.i = -(a->CPos - 1)->Par.i;
 					break;
 					}
 			// write byte code
@@ -2830,6 +2845,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			Shift(Discard, false);
 			// C4ID -> namespace given
 			C4AulFunc *pFunc = NULL;
+			C4String *pName = NULL;
 			C4AulBCCType eCallType = AB_CALL;
 			C4ID idNS = 0;
 			if(TokenType == ATT_C4ID)
@@ -2854,8 +2870,6 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 						{
 						throw new C4AulParseError(this, FormatString("direct object call: function %s::%s not found", C4IdText(idNS), Idtf).getData());
 						}
-					// write namespace chunk to byte code
-					AddBCC(AB_CALLNS, idNS);
 					}
 				}
 			else
@@ -2886,12 +2900,16 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 					break;
 					}
 				}
+			if (Type == PARSER)
+				{
+				pName = Game.ScriptEngine.Strings.RegString(Idtf);
+				}
 			// add call chunk
 			Shift();
-			Parse_Params(C4AUL_MAX_Par, pFunc ? pFunc->Name : 0, pFunc);
+			Parse_Params(C4AUL_MAX_Par, pName ? pName->GetCStr() : Idtf, pFunc);
 			if(idNS != 0)
-				AddBCC(AB_CALLNS, (long) idNS);
-			AddBCC(eCallType, (long) pFunc);
+				AddBCC(AB_CALLNS, idNS);
+			AddBCC(eCallType, (intptr_t) pName);
 			break;
 			}
 		default:
@@ -3148,8 +3166,8 @@ BOOL C4AulScript::Parse()
 					{
 					C4AulBCC *pBCC = Code + i;
 					if(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN)
-						if(!pBCC->bccX)
-							pBCC->bccX = CPos - Code - i;
+						if(!pBCC->Par.i)
+							pBCC->Par.i = CPos - Code - i;
 					}
 				// add an error chunk
 				AddBCC(AB_ERR);
@@ -3195,15 +3213,15 @@ BOOL C4AulScript::Parse()
 				LogSilentF("%s:", Fn->Name);
 				for(C4AulBCC *pBCC = Fn->Code;; pBCC++)
 					{
-					C4AulBCCType eType = pBCC->bccType; long X = pBCC->bccX;
+					C4AulBCCType eType = pBCC->bccType;
 					switch (eType)
 						{
-						case AB_FUNC: case AB_CALL: case AB_CALLFS:
-							LogSilentF("%s\t'%s'\n", GetTTName(eType), X ? ((C4AulFunc *)X)->Name : ""); break;
-						case AB_STRING:
-							LogSilentF("%s\t'%s'\n", GetTTName(eType), X ? ((C4String *)X)->GetCStr() : ""); break;
+						case AB_FUNC:
+							LogSilentF("%s\t'%s'\n", GetTTName(eType), pBCC->Par.f->Name); break;
+						case AB_STRING: case AB_CALL: case AB_CALLFS:
+							LogSilentF("%s\t'%s'\n", GetTTName(eType), pBCC->Par.s->GetCStr()); break;
 						default:
-							LogSilentF("%s\t%ld\n", GetTTName(eType), X); break;
+							LogSilentF("%s\t%ld\n", GetTTName(eType), pBCC->Par.X); break;
 						}
 					if(eType == AB_EOFN) break;
 					}

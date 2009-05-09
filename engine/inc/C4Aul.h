@@ -224,7 +224,13 @@ extern C4ScriptOpDef C4ScriptOpMap[];
 struct C4AulBCC
 	{
 	C4AulBCCType bccType;	// chunk type
-	intptr_t bccX;		// extra info (long for use with amd64)
+	union
+		{
+		int32_t i;
+		C4String * s;
+		C4AulFunc * f;
+		intptr_t X;
+		} Par;		// extra info (long for use with amd64)
 	const char *SPos;
 	};
 
