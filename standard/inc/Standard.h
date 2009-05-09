@@ -101,9 +101,13 @@ typedef __int32 intptr_t;
 
 #if defined(__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
 // Another temporary-to-reference-fix: this time using C++0x's rvalue references
-#define RREF &&
+#define HAVE_RVALUE_REF
+#endif
+
+#ifdef HAVE_RVALUE_REF
+#	define RREF &&
 #else
-#define RREF &
+#	define RREF &
 #endif
 
 #if defined(_DEBUG) && defined(_MSC_VER)

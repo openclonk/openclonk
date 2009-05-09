@@ -43,7 +43,7 @@ public:
   // Constructor from other buffer (copy construction):
   // Will take over buffer ownership. Copies data if specified.
   // Note: Construct with Buf2.getRef() to construct a reference (This will work for a constant Buf2, too)
-  StdBuf(StdBuf RREF Buf2, bool fCopy = false)
+	StdBuf(StdBuf RREF Buf2, bool fCopy = false)
     : fRef(true), pData(NULL), iSize(0)
   {
     if(fCopy)
@@ -53,6 +53,7 @@ public:
     else
       Ref(Buf2);
   }
+#ifdef HAVE_RVALUE_REF
   StdBuf(const StdBuf & Buf2, bool fCopy = true)
     : fRef(true), pData(NULL), iSize(0)
   {
@@ -61,6 +62,7 @@ public:
     else
       Ref(Buf2);
   }
+#endif
 
   // Set by constant data. Copies data if desired.
   StdBuf(const void *pData, size_t iSize, bool fCopy = false)
@@ -274,7 +276,7 @@ public:
 	}
   // take over another buffer's contents
   void Take(StdBuf RREF Buf2)
-  {
+	{
     Take(Buf2.GrabPointer(), Buf2.getSize());
   }
 
@@ -308,7 +310,7 @@ public:
 
   // Set (as constructor: take if possible)
   StdBuf &operator = (StdBuf RREF Buf2)
-  {
+	{
     if(Buf2.isRef()) Ref(Buf2); else Take(Buf2);
     return *this;
   }
@@ -382,12 +384,15 @@ public:
 	{ }
 
 	// See StdBuf::StdBuf. Will take data if possible.
-  StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
+	StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
     : StdBuf(Buf2, fCopy)
   { }
-  StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
+
+#ifdef HAVE_RVALUE_REF
+	StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
     : StdBuf(Buf2, fCopy)
   { }
+#endif
 
   // Set by constant data. References data by default, copies if specified.
   explicit StdStrBuf(const char *pData, bool fCopy = false)
