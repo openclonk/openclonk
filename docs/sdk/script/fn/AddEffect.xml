@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AddEffect</title>
+    <category>Effekte</category>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>szEffectName</name>
+          <desc>Name des Effektes ohne vorangestelltes Fx.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>pTarget</name>
+          <desc>Zielobjekt für den Effekt. Bei 0 wird der Effekt global erzeugt.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>iPrio</name>
+          <desc>Priorität für den Effekt. Achtung: Die Priorität darf nicht 0 sein; ansonsten wird der Effekt nicht erzeugt!</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iTimerIntervall</name>
+          <optional />
+          <desc>Intervall, in dem Timer-Aufrufe getätigt werden. Bei 0 werden keine Timer-Aufrufe durchgeführt, und der Effekt bleibt permanent bis er durch anderwertige Aufrufe entfernt wird.</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>pCmdTarget</name>
+          <optional />
+          <desc>Befehlsziel. Wenn angegeben, werden alle Callbacks in diesem Objekt ausgeführt. Ansonsten finden diese Callbacks grundsätzlich ohne Objektkontext statt. Wenn das Befehlszielobjekt gelöscht wird, werden alle verbundenen Effekte ohne weitere Callbacks ebenfalls gelöscht. Falls das Befehlsziel seine Definition ändert, sollten verbundene Effekte mit <funclink>ChangeEffect</funclink> ihre Funktionen neu zuweisen lassen.</desc>
+        </param>
+        <param>
+          <type>id </type>
+          <name>idCmdTarget</name>
+          <optional />
+          <desc>Definition, in der bei nicht angegebenem Befehlsziel-Objekt Callbacks ausgeführt werden. Sind sowohl pCmdTarget als auch idCmdTarget 0, werden die Aufrufe global durchgeführt. Das heißt, die Fx*-Funktionen müssen als global deklariert sein, oder Enginefunktionen sein.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var1</name>
+          <optional />
+          <desc>Erster Zusatzparameter, der an Fx*Start- und Fx*Effect-Callbacks übergeben wird</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var2</name>
+          <optional />
+          <desc>Zweiter Zusatzparameter, der an Fx*Start- und Fx*Effect-Callbacks übergeben wird</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var3</name>
+          <optional />
+          <desc>Dritter Zusatzparameter, der an Fx*Start- und Fx*Effect-Callbacks übergeben wird</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>var4</name>
+          <optional />
+          <desc>Vierter Zusatzparameter, der an Fx*Start- und Fx*Effect-Callbacks übergeben wird</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Erzeugt einen Effekt. Rückgabewert ist der Effektindex bei Erfolg, oder 0 bei Fehlschlag (weil der Effekt beispielsweise abgelehnt wurde). Wenn der Effekt von einem anderen Effekt aufgenommen wurde, der sich in demselben Aufruf entfernt, wird -2 zurückgegeben.</desc>
+
+    <remark>Für Beispiele und weitere Hinweise siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>.</remark>
+
+    <related>
+      <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>
+      <funclink>ChangeEffect</funclink>
+      <funclink>CheckEffect</funclink>
+      <funclink>GetEffectCount</funclink>
+      <funclink>EffectCall</funclink>
+      <funclink>EffectVar</funclink>
+      <funclink>GetEffect</funclink>
+      <funclink>RemoveEffect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>März 2004</date>
+</funcs>

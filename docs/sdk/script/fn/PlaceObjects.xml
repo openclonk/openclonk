@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>PlaceObjects</title>
+		<category>Objekte</category><subcat>Erzeugung</subcat>
+		<version>4.9.5.0 CE</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>C4ID</type><name>id</name><desc>ID des zu platzierenden Objekts</desc></param>
+				<param><type>int</type><name>iAmount</name><desc>Menge der zu erzeugenden Objekte</desc></param>
+				<param><type>string</type><name>Mat</name><desc>Material in die Objekte erzeugt werden soll. Hier kann entweder der Materialname angegeben werden oder folgende Zeichenketten:
+<table><rowh><col>iMat</col><col>Erzeugung in</col></rowh>
+<row><col>"GBackSolid"</col><col>Objekte werden in festem Material erzeugt. Siehe auch <funclink>GBackSolid</funclink>()</col></row>
+<row><col>"GBackSemiSolid"</col><col>Objekte werden in festem oder flüssigem Material erzeugt. Siehe auch <funclink>GBackSemiSolid</funclink>()</col></row>
+<row><col>"GBackLiquid"</col><col>Objekte werden in flüssigem Material erzeugt. Siehe auch <funclink>GBackLiquid</funclink>()</col></row>
+<row><col>"GBackSky"</col><col>Objekte werden im freien Himmel erzeugt. Siehe auch <funclink>GBackSky</funclink>()</col></row>
+</table>
+</desc></param>
+				<param><type>int</type><name>iX</name><desc>Linke Kante der Position. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+				<param><type>int</type><name>iY</name><desc>Obere Kante der Position. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+				<param><type>int</type><name>iWdt</name><desc>Platzierrechteck Breite. Wenn nicht angegeben wird das Ende der Landschaft angenommen</desc><optional /></param>
+				<param><type>int</type><name>iHgt</name><desc>Platzierrechteck Höhe. Wenn nicht angegeben wird das Ende der Landschaft angenommen</desc><optional /></param>
+				<param><type>bool</type><name>fOnSurface</name><desc>Wenn true, werden alle Objekte oberhalb des angegeben Materials erzeugt. (Ohne Berücksichtigung des Zielrechtecks)</desc><optional /></param>
+				<param><type>bool</type><name>fNoStuck</name><desc>Wenn true, wird nicht sichergestellt dass des Objekt fest in der Erde ist. Dies ist z.B.: nötig wenn man Objekte im Flüssigkeiten erstellen will.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>
+Erzeugt iAmount viele Objekte im angegebenen Zielrechteck (optional) im angegebenen Material.
+Gibt die Anzahl der Iterationen zurück, oder -1 wenn die Erzeugung fehlschlägt.
+		</desc>
+		<remark>
+Je weniger vom angegeben Material vorhanden ist, desto Rechenintensiver ist die Platzierung.<br/>
+Es wird sichergestellt, dass keine Endlosschleife entsteht.	
+		</remark>
+		<examples>
+			<example>
+				<code>PlaceObjects(LOAM,20,<funclink>Material</funclink>("Earth"),100,0,200)</code>
+				<text>Erzeugt 20 Lehmklumpen in Erde innherhalb der Koordinaten 100,0 und 200,LandscapeHeight()</text>
+			</example>
+			<example>
+				<code>PlaceObjects(FISH,10,"GBackLiquid",0,0,0,<funclink>LandscapeHeight</funclink>()/2,0,1);</code>
+				<text>Erzeugt insgesamt 10 Fische in allen Flüssigkeiten die sich in der oberen Landschaftshälfte befinden</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>CreateObject</funclink>
+			<funclink>PlaceInMaterial</funclink>
+		</related>
+	</func>
+	<author>Tyron</author><date>August 2004</date>
+</funcs>

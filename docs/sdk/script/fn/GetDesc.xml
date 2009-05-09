@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetDesc</title>
+		<category>Objekte</category>
+		<subcat>Status</subcat>
+		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+		<syntax>
+			<rtype>string</rtype>
+			<params>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Beschreibung gesucht wird. 0 bei lokalem Aufruf.</desc><optional/></param>
+				<param><type>id</type><name>idDef</name><desc>Falls angegeben, wird stattdessen die Beschreibung dieser Definition zurückgegeben.</desc><optional/></param>
+			</params>
+		</syntax>
+		<desc>Gibt die Beschreibung eines Objekts oder einer Objektdefinition zurück. Die Beschreibung wird in Objektdefinitionen in der Desc**.txt angegeben.</desc>
+		<examples>
+			<example>
+				<code><funclink>Message</funclink>("%s|&lt;c ff0000&gt;%s&lt;/c&gt;", 0, <funclink>GetName</funclink>(<funclink>GetCursor</funclink>()), GetDesc(<funclink>GetCursor</funclink>()));</code>
+				<text>Gibt eine Meldung auf dem Bildschirm aus, die den Namen des gerade ausgewählten Clonks des ersten Spielers, sowie den Beschreibungstext seines Clonktyps enthält.</text>
+			</example>
+		</examples>
+	</func>
+	<author>Sven2</author><date>Juni 2003</date>
+</funcs>

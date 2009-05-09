@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>Hostile</title>
+		<category>Spieler</category>
+		<version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iPlr1</name><desc>Erster Spieler</desc></param>
+				<param><type>int</type><name>iPlr2</name><desc>Zweiter Spieler</desc></param>
+				<param><type>bool</type><name>fCheckOneWayOnly</name><desc>Wenn WAHR, wird nur geprüft, ob iPlr1 mit iPlr2 verfeindet ist und nicht umgekehrt.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Prüft, ob zwei Spieler verfeindet sind. Dazu reicht es, wenn nur einer von beiden mit dem anderen Spieler verfeindet ist.</desc>
+		<examples>
+			<example>
+				<code>protected RejectEntrance: <funclink>return</funclink>(!<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(), <funclink>GetOwner</funclink>(<funclink>Par</funclink>())));</code>
+				<text>Das Objekt lässt sich nur vom Besitzer oder verbündeten Spielern einsammeln.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>SetHostility</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>November 2001</date>
+	<author>Clonkonaut</author><date>April 2008</date>
+</funcs>

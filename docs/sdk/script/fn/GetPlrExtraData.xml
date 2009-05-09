@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+ <func>
+  <title>GetPlrExtraData</title>
+  <category>Spieler</category>
+  <version>4.9.1.0 GWE</version>
+  <syntax>
+   <rtype>any</rtype>
+   <params>
+    <param>
+     <type>int</type>
+     <name>iPlr</name>
+     <desc>Nummer des Spielers, für den zusätzliche Daten gespeichert werden sollen</desc>
+    </param>
+    <param>
+     <type>string</type>
+     <name>strDataName</name>
+     <desc>Name, der den Daten zugeordnet werden soll</desc>
+    </param>
+   </params>
+  </syntax>
+
+  <desc>Dieser Befehl fragt im Spieler gespeicherten Extra-Daten ab, die per <funclink>SetPlrExtraData</funclink> gesetzt wurden.</desc>
+
+  <remark>Für Details siehe <funclink>SetPlrExtraData</funclink></remark>
+
+  <related>
+   <funclink>SetPlrExtraData</funclink>
+   <funclink>GetCrewExtraData</funclink>
+  </related>
+ </func>
+ <author>PeterW</author><date>Januar 2002</date>
+</funcs>

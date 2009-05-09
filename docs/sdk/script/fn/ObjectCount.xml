@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>ObjectCount</title>
+		<category>Objekte</category><subcat>Suche</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>id</type><name>idDef</name><desc>Objekttyp</desc><optional /></param>
+				<param><type>int</type><name>iX</name><desc>Linke Kante der Position. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+				<param><type>int</type><name>iY</name><desc>Obere Kante der Position. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+				<param><type>int</type><name>iWdt</name><desc>Suchrechteck Breite</desc><optional /></param>
+				<param><type>int</type><name>iHgt</name><desc>Suchrechteck Höhe</desc><optional /></param>
+				<param><type>int</type><name>dwOCF</name><desc>Objektattribute. Es werden nur Objekte gefunden, die alle angegebenen Objektattribute besitzen. 0 findet alle Objekte.</desc><optional /></param>
+				<param><type>string</type><name>szAction</name><desc>Aktivität des zu findenden Objekts</desc><optional /></param>
+				<param><type>object</type><name>pActionTarget</name><desc>Aktivitätsziel, das das Objekt besitzen muss. Siehe dazu auch <funclink>SetAction</funclink>, <funclink>GetActionTarget</funclink></desc><optional /></param>
+				<param><type>any</type><name>pContainer</name><desc>Containerobjekt. Wenn angegeben, wird nur dieser Behälter durchsucht. Möglich sind auch <funclink>NoContainer</funclink> (Objekt befindet sich im Freien), und <funclink>AnyContainer</funclink> (Objekt ist in einem beliebigen Behälter enthalten).</desc><optional /></param>
+				<param><type>int</type><name>iOwner</name><desc>Besitzer, den die gefundenen Objekte haben sollen.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Sucht Objekte, und gibt deren Anzahl zurück. Sind iWdt und iHgt beide -1, so wird das nächstliegende Objekt gefunden. Sind sie beide 0, wird nur am Punkt iX/iY gesucht. Sind iX, iY, iWdt und iHgt alle 0, gilt als Suchrechteck die gesamte Karte (auch bei lokalen Aufrufen). Es müssen stets die Bedingungen aller Parameter erfüllt sein, die angegeben und nicht 0 sind.</desc>
+		<related>
+			<funclink>FindObject</funclink>
+			<funclink>NoContainer</funclink>
+			<funclink>AnyContainer</funclink>
+			<funclink>FindObjectOwner</funclink>
+			<funclink>ObjectCount2</funclink>
+		</related>
+	</func>
+	<author>jwk</author><date>August 2002</date>
+</funcs>

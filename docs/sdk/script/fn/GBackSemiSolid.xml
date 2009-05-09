@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GBackSemiSolid</title>
+		<category>Landschaft</category>
+		<subcat>Material</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iX</name><desc>X-Koordinate, Offset bei lokalem Aufruf</desc></param>
+				<param><type>int</type><name>iY</name><desc>Y-Koordinate, Offset bei lokalem Aufruf</desc></param>
+			</params>
+		</syntax>
+		<desc>Überprüft ob sich an angegebener Position in der Landschaft feste Materie oder Flüssigkeit befindet. Also alles außer Himmel und Tunnel.</desc>
+		<examples>
+			<example>
+				<code>var obj=<funclink>FindObject</funclink>(ROCK);
+while(GBackSemiSolid(<funclink>GetX</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>())) <funclink>SetPosition</funclink>(<funclink>GetX</funclink>(obj),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink>1,obj);</code>
+				<text>Dieses kleine Stückchen Script versetzt einen Stein an die Oberfläche.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>GBackLiquid</funclink>
+			<funclink>GBackSolid</funclink>
+			<funclink>GBackSky</funclink>
+			<funclink>InLiquid</funclink>
+			<funclink>GetMaterial</funclink>
+		</related>
+	</func>
+	<author>Günther</author><date>April 2002</date>
+</funcs>

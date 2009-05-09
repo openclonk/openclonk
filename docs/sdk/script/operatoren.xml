@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>Operatoren</title>
+
+<h>Operatoren</h>
+<part>
+	<text>Mittlerweile sind Operatoren in C4Script auf die gleiche Weise benutzbar wie aus diversen Programmiersprachen bzw. der Mathematik bekannt.</text>
+	<text>Es gelten also insbesondere die üblichen Prioritätsregeln (Punkt-Vor-Strich und Verwandte). Genaueres kann der unten aufgeführten Operatorenliste entnommen werden.</text>
+	<text>Um die aufeinanderfolgende Berechnung bestimmter Ausdrücke zu erzwingen, können auch Klammern gesetzt werden.</text>
+	<text>Folgende Operatoren werden unterstützt:</text>
+	
+	<text><table>
+		<rowh>
+		 <col>Priorität</col>
+		 <col>Operator</col>
+		 <col>Beschreibung</col>
+		 <col>Standort</col>
+		 <col>Typen (Rückgabe, erwartet)</col>
+		</rowh>
+		<row>
+		 <col>15</col>
+		 <col>++</col>
+		 <col>Erhöht den Wert der <strong>nachgestellten</strong> Variable um 1.</col>
+		 <col>prefix</col>
+		 <col>Referenz, Referenz</col>
+		</row>
+		<row>
+		 <col>15</col>
+		 <col>--</col>
+		 <col>Vermindert den Wert der <strong>nachgestellten</strong> Variable um 1</col>
+		 <col>prefix</col>
+		 <col>Referenz, Referenz</col>
+		</row>
+		<row>
+		 <col>15</col>
+		 <col>~</col>
+		 <col>Negiert den nachgestellten Wert bitweise</col>
+		 <col>prefix</col>
+		 <col>int, int</col>
+		</row>
+		<row>
+		 <col>15</col>
+		 <col>!</col>
+		 <col>Negiert den nachgestelllten Wert logisch</col>
+		 <col>prefix</col>
+		 <col>bool, bool</col>
+		</row>
+		<row>
+		 <col>15</col>
+		 <col>+</col>
+		 <col>macht nichts (für Abwärtskompatibilität zu Schreibweisen wie "+5")</col>
+		 <col>prefix</col>
+		 <col>int, int</col>
+		</row>
+		<row>
+		 <col>15</col>
+		 <col>-</col>
+		 <col>bildet die Gegenzahl zum nachgestellten Wert</col>
+		 <col>prefix</col>
+		 <col>int, int</col>
+		</row>
+		<row>
+		 <col>15</col>
+		 <col>++</col>
+		 <col>Erhöht den Wert der <strong>vorangestellten</strong> Variable um 1.</col>
+		 <col>postfix (nur 1 Parameter)</col>
+		 <col>int, Referenz</col>
+		</row>
+		<row>
+		 <col>15</col>
+		 <col>--</col>
+		 <col>Vermindert den Wert der <strong>vorangestellten</strong> Variable um 1.</col>
+		 <col>postfix (nur 1 Parameter)</col>
+		 <col>int, Referenz</col>
+		</row>
+		<row>
+		 <col>14l</col>
+		 <col>**</col>
+		 <col>Potenziert zwei Werte</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>13l</col>
+		 <col>/</col>
+		 <col>Dividiert zwei Werte durcheinander</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>13l</col>
+		 <col>*</col>
+		 <col>Multipliziert zwei Werte miteinander</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>13l</col>
+		 <col>%</col>
+		 <col>gibt den Divisionrest der Division zweier Werte zurück</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>12l</col>
+		 <col>-</col>
+		 <col>subtrahiert zwei Werte</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>12l</col>
+		 <col>+</col>
+		 <col>addiert zwei Werte</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>11l</col>
+		 <col>&lt;&lt;</col>
+		 <col>führt eine Links-Bitschieben-Operation aus</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>11l</col>
+		 <col>>></col>
+		 <col>führt eine Rechts-Bitschieben-Operation aus</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>10l</col>
+		 <col>&lt;</col>
+		 <col>gibt zurück, ob der erste Wert kleiner ist als der zweite</col>
+		 <col>postfix</col>
+		 <col>bool, int/int</col>
+		</row>
+		<row>
+		 <col>10l</col>
+		 <col>&lt;= </col>
+		 <col>gibt zurück, ob der erste Wert kleiner oder gleich dem zweiten ist</col>
+		 <col>postfix</col>
+		 <col>bool, int/int</col>
+		</row>
+		<row>
+		 <col>10l</col>
+		 <col>&gt;</col>
+		 <col>gibt zurück, ob der erste Wert größer als der zweite ist.</col>
+		 <col>postfix</col>
+		 <col>bool, int/int</col>
+		</row>
+		<row>
+		 <col>10l</col>
+		 <col>&gt;=</col>
+		 <col>gibt zurück, ob der erste Wert größer oder gleich dem zweiten ist.</col>
+		 <col>postfix</col>
+		 <col>bool, int/int</col>
+		</row>
+		<row>
+		 <col>9l</col>
+		 <col>==</col>
+		 <col>gibt zurück, ob zwei Werte gleich sind</col>
+		 <col>postfix</col>
+		 <col>bool, any/any</col>
+		</row>
+		<row>
+		 <col>9l</col>
+		 <col>!=</col>
+		 <col>gibt zurück, ob zwei Werte nicht gleich sind.</col>
+		 <col>postfix</col>
+		 <col>bool, any/any</col>
+		</row>
+		<row>
+		 <col>9l</col>
+		 <col>S=</col>
+		 <col>gibt zurück, ob zwei Strings gleich sind</col>
+		 <col>postfix</col>
+		 <col>bool, String/String</col>
+		</row>
+		<row>
+		 <col>9l</col>
+		 <col>eq</col>
+		 <col>gibt ebenfalls zurück, ob zwei Strings gleich sind</col>
+		 <col>postfix</col>
+		 <col>bool, String/String</col>
+		</row>
+		<row>
+		 <col>9l</col>
+		 <col>ne</col>
+		 <col>gibt ebenfalls zurück, ob zwei Strings nicht gleich sind</col>
+		 <col>postfix</col>
+		 <col>bool, String/String</col>
+		</row>
+		<row>
+		 <col>8l</col>
+		 <col>&amp;</col>
+		 <col>führt ein bitweises And aus</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>6l</col>
+		 <col>^</col>
+		 <col>führt ein bitweises XOr aus</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>6l</col>
+		 <col>|</col>
+		 <col>führt ein bitweises Or aus</col>
+		 <col>postfix</col>
+		 <col>int, int/int</col>
+		</row>
+		<row>
+		 <col>5l</col>
+		 <col>&amp;&amp;</col>
+		 <col>führt ein logisches And aus</col>
+		 <col>postfix</col>
+		 <col>any, any/any</col>
+		</row>
+		<row>
+		 <col>4l</col>
+		 <col>||</col>
+		 <col>führt ein logisches Or aus</col>
+		 <col>postfix</col>
+		 <col>any, any/any</col>
+		</row>
+		<row>
+		 <col>2r</col>
+		 <col>*=</col>
+		 <col>vervielfacht die vorangestellte Variable mit dem nachgestellten Wert</col>
+		 <col>postfix</col>
+		 <col>Referenz, Referenz/int</col>
+		</row>
+		<row>
+		 <col>2r</col>
+		 <col>/=</col>
+		 <col>teilt den Wert der vorangestellten Variable durch den nachgestellten Wert</col>
+		 <col>postfix</col>
+		 <col>Referenz, Referenz/int</col>
+		</row>
+		<row>
+		 <col>2r</col>
+		 <col>%=</col>
+		 <col>Schreibt den Divisionrest der Division des Wertes vorangestellten Variable mit dem nachgestellten Wert in die Variable</col>
+		 <col>postfix</col>
+		 <col>Referenz, Referenz/int</col>
+		</row>
+		<row>
+		 <col>2r</col>
+		 <col>+=</col>
+		 <col>erhöht die vorangestellte Variable um den nachgestellten Wert</col>
+		 <col>postfix</col>
+		 <col>Referenz, Referenz/int</col>
+		</row>
+		<row>
+		 <col>2r</col>
+		 <col>-=</col>
+		 <col>vermindert den Wert der vorangestellten Variable um den nachgestellten Wert</col>
+		 <col>postfix</col>
+		 <col>Referenz, Referenz/int</col>
+		</row>
+		<row>
+		 <col>2r</col>
+		 <col>=</col>
+		 <col>weist der vorangestellten Variable den nachgestellten Wert zu</col>
+		 <col>postfix</col>
+		 <col>Referenz, Referenz/any</col>
+		</row>
+	</table></text>
+
+	<h id="operk">Erklärungen und Beispiele:</h>
+	<part>
+		<h>Postfix oder prefix?</h>
+		<part>
+			<text>Diese Eigenschaft eines Operators gibt an, ob er <em>vor</em>(pre) oder <em>nach</em>(post) seinem ersten Parameter steht.</text>
+			<text>Prefix - Operatoren haben immer nur einen Parameter (nach dem Operator), während Postfix - Operatoren in der Regel 2 Parameter haben, einen vor und einen danach. (siehe auch <a href= "#opppmm">Operatoren ++/--</a>)</text>
+			
+			<h>Beispiel 1:</h>
+		
+<code>Log(" Ergebnis: %d", 5 + 5);
+Log(" Ergebnis: %d", 12 - 5);
+Log(" Ergebnis: %d", 5 * 5);</code>
+	
+			<h>Ausgabe:</h>
+	
+			<code> Ergebnis: 10
+ Ergebnis: 7
+ Ergebnis: 25</code>
+	
+			<text>Plus, Minus, Multiplikation u.ä. Operatoren bilden die Klasse der Postfix - Operatoren. Es werden jeweils zwei Werte (die vor bzw. nach dem Operator stehen) verrechnet.</text>
+			
+			<h>Beispiel 2:</h>
+	
+<code>Log(" Ergebnis: %d", -(5 + 5));
+Log(" Ergebnis: %d", ~7);
+Log(" Ergebnis: %d", !0);</code>
+	
+			<h>Ausgabe:</h>
+	
+<code> Ergebnis: -10
+ Ergebnis: -8
+ Ergebnis: 1</code>
+			
+			<text>Bei diesen Operatoren handelt es sich um sogenannte Prefix - Operatoren. Sie stehen jeweils vor dem zu verarbeitenden Wert.</text>
+		</part>
+			
+		<h id="opppmm">Die Operatoren ++ und --</h>
+		<part>
+			<text>Die Operatoren ++ bzw. -- existierten sowohl als postfix- als auch als prefix-Operatoren. Dabei haben die postfix-Varianten noch die Besonderheit, dass sie keinen nachgestellten Wert benötigen.</text>
+			
+			<h>Beispiel: (postfix)</h>
+	
+			<code>Var(0) = 0;
+while(<strong>Var(0)++</strong> &lt; 10)
+  Log("%d", Var(0) )</code>
+			
+			<h>Beispiel 2: (prefix)</h>
+	
+			<code>Var(0) = 0;
+while(<strong>++Var(0)</strong> &lt; 10)
+  Log("%d", Var(0) )</code>
+	
+			<text>Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung Var(0) um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen.</text>
+			<text>Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben.	D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist Var(0) am Anfang 9. Dann wird sie um eins erhöht (Var(0) ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben.</text>
+			<text>Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn Var(0) 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen.</text>
+		</part>
+			
+		<h id="andor">Die Operatoren &amp;&amp; und ||</h>
+		<part>
+			<text>Diese beiden Operatoren haben (ab <emlink href="script/Strict.html">#strict 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:</text>
+			<code>0 &amp;&amp; Explode(20);</code>
+			<text>Außerdem ist das Ergebnis des Operators der Wert des ersten oder zweiten Parameters, je nachdem ob einer oder beide ausgewertet wurden. Beispielsweise kann man so wenn möglich einen Ritter, und ansonsten einen Clonk erzeugen:</text>
+			<code>CreateObject(KNIG,0,0,GetOwner()) || CreateObject(CLNK,0,0,GetOwner())</code>
+		</part>
+		
+		<h id="prio">Prioritäten und Assoziativität</h>
+		<part>
+			<text>Dieses Thema ist nicht unbedingt zum Verständnis der Operatoren vonnöten. Es soll nur zeigen, wie die Mechanismen wie Punkt-vor-Strich u.ä. im Detail funktionieren.</text>
+			<text>Um einen längeren Ausdruck mit mehreren Operatoren ausrechnen zu können, muss entschieden werden, in welcher Reinfolge die Operatoren ausgeführt werden und welches Ergebnis welchem anderem Operator zu übergeben ist.</text>
+			<text>Allgemein gilt: Operatoren mit höherer Priorität werden vor Operatoren mit niedriger Priorität ausgeführt. Anmerkung: das gilt <strong>nicht</strong> für die Reihenfolge der Ausführung der Parameter. Diese werden ganz "normal" von links nach rechts ausgeführt.</text>
+			
+			<h>Beispiel:</h>
+			<code>Log("%d", 5 * 4 + 3 &lt; 6);</code>
+			<text>entspricht:</text>
+			<code>Log("%d", (((5 * 4) + 3) &lt; 6));</code>
+	
+			<text>Dabei taucht aber noch ein Problem auf: was ist zu tun, wenn "benachbarte" Operatoren dieselbe Priorität haben? Ist dann der linke oder der rechte Ausdruck zu klammern? Über diese Frage entscheidet die sog. Assoziativität. Ist ein Operator links-assoziativ, so hat jeweils der linke Operator Priorität (übrigens auch der Regelfall, denn meistens wird von links nach rechts gerechnet). Anders bei den rechts-assoziativen Operatoren, wo jeweils der rechte Operator Priorität hat.</text>
+			
+			<h>Beispiel:</h>
+			<code>Var(0) = Var(1) = 1 + 2 + 3 + 4;</code>
+			<text>entspricht:</text>
+			<code>Var(0) = (Var(1) = (((1 + 2) + 3) + 4) );</code>
+			
+			<text>Hier sieht man deutlich, dass der Operator "+" links-assoziativ ist, der Ausdruck "<code>1 + 2 + 3</code>" wird zu "<code>(1 + 2) + 3</code>".</text>
+			<text>Dagegen wird der Ausdruck "<code>Var(0) = Var(1) = x</code>" zu "<code>Var(0) = (Var(1) = x)</code>", da der Operator "=" rechts-assoziativ ist.</text>
+			<text>Die Angaben über Prioritäten bzw. Assoziativitäten finden sich in der obigen Liste.</text>
+		</part>
+		
+		<h id="Bitweise">Bitweise Operatoren</h>
+		<text>In der Liste der Operatoren fallen einige Operatoren auf, die bitweise Opererationen oder Bitschieben durchführen.</text>
+		<text>Erst mal eine kurze Beschreibung von Bits: der Computer rechnet intern im sog. binären Zahlensystem. In diesem System gibt es nur zwei Ziffern, nämlich 0 und 1. (wir rechnen üblicherweise im 10er-System, wir haben 10 Ziffern von 0 bis 9). Damit lassen sich die Zahlen folgendermaßen darstellen:</text>
+		
+		<h id="binary">Das Binärsystem</h>
+		<part>
+			<text>(jeweils erst im Zehnersystem, dann im Binärsystem)</text>
+	
+			<code>1 = 00000001
+2 = 00000010
+4 = 00000100
+8 = 00001000
+6 = 00000110
+7 = 00000111</code>
+			
+			<text>Dabei wird jede Ziffer als "Bit" bezeichnet. Eine Folge von 8 Bits (s.o.) nennt man ein "Byte".</text>
+			<text>Bitweise Operatoren bearbeiten Zahlen nun bitweise.</text>
+			
+			<h>Beispiel:</h>
+	
+			<code>~00000000 = 11111111
+~00000100 = 11111011
+~01100000 = 10011111</code>
+			
+			<text>In diesem Beispiel handelt es sich um bitweises Not. D.h. jedes Bit wird einzeln negiert (aus 0 wird 1, aus 1 wird 0).</text>
+			<text>Bitweise Operatoren mit 2 Parametern verrechnen nun jeweils die Bits zweier Zahlen.</text>
+			
+			<h>Beispiele:</h>
+			
+			<text><table>
+				<row>
+				 <col></col>
+				 <col><code>10010010</code></col>
+				</row>
+				<row>
+				 <col><code>&amp;</code></col>
+				 <col><code>01110111</code></col>
+				</row>
+				<row>
+				 <col><code>=</code></col>
+				 <col><code>00010010</code></col>
+				</row>
+			</table></text>
+			
+			<text><table>
+				<row>
+				 <col></col>
+				 <col><code>10010010</code></col>
+				</row>
+				<row>
+				 <col><code>|</code></col>
+				 <col><code>01110111</code></col>
+				</row>
+				<row>
+				 <col><code>=</code></col>
+				 <col><code>11110111</code></col>
+				</row>
+			</table></text>
+			
+			<text><table>
+				<row>
+				 <col></col>
+				 <col><code>10010010</code></col>
+				</row>
+				<row>
+				 <col><code>^</code></col>
+				 <col><code>01110111</code></col>
+				</row>
+				<row>
+				 <col><code>=</code></col>
+				 <col><code>11100101</code></col>
+				</row>
+			</table></text>
+			
+			<text>Diese drei Operatoren sind (der Reihe nach) Und (&amp;), Oder (|) und Exklusiv-Oder (^).</text>
+			<text>Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn in beiden Eingaben an der entsprechenden Stelle ebenfalls eine 1 steht. "Und" hat also die folgende Wahrheitstabelle (senkrecht bzw. waagerecht sind die beiden möglichen Parameter jeweils gelistet, in der Tabelle selbst das Ergebnis):</text>
+			
+			<text><table>
+				<row>
+					<col><code>&amp;</code></col>
+					<col>0</col>
+					<col>1</col>
+				</row>
+				<row>
+					<col>0</col>
+					<col>0</col>
+					<col>0</col>
+				</row>
+				<row>
+					<col>1</col>
+					<col>0</col>
+					<col>1</col>
+				</row>
+			</table></text>
+			
+			<text>Der Operator "Oder" gibt 1 zurück, wenn eins (oder beide) der Eingaben 1 sind:</text>
+			
+			<text><table>
+				<row>
+					<col><code>|</code></col>
+					<col>0</col>
+					<col>1</col>
+				</row>
+				<row>
+					<col>0</col>
+					<col>0</col>
+					<col>1</col>
+				</row>
+				<row>
+					<col>1</col>
+					<col>1</col>
+					<col>1</col>
+				</row>
+			</table></text>
+			
+			<text>Der Operator "Exklusiv-Oder" (XOr) verhält sich wie das "Oder", doch wird 0 zurückgegeben, wenn beide Parameter 0 sind.</text>
+			
+			<text><table>
+				<row>
+					<col><code>^</code></col>
+					<col>0</col>
+					<col>1</col>
+				</row>
+				<row>
+					<col>0</col>
+					<col>0</col>
+					<col>1</col>
+				</row>
+				<row>
+					<col>1</col>
+					<col>1</col>
+					<col>0</col>
+				</row>
+			</table></text>
+			
+			<h>Anwendungen</h>
+			<text>In Clonk werden häufig Bitoperationen benutzt, wenn es darum geht, verschiedene Eigenschaften eines Objekts in einem Wert zu speichern. Das prominenteste Beispiel sind hier wohl die C4D(Category)-Werte. Hier repräsentiert jedes Bit des C4D-Wertes eine bestimmte Eigenschaft (für Einzelheiten siehe Entwickler-Dokumentation).</text>
+			<text>Auf diese Bits kann man recht bequem über die bitweisen Operatoren zugreifen. Ein C4D-Wert kann z.B. folgendermaßen aussehen:</text>
+			
+			<h>Beispiel: (Wipf)</h>
+			<code>Category = 69640</code>
+			<text>Dieser Wert ergibt im Binär-System: (kann mit Windows-Taschenrechner umgerechnet werden)</text>
+			<code>10001000000001000</code>
+			<text>Hier sieht man, dass Bit 3, Bit 12 und Bit 16 gesetzt sind (es wird von rechts gezählt und mit 0 begonnen)</text>
+			<text>Dies entspricht der Reihe nach den C4D-Werten <funclink>C4D_Living</funclink> (Objekt ist ein Lebewesen), C4D_SelectAnimal (Objekt kann im Menu für Lebewesen hinzugefügt werden) und  C4D_TradeLiving (Objekt ist ein Lebewesen, darf aber trotzdem verkauft werden).</text>
+			<text>Im Script kann nun recht einfach geprüft werden, ob ein bestimmtes Bit gesetzt ist: man benutzt den Operator "Und" (<code>&amp;</code>), dem man den Wert und die "Maske" übergibt. In der Maske ist nur das Bit gesetzt, dass von Interesse ist. Auf diese Weise müssen im Ergebnis alle Bits, die nicht interessieren, 0 sein (denn sie sind es in der Maske). Ist nun das Bit, das interressiert, 1, so wird diese in das Ergebnis übernommen, ist es 0, so wird im Ergebnis dort auch 0 stehen. Im letzteren Fall ist sogar das gesamte Ergebnis 0, da alle anderen Bits ja auch 0 sind. Es genügt also zu überprüfen, ob das Ergebnis von <code>[Val] &amp; [Mask]</code> ungleich null ist, um herauszufinden, ob ein bestimmtes Bit gesetzt ist.</text>
+			
+			<h>Beispiel:</h>
+			
+			<text><table>
+				<row>
+					<col></col>
+					<col><code>10001000000001000</code></col>
+					<col>(Wert)</col>
+				</row>
+				<row>
+					<col><code>&amp;</code></col>
+					<col><code>00001000000000000</code></col>
+					<col>(Maske)</col>
+				</row>
+				<row>
+					<col><code>=</code></col>
+					<col><code>00001000000000000</code></col>
+					<col></col>
+				</row>
+			</table></text>
+			
+			<text>Das Ergebnis ist in diesem Fall nicht 0, also ist das Bit, dass in der Maske gesetzt ist, auch im Wert gesetzt.</text>
+			
+			<text><table>
+				<row>
+					<col></col>
+					<col><code>10001000000001000</code></col>
+					<col>(Wert)</col>
+				</row>
+				<row>
+					<col><code>&amp;</code></col>
+					<col><code>00000000010000000</code></col>
+					<col>(Maske)</col>
+				</row>
+				<row>
+					<col><code>=</code></col>
+					<col><code>00000000000000000</code></col>
+					<col></col>
+				</row>
+			</table></text>
+			
+			<text>Hier ist das Ergebnis 0, denn das Bit in der Maske ist nicht beim Wert gesetzt.</text>
+			<text>Es bleibt noch die Frage zu klären, wo man die entsprechende Maske denn herbekommt. Im Fall der Category-Werte sind diese bereits mit Namen mitgeliefert, sie können über <code>C4D_[XXX]</code> abgerufen werden. Wollte man z.B. herausfinden, ob es sich bei einem Objekt um ein Lebewesen handelt, so sähe der Script folgendermaßen aus:</text>
+			
+<code>if (<funclink>GetCategory</funclink>() &amp; <funclink>C4D_Living</funclink>)
+  ;...;</code>
+			
+			<text>Auf diese Weise kann man also einzelne Bits gezielt prüfen. Doch wie soll man diese nun bearbeiten?	Will man ein einzelnes Bit <strong>setzen</strong>, so wird der Operator "Oder" (<code>|</code>) benutzt. Dieser wird wieder auf Wert und Maske angewendet:</text>
+			
+			<text><table>
+				<row>
+					<col></col>
+					<col><code>10001000000001000</code></col>
+					<col>(Wert)</col>
+				</row>
+				<row>
+					<col><code>|</code></col>
+					<col><code>00000000010000000</code></col>
+					<col>(Maske)</col>
+				</row>
+				<row>
+					<col><code>=</code></col>
+					<col><code>10001000010001000</code></col>
+					<col>(neuer Wert)</col>
+				</row>
+			</table></text>
+			
+			<text>Auf diese Weise ist es allerdings immer nur möglich, ein bestimmtes Bit auf 1 zu setzen. War dieses bereits gesetzt, so bleibt der Wert unverändert. Will man nun ein bestimmtes Bit auf 0 setzen, so benutzt man wieder den "Und"-Operator und die <strong>inverse</strong>(logisch Not) Maske, also <code>[Wert] &amp; ~[Maske]</code>:</text>
+			
+			<text><table>
+				<row>
+					<col></col>
+					<col><code>10001000010001000</code></col>
+					<col>(Wert)</col>
+				</row>
+				<row>
+					<col><code>&amp;</code></col>
+					<col><code>11111111101111111</code></col>
+					<col><code>(= ~00000000010000000)</code></col>
+				</row>
+				<row>
+					<col><code>=</code></col>
+					<col><code>10001000000001000</code></col>
+					<col>(neuer Wert)</col>
+				</row>
+			</table></text>
+			
+			<text>Es ist auch möglich, ein bestimmtes Bit gezielt umzuschalten, also von 1 auf 0 und von 0 nach 1. Dies leistet der bitweise "Exklusiv-Oder"-Operator (<code>^</code>):</text>
+			
+			<text><table>
+				<row>
+					<col></col>
+					<col><code>10001000000001000</code></col>
+					<col>(Wert)</col>
+				</row>
+				<row>
+					<col><code>^</code></col>
+					<col><code>00000000010000000</code></col>
+					<col>(Maske)</col>
+				</row>
+				<row>
+					<col><code>=</code></col>
+					<col><code>10001000010001000</code></col>
+					<col>(neuer Wert)</col>
+				</row>
+			</table></text>
+			
+			<text><table>
+				<row>
+					<col></col>
+					<col><code>10001000010001000</code></col>
+					<col>(Wert)</col>
+				</row>
+				<row>
+					<col><code>^</code></col>
+					<col><code>00000000010000000</code></col>
+					<col>(Maske)</col>
+				</row>
+				<row>
+					<col><code>=</code></col>
+					<col><code>10001000000001000</code></col>
+					<col>(neuer Wert)</col>
+				</row>
+			</table></text>
+		</part>
+		
+		<h id="bitmove">Bitschiebereien</h>
+		<part>
+			<text>Außer den Operatoren, die bitweises Manipulieren von Werten erlauben (s.o.) gibt es noch sog. <strong>Bitschiebe-Operatoren</strong>. Die Funktion dieser Operatoren beschränkt sich darauf (anschaulich gesprochen), an einen Bit-Wert Nullen anzuhängen (&lt;&lt;) bzw. Ziffern abzuschneiden (&gt;&gt;).</text>
+			
+			<h>Beispiel:</h>
+	
+			<code>  00001000000001000 &lt;&lt; 2
+= 00100000000100000
+
+  00001000000001000 &gt;&gt; 2
+= 00000010000000010</code>
+			
+			<text>Mathematisch entspricht der Operator &lt;&lt; der Multiplikation mit <code>2 ^ X</code> (genau wie im Zehnersystem das Anhängen einer Null mit einer Multiplikation mit 10 gleichkommt) und der Operator &gt;&gt; einer Division mit <code>2 ^ X</code> (mit anschließendem Abrunden).</text>
+			<text>Mit den Operatoren können vor allem Masken erstellt (1 &lt;&lt; BitNr), und <funclink>RGB</funclink>-Farbwerte zusammengesetzt und auseinandergenommen werden.</text>
+		</part>
+	</part>
+</part>
+
+<author>PeterW</author>
+
+</doc>

@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>DefCore.txt</title>
+<h id="DefCoretxt">DefCore</h>
+<part>
+<text>In der Komponente DefCore.txt eines Objekts lässt sich das Basisverhalten eines Objekts
+einrichten. Dazu gehören zum Beispiel die Kategorie, also ob es sich um ein Gebäude oder ein Lebewesen handelt, 
+die Grafik, Eingangs- und Einsammelbereiche, Brennbarkeit, Wert, Masse, und so weiter. 
+Außerdem wird hier das Objekt-ID angegeben, mit dem dieser Objekttyp
+später in Scripten referenziert wird - es ist wichtig, dass jedes Objekt ein eigenes ID hat.
+Hierzu siehe auch <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">Objekt- und
+Entwickleridentifikation</emlink>.</text>
+
+<text>
+<table>
+<caption id="SektionDefCore">Sektion [DefCore]</caption>
+<rowh><col>Wert</col><col>Datentyp</col><col>Beschreibung</col></rowh>
+<row><col>id</col><col>Definitions-ID</col>
+  <col>Id des Objekts.</col></row>
+<row><col>Version</col><col>3 Integer</col>
+  <col>Minimale vom Objekt benötigte Engine-Version. Dieser Eintrag sollte bei jeder Änderung auf die jeweils
+  aktuelle Clonk-Version gesetzt werden, damit ersichtlich ist, zu welchem Zeitpunkt das Objekt erschienen ist.</col></row>
+<row><col>Name</col><col>Zeichenfolge (max. 30)</col>
+  <col>Name des Objekts. Bei Mehrsprachigkeit Names.txt nutzen.</col></row>
+<row><col>Category</col><col>Integer</col>
+  <col>Kategorie des Objekts. Siehe <emlink href="definition/category.html">Objektkategorien</emlink>.</col></row>
+<row><col>MaxUserSelect</col><col>Integer</col>
+  <col>Maximale Anzahl beim Platzieren des Objekts im Menüsystem.</col></row>
+<row><col>TimerCall</col><col>Zeichenfolge (max. 30)</col>
+  <col>Regelmäßig aufgerufene Funktion des Objektscripts.
+  Siehe <emlink href="definition/script.html">Objektscripte</emlink>.</col></row>
+<row><col>Timer</col><col>Integer</col>
+  <col>Zeitabstand der TimerCalls in Frames. Ohne Angabe gilt der Vorgabewert 35.</col></row>
+<row><col>ContactCalls</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob Kontaktaufrufe im Objektscript getätigt werden.</col></row>
+<row><col>Width</col><col>Integer</col>
+  <col>Breite des Objekts.</col></row>
+<row><col>Height</col><col>Integer</col>
+  <col>Höhe des Objekts.</col></row>
+<row><col>Offset</col><col>2 Integer</col>
+  <col>Koordinatenabstand der linken oberen Ecke zur Objektmitte.</col></row>
+<row><col>Value</col><col>Integer</col>
+  <col>Wert des Objekts in Geldpunkten.</col></row>
+<row><col>Mass</col><col>Integer</col>
+  <col>Gewicht des Objekts. Stein 10, Clonk 50, Hütte 1000, Burg 10000.</col></row>
+<row><col>Components</col><col>ID-Liste</col>
+  <col>Elemente, aus denen das Objekt zusammen gesetzt ist.
+  Im Bau oder Wachstum befindliche Objekte enthalten nur anteilige Komponenten.</col></row>
+<row><col>SolidMask</col><col>6 Integer</col>
+  <col>Massivbereiche des Objekts. Zielrechteck aus Graphics.bmp aufs Objekt.</col></row>
+<row><col>TopFace</col><col>6 Integer</col>
+  <col>Verdeckende Oberflächen. Zielrechteck aus Graphics.bmp aufs Objekt.</col></row>
+<row><col>Picture</col><col>4 Integer</col>
+  <col>Repräsentativgrafik des Objekts. Rechteck aus Graphics.bmp.</col></row>
+<row><col>Vertices</col><col>Integer</col>
+  <col>Anzahl der Eckpunkte des Objekts. 1 bis 30.</col></row>
+<row><col>VertexX</col><col>bis zu 30 Integer</col>
+  <col>Liste der horizontalen Koordinaten der Eckpunkte des Objekts.
+  Siehe <emlink href="definition/vertices.html">Vertices</emlink>.</col></row>
+<row><col>VertexY</col><col>bis zu 30 Integer</col>
+  <col>Liste der vertikalen Koordinaten der Eckpunkte des Objekts.</col></row>
+<row><col>VertexCNAT</col><col>bis zu 30 Integer</col>
+  <col>Liste der Ausrichtungsbestimmungen der Eckpunkte.
+  Siehe <emlink href="definition/cnat.html">CNAT</emlink>.</col></row>
+<row><col>VertexFriction</col><col>bis zu 30 Integer</col>
+  <col>Liste der Reibungswerte der Eckpunkte, jeweils 1 bis 100.</col></row>
+<row><col>Entrance</col><col>4 Integer</col>
+  <col>Koordinaten des Eingangsbereichs des Objekts relativ zur Objektmitte.</col></row>
+<row><col>Collection</col><col>4 Integer</col>
+  <col>Koordinaten des Aufnahmebereichs des Objekts relativ zur Objektmitte.</col></row>
+<row><col>CollectionLimit</col><col>Integer</col>
+  <col>Anzahl der maximal aufnehmbaren Objekte, 0 für uneingeschränkt.</col></row>
+<row><col>FireTop</col><col>Integer</col>
+  <col>Flammenabstand zur Objektunterkante.</col></row>
+<row><col>Placement</col><col>Integer</col>
+  <col>Platzierung: 0 Oberfläche, 1 in Flüssigkeit, 2 in der Luft.</col></row>
+<row><col>Exclusive</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt dahinterliegende Objekte blockiert.</col></row>
+<row><col>ContactIncinerate</col><col>Integer</col>
+  <col>Kontaktentzündlichkeit: 0 keine, 1 (hoch) bis 5 (niedrig)</col></row>
+<row><col>BlastIncinerate</col><col>Integer</col>
+  <col>Explosionsentzündlichkeit: 0 keine, sonst bei angegebenem Schadenswert</col></row>
+<row><col>BurnTo</col><col>C4ID</col><col>Definitionswechsel bei Entzündung.</col></row>
+<row><col>Base</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt Heimatbasis sein kann.</col></row>
+<row><col>Line</col><col>Integer</col>
+  <col>1 Energieleitung, 2 Zuflussrohr, 3 Abflussrohr.</col></row>
+<row><col>LineConnect</col><col>Integer</col>
+  <col>Anschlussfähigkeit für Leitungen.
+  Siehe <emlink href="definition/lineconnect.html">LineConnect</emlink>.</col></row>
+<row><col>Prey</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt ein Beutelebewesen ist.</col></row>
+<row><col>Edible</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt essbar ist (noch nicht unterstützt).</col></row>
+<row><col>CrewMember</col><col>Integer</col>
+  <col>0 oder 1. Wenn 1, wird das Objekt beim Kauf der Mannschaft hinzugefügt.
+  Mit CreateObject erzeugte CrewMember-Objekte müssen mit <emlink href="script/fn/MakeCrewMember">MakeCrewMember</emlink>
+  der Mannschaft eines Spielers hinzugefügt werden.</col></row>
+<row><col>Growth</col><col>Integer</col>
+  <col>Wachstum des Objekts. Baum 1-4, Lebewesen 15.</col></row>
+<row><col>Rebuy</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt nach Verkauf zurückgekauft werden kann.</col></row>
+<row><col>Construction</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt als Baustelle gebaut werden kann.</col></row>
+<row><col>ConstructTo</col><col>C4ID</col>
+  <col>Definitionswechsel beim Bau.</col></row>
+<row><col>Grab</col><col>Integer</col>
+  <col>0 kein Anfassen, 1 Anfassen und Verschieben, 2 nur Anfassen.</col></row>
+<row><col>GrabPutGet</col><col>Integer</col>
+  <col>Bitmaske: Bit 0 (Wert 1) Grab und Put, Bit 1 (Wert 2) Grab und Get</col></row>
+<row><col>Collectible</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt eingesammelt werden kann.</col></row>
+<row><col>Rotate</col><col>Integer</col>
+  <col>0 keine Rotation, 1 volle Rotation, 2-360 eingeschränkte Rotation</col></row>
+<row><col>Chop</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt gefällt werden kann.</col></row>
+<row><col>Float</col><col>Integer</col>
+  <col>Auftrieb in Flüssigkeiten: 0 kein Auftrieb, sonst Auftriebshöhe über Mitte</col></row>
+<row><col>ContainBlast</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob Explosionen im Inneren nach außen wirken.</col></row>
+<row><col>ColorByOwner</col><col>Integer</col>
+  <col>0 oder 1. Bei Wert 1 wird das Ausgangsblau, bzw. die Overlay.png, nach dem Besitzer gefärbt.</col></row>
+<row><col>ColorByMaterial</col><col>Zeichenfolge (max. 15)</col>
+  <col>Name des Materials, nach dem das Objekt gefärbt wird.</col></row>
+<row><col>HorizontalFix</col><col>Integer</col>
+  <col>0 oder 1. Bei Wert 1 kann das Objekt sich nur vertikal bewegen.</col></row>
+<row><col>BorderBound</col><col>Integer</col>
+  <col>Bitmaske: Bit 0 (1) Stop an Seiten, Bit 1 (2) Stop oben, Bit 2 (4) Stop unten</col></row>
+<row><col>UprightAttach</col><col>Integer</col>
+  <col>Wenn ungleich 0 (8-10) sitzt das Objekt aufgerichtet auf Massivbereichen auf.</col></row>
+<row><col>StretchGrowth</col><col>Integer</col>
+  <col>0 oder 1. Bei Wert 1 wird das Objekt wie ein Lebewesen vergrößert (abhängig von der Fertigstellung.
+  Siehe <emlink href="script/fn/GetCon.html">GetCon</emlink>)</col></row>
+<row><col>Basement</col><col>Integer</col>
+  <col>0 kein Fundament, 1 Fundament, andere Werte speziell</col></row>
+<row><col>NoBurnDecay</col><col>Integer</col>
+  <col>0 oder 1. Bei Wert 1 verbrennt das Objekt nicht.</col></row>
+<row><col>IncompleteActivity</col><col>Integer</col>
+  <col>0 oder 1. Wert 1 für Lebewesen, die auch im Wachstum aktiv sein können.</col></row>
+<row><col>Oversize</col><col>Integer</col>
+  <col>0 oder 1. Das Objekt kann mit DoCon auf Übergröße vergrößert werden.</col></row>
+<row><col>AttractLightning</col><col>Integer</col>
+  <col>0 oder 1. Das Objekt zieht Blitze an.</col></row>
+<row><col>Fragile</col><col>Integer</col>
+  <col>0 oder 1. Objekt sollte nicht geworfen werden.</col></row>
+<row><col>NoPushEnter</col><col>Integer</col>
+  <col>0 oder 1. Das Objekt kann nicht durch Anfassen und Steuerung Rauf in andere Objekte hineingeschoben werden
+  (z.B. Fahrstuhlkorb).</col></row>
+<row><col>VehicleControl</col><col>Integer</col>
+  <col>Bitmaske: Bit 0 (Wert 1) das Objekt kann durch Anfassen von außen und/oder Bit 1 (Wert 2) von innen gesteuert
+  werden. Bei aktiviertem VehicleControl werden die selbständig auszuführenden Befehle (Commands) eines Clonks
+  als ControlCommand-Aufrufe an das Script des entsprechenden Fahrzeugs weitergeleitet und können von diesem
+  ausgewertet und abgefangen werden.
+  Siehe <emlink href="definition/script.html#ControlFunktionen">Control-Funktionen</emlink>.</col></row>
+<row><col>Pathfinder</col><col>Integer</col>
+  <col>1 - 10. Beeinflusst die Suchtiefe des Wegfindungsalgorithmus (Standard: 1). Vorsicht: hohe Werte sind sehr rechenintensiv.
+  Mit diesem Wert setzen auch Objekte ohne CrewMember-Wert bei der Ausführung von Kommandos (z.B. MoveTo)
+  den internen Wegfindungsalgorithmus ein. Erweitert ab 4.95.4.</col></row>
+<row><col>NoComponentMass</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 zählt der Inhalt des Objekts nicht mit zur Gesamtmasse. Dadurch lässt sich zum Beispiel
+  verhindern, dass Rucksäcke oder Köcher durch ihren Inhalt mörderische Wurfwaffen werden.</col></row>
+<row><col>NoStabilize</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 richtet sich das Objekt nicht automatisch auf 0° Drehung auf, wenn es nur sehr leicht gedreht ist.</col></row>
+<row><col>ClosedContainer</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 können enthaltene Clonks bei aktiviertem Fog Of War nicht herausschauen.</col></row>
+<row><col>SilentCommands</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 werden bei fehlgeschlagenen Commands keine Meldungen ausgegeben.</col></row>
+<row><col>NoBurnDamage</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 wird dem Objekt kein Schaden zugefügt, wenn es brennt.</col></row>
+<row><col>TemporaryCrew</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 wird das Objekt nicht in die Dauerhafte Crew des Spielers eingetragen.</col></row>
+<row><col>SmokeRate</col><col>Integer</col>
+  <col>0 bis 200: Gibt die Rauchmenge an, die das Objekt im Brandfall verursacht. 0 ist kein Rauch, 100 ist die Standardmenge.
+  Bei Werten ungleich 0 wird allerdings immer die Maximalmenge Rauch produziert, wenn das Objekt in schneller Bewegung ist
+  (zum Beispiel Brandpfeile).</col></row>
+<row><col>BlitMode</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 wird das Objekt additiv gezeichnet.</col></row>
+<row><col>NoBreath</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 atmet das Objekt nicht, selbst wenn es ein Lebewesen ist.</col></row>
+<row><col>ConSizeOff</col><col>Integer</col>
+  <col>Wert >=0. Abzug des benötigten Bauplatzes von oben.</col></row>
+<row><col>NoSell</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 kann das Objekt nicht verkauft werden.</col></row>
+<row><col>NoGet</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 kann das Objekt nicht manuell aus anderen Objekten heraus genommen werden.01.</col></row>
+<row><col>NoFight</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 kämpft das Objekt nicht mit anderen Lebewesen, selbst wenn es selber ein Lebewesen ist.</col></row>
+<row><col>LiftTop</col><col>Integer</col>
+  <col>Wird ein Objekt bei einer Action mit der Procedure "<emlink href="definition/procedures.html">LIFT</emlink>" mehr als die angegebene Höhe
+  über der Objektmitte angehoben, wird die Funktion LiftTop im Script aufgerufen.</col></row>
+<row><col>RotatedEntrance</col><col>Integer</col>
+  <col>0 Eingang ist nur bei aufgerichtetem Objekt geöffnet, 1 Eingang ist immer geöffnet, 2-360 Eingang ist innerhalb des entsprechenden Bereichs geöffnet. Ab 4.95.4.</col></row>
+<row><col>MoveToRange</col><col>Integer</col>
+  <col>Maximale Distanz, mit der ein Bewegungskommando einen Zielpunkt treffen muss, damit das Bewegungskommando als erfüllt gilt. Vorgabewert 5. Ab 4.95.4.</col></row>
+<row><col>NoTransferZones</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 berücksichtigt die Wegfindung des Objekts keine Transferzonen an Gebäuden. Ab 4.95.4.</col></row>
+<row><col>AutoContextMenu</col><col>Integer</col>
+  <col>0 oder 1. Bei 1 wird für dieses Gebäude beim Betreten automatisch das Kontextmenü geöffnet. Ab 4.9.7.7.</col></row>
+</table>
+</text>
+<text>
+<table>
+<caption id="SektionPhysical">Sektion [Physical]</caption>
+<rowh><col>Wert</col><col>Datentyp</col><col>Beschreibung</col></rowh>
+<row><col>Energy</col><col>Integer</col>
+  <col>0-100000. Maximale Energie bzw. Lebensenergie.</col></row>
+<row><col>Breath</col><col>Integer</col>
+  <col>0-100000. Maximaler Atem.</col></row>
+<row><col>Walk</col><col>Integer</col>
+  <col>0-100000. Laufgeschwindigkeit.</col></row>
+<row><col>Jump</col><col>Integer</col>
+  <col>0-100000. Sprungkraft.</col></row>
+<row><col>Scale</col><col>Integer</col>
+  <col>0-100000. Klettergeschwindigkeit.</col></row>
+<row><col>Hangle</col><col>Integer</col>
+  <col>0-100000. Hangelgeschwindigkeit.</col></row>
+<row><col>Dig</col><col>Integer</col>
+  <col>0-100000. Grabgeschwindigkeit.</col></row>
+<row><col>Swim</col><col>Integer</col>
+  <col>0-100000. Schwimmgeschwindigkeit.</col></row>
+<row><col>Throw</col><col>Integer</col>
+  <col>0-100000. Wurfkraft.</col></row>
+<row><col>Push</col><col>Integer</col>
+  <col>0-100000. Schiebekraft.</col></row>
+<row><col>Fight</col><col>Integer</col>
+  <col>0-100000. Kampfkraft.</col></row>
+<row><col>Magic</col><col>Integer</col>
+  <col>0-100000. Maximale Zauberenergie.</col></row>
+<row><col>Float</col><col>Integer</col>
+  <col>0-100. Fluggeschwindigkeit.</col></row>
+<row><col>CanScale</col><col>Integer</col>
+  <col>0 oder 1. Klettern.</col></row>
+<row><col>CanHangle</col><col>Integer</col>
+  <col>0 oder 1. Hangeln.</col></row>
+<row><col>CanDig</col><col>Integer</col>
+  <col>0 oder 1. Graben.</col></row>
+<row><col>CanConstruct</col><col>Integer</col>
+  <col>0 oder 1. Bauen. Bei Werten größer 1: Prozentuale Baugeschwindigkeit (100 entspricht dem Standard;
+  50 ist halbe Standardgeschwindigkeit). Erweitert</col></row>
+<row><col>CorrosionResist</col><col>Integer</col>
+  <col>0 oder 1. Legt fest, ob das Objekt Säure widersteht.</col></row>
+<row><col>BreatheWater</col><col>Integer</col>
+  <col>0 Objekt atmet Luft, 1 Objekt atmet Wasser.</col></row>
+</table>
+</text>
+<h>Hinweis:</h>
+<text>Sobald ein Mannschaftsmitglied erschaffen wird, wird für dieses eine eigenständige
+Physical-Sektion erschaffen, die zusammen mit dem Mannschaftsmitglied in der Objektinfo (c4i)
+gespeichert wird. Jedes Mannschaftsmitglied behält seine eigene Physical-Sektion, da hier alle
+individuellen Veränderungen (z.B. erweiterte Fähigkeiten durch Beförderung)
+vorgenommen werden. Die Physical-Sektion der Objektdefinition wird also nur bei der Erschaffung des
+Objekts verwendet und nicht etwa bei ChangeDef.</text>
+</part>
+<author>Sven2</author><date>April 2002</date>
+</doc>

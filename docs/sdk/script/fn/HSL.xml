@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>HSL</title>
+		<category>Arithmetik</category>
+		<version>4.9.5.0 CE</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>byH</name><desc>Farbton der Farbe. 0 ist Rot, 85 ist Grün, 170 Blau und 255 wieder Rot.</desc></param>
+				<param><type>int</type><name>byS</name><desc>Sättigung der Farbe. Dies ist der Farbkontrast.</desc></param>
+				<param><type>int</type><name>byL</name><desc>Helligkeit der Farbe. Helligkeit gleich null entspräche <funclink>RGB</funclink>(0,0,0)</desc></param>
+			</params>
+		</syntax>
+		<desc>Setzt einen 32Bit-Farbwert aus den drei Parametern zusammen. 0-255 für alle Parameter.</desc>
+		<examples>
+			<example>
+				<code><funclink>SetSkyAdjust</funclink>(HSL(0,255,127));</code>
+				<text>Färbt den Himmel rot.</text>
+			</example>
+			<example>
+				<code><funclink>SetColorDw</funclink>(HSL(<funclink>Random</funclink>(256),255,127),<funclink>GetHiRank</funclink>(0));</code>
+				<text>Färbt den höchstrangigsten Clonk des ersten Spielers in einem zufälligen kräftigem Farbton.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>RGB</funclink>
+			<funclink>RGBa</funclink>
+			<funclink>HSLa</funclink>
+		</related>
+	</func>
+	<author>Newton</author><date>Juni 2005</date>
+</funcs>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetCrewEnabled</title>
+		<category>Objekte</category>
+		<subcat>Mannschaft</subcat>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>bool</type><name>fEnabled</name><desc>Gibt an, ob das Mannschaftsmitglied aktiviert oder deaktiviert werden soll.</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Status verändert werden soll. 0 bei lokalem Aufruf.</desc></param>
+			</params>
+		</syntax>
+		<desc>Aktiviert oder deaktiviert Mannschaftsmitglieder. Deaktivierte Mannschaftsmitglieder können nicht mehr vom Spieler angewählt werden. So kann es auch passieren, dass ein Spieler zwar 0 Mannschaftsmitglieder zur Auswahl hat, aber trotzdem nicht eliminiert ist. Nur für Objekte, die auch wirklich zu einer Mannschaft gehören. Deaktivierte Mannschaftsmitglieder sind automatisch nicht mehr ausgewählt.</desc>
+		<examples>
+			<example>
+				<code>SetCrewEnabled(0, <funclink>GetCursor</funclink>());</code>
+				<text>Deaktiviert den ausgewählten Clonk des ersten Spielers.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>GetCrewEnabled</funclink>
+			<funclink>MakeCrewMember</funclink>
+			<funclink>SelectCrew</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>April 2002</date>
+</funcs>

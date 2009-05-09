@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+        <func>
+                <title>GetPlayerType</title>
+                <category>Spieler</category>
+                <version>4.9.6.0 CR</version>
+                <syntax>
+                        <rtype>int</rtype>
+                        <params>
+                                <param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spieler, dessen Typ abgefragt werden soll</desc></param>
+                        </params>
+                </syntax>
+                <desc>Liefert den Typ eines Spielers. Mögliche Typen sind:
+                      <table><rowh><col>Konstante</col><col>Wert</col><col>Beschreibung</col></rowh>
+                      <row><col>C4PT_User</col><col>1</col><col>Vom Benutzer gesteuerter Spieler</col></row>
+                      <row><col>C4PT_Script</col><col>2</col><col>Scriptgeesteuerter Spieler; zum Beispiel KI-Spieler.</col></row>
+                      </table>
+                </desc>
+                <remark>Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird 0 zurückgegeben.</remark>
+                <examples>
+                        <example>
+<code>protected func InitializePlayer(int iPlr)
+  {
+  // Ist es ein Scriptspieler?
+  if (GetPlayerType(iPlr) == C4PT_Script)
+    {
+    // Dann ein KI-Objekt erstellen
+    <funclink>CreateObject</funclink>(_EAI, 50,50, iPlr);
+    }
+  <funclink>return</funclink> true;
+  }</code>
+                                <text>Szenarienscript: Sobald ein Scritpspieler beitritt, wird ein Objekt der Definition _EAI im Besitz dieses Spielers erstellt. Dieses Objekt könnte zum Beispiel alle Clonks im Besitz des Spielers steuern.</text>
+                        </example>
+                </examples>
+                <related>
+                <emlink href="script/ScriptPlayers.html">Scriptspieler</emlink>
+			<funclink>CreateScriptPlayer</funclink>
+                </related>
+        </func>
+        <author>Sven2</author><date>Dezember 2007</date>
+</funcs>
+

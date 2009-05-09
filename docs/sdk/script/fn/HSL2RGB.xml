@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>HSL2RGB</title>
+		<category>Arithmetik</category>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>Val</name><desc>24Bit HSL-Wert</desc></param>
+			</params>
+		</syntax>
+		<desc>
+		Wandelt einen 24Bit HSL-Wert in den bekannten 32Bit RGB-Farbwert um.<br/>
+		Der 24Bit HSL-Wert kann mit <funclink>RGB</funclink>(Hue,Saturation,Lightness) erzeugt werden.<br/>
+		</desc>
+		<remark>
+		Da es in Clonk keinen Float-Datentyp gibt können die umgerechneten Werte einen geringen Fehler enthalten. (Im Regelfall nicht mehr als +1 bzw. -1) 
+		</remark>
+		<examples>
+			<example>
+				<code>#strict
+#appendto CLNK
+
+func Initialize() {
+  <funclink>AddEffect</funclink>("VariateHue",<funclink>this</funclink>(),200,1,<funclink>this</funclink>());
+  <funclink>return</funclink>(<funclink>_inherited</funclink>());
+}
+
+func FxVariateHueTimer() {
+  var rgb, hsl=RGB2HSL(<funclink>GetColorDw</funclink>());
+  var hue, sat, light;
+  <funclink>SplitRGBaValue</funclink>(hsl, hue, sat, light);
+  hue+=2;
+  if(hue>255) hue=0;
+  rgb=<funclink>HSL2RGB</funclink>(<funclink>RGB</funclink>(hue,sat,light));
+  <funclink>SetColorDw</funclink>(rgb);
+}
+</code>
+				<text>Erzeugt in jedem Clonk einen Effekt der die Farbe der Clonks Regenbogenartig variieren lässt.<br/>Zum ausprobieren den Script am besten in einen Szenarienlokale System.c4g Ordner kopieren<br/>Der Hue-Wert wird hier mit Absicht mit jeweils um 2 erhöht, da der geringe Fehler bei der Umrechnung sonst wirksam wird und gar nichts geschieht.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>RGB2HSL</funclink>
+			<funclink>SetRGBaValue</funclink>
+			<funclink>RGB</funclink>
+		</related>
+	</func>
+	<author>Tyron</author><date>September 2004</date>
+</funcs>

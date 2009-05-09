@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerInfoCoreVal</title>
+    <category>Get*Val</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>strEntry</name>
+          <desc>Name des abzufragenden Eintrags</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>strSection</name>
+          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>id</type>
+          <name>iPlayer</name>
+          <desc>Spieler, dessen Eintrag abgefragt werden soll.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iEntryNr</name>
+          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
+          <optional/>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Gibt einen Eigenschaftswert aus der Player.txt eines Spielers zurück.</desc>
+
+    <remark>Es kann aus technischen Gründen keine analoge Funktion SetPlayerVal geben.</remark>
+
+    <related>
+      <funclink>GetObjectVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetActMapVal</funclink>
+      <funclink>GetScenarioVal</funclink>
+      <funclink>GetPlayerVal</funclink>
+    </related>
+
+  </func>
+  <author>jwk</author><date>August 2002</date>
+</funcs>

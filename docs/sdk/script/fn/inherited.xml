@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>inherited</title>
+    <category>Script</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param><type>any</type><name>...</name><desc>Aufrufparameter</desc></param>
+      </params>
+    </syntax>
+    <desc>Ruft die überladene Funktion auf. Funktionen überladen sich, wenn sie beide den gleichen Namen haben.</desc>
+    <examples>
+      <example>
+
+<code>#strict
+#include CLNK
+Initialize:
+  CreateContents(SWOR);
+  <funclink>return</funclink>(inherited(<funclink>Par</funclink>(), <funclink>Par</funclink>(1)));</code>
+
+        <text>So könnte das Script eines neuen Clonktyp aussehen. Er leitet seine Basisfunktionalität vom Clonk (CLNK) ab, und erweitert den Initialize-EngineCallback.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>_inherited</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>November 2001</date>
+</funcs>

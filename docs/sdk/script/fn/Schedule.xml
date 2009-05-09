@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Schedule</title>
+    <category>Script</category>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>string</type><name>szScript</name><desc>Auszuführendes Script</desc></param>
+        <param><type>int</type><name>iInterval</name><desc>Zeit, bis das Script zum ersten Mal ausgeführt werden soll. Wenn iRepeat &gt; 1, ist es außerdem der Zeitabstand zwischen erneuten Ausführungen.</desc></param>
+				<param><type>int</type><name>iRepeat</name><desc>Anzahl der Ausführungen. Wenn 0 oder nicht angegeben wird das Script genau ein mal ausgeführt.</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, in dem das Script ausgeführt werden soll. 0 für lokalen Aufruf.</desc></param>
+      </params>
+    </syntax>
+    <desc>Führt einen bestimmes Script mit Verzögerung aus.</desc>
+		<remark>Diese Funktion wird in der System.c4g durch einen <emlink href="script/Effects.html">Effekt</emlink> "IntSchedule" und
+					  die Funktion <funclink>eval</funclink> realisiert.</remark>
+		<remark>Entsprechend darf das Script nur aus genau einem Befehl bestehen (es ist nicht möglich, mehrere Befehle mit ";" aufzulisten)</remark>
+    <examples>
+      <example>
+				<code>Schedule("<funclink>Explode</funclink>(50)", 1000, 0, <funclink>FindObject</funclink>(CLNK));</code>
+				<text>Lässt einen Clonk auf der Landschaft mit 1000 Ticks Verzögerung explodieren.</text>
+			</example>
+      <example>
+				<code>Schedule("<funclink>SetWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0), <funclink>GetWealth</funclink>(<funclink>GetPlayerByIndex</funclink>(0)) + 1)", 1, 100);</code>
+				<text>Gibt dem ersten Spieler 100 Ticks lang jeden Tick 1 Goldstück. Man beachte dass wenn der erste Spieler stirbt, der Geldregen auf den nächsten Spieler übergeht, da bei jeder Ausführung das Ziel neu bestimmt wird.</text>
+			</example>
+		</examples>
+    <related>
+      <funclink>ScheduleCall</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>August 2005</date>
+</funcs>

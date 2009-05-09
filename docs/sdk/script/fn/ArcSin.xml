@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>ArcSin</title>
+		<category>Arithmetik</category>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>iVal</name><desc>Länge der Gegenkathete</desc></param>
+				<param><type>int</type><name>iRadius</name><desc>Länge der Hypotenuse</desc></param>
+			</params>
+		</syntax>
+		<desc>Berechnet den Arcussinus von iVal/iRadius, also Result=arcsin(iVal/iRadius). Dies entspricht Sin(Result)=iVal/iRadius. Die Funktion wird benötigt, um Seitenverhältnisse zu einem Winkel umzurechnen. Für die meisten Fälle ist <funclink>Angle</funclink>() aber ausreichend und praktischer.</desc>
+		<examples>
+			<example>
+				<code><funclink>Log</funclink>("Zielwinkel: %d Grad", ArcSin(<funclink>Abs</funclink>(<funclink>GetY</funclink>(target)-<funclink>GetY</funclink>()), <funclink>ObjectDistance</funclink>(target)));</code>
+				<text>Gibt den Zielwinkel vom aufrufenden Objekt zu target aus.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>Angle</funclink>
+			<funclink>ArcCos</funclink>
+			<funclink>Sin</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>November 2001</date>
+</funcs>

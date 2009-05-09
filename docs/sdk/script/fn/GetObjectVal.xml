@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetObjectVal</title>
+    <category>Get*Val</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>strEntry</name>
+          <desc>Name des abzufragenden Eintrags</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>strSection</name>
+          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>object</type>
+          <name>pObj</name>
+          <desc>Objekt, von dem der Eintrag abgefragt werden soll. Null bei lokalen Aufrufen.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iEntryNr</name>
+          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
+          <optional/>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Gibt einen Eigenschaftswert eines Objekts nach seinem Namen in der Objects.txt zurück.</desc>
+
+    <remark>Die meisten Möglichkeiten für Werte von strEntry sind bereits in System.c4g/GetXVal.c vordefiniert</remark>
+
+    <examples>
+      <example>
+        <text>siehe <funclink>GetDefCoreVal</funclink></text>
+      </example>
+    </examples>
+
+
+    <related>
+      <funclink>GetDefCoreVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetActMapVal</funclink>
+      <funclink>GetScenarioVal</funclink>
+      <funclink>GetPlayerVal</funclink>
+      <funclink>GetPlayerInfoCoreVal</funclink>
+    </related>
+
+  </func>
+  <author>PeterW</author><date>April 2002</date>
+</funcs>

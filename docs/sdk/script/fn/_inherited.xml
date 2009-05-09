@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>_inherited</title>
+    <category>Script</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param><type>any</type><name>...</name><desc>Aufrufparameter</desc></param>
+      </params>
+    </syntax>
+    <desc>Ruft die überladene Funktion auf. Funktionen überladen sich, wenn sie beide den gleichen Namen haben. Die Funktion ist im Gegensatz zu <funclink>inherited</funclink> außerdem failsafe. Das heißt, dass es zu keinem Fehler führt, wenn die Ursprungsfunktion gar nicht existiert.</desc>
+    <examples>
+      <example>
+
+<code>#strict
+
+#appendto CLNK
+
+Initialize:
+  <funclink>CreateContents</funclink>(FLNT);
+  <funclink>return</funclink>(_inherited(<funclink>Par</funclink>(), <funclink>Par</funclink>(1)));</code>
+
+        <text>Gibt jedem Clonk zu Beginn einen Feuerstein.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>inherited</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>November 2001</date>
+</funcs>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetClrModulation</title>
+		<category>Objekte</category><subcat>Darstellung</subcat>
+		<version>4.9.5.0 CE<extversion>4.9.6.0 CR</extversion></version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Färbung abgefragt werden soll. 0 bei lokalen Aufruf.</desc></param>
+				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Fragt die Farbmodulation eines Objekts ab. Diese ist ein Farbwert, der multiplikativ (oder auch additiv, bei entsprechend aktiviertem  BlitMode in der DefCore) aufgerechnet wird. Für weitere Hinweise siehe auch <funclink>SetClrModulation</funclink>().</desc>
+		<remark>Ist der Rückgabewert dieser Funktion 0, so wurde keine Farbmodulation durchgeführt (analog zu <funclink>RGBa</funclink>(255,255,255,0)).</remark>
+		<examples>
+			<example>
+<code>global func SetObjAlpha(var byAlpha, pObj)
+  {
+  var dwClrMod=GetClrModulation(pObj);
+  <funclink>if</funclink> (!dwClrMod) dwClrMod = byAlpha&lt;&lt;24; else dwClrMod = dwClrMod &amp; 16777215 | byAlpha&lt;&lt;24;
+  <funclink>return</funclink>(<funclink>SetClrModulation</funclink>(dwClrMod, pObj));
+  }</code>
+				<text>Globale Funktion: Setzt nur den Alphawert der Farbmodulation eines Objekts.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>RGB</funclink>
+			<funclink>RGBa</funclink>
+			<funclink>SetGamma</funclink>
+			<funclink>SetClrModulation</funclink>
+			<funclink>GetColorDw</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>Fabruar 2004</date>
+</funcs>

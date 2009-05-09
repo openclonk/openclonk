@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>CastObjects</title>
+		<category>Objekte</category><subcat>Erzeugung</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>id </type><name>id</name><desc>ID des Objekttyps, der verschleudert wird</desc></param>
+				<param><type>int </type><name>iNumber</name><desc>Anzahl verschleuderter Objekte.</desc></param>
+				<param><type>int </type><name>iLevel</name><desc>Geschwindigkeit der verschleuderten Objekte</desc></param>
+				<param><type>int </type><name>iX</name><desc>X-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int </type><name>iY</name><desc>Y-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Verschleudert iNumber Objekte an angegebener Position mit einer Geschwindigkeit von iLevel. Bei einem lokalen Aufruf haben die erzeugten Objekte den selben Besitzer wie das aufrufende Objekt.</desc>
+		<examples>
+			<example>
+				<code>var num=<funclink>GetVertexNum</funclink>()<emlink href="script/operatoren.html">-</emlink>1;
+CastObjects(SPRK,1,20,<funclink>GetVertex</funclink>(num, 0)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(), <funclink>GetVertex</funclink>(num, 1)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>());
+				</code>
+				<text>Erzeugt am letzten Vertex einer Linie einen Funken. Bei mehrmaligem Aufruf erzielt man damit den gleichen Effekt wie bei einem Blitzeinschlag.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>CreateObject</funclink>
+		</related>
+	</func>
+	<author>Günther</author><date>Februar 2002</date>
+</funcs>

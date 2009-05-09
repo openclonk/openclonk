@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>AddMsgBoardCmd</title>
+		<category>Interface</category>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>string</type><name>strCommand</name><desc>Name des MessageBoard-Kommandos</desc></param>
+				<param><type>string</type><name>strScript</name><desc>Auszuführender Script</desc></param>
+			</params>
+		</syntax>
+		<desc>Erzeugt ein neues selbstdefiniertes Messageboard-Kommando. Dieses Kommando kann von jedem Spieler im Spiel durch Eingabe von "/[Kommandoname]" aufgerufen werden.
+          In dem Fall wird der angegebene Script ausgeführt. Im Script kann "%s" dafür verwendet werden, eventuell angegebene Parameter einzubinden.</desc>
+	</func>
+	<author>PeterW</author><date>Juni 2003</date>
+</funcs>

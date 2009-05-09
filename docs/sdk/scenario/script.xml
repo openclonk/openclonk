@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>Szenarioscripte</title>
+
+<h id="SzenarioScripte">Szenarioscripte</h>
+<part>
+	<text>In Szenarioscripten kann ein globaler Handlungsablauf und szenarienspezifische Besonderheiten wie Rejoins oder spezielle Spielerplatzierungen festgelegt werden. Für eine Beschreibung der Scriptsprache C4Script siehe <emlink href="script/index.html">C4Script</emlink>-Dokumentation.</text>
+
+	<h id="Callbacks">Callbacks in Szenarioscripten</h>
+	<text>Beim Start der Runde (Und VOR dem Beitritt der Spieler!) ruft die Engine, wenn vorhanden, die Funktion "Initialize" im Script des Szenarios auf. Innerhalb dieser Funktion können z.B. Objekte erzeugt werden, die beim Start der Runde vorhanden sein sollen. Außerdem kann die fortlaufende Scriptausführung gestartet werden.</text>
+
+	<code>func Initialize()
+{
+  <funclink>Message</funclink>("Hallo"); 
+  <funclink>CreateObject</funclink>(HUT1,250,200,0);
+  <funclink>ScriptGo</funclink>(1);
+}</code>
+
+	<text>Fortlaufende Scriptausführung: zu Beginn der Runde steht der interne Sciptzähler auf 0. Wurde mit ScriptGo die Scriptausführung aktiviert, so erhöht die Engine im Lauf der Runde in jedem zehnten Frame (Bild) den Scriptzähler um 1 und ruft, wenn vorhanden, die dazugehörige Script-Funktion im Szenario-Script auf.</text>
+	
+	<code>func Script26()
+{
+  <funclink>Message</funclink>("Diese Funktion wird nach 260 Frames ausgeführt.");
+}</code>
+
+	<text>Der Scriptzähler kann mit dem Befehl <funclink>goto</funclink>() auch manuell auf einen bestimmten Wert gesetzt werden.</text>
+	<text>Nach der Platzierung eines beitretenden Spielers ruft die Engine, wenn vorhanden, die Funktion InitializePlayer im Scenario-Script für diesen Spieler auf. Die Funktion wird aufgerufen, nachdem die in Scenario.txt beschriebenen Startkonditionen (Positionierung und Platzierung von Mannschaft, Gebäude, Fahrzeuge, Material) verarbeitet wurden. Mit dieser Funktion können weitere spielerabhängige Startkonditionen geschaffen werden.</text>
+
+	<code>func InitializePlayer(iPlr)
+{
+  // Eine Meldung für diesen Spieler
+  <funclink>Message</funclink>( "Spieler Nr. %d ist beigetreten", 0, iPlr );
+  <funclink>Sound</funclink>("Ding");
+  // Ersten Clonk des Spielers doch an einer anderen Stelle starten lassen
+  <funclink>SetPosition</funclink>( <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>()), <funclink>GetCrew</funclink>(iPlr));
+}</code>
+
+	<text>Analog dazu ruft die Engine die Funktion RemovePlayer auf, wenn ein Spieler die Runde verlässt.</text>
+	<text>Wird eine Runde durch szenariobedingte Spielziele wie Spielereliminierung, Materialabbau, usw. (siehe Scenario.txt <emlink href="scenario/scenario.html#SektionGame">Sektion [Game]</emlink>) oder durch den Scriptbefehl GameOver beendet (also nicht bei abgebrochenen Runden), ruft die Engine im Szenario-Script die Funktion OnGameOver auf.</text>
+
+	<code>func OnGameOver()
+{
+  <funclink>Sound</funclink>("Trumpet");
+  // Hier bietet sich die Möglichkeit für spezielle Rundenauswertung in der Log-Datei Clonk4.log
+  <funclink>Log</funclink>("Vermögen von Spieler 1: %d", <funclink>GetWealth</funclink>(0));
+}</code>
+</part>
+
+<author>Sven2</author><date>April 2002</date>
+
+</doc>

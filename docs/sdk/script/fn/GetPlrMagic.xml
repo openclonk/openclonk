@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetPlrMagic</title>
+		<category>Spieler</category>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>bool / id</rtype>
+			<params>
+				<param><type>int</type><name>iPlr</name><desc>Spieler, dessen Magiewissen abgefragt wird.</desc></param>
+				<param><type>id</type><name>id</name><desc>Bei angegebenen id gibt die Funktion TRUE zurück, wenn der iPlr betreffenden Zauber zur Verfügung hat. iIndex wird hierbei ignoriert.</desc></param>
+				<param><type>int</type><name>iIndex</name><desc>Bei angegebenem iIndex liefert die Funktion den indizierten Zauberspruch, der dem Spieler zur Verfügung steht.</desc></param>
+			</params>
+		</syntax>
+		<desc>Stellt das Magiewissen eines bestimmten Spielers fest.</desc>
+		<examples>
+			<example>
+				<code><funclink>if</funclink> (GetPlrMagic(0,MLGT))
+	<funclink>Message</funclink>("Spieler %s kann Blitze zaubern",0,<funclink>GetPlayerName</funclink>(0));
+				</code>
+				<text>Wenn Spieler 0 Blitze zaubern (MLGT) kann, wird eine entsprechende Botschaft ausgegeben.</text>
+			</example>
+			<example>
+				<code>var spell;
+
+spell = GetPlrMagic(0,0,4);
+<funclink>Message</funclink>("Der fünfte Zauberspruch des Spielers ist %i",0,spell);
+				</code>
+				<text>Gibt die ID des 5. Zauberspruchs des ersten Spielers aus.</text>
+			</example>
+		</examples>
+	</func>
+	<author>jwk</author><date>Juni 2002</date>
+</funcs>

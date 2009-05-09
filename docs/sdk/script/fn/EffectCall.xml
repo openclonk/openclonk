@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>EffectCall</title>
+    <category>Effekte</category>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>pTarget</name>
+          <desc>Zielobjekt des Effektes, auf dessen Variablenspeicher zugegriffen wird. 0 für globale Effekte.</desc>
+          <optional />
+        </param>
+        <param>
+          <type>int</type>
+          <name>iNumber</name>
+          <desc>Effektnummer. Effektnummern werden an Effekt-Callbackfunktionen übergeben, sind Rückgabewert von <funclink>AddEffect</funclink> und lassen sich über <funclink>GetEffect</funclink> aus dem Effektnamen herausfinden.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>szCommand</name>
+          <desc>Aufzurufender Befehl. Es wird automatisch Fx[Effektname] vorangestellt; dies sollte nicht mit angegeben werden.</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>...</name>
+          <desc>Zusätzliche Aufrufparameter</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Führt einen Funktionsaufruf im angegebenen Effekt durch. Der Aufruf erhält den Befehlskontext des Effektes, und die ersten beiden Aufrufparameter sind immer Zielobjekt und Effektindex. Die weiteren Parameter können frei gewählt werden.</desc>
+
+    <remark>Für Beispiele und weitere Hinweise siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>.</remark>
+
+    <related>
+      <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>
+      <funclink>AddEffect</funclink>
+      <funclink>ChangeEffect</funclink>
+      <funclink>CheckEffect</funclink>
+      <funclink>GetEffectCount</funclink>
+      <funclink>EffectVar</funclink>
+      <funclink>GetEffect</funclink>
+      <funclink>RemoveEffect</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>März 2004</date>
+</funcs>

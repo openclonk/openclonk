@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetMaterialCount</title>
+		<category>Landschaft</category><subcat>Material</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>iMaterial</name><desc>Materialsindex</desc></param>
+			</params>
+		</syntax>
+		<desc>Liefert die in der Landschaft vorhandene Menge des angegebenen Materials.</desc>
+		<remark>Ein Rückgabewert -1 bedeutet, daß noch kein gültiger Wert ermittelt werden konnte. Er kann nicht ermittelt werden, wenn nicht mindestens 500 Frames seit Rundenbeginn vergangen sind, oder NoScan in den Szenarieneigenschaften aktiviert ist. Pixel werden nur alle 500 Frames gezählt, d.h. in diesem Zeitraum gibt die Funktion immer den selben Wert zurück.</remark>
+		<examples>
+			<example>
+				<code>/* Spielziel erfüllt? */
+public func IsFulfilled()
+{
+  // Gold noch nicht gezählt?
+  if ((var iGold=GetMaterialCount(<funclink>Material</funclink>("Gold")))==-1) return();
+  // noch zu viel?
+  if (iGold >= 150) return();
+  // noch Goldstücke abzubauen?
+  return(!<funclink>ObjectCount</funclink>(GOLD));
+}
+				</code>
+				<text>Auszug aus dem Goldminen-Spielzielobjekt (GLDM).</text>
+			</example>
+		</examples>
+								<related>
+												<funclink>Material</funclink>
+								</related>
+	</func>
+	<author>wipfmetz</author><date>August 2002</date>
+</funcs>

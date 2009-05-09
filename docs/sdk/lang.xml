@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
+<doc>
+<title>Sprachanpassung</title>
+<h>Sprachanpassung</h>
+<part>
+<text>Clonk ermöglicht es, Unterstützung für mehrere Sprachen in Objekte und Szenarien zu integrieren. 
+Dazu können jeweils bestimmte Elemente sprachabhängig überladen werden.</text>
+<h>Anpassbare Elemente</h>
+
+<dl>
+<dt id="Titletxt"><img src="../images/icon_text.gif" width="16" height="16" />Title.txt</dt>
+<dd><text>
+ Die Komponente <emlink href="scenario/index.html#Titletxt">Title.txt</emlink> kann in Szenarien und Objektordnern verwendet 
+ werden, um den Titel für verschiedene Sprachen zu definieren.
+</text>
+<text>
+ In jeder Zeile wird dabei ein Sprachkürzel dem gewünschten Titel vorangestellt. Beispiel:
+</text>
+<code>DE:Angriff der Killerwipfe
+US:Attack of the Killer Wipfs
+</code>
+<text>
+ In externen Sprachpaketen sollte an der entsprechenden Verzeichnis-Position eine Komponente Title*.txt stehen (wobei * durch das entsprechende Sprachkürzel ersetzt wird), die dann den Titel für die jeweilige zusätzliche Sprache enthalten kann. Beispiel für den Inhalt einer TitleFR.txt:
+</text>
+<code>FR:Les wipfes moerderesque attaquent</code>
+<text>Ist ein Eintrag für die gewählte Sprache vorhanden, so wird der Title-Eintrag aus der <emlink href="scenario/scenario.html#SektionHead">Scenario.txt</emlink> durch den entsprechenden Namen überschrieben.</text>
+<text>Wichtig: es sollten keine Anführungszeichen oder Sonderzeichen verwendet werden.</text>
+</dd>
+
+<dt id="Namestxt"><img src="../images/icon_text.gif" width="16" height="16" />Names.txt</dt>
+<dd><text>
+ Mit der Komponente <emlink href="definition/index.html#Namestxt">Names.txt</emlink> kann der Name eines Objekts für verschiedene
+ Sprachen definiert werden. Die Funktionsweise der Names.txt gleicht Funktionsweise der der Title.txt.
+</text>
+<text>
+ Existiert ein Eintrag für die gewählte Sprache, so wird die Name-Angabe aus der
+ <emlink href="definition/defcore.html#SektionDefCore">DefCore.txt</emlink> überschrieben.
+</text>
+</dd>
+
+<dt id="Desctxt"><img src="../images/icon_text.gif" width="16" height="16" />Desc*.txt / Desc*.rtf</dt>
+<dd><text>
+ Um die Beschreibung einer <emlink href="definition/index.html#Desc__txt">Objektdefinition</emlink> oder eines 
+ <emlink href="scenario/index.html#Desc__rtf">Szenarios</emlink>
+ sprachabhängig anzupassen, muss eine Datei Desc*.txt/.rtf im Definitions- bzw. Szenarioverzeichnis vorhanden sein
+ (* steht dabei wieder für das entsprechende Sprachkürzel, die Komponenten sollte also z.B. DescUS.rtf heißen).
+</text>
+</dd>
+
+<dt id="Sciptc"><img src="../images/icon_text.gif" width="16" height="16" />Script.c, Teams.txt</dt>
+<dd><text>
+ Um sprachabhängig Texte in Scripts einzufügen, kommen sogenannte String Tables
+ zum Einsatz. Im Script wird dazu, anstatt des Textes ein Verweis auf einen Eintrag einer
+ solchen String-Tabelle eingefügt. Die Tabelle muss sich im selben Verzeichnis wie das
+ darauf verweisende Script befinden und den Namen StringTbl*.txt haben (wobei * für den
+ Sprachcode steht).
+</text>
+<text>
+ Der Verweis im Script besteht aus einem Namen für den zu verwendenden String (String-ID),
+ der mit Dollarzeichen ("$") als ein solcher Stringtabellenverweis gekennzeichnet ist. <br/> Beispiel:
+</text>
+<code>protected func Activate(pCaller)
+{
+  [$DescActivate$]
+  <emlink href="script/fn/Message.html">Message</emlink>("$MsgYourPosition$ %d / %d", <emlink href="script/fn/GetX.html">GetX</emlink>(pCaller), <emlink href="script/fn/GetX.html">GetY</emlink>(pCaller));
+}</code>
+<text>
+ Hier werden zwei Strings mit den Namen "DescActivate" und "MsgYourPosition" eingebunden.
+</text>
+<text>
+ Eine passende StringTblDE.txt (für deutsche Sprache) könnte folgendermaßen aussehen:
+</text>
+<code># Beschreibungstexte
+DescActivate=Position bestimmen
+# Nachrichten
+MsgYourPosition=Deine Position ist:</code>
+<text>
+ Im Objekt hätte also Activate den Beschreibungstext "Position bestimmen" und würde z.B.
+ die Nachricht "Deine Position ist: 252 / 352" ausgeben. In der Stringtabelle wurden hier zwei
+ Kommentare eingefügt. Sie beginnen mit einem '#'-Zeichen und werden ignoriert.
+</text>
+<text>
+ Zur Vollständigkeit - eine passende StringTblUS.txt:
+</text>
+<code># Description texts
+DescActivate=Tell position
+# Messages
+MsgYourPosition=Your position is:</code>
+<text>
+ Hier würden also z.B. die Nachricht "Your position is: 252 / 352" erzeugt, wenn Englisch
+ als Sprache eingestellt ist.
+</text>
+</dd>
+</dl>
+
+</part>
+
+<author>PeterW</author><date>April 2002</date>
+<author>matthes</author><date>April 2004</date>
+
+</doc>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+ <func>
+  <title>Max</title>
+  <category>Arithmetik</category>
+  <version>4.6.5.0 CP</version>
+  <syntax>
+   <rtype>int</rtype>
+   <params>
+    <param>
+     <type>int</type>
+     <name>iVal1</name>
+     <desc>erster Wert</desc>
+    </param>
+    <param>
+     <type>int</type>
+     <name>iVal2</name>
+     <desc>zweiter Wert</desc>
+    </param>
+   </params>
+  </syntax>
+
+  <desc>Gibt den größeren der beiden Werte zurück</desc>
+
+  <related>
+   <funclink>Min</funclink>
+   <funclink>Inside</funclink>
+   <funclink>BoundBy</funclink>
+  </related>
+ </func>
+ <author>PeterW</author><date>Dezember 2001</date>
+</funcs>

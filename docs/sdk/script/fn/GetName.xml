@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetName</title>
+		<category>Objekte</category>
+		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+		<syntax>
+			<rtype>string</rtype>
+			<params>
+				<param><type>object</type><name>pObj</name><desc>Das Objekt, dessen Name gesucht wird. 0 bei lokalem Aufruf.</desc><optional/></param>
+				<param><type>id</type><name>idDef</name><desc>Falls angegeben, wird stattdessen der Name dieser Definition zurückgegeben.</desc><optional/></param>
+			</params>
+		</syntax>
+		<desc>Gibt den Namen eines Objekts oder einer Objektdefinition zurück. Hat das Objekt keinen eigenen Namen, wird der Name der Definition zurückgegeben.</desc>
+	</func>
+	<author>jwk</author><date>Juni 2002</date>
+</funcs>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>EliminatePlayer</title>
+		<category>Spieler</category>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iPlr</name><desc>Spielernummer des zu eliminierenden Spielers</desc></param>
+			</params>
+		</syntax>
+		<desc>Eliminiert einen Spieler. Die Runde gilt für diesen Spieler als verloren.</desc>
+		<examples>
+			<example>
+				<code>if (!<funclink>FindObjectOwner</funclink>(FLAG, 0)) EliminatePlayer(0);</code>
+				<text>Wenn der erste Spieler keine Flagge mehr hat, wird er eliminiert.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>GameOver</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>November 2001</date>
+</funcs>

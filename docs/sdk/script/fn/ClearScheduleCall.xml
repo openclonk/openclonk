@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ClearScheduleCall</title>
+    <category>Script</category>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+				<param><type>object</type><name>pObj</name><desc>Objekt, für das verzögerte Funktionsaufrufe abgebrochen werden sollen. 0 für aufrufendes Objekt.</desc></param>
+        <param><type>string</type><name>szFunction</name><desc>Name der Funktion, die durch die abzubrechenden Aufrufe aufgerufen würde.</desc></param>
+      </params>
+    </syntax>
+    <desc>Bricht durch <funclink>ScheduleCall</funclink> erzeugte verzögerte Funktionsaufrufe ab. Alle momentan wartenden Funktionsaufrufe an
+		     die angegebene Funktion und das angegebene Objekt werden abgebrochen.</desc>
+    <examples>
+      <example>
+				<code>ClearScheduleCall(<funclink>FindObject</funclink>(CLNK), "Redefine");</code>
+				<text>Bricht alle verzögerten "Redefine"-Aufrufe an den ersten Clonk ab.</text>
+			</example>
+		</examples>
+    <related>
+      <funclink>Schedule</funclink>
+      <funclink>ScheduleCall</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>August 2005</date>
+</funcs>

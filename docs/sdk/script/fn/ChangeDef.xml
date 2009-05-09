@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ChangeDef</title>
+    <category>Objekte</category><subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>id</type><name>idNewDef</name><desc>ID der neuen Definition für das Objekt</desc></param>
+        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Typ geändert wird. 0 bei lokalem Aufruf.</desc></param>
+      </params>
+    </syntax>
+    <desc>Weist einem Objekt eine neue Definition zu.</desc>
+    <remark>Bei ChangeDef bleiben lokale Variablen unangetastet. Die Werte lokaler benannter Variablen
+            werden in gleichnamige Variablen in der Zieldefinition übertragen.</remark>
+
+    <remark>Achtung! Wendet der Script eines Objekts ChangeDef auf sich selbst an, passt der Script
+            nach der Definitionsänderung nicht mehr zum Objekt. Deshalb sollte in diesem Fall
+            nach ChangeDef weder eine lokale Funktion aufgerufen (stattdessen <funclink>this</funclink>()->Funktion(...)
+            benutzen) noch auf eine lokale benannte Variable zugegriffen werden (selbst wenn
+            eine gleichnamige in der Zieldefinition existiert).</remark>
+    <examples>
+      <example>
+        <code>ChangeDef(MONS, <funclink>GetCursor</funclink>(0));</code>
+        <text>Verwandelt den ausgewählten Clonk des ersten Spielers in ein Monster.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetID</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>November 2001</date>
+</funcs>

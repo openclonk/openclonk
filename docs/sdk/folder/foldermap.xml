@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>FolderMap.txt</title>
+
+<h id="FolderMaptxt">FolderMap.txt</h><part>
+<text>Ab CR können Rundenordner Auswahlkarten für die enthaltenen Szenarien anbieten.
+Diese Karten werden nur in der Szenarienauswahl im Spiel und nicht im Entwicklerfrontend (Editor) angezeigt. Für ein Beispiel siehe das Westernpack von RedWolf Design.</text>
+
+<text><table>
+	<caption id="SektionFolderMap">Sektion [FolderMap]</caption>
+	<rowh>
+		<col>Wert</col>
+		<col>Datentyp</col>
+		<col>Beschreibung</col>
+	</rowh>
+	<row>
+		<col>ScenInfoArea</col>
+		<col>4 Integer</col>
+		<col>Koordinaten (x,y,Breite,Höhe) für die Beschreibungsbox, in der die Beschreibung für das ausgewählte Szenario angezeigt wird.</col>
+	</row>
+	<row>
+		<col>MinResX</col>
+		<col>Integer</col>
+		<col>Unterschreitet die Bildschirmauflösung des Spielers diesen Wert in der Breite, so wird statt der FolderMap die klassische Szenarienauswahl angezeigt. Dies ist nützlich, falls die Karte so großräumig ausgelegt ist, dass sie bei kleineren Auflösungen unbenutzbar wäre.</col>
+	</row>
+	<row>
+		<col>MinResY</col>
+		<col>Integer</col>
+		<col>Analog zu MinResY: Mindesthöhe der Bildschirmauflösung.</col>
+	</row>
+	<row>
+		<col>FullscreenBG</col>
+		<col>Integer</col>
+		<col>Wenn ungleich 0, wird das Hintergrundbild auf die gesamte Bildschirmgröße gestreckt. Dabei ist zu beachten, dass Kontrollelemente trotzdem nur innerhalb des mittleren Gebietes platziert werden dürfen.</col>
+	</row></table></text>
+
+<text><table>
+	<caption id="SektionAccessGfx">Beliebig viele Sektionen [AccessGfx]</caption>
+	<rowh>
+		<col>Wert</col>
+		<col>Datentyp</col>
+		<col>Beschreibung</col>
+	</rowh>
+	<row>
+		<col>Access</col>
+		<col>Zeichenfolge</col>
+		<col>Wenn für diesen Benutzer das hier angegebene MissionAccess-Passwort freigeschaltet ist, wird die in dieser Sektion beschriebene Grafik auf der FolderMap angezeigt. Auf diese Weise können einzelne Bestandteile der Karte freigespielt werden. Siehe dazu die Scriptfunktion <funclink>GainMissionAccess</funclink>.</col>
+	</row>
+	<row>
+		<col>OverlayImage</col>
+		<col>Zeichenfolge</col>
+		<col>Dateiname der Grafikdatei, die angezeigt wird. Die Datei sollte im selben Rundenordner liegen.</col>
+	</row>
+	<row>
+		<col>Area</col>
+		<col>4 Integer</col>
+		<col>Koordinaten des Bereiches, in dem das Bild angezeigt wird. Die Koordinaten sind relativ zum <emlink href="#background">Hintergrundbild</emlink>.</col>
+</row></table></text>
+
+<text><table>
+	<caption id="SektionScenario">Beliebig viele Sektionen [Scenario]</caption>
+	<rowh>
+		<col>Wert</col>
+		<col>Datentyp</col>
+		<col>Beschreibung</col>
+	</rowh>
+	<row>
+		<col>File</col>
+		<col>Zeichenfolge</col>
+		<col>Szenariendatei (inklusive Endung .c4s), für die mit dieser Sektion ein Knopf erstellt wird. Für jedes Szenario im Rundenordner sollte eine [Scenario]-Sektion erstellt werden. Es werden grundsätzlich nur die Knöpfe angezeigt, für die der Benutzer MissionAccess (siehe <funclink>GainMissionAccess</funclink>) freigeschaltet hat. </col>
+	</row>
+	<row>
+		<col>BaseImage</col>
+		<col>Zeichenfolge</col>
+		<col>Dateiname der Grafikdatei, die angezeigt wird, wenn das Szenario nicht ausgewählt ist. Die Datei sollte im selben Rundenordner liegen.</col>
+	</row>
+	<row>
+		<col>OverlayImage</col>
+		<col>Zeichenfolge</col>
+		<col>Dateiname der Grafikdatei, die angezeigt wird, wenn der Benutzer das Szenario ausgewählt hat oder mit der Maus darüber fährt. Die Datei sollte im selben Rundenordner liegen.</col>
+	</row>
+	<row>
+		<col>Area</col>
+		<col>4 Integer</col>
+		<col>Koordinaten des Bereiches, in dem der Knopf angezeigt wird. Die Koordinaten sind relativ zum <emlink href="#background">Hintergrundbild</emlink>.</col>
+	</row>
+	<row>
+		<col>Title</col>
+		<col>Zeichenfolge</col>
+		<col>Titel, der auf den Knopf geschrieben wird. Für Szenarientitel, die in allen Sprachen gleich sind, kann der Titel auch weggelassen und stattdessen direkt ins BaseImage bzw. Overlayimage gemalt werden. Die Zeichenkette TITLE wird dabei automatisch durch den aus dem Szenario geladenen Titel ersetzt.</col>
+	</row>
+	<row>
+		<col>TitleFontSize</col>
+		<col>Integer</col>
+		<col>Schriftgröße des Titels. Die Größe bezieht sich auf ein nicht gezoomtes Hintergrundbild und kann je nach Auflösung verändert werden.</col>
+	</row>
+	<row>
+		<col>TitleColorInactive</col>
+		<col>Integer</col>
+		<col>DWORD-Farbe des Titels, wenn der Knopf nicht ausgewählt ist.</col>
+	</row>
+	<row>
+		<col>TitleColorActive</col>
+		<col>Integer</col>
+		<col>DWORD-Farbe des Titels, wenn der Knopf nicht sgewählt ist.</col>
+	</row>
+	<row>
+		<col>TitleOffX</col>
+		<col>Integer</col>
+		<col>Horizontaler Offset der linken Kante (bzw. Textmitte bei zentriertem Text) des Titels von der linken Kante des Knopfes.</col>
+	</row>
+	<row>
+		<col>TitleOffY</col>
+		<col>Integer</col>
+		<col>Vertikaler Offset der Oberkante des Titels von der oberen Kante des Knopfes.</col>
+	</row>
+	<row>
+		<col>TitleAlign</col>
+		<col>Integer</col>
+		<col>Ausrichtung des Titels: 0 für linksbündig, 1 für zentriert, 2 für rechtsbündig.</col>
+	</row>
+	<row>
+		<col>TitleUseBookFont</col>
+		<col>Boolean</col>
+		<col>0 oder 1. Bei 1 wird die schattenlose Schriftart des Startupmenüs anstatt der nromalen InGame-Schriftart für den Titelverwendet.</col>
+	</row>
+</table></text>
+
+<h id="order">Anordnung der Elemente</h>
+<text>Es werden grundsätzlich alle AccessGfx-Grafiken unter die Szenarienknöpfe gezeichnet. Die Szenarienknöpfe erscheinen in der Reihenfolge, in der sie in der Datei angegeben sind. Dabei ist darauf zu achten, dass man sie in einer sinnvollen Reihenfolge angibt (also von links nach rechts und von oben nach unten), da das Durchschalten mit Tastatur oder Gamepad hiervon abhängt. Es ist auch Aufgabe des Entwicklers, dafür zu sorgen, dass sich Knöpfe und Grafiken nicht überlappen.</text>
+
+<h id="background">Hintergrundbild</h>
+<text>Wenn der Ordner eine FolderMap enthält, wird eine der Bilddateien FolderMap.png/.jpg/.jpeg/.bmp als Hintergrund erwartet. Die optimale Bildgröße, bei der das Hintergrundbild ohne gestreckt zu werden angezeigt werden kann, hängt von der Bildschirmauflösung des Benutzers ab:</text>
+<text><table>
+	<rowh><col>Auflösung</col><col>Größe der FolderMap</col></rowh>
+	<row><col>640x480</col><col>616x385</col></row>
+	<row><col>800x600</col><col>768x480</col></row>
+	<row><col>1024x768</col><col>984x616</col></row></table></text>
+<text>Das Bild wird immer auf die volle, für die Auswahl zur Verfügung stehende Größe gestreckt bzw. gestaucht. Alle Positionsangaben für Szenarien, die Beschreibungsleiste, etc. beziehen sich auf Koordinaten in diesem Hintergrundbild und werden entsprechend mitgestreckt oder gestaucht. Es empfiehlt sich also, die Karte für eine relativ große Auflösung wie z.B. 1024x768 zu gestalten, und stets zu testen, ob für kleine Auflösungen noch alles lesbar ist.</text>
+
+<h id="devel">Tipps zur Entwicklung</h>
+<text>Zum Testen kann die FolderMap mit einem entpackten Rundenordner entworfen, und dann in der Szenarienauswahl mit Druck auf F5 jeweils neu geladen werden. Erscheint statt der FolderMap die klassische Szenarienauswahl, ist beim Laden der Definitionsdatei ein Fehler aufgetreten, oder zum Beispiel eine referenzierte Grafikdatei nicht gefunden worden. Bei aktiviertem Debugmodus findet sich in dem Fall eine Fehlermeldung in der Datei Clonk.log.</text>
+
+
+</part>
+<author>Sven2</author><date>September 2006</date>
+
+</doc>

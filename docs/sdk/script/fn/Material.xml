@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Material</title>
+    <category>Landschaft</category>
+    <subcat>Material</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param><type>string</type><name>szMaterialName</name><desc>Name des Materials</desc></param>
+      </params>
+    </syntax>
+    <desc>Gibt den Index eines Materials anhand seines Namens zurück. Dieser Index wird in den meisten materialbezogenen Funktionen verwendet.</desc>
+    <examples>
+      <example>
+        <code><funclink>InsertMaterial</funclink>(Material("Gold"), 200, 100);</code>
+        <text>Fügt ein Pixel Gold an Position 200/100 ein.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>MaterialName</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>November 2001</date>
+</funcs>

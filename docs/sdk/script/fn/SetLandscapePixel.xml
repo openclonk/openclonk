@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetLandscapePixel</title>
+    <category>Landschaft</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>int</type><name>iX</name><desc>X-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf</desc></param>
+        <param><type>int</type><name>iY</name><desc>Y-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf</desc></param>
+        <param><type>int</type><name>dwValue</name><desc>32Bit-Farbwert des Pixels.</desc></param>
+      </params>
+    </syntax>
+    <desc>Färbt ein Pixel in der Landschaft ein. Diese Funktion ist nicht im 8Bit-Grafiksystem verfügbar.</desc>
+    <examples>
+      <example>
+        <code>SetLandscapePixel(0, 0, <funclink>RGB</funclink>(185, 127, 0));</code>
+        <text>Färbt das Landschaftspixel direkt hinter dem aufrufenden Objekt braun.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RGB</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>April 2002</date>
+</funcs>

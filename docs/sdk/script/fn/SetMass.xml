@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetMass</title>
+		<category>Objekte</category><subcat>Status</subcat>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iNewMass</name><desc>Neue Eigenmasse</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Eigenmasse geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Ändert die Eigenmasse eines Objekts. Die Eigenmasse entspricht dem in der <emlink href="definition/DefCore.html">DefCore.txt</emlink> angegebenen Wert unter [DefCore], Mass. Die tatsächliche Objektmasse ergibt sich durch Hinzurechnen der Masse aller enthaltenen Objekte.</desc>
+		<examples>
+			<example>
+
+<code>private func GetOwnMass(pClonk)
+  {
+  var iMass=<funclink>GetMass</funclink>(pClonk), i, pObj;
+  <funclink>while</funclink>(pObj = <funclink>Contents</funclink>(i++, pClonk)) iMass -= <funclink>GetMass</funclink>(pObj);
+  <funclink>return</funclink>(iMass);
+  }
+
+protected func Activate(pByClonk)
+  {
+  [Essen]
+  SetMass(GetOwnMass(pByClonk) + 100, pByClonk);
+  <funclink>Sound</funclink>("ClonkMunch", 0, pByClonk);
+  <funclink>return</funclink>(<funclink>RemoveObject</funclink>());
+  }</code>
+
+				<text>Script für einen Keks: Beim Essen nimmt die Masse des Clonks zu.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>GetMass</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>Juni 2003</date>
+</funcs>

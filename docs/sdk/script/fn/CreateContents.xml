@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>CreateContents</title>
+		<category>Objekte</category><subcat>Erzeugung</subcat>
+		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+		<syntax>
+			<rtype>object</rtype>
+			<params>
+				<param><type>id</type><name>id</name><desc>Typ des zu erstellenden Objekts</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Hierin wird das Objekt erstellt</desc></param>
+				<param><type>int</type><name>iCount</name><desc>Anzahl zu erstellender Objekte. Ab 4.9.6.0 CR</desc></param>
+			</params>
+		</syntax>
+		<desc>Erzeugt ein Objekt vom Typ id als Inhalt von pObj.</desc>
+		<examples>
+			<example>
+				<code>CreateContents(ROCK,<funclink>GetHiRank</funclink>(0));</code>
+				<text>Der höchstrangige Clonk des Spielers erhält einen Stein.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>CreateConstruction</funclink>
+			<funclink>CreateObject</funclink>
+			<funclink>RemoveObject</funclink>
+		</related>
+	</func>
+	<author>springer</author><date>April 2002</date>
+</funcs>

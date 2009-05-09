@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>ComposeContents</title>
+		<category>Objekte</category><subcat>Erzeugung</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>object</rtype>
+			<params>
+				<param><type>id</type><name>id</name><desc>Typ des zu erstellenden Objekts</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, welches die benötigten Komponenten enthält</desc></param>
+			</params>
+		</syntax>
+		<desc>Erzeugt ein Objekt vom Typ id als Inhalt von pObj. Das Objekt wird aus seinen Komponenten zusammen gesetzt, die in pObj enthalten sein müssen. Andernfalls wird eine Meldung ausgegeben, welche Objekte noch benötigt werden. Auch ComposeContents produziert den Engine Objekt-Call BuildNeedsMaterial, durch den die Meldung über noch benötigtes Material ausgewertet und abgefangen werden kann.</desc>
+		<examples>
+			<example>
+				<code>ComposeContents( STMG, <funclink>FindObject</funclink>(HUT1) );</code>
+				<text>Setzt in der nächstgelegenen Hütte eine Dampfmaschine zusammen, wenn die Materialien dazu vorhanden sind.</text>
+			</example>
+		</examples>
+	</func>
+	<author>springer</author><date>April 2002</date>
+</funcs>

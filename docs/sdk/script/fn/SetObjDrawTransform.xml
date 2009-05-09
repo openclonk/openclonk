@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetObjDrawTransform</title>
+		<category>Objekte</category><subcat>Darstellung</subcat>
+		<version>4.9.5.0 CE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iWidth</name><desc>Breite der Grafik. 1000 ist die Standardbreite, negative Angaben bedeuten eine horizontale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
+				<param><type>int</type><name>iXSkew</name><desc>Horizontale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der horizontalen Kante um 45° nach links (oben nach links, unten nach rechts). Negative Werte bedeuten eine Verschiebung nach rechts.</desc></param>
+				<param><type>int</type><name>iXAdjust</name><desc>Horizontale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach rechts verschoben, bei negativen Angaben wird die Grafik nach links verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
+				<param><type>int</type><name>iYSkew</name><desc>Vertikale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der vertikalen Kante um 45° nach unten (links hoch, rechts runter). Negative Werte bedeuten eine Verschiebung nach oben.</desc></param>
+				<param><type>int</type><name>iHeight</name><desc>Höhe der Grafik. 1000 ist die Standardhöhe, negative Angaben bedeuten eine vertikale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
+				<param><type>int</type><name>iYAdjust</name><desc>Vertikale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach unten verschoben, bei negativen Angaben wird die Grafik nach oben verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Das Objekt dessen Grafik transformiert dargestellt werden soll. 0 bei lokalem Aufruf.</desc></param>
+				<param><type>int</type><name>iOverlayID</name><desc>ID des Overlays, dessen Transformation angepasst werden soll. Bei 0 (default) wird die Hauptgrafik transformiert.</desc></param>
+			</params>
+		</syntax>
+		<desc>Transformiert die Grafik des angegebenen Objektes.</desc>
+		<remark>Sämtliche Angaben der Parameter werden in Promille (1000 = 100%) getätigt, weil es in Clonk keine Floating Point-Werte gibt.</remark>
+		<examples>
+			<example>
+				<code>SetObjDrawTransform(1000,0,0,0,1000,0);</code>
+				<text>Setzt die Transformation zurück.</text>
+			</example>
+			<example>
+				<code>global func SetDTRotation (int r, int xoff, int yoff, object obj) {
+  var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+  // set matrix values
+  SetObjDrawTransform (
+    +fcos, +fsin, (1000-fcos)*xoff - fsin*yoff,
+    -fsin, +fcos, (1000-fcos)*yoff + fsin*xoff,
+    obj
+  );
+}</code>
+				<text>Rotiert das Objekt ohne es tatsächlich zu rotieren (Vertices usw. bleiben da wo sie sind).</text>
+			</example>
+			<example>
+				<code>SetObjDrawTransform(1000,0,0,0,-1000,0,<funclink>GetHiRank</funclink>(0));</code>
+				<text>Dreht den höchstrangigsten Clonk des ersten Spielers um, so dass er auf dem Kopf steht.</text>
+			</example>
+			<example>
+				<code>SetObjDrawTransform(500,0,0,0,500,GetDefHeight(GetID())*1000/4);</code>
+				<text>Verkleinert die Grafik um 50% verschiebt die Unterkante der verkleinerten Grafik an die Unterkante des Objektes: Ein so verkleinerter Baum würde nicht in der Luft schweben (weil Grafik zentriert), sondern seine Wurzel da haben wo sie auch vorher war.</text>
+			</example>
+		</examples>
+	</func>
+	<author>Clonkonaut</author><date>Mai 2008</date>
+</funcs>

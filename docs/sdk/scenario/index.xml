@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>Szenarien</title>
+
+<h id="Szenarien">Szenarien</h>
+<part>
+	<text>Szenarien sind die Spielwelten, die der Spieler im Menüsystem auswählen und starten kann. Über die einzelnen Komponenten kann der Szenarien-Designer von der Landschaft über Spielmodus und -regeln über benutzte Objekte, Materialien, die Landschaft, usw. bis hin zum Aussehen im Menüsystem alles frei einstellen.</text>
+	
+	<h id="SzenarioKomponentenC4S">Szenario-Komponenten (C4S)</h>
+	<dl>
+		<dt id="Szenariotxt"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="scenario/scenario.html">Scenario.txt</emlink></dt>
+		<dd><text>Enthält die meisten Szenarioeinstellungen.</text></dd>
+		
+		<dt id="Teamstxt"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="scenario/Teams.html">Teams.txt</emlink></dt>
+		<dd><text>Enthält Teameinstellungen für Mehrspielerszenarien. Ab 4.9.6.0 CR.</text></dd>
+		
+		<dt id="Title"><img src="../../images/icon_image.gif" width="16" height="16"/>Title.png/Title.bmp</dt>
+		<dd><text>Das Titelbild des Szenarios im Format PNG. Größe: 200x150 Pixel. Das veraltete Grafikformat Windows BMP mit 256 Farben wird auch weiterhin unterstützt.</text></dd>
+		
+		<dt id="Iconbmp"><img src="../../images/icon_image.gif" width="16" height="16"/>Icon.bmp</dt>
+		<dd><text>Das Icon des Szenarios als unkomprimiertes Windows Bitmap mit 256 Farben. Größe 16x16 Pixel. Die Farbe RGB 255/0/255 (Lila) wird transparent angezeigt.</text></dd>
+		
+		<dt id="Loader"><img src="../../images/icon_image.gif" width="16" height="16"/>Loader*.png/Loader*.bmp</dt>
+		<dd><text>Eine Grafik, die beim Start der Runde angezeigt wird. Sind mehrere Dateien vorhanden (Loader1.png, Loader2.png, Loader3.png...), wird per Zufall eine ausgewählt, wobei über eine optional im Scenario.txt vorhandene Loader-Spezifikation die Auswahl noch weiter vorgegeben werden kann. Beim veralteten BMP-Format mit 256 Farben müssen die Farben Schwarz bei Palettenindex 16 und Weiß bei Index 31 vorhanden sein, damit Meldungen beim Startvorgang korrekt angezeigt werden können. Auch Loader-Grafiken aus einem übergeordneten Ordner werden geladen.</text></dd>
+		
+		<dt id="Sky"><img src="../../images/icon_image.gif" width="16" height="16"/>Sky.png/Sky.bmp</dt>
+		<dd><text>Das Himmels-Hintergrundbild. Himmelsgrafiken sollten exakt kachelfähig sein oder die exakte Größe der Landschaft während der Runde haben (bei dynamischen Karten nicht vorhersehbar, bei statischen Karten die Größe des Landkartenbitmaps multipliziert mit dem Vergrößerungsfaktor). Beim veralteten BMP-Format mit 256 Farben dürfen in diesem Bitmap nur die ersten zwanzig Farben benutzt werden. </text></dd>
+		
+		<dt id="Desc__rtf"><img src="../../images/icon_text.gif" width="16" height="16"/>Desc*.rtf</dt>
+		<dd><text>Der Beschreibungstext im RTF-Format. __ muss durch den zweistelligen Sprachcode ersetzt werden. DE steht beispielsweise für Deutsch, US für American English. Es können für mehrere Sprachen verschiedene Beschreibungen enthalten sein, von denen je nach eingestellter Sprache des Menüsystems automatisch die passendste ausgewählt wird.</text>
+		<text>Der Font des Textes wird im Spiel automatisch auf den eingestellten Menüsystem-Font angepasst. Die Größe der Überschrift sollte 10pt und die des Textes 8pt betragen. Bilder im Text werden ignoriert.</text>
+		<text>Diese Datei erstellt man am besten mit dem zu Windows gehörenden WordPad und nicht mit Winword, denn dieses packt in jedes Dokument kilobyteweise unnütze Daten.</text></dd>
+		
+		<dt id="Titletxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Title.txt</dt>
+		<dd><text>Normalerweise wird der Titel eines Szenarios beim Umbenennen mit dem Menüsystem dem Dateinamen entnommen und in der [Head]-Sektion des Szenario.txt gespeichert. Der Dateiname kann unabhängig verändert werden. Für mehrsprachige Szenarien muss eine Datei Title mit entsprechendem Inhalt erzeugt werden:</text>
+		<code>DE:Angriff der Killerwipfe
+US:Attack of the Killer Wipfs</code>
+		<text>Wichtig: es sollten keine Anführungszeichen oder Sonderzeichen verwendet werden.</text></dd>
+		
+		<dt id="Scriptc"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="scenario/script.html">Script.c</emlink></dt>
+		<dd><text>Das Szenarioscript.</text></dd>
+		
+		<dt id="Landscapebmp"><img src="../../images/icon_image.gif" width="16" height="16"/>Landscape.bmp</dt>
+		<dd><text>Statische Landkarten werden um den in Scenario.txt enthaltenen Faktor MapZoom auf die tatsächliche Spiellandschaft vergrößert. Die in Landscape.bmp enthaltenen Farbindizes entsprechen den in <emlink href="material/index.html#TexMaptxt">TexMap.txt</emlink> zugeordneten Materialien und Texturen.</text>
+		<text>Exakte Landkarten (ExactLandscape) geben die tatsächliche Spiellandschaft wieder. Die Farbindizes in Landscape.bmp (128-191 und 192-255, jeweils 3 Farben pro Material) repräsentieren direkt die für das Szenario festgelegten Materialien. Die aktuelle Materialanordnung wird in MatMap.txt festgehalten.</text></dd>
+		
+		<dt id="Landscapepng"><img src="../../images/icon_image.gif" width="16" height="16"/>Landscape.png</dt>
+		<dd><text>Die Karte in Originalgröße für exakte Landschaften. Hier wird für Spielstände das aktuelle Erscheinungsbild der Landkarte mit Halbtransparenz und texturierten Materialien abgelegt. Exakte Landschaften beanspruchen sehr viel Speicherplatz und sollten daher in regulären Szenarien nicht verwendet werden.</text></dd>
+		
+		<dt id="Landscapetxt"><img src="../../images/icon_text.gif" width="16" height="16"/><emlink href="scenario/MapCreatorS2.html">Landscape.txt</emlink></dt>
+		<dd><text>Besonders fortgeschrittene Spieler können über diese Datei komplexe Zufallslandschaften definieren. Dafür sind allerdings mathematisches und logisches Verständnis sowie viel Geduld unumgänglich.</text></dd>
+		
+		<dt id="MatMaptxt"><img src="../../images/icon_text.gif" width="16" height="16"/>MatMap.txt</dt>
+		<dd><text>Enthält die Anordnung der in diesem Szenario verwendeten Materialien. Die hier aufgeführten Materialien werden von der exakten Landkarte verwendet und müssen beim Start der Runde in der zu ladenden Datei Material.c4g vorhanden sein.</text></dd>
+		
+		<dt id="Objectstxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Objects.txt</dt>
+		<dd><text>Diese Komponente wird von der Engine erzeugt und enthält die Laufzeitobjektdaten eines abgespeicherten Szenarios.</text></dd>
+		
+		<dt id="Materialc4g"><img src="../../images/icon_system.gif" width="16" height="16"/><emlink href="material/index.html">Material.c4g</emlink></dt>
+		<dd><text>Szenarien können lokale Materialdefinitionen enthalten. Es gelten die <a href="#UeberladungenC4S">Überladungsregeln</a>.</text></dd>
+		
+		<dt id="Graphicsc4g"><img src="../../images/icon_system.gif" width="16" height="16"/>Graphics.c4g</dt>
+		<dd><text>Szenarien können einzelne Grafiken aus der systemglobalen Graphics.c4g überladen. Es gelten die <a href="#UeberladungenC4S">Überladungsregeln</a>.</text></dd>
+		
+		<dt id="wav"><img src="../../images/icon_sound.gif" width="16" height="16"/>*.wav</dt>
+		<dd><text>Szenarien können beliebig lokale Sounds enthalten. Diese können per Script während des Spiels abgespielt werden. Szenariolokale Sounds werden dynamisch und erst bei Bedarf geladen, was bei großen Szenariodateien zu Verzögerungen führen kann.</text></dd>
+		
+		<dt id="mid"><img src="../../images/icon_music.gif" width="16" height="16"/>*.mid/*.ogg</dt>
+		<dd><text>Wenn das Szenario lokale Musikdateien enthält, werden diese während der Runde in zufälliger Reihenfolge abgespielt. Siehe auch Script-Funktion <emlink href="script/fn/Music.html">Music</emlink>().</text></dd>
+		
+		<dt id="Musicc4g"><img src="../../images/icon_system.gif" width="16" height="16"/>Music.c4g</dt>
+		<dd><text>Lokale Musikstücke können auch in dieser lokalen Gruppendatei abgelegt werden.</text></dd>
+		
+		<dt id="c4d"><img src="../../images/icon_object_definition.gif" width="16" height="16"/><emlink href="definition/index.html">*.c4d</emlink></dt>
+		<dd><text>Szenarien können lokale Objektdefinitionen enthalten, die dann nur im entsprechenden Szenario verfügbar sind.</text>
+		<text>Die Engine durchsucht auch alle übergeordneten Rundenordner (c4f) des Szenarios nach Objektdefinitionen. Dadurch kann ein Rundenordner Objektdefinitionen enthalten, die dann in allen untergeordneten Szenarien verfügbar sind.</text></dd>
+		
+		<dt id="Namestxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Names.txt</dt>
+		<dd><text>Diese Namen werden für während der Runde neu erzeugte Clonks verwendet.</text></dd>
+		
+		<dt id="Infotxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Info.txt</dt>
+		<dd><text>Hier kann der Autor zusätzliche Informationen über den Entwicklungsstand seines Szenarios, seine Kontaktadresse oder sonstige Informationen angeben, die er anderen Entwicklern mitteilen möchte.</text></dd>
+		
+		<dt id="Authortxt"><img src="../../images/icon_text.gif" width="16" height="16"/>Author.txt</dt>
+		<dd><text>Sollte den Namen des Autors im Format "Vorname Nachname (Nick)" enthalten und ist dafür gedacht, dass der Name des ursprünglichen Autors erhalten bleibt, selbst wenn die Gruppendatei von einem anderen Entwickler verändert wird (Auswertung der Komponente zur Zeit nur bei Dateien, die durch RedWolf Design bearbeitet werden). Dies ist insbesondere für Wettbewerbsszenarien gedacht.</text></dd>
+	</dl>
+	
+	<h id="UeberladungenC4S">Überladungsregeln</h>
+	<text>Diverse Systemkomponenten (Graphics, Loader, Material, Musik und Objekte) können in Szenarien überladen werden. Dabei werden auch übergeordnete Rundenordner (C4F) durchsucht. Hierbei steigt die Überladungspriorität mit der Ordnertiefe. Bei einem Szenario, das sich in die Ordnerstruktur Ordner.c4f\Unterordner.c4f\Szenario.c4s einordnet, würden Komponenten aus Unterordner.c4f also gleiche Komponenten aus Ordner.c4f überladen (respektive Szenario.c4f Komponenten aus Unterordner.c4f und Ordner.c4f).</text>
+</part>
+
+<author>Sven2</author><date>April 2002</date>
+<author>matthes</author><date>Juni 2004</date>
+
+</doc>

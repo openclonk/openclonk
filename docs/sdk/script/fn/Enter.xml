@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>Enter</title>
+		<category>Objekte</category><subcat>Position</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>object</type><name>pTarget</name><desc>Objekt, in das hineinversetzt wird</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, das in pTarget hineinversetzt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Versetzt ein Objekt in ein anderes hinein. Bei diesem Vorgang wird weder RejectCollect, noch Collection oder ActivateEntrance im Zielobjekt aufgerufen. Dafür aber RejectEntrance und Entrance im Objekt, das hineinversetzt werden soll.</desc>
+		<examples>
+			<example>
+				<code>Enter(<funclink>FindObject</funclink>(HUT1), <funclink>GetCursor</funclink>(0));</code>
+				<text>Der ausgewählte Clonk des ersten Spielers wird in die erstbeste Hütte versetzt.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>Exit</funclink>
+			<funclink>Collect</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>November 2001</date>
+</funcs>

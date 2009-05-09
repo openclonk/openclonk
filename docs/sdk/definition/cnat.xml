@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>CNAT - Contact Attachment</title>
+<h id="CNAT">CNAT - Contact Attachment</h>
+<text>An zahlreichen Stellen benutzt die Engine ContactAttachment-Werte (DWord-Bitmasken), um
+Ausrichtungen von Objekten und Vorgängen zu verwalten. So kann z.B. einem Objekt-Vertex ein
+CNAT-Wert zugewiesen werden, der die Ausrichtung <em>Links</em> enthält. Sind für dieses
+Objekt <em>ContactCalls</em> aktiviert (siehe
+<emlink href="definition/defcore.html">DefCore.txt</emlink>), so ruft die Engine bei jedem Kontakt
+dieses Vertex mit der Landschaft die Objektscript-Funktion <em>ContactLeft</em> auf. CNAT-Werte
+setzen sich aus folgenden Bits zusammen:</text>
+<text>
+<table>
+<rowh><col>Bit</col><col>Wert</col><col>CNAT</col><col>Beschreibung</col></rowh>
+<row><col>0</col><col>1</col><col>CNAT_Left</col>
+  <col>Richtung: Links</col></row>
+<row><col>1</col><col>2</col><col>CNAT_Right</col>
+  <col>Richtung: Rechts</col></row>
+<row><col>2</col><col>4</col><col>CNAT_Top</col>
+  <col>Richtung: Oben</col></row>
+<row><col>3</col><col>8</col><col>CNAT_Bottom</col>
+  <col>Richtung: Unten</col></row>
+<row><col>4</col><col>16</col><col>CNAT_Center</col>
+  <col>Richtung: Mitte (nicht für Attachment)</col></row>
+<row><col>5</col><col>32</col><col>CNAT_MultiAttach</col>
+  <col>Zusatz-Flag: neues Attachment-Verhalten für Objekte mit gleicher Richtung an mehreren
+  Vertices (ab Version 4.95.4)</col></row>
+<row><col>6</col><col>64</col><col>CNAT_NoCollision</col>
+  <col>Zusatz-Flag: kollisionsfreier Vertex (ab Version 4.95.4)</col></row>
+<bitmask>CNAT</bitmask>
+</table>
+</text>
+<author>Sven2</author><date>April 2002</date>
+<author>Newton &amp; Günther</author><date>Januar 2005</date>
+<author>Matthes</author><date>August 2005</date>
+</doc>

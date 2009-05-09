@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetMenuSize</title>
+    <category>Objekte</category><subcat>Menü</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>int</type><name>iCols</name><desc>0-50: Anzahl der Menüeinträge, die das Menü in der Breite anzeigen können soll</desc></param>
+        <param><type>int</type><name>iRows</name><desc>0-50: Anzahl der Menüeinträge, die das Menü in der Höhe anzeigen können soll</desc></param>
+        <param><type>object</type><name>pMenuObj</name><desc>Menüobjekt für das die Menügröße geändert werden soll. 0 wenn sich das Menu im aufrufenden Objekt befindet.</desc><optional /></param>
+      </params>
+    </syntax>
+    <desc>Ändert die Größe eines Objektmenüs, so dass die vorgegebene Anzahl an Menüeinträgen in Breite und Höhe hineinpassen.</desc>
+    <related><funclink>GetMenuSelection</funclink><funclink>GetMenu</funclink><funclink>CreateMenu</funclink><funclink>AddMenuItem</funclink></related>
+  </func>
+  <author>Sven2</author><date>Juni 2003</date>
+</funcs>

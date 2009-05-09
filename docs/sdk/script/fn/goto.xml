@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>goto</title>
+    <category>Script</category>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>int</type><name>iCounter</name><desc>Neue Position des Skriptzählers. Der nächste ScriptXXX-Aufruf wird bei diesem Zählerwert getätigt.</desc></param>
+      </params>
+    </syntax>
+    <desc>Setzt den Skriptzähler in Szenarioskripten auf den gewünschten Wert. Der Scriptzähler sorgt dafür, dass die ScriptXXX-Funktionen im Szenrienscript aufgerufen werden. Dies funktioniert nicht in Objektscripten, stattdessen sollten TimerCalls oder ActMaps mit StartCall/PhaseCall/EndCall verwendet werden.</desc>
+    <remark>In älteren Versionen implizierte goto() ein <funclink>return</funclink>(). Dieses Verhalten wird bei Nicht-Angabe von <emlink href="script/Strict.html">#strict</emlink> emuliert.</remark>
+    <examples>
+      <example>
+<code>#strict
+
+protected func Initialize()
+  {
+  // Scriptcounter starten
+  <funclink>ScriptGo</funclink>(1);
+  // Fertig
+  <funclink>return</funclink>(1);
+  }
+
+protected func Script100()
+  {
+  // Flints erzeugen
+  <funclink>CastObjects</funclink>(FLNT,10,200, <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), 20);
+  <funclink>return</funclink>(goto(90));
+  }</code>
+        <text>Script eines Szenarios: Ein Flintregen. Es werden alle 100 Frames 10 Flints erzeugt.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>ScriptGo</funclink>
+      <funclink>ScriptCounter</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>April 2002</date>
+</funcs>

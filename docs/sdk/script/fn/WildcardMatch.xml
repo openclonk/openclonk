@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>WildcardMatch</title>
+    <category>Script</category><subcat>Strings</subcat>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param><type>string</type><name>szStr</name><desc>String, der überprüft werden soll.</desc></param>
+        <param><type>string</type><name>szWildcard</name><desc>String zum Vergleichen.</desc></param>
+      </params>
+    </syntax>
+    <desc>
+      Prüft, ob zwei Strings gleich sind. Die Prüfung ist case-sensitiv, außerdem können Wildcards benutzt werden.
+    </desc>
+    <remark>
+    Ein * im Vergleichsstring steht für beliebig viele Zeichen (oder keines). Ein ? steht für genau ein Zeichen.
+    </remark>
+    <examples>
+      <example>
+        <code>public func IsRiding() { return WildcardMatch(<funclink>GetAction</funclink>(), "Ride*"); }</code>
+        <text>Liefert <code>true</code> für alle Aktionen, die mit "Ride" anfangen ("Ride" selbst, "RideStill", "RideThrow", usw.).</text>
+      </example>
+      <example>
+        <code>WildcardMatch("Explode1", "Explode?");</code>
+        <text>Ist <code>true</code>.</text>
+      </example>
+      <example>
+        <code>WildcardMatch("Explode10", "Explode?");</code>
+        <text>Ist <code>false</code>.</text>
+      </example>
+      <example>
+        <code>WildcardMatch(GetName(), "*purz*");</code>
+        <text>Prüft, ob der Name des aufrufenden Objekts "purz" enthält (wo ist egal).</text>
+      </example>
+    </examples>
+  </func>
+  <author>Clonkonaut</author><date>Mai 2008</date>
+</funcs>

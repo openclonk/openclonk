@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetPlrViewRange</title>
+		<category>Spieler</category>
+		<subcat>Sicht</subcat>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iRange</name><desc>Sichtweite in Pixel.</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Sichtweite gesetzt wird. 0 bei lokalem Aufruf.</desc></param>
+			</params>
+		</syntax>
+		<desc>Setzt die Sichtweite eines Objekts.</desc>
+		<remark>Aufgrund der Ungenauigkeit des Kriegsnebels wird die Sichtweite nur ungenaue Auswirkungen haben.</remark>
+		<examples>
+			<example>
+				<code>/* Wird bei Doppelklick auf Graben aufgerufen */
+protected func Activate(pClonk)
+{
+	// Den Clonk blenden
+	SetPlrViewRange(0, pClonk);
+	// Schmerzensschrei 
+	<funclink>Sound</funclink>("Scream", pClonk);
+	return(1);
+}
+				</code>
+				<text>Mit Augentropfen verwechseltes Säureglas.</text>
+			</example>
+		</examples>
+								<related>
+												<funclink>SetPlrView</funclink>
+												<funclink>SetFoW</funclink>
+								</related>
+	</func>
+	<author>wipfmetz</author><date>August 2002</date>
+</funcs>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>RGBa</title>
+		<category>Arithmetik</category>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>byR</name><desc>Rotanteil für die Farbe</desc></param>
+				<param><type>int</type><name>byG</name><desc>Grünanteil für die Farbe</desc></param>
+				<param><type>int</type><name>byB</name><desc>Blauanteil für die Farbe</desc></param>
+				<param><type>int</type><name>byA</name><desc>Durchsichtigkeit für die Farbe</desc></param>
+			</params>
+		</syntax>
+		<desc>Setzt einen 32Bit-Farbwert aus den drei Grundfarben und einem Durchsichtigkeitswert zusammen. 0-255 für alle Parameter.</desc>
+		<examples>
+			<example>
+				<code><funclink>SetSkyAdjust</funclink>(RGBa(255,127,127,127),<funclink>RGB</funclink>(255,0,0));</code>
+				<text>Färbt den Himmel so richtig rot.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>RGB</funclink>
+			<funclink>HSL</funclink>
+			<funclink>HSLa</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>April 2002</date>
+</funcs>

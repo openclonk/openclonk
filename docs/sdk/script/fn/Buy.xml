@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>Buy</title>
+		<category>Objekte</category><subcat>Erzeugung</subcat>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>object</rtype>
+			<params>
+				<param><type>id</type><name>idBuyObj</name><desc>ID des Objekttyps, der gekauft wird</desc></param>
+				<param><type>int</type><name>iForPlr</name><desc>Nummer des Spielers, dem das Objekt hinterher gehört</desc></param>
+				<param><type>int</type><name>iPayPlr</name><desc>Nummer des Spielers, der den Kauf bezahlt</desc></param>
+				<param><type>object</type><name>pToBase</name><desc>Zielobjekt, in das das neu gekaufte Objekt hineinversetzt wird</desc><optional /></param>
+				<param><type>bool</type><name>fShowErrors</name><desc>Wenn ungleich Null, werden Fehlermeldugnen wie "Kaufen nicht möglich" aufgrund von Geldmangel angezeigt.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Kauft ein Objekt für iForPlr, und zieht iPayPlr Geld ab. Wenn dieser nicht genug Geld oder das Objekt nicht im Heimatbasismaterial hat, wird der Vorgang nicht ausgeführt.</desc>
+		<examples>
+			<example>
+				<code>Buy(CNKT, 0, 0, <funclink>FindBase</funclink>(0), 1);</code>
+				<text>Kauft einen Stein in der Basis des ersten Spielers.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>Sell</funclink>
+			<funclink>GetWealth</funclink>
+			<funclink>GetBase</funclink>
+			<funclink>FindBase</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>November 2001</date>
+</funcs>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetUnusedOverlayID</title>
+    <category>Objekte</category><subcat>Darstellung</subcat>
+    <version>4.9.8.5 CR</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param><type>int</type><name>iBaseIndex</name><desc>ID des Overlays hinter dem die Suche beginnen soll.</desc></param>
+        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Overlays durchsucht werden sollen. Kann bei lokalen Aufrufen 0 sein.</desc></param>
+        </params>
+    </syntax>
+    <desc>Gibt eine ungenutzte Overlay-ID zurück. Es wird der erste freie Overlay nach iBaseIndex zurückgegeben.</desc>
+    <remark>Die Basisgrafik zählt nicht als Overlay, also sollte iBaseIndex mindestens 1 sein.</remark>
+    <related>
+      <funclink>SetGraphics</funclink>
+    </related>
+  </func>
+  <author>Clonkonaut</author><date>Mai 2008</date>
+</funcs>

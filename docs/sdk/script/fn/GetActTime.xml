@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetActTime</title>
+    <category>Objekte</category><subcat>Aktivität</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param><type>object</type><name>pObj</name><desc>Objekt, Null bei lokalem Aufruf.</desc></param>
+      </params>
+    </syntax>
+    <desc>Liefert den Zeitraum in Frames, die das angegebene Objekt bereits die aktuelle Aktivität ausgeführt hat.</desc>
+    <examples>
+      <example>
+        <code>private func Burning()
+{
+  // Rauch
+  <funclink>Smoke</funclink>(+23, <funclink>Random</funclink>(3) - 24, <funclink>Random</funclink>(5) + 8);
+  // Noch nicht fertig
+  if (GetActTime() &lt; 150) <funclink>return</funclink>(1);
+  // Fertig
+  <funclink>SetAction</funclink>("Idle");
+  // Erz suchen
+  var pOre;
+  <funclink>if</funclink> (!(pOre = <funclink>FindContents</funclink>(ORE1))) <funclink>return</funclink>(1);
+  // Erz verbrauchen
+  <funclink>RemoveObject</funclink>(pOre);
+  // Metall auswerfen
+  <funclink>Exit</funclink>(<funclink>CreateContents</funclink>(METL), -27, +13, 0, -1);
+  // Sound
+  <funclink>Sound</funclink>("Pshshsh");
+}
+</code>
+        <text>Auszug aus dem Hochofen-Script. Nach 150 Frames ist das Metall fertiggebacken.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAction</funclink>
+      <funclink>GetActionTarget</funclink>
+      <funclink>GetPhase</funclink>
+      <funclink>ObjectSetAction</funclink>
+      <funclink>SetAction</funclink>
+      <funclink>SetPhase</funclink>
+    </related>
+  </func>
+  <author>Günther</author><date>April 2002</date>
+</funcs>

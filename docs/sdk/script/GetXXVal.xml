@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</title>
+
+<h>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</h>
+<part>
+	<text><ul>
+		<li>GetDefCoreVal(string strEntry, string strSection, id idDef); </li>
+		<li>GetActMapVal(string strEntry, stringstrAction, id idDef); </li>
+		<li>GetObjectVal(string strEntry, string strSection, object pObj); </li>
+		<li>GetObjectInfoCoreVal(string strEntry, string strSection, object pObj); </li>
+		<li>GetScenarioVal(string strEntry, string strSection);</li>
+		<li>GetPlayerVal(string strEntry, string strSection, int iPlr); </li>
+		<li>GetPlayerInfoCoreVal(string strEntry, string strSection, int iPlr); </li>
+	</ul></text>
+	
+	<text>Diese Funktionsfamilie gewährt direkten Zugriff auf sämtliche Eigenschaften der entsprechenden Objekte, wie sie auch abgespeichert werden.</text>
+	<text>Dabei entsprechen die Funktionen jeweils folgenden Dateien:</text>
+	
+	<text><table>
+		<rowh>
+			<col>Funktion</col>
+			<col>Datei</col>
+		</rowh>
+		<row>
+			<col>GetDefCoreVal</col>
+			<col>DefCore.txt</col>
+		</row>
+		<row>
+			<col>GetActMapVal</col>
+			<col>ActMap.txt</col>
+		</row>
+		<row>
+			<col>GetObjectVal</col>
+			<col>Objects.txt</col>
+		</row>
+		<row>
+			<col>GetObjectInfoCoreVal</col>
+			<col>*.c4i (in Spielerdateien)</col>
+		</row>
+		<row>
+			<col>GetScenarioVal</col>
+			<col>Scenario.txt</col>
+		</row>
+		<row>
+			<col>GetPlayerVal</col>
+			<col>scenario.txt</col>
+		</row>
+		<row>
+			<col>GetPlayerInfoCoreVal</col>
+			<col>player.txt</col>
+		</row>
+	</table></text>
+	
+	<text>Die Eigenschaft wird jeweils anhand ihres Namen und ggf. der Sektion übergeben (wird 0 übergeben, so werden alle Sektionen nach einem gleichnamigen Wert durchsucht). Wurde eine entsprechende Eigenschaft nicht gefunden oder entsprcht der Typ der Eigenschaft keinem gültigen Script-Datenformat (z.B. ID-Liste), so wird 0 zurückgegeben.</text>
+	<text>Wird GetObjectVal für pObj/idDef jeweils 0 zurückgegeben, so wird das Objekt (bzw. dessen Definition), aus dem der Aufruf erfolgte angenommen.</text>
+	<text>Die Zusatzfunktionen GetXVal.c (in System.c4g) ermöglichen Aufrufe verschiedener Get*Val-Funktionen durch globale Scriptfunktionen (z.B. <code>GetObjWidth()</code>, entspricht <code>GetObjectVal("Width", 0, -obj-)</code>).</text>
+</part>
+
+<author>Peter</author><date>November 2001</date>
+
+</doc>

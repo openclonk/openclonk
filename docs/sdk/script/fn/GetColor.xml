@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetColor</title>
+    <category>Objekte</category><subcat>Darstellung</subcat>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param><type>object</type><name>pObj</name><desc>Abgefragtes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
+      </params>
+    </syntax>
+    <desc>Fragt den indizierten Farbwert eines Objekts ab, nach dem die ColorByOwner-Flächern eingefärbt sind. Dieser konnte beispielsweise durch <funclink>SetOwner</funclink> oder <funclink>SetColor</funclink> gesetzt worden sein.</desc>
+    <remark>Die Funktion ist nur noch für das 8 Bit-Grafiksystem relevant. Normalerweise sollte der Farbwert eines Objekts mit <funclink>GetColorDw</funclink> abgefragt werden.</remark>
+    <examples>
+      <example>
+
+<code><funclink>SetColor</funclink>((GetColor()+1)%12);</code>
+
+        <text>Färbt das aufrufende Objekt auf die nächste Spielerfarbe um.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetColorDw</funclink>
+      <funclink>SetColor</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>Mai 2002</date>
+</funcs>

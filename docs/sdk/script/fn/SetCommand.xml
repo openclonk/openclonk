@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetCommand</title>
+    <category>Objekte</category>
+    <subcat>Commands</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>pObj</name>
+          <desc>Objekt, dem das Kommando gegeben wird.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>szCommand</name>
+          <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>pTarget</name>
+          <optional />
+          <desc>Zielobjekt für Aktion</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iX</name>
+          <optional />
+          <desc>X-Zielkoordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iY</name>
+          <optional />
+          <desc>Y-Zielkoordinate</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>pTarget2</name>
+          <optional />
+          <desc>zweites Zielobjekt</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>Data</name>
+          <optional />
+          <desc>zusätzliche Daten zur Aktion</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iRetries</name>
+          <optional />
+          <desc>Anzahl der Wiederholungen (wenn das Kommando fehlschlägt), bis das Kommando abgebrochen wird.</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>
+      Gibt einem Objekt ein Kommando, welches dieses selbstständig (ggf. durch automatische Wegfindung) auszuführen versucht.
+    </desc>
+
+    <remark>
+       Es sind folgende Kommandos definiert:
+      <table>
+        <rowh><col>szCommand</col><col>pTarget</col><col>iX,iY</col><col>pTarget2</col><col>iData</col><col>Beschreibung</col></rowh>
+        <row><col>Acquire</col><col>Null</col><col>0,0</col><col>Behälter ignorieren</col><col>Objekttyp (id)</col><col>Objekt von Objekttyp beschaffen, wenn nötig kaufen. Material im angegebenen Behälter (Target2) wird bei der Suche ignoriert.</col></row>
+        <row><col>Activate</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Zielobjekt aktivieren (aus Gebäude herausholen).</col></row>
+        <row><col>Activate</col><col>Null</col><col>0,0</col><col>Zielobjekt</col><col></col><col>Holen-Menü für Inhalt des Zielobjekts öffnen.</col></row>
+        <row><col>Activate</col><col>Null</col><col>Anzahl,0</col><col>Zielobjekt</col><col>Objekttyp (id)</col><col>Anzahl Objekte von Objekttyp in Zielobjekt aktivieren.</col></row>
+        <row><col>Attack</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Zielobjekt angreifen.</col></row>
+        <row><col>Build</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Zielobjekt bauen und anschließend mit Energie versorgen.</col></row>
+        <row><col>Buy</col><col>Null</col><col>0,0</col><col>Null</col><col>Objekttyp (id)</col><col>Objekt von Objekttyp in nächstgelegener Basis kaufen.</col></row>
+        <row><col>Buy</col><col>Basis</col><col>Anzahl,0</col><col>Null</col><col>Objekttyp (id)</col><col>Anzahl Objekte von Objekttyp in Basis kaufen.</col></row>
+        <row><col>Buy</col><col>Basis</col><col></col><col></col><col></col><col>Kaufen-Menü für angegebene Basis öffnen.</col></row>
+        <row><col>Call</col><col>Objekt</col><col>Par(1),Par(2)</col><col>Par(3)</col><col><em>Funktion</em> (string)</col><col><em>Funktion</em> im Objekt-Script von Objekt aufrufen, Par(0) ist dabei das aufrufende Objekt. Schlägt das Kommando fehl, weil untergeordnete Befehle nicht ausgeführt werden konnten, wird stattdessen <em>Funktion</em>Failed aufgerufen.</col></row>
+        <row><col>Chop</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Zielobjekt fällen.</col></row>
+        <row><col>Construct</col><col></col><col></col><col></col><col></col><col>Bauauftragsmenü öffnen.</col></row>
+        <row><col>Construct</col><col>Null</col><col>0,0</col><col>Null</col><col>Objekttyp (id)</col><col>An der nächstmöglichen Zielposition Baustelle errichten.</col></row>
+        <row><col>Construct</col><col>Null</col><col>Zielposition</col><col>Null</col><col>Objekttyp (id)</col><col>An der Zielposition Baustelle errichten und anschließend bauen.</col></row>
+        <row><col>Construct</col><col>Zielobjekt</col><col>Zielposition [opt]</col><col>Null</col><col>Objekttyp (id)</col><col>Zielobjekt helfen, die Baustelle zu errichten (der Clonk baut mit, sobald die Baustelle errichtet wurde)</col></row>
+        <row><col>Dig</col><col>Null</col><col>Zielposition</col><col></col><col></col><col>Zur Zielposition graben.</col></row>
+        <row><col>Drop</col><col></col><col></col><col></col><col></col><col>Erstes getragenes Objekt sofort ablegen.</col></row>
+        <row><col>Drop</col><col>Null</col><col>Zielposition</col><col></col><col></col><col>Erstes getragenes Objekt an Zielposition ablegen.</col></row>
+        <row><col>Drop</col><col>Zielobjekt</col><col>Zielposition</col><col></col><col></col><col>Zielobjekt einsammeln und an Zielposition ablegen.</col></row>
+        <row><col>Energy</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Zielobjekt vom nächsten Versorger mit Energie versorgen.</col></row>
+        <row><col>Energy</col><col>Zielobjekt</col><col>0,0</col><col>Versorger</col><col></col><col>Zielobjekt vom Versorger mit Energie versorgen.</col></row>
+        <row><col>Enter</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Das Zielobjekt betreten.</col></row>
+        <row><col>Exit</col><col></col><col></col><col></col><col></col><col>Den aktuellen Behälter verlassen.</col></row>
+        <row><col>Follow</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Dem Zielobjekt folgen (dauerhaft).</col></row>
+        <row><col>Get</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Zielobjekt einsammeln (ggf. ausgraben).</col></row>
+        <row><col>Get</col><col>Null</col><col>Anzahl,0</col><col>Zielobjekt</col><col>Objekttyp (id)</col><col>Anzahl Objekte von Objekttyp aus Zielobjekt holen. Ab 4.9.8.3.</col></row>
+        <row><col>Grab</col><col>Zielobjekt</col><col>Offset</col><col></col><col></col><col>Das Zielobjekt am Offset zur Objektmitte anfassen.</col></row>
+        <row><col>Home</col><col></col><col></col><col></col><col></col><col>Zurück zur nächstgelegenen Heimatbasis.</col></row>
+        <row><col>Jump</col><col></col><col></col><col></col><col></col><col>In aktuelle Richtung springen.</col></row>
+        <row><col>Jump</col><col>Null</col><col>Zielposition</col><col></col><col></col><col>In Richtung der Zielposition springen.</col></row>
+        <row><col>MoveTo</col><col>Zielobjekt</col><col>0,0</col><col>Null</col><col>Keine Anpassung? (bool)</col><col>Zur Position des Zielobjekts bewegen. iData true um die Koordinaten nicht an die Landschaftsform anzupassen.</col></row>
+        <row><col>MoveTo</col><col>Null</col><col>Zielposition</col><col>Null</col><col>Keine Anpassung? (bool)</col><col>Zur Zielposition bewegen. iData true um die Koordinaten nicht an die Landschaftsform anzupassen.</col></row>
+        <row><col>None</col><col></col><col></col><col></col><col></col><col>Aktuelle Befehle löschen.</col></row>
+        <row><col>PushTo</col><col>Zielobjekt</col><col>Zielposition</col><col></col><col></col><col>Zielobjekt an Zielposition schieben.</col></row>
+        <row><col>PushTo</col><col>Objekt</col><col>0,0</col><col>Zielobjekt</col><col></col><col>Objekt in Zielobjekt schieben.</col></row>
+        <row><col>Put</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Erstes getragenes Objekt im Zielobjekt ablegen.</col></row>
+        <row><col>Put</col><col>Zielobjekt</col><col>Anzahl,0</col><col></col><col></col><col>Die angegebene Anzahl getragener Objekte im Zielobjekt ablegen. Ab 4.9.8.3.</col></row>
+        <row><col>Put</col><col>Zielobjekt</col><col>0,0</col><col>Objekt</col><col></col><col>Objekt einsammeln und im Zielobjekt ablegen.</col></row>
+        <row><col>Put</col><col>Zielobjekt</col><col>0,0</col><col>Null</col><col>Objekttyp (id)</col><col>Getragenes Objekt von Objekttyp im Zielobjekt ablegen.</col></row>
+        <row><col>Put</col><col>Zielobjekt</col><col>Anzahl,0</col><col>Null</col><col>Objekttyp (id)</col><col>Die angegebene Anzahl getragener Objekte von Objekttyp im Zielobjekt ablegen. Ab 4.9.8.3.</col></row>
+        <row><col>Sell</col><col>Null</col><col>0,0</col><col>Objekt2</col><col>Objekttyp (id)</col><col>Objekt von Objekttyp in nächstgelegener Basis verkaufen. Bei angegebenem Objekt2 wird zuerst dieses verkauft, wenn es in der Basis ist.</col></row>
+        <row><col>Sell</col><col>Basis</col><col>Anzahl,0</col><col>Objekt2</col><col>Objekttyp (id)</col><col>Anzahl Objekte von Objekttyp in Basis verkaufen. Bei angegebenem Objekt2 wird zuerst dieses verkauft, wenn es in der Basis ist.</col></row>
+        <row><col>Sell</col><col>Basis</col><col></col><col></col><col></col><col>Verkaufen-Menü für angegebene Basis öffnen.</col></row>
+        <row><col>Throw</col><col></col><col></col><col></col><col></col><col>Erstes getragenes Objekt sofort werfen.</col></row>
+        <row><col>Throw</col><col>Null</col><col>Zielposition</col><col></col><col></col><col>Erstes getragenes Objekt auf Zielposition werfen.</col></row>
+        <row><col>Throw</col><col>Zielobjekt</col><col>Zielposition</col><col></col><col></col><col>Zielobjekt einsammeln und an Zielposition werfen.</col></row>
+        <row><col>UnGrab</col><col></col><col></col><col></col><col></col><col>Aktuell angefaßtes Objekt loslassen.</col></row>
+        <row><col>Wait</col><col>Null</col><col>0,0</col><col>Null</col><col>Frames</col><col>Anzahl Frames/Ticks warten.</col></row>
+      </table>
+    </remark>
+
+    <examples>
+      <example>
+        <code>SetCommand(<funclink>this</funclink>(), "Attack", <funclink>FindObjectOwner</funclink>(CLNK, 1, 0, 0, -1, -1), 0, 0, 0, 0, 10);</code>
+        <text>
+Dieser Script gibt dem ausführenden Clonk den Befehl, den nächstgelegenen Clonk von Spieler 1 zu attackieren. Dabei soll er nicht so schnell aufgeben und (wenn er z.B.
+daran scheitert, den Weg zum Feind zu finden) es 10 Mal zu versuchen, bis er sein Ziel erreicht hat oder abbricht.
+        </text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetCommand</funclink>
+      <funclink>AddCommand</funclink>
+      <funclink>AppendCommand</funclink>
+      <funclink>FinishCommand</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>November 2001</date>
+</funcs>

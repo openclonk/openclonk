@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SimFlight</title>
+		<category>Objekte</category><subcat>Bewegung</subcat>
+		<version>4.9.5.0 CE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int &amp;</type><name>iX</name><desc>X-Koordinate der Startposition. Immer global.</desc></param>
+				<param><type>int &amp;</type><name>iY</name><desc>Y-Koordinate der Startposition. Immer global.</desc></param>
+				<param><type>int &amp;</type><name>iXDir</name><desc>X-Anfangsgeschwindigkeit.</desc></param>
+				<param><type>int &amp;</type><name>iYDir</name><desc>Y-Anfangsgeschwindigkeit.</desc></param>
+				<param><type>int</type><name>iMinDensity</name><desc>Minimale Dichte des Materials nach dem auf der Wurfbahn gesucht wird. Keine Angabe oder Null entspricht 50 (festes Material).</desc><optional/></param>
+				<param><type>int</type><name>iMaxDensity</name><desc>Maximale Dichte des Materials nach dem auf der Wurfbahn gesucht wird. Keine Angabe oder Null entspricht 50 (festes Material).</desc><optional/></param>
+				<param><type>int</type><name>iIteration</name><desc>Anzahl der simulierten Frames bis zum Abbruch der Simulation. Keine Angabe oder Null entspricht -1 (Kein Abbruch).</desc><optional/></param>
+				<param><type>int</type><name>iPrecision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
+			</params>
+		</syntax>
+		<desc>Simuliert die Bewegung eines freien Falles mit Anfangsgeschwindigkeit in die angegebene Richtung. Wenn die simulierte Bewegung ein Material mit der gewünschten Dichte durchläuft, gibt diese Funktion true zurück, ansonsten false.<br/> Bei true wird die X- und Y-Position des Aufpralls in den angegebenen Variablen für iX und iY gespeichert, die Aufprallgeschwindigkeit in den angegebenen Variablen fü iXDir und iYDir. Siehe dazu <emlink href="script/Funcs.html#referenzen">Referenzen</emlink>.</desc>
+		<examples>
+			<example>
+<code>var iX = <funclink>GetX</funclink>(), iY = <funclink>GetY</funclink>(), iXDir = <funclink>GetXDir</funclink>(), iYDir = <funclink>GetYDir</funclink>();
+if (<funclink>GetAction</funclink>()eq"Jump")
+  if (SimFlight(iX, iY, iXDir, iYDir))
+    if (iYDir >= 80)
+      <funclink>Message</funclink>("Oh oh, das wird ein harter Aufprall!", <funclink>this</funclink>());</code>
+				<text>Wenn sich der aufrufende Clonk in der Luft befindet und vorauszusehen ist, dass er mit hoher Geschwindigkeit auf den Boden aufprallen wird, ruft dies der Clonk aus. Bei einer Aufprallgeschwindigkeit von mindestens 8 Pixeln pro Frame landet der Clonk nicht mehr auf seinen Füßen und muss sich erst wieder aufrichten.<br/>Die ersten vier Parameter von SimFlight sind <emlink href="script/Funcs.html#referenzen">Referenzen</emlink>.</text>
+			</example>
+		</examples>
+	</func>
+	<author>Newton</author><date>März 2004</date>
+</funcs>

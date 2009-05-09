@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>SetSolidMask</title>
+    <category>Objekte</category><subcat>Status</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>int</type><name>iX</name><desc>X-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik</desc></param>
+        <param><type>int</type><name>iY</name><desc>Y-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik</desc></param>
+        <param><type>int</type><name>iWdt</name><desc>Breite der neuen SolidMask in der Definitionsgrafik</desc></param>
+        <param><type>int</type><name>iHgt</name><desc>Höhe der neuen SolidMask in der Definitionsgrafik</desc></param>
+        <param><type>int</type><name>iTx</name><desc>X-Zielposition der neuen SolidMask relativ zur oberen linken Objektecke</desc></param>
+        <param><type>int</type><name>iTx</name><desc>Y-Zielposition der neuen SolidMask relativ zur oberen linken Objektecke</desc></param>
+        <param><type>object</type><name>pObj</name><desc>Objekt, dessen fester Bereich geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
+      </params>
+    </syntax>
+    <desc>Setzt einen neuen, festen Bereich eines Objekts. Das Quellrechteck der Grafik gibt dabei an, welche Pixel im Rechteck fest werden sollen: Alle Pixel, die zu weniger als 50% transparent sind, werden fest. Siehe auch Eintrag SolidMask in der <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>
+    <remark>Feste Bereiche werden intern in der Landschaft als Pixel mit dem Material "Vehicle" eingefügt.</remark>
+    <examples>
+      <example>
+        <code>SetSolidMask();</code>
+        <text>Löscht die SolidMask für das aufrufende Objekt.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>Juni 2003</date>
+</funcs>

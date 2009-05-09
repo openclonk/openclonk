@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>ClearParticles</title>
+		<category>Partikel</category>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>string</type><name>szName</name><desc>Name der Partikeldefinition, dessen Instanzen gelöscht werden sollen. Bei 0 werden alle Partikel entfernt.</desc></param>
+
+			</params>
+		</syntax>
+		<desc>Entfernt alle Partikel eines angegebenen Typs.</desc>
+		<examples>
+			<example>
+				<code>ClearParticles("Smoke");</code>
+				<text>Entfernt den Rauch.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>CreateParticle</funclink>
+			<funclink>PushParticles</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>April 2002</date>
+</funcs>

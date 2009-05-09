@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>DoScoreboardShow</title>
+    <category>Interface</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>int</type><name>iChange</name><desc>Änderung der Sichtbarkeit des Scoreboards.</desc></param>
+        <param><type>int</type><name>iForPlr</name><desc>Wenn größer 0, Spielernummer+1 des Spielers, für den die Scoreboard-Sichtbarkeit geändert werden soll.</desc><optional /></param>
+      </params>
+    </syntax>
+    <desc>
+	Ändert den Sichtbarkeitszähler für das Scoreboard. Der intern verwaltete Zähler beginnt bei 0. Ist er größer als 0, wird das Scoreboard gezeigt. Ist er kleiner als 0, wird es verborgen. Ist er gleich 0, wird das Scoreboard nur dann gezeigt, wenn der Spieler die entsprechende Taste (normalweise Tab) drückt.
+    </desc>
+    <examples>
+      <example>
+        <text>Für ein ausführliches Beispiel siehe <funclink>SetScoreboardData</funclink>.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetScoreboardData</funclink>
+      <funclink>SortScoreboard</funclink>
+      <funclink>ScoreboardCol</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>Februar 2006</date>
+</funcs>

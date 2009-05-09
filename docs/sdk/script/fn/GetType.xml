@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetType</title>
+    <category>Variablen</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax> 
+       <rtype>int</rtype>
+       <params>
+         <param><type>any</type><name>Value</name><desc>Wert dessen Typ abgefragt werden soll.</desc></param>
+       </params>
+    </syntax>
+    <desc>Gibt den Typ des übergebenen Werts zurück.</desc>
+    <related>
+      <funclink>C4V_Any</funclink>
+      <funclink>C4V_Array</funclink>
+      <funclink>C4V_Bool</funclink>
+      <funclink>C4V_C4ID</funclink>
+      <funclink>C4V_C4Object</funclink>
+      <funclink>C4V_Int</funclink>
+      <funclink>C4V_String</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>Juni 2003</date>
+</funcs>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetMass</title>
+		<category>Objekte</category><subcat>Status</subcat>
+		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>object</type><name>pObj</name><desc>Gewogenes Objekt. 0 bei lokalem Aufruf oder angegebenem idDef.</desc><optional /></param>
+				<param><type>id</type><name>idDef</name><desc>Objektdefinition, von der das Standardgewicht ermittelt werden soll. 0 bei angegebenem pObj</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Liefert die Masse eines Objekts inklusive aller Inhaltsobjekte. Bei angegebenem idDef wird pObj ignoriert und stattdessen die Standardmasse der Objektdefinition zurückgegeben. Sind idDef und pObj 0, gilt das aufrufende Objekt als pObj.</desc>
+		<examples>
+			<example>
+				<code>/* Wird bei klick auf Spezial aufgerufen */
+protected func ControlSpecial()
+{
+	// Magersüchtig?
+	if(<funclink>GetMass</funclink>() &lt; 50) // Normalmasse des CLNK: 50
+		// Magensäure frisst sich nach aussen
+		<funclink>CastPXS</funclink>("Acid", 150, 30);
+<funclink>return</funclink>(1);
+}		
+				</code>
+				<text>Magersucht</text>
+			</example>
+		</examples>
+	</func>
+	<author>wipfmetz / Sven2</author><date>August 2002 / April 2003</date>
+</funcs>

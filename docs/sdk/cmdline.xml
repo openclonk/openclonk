@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
+<doc>
+<title>Kommandozeilenparameter</title>
+<h id="cmdline">Kommandozeilenparameter</h>
+
+<text>Das Installationsverzeichnis von Clonk enthält die unten beschriebenen Programmdateien. Durch einen Start per Doppelklick oder Startmenü werden Programme ohne zusätzliche Parameter ausgeführt. Innerhalb einer Konsole (Eingabeaufforderung) oder Script-Datei (Batch-Datei) lassen sich die Programme jedoch mit zusätzlichen Kommandozeilenparametern starten, die hier ausführlich erklärt werden.</text>
+<part>
+<h id="Clonk">Clonk.exe <tt>(Windows)</tt> clonk (Linux) Clonk (Mac)</h>
+<text>Die Engine. Das eigentliche Hauptprogramm des Spiels. Ohne Parameter startet das Spiel im Vollbildmodus (Spielermodus) und zeigt das Startmenü an. Folgende Parameter sind zusätzlich möglich:</text>
+<dl>
+<dt id="console">/console</dt>
+<dd><text>Startet im Konsolenmodus (auch Entwicklermodus oder Fenstermodus genannt). Im Konsolenmodus können Szenarien bearbeitet und abgespeichert werden. Das Spiel startet auch standardgemäß im Konsolenmodus, wenn ein Szenario (*.c4s) als Parameter angegeben und kein /fullscreen gesetzt ist.</text></dd>
+<dt id="fullscreen">/fullscreen</dt>
+<dd><text>Startet im Vollbildmodus (auch Spielermodus genannt). Wenn kein Szenario und keine Direktbeitritt-Adresse angegeben ist, wird das Startmenü angezeigt.</text></dd>
+<dt id="config">/config:Filename</dt>
+<dd><text>Lädt die als Filename angegebene Konfiguirationsdatei (wenn vorhanden) und schreibt beim Beenden in diese.</text></dd>
+<dt id="record">/record</dt>
+<dd><text>Die Runde wird aufgenommen.</text></dd>
+<dt id="network">/network bzw. /nonetwork</dt>
+<dd><text>Aktiviert bzw. deaktiviert den Netzwerkmodus.</text></dd>
+<dt id="signup">/signup bzw. /nosignup</dt>
+<dd><text>Aktiviert bzw. deaktiviert die Anmeldung des Spiels als Internetspiel. Dieser Wert wird in der Konfiguration gespeichert.</text></dd>
+<dd><text>/signup impliziert /network. /nosignup impliziert /noleague.</text></dd>
+<dt id="league">/league bzw. /noleague</dt>
+<dd><text>Aktiviert bzw. deaktiviert die Anmeldung des Spiels als Ligaspiel. Dieser Wert wird in der Konfiguration gespeichert.</text></dd>
+<dd><text>/league impliziert /network und /signup.</text></dd>
+<dt id="runtimejoin">/runtimejoin bzw. /noruntimejoin</dt>
+<dd><text>Aktiviert bzw. deaktiviert den Laufzeitbeitritt. Dieser Wert wird in der Konfiguration gespeichert.</text></dd>
+<dt id="regjoinonly">/regjoinonly</dt>
+<dd><text>Bewirkt, dass nur Clients mit registrierter Version in Netzwerkspielen beitreten können (in Dedicated-Server-Engine <em>immer</em> aktiv).</text></dd>
+<dt id="ncrw">/faircrew bzw. /trainedcrew</dt>
+<dd><text>Aktiviert bzw. deaktiviert faire Crew. Bei fairer Crew starten alle Clonks mit gleichen physischen Eigenschaften. Bei trainierter Crew starten Clonks mit ihren individuell trainierten physischen Eigenschaften. Dieser Wert wird in der Konfiguration gespeichert.</text></dd>
+<dt id="lobby">/lobby[:time]</dt>
+<dd><text>Aktiviert vor dem Start eines Netzwerkspieles die Lobby, das heißt den Wartebildschirm mit Chat vor dem Spielstart. Standardgemäß aktiv für alle Netzwerkspiele. Impliziert /network. Bei angegebener Zeit (z.B. /lobby:120) startet die Lobby im Countdown, so dass im Beispiel das Spiel automatisch nach 120 Sekunden gestartet wird.</text></dd>
+<dt id="observe">/observe</dt>
+<dd><text>Für Netzwerkspiele: tritt als Zuschauer (ohne Spieler) bei. Impliziert /network.</text></dd>
+<dt id="Join">/join:&lt;<em>Adresse</em>&gt;</dt>
+<dd><text>Sucht ein Netzwerkspiel auf der angegebenen Adresse und tritt dort bei. Es sollte kein lokales Szenario (*.c4s) angegeben werden. Impliziert /network.</text></dd>
+<dt id="clonkp">clonk://&lt;<em>Adresse</em>&gt;/</dt>
+<dd><text>Bei Angabe einer Adresse gleich /join. Wird "update" als Adresse übergeben, sucht die Engine beim Start nach verfügbaren Updates.</text></dd>
+<dt id="tcpport">/tcpport:&lt;<em>Portnummer</em>&gt;</dt>
+<dd><text>Setzt die TCP-Portnummer für Clientverbindungen in Netzwerkspielen. Dieser Wert wird in der Konfiguration gespeichert. Bei Portnummer -1 werden TCP-Verbindungen deaktiviert, und Netzwerkdaten nur über UDP gesendet.</text></dd>
+<dt id="udpport">/udpport:&lt;<em>Portnummer</em>&gt;</dt>
+<dd><text>Setzt die UDP-Portnummer für Clientverbindungen in Netzwerkspielen. Dieser Wert wird in der Konfiguration gespeichert. Bei Portnummer -1 werden UDP-Verbindungen deaktiviert, und Netzwerkdaten nur über TCP gesendet.</text></dd>
+<dt id="pass">/pass:&lt;<em>Passwort</em>&gt;</dt>
+<dd><text>Nur Netzwerk-Host: setzt das Beitrittspasswort auf den angegebenen Wert. Wird &lt;<em>Passwort</em>&gt; leer gelassen, wird kein Passwort gesetzt.</text></dd>
+<dt id="comment">/comment:&lt;<em>Kommentar</em>&gt;</dt>
+<dd><text>Nur Netzwerk-Host: setzt den Beschreibungstext des Netzwerkspiels. Dieser Wert wird in der Konfiguration gespeichert.</text></dd>
+<dt id="update">/update</dt>
+<dd><text>Prüft beim Programmstart auf verfügbare Updates.</text></dd>
+<dt id="recdump">/recdump:&lt;<em>Dateiname</em>&gt;</dt>
+<dd><text>Nur für die Wiedergabe von Aufnahmen: Vor dem Start der Wiedergabe werden die Wiedergabedaten (Spielerkommandos) in eine Datei mit dem Namen &lt;<em>Dateiname</em>&gt; im Clonkverzeichnis geschrieben. Endet der Dateiname auf .txt, werden die Daten als Text geschrieben; sonst binär. Die abzuspielende Aufnahme muss trotzdem als Szenariendatei angegeben werden (Zum Beispiel Clonk.exe Aufnahmen.c4f\Record001.c4s /recdump:CtrlRec.txt).</text></dd>
+<dt id="startup">/startup:&lt;<em>Name</em>&gt;</dt>
+<dd><text>Nur für Vollbild-Startmenü: Statt des Hauptmenüs wird direkt eines der Untermenüs angezeigt. Mögliche Werte für &lt;<em>Name</em>&gt; sind <em>main</em> (Hauptmenü), <em>scen</em> (Szenarienauswahl), <em>netscen</em> (Szenarienauswahl für Netzwerkspiel), <em>net</em> (Netzwerk/Internet-Spieleliste), <em>options</em> (Optionsmenü), <em>plrsel</em> (Spielerauswahl) und <em>about</em> (Credits).</text></dd>
+<dt id="c4s">*.c4s</dt>
+<dd><text>Bei Angabe eines Szenarios (Dateiendung .c4s) wird dieses direkt gestartet.</text></dd>
+<dt id="c4d">*.c4d</dt>
+<dd><text>Wenn das gestartete Szenario keine Objektdefinitionen (Dateiendung .c4d) vorgibt, und keine Definitionen über die Registry angegeben werden, können sie über die Kommandozeile übergeben werden.</text></dd>
+<dt id="c4p">*.c4p</dt>
+<dd><text>Spielerdateien (Dateiendung .c4p) können in der Kommandozeile angegeben werden. Wenn keine Spielerdateien in der Kommandozeile stehen, werden die in der Registrierung gespeicherten, zuletzt aktivierten Spieler benutzt. Durch Angabe eines nichtexistenten Spielers (z.B. gibtsnicht.c4p) kann verhindert werden, dass die in der Registrierung aktivierten Spieler beitreten (z.B. zum Bearbeiten einer Landschaft im Entwicklermodus).</text></dd>
+<dt id="c4u">*.c4u</dt>
+<dd><text>Wird ein Update-Paket (Dateiendung .c4u) als Parameter an die Engine übergeben, so wird die Engine versuchen, dieses Update auf die lokale Spielinstallation anzuwenden.</text></dd>
+</dl>
+</part>
+<part>
+<h id="Editor">Editor.exe (nur Windows)</h>
+<text>Der Editor zum Bearbeiten von Gruppendateien und Entwickeln eigener Spielerweiterungen. Der Editor hat keine Parameter.</text>
+</part>
+<part>
+<h id="C4Group">c4group.exe (Windows) c4group (Linux) c4group (Mac)</h>
+<text>Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet.</text>
+</part>
+<author>Sven2</author><date>Februar 2007</date>
+</doc>

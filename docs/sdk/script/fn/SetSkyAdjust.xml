@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetSkyAdjust</title>
+		<category>Himmel</category>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>dwClrMod</name><desc>Primäre Farbmodulation</desc></param>
+				<param><type>int</type><name>dwBackClr</name><desc>Hintergrundfarbe. Wenn in dwClrMod das Alphabyte nicht 0 ist, wird diese Farbe als Hintergrund hinter den Himmel gelegt. So lassen sich auch hellere oder entsättigte Himmel realisieren.</desc></param>
+			</params>
+		</syntax>
+		<desc>Setzt die Himmelsmodulation. Die Himmelsfarben werden mit der angegebenen Farbe so verrechnet wie auch ColorByOwner-Grafiken.</desc>
+		<examples>
+			<example>
+				<code>SetSkyAdjust(<funclink>RGBa</funclink>(255,255,255,127), <funclink>RGB</funclink>(127,127,127));</code>
+				<text>Graut den Himmel aus.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>GetSkyAdjust</funclink>
+			<funclink>SetMatAdjust</funclink>
+			<funclink>SetSkyFade</funclink>
+			<funclink>SetGamma</funclink>
+			<funclink>RGB</funclink>
+			<funclink>RGBa</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>Mai 2002</date>
+</funcs>

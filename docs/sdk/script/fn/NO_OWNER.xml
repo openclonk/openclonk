@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>NO_OWNER</title>
+		<category>Spieler</category>
+		<version>4.9.5.0 CE</version>
+		<syntax>
+			<rtype>int</rtype>
+		</syntax>
+		<desc>Spielernummer: Kein Spieler. Diese Konstante kann als Besitzerangabe für diverse Funktionen wie <funclink>CreateObject</funclink> oder <funclink>FindObjectOwner</funclink> verwendet werden, um einen neutralen Spieler anzugeben.</desc>
+		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
+		<examples>
+			<example>
+				<code><funclink>CreateObject</funclink>(EFLN, 100,100, NO_OWNER);</code>
+				<text>Erzeugt einen besitzerlosen Flint.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>SetOwner</funclink>
+			<funclink>GetOwner</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>Januar 2005</date>
+</funcs>

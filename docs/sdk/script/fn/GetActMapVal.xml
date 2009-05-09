@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetActMapVal</title>
+    <category>Get*Val</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>strEntry</name>
+          <desc>Name des abzufragenden Eintrags</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>strAction</name>
+          <desc>Name der Aktion, von der der Eintrag abgefragt werden soll</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>id</type>
+          <name>idDef</name>
+          <desc>Objektdefinition, von der die Aktionsdaten abgefragt werden sollen. Bei Übergabe von 0 wird die Definition des aufrufenden Objekts angenommen.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iEntryNr</name>
+          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
+          <optional/>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Fragt Aktionsdaten aus der <emlink href="definition/actmap.html">ActMap.txt</emlink> anhand deren dortigem Namen ab.</desc>
+
+    <examples>
+      <example>
+        <code>var iActLength = GetActMapVal("Length", <funclink>GetAction</funclink>()) * GetActMapVal("Delay", <funclink>GetAction</funclink>());</code>
+        <text>Berechnet die Länge in Ticks, die die aktuelle Action dauert</text>
+      </example>
+    </examples>
+
+
+    <related>
+      <funclink>GetDefCoreVal</funclink>
+      <funclink>GetObjectVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetScenarioVal</funclink>
+      <funclink>GetPlayerVal</funclink>
+      <funclink>GetPlayerInfoCoreVal</funclink>
+    </related>
+
+  </func>
+  <author>PeterW</author><date>April 2002</date>
+</funcs>

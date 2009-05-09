@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ActIdle</title>
+    <category>Objekte</category><subcat>Aktivität</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>object</type><name>pObj</name><desc>Zu überprüfendes Objekt</desc><optional /></param>
+      </params>
+    </syntax>
+    <desc>Prüft, ob das Objekt eine Aktivität ausführt. Bei lokalem Aufruf kann pObj == 0 sein.</desc>
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(ActIdle(i = <funclink>FindObject</funclink>(HUT1)) <funclink>Explode</funclink>(15, i);</code>
+        <text>Lässt die Bambushütte explodieren, wenn die Tür geschlossen ist</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetAction</funclink>
+      <funclink>SetAction</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>April 2002</date>
+</funcs>

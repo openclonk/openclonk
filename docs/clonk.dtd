@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!ENTITY % text "a | img | emlink | funclink | em | code | strong">
+
+<!ELEMENT funcs (func+, (author, date)+)>
+  <!ELEMENT func           (title, deprecated?, category, subcat*, version, deprecated?, syntax, desc, remark*, examples?, related?)>
+    <!ELEMENT title        (#PCDATA)>
+    <!ELEMENT category     (#PCDATA)>
+    <!ELEMENT subcat       (#PCDATA)>
+    <!ELEMENT version      (#PCDATA | extversion)*>
+      <!ELEMENT extversion (#PCDATA)>
+    <!ELEMENT deprecated   EMPTY>
+    <!ELEMENT internal     EMPTY>
+    <!ELEMENT syntax       (rtype, params*)>
+      <!ELEMENT rtype      (#PCDATA)>
+      <!ELEMENT params     (#PCDATA | param)*>
+        <!ELEMENT param    (type?, optional?, name, optional?, desc, optional?)>
+          <!ELEMENT name   (#PCDATA)>
+          <!ELEMENT type   (#PCDATA)>
+          <!ELEMENT desc   (#PCDATA | br | ul | li | table | %text;)*>
+          <!ELEMENT optional EMPTY>
+    <!ELEMENT remark       (#PCDATA | br | ul | li | table | %text;)*>
+    <!ELEMENT examples     (example+)>
+      <!ELEMENT example    (code | text)*>
+        <!ELEMENT code     (#PCDATA | funclink | emlink | em | strong)*>
+        <!ELEMENT text     (#PCDATA | br | ul | li | table | %text;)*>
+    <!ELEMENT related      (funclink | emlink)+>
+      <!ELEMENT funclink   (#PCDATA)>
+      <!ELEMENT emlink     (#PCDATA)>
+        <!ATTLIST emlink href CDATA #REQUIRED>
+  <!ELEMENT author         (#PCDATA)>
+  <!ELEMENT date           (#PCDATA)>
+<!ELEMENT doc (title, (h | text | dl | part | code | author | date | img)*)>
+  <!ELEMENT part (h | text | part | code | dl)*>
+
+<!ELEMENT br EMPTY>
+
+<!ELEMENT table (#PCDATA | caption | rowh | row | bitmask)*>
+  <!ELEMENT caption (#PCDATA)>
+    <!ATTLIST caption
+      id ID #IMPLIED>
+  <!ELEMENT row   (#PCDATA | col)*>
+    <!ATTLIST row
+      id ID #IMPLIED>
+  <!ELEMENT rowh  (#PCDATA | col)*>
+  <!ELEMENT col   (#PCDATA | %text;)*>
+    <!ATTLIST col
+      colspan CDATA #IMPLIED>
+  <!ELEMENT bitmask (#PCDATA)>
+
+<!ELEMENT ul    (#PCDATA | li)*>
+  <!ELEMENT li    (#PCDATA | %text;)*>
+
+<!ELEMENT dl    (#PCDATA | dd | dt)*>
+  <!ELEMENT dt    (#PCDATA | emlink | funclink | img)*>
+    <!ATTLIST dt
+      id ID #IMPLIED>
+  <!ELEMENT dd    (#PCDATA | text | code)*>
+
+<!ELEMENT em    (#PCDATA)>
+<!ELEMENT strong (#PCDATA)>
+
+<!ELEMENT h     (#PCDATA)>
+  <!ATTLIST h
+    id ID #IMPLIED>
+
+<!ELEMENT img   EMPTY>
+  <!ATTLIST img
+    src CDATA #REQUIRED
+    width CDATA "0"
+    height CDATA "0"
+    id ID #IMPLIED>
+
+<!ELEMENT a     (#PCDATA)>
+  <!ATTLIST a
+    href CDATA #REQUIRED>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetDir</title>
+		<category>Objekte</category><subcat>Aktivität</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>iDir</name><desc>Aktionsrichtung. Vordefinierte Werte: <funclink>DIR_Right</funclink>() / <funclink>DIR_Left</funclink>()</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Richtung gesetzt werden soll. 0 bei lokalem Aufruf.</desc><optional/></param>
+			</params>
+		</syntax>
+		<desc>Setzt die Richtung eines Objekts.</desc>
+		<remark>SetDir beeinflusst nur die grafische Darstellung das Objekts; für Veränderung der Bewegungsrichtung ist <funclink>SetComDir</funclink> zuständig!</remark>
+		<remark>Wenn bei der Aktion mehr als zwei Richtungen angegeben werden (siehe <emlink href="definition/actmap.html">ActMap.txt</emlink>), dürfen auch andere Werte als <funclink>DIR_Right</funclink>()
+						und <funclink>DIR_Left</funclink>() übergeben werden.</remark>
+		<related>
+			<funclink>GetDir</funclink>
+			<funclink>DIR_Left</funclink>
+			<funclink>DIR_Right</funclink>
+			<funclink>SetAction</funclink>
+		</related>
+	</func>
+	<author>jwk</author><date>August 2002</date>
+</funcs>

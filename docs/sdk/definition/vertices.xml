@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>Vertices</title>
+<h id="Vertices">Vertices</h>
+<text>Vertices sind die Kollisionspunkte eines Objekts. Der Umriss eines Objekts sollte grob durch
+Vertices markiert sein. Meist reichen hierbei vier bis fünf Eckpunkte. Die Koordinaten der
+Eckpunkte gelten in Relation zur Objektmitte. An diesen Punkten wird überprüft, ob das
+Objekt mit festen Materialien in der Landschaft kollidiert. Stößt ein Objekt mit einem
+Vertex gegen festes Material, so wird es entsprechend anhalten, seine Richtung ändern oder sich
+drehen (die Vertices drehen sich hierbei natürlich mit). Wird ein Eckpunkt eines Objekts durch
+ein festes Material verschüttet, so hängt das Objekt fest. Die Reibung eines Vertex
+bestimmt, wie leicht das Objekt an diesem Punkt abrutscht. Ist einem Vertex eine Ausrichtung
+zugeordnet (siehe <emlink href="definition/cnat.html">CNAT - ContactAttachment</emlink>), so
+wird bei aktivierten ContactCalls die entsprechende Funktion im Script des Objekts aufgerufen,
+sobald der Vertex mit der Landschaft kollidiert, so dass das Objekt merkt, dass es z.B. links gegen
+eine Wand gefahren ist und entsprechend reagieren kann. Bei Objekten mit SolidMask ist zu beachten,
+dass jeder Vertex mindestens einen Punkt Abstand zum festen Bereich hat, sonst bleibt das Objekt in
+der eigenen SolidMask hängen.</text>
+
+<author>Sven2</author><date>April 2002</date>
+</doc>

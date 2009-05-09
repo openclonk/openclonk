@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerID</title>
+    <category>Spieler</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param><type>int</type><name>iPlayerNumber</name><desc>Spielernummer, dessen ID abgefragt werden soll.</desc></param>
+      </params>
+    </syntax>
+    <desc>
+	Gibt die Spieler-ID eines beigetretenen Spielers zurück. Spieler-IDs werden von 1 hochgezählt, und - anders als Spielernummern - nicht wieder benutzt, nachdem ein Spieler eliminiert wurde. Jeder neu beigetetene Spieler hat also eine eigene ID.
+    </desc>
+    <remark>Spieler-IDs werden in Netzwerkspielen schon in der Lobby zugewiesen. Da Lobbyspieler noch im Nachhinein entfernt oder Netzwerkclients vor dem eigentlichen Start ihre Verbindung verlieren können, ist auch bei Spieler-IDs nicht garantiert, dass beim Spielstart alle IDs von 1 bis <funclink>GetPlayerCount</funclink>() belegt sind.</remark>
+    <examples>
+      <example>
+        <code>static num_scores;
+        
+protected func RemovePlayer(int iPlr)
+  {
+  var idPlr = GetPlayerID(iPlr);
+  <funclink>Global</funclink>(idPlr*2)   = <funclink>GetPlayerName</funclink>(iPlr);
+  <funclink>Global</funclink>(idPlr*2+1) = <funclink>GetScore</funclink>(iPlr);
+  ++num_scores;
+  }
+  
+protected func OnGameOver()
+  {
+  var msg = "Scores:", i, plr_name;
+  <funclink>while</funclink> (num_scores)
+    if (plr_name = <funclink>Global</funclink>(i++*2))
+      {
+      msg = <funclink>Format</funclink>("%s|%s=%d", msg, plr_name, <funclink>Global</funclink>(i*2-1));
+      --num_scores;
+      }
+  <funclink>Message</funclink>(msg);
+  }</code>
+        <text>Speichert die Punkte und Namen aller Spieler bei ihrer Eliminierung in einer globalen Liste. Wenn die Runde vorbei ist, wird diese Liste als Nachricht ausgegeben. Da die Liste mit Spieler-IDs statt Spielernummern indiziert wird, ist sicher gestellt, dass neu beitretende Spieler keine Punkte ehemaliger Spieler überschreiben.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>GetPlayerTeam</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>März 2006</date>
+</funcs>

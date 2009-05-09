@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetPlrKnowledge</title>
+		<category>Spieler</category>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>iPlr</name><desc>Spieler, über dessen Baupläne Informationen abgerufen werden sollen.</desc></param>
+				<param><type>id</type><name>id</name><desc>Wenn angegebenen, dann gibt die Funktion TRUE zurück, wenn der Spieler den Bauplan des betreffenden herstellbaren Objekts besitzt, ansonsten FALSE.</desc><optional /></param>
+				<param><type>int</type><name>iIndex</name><desc>Nur angeben, wenn keine id=0.</desc><optional /></param>
+				<param><type>int</type><name>dwCategory</name><desc>Nur angeben, wenn keine id=0.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Bei angegebenen id gibt die Funktion TRUE zurück, wenn der Spieler den Bauplan des betreffenden herstellbaren Objekts besitzt. iIndex und dwCategory werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Bauplan der entsprechenden Kategorie des Spielers.</desc>
+		<examples>
+			<example>
+				<code><funclink>if</funclink>(GetPlrKnowledge(0,HUT1))
+	<funclink>Message</funclink>("Spieler %s kann Bambushütten bauen",0,<funclink>GetPlayerName</funclink>(0));</code>
+				<text>Gibt einen Text aus, falls der erste Spieler sich im Besitz des Bauplanes für Bambushütten befindet.</text>
+				<code>var def = GetPlrKnowledge( 0,0,4,<funclink>C4D_Structure</funclink>()) );
+<funclink>Message</funclink>("Der fünfte Gebäude-Bauplan des Spielers ist %i",0,def);</code>
+				<text></text>
+			</example>
+		</examples>
+		<related>
+			<funclink>SetPlrKnowledge</funclink>
+			<funclink>C4D_All</funclink>
+			<funclink>C4D_Goal</funclink>
+			<funclink>C4D_Knowledge</funclink>
+			<funclink>C4D_Living</funclink>
+			<funclink>C4D_Object</funclink>
+			<funclink>C4D_Rule</funclink>
+			<funclink>C4D_StaticBack</funclink>
+			<funclink>C4D_Structure</funclink>
+			<funclink>C4D_Vehicle</funclink>
+		</related>
+	</func>
+	<author>Günther</author><date>Februar 2002</date>
+</funcs>

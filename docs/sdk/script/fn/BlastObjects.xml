@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>BlastObjects</title>
+		<category>Objekte</category>
+		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>iX</name><desc>X-Koordinate</desc></param>
+				<param><type>int</type><name>iY</name><desc>Y-Koordinate</desc></param>
+				<param><type>int</type><name>iLevel</name><desc>Stärke</desc></param>
+				<param><type>object</type><name>pContainer</name><desc>Objekt, in dem die zu sprengenden Objekte enthalten sind.</desc></param>
+				<param><type>int</type><name>iCausedBy</name><desc>Spielernummer des Spielers, der der Verursacher des Schaden ist, plus eins.</desc></param>
+			</params>
+		</syntax>
+		<desc>Fügt allen Objekten an angegebener Position Explosionsschaden zu. iX und iY sind immer globale Koordinaten. Wenn ein pContainer angegeben ist, wird der Schaden nur den Objekten zugefügt, die in pContainer enthalten sind. Explosionsschaden kann zur Entzündung führen oder auch Lebewesen wegschleudern. Bei lokalen Aufrufen gilt der Schaden als vom Controller des aufrufenden Objekts verursacht.</desc>
+		<examples>
+			<example>
+				<code>BlastObjects(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), 60, <funclink>this</funclink>());</code>
+				<text>Das aufrufende Objekt fügt enthaltenen Objekten Explosionsschaden der Stärke 60 zu.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>Explode</funclink>
+			<funclink>NoContainer</funclink>
+			<funclink>AnyContainer</funclink>
+		</related>
+	</func>
+	<author>jwk</author><date>April 2002</date>
+	<author>Clonkonaut</author><date>April 2008</date>
+</funcs>

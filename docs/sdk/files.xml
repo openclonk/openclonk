@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../clonk.xsl"?>
+<doc>
+<title>Spieldaten</title>
+<h id="Spieldaten">Spieldaten</h>
+
+<text>Die Spieldaten von Clonk sind in komprimierten Gruppendateien zusammen gefasst, die jeweils
+einzelne Komponenten oder weitere Gruppendateien enthalten:</text>
+<dl>
+<dt id="Spielerdateienc4p"><img src="../images/icon_player.gif" width="16" height="16"/>Spielerdateien (c4p)</dt>
+<dd><text>In einer Spielerdatei werden die persönlichen Einstellungen eines Spielers, seine
+erspielten Punkte, Informationen zu seiner Stammcrew und gegebenenfalls sein Portrait
+gespeichert.</text></dd>
+<dt id="Szenarienc4s"><img src="../images/icon_scenario.gif" width="16"
+height="16"/><emlink href="scenario/index.html">Szenarien (c4s)</emlink></dt>
+<dd><text>Szenariodateien setzen sich aus einem Informationskern und weiteren Komponenten, wie einer
+Landkarte, Titelbild und Beschreibungstexten, einer Himmelsgrafik, einem Script und lokalen
+Objektdefinitionen zusammen.</text></dd>
+<dt id="Objektdefinitionenc4d"><img src="../images/icon_object_definition.gif" width="16"
+height="16"/><emlink href="definition/index.html">Objektdefinitionen (c4d)</emlink></dt>
+<dd><text>Objektdefinitionen enthalten einen Informationskern, Grafikelemente, eine
+Aktivitätstabelle, Scripte und Beschreibungstexte. Auch <emlink
+href="particle/index.html">Partikel</emlink> werden in Objektordnern angelegt.</text></dd>
+<dt id="Rundenordnerc4f"><img src="../images/icon_scenario_folder.gif" width="16" height="16"/><emlink href="folder/index.html">Rundenordner (c4f)</emlink></dt>
+<dd><text>Szenarien können in Rundenordnern zusammen gefasst werden.</text></dd>
+<dt id="Systemdatenc4g"><img src="../images/icon_system.gif" width="16" height="16"/>Systemdaten (c4g)</dt>
+<dd><text>Grafiken, Sounds und Musik des Spiels sind in eigenen Gruppen zusammen gefasst und sollten
+nicht verändert werden.</text>
+<text>Mit dem Menüsystem von Clonk lassen sich Gruppendateien bearbeiten und/oder in normale
+Verzeichnisse umwandeln. Die Komponenten der Gruppendateien lassen sich direkt mit allen
+gängigen Anwendungsprogrammen editieren. Sowohl Menüsystem als auch Engine können
+generell sowohl gepackte als auch offene Gruppen verarbeiten.</text>
+<text>Das Entpacken von Gruppen liefert vor allem einen Geschwindigkeitsvorteil beim Bearbeiten von
+größeren oder verschachtelten Dateien.</text></dd>
+</dl>
+<author>Sven2</author><date>April 2002</date>
+<author>matthes</author><date>Juni 2004</date>
+</doc>

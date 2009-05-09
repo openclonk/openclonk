@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>CastParticles</title>
+    <category>Partikel</category>
+    <version>4.9.1.0 GWE<extversion>4.9.5.0 CE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param><type>string</type><name>szName</name><desc>Name des Partikeltyps</desc></param>
+        <param><type>int</type><name>iAmount</name><desc>Anzahl der Partikel</desc></param>
+        <param><type>int</type><name>iLevel</name><desc>Geschwindigkeit, mit der verschleudert werden soll</desc></param>
+        <param><type>int</type><name>iX</name><desc>X-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
+        <param><type>int</type><name>iY</name><desc>Y-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
+        <param><type>int</type><name>a0</name><desc>Untere Schranke für den ersten Zusatzparameter. Dies ist normalerweise die Größe des Partikels in 1/5-Pixeln.</desc></param>
+        <param><type>int</type><name>a1</name><desc>Obere Schranke für den ersten Zusatzparameter</desc></param>
+        <param><type>int</type><name>b0</name><desc>Untere Schranke für den zweiten Zusatzparameter. Dies ist normalerweise die Farbmodulation des Partikels.</desc></param>
+        <param><type>int</type><name>b1</name><desc>Obere Schranke für den zweiten Zusatzparameter</desc></param>
+        <param><type>object</type><name>pObj</name><desc>Zielobjekt für objektlokale Partikel. Objektlokale Partikel werden direkt über den jeweiligen Objekten gezeichnet, und beim Entfernen des Objekts gelöscht.</desc><optional /></param>
+      </params>
+    </syntax>
+    <desc>Verschleudert iAmount Partikel vom angegebenen Typ. Die Zusatzparameter werden zufällig zwischen a0/b0 und a1/b1 gesetzt.</desc>
+    <remark>Diese Funktion gibt im 8Bit-Modus immer 1 zurück. Ansonsten wird nur 0 zurückgegeben, wenn die Partikeldefinition unter dem Namen nicht geladen wurde. Es gibt also keine Möglichkeit, herauszufinden, ob ein Partikel wirklich erzeugt wurde. Dies muss aus Gründen der Netzwerksynchronisation so sein, und Partikel sollten darum nur für kurzzeitige Effekte verwendet werden. Wer mehr Kontolle benötigt, sollte stattdessen auf Objekte zurückgreifen.</remark>
+    <examples>
+      <example>
+        <code>CastParticles("FSpark", 10,100, 0,0, 100, 200, <funclink>RGBa</funclink>(128,128,255,0), <funclink>RGBa</funclink>(255,255,255,127));</code>
+        <text>Verschleudert einige Funken.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>CreateParticle</funclink>
+      <funclink>CastObjects</funclink>
+      <funclink>CastPXS</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>Mai 2002</date>
+</funcs>

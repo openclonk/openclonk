@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>HSLa</title>
+		<category>Arithmetik</category>
+		<version>4.9.5.0 CE</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>byH</name><desc>Farbton der Farbe. 0 ist Rot, 85 ist Grün, 170 Blau und 255 wieder Rot.</desc></param>
+				<param><type>int</type><name>byS</name><desc>Sättigung der Farbe. Dies ist der Farbkontrast.</desc></param>
+				<param><type>int</type><name>byL</name><desc>Helligkeit der Farbe. Helligkeit gleich null entspräche <funclink>RGB</funclink>(0,0,0)</desc></param>
+				<param><type>int</type><name>byA</name><desc>Durchsichtigkeit der Farbe.</desc></param>
+			</params>
+		</syntax>
+		<desc>Setzt einen 32Bit-Farbwert aus den drei Parametern und einem Durchsichtigkeitswert zusammen. 0-255 für alle Parameter.</desc>
+		<examples>
+			<example>
+				<code><funclink>SetClrModulation</funclink>(HSLa(0,0,255,64),<funclink>FindObject</funclink>(TRE1));</code>
+				<text>Färbt einen zufälligen Baum absolut weiß und ein wenig durchsichtig.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>RGB</funclink>
+			<funclink>RGBa</funclink>
+			<funclink>HSLa</funclink>
+		</related>
+	</func>
+	<author>Newton</author><date>Juni 2005</date>
+</funcs>

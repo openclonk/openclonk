@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetKiller</title>
+		<category>Objekte</category><subcat>Status</subcat>
+		<version>4.9.6.0 CR</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>object</type><name>pObj</name><desc>Abzufragendes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Liefert den Spieler, der zuletzt Energieabzug an einem Objekt verursacht hat.</desc>
+		<remark>Aufgrund der Komplexität der Spielwelt von Clonk ist es nicht immer möglich, den tatsächlichen Schadensverursacher in Kettenreaktionen korrekt ausfindig zu machen.
+			Zur Schadensverfolgung speichert jedes Objekt einen steuernden Spieler, der die Spielernummer des Spielers angibt, der ein Objekt zuletzt kontrolliert bzw. geworfen, geschoben, abgeschossen, etc. hat (für Details siehe <funclink>GetController</funclink>). Dieses Feld wird benutzt, um den Schaden erzeugenden Spieler zu ermitteln:<br />
+			<ul><li>Bei Objekttreffern der steuernde Spieler des geworfenen Objektes. Dieser wird für Gegenstände automatisch beim Einsammeln gesetzt.</li>
+			<li>Bei Clonk-zu-Clonk-Kämpfen gilt direkt der steuernde Spieler des Kampfgegners als Schadensverursacher. Das ist im Normalfall der Besitzer.</li>
+			<li>Bei Feuer gilt der Controller des ursprünglichen Verursachers des Feuers, also dem aufrufenden Objekt in <funclink>Incinerate</funclink>()-Aufrufen. Der Verursacher wird durch die Entzündketten weitergetragen, unabhängig von Besitzern oder steuernden Spielern der brennenden Objekte. Zündet also zum Beispiel Spieler A einen Clonk von Spieler B an und selbiger entzündet einen Clonk von Spieler C, so gelten beide Feuer als von Spieler A verursacht.</li></ul>
+			Der Schadensverursacher eines Clonks wird aumatisch auf NO_OWNER (kein Spieler) zurück gesetzt, wenn der Clonk eine Aktivität ausführt, für die nicht ObjectDisabled=1 gesetzt ist (zum Beispiel "Walk").<br />
+			Selbst verursachter Schaden setzt das Feld nur dann auf den eigenen Spieler, wenn es vorher NO_OWNER war. Das verhindert, dass ein Spieler durch schnellen Selbstmord anderen Spielern Punkte wegnehmen kann. Wenn man unten herausfällt, gilt also derjenige als Mörder, der zuletzt Schaden verursacht hat. Wurde der Clonk mit einem Steintreffer herunter geschleudert, gilt in dem Fall der Steinwerfer.
+		</remark>
+		<examples>
+			<example>
+				<code>protected func Death()
+{
+	var iKiller = GetKiller();
+	if (iKiller == <funclink>GetController</funclink>()) <funclink>Message</funclink>("%s hat sich selbst umgebracht.", <funclink>this</funclink>(), <funclink>GetName</funclink>());
+	else if (iKiller > NO_OWNER) <funclink>Message</funclink>("%s wurde von %s geplättet!", <funclink>this</funclink>(), <funclink>GetName</funclink>(), <funclink>GetPlayerName</funclink>(iKiller));
+	else <funclink>DeathAnnounce</funclink>();
+	<funclink>return</funclink>(true);
+}</code>
+				<text>Script für den Tod eines Clonks: Anstatt der normalen Todesnachricht richtet sich die Nachricht danach, wer den Clonk getötet hat.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>GetController</funclink>
+			<funclink>GetOwner</funclink>
+			<funclink>SetController</funclink>
+			<funclink>DoEnergy</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>April 2007</date>
+</funcs>

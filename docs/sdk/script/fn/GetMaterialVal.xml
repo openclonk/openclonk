@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetMaterialVal</title>
+    <category>Get*Val</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>strEntry</name>
+          <desc>Name des abzufragenden Eintrags</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>strSection</name>
+          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iMaterial</name>
+          <desc>Nummer des Materials, von dem der Eintrag abgefragt werden soll. Bei Übergabe von 0 wird die Definition des aufrufenden Objekts angenommen.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iEntryNr</name>
+          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
+          <optional/>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Gibt einen Eigenschaftswert einer Materialdefinition nach seinem Namen in der <emlink href="material/c4m.html">Materialdatei</emlink>
+          zurück.</desc>
+
+    <examples>
+      <example>
+        <code>GetMaterialVal("BlastFree", "Material", <funclink>GetMaterial</funclink>(20, 0))</code>
+        <text>Überprüft, ob das Material rechts vom aufrufenden Objekt sprengbar ist.</text>
+      </example>
+    </examples>
+
+
+    <related>
+      <funclink>GetMaterial</funclink>
+      <funclink>Material</funclink>
+    </related>
+
+  </func>
+  <author>PeterW</author><date>Juni 2003</date>
+</funcs>

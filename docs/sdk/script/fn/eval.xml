@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>eval</title>
+    <category>Script</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>strScript</name>
+          <desc>Auszuführender Script</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Führt einen als String übergebenen Script aus.</desc>
+
+    <examples>
+      <example>
+
+        <code>var v1, v2, v3, v4, v5;
+for(var i = 1; i &lt;= 5; i++) eval( <funclink>Format</funclink>("v%d = %d", i, i * i) );</code>
+
+        <text>Füllt die Variablen v1 bis v5 mit den Quadratzahlen der Zahlen 1 bis 5 (Es werden die Scripte "v1 = 1", "v2 = 4" ... "v5 = 25" mit <funclink>Format</funclink> erzeugt und mit "eval" ausgeführt)</text>
+
+      </example>
+    </examples>
+
+  </func>
+  <author>PeterW</author><date>April 2002</date>
+</funcs>

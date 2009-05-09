@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetFoW</title>
+		<category>Spieler</category><subcat>Sicht</subcat>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>bool</type><name>fEnabled</name><desc>Wenn TRUE, wird der Kriegsnebel aktiviert, bei FALSE deaktiviert.</desc></param>
+				<param><type>int</type><name>iPlayer</name><desc>Nummer des Spielers.</desc></param>
+			</params>
+		</syntax>
+		<desc>Schaltet den Nebel des Krieges für einen Spieler ein oder aus.</desc>
+		<examples>
+			<example>
+				<code>var i = 0;
+<funclink>for</funclink> (var plrnum = <funclink>GetPlayerCount</funclink> (); plrnum; i++)
+  if (<funclink>GetPlayerName</funclink> (i)) {
+    plrnum--;
+    SetFoW (0, i);
+  }</code>
+				<text>Schaltet den Kriegsnebel für alle Spieler aus.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>SetPlrView</funclink>
+			<funclink>SetPlrViewRange</funclink>
+		</related>
+	</func>
+	<author>Günther</author><date>November 2002</date>
+</funcs>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>ActMap.txt</title>
+<h id="ActMap">ActMap</h>
+<text>In der Komponente ActMap.txt werden die möglichen
+Aktivitäten eines Objekts beschrieben. Die Animationsphasen einer
+jeden Aktivität werden dabei in der Graphics.png (oder veraltet
+Graphics.bmp) als nebeneinanderliegende Bilder abgelegt und in der
+ActMap.txt über Bildkoordinaten referenziert. Aktivitäten können im
+Spiel von der Engine oder per Script gestartet oder beendet werden
+(siehe <emlink href="script/fn/SetAction.html">SetAction</emlink>). Einige
+Aktivitäten, speziell solche von Lebewesen, nutzen dabei Engine-interne
+<emlink href="definition/procedures.html">Prozeduren</emlink>, die das Bewegungsverhalten
+des Objekts während der Ausführung dieser Aktivität steuert.</text>
+<text>
+<table>
+<caption id="BeliebigvieleSektionenAction">Beliebig viele Sektionen [Action]</caption>
+  <rowh>
+    <col>Wert</col>
+    <col>Datentyp</col>
+    <col>Beschreibung</col>
+  </rowh>
+  <row>
+    <col>Name</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Name der Aktivität. Siehe <emlink href="script/fn/SetAction.html">SetAction</emlink>().</col>
+  </row>
+  <row>
+    <col>Procedure</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Interne Standardprozedur. Siehe <emlink href="definition/procedures.html">Prozeduren</emlink>.</col>
+  </row>
+  <row>
+    <col>Directions</col>
+    <col>Integer</col>
+    <col>Anzahl der Animationsrichtungen. Animationreihen vertikal in Graphics.png.</col>
+  </row>
+  <row>
+    <col>FlipDir</col>
+    <col>Integer</col>
+    <col>Wenn ungleich 0, gibt dieser Wert die erste Animationsrichtung an, die durch
+Spiegelung einer davor liegenden Animationsrichtung gezeichnet wird. So wird bei Wert
+1 für die Richtung 1 (rechts) die gespiegelte Grafik der Richtung 0 (links) verwendet
+(siehe Clonks). Bei Wert 7 wird für Richtungen &gt;= 7 die gespiegelte Grafik der
+Richtung 6 - n verwendet, d.h. bei höheren Richtungsnummern wird wieder rückwärts nach
+oben gezählt (siehe Banner im Ritterpack).</col>
+  </row>
+  <row>
+    <col>Length</col>
+    <col>Integer</col>
+    <col>Anzahl der Animationsphasen dieser Aktivität (horizontal in Graphics.png).</col>
+  </row>
+  <row>
+    <col>Reverse</col>
+    <col>Integer</col>
+    <col>0 oder 1. Bei Wert 1 werden die Animationsphasen rückwärts angezeigt.</col>
+  </row>
+  <row>
+    <col>Delay</col>
+    <col>Integer</col>
+    <col>Wartezeit in Frames (Ticks) zwischen zwei Animationsphasen.</col>
+  </row>
+  <row>
+    <col>Attach</col>
+    <col>Integer</col>
+    <col>Festhalten an Oberflächen: <emlink href="definition/cnat.html">CNAT-Wert</emlink>,
+    also z.B. Wert 8 für Boden. Wird nur ausgewertet, wenn Procedure NONE ist.</col>
+  </row>
+  <row>
+    <col>Facet</col>
+    <col>6 Integer</col>
+    <col>Animationsgrafik: Zielrechteck aus Graphics.png auf Objektposition.</col>
+  </row>
+  <row>
+    <col>FacetBase</col>
+    <col>Integer</col>
+    <col>0 oder 1. Bei Wert 1 wird Facet mit der Standardobjektgrafik unterlegt.</col>
+  </row>
+  <row>
+    <col>FacetTopFace</col>
+    <col>Integer</col>
+    <col>0 oder 1. Bei 1 wird das TopFace (siehe <emlink href="definition/defcore.html">DefCore.txt</emlink>)
+    aus der animierten Facet verwendet.</col>
+  </row>
+  <row>
+    <col>FacetTargetStretch</col>
+    <col>Boolean</col>
+    <col>0 oder 1. Bei 1 wird die Grafik vertikal bis zur oberen Kante des ActionTarget gestretcht.</col>
+  </row>
+  <row>
+    <col>NextAction</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Nächste Aktivität nach Ablauf der Animationsphasen.</col>
+  </row>
+  <row>
+    <col>NoOtherAction</col>
+    <col>Integer</col>
+    <col>0 oder 1. Bei 1 ist keine Aktivität nach dieser möglich (z.B. Tod, Zerstörung).</col>
+  </row>
+  <row>
+    <col>StartCall</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Objektscriptfunktion, die beim Start der Aktivität aufgerufen wird.</col>
+  </row>
+  <row>
+    <col>EndCall</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Wird am Ende der Aktivität aufgerufen.</col>
+  </row>
+  <row>
+    <col>PhaseCall</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Wird bei jedem Phasenschritt aufgerufen.</col>
+  </row>
+  <row>
+    <col>AbortCall</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Wird aufgerufen, wenn die Aktivität vor ihrem Ende durch eine andere ersetzt wird.</col>
+  </row>
+  <row>
+    <col>InLiquidAction</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Auszuführende Aktion, wenn das Objekt in Flüssigkeiten eintaucht.</col>
+  </row>
+  <row>
+    <col>Sound</col>
+    <col>Zeichenfolge (max. 30)</col>
+    <col>Dauerhaftes Geräusch dieser Aktivität.</col>
+  </row>
+  <row>
+    <col>ObjectDisabled</col>
+    <col>Integer</col>
+    <col>0 oder 1. Eingeschränkte Fähigkeit des Objekts während dieser Aktion.</col>
+  </row>
+  <row>
+    <col>DigFree</col>
+    <col>Integer</col>
+    <col>Freigraben während dieser Aktion. Objektrechteck 1, sonst Kreisradius.</col>
+  </row>
+  <row>
+    <col>EnergyUsage</col>
+    <col>Integer</col>
+    <col>Nötige Energie für diese Aktion. Maschinen 500.</col>
+  </row>
+</table>
+</text>
+<author>Sven2</author><date>April 2002</date>
+<author>matthes</author><date>Juni 2004</date>
+</doc>

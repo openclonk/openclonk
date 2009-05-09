@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPlayerVal</title>
+    <category>Get*Val</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>strEntry</name>
+          <desc>Name des abzufragenden Eintrags</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>strSection</name>
+          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iPlayer</name>
+          <desc>Nummer des Spielers, von dem der Eintrag abgefragt werden soll.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iEntryNr</name>
+          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
+          <optional/>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Fragt Eigenschaftswerte eines Spielers anhand dessen Namen ab, wie sie beim Speichern eines Spiels in die game.txt geschrieben werden</desc>
+
+    <remark>Achtung! Die abgefragten Werte können teilweise sync-sicher sein (also z.B. bei
+            verschiedenen Rechnern in einem Netzwerkspiel verschiedene Werte zurückliefern)</remark>
+
+    <remark>Die meisten Möglichkeiten für Werte von strEntry sind bereits in System.c4g/GetXVal.c vordefiniert</remark>
+
+    <examples>
+      <example>
+        <code><funclink>Log</funclink>("Spieler %d hat %d Objekte!", iPlr, GetPlrObjectsOwned(iPlr));</code>
+
+        <text>Schreibt die Anzahl der Objekte, die der Spieler mit der Nummer iPlr besitzt ins Log.</text>
+
+      </example>
+    </examples>
+
+
+    <related>
+      <funclink>GetDefCoreVal</funclink>
+      <funclink>GetObjectVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetActMapVal</funclink>
+      <funclink>GetScenarioVal</funclink>
+      <funclink>GetPlayerInfoCoreVal</funclink>
+    </related>
+
+  </func>
+  <author>PeterW</author><date>April 2002</date>
+</funcs>

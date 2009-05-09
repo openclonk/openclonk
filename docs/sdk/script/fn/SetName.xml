@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+ <func>
+  <title>SetName</title>
+  <category>Objekte</category>
+  <subcat>Status</subcat>
+  <version>4.9.1.0 GWE
+   <extversion>4.9.6.0 CR</extversion>
+  </version>
+  <syntax>
+   <rtype>bool</rtype>
+   <params>
+    <param>
+     <type>string</type>
+     <name>szNewName</name>
+     <desc>Neuer Name. Wenn 0 (nicht ""!), wird der Name des Objekts auf den Namen seiner Definition beziehungsweise den Namen in der Spielerdatei zurückgesetzt.</desc>
+    </param>
+    <param>
+     <type>object</type>
+     <name>pObj</name>
+     <desc>Objekt, dessen Name geändert werden soll. 0 bei lokalem Aufruf.</desc>
+     <optional />
+    </param>
+    <param>
+     <type>id</type>
+     <name>idDef</name>
+     <desc>Wenn angegeben, wird pObj ignoriert, und stattdessen der Name der Definition geändert.</desc>
+     <optional />
+    </param>
+    <param>
+     <type>bool</type>
+     <name>fSetInInfo</name>
+     <desc>Nur für Crewobjekte: Wenn wahr, wird der Name permanent in der Infosektion des Spielers geändert. Namen dürfen jeweils nur einmal pro Spielerdatei vorkommen. Ab CR.</desc>
+     <optional />
+    </param>
+    <param>
+     <type>bool</type>
+     <name>fMakeValidIfExists</name>
+     <desc>Steuert das Verhalten, falls ein Clonk mit dem angegebenen Namen schon in der Stammcrew des Spielers existiert: Wenn unwahr, schlägt die Funktion in diesem Fall fehl. Wenn wahr, wird ein neuer Name durch Anhängen einer Zahl erzeugt. Ab CR.</desc>
+     <optional />
+    </param>
+   </params>
+  </syntax>
+
+  <desc>Ändert für eine Runde den Namen eines Objekts oder einer Definition.</desc>
+  <remark>Vor Clonk Endeavour bewirkte ein Aufruf für ein Mannschaftsmitglied noch eine permanente Änderung in der Spielerdatei und ein Aufruf für ein normales Objekt eine Änderung für alle Objekte der gleichen Definition.</remark><!--
+  <remark>Bei Mannschaftsobjekten wird der Name in der Infosektion geändert. Das bedeutet beispielsweise, dass das Mannschaftsmitglied des Spielers beim regulären Beenden der Runde im veränderten Zustand in die Spielerdatei geschrieben wird - das heißt, der Name wird permanent geändert.</remark>
+  <remark>Nicht-Mannschaftsmitglieder besitzen kein eigenes Feld für die Namensspeicherung, und Definitionsänderungen werden in Spielständen und bei Laufzeitbeitritten nicht mit synchronisiert. Das bedeutet, dass Namensänderungen bei Laufzeitbeitritten oder Wiederaufnahmen von Spielständen verloren gehen. Als Abhilfe kann der neue Name beispielweise in einer lokalen Variable zwischengespeichert werden, um ihn dann in einer bei der Synchronisierung aufgerufenen Funktion (UpdateTransferZone) neu zu setzen.</remark>-->
+
+  <examples>
+   <example>
+<code>protected func InitializePlayer(iPlr)
+  {
+  SetName("Strunzmuffel", <funclink>GetHiRank</funclink>(iPlr));
+  <funclink>return</funclink>(1);
+  }</code>
+    <text>Szenarioscript: Die höchstrangigen Clonks neu beitretender Spieler heißen in dieser Runde anders. <!--werden umgetauft (Und bleiben es auch nach Beenden der Runde!).--></text>
+   </example>
+  </examples>
+  <related>
+   <funclink>MakeCrewMember</funclink>
+   <funclink>GetName</funclink>
+  </related>
+ </func>
+ <author>Sven2</author><date>Juni 2003</date>
+</funcs>

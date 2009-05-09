@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>StopScriptProfiler</title>
+		<category>Entwickler</category>
+		<version>4.9.6.0 CR</version>
+		<syntax>
+			<rtype>bool</rtype>
+		</syntax>
+		<desc>Stoppt den Scriptprofiler, und gibt das Ergebnis im Log aus.</desc>
+		<remark>Mit dem Scriptprofiler lässt sich messen, wie viel Rechenzeit die Scriptengine in welchen Scriptfunktionen aufwendet. Dies kann nützlich sein, um in langsam laufenden Szenarien zu prüfen, ob und wo sich Flaschenhälse in der Ausführung von Scripten befinden. Gemessen werden immer jeweils die Scriptausführungen zwischen einem StartScriptProfiler und einem StopScriptProfiler-Aufruf.</remark>
+		<examples>
+			<example>
+				<text>Zunächst wird der Profiler gestartet, indem man irgendwo <funclink>StartScriptProfiler</funclink> ausführt - zum Beispiel im Konsolenfenster, wenn die Engine im Entwicklermodus gestartet wird. Nach einer Weile Spiel führt man dann <funclink>StopScriptProfiler</funclink> aus, und erhält zum Beispiel folgende Ausgabe im Log:</text>
+				<code>Profiler statistics:
+==============================
+00037ms	globa<b></b>l Explode
+00035ms	SFLN::Hit
+00020ms	TRB1::Damage
+00020ms	TRB1::ChopDown
+00020ms	TRB2::Damage
+00020ms	TRB2::ChopDown
+00018ms	game DeployPlayer
+00018ms	LOAM::Hit
+00018ms	BIRD::ControlDigDouble
+00012ms	_QSF::Active
+00012ms	Direct exec
+00011ms	_SPK::CastObject
+00002ms	FXL1::Advance
+00002ms	TFLN::Hit
+00002ms	_QSF::Hit
+00002ms	_QSF::Detonate
+==============================</code>
+				<text>In dieser Ausgabe sieht man, dass die größte Scriptbremse Explosionen sind. "global Explode" ist die Funktion Explode, die irgendwo global im Script definiert ist. Auf Platz zwei steht die Auftrefffunktion vom Superflint (SFLN::Hit). Hierbei ist zu beachten, dass alle Unteraufrufe von Scriptfunktionen auch immer mit einbezogen werden. Die rechenintesiven Explode-Aufrufe schlagen also sowohl in "global Explode", als auch in "SFLN::Hit" zu Buche. Rekursiv sich selbst aufrufende Funktionen zählen sich entsprechend auch für jede Rekursion doppelt.</text>
+				<text>"game DeployPlayer" ist ein Aufruf im Szenarienscript. "Direct exec" ist die Summe aller zur Laufzeit kompiliierten und ausgeführten Scripte. Das sind zum Beispiel <funclink>eval</funclink> oder Menü-Callbacks.</text>
+				<text>Es ist zu beachten, dass rechenintensive Scripte nicht die einzigen Bremsen im Spiel sind. Wenn ein Objekt zum Beispiel sehr viele Partikel erzeugt, kann dies das Spiel bremsen, ohne in der Scriptengine aufzutauchen. Ein anderes Beispiel wäre das Erzeugen von sehr vielen Objekten.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>StartScriptProfiler</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>März 2007</date>
+</funcs>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Angle</title>
+    <category>Arithmetik</category>
+    <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param><type>int</type><name>iX1</name><desc>X-Koordinate des ersten Punktes</desc></param>
+        <param><type>int</type><name>iY1</name><desc>Y-Koordinate des ersten Punktes</desc></param>
+        <param><type>int</type><name>iX2</name><desc>X-Koordinate des zweiten Punktes</desc></param>
+        <param><type>int</type><name>iY2</name><desc>Y-Koordinate des zweiten Punktes</desc></param>
+        <param><type>int</type><name>iPrec</name><desc>Gibt, wenn angegeben, den Winkel multipliziert mit iPrec zurück, um so genauere Winkel zu erhalten. Eine Präzision von 10 gibt also Werte zwischen 0 und 3600 zurück.</desc><optional/></param>
+      </params>
+    </syntax>
+    <desc>Liefert den Winkel, in dem sich der zweite Punkt vom ersten Punkt aus gesehen befindet. Der Winkel wird in Grad zurückgeliefert, 0° ist senkrecht oben. Alle Koordinaten sind global.</desc>
+    <examples>
+      <example>
+<code><funclink>SetR</funclink>(Angle(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)),
+           <funclink>GetX</funclink>(<funclink>GetCursor</funclink>(1)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(1)) ));</code>
+        <text>Das Objekt dreht sich, so dass es parallel zu der Gerade liegt, die durch die Mittelpunkte der ausgewählten Clonks von Spieler 1 und 2 geht.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>Cos</funclink>
+      <funclink>Sin</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>April 2002</date>
+  <author>Clonk-Karl</author><date>September 2004</date>
+</funcs>

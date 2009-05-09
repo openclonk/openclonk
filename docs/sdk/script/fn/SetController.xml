@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetController</title>
+		<category>Objekte</category><subcat>Status</subcat>
+		<version>4.9.6.0 CR</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iNewController</name><desc>Spielernummer des neuen, steuernden Spielers. NO_OWNER für keinen Spieler.</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen steuernder Spieler geändert wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Ändert den steuernden Spieler eines Objekts.</desc>
+		<examples>
+			<example>
+				<code>protected func Entrance(pContainer) { SetController(<funclink>GetController</funclink>(pContainer)); <funclink>return</funclink>(); }</code>
+				<text>Das Objekt ändert seinen steuernden Spieler, wenn es eingesammelt oder in einem Fahrzeug oder Gebäude abgelegt wird.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>GetController</funclink>
+			<funclink>GetKiller</funclink>
+			<funclink>SetOwner</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>April 2007</date>
+</funcs>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetTeamByIndex</title>
+    <category>Teams</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+		<param><type>int</type><name>iIndex</name><desc>Index in der Teamliste</desc></param>
+      </params>
+    </syntax>
+    <desc>
+    Gibt die indizierte Teamnummer zurück. Die Funktion garantiert für Werte zwischen 0 und GetTeamCount()-1, dass eine gültige Teamnummer zurückgegeben wird (denn durch eliminierte Spieler und Neubeitritte kann es vorkommen, dass "Löcher" unbelegter Teamnummern in der Liste entstehen!). Damit ist es einfacher, eine Schleife zu schreiben, die alle Teamnummern durchgeht.
+    </desc>
+<examples>
+                        <example>
+<code><funclink>for</funclink>(var i = 0; i &lt; <funclink>GetTeamCount</funclink>(); i++)
+  <funclink>Log</funclink>("Willkommen im Spiel, Spieler von %s", <funclink>GetTeamName</funclink>(GetTeamByIndex(i)));</code>
+                                <text>Begrüßt alle Spieler anhand ihrer Teams im Log.</text>
+                        </example>
+                </examples>
+	<related>
+		<emlink href="scenario/Teams.html">Teams</emlink>
+		<funclink>GetTeamColor</funclink>
+		<funclink>GetTeamName</funclink>
+		<funclink>GetPlayerTeam</funclink>
+		<funclink>GetTeamCount</funclink>
+	</related>
+  </func>
+  <author>Clonkonaut</author><date>April 2008</date>
+</funcs>

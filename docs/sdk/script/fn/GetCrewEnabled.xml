@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetCrewEnabled</title>
+		<category>Objekte</category>
+		<subcat>Mannschaft</subcat>
+		<version>4.9.1.0 GWE</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Status abgefragt werden soll. 0 bei lokalem Aufruf.</desc></param>
+			</params>
+		</syntax>
+		<desc>Fragt ab, ob ein Mannschaftsmitglied gegenwärtig angewählt werden kann.</desc>
+		<examples>
+			<example>
+				<code><funclink>if</funclink> (!GetCrewEnabled(<funclink>GetHiRank</funclink>())) <funclink>SetCrewEnabled</funclink>(1, <funclink>GetCursor</funclink>());</code>
+				<text>Aktiviert den höchstrangigen Clonk des ersten Spielers, falls er noch nicht aktiviert ist.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>SetCrewEnabled</funclink>
+			<funclink>MakeCrewMember</funclink>
+			<funclink>SelectCrew</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>April 2002</date>
+</funcs>

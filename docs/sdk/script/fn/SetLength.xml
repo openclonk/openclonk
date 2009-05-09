@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetLength</title>
+		<category>Script</category><subcat>Strings</subcat>
+		<version>4.9.6.0 CR</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>array</type><name>aResize</name><desc>Array, dessen Länge verändert werden soll</desc></param>
+				<param><type>int</type><name>iSize</name><desc>Neue Länge des Feldes</desc></param>
+			</params>
+		</syntax>
+		<desc>Verändert die Länge eines Arrays auf den angegebenen Wert. Überzählige Elemente werden dabei gegebenenfalls gelöscht.</desc>
+		<related>
+			<funclink>GetLength</funclink>
+			<funclink>CreateArray</funclink>
+		</related>
+	</func>
+	<author>Clonkonaut</author><date>Juli 2006</date>
+</funcs>

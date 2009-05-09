@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetPlrView</title>
+		<category>Spieler</category><subcat>Sicht</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iPlr</name><desc>Spieler, dessen Sicht gesetzt werden soll.</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, auf das die Sicht gesetzt werden soll. </desc></param>
+			</params>
+		</syntax>
+		<desc>Zentriert das Sichtfenster eines Spielers auf ein Objekt. Die Sicht folgt dem Objekt bis zum nächsten Spielerkommando.</desc>
+		<examples>
+			<example>
+				<code>local oFeind;
+// TimerCall eines automatischen Aussichtsturms
+protected func Timer()
+{
+  // Bereits einen Feind gefunden?
+  <funclink>if</funclink>(!oFeind)
+  {
+    // Alarm schlagen?
+    <funclink>while</funclink>(oAlarm = <funclink>FindObject</funclink>(0, -100, -100, 200, 200, <funclink>OCF_CrewMember</funclink>(), 0, 0, 0, oAlarm))
+      <funclink>if</funclink>(<funclink>Hostile</funclink>(<funclink>GetOwner</funclink>(oAlarm), <funclink>GetOwner</funclink>()))
+      {
+        // Ein feindlicher Clonk!
+        SetPlrView(<funclink>GetOwner</funclink>(), oAlarm);
+        <funclink>Sound</funclink>("Bing");
+        break;
+      }
+  }
+  else
+  {
+    <funclink>if</funclink>(<funclink>ObjectDistance</funclink>(oFeind) &lt; 120)
+    {
+      // Noch einige ständige Effekte bei Alarm
+      <funclink>Sound</funclink>("Bing");
+      <funclink>Message</funclink>("!!! FEIND !!!", <funclink>this</funclink>());
+    }
+    else
+    {
+      // wenn er sich entfernt: Alarm beenden
+      oFeind = 0;
+    }
+  }
+}
+				</code>
+				<text>Automatischer Wachturm: gelangt ein gegnerischer Clonk in die Nähe des Gebäudes, so wird die Sicht des Gebäudebesitzers auf den Angreifer gelenkt. 
+              Außerdem wird, solange er sich in der Umgebung des Gebäudes befindet, ständig ein Sound gespielt und eine Nachricht über den Gebäude ausgegeben.</text>
+			</example>
+		</examples>
+								<related>
+												<funclink>GetPlrView</funclink>
+												<funclink>GetPlrViewMode</funclink>
+												<funclink>SetPlrViewRange</funclink>
+												<funclink>SetFoW</funclink>
+								</related>
+	</func>
+	<author>PeterW</author><date>April 2003</date>
+</funcs>

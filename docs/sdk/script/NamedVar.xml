@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>Benannte Variablen</title>
+
+<h>Benannte Variablen</h>
+<part>
+	<text>Variablen dienen innerhalb von Scripts zur Speicherung von Daten. Es gibt bestimmte <emlink href="script/Typechecks.html">Datentypen</emlink>, die Variablen annehmen können.</text>
+	
+	<text>Außerdem kann eine Variable einen von drei Gültigkeitsbereiche haben. Die Variable ist außerhalb ihres Gültigkeitsbereiches nicht sichtbar.</text>
+	
+	<text><table>
+		<row>
+		  <col>Schlüsselwort</col>
+		  <col>Gültigkeitsbereich</col>
+		  <col>Standort</col>
+		</row>
+		<row>
+		  <col><code>var</code></col>
+		  <col>funktions-lokal</col>
+		  <col>Funktion</col>
+		</row>
+		<row>
+		  <col><code>local</code></col>
+		  <col>objekt-lokal</col>
+		  <col>Objektscript</col>
+		</row>
+		<row>
+		  <col><code>static</code></col>
+		  <col>global</col>
+		  <col>beliebiger Skript</col>
+		</row>
+	</table></text>
+	
+	<text>Variablen werden mit folgender Syntax definiert:</text>
+	
+	<code>{ var / local / static } name [= expr] [, name [= expr] ... ];</code>
+	
+	<text>Als erstes wird der Gültigkeitbereich angegeben. Danach muss der Name einer benannten Variable folgen.</text>
+	<text>Optional kann der Variable auch gleich ein Wert zugewiesen werden. Dies ist aber nur für funktionslokale (<code>var</code>) Variablen erlaubt. Ohne Initialisierung beginnt die Variable mit dem Standard-Wert 0.</text>
+	<text>Weitere Deklarationen können, mit Kommata getrennt, folgen. Die Deklaration muss immer mit einem ";" beendet werden.</text>
+	
+	<h>Beispiel:</h>
+	
+	<code>static iObjectCount;
+local  iTimeToLive;
+
+protected func Initialize()
+{
+  iObjectCount++;
+  iTimeToLive = 100;
+}
+
+protected func Destruction()
+{
+  iObjectCount--;
+}
+
+protected func Timer()
+{
+  if(!--iTimeToLive)
+  {
+    <funclink>RemoveObject</funclink>();
+    <funclink>return</funclink>();
+  }
+
+  var obj = <funclink>FindObject</funclink>(CLNK, 0, 0, -1, -1);
+
+  if(<funclink>ObjectDistance</funclink>(obj) &lt; 20)
+    <funclink>DoDamage</funclink>(-10, obj);
+
+  <funclink>return</funclink>();
+}</code>
+	
+	<h>Ergänzungen:</h>
+	
+	<text><ul>
+		<li>Definitionen objektlokaler Variablen werden sowohl bei #appendto also auch bei #include mit übernommen.</li>
+		<li>Mittels der Funktionen <funclink>VarN</funclink>(), <funclink>LocalN</funclink>(), und <funclink>GlobalN</funclink>() kann indirekt auf Variablen zugegriffen werden. Mittels <funclink>LocalN</funclink>() kann speziell auch auf lokale Variablen in anderen Objekten zugreifen.</li>
+		<li>Sind an einer Stelle zwei Variablen desselben Namens sichtbar, so bezeichnet der Name im Script jeweils die Variable mit dem kleineren Geltungsbereich. Das heißt z.B., dass eine objektlokale Variable eine globale Variable "verdeckt".</li>
+		<li>Wird eine Variable mehrfach deklariert, so existiert die Variable nachher trotzdem nur einmal und es wird kein Fehler ausgegeben. Initialisierungen gelten als Zuweisungen und werden wie eine entsprechende Anweisung ggf. auch mehrfach ausgeführt.</li>
+		<li>Eine <code>static</code>-Variable darf auch in Objektscripten verwendet werden (siehe Beispiel). Wird eine <code>static</code>-Variable mit gleichem Namen in einem anderen Script definiert, so bezeichnen beide auch dieselbe Variable.</li>
+	</ul></text>
+</part>
+
+<author>PeterW</author><date>ewig her</date>
+
+</doc>

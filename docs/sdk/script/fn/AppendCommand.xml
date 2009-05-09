@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>AppendCommand</title>
+    <category>Objekte</category>
+    <subcat>Commands</subcat>
+    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>pObj</name>
+          <desc>Objekt, dem das Kommando gegeben wird.</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>szCommand</name>
+          <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>pTarget</name>
+          <optional />
+          <desc>Zielobjekt für Aktion</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iX</name>
+          <optional />
+          <desc>X-Zielkoordinate</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iY</name>
+          <optional />
+          <desc>Y-Zielkoordinate</desc>
+        </param>
+        <param>
+          <type>object</type>
+          <name>pTarget2</name>
+          <optional />
+          <desc>zweites Zielobjekt</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iInterval</name>
+          <optional />
+          <desc>Zeit (in Ticks/Frames), bis das Kommando abgebrochen wird</desc>
+        </param>
+        <param>
+          <type>any</type>
+          <name>Data</name>
+          <optional />
+          <desc>zusätzliche Daten zur Aktion</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iRetries</name>
+          <optional />
+          <desc>Anzahl der Wiederholungen (wenn das Kommando fehlschlägt), bis das Kommando abgebrochen wird.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iBaseMode</name>
+          <optional />
+          <desc>Befehlsstapelmodus. Werte siehe <funclink>AddCommand</funclink>.</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Fügt ein Kommando der Kommandoliste eines Objekts am Ende hinzu. Das Objekt wird also das zuerst gegebene Kommando ausführen und sich danach automatisch dem mit AppendCommand hinzugefügten widmen.<br />
+          Für Kommando-Beschreibungen siehe <funclink>SetCommand</funclink><br/>
+          Bemerkung: Mit AppendCommand hinzugefügte Befehle werden nicht an gesteuerte Fahrzeuge weitergeleitet (siehe VehicleControl)</desc>
+
+    <examples>
+      <example>
+        <code>var base = <funclink>FindBase</funclink>();
+<funclink>SetCommand</funclink>(<funclink>this</funclink>(), "MoveTo", base);
+AppendCommand(<funclink>this</funclink>(), "Throw", 0, <funclink>GetX</funclink>(base), <funclink>GetY</funclink>(base));</code>
+        <text>
+Gibt dem Clonk den Befehl, zuerst zu der ersten (gefundenen) Basis zu laufen, und dann das erste Objekt, das er trägt, auf diese zu werfen.<br />
+        </text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetCommand</funclink>
+      <funclink>GetCommand</funclink>
+      <funclink>AddCommand</funclink>
+      <funclink>FinishCommand</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>November 2001</date>
+</funcs>

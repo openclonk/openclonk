@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>ExtractLiquid</title>
+    <category>Landschaft</category>
+    <subcat>Material</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param><type>int</type><name>iX</name><desc>X-Position, an der abgesogen wird. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+        <param><type>int</type><name>iY</name><desc>Y-Position, an der abgesogen wird. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+      </params>
+    </syntax>
+    <desc>Saugt ein Pixel Flüssigkeit an der angegebenen Position ab. Zurückgegeben wird die Materialnummer des abgesogenen Materials; bei Misserfolg -1.</desc>
+    <examples>
+      <example>
+
+<code>var mat=ExtractLiquid();
+if (mat!=-1) <funclink>InsertMaterial</funclink>(mat,0,-100)</code>
+        <text>Saugt ein Flüssigkeitspixel ab, und fügt es 100 Pixel oberhalb wieder ein.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>ExtractMaterialAmount</funclink>
+      <funclink>InsertMaterial</funclink>
+      <funclink>GBackLiquid</funclink>
+    </related>
+  </func>
+  <author>Sven2</author><date>November 2001</date>
+</funcs>

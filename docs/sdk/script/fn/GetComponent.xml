@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+				<func>
+								<title>GetComponent</title>
+								<category>Objekte</category><subcat>Komponenten</subcat>
+								<version>4.6.5.0 CP</version>
+								<syntax>
+												<rtype>int / id</rtype>
+												<params>
+																<param><type>id</type><name>idComponent</name><desc>Objektkomponente, dessen Menge zurückgeliefert werden soll. Wenn 0, wird iIndex benutzt und eine Objektkomponente zurückgegeben.</desc><optional /></param>
+																<param><type>int</type><name>iIndex</name><desc>Index der zurückzuliefernden Komponente. Dieser Parameter wird ignoriert, wenn idComponent angegeben ist. Ansonsten wird eine ID der Komponente zurückgegeben, dessen Menge in einem darauffolgenden GetComponent-Aufruf ermittelt werden kann.</desc><optional /></param>
+																<param><type>object</type><name>pObj</name><desc>Objekt dessen Komponenten abgefragt werden sollen. 0 bei lokalem Aufruf. Wenn stattdessen eine idDef angegeben ist, wird dieser Parameter ignoriert.</desc><optional /></param>
+																<param><type>id</type><name>idDef</name><desc>Definition, von der die Komponenten abgefragt werden sollen. Wenn 0, wird stattdessen in pObj bzw. dem aufrufenden Objekt abgefragt.</desc><optional /></param>
+												</params>
+								</syntax>
+								<desc>Liefert Objektkomponenten.</desc>
+		<examples>
+			<example>
+<code>var i,cid,num;
+<funclink>while</funclink> (id = GetComponent(0, i++, 0, <funclink>GetID</funclink>()))
+	if ((num = GetComponent(id) - GetComponent(id, 0, 0, <funclink>GetID</funclink>())) > 0)
+		<funclink>while</funclink> (num--) <funclink>CreateObject</funclink>(id, 0, 0, <funclink>GetOwner</funclink>());</code>
+				<text>Erzeugt alle Komponenten, die dem aufrufenden Objekt noch fehlen (z.B. bei einer Baustelle), direkt vor selbigem.</text>
+			</example>
+		</examples>
+								<related>
+			<funclink>SetComponent</funclink>
+			<funclink>Split2Components</funclink>
+								</related>
+				</func>
+				<author>Cucaracha</author><date>Mai 2002</date>
+</funcs>
+

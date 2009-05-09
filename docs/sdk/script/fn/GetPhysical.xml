@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+        <func>
+                <title>GetPhysical</title>
+                <category>Objekte</category><subcat>Status</subcat>
+                <version>4.6.5.0 CP</version>
+                <syntax>
+                        <rtype>int</rtype>
+                        <params>
+                                <param><type>string</type><name>szPhysical</name><desc>Name der abzufragenden physischen Eigenschaft.</desc></param>
+                                <param><type>int</type><name>iMode</name><desc>iMode 0 liefert die gerade aktuellen Eigenschaften (permanent oder temporär) und kann auch bei Objekten ohne Objektinfo (z.B. Fahrzeugen oder Gebäuden) angewendet werden. iMode 1 liefert die permanenten Eigenschaften aus der Objektinfo. iMode 2 liefert die temporären Eigenschaften, allerdings nur wenn sich die Eigenschaften auch gerade im temporären Modus befinden.</desc></param>
+			        <param><type>object</type><name>pObj</name><desc>Das Objekt, dessen Physical festgestellt wird. Null bei lokalen Aufrufen.</desc></param>
+			        <param><type>id</type><name>idDef</name><desc>Wenn angegeben, wird stattdessen der Definitionswert der angegebenen Definition aus der DefCore.txt, Sektion [Physical] zurückgegeben.</desc></param>
+		        </params>
+                </syntax>
+                <desc>Liefert die physischen Eigenschaften eines Objekts.</desc>
+		<examples>
+			<example>
+				<code><funclink>if</funclink> (GetPhysical("Magic", 0, <funclink>GetCursor</funclink>())) <funclink>Message</funclink>("Ich kann zaubern!", <funclink>GetCursor</funclink>());</code>
+				<text>Der ausgewählte Clonk des ersten Spielers freut sich, wenn er gerade Zauberenergie aufnehmen kann.</text>
+			</example>
+		</examples>
+                <related>
+                        <funclink>SetPhysical</funclink>
+                        <funclink>TrainPhysical</funclink>
+      <funclink>ResetPhysical</funclink>
+                </related>
+        </func>
+        <author>jwk</author><date>Juni 2002</date>
+        <author>Sven2</author><date>Juni 2003</date>
+</funcs>
+

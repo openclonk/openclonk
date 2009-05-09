@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetOwner</title>
+		<category>Objekte</category><subcat>Status</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iNewOwner</name><desc>Spielernummer des neuen Besitzers. -1 für keinen Besitzer.</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Besitzer geändert wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+			</params>
+		</syntax>
+		<desc>Ändert den Besitzer eines Objekts.</desc>
+		<remark>Dieser Aufruf ändert auch den Controller des Objektes auf den neuen Besitzer</remark>
+		<examples>
+			<example>
+				<code>protected func Entrance(pContainer) { SetOwner(<funclink>GetOwner</funclink>(pContainer)); <funclink>return</funclink>(); }</code>
+				<text>Das Objekt ändert seinen Besitzer, wenn es eingesammelt wird.</text>
+			</example>
+		</examples>
+		<related>
+			<funclink>SetController</funclink>
+			<funclink>GetOwner</funclink>
+			<funclink>MakeCrewMember</funclink>
+		</related>
+	</func>
+	<author>Sven2</author><date>November 2001</date>
+</funcs>

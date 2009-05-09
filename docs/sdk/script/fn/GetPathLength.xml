@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetPathLength</title>
+    <category>Landschaft</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>iFromX</name>
+          <desc>X-Koordiante der Startposition</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iFromY</name>
+          <desc>Y-Koordiante der Startposition</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iToX</name>
+          <desc>X-Koordiante der Zielposition</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iToY</name>
+          <desc>Y-Koordiante der Zielposition</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Sucht mittels des auch für die Clonk-Wegfindung benutzten Algorithmus
+          einen Weg zwischen zwei Punkten der Landschaft und gibt dessen Länge
+          zurück. Wurde kein Weg gefunden, gibt die Funktion 0 zurück.</desc>
+
+    <examples>
+      <example>
+        <code>var iDist = GetPathLength(<funclink>GetX</funclink>(), <funclink>GetY</funclink>(), <funclink>GetX</funclink>(<funclink>FindBase</funclink>(<funclink>GetOwner</funclink>())), <funclink>GetY</funclink>(<funclink>FindBase</funclink>(<funclink>GetOwner</funclink>())));</code>
+        <text>Ermittelt die Entfernung eines Objekts bis zu seiner ersten Basis</text>
+      </example>
+    </examples>
+  </func>
+  <author>PeterW</author><date>April 2002</date>
+</funcs>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetTeamCount</title>
+    <category>Teams</category>
+    <version>4.9.6.0 CR</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+      </params>
+    </syntax>
+    <desc>
+    Liefert die Anzahl der Teams, die momentan im Spiel sind.
+    </desc>
+    <remark>Da Spieler zur Laufzeit hinzukommen oder entfernt werden können, kann es vorkommen, dass "Lücken" in der Teamindizierung entstehen (d.h., dass zum Beispiel Team 2 existiert, aber Team 1 nicht mehr) - GetTeamCount liefert unabhängig davon aber nicht den Index des letzten Teams+1, sondern die tatsächliche Teamanzahl zurück. Um alle Teams durchzugehen, benötigt man daher eine spezielle Schleife. Es reicht nicht, einfach von 0 bis GetTeamCount()-1 hochzuzählen! Siehe das Beispiel zu <funclink>GetTeamByIndex</funclink>.</remark>
+	<related>
+		<emlink href="scenario/Teams.html">Teams</emlink>
+		<funclink>GetTeamColor</funclink>
+		<funclink>GetTeamName</funclink>
+		<funclink>GetPlayerTeam</funclink>
+		<funclink>GetTeamByIndex</funclink>
+	</related>
+  </func>
+  <author>Clonkonaut</author><date>April 2008</date>
+</funcs>

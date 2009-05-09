@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>InLiquid</title>
+    <category>Landschaft</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>pObj</name>
+          <desc>Zielobjekt. 0 bei lokalem Aufruf.</desc>
+        </param>
+      </params>
+    </syntax>
+    <desc>Gibt TRUE zurück, wenn sich das Objekt in einer Flüssigkeit befindet.</desc>
+    <related>
+      <funclink>OCF_InLiquid</funclink>
+      <funclink>GBackLiquid</funclink>
+    </related>
+  </func>
+  <author>PeterW</author><date>November 2001</date>
+</funcs>

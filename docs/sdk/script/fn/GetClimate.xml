@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+				<func>
+								<title>GetClimate</title>
+								<category>Umwelt</category><subcat>Wetter</subcat>
+								<version>4.6.5.0 CP</version>
+								<syntax>
+												<rtype>int</rtype>
+								</syntax>
+								<desc>Liefert den aktuellen Klimawert. Dieser wird als Konstante zum durch TemperatureRange und Season entstehenden Wert hinzugezählt.</desc>
+		<remark>Der aktuelle Temperaturrichtwert errechnet sich als "Climate - TemperatureRange * cos(Season * Pi / 50)" - an diesen Richtwert wird die aktuelle Temperatur mit maximal 1 Grad pro 35 Frames angepasst.</remark>
+								<related>
+												<funclink>GetSeason</funclink>
+												<funclink>GetTemperature</funclink>
+												<funclink>SetClimate</funclink>
+								</related>
+				</func>
+				<author>Cucaracha</author><date>Mai 2002</date>
+</funcs>
+

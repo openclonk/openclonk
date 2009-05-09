@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetScenarioVal</title>
+    <category>Get*Val</category>
+    <version>4.9.1.0 GWE</version>
+    <syntax>
+      <rtype>any</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>strEntry</name>
+          <desc>Name des abzufragenden Eintrags</desc>
+        </param>
+        <param>
+          <type>string</type>
+          <name>strSection</name>
+          <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
+          <optional/>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iEntryNr</name>
+          <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
+          <optional/>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Fragt Eigenschaftswerte des Szenarios anhand dessen Namen/Sekion in der <emlink href="scenario/scenario.html">Scenario.txt</emlink> ab</desc>
+
+    <remark>Achtung! Die abgefragten Werte können teilweise nicht sync-sicher sein (also z.B. bei
+            verschiedenen Rechnern in einem Netzwerkspiel verschiedene Werte zurückliefern)</remark>
+
+    <remark>Die meisten Möglichkeiten für Werte von strEntry sind bereits in System.c4g/GetXVal.c vordefiniert</remark>
+
+    <examples>
+      <example>
+        <code><funclink>Log</funclink>("You are playing \"%s\"!", GetScenTitle());</code>
+
+        <text>Gibt eine Meldung mit dem Szenariotitel aus.</text>
+
+      </example>
+    </examples>
+
+
+    <related>
+      <funclink>GetDefCoreVal</funclink>
+      <funclink>GetObjectVal</funclink>
+      <funclink>GetObjectInfoCoreVal</funclink>
+      <funclink>GetActMapVal</funclink>
+      <funclink>GetPlayerVal</funclink>
+      <funclink>GetPlayerInfoCoreVal</funclink>
+    </related>
+
+  </func>
+  <author>PeterW</author><date>April 2002</date>
+</funcs>

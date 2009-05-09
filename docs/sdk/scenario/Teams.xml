@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>Teams.txt</title>
+
+<h id="Scenariotxt">Teams.txt</h>
+<text>Über die Teams.txt kann für Mehrspielerszenarien definiert werden, in welchen Fraktionen die Spieler zusammen oder gegeneinander spielen. Ab 4.9.6.0 CR.</text>
+
+<text><table>
+	<caption id="SektionTeams">Sektion [Teams]</caption>
+	<rowh>
+		<col>Wert</col>
+		<col>Datentyp</col>
+		<col>Beschreibung</col>
+		<col>Standardwert</col>
+	</rowh>
+	<row>
+		<col>Active</col>
+		<col>Integer</col>
+		<col>0 oder 1. Wenn 0, existieren keine Teams und es wird davon ausgegangen, dass auch keine zur Laufzeit gebildet werden können. Das heißt zum Beispiel, dass den Spielern kein Verfeindungsmenü zur Verfügung steht.</col>
+		<col>1</col>
+	</row>
+	<row>
+		<col>AllowHostilityChange</col>
+		<col>Integer</col>
+		<col>0 oder 1. Wenn 1, können sich Spieler zur Laufzeit verbünden und verfeinden.</col>
+		<col>0 bei vorhandener und 1 bei nicht vorhandener Teams.txt und aktivierter Meleespielregel.</col>
+	</row>
+	<row>
+		<col>AllowTeamSwitch</col>
+		<col>Integer</col>
+		<col>0 oder 1. Wenn 1, können Spieler zur Laufzeit ein anderes Team wählen.</col>
+		<col>0</col>
+	</row>
+	<row>
+		<col>AutoGenerateTeams</col>
+		<col>Integer</col>
+		<col>0 oder 1. Wenn 1, können sich Spieler zur Laufzeit verbünden und verfeinden.</col>
+		<col>0 bei vorhandenen Teams. 1 wenn keine [Team]-Sektionen existieren.</col>
+	</row>
+	<row>
+		<col>TeamDistribution</col>
+		<col>Identifikator</col>
+		<col>Verteilung der Spieler auf die Teams. Mögliche Werte sind Free (Freie Auswahl), Host (Der Host wählt in der Lobby), Random (Zufällige Verteilung) oder RandomInv (Zufällige, für die Spieler in der Lobby unsichtbare Verteilung).</col>
+		<col>Free</col>
+	</row>
+	<row>
+		<col>TeamColors</col>
+		<col>Integer</col>
+		<col>0 oder 1. Bei 1 haben alle Spieler eines Teams die gleiche Farbe.</col>
+		<col>0</col>
+	</row>
+	<row>
+		<col>MaxScriptPlayers</col>
+		<col>Integer</col>
+		<col>Maximale Zahl der Scriptspieler, die der Host in Netzwerkspielen in der Lobby aktivieren kann. Dabei zählen schon beigetretene Scriptspieler mit.</col>
+		<col>0</col>
+	</row>
+	<row>
+		<col>ScriptPlayerNames</col>
+		<col>String</col>
+		<col>Durch "|" getrennte Liste von Namen, die an in der Lobby beitretende Scriptspieler vergeben werden. Sind keine Namen angegeben, heißen alle Scriptspieler "Computer".</col>
+		<col>Computer</col>
+	</row>
+</table></text>
+
+<text><table>
+	<caption id="SektionTeam">Beliebig viele Sektionen [Team]</caption>
+	<rowh>
+		<col>Wert</col>
+		<col>Datentyp</col>
+		<col>Beschreibung</col>
+		<col>Standardwert</col>
+	</rowh>
+	<row>
+		<col>id</col>
+		<col>Integer</col>
+		<col>Identifikator: Eine eindeutige Zahl größer als 0, die im Szenarienscript zur Identifikation des Teams benutzt werden kann. Normalerweise kann man die Team-IDs einfach mit sequentiell von 1 aufsteigend durchnummerieren.</col>
+		<col>Muss angegeben werden!</col>
+	</row>
+	<row>
+		<col>Name</col>
+		<col>Zeichenfole (max 30)</col>
+		<col>Name für das Team. Es können wie in Scripten auch lokalisierte Zeichenketten wie $TeamRight$ benutzt werden. Siehe <emlink href="lang.html#Teamstxt">Sprachanpassung</emlink>.</col>
+		<col></col>
+	</row>
+	<row>
+		<col>PlrStartIndex</col>
+		<col>Integer</col>
+		<col>Wenn ungleich 0, wird für alle Mitglieder dieses Teams die entsprechende [PlayerX]-Sektion der <emlink href="scenario/scenario.html#SektionenPlayer1Player2Player3Player4">Scenario.txt</emlink> für die Startparameter verwendet. 0 für automatische Vergabe unabhängig von den Teams.</col>
+		<col>0</col>
+	</row>
+	<row>
+		<col>Color</col>
+		<col>Integer</col>
+		<col>32 Bit RGB-Wert, der die Teamfarbe angibt. Die Teamfarbe wird statt der Spielerfarbe benutzt, wenn TeamColors angegeben ist.</col>
+		<col>0</col>
+	</row>
+	<row>
+		<col>IconSpec</col>
+		<col>String</col>
+		<col>Spezifikation für das Teamicon für Beitritt im nicht-Netzwerk oder zur Laufzeit.</col>
+		<col></col>
+	</row>
+	<row>
+		<col>MaxPlayer</col>
+		<col>Integer</col>
+		<col>Maximale Anzahl der Spieler, die diesem Team beitreten dürfen. 0 für endlos.</col>
+		<col>0</col>
+	</row>
+</table></text>
+
+<author>Sven2</author><date>Juni 2006</date>
+
+</doc>

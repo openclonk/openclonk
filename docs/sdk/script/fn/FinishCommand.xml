@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>FinishCommand</title>
+    <category>Objekte</category>
+    <subcat>Commands</subcat>
+    <version>4.9.5.0 CE</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>object</type>
+          <name>pObj</name>
+          <desc>Objekt, dessen Kommando beendet wird.</desc>
+        </param>
+        <param>
+          <type>bool</type>
+          <name>fSuccess</name>
+          <desc>Ob das Kommando als erfolgreich gewertet werden soll.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iCommandNum</name>
+          <optional />
+          <desc>Index des Kommandos. 0 für das aktuelle, 1 für das als nächstes auszuführende usw.</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Beendet ein Kommado in der Kommandoliste eines Objekts.</desc>
+
+    <examples>
+      <example>
+        <code>public func Production(object clonk)
+{
+  // Baum suchen
+  <emlink href="script/NamedVar.html">var</emlink> pTree;
+  if (!(pTree = FindWorkTree(clonk)))
+  // Kein geeigneter Baum (fertig)
+  {
+	<funclink>Message</funclink>("$TxtNomoresuitabletrees$",this());
+	FinishCommand(clonk, 0, 1);
+	return(0);
+  }
+[...]
+}
+        </code>
+        <text>
+Auszug aus dem Sägewerk-Script. Finishcommand wird benutzt, um nachfolgende Kommandos darüber zu informieren,
+dass die automatische Holzproduktion fehlgeschlagen ist. Produktion() wurde dabei durch ein Call-Kommando
+aufgerufen, welches immer erfolgreich ist, wenn es die Funktion aufrufen kann. Deshalb muss FinishCommand
+verwendet werden.
+        </text>
+      </example>
+    </examples>
+    <related>
+      <funclink>SetCommand</funclink>
+      <funclink>GetCommand</funclink>
+      <funclink>AppendCommand</funclink>
+	  <funclink>AddCommand</funclink>
+    </related>
+  </func>
+  <author>Günther</author><date>April 2004</date>
+</funcs>

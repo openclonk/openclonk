@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Format</title>
+    <category>Script</category><subcat>Strings</subcat>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param><type>string</type><name>szStr</name><desc>Zeichenkette, in die die Werte eingesetzt werden</desc></param>
+        <param><type></type><name>...</name><desc>Werte, die in die Zeichenkette eingesetzt werden</desc></param>
+      </params>
+    </syntax>
+    <desc>
+      Setzt eine Zeichenkette aus verschiedenen Werten zusammen. Dabei wird szStr von vorne bis zum Ende nach mit '%' beginnenden Platzhaltern durchsucht, um diese dann durch die Parameter zu ersetzen.<br />
+      Das allgemeine Syntax für diese Platzhalter lautet:<br />
+      <code>%[Länge][.Präzision]Typ</code>
+      Bis auf den Typ sind also alle Parameter optional. Der Typ gibt den Datentyp an, den der Parameter hat. Möglich sind folgende Werte:
+      <table><rowh><col>Typ</col><col>Bedeutung</col></rowh>
+      <row><col>d</col><col>Ganzzahl (int)</col></row>
+      <row><col>x</col><col>Ganzzahl (int), hexadezimale Ausgabe (0123456789abcdef)</col></row>
+      <row><col>X</col><col>Ganzzahl (int), hexadezimale Ausgabe (0123456789ABCDEF)</col></row>
+      <row><col>i</col><col>id (Bei IDs funktionieren die restlichen Parameter wie Länge und Präzision nicht!)</col></row>
+      <row><col>s</col><col>Zeichenkette</col></row>
+      <row><col>v</col><col>Beliebig. Vor allem nützlich zur Fehlersuche.</col></row>
+      </table>
+      Länge gibt eine Minimallänge an. Wenn der Wert kürzer ist, wird er rechtsbündig ausgerichtet und mit Leerzeichen aufgefüllt. Wird vor die Länge eine '0' gestellt, wird mit Nullen statt Leerzeichen aufgefüllt.<br />
+      <br />
+      Das Präzisionsfeld verhält sich je nach dem Parametertyp: Bei Ganzzahlen (d) gibt es die Minimalzahl der auszugebenden Zahlen an (der Rest wird mit Nullen aufgefüllt), während es bei Zeichenketten (s) die Maximalzahl der auszugebenden Zeichen angibt.<br />
+    </desc>
+    <examples>
+      <example>
+        <code><funclink>Message</funclink>(Format("Hallo, %s. Du hast %d Clonks!", <funclink>GetPlayerName</funclink>(0), <funclink>GetCrewCount</funclink>(0)));</code>
+        <text>Gibt zum Beispiel "Hallo Twonky, du hast 3 Clonks!" auf dem Bildschirm aus.</text>
+      </example>
+      <example>
+        <code><funclink>Log</funclink>(Format("'%3d'", 1));</code>
+        <text>Gibt aus: '  1'</text>
+      </example>
+      <example>
+        <code><funclink>Log</funclink>(Format("'%i'", <funclink>GetID</funclink>(<funclink>GetCursor</funclink>())));</code>
+        <text>Gibt z.B. aus: 'CLNK'</text>
+      </example>
+      <example>
+        <code><funclink>Log</funclink>(Format("'%3.2d'", 5));</code>
+        <text>Gibt aus: ' 05'</text>
+      </example>
+      <example>
+        <code><funclink>Log</funclink>(Format("'%.2s'", "test"));</code>
+        <text>Gibt aus: 'te'</text>
+      </example>
+      <example>
+        <code><funclink>Log</funclink>(Format("'%03d'", 12));</code>
+        <text>Gibt aus: '012'</text>
+      </example>
+    </examples>
+  </func>
+  <author>Sven2</author><date>November 2001</date>
+</funcs>

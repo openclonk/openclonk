@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Random</title>
+    <category>Arithmetik</category>
+    <version>4.6.5.0 CP</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param><type>int</type><name>iMaxVal</name><desc>Höchstwert</desc></param>
+      </params>
+    </syntax>
+    <desc>Gibt eine Zufallszahl zwischen 0 und iMaxVal-1 zurück. Der zurückgegebene Wert kann jedoch nicht höher als 32767 sein.</desc>
+    <examples>
+      <example>
+        <code>protected func Hit()
+{
+  <funclink>if</funclink>(!Random(60)) <funclink>Explode</funclink>(Random(10)+1);
+}
+        </code>
+        <text>Lässt das Objekt, in dem der Script steht, mit der Wahrscheinlichkeit von 1:60 explodieren. Der Explosionsradius ist dabei ein zufälliger Wert zwischen 1 und 10.</text>
+      </example>
+    </examples>
+    <related>
+      <funclink>RandomX</funclink>
+    </related>
+  </func>
+  <author>jwk</author><date>Juni 2002</date>
+</funcs>

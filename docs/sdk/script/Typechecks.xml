@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>Datentypen</title>
+
+<h>Datentypen</h>
+<part>
+
+	<text>C4Script unterstützt die folgenden Datentypen für Variablen, Parameter und Rückgabewerte:</text>
+	
+	<text><table>
+		<rowh>
+		  <col>Typname</col>
+		  <col>Voller Name</col>
+		  <col>Variableninhalt</col>
+		  <col>Beispiel</col>
+		</rowh>
+		<row>
+		  <col><code>int</code></col>
+		  <col>Integer</col>
+		  <col>Eine ganze Zahl im Bereich von -2.147.483.648 bis +2.147.483.647.</col>
+		  <col><code>42 </code></col>
+		</row>
+		<row>
+		  <col><code>bool</code></col>
+		  <col>Boolean</col>
+		  <col>"wahr" (Wert <code>true</code>) oder "falsch" (Wert <code>false</code>). Wird von vielen Kontrollstrukturen wie <funclink>if</funclink> und <funclink>while</funclink> als Parameter erwartet.</col>
+		  <col><code>true </code></col>
+		</row>
+		<row>
+		  <col><code>id</code></col>
+		  <col>Definitions-ID</col>
+		  <col>ID einer Objektdefinition (siehe <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">Objektdefinitionen</emlink>)</col>
+		  <col><code>CLNK </code></col>
+		</row>
+		<row>
+		  <col><code>string</code></col>
+		  <col>Zeichenkette</col>
+		  <col>Ein beliebiger Text.</col>
+		  <col><code>"Dies ist ein Text!" </code></col>
+		</row>
+		<row>
+		  <col><code>object</code></col>
+		  <col>Objektzeiger</col>
+		  <col>Verweis auf ein im Spiel existierendes Objekt. Hat keine direkte Darstellung. Siehe z.B. <funclink>FindObject</funclink>()</col>
+		  <col>-</col>
+		</row>
+		<row>
+		  <col><code>array</code></col>
+		  <col>Feld</col>
+		  <col>Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <funclink>GetLength</funclink> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können. Ab CR.</col>
+		  <col><code>[0,42,CLNK] </code></col>
+		</row>
+	</table></text>
+	
+	<text>Außerdem gibt es noch zwei spezielle Typen:</text>
+	
+	<text><ul>
+	<li><code>any</code>: Der Typ ist nicht bekannt oder egal. "0" hat immer diesen Typ.</li>
+	<li><code>&amp;</code>: Der Wert ist eine Referenz - z.B. auf eine Variable. Er verhält sich genau wie der Zielwert, kann aber gesetzt werden (z.B. mit dem Operator "<code>=</code>"). Siehe auch <emlink href="script/Funcs.html#referenzen">Referenzparameter</emlink>.</li>
+	</ul></text>
+	
+	<h>Arrays</h>
+	<part>
+		<text>Arrays können entweder direkt durch <code>[<em>Ausdruck 1</em>, <em>Ausdruck 2</em>, ...]</code> oder <funclink>CreateArray</funclink>() erstellt werden. Sie werden bei Zugriff auf ein Element gegebenenfalls automatisch verlängert, jedoch ist es schneller, das Array gleich mit der benötigten Länge zu erstellen. Wird ein Array einer Variablen zugewiesen oder einer Funktion übergeben, bekommt diese Variable eine eigene Kopie des Arrays. Das eigentliche Kopieren wird aber erst ausgeführt, wenn es nötig ist. Wenn das Array einer Funktion zum Ändern übergeben werden soll, muss ein Referenzparameter verwendet werden.
+		</text>
+		<text>Zugriff auf ein Element <code>i</code> eines Arrays <code>a</code> erfolgt über <code>a[i]</code>. Dabei entspricht <code>i=0</code> dem ersten Element.</text>
+		<h>Beispiel 1</h>
+<code>func ArraySum(array a)
+{
+  var l = GetLength(a);
+  var result = 0;
+  for (var i = 0; i &lt; l; ++i)
+  {
+    result += a[i];
+  }
+  return (result);
+}</code>
+		<text>Diese Funktion summiert alle Elemente eines Arrays.</text>
+		<h>Beispiel 2</h>
+<code>func RandomID()
+{
+  var a = [CLNK, WIPF, BIRD, HUT1];
+  return (a[Random(4)]);
+}</code>
+		<text>Diese Funktion wählt zufällig aus einer der vier ids aus und gibt diese zurück.</text>
+	</part>
+	
+	<h>Konvertierung</h>
+	
+	<text>Aus folgender Tabelle kann entnommen werden, welche Typen automatisch konvertiert werden und wo ein Fehler ausgelöst wird:</text>
+	
+	<text><table>
+		<rowh>
+		 <col>nach -&gt;</col>
+		 <col><code>int</code></col>
+		 <col><code>bool</code></col>
+		 <col><code>id</code></col>
+		 <col><code>object</code></col>
+		 <col><code>string</code></col>
+		 <col><code>array</code></col>
+		</rowh>
+		<row>
+		 <col><code>int</code></col>
+		 <col>OK</col>
+		 <col>OK</col>
+		 <col>if &lt;= 9999</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		</row>
+		<row>
+		 <col><code>bool</code></col>
+		 <col>OK</col>
+		 <col>OK</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		</row>
+		<row>
+		 <col><code>id</code></col>
+		 <col>#strict</col>
+		 <col>OK</col>
+		 <col>OK</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		</row>
+		<row>
+		 <col><code>object</code></col>
+		 <col>#strict</col>
+		 <col>OK</col>
+		 <col>Error</col>
+		 <col>OK</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		</row>
+		<row>
+		 <col><code>string</code></col>
+		 <col>#strict</col>
+		 <col>OK</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		 <col>OK</col>
+		 <col>Error</col>
+		</row>
+		<row>
+		 <col><code>array</code></col>
+		 <col>Error</col>
+		 <col>OK</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		 <col>Error</col>
+		 <col>OK</col>
+		</row>
+	</table></text>
+
+	<h>Erklärung der Tabelle:</h>
+	<text><ul>
+		<li>Wo #strict steht, wird nur ein Fehler ausgelöst wenn der Script <emlink href="script/Strict.html">#strict</emlink> ist. Hierbei handelt es sich um "ungefährliche" aber sinnlose Konvertierungen, die nur in einigen "trickreichen" Scripts zur Anwendung kamen.</li>
+		<li>Die Konvertierung int zu id ist nur erlaubt, wenn die Zahl größer gleich 0 und kleiner gleich 9999 ist. Auf diese Weise werden auch IDs, die nur aus Zahlen bestehen, unterstützt (z.B. 0001)</li>
+		<li>Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>.</li>
+	</ul></text>
+	
+</part>
+
+<author>Günther</author><date>April 2006</date>
+<author>PeterW</author><date>April 2006</date>
+
+</doc>
