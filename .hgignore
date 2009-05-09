@@ -1,0 +1,39 @@
+syntax: glob
+
+autom4te.cache
+*~
+*.bak
+.deps
+*.o
+clonk
+.dirstamp
+*.a
+*.c4p
+*.lib
+stamp-h1
+config.h
+config.log
+config.status
+Makefile
+C4Include.h.gch
+Makefile.in
+aclocal.m4
+autotools/config.guess
+autotools/config.sub
+configure
+intermediate
+
+# Temporary files created by Microsoft Visual Studio
+*.ncb
+*.plg
+*.opt
+*.suo
+*.sbr
+*.bsc
+BuildLog.htm
+*.user
+*.positions
+
+# TortoiseHg loves to generate those
+*.orig
+
