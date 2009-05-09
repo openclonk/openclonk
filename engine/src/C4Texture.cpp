@@ -79,13 +79,8 @@ bool C4TexMapEntry::Init()
 		return false;
 		}
 	pMaterial = &Game.Material.Map[iMaterialIndex];
-	// Special, hardcoded crap: change <liquid>-Smooth to <liquid>-Liquid
-	const char *szTexture = Texture.getData();
-	if (DensityLiquid(pMaterial->Density))
-		if (SEqualNoCase(szTexture, "Smooth"))
-			szTexture = "Liquid";
 	// Find texture
-	C4Texture * sfcTexture = Game.TextureMap.GetTexture(szTexture);
+	C4Texture * sfcTexture = Game.TextureMap.GetTexture(Texture.getData());
 	if(!sfcTexture)
 		{
 		DebugLogF("Error initializing material %s-%s: Invalid texture!", Material.getData(), Texture.getData());

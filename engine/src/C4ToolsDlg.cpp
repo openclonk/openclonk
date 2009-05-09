@@ -419,7 +419,7 @@ void C4ToolsDlg::Default()
 	Grade = C4TLS_GradeDefault;
 	ModeIFT = TRUE;
 	SCopy("Earth",Material);
-	SCopy("Rough",Texture);
+	SCopy("earth",Texture);
 	}
 
 void C4ToolsDlg::Clear()
