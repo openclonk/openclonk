@@ -290,15 +290,6 @@ BOOL C4ConfigShareware::Registered()
 	return RegistrationValid;
 	}
 
-BOOL C4ConfigShareware::IsFreeFolder(const char *szFoldername, const char *szMaker)
-	{
-	char szFreeFolder[_MAX_FNAME+1];
-	for (int iSeg = 0; SCopySegment(LoadSecStr(IDS_SEC_FREEFOLDERS), iSeg, szFreeFolder); iSeg++)
-		if (SEqualNoCase(GetFilename(szFoldername),szFreeFolder) && SEqual(szMaker, LoadSecStr(IDS_SEC_FREEFOLDERMAKER)))
-			return TRUE;
-	return FALSE;
-	}
-
 bool C4ConfigShareware::LoadRegistration()
 	{
 	// Reset error message(s)

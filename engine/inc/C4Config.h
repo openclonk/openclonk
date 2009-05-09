@@ -315,7 +315,6 @@ class C4Config: protected CStdConfig
 		BOOL Load(BOOL forceWorkingDirectory = TRUE, const char *szConfigFile = NULL);
 		BOOL Init();
 		BOOL Registered();
-		BOOL IsFreeFolder(const char *szFoldername, const char *szMaker);
 		const char *AtExePath(const char *szFilename);
 		const char *AtTempPath(const char *szFilename);
 		const char *AtNetworkPath(const char *szFilename);

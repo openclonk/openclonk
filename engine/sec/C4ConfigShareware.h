@@ -43,7 +43,6 @@ class C4ConfigShareware: public C4Config
 	public:
 		void ClearRegistrationError();
 		BOOL Registered();
-		BOOL IsFreeFolder(const char *szFoldername, const char *szMaker);
 		bool LoadRegistration();
 		bool LoadRegistration(const char *szFrom);
 		const char* GetRegistrationData(const char* strField);

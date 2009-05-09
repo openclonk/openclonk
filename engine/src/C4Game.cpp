@@ -166,10 +166,6 @@ BOOL C4Game::OpenScenario()
   if (!C4S.Load(ScenarioFile))
 		{ LogFatal(LoadResStr("IDS_PRC_FILEINVALID")); return FALSE; }
 
-	// Check registration
-	if (!CheckScenarioAccess())
-		{ LogFatal(LoadResStr("IDS_PRC_NOSWSCENARIO")); return FALSE; }
-
 	// Check minimum engine version
 	if (CompareVersion(C4S.Head.C4XVer[0],C4S.Head.C4XVer[1],C4S.Head.C4XVer[2],C4S.Head.C4XVer[3]) > 0)
 		{
@@ -332,15 +328,6 @@ bool C4Game::Init()
 		SCopy(Config.General.Participants, PlayerFilenames, Min(sizeof(PlayerFilenames), sizeof(Config.General.Participants)) - 1);
 		StartupPlayerCount = SModuleCount(PlayerFilenames);
 		}
-
-	// In console builds, registered join only is forced; this is a limitation to
-	// third-party dedicated servers which we want to keep from providing unlimited
-	// numbers of free games to everybody. Only human hosts can allow non-registered
-	// players to join. Exception: dedicated servers run by RWD may do this.
-#ifdef USE_CONSOLE
-	if (!SEqual(Config.GetRegistrationData("Cuid"), "10694920"))
-		RegJoinOnly = true;
-#endif
 
 	// Join a game?
 	if(pJoinReference || *DirectJoinAddress)
@@ -3679,31 +3666,6 @@ BOOL C4Game::CheckObjectEnumeration()
 	if (iMax>ObjectEnumerationIndex) ObjectEnumerationIndex=iMax;
 	// Done
 	return TRUE;
-	}
-
-BOOL C4Game::CheckScenarioAccess()
-	{
-
-	// Registered: all access
-	if (Config.Registered()) return TRUE;
-
-	// replay OK, too
-	if (C4S.Head.Replay) return TRUE;
-
-	// Scenario in free shareware folder
-	C4Group *pFolder;
-	if (C4S.Head.EnableUnregisteredAccess)
-		if (pFolder = ScenarioFile.GetMother())
-			if (Config.IsFreeFolder(pFolder->GetName(), pFolder->GetMaker()))
-				return TRUE;
-
-	// Network join to any scenario okay (this is the new, great freedom)
-	if (Network.isEnabled() && !Network.isHost())
-		return TRUE;
-
-	// Nope
-	return FALSE;
-
 	}
 
 const char* C4Game::FoldersWithLocalsDefs(const char *szPath)

@@ -304,7 +304,6 @@ class C4Game
     void ExecObjects();
 		void Ticks();
 	  const char *FoldersWithLocalsDefs(const char *szPath);
-	  BOOL CheckScenarioAccess();
 	  BOOL CheckObjectEnumeration();
 	  BOOL LocalFileMatch(const char *szFilename, int32_t iCreation);
 		BOOL DefinitionFilenamesFromSaveGame();

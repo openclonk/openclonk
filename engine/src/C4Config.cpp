@@ -929,12 +929,6 @@ BOOL C4Config::Registered()
 	return TRUE;
 	}
 
-BOOL C4Config::IsFreeFolder(const char *szFoldername, const char *szMaker)
-	{
-	// Dummy function: to be overloaded in C4Config
-	return TRUE;
-	}
-
 BOOL C4Config::Init()
 	{
 	return TRUE;

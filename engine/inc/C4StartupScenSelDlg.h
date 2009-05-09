@@ -107,11 +107,10 @@ class C4ScenarioListLoader
 			private:
 				C4Scenario C4S;
 				bool fNoMissionAccess;
-				bool fUnregisteredAccess;
 				int32_t iMinPlrCount;
 
 			public:
-				Scenario(class Folder *pParent) : Entry(pParent), fNoMissionAccess(false), fUnregisteredAccess(false), iMinPlrCount(0) {}
+				Scenario(class Folder *pParent) : Entry(pParent), fNoMissionAccess(false), iMinPlrCount(0) {}
 				virtual ~Scenario() {}
 
 				virtual bool LoadCustom(C4Group &rGrp, bool fNameLoaded, bool fIconLoaded); // do fallbacks for title and icon; check whether scenario is valid
@@ -121,7 +120,6 @@ class C4ScenarioListLoader
 				virtual bool CanOpen(StdStrBuf &sError); // check mission access, player count, etc.
 				virtual bool IsGrayed() { return false; } // additional option for graying out
 				virtual bool HasMissionAccess() const { return !fNoMissionAccess; };         // check mission access only
-				virtual bool HasUnregisteredAccess() const { return fUnregisteredAccess; };
 				virtual StdStrBuf GetOpenText(); // get open button text
 				virtual StdStrBuf GetOpenTooltip();
 				const C4Scenario &GetC4S() const { return C4S; } // get scenario core

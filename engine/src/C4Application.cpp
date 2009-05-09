@@ -290,9 +290,6 @@ bool C4Application::OpenGame()
 		}
 	else
 		{
-		// Check registration
-		if ( !Config.Registered() )
-			{ LogFatal(LoadResStr("IDS_CNS_REGONLY")); Clear(); return FALSE; }
 		// Execute command line
 		if (Game.ScenarioFilename[0] || Game.DirectJoinAddress[0])
 			return Console.OpenGame(szCmdLine);
