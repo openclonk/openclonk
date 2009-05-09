@@ -19,6 +19,8 @@
 #ifndef INC_C4InputValidation
 #define INC_C4InputValidation
 
+#include "StdBuf.h"
+
 namespace C4InVal
 	{
 	// validation options

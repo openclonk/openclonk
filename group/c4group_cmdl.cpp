@@ -368,7 +368,7 @@ int RegisterShellExtensions()
 	}
 	// Directories
 	const char *strClasses2 = "Directory";
-	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
+	for (int i = 0; SCopySegment(strClasses2, i, strClass); i++)
 	{
 		// Pack
 		sprintf(strCommand, "\"%s\" \"%%1\" \"-p\"", strModule);
@@ -396,7 +396,7 @@ int UnregisterShellExtensions()
 	}
 	// Directories
 	const char *strClasses2 = "Directory";
-	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
+	for (int i = 0; SCopySegment(strClasses2, i, strClass); i++)
 	{
 		// Pack
 		if (!RemoveRegShell(strClass, "MakeGroupFile")) return 0;
