@@ -1,6 +1,6 @@
 [Material]
 Name=Ice
-Color=96,96,160,96,96,160,96,96,160
+Color=128,128,128,128,128,128,128,128,128
 Shape=1
 Density=50
 Friction=15
@@ -19,4 +19,4 @@ AboveTempConvert=10
 AboveTempConvertDir=1
 AboveTempConvertTo=Water
 Placement=21
-TextureOverlay=ice
+TextureOverlay=ice3

@@ -40,13 +40,13 @@
 #60=Crystal-Flare
 #61=Crystal-Structure
 #62=Crystal-Structure2
-65=Ice-ice
-66=Ice-ice
-67=Ice-ice
-68=Ice-ice
-70=Snow-ice
-71=Snow-ice
-72=Snow-ice
+65=Ice-ice1
+66=Ice-ice2
+67=Ice-ice3
+68=Ice-ice3
+70=Snow-snow1
+71=Snow-snow1
+72=Snow-snow1
 #80=FlySand-Smooth2
 #81=FlySand-Smooth3
 
