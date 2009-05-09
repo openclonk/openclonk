@@ -1,0 +1,29 @@
+Clonk
+Ensign
+Lieutenant
+Captain
+Major
+Lieutenant Colonel
+Colonel
+Brigade General
+Major General
+Lieutenant General
+General
+Midshipman
+Commander
+Commodore
+Rear-Admiral
+Vice-Admiral
+Admiral
+Fleet Admiral
+Counsellor of State
+Secretary of State
+Chancellor
+Vice President
+President
+Premier
+*%s First Class
+*%s Second Degree
+*%s Without Equal
+*Sublime %s
+*Exalted %s

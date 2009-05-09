@@ -1,0 +1,11 @@
+[Material]
+Name=Granite
+Color=66,66,66,80,80,80,90,90,90
+Shape=3
+Density=50
+Friction=100
+MaxAirSpeed=100
+MaxSlide=250
+BlastShiftTo=Rock
+Placement=60
+TextureOverlay=granite

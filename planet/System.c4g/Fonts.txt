@@ -1,0 +1,9 @@
+# Font definition file
+
+#[Font]
+#Name=Endeavour
+#Size=10
+#LogFont=FontEndeavour10.png,1
+#Font=FontEndeavour12.png,1
+#CaptionFont=FontEndeavour16.png,1
+#TitleFont=FontEndeavour24.png,1
