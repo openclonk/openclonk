@@ -21,6 +21,8 @@
 #include <errno.h>
 #include <fcntl.h>
 
+#include <vector>
+
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif

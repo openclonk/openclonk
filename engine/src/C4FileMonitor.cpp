@@ -325,7 +325,7 @@ C4FileMonitor::C4FileMonitor(ChangeNotify pCallback)
 }
 
 C4FileMonitor::~C4FileMonitor() { }
-bool C4FileMonitor::Execute(int iTimeout) { return false; /* blarg... function must return a value */ }
+bool C4FileMonitor::Execute(int iTimeout, pollfd *) { return false; /* blarg... function must return a value */ }
 void C4FileMonitor::StartMonitoring() {}
 void C4FileMonitor::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) {}
 void C4FileMonitor::AddDirectory(const char *szDir) {}
