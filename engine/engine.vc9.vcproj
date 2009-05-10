@@ -276,7 +276,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib odbc32.lib odbccp32.lib winmm.lib vfw32.lib wsock32.lib dsound.lib ws2_32.lib dbghelp.lib d3d9.lib d3dx9.lib fmodvc.lib libjpeg.lib libeay32.lib zlib.lib libpng.lib glew32s.lib freetype239MT.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib odbc32.lib odbccp32.lib winmm.lib vfw32.lib wsock32.lib dsound.lib ws2_32.lib dbghelp.lib d3d9.lib d3dx9.lib fmodvc.lib libjpeg.lib libeay32.lib zlib.lib libpng.lib glew32s.lib freetype239.lib"
 				OutputFile="..\planet\Clonk.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
