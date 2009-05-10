@@ -9,7 +9,8 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include <winresrc.h>
+#define IDC_STATIC (-1)
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -99,7 +100,7 @@ BEGIN
             VALUE "SpecialBuild", C4BUILDOPT "\0"
             VALUE "ProductVersion", C4VERSION "\0"
             VALUE "InternalName", "Clonk 4 Engine\0"
-            VALUE "LegalCopyright", "Copyright © 2008 RedWolf Design GmbH\0"
+            VALUE "LegalCopyright", "Copyright © " C4COPYRIGHT_YEAR " " C4COPYRIGHT_COMPANY "\0"
             VALUE "LegalTrademarks", "Clonk is a registered trademark of Matthes Bender.\0"
             VALUE "OriginalFilename", "Clonk.exe\0"
             VALUE "PrivateBuild", "\0"
