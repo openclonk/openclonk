@@ -351,14 +351,12 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 	for (C4AulFunc *pFn = Game.ScriptEngine.GetFirstFunc(); pFn; pFn = Game.ScriptEngine.GetNextFunc(pFn))
 		if (pFn->GetPublic())
 			{
-			SCopy(pFn->Name, OSTR);
 #ifdef _WIN32
-			SAppend("()",OSTR);
-			SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)OSTR);
+				SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)pFn->Name);
 #else
 #ifdef WITH_DEVELOPER_MODE
 			gtk_list_store_append(store, &iter);
-			gtk_list_store_set(store, &iter, 0, OSTR, -1);
+			gtk_list_store_set(store, &iter, 0, pFn->Name, -1);
 #endif
 #endif
 			}
@@ -379,14 +377,12 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 				if (!fDivider) { SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------"); fDivider=TRUE; }
 #endif
 				// Add function
-				SCopy(pRef->Name,OSTR);
 #ifdef _WIN32
-				SAppend("()",OSTR);
-				SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)OSTR);
+				SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)pRef->Name);
 #else
 #ifdef WITH_DEVELOPER_MODE
 				gtk_list_store_append(store, &iter);
-				gtk_list_store_set(store, &iter, 0, OSTR, -1);
+				gtk_list_store_set(store, &iter, 0, pRef->Name, -1);
 #endif
 #endif
 				}

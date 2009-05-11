@@ -327,6 +327,7 @@ bool C4MessageInput::IsTypeIn()
 bool C4MessageInput::ProcessInput(const char *szText)
 	{
   // helper variables
+	char OSTR[402]; // cba
   C4ControlMessageType eMsgType;
   const char *szMsg = NULL;
   int32_t iToPlayer = -1;
@@ -386,6 +387,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
     {
     eMsgType = C4CMT_Say;
     // Append '"', if neccessary
+		StdStrBuf text(szText);
     SCopy(szText, OSTR, 400);
     char *pEnd = OSTR + SLen(OSTR) - 1;
     if(*pEnd != '"') { *++pEnd = '"'; *++pEnd = 0; }

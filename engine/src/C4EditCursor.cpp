@@ -173,24 +173,24 @@ bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
 
 BOOL C4EditCursor::UpdateStatusBar()
 	{
-	*OSTR='\0';
+	StdStrBuf str;
 	switch (Mode)
 		{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModePlay:
-			if (Game.MouseControl.GetCaption()) SCopyUntil(Game.MouseControl.GetCaption(),OSTR,'|');
+			if (Game.MouseControl.GetCaption()) str.CopyUntil(Game.MouseControl.GetCaption(),'|');
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModeEdit:
-			sprintf(OSTR,"%i/%i (%s)",X,Y,Target ? (Target->GetName()) : LoadResStr("IDS_CNS_NOTHING") );
+			str.Format("%i/%i (%s)",X,Y,Target ? (Target->GetName()) : LoadResStr("IDS_CNS_NOTHING") );
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModeDraw:
-			sprintf(OSTR,"%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? Game.Material.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
+			str.Format("%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? Game.Material.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
-	return Console.UpdateCursorBar(OSTR);
+	return Console.UpdateCursorBar(str.getData());
 	}
 
 void C4EditCursor::OnSelectionChanged()
@@ -693,8 +693,7 @@ void C4EditCursor::ToolFailure()
 	{
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	Hold=FALSE;
-	sprintf(OSTR,LoadResStr("IDS_CNS_NOMATDEF"),pTools->Material,pTools->Texture);
-	Console.Message(OSTR);
+	Console.Message(FormatString(LoadResStr("IDS_CNS_NOMATDEF"),pTools->Material,pTools->Texture).getData());
 	}
 
 void C4EditCursor::ApplyToolPicker()

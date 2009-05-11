@@ -477,8 +477,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 				// player join - check filename
 				if (!ItemExists(plrPath.getData()))
 					{
-					sprintf(OSTR, LoadResStr("IDS_MSG_CMD_JOINPLR_NOFILE"), plrPath.getData());
-					LobbyError(OSTR);
+					LobbyError(FormatString(LoadResStr("IDS_MSG_CMD_JOINPLR_NOFILE"), plrPath.getData()).getData());
 					}
 				else
 					Game.Network.Players.JoinLocalPlayer(plrPath.getData(), true);

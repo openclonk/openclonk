@@ -363,8 +363,6 @@ const int32_t C4RULE_StructuresNeedEnergy			 = 1,
 							C4RULE_FlagRemoveable						 = 4,
 							C4RULE_StructuresSnowIn          = 8;
 
-extern char OSTR[500];
-
 extern C4Game					Game;
 
 // a global wrapper

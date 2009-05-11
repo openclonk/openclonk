@@ -807,15 +807,18 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 			// add chars to output
 			while (szLastPos != szPos)
 				{
-				*szOut++ = *szLastPos++;
-				if (!--iMaxOutLen)
+				if (szOut)
+					*szOut++ = *szLastPos++;
+				else
+					++szLastPos;
+				if (szOut && !--iMaxOutLen)
 					{
 					// buffer end: cut and terminate
 					*szOut = '\0';
 					break;
 					}
 				}
-			if (!iMaxOutLen) break;
+			if (szOut && !iMaxOutLen) break;
 			// add to line; always add one char at minimum
 			if ((iX+=iCharWdt) <= iWdt || fIsFirstLineChar)
 				{
@@ -853,13 +856,16 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 			else
 				{
 				// otherwise, insert line break
-				if (!--iMaxOutLen)
+				if (szOut && !--iMaxOutLen)
 					// buffer is full
 					break;
-				char *szOut2 = szOut;
-				while (--szOut2 >= szLastBreakOut)
-					szOut2[1] = *szOut2;
-				szOut2[1] = '\n';
+				if (szOut)
+					{
+					char *szOut2 = szOut;
+					while (--szOut2 >= szLastBreakOut)
+						szOut2[1] = *szOut2;
+					szOut2[1] = '\n';
+					}
 				}
 			// calc next line usage
 			iX -= iXBreak;
@@ -876,13 +882,14 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 		fIsFirstLineChar = true;
 		}
 	// transfer final data to buffer - markup and terminator
-	while (*szOut++ = *szLastPos++)
-		if (!--iMaxOutLen)
-			{
-			// buffer end: cut and terminate
-			*szOut = '\0';
-			break;
-			}
+	if (szOut)
+		while (*szOut++ = *szLastPos++)
+			if (!--iMaxOutLen)
+				{
+				// buffer end: cut and terminate
+				*szOut = '\0';
+				break;
+				}
 	// return text height
 	return iHgt;
 	}

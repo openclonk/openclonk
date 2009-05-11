@@ -447,8 +447,7 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 		if (getControlPreSend() != iBestPreSend)
 			{
 			setControlPreSend(iBestPreSend);
-			sprintf(OSTR, "PreSend: %d  - TargetFPS: %d", iBestPreSend, iTargetFPS);
-			Game.GraphicsSystem.FlashMessage(OSTR);
+			Game.GraphicsSystem.FlashMessage(FormatString("PreSend: %d  - TargetFPS: %d", iBestPreSend, iTargetFPS).getData());
 			}
 		}
 }

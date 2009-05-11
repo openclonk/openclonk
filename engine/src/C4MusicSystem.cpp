@@ -82,14 +82,12 @@ bool C4MusicSystem::InitializeMOD()
 #endif
 	if (FSOUND_GetVersion() < FMOD_VERSION)
 		{
-		sprintf(OSTR, "FMod: You are using the wrong DLL version!  You should be using %.02f", FMOD_VERSION);
-		Log(OSTR);
+		LogF("FMod: You are using the wrong DLL version!  You should be using %.02f", FMOD_VERSION);
 		return FALSE;
 		}
 	if (!FSOUND_Init(44100, 32, 0))
 		{
-		sprintf(OSTR, "FMod: %s", FMOD_ErrorString(FSOUND_GetError()));
-	  Log(OSTR);
+		LogF("FMod: %s", FMOD_ErrorString(FSOUND_GetError()));
 		return FALSE;
 		}
 	// ok

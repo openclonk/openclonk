@@ -540,8 +540,8 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContextTakeOver(C4GUI
 			if (!pInfo->HasJoinIssued())
 				if (!pInfo->GetAssociatedSavegamePlayerID())
 					{
-					sprintf(OSTR, LoadResStr("IDS_MSG_USINGPLR"), pInfo->GetName());
-					pMenu->AddItem(OSTR, LoadResStr("IDS_MSG_USINGPLR_DESC"), C4GUI::Ico_Player,
+					pMenu->AddItem(FormatString(LoadResStr("IDS_MSG_USINGPLR"), pInfo->GetName()).getData(),
+						LoadResStr("IDS_MSG_USINGPLR_DESC"), C4GUI::Ico_Player,
 						new C4GUI::CBMenuHandlerEx<PlayerListItem, int32_t>(this, &PlayerListItem::OnCtxTakeOver, pInfo->GetID()));
 					}
 		}
@@ -750,8 +750,7 @@ C4PlayerInfoListBox::ClientListItem::ClientListItem(C4PlayerInfoListBox *pForLis
 	AddElement(pStatusIcon); AddElement(pNameLabel);
 	if (btnAddPlayer) AddElement(btnAddPlayer);
 	// tooltip (same for all components for now. seperate tooltip for status icon later?)
-	sprintf(OSTR, "Client %s (%s)", rClientInfo.getName(), rClientInfo.getNick());
-	SetToolTip(OSTR);
+	SetToolTip(FormatString("Client %s (%s)", rClientInfo.getName(), rClientInfo.getNick()).getData());
 	// insert into listbox at correct order
 	// (will eventually get resized horizontally and moved)
 	pForListBox->InsertElement(this, pInsertBefore);
@@ -777,17 +776,18 @@ void C4PlayerInfoListBox::ClientListItem::SetPing(int32_t iToPing)
 		return;
 		}
 	// get ping as text
-	sprintf(OSTR, "%d ms", iToPing);
+	StdStrBuf ping;
+	ping.Format("%d ms", iToPing);
 	// create ping label if necessary
 	if (!pPingLabel)
 		{
-		pPingLabel = new C4GUI::Label(OSTR, GetBounds().Wdt, 0, ARight, C4GUI_MessageFontClr);
+		pPingLabel = new C4GUI::Label(ping.getData(), GetBounds().Wdt, 0, ARight, C4GUI_MessageFontClr);
 		pPingLabel->SetToolTip(LoadResStr("IDS_DLGTIP_PING"));
 		AddElement(pPingLabel);
 		}
 	else
 		// or just set updated text
-		pPingLabel->SetText(OSTR);
+		pPingLabel->SetText(ping.getData());
 	}
 
 void C4PlayerInfoListBox::ClientListItem::UpdateInfo()

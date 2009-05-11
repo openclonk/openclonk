@@ -194,10 +194,13 @@ BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 					switch (HIWORD(wParam))
 						{
 						case CBN_SELCHANGE:
+							{
+							char str[100];
 							int32_t cursel = SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETCURSEL,0,0);
-							SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETLBTEXT,cursel,(LPARAM)OSTR);
-							Console.ToolsDlg.SetMaterial(OSTR);
+							SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETLBTEXT,cursel,(LPARAM)str);
+							Console.ToolsDlg.SetMaterial(str);
 							break;
+							}
 						}
 					return TRUE;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -205,10 +208,13 @@ BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 					switch (HIWORD(wParam))
 						{
 						case CBN_SELCHANGE:
+							{
+							char str[100];
 							int32_t cursel = SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETCURSEL,0,0);
-							SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETLBTEXT,cursel,(LPARAM)OSTR);
-							Console.ToolsDlg.SetTexture(OSTR);
+							SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETLBTEXT,cursel,(LPARAM)str);
+							Console.ToolsDlg.SetTexture(str);
 							break;
+							}
 						}
 					return TRUE;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

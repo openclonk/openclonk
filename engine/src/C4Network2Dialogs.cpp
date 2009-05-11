@@ -176,8 +176,7 @@ void C4Network2ClientListBox::ClientListItem::Update()
 	if (pPing)
 		{
 		int iWait = Game.Control.Network.ClientPerfStat(iClientID);
-		sprintf(OSTR, "%d ms", iWait);
-		pPing->SetText(OSTR);
+		pPing->SetText(FormatString("%d ms", iWait).getData());
 		pPing->SetColor(RGB(
 			BoundBy(255-Abs(iWait)*5, 0, 255),
 			BoundBy(255-iWait*5, 0, 255),

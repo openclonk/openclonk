@@ -107,8 +107,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			break;
     //----------------------------------------------------------------------------------------------------------------------------------
 		case WM_DESTROY:
-			sprintf(OSTR,"Viewport%i",cvp->Player+1);
-			StoreWindowPosition(hwnd, OSTR, Config.GetSubkeyPath("Console"));
+			StoreWindowPosition(hwnd, FormatString("Viewport%i",cvp->Player+1).getData(), Config.GetSubkeyPath("Console"));
 			break;
     //----------------------------------------------------------------------------------------------------------------------------------
 		case WM_CLOSE:
@@ -1387,8 +1386,7 @@ BOOL C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	if (!pWindow->Init(pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : Game.Players.Get(Player)->GetName(), pParent, false))
 		return FALSE;
 	// Position and size
-	sprintf(OSTR, "Viewport%i", Player+1);
-	pWindow->RestorePosition(OSTR, Config.GetSubkeyPath("Console"));
+	pWindow->RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
 	//UpdateWindow(hWnd);
 	// Updates
 	UpdateOutputSize();

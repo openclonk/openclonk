@@ -191,8 +191,9 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 		{
 		Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0x4fff0000);
 		}
-	sprintf(OSTR, "%i%%", iProgress);
-	Application.DDraw->StringOut(OSTR, rProgressBarFont, 1.0f, cgo.Surface, cgo.Wdt/2, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-rProgressBarFont.iLineHgt/2-iProgressBarHgt/2, 0xffffffff, ACenter, true);
+	Application.DDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
+		cgo.Wdt/2, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-rProgressBarFont.iLineHgt/2-iProgressBarHgt/2, 0xffffffff,
+		ACenter, true);
 	// draw log box
 	if (pLog)
 		{

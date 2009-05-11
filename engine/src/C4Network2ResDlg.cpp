@@ -59,12 +59,13 @@ void C4Network2ResDlg::ListItem::Update(const C4Network2Res *pByRes)
 	iProgress = pByRes->getPresentPercent();
 	if (iProgress < 100)
 		{
-		sprintf(OSTR, "%d%%", iProgress);
+		StdStrBuf progress;
+		progress.Format("%d%%", iProgress);
 		if (pProgress)
-			pProgress->SetText(OSTR);
+			pProgress->SetText(progress.getData());
 		else
 			{
-			pProgress = new C4GUI::Label(OSTR, GetBounds().Wdt - IconLabelSpacing, 0, ARight);
+			pProgress = new C4GUI::Label(progress.getData(), GetBounds().Wdt - IconLabelSpacing, 0, ARight);
 			pProgress->SetToolTip(LoadResStr("IDS_NET_RESPROGRESS_DESC"));
 			AddElement(pProgress);
 			}
@@ -115,8 +116,8 @@ void C4Network2ResDlg::ListItem::LocalSaveResource(bool fDoOverwrite)
 	if (!fDoOverwrite && ItemExists(szTarget))
 		{
 		// show a confirmation dlg, asking whether the ressource should be overwritten
-		sprintf(OSTR, LoadResStr("IDS_NET_RES_SAVE_OVERWRITE"), GetFilename(szTarget));
-		GetScreen()->ShowRemoveDlg(new C4GUI::ConfirmationDialog(OSTR, LoadResStr("IDS_NET_RES_SAVE"),
+		GetScreen()->ShowRemoveDlg(new C4GUI::ConfirmationDialog(
+			FormatString(LoadResStr("IDS_NET_RES_SAVE_OVERWRITE"), GetFilename(szTarget)).getData(), LoadResStr("IDS_NET_RES_SAVE"),
 			new C4GUI::CallbackHandler<C4Network2ResDlg::ListItem>(this, &C4Network2ResDlg::ListItem::OnButtonSaveConfirm), C4GUI::MessageDialog::btnYesNo));
 		return;
 		}
@@ -124,8 +125,8 @@ void C4Network2ResDlg::ListItem::LocalSaveResource(bool fDoOverwrite)
 		GetScreen()->ShowMessage(strErrCopyFile.getData(), strErrCopyFile.getData(), C4GUI::Ico_Error);
 	else
 		{
-		sprintf(OSTR, LoadResStr("IDS_NET_RES_SAVED_DESC"), GetFilename(szTarget));
-		GetScreen()->ShowMessage(OSTR, LoadResStr("IDS_NET_RES_SAVED"), C4GUI::Ico_Save);
+		GetScreen()->ShowMessage(FormatString(LoadResStr("IDS_NET_RES_SAVED_DESC"), GetFilename(szTarget)).getData(),
+			LoadResStr("IDS_NET_RES_SAVED"), C4GUI::Ico_Save);
 		}
 	}
 

@@ -603,8 +603,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 #ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// wie geth ID?????ßßßß
 		if (!Name[0]) Name = GetFilename(hGroup.GetName());
-		sprintf(OSTR, LoadResStr("IDS_ERR_INVALIDID"), Name.getData());
-		Log(OSTR);
+		LogF(LoadResStr("IDS_ERR_INVALIDID"), Name.getData());
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		fSuccess=FALSE;
 		}
@@ -887,7 +886,7 @@ BOOL C4Def::ColorizeByMaterial(C4MaterialMap &rMats, BYTE bGBM)
 	if (ColorByMaterial[0])
 		{
 		int32_t mat=rMats.Get(ColorByMaterial);
-		if (mat==MNone) { sprintf(OSTR, "C4Def::ColorizeByMaterial: mat %s not defined", ColorByMaterial); Log(OSTR); return FALSE; }
+		if (mat==MNone) { LogF("C4Def::ColorizeByMaterial: mat %s not defined", ColorByMaterial); return FALSE; }
 		if (!Graphics.ColorizeByMaterial(mat, rMats, bGBM)) return FALSE;
 		}
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -1015,7 +1014,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			}
 
 #ifdef C4ENGINE // Message - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		if (fThisSearchMessage) {	sprintf(OSTR,"%s...",GetFilename(hGroup.GetName())); Log(OSTR); }
+		if (fThisSearchMessage) {	LogF("%s...",GetFilename(hGroup.GetName())); }
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// Load primary definition
@@ -1064,7 +1063,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 #endif
 
 #ifdef C4ENGINE // Message - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	if (fThisSearchMessage) {	sprintf(OSTR,LoadResStr("IDS_PRC_DEFSLOADED"),iResult); Log(OSTR); }
+	if (fThisSearchMessage) {	LogF(LoadResStr("IDS_PRC_DEFSLOADED"),iResult); }
 
 	// progress (could go down one level of recursion...)
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));

@@ -363,8 +363,7 @@ BOOL ObjectComDig(C4Object *cObj) // by DFA_WALK
   C4PhysicalInfo *phys=cObj->GetPhysical();
   if (!phys->CanDig || !ObjectActionDig(cObj))
     {
-    sprintf(OSTR,LoadResStr("IDS_OBJ_NODIG"),cObj->GetName());
-    GameMsgObject(OSTR,cObj);
+		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NODIG"),cObj->GetName()).getData(),cObj);
     return FALSE;
     }
   return TRUE;
@@ -395,8 +394,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
   // Check physical
   if (!cObj->GetPhysical()->CanConstruct)
 		{
-		sprintf(OSTR,LoadResStr("IDS_OBJ_NOLINECONSTRUCT"),cObj->GetName());
-		GameMsgObject(OSTR,cObj); return FALSE;
+		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOLINECONSTRUCT"),cObj->GetName()).getData(),cObj); return FALSE;
 		}
 
 	// - - - - - - - - - - - - - - - - - - Line pickup - - - - - - - - - - - - - - - - -
@@ -416,8 +414,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 			|| (cline->Action.Target2 && (cline->Action.Target2->Def->id==C4ID_Linekit)) )
 				{
 				StartSoundEffect("Error",false,100,cObj);
-				sprintf(OSTR,LoadResStr("IDS_OBJ_NODOUBLEKIT"),cline->GetName());
-				GameMsgObject(OSTR,cObj);	return FALSE;
+				GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NODOUBLEKIT"),cline->GetName()).getData(),cObj);	return FALSE;
 				}
 		// Create new linekit
     if (!(linekit=Game.CreateObject(C4ID_Linekit,cObj,cline->Owner))) return FALSE;
@@ -433,8 +430,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 		if (cline->Action.Target==tstruct) cline->Action.Target=linekit;
 		if (cline->Action.Target2==tstruct) cline->Action.Target2=linekit;
 		// Message
-		sprintf(OSTR,LoadResStr("IDS_OBJ_DISCONNECT"),cline->GetName(),tstruct->GetName());
-		GameMsgObject(OSTR,tstruct);
+		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_DISCONNECT"),cline->GetName(),tstruct->GetName()).getData(),tstruct);
 		return TRUE;
 		}
 
@@ -452,8 +448,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 			{
 			// No connect
 			StartSoundEffect("Error",false,100,cObj);
-			sprintf(OSTR,LoadResStr("IDS_OBJ_NOCONNECT"));
-			GameMsgObject(OSTR,cObj);	return FALSE;
+			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCONNECT")).getData(),cObj);	return FALSE;
 			}
 
 		// Check short circuit -> removal
@@ -461,8 +456,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 		 || (cline->Action.Target2==tstruct))
 			{
 			StartSoundEffect("Connect",false,100,cObj);
-			sprintf(OSTR,LoadResStr("IDS_OBJ_LINEREMOVAL"),cline->GetName());
-			GameMsgObject(OSTR,tstruct);
+			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_LINEREMOVAL"),cline->GetName()).getData(),tstruct);
 			cline->AssignRemoval();
 			return TRUE;
 			}
@@ -484,8 +478,8 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 	  if (!connect_okay)
 			{
 			StartSoundEffect("Error",false,100,cObj);
-			sprintf(OSTR,LoadResStr("IDS_OBJ_NOCONNECTTYPE"),cline->GetName(),tstruct->GetName());
-			GameMsgObject(OSTR,tstruct); return FALSE;
+			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCONNECTTYPE"),cline->GetName(),tstruct->GetName()).getData(),tstruct);
+			return FALSE;
 			}
 
 		// Connect line to structure
@@ -495,8 +489,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 		linekit->Exit();
 		linekit->AssignRemoval();
 
-		sprintf(OSTR,LoadResStr("IDS_OBJ_CONNECT"),cline->GetName(),tstruct->GetName());
-		GameMsgObject(OSTR,tstruct);
+		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_CONNECT"),cline->GetName(),tstruct->GetName()).getData(),tstruct);
 
 		return TRUE;
 		}
@@ -509,8 +502,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 	if (!tstruct || !(ocf & OCF_LineConstruct))
 		{
 		StartSoundEffect("Error",false,100,cObj);
-		sprintf(OSTR,LoadResStr("IDS_OBJ_NONEWLINE"));
-		GameMsgObject(OSTR,cObj);	return FALSE;
+		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NONEWLINE")).getData(),cObj);	return FALSE;
 		}
 
 	// Determine new line type
@@ -533,8 +525,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 	if (linetype==C4ID_None)
 		{
 		StartSoundEffect("Error",false,100,cObj);
-		sprintf(OSTR,LoadResStr("IDS_OBJ_NONEWLINE"));
-		GameMsgObject(OSTR,cObj);	return FALSE;
+		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NONEWLINE")).getData(),cObj);	return FALSE;
 		}
 
 	// Create new line
@@ -542,8 +533,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 															 tstruct,linekit);
 	if (!newline) return FALSE;
 	StartSoundEffect("Connect",false,100,cObj);
-	sprintf(OSTR,LoadResStr("IDS_OBJ_NEWLINE"),newline->GetName());
-	GameMsgObject(OSTR,tstruct);
+	GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NEWLINE"),newline->GetName()).getData(),tstruct);
 
 	return TRUE;
 	}
@@ -697,8 +687,7 @@ BOOL ObjectComChop(C4Object *cObj, C4Object *pTarget)
   if (!pTarget) return FALSE;
   if (!cObj->GetPhysical()->CanChop)
 		{
-    sprintf(OSTR,LoadResStr("IDS_OBJ_NOCHOP"),cObj->GetName());
-    GameMsgObject(OSTR,cObj);
+    GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCHOP"),cObj->GetName()).getData(),cObj);
 		return FALSE;
 		}
   if (cObj->GetProcedure()!=DFA_WALK) return FALSE;
@@ -965,15 +954,15 @@ BOOL SellFromBase(int32_t iPlr, C4Object *pBaseObj, C4ID id, C4Object *pSellObj)
   if (Game.Players.Get(pBaseObj->Base)->Eliminated)
     {
     StartSoundEffect("Error",false,100,pBaseObj);
-    sprintf(OSTR,LoadResStr("IDS_PLR_ELIMINATED"),Game.Players.Get(pBaseObj->Base)->GetName());
-    GameMsgPlayer(OSTR,iPlr); return FALSE;
+    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),Game.Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
+		return FALSE;
     }
   // Base owner hostile
   if (Hostile(iPlr,pBaseObj->Base))
     {
     StartSoundEffect("Error",false,100,pBaseObj);
-    sprintf(OSTR,LoadResStr("IDS_PLR_HOSTILE"),Game.Players.Get(pBaseObj->Base)->GetName());
-    GameMsgPlayer(OSTR,iPlr); return FALSE;
+    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),Game.Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
+		return FALSE;
     }
 	// check validity of sell object, if specified
 	if (pThing = pSellObj)
@@ -1000,8 +989,7 @@ BOOL Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, BOOL fShowErrors)
 		{
 		if (!fShowErrors) return FALSE;
 		StartSoundEffect("Error",false,100,pBase);
-		sprintf(OSTR,LoadResStr("IDS_PLR_HOSTILE"),Game.Players.Get(pBase->Base)->GetName());
-		GameMsgPlayer(OSTR,iPlr); return FALSE;
+		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),Game.Players.Get(pBase->Base)->GetName()).getData(),iPlr); return FALSE;
 		}
 	// buy
 	if (!(pThing=Game.Players.Get(pBase->Base)->Buy(id, fShowErrors, iPlr, pBase))) return FALSE;

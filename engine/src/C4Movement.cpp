@@ -116,8 +116,7 @@ BOOL C4Object::Contact(int32_t iCNAT)
 	{
 	if (Def->ContactFunctionCalls)
 		{
-		sprintf(OSTR,PSF_Contact, CNATName(iCNAT));
-		return !! Call(OSTR);
+		return !! Call(FormatString(PSF_Contact, CNATName(iCNAT)).getData());
 		}
   return FALSE;
 	}

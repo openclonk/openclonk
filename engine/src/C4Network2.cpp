@@ -1052,7 +1052,7 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 	C4ClientCore NewCCore = CCore;
 
 	// accept connection?
-	const char *szReply = NULL;
+	StdStrBuf reply;
 	bool fOK = false;
 
 	// search client
@@ -1063,25 +1063,24 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 	bool fWrongPassword = false;
 	if(Pkt.getVer() != C4XVERBUILD)
 	{
-		sprintf(OSTR, "wrong engine (%d, I have %d)", Pkt.getVer(), C4XVERBUILD);
-		szReply = OSTR;
+		reply.Format("wrong engine (%d, I have %d)", Pkt.getVer(), C4XVERBUILD);
 		fOK = false;
 	}
 	else
 	{
 		if(pClient)
-			if(CheckConn(NewCCore, pConn, pClient, szReply))
+			if(CheckConn(NewCCore, pConn, pClient, reply.getData()))
 			{
         // accept
-				if(!szReply) szReply = "connection accepted";
+				if(!reply) reply = "connection accepted";
 				fOK = true;
 			}
 		// client: host connection?
 		if(!fOK && !isHost() && Status.getState() == GS_Init && !Clients.GetHost())
-			if(HostConnect(NewCCore, pConn, szReply))
+			if(HostConnect(NewCCore, pConn, reply.getData()))
 			{
         // accept
-				if(!szReply) szReply = "host connection accepted";
+				if(!reply) reply = "host connection accepted";
 				fOK = true;
 			}
 		// host: client join? (NewCCore will be changed by Join()!)
@@ -1090,35 +1089,35 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 			// check password
 			if(!sPassword.isNull() && !SEqual(Pkt.getPassword(), sPassword.getData()))
 			{
-				szReply = "wrong password";
+				reply = "wrong password";
 				fWrongPassword = true;
 			}
 			// registered join only
 			else if (Game.RegJoinOnly && !SLen(NewCCore.getCUID()))
 			{
-				szReply = "registered join only";
+				reply = "registered join only";
 			}
 			// accept join
-			else if(Join(NewCCore, pConn, szReply))
+			else if(Join(NewCCore, pConn, reply.getData()))
 			{
         // save core
 		    pConn->SetCCore(NewCCore);
         // accept
-				if(!szReply) szReply = "join accepted";
+				if(!reply) reply = "join accepted";
 				fOK = true;
 			}
 		}
 	}
 
 	// denied? set default reason
-	if(!fOK && !szReply) szReply = "connection denied";
+	if(!fOK && !reply) reply = "connection denied";
 
 	// OK and already half accepted? Skip (double-checked: ok).
 	if(fOK && pConn->isHalfAccepted())
 		return;
 
   // send answer
-  C4PacketConnRe pcr(fOK, fWrongPassword, szReply);
+	C4PacketConnRe pcr(fOK, fWrongPassword, reply.getData());
   if(!pConn->Send(MkC4NetIOPacket(PID_ConnRe, pcr)))
 		return;
 
@@ -1133,12 +1132,12 @@ void C4Network2::HandleConn(const C4PacketConn &Pkt, C4Network2IOConnection *pCo
 	else
 	{
 		// log & close
-		LogSilentF("Network: connection by %s (%s:%d) blocked: %s", CCore.getName(), inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port), szReply ? szReply : "");
+		LogSilentF("Network: connection by %s (%s:%d) blocked: %s", CCore.getName(), inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port), reply.getData());
 		pConn->Close();
 	}
 }
 
-bool C4Network2::CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, const char *&szReply)
+bool C4Network2::CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pConn, C4Network2Client *pClient, const char *szReply)
 {
 	if(!pConn || !pClient) return false;
 	// already connected? (shouldn't happen really)
@@ -1154,7 +1153,7 @@ bool C4Network2::CheckConn(const C4ClientCore &CCore, C4Network2IOConnection *pC
 	return true;
 }
 
-bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *&szReply)
+bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply)
 {
 	if(!pConn) return false;
 	if(!CCore.isHost()) { szReply = "not host"; return false; }
@@ -1166,7 +1165,7 @@ bool C4Network2::HostConnect(const C4ClientCore &CCore, C4Network2IOConnection *
 	return true;
 }
 
-bool C4Network2::Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *&szReply)
+bool C4Network2::Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const char *szReply)
 {
 	if(!pConn) return false;
 	// security

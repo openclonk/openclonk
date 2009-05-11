@@ -147,8 +147,7 @@ void C4ControlSet::Execute() const
 		if (Game.Control.isCtrlHost() && !Game.Control.isReplay() && Game.Control.isNetwork())
 			Config.Network.ControlRate = Game.Control.ControlRate;
 		// always show msg
-		sprintf(OSTR,LoadResStr("IDS_NET_CONTROLRATE"),Game.Control.ControlRate,Game.FrameCounter);
-		Game.GraphicsSystem.FlashMessage(OSTR);
+		Game.GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_NET_CONTROLRATE"),Game.Control.ControlRate,Game.FrameCounter).getData());
 		break;
 
 	case C4CVT_AllowDebug: // allow debug mode?
@@ -1030,6 +1029,7 @@ void C4ControlMessage::Execute() const
 	//if (pPlr) pPlr->CountControl(C4Player::PCID_Message, Message.GetHash());
 	// get lobby to forward to
 	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	StdStrBuf str;
 	switch(eType)
   {
 	case C4CMT_Normal:
@@ -1038,21 +1038,21 @@ void C4ControlMessage::Execute() const
 		if(pPlr)
 			{
 			if(pPlr->AtClient != iByClient) break;
-			sprintf(OSTR, (eType == C4CMT_Normal ? "<c %x><<i></i>%s> %s</c>" : "<c %x> * %s %s</c>"),
+			str.Format((eType == C4CMT_Normal ? "<c %x><<i></i>%s> %s</c>" : "<c %x> * %s %s</c>"),
 										pPlr->ColorDw, pPlr->GetName(), szMessage);
 			}
 		else
 			{
 			C4Client *pClient = Game.Clients.getClientByID(iByClient);
-			sprintf(OSTR, (eType == C4CMT_Normal ? "<%s> %s" : " * %s %s"),
+			str.Format((eType == C4CMT_Normal ? "<%s> %s" : " * %s %s"),
 										pClient ? pClient->getNick() : "???", szMessage);
 			}
 		// 2 lobby
 		if (pLobby)
-			pLobby->OnMessage(Game.Clients.getClientByID(iByClient), OSTR);
+			pLobby->OnMessage(Game.Clients.getClientByID(iByClient), str.getData());
 		// or 2 log
 		else
-			Log(OSTR);
+			Log(str.getData());
 		break;
 
 	case C4CMT_Say:

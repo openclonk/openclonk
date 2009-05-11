@@ -93,16 +93,17 @@ BOOL C4Sky::Init(bool fSavegame)
 		// Scan list sections
 		SReplaceChar(Game.C4S.Landscape.SkyDef,',',';'); // modifying the C4S here...!
 		skylistn=SCharCount(';',Game.C4S.Landscape.SkyDef)+1;
-		SCopySegment(Game.C4S.Landscape.SkyDef,SeededRandom(Game.RandomSeed,skylistn),OSTR,';');
-		SClearFrontBack(OSTR);
+		char str[402];
+		SCopySegment(Game.C4S.Landscape.SkyDef,SeededRandom(Game.RandomSeed,skylistn),str,';');
+		SClearFrontBack(str);
 		// Sky tile specified, try load
-		if (OSTR[0] && !SEqual(OSTR,"Default"))
+		if (*str && !SEqual(str,"Default"))
 			{
 			// Check for sky tile in scenario file
-			loaded = !!Surface->LoadAny(Game.ScenarioFile,OSTR,true,true);
+			loaded = !!Surface->LoadAny(Game.ScenarioFile,str,true,true);
 			if (!loaded)
 				{
-				loaded = !!Surface->LoadAny(Game.GraphicsResource.Files, OSTR, true);
+				loaded = !!Surface->LoadAny(Game.GraphicsResource.Files, str, true);
 				}
 			}
 		}

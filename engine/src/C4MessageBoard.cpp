@@ -366,13 +366,15 @@ C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)
 	// Scan message text for heading player name
 	if(SEqual2(szMessage, "* "))
 		{
-		SCopyUntil(szMessage + 2,OSTR,' ');
-		return Game.Players.GetByName(OSTR);
+		StdStrBuf str;
+		str.CopyUntil(szMessage + 2,' ');
+		return Game.Players.GetByName(str.getData());
 		}
 	if (SCharCount(':',szMessage))
 		{
-		SCopyUntil(szMessage,OSTR,':');
-		return Game.Players.GetByName(OSTR);
+		StdStrBuf str;
+		str.CopyUntil(szMessage + 2,':');
+		return Game.Players.GetByName(str.getData());
 		}
 	return NULL;
 	}

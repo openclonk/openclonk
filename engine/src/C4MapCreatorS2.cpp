@@ -1563,8 +1563,7 @@ bool AlgoScript(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 {
 #ifdef C4ENGINE
 	// get script function
-	sprintf(OSTR, "ScriptAlgo%s", pOvrl->Name);
-	C4AulFunc *pFunc = Game.Script.GetSFunc(OSTR);
+	C4AulFunc *pFunc = Game.Script.GetSFunc(FormatString("ScriptAlgo%s", pOvrl->Name).getData());
 	// failsafe
 	if(!pFunc) return false;
 	// ok, call func

@@ -2044,14 +2044,13 @@ void C4Command::Fail(const char *szFailMessage)
 
 	char szCommandName[24 + 1];
 	char szObjectName[C4MaxName + 1];
+	StdStrBuf str;
 
 	if (ExecFail && cObj && (cObj->OCF & OCF_CrewMember))
 		{
 		// Fail message
 		if (szFailMessage)
-			SCopy(szFailMessage, OSTR, sizeof (OSTR) - 1);
-		else
-			OSTR[0]=0;
+			str = szFailMessage;
 		C4Object * l_Obj = cObj;
 		switch (Command)
 			{
@@ -2063,7 +2062,7 @@ void C4Command::Fail(const char *szFailMessage)
 					C4VID(Target->Component.GetID(0)), C4VInt(Target->Component.GetCount(0))))) // WTF? This is passing current components. Not needed ones!
 					break; // no message
 				if (szFailMessage) break;
-				SCopy(Target->GetNeededMatStr(cObj).getData(), OSTR, sizeof(OSTR));
+				str = Target->GetNeededMatStr(cObj);
 				break;
 			case C4CMD_Call:
 				{
@@ -2072,7 +2071,7 @@ void C4Command::Fail(const char *szFailMessage)
 				if (CallFailed()) return;
 				// Fail-function not available or returned zero: standard message
 				SCopy(LoadResStr(CommandNameID(l_Command)),szCommandName);
-				sprintf(OSTR,LoadResStr("IDS_CON_FAILURE"),szCommandName);
+				str.Format(LoadResStr("IDS_CON_FAILURE"),szCommandName);
 				break;
 				}
 			case C4CMD_Exit:
@@ -2089,22 +2088,22 @@ void C4Command::Fail(const char *szFailMessage)
 				SCopy(LoadResStr(CommandNameID(Command)), szCommandName);
 				C4Def *pDef; pDef = Game.Defs.ID2Def(Data);
 				SCopy(pDef ? pDef->GetName() : LoadResStr("IDS_OBJ_UNKNOWN"), szObjectName);
-				sprintf(OSTR, LoadResStr("IDS_CON_FAILUREOF"), szCommandName, szObjectName);
+				str.Format(LoadResStr("IDS_CON_FAILUREOF"), szCommandName, szObjectName);
 				break;
 			default:
 				// Already has a fail message
 				if (szFailMessage) break;
 				// Standard no-can-do message
 				SCopy(LoadResStr(CommandNameID(Command)), szCommandName);
-				sprintf(OSTR, LoadResStr("IDS_CON_FAILURE"), szCommandName);
+				str.Format(LoadResStr("IDS_CON_FAILURE"), szCommandName);
 				break;
 			}
 		if (l_Obj) if (l_Obj->Status && !l_Obj->Def->SilentCommands)
 			{
 			// Message (if not empty)
-			if (OSTR[0])
+			if (!!str)
 				{
-				Game.Messages.Append(C4GM_Target, OSTR, l_Obj, NO_OWNER, 0, 0, FWhite, TRUE);
+				Game.Messages.Append(C4GM_Target, str.getData(), l_Obj, NO_OWNER, 0, 0, FWhite, TRUE);
 				}
 			// Fail sound
 			StartSoundEffect("CommandFailure*",false,100,l_Obj);

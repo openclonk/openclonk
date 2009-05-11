@@ -1356,9 +1356,8 @@ bool C4Group::RewindFilePtr()
 #ifdef C4ENGINE
 	if (szCurrAccessedEntry && !iC4GroupRewindFilePtrNoWarn)
 		{
-		sprintf (OSTR, "C4Group::RewindFilePtr() for %s (%s)", szCurrAccessedEntry ? szCurrAccessedEntry : "???", FileName);
+		LogF ("C4Group::RewindFilePtr() for %s (%s)", szCurrAccessedEntry ? szCurrAccessedEntry : "???", FileName);
 		szCurrAccessedEntry=NULL;
-		Log(OSTR);
 		}
 #endif
 #endif

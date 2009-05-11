@@ -256,8 +256,6 @@ const int32_t C4P_Command_None		=	0,
 							C4P_Command_Append	= 4,
 							C4P_Command_Range		= 8;
 
-extern char OSTR[500];
-
 //=================================== Owners ==============================================
 
 const int NO_OWNER				 = -1,

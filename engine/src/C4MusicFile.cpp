@@ -110,8 +110,7 @@ BOOL C4MusicFileMID::Play(BOOL loop)
 
 	if (!mod)
 		{
-		sprintf(OSTR, "FMod: %s", FMOD_ErrorString(FSOUND_GetError()));
-	  Log(OSTR);
+		LogF("FMod: %s", FMOD_ErrorString(FSOUND_GetError()));
 		return FALSE;
 		}
 
@@ -168,8 +167,7 @@ BOOL C4MusicFileMOD::Play(BOOL loop)
 
 	if (!mod)
 		{
-		sprintf(OSTR, "FMod: %s", FMOD_ErrorString(FSOUND_GetError()));
-	  Log(OSTR);
+		LogF("FMod: %s", FMOD_ErrorString(FSOUND_GetError()));
 		return FALSE;
 		}
 

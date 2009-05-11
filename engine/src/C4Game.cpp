@@ -54,8 +54,6 @@
 
 #include <StdFile.h>
 
-char OSTR[500];
-
 class C4GameSec1Timer : public C4ApplicationSec1Timer
 	{
 	public:
@@ -1560,32 +1558,31 @@ BOOL C4Game::DropFile(const char *szFilename, float iX, float iY)
 				return DropDef(c_id, iX, iY);
 				}
 		// Failure
-		sprintf(OSTR,LoadResStr("IDS_CNS_DROPNODEF"),GetFilename(szFilename));
-		Console.Out(OSTR);
+		Console.Out(FormatString(LoadResStr("IDS_CNS_DROPNODEF"),GetFilename(szFilename)).getData());
 		return FALSE;
 		}
 	return FALSE;
 	}
 
-BOOL C4Game::DropDef(C4ID id, float iX, float iY)
+BOOL C4Game::DropDef(C4ID id, float X, float Y)
 	{
 	// Get def
 	C4Def *pDef;
 	if (pDef=C4Id2Def(id))
 		{
+		StdStrBuf str;
 		if (pDef->Category & C4D_Structure)
-			sprintf(OSTR, "CreateConstruction(%s,%d,%d,-1,%d,true)", C4IdText(id), int(iX), int(iY), FullCon);
+			str.Format("CreateConstruction(%s,%d,%d,-1,%d,true)", C4IdText(id), int(X), int(Y), FullCon);
 		else
-			sprintf(OSTR, "CreateObject(%s,%d,%d,-1)", C4IdText(id), int(iX), int(iY));
-		Game.Control.DoInput(CID_Script, new C4ControlScript(OSTR), CDT_Decide);
-    return TRUE;
+			str.Format("CreateObject(%s,%d,%d,-1)", C4IdText(id), int(X), int(Y));
+		Game.Control.DoInput(CID_Script, new C4ControlScript(str.getData()), CDT_Decide);
+		return TRUE;
 		}
-  else
-    {
-	  // Failure
-	  sprintf(OSTR,LoadResStr("IDS_CNS_DROPNODEF"),C4IdText(id));
-	  Console.Out(OSTR);
-    }
+	else
+		{
+		// Failure
+		Console.Out(FormatString(LoadResStr("IDS_CNS_DROPNODEF"),C4IdText(id)).getData());
+		}
 	return FALSE;
 	}
 
@@ -1762,14 +1759,15 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 						if (cursor->Info)
 							{
 							int32_t texthgt = Game.GraphicsResource.FontRegular.iLineHgt;
+							StdStrBuf str;
 							if (cursor->Info->Rank>0)
 								{
-								sprintf(OSTR,"%s|%s",cursor->Info->sRankName.getData(),cursor->GetName ());
+								str.Format("%s|%s",cursor->Info->sRankName.getData(),cursor->GetName ());
 								texthgt += texthgt;
 								}
-							else SCopy(cursor->GetName (),OSTR);
+							else str = cursor->GetName();
 
-							Application.DDraw->TextOut(OSTR, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
+							Application.DDraw->TextOut(str.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
 							                             cgo.X + cox + fctCursor.Wdt / 2,
 							                             cgo.Y + coy - 2 - texthgt,
 							                             0xffff0000, ACenter);
@@ -2158,7 +2156,7 @@ BOOL C4Game::ReloadDef(C4ID id)
 	C4Def *pDef = Defs.ID2Def(id);
 	if (!pDef) return FALSE;
 	// Message
-	sprintf(OSTR,"Reloading %s from %s",C4IdText(pDef->id),GetFilename(pDef->Filename)); Log(OSTR);
+	LogF("Reloading %s from %s",C4IdText(pDef->id),GetFilename(pDef->Filename));
 	// Reload def
 	if (Defs.Reload(pDef,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem))
 		{
@@ -2202,7 +2200,7 @@ BOOL C4Game::ReloadParticle(const char *szName)
 	C4ParticleDef *pDef=Particles.GetDef(szName);
 	if (!pDef) return FALSE;
 	// verbose
-	sprintf(OSTR,"Reloading particle %s from %s",pDef->Name.getData(),GetFilename(pDef->Filename.getData())); Log(OSTR);
+	LogF("Reloading particle %s from %s",pDef->Name.getData(),GetFilename(pDef->Filename.getData()));
 	// reload it
 	if (!pDef->Reload())
 		{
@@ -2211,7 +2209,7 @@ BOOL C4Game::ReloadParticle(const char *szName)
 		// clear def
 		delete pDef;
 		// log
-		sprintf(OSTR,"Reloading failure. All particles removed."); Log(OSTR);
+		LogF("Reloading failure. All particles removed.");
 		// failure
 		return FALSE;
 		}
@@ -2541,8 +2539,7 @@ BOOL C4Game::InitPlayers()
 		if (iPlrCnt==0)
 			if (Application.isFullScreen && !Control.NoInput())
 				{
-				sprintf(OSTR,LoadResStr("IDS_CNS_NOFULLSCREENPLRS"));
-				LogFatal(OSTR); return FALSE;
+				LogFatal(LoadResStr("IDS_CNS_NOFULLSCREENPLRS")); return FALSE;
 				}
 #endif
 		// Too many players
@@ -3642,8 +3639,8 @@ BOOL C4Game::CheckObjectEnumeration()
 		cObj = clnk->Obj;
 		if (cObj->Number<1)
 			{
-			sprintf(OSTR, "Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, C4IdText(cObj->id), cObj->GetX());
-			Log(OSTR); return FALSE;
+			LogF("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, C4IdText(cObj->id), cObj->GetX());
+			return FALSE;
 			}
 		// Max
 		if (cObj->Number>iMax) iMax=cObj->Number;
@@ -3651,11 +3648,11 @@ BOOL C4Game::CheckObjectEnumeration()
 		for (clnk2=Objects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
 			if (cObj2!=cObj)
 				if (cObj->Number==cObj2->Number)
-					{ sprintf(OSTR,"Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()); Log(OSTR); return FALSE; }
+					{ LogF("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()); return FALSE; }
 		for (clnk2=Objects.InactiveObjects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
 			if (cObj2!=cObj)
 				if (cObj->Number==cObj2->Number)
-					{ sprintf(OSTR,"Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()); Log(OSTR); return FALSE; }
+					{ LogF("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()); return FALSE; }
 		// next
 		if (!clnk->Next)
 			if (clnk == Objects.Last) clnk=Objects.InactiveObjects.First; else clnk=NULL;
@@ -4073,8 +4070,7 @@ bool C4Game::SpeedUp()
 	// Use /fast to set to even higher speeds.
 	FrameSkip = BoundBy<int32_t>(FrameSkip + 1, 1, 50);
 	FullSpeed = TRUE;
-	sprintf(OSTR, LoadResStr("IDS_MSG_SPEED"), FrameSkip);
-	GraphicsSystem.FlashMessage(OSTR);
+	GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_SPEED"), FrameSkip).getData());
 	return true;
 }
 
@@ -4083,8 +4079,7 @@ bool C4Game::SlowDown()
 	FrameSkip = BoundBy<int32_t>(FrameSkip - 1, 1, 50);
 	if (FrameSkip == 1)
 		FullSpeed = FALSE;
-	sprintf(OSTR, LoadResStr("IDS_MSG_SPEED"), FrameSkip);
-	GraphicsSystem.FlashMessage(OSTR);
+	GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_SPEED"), FrameSkip).getData());
 	return true;
 }
 

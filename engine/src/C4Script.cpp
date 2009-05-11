@@ -5951,8 +5951,7 @@ static bool FnSetPreSend(C4AulContext *cthr, long iToVal, C4String *pNewName)
 	if (!szClient || !*szClient || WildcardMatch(szClient, Game.Clients.getLocalName()))
 		{
 		Game.Control.Network.setTargetFPS(iToVal);
-		sprintf(OSTR, "TargetFPS: %ld", iToVal);
-		Game.GraphicsSystem.FlashMessage(OSTR);
+		Game.GraphicsSystem.FlashMessage(FormatString("TargetFPS: %ld", iToVal).getData());
 		}
 	return TRUE;
   }

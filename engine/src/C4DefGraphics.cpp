@@ -682,6 +682,7 @@ void C4GraphicsOverlay::Read(const char **ppInput)
 	{
 	// deprecated
 	assert(false && "C4GraphicsOverlay::Read: deprecated");
+#if 0
 	const char *szReadFrom = *ppInput;
 	// defaults
 	eMode = MODE_None; pSourceGfx = NULL; *Action=0; dwBlitMode = 0; iPhase = 0; iID=0;
@@ -735,12 +736,14 @@ void C4GraphicsOverlay::Read(const char **ppInput)
 	*ppInput = szReadFrom;
 	// update used facet according to read data
 	UpdateFacet();
+#endif
 	}
 
 void C4GraphicsOverlay::Write(char *szOutput)
 	{
 	// deprecated
 	assert(false && "C4GraphicsOverlay::Write: deprecated");
+#if 0
 	// safety: Don't save invalid
 	if (!pSourceGfx) return;
 	C4Def *pDef = pSourceGfx->pDef;
@@ -776,6 +779,7 @@ void C4GraphicsOverlay::Write(char *szOutput)
 	SCopy(OSTR, szOutput); szOutput += strlen(szOutput);
 	// terminate string
 	*szOutput=0;
+#endif
 	}
 
 void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)

@@ -351,9 +351,10 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 	pRankSys->DrawRankSymbol(NULL, Rank, pRankRes, iRankCnt, false, iX, &cgo);
 	iX+=Game.GraphicsResource.fctRank.Wdt;
 	// Rank & Name
-	if (Rank>0)	sprintf(OSTR,"%s|%s",sRankName.getData(),pOfObj->GetName ());
-	else sprintf(OSTR,"%s",pOfObj->GetName ());
-	Application.DDraw->TextOut(OSTR, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
+	StdStrBuf name;
+	if (Rank>0)	name.Format("%s|%s",sRankName.getData(),pOfObj->GetName ());
+	else name.Format("%s",pOfObj->GetName ());
+	Application.DDraw->TextOut(name.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
 
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}

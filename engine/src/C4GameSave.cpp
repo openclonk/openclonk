@@ -452,7 +452,7 @@ bool C4GameSave::Save(C4Group &hToGroup, bool fKeepGroup)
 		{
 		pSaveGroup->Delete(C4CFN_ScenarioTitle);
 		pSaveGroup->Delete(C4CFN_ScenarioIcon);
-		sprintf(OSTR,C4CFN_ScenarioDesc,"*");	pSaveGroup->Delete(OSTR);
+		pSaveGroup->Delete(FormatString(C4CFN_ScenarioDesc,"*").getData());
 		pSaveGroup->Delete(C4CFN_Titles);
 		pSaveGroup->Delete(C4CFN_Info);
 		}
