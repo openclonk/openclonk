@@ -92,9 +92,9 @@ namespace {
 
 	class ImplicitStrBuf: public StdStrBuf {
 		public:
-		ImplicitStrBuf(StdStrBuf RREF Buf2): StdStrBuf(Buf2, false) { }
+		ImplicitStrBuf(StdStrBuf RREF Buf2): StdStrBuf(static_cast<StdStrBuf RREF>(Buf2)) { }
 		ImplicitStrBuf(const StdStrBuf & Buf2): StdStrBuf(Buf2) { }
-		ImplicitStrBuf(ImplicitStrBuf RREF Buf2): StdStrBuf(Buf2) { }
+		ImplicitStrBuf(ImplicitStrBuf RREF Buf2): StdStrBuf(static_cast<ImplicitStrBuf RREF>(Buf2)) { }
 		ImplicitStrBuf(const ImplicitStrBuf & Buf2): StdStrBuf(Buf2) { }
 		operator const char *() const { return getData(); }
 	};
@@ -1372,6 +1372,7 @@ void C4Console::UpdateInputCtrl()
 
 	GtkTreeIter iter;
 	GtkListStore* store = GTK_LIST_STORE(gtk_entry_completion_get_model(completion));
+	g_assert(store);
 	gtk_list_store_clear(store);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	// add global and standard functions

@@ -384,8 +384,12 @@ public:
 	{ }
 
 	// See StdBuf::StdBuf. Will take data if possible.
+	// The static_cast is necessary to pass a rvalue reference to
+	// the StdBuf constructor. Without it, the const lvalue
+	// StdBuf constructor will be used, which will ref the contents
+	// instead of moving them.
 	StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
-    : StdBuf(Buf2, fCopy)
+    : StdBuf(static_cast<StdStrBuf RREF>(Buf2), fCopy)
   { }
 
 #ifdef HAVE_RVALUE_REF
