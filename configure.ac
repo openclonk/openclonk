@@ -161,6 +161,13 @@ AC_CHECK_LIB(png, png_read_image, [
   AC_MSG_ERROR([libpng not found.])
 ], [-lz])
 
+# Check for libz
+AC_CHECK_LIB(z, deflate, [
+  CLONK_LIBS="-lz $CLONK_LIBS"
+], [
+  AC_MSG_ERROR([libz not found.])
+])
+
 # Check for libfreetype
 if test $enable_console = no; then
   if test "$cross_compiling" = no; then
