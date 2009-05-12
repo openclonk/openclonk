@@ -502,7 +502,6 @@ void CStdDDraw::Default()
 
 void CStdDDraw::Clear()
 	{
-	sLastError.Clear();
 	DisableGamma();
 	Active=BlitModulated=fUseClrModMap=false;
 	dwBlitMode = 0;
@@ -1190,7 +1189,7 @@ BOOL CStdDDraw::BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt
 
 bool CStdDDraw::Error(const char *szMsg)
 	{
-	sLastError.Copy(szMsg);
+	if (pApp) pApp->Error(szMsg);
 	Log(szMsg); return false;
 	}
 

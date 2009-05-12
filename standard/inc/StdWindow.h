@@ -394,6 +394,8 @@ public:
 	  #endif
 	}
 	void MessageDialog(const char * message);
+	const char *GetLastError() { return sLastError.getData(); }
+	void Error(const char * m) { sLastError.Copy(m); }
 #ifdef _WIN32
 
 private:
@@ -465,6 +467,7 @@ protected:
 	unsigned int KeyMask;
 #endif
 	const char *szCmdLine;
+	StdStrBuf sLastError;
 	bool fDspModeSet;						// true if display mode was changed
 	virtual bool DoInit() = 0;
 

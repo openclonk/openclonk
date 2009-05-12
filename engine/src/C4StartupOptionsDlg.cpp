@@ -1155,7 +1155,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	if (!Application.SetVideoMode(iResX, iResY,Config.Graphics.BitDepth, Config.Graphics.Monitor,!DDrawCfg.Windowed))
 		{
 		StdCopyStrBuf strChRes(LoadResStr("IDS_MNU_SWITCHRESOLUTION"));
-		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), lpDDraw->GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, NULL);
+		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), Application.GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, NULL);
 		return false;
 		}
 	// implied font change

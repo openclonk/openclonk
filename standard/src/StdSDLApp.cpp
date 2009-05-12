@@ -147,10 +147,15 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 }
 
 bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen) {
-// Multi-monitor support not implemented.
-// As far as I can tell, SDL doesn't support it to begin with.
-	SDL_SetVideoMode(iXRes, iYRes, iColorDepth, SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0));
+	// SDL doesn't support multiple monitors.
+	if(!SDL_SetVideoMode(iXRes, iYRes, iColorDepth, SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0))) {
+		sLastError.Copy(SDL_GetError());
+		return false;
+	}
 	SDL_ShowCursor(SDL_DISABLE);
+	pWindow->SetSize(iXRes, iYRes);
+	OnResolutionChanged(iXRes, iYRes);
+	return true;
 }
 
 void CStdApp::RestoreVideoMode() {

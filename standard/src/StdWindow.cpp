@@ -304,7 +304,12 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	{
 #ifdef USE_DIRECTX
 	if (pD3D)
-		return pD3D->SetVideoMode(iXRes, iYRes, iColorDepth, iMonitor, fFullScreen);
+		{
+		if(!pD3D->SetVideoMode(iXRes, iYRes, iColorDepth, iMonitor, fFullScreen))
+			return false;
+		OnResolutionChanged(iXRes, iYRes);
+		return true;
+		}
 #endif
 	bool fFound=false;
 	DEVMODE dmode;
@@ -357,6 +362,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 		{
 		ChangeDisplaySettings(NULL, CDS_RESET);
 		fDspModeSet = false;
+		OnResolutionChanged(iXRes, iYRes);
 		return true;
 		}
 	// save original display mode
@@ -378,6 +384,8 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 			}
 		}
 	SetWindowPos(pWindow->hWindow, 0, MonitorRect.left, MonitorRect.top, dspMode.dmPelsWidth, dspMode.dmPelsHeight, 0);
+	if (fDspModeSet)
+		OnResolutionChanged(iXRes, iYRes);
 	return fDspModeSet;
 #endif
 }

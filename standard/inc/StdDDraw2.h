@@ -227,7 +227,6 @@ class CStdDDraw
 		bool Active;										// set if device is ready to render, etc.
 		CGammaControl Gamma;						// gamma
 		CGammaControl DefRamp;						// default gamma ramp
-		StdStrBuf sLastError;
 		int MaxTexSize;
 	protected:
 		BYTE								byByteCnt;		// bytes per pixel (2 or 4)
@@ -262,7 +261,6 @@ class CStdDDraw
 		virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes) = 0; // reinit clipper for new resolution
 		virtual bool IsOpenGL() { return false; }
 		virtual bool IsShaderific() { return false; }
-		const char *GetLastError() { return sLastError.getData(); }
 		// Palette
 		BOOL SetPrimaryPalette(BYTE *pBuf, BYTE *pAlphaBuf=NULL);
 		BOOL SetPrimaryPaletteQuad(BYTE *pBuf);
