@@ -503,7 +503,7 @@ void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWei
 		// convert using Win32 API
 		if (!fUTF8 && c>=128)
 			{
-			char cc[2] = { c, '\0' };
+			char cc[2] = { char(c), '\0' };
 			wchar_t outbuf[4];
 			if (MultiByteToWideChar(iCodePage, 0, cc, -1, outbuf, 4)) // 2do: Convert using proper codepage
 				{

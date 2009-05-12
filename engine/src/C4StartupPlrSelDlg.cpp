@@ -28,6 +28,7 @@
 #include <C4FileSelDlg.h>
 #include <C4Log.h>
 #endif
+#include <cctype>
 
 // font clrs
 const uint32_t ClrPlayerItem   = 0xff000000;

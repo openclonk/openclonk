@@ -31,6 +31,7 @@
 #include <C4Player.h>
 #include <C4GameLobby.h>
 #endif
+#include <cctype>
 
 // --------------------------------------------------
 // C4ChatInputDialog

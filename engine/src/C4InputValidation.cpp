@@ -25,6 +25,7 @@
 // FIXME: One should not have to include C4Game.h for pGUI
 #include <C4Game.h>
 #endif
+#include <cctype>
 
 namespace C4InVal
 	{
