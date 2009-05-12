@@ -359,6 +359,10 @@ public:
 		// Always fail after quit message
 		if(fQuitMsgReceived)
 			return false;
+#if defined(USE_SDL_MAINLOOP)
+		// Unfortunately, the SDL event loop needs to be polled
+		FlushMessages();
+#endif
 		return StdScheduler::ScheduleProcs(iTimeout);
 	}
 	bool FlushMessages();
