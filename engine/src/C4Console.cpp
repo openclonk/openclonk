@@ -93,7 +93,9 @@ namespace {
 	class ImplicitStrBuf: public StdStrBuf {
 		public:
 		ImplicitStrBuf(StdStrBuf RREF Buf2): StdStrBuf(static_cast<StdStrBuf RREF>(Buf2)) { }
+#ifdef HAVE_RVALUE_REF
 		ImplicitStrBuf(const StdStrBuf & Buf2): StdStrBuf(Buf2) { }
+#endif
 		ImplicitStrBuf(ImplicitStrBuf RREF Buf2): StdStrBuf(static_cast<ImplicitStrBuf RREF>(Buf2)) { }
 		ImplicitStrBuf(const ImplicitStrBuf & Buf2): StdStrBuf(Buf2) { }
 		operator const char *() const { return getData(); }
