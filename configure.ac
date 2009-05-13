@@ -28,6 +28,7 @@ AM_INIT_AUTOMAKE([foreign subdir-objects nostdinc no-define 1.10])
 
 AC_PROG_CXX
 AC_LANG([C++])
+AX_CHECK_COMPILER_FLAGS([-std=gnu++0x], [CXX="${CXX} -std=gnu++0x"])
 AX_PROG_CXX_REFTOTEMP
 AC_PROG_CC
 AM_PROG_CC_C_O
