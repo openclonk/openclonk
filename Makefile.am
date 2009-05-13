@@ -48,7 +48,7 @@ AM_CPPFLAGS = \
   -I$(srcdir)/engine/inc \
   -I$(srcdir)/engine/sec \
   -DC4ENGINE \
-  $(GTK_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS)
+  $(GLEW_CFLAGS) $(GTK_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS)
 
 #various hacks to get dependency tracking working with a precompiled C4Include
 if RECENT_GCC

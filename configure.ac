@@ -213,6 +213,7 @@ if test $with_gl = yes; then
       [AC_MSG_ERROR([glu32 not found.])])
     AC_CHECK_LIB(glew32, main, [CLONK_LIBS="-lglew32 $CLONK_LIBS"],
       [AC_MSG_ERROR([glew not found.])])
+    AC_SUBST([GLEW_CFLAGS],["-DGLEW_STATIC"])
   else
     AC_CHECK_LIB(GL, glBegin, [CLONK_LIBS="-lGL $CLONK_LIBS"],
       [AC_MSG_ERROR([libGL not found.])])
