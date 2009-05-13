@@ -54,6 +54,7 @@ AM_CPPFLAGS = \
 if RECENT_GCC
 BUILT_SOURCES = C4Include.h.gch
 CLEANFILES = C4Include.h.gch
+DISTCLEANFILES = @am__quote@$(DEPDIR)/C4Include.Po@am__quote@
 
 # Adapted from the automake compile-command for normal source files.
 # Has to be updated after certain changes in this file.
@@ -456,6 +457,7 @@ libstandard_a_SOURCES = \
   standard/inc/StdConfig.h \
   standard/inc/StdCompiler.h \
   standard/inc/StdD3D.h \
+  standard/inc/StdD3DShader.h \
   standard/inc/StdDDraw2.h \
   standard/inc/StdFacet.h \
   standard/inc/StdFile.h \
@@ -570,7 +572,6 @@ endif
 EXTRA_DIST = \
   clonk.anjuta \
   licenses \
-  README.linux \
   xcode \
   engine/netio/NetIO.dsp \
   netpuncher/Puncher.dsp \
