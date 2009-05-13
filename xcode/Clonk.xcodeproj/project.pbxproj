@@ -284,7 +284,7 @@
 		AFFAA14B0C2A896200444B95 /* C4ChatDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4ChatDlg.cpp; sourceTree = "<group>"; };
 		AFFAA14C0C2A896200444B95 /* C4InteractiveThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4InteractiveThread.cpp; sourceTree = "<group>"; };
 		AFFAA14D0C2A896200444B95 /* C4Network2IRC.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4Network2IRC.cpp; sourceTree = "<group>"; };
-		D40626910BB9418400815E5D /* c4group.mac */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c4group.mac; sourceTree = BUILT_PRODUCTS_DIR; };
+		D40626910BB9418400815E5D /* c4group */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c4group; sourceTree = BUILT_PRODUCTS_DIR; };
 		D40626990BB9440C00815E5D /* c4group_ng.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = c4group_ng.cpp; path = ../group/c4group_ng.cpp; sourceTree = SOURCE_ROOT; };
 		D40626AA0BB947A700815E5D /* C4Update.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = C4Update.cpp; sourceTree = "<group>"; };
 		D4199B690BA96DD6000026FC /* C4StartupAboutDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4StartupAboutDlg.cpp; sourceTree = "<group>"; };
@@ -724,7 +724,7 @@
 			isa = PBXGroup;
 			children = (
 				8D1107320486CEB800E47090 /* Clonk.app */,
-				D40626910BB9418400815E5D /* c4group.mac */,
+				D40626910BB9418400815E5D /* c4group */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1238,7 +1238,6 @@
 				D444F79F0B417971001B60F7 /* CopyFiles */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
-				D4199B7C0BA977DB000026FC /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1263,7 +1262,7 @@
 			);
 			name = c4group;
 			productName = c4group;
-			productReference = D40626910BB9418400815E5D /* c4group.mac */;
+			productReference = D40626910BB9418400815E5D /* c4group */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -1304,22 +1303,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		D4199B7C0BA977DB000026FC /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "cd ../..\ncp planet/Clonk.app/Contents/MacOS/Clonk binaries/mac/Clonk.app/Contents/MacOS/Clonk";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D11072C0486CEB800E47090 /* Sources */ = {
@@ -1593,7 +1576,7 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CONFIGURATION_BUILD_DIR = ../../planet;
+				CONFIGURATION_BUILD_DIR = ../planet;
 				FRAMEWORK_SEARCH_PATHS = .;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					HAVE_POLL_H,
@@ -1622,7 +1605,12 @@
 					./SDL_mixer.framework/Headers,
 					/opt/local/include,
 				);
+				LIBRARY_SEARCH_PATHS = /opt/local/lib;
 				OTHER_LDFLAGS = (
+					"-lz",
+					"-lpng",
+					"-ljpeg",
+					"-lGLEW",
 					"-lcrypto",
 					"-liconv",
 					/Developer/SDKs/MacOSX10.4u.sdk/usr/X11R6/lib/libfreetype.a,
@@ -1687,7 +1675,7 @@
 		D43533520B444795009841F0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CONFIGURATION_BUILD_DIR = ../../planet;
+				CONFIGURATION_BUILD_DIR = ../planet;
 				FRAMEWORK_SEARCH_PATHS = .;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					HAVE_POLL_H,
@@ -1715,7 +1703,12 @@
 					./SDL_mixer.framework/Headers,
 					/opt/local/include,
 				);
+				LIBRARY_SEARCH_PATHS = /opt/local/lib;
 				OTHER_LDFLAGS = (
+					"-lz",
+					"-lpng",
+					"-lGLEW",
+					"-ljpeg",
 					"-lcrypto",
 					"-liconv",
 					/Developer/SDKs/MacOSX10.4u.sdk/usr/X11R6/lib/libfreetype.a,
@@ -1767,7 +1760,7 @@
 		D469034A0C8DCE5A001C3A01 /* Profiling */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CONFIGURATION_BUILD_DIR = ../../planet;
+				CONFIGURATION_BUILD_DIR = ../planet;
 				FRAMEWORK_SEARCH_PATHS = .;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					HAVE_POLL_H,
@@ -1797,9 +1790,14 @@
 					./SDL_mixer.framework/Headers,
 					/opt/local/include,
 				);
+				LIBRARY_SEARCH_PATHS = /opt/local/lib;
 				OTHER_LDFLAGS = (
 					"-lcrypto",
 					"-liconv",
+					"-lz",
+					"-lpng",
+					"-ljpeg",
+					"-lGLEW",
 					/Developer/SDKs/MacOSX10.4u.sdk/usr/X11R6/lib/libfreetype.a,
 					"-Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib",
 				);
