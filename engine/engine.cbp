@@ -5,25 +5,42 @@
 		<Option title="engine" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option show_notes="1">
+			<notes>
+				<![CDATA[Q&A:
+
+Q: I get a lot of linker errors and missing headers and stuff?
+A: You have to install Guenther's mingw-lib package: http://forum.openclonk.org/topic_show.pl?pid=1522#pid1522
+
+Q: I want DirectX??
+A: If you want DirectX and have the SDK installed (read http://forum.openclonk.org/topic_show.pl?pid=1405#pid1405 ), just add d3dx9 and d3d9 to the general
+linker parameters of engine (Project->Build Options->Select "engine"; switch to tab "Linker Options" and add those lines to the left window)
+Additionally change USE_DIRECTX_OFF to USE_DIRECTX in the "Compiler Options"- tab->#defines after you selected the build target you want to build.
+
+Q: The project complains about some fmod stuff.
+A: Read http://forum.openclonk.org/topic_show.pl?pid=1405#pid1405 and install (aka unpack to right directory)  the fmod package (aka libraries and header).]]>
+			</notes>
+		</Option>
 		<Build>
 			<Target title="Engine Debug Win32">
 				<Option output="..\planet\ClonkD" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\intermediate\vc9\Engine\Debug" />
+				<Option object_output="..\obj\Engine\Debug" />
 				<Option type="0" />
 				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-W" />
 					<Add option="-g" />
 					<Add option="-O0" />
 					<Add option="-DBIG_C4INCLUDE" />
-					<Add option="-DUSE_FMOD" />
+					<Add option="-DUSE_FMOD_OFF" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DC4ENGINE" />
 					<Add option="-D_WINDOWS" />
 					<Add option="-DUSE_GL" />
+					<Add option="-DUSE_DIRECTX_OFF" />
 					<Add option="-DWIN32" />
 					<Add option="-DC4MULTIMONITOR" />
-					<Add option="-DGLEW_STATIC" />
 					<Add directory=".\inc" />
 					<Add directory=".\sec" />
 					<Add directory="..\standard\inc" />
@@ -36,30 +53,16 @@
 					<Add directory="..\deps\include" />
 				</ResourceCompiler>
 				<Linker>
-					<Add library="opengl32" />
-					<Add library="glu32" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
-					<Add library="winmm" />
-					<Add library="vfw32" />
-					<Add library="wsock32" />
-					<Add library="dsound" />
-					<Add library="ws2_32" />
-					<Add library="fmodvc" />
-					<Add library="libeay32" />
-					<Add library="zlib" />
-					<Add library="libpng" />
-					<Add library="glew32sd" />
-					<Add library="freetype239_D" />
-					<Add library="libjpeg" />
+					<Add library="..\obj\Standard\lib\libStandardD.a" />
 					<Add directory="..\deps\lib" />
 				</Linker>
 			</Target>
 			<Target title="Engine Release Win32">
 				<Option output="..\planet\Clonk" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\intermediate\vc9\Engine\Release" />
+				<Option object_output="..\obj\Engine\Release" />
 				<Option type="0" />
 				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
 					<Add option="-O3" />
 					<Add option="-W" />
@@ -68,6 +71,7 @@
 					<Add option="-DBIG_C4INCLUDE" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DC4ENGINE" />
+					<Add option="-DUSE_DIRECTX_OFF" />
 					<Add option="-DUSE_GL" />
 					<Add option="-DWIN32" />
 					<Add option="-DC4MULTIMONITOR" />
@@ -84,46 +88,30 @@
 					<Add directory="..\deps\include" />
 				</ResourceCompiler>
 				<Linker>
-					<Add library="opengl32" />
-					<Add library="glu32" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
-					<Add library="winmm" />
-					<Add library="vfw32" />
-					<Add library="wsock32" />
-					<Add library="dsound" />
-					<Add library="ws2_32" />
-					<Add library="dbghelp" />
-					<Add library="d3d9" />
-					<Add library="d3dx9" />
-					<Add library="fmodvc" />
-					<Add library="libjpeg" />
-					<Add library="libeay32" />
-					<Add library="zlib" />
-					<Add library="libpng" />
-					<Add library="glew32s" />
-					<Add library="freetype239" />
+					<Add option="-s" />
+					<Add library="..\obj\Standard\lib\libStandard.a" />
 					<Add directory="..\deps\lib" />
 				</Linker>
 			</Target>
 			<Target title="Engine Release (Debug) Win32">
 				<Option output="..\planet\Clonk" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\intermediate\vc9\Engine\ExtremeDebug" />
+				<Option object_output="..\obj\Engine\ReleaseDebug" />
 				<Option type="0" />
 				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
+					<Add option="-O3" />
+					<Add option="-W" />
 					<Add option="-D_WINDOWS" />
 					<Add option="-DUSE_FMOD" />
 					<Add option="-DBIG_C4INCLUDE" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DC4ENGINE" />
-					<Add option="-DUSE_DIRECTX" />
+					<Add option="-DUSE_DIRECTX_OFF" />
 					<Add option="-DUSE_GL" />
 					<Add option="-DWIN32" />
 					<Add option="-DC4MULTIMONITOR" />
 					<Add option="-DGLEW_STATIC" />
-					<Add option="-W" />
-					<Add option="-O3" />
 					<Add directory=".\inc" />
 					<Add directory=".\sec" />
 					<Add directory="..\standard\inc" />
@@ -136,42 +124,26 @@
 					<Add directory="..\deps\include" />
 				</ResourceCompiler>
 				<Linker>
-					<Add library="opengl32" />
-					<Add library="glu32" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
-					<Add library="winmm" />
-					<Add library="vfw32" />
-					<Add library="wsock32" />
-					<Add library="dsound" />
-					<Add library="ws2_32" />
-					<Add library="dbghelp" />
-					<Add library="d3d9" />
-					<Add library="d3dx9" />
-					<Add library="fmodvc" />
-					<Add library="libjpeg" />
-					<Add library="libeay32" />
-					<Add library="zlib" />
-					<Add library="libpng" />
-					<Add library="glew32s" />
-					<Add library="freetype239MT" />
+					<Add option="-s" />
+					<Add library="..\obj\Standard\lib\libStandard.a" />
 					<Add directory="..\deps\lib" />
 				</Linker>
 			</Target>
 			<Target title="Engine Release Console Win32">
 				<Option output="..\planet\Clonk" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\intermediate\vc9\Engine\ReleaseConsole" />
+				<Option object_output="..\obj\Engine\ReleaseConsole" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
+					<Add option="-O3" />
+					<Add option="-W" />
 					<Add option="-DUSE_CONSOLE" />
 					<Add option="-D_WINDOWS" />
 					<Add option="-DBIG_C4INCLUDE" />
 					<Add option="-DNDEBUG" />
 					<Add option="-DC4ENGINE" />
 					<Add option="-DWIN32" />
-					<Add option="-W" />
-					<Add option="-O3" />
 					<Add directory=".\inc" />
 					<Add directory=".\sec" />
 					<Add directory="..\standard\inc" />
@@ -184,43 +156,27 @@
 					<Add directory="..\deps\include" />
 				</ResourceCompiler>
 				<Linker>
-					<Add library="opengl32" />
-					<Add library="glu32" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
-					<Add library="winmm" />
-					<Add library="vfw32" />
-					<Add library="wsock32" />
-					<Add library="dsound" />
-					<Add library="ws2_32" />
-					<Add library="dbghelp" />
-					<Add library="d3d9" />
-					<Add library="d3dx9" />
-					<Add library="fmodvc" />
-					<Add library="libjpeg" />
-					<Add library="libeay32" />
-					<Add library="zlib" />
-					<Add library="libpng" />
-					<Add library="glew32s" />
-					<Add library="freetype239MT" />
+					<Add option="-s" />
+					<Add library="..\obj\Standard\lib\libStandardCon.a" />
 					<Add directory="..\deps\lib" />
 				</Linker>
 			</Target>
 			<Target title="Engine Debug Console Win32">
 				<Option output="..\planet\ClonkD" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\intermediate\vc9\Engine\DebugConsole" />
+				<Option object_output="..\obj\Engine\DebugConsole" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
 				<Compiler>
+					<Add option="-W" />
+					<Add option="-g" />
+					<Add option="-O0" />
 					<Add option="-DUSE_CONSOLE" />
 					<Add option="-DBIG_C4INCLUDE" />
 					<Add option="-D_DEBUG" />
 					<Add option="-DC4ENGINE" />
 					<Add option="-D_WINDOWS" />
 					<Add option="-DWIN32" />
-					<Add option="-W" />
-					<Add option="-g" />
-					<Add option="-O0" />
 					<Add directory=".\inc" />
 					<Add directory=".\sec" />
 					<Add directory="..\standard\inc" />
@@ -233,29 +189,42 @@
 					<Add directory="..\deps\include" />
 				</ResourceCompiler>
 				<Linker>
-					<Add library="opengl32" />
-					<Add library="glu32" />
-					<Add library="odbc32" />
-					<Add library="odbccp32" />
-					<Add library="winmm" />
-					<Add library="vfw32" />
-					<Add library="wsock32" />
-					<Add library="dsound" />
-					<Add library="ws2_32" />
-					<Add library="dbghelp" />
-					<Add library="d3d9" />
-					<Add library="d3dx9" />
-					<Add library="fmodvc" />
-					<Add library="libjpeg" />
-					<Add library="libeay32" />
-					<Add library="zlib" />
-					<Add library="libpngd" />
-					<Add library="glew32sd" />
-					<Add library="freetype239_D" />
+					<Add library="..\obj\Standard\lib\libStandardDCon.a" />
 					<Add directory="..\deps\lib" />
 				</Linker>
 			</Target>
 		</Build>
+		<Compiler>
+			<Add option="-DHAVE_STDINT_H" />
+			<Add directory="sec" />
+			<Add directory="inc" />
+			<Add directory="..\standard\inc" />
+		</Compiler>
+		<Linker>
+			<Add option="-lfreetype6" />
+			<Add option="-ljpeg62" />
+			<Add option="-lglew32" />
+			<Add option="-lcomdlg32" />
+			<Add option="-lgdi32" />
+			<Add option="-lz" />
+			<Add option="-lcrypto" />
+			<Add option="-mwindows" />
+			<Add option="-lpng12" />
+			<Add option="-lpng3" />
+			<Add library="winmm" />
+			<Add library="odbc32" />
+			<Add library="odbccp32" />
+			<Add library="vfw32" />
+			<Add library="wsock32" />
+			<Add library="dsound" />
+			<Add library="ws2_32" />
+			<Add library="fmodvc" />
+			<Add library="libeay32" />
+			<Add library="zlib1" />
+			<Add library="opengl32" />
+			<Add library="glu32" />
+			<Add directory="..\planet" />
+		</Linker>
 		<Unit filename="inc\C4AList.h" />
 		<Unit filename="inc\C4Application.h" />
 		<Unit filename="inc\C4Aul.h" />
@@ -596,31 +565,6 @@
 		<Unit filename="src\C4Weather.cpp" />
 		<Unit filename="src\C4WinMain.cpp" />
 		<Unit filename="src\C4Wrappers.cpp" />
-		<Unit filename="..\standard\src\Bitmap256.cpp" />
-		<Unit filename="..\standard\src\CStdFile.cpp" />
-		<Unit filename="..\standard\src\OpenURL.cpp" />
-		<Unit filename="..\standard\src\PathFinder.cpp" />
-		<Unit filename="..\standard\src\Standard.cpp" />
-		<Unit filename="..\standard\src\StdBuf.cpp" />
-		<Unit filename="..\standard\src\StdCompiler.cpp" />
-		<Unit filename="..\standard\src\StdConfig.cpp" />
-		<Unit filename="..\standard\src\StdD3D.cpp" />
-		<Unit filename="..\standard\src\StdD3DShader.cpp" />
-		<Unit filename="..\standard\src\StdDDraw2.cpp" />
-		<Unit filename="..\standard\src\StdFile.cpp" />
-		<Unit filename="..\standard\src\StdFont.cpp" />
-		<Unit filename="..\standard\src\StdGL.cpp" />
-		<Unit filename="..\standard\src\StdGLCtx.cpp" />
-		<Unit filename="..\standard\src\StdPNG.cpp" />
-		<Unit filename="..\standard\src\StdRegistry.cpp" />
-		<Unit filename="..\standard\src\StdResStr2.cpp" />
-		<Unit filename="..\standard\src\StdScheduler.cpp" />
-		<Unit filename="..\standard\src\StdSurface2.cpp" />
-		<Unit filename="..\standard\src\StdSurface8.cpp" />
-		<Unit filename="..\standard\src\StdVideo.cpp" />
-		<Unit filename="..\standard\src\StdWindow.cpp" />
-		<Unit filename="..\..\planet\System.c4g\LanguageDE.txt" />
-		<Unit filename="..\..\planet\System.c4g\LanguageUS.txt" />
 		<Extensions>
 			<code_completion />
 			<debugger />
