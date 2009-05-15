@@ -206,21 +206,6 @@
 		<Compiler>
 			<Add option="-DHAVE_STDINT_H" />
 		</Compiler>
-		<Linker>
-			<Add option="-lfreetype" />
-			<Add option="-lvfw32" />
-			<Add option="-lws2_32" />
-			<Add option="-lwinmm" />
-			<Add option="-lcomdlg32" />
-			<Add option="-lgdi32" />
-			<Add option="-lglew32" />
-			<Add option="-lglu32" />
-			<Add option="-lopengl32" />
-			<Add option="-lz" />
-			<Add option="-lpng" />
-			<Add option="-ljpeg" />
-			<Add option="-lcrypto" />
-		</Linker>
 		<Unit filename="inc\Bitmap256.h" />
 		<Unit filename="inc\CStdFile.h" />
 		<Unit filename="inc\DInputX.h" />

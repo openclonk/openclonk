@@ -190,6 +190,12 @@ A: Read http://forum.openclonk.org/topic_show.pl?pid=1405#pid1405 and install (a
 				</ResourceCompiler>
 				<Linker>
 					<Add library="..\obj\Standard\lib\libStandardDCon.a" />
+					<Add library="odbc32" />
+					<Add library="odbccp32" />
+					<Add library="wsock32" />
+					<Add library="dsound" />
+					<Add library="fmodvc" />
+					<Add library="libeay32" />
 					<Add directory="..\deps\lib" />
 				</Linker>
 			</Target>
@@ -201,28 +207,23 @@ A: Read http://forum.openclonk.org/topic_show.pl?pid=1405#pid1405 and install (a
 			<Add directory="..\standard\inc" />
 		</Compiler>
 		<Linker>
-			<Add option="-lfreetype6" />
-			<Add option="-ljpeg62" />
-			<Add option="-lglew32" />
+			<Add option="-mwindows" />
+			<Add option="-lws2_32" />
 			<Add option="-lcomdlg32" />
 			<Add option="-lgdi32" />
-			<Add option="-lz" />
+			<Add option="-ljpeg" />
 			<Add option="-lcrypto" />
-			<Add option="-mwindows" />
-			<Add option="-lpng12" />
-			<Add option="-lpng3" />
-			<Add library="winmm" />
-			<Add library="odbc32" />
-			<Add library="odbccp32" />
-			<Add library="vfw32" />
-			<Add library="wsock32" />
-			<Add library="dsound" />
-			<Add library="ws2_32" />
+			<Add option="-enable-auto-import" />
 			<Add library="fmodvc" />
-			<Add library="libeay32" />
-			<Add library="zlib1" />
-			<Add library="opengl32" />
+			<Add library="winmm" />
+			<Add library="glew32" />
 			<Add library="glu32" />
+			<Add library="freetype" />
+			<Add library="opengl32" />
+			<Add library="vfw32" />
+			<Add library="z" />
+			<Add library="png" />
+			<Add library="png12" />
 			<Add directory="..\planet" />
 		</Linker>
 		<Unit filename="inc\C4AList.h" />
