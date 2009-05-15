@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-05-30 12:41+0200\n"
+"POT-Creation-Date: 2009-05-15 20:27+0200\n"
 "PO-Revision-Date: 2008-05-30 14:30+0100\n"
 "Last-Translator: matthes <matthes@clonk.de>\n"
 "Language-Team: English\n"
@@ -25,7 +25,6 @@ msgstr "extended"
 #: sdk/script/operatoren.xml:5(title)
 #: sdk/script/operatoren.xml:7(h)
 #: sdk/script/fn/if.xml:26(emlink)
-#: sdk/script/fn/And.xml:27(emlink)
 #: sdk/scenario/MapCreatorS2.xml:179(h)
 msgid "Operatoren"
 msgstr "Operators"
@@ -59,17 +58,18 @@ msgstr "Operator"
 #: sdk/script/operatoren.xml:18(col)
 #: sdk/script/fn/SetCommand.xml:69(col)
 #: sdk/script/fn/GetPlayerType.xml:16(col)
+#: sdk/script/fn/CustomMessage.xml:21(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:16(col)
 #: sdk/script/fn/AddCommand.xml:71(col)
-#: sdk/scenario/scenario.xml:15(col)
-#: sdk/scenario/scenario.xml:74(col)
-#: sdk/scenario/scenario.xml:143(col)
-#: sdk/scenario/scenario.xml:202(col)
-#: sdk/scenario/scenario.xml:356(col)
-#: sdk/scenario/scenario.xml:375(col)
-#: sdk/scenario/scenario.xml:424(col)
-#: sdk/scenario/scenario.xml:448(col)
-#: sdk/scenario/scenario.xml:462(col)
+#: sdk/scenario/scenario.xml:23(col)
+#: sdk/scenario/scenario.xml:82(col)
+#: sdk/scenario/scenario.xml:151(col)
+#: sdk/scenario/scenario.xml:210(col)
+#: sdk/scenario/scenario.xml:364(col)
+#: sdk/scenario/scenario.xml:383(col)
+#: sdk/scenario/scenario.xml:432(col)
+#: sdk/scenario/scenario.xml:456(col)
+#: sdk/scenario/scenario.xml:470(col)
 #: sdk/scenario/basefunc.xml:10(col)
 #: sdk/scenario/Teams.xml:15(col)
 #: sdk/scenario/Teams.xml:73(col)
@@ -93,103 +93,98 @@ msgid "Beschreibung"
 msgstr "Description"
 
 #: sdk/script/operatoren.xml:19(col)
-#: sdk/script/fn/SetGamma.xml:22(col)
-#: sdk/script/NamedVar.xml:22(col)
-#: sdk/script/GetXXVal.xml:24(col)
-#: sdk/definition/script.xml:67(col)
-msgid "Funktion"
-msgstr "Function"
-
-#: sdk/script/operatoren.xml:20(col)
 #: sdk/script/NamedVar.xml:17(col)
 msgid "Standort"
 msgstr "Location"
 
-#: sdk/script/operatoren.xml:21(col)
+#: sdk/script/operatoren.xml:20(col)
 msgid "Typen (Rückgabe, erwartet)"
 msgstr "Type (resulting, expected)"
 
-#: sdk/script/operatoren.xml:24(col)
-#: sdk/script/operatoren.xml:32(col)
-#: sdk/script/operatoren.xml:40(col)
-#: sdk/script/operatoren.xml:48(col)
-#: sdk/script/operatoren.xml:56(col)
-#: sdk/script/operatoren.xml:64(col)
+#: sdk/script/operatoren.xml:23(col)
+#: sdk/script/operatoren.xml:30(col)
+#: sdk/script/operatoren.xml:37(col)
+#: sdk/script/operatoren.xml:44(col)
+#: sdk/script/operatoren.xml:51(col)
+#: sdk/script/operatoren.xml:58(col)
+#: sdk/script/operatoren.xml:65(col)
 #: sdk/script/operatoren.xml:72(col)
-#: sdk/script/operatoren.xml:80(col)
 #: sdk/definition/category.xml:74(col)
 msgid "15"
 msgstr "15"
 
-#: sdk/script/operatoren.xml:25(col)
-#: sdk/script/operatoren.xml:73(col)
+#: sdk/script/operatoren.xml:24(col)
+#: sdk/script/operatoren.xml:66(col)
 #: sdk/script/fn/SetPlrMagic.xml:21(emlink)
 msgid "++"
 msgstr "++"
 
-#: sdk/script/operatoren.xml:26(col)
+#: sdk/script/operatoren.xml:25(col)
 msgid "Erhöht den Wert der <strong>nachgestellten</strong> Variable um 1."
 msgstr "Increases the value of the <strong>following</strong> variable by 1."
 
-#: sdk/script/operatoren.xml:27(col)
-msgid "IncVar"
-msgstr "IncVar"
-
-#: sdk/script/operatoren.xml:28(col)
-#: sdk/script/operatoren.xml:36(col)
-#: sdk/script/operatoren.xml:44(col)
-#: sdk/script/operatoren.xml:52(col)
-#: sdk/script/operatoren.xml:60(col)
-#: sdk/script/operatoren.xml:68(col)
+#: sdk/script/operatoren.xml:26(col)
+#: sdk/script/operatoren.xml:33(col)
+#: sdk/script/operatoren.xml:40(col)
+#: sdk/script/operatoren.xml:47(col)
+#: sdk/script/operatoren.xml:54(col)
+#: sdk/script/operatoren.xml:61(col)
 msgid "prefix"
 msgstr "prefix"
 
-#: sdk/script/operatoren.xml:29(col)
-#: sdk/script/operatoren.xml:37(col)
+#: sdk/script/operatoren.xml:27(col)
+#: sdk/script/operatoren.xml:34(col)
 msgid "Referenz, Referenz"
 msgstr "reference, reference"
 
-#: sdk/script/operatoren.xml:33(col)
-#: sdk/script/operatoren.xml:81(col)
+#: sdk/script/operatoren.xml:31(col)
+#: sdk/script/operatoren.xml:73(col)
 #: sdk/script/fn/SetPlrMagic.xml:23(emlink)
 msgid "--"
 msgstr "--"
 
-#: sdk/script/operatoren.xml:34(col)
+#: sdk/script/operatoren.xml:32(col)
 msgid "Vermindert den Wert der <strong>nachgestellten</strong> Variable um 1"
 msgstr "Decreases the value of the <strong>following</strong> variable by 1."
 
-#: sdk/script/operatoren.xml:35(col)
-msgid "DecVar"
-msgstr "DecVar"
-
-#: sdk/script/operatoren.xml:41(col)
+#: sdk/script/operatoren.xml:38(col)
 msgid "~"
 msgstr "~"
 
-#: sdk/script/operatoren.xml:42(col)
+#: sdk/script/operatoren.xml:39(col)
 msgid "Negiert den nachgestellten Wert bitweise"
 msgstr "Bitwise negation of the following value."
 
-#: sdk/script/operatoren.xml:43(col)
+#: sdk/script/operatoren.xml:41(col)
+#: sdk/script/operatoren.xml:55(col)
+#: sdk/script/operatoren.xml:62(col)
+msgid "int, int"
+msgstr "int, int"
+
+#: sdk/script/operatoren.xml:45(col)
+#: sdk/script/fn/GBackSky.xml:21(emlink)
+msgid "!"
+msgstr "!"
+
+#: sdk/script/operatoren.xml:46(col)
+msgid "Negiert den nachgestelllten Wert logisch"
+msgstr "Logical negation of the following value."
+
+#: sdk/script/operatoren.xml:48(col)
+msgid "bool, bool"
+msgstr "bool, bool"
+
+#: sdk/script/operatoren.xml:52(col)
+#: sdk/script/operatoren.xml:115(col)
+msgid "+"
+msgstr "+"
+
+#: sdk/script/operatoren.xml:53(col)
+msgid "macht nichts (für Abwärtskompatibilität zu Schreibweisen wie \"+5\")"
+msgstr "no effect (compatibility for terms such as \"+5\")"
+
 #: sdk/script/operatoren.xml:59(col)
-#: sdk/script/operatoren.xml:65(col)
-#: sdk/script/operatoren.xml:67(col)
-#: sdk/script/operatoren.xml:75(col)
-#: sdk/script/operatoren.xml:83(col)
-#: sdk/script/operatoren.xml:121(col)
-#: sdk/script/operatoren.xml:139(col)
-#: sdk/script/operatoren.xml:147(col)
-#: sdk/script/operatoren.xml:163(col)
-#: sdk/script/operatoren.xml:179(col)
-#: sdk/script/operatoren.xml:235(col)
-#: sdk/script/operatoren.xml:243(col)
-#: sdk/script/operatoren.xml:267(col)
-#: sdk/script/operatoren.xml:275(col)
-#: sdk/script/operatoren.xml:283(col)
-#: sdk/script/operatoren.xml:291(col)
-#: sdk/script/operatoren.xml:299(col)
-#: sdk/script/operatoren.xml:307(col)
+#: sdk/script/operatoren.xml:108(col)
 #: sdk/script/fn/GBackSolid.xml:21(emlink)
 #: sdk/script/fn/GBackSky.xml:21(emlink)
 #: sdk/script/fn/GBackSemiSolid.xml:21(emlink)
@@ -200,470 +195,378 @@ msgstr "Bitwise negation of the following value."
 msgid "-"
 msgstr "-"
 
-#: sdk/script/operatoren.xml:45(col)
-#: sdk/script/operatoren.xml:61(col)
-#: sdk/script/operatoren.xml:69(col)
-msgid "int, int"
-msgstr "int, int"
-
-#: sdk/script/operatoren.xml:49(col)
-#: sdk/script/fn/GBackSky.xml:21(emlink)
-msgid "!"
-msgstr "!"
-
-#: sdk/script/operatoren.xml:50(col)
-msgid "Negiert den nachgestelllten Wert logisch"
-msgstr "Logical negation of the following value."
-
-#: sdk/script/operatoren.xml:51(col)
-msgid "Not"
-msgstr "Not"
-
-#: sdk/script/operatoren.xml:53(col)
-msgid "bool, bool"
-msgstr "bool, bool"
-
-#: sdk/script/operatoren.xml:57(col)
-#: sdk/script/operatoren.xml:129(col)
-msgid "+"
-msgstr "+"
-
-#: sdk/script/operatoren.xml:58(col)
-msgid "macht nichts (für Abwärtskompatibilität zu Schreibweisen wie \"+5\")"
-msgstr "no effect (compatibility for terms such as \"+5\")"
-
-#: sdk/script/operatoren.xml:66(col)
+#: sdk/script/operatoren.xml:60(col)
 msgid "bildet die Gegenzahl zum nachgestellten Wert"
 msgstr "Yields the reciprocal of the following value."
 
-#: sdk/script/operatoren.xml:74(col)
+#: sdk/script/operatoren.xml:67(col)
 msgid "Erhöht den Wert der <strong>vorangestellten</strong> Variable um 1."
 msgstr "Increases the value of the <strong>preceding</strong> variable by 1."
 
-#: sdk/script/operatoren.xml:76(col)
-#: sdk/script/operatoren.xml:84(col)
+#: sdk/script/operatoren.xml:68(col)
+#: sdk/script/operatoren.xml:75(col)
 msgid "postfix (nur 1 Parameter)"
 msgstr "postfix (only one parameter)"
 
-#: sdk/script/operatoren.xml:77(col)
-#: sdk/script/operatoren.xml:85(col)
+#: sdk/script/operatoren.xml:69(col)
+#: sdk/script/operatoren.xml:76(col)
 msgid "int, Referenz"
 msgstr "int, reference"
 
-#: sdk/script/operatoren.xml:82(col)
+#: sdk/script/operatoren.xml:74(col)
 msgid "Vermindert den Wert der <strong>vorangestellten</strong> Variable um 1."
 msgstr "Decreases the value of the <strong>preceding</strong> variable by 1."
 
-#: sdk/script/operatoren.xml:88(col)
+#: sdk/script/operatoren.xml:79(col)
 msgid "14l"
 msgstr "14l"
 
-#: sdk/script/operatoren.xml:89(col)
+#: sdk/script/operatoren.xml:80(col)
 msgid "**"
 msgstr "**"
 
-#: sdk/script/operatoren.xml:90(col)
+#: sdk/script/operatoren.xml:81(col)
 msgid "Potenziert zwei Werte"
 msgstr "Yields the power of a to b."
 
-#: sdk/script/operatoren.xml:91(col)
-msgid "Pow"
-msgstr "Pow"
-
-#: sdk/script/operatoren.xml:92(col)
-#: sdk/script/operatoren.xml:100(col)
-#: sdk/script/operatoren.xml:108(col)
-#: sdk/script/operatoren.xml:116(col)
+#: sdk/script/operatoren.xml:82(col)
+#: sdk/script/operatoren.xml:89(col)
+#: sdk/script/operatoren.xml:96(col)
+#: sdk/script/operatoren.xml:103(col)
+#: sdk/script/operatoren.xml:110(col)
+#: sdk/script/operatoren.xml:117(col)
 #: sdk/script/operatoren.xml:124(col)
-#: sdk/script/operatoren.xml:132(col)
-#: sdk/script/operatoren.xml:140(col)
-#: sdk/script/operatoren.xml:148(col)
-#: sdk/script/operatoren.xml:156(col)
-#: sdk/script/operatoren.xml:164(col)
-#: sdk/script/operatoren.xml:172(col)
+#: sdk/script/operatoren.xml:131(col)
+#: sdk/script/operatoren.xml:138(col)
+#: sdk/script/operatoren.xml:145(col)
+#: sdk/script/operatoren.xml:152(col)
+#: sdk/script/operatoren.xml:159(col)
+#: sdk/script/operatoren.xml:166(col)
+#: sdk/script/operatoren.xml:173(col)
 #: sdk/script/operatoren.xml:180(col)
-#: sdk/script/operatoren.xml:188(col)
-#: sdk/script/operatoren.xml:196(col)
-#: sdk/script/operatoren.xml:204(col)
-#: sdk/script/operatoren.xml:212(col)
-#: sdk/script/operatoren.xml:220(col)
-#: sdk/script/operatoren.xml:228(col)
+#: sdk/script/operatoren.xml:187(col)
+#: sdk/script/operatoren.xml:194(col)
+#: sdk/script/operatoren.xml:201(col)
+#: sdk/script/operatoren.xml:208(col)
+#: sdk/script/operatoren.xml:215(col)
+#: sdk/script/operatoren.xml:222(col)
+#: sdk/script/operatoren.xml:229(col)
 #: sdk/script/operatoren.xml:236(col)
-#: sdk/script/operatoren.xml:244(col)
-#: sdk/script/operatoren.xml:252(col)
-#: sdk/script/operatoren.xml:260(col)
-#: sdk/script/operatoren.xml:268(col)
-#: sdk/script/operatoren.xml:276(col)
-#: sdk/script/operatoren.xml:284(col)
-#: sdk/script/operatoren.xml:292(col)
-#: sdk/script/operatoren.xml:300(col)
-#: sdk/script/operatoren.xml:308(col)
+#: sdk/script/operatoren.xml:243(col)
+#: sdk/script/operatoren.xml:250(col)
+#: sdk/script/operatoren.xml:257(col)
+#: sdk/script/operatoren.xml:264(col)
+#: sdk/script/operatoren.xml:271(col)
 msgid "postfix"
 msgstr "postfix"
 
-#: sdk/script/operatoren.xml:93(col)
-#: sdk/script/operatoren.xml:101(col)
-#: sdk/script/operatoren.xml:109(col)
-#: sdk/script/operatoren.xml:117(col)
+#: sdk/script/operatoren.xml:83(col)
+#: sdk/script/operatoren.xml:90(col)
+#: sdk/script/operatoren.xml:97(col)
+#: sdk/script/operatoren.xml:104(col)
+#: sdk/script/operatoren.xml:111(col)
+#: sdk/script/operatoren.xml:118(col)
 #: sdk/script/operatoren.xml:125(col)
-#: sdk/script/operatoren.xml:133(col)
-#: sdk/script/operatoren.xml:141(col)
-#: sdk/script/operatoren.xml:149(col)
-#: sdk/script/operatoren.xml:229(col)
-#: sdk/script/operatoren.xml:237(col)
-#: sdk/script/operatoren.xml:245(col)
+#: sdk/script/operatoren.xml:132(col)
+#: sdk/script/operatoren.xml:202(col)
+#: sdk/script/operatoren.xml:209(col)
+#: sdk/script/operatoren.xml:216(col)
 msgid "int, int/int"
 msgstr "int, int/int"
 
-#: sdk/script/operatoren.xml:96(col)
-#: sdk/script/operatoren.xml:104(col)
-#: sdk/script/operatoren.xml:112(col)
+#: sdk/script/operatoren.xml:86(col)
+#: sdk/script/operatoren.xml:93(col)
+#: sdk/script/operatoren.xml:100(col)
 msgid "13l"
 msgstr "13l"
 
-#: sdk/script/operatoren.xml:97(col)
+#: sdk/script/operatoren.xml:87(col)
 msgid "/"
 msgstr "/"
 
-#: sdk/script/operatoren.xml:98(col)
+#: sdk/script/operatoren.xml:88(col)
 msgid "Dividiert zwei Werte durcheinander"
 msgstr "Divides a by b."
 
-#: sdk/script/operatoren.xml:99(col)
-msgid "Div"
-msgstr "Div"
-
-#: sdk/script/operatoren.xml:105(col)
+#: sdk/script/operatoren.xml:94(col)
 #: sdk/script/fn/PlrMessage.xml:14(desc)
 msgid "*"
 msgstr "*"
 
-#: sdk/script/operatoren.xml:106(col)
+#: sdk/script/operatoren.xml:95(col)
 msgid "Multipliziert zwei Werte miteinander"
 msgstr "Multiplies a by b."
 
-#: sdk/script/operatoren.xml:107(col)
-msgid "Mul"
-msgstr "Mul"
-
-#: sdk/script/operatoren.xml:113(col)
+#: sdk/script/operatoren.xml:101(col)
 msgid "%"
 msgstr "%"
 
-#: sdk/script/operatoren.xml:114(col)
+#: sdk/script/operatoren.xml:102(col)
 msgid "gibt den Divisionrest der Division zweier Werte zurück"
 msgstr "Yields the remainder of the devision of a by b."
 
-#: sdk/script/operatoren.xml:115(col)
-msgid "Mod"
-msgstr "Mod"
-
-#: sdk/script/operatoren.xml:120(col)
-#: sdk/script/operatoren.xml:128(col)
+#: sdk/script/operatoren.xml:107(col)
+#: sdk/script/operatoren.xml:114(col)
 msgid "12l"
 msgstr "12l"
 
-#: sdk/script/operatoren.xml:122(col)
+#: sdk/script/operatoren.xml:109(col)
 msgid "subtrahiert zwei Werte"
 msgstr "Subtracts b from a."
 
-#: sdk/script/operatoren.xml:123(col)
-msgid "Sub"
-msgstr "Sub"
-
-#: sdk/script/operatoren.xml:130(col)
+#: sdk/script/operatoren.xml:116(col)
 msgid "addiert zwei Werte"
 msgstr "Adds a to b."
 
-#: sdk/script/operatoren.xml:131(col)
-msgid "Sum"
-msgstr "Sum"
-
-#: sdk/script/operatoren.xml:136(col)
-#: sdk/script/operatoren.xml:144(col)
+#: sdk/script/operatoren.xml:121(col)
+#: sdk/script/operatoren.xml:128(col)
 msgid "11l"
 msgstr "11l"
 
-#: sdk/script/operatoren.xml:137(col)
+#: sdk/script/operatoren.xml:122(col)
 msgid "&lt;&lt;"
 msgstr "&lt;&lt;"
 
-#: sdk/script/operatoren.xml:138(col)
+#: sdk/script/operatoren.xml:123(col)
 msgid "führt eine Links-Bitschieben-Operation aus"
 msgstr "Performs a bit shift operation to the left."
 
-#: sdk/script/operatoren.xml:145(col)
+#: sdk/script/operatoren.xml:129(col)
 msgid "&gt;&gt;"
 msgstr "&gt;&gt;"
 
-#: sdk/script/operatoren.xml:146(col)
+#: sdk/script/operatoren.xml:130(col)
 msgid "führt eine Rechts-Bitschieben-Operation aus"
 msgstr "Performs a bit shift operation to the right."
 
-#: sdk/script/operatoren.xml:152(col)
-#: sdk/script/operatoren.xml:160(col)
-#: sdk/script/operatoren.xml:168(col)
-#: sdk/script/operatoren.xml:176(col)
+#: sdk/script/operatoren.xml:135(col)
+#: sdk/script/operatoren.xml:142(col)
+#: sdk/script/operatoren.xml:149(col)
+#: sdk/script/operatoren.xml:156(col)
 msgid "10l"
 msgstr "10l"
 
-#: sdk/script/operatoren.xml:153(col)
+#: sdk/script/operatoren.xml:136(col)
 msgid "&lt;"
 msgstr "&lt;"
 
-#: sdk/script/operatoren.xml:154(col)
+#: sdk/script/operatoren.xml:137(col)
 msgid "gibt zurück, ob der erste Wert kleiner ist als der zweite"
 msgstr "Returns whether a is less than b."
 
-#: sdk/script/operatoren.xml:155(col)
-msgid "LessThan"
-msgstr "LessThan"
-
-#: sdk/script/operatoren.xml:157(col)
-#: sdk/script/operatoren.xml:165(col)
-#: sdk/script/operatoren.xml:173(col)
-#: sdk/script/operatoren.xml:181(col)
+#: sdk/script/operatoren.xml:139(col)
+#: sdk/script/operatoren.xml:146(col)
+#: sdk/script/operatoren.xml:153(col)
+#: sdk/script/operatoren.xml:160(col)
 msgid "bool, int/int"
 msgstr "bool, int/int"
 
-#: sdk/script/operatoren.xml:161(col)
+#: sdk/script/operatoren.xml:143(col)
 msgid "&lt;="
 msgstr "&lt;="
 
-#: sdk/script/operatoren.xml:162(col)
+#: sdk/script/operatoren.xml:144(col)
 msgid "gibt zurück, ob der erste Wert kleiner oder gleich dem zweiten ist"
 msgstr "Returns whether a is less than or equal to b."
 
-#: sdk/script/operatoren.xml:169(col)
+#: sdk/script/operatoren.xml:150(col)
 msgid "&gt;"
 msgstr "&gt;"
 
-#: sdk/script/operatoren.xml:170(col)
+#: sdk/script/operatoren.xml:151(col)
 msgid "gibt zurück, ob der erste Wert größer als der zweite ist."
 msgstr "Returns whether a is greater than b."
 
-#: sdk/script/operatoren.xml:171(col)
-msgid "GreaterThan"
-msgstr "GreaterThan"
-
-#: sdk/script/operatoren.xml:177(col)
+#: sdk/script/operatoren.xml:157(col)
 msgid "&gt;="
 msgstr "&gt;="
 
-#: sdk/script/operatoren.xml:178(col)
+#: sdk/script/operatoren.xml:158(col)
 msgid "gibt zurück, ob der erste Wert größer oder gleich dem zweiten ist."
 msgstr "Returns whether the first value is greater than or equal to the second."
 
+#: sdk/script/operatoren.xml:163(col)
+#: sdk/script/operatoren.xml:170(col)
+#: sdk/script/operatoren.xml:177(col)
 #: sdk/script/operatoren.xml:184(col)
-#: sdk/script/operatoren.xml:192(col)
-#: sdk/script/operatoren.xml:200(col)
-#: sdk/script/operatoren.xml:208(col)
-#: sdk/script/operatoren.xml:216(col)
+#: sdk/script/operatoren.xml:191(col)
 msgid "9l"
 msgstr "9l"
 
-#: sdk/script/operatoren.xml:185(col)
+#: sdk/script/operatoren.xml:164(col)
 msgid "=="
 msgstr "=="
 
-#: sdk/script/operatoren.xml:186(col)
+#: sdk/script/operatoren.xml:165(col)
 msgid "gibt zurück, ob zwei Werte gleich sind"
 msgstr "Returns whether a equals b."
 
-#: sdk/script/operatoren.xml:187(col)
-msgid "Equal"
-msgstr "Equal"
-
-#: sdk/script/operatoren.xml:189(col)
-#: sdk/script/operatoren.xml:197(col)
-msgid "bool, Any/Any"
+#: sdk/script/operatoren.xml:167(col)
+#: sdk/script/operatoren.xml:174(col)
+#, fuzzy
+msgid "bool, any/any"
 msgstr "bool, Any/Any"
 
-#: sdk/script/operatoren.xml:193(col)
+#: sdk/script/operatoren.xml:171(col)
 msgid "!="
 msgstr "!="
 
-#: sdk/script/operatoren.xml:194(col)
+#: sdk/script/operatoren.xml:172(col)
 msgid "gibt zurück, ob zwei Werte nicht gleich sind."
 msgstr "Returns whether a is unequal to b."
 
-#: sdk/script/operatoren.xml:195(col)
-msgid "Not Equal"
-msgstr "Not Equal"
-
-#: sdk/script/operatoren.xml:201(col)
+#: sdk/script/operatoren.xml:178(col)
 msgid "S="
 msgstr "S="
 
-#: sdk/script/operatoren.xml:202(col)
+#: sdk/script/operatoren.xml:179(col)
 msgid "gibt zurück, ob zwei Strings gleich sind"
 msgstr "Returns whether two strings are identical."
 
-#: sdk/script/operatoren.xml:203(col)
-#: sdk/script/operatoren.xml:211(col)
-msgid "SEqual"
-msgstr "SEqual"
-
-#: sdk/script/operatoren.xml:205(col)
-#: sdk/script/operatoren.xml:213(col)
-#: sdk/script/operatoren.xml:221(col)
+#: sdk/script/operatoren.xml:181(col)
+#: sdk/script/operatoren.xml:188(col)
+#: sdk/script/operatoren.xml:195(col)
 msgid "bool, String/String"
 msgstr "bool, string/string"
 
-#: sdk/script/operatoren.xml:209(col)
+#: sdk/script/operatoren.xml:185(col)
 #: sdk/script/fn/GetAction.xml:18(emlink)
 msgid "eq"
 msgstr "eq"
 
-#: sdk/script/operatoren.xml:210(col)
+#: sdk/script/operatoren.xml:186(col)
 msgid "gibt ebenfalls zurück, ob zwei Strings gleich sind"
 msgstr "Also returns whether two strings are identical."
 
-#: sdk/script/operatoren.xml:217(col)
+#: sdk/script/operatoren.xml:192(col)
 msgid "ne"
 msgstr "ne"
 
-#: sdk/script/operatoren.xml:218(col)
+#: sdk/script/operatoren.xml:193(col)
 msgid "gibt ebenfalls zurück, ob zwei Strings nicht gleich sind"
 msgstr "Also returns whether two strings are not identical."
 
-#: sdk/script/operatoren.xml:219(col)
-msgid "Not SEqual"
-msgstr "Not SEqual"
-
-#: sdk/script/operatoren.xml:224(col)
+#: sdk/script/operatoren.xml:198(col)
 msgid "8l"
 msgstr "8l"
 
-#: sdk/script/operatoren.xml:225(col)
+#: sdk/script/operatoren.xml:199(col)
 #: sdk/script/fn/C4D_Knowledge.xml:16(emlink)
 msgid "&amp;"
 msgstr "&amp;"
 
-#: sdk/script/operatoren.xml:226(col)
+#: sdk/script/operatoren.xml:200(col)
 msgid "führt ein bitweises And aus"
 msgstr "Performs a bitwise AND operation."
 
-#: sdk/script/operatoren.xml:227(col)
-msgid "BitAnd"
-msgstr "BitAnd"
-
-#: sdk/script/operatoren.xml:232(col)
-#: sdk/script/operatoren.xml:240(col)
+#: sdk/script/operatoren.xml:205(col)
+#: sdk/script/operatoren.xml:212(col)
 msgid "6l"
 msgstr "6l"
 
-#: sdk/script/operatoren.xml:233(col)
+#: sdk/script/operatoren.xml:206(col)
 msgid "^"
 msgstr "^"
 
-#: sdk/script/operatoren.xml:234(col)
+#: sdk/script/operatoren.xml:207(col)
 msgid "führt ein bitweises XOr aus"
 msgstr "Performs a bitwise XOR operation."
 
-#: sdk/script/operatoren.xml:241(col)
+#: sdk/script/operatoren.xml:213(col)
 msgid "|"
 msgstr "|"
 
-#: sdk/script/operatoren.xml:242(col)
+#: sdk/script/operatoren.xml:214(col)
 msgid "führt ein bitweises Or aus"
 msgstr "Performs a bitwise OR operation."
 
-#: sdk/script/operatoren.xml:248(col)
+#: sdk/script/operatoren.xml:219(col)
 msgid "5l"
 msgstr "5l"
 
-#: sdk/script/operatoren.xml:249(col)
+#: sdk/script/operatoren.xml:220(col)
 msgid "&amp;&amp;"
 msgstr "&amp;&amp;"
 
-#: sdk/script/operatoren.xml:250(col)
+#: sdk/script/operatoren.xml:221(col)
 msgid "führt ein logisches And aus"
 msgstr "Performs a logical AND operation."
 
-#: sdk/script/operatoren.xml:251(col)
-msgid "And"
-msgstr "And"
+#: sdk/script/operatoren.xml:223(col)
+#: sdk/script/operatoren.xml:230(col)
+msgid "any, any/any"
+msgstr ""
 
-#: sdk/script/operatoren.xml:253(col)
-#: sdk/script/operatoren.xml:261(col)
-msgid "bool, bool/bool"
-msgstr "bool, bool/bool"
-
-#: sdk/script/operatoren.xml:256(col)
+#: sdk/script/operatoren.xml:226(col)
 msgid "4l"
 msgstr "4l"
 
-#: sdk/script/operatoren.xml:257(col)
+#: sdk/script/operatoren.xml:227(col)
 msgid "||"
 msgstr "||"
 
-#: sdk/script/operatoren.xml:258(col)
+#: sdk/script/operatoren.xml:228(col)
 msgid "führt ein logisches Or aus"
 msgstr "Performs a logical OR operation."
 
-#: sdk/script/operatoren.xml:259(col)
-msgid "Or"
-msgstr "Or"
-
-#: sdk/script/operatoren.xml:264(col)
-#: sdk/script/operatoren.xml:272(col)
-#: sdk/script/operatoren.xml:280(col)
-#: sdk/script/operatoren.xml:288(col)
-#: sdk/script/operatoren.xml:296(col)
-#: sdk/script/operatoren.xml:304(col)
+#: sdk/script/operatoren.xml:233(col)
+#: sdk/script/operatoren.xml:240(col)
+#: sdk/script/operatoren.xml:247(col)
+#: sdk/script/operatoren.xml:254(col)
+#: sdk/script/operatoren.xml:261(col)
+#: sdk/script/operatoren.xml:268(col)
 msgid "2r"
 msgstr "2r"
 
-#: sdk/script/operatoren.xml:265(col)
+#: sdk/script/operatoren.xml:234(col)
 msgid "*="
 msgstr "*="
 
-#: sdk/script/operatoren.xml:266(col)
+#: sdk/script/operatoren.xml:235(col)
 msgid "vervielfacht die vorangestellte Variable mit dem nachgestellten Wert"
 msgstr "Multiplies the preceeding variables by the following value."
 
-#: sdk/script/operatoren.xml:269(col)
-#: sdk/script/operatoren.xml:277(col)
-#: sdk/script/operatoren.xml:285(col)
-#: sdk/script/operatoren.xml:293(col)
-#: sdk/script/operatoren.xml:301(col)
+#: sdk/script/operatoren.xml:237(col)
+#: sdk/script/operatoren.xml:244(col)
+#: sdk/script/operatoren.xml:251(col)
+#: sdk/script/operatoren.xml:258(col)
+#: sdk/script/operatoren.xml:265(col)
 msgid "Referenz, Referenz/int"
 msgstr "reference, reference/int"
 
-#: sdk/script/operatoren.xml:273(col)
+#: sdk/script/operatoren.xml:241(col)
 msgid "/="
 msgstr "/="
 
-#: sdk/script/operatoren.xml:274(col)
+#: sdk/script/operatoren.xml:242(col)
 msgid "teilt den Wert der vorangestellten Variable durch den nachgestellten Wert"
 msgstr "Divides the preceeding variable by the following value."
 
-#: sdk/script/operatoren.xml:281(col)
+#: sdk/script/operatoren.xml:248(col)
 msgid "%="
 msgstr "%="
 
-#: sdk/script/operatoren.xml:282(col)
+#: sdk/script/operatoren.xml:249(col)
 msgid "Schreibt den Divisionrest der Division des Wertes vorangestellten Variable mit dem nachgestellten Wert in die Variable"
 msgstr "Sets the preceeding variable to the remainder of the devision of that variable by the following value."
 
-#: sdk/script/operatoren.xml:289(col)
+#: sdk/script/operatoren.xml:255(col)
 msgid "+="
 msgstr "+="
 
-#: sdk/script/operatoren.xml:290(col)
+#: sdk/script/operatoren.xml:256(col)
 msgid "erhöht die vorangestellte Variable um den nachgestellten Wert"
 msgstr "Increases the preceeding variable by the following value."
 
-#: sdk/script/operatoren.xml:297(col)
+#: sdk/script/operatoren.xml:262(col)
 msgid "-="
 msgstr "-="
 
-#: sdk/script/operatoren.xml:298(col)
+#: sdk/script/operatoren.xml:263(col)
 msgid "vermindert den Wert der vorangestellten Variable um den nachgestellten Wert"
 msgstr "Decreases the preeceding variable by the following value."
 
-#: sdk/script/operatoren.xml:305(col)
+#: sdk/script/operatoren.xml:269(col)
 #: sdk/script/fn/SetPlrMagic.xml:20(emlink)
 #: sdk/script/fn/SetPlrMagic.xml:21(emlink)
 #: sdk/script/fn/LocalN.xml:20(emlink)
@@ -671,109 +574,123 @@ msgstr "Decreases the preeceding variable by the following value."
 msgid "="
 msgstr "="
 
-#: sdk/script/operatoren.xml:306(col)
+#: sdk/script/operatoren.xml:270(col)
 msgid "weist der vorangestellten Variable den nachgestellten Wert zu"
 msgstr "Assigns the following value to the preceeding variable."
 
-#: sdk/script/operatoren.xml:309(col)
-msgid "Referenz, Referenz/Any"
+#: sdk/script/operatoren.xml:272(col)
+#, fuzzy
+msgid "Referenz, Referenz/any"
 msgstr "reference, reference/any"
 
-#: sdk/script/operatoren.xml:313(h)
+#: sdk/script/operatoren.xml:276(h)
 msgid "Erklärungen und Beispiele:"
 msgstr "Explanation and examples:"
 
-#: sdk/script/operatoren.xml:315(h)
+#: sdk/script/operatoren.xml:278(h)
 msgid "Postfix oder prefix?"
 msgstr "Postfix or prefix?"
 
-#: sdk/script/operatoren.xml:317(text)
+#: sdk/script/operatoren.xml:280(text)
 msgid "Diese Eigenschaft eines Operators gibt an, ob er <em>vor</em>(pre) oder <em>nach</em>(post) seinem ersten Parameter steht."
 msgstr "This property of an operator determines whether it is used <em>before</em> (pre) or <em>after</em> (post) its parameter."
 
-#: sdk/script/operatoren.xml:318(text)
+#: sdk/script/operatoren.xml:281(text)
 msgid "Prefix - Operatoren haben immer nur einen Parameter (nach dem Operator), während Postfix - Operatoren in der Regel 2 Parameter haben, einen vor und einen danach. (siehe auch <a href=\"#opppmm\">Operatoren ++/--</a>)"
 msgstr "Prefix operators only have one parameter while postfix operators usually have two parameters (one preceeding and one following). See also <a href=\"#opppmm\">operators ++/--</a>."
 
-#: sdk/script/operatoren.xml:320(h)
+#: sdk/script/operatoren.xml:283(h)
 msgid "Beispiel 1:"
 msgstr "Example 1:"
 
-#: sdk/script/operatoren.xml:326(h)
-#: sdk/script/operatoren.xml:340(h)
+#: sdk/script/operatoren.xml:289(h)
+#: sdk/script/operatoren.xml:303(h)
 #: sdk/script/BreakContinue.xml:25(h)
 msgid "Ausgabe:"
 msgstr "Output:"
 
-#: sdk/script/operatoren.xml:332(text)
+#: sdk/script/operatoren.xml:295(text)
 msgid "Plus, Minus, Multiplikation u.ä. Operatoren bilden die Klasse der Postfix - Operatoren. Es werden jeweils zwei Werte (die vor bzw. nach dem Operator stehen) verrechnet."
 msgstr "Addition, subtraction, multiplication, division, and similar form the group of postfix operators. They combine the two values preceeding and following the operator."
 
-#: sdk/script/operatoren.xml:334(h)
+#: sdk/script/operatoren.xml:297(h)
 msgid "Beispiel 2:"
 msgstr "Example 2:"
 
-#: sdk/script/operatoren.xml:346(text)
+#: sdk/script/operatoren.xml:309(text)
 msgid "Bei diesen Operatoren handelt es sich um sogenannte Prefix - Operatoren. Sie stehen jeweils vor dem zu verarbeitenden Wert."
 msgstr "Prefix operators are located before the value to which they are applied."
 
-#: sdk/script/operatoren.xml:349(h)
+#: sdk/script/operatoren.xml:312(h)
 msgid "Die Operatoren ++ und --"
 msgstr "Operators ++ and --"
 
-#: sdk/script/operatoren.xml:351(text)
+#: sdk/script/operatoren.xml:314(text)
 msgid "Die Operatoren ++ bzw. -- existierten sowohl als postfix- als auch als prefix-Operatoren. Dabei haben die postfix-Varianten noch die Besonderheit, dass sie keinen nachgestellten Wert benötigen."
 msgstr "Operators ++ and -- exist as both postfix and prefix operators. The postfix version of these operators does not have a second parameter."
 
-#: sdk/script/operatoren.xml:353(h)
+#: sdk/script/operatoren.xml:316(h)
 msgid "Beispiel: (postfix)"
 msgstr "Example 1 (postfix):"
 
-#: sdk/script/operatoren.xml:356(strong)
+#: sdk/script/operatoren.xml:319(strong)
 msgid "Var(0)++"
 msgstr "Var(0)++"
 
-#: sdk/script/operatoren.xml:359(h)
+#: sdk/script/operatoren.xml:322(h)
 msgid "Beispiel 2: (prefix)"
 msgstr "Example 2 (prefix):"
 
-#: sdk/script/operatoren.xml:362(strong)
+#: sdk/script/operatoren.xml:325(strong)
 msgid "++Var(0)"
 msgstr "++Var(0)"
 
-#: sdk/script/operatoren.xml:365(text)
+#: sdk/script/operatoren.xml:328(text)
 msgid "Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung Var(0) um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen."
 msgstr "These two examples are almost identical. In both cases the value of Var(0) is increased by one per loop repetition. The result is compared to 10 in each case."
 
-#: sdk/script/operatoren.xml:366(text)
+#: sdk/script/operatoren.xml:329(text)
 msgid "Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben. D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist Var(0) am Anfang 9. Dann wird sie um eins erhöht (Var(0) ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben."
 msgstr "Yet there is an important difference between the two versions: when using the postfix version, the <strong>previous</strong> value of the variable is returned. The first example will result in a count from 1 to <strong>10</strong>, since at beginning of the last loop repetition is value of Var(0) is 9. It is then increased by one (Var(0) is now 10) but the previous value of 9 is returned and compared to 10. Thus the loop will be repeated one more time and then the value of 10 is printed."
 
-#: sdk/script/operatoren.xml:367(text)
+#: sdk/script/operatoren.xml:330(text)
 msgid "Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn Var(0) 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen."
 msgstr "In the second example, on the other hand, the loop runs from 1 to <strong>9</strong>. When Var(0) is 9 and is increased, the new value of 10 is returned immediately. The result is not less than 10 and the loop ends."
 
-#: sdk/script/operatoren.xml:370(h)
+#: sdk/script/operatoren.xml:333(h)
+#, fuzzy
+msgid "Die Operatoren &amp;&amp; und ||"
+msgstr "Operators ++ and --"
+
+#: sdk/script/operatoren.xml:335(text)
+msgid "Diese beiden Operatoren haben (ab <emlink href=\"script/Strict.html\">#strict 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:"
+msgstr ""
+
+#: sdk/script/operatoren.xml:337(text)
+msgid "Außerdem ist das Ergebnis des Operators der Wert des ersten oder zweiten Parameters, je nachdem ob einer oder beide ausgewertet wurden. Beispielsweise kann man so wenn möglich einen Ritter, und ansonsten einen Clonk erzeugen:"
+msgstr ""
+
+#: sdk/script/operatoren.xml:341(h)
 msgid "Prioritäten und Assoziativität"
 msgstr "Priority and Associating"
 
-#: sdk/script/operatoren.xml:372(text)
+#: sdk/script/operatoren.xml:343(text)
 msgid "Dieses Thema ist nicht unbedingt zum Verständnis der Operatoren vonnöten. Es soll nur zeigen, wie die Mechanismen wie Punkt-vor-Strich u.ä. im Detail funktionieren."
 msgstr "This subject shows how operator priority is evaluated in detail."
 
-#: sdk/script/operatoren.xml:373(text)
+#: sdk/script/operatoren.xml:344(text)
 msgid "Um einen längeren Ausdruck mit mehreren Operatoren ausrechnen zu können, muss entschieden werden, in welcher Reinfolge die Operatoren ausgeführt werden und welches Ergebnis welchem anderem Operator zu übergeben ist."
 msgstr "To calculate the result of a complex term, first we have to decide in which order to evaluate the individual operations and to which other operator the result is to be passed."
 
-#: sdk/script/operatoren.xml:374(text)
+#: sdk/script/operatoren.xml:345(text)
 msgid "Allgemein gilt: Operatoren mit höherer Priorität werden vor Operatoren mit niedriger Priorität ausgeführt. Anmerkung: das gilt <strong>nicht</strong> für die Reihenfolge der Ausführung der Parameter. Diese werden ganz \"normal\" von links nach rechts ausgeführt."
 msgstr "Generally, operators with a higher priority are evaluate before operators with a lower priority. Notice: this does not apply to the evaluation of parameters - those are normally evaluated from left to right."
 
-#: sdk/script/operatoren.xml:376(h)
-#: sdk/script/operatoren.xml:383(h)
-#: sdk/script/operatoren.xml:411(h)
-#: sdk/script/operatoren.xml:540(h)
-#: sdk/script/operatoren.xml:669(h)
+#: sdk/script/operatoren.xml:347(h)
+#: sdk/script/operatoren.xml:354(h)
+#: sdk/script/operatoren.xml:382(h)
+#: sdk/script/operatoren.xml:511(h)
+#: sdk/script/operatoren.xml:640(h)
 #: sdk/script/NamedVar.xml:44(h)
 #: sdk/script/Funcs.xml:78(h)
 #: sdk/script/Funcs.xml:132(h)
@@ -784,87 +701,87 @@ msgstr "Generally, operators with a higher priority are evaluate before operator
 msgid "Beispiel:"
 msgstr "Example:"
 
-#: sdk/script/operatoren.xml:378(text)
-#: sdk/script/operatoren.xml:385(text)
+#: sdk/script/operatoren.xml:349(text)
+#: sdk/script/operatoren.xml:356(text)
 msgid "entspricht:"
 msgstr "evaluated as:"
 
-#: sdk/script/operatoren.xml:381(text)
+#: sdk/script/operatoren.xml:352(text)
 msgid "Dabei taucht aber noch ein Problem auf: was ist zu tun, wenn \"benachbarte\" Operatoren dieselbe Priorität haben? Ist dann der linke oder der rechte Ausdruck zu klammern? Über diese Frage entscheidet die sog. Assoziativität. Ist ein Operator links-assoziativ, so hat jeweils der linke Operator Priorität (übrigens auch der Regelfall, denn meistens wird von links nach rechts gerechnet). Anders bei den rechts-assoziativen Operatoren, wo jeweils der rechte Operator Priorität hat."
 msgstr "Here we have another problem: what to do when 'neighbouring' operators have the same priority? Should we first process the left or the right term? This is decided by the so called associativity. If an operator is left-associative then the term on the left is evaluated first (this is the usual case). With right-associative operators the term on the right is evaluated first."
 
-#: sdk/script/operatoren.xml:388(text)
+#: sdk/script/operatoren.xml:359(text)
 msgid "Hier sieht man deutlich, dass der Operator \"+\" links-assoziativ ist, der Ausdruck \"<code>1 + 2 + 3</code>\" wird zu \"<code>(1 + 2) + 3</code>\"."
 msgstr "Here you can see that the operator \"+\" is left-associative, the term \"<code>1 + 2 + 3</code>\" is evaluated as \"<code>(1 + 2) + 3</code>\"."
 
-#: sdk/script/operatoren.xml:389(text)
+#: sdk/script/operatoren.xml:360(text)
 msgid "Dagegen wird der Ausdruck \"<code>Var(0) = Var(1) = x</code>\" zu \"<code>Var(0) = (Var(1) = x)</code>\", da der Operator \"=\" rechts-assoziativ ist."
 msgstr "As opposed to this, the term \"<code>Var(0) = Var(1) = x</code>\" becomes \"<code>Var(0) = (Var(1) = x)</code>\", since the operator \"=\" is right-associative."
 
-#: sdk/script/operatoren.xml:390(text)
+#: sdk/script/operatoren.xml:361(text)
 msgid "Die Angaben über Prioritäten bzw. Assoziativitäten finden sich in der obigen Liste."
 msgstr "To find out about an operator's associativity, see the table above."
 
-#: sdk/script/operatoren.xml:393(h)
+#: sdk/script/operatoren.xml:364(h)
 msgid "Bitweise Operatoren"
 msgstr "Bit Manipulation Operators"
 
-#: sdk/script/operatoren.xml:394(text)
+#: sdk/script/operatoren.xml:365(text)
 msgid "In der Liste der Operatoren fallen einige Operatoren auf, die bitweise Opererationen oder Bitschieben durchführen."
 msgstr "In the operator list you will have noticed some operators which perform bitwise operations or bit shift."
 
-#: sdk/script/operatoren.xml:395(text)
+#: sdk/script/operatoren.xml:366(text)
 msgid "Erst mal eine kurze Beschreibung von Bits: der Computer rechnet intern im sog. binären Zahlensystem. In diesem System gibt es nur zwei Ziffern, nämlich 0 und 1. (wir rechnen üblicherweise im 10er-System, wir haben 10 Ziffern von 0 bis 9). Damit lassen sich die Zahlen folgendermaßen darstellen:"
 msgstr "To start out, a short description of bits: any computer internally works with 'binary numbers'. In this system there are only two digits: 0 and 1. Humans, by the way, usually work with 10 digits: 0 to 9. With the binary system, number can be represented as follows:"
 
-#: sdk/script/operatoren.xml:397(h)
+#: sdk/script/operatoren.xml:368(h)
 msgid "Das Binärsystem"
 msgstr "The Binary System"
 
-#: sdk/script/operatoren.xml:399(text)
+#: sdk/script/operatoren.xml:370(text)
 msgid "(jeweils erst im Zehnersystem, dann im Binärsystem)"
 msgstr "(each number is presented in the decimal system first, then binary)"
 
-#: sdk/script/operatoren.xml:408(text)
+#: sdk/script/operatoren.xml:379(text)
 msgid "Dabei wird jede Ziffer als \"Bit\" bezeichnet. Eine Folge von 8 Bits (s.o.) nennt man ein \"Byte\"."
 msgstr "Each digit in the binary system is called a \"bit\". A sequence of 8 bits (see above) is called a \"byte\"."
 
-#: sdk/script/operatoren.xml:409(text)
+#: sdk/script/operatoren.xml:380(text)
 msgid "Bitweise Operatoren bearbeiten Zahlen nun bitweise."
 msgstr "Bitwise operatiors perform actions on the bits of a number."
 
-#: sdk/script/operatoren.xml:417(text)
+#: sdk/script/operatoren.xml:388(text)
 msgid "In diesem Beispiel handelt es sich um bitweises Not. D.h. jedes Bit wird einzeln negiert (aus 0 wird 1, aus 1 wird 0)."
 msgstr "This example shows a binary NOT. That means, each bit of the number is negated individually (0 becomes 1, 1 becomes 0)."
 
-#: sdk/script/operatoren.xml:418(text)
+#: sdk/script/operatoren.xml:389(text)
 msgid "Bitweise Operatoren mit 2 Parametern verrechnen nun jeweils die Bits zweier Zahlen."
 msgstr "Bitwise operators with two parameters combine the bits of two numbers."
 
-#: sdk/script/operatoren.xml:420(h)
+#: sdk/script/operatoren.xml:391(h)
 msgid "Beispiele:"
 msgstr "Examples:"
 
-#: sdk/script/operatoren.xml:467(text)
+#: sdk/script/operatoren.xml:438(text)
 msgid "Diese drei Operatoren sind (der Reihe nach) Und (&amp;), Oder (|) und Exklusiv-Oder (^)."
 msgstr "These three operators are (in order) AND (&amp;), OR (|) and EXCLUSIVE-OR (^)."
 
-#: sdk/script/operatoren.xml:468(text)
+#: sdk/script/operatoren.xml:439(text)
 msgid "Bei dem ersten Operator (Und) steht beim Ergebnis nur dann eine 1, wenn in beiden Eingaben an der entsprechenden Stelle ebenfalls eine 1 steht. \"Und\" hat also die folgende Wahrheitstabelle (senkrecht bzw. waagerecht sind die beiden möglichen Parameter jeweils gelistet, in der Tabelle selbst das Ergebnis):"
 msgstr "With the AND operator, the resulting bit will only be 1 if both incoming bits are 1. AND gives the following result:"
 
-#: sdk/script/operatoren.xml:473(col)
-#: sdk/script/operatoren.xml:477(col)
-#: sdk/script/operatoren.xml:478(col)
-#: sdk/script/operatoren.xml:479(col)
-#: sdk/script/operatoren.xml:483(col)
-#: sdk/script/operatoren.xml:493(col)
-#: sdk/script/operatoren.xml:497(col)
-#: sdk/script/operatoren.xml:498(col)
-#: sdk/script/operatoren.xml:513(col)
-#: sdk/script/operatoren.xml:517(col)
-#: sdk/script/operatoren.xml:518(col)
-#: sdk/script/operatoren.xml:524(col)
+#: sdk/script/operatoren.xml:444(col)
+#: sdk/script/operatoren.xml:448(col)
+#: sdk/script/operatoren.xml:449(col)
+#: sdk/script/operatoren.xml:450(col)
+#: sdk/script/operatoren.xml:454(col)
+#: sdk/script/operatoren.xml:464(col)
+#: sdk/script/operatoren.xml:468(col)
+#: sdk/script/operatoren.xml:469(col)
+#: sdk/script/operatoren.xml:484(col)
+#: sdk/script/operatoren.xml:488(col)
+#: sdk/script/operatoren.xml:489(col)
+#: sdk/script/operatoren.xml:495(col)
 #: sdk/script/fn/SetRGBaValue.xml:21(col)
 #: sdk/script/fn/SetPlrShowControl.xml:20(col)
 #: sdk/script/fn/SetPhysical.xml:16(col)
@@ -874,6 +791,7 @@ msgstr "With the AND operator, the resulting bit will only be 1 if both incoming
 #: sdk/script/fn/GetRGBaValue.xml:20(col)
 #: sdk/script/fn/GetEffect.xml:50(col)
 #: sdk/script/fn/DoRGBaValue.xml:21(col)
+#: sdk/script/fn/CustomMessage.xml:22(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:17(col)
 #: sdk/script/fn/CreateMenu.xml:18(col)
 #: sdk/script/fn/CreateMenu.xml:30(col)
@@ -894,18 +812,18 @@ msgstr "With the AND operator, the resulting bit will only be 1 if both incoming
 msgid "0"
 msgstr "0"
 
+#: sdk/script/operatoren.xml:445(col)
+#: sdk/script/operatoren.xml:453(col)
+#: sdk/script/operatoren.xml:455(col)
+#: sdk/script/operatoren.xml:465(col)
+#: sdk/script/operatoren.xml:470(col)
+#: sdk/script/operatoren.xml:473(col)
 #: sdk/script/operatoren.xml:474(col)
-#: sdk/script/operatoren.xml:482(col)
-#: sdk/script/operatoren.xml:484(col)
+#: sdk/script/operatoren.xml:475(col)
+#: sdk/script/operatoren.xml:485(col)
+#: sdk/script/operatoren.xml:490(col)
+#: sdk/script/operatoren.xml:493(col)
 #: sdk/script/operatoren.xml:494(col)
-#: sdk/script/operatoren.xml:499(col)
-#: sdk/script/operatoren.xml:502(col)
-#: sdk/script/operatoren.xml:503(col)
-#: sdk/script/operatoren.xml:504(col)
-#: sdk/script/operatoren.xml:514(col)
-#: sdk/script/operatoren.xml:519(col)
-#: sdk/script/operatoren.xml:522(col)
-#: sdk/script/operatoren.xml:523(col)
 #: sdk/script/fn/SetRGBaValue.xml:22(col)
 #: sdk/script/fn/SetPlrShowControl.xml:21(col)
 #: sdk/script/fn/SetPlrShowCommand.xml:21(col)
@@ -918,6 +836,7 @@ msgstr "0"
 #: sdk/script/fn/GetPlayerType.xml:17(col)
 #: sdk/script/fn/GetEffect.xml:51(col)
 #: sdk/script/fn/DoRGBaValue.xml:22(col)
+#: sdk/script/fn/CustomMessage.xml:23(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:18(col)
 #: sdk/script/fn/CreateMenu.xml:19(col)
 #: sdk/script/fn/CreateMenu.xml:31(col)
@@ -938,107 +857,107 @@ msgstr "0"
 msgid "1"
 msgstr "1"
 
-#: sdk/script/operatoren.xml:488(text)
+#: sdk/script/operatoren.xml:459(text)
 msgid "Der Operator \"Oder\" gibt 1 zurück, wenn eins (oder beide) der Eingaben 1 sind:"
 msgstr "The OR operator results in 1 if one or both of the incoming bits are 1:"
 
-#: sdk/script/operatoren.xml:508(text)
+#: sdk/script/operatoren.xml:479(text)
 msgid "Der Operator \"Exklusiv-Oder\" (XOr) verhält sich wie das \"Oder\", doch wird 0 zurückgegeben, wenn beide Parameter 0 sind."
 msgstr "The XOR operator results in 1 if either (but not both) of the incoming bits are 1:"
 
-#: sdk/script/operatoren.xml:528(h)
+#: sdk/script/operatoren.xml:499(h)
 msgid "Anwendungen"
 msgstr "Applications:"
 
-#: sdk/script/operatoren.xml:529(text)
+#: sdk/script/operatoren.xml:500(text)
 msgid "In Clonk werden häufig Bitoperationen benutzt, wenn es darum geht, verschiedene Eigenschaften eines Objekts in einem Wert zu speichern. Das prominenteste Beispiel sind hier wohl die C4D(Category)-Werte. Hier repräsentiert jedes Bit des C4D-Wertes eine bestimmte Eigenschaft (für Einzelheiten siehe Entwickler-Dokumentation)."
 msgstr "Clonk  often uses bitwise operations when storing the characteristics of an object in a single value. The best known example is the category (\"C4D\" values) of an object. Here, each bit of the category value represents a certain class or characteristic."
 
-#: sdk/script/operatoren.xml:530(text)
+#: sdk/script/operatoren.xml:501(text)
 msgid "Auf diese Bits kann man recht bequem über die bitweisen Operatoren zugreifen. Ein C4D-Wert kann z.B. folgendermaßen aussehen:"
 msgstr "To access or sort out the individual characteristics, you can easily access a C4D value with bitwise operators:"
 
-#: sdk/script/operatoren.xml:532(h)
+#: sdk/script/operatoren.xml:503(h)
 msgid "Beispiel: (Wipf)"
 msgstr "Example (wipf):"
 
-#: sdk/script/operatoren.xml:534(text)
+#: sdk/script/operatoren.xml:505(text)
 msgid "Dieser Wert ergibt im Binär-System: (kann mit Windows-Taschenrechner umgerechnet werden)"
 msgstr "This value in binary system:"
 
-#: sdk/script/operatoren.xml:536(text)
+#: sdk/script/operatoren.xml:507(text)
 msgid "Hier sieht man, dass Bit 3, Bit 12 und Bit 16 gesetzt sind (es wird von rechts gezählt und mit 0 begonnen)"
 msgstr "You can see that bit 3, 12, and 16 are set (counting from left to right, starting with 0)."
 
-#: sdk/script/operatoren.xml:537(text)
+#: sdk/script/operatoren.xml:508(text)
 msgid "Dies entspricht der Reihe nach den C4D-Werten <placeholder-1/> (Objekt ist ein Lebewesen), C4D_SelectAnimal (Objekt kann im Menu für Lebewesen hinzugefügt werden) und C4D_TradeLiving (Objekt ist ein Lebewesen, darf aber trotzdem verkauft werden)."
 msgstr "This represents the C4D values <placeholder-1/> (objects is a living being), C4D_SelectAnimal (living being can be selected in the menu system) and C4D_TradeLiving (living being can be bought or sold)."
 
-#: sdk/script/operatoren.xml:538(text)
+#: sdk/script/operatoren.xml:509(text)
 msgid "Im Script kann nun recht einfach geprüft werden, ob ein bestimmtes Bit gesetzt ist: man benutzt den Operator \"Und\" (<code>&amp;</code>), dem man den Wert und die \"Maske\" übergibt. In der Maske ist nur das Bit gesetzt, dass von Interesse ist. Auf diese Weise müssen im Ergebnis alle Bits, die nicht interessieren, 0 sein (denn sie sind es in der Maske). Ist nun das Bit, das interressiert, 1, so wird diese in das Ergebnis übernommen, ist es 0, so wird im Ergebnis dort auch 0 stehen. Im letzteren Fall ist sogar das gesamte Ergebnis 0, da alle anderen Bits ja auch 0 sind. Es genügt also zu überprüfen, ob das Ergebnis von <code>[Val] &amp; [Mask]</code> ungleich null ist, um herauszufinden, ob ein bestimmtes Bit gesetzt ist."
 msgstr "In script you can now easily check whether a given bit is set: simply use the AND operator (&amp) with a second parameter (\"mask\"). In this mask, only a single bit is set, representing the category value which we we like to test for. In the result of the AND operation all bits that do not interest us, will be 0. Only the one bit that does interest us, has the chance of being 1 - that is, if it is set in the original value. Since a single bit set in a number will already cause that number's value to be different from 0, all you have to do now is to compare the resulting number to 0: if it is different from 0, the characteristic we have been looking for is given; if the result is equal to 0, the characteristic is not given."
 
-#: sdk/script/operatoren.xml:546(col)
-#: sdk/script/operatoren.xml:566(col)
-#: sdk/script/operatoren.xml:592(col)
-#: sdk/script/operatoren.xml:612(col)
-#: sdk/script/operatoren.xml:632(col)
-#: sdk/script/operatoren.xml:650(col)
+#: sdk/script/operatoren.xml:517(col)
+#: sdk/script/operatoren.xml:537(col)
+#: sdk/script/operatoren.xml:563(col)
+#: sdk/script/operatoren.xml:583(col)
+#: sdk/script/operatoren.xml:603(col)
+#: sdk/script/operatoren.xml:621(col)
 msgid "(Wert)"
 msgstr "(value)"
 
-#: sdk/script/operatoren.xml:551(col)
-#: sdk/script/operatoren.xml:571(col)
-#: sdk/script/operatoren.xml:597(col)
-#: sdk/script/operatoren.xml:637(col)
-#: sdk/script/operatoren.xml:655(col)
+#: sdk/script/operatoren.xml:522(col)
+#: sdk/script/operatoren.xml:542(col)
+#: sdk/script/operatoren.xml:568(col)
+#: sdk/script/operatoren.xml:608(col)
+#: sdk/script/operatoren.xml:626(col)
 msgid "(Maske)"
 msgstr "(mask)"
 
-#: sdk/script/operatoren.xml:560(text)
+#: sdk/script/operatoren.xml:531(text)
 msgid "Das Ergebnis ist in diesem Fall nicht 0, also ist das Bit, dass in der Maske gesetzt ist, auch im Wert gesetzt."
 msgstr "In this case, the result is unequal to 0, so we know the bit we have set in the mask is also set in the original value."
 
-#: sdk/script/operatoren.xml:580(text)
+#: sdk/script/operatoren.xml:551(text)
 msgid "Hier ist das Ergebnis 0, denn das Bit in der Maske ist nicht beim Wert gesetzt."
 msgstr "Here the result is equal to 0, meaning the bit we are looking for was not set in the original value."
 
-#: sdk/script/operatoren.xml:581(text)
+#: sdk/script/operatoren.xml:552(text)
 msgid "Es bleibt noch die Frage zu klären, wo man die entsprechende Maske denn herbekommt. Im Fall der Category-Werte sind diese bereits mit Namen mitgeliefert, sie können über <code>C4D_[XXX]</code> abgerufen werden. Wollte man z.B. herausfinden, ob es sich bei einem Objekt um ein Lebewesen handelt, so sähe der Script folgendermaßen aus:"
 msgstr "The question remains where to get the proper mask from. In the case of the C4D categories, there are predefined values we can use. They are called <code>C4D_xxx</code>. So to find out whether an object is a living being we use the following code:"
 
-#: sdk/script/operatoren.xml:586(text)
+#: sdk/script/operatoren.xml:557(text)
 msgid "Auf diese Weise kann man also einzelne Bits gezielt prüfen. Doch wie soll man diese nun bearbeiten? Will man ein einzelnes Bit <strong>setzen</strong>, so wird der Operator \"Oder\" (<code>|</code>) benutzt. Dieser wird wieder auf Wert und Maske angewendet:"
 msgstr "Now we can test whether an individual bit is set. But how can we change bits, for example <strong>set</strong> them? For this, we can use the OR operator (|). Again, it is applied using a value and a mask as a second parameter:"
 
-#: sdk/script/operatoren.xml:602(col)
-#: sdk/script/operatoren.xml:622(col)
-#: sdk/script/operatoren.xml:642(col)
-#: sdk/script/operatoren.xml:660(col)
+#: sdk/script/operatoren.xml:573(col)
+#: sdk/script/operatoren.xml:593(col)
+#: sdk/script/operatoren.xml:613(col)
+#: sdk/script/operatoren.xml:631(col)
 msgid "(neuer Wert)"
 msgstr "(new value)"
 
-#: sdk/script/operatoren.xml:606(text)
+#: sdk/script/operatoren.xml:577(text)
 msgid "Auf diese Weise ist es allerdings immer nur möglich, ein bestimmtes Bit auf 1 zu setzen. War dieses bereits gesetzt, so bleibt der Wert unverändert. Will man nun ein bestimmtes Bit auf 0 setzen, so benutzt man wieder den \"Und\"-Operator und die <strong>inverse</strong>(logisch Not) Maske, also <code>[Wert] &amp; ~[Maske]</code>:"
 msgstr "In this way it is only possible to set a certain bit to 1. If the bit was already set, the value will remain unchanged. To set a certain bit to 0 we have to use the AND operator and the <strong>inverse</strong> (logical NOT) mask, or <code>[value] &amp;~[mask]</code>."
 
-#: sdk/script/operatoren.xml:626(text)
+#: sdk/script/operatoren.xml:597(text)
 msgid "Es ist auch möglich, ein bestimmtes Bit gezielt umzuschalten, also von 1 auf 0 und von 0 nach 1. Dies leistet der bitweise \"Exklusiv-Oder\"-Operator (<code>^</code>):"
 msgstr "It is also possibly to toggle a certain bit from 1 to 0 or 0 to 1, whichever way it is set. This is done with the XOR operator (^):"
 
-#: sdk/script/operatoren.xml:665(h)
+#: sdk/script/operatoren.xml:636(h)
 msgid "Bitschiebereien"
 msgstr "Bit Shifts"
 
-#: sdk/script/operatoren.xml:667(text)
+#: sdk/script/operatoren.xml:638(text)
 msgid "Außer den Operatoren, die bitweises Manipulieren von Werten erlauben (s.o.) gibt es noch sog. <strong>Bitschiebe-Operatoren</strong>. Die Funktion dieser Operatoren beschränkt sich darauf (anschaulich gesprochen), an einen Bit-Wert Nullen anzuhängen (&lt;&lt;) bzw. Ziffern abzuschneiden (&gt;&gt;)."
 msgstr "Besides operators for bitwise combination of values there are also the <strong>bit shift</strong> operators. All these operators do is move all the bits in a number from left to right (adding a new 0 on the left) or from right to left (adding a new 0 on the right)."
 
-#: sdk/script/operatoren.xml:677(text)
+#: sdk/script/operatoren.xml:648(text)
 msgid "Mathematisch entspricht der Operator &lt;&lt; der Multiplikation mit <code>2 ^ X</code> (genau wie im Zehnersystem das Anhängen einer Null mit einer Multiplikation mit 10 gleichkommt) und der Operator &gt;&gt; einer Division mit <code>2 ^ X</code> (mit anschließendem Abrunden)."
 msgstr "Mathematically, the operator &lt;&lt; performs a multiplication by 2 (exactly in the same way that in the decimal system appending a 0 performs a multiplication by 10) and the operator &gt;&gt; is a division by 2 (including some rounding)."
 
-#: sdk/script/operatoren.xml:678(text)
+#: sdk/script/operatoren.xml:649(text)
 msgid "Mit den Operatoren können vor allem Masken erstellt (1 &lt;&lt; BitNr), und <placeholder-1/>-Farbwerte zusammengesetzt und auseinandergenommen werden."
 msgstr "Using these operators you can put together masks (1 &lt;&lt; bit-no.) and mix or take apart <placeholder-1/> color values."
 
@@ -1058,7 +977,6 @@ msgstr "Using these operators you can put together masks (1 &lt;&lt; bit-no.) an
 #: sdk/script/fn/ScriptCounter.xml:7(category)
 #: sdk/script/fn/ScheduleCall.xml:7(category)
 #: sdk/script/fn/Schedule.xml:7(category)
-#: sdk/script/fn/SEqual.xml:7(category)
 #: sdk/script/fn/ProtectedCall.xml:7(category)
 #: sdk/script/fn/PrivateCall.xml:7(category)
 #: sdk/script/fn/Par.xml:7(category)
@@ -1637,7 +1555,6 @@ msgstr "Gives a flintstone to each clonk."
 
 #: sdk/script/fn/WildcardMatch.xml:7(subcat)
 #: sdk/script/fn/SetLength.xml:7(subcat)
-#: sdk/script/fn/SEqual.xml:7(subcat)
 #: sdk/script/fn/GetLength.xml:7(subcat)
 #: sdk/script/fn/GetChar.xml:7(subcat)
 #: sdk/script/fn/Format.xml:7(subcat)
@@ -1729,27 +1646,17 @@ msgid "Entfernt obj wenn einer seiner Vertices feststeckt"
 msgstr "Removes obj if one if its vertices is stuck."
 
 #: sdk/script/fn/VarN.xml:7(category)
-#: sdk/script/fn/Var.xml:7(category)
-#: sdk/script/fn/SetVar.xml:8(category)
-#: sdk/script/fn/SetLocal.xml:7(category)
-#: sdk/script/fn/SetGlobal.xml:7(category)
 #: sdk/script/fn/LocalN.xml:7(category)
-#: sdk/script/fn/Local.xml:7(category)
 #: sdk/script/fn/IsRef.xml:7(category)
-#: sdk/script/fn/IncVar.xml:7(category)
-#: sdk/script/fn/Inc.xml:8(category)
 #: sdk/script/fn/GlobalN.xml:7(category)
-#: sdk/script/fn/Global.xml:7(category)
 #: sdk/script/fn/GetType.xml:7(category)
-#: sdk/script/fn/DecVar.xml:7(category)
-#: sdk/script/fn/Dec.xml:8(category)
 #: sdk/script/fn/C4V_String.xml:7(category)
 #: sdk/script/fn/C4V_Int.xml:7(category)
 #: sdk/script/fn/C4V_C4Object.xml:7(category)
 #: sdk/script/fn/C4V_C4ID.xml:7(category)
 #: sdk/script/fn/C4V_Bool.xml:7(category)
+#: sdk/script/fn/C4V_Array.xml:7(category)
 #: sdk/script/fn/C4V_Any.xml:7(category)
-#: sdk/script/fn/AssignVar.xml:8(category)
 msgid "Variablen"
 msgstr "Variables"
 
@@ -1759,25 +1666,12 @@ msgid "Name der Variablen, zu der eine Referenz zurückgegeben werden soll"
 msgstr "Name of the variable to which a reference is to be returned."
 
 #: sdk/script/fn/VarN.xml:20(desc)
-#: sdk/script/fn/Var.xml:21(desc)
 msgid "Gibt eine Referenz auf eine funktionslokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden."
 msgstr "Returns a reference to a function local variable. This reference can be used for reading or writing."
 
 #: sdk/script/fn/VarN.xml:26(text)
 msgid "Setzt eine zufällige, threadlokale Variable auf einen zufälligen Wert."
 msgstr "Sets a randomly chosen thread local variable to a random value."
-
-#: sdk/script/fn/Var.xml:16(desc)
-msgid "Index der Variable, zu der eine Referenz zurückgegeben werden soll"
-msgstr "Index of the variable to which a reference is to be returned."
-
-#: sdk/script/fn/Var.xml:23(remark)
-msgid "Normalerweise sollten statt dieser Funktion benannte, threadlokale Variablen (var) benutzt werden. Manchmal ist die Funktion jedoch praktisch, um lokale Arrays zu emulieren."
-msgstr "Usually, you should use named local variables instead of using this function. Sometimes, however, it is convenient to used indexed variables to emulate a local array."
-
-#: sdk/script/fn/Var.xml:62(text)
-msgid "Berechnet pi auf 800 Stellen genau und gibt den Wert in zwei Logzeilen aus."
-msgstr "Calculates pi exact to 800 decimals and returns the value in two log entries."
 
 #: sdk/script/fn/Value.xml:7(subcat)
 #: sdk/script/fn/TrainPhysical.xml:7(subcat)
@@ -1901,6 +1795,7 @@ msgstr "Constant for <placeholder-1/>/<placeholder-2/>. The object is visible fo
 #: sdk/script/fn/C4V_C4Object.xml:13(remark)
 #: sdk/script/fn/C4V_C4ID.xml:13(remark)
 #: sdk/script/fn/C4V_Bool.xml:13(remark)
+#: sdk/script/fn/C4V_Array.xml:13(remark)
 #: sdk/script/fn/C4V_Any.xml:13(remark)
 #: sdk/script/fn/C4D_Vehicle.xml:13(remark)
 #: sdk/script/fn/C4D_Structure.xml:13(remark)
@@ -2035,88 +1930,6 @@ msgstr "Example from System.c4g: improves the sorcerer's magic physical value af
 msgid "DefCore.txt, [Physical]"
 msgstr "DefCore.txt, [Physical]"
 
-#: sdk/script/fn/Sum.xml:7(category)
-#: sdk/script/fn/Sub.xml:7(category)
-#: sdk/script/fn/Sqrt.xml:7(category)
-#: sdk/script/fn/SplitRGBaValue.xml:7(category)
-#: sdk/script/fn/Sin.xml:7(category)
-#: sdk/script/fn/SetRGBaValue.xml:7(category)
-#: sdk/script/fn/RandomX.xml:7(category)
-#: sdk/script/fn/Random.xml:7(category)
-#: sdk/script/fn/RGBa.xml:7(category)
-#: sdk/script/fn/RGB2HSL.xml:7(category)
-#: sdk/script/fn/RGB.xml:7(category)
-#: sdk/script/fn/Pow.xml:7(category)
-#: sdk/script/fn/Mul.xml:7(category)
-#: sdk/script/fn/Mod.xml:7(category)
-#: sdk/script/fn/Min.xml:7(category)
-#: sdk/script/fn/Max.xml:7(category)
-#: sdk/script/fn/Inside.xml:7(category)
-#: sdk/script/fn/HSLa.xml:7(category)
-#: sdk/script/fn/HSL2RGB.xml:7(category)
-#: sdk/script/fn/HSL.xml:7(category)
-#: sdk/script/fn/GetRGBaValue.xml:7(category)
-#: sdk/script/fn/DoRGBaValue.xml:7(category)
-#: sdk/script/fn/Div.xml:7(category)
-#: sdk/script/fn/Distance.xml:7(category)
-#: sdk/script/fn/Cos.xml:7(category)
-#: sdk/script/fn/BoundBy.xml:7(category)
-#: sdk/script/fn/BitAnd.xml:7(category)
-#: sdk/script/fn/ArcSin.xml:7(category)
-#: sdk/script/fn/ArcCos.xml:7(category)
-#: sdk/script/fn/Angle.xml:7(category)
-#: sdk/script/fn/Abs.xml:7(category)
-msgid "Arithmetik"
-msgstr "Arithmetics"
-
-#: sdk/script/fn/Sum.xml:13(desc)
-msgid "1. Summand"
-msgstr "first operand"
-
-#: sdk/script/fn/Sum.xml:14(desc)
-msgid "2. Summand"
-msgstr "secod operand"
-
-#: sdk/script/fn/Sum.xml:15(desc)
-msgid "3. Summand"
-msgstr "third operand"
-
-#: sdk/script/fn/Sum.xml:16(desc)
-msgid "4. Summand"
-msgstr "fourth operand"
-
-#: sdk/script/fn/Sum.xml:19(desc)
-msgid "Bildet die Summe von iVal1, iVal2, iVal3 und iVal4 und gibt das Ergebnis zurück. Diese Funktion sollte in neuen Scripts durch den Operator \"+\" ersetzt werden."
-msgstr "Adds iVal1, iVal2, iVal3, and iVal4 and returns the sum. You should really use the '+' operator instead."
-
-#: sdk/script/fn/Sum.xml:23(text)
-msgid "Gibt das Ergebnis von 10 + 5 im Log aus."
-msgstr "Prints the result of 10 + 5 to the log."
-
-#: sdk/script/fn/Sub.xml:13(desc)
-msgid "Minuend"
-msgstr "value"
-
-#: sdk/script/fn/Sub.xml:14(desc)
-msgid "Subtrahend 1"
-msgstr "first subtracted value"
-
-#: sdk/script/fn/Sub.xml:15(desc)
-msgid "Subtrahend 2"
-msgstr "second subtracted value"
-
-#: sdk/script/fn/Sub.xml:16(desc)
-msgid "Subtrahend 3"
-msgstr "third subtracted value"
-
-#: sdk/script/fn/Sub.xml:19(desc)
-msgid "Subtrahiert die Summe von iVal2, 3 und 4 von iVal1 und gibt das Ergebnis zurück. Diese Funktion sollte in neuen Scripts durch den Operator \"-\" ersetzt werden."
-msgstr "Subtracts iVal2, iVal3, and iVal4 from iVal1 and returns the result. You should really use the '-' operator instead."
-
-#: sdk/script/fn/Sub.xml:23(text)
-msgid "Gibt das Ergebnis von 10 - 5 im Log aus."
-msgstr "Prints the result of 10 - 5 to the log."
-
 #: sdk/script/fn/Stuck.xml:12(desc)
 msgid "Objekt, von dem ermittelt werden soll, ob es feststeckt. 0 bei lokalem Aufruf."
 msgstr "Object of which you want to know if it's stuck. Can be 0 in local calls."
@@ -2143,7 +1956,8 @@ msgstr "Stops the script profiler and writes the result to the log."
 
 #: sdk/script/fn/StopScriptProfiler.xml:13(remark)
 #: sdk/script/fn/StartScriptProfiler.xml:16(remark)
-msgid "Mit dem Scriptprofiler lässt sich messen, wie viel Rechenzeit die Scriptengine in welchen Scriptfunktionen aufwendet. Dies kann nützlich sein, um in langsam lafenden Szenarien zu prüfen, ob und wo sich Flaschenhälse in der Ausführung von Scripten befinden. Gemessen werden immer jeweils die Scriptausführungen zwischen einem StartScriptProfiler und einem StopScriptProfiler-Aufruf."
+#, fuzzy
+msgid "Mit dem Scriptprofiler lässt sich messen, wie viel Rechenzeit die Scriptengine in welchen Scriptfunktionen aufwendet. Dies kann nützlich sein, um in langsam laufenden Szenarien zu prüfen, ob und wo sich Flaschenhälse in der Ausführung von Scripten befinden. Gemessen werden immer jeweils die Scriptausführungen zwischen einem StartScriptProfiler und einem StopScriptProfiler-Aufruf."
 msgstr "The script profiler can be used to measure how much processing time the scripting engine is using for executing certain script functions. This can be useful to find out which parts of a script are mainly slowing down execution in larger scenarios. The profiler measures the execution time between the commands StartScriptProfiler and StopScriptProfiler."
 
 #: sdk/script/fn/StopScriptProfiler.xml:16(text)
@@ -2169,6 +1983,34 @@ msgstr "If specified, only script functions of the given object definition are m
 #: sdk/script/fn/StartScriptProfiler.xml:15(desc)
 msgid "Startet den Scriptprofiler."
 msgstr "Starts the script profiler."
+
+#: sdk/script/fn/Sqrt.xml:7(category)
+#: sdk/script/fn/SplitRGBaValue.xml:7(category)
+#: sdk/script/fn/Sin.xml:7(category)
+#: sdk/script/fn/SetRGBaValue.xml:7(category)
+#: sdk/script/fn/RandomX.xml:7(category)
+#: sdk/script/fn/Random.xml:7(category)
+#: sdk/script/fn/RGBa.xml:7(category)
+#: sdk/script/fn/RGB2HSL.xml:7(category)
+#: sdk/script/fn/RGB.xml:7(category)
+#: sdk/script/fn/Pow.xml:7(category)
+#: sdk/script/fn/Min.xml:7(category)
+#: sdk/script/fn/Max.xml:7(category)
+#: sdk/script/fn/Inside.xml:7(category)
+#: sdk/script/fn/HSLa.xml:7(category)
+#: sdk/script/fn/HSL2RGB.xml:7(category)
+#: sdk/script/fn/HSL.xml:7(category)
+#: sdk/script/fn/GetRGBaValue.xml:7(category)
+#: sdk/script/fn/DoRGBaValue.xml:7(category)
+#: sdk/script/fn/Distance.xml:7(category)
+#: sdk/script/fn/Cos.xml:7(category)
+#: sdk/script/fn/BoundBy.xml:7(category)
+#: sdk/script/fn/ArcSin.xml:7(category)
+#: sdk/script/fn/ArcCos.xml:7(category)
+#: sdk/script/fn/Angle.xml:7(category)
+#: sdk/script/fn/Abs.xml:7(category)
+msgid "Arithmetik"
+msgstr "Arithmetics"
 
 #: sdk/script/fn/Sqrt.xml:12(desc)
 msgid "Wert, aus dem die Wurzel gezogen werden soll"
@@ -2359,8 +2201,6 @@ msgstr "Object script: the object creates a puff of smoke."
 
 #: sdk/script/fn/SkyPar_Keep.xml:7(category)
 #: sdk/script/fn/SetSkyParallax.xml:7(category)
-#: sdk/script/fn/SetSkyFade.xml:7(category)
-#: sdk/script/fn/SetSkyColor.xml:7(category)
 #: sdk/script/fn/SetSkyAdjust.xml:7(category)
 #: sdk/script/fn/GetSkyColor.xml:7(category)
 #: sdk/script/fn/GetSkyAdjust.xml:7(category)
@@ -2556,7 +2396,6 @@ msgid "Schüttelt alle Lebewesen durch."
 msgstr "Shakes all living beings."
 
 #: sdk/script/fn/ShakeFree.xml:7(category)
-#: sdk/script/fn/SetMaterialColor.xml:7(category)
 #: sdk/script/fn/SetMatAdjust.xml:7(category)
 #: sdk/script/fn/SetLandscapePixel.xml:7(category)
 #: sdk/script/fn/SetClimate.xml:7(category)
@@ -2834,20 +2673,6 @@ msgstr "Sets the offset coordinates of a given object vertex (see<emlink href=\"
 msgid "Achtung: Bei jeder Vertexaktualisierung (also beispielsweise dann, wenn sich Fertigstellungswert oder Rotation eines Objekts ändern) werden normalerweise alle Vertices wieder auf die Definitionswerte zurückgesetzt. Um dies zu umgehen, kann der iSetCustomPermanent-Parameter verwendet werden (Beispiel siehe CE-Drache)."
 msgstr "Notice: with any vertex updated caused by stretching or rotation of the object (e.g. building or growth) the vertices will be reset to their original defined position unless a special vertex mode is selected using the iSetCustomPermanent parameter."
 
-#: sdk/script/fn/SetVar.xml:13(desc)
-#: sdk/script/fn/AssignVar.xml:13(desc)
-msgid "Die threadlokale Variable, die gesetzt werden soll."
-msgstr "Thread local variable to be set."
-
-#: sdk/script/fn/SetVar.xml:14(desc)
-#: sdk/script/fn/AssignVar.xml:14(desc)
-msgid "Zu setzender Wert."
-msgstr "Value to be set."
-
-#: sdk/script/fn/SetVar.xml:17(desc)
-msgid "Weist den Wert iValue einer beliebigen Thread-lokalen Variablen (ab 0) zu. Der Datentyp ist variabel. Thread-lokale Variablen gelten nur für die Dauer des aktuellen Funktionsaufrufes. Numerierte Variablen wurden durch Variablen mit Namen abgelöst, sind aber für Arrays nützlich."
-msgstr "Assigns a value to an indexed thread local variable. The data type is variant. Thread local variables are valid for the duration of a function execution only. Indexed variables are more old-fashioned than named variables but are still good for emulating local arrays."
-
 #: sdk/script/fn/SetTransferZone.xml:12(desc)
 msgid "X-Position der oberen linken Ecke der neuen Transferzone; relativ zum Objektmittelpunkt"
 msgstr "X position of the top left corner of the new transfer zone, relative to the object center."
@@ -2971,70 +2796,6 @@ msgstr "If you specify <placeholder-1/>() for one of the parameters, the previou
 #: sdk/script/fn/SetSkyParallax.xml:26(text)
 msgid "Setzt den Himmel auf parallax und mit dem Wind bewegend."
 msgstr "Sets the sky to parallax and moving with the wind."
-
-#: sdk/script/fn/SetSkyFade.xml:12(desc)
-msgid "Rot-Wert der Anfangsfarbe"
-msgstr "Red value of the initial color."
-
-#: sdk/script/fn/SetSkyFade.xml:13(desc)
-msgid "Grün-Wert der Anfangsfarbe"
-msgstr "Green value of the initial color."
-
-#: sdk/script/fn/SetSkyFade.xml:14(desc)
-msgid "Blau-Wert der Anfangsfarbe"
-msgstr "Blue value of the initial color."
-
-#: sdk/script/fn/SetSkyFade.xml:15(desc)
-msgid "Rot-Wert der Endfarbe"
-msgstr "Red value of the destination color."
-
-#: sdk/script/fn/SetSkyFade.xml:16(desc)
-msgid "Grün-Wert der Endfarbe"
-msgstr "Green value of the destination color."
-
-#: sdk/script/fn/SetSkyFade.xml:17(desc)
-msgid "Blau-Wert der Endfarbe"
-msgstr "Blue value of the destination color."
-
-#: sdk/script/fn/SetSkyFade.xml:20(desc)
-msgid "Verändert die Himmelsfarben. Dabei werden im 8Bit-Modus die Palettenfarben 0 (Anfangsfarbe) bis 19 (Endfartbe) auf einen Verlauf zwischen den angegebenen Farbwerten gesetzt. Das macht natürlich nur dann Sinn, wenn der Himmel aus einem Farbverlauf besteht."
-msgstr "Changes the color of the sky. This will set the 8 bit palette colors 0 (initial) to 10 (destination) to a gradient from the initial to the destination color. Obviously, this only makes sense with color gradient skies."
-
-#: sdk/script/fn/SetSkyFade.xml:21(remark)
-msgid "Diese Funktion ist veraltet, und funktioniert nur im alten 8-Bit-Grafiksystem richtig (für NewGfx wird sie notdürftig emuliert). Stattdessen sollte <placeholder-1/> verwendet werden."
-msgstr "This function is obsolete and will not properly work with the new graphics system. You should use <placeholder-1/> instead."
-
-#: sdk/script/fn/SetSkyFade.xml:25(text)
-msgid "Setzt den Himmel auf einen Verlauf zwischen schwarz und weiß."
-msgstr "Sets the sky to a gradient from black to white."
-
-#: sdk/script/fn/SetSkyColor.xml:12(desc)
-msgid "0-19: Himmelsfarbenindex"
-msgstr "0-19: Sky color index"
-
-#: sdk/script/fn/SetSkyColor.xml:13(desc)
-msgid "Rot-Wert der Farbe"
-msgstr "Red value of the color"
-
-#: sdk/script/fn/SetSkyColor.xml:14(desc)
-msgid "Grün-Wert der Farbe"
-msgstr "Green value of the color"
-
-#: sdk/script/fn/SetSkyColor.xml:15(desc)
-msgid "Blau-Wert der Farbe"
-msgstr "Blue value of the color"
-
-#: sdk/script/fn/SetSkyColor.xml:18(desc)
-msgid "Verändert eine Himmelsfarben. Dabei wird im 8Bit-Modus der entsprechende Paletteneintrag geändert."
-msgstr "Changes a single sky color. This will set a single palette color in 8 bit color mode."
-
-#: sdk/script/fn/SetSkyColor.xml:19(remark)
-msgid "Diese Funktion ist veraltet, und funktioniert nur im alten 8-Bit-Grafiksystem richtig. Für NewGfx wird sie notdürftig emuliert, wenn iIndex=0. Stattdessen sollte <placeholder-1/> verwendet werden."
-msgstr "This function is obsolete and will not properly work with the new graphics system. You should use <placeholder-1/> instead."
-
-#: sdk/script/fn/SetSkyColor.xml:23(text)
-msgid "Macht den Himmel ziemlich bunt."
-msgstr "Makes a colorful sky."
 
 #: sdk/script/fn/SetSkyAdjust.xml:12(desc)
 #: sdk/script/fn/SetMatAdjust.xml:12(desc)
@@ -3173,6 +2934,7 @@ msgstr "Red value"
 #: sdk/script/fn/GetPlayerType.xml:18(col)
 #: sdk/script/fn/GetEffect.xml:52(col)
 #: sdk/script/fn/DoRGBaValue.xml:23(col)
+#: sdk/script/fn/CustomMessage.xml:24(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:19(col)
 #: sdk/script/fn/CreateMenu.xml:20(col)
 #: sdk/script/fn/CreateMenu.xml:32(col)
@@ -3257,7 +3019,7 @@ msgstr "Sets the rotation of an object."
 #: sdk/script/fn/Enter.xml:7(subcat)
 #: sdk/script/fn/AbsY.xml:8(subcat)
 #: sdk/script/fn/AbsX.xml:8(subcat)
-#: sdk/scenario/scenario.xml:151(col)
+#: sdk/scenario/scenario.xml:159(col)
 msgid "Position"
 msgstr "Position"
 
@@ -3302,21 +3064,20 @@ msgstr "Display"
 #: sdk/script/fn/SetPhysical.xml:15(col)
 #: sdk/script/fn/SetObjectBlitMode.xml:19(col)
 #: sdk/script/fn/SetGraphics.xml:19(col)
-#: sdk/script/fn/Not.xml:13(desc)
 #: sdk/script/fn/GetPlayerType.xml:16(col)
 #: sdk/script/fn/GetEffect.xml:49(col)
 #: sdk/script/fn/CreateMenu.xml:17(col)
 #: sdk/script/fn/CreateMenu.xml:20(col)
 #: sdk/script/fn/CreateMenu.xml:29(col)
-#: sdk/scenario/scenario.xml:13(col)
-#: sdk/scenario/scenario.xml:72(col)
-#: sdk/scenario/scenario.xml:141(col)
-#: sdk/scenario/scenario.xml:200(col)
-#: sdk/scenario/scenario.xml:354(col)
-#: sdk/scenario/scenario.xml:373(col)
-#: sdk/scenario/scenario.xml:422(col)
-#: sdk/scenario/scenario.xml:446(col)
-#: sdk/scenario/scenario.xml:460(col)
+#: sdk/scenario/scenario.xml:21(col)
+#: sdk/scenario/scenario.xml:80(col)
+#: sdk/scenario/scenario.xml:149(col)
+#: sdk/scenario/scenario.xml:208(col)
+#: sdk/scenario/scenario.xml:362(col)
+#: sdk/scenario/scenario.xml:381(col)
+#: sdk/scenario/scenario.xml:430(col)
+#: sdk/scenario/scenario.xml:454(col)
+#: sdk/scenario/scenario.xml:468(col)
 #: sdk/scenario/basefunc.xml:10(col)
 #: sdk/scenario/Teams.xml:13(col)
 #: sdk/scenario/Teams.xml:71(col)
@@ -3812,6 +3573,7 @@ msgstr "0-100000: new value for the property"
 #: sdk/script/fn/SetObjectBlitMode.xml:19(col)
 #: sdk/script/fn/SetGraphics.xml:19(col)
 #: sdk/script/fn/GetPlayerType.xml:16(col)
+#: sdk/script/fn/CustomMessage.xml:21(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:16(col)
 #: sdk/script/fn/CreateMenu.xml:17(col)
 #: sdk/script/fn/CreateMenu.xml:29(col)
@@ -4154,74 +3916,6 @@ msgstr "Adjusts the maximum number of players that can take part in the current 
 msgid "Teil eines Szenarioscripts: Nach einiger Zeit können keine weiteren Spieler beitreten."
 msgstr "Part of a scenario script: after a little while, no more players can join."
 
-#: sdk/script/fn/SetMaterialColor.xml:8(subcat)
-#: sdk/script/fn/PlaceInMaterial.xml:13(desc)
-#: sdk/script/fn/MaterialName.xml:8(subcat)
-#: sdk/script/fn/Material.xml:8(subcat)
-#: sdk/script/fn/InsertMaterial.xml:8(subcat)
-#: sdk/script/fn/GetMaterialCount.xml:7(subcat)
-#: sdk/script/fn/GetMaterialColor.xml:8(subcat)
-#: sdk/script/fn/GetMaterial.xml:8(subcat)
-#: sdk/script/fn/GBackSolid.xml:8(subcat)
-#: sdk/script/fn/GBackSky.xml:8(subcat)
-#: sdk/script/fn/GBackSemiSolid.xml:8(subcat)
-#: sdk/script/fn/GBackLiquid.xml:8(subcat)
-#: sdk/script/fn/ExtractMaterialAmount.xml:8(subcat)
-#: sdk/script/fn/ExtractLiquid.xml:8(subcat)
-#: sdk/scenario/scenario.xml:171(col)
-#: sdk/scenario/scenario.xml:295(col)
-#: sdk/scenario/MapCreatorS2.xml:39(col)
-msgid "Material"
-msgstr "Material"
-
-#: sdk/script/fn/SetMaterialColor.xml:13(desc)
-msgid "Index des Materials, dessen Farben gesetzt werden"
-msgstr "Index of the material for which you want to set the colors."
-
-#: sdk/script/fn/SetMaterialColor.xml:14(desc)
-msgid "Roter Kanal der ersten Materialfarbe"
-msgstr "Red value of the first material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:15(desc)
-msgid "Grüner Kanal der ersten Materialfarbe"
-msgstr "Green value of the first material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:16(desc)
-msgid "Blauer Kanal der ersten Materialfarbe"
-msgstr "Blue value of the first material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:17(desc)
-msgid "Roter Kanal der zweiten Materialfarbe"
-msgstr "Red value of the second material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:18(desc)
-msgid "Grüner Kanal der zweiten Materialfarbe"
-msgstr "Green value of the second material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:19(desc)
-msgid "Blauer Kanal der zweiten Materialfarbe"
-msgstr "Blue value of the second material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:20(desc)
-msgid "Roter Kanal der dritten Materialfarbe"
-msgstr "Red value of the third material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:21(desc)
-msgid "Grüner Kanal der dritten Materialfarbe"
-msgstr "Green value of the third material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:22(desc)
-msgid "Blauer Kanal der dritten Materialfarbe"
-msgstr "Blue value of the third material color"
-
-#: sdk/script/fn/SetMaterialColor.xml:25(desc)
-msgid "Setzt die Farben eines Materials in der Palette. Dadurch werden alle Vorkommen dieses Materials auf der Karte in der neuen Farbe dargestellt."
-msgstr "Sets the colors of a material causing all occurences of this material in the landscape to be drawn using the new color."
-
-#: sdk/script/fn/SetMaterialColor.xml:29(text)
-msgid "Färbt Gold schwarz."
-msgstr "Makes gold black."
-
 #: sdk/script/fn/SetMatAdjust.xml:15(desc)
 msgid "Setzt die Materialmodulation. Die Materialfarben werden mit der angegebenen Farbe so verrechnet wie auch ColorByOwner-Grafiken."
 msgstr "Sets the material drawing modulation. The material colors will be modulated with the specified color in the same way as ColorByOwner graphics."
@@ -4246,33 +3940,9 @@ msgstr "Changes the mass of an object. The mass is initialised with <emlink href
 msgid "Script für einen Keks: Beim Essen nimmt die Masse des Clonks zu."
 msgstr "Script for a cookie: when eating this cookie the mass of the clonk will increase."
 
-#: sdk/script/fn/SetLocal.xml:18(desc)
-msgid "Nummer der Variable, die gesetzt werden soll. Jeder Index &lt;=0 erlaubt"
-msgstr "Nuber of the variable to be set."
-
-#: sdk/script/fn/SetLocal.xml:23(desc)
-#: sdk/script/fn/SetGlobal.xml:23(desc)
-msgid "Neuer Wert der Variable"
-msgstr "New value"
-
-#: sdk/script/fn/SetLocal.xml:29(desc)
-msgid "Objekt, in der die Variable gesetzt werden soll"
-msgstr "Object in which the variable is to be set"
-
-#: sdk/script/fn/SetLocal.xml:34(desc)
-msgid "Setzt eine <placeholder-1/>-Variable in einem Objekt (wenn nicht angegeben, wird die Variable in dem aufrufenden Objekt gesetzt)."
-msgstr "Sets a <placeholder-1/> variable in an object (if no object is specified the variable is set in the calling object)."
-
-#: sdk/script/fn/SetLocal.xml:36(remark)
-msgid "SetLocal gibt, wenn erfolgreich, den gesetzten Wert zurück (ansonsten 0)."
-msgstr "If successful, SetLocal will return the newly set value (or 0 otherwise)."
-
-#: sdk/script/fn/SetLocal.xml:38(remark)
-msgid "Statt SetLocal sollte zum Zugriff auf Local-Variablen die Schreibweise <code><placeholder-1/>(x) = y</code> verwendet werden"
-msgstr "With local variables you should use the <code><placeholder-1/>(x) = y</code> syntax instead of SetLocal."
-
 #: sdk/script/fn/SetLength.xml:12(desc)
-msgid "Feld, dessen Länge verändert werden soll"
+#, fuzzy
+msgid "Array, dessen Länge verändert werden soll"
 msgstr "Array which length is to be changed"
 
 #: sdk/script/fn/SetLength.xml:13(desc)
@@ -4280,7 +3950,8 @@ msgid "Neue Länge des Feldes"
 msgstr "New length of the array."
 
 #: sdk/script/fn/SetLength.xml:16(desc)
-msgid "Verändert die Länge eines Felds auf den angegebenen Wert. Überzählige Elemente werden dabei gelöscht."
+#, fuzzy
+msgid "Verändert die Länge eines Arrays auf den angegebenen Wert. Überzählige Elemente werden dabei gegebenenfalls gelöscht."
 msgstr "Changes the length of the array to the specified value. Surplus elements will be deleted."
 
 #: sdk/script/fn/SetLandscapePixel.xml:12(desc)
@@ -4335,7 +4006,6 @@ msgstr "Makes the first two players enemies without causing a message."
 #: sdk/script/fn/SetGamma.xml:7(category)
 #: sdk/script/fn/SetGameSpeed.xml:7(category)
 #: sdk/script/fn/ResetGamma.xml:7(category)
-#: sdk/script/fn/IsNewgfx.xml:8(category)
 #: sdk/script/fn/IsNetwork.xml:7(category)
 #: sdk/script/fn/GetGravity.xml:7(category)
 #: sdk/script/fn/GameOver.xml:7(category)
@@ -4477,22 +4147,6 @@ msgstr "Some knight will be displayed with a shield, additively drawn onto the c
 msgid "Objektdefinitionen (C4D)"
 msgstr "Object definitions (c4d)"
 
-#: sdk/script/fn/SetGlobal.xml:18(desc)
-msgid "Nummer der Variable, die gesetzt werden soll. Jeder Index &gt;=0 erlaubt"
-msgstr "Nuber of the variable to be set. Every index bigger than 0 is allowed."
-
-#: sdk/script/fn/SetGlobal.xml:28(desc)
-msgid "Setzt eine <placeholder-1/>-Variable."
-msgstr "Sets a <placeholder-1/> variable."
-
-#: sdk/script/fn/SetGlobal.xml:30(remark)
-msgid "SetGlobal gibt, wenn erfolgreich, den gesetzten Wert zurück (ansonsten 0)."
-msgstr "If successful, SetGlobal returns the newly set value (otherwise 0)."
-
-#: sdk/script/fn/SetGlobal.xml:32(remark)
-msgid "Statt SetGlobal sollte zum Zugriff auf Global-Variablen die Schreibweise <code><placeholder-1/>(x) = y</code> verwendet werden"
-msgstr "Instead of SetGlobal you should use code such as <code><placeholder-1/>(x) = y</code> to access global variables."
-
 #: sdk/script/fn/SetGamma.xml:12(desc)
 msgid "Veränderung für dunkle Farben. Standard ist <placeholder-1/>(0,0,0) für keine Veränderung."
 msgstr "Adjusting darker colors. Default <placeholder-1/>(0,0,0) for no adjustment."
@@ -4516,6 +4170,13 @@ msgstr "Sets a gamma ramp. Using gamma ramps, the global light situation of the 
 #: sdk/script/fn/SetGamma.xml:22(col)
 msgid "iRampIndex"
 msgstr "iRampIndex"
+
+#: sdk/script/fn/SetGamma.xml:22(col)
+#: sdk/script/NamedVar.xml:22(col)
+#: sdk/script/GetXXVal.xml:24(col)
+#: sdk/definition/script.xml:67(col)
+msgid "Funktion"
+msgstr "Function"
 
 #: sdk/script/fn/SetGamma.xml:23(col)
 msgid "Szenarienglobaler Wert"
@@ -5693,26 +5354,6 @@ msgstr "Makes a clonk explode after 1000 ticks delay."
 msgid "Gibt dem ersten Spieler 100 Ticks lang jeden Tick 1 Goldstück. Man beachte dass wenn der erste Spieler stirbt, der Geldregen auf den nächsten Spieler übergeht, da bei jeder Ausführung das Ziel neu bestimmt wird."
 msgstr "Gives one unit of money per frame to the first player for 100 frames. Notice that if the first player is eliminated, the donations will continue for the next (first) player, since the receiving player is determined anew in each execution."
 
-#: sdk/script/fn/SEqual.xml:13(desc)
-msgid "Erste Zeichenkette zum Vergleichen"
-msgstr "First string to compare."
-
-#: sdk/script/fn/SEqual.xml:14(desc)
-msgid "Zweite Zeichenkette zum Vergleichen"
-msgstr "Second string to compare."
-
-#: sdk/script/fn/SEqual.xml:17(desc)
-msgid "Vergleicht zwei Zeichenketten, und gibt zurück, ob sie gleich sind. Dieser Vergleich beachtet Groß-/Kleinschreibung, und entfernt keine vorangehenden oder nachfolgenden Leerzeichen."
-msgstr "Compares two strings and returns whether they are identical. This comparison is case sensitive and does not ignore leading or trailing space."
-
-#: sdk/script/fn/SEqual.xml:18(remark)
-msgid "Zur einfacheren Schreibweise und schnelleren Ausführung stehen inzwischen die Operatoren S=, eq und ne zur Verfügung"
-msgstr "For simpler syntax, there are also the operators S=, eq, and ne available for string comparison."
-
-#: sdk/script/fn/SEqual.xml:22(text)
-msgid "Setzt die Aktivität \"Floating\" im aufrufenden Objekt, wenn sie noch nicht gesetzt war."
-msgstr "Sets action \"Floating\" in the calling object if it was not set already."
-
 #: sdk/script/fn/ResortObjects.xml:12(desc)
 msgid "Name der Funktion, die für die Umsortierung aufgerufen wird."
 msgstr "Name of the function to be called for sorting."
@@ -5953,7 +5594,8 @@ msgid "Färbt den Himmel so richtig rot."
 msgstr "Makes a ruddy sky."
 
 #: sdk/script/fn/RGB2HSL.xml:15(desc)
-msgid "Wandelt einen 32Bit-Farbwert in die entsprechenden Hue-, Saturation- und Lightness-Werte um wie bereits von Malprogrammen bekannt.<br/> Die HSL Werte werden ebenfalls als DWORD zurückgegeben und können mit <placeholder-1/>() oder <placeholder-2/>() weiter verwendet werden.<br/> Alle Werte sind von 0 bis 255 skaliert."
+#, fuzzy
+msgid "Wandelt einen 32Bit-Farbwert in die entsprechenden Hue-, Saturation- und Lightness-Werte um wie bereits von Malprogrammen bekannt.<br/> Die HSL Werte werden ebenfalls als int zurückgegeben und können mit <placeholder-1/>() oder <placeholder-2/>() weiter verwendet werden.<br/> Alle Werte sind von 0 bis 255 skaliert."
 msgstr "Converts a 32 bit color value into hue, saturation, and lightness values as know in paint programs.<br>The HSL value is returned as DWord and can be processed using <placeholder-1/> or <placeholder-2/>.<br/> All values range from 0-255."
 
 #: sdk/script/fn/RGB2HSL.xml:20(remark)
@@ -6070,6 +5712,7 @@ msgstr "Instead of Pow() you should use the <emlink href=\"script/operatoren.htm
 #: sdk/script/fn/PlayerMessage.xml:7(category)
 #: sdk/script/fn/Message.xml:7(category)
 #: sdk/script/fn/Log.xml:7(category)
+#: sdk/script/fn/CustomMessage.xml:7(category)
 msgid "Nachrichten"
 msgstr "Messages"
 
@@ -6192,7 +5835,8 @@ msgid "Objekte werden im freien Himmel erzeugt. Siehe auch <placeholder-1/>()"
 msgstr "Objects are created in mid-air. Also see <placeholder-1/>()."
 
 #: sdk/script/fn/PlaceObjects.xml:14(desc)
-msgid "Material in die Objekte erzeugt werden soll. Hier kann entweder die Materialnummer angegeben werden oder folgende Zeichenketten: <placeholder-1/>"
+#, fuzzy
+msgid "Material in die Objekte erzeugt werden soll. Hier kann entweder der Materialname angegeben werden oder folgende Zeichenketten: <placeholder-1/>"
 msgstr "Material in which object are to be created. This can be a material number or a string as follows: <placeholder-1/>"
 
 #: sdk/script/fn/PlaceObjects.xml:22(desc)
@@ -6245,6 +5889,25 @@ msgstr "Creates a total of 10 fishes in all liquids found in the upper half of t
 #: sdk/script/fn/FindObject.xml:13(desc)
 msgid "Objekttyp"
 msgstr "Object type"
+
+#: sdk/script/fn/PlaceInMaterial.xml:13(desc)
+#: sdk/script/fn/MaterialName.xml:8(subcat)
+#: sdk/script/fn/Material.xml:8(subcat)
+#: sdk/script/fn/InsertMaterial.xml:8(subcat)
+#: sdk/script/fn/GetMaterialCount.xml:7(subcat)
+#: sdk/script/fn/GetMaterialColor.xml:8(subcat)
+#: sdk/script/fn/GetMaterial.xml:8(subcat)
+#: sdk/script/fn/GBackSolid.xml:8(subcat)
+#: sdk/script/fn/GBackSky.xml:8(subcat)
+#: sdk/script/fn/GBackSemiSolid.xml:8(subcat)
+#: sdk/script/fn/GBackLiquid.xml:8(subcat)
+#: sdk/script/fn/ExtractMaterialAmount.xml:8(subcat)
+#: sdk/script/fn/ExtractLiquid.xml:8(subcat)
+#: sdk/scenario/scenario.xml:179(col)
+#: sdk/scenario/scenario.xml:303(col)
+#: sdk/scenario/MapCreatorS2.xml:39(col)
+msgid "Material"
+msgstr "Material"
 
 #: sdk/script/fn/PlaceInMaterial.xml:14(desc)
 msgid "Anzahl Wiederholungen"
@@ -6321,47 +5984,6 @@ msgstr "The same function with new style syntax."
 #: sdk/script/fn/Par.xml:46(text)
 msgid "Ein Beispiel für gemischte Verwendung von benannten und unbenannten Parametern. Diese Funktion kann bis zu 9 Zahlen multiplizieren. Dabei wird jeweils die Anzahl der zu multiplizierenden Zahlen übergeben (z.B. MultiplyX(4, 10, 3, 4, 7) = 10 * 3 * 4 * 7 = 840)"
 msgstr "An example for mixed use of named and indexed parameters: this function can multiply up to 0 numbers. The first parameter is the count of following parameters to be multiplied (e.g. MultiplyX(4, 10, 3, 4, 7) = 10 * 3 * 4 * 7 = 840)"
-
-#: sdk/script/fn/Or.xml:7(category)
-#: sdk/script/fn/Not.xml:8(category)
-#: sdk/script/fn/LessThan.xml:7(category)
-#: sdk/script/fn/GreaterThan.xml:7(category)
-#: sdk/script/fn/Equal.xml:8(category)
-#: sdk/script/fn/And.xml:7(category)
-msgid "Logik"
-msgstr "Logic"
-
-#: sdk/script/fn/Or.xml:13(desc)
-#: sdk/script/fn/BitAnd.xml:13(desc)
-#: sdk/script/fn/And.xml:13(desc)
-msgid "1. Bedingung"
-msgstr "First condition"
-
-#: sdk/script/fn/Or.xml:14(desc)
-#: sdk/script/fn/BitAnd.xml:14(desc)
-#: sdk/script/fn/And.xml:14(desc)
-msgid "2. Bedingung"
-msgstr "Second condition"
-
-#: sdk/script/fn/Or.xml:15(desc)
-msgid "3. Bedingung"
-msgstr "Third condition"
-
-#: sdk/script/fn/Or.xml:16(desc)
-msgid "4. Bedingung"
-msgstr "Fourth condition"
-
-#: sdk/script/fn/Or.xml:17(desc)
-msgid "5. Bedingung"
-msgstr "Fifth condition"
-
-#: sdk/script/fn/Or.xml:20(desc)
-msgid "Gibt TRUE zurück, wenn einer der Parameter ungleich Null ist (Logisches Oder). Sollte in neueren Scripts durch den Operator \"||\" ersetzt werden."
-msgstr "Returns true if one of the specified parameters in unequal to zero (logical OR). You should use the operator \"||\" instead."
-
-#: sdk/script/fn/Or.xml:24(text)
-msgid "Alles außer Kohle, Öl-Fässern und Holz aus dem Gebäude entfernen. (Beispiel aus PowerPlant.c4d übernommen)"
-msgstr "Removes everything except coal, oil barrels, and wood from the building (example taken from PowerPlant.c4d)."
 
 #: sdk/script/fn/OnFire.xml:12(desc)
 msgid "Zu prüfendes Objekt."
@@ -6795,18 +6417,6 @@ msgstr "Object character flag: the object attracts lightning. See <emlink href=\
 msgid "Object character flag: Lebendes Lebewesen."
 msgstr "Object character flag: live living being."
 
-#: sdk/script/fn/Not.xml:16(desc)
-msgid "Gibt true zurück, wenn Value false ist, false, wenn Value true ist."
-msgstr "Returns true if Value is false and vice versa."
-
-#: sdk/script/fn/Not.xml:20(text)
-msgid "Ruft FooBarFunc() auf, wenn x falsch ist."
-msgstr "Calls FooBarFunc() if x is false."
-
-#: sdk/script/fn/Not.xml:24(text)
-msgid "Ruft FooBarFunc() auf, wenn x falsch ist. Neue Schreibweise."
-msgstr "Calls FooBarFunc() if x is false. New syntax."
-
 #: sdk/script/fn/NoContainer.xml:13(desc)
 msgid "Konstante für FindObject: Suche außerhalb aller Objekte."
 msgstr "Constant for FindObject: search uncontained objects."
@@ -6847,48 +6457,13 @@ msgstr "If 1, the specified track will be looped forever."
 msgid "Spielt ein Musikstück ab. Die entsprechende Datei muss in einer der aktiven Musikdateien vorhanden sein. Sind im ausgewählten Szenario Musikdateien vorhanden, gilt die Szenariodatei als aktive Musikdatei, andernfalls wird die globale Musikdatei Music.c4g genutzt. Bei erfolgreichem Aufruf dieser Funktion wird die Musikwiedergabe aktiviert, auch wenn sie in den Optionen des Menüsystems deaktiviert wurde."
 msgstr "Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.c4g will be used. A successful call to this function will activate music playback, even if it was turned off in the options."
 
-#: sdk/script/fn/Mul.xml:16(desc)
-msgid "Faktor 1"
-msgstr "Factor 1"
-
-#: sdk/script/fn/Mul.xml:21(desc)
-msgid "Faktor 2"
-msgstr "Factor 2"
-
-#: sdk/script/fn/Mul.xml:26(desc)
-msgid "Multipliziert iVal1 mit iVal2 und gibt das Ergebnis zurück."
-msgstr "Multiplies iVal1 with iVal2 and returns the result."
-
-#: sdk/script/fn/Mul.xml:28(remark)
-msgid "Statt <code>Mul(x, y)</code> sollte die Operatorenschreibweise <code>x * y</code> benutzt werden."
-msgstr "Instead of <code>Mul(x, y)</code> you should use the operator <code>x * y</code>."
-
-#: sdk/script/fn/Mod.xml:16(desc)
-msgid "Divident"
-msgstr "Dividend"
-
-#: sdk/script/fn/Mod.xml:21(desc)
-#: sdk/script/fn/Div.xml:14(desc)
-msgid "Divisor"
-msgstr "Divisor"
-
-#: sdk/script/fn/Mod.xml:26(desc)
-msgid "Gibt den Divisionsrest von iVal1 / iVal2 zurück."
-msgstr "Returns the division rest (modulo) of iVal1 / iVal2."
-
-#: sdk/script/fn/Mod.xml:28(remark)
-msgid "Statt <code>Mod(x, y)</code> sollte die Operatorenschreibweise <code>x % y</code> benutzt werden."
-msgstr "Instead of <code>Mod(x, y)</code> you should use the operator <code>x % y</code>."
-
 #: sdk/script/fn/Min.xml:15(desc)
 #: sdk/script/fn/Max.xml:15(desc)
-#: sdk/script/fn/LessThan.xml:16(desc)
 msgid "erster Wert"
 msgstr "first Value"
 
 #: sdk/script/fn/Min.xml:20(desc)
 #: sdk/script/fn/Max.xml:20(desc)
-#: sdk/script/fn/LessThan.xml:21(desc)
 msgid "zweiter Wert"
 msgstr "second Value"
 
@@ -7016,34 +6591,6 @@ msgstr "The object carries a tree around with it."
 msgid "benannte Variablen"
 msgstr "named variables"
 
-#: sdk/script/fn/Local.xml:17(desc)
-msgid "Nummer der Variable, die abgefragt werden soll. Jede positive Zahl (einschließlich 0) erlaubt"
-msgstr "Index of the variable to be accessed. Can be any positive number including 0."
-
-#: sdk/script/fn/Local.xml:23(desc)
-msgid "Objekt, in der sich die Variable befindet"
-msgstr "Object holding the variable."
-
-#: sdk/script/fn/Local.xml:28(desc)
-msgid "Gibt den Wert einer lokalen Variable (als Referenz) zurück. Jedes Objekt kann eine beliebige Anzahl lokaler Variablen besitzen. Diese werden für jedes Objekt dauerhaft gespeichert und gehen erst verloren, wenn das Objekt gelöscht wird. Eine lokale Variable hat bei Erstellung des Objekts immer den Wert 0."
-msgstr "Returns the value of an object local variable (as reference). Each object can hold any number of local variables. This are stored in the object until the object is deleted. A newly created local variable always has the value 0."
-
-#: sdk/script/fn/Local.xml:30(remark)
-msgid "Da Local eine Referenz zurückgibt, kann der Wert einer Variable über Operatoren verändert werden ( Local(0) = 20; Local(1)++; u.ä.)"
-msgstr "Since Local() returns a reference, the variable can be modified using operators such as Local(0) = 20 or Local(1)++"
-
-#: sdk/script/fn/Local.xml:31(remark)
-msgid "Wo möglich, sollte statt einer Local-Variable eine lokale benannte Variable eingesetzt werden."
-msgstr "Whenever possible, you should use named variables instead of indexed ones."
-
-#: sdk/script/fn/Local.xml:53(text)
-msgid "Dieser Script hat eine Ereignisfunktion (Hit), welche aufgerufen wird, wenn das Objekt auf den Boden aufschlägt. <br/> Hier wird die lokale Variable Nr. 0 auf 1 und die lokale Variable Nr. 1 auf 10 gesetzt. <br/> Die zweite Scriptfunktion, die definiert wird, heißt \"Timer\". Hierbei sollte es sich um eine Funktion handeln, die periodisch aufgerufen wird (Einstellung \"Timer\" in der DefCore.txt). Hier wird erst geprüft, ob das Objekt aktiviert ist [Local(0)]. Wenn nicht, wird die Funktion sofort beendet, es passiert also nichts. Wurde das Objekt aber aktiviert (dann ist Local(0) = 1), so wird ein Sound ausgegeben. Darauf wird die lokale Variable 1 eins heruntergezählt und der neue Wert über dem Objekt angezeigt. <br/> D.h. die Aktivierung in Hit startet einen Countdown von 10 aus. Ist der Zähler bei 0 angekommen, so explodiert das Objekt."
-msgstr "This script is invoked through the engine callback 'Hit' which occurs when the object hits the ground.<br/>The script sets the local variable 0 to value 1 and the variable 1 to value 10.<br/>The second script function is called 'Timer' and should be called periodically (see Timer entry in DefCore). This function will check whether the object has already hit the ground (Local(0) ist set). If this is the case, a sound is played and the counter variable 1 is decreased. When the counter reaches zero, the object explodes. Ergo: a timed grenade activated by impact."
-
-#: sdk/script/fn/LessThan.xml:26(desc)
-msgid "Gibt TRUE zurück, wenn der erste übergebene Wert kleiner ist als der zweite (iValue1 &lt; iValue2)"
-msgstr "Returns true if the first passed value is less than the second (iValue1 &lt; iValue2)."
-
 #: sdk/script/fn/LaunchVolcano.xml:15(desc)
 #: sdk/script/fn/LaunchLightning.xml:15(desc)
 #: sdk/script/fn/LaunchEarthquake.xml:15(desc)
@@ -7135,14 +6682,6 @@ msgstr "Value of which to determine the type."
 msgid "Prüft, ob Value eine Referenz ist."
 msgstr "Checks wether Value is a reference."
 
-#: sdk/script/fn/IsNewgfx.xml:13(desc)
-msgid "Gibt zurück, ob das 32 Bit/16 Bit-Grafiksystem aktiviert ist. Bei Rückgabewert FALSE befindet sich die Engine im 8 Bit-Modus. Diese Funktion ist veraltet. Ab 4.9.5.0 CE läuft die Engine ausschließlich im 32 Bit/16 Bit-Modus."
-msgstr "Returns whether the graphics system operates in 8 Bit or 32/16 Bit mode. This function is obsolete. From 4.9.5.0 CE the engine will run in 32/16 Bit mode only."
-
-#: sdk/script/fn/IsNewgfx.xml:17(text)
-msgid "Beendet das Spiel, wenn nicht der neue Grafikmodus aktiviert ist."
-msgstr "Ends the game if the new graphics mode is not enabled."
-
 #: sdk/script/fn/IsNetwork.xml:12(desc)
 msgid "Prüft, ob das aktuelle Spiel ein Netzwerkspiel ist."
 msgstr "Returns whether the current game is a network game."
@@ -7198,23 +6737,6 @@ msgstr "Object to be incinerated."
 #: sdk/script/fn/Incinerate.xml:19(desc)
 msgid "Zündet das übergebene Objekt an. In dem jeweiligen Objekt wird ggf. Incineration() aufgerufen"
 msgstr "Incinerates the specified object. This may cause an Incineration() call in the object."
-
-#: sdk/script/fn/IncVar.xml:13(desc)
-msgid "Index der lokalen Variable, die erhöht werden soll"
-msgstr "Index of the local variable to be increased."
-
-#: sdk/script/fn/IncVar.xml:16(desc)
-msgid "Erhöht die angegebene, threadlokale Variable. Neuere Scripte sollten den \"++\"-Operator und benannte Variablen benutzen."
-msgstr "Increases the specified, thread local variable. You should use the \"++\" operator instead."
-
-#: sdk/script/fn/Inc.xml:13(desc)
-#: sdk/script/fn/Dec.xml:13(desc)
-msgid "Variable"
-msgstr "Variable"
-
-#: sdk/script/fn/Inc.xml:16(desc)
-msgid "Erhöht die Variable Var um 1. Bitte den \"++\"-Operator verwenden."
-msgstr "Increases the variable by 1. You should use the \"++\" operator instead."
 
 #: sdk/script/fn/InLiquid.xml:19(desc)
 msgid "Gibt TRUE zurück, wenn sich das Objekt in einer Flüssigkeit befindet."
@@ -7283,18 +6805,6 @@ msgstr "Creates a 32 bit color value from three parameters. Range is 0-255 for a
 msgid "Färbt den höchstrangigsten Clonk des ersten Spielers in einem zufälligen kräftigem Farbton."
 msgstr "Colors the highest ranking clonk of the first player in a strong, random color."
 
-#: sdk/script/fn/GreaterThan.xml:13(desc)
-msgid "Erster Wert zum Vergleichen."
-msgstr "First value to be compared."
-
-#: sdk/script/fn/GreaterThan.xml:14(desc)
-msgid "Zweiter Wert zum Vergleichen."
-msgstr "Second value to be compared."
-
-#: sdk/script/fn/GreaterThan.xml:17(desc)
-msgid "Gibt True zurück wenn iVal1 größer als iVal2 ist."
-msgstr "Returns true if iVal is greater than iVal2."
-
 #: sdk/script/fn/GrabObjectInfo.xml:16(desc)
 msgid "Objekt (Clonk), von dem die Infosektion genommen werden soll."
 msgstr "Object (clonk) of which to retrieve the info section."
@@ -7330,14 +6840,6 @@ msgstr "Name of a global variable."
 #: sdk/script/fn/GlobalN.xml:15(desc)
 msgid "Liefert den Inhalt der globalen Variable mit dem Namen szText. Per GlobalN(\"Name\")=Wert; kann der Wert einer benannten globalen Variable gesetzt werden."
 msgstr "Returns the value of the global variable of name szText. Through GlobalN(\"Name\")=Value you can also set the value of a global variable."
-
-#: sdk/script/fn/Global.xml:12(desc)
-msgid "Nummer der globalen Variable."
-msgstr "Number of the global variable."
-
-#: sdk/script/fn/Global.xml:15(desc)
-msgid "Liefert den Inhalt der globalen Variable iVarIndex."
-msgstr "Returns the value of the global variable iVarIndex."
 
 #: sdk/script/fn/GetYDir.xml:12(desc)
 #: sdk/script/fn/GetXDir.xml:12(desc)
@@ -7773,7 +7275,8 @@ msgid "Wenn TRUE gibt die Funktion die Portraitwerte des permanenten Portraits z
 msgstr "If true, the function returns the values of the object's permanent portrait. Otherwise, the values of the currently used portrait which might be temporary."
 
 #: sdk/script/fn/GetPortrait.xml:17(desc)
-msgid "Frägt Name oder ID des Portraits eines Crew-Mitglieds ab."
+#, fuzzy
+msgid "Fragt Name oder ID des Portraits eines Crew-Mitglieds ab."
 msgstr "Retrieves name or id of the portrait of a crew member."
 
 #: sdk/script/fn/GetPortrait.xml:18(remark)
@@ -8331,11 +7834,13 @@ msgid "Liefert den aktuellen Zauberenergiewert eines Objekts. pObj Null bei loka
 msgstr "Returns the current magic energy level of an object. pObj can be 0 in local calls."
 
 #: sdk/script/fn/GetLength.xml:12(desc)
-msgid "Zeichenkette oder Feld, von der die Länge abgefragt wird"
+#, fuzzy
+msgid "Zeichenkette oder Array, von der die Länge abgefragt wird"
 msgstr "String or array of which to get the length."
 
 #: sdk/script/fn/GetLength.xml:15(desc)
-msgid "Ermittelt die Länge einer Zeichenkette oder eines Felds."
+#, fuzzy
+msgid "Ermittelt die Länge einer Zeichenkette oder eines Arrays."
 msgstr "Returns the length of a string or array."
 
 #: sdk/script/fn/GetKiller.xml:15(desc)
@@ -8431,6 +7936,10 @@ msgstr "Kills the highest ranking clonk of the third player."
 #: sdk/script/fn/GetGravity.xml:12(desc)
 msgid "Liest die Schwerkraft (in Prozent) aus."
 msgstr "Returns the current gravity in percent."
+
+#: sdk/script/fn/GetGravity.xml:17(text)
+msgid "Hebt die Gravitation in einem Radius von 100 Pixeln auf, wenn jeden Frame aufgerufen."
+msgstr ""
 
 #: sdk/script/fn/GetEntrance.xml:12(desc)
 msgid "Objekt, dessen Entrance-Wert abgefragt wird. 0 bei lokalem Aufruf."
@@ -8878,10 +8387,15 @@ msgid "Position des abgefragten Zeichens. 0 entspricht dabei dem ersten Zeichen.
 msgstr "Position of the character. The first character is at position 0. If the specified position is outside the string, 0 is returned."
 
 #: sdk/script/fn/GetChar.xml:16(desc)
-msgid "Ermittelt den Ascii-Zeichencode eines indizierten Zeichens einer Zeichenkette."
+#, fuzzy
+msgid "Ermittelt den Zeichencode eines indizierten Zeichens einer Zeichenkette."
 msgstr "Determines the ASCII character code of a character in a string."
 
-#: sdk/script/fn/GetChar.xml:24(text)
+#: sdk/script/fn/GetChar.xml:17(remark)
+msgid "Mit <code><placeholder-1/>(\"%c\")</code> lässt sich das Zeichen in einen String umwandeln."
+msgstr ""
+
+#: sdk/script/fn/GetChar.xml:25(text)
 msgid "Ermittelt den Anfangsbuchstaben des Spielernamens des ersten Spielers."
 msgstr "Gets the first character of the name of the first player."
 
@@ -9675,7 +9189,8 @@ msgid "Maximale Menge, die extrahiert wird"
 msgstr "Maximum amount to be extracted."
 
 #: sdk/script/fn/ExtractMaterialAmount.xml:19(desc)
-msgid "Extrahiert eine bestimmte Menge des gleichen Materials an einer Stelle. Zurückgegeben wir die tatsächlich erfolgreich extrahierte Materialmenge."
+#, fuzzy
+msgid "Extrahiert eine bestimmte Menge des gleichen Materials an einer Stelle. Zurückgegeben wird die tatsächlich erfolgreich extrahierte Materialmenge."
 msgstr "Extracts a certain amount of material at the specified position. The return value is the amount actually extracted."
 
 #: sdk/script/fn/ExtractMaterialAmount.xml:26(text)
@@ -9769,26 +9284,6 @@ msgstr "Moves an object from its container. Optionally, sets its exit velocity."
 #: sdk/script/fn/Exit.xml:25(text)
 msgid "Bewegt das erste Inhaltsobjekt oberhalb aus dem aufrufenden Objekt heraus, dreht es zufällig und schleudert es nach oben."
 msgstr "Moves the first contained object from the calling object, rotates it randomly and throws it upwards."
-
-#: sdk/script/fn/Equal.xml:13(desc)
-msgid "Zahl 1"
-msgstr "Value 1"
-
-#: sdk/script/fn/Equal.xml:14(desc)
-msgid "Zahl 2"
-msgstr "Value 2"
-
-#: sdk/script/fn/Equal.xml:17(desc)
-msgid "Gibt true zurück, wenn iVal1 == iVal2, false, wenn nicht."
-msgstr "Returns true if iVal1 == iVal2. Otherwise false."
-
-#: sdk/script/fn/Equal.xml:21(text)
-msgid "Ruft FooBarFunc() auf, wenn x == y. Alte Schreibweise."
-msgstr "Calls FooBarFunc() if x == y. Old syntax."
-
-#: sdk/script/fn/Equal.xml:25(text)
-msgid "Ruft FooBarFunc() auf, wenn x == y. Neue Schreibweise."
-msgstr "Calls FooBarFunc() if x == y. New syntax."
 
 #: sdk/script/fn/Enter.xml:12(desc)
 msgid "Objekt, in das hineinversetzt wird"
@@ -10236,14 +9731,6 @@ msgstr "Changes the breath value of an object."
 msgid "Gibt den ausgewählten Clonk des ersten Spielers 50% mehr Atemluft."
 msgstr "Gives 50% more breath to the selected clonk of the first player."
 
-#: sdk/script/fn/Div.xml:13(desc)
-msgid "Dividend"
-msgstr "Dividend"
-
-#: sdk/script/fn/Div.xml:17(desc)
-msgid "Führt eine Division durch, wobei eine Division durch 0 einfach 0 zurückgibt. Statt dieser Funktion sollte der Operator \"/\" verwendet werden."
-msgstr "Performs a division. A division by 0 will return 0 (and not cause an error). You should use the operator \"/\" instead."
-
 #: sdk/script/fn/Distance.xml:12(desc)
 msgid "X-Position des ersten Punktes"
 msgstr "X coordinate of the first point."
@@ -10334,18 +9821,6 @@ msgstr "Calls a function in a script without object context. <placeholder-1/> re
 msgid "Gibt Spieler 0 die Pläne für die Burgteile."
 msgstr "Gives castle construction plans to player 0."
 
-#: sdk/script/fn/DecVar.xml:13(desc)
-msgid "Index der lokalen Variable, die verringert werden soll"
-msgstr "Index of the variable to be decreased."
-
-#: sdk/script/fn/DecVar.xml:16(desc)
-msgid "Verringert die angegebene, threadlokale Variable. Neuere Scripte sollten den \"--\"-Operator und benannte Variablen benutzen."
-msgstr "Decreases the specified, thread local variable. New scripts should use the \"--\" operator and named variables instead."
-
-#: sdk/script/fn/Dec.xml:16(desc)
-msgid "Erniedrigt die Variable Var um 1. Bitte den \"--\"-Operator verwenden."
-msgstr "Decreases the variable. You should use \"--\" instead."
-
 #: sdk/script/fn/DeathAnnounce.xml:12(desc)
 msgid "Gibt eine Botschaft a la \"[name] ist von uns gegangen\" über dem aufrufenden Objekt aus."
 msgstr "Displays a death message above the calling object."
@@ -10366,6 +9841,105 @@ msgstr "Constant for <placeholder-1/>/<placeholder-2/>: direction left"
 msgid "Der ausgewählte Clonk hält an und schaut nach links."
 msgstr "The selected clonk stops and looks to the left."
 
+#: sdk/script/fn/CustomMessage.xml:12(desc)
+#, fuzzy
+msgid "Nachricht, die ausgegeben wird."
+msgstr "Message to be displayed"
+
+#: sdk/script/fn/CustomMessage.xml:13(desc)
+#, fuzzy
+msgid "Wenn ungleich 0, wird die Nachricht über dem angegebenen Objekt ausgegeben."
+msgstr "If not 0, the secondary sky color is returned as specified in SetSkyAdjust."
+
+#: sdk/script/fn/CustomMessage.xml:14(desc)
+#, fuzzy
+msgid "Nummer des Spielers, bei dem die Nachricht ausgegeben wird. Bei Angabe von NO_OWNER wird die Nachricht für alle Spieler angezeigt."
+msgstr "Object above which the message is to be displayed. If no object is specified, the message is displayed globally (as with <placeholder-1/>)."
+
+#: sdk/script/fn/CustomMessage.xml:15(desc)
+msgid "x-Offset der Nachrichtenposition. Bei globalen Nachrichten ist dies die Viewportmitte. Bei Objektnachrichten ist dies relativ zur Standard-Nachrichtenposition über dem Objekt. Bei Portrait-Nachrichten (portrait!=0) ist das Offset relativ zur oberen, linken Viewportecke."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:16(desc)
+msgid "y-Offset der Nachrichtenposition."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:17(desc)
+msgid "Farbe der Nachricht. Bei 0 Default auf 0xffffff (weiß)."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:18(desc)
+msgid "ID der Objektdefinition, die für Dekoration der Nachricht verwendet wird. Wenn angegeben, wird die Nachricht von einem Rahmen umgeben. Nur gültig bei angegebenem Portrait."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:19(desc)
+msgid "Bildspezifikation für ein Bild links neben der Nachricht im Dekorationsrahmen."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:21(col)
+#: sdk/script/fn/CreateScriptPlayer.xml:16(col)
+#: sdk/scenario/basefunc.xml:10(col)
+#: sdk/definition/lineconnect.xml:11(col)
+#: sdk/definition/cnat.xml:16(col)
+#: sdk/definition/category.xml:12(col)
+msgid "Bit"
+msgstr "Bit"
+
+#: sdk/script/fn/CustomMessage.xml:22(col)
+#, fuzzy
+msgid "MSG_NoBreak"
+msgstr "NoBreath"
+
+#: sdk/script/fn/CustomMessage.xml:22(col)
+msgid "Wenn gesetzt, werden keine automatischen Zeilenumbruch bei langen Nachrichten eingefügt."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:23(col)
+#, fuzzy
+msgid "MSG_Bottom"
+msgstr "CNAT_Bottom"
+
+#: sdk/script/fn/CustomMessage.xml:23(col)
+msgid "Nur globale Nachrichten. Für Portraitnachrichten mit Dekorationsrahmen: Das Nachrichtenoffset gibt die Verschiebung zur unteren Bildschirmkante anstatt zur oberen Bildschirmkante an. Für nicht-Portraitnachrichten setzt das Flag die Nachricht etwas tiefer."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:24(col)
+msgid "MSG_Multiple"
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:24(col)
+msgid "Wenn gesetzt, werden vorherige Nachrichten des gleichen Typs nicht gelöscht."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:20(desc)
+#, fuzzy
+msgid "Bitmaske zusätzlicher Optionen. Mögliche Werte: <placeholder-1/>"
+msgstr "Bit mask composed of the following values: <placeholder-1/>"
+
+#: sdk/script/fn/CustomMessage.xml:28(desc)
+msgid "Gibt eine Nachricht aus."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:29(remark)
+msgid "Diese Funktion vereinigt die Funktionialitäten von <placeholder-1/>, <placeholder-2/> und <placeholder-3/> und bietet zusätzliche Optionen an. Um in der Zukunft weitere Parameter einfügen zu können ohne eine neue Funktion zu erschaffen, enthält sie bewusst keine zusätzlichen Format-Parameter. Diese können über die Funktion <placeholder-4/> erreicht werden."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:30(remark)
+msgid "Es gelten die üblichen Nachrichtenformatierungen. Beginnt die Nachricht mit einem \"@\", so wird die Nachricht dauerhaft angezeigt bis sie durch eine andere ersetzt wird. Das Zeichen \"|\" steht für einen Zeilenumbruch. Es können Nachrichtenformatierungen mit den Tags &lt;i&gt; (kursiv) und &lt;c&gt; (farbig) genutzt werden."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:31(remark)
+msgid "Nachrichten werden grundsätzlich angezeigt, bis eine von der Nachrichtenlänge abhängige Zeit vergangen ist oder sie durch eine zweite Nachricht gleicher Klasse ersetzt werden. Eine globale Nachricht (d.h. obj=0) ersetzt alle anderen globalen Nachrichten, und eine Objektnachricht (obj!=0) ersetzt alle anderen Objektnachrichten. Um mehrere Nachrichten gleicher Klasse anzuzeigen, sollte das Flag MSG_Multiple verwendet werden."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:35(text)
+msgid "Gibt die Nachricht \"This is madness!\" nur für Spieler 0 aus, wobei das Wort \"madness\" in kursiver Schrift angezeigt wird."
+msgstr ""
+
+#: sdk/script/fn/CustomMessage.xml:39(text)
+msgid "Gibt eine Nachricht mit Dekorahmen aus. Der Name Tonki ist gelb eingefärbt. Links von der Nachricht wird ein grünes Clonk-Portrait angezeigt. Es muss die Dekorationsdefinition MD69 geladen sein."
+msgstr ""
+
 #: sdk/script/fn/CrewMember.xml:12(desc)
 msgid "Zu prüfende Objektdefinition."
 msgstr "Object definition to check."
@@ -10385,14 +9959,6 @@ msgstr "Player color"
 #: sdk/script/fn/CreateScriptPlayer.xml:14(desc)
 msgid "Team-ID. Wird 0 angegeben, so wird ein Team nach denselben Regeln ausgewählt wie bei einem normal beitretenden Spieler."
 msgstr "Team-Id. If 0, a team is automatically chosen according to the rules also applied to normal joining players."
-
-#: sdk/script/fn/CreateScriptPlayer.xml:16(col)
-#: sdk/scenario/basefunc.xml:10(col)
-#: sdk/definition/lineconnect.xml:11(col)
-#: sdk/definition/cnat.xml:16(col)
-#: sdk/definition/category.xml:12(col)
-msgid "Bit"
-msgstr "Bit"
 
 #: sdk/script/fn/CreateScriptPlayer.xml:17(col)
 msgid "CSPF_FixedAttributes"
@@ -10659,7 +10225,8 @@ msgid "Gibt die Fertigstellung des Objekts in Prozent an (muss mindestens 1 sein
 msgstr "Determines the initial completion of the object in percent (minimum 1)."
 
 #: sdk/script/fn/CreateConstruction.xml:17(desc)
-msgid "Bestimmt, ob die Landschaft an die Baustelle angepasst werden soll (inkl. Fundament."
+#, fuzzy
+msgid "Bestimmt, ob die Landschaft an die Baustelle angepasst werden soll (inkl. Fundament)."
 msgstr "Determines whether the landscape at the creation site is to be adjusted to the objects base."
 
 #: sdk/script/fn/CreateConstruction.xml:18(desc)
@@ -11106,6 +10673,15 @@ msgstr "Data type: boolean value (true or false)."
 msgid "Gibt x im Log aus, wenn es ein boolscher Wert ist."
 msgstr "Writes x to the log if it is a boolean value."
 
+#: sdk/script/fn/C4V_Array.xml:12(desc)
+#, fuzzy
+msgid "Datentyp: Array."
+msgstr "Data type: id."
+
+#: sdk/script/fn/C4V_Array.xml:17(text)
+msgid "Speichert ein neues, leeres Array in x wenn es noch kein Array ist."
+msgstr ""
+
 #: sdk/script/fn/C4V_Any.xml:12(desc)
 msgid "Datentyp: Unbekannter Datentyp."
 msgstr "Data type: unknown data type."
@@ -11294,18 +10870,6 @@ msgstr "Applies explosion damage to all objects at the specified position. iX an
 msgid "Das aufrufende Objekt fügt enthaltenen Objekten Explosionsschaden der Stärke 60 zu."
 msgstr "The calling object causes explosion damage of level 60 to its contents."
 
-#: sdk/script/fn/BitAnd.xml:17(desc)
-msgid "Gibt (iVal1 &amp; iVal2) zurück (Bitweises And). Sollte in neuen Scripts durch den Operator \"&amp;\" ersetzt werden."
-msgstr "Returns bitwise AND (iVal1 &amp; iVal2). You should use operator \"&amp;\" instead."
-
-#: sdk/script/fn/BitAnd.xml:21(text)
-msgid "Gibt FALSE zurück, wenn in der aktuellen Kategorie des Objekts das Flag für C4D_Vehicle() gesetzt ist. (Aus dem Tree.c4d Script)"
-msgstr "Returns false, if the current category of the object contains the C4D_Vehicle bit (from the tree script)."
-
-#: sdk/script/fn/AssignVar.xml:17(desc)
-msgid "Weist den Wert iValue einer beliebigen Thread-lokalen Variablen (ab 0) zu. Der Datentyp ist variabel. Thread-lokale Variablen gelten nur für die Dauer des aktuellen Funktionsaufrufes. AssignVar wurde durch <placeholder-1/> abgelöst."
-msgstr "Assigns a value to a thread local variable. The data type is variant. Thread local variables exist only for the duration of the function execution. This function was replaced by <placeholder-1/>."
-
 #: sdk/script/fn/ArcSin.xml:12(desc)
 msgid "Länge der Gegenkathete"
 msgstr "Length of the opposite leg"
@@ -11384,14 +10948,6 @@ msgstr "Returns the view angle from the first point to the second in degrees. 0�
 msgid "Das Objekt dreht sich, so dass es parallel zu der Gerade liegt, die durch die Mittelpunkte der ausgewählten Clonks von Spieler 1 und 2 geht."
 msgstr "The object rotates so it points from the clonk of player 1 to the clonk of player 2."
 
-#: sdk/script/fn/And.xml:17(desc)
-msgid "Gibt TRUE zurück, wenn beide Parameter ungleich Null sind (Logisches And). Sollte in neueren Scripts durch den <emlink href=\"script/operatoren.html\">Operator</emlink> \"&amp;&amp;\" ersetzt werden."
-msgstr "Returns true if both parameters are unequal to zero (logical AND). You should use the <emlink href=\"script/operatoren.html\">operator</emlink> \"&amp;&amp;\" instead."
-
-#: sdk/script/fn/And.xml:21(text)
-msgid "Gibt Null zurück, wenn das Objekt, welches als erster Parameter übergeben wurde, sich sowohl in dem lokalen Objekt befindet, als auch ein Crew-Member ist."
-msgstr "Returns 0 if the specified object is contained in this object and is also a crew member."
-
 #: sdk/script/fn/AddVertex.xml:12(desc)
 msgid "X-Koordinate, von der Objektmitte aus gesehen."
 msgstr "X coordinate, relative to the object center"
@@ -11425,12 +10981,13 @@ msgid "Text des neuen Menüeintrags"
 msgstr "Text of the new menu entry"
 
 #: sdk/script/fn/AddMenuItem.xml:13(desc)
-msgid "Kommando, das bei Auswahl des Menüeintrags ausgeführt werden soll. Kann entweder ein Funktionsname oder ein Statement sein."
+#, fuzzy
+msgid "Kommando, das bei Auswahl des Menüeintrags ausgeführt werden soll. Kann entweder ein Funktionsname oder ein Statement sein. Wenn ein Funktionsname angegeben wird, dann wird die Funktion in dem Objekt aufgerufen, welches bei <placeholder-1/> als pCommandObject übergeben wurde."
 msgstr "Script to be executed. Can be a function name or other statement."
 
 #: sdk/script/fn/AddMenuItem.xml:14(desc)
-msgid "Die ID wird als <placeholder-1/>(0) des szCommand übergeben und als Bild für den Menüeintrag verwendet. Der Name der Definition kann mit %s in szCaption verwendet werden."
-msgstr "The id is passed as <placeholder-1/>(0) of szCommand and used as image for the menu entry. The name of the definition can be used through %s in szCaption."
+msgid "Die ID wird als Bild für den Menüeintrag verwendet. Der Name der Definition kann mit %s in szCaption verwendet werden. Außerdem wird die ID als erster Parameter an den Aufruf von szCommand übergeben, sofern dieser nur ein Funktionsname ist."
+msgstr ""
 
 #: sdk/script/fn/AddMenuItem.xml:15(desc)
 msgid "Objekt, dessen Menü der Eintrag hinzugefügt werden soll. Kann bei lokalen Aufrufen 0 sein."
@@ -11685,37 +11242,30 @@ msgid "Beispiel"
 msgstr "Example"
 
 #: sdk/script/Typechecks.xml:21(col)
-#: sdk/scenario/scenario.xml:19(col)
-#: sdk/scenario/scenario.xml:34(col)
-#: sdk/scenario/scenario.xml:39(col)
-#: sdk/scenario/scenario.xml:44(col)
-#: sdk/scenario/scenario.xml:54(col)
-#: sdk/scenario/scenario.xml:59(col)
-#: sdk/scenario/scenario.xml:64(col)
-#: sdk/scenario/scenario.xml:98(col)
-#: sdk/scenario/scenario.xml:103(col)
-#: sdk/scenario/scenario.xml:108(col)
-#: sdk/scenario/scenario.xml:128(col)
-#: sdk/scenario/scenario.xml:133(col)
-#: sdk/scenario/scenario.xml:147(col)
-#: sdk/scenario/scenario.xml:211(col)
-#: sdk/scenario/scenario.xml:221(col)
-#: sdk/scenario/scenario.xml:236(col)
-#: sdk/scenario/scenario.xml:241(col)
-#: sdk/scenario/scenario.xml:246(col)
-#: sdk/scenario/scenario.xml:251(col)
-#: sdk/scenario/scenario.xml:256(col)
-#: sdk/scenario/scenario.xml:261(col)
-#: sdk/scenario/scenario.xml:266(col)
-#: sdk/scenario/scenario.xml:271(col)
-#: sdk/scenario/scenario.xml:311(col)
-#: sdk/scenario/scenario.xml:326(col)
-#: sdk/scenario/scenario.xml:331(col)
-#: sdk/scenario/scenario.xml:336(col)
-#: sdk/scenario/scenario.xml:341(col)
-#: sdk/scenario/scenario.xml:346(col)
-#: sdk/scenario/scenario.xml:414(col)
-#: sdk/scenario/scenario.xml:466(col)
+#: sdk/scenario/scenario.xml:27(col)
+#: sdk/scenario/scenario.xml:42(col)
+#: sdk/scenario/scenario.xml:47(col)
+#: sdk/scenario/scenario.xml:52(col)
+#: sdk/scenario/scenario.xml:62(col)
+#: sdk/scenario/scenario.xml:67(col)
+#: sdk/scenario/scenario.xml:72(col)
+#: sdk/scenario/scenario.xml:106(col)
+#: sdk/scenario/scenario.xml:111(col)
+#: sdk/scenario/scenario.xml:116(col)
+#: sdk/scenario/scenario.xml:136(col)
+#: sdk/scenario/scenario.xml:141(col)
+#: sdk/scenario/scenario.xml:244(col)
+#: sdk/scenario/scenario.xml:249(col)
+#: sdk/scenario/scenario.xml:254(col)
+#: sdk/scenario/scenario.xml:259(col)
+#: sdk/scenario/scenario.xml:264(col)
+#: sdk/scenario/scenario.xml:319(col)
+#: sdk/scenario/scenario.xml:339(col)
+#: sdk/scenario/scenario.xml:344(col)
+#: sdk/scenario/scenario.xml:349(col)
+#: sdk/scenario/scenario.xml:354(col)
+#: sdk/scenario/scenario.xml:422(col)
+#: sdk/scenario/scenario.xml:474(col)
 #: sdk/scenario/Teams.xml:20(col)
 #: sdk/scenario/Teams.xml:26(col)
 #: sdk/scenario/Teams.xml:32(col)
@@ -13442,22 +12992,27 @@ msgid "Wird eine Runde durch szenariobedingte Spielziele wie Spielereliminierung
 msgstr "If a round is ended through the game i.e. by player elimination, fulfillment of all goals as defined in Scenario.txt <emlink href=\"scenario/scenario.html#SektionGame\">section [Game]</emlink>), or by the script command GameOver, the engine will call the function OnGameOver in the scenario script. This will not be called if the round was aborted."
 
 #: sdk/scenario/scenario.xml:8(text)
-msgid "Über die Scenario.txt lassen sich alle Szenarienvoreinstellungen anpassen. Dazu gehören einfache, dynamische Karten, Spielervorgaben, Spielziele, Wetter, usw. Die meisten dieser Einstellungen lassen sich allerdings bequemer über das Menüsystem in den Rundenoptionen konfigurieren. Für komplexere Startbedingungen wie zum Beispiel Teamschlachten mit automatischen Rejoins, sowie für vorgegebene Handlungsabläufe im Spiel benötigt man ein <emlink href=\"scenario/script.html\">Script</emlink>."
+#, fuzzy
+msgid "Über die Scenario.txt lassen sich alle Szenarienvoreinstellungen anpassen. Dazu gehören einfache, dynamische Karten, Spielervorgaben, Spielziele, Wetter, usw. Die meisten dieser Einstellungen lassen sich allerdings bequemer über den Editor in den Rundenoptionen konfigurieren. Für komplexere Startbedingungen wie zum Beispiel Teamschlachten mit automatischen Rejoins, sowie für vorgegebene Handlungsabläufe im Spiel benötigt man ein <emlink href=\"scenario/script.html\">Script</emlink>."
 msgstr "In Scenario.txt you can define basic scenario settings including simple dynamic maps, player presets and starting material, game goals, weather conditions etc. Most of these settings can also be made in the scenario properties of the menu system. For more complex settings and mission sequences you will have to write a <emlink href=\"scenario/script.html\">script</emlink>."
 
-#: sdk/scenario/scenario.xml:11(caption)
+#: sdk/scenario/scenario.xml:13(text)
+msgid "Einige der Werte werden mit vier Zahlen angegeben, die Mittelwert, Abweichung, Minimum und Maximum festlegen. Der tatsächliche Wert wird dann durch <code>BoundBy(Mittelwert+Random(2*Abweichung+1)-Abweichung,Minimum,Maximum);</code> bestimmt."
+msgstr ""
+
+#: sdk/scenario/scenario.xml:19(caption)
 msgid "Sektion [Head]"
 msgstr "Section [Head]"
 
-#: sdk/scenario/scenario.xml:14(col)
-#: sdk/scenario/scenario.xml:73(col)
-#: sdk/scenario/scenario.xml:142(col)
-#: sdk/scenario/scenario.xml:201(col)
-#: sdk/scenario/scenario.xml:355(col)
-#: sdk/scenario/scenario.xml:374(col)
-#: sdk/scenario/scenario.xml:423(col)
-#: sdk/scenario/scenario.xml:447(col)
-#: sdk/scenario/scenario.xml:461(col)
+#: sdk/scenario/scenario.xml:22(col)
+#: sdk/scenario/scenario.xml:81(col)
+#: sdk/scenario/scenario.xml:150(col)
+#: sdk/scenario/scenario.xml:209(col)
+#: sdk/scenario/scenario.xml:363(col)
+#: sdk/scenario/scenario.xml:382(col)
+#: sdk/scenario/scenario.xml:431(col)
+#: sdk/scenario/scenario.xml:455(col)
+#: sdk/scenario/scenario.xml:469(col)
 #: sdk/scenario/Teams.xml:14(col)
 #: sdk/scenario/Teams.xml:72(col)
 #: sdk/particle/index.xml:32(col)
@@ -13473,75 +13028,102 @@ msgstr "Section [Head]"
 msgid "Datentyp"
 msgstr "File type"
 
-#: sdk/scenario/scenario.xml:18(col)
+#: sdk/scenario/scenario.xml:26(col)
 msgid "Icon"
 msgstr "Icon"
 
-#: sdk/scenario/scenario.xml:20(col)
+#: sdk/scenario/scenario.xml:28(col)
 msgid "Standard-Icon des Szenarios. Siehe Szenarioeigenschaften im Menüsystem."
 msgstr "Default icon for the scenario. See the scenario options in the menu system."
 
-#: sdk/scenario/scenario.xml:23(col)
+#: sdk/scenario/scenario.xml:31(col)
 #: sdk/folder/foldermap.xml:90(col)
 msgid "Title"
 msgstr "Title"
 
-#: sdk/scenario/scenario.xml:24(col)
+#: sdk/scenario/scenario.xml:32(col)
 msgid "Zeichenfolge (max 512)"
 msgstr "String (max 512)"
 
-#: sdk/scenario/scenario.xml:25(col)
+#: sdk/scenario/scenario.xml:33(col)
 msgid "Titel des Szenarios. Wird durch die Einträge in Title.txt ersetzt."
 msgstr "Title for the scenario. Entries in Title.txt will override this value."
 
-#: sdk/scenario/scenario.xml:28(col)
+#: sdk/scenario/scenario.xml:36(col)
 #: sdk/definition/defcore.xml:22(col)
 msgid "Version"
 msgstr "Version"
 
-#: sdk/scenario/scenario.xml:29(col)
-#: sdk/definition/defcore.xml:22(col)
-msgid "3 Integer"
-msgstr "3 Integer"
+#: sdk/scenario/scenario.xml:37(col)
+#: sdk/scenario/scenario.xml:155(col)
+#: sdk/scenario/scenario.xml:219(col)
+#: sdk/scenario/scenario.xml:229(col)
+#: sdk/scenario/scenario.xml:269(col)
+#: sdk/scenario/scenario.xml:274(col)
+#: sdk/scenario/scenario.xml:279(col)
+#: sdk/scenario/scenario.xml:284(col)
+#: sdk/scenario/scenario.xml:289(col)
+#: sdk/scenario/scenario.xml:294(col)
+#: sdk/scenario/scenario.xml:299(col)
+#: sdk/scenario/scenario.xml:314(col)
+#: sdk/scenario/scenario.xml:334(col)
+#: sdk/scenario/scenario.xml:387(col)
+#: sdk/scenario/scenario.xml:392(col)
+#: sdk/scenario/scenario.xml:397(col)
+#: sdk/scenario/scenario.xml:402(col)
+#: sdk/scenario/scenario.xml:407(col)
+#: sdk/scenario/scenario.xml:412(col)
+#: sdk/scenario/scenario.xml:436(col)
+#: sdk/scenario/scenario.xml:441(col)
+#: sdk/scenario/scenario.xml:446(col)
+#: sdk/material/c4m.xml:220(col)
+#: sdk/folder/foldermap.xml:20(col)
+#: sdk/folder/foldermap.xml:58(col)
+#: sdk/folder/foldermap.xml:86(col)
+#: sdk/definition/defcore.xml:55(col)
+#: sdk/definition/defcore.xml:69(col)
+#: sdk/definition/defcore.xml:71(col)
+msgid "4 Integer"
+msgstr "4 integers"
 
-#: sdk/scenario/scenario.xml:30(col)
+#: sdk/scenario/scenario.xml:38(col)
 msgid "Vom Szenario benötigte Version der Engine."
 msgstr "Engine version required by the scenario."
 
-#: sdk/scenario/scenario.xml:33(col)
+#: sdk/scenario/scenario.xml:41(col)
 msgid "RoundOptions"
 msgstr "RoundOptions"
 
-#: sdk/scenario/scenario.xml:35(col)
+#: sdk/scenario/scenario.xml:43(col)
 msgid "0 oder 1. Freigabe der Szenarioeigenschaften im Menüsystem für andere Spieler."
 msgstr "0 or 1. Allow other players to change scenario properties in the menu system."
 
-#: sdk/scenario/scenario.xml:38(col)
+#: sdk/scenario/scenario.xml:46(col)
 #: sdk/scenario/Teams.xml:107(col)
 msgid "MaxPlayer"
 msgstr "MaxPlayer"
 
-#: sdk/scenario/scenario.xml:40(col)
+#: sdk/scenario/scenario.xml:48(col)
 msgid "Maximale Anzahl der Spieler."
 msgstr "Maximum player count"
 
-#: sdk/scenario/scenario.xml:43(col)
+#: sdk/scenario/scenario.xml:51(col)
 msgid "NoInitialize"
 msgstr "NoInitialize"
 
-#: sdk/scenario/scenario.xml:45(col)
+#: sdk/scenario/scenario.xml:53(col)
 msgid "0 oder 1. Bei 1 werden alle Objekte, die genau einmal erzeugt werden sollten, nicht platziert. Automatisch für Spielstände und gespeicherte Szenarien gesetzt, um eine erneute Erzeugung von Vegetation, Spielzielen und ähnlichem zu vermeiden. Es werden unter anderem die Werte Buildings, Vehicles, Material, Vegetation, InEarth und Animals ignoriert."
 msgstr "0 or 1. If 1, basic startup objects as defined in Scenario.txt (player material and buildings, animals, vegetation) are not placed. This flag is automatically set in savegaes and is used to avoid duplication by repeated scenario initialization. The flag ignores among others the values Buildings, Vehicles, Material, Vegetation, InEarth, and Animals."
 
-#: sdk/scenario/scenario.xml:48(col)
+#: sdk/scenario/scenario.xml:56(col)
 msgid "MissionAccess"
 msgstr "MissionAccess"
 
-#: sdk/scenario/scenario.xml:49(col)
-#: sdk/scenario/scenario.xml:226(col)
-#: sdk/scenario/scenario.xml:296(col)
-#: sdk/scenario/scenario.xml:301(col)
-#: sdk/scenario/scenario.xml:409(col)
+#: sdk/scenario/scenario.xml:57(col)
+#: sdk/scenario/scenario.xml:234(col)
+#: sdk/scenario/scenario.xml:304(col)
+#: sdk/scenario/scenario.xml:309(col)
+#: sdk/scenario/scenario.xml:417(col)
 #: sdk/material/c4m.xml:235(col)
 #: sdk/material/c4m.xml:240(col)
 #: sdk/material/c4m.xml:245(col)
@@ -13554,314 +13136,300 @@ msgstr "MissionAccess"
 msgid "Zeichenfolge"
 msgstr "String"
 
-#: sdk/scenario/scenario.xml:50(col)
+#: sdk/scenario/scenario.xml:58(col)
 msgid "Szenario kann nur gestartet werden, wenn ein Spieler zuvor dieses Zugangspasswort in einem anderen Szenario erspielt hat. Siehe Scriptfunktion <placeholder-1/>()."
 msgstr "The scenario will only load if the player gained this password in another scenario. See script function <placeholder-1/>()."
 
-#: sdk/scenario/scenario.xml:53(col)
+#: sdk/scenario/scenario.xml:61(col)
 msgid "Replay"
 msgstr "Replay"
 
-#: sdk/scenario/scenario.xml:55(col)
+#: sdk/scenario/scenario.xml:63(col)
 msgid "Wird von der Engine automatisch gesetzt, und markiert eine Aufnahme."
 msgstr "Set automatically be the engine. Marks the scenario as record."
 
-#: sdk/scenario/scenario.xml:58(col)
+#: sdk/scenario/scenario.xml:66(col)
 msgid "Film"
 msgstr "Film"
 
-#: sdk/scenario/scenario.xml:60(col)
+#: sdk/scenario/scenario.xml:68(col)
 msgid "0 oder 1 und nur bei Aufnahmen. Bei 1 folgt die Sicht nur dem ersten Spieler und alle Spielerkontrollen werden ausgeblendet."
 msgstr "0 or 1 und only valid for records. If 1, the view always follows the first player and all player controls are invisible."
 
-#: sdk/scenario/scenario.xml:63(col)
+#: sdk/scenario/scenario.xml:71(col)
 msgid "ForcedGfxMode"
 msgstr "ForcedGfxMode"
 
-#: sdk/scenario/scenario.xml:65(col)
+#: sdk/scenario/scenario.xml:73(col)
 msgid "0-2. 0: Jede Engine möglich; 1: Nur NewGfx (OpenGL/D3D); 2: Nur OldGfx (8Bit-DDraw)."
 msgstr "0-2. 0: All engines possible; 1: NewGfx only (OpenGL/D3D); 2: OldGfx only (8bit-DDraw)."
 
-#: sdk/scenario/scenario.xml:70(caption)
+#: sdk/scenario/scenario.xml:78(caption)
 msgid "Sektion [Game]"
 msgstr "Section [Game]"
 
-#: sdk/scenario/scenario.xml:77(col)
+#: sdk/scenario/scenario.xml:85(col)
 msgid "Rules"
 msgstr "Rules"
 
-#: sdk/scenario/scenario.xml:78(col)
-#: sdk/scenario/scenario.xml:83(col)
-#: sdk/scenario/scenario.xml:88(col)
-#: sdk/scenario/scenario.xml:113(col)
-#: sdk/scenario/scenario.xml:118(col)
-#: sdk/scenario/scenario.xml:157(col)
-#: sdk/scenario/scenario.xml:162(col)
-#: sdk/scenario/scenario.xml:167(col)
-#: sdk/scenario/scenario.xml:172(col)
-#: sdk/scenario/scenario.xml:177(col)
-#: sdk/scenario/scenario.xml:182(col)
-#: sdk/scenario/scenario.xml:187(col)
-#: sdk/scenario/scenario.xml:192(col)
-#: sdk/scenario/scenario.xml:206(col)
-#: sdk/scenario/scenario.xml:216(col)
-#: sdk/scenario/scenario.xml:360(col)
-#: sdk/scenario/scenario.xml:365(col)
-#: sdk/scenario/scenario.xml:452(col)
-#: sdk/scenario/scenario.xml:476(col)
+#: sdk/scenario/scenario.xml:86(col)
+#: sdk/scenario/scenario.xml:91(col)
+#: sdk/scenario/scenario.xml:96(col)
+#: sdk/scenario/scenario.xml:121(col)
+#: sdk/scenario/scenario.xml:126(col)
+#: sdk/scenario/scenario.xml:165(col)
+#: sdk/scenario/scenario.xml:170(col)
+#: sdk/scenario/scenario.xml:175(col)
+#: sdk/scenario/scenario.xml:180(col)
+#: sdk/scenario/scenario.xml:185(col)
+#: sdk/scenario/scenario.xml:190(col)
+#: sdk/scenario/scenario.xml:195(col)
+#: sdk/scenario/scenario.xml:200(col)
+#: sdk/scenario/scenario.xml:214(col)
+#: sdk/scenario/scenario.xml:224(col)
+#: sdk/scenario/scenario.xml:368(col)
+#: sdk/scenario/scenario.xml:373(col)
+#: sdk/scenario/scenario.xml:460(col)
+#: sdk/scenario/scenario.xml:484(col)
 #: sdk/definition/defcore.xml:48(col)
 msgid "ID-Liste"
 msgstr "ID list"
 
-#: sdk/scenario/scenario.xml:79(col)
+#: sdk/scenario/scenario.xml:87(col)
 msgid "Spielregeln."
 msgstr "Game rules."
 
-#: sdk/scenario/scenario.xml:82(col)
+#: sdk/scenario/scenario.xml:90(col)
 msgid "Goals"
 msgstr "Goals"
 
-#: sdk/scenario/scenario.xml:84(col)
+#: sdk/scenario/scenario.xml:92(col)
 msgid "Spielziele."
 msgstr "Game goals."
 
-#: sdk/scenario/scenario.xml:87(col)
+#: sdk/scenario/scenario.xml:95(col)
 msgid "ValueOverloads"
 msgstr "ValueOverloads"
 
-#: sdk/scenario/scenario.xml:89(col)
+#: sdk/scenario/scenario.xml:97(col)
 msgid "Liste der Definitionen, dessen Wert für diese Runde geändert sein soll. Die Menge gibt den neuen Wert an."
 msgstr "List of definitions for which the values should be overridden. The amount will be the new value."
 
-#: sdk/scenario/scenario.xml:92(col)
+#: sdk/scenario/scenario.xml:100(col)
 msgid "FoWColor"
 msgstr "FoWColor"
 
-#: sdk/scenario/scenario.xml:93(col)
+#: sdk/scenario/scenario.xml:101(col)
 msgid "DWORD"
 msgstr "DWORD"
 
-#: sdk/scenario/scenario.xml:94(col)
+#: sdk/scenario/scenario.xml:102(col)
 msgid "Farbe des Fog of War."
 msgstr "Color of the fog of war"
 
-#: sdk/scenario/scenario.xml:97(col)
+#: sdk/scenario/scenario.xml:105(col)
 msgid "Mode"
 msgstr "Mode"
 
-#: sdk/scenario/scenario.xml:99(col)
+#: sdk/scenario/scenario.xml:107(col)
 msgid "Veraltet. 0 Kooperativ, 1 Melee, 2 Teamwork-Melee."
 msgstr "Obsolete. 0 Cooperative, 1 Melee, 2 Teamwork-Melee."
 
-#: sdk/scenario/scenario.xml:102(col)
+#: sdk/scenario/scenario.xml:110(col)
 msgid "Elimination"
 msgstr "Elimination"
 
-#: sdk/scenario/scenario.xml:104(col)
+#: sdk/scenario/scenario.xml:112(col)
 msgid "Veraltet. Spielereliminierung durch 0 Verlust Captain, 1 Verlust Crew, 2 Verlust Flagge."
 msgstr "Obsolete. Player elimination by: 0 Loss of captain, 1 Loss of crew, 2 Loss of flag."
 
-#: sdk/scenario/scenario.xml:107(col)
+#: sdk/scenario/scenario.xml:115(col)
 msgid "CooperativeGoal"
 msgstr "CooperativeGoal"
 
-#: sdk/scenario/scenario.xml:109(col)
+#: sdk/scenario/scenario.xml:117(col)
 msgid "Veraltet. Wert der Auswahl Spielziel im Menüsystem (0-4)."
 msgstr "Obsolete. Value for goal in the menu system (0-4)"
 
-#: sdk/scenario/scenario.xml:112(col)
+#: sdk/scenario/scenario.xml:120(col)
 msgid "CreateObjects"
 msgstr "CreateObjects"
 
-#: sdk/scenario/scenario.xml:114(col)
+#: sdk/scenario/scenario.xml:122(col)
 msgid "Veraltet. Spielziel: Diese Objekte müssen mindestens vorhanden sein."
 msgstr "Obsolete. Game goal: These objects must be created."
 
-#: sdk/scenario/scenario.xml:117(col)
+#: sdk/scenario/scenario.xml:125(col)
 msgid "ClearObjects"
 msgstr "ClearObjects"
 
-#: sdk/scenario/scenario.xml:119(col)
+#: sdk/scenario/scenario.xml:127(col)
 msgid "Veraltet. Spielziel: Diese Objekte müssen auf x reduziert werden."
 msgstr "Obsolete. Game goal: The object counts must be reduced to x."
 
-#: sdk/scenario/scenario.xml:122(col)
+#: sdk/scenario/scenario.xml:130(col)
 msgid "ClearMaterials"
 msgstr "ClearMaterials"
 
-#: sdk/scenario/scenario.xml:123(col)
-#: sdk/scenario/scenario.xml:316(col)
+#: sdk/scenario/scenario.xml:131(col)
+#: sdk/scenario/scenario.xml:324(col)
 msgid "Material-Liste"
 msgstr "Material list"
 
-#: sdk/scenario/scenario.xml:124(col)
+#: sdk/scenario/scenario.xml:132(col)
 msgid "Veraltet. Spielziel: Diese Materialien müssen auf x reduziert werden."
 msgstr "Obsolete. Game goal: The material count must be reduced to x."
 
-#: sdk/scenario/scenario.xml:127(col)
+#: sdk/scenario/scenario.xml:135(col)
 #: sdk/scenario/basefunc.xml:10(col)
 msgid "BaseFunctionality"
 msgstr "BaseFunctionality"
 
-#: sdk/scenario/scenario.xml:129(col)
+#: sdk/scenario/scenario.xml:137(col)
 msgid "Bitmaske, die angibt, welche Funktionen eine Basis erfüllt. Siehe <emlink href=\"scenario/basefunc.html\">Basisfunktionalitäten</emlink>. Ab CR."
 msgstr "A bit mask that defines which functionality a home base object will offer. See <emlink href=\"scenario/basefunc.html\">Homebase Functionality</emlink>. From CR."
 
-#: sdk/scenario/scenario.xml:132(col)
+#: sdk/scenario/scenario.xml:140(col)
 msgid "BaseRegenerateEnergyPrice"
 msgstr "BaseRegenerateEnergyPrice"
 
-#: sdk/scenario/scenario.xml:134(col)
+#: sdk/scenario/scenario.xml:142(col)
 msgid "Kosten, die aufgewendet werden, um einen Clonk in einer Basis um 100 Energiepunkte zu heilen. Standard ist 5; bei 0 ist die Heilung kostenlos. Ab CR."
 msgstr "The cost of recharging a clonk to 100% life energy in the home base. Default is 5. Value 0 will yield free recharging. From CR."
 
-#: sdk/scenario/scenario.xml:139(caption)
+#: sdk/scenario/scenario.xml:147(caption)
 msgid "Sektionen [Player1] [Player2] [Player3] [Player4]"
 msgstr "Sections [Player1] [Player2] [Player3] [Player4]"
 
-#: sdk/scenario/scenario.xml:146(col)
+#: sdk/scenario/scenario.xml:154(col)
 msgid "Wealth"
 msgstr "Wealth"
 
-#: sdk/scenario/scenario.xml:148(col)
+#: sdk/scenario/scenario.xml:156(col)
 msgid "Startkapital."
 msgstr "Seed capital."
 
-#: sdk/scenario/scenario.xml:152(col)
-#: sdk/scenario/scenario.xml:276(col)
-#: sdk/scenario/scenario.xml:281(col)
-#: sdk/scenario/scenario.xml:286(col)
-#: sdk/scenario/scenario.xml:291(col)
-#: sdk/scenario/scenario.xml:306(col)
-#: sdk/scenario/scenario.xml:379(col)
-#: sdk/scenario/scenario.xml:384(col)
-#: sdk/scenario/scenario.xml:389(col)
-#: sdk/scenario/scenario.xml:394(col)
-#: sdk/scenario/scenario.xml:399(col)
-#: sdk/scenario/scenario.xml:404(col)
-#: sdk/scenario/scenario.xml:428(col)
-#: sdk/scenario/scenario.xml:433(col)
-#: sdk/scenario/scenario.xml:438(col)
+#: sdk/scenario/scenario.xml:160(col)
 #: sdk/particle/index.xml:144(col)
 #: sdk/definition/defcore.xml:42(col)
 msgid "2 Integer"
 msgstr "2 Integer"
 
-#: sdk/scenario/scenario.xml:153(col)
+#: sdk/scenario/scenario.xml:161(col)
 msgid "Startposition in Koordinaten der ungezoomten Landkarte. Beide -1 für Zufall."
 msgstr "Start position as coordinates for the un-zoomed landscape. Both -1: Random position."
 
-#: sdk/scenario/scenario.xml:156(col)
+#: sdk/scenario/scenario.xml:164(col)
 msgid "Crew"
 msgstr "Crew"
 
-#: sdk/scenario/scenario.xml:158(col)
+#: sdk/scenario/scenario.xml:166(col)
 msgid "Art und Anzahl der Mannschaftsmitglieder."
 msgstr "Type and count of initial crew members."
 
-#: sdk/scenario/scenario.xml:161(col)
+#: sdk/scenario/scenario.xml:169(col)
 msgid "Buildings"
 msgstr "Buildings"
 
-#: sdk/scenario/scenario.xml:163(col)
+#: sdk/scenario/scenario.xml:171(col)
 msgid "Zu Spielbeginn vorhandene Gebäude."
 msgstr "Buildings available at game start."
 
-#: sdk/scenario/scenario.xml:166(col)
+#: sdk/scenario/scenario.xml:174(col)
 msgid "Vehicles"
 msgstr "Vehicles"
 
-#: sdk/scenario/scenario.xml:168(col)
+#: sdk/scenario/scenario.xml:176(col)
 msgid "Zu Spielbeginn vorhandene Fahrzeuge."
 msgstr "Vehicles available at game start."
 
-#: sdk/scenario/scenario.xml:173(col)
+#: sdk/scenario/scenario.xml:181(col)
 msgid "Zu Spielbeginn vorhandenes Material."
 msgstr "Materials available at game start"
 
-#: sdk/scenario/scenario.xml:176(col)
+#: sdk/scenario/scenario.xml:184(col)
 msgid "Knowledge"
 msgstr "Knowledge"
 
-#: sdk/scenario/scenario.xml:178(col)
+#: sdk/scenario/scenario.xml:186(col)
 msgid "Vom Spieler erzeugbare Objekte."
 msgstr "Objects the player should initially be able to create."
 
-#: sdk/scenario/scenario.xml:181(col)
+#: sdk/scenario/scenario.xml:189(col)
 msgid "HomeBaseMaterial"
 msgstr "HomeBaseMaterial"
 
-#: sdk/scenario/scenario.xml:183(col)
+#: sdk/scenario/scenario.xml:191(col)
 msgid "Zu Spielbeginn in der Heimatbasis kaufbares Material."
 msgstr "Materials available to buy at game start."
 
-#: sdk/scenario/scenario.xml:186(col)
+#: sdk/scenario/scenario.xml:194(col)
 msgid "HomeBaseProduction"
 msgstr "HomeBaseProduction"
 
-#: sdk/scenario/scenario.xml:188(col)
+#: sdk/scenario/scenario.xml:196(col)
 msgid "Nachproduktion von Material für die Heimatbasis."
 msgstr "Additional supply of materials to buy."
 
-#: sdk/scenario/scenario.xml:191(col)
+#: sdk/scenario/scenario.xml:199(col)
 #: sdk/definition/defcore.xml:229(col)
 msgid "Magic"
 msgstr "Magic"
 
-#: sdk/scenario/scenario.xml:193(col)
+#: sdk/scenario/scenario.xml:201(col)
 msgid "Zur Verfügung stehende Zauber. Sind keine Zauber angegeben, werden alle verfügbaren Zauber geladen (Abwärtskompatibilität zu älteren Szenarien)."
 msgstr "Available spells. If the list is empty, all spells are available (backwards compatibility)."
 
-#: sdk/scenario/scenario.xml:198(caption)
+#: sdk/scenario/scenario.xml:206(caption)
 msgid "Sektion [Landscape]"
 msgstr "Section [Landscape]"
 
-#: sdk/scenario/scenario.xml:205(col)
+#: sdk/scenario/scenario.xml:213(col)
 msgid "Vegetation"
 msgstr "Vegetation"
 
-#: sdk/scenario/scenario.xml:207(col)
+#: sdk/scenario/scenario.xml:215(col)
 msgid "Vegetationstypen und relative Anteile."
 msgstr "Vegetation types and ratio."
 
-#: sdk/scenario/scenario.xml:210(col)
+#: sdk/scenario/scenario.xml:218(col)
 msgid "VegetationLevel"
 msgstr "VegetationLevel"
 
-#: sdk/scenario/scenario.xml:212(col)
+#: sdk/scenario/scenario.xml:220(col)
 msgid "0-100. Menge Vegetation."
 msgstr "0-100. Vegetation amount."
 
-#: sdk/scenario/scenario.xml:215(col)
+#: sdk/scenario/scenario.xml:223(col)
 msgid "InEarth"
 msgstr "InEarth"
 
-#: sdk/scenario/scenario.xml:217(col)
+#: sdk/scenario/scenario.xml:225(col)
 msgid "Typen und relative Anteile der Objekte im Erdreich."
 msgstr "Types and proportionate shares of buried objects."
 
-#: sdk/scenario/scenario.xml:220(col)
+#: sdk/scenario/scenario.xml:228(col)
 msgid "InEarthLevel"
 msgstr "InEarthLevel"
 
-#: sdk/scenario/scenario.xml:222(col)
+#: sdk/scenario/scenario.xml:230(col)
 msgid "0-100. Menge Erdreich-Objekte."
 msgstr "0-100. Amount of buried objects."
 
-#: sdk/scenario/scenario.xml:225(col)
+#: sdk/scenario/scenario.xml:233(col)
 #: sdk/material/c4m.xml:310(col)
 msgid "Sky"
 msgstr "Sky"
 
-#: sdk/scenario/scenario.xml:227(col)
+#: sdk/scenario/scenario.xml:235(col)
 msgid "Himmeltextur wie in der Graphics.c4g vorhanden (ohne Dateierweiterung)."
 msgstr "Sky texture from Graphics.c4g (without filename extension)"
 
-#: sdk/scenario/scenario.xml:230(col)
+#: sdk/scenario/scenario.xml:238(col)
 msgid "SkyFade"
 msgstr "SkyFade"
 
-#: sdk/scenario/scenario.xml:231(col)
+#: sdk/scenario/scenario.xml:239(col)
 #: sdk/particle/index.xml:75(col)
 #: sdk/material/c4m.xml:195(col)
 #: sdk/definition/defcore.xml:51(col)
@@ -13870,351 +13438,351 @@ msgstr "SkyFade"
 msgid "6 Integer"
 msgstr "6 integers"
 
-#: sdk/scenario/scenario.xml:232(col)
+#: sdk/scenario/scenario.xml:240(col)
 msgid "Himmelfarbverlauf von RGB nach RGB. Werte von 0-255. Sind alle Werte 0, wird das Vorgabe-Blau der Clonk-Farbpalette verwendet."
 msgstr "Sky color gradient (RGB to RGB). Values 0-255. With all values 0, the default blue background will be used."
 
-#: sdk/scenario/scenario.xml:235(col)
+#: sdk/scenario/scenario.xml:243(col)
 msgid "BottomOpen"
 msgstr "BottomOpen"
 
-#: sdk/scenario/scenario.xml:237(col)
+#: sdk/scenario/scenario.xml:245(col)
 msgid "0 oder 1. Legt fest, ob die Spielwelt unten offen ist."
 msgstr "0 or 1. Determines wether the bottom of the game world should be open."
 
-#: sdk/scenario/scenario.xml:240(col)
+#: sdk/scenario/scenario.xml:248(col)
 msgid "TopOpen"
 msgstr "TopOpen"
 
-#: sdk/scenario/scenario.xml:242(col)
+#: sdk/scenario/scenario.xml:250(col)
 msgid "0 oder 1. Legt fest, ob die Spielwelt oben offen ist."
 msgstr "0 or 1. Determines wether the top of the game world should be open."
 
-#: sdk/scenario/scenario.xml:245(col)
+#: sdk/scenario/scenario.xml:253(col)
 msgid "LeftOpen"
 msgstr "LeftOpen"
 
-#: sdk/scenario/scenario.xml:247(col)
+#: sdk/scenario/scenario.xml:255(col)
 msgid "Öffnung des linken Randes bis zum Abstand in Pixel von der Oberkante."
 msgstr "Height until which the left side of the game world is open."
 
-#: sdk/scenario/scenario.xml:250(col)
+#: sdk/scenario/scenario.xml:258(col)
 msgid "RightOpen"
 msgstr "RightOpen"
 
-#: sdk/scenario/scenario.xml:252(col)
+#: sdk/scenario/scenario.xml:260(col)
 msgid "Öffnung des rechten Randes bis zum Abstand in Pixel von der Oberkante."
 msgstr "Height until which the right side of the game world is open."
 
-#: sdk/scenario/scenario.xml:255(col)
+#: sdk/scenario/scenario.xml:263(col)
 msgid "AutoScanSideOpen"
 msgstr "AutoScanSideOpen"
 
-#: sdk/scenario/scenario.xml:257(col)
+#: sdk/scenario/scenario.xml:265(col)
 msgid "0 oder 1. Bei 1 werden LeftOpen und RightOpen automatisch angepasst."
 msgstr "0 or 1. If 1, LeftOpen and RightOpen will be set automatically depending on the landscape at game start."
 
-#: sdk/scenario/scenario.xml:260(col)
+#: sdk/scenario/scenario.xml:268(col)
 msgid "MapWidth"
 msgstr "MapWidth"
 
-#: sdk/scenario/scenario.xml:262(col)
+#: sdk/scenario/scenario.xml:270(col)
 msgid "Ausgangsbreite der dynamischen Karte."
 msgstr "Base width of the dynamic map."
 
-#: sdk/scenario/scenario.xml:265(col)
+#: sdk/scenario/scenario.xml:273(col)
 msgid "MapHeight"
 msgstr "MapHeight"
 
-#: sdk/scenario/scenario.xml:267(col)
+#: sdk/scenario/scenario.xml:275(col)
 msgid "Ausgangshöhe der dynamischen Karte."
 msgstr "Base height of the dynamic map."
 
-#: sdk/scenario/scenario.xml:270(col)
+#: sdk/scenario/scenario.xml:278(col)
 msgid "MapZoom"
 msgstr "MapZoom"
 
-#: sdk/scenario/scenario.xml:272(col)
+#: sdk/scenario/scenario.xml:280(col)
 msgid "Vergrößerungsfaktor der Karte auf die tatsächliche Spiellandschaft. Wert 10."
 msgstr "Factor for zooming the map to the real game world. Default is 10."
 
-#: sdk/scenario/scenario.xml:275(col)
+#: sdk/scenario/scenario.xml:283(col)
 msgid "Amplitude"
 msgstr "Amplitude"
 
-#: sdk/scenario/scenario.xml:277(col)
+#: sdk/scenario/scenario.xml:285(col)
 msgid "0-100 und Abweichung. Hügelhöhe bei dynamischen Karten."
 msgstr "0-100 with tolerance. Hill height for dynamic maps."
 
-#: sdk/scenario/scenario.xml:280(col)
+#: sdk/scenario/scenario.xml:288(col)
 msgid "Phase"
 msgstr "Phase"
 
-#: sdk/scenario/scenario.xml:282(col)
+#: sdk/scenario/scenario.xml:290(col)
 msgid "0-100 und Abweichung. Hügelverschiebung bei dynamischen Karten."
 msgstr "0-100 with tolerance. Hill offset for dynamic maps."
 
-#: sdk/scenario/scenario.xml:285(col)
+#: sdk/scenario/scenario.xml:293(col)
 msgid "Period"
 msgstr "Period"
 
-#: sdk/scenario/scenario.xml:287(col)
+#: sdk/scenario/scenario.xml:295(col)
 msgid "0-100 und Abweichung. Hügelabstand bei dynamischen Karten."
 msgstr "0-100 with tolerance. Hill interval for dynamic maps."
 
-#: sdk/scenario/scenario.xml:290(col)
+#: sdk/scenario/scenario.xml:298(col)
 msgid "Random"
 msgstr "Random"
 
-#: sdk/scenario/scenario.xml:292(col)
+#: sdk/scenario/scenario.xml:300(col)
 msgid "0-100 und Abweichung. Zufallsabweichung bei dynamischen Karten."
 msgstr "0-100 with tolerance. Random deviance for dynamic maps."
 
-#: sdk/scenario/scenario.xml:297(col)
+#: sdk/scenario/scenario.xml:305(col)
 msgid "Material-Textur-Definition des Basismaterials (Erdreich) bei dynamischen Karten."
 msgstr "Material-texture definition of the base material for dynamic maps."
 
-#: sdk/scenario/scenario.xml:300(col)
+#: sdk/scenario/scenario.xml:308(col)
 msgid "Liquid"
 msgstr "Liquid"
 
-#: sdk/scenario/scenario.xml:302(col)
+#: sdk/scenario/scenario.xml:310(col)
 msgid "Material-Textur-Definition der Flüssigkeit in dynamischen Karten."
 msgstr "Material-texture definition of the liquid material for dynamic maps."
 
-#: sdk/scenario/scenario.xml:305(col)
+#: sdk/scenario/scenario.xml:313(col)
 msgid "LiquidLevel"
 msgstr "LiquidLevel"
 
-#: sdk/scenario/scenario.xml:307(col)
+#: sdk/scenario/scenario.xml:315(col)
 msgid "0-100 und Abweichung. Flüssigkeitsstand in dynamischen Karten."
 msgstr "0-100 with tolerance. Liquid level for dynamic maps."
 
-#: sdk/scenario/scenario.xml:310(col)
+#: sdk/scenario/scenario.xml:318(col)
 msgid "MapPlayerExtend"
 msgstr "MapPlayerExtend"
 
-#: sdk/scenario/scenario.xml:312(col)
+#: sdk/scenario/scenario.xml:320(col)
 msgid "0 oder 1. Legt fest, ob die dynamische Karte in der Breite angepasst wird."
 msgstr "0 or 1. Determines wether the dynamic map will be extended for every player activated at game start."
 
-#: sdk/scenario/scenario.xml:315(col)
+#: sdk/scenario/scenario.xml:323(col)
 msgid "Layers"
 msgstr "Layers"
 
-#: sdk/scenario/scenario.xml:317(col)
+#: sdk/scenario/scenario.xml:325(col)
 msgid "Materialschichten im Erdreich bei dynamischen Karten."
 msgstr "Additional material layers in earth for dynamic maps."
 
-#: sdk/scenario/scenario.xml:320(col)
+#: sdk/scenario/scenario.xml:328(col)
 msgid "ExactLandscape"
 msgstr "ExactLandscape"
 
-#: sdk/scenario/scenario.xml:321(col)
+#: sdk/scenario/scenario.xml:329(col)
 msgid "1 Integer"
 msgstr "1 Integer"
 
-#: sdk/scenario/scenario.xml:322(col)
+#: sdk/scenario/scenario.xml:330(col)
 msgid "0 oder 1. Gibt an, ob Landscape.bmp eine tatsächliche Spiellandschaft ist."
 msgstr "0 or 1. Specifies wether the Landscape.bmp is an actual game landscape."
 
-#: sdk/scenario/scenario.xml:325(col)
+#: sdk/scenario/scenario.xml:333(col)
 msgid "Gravity"
 msgstr "Gravity"
 
-#: sdk/scenario/scenario.xml:327(col)
+#: sdk/scenario/scenario.xml:335(col)
 msgid "10-200: Gravitation. 100 ist Standard."
 msgstr "10-200: Gravity. Default 100."
 
-#: sdk/scenario/scenario.xml:330(col)
+#: sdk/scenario/scenario.xml:338(col)
 msgid "NoScan"
 msgstr "NoScan"
 
-#: sdk/scenario/scenario.xml:332(col)
+#: sdk/scenario/scenario.xml:340(col)
 msgid "0 oder 1. Bei 1 werden keine Überprüfungen innerhalb der Landschaft durchgeführt, wie beispielsweise Schneeschmelze oder Festwerden von Lava in Vulkanen."
 msgstr "0 or 1. If 1, some ingame landscape checks will be turned of, such as freezing, melting or material counting."
 
-#: sdk/scenario/scenario.xml:335(col)
+#: sdk/scenario/scenario.xml:343(col)
 msgid "KeepMapCreator"
 msgstr "KeepMapCreator"
 
-#: sdk/scenario/scenario.xml:337(col)
+#: sdk/scenario/scenario.xml:345(col)
 msgid "0 oder 1. Bei 1 wird der interne MapCreator nicht nach dem Start entladen, so dass Befehle wie <placeholder-1/> zur Verfügung stehen."
 msgstr "0 or 1. If 1, the internal MapCreater won't unload after game start, so functions like <placeholder-1/> still work."
 
-#: sdk/scenario/scenario.xml:340(col)
+#: sdk/scenario/scenario.xml:348(col)
 msgid "SkyScrollMode"
 msgstr "SkyScrollMode"
 
-#: sdk/scenario/scenario.xml:342(col)
+#: sdk/scenario/scenario.xml:350(col)
 msgid "0 bis 2. Bei 1 bewegt sich der Himmel mit dem Wind, bei 2 ist er halbparallax."
 msgstr "0 to 2. 0: Static sky, 1: The sky moves with the wind, 2: The sky is drawn half-parallax."
 
-#: sdk/scenario/scenario.xml:345(col)
+#: sdk/scenario/scenario.xml:353(col)
 msgid "FoWRes"
 msgstr "FoWRes"
 
-#: sdk/scenario/scenario.xml:347(col)
+#: sdk/scenario/scenario.xml:355(col)
 msgid "Größe der Blöcke, in denen der Kriegsnebel (Fog of War) berechnet wird. Standardwert 64. Achtung: Kleinere Werte verbessern zwar die Darstellung des Kriegsnebels, erhöhen aber auch die benötigte Rechenleistung bei hohen Bildschirmauflösungen. Ab CR."
 msgstr "Granularity of the Fog of War. Default: 64. Warning: smaller values will improve the looks of the FoW but will also severely increase processing times."
 
-#: sdk/scenario/scenario.xml:352(caption)
+#: sdk/scenario/scenario.xml:360(caption)
 msgid "Sektion [Animals]"
 msgstr "Section [Animals]"
 
-#: sdk/scenario/scenario.xml:359(col)
+#: sdk/scenario/scenario.xml:367(col)
 msgid "Animals"
 msgstr "Animals"
 
-#: sdk/scenario/scenario.xml:361(col)
+#: sdk/scenario/scenario.xml:369(col)
 msgid "Freilaufende Lebewesen."
 msgstr "Freewheeling creatures."
 
-#: sdk/scenario/scenario.xml:364(col)
+#: sdk/scenario/scenario.xml:372(col)
 msgid "Nest"
 msgstr "Nest"
 
-#: sdk/scenario/scenario.xml:366(col)
+#: sdk/scenario/scenario.xml:374(col)
 msgid "Nester im Erdreich."
 msgstr "Buried nests."
 
-#: sdk/scenario/scenario.xml:371(caption)
+#: sdk/scenario/scenario.xml:379(caption)
 msgid "Sektion [Weather]"
 msgstr "Section [Weather]"
 
-#: sdk/scenario/scenario.xml:378(col)
+#: sdk/scenario/scenario.xml:386(col)
 msgid "Climate"
 msgstr "Climate"
 
-#: sdk/scenario/scenario.xml:380(col)
+#: sdk/scenario/scenario.xml:388(col)
 msgid "0-100 und Abweichung. Durchschnittstemperatur. 0 warm, 100 kalt."
 msgstr "0-100 with tolerance. Average temperature. 0 warm, 100 cold."
 
-#: sdk/scenario/scenario.xml:383(col)
+#: sdk/scenario/scenario.xml:391(col)
 msgid "StartSeason"
 msgstr "StartSeason"
 
-#: sdk/scenario/scenario.xml:385(col)
+#: sdk/scenario/scenario.xml:393(col)
 msgid "0-100 und Abweichung. Startjahreszeit."
 msgstr "0-100 with tolerance. Season at game start."
 
-#: sdk/scenario/scenario.xml:388(col)
+#: sdk/scenario/scenario.xml:396(col)
 msgid "YearSpeed"
 msgstr "YearSpeed"
 
-#: sdk/scenario/scenario.xml:390(col)
+#: sdk/scenario/scenario.xml:398(col)
 msgid "0-100 und Abweichung. Geschwindigkeit des Jahreszeitenwechsels."
 msgstr "0-100 with tolerance. Speed of season change."
 
-#: sdk/scenario/scenario.xml:393(col)
+#: sdk/scenario/scenario.xml:401(col)
 msgid "Rain"
 msgstr "Rain"
 
-#: sdk/scenario/scenario.xml:395(col)
+#: sdk/scenario/scenario.xml:403(col)
 msgid "0-100 und Abweichung. Regenwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Precipitation amount."
 
-#: sdk/scenario/scenario.xml:398(col)
+#: sdk/scenario/scenario.xml:406(col)
 msgid "Wind"
 msgstr "Wind"
 
-#: sdk/scenario/scenario.xml:400(col)
+#: sdk/scenario/scenario.xml:408(col)
 msgid "-100-100 und Abweichung. Windrichtung und -stärke."
 msgstr "-100-100 with tolerance. Wind direction and strength."
 
-#: sdk/scenario/scenario.xml:403(col)
+#: sdk/scenario/scenario.xml:411(col)
 msgid "Lightning"
 msgstr "Lightning"
 
-#: sdk/scenario/scenario.xml:405(col)
+#: sdk/scenario/scenario.xml:413(col)
 msgid "0-100 und Abweichung. Blitzwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Probability for lightnings."
 
-#: sdk/scenario/scenario.xml:408(col)
+#: sdk/scenario/scenario.xml:416(col)
 msgid "Precipitation"
 msgstr "Precipitation"
 
-#: sdk/scenario/scenario.xml:410(col)
+#: sdk/scenario/scenario.xml:418(col)
 msgid "Einfache Materialdefinition Niederschlag."
 msgstr "Simple material definition precipitation."
 
-#: sdk/scenario/scenario.xml:413(col)
+#: sdk/scenario/scenario.xml:421(col)
 msgid "NoGamma"
 msgstr "NoGamma"
 
-#: sdk/scenario/scenario.xml:415(col)
+#: sdk/scenario/scenario.xml:423(col)
 msgid "0 oder 1. Bei 1 wirken sich die Jahreszeiten nicht auf die Bildschirmfärbung aus."
 msgstr "0 or 1. If 1, the current season won't cause a small global color change."
 
-#: sdk/scenario/scenario.xml:420(caption)
+#: sdk/scenario/scenario.xml:428(caption)
 msgid "Sektion [Disasters]"
 msgstr "Section [Disasters]"
 
-#: sdk/scenario/scenario.xml:427(col)
+#: sdk/scenario/scenario.xml:435(col)
 msgid "Meteorite"
 msgstr "Meteorite"
 
-#: sdk/scenario/scenario.xml:429(col)
+#: sdk/scenario/scenario.xml:437(col)
 msgid "0-100 und Abweichung. Meteoritenwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Probability for meteorites."
 
-#: sdk/scenario/scenario.xml:432(col)
+#: sdk/scenario/scenario.xml:440(col)
 msgid "Volcano"
 msgstr "Volcano"
 
-#: sdk/scenario/scenario.xml:434(col)
+#: sdk/scenario/scenario.xml:442(col)
 msgid "0-100 und Abweichung. Vulkanwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Probability for volcanos."
 
-#: sdk/scenario/scenario.xml:437(col)
+#: sdk/scenario/scenario.xml:445(col)
 msgid "Earthquake"
 msgstr "Earthquake"
 
-#: sdk/scenario/scenario.xml:439(col)
+#: sdk/scenario/scenario.xml:447(col)
 msgid "0-100 und Abweichung. Erdbebenwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Probability for earthquakes."
 
-#: sdk/scenario/scenario.xml:444(caption)
+#: sdk/scenario/scenario.xml:452(caption)
 msgid "Sektion [Environment]"
 msgstr "Section [Environment]"
 
-#: sdk/scenario/scenario.xml:451(col)
+#: sdk/scenario/scenario.xml:459(col)
 msgid "Objects"
 msgstr "Objects"
 
-#: sdk/scenario/scenario.xml:453(col)
+#: sdk/scenario/scenario.xml:461(col)
 msgid "Umweltsteuerungsobjekte, die am Anfang der Runde platziert werden."
 msgstr "Environment control objects that are placed at game start."
 
-#: sdk/scenario/scenario.xml:458(caption)
+#: sdk/scenario/scenario.xml:466(caption)
 msgid "Sektion [Definitions]"
 msgstr "Section [Definitions]"
 
-#: sdk/scenario/scenario.xml:465(col)
+#: sdk/scenario/scenario.xml:473(col)
 msgid "LocalOnly"
 msgstr "LocalOnly"
 
-#: sdk/scenario/scenario.xml:467(col)
+#: sdk/scenario/scenario.xml:475(col)
 msgid "Wenn LocalOnly den Wert 1 hat, werden alle angegebenen Objektdefinitions-pakete ignoriert und nur lokale Objektdefinitionen geladen."
 msgstr "If LocalOnly is 1, only definitions local to the scenario file will be load."
 
-#: sdk/scenario/scenario.xml:470(col)
+#: sdk/scenario/scenario.xml:478(col)
 msgid "Definition1 (bis 9)"
 msgstr "Definition1 to 9"
 
-#: sdk/scenario/scenario.xml:471(col)
+#: sdk/scenario/scenario.xml:479(col)
 msgid "Zeichenfolge(n)"
 msgstr "String(s)"
 
-#: sdk/scenario/scenario.xml:472(col)
+#: sdk/scenario/scenario.xml:480(col)
 msgid "Über Definition<em>x</em>-Einträge kann vorgegeben werden, welche Objektdefinitionspakete (c4d) das Szenario benutzen soll. Die Pakete müssen im Clonk-Verzeichnis vorhanden sein. Sind Pakete im Szenario angegeben, wird die vom Menüsystem bestimmte Auswahl ignoriert."
 msgstr "With Definition<em>x</em> entries you can specify which object definition packs (c4d) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled."
 
-#: sdk/scenario/scenario.xml:475(col)
+#: sdk/scenario/scenario.xml:483(col)
 msgid "SkipDefs"
 msgstr "SkipDefs"
 
-#: sdk/scenario/scenario.xml:477(col)
+#: sdk/scenario/scenario.xml:485(col)
 msgid "Liste der Definitionen, die im Spiel nicht geladen werden sollen. So lässt sich beispielsweise die Erforschung bestimmter Objekte verhindern."
 msgstr "List of object definitions (C4IDs) which are not to be loaded with this scenario. This can be used to prevent researching certain object types in the game."
 
@@ -16204,16 +15772,6 @@ msgstr "Graphics used for loose material pixels. This graphic should be availabl
 #: sdk/material/c4m.xml:219(col)
 msgid "PXSGfxRt"
 msgstr "PXSGfxRt"
-
-#: sdk/material/c4m.xml:220(col)
-#: sdk/folder/foldermap.xml:20(col)
-#: sdk/folder/foldermap.xml:58(col)
-#: sdk/folder/foldermap.xml:86(col)
-#: sdk/definition/defcore.xml:55(col)
-#: sdk/definition/defcore.xml:69(col)
-#: sdk/definition/defcore.xml:71(col)
-msgid "4 Integer"
-msgstr "4 integers"
 
 #: sdk/material/c4m.xml:221(col)
 msgid "Zielrechteck auf die Grafik für lose Materialpixel. Es werden weitere Phasen rechts und unterhalb der angegebenen Grafik benutzt. Die Grafik sollte immer oben links beginnen, und die gesamte Texturgröße einnehmen."
@@ -18318,6 +17876,10 @@ msgstr "Section [DefCore]"
 msgid "Id des Objekts."
 msgstr "Id of the object."
 
+#: sdk/definition/defcore.xml:22(col)
+msgid "3 Integer"
+msgstr "3 Integer"
+
 #: sdk/definition/defcore.xml:23(col)
 msgid "Minimale vom Objekt benötigte Engine-Version. Dieser Eintrag sollte bei jeder Änderung auf die jeweils aktuelle Clonk-Version gesetzt werden, damit ersichtlich ist, zu welchem Zeitpunkt das Objekt erschienen ist."
 msgstr "Minimal engine version required by the object. Should be always the current engine version at the time of the last change."
@@ -19958,106 +19520,554 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 msgid "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 msgstr "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 
+#~ msgid "IncVar"
+#~ msgstr "IncVar"
+
+#~ msgid "DecVar"
+#~ msgstr "DecVar"
+
+#~ msgid "Not"
+#~ msgstr "Not"
+
+#~ msgid "Pow"
+#~ msgstr "Pow"
+
+#~ msgid "Div"
+#~ msgstr "Div"
+
+#~ msgid "Mul"
+#~ msgstr "Mul"
+
+#~ msgid "Mod"
+#~ msgstr "Mod"
+
+#~ msgid "Sub"
+#~ msgstr "Sub"
+
+#~ msgid "Sum"
+#~ msgstr "Sum"
+
+#~ msgid "LessThan"
+#~ msgstr "LessThan"
+
+#~ msgid "GreaterThan"
+#~ msgstr "GreaterThan"
+
+#~ msgid "Equal"
+#~ msgstr "Equal"
+
+#~ msgid "Not Equal"
+#~ msgstr "Not Equal"
+
+#~ msgid "SEqual"
+#~ msgstr "SEqual"
+
+#~ msgid "Not SEqual"
+#~ msgstr "Not SEqual"
+
+#~ msgid "BitAnd"
+#~ msgstr "BitAnd"
+
+#~ msgid "And"
+#~ msgstr "And"
+
+#~ msgid "bool, bool/bool"
+#~ msgstr "bool, bool/bool"
+
+#~ msgid "Or"
+#~ msgstr "Or"
+
+#~ msgid "Index der Variable, zu der eine Referenz zurückgegeben werden soll"
+#~ msgstr "Index of the variable to which a reference is to be returned."
+
+#~ msgid "Normalerweise sollten statt dieser Funktion benannte, threadlokale Variablen (var) benutzt werden. Manchmal ist die Funktion jedoch praktisch, um lokale Arrays zu emulieren."
+#~ msgstr "Usually, you should use named local variables instead of using this function. Sometimes, however, it is convenient to used indexed variables to emulate a local array."
+
+#~ msgid "Berechnet pi auf 800 Stellen genau und gibt den Wert in zwei Logzeilen aus."
+#~ msgstr "Calculates pi exact to 800 decimals and returns the value in two log entries."
+
+#~ msgid "1. Summand"
+#~ msgstr "first operand"
+
+#~ msgid "2. Summand"
+#~ msgstr "secod operand"
+
+#~ msgid "3. Summand"
+#~ msgstr "third operand"
+
+#~ msgid "4. Summand"
+#~ msgstr "fourth operand"
+
+#~ msgid "Bildet die Summe von iVal1, iVal2, iVal3 und iVal4 und gibt das Ergebnis zurück. Diese Funktion sollte in neuen Scripts durch den Operator \"+\" ersetzt werden."
+#~ msgstr "Adds iVal1, iVal2, iVal3, and iVal4 and returns the sum. You should really use the '+' operator instead."
+
+#~ msgid "Gibt das Ergebnis von 10 + 5 im Log aus."
+#~ msgstr "Prints the result of 10 + 5 to the log."
+
+#~ msgid "Minuend"
+#~ msgstr "value"
+
+#~ msgid "Subtrahend 1"
+#~ msgstr "first subtracted value"
+
+#~ msgid "Subtrahend 2"
+#~ msgstr "second subtracted value"
+
+#~ msgid "Subtrahend 3"
+#~ msgstr "third subtracted value"
+
+#~ msgid "Subtrahiert die Summe von iVal2, 3 und 4 von iVal1 und gibt das Ergebnis zurück. Diese Funktion sollte in neuen Scripts durch den Operator \"-\" ersetzt werden."
+#~ msgstr "Subtracts iVal2, iVal3, and iVal4 from iVal1 and returns the result. You should really use the '-' operator instead."
+
+#~ msgid "Gibt das Ergebnis von 10 - 5 im Log aus."
+#~ msgstr "Prints the result of 10 - 5 to the log."
+
+#~ msgid "Die threadlokale Variable, die gesetzt werden soll."
+#~ msgstr "Thread local variable to be set."
+
+#~ msgid "Zu setzender Wert."
+#~ msgstr "Value to be set."
+
+#~ msgid "Weist den Wert iValue einer beliebigen Thread-lokalen Variablen (ab 0) zu. Der Datentyp ist variabel. Thread-lokale Variablen gelten nur für die Dauer des aktuellen Funktionsaufrufes. Numerierte Variablen wurden durch Variablen mit Namen abgelöst, sind aber für Arrays nützlich."
+#~ msgstr "Assigns a value to an indexed thread local variable. The data type is variant. Thread local variables are valid for the duration of a function execution only. Indexed variables are more old-fashioned than named variables but are still good for emulating local arrays."
+
+#~ msgid "Rot-Wert der Anfangsfarbe"
+#~ msgstr "Red value of the initial color."
+
+#~ msgid "Grün-Wert der Anfangsfarbe"
+#~ msgstr "Green value of the initial color."
+
+#~ msgid "Blau-Wert der Anfangsfarbe"
+#~ msgstr "Blue value of the initial color."
+
+#~ msgid "Rot-Wert der Endfarbe"
+#~ msgstr "Red value of the destination color."
+
+#~ msgid "Grün-Wert der Endfarbe"
+#~ msgstr "Green value of the destination color."
+
+#~ msgid "Blau-Wert der Endfarbe"
+#~ msgstr "Blue value of the destination color."
+
+#~ msgid "Verändert die Himmelsfarben. Dabei werden im 8Bit-Modus die Palettenfarben 0 (Anfangsfarbe) bis 19 (Endfartbe) auf einen Verlauf zwischen den angegebenen Farbwerten gesetzt. Das macht natürlich nur dann Sinn, wenn der Himmel aus einem Farbverlauf besteht."
+#~ msgstr "Changes the color of the sky. This will set the 8 bit palette colors 0 (initial) to 10 (destination) to a gradient from the initial to the destination color. Obviously, this only makes sense with color gradient skies."
+
+#~ msgid "Diese Funktion ist veraltet, und funktioniert nur im alten 8-Bit-Grafiksystem richtig (für NewGfx wird sie notdürftig emuliert). Stattdessen sollte <placeholder-1/> verwendet werden."
+#~ msgstr "This function is obsolete and will not properly work with the new graphics system. You should use <placeholder-1/> instead."
+
+#~ msgid "Setzt den Himmel auf einen Verlauf zwischen schwarz und weiß."
+#~ msgstr "Sets the sky to a gradient from black to white."
+
+#~ msgid "0-19: Himmelsfarbenindex"
+#~ msgstr "0-19: Sky color index"
+
+#~ msgid "Rot-Wert der Farbe"
+#~ msgstr "Red value of the color"
+
+#~ msgid "Grün-Wert der Farbe"
+#~ msgstr "Green value of the color"
+
+#~ msgid "Blau-Wert der Farbe"
+#~ msgstr "Blue value of the color"
+
+#~ msgid "Verändert eine Himmelsfarben. Dabei wird im 8Bit-Modus der entsprechende Paletteneintrag geändert."
+#~ msgstr "Changes a single sky color. This will set a single palette color in 8 bit color mode."
+
+#~ msgid "Diese Funktion ist veraltet, und funktioniert nur im alten 8-Bit-Grafiksystem richtig. Für NewGfx wird sie notdürftig emuliert, wenn iIndex=0. Stattdessen sollte <placeholder-1/> verwendet werden."
+#~ msgstr "This function is obsolete and will not properly work with the new graphics system. You should use <placeholder-1/> instead."
+
+#~ msgid "Macht den Himmel ziemlich bunt."
+#~ msgstr "Makes a colorful sky."
+
+#~ msgid "Index des Materials, dessen Farben gesetzt werden"
+#~ msgstr "Index of the material for which you want to set the colors."
+
+#~ msgid "Roter Kanal der ersten Materialfarbe"
+#~ msgstr "Red value of the first material color"
+
+#~ msgid "Grüner Kanal der ersten Materialfarbe"
+#~ msgstr "Green value of the first material color"
+
+#~ msgid "Blauer Kanal der ersten Materialfarbe"
+#~ msgstr "Blue value of the first material color"
+
+#~ msgid "Roter Kanal der zweiten Materialfarbe"
+#~ msgstr "Red value of the second material color"
+
+#~ msgid "Grüner Kanal der zweiten Materialfarbe"
+#~ msgstr "Green value of the second material color"
+
+#~ msgid "Blauer Kanal der zweiten Materialfarbe"
+#~ msgstr "Blue value of the second material color"
+
+#~ msgid "Roter Kanal der dritten Materialfarbe"
+#~ msgstr "Red value of the third material color"
+
+#~ msgid "Grüner Kanal der dritten Materialfarbe"
+#~ msgstr "Green value of the third material color"
+
+#~ msgid "Blauer Kanal der dritten Materialfarbe"
+#~ msgstr "Blue value of the third material color"
+
+#~ msgid "Setzt die Farben eines Materials in der Palette. Dadurch werden alle Vorkommen dieses Materials auf der Karte in der neuen Farbe dargestellt."
+#~ msgstr "Sets the colors of a material causing all occurences of this material in the landscape to be drawn using the new color."
+
+#~ msgid "Färbt Gold schwarz."
+#~ msgstr "Makes gold black."
+
+#~ msgid "Nummer der Variable, die gesetzt werden soll. Jeder Index &lt;=0 erlaubt"
+#~ msgstr "Nuber of the variable to be set."
+
+#~ msgid "Neuer Wert der Variable"
+#~ msgstr "New value"
+
+#~ msgid "Objekt, in der die Variable gesetzt werden soll"
+#~ msgstr "Object in which the variable is to be set"
+
+#~ msgid "Setzt eine <placeholder-1/>-Variable in einem Objekt (wenn nicht angegeben, wird die Variable in dem aufrufenden Objekt gesetzt)."
+#~ msgstr "Sets a <placeholder-1/> variable in an object (if no object is specified the variable is set in the calling object)."
+
+#~ msgid "SetLocal gibt, wenn erfolgreich, den gesetzten Wert zurück (ansonsten 0)."
+#~ msgstr "If successful, SetLocal will return the newly set value (or 0 otherwise)."
+
+#~ msgid "Statt SetLocal sollte zum Zugriff auf Local-Variablen die Schreibweise <code><placeholder-1/>(x) = y</code> verwendet werden"
+#~ msgstr "With local variables you should use the <code><placeholder-1/>(x) = y</code> syntax instead of SetLocal."
+
+#~ msgid "Nummer der Variable, die gesetzt werden soll. Jeder Index &gt;=0 erlaubt"
+#~ msgstr "Nuber of the variable to be set. Every index bigger than 0 is allowed."
+
+#~ msgid "Setzt eine <placeholder-1/>-Variable."
+#~ msgstr "Sets a <placeholder-1/> variable."
+
+#~ msgid "SetGlobal gibt, wenn erfolgreich, den gesetzten Wert zurück (ansonsten 0)."
+#~ msgstr "If successful, SetGlobal returns the newly set value (otherwise 0)."
+
+#~ msgid "Statt SetGlobal sollte zum Zugriff auf Global-Variablen die Schreibweise <code><placeholder-1/>(x) = y</code> verwendet werden"
+#~ msgstr "Instead of SetGlobal you should use code such as <code><placeholder-1/>(x) = y</code> to access global variables."
+
+#~ msgid "Erste Zeichenkette zum Vergleichen"
+#~ msgstr "First string to compare."
+
+#~ msgid "Zweite Zeichenkette zum Vergleichen"
+#~ msgstr "Second string to compare."
+
+#~ msgid "Vergleicht zwei Zeichenketten, und gibt zurück, ob sie gleich sind. Dieser Vergleich beachtet Groß-/Kleinschreibung, und entfernt keine vorangehenden oder nachfolgenden Leerzeichen."
+#~ msgstr "Compares two strings and returns whether they are identical. This comparison is case sensitive and does not ignore leading or trailing space."
+
+#~ msgid "Zur einfacheren Schreibweise und schnelleren Ausführung stehen inzwischen die Operatoren S=, eq und ne zur Verfügung"
+#~ msgstr "For simpler syntax, there are also the operators S=, eq, and ne available for string comparison."
+
+#~ msgid "Setzt die Aktivität \"Floating\" im aufrufenden Objekt, wenn sie noch nicht gesetzt war."
+#~ msgstr "Sets action \"Floating\" in the calling object if it was not set already."
+
+#~ msgid "Logik"
+#~ msgstr "Logic"
+
+#~ msgid "1. Bedingung"
+#~ msgstr "First condition"
+
+#~ msgid "2. Bedingung"
+#~ msgstr "Second condition"
+
+#~ msgid "3. Bedingung"
+#~ msgstr "Third condition"
+
+#~ msgid "4. Bedingung"
+#~ msgstr "Fourth condition"
+
+#~ msgid "5. Bedingung"
+#~ msgstr "Fifth condition"
+
+#~ msgid "Gibt TRUE zurück, wenn einer der Parameter ungleich Null ist (Logisches Oder). Sollte in neueren Scripts durch den Operator \"||\" ersetzt werden."
+#~ msgstr "Returns true if one of the specified parameters in unequal to zero (logical OR). You should use the operator \"||\" instead."
+
+#~ msgid "Alles außer Kohle, Öl-Fässern und Holz aus dem Gebäude entfernen. (Beispiel aus PowerPlant.c4d übernommen)"
+#~ msgstr "Removes everything except coal, oil barrels, and wood from the building (example taken from PowerPlant.c4d)."
+
+#~ msgid "Gibt true zurück, wenn Value false ist, false, wenn Value true ist."
+#~ msgstr "Returns true if Value is false and vice versa."
+
+#~ msgid "Ruft FooBarFunc() auf, wenn x falsch ist."
+#~ msgstr "Calls FooBarFunc() if x is false."
+
+#~ msgid "Ruft FooBarFunc() auf, wenn x falsch ist. Neue Schreibweise."
+#~ msgstr "Calls FooBarFunc() if x is false. New syntax."
+
+#~ msgid "Faktor 1"
+#~ msgstr "Factor 1"
+
+#~ msgid "Faktor 2"
+#~ msgstr "Factor 2"
+
+#~ msgid "Multipliziert iVal1 mit iVal2 und gibt das Ergebnis zurück."
+#~ msgstr "Multiplies iVal1 with iVal2 and returns the result."
+
+#~ msgid "Statt <code>Mul(x, y)</code> sollte die Operatorenschreibweise <code>x * y</code> benutzt werden."
+#~ msgstr "Instead of <code>Mul(x, y)</code> you should use the operator <code>x * y</code>."
+
+#~ msgid "Divident"
+#~ msgstr "Dividend"
+
+#~ msgid "Divisor"
+#~ msgstr "Divisor"
+
+#~ msgid "Gibt den Divisionsrest von iVal1 / iVal2 zurück."
+#~ msgstr "Returns the division rest (modulo) of iVal1 / iVal2."
+
+#~ msgid "Statt <code>Mod(x, y)</code> sollte die Operatorenschreibweise <code>x % y</code> benutzt werden."
+#~ msgstr "Instead of <code>Mod(x, y)</code> you should use the operator <code>x % y</code>."
+
+#~ msgid "Nummer der Variable, die abgefragt werden soll. Jede positive Zahl (einschließlich 0) erlaubt"
+#~ msgstr "Index of the variable to be accessed. Can be any positive number including 0."
+
+#~ msgid "Objekt, in der sich die Variable befindet"
+#~ msgstr "Object holding the variable."
+
+#~ msgid "Gibt den Wert einer lokalen Variable (als Referenz) zurück. Jedes Objekt kann eine beliebige Anzahl lokaler Variablen besitzen. Diese werden für jedes Objekt dauerhaft gespeichert und gehen erst verloren, wenn das Objekt gelöscht wird. Eine lokale Variable hat bei Erstellung des Objekts immer den Wert 0."
+#~ msgstr "Returns the value of an object local variable (as reference). Each object can hold any number of local variables. This are stored in the object until the object is deleted. A newly created local variable always has the value 0."
+
+#~ msgid "Da Local eine Referenz zurückgibt, kann der Wert einer Variable über Operatoren verändert werden ( Local(0) = 20; Local(1)++; u.ä.)"
+#~ msgstr "Since Local() returns a reference, the variable can be modified using operators such as Local(0) = 20 or Local(1)++"
+
+#~ msgid "Wo möglich, sollte statt einer Local-Variable eine lokale benannte Variable eingesetzt werden."
+#~ msgstr "Whenever possible, you should use named variables instead of indexed ones."
+
+#~ msgid "Dieser Script hat eine Ereignisfunktion (Hit), welche aufgerufen wird, wenn das Objekt auf den Boden aufschlägt. <br/> Hier wird die lokale Variable Nr. 0 auf 1 und die lokale Variable Nr. 1 auf 10 gesetzt. <br/> Die zweite Scriptfunktion, die definiert wird, heißt \"Timer\". Hierbei sollte es sich um eine Funktion handeln, die periodisch aufgerufen wird (Einstellung \"Timer\" in der DefCore.txt). Hier wird erst geprüft, ob das Objekt aktiviert ist [Local(0)]. Wenn nicht, wird die Funktion sofort beendet, es passiert also nichts. Wurde das Objekt aber aktiviert (dann ist Local(0) = 1), so wird ein Sound ausgegeben. Darauf wird die lokale Variable 1 eins heruntergezählt und der neue Wert über dem Objekt angezeigt. <br/> D.h. die Aktivierung in Hit startet einen Countdown von 10 aus. Ist der Zähler bei 0 angekommen, so explodiert das Objekt."
+#~ msgstr "This script is invoked through the engine callback 'Hit' which occurs when the object hits the ground.<br/>The script sets the local variable 0 to value 1 and the variable 1 to value 10.<br/>The second script function is called 'Timer' and should be called periodically (see Timer entry in DefCore). This function will check whether the object has already hit the ground (Local(0) ist set). If this is the case, a sound is played and the counter variable 1 is decreased. When the counter reaches zero, the object explodes. Ergo: a timed grenade activated by impact."
+
+#~ msgid "Gibt TRUE zurück, wenn der erste übergebene Wert kleiner ist als der zweite (iValue1 &lt; iValue2)"
+#~ msgstr "Returns true if the first passed value is less than the second (iValue1 &lt; iValue2)."
+
+#~ msgid "Gibt zurück, ob das 32 Bit/16 Bit-Grafiksystem aktiviert ist. Bei Rückgabewert FALSE befindet sich die Engine im 8 Bit-Modus. Diese Funktion ist veraltet. Ab 4.9.5.0 CE läuft die Engine ausschließlich im 32 Bit/16 Bit-Modus."
+#~ msgstr "Returns whether the graphics system operates in 8 Bit or 32/16 Bit mode. This function is obsolete. From 4.9.5.0 CE the engine will run in 32/16 Bit mode only."
+
+#~ msgid "Beendet das Spiel, wenn nicht der neue Grafikmodus aktiviert ist."
+#~ msgstr "Ends the game if the new graphics mode is not enabled."
+
+#~ msgid "Index der lokalen Variable, die erhöht werden soll"
+#~ msgstr "Index of the local variable to be increased."
+
+#~ msgid "Erhöht die angegebene, threadlokale Variable. Neuere Scripte sollten den \"++\"-Operator und benannte Variablen benutzen."
+#~ msgstr "Increases the specified, thread local variable. You should use the \"++\" operator instead."
+
+#~ msgid "Variable"
+#~ msgstr "Variable"
+
+#~ msgid "Erhöht die Variable Var um 1. Bitte den \"++\"-Operator verwenden."
+#~ msgstr "Increases the variable by 1. You should use the \"++\" operator instead."
+
+#~ msgid "Erster Wert zum Vergleichen."
+#~ msgstr "First value to be compared."
+
+#~ msgid "Zweiter Wert zum Vergleichen."
+#~ msgstr "Second value to be compared."
+
+#~ msgid "Gibt True zurück wenn iVal1 größer als iVal2 ist."
+#~ msgstr "Returns true if iVal is greater than iVal2."
+
+#~ msgid "Nummer der globalen Variable."
+#~ msgstr "Number of the global variable."
+
+#~ msgid "Liefert den Inhalt der globalen Variable iVarIndex."
+#~ msgstr "Returns the value of the global variable iVarIndex."
+
+#~ msgid "Zahl 1"
+#~ msgstr "Value 1"
+
+#~ msgid "Zahl 2"
+#~ msgstr "Value 2"
+
+#~ msgid "Gibt true zurück, wenn iVal1 == iVal2, false, wenn nicht."
+#~ msgstr "Returns true if iVal1 == iVal2. Otherwise false."
+
+#~ msgid "Ruft FooBarFunc() auf, wenn x == y. Alte Schreibweise."
+#~ msgstr "Calls FooBarFunc() if x == y. Old syntax."
+
+#~ msgid "Ruft FooBarFunc() auf, wenn x == y. Neue Schreibweise."
+#~ msgstr "Calls FooBarFunc() if x == y. New syntax."
+
+#~ msgid "Dividend"
+#~ msgstr "Dividend"
+
+#~ msgid "Führt eine Division durch, wobei eine Division durch 0 einfach 0 zurückgibt. Statt dieser Funktion sollte der Operator \"/\" verwendet werden."
+#~ msgstr "Performs a division. A division by 0 will return 0 (and not cause an error). You should use the operator \"/\" instead."
+
+#~ msgid "Index der lokalen Variable, die verringert werden soll"
+#~ msgstr "Index of the variable to be decreased."
+
+#~ msgid "Verringert die angegebene, threadlokale Variable. Neuere Scripte sollten den \"--\"-Operator und benannte Variablen benutzen."
+#~ msgstr "Decreases the specified, thread local variable. New scripts should use the \"--\" operator and named variables instead."
+
+#~ msgid "Erniedrigt die Variable Var um 1. Bitte den \"--\"-Operator verwenden."
+#~ msgstr "Decreases the variable. You should use \"--\" instead."
+
+#~ msgid "Gibt (iVal1 &amp; iVal2) zurück (Bitweises And). Sollte in neuen Scripts durch den Operator \"&amp;\" ersetzt werden."
+#~ msgstr "Returns bitwise AND (iVal1 &amp; iVal2). You should use operator \"&amp;\" instead."
+
+#~ msgid "Gibt FALSE zurück, wenn in der aktuellen Kategorie des Objekts das Flag für C4D_Vehicle() gesetzt ist. (Aus dem Tree.c4d Script)"
+#~ msgstr "Returns false, if the current category of the object contains the C4D_Vehicle bit (from the tree script)."
+
+#~ msgid "Weist den Wert iValue einer beliebigen Thread-lokalen Variablen (ab 0) zu. Der Datentyp ist variabel. Thread-lokale Variablen gelten nur für die Dauer des aktuellen Funktionsaufrufes. AssignVar wurde durch <placeholder-1/> abgelöst."
+#~ msgstr "Assigns a value to a thread local variable. The data type is variant. Thread local variables exist only for the duration of the function execution. This function was replaced by <placeholder-1/>."
+
+#~ msgid "Gibt TRUE zurück, wenn beide Parameter ungleich Null sind (Logisches And). Sollte in neueren Scripts durch den <emlink href=\"script/operatoren.html\">Operator</emlink> \"&amp;&amp;\" ersetzt werden."
+#~ msgstr "Returns true if both parameters are unequal to zero (logical AND). You should use the <emlink href=\"script/operatoren.html\">operator</emlink> \"&amp;&amp;\" instead."
+
+#~ msgid "Gibt Null zurück, wenn das Objekt, welches als erster Parameter übergeben wurde, sich sowohl in dem lokalen Objekt befindet, als auch ein Crew-Member ist."
+#~ msgstr "Returns 0 if the specified object is contained in this object and is also a crew member."
+
+#~ msgid "Die ID wird als <placeholder-1/>(0) des szCommand übergeben und als Bild für den Menüeintrag verwendet. Der Name der Definition kann mit %s in szCaption verwendet werden."
+#~ msgstr "The id is passed as <placeholder-1/>(0) of szCommand and used as image for the menu entry. The name of the definition can be used through %s in szCaption."
+
 #~ msgid "Der Entwicklermodus kann in der registrierten Version des Spiels den Optionen des Menüsystems aktiviert werden."
 #~ msgstr "The developer mode can be activated in the registered version of the game in the options dialog of the menu system."
+
 #~ msgid "/network"
 #~ msgstr "/network"
+
 #~ msgid "/nosignup"
 #~ msgstr "/nosignup"
+
 #~ msgid "Kein Internetspiel, kein Ligaspiel."
 #~ msgstr "No internet game, no league game."
+
 #~ msgid "/signup"
 #~ msgstr "/signup"
+
 #~ msgid "Internetspiel, aber kein Ligaspiel. Impliziert /network."
 #~ msgstr "Internet game, but no league game. Implies /network."
+
 #~ msgid "/league"
 #~ msgstr "/league"
+
 #~ msgid "/ncrw oder /faircrew"
 #~ msgstr "/ncrw or /faircrew"
+
 #~ msgid "Aktiviert faire Crew. Alle Clonks starten mit gleichen physischen Eigenschaften."
 #~ msgstr "Enables Fair Crew. All clonks start with the same physical properties."
+
 #~ msgid "Deaktiviert faire Crew. Clonks starten mit ihren individuell trainierten physischen Eigenschaften."
 #~ msgstr "Disables Fair Crew. Clonks start with their individually trained physical properties."
+
 #~ msgid "/runtimejoin"
 #~ msgstr "/runtimejoin"
+
 #~ msgid "Gibt den Laufzeitbeitritt frei. Dies ändert den Konfigurationswert permanent."
 #~ msgstr "Enables runtime join. This will adjust the corresponding configuration value permanently."
+
 #~ msgid "Anmerkung:"
 #~ msgstr "Remark:"
+
 #~ msgid "Anmerkung 1:"
 #~ msgstr "Remark 1:"
+
 #~ msgid "Anmerkung 2:"
 #~ msgstr "Remark 2:"
+
 #~ msgid "this muss wie eine Variable, das heißt ohne Klammern für den Funktionsaufruf, benutzt werden."
 #~ msgstr "this must be used without parentheses."
+
 #~ msgid "Liefert das erste im Editormodus ausgewählte Objekt."
 #~ msgstr "Returns the (first) object currently selected in engine's developer mode."
+
 #~ msgid "Anzeigen: F5 Vertices, F6 Action, F7 Commands, F8 Entrance/Collection, Alt-F7 Pathfinder, Alt-F8 SolidMasks"
 #~ msgstr "Displays: F5 Vertices, F6 Action, F7 Commands, F8 Entrance/Collection, Alt-F7 Pathfinder, Alt-F8 SolidMasks"
+
 #~ msgid "Achtung! Der Wert dieser Funktion sollte nur verwendet werden, um direkt an <placeholder-1/> oder <placeholder-2/> übergeben zu werden. Jede andere Verwendung kann zu Problemen mit dem Typechecksystem führen"
 #~ msgstr "Warning: you should use this value only in calls to <placeholder-1/> or <placeholder-2/>. Any other use might cause type checking errors."
+
 #~ msgid "Zielobjekt für objektlokale Partikel. Objektlokale Partikel werden direkt über den jeweiligen Objekten gezeichnet, und beim Entfernen des Objekts gelöscht. Ab 4.9.5.0 CE."
 #~ msgstr "Target object for object local particles. Object local particles are drawn directly on top of the object and are removed when the object is deleted. From 4.9.5.0 CE."
+
 #~ msgid "Noch in der Testphase. Funktion bitte nicht benutzen."
 #~ msgstr "Still in beta phase. Do not use this function yet."
+
 #~ msgid "Meldet das Spiel nicht als Internetspiel an."
 #~ msgstr "Does not register the game as an internet game."
+
 #~ msgid "Gibt dem ausgewählten Clonk jedes Spielers einen Flint ins Inventar."
 #~ msgstr "Gives a flint to the selected clonk of each player."
+
 #~ msgid "Die Variable, die umgewandelt werden soll."
 #~ msgstr "Variable to be converted."
+
 #~ msgid "Erzwingt die Variablenumwandlung in den Typ \"int\"."
 #~ msgstr "Forces conversion to type \"int\"."
+
 #~ msgid "Erzwingt die Variablenumwandlung in den Typ \"object\"."
 #~ msgstr "Forces conversion to type \"object\"."
+
 #~ msgid "Erzwingt die Variablenumwandlung in den Typ \"id\"."
 #~ msgstr "Forces conversion to type \"id\"."
+
 #~ msgid "Erzwingt die Variablenumwandlung in den Typ \"bool\"."
 #~ msgstr "Forces conversion to type \"bool\"."
+
 #~ msgid "Erzwingt die Variablenumwandlung in den Typ \"any\"."
 #~ msgstr "Forces conversion to type \"any\"."
+
 #~ msgid "/ncrw"
 #~ msgstr "/ncrw"
+
 #~ msgid "Aktiviert faire Crew."
 #~ msgstr "Activates fair crew mode."
+
 #~ msgid "/ucrw"
 #~ msgstr "/ucrw"
+
 #~ msgid "Deaktiviert faire Crew."
 #~ msgstr "Deactivates fair crew mode."
+
 #~ msgid "Gleich /join."
 #~ msgstr "Same as /join."
+
 #~ msgid "X-Position des Suchpunktes"
 #~ msgstr "X coordinate of search point"
+
 #~ msgid "Y-Position des Suchpunktes"
 #~ msgstr "Y coordinate of the search point"
+
 #~ msgid "Wenn das Objekt erzeugt wird."
 #~ msgstr "When the object is competed."
+
 #~ msgid "/nonetwork"
 #~ msgstr "/nonetwork"
+
 #~ msgid "Deaktiviert den Netzwermodus."
 #~ msgstr "Deactivates network mode."
+
 #~ msgid "Gleich wie /Join, allerdings wird /network impliziert."
 #~ msgstr "Like /Join, but /network is implied."
+
 #~ msgid "Liefert die ID des Menüsymbols (idSymbol), falls das Objekt ein Menü geöffnet hat. 0 bei keinem Menü oder bei keinem Symbol."
 #~ msgstr "Returns the id of the menu symbol if the object has an active menu. Returns 0 if no menu is open or no symbol is set."
+
 #~ msgid "0 Normal, 1 Kontext, 2 Info."
 #~ msgstr "0 normal, 1 context, 2 info."
+
 #~ msgid "FreeForAll"
 #~ msgstr "FreeForAll"
+
 #~ msgid "Im Installationsordner von Clonk befinden sich vier ausführbare Dateien: Clonk.exe, Editor.exe und C4Group.exe und Update.exe. Klickt man die Dateien einfach im Explorer an, werden sie ohne Startparameter ausgeführt. Über Batchdateien bzw. die Kommandozeile lassen sich jedoch diverse Parameter angeben, um den Start zu automatisieren:"
 #~ msgstr "The installation folder of Clonk contains four executable files: Clonk.exe, Editor.exe, C4Group.exe and Update.exe. If you just start those files in Windows Explorer, they will be startet without startup parameters. Using batch files or the command line, you can specify a variety of command line parameters in order to automate startup:"
+
 #~ msgid "Editor.exe"
 #~ msgstr "Editor.exe"
+
 #~ msgid "C4Group.exe"
 #~ msgstr "C4Group.exe"
+
 #~ msgid "Update.exe"
 #~ msgstr "Update.exe"
+
 #~ msgid "Sollte ohne Parameter gestartet werden, und wendet alle im Clonkverzeichnis vorhandenen Updategruppen (*.c4u) auf die entsprechenden Pakete an. Normalerweise wird dieses Programm direkt über den integrierten Updateprozess in Clonk aufgerufen."
 #~ msgstr "Should be started without parameters. All updates present in the Clonk folder (*.c4u) are applied to their respective packages. Usually, this program will be called automatically by the integrated update process in the game."
+
 #~ msgid "Auszuschließendes Objekt"
 #~ msgstr "Object to be excluded."
+
 #~ msgid "Objekt bewegt sich parallax nach Local 0 und 1."
 #~ msgstr "Object is moving parallax according to Local 0 and 1."
+
 #~ msgid "OCF_CrewMember"
 #~ msgstr "OCF_CrewMember"
-
