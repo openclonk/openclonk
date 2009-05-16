@@ -37,3 +37,10 @@ BuildLog.htm
 # TortoiseHg loves to generate those
 *.orig
 
+# XCode temporary files
+.DS_Store
+xcode/build
+
+# Binaries
+planet/Clonk.app
+
