@@ -1238,6 +1238,7 @@
 				D444F79F0B417971001B60F7 /* CopyFiles */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				D04E83FE0FBF138E00820337 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -1303,6 +1304,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		D04E83FE0FBF138E00820337 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "LIBS_TO_BUNDLE=\"/opt/local/lib/lib(crypto|z\\.|iconv|jpeg|png|GLEW)[^ ]+\"\n\ncd $TARGET_BUILD_DIR\nfor lib in `otool -L $EXECUTABLE_PATH | grep -Eo \"$LIBS_TO_BUNDLE\"`; do\n  base=`basename $lib`\n  bundle_path=$FRAMEWORKS_FOLDER_PATH/$base\n  id=@executable_path/../Frameworks/$base\n  \n  echo Bundling $base...\n  cp $lib $bundle_path\n  chmod u+w $bundle_path\n  install_name_tool -id $id $bundle_path\n  install_name_tool -change $lib $id $EXECUTABLE_PATH\ndone\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D11072C0486CEB800E47090 /* Sources */ = {
