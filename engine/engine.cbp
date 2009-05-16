@@ -10,8 +10,9 @@
 				<![CDATA[How-To:
 1. Install Guenther's mingw-lib package.
 	(http://forum.openclonk.org/topic_show.pl?pid=1522#pid1522)
-	Attention: The folder include/freetype2/freetype from the package has to be in your 		MinGW include-directory (so that you have MinGW/include/freetype) 
-	The other stuff is in a proper directory structure for just unpacking it as it is.
+
+1.2. Go to "Settings -> Compiler and debugger..". Go to the "Search directories" tab and select 	"Compiler". Add "your/path/to/CodeBlocks/MinGW/include/freetype2" there.
+	For example: C:/CodeBlocks/MinGW/include/freetype2
 
 2. Install fmod.
 	(http://forum.openclonk.org/topic_show.pl?pid=1405#pid1405)
