@@ -1,6 +1,7 @@
 #include <C4Include.h>
 #include <C4PropList.h>
 #include <C4Game.h>
+#include <C4Object.h>
 
 void C4PropList::AddRef(C4Value *pRef)
 	{
@@ -21,6 +22,11 @@ void C4PropList::DelRef(const C4Value * pRef, C4Value * pNextRef)
 		assert(pVal->NextRef);
 		pVal->NextRef = pNextRef;
 		}
+	if (FirstRef) return;
+	// These classes have their own memory management
+	if (dynamic_cast<C4Object *>(this)) return;
+	if (dynamic_cast<C4Def *>(this)) return;
+	delete this;
 	}
 
 void C4PropList::AssignRemoval()
