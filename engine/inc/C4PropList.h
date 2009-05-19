@@ -31,6 +31,7 @@ class C4PropList {
 	void ResetProperty(C4String * k);
 
 	C4PropList();
+	C4PropList(C4PropList * prototype);
 	virtual ~C4PropList();
 
 	protected:

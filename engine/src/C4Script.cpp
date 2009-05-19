@@ -964,6 +964,11 @@ static C4String *FnGetAction(C4AulContext *cthr, C4Object *pObj)
   return String(pObj->Def->ActMap[pObj->Action.Act].Name);
   }
 
+static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
+	{
+	return new C4PropList(prototype);
+	}
+
 static C4Value FnGetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * pObj_C4V)
 	{
 	C4PropList * pObj = pObj_C4V->_getPropList();
@@ -6582,6 +6587,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetYDir", FnSetYDir);
 	AddFunc(pEngine, "SetR", FnSetR);
 	AddFunc(pEngine, "SetOwner", FnSetOwner);
+	AddFunc(pEngine, "CreatePropList", FnCreatePropList);
 	AddFunc(pEngine, "CreateObject", FnCreateObject);
 	AddFunc(pEngine, "MakeCrewMember", FnMakeCrewMember);
 	AddFunc(pEngine, "GrabObjectInfo", FnGrabObjectInfo);

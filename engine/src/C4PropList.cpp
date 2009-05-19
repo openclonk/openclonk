@@ -34,6 +34,11 @@ C4PropList::C4PropList():
 	{
 	}
 
+C4PropList::C4PropList(C4PropList * prototype):
+	FirstRef(NULL), prototype(prototype)
+	{
+	}
+
 C4PropList::~C4PropList()
 	{
 	assert(!FirstRef);
