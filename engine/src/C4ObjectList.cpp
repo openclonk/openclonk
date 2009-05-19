@@ -457,7 +457,7 @@ void C4ObjectList::Enumerate()
 			cLnk->Obj->EnumeratePointers();
 	}
 
-long C4ObjectList::ObjectNumber(C4Object *pObj)
+long C4ObjectList::ObjectNumber(C4PropList *pObj)
 	{
   C4ObjectLink *cLnk;
 	if(!pObj) return 0;

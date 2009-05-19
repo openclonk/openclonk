@@ -53,7 +53,7 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		C4Object *FindInternal(C4ID id); // find object in first sector
 		virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
-		long ObjectNumber(C4Object *pObj); // object number by pointer
+		long ObjectNumber(C4PropList *pObj); // object number by pointer
 
 		C4ObjectList &ObjectsInt(); // return object list containing system objects
 

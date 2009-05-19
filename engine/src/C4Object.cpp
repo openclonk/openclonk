@@ -141,7 +141,6 @@ void C4Object::Default()
 	pGraphics=NULL;
 	pDrawTransform=NULL;
 	pEffects=NULL;
-  FirstRef=NULL;
 	pGfxOverlay=NULL;
 	iLastAttachMovementFrame=-1;
 	}
@@ -310,9 +309,8 @@ void C4Object::AssignRemoval(BOOL fExitContents)
   // Object info
   if (Info) Info->Retire();
 	Info = NULL;
-  // Object system operation
-  while(FirstRef) FirstRef->Set(0);
-  Game.ClearPointers(this);
+	// Object system operation
+	C4PropList::AssignRemoval();
   ClearCommands();
 	if (pSolidMaskData)
 		{
@@ -3178,7 +3176,6 @@ void C4Object::Clear()
 		}
 	if (pDrawTransform) { delete pDrawTransform; pDrawTransform=NULL; }
 	if (pGfxOverlay) { delete pGfxOverlay; pGfxOverlay=NULL; }
-  while (FirstRef) FirstRef->Set(0);
 	}
 
 BOOL C4Object::ContainedControl(BYTE byCom)
@@ -5644,7 +5641,7 @@ void C4Object::ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctView
 	{
 	// parallaxity by locals
 	// special: Negative positions with parallaxity 0 mean HUD elements positioned to the right/bottom
-	int iParX = Local[0].Data.Int, iParY = Local[1].Data.Int;
+	int iParX = Local[0].getInt(), iParY = Local[1].getInt();
 	if (!iParX && GetX()<0)
 		riTx = -fctViewport.Wdt;
 	else
@@ -5677,7 +5674,7 @@ void C4Object::UnSelect(BOOL fCursor)
 
 void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)
 	{
-	float iParX = float(Local[0].Data.Int), iParY = float(Local[1].Data.Int);
+	float iParX = float(Local[0].getInt()), iParY = float(Local[1].getInt());
 	// get drawing pos, then subtract original target pos to get drawing pos on landscape
 	if (!iParX && GetX()<0)
 		// HUD element at right viewport pos
@@ -5943,27 +5940,6 @@ void C4Object::UpdateInLiquid()
     if (InLiquid) // Leave liquid
       InLiquid=0;
     }
-	}
-
-void C4Object::AddRef(C4Value *pRef)
-	{
-	pRef->NextRef = FirstRef;
-	FirstRef = pRef;
-	}
-
-void C4Object::DelRef(const C4Value * pRef, C4Value * pNextRef)
-	{
-	// References to objects never have HasBaseArray set
-	if(pRef == FirstRef)
-		FirstRef = pNextRef;
-	else
-		{
-		C4Value *pVal = FirstRef;
-		while(pVal->NextRef && pVal->NextRef != pRef)
-			pVal = pVal->NextRef;
-		assert(pVal->NextRef);
-		pVal->NextRef = pNextRef;
-		}
 	}
 
 StdStrBuf C4Object::GetInfoString()

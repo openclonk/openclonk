@@ -92,6 +92,7 @@ class C4FacetSurface;
 class C4Surface;
 class C4League;
 class C4RoundResults;
+class C4PropList;
 
 namespace C4GUI { class Screen; }
 typedef C4GUI::Screen C4GUIScreen;

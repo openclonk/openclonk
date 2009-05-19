@@ -73,6 +73,7 @@
 #define C4AUL_TypeBool			"bool"
 #define C4AUL_TypeC4ID			"id"
 #define C4AUL_TypeC4Object	"object"
+#define C4AUL_TypePropList	"proplist"
 #define C4AUL_TypeString		"string"
 #define C4AUL_TypeArray			"array"
 
@@ -1567,6 +1568,7 @@ void C4AulParseState::Parse_FuncHead()
 			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_C4ID; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(Discard,false); }
+			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(Discard,false); }
 			// ampersand?

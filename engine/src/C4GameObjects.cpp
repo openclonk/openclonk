@@ -283,7 +283,7 @@ C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 	return InactiveObjects.ObjectPointer(iNumber);
 	}
 
-long C4GameObjects::ObjectNumber(C4Object *pObj)
+long C4GameObjects::ObjectNumber(C4PropList * pObj)
 	{
 	// search own list
 	long iNum = C4ObjectList::ObjectNumber(pObj);

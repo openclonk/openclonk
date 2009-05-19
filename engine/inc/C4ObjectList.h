@@ -123,7 +123,7 @@ class C4ObjectList
 		BOOL Write(char *szTarget);
 		void CompileFunc(StdCompiler *pComp, bool fSaveRefs = true, bool fSkipPlayerObjects = false);
 
-		long ObjectNumber(C4Object *pObj);
+		long ObjectNumber(C4PropList *pObj);
 		bool IsContained(C4Object *pObj);
 		int ClearPointers(C4Object *pObj);
 		int ObjectCount(C4ID id=C4ID_None, int32_t dwCategory=C4D_All) const;

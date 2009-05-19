@@ -548,8 +548,8 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
 				{
 				fRemove = false;
 				if (GetX()>GBackWdt || GetY()>GBackHgt) fRemove = true; // except if they are really out of the viewport to the right...
-				else if (GetX()<0 && Local[0].Data) fRemove = true; // ...or it's not HUD horizontally and it's out to the left
-				else if (!Local[0].Data && GetX()<-GBackWdt) fRemove = true; // ...or it's HUD horizontally and it's out to the left
+				else if (GetX()<0 && Local[0].getBool()) fRemove = true; // ...or it's not HUD horizontally and it's out to the left
+				else if (!Local[0].getBool() && GetX()<-GBackWdt) fRemove = true; // ...or it's HUD horizontally and it's out to the left
 				}
 			if (fRemove)
 				{

@@ -77,15 +77,25 @@ public:
 		for (unsigned int i = 0; i < Capacity; ++i)
 			Table[i] = 0;
 		}
-	template<typename H> T Get(H e)
+	template<typename H> T & Get(H e)
 		{
 		unsigned int h = Hash(e);
-		T r = Table[h % Capacity];
-		while (r && !Equals(r, e))
+		T * r = &Table[h % Capacity];
+		while (*r && !Equals(*r, e))
 			{
-			r = Table[++h % Capacity];
+			r = &Table[++h % Capacity];
 			}
-		return r;
+		return *r;
+		}
+	template<typename H> bool Has(H e)
+		{
+		unsigned int h = Hash(e);
+		T * r = &Table[h % Capacity];
+		while (*r && !Equals(*r, e))
+			{
+			r = &Table[++h % Capacity];
+			}
+		return !!*r;
 		}
 	unsigned int GetSize() { return Size; }
 	void Add(T e)
@@ -150,6 +160,11 @@ inline unsigned int C4Set<C4String *>::Hash<C4String *>(C4String * e)
 	return e->Hash;
 	}
 
+enum {
+P_PROTOTYPE,
+P_NAME,
+P_LAST };
+
 // There is only one Stringtable in Game.ScriptEngine
 class C4StringTable
 	{
@@ -173,6 +188,7 @@ public:
 
 	C4Set<C4String *> Set;
 	std::vector<C4String *> Stringstxt;
+	C4String * P[P_LAST];
 	};
 
 #endif

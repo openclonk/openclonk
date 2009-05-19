@@ -236,7 +236,7 @@ class C4Game
 	  BOOL ReloadDef(C4ID id);
 		BOOL ReloadParticle(const char *szName);
     // Object functions
-    void ClearPointers(C4Object *cobj);
+    void ClearPointers(C4PropList *cobj);
     C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
                            int32_t x=50, int32_t y=50, int32_t r=0,
                            FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);

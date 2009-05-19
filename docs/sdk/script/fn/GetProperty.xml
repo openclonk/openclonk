@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+        <func>
+                <title>GetProperty</title>
+                <category>Objekte</category><subcat>Eigenschaften</subcat>
+                <version>4.10.0.0</version>
+                <syntax>
+                        <rtype>any</rtype>
+                        <params>
+                                <param><type>string</type><name>key</name><desc>Abzufragende Eigenschaft.</desc><optional /></param>
+                                <param><type>proplist</type><name>object</name><desc>Objekt, das untersucht wird. Null bei lokalem Aufruf.</desc><optional /></param>
+                        </params>
+                </syntax>
+                <desc>Liefert die Eigenschaft <code>key</code> von <code>object</code>.</desc>
+                <related>
+                        <funclink>SetProperty</funclink>
+                </related>
+        </func>
+        <author>Günther</author><date>Mai 2009</date>
+</funcs>
+

@@ -73,8 +73,6 @@ static StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4V
 		// Field
 		if (*cpFormat=='%')
 			{
-			// arrays now valid in %v
-			//if (Par[cPar] && Par[cPar]->Type == C4V_Array) throw new C4AulExecError(0, cthr, 0, "array argument to format");
 			// Scan field type
 			for (cpType=cpFormat+1; *cpType && (*cpType=='.' || Inside(*cpType,'0','9')); cpType++) {}
 			// Copy field
@@ -966,6 +964,27 @@ static C4String *FnGetAction(C4AulContext *cthr, C4Object *pObj)
   return String(pObj->Def->ActMap[pObj->Action.Act].Name);
   }
 
+static C4Value FnGetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * pObj_C4V)
+	{
+	C4PropList * pObj = pObj_C4V->_getPropList();
+	if (!pObj) pObj=cthr->Obj; if (!pObj) return C4VFalse;
+	C4String * key = key_C4V->_getStr();
+	if(!key) return C4VFalse;
+	C4Value r;
+	pObj->GetProperty(key, r);
+	return r;
+	}
+
+static C4Value FnSetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * to, C4Value * pObj_C4V)
+	{
+	C4PropList * pObj = pObj_C4V->_getPropList();
+	if (!pObj) pObj=cthr->Obj; if (!pObj) return C4VFalse;
+	C4String * key = key_C4V->_getStr();
+	if(!key) return C4VFalse;
+	pObj->SetProperty(key, *to);
+	return C4VTrue;
+	}
+
 static C4String *FnGetName(C4AulContext *cthr, C4Object *pObj, C4ID idDef/*, bool fFilename, long idx*/)
   {
 	// Def name
@@ -1523,7 +1542,8 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 		sprintf(parameter, "%s", C4IdText(Parameter.getC4ID()));
 		break;
 	case C4V_C4Object:
-		sprintf(parameter, "Object(%d)", Parameter.getObj()->Number);
+	case C4V_PropList:
+		sprintf(parameter, "Object(%d)", Parameter.getPropList()->Number);
 		break;
 	case C4V_String:
     // note this breaks if there is '"' in the string.
@@ -6869,6 +6889,7 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "C4V_C4Object"           ,C4V_Int,          C4V_C4Object},
 	{ "C4V_String"             ,C4V_Int,          C4V_String},
 	{ "C4V_Array"              ,C4V_Int,          C4V_Array},
+	{ "C4V_PropList"           ,C4V_Int,          C4V_PropList},
 
 	{ "COMD_None"              ,C4V_Int,          COMD_None},
 	{ "COMD_Stop"              ,C4V_Int,          COMD_Stop},
@@ -7166,6 +7187,8 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "Global",								1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGlobal_C4V ,                0 },
   { "SetLocal",							1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetLocal_C4V ,              0 },
   { "Local",								1	,C4V_Any			,{ C4V_Int		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnLocal_C4V ,                 0 },
+  { "SetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetProperty_C4V ,           0 },
+  { "GetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetProperty_C4V ,           0 },
   { "Explode",							1	,C4V_Bool			,{ C4V_Int		,C4V_C4Object,C4V_C4ID	,C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnExplode },
   { "Incinerate",						1	,C4V_Bool			,{ C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnIncinerate },
 	{ "IncinerateLandscape",  1	,C4V_Bool			,{ C4V_Int    ,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnIncinerateLandscape },

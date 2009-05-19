@@ -63,13 +63,14 @@ void C4Value::AddDataRef()
 		case C4V_Array: Data.Array = Data.Array->IncRef(); break;
 		case C4V_String: Data.Str->IncRef(); break;
 		case C4V_C4Object:
-		Data.Obj->AddRef(this);
+		case C4V_PropList:
+		Data.PropList->AddRef(this);
 #ifdef _DEBUG
 		// check if the object actually exists
-		if(!Game.Objects.ObjectNumber(Data.Obj))
-			{ LogF("Warning: using wild object ptr %p!", Data.Obj); }
-		else if(!Data.Obj->Status)
-			{ LogF("Warning: using ptr on deleted object %p (%s)!", Data.Obj, Data.Obj->GetName()); }
+		if(!Game.Objects.ObjectNumber(Data.PropList))
+			{ LogF("Warning: using wild object ptr %p!", Data.PropList); }
+		else if(!Data.PropList->Status)
+			{ LogF("Warning: using ptr on deleted object %p (%s)!", Data.PropList, Data.PropList->GetName()); }
 #endif
 		break;
 #endif
@@ -88,7 +89,7 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 		Data.Ref->DelRef(this, pNextRef, pBaseArray);
 		break;
 #ifdef C4ENGINE
-		case C4V_C4Object: Data.Obj->DelRef(this, pNextRef); break;
+		case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
 		case C4V_Array: Data.Array->DecRef(); break;
 		case C4V_String: Data.Str->DecRef(); break;
 #endif
@@ -302,6 +303,8 @@ const char* GetC4VName(const C4V_Type Type)
 		return "string";
 	case C4V_Array:
 		return "array";
+	case C4V_PropList:
+		return "proplist";
 	case C4V_pC4Value:
 		return "&";
 	default:
@@ -331,6 +334,8 @@ char GetC4VID(const C4V_Type Type)
 		return 'O';
 	case C4V_Array:
 		return 'a';
+	case C4V_PropList:
+		return 'p';
 	}
 	return ' ';
 }
@@ -357,6 +362,8 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_C4ObjectEnum;
 	case 'a':
 		return C4V_Array;
+	case 'p':
+		return C4V_PropList;
 	}
 	return C4V_Any;
 }
@@ -388,6 +395,13 @@ static bool FnCnvDeref(C4Value *Val, C4V_Type toType, BOOL fStrict)
 	Val->Deref();
 	// retry to check convert
 	return Val->ConvertTo(toType, fStrict);
+	}
+
+bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType, BOOL fStrict)
+	{
+	// try casting
+	if (dynamic_cast<C4Object *>(Val->Data.PropList)) return true;
+	return false;
 	}
 
 bool C4Value::FnCnvGuess(C4Value *Val, C4V_Type toType, BOOL fStrict)
@@ -422,6 +436,7 @@ bool C4Value::FnCnvInt2Id(C4Value *Val, C4V_Type toType, BOOL fStrict)
 #define CnvInt2Id    C4Value::FnCnvInt2Id, false
 #define CnvDirectOld FnCnvDirectOld, true
 #define CnvDeref     FnCnvDeref, false
+#define CnvObject    FnCnvObject, false
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 	{ // C4V_Any - always try guess
@@ -432,6 +447,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvGuess		}, // C4Object
 		{ CnvGuess		}, // String
 		{ CnvGuess		}, // Array
+		{ CnvGuess		}, // PropList
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_Int
@@ -442,6 +458,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_Bool
@@ -452,6 +469,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_C4ID
@@ -462,6 +480,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_Object
@@ -472,6 +491,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK			}, // C4Object   same
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
+		{ CnvOK			}, // PropList
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_String
@@ -482,6 +502,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvOK			}, // String     same
 		{ CnvError		}, // Array      NEVER!
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // pC4Value
 	},
 	{ // C4V_Array
@@ -492,6 +513,18 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvOK			}, // Array      same
+		{ CnvError		}, // PropList   NEVER!
+		{ CnvError		}, // pC4Value   NEVER!
+	},
+	{ // C4V_PropList
+		{ CnvOK			}, // any
+		{ CnvError		}, // int        NEVER!
+		{ CnvOK			}, // Bool
+		{ CnvError		}, // C4ID       NEVER!
+		{ CnvObject		}, // C4Object   NEVER!
+		{ CnvError		}, // String     NEVER!
+		{ CnvError		}, // Array      NEVER!
+		{ CnvOK			}, // PropList   same
 		{ CnvError		}, // pC4Value   NEVER!
 	},
 	{ // C4V_pC4Value - resolve reference and retry type check
@@ -501,6 +534,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvDeref		}, // C4ID
 		{ CnvDeref		}, // C4Object
 		{ CnvDeref		}, // String
+		{ CnvDeref		}, // PropList
 		{ CnvDeref		}, // Array
 		{ CnvOK			}, // pC4Value   same
 	},
@@ -544,6 +578,8 @@ StdStrBuf C4Value::GetDataString()
 			else
 				return StdStrBuf("0"); // (impossible)
 		}
+	case C4V_PropList:
+		return StdStrBuf("FIXME");
 	case C4V_String:
 		return (Data.Str && Data.Str->GetCStr()) ? FormatString("\"%s\"", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
 	case C4V_Array:
@@ -601,12 +637,12 @@ void C4Value::DenumeratePointer()
 	if(Type != C4V_C4ObjectEnum && !Inside(Data.Int, C4EnumPointer1, C4EnumPointer2)) return;
 	// get obj id, search object
 	int iObjID = (Data.Int >= C4EnumPointer1 ? Data.Int - C4EnumPointer1 : Data.Int);
-	C4Object *pObj = Game.Objects.ObjectPointer(iObjID);
+	C4PropList *pObj = Game.Objects.ObjectPointer(iObjID);
 	if (!pObj)
 		pObj = Game.Objects.InactiveObjects.ObjectPointer(iObjID);
 	if(pObj)
 		// set
-		SetObject(pObj);
+		SetPropList(pObj);
 	else
 	{
 		// any: guess type
@@ -688,10 +724,10 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		break;
 
 	// object: save object number instead
-	case C4V_C4Object:
+	case C4V_C4Object: case C4V_PropList:
 #ifdef C4ENGINE
 		if(!fCompiler)
-			iTmp = Game.Objects.ObjectNumber(getObj());
+			iTmp = Game.Objects.ObjectNumber(getPropList());
 #else
 		if(!fCompiler) iTmp = 0;
 #endif
@@ -796,7 +832,7 @@ bool C4Value::operator == (const C4Value& Value2) const
 				default:
 					return false;
 				}
-		case C4V_C4Object:
+		case C4V_C4Object: case C4V_PropList:
 			return Data == Value2.Data && Type == Value2.Type;
 		case C4V_String:
 			return Type == Value2.Type && Data.Str == Value2.Data.Str;

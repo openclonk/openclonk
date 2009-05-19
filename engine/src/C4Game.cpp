@@ -925,8 +925,10 @@ void C4Game::ClearObjectPtrs(C4Object *pObj)
   Application.SoundSystem.ClearPointers(pObj);
   }
 
-void C4Game::ClearPointers(C4Object *pObj)
-  {
+void C4Game::ClearPointers(C4PropList * PropList)
+	{
+	C4Object * pObj = dynamic_cast<C4Object *>(PropList);
+	if (!pObj) return; // FIXME
 	BackObjects.ClearPointers(pObj);
 	ForeObjects.ClearPointers(pObj);
   Messages.ClearPointers(pObj);

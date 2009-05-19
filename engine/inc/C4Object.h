@@ -27,6 +27,7 @@
 #include "C4ValueList.h"
 #include "C4Effects.h"
 #include "C4Particles.h"
+#include "C4PropList.h"
 
 /* Object status */
 
@@ -103,15 +104,13 @@ class C4Action
 		void GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfWall, int32_t &riBridgeMaterial);
   };
 
-class C4Object
+class C4Object: public C4PropList
 	{
 	public:
 		C4Object();
 		~C4Object();
-		int32_t Number; // int32_t, for sync safety on all machines
 		C4ID id;
 		StdStrBuf Name;
-		int32_t Status; // NoSave //
 		int32_t RemovalDelay; // NoSave //
 		int32_t Owner;
 		int32_t Controller;
@@ -190,8 +189,6 @@ class C4Object
 		int32_t nActionTarget1,nActionTarget2;
 		int32_t nContained;
 		StdCopyStrBuf nInfo;
-
-		C4Value *FirstRef; // No-Save
 
 		class C4GraphicsOverlay *pGfxOverlay;  // singly linked list of overlay graphics
 	protected:
@@ -398,9 +395,6 @@ class C4Object
 		void ClearContentsAndContained(bool fDoCalls=true); // exit from container and eject contents (doing calbacks)
 
 		bool AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpeed);
-
-    void AddRef(C4Value *pRef);
-    void DelRef(const C4Value *pRef, C4Value * pNextRef);
 
 		StdStrBuf GetInfoString(); // return def desc plus effects
 

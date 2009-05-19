@@ -78,11 +78,14 @@ void C4String::DecRef()
 
 C4StringTable::C4StringTable()
 	{
+	P[P_PROTOTYPE] = RegString("Prototype");
+	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
 	}
 
 C4StringTable::~C4StringTable()
 	{
 	Clear();
+	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->DecRef();
 	assert(!Set.GetSize());
 	}
 
