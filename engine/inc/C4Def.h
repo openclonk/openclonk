@@ -414,6 +414,7 @@ class C4DefList
     BOOL Add(C4Def *ndef, BOOL fOverload);
 		void BuildTable(); // build quick access table
 		void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
+		void CallEveryDefinition();
 #ifdef C4ENGINE
 		void Synchronize();
 #endif

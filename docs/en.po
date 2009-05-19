@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-20 00:11+0200\n"
+"POT-Creation-Date: 2009-05-20 00:30+0200\n"
 "PO-Revision-Date: 2008-05-30 14:30+0100\n"
 "Last-Translator: matthes <matthes@clonk.de>\n"
 "Language-Team: English\n"
@@ -9863,6 +9863,25 @@ msgstr "Calls a function in a script without object context. <placeholder-1/> re
 msgid "Gibt Spieler 0 die Pläne für die Burgteile."
 msgstr "Gives castle construction plans to player 0."
 
+#: sdk/script/fn/Definition.xml:7(category)
+#: sdk/script/fn/Construction.xml:7(category)
+#: sdk/script/fn/Activate.xml:7(category)
+msgid "Callbacks"
+msgstr "Callbacks"
+
+#: sdk/script/fn/Definition.xml:8(subcat)
+#, fuzzy
+msgid "Definition"
+msgstr "definition id"
+
+#: sdk/script/fn/Definition.xml:12(desc)
+msgid "Definition, die initialisiert wird."
+msgstr ""
+
+#: sdk/script/fn/Definition.xml:15(desc)
+msgid "Wird nach dem Laden der Definitionen aufgerufen. Sollte nur die aktuelle Definiton Ã¤ndern."
+msgstr ""
+
 #: sdk/script/fn/DeathAnnounce.xml:12(desc)
 msgid "Gibt eine Botschaft a la \"[name] ist von uns gegangen\" über dem aufrufenden Objekt aus."
 msgstr "Displays a death message above the calling object."
@@ -10330,11 +10349,6 @@ msgstr "Object to examine. Can be 0 in local calls."
 #: sdk/script/fn/Contained.xml:15(desc)
 msgid "Liefert das Objekt, in dem sich pObj befindet. Rückgabewert Null, wenn pObj sich im Freien befindet."
 msgstr "Returns the container object in which this object is contained. Returns 0 if this object is not contained."
-
-#: sdk/script/fn/Construction.xml:7(category)
-#: sdk/script/fn/Activate.xml:7(category)
-msgid "Callbacks"
-msgstr "Callbacks"
 
 #: sdk/script/fn/Construction.xml:12(desc)
 msgid "Objekt welches das neu erstellte Objekt erzeugt hat. 0 wenn es global (Szenarioscript,...) erstellt wurde."

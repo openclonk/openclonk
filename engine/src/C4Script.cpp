@@ -967,7 +967,9 @@ static C4String *FnGetAction(C4AulContext *cthr, C4Object *pObj)
 static C4Value FnGetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * pObj_C4V)
 	{
 	C4PropList * pObj = pObj_C4V->_getPropList();
-	if (!pObj) pObj=cthr->Obj; if (!pObj) return C4VFalse;
+	if (!pObj) pObj=cthr->Obj;
+	if (!pObj) pObj=cthr->Def;
+	if (!pObj) return C4VFalse;
 	C4String * key = key_C4V->_getStr();
 	if(!key) return C4VFalse;
 	C4Value r;
@@ -978,7 +980,9 @@ static C4Value FnGetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value 
 static C4Value FnSetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * to, C4Value * pObj_C4V)
 	{
 	C4PropList * pObj = pObj_C4V->_getPropList();
-	if (!pObj) pObj=cthr->Obj; if (!pObj) return C4VFalse;
+	if (!pObj) pObj=cthr->Obj;
+	if (!pObj) pObj=cthr->Def;
+	if (!pObj) return C4VFalse;
 	C4String * key = key_C4V->_getStr();
 	if(!key) return C4VFalse;
 	pObj->SetProperty(key, *to);

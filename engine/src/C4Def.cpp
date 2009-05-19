@@ -1755,3 +1755,13 @@ void C4DefList::ResetIncludeDependencies()
 	for (pDef=FirstDef; pDef; pDef=pDef->Next)
 		pDef->ResetIncludeDependencies();
 	}
+
+void C4DefList::CallEveryDefinition()
+	{
+	C4Def *pDef;
+	for (pDef=FirstDef; pDef; pDef=pDef->Next)
+		{
+		C4AulParSet Pars(C4VPropList(pDef));
+		pDef->Script.Call(PSF_Definition, 0, &Pars, true);
+		}
+	}
