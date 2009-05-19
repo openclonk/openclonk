@@ -1538,9 +1538,9 @@ BOOL C4Game::CreateViewport(int32_t iPlayer, bool fSilent)
 C4ID DefFileGetID(const char *szFilename)
 	{
 	C4Group hDef;
-	C4DefCore DefCore;
+	C4Def DefCore;
 	if (!hDef.Open(szFilename)) return C4ID_None;
-	if (!DefCore.Load(hDef)) { hDef.Close(); return C4ID_None; }
+	if (!DefCore.LoadDefCore(hDef)) { hDef.Close(); return C4ID_None; }
 	hDef.Close();
 	return DefCore.id;
 	}

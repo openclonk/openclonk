@@ -160,6 +160,7 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	LastEnergyLossCausePlayer=NO_OWNER;
   Info=pInfo;
   Def=pDef;
+	prototype = pDef;
 	if (Info) SetName(pInfo->Name);
   Category=Def->Category;
 	Def->Count++;
@@ -1238,6 +1239,7 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	Def->Count--;
   // Def change
   Def=pDef;
+	prototype = pDef;
 	id=pDef->id;
 	Def->Count++;
 	LocalNamed.SetNameList(&pDef->Script.LocalNamed);
@@ -2648,6 +2650,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	if(fCompiler)
 		{
 		Def = Game.Defs.ID2Def(id);
+		prototype = Def;
 		if(!Def)
 			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),C4IdText(id)); return; }
 		}

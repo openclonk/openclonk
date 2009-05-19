@@ -135,16 +135,10 @@ void C4ActionDef::CompileFunc(StdCompiler *pComp)
 
 //--------------------------------- C4DefCore ----------------------------------------------
 
-C4DefCore::C4DefCore()
-	{
-	Default();
-	}
-
-void C4DefCore::Default()
+void C4Def::DefaultDefCore()
   {
 	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=rC4XVer[3]=0;
 	RequireDef.Clear();
-	Name.Ref("Undefined");
 	Physical.Default();
   Shape.Default();
   Entrance.Default();
@@ -223,7 +217,7 @@ void C4DefCore::Default()
 	NoTransferZones=0;
 	}
 
-BOOL C4DefCore::Load(C4Group &hGroup)
+BOOL C4Def::LoadDefCore(C4Group &hGroup)
 	{
 	StdStrBuf Source;
 	if (hGroup.LoadEntryString(C4CFN_DefCore,Source))
@@ -268,7 +262,7 @@ BOOL C4DefCore::Load(C4Group &hGroup)
 	return FALSE;
 	}
 
-BOOL C4DefCore::Save(C4Group &hGroup)
+BOOL C4Def::Save(C4Group &hGroup)
 	{
 	StdStrBuf Out;
 	if (! Decompile(&Out, FormatString("%s::DefCore.txt", C4IdText(id)).getData()) )
@@ -276,22 +270,22 @@ BOOL C4DefCore::Save(C4Group &hGroup)
 	return hGroup.Add(C4CFN_DefCore,Out,FALSE,TRUE);
 	}
 
-BOOL C4DefCore::Compile(const char *szSource, const char *szName)
+BOOL C4Def::Compile(const char *szSource, const char *szName)
 	{
 	return CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(*this, "DefCore"), StdStrBuf(szSource), szName);
 	}
 
-BOOL C4DefCore::Decompile(StdStrBuf *pOut, const char *szName)
+BOOL C4Def::Decompile(StdStrBuf *pOut, const char *szName)
 	{
 	return DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*this, "DefCore"), pOut, szName);
 	}
 
-void C4DefCore::CompileFunc(StdCompiler *pComp)
+void C4Def::CompileFunc(StdCompiler *pComp)
 	{
 
 	pComp->Value(mkNamingAdapt(mkC4IDAdapt(id),								"id",									C4ID_None					));
 	pComp->Value(mkNamingAdapt(toC4CArr(rC4XVer),							"Version"																));
-	pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),					    "Name",								"Undefined"				));
+	//FIXME pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),					    "Name",								"Undefined"				));
 	pComp->Value(mkNamingAdapt(mkParAdapt(RequireDef, false),	"RequireDef",					C4IDList()				));
 
 	const StdBitfieldEntry<int32_t> Categories[] = {
@@ -416,7 +410,7 @@ void C4DefCore::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(GrabPutGet, GrabPutGetTypes),
 																														"GrabPutGet",					0									));
-
+	
 	pComp->Value(mkNamingAdapt(Carryable,											"Collectible",				0									));
 	pComp->Value(mkNamingAdapt(Rotateable,										"Rotate",							0									));
 	pComp->Value(mkNamingAdapt(RotatedEntrance,								"RotatedEntrance",		0									));
@@ -489,7 +483,7 @@ C4Def::C4Def()
 
 void C4Def::Default()
 	{
-	C4DefCore::Default();
+	DefaultDefCore();
 
 #if !defined(C4ENGINE) && !defined(C4GROUP)
   Picture=NULL;
@@ -596,14 +590,13 @@ BOOL C4Def::Load(C4Group &hGroup,
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   // Read DefCore
-	if (fSuccess) fSuccess=C4DefCore::Load(hGroup);
+	if (fSuccess) fSuccess=LoadDefCore(hGroup);
 	// check id
 	if (fSuccess) if (!LooksLikeID(id))
 		{
 #ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// wie geth ID?????ßßßß
-		if (!Name[0]) Name = GetFilename(hGroup.GetName());
-		LogF(LoadResStr("IDS_ERR_INVALIDID"), Name.getData());
+		LogF(LoadResStr("IDS_ERR_INVALIDID"), GetFilename(hGroup.GetName()));
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		fSuccess=FALSE;
 		}
@@ -703,15 +696,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 		// for downwards compatibility with packing order
 		Script.Load("Script", hGroup, C4CFN_Script, szLanguage, this, &StringTable, true);
 		}
-#endif
 
-	// Read name
-	C4ComponentHost DefNames;
-	if (DefNames.LoadEx("Names", hGroup, C4CFN_DefNames, szLanguage))
-		DefNames.GetLanguageString(szLanguage, Name);
-	DefNames.Close();
-
-#ifdef C4ENGINE
 	// read clonknames
 	if (dwLoadWhat & C4D_Load_ClonkNames)
 		{
@@ -813,7 +798,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 		{
 		TopFace.Default();
 		// warn in debug mode
-		DebugLogF("invalid TopFace in %s(%s)", Name.getData(), C4IdText(id));
+		DebugLogF("invalid TopFace in %s(%s)", GetName(), C4IdText(id));
 		}
 
 

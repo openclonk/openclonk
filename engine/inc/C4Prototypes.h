@@ -26,7 +26,6 @@ class C4Playback;
 class C4Scenario;
 class C4PlayerInfoCore;
 class C4ObjectInfoCore;
-class C4DefCore;
 class C4Def;
 class C4DefList;
 class C4IDList;

@@ -27,6 +27,7 @@
 #include <C4Facet.h>
 #include <C4Surface.h>
 #include <C4ComponentHost.h>
+#include <C4PropList.h>
 
 #ifdef C4ENGINE
 #include <C4ScriptHost.h>
@@ -179,14 +180,11 @@ class C4ActionDef
 		void CompileFunc(StdCompiler *pComp);
   };
 
-class C4DefCore
+class C4Def: public C4PropList
   {
-	public:
-		C4DefCore();
   public:
     C4ID id;
 		int32_t rC4XVer[4];
-    StdCopyStrBuf Name;
 		C4IDList RequireDef;
 		C4PhysicalInfo Physical;
     C4Shape Shape;
@@ -271,19 +269,16 @@ class C4DefCore
 		int32_t AutoContextMenu;  // automatically open context menu for this object
 		int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
 	public:
-		void Default();
-    BOOL Load(C4Group &hGroup);
+		void DefaultDefCore();
+    BOOL LoadDefCore(C4Group &hGroup);
 		BOOL Save(C4Group &hGroup);
 		void CompileFunc(StdCompiler *pComp);
-		const char * GetName() const { return Name.getData(); }
 	protected:
 		BOOL Compile(const char *szSource, const char *szName);
 		BOOL Decompile(StdStrBuf *pOut, const char *szName);
-  };
 
 
-class C4Def: public C4DefCore
-  {
+// Here begins the C4Def
   friend class C4DefList;
   public:
     C4Def();
@@ -294,8 +289,7 @@ class C4Def: public C4DefCore
     HBITMAP Picture;
     HBITMAP Image;
 #endif
-
-    int32_t ActNum; C4ActionDef *ActMap;
+		int32_t ActNum; C4ActionDef *ActMap;
 		char Maker[C4MaxName+1];
 		char Filename[_MAX_FNAME+1];
 		int32_t Creation;

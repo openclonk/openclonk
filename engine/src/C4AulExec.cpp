@@ -84,7 +84,7 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 	if(Obj)
 		Dump.AppendFormat(" (obj %s)", C4VObj(Obj).GetDataString().getData());
 	else if(Func->Owner->Def != NULL)
-		Dump.AppendFormat(" (def %s)", Func->Owner->Def->Name.getData());
+		Dump.AppendFormat(" (def %s)", Func->Owner->Def->GetName());
 	// Script
 	if(!fDirectExec && Func->Owner)
 		Dump.AppendFormat(" (%s:%d)",
@@ -1012,7 +1012,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 								FormatString("Object call: No function \"%s\" in object \"%s\"!", szFuncName, pTargetVal->GetDataString().getData()).getData());
 						else
 							throw new C4AulExecError(pCurCtx->Obj,
-								FormatString("Definition call: No function \"%s\" in definition \"%s\"!", szFuncName, pDestDef->Name.getData()).getData());
+								FormatString("Definition call: No function \"%s\" in definition \"%s\"!", szFuncName, pDestDef->GetName()).getData());
 						}
 
 					// Resolve overloads

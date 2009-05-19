@@ -309,7 +309,7 @@ void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 		C4Def *pDef = Game.Defs.ID2Def(id);
 		// search def-graphics
 		if(!pDef || !( pDefGraphics = pDef->Graphics.Get(Name.getData()) ))
-			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), C4IdText(id), pDef ? pDef->Name.getData() : "def not found");
+			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), C4IdText(id), pDef ? pDef->GetName() : "def not found");
 		}
 	}
 
