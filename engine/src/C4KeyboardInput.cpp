@@ -441,7 +441,7 @@ StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
 
 /* ----------------- C4KeyCodeEx ------------------ */
 
-void C4KeyCodeEx::CompileFunc(StdCompiler *pComp)
+void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 	{
 	if (pComp->isCompiler())
 		{
@@ -464,7 +464,18 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp)
 			// last section: convert to key code
 			C4KeyCode eCode = String2KeyCode(sCode);
 			if (eCode == KEY_Undefined)
-				pComp->excCorrupt("undefined key code: %s", sCode.getData());
+				{
+				if (pOutBufIfUndefined)
+					{
+					// unknown key, but an output buffer for unknown keys was provided. Use it.
+					pOutBufIfUndefined->Take(sCode);
+					eCode = KEY_Default;
+					}
+				else
+					{
+					pComp->excCorrupt("undefined key code: %s", sCode.getData());
+					}
+				}
 			dwShift = dwSetShift;
 			Key = eCode;
 			}

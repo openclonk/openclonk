@@ -162,7 +162,7 @@ struct C4KeyCodeEx
 		return Key == v2.Key && dwShift == v2.dwShift;
 		}
 
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined=NULL);
 
 	C4KeyCodeEx(C4KeyCode Key = KEY_Default, C4KeyShiftState Shift = KEYS_None, bool fIsRepeated = false)
 		: Key(Key), dwShift(Shift), fRepeated(fIsRepeated) {}

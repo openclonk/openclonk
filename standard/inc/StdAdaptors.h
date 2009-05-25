@@ -518,7 +518,7 @@ struct StdSTLContainerAdapt
 			// Write all entries
 			for (typename C::const_iterator i = rStruct.begin(); i != rStruct.end(); ++i)
 			{
-				if (i != rStruct.begin()) pComp->Seperator(eSep);
+				if (i != rStruct.begin() && eSep) pComp->Seperator(eSep);
 				pComp->Value(const_cast<T &>(*i));
 			}
 		}
@@ -549,7 +549,7 @@ struct StdSTLContainerAdapt
 					break;
 				}
 			}
-			while(pComp->Seperator(eSep));
+			while(!eSep || pComp->Seperator(eSep));
 		}
 	}
 	// Operators for default checking/setting

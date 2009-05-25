@@ -83,7 +83,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\deps\lib"
-				IgnoreDefaultLibraryNames="LIBCMT"
+				IgnoreDefaultLibraryNames="LIBCMT,LIBCMTD"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\intermediate\vc9\Engine\Debug\clonk.pdb"
 				SubSystem="2"
@@ -183,7 +183,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\deps\lib"
-				IgnoreDefaultLibraryNames="LIBCMT"
+				IgnoreDefaultLibraryNames="LIBCMT,LIBCMTD"
 				ProgramDatabaseFile="..\intermediate\vc9\clonk.pdb"
 				SubSystem="2"
 				RandomizedBaseAddress="1"
@@ -283,7 +283,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\deps\lib"
-				IgnoreDefaultLibraryNames="LIBCMT"
+				IgnoreDefaultLibraryNames="LIBCMT,LIBCMTD"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\intermediate\vc9\engine\ExtremeDebug\clonk.pdb"
 				SubSystem="2"
@@ -383,7 +383,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\deps\lib"
-				IgnoreDefaultLibraryNames="LIBCMT"
+				IgnoreDefaultLibraryNames="LIBCMT,LIBCMTD"
 				ProgramDatabaseFile="..\intermediate\vc9\clonk.pdb"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -481,7 +481,7 @@
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="..\deps\lib"
-				IgnoreDefaultLibraryNames="LIBCMT"
+				IgnoreDefaultLibraryNames="LIBCMT,LIBCMTD"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="..\intermediate\vc9\Engine\DebugConsole\clonk.pdb"
 				SubSystem="1"
@@ -6885,6 +6885,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\src\C4PlayerControl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="src\C4PlayerInfo.cpp"
 				>
 				<FileConfiguration
@@ -10200,6 +10204,10 @@
 			</File>
 			<File
 				RelativePath="inc\C4Player.h"
+				>
+			</File>
+			<File
+				RelativePath=".\inc\C4PlayerControl.h"
 				>
 			</File>
 			<File
