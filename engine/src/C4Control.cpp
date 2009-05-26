@@ -376,6 +376,45 @@ void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
   C4ControlPacket::CompileFunc(pComp);
 }
 
+
+// *** C4ControlPlayerControl2
+
+void C4ControlPlayerControl2::Execute() const
+{
+	C4PlayerControl *pTargetCtrl = NULL;
+	if (iPlr == -1)
+	{
+		// neutral control packet: Execute in global control
+	}
+	else
+	{
+		// player-based control: Execute on control owned by player
+		C4Player *pPlr=Game.Players.Get(iPlr);
+		if (pPlr)
+		{
+			//pPlr->CountControl(C4Player::PCID_DirectCom, iCom*10000+iData);
+		}
+	}
+	if (pTargetCtrl) pTargetCtrl->ExecuteControlPacket(this);
+}
+
+void C4ControlPlayerControl2::ControlItem::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(iControl);
+	pComp->Seperator();
+	pComp->Value(iTriggerMode);
+}
+
+void C4ControlPlayerControl2::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
+	pComp->Value(mkNamingAdapt(fRelease, "Release", false));
+	pComp->Value(mkNamingAdapt(ExtraData, "ExtraData", C4KeyEventData()));
+	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(ControlItems), "Controls", ControlItemVec()));
+	C4ControlPacket::CompileFunc(pComp);
+}
+
+
 // *** C4ControlPlayerCommand
 
 C4ControlPlayerCommand::C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32_t iX, int32_t iY,

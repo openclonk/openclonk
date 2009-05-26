@@ -167,7 +167,17 @@ struct C4KeyCodeEx
 	C4KeyCodeEx(C4KeyCode Key = KEY_Default, C4KeyShiftState Shift = KEYS_None, bool fIsRepeated = false)
 		: Key(Key), dwShift(Shift), fRepeated(fIsRepeated) {}
 
-	bool IsRepeated() { return fRepeated; }
+	bool IsRepeated() const { return fRepeated; }
+	};
+
+// extra data associated with a key event
+struct C4KeyEventData
+	{
+	int32_t iStrength; // pressure between 0 and 100 (100 for nomal keypress)
+	int32_t x,y;       // position for mouse event
+	C4KeyEventData() : iStrength(0), x(0), y(0) {}
+	void CompileFunc(StdCompiler *pComp);
+	bool operator ==(const struct C4KeyEventData &cmp) const;
 	};
 
 // callback interface
@@ -392,6 +402,7 @@ class C4KeyboardInput
 		// mapping of all keys by code and name
 		KeyCodeMap KeysByCode;
 		KeyNameMap KeysByName;
+		C4KeyEventData LastKeyExtraData;
 
 	public:
 		static bool IsValid; // global var to fix any deinitialization orders of key map and static keys
@@ -417,6 +428,7 @@ class C4KeyboardInput
 
 		C4CustomKey *GetKeyByName(const char *szKeyName);
 		StdStrBuf GetKeyCodeNameByKeyName(const char *szKeyName, bool fShort = false, int32_t iIndex = 0);
+		const C4KeyEventData &GetLastKeyExtraData() const { return LastKeyExtraData; }
 	};
 
 // keyboardinput-initializer-helper

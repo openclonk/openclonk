@@ -494,6 +494,21 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 		}
 	}
 
+void C4KeyEventData::CompileFunc(StdCompiler *pComp)
+	{
+	pComp->Value(iStrength);
+	pComp->Seperator();
+	pComp->Value(x);
+	pComp->Seperator();
+	pComp->Value(y);
+	}
+
+bool C4KeyEventData::operator ==(const struct C4KeyEventData &cmp) const
+	{
+	return iStrength == cmp.iStrength
+	    && x == cmp.x && y == cmp.y;
+	}
+
 /* ----------------- C4CustomKey------------------ */
 
 C4CustomKey::C4CustomKey(C4KeyCodeEx DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
@@ -640,6 +655,7 @@ bool C4KeyboardInput::IsValid = false;
 
 void C4KeyboardInput::Clear()
 	{
+	LastKeyExtraData = C4KeyEventData();
 	// release all keys - name map is guarantueed to contain them all
 	for (KeyNameMap::const_iterator i = KeysByName.begin(); i != KeysByName.end(); ++i)
 		i->second->Deref();

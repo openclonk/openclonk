@@ -202,6 +202,7 @@
 #include "C4PathFinder.h"
 #include "C4Physics.h"
 #include "C4Player.h"
+#include "C4PlayerControl.h"
 #include "C4PlayerInfo.h"
 #include "C4PlayerInfoListBox.h"
 #include "C4PlayerList.h"

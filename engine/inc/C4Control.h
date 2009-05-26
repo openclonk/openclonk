@@ -173,6 +173,37 @@ public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
+class C4ControlPlayerControl2 : public C4ControlPacket // sync
+{
+public:
+	C4ControlPlayerControl2() : iPlr(-1), fRelease(false) {}
+	C4ControlPlayerControl2(int32_t iPlr, bool fRelease, const C4KeyEventData &rExtraData)
+		: iPlr(iPlr), fRelease(fRelease), ExtraData(rExtraData) { }
+
+	struct ControlItem
+	{
+		int32_t iControl;
+		int32_t iTriggerMode;
+		ControlItem() : iControl(-1), iTriggerMode(0) {}
+		ControlItem(int32_t iControl, int32_t iTriggerMode) : iControl(iControl), iTriggerMode(iTriggerMode) {}
+		void CompileFunc(StdCompiler *pComp);
+		bool operator ==(const struct ControlItem &cmp) const { return iControl==cmp.iControl && iTriggerMode == cmp.iTriggerMode; }
+	};
+	typedef std::vector<ControlItem> ControlItemVec;
+protected:
+	int32_t iPlr;
+	bool fRelease;
+	C4KeyEventData ExtraData;
+	ControlItemVec ControlItems;
+public:
+	DECLARE_C4CONTROL_VIRTUALS
+	void AddControl(int32_t iControl, int32_t iTriggerMode)
+		{ ControlItems.push_back(ControlItem(iControl, iTriggerMode)); }
+	const ControlItemVec &GetControlItems() const { return ControlItems; }
+	bool IsReleaseControl() const { return fRelease; }
+	const C4KeyEventData &GetExtraData() const { return ExtraData; }
+};
+
 class C4ControlPlayerCommand : public C4ControlPacket // sync
 {
 public:

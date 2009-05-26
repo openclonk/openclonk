@@ -50,6 +50,7 @@
 #include <C4ObjectMenu.h>
 #include <C4GameLobby.h>
 #include <C4ChatDlg.h>
+#include <C4PlayerControl.h>
 #endif
 
 #include <StdFile.h>
@@ -572,6 +573,8 @@ void C4Game::Clear()
 	KeyboardInput.Clear();
 	SetMusicLevel(100);
 	PlayList.Clear();
+	PlayerControlAssignmentSets.Clear();
+	PlayerControlDefs.Clear();
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
@@ -2443,9 +2446,6 @@ BOOL C4Game::InitScriptEngine()
 		{ LogFatal(LoadResStr("IDS_ERR_INVALIDSYSGRP")); return FALSE; }
 	C4Group &File = Application.SystemGroup;
 
-	// Load string table
-	MainSysLangStringTable.LoadEx("StringTbl", File, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
-
 	// get scripts
 	char fn[_MAX_FNAME+1] = { 0 };
 	File.ResetSearch();
@@ -3238,9 +3238,31 @@ bool C4Game::InitSystem()
 	// init keyboard input (default keys, plus overloads)
 	if (!InitKeyboard())
 		{ LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD")); return false; }
+	// Load string table
+	UpdateLanguage();
+	// Player keyboard input: Key definitions and default sets
+	if (!InitPlayerControlSettings()) return false;
 	// Rank system
 	Rank.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
 	// done, success
+	return true;
+	}
+
+void C4Game::UpdateLanguage()
+	{
+	// Reload System.c4g string table
+	MainSysLangStringTable.LoadEx("StringTbl", Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	}
+
+bool C4Game::InitPlayerControlSettings()
+	{
+	C4PlayerControlFile PlayerControlFile;
+	if (!PlayerControlFile.Load(Application.SystemGroup, C4CFN_PlayerControls, &MainSysLangStringTable)) { LogFatal("[!]Error loading player controls"); return false; }
+	PlayerControlDefs = PlayerControlFile.GetControlDefs();
+	PlayerControlAssignmentSets = PlayerControlFile.GetAssignmentSets();
+	PlayerControlAssignmentSets.ResolveRefs(&PlayerControlDefs);
+	// And overwrites from config
+	//PlayerControlAssignmentSets.MergeFrom(Config.Controls.Assignments);
 	return true;
 	}
 

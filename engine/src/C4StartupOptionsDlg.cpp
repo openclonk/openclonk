@@ -1340,6 +1340,7 @@ bool C4StartupOptionsDlg::OnLangComboSelChange(C4GUI::ComboBox *pForCombo, int32
 	Config.General.Language[2] = '\0';
 	UpdateLanguage();
 	Languages.LoadLanguage(Config.General.LanguageEx);
+	Game.UpdateLanguage();
 	// recreate everything to reflect language changes
 	RecreateDialog(true);
 	return true;
