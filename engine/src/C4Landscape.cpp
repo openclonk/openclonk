@@ -273,7 +273,6 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 	if (fClearSky) Sky.Clear();
 	// clear surfaces, if assigned
 	delete Surface32; Surface32=NULL;
-	delete AnimationSurface; AnimationSurface=0;
 	delete Surface8; Surface8=NULL;
 	delete Map; Map=NULL;
   // clear initial landscape
@@ -299,7 +298,7 @@ void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 		const CSurface * Surfaces[C4M_MaxTexIndex];
 		for (int i = 0; i < C4M_MaxTexIndex; ++i)
 			Surfaces[i] = Game.TextureMap.GetEntry(i)->getPattern().getSurface();
-		Application.DDraw->BlitLandscape(Surface32, AnimationSurface, &Game.GraphicsResource.sfcLiquidAnimation, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,Surfaces);
+		Application.DDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt, DDrawCfg.Shader ? Surfaces : 0);
 		}
 	if (Modulation) Application.DDraw->DeactivateBlitModulation();
 	}
@@ -381,7 +380,6 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 	// get chunk size
 	iChunkWidth=MapZoom; iChunkHeight=MapZoom;
 	Surface32->Lock();
-	if (AnimationSurface) AnimationSurface->Lock();
 	// Scan map lines
 	for (iY=iMapY; iY<iMapY+iMapHgt; iY++)
 		{
@@ -429,7 +427,6 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 			}
 		}
 	Surface32->Unlock();
-	if (AnimationSurface) AnimationSurface->Unlock();
 	}
 
 BOOL C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage)
@@ -488,7 +485,6 @@ BOOL C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 	// assign clipper
 	Surface8->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
 	Surface32->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
-	if (AnimationSurface) AnimationSurface->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
 	Application.DDraw->NoPrimaryClipper();
 
 	// Enlarge map segment for chunky rim
@@ -503,7 +499,6 @@ BOOL C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 	// remove clipper
 	Surface8->NoClip();
 	Surface32->NoClip();
-	if (AnimationSurface) AnimationSurface->NoClip();
 
 	// success
 	return TRUE;
@@ -531,12 +526,10 @@ BOOL C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMap
 	To.Hgt = iMapHgt*MapZoom;
 
 	Surface32->Lock();
-	if (AnimationSurface) AnimationSurface->Lock();
 	PrepareChange(To);
 	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY);
 	FinishChange(To);
 	Surface32->Unlock();
-	if (AnimationSurface) AnimationSurface->Unlock();
 	return TRUE;
 	}
 
@@ -720,15 +713,12 @@ BOOL C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		// Create landscape surface
 		Surface32 = new CSurface();
 		Surface8 = new CSurface8();
-		if (Config.Graphics.ColorAnimation && DDrawCfg.Shader)
-			AnimationSurface = new CSurface(Width, Height);
 		if (!Surface32->Create(Width, Height, true, false, lpDDraw->IsShaderific() ? 0 : 64)
 			|| !Surface8->Create(Width, Height, true)
-			|| (AnimationSurface && !AnimationSurface->Create(Width, Height))
 			|| !Mat2Pal())
 			{
-			delete Surface8; delete Surface32; delete AnimationSurface;
-			Surface8 = 0; Surface32 = 0; AnimationSurface = 0;
+			delete Surface8; delete Surface32;
+			Surface8 = 0; Surface32 = 0;
 			return FALSE;
 			}
 
@@ -1552,8 +1542,6 @@ BOOL C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 	Surface8->GetSurfaceSize(iWidth,iHeight);
 	Width = iWidth; Height = iHeight;
 	Surface32 = new CSurface(Width, Height);
-	if (Config.Graphics.ColorAnimation && DDrawCfg.Shader)
-		AnimationSurface = new CSurface(Width, Height);
 	// adjust pal
 	if (!Mat2Pal()) return FALSE;
 	// load the 32bit-surface, too
@@ -1651,7 +1639,6 @@ void C4Landscape::Default()
 	Mode=C4LSC_Undefined;
 	Surface8=NULL;
 	Surface32=NULL;
-	AnimationSurface=0;
 	Map=NULL;
 	Width=Height=0;
 	MapWidth=MapHeight=MapZoom=0;
@@ -2490,11 +2477,6 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 	if (To.Wdt<=0 || To.Hgt<=0) return true;
 	if (!Surface32->Lock()) return false;
 	Surface32->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
-	if (AnimationSurface)
-		{
-		AnimationSurface->Lock();
-		AnimationSurface->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
-		}
 	// do lightning
 	for (int32_t iX=To.x; iX<To.x+To.Wdt; ++iX)
 		{
@@ -2547,11 +2529,9 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 				DarkenClrBy(dwBackClr, Min(30, 2 * (iOwnDens - iCompareDens)));
 				}
 			Surface32->SetPixDw(iX, iY, dwBackClr);
-			if (AnimationSurface) AnimationSurface->SetPixDw(iX, iY, DensityLiquid(Pix2Dens[pix]) ? 255 << 24 : 0);
 			}
 		}
 	Surface32->Unlock();
-	if (AnimationSurface) AnimationSurface->Unlock();
 	// done
 	return true;
 	}

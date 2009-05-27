@@ -302,8 +302,8 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	}
 
-void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
-								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
+void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
+                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
 	{
 	//Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
 	// safety
@@ -373,20 +373,17 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 	int iTexY2=Min((int)(fy+hgt-1)/iTexSize +1, sfcSource->iTexY);
 	// blit from all these textures
 	SetTexture();
-	if (sfcSource2)
+	if (mattextures)
 		{
 		glActiveTexture(GL_TEXTURE1);
 		glEnable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE2);
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, (*sfcLiquidAnimation->ppTex)->texName);
 		glActiveTexture(GL_TEXTURE0);
 		}
 	DWORD dwModMask = 0;
 	if (shaders[0])
 		{
 		glEnable(GL_FRAGMENT_PROGRAM_ARB);
-		GLuint s = sfcSource2 ? 2 : 0;
+		GLuint s = mattextures ? 2 : 0;
 		if (Saturation < 255)
 			{
 			s += 3;
@@ -407,19 +404,6 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 			{
 			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
 			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
-			}
-		if (sfcSource2)
-			{
-			static GLfloat bla[4] = { -0.6f/3, 0.0f, 0.6f/3, 0.0f };
-			bla[0] += 0.05f; bla[1] += 0.05f; bla[2] += 0.05f;
-			GLfloat mod[4];
-			for (int i = 0; i < 3; ++i)
-				{
-				if (bla[i] > 0.9f) bla[i] = -0.3f;
-				mod[i] = (bla[i] > 0.3f ? 0.6f - bla[i] : bla[i]) / 3.0f;
-				}
-			mod[3] = 0;
-			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, mod);
 			}
 		dwModMask = 0;
 		}
@@ -462,26 +446,12 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 			// blit
 			DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffff;
 
-			if (sfcSource2)
+			if (mattextures)
 				glActiveTexture(GL_TEXTURE0);
 			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
 			glBindTexture(GL_TEXTURE_2D, pTex->texName);
-			if (Zoom != 1.0);// && !DDrawCfg.PointFiltering)
-				{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				}
-			if (sfcSource2)
-				{
-				CTexRef *pTex = *(sfcSource2->ppTex + iY * sfcSource2->iTexX + iX);
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, pTex->texName);
-				if (Zoom != 1.0 && !DDrawCfg.PointFiltering)
-					{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-					}
-				}
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 			// get current blitting offset in texture (beforing any last-tex-size-changes)
 			int iBlitX=iTexSize*iX;
@@ -541,7 +511,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 				Vtx[i].fty += DDrawCfg.fBlitOff;
 				Vtx[i].ftz = 0;
 				}
-			if(DDrawCfg.Shader)
+			if(mattextures)
 				{
 				GLfloat shaderparam[4];
 				for (int cnt=1;cnt<127;cnt++)
@@ -579,11 +549,9 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 		{
 		glDisable(GL_FRAGMENT_PROGRAM_ARB);
 		}
-	if (sfcSource2)
+	if (mattextures)
 		{
 		glActiveTexture(GL_TEXTURE1);
-		glDisable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE2);
 		glDisable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
 		}

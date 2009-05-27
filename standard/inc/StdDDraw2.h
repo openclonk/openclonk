@@ -286,7 +286,7 @@ class CStdDDraw
 		void PrimaryUnlocked() { PrimaryLocked=false; }
 		virtual bool PrepareRendering(SURFACE sfcToSurface) = 0; // check if/make rendering possible to given surface
 		// Blit
-		virtual void BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
+		virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
 		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 		void Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 		               SURFACE sfcTarget, int tx, int ty, int wdt, int hgt);

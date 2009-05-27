@@ -68,7 +68,6 @@ class C4Landscape
     BYTE *pInitial; // Initial landscape after creation - used for diff
 	protected:
 		CSurface * Surface32;
-		CSurface * AnimationSurface;
 		CSurface8 * Surface8;
 		int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 		int32_t PixCntPitch;

@@ -54,7 +54,6 @@ class C4GraphicsResource
 		int32_t iNumRanks;
 		C4FacetID fctFire;
 		C4FacetID fctBackground;
-		C4Surface sfcLiquidAnimation; int32_t idSfcLiquidAnimation;
 		C4FacetID fctCaptain;
 		C4FacetID	fctMouseCursor;
 		bool fOldStyleCursor; // if set, offsets need to be applied to some cursor facets

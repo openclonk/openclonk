@@ -116,8 +116,8 @@ class CStdGL : public CStdDDraw
 #endif
 		// Blit
 		void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
-		virtual void BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
-		                      SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
+		virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
+		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 		void FillBG(DWORD dwClr=0);
 		// Drawing
 		void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
