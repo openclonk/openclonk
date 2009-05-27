@@ -27,6 +27,7 @@
 		AFFAA14E0C2A896200444B95 /* C4ChatDlg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFFAA14B0C2A896200444B95 /* C4ChatDlg.cpp */; };
 		AFFAA14F0C2A896200444B95 /* C4InteractiveThread.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFFAA14C0C2A896200444B95 /* C4InteractiveThread.cpp */; };
 		AFFAA1500C2A896200444B95 /* C4Network2IRC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AFFAA14D0C2A896200444B95 /* C4Network2IRC.cpp */; };
+		D0AD7B7F0FCD7C1C00EAC39A /* C4PlayerControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0AD7B7E0FCD7C1C00EAC39A /* C4PlayerControl.cpp */; };
 		D406269A0BB9440C00815E5D /* c4group_ng.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D40626990BB9440C00815E5D /* c4group_ng.cpp */; };
 		D40626A00BB9477A00815E5D /* C4Config.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D439CADC0B8CB129001D508B /* C4Config.cpp */; };
 		D40626A10BB9477A00815E5D /* C4Group.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D439CAF80B8CB12A001D508B /* C4Group.cpp */; };
@@ -284,6 +285,8 @@
 		AFFAA14B0C2A896200444B95 /* C4ChatDlg.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4ChatDlg.cpp; sourceTree = "<group>"; };
 		AFFAA14C0C2A896200444B95 /* C4InteractiveThread.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4InteractiveThread.cpp; sourceTree = "<group>"; };
 		AFFAA14D0C2A896200444B95 /* C4Network2IRC.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = C4Network2IRC.cpp; sourceTree = "<group>"; };
+		D0AD7B7D0FCD7C0C00EAC39A /* C4PlayerControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4PlayerControl.h; sourceTree = "<group>"; };
+		D0AD7B7E0FCD7C1C00EAC39A /* C4PlayerControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4PlayerControl.cpp; sourceTree = "<group>"; };
 		D40626910BB9418400815E5D /* c4group */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c4group; sourceTree = BUILT_PRODUCTS_DIR; };
 		D40626990BB9440C00815E5D /* c4group_ng.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; name = c4group_ng.cpp; path = ../group/c4group_ng.cpp; sourceTree = SOURCE_ROOT; };
 		D40626AA0BB947A700815E5D /* C4Update.cpp */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.cpp.cpp; path = C4Update.cpp; sourceTree = "<group>"; };
@@ -886,6 +889,7 @@
 		D439CAD10B8CB129001D508B /* src */ = {
 			isa = PBXGroup;
 			children = (
+				D0AD7B7E0FCD7C1C00EAC39A /* C4PlayerControl.cpp */,
 				3562890E0DA62F9000FB1482 /* C4MainMenu.cpp */,
 				3562890F0DA62F9000FB1482 /* C4ObjectMenu.cpp */,
 				3588FB750DA0FFD2001544C0 /* C4FileSelDlg.cpp */,
@@ -1068,6 +1072,7 @@
 		D45B48A40D6B333A001A7AE2 /* inc */ = {
 			isa = PBXGroup;
 			children = (
+				D0AD7B7D0FCD7C0C00EAC39A /* C4PlayerControl.h */,
 				356289130DA62FA600FB1482 /* C4MainMenu.h */,
 				356288E60DA62CAD00FB1482 /* C4ObjectMenu.h */,
 				3588FB730DA0FFBE001544C0 /* C4FileSelDlg.h */,
@@ -1515,6 +1520,7 @@
 				356289100DA62F9000FB1482 /* C4MainMenu.cpp in Sources */,
 				356289110DA62F9000FB1482 /* C4ObjectMenu.cpp in Sources */,
 				3514CB3A0DBCCE5F00534809 /* OpenURL.cpp in Sources */,
+				D0AD7B7F0FCD7C1C00EAC39A /* C4PlayerControl.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

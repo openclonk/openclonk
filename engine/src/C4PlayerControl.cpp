@@ -19,6 +19,13 @@
 #include <C4Include.h>
 #include <C4PlayerControl.h>
 
+#ifndef BIG_C4INCLUDE
+#include <C4LangStringTable.h>
+#include <C4Player.h>
+#include <C4Control.h>
+#include <C4Game.h>
+#include <C4Wrappers.h>
+#endif
 
 /* C4PlayerControlDef */
 
@@ -583,3 +590,14 @@ void C4PlayerControl::RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet 
 	// register all keys into Game.KeyboardInput creating KeyBindings
 	}
 
+// TODO?!
+void C4PlayerControlAssignmentSet::GetAssignmentsByKey(const C4KeyCodeEx &key, bool fHoldKeysOnly, C4PlayerControlAssignmentVec *pOutVec, const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys)
+{ }
+void C4PlayerControl::CSync::SetControlDownState(int32_t iControl, const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser)
+{ }
+void C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
+{ }
+int32_t C4PlayerControl::CSync::GetControlDisabled(int32_t) const
+{ return 0; }
+const C4PlayerControl::CSync::ControlDownState *C4PlayerControl::CSync::GetControlDownState(int32_t iControl) const
+{ return NULL; }
