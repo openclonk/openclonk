@@ -295,7 +295,12 @@ void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 	if (Game.GraphicsSystem.ShowSolidMask)
 		Application.DDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
 	else
-		Application.DDraw->BlitLandscape(Surface32, AnimationSurface, &Game.GraphicsResource.sfcLiquidAnimation, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
+		{
+		const CSurface * Surfaces[C4M_MaxTexIndex];
+		for (int i = 0; i < C4M_MaxTexIndex; ++i)
+			Surfaces[i] = Game.TextureMap.GetEntry(i)->getPattern().getSurface();
+		Application.DDraw->BlitLandscape(Surface32, AnimationSurface, &Game.GraphicsResource.sfcLiquidAnimation, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,Surfaces);
+		}
 	if (Modulation) Application.DDraw->DeactivateBlitModulation();
 	}
 
@@ -2506,6 +2511,11 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 			BelowDensity -= GetPlacement(iX, iY);
 			BelowDensity += GetPlacement(iX, iY + 8);
 			BYTE pix = _GetPix(iX, iY);
+
+			if(DDrawCfg.Shader) {
+			    Surface32->SetPixDw(iX, iY, pix);
+				continue;
+			};
 			// Sky
 			if(!pix)
 				{

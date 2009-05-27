@@ -829,7 +829,7 @@ bool CStdDDraw::ClipPoly(CBltData &rBltData)
 	}
 
 void CStdDDraw::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcSource3, float fx, float fy,
-								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt)
+								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[])
 	{
 	Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt, FALSE);
 	}

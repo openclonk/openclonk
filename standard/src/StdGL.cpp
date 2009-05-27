@@ -303,9 +303,9 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	}
 
 void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
-								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt)
+								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
 	{
-	Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
+	//Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
 	// safety
 	if (!sfcSource || !sfcTarget || !wdt || !hgt) return;
 	assert(sfcTarget->IsRenderTarget());
@@ -401,6 +401,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glActiveTexture(GL_TEXTURE0);
 			}
+		s=12; //Special-Shader!
 		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
 		if (Saturation < 255)
 			{
@@ -465,10 +466,10 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 				glActiveTexture(GL_TEXTURE0);
 			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
 			glBindTexture(GL_TEXTURE_2D, pTex->texName);
-			if (Zoom != 1.0 && !DDrawCfg.PointFiltering)
+			if (Zoom != 1.0);// && !DDrawCfg.PointFiltering)
 				{
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				}
 			if (sfcSource2)
 				{
@@ -540,9 +541,38 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 				Vtx[i].fty += DDrawCfg.fBlitOff;
 				Vtx[i].ftz = 0;
 				}
+			if(DDrawCfg.Shader)
+				{
+				GLfloat shaderparam[4];
+				for (int cnt=1;cnt<127;cnt++)
+					{
+					if(mattextures[cnt])
+						{
+						shaderparam[0]=static_cast<GLfloat>(cnt)/255.0f;
+						glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, shaderparam);
 
-			glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
-			glDrawArrays(GL_POLYGON, 0, 4);
+						glActiveTexture(GL_TEXTURE1);   //Bind Mat Texture
+						glEnable(GL_TEXTURE_2D);
+						glBindTexture(GL_TEXTURE_2D, (*(mattextures[cnt]->ppTex))->texName);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+						glActiveTexture(GL_TEXTURE0);
+
+						glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+						glDrawArrays(GL_QUADS, 0, 4);
+						}
+					}
+				}
+			else
+				{
+				glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+				glDrawArrays(GL_QUADS, 0, 4);
+				}
+
 			}
 		}
 	if (shaders[0])
@@ -834,6 +864,22 @@ bool CStdGL::RestoreDeviceObjects()
 		// sample the texture
 		"TXP fow, fragment.texcoord[3], texture[3], 2D;\n"
 		"LRP tmp.rgb, fow.aaaa, tmp, fow;\n";
+		const char * landscape =
+		"TEMP col;\n"
+		"MOV col.x, program.local[0].x;\n" //Load color to indentify
+		"ADD col.y, col.x, 0.001;\n"
+		"SUB col.z, col.x, 0.001;\n"  //epsilon-range
+		"SGE tmp.r, tmp.b, 0.5015;\n" //Tunnel?
+		"MAD tmp.r, tmp.r, -0.5019, tmp.b;\n"
+		"SGE col.z, tmp.r, col.z;\n" //mat identified?
+		"SLT col.y, tmp.r, col.y;\n"
+		"TEMP coo;\n"
+		"MOV coo, fragment.texcoord;\n"
+		"MUL coo.xy, coo, 3.0;\n"
+		"TXP tmp, coo, texture[1], 2D;\n"
+		"MUL tmp.a, col.y, col.z;\n"
+		"SUB tmp.a, 1.0, tmp.a;\n"
+		;
 		const char * end =
 		"MOV result.color, tmp;\n"
 		"END\n";
@@ -849,6 +895,7 @@ bool CStdGL::RestoreDeviceObjects()
 		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,         alpha_add, grey, fow, end).getData(), shaders[9]);
 		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,         funny_add, grey, fow, end).getData(), shaders[10]);
 		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, liquid, alpha_add, grey, fow, end).getData(), shaders[11]);
+		DefineShaderARB(FormatString("%s%s%s", preface, landscape, end).getData(), shaders[12]);
 		}
 	// done
 	return Active;

@@ -92,7 +92,7 @@ class CStdGL : public CStdDDraw
 		bool fFullscreen;						// fullscreen mode?
 		int iClrDpt;								// color depth
 		// shaders for the ARB extension
-		GLuint shaders[12];
+		GLuint shaders[13];
 		// vertex buffer object
 		GLuint vbo;
 	public:
@@ -117,7 +117,7 @@ class CStdGL : public CStdDDraw
 		// Blit
 		void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
 		virtual void BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
-		                      SURFACE sfcTarget, float tx, float ty, float wdt, float hgt);
+		                      SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 		void FillBG(DWORD dwClr=0);
 		// Drawing
 		void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);

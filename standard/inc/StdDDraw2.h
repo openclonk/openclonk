@@ -136,6 +136,7 @@ class CPattern
 		uint32_t *pAlpha;
 	public:
 		CPattern& operator=(const CPattern&);
+		const CSurface *getSurface() const { return sfcPattern32; }
 		bool PatternClr(int iX, int iY, BYTE &byClr, DWORD &dwClr, CStdPalette &rPal) const;	// apply pattern to color
 		bool IsNewStyle() { if (sfcPattern32) return true; }
 		bool Set(class CSurface *sfcSource, int iZoom=0, bool fMonochrome=false);	// set and enable pattern
@@ -286,7 +287,7 @@ class CStdDDraw
 		virtual bool PrepareRendering(SURFACE sfcToSurface) = 0; // check if/make rendering possible to given surface
 		// Blit
 		virtual void BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
-		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt);
+		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 		void Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 		               SURFACE sfcTarget, int tx, int ty, int wdt, int hgt);
 		BOOL Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
