@@ -92,7 +92,7 @@ class CStdGL : public CStdDDraw
 		bool fFullscreen;						// fullscreen mode?
 		int iClrDpt;								// color depth
 		// shaders for the ARB extension
-		GLuint shaders[13];
+		GLuint shaders[12];
 		// vertex buffer object
 		GLuint vbo;
 	public:

@@ -398,7 +398,6 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glActiveTexture(GL_TEXTURE0);
 			}
-		s=12; //Special-Shader!
 		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
 		if (Saturation < 255)
 			{
@@ -488,10 +487,22 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 
 			// color modulation
 			// global modulation map
-			int i;
-			if (fUseClrModMap && dwModClr)
+			if (shaders[0] && fUseClrModMap)
 				{
-				for (i=0; i<4; ++i)
+				glActiveTexture(GL_TEXTURE3);
+				glLoadIdentity();
+				CSurface * pSurface = pClrModMap->GetSurface();
+				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSize), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSize), 1.0f);
+				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+
+				glClientActiveTexture(GL_TEXTURE3);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &Vtx[0].ftx);
+				glClientActiveTexture(GL_TEXTURE0);
+				}
+			if (!shaders[0] && fUseClrModMap && dwModClr)
+				{
+				for (int i=0; i<4; ++i)
 					{
 					DWORD c = pClrModMap->GetModAt(int(Vtx[i].ftx), int(Vtx[i].fty));
 					ModulateClr(c, dwModClr);
@@ -500,10 +511,10 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 				}
 			else
 				{
-				for (i=0; i<4; ++i)
+				for (int i=0; i<4; ++i)
 					DwTo4UB(dwModClr | dwModMask, Vtx[i].color);
 				}
-			for (i=0; i<4; ++i)
+			for (int i=0; i<4; ++i)
 				{
 				Vtx[i].tx /= iTexSize;
 				Vtx[i].ty /= iTexSize;
@@ -519,17 +530,14 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 					if(mattextures[cnt])
 						{
 						shaderparam[0]=static_cast<GLfloat>(cnt)/255.0f;
-						glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, shaderparam);
-
-						glActiveTexture(GL_TEXTURE1);   //Bind Mat Texture
-						glEnable(GL_TEXTURE_2D);
+						glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, shaderparam);
+						//Bind Mat Texture
+						glActiveTexture(GL_TEXTURE1);
 						glBindTexture(GL_TEXTURE_2D, (*(mattextures[cnt]->ppTex))->texName);
 						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
 						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-
 						glActiveTexture(GL_TEXTURE0);
 
 						glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
@@ -786,6 +794,7 @@ bool CStdGL::RestoreDeviceObjects()
 	// reset blit states
 	dwBlitMode = 0;
 
+	// Vertex Buffer Objects crash some versions of the free radeon driver. TODO: provide an option for them
 	if (0 && GLEW_ARB_vertex_buffer_object)
 		{
 		glGenBuffersARB(1, &vbo);
@@ -816,25 +825,9 @@ bool CStdGL::RestoreDeviceObjects()
 		"TEMP grey;\n"
 		"DP3 grey, tmp, { 0.299, 0.587, 0.114, 1.0 };\n"
 		"LRP tmp.rgb, program.local[0], tmp, grey;\n";
-		const char * liquid =
-		"TEMP mask;\n"
-		"TEMP liquid;\n"
-		"TXP mask, fragment.texcoord, texture[1], 2D;\n"
-		"TXP liquid, fragment.texcoord, texture[2], 2D;\n"
-		// animation
-		"SUB liquid.rgb, liquid, {0.5, 0.5, 0.5, 0};\n"
-		"DP3 liquid.rgb, liquid, program.local[1];\n"
-		//"MAD_SAT tmp.rgb, mask.aaa, liquid, tmp;\n"
-		"MUL liquid.rgb, mask.aaaa, liquid;\n"
-		"ADD_SAT tmp.rgb, liquid, tmp;\n";
-		const char * fow =
-		"TEMP fow;\n"
-		// sample the texture
-		"TXP fow, fragment.texcoord[3], texture[3], 2D;\n"
-		"LRP tmp.rgb, fow.aaaa, tmp, fow;\n";
 		const char * landscape =
 		"TEMP col;\n"
-		"MOV col.x, program.local[0].x;\n" //Load color to indentify
+		"MOV col.x, program.local[1].x;\n" //Load color to indentify
 		"ADD col.y, col.x, 0.001;\n"
 		"SUB col.z, col.x, 0.001;\n"  //epsilon-range
 		"SGE tmp.r, tmp.b, 0.5015;\n" //Tunnel?
@@ -846,24 +839,27 @@ bool CStdGL::RestoreDeviceObjects()
 		"MUL coo.xy, coo, 3.0;\n"
 		"TXP tmp, coo, texture[1], 2D;\n"
 		"MUL tmp.a, col.y, col.z;\n"
-		"SUB tmp.a, 1.0, tmp.a;\n"
-		;
+		"SUB tmp.a, 1.0, tmp.a;\n";
+		const char * fow =
+		"TEMP fow;\n"
+		// sample the texture
+		"TXP fow, fragment.texcoord[3], texture[3], 2D;\n"
+		"LRP tmp.rgb, fow.aaaa, tmp, fow;\n";
 		const char * end =
 		"MOV result.color, tmp;\n"
 		"END\n";
-		DefineShaderARB(FormatString("%s%s%s",       preface,         alpha_add,            end).getData(), shaders[0]);
-		DefineShaderARB(FormatString("%s%s%s",       preface,         funny_add,            end).getData(), shaders[1]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface, liquid, alpha_add,            end).getData(), shaders[2]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,         alpha_add, grey,      end).getData(), shaders[3]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,         funny_add, grey,      end).getData(), shaders[4]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, liquid, alpha_add, grey,      end).getData(), shaders[5]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,         alpha_add,       fow, end).getData(), shaders[6]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,         funny_add,       fow, end).getData(), shaders[7]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, liquid, alpha_add,       fow, end).getData(), shaders[8]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,         alpha_add, grey, fow, end).getData(), shaders[9]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,         funny_add, grey, fow, end).getData(), shaders[10]);
-		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, liquid, alpha_add, grey, fow, end).getData(), shaders[11]);
-		DefineShaderARB(FormatString("%s%s%s", preface, landscape, end).getData(), shaders[12]);
+		DefineShaderARB(FormatString("%s%s%s",       preface,            alpha_add,            end).getData(), shaders[0]);
+		DefineShaderARB(FormatString("%s%s%s",       preface,            funny_add,            end).getData(), shaders[1]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface, landscape, alpha_add,            end).getData(), shaders[2]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_add, grey,      end).getData(), shaders[3]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            funny_add, grey,      end).getData(), shaders[4]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_add, grey,      end).getData(), shaders[5]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_add,       fow, end).getData(), shaders[6]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            funny_add,       fow, end).getData(), shaders[7]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_add,       fow, end).getData(), shaders[8]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            alpha_add, grey, fow, end).getData(), shaders[9]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            funny_add, grey, fow, end).getData(), shaders[10]);
+		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, landscape, alpha_add, grey, fow, end).getData(), shaders[11]);
 		}
 	// done
 	return Active;
