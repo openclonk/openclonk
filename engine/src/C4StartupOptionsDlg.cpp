@@ -834,7 +834,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pSheetGraphics->AddElement(pGroupTrouble);
 	C4GUI::ComponentAligner caGroupTrouble(pGroupTrouble->GetClientRect(), iIndentX1, iIndentY2, true);
 	C4GUI::BaseCallbackHandler *pGfxGroubleCheckCB = new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxTroubleCheck);
-	int32_t iNumGfxOptions = 5, iOpt=0;
+	int32_t iNumGfxOptions = 6, iOpt=0;
 	// no alpha adding
 	pCheckGfxNoAlphaAdd = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_NOALPHAADD"), false);
 	pCheckGfxNoAlphaAdd->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
@@ -859,6 +859,12 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheckGfxNoBoxFades->SetToolTip(LoadResStr("IDS_MSG_NOCLRFADE_DESC"));
 	pCheckGfxNoBoxFades->SetOnChecked(pGfxGroubleCheckCB);
 	pGroupTrouble->AddElement(pCheckGfxNoBoxFades);
+	// Shaders
+	pShaders = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), "Shaders", false);
+	pShaders->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
+	pShaders->SetToolTip("Shaders");
+	pShaders->SetOnChecked(pGfxGroubleCheckCB);
+	pGroupTrouble->AddElement(pShaders);
 	// manual clipping
 	pCheckGfxClipManually = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_MANUALCLIP"), false);
 	pCheckGfxClipManually->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
@@ -1426,6 +1432,7 @@ void C4StartupOptionsDlg::LoadGfxTroubleshoot()
 	pCheckGfxNoAddBlit->SetChecked(!!(dwGfxCfg & C4GFXCFG_NOADDITIVEBLTS));
 	pCheckGfxNoBoxFades->SetChecked(!!(dwGfxCfg & C4GFXCFG_NOBOXFADES));
 	pCheckGfxClipManually->SetChecked(!!(dwGfxCfg & C4GFXCFG_CLIPMANUALLY));
+	pShaders->SetChecked(!!DDrawCfg.Shader);
 	pEdtGfxBlitOff->SetIntVal(iGfxBlitOff);
 	// title of troubleshooting-box by config set
 	pGroupTrouble->SetTitle(FormatString("%s: %s", LoadResStrNoAmp("IDS_CTL_TROUBLE"), fUseGL ? "OpenGL" : "DirectX").getData());
@@ -1441,6 +1448,7 @@ void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 	if (pCheckGfxNoAddBlit->GetChecked()) dwGfxCfg |= C4GFXCFG_NOADDITIVEBLTS;
 	if (pCheckGfxNoBoxFades->GetChecked()) dwGfxCfg |= C4GFXCFG_NOBOXFADES;
 	if (pCheckGfxClipManually->GetChecked()) dwGfxCfg |= C4GFXCFG_CLIPMANUALLY;
+	DDrawCfg.Shader=pShaders->GetChecked();
 	if (DDrawCfg.Windowed) dwGfxCfg |= C4GFXCFG_WINDOWED;
 	pEdtGfxBlitOff->Save2Config();
 	// get config set to be used
