@@ -40,22 +40,7 @@
 #include <C4Version.h>
 #include <C4Update.h>
 #include <C4ConfigShareware.h>
-
-// from http://cboard.cprogramming.com/archive/index.php/t-27714.html
-#include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
-int mygetch( ) {
-  struct termios oldt, newt;
-  int ch;
-  tcgetattr( STDIN_FILENO, &oldt );
-  newt = oldt;
-  newt.c_lflag &= ~( ICANON | ECHO );
-  tcsetattr( STDIN_FILENO, TCSANOW, &newt );
-  ch = getchar();
-  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
-  return ch;
-}
+#include <StdRegistry.h>
 
 int globalArgC;
 char **globalArgV;
@@ -65,7 +50,6 @@ bool fQuiet = true;
 bool fRecursive = false;
 bool fRegisterShell = false;
 bool fUnregisterShell = false;
-bool fPromptAtEnd = false;
 char strExecuteAtEnd[_MAX_PATH + 1] = "";
 
 int iResult = 0;
@@ -365,11 +349,12 @@ int RegisterShellExtensions() {
   char strModule[2048];
   char strCommand[2048];
   char strClass[128];
+  int i;
   GetModuleFileName(NULL, strModule, 2048);
   // Groups
   const char *strClasses =
     "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
-  for (int i = 0; SCopySegment(strClasses, i, strClass); i++) {
+  for (i = 0; SCopySegment(strClasses, i, strClass); i++) {
     // Unpack
     sprintf(strCommand, "\"%s\" \"%%1\" \"-u\"", strModule);
     if (!SetRegShell(strClass, "MakeFolder", "C4Group Unpack", strCommand))
@@ -396,11 +381,12 @@ int UnregisterShellExtensions() {
 #ifdef _WIN32
   char strModule[2048];
   char strClass[128];
+  int i;
   GetModuleFileName(NULL, strModule, 2048);
   // Groups
   const char *strClasses =
     "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
-  for (int i = 0; SCopySegment(strClasses, i, strClass); i++) {
+  for (i = 0; SCopySegment(strClasses, i, strClass); i++) {
     // Unpack
     if (!RemoveRegShell(strClass, "MakeFolder"))
       return 0;
@@ -447,8 +433,6 @@ int main(int argc, char *argv[]) {
       case 'u':
         fUnregisterShell = true;
         break;
-				// Prompt at end
-			case 'p': fPromptAtEnd = true; break;
 				// Execute at end
 			case 'x': SCopy(argv[i] + 3, strExecuteAtEnd, _MAX_PATH); break;
         // Unknown
@@ -520,9 +504,9 @@ int main(int argc, char *argv[]) {
     printf("          -g [source] [target] [title] Make update\n");
     printf("          -y Apply update\n");
     printf("\n");
-    printf("Options:  -v Verbose -r Recursive -p Prompt at end\n");
+    printf("Options:  -v Verbose -r Recursive\n");
     printf("          -i Register shell -u Unregister shell\n");
-		printf("          -x:<command> Execute shell command when done\n");
+    printf("          -x:<command> Execute shell command when done\n");
     printf("\n");
     printf("Examples: c4group pack.c4g -a myfile.dat -l \"*.dat\"\n");
     printf("          c4group pack.c4g -as myfile.dat myfile.bin\n");
@@ -535,17 +519,20 @@ int main(int argc, char *argv[]) {
     printf("          c4group -i\n");
   }
 
-	// Prompt at end
-	if (fPromptAtEnd)
-		{
-		printf("\nDone. Press any key to continue.\n");
-		mygetch();
-		}
-
 	// Execute when done
 	if (strExecuteAtEnd[0])
 		{
 		printf("Executing: %s\n", strExecuteAtEnd);
+#ifdef _WIN32
+
+		STARTUPINFO startInfo;
+		ZeroMem(&startInfo, sizeof(startInfo));
+		startInfo.cb = sizeof(startInfo);
+
+		PROCESS_INFORMATION procInfo;
+
+		CreateProcess(strExecuteAtEnd, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startInfo, &procInfo);
+#else
 		switch (fork())
 		  {
 		  // Error
@@ -560,8 +547,8 @@ int main(int argc, char *argv[]) {
 		  default:
 		    break;
 		  }
+#endif
 		}
-
   // Done
   return iResult;
 
