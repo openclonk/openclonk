@@ -60,6 +60,8 @@ class C4PlayerControlDef
 		bool IsHoldKey() const { return fIsHoldKey; }
 		C4ID GetExtraData() const { return idControlExtraData; }
 		bool IsGlobal() const { return fGlobal; }
+		int32_t GetRepeatDelay() const { return iRepeatDelay; }
+		int32_t GetInitialRepeatDelay() const { return iInitialRepeatDelay; }
 
 		//C4PlayerControlDef &operator =(const C4PlayerControlDef &src);
 		bool operator ==(const C4PlayerControlDef &cmp) const;
@@ -81,6 +83,15 @@ class C4PlayerControlDefs
 		DefVecImpl Defs;
 
 	public:
+		struct CInternalCons
+			{
+			int32_t CON_MenuSelect, CON_MenuEnterAll, CON_MenuEnter, CON_MenuClose;
+			CInternalCons() : CON_MenuSelect(CON_None), CON_MenuEnterAll(CON_None), CON_MenuEnter(CON_None), CON_MenuClose(CON_None) {}
+			} InternalCons;
+
+		void UpdateInternalCons();
+
+	public:
 		C4PlayerControlDefs() {}
 		~C4PlayerControlDefs() {}
 		void Clear();
@@ -88,11 +99,24 @@ class C4PlayerControlDefs
 		void CompileFunc(StdCompiler *pComp);
 		void MergeFrom(const C4PlayerControlDefs &Src); // copy all defs from source file; overwrite defs of same name if found
 
-		C4PlayerControlDef *GetControlByIndex(int32_t idx);
+		const C4PlayerControlDef *GetControlByIndex(int32_t idx) const;
 		int32_t GetControlIndexByIdentifier(const char *szIdentifier) const; // return CON_None for not found
+		int32_t GetCount() const { return Defs.size(); }
 
 		bool operator ==(const C4PlayerControlDefs &cmp) const { return Defs == cmp.Defs; }
 	};
+
+struct C4PlayerControlRecentKey
+	{
+	C4KeyCodeEx Key;
+	DWORD tTime;
+	C4PlayerControlRecentKey(const C4KeyCodeEx &Key, DWORD tTime) : Key(Key), tTime(tTime) {}
+	bool operator ==(const C4PlayerControlRecentKey &cmp) { return Key==cmp.Key; } // comparison op for finding items in lists: Search for the key only
+	};
+
+typedef std::list<C4PlayerControlRecentKey> C4PlayerControlRecentKeyList;
+
+typedef std::vector<C4KeyCodeEx> C4KeyCodeExVec;
 
 // a key/mouse/gamepad assignment to a PlayerControlDef
 class C4PlayerControlAssignment
@@ -140,6 +164,7 @@ class C4PlayerControlAssignment
 
 		void CompileFunc(StdCompiler *pComp);
 		bool ResolveRefs(class C4PlayerControlAssignmentSet *pParentSet, C4PlayerControlDefs *pControlDefs); // resolve references between assignments
+		bool IsComboMatched(const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const; // check if combo is currently fulfilled (assuming TriggerKey is already matched)
 
 		bool operator ==(const C4PlayerControlAssignment &cmp) const; // doesn't compare resolved TriggerKey/iControl
 		bool operator <(const C4PlayerControlAssignment &cmp) const { return iPriority < cmp.iPriority; }
@@ -148,19 +173,13 @@ class C4PlayerControlAssignment
 		bool IsRefsResolved() const { return fRefsResolved; }
 		bool IsAlwaysUnhandled() const { return iTriggerMode & CTM_AlwaysUnhandled; }
 		int32_t GetTriggerMode() const { return iTriggerMode; }
+		const C4KeyCodeEx &GetTriggerKey() const { return TriggerKey; }
+		bool HasCombo() const { return KeyCombo.size()>1; }
 	};
 
 typedef std::vector<C4PlayerControlAssignment> C4PlayerControlAssignmentVec;
+typedef std::vector<const C4PlayerControlAssignment *> C4PlayerControlAssignmentPVec;
 
-struct C4PlayerControlRecentKey
-	{
-	C4KeyCodeEx Key;
-	int32_t iFrame;
-	C4PlayerControlRecentKey(const C4KeyCodeEx &Key, int32_t iFrame) : Key(Key), iFrame(iFrame) {}
-	bool operator ==(const C4PlayerControlRecentKey &cmp) { return Key==cmp.Key; } // comparison op for finding items in lists: Search for the key only
-	};
-
-typedef std::list<C4PlayerControlRecentKey> C4PlayerControlRecentKeyList;
 
 // a set of key/mouse/gamepad assignments to all controls
 class C4PlayerControlAssignmentSet
@@ -181,7 +200,8 @@ class C4PlayerControlAssignmentSet
 		const char *GetName() const { return sName.getData(); }
 
 		C4PlayerControlAssignment *GetAssignmentByControlName(const char *szControlName);
-		void GetAssignmentsByKey(const C4KeyCodeEx &key, bool fHoldKeysOnly, C4PlayerControlAssignmentVec *pOutVec, const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys); // match only by TriggerKey (last key of Combo) if fHoldKeysOnly
+		void GetAssignmentsByKey(const C4PlayerControlDefs &rDefs, const C4KeyCodeEx &key, bool fHoldKeysOnly, C4PlayerControlAssignmentPVec *pOutVec, const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const; // match only by TriggerKey (last key of Combo) if fHoldKeysOnly
+		void GetTriggerKeys(const C4PlayerControlDefs &rDefs, C4KeyCodeExVec *pRegularKeys, C4KeyCodeExVec *pHoldKeys) const; // put all trigger keys of keyset into output vectors
 
 		bool operator ==(const C4PlayerControlAssignmentSet &cmp) const;
 	};
@@ -225,6 +245,9 @@ class C4PlayerControlFile
 // runtime information about a player's control
 class C4PlayerControl
 	{
+	public:
+		enum { MaxRecentKeyLookback = 3000, MaxSequenceKeyDelay = 800 }; // milliseconds: Time to press key combos
+
 	private:
 		C4PlayerControlDefs &ControlDefs; // shortcut
 
@@ -232,8 +255,9 @@ class C4PlayerControl
 		int32_t iPlr;
 
 		// async values
-		C4PlayerControlAssignmentSet *pControlSet; // the control set used by this player
-		std::list<C4KeyBinding *> KeyBindings;     // keys registered into Game.KeyboardInput
+		C4PlayerControlAssignmentSet *pControlSet; // the control set used by this player - may be NULL if the player cannot be controlled!
+		typedef std::list<C4CustomKey *> KeyBindingList;
+		KeyBindingList KeyBindings;     // keys registered into Game.KeyboardInput
 		C4PlayerControlRecentKeyList RecentKeys;           // keys pressed recently; for combinations
 		C4PlayerControlRecentKeyList DownKeys;         // keys currently held down
 
@@ -247,8 +271,13 @@ class C4PlayerControl
 				bool fDownByUser;  // if true, the key is actually pressed. Otherwise, it's triggered as down by another key
 				ControlDownState(const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser)
 					: DownState(rDownState), iDownFrame(iDownFrame), fDownByUser(fDownByUser) {}
+				bool IsDown() const { return DownState.iStrength>0; }
+
+				ControlDownState() : DownState(), iDownFrame(0), fDownByUser(false) {}
+				void CompileFunc(StdCompiler *pComp);
+				bool operator ==(const ControlDownState &cmp) const;
 				};
-			typedef std::vector<int32_t> DownStateVec;
+			typedef std::vector<ControlDownState> DownStateVec;
 			DownStateVec ControlDownStates;           // indexed by C4PlayerControlID: Down-state of a control. 0=up, 100=down; values inbetween e.g. for gamepad sticks
 			typedef std::vector<int32_t> DisableStateVec;
 			DisableStateVec ControlDisableStates;        // indexed by C4PlayerControlID: Disable-states of controls. >0 is disabled.
@@ -259,6 +288,7 @@ class C4PlayerControl
 			void SetControlDownState(int32_t iControl, const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser);
 			void SetControlDisabled(int32_t iControl, int32_t iVal);
 
+			void Clear();
 			void CompileFunc(StdCompiler *pComp);
 			bool operator ==(const CSync &cmp) const;
 			} Sync;
@@ -273,8 +303,8 @@ class C4PlayerControl
 		bool ExecuteControlAction(int32_t iControl, C4PlayerControlDef::Actions eAction, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated);
 		bool ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated);
 
-		// sync execution: Do keyrepeat, etc.
-		void Execute();
+		// init
+		void AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32_t idx);
 
 	public:
 		C4PlayerControl();
@@ -288,7 +318,10 @@ class C4PlayerControl
 		bool IsGlobal() const { return iPlr==-1; }
 
 		// callback from control queue
-		void ExecuteControlPacket(const class C4ControlPlayerControl2 *pCtrl);
+		void ExecuteControlPacket(const class C4ControlPlayerControl *pCtrl);
+
+		// sync execution: Do keyrepeat, etc.
+		void Execute();
 	};
 
 

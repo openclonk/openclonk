@@ -170,7 +170,7 @@ C4StartupOptionsDlg::KeySelDialog::~KeySelDialog()
 	delete pKeyListener;
 	}
 
-bool C4StartupOptionsDlg::KeySelDialog::KeyDown(C4KeyCodeEx key)
+bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 	{
 	// check if key is valid for this set
 	// do not mix gamepad and keyboard keys

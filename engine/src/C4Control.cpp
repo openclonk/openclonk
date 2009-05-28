@@ -355,31 +355,10 @@ void C4ControlPlayerSelect::CompileFunc(StdCompiler *pComp)
   C4ControlPacket::CompileFunc(pComp);
 }
 
+
 // *** C4ControlPlayerControl
 
 void C4ControlPlayerControl::Execute() const
-{
-	C4Player *pPlr=Game.Players.Get(iPlr);
-	if(pPlr)
-		{
-		if (!Inside<int>(iCom, COM_ReleaseFirst, COM_ReleaseLast))
-			pPlr->CountControl(C4Player::PCID_DirectCom, iCom*10000+iData);
-		pPlr->InCom(iCom, iData);
-		}
-}
-
-void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
-{
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCom), "Com", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iData), "Data", 0));
-  C4ControlPacket::CompileFunc(pComp);
-}
-
-
-// *** C4ControlPlayerControl2
-
-void C4ControlPlayerControl2::Execute() const
 {
 	C4PlayerControl *pTargetCtrl = NULL;
 	if (iPlr == -1)
@@ -392,20 +371,20 @@ void C4ControlPlayerControl2::Execute() const
 		C4Player *pPlr=Game.Players.Get(iPlr);
 		if (pPlr)
 		{
-			//pPlr->CountControl(C4Player::PCID_DirectCom, iCom*10000+iData);
+			pTargetCtrl = &(pPlr->Control);
 		}
 	}
 	if (pTargetCtrl) pTargetCtrl->ExecuteControlPacket(this);
 }
 
-void C4ControlPlayerControl2::ControlItem::CompileFunc(StdCompiler *pComp)
+void C4ControlPlayerControl::ControlItem::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(iControl);
 	pComp->Seperator();
 	pComp->Value(iTriggerMode);
 }
 
-void C4ControlPlayerControl2::CompileFunc(StdCompiler *pComp)
+void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
 	pComp->Value(mkNamingAdapt(fRelease, "Release", false));

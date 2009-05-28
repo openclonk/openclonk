@@ -220,7 +220,6 @@ class C4Object
 		C4Object *ComposeContents(C4ID id);
 		BOOL MenuCommand(const char *szCommand);
 
-		BOOL CallControl(C4Player *pPlr, BYTE byCom, C4AulParSet *pPars = 0);
 		C4Value Call(const char *szFunctionCall, C4AulParSet *pPars = 0, bool fPassError = false);
 
 
@@ -338,9 +337,6 @@ class C4Object
 		const char *GetName();
 		void SetName (const char *NewName = 0);
 		int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
-		void DirectCom(BYTE byCom, int32_t iData);
-		void AutoStopDirectCom(BYTE byCom, int32_t iData);
-		void AutoStopUpdateComDir();
 		BOOL BuyEnergy();
 		void AutoSellContents();
 		BOOL SetOwner(int32_t iOwner);

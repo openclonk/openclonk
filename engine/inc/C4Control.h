@@ -163,22 +163,11 @@ public:
 class C4ControlPlayerControl : public C4ControlPacket // sync
 {
 public:
-  C4ControlPlayerControl()
-    : iPlr(-1), iCom(-1), iData(-1) { }
-	C4ControlPlayerControl(int32_t iPlr, int32_t iCom, int32_t iData)
-		: iPlr(iPlr), iCom(iCom), iData(iData) { }
-protected:
-	int32_t iPlr, iCom, iData;
-public:
-	DECLARE_C4CONTROL_VIRTUALS
-};
-
-class C4ControlPlayerControl2 : public C4ControlPacket // sync
-{
-public:
-	C4ControlPlayerControl2() : iPlr(-1), fRelease(false) {}
-	C4ControlPlayerControl2(int32_t iPlr, bool fRelease, const C4KeyEventData &rExtraData)
+	C4ControlPlayerControl() : iPlr(-1), fRelease(false) {}
+	C4ControlPlayerControl(int32_t iPlr, bool fRelease, const C4KeyEventData &rExtraData)
 		: iPlr(iPlr), fRelease(fRelease), ExtraData(rExtraData) { }
+	C4ControlPlayerControl(int32_t iPlr, int32_t iControl, int32_t iExtraData) // old-style menu com emulation
+		: iPlr(iPlr), fRelease(false), ExtraData(iExtraData,0,0) { AddControl(iControl,0); }
 
 	struct ControlItem
 	{

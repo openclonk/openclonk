@@ -204,9 +204,6 @@ class C4Game
 		void ShowGameOverDlg();
 		bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false);
 		void DrawCursors(C4TargetFacet &cgo, int32_t iPlayer);
-		bool LocalControlKey(C4KeyCodeEx key, C4KeySetCtrl Ctrl);
-		bool LocalControlKeyUp(C4KeyCodeEx key, C4KeySetCtrl Ctrl);
-		void LocalPlayerControl(int32_t iPlayer, int32_t iCom);
 		void FixRandom(int32_t iSeed);
 		bool Init();
 		bool PreInit();

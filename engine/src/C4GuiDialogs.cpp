@@ -593,7 +593,7 @@ BOOL Dialog::CharIn(const char * c)
 	return FALSE;
 	}
 
-bool Dialog::KeyHotkey(C4KeyCodeEx key)
+bool Dialog::KeyHotkey(const C4KeyCodeEx &key)
 	{
 	WORD wKey = WORD(key.Key);
 	// do hotkey procs for standard alphanumerics only

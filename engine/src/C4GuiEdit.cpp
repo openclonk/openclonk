@@ -396,7 +396,7 @@ bool Edit::KeyEnter()
 	return true;
 	}
 
-bool Edit::KeyCursorOp(C4KeyCodeEx key, CursorOperation op)
+bool Edit::KeyCursorOp(const C4KeyCodeEx &key, CursorOperation op)
 	{
 	bool fShift = !!(key.dwShift & KEYS_Shift);
 	bool fCtrl = !!(key.dwShift & KEYS_Control);

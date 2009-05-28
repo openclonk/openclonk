@@ -3161,37 +3161,6 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "NetAllowJoinToggle",     KEYSCOPE_Generic,    new C4KeyCB  <C4Network2>      (Network, &C4Network2::ToggleAllowJoin)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "NetStatsToggle",         KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShowNetStatus)));
 
-	// Map player keyboard controls
-	int32_t iKdbSet,iCtrl;
-	StdStrBuf sPlrCtrlName;
-  for (iKdbSet=C4P_Control_Keyboard1; iKdbSet<=C4P_Control_Keyboard4; iKdbSet++)
-	  for (iCtrl=0; iCtrl<C4MaxKey; iCtrl++)
-			{
-			sPlrCtrlName.Format("Kbd%dKey%d", iKdbSet-C4P_Control_Keyboard1+1, iCtrl+1);
-			KeyboardInput.RegisterKey(new C4CustomKey(
-				C4KeyCodeEx(Config.Controls.Keyboard[iKdbSet][iCtrl]),
-				sPlrCtrlName.getData(), KEYSCOPE_Control,
-				new C4KeyCBExPassKey<C4Game, C4KeySetCtrl>(*this, C4KeySetCtrl(iKdbSet, iCtrl), &C4Game::LocalControlKey, &C4Game::LocalControlKeyUp),
-				C4CustomKey::PRIO_PlrControl));
-			}
-
-	// Map player gamepad controls
-	int32_t iGamepad;
-	for (iGamepad=C4P_Control_GamePad1; iGamepad<=C4P_Control_GamePad1+C4ConfigMaxGamepads; iGamepad++)
-		{
-		C4ConfigGamepad &cfg = Config.Gamepads[iGamepad-C4P_Control_GamePad1];
-	  for (iCtrl=0; iCtrl<C4MaxKey; iCtrl++)
-			{
-			if (cfg.Button[iCtrl] == -1) continue;
-			sPlrCtrlName.Format("Joy%dBtn%d", iGamepad-C4P_Control_GamePad1+1, iCtrl+1);
-			KeyboardInput.RegisterKey(new C4CustomKey(
-				C4KeyCodeEx(cfg.Button[iCtrl]),
-				sPlrCtrlName.getData(), KEYSCOPE_Control,
-				new C4KeyCBExPassKey<C4Game, C4KeySetCtrl>(*this, C4KeySetCtrl(iGamepad, iCtrl), &C4Game::LocalControlKey, &C4Game::LocalControlKeyUp),
-				C4CustomKey::PRIO_PlrControl));
-			}
-		}
-
 	// load any custom keysboard overloads
 	KeyboardInput.LoadCustomConfig();
 
@@ -3295,71 +3264,6 @@ void C4Game::FixRandom(int32_t iSeed)
 	//sprintf(OSTR,"Fixing random to %i",iSeed); Log(OSTR);
 	FixedRandom(iSeed);
 	Randomize3();
-	}
-
-bool C4Game::LocalControlKey(C4KeyCodeEx key, C4KeySetCtrl Ctrl)
-	{
-	// keyboard callback: Perform local player control
-	C4Player *pPlr;
-	if (pPlr = Players.GetLocalByKbdSet(Ctrl.iKeySet))
-		{
-		// Swallow a event generated from Keyrepeat for AutoStopControl
-		if (pPlr->PrefControlStyle)
-			{
-			if (key.IsRepeated())
-				return true;
-			}
-		LocalPlayerControl(pPlr->Number,Control2Com(Ctrl.iCtrl, false));
-		return true;
-		}
-	// not processed - must return false here, so unused keyboard control sets do not block used ones
-	return false;
-	}
-
-bool C4Game::LocalControlKeyUp(C4KeyCodeEx key, C4KeySetCtrl Ctrl)
-	{
-	// Direct callback for released key in AutoStopControl-mode (ignore repeated)
-	if (key.IsRepeated())
-		return true;
-	C4Player *pPlr;
-	if ((pPlr = Players.GetLocalByKbdSet(Ctrl.iKeySet)) && pPlr->PrefControlStyle)
-		{
-		int iCom = Control2Com(Ctrl.iCtrl, true);
-		if (iCom != COM_None) LocalPlayerControl(pPlr->Number, iCom);
-			return true;
-		}
-	// not processed - must return false here, so unused keyboard control sets do not block used ones
-	return false;
-	}
-
-void C4Game::LocalPlayerControl(int32_t iPlayer, int32_t iCom)
-	{
-	C4Player *pPlr = Players.Get(iPlayer); if (!pPlr) return;
-	int32_t iData=0;
-	// Menu button com
-	if (iCom==COM_PlayerMenu)
-		{
-		// Player menu open: close
-		if (pPlr->Menu.IsActive())
-			pPlr->Menu.Close(false);
-		// Menu closed: open main menu
-		else
-			pPlr->ActivateMenuMain();
-		return;
-		}
-	// Local player menu active: convert menu com and control local
-	if (pPlr->Menu.ConvertCom(iCom,iData,true))
-		{
-		pPlr->Menu.Control(iCom,iData);
-		return;
-		}
-	// Pre-queue asynchronous menu conversions
-	if (pPlr->Cursor && pPlr->Cursor->Menu)
-		pPlr->Cursor->Menu->ConvertCom(iCom,iData,true);
-	// Not for eliminated (checked again in DirectCom, but make sure no control is generated for eliminated players!)
-	if (pPlr->Eliminated) return;
-	// Player control: add to control queue
-	Input.Add(CID_PlrControl, new C4ControlPlayerControl(iPlayer,iCom,iData));
 	}
 
 BOOL C4Game::DefinitionFilenamesFromSaveGame()

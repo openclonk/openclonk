@@ -2692,24 +2692,6 @@ static bool FnDoHomebaseProduction(C4AulContext *cthr, long iPlr, C4ID id, long 
   return Game.Players.Get(iPlr)->HomeBaseProduction.SetIDCount(id,iLastcount+iChange,TRUE);
 	}
 
-static long FnGetPlrDownDouble(C4AulContext *cthr, long iPlr)
-  {
-  if (!ValidPlr(iPlr)) return FALSE;
-  return Game.Players.Get(iPlr)->LastComDownDouble;
-  }
-
-static bool FnClearLastPlrCom(C4AulContext *cthr, long iPlr)
-	{
-	// get player
-	C4Player *pPlr = Game.Players.Get(iPlr);
-	if (!pPlr) return FALSE;
-	// reset last coms
-	pPlr->LastCom = COM_None;
-	pPlr->LastComDownDouble = 0;
-	// done, success
-	return TRUE;
-	}
-
 static bool FnSetPlrKnowledge(C4AulContext *cthr, long iPlr, C4ID id, bool fRemove)
   {
 	C4Player *pPlr=Game.Players.Get(iPlr);
@@ -6586,8 +6568,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlrView", FnSetPlrView);
 	AddFunc(pEngine, "SetPlrKnowledge", FnSetPlrKnowledge);
 	AddFunc(pEngine, "SetPlrMagic", FnSetPlrMagic);
-	AddFunc(pEngine, "GetPlrDownDouble", FnGetPlrDownDouble);
-	AddFunc(pEngine, "ClearLastPlrCom", FnClearLastPlrCom);
 	AddFunc(pEngine, "GetPlrViewMode", FnGetPlrViewMode);
 	AddFunc(pEngine, "GetPlrView", FnGetPlrView);
 	AddFunc(pEngine, "GetWealth", FnGetWealth);
