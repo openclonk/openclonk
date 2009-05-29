@@ -390,7 +390,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 #ifdef _WIN32
 	// Restore old text
 	SetWindowText(hCombo,szLastText);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Reassociate list store with completion
 	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(store));
 #endif

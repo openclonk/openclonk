@@ -1,7 +1,11 @@
 cmake_minimum_required (VERSION 2.6)
 project (clonk CXX C)
 
-add_executable(clonk
+if(WIN32)
+	SET(additional_clonk_sources engine/src/C4FileClasses.cpp engine/res/engine.rc engine/res/resource.h)
+endif()
+add_executable(clonk WIN32 MACOSX_BUNDLE
+	${additional_clonk_sources}
 	engine/src/C4AList.cpp
 	engine/src/C4Action.cpp
 	engine/src/C4Application.cpp
@@ -318,10 +322,6 @@ add_executable(clonk
 	engine/res/Play.h
 	engine/res/Rect.h
 	engine/res/Static.h
-
-	engine/src/C4FileClasses.cpp
-	engine/res/engine.rc
-	engine/res/resource.h
 )
 
 add_executable(c4group
@@ -348,7 +348,33 @@ add_executable(c4group
 	standard/zlib/zutil.h
 )
 
+if(WIN32)
+	SET(additional_system_sources
+		standard/src/StdWindow.cpp
+		standard/src/StdJoystick.cpp
+		standard/inc/StdJoystick.h
+	)
+elseif(USE_SDL)
+	SET(additional_system_sources
+		standard/src/StdSDLApp.cpp
+		standard/src/StdSDLWindow.cpp
+	)
+elseif(USE_X11)
+	SET(additional_system_sources
+		standard/src/StdXApp.cpp
+		standard/src/StdXWindow.cpp
+		standard/src/StdXPrivate.h
+	)
+endif()
+if(USE_GTK)
+	SET(additional_system_sources
+		${additional_system_sources}
+		standard/src/StdGtkWindow.cpp
+		standard/inc/StdGtkWindow.h
+	)
+endif()
 add_library(standard STATIC
+	${additional_system_sources}
 	standard/src/Bitmap256.cpp
 	standard/src/CStdFile.cpp
 	standard/src/Fixed.cpp
@@ -412,10 +438,6 @@ add_library(standard STATIC
 	standard/inc/StdWindow.h
 	standard/zlib/gzio.c
 	standard/zlib/zutil.h
-
-	standard/src/StdWindow.cpp
-	standard/src/StdJoystick.cpp
-	standard/inc/StdJoystick.h
 )
 
 include_directories(
@@ -424,6 +446,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/standard/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/engine/inc
 	${CMAKE_CURRENT_SOURCE_DIR}/engine/sec
+	${CMAKE_CURRENT_SOURCE_DIR}/engine
 )
 target_link_libraries(clonk standard)
 
@@ -439,13 +462,43 @@ CHECK_INCLUDE_FILE_CXX(stdint.h HAVE_STDINT_H)
 CHECK_INCLUDE_FILE_CXX(sys/stat.h HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILE_CXX(sys/types.h HAVE_SYS_TYPES_H)
 CHECK_INCLUDE_FILE_CXX(unistd.h HAVE_UNISTD_H)
+CHECK_INCLUDE_FILE_CXX(execinfo.h HAVE_EXECINFO_H)
+CHECK_INCLUDE_FILE_CXX(langinfo.h HAVE_LANGINFO_H)
+CHECK_INCLUDE_FILE_CXX(poll.h HAVE_POLL_H)
+CHECK_INCLUDE_FILE_CXX(sys/inotify.h HAVE_SYS_INOTIFY_H)
+CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
+CHECK_INCLUDE_FILE_CXX(X11/extensions/xf86vmode.h HAVE_X11_EXTENSIONS_XF86VMODE_H)
+CHECK_INCLUDE_FILE_CXX(X11/extensions/Xrandr.h HAVE_X11_EXTENSIONS_XRANDR_H)
+CHECK_INCLUDE_FILE_CXX(X11/keysym.h HAVE_X11_KEYSYM_H)
+CHECK_INCLUDE_FILE_CXX(X11/xpm.h HAVE_X11_XPM_H)
+CHECK_INCLUDE_FILE_CXX(iconv.h HAVE_ICONV)
+
+if(HAVE_ICONV)
+	SET(ICONV_CONST ON)
+endif()
+
+include(CheckFunctionExists)
+CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 
 # User selectable options
 option(USE_GL "Enable OpenGL support" ON)
+if(APPLE)
+	SET(INITIAL_USE_SDL_VALUE ON)
+else()
+	SET(INITIAL_USE_SDL_VALUE OFF)
+endif()
+option(USE_SDL "Use SDL to create windows etc." ${INITIAL_USE_SDL_VALUE})
 if(WIN32)
 	option(USE_DIRECTX "Enable DirectX support" ON)
 else()
 	SET(USE_DIRECTX OFF)
+endif()
+if(UNIX)
+	option(USE_X11 "Use X11 to create windows etc." ON)
+	option(USE_GTK "Use GTK for the developer mode" ON)
+else()
+	SET(USE_X11 OFF)
+	SET(USE_GTK OFF)
 endif()
 if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
@@ -457,11 +510,13 @@ include(FindJPEG)
 include(FindPNG)
 include(FindZLIB)
 
+include(FindThreads)
+SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT})
+
 # isilkor 09-05-29: FindFreetype only checks for no-ver and 219
 find_library(FREETYPE_LIBRARY NAMES freetype239)
 include(FindFreetype)
 include_directories(${FREETYPE_INCLUDE_DIRS})
-
 SET(HAVE_FREETYPE ${FREETYPE_FOUND} CACHE INTERNAL "Rename of FREETYPE_FOUND for config.h")
 
 # FINDLIB works the same as find_library, but also marks the resulting var as
@@ -470,9 +525,6 @@ macro(FINDLIB lib)
 	find_library(${ARGV})
 	mark_as_advanced(${lib})
 endmacro(FINDLIB)
-FINDLIB(VFW vfw32)
-FINDLIB(WS2 ws2_32)
-FINDLIB(WINMM winmm)
 # isilkor 09-05-29: Don't use FindOpenSSL, because that wants to link to ssleay
 FINDLIB(OPENSSL NAMES crypto libeay32)
 
@@ -484,6 +536,38 @@ endif()
 if(USE_DIRECTX)
 	FINDLIB(DIRECT3D d3d9)
 	FINDLIB(DIRECT3DX d3dx9)
+endif()
+if(USE_GTK)
+	include(FindPkgConfig)
+	if (PKG_CONFIG_FOUND)
+		pkg_check_modules(GTK glib-2.0>=2.4 gtk+-2.0>=2.4)
+	endif()
+	if(GTK_FOUND)
+		include_directories(${GTK_INCLUDE_DIRS})
+		link_directories(${GTK_LIBRARY_DIRS})
+		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
+		SET(WITH_GLIB ${GTK_FOUND})
+	endif()
+endif()
+if(USE_X11)
+	FINDLIB(X11 X11)
+	FINDLIB(XPM Xpm)
+	FINDLIB(XXF86VM Xxf86vm)
+	FINDLIB(XRANDR Xrandr)
+endif()
+if (WIN32)
+	FINDLIB(VFW vfw32)
+	FINDLIB(WS2 ws2_32)
+	FINDLIB(WINMM winmm)
+endif()
+if (UNIX)
+	include(FindSDL)
+	SET(HAVE_SDL ${SDL_FOUND})
+	if(SDL_FOUND)
+		include_directories(${SDL_INCLUDE_DIR})
+		FINDLIB(SDLMIXER SDL_mixer)
+		SET(HAVE_LIBSDL_MIXER ${SDLMIXER})
+	endif()
 endif()
 
 target_link_libraries(clonk
@@ -498,6 +582,13 @@ target_link_libraries(clonk
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${OPENSSL}
+	${GTK_LIBRARIES}
+	${X11}
+	${XPM}
+	${XXF86VM}
+	${XRANDR}
+	${SDL_LIBRARY}
+	${SDLMIXER}
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}

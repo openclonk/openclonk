@@ -49,11 +49,7 @@ namespace {
 #endif
 #endif // _WIN32
 
-#ifndef WITH_DEVELOPER_MODE
-#define WITH_DEVELOPER_MODE 0
-#endif
-
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 # include <gdk/gdkcursor.h>
 # include <gdk/gdkx.h>
 # include <gtk/gtkstock.h>
@@ -126,7 +122,7 @@ C4Console::C4Console()
 	hbmPlay2=NULL;
 	hbmHalt=NULL;
 	hbmHalt2=NULL;
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	cursorDefault = NULL;
 	cursorWait = NULL;
 	itemNet = NULL;
@@ -153,7 +149,7 @@ C4Console::~C4Console()
 	if (hbmPlay2) DeleteObject(hbmPlay2);
 	if (hbmHalt) DeleteObject(hbmHalt);
 	if (hbmHalt2) DeleteObject(hbmHalt2);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	if(cursorDefault) gdk_cursor_unref(cursorDefault);
 	if(cursorWait) gdk_cursor_unref(cursorWait);
 #endif // WITH_DEVELOPER_MODE / _WIN32
@@ -295,7 +291,7 @@ BOOL CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 	return FALSE;
 	}
-#elif defined(USE_X11) && !WITH_DEVELOPER_MODE
+#elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 void C4Console::HandleMessage (XEvent & e)
 {
 	// Parent handling
@@ -368,7 +364,7 @@ CStdWindow * C4Console::Init(CStdApp * pApp)
 	ShowCursor(TRUE);
 	// Success
 	return this;
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	cursorWait = gdk_cursor_new(GDK_WATCH);
 	cursorDefault = gdk_cursor_new(GDK_ARROW);
 
@@ -383,7 +379,7 @@ CStdWindow * C4Console::Init(CStdApp * pApp)
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	}
 
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 GtkWidget* C4Console::InitGUI()
 {
 	// ------------ Play/Pause and Mode ---------------------
@@ -628,7 +624,7 @@ bool C4Console::Out(const char *szText)
 	lines = SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_GETLINECOUNT,(WPARAM)0,(LPARAM)0);
 	SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,(LPARAM)lines);
 	UpdateWindow(hWindow);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Append text to log
 	if(!window) return true;
 
@@ -654,7 +650,7 @@ bool C4Console::ClearLog()
 	SetDlgItemText(hWindow,IDC_EDITOUTPUT,"");
 	SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,0);
 	UpdateWindow(hWindow);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtLog)), "", 0);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	return true;
@@ -687,7 +683,7 @@ bool C4Console::UpdateStatusBars()
 #ifdef _WIN32
 		SetDlgItemText(hWindow,IDC_STATICFRAME,str.getData());
 		UpdateWindow(GetDlgItem(hWindow,IDC_STATICFRAME));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblFrame), str.getData());
 #endif // WITH_DEVELOPER_MODE / _WIN32
 		}
@@ -700,7 +696,7 @@ bool C4Console::UpdateStatusBars()
 #ifdef _WIN32
 		SetDlgItemText(hWindow,IDC_STATICSCRIPT,str.getData());
 		UpdateWindow(GetDlgItem(hWindow,IDC_STATICSCRIPT));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblScript), str.getData());
 #endif // WITH_DEVELOPER_MODE / _WIN32
 		}
@@ -714,7 +710,7 @@ bool C4Console::UpdateStatusBars()
 #ifdef _WIN32
 		SetDlgItemText(hWindow,IDC_STATICTIME,str.getData());
 		UpdateWindow(GetDlgItem(hWindow,IDC_STATICTIME));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblTime), str.getData());
 #endif // WITH_DEVELOPER_MODE
 		}
@@ -729,7 +725,7 @@ bool C4Console::UpdateHaltCtrls(bool fHalt)
 	UpdateWindow(GetDlgItem(hWindow,IDC_BUTTONPLAY));
 	SendDlgItemMessage(hWindow,IDC_BUTTONHALT,BM_SETSTATE,fHalt,0);
 	UpdateWindow(GetDlgItem(hWindow,IDC_BUTTONHALT));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Prevents recursion
 	g_signal_handler_block(btnPlay, handlerPlay);
 	g_signal_handler_block(btnHalt, handlerHalt);
@@ -767,7 +763,7 @@ BOOL C4Console::SaveGame(BOOL fSaveGame)
 	BOOL fOkay=TRUE;
 #ifdef _WIN32
 	SetCursor(LoadCursor(0,IDC_WAIT));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Seems not to work. Don't know why...
 	gdk_window_set_cursor(window->window, cursorWait);
 #endif
@@ -789,7 +785,7 @@ BOOL C4Console::SaveGame(BOOL fSaveGame)
 
 #ifdef _WIN32
 	SetCursor(LoadCursor(0,IDC_ARROW));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gdk_window_set_cursor(window->window, NULL);
 #endif
 
@@ -857,7 +853,7 @@ bool C4Console::Message(const char *szMessage, bool fQuery)
 	if (!Active) return FALSE;
 #ifdef _WIN32
 	return (IDOK==MessageBox(hWindow,szMessage,C4ENGINECAPTION,fQuery ? (MB_OKCANCEL | MB_ICONEXCLAMATION) : MB_ICONEXCLAMATION));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkWidget* dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, fQuery ? (GTK_BUTTONS_OK_CANCEL) : (GTK_BUTTONS_OK), "%s", szMessage);
 	int response = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
@@ -914,7 +910,7 @@ void C4Console::EnableControls(bool fEnable)
 	// Player & viewport menu
 	EnableMenuItem(GetMenu(hWindow),IDM_PLAYER_JOIN, MF_BYCOMMAND | ((fEnable && Editing) ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_VIEWPORT_NEW, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Halt controls
 	gtk_widget_set_sensitive(btnPlay, Game.Network.isLobbyActive() || fEnable);
 	gtk_widget_set_sensitive(btnHalt, Game.Network.isLobbyActive() || fEnable);
@@ -1029,7 +1025,7 @@ BOOL C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 	// Reset working directory to exe path as Windows file dialog might have changed it
 	SetCurrentDirectory(Config.General.ExePath);
 	return fResult;
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkWidget* dialog = gtk_file_chooser_dialog_new(fSave ? "Save file..." : "Load file...", GTK_WINDOW(window), fSave ? GTK_FILE_CHOOSER_ACTION_SAVE : GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, fSave ? GTK_STOCK_SAVE : GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 
 	// TODO: Set dialog modal?
@@ -1161,7 +1157,7 @@ BOOL C4Console::FileRecord()
 	// disable menuitem
 #ifdef _WIN32
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_RECORD, MF_BYCOMMAND | MF_GRAYED);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_widget_set_sensitive(fileRecord, false);
 #endif
 	return TRUE;
@@ -1184,7 +1180,7 @@ void C4Console::Clear()
 	{
 	C4ConsoleBase::Clear();
 
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 //	txtLog = NULL;
 //	txtScript = NULL;
 //	btnPlay = NULL;
@@ -1219,7 +1215,7 @@ void C4Console::HelpAbout()
 #ifdef _WIN32
 	StdStrBuf strMessage; strMessage.Format("%s %s\n\n%s", C4ENGINECAPTION, C4VERSION, strCopyright.getData());
 	MessageBox(NULL, strMessage.getData(), C4ENGINECAPTION, MB_ICONINFORMATION | MB_TASKMODAL);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_show_about_dialog(GTK_WINDOW(window), "name", C4ENGINECAPTION, "version", C4VERSION, "copyright", strCopyright.getData(), NULL);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	}
@@ -1236,7 +1232,7 @@ bool C4Console::UpdateCursorBar(const char *szCursor)
 	// Cursor
 	SetDlgItemText(hWindow,IDC_STATICCURSOR,szCursor);
 	UpdateWindow(GetDlgItem(hWindow,IDC_STATICCURSOR));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_label_set_label(GTK_LABEL(lblCursor), Languages.IconvUtf8(szCursor).getData());
 #endif
 	return TRUE;
@@ -1255,7 +1251,7 @@ bool C4Console::UpdateViewportMenu()
 		sText.Format(LoadResStr("IDS_CNS_NEWPLRVIEWPORT"),pPlr->GetName());
 #ifdef _WIN32
 		AddMenuItem(hMenu,IDM_VIEWPORT_NEW1+pPlr->Number,sText.getData());
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		GtkWidget* menuItem = gtk_menu_item_new_with_label(Languages.IconvUtf8(sText.getData()).getData());
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuViewport), menuItem);
 		g_signal_connect(G_OBJECT(menuItem), "activate", G_CALLBACK(OnViewNewPlr), GINT_TO_POINTER(pPlr->Number));
@@ -1271,7 +1267,7 @@ void C4Console::ClearViewportMenu()
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexViewport);
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GList* children = gtk_container_get_children(GTK_CONTAINER(menuViewport));
 	for(GList* item = children; item != NULL; item = item->next)
 	{
@@ -1310,7 +1306,7 @@ bool C4Console::UpdateModeCtrls(int iMode)
 	UpdateWindow(GetDlgItem(hWindow,IDC_BUTTONMODEEDIT));
 	SendDlgItemMessage(hWindow,IDC_BUTTONMODEDRAW,BM_SETSTATE,(iMode==C4CNS_ModeDraw),0);
 	UpdateWindow(GetDlgItem(hWindow,IDC_BUTTONMODEDRAW));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Prevents recursion
 	g_signal_handler_block(btnModePlay, handlerModePlay);
 	g_signal_handler_block(btnModeEdit, handlerModeEdit);
@@ -1359,7 +1355,7 @@ void C4Console::UpdateInputCtrl()
 	HWND hCombo = GetDlgItem(hWindow,IDC_COMBOINPUT);
 	// Clear
 	SendMessage(hCombo,CB_RESETCONTENT,0,0);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(txtScript));
 	if(!completion)
 	{
@@ -1384,7 +1380,7 @@ void C4Console::UpdateInputCtrl()
 #ifdef _WIN32
 			SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)pFn->Name);
 #else
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 			gtk_list_store_append(store, &iter);
 			gtk_list_store_set(store, &iter, 0, pFn->Name, -1);
 #endif
@@ -1399,7 +1395,7 @@ void C4Console::UpdateInputCtrl()
 		{
 #ifdef _WIN32
 		SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)pRef->Name);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, pRef->Name, -1);
 #endif
@@ -1422,7 +1418,7 @@ bool C4Console::UpdatePlayerMenu()
 			sText.Format(LoadResStr("IDS_CNS_PLRQUIT"),pPlr->GetName());
 #ifdef _WIN32
 		AddMenuItem(hMenu,IDM_PLAYER_QUIT1+pPlr->Number,sText.getData(),(!Game.Network.isEnabled() || Game.Network.isHost()) && Editing);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		// TODO: Implement AddMenuItem...
 		GtkWidget* menuItem = gtk_menu_item_new_with_label(Languages.IconvUtf8(sText.getData()).getData());
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuPlayer), menuItem);
@@ -1441,7 +1437,7 @@ void C4Console::ClearPlayerMenu()
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexPlayer);
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GList* children = gtk_container_get_children(GTK_CONTAINER(menuPlayer));
 	for(GList* item = children; item != NULL; item = item->next)
 	{
@@ -1548,7 +1544,7 @@ void C4Console::UpdateNetMenu()
 	// Insert menu
 #ifdef _WIN32
 	if (!InsertMenu(GetMenu(hWindow),MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT)CreateMenu(),LoadResStr("IDS_MNU_NET"))) return;
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	itemNet = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_NET"));
 	GtkWidget* menuNet = gtk_menu_new();
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(itemNet), menuNet);
@@ -1568,7 +1564,7 @@ void C4Console::UpdateNetMenu()
 	str.Format(LoadResStr("IDS_MNU_NETHOST"),Game.Clients.getLocalName(),Game.Clients.getLocalID());
 #ifdef _WIN32
 	AddMenuItem(hMenu,IDM_NET_CLIENT1+Game.Clients.getLocalID(),str.getData());
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkWidget* item = gtk_menu_item_new_with_label(str.getData());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuNet), item);
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(OnNetClient), GINT_TO_POINTER(Game.Clients.getLocalID()));
@@ -1580,13 +1576,13 @@ void C4Console::UpdateNetMenu()
 			           pClient->getName(), pClient->getID());
 #ifdef _WIN32
 		AddMenuItem(hMenu,IDM_NET_CLIENT1+pClient->getID(), str.getData());
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		item = gtk_menu_item_new_with_label(str.getData());
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuNet), item);
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(OnNetClient), GINT_TO_POINTER(pClient->getID()));
 #endif
 		}
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 	gtk_widget_show_all(itemNet);
 #endif
 	return;
@@ -1598,7 +1594,7 @@ void C4Console::ClearNetMenu()
 	if (MenuIndexNet<0) return;
 #ifdef _WIN32
 	DeleteMenu(GetMenu(hWindow),MenuIndexNet,MF_BYPOSITION);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_container_remove(GTK_CONTAINER(menuBar), itemNet);
 	itemNet = NULL;
 #endif
@@ -1686,7 +1682,7 @@ bool C4Console::TogglePause()
 	}
 
 // GTK+ callbacks
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 void C4Console::OnScriptEntry(GtkWidget* entry, gpointer data)
 {
 	C4Console* console = static_cast<C4Console*>(data);

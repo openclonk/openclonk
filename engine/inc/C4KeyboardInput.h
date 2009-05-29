@@ -19,6 +19,8 @@
 #ifndef INC_C4KeyboardInput
 #define INC_C4KeyboardInput
 
+#include <cctype>
+
 // key context classifications
 enum C4KeyScope
 	{
