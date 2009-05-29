@@ -16,9 +16,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 /* Direct3D shader used for FoW-modulated blitting */
 
-#ifdef USE_DIRECTX
-
 #include <Standard.h>
+
+#ifdef USE_DIRECTX
 #include <StdD3DShader.h>
 
 static const char *szShaderCode =
