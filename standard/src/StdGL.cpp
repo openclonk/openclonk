@@ -2,6 +2,8 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2009 Carl-Philip Hänsch <c-p.haensch@vr-web.de>
+ * Copyright (c) 2009 Günther Brammer <gbrammer@gmx.de>
  *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
@@ -445,12 +447,19 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			// blit
 			DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffff;
 
-			if (mattextures)
-				glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0);
 			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
 			glBindTexture(GL_TEXTURE_2D, pTex->texName);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			if (!mattextures && Zoom != 1.0)
+				{
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				}
+			else
+				{
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				}
 
 			// get current blitting offset in texture (beforing any last-tex-size-changes)
 			int iBlitX=iTexSize*iX;
