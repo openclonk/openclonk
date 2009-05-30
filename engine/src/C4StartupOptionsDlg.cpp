@@ -902,7 +902,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pGroupEffects->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
 	pSheetGraphics->AddElement(pGroupEffects);
 	C4GUI::ComponentAligner caGroupEffects(pGroupEffects->GetClientRect(), iIndentX1, iIndentY2, true);
-	iNumGfxOptions = 2; iOpt=0;
+	iNumGfxOptions = 3; iOpt=0;
 	// effects level slider
 	C4GUI::ComponentAligner caEffectsLevel(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions), 1,0,false);
 	StdStrBuf sEffectsTxt; sEffectsTxt.Copy(LoadResStr("IDS_CTL_SMOKELOW"));
@@ -919,6 +919,11 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	// fire particles
 	pCheck = new BoolConfig(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FIREPARTICLES"), NULL, &Config.Graphics.FireParticles);
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_FIREPARTICLES_DESC"));
+	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
+	pGroupEffects->AddElement(pCheck);
+	// high resolution landscape
+	pCheck = new BoolConfig(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("[!]High resolution landscape"), NULL, &Config.Graphics.HighResLandscape);
+	pCheck->SetToolTip(LoadResStr("[!]An expensive effect."));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupEffects->AddElement(pCheck);
 

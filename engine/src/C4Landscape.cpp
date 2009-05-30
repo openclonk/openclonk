@@ -296,9 +296,12 @@ void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 	else
 		{
 		const CSurface * Surfaces[C4M_MaxTexIndex];
-		for (int i = 0; i < C4M_MaxTexIndex; ++i)
-			Surfaces[i] = Game.TextureMap.GetEntry(i)->getPattern().getSurface();
-		Application.DDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt, DDrawCfg.Shader ? Surfaces : 0);
+		if (Config.Graphics.HighResLandscape)
+			for (int i = 0; i < C4M_MaxTexIndex; ++i)
+				Surfaces[i] = Game.TextureMap.GetEntry(i)->getPattern().getSurface();
+		Application.DDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
+			cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt,
+			Config.Graphics.HighResLandscape ? Surfaces : 0);
 		}
 	if (Modulation) Application.DDraw->DeactivateBlitModulation();
 	}
@@ -2477,6 +2480,14 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 	if (To.Wdt<=0 || To.Hgt<=0) return true;
 	if (!Surface32->Lock()) return false;
 	Surface32->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
+
+	if(lpDDraw->IsShaderific() && Config.Graphics.HighResLandscape)
+		{
+		for (int32_t iX=To.x; iX<To.x+To.Wdt; ++iX)
+			for (int32_t iY=To.y; iY<To.y+To.Hgt; ++iY)
+				Surface32->SetPixDw(iX, iY, _GetPix(iX, iY));
+		}
+	else
 	// do lightning
 	for (int32_t iX=To.x; iX<To.x+To.Wdt; ++iX)
 		{
@@ -2493,11 +2504,6 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 			BelowDensity -= GetPlacement(iX, iY);
 			BelowDensity += GetPlacement(iX, iY + 8);
 			BYTE pix = _GetPix(iX, iY);
-
-			if(DDrawCfg.Shader) {
-			    Surface32->SetPixDw(iX, iY, pix);
-				continue;
-			};
 			// Sky
 			if(!pix)
 				{
