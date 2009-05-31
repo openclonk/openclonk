@@ -67,7 +67,14 @@ void CStdGL::Clear()
 	#endif
 	NoPrimaryClipper();
 	if (pTexMgr) pTexMgr->IntUnlock();
-	DeleteDeviceObjects();
+	InvalidateDeviceObjects();
+	NoPrimaryClipper();
+	// del main surfaces
+	if (lpPrimary) delete lpPrimary;
+	lpPrimary = lpBack = NULL;
+	RenderTarget = NULL;
+	// clear context
+	if (pCurrCtx) pCurrCtx->Deselect();
 	MainCtx.Clear();
 	pCurrCtx=NULL;
 	#ifndef USE_SDL_MAINLOOP
@@ -648,8 +655,17 @@ bool CStdGL::CreatePrimarySurfaces(BOOL Playermode, unsigned int iXRes, unsigned
 	// create+select gl context
 	if (!MainCtx.Init(pApp->pWindow, pApp)) return Error("  gl: Error initializing context");
 
-	// done, init device stuff
-	return InitDeviceObjects();
+	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
+	if (!GLEW_VERSION_1_3)
+		{
+		return Error("  gl: OpenGL Version 1.3 or higher required.");
+		}
+	MaxTexSize = 64;
+	GLint s = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
+	if (s>0) MaxTexSize = s;
+
+	return RestoreDeviceObjects();
 	}
 
 void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
@@ -753,21 +769,6 @@ void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
 		sfcTarget->SetPixDw((int)tx, (int)ty, dwClr);
 		}
   }
-
-bool CStdGL::InitDeviceObjects()
-	{
-	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
-	if (!GLEW_VERSION_1_3)
-		{
-		Log("  gl: OpenGL Version 1.3 or higher required.");
-		return false;
-		}
-	MaxTexSize = 64;
-	GLint s = 0;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
-	if (s>0) MaxTexSize = s;
-	return RestoreDeviceObjects();
-	}
 
 static void DefineShaderARB(const char * p, GLuint & s)
 	{
@@ -940,21 +941,6 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 	}
 
 CStdGL *pGL=NULL;
-
-bool CStdGL::DeleteDeviceObjects()
-	{
-	InvalidateDeviceObjects();
-	NoPrimaryClipper();
-	// del font objects
-	// del main surfaces
-	if (lpPrimary) delete lpPrimary;
-	lpPrimary=lpBack=NULL;
-	RenderTarget=NULL;
-	// clear context
-	if (pCurrCtx) pCurrCtx->Deselect();
-	MainCtx.Clear();
-	return true;
-	}
 
 void CStdGL::TaskOut()
 	{

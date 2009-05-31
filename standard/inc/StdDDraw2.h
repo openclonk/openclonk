@@ -356,10 +356,8 @@ class CStdDDraw
 		virtual bool RestoreStateBlock() = 0;
 
 		// device objects
-		virtual bool InitDeviceObjects() = 0;				// init device dependant objects
 		virtual bool RestoreDeviceObjects() = 0;		// restore device dependant objects
 		virtual bool InvalidateDeviceObjects() = 0;	// free device dependant objects
-		virtual bool DeleteDeviceObjects() = 0;			// free device dependant objects
 		virtual bool DeviceReady() = 0;							// return whether device exists
 
 		int GetByteCnt() { return byByteCnt; } // return bytes per pixel

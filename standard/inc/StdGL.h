@@ -60,6 +60,7 @@ class CStdGLCtx
 		bool PageFlip();						// present scene
 
 	protected:
+		void SelectCommon();
 		// this handles are declared as pointers to structs
 		CStdWindow * pWindow; // window to draw in
 #ifdef _WIN32
@@ -127,10 +128,8 @@ class CStdGL : public CStdDDraw
 		virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
 		virtual bool SaveDefaultGammaRamp(CStdWindow * pWindow);
 		// device objects
-		bool InitDeviceObjects();				// init device dependent objects
 		bool RestoreDeviceObjects();		// restore device dependent objects
 		bool InvalidateDeviceObjects();	// free device dependent objects
-		bool DeleteDeviceObjects();			// free device dependent objects
 		bool StoreStateBlock();
 		void SetTexture();
 		void ResetTexture();

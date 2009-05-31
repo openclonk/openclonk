@@ -23,6 +23,25 @@
 #include <StdWindow.h>
 
 #ifdef USE_GL
+
+void CStdGLCtx::SelectCommon()
+	{
+	pGL->pCurrCtx = this;
+	// update size
+	UpdateSize();
+	// assign size
+	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
+	// set some default states
+	glDisable(GL_DEPTH_TEST);
+	glShadeModel(GL_FLAT);
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	//glEnable(GL_LINE_SMOOTH);
+	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+	//glEnable(GL_POINT_SMOOTH);
+	}
+
 #ifdef _WIN32
 CStdGLCtx::CStdGLCtx(): hrc(0), pWindow(0), hDC(0), cx(0), cy(0) { }
 
@@ -106,20 +125,7 @@ bool CStdGLCtx::Select(bool verbose)
 	if (!pGL || !hrc) return false; if (!pGL->lpPrimary) return false;
 	// make context current
 	if (!wglMakeCurrent (hDC, hrc)) return false;
-	pGL->pCurrCtx = this;
-	// update size
-	UpdateSize();
-	// assign size
-	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
-	// set some default states
-	glDisable(GL_DEPTH_TEST);
-	glShadeModel(GL_FLAT);
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-	//glEnable(GL_POINT_SMOOTH);
+	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
 	if (!pGL->UpdateClipper()) return false;
@@ -251,20 +257,7 @@ bool CStdGLCtx::Select(bool verbose)
 		if (verbose) pGL->Error("  gl: glXMakeCurrent failed");
 		return false;
 		}
-	pGL->pCurrCtx = this;
-	// update size FIXME: Don't call this every frame
-	UpdateSize();
-	// assign size
-	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
-	// set some default states
-	glDisable(GL_DEPTH_TEST);
-	glShadeModel(GL_FLAT);
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-	//glEnable(GL_POINT_SMOOTH);
+	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
 	if (!pGL->UpdateClipper())
@@ -378,27 +371,14 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 
 bool CStdGLCtx::Select(bool verbose)
 {
-	pGL->pCurrCtx = this;
-	// update size FIXME: Don't call this every frame
-	UpdateSize();
-	// assign size
-	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
-	// set some default states
-	glDisable(GL_DEPTH_TEST);
-	glShadeModel(GL_FLAT);
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-	//glEnable(GL_POINT_SMOOTH);
+	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
 	if (!pGL->UpdateClipper())
-    {
+		{
 		if (verbose) pGL->Error("  gl: UpdateClipper failed");
 		return false;
-    }
+		}
 	// success
 	return true;
 }
