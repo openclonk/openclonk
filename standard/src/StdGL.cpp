@@ -73,6 +73,7 @@ void CStdGL::Clear()
 	if (lpPrimary) delete lpPrimary;
 	lpPrimary = lpBack = NULL;
 	RenderTarget = NULL;
+	if (lines_tex) { glDeleteTextures(1, &lines_tex); lines_tex = 0; }
 	// clear context
 	if (pCurrCtx) pCurrCtx->Deselect();
 	MainCtx.Clear();
@@ -600,6 +601,16 @@ bool CStdGL::CreatePrimarySurfaces(BOOL Playermode, unsigned int iXRes, unsigned
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
 	if (s>0) MaxTexSize = s;
 
+	// lines texture
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &lines_tex);
+	glBindTexture(GL_TEXTURE_2D, lines_tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	const char * linedata = byByteCnt == 2 ? "\xff\xff\xff\xf0" : "\xff\xff\xff\xff\xff\xff\xff\x00";
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
 	return RestoreDeviceObjects();
 	}
 
@@ -652,28 +663,64 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 		{
 		// prepare rendering to target
 		if (!PrepareRendering(sfcTarget)) return;
-		// set blitting state
-		int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
-		// use a different blendfunc here, because GL_LINE_SMOOTH expects this one
-		glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
-		// draw one line
-		glBegin(GL_LINES);
+		SetTexture();
+		SetupTextureEnv(false, false);
+		float offx = y1 - y2;
+		float offy = x2 - x1;
+		float l = sqrtf(offx * offx + offy * offy);
+		// avoid division by zero
+		l += 0.000000005f;
+		offx /= l; offx *= Zoom;
+		offy /= l; offy *= Zoom;
+		CBltVertex vtx[4];
+		vtx[0].ftx = x1 + offx; vtx[0].fty = y1 + offy; vtx[0].ftz = 0;
+		vtx[1].ftx = x1 - offx; vtx[1].fty = y1 - offy; vtx[1].ftz = 0;
+		vtx[2].ftx = x2 - offx; vtx[2].fty = y2 - offy; vtx[2].ftz = 0;
+		vtx[3].ftx = x2 + offx; vtx[3].fty = y2 + offy; vtx[3].ftz = 0;
 		// global clr modulation map
 		DWORD dwClr1 = dwClr;
+		glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
 		if (fUseClrModMap)
 			{
-			ModulateClr(dwClr1, pClrModMap->GetModAt((int)x1, (int)y1));
+			if (shaders[0])
+				{
+				glActiveTexture(GL_TEXTURE3);
+				glLoadIdentity();
+				CSurface * pSurface = pClrModMap->GetSurface();
+				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSize), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSize), 1.0f);
+				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+
+				glClientActiveTexture(GL_TEXTURE3);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &vtx[0].ftx);
+				glClientActiveTexture(GL_TEXTURE0);
+				}
+			else
+				{
+				ModulateClr(dwClr1, pClrModMap->GetModAt(lrintf(x1), lrintf(y1)));
+				ModulateClr(dwClr, pClrModMap->GetModAt(lrintf(x2), lrintf(y2)));
+				}
 			}
-		// convert from clonk-alpha to GL_LINE_SMOOTH alpha
-		glColorDw(InvertRGBAAlpha(dwClr1));
-		glVertex2f(x1 + 0.5f, y1 + 0.5f);
-		if (fUseClrModMap)
-			{
-			ModulateClr(dwClr, pClrModMap->GetModAt((int)x2, (int)y2));
-			glColorDw(InvertRGBAAlpha(dwClr));
-			}
-		glVertex2f(x2 + 0.5f, y2 + 0.5f);
-		glEnd();
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		DwTo4UB(dwClr1,vtx[0].color);
+		DwTo4UB(dwClr1,vtx[1].color);
+		DwTo4UB(dwClr,vtx[2].color);
+		DwTo4UB(dwClr,vtx[3].color);
+		vtx[0].tx = 0; vtx[0].ty = 0;
+		vtx[1].tx = 0; vtx[1].ty = 2;
+		vtx[2].tx = 1; vtx[2].ty = 2;
+		vtx[3].tx = 1; vtx[3].ty = 0;
+		// draw two triangles
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, lines_tex);
+		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), vtx);
+		glDrawArrays(GL_POLYGON, 0, 4);
+		glClientActiveTexture(GL_TEXTURE3);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glClientActiveTexture(GL_TEXTURE0);
+		ResetTexture();
 		}
 	else
 		{

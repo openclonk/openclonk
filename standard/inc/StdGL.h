@@ -96,6 +96,8 @@ class CStdGL : public CStdDDraw
 		GLuint shaders[12];
 		// vertex buffer object
 		GLuint vbo;
+		// texture for smooth lines
+		GLuint lines_tex;
 	public:
 		// General
 		void Clear();
