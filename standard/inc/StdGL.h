@@ -116,6 +116,7 @@ class CStdGL : public CStdDDraw
 		virtual CStdGLCtx *CreateContext(HWND hWindow, CStdApp *pApp);
 #endif
 		// Blit
+		void SetupTextureEnv(bool fMod2, bool landscape);
 		void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
 		virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
 		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);

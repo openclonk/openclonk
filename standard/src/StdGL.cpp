@@ -153,6 +153,46 @@ bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
 	return true;
 	}
 
+void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
+	{
+	if (shaders[0])
+		{
+		GLuint s = landscape ? 2 : (fMod2 ? 1 : 0);
+		if (Saturation < 255)
+			{
+			s += 3;
+			}
+		if (fUseClrModMap)
+			{
+			s += 6;
+			}
+		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
+		if (Saturation < 255)
+			{
+			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
+			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
+			}
+		}
+	// texture environment
+	else
+		{
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, fMod2 ? GL_ADD_SIGNED : GL_MODULATE);
+		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, fMod2 ? 2.0f : 1.0f);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_ADD);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+		}
+	// set modes
+	glShadeModel((fUseClrModMap && !shaders[0] && !DDrawCfg.NoBoxFades) ? GL_SMOOTH : GL_FLAT);
+	}
+
 void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 	{
 	// clipping
@@ -183,49 +223,8 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 			DwTo4UB(dwModClr, rBltData.vtVtx[i].color);
 		}
 	// reset MOD2 for completely black modulations
-	if (fMod2 && !fAnyModNotBlack) fMod2 = 0;
-	if (shaders[0])
-		{
-		glEnable(GL_FRAGMENT_PROGRAM_ARB);
-		GLuint s = fMod2 ? 1 : 0;
-		if (Saturation < 255)
-			{
-			s += 3;
-			}
-		if (fUseClrModMap)
-			{
-			s += 6;
-			glActiveTexture(GL_TEXTURE3);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glActiveTexture(GL_TEXTURE0);
-			}
-		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
-		if (Saturation < 255)
-			{
-			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
-			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
-			}
-		}
-	else
-		{
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, fMod2 ? GL_ADD_SIGNED : GL_MODULATE);
-		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, fMod2 ? 2.0f : 1.0f);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_ADD);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-		}
-	// set texture+modes
-	glShadeModel((fUseClrModMap && !DDrawCfg.NoBoxFades) ? GL_SMOOTH : GL_FLAT);
+	fMod2 = fMod2 && fAnyModNotBlack;
+	SetupTextureEnv(fMod2, false);
 	glBindTexture(GL_TEXTURE_2D, pTex->texName);
 	if (!fExact && !DDrawCfg.PointFiltering)
 		{
@@ -238,7 +237,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	matrix[0]=rBltData.TexPos.mat[0];  matrix[1]=rBltData.TexPos.mat[3];  matrix[2]=0;  matrix[3]=rBltData.TexPos.mat[6];
 	matrix[4]=rBltData.TexPos.mat[1];  matrix[5]=rBltData.TexPos.mat[4];  matrix[6]=0;  matrix[7]=rBltData.TexPos.mat[7];
 	matrix[8]=0;                       matrix[9]=0;                       matrix[10]=1; matrix[11]=0;
-	matrix[12]=rBltData.TexPos.mat[2]; matrix[13]=rBltData.TexPos.mat[5]; matrix[14]=0;	matrix[15]=rBltData.TexPos.mat[8];
+	matrix[12]=rBltData.TexPos.mat[2]; matrix[13]=rBltData.TexPos.mat[5]; matrix[14]=0; matrix[15]=rBltData.TexPos.mat[8];
 	glLoadMatrixf(matrix);
 
 	if (shaders[0] && fUseClrModMap)
@@ -297,13 +296,6 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	glDrawArrays(GL_POLYGON, 0, rBltData.byNumVertices);
 	glLoadIdentity();
-	if (shaders[0])
-		{
-		glDisable(GL_FRAGMENT_PROGRAM_ARB);
-		glActiveTexture(GL_TEXTURE3);
-		glDisable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE0);
-		}
 	if (!fExact && !DDrawCfg.PointFiltering)
 		{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -389,60 +381,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 		glActiveTexture(GL_TEXTURE0);
 		}
 	DWORD dwModMask = 0;
-	if (shaders[0])
-		{
-		glEnable(GL_FRAGMENT_PROGRAM_ARB);
-		GLuint s = mattextures ? 2 : 0;
-		if (Saturation < 255)
-			{
-			s += 3;
-			}
-		if (fUseClrModMap)
-			{
-			s += 6;
-			glActiveTexture(GL_TEXTURE3);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glActiveTexture(GL_TEXTURE0);
-			}
-		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
-		if (Saturation < 255)
-			{
-			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
-			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
-			}
-		dwModMask = 0;
-		}
-	// texture environment
-	else
-		{
-		if (DDrawCfg.NoAlphaAdd)
-			{
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 1.0f);
-			dwModMask = 0xff000000;
-			}
-		else
-			{
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 1.0f);
-			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_ADD);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
-			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-			dwModMask = 0;
-			}
-		}
-	// set texture+modes
-	glShadeModel((fUseClrModMap && !DDrawCfg.NoBoxFades) ? GL_SMOOTH : GL_FLAT);
+	SetupTextureEnv(false, mattextures);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glMatrixMode(GL_TEXTURE);
@@ -568,10 +507,6 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 				}
 
 			}
-		}
-	if (shaders[0])
-		{
-		glDisable(GL_FRAGMENT_PROGRAM_ARB);
 		}
 	if (mattextures)
 		{
@@ -706,6 +641,7 @@ void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwC
 	glColorPointer(4,GL_UNSIGNED_BYTE,0,colors);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glDrawArrays(GL_POLYGON, 0, 4);
+	glDisableClientState(GL_COLOR_ARRAY);
 	glShadeModel(GL_FLAT);
 	}
 
@@ -908,12 +844,29 @@ bool CStdGL::StoreStateBlock()
 void CStdGL::SetTexture()
 	{
 	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, (dwBlitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_SRC_ALPHA);
+	if (shaders[0] && fUseClrModMap)
+		{
+		glEnable(GL_FRAGMENT_PROGRAM_ARB);
+		glActiveTexture(GL_TEXTURE3);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
+	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
 	}
 
 void CStdGL::ResetTexture()
 	{
 	// disable texturing
+	if (shaders[0])
+		{
+		glDisable(GL_FRAGMENT_PROGRAM_ARB);
+		glActiveTexture(GL_TEXTURE3);
+		glDisable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
+		}
 	glDisable(GL_TEXTURE_2D);
 	}
 
