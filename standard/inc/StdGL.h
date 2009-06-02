@@ -145,7 +145,6 @@ class CStdGL : public CStdDDraw
 
 	protected:
 		bool CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
-		BOOL CreateDirectDraw();
 
 		bool CheckGLError(const char *szAtOp);
 #ifdef USE_X11

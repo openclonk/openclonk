@@ -155,7 +155,6 @@ class CStdD3D : public CStdDDraw
 		BOOL FindDisplayMode(unsigned int iXRes, unsigned int iYRes, D3DFORMAT format, unsigned int iMonitor);
 		virtual bool CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
     bool SetOutputAdapter(unsigned int iMonitor);
-    BOOL CreateDirectDraw();
 	inline bool HasShaders() const { return !!pShaders[0]; }
 
 

@@ -367,7 +367,6 @@ class CStdDDraw
 		bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
 		virtual bool CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 		bool Error(const char *szMsg);
-		virtual BOOL CreateDirectDraw() = 0;
 		void DebugLog(const char *szMsg)
 			{
 #ifdef _DEBUG

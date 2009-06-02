@@ -26,7 +26,6 @@ class CStdNoGfx : public CStdDDraw
 public:
 	CStdNoGfx();
 	virtual ~CStdNoGfx();
-	virtual BOOL CreateDirectDraw();
 public:
 	virtual bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL, CStdWindow * pWindow = NULL) { return true; }
 	virtual bool BeginScene() { return true; }

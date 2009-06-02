@@ -81,12 +81,6 @@ void CStdD3D::Clear()
 
 /* Direct3D initialization */
 
-BOOL CStdD3D::CreateDirectDraw()
-	{
-	if ((lpD3D=Direct3DCreate9(D3D_SDK_VERSION))==NULL) return FALSE;
-  return TRUE;
-	}
-
 bool CStdD3D::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
 	{
 	// call from gfx thread only!
@@ -485,20 +479,20 @@ BOOL CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, D3DFORMAT 
 
 bool CStdD3D::SetOutputAdapter(unsigned int iMonitor)
 	{
-	// set var
-	//pApp->Monitor = iMonitor;
 	// get associated monitor rect
 	HMONITOR hMon = lpD3D->GetAdapterMonitor(iMonitor);
-	if (!hMon) return false;
+	if (!hMon) return Error("GetAdapterMonitor error");
 	MONITORINFO nfo; ZeroMemory(&nfo, sizeof(nfo));
 	nfo.cbSize = sizeof(MONITORINFO);
-	if (!GetMonitorInfo(hMon, &nfo)) return false;
-	//pApp->MonitorRect = nfo.rcMonitor;
+	if (!GetMonitorInfo(hMon, &nfo)) return Error("GetMonitorInfo error");
 	return true;
 	}
 
 bool CStdD3D::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 	{
+	DebugLog("Init DX");
+	DebugLog("  Create Direct3D9...");
+	if ((lpD3D=Direct3DCreate9(D3D_SDK_VERSION))==NULL) return Error("  Direct3DCreate9 failure.");
 	// set monitor info (Monitor-var and target rect)
 	DebugLog("  SetOutput adapter...");
 	if (!SetOutputAdapter(iMonitor))
@@ -514,6 +508,7 @@ bool CStdD3D::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigne
 
 	HRESULT hr;
 	HWND hWindow = pApp->pWindow->hWindow;
+	DebugLog("  Create Device...");
 	if (Fullscreen)
 		{
 		// fullscreen mode
@@ -582,15 +577,15 @@ bool CStdD3D::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigne
 		}
 	switch (hr)
 		{
-		case D3DERR_INVALIDCALL: return Error("    CreateDevice: D3DERR_INVALIDCALL");
-		case D3DERR_NOTAVAILABLE: return Error("    CreateDevice: D3DERR_NOTAVAILABLE");
-		case D3DERR_OUTOFVIDEOMEMORY: return Error("    CreateDevice: D3DERR_OUTOFVIDEOMEMORY");
-		case D3DERR_DRIVERINTERNALERROR: return Error("    CreateDevice: D3DERR_DRIVERINTERNALERROR");
+		case D3DERR_INVALIDCALL: return Error("CreateDevice: D3DERR_INVALIDCALL");
+		case D3DERR_NOTAVAILABLE: return Error("CreateDevice: D3DERR_NOTAVAILABLE");
+		case D3DERR_OUTOFVIDEOMEMORY: return Error("CreateDevice: D3DERR_OUTOFVIDEOMEMORY");
+		case D3DERR_DRIVERINTERNALERROR: return Error("CreateDevice: D3DERR_DRIVERINTERNALERROR");
 		case D3D_OK: break;
-		default: return Error("    CreateDevice: unknown error");
+		default: return Error("CreateDevice: unknown error");
 		}
 	// device successfully created?
-	if (!lpDevice) return FALSE;
+	if (!lpDevice) return Error("CreateDevice: unreported error");
 	// store color depth
 	byByteCnt=iColorDepth/8;
 	PrimarySrfcFormat=d3dpp.BackBufferFormat;
@@ -611,7 +606,7 @@ bool CStdD3D::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigne
 		return FALSE;
 		}
 	// update monitor rect by new screen size
-	if (!SetOutputAdapter(iMonitor)) return FALSE;
+	if (!SetOutputAdapter(iMonitor)) return false;
 	// success!
 	return TRUE;
 	}

@@ -1696,16 +1696,8 @@ bool CStdDDraw::Init(CStdApp * pApp, BOOL Fullscreen, BOOL fUsePageLock, unsigne
 	// store default gamma
 	SaveDefaultGammaRamp(pApp->pWindow);
 
-	DebugLog("Init DX");
-	DebugLog("  Create DirectDraw...");
-
-	if (!CreateDirectDraw())
-		return Error("  CreateDirectDraw failure.");
-
-	DebugLog("  Create Device...");
-
 	if (!CreatePrimarySurfaces(Fullscreen, iXRes, iYRes, iBitDepth, iMonitor))
-		return Error("  CreateDevice failure.");
+		return false;
 
 	DebugLog("  Create Clipper");
 

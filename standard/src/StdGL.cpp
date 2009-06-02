@@ -519,14 +519,9 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	ResetTexture();
 	}
 
-BOOL CStdGL::CreateDirectDraw()
-	{
-	Log("  Using OpenGL...");
-	return TRUE;
-	}
-
 CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 	{
+	DebugLog("  gl: Create Context...");
 	// safety
 	if (!pWindow) return NULL;
 	// create it
@@ -535,8 +530,6 @@ CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 		{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 		}
-	// reselect current context
-	//if (pCurrCtx) pCurrCtx->Select(); else pCurrCtx=pCtx;
 	// done
 	return pCtx;
 	}
@@ -552,8 +545,6 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
 		{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 		}
-	// reselect current context
-	//if (pCurrCtx) pCurrCtx->Select(); else pCurrCtx=pCtx;
 	// done
 	return pCtx;
 	}
@@ -564,6 +555,7 @@ bool CStdGL::CreatePrimarySurfaces(BOOL Playermode, unsigned int iXRes, unsigned
 	//remember fullscreen setting
 	fFullscreen = Playermode && !DDrawCfg.Windowed;
 
+	DebugLog("  gl: SetVideoMode...");
 	// Set window size only in playermode
 	if (Playermode)
 		{
@@ -589,6 +581,7 @@ bool CStdGL::CreatePrimarySurfaces(BOOL Playermode, unsigned int iXRes, unsigned
 	lpPrimary->byBytesPP=byByteCnt;
 
 	// create+select gl context
+	DebugLog("  gl: Create Main Context...");
 	if (!MainCtx.Init(pApp->pWindow, pApp)) return Error("  gl: Error initializing context");
 
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
@@ -771,16 +764,13 @@ bool CStdGL::RestoreDeviceObjects()
 	if (!lpPrimary) return false;
 	// delete any previous objects
 	InvalidateDeviceObjects();
-	bool fSuccess=true;
 	// restore primary/back
 	RenderTarget=lpPrimary;
 	//lpPrimary->AttachSfc(NULL);
 	lpPrimary->byBytesPP=byByteCnt;
 
 	// set states
-	fSuccess = pCurrCtx ? (pCurrCtx->Select()) : MainCtx.Select();
-	// activate if successful
-	Active=fSuccess;
+	Active = pCurrCtx ? (pCurrCtx->Select()) : MainCtx.Select();
 	// restore gamma if active
 	if (Active)
 		EnableGamma();
@@ -937,7 +927,7 @@ void CStdGL::TaskOut()
 	// deactivate
 	// backup textures
 	if (pTexMgr && fFullscreen) pTexMgr->IntLock();
-	// shotdown gl
+	// shutdown gl
 	InvalidateDeviceObjects();
 	if (pCurrCtx) pCurrCtx->Deselect();
 	}
