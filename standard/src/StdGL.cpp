@@ -883,11 +883,6 @@ bool CStdGL::InvalidateDeviceObjects()
 	return fSuccess;
 }
 
-bool CStdGL::StoreStateBlock()
-	{
-	return true;
-	}
-
 void CStdGL::SetTexture()
 	{
 	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, (dwBlitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_SRC_ALPHA);
@@ -915,11 +910,6 @@ void CStdGL::ResetTexture()
 		glActiveTexture(GL_TEXTURE0);
 		}
 	glDisable(GL_TEXTURE_2D);
-	}
-
-bool CStdGL::RestoreStateBlock()
-	{
-	return true;
 	}
 
 bool CStdGL::CheckGLError(const char *szAtOp)

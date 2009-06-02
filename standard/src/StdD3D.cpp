@@ -1176,15 +1176,6 @@ BOOL CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent,
 	return lpDevice->EndStateBlock(pBlock) == D3D_OK;
 	}
 
-bool CStdD3D::StoreStateBlock()
-	{
-		// FIXME: saving the current state is an expensive operation in D3D9
-		return false;
-	SafeRelease(pSavedState);
-	if (lpDevice) lpDevice->CreateStateBlock(D3DSBT_ALL, &pSavedState);
-	return true;
-	}
-
 void CStdD3D::SetTexture()
 	{
 	}
@@ -1192,15 +1183,6 @@ void CStdD3D::SetTexture()
 void CStdD3D::ResetTexture()
 	{
 	if (Active) lpDevice->SetTexture(0, NULL);
-	}
-
-bool CStdD3D::RestoreStateBlock()
-	{
-		// FIXME: saving the current state is an expensive operation in D3D9
-		return false;
-	assert(pSavedState);
-	if (lpDevice) pSavedState->Apply();
-	return true;
 	}
 
 bool CStdD3D::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)

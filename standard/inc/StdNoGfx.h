@@ -44,10 +44,8 @@ public:
 	virtual void PerformPix(SURFACE, float, float, DWORD) { }
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &, bool ) { return true; }
 	virtual bool SaveDefaultGammaRamp(CStdWindow *) { return true; }
-	virtual bool StoreStateBlock() { return true; }
 	virtual void SetTexture() { }
 	virtual void ResetTexture() { }
-	virtual bool RestoreStateBlock() { return true; }
 	virtual bool InitDeviceObjects() { return true; }
 	virtual bool RestoreDeviceObjects() { return true; }
 	virtual bool InvalidateDeviceObjects() { return true; }

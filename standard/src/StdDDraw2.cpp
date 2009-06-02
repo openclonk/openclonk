@@ -949,8 +949,6 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	CBltData BltData;
 	// pass down pTransform
 	BltData.pTransform=pTransform;
-	// store current state
-	StoreStateBlock();
 	// blit with basesfc?
 	bool fBaseSfc=false;
 	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->ppTex) fBaseSfc=true;
@@ -964,8 +962,9 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	// calc stretch regarding texture size and indent
 	float scaleX2 = scaleX * iTexSize;
 	float scaleY2 = scaleY * iTexSize;
-	// blit from all these textures
+	// Enable textures
 	SetTexture();
+	// blit from all these textures
 	for (int iY=iTexY; iY<iTexY2; ++iY)
 		{
 		for (int iX=iTexX; iX<iTexX2; ++iX)
@@ -1040,8 +1039,6 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 		}
 	// reset texture
 	ResetTexture();
-	// restore state
-	RestoreStateBlock();
 	// success
 	return TRUE;
 	}

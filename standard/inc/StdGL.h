@@ -133,10 +133,8 @@ class CStdGL : public CStdDDraw
 		// device objects
 		bool RestoreDeviceObjects();		// restore device dependent objects
 		bool InvalidateDeviceObjects();	// free device dependent objects
-		bool StoreStateBlock();
 		void SetTexture();
 		void ResetTexture();
-		bool RestoreStateBlock();
 #ifdef _WIN32
 		bool DeviceReady() { return !!MainCtx.hrc; }
 #elif defined(USE_X11)

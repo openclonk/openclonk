@@ -350,10 +350,8 @@ class CStdDDraw
 		void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }
 		void ApplyZoom(float & X, float & Y);
 		void RemoveZoom(float & X, float & Y);
-		virtual bool StoreStateBlock() = 0;
 		virtual void SetTexture() = 0;
 		virtual void ResetTexture() = 0;
-		virtual bool RestoreStateBlock() = 0;
 
 		// device objects
 		virtual bool RestoreDeviceObjects() = 0;		// restore device dependant objects
