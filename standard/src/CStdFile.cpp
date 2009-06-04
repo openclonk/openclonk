@@ -67,11 +67,13 @@ bool CStdFile::Create(const char *szFilename, bool fCompressed, bool fExecutable
 			{
 			// Create an executable file
 #ifdef _WIN32
-			int mode = _S_IREAD|_S_IWRITE|_O_BINARY|_O_CREAT|_O_WRONLY|_O_TRUNC;
+			int mode = _S_IREAD|_S_IWRITE;
+			int flags = _O_BINARY|_O_CREAT|_O_WRONLY|_O_TRUNC;
 #else
-			int mode = S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IWGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH|O_CREAT|O_WRONLY|O_TRUNC;
+			mode_t mode = S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IWGRP|S_IXGRP|S_IROTH|S_IWOTH|S_IXOTH;
+			int flags = O_CREAT|O_WRONLY|O_TRUNC;
 #endif
-			int fd = open(Name, mode);
+			int fd = open(Name, flags, mode);
 			if (fd == -1) return false;
 			if (!(hFile = fdopen(fd,"wb"))) return false;
 			}
