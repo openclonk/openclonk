@@ -129,7 +129,7 @@ void C4MessageBoard::ChangeMode(int inMode)
 	Output.Hgt = iHeight;
 	LogBuffer.SetLBWidth(Output.Wdt);
 	// recalc viewports
-	Game.GraphicsSystem.RecalculateViewports();
+	::GraphicsSystem.RecalculateViewports();
 }
 
 void C4MessageBoard::Execute()
@@ -258,8 +258,8 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 	// Startup: draw Loader
 	if (Startup)
 		{
-		if (Game.GraphicsSystem.pLoaderScreen)
-			Game.GraphicsSystem.pLoaderScreen->Draw(cgo, Game.InitProgress, &LogBuffer);
+		if (::GraphicsSystem.pLoaderScreen)
+			::GraphicsSystem.pLoaderScreen->Draw(cgo, Game.InitProgress, &LogBuffer);
 		else
 			// loader not yet loaded: black BG
 			Application.DDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt, cgo.Hgt, 0x00000000);
@@ -305,7 +305,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 			if (iMsgY < cgo.Y)
 				{
 				dwFade = (0xff - BoundBy((cgo.Y - iMsgY + Max(ScreenFader, 0)) * 256 / Max(iMsgFader, 1) / iLineHgt, 0, 0xff)) << 24;
-				Game.GraphicsSystem.OverwriteBg();
+				::GraphicsSystem.OverwriteBg();
 				}
 			else
 				dwFade = 0xff000000;
@@ -323,11 +323,11 @@ void C4MessageBoard::EnsureLastMessage()
 	// not active: do nothing
 	if (iMode == 2) return;
 	// "console" mode: just set BackScroll to 0 and draw
-	if (iMode == 1) { iBackScroll = 0; Game.GraphicsSystem.Execute(); return; }
+	if (iMode == 1) { iBackScroll = 0; ::GraphicsSystem.Execute(); return; }
 	// scroll mode: scroll until end of log
 	for (int i = 0; i < 100; i++)
 		{
-		Game.GraphicsSystem.Execute();
+		::GraphicsSystem.Execute();
 		Execute();
 		if (iBackScroll < 0) break;
 		Delay=0;

@@ -154,7 +154,7 @@ void C4ControlSet::Execute() const
 		if (Game.Control.isCtrlHost() && !Game.Control.isReplay() && Game.Control.isNetwork())
 			Config.Network.ControlRate = Game.Control.ControlRate;
 		// always show msg
-		Game.GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_NET_CONTROLRATE"),Game.Control.ControlRate,Game.FrameCounter).getData());
+		::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_NET_CONTROLRATE"),Game.Control.ControlRate,Game.FrameCounter).getData());
 		break;
 
 	case C4CVT_AllowDebug: // allow debug mode?
@@ -164,7 +164,7 @@ void C4ControlSet::Execute() const
 		if (!fSet && Game.DebugMode)
 		{
 			Game.DebugMode=FALSE;
-			Game.GraphicsSystem.DeactivateDebugOutput();
+			::GraphicsSystem.DeactivateDebugOutput();
 		}
 		// save flag, log
 		Game.Parameters.AllowDebug = fSet;
@@ -233,10 +233,10 @@ void C4ControlSet::Execute() const
 			if(Game.Parameters.UseFairCrew)
 				{
 				int iRank = ::DefaultRanks.RankByExperience(Game.Parameters.FairCrewStrength);
-				Game.GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_FAIRCREW_ACTIVATED"), ::DefaultRanks.GetRankName(iRank, true).getData()).getData());
+				::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_FAIRCREW_ACTIVATED"), ::DefaultRanks.GetRankName(iRank, true).getData()).getData());
 				}
 			else
-				Game.GraphicsSystem.FlashMessage(LoadResStr("IDS_MSG_FAIRCREW_DEACTIVATED"));
+				::GraphicsSystem.FlashMessage(LoadResStr("IDS_MSG_FAIRCREW_DEACTIVATED"));
 			}
 		// lobby updates
 		if (Game.Network.isLobbyActive())

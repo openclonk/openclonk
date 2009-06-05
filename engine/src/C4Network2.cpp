@@ -706,7 +706,7 @@ void C4Network2::AllowJoin(bool fAllow)
 	fAllowJoin = fAllow;
 	if (Game.IsRunning)
 		{
-		Game.GraphicsSystem.FlashMessage(LoadResStr(fAllowJoin ? "IDS_NET_RUNTIMEJOINFREE" : "IDS_NET_RUNTIMEJOINBARRED"));
+		::GraphicsSystem.FlashMessage(LoadResStr(fAllowJoin ? "IDS_NET_RUNTIMEJOINFREE" : "IDS_NET_RUNTIMEJOINBARRED"));
 		Config.Network.NoRuntimeJoin = !fAllowJoin;
 		}
 }

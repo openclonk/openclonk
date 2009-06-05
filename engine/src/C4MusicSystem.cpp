@@ -563,7 +563,7 @@ bool C4MusicSystem::ToggleOnOff()
 		// game music
 		Config.Sound.RXMusic = !Config.Sound.RXMusic;
 		if (!Config.Sound.RXMusic) Stop(); else Play();
-		Game.GraphicsSystem.FlashMessageOnOff(LoadResStr("IDS_CTL_MUSIC"), !!Config.Sound.RXMusic);
+		::GraphicsSystem.FlashMessageOnOff(LoadResStr("IDS_CTL_MUSIC"), !!Config.Sound.RXMusic);
 		}
 	else
 		{

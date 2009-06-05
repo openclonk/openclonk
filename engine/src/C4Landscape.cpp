@@ -296,7 +296,7 @@ void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
   // do relights
   DoRelights();
 	// blit landscape
-	if (Game.GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.ShowSolidMask)
 		Application.DDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
 	else
 		Application.DDraw->BlitLandscape(Surface32, AnimationSurface, &Game.GraphicsResource.sfcLiquidAnimation, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);

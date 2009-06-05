@@ -90,7 +90,6 @@ class C4Game
 		~C4Game();
 	public:
     C4DefList						Defs;
-		C4GraphicsSystem		GraphicsSystem;
 		C4MessageInput      MessageInput;
 		C4GraphicsResource	GraphicsResource;
 		C4Network2					Network;

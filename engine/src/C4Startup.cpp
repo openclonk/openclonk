@@ -282,7 +282,7 @@ bool C4Startup::DoStartup()
 #endif
 
 	// make sure loader is drawn after splash
-	Game.GraphicsSystem.EnableLoaderDrawing();
+	::GraphicsSystem.EnableLoaderDrawing();
 
 	// Play some music!
 	if (Config.Sound.FEMusic)

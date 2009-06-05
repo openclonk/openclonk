@@ -354,7 +354,7 @@ void C4GraphicsSystem::ClearFullscreenBackground()
 
 void OnSurfaceRestore()
 	{
-	Game.GraphicsSystem.InvalidateBg();
+	::GraphicsSystem.InvalidateBg();
 	}
 
 BOOL C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst)
@@ -695,7 +695,7 @@ void C4GraphicsSystem::DrawHoldMessages()
 			Application.DDraw->lpBack, C4GUI::GetScreenWdt()/2,
 			C4GUI::GetScreenHgt()/2 - Game.GraphicsResource.FontRegular.iLineHgt*2,
 			CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
-		Game.GraphicsSystem.OverwriteBg();
+		::GraphicsSystem.OverwriteBg();
 		}
 	}
 
@@ -905,7 +905,7 @@ bool C4GraphicsSystem::ToggleShowHelp()
 bool C4GraphicsSystem::ViewportNextPlayer()
 	{
 	// safety: switch valid?
-	if ((!Game.C4S.Head.Film || !Game.C4S.Head.Replay) && !Game.GraphicsSystem.GetViewport(NO_OWNER)) return false;
+	if ((!Game.C4S.Head.Film || !Game.C4S.Head.Replay) && !::GraphicsSystem.GetViewport(NO_OWNER)) return false;
 	// do switch then
 	C4Viewport *vp = GetFirstViewport();
 	if (!vp) return false;
@@ -916,7 +916,7 @@ bool C4GraphicsSystem::ViewportNextPlayer()
 bool C4GraphicsSystem::FreeScroll(C4Vec2D vScrollBy)
 	{
 	// safety: move valid?
-	if ((!Game.C4S.Head.Replay || !Game.C4S.Head.Film) && !Game.GraphicsSystem.GetViewport(NO_OWNER)) return false;
+	if ((!Game.C4S.Head.Replay || !Game.C4S.Head.Film) && !::GraphicsSystem.GetViewport(NO_OWNER)) return false;
 	C4Viewport *vp = GetFirstViewport();
 	if (!vp) return false;
 	// move then (old static code crap...)
@@ -942,3 +942,5 @@ bool C4GraphicsSystem::ViewportZoomIn()
 	if (FirstViewport) FlashMessage(FormatString("%s: %f", "[!]Zoom", (float)FirstViewport->ZoomTarget).getData());
 	return true;
 	}
+
+C4GraphicsSystem GraphicsSystem;

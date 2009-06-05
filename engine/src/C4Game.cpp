@@ -1613,7 +1613,7 @@ BOOL C4Game::EnumerateMaterials()
     { LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return FALSE; }
 	// mapping to landscape palette will occur when landscape has been created
 	// set the pal
-	Game.GraphicsSystem.SetPalette();
+	::GraphicsSystem.SetPalette();
 
   return TRUE;
   }

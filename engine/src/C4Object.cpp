@@ -217,7 +217,7 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
   UpdateFace(true);
 
   // Initial audibility
-  Audible=Game.GraphicsSystem.GetAudibility(GetX(), GetY(), &AudiblePan);
+  Audible=::GraphicsSystem.GetAudibility(GetX(), GetY(), &AudiblePan);
 
 	// Initial OCF
 	SetOCF();
@@ -1983,7 +1983,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
 			Menu->SetPermanent(TRUE);
 			Menu->SetAlignment(C4MN_Align_Free);
-			C4Viewport *pViewport = Game.GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
+			C4Viewport *pViewport = ::GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
 			if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->ViewX) * pViewport->Zoom,
 			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->ViewY) * pViewport->Zoom);
 			// Add info item
@@ -2258,7 +2258,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
 
   // Debug Display //////////////////////////////////////////////////////////////////////
-  if (Game.GraphicsSystem.ShowCommand && !eDrawMode)
+  if (::GraphicsSystem.ShowCommand && !eDrawMode)
     {
     C4Command *pCom;
     int32_t ccx=GetX(),ccy=GetY();
@@ -2339,7 +2339,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
   // Debug Display ///////////////////////////////////////////////////////////////////////////////
 
 	// Don't draw (show solidmask)
-	if (Game.GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.ShowSolidMask)
 		if (SolidMask.Wdt)
 			{
 			// DrawSolidMask(cgo); - no need to draw it, because the 8bit-surface will be shown
@@ -2441,7 +2441,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 
 
 	// Debug Display ////////////////////////////////////////////////////////////////////////
-	if (Game.GraphicsSystem.ShowVertices) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowVertices) if (eDrawMode!=ODM_BaseOnly)
 		{
 		int32_t cnt;
 		if (Shape.VtxNum>1)
@@ -2455,7 +2455,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				}
 		}
 
-	if (Game.GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
 		{
 		if (OCF & OCF_Entrance)
 			Application.DDraw->DrawFrame(cgo.Surface,cgo.X+cox-Shape.x+Def->Entrance.x,
@@ -2471,7 +2471,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 						 CRed);
 		}
 
-	if (Game.GraphicsSystem.ShowAction) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowAction) if (eDrawMode!=ODM_BaseOnly)
 		{
 		if (Action.Act>ActIdle)
 			{
@@ -2543,7 +2543,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		|| !Inside<float>(coy,1-Shape.Hgt,cgo.Hgt))
 			return;
 	// Don't draw (show solidmask)
-	if (Game.GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.ShowSolidMask)
 		if (SolidMask.Wdt)
 			return;
 	// Contained

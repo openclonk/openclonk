@@ -419,7 +419,7 @@ BOOL C4Player::Save()
 	if (GetType() == C4PT_Script) return FALSE;
 	// Log
 	LogF(LoadResStr("IDS_PRC_SAVEPLR"), Config.AtRelativePath(Filename));
-	Game.GraphicsSystem.MessageBoard.EnsureLastMessage();
+	::GraphicsSystem.MessageBoard.EnsureLastMessage();
 	// copy player to save somewhere else
   char szPath[_MAX_PATH + 1];
   SCopy(Config.AtTempPath(C4CFN_TempPlayer), szPath, _MAX_PATH);

@@ -5267,13 +5267,13 @@ static long FnReloadParticle(C4AulContext* ctx, C4String *szParticleName)
 
 static bool FnSetGamma(C4AulContext* ctx, long dwClr1, long dwClr2, long dwClr3, long iRampIndex)
 	{
-	Game.GraphicsSystem.SetGamma(dwClr1, dwClr2, dwClr3, iRampIndex);
+	::GraphicsSystem.SetGamma(dwClr1, dwClr2, dwClr3, iRampIndex);
 	return TRUE;
 	}
 
 static bool FnResetGamma(C4AulContext* ctx, long iRampIndex)
 	{
-	Game.GraphicsSystem.SetGamma(0x000000, 0x808080, 0xffffff, iRampIndex);
+	::GraphicsSystem.SetGamma(0x000000, 0x808080, 0xffffff, iRampIndex);
 	return TRUE;
 	}
 
@@ -5378,7 +5378,7 @@ static bool FnSetFilmView(C4AulContext *ctx, long iToPlr)
 	// real switch in replays only
 	if (!Game.Control.isReplay()) return TRUE;
 	// set new target plr
-	if (C4Viewport *vp = Game.GraphicsSystem.GetFirstViewport()) vp->Init(iToPlr, true);
+	if (C4Viewport *vp = ::GraphicsSystem.GetFirstViewport()) vp->Init(iToPlr, true);
 	// done, always success (sync)
 	return TRUE;
 	}
@@ -5940,7 +5940,7 @@ static bool FnSetViewOffset(C4AulContext *ctx, long iPlayer, long iX, long iY)
   {
   if(!ValidPlr(iPlayer)) return 0;
   // get player viewport
-  C4Viewport *pView = Game.GraphicsSystem.GetViewport(iPlayer);
+  C4Viewport *pView = ::GraphicsSystem.GetViewport(iPlayer);
   if(!pView) return 1; // sync safety
   // set
   pView->ViewOffsX = iX;
@@ -5957,7 +5957,7 @@ static bool FnSetPreSend(C4AulContext *cthr, long iToVal, C4String *pNewName)
 	if (!szClient || !*szClient || WildcardMatch(szClient, Game.Clients.getLocalName()))
 		{
 		Game.Control.Network.setTargetFPS(iToVal);
-		Game.GraphicsSystem.FlashMessage(FormatString("TargetFPS: %ld", iToVal).getData());
+		::GraphicsSystem.FlashMessage(FormatString("TargetFPS: %ld", iToVal).getData());
 		}
 	return TRUE;
   }

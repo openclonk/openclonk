@@ -367,7 +367,7 @@ void C4SoundInstance::Execute()
 
 void C4SoundInstance::SetVolumeByPos(int32_t x, int32_t y)
   {
-  iVolume = Game.GraphicsSystem.GetAudibility(x, y, &iPan);
+  iVolume = ::GraphicsSystem.GetAudibility(x, y, &iPan);
   }
 
 void C4SoundInstance::ClearPointers(C4Object *pDelete)

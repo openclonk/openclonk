@@ -248,7 +248,7 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     //----------------------------------------------------------------------------------------------------------------------------------
 		case WM_PAINT:
 			// 2do: only draw specific dlg?
-			//Game.GraphicsSystem.Execute();
+			//::GraphicsSystem.Execute();
 			break;
 			return 0;
     //----------------------------------------------------------------------------------------------------------------------------------

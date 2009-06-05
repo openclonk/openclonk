@@ -566,8 +566,8 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			pLobby->ClearLog();
 			}
 		// fullscreen
-		else if (Game.GraphicsSystem.MessageBoard.Active)
-			Game.GraphicsSystem.MessageBoard.ClearLog();
+		else if (::GraphicsSystem.MessageBoard.Active)
+			::GraphicsSystem.MessageBoard.ClearLog();
 		else
 			{
 			// EM mode
@@ -631,13 +631,13 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		// get line cnt
 		int32_t iLineCnt = BoundBy(atoi(pCmdPar), 0, 20);
 		if(iLineCnt == 0)
-			Game.GraphicsSystem.MessageBoard.ChangeMode(2);
+			::GraphicsSystem.MessageBoard.ChangeMode(2);
 		else if(iLineCnt == 1)
-			Game.GraphicsSystem.MessageBoard.ChangeMode(0);
+			::GraphicsSystem.MessageBoard.ChangeMode(0);
 		else
 			{
-			Game.GraphicsSystem.MessageBoard.iLines = iLineCnt;
-			Game.GraphicsSystem.MessageBoard.ChangeMode(1);
+			::GraphicsSystem.MessageBoard.iLines = iLineCnt;
+			::GraphicsSystem.MessageBoard.ChangeMode(1);
 			}
 		return TRUE;
 		}

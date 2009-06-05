@@ -1629,7 +1629,7 @@ void C4Console::Execute()
 	PropertyDlg.Execute();
 	ObjectListDlg.Execute();
 	UpdateStatusBars();
-	Game.GraphicsSystem.Execute();
+	::GraphicsSystem.Execute();
 	}
 
 bool C4Console::OpenGame(const char *szCmdLine)

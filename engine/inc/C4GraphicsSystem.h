@@ -123,4 +123,5 @@ class C4GraphicsSystem
 		bool ViewportZoomIn();
 	};
 
+extern C4GraphicsSystem GraphicsSystem;
 #endif

@@ -565,7 +565,7 @@ void Screen::ElementPosChanged(Element *pOfElement)
 	{
 	// redraw fullscreen BG if dlgs are dragged around in shared mode
 	if (!IsExclusive())
-		Game.GraphicsSystem.InvalidateBg();
+		::GraphicsSystem.InvalidateBg();
 	}
 
 void Screen::ShowDialog(Dialog *pDlg, bool fFade)
@@ -637,7 +637,7 @@ void Screen::CloseDialog(Dialog *pDlg, bool fFade)
 		if (pActiveDlg && pActiveDlg->IsFading()) pActiveDlg = NULL;
 		}
 	// redraw background; clip update
-	Game.GraphicsSystem.InvalidateBg(); UpdateMouseFocus();
+	::GraphicsSystem.InvalidateBg(); UpdateMouseFocus();
 	}
 
 void Screen::RecheckActiveDialog()
@@ -700,8 +700,8 @@ void Screen::Draw(C4TargetFacet &cgo, bool fDoBG)
 		Dialog *pFSDlg = GetFullscreenDialog(false);
 		if (!pFSDlg || !pFSDlg->HasBackground())
 			{
-			if (Game.GraphicsSystem.pLoaderScreen)
-				Game.GraphicsSystem.pLoaderScreen->fctBackground.DrawFullScreen(cgo);
+			if (::GraphicsSystem.pLoaderScreen)
+				::GraphicsSystem.pLoaderScreen->fctBackground.DrawFullScreen(cgo);
 			else
 				// loader not yet loaded: black BG
 				lpDDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt+1, cgo.Hgt+1, 0x00000000);
@@ -969,7 +969,7 @@ void Screen::DrawToolTip(const char *szTip, C4TargetFacet &cgo, float x, float y
 		// draw tooltip
 		lpDDraw->TextOut(sText.getData(), *pUseFont, 1.0f, cgo.Surface, tX+3,tY+1, C4GUI_ToolTipColor, ALeft);
 		// while there's a tooltip, redraw the bg, because it might overlap
-		Game.GraphicsSystem.InvalidateBg();
+		::GraphicsSystem.InvalidateBg();
 		}
 	}
 

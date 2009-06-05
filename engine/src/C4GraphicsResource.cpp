@@ -197,7 +197,7 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 		AlphaPalette[0]=255;
 		AlphaPalette[191]=127;
 		// update game pal
-		if (!Game.GraphicsSystem.SetPalette()) { LogFatal("Pal error (2)!"); return FALSE; }
+		if (!::GraphicsSystem.SetPalette()) { LogFatal("Pal error (2)!"); return FALSE; }
 		idPalGrp = idNewPalGrp;
 		}
 

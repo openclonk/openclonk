@@ -613,13 +613,13 @@ BOOL C4PathFinder::Execute()
 	if (iRays>=C4PF_MaxRay) return FALSE;
 
 	// Draw
-	if (Game.GraphicsSystem.ShowPathfinder)
+	if (::GraphicsSystem.ShowPathfinder)
 		{
 		static int32_t iDelay=0;
 		iDelay++; if (iDelay>C4PF_Draw_Rate)
 			{
 			iDelay=0;
-			Game.GraphicsSystem.Execute();
+			::GraphicsSystem.Execute();
 			}
 		}
 

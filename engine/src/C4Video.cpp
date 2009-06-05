@@ -214,7 +214,7 @@ void C4Video::Draw(C4TargetFacet &cgo)
 bool C4Video::AdjustPosition()
 	{
 	// Get source player & viewport
-	C4Viewport *pViewport = Game.GraphicsSystem.GetFirstViewport();
+	C4Viewport *pViewport = ::GraphicsSystem.GetFirstViewport();
 	if (!pViewport) return false;
 	C4Player *pPlr = Game.Players.Get(pViewport->GetPlayer());
 	if (!pPlr) return false;
@@ -269,7 +269,7 @@ void C4Video::Draw()
 	if (!Active) return;
 	// Get viewport
 	C4Viewport *pViewport;
-	if (pViewport = Game.GraphicsSystem.GetFirstViewport())
+	if (pViewport = ::GraphicsSystem.GetFirstViewport())
 		{
 		C4TargetFacet cgo;
 		cgo.Set(Surface,pViewport->DrawX,pViewport->DrawY,pViewport->ViewWdt,pViewport->ViewHgt,pViewport->ViewX,pViewport->ViewY);

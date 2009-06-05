@@ -288,7 +288,7 @@ BOOL C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 	pPlr->CrewInfoList.DetachFromObjects();
 
 	// Clear viewports
-	Game.GraphicsSystem.CloseViewport(pPlr->Number, fNoCalls);
+	::GraphicsSystem.CloseViewport(pPlr->Number, fNoCalls);
 	// Check fullscreen viewports
 	FullScreen.ViewportCheck();
 
