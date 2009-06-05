@@ -1,6 +1,8 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+ * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2006  Peter Wortmann
 
 #include <C4NetIO.h>
 
