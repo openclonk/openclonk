@@ -24,14 +24,6 @@
 
 #include <GL/glew.h>
 
-#ifdef USE_X11
-//  Xmd.h typedefs BOOL to CARD8, but we want int
-#define BOOL _BOOL
-#include <X11/Xmd.h>
-#undef BOOL
-#include <GL/glx.h>
-#endif
-
 #if defined(__APPLE__)
 #include <OpenGL/glu.h>
 #else
@@ -69,7 +61,7 @@ class CStdGLCtx
 		HWND hWindow; // used if pWindow==NULL
 		HDC hDC;										// device context handle
 #elif defined(USE_X11)
-		GLXContext ctx;
+		/*GLXContext*/void * ctx;
 #endif
 		int cx,cy;									// context window size
 

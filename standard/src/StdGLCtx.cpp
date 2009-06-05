@@ -193,7 +193,12 @@ bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 
 #elif defined(USE_X11)
 
+//  Xmd.h typedefs BOOL to CARD8, whereas microsoft windows and Clonk use int
+#define BOOL _BOOL
+#include <X11/Xmd.h>
+#include <GL/glx.h>
 #include <X11/extensions/xf86vmode.h>
+#undef BOOL
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), cx(0), cy(0) { }
 
@@ -202,7 +207,7 @@ void CStdGLCtx::Clear()
 	Deselect();
 	if (ctx)
 		{
-		glXDestroyContext(pWindow->dpy, ctx);
+		glXDestroyContext(pWindow->dpy, (GLXContext)ctx);
 		ctx = 0;
 		}
 	pWindow = 0;
@@ -218,10 +223,10 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	// try direct rendering first
 	if (!DDrawCfg.NoAcceleration)
-		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, pGL->MainCtx.ctx, True);
+		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, True);
 	// without, rendering will be unacceptable slow, but that's better than nothing at all
 	if (!ctx)
-		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, pGL->MainCtx.ctx, False);
+		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, False);
 	// No luck at all?
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
@@ -249,7 +254,7 @@ bool CStdGLCtx::Select(bool verbose)
 		return false;
 		}
 	// make context current
-	if (!pWindow->renderwnd || !glXMakeCurrent(pWindow->dpy, pWindow->renderwnd, ctx))
+	if (!pWindow->renderwnd || !glXMakeCurrent(pWindow->dpy, pWindow->renderwnd, (GLXContext)ctx))
 		{
 		if (verbose) pGL->Error("  gl: glXMakeCurrent failed");
 		return false;
