@@ -2048,10 +2048,6 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 
 bool C4Game::CanQuickSave()
 	{
-	// Registered only
-	if (!Config.Registered())
-		{ Log(LoadResStr("IDS_GAME_NOUNREGSAVE")); return false; }
-
 	// Network hosts only
 	if (Network.isEnabled() && !Network.isHost())
 		{ Log(LoadResStr("IDS_GAME_NOCLIENTSAVE")); return false; }

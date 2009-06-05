@@ -106,12 +106,6 @@ bool ProcessGroup(const char *FilenamePar) {
       for (int iArg = iFirstCommand; iArg < argc; ++iArg) {
         // This argument is a command
         if (argv[iArg][0] == '-') {
-					// Block unregistered commands
-					if (!Config.Registered() && (SCharPos(argv[iArg][1], "y") < 0))
-					{
-						printf("Command -%c not allowed in unregistered version: %s\n", argv[iArg][1], Config.GetRegistrationError());
-						continue;
-					}
 					// Handle commands
           switch (argv[iArg][1]) {
             // Add
