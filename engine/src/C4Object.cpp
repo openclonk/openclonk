@@ -63,7 +63,7 @@ void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t conta
 void C4Action::SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, int32_t iBridgeMaterial)
 	{
 	// validity
-	iBridgeMaterial = Min<int32_t>(iBridgeMaterial, Game.Material.Num-1);
+	iBridgeMaterial = Min<int32_t>(iBridgeMaterial, ::MaterialMap.Num-1);
 	if (iBridgeMaterial < 0) iBridgeMaterial = 0xff;
 	iBridgeTime = BoundBy<int32_t>(iBridgeTime, 0, 0xffff);
 	// mask in this->Data
@@ -870,7 +870,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
     if (MatValid(mat=GBackMat(GetX(), GetY())))
       {
 			// Extinguish
-      if (Game.Material.Map[mat].Extinguisher)
+      if (::MaterialMap.Map[mat].Extinguisher)
         { Extinguish(iFireNumber); if (GBackLiquid(GetX(), GetY())) StartSoundEffect("Pshshsh",false,100,this); }
 			// Inflame
 			if (!Random(3))
@@ -990,14 +990,14 @@ BOOL C4Object::ExecLife()
   if (!Tick10)
     if (Alive)
 			if (InMat!=MNone)
-				if (Game.Material.Map[InMat].Corrosive)
+				if (::MaterialMap.Map[InMat].Corrosive)
 					if (!GetPhysical()->CorrosionResist)
-						DoEnergy(-Game.Material.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
+						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
 
 	// InMat incineration
   if (!Tick10)
 		if (InMat!=MNone)
-			if (Game.Material.Map[InMat].Incindiary)
+			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
 					Incinerate(NO_OWNER);
 
@@ -3951,14 +3951,14 @@ void C4Object::DigOutMaterialCast(BOOL fRequest)
 	{
 	// Check material contents for sufficient object cast amounts
 	if (!MaterialContents) return;
-  for (int32_t iMaterial=0; iMaterial<Game.Material.Num; iMaterial++)
+  for (int32_t iMaterial=0; iMaterial< ::MaterialMap.Num; iMaterial++)
     if (MaterialContents->Amount[iMaterial])
-      if (Game.Material.Map[iMaterial].Dig2Object!=C4ID_None)
-        if (Game.Material.Map[iMaterial].Dig2ObjectRatio!=0)
-          if (fRequest || !Game.Material.Map[iMaterial].Dig2ObjectOnRequestOnly)
-            if (MaterialContents->Amount[iMaterial]>=Game.Material.Map[iMaterial].Dig2ObjectRatio)
+      if (::MaterialMap.Map[iMaterial].Dig2Object!=C4ID_None)
+        if (::MaterialMap.Map[iMaterial].Dig2ObjectRatio!=0)
+          if (fRequest || !::MaterialMap.Map[iMaterial].Dig2ObjectOnRequestOnly)
+            if (MaterialContents->Amount[iMaterial]>=::MaterialMap.Map[iMaterial].Dig2ObjectRatio)
               {
-              Game.CreateObject(Game.Material.Map[iMaterial].Dig2Object,this,NO_OWNER,GetX(), GetY()+Shape.GetY()+Shape.Hgt,Random(360));
+              Game.CreateObject(::MaterialMap.Map[iMaterial].Dig2Object,this,NO_OWNER,GetX(), GetY()+Shape.GetY()+Shape.Hgt,Random(360));
               MaterialContents->Amount[iMaterial]=0;
               }
 	}

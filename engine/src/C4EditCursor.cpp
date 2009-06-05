@@ -193,7 +193,7 @@ BOOL C4EditCursor::UpdateStatusBar()
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModeDraw:
-			str.Format("%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? Game.Material.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
+			str.Format("%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? ::MaterialMap.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
@@ -728,7 +728,7 @@ void C4EditCursor::ApplyToolPicker()
 			// Material only from landscape
 			if (MatValid(iMaterial=GBackMat(X,Y)))
 				{
-				Console.ToolsDlg.SelectMaterial(Game.Material.Map[iMaterial].Name);
+				Console.ToolsDlg.SelectMaterial(::MaterialMap.Map[iMaterial].Name);
 				Console.ToolsDlg.SetIFT(GBackIFT(X,Y));
 				}
 			else

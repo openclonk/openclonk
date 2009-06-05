@@ -500,8 +500,8 @@ void C4ToolsDlg::InitMaterialCtrls()
 	// Materials
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_ADDSTRING,0,(LPARAM)C4TLS_MatSky);
-	for (int32_t cnt=0; cnt<Game.Material.Num; cnt++)
-		SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_ADDSTRING,0,(LPARAM)Game.Material.Map[cnt].Name);
+	for (int32_t cnt=0; cnt< ::MaterialMap.Num; cnt++)
+		SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_ADDSTRING,0,(LPARAM)::MaterialMap.Map[cnt].Name);
 	SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,(LPARAM)Material);
 #else
 #ifdef WITH_DEVELOPER_MODE
@@ -511,9 +511,9 @@ void C4ToolsDlg::InitMaterialCtrls()
 	gtk_list_store_clear(list);
 
 	gtk_combo_box_append_text(GTK_COMBO_BOX(materials), C4TLS_MatSky);
-	for(int32_t cnt = 0; cnt < Game.Material.Num; cnt++)
+	for(int32_t cnt = 0; cnt < ::MaterialMap.Num; cnt++)
 	{
-		gtk_combo_box_append_text(GTK_COMBO_BOX(materials), Game.Material.Map[cnt].Name);
+		gtk_combo_box_append_text(GTK_COMBO_BOX(materials), ::MaterialMap.Map[cnt].Name);
 	}
 	g_signal_handler_unblock(materials, handlerMaterials);
 	SelectComboBoxText(GTK_COMBO_BOX(materials), Material);
@@ -677,7 +677,7 @@ void C4ToolsDlg::UpdatePreview()
 	// Material-Texture
 	else
 		{
-    bCol=Mat2PixColDefault(Game.Material.Get(Material));
+    bCol=Mat2PixColDefault(::MaterialMap.Get(Material));
 		// Get/Create TexMap entry
 		BYTE iTex = ::TextureMap.GetIndex(Material, Texture, TRUE);
 		if (iTex)

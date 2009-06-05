@@ -1002,7 +1002,7 @@ void C4ControlEMDrawTool::Execute() const
 			break;
 		case EMDT_Fill: // fill tool
 			{
-			int iMat = Game.Material.Get(szMaterial);
+			int iMat = ::MaterialMap.Get(szMaterial);
 			if (!MatValid(iMat)) return;
 			for (int cnt=0; cnt<iGrade; cnt++)
 				::Landscape.InsertMaterial(iMat,iX+Random(iGrade)-iGrade/2,iY+Random(iGrade)-iGrade/2);

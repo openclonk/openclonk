@@ -565,7 +565,7 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	BOOL fFireCaused=TRUE;
 	int32_t iMat;
   if (MatValid(iMat=GBackMat(pObj->GetX(),pObj->GetY())))
-    if (Game.Material.Map[iMat].Extinguisher)
+    if (::MaterialMap.Map[iMat].Extinguisher)
 			{
 			// blasts should changedef in water, too!
 			if (fBlasted) if (pObj->Def->BurnTurnTo!=C4ID_None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
@@ -790,7 +790,7 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 	int32_t iMat = GBackMat(tx, ty);
 	// check liquid
 	if (MatValid(iMat))
-		if (DensityLiquid(Game.Material.Map[iMat].Density) && Game.Material.Map[iMat].Instable)
+		if (DensityLiquid(::MaterialMap.Map[iMat].Density) && ::MaterialMap.Map[iMat].Instable)
 			{
 			int32_t sy = ty;
 			while(GBackLiquid(tx, sy) && sy > ty - 20 && sy >= 0) sy--;

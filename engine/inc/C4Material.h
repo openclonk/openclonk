@@ -199,6 +199,8 @@ class C4MaterialMap
 	  BOOL SortEnumeration(int32_t iMat, const char *szMatName);
   };
 
+extern C4MaterialMap MaterialMap;
+
 const int32_t C4M_Flat    = 0,
           C4M_TopFlat = 1,
           C4M_Smooth  = 2,

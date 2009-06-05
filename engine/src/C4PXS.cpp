@@ -55,14 +55,14 @@ void C4PXS::Execute()
 	// Material conversion
 	int32_t iX = fixtoi(x), iY = fixtoi(y);
 	inmat=GBackMat(iX,iY);
-	C4MaterialReaction *pReact = Game.Material.GetReactionUnsafe(Mat, inmat);
+	C4MaterialReaction *pReact = ::MaterialMap.GetReactionUnsafe(Mat, inmat);
 	if (pReact && (*pReact->pFunc)(pReact, iX,iY, iX,iY, xdir,ydir, Mat,inmat, meePXSPos, NULL))
 		{ Deactivate(); return; }
 
 	// Gravity
 	ydir+=GravAccel;
 
-	if(GBackDensity(iX, iY + 1) < Game.Material.Map[Mat].Density)
+	if(GBackDensity(iX, iY + 1) < ::MaterialMap.Map[Mat].Density)
 		{
 		// Air speed: Wind plus some random
 		int32_t iWind = GBackWind(iX, iY);
@@ -70,7 +70,7 @@ void C4PXS::Execute()
 		FIXED tydir = FIXED256(Random(1200) - 600);
 
 		// Air friction, based on WindDrift. MaxSpeed is ignored.
-		int32_t iWindDrift = Max(Game.Material.Map[Mat].WindDrift - 20, 0);
+		int32_t iWindDrift = Max(::MaterialMap.Map[Mat].WindDrift - 20, 0);
 		xdir += ((txdir - xdir) * iWindDrift) * WindDrift_Factor;
 		ydir += ((tydir - ydir) * iWindDrift) * WindDrift_Factor;
 		}
@@ -97,7 +97,7 @@ void C4PXS::Execute()
 		int32_t inX = iX + Sign(iToX - iX), inY = iY + Sign(iToY - iY);
 		// Contact?
 		inmat = GBackMat(inX, inY);
-		C4MaterialReaction *pReact = Game.Material.GetReactionUnsafe(Mat, inmat);
+		C4MaterialReaction *pReact = ::MaterialMap.GetReactionUnsafe(Mat, inmat);
 		if (pReact)
 			if ((*pReact->pFunc)(pReact, iX,iY, inX,inY, xdir,ydir, Mat,inmat, meePXSMove, &fStopMovement))
 				{
@@ -256,7 +256,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 			for (unsigned int cnt2 = 0; cnt2<PXSChunkSize; cnt2++,pxp++)
 				if (pxp->Mat != MNone && VisibleRect.Contains(fixtoi(pxp->x), fixtoi(pxp->y)))
 					{
-					C4Material *pMat=&Game.Material.Map[pxp->Mat];
+					C4Material *pMat=&::MaterialMap.Map[pxp->Mat];
 					if (pMat->PXSFace.Surface && Config.Graphics.PXSGfx)
 						continue;
 					// old-style: unicolored pixels or lines
@@ -295,7 +295,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 			for (unsigned int cnt2 = 0; cnt2<PXSChunkSize; cnt2++,pxp++)
 				if (pxp->Mat != MNone && VisibleRect.Contains(fixtoi(pxp->x), fixtoi(pxp->y)))
 					{
-					C4Material *pMat=&Game.Material.Map[pxp->Mat];
+					C4Material *pMat=&::MaterialMap.Map[pxp->Mat];
 					if (!pMat->PXSFace.Surface)
 						continue;
 					// new-style: graphics

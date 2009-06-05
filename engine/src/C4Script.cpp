@@ -2245,7 +2245,7 @@ static bool FnFlameConsumeMaterial(C4AulContext *cthr, long x, long y)
 	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
 	long mat=GBackMat(x,y);
 	if (!MatValid(mat)) return false;
-	if (!Game.Material.Map[mat].Inflammable) return false;
+	if (!::MaterialMap.Map[mat].Inflammable) return false;
 	if (::Landscape.ExtractMaterial(x,y)==MNone) return false;
 	return true;
 	}
@@ -2280,7 +2280,7 @@ static bool FnInsertMaterial(C4AulContext *cthr, long mat, long x, long y, long 
 static long FnGetMaterialCount(C4AulContext *cthr, long iMaterial, bool fReal)
 	{
   if(!MatValid(iMaterial)) return -1;
-  if(fReal || !Game.Material.Map[iMaterial].MinHeightCount)
+  if(fReal || !::MaterialMap.Map[iMaterial].MinHeightCount)
     return ::Landscape.MatCount[iMaterial];
   else
 	  return ::Landscape.EffectiveMatCount[iMaterial];
@@ -2563,7 +2563,7 @@ static bool FnScriptGo(C4AulContext *cthr, bool go)
 static bool FnCastPXS(C4AulContext *cthr, C4String *mat_name, long amt, long level, long tx, long ty)
   {
 	if (cthr->Obj) { tx+=cthr->Obj->GetX(); ty+=cthr->Obj->GetY(); }
-  ::PXS.Cast(Game.Material.Get(FnStringPar(mat_name)),amt,tx,ty,level);
+  ::PXS.Cast(::MaterialMap.Get(FnStringPar(mat_name)),amt,tx,ty,level);
   return TRUE;
   }
 
@@ -2576,7 +2576,7 @@ static bool FnCastObjects(C4AulContext *cthr, C4ID id, long amt, long level, lon
 
 static long FnMaterial(C4AulContext *cthr, C4String *mat_name)
 	{
-	return Game.Material.Get(FnStringPar(mat_name));
+	return ::MaterialMap.Get(FnStringPar(mat_name));
 	}
 
 C4Object* FnPlaceVegetation(C4AulContext *cthr, C4ID id, long iX, long iY, long iWdt, long iHgt, long iGrowth)
@@ -3179,7 +3179,7 @@ static long FnLaunchLightning(C4AulContext *cthr, long x, long y, long xdir, lon
 static long FnLaunchVolcano(C4AulContext *cthr, long x)
 	{
 	return Game.Weather.LaunchVolcano(
-		       Game.Material.Get("Lava"),
+		       ::MaterialMap.Get("Lava"),
 					 x,GBackHgt-1,
 					 BoundBy(15*GBackHgt/500+Random(10),10,60));
 	}
@@ -4427,10 +4427,10 @@ static C4Value FnGetMaterialVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Val
 	long iMat = iMat_C4V->getInt();
 	long iEntryNr = iEntryNr_C4V->getInt();
 
-	if(iMat < 0 || iMat >= Game.Material.Num) return C4Value();
+	if(iMat < 0 || iMat >= ::MaterialMap.Num) return C4Value();
 
 	// get material
-	C4Material *pMaterial = &Game.Material.Map[iMat];
+	C4Material *pMaterial = &::MaterialMap.Map[iMat];
 
 	// get plr info core
 	C4MaterialCore* pMaterialCore = static_cast<C4MaterialCore*>(pMaterial);
@@ -4594,7 +4594,7 @@ static bool FnSetMaterialColor(C4AulContext* cthr, long iMat, long iClr1R, long 
 	{
 	// get mat
 	if (!MatValid(iMat)) return FALSE;
-	C4Material *pMat = &Game.Material.Map[iMat];
+	C4Material *pMat = &::MaterialMap.Map[iMat];
 	// newgfx: emulate by landscape modulation - enlightment not allowed...
 	DWORD dwBack, dwMod=GetClrModulation(C4RGB(pMat->Color[0], pMat->Color[1], pMat->Color[2]), C4RGB(iClr1R, iClr1G, iClr1B), dwBack);
 	dwMod&=0xffffff;
@@ -4609,7 +4609,7 @@ static long FnGetMaterialColor(C4AulContext* cthr, long iMat, long iNum, long iC
 	{
 	// get mat
 	if (!MatValid(iMat)) return FALSE;
-	C4Material *pMat = &Game.Material.Map[iMat];
+	C4Material *pMat = &::MaterialMap.Map[iMat];
 	// get color
 	return pMat->Color[iNum*3+iChannel];
 	}
@@ -4619,7 +4619,7 @@ static C4String *FnMaterialName(C4AulContext* cthr, long iMat)
 	// mat valid?
 	if (!MatValid(iMat)) return NULL;
 	// return mat name
-	return String(Game.Material.Map[iMat].Name);
+	return String(::MaterialMap.Map[iMat].Name);
 	}
 
 static bool FnSetMenuSize(C4AulContext* cthr, long iCols, long iRows, C4Object *pObj)
@@ -5011,8 +5011,8 @@ static bool FnDrawModLandscape(C4AulContext *cctx, long iX, long iY, long iWdt, 
 
 	long iX2=iX+iWdt; long iY2=iY+iHgt;
 	// get material modification values
-	C4ModLandscapeMatRec *MatInfo = new C4ModLandscapeMatRec[Game.Material.Num];
-	for (int i=0; i<Game.Material.Num; ++i)
+	C4ModLandscapeMatRec *MatInfo = new C4ModLandscapeMatRec[::MaterialMap.Num];
+	for (int i=0; i< ::MaterialMap.Num; ++i)
 		{
 		MatInfo[i].iMode=pObj->Local.GetItem(i*3+0).getInt();
 		MatInfo[i].iClr1=pObj->Local.GetItem(i*3+1).getInt();

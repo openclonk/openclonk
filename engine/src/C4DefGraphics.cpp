@@ -37,6 +37,7 @@
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
 #include <C4Log.h>
+#include <C4Material.h>
 #endif
 
 //-------------------------------- C4DefGraphics -----------------------------------------------

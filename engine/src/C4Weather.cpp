@@ -134,7 +134,7 @@ void C4Weather::Execute()
 		// Volcano
 		if (!Random(60))
 			if (Random(100)<VolcanoLevel)
-				LaunchVolcano(Game.Material.Get("Lava"),
+				LaunchVolcano(::MaterialMap.Get("Lava"),
 											Random(GBackWdt),GBackHgt-1,
 											BoundBy(15*GBackHgt/500+Random(10),10,60));
     }
@@ -199,10 +199,10 @@ BOOL C4Weather::LaunchEarthquake(int32_t iX, int32_t iY)
 
 BOOL C4Weather::LaunchCloud(int32_t iX, int32_t iY, int32_t iWidth, int32_t iStrength, const char *szPrecipitation)
 	{
-	if (Game.Material.Get(szPrecipitation)==MNone) return FALSE;
+	if (::MaterialMap.Get(szPrecipitation)==MNone) return FALSE;
 	C4Object *pObj;
 	if (pObj=Game.CreateObject(C4Id("FXP1"),NULL,NO_OWNER,iX,iY))
-		if (!!pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(Game.Material.Get(szPrecipitation)),
+		if (!!pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(::MaterialMap.Get(szPrecipitation)),
 																						   C4VInt(iWidth),
 																						   C4VInt(iStrength))))
 			return TRUE;

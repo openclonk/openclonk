@@ -77,13 +77,13 @@ bool C4TexMapEntry::Init()
 	{
 #ifdef C4ENGINE
 	// Find material
-	iMaterialIndex = Game.Material.Get(Material.getData());
+	iMaterialIndex = ::MaterialMap.Get(Material.getData());
 	if(!MatValid(iMaterialIndex))
 		{
 		DebugLogF("Error initializing material %s-%s: Invalid material!", Material.getData(), Texture.getData());
 		return false;
 		}
-	pMaterial = &Game.Material.Map[iMaterialIndex];
+	pMaterial = &::MaterialMap.Map[iMaterialIndex];
 	// Find texture
 	C4Texture * sfcTexture = ::TextureMap.GetTexture(Texture.getData());
 	if(!sfcTexture)
@@ -362,14 +362,14 @@ int32_t C4TextureMap::GetIndexMatTex(const char *szMaterialTexture, const char *
 			return iMatTex;
 #ifdef C4ENGINE
 	// search material
-	long iMaterial = Game.Material.Get(szMaterialTexture);
+	long iMaterial = ::MaterialMap.Get(szMaterialTexture);
 	if (!MatValid(iMaterial))
 		{
 		if (szErrorIfFailed) DebugLogF("Error getting MatTex for %s: Invalid material", szErrorIfFailed);
 		return 0;
 		}
 	// return default map entry
-	return Game.Material.Map[iMaterial].DefaultMatTex;
+	return ::MaterialMap.Map[iMaterial].DefaultMatTex;
 #else
 	return 0;
 #endif

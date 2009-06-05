@@ -610,7 +610,7 @@ void C4MouseControl::UpdateCursorTarget()
 					{
 					int32_t iMat = GBackMat(int32_t(GameX),int32_t(GameY));
 					if (MatValid(iMat))
-						if (pDef=C4Id2Def(Game.Material.Map[iMat].Dig2Object))
+						if (pDef=C4Id2Def(::MaterialMap.Map[iMat].Dig2Object))
 							{ idCaption="IDS_CON_DIGOUT"; fDouble=true; szName=pDef->GetName(); }
 					}
 					break;

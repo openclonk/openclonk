@@ -34,7 +34,7 @@ int32_t PixCol2MatOld(BYTE pixc)
   {
   if (pixc < GBM) return MNone;
   pixc &= 63; // Substract GBM, ignore IFT
-  if (pixc > Game.Material.Num*C4M_ColsPerMat-1) return MNone;
+  if (pixc > ::MaterialMap.Num*C4M_ColsPerMat-1) return MNone;
   return pixc / C4M_ColsPerMat;
   }
 
@@ -46,7 +46,7 @@ int32_t PixCol2MatOld2(BYTE pixc)
 	// equals middle vehicle-color
 	if (iMat==MVehic+1) return MVehic;
 	// above: range check
-	iMat-=2; if (iMat >= Game.Material.Num) return MNone;
+	iMat-=2; if (iMat >= ::MaterialMap.Num) return MNone;
 	return iMat;
   }
 

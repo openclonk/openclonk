@@ -173,7 +173,7 @@ bool C4GameSave::SaveLandscape()
 		MassMoverSet.Copy(::MassMover);
 		if (!MassMoverSet.Save(*pSaveGroup)) return false;
 		// Material enumeration
-		if (!Game.Material.SaveEnumeration(*pSaveGroup)) return false;
+		if (!::MaterialMap.SaveEnumeration(*pSaveGroup)) return false;
 		}
 	// static / dynamic
 	if (::Landscape.Mode == C4LSC_Static)

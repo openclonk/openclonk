@@ -33,7 +33,6 @@
 #include <C4GameObjects.h>
 #include <C4Scenario.h>
 #include <C4PlayerList.h>
-#include <C4Material.h>
 #include <C4GameControl.h>
 #include <C4Control.h>
 #include <C4PathFinder.h>
@@ -76,7 +75,6 @@ class C4Game
 		C4PlayerInfoList	 &RestorePlayerInfos; // Shortcut
 		C4RoundResults      RoundResults;
     C4Weather						Weather;
-		C4MaterialMap				Material;
 		C4GameObjects				Objects;
 		C4ObjectList				BackObjects;		// objects in background (C4D_Background)
 		C4ObjectList				ForeObjects;		// objects in foreground (C4D_Foreground)

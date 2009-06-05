@@ -135,7 +135,7 @@ BOOL C4MassMover::Execute()
   if (GBackMat(x,y)!=Mat) { Cease(); return FALSE; }
 
   // Check for transfer target space
-	C4Material *pMat = Game.Material.Map+Mat;
+	C4Material *pMat = ::MaterialMap.Map+Mat;
   tx=x; ty=y;
   if (!::Landscape.FindMatPath(tx,ty,+1,pMat->Density,pMat->MaxSlide))
     {
@@ -171,7 +171,7 @@ BOOL C4MassMover::Execute()
 		::Landscape.InsertMaterial(::Landscape.ExtractMaterial(x,y), tx, ty, 0, 1);
 
 	// Reinsert material (thrusted aside)
-	if(Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat) && Game.Material.Map[omat].Density > 0)
+	if(Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat) && ::MaterialMap.Map[omat].Density > 0)
 		::Landscape.InsertMaterial(omat, tx, ty + 1);
 
   // Create new mover at target
@@ -184,7 +184,7 @@ BOOL C4MassMover::Corrosion(int32_t dx, int32_t dy)
 	{
 	// check reaction map of massmover-mat to target mat
 	int32_t tmat=GBackMat(x+dx,y+dy);
-	C4MaterialReaction *pReact = Game.Material.GetReactionUnsafe(Mat, tmat);
+	C4MaterialReaction *pReact = ::MaterialMap.GetReactionUnsafe(Mat, tmat);
 	if (pReact)
 		{
 		FIXED xdir=Fix0, ydir=Fix0;

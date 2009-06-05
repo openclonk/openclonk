@@ -24,6 +24,7 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Def.h>
+#include <C4Material.h>
 #include <C4Game.h>
 #endif
 
@@ -266,7 +267,7 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 			}
 
 		// update material pointers
-		Game.Material.UpdateScriptPointers();
+		::MaterialMap.UpdateScriptPointers();
 
 		// display state
 		LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
@@ -305,7 +306,7 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	Game.Objects.UpdateScriptPointers();
 
 	// update material pointers
-	Game.Material.UpdateScriptPointers();
+	::MaterialMap.UpdateScriptPointers();
 	}
 
 BOOL C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs)

@@ -621,7 +621,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, FIXED &fXDir, FIXED &fYDir, int32_
 
 	// Rough contact? May splash
 	if (fYDir > itofix(1))
-		if (Game.Material.Map[iPxsMat].SplashRate && !Random(Game.Material.Map[iPxsMat].SplashRate))
+		if (::MaterialMap.Map[iPxsMat].SplashRate && !Random(::MaterialMap.Map[iPxsMat].SplashRate))
 			{
 			fYDir = -fYDir/8;
 			fXDir = fXDir/8 + FIXED100(Random(200) - 100);
@@ -632,12 +632,12 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, FIXED &fXDir, FIXED &fYDir, int32_
 	fYDir = 0;
 
 	// Incindiary mats smoke on contact even before doing their slide
-	if (Game.Material.Map[iPxsMat].Incindiary)
+	if (::MaterialMap.Map[iPxsMat].Incindiary)
 		if (!Random(25)) Smoke(iX, iY, 4+Rnd3() );
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
-	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),Game.Material.Map[iPxsMat].Density,Game.Material.Map[iPxsMat].MaxSlide))
+	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),::MaterialMap.Map[iPxsMat].Density,::MaterialMap.Map[iPxsMat].MaxSlide))
 		{
 		if(iPxsMat == iLsMat)
 			{ iX = iSlideX; iY = iSlideY; fXDir = 0; return false; }
@@ -682,11 +682,11 @@ bool C4MaterialMap::mrfConvert(C4MaterialReaction *pReaction, int32_t &iX, int32
 		case meePXSPos: // PXS check before movement
 			{
 			// Check depth
-			int32_t iDepth = pReaction->fUserDefined ? pReaction->iDepth : Game.Material.Map[iPxsMat].InMatConvertDepth;
+			int32_t iDepth = pReaction->fUserDefined ? pReaction->iDepth : ::MaterialMap.Map[iPxsMat].InMatConvertDepth;
 			if (!iDepth || GBackMat(iX, iY - iDepth) == iLsMat)
 				{
 				// Convert
-				iPxsMat = pReaction->fUserDefined ? pReaction->iConvertMat : Game.Material.Map[iPxsMat].InMatConvertTo;
+				iPxsMat = pReaction->fUserDefined ? pReaction->iConvertMat : ::MaterialMap.Map[iPxsMat].InMatConvertTo;
 				if (!MatValid(iPxsMat))
 					// Convert failure (target mat not be loaded, or target may be C4TLS_MatSky): Kill Pix
 					return true;
@@ -749,7 +749,7 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			if (pReaction->fUserDefined)
 				fDoCorrode = (Random(100) < pReaction->iCorrosionRate);
 			else
-				fDoCorrode = (Random(100) < Game.Material.Map[iPxsMat].Corrosive) && (Random(100) < Game.Material.Map[iLsMat].Corrode);
+				fDoCorrode = (Random(100) < ::MaterialMap.Map[iPxsMat].Corrosive) && (Random(100) < ::MaterialMap.Map[iLsMat].Corrode);
 			if (fDoCorrode)
 				{
 				ClearBackPix(iLSPosX,iLSPosY);
@@ -773,7 +773,7 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			if (pReaction->fUserDefined)
 				fDoCorrode = (Random(100) < pReaction->iCorrosionRate);
 			else
-				fDoCorrode = (Random(100) < Game.Material.Map[iPxsMat].Corrosive) && (Random(100) < Game.Material.Map[iLsMat].Corrode);
+				fDoCorrode = (Random(100) < ::MaterialMap.Map[iPxsMat].Corrosive) && (Random(100) < ::MaterialMap.Map[iLsMat].Corrode);
 			if (fDoCorrode)
 				{
 				ClearBackPix(iLSPosX,iLSPosY);
@@ -884,3 +884,5 @@ void C4MaterialMap::UpdateScriptPointers()
 	}
 
 #endif
+
+C4MaterialMap MaterialMap;

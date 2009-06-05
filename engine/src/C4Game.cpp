@@ -64,6 +64,7 @@
 #include <C4MassMover.h>
 #include <C4RankSystem.h>
 #include <C4GameMessage.h>
+#include <C4Material.h>
 #endif
 
 #include <StdFile.h>
@@ -558,7 +559,7 @@ void C4Game::Clear()
 	PXS.Clear();
 	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
 	Particles.Clear();
-	Material.Clear();
+	::MaterialMap.Clear();
   TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
   GraphicsResource.Clear();
 	::Messages.Clear();
@@ -679,7 +680,7 @@ BOOL C4Game::GameOverCheck()
 	condition_true=TRUE;
 	for (cnt=0; cnt<C4MaxNameList; cnt++)
 		if (C4S.Game.ClearMaterial.Name[cnt][0])
-			if (MatValid(mat=Game.Material.Get(C4S.Game.ClearMaterial.Name[cnt])))
+			if (MatValid(mat=::MaterialMap.Get(C4S.Game.ClearMaterial.Name[cnt])))
 				{
 				condition_valid=TRUE;
         if (::Landscape.EffectiveMatCount[mat]>(DWORD)C4S.Game.ClearMaterial.Count[cnt])
@@ -833,7 +834,7 @@ BOOL C4Game::InitMaterialTexture()
 
 	// Clear old data
 	TextureMap.Clear();
-	Material.Clear();
+	::MaterialMap.Clear();
 
 	// Check for scenario local materials
 	bool fHaveScenMaterials = Game.ScenarioFile.FindEntry(C4CFN_Material);
@@ -891,7 +892,7 @@ BOOL C4Game::InitMaterialTexture()
 		// Load materials
 		if(fOverloadMaterials)
 			{
-			int iMats = Material.Load(Mats);
+			int iMats = ::MaterialMap.Load(Mats);
 			// Automatically continue search if no material was found
 			if(!iMats) fNewOverloadMaterials = true;
 			mat_count += iMats;
@@ -907,20 +908,20 @@ BOOL C4Game::InitMaterialTexture()
   LogF(LoadResStr("IDS_PRC_MATERIALS"),mat_count);
 
 	// Load material enumeration
-	if (!Material.LoadEnumeration(ScenarioFile))
+	if (!::MaterialMap.LoadEnumeration(ScenarioFile))
 		{	LogFatal(LoadResStr("IDS_PRC_NOMATENUM"));	return FALSE;	}
 
 	// Initialize texture map
 	TextureMap.Init();
 
   // Cross map mats (after texture init, because Material-Texture-combinations are used)
-  Material.CrossMapMaterials();
+  ::MaterialMap.CrossMapMaterials();
 
   // Enumerate materials
   if (!EnumerateMaterials()) return FALSE;
 
 	// get material script funcs
-	Material.UpdateScriptPointers();
+	::MaterialMap.UpdateScriptPointers();
 
   return TRUE;
   }
@@ -1604,17 +1605,17 @@ BOOL C4Game::EnumerateMaterials()
   {
 
   // Check material number
-  if (Material.Num>C4MaxMaterial)
+  if (::MaterialMap.Num>C4MaxMaterial)
     { LogFatal(LoadResStr("IDS_PRC_TOOMANYMATS")); return FALSE; }
 
   // Get hardcoded system material indices
-  MVehic   = Material.Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
-  MTunnel  = Material.Get("Tunnel");
-  MWater   = Material.Get("Water");
-  MSnow    = Material.Get("Snow");
-  MGranite = Material.Get("Granite");
-  MFlyAshes= Material.Get("FlyAshes");
-  MEarth   = Material.Get(C4S.Landscape.Material);
+  MVehic   = ::MaterialMap.Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
+  MTunnel  = ::MaterialMap.Get("Tunnel");
+  MWater   = ::MaterialMap.Get("Water");
+  MSnow    = ::MaterialMap.Get("Snow");
+  MGranite = ::MaterialMap.Get("Granite");
+  MFlyAshes= ::MaterialMap.Get("FlyAshes");
+  MEarth   = ::MaterialMap.Get(C4S.Landscape.Material);
   if ((MVehic==MNone) || (MTunnel==MNone))
     { LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return FALSE; }
 	// mapping to landscape palette will occur when landscape has been created
@@ -1682,7 +1683,7 @@ void C4Game::Default()
 	FullSpeed=FALSE;
 	FrameSkip=1; DoSkipFrame=false;
   ::Definitions.Default();
-  Material.Default();
+  ::MaterialMap.Default();
   Objects.Default();
 	BackObjects.Default();
 	ForeObjects.Default();
@@ -2290,7 +2291,7 @@ BOOL C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		SetInitProgress(58);
 
 		// Colorize defs by material
-		::Definitions.ColorizeByMaterial(Material,GBM);
+		::Definitions.ColorizeByMaterial(::MaterialMap,GBM);
 		SetInitProgress(59);
 
 		// Videos
@@ -2699,7 +2700,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 				// Soil check
 				iTy+=3; // two pix into ground
 				iMaterial = GBackMat(iTx,iTy);
-				if (iMaterial!=MNone) if (Material.Map[iMaterial].Soil)
+				if (iMaterial!=MNone) if (::MaterialMap.Map[iMaterial].Soil)
 					{
 					if (!pDef->Growth) iGrowth=FullCon;
 					iTy+=5;

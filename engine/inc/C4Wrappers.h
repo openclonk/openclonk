@@ -34,6 +34,7 @@
 #include "C4Texture.h"
 #include "C4GraphicsSystem.h"
 #include "C4GraphicsResource.h"
+#include <C4Material.h>
 #endif
 
 //=================================== ID2Def ==============================================
@@ -123,7 +124,7 @@ int32_t PixCol2MatOld2(BYTE pixc);
 
 inline bool MatValid(int32_t mat)
   {
-  return Inside<int32_t>(mat,0,Game.Material.Num-1);
+  return Inside<int32_t>(mat,0,::MaterialMap.Num-1);
   }
 
 inline bool MatVehicle(int32_t iMat)
@@ -159,25 +160,25 @@ inline BYTE MatTex2PixCol(int32_t tex)
 
 inline BYTE Mat2PixColDefault(int32_t mat)
 	{
-	return Game.Material.Map[mat].DefaultMatTex;
+	return ::MaterialMap.Map[mat].DefaultMatTex;
 	}
 
 inline int32_t MatDensity(int32_t mat)
   {
   if (!MatValid(mat)) return 0;
-  return Game.Material.Map[mat].Density;
+  return ::MaterialMap.Map[mat].Density;
   }
 
 inline int32_t MatPlacement(int32_t mat)
   {
   if (!MatValid(mat)) return 0;
-  return Game.Material.Map[mat].Placement;
+  return ::MaterialMap.Map[mat].Placement;
   }
 
 inline int32_t MatDigFree(int32_t mat)
   {
   if (!MatValid(mat)) return 1;
-  return Game.Material.Map[mat].DigFree;
+  return ::MaterialMap.Map[mat].DigFree;
   }
 
 inline BYTE GBackIFT(int32_t x, int32_t y)
