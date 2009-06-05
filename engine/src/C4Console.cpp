@@ -1339,7 +1339,7 @@ void C4Console::EditScript()
 	{
 	if (::Network.isEnabled()) return;
 	Game.Script.Open();
-  Game.ScriptEngine.ReLink(&Game.Defs);
+  ::ScriptEngine.ReLink(&Game.Defs);
 	}
 
 void C4Console::EditInfo()
@@ -1380,7 +1380,7 @@ void C4Console::UpdateInputCtrl()
 	gtk_list_store_clear(store);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	// add global and standard functions
-	for (C4AulFunc *pFn = Game.ScriptEngine.GetFirstFunc(); pFn; pFn = Game.ScriptEngine.GetNextFunc(pFn))
+	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
 		if (pFn->GetPublic())
 			{
 #ifdef _WIN32

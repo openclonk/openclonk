@@ -704,7 +704,7 @@ BOOL C4Def::Load(C4Group &hGroup,
   if (dwLoadWhat & C4D_Load_Script)
 		{
 		// reg script to engine
-		Script.Reg2List(&Game.ScriptEngine, &Game.ScriptEngine);
+		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
 		// Load script - loads string table as well, because that must be done after script load
 		// for downwards compatibility with packing order
 		Script.Load("Script", hGroup, C4CFN_Script, szLanguage, this, &StringTable, true);
@@ -1058,7 +1058,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			{
 			// host will be destroyed by script engine, so drop the references
 			C4ScriptHost *scr = new C4ScriptHost();
-			scr->Reg2List(&Game.ScriptEngine, &Game.ScriptEngine);
+			scr->Reg2List(&::ScriptEngine, &::ScriptEngine);
 			scr->Load(NULL, SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
 			}
 		// if it's a physical group: watch out for changes
@@ -1507,7 +1507,7 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	BuildTable();
 #ifdef C4ENGINE
 	// update script engine - this will also do include callbacks
-	Game.ScriptEngine.ReLink(this);
+	::ScriptEngine.ReLink(this);
 #endif
 #ifdef C4ENGINE
 	// update definition pointers

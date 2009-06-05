@@ -580,4 +580,5 @@ class C4AulScriptEngine : public C4AulScript
 		friend class C4AulParseState;
 	};
 
+extern C4AulScriptEngine ScriptEngine;
 #endif

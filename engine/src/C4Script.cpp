@@ -55,7 +55,7 @@ inline const static char *FnStringPar(C4String *pString)
 }
 inline C4String *String(const char * str)
 {
-	return str ? Game.ScriptEngine.Strings.RegString(str) : NULL;
+	return str ? ::ScriptEngine.Strings.RegString(str) : NULL;
 }
 
 static StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * Par0=0, C4Value * Par1=0, C4Value * Par2=0, C4Value * Par3=0,
@@ -3485,13 +3485,13 @@ static C4Value FnVar_C4V(C4AulContext *cthr, C4Value* iVarIndex)
 
 static C4Value FnSetGlobal_C4V(C4AulContext *cthr, C4Value* iVarIndex, C4Value* iValue)
   {
-	Game.ScriptEngine.Global[iVarIndex->getInt()]=*iValue;
+	::ScriptEngine.Global[iVarIndex->getInt()]=*iValue;
   return *iValue;
   }
 
 static C4Value FnGlobal_C4V(C4AulContext *cthr, C4Value* iVarIndex)
   {
-  return Game.ScriptEngine.Global[iVarIndex->getInt()].GetRef();
+  return ::ScriptEngine.Global[iVarIndex->getInt()].GetRef();
   }
 
 static C4Value FnSetLocal_C4V(C4AulContext *cthr, C4Value* iVarIndex, C4Value* iValue, C4Value* pObj_C4V)
@@ -4751,7 +4751,7 @@ static C4Value FnGlobalN(C4AulContext* cthr, C4Value* strName_C4V)
 	const char* strName = FnStringPar(strName_C4V->getStr());
 
 	// find variable
-	C4Value* pVarN = Game.ScriptEngine.GlobalNamed.GetItem(strName);
+	C4Value* pVarN = ::ScriptEngine.GlobalNamed.GetItem(strName);
 
 	if(!pVarN) return C4Value();
 
@@ -6228,7 +6228,7 @@ static bool FnStartScriptProfiler(C4AulContext *ctx, C4ID idScript)
 		pScript = &pDef->Script;
 		}
 	else
-		pScript = &Game.ScriptEngine;
+		pScript = &::ScriptEngine;
 	// profile it
 	C4AulProfiler::StartProfiling(pScript);
 	return true;
@@ -6459,7 +6459,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	{
 	// add all def constants (all Int)
 	for (C4ScriptConstDef *pCDef = &C4ScriptConstMap[0]; pCDef->Identifier; pCDef++)
-		Game.ScriptEngine.RegisterGlobalConstant(pCDef->Identifier, C4Value(pCDef->Data, pCDef->ValType));
+		::ScriptEngine.RegisterGlobalConstant(pCDef->Identifier, C4Value(pCDef->Data, pCDef->ValType));
 
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)

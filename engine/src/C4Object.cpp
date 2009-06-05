@@ -934,7 +934,7 @@ BOOL C4Object::ExecLife()
             {
 						// do energy transfer via script, so it can be overloaded by No-Magic-Energy-rule
 						// always use global func instead of local to save double search
-						C4AulFunc *pMagicEnergyFn = Game.ScriptEngine.GetFuncRecursive(PSF_DoMagicEnergy);
+						C4AulFunc *pMagicEnergyFn = ::ScriptEngine.GetFuncRecursive(PSF_DoMagicEnergy);
 						if (pMagicEnergyFn) // should always be true
 							{
 							C4AulParSet pars(C4VInt(-transfer), C4VObj(Contained));

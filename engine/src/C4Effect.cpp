@@ -57,7 +57,7 @@ C4AulScript *C4Effect::GetCallbackScript()
 	else if (idCommandTarget && (pDef=Game.Defs.ID2Def(idCommandTarget)))
 		pSrcScript = &pDef->Script;
 	else
-		pSrcScript = &Game.ScriptEngine;
+		pSrcScript = &::ScriptEngine;
 	return pSrcScript;
 	}
 
@@ -429,7 +429,7 @@ C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, C4Value &rVal1, C4Val
 	else if (idCommandTarget && (pDef=Game.Defs.ID2Def(idCommandTarget)))
 		pSrcScript = &pDef->Script;
 	else
-		pSrcScript = &Game.ScriptEngine;
+		pSrcScript = &::ScriptEngine;
 	// compose function name
 	char fn[C4AUL_MAX_Identifier+1];
 	sprintf(fn, PSF_FxCustom, Name, szFn);
@@ -775,7 +775,7 @@ int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t
 
 C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber)
 	{
-	return Game.ScriptEngine.Strings.RegString(LoadResStr("IDS_OBJ_BURNS"));
+	return ::ScriptEngine.Strings.RegString(LoadResStr("IDS_OBJ_BURNS"));
 	}
 
 

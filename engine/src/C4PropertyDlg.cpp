@@ -354,7 +354,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 #endif // _WIN32
 
 	// add global and standard functions
-	for (C4AulFunc *pFn = Game.ScriptEngine.GetFirstFunc(); pFn; pFn = Game.ScriptEngine.GetNextFunc(pFn))
+	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
 		if (pFn->GetPublic())
 			{
 #ifdef _WIN32

@@ -107,7 +107,6 @@ class C4Game
 		C4ComponentHost			Title;
 		C4ComponentHost			Names;
 		C4ComponentHost			GameText;
-		C4AulScriptEngine		ScriptEngine;
 		C4GameScriptHost		Script;
 		C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable, ScenarioSysLangStringTable;
     C4MassMoverSet			MassMover;

@@ -375,10 +375,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 
 				case AB_GLOBALN_R:
-					PushValueRef(*Game.ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
+					PushValueRef(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
 					break;
 				case AB_GLOBALN_V:
-					PushValue(*Game.ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
+					PushValue(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
 					break;
 			// prefix
 				case AB_Inc1:	// ++

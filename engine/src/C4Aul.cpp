@@ -613,3 +613,5 @@ void C4AulFuncMap::Remove(C4AulFunc * func)
 	*pFunc = (*pFunc)->MapNext;
 	--FuncCnt;
 	}
+
+C4AulScriptEngine ScriptEngine;

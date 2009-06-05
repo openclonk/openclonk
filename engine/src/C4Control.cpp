@@ -270,12 +270,12 @@ void C4ControlScript::Execute() const
 	if (iTargetObj == SCOPE_Console)
 		pScript = &Game.Script;
 	else if (iTargetObj == SCOPE_Global)
-		pScript = &Game.ScriptEngine;
+		pScript = &::ScriptEngine;
 	else if (pObj = Game.Objects.SafeObjectPointer(iTargetObj))
 		pScript = &(pObj->Def->Script);
 	else
 		// default: Fallback to global context
-		pScript = &Game.ScriptEngine;
+		pScript = &::ScriptEngine;
 	C4Value rVal(pScript->DirectExec(pObj, szScript, "console script"));
 	// show messages
 	if (!fInternal)

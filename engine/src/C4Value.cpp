@@ -273,7 +273,7 @@ C4V_Type C4Value::GuessType()
 		}
 
 	// string?
-	if (Game.ScriptEngine.Strings.FindString(Data.Str))
+	if (::ScriptEngine.Strings.FindString(Data.Str))
 		{
 		Type = C4V_String;
 		// see above
@@ -571,7 +571,7 @@ C4Value C4VString(const char *strString)
 #ifdef C4ENGINE
 	// safety
 	if(!strString) return C4Value();
-	return C4Value(Game.ScriptEngine.Strings.RegString(strString));
+	return C4Value(::ScriptEngine.Strings.RegString(strString));
 #else
 	return C4Value();
 #endif
@@ -582,7 +582,7 @@ C4Value C4VString(StdStrBuf Str)
 #ifdef C4ENGINE
 	// safety
 	if(Str.isNull()) return C4Value();
-	return C4Value(Game.ScriptEngine.Strings.RegString(Str));
+	return C4Value(::ScriptEngine.Strings.RegString(Str));
 #else
 	return C4Value();
 #endif
@@ -659,7 +659,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 			int32_t iTmp;
 			pComp->Value(iTmp);
 			// search
-			C4String *pString = Game.ScriptEngine.Strings.FindString(iTmp);
+			C4String *pString = ::ScriptEngine.Strings.FindString(iTmp);
 			if(pString)
 				{
 				Data.Str = pString;
@@ -718,7 +718,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		pComp->Value(s);
 		if(fCompiler)
 			{
-			C4String *pString = Game.ScriptEngine.Strings.RegString(s);
+			C4String *pString = ::ScriptEngine.Strings.RegString(s);
 			if(pString)
 				{
 				Data.Str = pString;
