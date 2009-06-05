@@ -177,7 +177,7 @@ C4GUI::Edit::InputResult C4ChatControl::ChatSheet::OnChatInput(C4GUI::Edit *edt,
 	else
 		{
 		// remember in history
-		Game.MessageInput.StoreBackBuffer(szInputText);
+		::MessageInput.StoreBackBuffer(szInputText);
 		// forward to chat control for processing
 		if (!pChatControl->ProcessInput(szInputText, this)) eResult = C4GUI::Edit::IR_Abort;
 		}
@@ -194,7 +194,7 @@ bool C4ChatControl::ChatSheet::KeyHistoryUpDown(bool fUp)
 	// chat input only
 	if (!IsFocused(pInputEdit)) return false;
 	pInputEdit->SelectAll(); pInputEdit->DeleteSelection();
-	const char *szPrevInput = Game.MessageInput.GetBackBuffer(fUp ? (++iBackBufferIndex) : (--iBackBufferIndex));
+	const char *szPrevInput = ::MessageInput.GetBackBuffer(fUp ? (++iBackBufferIndex) : (--iBackBufferIndex));
 	if (!szPrevInput || !*szPrevInput)
 		iBackBufferIndex = -1;
 	else

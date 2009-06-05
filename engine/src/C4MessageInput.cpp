@@ -127,7 +127,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 	C4GUI::Edit *pEdt = reinterpret_cast<C4GUI::Edit *>(edt);
 	char *szInputText = const_cast<char *>(pEdt->GetText());
 	// Store to back buffer
-	Game.MessageInput.StoreBackBuffer(szInputText);
+	::MessageInput.StoreBackBuffer(szInputText);
 	// check confidential data - even for object input (script triggered), webcode should not be pasted here
 	if (C4InVal::IsConfidentialData(szInputText, true))
 		{
@@ -155,7 +155,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		}
 	else
 		// reroute to message input class
-		Game.MessageInput.ProcessInput(szInputText);
+		::MessageInput.ProcessInput(szInputText);
 	// safety: message board commands may do strange things
 	if (!C4GUI::IsGUIValid() || this!=pInstance) return C4GUI::Edit::IR_Abort;
 	// select all text to be removed with next keypress
@@ -171,7 +171,7 @@ bool C4ChatInputDialog::KeyHistoryUpDown(bool fUp)
 	{
 	// browse chat history
 	pEdit->SelectAll(); pEdit->DeleteSelection();
-	const char *szPrevInput = Game.MessageInput.GetBackBuffer(fUp ? (++BackIndex) : (--BackIndex));
+	const char *szPrevInput = ::MessageInput.GetBackBuffer(fUp ? (++BackIndex) : (--BackIndex));
 	if (!szPrevInput || !*szPrevInput)
 		BackIndex = -1;
 	else
@@ -814,3 +814,5 @@ void C4MessageBoardQuery::CompileFunc(StdCompiler *pComp)
 	// list end
 	pComp->Seperator(StdCompiler::SEP_END); // ')'
 	}
+
+C4MessageInput MessageInput;

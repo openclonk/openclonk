@@ -3700,7 +3700,7 @@ static bool FnAbortMessageBoard(C4AulContext *cthr, C4Object *pObj, long iForPlr
 	C4Player *pPlr = Game.Players.Get(iForPlr);
 	if (!pPlr) return FALSE;
 	// close TypeIn if active
-	Game.MessageInput.AbortMsgBoardQuery(pObj, iForPlr);
+	::MessageInput.AbortMsgBoardQuery(pObj, iForPlr);
 	// abort for it
 	return pPlr->RemoveMessageBoardQuery(pObj);
 	}
@@ -5449,7 +5449,7 @@ static bool FnAddMsgBoardCmd(C4AulContext *ctx, C4String *pstrCommand, C4String 
 		default: return FALSE;
 		}
 	// add command
-	Game.MessageInput.AddCommand(FnStringPar(pstrCommand), FnStringPar(pstrScript), eRestriction);
+	::MessageInput.AddCommand(FnStringPar(pstrCommand), FnStringPar(pstrScript), eRestriction);
 	return TRUE;
 	}
 

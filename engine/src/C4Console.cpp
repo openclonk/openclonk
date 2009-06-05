@@ -594,14 +594,14 @@ bool C4Console::In(const char *szText)
 	// begins with '/'? then it's a command
 	if (*szText == '/')
 		{
-		Game.MessageInput.ProcessCommand(szText);
+		::MessageInput.ProcessCommand(szText);
 		// done
 		return TRUE;
 		}
 	// begins with '#'? then it's a message. Route cia ProcessInput to allow #/sound
 	if (*szText == '#')
 		{
-		Game.MessageInput.ProcessInput(szText + 1);
+		::MessageInput.ProcessInput(szText + 1);
 		return TRUE;
 		}
 	// editing enabled?

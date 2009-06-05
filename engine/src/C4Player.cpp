@@ -2189,13 +2189,13 @@ void C4Player::ExecMsgBoardQueries()
 	// query now possible?
 	if (!C4GUI::IsGUIValid()) return;
 	// already active?
-	if (Game.MessageInput.IsTypeIn()) return;
+	if (::MessageInput.IsTypeIn()) return;
 	// find an un-evaluated query
 	C4MessageBoardQuery *pCheck = pMsgBoardQuery;
 	while (pCheck) if (!pCheck->fAnswered) break; else pCheck = pCheck->pNext;
 	if (!pCheck) return;
 	// open it
-	Game.MessageInput.StartTypeIn(true, pCheck->pCallbackObj, pCheck->fIsUppercase, false, Number, pCheck->sInputQuery);
+	::MessageInput.StartTypeIn(true, pCheck->pCallbackObj, pCheck->fIsUppercase, false, Number, pCheck->sInputQuery);
 	}
 
 void C4Player::CallMessageBoard(C4Object *pForObj, const StdStrBuf &sQueryString, bool fIsUppercase)

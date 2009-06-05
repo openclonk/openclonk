@@ -147,6 +147,8 @@ class C4MessageInput
 		friend class C4ChatInputDialog;
 	};
 
+extern C4MessageInput MessageInput;
+
 // script query to ask a player for a string
 class C4MessageBoardQuery
 	{

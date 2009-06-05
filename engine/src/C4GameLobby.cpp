@@ -444,7 +444,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 		{
 		// store input in backbuffer before processing commands
 		// because those might kill the edit field
-		Game.MessageInput.StoreBackBuffer(szInputText);
+		::MessageInput.StoreBackBuffer(szInputText);
 		bool fProcessed = false;
 		// check confidential data
 		if (C4InVal::IsConfidentialData(szInputText, true)) fProcessed = true;
@@ -605,7 +605,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 				}
 			}
 		// not processed? Then forward to messageinput, which parses additional commands and sends regular messages
-		if (!fProcessed) Game.MessageInput.ProcessInput(szInputText);
+		if (!fProcessed) ::MessageInput.ProcessInput(szInputText);
 		}
 	// clear edit field after text has been processed
 	pEdt->SelectAll(); pEdt->DeleteSelection();
@@ -828,7 +828,7 @@ bool MainDlg::KeyHistoryUpDown(bool fUp)
 	// chat input only
 	if (!IsFocused(pEdt)) return false;
 	pEdt->SelectAll(); pEdt->DeleteSelection();
-	const char *szPrevInput = Game.MessageInput.GetBackBuffer(fUp ? (++iBackBufferIndex) : (--iBackBufferIndex));
+	const char *szPrevInput = ::MessageInput.GetBackBuffer(fUp ? (++iBackBufferIndex) : (--iBackBufferIndex));
 	if (!szPrevInput || !*szPrevInput)
 		iBackBufferIndex = -1;
 	else

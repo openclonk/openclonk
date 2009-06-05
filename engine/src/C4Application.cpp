@@ -451,7 +451,7 @@ void C4Application::OnCommand(const char *szCmd)
 	{
 	// reroute to whatever seems to take commands at the moment
 	if(AppState == C4AS_Game)
-		Game.MessageInput.ProcessInput(szCmd);
+		::MessageInput.ProcessInput(szCmd);
 	}
 
 void C4Application::Activate()

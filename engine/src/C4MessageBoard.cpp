@@ -146,7 +146,7 @@ void C4MessageBoard::Execute()
 	case 2: // show nothing
 
 		// TypeIn: Act as in mode 0
-		if (!Game.MessageInput.IsTypeIn())
+		if (!::MessageInput.IsTypeIn())
 			{
 			ScreenFader = 100;
 			iBackScroll = -1;
@@ -156,7 +156,7 @@ void C4MessageBoard::Execute()
 	case 0: // one msg
 
 		// typein? fade in
-		if(Game.MessageInput.IsTypeIn())
+		if(::MessageInput.IsTypeIn())
 			ScreenFader = Max(ScreenFader - 20, -100);
 
 		// no curr msg?
@@ -166,7 +166,7 @@ void C4MessageBoard::Execute()
 			Empty = true;
 			// draw anyway
 			Draw(Output);
-			if(!Game.MessageInput.IsTypeIn())
+			if(!::MessageInput.IsTypeIn())
 				ScreenFader += 5;
 			return;
 		}
