@@ -798,7 +798,7 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 				{
 				BubbleOut(tx+Random(16)-8,ty+Random(16)-6);
 				if (GBackLiquid(tx,ty) && !GBackSemiSolid(tx, sy))
-				Game.PXS.Create(Game.Landscape.ExtractMaterial(tx,ty),
+				::PXS.Create(Game.Landscape.ExtractMaterial(tx,ty),
 									itofix(tx),itofix(sy),
 									FIXED100(Random(151)-75),
 									FIXED100(-Random(200)));

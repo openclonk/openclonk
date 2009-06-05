@@ -112,7 +112,6 @@ class C4Game
 		C4GameScriptHost		Script;
 		C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable, ScenarioSysLangStringTable;
     C4MassMoverSet			MassMover;
-		C4PXSSystem					PXS;
 		C4ParticleSystem		Particles;
 		C4PlayerList				Players;
 		StdStrBuf           PlayerNames;

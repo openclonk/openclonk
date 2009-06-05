@@ -141,7 +141,7 @@ void C4PXS::Deactivate()
 	AddDbgRec(RCT_ExecPXS, &rc, sizeof(rc));
 #endif
   Mat=MNone;
-	Game.PXS.Delete(this);
+	::PXS.Delete(this);
   }
 
 C4PXSSystem::C4PXSSystem()
@@ -451,3 +451,5 @@ void C4PXSSystem::Delete(C4PXS *pPXS)
 	if(cnt < PXSMaxChunk)
 		iChunkPXS[cnt]--;
 }
+
+C4PXSSystem PXS;

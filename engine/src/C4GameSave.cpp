@@ -164,7 +164,7 @@ bool C4GameSave::SaveLandscape()
 		if (!fSuccess) return false;
 		DBGRECOFF.Clear();
 		// PXS
-		if (!Game.PXS.Save(*pSaveGroup)) return false;
+		if (!::PXS.Save(*pSaveGroup)) return false;
 		// MassMover (create copy, may not modify running data)
 		C4MassMoverSet MassMoverSet;
 		MassMoverSet.Copy(Game.MassMover);

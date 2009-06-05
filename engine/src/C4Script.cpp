@@ -2559,7 +2559,7 @@ static bool FnScriptGo(C4AulContext *cthr, bool go)
 static bool FnCastPXS(C4AulContext *cthr, C4String *mat_name, long amt, long level, long tx, long ty)
   {
 	if (cthr->Obj) { tx+=cthr->Obj->GetX(); ty+=cthr->Obj->GetY(); }
-  Game.PXS.Cast(Game.Material.Get(FnStringPar(mat_name)),amt,tx,ty,level);
+  ::PXS.Cast(Game.Material.Get(FnStringPar(mat_name)),amt,tx,ty,level);
   return TRUE;
   }
 

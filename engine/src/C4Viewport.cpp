@@ -1076,7 +1076,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 
 	// draw PXS (unclipped!)
 	C4ST_STARTNEW(PXSStat, "C4Viewport::Draw: PXS")
-	Game.PXS.Draw(cgo);
+	::PXS.Draw(cgo);
 	C4ST_STOP(PXSStat)
 
 	// draw objects

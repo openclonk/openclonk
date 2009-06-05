@@ -64,4 +64,5 @@ class C4PXSSystem
 		C4PXS *New();
 	};
 
+extern C4PXSSystem PXS;
 #endif

@@ -699,7 +699,7 @@ bool C4MaterialMap::mrfConvert(C4MaterialReaction *pReaction, int32_t &iX, int32
 
 		case meeMassMove: // MassMover-movement
 		  // Conversion-transfer to PXS
-			Game.PXS.Create(iPxsMat,itofix(iX),itofix(iY));
+			::PXS.Create(iPxsMat,itofix(iX),itofix(iY));
 			return true;
 		}
 	// not handled

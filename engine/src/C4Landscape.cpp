@@ -970,7 +970,7 @@ int32_t C4Landscape::ShakeFreePix(int32_t tx, int32_t ty)
     if (Game.Material.Map[mat].DigFree)
 			{
 			ClearPix(tx,ty);
-			Game.PXS.Create(mat,itofix(tx),itofix(ty));
+			::PXS.Create(mat,itofix(tx),itofix(ty));
 			}
   CheckInstabilityRange(tx,ty);
   return mat;
@@ -1094,7 +1094,7 @@ void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t grade, 
                            tx,ty,iByPlayer);
 
       if (Game.Material.Map[cnt].Blast2PXSRatio != 0)
-        Game.PXS.Cast(cnt,
+        ::PXS.Cast(cnt,
                 BlastMatCount[cnt]/Game.Material.Map[cnt].Blast2PXSRatio,
                 tx,ty,60);
       }
@@ -1218,7 +1218,7 @@ BOOL C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
   // Try slide
   while (FindMatSlide(tx,ty,+1,mdens,Game.Material.Map[mat].MaxSlide))
 		if (GetDensity(tx,ty+1)<mdens)
-			{ Game.PXS.Create(mat,itofix(tx),itofix(ty),FIXED10(vx),FIXED10(vy)); return TRUE; }
+			{ ::PXS.Create(mat,itofix(tx),itofix(ty),FIXED10(vx),FIXED10(vy)); return TRUE; }
 
 	// Try reaction with material below
 	C4MaterialReaction *pReact; int32_t tmat;
