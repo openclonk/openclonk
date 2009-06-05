@@ -1684,7 +1684,7 @@ void C4Game::Default()
   Weather.Default();
   Landscape.Default();
   TextureMap.Default();
-  Rank.Default();
+	::DefaultRanks.Default();
   MassMover.Default();
 	PXS.Default();
 	GraphicsSystem.Default();
@@ -3243,7 +3243,7 @@ bool C4Game::InitSystem()
 	if (!InitKeyboard())
 		{ LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD")); return false; }
 	// Rank system
-	Rank.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
+	::DefaultRanks.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
 	// done, success
 	return true;
 	}

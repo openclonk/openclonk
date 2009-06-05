@@ -1500,7 +1500,7 @@ void C4Object::DoExperience(int32_t change)
 
   // Promotion check
 	if (Info->Experience<MaxExperience)
-		if (Info->Experience>=Game.Rank.Experience(Info->Rank+1))
+		if (Info->Experience>=::DefaultRanks.Experience(Info->Rank+1))
 			Promote(Info->Rank+1, FALSE, false);
   }
 
@@ -2155,7 +2155,7 @@ BOOL C4Object::Promote(int32_t torank, BOOL exception, bool fForceRankName)
 	if (pUseDef && pUseDef->pRankNames)
 		pRankSys = pUseDef->pRankNames;
 	else
-		pRankSys = &Game.Rank;
+		pRankSys = &::DefaultRanks;
 	// always promote info
 	Info->Promote(torank,*pRankSys, fForceRankName);
 	// silent update?

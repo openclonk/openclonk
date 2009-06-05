@@ -341,5 +341,6 @@ bool C4RankSystem::DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Fa
 		}
 	return false;
 	}
-
 #endif
+
+C4RankSystem DefaultRanks;

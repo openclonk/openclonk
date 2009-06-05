@@ -232,8 +232,8 @@ void C4ControlSet::Execute() const
 			// show msg
 			if(Game.Parameters.UseFairCrew)
 				{
-				int iRank = Game.Rank.RankByExperience(Game.Parameters.FairCrewStrength);
-				Game.GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_FAIRCREW_ACTIVATED"), Game.Rank.GetRankName(iRank, true).getData()).getData());
+				int iRank = ::DefaultRanks.RankByExperience(Game.Parameters.FairCrewStrength);
+				Game.GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_FAIRCREW_ACTIVATED"), ::DefaultRanks.GetRankName(iRank, true).getData()).getData());
 				}
 			else
 				Game.GraphicsSystem.FlashMessage(LoadResStr("IDS_MSG_FAIRCREW_DEACTIVATED"));

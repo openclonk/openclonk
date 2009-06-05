@@ -337,7 +337,7 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 		}
 
 	// Rank symbol
-	C4RankSystem *pRankSys = &Game.Rank;
+	C4RankSystem *pRankSys = &::DefaultRanks;
 	C4Facet *pRankRes=&Game.GraphicsResource.fctRank;
 	int iRankCnt=Game.GraphicsResource.iNumRanks;
 	if (pOfObj)

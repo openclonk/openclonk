@@ -489,7 +489,7 @@ void C4StartupPlrSelDlg::CrewListItem::SetSelectionInfo(C4GUI::TextWindow *pSele
 	pSelectionInfo->AddTextLine(FormatString("%s %s", Core.sRankName.getData(), Core.Name).getData(), &C4Startup::Get()->Graphics.BookFontCapt, ClrPlayerItem, false, false);
 	StdStrBuf sPromo;
 	int32_t iNextRankExp; StdStrBuf sNextRankName;
-	if (Core.GetNextRankInfo(Game.Rank, &iNextRankExp, &sNextRankName))
+	if (Core.GetNextRankInfo(::DefaultRanks, &iNextRankExp, &sNextRankName))
 		sPromo.Format(LoadResStr("IDS_DESC_PROMO"),sNextRankName.getData(),(int) iNextRankExp);
 	else
 		sPromo.Copy(LoadResStr("IDS_DESC_NOPROMO"));
@@ -1129,7 +1129,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 		{
 		// create new player: Use default C4P values, with a few exceptions
 		// FIXME: Use Player, not Clonkranks
-		C4P.Default(&Game.Rank);
+		C4P.Default(&::DefaultRanks);
 		// Set name, color, comment
 		SCopy(LoadResStr("IDS_PLR_NEWCOMMENT"), C4P.Comment, C4MaxComment);
 		C4P.PrefColor = SafeRandom(8);

@@ -959,7 +959,7 @@ C4PhysicalInfo *C4Def::GetFairCrewPhysicals()
 		pFairCrewPhysical = new C4PhysicalInfo(Physical);
 		// determine the rank
 		int32_t iExpGain = Game.Parameters.FairCrewStrength;
-		C4RankSystem *pRankSys=&Game.Rank;
+		C4RankSystem *pRankSys=&::DefaultRanks;
 		if (pRankNames) pRankSys = pRankNames;
 		int32_t iRank = pRankSys->RankByExperience(iExpGain);
 		// promote physicals for rank

@@ -55,4 +55,6 @@ class C4RankSystem
 #endif
   };
 
+extern C4RankSystem DefaultRanks;
+
 #endif
