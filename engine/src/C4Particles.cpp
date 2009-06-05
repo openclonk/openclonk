@@ -265,7 +265,7 @@ void C4ParticleList::Exec(C4Object *pObj)
 			{
 			// sorry, life is over for you :P
 			--pPrt->pDef->Count;
-			pPrt->MoveList(*this, Game.Particles.FreeParticles);
+			pPrt->MoveList(*this, ::Particles.FreeParticles);
 			}
 		}
 	// done
@@ -289,7 +289,7 @@ void C4ParticleList::Clear()
 		pPrtNext=pPrt->pNext;
 		// sorry, life is over for you :P
 		--pPrt->pDef->Count;
-		pPrt->MoveList(*this, Game.Particles.FreeParticles);
+		pPrt->MoveList(*this, ::Particles.FreeParticles);
 		}
 	}
 
@@ -307,7 +307,7 @@ int32_t C4ParticleList::Remove(C4ParticleDef *pOfDef)
 			{
 			// sorry, life is over for you :P
 			--pPrt->pDef->Count;
-			pPrt->MoveList(*this, Game.Particles.FreeParticles);
+			pPrt->MoveList(*this, ::Particles.FreeParticles);
 			}
 		}
 	// done
@@ -446,7 +446,7 @@ C4Particle *C4ParticleSystem::Create(C4ParticleDef *pOfDef,
 	// count particle
 	++pOfDef->Count;
 	// more to desired list
-	pPrt->MoveList(Game.Particles.FreeParticles, *pPxList);
+	pPrt->MoveList(::Particles.FreeParticles, *pPxList);
 	// return newly created particle
 	return pPrt;
 	}
@@ -840,3 +840,5 @@ C4ParticleDrawProcRec C4ParticleDrawProcMap[] = {
 	{ "Smoke",	fxSmokeDraw },
 	{ "Std",		fxStdDraw },
 	{ "",				0 } };
+
+C4ParticleSystem Particles;

@@ -1086,7 +1086,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 
 	// draw global particles
 	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Particles")
-	Game.Particles.GlobalParticles.Draw(cgo,NULL);
+	::Particles.GlobalParticles.Draw(cgo,NULL);
 	C4ST_STOP(PartStat)
 
 	// draw foreground objects

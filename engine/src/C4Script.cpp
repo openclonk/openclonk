@@ -5137,10 +5137,10 @@ static bool FnCreateParticle(C4AulContext *cthr, C4String *szName, long iX, long
 		iY+=cthr->Obj->GetY();
 		}
 	// get particle
-	C4ParticleDef *pDef=Game.Particles.GetDef(FnStringPar(szName));
+	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(szName));
 	if (!pDef) return FALSE;
 	// create
-	Game.Particles.Create(pDef, (float) iX, (float) iY, (float) iXDir/10.0f, (float) iYDir/10.0f, (float) a/10.0f, b, pObj ? (fBack ? &pObj->BackParticles : &pObj->FrontParticles) : NULL, pObj);
+	::Particles.Create(pDef, (float) iX, (float) iY, (float) iXDir/10.0f, (float) iYDir/10.0f, (float) a/10.0f, b, pObj ? (fBack ? &pObj->BackParticles : &pObj->FrontParticles) : NULL, pObj);
 	// success, even if not created
 	return TRUE;
 	}
@@ -5156,10 +5156,10 @@ static bool FnCastAParticles(C4AulContext *cthr, C4String *szName, long iAmount,
 		iY+=cthr->Obj->GetY();
 		}
 	// get particle
-	C4ParticleDef *pDef=Game.Particles.GetDef(FnStringPar(szName));
+	C4ParticleDef *pDef=::Particles.GetDef(FnStringPar(szName));
 	if (!pDef) return FALSE;
 	// cast
-	Game.Particles.Cast(pDef, iAmount, (float) iX, (float) iY, iLevel, (float) a0/10.0f, b0, (float) a1/10.0f, b1, pObj ? (fBack ? &pObj->BackParticles : &pObj->FrontParticles) : NULL, pObj);
+	::Particles.Cast(pDef, iAmount, (float) iX, (float) iY, iLevel, (float) a0/10.0f, b0, (float) a1/10.0f, b1, pObj ? (fBack ? &pObj->BackParticles : &pObj->FrontParticles) : NULL, pObj);
 	// success, even if not created
 	return TRUE;
 	}
@@ -5180,11 +5180,11 @@ static bool FnPushParticles(C4AulContext *cthr, C4String *szName, long iAX, long
 	C4ParticleDef *pDef=NULL;
 	if (szName)
 		{
-		pDef=Game.Particles.GetDef(FnStringPar(szName));
+		pDef=::Particles.GetDef(FnStringPar(szName));
 		if (!pDef) return FALSE;
 		}
 	// push them
-	Game.Particles.Push(pDef, (float) iAX/10.0f, (float)iAY/10.0f);
+	::Particles.Push(pDef, (float) iAX/10.0f, (float)iAY/10.0f);
 	// success
 	return TRUE;
 	}
@@ -5195,7 +5195,7 @@ static bool FnClearParticles(C4AulContext *cthr, C4String *szName, C4Object *pOb
 	C4ParticleDef *pDef=NULL;
 	if (szName)
 		{
-		pDef=Game.Particles.GetDef(FnStringPar(szName));
+		pDef=::Particles.GetDef(FnStringPar(szName));
 		if (!pDef) return FALSE;
 		}
 	// delete them
@@ -5205,7 +5205,7 @@ static bool FnClearParticles(C4AulContext *cthr, C4String *szName, C4Object *pOb
 		pObj->BackParticles.Remove(pDef);
 		}
 	else
-		Game.Particles.GlobalParticles.Remove(pDef);
+		::Particles.GlobalParticles.Remove(pDef);
 	// success
 	return TRUE;
 	}

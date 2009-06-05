@@ -2358,7 +2358,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		}
 
 	// Fire facet - always draw, even if particles are drawn as well
-	if (OnFire /*&& !Game.Particles.IsFireParticleLoaded()*/) if (eDrawMode!=ODM_BaseOnly)
+	if (OnFire /*&& !::Particles.IsFireParticleLoaded()*/) if (eDrawMode!=ODM_BaseOnly)
 		{
 		C4Facet fgo;
 		// Straight: Full Shape.Rect on fire

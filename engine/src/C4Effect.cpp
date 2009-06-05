@@ -644,7 +644,7 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	pObj->ExecFire(iNumber, iCausedByPlr);
 
 	// special effects only if loaded
-	if (!Game.Particles.IsFireParticleLoaded()) return C4Fx_OK;
+	if (!::Particles.IsFireParticleLoaded()) return C4Fx_OK;
 
 	// get effect: May be NULL after object fire execution, in which case the fire has been extinguished
 	if (!pObj->GetOnFire()) return C4Fx_Execute_Kill;
@@ -720,12 +720,12 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 		if (i<iCount/2)
 			{
 			dwClr = 0x32004000 + ((SafeRandom(59) + 196) << 16);
-			pPartDef = Game.Particles.pFire1;
+			pPartDef = ::Particles.pFire1;
 			}
 		else
 			{
 			dwClr = 0xffffff;
-			pPartDef = Game.Particles.pFire2;
+			pPartDef = ::Particles.pFire2;
 			}
 		if (iFireMode == C4Fx_FireMode_Object) dwClr += 0x62000000;
 
@@ -752,7 +752,7 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 			}
 
 		// OK; create it!
-		Game.Particles.Create(pPartDef, float(iX)+fRot[0]*iPx+fRot[1]*iPy, float(iY)+fRot[2]*iPx+fRot[3]*iPy, (float) iXDir/10.0f, (float) iYDir/10.0f, (float) iSize/10.0f, dwClr, pParticleList,pObj);
+		::Particles.Create(pPartDef, float(iX)+fRot[0]*iPx+fRot[1]*iPy, float(iY)+fRot[2]*iPx+fRot[3]*iPy, (float) iXDir/10.0f, (float) iYDir/10.0f, (float) iSize/10.0f, dwClr, pParticleList,pObj);
 		}
 
 	return C4Fx_OK;
@@ -834,9 +834,9 @@ void BubbleOut(int32_t tx, int32_t ty)
 
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
   {
-	if (Game.Particles.pSmoke)
+	if (::Particles.pSmoke)
 		{
-		Game.Particles.Create(Game.Particles.pSmoke, float(tx), float(ty)-level/2, 0.0f, 0.0f, float(level), dwClr);
+		::Particles.Create(::Particles.pSmoke, float(tx), float(ty)-level/2, 0.0f, 0.0f, float(level), dwClr);
 		return;
 		}
 	// User-defined smoke level
@@ -869,20 +869,20 @@ void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t i
 					::Landscape.Incinerate(tx+5,ty-5);
 		// Create blast object or particle
 		C4Object *pBlast;
-		C4ParticleDef *pPrtDef = Game.Particles.pBlast;
+		C4ParticleDef *pPrtDef = ::Particles.pBlast;
 		// particle override
 		if (szEffect)
 			{
-			C4ParticleDef *pPrtDef2 = Game.Particles.GetDef(szEffect);
+			C4ParticleDef *pPrtDef2 = ::Particles.GetDef(szEffect);
 			if (pPrtDef2) pPrtDef = pPrtDef2;
 			}
 		else if (idEffect) pPrtDef = NULL;
 		// create particle
 		if (pPrtDef)
 			{
-			Game.Particles.Create(pPrtDef, (float) tx, (float) ty, 0.0f, 0.0f, (float) level, 0);
+			::Particles.Create(pPrtDef, (float) tx, (float) ty, 0.0f, 0.0f, (float) level, 0);
 			if (SEqual2(pPrtDef->Name.getData(), "Blast"))
-				Game.Particles.Cast(Game.Particles.pFSpark, level/5+1, (float) tx, (float) ty, level, level/2+1.0f, 0x00ef0000, level+1.0f, 0xffff1010);
+				::Particles.Cast(::Particles.pFSpark, level/5+1, (float) tx, (float) ty, level, level/2+1.0f, 0x00ef0000, level+1.0f, 0xffff1010);
 			}
 		else
 			if (pBlast = Game.CreateObjectConstruction(idEffect ? idEffect : C4Id("FXB1"),pByObj,iCausedBy,tx,ty+level,FullCon*level/20))

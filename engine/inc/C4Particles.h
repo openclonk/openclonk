@@ -26,7 +26,7 @@
 // thus, more complex partivle behaviour should be solved via
 // objects
 // note: this particle system will always assume the owning def
-//  object to be a static class named Game.Particles!
+//  object to be a static class named ::Particles!
 
 #ifndef INC_C4Particles
 #define INC_C4Particles
@@ -50,7 +50,7 @@ typedef C4ParticleProc C4ParticleExecProc; // particle execution proc - returns 
 typedef C4ParticleProc C4ParticleCollisionProc; // particle collision proc - returns whether particle died
 typedef void (*C4ParticleDrawProc)(C4Particle *, C4TargetFacet &, C4Object *); // particle drawing code
 
-#define ParticleSystem Game.Particles
+#define ParticleSystem ::Particles
 
 // core for particle defs
 class C4ParticleDefCore
@@ -223,6 +223,8 @@ class C4ParticleSystem
 		friend class C4Particle;
 		friend class C4ParticleChunk;
 	};
+
+extern C4ParticleSystem Particles;
 
 // default particle execution/drawing functions
 bool fxStdInit(C4Particle *pPrt, C4Object *pTarget);
