@@ -200,28 +200,28 @@ void C4GameControlNetwork::DoInput(C4PacketType eCtrlType, C4ControlPacket *pCtr
 			if(!fHost)
 			{
 				// Client: send to host
-				if(!Game.Network.Clients.SendMsgToHost(MkC4NetIOPacket(PID_ControlPkt, CtrlPkt)))
+				if(!::Network.Clients.SendMsgToHost(MkC4NetIOPacket(PID_ControlPkt, CtrlPkt)))
 					{ LogFatal("Network: could not send direct control packet!"); break; }
 				delete pCtrl;
 			}
 			else
 			{
 				// Host: send to all clients
-				Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_ControlPkt, CtrlPkt));
+				::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_ControlPkt, CtrlPkt));
 				// Execute at once, if possible
-				if(Game.Network.isFrozen())
+				if(::Network.isFrozen())
 				{
 					pParent->ExecControlPacket(eCtrlType, pCtrl);
 					delete pCtrl;
 					C4PacketExecSyncCtrl Pkt(pParent->ControlTick);
-					Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_ExecSyncCtrl, Pkt));
+					::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_ExecSyncCtrl, Pkt));
 				}
 				else
 				{
 					// Safe back otherwise
 					SyncControl.Add(eCtrlType, pCtrl);
 					// And sync
-					Game.Network.Sync();
+					::Network.Sync();
 				}
 			}
 		}
@@ -232,7 +232,7 @@ void C4GameControlNetwork::DoInput(C4PacketType eCtrlType, C4ControlPacket *pCtr
 		case CDT_Private:
 		{
 			// Send to all clients
-			if(!Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_ControlPkt, CtrlPkt)))
+			if(!::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_ControlPkt, CtrlPkt)))
 				{ LogFatal("Network: could not send direct control packet!"); break; }
 			// Exec at once
 			pParent->ExecControlPacket(eCtrlType, pCtrl);
@@ -255,7 +255,7 @@ C4ControlDeliveryType C4GameControlNetwork::DecideControlDelivery() const
 		return CDT_Queue;
 	// Decide the fastest control delivery type atm. Note this is a guess.
 	// Control sent with the returned delivery type may in theory be delayed infinitely.
-	if(Game.Network.isFrozen())
+	if(::Network.isFrozen())
 		return CDT_Sync;
 	if(!Game.Clients.getLocal()->isActivated())
 		return CDT_Sync;
@@ -275,7 +275,7 @@ void C4GameControlNetwork::ExecSyncControl() // by main thread
 
 	// So let's spread the word, so clients will call ExecSyncControl, too.
 	C4PacketExecSyncCtrl Pkt(pParent->ControlTick);
-	Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_ExecSyncCtrl, Pkt));
+	::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_ExecSyncCtrl, Pkt));
 
 	// Execute it
 	ExecSyncControl(Pkt.getControlTick());
@@ -378,13 +378,13 @@ void C4GameControlNetwork::SetCtrlMode(C4GameControlNetworkMode enMode) // by ma
   {
     CStdLock CtrlLock(&CtrlCSec); C4GameControlPacket *pPkt;
     for(int32_t iCtrlTick = Game.Control.ControlTick; pPkt = getCtrl(iClientID, iCtrlTick); iCtrlTick++)
-  		Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
+  		::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
   }
 	else if(enMode == CNM_Central && fHost)
 	{
     CStdLock CtrlLock(&CtrlCSec); C4GameControlPacket *pPkt;
     for(int32_t iCtrlTick = Game.Control.ControlTick; pPkt = getCtrl(C4ClientIDAll, iCtrlTick); iCtrlTick++)
-  		Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
+  		::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
 	}
 }
 
@@ -400,7 +400,7 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
   {
 		// Some rudimentary PreSend-calculation
 		// get associated connection - NULL for self
-		C4Network2Client *pNetClt = Game.Network.Clients.GetClientByID(pClient->getClientID());
+		C4Network2Client *pNetClt = ::Network.Clients.GetClientByID(pClient->getClientID());
 		if (pNetClt && !pNetClt->isLocal())
 		{
 			C4Network2IOConnection *pConn = pNetClt->getMsgConn();
@@ -588,7 +588,7 @@ void C4GameControlNetwork::HandleControlPkt(C4PacketType eCtrlType, C4ControlPac
 	ExecQueuedSyncCtrl();
 
 	// Execute at once, if possible
-	if(Game.Network.isFrozen())
+	if(::Network.isFrozen())
 	{
 		pParent->ExecControlPacket(eCtrlType, pCtrl);
 		delete pCtrl;
@@ -743,9 +743,9 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 		C4NetIOPacket Pkt = MkC4NetIOPacket(PID_ControlReq, C4PacketControlReq(iControlReady + 1));
 		// send control requests
 		if(eMode == CNM_Central)
-			Game.Network.Clients.SendMsgToHost(Pkt);
+			::Network.Clients.SendMsgToHost(Pkt);
 		else
-			Game.Network.Clients.BroadcastMsgToConnClients(Pkt);
+			::Network.Clients.BroadcastMsgToConnClients(Pkt);
 		// set time for next request
 		iNextControlReqeust = timeGetTime() + C4ControlRequestInterval;
 	}
@@ -793,7 +793,7 @@ C4GameControlPacket *C4GameControlNetwork::PackCompleteCtrl(int32_t iTick)
 
 	// host: send to clients (central and async mode)
 	if(eMode != CNM_Decentral)
-		Game.Network.Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_Control, *pComplete));
+		::Network.Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_Control, *pComplete));
 
 	// advance control request time
 	iNextControlReqeust = Max<uint32_t>(iNextControlReqeust, timeGetTime() + C4ControlRequestInterval);

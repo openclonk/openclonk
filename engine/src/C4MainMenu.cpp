@@ -491,7 +491,7 @@ bool C4MainMenu::ActivateHost(int32_t iPlayer)
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
 	SetPermanent(true);
 	// Clients
-	for (C4Network2Client *pClient=Game.Network.Clients.GetNextClient(NULL); pClient; pClient=Game.Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 		{
 		bool fHost = (pClient->getID() == 0);
 		StdStrBuf strText, strCommand;
@@ -641,20 +641,20 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 		AddRefSym(LoadResStr("IDS_MENU_CPNEWPLAYER"),GfxR->fctPlayerClr.GetPhase(),"ActivateMenu:NewPlayer",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPNEWPLAYERINFO"));
 		}
 	// Save game (player menu only - should we allow saving games with no players in it?)
-	if (pPlr && (!Game.Network.isEnabled() || Game.Network.isHost()))
+	if (pPlr && (!::Network.isEnabled() || ::Network.isHost()))
 		{
 		AddRefSym(LoadResStr("IDS_MENU_CPSAVEGAME"),GfxR->fctMenu.GetPhase(0),"ActivateMenu:Save:Game",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPSAVEGAMEINFO"));
 		}
 	// Options
 	AddRefSym(LoadResStr("IDS_MNU_OPTIONS"), GfxR->fctOptions.GetPhase(0), "ActivateMenu:Options",C4MN_Item_NoCount, NULL, LoadResStr("IDS_MNU_OPTIONSINFO"));
 	// Disconnect
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 	{
 		// Host
-		if(Game.Network.isHost() && Game.Clients.getClient(NULL))
+		if(::Network.isHost() && Game.Clients.getClient(NULL))
 			AddRefSym(LoadResStr("IDS_MENU_DISCONNECT"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Disconnect), "ActivateMenu:Host", C4MN_Item_NoCount, NULL, LoadResStr("IDS_TEXT_KICKCERTAINCLIENTSFROMTHE"));
 		// Client
-		if (!Game.Network.isHost())
+		if (!::Network.isHost())
 			AddRefSym(LoadResStr("IDS_MENU_DISCONNECT"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Disconnect), "ActivateMenu:Client", C4MN_Item_NoCount, NULL, LoadResStr("IDS_TEXT_DISCONNECTTHEGAMEFROMTHES"));
 	}
 	// Surrender (player menu only)
@@ -716,9 +716,9 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// not in league or replay mode
 		if (Game.Parameters.isLeague() || Game.C4S.Head.Replay) return false;
 		// join player
-		if (Game.Network.isEnabled())
+		if (::Network.isEnabled())
 			// 2do: not for observers and such?
-			Game.Network.Players.JoinLocalPlayer(szCommand+11, true);
+			::Network.Players.JoinLocalPlayer(szCommand+11, true);
 		else
 			Game.Players.CtrlJoinLocalNoNetwork(szCommand+11, Game.Clients.getLocalID(), Game.Clients.getLocalName());
 		return true;
@@ -760,9 +760,9 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	if (SEqual2(szCommand,"Host:Kick:"))
 		{
 		int iClientID = atoi(szCommand+10);
-		if(iClientID && Game.Network.isEnabled())
+		if(iClientID && ::Network.isEnabled())
 			if(Game.Parameters.isLeague() && Game.Players.GetAtClient(iClientID))
-				Game.Network.Vote(VT_Kick, true, iClientID);
+				::Network.Vote(VT_Kick, true, iClientID);
 			else
 				{
 				C4Client *pClient = Game.Clients.getClientByID(iClientID);
@@ -774,13 +774,13 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	// Part
 	if (SEqual2(szCommand,"Part"))
 		{
-		if(Game.Network.isEnabled())
+		if(::Network.isEnabled())
 			if(Game.Parameters.isLeague() && Game.Players.GetLocalByIndex(0))
-				Game.Network.Vote(VT_Kick, true, Game.Control.ClientID());
+				::Network.Vote(VT_Kick, true, Game.Control.ClientID());
 			else
 				{
 				Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, LoadResStr("IDS_ERR_GAMELEFTVIAPLAYERMENU"));
-				Game.Network.Clear();
+				::Network.Clear();
 				}
 		return true;
 		}

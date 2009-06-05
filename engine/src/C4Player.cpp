@@ -435,7 +435,7 @@ BOOL C4Player::Save()
 	// Close group
   if (!hGroup.Close()) return FALSE;
   // resource
-	C4Network2Res::Ref pRes = Game.Network.ResList.getRefRes(Filename),
+	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(Filename),
 										 pDRes = NULL;
   bool fOfficial = pRes && Game.Control.isCtrlHost();
   if(pRes) pDRes = pRes->Derive();

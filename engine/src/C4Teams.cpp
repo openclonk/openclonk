@@ -451,7 +451,7 @@ bool C4TeamList::IsTeamVisible() const
 	{
 	// teams invisible during lobby time if random surprise teams
 	if (eTeamDist == TEAMDIST_RandomInv)
-		if (Game.Network.isLobbyActive())
+		if (::Network.isLobbyActive())
 			return false;
 	return true;
 	}
@@ -487,8 +487,8 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	// teams are always needed in the lobby, so there's a team preset to change
 	// for runtime joins, teams are needed if specified by teams.txt or if any teams have been created before (to avoid mixed team-noteam-scenarios)
 	// but only assign teams in runtime join if the player won't pick it himself
-	bool fWillHaveLobby = Game.Network.isEnabled() && !Game.Network.Status.isPastLobby() && Game.fLobby;
-	bool fHasOrWillHaveLobby = Game.Network.isLobbyActive() || fWillHaveLobby;
+	bool fWillHaveLobby = ::Network.isEnabled() && !::Network.Status.isPastLobby() && Game.fLobby;
+	bool fHasOrWillHaveLobby = ::Network.isLobbyActive() || fWillHaveLobby;
 	bool fCanPickTeamAtRuntime = !IsRandomTeam() && (rNewJoin.GetType() == C4PT_User) && IsRuntimeJoinTeamChoice();
 	bool fIsTeamNeeded = IsRuntimeJoinTeamChoice() || GetTeamCount();
 	if (!fHasOrWillHaveLobby && (!fIsTeamNeeded || fCanPickTeamAtRuntime)) return false;
@@ -798,9 +798,9 @@ void C4TeamList::SetTeamDistribution(TeamDist eToVal)
 			RecheckTeams();
 			}
 		// send updates to other clients and reset flags
-		if (Game.Network.isEnabled())
+		if (::Network.isEnabled())
 			{
-			Game.Network.Players.SendUpdatedPlayers();
+			::Network.Players.SendUpdatedPlayers();
 			}
 		}
 	}
@@ -821,10 +821,10 @@ void C4TeamList::SetTeamColors(bool fEnabled)
 	if (!Game.Control.isCtrlHost()) return;
 	// go through all player infos; reset color in them
 	Game.PlayerInfos.UpdatePlayerAttributes(); // sets team and savegame colors
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 		{
 		// sends color updates to all clients
-		Game.Network.Players.SendUpdatedPlayers();
+		::Network.Players.SendUpdatedPlayers();
 		}
 	}
 

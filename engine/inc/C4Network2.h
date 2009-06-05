@@ -366,6 +366,8 @@ protected:
 
 };
 
+extern C4Network2 Network;
+
 class C4VoteDialog : public C4GUI::MessageDialog
 {
 public:

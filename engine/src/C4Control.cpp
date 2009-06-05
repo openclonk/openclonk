@@ -239,13 +239,13 @@ void C4ControlSet::Execute() const
 				::GraphicsSystem.FlashMessage(LoadResStr("IDS_MSG_FAIRCREW_DEACTIVATED"));
 			}
 		// lobby updates
-		if (Game.Network.isLobbyActive())
+		if (::Network.isLobbyActive())
 			{
-			Game.Network.GetLobby()->UpdateFairCrew();
+			::Network.GetLobby()->UpdateFairCrew();
 			}
 		// this setting is part of the reference
-		if (Game.Network.isEnabled() && Game.Network.isHost())
-			Game.Network.InvalidateReference();
+		if (::Network.isEnabled() && ::Network.isHost())
+			::Network.InvalidateReference();
     break;
 	}
 }
@@ -289,8 +289,8 @@ void C4ControlScript::Execute() const
 		if(!LocalControl())
 		{
 			C4Network2Client *pClient = NULL;
-			if(Game.Network.isEnabled())
-				pClient = Game.Network.Clients.GetClientByID(iByClient);
+			if(::Network.isEnabled())
+				pClient = ::Network.Clients.GetClientByID(iByClient);
 			if(pClient)
 				LogF(" = %s (by %s)", rVal.GetDataString().getData(), pClient->getName());
 			else
@@ -491,14 +491,14 @@ void C4ControlSyncCheck::Execute() const
 	  SaveGame.Save(Config.AtExePath("Desync.c4s"));
 #endif
 		// league: Notify regular client disconnect within the game
-		Game.Network.LeagueNotifyDisconnect(C4ClientIDHost, C4LDR_Desync);
+		::Network.LeagueNotifyDisconnect(C4ClientIDHost, C4LDR_Desync);
 		// Deactivate / end
 		if(Game.Control.isReplay())
 			Game.DoGameOver();
 		else if(Game.Control.isNetwork())
 			{
 			Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, "Network: Synchronization loss!");
-			Game.Network.Clear();
+			::Network.Clear();
 			}
 		}
 
@@ -546,7 +546,7 @@ void C4ControlClientJoin::Execute() const
 	// log
 	LogF(LoadResStr("IDS_NET_CLIENT_JOIN"), Core.getName());
 	// lobby callback
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby) pLobby->OnClientJoin(pClient);
 	// console callback
 	if (Console.Active) Console.UpdateMenus();
@@ -641,13 +641,13 @@ void C4ControlClientRemove::Execute() const
 	// remove all players
 	Game.Players.RemoveAtClient(iID, true);
 	// remove all resources
-	if(Game.Network.isEnabled())
-		Game.Network.ResList.RemoveAtClient(iID);
+	if(::Network.isEnabled())
+		::Network.ResList.RemoveAtClient(iID);
 	// lobby callback
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby && Game.pGUI) pLobby->OnClientPart(pClient);
 	// player list callback
-	Game.Network.Players.OnClientPart(pClient);
+	::Network.Players.OnClientPart(pClient);
 	// console callback
 	if(Console.Active) Console.UpdateMenus();
 
@@ -734,7 +734,7 @@ void C4ControlJoinPlayer::Execute() const
 	else if(Game.Control.isNetwork())
 	{
 		// Find ressource
-		C4Network2Res::Ref pRes = Game.Network.ResList.getRefRes(ResCore.getID());
+		C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 		if(pRes && pRes->isComplete())
 			Game.JoinPlayer(pRes->getFile(), iAtClient, pClient->getName(), pInfo);
 	}
@@ -790,9 +790,9 @@ bool C4ControlJoinPlayer::PreExecute() const
   // network only
 	if(!Game.Control.isNetwork()) return true;
   // search ressource
-	C4Network2Res::Ref pRes = Game.Network.ResList.getRefRes(ResCore.getID());
+	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 	// doesn't exist? start loading
-	if(!pRes) { pRes = Game.Network.ResList.AddByCore(ResCore, true); }
+	if(!pRes) { pRes = ::Network.ResList.AddByCore(ResCore, true); }
 	if(!pRes) return true;
   // is loading or removed?
 	return !pRes->isLoading();
@@ -804,7 +804,7 @@ void C4ControlJoinPlayer::PreRec(C4Record *pRecord)
 	if (fByRes)
 		{
 		// get local file by id
-		C4Network2Res::Ref pRes = Game.Network.ResList.getRefRes(ResCore.getID());
+		C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 		if(!pRes || pRes->isRemoved()) return;
 		// create a copy of the resource
 		StdStrBuf szTemp; szTemp.Copy(pRes->getFile());
@@ -1035,7 +1035,7 @@ void C4ControlMessage::Execute() const
 	// do not record message as control, because it is not synced!
 	//if (pPlr) pPlr->CountControl(C4Player::PCID_Message, Message.GetHash());
 	// get lobby to forward to
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	StdStrBuf str;
 	switch(eType)
   {
@@ -1169,7 +1169,7 @@ void C4ControlPlayerInfo::Execute() const
 		}
 	else
 		// network:
-		Game.Network.Players.HandlePlayerInfo(PlrInfo);
+		::Network.Players.HandlePlayerInfo(PlrInfo);
 }
 
 void C4ControlPlayerInfo::CompileFunc(StdCompiler *pComp)
@@ -1262,8 +1262,8 @@ void C4ControlVote::Execute() const
 	else
 		LogF(LoadResStr("IDS_VOTE_DOESNOTWANTTO"), pClient->getName(), getDesc().getData());
 	// Save vote back
-	if(Game.Network.isEnabled())
-		Game.Network.AddVote(*this);
+	if(::Network.isEnabled())
+		::Network.AddVote(*this);
 	// Vote done?
 	if(Game.Control.isCtrlHost())
 		{
@@ -1301,7 +1301,7 @@ void C4ControlVote::Execute() const
 				iVotesTeam++;
 				// Search vote of this client on the subject
 				C4IDPacket *pPkt; C4ControlVote *pVote;
-				if(pPkt = Game.Network.GetVote(iClientID, eType, iData))
+				if(pPkt = ::Network.GetVote(iClientID, eType, iData))
 					if(pVote = static_cast<C4ControlVote *>(pPkt->getPkt()))
 						if(pVote->isApprove())
 							iPositiveTeam++;
@@ -1347,8 +1347,8 @@ void C4ControlVoteEnd::Execute() const
 {
 	// End the voting process
 	if(!HostControl()) return;
-	if(Game.Network.isEnabled())
-		Game.Network.EndVote(getType(), isApprove(), getData());
+	if(::Network.isEnabled())
+		::Network.EndVote(getType(), isApprove(), getData());
 	// Log
 	StdStrBuf sMsg;
 	if(isApprove())
@@ -1394,7 +1394,7 @@ void C4ControlVoteEnd::Execute() const
 			// otherwise, we have been kicked by the host.
 			// Do a regular disconnect and display reason in game over dialog, so the client knows what has happened!
 			Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, FormatString(LoadResStr("IDS_ERR_YOUHAVEBEENREMOVEDBYVOTIN"), sMsg.getData()).getData());
-			Game.Network.Clear();
+			::Network.Clear();
 			// Game over immediately, so poor player won't continue game alone
 			Game.DoGameOver();
 			}

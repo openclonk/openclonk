@@ -1479,7 +1479,7 @@ void C4StartupScenSelDlg::OnClosed(bool fOK)
 	if (!fOK)
 		{
 		// clear settings: Password
-		Game.Network.SetPassword(NULL);
+		::Network.SetPassword(NULL);
 		C4Startup::Get()->SwitchDialog(C4Startup::SDID_Back);
 		}
 	}

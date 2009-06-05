@@ -574,7 +574,7 @@ void C4Network2::Execute()
 	    {
 	      // create
 	      C4Network2Reference *pRef = new C4Network2Reference();
-	      pRef->InitLocal(&Game);
+	      pRef->InitLocal();
 	      // set
 	      NetIO.SetReference(pRef);
 	      iLastReferenceUpdate = time(NULL);
@@ -1948,7 +1948,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
 
   // Do update
   C4Network2Reference Ref;
-  Ref.InitLocal(&Game);
+  Ref.InitLocal();
   if(!pLeagueClient->Start(Ref))
   {
     // Log message
@@ -2093,7 +2093,7 @@ bool C4Network2::LeagueUpdate()
 
   // Create reference
   C4Network2Reference Ref;
-  Ref.InitLocal(&Game);
+  Ref.InitLocal();
 
   // Do update
   if(!pLeagueClient->Update(Ref))
@@ -2175,7 +2175,7 @@ bool C4Network2::LeagueEnd(const char *szRecordName, const BYTE *pRecordSHA)
 
 		// Do update
 		C4Network2Reference Ref;
-		Ref.InitLocal(&Game);
+		Ref.InitLocal();
 		if(!pLeagueClient->End(Ref, szRecordName, pRecordSHA))
 		{
 			// Log message
@@ -2674,7 +2674,7 @@ void C4VoteDialog::OnClosed(bool fOK)
 	{
 	bool fAbortGame = false;
 	// notify that this object will be deleted shortly
-	Game.Network.OnVoteDialogClosed();
+	::Network.OnVoteDialogClosed();
 	// Was league surrender dialog
 	if (fSurrender)
 		{
@@ -2684,8 +2684,8 @@ void C4VoteDialog::OnClosed(bool fOK)
 			// set game leave reason, although round results dialog isn't showing it ATM
 			Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, LoadResStr("IDS_ERR_YOUSURRENDEREDTHELEAGUEGA"));
 			// leave game
-			Game.Network.LeagueSurrender();
-			Game.Network.Clear();
+			::Network.LeagueSurrender();
+			::Network.Clear();
 			// We have just league-surrendered. Abort the game - that is what we originally wanted.
 			// Note: as we are losing league points and this is a relevant game, it would actually be
 			// nice to show an evaluation dialog which tells us that we have lost and how many league
@@ -2700,8 +2700,8 @@ void C4VoteDialog::OnClosed(bool fOK)
 	else
 		{
 		// Vote still active? Then vote.
-		if (Game.Network.GetVote(C4ClientIDUnknown, eVoteType, iVoteData))
-			Game.Network.Vote(eVoteType, fOK, iVoteData);
+		if (::Network.GetVote(C4ClientIDUnknown, eVoteType, iVoteData))
+			::Network.Vote(eVoteType, fOK, iVoteData);
 		}
 	// notify base class
 	MessageDialog::OnClosed(fOK);
@@ -2905,3 +2905,5 @@ bool C4Network2::isStreaming() const
 	// Streaming must be active and there must still be anything to stream
 	return fStreaming;
 	}
+
+C4Network2 Network;

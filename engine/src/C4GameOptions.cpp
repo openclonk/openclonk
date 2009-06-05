@@ -100,7 +100,7 @@ void C4GameOptionsList::OptionControlMode::DoDropdownSelChange(int32_t idNewSele
 	// change possible?
 	if (!Game.Control.isNetwork() || !Game.Control.Network.IsEnabled() || !Game.Control.isCtrlHost()) return;
 	// perform it
-	Game.Network.SetCtrlMode(idNewSelection);
+	::Network.SetCtrlMode(idNewSelection);
 	// update done in parent call
 	}
 
@@ -154,7 +154,7 @@ void C4GameOptionsList::OptionControlRate::Update()
 // ----------- C4GameOptionsList::OptionRuntimeJoin ----------------------------------------------------------------
 
 C4GameOptionsList::OptionRuntimeJoin::OptionRuntimeJoin(class C4GameOptionsList *pForDlg)
-: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_NET_RUNTIMEJOIN"), !Game.Network.isHost())
+: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_NET_RUNTIMEJOIN"), !::Network.isHost())
 	{
 	SetToolTip(LoadResStr("IDS_NET_RUNTIMEJOIN_DESC"));
 	}
@@ -170,7 +170,7 @@ void C4GameOptionsList::OptionRuntimeJoin::DoDropdownSelChange(int32_t idNewSele
 	// adjust mode
 	bool fAllowed = !!idNewSelection;
 	Config.Network.NoRuntimeJoin = !fAllowed;
-	if (Game.IsRunning) Game.Network.AllowJoin(fAllowed);
+	if (Game.IsRunning) ::Network.AllowJoin(fAllowed);
 	}
 
 void C4GameOptionsList::OptionRuntimeJoin::Update()
@@ -250,7 +250,7 @@ void C4GameOptionsList::InitOptions()
 	// creates option selection components
 	new OptionControlMode(this);
 	new OptionControlRate(this);
-	if (Game.Network.isHost()) new OptionRuntimeJoin(this);
+	if (::Network.isHost()) new OptionRuntimeJoin(this);
 	if (!IsRuntime())
 		{
 		if (Game.Teams.HasTeamDistOptions()) new OptionTeamDist(this);

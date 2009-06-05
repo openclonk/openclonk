@@ -136,7 +136,7 @@ void C4Network2ResDlg::ListItem::LocalSaveResource(bool fDoOverwrite)
 C4Network2Res::Ref C4Network2ResDlg::ListItem::GetRefRes()
 	{
 	// forward to network reslist
-	return Game.Network.ResList.getRefRes(iResID);
+	return ::Network.ResList.getRefRes(iResID);
 	}
 
 bool C4Network2ResDlg::ListItem::IsSavePossible()
@@ -189,7 +189,7 @@ void C4Network2ResDlg::Update()
 	// check through own resources and current res list
 	ListItem *pItem = static_cast<ListItem *>(pClientWindow->GetFirst()), *pNext;
 	C4Network2Res *pRes; int iResID=-1;
-	while (pRes = Game.Network.ResList.getRefNextRes(++iResID))
+	while (pRes = ::Network.ResList.getRefNextRes(++iResID))
 		{
 		iResID = pRes->getResID();
 		// resource checking: deleted ressource(s) present?

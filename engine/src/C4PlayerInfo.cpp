@@ -93,14 +93,14 @@ bool C4PlayerInfo::LoadFromLocalFile(const char *szFilename)
 	dwColor = dwOriginalColor = C4P.PrefColorDw & 0xffffff; // ignore alpha
 	dwAlternateColor = C4P.PrefColor2Dw & 0xffffff; // ignore alpha
 	// network: ressource (not for replays, because everyone has the player files there...)
-	if (Game.Network.isEnabled() && !Game.C4S.Head.Replay)
+	if (::Network.isEnabled() && !Game.C4S.Head.Replay)
 		{
 		// add ressource
 		// 2do: rejoining players need to update their ressource version when saving the player
 		// otherwise, player file versions may differ
-		pRes = Game.Network.ResList.getRefRes(szFilename, true);
+		pRes = ::Network.ResList.getRefRes(szFilename, true);
 		// not found? add
-		if(!pRes) pRes = Game.Network.ResList.AddByGroup(&Grp, false, NRT_Player, -1, szFilename);
+		if(!pRes) pRes = ::Network.ResList.AddByGroup(&Grp, false, NRT_Player, -1, szFilename);
 		if(!pRes) return false;
 		// set core and flag
 		ResCore = pRes->getCore();
@@ -300,7 +300,7 @@ void C4PlayerInfo::LoadResource()
 		dwFlags &= ~PIF_HasRes;
 	else
 		// create resource (will check if resource already exists)
-		if (!(pRes = Game.Network.ResList.AddByCore(ResCore)))
+		if (!(pRes = ::Network.ResList.AddByCore(ResCore)))
 			{
 			dwFlags &= ~PIF_HasRes;
 			// add failed? invalid ressource??! -- TODO: may be too large to load
@@ -752,7 +752,7 @@ bool C4PlayerInfoList::DoPlayerInfoUpdate(C4ClientPlayerInfos *pUpdate)
 	// in network game, process by host. In offline game, just create control
 	bool fSucc = true;
 	if (Game.Control.isNetwork())
-		Game.Network.Players.RequestPlayerInfoUpdate(*pUpdate);
+		::Network.Players.RequestPlayerInfoUpdate(*pUpdate);
 	else
 		fSucc = DoLocalNonNetworkPlayerInfoUpdate(pUpdate);
 	return fSucc;
@@ -880,7 +880,7 @@ C4ClientPlayerInfos *C4PlayerInfoList::AddInfo(C4ClientPlayerInfos *pNewClientIn
 	// caution: also called for RestorePlayerInfos-list
 	// host: reserve new IDs for all players
 	// client: all IDs should be assigned already by host
-	if (Game.Network.isHost() || !Game.Network.isEnabled())
+	if (::Network.isHost() || !::Network.isEnabled())
 		{
 		if (!AssignPlayerIDs(pNewClientInfo) && pNewClientInfo->IsAddPacket())
 			{
@@ -1317,7 +1317,7 @@ bool C4PlayerInfoList::InitLocal()
 	// no double init
 	assert(!GetInfoCount());
 	// no network
-	assert(!Game.Network.isEnabled());
+	assert(!::Network.isEnabled());
 	// create player info for local player joins
 	C4ClientPlayerInfos *pLocalInfo = new C4ClientPlayerInfos(Game.PlayerFilenames);
 	// register local info immediately
@@ -1334,7 +1334,7 @@ bool C4PlayerInfoList::InitLocal()
 bool C4PlayerInfoList::LocalJoinUnjoinedPlayersInQueue()
 	{
 	// local call only - in network, C4Network2Players joins players!
-	assert(!Game.Network.isEnabled());
+	assert(!::Network.isEnabled());
 	// get local players
 	C4ClientPlayerInfos **ppkLocal = GetInfoPtrByClientID(Game.Control.ClientID()), *pkLocal;
 	if (!ppkLocal) return false;
@@ -1410,7 +1410,7 @@ bool C4PlayerInfoList::RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers)
 		// do savegame player association of real players
 		// for non-lobby games do automatic association first
 		int32_t iNumGrabbed = 0, i;
-		if (!Game.Network.isEnabled() && Game.C4S.Head.SaveGame)
+		if (!::Network.isEnabled() && Game.C4S.Head.SaveGame)
 			{
 			// do several passes: First passes using regular player matching; following passes matching anything but with a warning message
 			for (int eMatchingLevel = 0; eMatchingLevel <= PML_Any; ++eMatchingLevel)
@@ -1582,7 +1582,7 @@ bool C4PlayerInfoList::RecreatePlayers()
 			szAtClientName = "Replay";
 		else
 			// local non-network non-replay games set local name
-			if (!Game.Network.isEnabled())
+			if (!::Network.isEnabled())
 				{
 				assert(idAtClient == Game.Control.ClientID());
 				szAtClientName = "Local";
@@ -1613,7 +1613,7 @@ bool C4PlayerInfoList::RecreatePlayers()
 				if (szFilename && pJoinRes && pJoinRes->isLoading())
 					{
 					const char *szName = pInfo->GetName();
-					if (!Game.Network.RetrieveRes(pJoinRes->getCore(), C4NetResRetrieveTimeout,
+					if (!::Network.RetrieveRes(pJoinRes->getCore(), C4NetResRetrieveTimeout,
                                              FormatString(LoadResStr("IDS_NET_RES_PLRFILE"), szName).getData()))
 						szFilename=NULL;
 					}
@@ -1701,7 +1701,7 @@ bool C4PlayerInfoList::SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fS
 						{
 						// in the game: Set filename for inside savegame file
 						StdStrBuf sNewName;
-						if (Game.Network.isEnabled())
+						if (::Network.isEnabled())
 							{
 							C4Client *pGameClient = Game.Clients.getClientByID(pClient->GetClientID());
 							const char *szName = pGameClient ? pGameClient->getName() : "Unknown";

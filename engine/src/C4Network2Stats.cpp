@@ -324,14 +324,14 @@ C4Network2Stats::C4Network2Stats()
 	statActions.SetAverageTime(100);
 	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next) pPlr->CreateGraphs();
 	C4Network2Client *pClient = NULL;
-	while (pClient = Game.Network.Clients.GetNextClient(pClient)) pClient->CreateGraphs();
+	while (pClient = ::Network.Clients.GetNextClient(pClient)) pClient->CreateGraphs();
 	}
 
 C4Network2Stats::~C4Network2Stats()
 	{
 	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next) pPlr->ClearGraphs();
 	C4Network2Client *pClient = NULL;
-	while (pClient = Game.Network.Clients.GetNextClient(pClient)) pClient->ClearGraphs();
+	while (pClient = ::Network.Clients.GetNextClient(pClient)) pClient->ClearGraphs();
 	Application.Remove(this);
 	}
 
@@ -343,11 +343,11 @@ void C4Network2Stats::ExecuteFrame()
 void C4Network2Stats::ExecuteSecond()
 	{
 	statFPS.RecordValue(C4Graph::ValueType(Game.FPS));
-	statNetI.RecordValue(C4Graph::ValueType(Game.Network.NetIO.getProtIRate(P_TCP) + Game.Network.NetIO.getProtIRate(P_UDP)));
-	statNetO.RecordValue(C4Graph::ValueType(Game.Network.NetIO.getProtORate(P_TCP) + Game.Network.NetIO.getProtORate(P_UDP)));
+	statNetI.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtIRate(P_TCP) + ::Network.NetIO.getProtIRate(P_UDP)));
+	statNetO.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtORate(P_TCP) + ::Network.NetIO.getProtORate(P_UDP)));
 	// pings for all clients
 	C4Network2Client *pClient = NULL;
-	while (pClient = Game.Network.Clients.GetNextClient(pClient)) if (pClient->getStatPing())
+	while (pClient = ::Network.Clients.GetNextClient(pClient)) if (pClient->getStatPing())
 		{
 		int iPing=0;
 		C4Network2IOConnection *pConn = pClient->getMsgConn();

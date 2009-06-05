@@ -446,7 +446,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 
 bool C4MessageInput::ProcessCommand(const char *szCommand)
 	{
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	// command
 	char szCmdName[C4MaxName + 1];
 	SCopyUntil(szCommand + 1, szCmdName, ' ', C4MaxName);
@@ -481,8 +481,8 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		{
 		if (!Game.IsRunning) return FALSE;
 		if (!Game.DebugMode) return FALSE;
-		if (!Game.Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return FALSE;
-    if (Game.Network.isEnabled() && !Game.Network.isHost()) return FALSE;
+		if (!::Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return FALSE;
+    if (::Network.isEnabled() && !::Network.isHost()) return FALSE;
 
     Game.Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
 		return TRUE;
@@ -507,17 +507,17 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		  }
 		if(SEqual2(pCmdPar, "comment ") || SEqual(pCmdPar, "comment"))
 		  {
-			if(!Game.Network.isEnabled() || !Game.Network.isHost()) return FALSE;
+			if(!::Network.isEnabled() || !::Network.isHost()) return FALSE;
       // Set in configuration, update reference
 			Config.Network.Comment.CopyValidated(pCmdPar[7] ? (pCmdPar+8) : "");
-      Game.Network.InvalidateReference();
+      ::Network.InvalidateReference();
 			Log(LoadResStr("IDS_NET_COMMENTCHANGED"));
 			return TRUE;
 		  }
 		if(SEqual2(pCmdPar, "password ") || SEqual(pCmdPar, "password"))
 		  {
-			if(!Game.Network.isEnabled() || !Game.Network.isHost()) return FALSE;
-			Game.Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
+			if(!::Network.isEnabled() || !::Network.isHost()) return FALSE;
+			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
 			if (pLobby) pLobby->UpdatePassword();
 			return TRUE;
 		  }
@@ -541,12 +541,12 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// get szen from network folder - not in lobby; use res tab there
 	if(SEqual(szCmdName, "netgetscen"))
 		{
-		if (Game.Network.isEnabled() && !Game.Network.isHost() && !pLobby)
+		if (::Network.isEnabled() && !::Network.isHost() && !pLobby)
 			{
 			const C4Network2ResCore *pResCoreScen = Game.Parameters.Scenario.getResCore();
 			if (pResCoreScen)
 				{
-				C4Network2Res::Ref pScenario = Game.Network.ResList.getRefRes(pResCoreScen->getID());
+				C4Network2Res::Ref pScenario = ::Network.ResList.getRefRes(pResCoreScen->getID());
 				if (pScenario)
 					if (C4Group_CopyItem(pScenario->getFile(), Config.AtUserDataPath(GetFilename(Game.ScenarioFilename))))
 						{
@@ -578,7 +578,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// kick client
 	if(SEqual(szCmdName, "kick"))
 		{
-		if (Game.Network.isEnabled() && Game.Network.isHost())
+		if (::Network.isEnabled() && ::Network.isHost())
 			{
 			// find client
 			C4Client *pClient = Game.Clients.getClientByName(pCmdPar);
@@ -589,7 +589,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 				}
 			// league: Kick needs voting
 			if(Game.Parameters.isLeague() && Game.Players.GetAtClient(pClient->getID()))
-				Game.Network.Vote(VT_Kick, true, pClient->getID());
+				::Network.Vote(VT_Kick, true, pClient->getID());
 			else
 				// add control
 				Game.Clients.CtrlRemove(pClient, LoadResStr("IDS_MSG_KICKFROMMSGBOARD"));
@@ -645,7 +645,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// kick/activate/deactivate/observer
 	if(SEqual(szCmdName, "activate") || SEqual(szCmdName, "deactivate") || SEqual(szCmdName, "observer"))
 		{
-    if (!Game.Network.isEnabled() || !Game.Network.isHost())
+    if (!::Network.isEnabled() || !::Network.isHost())
       { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return FALSE; }
 		// search for client
 		C4Client *pClient = Game.Clients.getClientByName(pCmdPar);
@@ -673,9 +673,9 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// control mode
 	if(SEqual(szCmdName, "centralctrl") || SEqual(szCmdName, "decentralctrl")  || SEqual(szCmdName, "asyncctrl"))
     {
-    if (!Game.Network.isEnabled() || !Game.Network.isHost())
+    if (!::Network.isEnabled() || !::Network.isHost())
       { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return FALSE; }
-    Game.Network.SetCtrlMode(*szCmdName == 'c' ? CNM_Central : *szCmdName == 'd' ? CNM_Decentral : CNM_Async);
+    ::Network.SetCtrlMode(*szCmdName == 'c' ? CNM_Central : *szCmdName == 'd' ? CNM_Decentral : CNM_Async);
 		return TRUE;
     }
 

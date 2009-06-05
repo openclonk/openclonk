@@ -252,7 +252,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	Application.Add(this);
 	Update();
 	// initial focus on quit button if visible, so space/enter/low gamepad buttons quit
-	fIsQuitBtnVisible = fIsNetDone || !Game.Network.isHost();
+	fIsQuitBtnVisible = fIsNetDone || !::Network.isHost();
 	if (fIsQuitBtnVisible) SetFocus(btnExit, false);
 	}
 
@@ -268,10 +268,10 @@ void C4GameOverDlg::Update()
 	for (int32_t i=0; i<iPlrListCount; ++i) ppPlayerLists[i]->Update();
 	if (pNetResultLabel)
 		{
-		SetNetResult(Game.RoundResults.GetNetResultString(), Game.RoundResults.GetNetResult(), Game.Network.getPendingStreamData(), Game.Network.isStreaming());
+		SetNetResult(Game.RoundResults.GetNetResultString(), Game.RoundResults.GetNetResult(), ::Network.getPendingStreamData(), ::Network.isStreaming());
 		}
 	// exit/continue button only visible for host if league streaming finished
-	bool fBtnsVisible = fIsNetDone || !Game.Network.isHost();
+	bool fBtnsVisible = fIsNetDone || !::Network.isHost();
 	if (fBtnsVisible != fIsQuitBtnVisible)
 		{
 		fIsQuitBtnVisible = fBtnsVisible;

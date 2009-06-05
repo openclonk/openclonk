@@ -50,10 +50,10 @@ void C4Network2Reference::SetSourceIP(in_addr ip)
 }
 
 #ifdef C4ENGINE
-void C4Network2Reference::InitLocal(C4Game *pGame)
+void C4Network2Reference::InitLocal()
 {
 	// Copy all game parameters
-	Parameters = pGame->Parameters;
+	Parameters = ::Game.Parameters;
 
 	// Discard player resources (we don't want these infos in the reference)
 	C4ClientPlayerInfos *pClientInfos; C4PlayerInfo *pPlayerInfo;
@@ -63,22 +63,22 @@ void C4Network2Reference::InitLocal(C4Game *pGame)
 			pPlayerInfo->DiscardResource();
 
 	// Special additional information in reference
-	Icon = pGame->C4S.Head.Icon;
-	Title.CopyValidated(pGame->ScenarioTitle);
-	GameStatus = pGame->Network.Status;
-	Time = pGame->Time;
-	Frame = pGame->FrameCounter;
-	StartTime = pGame->StartTime;
-	LeaguePerformance = pGame->RoundResults.GetLeaguePerformance();
+	Icon = ::Game.C4S.Head.Icon;
+	Title.CopyValidated(::Game.ScenarioTitle);
+	GameStatus = ::Network.Status;
+	Time = ::Game.Time;
+	Frame = ::Game.FrameCounter;
+	StartTime = ::Game.StartTime;
+	LeaguePerformance = ::Game.RoundResults.GetLeaguePerformance();
 	Comment = Config.Network.Comment;
-	JoinAllowed = pGame->Network.isJoinAllowed();
-	ObservingAllowed = pGame->Network.isObservingAllowed();
-	PasswordNeeded = pGame->Network.isPassworded();
-	RegJoinOnly = pGame->RegJoinOnly;
+	JoinAllowed = ::Network.isJoinAllowed();
+	ObservingAllowed = ::Network.isObservingAllowed();
+	PasswordNeeded = ::Network.isPassworded();
+	RegJoinOnly = ::Game.RegJoinOnly;
 	Game.Set();
 
 	// Addresses
-	C4Network2Client *pLocalNetClient = pGame->Clients.getLocal()->getNetClient();
+	C4Network2Client *pLocalNetClient = ::Game.Clients.getLocal()->getNetClient();
 	iAddrCnt = pLocalNetClient->getAddrCnt();
 	for(i = 0; i < iAddrCnt; i++)
 		Addrs[i] = pLocalNetClient->getAddr(i);

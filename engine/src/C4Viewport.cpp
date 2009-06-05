@@ -1122,7 +1122,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 
 		// Netstats
 		if (::GraphicsSystem.ShowNetstatus)
-			Game.Network.DrawStatus(cgo);
+			::Network.DrawStatus(cgo);
 
 		C4ST_STOP(OvrStat)
 

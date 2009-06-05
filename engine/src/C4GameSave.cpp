@@ -294,7 +294,7 @@ void C4GameSave::WriteDescDate(StdStrBuf &sBuf, bool fRecord)
 	time_t tTime; time(&tTime);
 	struct tm *pLocalTime;
 	pLocalTime=localtime(&tTime);
-	sBuf.AppendFormat(LoadResStr(fRecord ? "IDS_DESC_DATEREC" : (Game.Network.isEnabled() ? "IDS_DESC_DATENET" : "IDS_DESC_DATE")),
+	sBuf.AppendFormat(LoadResStr(fRecord ? "IDS_DESC_DATEREC" : (::Network.isEnabled() ? "IDS_DESC_DATENET" : "IDS_DESC_DATE")),
 							 pLocalTime->tm_mday,
 							 pLocalTime->tm_mon+1,
 							 pLocalTime->tm_year+1900,
@@ -361,7 +361,7 @@ void C4GameSave::WriteDescNetworkClients(StdStrBuf &sBuf)
 	// Desc
 	sBuf.Append(LoadResStr("IDS_DESC_CLIENTS"));
 	// Client names
-	for (C4Network2Client *pClient=Game.Network.Clients.GetNextClient(NULL); pClient; pClient=Game.Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 		{ sBuf.Append(", ");	sBuf.Append(pClient->getName()); }
 	// End of line
 	WriteDescLineFeed(sBuf);
@@ -507,7 +507,7 @@ bool C4GameSaveSavegame::OnSaving()
 	// this resets playing times and stores them in the players?
 	// but doing so would be too late when the queue is executed!
 	// TODO: remove it? (-> PeterW ;))
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 		Game.Input.Add(CID_Synchronize, new C4ControlSynchronize(TRUE));
 	else
 		Game.Players.SynchronizeLocalFiles();
@@ -542,7 +542,7 @@ bool C4GameSaveSavegame::WriteDesc(StdStrBuf &sBuf)
 	WriteDescDate(sBuf);
 	WriteDescGameTime(sBuf);
 	WriteDescDefinitions(sBuf);
-	if (Game.Network.isEnabled()) WriteDescNetworkClients(sBuf);
+	if (::Network.isEnabled()) WriteDescNetworkClients(sBuf);
 	WriteDescPlayers(sBuf);
 	// done, success
 	return true;
@@ -582,7 +582,7 @@ bool C4GameSaveRecord::WriteDesc(StdStrBuf &sBuf)
 	WriteDescEngine(sBuf);
 	WriteDescDefinitions(sBuf);
 	WriteDescLeague(sBuf, fLeague, Game.Parameters.League.getData());
-	if (Game.Network.isEnabled()) WriteDescNetworkClients(sBuf);
+	if (::Network.isEnabled()) WriteDescNetworkClients(sBuf);
 	WriteDescPlayers(sBuf);
 	// done, success
 	return true;

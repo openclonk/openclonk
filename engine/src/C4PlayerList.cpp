@@ -343,7 +343,7 @@ C4Player* C4PlayerList::Join(const char *szFilename, BOOL fScenarioInit, int iAt
 
 BOOL C4PlayerList::CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName)
 	{
-	assert(!Game.Network.isEnabled());
+	assert(!::Network.isEnabled());
 	// Create temp copy of player file without portraits
 	// Why? This is local join!
 	/*
@@ -485,7 +485,7 @@ BOOL C4PlayerList::FileInUse(const char *szFilename) const
 		if (ItemIdentical(cPlr->Filename,szFilename))
 			return TRUE;
 	// Compare to any network path player files with prefix (hack)
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 		{
 		char szWithPrefix[_MAX_PATH+1];
 		SCopy(GetFilename(szFilename),szWithPrefix);

@@ -962,17 +962,17 @@ bool C4Game::Pause()
 	// already paused?
 	if (IsPaused()) return false;
 	// pause by net?
-	if(Game.Network.isEnabled())
+	if(::Network.isEnabled())
 		{
 		// league? Vote...
 		if(Parameters.isLeague() && !Game.Evaluated)
 			{
-			Game.Network.Vote(VT_Pause, true, true);
+			::Network.Vote(VT_Pause, true, true);
 			return false;
 			}
 		// host only
-		if(!Game.Network.isHost()) return true;
-		Game.Network.Pause();
+		if(!::Network.isHost()) return true;
+		::Network.Pause();
 		}
 	else
 		{
@@ -988,17 +988,17 @@ bool C4Game::Unpause()
 	// already paused?
 	if (!IsPaused()) return false;
 	// pause by net?
-	if(Game.Network.isEnabled())
+	if(::Network.isEnabled())
 		{
 		// league? Vote...
 		if(Parameters.isLeague() && !Game.Evaluated)
 			{
-			Game.Network.Vote(VT_Pause, true, false);
+			::Network.Vote(VT_Pause, true, false);
 			return false;
 			}
 		// host only
-		if(!Game.Network.isHost()) return true;
-		Game.Network.Start();
+		if(!::Network.isHost()) return true;
+		::Network.Start();
 		}
 	else
 		{
@@ -1012,8 +1012,8 @@ bool C4Game::Unpause()
 bool C4Game::IsPaused()
 	{
 	// pause state defined either by network or by game halt count
-	if (Game.Network.isEnabled())
-		return !Game.Network.isRunning();
+	if (::Network.isEnabled())
+		return !::Network.isRunning();
 	return !!HaltCount;
 	}
 
@@ -2133,7 +2133,7 @@ static void FileMonitorCallback(const char * file, const char * extrafile)
 BOOL C4Game::ReloadFile(const char *szFile)
   {
   // not in network
-  if(Game.Network.isEnabled()) return FALSE;
+  if(::Network.isEnabled()) return FALSE;
   const char *szRelativePath = Config.AtRelativePath(szFile);
   // a definition? or part of a definition?
   C4Def *pDef;
@@ -2151,7 +2151,7 @@ BOOL C4Game::ReloadDef(C4ID id)
 	{
 	bool fSucc;
   // not in network
-  if(Game.Network.isEnabled()) return FALSE;
+  if(::Network.isEnabled()) return FALSE;
 	// syncronize (close menus with dead surfaces, etc.)
 	// no need to sync back player files, though
 	Synchronize(FALSE);
@@ -2197,7 +2197,7 @@ BOOL C4Game::ReloadDef(C4ID id)
 BOOL C4Game::ReloadParticle(const char *szName)
 	{
   // not in network
-  if(Game.Network.isEnabled()) return FALSE;
+  if(::Network.isEnabled()) return FALSE;
 	// safety
 	if (!szName) return FALSE;
 	// get particle def
@@ -2243,7 +2243,7 @@ BOOL C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		// join local players for regular games
 		// should be done before record/replay is initialized, so the players are stored in PlayerInfos.txt
 		// for local savegame resumes, players are joined into PlayerInfos and later associated in InitPlayers
-		if (!Game.Network.isEnabled())
+		if (!::Network.isEnabled())
 			if (!PlayerInfos.InitLocal())
 				{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return FALSE; }
 

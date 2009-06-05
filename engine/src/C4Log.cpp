@@ -157,7 +157,7 @@ bool Log(const char *szMessage)
 	// Pass on to console
 	Console.Out(szMessage);
 	// pass on to lobby
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby && Game.pGUI) pLobby->OnLog(szMessage);
 
 	// Add message to log buffer

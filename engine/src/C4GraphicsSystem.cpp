@@ -152,7 +152,7 @@ void C4GraphicsSystem::Execute()
 
 	// If lobby running, message board only (page flip done by startup message board)
 	if (!Game.pGUI || !Game.pGUI->HasFullscreenDialog(true)) // allow for message board behind GUI
-		if(Game.Network.isLobbyActive() || !Game.IsRunning)
+		if(::Network.isLobbyActive() || !Game.IsRunning)
 			if (Application.isFullScreen)
 				{
 				// Message board

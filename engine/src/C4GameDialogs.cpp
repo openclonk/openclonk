@@ -54,7 +54,7 @@ C4AbortGameDialog::~C4AbortGameDialog()
 
 void C4AbortGameDialog::OnShown()
 	{
-	if(!Game.Network.isEnabled())
+	if(!::Network.isEnabled())
 		{
 		fGameHalted = true;
 		Game.HaltCount++;

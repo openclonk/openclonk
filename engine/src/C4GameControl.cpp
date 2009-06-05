@@ -107,8 +107,8 @@ void C4GameControl::ChangeToLocal()
 	if(eMode == CM_Network)
 		{
 		Network.Clear();
-		if(Game.Network.isEnabled())
-			Game.Network.Clear();
+		if(::Network.isEnabled())
+			::Network.Clear();
 		}
 	// replay: close playback
 	else if(eMode == CM_Replay)
@@ -152,7 +152,7 @@ bool C4GameControl::StartRecord(bool fInitial, bool fStreaming)
 	if(fStreaming)
 	{
 		if(!pRecord->StartStreaming(fInitial) ||
-			 !Game.Network.StartStreaming(pRecord))
+			 !::Network.StartStreaming(pRecord))
 		{
 			delete pRecord; pRecord = NULL;
 			return false;
@@ -169,7 +169,7 @@ void C4GameControl::StopRecord(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 {
 	if(pRecord)
 	{
-		Game.Network.FinishStreaming();
+		::Network.FinishStreaming();
     pRecord->Stop(pRecordName, pRecordSHA1);
 		// just delete
 		delete pRecord; pRecord = NULL;
@@ -248,7 +248,7 @@ bool C4GameControl::Prepare()
 
     // deactivated and got control: request activate
     if(Input.firstPkt() && !Game.Clients.getLocal()->isActivated())
-      Game.Network.RequestActivate();
+      ::Network.RequestActivate();
 
 		// needs input?
 		while(Network.CtrlNeeded(Game.FrameCounter))

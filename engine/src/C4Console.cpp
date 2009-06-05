@@ -751,7 +751,7 @@ bool C4Console::UpdateHaltCtrls(bool fHalt)
 BOOL C4Console::SaveGame(BOOL fSaveGame)
 	{
 	// Network hosts only
-	if (Game.Network.isEnabled() && !Game.Network.isHost())
+	if (::Network.isEnabled() && !::Network.isHost())
 		{ Message(LoadResStr("IDS_GAME_NOCLIENTSAVE")); return FALSE; }
 
 
@@ -879,15 +879,15 @@ void C4Console::EnableControls(bool fEnable)
 	SendDlgItemMessage(hWindow,IDC_BUTTONMODEPLAY,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(fEnable ? hbmMouse : hbmMouse2));
 	SendDlgItemMessage(hWindow,IDC_BUTTONMODEEDIT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((fEnable && Editing) ? hbmCursor : hbmCursor2));
 	SendDlgItemMessage(hWindow,IDC_BUTTONMODEDRAW,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((fEnable && Editing) ? hbmBrush : hbmBrush2));
-	SendDlgItemMessage(hWindow,IDC_BUTTONPLAY,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(Game.Network.isLobbyActive() || fEnable ? hbmPlay : hbmPlay2));
-	SendDlgItemMessage(hWindow,IDC_BUTTONHALT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(Game.Network.isLobbyActive() || fEnable ? hbmHalt : hbmHalt2));
+	SendDlgItemMessage(hWindow,IDC_BUTTONPLAY,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(::Network.isLobbyActive() || fEnable ? hbmPlay : hbmPlay2));
+	SendDlgItemMessage(hWindow,IDC_BUTTONHALT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(::Network.isLobbyActive() || fEnable ? hbmHalt : hbmHalt2));
 
 	// OK
 	EnableWindow( GetDlgItem(hWindow,IDOK), fEnable);
 
 	// Halt controls
-	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONPLAY), Game.Network.isLobbyActive() || fEnable);
-	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONHALT), Game.Network.isLobbyActive() || fEnable);
+	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONPLAY), ::Network.isLobbyActive() || fEnable);
+	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONHALT), ::Network.isLobbyActive() || fEnable);
 
 	// Edit modes
 	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONMODEPLAY),(fEnable));
@@ -918,16 +918,16 @@ void C4Console::EnableControls(bool fEnable)
 	EnableMenuItem(GetMenu(hWindow),IDM_VIEWPORT_NEW, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
 #elif defined(WITH_DEVELOPER_MODE)
 	// Halt controls
-	gtk_widget_set_sensitive(btnPlay, Game.Network.isLobbyActive() || fEnable);
-	gtk_widget_set_sensitive(btnHalt, Game.Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnPlay, ::Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnHalt, ::Network.isLobbyActive() || fEnable);
 
 	// Edit modes
-	gtk_widget_set_sensitive(btnModePlay, Game.Network.isLobbyActive() || fEnable);
-	gtk_widget_set_sensitive(btnModeEdit, Game.Network.isLobbyActive() || fEnable);
-	gtk_widget_set_sensitive(btnModeDraw, Game.Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnModePlay, ::Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnModeEdit, ::Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnModeDraw, ::Network.isLobbyActive() || fEnable);
 
 	// Console input
-	gtk_widget_set_sensitive(txtScript, Game.Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(txtScript, ::Network.isLobbyActive() || fEnable);
 
 	// File menu
 	// C4Network2 will have to handle that cases somehow (TODO: test)
@@ -1331,20 +1331,20 @@ bool C4Console::UpdateModeCtrls(int iMode)
 
 void C4Console::EditTitle()
 	{
-	if (Game.Network.isEnabled()) return;
+	if (::Network.isEnabled()) return;
 	Game.Title.Open();
 	}
 
 void C4Console::EditScript()
 	{
-	if (Game.Network.isEnabled()) return;
+	if (::Network.isEnabled()) return;
 	Game.Script.Open();
   Game.ScriptEngine.ReLink(&Game.Defs);
 	}
 
 void C4Console::EditInfo()
 	{
-	if (Game.Network.isEnabled()) return;
+	if (::Network.isEnabled()) return;
 	Game.Info.Open();
 	}
 
@@ -1418,12 +1418,12 @@ bool C4Console::UpdatePlayerMenu()
 	for (C4Player *pPlr=Game.Players.First; pPlr; pPlr=pPlr->Next)
 		{
 		StdStrBuf sText;
-		if (Game.Network.isEnabled())
+		if (::Network.isEnabled())
 			sText.Format(LoadResStr("IDS_CNS_PLRQUITNET"),pPlr->GetName(),pPlr->AtClientName);
 		else
 			sText.Format(LoadResStr("IDS_CNS_PLRQUIT"),pPlr->GetName());
 #ifdef _WIN32
-		AddMenuItem(hMenu,IDM_PLAYER_QUIT1+pPlr->Number,sText.getData(),(!Game.Network.isEnabled() || Game.Network.isHost()) && Editing);
+		AddMenuItem(hMenu,IDM_PLAYER_QUIT1+pPlr->Number,sText.getData(),(!::Network.isEnabled() || ::Network.isHost()) && Editing);
 #elif defined(WITH_DEVELOPER_MODE)
 		// TODO: Implement AddMenuItem...
 		GtkWidget* menuItem = gtk_menu_item_new_with_label(Languages.IconvUtf8(sText.getData()).getData());
@@ -1431,7 +1431,7 @@ bool C4Console::UpdatePlayerMenu()
 		g_signal_connect(G_OBJECT(menuItem), "activate", G_CALLBACK(OnPlrQuit), GINT_TO_POINTER(pPlr->Number));
 		gtk_widget_show(menuItem);
 
-		gtk_widget_set_sensitive(menuItem, (!Game.Network.isEnabled() || Game.Network.isHost()) && Editing);
+		gtk_widget_set_sensitive(menuItem, (!::Network.isEnabled() || ::Network.isHost()) && Editing);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 		}
 	return TRUE;
@@ -1496,8 +1496,8 @@ void C4Console::PlayerJoin()
 	char szPlayerFilename[_MAX_PATH+1];
 	for (int iPar=0; SCopySegment(c4plist,iPar,szPlayerFilename,';',_MAX_PATH); iPar++)
 		if (szPlayerFilename[0])
-			if (Game.Network.isEnabled())
-				Game.Network.Players.JoinLocalPlayer(szPlayerFilename, true);
+			if (::Network.isEnabled())
+				::Network.Players.JoinLocalPlayer(szPlayerFilename, true);
 			else
 				Game.Players.CtrlJoinLocalNoNetwork(szPlayerFilename, Game.Clients.getLocalID(), Game.Clients.getLocalName());
 
@@ -1544,7 +1544,7 @@ void C4Console::UpdateNetMenu()
 	{
 	// Active & network hosting check
 	if (!Active) return;
-	if (!Game.Network.isHost() || !Game.Network.isEnabled()) return;
+	if (!::Network.isHost() || !::Network.isEnabled()) return;
 	// Clear old
 	ClearNetMenu();
 	// Insert menu
@@ -1576,7 +1576,7 @@ void C4Console::UpdateNetMenu()
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(OnNetClient), GINT_TO_POINTER(Game.Clients.getLocalID()));
 #endif
 	// Clients
-	for (C4Network2Client *pClient=Game.Network.Clients.GetNextClient(NULL); pClient; pClient=Game.Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 		{
 			str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT" : "IDS_MNU_NETCLIENTDE"),
 			           pClient->getName(), pClient->getID());

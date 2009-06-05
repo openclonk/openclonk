@@ -90,7 +90,6 @@ class C4Game
 		~C4Game();
 	public:
     C4DefList						Defs;
-		C4Network2					Network;
 		C4ClientList			 &Clients; // Shortcut
 		C4GameParameters		Parameters;
 		C4TeamList				 &Teams; // Shortcut

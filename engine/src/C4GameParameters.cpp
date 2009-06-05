@@ -290,7 +290,7 @@ bool C4GameResList::RetrieveFiles()
 		{
 		const C4Network2ResCore &Core = *pResList[i]->getResCore();
 		StdStrBuf ResNameBuf = FormatString("%s: %s", LoadResStr("IDS_DLG_DEFINITION"), GetFilename(Core.getFileName()));
-		if (!Game.Network.RetrieveRes(Core, C4NetResRetrieveTimeout, ResNameBuf.getData()))
+		if (!::Network.RetrieveRes(Core, C4NetResRetrieveTimeout, ResNameBuf.getData()))
 			return false;
 		}
 	return true;

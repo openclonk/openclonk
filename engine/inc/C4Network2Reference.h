@@ -83,7 +83,7 @@ public:
 
 	void SetSourceIP(in_addr ip);
 
-	void InitLocal(C4Game *pGame);
+	void InitLocal();
 
   void SortNullIPsBack();
 
