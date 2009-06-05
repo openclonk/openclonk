@@ -43,6 +43,7 @@
 #include <C4ObjectMenu.h>
 #include <C4MouseControl.h>
 #include <C4PXS.h>
+#include <C4GameMessage.h>
 #endif
 
 #include <StdGL.h>
@@ -855,7 +856,7 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		}
 	// Game messages
  	C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
-	Game.Messages.Draw(cgo, Player, Zoom);
+	::Messages.Draw(cgo, Player, Zoom);
 	C4ST_STOP(MsgStat)
 
 	// Control overlays (if not film/replay)

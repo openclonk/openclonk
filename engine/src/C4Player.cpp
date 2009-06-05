@@ -42,6 +42,7 @@
 #include <C4GameOverDlg.h>
 #include <C4ObjectMenu.h>
 #include <C4MouseControl.h>
+#include <C4GameMessage.h>
 #endif
 
 #define C4FOW_Def_View_RangeX 500

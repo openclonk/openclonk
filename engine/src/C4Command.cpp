@@ -31,7 +31,7 @@
 #include <C4ObjectCom.h>
 #include <C4ObjectInfo.h>
 #include <C4Random.h>
-#include <C4Game.h>
+#include <C4GameMessage.h>
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
 #include <C4Wrappers.h>
@@ -2109,7 +2109,7 @@ void C4Command::Fail(const char *szFailMessage)
 			// Message (if not empty)
 			if (!!str)
 				{
-				Game.Messages.Append(C4GM_Target, str.getData(), l_Obj, NO_OWNER, 0, 0, FWhite, TRUE);
+				::Messages.Append(C4GM_Target, str.getData(), l_Obj, NO_OWNER, 0, 0, FWhite, TRUE);
 				}
 			// Fail sound
 			StartSoundEffect("CommandFailure*",false,100,l_Obj);

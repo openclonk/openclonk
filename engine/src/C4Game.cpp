@@ -63,6 +63,7 @@
 #include <C4MessageInput.h>
 #include <C4MassMover.h>
 #include <C4RankSystem.h>
+#include <C4GameMessage.h>
 #endif
 
 #include <StdFile.h>
@@ -560,7 +561,7 @@ void C4Game::Clear()
 	Material.Clear();
   TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
   GraphicsResource.Clear();
-	Messages.Clear();
+	::Messages.Clear();
 	MessageInput.Clear();
 	Info.Clear();
 	Title.Clear();
@@ -772,7 +773,7 @@ BOOL C4Game::Execute() // Returns true if the game is over
 	EXEC_S_DR(	Players.Execute();								, PlayersStat					, "PlrEx")
 	//FIXME: C4Application::Execute should do this, but what about the stats?
 	EXEC_S_DR(	Application.MusicSystem.Execute();						, MusicSystemStat			, "Music")
-	EXEC_S_DR(	Messages.Execute();								, MessagesStat				, "MsgEx")
+	EXEC_S_DR(	::Messages.Execute();								, MessagesStat				, "MsgEx")
 	EXEC_S_DR(	Script.Execute();									, ScriptStat					, "Scrpt")
 
 	EXEC_DR(		MouseControl.Execute();																	, "Input")
@@ -942,7 +943,7 @@ void C4Game::ClearPointers(C4Object *pObj)
   {
 	BackObjects.ClearPointers(pObj);
 	ForeObjects.ClearPointers(pObj);
-  Messages.ClearPointers(pObj);
+	::Messages.ClearPointers(pObj);
   ClearObjectPtrs(pObj);
   Players.ClearPointers(pObj);
 	GraphicsSystem.ClearPointers(pObj);
@@ -1694,7 +1695,7 @@ void C4Game::Default()
 	PXS.Default();
 	GraphicsSystem.Default();
   C4S.Default();
-	Messages.Default();
+	::Messages.Default();
 	MessageInput.Default();
 	Info.Default();
 	Title.Default();
@@ -2194,7 +2195,7 @@ BOOL C4Game::ReloadDef(C4ID id)
 		fSucc = false;
 		}
 	// update game messages
-	Messages.UpdateDef(id);
+	::Messages.UpdateDef(id);
 	// done
 	return fSucc;
 	}

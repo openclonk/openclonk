@@ -47,6 +47,7 @@
 #include <C4ObjectMenu.h>
 #include <C4RankSystem.h>
 #include <C4GameVersion.h>
+#include <C4GameMessage.h>
 #endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
@@ -1714,7 +1715,7 @@ BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 				// ...tell builder to acquire the material
 				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,NeededMaterial,FALSE,1);
 			// ...game message if not overloaded
-			Game.Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
+			::Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
 			}
 		// Still in need: done/fail
 		return FALSE;

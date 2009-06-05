@@ -111,33 +111,6 @@ void SoundPan(const char *szSndName, C4Object *pObj, int32_t iPan)
 
 #define GfxR (&(::GraphicsResource))
 
-//=============================== Messages =============================================
-
-void GameMsgObject(const char *szText, C4Object *pTarget, int32_t iFCol)
-	{
-	Game.Messages.New(C4GM_Target,szText,pTarget,NO_OWNER,0,0,(uint8_t) iFCol);
-	}
-
-void GameMsgObjectPlayer(const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iFCol)
-	{
-	Game.Messages.New(C4GM_TargetPlayer,szText,pTarget,iPlayer,0,0,(uint8_t) iFCol);
-	}
-
-void GameMsgGlobal(const char *szText, int32_t iFCol)
-	{
-	Game.Messages.New(C4GM_Global,szText,NULL,ANY_OWNER,0,0,(uint8_t) iFCol);
-	}
-
-void GameMsgPlayer(const char *szText, int32_t iPlayer, int32_t iFCol)
-	{
-	Game.Messages.New(C4GM_GlobalPlayer,szText,NULL,iPlayer,0,0,(uint8_t) iFCol);
-	}
-
-void GameMsgObjectDw(const char *szText, C4Object *pTarget, uint32_t dwClr)
-	{
-	Game.Messages.New(C4GM_Target,szText,pTarget,NO_OWNER,0,0,dwClr);
-	}
-
 //================================== Players ============================================
 
 int32_t ValidPlr(int32_t plr)

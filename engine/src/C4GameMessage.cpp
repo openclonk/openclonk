@@ -346,13 +346,13 @@ bool C4GameMessageList::Append(int32_t iType, const char *szText, C4Object *pTar
 	C4GameMessage *cmsg = NULL;
   if (iType == C4GM_Target)
 		{
-	  for (cmsg=Game.Messages.First; cmsg; cmsg=cmsg->Next)
+	  for (cmsg=::Messages.First; cmsg; cmsg=cmsg->Next)
 		  if (pTarget == cmsg->Target)
 				break;
 		}
   if (iType == C4GM_Global || iType == C4GM_GlobalPlayer)
 		{
-	  for (cmsg=Game.Messages.First; cmsg; cmsg=cmsg->Next)
+	  for (cmsg=::Messages.First; cmsg; cmsg=cmsg->Next)
 		  if (iPlayer == cmsg->Player)
 				break;
 		}
@@ -393,3 +393,4 @@ void C4GameMessageList::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 		cmsg->Draw(cgo,iPlayer,Zoom);
 	}
 
+C4GameMessageList Messages;

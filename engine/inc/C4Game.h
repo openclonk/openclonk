@@ -26,11 +26,9 @@
 
 #ifdef C4ENGINE
 
-#include <C4Client.h>
 #include <C4GameParameters.h>
 #include <C4PlayerInfo.h>
 #include <C4RoundResults.h>
-#include <C4GameMessage.h>
 #include <C4Weather.h>
 #include <C4GameObjects.h>
 #include <C4Scenario.h>
@@ -77,7 +75,6 @@ class C4Game
 		C4PlayerInfoList	 &PlayerInfos; // Shortcut
 		C4PlayerInfoList	 &RestorePlayerInfos; // Shortcut
 		C4RoundResults      RoundResults;
-		C4GameMessageList		Messages;
     C4Weather						Weather;
 		C4MaterialMap				Material;
 		C4GameObjects				Objects;

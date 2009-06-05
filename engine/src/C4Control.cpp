@@ -39,6 +39,7 @@
 #include <C4RankSystem.h>
 #include <C4PXS.h>
 #include <C4MassMover.h>
+#include <C4GameMessage.h>
 #endif
 
 // *** C4ControlPacket

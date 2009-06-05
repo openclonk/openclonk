@@ -44,6 +44,7 @@
 #include <C4RankSystem.h>
 #include <C4PXS.h>
 #include <C4MessageInput.h>
+#include <C4GameMessage.h>
 #endif
 
 //========================== Some Support Functions =======================================
@@ -2526,8 +2527,8 @@ static C4Value FnAddMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value
 	if (!szMessage) return C4VBool(false);
 
 	C4Object * pObj = c4vObj->getObj();
-	if (pObj) Game.Messages.Append(C4GM_Target,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),pObj,NO_OWNER,0,0,FWhite);
-	else Game.Messages.Append(C4GM_Global,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),0,ANY_OWNER,0,0,FWhite);
+	if (pObj) ::Messages.Append(C4GM_Target,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),pObj,NO_OWNER,0,0,FWhite);
+	else ::Messages.Append(C4GM_Global,FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),0,ANY_OWNER,0,0,FWhite);
 
 	return C4VBool(true);
 	}
@@ -6282,7 +6283,7 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, l
 	sMsg.Ref(szMsg);
 	if (dwFlags & C4GM_DropSpeech) sMsg.SplitAtChar('$', NULL);
 	// create it!
-	return Game.Messages.New(iType,sMsg,pObj,iOwner,iOffX,iOffY,(uint32_t)dwClr, idDeco, sPortrait ? sPortrait->GetCStr() : NULL, dwFlags, iHSize);
+	return ::Messages.New(iType,sMsg,pObj,iOwner,iOffX,iOffY,(uint32_t)dwClr, idDeco, sPortrait ? sPortrait->GetCStr() : NULL, dwFlags, iHSize);
 	}
 
 /*static long FnSetSaturation(C4AulContext *ctx, long s)

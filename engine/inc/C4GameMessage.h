@@ -101,11 +101,30 @@ class C4GameMessageList
 		bool Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint8_t bCol, bool fNoDuplicates = false);
 	};
 
-void GameMsgObject(const char *szText, C4Object *pTarget, int32_t iFCol=FWhite);
-void GameMsgObjectPlayer(const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iFCol=FWhite);
-void GameMsgGlobal(const char *szText, int32_t iFCol=FWhite);
-void GameMsgPlayer(const char *szText, int32_t iPlayer, int32_t iFCol=FWhite);
+extern C4GameMessageList Messages;
 
-void GameMsgObjectDw(const char *szText, C4Object *pTarget, uint32_t dwClr);
+inline void GameMsgObject(const char *szText, C4Object *pTarget, int32_t iFCol=FWhite)
+	{
+	::Messages.New(C4GM_Target,szText,pTarget,NO_OWNER,0,0,(uint8_t) iFCol);
+	}
 
+inline void GameMsgObjectPlayer(const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iFCol=FWhite)
+	{
+	::Messages.New(C4GM_TargetPlayer,szText,pTarget,iPlayer,0,0,(uint8_t) iFCol);
+	}
+
+inline void GameMsgGlobal(const char *szText, int32_t iFCol=FWhite)
+	{
+	::Messages.New(C4GM_Global,szText,NULL,ANY_OWNER,0,0,(uint8_t) iFCol);
+	}
+
+inline void GameMsgPlayer(const char *szText, int32_t iPlayer, int32_t iFCol=FWhite)
+	{
+	::Messages.New(C4GM_GlobalPlayer,szText,NULL,iPlayer,0,0,(uint8_t) iFCol);
+	}
+
+inline void GameMsgObjectDw(const char *szText, C4Object *pTarget, uint32_t dwClr)
+	{
+	::Messages.New(C4GM_Target,szText,pTarget,NO_OWNER,0,0,dwClr);
+	}
 #endif

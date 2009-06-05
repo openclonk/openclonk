@@ -25,7 +25,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Config.h>
-#include <C4Game.h>
+#include <C4GameMessage.h>
 #include <C4Wrappers.h>
 #endif
 
@@ -43,9 +43,9 @@ void C4AulExecError::show()
 	// debug mode object message
 	if (Game.DebugMode)
 		if (cObj)
-			Game.Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
+			::Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
 		else
-			Game.Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
+			::Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
 #endif
 	}
 
