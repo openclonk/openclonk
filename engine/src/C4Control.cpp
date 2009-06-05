@@ -437,7 +437,7 @@ void C4ControlSyncCheck::Set()
 	RandomCount = ::RandomCount;
 	AllCrewPosX = GetAllCrewPosX();
 	PXSCount = ::PXS.Count;
-	MassMoverIndex = Game.MassMover.CreatePtr;
+	MassMoverIndex = ::MassMover.CreatePtr;
 	ObjectCount = Game.Objects.ObjectCount();
 	ObjectEnumerationIndex = Game.ObjectEnumerationIndex;
 	SectShapeSum = Game.Objects.Sectors.getShapeSum();

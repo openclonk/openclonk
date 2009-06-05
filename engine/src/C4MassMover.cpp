@@ -112,7 +112,7 @@ BOOL C4MassMover::Init(int32_t tx, int32_t ty)
   // Check mat
   Mat=GBackMat(tx,ty);
   x=tx; y=ty;
-	Game.MassMover.Count++;
+	::MassMover.Count++;
   return (Mat!=MNone);
   }
 
@@ -123,7 +123,7 @@ void C4MassMover::Cease()
 	rc.x=x; rc.y=y;
 	AddDbgRec(RCT_MMD, &rc, sizeof(rc));
 #endif
-	Game.MassMover.Count--;
+	::MassMover.Count--;
   Mat=MNone;
   }
 
@@ -175,7 +175,7 @@ BOOL C4MassMover::Execute()
 		::Landscape.InsertMaterial(omat, tx, ty + 1);
 
   // Create new mover at target
-  Game.MassMover.Create(tx,ty,!Rnd3());
+  ::MassMover.Create(tx,ty,!Rnd3());
 
   return TRUE;
   }
@@ -280,3 +280,5 @@ void C4MassMoverSet::Copy(C4MassMoverSet &rSet)
 	CreatePtr=rSet.CreatePtr;
   for (int32_t cnt=0; cnt<C4MassMoverChunk; cnt++) Set[cnt]=rSet.Set[cnt];
 	}
+
+C4MassMoverSet MassMover;

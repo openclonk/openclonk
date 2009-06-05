@@ -881,7 +881,7 @@ BOOL C4Landscape::CheckInstability(int32_t tx, int32_t ty)
   int32_t mat=GetMat(tx,ty);
   if (MatValid(mat))
     if (Game.Material.Map[mat].Instable)
-      return Game.MassMover.Create(tx,ty);
+      return ::MassMover.Create(tx,ty);
   return FALSE;
   }
 

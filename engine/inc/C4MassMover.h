@@ -62,4 +62,6 @@ class C4MassMoverSet
 	  void Consolidate();
   };
 
+extern C4MassMoverSet MassMover;
+
 #endif

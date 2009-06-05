@@ -167,7 +167,7 @@ bool C4GameSave::SaveLandscape()
 		if (!::PXS.Save(*pSaveGroup)) return false;
 		// MassMover (create copy, may not modify running data)
 		C4MassMoverSet MassMoverSet;
-		MassMoverSet.Copy(Game.MassMover);
+		MassMoverSet.Copy(::MassMover);
 		if (!MassMoverSet.Save(*pSaveGroup)) return false;
 		// Material enumeration
 		if (!Game.Material.SaveEnumeration(*pSaveGroup)) return false;
