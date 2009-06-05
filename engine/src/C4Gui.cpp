@@ -470,7 +470,7 @@ void CMouse::Draw(C4TargetFacet &cgo, bool fDrawToolTip)
 		iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
 		}
 	GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX,y+iOffsetY,0);
-	if (Game.MouseControl.IsHelp())
+	if (::MouseControl.IsHelp())
 		GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX+5,y+iOffsetY-5,29);
 	// ToolTip
 	if (fDrawToolTip && pMouseOverElement)
@@ -689,7 +689,7 @@ void Screen::Render(bool fDoBG)
 void Screen::RenderMouse(C4TargetFacet &cgo)
 	{
 	// draw mouse cursor
-	Mouse.Draw(cgo, (Mouse.IsMouseStill() && Mouse.IsActiveInput()) || Game.MouseControl.IsHelp());
+	Mouse.Draw(cgo, (Mouse.IsMouseStill() && Mouse.IsActiveInput()) || ::MouseControl.IsHelp());
 	}
 
 void Screen::Draw(C4TargetFacet &cgo, bool fDoBG)
@@ -761,7 +761,7 @@ bool Screen::MouseInput(int32_t iButton, int32_t iPxX, int32_t iPxY, DWORD dwKey
 	float fX = float(iPxX) / fZoom;
 	float fY = float(iPxY) / fZoom;
 	// help mode and button pressed: Abort help and discard button
-	if (Game.MouseControl.IsHelp())
+	if (::MouseControl.IsHelp())
 		{
 		switch (iButton)
 			{
@@ -776,7 +776,7 @@ bool Screen::MouseInput(int32_t iButton, int32_t iPxX, int32_t iPxY, DWORD dwKey
 				break;
 			default:
 				// buttons stop help
-				Game.MouseControl.AbortHelp();
+				::MouseControl.AbortHelp();
 				iButton = C4MC_Button_None;
 				break;
 			}
@@ -909,7 +909,7 @@ bool Screen::RecheckMouseInput()
 void Screen::UpdateMouseFocus()
 	{
 	// when exclusive mode has changed: Make sure mouse clip is correct
-	Game.MouseControl.UpdateClip();
+	::MouseControl.UpdateClip();
 	}
 
 void Screen::DoContext(ContextMenu *pNewCtx, Element *pAtElement, int32_t iX, int32_t iY)

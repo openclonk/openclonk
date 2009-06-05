@@ -769,7 +769,7 @@ BOOL C4Player::FinalInit(BOOL fInitialValue)
 	// Init player's mouse control
 	if (LocalControl)
 		if (MouseControl)
-			Game.MouseControl.Init(Number);
+			::MouseControl.Init(Number);
 
 	// Set initial value
 	if (fInitialValue)
@@ -2283,14 +2283,14 @@ void C4Player::ToggleMouseControl()
 	// Activate mouse control if it's available
 	if (!MouseControl && !Game.Players.MouseControlTaken())
 		{
-		Game.MouseControl.Init(Number);
+		::MouseControl.Init(Number);
 		MouseControl=TRUE;
 		}
 	// Deactivate mouse control
 	else if (MouseControl)
 		{
-		Game.MouseControl.Clear();
-		Game.MouseControl.Default();
+		::MouseControl.Clear();
+		::MouseControl.Default();
 		MouseControl = 0;
 		// Scrolling isn't possible any more
 		if (ViewMode == C4PVM_Scrolling)

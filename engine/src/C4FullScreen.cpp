@@ -63,7 +63,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			if (Application.Active)
 				::GraphicsSystem.Execute();
 			// update cursor clip
-			Game.MouseControl.UpdateClip();
+			::MouseControl.UpdateClip();
 			return FALSE;
 		case WM_PAINT:
 			// Redraw after task switch
@@ -425,7 +425,7 @@ BOOL C4FullScreen::ViewportCheck()
 			if (!fFilm)
 			{
 				// Activate mouse control
-				Game.MouseControl.Init(iPlrNum);
+				::MouseControl.Init(iPlrNum);
 				// Display message for how to open observer menu (this message will be cleared if any owned viewport opens)
 				StdStrBuf sKey;
 				sKey.Format("<c ffff00><%s></c>", Game.KeyboardInput.GetKeyCodeNameByKeyName("FullscreenMenuOpen", false).getData());

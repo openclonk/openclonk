@@ -449,7 +449,7 @@ void C4ObjectMenu::OnUserEnter(int32_t Player, int32_t iIndex, bool fRight)
 void C4ObjectMenu::OnUserClose()
 	{
 	// Queue
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Game.MouseControl.GetPlayer(),COM_MenuClose,0));
+	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(::MouseControl.GetPlayer(),COM_MenuClose,0));
 	}
 
 bool C4ObjectMenu::IsReadOnly()
@@ -466,7 +466,7 @@ bool C4ObjectMenu::IsReadOnly()
 	// if the player is eliminated, do not control either!
 	if (!pVP->fIsNoOwnerViewport)
 		{
-		C4Player *pPlr = Game.Players.Get(Game.MouseControl.GetPlayer());
+		C4Player *pPlr = Game.Players.Get(::MouseControl.GetPlayer());
 		if (pPlr && pPlr->Eliminated) return true;
 		}
 	return false;

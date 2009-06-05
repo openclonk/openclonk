@@ -165,7 +165,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
     }
 
 	// Viewport mouse control
-	if (Game.MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 		{
 		switch (uMsg)
 			{
@@ -505,7 +505,7 @@ gboolean C4ViewportWindow::OnScrollStatic(GtkWidget* widget, GdkEventScroll* eve
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
-	if (Game.MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		switch(event->direction)
 		{
@@ -525,7 +525,7 @@ gboolean C4ViewportWindow::OnButtonPressStatic(GtkWidget* widget, GdkEventButton
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
-	if (Game.MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		switch(event->button)
 		{
@@ -566,7 +566,7 @@ gboolean C4ViewportWindow::OnButtonReleaseStatic(GtkWidget* widget, GdkEventButt
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
-	if (Game.MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		switch (event->button)
 		{
@@ -601,7 +601,7 @@ gboolean C4ViewportWindow::OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotio
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
-	if (Game.MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		::GraphicsSystem.MouseMove(C4MC_Button_None, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 	}
@@ -670,7 +670,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 		case ButtonPress:
 			{
 			static int last_left_click, last_right_click;
-			if (Game.MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+			if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 				{
 				switch (e.xbutton.button)
 					{
@@ -727,7 +727,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 			}
 		break;
 		case ButtonRelease:
-		if (Game.MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 			{
 			switch (e.xbutton.button)
 				{
@@ -758,7 +758,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 			}
 		break;
 		case MotionNotify:
-		if (Game.MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 			{
 			::GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 			}
@@ -859,12 +859,12 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	// Control overlays (if not film/replay)
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
 		// Mouse control
-		if (Game.MouseControl.IsViewport(this))
+		if (::MouseControl.IsViewport(this))
 			{
 			C4ST_STARTNEW(MouseStat, "C4Viewport::DrawOverlay: Mouse")
 			if (Config.Graphics.ShowCommands) // Now, ShowCommands is respected even for mouse control...
 				DrawMouseButtons(cgo);
-			Game.MouseControl.Draw(cgo, GameZoom);
+			::MouseControl.Draw(cgo, GameZoom);
 			// Draw GUI-mouse in EM if active
 			if (pWindow && Game.pGUI) Game.pGUI->RenderMouse(cgo);
 			C4ST_STOP(MouseStat)
@@ -947,7 +947,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 			}
 
 	// Draw commands
-	if (Config.Graphics.ShowCommands /*|| Game.MouseControl.IsViewport(this)*/ ) // Now, ShowCommands is respected even for mouse control
+	if (Config.Graphics.ShowCommands /*|| ::MouseControl.IsViewport(this)*/ ) // Now, ShowCommands is respected even for mouse control
 		if (realcursor)
 			if (cgo.Hgt>C4SymbolSize)
 				{
@@ -990,7 +990,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 		if (ResetMenuPositions) pPlr->Cursor->Menu->ResetLocation();
 		// if mouse is dragging, make it transparent to easy construction site drag+drop
 		bool fDragging=false;
-		if (Game.MouseControl.IsDragging() && Game.MouseControl.IsViewport(this))
+		if (::MouseControl.IsDragging() && ::MouseControl.IsViewport(this))
 			{
 			fDragging = true;
 			lpDDraw->ActivateBlitModulation(0xafffffff);
@@ -1215,13 +1215,13 @@ void C4Viewport::AdjustPosition()
 		float iTargetViewY = pPlr->ViewY - ViewHgt / (Zoom * 2);
 		// add mouse auto scroll
 		float iPrefViewX = ViewX - ViewOffsX, iPrefViewY = ViewY - ViewOffsY;
-		if(pPlr->MouseControl && Game.MouseControl.InitCentered && Config.General.MouseAScroll)
+		if(pPlr->MouseControl && ::MouseControl.InitCentered && Config.General.MouseAScroll)
 			{
 			int32_t iAutoScrollBorder = Min(Min(ViewWdt/10,ViewHgt/10), C4SymbolSize);
 			if(iAutoScrollBorder)
 				{
-				iPrefViewX += BoundBy<int32_t>(0, Game.MouseControl.VpX - ViewWdt + iAutoScrollBorder, Game.MouseControl.VpX - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
-				iPrefViewY += BoundBy<int32_t>(0, Game.MouseControl.VpY - ViewHgt + iAutoScrollBorder, Game.MouseControl.VpY - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
+				iPrefViewX += BoundBy<int32_t>(0, ::MouseControl.VpX - ViewWdt + iAutoScrollBorder, ::MouseControl.VpX - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
+				iPrefViewY += BoundBy<int32_t>(0, ::MouseControl.VpY - ViewHgt + iAutoScrollBorder, ::MouseControl.VpY - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
 				}
 			}
 		// scroll range
@@ -1541,7 +1541,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	if (pPlr=Game.Players.Get(Player))
 		if (pPlr->MouseControl)
 			{
-			Game.MouseControl.UpdateClip();
+			::MouseControl.UpdateClip();
 			// and inform GUI
 			if (Game.pGUI)
 				//Game.pGUI->SetBounds(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));

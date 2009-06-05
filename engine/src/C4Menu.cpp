@@ -233,13 +233,13 @@ void C4MenuItem::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, 
 	else if (iButton == C4MC_Button_LeftUp)
 		{
 		// left-click performed
-		pMenu->UserEnter(Game.MouseControl.GetPlayer(), this, false);
+		pMenu->UserEnter(::MouseControl.GetPlayer(), this, false);
 		return;
 		}
 	else if (iButton == C4MC_Button_RightUp)
 		{
 		// right-up: Alternative enter command
-		pMenu->UserEnter(Game.MouseControl.GetPlayer(), this, true);
+		pMenu->UserEnter(::MouseControl.GetPlayer(), this, true);
 		return;
 		}
 	// inherited; this is just setting some vars
@@ -250,7 +250,7 @@ void C4MenuItem::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, 
 void C4MenuItem::MouseEnter(C4GUI::CMouse &rMouse)
 	{
 	// callback to menu: Select item
-	pMenu->UserSelectItem(Game.MouseControl.GetPlayer(), this);
+	pMenu->UserSelectItem(::MouseControl.GetPlayer(), this);
 	typedef C4GUI::Element ParentClass;
 	ParentClass::MouseEnter(rMouse);
 	}
@@ -263,7 +263,7 @@ void C4MenuItem::DoDragging(C4GUI::CMouse &rMouse, int32_t iX, int32_t iY, DWORD
 	if (Max(Abs(iX - iDragX), Abs(iY - iDragY)) >= C4MC_DragSensitivity)
 		{
 		// then do a drag!
-		Game.MouseControl.StartConstructionDrag(id);
+		::MouseControl.StartConstructionDrag(id);
 		// this disables the window: Release mouse
 		rMouse.ReleaseButtons();
 		rMouse.pDragElement = NULL;

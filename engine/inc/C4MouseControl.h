@@ -144,4 +144,5 @@ class C4MouseControl
 		int32_t GetPlayer() { return Player; }
 	};
 
+extern C4MouseControl MouseControl;
 #endif

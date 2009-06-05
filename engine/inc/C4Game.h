@@ -97,7 +97,6 @@ class C4Game
 		C4PlayerInfoList	 &RestorePlayerInfos; // Shortcut
 		C4RoundResults      RoundResults;
 		C4GameMessageList		Messages;
-		C4MouseControl			MouseControl;
     C4Weather						Weather;
 		C4MaterialMap				Material;
 		C4GameObjects				Objects;

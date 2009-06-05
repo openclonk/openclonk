@@ -184,7 +184,7 @@ BOOL C4EditCursor::UpdateStatusBar()
 		{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModePlay:
-			if (Game.MouseControl.GetCaption()) str.CopyUntil(Game.MouseControl.GetCaption(),'|');
+			if (::MouseControl.GetCaption()) str.CopyUntil(::MouseControl.GetCaption(),'|');
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModeEdit:
@@ -530,8 +530,8 @@ BOOL C4EditCursor::SetMode(int32_t iMode)
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 	// Update cursor
-	if (Mode==C4CNS_ModePlay) Game.MouseControl.ShowCursor();
-	else Game.MouseControl.HideCursor();
+	if (Mode==C4CNS_ModePlay) ::MouseControl.ShowCursor();
+	else ::MouseControl.HideCursor();
 	// Restore focus
 #ifdef _WIN32
 	SetFocus(hFocus);

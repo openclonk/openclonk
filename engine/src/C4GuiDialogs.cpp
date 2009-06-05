@@ -928,7 +928,7 @@ void FullscreenDialog::DrawBackground(C4TargetFacet &cgo, C4Facet &rFromFct)
 
 void FullscreenDialog::OnHelpBtn(C4GUI::Control *pBtn)
 	{
-	Game.MouseControl.SetHelp();
+	::MouseControl.SetHelp();
 	}
 
 
