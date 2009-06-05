@@ -459,7 +459,7 @@ BOOL C4Player::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny)
 #ifndef C4ENGINE
 	C4DefList *pDefs = NULL;
 #else
-	C4DefList *pDefs = &Game.Defs;
+	C4DefList *pDefs = &::Definitions;
 #endif
 	if (!CrewInfoList.Save(hGroup, fSavegame, fStoreTiny, pDefs))
     { hGroup.Close(); return FALSE; }
@@ -486,8 +486,8 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 			// Set standard crew
 			C4ID idStdCrew = Game.C4S.PlrStart[PlrStartIndex].NativeCrew;
 			// Select member from home crew, add new if necessary
-			while (!(pInfo=CrewInfoList.GetIdle(idStdCrew,Game.Defs)))
-				if (!CrewInfoList.New(idStdCrew,&Game.Defs))
+			while (!(pInfo=CrewInfoList.GetIdle(idStdCrew,::Definitions)))
+				if (!CrewInfoList.New(idStdCrew,&::Definitions))
 					break;
 			// Crew placement location
 			if (!pInfo || !(pDef=C4Id2Def(pInfo->id))) continue;
@@ -527,8 +527,8 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 			for (int32_t cnt2=0; cnt2<iCount; cnt2++)
 				{
 				// Select member from home crew, add new if necessary
-				while (!(pInfo=CrewInfoList.GetIdle(id,Game.Defs)))
-					if (!CrewInfoList.New(id,&Game.Defs))
+				while (!(pInfo=CrewInfoList.GetIdle(id,::Definitions)))
+					if (!CrewInfoList.New(id,&::Definitions))
 						break;
 				// Safety
 				if (!pInfo || !(pDef=C4Id2Def(pInfo->id))) continue;
@@ -688,15 +688,15 @@ BOOL C4Player::ScenarioInit()
   // Wealth, home base materials, abilities
   Wealth=Game.C4S.PlrStart[PlrStartIndex].Wealth.Evaluate();
   HomeBaseMaterial=Game.C4S.PlrStart[PlrStartIndex].HomeBaseMaterial;
-  HomeBaseMaterial.ConsolidateValids(Game.Defs);
+  HomeBaseMaterial.ConsolidateValids(::Definitions);
   HomeBaseProduction=Game.C4S.PlrStart[PlrStartIndex].HomeBaseProduction;
-  HomeBaseProduction.ConsolidateValids(Game.Defs);
+  HomeBaseProduction.ConsolidateValids(::Definitions);
   Knowledge=Game.C4S.PlrStart[PlrStartIndex].BuildKnowledge;
-  Knowledge.ConsolidateValids(Game.Defs);
+  Knowledge.ConsolidateValids(::Definitions);
 	Magic=Game.C4S.PlrStart[PlrStartIndex].Magic;
-	Magic.ConsolidateValids(Game.Defs);
-	if (Magic.IsClear()) Magic.Load(Game.Defs,C4D_Magic); // All magic default if empty
-	Magic.SortByValue(Game.Defs);
+	Magic.ConsolidateValids(::Definitions);
+	if (Magic.IsClear()) Magic.Load(::Definitions,C4D_Magic); // All magic default if empty
+	Magic.SortByValue(::Definitions);
 
   // Starting position
   ptx = Game.C4S.PlrStart[PlrStartIndex].Position[0];
@@ -1138,14 +1138,14 @@ BOOL C4Player::Strip(const char *szFilename, bool fAggressive)
 		if(!PlrInfoCore.Load(Grp) || !CrewInfoList.Load(Grp, false))
 			return FALSE;
 		// Strip crew info list (remove object infos that are invalid for this scenario)
-		CrewInfoList.Strip(Game.Defs);
+		CrewInfoList.Strip(::Definitions);
 		// Create a new group that receives the bare essentials
 		Grp.Close();
 		if(!EraseItem(szFilename) ||
 			 !Grp.Open(szFilename, TRUE))
 			return FALSE;
 		// Save info core & crew info list to newly-created file
-		if(!PlrInfoCore.Save(Grp) || !CrewInfoList.Save(Grp, true, true, &Game.Defs))
+		if(!PlrInfoCore.Save(Grp) || !CrewInfoList.Save(Grp, true, true, &::Definitions))
 			return FALSE;
 		Grp.Close();
 		}
@@ -1184,8 +1184,8 @@ BOOL C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 
 		// Find crew info by id
 		if (!cInf)
-			while (!( cInf = CrewInfoList.GetIdle(pObj->id,Game.Defs) ))
-				if (!CrewInfoList.New(pObj->id,&Game.Defs))
+			while (!( cInf = CrewInfoList.GetIdle(pObj->id,::Definitions) ))
+				if (!CrewInfoList.New(pObj->id,&::Definitions))
 					return FALSE;
 
 		// Set object info

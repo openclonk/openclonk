@@ -162,7 +162,7 @@ bool C4GraphicsResource::InitFonts()
 	if (!Game.FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
 		return false;
 	// assign def list as custom image source
-	FontRegular.SetCustomImages(&Game.Defs);
+	FontRegular.SetCustomImages(&::Definitions);
 	// load additional fonts
 	if (!Game.FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
 	if (!Game.FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;

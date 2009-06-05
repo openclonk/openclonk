@@ -620,7 +620,7 @@ static long FnGetPhysical(C4AulContext *cthr, C4String *szPhysical, long iMode, 
 		if (idDef)
 			{
 			// get def
-			C4Def *pDef=Game.Defs.ID2Def(idDef); if (!pDef) return 0;
+			C4Def *pDef=::Definitions.ID2Def(idDef); if (!pDef) return 0;
 			// return physical value
 			return pDef->Physical.*off;
 			}
@@ -980,7 +980,7 @@ static C4String *FnGetName(C4AulContext *cthr, C4Object *pObj, C4ID idDef/*, boo
 		{
 		/*if (idx)
 			{
-			pDef = Game.Defs.GetDef(idx-1);
+			pDef = ::Definitions.GetDef(idx-1);
 			}
 		else*/
 			pDef=C4Id2Def(idDef);
@@ -1060,7 +1060,7 @@ static C4String *FnGetDesc(C4AulContext *cthr, C4Object *pObj, C4ID idDef)
 	if (pObj)
 		pDef = pObj->Def;
 	else
-		pDef = Game.Defs.ID2Def(idDef);
+		pDef = ::Definitions.ID2Def(idDef);
 	// nothing found?
 	if(!pDef) return NULL;
 	// return desc
@@ -1142,7 +1142,7 @@ static long FnGetMass(C4AulContext *cthr, C4Object *pObj, C4ID idDef)
   {
 	if (idDef)
 		{
-		C4Def *pDef = Game.Defs.ID2Def(idDef);
+		C4Def *pDef = ::Definitions.ID2Def(idDef);
 		if (!pDef) return 0;
 		return pDef->Mass;
 		}
@@ -2749,7 +2749,7 @@ static C4Value FnGetPlrKnowledge_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Va
 	// Search by id, check if available, return bool
 	if (id)	return C4VBool(Game.Players.Get(iPlr)->Knowledge.GetIDCount(id,1) != 0);
 	// Search indexed item of given category, return C4ID
-	return C4VID(Game.Players.Get(iPlr)->Knowledge.GetID( Game.Defs, dwCategory, iIndex ));
+	return C4VID(Game.Players.Get(iPlr)->Knowledge.GetID( ::Definitions, dwCategory, iIndex ));
   }
 
 static C4ID FnGetDefinition(C4AulContext *cthr, long iIndex, long dwCategory)
@@ -2758,7 +2758,7 @@ static C4ID FnGetDefinition(C4AulContext *cthr, long iIndex, long dwCategory)
 	// Default: all categories
 	if (!dwCategory) dwCategory=C4D_All;
 	// Get def
-	if (!(pDef = Game.Defs.GetDef(iIndex,dwCategory))) return C4ID_None;
+	if (!(pDef = ::Definitions.GetDef(iIndex,dwCategory))) return C4ID_None;
 	// Return id
 	return pDef->id;
 	}
@@ -2804,7 +2804,7 @@ static C4Value FnGetHomebaseMaterial_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, 
 	// Search by id, return available count
 	if (id)	return C4VInt(Game.Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
-	return C4VID(Game.Players.Get(iPlr)->HomeBaseMaterial.GetID( Game.Defs, dwCategory, iIndex ));
+	return C4VID(Game.Players.Get(iPlr)->HomeBaseMaterial.GetID( ::Definitions, dwCategory, iIndex ));
 	}
 
 static C4Value FnGetHomebaseProduction_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Value* id_C4V, C4Value* iIndex_C4V, C4Value* dwCategory_C4V)
@@ -2818,7 +2818,7 @@ static C4Value FnGetHomebaseProduction_C4V(C4AulContext *cthr, C4Value* iPlr_C4V
 	// Search by id, return available count
 	if (id)	return C4VInt(Game.Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
-	return C4VID(Game.Players.Get(iPlr)->HomeBaseProduction.GetID( Game.Defs, dwCategory, iIndex ));
+	return C4VID(Game.Players.Get(iPlr)->HomeBaseProduction.GetID( ::Definitions, dwCategory, iIndex ));
 	}
 
 static long FnSetPlrMagic(C4AulContext *cthr, long iPlr, C4ID id, bool fRemove)
@@ -2848,7 +2848,7 @@ static C4Value FnGetPlrMagic_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Value*
 	// Search by id, check if available, return bool
 	if (id)	return C4VBool(Game.Players.Get(iPlr)->Magic.GetIDCount(id,1) != 0);
 	// Search indexed item of given category, return C4ID
-	return C4VID(Game.Players.Get(iPlr)->Magic.GetID( Game.Defs, C4D_Magic, iIndex ));
+	return C4VID(Game.Players.Get(iPlr)->Magic.GetID( ::Definitions, C4D_Magic, iIndex ));
   }
 
 static long FnGetWealth(C4AulContext *cthr, long iPlr)
@@ -5250,7 +5250,7 @@ static long FnReloadDef(C4AulContext* ctx, C4ID idDef, long iReloadWhat)
 		}
 	else
 		// def by ID
-		pDef=Game.Defs.ID2Def(idDef);
+		pDef=::Definitions.ID2Def(idDef);
 	// safety
 	if (!pDef) return false;
 	// reload everything if nothing has been specified
@@ -5580,7 +5580,7 @@ static bool FnSetPortrait(C4AulContext *ctx, C4String *pstrPortrait, C4Object *p
 	if (SEqual(szPortrait, C4Portrait_None)) return pTarget->Info->ClearPortrait(!!fPermanent);
 	// get source def for portrait
 	C4Def *pSourceDef;
-	if (idSourceDef) pSourceDef = Game.Defs.ID2Def(idSourceDef); else pSourceDef=pTarget->Def;
+	if (idSourceDef) pSourceDef = ::Definitions.ID2Def(idSourceDef); else pSourceDef=pTarget->Def;
 	if (!pSourceDef) return FALSE;
 	// special case: random portrait
 	if (SEqual(szPortrait, C4Portrait_Random)) return pTarget->Info->SetRandomPortrait(pSourceDef->id, !!fPermanent, !!fCopyGfx);

@@ -2092,7 +2092,7 @@ void C4Command::Fail(const char *szFailMessage)
 				if (szFailMessage) break;
 				// Fail message with name of target type
 				SCopy(LoadResStr(CommandNameID(Command)), szCommandName);
-				C4Def *pDef; pDef = Game.Defs.ID2Def(Data);
+				C4Def *pDef; pDef = ::Definitions.ID2Def(Data);
 				SCopy(pDef ? pDef->GetName() : LoadResStr("IDS_OBJ_UNKNOWN"), szObjectName);
 				str.Format(LoadResStr("IDS_CON_FAILUREOF"), szCommandName, szObjectName);
 				break;

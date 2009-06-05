@@ -51,7 +51,7 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 	else*/
 		{
 		// just get desc from def
-		C4Def *pGoalDef = Game.Defs.ID2Def(idGoal);
+		C4Def *pGoalDef = ::Definitions.ID2Def(idGoal);
 		if (pGoalDef)
 			{
 			strGoalName.Copy(pGoalDef->GetName());
@@ -66,7 +66,7 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 		sToolTip.Format(LoadResStr("IDS_DESC_GOALNOTFULFILLED"), strGoalName.getData(), strGoalDesc.getData());
 	SetToolTip(sToolTip.getData());
 	// create buffered picture of goal definition
-	C4Def *pDrawDef = Game.Defs.ID2Def(idGoal);
+	C4Def *pDrawDef = ::Definitions.ID2Def(idGoal);
 	if (pDrawDef)
 		{
 		Picture.Create(C4PictureSize, C4PictureSize);

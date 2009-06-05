@@ -429,6 +429,8 @@ class C4DefList
 		void SortByID(); // sorts list by quick access table
   };
 
+extern C4DefList Definitions;
+
 // Default Action Procedures
 
 #define DFA_NONE    -1

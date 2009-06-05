@@ -312,7 +312,7 @@ void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 	if(fCompiler)
 		{
 		// search definition, throw expection if not found
-		C4Def *pDef = Game.Defs.ID2Def(id);
+		C4Def *pDef = ::Definitions.ID2Def(id);
 		// search def-graphics
 		if(!pDef || !( pDefGraphics = pDef->Graphics.Get(Name.getData()) ))
 			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), C4IdText(id), pDef ? pDef->Name.getData() : "def not found");
@@ -706,7 +706,7 @@ void C4GraphicsOverlay::Read(const char **ppInput)
 		}
 	// get ID
 	char id[5]; SCopy(szReadFrom, id, 4); szReadFrom += 6;
-	C4Def *pSrcDef = Game.Defs.ID2Def(C4Id(id)); // defaults to NULL for unloaded def
+	C4Def *pSrcDef = ::Definitions.ID2Def(C4Id(id)); // defaults to NULL for unloaded def
 	if (pSrcDef)
 		{
 		char GfxName[C4MaxName+1];

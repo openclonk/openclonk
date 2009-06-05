@@ -1957,7 +1957,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_PLR_NOBKNOW"),pPlayer->GetName()).getData(),
 				this,C4MN_Extra_Components,0,iMenu);
 			// Add player's structure build knowledge
-		  for (cnt=0; pDef=C4Id2Def(pPlayer->Knowledge.GetID(Game.Defs,C4D_Structure,cnt,&iCount)); cnt++)
+		  for (cnt=0; pDef=C4Id2Def(pPlayer->Knowledge.GetID(::Definitions,C4D_Structure,cnt,&iCount)); cnt++)
 				{
 				// Caption
 				sprintf(szCaption,LoadResStr("IDS_MENU_CONSTRUCT"),pDef->GetName());
@@ -2665,7 +2665,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( mkC4IDAdapt(id),									"id",									C4ID_None					));
 	if(fCompiler)
 		{
-		Def = Game.Defs.ID2Def(id);
+		Def = ::Definitions.ID2Def(id);
 		if(!Def)
 			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),C4IdText(id)); return; }
 		}

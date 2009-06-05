@@ -104,27 +104,27 @@ BOOL C4Game::InitDefs()
 		int iMinProgress = 10 + (25 * i) / iDefResCount;
 		int iMaxProgress = 10 + (25 * (i + 1)) / iDefResCount;
 		++i;
-		iDefs+=Defs.Load(pDef->getFile(),C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem,TRUE,iMinProgress,iMaxProgress);
+		iDefs+=::Definitions.Load(pDef->getFile(),C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem,TRUE,iMinProgress,iMaxProgress);
 
 		// Def load failure
-		if (Defs.LoadFailure) return FALSE;
+		if (::Definitions.LoadFailure) return FALSE;
 		}
 
 	// Load for scenario file - ignore sys group here, because it has been loaded already
-	iDefs+=Defs.Load(ScenarioFile,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem,TRUE,TRUE,35,40, false);
+	iDefs+=::Definitions.Load(ScenarioFile,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem,TRUE,TRUE,35,40, false);
 
 	// Absolutely no defs: we don't like that
 	if (!iDefs) { LogFatal(LoadResStr("IDS_PRC_NODEFS")); return FALSE; }
 
 	// Check def engine version (should be done immediately on def load)
-	iDefs=Defs.CheckEngineVersion(C4XVER1,C4XVER2,C4XVER3,C4XVER4);
+	iDefs=::Definitions.CheckEngineVersion(C4XVER1,C4XVER2,C4XVER3,C4XVER4);
   if (iDefs>0) { LogF(LoadResStr("IDS_PRC_DEFSINVC4X"),iDefs); }
 
 	// Check for unmet requirements
-	Defs.CheckRequireDef();
+	::Definitions.CheckRequireDef();
 
 	// build quick access table
-	Defs.BuildTable();
+	::Definitions.BuildTable();
 
 	// get default particles
 	Particles.SetDefParticles();
@@ -547,7 +547,7 @@ void C4Game::Clear()
 	Weather.Clear();
 	GraphicsSystem.Clear();
   DeleteObjects(true);
-  Defs.Clear();
+  ::Definitions.Clear();
 	Landscape.Clear();
 	PXS.Clear();
 	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
@@ -1561,7 +1561,7 @@ BOOL C4Game::DropFile(const char *szFilename, float iX, float iY)
 		if (c_id=DefFileGetID(szFilename))
 			// Get loaded def or try to load def from file
 			if ( (cdef=C4Id2Def(c_id))
-				|| (Defs.Load(szFilename,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem) && (cdef=C4Id2Def(c_id))) )
+				|| (::Definitions.Load(szFilename,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem) && (cdef=C4Id2Def(c_id))) )
 				{
 				return DropDef(c_id, iX, iY);
 				}
@@ -1675,7 +1675,7 @@ void C4Game::Default()
 	ObjectEnumerationIndex=0;
 	FullSpeed=FALSE;
 	FrameSkip=1; DoSkipFrame=false;
-  Defs.Default();
+  ::Definitions.Default();
   Material.Default();
   Objects.Default();
 	BackObjects.Default();
@@ -2137,10 +2137,10 @@ BOOL C4Game::ReloadFile(const char *szFile)
   const char *szRelativePath = Config.AtRelativePath(szFile);
   // a definition? or part of a definition?
   C4Def *pDef;
-  if(pDef = Defs.GetByPath(szRelativePath))
+  if(pDef = ::Definitions.GetByPath(szRelativePath))
     return ReloadDef(pDef->id);
   // script?
-  if(ScriptEngine.ReloadScript(szRelativePath, &Defs))
+  if(ScriptEngine.ReloadScript(szRelativePath, &::Definitions))
     {
     return TRUE;
     }
@@ -2157,12 +2157,12 @@ BOOL C4Game::ReloadDef(C4ID id)
 	Synchronize(FALSE);
 	// reload def
 	C4ObjectLink *clnk;
-	C4Def *pDef = Defs.ID2Def(id);
+	C4Def *pDef = ::Definitions.ID2Def(id);
 	if (!pDef) return FALSE;
 	// Message
 	LogF("Reloading %s from %s",C4IdText(pDef->id),GetFilename(pDef->Filename));
 	// Reload def
-	if (Defs.Reload(pDef,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem))
+	if (::Definitions.Reload(pDef,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem))
 		{
 		// Success, update all concerned object faces
 		// may have been done by graphics-update already - but not for objects using graphics of another def
@@ -2183,7 +2183,7 @@ BOOL C4Game::ReloadDef(C4ID id)
 		// safety: If a removed def is being profiled, profiling must stop
 		C4AulProfiler::Abort();
 		// Kill def
-		Defs.Remove(pDef);
+		::Definitions.Remove(pDef);
 		// Log
 		Log("Reloading failure. All objects of this type removed.");
 		fSucc = false;
@@ -2284,7 +2284,7 @@ BOOL C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		SetInitProgress(58);
 
 		// Colorize defs by material
-		Defs.ColorizeByMaterial(Material,GBM);
+		::Definitions.ColorizeByMaterial(Material,GBM);
 		SetInitProgress(59);
 
 		// Videos
@@ -2474,7 +2474,7 @@ BOOL C4Game::InitScriptEngine()
 BOOL C4Game::LinkScriptEngine()
 	{
 	// Link script engine (resolve includes/appends, generate code)
-	ScriptEngine.Link(&Defs);
+	ScriptEngine.Link(&::Definitions);
 
 	// Set name list for globals
 	ScriptEngine.GlobalNamed.SetNameList(&ScriptEngine.GlobalNamedNames);
@@ -3437,7 +3437,7 @@ void C4Game::Synchronize(BOOL fSavePlayerFiles)
 	// Fix random
 	FixRandom(RandomSeed);
 	// Synchronize members
-	Defs.Synchronize();
+	::Definitions.Synchronize();
 	Landscape.Synchronize();
 	MassMover.Synchronize();
 	PXS.Synchronize();
@@ -3711,7 +3711,7 @@ void C4Game::InitValueOverloads()
 	C4ID idOvrl; C4Def *pDef;
 	// set new values
 	for (int32_t cnt=0; idOvrl=C4S.Game.Realism.ValueOverloads.GetID(cnt); cnt++)
-		if (pDef=Defs.ID2Def(idOvrl))
+		if (pDef=::Definitions.ID2Def(idOvrl))
 			pDef->Value=C4S.Game.Realism.ValueOverloads.GetIDCount(idOvrl);
 	}
 
@@ -4018,7 +4018,7 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 		C4ID idPortrait;
 		const char *szPortraitName = C4Portrait::EvaluatePortraitString(szSpec, idPortrait, C4ID_None, &dwClr);
 		if (idPortrait == C4ID_None) return false;
-		C4Def *pPortraitDef = Game.Defs.ID2Def(idPortrait);
+		C4Def *pPortraitDef = ::Definitions.ID2Def(idPortrait);
 		if (!pPortraitDef || !pPortraitDef->Portraits) return false;
 		C4DefGraphics *pDefPortraitGfx = pPortraitDef->Portraits->Get(szPortraitName);
 		if (!pDefPortraitGfx) return false;

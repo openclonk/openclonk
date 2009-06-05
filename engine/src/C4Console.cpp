@@ -1339,7 +1339,7 @@ void C4Console::EditScript()
 	{
 	if (::Network.isEnabled()) return;
 	Game.Script.Open();
-  ::ScriptEngine.ReLink(&Game.Defs);
+  ::ScriptEngine.ReLink(&::Definitions);
 	}
 
 void C4Console::EditInfo()

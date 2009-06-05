@@ -926,7 +926,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	switch (Extra)
 		{
 		case C4MN_Extra_Components:
-			if (pItem) pItem->Components.Draw(cgoExtra,-1,Game.Defs,C4D_All,TRUE,C4FCT_Right | C4FCT_Triple | C4FCT_Half);
+			if (pItem) pItem->Components.Draw(cgoExtra,-1,::Definitions,C4D_All,TRUE,C4FCT_Right | C4FCT_Triple | C4FCT_Half);
 			break;
 		case C4MN_Extra_Value:
 			{
@@ -953,7 +953,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 				::GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
 				cgoExtra.Wdt = cgoExtra.X - iOriginalX - 5;
 				cgoExtra.X = iOriginalX;
-				pItem->Components.Draw(cgoExtra,-1,Game.Defs,C4D_All,TRUE,C4FCT_Right | C4FCT_Triple | C4FCT_Half);
+				pItem->Components.Draw(cgoExtra,-1,::Definitions,C4D_All,TRUE,C4FCT_Right | C4FCT_Triple | C4FCT_Half);
 				}
 			break;
 		}

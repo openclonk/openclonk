@@ -135,7 +135,7 @@ BOOL C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 			const char *szPortraitName; C4ID idPortraitID;
 			szPortraitName = C4Portrait::EvaluatePortraitString(PortraitFile, idPortraitID, id, NULL);
 			// get portrait def
-			C4Def *pPortraitDef = Game.Defs.ID2Def(idPortraitID);
+			C4Def *pPortraitDef = ::Definitions.ID2Def(idPortraitID);
 			// def found?
 			if (pPortraitDef && pPortraitDef->Portraits)
 				{
@@ -373,7 +373,7 @@ void C4ObjectInfo::Recruit()
 #ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	InActionTime=Game.Time;
 	// rank name overload by def?
-	C4Def *pDef=Game.Defs.ID2Def(id);
+	C4Def *pDef=::Definitions.ID2Def(id);
 	if (pDef) if (pDef->pRankNames)
 		{
 		StdStrBuf sRank(pDef->pRankNames->GetRankName(Rank, true));
@@ -407,7 +407,7 @@ bool C4ObjectInfo::SetRandomPortrait(C4ID idSourceDef, bool fAssignPermanently, 
 	if (!idSourceDef)
 		idSourceDef = id;
 	// Get source def
-	C4Def* pPortraitDef = Game.Defs.ID2Def(idSourceDef);
+	C4Def* pPortraitDef = ::Definitions.ID2Def(idSourceDef);
 	// Portrait source def not loaded: do not assign a portrait now, so the clonk can get
 	// the correct portrait later when the source def is available (assuming this clonk is
 	// not going to be used in this round anyway)
@@ -417,7 +417,7 @@ bool C4ObjectInfo::SetRandomPortrait(C4ID idSourceDef, bool fAssignPermanently, 
 	if (!pPortraitDef->PortraitCount)
 		{
 		// Then use CLNK portraits (2do: base on include chains in latter case)?
-		pPortraitDef = Game.Defs.ID2Def(C4ID_Clonk);
+		pPortraitDef = ::Definitions.ID2Def(C4ID_Clonk);
 		// Assign permanently, assuming it is some kind of normal clonk here...
 		fAssignPermanently=true;
 		fCopyFile=false;

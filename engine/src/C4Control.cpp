@@ -226,9 +226,9 @@ void C4ControlSet::Execute() const
 		if (Game.IsRunning)
 			{
 			// invalidate fair crew physicals
-			const int iDefCount = Game.Defs.GetDefCount();
+			const int iDefCount = ::Definitions.GetDefCount();
 			for(int i = 0; i < iDefCount; i++)
-				Game.Defs.GetDef(i)->ClearFairCrewPhysicals();
+				::Definitions.GetDef(i)->ClearFairCrewPhysicals();
 			// show msg
 			if(Game.Parameters.UseFairCrew)
 				{

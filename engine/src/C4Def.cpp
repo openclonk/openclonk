@@ -1765,3 +1765,5 @@ void C4DefList::ResetIncludeDependencies()
 	for (pDef=FirstDef; pDef; pDef=pDef->Next)
 		pDef->ResetIncludeDependencies();
 	}
+
+C4DefList Definitions;

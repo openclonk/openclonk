@@ -193,7 +193,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			if (!(pPlayer = Game.Players.Get(pTarget->Base))) return FALSE;
 			C4Player *pBuyPlayer = Object ? Game.Players.Get(Object->Owner) : NULL;
 			C4ID idDef;
-		  for (cnt=0; idDef=pPlayer->HomeBaseMaterial.GetID(Game.Defs,C4D_All,cnt,&iCount); cnt++)
+		  for (cnt=0; idDef=pPlayer->HomeBaseMaterial.GetID(::Definitions,C4D_All,cnt,&iCount); cnt++)
 				{
 				pDef=C4Id2Def(idDef);
 				if (!pDef) continue; // skip invalid defs

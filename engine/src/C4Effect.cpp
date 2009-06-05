@@ -54,7 +54,7 @@ C4AulScript *C4Effect::GetCallbackScript()
 		// overwrite ID for sync safety in runtime join
 		idCommandTarget = pCommandTarget->id;
 		}
-	else if (idCommandTarget && (pDef=Game.Defs.ID2Def(idCommandTarget)))
+	else if (idCommandTarget && (pDef=::Definitions.ID2Def(idCommandTarget)))
 		pSrcScript = &pDef->Script;
 	else
 		pSrcScript = &::ScriptEngine;
@@ -426,7 +426,7 @@ C4Value C4Effect::DoCall(C4Object *pObj, const char *szFn, C4Value &rVal1, C4Val
 		// overwrite ID for sync safety in runtime join
 		idCommandTarget = pCommandTarget->id;
 		}
-	else if (idCommandTarget && (pDef=Game.Defs.ID2Def(idCommandTarget)))
+	else if (idCommandTarget && (pDef=::Definitions.ID2Def(idCommandTarget)))
 		pSrcScript = &pDef->Script;
 	else
 		pSrcScript = &::ScriptEngine;

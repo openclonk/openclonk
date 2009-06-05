@@ -37,7 +37,7 @@
 
 inline C4Def *C4Id2Def(C4ID id)
   {
-  return Game.Defs.ID2Def(id);
+  return ::Definitions.ID2Def(id);
   }
 
 //=============================== Sound ==================================================

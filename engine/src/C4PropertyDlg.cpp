@@ -215,7 +215,7 @@ BOOL C4PropertyDlg::Update()
 				{
 				Output.Append(LineFeed);
 				Output.Append(LoadResStr("IDS_CNS_CONTENTS"));
-				Output.Append(static_cast<const StdStrBuf &>(cobj->Contents.GetNameList(Game.Defs)));
+				Output.Append(static_cast<const StdStrBuf &>(cobj->Contents.GetNameList(::Definitions)));
 				}
 			// Action
 			if (cobj->Action.Act!=ActIdle)
