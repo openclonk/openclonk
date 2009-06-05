@@ -30,6 +30,7 @@
 #include <C4Viewport.h>
 #include <C4Wrappers.h>
 #include <C4Player.h>
+#include <C4MouseControl.h>
 #endif
 
 const int32_t 		C4MN_DefInfoWdt     = 270, // default width of info windows

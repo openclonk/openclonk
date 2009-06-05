@@ -29,6 +29,8 @@
 #include <C4Teams.h>
 #include <C4Game.h>
 #include <C4FileSelDlg.h>
+#include <C4GraphicsResource.h>
+#include <C4MouseControl.h>
 #endif
 
 DWORD GenerateRandomPlayerColor(int32_t iTry); // in C4PlayerInfoConflicts.cpp

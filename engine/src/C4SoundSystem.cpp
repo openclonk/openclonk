@@ -30,6 +30,7 @@
 #include <C4Game.h>
 #include <C4Config.h>
 #include <C4Application.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 C4SoundEffect::C4SoundEffect():

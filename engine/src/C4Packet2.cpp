@@ -19,10 +19,13 @@
  */
 #include "C4Include.h"
 
-#include "C4Game.h"
+
 #include "C4Network2Res.h"
 #include "C4Version.h"
 #include "C4GameLobby.h"
+#include <C4Network2.h>
+#include <C4RoundResults.h>
+#include <C4GameControlNetwork.h>
 
 // *** constants
 

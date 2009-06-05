@@ -32,6 +32,8 @@
 #include <C4Language.h>
 #include <C4FileSelDlg.h>
 #include <C4Log.h>
+#include <C4GraphicsResource.h>
+#include <C4RankSystem.h>
 #endif
 #include <cctype>
 

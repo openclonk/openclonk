@@ -28,7 +28,7 @@
 #ifndef BIG_C4INCLUDE
 
 #include <C4Group.h>
-#include <C4Game.h>
+#include <C4PXS.h>
 #include <C4Random.h>
 #include <C4ToolsDlg.h> // For C4TLS_MatSky...
 #ifdef C4ENGINE

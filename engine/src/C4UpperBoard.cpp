@@ -24,6 +24,7 @@
 #include <C4Game.h>
 #include <C4Config.h>
 #include <C4Application.h>
+#include <C4GraphicsResource.h>
 #endif
 
 C4UpperBoard::C4UpperBoard()

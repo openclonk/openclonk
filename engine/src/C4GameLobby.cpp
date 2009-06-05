@@ -33,6 +33,7 @@
 #include "C4RTF.H"
 #include "C4ChatDlg.h"
 #include "C4PlayerInfoListBox.h"
+#include <C4MessageInput.h>
 #endif
 
 namespace C4GameLobby {

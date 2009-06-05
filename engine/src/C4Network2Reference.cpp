@@ -18,9 +18,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 #include "C4Include.h"
-#ifdef C4ENGINE
-#include "C4Game.h"
-#endif
+#include <C4Game.h>
 #include "C4Version.h"
 #include "C4Network2Reference.h"
 

@@ -42,6 +42,8 @@
 #include <C4Application.h>
 #include <C4Wrappers.h>
 #include <C4Stat.h>
+#include <C4MassMover.h>
+#include <C4PXS.h>
 #endif
 
 #include <StdPNG.h>

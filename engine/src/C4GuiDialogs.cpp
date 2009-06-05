@@ -33,6 +33,7 @@
 #include <C4Console.h>
 #include <C4Def.h>
 #include <C4Wrappers.h>
+#include <C4MouseControl.h>
 #endif
 
 #include <StdGL.h>

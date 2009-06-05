@@ -27,6 +27,7 @@
 #include <C4Network2IO.h>
 #include <C4Network2Stats.h>
 #include <C4GameLobby.h> // fullscreen network lobby
+#include <C4Game.h>
 #endif
 
 #ifndef _WIN32

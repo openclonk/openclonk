@@ -21,7 +21,7 @@
 
 #include "C4Include.h"
 #include "C4GameOptions.h"
-#include "C4Game.h"
+#include <C4Game.h>
 
 // ----------- C4GameOptionsList::Option ----------------------------------------------------------------
 

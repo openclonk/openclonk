@@ -45,6 +45,8 @@
 #include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4ObjectMenu.h>
+#include <C4RankSystem.h>
+#include <C4GameVersion.h>
 #endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)

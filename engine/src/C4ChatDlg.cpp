@@ -22,9 +22,10 @@
 
 #include "C4Include.h"
 #include "C4ChatDlg.h"
-#include "C4Game.h"
+
 #include "C4InputValidation.h"
 #include "C4Network2IRC.h"
+#include "C4MessageInput.h"
 
 void convUTF8toWindows(StdStrBuf &sText)
 {

@@ -29,6 +29,8 @@
 #include <C4Console.h>
 #include <C4FullScreen.h>
 #include <C4Log.h>
+#include <C4Game.h>
+#include <C4Version.h>
 
 C4Application Application;
 C4Console			Console;

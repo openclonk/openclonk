@@ -31,6 +31,9 @@
 #include <C4Game.h>
 #include <C4Landscape.h>
 #include <C4Log.h>
+#include "C4Texture.h"
+#include "C4GraphicsSystem.h"
+#include "C4GraphicsResource.h"
 #endif
 
 //=================================== ID2Def ==============================================

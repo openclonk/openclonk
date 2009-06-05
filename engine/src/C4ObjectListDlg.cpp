@@ -24,6 +24,7 @@
 #include <C4Console.h>
 #include <C4Object.h>
 #include <C4Language.h>
+#include <C4Game.h>
 
 
 #ifdef WITH_DEVELOPER_MODE

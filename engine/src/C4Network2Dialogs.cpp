@@ -27,9 +27,10 @@
 #ifndef BIG_C4INCLUDE
 #include "C4Network2.h"
 #include "C4Network2Stats.h"
-#include "C4Game.h"
+
 #include "C4Viewport.h"
 #include "C4GameOptions.h"
+#include <C4Game.h>
 #endif
 
 #ifndef HAVE_WINSOCK

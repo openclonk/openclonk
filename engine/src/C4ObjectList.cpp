@@ -29,6 +29,7 @@
 #include <C4Object.h>
 #include <C4Wrappers.h>
 #include <C4Application.h>
+#include <C4Region.h>
 #endif
 
 C4ObjectList::C4ObjectList(): FirstIter(0)

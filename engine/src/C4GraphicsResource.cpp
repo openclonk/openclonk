@@ -29,6 +29,7 @@
 #include <C4Gui.h>
 #include <C4Log.h>
 #include <C4Game.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 #include <StdGL.h>

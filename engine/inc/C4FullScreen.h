@@ -26,10 +26,6 @@
 #include "C4MainMenu.h"
 #include <StdWindow.h>
 
-#ifndef BIG_C4INCLUDE
-#include "C4Game.h"
-#endif
-
 bool IsKeyDown(int iKey);
 
 class C4FullScreen: public CStdWindow

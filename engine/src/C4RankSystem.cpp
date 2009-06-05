@@ -29,6 +29,7 @@
 #include <C4ComponentHost.h>
 #include <C4FacetEx.h>
 #include <C4Game.h>
+#include <C4GraphicsResource.h>
 #endif
 
 #include <StdRegistry.h>

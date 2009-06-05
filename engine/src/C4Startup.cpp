@@ -32,6 +32,8 @@
 #include <C4Game.h>
 #include <C4Application.h>
 #include <C4Log.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)

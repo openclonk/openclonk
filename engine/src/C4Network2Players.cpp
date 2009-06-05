@@ -25,7 +25,8 @@
 #include "C4Network2Players.h"
 #include "C4PlayerInfo.h"
 #include "C4GameLobby.h"
-#include "C4Game.h"
+#include <C4Game.h>
+
 #include "C4Control.h"
 
 // *** C4Network2Players

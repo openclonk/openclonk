@@ -32,6 +32,9 @@
 #include <C4Console.h>
 #include <C4Log.h>
 #include <C4Player.h>
+#include <C4Landscape.h>
+#include <C4PXS.h>
+#include <C4MassMover.h>
 #endif
 
 // *** C4GameSave main class

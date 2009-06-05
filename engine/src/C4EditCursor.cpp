@@ -32,6 +32,7 @@
 #include <C4Application.h>
 #include <C4Random.h>
 #include <C4Wrappers.h>
+#include <C4MouseControl.h>
 #endif
 
 #ifdef WITH_DEVELOPER_MODE

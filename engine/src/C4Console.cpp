@@ -28,10 +28,14 @@
 #include <C4Application.h>
 
 #include <C4GameSave.h>
+#include <C4Game.h>
+#include <C4MessageInput.h>
 #include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
 #include <C4Player.h>
+#include <C4Landscape.h>
+#include <C4GraphicsSystem.h>
 
 #include <StdFile.h>
 #include <StdRegistry.h>

@@ -41,6 +41,9 @@
 #include <C4ObjectInfoList.h>
 #include <C4Player.h>
 #include <C4ObjectMenu.h>
+#include <C4RankSystem.h>
+#include <C4PXS.h>
+#include <C4MessageInput.h>
 #endif
 
 //========================== Some Support Functions =======================================

@@ -41,6 +41,8 @@
 #include <C4Player.h>
 #include <C4ChatDlg.h>
 #include <C4ObjectMenu.h>
+#include <C4MouseControl.h>
+#include <C4PXS.h>
 #endif
 
 #include <StdGL.h>

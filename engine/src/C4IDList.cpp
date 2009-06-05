@@ -27,7 +27,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Def.h>
 #include <C4Application.h>
-#include <C4Game.h>
+#include <C4GraphicsResource.h>
 #endif
 
 C4IDListChunk::C4IDListChunk()

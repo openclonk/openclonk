@@ -32,6 +32,8 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4Object.h>
+#include <C4Game.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 C4PlayerList::C4PlayerList()

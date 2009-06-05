@@ -28,7 +28,6 @@
 #include "C4ToolsDlg.h"
 #include "C4ObjectListDlg.h"
 #include "C4EditCursor.h"
-#include "C4Game.h"
 
 #include <StdWindow.h>
 

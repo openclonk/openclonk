@@ -23,7 +23,8 @@
 #include <C4FileSelDlg.h>
 
 #ifndef BIG_C4INCLUDE
-#include <C4Game.h> // only for single use of ::GraphicsResource.fctOKCancel below...
+#include <C4GraphicsResource.h> // only for single use of ::GraphicsResource.fctOKCancel below...
+#include <C4Version.h>
 #endif
 
 #ifdef _WIN32

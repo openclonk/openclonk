@@ -31,6 +31,7 @@
 #include <C4Wrappers.h>
 #include <C4Log.h>
 #include <C4GamePadCon.h>
+#include <C4MouseControl.h>
 #endif
 
 namespace C4GUI {

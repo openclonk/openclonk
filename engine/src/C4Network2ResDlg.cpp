@@ -22,7 +22,7 @@
 #include "C4Include.h"
 #include "C4GameLobby.h"
 #include "C4FullScreen.h"
-#include "C4Game.h"
+
 #include "C4Network2.h"
 #include "C4PlayerInfo.h"
 #include "C4Network2Players.h"

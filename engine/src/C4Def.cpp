@@ -35,7 +35,7 @@
 #include <C4Components.h>
 #include <C4Config.h>
 #include <C4ValueList.h>
-
+#include <C4RankSystem.h>
 #ifdef C4ENGINE
 #include <C4Wrappers.h>
 #include <C4Object.h>

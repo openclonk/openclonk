@@ -58,6 +58,11 @@
 #include <C4ObjectMenu.h>
 #include <C4GameLobby.h>
 #include <C4ChatDlg.h>
+#include <C4MouseControl.h>
+#include <C4PXS.h>
+#include <C4MessageInput.h>
+#include <C4MassMover.h>
+#include <C4RankSystem.h>
 #endif
 
 #include <StdFile.h>

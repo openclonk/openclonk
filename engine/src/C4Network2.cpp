@@ -30,6 +30,9 @@
 #include <C4Console.h>
 #include <C4GameSave.h>
 #include <C4RoundResults.h>
+#include <C4Game.h>
+#include <C4GraphicsSystem.h>
+#include <C4GraphicsResource.h>
 
 // lobby
 #include <C4Gui.h>

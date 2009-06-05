@@ -28,8 +28,11 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Console.h>
 #include <C4GameLobby.h>
+#include <C4Game.h>
 #include <C4LogBuf.h>
 #include <C4Language.h>
+#include <C4Network2.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 #if defined(HAVE_SHARE_H) || defined(_WIN32)

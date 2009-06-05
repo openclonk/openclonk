@@ -27,6 +27,7 @@
 #include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4Viewport.h>
+#include <C4MouseControl.h>
 #endif
 
 

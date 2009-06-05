@@ -36,6 +36,7 @@
 #include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4SoundSystem.h>
+#include <C4MouseControl.h>
 #endif
 
 #include <StdPNG.h>

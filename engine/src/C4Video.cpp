@@ -30,6 +30,8 @@
 #include <C4Application.h>
 #include <C4Game.h>
 #include <C4Player.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 #ifdef _WIN32

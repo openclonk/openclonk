@@ -26,42 +26,24 @@
 
 #ifdef C4ENGINE
 
-#include <C4Def.h>
-#include <C4Texture.h>
-#include <C4RankSystem.h>
-#include <C4GraphicsSystem.h>
-#include <C4GraphicsResource.h>
-#include <C4GameMessage.h>
-#include <C4MouseControl.h>
-#include <C4MessageInput.h>
-#include <C4Weather.h>
-#include <C4Material.h>
-#include <C4GameObjects.h>
-#include <C4Landscape.h>
-#include <C4Scenario.h>
-#include <C4MassMover.h>
-#include <C4PXS.h>
-#include <C4PlayerList.h>
-#include <C4Teams.h>
+#include <C4Client.h>
+#include <C4GameParameters.h>
 #include <C4PlayerInfo.h>
+#include <C4RoundResults.h>
+#include <C4GameMessage.h>
+#include <C4Weather.h>
+#include <C4GameObjects.h>
+#include <C4Scenario.h>
+#include <C4PlayerList.h>
+#include <C4Material.h>
+#include <C4GameControl.h>
 #include <C4Control.h>
 #include <C4PathFinder.h>
-#include <C4ComponentHost.h>
-#include <C4ScriptHost.h>
-#include <C4Particles.h>
-#include <C4GroupSet.h>
 #include <C4Extra.h>
-#include <C4GameControl.h>
 #include <C4Effects.h>
 #include <C4Fonts.h>
-#include "C4LangStringTable.h"
 #include "C4Scoreboard.h"
-#include <C4Network2.h>
-#include <C4Scenario.h>
-#include <C4Client.h>
-#include <C4Network2Reference.h>
 #include <C4VideoPlayback.h>
-#include <C4RoundResults.h>
 
 class C4Game
   {

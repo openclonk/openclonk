@@ -31,6 +31,10 @@
 #endif
 
 #ifndef BIG_C4INCLUDE
+#include "C4Game.h"
+#include "C4GraphicsSystem.h"
+#include "C4GraphicsResource.h"
+#include "C4MessageInput.h"
 #include <C4FileClasses.h>
 #include <C4FullScreen.h>
 #include <C4Language.h>

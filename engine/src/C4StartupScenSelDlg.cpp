@@ -38,6 +38,7 @@
 #include <C4GameDialogs.h>
 #include <C4Language.h>
 #include <C4FileSelDlg.h>
+#include <C4MouseControl.h>
 #endif
 
 #include <set>

@@ -32,6 +32,10 @@
 #include <C4Console.h>
 #include <C4Network2Dialogs.h>
 #include <C4Player.h>
+#include <C4GraphicsSystem.h>
+#include <C4GraphicsResource.h>
+#include <C4MessageInput.h>
+#include <C4Game.h>
 #endif
 
 const int C4LogSize=30000, C4LogMaxLines=1000;

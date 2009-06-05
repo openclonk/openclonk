@@ -35,6 +35,7 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4GameLobby.h>
+#include <C4GraphicsSystem.h>
 #endif
 #include <cctype>
 
