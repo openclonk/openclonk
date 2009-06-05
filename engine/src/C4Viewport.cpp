@@ -932,7 +932,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 			{
 			int32_t cx = C4SymbolBorder;
 			C4ST_STARTNEW(EnStat, "C4Viewport::DrawCursorInfo: Energy")
-			int32_t bar_wdt = Game.GraphicsResource.fctEnergyBars.Wdt;
+			int32_t bar_wdt = ::GraphicsResource.fctEnergyBars.Wdt;
 			int32_t iYOff = Config.Graphics.ShowPortraits ? 10 : 0;
 			// Energy
 			ccgo.Set(cgo.Surface,cgo.X+cx,cgo.Y+C4SymbolSize+2*C4SymbolBorder+iYOff,bar_wdt,cgo.Hgt-3*C4SymbolBorder-2*C4SymbolSize-iYOff);
@@ -975,7 +975,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 	if (pPlr && pPlr->Eliminated)
 		{
 		Application.DDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :	"IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
-			Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+2*cgo.Hgt/3,0xfaFF0000,ACenter);
+			::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+2*cgo.Hgt/3,0xfaFF0000,ACenter);
 		return;
 		}
 
@@ -1038,10 +1038,10 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 	if (fDrawOverlay)
 		{
 		// Draw landscape borders. Only if overlay, so complete map screenshots don't get messed up
-		if (BorderLeft)  Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
-		if (BorderTop)   Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
-		if (BorderRight) Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
-		if (BorderBottom)Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
+		if (BorderLeft)  Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
+		if (BorderTop)   Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
+		if (BorderRight) Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
+		if (BorderBottom)Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
 
 		// Set clippers
 		cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/Zoom);
@@ -1333,7 +1333,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 						 cgo.X+cgo.Wdt-wdt-C4SymbolBorder,
 						 cgo.Y+C4SymbolBorder,
 						 wdt,hgt);
-		Game.GraphicsResource.fctWealth.DrawValue(ccgo,Game.Players.Get(Player)->Wealth, 0, Config.Graphics.Currency);
+		::GraphicsResource.fctWealth.DrawValue(ccgo,Game.Players.Get(Player)->Wealth, 0, Config.Graphics.Currency);
 		}
 
 	// Value gain
@@ -1346,7 +1346,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 							 cgo.X+cgo.Wdt-2*wdt-2*C4SymbolBorder,
 							 cgo.Y+C4SymbolBorder,
 							 wdt,hgt);
-			Game.GraphicsResource.fctScore.DrawValue(ccgo,Game.Players.Get(Player)->ValueGain);
+			::GraphicsResource.fctScore.DrawValue(ccgo,Game.Players.Get(Player)->ValueGain);
 			}
 
 	// Crew
@@ -1358,7 +1358,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 						 cgo.X+cgo.Wdt-3*wdt-3*C4SymbolBorder,
 						 cgo.Y+C4SymbolBorder,
 						 wdt,hgt);
-		Game.GraphicsResource.fctCrewClr.DrawValue2Clr(ccgo,Game.Players.Get(Player)->SelectCount,Game.Players.Get(Player)->ActiveCrewCount(),Game.Players.Get(Player)->ColorDw);
+		::GraphicsResource.fctCrewClr.DrawValue2Clr(ccgo,Game.Players.Get(Player)->SelectCount,Game.Players.Get(Player)->ActiveCrewCount(),Game.Players.Get(Player)->ColorDw);
 		}
 
 	// Controls
@@ -1519,7 +1519,7 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 		}
 
 	// Name
-	Application.DDraw->TextOut(pPlr->GetName(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
+	Application.DDraw->TextOut(pPlr->GetName(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 				cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt*2/3+iNameHgtOff + DrawMessageOffset,
 				pPlr->ColorDw | 0xff000000, ACenter);
 	}

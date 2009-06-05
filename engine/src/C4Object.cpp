@@ -2333,8 +2333,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		// Open MoveTo stack
 		if (iMoveTos) { Cmds.AppendChar('|'); Cmds.AppendFormat("%dx MoveTo",iMoveTos); iMoveTos=0; }
 		// Draw message
-		int32_t cmwdt,cmhgt;  Game.GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
-		Application.DDraw->TextOut(Cmds.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+		int32_t cmwdt,cmhgt;  ::GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
+		Application.DDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
     }
   // Debug Display ///////////////////////////////////////////////////////////////////////////////
 
@@ -2377,7 +2377,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 			        offY + fr.y,
 			        fr.Wdt, fr.Hgt);
 			}
-		Game.GraphicsResource.fctFire.Draw(fgo,FALSE,FirePhase);
+		::GraphicsResource.fctFire.Draw(fgo,FALSE,FirePhase);
 		}
 
 	// color modulation (including construction sign...)
@@ -2434,7 +2434,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	// Energy shortage
 	if (NeedEnergy) if (Tick35>12) if (eDrawMode!=ODM_BaseOnly)
 		{
-		C4Facet &fctEnergy = Game.GraphicsResource.fctEnergy;
+		C4Facet &fctEnergy = ::GraphicsResource.fctEnergy;
 		int32_t tx=cox+Shape.Wdt/2-fctEnergy.Wdt/2, ty=coy-fctEnergy.Hgt-5;
 		fctEnergy.Draw(cgo.Surface,cgo.X+tx,cgo.Y+ty);
 		}
@@ -2477,8 +2477,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 			{
 			StdStrBuf str;
 			str.Format("%s (%d)",Def->ActMap[Action.Act].Name,Action.Phase);
-			int32_t cmwdt,cmhgt; Game.GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
-			Application.DDraw->TextOut(str.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-cmhgt,InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+			int32_t cmwdt,cmhgt; ::GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
+			Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-cmhgt,InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
 			}
 		}
   // Debug Display ///////////////////////////////////////////////////////////////////////
@@ -2520,16 +2520,16 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 				else
 					SCopy(GetName(),szText);
 				// Word wrap to cgo width
-				int32_t iCharWdt, dummy; Game.GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
+				int32_t iCharWdt, dummy; ::GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
 				int32_t iMaxLine = Max<int32_t>( cgo.Wdt / iCharWdt, 20 );
 				SWordWrap(szText,' ','|',iMaxLine);
 				// Adjust position by output boundaries
 				int32_t iTX,iTY,iTWdt,iTHgt;
-				Game.GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
+				::GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
 				iTX = BoundBy<int>( X-cotx, iTWdt/2, cgo.Wdt-iTWdt/2 );
 				iTY = BoundBy<int>( Y-coty-iTHgt, 0, cgo.Hgt-iTHgt );
 				// Draw
-				Application.DDraw->TextOut(szText, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + iTX, cgo.Y + iTY,
+				Application.DDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + iTX, cgo.Y + iTY,
 														pOwner->ColorDw|0x7f000000,ACenter);
 				}
 			}
@@ -2551,7 +2551,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// Construction sign
 	if (OCF & OCF_Construct) if (r==0) if (eDrawMode!=ODM_BaseOnly)
 		{
-		C4Facet &fctConSign = Game.GraphicsResource.fctConstruction;
+		C4Facet &fctConSign = ::GraphicsResource.fctConstruction;
 		lpDDraw->Blit(fctConSign.Surface,
 			fctConSign.X, fctConSign.Y,
 			fctConSign.Wdt, fctConSign.Hgt,
@@ -2639,20 +2639,20 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 void C4Object::DrawEnergy(C4Facet &cgo)
 	{
 	//cgo.DrawEnergyLevel(Energy,GetPhysical()->Energy);
-	cgo.DrawEnergyLevelEx(Energy,GetPhysical()->Energy, Game.GraphicsResource.fctEnergyBars, 0);
+	cgo.DrawEnergyLevelEx(Energy,GetPhysical()->Energy, ::GraphicsResource.fctEnergyBars, 0);
 	}
 
 void C4Object::DrawMagicEnergy(C4Facet &cgo)
 	{
 	// draw in units of MagicPhysicalFactor, so you can get a full magic energy bar by script even if partial magic energy training is not fulfilled
 	//cgo.DrawEnergyLevel(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor,39);
-	cgo.DrawEnergyLevelEx(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor, Game.GraphicsResource.fctEnergyBars, 1);
+	cgo.DrawEnergyLevelEx(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor, ::GraphicsResource.fctEnergyBars, 1);
 	}
 
 void C4Object::DrawBreath(C4Facet &cgo)
 	{
 	//cgo.DrawEnergyLevel(Breath,GetPhysical()->Breath,99);
-	cgo.DrawEnergyLevelEx(Breath,GetPhysical()->Breath, Game.GraphicsResource.fctEnergyBars, 2);
+	cgo.DrawEnergyLevelEx(Breath,GetPhysical()->Breath, ::GraphicsResource.fctEnergyBars, 2);
 	}
 
 void C4Object::CompileFunc(StdCompiler *pComp)
@@ -2915,7 +2915,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 		tObj->DrawCommand(cgoBottom,C4FCT_Right,NULL,com,pRegions,Owner,
 			FormatString(LoadResStr("IDS_CON_BUILD"), tObj->GetName()).getData(),&ccgo);
 		tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-		Game.GraphicsResource.fctBuild.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE);
+		::GraphicsResource.fctBuild.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE);
 		}
 
 	// Grab target control (control flag)
@@ -2937,7 +2937,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Action.Target->DrawCommand(cgoBottom, C4FCT_Right, NULL, ComOrder(cnt), pRegions, Owner, 
 					FormatString(LoadResStr("IDS_CON_UNGRAB"), Action.Target->GetName()).getData(), &ccgo);
 				Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Action.Target->Color, Action.Target);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 6);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 6);
 				}
 			else if (ComOrder(cnt) == COM_Throw)
 				{
@@ -2947,7 +2947,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 					Action.Target->DrawCommand(cgoBottom, C4FCT_Right, NULL, COM_Throw, pRegions, Owner,
 						FormatString(LoadResStr("IDS_CON_PUT"), tObj->GetName(), Action.Target->GetName()).getData(), &ccgo);
 					tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-					Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 					}
 				// Get
 				else if (Action.Target->Contents.ListIDCount(C4D_Get) && (Action.Target->Def->GrabPutGet & C4D_Grab_Get))
@@ -2955,7 +2955,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 					Action.Target->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 						FormatString(LoadResStr("IDS_CON_GET"),Action.Target->GetName()).getData(), &ccgo);
 					Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Action.Target->Color, Action.Target);
-					Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
+					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
 					}
 				}
 		}
@@ -2978,7 +2978,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			{
 			DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Down,pRegions,Owner,
 								LoadResStr("IDS_CON_EXIT"),&ccgo);
-			Game.GraphicsResource.fctExit.Draw(ccgo);
+			::GraphicsResource.fctExit.Draw(ccgo);
 			}
 		// Contained base commands
 		if (ValidPlr(Contained->Base))
@@ -3009,7 +3009,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Right,pRegions,Owner,
 					FormatString(LoadResStr("IDS_CON_GET"),Contained->GetName()).getData(),&ccgo);
 				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
 				}
 			// carlo: Get ("Take")
 			if (!fContainedLeftOverride)
@@ -3017,7 +3017,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Left,pRegions,Owner,
 					FormatString(LoadResStr("IDS_CON_ACTIVATEFROM"),Contained->GetName()).getData(),&ccgo);
 				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 				}
 			}
 		if (tObj=Contents.GetObject())
@@ -3026,7 +3026,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 				FormatString(LoadResStr("IDS_CON_PUT"),tObj->GetName(),Contained->GetName()).getData(),&ccgo);
 			tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-			Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 			}
 		else if (nContents)
 			{
@@ -3034,7 +3034,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 				FormatString(LoadResStr("IDS_CON_ACTIVATEFROM"),Contained->GetName()).getData(),&ccgo);
 			Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-			Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 			}
 		}
 

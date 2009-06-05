@@ -868,7 +868,7 @@ FullscreenDialog::FullscreenDialog(const char *szTitle, const char *szSubtitle)
 		{
 		// help button disabled; use meaningful captions instead
 		//pBtnHelp = new CallbackButton<FullscreenDialog, IconButton>(Ico_UnknownClient /* 2do: Help icon */, C4Rect(0,0,32,32), 'H' /* 2do */, &FullscreenDialog::OnHelpBtn, this);
-		//C4Facet fctHelp = Game.GraphicsResource.fctOKCancel;
+		//C4Facet fctHelp = ::GraphicsResource.fctOKCancel;
 		//fctHelp.Y += fctHelp.Hgt;
 		//pBtnHelp->SetFacet(fctHelp);
 		//pBtnHelp->SetToolTip("[.!]Help button: Press this button and hover the element you want help for!");
@@ -898,7 +898,7 @@ void FullscreenDialog::DrawElement(C4TargetFacet &cgo)
 	{
 	// draw upper board
 	if (HasUpperBoard())
-		lpDDraw->BlitSurfaceTile(Game.GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-Game.GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,Game.GraphicsResource.fctUpperBoard.Hgt);
+		lpDDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-::GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,::GraphicsResource.fctUpperBoard.Hgt);
 	}
 
 void FullscreenDialog::UpdateOwnPos()

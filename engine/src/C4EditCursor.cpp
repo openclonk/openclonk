@@ -423,9 +423,9 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 		Application.DDraw->DrawLine(cgo.Surface,X*Zoom+cgo.X-cgo.TargetX*Zoom,Y*Zoom+cgo.Y-cgo.TargetY*Zoom,X2*Zoom+cgo.X-cgo.TargetX*Zoom,Y2*Zoom+cgo.Y-cgo.TargetY*Zoom,CWhite);
 	// Draw drop target
 	if (DropTarget)
-		Game.GraphicsResource.fctDropTarget.Draw(cgo.Surface,
-											 DropTarget->GetX()*Zoom+cgo.X-cgo.TargetX*Zoom-Game.GraphicsResource.fctDropTarget.Wdt/2,
-											 DropTarget->GetY()*Zoom+DropTarget->Shape.y+cgo.Y-cgo.TargetY*Zoom-Game.GraphicsResource.fctDropTarget.Hgt);
+		::GraphicsResource.fctDropTarget.Draw(cgo.Surface,
+											 DropTarget->GetX()*Zoom+cgo.X-cgo.TargetX*Zoom-::GraphicsResource.fctDropTarget.Wdt/2,
+											 DropTarget->GetY()*Zoom+DropTarget->Shape.y+cgo.Y-cgo.TargetY*Zoom-::GraphicsResource.fctDropTarget.Hgt);
 	}
 
 

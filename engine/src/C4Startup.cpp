@@ -36,7 +36,7 @@
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 	{
-	return Game.GraphicsResource.LoadFile(rToFct, szFilename, Game.GraphicsResource.Files);
+	return ::GraphicsResource.LoadFile(rToFct, szFilename, ::GraphicsResource.Files);
 	}
 
 bool C4StartupGraphics::Init()
@@ -105,16 +105,16 @@ bool C4StartupGraphics::Init()
 bool C4StartupGraphics::InitFonts()
 	{
 	const char *szFont = Config.General.RXFontName;
-	if (!Game.FontLoader.InitFont(BookFontCapt, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &Game.GraphicsResource.Files, false))
+	if (!Game.FontLoader.InitFont(BookFontCapt, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (1)"); return false; }
 	Game.SetInitProgress(85);
-	if (!Game.FontLoader.InitFont(BookFont, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Game.GraphicsResource.Files, false))
+	if (!Game.FontLoader.InitFont(BookFont, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (2)"); return false; }
 	Game.SetInitProgress(90);
-	if (!Game.FontLoader.InitFont(BookFontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &Game.GraphicsResource.Files, false))
+	if (!Game.FontLoader.InitFont(BookFontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (3)"); return false; }
 	Game.SetInitProgress(95);
-	if (!Game.FontLoader.InitFont(BookSmallFont, szFont, C4FontLoader::C4FT_MainSmall, Config.General.RXFontSize, &Game.GraphicsResource.Files, false))
+	if (!Game.FontLoader.InitFont(BookSmallFont, szFont, C4FontLoader::C4FT_MainSmall, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (4)"); return false; }
 	return true;
 	}

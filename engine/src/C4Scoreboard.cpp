@@ -344,13 +344,13 @@ void C4ScoreboardDlg::Update()
 		for (int32_t iRow = 0; iRow < iRowCount; ++iRow)
 			{
 			C4Scoreboard::Entry *pCell = pBrd->GetCell(iCol, iRow);
-			if ((iRow || iCol) && !pCell->Text.isNull()) piColWidths[iCol] = Max<int32_t>(piColWidths[iCol], Game.GraphicsResource.FontRegular.GetTextWidth(pCell->Text.getData()) + XIndent);
+			if ((iRow || iCol) && !pCell->Text.isNull()) piColWidths[iCol] = Max<int32_t>(piColWidths[iCol], ::GraphicsResource.FontRegular.GetTextWidth(pCell->Text.getData()) + XIndent);
 			}
 		iWdt += piColWidths[iCol];
 		}
-	iHgt += iRowCount * (Game.GraphicsResource.FontRegular.GetLineHeight() + YIndent);
+	iHgt += iRowCount * (::GraphicsResource.FontRegular.GetLineHeight() + YIndent);
 	const char *szTitle = pBrd->GetCell(0,0)->Text.getData();
-	if (szTitle) iWdt = Max<int32_t>(iWdt, Game.GraphicsResource.FontRegular.GetTextWidth(szTitle) + 40);
+	if (szTitle) iWdt = Max<int32_t>(iWdt, ::GraphicsResource.FontRegular.GetTextWidth(szTitle) + 40);
 	if (!pTitle != !szTitle) SetTitle(szTitle); // needed for title margin...
 	iWdt += GetMarginLeft() + GetMarginRight();
 	iHgt += GetMarginTop() + GetMarginBottom();
@@ -391,9 +391,9 @@ void C4ScoreboardDlg::DrawElement(C4TargetFacet &cgo)
 			{
 			const char *szText = pBrd->GetCell(iCol, iRow)->Text.getData();
 			if (szText && *szText && (iRow || iCol))
-				lpDDraw->TextOut(szText, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface, iCol ? iX + piColWidths[iCol]/2 : iX, iY, 0xffffffff, iCol ? ACenter : ALeft);
+				lpDDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iCol ? iX + piColWidths[iCol]/2 : iX, iY, 0xffffffff, iCol ? ACenter : ALeft);
 			iX += piColWidths[iCol];
 			}
-		iY += Game.GraphicsResource.FontRegular.GetLineHeight() + YIndent;
+		iY += ::GraphicsResource.FontRegular.GetLineHeight() + YIndent;
 		}
 	}

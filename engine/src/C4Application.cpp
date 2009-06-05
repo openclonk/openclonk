@@ -427,14 +427,14 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 	// first, check if the selected font can be created at all
 	// check regular font only - there's no reason why the other fonts couldn't be created
 	CStdFont TestFont;
-	if (!Game.FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &Game.GraphicsResource.Files))
+	if (!Game.FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
 		return false;
 	// OK; reinit all fonts
 	StdStrBuf sOldFont; sOldFont.Copy(Config.General.RXFontName);
 	int32_t iOldFontSize = Config.General.RXFontSize;
 	SCopy(szFontFace, Config.General.RXFontName);
 	Config.General.RXFontSize = iFontSize;
-	if (!Game.GraphicsResource.InitFonts() || !C4Startup::Get()->Graphics.InitFonts())
+	if (!::GraphicsResource.InitFonts() || !C4Startup::Get()->Graphics.InitFonts())
 		{
 		// failed :o
 		// shouldn't happen. Better restore config.

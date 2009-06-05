@@ -164,10 +164,10 @@ bool C4GraphicsResource::InitFonts()
 	// assign def list as custom image source
 	FontRegular.SetCustomImages(&Game.Defs);
 	// load additional fonts
-	if (!Game.FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &Game.GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &Game.GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Game.GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Game.GraphicsResource.Files, false)) return false;
+	if (!Game.FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!Game.FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!Game.FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!Game.FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false)) return false;
 #endif
 	// done, success
 	return true;
@@ -497,3 +497,5 @@ bool C4GraphicsResource::ReloadResolutionDependantFiles()
 	fctMouseCursor.idSourceGroup = 0;
 	return LoadCursorGfx();
 	}
+
+C4GraphicsResource GraphicsResource;

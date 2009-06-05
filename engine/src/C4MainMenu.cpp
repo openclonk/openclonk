@@ -213,7 +213,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 				if (!fHasIcon)
 					{
 					if (pTeam && pTeam->GetPlayerCount())
-						Game.GraphicsResource.fctCrewClr.DrawClr(fctSymbol, TRUE, pTeam->GetColor());
+						::GraphicsResource.fctCrewClr.DrawClr(fctSymbol, TRUE, pTeam->GetColor());
 					else
 						C4GUI::Icon::GetIconFacet(C4GUI::Ico_Team).Draw(fctSymbol, TRUE);
 					}
@@ -251,7 +251,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 					{
 					// Symbol
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-					Game.GraphicsResource.fctPlayerClr.DrawClr(fctSymbol, TRUE, pPlr->ColorDw);
+					::GraphicsResource.fctPlayerClr.DrawClr(fctSymbol, TRUE, pPlr->ColorDw);
 					// Message
 					StdStrBuf sMsg;
 					DWORD dwClr = pPlr->ColorDw;
@@ -330,7 +330,7 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 		InitRefSym(GfxR->fctMenu.GetPhase(4),LoadResStr("IDS_MENU_CPGOALS"),iPlayer);
 		SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
 		SetPermanent(false);
-		fctGF.Set(NULL, C4SymbolSize-Game.GraphicsResource.fctCaptain.Wdt-2, 2, Game.GraphicsResource.fctCaptain.Wdt, Game.GraphicsResource.fctCaptain.Hgt);
+		fctGF.Set(NULL, C4SymbolSize-::GraphicsResource.fctCaptain.Wdt-2, 2, ::GraphicsResource.fctCaptain.Wdt, ::GraphicsResource.fctCaptain.Hgt);
 		}
 	// determine if the goals are fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 	C4IDList GoalList, FulfilledGoalList;
@@ -353,7 +353,7 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 					if (FulfilledGoalList.GetIDCount(idGoal))
 						{
 						fctGF.Surface=fctSymbol.Surface;
-						Game.GraphicsResource.fctCaptain.Draw(fctGF);
+						::GraphicsResource.fctCaptain.Draw(fctGF);
 						}
 					StdStrBuf Command; Command.Format("Player:Goal:%s", C4IdText(idGoal));
 					Add(pDef->GetName(),fctSymbol,Command.getData(),C4MN_Item_NoCount,NULL,pDef->GetDesc());

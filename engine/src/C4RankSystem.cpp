@@ -294,7 +294,7 @@ bool C4RankSystem::DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Fa
 			{
 			// extended rank: draw
 			// extension star defaults to captain star; but use extended symbols if they are in the gfx
-			C4Facet fctExtended = Game.GraphicsResource.fctCaptain;
+			C4Facet fctExtended = ::GraphicsResource.fctCaptain;
 			if (iMaxRankSym > iRankSymbolCount)
 				{
 				int32_t iExtended = iRank / iRankSymbolCount - 1 + iRankSymbolCount;

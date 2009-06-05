@@ -468,8 +468,8 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			{
 			// Otherwise red mouse control style
 			int32_t iWdt,iHgt;
-			Game.GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
-			Application.DDraw->TextOut(Caption.getData(), Game.GraphicsResource.FontRegular, 1.0,
+			::GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
+			Application.DDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
 													cgo.Surface,
 													float(cgo.X)+BoundBy<float>(GuiX,float(iWdt)/2+1,float(cgo.Wdt)-iWdt/2-1),
 													float(cgo.Y)+Min<float>( CaptionBottomY ? float(CaptionBottomY-iHgt-1) : GuiY+13, float(cgo.Hgt-iHgt)),

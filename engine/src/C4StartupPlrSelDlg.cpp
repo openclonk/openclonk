@@ -171,7 +171,7 @@ void C4StartupPlrSelDlg::ListItem::CreateColoredPortrait()
 
 void C4StartupPlrSelDlg::ListItem::SetDefaultPortrait()
 	{
-	fctPortrait.Set(Game.GraphicsResource.fctPlayerClr);
+	fctPortrait.Set(::GraphicsResource.fctPlayerClr);
 	}
 
 void C4StartupPlrSelDlg::ListItem::GrabPortrait(C4FacetSurface *pFromFacet)
@@ -240,7 +240,7 @@ void C4StartupPlrSelDlg::PlayerListItem::Load(const StdStrBuf &rsFilename)
 		{
 		// no custom icon: create default by player color
 		fctIcon.Create(iHeight,iHeight);
-		Game.GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
+		::GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
 		}
 	GrabIcon(fctIcon);
 	// load portrait
@@ -290,7 +290,7 @@ void C4StartupPlrSelDlg::PlayerListItem::UpdateCore(C4PlayerInfoCore & NewCore)
 		fHasCustomIcon = false;
 		int32_t iHeight = GetBounds().Hgt;
 		C4FacetSurface fctIcon; fctIcon.Create(iHeight,iHeight);
-		Game.GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
+		::GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
 		GrabIcon(fctIcon);
 		}
 	// update in selection
@@ -373,7 +373,7 @@ void C4StartupPlrSelDlg::CrewListItem::Load(C4Group &rGrp, const StdStrBuf &rsFi
 	else
 		{
 		// no custom icon: create default by rank system
-		if (C4RankSystem::DrawRankSymbol(&fctIcon, Core.Rank, &Game.GraphicsResource.fctRank, Game.GraphicsResource.iNumRanks, true))
+		if (C4RankSystem::DrawRankSymbol(&fctIcon, Core.Rank, &::GraphicsResource.fctRank, ::GraphicsResource.iNumRanks, true))
 			GrabIcon(fctIcon);
 		}
 	// load portrait; empty by default
@@ -1181,7 +1181,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	szTip = LoadResStr("IDS_DLGTIP_PLAYERCOLORS");
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caColorArea.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnClrChangeLeft));
 	pBtn->SetToolTip(szTip);
-	C4Facet &rfctClrPreviewPic = Game.GraphicsResource.fctFlagClr; //C4Startup::Get()->Graphics.fctCrewClr; //Game.GraphicsResource.fctCrewClr;
+	C4Facet &rfctClrPreviewPic = ::GraphicsResource.fctFlagClr; //C4Startup::Get()->Graphics.fctCrewClr; //::GraphicsResource.fctCrewClr;
 	pClrPreview = new C4GUI::Picture(caColorArea.GetFromLeft(rfctClrPreviewPic.GetWidthByHeight(caColorArea.GetHeight())), true);
 	pClrPreview->SetFacet(rfctClrPreviewPic);
 	AddElement(pClrPreview);
@@ -1217,7 +1217,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	szTip = LoadResStr("IDS_DLGTIP_PLAYERCONTROL");
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeLeft));
 	pBtn->SetToolTip(szTip);
-	C4Facet &rfctCtrlPic = Game.GraphicsResource.fctKeyboard; // UpdatePlayerControl() will alternatively set fctGamepad
+	C4Facet &rfctCtrlPic = ::GraphicsResource.fctKeyboard; // UpdatePlayerControl() will alternatively set fctGamepad
 	AddElement(pCtrlImg = new C4GUI::Picture(caControl.GetFromLeft(rfctCtrlPic.GetWidthByHeight(caControl.GetHeight())), true));
 	pCtrlImg->SetToolTip(szTip);
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Right, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeRight));
@@ -1337,7 +1337,7 @@ void C4StartupPlrPropertiesDlg::OnClrSliderBChange(int32_t iNewVal)
 void C4StartupPlrPropertiesDlg::UpdatePlayerControl()
 	{
 	// update keyboard image of selected control
-	C4Facet &rfctCtrlPic = (C4P.PrefControl < C4P_Control_GamePad1) ? Game.GraphicsResource.fctKeyboard : Game.GraphicsResource.fctGamepad;
+	C4Facet &rfctCtrlPic = (C4P.PrefControl < C4P_Control_GamePad1) ? ::GraphicsResource.fctKeyboard : ::GraphicsResource.fctGamepad;
 	pCtrlImg->SetFacet(rfctCtrlPic);
 	pCtrlImg->GetMFacet().X += rfctCtrlPic.Wdt * (C4P.PrefControl - ((C4P.PrefControl < C4P_Control_GamePad1) ? 0 : C4P_Control_GamePad1));
 	// update mouse image
@@ -1569,6 +1569,6 @@ void C4StartupPlrPropertiesDlg::UpdateBigIcon()
 	// no icon: Set default
 	if (!fHasIcon)
 		{
-		pPictureBtn->SetFacet(Game.GraphicsResource.fctPlayerClr);
+		pPictureBtn->SetFacet(::GraphicsResource.fctPlayerClr);
 		}
 	}

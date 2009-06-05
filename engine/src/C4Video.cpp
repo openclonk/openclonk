@@ -170,9 +170,9 @@ bool C4Video::Start(const char *szFilename)
 	if (Config.Graphics.BitDepth == 8)
 		for (int cnt=0; cnt<256; cnt++)
 			{
-			pInfo->bmiColors[cnt].rgbRed = Game.GraphicsResource.GamePalette[cnt*3+0];
-			pInfo->bmiColors[cnt].rgbGreen = Game.GraphicsResource.GamePalette[cnt*3+1];
-			pInfo->bmiColors[cnt].rgbBlue = Game.GraphicsResource.GamePalette[cnt*3+2];
+			pInfo->bmiColors[cnt].rgbRed = ::GraphicsResource.GamePalette[cnt*3+0];
+			pInfo->bmiColors[cnt].rgbGreen = ::GraphicsResource.GamePalette[cnt*3+1];
+			pInfo->bmiColors[cnt].rgbBlue = ::GraphicsResource.GamePalette[cnt*3+2];
 			}
 	// Recording flag
 	Recording=true;
@@ -208,7 +208,7 @@ void C4Video::Draw(C4TargetFacet &cgo)
 	StdStrBuf str;
 	if (Recording) str.Format("%dx%d Frame %d",Width,Height,AviFrame);
 	else str.Format("%dx%d",Width,Height);
-	Application.DDraw->TextOut(str.getData(), Game.GraphicsResource.FontRegular, 1.0,cgo.Surface,cgo.X+X+4,cgo.Y+Y+3,Recording ? 0xfaFF0000 : 0xfaFFFFFF);
+	Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0,cgo.Surface,cgo.X+X+4,cgo.Y+Y+3,Recording ? 0xfaFF0000 : 0xfaFFFFFF);
 	}
 
 bool C4Video::AdjustPosition()

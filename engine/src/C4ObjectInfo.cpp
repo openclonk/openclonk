@@ -332,14 +332,14 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 	// Captain symbol
 	if (fCaptain)
 		{
-		Game.GraphicsResource.fctCaptain.Draw(cgo.Surface,cgo.X+iX,cgo.Y,0,0);
-		iX+=Game.GraphicsResource.fctCaptain.Wdt;
+		::GraphicsResource.fctCaptain.Draw(cgo.Surface,cgo.X+iX,cgo.Y,0,0);
+		iX+=::GraphicsResource.fctCaptain.Wdt;
 		}
 
 	// Rank symbol
 	C4RankSystem *pRankSys = &::DefaultRanks;
-	C4Facet *pRankRes=&Game.GraphicsResource.fctRank;
-	int iRankCnt=Game.GraphicsResource.iNumRanks;
+	C4Facet *pRankRes=&::GraphicsResource.fctRank;
+	int iRankCnt=::GraphicsResource.iNumRanks;
 	if (pOfObj)
 		{
 		C4Def *pDef=pOfObj->Def;
@@ -354,12 +354,12 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 			}
 		}
 	pRankSys->DrawRankSymbol(NULL, Rank, pRankRes, iRankCnt, false, iX, &cgo);
-	iX+=Game.GraphicsResource.fctRank.Wdt;
+	iX+=::GraphicsResource.fctRank.Wdt;
 	// Rank & Name
 	StdStrBuf name;
 	if (Rank>0)	name.Format("%s|%s",sRankName.getData(),pOfObj->GetName ());
 	else name.Format("%s",pOfObj->GetName ());
-	Application.DDraw->TextOut(name.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
+	Application.DDraw->TextOut(name.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
 
 #endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}

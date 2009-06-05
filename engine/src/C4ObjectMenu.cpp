@@ -327,7 +327,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 						fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Right, C4FCT_Top);
 						Object->Contents.GetObject(0)->DrawPicture(fctTarget);
 						fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom);
-						Game.GraphicsResource.fctHand.Draw(fctTarget, TRUE, 0);
+						::GraphicsResource.fctHand.Draw(fctTarget, TRUE, 0);
 						// Add menu item
 						Add(LoadResStr("IDS_CON_PUT2"), fctSymbol, szCommand, C4MN_Item_NoCount, NULL, NULL, C4ID_None, szCommand2);
 						// Preserve symbol
@@ -405,7 +405,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 					{
 					sprintf(szCommand, "PlayerObjectCommand(GetOwner(), \"Exit\") && ExecuteCommand()"); // Exit all selected clonks...
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-					Game.GraphicsResource.fctExit.Draw(fctSymbol);
+					::GraphicsResource.fctExit.Draw(fctSymbol);
 					Add(LoadResStr("IDS_COMM_EXIT"), fctSymbol, szCommand);
 					fctSymbol.Default();
 					}

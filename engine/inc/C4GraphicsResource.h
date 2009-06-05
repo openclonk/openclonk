@@ -119,4 +119,5 @@ class C4GraphicsResource
 		friend class C4StartupGraphics;
 	};
 
+extern C4GraphicsResource GraphicsResource;
 #endif

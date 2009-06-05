@@ -116,7 +116,7 @@ void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
 	typedef C4GUI::FullscreenDialog Base;
 	Base::DrawElement(cgo);
 	// draw logo
-	C4Facet &fctLogo = Game.GraphicsResource.fctLogo;
+	C4Facet &fctLogo = ::GraphicsResource.fctLogo;
 	float fLogoZoom = 1.0f;
 	fctLogo.DrawX(cgo.Surface, rcBounds.Wdt *1/21, rcBounds.Hgt/14 - 5, int32_t(fLogoZoom*fctLogo.Wdt), int32_t(fLogoZoom*fctLogo.Hgt));
 	// draw version info

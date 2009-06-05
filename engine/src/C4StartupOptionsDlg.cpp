@@ -206,7 +206,7 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 	{
 	// draw key
 	C4Facet cgoDraw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY, rcBounds.Wdt, rcBounds.Hgt);
-	Game.GraphicsResource.fctKey.Draw(cgoDraw, TRUE, fDown);
+	::GraphicsResource.fctKey.Draw(cgoDraw, TRUE, fDown);
 	int32_t iKeyIndent = cgoDraw.Wdt / 5;
 	cgoDraw.X += iKeyIndent; cgoDraw.Wdt -= 2*iKeyIndent;
 	cgoDraw.Y += iKeyIndent*3/4; cgoDraw.Hgt -= 2*iKeyIndent;
@@ -220,7 +220,7 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 			ModulateClr(dwModClr, dwOldBlitModClr);
 		lpDDraw->ActivateBlitModulation(dwModClr);
 		}
-	Game.GraphicsResource.fctCommand.Draw(cgoDraw, TRUE, iKeyID, 0);
+	::GraphicsResource.fctCommand.Draw(cgoDraw, TRUE, iKeyID, 0);
 	if (!fDoHightlight)
 		if (fHadBlitMod)
 			lpDDraw->ActivateBlitModulation(dwOldBlitModClr);
@@ -257,7 +257,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 		iMaxControlSets = C4MaxKeyboardSet;
 	ppKeyControlSetBtns = new C4GUI::IconButton *[iMaxControlSets];
 	// top line buttons to select keyboard set or gamepad
-	C4Facet fctCtrlPic = fGamepad ? Game.GraphicsResource.fctGamepad : Game.GraphicsResource.fctKeyboard;
+	C4Facet fctCtrlPic = fGamepad ? ::GraphicsResource.fctGamepad : ::GraphicsResource.fctKeyboard;
 	int32_t iCtrlSetWdt = caArea.GetWidth() - caArea.GetHMargin()*2;
 	int32_t iCtrlSetHMargin = 5, iCtrlSetVMargin = 5;
 	int32_t iCtrlSetBtnWdt = BoundBy<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlPic.Wdt);
@@ -280,7 +280,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	caArea.ExpandTop(caArea.GetVMargin());
 	AddElement(new C4GUI::HorizontalLine(caArea.GetFromTop(2)));
 	caArea.ExpandTop(caArea.GetVMargin());
-	C4Facet &rfctKey = Game.GraphicsResource.fctKey;
+	C4Facet &rfctKey = ::GraphicsResource.fctKey;
 	int32_t iKeyAreaMaxWdt = caArea.GetWidth()-2*caArea.GetHMargin(), iKeyAreaMaxHgt = caArea.GetHeight()-2*caArea.GetVMargin();
 	int32_t iKeyWdt = rfctKey.Wdt*3/2, iKeyHgt = rfctKey.Hgt*3/2;
 	int32_t iKeyUseWdt = iKeyWdt + iKeyHgt*3; // add space for label

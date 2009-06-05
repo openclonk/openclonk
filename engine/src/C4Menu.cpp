@@ -65,19 +65,19 @@ void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner, C4Object *cObj)
 			}
 			break;
 		case C4MN_Buy:
-			Game.GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), TRUE, dwColor);
-			Game.GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
-			Game.GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), FALSE, 0);
+			::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), TRUE, dwColor);
+			::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
+			::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), FALSE, 0);
 			break;
 		case C4MN_Sell:
-			Game.GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), TRUE, dwColor);
-			Game.GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
-			Game.GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), FALSE, 1);
+			::GraphicsResource.fctFlagClr.DrawClr(ccgo = cgo.GetFraction(75, 75), TRUE, dwColor);
+			::GraphicsResource.fctWealth.Draw(ccgo = cgo.GetFraction(100, 50, C4FCT_Left, C4FCT_Bottom));
+			::GraphicsResource.fctArrow.Draw(ccgo = cgo.GetFraction(70, 70, C4FCT_Right, C4FCT_Center), FALSE, 1);
 			break;
 		/*case C4MN_Main:
-			Game.GraphicsResource.fctFlagClr.DrawClr(cgo,TRUE,dwColor);
+			::GraphicsResource.fctFlagClr.DrawClr(cgo,TRUE,dwColor);
 			ccgo.Set(cgo.Surface,cgo.X,cgo.Y+cgo.Hgt/2,cgo.Wdt,cgo.Hgt/2);
-			Game.GraphicsResource.fctCrewClr.DrawClr(ccgo,TRUE,dwColor);
+			::GraphicsResource.fctCrewClr.DrawClr(ccgo,TRUE,dwColor);
 			break;*/
 		}
 	}
@@ -183,13 +183,13 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 	switch (iStyle)
 		{
 		case C4MN_Style_Context:
-			Application.DDraw->TextOut(Caption,Game.GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
+			Application.DDraw->TextOut(Caption,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
 			break;
 		case C4MN_Style_Info:
 			{
 			StdStrBuf sText;
-			Game.GraphicsResource.FontRegular.BreakMessage(InfoCaption, cgoItemText.Wdt, &sText, true);
-			Application.DDraw->TextOut(sText.getData(), Game.GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y);
+			::GraphicsResource.FontRegular.BreakMessage(InfoCaption, cgoItemText.Wdt, &sText, true);
+			Application.DDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y);
 			break;
 			}
 		case C4MN_Style_Dialog:
@@ -204,8 +204,8 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 				}
 			// display broken text
 			StdStrBuf sText;
-			Game.GraphicsResource.FontRegular.BreakMessage(Caption, cgoItemText.Wdt, &sText, true);
-			Application.DDraw->TextOut(sText.getData(),Game.GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y);
+			::GraphicsResource.FontRegular.BreakMessage(Caption, cgoItemText.Wdt, &sText, true);
+			Application.DDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X,cgoItemText.Y);
 			// restore complete text
 			if (cXChg) Caption[iStopPos] = cXChg;
 			break;
@@ -217,7 +217,7 @@ void C4MenuItem::DrawElement(C4TargetFacet &cgo)
 		{
 		char szCount[10+1];
 		sprintf(szCount,"%ix",Count);
-		Application.DDraw->TextOut(szCount,Game.GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X+cgoItemText.Wdt-1,cgoItemText.Y+cgoItemText.Hgt-1-Game.GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+		Application.DDraw->TextOut(szCount,::GraphicsResource.FontRegular, 1.0, cgoItemText.Surface,cgoItemText.X+cgoItemText.Wdt-1,cgoItemText.Y+cgoItemText.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
 		}
 	}
 
@@ -672,15 +672,15 @@ void C4Menu::InitLocation(C4Facet &cgoArea)
 			break;
 		case C4MN_Style_Context:
 			{
-			ItemHeight = Max<int32_t>(C4MN_SymbolSize, Game.GraphicsResource.FontRegular.GetLineHeight());
+			ItemHeight = Max<int32_t>(C4MN_SymbolSize, ::GraphicsResource.FontRegular.GetLineHeight());
 			int32_t iWdt, iHgt;
-			Game.GraphicsResource.FontRegular.GetTextExtent(Caption, ItemWidth, iHgt, true);
+			::GraphicsResource.FontRegular.GetTextExtent(Caption, ItemWidth, iHgt, true);
 			// FIXME: Blah. This stuff should be calculated correctly by pTitle.
 			ItemWidth += ItemHeight + 16;
 			C4MenuItem *pItem;
 			for (int i = 0; pItem = GetItem(i); ++i)
 				{
-				Game.GraphicsResource.FontRegular.GetTextExtent(pItem->Caption, iWdt, iHgt, true);
+				::GraphicsResource.FontRegular.GetTextExtent(pItem->Caption, iWdt, iHgt, true);
 				ItemWidth = Max(ItemWidth, iWdt + pItem->GetSymbolWidth(ItemHeight));
 				}
 			ItemWidth += 3; // Add some extra space so text doesn't touch right border frame...
@@ -690,7 +690,7 @@ void C4Menu::InitLocation(C4Facet &cgoArea)
 			{
 			// calculate size from a default size determined by a window width of C4MN_DefInfoWdt
 			int32_t iWdt,iHgt,iLargestTextWdt;
-			Game.GraphicsResource.FontRegular.GetTextExtent(Caption,iWdt,iHgt, true);
+			::GraphicsResource.FontRegular.GetTextExtent(Caption,iWdt,iHgt, true);
 			iLargestTextWdt = iWdt + 2 * C4MN_SymbolSize + C4MN_FrameWidth;
 			ItemWidth=Min<int>(cgoArea.Wdt - 2*C4MN_FrameWidth, Max(iLargestTextWdt, C4MN_DefInfoWdt));
 			ItemHeight=0;
@@ -698,8 +698,8 @@ void C4Menu::InitLocation(C4Facet &cgoArea)
 			C4MenuItem *pItem;
 			for (int32_t i=0; pItem=GetItem(i); ++i)
 				{
-				Game.GraphicsResource.FontRegular.BreakMessage(pItem->InfoCaption, ItemWidth, &sText, true);
-				Game.GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iWdt,iHgt, true);
+				::GraphicsResource.FontRegular.BreakMessage(pItem->InfoCaption, ItemWidth, &sText, true);
+				::GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iWdt,iHgt, true);
 				assert(iWdt <= ItemWidth);
 				ItemWidth=Max(ItemWidth,iWdt); ItemHeight=Max(ItemHeight,iHgt);
 				iLargestTextWdt = Max(iLargestTextWdt, iWdt);
@@ -721,7 +721,7 @@ void C4Menu::InitLocation(C4Facet &cgoArea)
 			// dialog window: Item width is whole dialog, portrait subtracted if any
 			// Item height varies
 			int32_t iWdt,iHgt;
-			Game.GraphicsResource.FontRegular.GetTextExtent(Caption,iWdt,iHgt, true);
+			::GraphicsResource.FontRegular.GetTextExtent(Caption,iWdt,iHgt, true);
 			ItemWidth=Min<int>(cgoArea.Wdt - 2*C4MN_FrameWidth, Max<int>(iWdt + 2 * C4MN_SymbolSize + C4MN_FrameWidth, C4MN_DlgWdt));
 			ItemHeight=iHgt; // Items may be multiline and higher
 			if (HasPortrait())
@@ -930,7 +930,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 			break;
 		case C4MN_Extra_Value:
 			{
-			if (pDef) Game.GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
+			if (pDef) ::GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
 			// Flag parent object's owner's wealth display
 			C4Player *pParentPlr = Game.Players.Get(GetControllingPlayer());
 			if (pParentPlr) pParentPlr->ViewWealth = C4ViewDelay;
@@ -940,7 +940,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 		case C4MN_Extra_LiveMagicValue:
 			if (pDef)
 				{
-				Game.GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
+				::GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
 				}
 			break;
 		case C4MN_Extra_ComponentsMagic:
@@ -950,7 +950,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 				{
 				// DrawValue2 kills the facet...
 				int32_t iOriginalX = cgoExtra.X;
-				Game.GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
+				::GraphicsResource.fctMagic.DrawValue2(cgoExtra,iValue,iUseExtraData,0,0,C4FCT_Right);
 				cgoExtra.Wdt = cgoExtra.X - iOriginalX - 5;
 				cgoExtra.X = iOriginalX;
 				pItem->Components.Draw(cgoExtra,-1,Game.Defs,C4D_All,TRUE,C4FCT_Right | C4FCT_Triple | C4FCT_Half);
@@ -1192,14 +1192,14 @@ void C4Menu::UpdateElementPositions()
 			if (!pPrev || (!pPrev->IsSelectable || !pCurr->IsSelectable)) yOff += C4MN_DlgLineMargin; else yOff += C4MN_DlgOptionLineMargin;
 			// determine item height.
 			StdStrBuf sText;
-			int32_t iAssumedItemHeight = Game.GraphicsResource.FontRegular.GetLineHeight();
+			int32_t iAssumedItemHeight = ::GraphicsResource.FontRegular.GetLineHeight();
 			int32_t iWdt, iAvailWdt = ItemWidth, iSymWdt;
 			for(;;)
 				{
 				iSymWdt = Min<int32_t>(pCurr->GetSymbolWidth(iAssumedItemHeight), iAvailWdt/2);
 				iAvailWdt = ItemWidth - iSymWdt;
-				Game.GraphicsResource.FontRegular.BreakMessage(pCurr->Caption, iAvailWdt, &sText, true);
-				Game.GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iWdt,rcNewBounds.Hgt, true);
+				::GraphicsResource.FontRegular.BreakMessage(pCurr->Caption, iAvailWdt, &sText, true);
+				::GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iWdt,rcNewBounds.Hgt, true);
 				if (!iSymWdt || rcNewBounds.Hgt <= iAssumedItemHeight) break;
 				// If there is a symbol, the symbol grows as more lines become available
 			  // Thus, less space is available for the text, and it might become larger

@@ -1125,28 +1125,28 @@ C4Rect &ComponentAligner::GetGridCell(int32_t iSectX, int32_t iSectXMax, int32_t
 
 bool Resource::Load(C4GroupSet &rFromGroup)
 	{
-	// load gfx - using helper funcs from Game.GraphicsResource here...
-	if (!Game.GraphicsResource.LoadFile(sfcCaption, "GUICaption", rFromGroup, idSfcCaption)) return false;
+	// load gfx - using helper funcs from ::GraphicsResource here...
+	if (!::GraphicsResource.LoadFile(sfcCaption, "GUICaption", rFromGroup, idSfcCaption)) return false;
 	barCaption.SetHorizontal(sfcCaption, sfcCaption.Hgt, 32);
-	if (!Game.GraphicsResource.LoadFile(sfcButton, "GUIButton", rFromGroup, idSfcButton)) return false;
+	if (!::GraphicsResource.LoadFile(sfcButton, "GUIButton", rFromGroup, idSfcButton)) return false;
 	barButton.SetHorizontal(sfcButton);
-	if (!Game.GraphicsResource.LoadFile(sfcButtonD, "GUIButtonDown", rFromGroup, idSfcButtonD)) return false;
+	if (!::GraphicsResource.LoadFile(sfcButtonD, "GUIButtonDown", rFromGroup, idSfcButtonD)) return false;
 	barButtonD.SetHorizontal(sfcButtonD);
-	if (!Game.GraphicsResource.LoadFile(fctButtonHighlight, "GUIButtonHighlight", rFromGroup)) return false;
-	if (!Game.GraphicsResource.LoadFile(fctIcons, "GUIIcons", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctButtonHighlight, "GUIButtonHighlight", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctIcons, "GUIIcons", rFromGroup)) return false;
 	fctIcons.Set(fctIcons.Surface,0,0,C4GUI_IconWdt,C4GUI_IconHgt);
-	if (!Game.GraphicsResource.LoadFile(fctIconsEx, "GUIIcons2", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctIconsEx, "GUIIcons2", rFromGroup)) return false;
 	fctIconsEx.Set(fctIconsEx.Surface,0,0,C4GUI_IconExWdt,C4GUI_IconExHgt);
-	if (!Game.GraphicsResource.LoadFile(sfcScroll, "GUIScroll", rFromGroup, idSfcScroll)) return false;
+	if (!::GraphicsResource.LoadFile(sfcScroll, "GUIScroll", rFromGroup, idSfcScroll)) return false;
 	sfctScroll.Set(C4Facet(&sfcScroll,0,0,32,32));
-	if (!Game.GraphicsResource.LoadFile(sfcContext, "GUIContext", rFromGroup, idSfcContext)) return false;
+	if (!::GraphicsResource.LoadFile(sfcContext, "GUIContext", rFromGroup, idSfcContext)) return false;
 	fctContext.Set(&sfcContext,0,0,16,16);
-	if (!Game.GraphicsResource.LoadFile(fctSubmenu, "GUISubmenu", rFromGroup)) return false;
-	if (!Game.GraphicsResource.LoadFile(fctCheckbox, "GUICheckbox", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctSubmenu, "GUISubmenu", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctCheckbox, "GUICheckbox", rFromGroup)) return false;
 	fctCheckbox.Set(fctCheckbox.Surface, 0,0,fctCheckbox.Hgt,fctCheckbox.Hgt);
-	if (!Game.GraphicsResource.LoadFile(fctBigArrows, "GUIBigArrows", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctBigArrows, "GUIBigArrows", rFromGroup)) return false;
 	fctBigArrows.Set(fctBigArrows.Surface, 0,0, fctBigArrows.Wdt/4, fctBigArrows.Hgt);
-	if (!Game.GraphicsResource.LoadFile(fctProgressBar, "GUIProgress", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctProgressBar, "GUIProgress", rFromGroup)) return false;
 	fctProgressBar.Set(fctProgressBar.Surface, 1,0, fctProgressBar.Wdt-2, fctProgressBar.Hgt);
 	// loaded sucessfully
 	pRes = this;

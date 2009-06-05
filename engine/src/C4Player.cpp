@@ -1162,11 +1162,11 @@ void C4Player::DrawHostility(C4Facet &cgo, int32_t iIndex)
 			pPlr->BigIcon.Draw(cgo);
 		// Standard player image
 		else
-			Game.GraphicsResource.fctCrewClr.DrawClr(cgo, TRUE, pPlr->ColorDw);
+			::GraphicsResource.fctCrewClr.DrawClr(cgo, TRUE, pPlr->ColorDw);
 		// Other player and hostile
 		if (pPlr != this)
 			if (Hostility.GetIDCount(pPlr->Number+1))
-				Game.GraphicsResource.fctMenu.GetPhase(7).Draw(cgo);
+				::GraphicsResource.fctMenu.GetPhase(7).Draw(cgo);
 		}
 	}
 

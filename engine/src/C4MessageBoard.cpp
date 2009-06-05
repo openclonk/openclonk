@@ -235,7 +235,7 @@ void C4MessageBoard::Init(C4Facet &cgo, BOOL fStartup)
 	Active=TRUE;
 	Output=cgo;
 	Startup=fStartup;
-	iLineHgt=Game.GraphicsResource.FontRegular.iLineHgt;
+	iLineHgt=::GraphicsResource.FontRegular.iLineHgt;
 	LogBuffer.SetLBWidth(Output.Wdt);
 
 	if(!Startup)
@@ -268,7 +268,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 
 	// Game running: message fader
 	// Background
-	Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,-cgo.X,-cgo.Y);
+	Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,-cgo.X,-cgo.Y);
 
 	// draw messages
 	if(iMode != 2 || C4ChatInputDialog::IsShown())
@@ -311,7 +311,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 				dwFade = 0xff000000;
 			dwColor |= dwFade;
 			// Draw
-			Application.DDraw->StringOut(Message,Game.GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
+			Application.DDraw->StringOut(Message,::GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
 			}
 		}
 	}
@@ -343,7 +343,7 @@ void C4MessageBoard::AddLog(const char *szMessage)
 	// make sure new message will be drawn
 	++iBackScroll;
 	// register message in standard messageboard font
-	LogBuffer.AppendLines(szMessage, &Game.GraphicsResource.FontRegular, 0, NULL);
+	LogBuffer.AppendLines(szMessage, &::GraphicsResource.FontRegular, 0, NULL);
 	}
 
 void C4MessageBoard::ClearLog()

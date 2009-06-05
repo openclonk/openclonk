@@ -523,7 +523,7 @@ void C4ParticleSystem::SetDefParticles()
 	// if fire is drawn w/o background fct: unload fire face if both fire particles are assigned
 	// but this is not done here
 	//if (IsFireParticleLoaded())
-	//	Game.GraphicsResource.fctFire.Clear();
+	//	::GraphicsResource.fctFire.Clear();
 	}
 
 int32_t C4ParticleSystem::Push(C4ParticleDef *pOfDef, float dxdir, float dydir)

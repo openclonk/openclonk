@@ -281,7 +281,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 			{
 			// no custom icon: create default by player color
 			pIcon->GetMFacet().Create(C4GUI_IconWdt,C4GUI_IconHgt);
-			Game.GraphicsResource.fctPlayerClr.DrawClr(pIcon->GetMFacet(), TRUE, dwPlayerClr);
+			::GraphicsResource.fctPlayerClr.DrawClr(pIcon->GetMFacet(), TRUE, dwPlayerClr);
 			}
 		fIconSet = true;
 		// unreg icon? Grayscale and stamp!
@@ -319,11 +319,11 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 		// shadow
 		DWORD dwPrevMod; bool fPrevMod = lpDDraw->GetBlitModulation(dwPrevMod);
 		Application.DDraw->ActivateBlitModulation(1);
-		Game.GraphicsResource.fctCrewClr.DrawClr(fctDraw, TRUE, dwJoinedInfoClr);
+		::GraphicsResource.fctCrewClr.DrawClr(fctDraw, TRUE, dwJoinedInfoClr);
 		if (fPrevMod) lpDDraw->ActivateBlitModulation(dwPrevMod); else lpDDraw->DeactivateBlitModulation();
 		fctDraw.X = 0;
 		// gfx
-		Game.GraphicsResource.fctCrewClr.DrawClr(fctDraw, TRUE, dwJoinedInfoClr);
+		::GraphicsResource.fctCrewClr.DrawClr(fctDraw, TRUE, dwJoinedInfoClr);
 		}
 	fJoinedInfoSet = fHasJoinedInfo;
 	dwJoinClr = dwJoinedInfoClr;

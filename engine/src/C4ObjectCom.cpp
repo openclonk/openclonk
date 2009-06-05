@@ -924,14 +924,14 @@ bool ComDirLike(int32_t iComDir, int32_t iSample)
 void DrawCommandKey(C4Facet &cgo, int32_t iCom, BOOL fPressed, const char *szText)
 	{
 	// Draw key
-	Game.GraphicsResource.fctKey.Draw(cgo,FALSE,fPressed);
+	::GraphicsResource.fctKey.Draw(cgo,FALSE,fPressed);
 	// Draw control symbol
 	if (iCom == COM_PlayerMenu)
-		Game.GraphicsResource.fctOKCancel.Draw(cgo,TRUE,1,1);
+		::GraphicsResource.fctOKCancel.Draw(cgo,TRUE,1,1);
 	else
-		Game.GraphicsResource.fctCommand.Draw(cgo,TRUE,Com2Control(iCom),((iCom & COM_Double)!=0));
+		::GraphicsResource.fctCommand.Draw(cgo,TRUE,Com2Control(iCom),((iCom & COM_Double)!=0));
 	// Use smaller font on smaller buttons
-	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? Game.GraphicsResource.FontTiny : Game.GraphicsResource.FontRegular;
+	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? ::GraphicsResource.FontTiny : ::GraphicsResource.FontRegular;
 	// Draw text
 	if (szText && Config.Graphics.ShowCommandKeys)
 		Application.DDraw->TextOut(szText, rFont, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt-rFont.iLineHgt-2,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
@@ -940,11 +940,11 @@ void DrawCommandKey(C4Facet &cgo, int32_t iCom, BOOL fPressed, const char *szTex
 void DrawControlKey(C4Facet &cgo, int32_t iControl, BOOL fPressed, const char *szText)
 	{
 	// Draw key
-	Game.GraphicsResource.fctKey.Draw(cgo,FALSE,fPressed);
+	::GraphicsResource.fctKey.Draw(cgo,FALSE,fPressed);
 	// Draw control symbol
-	Game.GraphicsResource.fctCommand.Draw(cgo,TRUE,iControl);
+	::GraphicsResource.fctCommand.Draw(cgo,TRUE,iControl);
 	// Use smaller font on smaller buttons
-	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? Game.GraphicsResource.FontRegular : Game.GraphicsResource.FontTiny;
+	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? ::GraphicsResource.FontRegular : ::GraphicsResource.FontTiny;
 	// Draw text
 	if (szText)
 		Application.DDraw->TextOut(szText, rFont, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt-rFont.iLineHgt-2,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);

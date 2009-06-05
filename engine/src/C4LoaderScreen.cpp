@@ -30,7 +30,7 @@
 #include <C4GroupSet.h>
 #endif
 
-C4LoaderScreen::C4LoaderScreen() : TitleFont(Game.GraphicsResource.FontTitle), LogFont(Game.GraphicsResource.FontTiny)
+C4LoaderScreen::C4LoaderScreen() : TitleFont(::GraphicsResource.FontTitle), LogFont(::GraphicsResource.FontTiny)
 	{
 	// zero fields
 	szInfo=NULL;
@@ -119,7 +119,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 		}*/
 
 	// init fonts
-	if (!Game.GraphicsResource.InitFonts())
+	if (!::GraphicsResource.InitFonts())
 		return false;
 
 	// initial draw
@@ -173,7 +173,7 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	int iLogBoxMargin=2;
 	int iVMargin=5;
 	int iProgressBarHgt=15;
-	CStdFont &rLogBoxFont=LogFont, &rProgressBarFont=Game.GraphicsResource.FontRegular;
+	CStdFont &rLogBoxFont=LogFont, &rProgressBarFont=::GraphicsResource.FontRegular;
 	float fLogBoxFontZoom=1.0f;
 	// Background (loader)
 	fctBackground.DrawFullScreen(cgo);

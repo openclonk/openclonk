@@ -288,14 +288,14 @@ void C4Facet::DrawValue(C4Facet &cgo, int32_t iValue, int32_t iSectionX, int32_t
 		{
 		case C4FCT_Center:
 			Draw(cgo, TRUE, iSectionX, iSectionY);
-			lpDDraw->TextOut(ostr, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
+			lpDDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 			                   cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
 			break;
 		case C4FCT_Right:
 			{
 			int32_t textwdt, texthgt;
-			Game.GraphicsResource.FontRegular.GetTextExtent(ostr, textwdt, texthgt, false);
-			lpDDraw->TextOut(ostr, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
+			::GraphicsResource.FontRegular.GetTextExtent(ostr, textwdt, texthgt, false);
+			lpDDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 			                   cgo.X + cgo.Wdt - 1, cgo.Y, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
 			cgo.Set(cgo.Surface, cgo.X + cgo.Wdt - 1 - textwdt - 2 * cgo.Hgt, cgo.Y, 2 * cgo.Hgt, cgo.Hgt);
 			Draw(cgo, TRUE, iSectionX, iSectionY);
@@ -314,15 +314,15 @@ void C4Facet::DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t
 		{
 		case C4FCT_Center:
 			Draw(cgo, TRUE, iSectionX, iSectionY);
-			lpDDraw->TextOut(ostr, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
+			lpDDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 			                   cgo.X + cgo.Wdt - 1, cgo.Y + cgo.Hgt - 1, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
 			break;
 		case C4FCT_Right:
 			{
 			int32_t textwdt, texthgt;
-			Game.GraphicsResource.FontRegular.GetTextExtent(ostr, textwdt, texthgt, false);
+			::GraphicsResource.FontRegular.GetTextExtent(ostr, textwdt, texthgt, false);
 			textwdt += Wdt + 3;
-			lpDDraw->TextOut(ostr, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
+			lpDDraw->TextOut(ostr, ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 			                   cgo.X + cgo.Wdt - 1, cgo.Y, CStdDDraw::DEFAULT_MESSAGE_COLOR, ARight);
 			cgo.Set(cgo.Surface, cgo.X + cgo.Wdt - textwdt, cgo.Y, 2 * cgo.Hgt, cgo.Hgt);
 			Draw(cgo, TRUE, iSectionX, iSectionY);

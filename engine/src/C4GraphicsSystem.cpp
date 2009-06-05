@@ -116,7 +116,7 @@ void C4GraphicsSystem::Clear()
 BOOL C4GraphicsSystem::SetPalette()
 	{
 	// Set primary palette by game palette
-	if (!Application.DDraw->SetPrimaryPalette(Game.GraphicsResource.GamePalette, Game.GraphicsResource.AlphaPalette)) return FALSE;
+	if (!Application.DDraw->SetPrimaryPalette(::GraphicsResource.GamePalette, ::GraphicsResource.AlphaPalette)) return FALSE;
 	return TRUE;
 	}
 
@@ -341,7 +341,7 @@ void C4GraphicsSystem::DrawFullscreenBackground()
 	for (int i=0, iNum=BackgroundAreas.GetCount(); i<iNum; ++i)
 		{
 		const C4Rect &rc = BackgroundAreas.Get(i);
-		Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,Application.DDraw->lpBack,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
+		Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,Application.DDraw->lpBack,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
 		}
 	--iRedrawBackground;
 	}
@@ -691,9 +691,9 @@ void C4GraphicsSystem::DrawHoldMessages()
 	{
 	if (Application.isFullScreen && Game.HaltCount)
 		{
-		Application.DDraw->TextOut("Pause", Game.GraphicsResource.FontRegular,1.0,
+		Application.DDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
 			Application.DDraw->lpBack, C4GUI::GetScreenWdt()/2,
-			C4GUI::GetScreenHgt()/2 - Game.GraphicsResource.FontRegular.iLineHgt*2,
+			C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.iLineHgt*2,
 			CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
 		::GraphicsSystem.OverwriteBg();
 		}
@@ -713,7 +713,7 @@ void C4GraphicsSystem::SetDarkColorTable()
 	{
 	const int32_t iDarkening=80;
 	// Using GamePalette
-	BYTE *bypPalette = Game.GraphicsResource.GamePalette;
+	BYTE *bypPalette = ::GraphicsResource.GamePalette;
 	for (int32_t iColor=0; iColor<256; iColor++)
 		DarkColorTable[iColor]=FindPaletteColor(bypPalette,Max<int32_t>(bypPalette[iColor*3+0]-iDarkening,0),Max<int32_t>(bypPalette[iColor*3+1]-iDarkening,0),Max<int32_t>(bypPalette[iColor*3+2]-iDarkening,0));
 	}
@@ -748,7 +748,7 @@ void C4GraphicsSystem::DrawFlashMessage()
 	{
 	if (!FlashMessageTime) return;
 	if (!Application.isFullScreen) return;
-	Application.DDraw->TextOut(FlashMessageText, Game.GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(FlashMessageText, ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
 		(FlashMessageX==-1) ? C4GUI::GetScreenWdt()/2 : FlashMessageX,
 		(FlashMessageY==-1) ? C4GUI::GetScreenHgt()/2 : FlashMessageY,
 		CStdDDraw::DEFAULT_MESSAGE_COLOR,
@@ -784,7 +784,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("\n<c ffff00>%s</c> - %s\n", GetKeyboardInputName("Screenshot").getData(), LoadResStr("IDS_CTL_SCREENSHOT"));
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("ScreenshotEx").getData(), LoadResStr("IDS_CTL_SCREENSHOTEX"));
 
-	Application.DDraw->TextOut(strText.getData(), Game.GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
 														 iX + 128, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
 
 	// right coloumn
@@ -798,7 +798,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowVtxToggle").getData(), "Entrance+Vertices");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowActionToggle").getData(), "Actions/Commands/Pathfinder");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowSolidMaskToggle").getData(), "SolidMasks");
-	Application.DDraw->TextOut(strText.getData(), Game.GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
 														 iX + iWdt/2 + 64, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
 	}
 

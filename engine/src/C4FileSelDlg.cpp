@@ -23,7 +23,7 @@
 #include <C4FileSelDlg.h>
 
 #ifndef BIG_C4INCLUDE
-#include <C4Game.h> // only for single use of Game.GraphicsResource.fctOKCancel below...
+#include <C4Game.h> // only for single use of ::GraphicsResource.fctOKCancel below...
 #endif
 
 #ifdef _WIN32
@@ -504,7 +504,7 @@ void C4PortraitSelDlg::ListItem::DrawElement(C4TargetFacet &cgo)
 	C4Facet cgoPicture(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y, ImagePreviewSize, ImagePreviewSize);
 	if (fError || !sFilename)
 		{
-		C4Facet &fctNoneImg = Game.GraphicsResource.fctOKCancel;
+		C4Facet &fctNoneImg = ::GraphicsResource.fctOKCancel;
 		fctNoneImg.Draw(cgoPicture.Surface, cgoPicture.X+(cgoPicture.Wdt-fctNoneImg.Wdt)/2, cgoPicture.Y+(cgoPicture.Hgt-fctNoneImg.Hgt)/2, 1,0);
 		}
 	else

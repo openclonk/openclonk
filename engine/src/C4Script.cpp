@@ -1611,8 +1611,8 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 		case C4MN_Add_ImgRank:
 			{
 			// symbol by rank
-			C4Facet *pfctRankSym = &Game.GraphicsResource.fctRank;
-			int32_t iRankSymNum = Game.GraphicsResource.iNumRanks;
+			C4Facet *pfctRankSym = &::GraphicsResource.fctRank;
+			int32_t iRankSymNum = ::GraphicsResource.iNumRanks;
 			if (pDef && pDef->pRankSymbols)
 				{
 				pfctRankSym = pDef->pRankSymbols;
@@ -1636,8 +1636,8 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 				{
 				// create graphics
 				// get rank gfx
-				C4Facet *pRankRes=&Game.GraphicsResource.fctRank;
-				long iRankCnt=Game.GraphicsResource.iNumRanks;
+				C4Facet *pRankRes=&::GraphicsResource.fctRank;
+				long iRankCnt=::GraphicsResource.iNumRanks;
 				C4Def *pDef=pGfxObj->Def;
 				if (pDef->pRankSymbols)
 					{

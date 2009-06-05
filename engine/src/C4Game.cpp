@@ -806,8 +806,8 @@ void C4Game::InitFullscreenComponents(bool fRunning)
 		{
 		// running game: Message board upper board and viewports
 		C4Facet cgo;
-		cgo.Set(Application.DDraw->lpBack, 0, C4GUI::GetScreenHgt() - Game.GraphicsResource.FontRegular.iLineHgt,
-		        C4GUI::GetScreenWdt(), Game.GraphicsResource.FontRegular.iLineHgt);
+		cgo.Set(Application.DDraw->lpBack, 0, C4GUI::GetScreenHgt() - ::GraphicsResource.FontRegular.iLineHgt,
+		        C4GUI::GetScreenWdt(), ::GraphicsResource.FontRegular.iLineHgt);
 		GraphicsSystem.MessageBoard.Init(cgo,FALSE);
 		C4Facet cgo2;
 		cgo2.Set(Application.DDraw->lpBack, 0, 0, C4GUI::GetScreenWdt(), C4UpperBoardHeight);
@@ -1766,7 +1766,7 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 						fctCursor.Draw(cgo.Surface,cgo.X+cox,cgo.Y+coy,cphase);
 						if (cursor->Info)
 							{
-							int32_t texthgt = Game.GraphicsResource.FontRegular.iLineHgt;
+							int32_t texthgt = ::GraphicsResource.FontRegular.iLineHgt;
 							StdStrBuf str;
 							if (cursor->Info->Rank>0)
 								{
@@ -1775,7 +1775,7 @@ void C4Game::DrawCursors(C4TargetFacet &cgo, int32_t iPlayer)
 								}
 							else str = cursor->GetName();
 
-							Application.DDraw->TextOut(str.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
+							Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 							                             cgo.X + cox + fctCursor.Wdt / 2,
 							                             cgo.Y + coy - 2 - texthgt,
 							                             0xffff0000, ACenter);
@@ -1969,7 +1969,7 @@ BOOL C4Game::SaveGameTitle(C4Group &hGroup)
 
 		// Fullscreen
 		Application.DDraw->Blit(Application.DDraw->lpBack,
-			0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-Game.GraphicsResource.FontRegular.iLineHgt),
+			0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.iLineHgt),
 			sfcPic,0,0,iSfcWdt,iSfcHgt);
 
 		BOOL fOkay=TRUE;
@@ -3234,7 +3234,7 @@ bool C4Game::InitSystem()
 	// But postponing initialization until then would mean a black screen for quite some time of the initialization progress.
 	// Peter wouldn't like this...
 #ifndef USE_CONSOLE
-	if (!FontLoader.InitFont(Game.GraphicsResource.FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
+	if (!FontLoader.InitFont(::GraphicsResource.FontRegular, Config.General.RXFontName, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &GraphicsResource.Files))
 		return false;
 #endif
 	// init message input (default commands)

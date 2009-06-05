@@ -109,7 +109,7 @@ void SoundPan(const char *szSndName, C4Object *pObj, int32_t iPan)
 
 //=========================== Graphics Resource =========================================
 
-#define GfxR (&(Game.GraphicsResource))
+#define GfxR (&(::GraphicsResource))
 
 //=============================== Messages =============================================
 
