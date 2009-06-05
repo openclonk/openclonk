@@ -150,16 +150,16 @@ bool C4GameSave::SaveScenarioSections()
 bool C4GameSave::SaveLandscape()
 	{
 	// exact?
-	if (Game.Landscape.Mode == C4LSC_Exact || GetForceExactLandscape())
+	if (::Landscape.Mode == C4LSC_Exact || GetForceExactLandscape())
 		{
 		C4DebugRecOff DBGRECOFF;
 		// Landscape
 		Game.Objects.RemoveSolidMasks();
 		bool fSuccess;
-		if(Game.Landscape.Mode == C4LSC_Exact)
-			fSuccess = !!Game.Landscape.Save(*pSaveGroup);
+		if(::Landscape.Mode == C4LSC_Exact)
+			fSuccess = !!::Landscape.Save(*pSaveGroup);
 		else
-			fSuccess = !!Game.Landscape.SaveDiff(*pSaveGroup, !IsSynced());
+			fSuccess = !!::Landscape.SaveDiff(*pSaveGroup, !IsSynced());
 		Game.Objects.PutSolidMasks();
 		if (!fSuccess) return false;
 		DBGRECOFF.Clear();
@@ -173,7 +173,7 @@ bool C4GameSave::SaveLandscape()
 		if (!Game.Material.SaveEnumeration(*pSaveGroup)) return false;
 		}
 	// static / dynamic
-	if (Game.Landscape.Mode == C4LSC_Static)
+	if (::Landscape.Mode == C4LSC_Static)
 		{
 		// static map
 		// remove old-style landscape.bmp
@@ -182,12 +182,12 @@ bool C4GameSave::SaveLandscape()
 		if(!GetForceExactLandscape())
 			{
 			// save map
-			if (!Game.Landscape.SaveMap(*pSaveGroup)) return FALSE;
+			if (!::Landscape.SaveMap(*pSaveGroup)) return FALSE;
 			// save textures (if changed)
-			if (!Game.Landscape.SaveTextures(*pSaveGroup)) return FALSE;
+			if (!::Landscape.SaveTextures(*pSaveGroup)) return FALSE;
 			}
 		}
-	else if (Game.Landscape.Mode != C4LSC_Exact)
+	else if (::Landscape.Mode != C4LSC_Exact)
 		{
 		// dynamic map by landscape.txt or scenario core: nothing to save
 		// in fact, it doesn't even make much sense to save the Objects.txt

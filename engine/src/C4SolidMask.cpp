@@ -254,7 +254,7 @@ void C4SolidMask::Remove(bool fCauseInstability, bool fBackupAttachment)
 				_SBackPixIfMask(iTx,iTy,*pPix,MCVehic);
 				// Instability
 				if (fCauseInstability)
-					Game.Landscape.CheckInstabilityRange(iTx,iTy);
+					::Landscape.CheckInstabilityRange(iTx,iTy);
 				}
 		}
 	// Mask not put flag
@@ -456,7 +456,7 @@ bool C4SolidMask::CheckConsistency()
 		{
 		pSolid->RemoveTemporary(SolidMaskRect);
 		}
-	assert(!Game.Landscape.MatCount[MVehic]);
+	assert(!::Landscape.MatCount[MVehic]);
 	// Restore Solidmasks
 	for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
 		{

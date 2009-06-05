@@ -102,7 +102,6 @@ class C4Game
 		C4GameObjects				Objects;
 		C4ObjectList				BackObjects;		// objects in background (C4D_Background)
 		C4ObjectList				ForeObjects;		// objects in foreground (C4D_Foreground)
-    C4Landscape					Landscape;
     C4Scenario					C4S;
 		C4ComponentHost			Info;
 		C4ComponentHost			Title;

@@ -83,7 +83,7 @@ void C4PXS::Execute()
 	// In bounds?
 	if(Inside<int32_t>(iToX, 0, GBackWdt-1) && Inside<int32_t>(iToY, 0, GBackHgt-1))
 		// Check path
-		if(Game.Landscape._PathFree(iX, iY, iToX, iToY))
+		if(::Landscape._PathFree(iX, iY, iToX, iToY))
 			{
 			x=ctcox; y=ctcoy;
 			return;
@@ -260,7 +260,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 					if (pMat->PXSFace.Surface && Config.Graphics.PXSGfx)
 						continue;
 					// old-style: unicolored pixels or lines
-					DWORD dwMatClr = Game.Landscape.GetPal()->GetClr((BYTE) (Mat2PixColDefault(pxp->Mat)));
+					DWORD dwMatClr = ::Landscape.GetPal()->GetClr((BYTE) (Mat2PixColDefault(pxp->Mat)));
 					if (fixtoi(pxp->xdir) || fixtoi(pxp->ydir))
 						{
 						// lines for stuff that goes whooosh!

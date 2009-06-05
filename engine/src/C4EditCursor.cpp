@@ -567,7 +567,7 @@ void C4EditCursor::ApplyToolBrush()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
   // execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, Game.Landscape.Mode, X,Y,0,0, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
 void C4EditCursor::ApplyToolLine()
@@ -575,7 +575,7 @@ void C4EditCursor::ApplyToolLine()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
   // execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, Game.Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
 void C4EditCursor::ApplyToolRect()
@@ -583,7 +583,7 @@ void C4EditCursor::ApplyToolRect()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
   // execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, Game.Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
 void C4EditCursor::ApplyToolFill()
@@ -591,7 +591,7 @@ void C4EditCursor::ApplyToolFill()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
   // execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, Game.Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
 	}
 
 BOOL C4EditCursor::DoContextMenu()
@@ -706,11 +706,11 @@ void C4EditCursor::ApplyToolPicker()
 	{
 	int32_t iMaterial;
 	BYTE byIndex;
-	switch (Game.Landscape.Mode)
+	switch (::Landscape.Mode)
 		{
 		case C4LSC_Static:
 			// Material-texture from map
-			if (byIndex=Game.Landscape.GetMapIndex(X/Game.Landscape.MapZoom,Y/Game.Landscape.MapZoom))
+			if (byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom))
 				{
 				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
 				if(pTex)

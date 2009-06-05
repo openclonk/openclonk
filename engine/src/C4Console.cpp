@@ -778,7 +778,7 @@ BOOL C4Console::SaveGame(BOOL fSaveGame)
 	if (fSaveGame)
 		pGameSave = new C4GameSaveSavegame();
 	else
-		pGameSave = new C4GameSaveScenario(!Console.Active || Game.Landscape.Mode==C4LSC_Exact, false);
+		pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.Mode==C4LSC_Exact, false);
 	if (!pGameSave->Save(Game.ScenarioFile, false))
 		{ Out("Game::Save failed"); fOkay=FALSE; }
 	delete pGameSave;

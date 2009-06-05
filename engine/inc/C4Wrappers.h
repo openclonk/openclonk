@@ -106,14 +106,14 @@ inline bool DensityLiquid(int32_t dens)
 extern int32_t MVehic,MTunnel,MWater,MSnow,MEarth,MGranite,MFlyAshes; // presearched materials
 extern BYTE MCVehic; // precalculated material color
 
-#define GBackWdt Game.Landscape.Width
-#define GBackHgt Game.Landscape.Height
-#define GBackPix Game.Landscape.GetPix
-#define SBackPix Game.Landscape.SetPix
-#define ClearBackPix Game.Landscape.ClearPix
-#define _GBackPix Game.Landscape._GetPix
-#define _SBackPix Game.Landscape._SetPix
-#define _SBackPixIfMask Game.Landscape._SetPixIfMask
+#define GBackWdt ::Landscape.Width
+#define GBackHgt ::Landscape.Height
+#define GBackPix ::Landscape.GetPix
+#define SBackPix ::Landscape.SetPix
+#define ClearBackPix ::Landscape.ClearPix
+#define _GBackPix ::Landscape._GetPix
+#define _SBackPix ::Landscape._SetPix
+#define _SBackPixIfMask ::Landscape._SetPixIfMask
 
 int32_t PixCol2MatOld(BYTE pixc);
 int32_t PixCol2MatOld2(BYTE pixc);
@@ -184,12 +184,12 @@ inline BYTE GBackIFT(int32_t x, int32_t y)
 
 inline int32_t GBackMat(int32_t x, int32_t y)
   {
-	return Game.Landscape.GetMat(x, y);
+	return ::Landscape.GetMat(x, y);
   }
 
 inline int32_t GBackDensity(int32_t x, int32_t y)
   {
-	return Game.Landscape.GetDensity(x, y);
+	return ::Landscape.GetDensity(x, y);
   }
 
 inline bool GBackSolid(int32_t x, int32_t y)

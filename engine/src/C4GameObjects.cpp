@@ -300,7 +300,7 @@ C4ObjectList &C4GameObjects::ObjectsInt()
 	{
 	// some time ago, only objects in the topleft corner used to be recognized
 	// this is an unnecessary restriction though...
-	//return Game.Landscape.Sectors.First()->Objects;
+	//return ::Landscape.Sectors.First()->Objects;
 	return *this;
 	}
 

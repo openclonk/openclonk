@@ -137,13 +137,13 @@ BOOL C4MassMover::Execute()
   // Check for transfer target space
 	C4Material *pMat = Game.Material.Map+Mat;
   tx=x; ty=y;
-  if (!Game.Landscape.FindMatPath(tx,ty,+1,pMat->Density,pMat->MaxSlide))
+  if (!::Landscape.FindMatPath(tx,ty,+1,pMat->Density,pMat->MaxSlide))
     {
 		// Contact material reaction check: corrosion/evaporation/inflammation/etc.
 		if (Corrosion(+0,+1) || Corrosion(-1,+0) || Corrosion(+1,+0))
 			{
 			// material has been used up
-			Game.Landscape.ExtractMaterial(x,y);
+			::Landscape.ExtractMaterial(x,y);
 			return TRUE;
 			}
 
@@ -155,7 +155,7 @@ BOOL C4MassMover::Execute()
 /*	if (Corrosion(0,0))
 		{
 		// material has been used up by conversion
-		Game.Landscape.ExtractMaterial(x,y);
+		::Landscape.ExtractMaterial(x,y);
 		return TRUE;
 		}*/
 
@@ -166,13 +166,13 @@ BOOL C4MassMover::Execute()
 
   // Transfer mass
 	if(Random(10))
-		SBackPix(tx,ty,Mat2PixColDefault(Game.Landscape.ExtractMaterial(x,y))+GBackIFT(tx,ty));
+		SBackPix(tx,ty,Mat2PixColDefault(::Landscape.ExtractMaterial(x,y))+GBackIFT(tx,ty));
 	else
-		Game.Landscape.InsertMaterial(Game.Landscape.ExtractMaterial(x,y), tx, ty, 0, 1);
+		::Landscape.InsertMaterial(::Landscape.ExtractMaterial(x,y), tx, ty, 0, 1);
 
 	// Reinsert material (thrusted aside)
 	if(Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat) && Game.Material.Map[omat].Density > 0)
-		Game.Landscape.InsertMaterial(omat, tx, ty + 1);
+		::Landscape.InsertMaterial(omat, tx, ty + 1);
 
   // Create new mover at target
   Game.MassMover.Create(tx,ty,!Rnd3());

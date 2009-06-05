@@ -245,7 +245,7 @@ static C4Value FnIncinerateLandscape(C4AulContext *cthr, C4Value *pPars)
 	{
 	PAR(int, iX); PAR(int, iY);
 	if (cthr->Obj) { iX += cthr->Obj->GetX(); iY += cthr->Obj->GetY(); }
-	return C4VBool(!!Game.Landscape.Incinerate(iX, iY));
+	return C4VBool(!!::Landscape.Incinerate(iX, iY));
 	}
 
 static C4Value FnExtinguish(C4AulContext *cthr, C4Value *pPars)
@@ -270,13 +270,13 @@ static C4Value FnSetGravity(C4AulContext *cthr, C4Value *pPars)
 	{
 	PAR(int, iGravity);
 
-	Game.Landscape.Gravity = itofix(BoundBy<long>(iGravity,-300,300)) / 500;
+	::Landscape.Gravity = itofix(BoundBy<long>(iGravity,-300,300)) / 500;
 	return C4VTrue;
 	}
 
 static C4Value FnGetGravity(C4AulContext *cthr, C4Value *pPars)
 	{
-	return C4VInt(fixtoi(Game.Landscape.Gravity * 500));
+	return C4VInt(fixtoi(::Landscape.Gravity * 500));
 	}
 
 static C4Value FnDeathAnnounce(C4AulContext *cthr, C4Value *pPars)
@@ -2242,7 +2242,7 @@ static bool FnFlameConsumeMaterial(C4AulContext *cthr, long x, long y)
 	long mat=GBackMat(x,y);
 	if (!MatValid(mat)) return false;
 	if (!Game.Material.Map[mat].Inflammable) return false;
-	if (Game.Landscape.ExtractMaterial(x,y)==MNone) return false;
+	if (::Landscape.ExtractMaterial(x,y)==MNone) return false;
 	return true;
 	}
 
@@ -2264,22 +2264,22 @@ static long FnExtractLiquid(C4AulContext *cthr, long x, long y)
 	{
 	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
 	if (!GBackLiquid(x,y)) return MNone;
-	return Game.Landscape.ExtractMaterial(x,y);
+	return ::Landscape.ExtractMaterial(x,y);
 	}
 
 static bool FnInsertMaterial(C4AulContext *cthr, long mat, long x, long y, long vx, long vy)
 	{
 	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
-	return !!Game.Landscape.InsertMaterial(mat,x,y,vx,vy);
+	return !!::Landscape.InsertMaterial(mat,x,y,vx,vy);
 	}
 
 static long FnGetMaterialCount(C4AulContext *cthr, long iMaterial, bool fReal)
 	{
   if(!MatValid(iMaterial)) return -1;
   if(fReal || !Game.Material.Map[iMaterial].MinHeightCount)
-    return Game.Landscape.MatCount[iMaterial];
+    return ::Landscape.MatCount[iMaterial];
   else
-	  return Game.Landscape.EffectiveMatCount[iMaterial];
+	  return ::Landscape.EffectiveMatCount[iMaterial];
 	}
 
 static long FnGetMaterial(C4AulContext *cthr, long x, long y)
@@ -2330,7 +2330,7 @@ static long FnExtractMaterialAmount(C4AulContext *cthr, long x, long y, long mat
 	long extracted=0; for (;extracted<amount; extracted++)
 		{
 		if (GBackMat(x,y)!=mat) return extracted;
-		if (Game.Landscape.ExtractMaterial(x,y)!=mat) return extracted;
+		if (::Landscape.ExtractMaterial(x,y)!=mat) return extracted;
 		}
 	return extracted;
 	}
@@ -2361,7 +2361,7 @@ static bool FnBlastFree(C4AulContext *cthr, long iX, long iY, long iLevel, long 
 		iY += cthr->Obj->GetY();
 		}
 	int grade = BoundBy<int>((iLevel/10)-1,1,3);
-	Game.Landscape.BlastFree(iX, iY, iLevel, grade, iCausedBy);
+	::Landscape.BlastFree(iX, iY, iLevel, grade, iCausedBy);
 	return true;
 	}
 
@@ -3126,8 +3126,8 @@ static long FnGetClimate(C4AulContext *cthr)
 static bool FnSetSkyFade(C4AulContext *cthr, long iFromRed, long iFromGreen, long iFromBlue, long iToRed, long iToGreen, long iToBlue)
 	{
 	// newgfx: set modulation
-	DWORD dwBack,dwMod=GetClrModulation(Game.Landscape.Sky.FadeClr1, C4RGB(iFromRed, iFromGreen, iFromBlue), dwBack);
-	Game.Landscape.Sky.SetModulation(dwMod,dwBack);
+	DWORD dwBack,dwMod=GetClrModulation(::Landscape.Sky.FadeClr1, C4RGB(iFromRed, iFromGreen, iFromBlue), dwBack);
+	::Landscape.Sky.SetModulation(dwMod,dwBack);
 	return TRUE;
 	}
 
@@ -3136,8 +3136,8 @@ static bool FnSetSkyColor(C4AulContext *cthr, long iIndex, long iRed, long iGree
 	// set first index only
 	if (iIndex) return TRUE;
 	// get color difference
-	DWORD dwBack,dwMod=GetClrModulation(Game.Landscape.Sky.FadeClr1, C4RGB(iRed, iGreen, iBlue), dwBack);
-	Game.Landscape.Sky.SetModulation(dwMod,dwBack);
+	DWORD dwBack,dwMod=GetClrModulation(::Landscape.Sky.FadeClr1, C4RGB(iRed, iGreen, iBlue), dwBack);
+	::Landscape.Sky.SetModulation(dwMod,dwBack);
 	// success
 	return TRUE;
 	}
@@ -3146,8 +3146,8 @@ static long FnGetSkyColor(C4AulContext *cthr, long iIndex, long iRGB)
 	{
 	// relict from OldGfx
 	if (iIndex || !Inside<long>(iRGB,0,2)) return 0;
-	DWORD dwClr=Game.Landscape.Sky.FadeClr1;
-	BltAlpha(dwClr, Game.Landscape.Sky.FadeClr2 | ((iIndex*0xff/19)<<24));
+	DWORD dwClr=::Landscape.Sky.FadeClr1;
+	BltAlpha(dwClr, ::Landscape.Sky.FadeClr2 | ((iIndex*0xff/19)<<24));
 	switch (iRGB)
 		{
 		case 0: return (dwClr>>16)&0xff;
@@ -3188,7 +3188,7 @@ static bool FnLaunchEarthquake(C4AulContext *cthr, long x, long y)
 
 static bool FnShakeFree(C4AulContext *cthr, long x, long y, long rad)
 	{
-	Game.Landscape.ShakeFree(x,y,rad);
+	::Landscape.ShakeFree(x,y,rad);
 	return 1;
 	}
 
@@ -3200,22 +3200,22 @@ static bool FnShakeObjects(C4AulContext *cthr, long x, long y, long rad)
 
 static bool FnDigFree(C4AulContext *cthr, long x, long y, long rad, bool fRequest)
 	{
-	Game.Landscape.DigFree(x,y,rad,fRequest,cthr->Obj);
+	::Landscape.DigFree(x,y,rad,fRequest,cthr->Obj);
 	return 1;
 	}
 
 static bool FnDigFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt, bool fRequest)
 	{
-	Game.Landscape.DigFreeRect(iX,iY,iWdt,iHgt,fRequest,cthr->Obj);
+	::Landscape.DigFreeRect(iX,iY,iWdt,iHgt,fRequest,cthr->Obj);
 	return TRUE;
 	}
 
 static bool FnFreeRect(C4AulContext *cthr, long iX, long iY, long iWdt, long iHgt, long iFreeDensity)
 	{
 	if (iFreeDensity)
-		Game.Landscape.ClearRectDensity(iX,iY,iWdt,iHgt,iFreeDensity);
+		::Landscape.ClearRectDensity(iX,iY,iWdt,iHgt,iFreeDensity);
 	else
-		Game.Landscape.ClearRect(iX,iY,iWdt,iHgt);
+		::Landscape.ClearRect(iX,iY,iWdt,iHgt);
 	return TRUE;
 	}
 
@@ -4596,7 +4596,7 @@ static bool FnSetMaterialColor(C4AulContext* cthr, long iMat, long iClr1R, long 
 	dwMod&=0xffffff;
 	if (!dwMod) dwMod=1;
 	if (dwMod==0xffffff) dwMod=0;
-	Game.Landscape.SetModulation(dwMod);
+	::Landscape.SetModulation(dwMod);
 	// done
 	return TRUE;
 	}
@@ -4762,7 +4762,7 @@ static C4Value FnGlobalN(C4AulContext* cthr, C4Value* strName_C4V)
 static bool FnSetSkyAdjust(C4AulContext* cthr, long dwAdjust, long dwBackClr)
 	{
 	// set adjust
-	Game.Landscape.Sky.SetModulation(dwAdjust, dwBackClr);
+	::Landscape.Sky.SetModulation(dwAdjust, dwBackClr);
 	// success
 	return TRUE;
 	}
@@ -4770,7 +4770,7 @@ static bool FnSetSkyAdjust(C4AulContext* cthr, long dwAdjust, long dwBackClr)
 static bool FnSetMatAdjust(C4AulContext* cthr, long dwAdjust)
 	{
 	// set adjust
-	Game.Landscape.SetModulation(dwAdjust);
+	::Landscape.SetModulation(dwAdjust);
 	// success
 	return TRUE;
 	}
@@ -4778,13 +4778,13 @@ static bool FnSetMatAdjust(C4AulContext* cthr, long dwAdjust)
 static long FnGetSkyAdjust(C4AulContext* cthr, bool fBackColor)
 	{
 	// get adjust
-	return Game.Landscape.Sky.GetModulation(!!fBackColor);
+	return ::Landscape.Sky.GetModulation(!!fBackColor);
 	}
 
 static long FnGetMatAdjust(C4AulContext* cthr)
 	{
 	// get adjust
-	return Game.Landscape.GetModulation();
+	return ::Landscape.GetModulation();
 	}
 
 static long FnAnyContainer(C4AulContext*)		{ return ANY_CONTAINER;	}
@@ -4915,7 +4915,7 @@ static C4Value FnGetCrewExtraData(C4AulContext *cthr, C4Value *pCrew_C4V, C4Valu
 
 static long FnDrawMatChunks(C4AulContext *cctx, long tx, long ty, long twdt, long thgt, long icntx, long icnty, C4String *strMaterial, C4String *strTexture, bool bIFT)
 {
-	return Game.Landscape.DrawChunks(tx, ty, twdt, thgt, icntx, icnty, FnStringPar(strMaterial), FnStringPar(strTexture), bIFT != 0);
+	return ::Landscape.DrawChunks(tx, ty, twdt, thgt, icntx, icnty, FnStringPar(strMaterial), FnStringPar(strTexture), bIFT != 0);
 }
 
 static bool FnGetCrewEnabled(C4AulContext *cctx, C4Object *pObj)
@@ -4965,13 +4965,13 @@ static bool FnUnselectCrew(C4AulContext *cctx, long iPlayer)
 static long FnDrawMap(C4AulContext *cctx, long iX, long iY, long iWdt, long iHgt, C4String *szMapDef)
 	{
 	// draw it!
-	return Game.Landscape.DrawMap(iX, iY, iWdt, iHgt, FnStringPar(szMapDef));
+	return ::Landscape.DrawMap(iX, iY, iWdt, iHgt, FnStringPar(szMapDef));
 	}
 
 static long FnDrawDefMap(C4AulContext *cctx, long iX, long iY, long iWdt, long iHgt, C4String *szMapDef)
 	{
 	// draw it!
-	return Game.Landscape.DrawDefMap(iX, iY, iWdt, iHgt, FnStringPar(szMapDef));
+	return ::Landscape.DrawDefMap(iX, iY, iWdt, iHgt, FnStringPar(szMapDef));
 	}
 
 struct C4ModLandscapeMatRec
@@ -5002,7 +5002,7 @@ static bool FnDrawModLandscape(C4AulContext *cctx, long iX, long iY, long iWdt, 
 
 	// ClipRect wants int& instead of long&
 	int32_t i_x = iX, i_y = iY, i_w = iWdt, i_h = iHgt;
-	if (!Game.Landscape.ClipRect(i_x, i_y, i_w, i_h)) return FALSE;
+	if (!::Landscape.ClipRect(i_x, i_y, i_w, i_h)) return FALSE;
 	iX = i_x; iY = i_y; iWdt = i_w; iHgt = i_h;
 
 	long iX2=iX+iWdt; long iY2=iY+iHgt;
@@ -5102,7 +5102,7 @@ static bool FnDrawModLandscape(C4AulContext *cctx, long iX, long iY, long iWdt, 
 						if (dwPix>>24)
 							{
 							// apply it!
-							DWORD dwPixUnder = Game.Landscape._GetPixDw(x,y, false);
+							DWORD dwPixUnder = ::Landscape._GetPixDw(x,y, false);
 							BltAlpha(dwPixUnder, dwPix); dwPix=dwPixUnder;
 							}
 						break;
@@ -5113,7 +5113,7 @@ static bool FnDrawModLandscape(C4AulContext *cctx, long iX, long iY, long iWdt, 
 				if (fDrawPix)
 					{
 					//dwPix=Application.DDraw->PatternedClr(x,y,dwPix);
-					// TODO: Game.Landscape.SetPixDw(x,y,dwPix);
+					// TODO: ::Landscape.SetPixDw(x,y,dwPix);
 					}
 				}
 			++pZ;
@@ -5218,13 +5218,13 @@ static bool FnSetSkyParallax(C4AulContext* ctx, long iMode, long iParX, long iPa
 	{
 	// set all parameters that aren't SkyPar_KEEP
 	if (iMode != SkyPar_KEEP)
-		if (Inside<long>(iMode, 0, 1)) Game.Landscape.Sky.ParallaxMode = iMode;
-	if (iParX != SkyPar_KEEP && iParX) Game.Landscape.Sky.ParX = iParX;
-	if (iParY != SkyPar_KEEP && iParY) Game.Landscape.Sky.ParY = iParY;
-	if (iXDir != SkyPar_KEEP) Game.Landscape.Sky.xdir = itofix(iXDir);
-	if (iYDir != SkyPar_KEEP) Game.Landscape.Sky.ydir = itofix(iYDir);
-	if (iX != SkyPar_KEEP) Game.Landscape.Sky.x = itofix(iX);
-	if (iY != SkyPar_KEEP) Game.Landscape.Sky.y = itofix(iY);
+		if (Inside<long>(iMode, 0, 1)) ::Landscape.Sky.ParallaxMode = iMode;
+	if (iParX != SkyPar_KEEP && iParX) ::Landscape.Sky.ParX = iParX;
+	if (iParY != SkyPar_KEEP && iParY) ::Landscape.Sky.ParY = iParY;
+	if (iXDir != SkyPar_KEEP) ::Landscape.Sky.xdir = itofix(iXDir);
+	if (iYDir != SkyPar_KEEP) ::Landscape.Sky.ydir = itofix(iYDir);
+	if (iX != SkyPar_KEEP) ::Landscape.Sky.x = itofix(iX);
+	if (iY != SkyPar_KEEP) ::Landscape.Sky.y = itofix(iY);
 	// success
 	return TRUE;
 	}
@@ -5308,12 +5308,12 @@ static long FnGetPathLength(C4AulContext* ctx, long iFromX, long iFromY, long iT
 static long FnSetTextureIndex(C4AulContext *ctx, C4String *psMatTex, long iNewIndex, bool fInsert)
 	{
 	if(!Inside(iNewIndex, 0l, 255l)) return FALSE;
-	return Game.Landscape.SetTextureIndex(FnStringPar(psMatTex), BYTE(iNewIndex), !!fInsert);
+	return ::Landscape.SetTextureIndex(FnStringPar(psMatTex), BYTE(iNewIndex), !!fInsert);
 	}
 
 static long FnRemoveUnusedTexMapEntries(C4AulContext *ctx)
   {
-  Game.Landscape.RemoveUnusedTexMapEntries();
+  ::Landscape.RemoveUnusedTexMapEntries();
   return TRUE;
   }
 
@@ -5322,7 +5322,7 @@ static bool FnSetLandscapePixel(C4AulContext* ctx, long iX, long iY, long dwValu
 	// local call
 	if (ctx->Obj) { iX+=ctx->Obj->GetX(); iY+=ctx->Obj->GetY(); }
 	// set pixel in 32bit-sfc only
-	// TODO: Game.Landscape.SetPixDw(iX, iY, dwValue);
+	// TODO: ::Landscape.SetPixDw(iX, iY, dwValue);
 	// success
 	return TRUE;
 	}
@@ -5349,7 +5349,7 @@ static bool FnSetObjectOrder(C4AulContext* ctx, C4Object *pObjBeforeOrAfter, C4O
 static bool FnDrawMaterialQuad(C4AulContext* ctx, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, bool fSub)
 	{
   const char *szMat = FnStringPar(szMaterial);
-	return !! Game.Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, fSub);
+	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, fSub);
 	}
 
 static bool FnFightWith(C4AulContext *ctx, C4Object *pTarget, C4Object *pClonk)

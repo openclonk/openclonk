@@ -132,7 +132,7 @@ BOOL C4TextureMap::AddEntry(BYTE byIndex, const char *szMaterial, const char *sz
 		}
 #ifdef C4ENGINE
 		// Landscape must be notified (new valid pixel clr)
-		Game.Landscape.HandleTexMapUpdate();
+		::Landscape.HandleTexMapUpdate();
 #endif
 		}
   return TRUE;

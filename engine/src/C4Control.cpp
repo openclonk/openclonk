@@ -975,8 +975,8 @@ void C4ControlEMDrawTool::Execute() const
 		return;
 		}
 	// check current mode
-	assert(Game.Landscape.Mode == iMode);
-	if (Game.Landscape.Mode != iMode) return;
+	assert(::Landscape.Mode == iMode);
+	if (::Landscape.Mode != iMode) return;
 	// assert validity of parameters
 	if (!Material.getSize()) return;
 	const char *szMaterial = Material.getData(),
@@ -986,22 +986,22 @@ void C4ControlEMDrawTool::Execute() const
 		{
 		case EMDT_Brush: // brush tool
 			if (!Texture.getSize()) break;
-			Game.Landscape.DrawBrush(iX, iY, iGrade, szMaterial, szTexture, fIFT);
+			::Landscape.DrawBrush(iX, iY, iGrade, szMaterial, szTexture, fIFT);
 			break;
 		case EMDT_Line: // line tool
 			if (!Texture.getSize()) break;
-			Game.Landscape.DrawLine(iX,iY,iX2,iY2, iGrade, szMaterial, szTexture, fIFT);
+			::Landscape.DrawLine(iX,iY,iX2,iY2, iGrade, szMaterial, szTexture, fIFT);
 			break;
 		case EMDT_Rect: // rect tool
 			if (!Texture.getSize()) break;
-			Game.Landscape.DrawBox(iX,iY,iX2,iY2, iGrade, szMaterial, szTexture, fIFT);
+			::Landscape.DrawBox(iX,iY,iX2,iY2, iGrade, szMaterial, szTexture, fIFT);
 			break;
 		case EMDT_Fill: // fill tool
 			{
 			int iMat = Game.Material.Get(szMaterial);
 			if (!MatValid(iMat)) return;
 			for (int cnt=0; cnt<iGrade; cnt++)
-				Game.Landscape.InsertMaterial(iMat,iX+Random(iGrade)-iGrade/2,iY+Random(iGrade)-iGrade/2);
+				::Landscape.InsertMaterial(iMat,iX+Random(iGrade)-iGrade/2,iY+Random(iGrade)-iGrade/2);
 			}
 			break;
 		}

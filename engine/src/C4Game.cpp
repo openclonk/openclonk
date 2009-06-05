@@ -676,7 +676,7 @@ BOOL C4Game::GameOverCheck()
 			if (MatValid(mat=Game.Material.Get(C4S.Game.ClearMaterial.Name[cnt])))
 				{
 				condition_valid=TRUE;
-        if (Game.Landscape.EffectiveMatCount[mat]>(DWORD)C4S.Game.ClearMaterial.Count[cnt])
+        if (::Landscape.EffectiveMatCount[mat]>(DWORD)C4S.Game.ClearMaterial.Count[cnt])
           condition_true = FALSE;
 				}
 	if (condition_valid)

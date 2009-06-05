@@ -1989,7 +1989,7 @@ BOOL PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32
 bool PathFreeIgnoreVehiclePix(int32_t x, int32_t y, int32_t par)
   {
 	BYTE byPix=GBackPix(x,y);
-	return !byPix || !DensitySolid(Game.Landscape.GetPixMat(byPix)) || Game.Landscape.GetPixMat(byPix) == MVehic;
+	return !byPix || !DensitySolid(::Landscape.GetPixMat(byPix)) || ::Landscape.GetPixMat(byPix) == MVehic;
   }
 
 BOOL PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy)
@@ -2091,12 +2091,12 @@ BOOL ConstructionCheck(C4ID id, int32_t iX, int32_t iY, C4Object *pByObj)
   int32_t rtx,rty,wdt,hgt;
   wdt=ndef->Shape.Wdt; hgt=ndef->Shape.Hgt-ndef->ConSizeOff;
   rtx=iX-wdt/2; rty=iY-hgt;
-  if (Game.Landscape.AreaSolidCount(rtx,rty,wdt,hgt)>(wdt*hgt/20))
+  if (::Landscape.AreaSolidCount(rtx,rty,wdt,hgt)>(wdt*hgt/20))
     {
     if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOROOM"),pByObj,FRed);
     return FALSE;
     }
-  if (Game.Landscape.AreaSolidCount(rtx,rty+hgt,wdt,5)<(wdt*2))
+  if (::Landscape.AreaSolidCount(rtx,rty+hgt,wdt,5)<(wdt*2))
     {
     if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOLEVEL"),pByObj,FRed);
     return FALSE;
@@ -2276,14 +2276,14 @@ BYTE DrawLineCol;
 
 bool C4Landscape::DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade)
 	{
-	Game.Landscape.Surface8->Circle(iX,iY,iGrade, DrawLineCol);
+	::Landscape.Surface8->Circle(iX,iY,iGrade, DrawLineCol);
 	return TRUE;
 	}
 
 bool DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius)
 	{
-	if (iRadius==1) { if (Game.Landscape.Map) Game.Landscape.Map->SetPix(iX,iY,DrawLineCol); }
-	else Game.Landscape.Map->Circle(iX,iY,iRadius,DrawLineCol);
+	if (iRadius==1) { if (::Landscape.Map) ::Landscape.Map->SetPix(iX,iY,DrawLineCol); }
+	else ::Landscape.Map->Circle(iX,iY,iRadius,DrawLineCol);
 	return TRUE;
 	}
 
@@ -2945,3 +2945,5 @@ bool C4Landscape::DebugSave(const char *szFilename)
 		}
 	return fSuccess;
 	}
+
+C4Landscape Landscape;

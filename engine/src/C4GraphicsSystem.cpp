@@ -636,8 +636,8 @@ BOOL C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 		// mark background to be redrawn
 		InvalidateBg();
 		// backup and clear sky parallaxity
-		int32_t iParX=Game.Landscape.Sky.ParX; Game.Landscape.Sky.ParX=10;
-		int32_t iParY=Game.Landscape.Sky.ParY; Game.Landscape.Sky.ParY=10;
+		int32_t iParX=::Landscape.Sky.ParX; ::Landscape.Sky.ParX=10;
+		int32_t iParY=::Landscape.Sky.ParY; ::Landscape.Sky.ParY=10;
 		// temporarily change viewport player
 		int32_t iVpPlr=pVP->Player; pVP->Player=NO_OWNER;
 		// blit all tiles needed
@@ -667,8 +667,8 @@ BOOL C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 		// restore viewport player
 		pVP->Player=iVpPlr;
 		// restore parallaxity
-		Game.Landscape.Sky.ParX=iParX;
-		Game.Landscape.Sky.ParY=iParY;
+		::Landscape.Sky.ParX=iParX;
+		::Landscape.Sky.ParY=iParY;
 		// save!
 		return png.Save(szFilename);
 		}

@@ -1065,13 +1065,13 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		lpDDraw->SetClrModMapEnabled(false);
 
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
-	Game.Landscape.Sky.Draw(cgo);
+	::Landscape.Sky.Draw(cgo);
 	C4ST_STOP(SkyStat)
 	Game.BackObjects.DrawAll(cgo, Player);
 
 	// Draw Landscape
 	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
-	Game.Landscape.Draw(cgo,Player);
+	::Landscape.Draw(cgo,Player);
 	C4ST_STOP(LandStat)
 
 	// draw PXS (unclipped!)

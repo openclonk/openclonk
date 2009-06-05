@@ -198,8 +198,8 @@ void C4Player::Execute()
 								{
 								// player has selected a team that has a valid start position assigned
 								// set view to this position!
-								ViewX = Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] * Game.Landscape.MapZoom;
-								ViewY = Game.C4S.PlrStart[iPlrStartIndex-1].Position[1] * Game.Landscape.MapZoom;
+								ViewX = Game.C4S.PlrStart[iPlrStartIndex-1].Position[0] * ::Landscape.MapZoom;
+								ViewY = Game.C4S.PlrStart[iPlrStartIndex-1].Position[1] * ::Landscape.MapZoom;
 								}
 							}
 						}

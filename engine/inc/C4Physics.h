@@ -27,7 +27,7 @@ const int StableRange=10;
 const int AttachRange=5;
 const int CornerRange=AttachRange+2;
 
-#define GravAccel (Game.Landscape.Gravity)
+#define GravAccel (::Landscape.Gravity)
 
 extern const FIXED FloatAccel;
 extern const FIXED HitSpeed1,HitSpeed2,HitSpeed3,HitSpeed4;

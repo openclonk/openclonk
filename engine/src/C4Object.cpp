@@ -871,7 +871,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
         { Extinguish(iFireNumber); if (GBackLiquid(GetX(), GetY())) StartSoundEffect("Pshshsh",false,100,this); }
 			// Inflame
 			if (!Random(3))
-				Game.Landscape.Incinerate(GetX(), GetY());
+				::Landscape.Incinerate(GetX(), GetY());
       }
     }
 
@@ -1088,8 +1088,8 @@ void C4Object::ExecBase()
     if ((Category & C4D_Structure) && !(Game.Rules & C4RULE_StructuresSnowIn))
       if (r==0)
 				{
-				Game.Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MSnow);
-				Game.Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MFlyAshes);
+				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MSnow);
+				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MFlyAshes);
 				}
     }
 
@@ -4561,7 +4561,7 @@ bool DoBridge(C4Object *clk)
 			}
 		}
 	// draw bridge into landscape
-  Game.Landscape.DrawMaterialRect(iBridgeMaterial,tx-2,ty,4,3);
+  ::Landscape.DrawMaterialRect(iBridgeMaterial,tx-2,ty,4,3);
 	// Move Clonk
 	if (fMoveClonk) clk->MovePosition(cx-clk->GetX(), cy-clk->GetY());
 	return true;

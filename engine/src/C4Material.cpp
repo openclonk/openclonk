@@ -637,7 +637,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, FIXED &fXDir, FIXED &fYDir, int32_
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
-	if (Game.Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),Game.Material.Map[iPxsMat].Density,Game.Material.Map[iPxsMat].MaxSlide))
+	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),Game.Material.Map[iPxsMat].Density,Game.Material.Map[iPxsMat].MaxSlide))
 		{
 		if(iPxsMat == iLsMat)
 			{ iX = iSlideX; iY = iSlideY; fXDir = 0; return false; }
@@ -713,7 +713,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 		{
 		case meeMassMove: // MassMover-movement
 		case meePXSPos: // PXS check before movement: Kill both landscape and PXS mat
-			Game.Landscape.ExtractMaterial(iLSPosX,iLSPosY);
+			::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
 			if (!Rnd3()) Smoke(iX,iY,3);
 			if (!Rnd3()) StartSoundEffectAt("Pshshsh", iX, iY);
 			return true;
@@ -725,7 +725,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 					// either splash or slide prevented interaction
 					return false;
 			// Always kill both landscape and PXS mat
-			Game.Landscape.ExtractMaterial(iLSPosX,iLSPosY);
+			::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
 			if (!Rnd3()) Smoke(iX,iY,3);
 			if (!Rnd3()) StartSoundEffectAt("Pshshsh", iX, iY);
 			return true;
@@ -753,7 +753,7 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			if (fDoCorrode)
 				{
 				ClearBackPix(iLSPosX,iLSPosY);
-				//Game.Landscape.CheckInstabilityRange(iLSPosX,iLSPosY); - more correct, but makes acid too effective as well
+				//::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY); - more correct, but makes acid too effective as well
 				if (!Random(5)) Smoke(iX,iY,3+Random(3));
 				if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
 				return true;
@@ -777,13 +777,13 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			if (fDoCorrode)
 				{
 				ClearBackPix(iLSPosX,iLSPosY);
-				Game.Landscape.CheckInstabilityRange(iLSPosX,iLSPosY);
+				::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY);
 				if (!Random(5)) Smoke(iX,iY,3+Random(3));
 				if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
 				return true;
 				}
 			// Else: dead. Insert material here
-			Game.Landscape.InsertMaterial(iPxsMat,iX,iY);
+			::Landscape.InsertMaterial(iPxsMat,iX,iY);
 			return true;
 			}
 		}
@@ -799,7 +799,7 @@ bool C4MaterialMap::mrfIncinerate(C4MaterialReaction *pReaction, int32_t &iX, in
 		{
 		case meeMassMove: // MassMover-movement
 		case meePXSPos: // PXS check before movement
-			if (Game.Landscape.Incinerate(iX, iY)) return true;
+			if (::Landscape.Incinerate(iX, iY)) return true;
 			break;
 
 		case meePXSMove: // PXS movement
@@ -808,9 +808,9 @@ bool C4MaterialMap::mrfIncinerate(C4MaterialReaction *pReaction, int32_t &iX, in
 				// either splash or slide prevented interaction
 				return false;
 			// evaluate inflammation (should always succeed)
-			if (Game.Landscape.Incinerate(iX, iY)) return true;
+			if (::Landscape.Incinerate(iX, iY)) return true;
 			// Else: dead. Insert material here
-			Game.Landscape.InsertMaterial(iPxsMat,iX,iY);
+			::Landscape.InsertMaterial(iPxsMat,iX,iY);
 			return true;
 		}
 	// not handled
@@ -833,7 +833,7 @@ bool C4MaterialMap::mrfInsert(C4MaterialReaction *pReaction, int32_t &iX, int32_
 					// continue existing
 					return false;
 			// Else: dead. Insert material here
-			Game.Landscape.InsertMaterial(iPxsMat,iX,iY);
+			::Landscape.InsertMaterial(iPxsMat,iX,iY);
 			return true;
 			}
 

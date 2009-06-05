@@ -236,6 +236,8 @@ class C4Landscape
 		bool DebugSave(const char *szFilename);
   };
 
+extern C4Landscape Landscape;
+
 /* Some global landscape functions */
 
 BOOL AboveSolid(int32_t &rx, int32_t &ry);

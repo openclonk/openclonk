@@ -798,7 +798,7 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 				{
 				BubbleOut(tx+Random(16)-8,ty+Random(16)-6);
 				if (GBackLiquid(tx,ty) && !GBackSemiSolid(tx, sy))
-				::PXS.Create(Game.Landscape.ExtractMaterial(tx,ty),
+				::PXS.Create(::Landscape.ExtractMaterial(tx,ty),
 									itofix(tx),itofix(sy),
 									FIXED100(Random(151)-75),
 									FIXED100(-Random(200)));
@@ -863,10 +863,10 @@ void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t i
   if (!container)
     {
 		// Incinerate landscape
-    if (!Game.Landscape.Incinerate(tx,ty))
-			if (!Game.Landscape.Incinerate(tx,ty-10))
-				if (!Game.Landscape.Incinerate(tx-5,ty-5))
-					Game.Landscape.Incinerate(tx+5,ty-5);
+    if (!::Landscape.Incinerate(tx,ty))
+			if (!::Landscape.Incinerate(tx,ty-10))
+				if (!::Landscape.Incinerate(tx-5,ty-5))
+					::Landscape.Incinerate(tx+5,ty-5);
 		// Create blast object or particle
 		C4Object *pBlast;
 		C4ParticleDef *pPrtDef = Game.Particles.pBlast;
@@ -894,7 +894,7 @@ void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t i
 	if (!container)
 		{
 		// Blast free landscape. After blasting objects so newly mined materials don't get flinged
-		Game.Landscape.BlastFree(tx,ty,level,grade, iCausedBy);
+		::Landscape.BlastFree(tx,ty,level,grade, iCausedBy);
 		}
   }
 
