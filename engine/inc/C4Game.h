@@ -90,7 +90,6 @@ class C4Game
 		~C4Game();
 	public:
     C4DefList						Defs;
-    C4TextureMap				TextureMap;
     C4RankSystem				Rank;
 		C4GraphicsSystem		GraphicsSystem;
 		C4MessageInput      MessageInput;

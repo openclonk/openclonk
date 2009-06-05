@@ -95,4 +95,6 @@ class C4TextureMap
     BOOL AddTexture(const char *szTexture, CSurface * sfcSurface);
   };
 
+extern C4TextureMap TextureMap;
+
 #endif

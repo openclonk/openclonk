@@ -85,7 +85,7 @@ bool C4TexMapEntry::Init()
 		}
 	pMaterial = &Game.Material.Map[iMaterialIndex];
 	// Find texture
-	C4Texture * sfcTexture = Game.TextureMap.GetTexture(Texture.getData());
+	C4Texture * sfcTexture = ::TextureMap.GetTexture(Texture.getData());
 	if(!sfcTexture)
 		{
 		DebugLogF("Error initializing material %s-%s: Invalid texture!", Material.getData(), Texture.getData());
@@ -462,3 +462,5 @@ void C4TextureMap::StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterial)
       if(rand() < RAND_MAX / 2) bypPalette[3*i+2] += 3; else bypPalette[3*i+2] -= 3;
       }
 	}
+
+C4TextureMap TextureMap;

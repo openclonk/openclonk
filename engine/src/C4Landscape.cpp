@@ -185,7 +185,7 @@ int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 	// nothing to do?
 	if (!conv_to_tex) return 0;
 	// find material
-	int32_t conv_to = Game.TextureMap.GetEntry(conv_to_tex)->GetMaterialIndex();
+	int32_t conv_to = ::TextureMap.GetEntry(conv_to_tex)->GetMaterialIndex();
 	// find mat top
 	int32_t mconv = Game.Material.Map[mat].TempConvStrength,
           mconvs = mconv;
@@ -368,7 +368,7 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 	int32_t iIFT;
 	BYTE byMapPixel, byMapPixelBelow;
 	int iMapWidth,iMapHeight;
-	C4Material *pMaterial = Game.TextureMap.GetEntry(iTexture)->GetMaterial();
+	C4Material *pMaterial = ::TextureMap.GetEntry(iTexture)->GetMaterial();
 	if(!pMaterial) return;
 	int32_t iChunkType=pMaterial->MapChunkType;
 	BYTE byColor=MatTex2PixCol(iTexture);
@@ -552,7 +552,7 @@ CSurface8 * C4Landscape::CreateMap()
   // Fill sfcMap
     C4MapCreator MapCreator;
     MapCreator.Create(sfcMap,
-                      Game.C4S.Landscape, Game.TextureMap,
+                      Game.C4S.Landscape, ::TextureMap,
                       TRUE,Game.StartupPlayerCount);
 
   return sfcMap;
@@ -565,7 +565,7 @@ CSurface8 * C4Landscape::CreateMapS2(C4Group &ScenFile)
 
 	// create map creator
 	if (!pMapCreator)
-		pMapCreator = new C4MapCreatorS2(&Game.C4S.Landscape, &Game.TextureMap, &Game.Material, Game.StartupPlayerCount);
+		pMapCreator = new C4MapCreatorS2(&Game.C4S.Landscape, &::TextureMap, &Game.Material, Game.StartupPlayerCount);
 
 	// read file
 	pMapCreator->ReadFile(C4CFN_DynLandscape, &ScenFile);
@@ -2154,7 +2154,7 @@ BOOL C4Landscape::SaveMap(C4Group &hGroup)
 
 	// Create map palette
 	BYTE bypPalette[3*256];
-	Game.TextureMap.StoreMapPalette(bypPalette,Game.Material);
+	::TextureMap.StoreMapPalette(bypPalette,Game.Material);
 
 	// Save map surface
 	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), bypPalette))
@@ -2172,7 +2172,7 @@ BOOL C4Landscape::SaveMap(C4Group &hGroup)
 bool C4Landscape::SaveTextures(C4Group &hGroup)
 	{
 	// if material-texture-combinations have been added, write the texture map
-	if (Game.TextureMap.fEntriesAdded)
+	if (::TextureMap.fEntriesAdded)
 		{
 		C4Group *pMatGroup = new C4Group();
 		bool fSuccess=false;
@@ -2184,7 +2184,7 @@ bool C4Landscape::SaveTextures(C4Group &hGroup)
 			// create at temp path
 			if (pMatGroup->Open(Config.AtTempPath(C4CFN_Material), TRUE))
 				// write to it
-				if (Game.TextureMap.SaveMap(*pMatGroup, C4CFN_TexMap))
+				if (::TextureMap.SaveMap(*pMatGroup, C4CFN_TexMap))
 					// close (flush)
 					if (pMatGroup->Close())
 						// add it
@@ -2196,7 +2196,7 @@ bool C4Landscape::SaveTextures(C4Group &hGroup)
 		else
 			// simply write it to the local material file
 			if (pMatGroup->OpenAsChild(&hGroup, C4CFN_Material))
-				fSuccess = Game.TextureMap.SaveMap(*pMatGroup, C4CFN_TexMap);
+				fSuccess = ::TextureMap.SaveMap(*pMatGroup, C4CFN_TexMap);
 		// close material group again
 		if (pMatGroup->IsOpen()) pMatGroup->Close();
 		delete pMatGroup;
@@ -2231,7 +2231,7 @@ BOOL C4Landscape::GetMapColorIndex(const char *szMaterial, const char *szTexture
 	// Material-Texture
 	else
 		{
-		if (!(rbyCol=Game.TextureMap.GetIndex(szMaterial,szTexture))) return FALSE;
+		if (!(rbyCol=::TextureMap.GetIndex(szMaterial,szTexture))) return FALSE;
 		if (fIFT) rbyCol+=IFT;
 		}
 	// Found
@@ -2392,7 +2392,7 @@ BOOL C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 BOOL C4Landscape::DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool fIFT)
   {
 	// get texture
-	int32_t iMatTex = Game.TextureMap.GetIndexMatTex(szMaterial);
+	int32_t iMatTex = ::TextureMap.GetIndexMatTex(szMaterial);
 	if(!iMatTex) return FALSE;
 	// prepate pixel count update
 	C4Rect BoundingBox(iX1, iY1, 1, 1);
@@ -2557,7 +2557,7 @@ DWORD C4Landscape::GetClrByTex(int32_t iX, int32_t iY)
 	DWORD dwPix = Surface8->pPal->GetClr(pix);
 	// get texture map entry for pixel
 	const C4TexMapEntry *pTex;
-	if(pix && (pTex = Game.TextureMap.GetEntry(PixCol2Tex(pix))))
+	if(pix && (pTex = ::TextureMap.GetEntry(PixCol2Tex(pix))))
 		{
 		// pattern color
 		pTex->getPattern().PatternClr(iX, iY, pix, dwPix, Application.DDraw->Pal);
@@ -2578,7 +2578,7 @@ BOOL C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, co
 	FakeLS.MapWdt.Set(iMapWdt, 0, iMapWdt, iMapWdt);
 	FakeLS.MapHgt.Set(iMapHgt, 0, iMapHgt, iMapHgt);
 	// create map creator
-	C4MapCreatorS2 MapCreator(&FakeLS, &Game.TextureMap, &Game.Material, Game.StartupPlayerCount);
+	C4MapCreatorS2 MapCreator(&FakeLS, &::TextureMap, &Game.Material, Game.StartupPlayerCount);
 	// read file
 	MapCreator.ReadScript(szMapDef);
 	// render map
@@ -2663,13 +2663,13 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 	// get last mat index - returns zero for not found (valid for insertion mode)
 	StdStrBuf Material, Texture;
 	Material.CopyUntil(szMatTex, '-'); Texture.Copy(SSearch(szMatTex, "-"));
-	BYTE iOldIndex = (szMatTex && *szMatTex) ? Game.TextureMap.GetIndex(Material.getData(), Texture.getData(), FALSE) : 0;
+	BYTE iOldIndex = (szMatTex && *szMatTex) ? ::TextureMap.GetIndex(Material.getData(), Texture.getData(), FALSE) : 0;
 	// insertion mode?
 	if (fInsert)
 		{
 		// there must be room to move up to
 		BYTE byLastMoveIndex = C4M_MaxTexIndex - 1;
-		while (Game.TextureMap.GetEntry(byLastMoveIndex))
+		while (::TextureMap.GetEntry(byLastMoveIndex))
 			if (--byLastMoveIndex == iNewIndex)
 				{
 				DebugLogF("Cannot insert new texture %s to index %d: No room for insertion.", (const char *) szMatTex, (int) iNewIndex);
@@ -2678,10 +2678,10 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 		// then move up all other textures first
 		// could do this in one loop, but it's just a developement call anyway, so move one index at a time
 		while (--byLastMoveIndex >= iNewIndex)
-			if (Game.TextureMap.GetEntry(byLastMoveIndex))
+			if (::TextureMap.GetEntry(byLastMoveIndex))
 				{
 				ReplaceMapColor(byLastMoveIndex, byLastMoveIndex+1);
-				Game.TextureMap.MoveIndex(byLastMoveIndex, byLastMoveIndex+1);
+				::TextureMap.MoveIndex(byLastMoveIndex, byLastMoveIndex+1);
 				}
 		// new insertion desired?
 		if (szMatTex && *szMatTex)
@@ -2690,14 +2690,14 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 			if (iOldIndex)
 				{
 				ReplaceMapColor(iOldIndex, iNewIndex);
-				Game.TextureMap.MoveIndex(iOldIndex, iNewIndex);
+				::TextureMap.MoveIndex(iOldIndex, iNewIndex);
 				}
 			else
 				{
 				StdStrBuf Material, Texture;
 				Material.CopyUntil(szMatTex, '-'); Texture.Copy(SSearch(szMatTex, "-"));
 				// new insertion
-				if (!Game.TextureMap.AddEntry(iNewIndex, Material.getData(), Texture.getData()))
+				if (!::TextureMap.AddEntry(iNewIndex, Material.getData(), Texture.getData()))
 					{
 					LogF("Cannot insert new texture %s to index %d: Texture map entry error", (const char *) szMatTex, (int) iNewIndex);
 					return FALSE;
@@ -2711,7 +2711,7 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 		{
 		// new index must not be occupied
 		const C4TexMapEntry *pOld;
-		if ((pOld = Game.TextureMap.GetEntry(iNewIndex)) && !pOld->isNull())
+		if ((pOld = ::TextureMap.GetEntry(iNewIndex)) && !pOld->isNull())
 			{
 			DebugLogF("Cannot move texture %s to index %d: Index occupied by %s-%s.", (const char *) szMatTex, (int) iNewIndex, pOld->GetMaterialName(), pOld->GetTextureName());
 			return FALSE;
@@ -2725,7 +2725,7 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 		// update map
 		ReplaceMapColor(iOldIndex, iNewIndex);
 		// change to new index in texmap
-		Game.TextureMap.MoveIndex(iOldIndex, iNewIndex);
+		::TextureMap.MoveIndex(iOldIndex, iNewIndex);
 		// done, success
 		return TRUE;
 		}
@@ -2761,7 +2761,7 @@ bool C4Landscape::Mat2Pal()
 	int32_t tex,rgb;
 	for (tex=0; tex<C4M_MaxTexIndex; tex++)
 		{
-		const C4TexMapEntry *pTex = Game.TextureMap.GetEntry(tex);
+		const C4TexMapEntry *pTex = ::TextureMap.GetEntry(tex);
 		if(!pTex || pTex->isNull())
 			continue;
 		// colors
@@ -2930,9 +2930,9 @@ void C4Landscape::RemoveUnusedTexMapEntries()
   // remove unused
   for (iMatTex = 1; iMatTex < C4M_MaxTexIndex; ++iMatTex)
     if (!fTexUsage[iMatTex])
-      Game.TextureMap.RemoveEntry(iMatTex);
+      ::TextureMap.RemoveEntry(iMatTex);
   // flag rewrite
-  Game.TextureMap.fEntriesAdded = true;
+  ::TextureMap.fEntriesAdded = true;
   }
 
 bool C4Landscape::DebugSave(const char *szFilename)

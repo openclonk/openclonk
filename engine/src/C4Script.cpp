@@ -2294,7 +2294,7 @@ static C4String *FnGetTexture(C4AulContext* cthr, long x, long y)
 	int32_t iTex = PixCol2Tex(GBackPix(x, y));
 	if(!iTex) return NULL;
 	// Get material-texture mapping
-	const C4TexMapEntry *pTex = Game.TextureMap.GetEntry(iTex);
+	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
 	if(!pTex) return NULL;
 	// Return tex name
 	return String(pTex->GetTextureName());
@@ -5072,7 +5072,7 @@ static bool FnDrawModLandscape(C4AulContext *cctx, long iX, long iY, long iWdt, 
 		}
 
 	// apply buffer
-	//Application.DDraw->DefinePattern(Game.TextureMap.GetTexture("Smooth2"));
+	//Application.DDraw->DefinePattern(::TextureMap.GetTexture("Smooth2"));
 	pZ=map;
 	for (int y=iY; y<iY2; ++y)
 		for (int x=iX; x<iX2; ++x)

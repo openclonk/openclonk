@@ -394,7 +394,7 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
 		const char *szTextureOverlay = NULL;
 		// newgfx: init pattern
 		if (Map[cnt].sTextureOverlay.getLength())
-			if (Game.TextureMap.GetTexture(Map[cnt].sTextureOverlay.getLength()))
+			if (::TextureMap.GetTexture(Map[cnt].sTextureOverlay.getLength()))
 				{
 				szTextureOverlay = Map[cnt].sTextureOverlay.getData();
 				// backwards compatibility: if a pattern was specified although the no-pattern flag was set, overwrite that flag
@@ -408,13 +408,13 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
 		if (!szTextureOverlay)
 			szTextureOverlay = "Smooth";
 		// search/create entry in texmap
-		Map[cnt].DefaultMatTex = Game.TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, TRUE,
+		Map[cnt].DefaultMatTex = ::TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, TRUE,
 			FormatString("DefaultMatTex of mat %s", Map[cnt].Name).getData());
 		// init PXS facet
 		SURFACE sfcTexture;
 		C4Texture * Texture;
 		if (Map[cnt].sPXSGfx.getLength())
-			if (Texture=Game.TextureMap.GetTexture(Map[cnt].sPXSGfx.getData()))
+			if (Texture=::TextureMap.GetTexture(Map[cnt].sPXSGfx.getData()))
 				if (sfcTexture=Texture->Surface32)
 					Map[cnt].PXSFace.Set(sfcTexture, Map[cnt].PXSGfxRt.x, Map[cnt].PXSGfxRt.y, Map[cnt].PXSGfxRt.Wdt, Map[cnt].PXSGfxRt.Hgt);
 		// evaluate reactions for that material
@@ -499,13 +499,13 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
   for (cnt=0; cnt<Num; cnt++)
     {
     if (Map[cnt].sBlastShiftTo.getLength())
-			Map[cnt].BlastShiftTo=Game.TextureMap.GetIndexMatTex(Map[cnt].sBlastShiftTo.getData(), NULL, TRUE, FormatString("BlastShiftTo of mat %s", Map[cnt].Name).getData());
+			Map[cnt].BlastShiftTo=::TextureMap.GetIndexMatTex(Map[cnt].sBlastShiftTo.getData(), NULL, TRUE, FormatString("BlastShiftTo of mat %s", Map[cnt].Name).getData());
     if (Map[cnt].sInMatConvertTo.getLength())
       Map[cnt].InMatConvertTo=Get(Map[cnt].sInMatConvertTo.getData());
     if (Map[cnt].sBelowTempConvertTo.getLength())
-      Map[cnt].BelowTempConvertTo=Game.TextureMap.GetIndexMatTex(Map[cnt].sBelowTempConvertTo.getData(), NULL, TRUE, FormatString("BelowTempConvertTo of mat %s", Map[cnt].Name).getData());
+      Map[cnt].BelowTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sBelowTempConvertTo.getData(), NULL, TRUE, FormatString("BelowTempConvertTo of mat %s", Map[cnt].Name).getData());
     if (Map[cnt].sAboveTempConvertTo.getLength())
-      Map[cnt].AboveTempConvertTo=Game.TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, TRUE, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
+      Map[cnt].AboveTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, TRUE, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
 		}
 #if 0
 	int32_t i=0;

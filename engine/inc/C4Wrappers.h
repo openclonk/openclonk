@@ -144,7 +144,7 @@ inline int32_t PixCol2Mat(BYTE pixc)
 	int32_t iTex = PixCol2Tex(pixc);
 	if(!iTex) return MNone;
 	// Get material-texture mapping
-	const C4TexMapEntry *pTex = Game.TextureMap.GetEntry(iTex);
+	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
 	// Return material
 	return pTex ? pTex->GetMaterialIndex() : MNone;
 	}

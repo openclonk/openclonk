@@ -712,7 +712,7 @@ void C4EditCursor::ApplyToolPicker()
 			// Material-texture from map
 			if (byIndex=Game.Landscape.GetMapIndex(X/Game.Landscape.MapZoom,Y/Game.Landscape.MapZoom))
 				{
-				const C4TexMapEntry *pTex = Game.TextureMap.GetEntry(byIndex & (IFT-1));
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
 				if(pTex)
 					{
 					Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());

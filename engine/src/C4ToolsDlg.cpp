@@ -537,9 +537,9 @@ void C4ToolsDlg::UpdateTextures()
 	// bottom-most: any invalid textures
 	bool fAnyEntry = false; int32_t cnt; const char *szTexture;
 	if (Game.Landscape.Mode!=C4LSC_Exact)
-		for (cnt=0; (szTexture=Game.TextureMap.GetTexture(cnt)); cnt++)
+		for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 			{
-			if (!Game.TextureMap.GetIndex(Material, szTexture, FALSE))
+			if (!::TextureMap.GetIndex(Material, szTexture, FALSE))
 				{
 				fAnyEntry = true;
 #ifdef _WIN32
@@ -564,10 +564,10 @@ void C4ToolsDlg::UpdateTextures()
 	}
 
 	// atop: valid textures
-	for (cnt=0; (szTexture=Game.TextureMap.GetTexture(cnt)); cnt++)
+	for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 		{
 		// Current material-texture valid? Always valid for exact mode
-		if (Game.TextureMap.GetIndex(Material,szTexture,FALSE) || Game.Landscape.Mode==C4LSC_Exact)
+		if (::TextureMap.GetIndex(Material,szTexture,FALSE) || Game.Landscape.Mode==C4LSC_Exact)
 			{
 #ifdef _WIN32
 			SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,(LPARAM)szTexture);
@@ -602,7 +602,7 @@ void C4ToolsDlg::SetMaterial(const char *szMaterial)
 void C4ToolsDlg::SetTexture(const char *szTexture)
 	{
 	// assert valid (for seperator selection)
-	if (!Game.TextureMap.GetTexture(szTexture))
+	if (!::TextureMap.GetTexture(szTexture))
 		{
 		// ensure correct texture is in dlg
 #ifdef _WIN32
@@ -679,11 +679,11 @@ void C4ToolsDlg::UpdatePreview()
 		{
     bCol=Mat2PixColDefault(Game.Material.Get(Material));
 		// Get/Create TexMap entry
-		BYTE iTex = Game.TextureMap.GetIndex(Material, Texture, TRUE);
+		BYTE iTex = ::TextureMap.GetIndex(Material, Texture, TRUE);
 		if (iTex)
 			{
 			// Define texture pattern
-			const C4TexMapEntry *pTex = Game.TextureMap.GetEntry(iTex);
+			const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
 			// Security
 			if(pTex)
 				{
@@ -990,12 +990,12 @@ void C4ToolsDlg::AssertValidTexture()
 	// Ignore if sky
 	if (SEqual(Material,C4TLS_MatSky)) return;
 	// Current material-texture valid
-	if (Game.TextureMap.GetIndex(Material,Texture,FALSE)) return;
+	if (::TextureMap.GetIndex(Material,Texture,FALSE)) return;
 	// Find valid material-texture
 	const char *szTexture;
-	for (int32_t iTexture=0; szTexture=Game.TextureMap.GetTexture(iTexture); iTexture++)
+	for (int32_t iTexture=0; szTexture=::TextureMap.GetTexture(iTexture); iTexture++)
 		{
-		if (Game.TextureMap.GetIndex(Material,szTexture,FALSE))
+		if (::TextureMap.GetIndex(Material,szTexture,FALSE))
 			{ SelectTexture(szTexture); return; }
 		}
 	// No valid texture found
