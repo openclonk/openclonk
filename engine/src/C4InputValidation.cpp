@@ -190,8 +190,8 @@ namespace C4InVal
 		const char *szWebCode = Config.GetRegistrationData("WebCode");
 		if (szWebCode && *szWebCode) if (SSearchNoCase(szInput, szWebCode))
 			{
-			if (fShowWarningMessage && Game.pGUI)
-				Game.pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
+			if (fShowWarningMessage && ::pGUI)
+				::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
 			return true;
 			}
 #endif

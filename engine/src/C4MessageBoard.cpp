@@ -356,7 +356,7 @@ void C4MessageBoard::LogNotify()
 	// Not active
 	if (!Active) return;
 	// do not show startup board if GUI is active
-	if (Game.pGUI && Game.pGUI->IsActive()) return;
+	if (::pGUI && ::pGUI->IsActive()) return;
 	// Reset
 	iBackScroll=0;
 	// Draw

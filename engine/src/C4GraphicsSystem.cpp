@@ -151,23 +151,23 @@ void C4GraphicsSystem::Execute()
 	bool fBGDrawn = false;
 
 	// If lobby running, message board only (page flip done by startup message board)
-	if (!Game.pGUI || !Game.pGUI->HasFullscreenDialog(true)) // allow for message board behind GUI
+	if (!::pGUI || !::pGUI->HasFullscreenDialog(true)) // allow for message board behind GUI
 		if(::Network.isLobbyActive() || !Game.IsRunning)
 			if (Application.isFullScreen)
 				{
 				// Message board
 				if (iRedrawBackground) ClearFullscreenBackground();
 				MessageBoard.Execute();
-				if (!Game.pGUI || !C4GUI::IsActive())
+				if (!::pGUI || !C4GUI::IsActive())
 					{ FinishDrawing(); return; }
 				fBGDrawn = true;
 				}
 
 	// fullscreen GUI?
-	if (Application.isFullScreen && Game.pGUI && C4GUI::IsActive() && (Game.pGUI->HasFullscreenDialog(false) || !Game.IsRunning))
+	if (Application.isFullScreen && ::pGUI && C4GUI::IsActive() && (::pGUI->HasFullscreenDialog(false) || !Game.IsRunning))
 		{
 		if (!fBGDrawn && iRedrawBackground) ClearFullscreenBackground();
-		Game.pGUI->Render(!fBGDrawn);
+		::pGUI->Render(!fBGDrawn);
 		FinishDrawing();
 		return;
 		}
@@ -188,7 +188,7 @@ void C4GraphicsSystem::Execute()
 
 	// some hack to ensure the mouse is drawn after a dialog close and before any
 	// movement messages
-	if (Game.pGUI && !C4GUI::IsActive())
+	if (::pGUI && !C4GUI::IsActive())
 		SetMouseInGUI(false, false);
 
 	// Viewports
@@ -210,9 +210,9 @@ void C4GraphicsSystem::Execute()
 		}
 
 	// InGame-GUI
-	if (Game.pGUI && C4GUI::IsActive())
+	if (::pGUI && C4GUI::IsActive())
 		{
-		Game.pGUI->Render(false);
+		::pGUI->Render(false);
 		}
 
 	// Palette update
@@ -427,8 +427,8 @@ void C4GraphicsSystem::RecalculateViewports()
 	// StdWindow handles this.
 #endif
 	// reset GUI dlg pos
-	if (Game.pGUI)
-		Game.pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
+	if (::pGUI)
+		::pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
 
 	// fullscreen background: First, cover all of screen
 	BackgroundAreas.Clear();
@@ -543,10 +543,10 @@ void C4GraphicsSystem::MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD 
 	{
 	// pass on to GUI
 	// Special: Don't pass if dragging and button is not upped
-	if (Game.pGUI && Game.pGUI->IsActive() && !::MouseControl.IsDragging())
+	if (::pGUI && ::pGUI->IsActive() && !::MouseControl.IsDragging())
 		{
-		bool fResult = Game.pGUI->MouseInput(iButton, iX, iY, dwKeyParam, NULL, pVP);
-		if (Game.pGUI && Game.pGUI->HasMouseFocus()) { SetMouseInGUI(true, true); return; }
+		bool fResult = ::pGUI->MouseInput(iButton, iX, iY, dwKeyParam, NULL, pVP);
+		if (::pGUI && ::pGUI->HasMouseFocus()) { SetMouseInGUI(true, true); return; }
 		// non-exclusive GUI: inform mouse-control about GUI-result
 		SetMouseInGUI(fResult, true);
 		// abort if GUI processed it
@@ -559,7 +559,7 @@ void C4GraphicsSystem::MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD 
 	if (!::MouseControl.IsActive())
 		{
 		// enable mouse in GUI, if a mouse-only-dlg is displayed
-		if (Game.pGUI && Game.pGUI->GetMouseControlledDialogCount())
+		if (::pGUI && ::pGUI->GetMouseControlledDialogCount())
 			SetMouseInGUI(true, true);
 		return;
 		}
@@ -581,14 +581,14 @@ void C4GraphicsSystem::MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t 
 void C4GraphicsSystem::SetMouseInGUI(bool fInGUI, bool fByMouse)
 	{
 	// inform mouse control and GUI
-	if (Game.pGUI)
+	if (::pGUI)
 		{
-		Game.pGUI->Mouse.SetOwnedMouse(fInGUI);
+		::pGUI->Mouse.SetOwnedMouse(fInGUI);
 		// initial movement to ensure mouse control pos is correct
 		if (!::MouseControl.IsMouseOwned() && !fInGUI && !fByMouse)
 			{
 			::MouseControl.SetOwnedMouse(true);
-			MouseMoveToViewport(C4MC_Button_None, int32_t(Game.pGUI->Mouse.x*C4GUI::GetZoom()), int32_t(Game.pGUI->Mouse.y*C4GUI::GetZoom()), Game.pGUI->Mouse.dwKeys);
+			MouseMoveToViewport(C4MC_Button_None, int32_t(::pGUI->Mouse.x*C4GUI::GetZoom()), int32_t(::pGUI->Mouse.y*C4GUI::GetZoom()), ::pGUI->Mouse.dwKeys);
 			}
 		}
 	::MouseControl.SetOwnedMouse(!fInGUI);

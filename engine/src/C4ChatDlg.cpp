@@ -986,15 +986,15 @@ C4ChatDlg::~C4ChatDlg()
 
 C4ChatDlg *C4ChatDlg::ShowChat()
 	{
-	if (!Game.pGUI) return NULL;
+	if (!::pGUI) return NULL;
 	if (!pInstance)
 		{
 		pInstance = new C4ChatDlg();
-		pInstance->Show(Game.pGUI, true);
+		pInstance->Show(::pGUI, true);
 		}
 	else
 		{
-		Game.pGUI->ActivateDialog(pInstance);
+		::pGUI->ActivateDialog(pInstance);
 		}
 	return pInstance;
 	}

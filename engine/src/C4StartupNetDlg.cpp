@@ -969,7 +969,7 @@ bool C4StartupNetDlg::DoOK()
 	if(!pSelection)
 		{
 		// no ref selected: Oh noes!
-		Game.pGUI->ShowMessageModal(
+		::pGUI->ShowMessageModal(
 				LoadResStr("IDS_NET_NOJOIN_NOREF"),
 				strNoJoin.getData(),
 				C4GUI::MessageDialog::btnOK,
@@ -981,7 +981,7 @@ bool C4StartupNetDlg::DoOK()
 	if (szError = pRefEntry->GetError())
 		{
 		// erroneous ref selected: Oh noes!
-		Game.pGUI->ShowMessageModal(
+		::pGUI->ShowMessageModal(
 				FormatString(LoadResStr("IDS_NET_NOJOIN_BADREF"), szError).getData(),
 				strNoJoin.getData(),
 				C4GUI::MessageDialog::btnOK,
@@ -993,7 +993,7 @@ bool C4StartupNetDlg::DoOK()
 	if (!pRef && !(szDirectJoinAddress && *szDirectJoinAddress))
 		{
 		// something strange has been selected (e.g., a masterserver entry). Error.
-		Game.pGUI->ShowMessageModal(
+		::pGUI->ShowMessageModal(
 				LoadResStr("IDS_NET_NOJOIN_NOREF"),
 				strNoJoin.getData(),
 				C4GUI::MessageDialog::btnOK,
@@ -1007,7 +1007,7 @@ bool C4StartupNetDlg::DoOK()
 		C4GameVersion verThis;
 		if (!(pRef->getGameVersion() == verThis))
 			{
-			Game.pGUI->ShowMessageModal(
+			::pGUI->ShowMessageModal(
 					FormatString(LoadResStr("IDS_NET_NOJOIN_BADVER"),
                             pRef->getGameVersion().GetString().getData(),
                             verThis.GetString().getData()).getData(),
@@ -1020,7 +1020,7 @@ bool C4StartupNetDlg::DoOK()
 		if (pRef->isRegJoinOnly())
 			if (!Config.Registered())
 				{
-				Game.pGUI->ShowMessageModal(LoadResStr("IDS_NET_REGJOINONLY"),
+				::pGUI->ShowMessageModal(LoadResStr("IDS_NET_REGJOINONLY"),
 																		strNoJoin.getData(),
 																		C4GUI::MessageDialog::btnOK,
 																		C4GUI::Ico_Error);
@@ -1029,7 +1029,7 @@ bool C4StartupNetDlg::DoOK()
 		// no runtime join
 		if (!pRef->isJoinAllowed())
 			{
-			if (!Game.pGUI->ShowMessageModal(
+			if (!::pGUI->ShowMessageModal(
 					LoadResStr("IDS_NET_NOJOIN_NORUNTIME"),
 					strNoJoin.getData(),
 					C4GUI::MessageDialog::btnYes | C4GUI::MessageDialog::btnNo,
@@ -1079,7 +1079,7 @@ void C4StartupNetDlg::DoRefresh()
 	if(!DiscoverClient.StartDiscovery())
 		{
       StdCopyStrBuf strNoDiscovery(LoadResStr("IDS_NET_NODISCOVERY"));
-		Game.pGUI->ShowMessageModal(
+		::pGUI->ShowMessageModal(
 			FormatString(LoadResStr("IDS_NET_NODISCOVERY_DESC"), DiscoverClient.GetError()).getData(),
 			strNoDiscovery.getData(),
 			C4GUI::MessageDialog::btnAbort,

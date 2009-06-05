@@ -297,7 +297,7 @@ bool C4MessageInput::StartTypeIn(bool fObjInput, C4Object *pObj, bool fUpperCase
 	// close any previous
 	if (IsTypeIn()) CloseTypeIn();
 	// start new
-	return Game.pGUI->ShowRemoveDlg(new C4ChatInputDialog(fObjInput, pObj, fUpperCase, fTeam, iPlr, rsInputQuery));
+	return ::pGUI->ShowRemoveDlg(new C4ChatInputDialog(fObjInput, pObj, fUpperCase, fTeam, iPlr, rsInputQuery));
 	}
 
 bool C4MessageInput::KeyStartTypeIn(bool fTeam)

@@ -191,7 +191,7 @@ void C4MouseControl::UpdateClip()
 	// fullscreen only
 	if (!Application.isFullScreen) return;
 	// application or mouse control not active? remove any clips
-	if (!Active || !Application.Active || (Game.pGUI && Game.pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
+	if (!Active || !Application.Active || (::pGUI && ::pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
 	// get controlled viewport
 	C4Viewport *pVP=::GraphicsSystem.GetViewport(Player);
 	if (!pVP) { ClipCursor(NULL); return; }
@@ -207,8 +207,8 @@ void C4MouseControl::UpdateClip()
 		}
 	ClipCursor(&vpRct);
 	// and inform GUI
-	if (Game.pGUI)
-		Game.pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
+	if (::pGUI)
+		::pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
 #endif
 	//StdWindow manages this.
 	}
@@ -458,7 +458,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	// Draw caption
 	if (Caption)
 		{
-		if (IsHelpCaption && Game.pGUI)
+		if (IsHelpCaption && ::pGUI)
 			{
 			// Help: Tooltip style
 			C4TargetFacet cgoTip; cgoTip = static_cast<const C4Facet &>(cgo);

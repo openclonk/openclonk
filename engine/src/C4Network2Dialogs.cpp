@@ -456,7 +456,7 @@ void C4Network2ClientListBox::Update()
 C4Network2ClientListDlg *C4Network2ClientListDlg::pInstance = NULL;
 
 C4Network2ClientListDlg::C4Network2ClientListDlg()
-: Dialog(Game.pGUI->GetPreferredDlgRect().Wdt*3/4, Game.pGUI->GetPreferredDlgRect().Hgt*3/4, LoadResStr("IDS_NET_CAPTION"), false)
+: Dialog(::pGUI->GetPreferredDlgRect().Wdt*3/4, ::pGUI->GetPreferredDlgRect().Hgt*3/4, LoadResStr("IDS_NET_CAPTION"), false)
 	{
 	// component layout
 	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
@@ -499,7 +499,7 @@ bool C4Network2ClientListDlg::Toggle()
 	// toggle off?
 	if (pInstance) { pInstance->Close(true); return true; }
   // toggle on!
-	return Game.pGUI->ShowRemoveDlg(pInstance = new C4Network2ClientListDlg());
+	return ::pGUI->ShowRemoveDlg(pInstance = new C4Network2ClientListDlg());
 	}
 
 
@@ -955,5 +955,5 @@ void C4ChartDialog::Toggle()
 	if (pChartDlg) { pChartDlg->Close(false); return; }
 	// otherwise, open
 	C4ChartDialog *pDlg = new C4ChartDialog();
-	if (!Game.pGUI->ShowRemoveDlg(pDlg)) if (pChartDlg) delete pChartDlg;
+	if (!::pGUI->ShowRemoveDlg(pDlg)) if (pChartDlg) delete pChartDlg;
 	}

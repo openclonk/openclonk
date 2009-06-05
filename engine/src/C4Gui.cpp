@@ -1209,3 +1209,5 @@ Screen *Screen::pScreen;
 
 
 }; // end of namespace
+
+C4GUIScreen *pGUI;

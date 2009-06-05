@@ -157,7 +157,7 @@ C4Startup::C4Startup() : fInStartup(false), fAborted(false), pLastDlg(NULL), pCu
 C4Startup::~C4Startup()
 	{
 	pInstance = NULL;
-	if (Game.pGUI)
+	if (::pGUI)
 		{
 		if (pLastDlg) delete pLastDlg;
 		if (pCurrDlg) delete pCurrDlg;
@@ -231,7 +231,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 	if (pLastDlg = pCurrDlg)
 		if (fFade)
 			{
-			if (!pLastDlg->IsShown()) pLastDlg->Show(Game.pGUI, false);
+			if (!pLastDlg->IsShown()) pLastDlg->Show(::pGUI, false);
 			pLastDlg->FadeOut(true);
 			}
 		else
@@ -244,7 +244,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 	// fade in new dlg
 	if (fFade)
 		{
-		if (!pToDlg->FadeIn(Game.pGUI))
+		if (!pToDlg->FadeIn(::pGUI))
 			{
 			delete pToDlg; pCurrDlg=NULL;
 			return NULL;
@@ -252,7 +252,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 		}
 	else
 		{
-		if (!pToDlg->Show(Game.pGUI, true))
+		if (!pToDlg->Show(::pGUI, true))
 			{
 			delete pToDlg; pCurrDlg=NULL;
 			return NULL;
@@ -264,7 +264,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 bool C4Startup::DoStartup()
 	{
 	assert(!fInStartup);
-	assert(Game.pGUI);
+	assert(::pGUI);
 	// now in startup!
 	fInStartup = true;
 	fLastDlgWasBack = false;
@@ -303,7 +303,7 @@ bool C4Startup::DoStartup()
 		const char *szErr = GetFatalError();
 		if (szErr)
 			{
-			Game.pGUI->ShowMessage(szErr, LoadResStr("IDS_DLG_LOG"), C4GUI::Ico_Error);
+			::pGUI->ShowMessage(szErr, LoadResStr("IDS_DLG_LOG"), C4GUI::Ico_Error);
 			}
 		else
 			{
@@ -311,18 +311,18 @@ bool C4Startup::DoStartup()
 			StdStrBuf sLastLog;
 			if (GetLogSection(Game.StartupLogPos, Game.QuitLogPos - Game.StartupLogPos, sLastLog))
 				if (!sLastLog.isNull())
-					Game.pGUI->ShowRemoveDlg(new C4GUI::InfoDialog(LoadResStr("IDS_DLG_LOG"), 10, sLastLog));
+					::pGUI->ShowRemoveDlg(new C4GUI::InfoDialog(LoadResStr("IDS_DLG_LOG"), 10, sLastLog));
 			}
 		ResetFatalError();
 		}
 
 	// while state startup: keep looping
-	while(fInStartup && Game.pGUI && !pCurrDlg->IsAborted())
+	while(fInStartup && ::pGUI && !pCurrDlg->IsAborted())
 		if (!Application.ScheduleProcs()) return false;
 
-	// check whether startup was aborted; first checking Game.pGUI
+	// check whether startup was aborted; first checking ::pGUI
 	// (because an external call to Game.Clear() would invalidate dialogs)
-	if (!Game.pGUI) return false;
+	if (!::pGUI) return false;
 	if (pLastDlg) { delete pLastDlg; pLastDlg = NULL; }
 	if (pCurrDlg)
 		{
@@ -344,11 +344,11 @@ bool C4Startup::DoStartup()
 	fInStartup = false;
 
 	// after startup: cleanup
-	if (Game.pGUI) Game.pGUI->CloseAllDialogs(true);
+	if (::pGUI) ::pGUI->CloseAllDialogs(true);
 
 	// reinit keyboard to reflect any config changes that might have been done
 	// this is a good time to do it, because no GUI dialogs are opened
-	if (Game.pGUI) if (!Game.InitKeyboard()) LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD"));
+	if (::pGUI) if (!Game.InitKeyboard()) LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD"));
 
 	// all okay; return whether startup finished with a game start selection
 	return !fAborted;
@@ -357,7 +357,7 @@ bool C4Startup::DoStartup()
 C4Startup *C4Startup::EnsureLoaded()
 	{
 	// create and load startup data if not done yet
-	assert(Game.pGUI);
+	assert(::pGUI);
 	if (!pInstance)
 		{
 		Game.SetInitProgress(40);

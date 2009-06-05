@@ -866,7 +866,7 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				DrawMouseButtons(cgo);
 			::MouseControl.Draw(cgo, GameZoom);
 			// Draw GUI-mouse in EM if active
-			if (pWindow && Game.pGUI) Game.pGUI->RenderMouse(cgo);
+			if (pWindow && ::pGUI) ::pGUI->RenderMouse(cgo);
 			C4ST_STOP(MouseStat)
 			}
 		// Keyboard/Gamepad
@@ -1543,9 +1543,9 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 			{
 			::MouseControl.UpdateClip();
 			// and inform GUI
-			if (Game.pGUI)
-				//Game.pGUI->SetBounds(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
-				Game.pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
+			if (::pGUI)
+				//::pGUI->SetBounds(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
+				::pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
 			}
 	}
 

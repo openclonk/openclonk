@@ -2732,5 +2732,5 @@ namespace C4GUI {
 	}; // end of namespace
 
 typedef C4GUI::Screen C4GUIScreen;
-
+extern C4GUIScreen *pGUI;
 #endif

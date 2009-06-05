@@ -119,7 +119,6 @@ class C4Game
 		C4GroupSet					GroupSet;
 		C4Group             *pParentGroup;
 		C4Extra							Extra;
-		C4GUIScreen         *pGUI;
 		C4ScenarioSection   *pScenarioSections, *pCurrentScenarioSection;
 		C4Effect            *pGlobalEffects;
 #ifndef USE_CONSOLE

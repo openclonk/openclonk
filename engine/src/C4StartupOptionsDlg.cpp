@@ -428,7 +428,7 @@ void C4StartupOptionsDlg::ControlConfigArea::OnGUIGamepadCheckChange(C4GUI::Elem
 	if (fChecked == !!Config.Controls.GamepadGuiControl) return;
 	// reflect change
 	Config.Controls.GamepadGuiControl = fChecked;
-	Game.pGUI->UpdateGamepadGUIControlEnabled();
+	::pGUI->UpdateGamepadGUIControlEnabled();
 	pOptionsDlg->RecreateDialog(false);
 	}
 

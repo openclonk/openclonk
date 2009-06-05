@@ -939,7 +939,7 @@ void C4PlayerInfoListBox::ClientListItem::OnCtxActivate(C4GUI::Element *pListIte
 void C4PlayerInfoListBox::ClientListItem::OnCtxInfo(C4GUI::Element *pListItem)
 	{
 	// show client info dialog
-	Game.pGUI->ShowRemoveDlg(new C4Network2ClientDlg(idClient));
+	::pGUI->ShowRemoveDlg(new C4Network2ClientDlg(idClient));
 	}
 
 void C4PlayerInfoListBox::ClientListItem::OnBtnAddPlr(C4GUI::Control *btn)

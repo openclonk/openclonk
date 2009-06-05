@@ -335,7 +335,7 @@ bool C4Menu::TryClose(bool fOK, bool fControl)
 	// close the menu
 	Close(fOK);
 	Clear();
-	if (Game.pGUI) Game.pGUI->RemoveElement(this);
+	if (::pGUI) ::pGUI->RemoveElement(this);
 
 	// invoke close command
 	if (fControl && CloseCommand.getData())
@@ -379,7 +379,7 @@ bool C4Menu::InitMenu(const char *szEmpty, int32_t iExtra, int32_t iExtraData, i
 	if (iStyle & C4MN_Style_EqualItemHeight) SetEqualItemHeight(true);
 	if (Style == C4MN_Style_Dialog) Alignment = C4MN_Align_Top;
 	if (Style == C4MN_Style_Dialog) DrawMenuControls = 0;
-	if (Game.pGUI) Game.pGUI->ShowDialog(this, false);
+	if (::pGUI) ::pGUI->ShowDialog(this, false);
 	fTextProgressing = false;
 	fActive = true;
 	return true;
@@ -831,8 +831,8 @@ void C4Menu::Draw(C4TargetFacet &cgo)
 	if (!fTextProgressing) ++TimeOnSelection;
 	if (TimeOnSelection >= C4MN_InfoCaption_Delay)
 		if (Style != C4MN_Style_Info) // No tooltips in info menus - doesn't make any sense...
-			if (!Game.Control.isReplay() && Game.pGUI)
-				if (!Game.pGUI->Mouse.IsActiveInput())
+			if (!Game.Control.isReplay() && ::pGUI)
+				if (!::pGUI->Mouse.IsActiveInput())
 					{
 					C4MenuItem *pSel = GetSelectedItem();
 					if (pSel && *pSel->InfoCaption)

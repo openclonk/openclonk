@@ -210,7 +210,7 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	// Determine dialog
-	Dialog *pDlg = Game.pGUI ? Game.pGUI->GetDialog(hwnd) : NULL;
+	Dialog *pDlg = ::pGUI ? ::pGUI->GetDialog(hwnd) : NULL;
 	if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 	// Process message
@@ -252,25 +252,25 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			break;
 			return 0;
     //----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDOWN: Game.pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
+		case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONUP: Game.pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
+		case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDOWN: Game.pGUI->MouseInput(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONUP: Game.pGUI->MouseInput(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDBLCLK: Game.pGUI->MouseInput(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
+		case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDBLCLK: Game.pGUI->MouseInput(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
+		case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEMOVE:
 			//SetCursor(NULL);
-			Game.pGUI->MouseInput(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+			::pGUI->MouseInput(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
 			break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEWHEEL:
-			Game.pGUI->MouseInput(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+			::pGUI->MouseInput(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
 			break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 		}
@@ -315,7 +315,7 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 void DialogWindow::Close()
 	{
 	// FIXME: Close the dialog of this window
-	//Dialog *pDlg = Game.pGUI ? Game.pGUI->GetDialog(hWindow) : NULL;
+	//Dialog *pDlg = ::pGUI ? ::pGUI->GetDialog(hWindow) : NULL;
 	//if (pDlg) pDlg->Close();
 	}
 

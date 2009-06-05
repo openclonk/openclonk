@@ -304,23 +304,23 @@ C4Network2::InitResult C4Network2::InitClient(const class C4Network2Address *pAd
 	Log(strMessage.getData());
 	// show box
 	C4GUI::MessageDialog *pDlg = NULL;
-	if(Game.pGUI && !Console.Active)
+	if(::pGUI && !Console.Active)
 	{
 		// create & show
 		pDlg = new C4GUI::MessageDialog(strMessage.getData(), LoadResStr("IDS_NET_JOINGAME"),
 			C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsMedium);
-		if(!pDlg->Show(Game.pGUI, true)) { Clear(); return IR_Fatal; }
+		if(!pDlg->Show(::pGUI, true)) { Clear(); return IR_Fatal; }
 	}
 	// wait for connect / timeout / abort by user (host will change status on succesful connect)
 	while(Status.getState() == GS_Init)
 	{
 		if(!Application.ScheduleProcs(100))
-			{ if(Game.pGUI && pDlg) delete pDlg; return IR_Fatal;}
+			{ if(::pGUI && pDlg) delete pDlg; return IR_Fatal;}
 		if(pDlg && pDlg->IsAborted())
-			{ if(Game.pGUI && pDlg) delete pDlg; return IR_Fatal; }
+			{ if(::pGUI && pDlg) delete pDlg; return IR_Fatal; }
 	}
 	// Close dialog
-	if(Game.pGUI && pDlg) delete pDlg;
+	if(::pGUI && pDlg) delete pDlg;
 	// error?
 	if(!isEnabled())
 		return IR_Error;
@@ -367,19 +367,19 @@ bool C4Network2::DoLobby()
 
 		// init lobby dialog
 		pLobby = new C4GameLobby::MainDlg(isHost());
-		if (!pLobby->FadeIn(Game.pGUI)) { delete pLobby; pLobby = NULL; Clear(); return FALSE; }
+		if (!pLobby->FadeIn(::pGUI)) { delete pLobby; pLobby = NULL; Clear(); return FALSE; }
 
 		// init lobby countdown if specified
 		if (Game.iLobbyTimeout) StartLobbyCountdown(Game.iLobbyTimeout);
 
 		// while state lobby: keep looping
-		while(isLobbyActive() && Game.pGUI && pLobby && pLobby->IsShown())
+		while(isLobbyActive() && ::pGUI && pLobby && pLobby->IsShown())
 			if (!Application.ScheduleProcs())
 				{ Clear(); return false; }
 
-		// check whether lobby was aborted; first checking Game.pGUI
+		// check whether lobby was aborted; first checking ::pGUI
 		// (because an external call to Game.Clear() would invalidate pLobby)
-		if (!Game.pGUI) { pLobby = NULL; Clear(); return false; }
+		if (!::pGUI) { pLobby = NULL; Clear(); return false; }
 		if (pLobby && pLobby->IsAborted()) { delete pLobby; pLobby = NULL; Clear(); return false; }
 
 		// deinit lobby
@@ -387,7 +387,7 @@ bool C4Network2::DoLobby()
 		delete pLobby; pLobby = NULL;
 
 		// close any other dialogs
-		if (Game.pGUI) Game.pGUI->CloseAllDialogs(false);
+		if (::pGUI) ::pGUI->CloseAllDialogs(false);
 		}
 
 	// lobby end
@@ -453,7 +453,7 @@ bool C4Network2::FinalInit()
 
 		// show box
 		C4GUI::Dialog *pDlg = NULL;
-		if(Game.pGUI && !Console.Active)
+		if(::pGUI && !Console.Active)
 		{
 			// seperate dlgs for host/client
 			if (isHost())
@@ -462,7 +462,7 @@ bool C4Network2::FinalInit()
 				pDlg = new C4GUI::MessageDialog(LoadResStr("IDS_NET_WAITFORSTART"), LoadResStr("IDS_NET_CAPTION"),
 						C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsSmall);
 			// show it
-			if(!pDlg->Show(Game.pGUI, true)) return false;
+			if(!pDlg->Show(::pGUI, true)) return false;
 		}
 
 		// wait for acknowledgement
@@ -473,13 +473,13 @@ bool C4Network2::FinalInit()
 				// execute
 				if(!pDlg->Execute()) { delete pDlg; Clear(); return false; }
 				// aborted?
-				if(!Game.pGUI) { Clear(); return false;}
+				if(!::pGUI) { Clear(); return false;}
 				if(pDlg->IsAborted()) { delete pDlg; Clear(); return false; }
 			}
 			else if(!Application.ScheduleProcs())
 				{ Clear(); return false; }
 		}
-		if(Game.pGUI && pDlg) delete pDlg;
+		if(::pGUI && pDlg) delete pDlg;
 		// log
 		Log(LoadResStr("IDS_NET_START"));
 	}
@@ -651,7 +651,7 @@ void C4Network2::Clear()
   iDynamicTick = -1; fDynamicNeeded = false;
   iLastActivateRequest = iLastChaseTargetUpdate = iLastReferenceUpdate = iLastLeagueUpdate = 0;
 	fDelayedActivateReq = false;
-	if(Game.pGUI) delete pVoteDialog; pVoteDialog = NULL;
+	if(::pGUI) delete pVoteDialog; pVoteDialog = NULL;
 	fPausedForVote = false;
 	iLastOwnVoting = 0;
 	// don't clear fPasswordNeeded here, it's needed by InitClient
@@ -689,7 +689,7 @@ StdStrBuf C4Network2::QueryClientPassword()
 	StdStrBuf sCaption; sCaption.Copy(LoadResStr("IDS_MSG_ENTERPASSWORD"));
 	C4GUI::InputDialog *pInputDlg = new C4GUI::InputDialog(LoadResStr("IDS_MSG_ENTERPASSWORD"), sCaption.getData(), C4GUI::Ico_Ex_Locked, NULL, false);
 	pInputDlg->SetDelOnClose(false);
-	if (!Game.pGUI->ShowModalDlg(pInputDlg, false))
+	if (!::pGUI->ShowModalDlg(pInputDlg, false))
 		{
 		if (C4GUI::IsGUIValid()) delete pInputDlg;
 		return StdStrBuf();
@@ -1545,13 +1545,13 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 			fLog = true;
 		}
 		// show progress dialog
-		if(!pDlg && !Console.Active && Game.pGUI)
+		if(!pDlg && !Console.Active && ::pGUI)
 		{
 			// create
 			pDlg = new C4GUI::ProgressDialog(FormatString(LoadResStr("IDS_NET_WAITFORRES"), szResName).getData(),
                                           LoadResStr("IDS_NET_CAPTION"), 100, 0, C4GUI::Ico_NetWait);
 			// show dialog
-			if(!pDlg->Show(Game.pGUI, true)) { delete pDlg; return NULL; }
+			if(!pDlg->Show(::pGUI, true)) { delete pDlg; return NULL; }
 		}
 
 		// wait
@@ -1563,7 +1563,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 			if(!pDlg->Execute())
 				{ if (pDlg) delete pDlg; return NULL; }
 			// aborted?
-			if(!Game.pGUI) return NULL;
+			if(!::pGUI) return NULL;
 			if(pDlg->IsAborted()) break;
 		}
 		else
@@ -1574,7 +1574,7 @@ C4Network2Res::Ref C4Network2::RetrieveRes(const C4Network2ResCore &Core, int32_
 
 	}
 	// aborted
-	if(!Game.pGUI) return NULL;
+	if(!::pGUI) return NULL;
 	delete pDlg;
 	return NULL;
 }
@@ -1909,8 +1909,8 @@ bool C4Network2::InitLeague(bool *pCancel)
       Game.Parameters.LeagueAddress.Clear();
     // Show message, allow abort
 		bool fResult = true;
-    if(Game.pGUI && !Console.Active)
-      fResult = Game.pGUI->ShowMessageModal(Message.getData(), LoadResStr("IDS_NET_ERR_LEAGUE"),
+    if(::pGUI && !Console.Active)
+      fResult = ::pGUI->ShowMessageModal(Message.getData(), LoadResStr("IDS_NET_ERR_LEAGUE"),
                   (pCancel ? C4GUI::MessageDialog::btnOK : 0) | C4GUI::MessageDialog::btnAbort,
                   C4GUI::Ico_Error);
     if (pCancel) *pCancel = fResult;
@@ -1955,10 +1955,10 @@ bool C4Network2::LeagueStart(bool *pCancel)
     StdStrBuf Message = FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_STARTGAME"), pLeagueClient->GetError());
     LogFatal(Message.getData());
     // Show message
-    if(Game.pGUI && !Console.Active)
+    if(::pGUI && !Console.Active)
 			{
 			// Show option to cancel, if possible
-			bool fResult = Game.pGUI->ShowMessageModal(
+			bool fResult = ::pGUI->ShowMessageModal(
 				Message.getData(),
 				LoadResStr("IDS_NET_ERR_LEAGUE"),
 				pCancel ? (C4GUI::MessageDialog::btnOK | C4GUI::MessageDialog::btnAbort) : C4GUI::MessageDialog::btnOK,
@@ -1980,12 +1980,12 @@ bool C4Network2::LeagueStart(bool *pCancel)
   Log(Message.getData());
   // Set up a dialog
 	C4GUI::MessageDialog *pDlg = NULL;
-	if(Game.pGUI && !Console.Active)
+	if(::pGUI && !Console.Active)
 	{
 		// create & show
 		pDlg = new C4GUI::MessageDialog(Message.getData(), LoadResStr("IDS_NET_LEAGUE_STARTGAME"),
 														C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsRegular);
-		if(!pDlg || !pDlg->Show(Game.pGUI, true))	return false;
+		if(!pDlg || !pDlg->Show(::pGUI, true))	return false;
 	}
 	// Wait for response
 	while(pLeagueClient->isBusy())
@@ -1995,7 +1995,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
        (pDlg && pDlg->IsAborted()))
     {
 	    // Clear up
-  		if(Game.pGUI && pDlg) delete pDlg;
+  		if(::pGUI && pDlg) delete pDlg;
 			return false;
     }
     // Check if league server has responded
@@ -2003,7 +2003,7 @@ bool C4Network2::LeagueStart(bool *pCancel)
       break;
   }
   // Close dialog
-  if(Game.pGUI && pDlg)
+  if(::pGUI && pDlg)
 	{
 		pDlg->Close(true);
 		delete pDlg;
@@ -2021,10 +2021,10 @@ bool C4Network2::LeagueStart(bool *pCancel)
     // Log message
     Log(Message.getData());
     // Show message
-    if(Game.pGUI && !Console.Active)
+    if(::pGUI && !Console.Active)
 			{
 			// Show option to cancel, if possible
-			bool fResult = Game.pGUI->ShowMessageModal(
+			bool fResult = ::pGUI->ShowMessageModal(
 				Message.getData(),
 				LoadResStr("IDS_NET_ERR_LEAGUE"),
 				pCancel ? (C4GUI::MessageDialog::btnOK | C4GUI::MessageDialog::btnAbort) : C4GUI::MessageDialog::btnOK,
@@ -2043,10 +2043,10 @@ bool C4Network2::LeagueStart(bool *pCancel)
     // Log message
     Log(Message.getData());
 		// Show message
-    if(Game.pGUI && !Console.Active)
+    if(::pGUI && !Console.Active)
 		{
 			// Show option to cancel, if possible
-			bool fResult = Game.pGUI->ShowMessageModal(
+			bool fResult = ::pGUI->ShowMessageModal(
 				Message.getData(),
 				LoadResStr("IDS_NET_ERR_LEAGUE"),
 				pCancel ? (C4GUI::MessageDialog::btnOK | C4GUI::MessageDialog::btnAbort) : C4GUI::MessageDialog::btnOK,
@@ -2182,8 +2182,8 @@ bool C4Network2::LeagueEnd(const char *szRecordName, const BYTE *pRecordSHA)
 			sResultMessage = FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_FINISHGAME"), pLeagueClient->GetError());
 			Log(sResultMessage.getData());
 			// Show message, allow retry
-			if(!Game.pGUI || Console.Active) break;
-			bool fRetry = Game.pGUI->ShowMessageModal(sResultMessage.getData(), LoadResStr("IDS_NET_ERR_LEAGUE"),
+			if(!::pGUI || Console.Active) break;
+			bool fRetry = ::pGUI->ShowMessageModal(sResultMessage.getData(), LoadResStr("IDS_NET_ERR_LEAGUE"),
 			                                          C4GUI::MessageDialog::btnRetryAbort, C4GUI::Ico_Error);
 			if (fRetry) continue;
 			break;
@@ -2206,10 +2206,10 @@ bool C4Network2::LeagueEnd(const char *szRecordName, const BYTE *pRecordSHA)
 										LeagueServerMessage.getLength() ? LeagueServerMessage.getData() :
 										  LoadResStr("IDS_NET_ERR_LEAGUE_EMPTYREPLY");
 			sResultMessage.Take(FormatString(LoadResStr("IDS_NET_ERR_LEAGUE_SENDRESULT"), pError));
-			if(!Game.pGUI || Console.Active) continue;
+			if(!::pGUI || Console.Active) continue;
 			// Only retry if we didn't get an answer from the league server
 			bool fRetry = !pLeagueClient->isSuccess();
-			fRetry = Game.pGUI->ShowMessageModal(sResultMessage.getData(), LoadResStr("IDS_NET_ERR_LEAGUE"),
+			fRetry = ::pGUI->ShowMessageModal(sResultMessage.getData(), LoadResStr("IDS_NET_ERR_LEAGUE"),
 															 fRetry ? C4GUI::MessageDialog::btnRetryAbort : C4GUI::MessageDialog::btnAbort,
 															 C4GUI::Ico_Error);
 			if (fRetry) continue;
@@ -2313,11 +2313,11 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 		Log(Message.getData());
 		// Set up a dialog
 		C4GUI::MessageDialog *pDlg = NULL;
-		if(Game.pGUI && !Console.Active)
+		if(::pGUI && !Console.Active)
 		{
 			// create & show
 			pDlg = new C4GUI::MessageDialog(Message.getData(), LoadResStr("IDS_DLG_LEAGUESIGNUP"), C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsRegular);
-			if(!pDlg || !pDlg->Show(Game.pGUI, true))	return false;
+			if(!pDlg || !pDlg->Show(::pGUI, true))	return false;
 		}
 		// Wait for response
 		while(pLeagueClient->isBusy())
@@ -2327,7 +2327,7 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 				 (pDlg && pDlg->IsAborted()))
 			{
 				// Clear up
-  			if(Game.pGUI && pDlg) delete pDlg;
+  			if(::pGUI && pDlg) delete pDlg;
 				return false;
 			}
 			// Check if league server has responded
@@ -2335,7 +2335,7 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 				break;
 		}
 		// Close dialog
-		if(Game.pGUI && pDlg)
+		if(::pGUI && pDlg)
 		{
 			pDlg->Close(true);
 			delete pDlg;
@@ -2352,15 +2352,15 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 			// Show welcome message, if any
 			bool fSuccess;
 			if(Message.getLength())
-				fSuccess = Game.pGUI->ShowMessageModal(
+				fSuccess = ::pGUI->ShowMessageModal(
 					Message.getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
 					C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Ex_League);
 			else if(AccountMaster.getLength())
-				fSuccess = Game.pGUI->ShowMessageModal(
+				fSuccess = ::pGUI->ShowMessageModal(
 					FormatString(LoadResStr("IDS_MSG_LEAGUEPLAYERSIGNUPAS"), pInfo->GetName(), AccountMaster.getData(), pLeagueClient->getServerName()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
 					C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Ex_League);
 			else
-				fSuccess = Game.pGUI->ShowMessageModal(
+				fSuccess = ::pGUI->ShowMessageModal(
 					FormatString(LoadResStr("IDS_MSG_LEAGUEPLAYERSIGNUP"), pInfo->GetName(), pLeagueClient->getServerName()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPCONFIRM"),
 					C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Ex_League);
 
@@ -2370,7 +2370,7 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 				return true;
 			else
 				// Sign-up was cancelled by user
-				Game.pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESIGNUPCANCELLED"), pInfo->GetName()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUP"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
+				::pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESIGNUPCANCELLED"), pInfo->GetName()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUP"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
 
 		}
 		else
@@ -2380,7 +2380,7 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 			if((!fWebCode && !fUnregistered) || fRegister)
 			{
 				LogF(LoadResStr("IDS_MSG_LEAGUESIGNUPERROR"), Message.getData());
-				Game.pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESERVERMSG"), Message.getData()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPFAILED"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+				::pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESERVERMSG"), Message.getData()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUPFAILED"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 				// after a league server error message, always fall-through to try again
 			}
 
@@ -2500,9 +2500,9 @@ void C4Network2::LeagueSurrender()
 
 void C4Network2::LeagueShowError(const char *szMsg)
 	{
-	if (Game.pGUI && Application.isFullScreen)
+	if (::pGUI && Application.isFullScreen)
 		{
-		Game.pGUI->ShowErrorMessage(szMsg);
+		::pGUI->ShowErrorMessage(szMsg);
 		}
 	else
 		{
@@ -2613,7 +2613,7 @@ void C4Network2::OpenVoteDialog()
 	// Dialog already open?
 	if(pVoteDialog) return;
 	// No GUI?
-	if(!Game.pGUI) return;
+	if(!::pGUI) return;
 	// No vote available?
 	if(!Votes.firstPkt()) return;
 	// Can't vote?
@@ -2636,7 +2636,7 @@ void C4Network2::OpenVoteDialog()
 			// Open dialog
 			pVoteDialog = new C4VoteDialog(Msg.getData(), pVote->getType(), pVote->getData(), false);
 			pVoteDialog->SetDelOnClose();
-			pVoteDialog->Show(Game.pGUI, true);
+			pVoteDialog->Show(::pGUI, true);
 
 			break;
 		}
@@ -2650,7 +2650,7 @@ void C4Network2::OpenSurrenderDialog(C4ControlVoteType eType, int32_t iData)
 		pVoteDialog = new C4VoteDialog(
 			LoadResStr("IDS_VOTE_SURRENDERWARNING"), eType, iData, true);
 		pVoteDialog->SetDelOnClose();
-		pVoteDialog->Show(Game.pGUI, true);
+		pVoteDialog->Show(::pGUI, true);
 		}
 }
 

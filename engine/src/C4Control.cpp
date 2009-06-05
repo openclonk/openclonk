@@ -645,7 +645,7 @@ void C4ControlClientRemove::Execute() const
 		::Network.ResList.RemoveAtClient(iID);
 	// lobby callback
 	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
-	if (pLobby && Game.pGUI) pLobby->OnClientPart(pClient);
+	if (pLobby && ::pGUI) pLobby->OnClientPart(pClient);
 	// player list callback
 	::Network.Players.OnClientPart(pClient);
 	// console callback

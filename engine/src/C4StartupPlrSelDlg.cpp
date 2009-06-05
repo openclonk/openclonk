@@ -401,7 +401,7 @@ void C4StartupPlrSelDlg::CrewListItem::OnDeathMessageCtx(C4GUI::Element *el)
 	// Registered version only
 	if (!Config.Registered())
 		{
-		Game.pGUI->ShowMessageModal(LoadResStr("IDS_CTL_REGISTEREDONLY"), LoadResStr("IDS_MSG_SETDEATHMESSAGE"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		::pGUI->ShowMessageModal(LoadResStr("IDS_CTL_REGISTEREDONLY"), LoadResStr("IDS_MSG_SETDEATHMESSAGE"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
 		}
 	// Death message dialog
@@ -453,14 +453,14 @@ bool C4StartupPlrSelDlg::CrewListItem::SetName(const char *szNewName)
 		if (pParentGrp->FindEntry(fn))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_CLONKCOLLISION"), fn);
-			Game.pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		// OK; then rename
 		if (!pParentGrp->Rename(GetFilename().getData(), fn) || !pParentGrp->Save(TRUE))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_RENAMEFILE"), GetFilename().getData(), fn);
-			Game.pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		const char *szConstFn = fn;

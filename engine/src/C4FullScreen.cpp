@@ -99,8 +99,8 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			c[0] = (char)wParam;
 			c[1] = 0;
 			// GUI: forward
-			if (Game.pGUI)
-				if (Game.pGUI->CharIn(c))
+			if (::pGUI)
+				if (::pGUI->CharIn(c))
 					return 0;
 			return FALSE;
 			}
@@ -124,7 +124,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-void C4FullScreen::CharIn(const char * c) { Game.pGUI->CharIn(c); }
+void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 
 #elif defined(USE_X11)
 #include <X11/Xlib.h>
@@ -328,8 +328,8 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 			char c[2];
 			c[0] = e.key.keysym.unicode;
 			c[1] = 0;
-			if (Game.pGUI && !isSpecialKey(e.key.keysym.unicode))
-				Game.pGUI->CharIn(c);
+			if (::pGUI && !isSpecialKey(e.key.keysym.unicode))
+				::pGUI->CharIn(c);
 			Game.DoKeyboardInput(e.key.keysym.sym, KEYEV_Down,
 								 e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
 								 e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
@@ -368,10 +368,10 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 #ifndef _WIN32
 void C4FullScreen::CharIn(const char *c)
 	{
-	if (Game.pGUI)
+	if (::pGUI)
 		{
 		StdStrBuf c2; c2.Take(Languages.IconvClonk(c));
-		Game.pGUI->CharIn(c2.getData());
+		::pGUI->CharIn(c2.getData());
 		}
 	}
 #endif
@@ -463,13 +463,13 @@ BOOL C4FullScreen::ViewportCheck()
 bool C4FullScreen::ShowAbortDlg()
 	{
 	// no gui?
-	if (!Game.pGUI) return false;
+	if (!::pGUI) return false;
 	// abort dialog already shown
 	if (C4AbortGameDialog::IsShown()) return false;
 	// not while game over dialog is open
 	if (C4GameOverDlg::IsShown()) return false;
 	// show abort dialog
-	return Game.pGUI->ShowRemoveDlg(new C4AbortGameDialog());
+	return ::pGUI->ShowRemoveDlg(new C4AbortGameDialog());
 	}
 
 bool C4FullScreen::ActivateMenuMain()

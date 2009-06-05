@@ -1428,8 +1428,8 @@ bool C4PlayerInfoList::RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers)
 									// this is a "wild" match: Warn the player (but not in replays)
 									StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_MSG_PLAYERASSIGNMENT"), pInfo->GetName(), pSavegameInfo->GetName());
 									Log(sMsg.getData());
-									if (Game.pGUI && FullScreen.Active && !Game.C4S.Head.Replay)
-										Game.pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify, &Config.Startup.HideMsgPlrTakeOver);
+									if (::pGUI && FullScreen.Active && !Game.C4S.Head.Replay)
+										::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify, &Config.Startup.HideMsgPlrTakeOver);
 									}
 								}
 					}

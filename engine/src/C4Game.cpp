@@ -3525,12 +3525,12 @@ BOOL C4Game::InitNetworkFromAddress(const char *szAddress)
   Log(Message.getData());
   // Set up wait dialog
 	C4GUI::MessageDialog *pDlg = NULL;
-	if(Game.pGUI && !Console.Active)
+	if(::pGUI && !Console.Active)
 	{
 		// create & show
 		pDlg = new C4GUI::MessageDialog(Message.getData(), LoadResStr("IDS_NET_REFQUERY_QUERYTITLE"),
 			C4GUI::MessageDialog::btnAbort, C4GUI::Ico_NetWait, C4GUI::MessageDialog::dsMedium);
-		if(!pDlg || !pDlg->Show(Game.pGUI, true)) return FALSE;
+		if(!pDlg || !pDlg->Show(::pGUI, true)) return FALSE;
 	}
 	// Wait for response
 	while(RefClient.isBusy())
@@ -3539,7 +3539,7 @@ BOOL C4Game::InitNetworkFromAddress(const char *szAddress)
 		if(!Application.ScheduleProcs(100) ||
        (pDlg && pDlg->IsAborted()))
     {
-  		if(Game.pGUI && pDlg) delete pDlg;
+  		if(::pGUI && pDlg) delete pDlg;
 			return FALSE;
     }
     // Check if reference is received
@@ -3547,7 +3547,7 @@ BOOL C4Game::InitNetworkFromAddress(const char *szAddress)
       break;
   }
   // Close dialog
-  if(Game.pGUI && pDlg) delete pDlg;
+  if(::pGUI && pDlg) delete pDlg;
 	// Error?
 	if(!RefClient.isSuccess())
 		{ LogFatal(FormatString(strRefQueryFailed.getData(), RefClient.GetError()).getData()); return FALSE; }
