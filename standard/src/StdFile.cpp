@@ -562,10 +562,23 @@ bool SetWorkingDirectory(const char *path)
 
 #ifndef _WIN32
 // CreateDirectory: true on success
-bool CreateDirectory(const char * pathname, void*) {
-	// mkdir: false on success
-	return !mkdir(pathname,S_IREAD | S_IWRITE | S_IEXEC);
-}
+bool CreateDirectory(const char * pathname, void*)
+	{
+	int r = mkdir(pathname,S_IREAD | S_IWRITE | S_IEXEC);
+	if (r && errno == ENOENT)
+		{
+		StdCopyStrBuf parent(pathname);
+		char * slash = strrchr(parent.getMData(), '/');
+		if (slash)
+			{
+			*slash = 0;
+			CreateDirectory(parent.getData());
+			return !mkdir(pathname,S_IREAD | S_IWRITE | S_IEXEC);
+			}
+		}
+	// mkdir: 0 on success
+	return !r;
+	}
 #endif
 
 bool DirectoryExists(const char *szFilename)

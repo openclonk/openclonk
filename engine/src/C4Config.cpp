@@ -679,7 +679,7 @@ void C4ConfigGeneral::DeterminePaths(BOOL forceWorkingDirectory)
 #ifdef C4ENGINE
 	// Create user path if it doesn't already exist
 	if (!DirectoryExists(UserDataPath))
-		CreateDirectory(UserDataPath, NULL); // currently no error handling here; also: no recursive directory creation
+		CreateDirectory(UserDataPath, NULL);
 #endif
 	}
 
