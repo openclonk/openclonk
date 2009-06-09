@@ -19,6 +19,13 @@
 #include <C4Include.h>
 #include <C4PlayerControl.h>
 
+#ifndef BIG_C4INCLUDE
+#include <C4LangStringTable.h>
+#include <C4Player.h>
+#include <C4Control.h>
+#include <C4Game.h>
+#include <C4Wrappers.h>
+#endif
 
 /* C4PlayerControlDef */
 

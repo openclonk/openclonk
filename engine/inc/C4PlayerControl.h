@@ -21,6 +21,7 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4KeyboardInput.h>
+#include <C4LangStringTable.h>
 #endif
 
 // one control definition, e.g. "Left", "Throw", etc.
