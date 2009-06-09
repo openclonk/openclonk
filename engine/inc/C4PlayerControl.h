@@ -99,6 +99,8 @@ class C4PlayerControlDefs
 		void CompileFunc(StdCompiler *pComp);
 		void MergeFrom(const C4PlayerControlDefs &Src); // copy all defs from source file; overwrite defs of same name if found
 
+		void FinalInit(); // after all defs have been loaded: register script constants
+
 		const C4PlayerControlDef *GetControlByIndex(int32_t idx) const;
 		int32_t GetControlIndexByIdentifier(const char *szIdentifier) const; // return CON_None for not found
 		int32_t GetCount() const { return Defs.size(); }
@@ -167,7 +169,7 @@ class C4PlayerControlAssignment
 		bool IsComboMatched(const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const; // check if combo is currently fulfilled (assuming TriggerKey is already matched)
 
 		bool operator ==(const C4PlayerControlAssignment &cmp) const; // doesn't compare resolved TriggerKey/iControl
-		bool operator <(const C4PlayerControlAssignment &cmp) const { return iPriority < cmp.iPriority; }
+		bool operator <(const C4PlayerControlAssignment &cmp) const { return iPriority > cmp.iPriority; } // assignments are processed in DESCENDING priority!
 		const char *GetControlName() const { return sControlName.getData(); }
 		int32_t GetControl() const { return iControl; }
 		bool IsRefsResolved() const { return fRefsResolved; }
@@ -256,7 +258,7 @@ class C4PlayerControl
 
 		// async values
 		C4PlayerControlAssignmentSet *pControlSet; // the control set used by this player - may be NULL if the player cannot be controlled!
-		typedef std::list<C4CustomKey *> KeyBindingList;
+		typedef std::list<C4KeyBinding *> KeyBindingList;
 		KeyBindingList KeyBindings;     // keys registered into Game.KeyboardInput
 		C4PlayerControlRecentKeyList RecentKeys;           // keys pressed recently; for combinations
 		C4PlayerControlRecentKeyList DownKeys;         // keys currently held down

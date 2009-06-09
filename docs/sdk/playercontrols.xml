@@ -80,7 +80,7 @@
 			</row>
 			<row>
 				<col>Script (Standardwert)</col>
-				<col>Ausfuehrung des Scriptbefehls <em>PlayerControl</em> bzw. <em>PlayerControlReleased</em>. Siehe <emlink href="playercontrols.xml#Script">Script-Callbacks</emlink>.</col>
+				<col>Ausfuehrung des Scriptbefehls <em>PlayerControl</em> bzw. <em>PlayerControlRelease</em>. Siehe <emlink href="playercontrols.xml#Script">Script-Callbacks</emlink>.</col>
 			</row>
 			<row>
 				<col>Menu</col>
@@ -113,7 +113,7 @@
 	<row>
 		<col>Name</col>
 		<col>Zeichenfolge</col>
-		<col>Interner Name zur Identifikation gleicher Steuerungsbelegungen. Die Namen der Standardbelegungen sind <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em></col>
+		<col>Interner Name zur Identifikation gleicher Steuerungsbelegungen. Die Namen der Standardbelegungen sind <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. Ueber Platzhalter (*) koennen Tasten direkt in mehreren Belegungen definiert werden**.</col>
 	</row></table>
 
 <text><table>
@@ -127,6 +127,11 @@
 		<col>Key</col>
 		<col>Zeichenfolge</col>
 		<col>Taste(n) dieser Belegung oder Referenz auf eine andere Belegung. Siehe <emlink href="playercontrols.xml#Keys">Tastenbelegungen</emlink>.</col>
+	</row>
+	<row>
+		<col>ComboIsSequence</col>
+		<col>Boolean</col>
+		<col>Wenn wahr, werden mehrfache Tasten als Sequenz interpretiert. Das heisst, sie muessen nacheinander statt gleichzeitig gedrueckt werden. Siehe <emlink href="playercontrols.xml#Keys">Tastenbelegungen</emlink>.</col>
 	</row>
 	<row>
 		<col>Control</col>
@@ -193,8 +198,7 @@
     [Assignment]
     Key=W
     Control=Jump
-    Priority=50
-</code>
+    Priority=50</code>
 <text>Dies definiert eine Sprungtaste und die zugehoerige Standardbelegung auf der Tastatur fuer den ersten Spieler. Dazu folgendes Script zur Behandlung:</text>
 <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated)
 {
@@ -212,8 +216,7 @@
   }
   // Unbekanntes Kommando
   return false;
-}
-</code>
+}</code>
   
 <h id="ExtraData">ExtraData</h>
 <text>Da nicht jede Objektdefinition die globale PlayerControl-Funktion ueberladen kann, gibt es das ExtraData-Feld zum Verteilen von Kommandos. Zum Beispiel fuer folgende Definition:</text>
@@ -232,8 +235,7 @@
   if (control_extra) return control_extra->PlayerControl(player, control, x, y, strength, repeat);
   // Unbekanntes Kommando
   return false;
-}
-</code>
+}</code>
 <text>Und im Script der Schaufel:</text>
 <code>func PlayerControl(int player, int control, int x, int y, int strength, bool repeated)
 {
@@ -250,15 +252,81 @@
   }
   // Unbekanntes Kommando
   return false;
-}
-</code>
+}</code>
   
 <h id="Hold">Gehaltene Tasten</h>
+<text>Wird fuer ein Kommando das <em>Hold</em>-Flag gesetzt, so speichert die Engine den gegenwaertigen Tastenzustand fuer diese Taste. Solche Tasten haben einige Besonderheiten:</text>
+<text><ul>
+<li>Sie generieren beim Loslassen <funclink>PlayerControlRelease</funclink>-Aufrufe im Script.</li>
+<li>Belegungen koennen mit den <em>Hold</em>/<em>Release</em>-Flags dauerhafte Tastendruecke emulieren.</li>
+<li><emlink href="playercontrols.xml#Repeat">Tastenwiederholungen</emlink> werden erzeugt.</li>
+<li>Der Haltezustand der Taste kann mit <funclink>GetPlayerControlState</funclink> im Script abgefragt werden.</li>
+</ul></text>
+<text>Bestes Beispiel hierfuer ist ein Richtungskommando:</text>
+<code>  [ControlDef]
+  Identifier=Left
+  GUIName=Left
+  GUIDesc=Walk left
+  Hold=1</code>
+<text>Im Script wird die Richtung dann auf den Clonk uebertragen:</text>
+<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated)
+{
+  if (control == CON_Left) return UpdateControlDir(player);
+  // ...
+}
+
+global func PlayerControlRelease(int player, int control, C4ID control_extra, int x, int y)
+{
+  if (control == CON_Left) return UpdateControlDir(player);
+  // ...
+}
+
+global func UpdateControlDir(int player)
+{
+  // Clonk ausgewaehlt?
+  var player_clonk = GetCursor(player);
+  if (player_clonk)
+  {
+    // Clonkrichtung aktualisieren
+    var new_comdir = COMD_Stop;
+    if (GetPlayerControlState(player, CON_Left)) new_comdir = COMD_Left;
+    player_clonk->SetComDir(new_comdir);
+    // Kommando behandelt
+    return true;
+  }
+  // Kommando behandelt
+  return false;
+}</code>
+<text>Um klassisches Steuerungsverhalten zu erreichen, kann eine Tastenbelegung den <em>Hold</em>-Zustand emulieren:</text>
+<code>    [Assignment]
+    Key=A
+    Control=Left
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=S
+    Control=Left
+    TriggerMode=Release | AlwaysUnhandled</code>
+
 <h id="Globals">Globale Definitionen</h>
+<text>...</text>
 <h id="Repeat">Tastenwiederholungen</h>
-<h id="Deactivate">Deaktivierte Kommandos</h>
+<text>Hat ein Kommando ein <em>RepeatDelay</em> definiert, so werden wiederholte Kommandos beim Halten der Taste erzeugt. Zum Beispiel fuer ein Wurkommando:</text>
+<code>  [ControlDef]
+  Identifier=Throw
+  GUIName=Throw
+  GUIDesc=Get rid of your selected inventory
+  Hold=1
+  RepeatDelay=5
+  InitialRepeatDelay=35</code>
+<text>Im Beispiel koennte man die Wurftaste nach einmal Druecken auch halten. Das Wurfkommando wuerde dann nach 35 Frames (ca. eine Sekunde) halten alle 5 Frames automatisch wiederholt.</text>
+<text>Wiederholungen werden nur erzeugt, wenn das Kommando ebenfalls das <em>Hold</em>-Flag gesetzt hat.</text>
+<h id="Deactivate">Deaktivierte Kommandos**</h>
+<text>...</text>
 <h id="Keys">Tastenbelegungen</h>
+<text>...</text>
 <h id="Priority">Prioritaeten</h>
+<text>...</text>
 </part>
 <text><em>** - noch nicht implementiert</em></text>
 <author>Sven2</author><date>Juni 2009</date>

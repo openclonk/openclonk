@@ -2273,6 +2273,9 @@ BOOL C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return FALSE; }
 		SetInitProgress(56);
 
+		// Final init for loaded player commands. Before linking scripts, so CON_* constants are registered
+		PlayerControlDefs.FinalInit();
+
 		// Link scripts
 		if (!LinkScriptEngine()) return FALSE;
 		SetInitProgress(57);

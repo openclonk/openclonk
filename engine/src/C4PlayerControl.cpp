@@ -122,6 +122,20 @@ int32_t C4PlayerControlDefs::GetControlIndexByIdentifier(const char *szIdentifie
 	return CON_None;
 	}
 
+void C4PlayerControlDefs::FinalInit()
+	{
+	// Assume all defs have been loaded
+	// Register scritp constants
+	for (DefVecImpl::const_iterator i = Defs.begin(); i != Defs.end(); ++i)
+		{
+		const char *szIdtf  = (*i).GetIdentifier();
+		if (szIdtf && *szIdtf && !SEqual(szIdtf, "None"))
+			{
+			Game.ScriptEngine.RegisterGlobalConstant(FormatString("CON_%s", szIdtf).getData(), C4VInt(i-Defs.begin()));
+			}
+		}
+	}
+
 
 /* C4PlayerControlAssignment */
 
@@ -150,6 +164,7 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	{
 	if (!pComp->Name("Assignment")) { pComp->NameEnd(); pComp->excNotFound("Assignment"); }
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(KeyCombo), "Key", KeyComboVec()));
+	pComp->Value(mkNamingAdapt(fComboIsSequence, "ComboIsSequence", false));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sControlName, StdCompiler::RCT_Idtf), "Control", "None"));
 	pComp->Value(mkNamingAdapt(iPriority, "Priority", 0));
 	const StdBitfieldEntry<int32_t> TriggerModeNames[] = {
@@ -749,7 +764,7 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 		// control down
 		C4AulFunc *pFunc = Game.ScriptEngine.GetFirstFunc(PSF_PlayerControl);
 		if (!pFunc) return false;
-		C4AulParSet Pars(C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated));
+		C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated));
 		return !!pFunc->Exec(NULL, &Pars);
 		}
 	else
@@ -757,7 +772,7 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 		// control up
 		C4AulFunc *pFunc = Game.ScriptEngine.GetFirstFunc(PSF_PlayerControlRelease);
 		if (!pFunc) return false;
-		C4AulParSet Pars(C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y));
+		C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y));
 		return !!pFunc->Exec(NULL, &Pars);
 		}
 	}
@@ -835,7 +850,7 @@ void C4PlayerControl::RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet 
 
 void C4PlayerControl::AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32_t idx)
 	{
-	KeyBindings.push_back(new C4CustomKey(
+	KeyBindings.push_back(new C4KeyBinding(
 				key, FormatString("PlrKey%02d", idx).getData(), KEYSCOPE_Control,
 				new C4KeyCBPassKey<C4PlayerControl>(*this, &C4PlayerControl::ProcessKeyDown, fHoldKey ? &C4PlayerControl::ProcessKeyUp : NULL),
 				C4CustomKey::PRIO_PlrControl));

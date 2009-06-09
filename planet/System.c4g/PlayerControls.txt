@@ -1,0 +1,60 @@
+[ControlDefs]
+
+  [ControlDef]
+  Identifier=Left
+  GUIName=Left
+  GUIDesc=Walk left
+  Hold=1
+  RepeatDelay=5
+  InitialRepeatDelay=35
+
+  [ControlDef]
+  Identifier=Throw
+  GUIName=Throw
+  GUIDesc=Get rid of your selected inventory
+  Hold=1
+  RepeatDelay=5
+  InitialRepeatDelay=35
+
+    
+  [ControlDef]
+  Identifier=Dig
+  GUIName=Dig
+  GUIDesc=Delve through the earth
+
+  [ControlDef]
+  Identifier=Test
+  GUIName=Test
+  GUIDesc=Test key
+  
+  
+[ControlSets]
+
+  [ControlSet]
+  Name=Keyboard2Classic
+  
+    [Assignment]
+    Key=Q
+    Control=Throw
+    Priority=50
+
+    [Assignment]
+    Key=E
+    Control=Dig
+    Priority=50
+
+    [Assignment]
+    Key=A
+    Control=Left
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=S
+    Control=Left
+    TriggerMode=Release | AlwaysUnhandled
+
+    [Assignment]
+    Key=Throw,Throw,Dig
+    ComboIsSequence=1
+    Control=Test
+    Priority=60
