@@ -65,6 +65,7 @@
 #include <C4RankSystem.h>
 #include <C4GameMessage.h>
 #include <C4Material.h>
+#include <C4Weather.h>
 #endif
 
 #include <StdFile.h>

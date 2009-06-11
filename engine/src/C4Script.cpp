@@ -45,6 +45,7 @@
 #include <C4PXS.h>
 #include <C4MessageInput.h>
 #include <C4GameMessage.h>
+#include <C4Weather.h>
 #endif
 
 //========================== Some Support Functions =======================================
@@ -3082,49 +3083,49 @@ static long FnSetCrewStatus(C4AulContext *cthr, long iPlr, bool fInCrew, C4Objec
 static long FnGetWind(C4AulContext *cthr, long x, long y, bool fGlobal)
   {
 	// global wind
-	if (fGlobal) return Game.Weather.Wind;
+	if (fGlobal) return ::Weather.Wind;
 	// local wind
 	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
-  return Game.Weather.GetWind(x,y);
+  return ::Weather.GetWind(x,y);
   }
 
 static bool FnSetWind(C4AulContext *cthr, long iWind)
   {
-	Game.Weather.SetWind(iWind);
+	::Weather.SetWind(iWind);
   return TRUE;
   }
 
 static bool FnSetTemperature(C4AulContext *cthr, long iTemperature)
   {
-	Game.Weather.SetTemperature(iTemperature);
+	::Weather.SetTemperature(iTemperature);
   return TRUE;
   }
 
 static long FnGetTemperature(C4AulContext *cthr)
   {
-  return Game.Weather.GetTemperature();
+  return ::Weather.GetTemperature();
   }
 
 static bool FnSetSeason(C4AulContext *cthr, long iSeason)
   {
-	Game.Weather.SetSeason(iSeason);
+	::Weather.SetSeason(iSeason);
   return TRUE;
   }
 
 static long FnGetSeason(C4AulContext *cthr)
   {
-  return Game.Weather.GetSeason();
+  return ::Weather.GetSeason();
   }
 
 static bool FnSetClimate(C4AulContext *cthr, long iClimate)
   {
-	Game.Weather.SetClimate(iClimate);
+	::Weather.SetClimate(iClimate);
   return TRUE;
   }
 
 static long FnGetClimate(C4AulContext *cthr)
   {
-  return Game.Weather.GetClimate();
+  return ::Weather.GetClimate();
   }
 
 static bool FnSetSkyFade(C4AulContext *cthr, long iFromRed, long iFromGreen, long iFromBlue, long iToRed, long iToGreen, long iToBlue)
@@ -3173,12 +3174,12 @@ static long FnLandscapeHeight(C4AulContext *cthr)
 
 static long FnLaunchLightning(C4AulContext *cthr, long x, long y, long xdir, long xrange, long ydir, long yrange, bool fDoGamma)
 	{
-	return Game.Weather.LaunchLightning(x,y,xdir,xrange,ydir,yrange, fDoGamma);
+	return ::Weather.LaunchLightning(x,y,xdir,xrange,ydir,yrange, fDoGamma);
 	}
 
 static long FnLaunchVolcano(C4AulContext *cthr, long x)
 	{
-	return Game.Weather.LaunchVolcano(
+	return ::Weather.LaunchVolcano(
 		       ::MaterialMap.Get("Lava"),
 					 x,GBackHgt-1,
 					 BoundBy(15*GBackHgt/500+Random(10),10,60));
@@ -3186,7 +3187,7 @@ static long FnLaunchVolcano(C4AulContext *cthr, long x)
 
 static bool FnLaunchEarthquake(C4AulContext *cthr, long x, long y)
 	{
-	Game.Weather.LaunchEarthquake(x,y);
+	::Weather.LaunchEarthquake(x,y);
 	return 1;
 	}
 

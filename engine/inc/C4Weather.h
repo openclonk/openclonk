@@ -22,6 +22,7 @@
 #ifndef INC_C4Weather
 #define INC_C4Weather
 
+#include <C4Wrappers.h>
 class C4Weather
   {
   public:
@@ -53,5 +54,11 @@ class C4Weather
 		void SetSeasonGamma();		// set gamma adjustment for season
     void CompileFunc(StdCompiler *pComp);
   };
+extern C4Weather Weather;
+
+inline int32_t GBackWind(int32_t x, int32_t y)
+  {
+  return GBackIFT(x, y) ? 0: ::Weather.Wind;
+  }
 
 #endif

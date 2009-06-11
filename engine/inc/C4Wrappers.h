@@ -211,11 +211,6 @@ inline bool GBackLiquid(int32_t x, int32_t y)
   return DensityLiquid(GBackDensity(x,y));
   }
 
-inline int32_t GBackWind(int32_t x, int32_t y)
-  {
-  return GBackIFT(x, y) ? 0: Game.Weather.Wind;
-  }
-
 //==================================== StdCompiler =========================================
 
 void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError);

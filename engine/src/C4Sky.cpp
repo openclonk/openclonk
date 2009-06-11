@@ -31,6 +31,7 @@
 #include <C4SurfaceFile.h>
 #include <C4Components.h>
 #include <C4Wrappers.h>
+#include <C4Weather.h>
 #endif
 
 static BOOL SurfaceEnsureSize(C4Surface **ppSfc, int iMinWdt, int iMinHgt)
@@ -218,7 +219,7 @@ void C4Sky::Execute()
 	if (x>=itofix(Width)) x-=itofix(Width);
 	if (y>=itofix(Height)) y-=itofix(Height);
 	// update speed
-	if (ParallaxMode == C4SkyPM_Wind) xdir=FIXED100(Game.Weather.Wind);
+	if (ParallaxMode == C4SkyPM_Wind) xdir=FIXED100(::Weather.Wind);
 	}
 
 void C4Sky::Draw(C4TargetFacet &cgo)

@@ -44,6 +44,7 @@
 #include <C4Stat.h>
 #include <C4MassMover.h>
 #include <C4PXS.h>
+#include <C4Weather.h>
 #endif
 
 #include <StdPNG.h>
@@ -122,7 +123,7 @@ void C4Landscape::ExecuteScan()
   int32_t cy,mat;
 
   // Check: Scan needed?
-	const int32_t iTemperature = Game.Weather.GetTemperature();
+	const int32_t iTemperature = ::Weather.GetTemperature();
   for(mat = 0; mat < ::MaterialMap.Num; mat++)
     if(MatCount[mat])
       if(::MaterialMap.Map[mat].BelowTempConvertTo &&
@@ -173,7 +174,7 @@ void C4Landscape::ExecuteScan()
 int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 	{
   int32_t conv_to_tex = 0;
-	int32_t iTemperature = Game.Weather.GetTemperature();
+	int32_t iTemperature = ::Weather.GetTemperature();
   // Check below conv
   if(::MaterialMap.Map[mat].BelowTempConvertDir == dir)
 		if (::MaterialMap.Map[mat].BelowTempConvertTo)

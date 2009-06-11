@@ -30,6 +30,7 @@
 #include <C4Game.h>
 #include <C4Components.h>
 #include <C4Wrappers.h>
+#include <C4Weather.h>
 #endif
 
 void C4ParticleDefCore::CompileFunc(StdCompiler * pComp)
@@ -591,7 +592,7 @@ bool fxSmokeExec(C4Particle *pPrt, C4Object *pTarget)
 	// wind to float
 	if (!(pPrt->b%12) || fBuilding)
 		{
-		pPrt->xdir=0.025f*Game.Weather.GetWind(int32_t(pPrt->x),int32_t(pPrt->y));
+		pPrt->xdir=0.025f*::Weather.GetWind(int32_t(pPrt->x),int32_t(pPrt->y));
 		if (pPrt->xdir<-2.0f) pPrt->xdir=-2.0f; else if (pPrt->xdir>2.0f) pPrt->xdir=2.0f;
 		pPrt->xdir+=0.1f*SafeRandom(41)-2.0f;
 		}

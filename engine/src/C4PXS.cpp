@@ -28,6 +28,7 @@
 #include <C4Physics.h>
 #include <C4Random.h>
 #include <C4Wrappers.h>
+#include <C4Weather.h>
 #endif
 
 static const FIXED WindDrift_Factor = itofix(1, 800);

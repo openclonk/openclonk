@@ -302,3 +302,5 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 		}
 	pComp->Value(mkNamingAdapt(mkArrayAdaptM(::GraphicsSystem.dwGamma), "Gamma", dwGammaDefaults));
   }
+
+C4Weather Weather;
