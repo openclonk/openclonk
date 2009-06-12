@@ -42,12 +42,15 @@
 #endif
 #include <C4SolidMask.h>
 #include <C4Random.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #include <C4Player.h>
 #include <C4ObjectMenu.h>
 #include <C4RankSystem.h>
 #include <C4GameVersion.h>
 #include <C4GameMessage.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Game.h>
 #endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
@@ -842,7 +845,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
   // Fire Phase
   FirePhase++; if (FirePhase>=MaxFirePhase) FirePhase=0;
   // Extinguish in base
-  if (!Tick5)
+  if (!::Game.iTick5)
 		if (Category & C4D_Living)
 			if (Contained && ValidPlr(Contained->Base))
 				if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Extinguish)
@@ -851,9 +854,9 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 	if (!Def->NoBurnDecay)
 		DoCon(-100);
   // Damage
-  if (!Tick10) if (!Def->NoBurnDamage) DoDamage(+2,iCausedByPlr,C4FxCall_DmgFire);
+  if (!::Game.iTick10) if (!Def->NoBurnDamage) DoDamage(+2,iCausedByPlr,C4FxCall_DmgFire);
   // Energy
-  if (!Tick5) DoEnergy(-1,false,C4FxCall_EngFire, iCausedByPlr);
+  if (!::Game.iTick5) DoEnergy(-1,false,C4FxCall_EngFire, iCausedByPlr);
   // Effects
   int32_t smoke_level=2*Shape.Wdt/3;
 	int32_t smoke_rate=Def->SmokeRate;
@@ -864,7 +867,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 	    Smoke(GetX(), GetY(),smoke_level);
 		}
   // Background Effects
-  if (!Tick5)
+  if (!::Game.iTick5)
     {
     int32_t mat;
     if (MatValid(mat=GBackMat(GetX(), GetY())))
@@ -896,7 +899,7 @@ BOOL C4Object::ExecLife()
   {
 
   // Growth
-  if (!Tick35)
+  if (!::Game.iTick35)
 		// Growth specified by definition
     if (Def->Growth)
 			// Alive livings && trees only
@@ -911,7 +914,7 @@ BOOL C4Object::ExecLife()
 
   // Energy reload in base
   int32_t transfer;
-  if (!Tick3) if (Alive)
+  if (!::Game.iTick3) if (Alive)
     if (Contained && ValidPlr(Contained->Base))
       if (!Hostile(Owner,Contained->Base))
         if (Energy<GetPhysical()->Energy)
@@ -927,7 +930,7 @@ BOOL C4Object::ExecLife()
 						}
 
   // Magic reload
-  if (!Tick3) if (Alive)
+  if (!::Game.iTick3) if (Alive)
     if (Contained)
       if (!Hostile(Owner,Contained->Owner))
         if (MagicEnergy<GetPhysical()->Magic)
@@ -951,7 +954,7 @@ BOOL C4Object::ExecLife()
           }
 
   // Breathing
-  if (!Tick5)
+  if (!::Game.iTick5)
     if (Alive && !Def->NoBreath)
 			{
 			// Supply check
@@ -987,7 +990,7 @@ BOOL C4Object::ExecLife()
 			}
 
 	// Corrosion energy loss
-  if (!Tick10)
+  if (!::Game.iTick10)
     if (Alive)
 			if (InMat!=MNone)
 				if (::MaterialMap.Map[InMat].Corrosive)
@@ -995,14 +998,14 @@ BOOL C4Object::ExecLife()
 						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
 
 	// InMat incineration
-  if (!Tick10)
+  if (!::Game.iTick10)
 		if (InMat!=MNone)
 			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
 					Incinerate(NO_OWNER);
 
   // Nonlife normal energy loss
-	if (!Tick10) if (Energy)
+	if (!::Game.iTick10) if (Energy)
 		if (!(Category & C4D_Living))
 			if (!ValidPlr(Base) || (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RegenerateEnergy))
 				// don't loose if assigned as Energy-holder
@@ -1010,7 +1013,7 @@ BOOL C4Object::ExecLife()
 					DoEnergy(-1,false,C4FxCall_EngStruct, NO_OWNER);
 
 	// birthday
-	if (!Tick255)
+	if (!::Game.iTick255)
 		if (Alive)
 			if(Info)
 			{
@@ -1055,7 +1058,7 @@ void C4Object::ExecBase()
   C4Object *flag;;
 
   // New base assignment by flag (no old base removal)
-  if (!Tick10)
+  if (!::Game.iTick10)
     if (Def->CanBeBase) if (!ValidPlr(Base))
       if (flag=Contents.Find(C4ID_Flag))
         if (ValidPlr(flag->Owner) && (flag->Owner!=Base))
@@ -1071,7 +1074,7 @@ void C4Object::ExecBase()
           }
 
   // Base execution
-  if (!Tick35)
+  if (!::Game.iTick35)
     if (ValidPlr(Base))
       {
 			// Auto sell contents
@@ -1085,7 +1088,7 @@ void C4Object::ExecBase()
       }
 
   // Environmental action
-  if (!Tick35)
+  if (!::Game.iTick35)
     {
     // Structures dig free snow
     if ((Category & C4D_Structure) && !(Game.Rules & C4RULE_StructuresSnowIn))
@@ -1752,7 +1755,7 @@ BOOL C4Object::Chop(C4Object *pByObject)
   if (!Status || !Def || Contained || !(OCF & OCF_Chop))
     return FALSE;
   // Chop
-  if (!Tick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
+  if (!::Game.iTick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
   return TRUE;
   }
 
@@ -1794,7 +1797,7 @@ BOOL C4Object::Push(FIXED txdir, FIXED dforce, BOOL fStraighten)
   if (!!xdir || !!ydir || !!rdir) Mobile=1;
 
   // Stuck check
-  if (!Tick35) if (txdir) if (!Def->NoHorizontalMove)
+  if (!::Game.iTick35) if (txdir) if (!Def->NoHorizontalMove)
     if (ContactCheck(GetX(), GetY())) // Resets t_contact
       {
 			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_STUCK"),GetName()).getData(),this);
@@ -2435,7 +2438,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 						DrawSelectMark(cgo, 1);
 
 	// Energy shortage
-	if (NeedEnergy) if (Tick35>12) if (eDrawMode!=ODM_BaseOnly)
+	if (NeedEnergy) if (::Game.iTick35>12) if (eDrawMode!=ODM_BaseOnly)
 		{
 		C4Facet &fctEnergy = ::GraphicsResource.fctEnergy;
 		int32_t tx=cox+Shape.Wdt/2-fctEnergy.Wdt/2, ty=coy-fctEnergy.Hgt-5;
@@ -4020,7 +4023,7 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 		DrawPicture(cgoRight);
 
 	// Command
-	if (!fFlash || Tick35>15)
+	if (!fFlash || ::Game.iTick35>15)
 		DrawCommandKey(cgoLeft,iCom,FALSE,
 									 Config.Graphics.ShowCommandKeys ? PlrControlKeyName(iPlayer,Com2Control(iCom), true).getData() : NULL );
 
@@ -4732,7 +4735,7 @@ void C4Object::ExecAction()
 			lLimit=ValByPhysical(200, pPhysical->Scale);
 
 			// Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				if (Abs(ydir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Scale, 1, C4MaxPhysical);
 			int ComDir = Action.ComDir;
@@ -4767,7 +4770,7 @@ void C4Object::ExecAction()
 			lLimit=ValByPhysical(160, pPhysical->Hangle);
 
 			// Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				if (Abs(xdir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Hangle, 1, C4MaxPhysical);
 
@@ -4800,7 +4803,7 @@ void C4Object::ExecAction()
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_FLIGHT:
 			// Contained: fall out (one try only)
-      if (!Tick10)
+      if (!::Game.iTick10)
         if (Contained)
 					{
 					StopActionDelayCommand(this);
@@ -4845,7 +4848,7 @@ void C4Object::ExecAction()
       lLimit=ValByPhysical(160, pPhysical->Swim);
 
       // Physical training
-			if (!Tick10)
+			if (!::Game.iTick10)
 				if (Abs(xdir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Swim, 1, C4MaxPhysical);
 
@@ -5098,7 +5101,7 @@ void C4Object::ExecAction()
       // Valid check
       if (!Action.Target) { ObjectActionStand(this); return; }
       // Chop
-      if (!Tick3)
+      if (!::Game.iTick3)
         if (!Action.Target->Chop(this))
           { ObjectActionStand(this); return; }
       // Valid check (again, target might have been destroyed)
@@ -5124,7 +5127,7 @@ void C4Object::ExecAction()
 					{ ObjectActionStand(this); return; }
 
       // Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				TrainPhysical(&C4PhysicalInfo::Fight, 1, C4MaxPhysical);
 
 			// Direction
@@ -5147,7 +5150,7 @@ void C4Object::ExecAction()
       ydir=0;
       Mobile=1;
 			// Experience
-			if (!Tick35) DoExperience(+2);
+			if (!::Game.iTick35) DoExperience(+2);
       break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_LIFT:
@@ -5302,8 +5305,8 @@ void C4Object::ExecAction()
 				}
 
 			// Reduce line segments
-			if (!Tick35)
-				ReduceLineSegments(Shape, !Tick2);
+			if (!::Game.iTick35)
+				ReduceLineSegments(Shape, !::Game.iTick2);
 
 			break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

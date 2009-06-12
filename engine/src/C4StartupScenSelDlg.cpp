@@ -32,7 +32,6 @@
 #include <C4ComponentHost.h>
 #include <C4Components.h>
 #include <C4RTF.H>
-#include <C4Wrappers.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GameDialogs.h>

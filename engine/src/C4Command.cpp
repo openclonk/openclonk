@@ -34,7 +34,8 @@
 #include <C4GameMessage.h>
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #endif
 
 const int32_t MoveToRange=5,LetGoRange1=7,LetGoRange2=30,DigRange=1;
@@ -255,7 +256,7 @@ void C4Command::MoveTo()
 					PathChecked=TRUE;
 				}
 	// Path recheck
-	if (!Tick35) PathChecked=FALSE;
+	if (!::Game.iTick35) PathChecked=FALSE;
 
 	// Pushing grab only or not desired: let go (pulling, too?)
   if (cObj->GetProcedure()==DFA_PUSH)
@@ -359,7 +360,7 @@ void C4Command::MoveTo()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_SWIM:
       // Head to target
-      if (Tick2)
+      if (::Game.iTick2)
         { if (cx<Tx._getInt()-iTargetRange) cObj->Action.ComDir=COMD_Right;
           if (cx>Tx._getInt()+iTargetRange) cObj->Action.ComDir=COMD_Left;  }
       else
@@ -1820,7 +1821,7 @@ void C4Command::Transfer()
 		}
 
 	// Call target transfer script
-	if (!Tick5)
+	if (!::Game.iTick5)
 		{
 
 		C4AulScriptFunc *f;

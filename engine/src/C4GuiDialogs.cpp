@@ -32,8 +32,9 @@
 #include <C4Viewport.h>
 #include <C4Console.h>
 #include <C4Def.h>
-#include <C4Wrappers.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
+#include <C4Game.h>
 #endif
 
 #include <StdGL.h>

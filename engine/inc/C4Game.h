@@ -133,7 +133,7 @@ class C4Game
 		bool TempScenarioFile;
 		bool fPreinited; // set after PreInit has been called; unset by Clear and Default
 		int32_t FrameCounter;
-		int32_t iTick2,iTick3,iTick5,iTick10,iTick35,iTick255,iTick500,iTick1000;
+		int32_t iTick2,iTick3,iTick5,iTick10,iTick35,iTick255,iTick1000;
 		bool TimeGo;
 		int32_t Time;
 		int32_t StartTime;
@@ -292,7 +292,6 @@ class C4Game
     BOOL OpenScenario();
     BOOL InitDefs();
     BOOL InitMaterialTexture();
-    BOOL EnumerateMaterials();
 		BOOL GameOverCheck();
 		BOOL PlaceInEarth(C4ID id);
 		BOOL Compile(const char *szSource);

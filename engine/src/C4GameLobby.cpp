@@ -29,11 +29,11 @@
 #include "C4Network2Dialogs.h"
 #include "C4GameOptions.h"
 #include "C4GameDialogs.h"
-#include "C4Wrappers.h"
 #include "C4RTF.H"
 #include "C4ChatDlg.h"
 #include "C4PlayerInfoListBox.h"
 #include <C4MessageInput.h>
+#include <C4Game.h>
 #endif
 
 namespace C4GameLobby {

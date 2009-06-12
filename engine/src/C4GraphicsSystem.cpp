@@ -33,10 +33,13 @@
 #include <C4FullScreen.h>
 #include <C4Gui.h>
 #include <C4LoaderScreen.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4SoundSystem.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
+#include <C4Landscape.h>
+#include <C4Network2.h>
+#include <C4Game.h>
 #endif
 
 #include <StdPNG.h>

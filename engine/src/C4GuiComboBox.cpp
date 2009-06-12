@@ -23,7 +23,6 @@
 #include <C4Include.h>
 #include <C4Gui.h>
 #include <C4FacetEx.h>
-#include <C4Wrappers.h>
 #include <C4MouseControl.h>
 
 #include <StdWindow.h>

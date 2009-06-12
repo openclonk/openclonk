@@ -28,10 +28,11 @@
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4Viewport.h>
-#include <C4Wrappers.h>
 #include <C4Log.h>
 #include <C4GamePadCon.h>
 #include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 namespace C4GUI {

@@ -33,9 +33,11 @@
 #include <C4Command.h>
 #include <C4Random.h>
 #include <C4GameMessage.h>
-#include <C4Wrappers.h>
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
+#include <C4GraphicsResource.h>
+#include <C4Material.h>
+#include <C4Game.h>
 #endif
 
 BOOL SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir);

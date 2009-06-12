@@ -27,7 +27,8 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Physics.h>
 #include <C4SolidMask.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #endif
 
 /* Some physical constants */
@@ -528,7 +529,7 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
     // Check for stabilization
     Stabilize();
     // Check for mobilization
-    if (!Tick10)
+    if (!::Game.iTick10)
       {
       // Gravity mobilization
       xdir=ydir=rdir=0;

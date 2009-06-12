@@ -26,7 +26,8 @@
 #include <C4Object.h>
 #include <C4Config.h>
 #include <C4GameMessage.h>
-#include <C4Wrappers.h>
+#include <C4Game.h>
+#include <C4Log.h>
 #endif
 
 C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)

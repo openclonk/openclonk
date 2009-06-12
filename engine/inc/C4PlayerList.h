@@ -92,4 +92,6 @@ class C4PlayerList
 			friend class C4Player;
 	};
 
+int32_t ValidPlr(int32_t plr);
+int32_t Hostile(int32_t plr1, int32_t plr2);
 #endif

@@ -32,9 +32,12 @@
 #include <C4Application.h>
 #include <C4FullScreen.h>
 #include <C4Gui.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #include <C4Player.h>
 #include "C4ChatDlg.h"
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 const int32_t C4MC_Drag_None					= 0,
@@ -149,7 +152,7 @@ void C4MouseControl::Execute()
 	if (!Active || !fMouseOwned) return;
 
 	// Scrolling/continuous update
-	if (Scrolling || !Tick5)
+	if (Scrolling || !::Game.iTick5)
 		{
 		WORD wKeyState=0;
 		if (Application.IsControlDown()) wKeyState|=MK_CONTROL;
@@ -916,7 +919,7 @@ void C4MouseControl::DragNone()
 			{
 			// Hold down on region
 			case C4MC_Cursor_Region:
-				if (!Tick5)
+				if (!::Game.iTick5)
 					if (DownRegion.HoldCom)
 						SendControl(DownRegion.HoldCom);
 				break;

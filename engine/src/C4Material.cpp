@@ -31,8 +31,14 @@
 #include <C4PXS.h>
 #include <C4Random.h>
 #include <C4ToolsDlg.h> // For C4TLS_MatSky...
+#include <C4Texture.h>
+#include <C4Aul.h>
+#include <C4Landscape.h>
+#include <C4SoundSystem.h>
+#include <C4Effects.h>
+#include <C4Game.h>
 #ifdef C4ENGINE
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #include <C4Physics.h> // For GravAccel
 #endif
 
@@ -41,6 +47,9 @@
 #ifdef C4FRONTEND
 #include "C4CompilerWrapper.h"
 #endif
+
+int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MSnow=MNone,MEarth=MNone,MGranite=MNone,MFlyAshes=MNone;
+BYTE MCVehic=0;
 
 // -------------------------------------- C4MaterialReaction
 
@@ -350,8 +359,11 @@ int32_t C4MaterialMap::Get(const char *szMaterial)
 
 #ifdef C4ENGINE
 
-void C4MaterialMap::CrossMapMaterials() // Called after load
-  {
+bool C4MaterialMap::CrossMapMaterials() // Called after load
+	{
+	// Check material number
+	if (::MaterialMap.Num>C4MaxMaterial)
+		{ LogFatal(LoadResStr("IDS_PRC_TOOMANYMATS")); return false; }
 	// build reaction function map
 	delete [] ppReactionMap;
 	typedef C4MaterialReaction * C4MaterialReactionPtr;
@@ -515,6 +527,17 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
 			if (ppReactionMap[(cnt2+1)*(Num+1) + cnt+1])
 				printf("%s -> %s: %p\n", Map[cnt].Name, Map[cnt2].Name, ppReactionMap[(cnt2+1)*(Num+1) + cnt+1]->pFunc);
 #endif
+	// Get hardcoded system material indices
+	MVehic   = Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
+	MTunnel  = Get("Tunnel");
+	MWater   = Get("Water");
+	MSnow    = Get("Snow");
+	MGranite = Get("Granite");
+	MFlyAshes= Get("FlyAshes");
+	MEarth   = Get(Game.C4S.Landscape.Material);
+	if ((MVehic==MNone) || (MTunnel==MNone))
+		{ LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return false; }
+	return true;
 	}
 
 #endif
@@ -884,5 +907,25 @@ void C4MaterialMap::UpdateScriptPointers()
 	}
 
 #endif
+
+int32_t PixCol2MatOld(BYTE pixc)
+  {
+  if (pixc < GBM) return MNone;
+  pixc &= 63; // Substract GBM, ignore IFT
+  if (pixc > ::MaterialMap.Num*C4M_ColsPerMat-1) return MNone;
+  return pixc / C4M_ColsPerMat;
+  }
+
+int32_t PixCol2MatOld2(BYTE pixc)
+  {
+	int32_t iMat = ((int32_t) (pixc&0x7f)) -1;
+	// if above MVehic, don't forget additional vehicle-colors
+	if (iMat<=MVehic) return iMat;
+	// equals middle vehicle-color
+	if (iMat==MVehic+1) return MVehic;
+	// above: range check
+	iMat-=2; if (iMat >= ::MaterialMap.Num) return MNone;
+	return iMat;
+  }
 
 C4MaterialMap MaterialMap;

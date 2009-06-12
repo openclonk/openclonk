@@ -26,7 +26,6 @@
 #include <C4ObjectInfo.h>
 
 #ifndef BIG_C4INCLUDE
-#include <C4Wrappers.h>
 #include <C4Random.h>
 #include <C4Components.h>
 #include <C4Game.h>
@@ -35,6 +34,7 @@
 #include <C4RankSystem.h>
 #include <C4Log.h>
 #include <C4Player.h>
+#include <C4GraphicsResource.h>
 #endif
 
 #ifdef _MSC_VER

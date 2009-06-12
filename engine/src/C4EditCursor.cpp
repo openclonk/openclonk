@@ -31,8 +31,11 @@
 #include <C4Object.h>
 #include <C4Application.h>
 #include <C4Random.h>
-#include <C4Wrappers.h>
 #include <C4MouseControl.h>
+#include <C4Landscape.h>
+#include <C4Texture.h>
+#include <C4GraphicsResource.h>
+#include <C4Game.h>
 #endif
 
 #ifdef WITH_DEVELOPER_MODE

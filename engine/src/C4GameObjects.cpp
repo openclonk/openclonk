@@ -30,7 +30,7 @@
 #include <C4SolidMask.h>
 #include <C4Network2Stats.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #endif
 
 C4GameObjects::C4GameObjects()
@@ -105,10 +105,10 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	// Checks for this frame
 	focf=tocf=OCF_None;
 	// Medium level: Fight
-	if (!Tick5)
+	if (!::Game.iTick5)
 		{ focf|=OCF_FightReady; tocf|=OCF_FightReady; }
 	// Very low level: Incineration
-	if (!Tick35)
+	if (!::Game.iTick35)
 		{ focf|=OCF_OnFire; tocf|=OCF_Inflammable; }
 
 	if (focf && tocf)
@@ -143,7 +143,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 
 	focf=tocf=OCF_None;
 	// High level: Collection, Hit
-	if (!Tick3)
+	if (!::Game.iTick3)
 		{ focf|=OCF_Collection; tocf|=OCF_Carryable; }
 	focf|=OCF_Alive;	    tocf|=OCF_HitSpeed2;
 
@@ -174,7 +174,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy); // hit energy reduced to 1/3rd, but do not drop to zero because of this division
 													obj1->DoEnergy(-iHitEnergy/5, false, C4FxCall_EngObjHit, obj2->Controller);
 													int tmass=Max<int32_t>(obj1->Mass,50);
-													if (!Tick3 || (obj1->Action.Act>=0 && obj1->Def->ActMap[obj1->Action.Act].Procedure != DFA_FLIGHT))
+													if (!::Game.iTick3 || (obj1->Action.Act>=0 && obj1->Def->ActMap[obj1->Action.Act].Procedure != DFA_FLIGHT))
 														obj1->Fling(obj2->xdir*50/tmass,-Abs(obj2->ydir/2)*50/tmass, false);
 													obj1->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(-iHitEnergy/5),
 																																C4VObj(obj2)));
@@ -214,7 +214,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	// Checks for this frame
 	focf=tocf=OCF_None;
 	// Low level: Fight
-	if (!Tick10)
+	if (!::Game.iTick10)
 		{ focf|=OCF_FightReady; tocf|=OCF_FightReady; }
 
 	if (focf && tocf)

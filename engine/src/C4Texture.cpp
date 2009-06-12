@@ -34,7 +34,7 @@
 #include <C4Application.h>
 #include <C4Material.h>
 #include <C4Landscape.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #endif
 
 C4Texture::C4Texture()

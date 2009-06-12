@@ -120,4 +120,5 @@ class C4GraphicsResource
 	};
 
 extern C4GraphicsResource GraphicsResource;
+#define GfxR (&(::GraphicsResource))
 #endif

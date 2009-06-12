@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <C4Log.h>
 
 // *** StdCompiler
 
@@ -960,3 +961,12 @@ void StdCompilerINIRead::notFound(const char *szWhat)
 {
 	excNotFound("%s expected", szWhat);
 }
+
+void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError)
+	{
+	const char *szName = reinterpret_cast<const char *>(pData);
+	if(!szPosition || !*szPosition)
+		DebugLogF("WARNING: %s (in %s)", szError, szName);
+	else
+		DebugLogF("WARNING: %s (in %s, %s)", szError, szPosition, szName);
+	}

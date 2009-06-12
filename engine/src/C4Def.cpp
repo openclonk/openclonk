@@ -36,10 +36,11 @@
 #include <C4Config.h>
 #include <C4ValueList.h>
 #include <C4RankSystem.h>
+#include <C4Game.h>
 #ifdef C4ENGINE
-#include <C4Wrappers.h>
 #include <C4Object.h>
 #include "C4Network2Res.h"
+#include <C4Material.h>
 #endif
 #endif
 

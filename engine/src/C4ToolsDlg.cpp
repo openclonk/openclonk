@@ -27,14 +27,13 @@
 #include <C4ToolsDlg.h>
 #include <C4Console.h>
 #include <C4Application.h>
+#include <C4Texture.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #include <StdRegistry.h>
 #include <StdD3D.h>
 #ifdef USE_GL
 #include <StdGL.h>
-#endif
-
-#ifndef BIG_C4INCLUDE
-#include "C4Wrappers.h"
 #endif
 
 #ifdef WITH_DEVELOPER_MODE

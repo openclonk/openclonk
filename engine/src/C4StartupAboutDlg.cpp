@@ -24,7 +24,6 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4StartupMainDlg.h>
-#include <C4Wrappers.h>
 #endif
 
 // ------------------------------------------------

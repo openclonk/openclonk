@@ -721,3 +721,13 @@ void C4PlayerList::RecheckPlayerSort(C4Player *pForPlayer)
 		pPrev->Next = pForPlayer;
 		}
 	}
+
+int32_t ValidPlr(int32_t plr)
+	{
+	return Game.Players.Valid(plr);
+	}
+
+int32_t Hostile(int32_t plr1, int32_t plr2)
+	{
+	return Game.Players.Hostile(plr1,plr2);
+	}

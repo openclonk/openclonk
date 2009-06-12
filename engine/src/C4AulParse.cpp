@@ -27,7 +27,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Def.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #endif
 
 #define DEBUG_BYTECODE_DUMP 0

@@ -24,6 +24,7 @@
 #include <C4Include.h>
 #include <C4Landscape.h>
 #include <C4SolidMask.h>
+#include <C4Game.h>
 
 #ifndef BIG_C4INCLUDE
 #include <C4Map.h>
@@ -40,17 +41,17 @@
 #include <C4Material.h>
 #include <C4GameMessage.h>
 #include <C4Application.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #include <C4Stat.h>
 #include <C4MassMover.h>
 #include <C4PXS.h>
 #include <C4Weather.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Texture.h>
 #endif
 
 #include <StdPNG.h>
-
-int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MSnow=MNone,MEarth=MNone,MGranite=MNone,MFlyAshes=MNone;
-BYTE MCVehic=0;
 
 const int C4LS_MaxLightDistY = 8;
 const int C4LS_MaxLightDistX = 1;
@@ -86,13 +87,13 @@ void C4Landscape::Execute()
 	// move sky
 	Sky.Execute();
   // Side open scan
-  /*if (!Tick255)
+  /*if (!::Game.iTick255)
     if (Game.C4S.LScape.AutoScanSideOpen)
       ScanSideOpen(); */
 #ifdef _DEBUG
-	/*if(!Tick255)
+	/*if(!::Game.iTick255)
 		UpdatePixCnt(C4Rect(0, 0, Width, Height), true);
-	if(!Tick255)
+	if(!::Game.iTick255)
     {
     DWORD MatCountCheck[C4MaxMaterial], EffectiveMatCountCheck[C4MaxMaterial];
     int32_t iMat;
@@ -111,7 +112,7 @@ void C4Landscape::Execute()
     }*/
 #endif
 	// Relights
-  if (!Tick35)
+  if (!::Game.iTick35)
 		DoRelights();
   }
 
@@ -1020,7 +1021,7 @@ void C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, BOOL fRequest, C4
   for (xcnt=-iLineWidth; xcnt<iLineWidth+(iLineWidth==0); xcnt++)
     DigFreeSinglePix(tx + xcnt, ty + rad, 0, +1);
   // Dig out material cast
-  if (!Tick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
+  if (!::Game.iTick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
   }
 
 void C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, BOOL fRequest, C4Object *pByObj)
@@ -1034,7 +1035,7 @@ void C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, 
   // Clear single pixels
 
   // Dig out material cast
-  if (!Tick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
+  if (!::Game.iTick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
   }
 
 void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
@@ -2116,6 +2117,17 @@ BOOL ConstructionCheck(C4ID id, int32_t iX, int32_t iY, C4Object *pByObj)
   return TRUE;
   }
 
+
+int32_t PixCol2Mat(BYTE pixc)
+	{
+	// Get texture
+	int32_t iTex = PixCol2Tex(pixc);
+	if(!iTex) return MNone;
+	// Get material-texture mapping
+	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
+	// Return material
+	return pTex ? pTex->GetMaterialIndex() : MNone;
+	}
 
 void C4Landscape::ClearRect(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt)
 	{

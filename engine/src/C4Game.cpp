@@ -52,7 +52,6 @@
 #include <C4Console.h>
 #include <C4Network2Stats.h>
 #include <C4Log.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4GameOverDlg.h>
 #include <C4ObjectMenu.h>
@@ -66,6 +65,10 @@
 #include <C4GameMessage.h>
 #include <C4Material.h>
 #include <C4Weather.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Texture.h>
+#include <C4Landscape.h>
 #endif
 
 #include <StdFile.h>
@@ -621,7 +624,7 @@ BOOL C4Game::GameOverCheck()
 #endif
 
 	// Only every 35 ticks
-	if (Tick35) return FALSE;
+	if (::Game.iTick35) return FALSE;
 
 	// do not GameOver in replay
 	if (Control.isReplay()) return FALSE;
@@ -916,10 +919,11 @@ BOOL C4Game::InitMaterialTexture()
 	TextureMap.Init();
 
   // Cross map mats (after texture init, because Material-Texture-combinations are used)
-  ::MaterialMap.CrossMapMaterials();
+	if (!::MaterialMap.CrossMapMaterials()) return false;
 
-  // Enumerate materials
-  if (!EnumerateMaterials()) return FALSE;
+	// mapping to landscape palette will occur when landscape has been created
+	// set the pal
+	::GraphicsSystem.SetPalette();
 
 	// get material script funcs
 	::MaterialMap.UpdateScriptPointers();
@@ -1484,7 +1488,7 @@ int32_t C4Game::ObjectCount(C4ID id,
 // Deletes removal-assigned data from list.
 // Pointer clearance is done by AssignRemoval.
 
-void C4Game::ObjectRemovalCheck() // Every Tick255 by ExecObjects
+void C4Game::ObjectRemovalCheck() // Every ::Game.iTick255 by ExecObjects
   {
   C4Object *cObj; C4ObjectLink *clnk,*next;
   for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=next)
@@ -1541,7 +1545,7 @@ void C4Game::ExecObjects() // Every Tick1 by Execute
 #endif
 
 	// Removal
-  if (!Tick255) ObjectRemovalCheck();
+  if (!::Game.iTick255) ObjectRemovalCheck();
   }
 
 BOOL C4Game::CreateViewport(int32_t iPlayer, bool fSilent)
@@ -1602,30 +1606,6 @@ BOOL C4Game::DropDef(C4ID id, float X, float Y)
 	return FALSE;
 	}
 
-BOOL C4Game::EnumerateMaterials()
-  {
-
-  // Check material number
-  if (::MaterialMap.Num>C4MaxMaterial)
-    { LogFatal(LoadResStr("IDS_PRC_TOOMANYMATS")); return FALSE; }
-
-  // Get hardcoded system material indices
-  MVehic   = ::MaterialMap.Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
-  MTunnel  = ::MaterialMap.Get("Tunnel");
-  MWater   = ::MaterialMap.Get("Water");
-  MSnow    = ::MaterialMap.Get("Snow");
-  MGranite = ::MaterialMap.Get("Granite");
-  MFlyAshes= ::MaterialMap.Get("FlyAshes");
-  MEarth   = ::MaterialMap.Get(C4S.Landscape.Material);
-  if ((MVehic==MNone) || (MTunnel==MNone))
-    { LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return FALSE; }
-	// mapping to landscape palette will occur when landscape has been created
-	// set the pal
-	::GraphicsSystem.SetPalette();
-
-  return TRUE;
-  }
-
 void C4Game::CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner, int32_t iController) {
 	int32_t cnt;
 	for (cnt=0; cnt<num; cnt++)	{
@@ -1679,7 +1659,7 @@ void C4Game::Default()
 	fScriptCreatedObjects=FALSE;
 	fLobby=fObserve=FALSE;
 	iLobbyTimeout=0;
-	iTick2=iTick3=iTick5=iTick10=iTick35=iTick255=iTick500=iTick1000=0;
+	iTick2=iTick3=iTick5=iTick10=iTick35=iTick255=iTick1000=0;
 	ObjectEnumerationIndex=0;
 	FullSpeed=FALSE;
 	FrameSkip=1; DoSkipFrame=false;
@@ -1804,7 +1784,6 @@ void C4Game::Ticks()
 	if (++iTick10==10)     iTick10=0;
 	if (++iTick35==35)     iTick35=0;
 	if (++iTick255==255)   iTick255=0;
-	if (++iTick500==500)   iTick500=0;
 	if (++iTick1000==1000) iTick1000=0;
 	// FPS / time
 	cFPS++; TimeGo = true;
@@ -1849,7 +1828,6 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 		pComp->Value(mkNamingAdapt(iTick10,               "Tick10",                0));
 		pComp->Value(mkNamingAdapt(iTick35,               "Tick35",                0));
 		pComp->Value(mkNamingAdapt(iTick255,              "Tick255",               0));
-		pComp->Value(mkNamingAdapt(iTick500,              "Tick500",               0));
 		pComp->Value(mkNamingAdapt(iTick1000,             "Tick1000",              0));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,    "StartupPlayerCount",    0));
 		pComp->Value(mkNamingAdapt(ObjectEnumerationIndex,"ObjectEnumerationIndex",0));
@@ -3757,7 +3735,7 @@ void C4Game::InitGoals()
 
 void C4Game::UpdateRules()
 	{
-	if (Tick255) return;
+	if (::Game.iTick255) return;
 	Rules=0;
 	if (ObjectCount(C4ID_Energy))		  Rules|=C4RULE_StructuresNeedEnergy;
 	if (ObjectCount(C4ID_CnMaterial)) Rules|=C4RULE_ConstructionNeedsMaterial;

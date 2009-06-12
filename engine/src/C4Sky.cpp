@@ -30,8 +30,8 @@
 #include <C4Random.h>
 #include <C4SurfaceFile.h>
 #include <C4Components.h>
-#include <C4Wrappers.h>
 #include <C4Weather.h>
+#include <C4GraphicsResource.h>
 #endif
 
 static BOOL SurfaceEnsureSize(C4Surface **ppSfc, int iMinWdt, int iMinHgt)

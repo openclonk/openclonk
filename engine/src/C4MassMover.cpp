@@ -28,7 +28,7 @@
 #include <C4Random.h>
 #include <C4Material.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
 #endif
 
 // Note: creation optimized using advancing CreatePtr, so sequential

@@ -27,9 +27,10 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
-#include <C4Wrappers.h>
 #include <C4Application.h>
 #include <C4Region.h>
+#include <C4GraphicsResource.h>
+#include <C4Game.h>
 #endif
 
 C4ObjectList::C4ObjectList(): FirstIter(0)

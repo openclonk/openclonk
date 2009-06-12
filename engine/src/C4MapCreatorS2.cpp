@@ -23,16 +23,10 @@
 #include <C4Include.h>
 #include <C4MapCreatorS2.h>
 #include <C4Random.h>
-
-
-#ifdef C4ENGINE
 #include <C4Game.h>
-#include <C4Wrappers.h>
-#else
 #include <C4Aul.h>
 #include <C4Material.h>
 #include <C4Texture.h>
-#endif
 
 /* --- C4MCCallbackArray --- */
 

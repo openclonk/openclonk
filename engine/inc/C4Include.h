@@ -250,7 +250,6 @@
 #include "C4Video.h"
 #include "C4Viewport.h"
 #include "C4Weather.h"
-#include "C4Wrappers.h"
 #endif
 
 #endif // INC_C4Include

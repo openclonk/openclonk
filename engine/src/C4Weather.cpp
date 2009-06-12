@@ -27,7 +27,8 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Random.h>
-#include <C4Wrappers.h>
+#include <C4GraphicsSystem.h>
+#include <C4Game.h>
 #endif
 
 C4Weather::C4Weather()
@@ -79,7 +80,7 @@ void C4Weather::Init(BOOL fScenario)
 void C4Weather::Execute()
   {
   // Season
-  if (!Tick35)
+  if (!::Game.iTick35)
     {
     SeasonDelay+=YearSpeed;
     if (SeasonDelay>=200)
@@ -92,23 +93,23 @@ void C4Weather::Execute()
       }
     }
   // Temperature
-  if (!Tick35)
+  if (!::Game.iTick35)
 		{
     int32_t iTemperature=Climate-(int32_t)(TemperatureRange*cos(6.28*(float)Season/100.0));
 		if (Temperature<iTemperature) Temperature++;
 		else if (Temperature>iTemperature) Temperature--;
 		}
   // Wind
-  if (!Tick1000)
+  if (!::Game.iTick1000)
     TargetWind=Game.C4S.Weather.Wind.Evaluate();
-  if (!Tick10)
+  if (!::Game.iTick10)
     Wind=BoundBy<int32_t>(Wind+Sign(TargetWind-Wind),
                  Game.C4S.Weather.Wind.Min,
                  Game.C4S.Weather.Wind.Max);
-  if (!Tick10)
+  if (!::Game.iTick10)
     SoundLevel("Wind",NULL,Max(Abs(Wind)-30,0)*2);
   // Disaster launch
-  if (!Tick10)
+  if (!::Game.iTick10)
     {
 		// Meteorite
     if (!Random(60))

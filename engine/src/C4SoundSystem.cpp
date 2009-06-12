@@ -617,3 +617,58 @@ void C4SoundSystem::ClearPointers(C4Object *pObj)
 	for (C4SoundEffect *pEff=FirstSound; pEff; pEff=pEff->Next)
     pEff->ClearPointers(pObj);
   }
+
+C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance)
+  {
+  // Sound check
+  if (!Config.Sound.RXSound) return FALSE;
+  // Start new
+  return Application.SoundSystem.NewEffect(szSndName, fLoop, iVolume, pObj, iCustomFalloffDistance);
+  }
+
+C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, bool fLoop, int32_t iVolume)
+  {
+  // Sound check
+  if (!Config.Sound.RXSound) return FALSE;
+  // Create
+  C4SoundInstance *pInst = StartSoundEffect(szSndName, fLoop, iVolume);
+  // Set volume by position
+  if(pInst) pInst->SetVolumeByPos(iX, iY);
+  // Return
+  return pInst;
+  }
+
+C4SoundInstance *GetSoundInstance(const char *szSndName, C4Object *pObj)
+  {
+  return Application.SoundSystem.FindInstance(szSndName, pObj);
+  }
+
+void StopSoundEffect(const char *szSndName, C4Object *pObj)
+  {
+  // Find instance
+  C4SoundInstance *pInst = Application.SoundSystem.FindInstance(szSndName, pObj);
+  if(!pInst) return;
+  // Stop
+  pInst->Stop();
+  }
+void SoundLevel(const char *szSndName, C4Object *pObj, int32_t iLevel)
+  {
+  // Sound level zero? Stop
+  if(!iLevel) { StopSoundEffect(szSndName, pObj); return; }
+  // Find or create instance
+  C4SoundInstance *pInst = Application.SoundSystem.FindInstance(szSndName, pObj);
+  if(!pInst) pInst = StartSoundEffect(szSndName, true, iLevel, pObj);
+  if(!pInst) return;
+  // Set volume
+  pInst->SetVolume(iLevel);
+  pInst->Execute();
+  }
+void SoundPan(const char *szSndName, C4Object *pObj, int32_t iPan)
+  {
+  // Find instance
+  C4SoundInstance *pInst = Application.SoundSystem.FindInstance(szSndName, pObj);
+  if(!pInst) return;
+  // Set pan
+  pInst->SetPan(iPan);
+  pInst->Execute();
+  }

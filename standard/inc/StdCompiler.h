@@ -686,5 +686,59 @@ protected:
 
 };
 
+void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError);
+
+template <class CompT, class StructT>
+	bool CompileFromBuf_Log(StructT &TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+	{
+		try
+		{
+			CompileFromBuf<CompT>(TargetStruct, SrcBuf);
+			return TRUE;
+		}
+		catch(StdCompiler::Exception *pExc)
+		{
+			LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
+			delete pExc;
+			return FALSE;
+		}
+	}
+template <class CompT, class StructT>
+	bool CompileFromBuf_LogWarn(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+	{
+		try
+		{
+			CompT Compiler;
+			Compiler.setInput(SrcBuf.getRef());
+			Compiler.setWarnCallback(StdCompilerWarnCallback, reinterpret_cast<void *>(const_cast<char *>(szName)));
+			Compiler.Compile(TargetStruct);
+			return TRUE;
+		}
+		catch(StdCompiler::Exception *pExc)
+		{
+			if(!pExc->Pos.getLength())
+				LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
+			else
+				LogF("ERROR: %s (in %s, %s)", pExc->Msg.getData(), pExc->Pos.getData(), szName);
+			delete pExc;
+			return FALSE;
+		}
+	}
+template <class CompT, class StructT>
+	bool DecompileToBuf_Log(StructT RREF TargetStruct, typename CompT::OutT *pOut, const char *szName)
+	{
+		if(!pOut) return false;
+		try
+		{
+			pOut->Take(DecompileToBuf<CompT>(TargetStruct));
+			return TRUE;
+		}
+		catch(StdCompiler::Exception *pExc)
+		{
+			LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
+			delete pExc;
+			return FALSE;
+		}
+	}
 
 #endif // STDCOMPILER_H

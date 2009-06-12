@@ -24,8 +24,7 @@
 #ifndef BIG_C4INCLUDE
 #include "C4Log.h"
 #include "C4Components.h"
-
-#include "C4Wrappers.h"
+#include <C4Game.h>
 #endif
 
 // *** C4GameRes

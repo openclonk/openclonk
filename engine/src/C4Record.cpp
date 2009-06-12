@@ -28,8 +28,8 @@
 #include <C4PlayerInfo.h>
 #include <C4GameSave.h>
 #include <C4Log.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
+#include <C4Game.h>
 #endif
 
 #include <StdFile.h>

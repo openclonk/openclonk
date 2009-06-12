@@ -30,7 +30,6 @@
 #include <C4Game.h>
 #include <C4RankSystem.h>
 #include <C4Config.h>
-#include <C4Wrappers.h>
 #endif
 
 C4ObjectInfoList::C4ObjectInfoList()

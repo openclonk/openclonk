@@ -27,7 +27,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Physics.h>
 #include <C4Material.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
 #endif
 
 BOOL C4Shape::AddVertex(int32_t iX, int32_t iY)

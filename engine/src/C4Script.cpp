@@ -37,7 +37,7 @@
 #include <C4Command.h>
 #include <C4Console.h>
 #include <C4Viewport.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #include <C4ObjectInfoList.h>
 #include <C4Player.h>
 #include <C4ObjectMenu.h>
@@ -46,6 +46,11 @@
 #include <C4MessageInput.h>
 #include <C4GameMessage.h>
 #include <C4Weather.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Texture.h>
+#include <C4PlayerList.h>
+#include <C4Game.h>
 #endif
 
 //========================== Some Support Functions =======================================

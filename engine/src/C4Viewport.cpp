@@ -30,7 +30,6 @@
 #include <C4UserMessages.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
-#include <C4Wrappers.h>
 #include <C4FullScreen.h>
 #include <C4Application.h>
 #include <C4ObjectCom.h>
@@ -44,6 +43,10 @@
 #include <C4MouseControl.h>
 #include <C4PXS.h>
 #include <C4GameMessage.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #endif
 
 #include <StdGL.h>
@@ -1481,7 +1484,7 @@ void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
 			{
 			showtext= iShowCtrl & (1<<(iCtrl+C4MaxShowControl)) ;
       if (iShowCtrl & (1<<(iCtrl+2*C4MaxShowControl)))
-				if (Tick35>18) showtext=FALSE;
+				if (::Game.iTick35>18) showtext=FALSE;
 			C4Facet ccgo;
 			ccgo.Set(cgo.Surface,tx+scwdt*(iCtrl%3),ty+schgt*(iCtrl/3),scwdt,schgt);
 			DrawControlKey(ccgo,iCtrl,(iLastCtrl==iCtrl) ? 1 : 0,

@@ -25,10 +25,12 @@
 #ifndef BIG_C4INCLUDE
 #include <C4FullScreen.h>
 #include <C4Viewport.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4GameOverDlg.h>
 #include <C4Object.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Game.h>
 #endif
 
 // -----------------------------------------------------------

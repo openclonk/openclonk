@@ -431,6 +431,11 @@ class C4DefList
 
 extern C4DefList Definitions;
 
+inline C4Def *C4Id2Def(C4ID id)
+	{
+	return ::Definitions.ID2Def(id);
+	}
+
 // Default Action Procedures
 
 #define DFA_NONE    -1

@@ -30,8 +30,8 @@
 #include <C4Console.h>
 #include <C4Application.h>
 #include <C4Object.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
+#include <C4Game.h>
 #endif
 
 #include <StdRegistry.h>
@@ -404,7 +404,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 
 void C4PropertyDlg::Execute()
 	{
-	if (!Tick35) Update();
+	if (!::Game.iTick35) Update();
 	}
 
 void C4PropertyDlg::ClearPointers(C4Object *pObj)

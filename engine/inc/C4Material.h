@@ -192,7 +192,7 @@ class C4MaterialMap
 		C4MaterialReaction *GetReaction(int32_t iPXSMat, int32_t iLandscapeMat);
 #ifdef C4ENGINE
 		void UpdateScriptPointers(); // set all material script pointers
-    void CrossMapMaterials();
+		bool CrossMapMaterials();
 #endif
   protected:
 		void SetMatReaction(int32_t iPXSMat, int32_t iLSMat, C4MaterialReaction *pReact);
@@ -215,5 +215,49 @@ const int32_t C4M_Flat    = 0,
 					C4M_Background= 0;
 
 const int32_t MNone = -1;
+
+extern int32_t MVehic,MTunnel,MWater,MSnow,MEarth,MGranite,MFlyAshes; // presearched materials
+extern BYTE MCVehic; // precalculated material color
+
+inline bool MatValid(int32_t mat)
+  {
+  return Inside<int32_t>(mat,0,::MaterialMap.Num-1);
+  }
+
+inline bool MatVehicle(int32_t iMat)
+	{
+	return iMat == MVehic;
+	}
+
+inline BYTE MatTex2PixCol(int32_t tex)
+  {
+	return BYTE(tex);
+  }
+
+inline BYTE Mat2PixColDefault(int32_t mat)
+	{
+	return ::MaterialMap.Map[mat].DefaultMatTex;
+	}
+
+inline int32_t MatDensity(int32_t mat)
+  {
+  if (!MatValid(mat)) return 0;
+  return ::MaterialMap.Map[mat].Density;
+  }
+
+inline int32_t MatPlacement(int32_t mat)
+  {
+  if (!MatValid(mat)) return 0;
+  return ::MaterialMap.Map[mat].Placement;
+  }
+
+inline int32_t MatDigFree(int32_t mat)
+  {
+  if (!MatValid(mat)) return 1;
+  return ::MaterialMap.Map[mat].DigFree;
+  }
+
+int32_t PixCol2MatOld(BYTE pixc);
+int32_t PixCol2MatOld2(BYTE pixc);
 
 #endif

@@ -29,8 +29,8 @@
 #include <C4RankSystem.h>
 #include <C4Group.h>
 #include <C4Components.h>
+#include <C4Game.h>
 #ifdef C4ENGINE
-#include <C4Wrappers.h>
 #endif
 #endif
 

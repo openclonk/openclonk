@@ -29,7 +29,7 @@
 #include <C4Console.h>
 #include <C4ObjectCom.h>
 #include <C4Object.h>
-#include <C4Wrappers.h>
+#include <C4Game.h>
 #endif
 
 /*--- C4ScriptHost ---*/
@@ -249,7 +249,7 @@ BOOL C4GameScriptHost::Execute()
 	if (!Script) return FALSE;
 #ifdef C4ENGINE
 	char buffer[500];
-	if (Go && !Tick10)
+	if (Go && !::Game.iTick10)
 		{
 		sprintf(buffer,PSF_Script,Counter++);
 		return !! Call(buffer);

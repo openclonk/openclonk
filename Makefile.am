@@ -226,7 +226,6 @@ clonk_SOURCES = \
   engine/src/C4Viewport.cpp \
   engine/src/C4Weather.cpp \
   engine/src/C4WinMain.cpp \
-  engine/src/C4Wrappers.cpp \
   engine/sec/C4ConfigShareware.cpp \
   engine/sec/C4ConfigShareware.h \
   engine/sec/C4SecurityCertificates.cpp \
@@ -373,7 +372,6 @@ clonk_SOURCES = \
   engine/inc/C4VideoPlayback.h \
   engine/inc/C4Viewport.h \
   engine/inc/C4Weather.h \
-  engine/inc/C4Wrappers.h \
   engine/inc/C4RoundResults.h \
   engine/src/C4RoundResults.cpp \
   engine/res/Brush.h \

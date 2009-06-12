@@ -35,7 +35,6 @@
 #include <C4Network2Stats.h>
 #include <C4MessageInput.h>
 #include <C4GamePadCon.h>
-#include <C4Wrappers.h>
 #include <C4Random.h>
 #include <C4Log.h>
 #include <C4FullScreen.h>
@@ -43,6 +42,10 @@
 #include <C4ObjectMenu.h>
 #include <C4MouseControl.h>
 #include <C4GameMessage.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #endif
 
 #define C4FOW_Def_View_RangeX 500
@@ -236,8 +239,8 @@ void C4Player::Execute()
 			}
 		}
 
-	// Tick35
-	if (!Tick35 && Status==PS_Normal)
+	// ::Game.iTick35
+	if (!::Game.iTick35 && Status==PS_Normal)
 		{
 		ExecHomeBaseProduction();
 		UpdateValue();

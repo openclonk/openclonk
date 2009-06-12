@@ -25,7 +25,8 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #endif
 
 
