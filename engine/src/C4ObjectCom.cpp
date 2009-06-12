@@ -38,6 +38,7 @@
 #include <C4GraphicsResource.h>
 #include <C4Material.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 BOOL SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir);
@@ -618,7 +619,7 @@ BOOL ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing)
       {
       // Was meant to be a drop anyway
       if (ValidPlr(cObj->Owner))
-        if (Game.Players.Get(cObj->Owner)->LastComDownDouble)
+        if (::Players.Get(cObj->Owner)->LastComDownDouble)
           return ObjectComDrop(cObj, pThing);
       // No grab put: fail
       return FALSE;
@@ -960,17 +961,17 @@ BOOL SellFromBase(int32_t iPlr, C4Object *pBaseObj, C4ID id, C4Object *pSellObj)
   if (!pBaseObj || !ValidPlr(pBaseObj->Base)) return FALSE;
 	if (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell) return FALSE;
   // Base owner eliminated
-  if (Game.Players.Get(pBaseObj->Base)->Eliminated)
+  if (::Players.Get(pBaseObj->Base)->Eliminated)
     {
     StartSoundEffect("Error",false,100,pBaseObj);
-    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),Game.Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
+    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),::Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
 		return FALSE;
     }
   // Base owner hostile
   if (Hostile(iPlr,pBaseObj->Base))
     {
     StartSoundEffect("Error",false,100,pBaseObj);
-    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),Game.Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
+    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),::Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
 		return FALSE;
     }
 	// check validity of sell object, if specified
@@ -983,7 +984,7 @@ BOOL SellFromBase(int32_t iPlr, C4Object *pBaseObj, C4ID id, C4Object *pSellObj)
 	// check definition NoSell
 	if (pThing->Def->NoSell) return FALSE;
   // Sell object (pBaseObj owner gets the money)
-  return Game.Players.Get(pBaseObj->Base)->Sell2Home(pThing);
+  return ::Players.Get(pBaseObj->Base)->Sell2Home(pThing);
   }
 
 BOOL Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, BOOL fShowErrors)
@@ -998,10 +999,10 @@ BOOL Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, BOOL fShowErrors)
 		{
 		if (!fShowErrors) return FALSE;
 		StartSoundEffect("Error",false,100,pBase);
-		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),Game.Players.Get(pBase->Base)->GetName()).getData(),iPlr); return FALSE;
+		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),::Players.Get(pBase->Base)->GetName()).getData(),iPlr); return FALSE;
 		}
 	// buy
-	if (!(pThing=Game.Players.Get(pBase->Base)->Buy(id, fShowErrors, iPlr, pBase))) return FALSE;
+	if (!(pThing=::Players.Get(pBase->Base)->Buy(id, fShowErrors, iPlr, pBase))) return FALSE;
 	// Object enter target object
 	pThing->Enter(pBase);
 	// Success
@@ -1010,7 +1011,7 @@ BOOL Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, BOOL fShowErrors)
 
 BOOL PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t tx, int32_t ty)
 	{
-	C4Player *pPlr=Game.Players.Get(plr);
+	C4Player *pPlr=::Players.Get(plr);
 	if (!pPlr) return FALSE;
 	int32_t iAddMode = C4P_Command_Set;
 	// Adjust for old-style keyboard throw/drop control: add & in range

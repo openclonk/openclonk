@@ -31,6 +31,7 @@
 #include <C4Network2Stats.h>
 #include <C4Game.h>
 #include <C4Log.h>
+#include <C4PlayerList.h>
 #endif
 
 C4GameObjects::C4GameObjects()
@@ -125,7 +126,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								{ obj2->Incinerate(obj1->GetFireCausePlr(), FALSE, obj1); continue; }
 						// Fight
 						if ((ocf1 & OCF_FightReady) && (ocf2 & OCF_FightReady))
-							if (Game.Players.Hostile(obj1->Owner,obj2->Owner))
+							if (::Players.Hostile(obj1->Owner,obj2->Owner))
 								{
 								// RejectFight callback
 								C4AulParSet parset1(C4VObj(obj2) );
@@ -228,7 +229,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 							ocf1=obj1->OCF; ocf2=obj2->OCF;
 							// Fight
 							if ((ocf1 & OCF_FightReady) && (ocf2 & OCF_FightReady))
-								if (Game.Players.Hostile(obj1->Owner,obj2->Owner))
+								if (::Players.Hostile(obj1->Owner,obj2->Owner))
 									{
 									ObjectActionFight(obj1,obj2);
 									ObjectActionFight(obj2,obj1);

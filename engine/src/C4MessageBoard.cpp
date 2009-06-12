@@ -36,6 +36,7 @@
 #include <C4GraphicsResource.h>
 #include <C4MessageInput.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 const int C4LogSize=30000, C4LogMaxLines=1000;
@@ -376,13 +377,13 @@ C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)
 		{
 		StdStrBuf str;
 		str.CopyUntil(szMessage + 2,' ');
-		return Game.Players.GetByName(str.getData());
+		return ::Players.GetByName(str.getData());
 		}
 	if (SCharCount(':',szMessage))
 		{
 		StdStrBuf str;
 		str.CopyUntil(szMessage + 2,':');
-		return Game.Players.GetByName(str.getData());
+		return ::Players.GetByName(str.getData());
 		}
 	return NULL;
 	}

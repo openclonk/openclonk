@@ -31,6 +31,7 @@
 #include "C4Viewport.h"
 #include "C4GameOptions.h"
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifndef HAVE_WINSOCK
@@ -252,7 +253,7 @@ const C4Client *C4Network2ClientListBox::ClientListItem::GetClient() const
 void C4Network2ClientListBox::ClientListItem::OnButtonActivate(C4GUI::Control *pButton)
 	{
 	// league: Do not deactivate clients with players
-	if (Game.Parameters.isLeague() && Game.Players.GetAtClient(iClientID))
+	if (Game.Parameters.isLeague() && ::Players.GetAtClient(iClientID))
 		{
 		Log(LoadResStr("IDS_LOG_COMMANDNOTALLOWEDINLEAGUE"));
 		return;
@@ -265,7 +266,7 @@ void C4Network2ClientListBox::ClientListItem::OnButtonKick(C4GUI::Control *pButt
 	{
 	// try kick
 	// league: Kick needs voting
-	if(Game.Parameters.isLeague() && Game.Players.GetAtClient(iClientID))
+	if(Game.Parameters.isLeague() && ::Players.GetAtClient(iClientID))
 		::Network.Vote(VT_Kick, true, iClientID);
 	else
 		Game.Clients.CtrlRemove(GetClient(), LoadResStr(pForDlg->IsStartup() ? "IDS_MSG_KICKFROMSTARTUPDLG" : "IDS_MSG_KICKFROMCLIENTLIST"));

@@ -39,6 +39,7 @@
 #include <C4GameOverDlg.h>
 #include <C4GraphicsSystem.h>
 #include <C4MouseControl.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifdef _WIN32
@@ -420,7 +421,7 @@ BOOL C4FullScreen::ViewportCheck()
 			iPlrNum = NO_OWNER;
 			// Film mode: create viewport for first player (instead of no-owner)
 			if (fFilm)
-				if (pPlr = Game.Players.First)
+				if (pPlr = ::Players.First)
 					iPlrNum = pPlr->Number;
 			// Create viewport
 			Game.CreateViewport(iPlrNum, iPlrNum==NO_OWNER);
@@ -455,7 +456,7 @@ BOOL C4FullScreen::ViewportCheck()
 	else
 		{
 		// movie mode: player present, and no valid viewport assigned?
-		if (Game.C4S.Head.Replay && Game.C4S.Head.Film && (pPlr = Game.Players.First))
+		if (Game.C4S.Head.Replay && Game.C4S.Head.Film && (pPlr = ::Players.First))
 			// assign viewport to joined player
 			pNoOwnerVp->Init(pPlr->Number, true);
 		}

@@ -35,6 +35,7 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4GraphicsResource.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifdef _MSC_VER
@@ -322,8 +323,8 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 			//C4Facet fctPortrait; fctPortrait.Set(Portrait);
 			C4Facet ccgo; ccgo.Set(cgo.Surface,cgo.X+iX,cgo.Y,4*cgo.Hgt/3+10,cgo.Hgt+10);
 			DWORD dwColor = 0xFFFFFFFF;
-			if (pOfObj && Game.Players.Get(pOfObj->Owner))
-				dwColor = Game.Players.Get(pOfObj->Owner)->ColorDw;
+			if (pOfObj && ::Players.Get(pOfObj->Owner))
+				dwColor = ::Players.Get(pOfObj->Owner)->ColorDw;
 			pPortraitGfx->DrawClr(ccgo, TRUE, dwColor);
 			iX+=4*cgo.Hgt/3;
 			}

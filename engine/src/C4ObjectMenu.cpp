@@ -29,6 +29,7 @@
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 
@@ -192,8 +193,8 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			// Refill target
 			if (!(pTarget=RefillObject)) return false;
 			// Add base owner's homebase material
-			if (!(pPlayer = Game.Players.Get(pTarget->Base))) return FALSE;
-			C4Player *pBuyPlayer = Object ? Game.Players.Get(Object->Owner) : NULL;
+			if (!(pPlayer = ::Players.Get(pTarget->Base))) return FALSE;
+			C4Player *pBuyPlayer = Object ? ::Players.Get(Object->Owner) : NULL;
 			C4ID idDef;
 		  for (cnt=0; idDef=pPlayer->HomeBaseMaterial.GetID(::Definitions,C4D_All,cnt,&iCount); cnt++)
 				{
@@ -322,7 +323,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 						sprintf(szCommand, "PlayerObjectCommand(%d, \"Put\", Object(%d), 0, 0) && ExecuteCommand()", Object->Owner, pTarget->Number);
 						// Secondary command: put all inventory items (all selected clonks)
 						szCommand2[0] = 0;
-						if ((Object->Contents.ObjectCount() > 1) || (Game.Players.Get(Object->Owner)->GetSelectedCrewCount() > 1))
+						if ((Object->Contents.ObjectCount() > 1) || (::Players.Get(Object->Owner)->GetSelectedCrewCount() > 1))
 							sprintf(szCommand2, "PlayerObjectCommand(%d, \"Put\", Object(%d), 1000, 0) && ExecuteCommand()", Object->Owner, pTarget->Number); // Workaround: specifying a really high put count here; will be adjusted later by C4Menu::ObjectCommand...
 						// Create symbol
 						fctSymbol.Create(C4SymbolSize,C4SymbolSize);
@@ -468,7 +469,7 @@ bool C4ObjectMenu::IsReadOnly()
 	// if the player is eliminated, do not control either!
 	if (!pVP->fIsNoOwnerViewport)
 		{
-		C4Player *pPlr = Game.Players.Get(::MouseControl.GetPlayer());
+		C4Player *pPlr = ::Players.Get(::MouseControl.GetPlayer());
 		if (pPlr && pPlr->Eliminated) return true;
 		}
 	return false;

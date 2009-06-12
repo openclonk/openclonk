@@ -38,6 +38,7 @@
 #include <C4Player.h>
 #include <C4Log.h>
 #include <C4Material.h>
+#include <C4PlayerList.h>
 #endif
 
 //-------------------------------- C4DefGraphics -----------------------------------------------
@@ -407,7 +408,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 							pObj->Menu->SetFrameDeco(NULL);
 				}
 		// check all object infos for portraits
-		for (C4Player *pPlr = Game.Players.First; pPlr; pPlr=pPlr->Next)
+		for (C4Player *pPlr = ::Players.First; pPlr; pPlr=pPlr->Next)
 			for (C4ObjectInfo *pInfo = pPlr->CrewInfoList.GetFirst(); pInfo; pInfo=pInfo->Next)
 				{
 				if (pInfo->Portrait.GetGfx() == pGraphicsPtr)

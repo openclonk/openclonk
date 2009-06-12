@@ -29,6 +29,7 @@
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
 #include <C4Player.h>
+#include <C4PlayerList.h>
 #endif
 
 const int32_t TextMsgDelayFactor = 2; // frames per char message display time
@@ -208,7 +209,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 						if(!Target->IsVisible(iPlayer, false))
 							return;
 					// check fog of war
-					C4Player *pPlr = Game.Players.Get(iPlayer);
+					C4Player *pPlr = ::Players.Get(iPlayer);
 					if(pPlr && pPlr->fFogOfWar)
 						if(!pPlr->FoWIsVisible(iMsgX, iMsgY))
 							{

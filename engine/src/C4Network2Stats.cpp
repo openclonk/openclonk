@@ -25,6 +25,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4Player.h>
+#include <C4PlayerList.h>
 #endif
 
 C4Graph::C4Graph()
@@ -322,14 +323,14 @@ C4Network2Stats::C4Network2Stats()
 	statControls.SetAverageTime(100);
 	statActions.SetTitle(LoadResStr("IDS_NET_APM"));
 	statActions.SetAverageTime(100);
-	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next) pPlr->CreateGraphs();
+	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->CreateGraphs();
 	C4Network2Client *pClient = NULL;
 	while (pClient = ::Network.Clients.GetNextClient(pClient)) pClient->CreateGraphs();
 	}
 
 C4Network2Stats::~C4Network2Stats()
 	{
-	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next) pPlr->ClearGraphs();
+	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->ClearGraphs();
 	C4Network2Client *pClient = NULL;
 	while (pClient = ::Network.Clients.GetNextClient(pClient)) pClient->ClearGraphs();
 	Application.Remove(this);
@@ -363,7 +364,7 @@ void C4Network2Stats::ExecuteControlFrame()
 	statControls.SetMultiplier((C4Graph::ValueType) 1000 / 38 / Game.Control.ControlRate);
 	statActions.SetMultiplier((C4Graph::ValueType) 1000 / 38 * 60 / Game.Control.ControlRate);
 	// register and reset control counts for all players
-	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 		{
 		if (pPlr->pstatControls)
 			{

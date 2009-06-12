@@ -40,6 +40,7 @@
 #include <C4Landscape.h>
 #include <C4Network2.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 #include <StdPNG.h>
@@ -520,8 +521,8 @@ void C4GraphicsSystem::SortViewportsByPlayerControl()
 		for (pPrev=NULL,pView=FirstViewport; pView && (pNext = pView->Next); pView=pNext)
 			{
 			// Get players
-			pPlr1 = Game.Players.Get(pView->Player);
-			pPlr2 = Game.Players.Get(pNext->Player);
+			pPlr1 = ::Players.Get(pView->Player);
+			pPlr2 = ::Players.Get(pNext->Player);
 			// Swap order
 			if (pPlr1 && pPlr2 && ( LayoutOrder(pPlr1->Control) > LayoutOrder(pPlr2->Control) ))
 				{

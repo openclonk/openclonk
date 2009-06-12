@@ -31,6 +31,7 @@
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 // -----------------------------------------------------------
@@ -66,7 +67,7 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 	// league or replay game
 	if (Game.Parameters.isLeague() || Game.C4S.Head.Replay) return false;
 	// Max player limit
-	if (Game.Players.GetCount() >= Game.Parameters.MaxPlayers) return false;
+	if (::Players.GetCount() >= Game.Parameters.MaxPlayers) return false;
 
 	// Menu symbol/init
 	if (GfxR->fctPlayerClr.Surface)
@@ -78,7 +79,7 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 			char szFilename[_MAX_PATH+1], szCommand[_MAX_PATH+30+1];
 			SCopy(*iter, szFilename, _MAX_PATH);
 			if (DirectoryExists(szFilename)) continue;
-			if (Game.Players.FileInUse(szFilename)) continue;
+			if (::Players.FileInUse(szFilename)) continue;
 			// Open group
 			C4Group hGroup;
 			if (!hGroup.Open(szFilename)) continue;
@@ -142,10 +143,10 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 			// Clear items
 			ClearItems();
 			// Refill player
-			if (!(pPlayer = Game.Players.Get(Player))) return false;
+			if (!(pPlayer = ::Players.Get(Player))) return false;
 			// Refill items
 			C4Player *pPlr; int32_t iIndex;
-			for (iIndex=0; pPlr = Game.Players.GetByIndex(iIndex); iIndex++)
+			for (iIndex=0; pPlr = ::Players.GetByIndex(iIndex); iIndex++)
 				// Ignore player self and invisible
 				if (pPlr != pPlayer) if (!pPlr->IsInvisible())
 					{
@@ -246,7 +247,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 			AddRefSym(LoadResStr("IDS_MSG_FREEVIEW"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Star), "Observe:Free", C4MN_Item_NoCount, NULL, LoadResStr("IDS_MSG_FREELYSCROLLAROUNDTHEMAP"));
 			// Add players
 			C4Player *pPlr; int32_t iIndex;
-			for (iIndex=0; pPlr = Game.Players.GetByIndex(iIndex); iIndex++)
+			for (iIndex=0; pPlr = ::Players.GetByIndex(iIndex); iIndex++)
 				{
 				// Ignore invisible
 				if (!pPlr->IsInvisible())
@@ -545,13 +546,13 @@ bool C4MainMenu::ActivateOptions(int32_t iPlayer, int32_t selection)
 	// Music
 	AddRefSym(LoadResStr("IDS_MNU_MUSIC"), GfxR->fctOptions.GetPhase(1 + Config.Sound.RXMusic),"Options:Music",C4MN_Item_NoCount);
 	// Mouse control
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (pPlr && !Game.C4S.Head.DisableMouse)
 		{
 		if (pPlr->MouseControl)
 			AddRefSym(LoadResStr("IDS_MNU_MOUSECONTROL"), GfxR->fctOptions.GetPhase(11 + 1), "Options:Mouse");
 		else
-			if (!Game.Players.MouseControlTaken())
+			if (!::Players.MouseControlTaken())
 				AddRefSym(LoadResStr("IDS_MNU_MOUSECONTROL"), GfxR->fctOptions.GetPhase(11), "Options:Mouse");
 		}
 	// Music
@@ -602,7 +603,7 @@ bool C4MainMenu::ActivateDisplay(int32_t iPlayer, int32_t selection)
 bool C4MainMenu::ActivateMain(int32_t iPlayer)
 	{
 	// Determine player
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	// Menu symbol/init
 	C4FacetSurface fctSymbol;
 	fctSymbol.Create(C4SymbolSize, C4SymbolSize);
@@ -626,7 +627,7 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 		AddRefSym(LoadResStr("IDS_TEXT_VIEW"),C4GUI::Icon::GetIconFacet(C4GUI::Ico_View),"ActivateMenu:Observer",C4MN_Item_NoCount,NULL,LoadResStr("IDS_TEXT_DETERMINEPLAYERVIEWTOFOLL"));
 		}
 	// Hostility (player menu only)
-	if (pPlr && (Game.Players.GetCount() > 1))
+	if (pPlr && (::Players.GetCount() > 1))
 		{
 		GfxR->fctFlagClr.Surface->SetClr(0xff0000);
 		AddRefSym(LoadResStr("IDS_MENU_CPATTACK"),GfxR->fctMenu.GetPhase(7),"ActivateMenu:Hostility",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPATTACKINFO"));
@@ -638,7 +639,7 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 		AddRefSym(LoadResStr("IDS_MSG_SELTEAM"),fctTeams,"ActivateMenu:TeamSel",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MSG_ALLOWSYOUTOJOINADIFFERENT"));
 		}
 	// Player join
-	if ((Game.Players.GetCount() < Game.Parameters.MaxPlayers) && !Game.Parameters.isLeague())
+	if ((::Players.GetCount() < Game.Parameters.MaxPlayers) && !Game.Parameters.isLeague())
 		{
 		AddRefSym(LoadResStr("IDS_MENU_CPNEWPLAYER"),GfxR->fctPlayerClr.GetPhase(),"ActivateMenu:NewPlayer",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPNEWPLAYERINFO"));
 		}
@@ -689,7 +690,7 @@ bool C4MainMenu::ActivateHostility(int32_t iPlayer)
 bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	{
 	// Determine player
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 	// Activate
 	if (SEqual2(szCommand,"ActivateMenu:"))
 		{
@@ -722,7 +723,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 			// 2do: not for observers and such?
 			::Network.Players.JoinLocalPlayer(szCommand+11, true);
 		else
-			Game.Players.CtrlJoinLocalNoNetwork(szCommand+11, Game.Clients.getLocalID(), Game.Clients.getLocalName());
+			::Players.CtrlJoinLocalNoNetwork(szCommand+11, Game.Clients.getLocalID(), Game.Clients.getLocalName());
 		return true;
 		}
 	// SetHostility
@@ -731,7 +732,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// only if allowed
 		if (!Game.Teams.IsHostilityChangeAllowed()) return false;
     int32_t iOpponent; sscanf(szCommand+13,"%i",&iOpponent);
-		C4Player *pOpponent = Game.Players.Get(iOpponent);
+		C4Player *pOpponent = ::Players.Get(iOpponent);
 		if (!pOpponent || pOpponent->GetType() != C4PT_User) return false;
 		// TODO: doesn't really work
     Game.Input.Add(CID_Script, new C4ControlScript(FormatString("SetHostility(%d, %d, !Hostile(%d, %d, true))", Player, iOpponent, Player, iOpponent).getData(), C4ControlScript::SCOPE_Global, true));
@@ -763,7 +764,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		{
 		int iClientID = atoi(szCommand+10);
 		if(iClientID && ::Network.isEnabled())
-			if(Game.Parameters.isLeague() && Game.Players.GetAtClient(iClientID))
+			if(Game.Parameters.isLeague() && ::Players.GetAtClient(iClientID))
 				::Network.Vote(VT_Kick, true, iClientID);
 			else
 				{
@@ -777,7 +778,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	if (SEqual2(szCommand,"Part"))
 		{
 		if(::Network.isEnabled())
-			if(Game.Parameters.isLeague() && Game.Players.GetLocalByIndex(0))
+			if(Game.Parameters.isLeague() && ::Players.GetLocalByIndex(0))
 				::Network.Vote(VT_Kick, true, Game.Control.ClientID());
 			else
 				{

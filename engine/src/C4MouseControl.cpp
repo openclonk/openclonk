@@ -38,6 +38,7 @@
 #include "C4ChatDlg.h"
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
+#include <C4PlayerList.h>
 #endif
 
 const int32_t C4MC_Drag_None					= 0,
@@ -223,7 +224,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	// Execute caption
 	if (KeepCaption) KeepCaption--; else { Caption.Clear(); IsHelpCaption=false; CaptionBottomY=0; }
 	// Check player
-	if ((Player>NO_OWNER) && !(pPlayer=Game.Players.Get(Player))) { Active=FALSE; return; }
+	if ((Player>NO_OWNER) && !(pPlayer=::Players.Get(Player))) { Active=FALSE; return; }
 	// Check viewport
 	if (!(Viewport=::GraphicsSystem.GetViewport(Player))) return;
 	// get view position
@@ -555,7 +556,7 @@ void C4MouseControl::UpdateCursorTarget()
 		// Select
     if (ocf & OCF_Alive)
       if (ValidPlr(Player))
-        if (Game.Players.Get(Player)->ObjectInCrew(TargetObject))
+        if (::Players.Get(Player)->ObjectInCrew(TargetObject))
           Cursor=C4MC_Cursor_Select;
 		// select custom region
 		if (TargetObject->Category & C4D_MouseSelect)
@@ -679,7 +680,7 @@ int32_t C4MouseControl::UpdateSingleSelection()
 
 	// Cursor has moved off single crew (or target object) selection: clear selection
 	else if (Selection.GetObject())
-		if (Game.Players.Get(Player)->ObjectInCrew(Selection.GetObject())
+		if (::Players.Get(Player)->ObjectInCrew(Selection.GetObject())
 			|| (Selection.GetObject()->Category & C4D_MouseSelect))
 			Selection.Clear();
 
@@ -1085,7 +1086,7 @@ BOOL C4MouseControl::IsValidMenu(C4Menu *pMenu)
 			return TRUE;
 	// Local control player menu
 	C4Player *pPlr;
-	for (int32_t cnt=0; pPlr=Game.Players.Get(cnt); cnt++)
+	for (int32_t cnt=0; pPlr=::Players.Get(cnt); cnt++)
 		if (pMenu == &(pPlr->Menu))
 			if (pMenu->IsActive())
 				return TRUE;
@@ -1269,7 +1270,7 @@ void C4MouseControl::SendCommand(int32_t iCommand, int32_t iX, int32_t iY, C4Obj
 	// no commands in passive mode
 	if (IsPassive()) return;
 	// no commands if player is eliminated or doesn't exist any more
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 	if (!pPlr || pPlr->Eliminated) return;
 	// User add multiple command mode
 	if (ShiftDown) iAddMode|=C4P_Command_Append;

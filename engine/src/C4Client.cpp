@@ -25,6 +25,7 @@
 #include <C4Network2Client.h>
 #include <C4Game.h>
 #include <C4Log.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifndef HAVE_WINSOCK
@@ -136,7 +137,7 @@ void C4Client::SetLocal()
 void C4Client::Remove()
 {
 	// remove players for this client
-	Game.Players.RemoveAtClient(getID(), true);
+	::Players.RemoveAtClient(getID(), true);
 }
 
 void C4Client::CompileFunc(StdCompiler *pComp)

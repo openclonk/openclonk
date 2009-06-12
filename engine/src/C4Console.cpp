@@ -36,6 +36,7 @@
 #include <C4Player.h>
 #include <C4Landscape.h>
 #include <C4GraphicsSystem.h>
+#include <C4PlayerList.h>
 
 #include <StdFile.h>
 #include <StdRegistry.h>
@@ -906,8 +907,8 @@ void C4Console::EnableControls(bool fEnable)
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_OPEN, MF_BYCOMMAND | MF_ENABLED );
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_OPENWPLRS, MF_BYCOMMAND | MF_ENABLED );
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_RECORD, MF_BYCOMMAND | ((Game.IsRunning && Game.Control.IsRuntimeRecordPossible()) ? MF_ENABLED : MF_GRAYED));
-	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAME, MF_BYCOMMAND | ((fEnable && Game.Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
-	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAMEAS, MF_BYCOMMAND | ((fEnable && Game.Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
+	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAME, MF_BYCOMMAND | ((fEnable && ::Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
+	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAMEAS, MF_BYCOMMAND | ((fEnable && ::Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVE, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEAS, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_CLOSE, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
@@ -936,8 +937,8 @@ void C4Console::EnableControls(bool fEnable)
 	// File menu
 	// C4Network2 will have to handle that cases somehow (TODO: test)
 	gtk_widget_set_sensitive(fileRecord, Game.IsRunning && Game.Control.IsRuntimeRecordPossible());
-	gtk_widget_set_sensitive(fileSaveGame, fEnable && Game.Players.GetCount());
-	gtk_widget_set_sensitive(fileSaveGameAs, fEnable && Game.Players.GetCount());
+	gtk_widget_set_sensitive(fileSaveGame, fEnable && ::Players.GetCount());
+	gtk_widget_set_sensitive(fileSaveGameAs, fEnable && ::Players.GetCount());
 	gtk_widget_set_sensitive(fileSave, fEnable);
 	gtk_widget_set_sensitive(fileSaveAs, fEnable);
 	gtk_widget_set_sensitive(fileClose, fEnable);
@@ -1255,7 +1256,7 @@ bool C4Console::UpdateViewportMenu()
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexViewport);
 #endif
-	for (C4Player *pPlr=Game.Players.First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=::Players.First; pPlr; pPlr=pPlr->Next)
 		{
 		StdStrBuf sText;
 		sText.Format(LoadResStr("IDS_CNS_NEWPLRVIEWPORT"),pPlr->GetName());
@@ -1419,7 +1420,7 @@ bool C4Console::UpdatePlayerMenu()
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexPlayer);
 #endif
-	for (C4Player *pPlr=Game.Players.First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=::Players.First; pPlr; pPlr=pPlr->Next)
 		{
 		StdStrBuf sText;
 		if (::Network.isEnabled())
@@ -1503,7 +1504,7 @@ void C4Console::PlayerJoin()
 			if (::Network.isEnabled())
 				::Network.Players.JoinLocalPlayer(szPlayerFilename, true);
 			else
-				Game.Players.CtrlJoinLocalNoNetwork(szPlayerFilename, Game.Clients.getLocalID(), Game.Clients.getLocalName());
+				::Players.CtrlJoinLocalNoNetwork(szPlayerFilename, Game.Clients.getLocalID(), Game.Clients.getLocalName());
 
 	}
 

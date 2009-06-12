@@ -36,6 +36,7 @@
 #include <C4Player.h>
 #include <C4GameLobby.h>
 #include <C4GraphicsSystem.h>
+#include <C4PlayerList.h>
 #endif
 #include <cctype>
 
@@ -97,7 +98,7 @@ void C4ChatInputDialog::OnChatCancel()
 	if (fObjInput)
 		{
 		// check if the target input is still valid
-		C4Player *pPlr = Game.Players.Get(iPlr);
+		C4Player *pPlr = ::Players.Get(iPlr);
 		if (!pPlr) return;
 		if (pPlr->MarkMessageBoardQueryAnswered(pTarget))
 			{
@@ -139,7 +140,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		{
 		fProcessed = true;
 		// check if the target input is still valid
-		C4Player *pPlr = Game.Players.Get(iPlr);
+		C4Player *pPlr = ::Players.Get(iPlr);
 		if (!pPlr) return C4GUI::Edit::IR_CloseDlg;
 		if (!pPlr->MarkMessageBoardQueryAnswered(pTarget))
 			{
@@ -233,7 +234,7 @@ bool C4ChatInputDialog::KeyCompleteNick()
 	// get current word in edit
 	if (!pEdit->GetCurrentWord(IncompleteNick, 256)) return false;
 	if (!*IncompleteNick) return false;
-	C4Player *plr = Game.Players.First;
+	C4Player *plr = ::Players.First;
 	while (plr)
 		{
 		// Compare name and input
@@ -362,7 +363,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
     char szTargetPlr[C4MaxName + 1];
     SCopyUntil(szText + 9, szTargetPlr, ' ', C4MaxName);
     // search player
-    C4Player *pToPlr = Game.Players.GetByName(szTargetPlr);
+    C4Player *pToPlr = ::Players.GetByName(szTargetPlr);
     if(!pToPlr) return FALSE;
     // set
     eMsgType = C4CMT_Private;
@@ -435,7 +436,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 			SCopy(szMsg, szMessage, Min<unsigned long>(C4MaxMessage, szEnd - szMsg + 1));
 			}
     // get sending player (if any)
-		C4Player *pPlr = Game.IsRunning ? Game.Players.GetLocalByIndex(0) : NULL;
+		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : NULL;
     // send
     Game.Control.DoInput(CID_Message,
       new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->Number : -1, iToPlayer),
@@ -589,7 +590,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 				return FALSE;
 				}
 			// league: Kick needs voting
-			if(Game.Parameters.isLeague() && Game.Players.GetAtClient(pClient->getID()))
+			if(Game.Parameters.isLeague() && ::Players.GetAtClient(pClient->getID()))
 				::Network.Vote(VT_Kick, true, pClient->getID());
 			else
 				// add control

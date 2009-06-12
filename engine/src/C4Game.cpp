@@ -69,6 +69,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Texture.h>
 #include <C4Landscape.h>
+#include <C4PlayerList.h>
 #endif
 
 #include <StdFile.h>
@@ -1389,7 +1390,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 				// Layer check: Layered objects are invisible to players whose cursor is in another layer
 				if (cObj->pLayer && ValidPlr(iPlr))
 					{
-					C4Object *pCursor = Game.Players.Get(iPlr)->Cursor;
+					C4Object *pCursor = ::Players.Get(iPlr)->Cursor;
 					if (!pCursor || (pCursor->pLayer != cObj->pLayer)) continue;
 					}
 				// Full range
@@ -3933,7 +3934,7 @@ bool C4Game::ActivateMenu(const char *szCommand)
 	// no new menu during round evaluation
 	if (C4GameOverDlg::IsShown()) return false;
 	// forward to primary player
-	C4Player *pPlr=Game.Players.GetLocalByIndex(0);
+	C4Player *pPlr=::Players.GetLocalByIndex(0);
 	if (!pPlr) return false;
   pPlr->Menu.ActivateCommand(pPlr->Number, szCommand);
 	return true;
@@ -3955,7 +3956,7 @@ void C4Game::Abort(bool fApproved)
 			Network.Vote(VT_Cancel);
 			return;
 			}
-		if(!Control.isCtrlHost() && !Game.GameOver && Game.Players.GetLocalByIndex(0))
+		if(!Control.isCtrlHost() && !Game.GameOver && ::Players.GetLocalByIndex(0))
 			{
 			Network.Vote(VT_Kick, true, Control.ClientID());
 			return;

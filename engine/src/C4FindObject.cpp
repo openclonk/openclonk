@@ -24,6 +24,7 @@
 #include <C4Object.h>
 #include <C4Game.h>
 #include <C4Random.h>
+#include <C4PlayerList.h>
 #endif
 
 // *** C4FindObject

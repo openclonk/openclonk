@@ -31,7 +31,6 @@
 #include <C4RoundResults.h>
 #include <C4GameObjects.h>
 #include <C4Scenario.h>
-#include <C4PlayerList.h>
 #include <C4GameControl.h>
 #include <C4Control.h>
 #include <C4PathFinder.h>
@@ -83,7 +82,6 @@ class C4Game
 		C4ComponentHost			GameText;
 		C4GameScriptHost		Script;
 		C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable, ScenarioSysLangStringTable;
-		C4PlayerList				Players;
 		StdStrBuf           PlayerNames;
 		C4GameControl				Control;
 		C4Control					 &Input; // shortcut

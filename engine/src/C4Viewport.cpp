@@ -47,6 +47,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 #include <StdGL.h>
@@ -894,7 +895,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 
 	// Get cursor
 	C4Object *cursor, *realcursor;
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 	if (!pPlr) return;
 	realcursor = pPlr->Cursor;
 	if (!(cursor=pPlr->ViewCursor))
@@ -908,8 +909,8 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 			C4ST_STARTNEW(ObjInfStat, "C4Viewport::DrawCursorInfo: Object info")
 			ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+C4SymbolBorder,3*C4SymbolSize,C4SymbolSize);
 			cursor->Info->Draw(	ccgo,
-													Config.Graphics.ShowPortraits, // && Game.Players.Get(Player)->CursorFlash,
-													(cursor == Game.Players.Get(Player)->Captain), cursor );
+													Config.Graphics.ShowPortraits, // && ::Players.Get(Player)->CursorFlash,
+													(cursor == ::Players.Get(Player)->Captain), cursor );
 			C4ST_STOP(ObjInfStat)
 			}
 
@@ -975,7 +976,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 	{
 
 	// Get player
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 
 	// Player eliminated
 	if (pPlr && pPlr->Eliminated)
@@ -1059,7 +1060,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		}
 
 	// landscape mod by FoW
-	C4Player *pPlr=Game.Players.Get(Player);
+	C4Player *pPlr=::Players.Get(Player);
 	if (pPlr && pPlr->fFogOfWar)
 		{
 		ClrModMap.Reset(Game.C4S.Landscape.FoWRes, Game.C4S.Landscape.FoWRes, ViewWdt, ViewHgt, int(cgo.TargetX*Zoom), int(cgo.TargetY*Zoom), 0, cgo.X-BorderLeft, cgo.Y-BorderTop, Game.FoWColor, cgo.Surface);
@@ -1198,7 +1199,7 @@ void C4Viewport::AdjustPosition()
 	// View position
 	if (PlayerLock && ValidPlr(Player))
 		{
-		C4Player *pPlr = Game.Players.Get(Player);
+		C4Player *pPlr = ::Players.Get(Player);
 		float iScrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
 		float iExtraBoundsX = 0, iExtraBoundsY = 0;
 		if(pPlr->ViewMode == C4PVM_Scrolling)
@@ -1331,7 +1332,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 	if (!ValidPlr(Player)) return;
 
 	// Wealth
-	if (Game.Players.Get(Player)->ViewWealth || Config.Graphics.ShowPlayerInfoAlways)
+	if (::Players.Get(Player)->ViewWealth || Config.Graphics.ShowPlayerInfoAlways)
 		{
 		int32_t wdt = C4SymbolSize;
 		int32_t hgt = C4SymbolSize/2;
@@ -1339,11 +1340,11 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 						 cgo.X+cgo.Wdt-wdt-C4SymbolBorder,
 						 cgo.Y+C4SymbolBorder,
 						 wdt,hgt);
-		::GraphicsResource.fctWealth.DrawValue(ccgo,Game.Players.Get(Player)->Wealth, 0, Config.Graphics.Currency);
+		::GraphicsResource.fctWealth.DrawValue(ccgo,::Players.Get(Player)->Wealth, 0, Config.Graphics.Currency);
 		}
 
 	// Value gain
-	if ( (Game.C4S.Game.ValueGain && Game.Players.Get(Player)->ViewValue)
+	if ( (Game.C4S.Game.ValueGain && ::Players.Get(Player)->ViewValue)
 		|| Config.Graphics.ShowPlayerInfoAlways)
 			{
 			int32_t wdt = C4SymbolSize;
@@ -1352,7 +1353,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 							 cgo.X+cgo.Wdt-2*wdt-2*C4SymbolBorder,
 							 cgo.Y+C4SymbolBorder,
 							 wdt,hgt);
-			::GraphicsResource.fctScore.DrawValue(ccgo,Game.Players.Get(Player)->ValueGain);
+			::GraphicsResource.fctScore.DrawValue(ccgo,::Players.Get(Player)->ValueGain);
 			}
 
 	// Crew
@@ -1364,7 +1365,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 						 cgo.X+cgo.Wdt-3*wdt-3*C4SymbolBorder,
 						 cgo.Y+C4SymbolBorder,
 						 wdt,hgt);
-		::GraphicsResource.fctCrewClr.DrawValue2Clr(ccgo,Game.Players.Get(Player)->SelectCount,Game.Players.Get(Player)->ActiveCrewCount(),Game.Players.Get(Player)->ColorDw);
+		::GraphicsResource.fctCrewClr.DrawValue2Clr(ccgo,::Players.Get(Player)->SelectCount,::Players.Get(Player)->ActiveCrewCount(),::Players.Get(Player)->ColorDw);
 		}
 
 	// Controls
@@ -1394,7 +1395,7 @@ BOOL C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	fIsNoOwnerViewport = (Player == NO_OWNER);
 	// Create window
 	pWindow = new C4ViewportWindow(this);
-	if (!pWindow->Init(pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : Game.Players.Get(Player)->GetName(), pParent, false))
+	if (!pWindow->Init(pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName(), pParent, false))
 		return FALSE;
 	// Position and size
 	pWindow->RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
@@ -1414,7 +1415,7 @@ BOOL C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 	{
 	// determine player
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	// player control
 	if (pPlr)
 		{
@@ -1445,11 +1446,11 @@ StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
 	{
 	if (!ValidPlr(Player)) return;
-	if (!Game.Players.Get(Player)->ShowControl) return;
+	if (!::Players.Get(Player)->ShowControl) return;
 	int32_t size = Min( cgo.Wdt/3, 7*cgo.Hgt/24 );
 	int32_t tx;
 	int32_t ty;
-	switch (Game.Players.Get(Player)->ShowControlPos)
+	switch (::Players.Get(Player)->ShowControlPos)
 		{
 		case 1: // Position 1: bottom right corner
 			tx = cgo.X+cgo.Wdt*3/4-size/2;
@@ -1472,8 +1473,8 @@ void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
 			ty = cgo.Y+15;
 			break;
 		}
-	int32_t iShowCtrl = Game.Players.Get(Player)->ShowControl;
-	int32_t iLastCtrl = Com2Control(Game.Players.Get(Player)->LastCom);
+	int32_t iShowCtrl = ::Players.Get(Player)->ShowControl;
+	int32_t iLastCtrl = Com2Control(::Players.Get(Player)->LastCom);
 	int32_t scwdt=size/3,schgt=size/4;
 	BOOL showtext;
 
@@ -1497,7 +1498,7 @@ extern int32_t DrawMessageOffset;
 void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 	{
 	C4Player *pPlr;
-	if (!(pPlr = Game.Players.Get(Player))) return;
+	if (!(pPlr = ::Players.Get(Player))) return;
 	if (!pPlr->LocalControl || !pPlr->ShowStartup) return;
 	int32_t iNameHgtOff=0;
 
@@ -1544,7 +1545,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	ResetMenuPositions=TRUE;
 	// player uses mouse control? then clip the cursor
 	C4Player *pPlr;
-	if (pPlr=Game.Players.Get(Player))
+	if (pPlr=::Players.Get(Player))
 		if (pPlr->MouseControl)
 			{
 			::MouseControl.UpdateClip();
@@ -1587,7 +1588,7 @@ void C4Viewport::DrawMouseButtons(C4TargetFacet &cgo)
 void C4Viewport::DrawPlayerFogOfWar(C4TargetFacet &cgo)
 	{
 	/*
-	C4Player *pPlr=Game.Players.Get(Player);
+	C4Player *pPlr=::Players.Get(Player);
 	if (!pPlr || !pPlr->FogOfWar) return;
 	pPlr->FogOfWar->Draw(cgo);*/ // now done by modulation
 	}
@@ -1595,14 +1596,14 @@ void C4Viewport::DrawPlayerFogOfWar(C4TargetFacet &cgo)
 void C4Viewport::NextPlayer()
 	{
 	C4Player *pPlr; int32_t iPlr;
-	if (!(pPlr = Game.Players.Get(Player)))
+	if (!(pPlr = ::Players.Get(Player)))
 		{
-		if (!(pPlr = Game.Players.First)) return;
+		if (!(pPlr = ::Players.First)) return;
 		}
 	else
 		if (!(pPlr = pPlr->Next))
 			if (Game.C4S.Head.Film && Game.C4S.Head.Replay)
-				pPlr = Game.Players.First; // cycle to first in film mode only; in network obs mode allow NO_OWNER-view
+				pPlr = ::Players.First; // cycle to first in film mode only; in network obs mode allow NO_OWNER-view
 	if (pPlr) iPlr = pPlr->Number; else iPlr = NO_OWNER;
 	if (iPlr != Player) Init(iPlr, true);
 	}
@@ -1611,7 +1612,7 @@ bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
 	{
 	// check all associated menus
 	// Get player
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 	// Player eliminated: No menu
 	if (pPlr && pPlr->Eliminated) return false;
 	// Player cursor object menu

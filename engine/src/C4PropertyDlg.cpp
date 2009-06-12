@@ -32,6 +32,7 @@
 #include <C4Object.h>
 #include <C4Player.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 #include <StdRegistry.h>
@@ -208,7 +209,7 @@ BOOL C4PropertyDlg::Update()
 			if (ValidPlr(cobj->Owner))
 				{
 				Output.Append(LineFeed);
-				Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),Game.Players.Get(cobj->Owner)->GetName());
+				Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),::Players.Get(cobj->Owner)->GetName());
 				}
 			// Contents
 			if (cobj->Contents.ObjectCount())

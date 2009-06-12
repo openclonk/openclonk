@@ -32,6 +32,7 @@
 #include <C4Player.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifdef _WIN32
@@ -218,7 +219,7 @@ bool C4Video::AdjustPosition()
 	// Get source player & viewport
 	C4Viewport *pViewport = ::GraphicsSystem.GetFirstViewport();
 	if (!pViewport) return false;
-	C4Player *pPlr = Game.Players.Get(pViewport->GetPlayer());
+	C4Player *pPlr = ::Players.Get(pViewport->GetPlayer());
 	if (!pPlr) return false;
 	// Set camera position
 	X = int32_t(pPlr->ViewX - pViewport->ViewX + pViewport->DrawX - Width/2);

@@ -33,6 +33,7 @@
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 const int32_t 		C4MN_DefInfoWdt     = 270, // default width of info windows
@@ -54,7 +55,7 @@ void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner, C4Object *cObj)
 	C4Facet ccgo;
 
 	DWORD dwColor=0;
-	if (ValidPlr(iOwner)) dwColor=Game.Players.Get(iOwner)->ColorDw;
+	if (ValidPlr(iOwner)) dwColor=::Players.Get(iOwner)->ColorDw;
 
 	switch (iMenu)
 		{
@@ -935,7 +936,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 			{
 			if (pDef) ::GraphicsResource.fctWealth.DrawValue(cgoExtra,iValue,0,0,C4FCT_Right);
 			// Flag parent object's owner's wealth display
-			C4Player *pParentPlr = Game.Players.Get(GetControllingPlayer());
+			C4Player *pParentPlr = ::Players.Get(GetControllingPlayer());
 			if (pParentPlr) pParentPlr->ViewWealth = C4ViewDelay;
 			}
 			break;
@@ -1308,7 +1309,7 @@ bool C4Menu::HasMouse()
 {
 	int32_t iPlayer = GetControllingPlayer();
 	if (iPlayer == NO_OWNER) return true; // free view dialog also has the mouse
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (pPlr && pPlr->MouseControl) return true;
 	return false;
 }

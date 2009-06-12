@@ -953,7 +953,7 @@ static C4Value FnPlayerObjectCommand(C4AulContext *cthr, C4Value *pPars)
 	PAR(object, pTarget2); PAR(any, Data);
 	// Player
 	if (!ValidPlr(iPlr) || !szCommand) return C4VFalse;
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	// Command
 	long iCommand = CommandByName(FnStringPar(szCommand)); if (!iCommand) return C4VFalse;
 	// Special: convert iData to szText
@@ -1040,7 +1040,7 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, C4Object *pObj, C4
 			// querying owner info list here isn't 100% accurate, as infos might have been stolen by other players
 			// however, there is no good way to track the original list ATM
 			C4ObjectInfoList *pInfoList = NULL;
-			C4Player *pOwner = Game.Players.Get(pObj->Owner);
+			C4Player *pOwner = ::Players.Get(pObj->Owner);
 			if (pOwner) pInfoList = &pOwner->CrewInfoList;
 			char NameBuf[C4MaxName+1];
 			if (pInfoList) if (pInfoList->NameExists(szName))
@@ -1080,12 +1080,12 @@ static C4String *FnGetDesc(C4AulContext *cthr, C4Object *pObj, C4ID idDef)
 static C4String *FnGetPlayerName(C4AulContext *cthr, long iPlayer)
   {
 	if (!ValidPlr(iPlayer)) return NULL;
-	return String(Game.Players.Get(iPlayer)->GetName());
+	return String(::Players.Get(iPlayer)->GetName());
 	}
 
 static C4String *FnGetTaggedPlayerName(C4AulContext *cthr, long iPlayer)
   {
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (!pPlr) return NULL;
 	DWORD dwClr = pPlr->ColorDw; C4GUI::MakeColorReadableOnBlack(dwClr);
 	static char szFnFormatBuf[1024+1];
@@ -1095,7 +1095,7 @@ static C4String *FnGetTaggedPlayerName(C4AulContext *cthr, long iPlayer)
 
 static long FnGetPlayerType(C4AulContext *cthr, long iPlayer)
 	{
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (!pPlr) return 0;
 	return pPlr->GetType();
 	}
@@ -2235,7 +2235,7 @@ static C4Object *FnFindObjectOwner(C4AulContext *cthr,
 static bool FnMakeCrewMember(C4AulContext *cthr, C4Object *pObj, long iPlayer)
 	{
 	if (!ValidPlr(iPlayer)) return false;
-	return !!Game.Players.Get(iPlayer)->MakeCrewMember(pObj);
+	return !!::Players.Get(iPlayer)->MakeCrewMember(pObj);
 	}
 
 static bool FnGrabObjectInfo(C4AulContext *cthr, C4Object *pFrom, C4Object *pTo)
@@ -2381,7 +2381,7 @@ static bool FnSound(C4AulContext *cthr, C4String *szSound, bool fGlobal, C4Objec
 	if (iAtPlayer)
 		{
 		// get player to play at
-		C4Player *pPlr = Game.Players.Get(iAtPlayer-1);
+		C4Player *pPlr = ::Players.Get(iAtPlayer-1);
 		// not existant? fail
 		if (!pPlr) return FALSE;
 		// network client: don't play here
@@ -2614,7 +2614,7 @@ static bool FnHostile(C4AulContext *cthr, long iPlr1, long iPlr2, bool fCheckOne
   {
 	if (fCheckOneWayOnly)
 		{
-		return Game.Players.HostilityDeclared(iPlr1,iPlr2);
+		return ::Players.HostilityDeclared(iPlr1,iPlr2);
 		}
 	else
 		return !!Hostile(iPlr1,iPlr2);
@@ -2622,7 +2622,7 @@ static bool FnHostile(C4AulContext *cthr, long iPlr1, long iPlr2, bool fCheckOne
 
 static bool FnSetHostility(C4AulContext *cthr, long iPlr, long iPlr2, bool fHostile, bool fSilent, bool fNoCalls)
   {
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	if (!pPlr) return false;
 	// do rejection test first
 	if (!fNoCalls)
@@ -2631,7 +2631,7 @@ static bool FnSetHostility(C4AulContext *cthr, long iPlr, long iPlr2, bool fHost
 			return false;
 		}
 	// OK; set hostility
-	bool fOldHostility = Game.Players.HostilityDeclared(iPlr, iPlr2);
+	bool fOldHostility = ::Players.HostilityDeclared(iPlr, iPlr2);
 	if (!pPlr->SetHostility(iPlr2,fHostile, fSilent)) return false;
 	// calls afterwards
 	Game.Script.GRBroadcast(PSF_OnHostilityChange, &C4AulParSet(C4VInt(iPlr), C4VInt(iPlr2), C4VBool(fHostile), C4VBool(fOldHostility)), true);
@@ -2641,21 +2641,21 @@ static bool FnSetHostility(C4AulContext *cthr, long iPlr, long iPlr2, bool fHost
 static bool FnSetPlrView(C4AulContext *cthr, long iPlr, C4Object *tobj)
   {
   if (!ValidPlr(iPlr)) return false;
-  Game.Players.Get(iPlr)->SetViewMode(C4PVM_Target,tobj);
+  ::Players.Get(iPlr)->SetViewMode(C4PVM_Target,tobj);
   return true;
   }
 
 static bool FnSetPlrShowControl(C4AulContext *cthr, long iPlr, C4String *defstring)
   {
   if (!ValidPlr(iPlr)) return false;
-  Game.Players.Get(iPlr)->ShowControl=StringBitEval(FnStringPar(defstring));
+  ::Players.Get(iPlr)->ShowControl=StringBitEval(FnStringPar(defstring));
   return true;
   }
 
 static bool FnSetPlrShowCommand(C4AulContext *cthr, long iPlr, long iCom)
 	{
   if (!ValidPlr(iPlr)) return false;
-  Game.Players.Get(iPlr)->FlashCom=iCom;
+  ::Players.Get(iPlr)->FlashCom=iCom;
 	if (!Config.Graphics.ShowCommands) Config.Graphics.ShowCommands=TRUE;
   return true;
 	}
@@ -2663,7 +2663,7 @@ static bool FnSetPlrShowCommand(C4AulContext *cthr, long iPlr, long iCom)
 static bool FnSetPlrShowControlPos(C4AulContext *cthr, long iPlr, long pos)
   {
   if (!ValidPlr(iPlr)) return false;
-  Game.Players.Get(iPlr)->ShowControlPos=pos;
+  ::Players.Get(iPlr)->ShowControlPos=pos;
   return true;
   }
 
@@ -2676,12 +2676,12 @@ static long FnGetPlrViewMode(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return -1;
 	if (Game.Control.SyncMode()) return -1;
-  return Game.Players.Get(iPlr)->ViewMode;
+  return ::Players.Get(iPlr)->ViewMode;
   }
 
 static C4Object *FnGetPlrView(C4AulContext *cthr, long iPlr)
   {
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
   if (!pPlr || pPlr->ViewMode != C4PVM_Target) return NULL;
   return pPlr->ViewTarget;
   }
@@ -2693,8 +2693,8 @@ static bool FnDoHomebaseMaterial(C4AulContext *cthr, long iPlr, C4ID id, long iC
 	C4Def *pDef = C4Id2Def(id);
 	if (!pDef) return false;
 	// add to material
-	long iLastcount = Game.Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id);
-  return Game.Players.Get(iPlr)->HomeBaseMaterial.SetIDCount(id,iLastcount+iChange,TRUE);
+	long iLastcount = ::Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id);
+  return ::Players.Get(iPlr)->HomeBaseMaterial.SetIDCount(id,iLastcount+iChange,TRUE);
 	}
 
 static bool FnDoHomebaseProduction(C4AulContext *cthr, long iPlr, C4ID id, long iChange)
@@ -2704,20 +2704,20 @@ static bool FnDoHomebaseProduction(C4AulContext *cthr, long iPlr, C4ID id, long 
 	C4Def *pDef = C4Id2Def(id);
 	if (!pDef) return false;
 	// add to material
-	long iLastcount = Game.Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id);
-  return Game.Players.Get(iPlr)->HomeBaseProduction.SetIDCount(id,iLastcount+iChange,TRUE);
+	long iLastcount = ::Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id);
+  return ::Players.Get(iPlr)->HomeBaseProduction.SetIDCount(id,iLastcount+iChange,TRUE);
 	}
 
 static long FnGetPlrDownDouble(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return FALSE;
-  return Game.Players.Get(iPlr)->LastComDownDouble;
+  return ::Players.Get(iPlr)->LastComDownDouble;
   }
 
 static bool FnClearLastPlrCom(C4AulContext *cthr, long iPlr)
 	{
 	// get player
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	if (!pPlr) return FALSE;
 	// reset last coms
 	pPlr->LastCom = COM_None;
@@ -2728,7 +2728,7 @@ static bool FnClearLastPlrCom(C4AulContext *cthr, long iPlr)
 
 static bool FnSetPlrKnowledge(C4AulContext *cthr, long iPlr, C4ID id, bool fRemove)
   {
-	C4Player *pPlr=Game.Players.Get(iPlr);
+	C4Player *pPlr=::Players.Get(iPlr);
   if (!pPlr) return FALSE;
 	if (fRemove)
 		{
@@ -2757,9 +2757,9 @@ static C4Value FnGetPlrKnowledge_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Va
 	DWORD dwCategory = dwCategory_C4V->getInt();
   if (!ValidPlr(iPlr)) return C4VBool(FALSE);
 	// Search by id, check if available, return bool
-	if (id)	return C4VBool(Game.Players.Get(iPlr)->Knowledge.GetIDCount(id,1) != 0);
+	if (id)	return C4VBool(::Players.Get(iPlr)->Knowledge.GetIDCount(id,1) != 0);
 	// Search indexed item of given category, return C4ID
-	return C4VID(Game.Players.Get(iPlr)->Knowledge.GetID( ::Definitions, dwCategory, iIndex ));
+	return C4VID(::Players.Get(iPlr)->Knowledge.GetID( ::Definitions, dwCategory, iIndex ));
   }
 
 static C4ID FnGetDefinition(C4AulContext *cthr, long iIndex, long dwCategory)
@@ -2812,9 +2812,9 @@ static C4Value FnGetHomebaseMaterial_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, 
 
   if (!ValidPlr(iPlr)) return C4VBool(FALSE);
 	// Search by id, return available count
-	if (id)	return C4VInt(Game.Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id));
+	if (id)	return C4VInt(::Players.Get(iPlr)->HomeBaseMaterial.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
-	return C4VID(Game.Players.Get(iPlr)->HomeBaseMaterial.GetID( ::Definitions, dwCategory, iIndex ));
+	return C4VID(::Players.Get(iPlr)->HomeBaseMaterial.GetID( ::Definitions, dwCategory, iIndex ));
 	}
 
 static C4Value FnGetHomebaseProduction_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Value* id_C4V, C4Value* iIndex_C4V, C4Value* dwCategory_C4V)
@@ -2826,14 +2826,14 @@ static C4Value FnGetHomebaseProduction_C4V(C4AulContext *cthr, C4Value* iPlr_C4V
 
   if (!ValidPlr(iPlr)) return C4VBool(FALSE);
 	// Search by id, return available count
-	if (id)	return C4VInt(Game.Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id));
+	if (id)	return C4VInt(::Players.Get(iPlr)->HomeBaseProduction.GetIDCount(id));
 	// Search indexed item of given category, return C4ID
-	return C4VID(Game.Players.Get(iPlr)->HomeBaseProduction.GetID( ::Definitions, dwCategory, iIndex ));
+	return C4VID(::Players.Get(iPlr)->HomeBaseProduction.GetID( ::Definitions, dwCategory, iIndex ));
 	}
 
 static long FnSetPlrMagic(C4AulContext *cthr, long iPlr, C4ID id, bool fRemove)
   {
-	C4Player *pPlr=Game.Players.Get(iPlr);
+	C4Player *pPlr=::Players.Get(iPlr);
   if (!pPlr) return FALSE;
 	if (fRemove)
 		{
@@ -2856,94 +2856,94 @@ static C4Value FnGetPlrMagic_C4V(C4AulContext *cthr, C4Value* iPlr_C4V, C4Value*
 
   if (!ValidPlr(iPlr)) return C4VBool(FALSE);
 	// Search by id, check if available, return bool
-	if (id)	return C4VBool(Game.Players.Get(iPlr)->Magic.GetIDCount(id,1) != 0);
+	if (id)	return C4VBool(::Players.Get(iPlr)->Magic.GetIDCount(id,1) != 0);
 	// Search indexed item of given category, return C4ID
-	return C4VID(Game.Players.Get(iPlr)->Magic.GetID( ::Definitions, C4D_Magic, iIndex ));
+	return C4VID(::Players.Get(iPlr)->Magic.GetID( ::Definitions, C4D_Magic, iIndex ));
   }
 
 static long FnGetWealth(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return 0;
-  return Game.Players.Get(iPlr)->Wealth;
+  return ::Players.Get(iPlr)->Wealth;
   }
 
 static bool FnSetWealth(C4AulContext *cthr, long iPlr, long iValue)
   {
   if (!ValidPlr(iPlr)) return FALSE;
-  Game.Players.Get(iPlr)->Wealth = BoundBy<long>(iValue,0,100000);
+  ::Players.Get(iPlr)->Wealth = BoundBy<long>(iValue,0,100000);
 	return TRUE;
   }
 
 static long FnDoScore(C4AulContext *cthr, long iPlr, long iChange)
   {
   if (!ValidPlr(iPlr)) return FALSE;
-  return Game.Players.Get(iPlr)->DoPoints(iChange);
+  return ::Players.Get(iPlr)->DoPoints(iChange);
   }
 
 static long FnGetPlrValue(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return 0;
-  return Game.Players.Get(iPlr)->Value;
+  return ::Players.Get(iPlr)->Value;
   }
 
 static long FnGetPlrValueGain(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return 0;
-  return Game.Players.Get(iPlr)->ValueGain;
+  return ::Players.Get(iPlr)->ValueGain;
   }
 
 static long FnGetScore(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return 0;
-  return Game.Players.Get(iPlr)->Points;
+  return ::Players.Get(iPlr)->Points;
   }
 
 static C4Object *FnGetHiRank(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return FALSE;
-  return Game.Players.Get(iPlr)->GetHiRankActiveCrew(false);
+  return ::Players.Get(iPlr)->GetHiRankActiveCrew(false);
   }
 
 static C4Object *FnGetCrew(C4AulContext *cthr, long iPlr, long index)
   {
   if (!ValidPlr(iPlr)) return FALSE;
-  return Game.Players.Get(iPlr)->Crew.GetObject(index);
+  return ::Players.Get(iPlr)->Crew.GetObject(index);
   }
 
 static long FnGetCrewCount(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return 0;
-  return Game.Players.Get(iPlr)->Crew.ObjectCount();
+  return ::Players.Get(iPlr)->Crew.ObjectCount();
   }
 
 static long FnGetPlayerCount(C4AulContext *cthr, long iType)
   {
 	if (!iType)
-		return Game.Players.GetCount();
+		return ::Players.GetCount();
 	else
-		return Game.Players.GetCount((C4PlayerType) iType);
+		return ::Players.GetCount((C4PlayerType) iType);
   }
 
 static long FnGetPlayerByIndex(C4AulContext *cthr, long iIndex, long iType)
 	{
 	C4Player *pPlayer;
 	if (iType)
-		pPlayer = Game.Players.GetByIndex(iIndex, (C4PlayerType) iType);
+		pPlayer = ::Players.GetByIndex(iIndex, (C4PlayerType) iType);
 	else
-		pPlayer = Game.Players.GetByIndex(iIndex);
+		pPlayer = ::Players.GetByIndex(iIndex);
 	if(!pPlayer) return NO_OWNER;
 	return pPlayer->Number;
 	}
 
 static long FnEliminatePlayer(C4AulContext *cthr, long iPlr, bool fRemoveDirect)
   {
-	C4Player *pPlr=Game.Players.Get(iPlr);
+	C4Player *pPlr=::Players.Get(iPlr);
 	if (!pPlr) return FALSE;
 	// direct removal?
 	if (fRemoveDirect)
 		{
 		// do direct removal (no fate)
-		return Game.Players.CtrlRemove(iPlr, false);
+		return ::Players.CtrlRemove(iPlr, false);
 		}
 	else
 		{
@@ -2956,7 +2956,7 @@ static long FnEliminatePlayer(C4AulContext *cthr, long iPlr, bool fRemoveDirect)
 
 static bool FnSurrenderPlayer(C4AulContext *cthr, long iPlr)
   {
-	C4Player *pPlr=Game.Players.Get(iPlr);
+	C4Player *pPlr=::Players.Get(iPlr);
 	if (!pPlr) return FALSE;
 	if (pPlr->Eliminated) return FALSE;
   pPlr->Surrender();
@@ -3000,7 +3000,7 @@ static bool FnCreateScriptPlayer(C4AulContext *cthr, C4String *szName, long dwCo
 static C4Object *FnGetCursor(C4AulContext *cthr, long iPlr, long iIndex)
   {
 	// get player
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	// invalid player?
 	if (!pPlr) return NULL;
 	// first index is always the cursor
@@ -3026,7 +3026,7 @@ static C4Object *FnGetCursor(C4AulContext *cthr, long iPlr, long iIndex)
 static C4Object *FnGetViewCursor(C4AulContext *cthr, long iPlr)
   {
 	// get player
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	// get viewcursor
 	return pPlr ? pPlr->ViewCursor : NULL;
 	}
@@ -3034,12 +3034,12 @@ static C4Object *FnGetViewCursor(C4AulContext *cthr, long iPlr)
 static C4Object *FnGetCaptain(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return FALSE;
-  return Game.Players.Get(iPlr)->Captain;
+  return ::Players.Get(iPlr)->Captain;
   }
 
 static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoSelectMark, bool fNoSelectArrow, bool fNoSelectCrew)
   {
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	if (!pPlr || (pObj && !pObj->Status)) return FALSE;
 	pPlr->SetCursor(pObj, !fNoSelectMark, !fNoSelectArrow);
 	if (!fNoSelectCrew) pPlr->SelectCrew(pObj, true);
@@ -3049,7 +3049,7 @@ static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoS
 static bool FnSetViewCursor(C4AulContext *cthr, long iPlr, C4Object *pObj)
   {
 	// get player
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	// invalid player?
 	if (!pPlr) return FALSE;
 	// set viewcursor
@@ -3059,7 +3059,7 @@ static bool FnSetViewCursor(C4AulContext *cthr, long iPlr, C4Object *pObj)
 
 static bool FnSelectCrew(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fSelect, bool fNoCursorAdjust)
   {
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	if (!pPlr || !pObj) return FALSE;
 	if (fNoCursorAdjust)
 		{ if (fSelect) pObj->DoSelect(); else pObj->UnSelect(); }
@@ -3071,13 +3071,13 @@ static bool FnSelectCrew(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fSe
 static long FnGetSelectCount(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return FALSE;
-  return Game.Players.Get(iPlr)->SelectCount;
+  return ::Players.Get(iPlr)->SelectCount;
   }
 
 static long FnSetCrewStatus(C4AulContext *cthr, long iPlr, bool fInCrew, C4Object *pObj)
 	{
 	// validate player
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	if (!pPlr) return FALSE;
 	// validate object / local call
 	if (!pObj) if (!(pObj=cthr->Obj)) return FALSE;
@@ -3684,7 +3684,7 @@ static bool FnTestMessageBoard(C4AulContext *cthr, long iForPlr, bool fTestIfInU
 	{
 	// multi-query-MessageBoard is always available if the player is valid =)
 	// (but it won't do anything in developer mode...)
-	C4Player *pPlr = Game.Players.Get(iForPlr);
+	C4Player *pPlr = ::Players.Get(iForPlr);
 	if (!pPlr) return FALSE;
 	if (!fTestIfInUse) return TRUE;
 	// single query only if no query is scheduled
@@ -3696,7 +3696,7 @@ static bool FnCallMessageBoard(C4AulContext *cthr, C4Object *pObj, bool fUpperCa
   if (!pObj) pObj=cthr->Obj;
 	if (pObj && !pObj->Status) return FALSE;
 	// check player
-	C4Player *pPlr = Game.Players.Get(iForPlr);
+	C4Player *pPlr = ::Players.Get(iForPlr);
 	if (!pPlr) return FALSE;
 	// remove any previous
 	pPlr->CallMessageBoard(pObj, StdStrBuf(FnStringPar(szQueryString)), !!fUpperCase);
@@ -3707,7 +3707,7 @@ static bool FnAbortMessageBoard(C4AulContext *cthr, C4Object *pObj, long iForPlr
 	{
   if (!pObj) pObj=cthr->Obj;
 	// check player
-	C4Player *pPlr = Game.Players.Get(iForPlr);
+	C4Player *pPlr = ::Players.Get(iForPlr);
 	if (!pPlr) return FALSE;
 	// close TypeIn if active
 	::MessageInput.AbortMsgBoardQuery(pObj, iForPlr);
@@ -3719,7 +3719,7 @@ static bool FnOnMessageBoardAnswer(C4AulContext *cthr, C4Object *pObj, long iFor
 	{
 	// remove query
 	// fail if query doesn't exist to prevent any doubled answers
-	C4Player *pPlr = Game.Players.Get(iForPlr);
+	C4Player *pPlr = ::Players.Get(iForPlr);
 	if (!pPlr) return FALSE;
 	if (!pPlr->RemoveMessageBoardQuery(pObj)) return FALSE;
 	// if no answer string is provided, the user did not answer anything
@@ -3771,7 +3771,7 @@ static long FnGetColorDw(C4AulContext *cthr, C4Object *pObj)
 static long FnGetPlrColorDw(C4AulContext *cthr, long iPlr)
   {
 	// get player
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	// safety
 	if (!pPlr) return 0;
 	// return player color
@@ -3792,7 +3792,7 @@ static long FnSetFoW(C4AulContext *cthr, bool fEnabled, long iPlr)
 	// safety
 	if (!ValidPlr(iPlr)) return FALSE;
 	// set enabled
-	Game.Players.Get(iPlr)->SetFoW(!!fEnabled);
+	::Players.Get(iPlr)->SetFoW(!!fEnabled);
 	// success
 	return TRUE;
 	}
@@ -3849,7 +3849,7 @@ static C4Object *FnBuy(C4AulContext *cthr, C4ID idBuyObj, long iForPlr, long iPa
 	if (!ValidPlr(iForPlr) || !ValidPlr(iPayPlr)) return NULL;
 	// buy
 	C4Object *pThing;
-	if (!(pThing=Game.Players.Get(iPayPlr)->Buy(idBuyObj, fShowErrors, iForPlr, pToBase ? pToBase : cthr->Obj))) return NULL;
+	if (!(pThing=::Players.Get(iPayPlr)->Buy(idBuyObj, fShowErrors, iForPlr, pToBase ? pToBase : cthr->Obj))) return NULL;
 	// enter object, if supplied
 	if (pToBase)
 		{
@@ -3870,7 +3870,7 @@ static long FnSell(C4AulContext *cthr, long iToPlr, C4Object *pObj)
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return 0;
 	if (!ValidPlr(iToPlr)) return FALSE;
 	// sell
-	return Game.Players.Get(iToPlr)->Sell2Home(pObj);
+	return ::Players.Get(iToPlr)->Sell2Home(pObj);
 	}
 
 // ** additional funcs for references/type info
@@ -4399,7 +4399,7 @@ static C4Value FnGetPlayerVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value
 	if(!ValidPlr(iPlr)) return C4Value();
 
 	// get player
-	C4Player* pPlayer = Game.Players.Get(iPlr);
+	C4Player* pPlayer = ::Players.Get(iPlr);
 
 	// get value
 	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*pPlayer, "Player"));
@@ -4416,7 +4416,7 @@ static C4Value FnGetPlayerInfoCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V,
 	if(!ValidPlr(iPlr)) return C4Value();
 
 	// get player
-	C4Player* pPlayer = Game.Players.Get(iPlr);
+	C4Player* pPlayer = ::Players.Get(iPlr);
 
 	// get plr info core
 	C4PlayerInfoCore* pPlayerInfoCore = (C4PlayerInfoCore*) pPlayer;
@@ -4835,7 +4835,7 @@ static C4Value FnSetPlrExtraData(C4AulContext *cthr, C4Value *iPlayer_C4V, C4Val
 		Data->GetType() != C4V_Bool &&
 		Data->GetType() != C4V_C4ID) return C4VNull;
 	// get pointer on player...
-	C4Player* pPlayer = Game.Players.Get(iPlayer);
+	C4Player* pPlayer = ::Players.Get(iPlayer);
 	// no name list created yet?
 	if(!pPlayer->ExtraData.pNames)
 		// create name list
@@ -4863,7 +4863,7 @@ static C4Value FnGetPlrExtraData(C4AulContext *cthr, C4Value *iPlayer_C4V, C4Val
 	// valid player?
 	if(!ValidPlr(iPlayer)) return C4Value();
 	// get pointer on player...
-	C4Player* pPlayer = Game.Players.Get(iPlayer);
+	C4Player* pPlayer = ::Players.Get(iPlayer);
 	// no name list?
 	if(!pPlayer->ExtraData.pNames) return C4Value();
 	long ival;
@@ -4947,7 +4947,7 @@ static bool FnSetCrewEnabled(C4AulContext *cctx, bool fEnabled, C4Object *pObj)
 		{
 		pObj->Select=FALSE;
 		C4Player *pOwner;
-		if (pOwner=Game.Players.Get(pObj->Owner))
+		if (pOwner=::Players.Get(pObj->Owner))
 			{
 			// if viewed player cursor gets deactivated and no new cursor is found, follow the old in target mode
 			bool fWasCursorMode = (pOwner->ViewMode == C4PVM_Cursor);
@@ -4964,7 +4964,7 @@ static bool FnSetCrewEnabled(C4AulContext *cctx, bool fEnabled, C4Object *pObj)
 static bool FnUnselectCrew(C4AulContext *cctx, long iPlayer)
 	{
 	// get player
-	C4Player *pPlr=Game.Players.Get(iPlayer);
+	C4Player *pPlr=::Players.Get(iPlayer);
 	if (!pPlr) return FALSE;
 	// unselect crew
 	pPlr->UnselectCrew();
@@ -5974,14 +5974,14 @@ static bool FnSetPreSend(C4AulContext *cthr, long iToVal, C4String *pNewName)
 
 static long FnGetPlayerID(C4AulContext *cthr, long iPlayer)
 	{
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	return pPlr ? pPlr->ID : 0;
 	}
 
 static long FnGetPlayerTeam(C4AulContext *cthr, long iPlayer)
 	{
 	// get player
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (!pPlr) return 0;
 	// search team containing this player
 	C4Team *pTeam = Game.Teams.GetTeamByPlayerID(pPlr->ID);
@@ -5997,7 +5997,7 @@ static bool FnSetPlayerTeam(C4AulContext *cthr, long iPlayer, long idNewTeam, bo
 	// no team changing in league games
 	if (Game.Parameters.isLeague()) return false;
 	// get player
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (!pPlr) return false;
 	C4PlayerInfo *pPlrInfo = pPlr->GetInfo();
 	if (!pPlrInfo) return false;
@@ -6089,7 +6089,7 @@ static long FnGetTeamCount(C4AulContext *cthr)
 
 static bool FnInitScenarioPlayer(C4AulContext *cthr, long iPlayer, long idTeam)
 	{
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (!pPlr) return false;
 	return pPlr->ScenarioAndTeamInit(idTeam);
 	}
@@ -6098,7 +6098,7 @@ static bool FnOnOwnerRemoved(C4AulContext *cthr)
 	{
 	// safety
 	C4Object *pObj = cthr->Obj; if (!pObj) return false;
-	C4Player *pPlr = Game.Players.Get(pObj->Owner); if (!pPlr) return false;
+	C4Player *pPlr = ::Players.Get(pObj->Owner); if (!pPlr) return false;
 	if (pPlr->Crew.IsContained(pObj))
 		{
 		// crew members: Those are removed later (AFTER the player has been removed, for backwards compatiblity with relaunch scripting)
@@ -6130,9 +6130,9 @@ static bool FnOnOwnerRemoved(C4AulContext *cthr)
 		// if noone from the same team was found, try to find another non-hostile player
 		// (necessary for cooperative rounds without teams)
 		if (iNewOwner == NO_OWNER)
-			for (C4Player *pOtherPlr = Game.Players.First; pOtherPlr; pOtherPlr = pOtherPlr->Next)
+			for (C4Player *pOtherPlr = ::Players.First; pOtherPlr; pOtherPlr = pOtherPlr->Next)
 				if (pOtherPlr != pPlr) if (!pOtherPlr->Eliminated)
-					if (!Game.Players.Hostile(pOtherPlr->Number, pPlr->Number))
+					if (!::Players.Hostile(pOtherPlr->Number, pPlr->Number))
 						iNewOwner = pOtherPlr->Number;
 
 		// set this owner
@@ -6164,7 +6164,7 @@ static bool FnDoScoreboardShow(C4AulContext *cthr, long iChange, long iForPlr)
 		{
 		// abort if the specified player is not local - but always return if the player exists,
 		// to ensure sync safety
-		if (!(pPlr = Game.Players.Get(iForPlr-1))) return FALSE;
+		if (!(pPlr = ::Players.Get(iForPlr-1))) return FALSE;
 		if (!pPlr->LocalControl) return TRUE;
 		}
 	Game.Scoreboard.DoDlgShow(iChange, false);
@@ -6201,7 +6201,7 @@ static long FnGetUnusedOverlayID(C4AulContext *ctx, long iBaseIndex, C4Object *p
 static long FnActivateGameGoalMenu(C4AulContext *ctx, long iPlayer)
 	{
 	// get target player
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (!pPlr) return FALSE;
 	// open menu
 	return pPlr->Menu.ActivateGoals(pPlr->Number, pPlr->LocalControl && !Game.Control.isReplay());

@@ -36,6 +36,7 @@
 #include <C4Player.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 const int32_t MoveToRange=5,LetGoRange1=7,LetGoRange2=30,DigRange=1;
@@ -1630,7 +1631,7 @@ void C4Command::Construct()
 	C4Def *pDef; if (!(pDef=C4Id2Def(Data))) { Finish(); return; }
 
 	// player has knowledge of this construction?
-	C4Player *pPlayer = Game.Players.Get(cObj->Owner);
+	C4Player *pPlayer = ::Players.Get(cObj->Owner);
 	if(pPlayer) if(!pPlayer->Knowledge.GetIDCount(Data, 1)) { Finish(); return; }
 
   // Building, chopping, digging: stop
@@ -1906,13 +1907,13 @@ void C4Command::Buy()
 	C4Def *pDef = C4Id2Def(Data);
 	if (!pDef) { Finish(); return; }
 	// Material not available for purchase at base: fail
-	if (!Game.Players.Get(Target->Base)->HomeBaseMaterial.GetIDCount(Data))
+	if (!::Players.Get(Target->Base)->HomeBaseMaterial.GetIDCount(Data))
 		{
 		Finish(false, FormatString(LoadResStr("IDS_PLR_NOTAVAIL"),pDef->GetName()).getData());
 		return;
 		}
 	// Base owner has not enough funds: fail
-	if (Game.Players.Get(Target->Base)->Wealth < pDef->GetValue(Target, cObj->Owner))
+	if (::Players.Get(Target->Base)->Wealth < pDef->GetValue(Target, cObj->Owner))
 		{ Finish(false, LoadResStr("IDS_PLR_NOWEALTH")); return; }
 	// Not within target object: enter
 	if (cObj->Contained!=Target)

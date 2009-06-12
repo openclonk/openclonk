@@ -33,6 +33,7 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4FullScreen.h>
+#include <C4PlayerList.h>
 #endif
 
 // *** C4PlayerInfo
@@ -1640,7 +1641,7 @@ bool C4PlayerInfoList::RecreatePlayers()
 					Game.Control.RecAddFile(szFilename, sFilenameInRecord.getData());
 					}
 				// recreate join directly
-				Game.Players.Join(szFilename, FALSE, idAtClient, szAtClientName, pInfo);
+				::Players.Join(szFilename, FALSE, idAtClient, szAtClientName, pInfo);
 				// delete temporary files immediately
 				if (pInfo->IsTempFile()) pInfo->DeleteTempFile();
 				}
@@ -1662,7 +1663,7 @@ bool C4PlayerInfoList::RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlay
 			// remove players that were in the game but are not associated
 			if (pInfo->IsJoined() && !GetPlayerInfoBySavegameID(pInfo->GetID()))
 				{
-				if (Game.Players.RemoveUnjoined(pInfo->GetInGameNumber()))
+				if (::Players.RemoveUnjoined(pInfo->GetInGameNumber()))
 					{
 					LogF(LoadResStr("IDS_PRC_REMOVEPLR"), pInfo->GetName());
 					}

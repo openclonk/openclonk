@@ -46,6 +46,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 #define C4FOW_Def_View_RangeX 500
@@ -311,7 +312,7 @@ BOOL C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 		pInfo->SetJoined(iNumber);
 
 		// Number might have changed: Recheck list sorting before scenarioinit, which will do script calls
-		Game.Players.RecheckPlayerSort(this);
+		::Players.RecheckPlayerSort(this);
 
 		// check for a postponed scenario init, if no team is specified (post-lobby-join in network, or simply non-network)
 		C4Team *pTeam = NULL;
@@ -395,7 +396,7 @@ BOOL C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 		AtClient = iAtClient;
 		SCopy(szAtClientName,AtClientName,C4MaxTitle);
 		// Number might have changed: Recheck list sorting
-		Game.Players.RecheckPlayerSort(this);
+		::Players.RecheckPlayerSort(this);
 		// Init control after loading runtime data, because control init will overwrite some of the values
 		InitControl();
 		}
@@ -676,7 +677,7 @@ BOOL C4Player::ScenarioInit()
 
   // Set color
   int32_t iColor=BoundBy<int32_t>(PrefColor,0,C4MaxColor-1);
-  while (Game.Players.ColorTaken(iColor))
+  while (::Players.ColorTaken(iColor))
     { ++iColor%=C4MaxColor; if (iColor==PrefColor) break; }
 	Color=iColor;
 
@@ -720,7 +721,7 @@ BOOL C4Player::ScenarioInit()
 			int32_t iStartPos=BoundBy(PrefPosition*iMaxPos/C4P_MaxPosition,0,iMaxPos-1);
       int32_t iPosition=iStartPos;
       // Distribute according to availability
-      while (Game.Players.PositionTaken(iPosition))
+      while (::Players.PositionTaken(iPosition))
         { ++iPosition%=iMaxPos; if (iPosition==iStartPos) break; }
 			Position=iPosition;
       // Set x position
@@ -844,7 +845,7 @@ C4Object *C4Player::Buy(C4ID id, BOOL fShowErrors, int32_t iForPlr, C4Object *pB
 	if (!(pThing=Game.CreateObject(id,pBuyObj,iForPlr))) return FALSE;
 	// Make crew member
 	if (pDef->CrewMember) if (ValidPlr(iForPlr))
-		Game.Players.Get(iForPlr)->MakeCrewMember(pThing);
+		::Players.Get(iForPlr)->MakeCrewMember(pThing);
 	// success
 	C4AulParSet parset (C4VInt(Number), C4VObj(pBuyObj));
 	pThing->Call(PSF_Purchase, &parset);
@@ -927,7 +928,7 @@ void C4Player::Evaluate()
 	// Melee: personal value gain score ...check Game.Objects(C4D_Goal)
 	if (Game.C4S.Game.IsMelee()) LastRound.Score = Max<int32_t>(ValueGain,0);
 	// Cooperative: shared score
-	else LastRound.Score = Max(Game.Players.AverageValueGain(),0);
+	else LastRound.Score = Max(::Players.AverageValueGain(),0);
 	LastRound.Level = 0; // unknown...
 	LastRound.Bonus = SuccessBonus * LastRound.Won;
 	LastRound.FinalScore = LastRound.Score + LastRound.Bonus;
@@ -974,7 +975,7 @@ BOOL C4Player::SetHostility(int32_t iOpponent, int32_t iHostility, BOOL fSilent)
 	// Announce
 	StartSoundEffect("Trumpet");
 	Log(FormatString(LoadResStr(iHostility ? "IDS_PLR_HOSTILITY" : "IDS_PLR_NOHOSTILITY"),
-					GetName(),Game.Players.Get(iOpponent)->GetName()).getData());
+					GetName(),::Players.Get(iOpponent)->GetName()).getData());
 	// Success
   return TRUE;
   }
@@ -1032,7 +1033,7 @@ void C4Player::SetTeamHostility()
 	// team only
 	if (!Team) return;
 	// set hostilities
-	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 		if (pPlr != this)
 			{
 			bool fHostile = (pPlr->Team != Team);
@@ -1160,7 +1161,7 @@ BOOL C4Player::Strip(const char *szFilename, bool fAggressive)
 void C4Player::DrawHostility(C4Facet &cgo, int32_t iIndex)
 	{
 	C4Player *pPlr;
-	if (pPlr=Game.Players.GetByIndex(iIndex))
+	if (pPlr=::Players.GetByIndex(iIndex))
 		{
 		// Portrait
 		if (Config.Graphics.ShowPortraits && pPlr->BigIcon.Surface)
@@ -1856,11 +1857,11 @@ void C4Player::InitControl()
 		iControl = C4P_Control_Keyboard1;
 		}
 	// Choose next while control taken
-	if (Game.Players.ControlTaken(iControl))
+	if (::Players.ControlTaken(iControl))
 		{
 		// Preferred control taken, search for available keyboard control
 		for (iControl=C4P_Control_Keyboard1; iControl<=C4P_Control_Keyboard4; iControl++)
-			if (!Game.Players.ControlTaken(iControl)) // Available control found
+			if (!::Players.ControlTaken(iControl)) // Available control found
 				break;
 		// No available control found
 		if (iControl>C4P_Control_Keyboard4)
@@ -1878,7 +1879,7 @@ void C4Player::InitControl()
 	if (PrefMouse && !Game.Control.isReplay())
 		if (!Game.C4S.Head.DisableMouse)
 			if (Inside<int32_t>(Control, C4P_Control_Keyboard1, C4P_Control_GamePadMax))
-				if (!Game.Players.MouseControlTaken())
+				if (!::Players.MouseControlTaken())
 					MouseControl=TRUE;
 	// no controls issued yet
 	ControlCount = ActionCount = 0;
@@ -2014,7 +2015,7 @@ void C4Player::Eliminate()
 		{
 		// Check: Any player left at this client?
 		C4Player *pPlr = NULL;
-		for(int i = 0; pPlr = Game.Players.GetAtClient(AtClient, i); i++)
+		for(int i = 0; pPlr = ::Players.GetAtClient(AtClient, i); i++)
 			if(!pPlr->Eliminated)
 				break;
 		// If not, deactivate the client
@@ -2286,7 +2287,7 @@ bool C4Player::IsInvisible() const
 void C4Player::ToggleMouseControl()
 {
 	// Activate mouse control if it's available
-	if (!MouseControl && !Game.Players.MouseControlTaken())
+	if (!MouseControl && !::Players.MouseControlTaken())
 		{
 		::MouseControl.Init(Number);
 		MouseControl=TRUE;

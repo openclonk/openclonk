@@ -51,6 +51,7 @@
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
@@ -213,7 +214,7 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	// Color
   if (Def->ColorByOwner)
     if (ValidPlr(Owner))
-			Color=Game.Players.Get(Owner)->ColorDw;
+			Color=::Players.Get(Owner)->ColorDw;
 
 	// Shape & face
 	Shape=Def->Shape;
@@ -886,7 +887,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 
 BOOL C4Object::BuyEnergy()
   {
-	C4Player *pPlr = Game.Players.Get(Base); if (!pPlr) return FALSE;
+	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return FALSE;
 	if (!GetPhysical()->Energy) return FALSE;
   if (pPlr->Eliminated) return FALSE;
   if (pPlr->Wealth<Game.C4S.Game.Realism.BaseRegenerateEnergyPrice) return FALSE;
@@ -1039,7 +1040,7 @@ BOOL C4Object::ExecLife()
 void C4Object::AutoSellContents()
   {
   C4ObjectLink *clnk; C4Object *cobj1,*cobj2;
-	C4Player *pPlr = Game.Players.Get(Base); if (!pPlr) return;
+	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return;
 
   // Content's gold contents
   for (clnk=Contents.First; clnk && (cobj1=clnk->Obj); clnk=clnk->Next)
@@ -1224,7 +1225,7 @@ void C4Object::AssignDeath(bool fForced)
   // Lose contents
   while (thing=Contents.GetObject()) thing->Exit(thing->GetX(),thing->GetY());
   // Remove from crew/cursor/view
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
   if (pPlr) pPlr->ClearPointers(this, true);
 	// ensure objects that won't be affected by dead-plrview-decay are handled properly
 	if (!pPlr || !(Category & C4D_Living) || !pPlr->FoWViewObjs.IsContained(this))
@@ -1269,7 +1270,7 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	// an object may have newly become an ColorByOwner-object
 	// if it had been ColorByOwner, but is not now, this will be caught in UpdateGraphics()
 	if (!Color && ValidPlr(Owner))
-		Color=Game.Players.Get(Owner)->ColorDw;
+		Color=::Players.Get(Owner)->ColorDw;
 	if (!Def->Rotateable) { r=0; fix_r=rdir=Fix0; }
 	// Reset solid mask
 	SolidMask=Def->SolidMask;
@@ -1635,7 +1636,7 @@ BOOL C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
   if (Hostile(by_plr,Base) && (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RejectEntrance))
     {
     if (ValidPlr(Owner))
-      GameMsgObject(FormatString(LoadResStr("IDS_OBJ_HOSTILENOENTRANCE"),Game.Players.Get(Owner)->GetName()).getData(),this);
+      GameMsgObject(FormatString(LoadResStr("IDS_OBJ_HOSTILENOENTRANCE"),::Players.Get(Owner)->GetName()).getData(),this);
     return FALSE;
     }
   // Try entrance activation
@@ -1938,7 +1939,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			if (!pTarget) break;
 
 			// Create symbol & init menu
-			pPlayer=Game.Players.Get(pTarget->Owner);
+			pPlayer=::Players.Get(pTarget->Owner);
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 			pTarget->Def->Draw(fctSymbol,FALSE,pTarget->Color, pTarget);
 			Menu->Init(fctSymbol,pTarget->GetName(),this,C4MN_Extra_None,0,iMenu,C4MN_Style_Context);
@@ -1955,7 +1956,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Construction:
 			// Check valid player
-			if (!(pPlayer = Game.Players.Get(Owner))) break;
+			if (!(pPlayer = ::Players.Get(Owner))) break;
 			// Create symbol
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 			DrawMenuSymbol(C4MN_Construction,fctSymbol,-1,NULL);
@@ -1983,7 +1984,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		case C4MN_Info:
 			// Target by parameter
 			if (!pTarget) break;
-			pPlayer=Game.Players.Get(pTarget->Owner);
+			pPlayer=::Players.Get(pTarget->Owner);
 			// Create symbol & init menu
 			fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,TRUE,0,1);
 			Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
@@ -2026,7 +2027,7 @@ void C4Object::AutoContextMenu(int32_t iMenuSelect)
 			if (OCF & OCF_CrewMember)
 				{
 				// Player has AutoContextMenus enabled
-				C4Player* pPlayer = Game.Players.Get(Controller);
+				C4Player* pPlayer = ::Players.Get(Controller);
 				if (pPlayer && pPlayer->PrefAutoContextMenu)
 					{
 					// Open context menu for structure
@@ -2434,7 +2435,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		if (eDrawMode!=ODM_BaseOnly)
 			if (ValidPlr(Owner))
 				if (Owner == iByPlayer)
-					if (Game.Players.Get(Owner)->SelectFlash)
+					if (::Players.Get(Owner)->SelectFlash)
 						DrawSelectMark(cgo, 1);
 
 	// Energy shortage
@@ -2511,7 +2512,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			if (!Inside<int>(GetX() + Shape.GetX() - cotx, 1 - Shape.Wdt, cgo.Wdt)
 			|| !Inside<int>(GetY() + Shape.GetY() - coty, 1 - Shape.Hgt, cgo.Hgt)) return;
 			// get player
-			C4Player* pOwner = Game.Players.Get(Owner);
+			C4Player* pOwner = ::Players.Get(Owner);
 			if (pOwner) if (!Hostile(Owner, iByPlayer)) if (!pOwner->IsInvisible())
 				{
 				int32_t X = GetX();
@@ -2885,7 +2886,7 @@ void C4Object::DenumeratePointers()
 bool DrawCommandQuery(int32_t controller, C4ScriptHost& scripthost, int32_t* mask, int com)
   {
   int method = scripthost.GetControlMethod(com, mask[0], mask[1]);
-  C4Player* player = Game.Players.Get(controller);
+  C4Player* player = ::Players.Get(controller);
   if(!player) return false;
 
   switch(method)
@@ -2916,7 +2917,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 	if(Action.ComDir == COMD_Stop && iDFA == DFA_WALK && (tObj = Game.Objects.AtObject(GetX(), GetY(), ocf, this)))
 		{
 		int32_t com = COM_Down_D;
-		if(Game.Players.Get(Controller)->PrefControlStyle) com = COM_Down;
+		if(::Players.Get(Controller)->PrefControlStyle) com = COM_Down;
 
 		tObj->DrawCommand(cgoBottom,C4FCT_Right,NULL,com,pRegions,Owner,
 			FormatString(LoadResStr("IDS_CON_BUILD"), tObj->GetName()).getData(),&ccgo);
@@ -2927,7 +2928,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 	// Grab target control (control flag)
 	if (iDFA==DFA_PUSH && Action.Target)
 		{
-		bool letgobydouble = !Game.Players.Get(Controller)->PrefControlStyle
+		bool letgobydouble = !::Players.Get(Controller)->PrefControlStyle
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 3)
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 11)
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 19);
@@ -3131,11 +3132,11 @@ BOOL C4Object::AssignInfo()
 	{
 	if (Info || !ValidPlr(Owner)) return FALSE;
 	// In crew list?
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr->Crew.GetLink(this))
 		{
 		// Register with player
-		if(!Game.Players.Get(Owner)->MakeCrewMember(this, true, false))
+		if(!::Players.Get(Owner)->MakeCrewMember(this, true, false))
 			pPlr->Crew.Remove(this);
 		return TRUE;
 		}
@@ -3145,13 +3146,13 @@ BOOL C4Object::AssignInfo()
 	// or c) The clonk belongs to a script player that's restored without Game.txt
 	else if (nInfo.getLength())
 		{
-		if(!Game.Players.Get(Owner)->MakeCrewMember(this, true, false))
+		if(!::Players.Get(Owner)->MakeCrewMember(this, true, false))
 			return FALSE;
 		// Dead and gone (info flags, remove from crew/cursor)
 		if (!Alive)
 			{
 			Info->HasDied=TRUE;
-			if (ValidPlr(Owner)) Game.Players.Get(Owner)->ClearPointers(this, true);
+			if (ValidPlr(Owner)) ::Players.Get(Owner)->ClearPointers(this, true);
 			}
 		return TRUE;
 		}
@@ -3215,7 +3216,7 @@ BOOL C4Object::ContainedControl(BYTE byCom)
 	C4Def *pCDef = Contained->Def;
 	bool fCallSfEarly = CompareVersion(pCDef->rC4XVer[0],pCDef->rC4XVer[1],pCDef->rC4XVer[2],pCDef->rC4XVer[3],4,9,1,3) >= 0;
 	bool result = false;
-	C4Player * pPlr = Game.Players.Get(Controller);
+	C4Player * pPlr = ::Players.Get(Controller);
 	if(fCallSfEarly)
 		{
 		if (sf && !!sf->Exec(Contained, &C4AulParSet(C4VObj(this)))) result = true;
@@ -3350,7 +3351,7 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 
 	// Object script override
 	C4Player *pController;
-	if (pController = Game.Players.Get(Controller))
+	if (pController = ::Players.Get(Controller))
 		if (CallControl(pController, byCom))
 			return;
 
@@ -3513,7 +3514,7 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 
 void C4Object::AutoStopDirectCom(BYTE byCom, int32_t iData) // By DirecCom
 	{
-	C4Player * pPlayer = Game.Players.Get(Controller);
+	C4Player * pPlayer = ::Players.Get(Controller);
 	// Control by procedure
 	switch (GetProcedure())
 		{
@@ -3677,7 +3678,7 @@ void C4Object::AutoStopDirectCom(BYTE byCom, int32_t iData) // By DirecCom
 
 void C4Object::AutoStopUpdateComDir()
 	{
-	C4Player * pPlr = Game.Players.Get(Controller);
+	C4Player * pPlr = ::Players.Get(Controller);
 	if (!pPlr || pPlr->Cursor != this) return;
 	int32_t NewComDir = Coms2ComDir(pPlr->PressedComs);
 	if (Action.ComDir == NewComDir) return;
@@ -3979,7 +3980,7 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 
 	// Flash
 	C4Player *pPlr;
-	if (pPlr=Game.Players.Get(Owner))
+	if (pPlr=::Players.Get(Owner))
 		if (iCom==pPlr->FlashCom)
 			fFlash=TRUE;
 
@@ -5365,7 +5366,7 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	if (iOwner != NO_OWNER)
 		if (GetGraphics()->IsColorByOwner())
 			{
-			Color=Game.Players.Get(iOwner)->ColorDw;
+			Color=::Players.Get(iOwner)->ColorDw;
 			UpdateFace(false);
 			}
 	// no change?
@@ -5373,11 +5374,11 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	// remove old owner view
 	if (ValidPlr(Owner))
 		{
-		pPlr = Game.Players.Get(Owner);
+		pPlr = ::Players.Get(Owner);
 		while (pPlr->FoWViewObjs.Remove(this)) {}
 		}
 	else
-		for (pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 			while (pPlr->FoWViewObjs.Remove(this)) {}
 	// set new owner
 	int32_t iOldOwner=Owner;
@@ -5418,7 +5419,7 @@ void C4Object::PlrFoWActualize()
 	if (ValidPlr(Owner))
 		{
 		// single player's FoW-list
-		pPlr = Game.Players.Get(Owner);
+		pPlr = ::Players.Get(Owner);
 		while (pPlr->FoWViewObjs.Remove(this)) {}
 		if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
 		}
@@ -5426,7 +5427,7 @@ void C4Object::PlrFoWActualize()
 	else
 		{
 		// all players!
-		for (pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 			{
 			while (pPlr->FoWViewObjs.Remove(this)) {}
 			if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
@@ -5587,8 +5588,8 @@ BOOL C4Object::GrabInfo(C4Object *pFrom)
 		ClearInfo (Info);
 		}
 	// remove objects from any owning crews
-	Game.Players.ClearPointers(pFrom);
-	Game.Players.ClearPointers(this);
+	::Players.ClearPointers(pFrom);
+	::Players.ClearPointers(this);
 	// set info
 	Info = pFrom->Info; pFrom->ClearInfo (pFrom->Info);
 	// set name
@@ -5600,7 +5601,7 @@ BOOL C4Object::GrabInfo(C4Object *pFrom)
 	// if alive, recruit to new crew
 	if (Alive) Info->Recruit();
 	// make new crew member
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->MakeCrewMember(this);
 	// done, success
 	return TRUE;
@@ -6131,7 +6132,7 @@ bool C4Object::IsPlayerObject(int32_t iPlayerNumber)
 	  // flags are player objects
 	  if (id == C4ID_Flag) return true;
 
-		C4Player *pOwner = Game.Players.Get(Owner);
+		C4Player *pOwner = ::Players.Get(Owner);
 		if (pOwner)
 			{
 			if (pOwner && pOwner->Crew.IsContained(this)) return true;
@@ -6152,7 +6153,7 @@ bool C4Object::IsUserPlayerObject()
 	// must be a player object at all
 	if (!IsPlayerObject()) return false;
 	// and the owner must not be a script player
-	C4Player *pOwner = Game.Players.Get(Owner);
+	C4Player *pOwner = ::Players.Get(Owner);
 	if (!pOwner || pOwner->GetType() != C4PT_User) return false;
 	// otherwise, it's a user playeer object
 	return true;

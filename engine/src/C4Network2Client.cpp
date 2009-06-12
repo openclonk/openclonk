@@ -28,6 +28,7 @@
 #include <C4Network2Stats.h>
 #include <C4GameLobby.h> // fullscreen network lobby
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifndef _WIN32
@@ -609,7 +610,7 @@ void C4Network2ClientList::UpdateClientActivity()
 {
 	for(C4Network2Client *pClient = pFirst; pClient; pClient = pClient->getNext())
     if(pClient->isActivated())
-      if(Game.Players.GetAtClient(pClient->getID()))
+      if(::Players.GetAtClient(pClient->getID()))
         pClient->SetLastActivity(Game.FrameCounter);
 }
 

@@ -42,6 +42,7 @@
 #include <C4GameMessage.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 // *** C4ControlPacket
@@ -330,7 +331,7 @@ C4ControlPlayerSelect::C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &O
 void C4ControlPlayerSelect::Execute() const
 {
 	// get player
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	if(!pPlr) return;
 
 	// Check object list
@@ -372,7 +373,7 @@ void C4ControlPlayerSelect::CompileFunc(StdCompiler *pComp)
 
 void C4ControlPlayerControl::Execute() const
 {
-	C4Player *pPlr=Game.Players.Get(iPlr);
+	C4Player *pPlr=::Players.Get(iPlr);
 	if(pPlr)
 		{
 		if (!Inside<int>(iCom, COM_ReleaseFirst, COM_ReleaseLast))
@@ -402,7 +403,7 @@ C4ControlPlayerCommand::C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32
 
 void C4ControlPlayerCommand::Execute() const
 {
-	C4Player *pPlr=Game.Players.Get(iPlr);
+	C4Player *pPlr=::Players.Get(iPlr);
 	if(pPlr)
 		{
 		pPlr->CountControl(C4Player::PCID_Command, iCmd+iX+iY+iTarget+iTarget2);
@@ -452,7 +453,7 @@ void C4ControlSyncCheck::Set()
 int32_t C4ControlSyncCheck::GetAllCrewPosX()
 	{
 	int32_t cpx=0;
-	for (C4Player *pPlr=Game.Players.First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=::Players.First; pPlr; pPlr=pPlr->Next)
 	  for (C4ObjectLink *clnk=pPlr->Crew.First; clnk; clnk=clnk->Next)
 			cpx += fixtoi(clnk->Obj->fix_x, 100);
 	return cpx;
@@ -599,7 +600,7 @@ void C4ControlClientUpdate::Execute() const
 		if(pClient->isLocal())
 			Game.Control.SetActivated(false);
 		// remove all players ("soft kick")
-		Game.Players.RemoveAtClient(iID, true);
+		::Players.RemoveAtClient(iID, true);
 		break;
 	}
 }
@@ -626,7 +627,7 @@ void C4ControlClientRemove::Execute() const
 		{
 		// TODO: in replays, client list is not yet synchronized
 		// remove players anyway
-		if (Game.Control.isReplay()) Game.Players.RemoveAtClient(iID, true);
+		if (Game.Control.isReplay()) ::Players.RemoveAtClient(iID, true);
 		return;
 		}
 	StdCopyStrBuf strClient(LoadResStr(pClient->isLocal() ? "IDS_NET_LOCAL_CLIENT" : "IDS_NET_CLIENT"));
@@ -645,7 +646,7 @@ void C4ControlClientRemove::Execute() const
 	// log
   LogF(LoadResStr("IDS_NET_CLIENT_REMOVED"), strClient.getData(), pClient->getName(), strReason.getData());
 	// remove all players
-	Game.Players.RemoveAtClient(iID, true);
+	::Players.RemoveAtClient(iID, true);
 	// remove all resources
 	if(::Network.isEnabled())
 		::Network.ResList.RemoveAtClient(iID);
@@ -1035,7 +1036,7 @@ void C4ControlMessage::Execute() const
 {
 	const char *szMessage = Message.getData();
 	// get player
-	C4Player *pPlr = (iPlayer < 0 ? NULL : Game.Players.Get(iPlayer));
+	C4Player *pPlr = (iPlayer < 0 ? NULL : ::Players.Get(iPlayer));
 	// security
 	if(pPlr && pPlr->AtClient != iByClient) return;
 	// do not record message as control, because it is not synced!
@@ -1091,7 +1092,7 @@ void C4ControlMessage::Execute() const
 			{
 			// for running game mode, check actual hostility
 			C4Player *pLocalPlr;
-			for(int cnt = 0; pLocalPlr = Game.Players.GetLocalByIndex(cnt); cnt++)
+			for(int cnt = 0; pLocalPlr = ::Players.GetLocalByIndex(cnt); cnt++)
 				if(!Hostile(pLocalPlr->Number, iPlayer))
 					break;
 			if(pLocalPlr) Log(FormatString("<c %x>{%s} %s</c>", pPlr->ColorDw, pPlr->GetName(), szMessage).getData());
@@ -1113,7 +1114,7 @@ void C4ControlMessage::Execute() const
 		if(!pPlr) break;
 		// show only if the target player is local
 		C4Player *pLocalPlr;
-		for(int cnt = 0; pLocalPlr = Game.Players.GetLocalByIndex(cnt); cnt++)
+		for(int cnt = 0; pLocalPlr = ::Players.GetLocalByIndex(cnt); cnt++)
 			if(pLocalPlr->ID == iToPlayer)
 				break;
 		if(pLocalPlr)
@@ -1191,7 +1192,7 @@ void C4ControlRemovePlr::Execute() const
 	// host only
 	if(iByClient != C4ClientIDHost) return;
 	// remove
-	Game.Players.Remove(iPlr, fDisconnected, false);
+	::Players.Remove(iPlr, fDisconnected, false);
 }
 
 void C4ControlRemovePlr::CompileFunc(StdCompiler *pComp)

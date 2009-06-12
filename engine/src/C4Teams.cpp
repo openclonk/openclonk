@@ -28,6 +28,7 @@
 #include <C4Random.h>
 #include <C4Components.h>
 #include <C4Player.h>
+#include <C4PlayerList.h>
 #endif
 
 // ---------------------------------------------------------------
@@ -76,7 +77,7 @@ void C4Team::AddPlayer(C4PlayerInfo &rInfo, bool fAdjustPlayer)
 	// and in actual player, if it is joined already
 	if (rInfo.IsJoined())
 		{
-		C4Player *pJoinedPlr = Game.Players.GetByInfoID(rInfo.GetID());
+		C4Player *pJoinedPlr = ::Players.GetByInfoID(rInfo.GetID());
 		assert(pJoinedPlr);
 		if (pJoinedPlr)
 			{

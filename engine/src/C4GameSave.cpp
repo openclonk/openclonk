@@ -35,6 +35,7 @@
 #include <C4Landscape.h>
 #include <C4PXS.h>
 #include <C4MassMover.h>
+#include <C4PlayerList.h>
 #endif
 
 // *** C4GameSave main class
@@ -240,7 +241,7 @@ bool C4GameSave::SaveRuntimeData()
 		// synchronization (via control queue)
 		if (GetSaveUserPlayerFiles() || GetSaveScriptPlayerFiles())
 			{
-			if (!Game.Players.Save((*pSaveGroup), GetCreateSmallFile(), RestoreInfos))
+			if (!::Players.Save((*pSaveGroup), GetCreateSmallFile(), RestoreInfos))
 				{ Log(LoadResStr("IDS_ERR_SAVE_PLAYERS")); return false; }
 			}
 		}
@@ -513,7 +514,7 @@ bool C4GameSaveSavegame::OnSaving()
 	if (::Network.isEnabled())
 		Game.Input.Add(CID_Synchronize, new C4ControlSynchronize(TRUE));
 	else
-		Game.Players.SynchronizeLocalFiles();
+		::Players.SynchronizeLocalFiles();
 	// OK; save now
 	return true;
 	}

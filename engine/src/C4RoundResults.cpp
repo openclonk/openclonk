@@ -26,6 +26,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
 #include <C4Object.h>
+#include <C4PlayerList.h>
 #endif
 
 // *** C4RoundResultsPlayer
@@ -296,7 +297,7 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 void C4RoundResults::EvaluateGame()
 	{
 	// set game data
-	C4Player *pFirstLocalPlayer = Game.Players.GetLocalByIndex(0);
+	C4Player *pFirstLocalPlayer = ::Players.GetLocalByIndex(0);
 	int32_t iFirstLocalPlayer = pFirstLocalPlayer ? pFirstLocalPlayer->Number : NO_OWNER;
 	EvaluateGoals(Goals, FulfilledGoals, iFirstLocalPlayer);
 	iPlayingTime = Game.Time;

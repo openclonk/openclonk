@@ -30,6 +30,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4Player.h>
 #include <C4PlayerInfo.h>
 #include <C4PlayerInfoListBox.h>
+#include <C4PlayerList.h>
 #endif
 
 
@@ -325,7 +326,7 @@ void C4GameOverDlg::OnShown()
 	// close some other dialogs
 	Game.Scoreboard.HideDlg();
 	FullScreen.CloseMenu();
-	for (C4Player *plr = Game.Players.First; plr; plr = plr->Next)
+	for (C4Player *plr = ::Players.First; plr; plr = plr->Next)
 		plr->CloseMenu();
 	// pause game when round results dlg is shown
 	Game.Pause();
