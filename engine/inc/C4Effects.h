@@ -28,6 +28,7 @@
 #define INC_C4Effects
 
 #include <C4Constants.h>
+#include <C4ValueList.h>
 
 // callback return values
 #define C4Fx_OK                      0 // generic standard behaviour for all effect callbacks

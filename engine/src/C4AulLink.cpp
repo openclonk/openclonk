@@ -26,6 +26,7 @@
 #include <C4Def.h>
 #include <C4Material.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 // ResolveAppends and ResolveIncludes must be called both
@@ -303,7 +304,7 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	Link(rDefs);
 
 	// update effect pointers
-	Game.Objects.UpdateScriptPointers();
+	::Objects.UpdateScriptPointers();
 
 	// update material pointers
 	::MaterialMap.UpdateScriptPointers();

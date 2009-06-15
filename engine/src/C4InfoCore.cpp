@@ -30,8 +30,7 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
-#ifdef C4ENGINE
-#endif
+#include <C4GameObjects.h>
 #endif
 
 #include <C4Random.h>

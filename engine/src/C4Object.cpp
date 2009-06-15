@@ -52,6 +52,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
@@ -244,9 +245,9 @@ C4Object::~C4Object()
 
 #if defined(_DEBUG)
 	// debug: mustn't be listed in any list now
-	assert(!Game.Objects.ObjectNumber(this));
-	assert(!Game.Objects.InactiveObjects.ObjectNumber(this));
-	Game.Objects.Sectors.AssertObjectNotInList(this);
+	assert(!::Objects.ObjectNumber(this));
+	assert(!::Objects.InactiveObjects.ObjectNumber(this));
+	::Objects.Sectors.AssertObjectNotInList(this);
 #endif
   }
 
@@ -294,9 +295,9 @@ void C4Object::AssignRemoval(BOOL fExitContents)
 	if (Status == C4OS_INACTIVE)
 		{
 		// object was inactive: activate first, then delete
-		Game.Objects.InactiveObjects.Remove(this);
+		::Objects.InactiveObjects.Remove(this);
 		Status = C4OS_NORMAL;
-		Game.Objects.Add(this);
+		::Objects.Add(this);
 		}
   Status=0;
 	// count decrease
@@ -370,7 +371,7 @@ void C4Object::UpdatePos()
 	// get new area covered
 	// do *NOT* do this while initializing, because object cannot be sorted by main list
 	if (!Initializing && Status == C4OS_NORMAL)
-		Game.Objects.UpdatePos(this);
+		::Objects.UpdatePos(this);
 	}
 
 void C4Object::UpdateFace(bool bUpdateShape, bool fTemp)
@@ -616,7 +617,7 @@ void C4Object::SetOCF()
 	// Update the object character flag according to the object's current situation
   FIXED cspeed=GetSpeed();
 #ifdef _DEBUG
-	if(Contained && !Game.Objects.ObjectNumber(Contained))
+	if(Contained && !::Objects.ObjectNumber(Contained))
 		{ LogF("Warning: contained in wild object %p!", Contained); }
 	else if(Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", Contained, Contained->GetName()); }
@@ -652,7 +653,7 @@ void C4Object::SetOCF()
 	DWORD cocf = OCF_Exclusive;
   if (Def->Chopable)
     if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!Game.Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
+			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
 				OCF|=OCF_Chop;
   // OCF_Rotate: Can be rotated
   if (Def->Rotateable)
@@ -755,7 +756,7 @@ void C4Object::UpdateOCF()
 	// Update the object character flag according to the object's current situation
   FIXED cspeed=GetSpeed();
 #ifdef _DEBUG
-	if(Contained && !Game.Objects.ObjectNumber(Contained))
+	if(Contained && !::Objects.ObjectNumber(Contained))
 		{ LogF("Warning: contained in wild object %p!", Contained); }
 	else if(Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", Contained, Contained->GetName()); }
@@ -782,7 +783,7 @@ void C4Object::UpdateOCF()
 	DWORD cocf = OCF_Exclusive;
   if (Def->Chopable)
     if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!Game.Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
+			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
 				OCF|=OCF_Chop;
   // HitSpeeds
   if (cspeed>=HitSpeed1) OCF|=OCF_HitSpeed1;
@@ -1282,7 +1283,7 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	// Any effect callbacks to this object might need to reinitialize their target functions
 	// This is ugly, because every effect there is must be updated...
 	if (Game.pGlobalEffects) Game.pGlobalEffects->OnObjectChangedDef(this);
-	for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk = pLnk->Next)
+	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
 		if (pLnk->Obj->pEffects) pLnk->Obj->pEffects->OnObjectChangedDef(this);
 	// Containment (no Entrance)
 	if (pContainer) Enter(pContainer,FALSE);
@@ -2832,10 +2833,10 @@ void C4Object::EnumeratePointers()
 	{
 
 	// Standard enumerated pointers
-	nContained = Game.Objects.ObjectNumber(Contained);
-	nActionTarget1 = Game.Objects.ObjectNumber(Action.Target);
-	nActionTarget2 = Game.Objects.ObjectNumber(Action.Target2);
-	nLayer = Game.Objects.ObjectNumber(pLayer);
+	nContained = ::Objects.ObjectNumber(Contained);
+	nActionTarget1 = ::Objects.ObjectNumber(Action.Target);
+	nActionTarget2 = ::Objects.ObjectNumber(Action.Target2);
+	nLayer = ::Objects.ObjectNumber(pLayer);
 
 	// Info by name
 	//if (Info) SCopy(Info->Name,nInfo,C4MaxName);
@@ -2858,10 +2859,10 @@ void C4Object::DenumeratePointers()
 	{
 
 	// Standard enumerated pointers
-	Contained = Game.Objects.ObjectPointer(nContained);
-	Action.Target = Game.Objects.ObjectPointer(nActionTarget1);
-	Action.Target2 = Game.Objects.ObjectPointer(nActionTarget2);
-	pLayer = Game.Objects.ObjectPointer(nLayer);
+	Contained = ::Objects.ObjectPointer(nContained);
+	Action.Target = ::Objects.ObjectPointer(nActionTarget1);
+	Action.Target2 = ::Objects.ObjectPointer(nActionTarget2);
+	pLayer = ::Objects.ObjectPointer(nLayer);
 
 	// Post-compile object list
 	Contents.DenumerateRead();
@@ -2914,7 +2915,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 	if (Menu && Menu->IsActive()) return;
 
 	DWORD ocf = OCF_Construct;
-	if(Action.ComDir == COMD_Stop && iDFA == DFA_WALK && (tObj = Game.Objects.AtObject(GetX(), GetY(), ocf, this)))
+	if(Action.ComDir == COMD_Stop && iDFA == DFA_WALK && (tObj = ::Objects.AtObject(GetX(), GetY(), ocf, this)))
 		{
 		int32_t com = COM_Down_D;
 		if(::Players.Get(Controller)->PrefControlStyle) com = COM_Down;
@@ -3334,7 +3335,7 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 	// contents shift must always be done to container object, which is not necessarily this
 	if (byCom==COM_Contents)
 		{
-		C4Object *pTarget = Game.Objects.SafeObjectPointer(iData);
+		C4Object *pTarget = ::Objects.SafeObjectPointer(iData);
 		if (pTarget && pTarget->Contained)
 			pTarget->Contained->DirectComContents(pTarget, true);
 		return;
@@ -5831,9 +5832,9 @@ bool C4Object::HasGraphicsOverlayRecursion(const C4Object *pCheckObj) const
 bool C4Object::StatusActivate()
 	{
 	// readd to main list
-	Game.Objects.InactiveObjects.Remove(this);
+	::Objects.InactiveObjects.Remove(this);
 	Status = C4OS_NORMAL;
-	Game.Objects.Add(this);
+	::Objects.Add(this);
 	// update some values
 	UpdateGraphics(false);
 	UpdateFace(true);
@@ -5849,9 +5850,9 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
 	// put into inactive list
-	Game.Objects.Remove(this);
+	::Objects.Remove(this);
 	Status = C4OS_INACTIVE;
-	Game.Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
+	::Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
 	// if desired, clear game pointers
 	if (fClearPointers)
 		{

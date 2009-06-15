@@ -31,6 +31,7 @@
 #include <C4Components.h>
 #include <C4Log.h>
 #include <C4Weather.h>
+#include <C4GameObjects.h>
 #endif
 
 void C4ParticleDefCore::CompileFunc(StdCompiler * pComp)
@@ -379,9 +380,9 @@ void C4ParticleSystem::ClearParticles()
 	{
 	// clear particle lists
 	C4ObjectLink *pLnk;
-	for (pLnk = Game.Objects.First; pLnk; pLnk = pLnk->Next)
+	for (pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
 		pLnk->Obj->FrontParticles.pFirst = pLnk->Obj->BackParticles.pFirst = NULL;
-	for (pLnk = Game.Objects.InactiveObjects.First; pLnk; pLnk = pLnk->Next)
+	for (pLnk = ::Objects.InactiveObjects.First; pLnk; pLnk = pLnk->Next)
 		pLnk->Obj->FrontParticles.pFirst = pLnk->Obj->BackParticles.pFirst = NULL;
 	GlobalParticles.pFirst = NULL;
 	// reset chunks

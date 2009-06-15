@@ -47,6 +47,7 @@
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 #define C4FOW_Def_View_RangeX 500
@@ -110,7 +111,7 @@ void C4Player::UpdateValue()
 
   // Asset all owned objects
   C4Object *cobj; C4ObjectLink *clnk;
-  for (clnk=Game.Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+  for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
     if (cobj->Owner==Number && cobj->Status)
       {
       ObjectsOwned++;
@@ -405,7 +406,7 @@ BOOL C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	GameJoinTime = Game.Time;
 
 	// Init FoW-viewobjects: NO_OWNER-FoW-repellers might need to be added
-	for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk = pLnk->Next)
+	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
 		{
 		C4Object *pObj = pLnk->Obj;
 		if (pObj->PlrViewRange && pObj->Owner == NO_OWNER)
@@ -606,7 +607,7 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
 	C4ObjectLink *clnk; C4Object *cobj;
 	if (Game.Rules & C4RULE_StructuresNeedEnergy)
 		if (fpower)
-			for (clnk=Game.Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+			for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 				if (cobj->Owner==Number)
 					if (cobj->Def->LineConnect & C4D_Power_Consumer)
 						CreatePowerConnection(fpower,cobj);
@@ -755,7 +756,7 @@ BOOL C4Player::ScenarioInit()
 		{
 		fFogOfWarInitialized = TRUE;
 		// reset view objects
-		Game.Objects.AssignPlrViewRange();
+		::Objects.AssignPlrViewRange();
 		}
 
 	// Scenario script initialization
@@ -785,7 +786,7 @@ BOOL C4Player::FinalInit(BOOL fInitialValue)
 	if (!Cursor) AdjustCursorCommand();
 
 	// Assign Captain
-	if (Game.Objects.Find(C4Id("KILC")))
+	if (::Objects.Find(C4Id("KILC")))
 		if (!Captain) Captain=GetHiRankActiveCrew(false);
 
 	// Update counts, pointers, views, value
@@ -797,7 +798,7 @@ BOOL C4Player::FinalInit(BOOL fInitialValue)
 		{
 		fFogOfWarInitialized = TRUE;
 		// reset view objects
-		Game.Objects.AssignPlrViewRange();
+		::Objects.AssignPlrViewRange();
 		}
 
 	return TRUE;
@@ -807,7 +808,7 @@ void C4Player::SetFoW(bool fEnable)
 	{
 	// enable FoW
 	if (fEnable && !fFogOfWarInitialized)
-		Game.Objects.AssignPlrViewRange();
+		::Objects.AssignPlrViewRange();
 	// set flag
 	fFogOfWar = fFogOfWarInitialized = fEnable;
 	}
@@ -925,7 +926,7 @@ void C4Player::Evaluate()
   time(reinterpret_cast<time_t *>(&LastRound.Date));
   LastRound.Duration = Game.Time;
   LastRound.Won = !Eliminated;
-	// Melee: personal value gain score ...check Game.Objects(C4D_Goal)
+	// Melee: personal value gain score ...check ::Objects(C4D_Goal)
 	if (Game.C4S.Game.IsMelee()) LastRound.Score = Max<int32_t>(ValueGain,0);
 	// Cooperative: shared score
 	else LastRound.Score = Max(::Players.AverageValueGain(),0);
@@ -1743,14 +1744,14 @@ void C4Player::DoTeamSelection(int32_t idTeam)
 void C4Player::EnumeratePointers()
 	{
 	// Cursor
-	Cursor = Game.Objects.Enumerated(Cursor);
+	Cursor = ::Objects.Enumerated(Cursor);
 	// ViewCursor
-	ViewCursor = Game.Objects.Enumerated(ViewCursor);
+	ViewCursor = ::Objects.Enumerated(ViewCursor);
 	// Captain
-	Captain = Game.Objects.Enumerated(Captain);
+	Captain = ::Objects.Enumerated(Captain);
 	// messageboard-queries
 	for (C4MessageBoardQuery *pCheck = pMsgBoardQuery; pCheck; pCheck = pCheck->pNext)
-		pCheck->nCallbackObj = pCheck->pCallbackObj ? Game.Objects.ObjectNumber(pCheck->pCallbackObj) : 0;
+		pCheck->nCallbackObj = pCheck->pCallbackObj ? ::Objects.ObjectNumber(pCheck->pCallbackObj) : 0;
 	}
 
 void C4Player::DenumeratePointers()
@@ -1758,14 +1759,14 @@ void C4Player::DenumeratePointers()
 	// Crew
 	Crew.DenumerateRead();
 	// Cursor
-	Cursor = Game.Objects.Denumerated(Cursor);
+	Cursor = ::Objects.Denumerated(Cursor);
 	// ViewCursor
-	ViewCursor = Game.Objects.Denumerated(ViewCursor);
+	ViewCursor = ::Objects.Denumerated(ViewCursor);
 	// Captain
-	Captain = Game.Objects.Denumerated(Captain);
+	Captain = ::Objects.Denumerated(Captain);
 	// messageboard-queries
 	for (C4MessageBoardQuery *pCheck = pMsgBoardQuery; pCheck; pCheck = pCheck->pNext)
-		pCheck->pCallbackObj = pCheck->nCallbackObj ? Game.Objects.ObjectPointer(pCheck->nCallbackObj) : NULL;
+		pCheck->pCallbackObj = pCheck->nCallbackObj ? ::Objects.ObjectPointer(pCheck->nCallbackObj) : NULL;
 	}
 
 void C4Player::RemoveCrewObjects()
@@ -1781,7 +1782,7 @@ void C4Player::NotifyOwnedObjects()
   C4Object *cobj; C4ObjectLink *clnk;
 
 	// notify objects in all object lists
-	for (C4ObjectList *pList = &Game.Objects; pList; pList = ((pList == &Game.Objects) ? &Game.Objects.InactiveObjects : NULL))
+	for (C4ObjectList *pList = &::Objects; pList; pList = ((pList == &::Objects) ? &::Objects.InactiveObjects : NULL))
 		for (clnk = pList->First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 			if (cobj->Status)
 				if (cobj->Owner == Number)
@@ -2260,7 +2261,7 @@ void C4Player::SetPlayerColor(uint32_t dwNewClr)
 	uint32_t dwOldClr = ColorDw;
 	ColorDw = dwNewClr;
 	C4Object *pObj;
-	for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk = pLnk->Next)
+	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
 		if (pObj = pLnk->Obj)
 			if (pObj->Status)
 				if (pObj->Owner == Number)

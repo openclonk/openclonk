@@ -34,6 +34,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 const int32_t 		C4MN_DefInfoWdt     = 270, // default width of info windows
@@ -918,7 +919,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	int32_t iUseExtraData = 0;
 	if (Extra == C4MN_Extra_LiveMagicValue || Extra == C4MN_Extra_ComponentsLiveMagic)
 		{
-		C4Object *pMagicSourceObj = Game.Objects.SafeObjectPointer(ExtraData);
+		C4Object *pMagicSourceObj = ::Objects.SafeObjectPointer(ExtraData);
 		if (pMagicSourceObj) iUseExtraData = pMagicSourceObj->MagicEnergy/MagicPhysicalFactor;
 		}
 	else

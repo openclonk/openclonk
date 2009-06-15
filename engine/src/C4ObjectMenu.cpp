@@ -30,6 +30,7 @@
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 
@@ -118,7 +119,7 @@ void C4ObjectMenu::ClearPointers(C4Object *pObj)
 C4Object* C4ObjectMenu::GetParentObject()
 	{
   C4Object *cObj; C4ObjectLink *cLnk;
-	for (cLnk=Game.Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
+	for (cLnk=::Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 		if ( cObj->Menu == this )
 			return cObj;
 	return NULL;
@@ -557,7 +558,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 			}
 
 	// Script context functions of any objects attached to target (search global list, because attachment objects might be moved just about anywhere...)
-	for (clnk=Game.Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
+	for (clnk=::Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
 		if (cObj->Status && cObj->Action.Target == pTarget)
 			if (cObj->Action.Act > ActIdle)
 				if (cObj->Def->ActMap[cObj->Action.Act].Procedure == DFA_ATTACH)

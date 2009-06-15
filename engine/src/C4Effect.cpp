@@ -32,6 +32,7 @@
 #include <C4Landscape.h>
 #include <C4PXS.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 void C4Effect::AssignCallbackFunctions()
@@ -172,7 +173,7 @@ void C4Effect::EnumeratePointers()
 	do
 		{
 		// command target
-		pEff->nCommandTarget = Game.Objects.ObjectNumber(pEff->pCommandTarget);
+		pEff->nCommandTarget = ::Objects.ObjectNumber(pEff->pCommandTarget);
 		// effect var denumeration: not necessary, because this is done while saving
 		}
 	while (pEff=pEff->pNext);
@@ -185,7 +186,7 @@ void C4Effect::DenumeratePointers()
 	do
 		{
 		// command target
-		pEff->pCommandTarget = Game.Objects.ObjectPointer(pEff->nCommandTarget);
+		pEff->pCommandTarget = ::Objects.ObjectPointer(pEff->nCommandTarget);
 		// variable pointers
 		pEff->EffectVars.DenumeratePointers();
 		// assign any callback functions
@@ -829,7 +830,7 @@ void BubbleOut(int32_t tx, int32_t ty)
 	// User-defined smoke level
 	int32_t SmokeLevel = GetSmokeLevel();
 	// Enough bubbles out there already
-	if (Game.Objects.ObjectCount(C4Id("FXU1")) >= SmokeLevel) return;
+	if (::Objects.ObjectCount(C4Id("FXU1")) >= SmokeLevel) return;
 	// Create bubble
 	Game.CreateObject(C4Id("FXU1"),NULL,NO_OWNER,tx,ty);
   }
@@ -844,7 +845,7 @@ void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
 	// User-defined smoke level
 	int32_t SmokeLevel = GetSmokeLevel();
 	// Enough smoke out there already
-	if (Game.Objects.ObjectCount(C4Id("FXS1")) >= SmokeLevel) return;
+	if (::Objects.ObjectCount(C4Id("FXS1")) >= SmokeLevel) return;
 	// Create smoke
 	level=BoundBy<int32_t>(level,3,32);
 	C4Object *pObj;

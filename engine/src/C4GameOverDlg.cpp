@@ -31,6 +31,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4PlayerInfo.h>
 #include <C4PlayerInfoListBox.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 
@@ -44,7 +45,7 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 	SetBounds(rcBounds);
 	// can't get specialized desc from object at the moment because of potential script callbacks!
 	StdStrBuf strGoalName, strGoalDesc;
-	/*C4Object *pGoalObj = Game.Objects.FindInternal(idGoal);
+	/*C4Object *pGoalObj = ::Objects.FindInternal(idGoal);
 	if (pGoalObj)
 		{
 		pGoalObj->GetInfoString().getData();
@@ -72,7 +73,7 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 		{
 		Picture.Create(C4PictureSize, C4PictureSize);
 		// get an object instance to draw (optional; may be zero)
-		C4Object *pGoalObj = Game.Objects.FindInternal(idGoal);
+		C4Object *pGoalObj = ::Objects.FindInternal(idGoal);
 		// draw goal def!
 		pDrawDef->Draw(Picture, false, 0, pGoalObj);
 		}

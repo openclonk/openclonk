@@ -25,6 +25,7 @@
 #include <C4Object.h>
 #include <C4Language.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 
 
 #ifdef WITH_DEVELOPER_MODE
@@ -79,7 +80,7 @@ GType c4_list_get_type (void);
 static void
 c4_list_init (C4List *c4_list)
 {
-	c4_list->data = &Game.Objects;
+	c4_list->data = &::Objects;
 
 	c4_list->stamp = g_random_int(); /* Random int to check whether iters belong to this model */
 }

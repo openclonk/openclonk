@@ -34,6 +34,7 @@
 #include <C4Object.h>
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
+#include <C4GameObjects.h>
 #endif
 
 C4PlayerList::C4PlayerList()
@@ -244,7 +245,7 @@ bool C4PlayerList::RemoveUnjoined(int32_t iPlayer)
 	{
 	// Savegame resume missing player: Remove player objects only
 	C4Object *pObj;
-	for (C4ObjectLink *clnk=Game.Objects.First; clnk && (pObj=clnk->Obj); clnk=clnk->Next)
+	for (C4ObjectLink *clnk=::Objects.First; clnk && (pObj=clnk->Obj); clnk=clnk->Next)
 		if (pObj->Status)
 			if (pObj->IsPlayerObject(iPlayer))
 				pObj->AssignRemoval(TRUE);
@@ -298,7 +299,7 @@ BOOL C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 	delete pPlr;
 
 	// Validate object owners
-	Game.Objects.ValidateOwners();
+	::Objects.ValidateOwners();
 
 	// Update console
 	Console.UpdateMenus();

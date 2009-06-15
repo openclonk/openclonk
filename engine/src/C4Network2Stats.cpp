@@ -26,6 +26,7 @@
 #include <C4Game.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 C4Graph::C4Graph()
@@ -338,7 +339,7 @@ C4Network2Stats::~C4Network2Stats()
 
 void C4Network2Stats::ExecuteFrame()
 	{
-	statObjCount.RecordValue(C4Graph::ValueType(Game.Objects.ObjectCount()));
+	statObjCount.RecordValue(C4Graph::ValueType(::Objects.ObjectCount()));
 	}
 
 void C4Network2Stats::ExecuteSecond()

@@ -39,6 +39,7 @@
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 const int32_t C4MC_Drag_None					= 0,
@@ -655,7 +656,7 @@ int32_t C4MouseControl::UpdateObjectSelection()
 	Selection.Clear();
 	// Add all collectible objects in drag frame to Selection
   C4Object *cObj; C4ObjectLink *cLnk;
-  for (cLnk=Game.Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
+  for (cLnk=::Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 		if (cObj->Status)
 			if (cObj->OCF & OCF_Carryable)
 				if (!cObj->Contained)

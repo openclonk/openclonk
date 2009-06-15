@@ -41,6 +41,7 @@
 #include <C4Network2.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 #include <StdPNG.h>
@@ -189,7 +190,7 @@ void C4GraphicsSystem::Execute()
 	ScreenTick++; if (ScreenTick>=ScreenRate) ScreenTick=0;
 
 	// Reset object audibility
-	Game.Objects.ResetAudibility();
+	::Objects.ResetAudibility();
 
 	// some hack to ensure the mouse is drawn after a dialog close and before any
 	// movement messages

@@ -43,6 +43,7 @@
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 // *** C4ControlPacket
@@ -278,7 +279,7 @@ void C4ControlScript::Execute() const
 		pScript = &Game.Script;
 	else if (iTargetObj == SCOPE_Global)
 		pScript = &::ScriptEngine;
-	else if (pObj = Game.Objects.SafeObjectPointer(iTargetObj))
+	else if (pObj = ::Objects.SafeObjectPointer(iTargetObj))
 		pScript = &(pObj->Def->Script);
 	else
 		// default: Fallback to global context
@@ -339,7 +340,7 @@ void C4ControlPlayerSelect::Execute() const
 	C4ObjectList SelectObjs;
 	int32_t iControlChecksum = 0;
 	for(int32_t i = 0; i < iObjCnt; i++)
-		if(pObj = Game.Objects.SafeObjectPointer(pObjNrs[i]))
+		if(pObj = ::Objects.SafeObjectPointer(pObjNrs[i]))
 		{
 			iControlChecksum += pObj->Number * (iControlChecksum+4787821);
 			// user defined object selection: callback to object
@@ -395,7 +396,7 @@ void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
 C4ControlPlayerCommand::C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32_t iX, int32_t iY,
 																							 C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode)
 	: iPlr(iPlr), iCmd(iCmd), iX(iX), iY(iY),
-		iTarget(Game.Objects.ObjectNumber(pTarget)), iTarget2(Game.Objects.ObjectNumber(pTarget2)),
+		iTarget(::Objects.ObjectNumber(pTarget)), iTarget2(::Objects.ObjectNumber(pTarget2)),
 		iData(iData), iAddMode(iAddMode)
 {
 
@@ -408,9 +409,9 @@ void C4ControlPlayerCommand::Execute() const
 		{
 		pPlr->CountControl(C4Player::PCID_Command, iCmd+iX+iY+iTarget+iTarget2);
 		pPlr->ObjectCommand(iCmd,
-												Game.Objects.ObjectPointer(iTarget),
+												::Objects.ObjectPointer(iTarget),
 												iX,iY,
-												Game.Objects.ObjectPointer(iTarget2),
+												::Objects.ObjectPointer(iTarget2),
 												iData,
 												iAddMode);
 		}
@@ -445,9 +446,9 @@ void C4ControlSyncCheck::Set()
 	AllCrewPosX = GetAllCrewPosX();
 	PXSCount = ::PXS.Count;
 	MassMoverIndex = ::MassMover.CreatePtr;
-	ObjectCount = Game.Objects.ObjectCount();
+	ObjectCount = ::Objects.ObjectCount();
 	ObjectEnumerationIndex = Game.ObjectEnumerationIndex;
-	SectShapeSum = Game.Objects.Sectors.getShapeSum();
+	SectShapeSum = ::Objects.Sectors.getShapeSum();
 }
 
 int32_t C4ControlSyncCheck::GetAllCrewPosX()
@@ -846,7 +847,7 @@ void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 
 C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj,
 												int32_t iObjectNum, int32_t *pObjects, const char *szScript)
-  : eAction(eAction), tx(tx), ty(ty), iTargetObj(Game.Objects.ObjectNumber(pTargetObj)),
+  : eAction(eAction), tx(tx), ty(ty), iTargetObj(::Objects.ObjectNumber(pTargetObj)),
 		iObjectNum(iObjectNum), pObjects(pObjects), Script(szScript, true)
 {
 
@@ -868,7 +869,7 @@ void C4ControlEMMoveObject::Execute() const
 			// move all given objects
 			C4Object *pObj;
 			for (int i=0; i<iObjectNum; ++i)
-				if (pObj = Game.Objects.SafeObjectPointer(pObjects[i])) if (pObj->Status)
+				if (pObj = ::Objects.SafeObjectPointer(pObjects[i])) if (pObj->Status)
 					{
 					pObj->ForcePosition(pObj->GetX()+tx,pObj->GetY()+ty);
 					pObj->xdir=pObj->ydir=0;
@@ -880,10 +881,10 @@ void C4ControlEMMoveObject::Execute() const
 			{
 			if (!pObjects) break;
 			// enter all given objects into target
-			C4Object *pObj, *pTarget = Game.Objects.SafeObjectPointer(iTargetObj);
+			C4Object *pObj, *pTarget = ::Objects.SafeObjectPointer(iTargetObj);
 			if (pTarget)
 				for (int i=0; i<iObjectNum; ++i)
-					if (pObj = Game.Objects.SafeObjectPointer(pObjects[i]))
+					if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
 						pObj->Enter(pTarget);
 			}
 			break;
@@ -895,7 +896,7 @@ void C4ControlEMMoveObject::Execute() const
 			// perform duplication
 			C4Object *pObj;
 			for (int i=0; i<iObjectNum; ++i)
-				if (pObj = Game.Objects.SafeObjectPointer(pObjects[i]))
+				if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
 					{
 					pObj = Game.CreateObject(pObj->id, pObj, pObj->Owner, pObj->GetX(), pObj->GetY());
 					if (pObj && fLocalCall) Console.EditCursor.GetSelection().Add(pObj, C4ObjectList::stNone);
@@ -928,7 +929,7 @@ void C4ControlEMMoveObject::Execute() const
 			// remove all objects
 			C4Object *pObj;
 			for (int i=0; i<iObjectNum; ++i)
-				if (pObj = Game.Objects.SafeObjectPointer(pObjects[i]))
+				if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
 					pObj->AssignRemoval();
 			}
       break; // Here was fallthrough. Seemed wrong. ck.
@@ -938,7 +939,7 @@ void C4ControlEMMoveObject::Execute() const
 			// exit all objects
 			C4Object *pObj;
 			for (int i=0; i<iObjectNum; ++i)
-				if (pObj = Game.Objects.SafeObjectPointer(pObjects[i]))
+				if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
 					pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->r);
 			}
       break; // Same. ck.

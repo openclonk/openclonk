@@ -36,6 +36,7 @@
 #include <C4PXS.h>
 #include <C4MassMover.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 // *** C4GameSave main class
@@ -158,13 +159,13 @@ bool C4GameSave::SaveLandscape()
 		{
 		C4DebugRecOff DBGRECOFF;
 		// Landscape
-		Game.Objects.RemoveSolidMasks();
+		::Objects.RemoveSolidMasks();
 		bool fSuccess;
 		if(::Landscape.Mode == C4LSC_Exact)
 			fSuccess = !!::Landscape.Save(*pSaveGroup);
 		else
 			fSuccess = !!::Landscape.SaveDiff(*pSaveGroup, !IsSynced());
-		Game.Objects.PutSolidMasks();
+		::Objects.PutSolidMasks();
 		if (!fSuccess) return false;
 		DBGRECOFF.Clear();
 		// PXS
@@ -208,7 +209,7 @@ bool C4GameSave::SaveRuntimeData()
 	// landscape
 	if (!SaveLandscape()) { Log(LoadResStr("IDS_ERR_SAVE_LANDSCAPE")); return false; }
 	// Objects
-	if (!Game.Objects.Save((*pSaveGroup),IsExact(),true))
+	if (!::Objects.Save((*pSaveGroup),IsExact(),true))
 		{ Log(LoadResStr("IDS_ERR_SAVE_OBJECTS")); return false; }
 	// Round results
 	if (GetSaveUserPlayers()) if (!Game.RoundResults.Save(*pSaveGroup))

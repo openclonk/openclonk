@@ -22,6 +22,7 @@
 #ifndef INC_C4Prototypes
 #define INC_C4Prototypes
 
+class C4AulFunc;
 class C4Game;
 class C4Record;
 class C4Playback;

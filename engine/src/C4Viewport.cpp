@@ -48,6 +48,7 @@
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 #include <StdGL.h>
@@ -1074,7 +1075,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
 	::Landscape.Sky.Draw(cgo);
 	C4ST_STOP(SkyStat)
-	Game.BackObjects.DrawAll(cgo, Player);
+	::Objects.BackObjects.DrawAll(cgo, Player);
 
 	// Draw Landscape
 	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
@@ -1088,7 +1089,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 
 	// draw objects
 	C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects")
-	Game.Objects.Draw(cgo, Player);
+	::Objects.Draw(cgo, Player);
 	C4ST_STOP(ObjStat)
 
 	// draw global particles
@@ -1097,7 +1098,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 	C4ST_STOP(PartStat)
 
 	// draw foreground objects
-	Game.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, true);
+	::Objects.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, true);
 
 	// Draw PathFinder
 	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
@@ -1118,7 +1119,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		cgo.Set(Application.DDraw->lpBack,DrawX,DrawY,int(float(ViewWdt)/fGUIZoom),int(float(ViewHgt)/fGUIZoom),ViewX,ViewY);
 
 		// draw custom GUI objects
-		Game.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, false);
+		::Objects.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, false);
 
 		// Draw overlay
 		C4ST_STARTNEW(OvrStat, "C4Viewport::Draw: Overlay")

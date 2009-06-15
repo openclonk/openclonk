@@ -33,6 +33,7 @@
 #include <C4Player.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 #include <StdRegistry.h>
@@ -177,7 +178,7 @@ BOOL C4PropertyDlg::Update(C4ObjectList &rSelection)
 
 BOOL IsObjectPointer(int iValue)
 	{
-  for (C4ObjectLink *cLnk=Game.Objects.First; cLnk; cLnk=cLnk->Next)
+  for (C4ObjectLink *cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj == (C4Object*) iValue)
 			return TRUE;
 	return FALSE;

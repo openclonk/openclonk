@@ -30,6 +30,7 @@
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
+#include <C4GameObjects.h>
 #endif
 
 #include <StdGL.h>

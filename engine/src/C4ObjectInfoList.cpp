@@ -30,6 +30,7 @@
 #include <C4Game.h>
 #include <C4RankSystem.h>
 #include <C4Config.h>
+#include <C4GameObjects.h>
 #endif
 
 C4ObjectInfoList::C4ObjectInfoList()
@@ -225,7 +226,7 @@ void C4ObjectInfoList::DetachFromObjects()
 	{
   C4ObjectInfo *cinf;
   for (cinf=First; cinf; cinf=cinf->Next)
-		Game.Objects.ClearInfo(cinf);
+		::Objects.ClearInfo(cinf);
 	}
 
 C4ObjectInfo* C4ObjectInfoList::GetLast()

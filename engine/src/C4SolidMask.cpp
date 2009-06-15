@@ -27,6 +27,7 @@
 #include <C4Object.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 
@@ -279,7 +280,7 @@ void C4SolidMask::Remove(bool fCauseInstability, bool fBackupAttachment)
 		MaskRemovalX = pForObject->GetX();
 		MaskRemovalY = pForObject->GetY();
 		iAttachingObjectsCount = 0;
-		C4LArea SolidArea(&Game.Objects.Sectors, MaskPutRect.x-1, MaskPutRect.y-1, MaskPutRect.Wdt+2, MaskPutRect.Hgt+2);
+		C4LArea SolidArea(&::Objects.Sectors, MaskPutRect.x-1, MaskPutRect.y-1, MaskPutRect.Wdt+2, MaskPutRect.Hgt+2);
 		C4LSector *pSct; C4Object *pObj;
 		for (C4ObjectList *pLst=SolidArea.FirstObjectShapes(&pSct); pLst; pLst=SolidArea.NextObjectShapes(pLst, &pSct))
 			for (C4ObjectLink *clnk=pLst->First; clnk; clnk=clnk->Next)

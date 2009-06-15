@@ -29,7 +29,6 @@
 #include <C4GameParameters.h>
 #include <C4PlayerInfo.h>
 #include <C4RoundResults.h>
-#include <C4GameObjects.h>
 #include <C4Scenario.h>
 #include <C4GameControl.h>
 #include <C4Control.h>
@@ -39,6 +38,7 @@
 #include <C4Fonts.h>
 #include "C4Scoreboard.h"
 #include <C4VideoPlayback.h>
+#include <C4ScriptHost.h>
 
 class C4Game
   {
@@ -72,9 +72,6 @@ class C4Game
 		C4PlayerInfoList	 &PlayerInfos; // Shortcut
 		C4PlayerInfoList	 &RestorePlayerInfos; // Shortcut
 		C4RoundResults      RoundResults;
-		C4GameObjects				Objects;
-		C4ObjectList				BackObjects;		// objects in background (C4D_Background)
-		C4ObjectList				ForeObjects;		// objects in foreground (C4D_Foreground)
     C4Scenario					C4S;
 		C4ComponentHost			Info;
 		C4ComponentHost			Title;

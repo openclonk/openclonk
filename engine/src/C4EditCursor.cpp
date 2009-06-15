@@ -36,6 +36,7 @@
 #include <C4Texture.h>
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 #ifdef WITH_DEVELOPER_MODE
@@ -466,7 +467,7 @@ void C4EditCursor::FrameSelection()
 	{
 	Selection.Clear();
   C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=Game.Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+	for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (cobj->Status) if (cobj->OCF & OCF_NotContained)
 			{
 			if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
@@ -662,7 +663,7 @@ void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
 
 	if (wKeyFlags & MK_CONTROL)
 		if (Selection.GetObject())
-			for (clnk=Game.Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+			for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 				if (cobj->Status)
 					if (!cobj->Contained)
 						if (Inside<int32_t>(X-(cobj->GetX()+cobj->Shape.x),0,cobj->Shape.Wdt-1))

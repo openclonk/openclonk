@@ -27,6 +27,7 @@
 #include <C4Game.h>
 #include <C4FacetEx.h>
 #include <C4Landscape.h>
+#include <C4GameObjects.h>
 #endif
 
 C4TransferZone::C4TransferZone()
@@ -119,7 +120,7 @@ BOOL C4TransferZones::Add(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4
 void C4TransferZones::Synchronize()
 	{
 	Clear();
-	Game.Objects.UpdateTransferZones();
+	::Objects.UpdateTransferZones();
 	}
 
 C4TransferZone* C4TransferZones::Find(int32_t iX, int32_t iY)

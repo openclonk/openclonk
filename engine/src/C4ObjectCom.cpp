@@ -39,6 +39,7 @@
 #include <C4Material.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 BOOL SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir);
@@ -342,7 +343,7 @@ BOOL ObjectComEnter(C4Object *cObj) // by pusher
   // Check object entrance, try command enter
   C4Object *pTarget;
   DWORD ocf=OCF_Entrance;
-  if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
     if (ocf & OCF_Entrance)
       { cObj->SetCommand(C4CMD_Enter,pTarget); return TRUE; }
 
@@ -357,7 +358,7 @@ BOOL ObjectComUp(C4Object *cObj) // by DFA_WALK or DFA_SWIM
   // Check object entrance, try command enter
   C4Object *pTarget;
   DWORD ocf=OCF_Entrance;
-  if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
     if (ocf & OCF_Entrance)
       return PlayerObjectCommand(cObj->Owner,C4CMD_Enter,pTarget);
 
@@ -416,7 +417,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 		if (cObj->Def->CollectionLimit && (cObj->Contents.ObjectCount()>=cObj->Def->CollectionLimit) ) return FALSE;
     // Check line pickup
 		ocf=OCF_LineConstruct;
-		tstruct=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
+		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
 		if (!tstruct || !(ocf & OCF_LineConstruct)) return FALSE;
 		if (!(cline=Game.FindObject(C4ID_None,0,0,0,0,OCF_All,"Connect",tstruct))) return FALSE;
 		// Check line connected to linekit at other end
@@ -452,7 +453,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 
 		// Check for structure connection
 		ocf=OCF_LineConstruct;
-		tstruct=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
+		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
 		// No structure
 		if (!tstruct || !(ocf & OCF_LineConstruct))
 			{
@@ -508,7 +509,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 
 	// Check for new structure connection
 	ocf=OCF_LineConstruct;
-	tstruct=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
+	tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
 	if (!tstruct || !(ocf & OCF_LineConstruct))
 		{
 		StartSoundEffect("Error",false,100,cObj);
@@ -570,7 +571,7 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
   ocf=OCF_Chop;
   if (phys->CanChop)
 		if (cObj->GetProcedure()!=DFA_SWIM)
-	    if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+	    if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
 		    if (ocf & OCF_Chop)
 			    {
 				  PlayerObjectCommand(cObj->Owner,C4CMD_Chop,pTarget);
@@ -581,7 +582,7 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
   ocf=OCF_LineConstruct;
   if (phys->CanConstruct)
 	  if (!cObj->Contents.GetObject())
-	    if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+	    if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
 		    if (ocf & OCF_LineConstruct)
 			    if (ObjectComLineConstruction(cObj))
 						return;
@@ -595,7 +596,7 @@ BOOL ObjectComDownDouble(C4Object *cObj) // by DFA_WALK
   {
   C4Object *pTarget;
   DWORD ocf= OCF_Construct | OCF_Grab;
-  if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
     {
     if (ocf & OCF_Construct)
       { PlayerObjectCommand(cObj->Owner,C4CMD_Build,pTarget); return TRUE; }

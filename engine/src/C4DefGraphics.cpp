@@ -39,6 +39,7 @@
 #include <C4Log.h>
 #include <C4Material.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 //-------------------------------- C4DefGraphics -----------------------------------------------
@@ -373,7 +374,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 		{
 		// check all objects
 		C4Object *pObj;
-		for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk=pLnk->Next)
+		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
 			if (pObj=pLnk->Obj) if (pObj->Status)
 				{
 				if (pObj->pGraphics == pGraphicsPtr)
@@ -439,7 +440,7 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 		{
 		// check all objects
 		C4Object *pObj;
-		for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk=pLnk->Next)
+		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
 			if (pObj=pLnk->Obj) if (pObj->Status)
 				{
 				if (pObj->pGraphics == pGraphicsPtr)
@@ -827,12 +828,12 @@ void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)
 
 void C4GraphicsOverlay::EnumeratePointers()
 	{
-	nOverlayObj = Game.Objects.ObjectNumber(pOverlayObj);
+	nOverlayObj = ::Objects.ObjectNumber(pOverlayObj);
 	}
 
 void C4GraphicsOverlay::DenumeratePointers()
 	{
-	pOverlayObj = Game.Objects.ObjectPointer(nOverlayObj);
+	pOverlayObj = ::Objects.ObjectPointer(nOverlayObj);
 	}
 
 void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByPlayer)

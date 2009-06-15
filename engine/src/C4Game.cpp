@@ -70,6 +70,7 @@
 #include <C4Texture.h>
 #include <C4Landscape.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 #include <StdFile.h>
@@ -650,7 +651,7 @@ BOOL C4Game::GameOverCheck()
 			// Count objects, fullsize only
 			C4ObjectLink *cLnk;
 			int32_t iCount=0;
-			for (cLnk=Game.Objects.First; cLnk; cLnk=cLnk->Next)
+			for (cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
 				if (cLnk->Obj->Status)
 					if (cLnk->Obj->Def->id==c_id)
 						if (cLnk->Obj->GetCon()>=FullCon)
@@ -671,7 +672,7 @@ BOOL C4Game::GameOverCheck()
 		BOOL alive_only=FALSE;
 		if (cdef && (cdef->Category & C4D_Living)) alive_only=TRUE;
 		int32_t iCount=0;
-		for (cLnk=Game.Objects.First; cLnk; cLnk=cLnk->Next)
+		for (cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
 			if (cLnk->Obj->Status)
 				if (cLnk->Obj->Def->id==c_id)
 					if (!alive_only || cLnk->Obj->GetAlive())
@@ -948,8 +949,8 @@ void C4Game::ClearObjectPtrs(C4Object *pObj)
 
 void C4Game::ClearPointers(C4Object *pObj)
   {
-	BackObjects.ClearPointers(pObj);
-	ForeObjects.ClearPointers(pObj);
+	::Objects.BackObjects.ClearPointers(pObj);
+	::Objects.ForeObjects.ClearPointers(pObj);
 	::Messages.ClearPointers(pObj);
   ClearObjectPtrs(pObj);
   Players.ClearPointers(pObj);
@@ -1072,10 +1073,7 @@ C4Object* C4Game::NewObject( C4Def *pDef, C4Object *pCreator,
 void C4Game::DeleteObjects(bool fDeleteInactive)
   {
 	// del any objects
-	Objects.DeleteObjects();
-	BackObjects.Clear();
-	ForeObjects.Clear();
-	if (fDeleteInactive) Objects.InactiveObjects.DeleteObjects();
+	::Objects.DeleteObjects(fDeleteInactive);
 	// reset resort flag
 	fResortAnyObject = FALSE;
   }
@@ -1244,7 +1242,7 @@ C4Object* C4Game::OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt
   C4Object *cObj; C4ObjectLink *clnk;
   C4Rect rect1,rect2;
   rect1.x=tx; rect1.y=ty; rect1.Wdt=wdt; rect1.Hgt=hgt;
-	C4LArea Area(&Game.Objects.Sectors, tx, ty, wdt, hgt); C4LSector *pSector;
+	C4LArea Area(&::Objects.Sectors, tx, ty, wdt, hgt); C4LSector *pSector;
 	for (C4ObjectList *pObjs = Area.FirstObjectShapes(&pSector); pSector; pObjs = Area.NextObjectShapes(pObjs, &pSector))
 		for (clnk=pObjs->First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
 			if (cObj->Status) if (!cObj->Contained)
@@ -1358,7 +1356,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 												C4Object *pFindNext)
 	{
 	// FIXME: Use C4FindObject here for optimization
-  C4Object *cObj; C4ObjectLink *cLnk; C4ObjectList *pLst = &ForeObjects;
+  C4Object *cObj; C4ObjectLink *cLnk; C4ObjectList *pLst = &::Objects.ForeObjects;
 
 	// scan all object lists seperately
 	while (pLst)
@@ -1418,8 +1416,8 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 
 			}
 		// next list
-		if (pLst == &ForeObjects) pLst = &Objects;
-		else if (pLst == &Objects) pLst = &BackObjects;
+		if (pLst == &::Objects.ForeObjects) pLst = &Objects;
+		else if (pLst == &Objects) pLst = &::Objects.BackObjects;
 		else pLst = NULL;
 		}
 
@@ -1667,8 +1665,6 @@ void C4Game::Default()
   ::Definitions.Default();
   ::MaterialMap.Default();
   Objects.Default();
-	BackObjects.Default();
-	ForeObjects.Default();
 	Players.Default();
   Weather.Default();
   Landscape.Default();

@@ -37,6 +37,7 @@
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 const int32_t MoveToRange=5,LetGoRange1=7,LetGoRange2=30,DigRange=1;
@@ -2306,15 +2307,15 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 
 void C4Command::DenumeratePointers()
 	{
-	Target = Game.Objects.ObjectPointer((long)Target);
-	Target2 = Game.Objects.ObjectPointer((long)Target2);
+	Target = ::Objects.ObjectPointer((long)Target);
+	Target2 = ::Objects.ObjectPointer((long)Target2);
 	Tx.DenumeratePointer();
 	}
 
 void C4Command::EnumeratePointers()
 	{
-	Target = (C4Object*) Game.Objects.ObjectNumber(Target);
-	Target2 = (C4Object*) Game.Objects.ObjectNumber(Target2);
+	Target = (C4Object*) ::Objects.ObjectNumber(Target);
+	Target2 = (C4Object*) ::Objects.ObjectNumber(Target2);
 	}
 
 int32_t C4Command::CallFailed()

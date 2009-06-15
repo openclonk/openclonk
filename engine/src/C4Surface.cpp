@@ -36,7 +36,7 @@
 #ifdef _DEBUG
 C4Surface::~C4Surface()
 	{
-/*	for (C4ObjectLink *lnk = Game.Objects.First; lnk; lnk=lnk->Next)
+/*	for (C4ObjectLink *lnk = ::Objects.First; lnk; lnk=lnk->Next)
 		if (lnk->Obj->Menu)
 			lnk->Obj->Menu->AssertSurfaceNotUsed(this);*/
 	}

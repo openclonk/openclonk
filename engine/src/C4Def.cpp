@@ -37,6 +37,7 @@
 #include <C4ValueList.h>
 #include <C4RankSystem.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #ifdef C4ENGINE
 #include <C4Object.h>
 #include "C4Network2Res.h"
@@ -1495,7 +1496,7 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	// GfxBackup-dtor will ensure that upon loading-failure all graphics are reset to default
 	C4DefGraphicsPtrBackup GfxBackup(&pDef->Graphics);
 	// clear any pointers into def (name)
-	Game.Objects.ClearDefPointers(pDef);
+	::Objects.ClearDefPointers(pDef);
 #endif
 	// Clear def
 	pDef->Clear(); // Assume filename is being kept
@@ -1512,7 +1513,7 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 #endif
 #ifdef C4ENGINE
 	// update definition pointers
-	Game.Objects.UpdateDefPointers(pDef);
+	::Objects.UpdateDefPointers(pDef);
 	// restore graphics
 	GfxBackup.AssignUpdate(&pDef->Graphics);
 #endif

@@ -26,6 +26,7 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #ifdef C4ENGINE
 #include <C4Object.h>
 #include <C4Log.h>
@@ -70,7 +71,7 @@ void C4Value::AddDataRef()
 		Data.Obj->AddRef(this);
 #ifdef _DEBUG
 		// check if the object actually exists
-		if(!Game.Objects.ObjectNumber(Data.Obj))
+		if(!::Objects.ObjectNumber(Data.Obj))
 			{ LogF("Warning: using wild object ptr %p!", Data.Obj); }
 		else if(!Data.Obj->Status)
 			{ LogF("Warning: using ptr on deleted object %p (%s)!", Data.Obj, Data.Obj->GetName()); }
@@ -263,7 +264,7 @@ C4V_Type C4Value::GuessType()
 
 #ifdef C4ENGINE
 	// object?
-	if (Game.Objects.ObjectNumber(Data.Obj))
+	if (::Objects.ObjectNumber(Data.Obj))
 		{
 		Type = C4V_C4Object;
 		// With the type now known, the destructor will clean up the reference
@@ -535,7 +536,7 @@ StdStrBuf C4Value::GetDataString()
 	case C4V_C4Object:
 		{
 		// obj exists?
-		if(!Game.Objects.ObjectNumber(Data.Obj) && !Game.Objects.InactiveObjects.ObjectNumber(Data.Obj))
+		if(!::Objects.ObjectNumber(Data.Obj) && !::Objects.InactiveObjects.ObjectNumber(Data.Obj))
 			return FormatString("%ld", Data.Int);
 		else
 			if (Data.Obj)
@@ -603,9 +604,9 @@ void C4Value::DenumeratePointer()
 	if(Type != C4V_C4ObjectEnum && !Inside(Data.Int, C4EnumPointer1, C4EnumPointer2)) return;
 	// get obj id, search object
 	int iObjID = (Data.Int >= C4EnumPointer1 ? Data.Int - C4EnumPointer1 : Data.Int);
-	C4Object *pObj = Game.Objects.ObjectPointer(iObjID);
+	C4Object *pObj = ::Objects.ObjectPointer(iObjID);
 	if (!pObj)
-		pObj = Game.Objects.InactiveObjects.ObjectPointer(iObjID);
+		pObj = ::Objects.InactiveObjects.ObjectPointer(iObjID);
 	if(pObj)
 		// set
 		SetObject(pObj);
@@ -693,7 +694,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	case C4V_C4Object:
 #ifdef C4ENGINE
 		if(!fCompiler)
-			iTmp = Game.Objects.ObjectNumber(getObj());
+			iTmp = ::Objects.ObjectNumber(getObj());
 #else
 		if(!fCompiler) iTmp = 0;
 #endif

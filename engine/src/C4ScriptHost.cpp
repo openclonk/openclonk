@@ -30,6 +30,7 @@
 #include <C4ObjectCom.h>
 #include <C4Object.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 /*--- C4ScriptHost ---*/
@@ -262,7 +263,7 @@ C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars
 	{
 	// call objects first - scenario script might overwrite hostility, etc...
 	C4Object *pObj;
-	for (C4ObjectLink *clnk=Game.Objects.ObjectsInt().First; clnk; clnk=clnk->Next) if (pObj=clnk->Obj)
+	for (C4ObjectLink *clnk=::Objects.ObjectsInt().First; clnk; clnk=clnk->Next) if (pObj=clnk->Obj)
 		if (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment))
 			if (pObj->Status)
 				{

@@ -51,6 +51,7 @@
 #include <C4Texture.h>
 #include <C4PlayerList.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 //========================== Some Support Functions =======================================
@@ -171,7 +172,7 @@ bool CheckEnergyNeedChain(C4Object *pObj, C4ObjectList &rEnergyChainChecked)
 
 	// Check all power line connected structures
   C4Object *cline; C4ObjectLink *clnk;
-  for (clnk=Game.Objects.First; clnk && (cline=clnk->Obj); clnk=clnk->Next)
+  for (clnk=::Objects.First; clnk && (cline=clnk->Obj); clnk=clnk->Next)
 		if (cline->Status) if (cline->Def->id==C4ID_PowerLine)
 			if (cline->Action.Target==pObj)
 				if (CheckEnergyNeedChain(cline->Action.Target2,rEnergyChainChecked))
@@ -2096,7 +2097,7 @@ static C4Value FnObjectCount2(C4AulContext *cthr, C4Value *pPars)
 	if(!pFO)
 		throw new C4AulExecError(cthr->Obj, "ObjectCount: No valid search criterions supplied!");
 	// Search
-	int32_t iCnt = pFO->Count(Game.Objects, Game.Objects.Sectors);
+	int32_t iCnt = pFO->Count(::Objects, ::Objects.Sectors);
 	// Free
 	delete pFO;
 	// Return
@@ -2113,7 +2114,7 @@ static C4Value FnFindObject2(C4AulContext *cthr, C4Value *pPars)
 	if(!pFO)
 		throw new C4AulExecError(cthr->Obj, "FindObject: No valid search criterions supplied!");
 	// Search
-	C4Object *pObj = pFO->Find(Game.Objects, Game.Objects.Sectors);
+	C4Object *pObj = pFO->Find(::Objects, ::Objects.Sectors);
 	// Free
 	delete pFO;
 	// Return
@@ -2130,7 +2131,7 @@ static C4Value FnFindObjects(C4AulContext *cthr, C4Value *pPars)
 	if(!pFO)
 		throw new C4AulExecError(cthr->Obj, "FindObjects: No valid search criterions supplied!");
 	// Search
-	C4ValueArray *pResult = pFO->FindMany(Game.Objects, Game.Objects.Sectors);
+	C4ValueArray *pResult = pFO->FindMany(::Objects, ::Objects.Sectors);
 	// Free
 	delete pFO;
 	// Return
@@ -3431,7 +3432,7 @@ static long FnObjectNumber(C4AulContext *cthr, C4Object *pObj)
 
 C4Object* FnObject(C4AulContext *cthr, long iNumber)
 	{
-	return Game.Objects.SafeObjectPointer(iNumber);
+	return ::Objects.SafeObjectPointer(iNumber);
 	}
 
 static long FnShowInfo(C4AulContext *cthr, C4Object *pObj)
@@ -3666,7 +3667,7 @@ static bool FnResort(C4AulContext *cthr, C4Object *pObj)
 		pObj->Resort();
 	// Resort object list
 	else
-		Game.Objects.SortByCategory();
+		::Objects.SortByCategory();
 	return TRUE;
 	}
 
@@ -4479,8 +4480,8 @@ static bool FnResortObjects(C4AulContext* cthr, C4String *szFunc, long Category)
 	pObjRes->Category=Category;
 	pObjRes->OrderFunc=pFn;
 	// insert into game resort proc list
-	pObjRes->Next = Game.Objects.ResortProc;
-	Game.Objects.ResortProc = pObjRes;
+	pObjRes->Next = ::Objects.ResortProc;
+	::Objects.ResortProc = pObjRes;
 	// success, so far
 	return TRUE;
 	}
@@ -4500,8 +4501,8 @@ static bool FnResortObject(C4AulContext* cthr, C4String *szFunc, C4Object *pObj)
 	pObjRes->OrderFunc=pFn;
 	pObjRes->pSortObj=pObj;
 	// insert into game resort proc list
-	pObjRes->Next = Game.Objects.ResortProc;
-	Game.Objects.ResortProc = pObjRes;
+	pObjRes->Next = ::Objects.ResortProc;
+	::Objects.ResortProc = pObjRes;
 	// success, so far
 	return TRUE;
 	}
@@ -5350,8 +5351,8 @@ static bool FnSetObjectOrder(C4AulContext* ctx, C4Object *pObjBeforeOrAfter, C4O
 	pObjRes->pObjBefore = pObjBeforeOrAfter;
 	pObjRes->fSortAfter = fSortAfter;
 	// insert into game resort proc list
-	pObjRes->Next = Game.Objects.ResortProc;
-	Game.Objects.ResortProc = pObjRes;
+	pObjRes->Next = ::Objects.ResortProc;
+	::Objects.ResortProc = pObjRes;
 	// done, success so far
 	return TRUE;
 	}

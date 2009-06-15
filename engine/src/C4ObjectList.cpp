@@ -31,6 +31,7 @@
 #include <C4Region.h>
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 C4ObjectList::C4ObjectList(): FirstIter(0)
@@ -499,7 +500,7 @@ BOOL C4ObjectList::DenumerateRead()
 	if(!pEnumerated) return FALSE;
 	// Denumerate all object pointers
 	for(std::list<int32_t>::const_iterator pNum = pEnumerated->begin(); pNum != pEnumerated->end(); ++pNum)
-		Add(Game.Objects.ObjectPointer(*pNum), stNone); // Add to tail, unsorted
+		Add(::Objects.ObjectPointer(*pNum), stNone); // Add to tail, unsorted
 	// Delete old list
 	delete pEnumerated; pEnumerated = NULL;
 	return TRUE;
