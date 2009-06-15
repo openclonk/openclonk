@@ -30,6 +30,7 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4Game.h>
+#include <C4GameControl.h>
 #endif
 
 #include <StdFile.h>
@@ -47,7 +48,7 @@ int DoNoDebugRec=0; // debugrec disable counter
 
 void AddDbgRec(C4RecordChunkType eType, const void *pData, int iSize)
 	{
-	Game.Control.DbgRec(eType, (const uint8_t *) pData, iSize);
+	::Control.DbgRec(eType, (const uint8_t *) pData, iSize);
 	}
 #else
 bool DoDebugRec=false;
@@ -911,7 +912,7 @@ void C4Playback::Finish()
 		Game.DoGameOver();
 		}
 	// finish playback: enable controls
-	Game.Control.ChangeToLocal();
+	::Control.ChangeToLocal();
 	}
 
 void C4Playback::Clear()
@@ -1043,7 +1044,7 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 			C4IDPacket Packet(*currChunk->pPkt);
 			C4ControlPacket *pCtrlPck = static_cast<C4ControlPacket *>(Packet.getPkt());
 			assert(!pCtrlPck->Sync());
-			Game.Control.ExecControlPacket(Packet.getPktType(), pCtrlPck);
+			::Control.ExecControlPacket(Packet.getPktType(), pCtrlPck);
 			NextChunk();
 			}
 		// record end?

@@ -30,7 +30,6 @@
 #include <C4PlayerInfo.h>
 #include <C4RoundResults.h>
 #include <C4Scenario.h>
-#include <C4GameControl.h>
 #include <C4Control.h>
 #include <C4PathFinder.h>
 #include <C4Extra.h>
@@ -80,7 +79,6 @@ class C4Game
 		C4GameScriptHost		Script;
 		C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable, ScenarioSysLangStringTable;
 		StdStrBuf           PlayerNames;
-		C4GameControl				Control;
 		C4Control					 &Input; // shortcut
 
 		C4PathFinder				PathFinder;

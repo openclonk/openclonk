@@ -35,6 +35,7 @@
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 C4PlayerList::C4PlayerList()
@@ -452,7 +453,7 @@ BOOL C4PlayerList::Retire(C4Player *pPlr)
 	if (!pPlr->Evaluated)
 		{
 		pPlr->Evaluate();
-		if (!Game.Control.isReplay() && pPlr->GetType() != C4PT_Script) pPlr->Save();
+		if (!::Control.isReplay() && pPlr->GetType() != C4PT_Script) pPlr->Save();
 		}
 	Remove(pPlr, false, false);
 
@@ -610,7 +611,7 @@ C4Player* C4PlayerList::GetAtRemoteClient(int iIndex) const
 	{
 	int cindex=0;
   for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-		if (pPlr->AtClient != Game.Control.ClientID())
+		if (pPlr->AtClient != ::Control.ClientID())
 			{
 			if (cindex==iIndex)	return pPlr;
 			cindex++;

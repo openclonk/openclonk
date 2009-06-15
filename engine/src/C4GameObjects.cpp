@@ -32,6 +32,7 @@
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4PlayerList.h>
+#include <C4Record.h>
 #endif
 
 C4GameObjects::C4GameObjects()

@@ -44,11 +44,12 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 // *** C4ControlPacket
 C4ControlPacket::C4ControlPacket()
-	: iByClient(Game.Control.ClientID())
+	: iByClient(::Control.ClientID())
 {
 
 }
@@ -60,7 +61,7 @@ C4ControlPacket::~C4ControlPacket()
 
 bool C4ControlPacket::LocalControl() const
 {
-  return iByClient == Game.Control.ClientID();
+  return iByClient == ::Control.ClientID();
 }
 
 void C4ControlPacket::SetByClient(int32_t inByClient)
@@ -155,14 +156,14 @@ void C4ControlSet::Execute() const
 		// host only
 		if(iByClient != C4ClientIDHost) break;
 		// adjust control rate
-		Game.Control.ControlRate += iData;
-		Game.Control.ControlRate = BoundBy<int32_t>(Game.Control.ControlRate, 1, C4MaxControlRate);
-		Game.Parameters.ControlRate = Game.Control.ControlRate;
+		::Control.ControlRate += iData;
+		::Control.ControlRate = BoundBy<int32_t>(::Control.ControlRate, 1, C4MaxControlRate);
+		Game.Parameters.ControlRate = ::Control.ControlRate;
 		// write back adjusted control rate to network settings
-		if (Game.Control.isCtrlHost() && !Game.Control.isReplay() && Game.Control.isNetwork())
-			Config.Network.ControlRate = Game.Control.ControlRate;
+		if (::Control.isCtrlHost() && !::Control.isReplay() && ::Control.isNetwork())
+			Config.Network.ControlRate = ::Control.ControlRate;
 		// always show msg
-		::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_NET_CONTROLRATE"),Game.Control.ControlRate,Game.FrameCounter).getData());
+		::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_NET_CONTROLRATE"),::Control.ControlRate,Game.FrameCounter).getData());
 		break;
 
 	case C4CVT_AllowDebug: // allow debug mode?
@@ -216,7 +217,7 @@ void C4ControlSet::Execute() const
 		// deny setting if it's fixed by scenario
 		if (Game.Parameters.FairCrewForced)
 			{
-			if (Game.Control.isCtrlHost()) Log(LoadResStr("IDS_MSG_NOMODIFYFAIRCREW"));
+			if (::Control.isCtrlHost()) Log(LoadResStr("IDS_MSG_NOMODIFYFAIRCREW"));
 			break;
 			}
     // set new value
@@ -440,7 +441,7 @@ void C4ControlSyncCheck::Set()
 {
 	extern int32_t FRndPtr3;
 	Frame = Game.FrameCounter;
-  ControlTick = Game.Control.ControlTick;
+  ControlTick = ::Control.ControlTick;
 	Random3 = FRndPtr3;
 	RandomCount = ::RandomCount;
 	AllCrewPosX = GetAllCrewPosX();
@@ -463,19 +464,19 @@ int32_t C4ControlSyncCheck::GetAllCrewPosX()
 void C4ControlSyncCheck::Execute() const
 	{
 	// control host?
-	if(Game.Control.isCtrlHost()) return;
+	if(::Control.isCtrlHost()) return;
 
 	// get the saved sync check data
-	C4ControlSyncCheck* pSyncCheck = Game.Control.GetSyncCheck(Frame), &SyncCheck = *pSyncCheck;
+	C4ControlSyncCheck* pSyncCheck = ::Control.GetSyncCheck(Frame), &SyncCheck = *pSyncCheck;
 	if(!pSyncCheck)
 		{
-		Game.Control.SyncChecks.Add(CID_SyncCheck, new C4ControlSyncCheck(*this));
+		::Control.SyncChecks.Add(CID_SyncCheck, new C4ControlSyncCheck(*this));
 		return;
 		}
 
 	// Not equal
 	if ( Frame                  != pSyncCheck->Frame
-		||(ControlTick            != pSyncCheck->ControlTick   && !Game.Control.isReplay())
+		||(ControlTick            != pSyncCheck->ControlTick   && !::Control.isReplay())
 	  || Random3                != pSyncCheck->Random3
 	  || RandomCount            != pSyncCheck->RandomCount
 	  || AllCrewPosX            != pSyncCheck->AllCrewPosX
@@ -485,8 +486,8 @@ void C4ControlSyncCheck::Execute() const
 	  || ObjectEnumerationIndex != pSyncCheck->ObjectEnumerationIndex
 		|| SectShapeSum						!= pSyncCheck->SectShapeSum)
 		{
-		const char *szThis = "Client", *szOther = Game.Control.isReplay() ? "Rec ":"Host";
-		if(iByClient != Game.Control.ClientID())
+		const char *szThis = "Client", *szOther = ::Control.isReplay() ? "Rec ":"Host";
+		if(iByClient != ::Control.ClientID())
 			{ const char *szTemp = szThis; szThis = szOther; szOther = szTemp; }
 		// Message
 		LogFatal("Network: Synchronization loss!");
@@ -501,9 +502,9 @@ void C4ControlSyncCheck::Execute() const
 		// league: Notify regular client disconnect within the game
 		::Network.LeagueNotifyDisconnect(C4ClientIDHost, C4LDR_Desync);
 		// Deactivate / end
-		if(Game.Control.isReplay())
+		if(::Control.isReplay())
 			Game.DoGameOver();
-		else if(Game.Control.isNetwork())
+		else if(::Control.isNetwork())
 			{
 			Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, "Network: Synchronization loss!");
 			::Network.Clear();
@@ -588,7 +589,7 @@ void C4ControlClientUpdate::Execute() const
 		pClient->SetActivated(!!iData);
 		// local?
 		if(pClient->isLocal())
-			Game.Control.SetActivated(!!iData);
+			::Control.SetActivated(!!iData);
 		break;
 	case CUT_SetObserver:
 		// nothing to do?
@@ -599,7 +600,7 @@ void C4ControlClientUpdate::Execute() const
 		pClient->SetObserver();
 		// local?
 		if(pClient->isLocal())
-			Game.Control.SetActivated(false);
+			::Control.SetActivated(false);
 		// remove all players ("soft kick")
 		::Players.RemoveAtClient(iID, true);
 		break;
@@ -628,7 +629,7 @@ void C4ControlClientRemove::Execute() const
 		{
 		// TODO: in replays, client list is not yet synchronized
 		// remove players anyway
-		if (Game.Control.isReplay()) ::Players.RemoveAtClient(iID, true);
+		if (::Control.isReplay()) ::Players.RemoveAtClient(iID, true);
 		return;
 		}
 	StdCopyStrBuf strClient(LoadResStr(pClient->isLocal() ? "IDS_NET_LOCAL_CLIENT" : "IDS_NET_CLIENT"));
@@ -639,7 +640,7 @@ void C4ControlClientRemove::Execute() const
 		sMsg.Format(LoadResStr("IDS_NET_CLIENT_REMOVED"), strClient.getData(), pClient->getName(), strReason.getData());
 		Log(sMsg.getData());
 		Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, sMsg.getData());
-		Game.Control.ChangeToLocal();
+		::Control.ChangeToLocal();
 		return;
 	}
 	// remove client
@@ -739,14 +740,14 @@ void C4ControlJoinPlayer::Execute() const
 			return;
 		}
   }
-	else if(Game.Control.isNetwork())
+	else if(::Control.isNetwork())
 	{
 		// Find ressource
 		C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 		if(pRes && pRes->isComplete())
 			Game.JoinPlayer(pRes->getFile(), iAtClient, pClient->getName(), pInfo);
 	}
-	else if(Game.Control.isReplay())
+	else if(::Control.isReplay())
 	{
 		// Expect player in scenario file
 		StdStrBuf PlayerFilename; PlayerFilename.Format("%s" DirSep "%d-%s", Game.ScenarioFilename, ResCore.getID(), GetFilename(ResCore.getFileName()));
@@ -796,7 +797,7 @@ bool C4ControlJoinPlayer::PreExecute() const
 	// client lost?
 	if(!Game.Clients.getClientByID(iAtClient)) return true;
   // network only
-	if(!Game.Control.isNetwork()) return true;
+	if(!::Control.isNetwork()) return true;
   // search ressource
 	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 	// doesn't exist? start loading
@@ -1164,7 +1165,7 @@ void C4ControlPlayerInfo::Execute() const
 {
 	// join to player info list
 	// replay and local control: direct join
-	if (Game.Control.isReplay() || !Game.Control.isNetwork())
+	if (::Control.isReplay() || !::Control.isNetwork())
 		{
 		// add info directly
 		Game.PlayerInfos.AddInfo(new C4ClientPlayerInfos(PlrInfo));
@@ -1172,7 +1173,7 @@ void C4ControlPlayerInfo::Execute() const
 		Game.Teams.RecheckPlayers();
 		// replay: actual player join packet will follow
 		// offline game: Issue the join
-		if (Game.Control.isLocal())
+		if (::Control.isLocal())
 			Game.PlayerInfos.LocalJoinUnjoinedPlayersInQueue();
 		}
 	else
@@ -1273,7 +1274,7 @@ void C4ControlVote::Execute() const
 	if(::Network.isEnabled())
 		::Network.AddVote(*this);
 	// Vote done?
-	if(Game.Control.isCtrlHost())
+	if(::Control.isCtrlHost())
 		{
 		// Count votes
 		int32_t iPositive = 0, iNegative = 0, iVotes = 0;
@@ -1330,12 +1331,12 @@ void C4ControlVote::Execute() const
 			}
 		// Approval? More then 50% needed
 		if(iPositive * 2 > iVotes)
-			Game.Control.DoInput(CID_VoteEnd,
+			::Control.DoInput(CID_VoteEnd,
 			  new C4ControlVoteEnd(eType, true, iData),
 				CDT_Sync);
 		// Disapproval?
 		else if(iNegative * 2 >= iVotes)
-			Game.Control.DoInput(CID_VoteEnd,
+			::Control.DoInput(CID_VoteEnd,
 			  new C4ControlVoteEnd(eType, false, iData),
 				CDT_Sync);
 		}
@@ -1390,7 +1391,7 @@ void C4ControlVoteEnd::Execute() const
 					if(!pInfo->IsRemoved())
 						pInfo->SetVotedOut();
 		// Remove the client
-		if(Game.Control.isCtrlHost())
+		if(::Control.isCtrlHost())
 			{
 			C4Client *pClient = Game.Clients.getClientByID(getData());
 			if(pClient)

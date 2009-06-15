@@ -37,6 +37,7 @@
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 #ifdef WITH_DEVELOPER_MODE
@@ -365,7 +366,7 @@ bool C4EditCursor::Delete()
 	{
 	if (!EditingOK()) return FALSE;
 	EMMoveObject(EMMO_Remove, 0, 0, NULL, &Selection);
-	if(Game.Control.isCtrlHost())
+	if(::Control.isCtrlHost())
 		{
 		OnSelectionChanged();
 		}
@@ -763,7 +764,7 @@ void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int
 
 void C4EditCursor::EMControl(C4PacketType eCtrlType, C4ControlPacket *pCtrl)
   {
-  Game.Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
+  ::Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
   }
 
 #ifdef WITH_DEVELOPER_MODE

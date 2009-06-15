@@ -166,5 +166,6 @@ protected:
 	void RemoveOldSyncChecks();
 
 };
+extern C4GameControl Control;
 
 #endif // INC_C4GameControl

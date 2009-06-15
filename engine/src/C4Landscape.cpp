@@ -49,6 +49,7 @@
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4Texture.h>
+#include <C4Record.h>
 #endif
 
 #include <StdPNG.h>

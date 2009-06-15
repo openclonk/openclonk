@@ -49,6 +49,7 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4Network2.h>
 #endif
 
 #include <StdGL.h>

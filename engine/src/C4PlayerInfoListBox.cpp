@@ -31,6 +31,8 @@
 #include <C4FileSelDlg.h>
 #include <C4GraphicsResource.h>
 #include <C4MouseControl.h>
+#include <C4Network2.h>
+#include <C4GameControl.h>
 #endif
 
 DWORD GenerateRandomPlayerColor(int32_t iTry); // in C4PlayerInfoConflicts.cpp
@@ -935,7 +937,7 @@ void C4PlayerInfoListBox::ClientListItem::OnCtxActivate(C4GUI::Element *pListIte
 	C4Client *pClient = GetClient();
 	if (!::Network.isEnabled() || !::Network.isHost() || !pClient) return;
 	// add control
-	Game.Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(idClient, CUT_Activate, !pClient->isActivated()), CDT_Sync);
+	::Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(idClient, CUT_Activate, !pClient->isActivated()), CDT_Sync);
 	}
 
 void C4PlayerInfoListBox::ClientListItem::OnCtxInfo(C4GUI::Element *pListItem)
@@ -1127,7 +1129,7 @@ C4PlayerInfoListBox::ScriptPlayersListItem::ScriptPlayersListItem(C4PlayerInfoLi
 	pIcon = new C4GUI::Icon(C4Rect(0, 0, iIconSize, iIconSize), C4GUI::Ico_Record);
 	pNameLabel = new C4GUI::Label(LoadResStr("IDS_CTL_SCRIPTPLAYERS"), iIconSize + IconLabelSpacing,0, ALeft);
 	btnAddPlayer = NULL;
-	if (Game.Control.isCtrlHost())
+	if (::Control.isCtrlHost())
 		{
 		btnAddPlayer = new C4GUI::CallbackButton<ScriptPlayersListItem, C4GUI::IconButton>(C4GUI::Ico_AddPlr, C4Rect(0, 0, iIconSize, iIconSize), 'A' /* 2do TODO */, &ScriptPlayersListItem::OnBtnAddPlr, this);
 		}
@@ -1170,7 +1172,7 @@ void C4PlayerInfoListBox::ScriptPlayersListItem::OnBtnAddPlr(C4GUI::Control *btn
 	int32_t iCurrScriptPlrCount = Game.PlayerInfos.GetActiveScriptPlayerCount(true, true);
 	bool fCanJoinScriptPlayers = (Game.Teams.GetMaxScriptPlayers() - iCurrScriptPlrCount > 0);
 	if (!fCanJoinScriptPlayers) return;
-	if (!Game.Control.isCtrlHost()) return;
+	if (!::Control.isCtrlHost()) return;
 	// request a script player join
 	C4PlayerInfo *pScriptPlrInfo = new C4PlayerInfo();
 	pScriptPlrInfo->SetAsScriptPlayer(Game.Teams.GetScriptPlayerName().getData(), GenerateRandomPlayerColor(iCurrScriptPlrCount), 0, C4ID_None);

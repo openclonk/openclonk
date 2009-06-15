@@ -52,6 +52,7 @@
 #include <C4PlayerList.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 //========================== Some Support Functions =======================================
@@ -2440,7 +2441,7 @@ static long FnSetPlayList(C4AulContext *cth, C4String *szPlayList)
 	long iFilesInPlayList = Application.MusicSystem.SetPlayList(FnStringPar(szPlayList));
 	Game.PlayList.Copy(FnStringPar(szPlayList));
 	// network/record/replay: return 0
-	if(Game.Control.SyncMode()) return 0;
+	if(::Control.SyncMode()) return 0;
 	return iFilesInPlayList;
 	}
 
@@ -2676,7 +2677,7 @@ static C4String *FnGetPlrControlName(C4AulContext *cthr, long iPlr, long iCon, b
 static long FnGetPlrViewMode(C4AulContext *cthr, long iPlr)
   {
   if (!ValidPlr(iPlr)) return -1;
-	if (Game.Control.SyncMode()) return -1;
+	if (::Control.SyncMode()) return -1;
   return ::Players.Get(iPlr)->ViewMode;
   }
 
@@ -2982,7 +2983,7 @@ static bool FnCreateScriptPlayer(C4AulContext *cthr, C4String *szName, long dwCo
 	// this script command puts a new script player info into the list
 	// the actual join will be delayed and synchronized via queue
 	// processed by control host only - clients/replay/etc. will perform the join via queue
-	if (!Game.Control.isCtrlHost()) return true;
+	if (!::Control.isCtrlHost()) return true;
 	C4PlayerInfo *pScriptPlrInfo = new C4PlayerInfo();
 	uint32_t dwInfoFlags = 0u;
 	if (dwFlags & CSPF_FixedAttributes   ) dwInfoFlags |= C4PlayerInfo::PIF_AttributesFixed;
@@ -3655,7 +3656,7 @@ static C4Value FnPrivateCall_C4V(C4AulContext *cthr,
 
 static C4Value FnEditCursor(C4AulContext *cth, C4Value *pPars)
 	{
-	if (Game.Control.SyncMode()) return C4VNull;
+	if (::Control.SyncMode()) return C4VNull;
 	return C4VObj(Console.EditCursor.GetTarget());
 	}
 
@@ -4037,7 +4038,7 @@ static bool FnGetMissionAccess(C4AulContext *cthr, C4String *strMissionAccess)
 	if (!strMissionAccess) return FALSE;
 
 	// non-sync mode: warn
-	if(Game.Control.SyncMode())
+	if(::Control.SyncMode())
 		Log("Warning: using GetMissionAccess may cause desyncs when playing records!");
 
 	if (!Config.General.MissionAccess) return FALSE;
@@ -4804,7 +4805,7 @@ static long FnNoContainer(C4AulContext*)			{ return NO_CONTAINER;	}
 static long FnGetTime(C4AulContext *)
 {
 	// check network, record, etc
-	if (Game.Control.SyncMode()) return 0;
+	if (::Control.SyncMode()) return 0;
 	return timeGetTime();
 }
 
@@ -4812,7 +4813,7 @@ static long FnGetSystemTime(C4AulContext *cthr, long iWhat)
 	{
 #ifdef _WIN32
 	// check network, record, etc
-	if (Game.Control.SyncMode()) return 0;
+	if (::Control.SyncMode()) return 0;
 	// check bounds
 	if (!Inside<long>(iWhat, 0, 7)) return 0;
 	SYSTEMTIME time;
@@ -5387,7 +5388,7 @@ static bool FnSetFilmView(C4AulContext *ctx, long iToPlr)
 	// check player
 	if (!ValidPlr(iToPlr) && iToPlr != NO_OWNER) return FALSE;
 	// real switch in replays only
-	if (!Game.Control.isReplay()) return TRUE;
+	if (!::Control.isReplay()) return TRUE;
 	// set new target plr
 	if (C4Viewport *vp = ::GraphicsSystem.GetFirstViewport()) vp->Init(iToPlr, true);
 	// done, always success (sync)
@@ -5962,12 +5963,12 @@ static bool FnSetViewOffset(C4AulContext *ctx, long iPlayer, long iX, long iY)
 
 static bool FnSetPreSend(C4AulContext *cthr, long iToVal, C4String *pNewName)
   {
-	if (!Game.Control.isNetwork()) return TRUE;
+	if (!::Control.isNetwork()) return TRUE;
 	// dbg: manual presend
 	const char *szClient = FnStringPar(pNewName);
 	if (!szClient || !*szClient || WildcardMatch(szClient, Game.Clients.getLocalName()))
 		{
-		Game.Control.Network.setTargetFPS(iToVal);
+		::Control.Network.setTargetFPS(iToVal);
 		::GraphicsSystem.FlashMessage(FormatString("TargetFPS: %ld", iToVal).getData());
 		}
 	return TRUE;
@@ -6205,7 +6206,7 @@ static long FnActivateGameGoalMenu(C4AulContext *ctx, long iPlayer)
 	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (!pPlr) return FALSE;
 	// open menu
-	return pPlr->Menu.ActivateGoals(pPlr->Number, pPlr->LocalControl && !Game.Control.isReplay());
+	return pPlr->Menu.ActivateGoals(pPlr->Number, pPlr->LocalControl && !::Control.isReplay());
 	}
 
 static bool FnFatalError(C4AulContext *ctx, C4String *pErrorMsg)
@@ -6301,7 +6302,7 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, l
 static bool FnPauseGame(C4AulContext *ctx, bool fToggle)
 	{
 	// not in replay (film)
-	if (Game.Control.isReplay()) return true;
+	if (::Control.isReplay()) return true;
 	// script method for halting game (for films)
 	if (fToggle)
 		Console.TogglePause();

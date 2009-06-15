@@ -32,6 +32,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4PlayerInfoListBox.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 
@@ -243,7 +244,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 		{
 		// not available for regular replay and network clients, obviously
 		// it is available for films though, so you can create cinematics for adventures
-		if (Game.Control.isCtrlHost() || (Game.C4S.Head.Film == 2))
+		if (::Control.isCtrlHost() || (Game.C4S.Head.Film == 2))
 			{
 			fHasNextMissionButton = true;
 			btnContinue->SetText(Game.NextMissionText.getData());

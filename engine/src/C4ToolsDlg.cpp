@@ -30,6 +30,7 @@
 #include <C4Texture.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
+#include <C4GameControl.h>
 #include <StdRegistry.h>
 #include <StdD3D.h>
 #ifdef USE_GL
@@ -893,7 +894,7 @@ BOOL C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
 	// send as control
 	if (!fThroughControl)
 		{
-		Game.Control.DoInput(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_SetMode, iMode), CDT_Decide);
+		::Control.DoInput(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_SetMode, iMode), CDT_Decide);
 		return TRUE;
 		}
 	// Set landscape mode

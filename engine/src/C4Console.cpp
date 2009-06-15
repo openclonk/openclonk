@@ -37,6 +37,7 @@
 #include <C4Landscape.h>
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
+#include <C4GameControl.h>
 
 #include <StdFile.h>
 #include <StdRegistry.h>
@@ -267,14 +268,14 @@ BOOL CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			// Remove player
 			if (Inside((int) LOWORD(wParam),IDM_PLAYER_QUIT1,IDM_PLAYER_QUIT2))
 				{
-				Game.Control.Input.Add(CID_Script, new C4ControlScript(
+				::Control.Input.Add(CID_Script, new C4ControlScript(
 					FormatString("EliminatePlayer(%d)", LOWORD(wParam)-IDM_PLAYER_QUIT1).getData()));
 				return TRUE;
 				}
 			// Remove client
 			if (Inside((int) LOWORD(wParam),IDM_NET_CLIENT1,IDM_NET_CLIENT2))
 				{
-				if(!Game.Control.isCtrlHost()) return FALSE;
+				if(!::Control.isCtrlHost()) return FALSE;
 				Game.Clients.CtrlRemove(Game.Clients.getClientByID(LOWORD(wParam)-IDM_NET_CLIENT1), LoadResStr("IDS_MSG_KICKBYMENU"));
 				return TRUE;
 				}
@@ -612,7 +613,7 @@ bool C4Console::In(const char *szText)
 	// editing enabled?
 	if (!EditCursor.EditingOK()) return FALSE;
 	// pass through network queue
-	Game.Control.DoInput(CID_Script, new C4ControlScript(szText, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+	::Control.DoInput(CID_Script, new C4ControlScript(szText, C4ControlScript::SCOPE_Console, false), CDT_Decide);
 	return TRUE;
 	}
 
@@ -877,7 +878,7 @@ void C4Console::EnableControls(bool fEnable)
 	{
 	if (!Active) return;
 	// disable Editing if no input allowed
-	Editing &= !Game.Control.NoInput();
+	Editing &= !::Control.NoInput();
 
 #ifdef _WIN32
 	// Set button images (edit modes & halt controls)
@@ -906,7 +907,7 @@ void C4Console::EnableControls(bool fEnable)
 	// C4Network2 will have to handle that cases somehow (TODO: test)
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_OPEN, MF_BYCOMMAND | MF_ENABLED );
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_OPENWPLRS, MF_BYCOMMAND | MF_ENABLED );
-	EnableMenuItem(GetMenu(hWindow),IDM_FILE_RECORD, MF_BYCOMMAND | ((Game.IsRunning && Game.Control.IsRuntimeRecordPossible()) ? MF_ENABLED : MF_GRAYED));
+	EnableMenuItem(GetMenu(hWindow),IDM_FILE_RECORD, MF_BYCOMMAND | ((Game.IsRunning && ::Control.IsRuntimeRecordPossible()) ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAME, MF_BYCOMMAND | ((fEnable && ::Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAMEAS, MF_BYCOMMAND | ((fEnable && ::Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVE, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
@@ -936,7 +937,7 @@ void C4Console::EnableControls(bool fEnable)
 
 	// File menu
 	// C4Network2 will have to handle that cases somehow (TODO: test)
-	gtk_widget_set_sensitive(fileRecord, Game.IsRunning && Game.Control.IsRuntimeRecordPossible());
+	gtk_widget_set_sensitive(fileRecord, Game.IsRunning && ::Control.IsRuntimeRecordPossible());
 	gtk_widget_set_sensitive(fileSaveGame, fEnable && ::Players.GetCount());
 	gtk_widget_set_sensitive(fileSaveGameAs, fEnable && ::Players.GetCount());
 	gtk_widget_set_sensitive(fileSave, fEnable);
@@ -1162,9 +1163,9 @@ BOOL C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 BOOL C4Console::FileRecord()
 	{
 	// only in running mode
-	if (!Game.IsRunning || !Game.Control.IsRuntimeRecordPossible()) return FALSE;
+	if (!Game.IsRunning || !::Control.IsRuntimeRecordPossible()) return FALSE;
 	// start record!
-	Game.Control.RequestRuntimeRecord();
+	::Control.RequestRuntimeRecord();
 	// disable menuitem
 #ifdef _WIN32
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_RECORD, MF_BYCOMMAND | MF_GRAYED);
@@ -1806,7 +1807,7 @@ void C4Console::OnPlrJoin(GtkWidget* item, gpointer data)
 
 void C4Console::OnPlrQuit(GtkWidget* item, gpointer data)
 {
-	Game.Control.Input.Add(CID_Script, new C4ControlScript(FormatString("EliminatePlayer(%d)", GPOINTER_TO_INT(data)).getData()));
+	::Control.Input.Add(CID_Script, new C4ControlScript(FormatString("EliminatePlayer(%d)", GPOINTER_TO_INT(data)).getData()));
 }
 
 void C4Console::OnViewNew(GtkWidget* item, gpointer data)
@@ -1826,7 +1827,7 @@ void C4Console::OnHelpAbout(GtkWidget* item, gpointer data)
 
 void C4Console::OnNetClient(GtkWidget* item, gpointer data)
 {
-	if(!Game.Control.isCtrlHost()) return;
+	if(!::Control.isCtrlHost()) return;
 	Game.Clients.CtrlRemove(Game.Clients.getClientByID(GPOINTER_TO_INT(data)), LoadResStr("IDS_MSG_KICKBYMENU"));
 }
 #endif // WITH_DEVELOPER_MODE

@@ -48,6 +48,7 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 #define C4FOW_Def_View_RangeX 500
@@ -179,7 +180,7 @@ void C4Player::Execute()
 			{
 			// There's only one team left to join? Join there immediately.
 			if (Menu.IsActive() && Menu.GetIdentification() == C4MN_TeamSelection) Menu.TryClose(false, false);
-			if (LocalControl && !Game.Control.isReplay())
+			if (LocalControl && !::Control.isReplay())
 				{
 				// team selection done through queue because TeamSelection-status may not be in sync (may be TeamSelectionPending!)
 				DoTeamSelection(idSelectedTeam);
@@ -444,7 +445,7 @@ BOOL C4Player::Save()
   // resource
 	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(Filename),
 										 pDRes = NULL;
-  bool fOfficial = pRes && Game.Control.isCtrlHost();
+  bool fOfficial = pRes && ::Control.isCtrlHost();
   if(pRes) pDRes = pRes->Derive();
 	// move back
 	if (ItemExists(Filename)) EraseItem(Filename);
@@ -1738,7 +1739,7 @@ void C4Player::DoTeamSelection(int32_t idTeam)
 	// stop team selection. This might close the menu forever if the control gets lost
 	// let's hope it doesn't!
 	Status = PS_TeamSelectionPending;
-	Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("InitScenarioPlayer(%d,%d)", (int)Number, (int)idTeam).getData()), CDT_Queue);
+	::Control.DoInput(CID_Script, new C4ControlScript(FormatString("InitScenarioPlayer(%d,%d)", (int)Number, (int)idTeam).getData()), CDT_Queue);
 	}
 
 void C4Player::EnumeratePointers()
@@ -1845,7 +1846,7 @@ void C4Player::InitControl()
 	{
 	// Check local control
 	LocalControl = FALSE;
-	if (AtClient == Game.Control.ClientID())
+	if (AtClient == ::Control.ClientID())
 		if (!GetInfo() || GetInfo()->GetType() == C4PT_User)
 			LocalControl=TRUE;
   // Set control
@@ -1877,7 +1878,7 @@ void C4Player::InitControl()
 		pGamepad = new C4GamePadOpener(Control - C4P_Control_GamePad1);
 		}
 	// Mouse
-	if (PrefMouse && !Game.Control.isReplay())
+	if (PrefMouse && !::Control.isReplay())
 		if (!Game.C4S.Head.DisableMouse)
 			if (Inside<int32_t>(Control, C4P_Control_Keyboard1, C4P_Control_GamePadMax))
 				if (!::Players.MouseControlTaken())
@@ -2012,7 +2013,7 @@ void C4Player::Eliminate()
 	Log(FormatString(LoadResStr("IDS_PRC_PLRELIMINATED"),GetName()).getData());
 
 	// Early client deactivation check
-	if(Game.Control.isCtrlHost() && AtClient > C4ClientIDHost)
+	if(::Control.isCtrlHost() && AtClient > C4ClientIDHost)
 		{
 		// Check: Any player left at this client?
 		C4Player *pPlr = NULL;
@@ -2021,7 +2022,7 @@ void C4Player::Eliminate()
 				break;
 		// If not, deactivate the client
 		if(!pPlr)
-			Game.Control.DoInput(CID_ClientUpdate,
+			::Control.DoInput(CID_ClientUpdate,
 				new C4ControlClientUpdate(AtClient, CUT_Activate, false),
 				CDT_Sync);
 		}

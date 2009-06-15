@@ -183,7 +183,7 @@ void C4GameControl::RequestRuntimeRecord()
 	// request through a synchronize-call
 	// currnetly do not request, but start record with next gamesync, so network runtime join can be debugged
 #ifndef DEBUGREC
-	Game.Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
+	::Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
 #endif
 	}
 
@@ -366,7 +366,7 @@ void C4GameControl::AdjustControlRate(int32_t iBy)
 {
 	// control host only
 	if(isCtrlHost())
-		Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_ControlRate, iBy), CDT_Decide);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_ControlRate, iBy), CDT_Decide);
 }
 
 void C4GameControl::SetActivated(bool fnActivated)
@@ -515,3 +515,5 @@ void C4GameControl::RemoveOldSyncChecks()
 			SyncChecks.Delete(pPkt);
 	}
 }
+
+C4GameControl Control;

@@ -34,6 +34,7 @@
 #include <C4Player.h>
 #include <C4FullScreen.h>
 #include <C4PlayerList.h>
+#include <C4GameControl.h>
 #endif
 
 // *** C4PlayerInfo
@@ -381,9 +382,9 @@ C4ClientPlayerInfos::C4ClientPlayerInfos(const char *szJoinFilenames, bool fAdd,
 		if (SSearch(Config.GetRegistrationData("Type"), "Developer"))
 			dwFlags |= CIF_Developer;
 		// set local ID
-		iClientID = Game.Control.ClientID();
+		iClientID = ::Control.ClientID();
 		// maybe control is not preinitialized
-		if (!Game.Control.isNetwork() && iClientID < 0) iClientID = 0;
+		if (!::Control.isNetwork() && iClientID < 0) iClientID = 0;
 		// join packet or initial packet?
 		if (fAdd)
 			// packet is to be added to other players
@@ -748,10 +749,10 @@ bool C4PlayerInfoList::DoLocalNonNetworkPlayerJoin(const char *szPlayerFile)
 bool C4PlayerInfoList::DoPlayerInfoUpdate(C4ClientPlayerInfos *pUpdate)
 	{
 	// never done by clients or in replay - update will be handled via queue
-	if (!Game.Control.isCtrlHost()) return false;
+	if (!::Control.isCtrlHost()) return false;
 	// in network game, process by host. In offline game, just create control
 	bool fSucc = true;
-	if (Game.Control.isNetwork())
+	if (::Control.isNetwork())
 		::Network.Players.RequestPlayerInfoUpdate(*pUpdate);
 	else
 		fSucc = DoLocalNonNetworkPlayerInfoUpdate(pUpdate);
@@ -771,7 +772,7 @@ bool C4PlayerInfoList::DoLocalNonNetworkPlayerInfoUpdate(C4ClientPlayerInfos *pU
 	UpdatePlayerAttributes(pUpdate, true);
 	// add through queue: This will add directly, do the record and put player joins into the queue
 	// in running mode, this call will also put the actual player joins into the queue
-  Game.Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(*pUpdate), Game.IsRunning ? CDT_Queue : CDT_Direct);
+  ::Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(*pUpdate), Game.IsRunning ? CDT_Queue : CDT_Direct);
 	// done, success
 	return true;
 	}
@@ -1336,7 +1337,7 @@ bool C4PlayerInfoList::LocalJoinUnjoinedPlayersInQueue()
 	// local call only - in network, C4Network2Players joins players!
 	assert(!::Network.isEnabled());
 	// get local players
-	C4ClientPlayerInfos **ppkLocal = GetInfoPtrByClientID(Game.Control.ClientID()), *pkLocal;
+	C4ClientPlayerInfos **ppkLocal = GetInfoPtrByClientID(::Control.ClientID()), *pkLocal;
 	if (!ppkLocal) return false;
 	pkLocal = *ppkLocal;
 	// check all players
@@ -1358,7 +1359,7 @@ bool C4PlayerInfoList::LocalJoinUnjoinedPlayersInQueue()
 				continue;
 				}
       Game.Input.Add(CID_JoinPlr,
-        new C4ControlJoinPlayer(szFilename, Game.Control.ClientID(), pInfo->GetID()));
+        new C4ControlJoinPlayer(szFilename, ::Control.ClientID(), pInfo->GetID()));
 			}
 	// done, success
 	return true;
@@ -1468,7 +1469,7 @@ bool C4PlayerInfoList::RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers)
 			// in replay mode, if there are no regular player joins, it must have been a runtime record
 			// i.e., a record that was started during the game
 			// in this case, the savegame player infos equal the real player infos to be used
-			if (Game.Control.isReplay() && !GetInfoCount())
+			if (::Control.isReplay() && !GetInfoCount())
 				{
 				*this = rSavegamePlayers;
 				}
@@ -1584,7 +1585,7 @@ bool C4PlayerInfoList::RecreatePlayers()
 			// local non-network non-replay games set local name
 			if (!::Network.isEnabled())
 				{
-				assert(idAtClient == Game.Control.ClientID());
+				assert(idAtClient == ::Control.ClientID());
 				szAtClientName = "Local";
 				}
 			else
@@ -1634,11 +1635,11 @@ bool C4PlayerInfoList::RecreatePlayers()
 						}
 					}
 				// record file handling: Save to the record file in the manner it's expected by C4PlayerInfoList::RecreatePlayers
-				if (Game.Control.isRecord() && szFilename)
+				if (::Control.isRecord() && szFilename)
 					{
 					StdStrBuf sFilenameInRecord;
 					sFilenameInRecord.Format("Recreate-%d.c4p", pInfo->GetID());
-					Game.Control.RecAddFile(szFilename, sFilenameInRecord.getData());
+					::Control.RecAddFile(szFilename, sFilenameInRecord.getData());
 					}
 				// recreate join directly
 				::Players.Join(szFilename, FALSE, idAtClient, szAtClientName, pInfo);

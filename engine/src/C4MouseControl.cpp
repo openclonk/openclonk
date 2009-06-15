@@ -40,6 +40,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 const int32_t C4MC_Drag_None					= 0,
@@ -1379,7 +1380,7 @@ C4Object *C4MouseControl::GetTargetObject(float iX, float iY, DWORD &dwOCF, C4Ob
 
 BOOL C4MouseControl::IsPassive()
 	{
-	return Game.Control.isReplay() || Player<=NO_OWNER;
+	return ::Control.isReplay() || Player<=NO_OWNER;
 	}
 
 void C4MouseControl::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt)

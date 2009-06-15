@@ -37,6 +37,7 @@
 #include <C4GameLobby.h>
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
+#include <C4GameControl.h>v
 #endif
 #include <cctype>
 
@@ -104,7 +105,7 @@ void C4ChatInputDialog::OnChatCancel()
 			{
 			// there was an associated query - it must be removed on all clients synchronized via queue
 			// do this by calling OnMessageBoardAnswer without an answer
-			Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, 0)", pTarget ? pTarget->Number : 0, iPlr).getData()), CDT_Decide);
+			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, 0)", pTarget ? pTarget->Number : 0, iPlr).getData()), CDT_Decide);
 			}
 		}
 	}
@@ -152,7 +153,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		StdStrBuf sInput;
 		sInput.Copy(szInputText);
 		sInput.EscapeString();
-		Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, \"%s\")", pTarget ? pTarget->Number : 0, iPlr, sInput.getData()).getData()), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, \"%s\")", pTarget ? pTarget->Number : 0, iPlr, sInput.getData()).getData()), CDT_Decide);
 		return C4GUI::Edit::IR_CloseDlg;
 		}
 	else
@@ -438,7 +439,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
     // get sending player (if any)
 		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : NULL;
     // send
-    Game.Control.DoInput(CID_Message,
+    ::Control.DoInput(CID_Message,
       new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->Number : -1, iToPlayer),
       CDT_Private);
   }
@@ -486,7 +487,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (!::Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return FALSE;
     if (::Network.isEnabled() && !::Network.isHost()) return FALSE;
 
-    Game.Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+    ::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
 		return TRUE;
 		}
 	// set runtimte properties
@@ -494,14 +495,14 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		{
 		if(SEqual2(pCmdPar, "maxplayer "))
 		  {
-			if (Game.Control.isCtrlHost())
+			if (::Control.isCtrlHost())
 				{
 				if(atoi(pCmdPar+10) == 0 && !SEqual(pCmdPar+10, "0"))
 					{
 					Log("Syntax: /set maxplayer count");
 					return FALSE;
 					}
-				Game.Control.DoInput(CID_Set,
+				::Control.DoInput(CID_Set,
 	        new C4ControlSet(C4CVT_MaxPlayer, atoi(pCmdPar+10)),
 					CDT_Decide);
 				return TRUE;
@@ -534,7 +535,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
         pSet = new C4ControlSet(C4CVT_FairCrew, atoi(pCmdPar + 9));
       else
         return FALSE;
-      Game.Control.DoInput(CID_Set, pSet, CDT_Decide);
+      ::Control.DoInput(CID_Set, pSet, CDT_Decide);
       return TRUE;
       }
 		// unknown property
@@ -623,7 +624,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (SEqual(szCmdName, "nodebug"))
 		{
 		if (!Game.IsRunning) return FALSE;
-		Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_AllowDebug, false), CDT_Decide);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_AllowDebug, false), CDT_Decide);
 		return TRUE;
 		}
 
@@ -666,7 +667,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			pCtrl = new C4ControlClientUpdate(pClient->getID(), CUT_SetObserver);
 		// perform it
 		if (pCtrl)
-			Game.Control.DoInput(CID_ClientUpdate, pCtrl, CDT_Sync);
+			::Control.DoInput(CID_ClientUpdate, pCtrl, CDT_Sync);
 		else
 			Log(LoadResStr("IDS_LOG_COMMANDNOTALLOWEDINLEAGUE"));
 		return TRUE;
@@ -733,7 +734,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		else
 			Script = pCmd->Script;
 		// add script
-		Game.Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
 		// ok
 		return TRUE;
 	}

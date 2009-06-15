@@ -28,6 +28,7 @@
 #include <C4UserMessages.h>
 #include <C4Log.h>
 #include <C4Game.h>
+#include <C4GameControl.h>
 #endif
 
 #ifndef HAVE_WINSOCK
@@ -931,7 +932,7 @@ void C4Network2IO::CallHandlers(int iHandlerID, const C4IDPacket *pPkt, C4Networ
 	// network control (mixed)
 	if(iHandlerID & PH_C4GameControlNetwork)
 	{
-		Game.Control.Network.HandlePacket(cStatus, pPacket, pConn);
+		::Control.Network.HandlePacket(cStatus, pPacket, pConn);
 	}
 }
 

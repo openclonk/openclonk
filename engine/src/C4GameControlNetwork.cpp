@@ -54,8 +54,8 @@ bool C4GameControlNetwork::Init(int32_t inClientID, bool fnHost, int32_t iStartT
 	if(IsEnabled()) Clear();
 	// init
 	iClientID = inClientID; fHost = fnHost;
-	Game.Control.ControlTick = iStartTick;
-	iControlSent = iControlReady = Game.Control.getNextControlTick() - 1;
+	::Control.ControlTick = iStartTick;
+	iControlSent = iControlReady = ::Control.getNextControlTick() - 1;
 	fActivated = fnActivated;
 	pNetwork = pnNetwork;
 	// check
@@ -86,7 +86,7 @@ void C4GameControlNetwork::Clear() // by main thread
 void C4GameControlNetwork::Execute() // by main thread
 {
 	// Control ticks only
-	if(Game.FrameCounter % Game.Control.ControlRate)
+	if(Game.FrameCounter % ::Control.ControlRate)
 		return;
 
   // Save time the control tick was reached
@@ -314,7 +314,7 @@ void C4GameControlNetwork::AddClient(int32_t iClientID, const char *szName) // b
   // create new
   C4GameControlClient *pClient = new C4GameControlClient();
   pClient->Set(iClientID, szName);
-	pClient->SetNextControl(Game.Control.ControlTick);
+	pClient->SetNextControl(::Control.ControlTick);
   // add client
   AddClient(pClient);
 }
@@ -364,7 +364,7 @@ void C4GameControlNetwork::SetActivated(bool fnActivated) // by main thread
 	fActivated = fnActivated;
 	// Activated? Start to send control at next tick
 	if(fActivated)
-		iControlSent = Game.Control.getNextControlTick() - 1;
+		iControlSent = ::Control.getNextControlTick() - 1;
 }
 
 void C4GameControlNetwork::SetCtrlMode(C4GameControlNetworkMode enMode) // by main thread
@@ -378,13 +378,13 @@ void C4GameControlNetwork::SetCtrlMode(C4GameControlNetworkMode enMode) // by ma
   if(enMode == CNM_Decentral)
   {
     CStdLock CtrlLock(&CtrlCSec); C4GameControlPacket *pPkt;
-    for(int32_t iCtrlTick = Game.Control.ControlTick; pPkt = getCtrl(iClientID, iCtrlTick); iCtrlTick++)
+    for(int32_t iCtrlTick = ::Control.ControlTick; pPkt = getCtrl(iClientID, iCtrlTick); iCtrlTick++)
   		::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
   }
 	else if(enMode == CNM_Central && fHost)
 	{
     CStdLock CtrlLock(&CtrlCSec); C4GameControlPacket *pPkt;
-    for(int32_t iCtrlTick = Game.Control.ControlTick; pPkt = getCtrl(C4ClientIDAll, iCtrlTick); iCtrlTick++)
+    for(int32_t iCtrlTick = ::Control.ControlTick; pPkt = getCtrl(C4ClientIDAll, iCtrlTick); iCtrlTick++)
   		::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
 	}
 }
@@ -713,7 +713,7 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 			// own control not ready?
 			if(fActivated && iControlSent <= iControlReady) break;
 			// no clients? no need to pack more than one tick into the future
-			if(!pClients && Game.Control.ControlTick <= iControlReady) break;
+			if(!pClients && ::Control.ControlTick <= iControlReady) break;
 			// stop packing?
 			if(iStopTick >= 0 && iControlReady + 1 >= iStopTick) break;
 			// central mode and not host?
@@ -728,12 +728,12 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 		// ok, control for this tick is ready
 		iControlReady++;
 		// tell the main thread to move on
-		if(fSetEvent && Game.GameGo && iControlReady >= Game.Control.ControlTick)
+		if(fSetEvent && Game.GameGo && iControlReady >= ::Control.ControlTick)
 			Application.NextTick();
 	}
 	// clear old ctrl
-	if(Game.Control.ControlTick >= C4ControlBacklog)
-		ClearCtrl(Game.Control.ControlTick - C4ControlBacklog);
+	if(::Control.ControlTick >= C4ControlBacklog)
+		ClearCtrl(::Control.ControlTick - C4ControlBacklog);
 	// target ctrl tick to reach?
 	if(iControlReady < iTargetTick &&
 			(!fActivated || iControlSent > iControlReady) &&

@@ -32,6 +32,7 @@
 #include "C4GameOptions.h"
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4GameControl.h>
 #endif
 
 #ifndef HAVE_WINSOCK
@@ -182,7 +183,7 @@ void C4Network2ClientListBox::ClientListItem::Update()
 	// update wait label
 	if (pPing)
 		{
-		int iWait = Game.Control.Network.ClientPerfStat(iClientID);
+		int iWait = ::Control.Network.ClientPerfStat(iClientID);
 		pPing->SetText(FormatString("%d ms", iWait).getData());
 		pPing->SetColor(RGB(
 			BoundBy(255-Abs(iWait)*5, 0, 255),
@@ -235,7 +236,7 @@ void C4Network2ClientListBox::ClientListItem::Update()
 	// network OK - control ready?
 	if (!pForDlg->IsStartup() && (icoStatus == C4GUI::Ico_Ready))
 		{
-		if (!Game.Control.Network.ClientReady(iClientID, Game.Control.ControlTick))
+		if (!::Control.Network.ClientReady(iClientID, ::Control.ControlTick))
 			{
 			// control not ready
 			icoStatus = C4GUI::Ico_NetWait;
@@ -259,7 +260,7 @@ void C4Network2ClientListBox::ClientListItem::OnButtonActivate(C4GUI::Control *p
 		return;
 		}
 	// change to status that is not currently shown
-	Game.Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(iClientID, CUT_Activate, !fShownActive), CDT_Sync);
+	::Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(iClientID, CUT_Activate, !fShownActive), CDT_Sync);
 	}
 
 void C4Network2ClientListBox::ClientListItem::OnButtonKick(C4GUI::Control *pButton)
@@ -487,9 +488,9 @@ void C4Network2ClientListDlg::Update()
 	// Compose status text
 	StdStrBuf sStatusText;
 	sStatusText.Format("Tick %d, Behind %d, Rate %d, PreSend %d, ACT: %d",
-		(int)Game.Control.ControlTick, (int)Game.Control.Network.GetBehind(Game.Control.ControlTick),
-    (int)Game.Control.ControlRate, (int)Game.Control.Network.getControlPreSend(),
-		(int)Game.Control.Network.getAvgControlSendTime());
+		(int)::Control.ControlTick, (int)::Control.Network.GetBehind(::Control.ControlTick),
+    (int)::Control.ControlRate, (int)::Control.Network.getControlPreSend(),
+		(int)::Control.Network.getAvgControlSendTime());
 	// Update status label
 	pStatusLabel->SetText(sStatusText.getData());
 	}
@@ -641,7 +642,7 @@ void C4GameOptionButtons::OnBtnFairCrew(C4GUI::Control *btn)
 		{
 		// altering button in lobby: Must be distributed as a control to all clients
 		if (Game.Parameters.FairCrewForced) return;
-		Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_FairCrew, Game.Parameters.UseFairCrew ? -1 : Config.General.FairCrewStrength), CDT_Sync);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_FairCrew, Game.Parameters.UseFairCrew ? -1 : Config.General.FairCrewStrength), CDT_Sync);
 		// button will be updated through control
 		}
 	else

@@ -22,6 +22,7 @@
 #include "C4Include.h"
 #include "C4GameOptions.h"
 #include <C4Game.h>
+#include <C4GameControl.h>
 
 // ----------- C4GameOptionsList::Option ----------------------------------------------------------------
 
@@ -81,7 +82,7 @@ C4GameOptionsList::OptionDropdown::OptionDropdown(class C4GameOptionsList *pForD
 
 // Unfortunately, the control mode cannot be changed in the lobby
 C4GameOptionsList::OptionControlMode::OptionControlMode(class C4GameOptionsList *pForDlg)
-: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_TEXT_CONTROLMODE"), !Game.Control.isCtrlHost() || !Game.Control.isNetwork() || !Game.Control.Network.IsEnabled() || !pForDlg->IsRuntime())
+: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_TEXT_CONTROLMODE"), !::Control.isCtrlHost() || !::Control.isNetwork() || !::Control.Network.IsEnabled() || !pForDlg->IsRuntime())
 	{
 	SetToolTip(LoadResStr("IDS_DESC_CHANGESTHEWAYCONTROLDATAI"));
 	}
@@ -89,7 +90,7 @@ C4GameOptionsList::OptionControlMode::OptionControlMode(class C4GameOptionsList 
 void C4GameOptionsList::OptionControlMode::DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller)
 	{
 	// change possible?
-	if (!Game.Control.isNetwork() || !Game.Control.Network.IsEnabled() || !Game.Control.isCtrlHost()) return;
+	if (!::Control.isNetwork() || !::Control.Network.IsEnabled() || !::Control.isCtrlHost()) return;
 	// add possible modes
 	pFiller->AddEntry(LoadResStr("IDS_NET_CTRLMODE_CENTRAL"), CNM_Central);
 	pFiller->AddEntry(LoadResStr("IDS_NET_CTRLMODE_DECENTRAL"), CNM_Decentral);
@@ -98,7 +99,7 @@ void C4GameOptionsList::OptionControlMode::DoDropdownFill(C4GUI::ComboBox_FillCB
 void C4GameOptionsList::OptionControlMode::DoDropdownSelChange(int32_t idNewSelection)
 	{
 	// change possible?
-	if (!Game.Control.isNetwork() || !Game.Control.Network.IsEnabled() || !Game.Control.isCtrlHost()) return;
+	if (!::Control.isNetwork() || !::Control.Network.IsEnabled() || !::Control.isCtrlHost()) return;
 	// perform it
 	::Network.SetCtrlMode(idNewSelection);
 	// update done in parent call
@@ -107,11 +108,11 @@ void C4GameOptionsList::OptionControlMode::DoDropdownSelChange(int32_t idNewSele
 void C4GameOptionsList::OptionControlMode::Update()
 	{
 	const char *szControlMode;
-	if (!Game.Control.isNetwork() || !Game.Control.Network.IsEnabled())
+	if (!::Control.isNetwork() || !::Control.Network.IsEnabled())
 		szControlMode = LoadResStr("IDS_NET_NONET");
 	else
 		{
-		switch (Game.Control.Network.GetCtrlMode())
+		switch (::Control.Network.GetCtrlMode())
 			{
 			case CNM_Central: szControlMode = LoadResStr("IDS_NET_CTRLMODE_CENTRAL"); break;
 			case CNM_Decentral: szControlMode = LoadResStr("IDS_NET_CTRLMODE_DECENTRAL"); break;
@@ -125,7 +126,7 @@ void C4GameOptionsList::OptionControlMode::Update()
 // ----------- C4GameOptionsList::OptionControlRate ----------------------------------------------------------------
 
 C4GameOptionsList::OptionControlRate::OptionControlRate(class C4GameOptionsList *pForDlg)
-: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_CTL_CONTROLRATE"), !Game.Control.isCtrlHost())
+: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_CTL_CONTROLRATE"), !::Control.isCtrlHost())
 	{
 	SetToolTip(LoadResStr("IDS_CTL_CONTROLRATE_DESC"));
 	}
@@ -140,14 +141,14 @@ void C4GameOptionsList::OptionControlRate::DoDropdownSelChange(int32_t idNewSele
 	{
 	// adjust rate
 	int32_t iNewRate = idNewSelection;
-	if (!iNewRate || iNewRate == Game.Control.ControlRate) return;
-	Game.Control.AdjustControlRate(iNewRate - Game.Control.ControlRate);
+	if (!iNewRate || iNewRate == ::Control.ControlRate) return;
+	::Control.AdjustControlRate(iNewRate - ::Control.ControlRate);
 	}
 
 void C4GameOptionsList::OptionControlRate::Update()
 	{
-	if (atoi(pDropdownList->GetText().getData()) == Game.Control.ControlRate) return;
-	pDropdownList->SetText(FormatString("%d", Game.Control.ControlRate).getData());
+	if (atoi(pDropdownList->GetText().getData()) == ::Control.ControlRate) return;
+	pDropdownList->SetText(FormatString("%d", ::Control.ControlRate).getData());
 	}
 
 
@@ -187,7 +188,7 @@ void C4GameOptionsList::OptionRuntimeJoin::Update()
 // ----------- C4GameOptionsList::OptionTeamDist ----------------------------------------------------------------
 
 C4GameOptionsList::OptionTeamDist::OptionTeamDist(class C4GameOptionsList *pForDlg)
-: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_MSG_TEAMDIST"), !Game.Control.isCtrlHost())
+: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_MSG_TEAMDIST"), !::Control.isCtrlHost())
 	{
 	SetToolTip(LoadResStr("IDS_MSG_TEAMDIST_DESC"));
 	}
@@ -213,7 +214,7 @@ void C4GameOptionsList::OptionTeamDist::Update()
 // ----------- C4GameOptionsList::OptionTeamColors ----------------------------------------------------------------
 
 C4GameOptionsList::OptionTeamColors::OptionTeamColors(class C4GameOptionsList *pForDlg)
-: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_MSG_TEAMCOLORS"), !Game.Control.isCtrlHost())
+: C4GameOptionsList::OptionDropdown(pForDlg, LoadResStr("IDS_MSG_TEAMCOLORS"), !::Control.isCtrlHost())
 	{
 	SetToolTip(LoadResStr("IDS_MSG_TEAMCOLORS_DESC"));
 	}

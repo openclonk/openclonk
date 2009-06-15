@@ -35,6 +35,7 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 const int32_t 		C4MN_DefInfoWdt     = 270, // default width of info windows
@@ -836,7 +837,7 @@ void C4Menu::Draw(C4TargetFacet &cgo)
 	if (!fTextProgressing) ++TimeOnSelection;
 	if (TimeOnSelection >= C4MN_InfoCaption_Delay)
 		if (Style != C4MN_Style_Info) // No tooltips in info menus - doesn't make any sense...
-			if (!Game.Control.isReplay() && ::pGUI)
+			if (!::Control.isReplay() && ::pGUI)
 				if (!::pGUI->Mouse.IsActiveInput())
 					{
 					C4MenuItem *pSel = GetSelectedItem();

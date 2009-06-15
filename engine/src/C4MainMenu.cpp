@@ -33,6 +33,8 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4Network2.h>
+#include <C4GameControl.h>
 #endif
 
 // -----------------------------------------------------------
@@ -701,7 +703,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		if (SEqual(szCommand+13,"NewPlayer")) return ActivateNewPlayer(Player);
 		if (SEqual(szCommand+13,"Goals"))
 			{
-			Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("ActivateGameGoalMenu(%d)", Player).getData()), CDT_Queue);
+			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("ActivateGameGoalMenu(%d)", Player).getData()), CDT_Queue);
 			return true;
 			}
 		if (SEqual(szCommand+13,"Rules")) return ActivateRules(Player);
@@ -748,7 +750,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	// Surrender
 	if (SEqual2(szCommand,"Surrender"))
 		{
-		Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("SurrenderPlayer(%d)", Player).getData()), CDT_Queue);
+		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("SurrenderPlayer(%d)", Player).getData()), CDT_Queue);
 		return true;
 		}
 	// Save game
@@ -780,7 +782,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		{
 		if(::Network.isEnabled())
 			if(Game.Parameters.isLeague() && ::Players.GetLocalByIndex(0))
-				::Network.Vote(VT_Kick, true, Game.Control.ClientID());
+				::Network.Vote(VT_Kick, true, ::Control.ClientID());
 			else
 				{
 				Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, LoadResStr("IDS_ERR_GAMELEFTVIAPLAYERMENU"));
@@ -854,7 +856,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// TODO!
 		C4Object *pObj; C4ID idItem = C4Id(szCommand+12);
 		if (pObj = ::Objects.FindInternal(idItem))
-			Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
+			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
 		else
 			return false;
 		return true;
@@ -878,7 +880,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// check if it's still allowed
 		if (!Game.Teams.IsTeamSwitchAllowed()) return false;
 		// OK, join this team
-		Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("SetPlayerTeam(%d,%d)", (int)Player, (int)idTeam).getData()), CDT_Queue);
+		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("SetPlayerTeam(%d,%d)", (int)Player, (int)idTeam).getData()), CDT_Queue);
 		return true;
 		}
 	// Observe

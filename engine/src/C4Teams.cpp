@@ -29,6 +29,7 @@
 #include <C4Components.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
+#include <C4GameControl.h>
 #endif
 
 // ---------------------------------------------------------------
@@ -304,7 +305,7 @@ bool C4TeamList::CanLocalChooseTeam() const
 	switch (eTeamDist)
 		{
 		case TEAMDIST_Free: return true;
-		case TEAMDIST_Host: return Game.Control.isCtrlHost();
+		case TEAMDIST_Host: return ::Control.isCtrlHost();
 		case TEAMDIST_Random:
 		case TEAMDIST_RandomInv:
 			return false;
@@ -462,7 +463,7 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	assert(IsMultiTeams());
 	if (!IsMultiTeams()) return false;
 	// local/single call only
-	//assert(Game.Control.isCtrlHost()); -- bla, control is not initialized at this point.
+	//assert(::Control.isCtrlHost()); -- bla, control is not initialized at this point.
 	// check whether a new team is to be assigned first
 	C4Team *pCurrentTeam = GetTeamByPlayerID(rNewJoin.GetID());
 	int32_t idCurrentTeam = pCurrentTeam ? pCurrentTeam->GetID() : 0;
@@ -674,7 +675,7 @@ void C4TeamList::RecheckTeams()
 	// automatic team distributions only
 	if (eTeamDist != TEAMDIST_Random && eTeamDist != TEAMDIST_RandomInv) return;
 	// host decides random teams
-	if (!Game.Control.isCtrlHost()) return;
+	if (!::Control.isCtrlHost()) return;
 	// redistribute players of largest team that has relocatable players left towards smaller teams
 	for(;;)
 		{
@@ -709,8 +710,8 @@ void C4TeamList::RecheckTeams()
 
 void C4TeamList::ReassignAllTeams()
 	{
-	assert(Game.Control.isCtrlHost());
-	if (!Game.Control.isCtrlHost()) return;
+	assert(::Control.isCtrlHost());
+	if (!::Control.isCtrlHost()) return;
 	// go through all player infos; reset team in them
 	int32_t idStart = -1; C4PlayerInfo *pNfo;
 	while (pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(idStart))
@@ -765,9 +766,9 @@ void C4TeamList::FillTeamDistOptions(C4GUI::ComboBox_FillCB *pFiller) const
 
 void C4TeamList::SendSetTeamDist(TeamDist eNewTeamDist)
 	{
-	assert(Game.Control.isCtrlHost());
+	assert(::Control.isCtrlHost());
 	// set it for all clients
-	Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_TeamDistribution, eNewTeamDist), CDT_Sync);
+	::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_TeamDistribution, eNewTeamDist), CDT_Sync);
 	}
 
 StdStrBuf C4TeamList::GetTeamDistString() const
@@ -787,7 +788,7 @@ void C4TeamList::SetTeamDistribution(TeamDist eToVal)
 	if (!Inside(eToVal, TEAMDIST_First, TEAMDIST_Last)) { assert(false); return; }
 	eTeamDist = eToVal;
 	// team distribution mode changed: Host may beed to redistribute
-	if (Game.Control.isCtrlHost())
+	if (::Control.isCtrlHost())
 		{
 		// if a random team mode was set, reassign all teams so it's really random
 		if (eTeamDist == TEAMDIST_Random || eTeamDist == TEAMDIST_RandomInv)
@@ -808,7 +809,7 @@ void C4TeamList::SetTeamDistribution(TeamDist eToVal)
 void C4TeamList::SendSetTeamColors(bool fEnabled)
 	{
 	// set it for all clients
-	Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_TeamColors, fEnabled), CDT_Sync);
+	::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_TeamColors, fEnabled), CDT_Sync);
 	}
 
 void C4TeamList::SetTeamColors(bool fEnabled)
@@ -818,7 +819,7 @@ void C4TeamList::SetTeamColors(bool fEnabled)
 	// reflect change
 	fTeamColors = fEnabled;
 	// update colors of all players
-	if (!Game.Control.isCtrlHost()) return;
+	if (!::Control.isCtrlHost()) return;
 	// go through all player infos; reset color in them
 	Game.PlayerInfos.UpdatePlayerAttributes(); // sets team and savegame colors
 	if (::Network.isEnabled())

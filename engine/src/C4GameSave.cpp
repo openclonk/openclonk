@@ -37,6 +37,7 @@
 #include <C4MassMover.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4Record.h>
 #endif
 
 // *** C4GameSave main class

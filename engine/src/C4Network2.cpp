@@ -33,6 +33,7 @@
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
 #include <C4GraphicsResource.h>
+#include <C4GameControl.h>
 
 // lobby
 #include <C4Gui.h>
@@ -166,7 +167,7 @@ bool C4Network2::InitHost(bool fLobby)
 {
 	if(isEnabled()) Clear();
 	// initialize everything
-	Status.Set(fLobby ? GS_Lobby : GS_Go, Game.Control.ControlTick);
+	Status.Set(fLobby ? GS_Lobby : GS_Go, ::Control.ControlTick);
 	Status.SetCtrlMode(Config.Network.ControlMode);
 	fHost = true;
 	fStatusAck = fStatusReached = true;
@@ -187,8 +188,8 @@ bool C4Network2::InitHost(bool fLobby)
 	if(!InitNetIO(false, true))
 		{ Clear(); return false; }
 	// init network control
-	pControl = &Game.Control.Network;
-	pControl->Init(C4ClientIDHost, true, Game.Control.getNextControlTick(), true, this);
+	pControl = &::Control.Network;
+	pControl->Init(C4ClientIDHost, true, ::Control.getNextControlTick(), true, this);
   // init league
 	bool fCancel = true;
   if(!InitLeague(&fCancel) || !LeagueStart(&fCancel))
@@ -282,7 +283,7 @@ C4Network2::InitResult C4Network2::InitClient(const class C4Network2Address *pAd
 	if(!InitNetIO(true, false))
 		{ Clear(); return IR_Fatal; }
 	// set network control
-	pControl = &Game.Control.Network;
+	pControl = &::Control.Network;
 	// set exclusive connection mode
 	NetIO.SetExclusiveConnMode(true);
 	// try to connect host
@@ -413,7 +414,7 @@ bool C4Network2::Start()
 {
 	if(!isEnabled() || !isHost()) return false;
 	// change mode: go
-	ChangeGameStatus(GS_Go, Game.Control.ControlTick);
+	ChangeGameStatus(GS_Go, ::Control.ControlTick);
 	return true;
 }
 
@@ -421,7 +422,7 @@ bool C4Network2::Pause()
 {
 	if(!isEnabled() || !isHost()) return false;
 	// change mode: pause
-	return ChangeGameStatus(GS_Pause, Game.Control.getNextControlTick());
+	return ChangeGameStatus(GS_Pause, ::Control.getNextControlTick());
 }
 
 bool C4Network2::Sync()
@@ -438,7 +439,7 @@ bool C4Network2::Sync()
 	// already sync?
 	if(isFrozen()) return true;
 	// ok, so let's do a sync: change in the same state we are already in
-	return ChangeGameStatus(Status.getState(), Game.Control.getNextControlTick());
+	return ChangeGameStatus(Status.getState(), ::Control.getNextControlTick());
 }
 
 bool C4Network2::FinalInit()
@@ -565,7 +566,7 @@ void C4Network2::Execute()
 	if(isHost())
 	{
 		// remove dynamic
-		if(!ResDynamic.isNull() && Game.Control.ControlTick > iDynamicTick)
+		if(!ResDynamic.isNull() && ::Control.ControlTick > iDynamicTick)
 			RemoveDynamic();
 		// Set chase target
 		UpdateChaseTarget();
@@ -596,7 +597,7 @@ void C4Network2::Execute()
 		if(Votes.firstPkt() && time(NULL) > (time_t) (iVoteStartTime + C4NetVotingTimeout))
 		{
 			C4ControlVote *pVote = static_cast<C4ControlVote *>(Votes.firstPkt()->getPkt());
-			Game.Control.DoInput(
+			::Control.DoInput(
 				CID_VoteEnd,
 				new C4ControlVoteEnd(pVote->getType(), false, pVote->getData()),
 				CDT_Sync);
@@ -637,8 +638,8 @@ void C4Network2::Clear()
 	Status.Clear();
 	fStatusAck = fStatusReached = true;
 	// if control mode is network: change to local
-	if(Game.Control.isNetwork())
-		Game.Control.ChangeToLocal();
+	if(::Control.isNetwork())
+		::Control.ChangeToLocal();
 	// clear all player infos
 	Players.Clear();
 	// remove all clients
@@ -726,7 +727,7 @@ void C4Network2::SetCtrlMode(int32_t iCtrlMode)
   // no change?
   if(iCtrlMode == Status.getCtrlMode()) return;
   // change game status
-  ChangeGameStatus(Status.getState(), Game.Control.ControlTick, iCtrlMode);
+  ChangeGameStatus(Status.getState(), ::Control.ControlTick, iCtrlMode);
 }
 
 void C4Network2::OnConn(C4Network2IOConnection *pConn)
@@ -943,8 +944,8 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 	// some control statistics
 	Stat.AppendFormat( "|Control: %s, Tick %d, Behind %d, Rate %d, PreSend %d, ACT: %d",
     Status.getCtrlMode() == CNM_Decentral ? "Decentral" : Status.getCtrlMode() == CNM_Central ? "Central" : "Async",
-		Game.Control.ControlTick, pControl->GetBehind(Game.Control.ControlTick),
-    Game.Control.ControlRate, pControl->getControlPreSend(), pControl->getAvgControlSendTime());
+		::Control.ControlTick, pControl->GetBehind(::Control.ControlTick),
+    ::Control.ControlRate, pControl->getControlPreSend(), pControl->getAvgControlSendTime());
 
 	// Streaming statistics
 	if(fStreaming)
@@ -974,9 +975,9 @@ void C4Network2::DrawStatus(C4TargetFacet &cgo)
 			Core.isObserver() ? "Observing" : Core.isActivated() ? "Active" : "Inactive", Core.isHost() ? "host" : "client",
 			Core.getName(), Core.getID(),
       pControl->ClientPerfStat(pClient->getID()),
-      Game.Control.ControlTick - pControl->ClientNextControl(pClient->getID()),
+      ::Control.ControlTick - pControl->ClientNextControl(pClient->getID()),
       szClientStatus,
-			pClient->isActivated() && !pControl->ClientReady(pClient->getID(), Game.Control.ControlTick) ? " (!ctrl)" : "");
+			pClient->isActivated() && !pControl->ClientReady(pClient->getID(), ::Control.ControlTick) ? " (!ctrl)" : "");
 		// connections
 		if(pClient->isConnected())
 		{
@@ -1195,7 +1196,7 @@ bool C4Network2::Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const 
 		CCore.SetName(szNewName);
 	}
 	// join client
-	Game.Control.DoInput(CID_ClientJoin, new C4ControlClientJoin(CCore), CDT_Direct);
+	::Control.DoInput(CID_ClientJoin, new C4ControlClientJoin(CCore), CDT_Direct);
 	// get client, set status
 	C4Network2Client *pClient = Clients.GetClient(CCore);
 	if(pClient) pClient->SetStatus(NCS_Joining);
@@ -1330,7 +1331,7 @@ void C4Network2::HandleActivateReq(int32_t iTick, C4Network2Client *pByClient)
       return;
   }
   // activate him
-	Game.Control.DoInput(CID_ClientUpdate,
+	::Control.DoInput(CID_ClientUpdate,
 		new C4ControlClientUpdate(pByClient->getID(), CUT_Activate, TRUE),
 		CDT_Sync);
 }
@@ -1360,7 +1361,7 @@ void C4Network2::HandleJoinData(const C4PacketJoinData &rPkt)
 	ResDynamic = rPkt.getDynamicCore();
 	iDynamicTick = rPkt.getStartCtrlTick();
 	// initialize control
-	Game.Control.ControlRate = rPkt.Parameters.ControlRate;
+	::Control.ControlRate = rPkt.Parameters.ControlRate;
 	pControl->Init(rPkt.getClientID(), false, rPkt.getStartCtrlTick(), pLocalClient->isActivated(), this);
 	pControl->CopyClientList(Game.Parameters.Clients);
 	// set local core
@@ -1447,7 +1448,7 @@ void C4Network2::OnClientDisconnect(C4Network2Client *pClient)
 		// (client might be the only one claiming to have the given control)
 		if(!fStatusReached)
 			if(Status.getState() == GS_Go || Status.getState() == GS_Pause)
-				ChangeGameStatus(Status.getState(), Game.Control.ControlTick);
+				ChangeGameStatus(Status.getState(), ::Control.ControlTick);
 	}
 	// host disconnected? Clear up
 	if(!isHost() && pClient->isHost())
@@ -1466,11 +1467,11 @@ void C4Network2::SendJoinData(C4Network2Client *pClient)
 	// host only, scenario must be available
 	assert(isHost());
 	// dynamic available?
-	if(ResDynamic.isNull() || iDynamicTick < Game.Control.ControlTick)
+	if(ResDynamic.isNull() || iDynamicTick < ::Control.ControlTick)
 	{
 		fDynamicNeeded = true;
 		// add synchronization control (will callback, see C4Game::Synchronize)
-		Game.Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Sync);
+		::Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Sync);
 		return;
 	}
 	// save his client ID
@@ -1604,7 +1605,7 @@ bool C4Network2::CreateDynamic(bool fInit)
 	if(!pRes) { Log(LoadResStr("IDS_NET_SAVE_ERR_ADDDYNDATARES")); return false; }
 	// save
 	ResDynamic = pRes->getCore();
-	iDynamicTick = Game.Control.getNextControlTick();
+	iDynamicTick = ::Control.getNextControlTick();
 	fDynamicNeeded = false;
 	// ok
 	return true;
@@ -1665,8 +1666,8 @@ void C4Network2::CheckStatusReached(bool fFromFinalInit)
 		if(Game.IsRunning || fFromFinalInit)
     {
 			// Make sure we have reached the tick and the control queue is empty (except for chasing)
-			if(Game.Control.CtrlTickReached(Status.getTargetCtrlTick()) &&
-				 (fChasing || !pControl->CtrlReady(Game.Control.ControlTick)))
+			if(::Control.CtrlTickReached(Status.getTargetCtrlTick()) &&
+				 (fChasing || !pControl->CtrlReady(::Control.ControlTick)))
 				fStatusReached = true;
 			else
       {
@@ -1686,7 +1687,7 @@ void C4Network2::CheckStatusReached(bool fFromFinalInit)
 		CheckStatusAck();
 	else
 	{
-		Status.SetTargetTick(Game.Control.ControlTick);
+		Status.SetTargetTick(::Control.ControlTick);
 		// send response to host
 		Clients.SendMsgToHost(MkC4NetIOPacket(PID_StatusAck, Status));
 		// do delayed activation request
@@ -1764,7 +1765,7 @@ void C4Network2::RequestActivate()
 	if(fHost)
 	{
 		// activate him
-		Game.Control.DoInput(CID_ClientUpdate,
+		::Control.DoInput(CID_ClientUpdate,
 			new C4ControlClientUpdate(C4ClientIDHost, CUT_Activate, TRUE),
 			CDT_Sync);
 		return;
@@ -1794,7 +1795,7 @@ void C4Network2::DeactivateInactiveClients()
   for(C4Network2Client *pClient = Clients.GetNextClient(NULL); pClient; pClient = Clients.GetNextClient(pClient))
 		if(!pClient->isLocal() && pClient->isActivated())
 		  if(pClient->getLastActivity() + C4NetDeactivationDelay < Game.FrameCounter)
-				Game.Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(pClient->getID(), CUT_Activate, false), CDT_Sync);
+				::Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(pClient->getID(), CUT_Activate, false), CDT_Sync);
 }
 
 void C4Network2::UpdateChaseTarget()
@@ -1814,7 +1815,7 @@ void C4Network2::UpdateChaseTarget()
 		return;
 	// copy status, set current tick
 	C4Network2Status ChaseTarget = Status;
-	ChaseTarget.SetTargetTick(Game.Control.ControlTick);
+	ChaseTarget.SetTargetTick(::Control.ControlTick);
 	// send to everyone involved
 	for(pClient = Clients.GetNextClient(NULL); pClient; pClient = Clients.GetNextClient(pClient))
 		if(pClient->isChasing())
@@ -2530,7 +2531,7 @@ void C4Network2::Vote(C4ControlVoteType eType, bool fApprove, int32_t iData)
 		iLastOwnVoting = time(NULL);
 	}
 	// Already voted? Ignore
-	if(GetVote(Game.Control.ClientID(), eType, iData))
+	if(GetVote(::Control.ClientID(), eType, iData))
 		return;
 	// Set pause mode if this is the host
 	if(isHost() && isRunning())
@@ -2539,7 +2540,7 @@ void C4Network2::Vote(C4ControlVoteType eType, bool fApprove, int32_t iData)
 		fPausedForVote = true;
 	}
 	// send vote control
-	Game.Control.DoInput(CID_Vote, new C4ControlVote(eType, fApprove, iData), CDT_Direct);
+	::Control.DoInput(CID_Vote, new C4ControlVote(eType, fApprove, iData), CDT_Direct);
 }
 
 void C4Network2::AddVote(const C4ControlVote &Vote)
@@ -2628,7 +2629,7 @@ void C4Network2::OpenVoteDialog()
 	{
 		// Already voted on this matter?
 		C4ControlVote *pVote = static_cast<C4ControlVote *>(pPkt->getPkt());
-		if(!GetVote(Game.Control.ClientID(), pVote->getType(), pVote->getData()))
+		if(!GetVote(::Control.ClientID(), pVote->getType(), pVote->getData()))
 		{
 			// Compose message
 			C4Client *pSrcClient = Game.Clients.getClientByID(pVote->getByClient());

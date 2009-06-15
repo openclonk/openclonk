@@ -26,6 +26,8 @@
 #include "C4PlayerInfo.h"
 #include "C4GameLobby.h"
 #include <C4Game.h>
+#include <C4Network2.h>
+#include <C4GameControl.h>
 
 #include "C4Control.h"
 
@@ -208,7 +210,7 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 	// so future player join request will take the other joined  clients into consideration
 	// when assigning player colors, etc.; it will also start resource loading
 	// in running mode, this call will also put the actual player joins into the queue
-  Game.Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(OwnInfoPacket), CDT_Direct);
+  ::Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(OwnInfoPacket), CDT_Direct);
 	// notify lobby of updates
 	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby) pLobby->OnPlayersChange();
@@ -255,7 +257,7 @@ void C4Network2Players::SendUpdatedPlayers()
 			{
 			C4ControlPlayerInfo *pkSend = new C4ControlPlayerInfo(*pUpdInfo);
 			// send info to all
-			Game.Control.DoInput(CID_PlrInfo, pkSend, CDT_Direct);
+			::Control.DoInput(CID_PlrInfo, pkSend, CDT_Direct);
 			}
 	ResetUpdatedPlayers();
 	}
@@ -334,7 +336,7 @@ void C4Network2Players::JoinUnjoinedPlayersInControlQueue(C4ClientPlayerInfos *p
 			// do so!
 			C4Network2Res *pPlrRes = pInfo->GetRes();
       C4Network2Client *pClient = ::Network.Clients.GetClientByID(pNewPacket->GetClientID());
-			if (!pPlrRes || (!pClient && pNewPacket->GetClientID() != Game.Control.ClientID()))
+			if (!pPlrRes || (!pClient && pNewPacket->GetClientID() != ::Control.ClientID()))
 				if (pInfo->GetType() != C4PT_Script)
 					{
 					// failure: Non-script players must have a res to join from!

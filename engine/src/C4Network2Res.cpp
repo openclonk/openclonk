@@ -29,6 +29,7 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
+#include <C4GameControl.h>
 #endif
 
 #include <fcntl.h>
@@ -1691,7 +1692,7 @@ void C4Network2ResList::OnResComplete(C4Network2Res *pRes)
 	// log (network thread -> ThreadLog)
 	Application.InteractiveThread.ThreadLogS("Network: %s received.", pRes->getCore().getFileName());
 	// call handler (ctrl might wait for this ressource)
-	Game.Control.Network.OnResComplete(pRes);
+	::Control.Network.OnResComplete(pRes);
 }
 
 bool C4Network2ResList::CreateNetworkFolder()

@@ -71,6 +71,7 @@
 #include <C4Landscape.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 #include <StdFile.h>
@@ -1594,7 +1595,7 @@ BOOL C4Game::DropDef(C4ID id, float X, float Y)
 			str.Format("CreateConstruction(%s,%d,%d,-1,%d,true)", C4IdText(id), int(X), int(Y), FullCon);
 		else
 			str.Format("CreateObject(%s,%d,%d,-1)", C4IdText(id), int(X), int(Y));
-		Game.Control.DoInput(CID_Script, new C4ControlScript(str.getData()), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(str.getData()), CDT_Decide);
 		return TRUE;
 		}
 	else

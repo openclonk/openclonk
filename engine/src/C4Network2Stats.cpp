@@ -27,6 +27,8 @@
 #include <C4Player.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4Network2.h>
+#include <C4GameControl.h>
 #endif
 
 C4Graph::C4Graph()
@@ -362,8 +364,8 @@ void C4Network2Stats::ExecuteSecond()
 void C4Network2Stats::ExecuteControlFrame()
 	{
 	// control rate may have updated: always convert values to actions per minute
-	statControls.SetMultiplier((C4Graph::ValueType) 1000 / 38 / Game.Control.ControlRate);
-	statActions.SetMultiplier((C4Graph::ValueType) 1000 / 38 * 60 / Game.Control.ControlRate);
+	statControls.SetMultiplier((C4Graph::ValueType) 1000 / 38 / ::Control.ControlRate);
+	statActions.SetMultiplier((C4Graph::ValueType) 1000 / 38 * 60 / ::Control.ControlRate);
 	// register and reset control counts for all players
 	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 		{

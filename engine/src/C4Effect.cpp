@@ -816,11 +816,8 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 
 int32_t GetSmokeLevel()
 	{
-	// Network active: enforce fixed smoke level
-	if(Game.Control.SyncMode())
-		return 150;
-	// User-defined smoke level
-	return Config.Graphics.SmokeLevel;
+	// just use fixed smoke level, smoke uses particles anyway
+	return 150;
 	}
 
 void BubbleOut(int32_t tx, int32_t ty)

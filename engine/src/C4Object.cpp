@@ -53,6 +53,7 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4Record.h>
 #endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)

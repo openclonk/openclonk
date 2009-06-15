@@ -32,6 +32,7 @@
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
+#include <C4Network2.h>
 #endif
 
 #include <StdGL.h>
