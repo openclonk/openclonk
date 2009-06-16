@@ -185,7 +185,7 @@ class C4Player: public C4PlayerInfoCore
     BOOL Sell2Home(C4Object *tobj);
     BOOL DoWealth(int32_t change);
     BOOL SetHostility(int32_t iOpponent, int32_t iHostility, BOOL fSilent=FALSE);
-		void CompileFunc(StdCompiler *pComp);
+		void CompileFunc(StdCompiler *pComp, bool fExact);
 		BOOL LoadRuntimeData(C4Group &hGroup);
 		bool ActivateMenuMain();
 		bool ActivateMenuTeamSelection(bool fFromMain);

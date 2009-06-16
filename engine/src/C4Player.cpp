@@ -1411,7 +1411,7 @@ void C4Player::ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTa
 	else if (iMode & C4P_Command_Set) cObj->SetCommand(iCommand,pTarget,iX,iY,pTarget2,TRUE,iData);
 	}
 
-void C4Player::CompileFunc(StdCompiler *pComp)
+void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	{
 	assert(ID);
 
@@ -1465,6 +1465,9 @@ void C4Player::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Crew,								"Crew"									));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,	"MsgBoardQueries"				));
+
+	// Keys held down
+	pComp->Value(Control);
   }
 
 BOOL C4Player::LoadRuntimeData(C4Group &hGroup)
@@ -1475,9 +1478,10 @@ BOOL C4Player::LoadRuntimeData(C4Group &hGroup)
 	// safety: Do nothing if playeer section is not even present (could kill initialized values)
 	if (!SSearch(pSource, FormatString("[Player%i]", ID).getData())) return FALSE;
 	// Compile (Search player section - runtime data is stored by unique player ID)
+	// Always compile exact. Exact data will not be present for savegame load, so it does not matter
 	assert(ID);
   if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-			mkNamingAdapt(*this, FormatString("Player%i", ID).getData()),
+			mkNamingAdapt(mkParAdapt(*this, true), FormatString("Player%i", ID).getData()),
 			StdStrBuf(pSource),
 			Game.GameText.GetFilePath()))
 		return FALSE;

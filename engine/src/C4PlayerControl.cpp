@@ -292,7 +292,7 @@ bool C4PlayerControlAssignment::operator ==(const C4PlayerControlAssignment &cmp
 void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 	{
 	if (!pComp->Name("ControlSet")) { pComp->NameEnd(); pComp->excNotFound("ControlSet"); }
-	pComp->Value(mkNamingAdapt(mkParAdapt(sName, StdCompiler::RCT_Idtf), "Name", "None"));
+	pComp->Value(mkNamingAdapt(mkParAdapt(sName, StdCompiler::RCT_All), "Name", "None")); // can't do RCT_Idtf because of wildcards
 	pComp->Value(mkSTLContainerAdapt(Assignments, StdCompiler::SEP_NONE));
 	pComp->NameEnd();
 	}
@@ -420,15 +420,31 @@ void C4PlayerControlAssignmentSets::MergeFrom(const C4PlayerControlAssignmentSet
 		{
 		const C4PlayerControlAssignmentSet &SrcSet = *i;
 		// overwrite if def of same name existed if it's not low priority anyway
-		C4PlayerControlAssignmentSet *pPrevSet = GetSetByName(SrcSet.GetName());
-		if (pPrevSet)
+		bool fIsWildcardSet = SrcSet.IsWildcardName();
+		if (!fIsWildcardSet)
 			{
-			pPrevSet->MergeFrom(SrcSet, fLowPrio);
+			C4PlayerControlAssignmentSet *pPrevSet = GetSetByName(SrcSet.GetName());
+			if (pPrevSet)
+				{
+				pPrevSet->MergeFrom(SrcSet, fLowPrio);
+				}
+			else
+				{
+				// new def: Append a copy
+				Sets.push_back(SrcSet);
+				}
 			}
 		else
 			{
-			// new def: Append a copy
-			Sets.push_back(SrcSet);
+			// source is a wildcard: Merge with all matching sets
+			for (AssignmentSetList::iterator j = Sets.begin(); j != Sets.end(); ++j)
+				{
+				C4PlayerControlAssignmentSet &DstSet = *j;
+				if (WildcardMatch(SrcSet.GetName(), DstSet.GetName()))
+					{
+					DstSet.MergeFrom(SrcSet, fLowPrio);
+					}
+				}
 			}
 		}
 	}
@@ -597,7 +613,6 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &key, bool fUp, const C4
 				// build a control packet and add control data instead. even for async controls later in chain, as they may be blocked by a sync handler
 				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, fUp, rKeyExtraData);
 				pControlPacket->AddControl(iControlIndex, pAssignment->GetTriggerMode());
-				break;
 				}
 			}
 		}
@@ -766,22 +781,11 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 		// player lost?
 		return false;
 		}
-	if (!fUp)
-		{
-		// control down
-		C4AulFunc *pFunc = Game.ScriptEngine.GetFirstFunc(PSF_PlayerControl);
-		if (!pFunc) return false;
-		C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated));
-		return !!pFunc->Exec(NULL, &Pars);
-		}
-	else
-		{
-		// control up
-		C4AulFunc *pFunc = Game.ScriptEngine.GetFirstFunc(PSF_PlayerControlRelease);
-		if (!pFunc) return false;
-		C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y));
-		return !!pFunc->Exec(NULL, &Pars);
-		}
+	// control down
+	C4AulFunc *pFunc = Game.ScriptEngine.GetFirstFunc(PSF_PlayerControl);
+	if (!pFunc) return false;
+	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
+	return !!pFunc->Exec(NULL, &Pars);
 	}
 
 

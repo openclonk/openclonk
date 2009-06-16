@@ -1824,7 +1824,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 	{
 	if (!comp.fScenarioSection && comp.fExact)
 		{
-    pComp->Name("Game");
+		pComp->Name("Game");
 		pComp->Value(mkNamingAdapt(Time,                  "Time",                  0));
 		pComp->Value(mkNamingAdapt(FrameCounter,          "Frame",                 0));
 //		pComp->Value(mkNamingAdapt(Control.ControlRate,   "ControlRate",           0));
@@ -1856,24 +1856,30 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 	if (comp.fExact)
 		{
 		pComp->Value(mkNamingAdapt(Weather, "Weather"));
-	  pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
-	  pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
+		pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
+		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
 		}
 
 	pComp->Value(mkNamingAdapt(mkNamingPtrAdapt(pGlobalEffects, "GlobalEffects"), "Effects"));
 
-	// scoreboard compiles into main level [Scoreboard]
-  if (!comp.fScenarioSection && comp.fExact)
-    pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
+	if (!comp.fScenarioSection && comp.fExact)
+		{
+		// scoreboard compiles into main level [Scoreboard]
+		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
+		// Keyboard status of global keys synchronized for exact (runtime join) only; not for savegames,
+		// as keys might be released between a savegame save and its resume
+		//pComp->Value(GlobalPlayerControl);
+		}
+
 	if (comp.fPlayers)
 		{
-    assert(pComp->isDecompiler());
+		assert(pComp->isDecompiler());
 		// player parsing: Parse all players
 		// This doesn't create any players, but just parses existing by their ID
 		// Primary player ininitialization (also setting ID) is done by player info list
 		// Won't work this way for binary mode!
 		for (C4Player *pPlr=Players.First; pPlr; pPlr=pPlr->Next)
-			pComp->Value(mkNamingAdapt(*pPlr, FormatString("Player%d", pPlr->ID).getData()));
+			pComp->Value(mkNamingAdapt(mkParAdapt(*pPlr, comp.fExact), FormatString("Player%d", pPlr->ID).getData()));
 		}
 	}
 
@@ -3231,7 +3237,8 @@ bool C4Game::InitPlayerControlSettings()
 	C4PlayerControlFile PlayerControlFile;
 	if (!PlayerControlFile.Load(Application.SystemGroup, C4CFN_PlayerControls, &MainSysLangStringTable)) { LogFatal("[!]Error loading player controls"); return false; }
 	PlayerControlDefs = PlayerControlFile.GetControlDefs();
-	PlayerControlAssignmentSets = PlayerControlFile.GetAssignmentSets();
+	PlayerControlAssignmentSets.Clear();
+	PlayerControlAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), false);
 	PlayerControlAssignmentSets.ResolveRefs(&PlayerControlDefs);
 	// And overwrites from config
 	//PlayerControlAssignmentSets.MergeFrom(Config.Controls.Assignments);

@@ -4368,7 +4368,7 @@ static C4Value FnGetPlayerVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value
 	C4Player* pPlayer = Game.Players.Get(iPlr);
 
 	// get value
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*pPlayer, "Player"));
+	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*pPlayer, true), "Player"));
 }
 
 static C4Value FnGetPlayerInfoCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value* iPlayer_C4V, C4Value *iEntryNr_C4V)
@@ -6307,6 +6307,32 @@ static bool FnSetNextMission(C4AulContext *ctx, C4String *szNextMission, C4Strin
 	return true;
 	}
 
+static long FnGetPlayerControlState(C4AulContext *ctx, long iPlr, long iControl)
+	{
+	// get control set to check
+	C4PlayerControl *pCheckCtrl = NULL;
+	if (iPlr == NO_OWNER)
+		{
+		//pCheckCtrl = Game.GlobalPlayerControls;
+		}
+	else
+		{
+		C4Player *pPlr = Game.Players.Get(iPlr);
+		if (pPlr)
+			{
+			pCheckCtrl = &(pPlr->Control);
+			}
+		}
+	// invalid player or no controls
+	if (!pCheckCtrl) return 0;
+	// query control
+	const C4PlayerControl::CSync::ControlDownState *pControlState = pCheckCtrl->GetControlDownState(iControl);
+	// no state means not down
+	if (!pControlState) return 0;
+	// otherwise take down-value
+	return pControlState->DownState.iStrength;
+	}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -6794,6 +6820,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "LocateFunc", FnLocateFunc);
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "SetNextMission", FnSetNextMission);
+	AddFunc(pEngine, "GetPlayerControlState", FnGetPlayerControlState);
 	new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 	new C4AulDefCastFunc(pEngine, "CastInt", C4V_Any, C4V_Int);
 	new C4AulDefCastFunc(pEngine, "CastBool", C4V_Any, C4V_Bool);

@@ -80,7 +80,7 @@
 			</row>
 			<row>
 				<col>Script (Standardwert)</col>
-				<col>Ausfuehrung des Scriptbefehls <em>PlayerControl</em> bzw. <em>PlayerControlRelease</em>. Siehe <emlink href="playercontrols.xml#Script">Script-Callbacks</emlink>.</col>
+				<col>Ausfuehrung des Scriptbefehls <em>PlayerControl</em>. Siehe <emlink href="playercontrols.xml#Script">Script-Callbacks</emlink>.</col>
 			</row>
 			<row>
 				<col>Menu</col>
@@ -180,7 +180,7 @@
 </part>
 <h id="Script">Script-Callbacks</h>
 <text>Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im Spielermenue), rufen eine globale Scriptfunktion auf:</text>
-<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated)</code>
+<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)</code>
 <text>Fuer eine Erlaeuterung der Parameter siehe <funclink>PlayerControl</funclink>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in iPlr, sowie das ausgefuehrte Kommando in iControl.</text>
 <text>Fuer ein einfaches Beispiel sei in der globalen <em>PlayerControls.txt</em> folgendes Kommando definiert:</text>
 <code>[ControlDefs]
@@ -200,11 +200,11 @@
     Control=Jump
     Priority=50</code>
 <text>Dies definiert eine Sprungtaste und die zugehoerige Standardbelegung auf der Tastatur fuer den ersten Spieler. Dazu folgendes Script zur Behandlung:</text>
-<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated)
+<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
   // Welches Kommando wurde ausgeloest?
   // Die Konstante CON_Jump wurde automatisch durch die Definition in PlayerControls.txt angelegt
-  if (control == CON_Jump)
+  if (control == CON_Jump &amp;&amp; !release)
   {
     // Sprungtaste gedrueckt. Der vom Spieler ausgewaehlte Clonk soll springen
     var player_clonk = GetCursor(player);
@@ -227,17 +227,17 @@
   GUIDesc=Going underground
   ExtraData=SHVL</code>
 <text>Dabei sei SHVL die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:</text>
-<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated)
+<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
   // Behandlung bekannter Befehle
   // [...]
   // Befehl mit eigener Behandlung
-  if (control_extra) return control_extra->PlayerControl(player, control, x, y, strength, repeat);
+  if (control_extra) return control_extra->PlayerControl(player, control, x, y, strength, repeat, release);
   // Unbekanntes Kommando
   return false;
 }</code>
 <text>Und im Script der Schaufel:</text>
-<code>func PlayerControl(int player, int control, int x, int y, int strength, bool repeated)
+<code>func PlayerControl(int player, int control, int x, int y, int strength, bool repeated, bool release)
 {
   // Behandlung bekannter Befehle
   // Grabkommando direkt an die Schaufel
@@ -257,7 +257,7 @@
 <h id="Hold">Gehaltene Tasten</h>
 <text>Wird fuer ein Kommando das <em>Hold</em>-Flag gesetzt, so speichert die Engine den gegenwaertigen Tastenzustand fuer diese Taste. Solche Tasten haben einige Besonderheiten:</text>
 <text><ul>
-<li>Sie generieren beim Loslassen <funclink>PlayerControlRelease</funclink>-Aufrufe im Script.</li>
+<li>Sie generieren auch beim Loslassen <funclink>PlayerControl</funclink>-Aufrufe mit gesetztem <em>Release</em>-Flag im Script.</li>
 <li>Belegungen koennen mit den <em>Hold</em>/<em>Release</em>-Flags dauerhafte Tastendruecke emulieren.</li>
 <li><emlink href="playercontrols.xml#Repeat">Tastenwiederholungen</emlink> werden erzeugt.</li>
 <li>Der Haltezustand der Taste kann mit <funclink>GetPlayerControlState</funclink> im Script abgefragt werden.</li>
@@ -269,13 +269,7 @@
   GUIDesc=Walk left
   Hold=1</code>
 <text>Im Script wird die Richtung dann auf den Clonk uebertragen:</text>
-<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated)
-{
-  if (control == CON_Left) return UpdateControlDir(player);
-  // ...
-}
-
-global func PlayerControlRelease(int player, int control, C4ID control_extra, int x, int y)
+<code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
   if (control == CON_Left) return UpdateControlDir(player);
   // ...

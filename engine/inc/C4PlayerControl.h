@@ -201,6 +201,7 @@ class C4PlayerControlAssignmentSet
 		void MergeFrom(const C4PlayerControlAssignmentSet &Src, bool fLowPrio); // take over all assignments defined in Src
 
 		const char *GetName() const { return sName.getData(); }
+		bool IsWildcardName() const { return IsWildcardString(sName.getData()); }
 
 		C4PlayerControlAssignment *GetAssignmentByControlName(const char *szControlName);
 		void GetAssignmentsByKey(const C4PlayerControlDefs &rDefs, const C4KeyCodeEx &key, bool fHoldKeysOnly, C4PlayerControlAssignmentPVec *pOutVec, const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const; // match only by TriggerKey (last key of Combo) if fHoldKeysOnly
@@ -264,6 +265,7 @@ class C4PlayerControl
 		C4PlayerControlRecentKeyList RecentKeys;           // keys pressed recently; for combinations
 		C4PlayerControlRecentKeyList DownKeys;         // keys currently held down
 
+	public:
 		// sync values
 		struct CSync
 			{
@@ -294,7 +296,10 @@ class C4PlayerControl
 			void Clear();
 			void CompileFunc(StdCompiler *pComp);
 			bool operator ==(const CSync &cmp) const;
-			} Sync;
+			};
+		
+	private:
+		CSync Sync;
 
 		// callbacks from Game.KeyboardInput
 		bool ProcessKeyEvent(const C4KeyCodeEx &key, bool fUp, const C4KeyEventData &rKeyExtraData);
@@ -319,6 +324,8 @@ class C4PlayerControl
 		void RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet *pKeyset); // register all keys into Game.KeyboardInput creating KeyBindings
 
 		bool IsGlobal() const { return iPlr==-1; }
+		const CSync::ControlDownState *GetControlDownState(int32_t iControl) const
+			{ return Sync.GetControlDownState(iControl); }
 
 		// callback from control queue
 		void ExecuteControlPacket(const class C4ControlPlayerControl *pCtrl);

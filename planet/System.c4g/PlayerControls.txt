@@ -3,10 +3,26 @@
   [ControlDef]
   Identifier=Left
   GUIName=Left
-  GUIDesc=Walk left
+  GUIDesc=Move left
   Hold=1
-  RepeatDelay=5
-  InitialRepeatDelay=35
+
+  [ControlDef]
+  Identifier=Right
+  GUIName=Right
+  GUIDesc=Move right
+  Hold=1
+  
+  [ControlDef]
+  Identifier=Up
+  GUIName=Up
+  GUIDesc=Move up or jump
+  Hold=1
+
+  [ControlDef]
+  Identifier=Down
+  GUIName=Down
+  GUIDesc=Move down
+  Hold=1
 
   [ControlDef]
   Identifier=Throw
@@ -16,22 +32,132 @@
   RepeatDelay=5
   InitialRepeatDelay=35
 
-    
   [ControlDef]
   Identifier=Dig
   GUIName=Dig
   GUIDesc=Delve through the earth
 
-  [ControlDef]
-  Identifier=Test
-  GUIName=Test
-  GUIDesc=Test key
-  
+ 
   
 [ControlSets]
 
   [ControlSet]
+  Name=Keyboard2
+
+    [Assignment]
+    Key=A
+    Control=Left
+
+    [Assignment]
+    Key=D
+    Control=Right
+
+    [Assignment]
+    Key=S
+    Control=Down
+
+    [Assignment]
+    Key=W
+    Control=Up
+    TriggerMode=Hold
+
+  [ControlSet]
   Name=Keyboard2Classic
+  
+    [Assignment]
+    Key=A
+    Control=Left
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=A
+    Control=Right
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=A
+    Control=Up
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=A
+    Control=Down
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=D
+    Control=Right
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=D
+    Control=Left
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=D
+    Control=Up
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=D
+    Control=Down
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=S
+    Control=Down
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=S
+    Control=Up
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=S
+    Control=Left
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=S
+    Control=Right
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=W
+    Control=Up
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=W
+    Control=Down
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=W
+    Control=Left
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=W
+    Control=Right
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+  [ControlSet]
+  Name=Keyboard2*
   
     [Assignment]
     Key=Q
@@ -42,19 +168,3 @@
     Key=E
     Control=Dig
     Priority=50
-
-    [Assignment]
-    Key=A
-    Control=Left
-    TriggerMode=Hold
-
-    [Assignment]
-    Key=S
-    Control=Left
-    TriggerMode=Release | AlwaysUnhandled
-
-    [Assignment]
-    Key=Throw,Throw,Dig
-    ComboIsSequence=1
-    Control=Test
-    Priority=60
