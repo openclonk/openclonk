@@ -204,8 +204,12 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 		KeyComboItem &rKeyComboItem = *i;
 		if (rKeyComboItem.Key == KEY_Default && rKeyComboItem.sKeyName.getLength())
 			{
-			// this is a key reference - find it
-			C4PlayerControlAssignment *pRefAssignment = pParentSet->GetAssignmentByControlName(rKeyComboItem.sKeyName.getData());
+			// this is a key reference
+			// it may be preceded by CON_ to avoid ambigous keus
+			const char *szKeyName = rKeyComboItem.sKeyName.getData();
+			if (SEqual2(szKeyName, "CON_")) szKeyName +=4;
+			// - find it
+			C4PlayerControlAssignment *pRefAssignment = pParentSet->GetAssignmentByControlName(szKeyName);
 			if (pRefAssignment)
 				{
 				// resolve itself if necessary
@@ -303,7 +307,8 @@ void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet 
 	for (C4PlayerControlAssignmentVec::const_iterator i = Src.Assignments.begin(); i != Src.Assignments.end(); ++i)
 		{
 		const C4PlayerControlAssignment &SrcAssignment = *i;
-		// overwrite if def of same name existed if it's not low priority anyway
+		// overwrite if def of same name existed if it's not low priority anyway?
+		// not so easy. Keys may be assigned to multiple controls and we may need to overwrite one or more of them...
 		C4PlayerControlAssignment *pPrevAssignment = GetAssignmentByControlName(SrcAssignment.GetControlName());
 		if (pPrevAssignment)
 			{
@@ -333,7 +338,9 @@ C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControlN
 	{
 	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
 		if (SEqual((*i).GetControlName(), szControlName))
-			return &*i;
+			// We don't like release keys... (2do)
+			if (!((*i).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
+				return &*i;
 	return NULL;
 	}
 

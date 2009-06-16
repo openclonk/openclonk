@@ -13,21 +13,47 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
   if (spec_id) return spec_id->PlayerControl(plr, ctrl, x, y, strength, repeat, release);
   // Forward control to cursor
   var cursor = GetCursor(plr);
-  if (cursor) return cursor->ObjectControl(plr, ctrl, x,y, strength, repeat, release);
+  if (cursor) 
+  {
+    // Object controlled by plr
+    cursor->SetController(plr);
+    // Overload by effect?
+    if (cursor->Control2Effect(plr, ctrl, x, y, strength, repeat, release)) return true;
+    return cursor->ObjectControl(plr, ctrl, x,y, strength, repeat, release);
+  }
   // No cursor? Nothing to handle control then
   return false;
 }
 
+
+
 /* Object functions */
 // To be called in an object context only!
+
+// Control2Effect
+// Call control function in all effects that have "Control" in their name
+global func Control2Effect(int ctrl, int x, int y, int strength, bool repeat, bool release)
+  {
+  // Count down from EffectCount, in case effects get deleted
+  var i = GetEffectCount("*Control*", this), iEffect;
+  var res;
+  while (i--)
+    {
+    iEffect = GetEffect("*Control*", this, i);
+    if ( GetEffect(0, this, iEffect, 1) )
+      if (EffectCall(this, iEffect, "Control", ctrl, x,y,strength, repeat, release))
+        return true;
+    }
+  // No effect handled the control
+  return false;
+  }
 
 // ObjectControl
 // Called from PlayerControl when a control is issued to the cursor
 // Return whether handled
+// To be overloaded by specific objects to enable additional controls
 global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
-  // Object controlled by plr
-  SetController(plr);
   // Any control resets a previously given command
   SetCommand(this, "None");
   // Movement controls
@@ -36,9 +62,6 @@ global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
     return ObjectControlMovement(plr, ctrl, strength, release);
   }
   // Unhandled control
-  var srelease = "";
-  if (release) srelease="Up";
-  Log("Unhandled: %d, %s%s, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), srelease, x,y,strength, repeat);
   return false;
 }
 
@@ -108,9 +131,14 @@ global func ObjectControlUpdateComdir(int plr)
     var is_handled;
     var proc = GetProcedure();
     if (proc == "WALK" || proc == "HANGLE" || proc == "PUSH" || proc == "PULL")
-      is_handled = (old_cx != new_cx) && !new_cy; // Only horizontal movement changed actual direction. Also, enfore clear Left/Right commands without leftover Up/Down
+      // Only horizontal movement changed actual direction
+      // Also, enfore clear Left/Right commands without leftover Up/Down
+      // CON_Down is never handled this way, thus forcing a CON_Stop
+      is_handled = (old_cx != new_cx) && !new_cy;
     else if (proc == "SCALE")
-      is_handled = (old_cy != new_cy) && !new_cx; // Only vertical movement changed actual direction. Also, enfore clear Up/Down to prevent "Zuppel" in corner
+      // Only vertical movement changed actual direction
+      // Also, enfore clear Up/Down to prevent "Zuppel" in corner
+      is_handled = (old_cy != new_cy) && !new_cx;
     else if (proc == "SWIM" || proc == "FLOAT" || proc == "DIG")
       is_handled = (old_cx != new_cx || old_cy != new_cy); // Free 360 degree movement
     else

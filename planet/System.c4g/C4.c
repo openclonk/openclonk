@@ -2,6 +2,7 @@
 
 #strict 2
 
+/* proplist changes aren't in this branch? 
 // stuff for the proplist changes
 static const DFA_NONE    =-1;
 static const DFA_WALK    = 0;
@@ -28,18 +29,15 @@ global func GetActMapVal(string strEntry, string strAction, id idDef, int iEntry
   if (!idDef) idDef = GetID();
   if (strEntry == "Facet") strEntry = ["X", "Y", "Wdt", "Hgt", "OffX", "OffY"][iEntryNr];
   return GetProperty(strEntry, GetProperty(strAction, idDef));
-}
+} */
 
 global func CastC4ID(x) { return x; }
 
-// Abgelöst durch SetPosition
-global func ForcePosition(object obj, int x, int y) { return SetPosition(x, y, obj); }
-
-// Abgelöst durch RemoveObject
-global func AssignRemoval(object obj) { return RemoveObject(obj); }
-
 // Für Szenarien ohne Objects.c4d...
 global func EmptyBarrelID() { return BARL; }
+global func GetBarrelType() {}
+func BarrelDoFill() {}
+func BarrelIsFull() {}
 
 // Fügt das Material in ein Fass im Objekt ein
 global func ObjectInsertMaterial(int imat, object pTarget)
@@ -58,6 +56,7 @@ global func ObjectInsertMaterial(int imat, object pTarget)
   // Kein Fass? Dann Objekt überlaufen lassen
   return InsertMaterial(imat, GetX(pTarget)-GetX(), GetY(pTarget)-GetY());
 }
+
   
 // Auffüllbares Fass im Objekt suchen
 global func FindFillBarrel(object pInObj, id type)

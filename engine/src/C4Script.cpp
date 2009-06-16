@@ -753,6 +753,13 @@ static bool FnSetActionData(C4AulContext *cthr, long iData, C4Object *pObj)
 	return TRUE;
 	}
 
+static long FnGetActionData(C4AulContext *cthr, C4Object *pObj)
+	{
+	if (!pObj) pObj=cthr->Obj; if (!pObj || !pObj->Status) return FALSE;
+	// get data
+	return pObj->Action.Data;
+	}
+
 static bool FnObjectSetAction(C4AulContext *cthr, C4Object *pObj, C4String *szAction,
 											C4Object *pTarget, C4Object *pTarget2, bool fDirect)
 	{
@@ -6509,6 +6516,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Bubble", FnBubble);
 	AddFunc(pEngine, "SetAction", FnSetAction);
 	AddFunc(pEngine, "SetActionData", FnSetActionData);
+	AddFunc(pEngine, "GetActionData", FnGetActionData);
 	AddFunc(pEngine, "SetBridgeActionData", FnSetBridgeActionData);
 	AddFunc(pEngine, "GetAction", FnGetAction);
 	AddFunc(pEngine, "GetActTime", FnGetActTime);
