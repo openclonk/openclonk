@@ -35,10 +35,6 @@
 
 #include <C4Random.h>
 
-#if defined(C4FRONTEND) || defined(C4GROUP)
-#include "C4CompilerWrapper.h"
-#include "C4Def.h"
-#endif
 
 //------------------------------- Player Info ----------------------------------------
 

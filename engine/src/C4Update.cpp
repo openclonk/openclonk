@@ -22,12 +22,7 @@
 #include "C4Group.h"
 #include "C4Log.h"
 
-#ifdef C4FRONTEND
-#include "C4ExplorerCfg.h"
-C4ExplorerCfg *GetCfg();
-#else
 C4Config *GetCfg();
-#endif
 
 #ifdef _WIN32
 #include <direct.h>
@@ -853,7 +848,5 @@ void C4UpdatePackage::WriteLog(const char *strMsg, ...)
 	vsprintf(strOutp, strMsg, arglist);
 	Log.Write(strOutp, strlen(strOutp));
 	Log.Flush();
-#ifdef C4GROUP
-	printf(strOutp);
-#endif
+	::Log(strOutp);
 }

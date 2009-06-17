@@ -42,9 +42,6 @@
 
 #endif
 
-#ifdef C4FRONTEND
-#include "C4CompilerWrapper.h"
-#endif
 
 int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MSnow=MNone,MEarth=MNone,MGranite=MNone,MFlyAshes=MNone;
 BYTE MCVehic=0;

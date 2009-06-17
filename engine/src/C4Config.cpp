@@ -52,10 +52,6 @@
 #include <locale.h>
 #endif
 
-#ifdef C4FRONTEND
-#include "C4Group.h"
-#include <winsock2.h>
-#endif
 
 bool isGermanSystem()
 {

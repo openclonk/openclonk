@@ -43,11 +43,6 @@
 #include <C4Material.h>
 #endif
 
-#if defined(C4FRONTEND) || defined(C4GROUP)
-#include "C4Group.h"
-#include "C4Scenario.h"
-#include "C4CompilerWrapper.h"
-#endif
 
 //-------------------------- Default Action Procedures --------------------------------------
 
@@ -521,10 +516,6 @@ C4Def::~C4Def()
 
 void C4Def::Clear()
   {
-#ifdef C4FRONTEND
-  if (Picture) DeleteObject(Picture); Picture=NULL;
-  if (Image) DeleteObject(Image); Image=NULL;
-#endif
 
 	Graphics.Clear();
 
