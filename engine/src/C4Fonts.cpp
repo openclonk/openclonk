@@ -277,7 +277,6 @@ int32_t C4FontLoader::GetClosestAvailableSize(const char *szFontName, int32_t iW
 	return iRVal;
 	}
 
-#ifdef C4ENGINE // - - -  - - - -  - - - -  - - -  - - - -  - - - -  - - -  -
 
 bool C4FontLoader::InitFont(CStdFont &rFont, C4VectorFont * pFont, int32_t iSize, uint32_t dwWeight, bool fDoShadow)
 	{
@@ -484,5 +483,4 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 	}
 
 
-#endif // C4ENGINE - - -  - - - -  - - - -  - - -  - - - -  - - - -  - - -  -
 

@@ -73,10 +73,8 @@ char *szCurrAccessedEntry=NULL;
 int iC4GroupRewindFilePtrNoWarn=0;
 #endif
 
-#ifdef C4ENGINE
 #ifdef _DEBUG
 //#define C4GROUP_DUMP_ACCESS
-#endif
 #endif
 
 //---------------------------- Global C4Group_Functions -------------------------------------------
@@ -1359,13 +1357,11 @@ bool C4Group::RewindFilePtr()
   {
 
 #ifdef _DEBUG
-#ifdef C4ENGINE
 	if (szCurrAccessedEntry && !iC4GroupRewindFilePtrNoWarn)
 		{
 		LogF ("C4Group::RewindFilePtr() for %s (%s)", szCurrAccessedEntry ? szCurrAccessedEntry : "???", FileName);
 		szCurrAccessedEntry=NULL;
 		}
-#endif
 #endif
 
   // Child group file: pass command to mother

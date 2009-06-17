@@ -44,7 +44,6 @@
 	#define C4_OS "unknown";
 #endif
 
-#ifdef C4ENGINE
 
 #ifndef HAVE_CONFIG_H
 // different debugrec options
@@ -83,7 +82,6 @@
 #if defined(HAVE_MIDI_H) && !defined(USE_FMOD)
 #define USE_WINDOWS_MIDI
 #endif
-#endif // C4ENGINE
 
 #include <Standard.h>
 #include <CStdFile.h>

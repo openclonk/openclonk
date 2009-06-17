@@ -33,9 +33,7 @@
 #include <C4Components.h>
 #include <C4Log.h>
 #include <C4Config.h>
-#ifdef C4ENGINE
 #include <C4Game.h>
-#endif
 #endif
 
 #ifdef HAVE_ICONV
@@ -265,7 +263,6 @@ C4GroupSet& C4Language::GetPackGroups(const char *strRelativePath)
 	// Store wanted target location
 	SCopy(strRelativePath, strTargetLocation, _MAX_PATH);
 
-#ifdef C4ENGINE
 	// Adjust location by scenario origin
 	if (Game.C4S.Head.Origin.getLength() && SEqualNoCase(GetExtension(Game.C4S.Head.Origin.getData()), "c4s"))
 		{
@@ -285,7 +282,6 @@ C4GroupSet& C4Language::GetPackGroups(const char *strRelativePath)
 				}
 			}
 		}
-#endif
 
 	// Target location has not changed: return last list of pack groups
 	if (SEqualNoCase(strTargetLocation, PackGroupLocation))

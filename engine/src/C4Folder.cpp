@@ -26,8 +26,6 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
-#ifdef C4ENGINE
-#endif
 #endif
 
 #if defined(C4FRONTEND) || defined (C4GROUP)

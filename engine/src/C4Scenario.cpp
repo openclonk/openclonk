@@ -30,8 +30,6 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
-#ifdef C4ENGINE
-#endif
 #endif
 
 #if defined(C4FRONTEND) || defined (C4GROUP)
@@ -652,7 +650,6 @@ BOOL C4SGame::IsMelee()
 
 
 
-#ifdef C4ENGINE
 
 // scenario sections
 
@@ -767,4 +764,3 @@ bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObj
 	return true;
 	}
 
-#endif // C4ENGINE

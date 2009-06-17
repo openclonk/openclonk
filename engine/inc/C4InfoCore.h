@@ -103,16 +103,12 @@ class C4TempPhysicalInfo : public C4PhysicalInfo
 	{
 	private:
 		// changes done to the original physicals; used for backtracing
-#ifdef C4ENGINE
 		std::vector<C4PhysicalChange> Changes;
-#endif
 
 	public:
 		void Clear()
 		{
-#ifdef C4ENGINE
 			Changes.clear();
-#endif
 		}
 		void Default() { Clear(); C4PhysicalInfo::Default(); } // clears
 		void CompileFunc(StdCompiler *pComp);

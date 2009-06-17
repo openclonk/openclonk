@@ -62,11 +62,9 @@ void C4ObjectInfo::Default()
 	Filename[0]=0;
   Next=NULL;
 	pDef = NULL;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	Portrait.Default();
 	pNewPortrait = NULL;
 	pCustomPortrait = NULL;
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 BOOL C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPortrait)
@@ -82,9 +80,7 @@ BOOL C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPor
 				{ hChild.Close(); return FALSE; }
 			// resolve definition, if possible
 			// only works in game, but is not needed in frontend or startup editing anyway
-#ifdef C4ENGINE
 			pDef = C4Id2Def(id);
-#endif
 			hChild.Close();
 			return TRUE;
 			}
@@ -99,7 +95,6 @@ BOOL C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 	SCopy(GetFilename(hGroup.GetName()),Filename,_MAX_FNAME);
 	// Load core
 	if (!C4ObjectInfoCore::Load(hGroup)) return FALSE;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Load portrait - always try linking, even if fLoadPortrait is false (doesn't cost mem anyway)
 	// evaluate portrait string in info
 	bool fPortraitFileChecked=false;
@@ -165,7 +160,6 @@ BOOL C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 		else if (Config.Graphics.AddNewCrewPortraits)
 			// assign a new random crew portrait
 			SetRandomPortrait(0, true, false);
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	return TRUE;
 	}
 
@@ -210,7 +204,6 @@ BOOL C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 	C4Group hTemp;
 	if (!hTemp.OpenAsChild(&hGroup, Filename, FALSE, TRUE))
 		return FALSE;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// New portrait present, or old portrait not saved yet (old player begin updated)?
 	if (!fStoreTiny && Config.Graphics.SaveDefaultPortraits) if (pNewPortrait || (Config.Graphics.AddNewCrewPortraits && Portrait.GetGfx() && !hTemp.FindEntry(C4CFN_Portrait)))
 		{
@@ -282,7 +275,6 @@ BOOL C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 			}
 		}
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Save info to temp group
 	if (!C4ObjectInfoCore::Save(hTemp, pDefs))
 		{ hTemp.Close(); return FALSE; }
@@ -300,17 +292,14 @@ void C4ObjectInfo::Evaluate()
 
 void C4ObjectInfo::Clear()
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	Portrait.Clear();
 	if (pNewPortrait) { delete pNewPortrait; pNewPortrait=NULL; }
 	if (pCustomPortrait) { delete pCustomPortrait; pCustomPortrait=NULL; }
 	pDef=NULL;
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Object *pOfObj)
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	int iX=0;
 
@@ -362,7 +351,6 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 	else name.Format("%s",pOfObj->GetName ());
 	Application.DDraw->TextOut(name.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4ObjectInfo::Recruit()
@@ -371,7 +359,6 @@ void C4ObjectInfo::Recruit()
 	if (InAction) return;
   WasInAction=TRUE;
   InAction=TRUE;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	InActionTime=Game.Time;
 	// rank name overload by def?
 	C4Def *pDef=::Definitions.ID2Def(id);
@@ -380,7 +367,6 @@ void C4ObjectInfo::Recruit()
 		StdStrBuf sRank(pDef->pRankNames->GetRankName(Rank, true));
 		if (sRank) sRankName.Copy(sRank);
 		}
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4ObjectInfo::Retire()
@@ -389,9 +375,7 @@ void C4ObjectInfo::Retire()
 	if (!InAction) return;
 	// retire
 	InAction=FALSE;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	TotalPlayingTime+=(Game.Time-InActionTime);
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4ObjectInfo::SetBirthday()
@@ -400,7 +384,6 @@ void C4ObjectInfo::SetBirthday()
 	}
 
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool C4ObjectInfo::SetRandomPortrait(C4ID idSourceDef, bool fAssignPermanently, bool fCopyFile)
 	{
@@ -471,4 +454,3 @@ bool C4ObjectInfo::ClearPortrait(bool fPermanently)
 	return true;
 	}
 
-#endif

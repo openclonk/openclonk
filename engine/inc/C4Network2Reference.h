@@ -19,12 +19,8 @@
 #ifndef C4NETWORK2REFERENCE_H
 #define C4NETWORK2REFERENCE_H
 
-#ifdef C4ENGINE
 #include "C4Network2.h"
 #include "C4Network2Client.h"
-#else
-#include "C4NetIO.h"
-#endif
 #include "C4GameParameters.h"
 #include "C4Version.h"
 #include "C4GameVersion.h"

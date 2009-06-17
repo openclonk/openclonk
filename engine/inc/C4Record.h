@@ -265,9 +265,6 @@ class C4Record // demo recording
 		C4Record(const char *szPlaybackFile, const char *szRecordFile, const char *szTempRecFile); // start recording from replay into record
 		~C4Record(); // destructor; close file; create demo scen
 		int Index;
-#ifndef C4ENGINE
-		int iLastFrame; // some hack for the ctrlrec-t00l
-#endif
 
 		bool IsRecording() const { return fRecording; } // return whether Start() has been called
 		unsigned int GetStreamingPos() const { return iStreamingPos; }

@@ -67,9 +67,7 @@ BOOL C4ScriptHost::Load(const char *szName, C4Group &hGroup, const char *szFilen
 	// set name
 	ScriptName.Format("%s" DirSep "%s", hGroup.GetFullName().getData(), Filename);
 	// preparse script
-#ifdef C4ENGINE
 	MakeScript();
-#endif
 	// Success
 	return fSuccess;
 	}
@@ -101,9 +99,7 @@ void C4ScriptHost::Close()
 	// Make executable script
 	MakeScript();
 	// Update console
-#if defined(C4ENGINE)
 	Console.UpdateInputCtrl();
-#endif
 	}
 
 int32_t C4ScriptHost::GetControlMethod(int32_t com, int32_t first, int32_t second)
@@ -119,7 +115,6 @@ void C4ScriptHost::GetControlMethodMask(const char *szFunctionFormat, int32_t& f
 	if (!Script) return;
 
 	// Scan for com defined control functions
-#ifdef C4ENGINE
 	int32_t iCom;
 	char szFunction[256+1];
 	for (iCom=0; iCom<ComOrderNum; iCom++)
@@ -133,21 +128,16 @@ void C4ScriptHost::GetControlMethodMask(const char *szFunctionFormat, int32_t& f
 			second |= ((func->ControlMethod >> 1) & 0x01) << iCom;
 			}
 		}
-#endif
 	}
 
 
 C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *Pars, bool fPrivateCall, bool fPassError)
 	{
-#ifdef C4ENGINE
 	// get function
 	C4AulScriptFunc *pFn;
 	if (!(pFn = GetSFunc(szFunction, AA_PRIVATE))) return C4VNull;
 	// Call code
 	return pFn->Exec(pObj,Pars, fPassError);
-#else
-	return 0;
-#endif
 	}
 
 BOOL C4ScriptHost::ReloadScript(const char *szPath)
@@ -173,7 +163,6 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 const char *C4ScriptHost::GetControlDesc(const char *szFunctionFormat, int32_t iCom, C4ID *pidImage, int32_t* piImagePhase)
 	{
-#ifdef C4ENGINE
 	// Compose script function
 	char szFunction[256+1];
 	sprintf(szFunction,szFunctionFormat,ComName(iCom));
@@ -187,7 +176,6 @@ const char *C4ScriptHost::GetControlDesc(const char *szFunctionFormat, int32_t i
 	if(piImagePhase) { *piImagePhase = 0; if(pFn) *piImagePhase = pFn->iImagePhase; }
 	// Return function desc
 	if (pFn && pFn->Desc.getLength()) return pFn->DescText.getData();
-#endif
 	// No function
 	return NULL;
 	}
@@ -248,14 +236,12 @@ void C4GameScriptHost::Default()
 BOOL C4GameScriptHost::Execute()
 	{
 	if (!Script) return FALSE;
-#ifdef C4ENGINE
 	char buffer[500];
 	if (Go && !::Game.iTick10)
 		{
 		sprintf(buffer,PSF_Script,Counter++);
 		return !! Call(buffer);
 		}
-#endif
 	return FALSE;
 	}
 

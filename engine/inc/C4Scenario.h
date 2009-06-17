@@ -320,7 +320,6 @@ class C4Scenario
 
 class C4ScenarioSection;
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 extern const char *C4ScenSect_Main;
 
@@ -345,6 +344,5 @@ class C4ScenarioSection
 		bool EnsureTempStore(bool fExtractLandscape, bool fExtractObjects);               // make sure that a temp file is created, and nothing is modified within the main scenario file
 	};
 
-#endif // C4ENGINE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 #endif // INC_C4Scenario

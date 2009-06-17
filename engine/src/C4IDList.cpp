@@ -265,7 +265,6 @@ bool C4IDList::IncreaseIDCount(C4ID c_id, bool fAddNewID, int32_t IncreaseBy, bo
 
 
 // Access by category-sorted index
-#ifdef C4ENGINE
 C4ID C4IDList::GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount) const
   {
   int32_t cindex=-1;
@@ -352,7 +351,6 @@ int32_t C4IDList::GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const
 		}
   return idnum;
   }
-#endif
 // IDList merge
 
 bool C4IDList::Add(C4IDList &rList)
@@ -525,7 +523,6 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 										C4DefList &rDefs, DWORD dwCategory,
 										bool fCounts, int32_t iAlign) const
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	int32_t sections = cgo.GetSectionCount();
 	int32_t idnum = GetNumberOfIDs(rDefs,dwCategory);
@@ -542,7 +539,6 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
     if (fCounts) Application.DDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
     }
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4IDList::Default()

@@ -97,9 +97,7 @@ class C4GraphicsSystem
 		C4Viewport *FirstViewport;
 		BOOL fViewportClassRegistered;
 		C4Facet ViewportArea;
-#ifdef C4ENGINE
 		C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
-#endif
 		char FlashMessageText[C4MaxTitle+1];
 		int32_t FlashMessageTime,FlashMessageX,FlashMessageY;
 		void DrawHelp();

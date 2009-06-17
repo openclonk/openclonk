@@ -228,7 +228,6 @@ BOOL C4AulScript::ReloadScript(const char *szPath)
 void C4AulScriptEngine::Link(C4DefList *rDefs)
 	{
 
-#ifdef C4ENGINE
 
 	try
 		{
@@ -284,7 +283,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		delete err;
 		}
 
-#endif
 
 	}
 

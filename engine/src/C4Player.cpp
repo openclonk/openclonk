@@ -464,11 +464,7 @@ BOOL C4Player::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny)
   if (!C4PlayerInfoCore::Save(hGroup))
     return FALSE;
 	// Save crew
-#ifndef C4ENGINE
-	C4DefList *pDefs = NULL;
-#else
 	C4DefList *pDefs = &::Definitions;
-#endif
 	if (!CrewInfoList.Save(hGroup, fSavegame, fStoreTiny, pDefs))
     { hGroup.Close(); return FALSE; }
 	// Sort
@@ -2071,7 +2067,6 @@ void C4Player::EvaluateLeague(bool fDisconnected, bool fWon)
 
 BOOL C4Player::LocalSync()
 	{
-#ifdef C4ENGINE
 	// local sync not necessary for script players
 	if (GetType() == C4PT_Script) return TRUE;
 	// evaluate total playing time
@@ -2087,17 +2082,14 @@ BOOL C4Player::LocalSync()
 	// save player
 	if (!Save())
 		return FALSE;
-#endif
 	// done, success
 	return TRUE;
 	}
 
-#ifdef C4ENGINE
 C4PlayerInfo *C4Player::GetInfo()
 	{
 	return Game.PlayerInfos.GetPlayerInfoByID(ID);
 	}
-#endif
 
 BOOL C4Player::SetObjectCrewStatus(C4Object *pCrew, BOOL fNewStatus)
 	{

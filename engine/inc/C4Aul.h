@@ -402,7 +402,6 @@ enum C4AulScriptState
 	ASS_PARSED			// byte code generated
 	};
 
-#ifdef C4ENGINE
 
 // script profiler entry
 class C4AulProfiler
@@ -429,7 +428,6 @@ class C4AulProfiler
 		static void StopProfiling();
 	};
 
-#endif
 
 // script class
 class C4AulScript

@@ -145,7 +145,6 @@ class C4Shape: public C4Rect
 		void CompileFunc(StdCompiler *pComp, bool fRuntime);
   };
 
-#ifdef C4ENGINE
 
 // a bunch of rectangles
 // rects NOT including pos+size-point
@@ -163,6 +162,5 @@ class C4RectList : public std::vector<C4Rect>
 		void ClipByRect(const C4Rect &rClip); // split up rectangles
 	};
 
-#endif
 
 #endif // INC_C4Shape

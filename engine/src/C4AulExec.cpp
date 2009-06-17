@@ -38,7 +38,6 @@ C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
 
 void C4AulExecError::show()
 	{
-#ifdef C4ENGINE
 	// log
 	C4AulError::show();
 	// debug mode object message
@@ -47,7 +46,6 @@ void C4AulExecError::show()
 			::Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
 		else
 			::Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
-#endif
 	}
 
 const int MAX_CONTEXT_STACK = 512;
@@ -1259,24 +1257,17 @@ C4Value C4AulFunc::Exec(C4Object *pObj, C4AulParSet* pPars, bool fPassErrors)
 
 C4Value C4AulScriptFunc::Exec(C4AulContext *pCtx, C4Value pPars[], bool fPassErrors)
 	{
-#ifdef C4ENGINE
 	// handle easiest case first
 	if (Owner->State != ASS_PARSED) return C4VNull;
 
 	// execute
 	return AulExec.Exec(this, pCtx->Obj, pPars, fPassErrors);
 
-#else
-
-	return C4AulNull;
-
-#endif
 	}
 
 
 C4Value C4AulScriptFunc::Exec(C4Object *pObj, C4AulParSet *pPars, bool fPassErrors)
 	{
-#ifdef C4ENGINE
 
 	// handle easiest case first
 	if (Owner->State != ASS_PARSED) return C4VNull;
@@ -1284,11 +1275,6 @@ C4Value C4AulScriptFunc::Exec(C4Object *pObj, C4AulParSet *pPars, bool fPassErro
 	// execute
 	return AulExec.Exec(this, pObj, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
 
-#else
-
-	return C4AulNull;
-
-#endif
 	}
 
 

@@ -33,11 +33,9 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Log.h>
 #include <C4Components.h>
-#ifdef C4ENGINE
 #include <C4Application.h>
 #include <C4Network2.h>
 #include <C4Language.h>
-#endif
 #endif
 
 #include <StdFile.h>
@@ -93,9 +91,7 @@ void C4ConfigGeneral::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(SaveGameFolder,	 		"SaveGameFolder",			"Savegames.c4f", false, true));
 	pComp->Value(mkNamingAdapt(SaveDemoFolder,			"SaveDemoFolder",			"Records.c4f",	 false, true  ));
-#ifdef C4ENGINE
 	pComp->Value(mkNamingAdapt(s(MissionAccess),		"MissionAccess",			"", false, true));
-#endif
 	pComp->Value(mkNamingAdapt(s(UpdateEngine),	    "UpdateEngine",    		"www.clonkx.de/" C4ENGINENICK "/cr_%d_%s.c4u"));
 	pComp->Value(mkNamingAdapt(s(UpdateObjects),	  "UpdateObjects",    	"www.clonkx.de/" C4ENGINENICK "/cr_%d%d%d%d_%d_%s.c4u"));
 	pComp->Value(mkNamingAdapt(s(UpdateMajor),			"UpdateMajor",    		"www.clonkx.de/" C4ENGINENICK "/cr_%d%d%d%d_%s.c4u"));
@@ -195,12 +191,10 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(NoReferenceRequest,			"NoReferenceRequest",		0							));
 	pComp->Value(mkNamingAdapt(MaxResSearchRecursion,   "MaxResSearchRecursion",1             ,false, true));
 	pComp->Value(mkNamingAdapt(Comment,		  						"Comment",							""						,false, true));
-#ifdef C4ENGINE
 	pComp->Value(mkNamingAdapt(PortTCP,									"PortTCP",							C4NetStdPortTCP				,false, true));
 	pComp->Value(mkNamingAdapt(PortUDP,									"PortUDP",							C4NetStdPortUDP				,false, true));
 	pComp->Value(mkNamingAdapt(PortDiscovery,						"PortDiscovery",				C4NetStdPortDiscovery	,false, true));
 	pComp->Value(mkNamingAdapt(PortRefServer,						"PortRefServer",				C4NetStdPortRefServer	,false, true));
-#endif
 	pComp->Value(mkNamingAdapt(ControlMode,	        		"ControlMode",	      	0           	));
 	pComp->Value(mkNamingAdapt(SendPortraits,						"SendPortraits",				0							,false, true));
 	pComp->Value(mkNamingAdapt(LocalName,               "LocalName",						"Unknown"			,false, true));
@@ -483,9 +477,7 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 	catch(StdCompiler::Exception *pExc)
 		{
 		// Configuration file syntax error?
-#ifdef C4ENGINE
 		LogF("Error loading configuration: %s"/*LoadResStr("IDS_ERR_CONFREAD") - restbl not yet loaded*/, pExc->Msg.getData());
-#endif
 		delete pExc;
 		return FALSE;
 		}
@@ -493,7 +485,6 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 	// Config postinit
 	General.DeterminePaths(forceWorkingDirectory);
 	General.AdoptOldSettings();
-#ifdef C4ENGINE
 	#ifdef HAVE_WINSOCK
 		bool fWinSock = AcquireWinSock();
 	#endif
@@ -506,7 +497,6 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 	#ifdef HAVE_WINSOCK
 		if (fWinSock) ReleaseWinSock();
 	#endif
-#endif
 	General.DefaultLanguage();
 #if defined USE_GL && !defined USE_DIRECTX
 	if (Graphics.Engine == GFXENGN_DIRECTX || Graphics.Engine == GFXENGN_DIRECTXS)
@@ -522,7 +512,6 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 		// OpenGL
 		DDrawCfg.Set(Graphics.NewGfxCfgGL, (float) Graphics.BlitOffGL/100.0f);
 	// Warning against invalid ports
-#ifdef C4ENGINE
 	if (Config.Network.PortTCP>0 && Config.Network.PortTCP == Config.Network.PortRefServer)
 		{
 		Log("Warning: Network TCP port and reference server port both set to same value - increasing reference server port!");
@@ -535,7 +524,6 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 		++Config.Network.PortDiscovery;
 		if (Config.Network.PortDiscovery>=65536) Config.Network.PortDiscovery = C4NetStdPortDiscovery;
 		}
-#endif
 	// Empty nick already defaults to GetRegistrationData("Nick") or
 	// Network.LocalName at relevant places.
 	/*if (!Network.Nick.getLength())
@@ -603,9 +591,7 @@ BOOL C4Config::Save()
 		}
 	catch(StdCompiler::Exception *pExc)
 		{
-#ifdef C4ENGINE
 		LogF(LoadResStr("IDS_ERR_CONFSAVE"), pExc->Msg.getData());
-#endif
 		delete pExc;
 		return FALSE;
 		}
@@ -622,11 +608,7 @@ void C4ConfigGeneral::DeterminePaths(BOOL forceWorkingDirectory)
 	GetTempPath(CFG_MaxString,TempPath);
 	if (TempPath[0]) AppendBackslash(TempPath);
 #elif defined(__linux__)
-#ifdef C4ENGINE
 	GetParentPath(Application.Location, ExePath);
-#else
-	ExePath[0] = '.'; ExePath[1] = 0;
-#endif
 	AppendBackslash(ExePath);
 	const char * t = getenv("TMPDIR");
 	if (t)
@@ -676,11 +658,9 @@ void C4ConfigGeneral::DeterminePaths(BOOL forceWorkingDirectory)
 		SAppend(ScreenshotFolder.getData(), ScreenshotPath);
 		AppendBackslash(ScreenshotPath);
 		}
-#ifdef C4ENGINE
 	// Create user path if it doesn't already exist
 	if (!DirectoryExists(UserDataPath))
 		CreateDirectory(UserDataPath, NULL);
-#endif
 	}
 
 static bool GrabOldPlayerFile(const char *fn)
@@ -785,7 +765,6 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 	return AtPathFilename;
 	}
 
-#ifdef C4ENGINE
 
 BOOL C4ConfigGeneral::CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle)
 	{
@@ -805,7 +784,6 @@ BOOL C4ConfigGeneral::CreateSaveFolder(const char *strDirectory, const char *str
 	return TRUE;
 	}
 
-#endif
 
 const char* C4ConfigNetwork::GetLeagueServerAddress()
 {

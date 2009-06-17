@@ -255,7 +255,6 @@ bool CStdAVIFile::GetFrameByTime(time_t iTime, int32_t *piFrame)
 	return iFrame < iFinalFrame;
 	}
 
-#ifdef C4ENGINE
 
 bool CStdAVIFile::GrabFrame(int32_t iFrame, CSurface *sfc) const
 	{
@@ -274,7 +273,6 @@ bool CStdAVIFile::GrabFrame(int32_t iFrame, CSurface *sfc) const
 	return !!sfc->Unlock();
 	}
 
-#endif
 
 bool CStdAVIFile::OpenAudioStream()
 	{

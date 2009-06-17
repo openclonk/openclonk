@@ -23,13 +23,8 @@
 #include <C4Include.h>
 #include <C4GroupSet.h>
 
-#ifdef C4ENGINE
 #include <C4Game.h>
 #include <C4Log.h>
-#else
-#include <C4Group.h>
-#include <C4Components.h>
-#endif
 
 C4GroupSetNode::C4GroupSetNode(C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id)
 	{
@@ -281,7 +276,6 @@ bool C4GroupSet::UnregisterGroup(int32_t iIndex)
 
 }
 
-#ifdef C4ENGINE
 C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 	{
 	// the scenario filename may be a scenario or directly a group folder
@@ -363,4 +357,3 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 		}
 	return pParentGroup;
 	}
-#endif

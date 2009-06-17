@@ -377,9 +377,7 @@ class CStdDDraw
 		void DebugLog(const char *szMsg)
 			{
 #ifdef _DEBUG
-#ifdef C4ENGINE
 			Log(szMsg);
-#endif
 #endif
 			}
 

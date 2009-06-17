@@ -24,9 +24,6 @@
 #ifndef INC_C4Random
 #define INC_C4Random
 
-#ifndef C4ENGINE
-#include <StdRandom.h>
-#endif
 
 #ifdef DEBUGREC
 	#include <C4Record.h>
@@ -34,7 +31,6 @@
 
 extern int RandomCount;
 extern unsigned int RandomHold;
-#ifdef C4ENGINE
 
 inline void FixedRandom(DWORD dwSeed)
 	{
@@ -82,7 +78,6 @@ inline unsigned int SeededRandom(unsigned int iSeed, unsigned int iRange)
 	return (iSeed >> 16) % iRange;
 	}
 
-#endif
 
 inline int SafeRandom(int range)
 	{

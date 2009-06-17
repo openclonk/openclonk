@@ -24,7 +24,6 @@
 #ifndef INC_C4Game
 #define INC_C4Game
 
-#ifdef C4ENGINE
 
 #include <C4GameParameters.h>
 #include <C4PlayerInfo.h>
@@ -328,6 +327,5 @@ inline StdStrBuf GetKeyboardInputName(const char *szKeyName, bool fShort = false
 	return Game.KeyboardInput.GetKeyCodeNameByKeyName(szKeyName, fShort, iIndex);
 }
 
-#endif // C4ENGINE
 
 #endif

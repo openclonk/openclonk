@@ -47,7 +47,6 @@ void C4Network2Reference::SetSourceIP(in_addr ip)
 			Addrs[i].SetIP(ip);
 }
 
-#ifdef C4ENGINE
 void C4Network2Reference::InitLocal()
 {
 	// Copy all game parameters
@@ -82,7 +81,6 @@ void C4Network2Reference::InitLocal()
 		Addrs[i] = pLocalNetClient->getAddr(i);
 
 }
-#endif
 
 void C4Network2Reference::SortNullIPsBack()
 {
