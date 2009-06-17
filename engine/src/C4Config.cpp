@@ -817,6 +817,22 @@ const char* C4ConfigNetwork::GetLeagueServerAddress()
 		return "clonk.de:84/league2b/league.php";
 }
 
+void C4ConfigNetwork::CheckPortsForCollisions()
+{
+	// check for port collisions
+	if(PortTCP != -1 && PortTCP == PortRefServer)
+	{
+		LogSilentF("Network: TCP Port collision, setting defaults");
+		PortTCP = C4NetStdPortTCP;
+		PortRefServer = C4NetStdPortRefServer;
+	}
+	if(PortUDP != -1 && PortUDP == PortDiscovery)
+	{
+		LogSilentF("Network: UDP Port collision, setting defaults");
+		PortUDP = C4NetStdPortUDP;
+		PortDiscovery = C4NetStdPortDiscovery;
+	}
+}
 void C4ConfigControls::ResetKeys()
 	{
 	StdCompilerNull Comp; Comp.Compile(mkParAdapt(*this, true));

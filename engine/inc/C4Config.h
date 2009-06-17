@@ -194,6 +194,7 @@ class C4ConfigNetwork
 	public:
 		void CompileFunc(StdCompiler *pComp);
 		const char *GetLeagueServerAddress();
+		void CheckPortsForCollisions();
 	};
 
 class C4ConfigStartup
