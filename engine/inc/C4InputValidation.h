@@ -46,9 +46,6 @@ namespace C4InVal
 	bool ValidateInt(int32_t &riVal, int32_t iMinVal, int32_t iMaxVal);
 
 	inline bool ValidateFilename(char *szFilename, size_t iMaxSize=_MAX_PATH) { return ValidateString(szFilename, VAL_Filename, iMaxSize); }
-
-	// checks for phising attacks: Return true if input contains user's webcode
-	bool IsConfidentialData(const char *szInput, bool fShowWarningMessage);
 	};
 
 // Validation adapter: Call ValidateString on string after compiling it

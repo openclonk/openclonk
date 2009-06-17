@@ -836,7 +836,7 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 	// safety
 	if (!szInput || !*szInput || !pChatSheet) return fResult;
 	// check confidential data
-	if (C4InVal::IsConfidentialData(szInput, true)) return fResult;
+	if (Config.IsConfidentialData(szInput, true)) return fResult;
 	// command?
 	if (*szInput == '/' && !SEqual2NoCase(szInput + 1, "me "))
 		{

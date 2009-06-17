@@ -23,6 +23,7 @@
 #include <C4ConfigShareware.h>
 #include <C4SecurityCertificates.h>
 #include <C4Log.h>
+#include <C4Gui.h>
 
 #include <StdFile.h>
 
@@ -484,3 +485,21 @@ void C4ConfigShareware::ClearRegistrationError()
 	// Reset error message(s)
 	RegistrationError.Clear();
 }
+
+bool C4ConfigShareware::IsConfidentialData(const char *szInput, bool fShowWarningMessage)
+	{
+	// safety
+	if (!szInput) return false;
+	// unreg users don't have confidential data
+	if (!Config.Registered()) return false;
+	// shouldn't send the webcode!
+	const char *szWebCode = GetRegistrationData("WebCode");
+	if (szWebCode && *szWebCode) if (SSearchNoCase(szInput, szWebCode))
+		{
+		if (fShowWarningMessage && ::pGUI)
+			::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
+		return true;
+		}
+	// all OK
+	return false;
+	}

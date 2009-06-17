@@ -132,7 +132,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 	// Store to back buffer
 	::MessageInput.StoreBackBuffer(szInputText);
 	// check confidential data - even for object input (script triggered), webcode should not be pasted here
-	if (C4InVal::IsConfidentialData(szInputText, true))
+	if (Config.IsConfidentialData(szInputText, true))
 		{
 		szInputText = "";
 		}
