@@ -501,8 +501,6 @@ c4group_CPPFLAGS = \
 
 c4group_SOURCES = \
   group/c4group_ng.cpp \
-  engine/src/C4Config.cpp \
-  engine/sec/C4ConfigShareware.cpp \
   engine/src/C4Group.cpp \
   engine/src/C4InputValidation.cpp \
   engine/sec/C4SecurityCertificates.cpp \

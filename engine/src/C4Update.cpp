@@ -706,6 +706,8 @@ BOOL C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 	return TRUE;
 }
 
+extern char C4Group_TempPath[_MAX_PATH+1];
+
 BOOL C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, BOOL *fModified)
 {
 	// (CAUTION: pGrp1 may be NULL - that means that there is no counterpart for Grp2
@@ -756,7 +758,8 @@ BOOL C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, BO
 			if(!UpdGroup.OpenAsChild(pUpGrp, strItemName))
 			{
 				// create new group (may be temporary)
-				SCopy(GetCfg()->AtTempPath("~upd"), strTempGroupName, _MAX_FNAME);
+				if (C4Group_TempPath[0]) { SCopy(C4Group_TempPath,strTempGroupName,_MAX_FNAME); SAppend("~upd",strTempGroupName,_MAX_FNAME); }
+				else SCopy("~upd",strTempGroupName,_MAX_FNAME);
 				MakeTempFilename(strTempGroupName);
 				if(!UpdGroup.Open(strTempGroupName, TRUE)) { delete pChildGrp1; WriteLog("Error: could not create temp group\n"); return FALSE; }
 			}

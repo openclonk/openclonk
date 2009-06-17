@@ -987,7 +987,8 @@ bool C4Group::Save(BOOL fReOpen)
 		{
 		// Create target temp file (in temp directory!)
 		SCopy(FileName,szGrpFileName,_MAX_FNAME);
-		SCopy(Config.AtTempPath(GetFilename(FileName)),szTempFileName,_MAX_FNAME);
+		if (C4Group_TempPath[0]) { SCopy(C4Group_TempPath,szTempFileName,_MAX_FNAME); SAppend(GetFilename(FileName),szTempFileName,_MAX_FNAME); }
+		else SCopy(FileName,szTempFileName,_MAX_FNAME);
 		MakeTempFilename(szTempFileName);
 		// (Temp file must not have the same name as the group.)
 		if (SEqual(szTempFileName,szGrpFileName))
