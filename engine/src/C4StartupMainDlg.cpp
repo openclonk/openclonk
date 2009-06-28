@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2007  Sven Eberhardt
+ * Copyright (c) 2005-2008  Matthes Bender
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -31,6 +35,7 @@
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4Language.h>
+#include <C4GraphicsResource.h>
 #endif
 
 
@@ -112,7 +117,7 @@ void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
 	typedef C4GUI::FullscreenDialog Base;
 	Base::DrawElement(cgo);
 	// draw logo
-	C4Facet &fctLogo = Game.GraphicsResource.fctLogo;
+	C4Facet &fctLogo = ::GraphicsResource.fctLogo;
 	float fLogoZoom = 1.0f;
 	fctLogo.DrawX(cgo.Surface, rcBounds.Wdt *1/21, rcBounds.Hgt/14 - 5, int32_t(fLogoZoom*fctLogo.Wdt), int32_t(fLogoZoom*fctLogo.Hgt));
 	// draw version info

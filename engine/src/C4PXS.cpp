@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2001-2002, 2005, 2007  Peter Wortmann
+ * Copyright (c) 2002, 2004-2006  Sven Eberhardt
+ * Copyright (c) 2006-2007  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +27,8 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Physics.h>
 #include <C4Random.h>
-#include <C4Wrappers.h>
+#include <C4Weather.h>
+#include <C4Game.h>
 #endif
 
 static const FIXED WindDrift_Factor = itofix(1, 800);
@@ -51,14 +56,14 @@ void C4PXS::Execute()
 	// Material conversion
 	int32_t iX = fixtoi(x), iY = fixtoi(y);
 	inmat=GBackMat(iX,iY);
-	C4MaterialReaction *pReact = Game.Material.GetReactionUnsafe(Mat, inmat);
+	C4MaterialReaction *pReact = ::MaterialMap.GetReactionUnsafe(Mat, inmat);
 	if (pReact && (*pReact->pFunc)(pReact, iX,iY, iX,iY, xdir,ydir, Mat,inmat, meePXSPos, NULL))
 		{ Deactivate(); return; }
 
 	// Gravity
 	ydir+=GravAccel;
 
-	if(GBackDensity(iX, iY + 1) < Game.Material.Map[Mat].Density)
+	if(GBackDensity(iX, iY + 1) < ::MaterialMap.Map[Mat].Density)
 		{
 		// Air speed: Wind plus some random
 		int32_t iWind = GBackWind(iX, iY);
@@ -66,7 +71,7 @@ void C4PXS::Execute()
 		FIXED tydir = FIXED256(Random(1200) - 600);
 
 		// Air friction, based on WindDrift. MaxSpeed is ignored.
-		int32_t iWindDrift = Max(Game.Material.Map[Mat].WindDrift - 20, 0);
+		int32_t iWindDrift = Max(::MaterialMap.Map[Mat].WindDrift - 20, 0);
 		xdir += ((txdir - xdir) * iWindDrift) * WindDrift_Factor;
 		ydir += ((tydir - ydir) * iWindDrift) * WindDrift_Factor;
 		}
@@ -79,7 +84,7 @@ void C4PXS::Execute()
 	// In bounds?
 	if(Inside<int32_t>(iToX, 0, GBackWdt-1) && Inside<int32_t>(iToY, 0, GBackHgt-1))
 		// Check path
-		if(Game.Landscape._PathFree(iX, iY, iToX, iToY))
+		if(::Landscape._PathFree(iX, iY, iToX, iToY))
 			{
 			x=ctcox; y=ctcoy;
 			return;
@@ -93,7 +98,7 @@ void C4PXS::Execute()
 		int32_t inX = iX + Sign(iToX - iX), inY = iY + Sign(iToY - iY);
 		// Contact?
 		inmat = GBackMat(inX, inY);
-		C4MaterialReaction *pReact = Game.Material.GetReactionUnsafe(Mat, inmat);
+		C4MaterialReaction *pReact = ::MaterialMap.GetReactionUnsafe(Mat, inmat);
 		if (pReact)
 			if ((*pReact->pFunc)(pReact, iX,iY, inX,inY, xdir,ydir, Mat,inmat, meePXSMove, &fStopMovement))
 				{
@@ -137,7 +142,7 @@ void C4PXS::Deactivate()
 	AddDbgRec(RCT_ExecPXS, &rc, sizeof(rc));
 #endif
   Mat=MNone;
-	Game.PXS.Delete(this);
+	::PXS.Delete(this);
   }
 
 C4PXSSystem::C4PXSSystem()
@@ -252,11 +257,11 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 			for (unsigned int cnt2 = 0; cnt2<PXSChunkSize; cnt2++,pxp++)
 				if (pxp->Mat != MNone && VisibleRect.Contains(fixtoi(pxp->x), fixtoi(pxp->y)))
 					{
-					C4Material *pMat=&Game.Material.Map[pxp->Mat];
+					C4Material *pMat=&::MaterialMap.Map[pxp->Mat];
 					if (pMat->PXSFace.Surface && Config.Graphics.PXSGfx)
 						continue;
 					// old-style: unicolored pixels or lines
-					DWORD dwMatClr = Game.Landscape.GetPal()->GetClr((BYTE) (Mat2PixColDefault(pxp->Mat)));
+					DWORD dwMatClr = ::Landscape.GetPal()->GetClr((BYTE) (Mat2PixColDefault(pxp->Mat)));
 					if (fixtoi(pxp->xdir) || fixtoi(pxp->ydir))
 						{
 						// lines for stuff that goes whooosh!
@@ -291,7 +296,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 			for (unsigned int cnt2 = 0; cnt2<PXSChunkSize; cnt2++,pxp++)
 				if (pxp->Mat != MNone && VisibleRect.Contains(fixtoi(pxp->x), fixtoi(pxp->y)))
 					{
-					C4Material *pMat=&Game.Material.Map[pxp->Mat];
+					C4Material *pMat=&::MaterialMap.Map[pxp->Mat];
 					if (!pMat->PXSFace.Surface)
 						continue;
 					// new-style: graphics
@@ -447,3 +452,5 @@ void C4PXSSystem::Delete(C4PXS *pPXS)
 	if(cnt < PXSMaxChunk)
 		iChunkPXS[cnt]--;
 }
+
+C4PXSSystem PXS;

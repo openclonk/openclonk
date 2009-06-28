@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2005  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,6 +22,7 @@
 #ifndef INC_C4Weather
 #define INC_C4Weather
 
+#include <C4Landscape.h>
 class C4Weather
   {
   public:
@@ -51,5 +54,11 @@ class C4Weather
 		void SetSeasonGamma();		// set gamma adjustment for season
     void CompileFunc(StdCompiler *pComp);
   };
+extern C4Weather Weather;
+
+inline int32_t GBackWind(int32_t x, int32_t y)
+  {
+  return GBackIFT(x, y) ? 0: ::Weather.Wind;
+  }
 
 #endif

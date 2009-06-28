@@ -1,6 +1,15 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2001, 2003-2004, 2007-2008  Matthes Bender
+ * Copyright (c) 2001-2007  Peter Wortmann
+ * Copyright (c) 2001-2009  Sven Eberhardt
+ * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2001  Carlo Teubner
+ * Copyright (c) 2004-2009  Günther Brammer
+ * Copyright (c) 2005  Tobias Zwick
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -33,9 +42,18 @@
 #endif
 #include <C4SolidMask.h>
 #include <C4Random.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #include <C4Player.h>
 #include <C4ObjectMenu.h>
+#include <C4RankSystem.h>
+#include <C4GameVersion.h>
+#include <C4GameMessage.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
+#include <C4Record.h>
 #endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
@@ -51,7 +69,7 @@ void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t conta
 void C4Action::SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, int32_t iBridgeMaterial)
 	{
 	// validity
-	iBridgeMaterial = Min<int32_t>(iBridgeMaterial, Game.Material.Num-1);
+	iBridgeMaterial = Min<int32_t>(iBridgeMaterial, ::MaterialMap.Num-1);
 	if (iBridgeMaterial < 0) iBridgeMaterial = 0xff;
 	iBridgeTime = BoundBy<int32_t>(iBridgeTime, 0, 0xffff);
 	// mask in this->Data
@@ -198,7 +216,7 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	// Color
   if (Def->ColorByOwner)
     if (ValidPlr(Owner))
-			Color=Game.Players.Get(Owner)->ColorDw;
+			Color=::Players.Get(Owner)->ColorDw;
 
 	// Shape & face
 	Shape=Def->Shape;
@@ -208,7 +226,7 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
   UpdateFace(true);
 
   // Initial audibility
-  Audible=Game.GraphicsSystem.GetAudibility(GetX(), GetY(), &AudiblePan);
+  Audible=::GraphicsSystem.GetAudibility(GetX(), GetY(), &AudiblePan);
 
 	// Initial OCF
 	SetOCF();
@@ -228,9 +246,9 @@ C4Object::~C4Object()
 
 #if defined(_DEBUG)
 	// debug: mustn't be listed in any list now
-	assert(!Game.Objects.ObjectNumber(this));
-	assert(!Game.Objects.InactiveObjects.ObjectNumber(this));
-	Game.Objects.Sectors.AssertObjectNotInList(this);
+	assert(!::Objects.ObjectNumber(this));
+	assert(!::Objects.InactiveObjects.ObjectNumber(this));
+	::Objects.Sectors.AssertObjectNotInList(this);
 #endif
   }
 
@@ -278,9 +296,9 @@ void C4Object::AssignRemoval(BOOL fExitContents)
 	if (Status == C4OS_INACTIVE)
 		{
 		// object was inactive: activate first, then delete
-		Game.Objects.InactiveObjects.Remove(this);
+		::Objects.InactiveObjects.Remove(this);
 		Status = C4OS_NORMAL;
-		Game.Objects.Add(this);
+		::Objects.Add(this);
 		}
   Status=0;
 	// count decrease
@@ -354,7 +372,7 @@ void C4Object::UpdatePos()
 	// get new area covered
 	// do *NOT* do this while initializing, because object cannot be sorted by main list
 	if (!Initializing && Status == C4OS_NORMAL)
-		Game.Objects.UpdatePos(this);
+		::Objects.UpdatePos(this);
 	}
 
 void C4Object::UpdateFace(bool bUpdateShape, bool fTemp)
@@ -600,7 +618,7 @@ void C4Object::SetOCF()
 	// Update the object character flag according to the object's current situation
   FIXED cspeed=GetSpeed();
 #ifdef _DEBUG
-	if(Contained && !Game.Objects.ObjectNumber(Contained))
+	if(Contained && !::Objects.ObjectNumber(Contained))
 		{ LogF("Warning: contained in wild object %p!", Contained); }
 	else if(Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", Contained, Contained->GetName()); }
@@ -636,7 +654,7 @@ void C4Object::SetOCF()
 	DWORD cocf = OCF_Exclusive;
   if (Def->Chopable)
     if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!Game.Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
+			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
 				OCF|=OCF_Chop;
   // OCF_Rotate: Can be rotated
   if (Def->Rotateable)
@@ -739,7 +757,7 @@ void C4Object::UpdateOCF()
 	// Update the object character flag according to the object's current situation
   FIXED cspeed=GetSpeed();
 #ifdef _DEBUG
-	if(Contained && !Game.Objects.ObjectNumber(Contained))
+	if(Contained && !::Objects.ObjectNumber(Contained))
 		{ LogF("Warning: contained in wild object %p!", Contained); }
 	else if(Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", Contained, Contained->GetName()); }
@@ -766,7 +784,7 @@ void C4Object::UpdateOCF()
 	DWORD cocf = OCF_Exclusive;
   if (Def->Chopable)
     if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!Game.Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
+			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
 				OCF|=OCF_Chop;
   // HitSpeeds
   if (cspeed>=HitSpeed1) OCF|=OCF_HitSpeed1;
@@ -830,7 +848,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
   // Fire Phase
   FirePhase++; if (FirePhase>=MaxFirePhase) FirePhase=0;
   // Extinguish in base
-  if (!Tick5)
+  if (!::Game.iTick5)
 		if (Category & C4D_Living)
 			if (Contained && ValidPlr(Contained->Base))
 				if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Extinguish)
@@ -839,9 +857,9 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 	if (!Def->NoBurnDecay)
 		DoCon(-100);
   // Damage
-  if (!Tick10) if (!Def->NoBurnDamage) DoDamage(+2,iCausedByPlr,C4FxCall_DmgFire);
+  if (!::Game.iTick10) if (!Def->NoBurnDamage) DoDamage(+2,iCausedByPlr,C4FxCall_DmgFire);
   // Energy
-  if (!Tick5) DoEnergy(-1,false,C4FxCall_EngFire, iCausedByPlr);
+  if (!::Game.iTick5) DoEnergy(-1,false,C4FxCall_EngFire, iCausedByPlr);
   // Effects
   int32_t smoke_level=2*Shape.Wdt/3;
 	int32_t smoke_rate=Def->SmokeRate;
@@ -852,17 +870,17 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 	    Smoke(GetX(), GetY(),smoke_level);
 		}
   // Background Effects
-  if (!Tick5)
+  if (!::Game.iTick5)
     {
     int32_t mat;
     if (MatValid(mat=GBackMat(GetX(), GetY())))
       {
 			// Extinguish
-      if (Game.Material.Map[mat].Extinguisher)
+      if (::MaterialMap.Map[mat].Extinguisher)
         { Extinguish(iFireNumber); if (GBackLiquid(GetX(), GetY())) StartSoundEffect("Pshshsh",false,100,this); }
 			// Inflame
 			if (!Random(3))
-				Game.Landscape.Incinerate(GetX(), GetY());
+				::Landscape.Incinerate(GetX(), GetY());
       }
     }
 
@@ -871,7 +889,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 
 BOOL C4Object::BuyEnergy()
   {
-	C4Player *pPlr = Game.Players.Get(Base); if (!pPlr) return FALSE;
+	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return FALSE;
 	if (!GetPhysical()->Energy) return FALSE;
   if (pPlr->Eliminated) return FALSE;
   if (pPlr->Wealth<Game.C4S.Game.Realism.BaseRegenerateEnergyPrice) return FALSE;
@@ -884,7 +902,7 @@ BOOL C4Object::ExecLife()
   {
 
   // Growth
-  if (!Tick35)
+  if (!::Game.iTick35)
 		// Growth specified by definition
     if (Def->Growth)
 			// Alive livings && trees only
@@ -899,7 +917,7 @@ BOOL C4Object::ExecLife()
 
   // Energy reload in base
   int32_t transfer;
-  if (!Tick3) if (Alive)
+  if (!::Game.iTick3) if (Alive)
     if (Contained && ValidPlr(Contained->Base))
       if (!Hostile(Owner,Contained->Base))
         if (Energy<GetPhysical()->Energy)
@@ -915,7 +933,7 @@ BOOL C4Object::ExecLife()
 						}
 
   // Magic reload
-  if (!Tick3) if (Alive)
+  if (!::Game.iTick3) if (Alive)
     if (Contained)
       if (!Hostile(Owner,Contained->Owner))
         if (MagicEnergy<GetPhysical()->Magic)
@@ -925,7 +943,7 @@ BOOL C4Object::ExecLife()
             {
 						// do energy transfer via script, so it can be overloaded by No-Magic-Energy-rule
 						// always use global func instead of local to save double search
-						C4AulFunc *pMagicEnergyFn = Game.ScriptEngine.GetFuncRecursive(PSF_DoMagicEnergy);
+						C4AulFunc *pMagicEnergyFn = ::ScriptEngine.GetFuncRecursive(PSF_DoMagicEnergy);
 						if (pMagicEnergyFn) // should always be true
 							{
 							C4AulParSet pars(C4VInt(-transfer), C4VObj(Contained));
@@ -939,7 +957,7 @@ BOOL C4Object::ExecLife()
           }
 
   // Breathing
-  if (!Tick5)
+  if (!::Game.iTick5)
     if (Alive && !Def->NoBreath)
 			{
 			// Supply check
@@ -975,22 +993,22 @@ BOOL C4Object::ExecLife()
 			}
 
 	// Corrosion energy loss
-  if (!Tick10)
+  if (!::Game.iTick10)
     if (Alive)
 			if (InMat!=MNone)
-				if (Game.Material.Map[InMat].Corrosive)
+				if (::MaterialMap.Map[InMat].Corrosive)
 					if (!GetPhysical()->CorrosionResist)
-						DoEnergy(-Game.Material.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
+						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
 
 	// InMat incineration
-  if (!Tick10)
+  if (!::Game.iTick10)
 		if (InMat!=MNone)
-			if (Game.Material.Map[InMat].Incindiary)
+			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
 					Incinerate(NO_OWNER);
 
   // Nonlife normal energy loss
-	if (!Tick10) if (Energy)
+	if (!::Game.iTick10) if (Energy)
 		if (!(Category & C4D_Living))
 			if (!ValidPlr(Base) || (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RegenerateEnergy))
 				// don't loose if assigned as Energy-holder
@@ -998,7 +1016,7 @@ BOOL C4Object::ExecLife()
 					DoEnergy(-1,false,C4FxCall_EngStruct, NO_OWNER);
 
 	// birthday
-	if (!Tick255)
+	if (!::Game.iTick255)
 		if (Alive)
 			if(Info)
 			{
@@ -1024,7 +1042,7 @@ BOOL C4Object::ExecLife()
 void C4Object::AutoSellContents()
   {
   C4ObjectLink *clnk; C4Object *cobj1,*cobj2;
-	C4Player *pPlr = Game.Players.Get(Base); if (!pPlr) return;
+	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return;
 
   // Content's gold contents
   for (clnk=Contents.First; clnk && (cobj1=clnk->Obj); clnk=clnk->Next)
@@ -1043,7 +1061,7 @@ void C4Object::ExecBase()
   C4Object *flag;;
 
   // New base assignment by flag (no old base removal)
-  if (!Tick10)
+  if (!::Game.iTick10)
     if (Def->CanBeBase) if (!ValidPlr(Base))
       if (flag=Contents.Find(C4ID_Flag))
         if (ValidPlr(flag->Owner) && (flag->Owner!=Base))
@@ -1059,7 +1077,7 @@ void C4Object::ExecBase()
           }
 
   // Base execution
-  if (!Tick35)
+  if (!::Game.iTick35)
     if (ValidPlr(Base))
       {
 			// Auto sell contents
@@ -1073,14 +1091,14 @@ void C4Object::ExecBase()
       }
 
   // Environmental action
-  if (!Tick35)
+  if (!::Game.iTick35)
     {
     // Structures dig free snow
     if ((Category & C4D_Structure) && !(Game.Rules & C4RULE_StructuresSnowIn))
       if (r==0)
 				{
-				Game.Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MSnow);
-				Game.Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MFlyAshes);
+				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MSnow);
+				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MFlyAshes);
 				}
     }
 
@@ -1209,7 +1227,7 @@ void C4Object::AssignDeath(bool fForced)
   // Lose contents
   while (thing=Contents.GetObject()) thing->Exit(thing->GetX(),thing->GetY());
   // Remove from crew/cursor/view
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
   if (pPlr) pPlr->ClearPointers(this, true);
 	// ensure objects that won't be affected by dead-plrview-decay are handled properly
 	if (!pPlr || !(Category & C4D_Living) || !pPlr->FoWViewObjs.IsContained(this))
@@ -1254,7 +1272,7 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	// an object may have newly become an ColorByOwner-object
 	// if it had been ColorByOwner, but is not now, this will be caught in UpdateGraphics()
 	if (!Color && ValidPlr(Owner))
-		Color=Game.Players.Get(Owner)->ColorDw;
+		Color=::Players.Get(Owner)->ColorDw;
 	if (!Def->Rotateable) { r=0; fix_r=rdir=Fix0; }
 	// Reset solid mask
 	SolidMask=Def->SolidMask;
@@ -1266,7 +1284,7 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	// Any effect callbacks to this object might need to reinitialize their target functions
 	// This is ugly, because every effect there is must be updated...
 	if (Game.pGlobalEffects) Game.pGlobalEffects->OnObjectChangedDef(this);
-	for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk = pLnk->Next)
+	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
 		if (pLnk->Obj->pEffects) pLnk->Obj->pEffects->OnObjectChangedDef(this);
 	// Containment (no Entrance)
 	if (pContainer) Enter(pContainer,FALSE);
@@ -1491,7 +1509,7 @@ void C4Object::DoExperience(int32_t change)
 
   // Promotion check
 	if (Info->Experience<MaxExperience)
-		if (Info->Experience>=Game.Rank.Experience(Info->Rank+1))
+		if (Info->Experience>=::DefaultRanks.Experience(Info->Rank+1))
 			Promote(Info->Rank+1, FALSE, false);
   }
 
@@ -1620,7 +1638,7 @@ BOOL C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
   if (Hostile(by_plr,Base) && (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RejectEntrance))
     {
     if (ValidPlr(Owner))
-      GameMsgObject(FormatString(LoadResStr("IDS_OBJ_HOSTILENOENTRANCE"),Game.Players.Get(Owner)->GetName()).getData(),this);
+      GameMsgObject(FormatString(LoadResStr("IDS_OBJ_HOSTILENOENTRANCE"),::Players.Get(Owner)->GetName()).getData(),this);
     return FALSE;
     }
   // Try entrance activation
@@ -1703,7 +1721,7 @@ BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 				// ...tell builder to acquire the material
 				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,NeededMaterial,FALSE,1);
 			// ...game message if not overloaded
-			Game.Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
+			::Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
 			}
 		// Still in need: done/fail
 		return FALSE;
@@ -1740,7 +1758,7 @@ BOOL C4Object::Chop(C4Object *pByObject)
   if (!Status || !Def || Contained || !(OCF & OCF_Chop))
     return FALSE;
   // Chop
-  if (!Tick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
+  if (!::Game.iTick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
   return TRUE;
   }
 
@@ -1782,7 +1800,7 @@ BOOL C4Object::Push(FIXED txdir, FIXED dforce, BOOL fStraighten)
   if (!!xdir || !!ydir || !!rdir) Mobile=1;
 
   // Stuck check
-  if (!Tick35) if (txdir) if (!Def->NoHorizontalMove)
+  if (!::Game.iTick35) if (txdir) if (!Def->NoHorizontalMove)
     if (ContactCheck(GetX(), GetY())) // Resets t_contact
       {
 			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_STUCK"),GetName()).getData(),this);
@@ -1923,7 +1941,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			if (!pTarget) break;
 
 			// Create symbol & init menu
-			pPlayer=Game.Players.Get(pTarget->Owner);
+			pPlayer=::Players.Get(pTarget->Owner);
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 			pTarget->Def->Draw(fctSymbol,FALSE,pTarget->Color, pTarget);
 			Menu->Init(fctSymbol,pTarget->GetName(),this,C4MN_Extra_None,0,iMenu,C4MN_Style_Context);
@@ -1940,7 +1958,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Construction:
 			// Check valid player
-			if (!(pPlayer = Game.Players.Get(Owner))) break;
+			if (!(pPlayer = ::Players.Get(Owner))) break;
 			// Create symbol
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 			DrawMenuSymbol(C4MN_Construction,fctSymbol,-1,NULL);
@@ -1948,7 +1966,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_PLR_NOBKNOW"),pPlayer->GetName()).getData(),
 				this,C4MN_Extra_Components,0,iMenu);
 			// Add player's structure build knowledge
-		  for (cnt=0; pDef=C4Id2Def(pPlayer->Knowledge.GetID(Game.Defs,C4D_Structure,cnt,&iCount)); cnt++)
+		  for (cnt=0; pDef=C4Id2Def(pPlayer->Knowledge.GetID(::Definitions,C4D_Structure,cnt,&iCount)); cnt++)
 				{
 				// Caption
 				sprintf(szCaption,LoadResStr("IDS_MENU_CONSTRUCT"),pDef->GetName());
@@ -1968,13 +1986,13 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		case C4MN_Info:
 			// Target by parameter
 			if (!pTarget) break;
-			pPlayer=Game.Players.Get(pTarget->Owner);
+			pPlayer=::Players.Get(pTarget->Owner);
 			// Create symbol & init menu
 			fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,TRUE,0,1);
 			Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
 			Menu->SetPermanent(TRUE);
 			Menu->SetAlignment(C4MN_Align_Free);
-			C4Viewport *pViewport = Game.GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
+			C4Viewport *pViewport = ::GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
 			if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->ViewX) * pViewport->Zoom,
 			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->ViewY) * pViewport->Zoom);
 			// Add info item
@@ -2011,7 +2029,7 @@ void C4Object::AutoContextMenu(int32_t iMenuSelect)
 			if (OCF & OCF_CrewMember)
 				{
 				// Player has AutoContextMenus enabled
-				C4Player* pPlayer = Game.Players.Get(Controller);
+				C4Player* pPlayer = ::Players.Get(Controller);
 				if (pPlayer && pPlayer->PrefAutoContextMenu)
 					{
 					// Open context menu for structure
@@ -2146,7 +2164,7 @@ BOOL C4Object::Promote(int32_t torank, BOOL exception, bool fForceRankName)
 	if (pUseDef && pUseDef->pRankNames)
 		pRankSys = pUseDef->pRankNames;
 	else
-		pRankSys = &Game.Rank;
+		pRankSys = &::DefaultRanks;
 	// always promote info
 	Info->Promote(torank,*pRankSys, fForceRankName);
 	// silent update?
@@ -2249,7 +2267,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
 
   // Debug Display //////////////////////////////////////////////////////////////////////
-  if (Game.GraphicsSystem.ShowCommand && !eDrawMode)
+  if (::GraphicsSystem.ShowCommand && !eDrawMode)
     {
     C4Command *pCom;
     int32_t ccx=GetX(),ccy=GetY();
@@ -2324,13 +2342,13 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		// Open MoveTo stack
 		if (iMoveTos) { Cmds.AppendChar('|'); Cmds.AppendFormat("%dx MoveTo",iMoveTos); iMoveTos=0; }
 		// Draw message
-		int32_t cmwdt,cmhgt;  Game.GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
-		Application.DDraw->TextOut(Cmds.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+		int32_t cmwdt,cmhgt;  ::GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
+		Application.DDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
     }
   // Debug Display ///////////////////////////////////////////////////////////////////////////////
 
 	// Don't draw (show solidmask)
-	if (Game.GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.ShowSolidMask)
 		if (SolidMask.Wdt)
 			{
 			// DrawSolidMask(cgo); - no need to draw it, because the 8bit-surface will be shown
@@ -2349,7 +2367,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		}
 
 	// Fire facet - always draw, even if particles are drawn as well
-	if (OnFire /*&& !Game.Particles.IsFireParticleLoaded()*/) if (eDrawMode!=ODM_BaseOnly)
+	if (OnFire /*&& !::Particles.IsFireParticleLoaded()*/) if (eDrawMode!=ODM_BaseOnly)
 		{
 		C4Facet fgo;
 		// Straight: Full Shape.Rect on fire
@@ -2368,7 +2386,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 			        offY + fr.y,
 			        fr.Wdt, fr.Hgt);
 			}
-		Game.GraphicsResource.fctFire.Draw(fgo,FALSE,FirePhase);
+		::GraphicsResource.fctFire.Draw(fgo,FALSE,FirePhase);
 		}
 
 	// color modulation (including construction sign...)
@@ -2419,20 +2437,20 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		if (eDrawMode!=ODM_BaseOnly)
 			if (ValidPlr(Owner))
 				if (Owner == iByPlayer)
-					if (Game.Players.Get(Owner)->SelectFlash)
+					if (::Players.Get(Owner)->SelectFlash)
 						DrawSelectMark(cgo, 1);
 
 	// Energy shortage
-	if (NeedEnergy) if (Tick35>12) if (eDrawMode!=ODM_BaseOnly)
+	if (NeedEnergy) if (::Game.iTick35>12) if (eDrawMode!=ODM_BaseOnly)
 		{
-		C4Facet &fctEnergy = Game.GraphicsResource.fctEnergy;
+		C4Facet &fctEnergy = ::GraphicsResource.fctEnergy;
 		int32_t tx=cox+Shape.Wdt/2-fctEnergy.Wdt/2, ty=coy-fctEnergy.Hgt-5;
 		fctEnergy.Draw(cgo.Surface,cgo.X+tx,cgo.Y+ty);
 		}
 
 
 	// Debug Display ////////////////////////////////////////////////////////////////////////
-	if (Game.GraphicsSystem.ShowVertices) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowVertices) if (eDrawMode!=ODM_BaseOnly)
 		{
 		int32_t cnt;
 		if (Shape.VtxNum>1)
@@ -2446,7 +2464,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				}
 		}
 
-	if (Game.GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
 		{
 		if (OCF & OCF_Entrance)
 			Application.DDraw->DrawFrame(cgo.Surface,cgo.X+cox-Shape.x+Def->Entrance.x,
@@ -2462,14 +2480,14 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 						 CRed);
 		}
 
-	if (Game.GraphicsSystem.ShowAction) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowAction) if (eDrawMode!=ODM_BaseOnly)
 		{
 		if (Action.Act>ActIdle)
 			{
 			StdStrBuf str;
 			str.Format("%s (%d)",Def->ActMap[Action.Act].Name,Action.Phase);
-			int32_t cmwdt,cmhgt; Game.GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
-			Application.DDraw->TextOut(str.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-cmhgt,InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+			int32_t cmwdt,cmhgt; ::GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
+			Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-cmhgt,InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
 			}
 		}
   // Debug Display ///////////////////////////////////////////////////////////////////////
@@ -2496,7 +2514,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			if (!Inside<int>(GetX() + Shape.GetX() - cotx, 1 - Shape.Wdt, cgo.Wdt)
 			|| !Inside<int>(GetY() + Shape.GetY() - coty, 1 - Shape.Hgt, cgo.Hgt)) return;
 			// get player
-			C4Player* pOwner = Game.Players.Get(Owner);
+			C4Player* pOwner = ::Players.Get(Owner);
 			if (pOwner) if (!Hostile(Owner, iByPlayer)) if (!pOwner->IsInvisible())
 				{
 				int32_t X = GetX();
@@ -2511,16 +2529,16 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 				else
 					SCopy(GetName(),szText);
 				// Word wrap to cgo width
-				int32_t iCharWdt, dummy; Game.GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
+				int32_t iCharWdt, dummy; ::GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
 				int32_t iMaxLine = Max<int32_t>( cgo.Wdt / iCharWdt, 20 );
 				SWordWrap(szText,' ','|',iMaxLine);
 				// Adjust position by output boundaries
 				int32_t iTX,iTY,iTWdt,iTHgt;
-				Game.GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
+				::GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
 				iTX = BoundBy<int>( X-cotx, iTWdt/2, cgo.Wdt-iTWdt/2 );
 				iTY = BoundBy<int>( Y-coty-iTHgt, 0, cgo.Hgt-iTHgt );
 				// Draw
-				Application.DDraw->TextOut(szText, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + iTX, cgo.Y + iTY,
+				Application.DDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + iTX, cgo.Y + iTY,
 														pOwner->ColorDw|0x7f000000,ACenter);
 				}
 			}
@@ -2534,7 +2552,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		|| !Inside<float>(coy,1-Shape.Hgt,cgo.Hgt))
 			return;
 	// Don't draw (show solidmask)
-	if (Game.GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.ShowSolidMask)
 		if (SolidMask.Wdt)
 			return;
 	// Contained
@@ -2542,7 +2560,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// Construction sign
 	if (OCF & OCF_Construct) if (r==0) if (eDrawMode!=ODM_BaseOnly)
 		{
-		C4Facet &fctConSign = Game.GraphicsResource.fctConstruction;
+		C4Facet &fctConSign = ::GraphicsResource.fctConstruction;
 		lpDDraw->Blit(fctConSign.Surface,
 			fctConSign.X, fctConSign.Y,
 			fctConSign.Wdt, fctConSign.Hgt,
@@ -2630,20 +2648,20 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 void C4Object::DrawEnergy(C4Facet &cgo)
 	{
 	//cgo.DrawEnergyLevel(Energy,GetPhysical()->Energy);
-	cgo.DrawEnergyLevelEx(Energy,GetPhysical()->Energy, Game.GraphicsResource.fctEnergyBars, 0);
+	cgo.DrawEnergyLevelEx(Energy,GetPhysical()->Energy, ::GraphicsResource.fctEnergyBars, 0);
 	}
 
 void C4Object::DrawMagicEnergy(C4Facet &cgo)
 	{
 	// draw in units of MagicPhysicalFactor, so you can get a full magic energy bar by script even if partial magic energy training is not fulfilled
 	//cgo.DrawEnergyLevel(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor,39);
-	cgo.DrawEnergyLevelEx(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor, Game.GraphicsResource.fctEnergyBars, 1);
+	cgo.DrawEnergyLevelEx(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor, ::GraphicsResource.fctEnergyBars, 1);
 	}
 
 void C4Object::DrawBreath(C4Facet &cgo)
 	{
 	//cgo.DrawEnergyLevel(Breath,GetPhysical()->Breath,99);
-	cgo.DrawEnergyLevelEx(Breath,GetPhysical()->Breath, Game.GraphicsResource.fctEnergyBars, 2);
+	cgo.DrawEnergyLevelEx(Breath,GetPhysical()->Breath, ::GraphicsResource.fctEnergyBars, 2);
 	}
 
 void C4Object::CompileFunc(StdCompiler *pComp)
@@ -2656,7 +2674,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( mkC4IDAdapt(id),									"id",									C4ID_None					));
 	if(fCompiler)
 		{
-		Def = Game.Defs.ID2Def(id);
+		Def = ::Definitions.ID2Def(id);
 		if(!Def)
 			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),C4IdText(id)); return; }
 		}
@@ -2816,10 +2834,10 @@ void C4Object::EnumeratePointers()
 	{
 
 	// Standard enumerated pointers
-	nContained = Game.Objects.ObjectNumber(Contained);
-	nActionTarget1 = Game.Objects.ObjectNumber(Action.Target);
-	nActionTarget2 = Game.Objects.ObjectNumber(Action.Target2);
-	nLayer = Game.Objects.ObjectNumber(pLayer);
+	nContained = ::Objects.ObjectNumber(Contained);
+	nActionTarget1 = ::Objects.ObjectNumber(Action.Target);
+	nActionTarget2 = ::Objects.ObjectNumber(Action.Target2);
+	nLayer = ::Objects.ObjectNumber(pLayer);
 
 	// Info by name
 	//if (Info) SCopy(Info->Name,nInfo,C4MaxName);
@@ -2842,10 +2860,10 @@ void C4Object::DenumeratePointers()
 	{
 
 	// Standard enumerated pointers
-	Contained = Game.Objects.ObjectPointer(nContained);
-	Action.Target = Game.Objects.ObjectPointer(nActionTarget1);
-	Action.Target2 = Game.Objects.ObjectPointer(nActionTarget2);
-	pLayer = Game.Objects.ObjectPointer(nLayer);
+	Contained = ::Objects.ObjectPointer(nContained);
+	Action.Target = ::Objects.ObjectPointer(nActionTarget1);
+	Action.Target2 = ::Objects.ObjectPointer(nActionTarget2);
+	pLayer = ::Objects.ObjectPointer(nLayer);
 
 	// Post-compile object list
 	Contents.DenumerateRead();
@@ -2870,7 +2888,7 @@ void C4Object::DenumeratePointers()
 bool DrawCommandQuery(int32_t controller, C4ScriptHost& scripthost, int32_t* mask, int com)
   {
   int method = scripthost.GetControlMethod(com, mask[0], mask[1]);
-  C4Player* player = Game.Players.Get(controller);
+  C4Player* player = ::Players.Get(controller);
   if(!player) return false;
 
   switch(method)
@@ -2898,21 +2916,21 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 	if (Menu && Menu->IsActive()) return;
 
 	DWORD ocf = OCF_Construct;
-	if(Action.ComDir == COMD_Stop && iDFA == DFA_WALK && (tObj = Game.Objects.AtObject(GetX(), GetY(), ocf, this)))
+	if(Action.ComDir == COMD_Stop && iDFA == DFA_WALK && (tObj = ::Objects.AtObject(GetX(), GetY(), ocf, this)))
 		{
 		int32_t com = COM_Down_D;
-		if(Game.Players.Get(Controller)->PrefControlStyle) com = COM_Down;
+		if(::Players.Get(Controller)->PrefControlStyle) com = COM_Down;
 
 		tObj->DrawCommand(cgoBottom,C4FCT_Right,NULL,com,pRegions,Owner,
 			FormatString(LoadResStr("IDS_CON_BUILD"), tObj->GetName()).getData(),&ccgo);
 		tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-		Game.GraphicsResource.fctBuild.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE);
+		::GraphicsResource.fctBuild.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE);
 		}
 
 	// Grab target control (control flag)
 	if (iDFA==DFA_PUSH && Action.Target)
 		{
-		bool letgobydouble = !Game.Players.Get(Controller)->PrefControlStyle
+		bool letgobydouble = !::Players.Get(Controller)->PrefControlStyle
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 3)
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 11)
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 19);
@@ -2928,7 +2946,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Action.Target->DrawCommand(cgoBottom, C4FCT_Right, NULL, ComOrder(cnt), pRegions, Owner, 
 					FormatString(LoadResStr("IDS_CON_UNGRAB"), Action.Target->GetName()).getData(), &ccgo);
 				Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Action.Target->Color, Action.Target);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 6);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 6);
 				}
 			else if (ComOrder(cnt) == COM_Throw)
 				{
@@ -2938,7 +2956,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 					Action.Target->DrawCommand(cgoBottom, C4FCT_Right, NULL, COM_Throw, pRegions, Owner,
 						FormatString(LoadResStr("IDS_CON_PUT"), tObj->GetName(), Action.Target->GetName()).getData(), &ccgo);
 					tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-					Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 					}
 				// Get
 				else if (Action.Target->Contents.ListIDCount(C4D_Get) && (Action.Target->Def->GrabPutGet & C4D_Grab_Get))
@@ -2946,7 +2964,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 					Action.Target->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 						FormatString(LoadResStr("IDS_CON_GET"),Action.Target->GetName()).getData(), &ccgo);
 					Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Action.Target->Color, Action.Target);
-					Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
+					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
 					}
 				}
 		}
@@ -2969,7 +2987,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			{
 			DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Down,pRegions,Owner,
 								LoadResStr("IDS_CON_EXIT"),&ccgo);
-			Game.GraphicsResource.fctExit.Draw(ccgo);
+			::GraphicsResource.fctExit.Draw(ccgo);
 			}
 		// Contained base commands
 		if (ValidPlr(Contained->Base))
@@ -3000,7 +3018,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Right,pRegions,Owner,
 					FormatString(LoadResStr("IDS_CON_GET"),Contained->GetName()).getData(),&ccgo);
 				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
 				}
 			// carlo: Get ("Take")
 			if (!fContainedLeftOverride)
@@ -3008,7 +3026,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Left,pRegions,Owner,
 					FormatString(LoadResStr("IDS_CON_ACTIVATEFROM"),Contained->GetName()).getData(),&ccgo);
 				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 				}
 			}
 		if (tObj=Contents.GetObject())
@@ -3017,7 +3035,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 				FormatString(LoadResStr("IDS_CON_PUT"),tObj->GetName(),Contained->GetName()).getData(),&ccgo);
 			tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-			Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 			}
 		else if (nContents)
 			{
@@ -3025,7 +3043,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 				FormatString(LoadResStr("IDS_CON_ACTIVATEFROM"),Contained->GetName()).getData(),&ccgo);
 			Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-			Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 			}
 		}
 
@@ -3116,11 +3134,11 @@ BOOL C4Object::AssignInfo()
 	{
 	if (Info || !ValidPlr(Owner)) return FALSE;
 	// In crew list?
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr->Crew.GetLink(this))
 		{
 		// Register with player
-		if(!Game.Players.Get(Owner)->MakeCrewMember(this, true, false))
+		if(!::Players.Get(Owner)->MakeCrewMember(this, true, false))
 			pPlr->Crew.Remove(this);
 		return TRUE;
 		}
@@ -3130,13 +3148,13 @@ BOOL C4Object::AssignInfo()
 	// or c) The clonk belongs to a script player that's restored without Game.txt
 	else if (nInfo.getLength())
 		{
-		if(!Game.Players.Get(Owner)->MakeCrewMember(this, true, false))
+		if(!::Players.Get(Owner)->MakeCrewMember(this, true, false))
 			return FALSE;
 		// Dead and gone (info flags, remove from crew/cursor)
 		if (!Alive)
 			{
 			Info->HasDied=TRUE;
-			if (ValidPlr(Owner)) Game.Players.Get(Owner)->ClearPointers(this, true);
+			if (ValidPlr(Owner)) ::Players.Get(Owner)->ClearPointers(this, true);
 			}
 		return TRUE;
 		}
@@ -3200,7 +3218,7 @@ BOOL C4Object::ContainedControl(BYTE byCom)
 	C4Def *pCDef = Contained->Def;
 	bool fCallSfEarly = CompareVersion(pCDef->rC4XVer[0],pCDef->rC4XVer[1],pCDef->rC4XVer[2],pCDef->rC4XVer[3],4,9,1,3) >= 0;
 	bool result = false;
-	C4Player * pPlr = Game.Players.Get(Controller);
+	C4Player * pPlr = ::Players.Get(Controller);
 	if(fCallSfEarly)
 		{
 		if (sf && !!sf->Exec(Contained, &C4AulParSet(C4VObj(this)))) result = true;
@@ -3318,7 +3336,7 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 	// contents shift must always be done to container object, which is not necessarily this
 	if (byCom==COM_Contents)
 		{
-		C4Object *pTarget = Game.Objects.SafeObjectPointer(iData);
+		C4Object *pTarget = ::Objects.SafeObjectPointer(iData);
 		if (pTarget && pTarget->Contained)
 			pTarget->Contained->DirectComContents(pTarget, true);
 		return;
@@ -3335,7 +3353,7 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 
 	// Object script override
 	C4Player *pController;
-	if (pController = Game.Players.Get(Controller))
+	if (pController = ::Players.Get(Controller))
 		if (CallControl(pController, byCom))
 			return;
 
@@ -3498,7 +3516,7 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 
 void C4Object::AutoStopDirectCom(BYTE byCom, int32_t iData) // By DirecCom
 	{
-	C4Player * pPlayer = Game.Players.Get(Controller);
+	C4Player * pPlayer = ::Players.Get(Controller);
 	// Control by procedure
 	switch (GetProcedure())
 		{
@@ -3662,7 +3680,7 @@ void C4Object::AutoStopDirectCom(BYTE byCom, int32_t iData) // By DirecCom
 
 void C4Object::AutoStopUpdateComDir()
 	{
-	C4Player * pPlr = Game.Players.Get(Controller);
+	C4Player * pPlr = ::Players.Get(Controller);
 	if (!pPlr || pPlr->Cursor != this) return;
 	int32_t NewComDir = Coms2ComDir(pPlr->PressedComs);
 	if (Action.ComDir == NewComDir) return;
@@ -3939,14 +3957,14 @@ void C4Object::DigOutMaterialCast(BOOL fRequest)
 	{
 	// Check material contents for sufficient object cast amounts
 	if (!MaterialContents) return;
-  for (int32_t iMaterial=0; iMaterial<Game.Material.Num; iMaterial++)
+  for (int32_t iMaterial=0; iMaterial< ::MaterialMap.Num; iMaterial++)
     if (MaterialContents->Amount[iMaterial])
-      if (Game.Material.Map[iMaterial].Dig2Object!=C4ID_None)
-        if (Game.Material.Map[iMaterial].Dig2ObjectRatio!=0)
-          if (fRequest || !Game.Material.Map[iMaterial].Dig2ObjectOnRequestOnly)
-            if (MaterialContents->Amount[iMaterial]>=Game.Material.Map[iMaterial].Dig2ObjectRatio)
+      if (::MaterialMap.Map[iMaterial].Dig2Object!=C4ID_None)
+        if (::MaterialMap.Map[iMaterial].Dig2ObjectRatio!=0)
+          if (fRequest || !::MaterialMap.Map[iMaterial].Dig2ObjectOnRequestOnly)
+            if (MaterialContents->Amount[iMaterial]>=::MaterialMap.Map[iMaterial].Dig2ObjectRatio)
               {
-              Game.CreateObject(Game.Material.Map[iMaterial].Dig2Object,this,NO_OWNER,GetX(), GetY()+Shape.GetY()+Shape.Hgt,Random(360));
+              Game.CreateObject(::MaterialMap.Map[iMaterial].Dig2Object,this,NO_OWNER,GetX(), GetY()+Shape.GetY()+Shape.Hgt,Random(360));
               MaterialContents->Amount[iMaterial]=0;
               }
 	}
@@ -3964,7 +3982,7 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 
 	// Flash
 	C4Player *pPlr;
-	if (pPlr=Game.Players.Get(Owner))
+	if (pPlr=::Players.Get(Owner))
 		if (iCom==pPlr->FlashCom)
 			fFlash=TRUE;
 
@@ -4008,7 +4026,7 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 		DrawPicture(cgoRight);
 
 	// Command
-	if (!fFlash || Tick35>15)
+	if (!fFlash || ::Game.iTick35>15)
 		DrawCommandKey(cgoLeft,iCom,FALSE,
 									 Config.Graphics.ShowCommandKeys ? PlrControlKeyName(iPlayer,Com2Control(iCom), true).getData() : NULL );
 
@@ -4552,7 +4570,7 @@ bool DoBridge(C4Object *clk)
 			}
 		}
 	// draw bridge into landscape
-  Game.Landscape.DrawMaterialRect(iBridgeMaterial,tx-2,ty,4,3);
+  ::Landscape.DrawMaterialRect(iBridgeMaterial,tx-2,ty,4,3);
 	// Move Clonk
 	if (fMoveClonk) clk->MovePosition(cx-clk->GetX(), cy-clk->GetY());
 	return true;
@@ -4720,7 +4738,7 @@ void C4Object::ExecAction()
 			lLimit=ValByPhysical(200, pPhysical->Scale);
 
 			// Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				if (Abs(ydir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Scale, 1, C4MaxPhysical);
 			int ComDir = Action.ComDir;
@@ -4755,7 +4773,7 @@ void C4Object::ExecAction()
 			lLimit=ValByPhysical(160, pPhysical->Hangle);
 
 			// Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				if (Abs(xdir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Hangle, 1, C4MaxPhysical);
 
@@ -4788,7 +4806,7 @@ void C4Object::ExecAction()
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_FLIGHT:
 			// Contained: fall out (one try only)
-      if (!Tick10)
+      if (!::Game.iTick10)
         if (Contained)
 					{
 					StopActionDelayCommand(this);
@@ -4833,7 +4851,7 @@ void C4Object::ExecAction()
       lLimit=ValByPhysical(160, pPhysical->Swim);
 
       // Physical training
-			if (!Tick10)
+			if (!::Game.iTick10)
 				if (Abs(xdir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Swim, 1, C4MaxPhysical);
 
@@ -5086,7 +5104,7 @@ void C4Object::ExecAction()
       // Valid check
       if (!Action.Target) { ObjectActionStand(this); return; }
       // Chop
-      if (!Tick3)
+      if (!::Game.iTick3)
         if (!Action.Target->Chop(this))
           { ObjectActionStand(this); return; }
       // Valid check (again, target might have been destroyed)
@@ -5112,7 +5130,7 @@ void C4Object::ExecAction()
 					{ ObjectActionStand(this); return; }
 
       // Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				TrainPhysical(&C4PhysicalInfo::Fight, 1, C4MaxPhysical);
 
 			// Direction
@@ -5135,7 +5153,7 @@ void C4Object::ExecAction()
       ydir=0;
       Mobile=1;
 			// Experience
-			if (!Tick35) DoExperience(+2);
+			if (!::Game.iTick35) DoExperience(+2);
       break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_LIFT:
@@ -5290,8 +5308,8 @@ void C4Object::ExecAction()
 				}
 
 			// Reduce line segments
-			if (!Tick35)
-				ReduceLineSegments(Shape, !Tick2);
+			if (!::Game.iTick35)
+				ReduceLineSegments(Shape, !::Game.iTick2);
 
 			break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -5350,7 +5368,7 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	if (iOwner != NO_OWNER)
 		if (GetGraphics()->IsColorByOwner())
 			{
-			Color=Game.Players.Get(iOwner)->ColorDw;
+			Color=::Players.Get(iOwner)->ColorDw;
 			UpdateFace(false);
 			}
 	// no change?
@@ -5358,11 +5376,11 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	// remove old owner view
 	if (ValidPlr(Owner))
 		{
-		pPlr = Game.Players.Get(Owner);
+		pPlr = ::Players.Get(Owner);
 		while (pPlr->FoWViewObjs.Remove(this)) {}
 		}
 	else
-		for (pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 			while (pPlr->FoWViewObjs.Remove(this)) {}
 	// set new owner
 	int32_t iOldOwner=Owner;
@@ -5403,7 +5421,7 @@ void C4Object::PlrFoWActualize()
 	if (ValidPlr(Owner))
 		{
 		// single player's FoW-list
-		pPlr = Game.Players.Get(Owner);
+		pPlr = ::Players.Get(Owner);
 		while (pPlr->FoWViewObjs.Remove(this)) {}
 		if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
 		}
@@ -5411,7 +5429,7 @@ void C4Object::PlrFoWActualize()
 	else
 		{
 		// all players!
-		for (pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 			{
 			while (pPlr->FoWViewObjs.Remove(this)) {}
 			if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
@@ -5572,8 +5590,8 @@ BOOL C4Object::GrabInfo(C4Object *pFrom)
 		ClearInfo (Info);
 		}
 	// remove objects from any owning crews
-	Game.Players.ClearPointers(pFrom);
-	Game.Players.ClearPointers(this);
+	::Players.ClearPointers(pFrom);
+	::Players.ClearPointers(this);
 	// set info
 	Info = pFrom->Info; pFrom->ClearInfo (pFrom->Info);
 	// set name
@@ -5585,7 +5603,7 @@ BOOL C4Object::GrabInfo(C4Object *pFrom)
 	// if alive, recruit to new crew
 	if (Alive) Info->Recruit();
 	// make new crew member
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->MakeCrewMember(this);
 	// done, success
 	return TRUE;
@@ -5815,9 +5833,9 @@ bool C4Object::HasGraphicsOverlayRecursion(const C4Object *pCheckObj) const
 bool C4Object::StatusActivate()
 	{
 	// readd to main list
-	Game.Objects.InactiveObjects.Remove(this);
+	::Objects.InactiveObjects.Remove(this);
 	Status = C4OS_NORMAL;
-	Game.Objects.Add(this);
+	::Objects.Add(this);
 	// update some values
 	UpdateGraphics(false);
 	UpdateFace(true);
@@ -5833,9 +5851,9 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
 	// put into inactive list
-	Game.Objects.Remove(this);
+	::Objects.Remove(this);
 	Status = C4OS_INACTIVE;
-	Game.Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
+	::Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
 	// if desired, clear game pointers
 	if (fClearPointers)
 		{
@@ -6116,7 +6134,7 @@ bool C4Object::IsPlayerObject(int32_t iPlayerNumber)
 	  // flags are player objects
 	  if (id == C4ID_Flag) return true;
 
-		C4Player *pOwner = Game.Players.Get(Owner);
+		C4Player *pOwner = ::Players.Get(Owner);
 		if (pOwner)
 			{
 			if (pOwner && pOwner->Crew.IsContained(this)) return true;
@@ -6137,7 +6155,7 @@ bool C4Object::IsUserPlayerObject()
 	// must be a player object at all
 	if (!IsPlayerObject()) return false;
 	// and the owner must not be a script player
-	C4Player *pOwner = Game.Players.Get(Owner);
+	C4Player *pOwner = ::Players.Get(Owner);
 	if (!pOwner || pOwner->GetType() != C4PT_User) return false;
 	// otherwise, it's a user playeer object
 	return true;

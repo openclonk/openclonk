@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2002, 2005-2006  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005-2008  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,7 +30,8 @@
 #include <C4Random.h>
 #include <C4SurfaceFile.h>
 #include <C4Components.h>
-#include <C4Wrappers.h>
+#include <C4Weather.h>
+#include <C4GraphicsResource.h>
 #endif
 
 static BOOL SurfaceEnsureSize(C4Surface **ppSfc, int iMinWdt, int iMinHgt)
@@ -60,7 +66,7 @@ void C4Sky::SetFadePalette(int32_t *ipColors)
   // If colors all zero, use game palette default blue
   if (ipColors[0]+ipColors[1]+ipColors[2]+ipColors[3]+ipColors[4]+ipColors[5]==0)
     {
-		BYTE *pClr=Game.GraphicsResource.GamePalette+3*CSkyDef1;
+		BYTE *pClr=::GraphicsResource.GamePalette+3*CSkyDef1;
 		FadeClr1=C4RGB(pClr[0], pClr[1], pClr[2]);
 		FadeClr2=C4RGB(pClr[3*19+0], pClr[3*19+1], pClr[3*19+2]);
     }
@@ -103,7 +109,7 @@ BOOL C4Sky::Init(bool fSavegame)
 			loaded = !!Surface->LoadAny(Game.ScenarioFile,str,true,true);
 			if (!loaded)
 				{
-				loaded = !!Surface->LoadAny(Game.GraphicsResource.Files, str, true);
+				loaded = !!Surface->LoadAny(::GraphicsResource.Files, str, true);
 				}
 			}
 		}
@@ -213,7 +219,7 @@ void C4Sky::Execute()
 	if (x>=itofix(Width)) x-=itofix(Width);
 	if (y>=itofix(Height)) y-=itofix(Height);
 	// update speed
-	if (ParallaxMode == C4SkyPM_Wind) xdir=FIXED100(Game.Weather.Wind);
+	if (ParallaxMode == C4SkyPM_Wind) xdir=FIXED100(::Weather.Wind);
 	}
 
 void C4Sky::Draw(C4TargetFacet &cgo)

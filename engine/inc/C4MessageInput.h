@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2006  Sven Eberhardt
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -145,6 +146,8 @@ class C4MessageInput
 
 		friend class C4ChatInputDialog;
 	};
+
+extern C4MessageInput MessageInput;
 
 // script query to ask a player for a string
 class C4MessageBoardQuery

@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2002, 2005, 2008  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +27,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Def.h>
 #include <C4Application.h>
-#include <C4Game.h>
+#include <C4GraphicsResource.h>
 #endif
 
 C4IDListChunk::C4IDListChunk()
@@ -261,7 +265,6 @@ bool C4IDList::IncreaseIDCount(C4ID c_id, bool fAddNewID, int32_t IncreaseBy, bo
 
 
 // Access by category-sorted index
-#ifdef C4ENGINE
 C4ID C4IDList::GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount) const
   {
   int32_t cindex=-1;
@@ -348,7 +351,6 @@ int32_t C4IDList::GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const
 		}
   return idnum;
   }
-#endif
 // IDList merge
 
 bool C4IDList::Add(C4IDList &rList)
@@ -521,7 +523,6 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 										C4DefList &rDefs, DWORD dwCategory,
 										bool fCounts, int32_t iAlign) const
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	int32_t sections = cgo.GetSectionCount();
 	int32_t idnum = GetNumberOfIDs(rDefs,dwCategory);
@@ -535,10 +536,9 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 		cgo2 = cgo.TruncateSection(iAlign);
 		rDefs.Draw(c_id,cgo2,(firstid+cnt==iSelection),0);
     sprintf(buf,"%dx",idcount);
-    if (fCounts) Application.DDraw->TextOut(buf, Game.GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - Game.GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+    if (fCounts) Application.DDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
     }
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4IDList::Default()

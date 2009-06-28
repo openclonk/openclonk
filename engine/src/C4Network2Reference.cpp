@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2006-2008  Peter Wortmann
+ * Copyright (c) 2007-2009  Sven Eberhardt
+ * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -15,9 +18,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 #include "C4Include.h"
-#ifdef C4ENGINE
-#include "C4Game.h"
-#endif
+#include <C4Game.h>
 #include "C4Version.h"
 #include "C4Network2Reference.h"
 
@@ -46,11 +47,10 @@ void C4Network2Reference::SetSourceIP(in_addr ip)
 			Addrs[i].SetIP(ip);
 }
 
-#ifdef C4ENGINE
-void C4Network2Reference::InitLocal(C4Game *pGame)
+void C4Network2Reference::InitLocal()
 {
 	// Copy all game parameters
-	Parameters = pGame->Parameters;
+	Parameters = ::Game.Parameters;
 
 	// Discard player resources (we don't want these infos in the reference)
 	C4ClientPlayerInfos *pClientInfos; C4PlayerInfo *pPlayerInfo;
@@ -60,28 +60,27 @@ void C4Network2Reference::InitLocal(C4Game *pGame)
 			pPlayerInfo->DiscardResource();
 
 	// Special additional information in reference
-	Icon = pGame->C4S.Head.Icon;
-	Title.CopyValidated(pGame->ScenarioTitle);
-	GameStatus = pGame->Network.Status;
-	Time = pGame->Time;
-	Frame = pGame->FrameCounter;
-	StartTime = pGame->StartTime;
-	LeaguePerformance = pGame->RoundResults.GetLeaguePerformance();
+	Icon = ::Game.C4S.Head.Icon;
+	Title.CopyValidated(::Game.ScenarioTitle);
+	GameStatus = ::Network.Status;
+	Time = ::Game.Time;
+	Frame = ::Game.FrameCounter;
+	StartTime = ::Game.StartTime;
+	LeaguePerformance = ::Game.RoundResults.GetLeaguePerformance();
 	Comment = Config.Network.Comment;
-	JoinAllowed = pGame->Network.isJoinAllowed();
-	ObservingAllowed = pGame->Network.isObservingAllowed();
-	PasswordNeeded = pGame->Network.isPassworded();
-	RegJoinOnly = pGame->RegJoinOnly;
+	JoinAllowed = ::Network.isJoinAllowed();
+	ObservingAllowed = ::Network.isObservingAllowed();
+	PasswordNeeded = ::Network.isPassworded();
+	RegJoinOnly = ::Game.RegJoinOnly;
 	Game.Set();
 
 	// Addresses
-	C4Network2Client *pLocalNetClient = pGame->Clients.getLocal()->getNetClient();
+	C4Network2Client *pLocalNetClient = ::Game.Clients.getLocal()->getNetClient();
 	iAddrCnt = pLocalNetClient->getAddrCnt();
 	for(i = 0; i < iAddrCnt; i++)
 		Addrs[i] = pLocalNetClient->getAddr(i);
 
 }
-#endif
 
 void C4Network2Reference::SortNullIPsBack()
 {
@@ -207,15 +206,13 @@ void C4Network2RefServer::RespondReference(const C4NetIO::addr_t &addr)
 	// Pack
 	StdStrBuf PacketData = DecompileToBuf<StdCompilerINIWrite>(mkNamingPtrAdapt(pReference, "Reference"));
 	// Create header
-	const char *szCharset = GetCharsetCodeName(LoadResStr("IDS_LANG_CHARSET"));
 	StdStrBuf Header = FormatString(
 		  "HTTP/1.1 200 Found\r\n"
       "Content-Length: %d\r\n"
-      "Content-Type: text/plain; charset=%s\r\n"
+      "Content-Type: text/plain; charset=UTF-8\r\n"
       "Server: " C4ENGINENAME "/" C4VERSION "\r\n"
       "\r\n",
-		PacketData.getLength(),
-		szCharset);
+		PacketData.getLength());
 	// Send back
 	Send(C4NetIOPacket(Header, Header.getLength(), false, addr));
 	Send(C4NetIOPacket(PacketData, PacketData.getLength(), false, addr));

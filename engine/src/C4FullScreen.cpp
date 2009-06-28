@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2008  Matthes Bender
+ * Copyright (c) 2001-2003, 2005, 2008  Sven Eberhardt
+ * Copyright (c) 2005-2007  Günther Brammer
+ * Copyright (c) 2006-2007  Julian Raschke
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,6 +25,7 @@
 #include <C4FullScreen.h>
 
 #ifndef BIG_C4INCLUDE
+#include <C4Game.h>
 #include <C4Application.h>
 #include <C4UserMessages.h>
 #include <C4Viewport.h>
@@ -32,6 +37,9 @@
 #include <C4GamePadCon.h>
 #include <C4Player.h>
 #include <C4GameOverDlg.h>
+#include <C4GraphicsSystem.h>
+#include <C4MouseControl.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifdef _WIN32
@@ -54,17 +62,17 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 					lpDDraw->TaskOut();
 				}
 			// redraw background
-			Game.GraphicsSystem.InvalidateBg();
+			::GraphicsSystem.InvalidateBg();
 			// Redraw after task switch
 			if (Application.Active)
-				Game.GraphicsSystem.Execute();
+				::GraphicsSystem.Execute();
 			// update cursor clip
-			Game.MouseControl.UpdateClip();
+			::MouseControl.UpdateClip();
 			return FALSE;
 		case WM_PAINT:
 			// Redraw after task switch
 			if (Application.Active)
-				Game.GraphicsSystem.Execute();
+				::GraphicsSystem.Execute();
 			break;
 		case WM_DESTROY:
 			Application.Quit();
@@ -95,8 +103,8 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			c[0] = (char)wParam;
 			c[1] = 0;
 			// GUI: forward
-			if (Game.pGUI)
-				if (Game.pGUI->CharIn(c))
+			if (::pGUI)
+				if (::pGUI->CharIn(c))
 					return 0;
 			return FALSE;
 			}
@@ -107,20 +115,20 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				Log((const char *)lParam);
 			return FALSE;
 		case WM_LBUTTONDOWN:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
+			::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
 			break;
-		case WM_LBUTTONUP: Game.GraphicsSystem.MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-		case WM_RBUTTONDOWN: Game.GraphicsSystem.MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-		case WM_RBUTTONUP: Game.GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-		case WM_LBUTTONDBLCLK: Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-		case WM_RBUTTONDBLCLK: Game.GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-		case WM_MOUSEMOVE: Game.GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-		case WM_MOUSEWHEEL: Game.GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+		case WM_LBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+		case WM_RBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+		case WM_RBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+		case WM_LBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+		case WM_RBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+		case WM_MOUSEMOVE: ::GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+		case WM_MOUSEWHEEL: ::GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
 		}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-void C4FullScreen::CharIn(const char * c) { Game.pGUI->CharIn(c); }
+void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 
 #elif defined(USE_X11)
 #include <X11/Xlib.h>
@@ -153,36 +161,36 @@ void C4FullScreen::HandleMessage (XEvent &e)
 				{
 				case Button1:
 				if (timeGetTime() - last_left_click < 400) {
-					Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,
+					::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,
 						e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 					last_left_click = 0;
 				} else {
-					Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDown,
+					::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,
 						e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 					last_left_click = timeGetTime();
 				}
 				break;
 				case Button2:
-				Game.GraphicsSystem.MouseMove(C4MC_Button_MiddleDown,
+				::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown,
 					e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 				break;
 				case Button3:
 				if (timeGetTime() - last_right_click < 400) {
-					Game.GraphicsSystem.MouseMove(C4MC_Button_RightDouble,
+					::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,
 						e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 					last_right_click = 0;
 				} else {
-					Game.GraphicsSystem.MouseMove(C4MC_Button_RightDown,
+					::GraphicsSystem.MouseMove(C4MC_Button_RightDown,
 						e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 					last_right_click = timeGetTime();
 				}
 				break;
 				case Button4:
-				Game.GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+				::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
 					e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(32) << 16), NULL);
 				break;
 				case Button5:
-				Game.GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+				::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
 					e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-32) << 16), NULL);
 				break;
 				default:
@@ -194,20 +202,20 @@ void C4FullScreen::HandleMessage (XEvent &e)
 		switch (e.xbutton.button)
 			{
 			case Button1:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
+			::GraphicsSystem.MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 			case Button2:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
+			::GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 			case Button3:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
+			::GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 			default:
             break;
 			}
 		break;
 		case MotionNotify:
-		Game.GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
+		::GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 		break;
 		case FocusIn:
 		Application.Active = true;
@@ -324,8 +332,8 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 			char c[2];
 			c[0] = e.key.keysym.unicode;
 			c[1] = 0;
-			if (Game.pGUI && !isSpecialKey(e.key.keysym.unicode))
-				Game.pGUI->CharIn(c);
+			if (::pGUI && !isSpecialKey(e.key.keysym.unicode))
+				::pGUI->CharIn(c);
 			Game.DoKeyboardInput(e.key.keysym.sym, KEYEV_Down,
 								 e.key.keysym.mod & (KMOD_LALT | KMOD_RALT),
 								 e.key.keysym.mod & (KMOD_LCTRL | KMOD_RCTRL),
@@ -340,14 +348,14 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 				e.key.keysym.mod & (KMOD_LSHIFT | KMOD_RSHIFT), false, NULL);
 			break;
 		case SDL_MOUSEMOTION:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_None, e.motion.x, e.motion.y, 0, NULL);
+			::GraphicsSystem.MouseMove(C4MC_Button_None, e.motion.x, e.motion.y, 0, NULL);
 			break;
 		case SDL_MOUSEBUTTONUP:
 		case SDL_MOUSEBUTTONDOWN:
 			int32_t button;
 			DWORD flags;
 			sdlToC4MCBtn(e.button, button, flags);
-			Game.GraphicsSystem.MouseMove(button, e.button.x, e.button.y, flags, NULL);
+			::GraphicsSystem.MouseMove(button, e.button.x, e.button.y, flags, NULL);
 			break;
 		case SDL_JOYAXISMOTION:
 		case SDL_JOYHATMOTION:
@@ -364,10 +372,10 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 #ifndef _WIN32
 void C4FullScreen::CharIn(const char *c)
 	{
-	if (Game.pGUI)
+	if (::pGUI)
 		{
 		StdStrBuf c2; c2.Take(Languages.IconvClonk(c));
-		Game.pGUI->CharIn(c2.getData());
+		::pGUI->CharIn(c2.getData());
 		}
 	}
 #endif
@@ -395,7 +403,7 @@ void C4FullScreen::Execute()
 	// Execute menu
 	if (pMenu) pMenu->Execute();
   // Draw
-	Game.GraphicsSystem.Execute();
+	::GraphicsSystem.Execute();
 	}
 
 BOOL C4FullScreen::ViewportCheck()
@@ -406,14 +414,14 @@ BOOL C4FullScreen::ViewportCheck()
 	// Determine film mode
 	bool fFilm = (Game.C4S.Head.Replay && Game.C4S.Head.Film);
 	// Check viewports
-	switch (Game.GraphicsSystem.GetViewportCount())
+	switch (::GraphicsSystem.GetViewportCount())
 		{
 		// No viewports: create no-owner viewport
 		case 0:
 			iPlrNum = NO_OWNER;
 			// Film mode: create viewport for first player (instead of no-owner)
 			if (fFilm)
-				if (pPlr = Game.Players.First)
+				if (pPlr = ::Players.First)
 					iPlrNum = pPlr->Number;
 			// Create viewport
 			Game.CreateViewport(iPlrNum, iPlrNum==NO_OWNER);
@@ -421,11 +429,11 @@ BOOL C4FullScreen::ViewportCheck()
 			if (!fFilm)
 			{
 				// Activate mouse control
-				Game.MouseControl.Init(iPlrNum);
+				::MouseControl.Init(iPlrNum);
 				// Display message for how to open observer menu (this message will be cleared if any owned viewport opens)
 				StdStrBuf sKey;
 				sKey.Format("<c ffff00><%s></c>", Game.KeyboardInput.GetKeyCodeNameByKeyName("FullscreenMenuOpen", false).getData());
-				Game.GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_PRESSORPUSHANYGAMEPADBUTT"), sKey.getData()).getData());
+				::GraphicsSystem.FlashMessage(FormatString(LoadResStr("IDS_MSG_PRESSORPUSHANYGAMEPADBUTT"), sKey.getData()).getData());
 			}
 			break;
 		// One viewport: do nothing
@@ -433,11 +441,11 @@ BOOL C4FullScreen::ViewportCheck()
 			break;
 		// More than one viewport: remove all no-owner viewports
 		default:
-			Game.GraphicsSystem.CloseViewport(NO_OWNER, true);
+			::GraphicsSystem.CloseViewport(NO_OWNER, true);
 			break;
 		}
 	// Look for no-owner viewport
-	C4Viewport *pNoOwnerVp = Game.GraphicsSystem.GetViewport(NO_OWNER);
+	C4Viewport *pNoOwnerVp = ::GraphicsSystem.GetViewport(NO_OWNER);
 	// No no-owner viewport found
 	if (!pNoOwnerVp)
 		{
@@ -448,7 +456,7 @@ BOOL C4FullScreen::ViewportCheck()
 	else
 		{
 		// movie mode: player present, and no valid viewport assigned?
-		if (Game.C4S.Head.Replay && Game.C4S.Head.Film && (pPlr = Game.Players.First))
+		if (Game.C4S.Head.Replay && Game.C4S.Head.Film && (pPlr = ::Players.First))
 			// assign viewport to joined player
 			pNoOwnerVp->Init(pPlr->Number, true);
 		}
@@ -459,13 +467,13 @@ BOOL C4FullScreen::ViewportCheck()
 bool C4FullScreen::ShowAbortDlg()
 	{
 	// no gui?
-	if (!Game.pGUI) return false;
+	if (!::pGUI) return false;
 	// abort dialog already shown
 	if (C4AbortGameDialog::IsShown()) return false;
 	// not while game over dialog is open
 	if (C4GameOverDlg::IsShown()) return false;
 	// show abort dialog
-	return Game.pGUI->ShowRemoveDlg(new C4AbortGameDialog());
+	return ::pGUI->ShowRemoveDlg(new C4AbortGameDialog());
 	}
 
 bool C4FullScreen::ActivateMenuMain()

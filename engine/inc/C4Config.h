@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2001, 2004, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -77,7 +82,6 @@ class C4ConfigGeneral
 		void AdoptOldSettings();
 		void DeterminePaths(BOOL forceWorkingDirectory);
 		void CompileFunc(StdCompiler *pComp);
-		bool IsUTF8() { return SEqual(LoadResStr("IDS_LANG_CHARSET"), "UTF-8"); }
 		void AddAdditionalDataPath(const char *szPath);
 		void ClearAdditionalDataPaths();
 		~C4ConfigGeneral() { ClearAdditionalDataPaths(); }
@@ -189,6 +193,7 @@ class C4ConfigNetwork
 	public:
 		void CompileFunc(StdCompiler *pComp);
 		const char *GetLeagueServerAddress();
+		void CheckPortsForCollisions();
 	};
 
 class C4ConfigStartup

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2006  Peter Wortmann
+ * Copyright (c) 2005  Sven Eberhardt
+ * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,6 +27,8 @@
 #include <C4Network2IO.h>
 #include <C4Network2Stats.h>
 #include <C4GameLobby.h> // fullscreen network lobby
+#include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifndef _WIN32
@@ -605,7 +610,7 @@ void C4Network2ClientList::UpdateClientActivity()
 {
 	for(C4Network2Client *pClient = pFirst; pClient; pClient = pClient->getNext())
     if(pClient->isActivated())
-      if(Game.Players.GetAtClient(pClient->getID()))
+      if(::Players.GetAtClient(pClient->getID()))
         pClient->SetLastActivity(Game.FrameCounter);
 }
 

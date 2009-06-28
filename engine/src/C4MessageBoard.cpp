@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2008  Matthes Bender
+ * Copyright (c) 2002-2005  Sven Eberhardt
+ * Copyright (c) 2002-2004  Peter Wortmann
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -28,6 +32,11 @@
 #include <C4Console.h>
 #include <C4Network2Dialogs.h>
 #include <C4Player.h>
+#include <C4GraphicsSystem.h>
+#include <C4GraphicsResource.h>
+#include <C4MessageInput.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
 #endif
 
 const int C4LogSize=30000, C4LogMaxLines=1000;
@@ -125,7 +134,7 @@ void C4MessageBoard::ChangeMode(int inMode)
 	Output.Hgt = iHeight;
 	LogBuffer.SetLBWidth(Output.Wdt);
 	// recalc viewports
-	Game.GraphicsSystem.RecalculateViewports();
+	::GraphicsSystem.RecalculateViewports();
 }
 
 void C4MessageBoard::Execute()
@@ -142,7 +151,7 @@ void C4MessageBoard::Execute()
 	case 2: // show nothing
 
 		// TypeIn: Act as in mode 0
-		if (!Game.MessageInput.IsTypeIn())
+		if (!::MessageInput.IsTypeIn())
 			{
 			ScreenFader = 100;
 			iBackScroll = -1;
@@ -152,7 +161,7 @@ void C4MessageBoard::Execute()
 	case 0: // one msg
 
 		// typein? fade in
-		if(Game.MessageInput.IsTypeIn())
+		if(::MessageInput.IsTypeIn())
 			ScreenFader = Max(ScreenFader - 20, -100);
 
 		// no curr msg?
@@ -162,7 +171,7 @@ void C4MessageBoard::Execute()
 			Empty = true;
 			// draw anyway
 			Draw(Output);
-			if(!Game.MessageInput.IsTypeIn())
+			if(!::MessageInput.IsTypeIn())
 				ScreenFader += 5;
 			return;
 		}
@@ -231,7 +240,7 @@ void C4MessageBoard::Init(C4Facet &cgo, BOOL fStartup)
 	Active=TRUE;
 	Output=cgo;
 	Startup=fStartup;
-	iLineHgt=Game.GraphicsResource.FontRegular.iLineHgt;
+	iLineHgt=::GraphicsResource.FontRegular.iLineHgt;
 	LogBuffer.SetLBWidth(Output.Wdt);
 
 	if(!Startup)
@@ -254,8 +263,8 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 	// Startup: draw Loader
 	if (Startup)
 		{
-		if (Game.GraphicsSystem.pLoaderScreen)
-			Game.GraphicsSystem.pLoaderScreen->Draw(cgo, Game.InitProgress, &LogBuffer);
+		if (::GraphicsSystem.pLoaderScreen)
+			::GraphicsSystem.pLoaderScreen->Draw(cgo, Game.InitProgress, &LogBuffer);
 		else
 			// loader not yet loaded: black BG
 			Application.DDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt, cgo.Hgt, 0x00000000);
@@ -264,7 +273,7 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 
 	// Game running: message fader
 	// Background
-	Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,-cgo.X,-cgo.Y);
+	Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt,-cgo.X,-cgo.Y);
 
 	// draw messages
 	if(iMode != 2 || C4ChatInputDialog::IsShown())
@@ -301,13 +310,13 @@ void C4MessageBoard::Draw(C4Facet &cgo)
 			if (iMsgY < cgo.Y)
 				{
 				dwFade = (0xff - BoundBy((cgo.Y - iMsgY + Max(ScreenFader, 0)) * 256 / Max(iMsgFader, 1) / iLineHgt, 0, 0xff)) << 24;
-				Game.GraphicsSystem.OverwriteBg();
+				::GraphicsSystem.OverwriteBg();
 				}
 			else
 				dwFade = 0xff000000;
 			dwColor |= dwFade;
 			// Draw
-			Application.DDraw->StringOut(Message,Game.GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
+			Application.DDraw->StringOut(Message,::GraphicsResource.FontRegular,1.0,cgo.Surface,cgo.X,iMsgY,dwColor);
 			}
 		}
 	}
@@ -319,11 +328,11 @@ void C4MessageBoard::EnsureLastMessage()
 	// not active: do nothing
 	if (iMode == 2) return;
 	// "console" mode: just set BackScroll to 0 and draw
-	if (iMode == 1) { iBackScroll = 0; Game.GraphicsSystem.Execute(); return; }
+	if (iMode == 1) { iBackScroll = 0; ::GraphicsSystem.Execute(); return; }
 	// scroll mode: scroll until end of log
 	for (int i = 0; i < 100; i++)
 		{
-		Game.GraphicsSystem.Execute();
+		::GraphicsSystem.Execute();
 		Execute();
 		if (iBackScroll < 0) break;
 		Delay=0;
@@ -339,7 +348,7 @@ void C4MessageBoard::AddLog(const char *szMessage)
 	// make sure new message will be drawn
 	++iBackScroll;
 	// register message in standard messageboard font
-	LogBuffer.AppendLines(szMessage, &Game.GraphicsResource.FontRegular, 0, NULL);
+	LogBuffer.AppendLines(szMessage, &::GraphicsResource.FontRegular, 0, NULL);
 	}
 
 void C4MessageBoard::ClearLog()
@@ -352,7 +361,7 @@ void C4MessageBoard::LogNotify()
 	// Not active
 	if (!Active) return;
 	// do not show startup board if GUI is active
-	if (Game.pGUI && Game.pGUI->IsActive()) return;
+	if (::pGUI && ::pGUI->IsActive()) return;
 	// Reset
 	iBackScroll=0;
 	// Draw
@@ -368,13 +377,13 @@ C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)
 		{
 		StdStrBuf str;
 		str.CopyUntil(szMessage + 2,' ');
-		return Game.Players.GetByName(str.getData());
+		return ::Players.GetByName(str.getData());
 		}
 	if (SCharCount(':',szMessage))
 		{
 		StdStrBuf str;
 		str.CopyUntil(szMessage + 2,':');
-		return Game.Players.GetByName(str.getData());
+		return ::Players.GetByName(str.getData());
 		}
 	return NULL;
 	}

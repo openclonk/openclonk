@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2004-2005, 2007-2008  Matthes Bender
+ * Copyright (c) 2004-2008  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2009  Peter Wortmann
+ * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,6 +31,10 @@
 #endif
 
 #ifndef BIG_C4INCLUDE
+#include "C4Game.h"
+#include "C4GraphicsSystem.h"
+#include "C4GraphicsResource.h"
+#include "C4MessageInput.h"
 #include <C4FileClasses.h>
 #include <C4FullScreen.h>
 #include <C4Language.h>
@@ -222,7 +231,7 @@ bool C4Application::PreInit()
 		{
 		//Log(LoadResStr("IDS_PRC_INITLOADER"));
 		bool fUseBlackScreenLoader = UseStartupDialog && !C4Startup::WasFirstRun() && !Config.Startup.NoSplash && !NoSplash && FileExists(C4CFN_Splash);
-		if (!Game.GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
+		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 		}
 
@@ -422,14 +431,14 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 	// first, check if the selected font can be created at all
 	// check regular font only - there's no reason why the other fonts couldn't be created
 	CStdFont TestFont;
-	if (!Game.FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &Game.GraphicsResource.Files))
+	if (!Game.FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
 		return false;
 	// OK; reinit all fonts
 	StdStrBuf sOldFont; sOldFont.Copy(Config.General.RXFontName);
 	int32_t iOldFontSize = Config.General.RXFontSize;
 	SCopy(szFontFace, Config.General.RXFontName);
 	Config.General.RXFontSize = iFontSize;
-	if (!Game.GraphicsResource.InitFonts() || !C4Startup::Get()->Graphics.InitFonts())
+	if (!::GraphicsResource.InitFonts() || !C4Startup::Get()->Graphics.InitFonts())
 		{
 		// failed :o
 		// shouldn't happen. Better restore config.
@@ -446,7 +455,7 @@ void C4Application::OnCommand(const char *szCmd)
 	{
 	// reroute to whatever seems to take commands at the moment
 	if(AppState == C4AS_Game)
-		Game.MessageInput.ProcessInput(szCmd);
+		::MessageInput.ProcessInput(szCmd);
 	}
 
 void C4Application::Activate()

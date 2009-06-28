@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2006, 2008  Sven Eberhardt
+ * Copyright (c) 2004-2006  Peter Wortmann
+ * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,8 +27,11 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
-#include <C4Wrappers.h>
 #include <C4Application.h>
+#include <C4Region.h>
+#include <C4GraphicsResource.h>
+#include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 C4ObjectList::C4ObjectList(): FirstIter(0)
@@ -370,7 +378,7 @@ void C4ObjectList::DrawIDList(C4Facet &cgo, int iSelection,
 		// Draw count
 		sprintf(szCount,"%dx",iCount);
 	  if ((iCount!=1) || fDrawOneCounts)
-			Application.DDraw->TextOut(szCount, Game.GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-Game.GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+			Application.DDraw->TextOut(szCount, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
 		// Region
 		if (pRegions) pRegions->Add(cgo2.X,cgo2.Y,cgo2.Wdt,cgo2.Hgt,pFirstObj->GetName(),iRegionCom,pFirstObj,COM_None,COM_None,pFirstObj->Number);
 		// Next section
@@ -492,7 +500,7 @@ BOOL C4ObjectList::DenumerateRead()
 	if(!pEnumerated) return FALSE;
 	// Denumerate all object pointers
 	for(std::list<int32_t>::const_iterator pNum = pEnumerated->begin(); pNum != pEnumerated->end(); ++pNum)
-		Add(Game.Objects.ObjectPointer(*pNum), stNone); // Add to tail, unsorted
+		Add(::Objects.ObjectPointer(*pNum), stNone); // Add to tail, unsorted
 	// Delete old list
 	delete pEnumerated; pEnumerated = NULL;
 	return TRUE;

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,6 +25,10 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4Player.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
+#include <C4Network2.h>
+#include <C4GameControl.h>
 #endif
 
 C4Graph::C4Graph()
@@ -319,32 +326,32 @@ C4Network2Stats::C4Network2Stats()
 	statControls.SetAverageTime(100);
 	statActions.SetTitle(LoadResStr("IDS_NET_APM"));
 	statActions.SetAverageTime(100);
-	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next) pPlr->CreateGraphs();
+	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->CreateGraphs();
 	C4Network2Client *pClient = NULL;
-	while (pClient = Game.Network.Clients.GetNextClient(pClient)) pClient->CreateGraphs();
+	while (pClient = ::Network.Clients.GetNextClient(pClient)) pClient->CreateGraphs();
 	}
 
 C4Network2Stats::~C4Network2Stats()
 	{
-	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next) pPlr->ClearGraphs();
+	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->ClearGraphs();
 	C4Network2Client *pClient = NULL;
-	while (pClient = Game.Network.Clients.GetNextClient(pClient)) pClient->ClearGraphs();
+	while (pClient = ::Network.Clients.GetNextClient(pClient)) pClient->ClearGraphs();
 	Application.Remove(this);
 	}
 
 void C4Network2Stats::ExecuteFrame()
 	{
-	statObjCount.RecordValue(C4Graph::ValueType(Game.Objects.ObjectCount()));
+	statObjCount.RecordValue(C4Graph::ValueType(::Objects.ObjectCount()));
 	}
 
 void C4Network2Stats::ExecuteSecond()
 	{
 	statFPS.RecordValue(C4Graph::ValueType(Game.FPS));
-	statNetI.RecordValue(C4Graph::ValueType(Game.Network.NetIO.getProtIRate(P_TCP) + Game.Network.NetIO.getProtIRate(P_UDP)));
-	statNetO.RecordValue(C4Graph::ValueType(Game.Network.NetIO.getProtORate(P_TCP) + Game.Network.NetIO.getProtORate(P_UDP)));
+	statNetI.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtIRate(P_TCP) + ::Network.NetIO.getProtIRate(P_UDP)));
+	statNetO.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtORate(P_TCP) + ::Network.NetIO.getProtORate(P_UDP)));
 	// pings for all clients
 	C4Network2Client *pClient = NULL;
-	while (pClient = Game.Network.Clients.GetNextClient(pClient)) if (pClient->getStatPing())
+	while (pClient = ::Network.Clients.GetNextClient(pClient)) if (pClient->getStatPing())
 		{
 		int iPing=0;
 		C4Network2IOConnection *pConn = pClient->getMsgConn();
@@ -357,10 +364,10 @@ void C4Network2Stats::ExecuteSecond()
 void C4Network2Stats::ExecuteControlFrame()
 	{
 	// control rate may have updated: always convert values to actions per minute
-	statControls.SetMultiplier((C4Graph::ValueType) 1000 / 38 / Game.Control.ControlRate);
-	statActions.SetMultiplier((C4Graph::ValueType) 1000 / 38 * 60 / Game.Control.ControlRate);
+	statControls.SetMultiplier((C4Graph::ValueType) 1000 / 38 / ::Control.ControlRate);
+	statActions.SetMultiplier((C4Graph::ValueType) 1000 / 38 * 60 / ::Control.ControlRate);
 	// register and reset control counts for all players
-	for (C4Player *pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 		{
 		if (pPlr->pstatControls)
 			{

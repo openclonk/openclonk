@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2007  Sven Eberhardt
+ * Copyright (c) 2004-2008  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -18,20 +21,13 @@
 #define INC_C4Network2
 
 #include "C4NetIO.h"
-
-#include "C4Application.h"
-#include "C4Network2Client.h"
-#include "C4Network2Res.h"
-#include "C4Network2IO.h"
 #include "C4Network2Players.h"
-#include "C4GameParameters.h"
-
-#ifndef BIG_C4INCLUDE
-#include "C4PlayerInfo.h"
-#include "C4Teams.h"
+#include "C4Network2IO.h"
+#include "C4Network2Res.h"
+#include "C4Network2Client.h"
 #include "C4Control.h"
 #include "C4Gui.h"
-#endif
+#include "C4GameParameters.h"
 
 // lobby predef - no need to include lobby in header just for the class ptr
 namespace C4GameLobby { class MainDlg; class Countdown; }
@@ -362,6 +358,8 @@ protected:
 	bool StreamOut();
 
 };
+
+extern C4Network2 Network;
 
 class C4VoteDialog : public C4GUI::MessageDialog
 {

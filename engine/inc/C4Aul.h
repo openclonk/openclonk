@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2001, 2004, 2006  Peter Wortmann
+ * Copyright (c) 2004, 2006-2009  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -397,7 +402,6 @@ enum C4AulScriptState
 	ASS_PARSED			// byte code generated
 	};
 
-#ifdef C4ENGINE
 
 // script profiler entry
 class C4AulProfiler
@@ -424,7 +428,6 @@ class C4AulProfiler
 		static void StopProfiling();
 	};
 
-#endif
 
 // script class
 class C4AulScript
@@ -575,4 +578,5 @@ class C4AulScriptEngine : public C4AulScript
 		friend class C4AulParseState;
 	};
 
+extern C4AulScriptEngine ScriptEngine;
 #endif

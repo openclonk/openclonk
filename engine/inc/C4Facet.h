@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2003, 2005-2006  Sven Eberhardt
+ * Copyright (c) 2006  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -44,7 +48,6 @@ struct C4Vec2D
 	C4Vec2D(int32_t x=0, int32_t y=0) : x(x), y(y) {}
 	};
 
-#ifdef C4ENGINE
 class C4DrawTransform : public CBltTransform
 	{
 	public:
@@ -113,7 +116,6 @@ class C4DrawTransform : public CBltTransform
 		int32_t GetYOffset() const { return static_cast<int32_t>(mat[5]); }
 
 	};
-#endif // C4ENGINE
 
 class C4Facet
   {
@@ -140,11 +142,9 @@ class C4Facet
 	  void DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center, int32_t *piUsedWidth=NULL);
 		void Draw(C4Facet &cgo, BOOL fAspect=TRUE, int32_t iPhaseX=0, int32_t iPhaseY=0, BOOL fTransparent=TRUE);
 		void DrawFullScreen(C4Facet &cgo);
-#ifdef C4ENGINE
 		void DrawT(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform); // draw with transformation (if pTransform is assigned)
 		void DrawT(C4Facet &cgo, BOOL fAspect, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
 		void DrawXT(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
-#endif // C4ENGINE
 		void DrawClr(C4Facet &cgo, BOOL fAspect=TRUE, DWORD dwClr=0); // set surface color and draw
 		void DrawXClr(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, DWORD dwClr); // set surface color and draw
 		void DrawValue2Clr(C4Facet &cgo, int32_t iValue1, int32_t iValue2, DWORD dwClr); // set surface color and draw

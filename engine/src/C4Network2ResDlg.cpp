@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005  Sven Eberhardt
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -19,7 +22,7 @@
 #include "C4Include.h"
 #include "C4GameLobby.h"
 #include "C4FullScreen.h"
-#include "C4Game.h"
+
 #include "C4Network2.h"
 #include "C4PlayerInfo.h"
 #include "C4Network2Players.h"
@@ -133,7 +136,7 @@ void C4Network2ResDlg::ListItem::LocalSaveResource(bool fDoOverwrite)
 C4Network2Res::Ref C4Network2ResDlg::ListItem::GetRefRes()
 	{
 	// forward to network reslist
-	return Game.Network.ResList.getRefRes(iResID);
+	return ::Network.ResList.getRefRes(iResID);
 	}
 
 bool C4Network2ResDlg::ListItem::IsSavePossible()
@@ -186,7 +189,7 @@ void C4Network2ResDlg::Update()
 	// check through own resources and current res list
 	ListItem *pItem = static_cast<ListItem *>(pClientWindow->GetFirst()), *pNext;
 	C4Network2Res *pRes; int iResID=-1;
-	while (pRes = Game.Network.ResList.getRefNextRes(++iResID))
+	while (pRes = ::Network.ResList.getRefNextRes(++iResID))
 		{
 		iResID = pRes->getResID();
 		// resource checking: deleted ressource(s) present?

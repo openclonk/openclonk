@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2008  Sven Eberhardt
+ * Copyright (c) 2006, 2008  Günther Brammer
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2008  Armin Burgmeier
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,7 +31,8 @@
 #include <C4GamePadCon.h>
 #include <C4Game.h>
 #include <C4Log.h>
-#include <C4Wrappers.h>
+#include <C4GraphicsResource.h>
+#include <C4Network2.h>
 #endif
 
 #include <StdGL.h>
@@ -200,7 +207,7 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 	{
 	// draw key
 	C4Facet cgoDraw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY, rcBounds.Wdt, rcBounds.Hgt);
-	Game.GraphicsResource.fctKey.Draw(cgoDraw, TRUE, fDown);
+	::GraphicsResource.fctKey.Draw(cgoDraw, TRUE, fDown);
 	int32_t iKeyIndent = cgoDraw.Wdt / 5;
 	cgoDraw.X += iKeyIndent; cgoDraw.Wdt -= 2*iKeyIndent;
 	cgoDraw.Y += iKeyIndent*3/4; cgoDraw.Hgt -= 2*iKeyIndent;
@@ -214,7 +221,7 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 			ModulateClr(dwModClr, dwOldBlitModClr);
 		lpDDraw->ActivateBlitModulation(dwModClr);
 		}
-	Game.GraphicsResource.fctCommand.Draw(cgoDraw, TRUE, iKeyID, 0);
+	::GraphicsResource.fctCommand.Draw(cgoDraw, TRUE, iKeyID, 0);
 	if (!fDoHightlight)
 		if (fHadBlitMod)
 			lpDDraw->ActivateBlitModulation(dwOldBlitModClr);
@@ -251,7 +258,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 		iMaxControlSets = C4MaxKeyboardSet;
 	ppKeyControlSetBtns = new C4GUI::IconButton *[iMaxControlSets];
 	// top line buttons to select keyboard set or gamepad
-	C4Facet fctCtrlPic = fGamepad ? Game.GraphicsResource.fctGamepad : Game.GraphicsResource.fctKeyboard;
+	C4Facet fctCtrlPic = fGamepad ? ::GraphicsResource.fctGamepad : ::GraphicsResource.fctKeyboard;
 	int32_t iCtrlSetWdt = caArea.GetWidth() - caArea.GetHMargin()*2;
 	int32_t iCtrlSetHMargin = 5, iCtrlSetVMargin = 5;
 	int32_t iCtrlSetBtnWdt = BoundBy<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlPic.Wdt);
@@ -274,7 +281,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	caArea.ExpandTop(caArea.GetVMargin());
 	AddElement(new C4GUI::HorizontalLine(caArea.GetFromTop(2)));
 	caArea.ExpandTop(caArea.GetVMargin());
-	C4Facet &rfctKey = Game.GraphicsResource.fctKey;
+	C4Facet &rfctKey = ::GraphicsResource.fctKey;
 	int32_t iKeyAreaMaxWdt = caArea.GetWidth()-2*caArea.GetHMargin(), iKeyAreaMaxHgt = caArea.GetHeight()-2*caArea.GetVMargin();
 	int32_t iKeyWdt = rfctKey.Wdt*3/2, iKeyHgt = rfctKey.Hgt*3/2;
 	int32_t iKeyUseWdt = iKeyWdt + iKeyHgt*3; // add space for label
@@ -422,7 +429,7 @@ void C4StartupOptionsDlg::ControlConfigArea::OnGUIGamepadCheckChange(C4GUI::Elem
 	if (fChecked == !!Config.Controls.GamepadGuiControl) return;
 	// reflect change
 	Config.Controls.GamepadGuiControl = fChecked;
-	Game.pGUI->UpdateGamepadGUIControlEnabled();
+	::pGUI->UpdateGamepadGUIControlEnabled();
 	pOptionsDlg->RecreateDialog(false);
 	}
 

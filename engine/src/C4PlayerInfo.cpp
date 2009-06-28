@@ -1,6 +1,13 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2008  Sven Eberhardt
+ * Copyright (c) 2005-2007  Peter Wortmann
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,9 +31,10 @@
 #include <C4Game.h>
 #include <C4Config.h>
 #include <C4Log.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4FullScreen.h>
+#include <C4PlayerList.h>
+#include <C4GameControl.h>
 #endif
 
 // *** C4PlayerInfo
@@ -86,14 +94,14 @@ bool C4PlayerInfo::LoadFromLocalFile(const char *szFilename)
 	dwColor = dwOriginalColor = C4P.PrefColorDw & 0xffffff; // ignore alpha
 	dwAlternateColor = C4P.PrefColor2Dw & 0xffffff; // ignore alpha
 	// network: ressource (not for replays, because everyone has the player files there...)
-	if (Game.Network.isEnabled() && !Game.C4S.Head.Replay)
+	if (::Network.isEnabled() && !Game.C4S.Head.Replay)
 		{
 		// add ressource
 		// 2do: rejoining players need to update their ressource version when saving the player
 		// otherwise, player file versions may differ
-		pRes = Game.Network.ResList.getRefRes(szFilename, true);
+		pRes = ::Network.ResList.getRefRes(szFilename, true);
 		// not found? add
-		if(!pRes) pRes = Game.Network.ResList.AddByGroup(&Grp, false, NRT_Player, -1, szFilename);
+		if(!pRes) pRes = ::Network.ResList.AddByGroup(&Grp, false, NRT_Player, -1, szFilename);
 		if(!pRes) return false;
 		// set core and flag
 		ResCore = pRes->getCore();
@@ -293,7 +301,7 @@ void C4PlayerInfo::LoadResource()
 		dwFlags &= ~PIF_HasRes;
 	else
 		// create resource (will check if resource already exists)
-		if (!(pRes = Game.Network.ResList.AddByCore(ResCore)))
+		if (!(pRes = ::Network.ResList.AddByCore(ResCore)))
 			{
 			dwFlags &= ~PIF_HasRes;
 			// add failed? invalid ressource??! -- TODO: may be too large to load
@@ -374,9 +382,9 @@ C4ClientPlayerInfos::C4ClientPlayerInfos(const char *szJoinFilenames, bool fAdd,
 		if (SSearch(Config.GetRegistrationData("Type"), "Developer"))
 			dwFlags |= CIF_Developer;
 		// set local ID
-		iClientID = Game.Control.ClientID();
+		iClientID = ::Control.ClientID();
 		// maybe control is not preinitialized
-		if (!Game.Control.isNetwork() && iClientID < 0) iClientID = 0;
+		if (!::Control.isNetwork() && iClientID < 0) iClientID = 0;
 		// join packet or initial packet?
 		if (fAdd)
 			// packet is to be added to other players
@@ -741,11 +749,11 @@ bool C4PlayerInfoList::DoLocalNonNetworkPlayerJoin(const char *szPlayerFile)
 bool C4PlayerInfoList::DoPlayerInfoUpdate(C4ClientPlayerInfos *pUpdate)
 	{
 	// never done by clients or in replay - update will be handled via queue
-	if (!Game.Control.isCtrlHost()) return false;
+	if (!::Control.isCtrlHost()) return false;
 	// in network game, process by host. In offline game, just create control
 	bool fSucc = true;
-	if (Game.Control.isNetwork())
-		Game.Network.Players.RequestPlayerInfoUpdate(*pUpdate);
+	if (::Control.isNetwork())
+		::Network.Players.RequestPlayerInfoUpdate(*pUpdate);
 	else
 		fSucc = DoLocalNonNetworkPlayerInfoUpdate(pUpdate);
 	return fSucc;
@@ -764,7 +772,7 @@ bool C4PlayerInfoList::DoLocalNonNetworkPlayerInfoUpdate(C4ClientPlayerInfos *pU
 	UpdatePlayerAttributes(pUpdate, true);
 	// add through queue: This will add directly, do the record and put player joins into the queue
 	// in running mode, this call will also put the actual player joins into the queue
-  Game.Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(*pUpdate), Game.IsRunning ? CDT_Queue : CDT_Direct);
+  ::Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(*pUpdate), Game.IsRunning ? CDT_Queue : CDT_Direct);
 	// done, success
 	return true;
 	}
@@ -873,7 +881,7 @@ C4ClientPlayerInfos *C4PlayerInfoList::AddInfo(C4ClientPlayerInfos *pNewClientIn
 	// caution: also called for RestorePlayerInfos-list
 	// host: reserve new IDs for all players
 	// client: all IDs should be assigned already by host
-	if (Game.Network.isHost() || !Game.Network.isEnabled())
+	if (::Network.isHost() || !::Network.isEnabled())
 		{
 		if (!AssignPlayerIDs(pNewClientInfo) && pNewClientInfo->IsAddPacket())
 			{
@@ -1310,7 +1318,7 @@ bool C4PlayerInfoList::InitLocal()
 	// no double init
 	assert(!GetInfoCount());
 	// no network
-	assert(!Game.Network.isEnabled());
+	assert(!::Network.isEnabled());
 	// create player info for local player joins
 	C4ClientPlayerInfos *pLocalInfo = new C4ClientPlayerInfos(Game.PlayerFilenames);
 	// register local info immediately
@@ -1327,9 +1335,9 @@ bool C4PlayerInfoList::InitLocal()
 bool C4PlayerInfoList::LocalJoinUnjoinedPlayersInQueue()
 	{
 	// local call only - in network, C4Network2Players joins players!
-	assert(!Game.Network.isEnabled());
+	assert(!::Network.isEnabled());
 	// get local players
-	C4ClientPlayerInfos **ppkLocal = GetInfoPtrByClientID(Game.Control.ClientID()), *pkLocal;
+	C4ClientPlayerInfos **ppkLocal = GetInfoPtrByClientID(::Control.ClientID()), *pkLocal;
 	if (!ppkLocal) return false;
 	pkLocal = *ppkLocal;
 	// check all players
@@ -1351,7 +1359,7 @@ bool C4PlayerInfoList::LocalJoinUnjoinedPlayersInQueue()
 				continue;
 				}
       Game.Input.Add(CID_JoinPlr,
-        new C4ControlJoinPlayer(szFilename, Game.Control.ClientID(), pInfo->GetID()));
+        new C4ControlJoinPlayer(szFilename, ::Control.ClientID(), pInfo->GetID()));
 			}
 	// done, success
 	return true;
@@ -1403,7 +1411,7 @@ bool C4PlayerInfoList::RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers)
 		// do savegame player association of real players
 		// for non-lobby games do automatic association first
 		int32_t iNumGrabbed = 0, i;
-		if (!Game.Network.isEnabled() && Game.C4S.Head.SaveGame)
+		if (!::Network.isEnabled() && Game.C4S.Head.SaveGame)
 			{
 			// do several passes: First passes using regular player matching; following passes matching anything but with a warning message
 			for (int eMatchingLevel = 0; eMatchingLevel <= PML_Any; ++eMatchingLevel)
@@ -1421,8 +1429,8 @@ bool C4PlayerInfoList::RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers)
 									// this is a "wild" match: Warn the player (but not in replays)
 									StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_MSG_PLAYERASSIGNMENT"), pInfo->GetName(), pSavegameInfo->GetName());
 									Log(sMsg.getData());
-									if (Game.pGUI && FullScreen.Active && !Game.C4S.Head.Replay)
-										Game.pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify, &Config.Startup.HideMsgPlrTakeOver);
+									if (::pGUI && FullScreen.Active && !Game.C4S.Head.Replay)
+										::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_MSG_FREESAVEGAMEPLRS"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify, &Config.Startup.HideMsgPlrTakeOver);
 									}
 								}
 					}
@@ -1461,7 +1469,7 @@ bool C4PlayerInfoList::RestoreSavegameInfos(C4PlayerInfoList &rSavegamePlayers)
 			// in replay mode, if there are no regular player joins, it must have been a runtime record
 			// i.e., a record that was started during the game
 			// in this case, the savegame player infos equal the real player infos to be used
-			if (Game.Control.isReplay() && !GetInfoCount())
+			if (::Control.isReplay() && !GetInfoCount())
 				{
 				*this = rSavegamePlayers;
 				}
@@ -1575,9 +1583,9 @@ bool C4PlayerInfoList::RecreatePlayers()
 			szAtClientName = "Replay";
 		else
 			// local non-network non-replay games set local name
-			if (!Game.Network.isEnabled())
+			if (!::Network.isEnabled())
 				{
-				assert(idAtClient == Game.Control.ClientID());
+				assert(idAtClient == ::Control.ClientID());
 				szAtClientName = "Local";
 				}
 			else
@@ -1606,7 +1614,7 @@ bool C4PlayerInfoList::RecreatePlayers()
 				if (szFilename && pJoinRes && pJoinRes->isLoading())
 					{
 					const char *szName = pInfo->GetName();
-					if (!Game.Network.RetrieveRes(pJoinRes->getCore(), C4NetResRetrieveTimeout,
+					if (!::Network.RetrieveRes(pJoinRes->getCore(), C4NetResRetrieveTimeout,
                                              FormatString(LoadResStr("IDS_NET_RES_PLRFILE"), szName).getData()))
 						szFilename=NULL;
 					}
@@ -1627,14 +1635,14 @@ bool C4PlayerInfoList::RecreatePlayers()
 						}
 					}
 				// record file handling: Save to the record file in the manner it's expected by C4PlayerInfoList::RecreatePlayers
-				if (Game.Control.isRecord() && szFilename)
+				if (::Control.isRecord() && szFilename)
 					{
 					StdStrBuf sFilenameInRecord;
 					sFilenameInRecord.Format("Recreate-%d.c4p", pInfo->GetID());
-					Game.Control.RecAddFile(szFilename, sFilenameInRecord.getData());
+					::Control.RecAddFile(szFilename, sFilenameInRecord.getData());
 					}
 				// recreate join directly
-				Game.Players.Join(szFilename, FALSE, idAtClient, szAtClientName, pInfo);
+				::Players.Join(szFilename, FALSE, idAtClient, szAtClientName, pInfo);
 				// delete temporary files immediately
 				if (pInfo->IsTempFile()) pInfo->DeleteTempFile();
 				}
@@ -1656,7 +1664,7 @@ bool C4PlayerInfoList::RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlay
 			// remove players that were in the game but are not associated
 			if (pInfo->IsJoined() && !GetPlayerInfoBySavegameID(pInfo->GetID()))
 				{
-				if (Game.Players.RemoveUnjoined(pInfo->GetInGameNumber()))
+				if (::Players.RemoveUnjoined(pInfo->GetInGameNumber()))
 					{
 					LogF(LoadResStr("IDS_PRC_REMOVEPLR"), pInfo->GetName());
 					}
@@ -1694,7 +1702,7 @@ bool C4PlayerInfoList::SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fS
 						{
 						// in the game: Set filename for inside savegame file
 						StdStrBuf sNewName;
-						if (Game.Network.isEnabled())
+						if (::Network.isEnabled())
 							{
 							C4Client *pGameClient = Game.Clients.getClientByID(pClient->GetClientID());
 							const char *szName = pGameClient ? pGameClient->getName() : "Unknown";

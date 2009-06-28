@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2004-2008  Peter Wortmann
+ * Copyright (c) 2005-2006  Günther Brammer
+ * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,6 +28,7 @@
 #include <C4UserMessages.h>
 #include <C4Log.h>
 #include <C4Game.h>
+#include <C4GameControl.h>
 #endif
 
 #ifndef HAVE_WINSOCK
@@ -624,7 +629,7 @@ bool C4Network2IO::Execute(int iTimeout, pollfd *)
 	}
 
 	// ressources
-	Game.Network.ResList.OnTimer();
+	::Network.ResList.OnTimer();
 
 	// ok
 	return true;
@@ -643,7 +648,7 @@ void C4Network2IO::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData
 	{
 		C4Network2IOConnection *pConn = reinterpret_cast<C4Network2IOConnection *>(pEventData);
 		// do callback
-		Game.Network.OnConn(pConn);
+		::Network.OnConn(pConn);
 		// remove reference
 		pConn->DelRef();
 	}
@@ -654,7 +659,7 @@ void C4Network2IO::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData
 		C4Network2IOConnection *pConn = reinterpret_cast<C4Network2IOConnection *>(pEventData);
 		assert(pConn->isClosed());
 		// do callback
-		Game.Network.OnDisconn(pConn);
+		::Network.OnDisconn(pConn);
 		// remove reference
 		pConn->DelRef();
 	}
@@ -898,36 +903,36 @@ void C4Network2IO::CallHandlers(int iHandlerID, const C4IDPacket *pPkt, C4Networ
 	if(iHandlerID & PH_C4Network2)
 	{
 		assert(!fThread);
-		Game.Network.HandlePacket(cStatus, pPacket, pConn);
+		::Network.HandlePacket(cStatus, pPacket, pConn);
 	}
 	// fullscreen lobby
 	if(iHandlerID & PH_C4GUIMainDlg)
 	{
 		assert(!fThread);
-		Game.Network.HandleLobbyPacket(cStatus, pPacket, pConn);
+		::Network.HandleLobbyPacket(cStatus, pPacket, pConn);
 	}
 	// client list class (main thread)
 	if(iHandlerID & PH_C4Network2ClientList)
 	{
 		assert(!fThread);
-		Game.Network.Clients.HandlePacket(cStatus, pPacket, pConn);
+		::Network.Clients.HandlePacket(cStatus, pPacket, pConn);
 	}
 	// player list class (main thread)
 	if(iHandlerID & PH_C4Network2Players)
 	{
 		assert(!fThread);
-		Game.Network.Players.HandlePacket(cStatus, pPacket, pConn);
+		::Network.Players.HandlePacket(cStatus, pPacket, pConn);
 	}
 	// ressource list class (network thread)
 	if(iHandlerID & PH_C4Network2ResList)
 	{
 		assert(fThread);
-		Game.Network.ResList.HandlePacket(cStatus, pPacket, pConn);
+		::Network.ResList.HandlePacket(cStatus, pPacket, pConn);
 	}
 	// network control (mixed)
 	if(iHandlerID & PH_C4GameControlNetwork)
 	{
-		Game.Control.Network.HandlePacket(cStatus, pPacket, pConn);
+		::Control.Network.HandlePacket(cStatus, pPacket, pConn);
 	}
 }
 
@@ -1258,10 +1263,10 @@ void C4Network2IO::OnPunch(C4NetIO::addr_t addr)
 	addr.sin_family = AF_INET;
 	ZeroMem(addr.sin_zero, sizeof(addr.sin_zero));
 	// Add for local client
-	C4Network2Client *pLocal = Game.Network.Clients.GetLocal();
+	C4Network2Client *pLocal = ::Network.Clients.GetLocal();
 	if(pLocal)
 		if(pLocal->AddAddr(C4Network2Address(addr, P_UDP), true))
-			Game.Network.InvalidateReference();
+			::Network.InvalidateReference();
 }
 
 // *** C4Network2IOConnection

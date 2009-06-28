@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001, 2004  Sven Eberhardt
+ * Copyright (c) 2006  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -38,6 +40,8 @@ class C4GameObjects : public C4NotifyingObjectList
 	public:
 		C4LSectors Sectors; // section object lists
 		C4ObjectList InactiveObjects; // inactive objects (Status=2)
+		C4ObjectList BackObjects; // objects in background (C4D_Background)
+		C4ObjectList ForeObjects; // objects in foreground (C4D_Foreground)
 		C4ObjResort *ResortProc; // current sheduled user resorts
 
 		unsigned int LastUsedMarker; // last used value for C4Object::Marker
@@ -76,7 +80,7 @@ class C4GameObjects : public C4NotifyingObjectList
 		void ResortUnsorted(); // resort any objects with unsorted-flag set into lists
 		void ExecuteResorts(); // execute custom resort procs
 
-		void DeleteObjects(); // delete all objects and links
+		void DeleteObjects(bool fDeleteInactive); // delete all objects and links
 
 		void ClearDefPointers(C4Def *pDef); // clear all pointers into definition
 		void UpdateDefPointers(C4Def *pDef); // restore any cleared pointers after def reload
@@ -85,7 +89,7 @@ class C4GameObjects : public C4NotifyingObjectList
 		bool AssignInfo();
 	};
 
-class C4AulFunc;
+extern C4GameObjects Objects;
 
 // sheduled resort holder
 class C4ObjResort

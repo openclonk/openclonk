@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003-2007  Sven Eberhardt
+ * Copyright (c) 2005-2007  Günther Brammer
+ * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,23 +28,18 @@
 #include <StdMarkup.h>
 #include <stdexcept>
 #include <string>
-
+/*
 #ifdef _WIN32
 #include <tchar.h>
 #include <stdio.h>
 #else
 #define _T(x) x
 #endif // _WIN32
-
+*/
 #ifdef HAVE_FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #endif // HAVE_FREETYPE
-
-#ifdef HAVE_ICONV
-#include <iconv.h>
-#endif // HAVE_ICONV
-
 
 /* Initialization */
 
@@ -135,7 +134,6 @@ CStdFont::CStdFont()
 	iGfxLineHgt=iLineHgt+1;
 	dwWeight=FW_NORMAL;
 	fDoShadow=false;
-	fUTF8 = false;
 	// font not yet initialized
 	*szFontName=0;
 	id=0;
@@ -368,7 +366,7 @@ CFacet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
 	return rFacet;
 	}
 
-void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWeight, const char * szCharset, bool fDoShadow)
+void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWeight, bool fDoShadow)
 	{
 	// clear previous
 	Clear();
@@ -376,7 +374,6 @@ void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWei
 	iHSpace=fDoShadow ? -1 : 0;             // horizontal shadow
 	dwWeight=dwFontWeight;
 	this->fDoShadow = fDoShadow;
-	if (SEqual(szCharset, "UTF-8")) fUTF8 = true;
 	// determine needed texture size
 	if (dwHeight * iFontZoom > 40)
 		iSfcSizes = 512;
@@ -463,67 +460,10 @@ void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWei
 	// in case of UTF8, unicode characters will be created on the fly and extended ASCII characters (128-255) are not needed
 	// now render all characters!
 
-#if defined HAVE_ICONV
-	// Initialize iconv
-	struct iconv_t_wrapper {
-		iconv_t i;
-		iconv_t_wrapper (const char * to, const char * from) {
-			i = iconv_open(to, from);
-			if (i == iconv_t(-1))
-				throw std::runtime_error(std::string("Cannot open iconv (") + to + ", " + from + ")");
-		}
-		~iconv_t_wrapper () { iconv_close (i); }
-		operator iconv_t () { return i; }
-	};
-#ifdef __BIG_ENDIAN__
-	iconv_t_wrapper iconv_handle("UCS-4BE",GetCharsetCodeName(szCharset));
-#else
-	iconv_t_wrapper iconv_handle("UCS-4LE",GetCharsetCodeName(szCharset));
-#endif
-#elif defined (_WIN32)
-	int32_t iCodePage = GetCharsetCodePage(szCharset);
-#endif
-	int cMax = fUTF8 ? 127 : 255;
+	int cMax = 127;
 	for (int c=' '; c <= cMax; ++c)
 		{
-		uint32_t dwChar = c;
-#if defined HAVE_ICONV
-		// convert from whatever legacy encoding in use to unicode
-		if (!fUTF8)
-			{
-			// Convert to unicode
-			char chr = dwChar;
-			char * in = &chr;
-			char * out = reinterpret_cast<char *>(&dwChar);
-			size_t insize = 1;
-			size_t outsize = 4;
-			iconv(iconv_handle, const_cast<ICONV_CONST char * * >(&in), &insize, &out, &outsize);
-			}
-#elif defined (_WIN32)
-		// convert using Win32 API
-		if (!fUTF8 && c>=128)
-			{
-			char cc[2] = { char(c), '\0' };
-			wchar_t outbuf[4];
-			if (MultiByteToWideChar(iCodePage, 0, cc, -1, outbuf, 4)) // 2do: Convert using proper codepage
-				{
-				// now convert from UTF-16 to UCS-4
-				if (((outbuf[0] & 0xfc00) == 0xd800) && ((outbuf[1] & 0xfc00) == 0xdc00))
-					{
-					dwChar = 0x10000 + (((outbuf[0] & 0x3ff) << 10) | (outbuf[1] & 0x3ff));
-					}
-				else
-					dwChar = outbuf[0];
-				}
-			else
-				{
-				// conversion error. Shouldn't be fatal; just pretend it were a Unicode character
-				}
-			}
-#else
-		// no conversion available? Just break for non-iso8859-1.
-#endif // defined HAVE_ICONV
-		if (!AddRenderedChar(dwChar, &(fctAsciiTexCoords[c-' '])))
+		if (!AddRenderedChar(c, &(fctAsciiTexCoords[c-' '])))
 			{
 			Clear();
 			throw std::runtime_error(std::string("Cannot render characters for Font (") + szFontName + ")");
@@ -659,7 +599,6 @@ void CStdFont::Clear()
 	dwWeight=FW_NORMAL;
 	fDoShadow=false;
 	fPrerenderedFont = false;
-	fUTF8 = false;
 	// font not yet initialized
 	*szFontName=0;
 	id=0;
@@ -688,9 +627,9 @@ bool CStdFont::GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, boo
 		// done? (must check here, because markup-skip may have led to text end)
 		if (!c) break;
 		// line break?
-		if( c == _T('\n') || (fCheckMarkup && c == _T('|'))) { iRowWdt=0; iHgt+=iLineHgt; continue; }
+		if(c == '\n' || (fCheckMarkup && c == '|')) { iRowWdt=0; iHgt+=iLineHgt; continue; }
 		// ignore system characters
-		if( c < _T(' ') ) continue;
+		if(c < ' ') continue;
 		// image?
 		int iImgLgt;
 		if (fCheckMarkup && c=='{' && szText[0]=='{' && szText[1]!='{' && (iImgLgt=SCharPos('}', szText+1))>0 && szText[iImgLgt+2]=='}')
@@ -1123,7 +1062,7 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 	while (c = GetNextCharacter(&szText))
 		{
 		// ignore system characters
-		if (c < _T(' ')) continue;
+		if (c < ' ') continue;
 		// apply markup
 		if (c=='<' && (~dwFlags & STDFONT_NOMARKUP))
 			{

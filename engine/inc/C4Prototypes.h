@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,6 +22,7 @@
 #ifndef INC_C4Prototypes
 #define INC_C4Prototypes
 
+class C4AulFunc;
 class C4Game;
 class C4Record;
 class C4Playback;

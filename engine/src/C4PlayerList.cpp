@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2002, 2004-2008  Sven Eberhardt
+ * Copyright (c) 2002, 2004, 2006  Peter Wortmann
+ * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -28,6 +32,10 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4Object.h>
+#include <C4Game.h>
+#include <C4GraphicsSystem.h>
+#include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 C4PlayerList::C4PlayerList()
@@ -238,7 +246,7 @@ bool C4PlayerList::RemoveUnjoined(int32_t iPlayer)
 	{
 	// Savegame resume missing player: Remove player objects only
 	C4Object *pObj;
-	for (C4ObjectLink *clnk=Game.Objects.First; clnk && (pObj=clnk->Obj); clnk=clnk->Next)
+	for (C4ObjectLink *clnk=::Objects.First; clnk && (pObj=clnk->Obj); clnk=clnk->Next)
 		if (pObj->Status)
 			if (pObj->IsPlayerObject(iPlayer))
 				pObj->AssignRemoval(TRUE);
@@ -284,7 +292,7 @@ BOOL C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 	pPlr->CrewInfoList.DetachFromObjects();
 
 	// Clear viewports
-	Game.GraphicsSystem.CloseViewport(pPlr->Number, fNoCalls);
+	::GraphicsSystem.CloseViewport(pPlr->Number, fNoCalls);
 	// Check fullscreen viewports
 	FullScreen.ViewportCheck();
 
@@ -292,7 +300,7 @@ BOOL C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 	delete pPlr;
 
 	// Validate object owners
-	Game.Objects.ValidateOwners();
+	::Objects.ValidateOwners();
 
 	// Update console
 	Console.UpdateMenus();
@@ -339,7 +347,7 @@ C4Player* C4PlayerList::Join(const char *szFilename, BOOL fScenarioInit, int iAt
 
 BOOL C4PlayerList::CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName)
 	{
-	assert(!Game.Network.isEnabled());
+	assert(!::Network.isEnabled());
 	// Create temp copy of player file without portraits
 	// Why? This is local join!
 	/*
@@ -445,7 +453,7 @@ BOOL C4PlayerList::Retire(C4Player *pPlr)
 	if (!pPlr->Evaluated)
 		{
 		pPlr->Evaluate();
-		if (!Game.Control.isReplay() && pPlr->GetType() != C4PT_Script) pPlr->Save();
+		if (!::Control.isReplay() && pPlr->GetType() != C4PT_Script) pPlr->Save();
 		}
 	Remove(pPlr, false, false);
 
@@ -481,7 +489,7 @@ BOOL C4PlayerList::FileInUse(const char *szFilename) const
 		if (ItemIdentical(cPlr->Filename,szFilename))
 			return TRUE;
 	// Compare to any network path player files with prefix (hack)
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 		{
 		char szWithPrefix[_MAX_PATH+1];
 		SCopy(GetFilename(szFilename),szWithPrefix);
@@ -603,7 +611,7 @@ C4Player* C4PlayerList::GetAtRemoteClient(int iIndex) const
 	{
 	int cindex=0;
   for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-		if (pPlr->AtClient != Game.Control.ClientID())
+		if (pPlr->AtClient != ::Control.ClientID())
 			{
 			if (cindex==iIndex)	return pPlr;
 			cindex++;
@@ -715,3 +723,15 @@ void C4PlayerList::RecheckPlayerSort(C4Player *pForPlayer)
 		pPrev->Next = pForPlayer;
 		}
 	}
+
+int32_t ValidPlr(int32_t plr)
+	{
+	return ::Players.Valid(plr);
+	}
+
+int32_t Hostile(int32_t plr1, int32_t plr2)
+	{
+	return ::Players.Hostile(plr1,plr2);
+	}
+
+C4PlayerList Players;

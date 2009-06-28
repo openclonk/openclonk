@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2009  Sven Eberhardt
+ * Copyright (c) 2005-2006  Peter Wortmann
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,8 +27,9 @@
 #include <C4Game.h>
 #include <C4Random.h>
 #include <C4Components.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
+#include <C4PlayerList.h>
+#include <C4GameControl.h>
 #endif
 
 // ---------------------------------------------------------------
@@ -73,7 +78,7 @@ void C4Team::AddPlayer(C4PlayerInfo &rInfo, bool fAdjustPlayer)
 	// and in actual player, if it is joined already
 	if (rInfo.IsJoined())
 		{
-		C4Player *pJoinedPlr = Game.Players.GetByInfoID(rInfo.GetID());
+		C4Player *pJoinedPlr = ::Players.GetByInfoID(rInfo.GetID());
 		assert(pJoinedPlr);
 		if (pJoinedPlr)
 			{
@@ -300,7 +305,7 @@ bool C4TeamList::CanLocalChooseTeam() const
 	switch (eTeamDist)
 		{
 		case TEAMDIST_Free: return true;
-		case TEAMDIST_Host: return Game.Control.isCtrlHost();
+		case TEAMDIST_Host: return ::Control.isCtrlHost();
 		case TEAMDIST_Random:
 		case TEAMDIST_RandomInv:
 			return false;
@@ -447,7 +452,7 @@ bool C4TeamList::IsTeamVisible() const
 	{
 	// teams invisible during lobby time if random surprise teams
 	if (eTeamDist == TEAMDIST_RandomInv)
-		if (Game.Network.isLobbyActive())
+		if (::Network.isLobbyActive())
 			return false;
 	return true;
 	}
@@ -458,7 +463,7 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	assert(IsMultiTeams());
 	if (!IsMultiTeams()) return false;
 	// local/single call only
-	//assert(Game.Control.isCtrlHost()); -- bla, control is not initialized at this point.
+	//assert(::Control.isCtrlHost()); -- bla, control is not initialized at this point.
 	// check whether a new team is to be assigned first
 	C4Team *pCurrentTeam = GetTeamByPlayerID(rNewJoin.GetID());
 	int32_t idCurrentTeam = pCurrentTeam ? pCurrentTeam->GetID() : 0;
@@ -483,8 +488,8 @@ bool C4TeamList::RecheckPlayerInfoTeams(C4PlayerInfo &rNewJoin, bool fByHost)
 	// teams are always needed in the lobby, so there's a team preset to change
 	// for runtime joins, teams are needed if specified by teams.txt or if any teams have been created before (to avoid mixed team-noteam-scenarios)
 	// but only assign teams in runtime join if the player won't pick it himself
-	bool fWillHaveLobby = Game.Network.isEnabled() && !Game.Network.Status.isPastLobby() && Game.fLobby;
-	bool fHasOrWillHaveLobby = Game.Network.isLobbyActive() || fWillHaveLobby;
+	bool fWillHaveLobby = ::Network.isEnabled() && !::Network.Status.isPastLobby() && Game.fLobby;
+	bool fHasOrWillHaveLobby = ::Network.isLobbyActive() || fWillHaveLobby;
 	bool fCanPickTeamAtRuntime = !IsRandomTeam() && (rNewJoin.GetType() == C4PT_User) && IsRuntimeJoinTeamChoice();
 	bool fIsTeamNeeded = IsRuntimeJoinTeamChoice() || GetTeamCount();
 	if (!fHasOrWillHaveLobby && (!fIsTeamNeeded || fCanPickTeamAtRuntime)) return false;
@@ -670,7 +675,7 @@ void C4TeamList::RecheckTeams()
 	// automatic team distributions only
 	if (eTeamDist != TEAMDIST_Random && eTeamDist != TEAMDIST_RandomInv) return;
 	// host decides random teams
-	if (!Game.Control.isCtrlHost()) return;
+	if (!::Control.isCtrlHost()) return;
 	// redistribute players of largest team that has relocatable players left towards smaller teams
 	for(;;)
 		{
@@ -705,8 +710,8 @@ void C4TeamList::RecheckTeams()
 
 void C4TeamList::ReassignAllTeams()
 	{
-	assert(Game.Control.isCtrlHost());
-	if (!Game.Control.isCtrlHost()) return;
+	assert(::Control.isCtrlHost());
+	if (!::Control.isCtrlHost()) return;
 	// go through all player infos; reset team in them
 	int32_t idStart = -1; C4PlayerInfo *pNfo;
 	while (pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(idStart))
@@ -761,9 +766,9 @@ void C4TeamList::FillTeamDistOptions(C4GUI::ComboBox_FillCB *pFiller) const
 
 void C4TeamList::SendSetTeamDist(TeamDist eNewTeamDist)
 	{
-	assert(Game.Control.isCtrlHost());
+	assert(::Control.isCtrlHost());
 	// set it for all clients
-	Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_TeamDistribution, eNewTeamDist), CDT_Sync);
+	::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_TeamDistribution, eNewTeamDist), CDT_Sync);
 	}
 
 StdStrBuf C4TeamList::GetTeamDistString() const
@@ -783,7 +788,7 @@ void C4TeamList::SetTeamDistribution(TeamDist eToVal)
 	if (!Inside(eToVal, TEAMDIST_First, TEAMDIST_Last)) { assert(false); return; }
 	eTeamDist = eToVal;
 	// team distribution mode changed: Host may beed to redistribute
-	if (Game.Control.isCtrlHost())
+	if (::Control.isCtrlHost())
 		{
 		// if a random team mode was set, reassign all teams so it's really random
 		if (eTeamDist == TEAMDIST_Random || eTeamDist == TEAMDIST_RandomInv)
@@ -794,9 +799,9 @@ void C4TeamList::SetTeamDistribution(TeamDist eToVal)
 			RecheckTeams();
 			}
 		// send updates to other clients and reset flags
-		if (Game.Network.isEnabled())
+		if (::Network.isEnabled())
 			{
-			Game.Network.Players.SendUpdatedPlayers();
+			::Network.Players.SendUpdatedPlayers();
 			}
 		}
 	}
@@ -804,7 +809,7 @@ void C4TeamList::SetTeamDistribution(TeamDist eToVal)
 void C4TeamList::SendSetTeamColors(bool fEnabled)
 	{
 	// set it for all clients
-	Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_TeamColors, fEnabled), CDT_Sync);
+	::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_TeamColors, fEnabled), CDT_Sync);
 	}
 
 void C4TeamList::SetTeamColors(bool fEnabled)
@@ -814,13 +819,13 @@ void C4TeamList::SetTeamColors(bool fEnabled)
 	// reflect change
 	fTeamColors = fEnabled;
 	// update colors of all players
-	if (!Game.Control.isCtrlHost()) return;
+	if (!::Control.isCtrlHost()) return;
 	// go through all player infos; reset color in them
 	Game.PlayerInfos.UpdatePlayerAttributes(); // sets team and savegame colors
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 		{
 		// sends color updates to all clients
-		Game.Network.Players.SendUpdatedPlayers();
+		::Network.Players.SendUpdatedPlayers();
 		}
 	}
 

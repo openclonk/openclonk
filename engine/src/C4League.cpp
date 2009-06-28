@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2002, 2006-2007, 2009  Sven Eberhardt
+ * Copyright (c) 2002, 2006-2008  Peter Wortmann
+ * Copyright (c) 2006, 2009  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +27,6 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4RoundResults.h>
-#include <C4Wrappers.h>
 #endif
 
 // *** C4LeagueRequestHead
@@ -591,7 +594,7 @@ void C4LeagueSignupDialog::UserClose(bool fOK)
 	if(!fOK)
 		{
 		Dialog::UserClose(fOK);
-		Game.pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESIGNUPCANCELLED"), strPlayerName.getData()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUP"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
+		::pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESIGNUPCANCELLED"), strPlayerName.getData()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUP"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
 		return;
 		}
 	// Check for empty account name
@@ -599,21 +602,21 @@ void C4LeagueSignupDialog::UserClose(bool fOK)
 	if(!szAccount || !*szAccount)
 		{
 		SetFocus(pEdtAccount->GetEdit(), false);
-		Game.pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISSINGUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISSINGUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
 		}
 	// Username contains invalid characters
 	if (SCharCountEx(szAccount, C4League_Name_Valid_Characters) != SLen(szAccount))
 		{
 		SetFocus(pEdtAccount->GetEdit(), false);
-		Game.pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEINVALIDUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEINVALIDUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
 		}
 	// Username is too short
 	if (SLen(szAccount) < 3)
 		{
 		SetFocus(pEdtAccount->GetEdit(), false);
-		Game.pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEUSERNAMETOOSHORT"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEUSERNAMETOOSHORT"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
 		}
 	// Check password
@@ -624,7 +627,7 @@ void C4LeagueSignupDialog::UserClose(bool fOK)
 		if(!szPassword || !*szPassword)
 			{
 			SetFocus(pEdtPass->GetEdit(), false);
-			Game.pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISSINGPASSWORD"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISSINGPASSWORD"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return;
 			}
 		// Check second password
@@ -632,7 +635,7 @@ void C4LeagueSignupDialog::UserClose(bool fOK)
 			{
 			SetFocus(pEdtPass2->GetEdit(), false);
 			pEdtPass2->GetEdit()->SetText("", false);
-			Game.pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISMATCHPASSWORD"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISMATCHPASSWORD"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return;
 			}
 		}
@@ -644,9 +647,9 @@ bool C4LeagueSignupDialog::ShowModal(const char *szPlayerName, const char *szLea
 	{
 	// show league signup dlg modally; return whether user pressed OK and change user and pass buffers in that case
 	assert(psCUID); assert(psPass);
-	if (!psCUID || !psPass || !Game.pGUI) return false;
+	if (!psCUID || !psPass || !::pGUI) return false;
 	C4LeagueSignupDialog *pDlg = new C4LeagueSignupDialog(szPlayerName, szLeagueName, szLeagueServerName, psCUID->getData(), psPass->getData(), fWarnThirdParty, fRegister);
-	bool fResult = Game.pGUI->ShowModalDlg(pDlg, false);
+	bool fResult = ::pGUI->ShowModalDlg(pDlg, false);
 	if (fResult)
 		{
 		psCUID->Copy(pDlg->GetAccount());

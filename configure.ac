@@ -24,7 +24,7 @@ AC_CANONICAL_HOST
 dnl foreign to tell automake to shut up,
 dnl and subdir-objects because it makes the Makefile smaller.
 dnl no-define because PACKAGE and VERSION are not used
-AM_INIT_AUTOMAKE([foreign subdir-objects nostdinc no-define 1.10])
+AM_INIT_AUTOMAKE([foreign nostdinc no-define 1.10])
 
 AC_PROG_CXX
 AC_LANG([C++])

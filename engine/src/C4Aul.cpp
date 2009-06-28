@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001, 2007-2008  Sven Eberhardt
+ * Copyright (c) 2001  Peter Wortmann
+ * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -31,11 +35,9 @@ C4AulError::C4AulError() {}
 
 void C4AulError::show()
 	{
-#ifdef C4ENGINE
 	// simply log error message
 	if(sMessage)
 		DebugLog(sMessage.getData());
-#endif
 	}
 
 C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
@@ -609,3 +611,5 @@ void C4AulFuncMap::Remove(C4AulFunc * func)
 	*pFunc = (*pFunc)->MapNext;
 	--FuncCnt;
 	}
+
+C4AulScriptEngine ScriptEngine;

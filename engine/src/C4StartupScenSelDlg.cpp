@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005, 2007-2008  Matthes Bender
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2005-2008  Sven Eberhardt
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2008  Peter Wortmann
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,12 +32,12 @@
 #include <C4ComponentHost.h>
 #include <C4Components.h>
 #include <C4RTF.H>
-#include <C4Wrappers.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GameDialogs.h>
 #include <C4Language.h>
 #include <C4FileSelDlg.h>
+#include <C4MouseControl.h>
 #endif
 
 #include <set>
@@ -617,14 +623,14 @@ bool C4ScenarioListLoader::Entry::RenameTo(const char *szNewName)
 		if (ItemExists(fullfn))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_FILEEXISTS"), fullfn);
-			Game.pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		// OK; then rename
 		if (!C4Group_MoveItem(sFilename.getData(), fullfn, true))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_RENAMEFILE"), sFilename.getData(), fullfn);
-			Game.pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		sFilename.Copy(fullfn);
@@ -636,20 +642,20 @@ bool C4ScenarioListLoader::Entry::RenameTo(const char *szNewName)
 		if (!Grp.Open(fullfn))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_OPENFILE"), sFilename.getData(), Grp.GetError());
-			Game.pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		if (!Grp.Delete(C4CFN_Title))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_DELOLDTITLE"), sFilename.getData(), Grp.GetError());
-			Game.pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		if (!SetTitleInGroup(Grp, szNewName)) return false;
 		if (!Grp.Close())
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_WRITENEWTITLE"), sFilename.getData(), Grp.GetError());
-			Game.pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), strErr.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		}
@@ -676,7 +682,7 @@ bool C4ScenarioListLoader::Entry::SetTitleInGroup(C4Group &rGrp, const char *szN
 	if (!rGrp.Add(C4CFN_WriteTitle, sTitle, FALSE, TRUE))
 		{
 		StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_ERRORADDINGNEWTITLEFORFIL"), sFilename.getData(), rGrp.GetError());
-		Game.pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return false;
 		}
 	return true;
@@ -1473,7 +1479,7 @@ void C4StartupScenSelDlg::OnClosed(bool fOK)
 	if (!fOK)
 		{
 		// clear settings: Password
-		Game.Network.SetPassword(NULL);
+		::Network.SetPassword(NULL);
 		C4Startup::Get()->SwitchDialog(C4Startup::SDID_Back);
 		}
 	}
@@ -1769,7 +1775,7 @@ void C4StartupScenSelDlg::DeleteConfirm(ScenListItem *pSel)
 	if (!C4Group_DeleteItem(pEnt->GetEntryFilename().getData(), true))
 		{
 		StdStrBuf sMsg; sMsg.Format("%s", LoadResStr("IDS_FAIL_DELETE"));
-		Game.pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_MNU_DELETE"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_MNU_DELETE"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
 		}
 	// remove from scenario list
@@ -1780,7 +1786,7 @@ void C4StartupScenSelDlg::DeleteConfirm(ScenListItem *pSel)
 
 bool C4StartupScenSelDlg::KeyCheat()
 	{
-	return Game.pGUI->ShowRemoveDlg(new C4GUI::InputDialog(LoadResStr("IDS_TEXT_ENTERMISSIONPASSWORD"), LoadResStr("IDS_DLG_MISSIONACCESS"), C4GUI::Ico_Options,
+	return ::pGUI->ShowRemoveDlg(new C4GUI::InputDialog(LoadResStr("IDS_TEXT_ENTERMISSIONPASSWORD"), LoadResStr("IDS_DLG_MISSIONACCESS"), C4GUI::Ico_Options,
 		new C4GUI::InputCallback<C4StartupScenSelDlg>(this, &C4StartupScenSelDlg::KeyCheat2),
 		false));
 	}

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005-2009  Günther Brammer
+ * Copyright (c) 2006, 2008  Armin Burgmeier
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,11 +30,14 @@
 #include "../../engine/inc/C4Version.h"
 
 #ifdef USE_X11
+#define BOOL _BOOL
 #include "../../engine/res/c4x.xpm"
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/xf86vmode.h>
+#include <GL/glx.h>
+#undef BOOL
 #endif
 
 #include <string>

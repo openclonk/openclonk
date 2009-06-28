@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2005  Sven Eberhardt
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -59,7 +61,7 @@ class C4VectorFont
 		~C4VectorFont(); // dtor - releases font and deletes temp file
 
 		bool Init(C4Group &hGrp, const char *szFilename, C4Config &rCfg); // load font from group
-		bool Init(const char *szFacename, int32_t iSize, uint32_t dwWeight, const char *szCharSet); // load system font specified by face name
+		bool Init(const char *szFacename, int32_t iSize, uint32_t dwWeight); // load system font specified by face name
 		void Init(const char *szName, CStdVectorFont *pFont); // init from a font that has been laoded already
 		friend class C4FontLoader;
 	};
@@ -86,12 +88,10 @@ class C4FontLoader
 		int32_t GetClosestAvailableSize(const char *szFontName, int32_t iWantedSize); // return possible font size that mathces the desired value closest
 		void AddVectorFont(C4VectorFont *pAddFont); // adds a new font to the list
 
-#ifdef C4ENGINE
 		bool InitFont(CStdFont &rFont, C4VectorFont * pFont, int32_t iSize, uint32_t dwWeight, bool fDoShadow);
 		// init a font class of the given type
 		// iSize is always the size of the normal font, which is adjusted for larger (title) and smaller (log) font types
 		bool InitFont(CStdFont &rFont, const char *szFontName, FontType eType, int32_t iSize, C4GroupSet *pGfxGroups, bool fDoShadow=true);
-#endif
 	};
 
 

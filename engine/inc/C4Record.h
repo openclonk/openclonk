@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
+ * Copyright (c) 2004-2006, 2008  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -263,9 +265,6 @@ class C4Record // demo recording
 		C4Record(const char *szPlaybackFile, const char *szRecordFile, const char *szTempRecFile); // start recording from replay into record
 		~C4Record(); // destructor; close file; create demo scen
 		int Index;
-#ifndef C4ENGINE
-		int iLastFrame; // some hack for the ctrlrec-t00l
-#endif
 
 		bool IsRecording() const { return fRecording; } // return whether Start() has been called
 		unsigned int GetStreamingPos() const { return iStreamingPos; }

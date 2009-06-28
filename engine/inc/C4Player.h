@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2004-2007  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -234,9 +236,7 @@ class C4Player: public C4PlayerInfoCore
 		void ClearGraphs();
 		void CountControl(ControlType eType, int32_t iID, int32_t iCntAdd=1);
 
-#ifdef C4ENGINE
 		class C4PlayerInfo *GetInfo(); // search info by ID
-#endif
 
 	private:
 		// messageboard-calls for this player

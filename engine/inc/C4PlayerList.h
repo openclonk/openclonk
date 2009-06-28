@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2006  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -88,5 +91,8 @@ class C4PlayerList
 
 			friend class C4Player;
 	};
+extern C4PlayerList Players;
 
+int32_t ValidPlr(int32_t plr);
+int32_t Hostile(int32_t plr1, int32_t plr2);
 #endif

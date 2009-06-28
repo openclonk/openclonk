@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2004  Matthes Bender
+ * Copyright (c) 2002-2004  Peter Wortmann
+ * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2005, 2007-2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -136,15 +140,12 @@ BOOL C4ComponentHost::Load(const char *szName,
 			sprintf(strEntryWithLanguage, strEntry, strCode);
 			if (hGroup.LoadEntryString(strEntryWithLanguage, Data))
 				{
-				if (pConfig->General.IsUTF8())
+				Data.EnsureUnicode();
+				// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
+				if (Data[0] == '\xEF' && Data[1] == '\xBB' && Data[2] == '\xBF')
 					{
-					Data.EnsureUnicode();
-					// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
-					if (Data[0] == '\xEF' && Data[1] == '\xBB' && Data[2] == '\xBF')
-						{
-						Data.Move(3,Data.getSize()-3);
-						Data.Shrink(3);
-						}
+					Data.Move(3,Data.getSize()-3);
+					Data.Shrink(3);
 					}
 				// Store actual filename
 				hGroup.FindEntry(strEntryWithLanguage, Filename);
@@ -185,7 +186,7 @@ BOOL C4ComponentHost::Load(const char *szName,
 			sprintf(strEntryWithLanguage, strEntry, strCode);
 			if (hGroupSet.LoadEntryString(strEntryWithLanguage, Data))
 				{
-				if (pConfig->General.IsUTF8()) Data.EnsureUnicode();
+				Data.EnsureUnicode();
 				// Store actual filename
 				C4Group *pGroup = hGroupSet.FindEntry(strEntryWithLanguage);
 				pGroup->FindEntry(strEntryWithLanguage, Filename);

@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001, 2005-2006  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2004-2006  Peter Wortmann
+ * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,10 +26,9 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Game.h>
-#ifdef C4ENGINE
+#include <C4GameObjects.h>
 #include <C4Object.h>
 #include <C4Log.h>
-#endif
 #endif
 
 const C4Value C4VNull = C4Value();
@@ -59,20 +62,18 @@ void C4Value::AddDataRef()
 	{
 		case C4V_pC4Value: Data.Ref->AddRef(this); break;
 		case C4V_Any: if (Data)	{ GuessType(); } break;
-#ifdef C4ENGINE
 		case C4V_Array: Data.Array = Data.Array->IncRef(); break;
 		case C4V_String: Data.Str->IncRef(); break;
 		case C4V_C4Object:
 		Data.Obj->AddRef(this);
 #ifdef _DEBUG
 		// check if the object actually exists
-		if(!Game.Objects.ObjectNumber(Data.Obj))
+		if(!::Objects.ObjectNumber(Data.Obj))
 			{ LogF("Warning: using wild object ptr %p!", Data.Obj); }
 		else if(!Data.Obj->Status)
 			{ LogF("Warning: using ptr on deleted object %p (%s)!", Data.Obj, Data.Obj->GetName()); }
 #endif
 		break;
-#endif
 		default: break;
 	}
 }
@@ -87,11 +88,9 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 		HasBaseArray = false;
 		Data.Ref->DelRef(this, pNextRef, pBaseArray);
 		break;
-#ifdef C4ENGINE
 		case C4V_C4Object: Data.Obj->DelRef(this, pNextRef); break;
 		case C4V_Array: Data.Array->DecRef(); break;
 		case C4V_String: Data.Str->DecRef(); break;
-#endif
 		default: break;
 	}
 }
@@ -148,7 +147,6 @@ void C4Value::Move(C4Value *nValue)
 	Set(0);
 }
 
-#ifdef C4ENGINE
 void C4Value::GetArrayElement(int32_t Index, C4Value & target, C4AulContext *pctx, bool noref)
 {
 	C4Value & Ref = GetRefVal();
@@ -193,7 +191,6 @@ void C4Value::SetArrayLength(int32_t size, C4AulContext *cthr)
 		throw new C4AulExecError(cthr->Obj, "SetLength: array expected");
 	Ref.Data.Array = Ref.Data.Array->SetLength(size);
 }
-#endif
 
 const C4Value & C4Value::GetRefVal() const
 {
@@ -238,12 +235,10 @@ void C4Value::DelRef(const C4Value *pRef, C4Value * pNextRef, C4ValueArray * pBa
 		}
 	}
 	// Was pRef the last ref to an array element?
-#ifdef C4ENGINE
 	if (pBaseArray && !FirstRef)
 	{
 		pBaseArray->DecElementRef();
 	}
-#endif
 }
 
 C4V_Type C4Value::GuessType()
@@ -257,9 +252,8 @@ C4V_Type C4Value::GuessType()
 	if (LooksLikeID(Data.Int) && Data.Int >= 10000)
 		return Type = C4V_C4ID;
 
-#ifdef C4ENGINE
 	// object?
-	if (Game.Objects.ObjectNumber(Data.Obj))
+	if (::Objects.ObjectNumber(Data.Obj))
 		{
 		Type = C4V_C4Object;
 		// With the type now known, the destructor will clean up the reference
@@ -269,14 +263,13 @@ C4V_Type C4Value::GuessType()
 		}
 
 	// string?
-	if (Game.ScriptEngine.Strings.FindString(Data.Str))
+	if (::ScriptEngine.Strings.FindString(Data.Str))
 		{
 		Type = C4V_String;
 		// see above
 		AddDataRef();
 		return Type;
 		}
-#endif
 
 	// must be int now
 	return Type = C4V_Int;
@@ -527,11 +520,10 @@ StdStrBuf C4Value::GetDataString()
 		return StdStrBuf(Data ? "true" : "false");
 	case C4V_C4ID:
 		return StdCopyStrBuf(C4IdText(Data.Int));
-#ifdef C4ENGINE
 	case C4V_C4Object:
 		{
 		// obj exists?
-		if(!Game.Objects.ObjectNumber(Data.Obj) && !Game.Objects.InactiveObjects.ObjectNumber(Data.Obj))
+		if(!::Objects.ObjectNumber(Data.Obj) && !::Objects.InactiveObjects.ObjectNumber(Data.Obj))
 			return FormatString("%ld", Data.Int);
 		else
 			if (Data.Obj)
@@ -556,7 +548,6 @@ StdStrBuf C4Value::GetDataString()
 			DataString.AppendChar(']');
 			return DataString;
 		}
-#endif // C4ENGINE
 	default:
 		return StdStrBuf("-unknown type- ");
 	}
@@ -564,29 +555,20 @@ StdStrBuf C4Value::GetDataString()
 
 C4Value C4VString(const char *strString)
 {
-#ifdef C4ENGINE
 	// safety
 	if(!strString) return C4Value();
-	return C4Value(Game.ScriptEngine.Strings.RegString(strString));
-#else
-	return C4Value();
-#endif
+	return C4Value(::ScriptEngine.Strings.RegString(strString));
 }
 
 C4Value C4VString(StdStrBuf Str)
 {
-#ifdef C4ENGINE
 	// safety
 	if(Str.isNull()) return C4Value();
-	return C4Value(Game.ScriptEngine.Strings.RegString(Str));
-#else
-	return C4Value();
-#endif
+	return C4Value(::ScriptEngine.Strings.RegString(Str));
 }
 
 void C4Value::DenumeratePointer()
 {
-#ifdef C4ENGINE
 	// array?
 	if (Type == C4V_Array)
 	{
@@ -599,9 +581,9 @@ void C4Value::DenumeratePointer()
 	if(Type != C4V_C4ObjectEnum && !Inside(Data.Int, C4EnumPointer1, C4EnumPointer2)) return;
 	// get obj id, search object
 	int iObjID = (Data.Int >= C4EnumPointer1 ? Data.Int - C4EnumPointer1 : Data.Int);
-	C4Object *pObj = Game.Objects.ObjectPointer(iObjID);
+	C4Object *pObj = ::Objects.ObjectPointer(iObjID);
 	if (!pObj)
-		pObj = Game.Objects.InactiveObjects.ObjectPointer(iObjID);
+		pObj = ::Objects.InactiveObjects.ObjectPointer(iObjID);
 	if(pObj)
 		// set
 		SetObject(pObj);
@@ -616,7 +598,6 @@ void C4Value::DenumeratePointer()
 		else
 			Set(0);
 	}
-#endif
 }
 
 void C4Value::CompileFunc(StdCompiler *pComp)
@@ -655,7 +636,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 			int32_t iTmp;
 			pComp->Value(iTmp);
 			// search
-			C4String *pString = Game.ScriptEngine.Strings.FindString(iTmp);
+			C4String *pString = ::ScriptEngine.Strings.FindString(iTmp);
 			if(pString)
 				{
 				Data.Str = pString;
@@ -687,12 +668,8 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 
 	// object: save object number instead
 	case C4V_C4Object:
-#ifdef C4ENGINE
 		if(!fCompiler)
-			iTmp = Game.Objects.ObjectNumber(getObj());
-#else
-		if(!fCompiler) iTmp = 0;
-#endif
+			iTmp = ::Objects.ObjectNumber(getObj());
 	case C4V_C4ObjectEnum:
 		if(!fCompiler) if (Type == C4V_C4ObjectEnum)
 			iTmp = Data.Int;
@@ -705,7 +682,6 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		break;
 
 	// string: save string number
-#ifdef C4ENGINE
 	case C4V_String:
 		{
 		// search
@@ -714,7 +690,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		pComp->Value(s);
 		if(fCompiler)
 			{
-			C4String *pString = Game.ScriptEngine.Strings.RegString(s);
+			C4String *pString = ::ScriptEngine.Strings.RegString(s);
 			if(pString)
 				{
 				Data.Str = pString;
@@ -736,7 +712,6 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	// shouldn't happen
 	case C4V_pC4Value:
 
-#endif //C4ENGINE
 
 	default:
 		assert(false);

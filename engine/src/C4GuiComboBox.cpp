@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2008  Sven Eberhardt
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,7 +23,6 @@
 #include <C4Include.h>
 #include <C4Gui.h>
 #include <C4FacetEx.h>
-#include <C4Wrappers.h>
 #include <C4MouseControl.h>
 
 #include <StdWindow.h>

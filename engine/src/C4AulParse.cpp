@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2004, 2006-2008  Sven Eberhardt
+ * Copyright (c) 2001-2004, 2006-2008  Peter Wortmann
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,7 +27,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Def.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #endif
 
 #define DEBUG_BYTECODE_DUMP 0
@@ -206,7 +211,7 @@ void C4AulScript::Warn(const char *pMsg, const char *pIdtf)
 	// display it
 	warning.show();
 	// count warnings
-	++Game.ScriptEngine.warnCnt;
+	++::ScriptEngine.warnCnt;
 	}
 
 void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
@@ -215,7 +220,7 @@ void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 	if (Fn && !Fn->Owner->Def && Fn->Owner->Appends) return;
 	// script doesn't own function -> skip
 	// (exception: global functions)
-	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&Game.ScriptEngine) return;
+	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&::ScriptEngine) return;
 	// display error
 
 	C4AulParseError warning(this, pMsg, pIdtf, TRUE);
@@ -224,7 +229,7 @@ void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 	if (Fn && Fn->pOrgScript != a)
 		DebugLogF("  (as #appendto/#include to %s)", Fn->Owner->ScriptName.getData());
 	// count warnings
-	++Game.ScriptEngine.warnCnt;
+	++::ScriptEngine.warnCnt;
 	}
 
 void C4AulParseState::StrictError(const char *pMsg, const char *pIdtf)
@@ -1885,7 +1890,7 @@ void C4AulParseState::Parse_Statement()
 			else if(a->LocalNamed.GetItemNr(Idtf) != -1)
 				{
 				// global func?
-				if(Fn->Owner == &Game.ScriptEngine)
+				if(Fn->Owner == &::ScriptEngine)
 					throw new C4AulParseError(this, "using local variable in global function!");
 				// insert variable by id
 				Parse_Expression();
@@ -2091,7 +2096,7 @@ void C4AulParseState::Parse_Statement()
 					FoundFn = Fn->OwnerOverloaded;
 				else
 					// get regular function
-					if(Fn->Owner == &Game.ScriptEngine)
+					if(Fn->Owner == &::ScriptEngine)
 						FoundFn = a->Owner->GetFuncRecursive(Idtf);
 					else
 						FoundFn = a->GetFuncRecursive(Idtf);
@@ -2519,7 +2524,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			else if(a->LocalNamed.GetItemNr(Idtf) != -1)
 				{
 				// global func?
-				if(Fn->Owner == &Game.ScriptEngine)
+				if(Fn->Owner == &::ScriptEngine)
 					throw new C4AulParseError(this, "using local variable in global function!");
 				// insert variable by id
 				AddBCC(AB_LOCALN_R, a->LocalNamed.GetItemNr(Idtf));
@@ -2603,7 +2608,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 				{
 				C4AulFunc *FoundFn;
 				// get regular function
-				if(Fn->Owner == &Game.ScriptEngine)
+				if(Fn->Owner == &::ScriptEngine)
 					FoundFn = Fn->Owner->GetFuncRecursive(Idtf);
 				else
 					FoundFn = a->GetFuncRecursive(Idtf);
@@ -2904,7 +2909,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 				}
 			if (Type == PARSER)
 				{
-				pName = Game.ScriptEngine.Strings.RegString(Idtf);
+				pName = ::ScriptEngine.Strings.RegString(Idtf);
 				}
 			// add call chunk
 			Shift();
@@ -3159,7 +3164,7 @@ BOOL C4AulScript::Parse()
 					if (Fn->pOrgScript != this)
 						DebugLogF("  (as #appendto/#include to %s)", Fn->Owner->ScriptName.getData());
 					// and count (visible only ;) )
-					++Game.ScriptEngine.errCnt;
+					++::ScriptEngine.errCnt;
 				}
 				delete err;
 				// make all jumps that don't have their destination yet jump here

@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2007, 2009  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -54,13 +56,6 @@ char strExecuteAtEnd[_MAX_PATH + 1] = "";
 
 int iResult = 0;
 
-C4ConfigShareware Config;
-C4Config *GetCfg() {
-  return &Config;
-}
-
-CDDrawCfg DDrawCfg;             // to satisfy the linker
-
 bool Log(const char *msg) {
   if (!fQuiet)
     printf("%s\n", msg);
@@ -74,6 +69,13 @@ BOOL LogF(const char *strMessage, ...) {
   Buf.FormatV(strMessage, args);
   // Log
   return Log(Buf.getData());
+}
+BOOL DebugLogF(const char *strMessage ...)
+{
+	va_list args; va_start(args, strMessage);
+	StdStrBuf Buf;
+	Buf.FormatV(strMessage, args);
+	return Log(Buf.getData());
 }
 
 bool ProcessGroup(const char *FilenamePar) {
@@ -93,11 +95,10 @@ bool ProcessGroup(const char *FilenamePar) {
   LogF("Group: %s", szFilename);
 
   // Open group file
-  if (hGroup.Open(szFilename, TRUE && Config.Registered())) {
+  if (hGroup.Open(szFilename, TRUE)) {
     // No commands: display contents
     if (iFirstCommand >= argc) {
       hGroup.SetStdOutput(true);
-			if (Config.Registered())
 				hGroup.View("*");
       hGroup.SetStdOutput(!fQuiet);
     }
@@ -106,12 +107,6 @@ bool ProcessGroup(const char *FilenamePar) {
       for (int iArg = iFirstCommand; iArg < argc; ++iArg) {
         // This argument is a command
         if (argv[iArg][0] == '-') {
-					// Block unregistered commands
-					if (!Config.Registered() && (SCharPos(argv[iArg][1], "y") < 0))
-					{
-						printf("Command -%c not allowed in unregistered version: %s\n", argv[iArg][1], Config.GetRegistrationError());
-						continue;
-					}
 					// Handle commands
           switch (argv[iArg][1]) {
             // Add
@@ -454,12 +449,12 @@ int main(int argc, char *argv[]) {
   LogF("RedWolf Design C4Group %s", C4VERSION);
 
   // Registration check
-  Config.Init();
-  Config.Load(FALSE);
+/*  Config.Init();
+  Config.Load(FALSE);*/
 
   // Init C4Group
-  C4Group_SetMaker(Config.General.Name);
-  C4Group_SetTempPath(Config.General.TempPath);
+/*  C4Group_SetMaker(Config.General.Name);
+  C4Group_SetTempPath(Config.General.TempPath);*/
   C4Group_SetSortList(C4CFN_FLS);
 
   // Store command line parameters

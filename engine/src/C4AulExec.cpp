@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2005-2007  Peter Wortmann
+ * Copyright (c) 2006-2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,8 +25,9 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Config.h>
+#include <C4GameMessage.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #endif
 
 C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
@@ -34,16 +38,14 @@ C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
 
 void C4AulExecError::show()
 	{
-#ifdef C4ENGINE
 	// log
 	C4AulError::show();
 	// debug mode object message
 	if (Game.DebugMode)
 		if (cObj)
-			Game.Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
+			::Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
 		else
-			Game.Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
-#endif
+			::Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
 	}
 
 const int MAX_CONTEXT_STACK = 512;
@@ -372,10 +374,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 
 				case AB_GLOBALN_R:
-					PushValueRef(*Game.ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
+					PushValueRef(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
 					break;
 				case AB_GLOBALN_V:
-					PushValue(*Game.ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
+					PushValue(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
 					break;
 			// prefix
 				case AB_Inc1:	// ++
@@ -1255,24 +1257,17 @@ C4Value C4AulFunc::Exec(C4Object *pObj, C4AulParSet* pPars, bool fPassErrors)
 
 C4Value C4AulScriptFunc::Exec(C4AulContext *pCtx, C4Value pPars[], bool fPassErrors)
 	{
-#ifdef C4ENGINE
 	// handle easiest case first
 	if (Owner->State != ASS_PARSED) return C4VNull;
 
 	// execute
 	return AulExec.Exec(this, pCtx->Obj, pPars, fPassErrors);
 
-#else
-
-	return C4AulNull;
-
-#endif
 	}
 
 
 C4Value C4AulScriptFunc::Exec(C4Object *pObj, C4AulParSet *pPars, bool fPassErrors)
 	{
-#ifdef C4ENGINE
 
 	// handle easiest case first
 	if (Owner->State != ASS_PARSED) return C4VNull;
@@ -1280,11 +1275,6 @@ C4Value C4AulScriptFunc::Exec(C4Object *pObj, C4AulParSet *pPars, bool fPassErro
 	// execute
 	return AulExec.Exec(this, pObj, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
 
-#else
-
-	return C4AulNull;
-
-#endif
 	}
 
 

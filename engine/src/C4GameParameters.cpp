@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2006-2007, 2009  Sven Eberhardt
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006-2007  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,8 +24,9 @@
 #ifndef BIG_C4INCLUDE
 #include "C4Log.h"
 #include "C4Components.h"
-#include "C4Game.h"
-#include "C4Wrappers.h"
+#include <C4Game.h>
+#include <C4GameObjects.h>
+#include <C4Network2.h>
 #endif
 
 // *** C4GameRes
@@ -286,7 +291,7 @@ bool C4GameResList::RetrieveFiles()
 		{
 		const C4Network2ResCore &Core = *pResList[i]->getResCore();
 		StdStrBuf ResNameBuf = FormatString("%s: %s", LoadResStr("IDS_DLG_DEFINITION"), GetFilename(Core.getFileName()));
-		if (!Game.Network.RetrieveRes(Core, C4NetResRetrieveTimeout, ResNameBuf.getData()))
+		if (!::Network.RetrieveRes(Core, C4NetResRetrieveTimeout, ResNameBuf.getData()))
 			return false;
 		}
 	return true;

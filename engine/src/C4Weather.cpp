@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2002, 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2004-2005, 2007  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +27,8 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Random.h>
-#include <C4Wrappers.h>
+#include <C4GraphicsSystem.h>
+#include <C4Game.h>
 #endif
 
 C4Weather::C4Weather()
@@ -75,7 +80,7 @@ void C4Weather::Init(BOOL fScenario)
 void C4Weather::Execute()
   {
   // Season
-  if (!Tick35)
+  if (!::Game.iTick35)
     {
     SeasonDelay+=YearSpeed;
     if (SeasonDelay>=200)
@@ -88,23 +93,23 @@ void C4Weather::Execute()
       }
     }
   // Temperature
-  if (!Tick35)
+  if (!::Game.iTick35)
 		{
     int32_t iTemperature=Climate-(int32_t)(TemperatureRange*cos(6.28*(float)Season/100.0));
 		if (Temperature<iTemperature) Temperature++;
 		else if (Temperature>iTemperature) Temperature--;
 		}
   // Wind
-  if (!Tick1000)
+  if (!::Game.iTick1000)
     TargetWind=Game.C4S.Weather.Wind.Evaluate();
-  if (!Tick10)
+  if (!::Game.iTick10)
     Wind=BoundBy<int32_t>(Wind+Sign(TargetWind-Wind),
                  Game.C4S.Weather.Wind.Min,
                  Game.C4S.Weather.Wind.Max);
-  if (!Tick10)
+  if (!::Game.iTick10)
     SoundLevel("Wind",NULL,Max(Abs(Wind)-30,0)*2);
   // Disaster launch
-  if (!Tick10)
+  if (!::Game.iTick10)
     {
 		// Meteorite
     if (!Random(60))
@@ -114,9 +119,9 @@ void C4Weather::Execute()
 			// In cave landscapes, meteors must be created a bit lower so they don't hit the ceiling
 			// (who activates meteors in cave landscapes anyway?)
       meto=Game.CreateObject(C4ID_Meteor, NULL, NO_OWNER,
-												Random(GBackWdt),Game.Landscape.TopOpen ? -20 : 5,0,
+												Random(GBackWdt),::Landscape.TopOpen ? -20 : 5,0,
                         itofix(Random(100+1)-50)/10,
-                        Game.Landscape.TopOpen ? Fix0 : itofix(2), itofix(1)/5);
+                        ::Landscape.TopOpen ? Fix0 : itofix(2), itofix(1)/5);
       }
 		// Lightning
 		if (!Random(35))
@@ -130,7 +135,7 @@ void C4Weather::Execute()
 		// Volcano
 		if (!Random(60))
 			if (Random(100)<VolcanoLevel)
-				LaunchVolcano(Game.Material.Get("Lava"),
+				LaunchVolcano(::MaterialMap.Get("Lava"),
 											Random(GBackWdt),GBackHgt-1,
 											BoundBy(15*GBackHgt/500+Random(10),10,60));
     }
@@ -195,10 +200,10 @@ BOOL C4Weather::LaunchEarthquake(int32_t iX, int32_t iY)
 
 BOOL C4Weather::LaunchCloud(int32_t iX, int32_t iY, int32_t iWidth, int32_t iStrength, const char *szPrecipitation)
 	{
-	if (Game.Material.Get(szPrecipitation)==MNone) return FALSE;
+	if (::MaterialMap.Get(szPrecipitation)==MNone) return FALSE;
 	C4Object *pObj;
 	if (pObj=Game.CreateObject(C4Id("FXP1"),NULL,NO_OWNER,iX,iY))
-		if (!!pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(Game.Material.Get(szPrecipitation)),
+		if (!!pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(::MaterialMap.Get(szPrecipitation)),
 																						   C4VInt(iWidth),
 																						   C4VInt(iStrength))))
 			return TRUE;
@@ -271,7 +276,7 @@ void C4Weather::SetSeasonGamma()
 			dwClr[i] |= BoundBy<int32_t>(iChanVal,0,255)<<iChan;
 			}
 	// apply gamma ramp
-	Game.GraphicsSystem.SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
+	::GraphicsSystem.SetGamma(dwClr[0], dwClr[1], dwClr[2], C4GRI_SEASON);
 	}
 
 void C4Weather::CompileFunc(StdCompiler *pComp)
@@ -296,5 +301,7 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 		dwGammaDefaults[i*3+1] = 0x808080;
 		dwGammaDefaults[i*3+2] = 0xffffff;
 		}
-	pComp->Value(mkNamingAdapt(mkArrayAdaptM(Game.GraphicsSystem.dwGamma), "Gamma", dwGammaDefaults));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptM(::GraphicsSystem.dwGamma), "Gamma", dwGammaDefaults));
   }
+
+C4Weather Weather;

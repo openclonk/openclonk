@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2002, 2004-2006, 2008  Sven Eberhardt
+ * Copyright (c) 2002-2004  Peter Wortmann
+ * Copyright (c) 2006, 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +27,8 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Physics.h>
 #include <C4SolidMask.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #endif
 
 /* Some physical constants */
@@ -210,7 +215,7 @@ void C4Object::DoMovement()
 			if (Def->ActMap[Action.Act].DigFree==1)
 				{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
-				Game.Landscape.DigFreeRect(ctcox+Shape.GetX(),ctcoy+Shape.GetY(),Shape.Wdt,Shape.Hgt,Action.Data,this);
+				::Landscape.DigFreeRect(ctcox+Shape.GetX(),ctcoy+Shape.GetY(),Shape.Wdt,Shape.Hgt,Action.Data,this);
 				}
 			// Free size round (variable size)
 			else
@@ -218,7 +223,7 @@ void C4Object::DoMovement()
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
 				int32_t rad = Def->ActMap[Action.Act].DigFree;
 				if (Con<FullCon) rad = rad*6*Con/5/FullCon;
-				Game.Landscape.DigFree(ctcox,ctcoy-1,rad,Action.Data,this);
+				::Landscape.DigFree(ctcox,ctcoy-1,rad,Action.Data,this);
 				}
 			}
 
@@ -524,7 +529,7 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
     // Check for stabilization
     Stabilize();
     // Check for mobilization
-    if (!Tick10)
+    if (!::Game.iTick10)
       {
       // Gravity mobilization
       xdir=ydir=rdir=0;

@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2005, 2008  Matthes Bender
+ * Copyright (c) 2001-2008  Sven Eberhardt
+ * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2002, 2004, 2006  Peter Wortmann
+ * Copyright (c) 2004-2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,10 +31,13 @@
 #include <C4ObjectCom.h>
 #include <C4ObjectInfo.h>
 #include <C4Random.h>
-#include <C4Game.h>
+#include <C4GameMessage.h>
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 const int32_t MoveToRange=5,LetGoRange1=7,LetGoRange2=30,DigRange=1;
@@ -249,7 +258,7 @@ void C4Command::MoveTo()
 					PathChecked=TRUE;
 				}
 	// Path recheck
-	if (!Tick35) PathChecked=FALSE;
+	if (!::Game.iTick35) PathChecked=FALSE;
 
 	// Pushing grab only or not desired: let go (pulling, too?)
   if (cObj->GetProcedure()==DFA_PUSH)
@@ -353,7 +362,7 @@ void C4Command::MoveTo()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_SWIM:
       // Head to target
-      if (Tick2)
+      if (::Game.iTick2)
         { if (cx<Tx._getInt()-iTargetRange) cObj->Action.ComDir=COMD_Right;
           if (cx>Tx._getInt()+iTargetRange) cObj->Action.ComDir=COMD_Left;  }
       else
@@ -1623,7 +1632,7 @@ void C4Command::Construct()
 	C4Def *pDef; if (!(pDef=C4Id2Def(Data))) { Finish(); return; }
 
 	// player has knowledge of this construction?
-	C4Player *pPlayer = Game.Players.Get(cObj->Owner);
+	C4Player *pPlayer = ::Players.Get(cObj->Owner);
 	if(pPlayer) if(!pPlayer->Knowledge.GetIDCount(Data, 1)) { Finish(); return; }
 
   // Building, chopping, digging: stop
@@ -1814,7 +1823,7 @@ void C4Command::Transfer()
 		}
 
 	// Call target transfer script
-	if (!Tick5)
+	if (!::Game.iTick5)
 		{
 
 		C4AulScriptFunc *f;
@@ -1899,13 +1908,13 @@ void C4Command::Buy()
 	C4Def *pDef = C4Id2Def(Data);
 	if (!pDef) { Finish(); return; }
 	// Material not available for purchase at base: fail
-	if (!Game.Players.Get(Target->Base)->HomeBaseMaterial.GetIDCount(Data))
+	if (!::Players.Get(Target->Base)->HomeBaseMaterial.GetIDCount(Data))
 		{
 		Finish(false, FormatString(LoadResStr("IDS_PLR_NOTAVAIL"),pDef->GetName()).getData());
 		return;
 		}
 	// Base owner has not enough funds: fail
-	if (Game.Players.Get(Target->Base)->Wealth < pDef->GetValue(Target, cObj->Owner))
+	if (::Players.Get(Target->Base)->Wealth < pDef->GetValue(Target, cObj->Owner))
 		{ Finish(false, LoadResStr("IDS_PLR_NOWEALTH")); return; }
 	// Not within target object: enter
 	if (cObj->Contained!=Target)
@@ -2086,7 +2095,7 @@ void C4Command::Fail(const char *szFailMessage)
 				if (szFailMessage) break;
 				// Fail message with name of target type
 				SCopy(LoadResStr(CommandNameID(Command)), szCommandName);
-				C4Def *pDef; pDef = Game.Defs.ID2Def(Data);
+				C4Def *pDef; pDef = ::Definitions.ID2Def(Data);
 				SCopy(pDef ? pDef->GetName() : LoadResStr("IDS_OBJ_UNKNOWN"), szObjectName);
 				str.Format(LoadResStr("IDS_CON_FAILUREOF"), szCommandName, szObjectName);
 				break;
@@ -2103,7 +2112,7 @@ void C4Command::Fail(const char *szFailMessage)
 			// Message (if not empty)
 			if (!!str)
 				{
-				Game.Messages.Append(C4GM_Target, str.getData(), l_Obj, NO_OWNER, 0, 0, FWhite, TRUE);
+				::Messages.Append(C4GM_Target, str.getData(), l_Obj, NO_OWNER, 0, 0, FWhite, TRUE);
 				}
 			// Fail sound
 			StartSoundEffect("CommandFailure*",false,100,l_Obj);
@@ -2292,21 +2301,21 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 		if(TextBuf == "0")
 			{ Text = NULL; }
 		else
-			{ Text = Game.ScriptEngine.Strings.RegString(TextBuf); Text->IncRef(); }
+			{ Text = ::ScriptEngine.Strings.RegString(TextBuf); Text->IncRef(); }
 		}
   }
 
 void C4Command::DenumeratePointers()
 	{
-	Target = Game.Objects.ObjectPointer((long)Target);
-	Target2 = Game.Objects.ObjectPointer((long)Target2);
+	Target = ::Objects.ObjectPointer((long)Target);
+	Target2 = ::Objects.ObjectPointer((long)Target2);
 	Tx.DenumeratePointer();
 	}
 
 void C4Command::EnumeratePointers()
 	{
-	Target = (C4Object*) Game.Objects.ObjectNumber(Target);
-	Target2 = (C4Object*) Game.Objects.ObjectNumber(Target2);
+	Target = (C4Object*) ::Objects.ObjectNumber(Target);
+	Target2 = (C4Object*) ::Objects.ObjectNumber(Target2);
 	}
 
 int32_t C4Command::CallFailed()

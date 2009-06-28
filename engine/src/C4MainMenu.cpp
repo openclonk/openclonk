@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2008  Sven Eberhardt
+ * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2008  Günther Brammer
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,10 +25,16 @@
 #ifndef BIG_C4INCLUDE
 #include <C4FullScreen.h>
 #include <C4Viewport.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4GameOverDlg.h>
 #include <C4Object.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
+#include <C4Network2.h>
+#include <C4GameControl.h>
 #endif
 
 // -----------------------------------------------------------
@@ -61,7 +70,7 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 	// league or replay game
 	if (Game.Parameters.isLeague() || Game.C4S.Head.Replay) return false;
 	// Max player limit
-	if (Game.Players.GetCount() >= Game.Parameters.MaxPlayers) return false;
+	if (::Players.GetCount() >= Game.Parameters.MaxPlayers) return false;
 
 	// Menu symbol/init
 	if (GfxR->fctPlayerClr.Surface)
@@ -73,7 +82,7 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 			char szFilename[_MAX_PATH+1], szCommand[_MAX_PATH+30+1];
 			SCopy(*iter, szFilename, _MAX_PATH);
 			if (DirectoryExists(szFilename)) continue;
-			if (Game.Players.FileInUse(szFilename)) continue;
+			if (::Players.FileInUse(szFilename)) continue;
 			// Open group
 			C4Group hGroup;
 			if (!hGroup.Open(szFilename)) continue;
@@ -137,10 +146,10 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 			// Clear items
 			ClearItems();
 			// Refill player
-			if (!(pPlayer = Game.Players.Get(Player))) return false;
+			if (!(pPlayer = ::Players.Get(Player))) return false;
 			// Refill items
 			C4Player *pPlr; int32_t iIndex;
-			for (iIndex=0; pPlr = Game.Players.GetByIndex(iIndex); iIndex++)
+			for (iIndex=0; pPlr = ::Players.GetByIndex(iIndex); iIndex++)
 				// Ignore player self and invisible
 				if (pPlr != pPlayer) if (!pPlr->IsInvisible())
 					{
@@ -210,7 +219,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 				if (!fHasIcon)
 					{
 					if (pTeam && pTeam->GetPlayerCount())
-						Game.GraphicsResource.fctCrewClr.DrawClr(fctSymbol, TRUE, pTeam->GetColor());
+						::GraphicsResource.fctCrewClr.DrawClr(fctSymbol, TRUE, pTeam->GetColor());
 					else
 						C4GUI::Icon::GetIconFacet(C4GUI::Ico_Team).Draw(fctSymbol, TRUE);
 					}
@@ -234,21 +243,21 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 			// Clear items
 			ClearItems();
 			// Check validity
-			C4Viewport *pVP = Game.GraphicsSystem.GetViewport(NO_OWNER);
+			C4Viewport *pVP = ::GraphicsSystem.GetViewport(NO_OWNER);
 			if (!pVP) return false;
 			int32_t iInitialSelection = 0;
 			// Add free view
 			AddRefSym(LoadResStr("IDS_MSG_FREEVIEW"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Star), "Observe:Free", C4MN_Item_NoCount, NULL, LoadResStr("IDS_MSG_FREELYSCROLLAROUNDTHEMAP"));
 			// Add players
 			C4Player *pPlr; int32_t iIndex;
-			for (iIndex=0; pPlr = Game.Players.GetByIndex(iIndex); iIndex++)
+			for (iIndex=0; pPlr = ::Players.GetByIndex(iIndex); iIndex++)
 				{
 				// Ignore invisible
 				if (!pPlr->IsInvisible())
 					{
 					// Symbol
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-					Game.GraphicsResource.fctPlayerClr.DrawClr(fctSymbol, TRUE, pPlr->ColorDw);
+					::GraphicsResource.fctPlayerClr.DrawClr(fctSymbol, TRUE, pPlr->ColorDw);
 					// Message
 					StdStrBuf sMsg;
 					DWORD dwClr = pPlr->ColorDw;
@@ -327,7 +336,7 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 		InitRefSym(GfxR->fctMenu.GetPhase(4),LoadResStr("IDS_MENU_CPGOALS"),iPlayer);
 		SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
 		SetPermanent(false);
-		fctGF.Set(NULL, C4SymbolSize-Game.GraphicsResource.fctCaptain.Wdt-2, 2, Game.GraphicsResource.fctCaptain.Wdt, Game.GraphicsResource.fctCaptain.Hgt);
+		fctGF.Set(NULL, C4SymbolSize-::GraphicsResource.fctCaptain.Wdt-2, 2, ::GraphicsResource.fctCaptain.Wdt, ::GraphicsResource.fctCaptain.Hgt);
 		}
 	// determine if the goals are fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 	C4IDList GoalList, FulfilledGoalList;
@@ -350,7 +359,7 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 					if (FulfilledGoalList.GetIDCount(idGoal))
 						{
 						fctGF.Surface=fctSymbol.Surface;
-						Game.GraphicsResource.fctCaptain.Draw(fctGF);
+						::GraphicsResource.fctCaptain.Draw(fctGF);
 						}
 					StdStrBuf Command; Command.Format("Player:Goal:%s", C4IdText(idGoal));
 					Add(pDef->GetName(),fctSymbol,Command.getData(),C4MN_Item_NoCount,NULL,pDef->GetDesc());
@@ -372,7 +381,7 @@ bool C4MainMenu::ActivateRules(int32_t iPlayer)
 	SetPermanent(false);
 	// Items
 	int32_t cnt; C4ID idGoal; C4Def *pDef;
-	for (cnt=0; idGoal=Game.Objects.ObjectsInt().GetListID(C4D_Rule,cnt); cnt++)
+	for (cnt=0; idGoal=::Objects.ObjectsInt().GetListID(C4D_Rule,cnt); cnt++)
 		if (pDef=C4Id2Def(idGoal))
 			{
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize); pDef->Draw(fctSymbol);
@@ -488,7 +497,7 @@ bool C4MainMenu::ActivateHost(int32_t iPlayer)
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);
 	SetPermanent(true);
 	// Clients
-	for (C4Network2Client *pClient=Game.Network.Clients.GetNextClient(NULL); pClient; pClient=Game.Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 		{
 		bool fHost = (pClient->getID() == 0);
 		StdStrBuf strText, strCommand;
@@ -540,13 +549,13 @@ bool C4MainMenu::ActivateOptions(int32_t iPlayer, int32_t selection)
 	// Music
 	AddRefSym(LoadResStr("IDS_MNU_MUSIC"), GfxR->fctOptions.GetPhase(1 + Config.Sound.RXMusic),"Options:Music",C4MN_Item_NoCount);
 	// Mouse control
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	if (pPlr && !Game.C4S.Head.DisableMouse)
 		{
 		if (pPlr->MouseControl)
 			AddRefSym(LoadResStr("IDS_MNU_MOUSECONTROL"), GfxR->fctOptions.GetPhase(11 + 1), "Options:Mouse");
 		else
-			if (!Game.Players.MouseControlTaken())
+			if (!::Players.MouseControlTaken())
 				AddRefSym(LoadResStr("IDS_MNU_MOUSECONTROL"), GfxR->fctOptions.GetPhase(11), "Options:Mouse");
 		}
 	// Music
@@ -597,7 +606,7 @@ bool C4MainMenu::ActivateDisplay(int32_t iPlayer, int32_t selection)
 bool C4MainMenu::ActivateMain(int32_t iPlayer)
 	{
 	// Determine player
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	// Menu symbol/init
 	C4FacetSurface fctSymbol;
 	fctSymbol.Create(C4SymbolSize, C4SymbolSize);
@@ -621,7 +630,7 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 		AddRefSym(LoadResStr("IDS_TEXT_VIEW"),C4GUI::Icon::GetIconFacet(C4GUI::Ico_View),"ActivateMenu:Observer",C4MN_Item_NoCount,NULL,LoadResStr("IDS_TEXT_DETERMINEPLAYERVIEWTOFOLL"));
 		}
 	// Hostility (player menu only)
-	if (pPlr && (Game.Players.GetCount() > 1))
+	if (pPlr && (::Players.GetCount() > 1))
 		{
 		GfxR->fctFlagClr.Surface->SetClr(0xff0000);
 		AddRefSym(LoadResStr("IDS_MENU_CPATTACK"),GfxR->fctMenu.GetPhase(7),"ActivateMenu:Hostility",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPATTACKINFO"));
@@ -633,25 +642,25 @@ bool C4MainMenu::ActivateMain(int32_t iPlayer)
 		AddRefSym(LoadResStr("IDS_MSG_SELTEAM"),fctTeams,"ActivateMenu:TeamSel",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MSG_ALLOWSYOUTOJOINADIFFERENT"));
 		}
 	// Player join
-	if ((Game.Players.GetCount() < Game.Parameters.MaxPlayers) && !Game.Parameters.isLeague())
+	if ((::Players.GetCount() < Game.Parameters.MaxPlayers) && !Game.Parameters.isLeague())
 		{
 		AddRefSym(LoadResStr("IDS_MENU_CPNEWPLAYER"),GfxR->fctPlayerClr.GetPhase(),"ActivateMenu:NewPlayer",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPNEWPLAYERINFO"));
 		}
 	// Save game (player menu only - should we allow saving games with no players in it?)
-	if (pPlr && (!Game.Network.isEnabled() || Game.Network.isHost()))
+	if (pPlr && (!::Network.isEnabled() || ::Network.isHost()))
 		{
 		AddRefSym(LoadResStr("IDS_MENU_CPSAVEGAME"),GfxR->fctMenu.GetPhase(0),"ActivateMenu:Save:Game",C4MN_Item_NoCount,NULL,LoadResStr("IDS_MENU_CPSAVEGAMEINFO"));
 		}
 	// Options
 	AddRefSym(LoadResStr("IDS_MNU_OPTIONS"), GfxR->fctOptions.GetPhase(0), "ActivateMenu:Options",C4MN_Item_NoCount, NULL, LoadResStr("IDS_MNU_OPTIONSINFO"));
 	// Disconnect
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 	{
 		// Host
-		if(Game.Network.isHost() && Game.Clients.getClient(NULL))
+		if(::Network.isHost() && Game.Clients.getClient(NULL))
 			AddRefSym(LoadResStr("IDS_MENU_DISCONNECT"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Disconnect), "ActivateMenu:Host", C4MN_Item_NoCount, NULL, LoadResStr("IDS_TEXT_KICKCERTAINCLIENTSFROMTHE"));
 		// Client
-		if (!Game.Network.isHost())
+		if (!::Network.isHost())
 			AddRefSym(LoadResStr("IDS_MENU_DISCONNECT"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Disconnect), "ActivateMenu:Client", C4MN_Item_NoCount, NULL, LoadResStr("IDS_TEXT_DISCONNECTTHEGAMEFROMTHES"));
 	}
 	// Surrender (player menu only)
@@ -684,7 +693,7 @@ bool C4MainMenu::ActivateHostility(int32_t iPlayer)
 bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	{
 	// Determine player
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 	// Activate
 	if (SEqual2(szCommand,"ActivateMenu:"))
 		{
@@ -694,7 +703,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		if (SEqual(szCommand+13,"NewPlayer")) return ActivateNewPlayer(Player);
 		if (SEqual(szCommand+13,"Goals"))
 			{
-			Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("ActivateGameGoalMenu(%d)", Player).getData()), CDT_Queue);
+			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("ActivateGameGoalMenu(%d)", Player).getData()), CDT_Queue);
 			return true;
 			}
 		if (SEqual(szCommand+13,"Rules")) return ActivateRules(Player);
@@ -713,11 +722,11 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// not in league or replay mode
 		if (Game.Parameters.isLeague() || Game.C4S.Head.Replay) return false;
 		// join player
-		if (Game.Network.isEnabled())
+		if (::Network.isEnabled())
 			// 2do: not for observers and such?
-			Game.Network.Players.JoinLocalPlayer(szCommand+11, true);
+			::Network.Players.JoinLocalPlayer(szCommand+11, true);
 		else
-			Game.Players.CtrlJoinLocalNoNetwork(szCommand+11, Game.Clients.getLocalID(), Game.Clients.getLocalName());
+			::Players.CtrlJoinLocalNoNetwork(szCommand+11, Game.Clients.getLocalID(), Game.Clients.getLocalName());
 		return true;
 		}
 	// SetHostility
@@ -726,7 +735,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// only if allowed
 		if (!Game.Teams.IsHostilityChangeAllowed()) return false;
     int32_t iOpponent; sscanf(szCommand+13,"%i",&iOpponent);
-		C4Player *pOpponent = Game.Players.Get(iOpponent);
+		C4Player *pOpponent = ::Players.Get(iOpponent);
 		if (!pOpponent || pOpponent->GetType() != C4PT_User) return false;
 		// TODO: doesn't really work
     Game.Input.Add(CID_Script, new C4ControlScript(FormatString("SetHostility(%d, %d, !Hostile(%d, %d, true))", Player, iOpponent, Player, iOpponent).getData(), C4ControlScript::SCOPE_Global, true));
@@ -741,7 +750,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	// Surrender
 	if (SEqual2(szCommand,"Surrender"))
 		{
-		Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("SurrenderPlayer(%d)", Player).getData()), CDT_Queue);
+		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("SurrenderPlayer(%d)", Player).getData()), CDT_Queue);
 		return true;
 		}
 	// Save game
@@ -757,9 +766,9 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	if (SEqual2(szCommand,"Host:Kick:"))
 		{
 		int iClientID = atoi(szCommand+10);
-		if(iClientID && Game.Network.isEnabled())
-			if(Game.Parameters.isLeague() && Game.Players.GetAtClient(iClientID))
-				Game.Network.Vote(VT_Kick, true, iClientID);
+		if(iClientID && ::Network.isEnabled())
+			if(Game.Parameters.isLeague() && ::Players.GetAtClient(iClientID))
+				::Network.Vote(VT_Kick, true, iClientID);
 			else
 				{
 				C4Client *pClient = Game.Clients.getClientByID(iClientID);
@@ -771,13 +780,13 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 	// Part
 	if (SEqual2(szCommand,"Part"))
 		{
-		if(Game.Network.isEnabled())
-			if(Game.Parameters.isLeague() && Game.Players.GetLocalByIndex(0))
-				Game.Network.Vote(VT_Kick, true, Game.Control.ClientID());
+		if(::Network.isEnabled())
+			if(Game.Parameters.isLeague() && ::Players.GetLocalByIndex(0))
+				::Network.Vote(VT_Kick, true, ::Control.ClientID());
 			else
 				{
 				Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, LoadResStr("IDS_ERR_GAMELEFTVIAPLAYERMENU"));
-				Game.Network.Clear();
+				::Network.Clear();
 				}
 		return true;
 		}
@@ -819,7 +828,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		if (SEqual(szCommand + 8, "UpperBoard"))
 			{
 			Config.Graphics.UpperBoard = !Config.Graphics.UpperBoard;
-			Game.GraphicsSystem.RecalculateViewports();
+			::GraphicsSystem.RecalculateViewports();
 			}
 		// FPS
 		if (SEqual(szCommand + 8, "FPS")) Config.General.FPS = !Config.General.FPS;
@@ -846,8 +855,8 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		Close(true);
 		// TODO!
 		C4Object *pObj; C4ID idItem = C4Id(szCommand+12);
-		if (pObj = Game.Objects.FindInternal(idItem))
-			Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
+		if (pObj = ::Objects.FindInternal(idItem))
+			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
 		else
 			return false;
 		return true;
@@ -871,14 +880,14 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		// check if it's still allowed
 		if (!Game.Teams.IsTeamSwitchAllowed()) return false;
 		// OK, join this team
-		Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("SetPlayerTeam(%d,%d)", (int)Player, (int)idTeam).getData()), CDT_Queue);
+		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("SetPlayerTeam(%d,%d)", (int)Player, (int)idTeam).getData()), CDT_Queue);
 		return true;
 		}
 	// Observe
 	if (SEqual2(szCommand, "Observe:"))
 		{
 		const char *szObserverTarget = szCommand+8;
-		C4Viewport *pVP = Game.GraphicsSystem.GetViewport(NO_OWNER);
+		C4Viewport *pVP = ::GraphicsSystem.GetViewport(NO_OWNER);
 		if (pVP) // viewport may have closed meanwhile
 			{
 			if (SEqual(szObserverTarget, "Free"))
@@ -914,7 +923,7 @@ bool C4MainMenu::ActivateCommand(int32_t iPlayer, const char *szCommand)
 bool C4MainMenu::ActivateObserver()
 	{
 	// Safety: Viewport lost?
-	if (!Game.GraphicsSystem.GetViewport(NO_OWNER)) return false;
+	if (!::GraphicsSystem.GetViewport(NO_OWNER)) return false;
 	// Menu symbol/init
 	InitRefSym(C4GUI::Icon::GetIconFacet(C4GUI::Ico_View), LoadResStr("IDS_TEXT_VIEW"), NO_OWNER, C4MN_Extra_None, 0, C4MN_Observer, C4MN_Style_Context);
 	SetAlignment(C4MN_Align_Left | C4MN_Align_Bottom);

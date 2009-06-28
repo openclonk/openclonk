@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2005, 2008  Sven Eberhardt
+ * Copyright (c) 2004  Peter Wortmann
+ * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -129,5 +133,13 @@ class C4SoundSystem
 		int32_t RemoveEffect(const char *szFilename);
 		int32_t EffectInBank(const char *szSound);
 	};
+
+class C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj=NULL, int32_t iCustomFalloffDistance=0);
+class C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, bool fLoop = false, int32_t iVolume = 100);
+class C4SoundInstance *GetSoundInstance(const char *szSndName, C4Object *pObj);
+void StopSoundEffect(const char *szSndName, C4Object *pObj);
+void SoundLevel(const char *szSndName, C4Object *pObj, int32_t iLevel);
+void SoundPan(const char *szSndName, C4Object *pObj, int32_t iPan);
+
 
 #endif

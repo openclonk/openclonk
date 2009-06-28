@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2008  Sven Eberhardt
+ * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2008  Armin Burgmeier
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -27,6 +30,9 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4Player.h>
 #include <C4PlayerInfo.h>
 #include <C4PlayerInfoListBox.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 
@@ -40,7 +46,7 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 	SetBounds(rcBounds);
 	// can't get specialized desc from object at the moment because of potential script callbacks!
 	StdStrBuf strGoalName, strGoalDesc;
-	/*C4Object *pGoalObj = Game.Objects.FindInternal(idGoal);
+	/*C4Object *pGoalObj = ::Objects.FindInternal(idGoal);
 	if (pGoalObj)
 		{
 		pGoalObj->GetInfoString().getData();
@@ -48,7 +54,7 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 	else*/
 		{
 		// just get desc from def
-		C4Def *pGoalDef = Game.Defs.ID2Def(idGoal);
+		C4Def *pGoalDef = ::Definitions.ID2Def(idGoal);
 		if (pGoalDef)
 			{
 			strGoalName.Copy(pGoalDef->GetName());
@@ -63,12 +69,12 @@ C4GoalDisplay::GoalPicture::GoalPicture(const C4Rect &rcBounds, C4ID idGoal, boo
 		sToolTip.Format(LoadResStr("IDS_DESC_GOALNOTFULFILLED"), strGoalName.getData(), strGoalDesc.getData());
 	SetToolTip(sToolTip.getData());
 	// create buffered picture of goal definition
-	C4Def *pDrawDef = Game.Defs.ID2Def(idGoal);
+	C4Def *pDrawDef = ::Definitions.ID2Def(idGoal);
 	if (pDrawDef)
 		{
 		Picture.Create(C4PictureSize, C4PictureSize);
 		// get an object instance to draw (optional; may be zero)
-		C4Object *pGoalObj = Game.Objects.FindInternal(idGoal);
+		C4Object *pGoalObj = ::Objects.FindInternal(idGoal);
 		// draw goal def!
 		pDrawDef->Draw(Picture, false, 0, pGoalObj);
 		}
@@ -219,7 +225,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 			ppPlayerLists[i]->SetToolTip(FormatString(LoadResStr("IDS_DESC_TEAM"), Game.Teams.GetTeamByIndex(i)->GetName()).getData());
 		else
 			ppPlayerLists[i]->SetToolTip(LoadResStr("IDS_DESC_LISTOFPLAYERSWHOPARTICIPA"));*/
-		//ppPlayerLists[i]->SetCustomFont(&Game.GraphicsResource.FontTooltip, 0xff000000); - display black on white?
+		//ppPlayerLists[i]->SetCustomFont(&::GraphicsResource.FontTooltip, 0xff000000); - display black on white?
 		ppPlayerLists[i]->SetSelectionDiabled(true);
 		ppPlayerLists[i]->SetDecoration(false, NULL, true, false);
 		AddElement(ppPlayerLists[i]);
@@ -238,7 +244,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 		{
 		// not available for regular replay and network clients, obviously
 		// it is available for films though, so you can create cinematics for adventures
-		if (Game.Control.isCtrlHost() || (Game.C4S.Head.Film == 2))
+		if (::Control.isCtrlHost() || (Game.C4S.Head.Film == 2))
 			{
 			fHasNextMissionButton = true;
 			btnContinue->SetText(Game.NextMissionText.getData());
@@ -249,7 +255,7 @@ C4GameOverDlg::C4GameOverDlg() : C4GUI::Dialog( (C4GUI::GetScreenWdt() < 800) ? 
 	Application.Add(this);
 	Update();
 	// initial focus on quit button if visible, so space/enter/low gamepad buttons quit
-	fIsQuitBtnVisible = fIsNetDone || !Game.Network.isHost();
+	fIsQuitBtnVisible = fIsNetDone || !::Network.isHost();
 	if (fIsQuitBtnVisible) SetFocus(btnExit, false);
 	}
 
@@ -265,10 +271,10 @@ void C4GameOverDlg::Update()
 	for (int32_t i=0; i<iPlrListCount; ++i) ppPlayerLists[i]->Update();
 	if (pNetResultLabel)
 		{
-		SetNetResult(Game.RoundResults.GetNetResultString(), Game.RoundResults.GetNetResult(), Game.Network.getPendingStreamData(), Game.Network.isStreaming());
+		SetNetResult(Game.RoundResults.GetNetResultString(), Game.RoundResults.GetNetResult(), ::Network.getPendingStreamData(), ::Network.isStreaming());
 		}
 	// exit/continue button only visible for host if league streaming finished
-	bool fBtnsVisible = fIsNetDone || !Game.Network.isHost();
+	bool fBtnsVisible = fIsNetDone || !::Network.isHost();
 	if (fBtnsVisible != fIsQuitBtnVisible)
 		{
 		fIsQuitBtnVisible = fBtnsVisible;
@@ -322,7 +328,7 @@ void C4GameOverDlg::OnShown()
 	// close some other dialogs
 	Game.Scoreboard.HideDlg();
 	FullScreen.CloseMenu();
-	for (C4Player *plr = Game.Players.First; plr; plr = plr->Next)
+	for (C4Player *plr = ::Players.First; plr; plr = plr->Next)
 		plr->CloseMenu();
 	// pause game when round results dlg is shown
 	Game.Pause();

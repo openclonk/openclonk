@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2002, 2004-2005  Sven Eberhardt
+ * Copyright (c) 2005  Tobias Zwick
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,7 +29,9 @@
 #include <C4Random.h>
 #include <C4Game.h>
 #include <C4Components.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
+#include <C4Weather.h>
+#include <C4GameObjects.h>
 #endif
 
 void C4ParticleDefCore::CompileFunc(StdCompiler * pComp)
@@ -261,7 +267,7 @@ void C4ParticleList::Exec(C4Object *pObj)
 			{
 			// sorry, life is over for you :P
 			--pPrt->pDef->Count;
-			pPrt->MoveList(*this, Game.Particles.FreeParticles);
+			pPrt->MoveList(*this, ::Particles.FreeParticles);
 			}
 		}
 	// done
@@ -285,7 +291,7 @@ void C4ParticleList::Clear()
 		pPrtNext=pPrt->pNext;
 		// sorry, life is over for you :P
 		--pPrt->pDef->Count;
-		pPrt->MoveList(*this, Game.Particles.FreeParticles);
+		pPrt->MoveList(*this, ::Particles.FreeParticles);
 		}
 	}
 
@@ -303,7 +309,7 @@ int32_t C4ParticleList::Remove(C4ParticleDef *pOfDef)
 			{
 			// sorry, life is over for you :P
 			--pPrt->pDef->Count;
-			pPrt->MoveList(*this, Game.Particles.FreeParticles);
+			pPrt->MoveList(*this, ::Particles.FreeParticles);
 			}
 		}
 	// done
@@ -374,9 +380,9 @@ void C4ParticleSystem::ClearParticles()
 	{
 	// clear particle lists
 	C4ObjectLink *pLnk;
-	for (pLnk = Game.Objects.First; pLnk; pLnk = pLnk->Next)
+	for (pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
 		pLnk->Obj->FrontParticles.pFirst = pLnk->Obj->BackParticles.pFirst = NULL;
-	for (pLnk = Game.Objects.InactiveObjects.First; pLnk; pLnk = pLnk->Next)
+	for (pLnk = ::Objects.InactiveObjects.First; pLnk; pLnk = pLnk->Next)
 		pLnk->Obj->FrontParticles.pFirst = pLnk->Obj->BackParticles.pFirst = NULL;
 	GlobalParticles.pFirst = NULL;
 	// reset chunks
@@ -442,7 +448,7 @@ C4Particle *C4ParticleSystem::Create(C4ParticleDef *pOfDef,
 	// count particle
 	++pOfDef->Count;
 	// more to desired list
-	pPrt->MoveList(Game.Particles.FreeParticles, *pPxList);
+	pPrt->MoveList(::Particles.FreeParticles, *pPxList);
 	// return newly created particle
 	return pPrt;
 	}
@@ -519,7 +525,7 @@ void C4ParticleSystem::SetDefParticles()
 	// if fire is drawn w/o background fct: unload fire face if both fire particles are assigned
 	// but this is not done here
 	//if (IsFireParticleLoaded())
-	//	Game.GraphicsResource.fctFire.Clear();
+	//	::GraphicsResource.fctFire.Clear();
 	}
 
 int32_t C4ParticleSystem::Push(C4ParticleDef *pOfDef, float dxdir, float dydir)
@@ -587,7 +593,7 @@ bool fxSmokeExec(C4Particle *pPrt, C4Object *pTarget)
 	// wind to float
 	if (!(pPrt->b%12) || fBuilding)
 		{
-		pPrt->xdir=0.025f*Game.Weather.GetWind(int32_t(pPrt->x),int32_t(pPrt->y));
+		pPrt->xdir=0.025f*::Weather.GetWind(int32_t(pPrt->x),int32_t(pPrt->y));
 		if (pPrt->xdir<-2.0f) pPrt->xdir=-2.0f; else if (pPrt->xdir>2.0f) pPrt->xdir=2.0f;
 		pPrt->xdir+=0.1f*SafeRandom(41)-2.0f;
 		}
@@ -836,3 +842,5 @@ C4ParticleDrawProcRec C4ParticleDrawProcMap[] = {
 	{ "Smoke",	fxSmokeDraw },
 	{ "Std",		fxStdDraw },
 	{ "",				0 } };
+
+C4ParticleSystem Particles;

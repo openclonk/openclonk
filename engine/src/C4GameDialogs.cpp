@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005  Sven Eberhardt
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2007  Peter Wortmann
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,6 +28,7 @@
 #include <C4Network2Dialogs.h>
 #include <C4Game.h>
 #include <C4Player.h>
+#include <C4Network2.h>
 #endif
 
 bool C4AbortGameDialog::is_shown = false;
@@ -50,7 +55,7 @@ C4AbortGameDialog::~C4AbortGameDialog()
 
 void C4AbortGameDialog::OnShown()
 	{
-	if(!Game.Network.isEnabled())
+	if(!::Network.isEnabled())
 		{
 		fGameHalted = true;
 		Game.HaltCount++;

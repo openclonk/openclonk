@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2002, 2004-2008  Sven Eberhardt
+ * Copyright (c) 2004-2005  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,14 +30,8 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
-#ifdef C4ENGINE
-#include <C4Wrappers.h>
-#endif
 #endif
 
-#if defined(C4FRONTEND) || defined (C4GROUP)
-#include "C4CompilerWrapper.h"
-#endif
 
 //==================================== C4SVal ==============================================
 
@@ -649,7 +647,6 @@ BOOL C4SGame::IsMelee()
 
 
 
-#ifdef C4ENGINE
 
 // scenario sections
 
@@ -764,4 +761,3 @@ bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObj
 	return true;
 	}
 
-#endif // C4ENGINE

@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
+ * Copyright (c) 2004-2008  Peter Wortmann
+ * Copyright (c) 2005-2008  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,8 +28,9 @@
 #include <C4PlayerInfo.h>
 #include <C4GameSave.h>
 #include <C4Log.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
+#include <C4Game.h>
+#include <C4GameControl.h>
 #endif
 
 #include <StdFile.h>
@@ -43,7 +48,7 @@ int DoNoDebugRec=0; // debugrec disable counter
 
 void AddDbgRec(C4RecordChunkType eType, const void *pData, int iSize)
 	{
-	Game.Control.DbgRec(eType, (const uint8_t *) pData, iSize);
+	::Control.DbgRec(eType, (const uint8_t *) pData, iSize);
 	}
 #else
 bool DoDebugRec=false;
@@ -907,7 +912,7 @@ void C4Playback::Finish()
 		Game.DoGameOver();
 		}
 	// finish playback: enable controls
-	Game.Control.ChangeToLocal();
+	::Control.ChangeToLocal();
 	}
 
 void C4Playback::Clear()
@@ -1039,7 +1044,7 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 			C4IDPacket Packet(*currChunk->pPkt);
 			C4ControlPacket *pCtrlPck = static_cast<C4ControlPacket *>(Packet.getPkt());
 			assert(!pCtrlPck->Sync());
-			Game.Control.ExecControlPacket(Packet.getPktType(), pCtrlPck);
+			::Control.ExecControlPacket(Packet.getPktType(), pCtrlPck);
 			NextChunk();
 			}
 		// record end?

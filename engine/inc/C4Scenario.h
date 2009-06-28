@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -317,7 +320,6 @@ class C4Scenario
 
 class C4ScenarioSection;
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 extern const char *C4ScenSect_Main;
 
@@ -342,6 +344,5 @@ class C4ScenarioSection
 		bool EnsureTempStore(bool fExtractLandscape, bool fExtractObjects);               // make sure that a temp file is created, and nothing is modified within the main scenario file
 	};
 
-#endif // C4ENGINE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 #endif // INC_C4Scenario

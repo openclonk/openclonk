@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2002, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2006-2007  Peter Wortmann
+ * Copyright (c) 2006-2007  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,23 +28,26 @@
 #ifndef BIG_C4INCLUDE
 
 #include <C4Group.h>
-#include <C4Game.h>
+#include <C4PXS.h>
 #include <C4Random.h>
 #include <C4ToolsDlg.h> // For C4TLS_MatSky...
-#ifdef C4ENGINE
-#include <C4Wrappers.h>
+#include <C4Texture.h>
+#include <C4Aul.h>
+#include <C4Landscape.h>
+#include <C4SoundSystem.h>
+#include <C4Effects.h>
+#include <C4Game.h>
+#include <C4Log.h>
 #include <C4Physics.h> // For GravAccel
-#endif
 
 #endif
 
-#ifdef C4FRONTEND
-#include "C4CompilerWrapper.h"
-#endif
+
+int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MSnow=MNone,MEarth=MNone,MGranite=MNone,MFlyAshes=MNone;
+BYTE MCVehic=0;
 
 // -------------------------------------- C4MaterialReaction
 
-#ifdef C4ENGINE
 
 struct ReactionFuncMapEntry { const char *szRFName; C4MaterialReactionFunc pFunc; };
 
@@ -52,11 +59,9 @@ const ReactionFuncMapEntry ReactionFuncMap[] = {
 	{ "Insert",  &C4MaterialMap::mrfInsert },
 	{ NULL, &C4MaterialReaction::NoReaction } };
 
-#endif
 
 void C4MaterialReaction::CompileFunc(StdCompiler *pComp)
 	{
-#ifdef C4ENGINE
 	if (pComp->isCompiler()) pScriptFunc = NULL;
 	// compile reaction func ptr
 	StdStrBuf sReactionFuncName;
@@ -65,7 +70,6 @@ void C4MaterialReaction::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(sReactionFuncName,		"Type",              				StdStrBuf()	    ));
 	i=0; while (ReactionFuncMap[i].szRFName && !SEqual(ReactionFuncMap[i].szRFName, sReactionFuncName.getData())) ++i;
 	pFunc = ReactionFuncMap[i].pFunc;
-#endif
 	// compile the rest
 	pComp->Value(mkNamingAdapt(TargetSpec,					"TargetSpec",								StdCopyStrBuf()	));
 	pComp->Value(mkNamingAdapt(ScriptFunc,					"ScriptFunc",								StdCopyStrBuf()	));
@@ -78,17 +82,15 @@ void C4MaterialReaction::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iCorrosionRate,      "CorrosionRate",            100             ));
 	}
 
-#ifdef C4ENGINE
 
 void C4MaterialReaction::ResolveScriptFuncs(const char *szMatName)
 	{
 	// get script func for script-defined behaviour
 	if (pFunc == &C4MaterialMap::mrfScript)
-		pScriptFunc = Game.ScriptEngine.GetSFuncWarn(this->ScriptFunc.getData(), AA_PROTECTED, FormatString("Material reaction of \"%s\"", szMatName).getData());
+		pScriptFunc = ::ScriptEngine.GetSFuncWarn(this->ScriptFunc.getData(), AA_PROTECTED, FormatString("Material reaction of \"%s\"", szMatName).getData());
 	else
 		pScriptFunc = NULL;
 	}
-#endif
 
 // -------------------------------------- C4MaterialCore
 
@@ -162,7 +164,6 @@ BOOL C4MaterialCore::Load(C4Group &hGroup,
   if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Source, Name.getData()))
 		return FALSE;
 	// adjust placement, if not specified
-#ifdef C4ENGINE
 	if (!Placement)
 		{
 		if (DensitySolid(Density))
@@ -176,7 +177,6 @@ BOOL C4MaterialCore::Load(C4Group &hGroup,
 			Placement=10;
 		else Placement=5;
 		}
-#endif
 	return TRUE;
 	}
 
@@ -255,32 +255,21 @@ C4Material::C4Material()
   AboveTempConvertTo=0;
   }
 
-#ifdef C4ENGINE
 void C4Material::UpdateScriptPointers()
 	{
 	for (uint32_t i = 0; i < CustomReactionList.size(); ++i)
 		CustomReactionList[i].ResolveScriptFuncs(Name);
 	}
-#endif
 
 
 // -------------------------------------- C4MaterialMap
 
-#ifdef C4ENGINE
 
 C4MaterialMap::C4MaterialMap() : DefReactConvert(&mrfConvert), DefReactPoof(&mrfPoof), DefReactCorrode(&mrfCorrode), DefReactIncinerate(&mrfIncinerate), DefReactInsert(&mrfInsert)
   {
 	Default();
   }
 
-#else
-
-C4MaterialMap::C4MaterialMap()
-  {
-	Default();
-  }
-
-#endif
 
 C4MaterialMap::~C4MaterialMap()
   {
@@ -344,10 +333,12 @@ int32_t C4MaterialMap::Get(const char *szMaterial)
   return MNone;
   }
 
-#ifdef C4ENGINE
 
-void C4MaterialMap::CrossMapMaterials() // Called after load
-  {
+bool C4MaterialMap::CrossMapMaterials() // Called after load
+	{
+	// Check material number
+	if (::MaterialMap.Num>C4MaxMaterial)
+		{ LogFatal(LoadResStr("IDS_PRC_TOOMANYMATS")); return false; }
 	// build reaction function map
 	delete [] ppReactionMap;
 	typedef C4MaterialReaction * C4MaterialReactionPtr;
@@ -390,7 +381,7 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
 		const char *szTextureOverlay = NULL;
 		// newgfx: init pattern
 		if (Map[cnt].sTextureOverlay.getLength())
-			if (Game.TextureMap.GetTexture(Map[cnt].sTextureOverlay.getLength()))
+			if (::TextureMap.GetTexture(Map[cnt].sTextureOverlay.getLength()))
 				{
 				szTextureOverlay = Map[cnt].sTextureOverlay.getData();
 				// backwards compatibility: if a pattern was specified although the no-pattern flag was set, overwrite that flag
@@ -404,13 +395,13 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
 		if (!szTextureOverlay)
 			szTextureOverlay = "Smooth";
 		// search/create entry in texmap
-		Map[cnt].DefaultMatTex = Game.TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, TRUE,
+		Map[cnt].DefaultMatTex = ::TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, TRUE,
 			FormatString("DefaultMatTex of mat %s", Map[cnt].Name).getData());
 		// init PXS facet
 		SURFACE sfcTexture;
 		C4Texture * Texture;
 		if (Map[cnt].sPXSGfx.getLength())
-			if (Texture=Game.TextureMap.GetTexture(Map[cnt].sPXSGfx.getData()))
+			if (Texture=::TextureMap.GetTexture(Map[cnt].sPXSGfx.getData()))
 				if (sfcTexture=Texture->Surface32)
 					Map[cnt].PXSFace.Set(sfcTexture, Map[cnt].PXSGfxRt.x, Map[cnt].PXSGfxRt.y, Map[cnt].PXSGfxRt.Wdt, Map[cnt].PXSGfxRt.Hgt);
 		// evaluate reactions for that material
@@ -495,13 +486,13 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
   for (cnt=0; cnt<Num; cnt++)
     {
     if (Map[cnt].sBlastShiftTo.getLength())
-			Map[cnt].BlastShiftTo=Game.TextureMap.GetIndexMatTex(Map[cnt].sBlastShiftTo.getData(), NULL, TRUE, FormatString("BlastShiftTo of mat %s", Map[cnt].Name).getData());
+			Map[cnt].BlastShiftTo=::TextureMap.GetIndexMatTex(Map[cnt].sBlastShiftTo.getData(), NULL, TRUE, FormatString("BlastShiftTo of mat %s", Map[cnt].Name).getData());
     if (Map[cnt].sInMatConvertTo.getLength())
       Map[cnt].InMatConvertTo=Get(Map[cnt].sInMatConvertTo.getData());
     if (Map[cnt].sBelowTempConvertTo.getLength())
-      Map[cnt].BelowTempConvertTo=Game.TextureMap.GetIndexMatTex(Map[cnt].sBelowTempConvertTo.getData(), NULL, TRUE, FormatString("BelowTempConvertTo of mat %s", Map[cnt].Name).getData());
+      Map[cnt].BelowTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sBelowTempConvertTo.getData(), NULL, TRUE, FormatString("BelowTempConvertTo of mat %s", Map[cnt].Name).getData());
     if (Map[cnt].sAboveTempConvertTo.getLength())
-      Map[cnt].AboveTempConvertTo=Game.TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, TRUE, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
+      Map[cnt].AboveTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, TRUE, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
 		}
 #if 0
 	int32_t i=0;
@@ -511,9 +502,19 @@ void C4MaterialMap::CrossMapMaterials() // Called after load
 			if (ppReactionMap[(cnt2+1)*(Num+1) + cnt+1])
 				printf("%s -> %s: %p\n", Map[cnt].Name, Map[cnt2].Name, ppReactionMap[(cnt2+1)*(Num+1) + cnt+1]->pFunc);
 #endif
+	// Get hardcoded system material indices
+	MVehic   = Get("Vehicle"); MCVehic = Mat2PixColDefault(MVehic);
+	MTunnel  = Get("Tunnel");
+	MWater   = Get("Water");
+	MSnow    = Get("Snow");
+	MGranite = Get("Granite");
+	MFlyAshes= Get("FlyAshes");
+	MEarth   = Get(Game.C4S.Landscape.Material);
+	if ((MVehic==MNone) || (MTunnel==MNone))
+		{ LogFatal(LoadResStr("IDS_PRC_NOSYSMATS")); return false; }
+	return true;
 	}
 
-#endif
 
 void C4MaterialMap::SetMatReaction(int32_t iPXSMat, int32_t iLSMat, C4MaterialReaction *pReact)
 	{
@@ -608,7 +609,6 @@ C4MaterialReaction *C4MaterialMap::GetReaction(int32_t iPXSMat, int32_t iLandsca
 	return GetReactionUnsafe(iPXSMat, iLandscapeMat);
 	}
 
-#ifdef C4ENGINE
 
 bool mrfInsertCheck(int32_t &iX, int32_t &iY, FIXED &fXDir, FIXED &fYDir, int32_t &iPxsMat, int32_t iLsMat, bool *pfPosChanged)
 	{
@@ -617,7 +617,7 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, FIXED &fXDir, FIXED &fYDir, int32_
 
 	// Rough contact? May splash
 	if (fYDir > itofix(1))
-		if (Game.Material.Map[iPxsMat].SplashRate && !Random(Game.Material.Map[iPxsMat].SplashRate))
+		if (::MaterialMap.Map[iPxsMat].SplashRate && !Random(::MaterialMap.Map[iPxsMat].SplashRate))
 			{
 			fYDir = -fYDir/8;
 			fXDir = fXDir/8 + FIXED100(Random(200) - 100);
@@ -628,12 +628,12 @@ bool mrfInsertCheck(int32_t &iX, int32_t &iY, FIXED &fXDir, FIXED &fYDir, int32_
 	fYDir = 0;
 
 	// Incindiary mats smoke on contact even before doing their slide
-	if (Game.Material.Map[iPxsMat].Incindiary)
+	if (::MaterialMap.Map[iPxsMat].Incindiary)
 		if (!Random(25)) Smoke(iX, iY, 4+Rnd3() );
 
 	// Move by mat path/slide
 	int32_t iSlideX = iX, iSlideY = iY;
-	if (Game.Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),Game.Material.Map[iPxsMat].Density,Game.Material.Map[iPxsMat].MaxSlide))
+	if (::Landscape.FindMatSlide(iSlideX,iSlideY,Sign(GravAccel),::MaterialMap.Map[iPxsMat].Density,::MaterialMap.Map[iPxsMat].MaxSlide))
 		{
 		if(iPxsMat == iLsMat)
 			{ iX = iSlideX; iY = iSlideY; fXDir = 0; return false; }
@@ -678,11 +678,11 @@ bool C4MaterialMap::mrfConvert(C4MaterialReaction *pReaction, int32_t &iX, int32
 		case meePXSPos: // PXS check before movement
 			{
 			// Check depth
-			int32_t iDepth = pReaction->fUserDefined ? pReaction->iDepth : Game.Material.Map[iPxsMat].InMatConvertDepth;
+			int32_t iDepth = pReaction->fUserDefined ? pReaction->iDepth : ::MaterialMap.Map[iPxsMat].InMatConvertDepth;
 			if (!iDepth || GBackMat(iX, iY - iDepth) == iLsMat)
 				{
 				// Convert
-				iPxsMat = pReaction->fUserDefined ? pReaction->iConvertMat : Game.Material.Map[iPxsMat].InMatConvertTo;
+				iPxsMat = pReaction->fUserDefined ? pReaction->iConvertMat : ::MaterialMap.Map[iPxsMat].InMatConvertTo;
 				if (!MatValid(iPxsMat))
 					// Convert failure (target mat not be loaded, or target may be C4TLS_MatSky): Kill Pix
 					return true;
@@ -695,7 +695,7 @@ bool C4MaterialMap::mrfConvert(C4MaterialReaction *pReaction, int32_t &iX, int32
 
 		case meeMassMove: // MassMover-movement
 		  // Conversion-transfer to PXS
-			Game.PXS.Create(iPxsMat,itofix(iX),itofix(iY));
+			::PXS.Create(iPxsMat,itofix(iX),itofix(iY));
 			return true;
 		}
 	// not handled
@@ -709,7 +709,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 		{
 		case meeMassMove: // MassMover-movement
 		case meePXSPos: // PXS check before movement: Kill both landscape and PXS mat
-			Game.Landscape.ExtractMaterial(iLSPosX,iLSPosY);
+			::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
 			if (!Rnd3()) Smoke(iX,iY,3);
 			if (!Rnd3()) StartSoundEffectAt("Pshshsh", iX, iY);
 			return true;
@@ -721,7 +721,7 @@ bool C4MaterialMap::mrfPoof(C4MaterialReaction *pReaction, int32_t &iX, int32_t 
 					// either splash or slide prevented interaction
 					return false;
 			// Always kill both landscape and PXS mat
-			Game.Landscape.ExtractMaterial(iLSPosX,iLSPosY);
+			::Landscape.ExtractMaterial(iLSPosX,iLSPosY);
 			if (!Rnd3()) Smoke(iX,iY,3);
 			if (!Rnd3()) StartSoundEffectAt("Pshshsh", iX, iY);
 			return true;
@@ -745,11 +745,11 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			if (pReaction->fUserDefined)
 				fDoCorrode = (Random(100) < pReaction->iCorrosionRate);
 			else
-				fDoCorrode = (Random(100) < Game.Material.Map[iPxsMat].Corrosive) && (Random(100) < Game.Material.Map[iLsMat].Corrode);
+				fDoCorrode = (Random(100) < ::MaterialMap.Map[iPxsMat].Corrosive) && (Random(100) < ::MaterialMap.Map[iLsMat].Corrode);
 			if (fDoCorrode)
 				{
 				ClearBackPix(iLSPosX,iLSPosY);
-				//Game.Landscape.CheckInstabilityRange(iLSPosX,iLSPosY); - more correct, but makes acid too effective as well
+				//::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY); - more correct, but makes acid too effective as well
 				if (!Random(5)) Smoke(iX,iY,3+Random(3));
 				if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
 				return true;
@@ -769,17 +769,17 @@ bool C4MaterialMap::mrfCorrode(C4MaterialReaction *pReaction, int32_t &iX, int32
 			if (pReaction->fUserDefined)
 				fDoCorrode = (Random(100) < pReaction->iCorrosionRate);
 			else
-				fDoCorrode = (Random(100) < Game.Material.Map[iPxsMat].Corrosive) && (Random(100) < Game.Material.Map[iLsMat].Corrode);
+				fDoCorrode = (Random(100) < ::MaterialMap.Map[iPxsMat].Corrosive) && (Random(100) < ::MaterialMap.Map[iLsMat].Corrode);
 			if (fDoCorrode)
 				{
 				ClearBackPix(iLSPosX,iLSPosY);
-				Game.Landscape.CheckInstabilityRange(iLSPosX,iLSPosY);
+				::Landscape.CheckInstabilityRange(iLSPosX,iLSPosY);
 				if (!Random(5)) Smoke(iX,iY,3+Random(3));
 				if (!Random(20)) StartSoundEffectAt("Corrode", iX, iY);
 				return true;
 				}
 			// Else: dead. Insert material here
-			Game.Landscape.InsertMaterial(iPxsMat,iX,iY);
+			::Landscape.InsertMaterial(iPxsMat,iX,iY);
 			return true;
 			}
 		}
@@ -795,7 +795,7 @@ bool C4MaterialMap::mrfIncinerate(C4MaterialReaction *pReaction, int32_t &iX, in
 		{
 		case meeMassMove: // MassMover-movement
 		case meePXSPos: // PXS check before movement
-			if (Game.Landscape.Incinerate(iX, iY)) return true;
+			if (::Landscape.Incinerate(iX, iY)) return true;
 			break;
 
 		case meePXSMove: // PXS movement
@@ -804,9 +804,9 @@ bool C4MaterialMap::mrfIncinerate(C4MaterialReaction *pReaction, int32_t &iX, in
 				// either splash or slide prevented interaction
 				return false;
 			// evaluate inflammation (should always succeed)
-			if (Game.Landscape.Incinerate(iX, iY)) return true;
+			if (::Landscape.Incinerate(iX, iY)) return true;
 			// Else: dead. Insert material here
-			Game.Landscape.InsertMaterial(iPxsMat,iX,iY);
+			::Landscape.InsertMaterial(iPxsMat,iX,iY);
 			return true;
 		}
 	// not handled
@@ -829,7 +829,7 @@ bool C4MaterialMap::mrfInsert(C4MaterialReaction *pReaction, int32_t &iX, int32_
 					// continue existing
 					return false;
 			// Else: dead. Insert material here
-			Game.Landscape.InsertMaterial(iPxsMat,iX,iY);
+			::Landscape.InsertMaterial(iPxsMat,iX,iY);
 			return true;
 			}
 
@@ -879,4 +879,25 @@ void C4MaterialMap::UpdateScriptPointers()
 	for (int32_t i=0; i<Num; ++i) Map[i].UpdateScriptPointers();
 	}
 
-#endif
+
+int32_t PixCol2MatOld(BYTE pixc)
+  {
+  if (pixc < GBM) return MNone;
+  pixc &= 63; // Substract GBM, ignore IFT
+  if (pixc > ::MaterialMap.Num*C4M_ColsPerMat-1) return MNone;
+  return pixc / C4M_ColsPerMat;
+  }
+
+int32_t PixCol2MatOld2(BYTE pixc)
+  {
+	int32_t iMat = ((int32_t) (pixc&0x7f)) -1;
+	// if above MVehic, don't forget additional vehicle-colors
+	if (iMat<=MVehic) return iMat;
+	// equals middle vehicle-color
+	if (iMat==MVehic+1) return MVehic;
+	// above: range check
+	iMat-=2; if (iMat >= ::MaterialMap.Num) return MNone;
+	return iMat;
+  }
+
+C4MaterialMap MaterialMap;

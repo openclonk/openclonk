@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002, 2004-2008  Sven Eberhardt
+ * Copyright (c) 2004  Matthes Bender
+ * Copyright (c) 2004, 2006-2008  Peter Wortmann
+ * Copyright (c) 2005-2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,7 +30,9 @@
 #include <C4SolidMask.h>
 #include <C4Network2Stats.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
+#include <C4PlayerList.h>
+#include <C4Record.h>
 #endif
 
 C4GameObjects::C4GameObjects()
@@ -44,6 +50,8 @@ void C4GameObjects::Default()
 	ResortProc=NULL;
 	Sectors.Clear();
 	LastUsedMarker = 0;
+	BackObjects.Default();
+	ForeObjects.Default();
 	}
 
 void C4GameObjects::Init(int32_t iWidth, int32_t iHeight)
@@ -59,10 +67,10 @@ BOOL C4GameObjects::Add(C4Object *nObj)
 		return InactiveObjects.Add(nObj, C4ObjectList::stMain);
 	// if this is a background object, add it to the list
 	if (nObj->Category & C4D_Background)
-		Game.BackObjects.Add(nObj, C4ObjectList::stMain);
+		::Objects.BackObjects.Add(nObj, C4ObjectList::stMain);
 	// if this is a foreground object, add it to the list
 	if (nObj->Category & C4D_Foreground)
-		Game.ForeObjects.Add(nObj, C4ObjectList::stMain);
+		::Objects.ForeObjects.Add(nObj, C4ObjectList::stMain);
 	// manipulate main list
 	if(!C4ObjectList::Add(nObj, C4ObjectList::stMain))
 		return FALSE;
@@ -79,9 +87,9 @@ BOOL C4GameObjects::Remove(C4Object *pObj)
 	// remove from sectors
 	Sectors.Remove(pObj);
 	// remove from backlist
-	Game.BackObjects.Remove(pObj);
+	::Objects.BackObjects.Remove(pObj);
 	// remove from forelist
-	Game.ForeObjects.Remove(pObj);
+	::Objects.ForeObjects.Remove(pObj);
 	// manipulate main list
 	return C4ObjectList::Remove(pObj);
 	}
@@ -101,10 +109,10 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	// Checks for this frame
 	focf=tocf=OCF_None;
 	// Medium level: Fight
-	if (!Tick5)
+	if (!::Game.iTick5)
 		{ focf|=OCF_FightReady; tocf|=OCF_FightReady; }
 	// Very low level: Incineration
-	if (!Tick35)
+	if (!::Game.iTick35)
 		{ focf|=OCF_OnFire; tocf|=OCF_Inflammable; }
 
 	if (focf && tocf)
@@ -121,7 +129,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 								{ obj2->Incinerate(obj1->GetFireCausePlr(), FALSE, obj1); continue; }
 						// Fight
 						if ((ocf1 & OCF_FightReady) && (ocf2 & OCF_FightReady))
-							if (Game.Players.Hostile(obj1->Owner,obj2->Owner))
+							if (::Players.Hostile(obj1->Owner,obj2->Owner))
 								{
 								// RejectFight callback
 								C4AulParSet parset1(C4VObj(obj2) );
@@ -139,7 +147,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 
 	focf=tocf=OCF_None;
 	// High level: Collection, Hit
-	if (!Tick3)
+	if (!::Game.iTick3)
 		{ focf|=OCF_Collection; tocf|=OCF_Carryable; }
 	focf|=OCF_Alive;	    tocf|=OCF_HitSpeed2;
 
@@ -170,7 +178,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy); // hit energy reduced to 1/3rd, but do not drop to zero because of this division
 													obj1->DoEnergy(-iHitEnergy/5, false, C4FxCall_EngObjHit, obj2->Controller);
 													int tmass=Max<int32_t>(obj1->Mass,50);
-													if (!Tick3 || (obj1->Action.Act>=0 && obj1->Def->ActMap[obj1->Action.Act].Procedure != DFA_FLIGHT))
+													if (!::Game.iTick3 || (obj1->Action.Act>=0 && obj1->Def->ActMap[obj1->Action.Act].Procedure != DFA_FLIGHT))
 														obj1->Fling(obj2->xdir*50/tmass,-Abs(obj2->ydir/2)*50/tmass, false);
 													obj1->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(-iHitEnergy/5),
 																																C4VObj(obj2)));
@@ -210,7 +218,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	// Checks for this frame
 	focf=tocf=OCF_None;
 	// Low level: Fight
-	if (!Tick10)
+	if (!::Game.iTick10)
 		{ focf|=OCF_FightReady; tocf|=OCF_FightReady; }
 
 	if (focf && tocf)
@@ -224,7 +232,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 							ocf1=obj1->OCF; ocf2=obj2->OCF;
 							// Fight
 							if ((ocf1 & OCF_FightReady) && (ocf2 & OCF_FightReady))
-								if (Game.Players.Hostile(obj1->Owner,obj2->Owner))
+								if (::Players.Hostile(obj1->Owner,obj2->Owner))
 									{
 									ObjectActionFight(obj1,obj2);
 									ObjectActionFight(obj2,obj1);
@@ -296,7 +304,7 @@ C4ObjectList &C4GameObjects::ObjectsInt()
 	{
 	// some time ago, only objects in the topleft corner used to be recognized
 	// this is an unnecessary restriction though...
-	//return Game.Landscape.Sectors.First()->Objects;
+	//return ::Landscape.Sectors.First()->Objects;
 	return *this;
 	}
 
@@ -317,22 +325,17 @@ void C4GameObjects::PutSolidMasks()
 			cLnk->Obj->UpdateSolidMask(false);
 	}
 
-void C4GameObjects::DeleteObjects()
+void C4GameObjects::DeleteObjects(bool fDeleteInactive)
 	{
-	// delete links and objects
-	while (First)
-		{
-		C4Object *pObj = First->Obj;
-		Remove(pObj);
-		delete pObj;
-		}
-	// reset mass
-	Mass=0;
+	C4ObjectList::DeleteObjects();
+	BackObjects.Clear();
+	ForeObjects.Clear();
+	if (fDeleteInactive) InactiveObjects.DeleteObjects();
 	}
 
 void C4GameObjects::Clear(bool fClearInactive)
   {
-  DeleteObjects();
+  DeleteObjects(fClearInactive);
   if(fClearInactive)
     InactiveObjects.Clear();
   ResortProc = NULL;
@@ -365,9 +368,9 @@ void C4ObjResort::Execute()
 		if (pSortObj->Status != C4OS_NORMAL || pSortObj->Unsorted) return;
 		// exchange
 		if (fSortAfter)
-			Game.Objects.OrderObjectAfter(pSortObj, pObjBefore);
+			::Objects.OrderObjectAfter(pSortObj, pObjBefore);
 		else
-			Game.Objects.OrderObjectBefore(pSortObj, pObjBefore);
+			::Objects.OrderObjectBefore(pSortObj, pObjBefore);
 		// done
 		return;
 		}
@@ -378,7 +381,7 @@ void C4ObjResort::Execute()
 		return;
 		}
 	// get first link to start sorting
-	C4ObjectLink *pLnk=Game.Objects.Last; if (!pLnk) return;
+	C4ObjectLink *pLnk=::Objects.Last; if (!pLnk) return;
 	// sort all categories given; one by one (sort by category is ensured by C4ObjectList::Add)
 	for (int iCat=1; iCat<C4D_SortLimit; iCat<<=1)
 		if (iCat & Category)
@@ -399,7 +402,7 @@ void C4ObjResort::Execute()
 						break;
 				// get previous link, which is the last in the list of this category
 				C4ObjectLink *pLastLnk;
-				if (pNextLnk) pLastLnk=pNextLnk->Next; else pLastLnk=Game.Objects.First;
+				if (pNextLnk) pLastLnk=pNextLnk->Next; else pLastLnk=::Objects.First;
 				// get next valid (there must be at least one: pLnk; so this loop should be safe)
 				while (!pLastLnk->Obj->Status) pLastLnk=pLastLnk->Next;
 				// now sort this portion of the list
@@ -421,7 +424,7 @@ void C4ObjResort::SortObject()
 	Pars[1].Set(C4VObj(pSortObj));
 	// first, check forward in list
 	C4ObjectLink *pMoveLink=NULL;
-	C4ObjectLink *pLnk = Game.Objects.GetLink(pSortObj);
+	C4ObjectLink *pLnk = ::Objects.GetLink(pSortObj);
 	C4ObjectLink *pLnkBck = pLnk;
 	C4Object *pObj2; int iResult;
 	if (!pLnk) return;
@@ -444,9 +447,9 @@ void C4ObjResort::SortObject()
 		// move link directly after pMoveLink
 		// FIXME: Inform C4ObjectList that this is a reorder, not a remove+insert
 		// move out of current position
-		Game.Objects.RemoveLink(pLnkBck);
+		::Objects.RemoveLink(pLnkBck);
 		// put into new position
-		Game.Objects.InsertLink(pLnkBck, pMoveLink);
+		::Objects.InsertLink(pLnkBck, pMoveLink);
 		}
 	else
 		{
@@ -470,19 +473,19 @@ void C4ObjResort::SortObject()
 		if (!pMoveLink) return;
 		// move link directly before pMoveLink
 		// move out of current position
-		Game.Objects.RemoveLink(pLnkBck);
+		::Objects.RemoveLink(pLnkBck);
 		// put into new position
-		Game.Objects.InsertLinkBefore(pLnkBck, pMoveLink);
+		::Objects.InsertLinkBefore(pLnkBck, pMoveLink);
 		}
 	// object has been resorted: resort into area lists, too
-	Game.Objects.UpdatePosResort(pSortObj);
+	::Objects.UpdatePosResort(pSortObj);
 	// done
 	}
 
 void C4ObjResort::Sort(C4ObjectLink *pFirst, C4ObjectLink *pLast)
 	{
 #ifdef _DEBUG
-	assert(Game.Objects.Sectors.CheckSort());
+	assert(::Objects.Sectors.CheckSort());
 #endif
 	// do a simple insertion-like sort
 	C4ObjectLink *pCurr; // current link to analyse
@@ -524,7 +527,7 @@ void C4ObjResort::Sort(C4ObjectLink *pFirst, C4ObjectLink *pLast)
 		pFirst=pNewFirst;
 		}
 #ifdef _DEBUG
-	assert(Game.Objects.Sectors.CheckSort());
+	assert(::Objects.Sectors.CheckSort());
 #endif
 	// resort objects in sector lists
 	for (pCurr=pFirstBck; pCurr!=pLast->Next; pCurr=pCurr->Next)
@@ -533,11 +536,11 @@ void C4ObjResort::Sort(C4ObjectLink *pFirst, C4ObjectLink *pLast)
 		if (pObj->Status && pObj->Unsorted)
 			{
 			pObj->Unsorted=FALSE;
-			Game.Objects.UpdatePosResort(pObj);
+			::Objects.UpdatePosResort(pObj);
 			}
 		}
 #ifdef _DEBUG
-	assert(Game.Objects.Sectors.CheckSort());
+	assert(::Objects.Sectors.CheckSort());
 #endif
 	}
 
@@ -546,7 +549,7 @@ void C4ObjResort::Sort(C4ObjectLink *pFirst, C4ObjectLink *pLast)
 
 int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	{
-  Clear(!fKeepInactive);
+	Clear(!fKeepInactive);
 
 	// Load data component
   StdStrBuf Source;
@@ -579,10 +582,10 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 		iMaxObjectNumber = Max<long>(iMaxObjectNumber, pObj->Number);
 		// add to list of backobjects
 		if (pObj->Category & C4D_Background)
-			Game.BackObjects.Add(pObj, C4ObjectList::stMain, this);
+			::Objects.BackObjects.Add(pObj, C4ObjectList::stMain, this);
 		// add to list of foreobjects
 		if (pObj->Category & C4D_Foreground)
-			Game.ForeObjects.Add(pObj, C4ObjectList::stMain, this);
+			::Objects.ForeObjects.Add(pObj, C4ObjectList::stMain, this);
 		// Unterminate end
 		}
 
@@ -931,3 +934,5 @@ bool C4GameObjects::AssignInfo()
 	if (!InactiveObjects.AssignInfo()) fSucc = false;
 	return fSucc;
 	}
+
+C4GameObjects Objects;

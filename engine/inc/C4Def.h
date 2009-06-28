@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2001  Matthes Bender
+ * Copyright (c) 2001-2007  Sven Eberhardt
+ * Copyright (c) 2003  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -28,11 +32,9 @@
 #include <C4Surface.h>
 #include <C4ComponentHost.h>
 
-#ifdef C4ENGINE
 #include <C4ScriptHost.h>
 #include <C4DefGraphics.h>
 #include "C4LangStringTable.h"
-#endif
 
 const int32_t C4D_None           =    0,
 							C4D_All            =		~C4D_None,
@@ -193,9 +195,6 @@ class C4DefCore
     C4Rect Entrance;
     C4Rect Collection;
     C4Rect PictureRect;
-#ifndef C4ENGINE
-    C4Rect PictureRectFE;
-#endif
     C4TargetRect SolidMask;
     C4TargetRect TopFace;
     C4IDList Component;
@@ -303,7 +302,6 @@ class C4Def: public C4DefCore
 		C4AulScriptFunc *TimerCall;
 		C4ComponentHost Desc;
 
-#ifdef C4ENGINE
 		// Currently cannot have script host in frontend because that
 		// would need C4Script, C4AulScript, and all that as well...
 		C4DefScriptHost Script;
@@ -325,7 +323,6 @@ class C4Def: public C4DefCore
 		C4PhysicalInfo *pFairCrewPhysical;
 
 		C4Facet MainFace;
-#endif
 
   protected:
     C4Def *Next;
@@ -338,13 +335,11 @@ class C4Def: public C4DefCore
 							class C4SoundSystem *pSoundSystem = NULL);
 		void Draw(C4Facet &cgo, BOOL fSelected=FALSE, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0);
 
-#ifdef C4ENGINE
 		inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
 		int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
 		C4PhysicalInfo *GetFairCrewPhysicals(); // get fair crew physicals at current fair crew strength
     void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
 		void Synchronize();
-#endif
 		const char *GetDesc() { return Desc.GetData(); }
   protected:
 	  bool LoadPortraits(C4Group &hGroup);
@@ -364,9 +359,7 @@ class C4Def: public C4DefCore
   };
 
 class C4DefList
-#ifdef C4ENGINE
 : public CStdFont::CustomImages
-#endif
   {
   public:
     C4DefList();
@@ -414,9 +407,7 @@ class C4DefList
     BOOL Add(C4Def *ndef, BOOL fOverload);
 		void BuildTable(); // build quick access table
 		void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
-#ifdef C4ENGINE
 		void Synchronize();
-#endif
 
 		// callback from font renderer: get ID image
 		virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet);
@@ -424,6 +415,13 @@ class C4DefList
 	private:
 		void SortByID(); // sorts list by quick access table
   };
+
+extern C4DefList Definitions;
+
+inline C4Def *C4Id2Def(C4ID id)
+	{
+	return ::Definitions.ID2Def(id);
+	}
 
 // Default Action Procedures
 

@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2006  Sven Eberhardt
+ * Copyright (c) 2005-2007  Peter Wortmann
+ * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -19,6 +23,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <C4Log.h>
 
 // *** StdCompiler
 
@@ -956,3 +961,12 @@ void StdCompilerINIRead::notFound(const char *szWhat)
 {
 	excNotFound("%s expected", szWhat);
 }
+
+void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError)
+	{
+	const char *szName = reinterpret_cast<const char *>(pData);
+	if(!szPosition || !*szPosition)
+		DebugLogF("WARNING: %s (in %s)", szError, szName);
+	else
+		DebugLogF("WARNING: %s (in %s, %s)", szError, szPosition, szName);
+	}

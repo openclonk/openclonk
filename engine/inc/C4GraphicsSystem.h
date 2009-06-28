@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2008  Matthes Bender
+ * Copyright (c) 2001, 2005, 2008  Sven Eberhardt
+ * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -94,9 +97,7 @@ class C4GraphicsSystem
 		C4Viewport *FirstViewport;
 		BOOL fViewportClassRegistered;
 		C4Facet ViewportArea;
-#ifdef C4ENGINE
 		C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
-#endif
 		char FlashMessageText[C4MaxTitle+1];
 		int32_t FlashMessageTime,FlashMessageX,FlashMessageY;
 		void DrawHelp();
@@ -120,4 +121,5 @@ class C4GraphicsSystem
 		bool ViewportZoomIn();
 	};
 
+extern C4GraphicsSystem GraphicsSystem;
 #endif

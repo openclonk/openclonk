@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
+ * Copyright (c) 2001-2007, 2009  Sven Eberhardt
+ * Copyright (c) 2003-2008  Peter Wortmann
+ * Copyright (c) 2004-2006, 2008  GÃ¼nther Brammer
+ * Copyright (c) 2005  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -29,19 +35,14 @@
 #include <C4Components.h>
 #include <C4Config.h>
 #include <C4ValueList.h>
-
-#ifdef C4ENGINE
-#include <C4Wrappers.h>
+#include <C4RankSystem.h>
+#include <C4Game.h>
+#include <C4GameObjects.h>
 #include <C4Object.h>
 #include "C4Network2Res.h"
-#endif
+#include <C4Material.h>
 #endif
 
-#if defined(C4FRONTEND) || defined(C4GROUP)
-#include "C4Group.h"
-#include "C4Scenario.h"
-#include "C4CompilerWrapper.h"
-#endif
 
 //-------------------------- Default Action Procedures --------------------------------------
 
@@ -246,7 +247,6 @@ BOOL C4DefCore::Load(C4Group &hGroup)
 			PictureRect.Set(0,0,Shape.Wdt,Shape.Hgt);
 
 		// Check category
-#ifdef C4ENGINE
 		if (!(Category & C4D_SortLimit))
 			{
 			// special: Allow this for spells
@@ -261,7 +261,6 @@ BOOL C4DefCore::Load(C4Group &hGroup)
 			DebugLogF("WARNING: Def %s (%s) at %s has invalid mass!", GetName(), C4IdText(id), hGroup.GetFullName().getData());
 			Mass = 0;
 			}
-#endif
 
 		return TRUE;
 		}
@@ -343,13 +342,8 @@ void C4DefCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Component,											"Components",					C4IDList()				));
 	pComp->Value(mkNamingAdapt(SolidMask,											"SolidMask",					TargetRect0				));
 	pComp->Value(mkNamingAdapt(TopFace,												"TopFace",						TargetRect0				));
-#ifdef C4ENGINE
 	pComp->Value(mkNamingAdapt(PictureRect,										"Picture",						Rect0							));
 	pComp->Value(mkNamingAdapt(StdNullAdapt(),								"PictureFE"															));
-#else
-	pComp->Value(mkNamingAdapt(PictureRect,										"Picture",						Rect0							));
-	pComp->Value(mkNamingAdapt(PictureRectFE,									"PictureFE",					Rect0							));
-#endif
 	pComp->Value(mkNamingAdapt(Entrance,											"Entrance",						Rect0							));
 	pComp->Value(mkNamingAdapt(Collection,										"Collection",					Rect0							));
 	pComp->Value(mkNamingAdapt(CollectionLimit,								"CollectionLimit",		0									));
@@ -481,9 +475,7 @@ void C4DefCore::CompileFunc(StdCompiler *pComp)
 
 C4Def::C4Def()
 	{
-#ifdef C4ENGINE
 	Graphics.pDef = this;
-#endif
 	Default();
 	}
 
@@ -504,7 +496,6 @@ void C4Def::Default()
 	Creation=0;
 	Count=0;
 	TimerCall=NULL;
-#ifdef C4ENGINE
 	MainFace.Set(NULL,0,0,0,0);
 	Script.Default();
 	StringTable.Default();
@@ -516,7 +507,6 @@ void C4Def::Default()
 	PortraitCount = 0;
 	Portraits = NULL;
 	pFairCrewPhysical = NULL;
-#endif
   }
 
 C4Def::~C4Def()
@@ -526,12 +516,7 @@ C4Def::~C4Def()
 
 void C4Def::Clear()
   {
-#ifdef C4FRONTEND
-  if (Picture) DeleteObject(Picture); Picture=NULL;
-  if (Image) DeleteObject(Image); Image=NULL;
-#endif
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	Graphics.Clear();
 
 	Script.Clear();
@@ -545,7 +530,6 @@ void C4Def::Clear()
 	PortraitCount = 0;
 	Portraits = NULL;
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   if (ActMap) delete [] ActMap; ActMap=NULL;
 	Desc.Clear();
@@ -559,18 +543,15 @@ BOOL C4Def::Load(C4Group &hGroup,
   {
 	BOOL fSuccess=TRUE;
 
-#ifdef C4ENGINE
 	bool AddFileMonitoring = false;
 	if (Game.pFileMonitor && !SEqual(hGroup.GetFullName().getData(),Filename) && !hGroup.IsPacked())
 		AddFileMonitoring = true;
-#endif
 
 	// Store filename, maker, creation
 	SCopy(hGroup.GetFullName().getData(),Filename);
 	SCopy(hGroup.GetMaker(),Maker,C4MaxName);
 	Creation = hGroup.GetCreation();
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Verbose log filename
 	if (Config.Graphics.VerboseObjectLoading>=3)
 		Log(hGroup.GetFullName().getData());
@@ -593,43 +574,35 @@ BOOL C4Def::Load(C4Group &hGroup,
 		// done
 		}
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   // Read DefCore
 	if (fSuccess) fSuccess=C4DefCore::Load(hGroup);
 	// check id
 	if (fSuccess) if (!LooksLikeID(id))
 		{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// wie geth ID?????ßßßß
 		if (!Name[0]) Name = GetFilename(hGroup.GetName());
 		LogF(LoadResStr("IDS_ERR_INVALIDID"), Name.getData());
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		fSuccess=FALSE;
 		}
 
-#ifdef C4ENGINE
 	// skip def: don't even read sounds!
 	if (fSuccess && Game.C4S.Definitions.SkipDefs.GetIDCount(id, 1)) return FALSE;
 
 	// OldGfx is no longer supported
 	if (NeededGfxMode == C4DGFXMODE_OLDGFX) return FALSE;
-#endif
 
 	if (!fSuccess)
 		{
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Read sounds even if not a valid def (for pure c4d sound folders)
 		if (dwLoadWhat & C4D_Load_Sounds)
 			if (pSoundSystem)
 				pSoundSystem->LoadEffects(hGroup);
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 		return FALSE;
 		}
 
-#ifdef C4ENGINE
 	// Read surface bitmap
 	if (dwLoadWhat & C4D_Load_Bitmap)
 		if (!Graphics.LoadBitmaps(hGroup, !!ColorByOwner))
@@ -646,7 +619,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 			return FALSE;
 			}
 
-#endif
 
 #if !defined(C4ENGINE) && !defined(C4GROUP)
 
@@ -683,7 +655,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 						return FALSE;
 #endif
 
-#ifdef C4ENGINE
   // Read ActMap
   if (dwLoadWhat & C4D_Load_ActMap)
 		if (!LoadActMap(hGroup))
@@ -691,19 +662,16 @@ BOOL C4Def::Load(C4Group &hGroup,
 			DebugLogF("  Error loading ActMap of %s (%s)", hGroup.GetFullName().getData(), C4IdText(id));
       return FALSE;
 			}
-#endif
 
-#ifdef C4ENGINE
   // Read script
   if (dwLoadWhat & C4D_Load_Script)
 		{
 		// reg script to engine
-		Script.Reg2List(&Game.ScriptEngine, &Game.ScriptEngine);
+		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
 		// Load script - loads string table as well, because that must be done after script load
 		// for downwards compatibility with packing order
 		Script.Load("Script", hGroup, C4CFN_Script, szLanguage, this, &StringTable, true);
 		}
-#endif
 
 	// Read name
 	C4ComponentHost DefNames;
@@ -711,7 +679,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 		DefNames.GetLanguageString(szLanguage, Name);
 	DefNames.Close();
 
-#ifdef C4ENGINE
 	// read clonknames
 	if (dwLoadWhat & C4D_Load_ClonkNames)
 		{
@@ -783,7 +750,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 			}
 		}
 
-#endif
 
   // Read desc
   if (dwLoadWhat & C4D_Load_Desc)
@@ -792,7 +758,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 		Desc.TrimSpaces();
 		}
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// Read sounds
 	if (dwLoadWhat & C4D_Load_Sounds)
@@ -817,7 +782,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 		}
 
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   // Temporary flag
   if (dwLoadWhat & C4D_Load_Temporary) Temporary=TRUE;
@@ -882,21 +846,18 @@ void C4Def::CrossMapActMap()
 
 BOOL C4Def::ColorizeByMaterial(C4MaterialMap &rMats, BYTE bGBM)
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if (ColorByMaterial[0])
 		{
 		int32_t mat=rMats.Get(ColorByMaterial);
 		if (mat==MNone) { LogF("C4Def::ColorizeByMaterial: mat %s not defined", ColorByMaterial); return FALSE; }
 		if (!Graphics.ColorizeByMaterial(mat, rMats, bGBM)) return FALSE;
 		}
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// success
 	return TRUE;
 	}
 
 void C4Def::Draw(C4Facet &cgo, BOOL fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY)
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// default: def picture rect
 	C4Rect fctPicRect = PictureRect;
@@ -920,10 +881,8 @@ void C4Def::Draw(C4Facet &cgo, BOOL fSelected, DWORD iColor, C4Object *pObj, int
 		for (C4GraphicsOverlay *pGfxOvrl = pObj->pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
 			if (pGfxOvrl->IsPicture())
 				pGfxOvrl->DrawPicture(cgo, pObj);
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
-#ifdef C4ENGINE
 int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 	{
 	// CalcDefValue defined?
@@ -953,7 +912,7 @@ C4PhysicalInfo *C4Def::GetFairCrewPhysicals()
 		pFairCrewPhysical = new C4PhysicalInfo(Physical);
 		// determine the rank
 		int32_t iExpGain = Game.Parameters.FairCrewStrength;
-		C4RankSystem *pRankSys=&Game.Rank;
+		C4RankSystem *pRankSys=&::DefaultRanks;
 		if (pRankNames) pRankSys = pRankNames;
 		int32_t iRank = pRankSys->RankByExperience(iExpGain);
 		// promote physicals for rank
@@ -976,7 +935,6 @@ void C4Def::Synchronize()
 	ClearFairCrewPhysicals();
 	}
 
-#endif
 
 //--------------------------------- C4DefList ----------------------------------------------
 
@@ -1013,9 +971,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			fSearchMessage=FALSE;
 			}
 
-#ifdef C4ENGINE // Message - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		if (fThisSearchMessage) {	LogF("%s...",GetFilename(hGroup.GetName())); }
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// Load primary definition
 	if (nDef=new C4Def)
@@ -1039,7 +995,6 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			}
 
 	// load additional system scripts for def groups only
-#ifdef C4ENGINE
 	C4Group SysGroup;
 	char fn[_MAX_FNAME+1] = { 0 };
 	if (!fPrimaryDef && fLoadSysGroups) if (SysGroup.OpenAsChild(&hGroup, C4CFN_System))
@@ -1052,7 +1007,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			{
 			// host will be destroyed by script engine, so drop the references
 			C4ScriptHost *scr = new C4ScriptHost();
-			scr->Reg2List(&Game.ScriptEngine, &Game.ScriptEngine);
+			scr->Reg2List(&::ScriptEngine, &::ScriptEngine);
 			scr->Load(NULL, SysGroup, fn, Config.General.LanguageEx, NULL, &SysGroupString);
 			}
 		// if it's a physical group: watch out for changes
@@ -1060,14 +1015,11 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 			Game.pFileMonitor->AddDirectory(SysGroup.GetFullName().getData());
 		SysGroup.Close();
 		}
-#endif
 
-#ifdef C4ENGINE // Message - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if (fThisSearchMessage) {	LogF(LoadResStr("IDS_PRC_DEFSLOADED"),iResult); }
 
 	// progress (could go down one level of recursion...)
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   return iResult;
   }
@@ -1095,17 +1047,13 @@ int32_t C4DefList::LoadFolderLocal( const char *szPath,
 				}
 		}
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// progress (could go down one level of recursion...)
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	return iResult;
 	}
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern BOOL C4EngineLoadProcess(const char *szMessage, int32_t iProcess);
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 int32_t C4DefList::Load(const char *szSearch,
                     DWORD dwLoadWhat, const char *szLanguage,
@@ -1140,10 +1088,8 @@ int32_t C4DefList::Load(const char *szSearch,
 			}
 		while (_findnext(fdthnd,&fdt)==0);
 		_findclose(fdthnd);
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// progress
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #else
 		fputs("FIXME: C4DefList::Load\n", stderr);
 #endif
@@ -1169,19 +1115,15 @@ int32_t C4DefList::Load(const char *szSearch,
 	if (!hGroup.Open(Config.AtDataReadPath(szSearch)))
 		{
 		// Specified file not found (failure)
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		LogFatal(FormatString(LoadResStr("IDS_PRC_DEFNOTFOUND"),szSearch).getData());
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		LoadFailure=TRUE;
 		return iResult;
 		}
 	iResult += Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem,fOverload,TRUE,iMinProgress,iMaxProgress);
 	hGroup.Close();
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// progress (could go down one level of recursion...)
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   return iResult;
   }
@@ -1194,7 +1136,6 @@ BOOL C4DefList::Add(C4Def *pDef, BOOL fOverload)
 	C4Def *pLastDef = ID2Def(pDef->id);
 	if (pLastDef && !fOverload) return FALSE;
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Log overloaded def
 	if (Config.Graphics.VerboseObjectLoading>=1)
 		if (pLastDef)
@@ -1206,7 +1147,6 @@ BOOL C4DefList::Add(C4Def *pDef, BOOL fOverload)
 				LogF("     Overload by %s",pDef->Filename);
 				}
 			}
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
   // Remove old def
 	Remove(pDef->id);
@@ -1319,7 +1259,6 @@ C4Def* C4DefList::GetDef(int32_t iIndex, DWORD dwCategory)
   return NULL;
   }
 
-#ifdef C4ENGINE
 C4Def *C4DefList::GetByPath(const char *szPath)
   {
   // search defs
@@ -1337,7 +1276,6 @@ C4Def *C4DefList::GetByPath(const char *szPath)
   // not found
   return NULL;
   }
-#endif
 
 int32_t C4DefList::RemoveTemporary()
   {
@@ -1454,15 +1392,11 @@ int32_t C4DefList::LoadForScenario(const char *szScenario,
 
 	// Load specified
 	iDefs += Load(sSpecified.getData(),dwLoadWhat,szLanguage,pSoundSystem,fOverload);
-#ifdef C4ENGINE
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress+iMinProgress)/2);
-#endif
 
 	// Load folder local
 	iDefs += LoadFolderLocal(szScenario,dwLoadWhat,szLanguage,pSoundSystem,fOverload);
-#ifdef C4ENGINE
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress*3+iMinProgress)/4);
-#endif
 
 	// Load local
 	iDefs += Load(hScenario,dwLoadWhat,szLanguage,pSoundSystem,fOverload);
@@ -1470,10 +1404,8 @@ int32_t C4DefList::LoadForScenario(const char *szScenario,
 	// build quick access table
 	BuildTable();
 
-#ifdef C4ENGINE
 	// progress
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
-#endif
 
 	// Done
 	return iDefs;
@@ -1483,13 +1415,11 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	{
 	// Safety
 	if (!pDef) return FALSE;
-#ifdef C4ENGINE
 	// backup graphics names and pointers
 	// GfxBackup-dtor will ensure that upon loading-failure all graphics are reset to default
 	C4DefGraphicsPtrBackup GfxBackup(&pDef->Graphics);
 	// clear any pointers into def (name)
-	Game.Objects.ClearDefPointers(pDef);
-#endif
+	::Objects.ClearDefPointers(pDef);
 	// Clear def
 	pDef->Clear(); // Assume filename is being kept
 	// Reload def
@@ -1499,16 +1429,12 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	hGroup.Close();
 	// rebuild quick access table
 	BuildTable();
-#ifdef C4ENGINE
 	// update script engine - this will also do include callbacks
-	Game.ScriptEngine.ReLink(this);
-#endif
-#ifdef C4ENGINE
+	::ScriptEngine.ReLink(this);
 	// update definition pointers
-	Game.Objects.UpdateDefPointers(pDef);
+	::Objects.UpdateDefPointers(pDef);
 	// restore graphics
 	GfxBackup.AssignUpdate(&pDef->Graphics);
-#endif
 	// Success
 	return TRUE;
 	}
@@ -1554,7 +1480,6 @@ void C4DefList::BuildTable()
 
 bool C4Def::LoadPortraits(C4Group &hGroup)
 {
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// reset any previous portraits
 	Portraits = NULL; PortraitCount = 0;
 	// search for portraits within def graphics
@@ -1566,21 +1491,18 @@ bool C4Def::LoadPortraits(C4Group &hGroup)
 			// count
 			++PortraitCount;
 			}
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	return true;
 }
 
 C4ValueArray *C4Def::GetCustomComponents(C4Value *pvArrayHolder, C4Object *pBuilder, C4Object *pObjInstance)
 	{
 	// return custom components array if script function is defined and returns an array
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	if (Script.SFn_CustomComponents)
 		{
 		C4AulParSet pars(C4VObj(pBuilder));
 		*pvArrayHolder = Script.SFn_CustomComponents->Exec(pObjInstance, &pars);
 		return pvArrayHolder->getArray();
 		}
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	return NULL;
 	}
 
@@ -1656,34 +1578,28 @@ void C4Def::GetComponents(C4IDList *pOutList, C4Object *pObjInstance, C4Object *
 		}
 	else
 		{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// no valid script overload: Assume object or definition components
 		if (pObjInstance)
 			*pOutList = pObjInstance->Component;
 		else
 			*pOutList = Component;
-#endif
 		}
 	}
 
 void C4Def::IncludeDefinition(C4Def *pIncludeDef)
 	{
-#ifdef C4ENGINE
 	// inherited rank infos and clonk names, if this definition doesn't have its own
 	if (!fClonkNamesOwned) pClonkNames = pIncludeDef->pClonkNames;
 	if (!fRankNamesOwned) pRankNames = pIncludeDef->pRankNames;
 	if (!fRankSymbolsOwned) { pRankSymbols = pIncludeDef->pRankSymbols; iNumRankSymbols = pIncludeDef->iNumRankSymbols; }
-#endif
 	}
 
 void C4Def::ResetIncludeDependencies()
 	{
-#ifdef C4ENGINE
 	// clear all pointers into foreign defs
 	if (!fClonkNamesOwned) pClonkNames = NULL;
 	if (!fRankNamesOwned) pRankNames = NULL;
 	if (!fRankSymbolsOwned) { pRankSymbols = NULL; iNumRankSymbols = 0; }
-#endif
 	}
 
 
@@ -1693,13 +1609,11 @@ void C4Def::ResetIncludeDependencies()
 
 bool C4DefList::GetFontImage(const char *szImageTag, CFacet &rOutImgFacet)
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// extended: images by game
 	C4FacetSurface fctOut;
 	if (!Game.DrawTextSpecImage(fctOut, szImageTag)) return false;
 	if (fctOut.Surface == &fctOut.GetFace()) return false; // cannot use facets that are drawn on the fly right now...
 	rOutImgFacet.Set(fctOut.Surface, fctOut.X, fctOut.Y, fctOut.Wdt, fctOut.Hgt);
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// done, found
 	return true;
 	}
@@ -1744,14 +1658,12 @@ void C4DefList::SortByID()
 		}
 	}
 
-#ifdef C4ENGINE
 void C4DefList::Synchronize()
 	{
 	C4Def *pDef;
 	for (pDef=FirstDef; pDef; pDef=pDef->Next)
 		pDef->Synchronize();
 	}
-#endif
 
 void C4DefList::ResetIncludeDependencies()
 	{
@@ -1759,3 +1671,5 @@ void C4DefList::ResetIncludeDependencies()
 	for (pDef=FirstDef; pDef; pDef=pDef->Next)
 		pDef->ResetIncludeDependencies();
 	}
+
+C4DefList Definitions;

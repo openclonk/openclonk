@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2005, 2007-2008  Günther Brammer
+ * Copyright (c) 2005, 2008  Peter Wortmann
+ * Copyright (c) 2005  Sven Eberhardt
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2007  Julian Raschke
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,6 +29,8 @@
 #include <C4Console.h>
 #include <C4FullScreen.h>
 #include <C4Log.h>
+#include <C4Game.h>
+#include <C4Version.h>
 
 C4Application Application;
 C4Console			Console;

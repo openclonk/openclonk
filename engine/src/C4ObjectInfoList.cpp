@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003  Matthes Bender
+ * Copyright (c) 2002, 2004-2005  Sven Eberhardt
+ * Copyright (c) 2002, 2008  Peter Wortmann
+ * Copyright (c) 2006, 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,7 +30,7 @@
 #include <C4Game.h>
 #include <C4RankSystem.h>
 #include <C4Config.h>
-#include <C4Wrappers.h>
+#include <C4GameObjects.h>
 #endif
 
 C4ObjectInfoList::C4ObjectInfoList()
@@ -222,7 +226,7 @@ void C4ObjectInfoList::DetachFromObjects()
 	{
   C4ObjectInfo *cinf;
   for (cinf=First; cinf; cinf=cinf->Next)
-		Game.Objects.ClearInfo(cinf);
+		::Objects.ClearInfo(cinf);
 	}
 
 C4ObjectInfo* C4ObjectInfoList::GetLast()
