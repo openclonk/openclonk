@@ -111,7 +111,7 @@ bool C4VectorFont::Init(C4Group &hGrp, const char *szFilename, C4Config &rCfg)
 	return true;
 	}
 
-bool C4VectorFont::Init(const char *szFacename, int32_t iSize, uint32_t dwWeight, const char *szCharSet)
+bool C4VectorFont::Init(const char *szFacename, int32_t iSize, uint32_t dwWeight)
 	{
 	// name by face
 	Name.Copy(szFacename);
@@ -122,7 +122,7 @@ bool C4VectorFont::Init(const char *szFacename, int32_t iSize, uint32_t dwWeight
 	if (hDC)
 		{
 		HFONT hFont = ::CreateFont(iSize, 0, 0, 0, dwWeight, FALSE,
-													 FALSE, FALSE, GetCharsetCode(szCharSet), OUT_DEFAULT_PRECIS,
+													 FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
 	                         CLIP_DEFAULT_PRECIS, 5,
 	                         VARIABLE_PITCH, szFacename);
 		if (hFont)
@@ -292,7 +292,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, C4VectorFont * pFont, int32_t iSize
 		if (!pFont->pFont) pFont->pFont = CStdFont::CreateFont(pFont->Name.getData());
 		if (!pFont->pFont) return false; // this font can't be used
 		}
-	rFont.Init(*(pFont->pFont), iSize, dwWeight, LoadResStr("IDS_LANG_CHARSET"), fDoShadow); // throws exception on error
+	rFont.Init(*(pFont->pFont), iSize, dwWeight, fDoShadow); // throws exception on error
 	return true;
 	}
 
@@ -455,7 +455,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 				if (!pFont)
 					{
 					pFont = new C4VectorFont();
-					if (pFont->Init(FontFaceName, iDefFontSize, dwDefWeight, LoadResStr("IDS_LANG_CHARSET")))
+					if (pFont->Init(FontFaceName, iDefFontSize, dwDefWeight))
 						{
 						AddVectorFont(pFont);
 						if (!InitFont(rFont, pFont, iDefFontSize, dwDefWeight, fDoShadow))

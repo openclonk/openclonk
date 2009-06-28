@@ -82,7 +82,6 @@ class C4ConfigGeneral
 		void AdoptOldSettings();
 		void DeterminePaths(BOOL forceWorkingDirectory);
 		void CompileFunc(StdCompiler *pComp);
-		bool IsUTF8() { return SEqual(LoadResStr("IDS_LANG_CHARSET"), "UTF-8"); }
 		void AddAdditionalDataPath(const char *szPath);
 		void ClearAdditionalDataPaths();
 		~C4ConfigGeneral() { ClearAdditionalDataPaths(); }

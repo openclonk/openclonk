@@ -266,7 +266,7 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 	StdStrBuf sBuffer;
 
 	// Header
-	sBuffer.AppendFormat("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1031{\\fonttbl {\\f0\\fnil\\fcharset%d Times New Roman;}}", GetCharsetCode(LoadResStr("IDS_LANG_CHARSET")));
+	sBuffer.AppendFormat("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1031{\\fonttbl {\\f0\\fnil\\fcharset%d Times New Roman;}}", 0 /*FIXME: a number for UTF-8 here*/);
 	sBuffer.Append(LineFeed);
 
 	// Scenario title

@@ -379,7 +379,7 @@ BOOL C4ToolsDlg::Open()
 		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, TRUE, TRUE, 0); // ???
 		gtk_widget_show_all(hbox);
 
-		C4DevmodeDlg::AddPage(hbox, GTK_WINDOW(Console.window), LoadResStrUtf8("IDS_DLG_TOOLS").getData());
+		C4DevmodeDlg::AddPage(hbox, GTK_WINDOW(Console.window), LoadResStr("IDS_DLG_TOOLS"));
 
 		//g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroy), this);
 		handlerDynamic = g_signal_connect(G_OBJECT(landscape_dynamic), "toggled", G_CALLBACK(OnButtonModeDynamic), this);
@@ -877,7 +877,7 @@ void C4ToolsDlg::UpdateLandscapeModeCtrls()
 	g_signal_handler_unblock(landscape_static, handlerStatic);
 	g_signal_handler_unblock(landscape_exact, handlerExact);
 
-	C4DevmodeDlg::SetTitle(hbox, LoadResStrUtf8(iMode==C4LSC_Dynamic ? "IDS_DLG_DYNAMIC" : iMode==C4LSC_Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT").getData());
+	C4DevmodeDlg::SetTitle(hbox, LoadResStr(iMode==C4LSC_Dynamic ? "IDS_DLG_DYNAMIC" : iMode==C4LSC_Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT"));
 #endif
 #endif
 	}

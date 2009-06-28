@@ -97,22 +97,6 @@ namespace {
 		gdk_pixbuf_unref(pixbuf);
 		return image;
 	}
-
-	class ImplicitStrBuf: public StdStrBuf {
-		public:
-		ImplicitStrBuf(StdStrBuf RREF Buf2): StdStrBuf(static_cast<StdStrBuf RREF>(Buf2)) { }
-#ifdef HAVE_RVALUE_REF
-		ImplicitStrBuf(const StdStrBuf & Buf2): StdStrBuf(Buf2) { }
-#endif
-		ImplicitStrBuf(ImplicitStrBuf RREF Buf2): StdStrBuf(static_cast<ImplicitStrBuf RREF>(Buf2)) { }
-		ImplicitStrBuf(const ImplicitStrBuf & Buf2): StdStrBuf(Buf2) { }
-		operator const char *() const { return getData(); }
-	};
-
-	inline ImplicitStrBuf LoadResStrUtf8I(const char * ident)
-	{
-		return ImplicitStrBuf(Languages.IconvUtf8(LoadResStr(ident)));
-	}
 }
 #endif
 
@@ -470,10 +454,10 @@ GtkWidget* C4Console::InitGUI()
 	// ------------ Menu -------------------
 	menuBar = gtk_menu_bar_new();
 
-	GtkWidget* itemFile = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_FILE"));
-	GtkWidget* itemComponents = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_COMPONENTS"));
-	GtkWidget* itemPlayer = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_PLAYER"));
-	GtkWidget* itemViewport = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_VIEWPORT"));
+	GtkWidget* itemFile = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_FILE"));
+	GtkWidget* itemComponents = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_COMPONENTS"));
+	GtkWidget* itemPlayer = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_PLAYER"));
+	GtkWidget* itemViewport = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_VIEWPORT"));
 	GtkWidget* itemHelp = gtk_menu_item_new_with_label("?");
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuBar), itemFile);
@@ -495,58 +479,58 @@ GtkWidget* C4Console::InitGUI()
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(itemViewport), menuViewport);
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(itemHelp), menuHelp);
 
-	fileOpen = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_OPEN"));
+	fileOpen = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_OPEN"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileOpen);
 
-	fileOpenWithPlayers = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_OPENWPLRS"));
+	fileOpenWithPlayers = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_OPENWPLRS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileOpenWithPlayers);
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), GTK_WIDGET(gtk_separator_menu_item_new()));
 
-	fileSave = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SAVESCENARIO"));
+	fileSave = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVESCENARIO"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSave);
 
-	fileSaveAs = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SAVESCENARIOAS"));
+	fileSaveAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVESCENARIOAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveAs);
 
-	fileSaveGame = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SAVEGAME"));
+	fileSaveGame = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAME"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGame);
 
-	fileSaveGameAs = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SAVEGAMEAS"));
+	fileSaveGameAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAMEAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGameAs);
 
-	fileRecord = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_RECORD"));
+	fileRecord = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_RECORD"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileRecord);
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), GTK_WIDGET(gtk_separator_menu_item_new()));
 
-	fileClose = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_CLOSE"));
+	fileClose = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_CLOSE"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileClose);
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), GTK_WIDGET(gtk_separator_menu_item_new()));
 
-	fileQuit = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_QUIT"));
+	fileQuit = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_QUIT"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileQuit);
 
-	compObjects = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_BTN_OBJECTS"));
+	compObjects = gtk_menu_item_new_with_label(LoadResStr("IDS_BTN_OBJECTS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compObjects);
 
-	compScript = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SCRIPT"));
+	compScript = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SCRIPT"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compScript);
 
-	compTitle = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_TITLE"));
+	compTitle = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_TITLE"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compTitle);
 
-	compInfo = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_INFO"));
+	compInfo = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_INFO"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compInfo);
 
-	plrJoin = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_JOIN"));
+	plrJoin = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_JOIN"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuPlayer), plrJoin);
 
-	viewNew = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_NEW"));
+	viewNew = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NEW"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuViewport), viewNew);
 
-	helpAbout = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MENU_ABOUT"));
+	helpAbout = gtk_menu_item_new_with_label(LoadResStr("IDS_MENU_ABOUT"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuHelp), helpAbout);
 
 	// ------------ Window ---------------------
@@ -644,7 +628,7 @@ bool C4Console::Out(const char *szText)
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtLog));
 	gtk_text_buffer_get_end_iter(buffer, &end);
 
-	gtk_text_buffer_insert(buffer, &end, C4Language::IconvUtf8(szText).getData(), -1);
+	gtk_text_buffer_insert(buffer, &end, szText, -1);
 	gtk_text_buffer_insert(buffer, &end, "\n", 1);
 
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(txtLog), gtk_text_buffer_get_insert(buffer), 0.0, FALSE, 0.0, 0.0);
@@ -1245,7 +1229,7 @@ bool C4Console::UpdateCursorBar(const char *szCursor)
 	SetDlgItemText(hWindow,IDC_STATICCURSOR,szCursor);
 	UpdateWindow(GetDlgItem(hWindow,IDC_STATICCURSOR));
 #elif defined(WITH_DEVELOPER_MODE)
-	gtk_label_set_label(GTK_LABEL(lblCursor), Languages.IconvUtf8(szCursor).getData());
+	gtk_label_set_label(GTK_LABEL(lblCursor), szCursor);
 #endif
 	return TRUE;
 	}
@@ -1264,7 +1248,7 @@ bool C4Console::UpdateViewportMenu()
 #ifdef _WIN32
 		AddMenuItem(hMenu,IDM_VIEWPORT_NEW1+pPlr->Number,sText.getData());
 #elif defined(WITH_DEVELOPER_MODE)
-		GtkWidget* menuItem = gtk_menu_item_new_with_label(Languages.IconvUtf8(sText.getData()).getData());
+		GtkWidget* menuItem = gtk_menu_item_new_with_label(sText.getData());
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuViewport), menuItem);
 		g_signal_connect(G_OBJECT(menuItem), "activate", G_CALLBACK(OnViewNewPlr), GINT_TO_POINTER(pPlr->Number));
 		gtk_widget_show(menuItem);
@@ -1432,7 +1416,7 @@ bool C4Console::UpdatePlayerMenu()
 		AddMenuItem(hMenu,IDM_PLAYER_QUIT1+pPlr->Number,sText.getData(),(!::Network.isEnabled() || ::Network.isHost()) && Editing);
 #elif defined(WITH_DEVELOPER_MODE)
 		// TODO: Implement AddMenuItem...
-		GtkWidget* menuItem = gtk_menu_item_new_with_label(Languages.IconvUtf8(sText.getData()).getData());
+		GtkWidget* menuItem = gtk_menu_item_new_with_label(sText.getData());
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuPlayer), menuItem);
 		g_signal_connect(G_OBJECT(menuItem), "activate", G_CALLBACK(OnPlrQuit), GINT_TO_POINTER(pPlr->Number));
 		gtk_widget_show(menuItem);
@@ -1557,7 +1541,7 @@ void C4Console::UpdateNetMenu()
 #ifdef _WIN32
 	if (!InsertMenu(GetMenu(hWindow),MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT)CreateMenu(),LoadResStr("IDS_MNU_NET"))) return;
 #elif defined(WITH_DEVELOPER_MODE)
-	itemNet = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_NET"));
+	itemNet = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NET"));
 	GtkWidget* menuNet = gtk_menu_new();
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(itemNet), menuNet);
 	gtk_menu_shell_insert(GTK_MENU_SHELL(menuBar), itemNet, MenuIndexHelp);

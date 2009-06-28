@@ -41,7 +41,6 @@ class C4LanguageInfo
 		char Name[C4MaxLanguageInfo + 1];
 		char Info[C4MaxLanguageInfo + 1];
 		char Fallback[C4MaxLanguageInfo + 1];
-		char Charset[C4MaxLanguageInfo + 1];
 		//char Location[C4MaxLanguageInfo + 1]; ...store group name here
 	protected:
 		C4LanguageInfo* Next;
@@ -76,7 +75,6 @@ class C4Language
 		// Encoding conversion functions
 		static StdStrBuf IconvClonk(const char * string);
 		static StdStrBuf IconvSystem(const char * string);
-		static StdStrBuf IconvUtf8(const char * string);
 	protected:
 		// Handling of language info loaded from string tables
 		void InitInfos();
@@ -87,15 +85,10 @@ class C4Language
 #ifdef HAVE_ICONV
 		static iconv_t local_to_host;
 		static iconv_t host_to_local;
-		static iconv_t local_to_utf_8;
 		static StdStrBuf Iconv(const char * string, iconv_t cd);
 #endif
 };
 
 extern C4Language Languages;
 
-static inline StdStrBuf LoadResStrUtf8(const char* ident)
-{
-	return Languages.IconvUtf8(LoadResStr(ident));
-}
 #endif

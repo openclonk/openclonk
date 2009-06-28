@@ -310,7 +310,7 @@ StdStrBuf C4RTFFile::GetPlainText()
 	// cleanup
 	ClearState();
 	// FIXME: This is wrong, RTF contains charset information which should be used
-	if (Config.General.IsUTF8()) sResult.EnsureUnicode();
+	sResult.EnsureUnicode();
 	// return result
 	return sResult;
 	}

@@ -140,15 +140,12 @@ BOOL C4ComponentHost::Load(const char *szName,
 			sprintf(strEntryWithLanguage, strEntry, strCode);
 			if (hGroup.LoadEntryString(strEntryWithLanguage, Data))
 				{
-				if (pConfig->General.IsUTF8())
+				Data.EnsureUnicode();
+				// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
+				if (Data[0] == '\xEF' && Data[1] == '\xBB' && Data[2] == '\xBF')
 					{
-					Data.EnsureUnicode();
-					// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
-					if (Data[0] == '\xEF' && Data[1] == '\xBB' && Data[2] == '\xBF')
-						{
-						Data.Move(3,Data.getSize()-3);
-						Data.Shrink(3);
-						}
+					Data.Move(3,Data.getSize()-3);
+					Data.Shrink(3);
 					}
 				// Store actual filename
 				hGroup.FindEntry(strEntryWithLanguage, Filename);
@@ -189,7 +186,7 @@ BOOL C4ComponentHost::Load(const char *szName,
 			sprintf(strEntryWithLanguage, strEntry, strCode);
 			if (hGroupSet.LoadEntryString(strEntryWithLanguage, Data))
 				{
-				if (pConfig->General.IsUTF8()) Data.EnsureUnicode();
+				Data.EnsureUnicode();
 				// Store actual filename
 				C4Group *pGroup = hGroupSet.FindEntry(strEntryWithLanguage);
 				pGroup->FindEntry(strEntryWithLanguage, Filename);

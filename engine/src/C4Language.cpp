@@ -42,7 +42,6 @@
 #endif
 #include <errno.h>
 iconv_t C4Language::host_to_local = iconv_t(-1);
-iconv_t C4Language::local_to_utf_8 = iconv_t(-1);
 iconv_t C4Language::local_to_host = iconv_t(-1);
 #endif
 
@@ -147,8 +146,6 @@ void C4Language::Clear()
 #ifdef HAVE_ICONV
 	if (local_to_host != iconv_t(-1))
 	{
-		if (local_to_host == local_to_utf_8)
-			local_to_utf_8 = iconv_t(-1);
 		iconv_close(local_to_host);
 		local_to_host = iconv_t(-1);
 	}
@@ -157,12 +154,6 @@ void C4Language::Clear()
 		iconv_close(host_to_local);
 		host_to_local = iconv_t(-1);
 	}
-	if (local_to_utf_8 != iconv_t(-1))
-	{
-		iconv_close(local_to_utf_8);
-		local_to_utf_8 = iconv_t(-1);
-	}
-
 #endif
 }
 
@@ -219,10 +210,6 @@ StdStrBuf C4Language::IconvSystem(const char * string)
 StdStrBuf C4Language::IconvClonk(const char * string)
 {
 	return Iconv(string, host_to_local);
-}
-StdStrBuf C4Language::IconvUtf8(const char * string)
-{
-	return Iconv(string, local_to_utf_8);
 }
 #else
 StdStrBuf C4Language::IconvSystem(const char * string)
@@ -383,16 +370,20 @@ void C4Language::LoadInfos(C4Group &hGroup)
 			// Load language string table
 			if (hGroup.LoadEntry(strEntry, &strTable, 0, 1))
 			{
+				if (!SEqual(GetResStr("IDS_LANG_CHARSET", strTable), "UTF-8"))
+				{
+					LogF("Translation %s is not in UTF-8, skipped", GetResStr("IDS_LANG_NAME", strTable));
+					continue;
+				}
 				// New language info
 				C4LanguageInfo *pInfo = new C4LanguageInfo;
 				// Get language code by entry name
 				SCopy(GetFilenameOnly(strEntry) + SLen(GetFilenameOnly(strEntry)) - 2, pInfo->Code, 2);
 				SCapitalize(pInfo->Code);
 				// Get language name, info, fallback from table
-				SCopy(GetResStr("IDS_LANG_NAME", (char*)strTable), pInfo->Name, C4MaxLanguageInfo);
-				SCopy(GetResStr("IDS_LANG_INFO", (char*)strTable), pInfo->Info, C4MaxLanguageInfo);
-				SCopy(GetResStr("IDS_LANG_FALLBACK", (char*)strTable), pInfo->Fallback, C4MaxLanguageInfo);
-				SCopy(GetResStr("IDS_LANG_CHARSET", (char*)strTable), pInfo->Charset, C4MaxLanguageInfo);
+				SCopy(GetResStr("IDS_LANG_NAME", strTable), pInfo->Name, C4MaxLanguageInfo);
+				SCopy(GetResStr("IDS_LANG_INFO", strTable), pInfo->Info, C4MaxLanguageInfo);
+				SCopy(GetResStr("IDS_LANG_FALLBACK", strTable), pInfo->Fallback, C4MaxLanguageInfo);
 				// Safety: pipe character is not allowed in any language info string
 				SReplaceChar(pInfo->Name, '|', ' ');
 				SReplaceChar(pInfo->Info, '|', ' ');
@@ -483,22 +474,13 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 #ifdef HAVE_LANGINFO_H
 	const char * const to_set = nl_langinfo(CODESET);
 	if (local_to_host == iconv_t(-1))
-		local_to_host = iconv_open (to_set ? to_set : "ASCII",
-			GetCharsetCodeName(LoadResStr("IDS_LANG_CHARSET")));
+		local_to_host = iconv_open (to_set ? to_set : "ASCII", "UTF-8");
 	if (host_to_local == iconv_t(-1))
-		host_to_local = iconv_open (GetCharsetCodeName(LoadResStr("IDS_LANG_CHARSET")),
+		host_to_local = iconv_open ("UTF-8",
 			to_set ? to_set : "ASCII");
 #else
 	const char * const to_set = "";
 #endif
-	if (local_to_utf_8 == iconv_t(-1))
-	{
-		if (SEqual(to_set, "UTF-8"))
-			local_to_utf_8 = local_to_host;
-		else
-			local_to_utf_8 = iconv_open ("UTF-8",
-				GetCharsetCodeName(LoadResStr("IDS_LANG_CHARSET")));
-	}
 #endif
 	// Success
 	return true;

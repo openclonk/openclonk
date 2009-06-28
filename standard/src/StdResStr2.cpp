@@ -166,15 +166,6 @@ char *GetResStr(const char *id, const char *strTable)
 		if ((pos = SSearch(strTable, idExt)))
 			// Get string until end of line
 			SCopyUntil(pos, strResult, "\r\n", ResStrMaxLen);
-#ifdef _DEBUG
-#ifdef _MSC_VER
-	if (SEqual2(strResult, "[Undefined:"))
-		if (!SEqual(id, "IDS_LANG_CHARSET"))
-			{
-			/* __asm int 3 */
-			}
-#endif
-#endif
 	// Return string
 	return strResult;
 }

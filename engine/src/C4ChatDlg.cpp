@@ -27,16 +27,16 @@
 #include "C4Network2IRC.h"
 #include "C4MessageInput.h"
 
-void convUTF8toWindows(StdStrBuf &sText)
+void ConvWindowsToUTF8(StdStrBuf &sText)
 {
-	// workaround until we have UTF-8 support: convert German umlauts and ß
-	sText.Replace("\xc3\x84", "Ä");
-	sText.Replace("\xc3\x96", "Ö");
-	sText.Replace("\xc3\x9c", "Ü");
-	sText.Replace("\xc3\xa4", "ä");
-	sText.Replace("\xc3\xb6", "ö");
-	sText.Replace("\xc3\xbc", "ü");
-	sText.Replace("\xc3\x9f", "ß");
+	// work around (German) legacy clients using windows-1252
+	sText.Replace("Ä", "\xc3\x84");
+	sText.Replace("Ö", "\xc3\x96");
+	sText.Replace("Ü", "\xc3\x9c");
+	sText.Replace("ä", "\xc3\xa4");
+	sText.Replace("ö", "\xc3\xb6");
+	sText.Replace("ü", "\xc3\xbc");
+	sText.Replace("ß", "\xc3\x9f");
 }
 
 /* C4ChatControl::ChatSheet::NickItem */
@@ -219,8 +219,8 @@ void C4ChatControl::ChatSheet::AddTextLine(const char *szText, uint32_t dwClr)
 	StdStrBuf sText; sText.Copy(szText);
 	for (char c='\x01'; c<' '; ++c)
 		sText.ReplaceChar(c, ' ');
-	// convert incoming UTF-8
-	convUTF8toWindows(sText);
+	// convert incoming Windows-1252
+	ConvWindowsToUTF8(sText);
 	// add text line to chat box
 	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
 	pChatBox->AddTextLine(sText.getData(), pUseFont, dwClr, true, false);
@@ -272,7 +272,7 @@ void C4ChatControl::ChatSheet::Update(bool fLock)
 			// update topic
 			const char *szTopic = pIRCChan->getTopic();
 			sChatTitle.Format("%s%s%s", sIdent.getData(), szTopic ? ": " : "", szTopic ? szTopic : "");
-			convUTF8toWindows(sChatTitle);
+			ConvWindowsToUTF8(sChatTitle);
 			}
 		}
 	}

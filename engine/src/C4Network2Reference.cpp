@@ -206,15 +206,13 @@ void C4Network2RefServer::RespondReference(const C4NetIO::addr_t &addr)
 	// Pack
 	StdStrBuf PacketData = DecompileToBuf<StdCompilerINIWrite>(mkNamingPtrAdapt(pReference, "Reference"));
 	// Create header
-	const char *szCharset = GetCharsetCodeName(LoadResStr("IDS_LANG_CHARSET"));
 	StdStrBuf Header = FormatString(
 		  "HTTP/1.1 200 Found\r\n"
       "Content-Length: %d\r\n"
-      "Content-Type: text/plain; charset=%s\r\n"
+      "Content-Type: text/plain; charset=UTF-8\r\n"
       "Server: " C4ENGINENAME "/" C4VERSION "\r\n"
       "\r\n",
-		PacketData.getLength(),
-		szCharset);
+		PacketData.getLength());
 	// Send back
 	Send(C4NetIOPacket(Header, Header.getLength(), false, addr));
 	Send(C4NetIOPacket(PacketData, PacketData.getLength(), false, addr));

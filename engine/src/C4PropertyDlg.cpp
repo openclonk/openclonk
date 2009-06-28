@@ -151,7 +151,7 @@ BOOL C4PropertyDlg::Open()
 
 		gtk_widget_show_all(vbox);
 
-		C4DevmodeDlg::AddPage(vbox, GTK_WINDOW(Console.window), LoadResStrUtf8("IDS_DLG_PROPERTIES").getData());
+		C4DevmodeDlg::AddPage(vbox, GTK_WINDOW(Console.window), LoadResStr("IDS_DLG_PROPERTIES"));
 
 		g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(OnScriptActivate), this);
 
@@ -281,7 +281,7 @@ BOOL C4PropertyDlg::Update()
 #else
 #ifdef WITH_DEVELOPER_MODE
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	gtk_text_buffer_set_text(buffer, C4Language::IconvUtf8(Output.getData()).getData(), -1);
+	gtk_text_buffer_set_text(buffer, Output.getData(), -1);
 #endif
 #endif
 	return TRUE;

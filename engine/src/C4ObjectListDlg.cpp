@@ -424,7 +424,7 @@ c4_list_get_value (GtkTreeModel * tree_model, GtkTreeIter * iter, gint column, G
 	g_value_init (value, G_TYPE_POINTER);
 	g_value_set_pointer(value, pObj);
 
-//	g_value_set_string(value, C4Language::IconvUtf8(pObj->GetName()).getData());
+//	g_value_set_string(value, pObj->GetName());
 }
 
 // Wrapper around g_object_new.
@@ -695,7 +695,7 @@ static void name_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 {
 	C4Object* object = c4_list_iter_get_C4Object(model, iter);
 
-	g_object_set(G_OBJECT(renderer), "text", C4Language::IconvUtf8(object->GetName()).getData(), (gpointer)NULL);
+	g_object_set(G_OBJECT(renderer), "text", object->GetName(), (gpointer)NULL);
 }
 
 #define ICON_SIZE 24

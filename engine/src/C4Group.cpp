@@ -777,7 +777,7 @@ bool C4Group::OpenRealGrpFile()
 		if (!StdFile.Read((BYTE*)&corebuf,sizeof(C4GroupEntryCore))) return Error("OpenRealGrpFile: Error reading entries");
 		// New C4Groups have filenames in UTF-8
 		StdStrBuf entryname(corebuf.FileName);
-		if (pConfig->General.IsUTF8()) entryname.EnsureUnicode();
+		entryname.EnsureUnicode();
 		// Prevent overwriting of user stuff by malicuous groups
 		C4InVal::ValidateFilename(const_cast<char *>(entryname.getData()),entryname.getLength());
 		EntryOffset+=sizeof(C4GroupEntryCore);

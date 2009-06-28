@@ -61,7 +61,7 @@ class C4VectorFont
 		~C4VectorFont(); // dtor - releases font and deletes temp file
 
 		bool Init(C4Group &hGrp, const char *szFilename, C4Config &rCfg); // load font from group
-		bool Init(const char *szFacename, int32_t iSize, uint32_t dwWeight, const char *szCharSet); // load system font specified by face name
+		bool Init(const char *szFacename, int32_t iSize, uint32_t dwWeight); // load system font specified by face name
 		void Init(const char *szName, CStdVectorFont *pFont); // init from a font that has been laoded already
 		friend class C4FontLoader;
 	};
