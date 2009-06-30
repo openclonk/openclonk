@@ -1686,7 +1686,7 @@ void C4Game::Default()
 	ScenarioSysLangStringTable.Default();
 	Script.Default();
 	GraphicsResource.Default();
-	Control.Default();
+	//Control.Default();
 	MouseControl.Default();
 	PathFinder.Default();
 	TransferZones.Default();
