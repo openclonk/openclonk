@@ -519,7 +519,9 @@ include(FindPNG)
 include(FindZLIB)
 
 include(FindThreads)
-SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT})
+if(${CMAKE_USE_PTHREADS_INIT} AND NOT WIN32)
+SET(HAVE_PTHREAD 1)
+endif()
 
 # isilkor 09-05-29: FindFreetype only checks for no-ver and 219
 find_library(FREETYPE_LIBRARY NAMES freetype239)
