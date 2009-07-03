@@ -507,6 +507,7 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 #endif
 		// OpenGL
 		DDrawCfg.Set(Graphics.NewGfxCfgGL, (float) Graphics.BlitOffGL/100.0f);
+	Graphics.ApplyResolutionConstraints();
 	// Warning against invalid ports
 	if (Config.Network.PortTCP>0 && Config.Network.PortTCP == Config.Network.PortRefServer)
 		{
@@ -593,6 +594,36 @@ BOOL C4Config::Save()
 		}
 	return TRUE;
 	}
+
+void C4ConfigGraphics::ApplyResolutionConstraints()
+{
+	// Enumerate display modes
+	int32_t idx = 0, iXRes, iYRes, iBitDepth;
+	int32_t best_match = -1;
+	uint32_t best_delta = ~0;
+	while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor))
+	{
+		uint32_t delta = std::abs(ResX*ResY - iXRes*iYRes);
+		if (!delta && iBitDepth == BitDepth)
+			return; // Exactly the expected mode
+		if (delta < best_delta)
+		{
+			// Better match than before
+			best_match = idx;
+			best_delta = delta;
+		}
+	}
+	if (best_match != -1)
+	{
+		// Apply next-best mode
+		Application.GetIndexedDisplayMode(best_match, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor);
+		if (iXRes != ResX || iYRes != ResY)
+			// Don't warn if only bit depth changes
+			// Also, lang table not loaded yet
+			LogF("Warning: The selected resolution %dx%d is not available and has been changed to %dx%d.", ResX, ResY, iXRes, iYRes);
+		ResX = iXRes; ResY = iYRes;
+	}
+}
 
 void C4ConfigGeneral::DeterminePaths(BOOL forceWorkingDirectory)
 	{

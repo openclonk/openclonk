@@ -144,6 +144,7 @@ class C4ConfigGraphics
 		int32_t FireParticles; // draw extended fire particles if enabled (defualt on)
 		int32_t MaxRefreshDelay; // minimum time after which graphics should be refreshed (ms)
 		void CompileFunc(StdCompiler *pComp);
+		void ApplyResolutionConstraints();
 	};
 
 class C4ConfigSound
