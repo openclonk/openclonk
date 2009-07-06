@@ -432,6 +432,7 @@ libstandard_a_SOURCES = \
   standard/src/StdGL.cpp \
   standard/src/StdGLCtx.cpp \
   standard/src/StdMarkup.cpp \
+  standard/src/StdMeshMaterial.cpp \
   standard/src/StdNoGfx.cpp \
   standard/src/StdPNG.cpp \
   standard/src/StdRegistry.cpp \
@@ -462,6 +463,7 @@ libstandard_a_SOURCES = \
   standard/inc/StdFont.h \
   standard/inc/StdGL.h \
   standard/inc/StdMarkup.h \
+  standard/inc/StdMeshMaterial.h \
   standard/inc/StdNoGfx.h \
   standard/inc/StdPNG.h \
   standard/inc/StdRandom.h \
