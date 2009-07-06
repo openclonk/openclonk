@@ -519,8 +519,8 @@ include(FindPNG)
 include(FindZLIB)
 
 include(FindThreads)
-if(${CMAKE_USE_PTHREADS_INIT} AND NOT WIN32)
-SET(HAVE_PTHREAD 1)
+if(NOT WIN32)
+	SET(HAVE_PTHREAD ${CMAKE_USE_PTHREADS_INIT} CACHE INTERNAL "libpthread available")
 endif()
 
 # isilkor 09-05-29: FindFreetype only checks for no-ver and 219
