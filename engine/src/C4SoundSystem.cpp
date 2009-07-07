@@ -309,7 +309,7 @@ BOOL C4SoundInstance::Playing()
                      : timeGetTime() < iStarted + pEffect->Length;
 #endif
 #ifdef HAVE_LIBSDL_MIXER
-	return Application.MusicSystem.MODInitialized && Mix_Playing(iChannel);
+	return Application.MusicSystem.MODInitialized && (iChannel != -1) && Mix_Playing(iChannel);
 #endif
 	return false;
   }
