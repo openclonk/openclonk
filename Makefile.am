@@ -477,7 +477,13 @@ libstandard_a_SOURCES = \
   standard/inc/StdVideo.h \
   standard/inc/StdWindow.h \
   standard/zlib/gzio.c \
-  standard/zlib/zutil.h
+  standard/zlib/zutil.h \
+  standard/tinyxml/tinystr.cpp \
+  standard/tinyxml/tinyxml.cpp \
+  standard/tinyxml/tinyxmlparser.cpp \
+  standard/tinyxml/tinyxmlerror.cpp \
+  standard/tinyxml/tinyxml.h \
+  standard/tinyxml/tinystr.h
 
 if WIN32
 libstandard_a_SOURCES += standard/src/StdWindow.cpp standard/src/StdJoystick.cpp standard/inc/StdJoystick.h
