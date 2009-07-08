@@ -36,7 +36,6 @@ C4Application Application;
 C4Console			Console;
 C4FullScreen	FullScreen;
 C4Game				Game;
-C4ConfigShareware Config;
 
 #ifdef _WIN32
 

@@ -602,6 +602,7 @@ target_link_libraries(clonk
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
+	${WS2}
 	${OPENSSL}
 )
 

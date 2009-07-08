@@ -486,7 +486,7 @@ void C4ConfigShareware::ClearRegistrationError()
 	RegistrationError.Clear();
 }
 
-bool C4ConfigShareware::IsConfidentialData(const char *szInput, bool fShowWarningMessage)
+bool C4ConfigShareware::IsConfidentialData(const char *szInput)
 	{
 	// safety
 	if (!szInput) return false;
@@ -496,10 +496,12 @@ bool C4ConfigShareware::IsConfidentialData(const char *szInput, bool fShowWarnin
 	const char *szWebCode = GetRegistrationData("WebCode");
 	if (szWebCode && *szWebCode) if (SSearchNoCase(szInput, szWebCode))
 		{
-		if (fShowWarningMessage && ::pGUI)
-			::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
+/*		if (fShowWarningMessage && ::pGUI)
+			::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));*/
 		return true;
 		}
 	// all OK
 	return false;
 	}
+
+C4ConfigShareware Config;

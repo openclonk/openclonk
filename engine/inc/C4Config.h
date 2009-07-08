@@ -141,8 +141,9 @@ class C4ConfigGraphics
 		int32_t RenderInactiveEM; // draw vieports even if inactive in CPEM
 		int32_t DisableGamma;
 		int32_t Monitor;    // monitor index to play on
-		int32_t FireParticles; // draw extended fire particles if enabled (defualt on)
+		int32_t FireParticles; // draw extended fire particles if enabled (default on)
 		int32_t MaxRefreshDelay; // minimum time after which graphics should be refreshed (ms)
+		int32_t EnableShaders; // enable pixel shaders on engines that support them
 		void CompileFunc(StdCompiler *pComp);
 		void ApplyResolutionConstraints();
 	};

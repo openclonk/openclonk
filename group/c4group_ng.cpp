@@ -61,22 +61,17 @@ bool Log(const char *msg) {
     printf("%s\n", msg);
   return 1;
 }
-BOOL LogF(const char *strMessage, ...) {
-  va_list args;
-  va_start(args, strMessage);
-  // Compose formatted message
-  StdStrBuf Buf;
-  Buf.FormatV(strMessage, args);
-  // Log
-  return Log(Buf.getData());
-}
-BOOL DebugLogF(const char *strMessage ...)
-{
-	va_list args; va_start(args, strMessage);
-	StdStrBuf Buf;
-	Buf.FormatV(strMessage, args);
-	return Log(Buf.getData());
-}
+#define IMPLEMENT_LOGF(func) \
+	BOOL func(const char *msg, ...) { \
+		va_list args; va_start(args, msg); \
+		StdStrBuf Buf; \
+		Buf.FormatV(msg, args); \
+		return Log(Buf.getData()); \
+	}
+
+IMPLEMENT_LOGF(DebugLogF)
+IMPLEMENT_LOGF(LogF)
+IMPLEMENT_LOGF(LogSilentF)
 
 bool ProcessGroup(const char *FilenamePar) {
 
@@ -402,8 +397,10 @@ int UnregisterShellExtensions() {
 }
 
 int main(int argc, char *argv[]) {
+#ifndef WIN32
   // Always line buffer mode, even if the output is not sent to a terminal
-  setvbuf(stdout, NULL, _IOLBF, 0);
+	setvbuf(stdout, NULL, _IOLBF, 0);
+#endif
   // Scan options
   int iFirstGroup = 0;
   for (int i = 1; i < argc; ++i) {

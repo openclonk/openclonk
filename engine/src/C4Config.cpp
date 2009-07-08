@@ -33,7 +33,6 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Log.h>
 #include <C4Components.h>
-#include <C4Application.h>
 #include <C4Network2.h>
 #include <C4Language.h>
 #endif
@@ -162,7 +161,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Monitor,								"Monitor",							0							)); // 0 = D3DADAPTER_DEFAULT
 	pComp->Value(mkNamingAdapt(FireParticles,					"FireParticles",				TRUE					));
 	pComp->Value(mkNamingAdapt(MaxRefreshDelay,				"MaxRefreshDelay",			30						));
-	pComp->Value(mkNamingAdapt(DDrawCfg.Shader,			  "Shader",								0							,false, true));
+	pComp->Value(mkNamingAdapt(EnableShaders,				  "Shader",								0							,false, true));
 	}
 
 void C4ConfigSound::CompileFunc(StdCompiler *pComp)
@@ -481,33 +480,25 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 	// Config postinit
 	General.DeterminePaths(forceWorkingDirectory);
 	General.AdoptOldSettings();
-	#ifdef HAVE_WINSOCK
-		bool fWinSock = AcquireWinSock();
-	#endif
+#ifdef HAVE_WINSOCK
+	// Setup WS manually, so c4group doesn't depend on C4NetIO
+	WSADATA wsadata;
+	bool fWinSock = !WSAStartup(WINSOCK_VERSION, &wsadata);
+#endif
 	if (SEqual(Network.LocalName.getData(), "Unknown"))
 		{
 		char LocalName[25+1]; *LocalName = 0;
 		gethostname(LocalName, 25);
 		if (*LocalName) Network.LocalName.Copy(LocalName);
 		}
-	#ifdef HAVE_WINSOCK
-		if (fWinSock) ReleaseWinSock();
-	#endif
+#ifdef HAVE_WINSOCK
+	if (fWinSock) WSACleanup();
+#endif
 	General.DefaultLanguage();
 #if defined USE_GL && !defined USE_DIRECTX
 	if (Graphics.Engine == GFXENGN_DIRECTX || Graphics.Engine == GFXENGN_DIRECTXS)
 		Graphics.Engine = GFXENGN_OPENGL;
 #endif
-#ifdef USE_DIRECTX
-	// set ddraw config
-	if (Graphics.Engine == GFXENGN_DIRECTX || Graphics.Engine == GFXENGN_DIRECTXS)
-		// Direct3D
-		DDrawCfg.Set(Graphics.NewGfxCfg, (float) Graphics.BlitOff/100.0f);
-	else
-#endif
-		// OpenGL
-		DDrawCfg.Set(Graphics.NewGfxCfgGL, (float) Graphics.BlitOffGL/100.0f);
-	Graphics.ApplyResolutionConstraints();
 	// Warning against invalid ports
 	if (Config.Network.PortTCP>0 && Config.Network.PortTCP == Config.Network.PortRefServer)
 		{
@@ -594,36 +585,6 @@ BOOL C4Config::Save()
 		}
 	return TRUE;
 	}
-
-void C4ConfigGraphics::ApplyResolutionConstraints()
-{
-	// Enumerate display modes
-	int32_t idx = 0, iXRes, iYRes, iBitDepth;
-	int32_t best_match = -1;
-	uint32_t best_delta = ~0;
-	while (Application.GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor))
-	{
-		uint32_t delta = std::abs(ResX*ResY - iXRes*iYRes);
-		if (!delta && iBitDepth == BitDepth)
-			return; // Exactly the expected mode
-		if (delta < best_delta)
-		{
-			// Better match than before
-			best_match = idx;
-			best_delta = delta;
-		}
-	}
-	if (best_match != -1)
-	{
-		// Apply next-best mode
-		Application.GetIndexedDisplayMode(best_match, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor);
-		if (iXRes != ResX || iYRes != ResY)
-			// Don't warn if only bit depth changes
-			// Also, lang table not loaded yet
-			LogF("Warning: The selected resolution %dx%d is not available and has been changed to %dx%d.", ResX, ResY, iXRes, iYRes);
-		ResX = iXRes; ResY = iYRes;
-	}
-}
 
 void C4ConfigGeneral::DeterminePaths(BOOL forceWorkingDirectory)
 	{

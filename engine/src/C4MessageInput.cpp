@@ -37,7 +37,7 @@
 #include <C4GameLobby.h>
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
-#include <C4GameControl.h>v
+#include <C4GameControl.h>
 #endif
 #include <cctype>
 
@@ -132,8 +132,9 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 	// Store to back buffer
 	::MessageInput.StoreBackBuffer(szInputText);
 	// check confidential data - even for object input (script triggered), webcode should not be pasted here
-	if (Config.IsConfidentialData(szInputText, true))
+	if (Config.IsConfidentialData(szInputText))
 		{
+		::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
 		szInputText = "";
 		}
 	// script queried input?

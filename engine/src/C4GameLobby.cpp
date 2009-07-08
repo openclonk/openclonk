@@ -449,7 +449,11 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 		::MessageInput.StoreBackBuffer(szInputText);
 		bool fProcessed = false;
 		// check confidential data
-		if (Config.IsConfidentialData(szInputText, true)) fProcessed = true;
+		if (Config.IsConfidentialData(szInputText))
+		{
+			::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
+			fProcessed = true;
+		}
 		// CAUTION when implementing special commands (like /quit) here:
 		// those must not be executed when text is pasted, because that could crash the GUI system
 		// when there are additional lines to paste, but the edit field is destructed by the command

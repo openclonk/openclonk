@@ -157,6 +157,27 @@ bool C4Application::DoInit()
 			return true;
 #endif
 
+	DDrawCfg.Shader = Config.Graphics.EnableShaders;
+	switch (Config.Graphics.Engine) {
+#ifdef USE_DIRECTX
+		case GFXENGN_DIRECTX:
+		case GFXENGN_DIRECTXS:
+			// Direct3D
+			DDrawCfg.Set(Config.Graphics.NewGfxCfg, (float) Config.Graphics.BlitOff/100.0f);
+			break;
+#endif
+#ifdef USE_GL
+		case GFXENGN_OPENGL:
+		// OpenGL
+		DDrawCfg.Set(Config.Graphics.NewGfxCfgGL, (float) Config.Graphics.BlitOffGL/100.0f);
+		break;
+#endif
+		default: ;	// Always have at least one statement
+	}
+
+	// Fixup resolution
+	ApplyResolutionConstraints();	
+
 	// activate
 	Active=TRUE;
 
@@ -218,6 +239,38 @@ bool C4Application::DoInit()
 
 	return true;
 	}
+
+	
+void C4Application::ApplyResolutionConstraints()
+{
+	// Enumerate display modes
+	int32_t idx = 0, iXRes, iYRes, iBitDepth;
+	int32_t best_match = -1;
+	uint32_t best_delta = ~0;
+	int32_t ResX = Config.Graphics.ResX, ResY = Config.Graphics.ResY, BitDepth = Config.Graphics.BitDepth;
+	while (GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor))
+	{
+		uint32_t delta = std::abs(ResX*ResY - iXRes*iYRes);
+		if (!delta && iBitDepth == BitDepth)
+			return; // Exactly the expected mode
+		if (delta < best_delta)
+		{
+			// Better match than before
+			best_match = idx;
+			best_delta = delta;
+		}
+	}
+	if (best_match != -1)
+	{
+		// Apply next-best mode
+		GetIndexedDisplayMode(best_match, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor);
+		if (iXRes != ResX || iYRes != ResY)
+			// Don't warn if only bit depth changes
+			// Also, lang table not loaded yet
+			LogF("Warning: The selected resolution %dx%d is not available and has been changed to %dx%d.", ResX, ResY, iXRes, iYRes);
+		ResX = iXRes; ResY = iYRes;
+	}
+}
 
 bool C4Application::PreInit()
 	{

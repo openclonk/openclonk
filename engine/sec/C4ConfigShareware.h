@@ -54,7 +54,7 @@ class C4ConfigShareware: public C4Config
 		const char* GetKeyPath();
 		StdStrBuf GetKeyMD5();
 		// checks for phising attacks: Return true if input contains user's webcode
-		bool IsConfidentialData(const char *szInput, bool fShowWarningMessage);
+		bool IsConfidentialData(const char *szInput);
 	protected:
 		StdStrBuf RegistrationError;
 		bool HandleError(const char *strMessage);

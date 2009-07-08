@@ -90,6 +90,7 @@ class C4Application: public CStdApp
 		bool OpenGame();
 		bool PreInit();
 		static BOOL ProcessCallback(const char *szMessage, int iProcess);
+		void ApplyResolutionConstraints();
 
 		virtual void OnCommand(const char *szCmd);
 
