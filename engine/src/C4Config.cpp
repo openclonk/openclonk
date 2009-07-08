@@ -652,13 +652,17 @@ void C4ConfigGeneral::DeterminePaths(BOOL forceWorkingDirectory)
 	SCopy("/tmp/", TempPath);
 #endif
 	// Force working directory to exe path if desired
+
+#ifndef _DEBUG
 	if (forceWorkingDirectory)
 		SetWorkingDirectory(ExePath);
+#endif
 
 	// Find system-wide data path
 #if defined(_WIN32) || defined(__APPLE__)
-	// Use exe path
-	SCopy(ExePath,SystemDataPath);
+	// Use workdir; in release builds, this is the exe dir
+	SCopy(GetWorkingDirectory(),SystemDataPath);
+	AppendBackslash(SystemDataPath);
 #elif defined(__linux__)
 	// FIXME: Where to put this?
 	SCopy(ExePath,SystemDataPath);
