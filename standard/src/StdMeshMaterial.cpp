@@ -229,7 +229,7 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
       ctx.AdvanceRequired(token_name, TOKEN_IDTF);
 
       CPNGFile png;
-      if(!ctx.TextureLoader(token_name.getData(), png))
+      if(!ctx.TextureLoader.LoadTexture(token_name.getData(), png))
         ctx.Error(StdStrBuf("Could not load texture '") + token_name + "'");
 
       if(png.iWdt != png.iHgt)

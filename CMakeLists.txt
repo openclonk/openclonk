@@ -394,6 +394,7 @@ add_library(standard STATIC
 	standard/src/StdGL.cpp
 	standard/src/StdGLCtx.cpp
 	standard/src/StdMarkup.cpp
+	standard/src/StdMesh.cpp
 	standard/src/StdMeshMaterial.cpp
 	standard/src/StdNoGfx.cpp
 	standard/src/StdPNG.cpp
@@ -425,6 +426,7 @@ add_library(standard STATIC
 	standard/inc/StdFont.h
 	standard/inc/StdGL.h
 	standard/inc/StdMarkup.h
+	standard/inc/StdMesh.h
 	standard/inc/StdMeshMaterial.h
 	standard/inc/StdNoGfx.h
 	standard/inc/StdPNG.h

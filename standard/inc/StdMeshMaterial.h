@@ -50,7 +50,7 @@ protected:
 class StdMeshMaterialTextureLoader
 {
 public:
-  virtual bool operator()(const char* filename, CPNGFile& dest) = 0;
+  virtual bool LoadTexture(const char* filename, CPNGFile& dest) = 0;
 };
 
 class StdMeshMaterialTextureUnit
