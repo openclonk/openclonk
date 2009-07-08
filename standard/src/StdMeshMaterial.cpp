@@ -181,8 +181,42 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
   Error(StdStrBuf("Unexpected identifier: '") + identifier + "'");
 }
 
-StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(): Texture(NULL) {}
-StdMeshMaterialTextureUnit::~StdMeshMaterialTextureUnit() { delete Texture; }
+StdMeshMaterialTextureUnit::TexRef::TexRef(unsigned int size):
+  RefCount(1), Tex(size, false)
+{
+}
+
+StdMeshMaterialTextureUnit::TexRef::~TexRef()
+{
+  assert(RefCount == 0);
+}
+
+StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
+  Texture(NULL)
+{
+}
+
+StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
+  Texture(other.Texture)
+{
+  if(Texture)
+    ++Texture->RefCount;
+}
+
+StdMeshMaterialTextureUnit::~StdMeshMaterialTextureUnit()
+{
+  if(Texture && !--Texture->RefCount)
+    delete Texture;
+}
+
+StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshMaterialTextureUnit& other)
+{
+  if(this == &other) return *this;
+  if(Texture) if(!--Texture->RefCount) delete Texture;
+  Texture = other.Texture;
+  if(Texture) ++Texture->RefCount;
+  return *this;
+}
 
 void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 {
@@ -201,12 +235,13 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
       if(png.iWdt != png.iHgt)
         ctx.Error(StdStrBuf("Texture '") + token_name + "' is not quadratic");
 
-      Texture = new CTexRef(png.iWdt, false);
-      Texture->Lock();
+      Texture = new TexRef(png.iWdt);
+
+      Texture->Tex.Lock();
       for(unsigned int y = 0; y < png.iHgt; ++y)
         for(unsigned int x = 0; x < png.iWdt; ++x)
-          Texture->SetPix4(x, y, png.GetPix(x, y));
-      Texture->Unlock();
+          Texture->Tex.SetPix4(x, y, png.GetPix(x, y));
+      Texture->Tex.Unlock();
     }
     else
       ctx.ErrorUnexpectedIdentifier(token_name);

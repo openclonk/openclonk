@@ -56,12 +56,30 @@ public:
 class StdMeshMaterialTextureUnit
 {
 public:
+  // Ref-counted texture. When a meterial inherits from one which contains
+  // a TextureUnit, then they will share the same CTexRef.
+  class TexRef
+  {
+  public:
+    TexRef(unsigned int size);
+    ~TexRef();
+
+    unsigned int RefCount;
+    CTexRef Tex;
+  };
+
   StdMeshMaterialTextureUnit();
+  StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other);
   ~StdMeshMaterialTextureUnit();
+
+  StdMeshMaterialTextureUnit& operator=(const StdMeshMaterialTextureUnit&);
 
   void Load(StdMeshMaterialParserCtx& ctx);
 
-  CTexRef* Texture;
+  const CTexRef& GetTexture() const { return Texture->Tex; }
+
+private:
+  TexRef* Texture;
 };
 
 class StdMeshMaterialPass
