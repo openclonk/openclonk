@@ -37,8 +37,8 @@ protected:
 
 // Interface to load skeleton files. Given a filename occuring in the
 // mesh file, this should load the skeleton file from wherever the mesh file
-// was loaded from, for example from a C4Group. Return an empty string if
-// the loading failed.
+// was loaded from, for example from a C4Group. Return default-construted
+// StdStrBuf with NULL data in case of error.
 class StdMeshSkeletonLoader
 {
 public:
@@ -73,14 +73,16 @@ class StdMeshBone
 {
   friend class StdMesh;
 public:
-  unsigned int Index; // Index in master bone array
+  StdMeshBone() {}
+
+  unsigned int Index; // Index in master bone table
   int ID; // Bone ID
   StdStrBuf Name; // Bone name
 
   // Bone transformation
-  StdMeshMatrix trans;
+  StdMeshMatrix Trans;
   // Inverse transformation
-  StdMeshMatrix inverse_trans;
+  StdMeshMatrix InverseTrans;
 
   const StdMeshBone* GetParent() const { return Parent; }
 
@@ -149,7 +151,11 @@ class StdMeshAnimation
 {
   friend class StdMesh;
 public:
+  StdMeshAnimation() {}
+  StdMeshAnimation(const StdMeshAnimation& other);
   ~StdMeshAnimation();
+
+  StdMeshAnimation& operator=(const StdMeshAnimation& other);
 
   StdStrBuf Name;
   float Length;
@@ -164,8 +170,10 @@ public:
   StdMesh();
   ~StdMesh();
 
-  // Throws StdMeshError
-  void InitXML(const char* xml_data, StdMeshSkeletonLoader& skel_loader, const StdMeshMatManager& manager);
+  // filename is only used to show it in error messages. The model is
+  // loaded from xml_data.
+  // Throws StdMeshError.
+  void InitXML(const char* filename, const char* xml_data, StdMeshSkeletonLoader& skel_loader, const StdMeshMatManager& manager);
 
   const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
   unsigned int GetNumVertices() const { return Vertices.size(); }
@@ -180,6 +188,11 @@ public:
   const StdMeshMaterial& GetMaterial() const { return *Material; }
 
 private:
+  void AddMasterBone(StdMeshBone* bone);
+
+  StdMesh(const StdMesh& other); // non-copyable
+  StdMesh& operator=(const StdMesh& other); // non-assignable
+
   // Remember bone assignments for vertices
   class Vertex: public StdMeshVertex
   {
