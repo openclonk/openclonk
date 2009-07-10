@@ -47,7 +47,7 @@ private:
 StdMeshXML::StdMeshXML(const char* filename, const char* xml_data):
   FileName(filename)
 {
-  Document.Parse(filename);
+  Document.Parse(xml_data);
   if(Document.Error())
     throw StdMeshError(StdStrBuf(Document.ErrorDesc()), FileName.getData(), Document.ErrorRow());
 }
@@ -338,6 +338,11 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
   TiXmlElement* submesh_elem = mesh.RequireFirstChild(submeshes_elem, "submesh");
   TiXmlElement* geometry_elem = mesh.RequireFirstChild(submesh_elem, "geometry");
 
+  const char* material = mesh.RequireStrAttribute(submesh_elem, "material");
+  Material = manager.GetMaterial(material);
+  if(!Material)
+    mesh.Error(FormatString("There is no such material named '%s'", material), submesh_elem);
+
   int VertexCount = mesh.RequireIntAttribute(geometry_elem, "vertexcount");
   Vertices.resize(VertexCount);
 
@@ -557,7 +562,7 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 
         TiXmlElement* translate_elem = skeleton.RequireFirstChild(keyframe_elem, "translate");
         TiXmlElement* rotate_elem = skeleton.RequireFirstChild(keyframe_elem, "rotate");
-        TiXmlElement* scale_elem = skeleton.RequireFirstChild(scale_elem, "scale");
+        TiXmlElement* scale_elem = skeleton.RequireFirstChild(keyframe_elem, "scale");
         TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotate_elem, "axis");
 
         float dx = skeleton.RequireFloatAttribute(translate_elem, "x");

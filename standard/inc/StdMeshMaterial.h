@@ -129,6 +129,10 @@ public:
 class StdMeshMatManager
 {
 public:
+  // Remove all materials from manager. Make sure there is no StdMesh
+  // referencing any out there before calling this.
+  void Clear();
+
   // Parse a material script file, and add the materials to the manager.
   // filename may be NULL if the source is not a file. It will only be used
   // for error messages.

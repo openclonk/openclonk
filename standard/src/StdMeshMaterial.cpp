@@ -289,22 +289,22 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
     }
     else if(token_name == "specular")
     {
-      Diffuse[0] = ctx.AdvanceFloat();
-      Diffuse[1] = ctx.AdvanceFloat();
-      Diffuse[2] = ctx.AdvanceFloat();
+      Specular[0] = ctx.AdvanceFloat();
+      Specular[1] = ctx.AdvanceFloat();
+      Specular[2] = ctx.AdvanceFloat();
 
       // The fourth argument is optional, not the fifth:
-      float diffuse3 = ctx.AdvanceFloat();
+      float specular3 = ctx.AdvanceFloat();
 
       float shininess;
       if(ctx.AdvanceFloatOptional(shininess))
       {
-        Diffuse[3] = diffuse3;
+        Specular[3] = specular3;
         Shininess = shininess;
       }
       else
       {
-        Shininess = diffuse3;
+        Shininess = specular3;
       }
     }
     else if(token_name == "emissive")
@@ -373,13 +373,18 @@ void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
     ctx.Error(StdStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
+void StdMeshMatManager::Clear()
+{
+  Materials.clear();
+}
+
 void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader)
 {
   StdMeshMaterialParserCtx ctx(mat_script, filename, tex_loader);
 
   Token token;
   StdStrBuf token_name;
-  while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
+  while((token = ctx.Advance(token_name)) == TOKEN_IDTF)
   {
     if(token_name == "material")
     {
