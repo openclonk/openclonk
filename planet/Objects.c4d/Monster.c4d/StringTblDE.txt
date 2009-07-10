@@ -1,0 +1,2 @@
+TxtMovement=Bewegen
+TxtLeave=Zurückverwandeln

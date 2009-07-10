@@ -1,0 +1,2 @@
+TxtMovement=Move
+TxtLeave=Retransform
