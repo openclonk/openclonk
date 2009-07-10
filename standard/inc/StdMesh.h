@@ -114,12 +114,10 @@ public:
   // *this = trans * *this
   void Transform(const StdMeshMatrix& trans);
 
-#if 0
   // *this *= f;
   void Mul(float f);
   // *this += other;
   void Add(const StdMeshVertex& other);
-#endif
 };
 
 class StdMeshFace
@@ -150,6 +148,7 @@ private:
 class StdMeshAnimation
 {
   friend class StdMesh;
+  friend class StdMeshInstance;
 public:
   StdMeshAnimation() {}
   StdMeshAnimation(const StdMeshAnimation& other);
@@ -166,6 +165,7 @@ private:
 
 class StdMesh
 {
+  friend class StdMeshInstance;
 public:
   StdMesh();
   ~StdMesh();
@@ -184,7 +184,7 @@ public:
   const StdMeshBone& GetBone(unsigned int i) const { return *Bones[i]; }
   unsigned int GetNumBones() const { return Bones.size(); }
 
-  const StdMeshAnimation& GetAnimationByName(const char* name);
+  const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
   const StdMeshMaterial& GetMaterial() const { return *Material; }
 
 private:
@@ -214,17 +214,26 @@ class StdMeshInstance
 public:
   StdMeshInstance(const StdMesh& mesh);
 
-  void SetAnimation(const StdStrBuf& animation);
-  const StdMeshAnimation& GetAnimation() const;
+  void SetAnimation(const StdStrBuf& animation_name);
+  void UnsetAnimation();
+
+  const StdMeshAnimation* GetAnimation() const { return Animation; }
 
   void SetPosition(float position);
+  float GetPosition() const { return Position; }
 
   // Get vertex of instance, with current animation applied. This needs to
   // go elsewhere if/when we want to calculate this on the hardware.
   const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
   unsigned int GetNumVertices() const { return Vertices.size(); }
 
+  const StdMesh& Mesh;
+
 protected:
+  const StdMeshAnimation* Animation;
+  float Position;
+
+  std::vector<StdMeshMatrix> BoneTransforms;
   std::vector<StdMeshVertex> Vertices;
 };
 

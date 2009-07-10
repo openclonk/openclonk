@@ -224,7 +224,6 @@ void StdMeshVertex::Transform(const StdMeshMatrix& trans)
   nz = trans(2,0)*old.nx + trans(2,1)*old.ny + trans(2,2)*old.nz;
 }
 
-#if 0
 void StdMeshVertex::Mul(float f)
 {
   x *= f;
@@ -249,7 +248,6 @@ void StdMeshVertex::Add(const StdMeshVertex& other)
   ny += other.ny;
   nz += other.nz;
 }
-#endif
 
 StdMeshMatrix StdMeshTrack::GetTransformAt(float time) const
 {
@@ -608,6 +606,95 @@ void StdMesh::AddMasterBone(StdMeshBone* bone)
   Bones.push_back(bone);
   for(unsigned int i = 0; i < bone->Children.size(); ++i)
     AddMasterBone(bone->Children[i]);
+}
+
+const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
+{
+  std::map<StdStrBuf, StdMeshAnimation>::const_iterator iter = Animations.find(name);
+  if(iter == Animations.end()) return NULL;
+  return &iter->second;
+}
+
+StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
+  Mesh(mesh), Animation(NULL), Position(0.0f),
+  BoneTransforms(Mesh.GetNumBones()), Vertices(Mesh.GetNumVertices())
+{
+  for(unsigned int i = 0; i < Mesh.GetNumVertices(); ++i)
+    Vertices[i] = Mesh.GetVertex(i);
+}
+
+void StdMeshInstance::SetAnimation(const StdStrBuf& animation_name)
+{
+  Animation = Mesh.GetAnimationByName(animation_name);
+  SetPosition(0.0f);
+}
+
+void StdMeshInstance::UnsetAnimation()
+{
+  Animation = NULL;
+
+  // Reset instance vertices
+  for(unsigned int i = 0; i < Mesh.GetNumVertices(); ++i)
+    Vertices[i] = Mesh.GetVertex(i);
+}
+
+void StdMeshInstance::SetPosition(float position)
+{
+  assert(Animation);
+  Position = position;
+
+  // Compute transformation matrix for each bone.
+  for(unsigned int i = 0; i < BoneTransforms.size(); ++i)
+  {
+    StdMeshTrack* track = Animation->Tracks[i];
+    if(track)
+    {
+      BoneTransforms[i] = track->GetTransformAt(position);
+    }
+    else
+    {
+      // No track for this bone, so use parent transformation
+      const StdMeshBone* parent = Mesh.GetBone(i).GetParent();
+      if(parent)
+      {
+        // Parent should already have been processed, because the bone indices
+        // are supposed to be hierarchically ordered.
+        assert(parent->Index < i);
+        BoneTransforms[i] = BoneTransforms[parent->Index];
+      }
+      else
+      {
+        BoneTransforms[i].SetIdentity();
+      }
+    }
+  }
+
+  // Compute transformation for each vertex. We could later think about
+  // doing this on the GPU using a vertex shader. This would then probably
+  // need to go to CStdGL::PerformMesh and CStdD3D::PerformMesh.
+  for(unsigned int i = 0; i < Vertices.size(); ++i)
+  {
+    const StdMesh::Vertex& vertex = Mesh.Vertices[i];
+    if(!vertex.BoneAssignments.empty())
+    {
+      Vertices[i].x = Vertices[i].y = Vertices[i].z = 0.0f;
+      Vertices[i].nx = Vertices[i].ny = Vertices[i].nz = 0.0f;
+      Vertices[i].u = vertex.u; Vertices[i].v = vertex.v;
+
+      for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+      {
+        const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[j];
+        StdMeshVertex vtx = vertex;
+        vtx.Transform(BoneTransforms[assignment.BoneIndex]);
+        vtx.Mul(assignment.Weight);
+        Vertices[i].Add(vtx);
+      }
+    }
+    else
+    {
+      Vertices[i] = vertex;
+    }
+  }
 }
 
 // vim: et ts=2 sw=2
