@@ -1706,7 +1706,7 @@ bool C4Network2ResList::CreateNetworkFolder()
 	// does not exist?
 	if(access(szNetworkPath, 00))
 	{
-		if(!CreateDirectory(szNetworkPath, 0))
+		if(!CreatePath(szNetworkPath))
 			{ LogFatal("Network: could not create network path!"); return false; }
 		return true;
 	}

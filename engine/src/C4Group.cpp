@@ -378,7 +378,7 @@ BOOL C4Group_UnpackDirectory(const char *szFilename)
 	char szFoldername[_MAX_PATH+1];
   SCopy(szFilename,szFoldername,_MAX_PATH);
   MakeTempFilename(szFoldername);
-  if (!CreateDirectory(szFoldername,NULL)) { hGroup.Close(); return FALSE; }
+  if (!CreatePath(szFoldername)) { hGroup.Close(); return FALSE; }
 
   // Extract files to folder
 	if (!hGroup.Extract("*",szFoldername)) { hGroup.Close(); return FALSE; }

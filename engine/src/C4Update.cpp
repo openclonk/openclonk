@@ -328,7 +328,7 @@ BOOL C4UpdatePackage::Execute(C4Group *pGroup)
 				// GrpUpdate -> file must exist
 				if(GrpUpdate) return FALSE;
 				// create dir
-				CreateDirectory(strTarget, NULL);
+				CreatePath(strTarget);
 			}
 		*p = '\\'; lp = p + 1;
 	}

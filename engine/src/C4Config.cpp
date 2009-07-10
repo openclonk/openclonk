@@ -651,8 +651,7 @@ void C4ConfigGeneral::DeterminePaths(BOOL forceWorkingDirectory)
 		AppendBackslash(ScreenshotPath);
 		}
 	// Create user path if it doesn't already exist
-	if (!DirectoryExists(UserDataPath))
-		CreateDirectory(UserDataPath, NULL);
+	CreatePath(UserDataPath);
 	}
 
 static bool GrabOldPlayerFile(const char *fn)
@@ -746,7 +745,7 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 	if(len = SLen(AtPathFilename))
 		if(AtPathFilename[len-1] == DirectorySeparator)
 			AtPathFilename[len-1] = '\0';
-	if (!DirectoryExists(AtPathFilename) && !CreateDirectory(AtPathFilename, NULL))
+	if (!CreatePath(AtPathFilename))
 	{
 		SCopy(General.ExePath, General.ScreenshotPath, CFG_MaxString-1);
 		SCopy(General.ScreenshotPath,AtPathFilename,_MAX_PATH);
@@ -761,9 +760,8 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 BOOL C4ConfigGeneral::CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle)
 	{
 	// Create directory if needed
-	if (!DirectoryExists(strDirectory))
-		if (!CreateDirectory(strDirectory, NULL))
-			return FALSE;
+	if (!CreatePath(strDirectory))
+		return FALSE;
 	// Create title component if needed
 	char lang[3]; SCopy(Config.General.Language, lang, 2);
 	StdStrBuf strTitleFile; strTitleFile.Format("%s%c%s", strDirectory, DirectorySeparator, C4CFN_WriteTitle);

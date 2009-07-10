@@ -727,7 +727,7 @@ bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObj
 	// main section: extract section files from main scenario group (create group as open dir)
 	if (!szFilename)
 		{
-		if (!CreateDirectory(szTmp, NULL)) return false;
+		if (!CreatePath(szTmp)) return false;
 		C4Group hGroup;
 		if (!hGroup.Open(szTmp, TRUE)) { EraseItem(szTmp); return false; }
 		// extract all desired section files

@@ -434,7 +434,7 @@ void C4StartupMainDlg::HandleIncomingKeyfile(const char *strIncomingKey)
 		if (GetScreen()->ShowMessageModal(strMessage.getData(), LoadResStr("IDS_DLG_REGISTRATION"),	C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Confirm))
 			{
 			// Create key path if it doesn't already exist
-			if (!DirectoryExists(Config.GetKeyPath())) CreateDirectory(Config.GetKeyPath(), NULL);
+			CreatePath(Config.GetKeyPath());
 			// Move key into key path
 			StdStrBuf strTarget; strTarget.Format("%s%s", Config.GetKeyPath(), GetFilename(strKeyFilename.getData()));
 			if (!MoveItem(strKeyFilename.getData(), strTarget.getData()))
@@ -451,7 +451,7 @@ void C4StartupMainDlg::HandleIncomingKeyfile(const char *strIncomingKey)
 		// Say thank you
 		GetScreen()->ShowMessageModal(LoadResStr("IDS_CTL_REGISTERED"), LoadResStr("IDS_DLG_REGISTRATION"),	C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
 		// Create key path if it doesn't already exist
-		if (!DirectoryExists(Config.GetKeyPath())) CreateDirectory(Config.GetKeyPath(), NULL);
+		CreatePath(Config.GetKeyPath());
 		// Now try to copy it into the key path (preferred)
 		StdStrBuf strTarget; strTarget.Format("%s%s", Config.GetKeyPath(), GetFilename(strKeyFilename.getData()));
 		if (!CopyItem(strKeyFilename.getData(), strTarget.getData()))
