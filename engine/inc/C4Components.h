@@ -85,6 +85,8 @@
 #define C4CFN_IconPNG         "Icon.png"
 #define C4CFN_ScenarioObjects	"Objects.txt"
 #define C4CFN_ScenarioDesc		"Desc%s.rtf"
+#define C4CFN_DefMaterials		"*.material"
+#define C4CFN_DefMesh					"Graphics.mesh.xml"
 #define C4CFN_DefGraphics			"Graphics.bmp"
 #define C4CFN_DefGraphicsPNG	"Graphics.png"
 #define C4CFN_ClrByOwnerPNG		"Overlay.png"

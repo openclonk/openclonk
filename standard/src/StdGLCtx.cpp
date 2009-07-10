@@ -116,6 +116,7 @@ bool CStdGLCtx::Select(bool verbose)
 	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
 	// set some default states
 	glDisable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	glShadeModel(GL_FLAT);
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_CULL_FACE);
@@ -266,6 +267,7 @@ bool CStdGLCtx::Select(bool verbose)
 	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
 	// set some default states
 	glDisable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	glShadeModel(GL_FLAT);
 	glDisable(GL_ALPHA_TEST);
 	glDisable(GL_CULL_FACE);

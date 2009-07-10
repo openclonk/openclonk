@@ -306,6 +306,82 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	}
 
+void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt)
+{
+	const StdMesh& mesh = instance.Mesh;
+	const StdMeshBox& box = mesh.GetBoundingBox();
+
+	glPushMatrix();
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_NORMALIZE);
+	glDisable(GL_BLEND); // TODO: Invert alpha instead in material loader
+	glEnable(GL_LIGHTING);
+
+	// TODO: Zoom, ClrMod, ...
+
+	//glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
+	
+	// Scale so that the mesh fits in (tx,ty,twdt,thgt)
+	double rx = -box.x1 / (box.x2 - box.x1);
+	double ry = -box.y1 / (box.y2 - box.y1);
+	glTranslatef(tx + rx*twdt, ty + ry*thgt, 0.0f);
+	glScalef(twdt/(box.x2 - box.x1), thgt/(box.y2 - box.y1), 1.0f);
+
+	// Put a light source in front of the object
+	GLfloat light_position[] = { 0.0f, 0.0f, 6.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glEnable(GL_LIGHT0);
+
+	// TODO: Find a working technique, we currently always use the
+	// first one:
+	const StdMeshMaterial& material = mesh.GetMaterial();
+	const StdMeshMaterialTechnique& technique = material.Techniques[0];
+
+	// Render each pass
+	for(unsigned int i = 0; i < technique.Passes.size(); ++i)
+	{
+		const StdMeshMaterialPass& pass = technique.Passes[i];
+
+		// Set up material
+		glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, pass.Diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, pass.Specular);
+		glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
+		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+		// TODO: Set up texture units
+		// Render mesh
+		glBegin(GL_TRIANGLES);
+		for(unsigned int j = 0; j < mesh.GetNumFaces(); ++j)
+		{
+			const StdMeshFace& face = mesh.GetFace(j);
+			const StdMeshVertex& vtx1 = instance.GetVertex(face.Vertices[0]);
+			const StdMeshVertex& vtx2 = instance.GetVertex(face.Vertices[1]);
+			const StdMeshVertex& vtx3 = instance.GetVertex(face.Vertices[2]);
+
+			glTexCoord2f(vtx1.u, vtx1.v);
+			glNormal3f(vtx1.nx, vtx1.ny, vtx1.nz);
+			glVertex3f(vtx1.x, vtx1.y, vtx1.z);
+			glTexCoord2f(vtx2.u, vtx2.v);
+			glNormal3f(vtx2.nx, vtx2.ny, vtx2.nz);
+			glVertex3f(vtx2.x, vtx2.y, vtx2.z);
+			glTexCoord2f(vtx3.u, vtx3.v);
+			glNormal3f(vtx3.nx, vtx3.ny, vtx3.nz);
+			glVertex3f(vtx3.x, vtx3.y, vtx3.z);
+		}
+		glEnd(); // GL_TRIANGLES
+	}
+
+	glDisable(GL_LIGHT0);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_NORMALIZE);
+	glEnable(GL_BLEND);
+	glPopMatrix();
+
+	// TODO: glScissor, so that we only clear the area the mesh covered.
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
+
 void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
 								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt)
 	{
