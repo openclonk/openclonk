@@ -318,6 +318,8 @@ StdMeshAnimation& StdMeshAnimation::operator=(const StdMeshAnimation& other)
 StdMesh::StdMesh():
   Material(NULL)
 {
+  BoundingBox.x1 = BoundingBox.y1 = BoundingBox.z1 = 0.0f;
+  BoundingBox.x2 = BoundingBox.y2 = BoundingBox.z2 = 0.0f;
 }
 
 StdMesh::~StdMesh()
@@ -356,6 +358,23 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
     Vertices[i].nz = mesh.RequireFloatAttribute(normal_elem, "z");
     Vertices[i].u = mesh.RequireFloatAttribute(texcoord_elem, "u");
     Vertices[i].v = mesh.RequireFloatAttribute(texcoord_elem, "v");
+
+    // Construct BoundingBox
+    if(i == 0)
+    {
+      BoundingBox.x1 = BoundingBox.x2 = Vertices[i].x;
+      BoundingBox.y1 = BoundingBox.y2 = Vertices[i].y;
+      BoundingBox.z1 = BoundingBox.z2 = Vertices[i].z;
+    }
+    else
+    {
+      BoundingBox.x1 = Min(Vertices[i].x, BoundingBox.x1);
+      BoundingBox.x2 = Max(Vertices[i].x, BoundingBox.x2);
+      BoundingBox.y1 = Min(Vertices[i].y, BoundingBox.y1);
+      BoundingBox.y2 = Max(Vertices[i].y, BoundingBox.y2);
+      BoundingBox.z1 = Min(Vertices[i].z, BoundingBox.z1);
+      BoundingBox.z2 = Max(Vertices[i].z, BoundingBox.z2);
+    }
   }
 
   TiXmlElement* faces_elem = mesh.RequireFirstChild(submesh_elem, "faces");

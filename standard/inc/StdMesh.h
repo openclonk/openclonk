@@ -163,6 +163,12 @@ private:
   std::vector<StdMeshTrack*> Tracks; // bone-indexed
 };
 
+struct StdMeshBox
+{
+  float x1, y1, z1;
+  float x2, y2, z2;
+};
+
 class StdMesh
 {
   friend class StdMeshInstance;
@@ -187,6 +193,8 @@ public:
   const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
   const StdMeshMaterial& GetMaterial() const { return *Material; }
 
+  const StdMeshBox& GetBoundingBox() const { return BoundingBox; }
+
 private:
   void AddMasterBone(StdMeshBone* bone);
 
@@ -206,6 +214,7 @@ private:
 
   std::map<StdStrBuf, StdMeshAnimation> Animations;
 
+  StdMeshBox BoundingBox;
   const StdMeshMaterial* Material;
 };
 
