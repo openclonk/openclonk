@@ -539,7 +539,7 @@ public:
   operator const void *() const { return getData(); }
 
 	// less-than operation for map
-	inline bool operator <(const StdStrBuf &v2)
+	inline bool operator <(const StdStrBuf &v2) const
 	{
 		int iLen = getLength(), iLen2 = v2.getLength();
 		if (iLen == iLen2)
