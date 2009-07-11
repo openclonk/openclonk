@@ -456,7 +456,7 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 					StdStrBuf filename(getenv("HOME"));
 					if (filename) { filename += "/"; }
 					filename += ".clonk/" C4ENGINENICK;
-					CreateDirectory(filename.getData());
+					CreatePath(filename.getData());
 					}
 #endif
 				// Buggy StdCompiler crashes when compiling a Null-StdStrBuf

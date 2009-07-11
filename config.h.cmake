@@ -178,3 +178,7 @@
 
 /* compile with debug options */
 #cmakedefine _DEBUG
+
+/* Define to 1 if rvalue references are supported */
+#cmakedefine HAVE_RVALUE_REF
+

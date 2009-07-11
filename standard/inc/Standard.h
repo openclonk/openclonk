@@ -104,11 +104,6 @@ typedef __int32 intptr_t;
 #define ALLOW_TEMP_TO_REF(ClassName)
 #endif
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (defined(__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)))
-// Another temporary-to-reference-fix: this time using C++0x's rvalue references
-#define HAVE_RVALUE_REF
-#endif
-
 #ifdef HAVE_RVALUE_REF
 #	define RREF &&
 #else

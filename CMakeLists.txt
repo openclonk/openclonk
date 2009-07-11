@@ -326,8 +326,6 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 
 add_executable(c4group
 	group/c4group_ng.cpp
-	engine/src/C4Config.cpp
-	engine/sec/C4ConfigShareware.cpp
 	engine/src/C4Group.cpp
 	engine/src/C4InputValidation.cpp
 	engine/sec/C4SecurityCertificates.cpp
@@ -606,6 +604,17 @@ target_link_libraries(c4group
 	${OPENSSL}
 )
 
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
+if(USE_GCC_STD_0X)
+	list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
+endif()
+include(CheckCXXSourceCompiles)
+set(CMAKE_REQUIRED_FLAGS ${OC_CXX_FLAGS})
+CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 add_definitions(-DHAVE_CONFIG_H)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OC_CXX_FLAGS}" CACHE STRING "C++ compiler flags" FORCE)
 
