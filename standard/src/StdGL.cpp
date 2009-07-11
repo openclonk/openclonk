@@ -314,7 +314,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glPushMatrix();
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_NORMALIZE);
-	glDisable(GL_BLEND); // TODO: Invert alpha instead in material loader
 	glEnable(GL_LIGHTING);
 
 	// TODO: Zoom, ClrMod, ...
@@ -375,7 +374,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_NORMALIZE);
-	glEnable(GL_BLEND);
 	glPopMatrix();
 
 	// TODO: glScissor, so that we only clear the area the mesh covered.

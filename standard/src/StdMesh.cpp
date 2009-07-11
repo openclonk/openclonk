@@ -22,7 +22,7 @@
 
 StdMeshError::StdMeshError(const StdStrBuf& message, const char* file, unsigned int line)
 {
-  Buf.Format("%s[%u]: %s", file, line, message.getData());
+  Buf.Format("%s:%u: %s", file, line, message.getData());
 }
 
 // Helper class to load things from an XML file with error checking

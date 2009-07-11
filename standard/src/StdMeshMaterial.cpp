@@ -22,7 +22,7 @@
 
 StdMeshMaterialError::StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line)
 {
-  Buf.Format("%s[%u]: %s", file, line, message.getData());
+  Buf.Format("%s:%u: %s", file, line, message.getData());
 }
 
 enum Token
@@ -253,10 +253,10 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 
 StdMeshMaterialPass::StdMeshMaterialPass()
 {
-  Ambient[0]  = Ambient[1]  = Ambient[2]  = Ambient[3]  = 1.0f;
-  Diffuse[0]  = Diffuse[1]  = Diffuse[2]  = Diffuse[3]  = 1.0f;
-  Specular[0] = Specular[1] = Specular[2] = Specular[3] = 0.0f;
-  Emissive[0] = Emissive[1] = Emissive[2] = Emissive[3] = 0.0f;
+  Ambient[0]  = Ambient[1]  = Ambient[2]  = 1.0f; Ambient[3]  = 0.0f;
+  Diffuse[0]  = Diffuse[1]  = Diffuse[2]  = 1.0f; Diffuse[3]  = 0.0f;
+  Specular[0] = Specular[1] = Specular[2] = 0.0f; Specular[3] = 1.0f;
+  Emissive[0] = Emissive[1] = Emissive[2] = 0.0f; Emissive[3] = 1.0f;
   Shininess = 0.0f;
 }
 
@@ -278,14 +278,16 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
       Ambient[0] = ctx.AdvanceFloat();
       Ambient[1] = ctx.AdvanceFloat();
       Ambient[2] = ctx.AdvanceFloat();
-      ctx.AdvanceFloatOptional(Ambient[3]);
+      if(ctx.AdvanceFloatOptional(Ambient[3]))
+        Ambient[3] = 1 - Ambient[3];
     }
     else if(token_name == "diffuse")
     {
       Diffuse[0] = ctx.AdvanceFloat();
       Diffuse[1] = ctx.AdvanceFloat();
       Diffuse[2] = ctx.AdvanceFloat();
-      ctx.AdvanceFloatOptional(Diffuse[3]);
+      if(ctx.AdvanceFloatOptional(Diffuse[3]))
+        Diffuse[3] = 1 - Diffuse[3];
     }
     else if(token_name == "specular")
     {
@@ -299,7 +301,7 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
       float shininess;
       if(ctx.AdvanceFloatOptional(shininess))
       {
-        Specular[3] = specular3;
+        Specular[3] = 1 - specular3;
         Shininess = shininess;
       }
       else
@@ -312,7 +314,8 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
       Emissive[0] = ctx.AdvanceFloat();
       Emissive[1] = ctx.AdvanceFloat();
       Emissive[2] = ctx.AdvanceFloat();
-      ctx.AdvanceFloatOptional(Emissive[3]);
+      if(ctx.AdvanceFloatOptional(Emissive[3]))
+        Emissive[3] = 1 - Emissive[3];
     }
     else
       ctx.ErrorUnexpectedIdentifier(token_name);
