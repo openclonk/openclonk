@@ -565,8 +565,10 @@ bool CreatePath(const std::string &path)
 {
 	assert(!path.empty());
 #ifdef _WIN32
-	if (!CreateDirectory(path.c_str(), NULL))
+	if (CreateDirectory(path.c_str(), NULL))
 	{
+		return true;
+	} else {
 		DWORD err = GetLastError();
 		switch(err)
 		{
