@@ -106,8 +106,11 @@ void C4ValueList::Sort(class C4SortObject &rSort)
 
 C4Value &C4ValueList::GetItem(int32_t iElem)
 {
-	if(iElem < 0) iElem = 0;
-	if(iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
+	if(iElem < -iSize)
+		throw new C4AulExecError(NULL,"invalid subscript");
+	else if(iElem < 0)
+		iElem = iSize + iElem;
+	else if(iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
 	// out-of-memory? This might not be catched, but it's better than a segfault
 	if(iElem >= iSize)
 		throw new C4AulExecError(NULL,"out of memory");
