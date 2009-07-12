@@ -1013,13 +1013,14 @@ BOOL C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 	ofn.Flags=dwFlags;
 
 	BOOL fResult;
+	const char *wd = GetWorkingDirectory();
 	if (fSave)
 		fResult = GetSaveFileName(&ofn);
 	else
 		fResult = GetOpenFileName(&ofn);
 
 	// Reset working directory to exe path as Windows file dialog might have changed it
-	SetCurrentDirectory(Config.General.ExePath);
+	SetCurrentDirectory(wd);
 	return fResult;
 #elif defined(WITH_DEVELOPER_MODE)
 	GtkWidget* dialog = gtk_file_chooser_dialog_new(fSave ? "Save file..." : "Load file...", GTK_WINDOW(window), fSave ? GTK_FILE_CHOOSER_ACTION_SAVE : GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, fSave ? GTK_STOCK_SAVE : GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
