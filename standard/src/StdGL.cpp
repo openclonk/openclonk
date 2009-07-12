@@ -317,7 +317,14 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	//glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
 
-	// TODO: Zoom, ClrMod, ...
+/*	float twdt = wdt;
+	float thgt = hgt;*/
+	tx = (tx - ZoomX) * Zoom + ZoomX;
+	ty = (ty - ZoomY) * Zoom + ZoomY;
+	twdt *= Zoom;
+	thgt *= Zoom;
+
+	// TODO: ClrMod, ...
 
 	//glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
 	
@@ -327,7 +334,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glTranslatef(tx + rx*twdt, ty + ry*thgt, 0.0f);
 
 	// Put a light source in front of the object
-	GLfloat light_position[] = { 0.0f, 0.0f, 15.0f, 1.0f };
+	GLfloat light_position[] = { 0.0f, 0.0f, 15.0f*Zoom, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
 
