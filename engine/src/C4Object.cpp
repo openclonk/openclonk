@@ -2251,6 +2251,16 @@ BOOL C4Object::SetPhase(int32_t iPhase)
   if (Action.Act<=ActIdle) return FALSE;
 	C4ActionDef *actdef=&(Def->ActMap[Action.Act]);
   Action.Phase=BoundBy<int32_t>(iPhase,0,actdef->Length);
+	Action.PhaseDelay = 0;
+
+	if(pMeshInstance)
+	{
+	  if(actdef->Delay)
+			pMeshInstance->SetPosition(static_cast<float>(Action.Phase * actdef->Delay + Action.PhaseDelay) / (actdef->Delay * actdef->Length) * pMeshInstance->GetAnimation()->Length);
+		else
+			pMeshInstance->SetPosition(static_cast<float>(Action.Phase) / actdef->Length * pMeshInstance->GetAnimation()->Length);
+	}
+
 	return TRUE;
 	}
 
@@ -4103,6 +4113,16 @@ BOOL C4Object::SetAction(int32_t iAct, C4Object *pTarget, C4Object *pTarget2, in
   if (Def && !Inside<int32_t>(iAct,ActIdle,Def->ActNum-1))
 		return FALSE;
 
+  // Set animation on instance. Abort if the mesh does not have
+	// such an animation.
+  if(pMeshInstance)
+	{
+    if(iAct == ActIdle || Def->ActMap[iAct].Animation == "")
+      pMeshInstance->UnsetAnimation();
+    else if(!pMeshInstance->SetAnimationByName(Def->ActMap[iAct].Animation))
+      return FALSE;
+  }
+
   // Stop previous act sound
   if (iLastAction>ActIdle)
     if (iAct!=iLastAction)
@@ -5372,6 +5392,7 @@ void C4Object::ExecAction()
   if (pAction->Delay)
   	{
 		Action.PhaseDelay+=iPhaseAdvance;
+		bool set_new_action = false;
 		if (Action.PhaseDelay>=pAction->Delay)
 			{
 			// Advance Phase
@@ -5387,12 +5408,23 @@ void C4Object::ExecAction()
 				{
 				// set new action if it's not Hold
 				if (pAction->NextAction==ActHold)
+					{
 					Action.Phase = pAction->Length-1;
+					Action.PhaseDelay = pAction->Delay-1;
+					}
 				else
+					{
 					// Set new action
+					set_new_action = true;
 					SetAction(pAction->NextAction, NULL, NULL, SAC_StartCall | SAC_EndCall);
+					}
 				}
 			}
+
+		// Update animation on mesh instance. If a new action was set,
+		// then will already have happened for the new action.
+		if(pMeshInstance && pMeshInstance->GetAnimation() && !set_new_action)
+			pMeshInstance->SetPosition(static_cast<float>(Action.Phase * pAction->Delay + Action.PhaseDelay) / (pAction->Delay * pAction->Length) * pMeshInstance->GetAnimation()->Length);
 		}
 
   return;

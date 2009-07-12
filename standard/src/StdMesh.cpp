@@ -20,6 +20,51 @@
 
 #include <tinyxml/tinyxml.h>
 
+namespace
+{
+  // Generate matrix to convert the mesh from Ogre coordinate system to Clonk
+  // coordinate system. When making changes here, don't forget to make
+  // corresponding changes for the inverse matrix below.
+  StdMeshMatrix CoordCorrectionMatrix()
+  {
+    StdMeshMatrix matrix;
+    StdMeshMatrix helper;
+
+    //matrix.SetIdentity();
+    matrix.SetScale(-1.0f, 1.0f, 1.0f);
+
+    //helper.SetRotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f);
+    helper.SetRotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f);
+    matrix.Mul(helper);
+
+    helper.SetRotate(M_PI/2.0f, 0.0f, 0.0f, 1.0f);
+    matrix.Mul(helper);
+
+    return matrix;
+  }
+
+  StdMeshMatrix CoordCorrectionMatrixInverse()
+  {
+    StdMeshMatrix matrix;
+    StdMeshMatrix helper;
+
+    matrix.SetRotate(-M_PI/2.0f, 0.0f, 0.0f, 1.0f);
+
+    //helper.SetRotate(-M_PI/2.0f, 1.0f, 0.0f, 0.0f);
+    helper.SetRotate(-M_PI/2.0f, 1.0f, 0.0f, 0.0f);
+    matrix.Mul(helper);
+
+    //helper.SetIdentity();
+    helper.SetScale(-1.0f, 1.0f, 1.0f);
+    matrix.Mul(helper);
+
+    return matrix;
+  }
+
+  StdMeshMatrix CoordCorrection = CoordCorrectionMatrix();
+  StdMeshMatrix CoordCorrectionInverse = CoordCorrectionMatrixInverse();
+}
+
 StdMeshError::StdMeshError(const StdStrBuf& message, const char* file, unsigned int line)
 {
   Buf.Format("%s:%u: %s", file, line, message.getData());
@@ -189,10 +234,6 @@ void StdMeshMatrix::Add(const StdMeshMatrix& other)
 
 void StdMeshMatrix::Transform(const StdMeshMatrix& other)
 {
-  // StdMeshMatrix blah(other);
-  // bla.Mul(*this);
-  // *this = bla;
-
   StdMeshMatrix old(*this);
 
   a[0][0] = other.a[0][0]*old.a[0][0] + other.a[0][1]*old.a[1][0] + other.a[0][2]*old.a[2][0];
@@ -217,8 +258,8 @@ void StdMeshVertex::Transform(const StdMeshMatrix& trans)
   StdMeshVertex old(*this);
 
   x = trans(0,0)*old.x + trans(0,1)*old.y + trans(0,2)*old.z + trans(0,3);
-  y = trans(1,0)*old.x + trans(1,1)*old.y + trans(1,2)*old.z + trans(0,3);
-  z = trans(2,0)*old.x + trans(2,1)*old.y + trans(2,2)*old.z + trans(0,3);
+  y = trans(1,0)*old.x + trans(1,1)*old.y + trans(1,2)*old.z + trans(1,3);
+  z = trans(2,0)*old.x + trans(2,1)*old.y + trans(2,2)*old.z + trans(2,3);
   nx = trans(0,0)*old.nx + trans(0,1)*old.ny + trans(0,2)*old.nz;
   ny = trans(1,0)*old.nx + trans(1,1)*old.ny + trans(0,2)*old.nz;
   nz = trans(2,0)*old.nx + trans(2,1)*old.ny + trans(2,2)*old.nz;
@@ -364,6 +405,9 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
     Vertices[i].u = mesh.RequireFloatAttribute(texcoord_elem, "u");
     Vertices[i].v = mesh.RequireFloatAttribute(texcoord_elem, "v");
 
+    // Convert to Clonk coordinate system
+    Vertices[i].Transform(CoordCorrection);
+
     // Construct BoundingBox
     if(i == 0)
     {
@@ -446,9 +490,17 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
     bone->Trans.SetRotate(angle, rx, ry, rz);
     bone->Trans.Transform(helper);
 
+    // Transform to Clonk coordinate system
+    bone->Trans.Mul(CoordCorrectionInverse);
+    bone->Trans.Transform(CoordCorrection);
+
     helper.SetRotate(-angle, rx, ry, rz);
     bone->InverseTrans.SetTranslate(-dx, -dy, -dz);
     bone->InverseTrans.Transform(helper);
+
+    // Transform to Clonk coordinate system
+    bone->InverseTrans.Mul(CoordCorrectionInverse);
+    bone->InverseTrans.Transform(CoordCorrection);
 
     bone->Parent = NULL;
 
@@ -576,12 +628,17 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
         float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
         float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
 
+        // TODO: Make sure the order is correct here - I am not sure about scale
         StdMeshMatrix helper;
         frame.Trans.SetRotate(angle, rx, ry, rz);
         helper.SetScale(sx, sy, sz);
         frame.Trans.Transform(helper);
         helper.SetTranslate(-dx, -dy, -dz);
         frame.Trans.Transform(helper);
+
+        // Transform into Clonk coordinate system
+        frame.Trans.Transform(CoordCorrection);
+        frame.Trans.Mul(CoordCorrectionInverse);
       }
     }
 
@@ -647,9 +704,18 @@ StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
     Vertices[i] = Mesh.GetVertex(i);
 }
 
-void StdMeshInstance::SetAnimation(const StdStrBuf& animation_name)
+bool StdMeshInstance::SetAnimationByName(const StdStrBuf& animation_name)
 {
-  Animation = Mesh.GetAnimationByName(animation_name);
+  const StdMeshAnimation* animation = Mesh.GetAnimationByName(animation_name);
+  if(!animation) return false;
+  SetAnimation(*animation);
+  return true;
+}
+
+void StdMeshInstance::SetAnimation(const StdMeshAnimation& animation)
+{
+  // TODO: Make sure the animation belongs to this mesh
+  Animation = &animation;
   SetPosition(0.0f);
 }
 

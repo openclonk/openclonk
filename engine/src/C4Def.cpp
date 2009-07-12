@@ -132,6 +132,7 @@ void C4ActionDef::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(toC4CStr(TurnAction),			"TurnAction",					""								));
 	pComp->Value(mkNamingAdapt(Reverse,										"Reverse",						0									));
 	pComp->Value(mkNamingAdapt(Step,											"Step",								1									));
+  pComp->Value(mkNamingAdapt(Animation,                 "Animation",          StdStrBuf()				));
 	}
 
 //--------------------------------- C4DefCore ----------------------------------------------

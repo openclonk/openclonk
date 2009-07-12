@@ -312,8 +312,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	const StdMeshBox& box = mesh.GetBoundingBox();
 
 	glPushMatrix();
+	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_NORMALIZE);
+	//glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
 
 	// TODO: Zoom, ClrMod, ...
@@ -321,15 +322,21 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	//glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
 	
 	// Scale so that the mesh fits in (tx,ty,twdt,thgt)
-	double rx = -box.x1 / (box.x2 - box.x1);
-	double ry = -box.y1 / (box.y2 - box.y1);
+	float rx = -box.x1 / (box.x2 - box.x1);
+	float ry = -box.y1 / (box.y2 - box.y1);
 	glTranslatef(tx + rx*twdt, ty + ry*thgt, 0.0f);
-	glScalef(twdt/(box.x2 - box.x1), thgt/(box.y2 - box.y1), 1.0f);
 
 	// Put a light source in front of the object
-	GLfloat light_position[] = { 0.0f, 0.0f, 6.0f, 1.0f };
+	GLfloat light_position[] = { 0.0f, 0.0f, 15.0f, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
+
+	float scx = twdt/(box.x2 - box.x1);
+	float scy = thgt/(box.y2 - box.y1);
+	// Keep aspect ratio:
+	//if(scx < scy) scy = scx;
+	//else scx = scy;
+	glScalef(scx, scy, 1.0f);
 
 	// TODO: Find a working technique, we currently always use the
 	// first one:
@@ -347,6 +354,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glMaterialfv(GL_FRONT, GL_SPECULAR, pass.Specular);
 		glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
 		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+
 		// TODO: Set up texture units
 		// Render mesh
 		glBegin(GL_TRIANGLES);
@@ -373,7 +381,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_LIGHT0);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_NORMALIZE);
+	glShadeModel(GL_FLAT);
 	glPopMatrix();
 
 	// TODO: glScissor, so that we only clear the area the mesh covered.

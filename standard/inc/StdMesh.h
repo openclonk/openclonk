@@ -223,7 +223,8 @@ class StdMeshInstance
 public:
   StdMeshInstance(const StdMesh& mesh);
 
-  void SetAnimation(const StdStrBuf& animation_name);
+  bool SetAnimationByName(const StdStrBuf& animation_name);
+  void SetAnimation(const StdMeshAnimation& animation);
   void UnsetAnimation();
 
   const StdMeshAnimation* GetAnimation() const { return Animation; }

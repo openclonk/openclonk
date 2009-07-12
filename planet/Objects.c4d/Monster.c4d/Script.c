@@ -20,12 +20,12 @@ private func Activity()
   if (Random(2) || (GetAction() != "Walk" && GetAction() != "Swim")) return 1;
 
   // Springen
-  if (GetAction() == "Walk")
+/*  if (GetAction() == "Walk")
    if (!Random(3)) return DoJump();
 
   // Umsehen
   if (GetAction() == "Walk")
-   if (!Random(8)) return SetAction("LookUp");
+   if (!Random(8)) return SetAction("LookUp");*/
 
   // Umdrehen
   if (Random(2)) return TurnRight();

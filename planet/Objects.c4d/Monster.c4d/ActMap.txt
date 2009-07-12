@@ -10,6 +10,7 @@ NextAction=Walk
 TurnAction=Turn
 StartCall=HitCheck
 InLiquidAction=Swim
+Animation=Walk
 
 [Action]
 Name=Turn

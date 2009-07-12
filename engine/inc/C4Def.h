@@ -176,6 +176,7 @@ class C4ActionDef
 		C4AulScriptFunc *EndCall;
 		C4AulScriptFunc *AbortCall;
 		C4AulScriptFunc *PhaseCall;
+		StdStrBuf Animation;
 	public:
 		void Default();
 		void CompileFunc(StdCompiler *pComp);
