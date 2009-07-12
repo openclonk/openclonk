@@ -2,6 +2,10 @@ cmake_minimum_required (VERSION 2.6)
 project (clonk CXX C)
 
 list(APPEND CMAKE_PREFIX_PATH deps)
+set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+separate_arguments(OC_CXX_FLAGS)
+set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
+separate_arguments(OC_CXX_FLAGS_DEBUG)
 
 if(WIN32)
 	SET(additional_clonk_sources engine/src/C4FileClasses.cpp engine/res/engine.rc engine/res/resource.h)
@@ -615,8 +619,27 @@ include(CheckCXXSourceCompiles)
 set(CMAKE_REQUIRED_FLAGS ${OC_CXX_FLAGS})
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 
+if(MSVC_VERSION GREATER 1499)
+	# Activate minimal rebuild
+	list(APPEND OC_CXX_FLAGS_DEBUG /Gm)
+	if (NOT FIND_LIBRARY_USE_LIB64_PATHS)
+		# Activate edit-and-continue
+		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
+		list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
+	endif()
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 add_definitions(-DHAVE_CONFIG_H)
+add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OC_CXX_FLAGS}" CACHE STRING "C++ compiler flags" FORCE)
-
+list(REMOVE_DUPLICATES OC_CXX_FLAGS)
+set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ compiler flags" FORCE)
+foreach(FLAG ${OC_CXX_FLAGS})
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" CACHE STRING "C++ compiler flags" FORCE)
+endforeach()
+list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
+set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+endforeach()
