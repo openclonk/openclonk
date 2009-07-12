@@ -21,7 +21,8 @@
 #ifndef INC_StdColors
 #define INC_StdColors
 
-#include <Standard.h>
+#include "Standard.h"
+#include <math.h>
 
 // color definitions
 const int FTrans=-1,FWhite=0,FBlack=1,FPlayer=2,FRed=3;

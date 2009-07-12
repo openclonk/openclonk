@@ -231,6 +231,39 @@ bool C4Video::AdjustPosition()
 	}
 
 #ifdef _WIN32
+static void StdBlit(uint8_t *bypSource, int iSourcePitch, int iSrcBufHgt,
+          int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
+          uint8_t *bypTarget, int iTargetPitch, int iTrgBufHgt,
+          int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt,
+					int iBytesPerPixel=1, bool fFlip=false)
+  {
+  if (!bypSource || !bypTarget) return;
+  if (!iTrgWdt || !iTrgHgt) return;
+  int xcnt,ycnt,zcnt,sline,tline,fy;
+  for (ycnt=0; ycnt<iTrgHgt; ycnt++)
+    {
+    fy = iSrcHgt * ycnt / iTrgHgt;
+    if (iSrcBufHgt>0) sline = ( iSrcBufHgt - 1 - iSrcY - fy ) * iSourcePitch;
+    else sline = ( iSrcY + fy ) * iSourcePitch;
+    if (iTrgBufHgt>0) tline = ( iTrgBufHgt - 1 - iTrgY - ycnt ) * iTargetPitch;
+    else tline = ( iTrgY + ycnt ) * iTargetPitch;
+		if (!fFlip)
+			{
+	    for (xcnt=0; xcnt<iTrgWdt; xcnt++)
+				for (zcnt=0; zcnt<iBytesPerPixel; zcnt++)
+		      bypTarget [ tline + (iTrgX + xcnt) * iBytesPerPixel + zcnt]
+			     = bypSource [ sline + (iSrcX + iSrcWdt * xcnt / iTrgWdt) * iBytesPerPixel + zcnt ];
+			}
+		else
+			{
+	    for (xcnt=0; xcnt<iTrgWdt; xcnt++)
+				for (zcnt=0; zcnt<iBytesPerPixel; zcnt++)
+		      bypTarget [ tline + (iTrgX + iTrgWdt - 1 -xcnt) * iBytesPerPixel + zcnt]
+			     = bypSource [ sline + (iSrcX + iSrcWdt * xcnt / iTrgWdt) * iBytesPerPixel + zcnt ];
+			}
+    }
+  }
+
 bool C4Video::RecordFrame()
 	{
 	// No buffer

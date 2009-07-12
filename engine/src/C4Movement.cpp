@@ -132,6 +132,13 @@ void C4Object::DoMotion(int32_t mx, int32_t my)
   fix_x += mx; fix_y += my;
   }
 
+static inline int32_t ForceLimits(int32_t &rVal, int32_t iLow, int32_t iHi)
+	{
+	if (rVal<iLow) { rVal=iLow; return -1; }
+	if (rVal>iHi)  { rVal=iHi;  return +1; }
+	return 0;
+	}
+
 void C4Object::TargetBounds(int32_t &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi)
 	{
 	switch (ForceLimits(ctco,limit_low,limit_hi))

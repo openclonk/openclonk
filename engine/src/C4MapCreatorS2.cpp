@@ -813,6 +813,11 @@ CSurface8 * C4MapCreatorS2::Render(const char *szMapName)
 	return sfc;
 	}
 
+static inline void DWordAlign(int &val)
+  {
+  if (val%4) { val>>=2; val<<=2; val+=4; }
+  }
+
 BYTE *C4MapCreatorS2::RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t &sfcHgt)
 	{
 	// get map

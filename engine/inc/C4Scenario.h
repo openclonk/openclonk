@@ -37,10 +37,12 @@ class C4SVal
     void Set(int32_t std=0, int32_t rnd=0, int32_t min=0, int32_t max=100);
     int32_t Evaluate();
     void CompileFunc(StdCompiler *pComp);
+	public:
+		inline bool operator==(const C4SVal &rhs) const
+		{
+			return rhs.Std == Std && rhs.Rnd == Rnd && rhs.Min == Min && rhs.Max == Max;
+		}
   };
-
-inline bool operator == (C4SVal Val1, C4SVal Val2)
-	{ return MemEqual((void *) &Val1, (void *) &Val2, sizeof(C4SVal)); }
 
 #define C4SGFXMODE_NEWGFX 1
 #define C4SGFXMODE_OLDGFX 2
