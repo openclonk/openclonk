@@ -799,7 +799,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					if(HoldStrings == Discard) return ATT_STRING;
 					// reg string (if not already done so)
 					C4String *pString;
-					pString = a->Engine->Strings.RegString(StdStrBuf(StrBuff,static_cast<long>(pStrPos - StrBuff)));
+					pString = a->Engine->Strings.RegString(StdStrBuf(StrBuff,static_cast<size_t>(pStrPos - StrBuff)));
 					if (HoldStrings == Hold) pString->Hold = 1;
 					// return pointer on string object
 					*pInt = (long) pString;

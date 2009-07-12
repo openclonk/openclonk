@@ -74,7 +74,7 @@ bool StdBuf::SaveToFile(const char *szFile) const
   return true;
 }
 
-bool StdStrBuf::LoadFromFile(const char *szFile)
+/*bool StdStrBuf::LoadFromFile(const char *szFile)
 {
   // Open file
   int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
@@ -105,22 +105,21 @@ bool StdStrBuf::SaveToFile(const char *szFile) const
   close(fh);
   // Ok
   return true;
-}
+}*/
 
 void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 {
   // Size (guess it is a small value most of the time - if it's big, an extra byte won't hurt anyway)
-	uint32_t tmp = iSize; pComp->Value(mkIntPackAdapt(tmp)); iSize = tmp;
+	uint32_t tmp = size(); pComp->Value(mkIntPackAdapt(tmp));
   pComp->Seperator(StdCompiler::SEP_PART2);
   // Read/write data
 	if(pComp->isCompiler())
   {
-    New(iSize);
-    pComp->Raw(getMData(), iSize, StdCompiler::RawCompileType(iType));
+    pComp->Raw(getMData(), size(), StdCompiler::RawCompileType(iType));
   }
   else
   {
-    pComp->Raw(const_cast<void *>(getData()), iSize, StdCompiler::RawCompileType(iType));
+    pComp->Raw(const_cast<void *>(getData()), size(), StdCompiler::RawCompileType(iType));
   }
 }
 
