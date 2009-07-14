@@ -32,7 +32,6 @@
 #include <C4Game.h>
 #endif
 
-
 //==================================== C4SVal ==============================================
 
 C4SVal::C4SVal(int32_t std, int32_t rnd, int32_t min, int32_t max)
@@ -150,11 +149,18 @@ const int32_t C4S_MaxPlayerDefault = 12;
 void C4SHead::Default()
   {
 	Origin.Clear();
-	ZeroMem(this,sizeof (C4SHead));
-  Icon=18;
+	Icon=18;
+	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
+	C4XVer[0] = C4XVer[1] = C4XVer[2] = C4XVer[3] = 0;
+	Difficulty = StartupPlayerCount = RandomSeed = SaveGame = Replay =
+		Film = EnableUnregisteredAccess = DisableMouse = 
+		IgnoreSyncChecks = NoInitialize = ForcedGfxMode = 
+		ForcedFairCrew = FairCrewStrength = 0;
+	NetworkGame = NetworkRuntimeJoin = false;
+
 	MaxPlayer=MaxPlayerLeague=C4S_MaxPlayerDefault;
 	MinPlayer=0; // auto-determine by mode
-  SCopy("Default Title",Title,C4MaxTitle);
+	SCopy("Default Title",Title,C4MaxTitle);
   }
 
 void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
