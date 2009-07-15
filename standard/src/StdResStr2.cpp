@@ -44,7 +44,7 @@ public:
 				Entry * e = &(Entries[h % Capacity]);
 				// Search an empty spot
 				int i = 0;
-				while (e->Data) {
+				while (*e) {
 #ifdef _DEBUG
 					if (e->Hash == h) printf("Hash Collision: %d (\"%.50s\")\nSTRINGTABLE WILL BREAK\n", h, table);
 #endif

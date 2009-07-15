@@ -23,9 +23,10 @@
 #ifndef STDBUF_H
 #define STDBUF_H
 
+#include <zlib.h>
 #include "Standard.h"
 
-#include <zlib.h>
+#include <stdlib.h>
 #include <assert.h>
 #include <stdarg.h>
 
@@ -34,49 +35,84 @@
 #include <crtdbg.h>
 #endif
 
-#include <string>
-
 // Base buffer class. Either references or holds data.
-class StdBuf : public std::string
+class StdBuf
 {
 public:
+
   // *** Construction
   // Standard constructor
-	StdBuf() { }
+  StdBuf() : fRef(true), pData(NULL), iSize(0) { }
 
   // Constructor from other buffer (copy construction):
   // Will take over buffer ownership. Copies data if specified.
   // Note: Construct with Buf2.getRef() to construct a reference (This will work for a constant Buf2, too)
-	StdBuf(const std::string &other, bool = false)
-		: std::string(other)
-  {}
+	StdBuf(StdBuf RREF Buf2, bool fCopy = false)
+    : fRef(true), pData(NULL), iSize(0)
+  {
+    if(fCopy)
+      Copy(Buf2);
+    else if(!Buf2.isRef())
+      Take(Buf2);
+    else
+      Ref(Buf2);
+  }
+#ifdef HAVE_RVALUE_REF
+  StdBuf(const StdBuf & Buf2, bool fCopy = true)
+    : fRef(true), pData(NULL), iSize(0)
+  {
+    if(fCopy)
+      Copy(Buf2);
+    else
+      Ref(Buf2);
+  }
+#endif
 
   // Set by constant data. Copies data if desired.
-  StdBuf(const void *pData, size_t iSize, bool = false)
-		: std::string(static_cast<const char*>(pData), iSize)
-  {}
+  StdBuf(const void *pData, size_t iSize, bool fCopy = false)
+    : fRef(true), pData(pData), iSize(iSize)
+  {
+    if(fCopy) Copy();
+  }
 
   ~StdBuf()
-  {}
+  {
+    Clear();
+  }
 
 	ALLOW_TEMP_TO_REF(StdBuf)
+
+protected:
+
+  // Reference? Otherwise, this object holds the data.
+  bool fRef;
+  // Data
+  union
+  {
+    const void *pData;
+    void *pMData;
+#if defined(_DEBUG)
+		char *szString; // for debugger preview
+#endif
+  };
+  size_t iSize;
 
 public:
 
   // *** Getters
 
-	bool        isNull()  const { return empty(); }
-	const void *getData() const { return empty()?NULL:c_str(); }
-  void       *getMData()      { return &operator[](0); }
-  const void *getPtr(size_t i) const { return c_str() + i; }
-  void       *getMPtr(size_t i)      { return &operator[](i); }
-  size_t      getSize() const { return size(); }
-  DEPRECATED bool        isRef()   const { return true; }
+	bool        isNull()  const { return ! getData(); }
+  const void *getData() const { return fRef ? pData : pMData; }
+  void       *getMData()      { assert(!fRef); return pMData; }
+  size_t      getSize() const { return iSize; }
+  bool        isRef()   const { return fRef; }
 
+  const void *getPtr(size_t i) const { return reinterpret_cast<const char*>(getData()) + i; }
+  void       *getMPtr(size_t i)      { return reinterpret_cast<char*>(getMData()) + i; }
 
   StdBuf getPart(size_t iStart, size_t inSize) const
   {
-    assert(iStart + inSize <= size());
+    assert(iStart + inSize <= iSize);
     return StdBuf(getPtr(iStart), inSize);
   }
 
@@ -87,38 +123,49 @@ public:
   // Reference given data
   void Ref(const void *pnData, size_t inSize)
   {
-		if(pnData)
-			assign(static_cast<const char*>(pnData), inSize);
-		else
-			clear();
+    Clear();
+    fRef = true; pData = pnData; iSize = inSize;
   }
   // Take over data (hold it)
-  void Take(const void *pnData, size_t inSize) { Ref(pnData, inSize); }
-
-	// Returns a copy of the contents
-	char *GrabPointer() const
+  void Take(void *pnData, size_t inSize)
+  {
+    Clear();
+    if(pnData)
+    {
+      fRef = false; pMData = pnData; iSize = inSize;
+    }
+  }
+	// Transfer puffer ownership to the caller
+	void *GrabPointer()
 	{
 		if(isNull()) return NULL;
-		char *ptr = new char[size()+1];
-		copy(ptr, size()); // doesn't null-terminate
-		ptr[size()] = '\0';
-		return ptr;
+		// Do not give out a buffer which someone else will free
+		if (fRef) Copy();
+		void *pMData = getMData();
+		pData = pMData; fRef = true;
+		return pMData;
 	}
 
   // * Buffer data operations
 
   // Create new buffer with given size
   void New(size_t inSize)
-	{ resize(inSize); }
+  {
+    Clear();
+    pMData = malloc(iSize = inSize);
+    fRef = false;
+  }
   // Write data into the buffer
   void Write(const void *pnData, size_t inSize, size_t iAt = 0)
   {
-		replace(iAt, inSize, static_cast<const char*>(pnData), inSize);
+    assert(iAt + inSize <= iSize);
+    if(pnData && inSize) memcpy(getMPtr(iAt), pnData, inSize);
   }
   // Move data around inside the buffer (checks overlap)
   void Move(size_t iFrom, size_t inSize, size_t iTo = 0)
   {
-		replace(iTo, inSize, *this, iFrom, inSize);
+    assert(iFrom + inSize <= iSize); assert(iTo + inSize <= iSize);
+    memmove(getMPtr(iTo), getPtr(iFrom), inSize);
   }
 	// Compare to memory
 	int Compare(const void *pCData, size_t iCSize, size_t iAt = 0) const
@@ -129,23 +176,32 @@ public:
   // Grow the buffer
   void Grow(size_t iGrow)
   {
-    resize(size() + iGrow);
+    // Grow dereferences
+    if(fRef) { Copy(iSize + iGrow); return; }
+    if(!iGrow) return;
+    // Realloc
+    pMData = realloc(pMData, iSize += iGrow);
   }
   // Shrink the buffer
   void Shrink(size_t iShrink)
   {
-    assert(size() >= iShrink);
-    resize(size() - iShrink);
+    assert(iSize >= iShrink);
+    // Shrink dereferences
+    if(fRef) { Copy(iSize - iShrink); return; }
+    if(!iShrink) return;
+    // Realloc
+    pMData = realloc(pMData, iSize -= iShrink);
   }
   // Clear buffer
   void Clear()
   {
-		clear();
+    if(!fRef) free(pMData);
+    pMData = NULL; fRef = true; iSize = 0;
   }
 	// Free buffer that had been grabbed
-	static void DeletePointer(const void *data)
+	static void DeletePointer(void *data)
 	{
-		delete[] static_cast<const char*>(data);
+		free(data);
 	}
 
   // * Composed actions
@@ -153,7 +209,10 @@ public:
   // Set buffer size (dereferences)
   void SetSize(size_t inSize)
   {
-    resize(inSize);
+    if(inSize > iSize)
+      Grow(inSize - iSize);
+    else
+      Shrink(iSize - inSize);
   }
 
   // Write buffer contents into the buffer
@@ -168,32 +227,62 @@ public:
 		return Compare(Buf2.getData(), Buf2.getSize(), iAt);
   }
 
-  DEPRECATED void Copy(size_t inSize) {}
-  DEPRECATED void Copy() {}
-	void Copy(const void *pnData, size_t inSize) { Ref(pnData, inSize); }
+  // Create a copy of the data (dereferences, obviously)
+  void Copy(size_t inSize)
+  {
+    if(isNull() && !inSize) return;
+    const void *pOldData = getData();
+		size_t iOldSize = iSize;
+    New(inSize);
+    Write(pOldData, Min(iOldSize, inSize));
+  }
+  void Copy()
+  {
+    Copy(iSize);
+  }
+  // Copy data from address
+  void Copy(const void *pnData, size_t inSize)
+  {
+		Ref(pnData, inSize); Copy();
+  }
   // Copy from another buffer
-	void Copy(const StdBuf &Buf2) { assign(Buf2); }
-
+  void Copy(const StdBuf &Buf2)
+  {
+    Copy(Buf2.getData(), Buf2.getSize());
+  }
 	// Create a copy and return it
-	StdBuf Duplicate() const { return *this; }
+	StdBuf Duplicate() const
+	{
+		StdBuf Buf; Buf.Copy(*this); return Buf;
+	}
 
   // Append data from address
   void Append(const void *pnData, int inSize)
   {
-		append(static_cast<const char*>(pnData), inSize);
+    Grow(inSize);
+    Write(pnData, inSize, iSize - inSize);
   }
   // Append data from another buffer
   void Append(const StdBuf &Buf2)
   {
-    append(Buf2);
+    Append(Buf2.getData(), Buf2.getSize());
   }
 
 	// Reference another buffer's contents
-	void Ref(const StdBuf &Buf2) { assign(Buf2); }
+  void Ref(const StdBuf &Buf2)
+	{
+		Ref(Buf2.getData(), Buf2.getSize());
+	}
 	// Create a reference to this buffer's contents
-	StdBuf getRef() const { return *this;	}
+	StdBuf getRef() const
+	{
+		return StdBuf(getData(), getSize());
+	}
   // take over another buffer's contents
-	void Take(const StdBuf &Buf2) { assign(Buf2); }
+  void Take(StdBuf RREF Buf2)
+	{
+    Take(Buf2.GrabPointer(), Buf2.getSize());
+  }
 
   // * File support
   bool LoadFromFile(const char *szFile);
@@ -202,8 +291,6 @@ public:
   // *** Operators
 
   // Null check
-	operator bool() const { return !empty(); }
-	operator const void*() const { return data(); }
   bool operator ! () const { return isNull(); }
 
   // Appending
@@ -218,10 +305,17 @@ public:
     return Buf;
   }
 
+  // Compare
+  bool operator == (const StdBuf &Buf2) const
+  {
+    return getSize() == Buf2.getSize() && !Compare(Buf2);
+  }
+  bool operator != (const StdBuf &Buf2) const { return ! operator == (Buf2); }
+
   // Set (as constructor: take if possible)
-	StdBuf &operator = (const std::string &Buf2)
+  StdBuf &operator = (StdBuf RREF Buf2)
 	{
-		assign(Buf2);
+    if(Buf2.isRef()) Ref(Buf2); else Take(Buf2);
     return *this;
   }
 
@@ -255,76 +349,225 @@ template <class elem_t>
   }
 
 // Copy-Buffer - Just copies data in the copy constructor.
-typedef StdBuf StdCopyBuf;
-
-// Stringbuffer (operates on null-terminated character buffers)
-class StdStrBuf : public StdBuf
+class StdCopyBuf : public StdBuf
 {
 public:
+
+  StdCopyBuf()
+  { }
+
+  // Set by buffer. Copies data by default.
+  StdCopyBuf(const StdBuf &Buf2, bool fCopy = true)
+    : StdBuf(Buf2.getRef(), fCopy)
+  { }
+
+  // Set by buffer. Copies data by default.
+  StdCopyBuf(const StdCopyBuf &Buf2, bool fCopy = true)
+    : StdBuf(Buf2.getRef(), fCopy)
+  { }
+
+  // Set by constant data. Copies data by default.
+  StdCopyBuf(const void *pData, size_t iSize, bool fCopy = true)
+    : StdBuf(pData, iSize, fCopy)
+  { }
+
+  StdCopyBuf &operator = (const StdBuf &Buf2) { Copy(Buf2); return *this; }
+  StdCopyBuf &operator = (const StdCopyBuf &Buf2) { Copy(Buf2); return *this; }
+
+};
+
+// Stringbuffer (operates on null-terminated character buffers)
+class StdStrBuf : protected StdBuf
+{
+public:
+
   // *** Construction
-  // Standard constructor
-	StdStrBuf() { }
 
-  // Constructor from other buffer (copy construction):
-  // Will take over buffer ownership. Copies data if specified.
-  // Note: Construct with Buf2.getRef() to construct a reference (This will work for a constant Buf2, too)
-	StdStrBuf(const char *data, bool = false)
-		: StdBuf(std::string(data))
-	{}
+	StdStrBuf()
+		: StdBuf()
+	{ }
 
-	StdStrBuf(const std::string &other, bool = false)
-		: StdBuf(other)
-  {}
+	// See StdBuf::StdBuf. Will take data if possible.
+	// The static_cast is necessary to pass a rvalue reference to
+	// the StdBuf constructor. Without it, the const lvalue
+	// StdBuf constructor will be used, which will ref the contents
+	// instead of moving them.
+	StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
+    : StdBuf(static_cast<StdStrBuf RREF>(Buf2), fCopy)
+  { }
 
-  // Set by constant data. Copies data if desired.
-  StdStrBuf(const char *pData, size_t iSize, bool = false)
-		: StdBuf(pData, iSize)
-  {}
+#ifdef HAVE_RVALUE_REF
+	StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
+    : StdBuf(Buf2, fCopy)
+  { }
+#endif
 
-  ~StdStrBuf()
-  {}
+  // Set by constant data. References data by default, copies if specified.
+  explicit StdStrBuf(const char *pData, bool fCopy = false)
+    : StdBuf(pData, pData ? strlen(pData) + 1 : 0, fCopy)
+  { }
+
+  // As previous constructor, but set length manually.
+  StdStrBuf(const char *pData, long int iLength)
+    : StdBuf(pData, pData ? iLength + 1 : 0, false)
+  { }
+  StdStrBuf(const char *pData, size_t iLength, bool fCopy = false)
+    : StdBuf(pData, pData ? iLength + 1 : 0, fCopy)
+  { }
 
 	ALLOW_TEMP_TO_REF(StdStrBuf)
+
 public:
 
   // *** Getters
+
+	bool        isNull()  const { return StdBuf::isNull(); }
+  const char *getData() const { return getBufPtr<char>(*this); }
+  char       *getMData()      { return getMBufPtr<char>(*this); }
+  size_t      getSize() const { return StdBuf::getSize(); }
   size_t      getLength() const { return getSize() ? getSize() - 1 : 0; }
-	const char *getData() const { return empty()?NULL:c_str(); }
-  char       *getMData()      { return &operator[](0); }
-  const char *getPtr(size_t i) const { return getData() + i; }
-  char       *getMPtr(size_t i)      { return getMData() + i; }
+  bool        isRef()   const { return StdBuf::isRef(); }
+
+  const char *getPtr(size_t i) const { return getBufPtr<char>(*this, i); }
+  char       *getMPtr(size_t i)      { return getMBufPtr<char>(*this, i); }
+
+  // For convenience. Note that writing can't be allowed.
+  char operator [] (size_t i) const { return *getPtr(i); }
 
   // Analogous to StdBuf
-	using StdBuf::Ref;
-  void Ref(const char *pnData) { if(pnData) assign(pnData); else clear(); }
-	using StdBuf::Take;
-  void Take(const char *pnData) { Ref(pnData); }
-	using StdBuf::Copy;
-  void Copy(const char *pnData) { Ref(pnData); }
+  void Ref(const char *pnData) { StdBuf::Ref(pnData, pnData ? strlen(pnData) + 1 : 0); }
+  void Ref(const char *pnData, size_t iLength) { assert((!pnData && !iLength) || strlen(pnData) == iLength); StdBuf::Ref(pnData, iLength + 1); }
+  void Take(char *pnData) { StdBuf::Take(pnData, pnData ? strlen(pnData) + 1 : 0); }
+  void Take(char *pnData, size_t iLength) { assert((!pnData && !iLength) || strlen(pnData) == iLength); StdBuf::Take(pnData, iLength + 1); }
+	char *GrabPointer() { return reinterpret_cast<char *>(StdBuf::GrabPointer()); }
 
-	StdStrBuf getRef() const { return *this; }
-	StdStrBuf Duplicate() const { return *this; }
+  void Ref(const StdStrBuf &Buf2) { StdBuf::Ref(Buf2.getData(), Buf2.getSize()); }
+	StdStrBuf getRef() const { return StdStrBuf(getData(), getLength()); }
+  void Take(StdStrBuf RREF Buf2) { StdBuf::Take(Buf2); }
 
-	void SetLength(size_t inSize) { SetSize(inSize+1); }
+  void Clear() { StdBuf::Clear(); }
+  void Copy() { StdBuf::Copy(); }
+  void Copy(const char *pnData) { StdBuf::Copy(pnData, pnData ? strlen(pnData) + 1 : 0); }
+  void Copy(const StdStrBuf &Buf2) { StdBuf::Copy(Buf2); }
+	StdStrBuf Duplicate() const { StdStrBuf Buf; Buf.Copy(*this); return Buf; }
+	void Move(size_t iFrom, size_t inSize, size_t iTo = 0) { StdBuf::Move(iFrom, inSize, iTo); }
 
-	// * Operators
+  // Byte-wise compare (will compare characters up to the length of the second string)
+  int Compare(const StdStrBuf &Buf2, size_t iAt = 0) const
+  {
+    assert(iAt <= getLength());
+    return StdBuf::Compare(Buf2.getData(), Buf2.getLength(), iAt);
+  }
+  int Compare_(const char *pCData, size_t iAt = 0) const
+  {
+    StdStrBuf str(pCData); // GCC needs this, for some obscure reason
+    return Compare(str, iAt);
+  }
 
-	StdStrBuf &operator += (const std::string &Buf2) { append(Buf2); return *this; }
+  // Grows the string to contain the specified number more/less characters.
+  // Note: Will set the terminator, but won't initialize - use Append* instead.
+  void Grow(size_t iGrow)
+  {
+    StdBuf::Grow(getSize() ? iGrow : iGrow + 1);
+    *getMPtr(getLength()) = '\0';
+  }
+  void Shrink(size_t iShrink)
+  {
+    assert(iShrink <= getLength());
+    StdBuf::Shrink(iShrink);
+    *getMPtr(getLength()) = '\0';
+  }
+  void SetLength(size_t iLength)
+  {
+    if(iLength == getLength() && !isNull()) return;
+    if(iLength >= getLength())
+      Grow(iLength - getLength());
+    else
+      Shrink(getLength() - iLength);
+  }
+
+  // Append string
+  void Append(const char *pnData, size_t iChars)
+  {
+    //assert(iChars <= strlen(pnData));
+    Grow(iChars);
+    Write(pnData, iChars, iSize - iChars - 1);
+	}
+  void Append(const char *pnData)
+  {
+    Append(pnData, strlen(pnData));
+  }
+  void Append(const StdStrBuf &Buf2)
+  {
+    Append(Buf2.getData(), Buf2.getLength());
+  }
+
+  // Copy string
+  void Copy(const char *pnData, size_t iChars)
+  {
+    Clear();
+    Append(pnData, iChars);
+  }
+
+  // * File support
+  bool LoadFromFile(const char *szFile);
+  bool SaveToFile(const char *szFile) const;
+
+  // * Operators
+
+  bool operator ! () const { return isNull(); }
+
+  StdStrBuf &operator += (const StdStrBuf &Buf2) { Append(Buf2); return *this; }
   StdStrBuf &operator += (const char *szString) { Append(szString); return *this; }
-	StdStrBuf operator + (const std::string &Buf2) const { StdStrBuf Buf = getRef(); Buf.append(Buf2); return Buf; }
-  StdStrBuf operator + (const char *szString) const { StdStrBuf Buf = getRef(); Buf.append(szString); return Buf; }
+  StdStrBuf operator + (const StdStrBuf &Buf2) const { StdStrBuf Buf = getRef(); Buf.Append(Buf2); return Buf; }
+  StdStrBuf operator + (const char *szString) const { StdStrBuf Buf = getRef(); Buf.Append(szString); return Buf; }
 
-	// Note this references the data.
-	StdStrBuf &operator = (const std::string &Buf2) { assign(Buf2); return *this; }
+  bool operator == (const StdStrBuf &Buf2) const
+  {
+    return getLength() == Buf2.getLength() && !Compare(Buf2);
+  }
+  bool operator != (const StdStrBuf &Buf2) const { return !operator == (Buf2); }
+
+  bool operator == (const char *szString) const { return StdStrBuf(szString) == *this; }
+  bool operator != (const char *szString) const { return ! operator == (szString); }
+
+  // Note this references the data.
+  StdStrBuf &operator = (const StdStrBuf &Buf2) { Ref(Buf2); return *this; }
   StdStrBuf &operator = (const char *szString) { Ref(szString); return *this; }
 
-  // * String specific
-	using StdBuf::Append;
-	void Append(const char *str) { if(str) append(str); }
+  // conversion to "bool"
+  operator const void *() const { return getData(); }
 
-	void AppendChars(char cChar, size_t iCnt) { append(iCnt, cChar); }
-	void AppendChar(char cChar) { push_back(cChar); }
-	void InsertChar(char cChar, size_t insert_before) { insert(insert_before, 1, cChar); }
+	// less-than operation for map
+	inline bool operator <(const StdStrBuf &v2)
+	{
+		int iLen = getLength(), iLen2 = v2.getLength();
+		if (iLen == iLen2)
+			return iLen ? (strcmp(getData(), v2.getData())<0) : false;
+		else
+			return iLen < iLen2;
+	}
+
+  // * String specific
+
+  void AppendChars(char cChar, size_t iCnt)
+  {
+    Grow(iCnt);
+    for(size_t i = getLength() - iCnt; i < getLength(); i++)
+      *getMPtr(i) = cChar;
+  }
+  void AppendChar(char cChar)
+  {
+    AppendChars(cChar, 1);
+  }
+  void InsertChar(char cChar, size_t insert_before)
+  {
+	  assert(insert_before <= getLength());
+    Grow(1);
+    for(size_t i = getLength()-1; i > insert_before; --i)
+      *getMPtr(i) = *getPtr(i-1);
+		*getMPtr(insert_before) = cChar;
+  }
 
   // Append data until given character (or string end) occurs.
   void AppendUntil(const char *szString, char cUntil)
@@ -333,7 +576,7 @@ public:
     if(pPos)
       Append(szString, pPos - szString);
     else
-      append(szString);
+      Append(szString);
   }
   // See above
   void CopyUntil(const char *szString, char cUntil)
@@ -360,7 +603,7 @@ public:
 
   StdStrBuf copyPart(size_t iStart, size_t inSize) const
   {
-    assert(iStart + inSize <= size());
+    assert(iStart + inSize <= iSize);
 		if (!inSize) return StdStrBuf();
 		StdStrBuf sResult;
 		sResult.Copy(getPtr(iStart), inSize);
@@ -386,6 +629,12 @@ public:
 	// check if a string consists only of the given chars
 	bool ValidateChars(const char *szInitialChars, const char *szMidChars);
 
+	// build a simple hash
+	int GetHash() const
+	{
+		return StdBuf::GetHash();
+	}
+
 	void EscapeString()
 	{
 		Replace("\\", "\\\\");
@@ -401,7 +650,31 @@ public:
 };
 
 // Copy-Stringbuffer - Just copies data in the copy constructor.
-typedef StdStrBuf StdCopyStrBuf;
+class StdCopyStrBuf : public StdStrBuf
+{
+public:
+
+  StdCopyStrBuf()
+  { }
+
+  explicit StdCopyStrBuf(const StdStrBuf &Buf2, bool fCopy = true)
+    : StdStrBuf(Buf2.getRef(), fCopy)
+  { }
+
+  StdCopyStrBuf(const StdCopyStrBuf &Buf2, bool fCopy = true)
+    : StdStrBuf(Buf2.getRef(), fCopy)
+  { }
+
+  // Set by constant data. Copies data if desired.
+  explicit StdCopyStrBuf(const char *pData, bool fCopy = true)
+    : StdStrBuf(pData, fCopy)
+  { }
+
+  StdCopyStrBuf &operator = (const StdStrBuf &Buf2) { Copy(Buf2); return *this; }
+  StdCopyStrBuf &operator = (const StdCopyStrBuf &Buf2) { Copy(Buf2); return *this; }
+  StdCopyStrBuf &operator = (const char *szString) { Copy(szString); return *this; }
+
+};
 
 // Wrappers
 extern StdStrBuf FormatString(const char *szFmt, ...) GNUC_FORMAT_ATTRIBUTE;
