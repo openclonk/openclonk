@@ -73,7 +73,8 @@ class C4ParticleDefCore
 		int32_t VertexY;									// y-offset of vertex; 100 is object height
 		int32_t Additive;									// whether particle should be drawn additively
 		int32_t Attach;								  	// whether the particle moves relatively to the target
-		int32_t AlphaFade;								// fadeout in each frame
+		int32_t AlphaFade;								// fadeout in each* frame
+		int32_t FadeDelay;								// *each = well, can be redefined here. Standard is 1
 		int32_t Parallaxity [2];          // parallaxity
 
 		StdStrBuf InitFn;	// proc to be used for initialization

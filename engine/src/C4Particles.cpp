@@ -58,6 +58,7 @@ void C4ParticleDefCore::CompileFunc(StdCompiler * pComp)
 	pComp->Value(mkNamingAdapt(VertexY,                 "VertexY",     0));
 	pComp->Value(mkNamingAdapt(Additive,                "Additive",    0));
 	pComp->Value(mkNamingAdapt(AlphaFade,               "AlphaFade",   0));
+	pComp->Value(mkNamingAdapt(FadeDelay,               "FadeDelay",   0));
 	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Parallaxity,100),"Parallaxity"));
 	pComp->Value(mkNamingAdapt(Attach,                  "Attach",      0));
 	}
@@ -74,7 +75,8 @@ C4ParticleDefCore::C4ParticleDefCore():
 	VertexCount(0),VertexY(0),
 	Additive(0),
 	Attach(0),
-	AlphaFade(0)
+	AlphaFade(0),
+	FadeDelay(0)
 	{
 	GfxFace.Default();
 	Parallaxity[0] = Parallaxity[1] = 100;
@@ -703,11 +705,14 @@ bool fxStdExec(C4Particle *pPrt, C4Object *pTarget)
 	if (iFade < 0) if (Game.FrameCounter % -iFade == 0) iFade = 1; else iFade = 0;
 	if (iFade)
 		{
-		DWORD dwClr=pPrt->b;
-		int32_t iAlpha=dwClr>>24;
-		iAlpha+=pPrt->pDef->AlphaFade;
-		if (iAlpha>=0xff) return false;
-		pPrt->b=(dwClr&0xffffff) | (iAlpha<<24);
+		if(pPrt->pDef->FadeDelay == 0 || Game.FrameCounter % pPrt->pDef->FadeDelay == 0)
+		{
+			DWORD dwClr=pPrt->b;
+			int32_t iAlpha=dwClr>>24;
+			iAlpha+=pPrt->pDef->AlphaFade;
+			if (iAlpha>=0xff) return false;
+			pPrt->b=(dwClr&0xffffff) | (iAlpha<<24);
+		}
 		}
 	// if delay is given, advance lifetime
 	if (pPrt->pDef->Delay)

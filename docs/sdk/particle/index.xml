@@ -137,7 +137,12 @@
 		<row>
 			<col>AlphaFade</col>
 			<col>Integer</col>
-			<col>0 bis 40. Ausfaden pro Frame. Wenn das Partikel vollends ausgefadet ist, verschwindet es.</col>
+			<col>0 bis 40. Ausfaden pro FadeDelay. Wenn das Partikel vollends ausgefadet ist, verschwindet es.</col>
+		</row>
+		<row>
+			<col>FadeDelay</col>
+			<col>Integer</col>
+			<col>Default ist 1.</col>
 		</row>
 		<row>
 			<col>Parallaxity</col>
