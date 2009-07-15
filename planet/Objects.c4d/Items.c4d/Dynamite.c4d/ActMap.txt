@@ -1,0 +1,10 @@
+[Action]
+Name=Fuse
+Procedure=FLOAT
+NextAction=Fuse
+Length=1
+Delay=1
+FacetBase=1
+Sound=Fusing
+StartCall=Fusing
+
