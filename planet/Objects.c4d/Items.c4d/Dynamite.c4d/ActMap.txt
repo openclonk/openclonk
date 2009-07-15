@@ -1,6 +1,6 @@
 [Action]
 Name=Fuse
-Procedure=FLOAT
+Procedure=NONE
 NextAction=Fuse
 Length=1
 Delay=1

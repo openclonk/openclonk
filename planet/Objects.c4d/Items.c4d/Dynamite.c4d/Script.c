@@ -61,8 +61,11 @@ public func Use(object clonk)
 
 public func Fuse()
 {
-  Sound("Fuse");
-  SetAction("Fuse");
+	if(GetAction() != "Fuse")
+	{
+		Sound("Fuse");
+		SetAction("Fuse");
+	}
 }
 
 // returns true if there is a wall in direction in which "clonk" looks 
@@ -81,7 +84,7 @@ private func getWall(&xo, &yo, object clonk)
 
 protected func Hit() { Sound("WoodHit*"); }
 
-protected func Incineration() { Fuse(); }
+protected func Incineration() { Extinguish(); Fuse(); }
 
 protected func RejectEntrance()
 {
