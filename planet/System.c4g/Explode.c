@@ -54,6 +54,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 
 	// blast particle
 	CreateParticle("Blast", x,y, 0,0, level*10, RGBa(255,255,255,100));
+	CastParticles("Spark",10,80+level,x,y,35,40,RGB(255,200,0),RGB(255,255,150));
 	//CastParticles("FSpark", level/5+1, level, x,y, level*5+10,level*10+10, 0x00ef0000,0xffff1010));
 
 	// smoke trails
