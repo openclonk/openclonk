@@ -21,13 +21,11 @@
     <examples>
       <example>
 
-<code>Sound("Applause", 0, <funclink>FindObject</funclink>(HUT2), 50);</code>
-
+				<code>Sound("Applause", 0, <funclink>FindObject</funclink>(HUT2), 50);</code>
         <text>Spielt einen Applaus-Sound bei der ersten, gefundenen Holzhütte in halber Lautstärke ab.</text>
       </example>
     </examples>
     <related>
-      <funclink>SoundLevel</funclink>
       <funclink>Music</funclink>
     </related>
   </func>

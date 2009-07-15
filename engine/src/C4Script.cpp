@@ -771,15 +771,6 @@ static bool FnSetActionData(C4AulContext *cthr, long iData, C4Object *pObj)
 	return TRUE;
 	}
 
-static bool FnObjectSetAction(C4AulContext *cthr, C4Object *pObj, C4String *szAction,
-											C4Object *pTarget, C4Object *pTarget2, bool fDirect)
-	{
-	if (!szAction || !pObj) return FALSE;
-	// regular action change
-	return !!pObj->SetActionByName(FnStringPar(szAction),pTarget,pTarget2,
-		C4Object::SAC_StartCall | C4Object::SAC_AbortCall,!!fDirect);
-	}
-
 static bool FnSetComDir(C4AulContext *cthr, long ncomdir, C4Object *pObj)
   {
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
@@ -2343,12 +2334,6 @@ static long FnSetPlayList(C4AulContext *cth, C4String *szPlayList)
 	if(::Control.SyncMode()) return 0;
 	return iFilesInPlayList;
 	}
-
-static bool FnSoundLevel(C4AulContext *cthr, C4String *szSound, long iLevel, C4Object *pObj)
-  {
-  SoundLevel(FnStringPar(szSound),pObj,iLevel);
-  return TRUE;
-  }
 
 static bool FnGameOver(C4AulContext *cthr, long iGameOverValue /* provided for future compatibility */)
 	{
@@ -6293,7 +6278,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetAlive", FnGetAlive);
 	AddFunc(pEngine, "GetDamage", FnGetDamage);
 	AddFunc(pEngine, "CrewMember", FnCrewMember);
-	AddFunc(pEngine, "ObjectSetAction", FnObjectSetAction, false);
 	AddFunc(pEngine, "ComponentAll", FnComponentAll);
 	AddFunc(pEngine, "SetComDir", FnSetComDir);
 	AddFunc(pEngine, "GetComDir", FnGetComDir);
@@ -6340,7 +6324,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Music", FnMusic);
 	AddFunc(pEngine, "MusicLevel", FnMusicLevel);
 	AddFunc(pEngine, "SetPlayList", FnSetPlayList);
-	AddFunc(pEngine, "SoundLevel", FnSoundLevel, false);
 	AddFunc(pEngine, "RemoveObject", FnRemoveObject);
 	AddFunc(pEngine, "GetActionTarget", FnGetActionTarget);
 	AddFunc(pEngine, "SetActionTargets", FnSetActionTargets);

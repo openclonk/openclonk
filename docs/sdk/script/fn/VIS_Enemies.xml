@@ -14,9 +14,8 @@
 		<examples>
 			<example>
 
-<code>var obj;
-while (obj=FindObject(BANR,0,0,0,0,0,0,0,0,obj)) SetVisibility(VIS_Enemies() | VIS_God(), obj);
-while (obj=FindObject(BANP,0,0,0,0,0,0,0,0,obj)) SetVisibility(VIS_Enemies() | VIS_God(), obj);</code>
+<code>for(var obj in FindObjects(Find_Or(Find_ID(BANR),Find_ID(BANP)))) SetVisibility(VIS_Enemies() | VIS_God(), obj);
+</code>
 
 				<text>Alle Banner sind nur noch für die jeweiligen Gegner der besitzenden Spieler sichtbar.</text>
 			</example>
