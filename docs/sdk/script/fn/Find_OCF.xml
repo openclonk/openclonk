@@ -16,11 +16,11 @@
 		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
 		<examples>
 			<example>
-				<code><funclink>ObjectCount2</funclink>(Find_OCF(<funclink>OCF_InLiquid</funclink> | <funclink>OCF_InSolid</funclink>))</code>
+				<code><funclink>ObjectCount</funclink>(Find_OCF(<funclink>OCF_InLiquid</funclink> | <funclink>OCF_InSolid</funclink>))</code>
 				<text>Gibt die Anzahl der Objekte zurück, die sich in Flüssigkeit befinden oder im Boden stecken.</text>
 			</example>
 			<example>
-				<code><funclink>FindObject2</funclink>(Find_OCF(<funclink>OCF_Alive</funclink>), Find_OCF(<funclink>OCF_OnFire</funclink>))</code>
+				<code><funclink>FindObject</funclink>(Find_OCF(<funclink>OCF_Alive</funclink>), Find_OCF(<funclink>OCF_OnFire</funclink>))</code>
 				<text>Gibt das erstbeste brennende Lebewesen zurück, falls ein solches existiert.</text>
 			</example>
 		</examples>

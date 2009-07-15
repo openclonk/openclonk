@@ -3,9 +3,9 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
 	<func>
-		<title>ObjectCount2</title>
+		<title>ObjectCount</title>
 		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
+		<version>4.10.0.0 CR</version>
 		<syntax>
 			<rtype>int</rtype>
 			<params>
@@ -14,10 +14,10 @@
 			</params>
 		</syntax>
 		<desc>Gibt die Anzahl der Objekte zurück, die das angegebenen Suchkriterien erfüllen. Die Suchkriterien werden mittels speziellen Kriteriums-Funktionen der Form "Find_*" angegeben.</desc>
-		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObjects</funclink> und <funclink>FindObject2</funclink>. Siehe <funclink>FindObjects</funclink> für weitere Kriterium-Beispiele.</remark>
+		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObjects</funclink> und <funclink>FindObject</funclink>. Siehe <funclink>FindObjects</funclink> für weitere Kriterium-Beispiele.</remark>
 		<examples>
 			<example>
-			<code><funclink>Message</funclink>( "Noch %d feindliche Clonks!", ObjectCount2(<funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>), <funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>()) );</code>
+			<code><funclink>Message</funclink>( "Noch %d feindliche Clonks!", ObjectCount(<funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>), <funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>()) );</code>
 			<text>Informiert über die Stärke der Feinde.</text>
 			</example>
 		</examples>
@@ -41,7 +41,7 @@
 			<funclink>Find_OCF</funclink>
 			<funclink>Find_Or</funclink>
 			<funclink>Find_Owner</funclink>
-			<funclink>FindObject2</funclink>
+			<funclink>FindObject</funclink>
 			<funclink>FindObjects</funclink>
 			<funclink>ObjectCount</funclink>
 		</related>

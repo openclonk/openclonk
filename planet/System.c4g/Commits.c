@@ -3,20 +3,10 @@
 /*-- flgr --*/
 
 // Liefert das Offset zur gewünschten Landscape-X-Position zurück
-global func AbsX(int x) {
-  return x - GetX();
-}
+global func AbsX(int x) { return x - GetX(); }
 
 // Liefert das Offset zur gewünschten Landscape-Y-Position zurück
-global func AbsY(int y) {
-  return y - GetY();
-}
-
-// Liefert 1 zurück wenn keine der angegeben Konditionen wahr ist
-// sollte nicht mehr benutzt werden!
-global func Nor(bool con1, bool con2, bool con3, bool con4, bool con5) {
-  return !(con1 || con2 || con3 || con4 || con5);
-}
+global func AbsY(int y) { return y - GetY(); }
 
 // Erzeugt ein Objekt mit der angegeben ID in iMaterial. iRetries ist die Anzahl der Versuche.
 global func PlaceInMaterial(id def, int material, int _retries) { // C4ID id, int iMaterial, [int iRetries]
@@ -116,145 +106,14 @@ global func Concat() {
 
 /*-- Joern --*/
 
-//Objekt hüpft mit der angegebenen Kraft.
-global func Bounce(int iPower)
-{
-  if(!GBackSolid(0,-2)) SetYDir(-Random(iPower));
-  if(GBackSolid(0,-2))  SetYDir(Random(10));
-  if(GBackSolid(-2,0))  SetXDir(-GetXDir());
-  if(GBackSolid(2,0))   SetXDir(-GetXDir());
-  return 1;
-}
-  
 //Fügt zum Konto des genannten Spielers iValue Gold hinzu
 global func DoWealth(int iPlayer, int iValue)
 {
   return SetWealth(iPlayer, iValue + GetWealth(iPlayer));
 }
-  
-//Erstellt für iPlayer ein Crewmember mit der genannten ID zufällig an einer begehbaren Stelle (an Land, nicht im Wasser).
-global func RndMakeCrewMember(int iPlayer, id ID)
-{
- var anim=PlaceAnimal(WIPF),crw;
- MakeCrewMember(crw=CreateObject( ID,GetX(anim),GetY(anim),iPlayer ), iPlayer);
- RemoveObject(anim);
- return crw;
-}
 
-//Objekt Explodiert mehrmals.
-global func SemiExplode(int iLevel, int incidence)
-{
-  for(var i = 0; i < incidence; i++)
-    Explode(iLevel,CreateObject(ROCK, 0, 0, GetOwner())); 
-  RemoveObject();
-  return 1;
-}
-    
 /*-- Tyron --*/
 
-// Wandelt einen DWORD in RGB werte um
-// select 0: a, select 1: R, select 2: G, select 3: B
-global func GetRGBaValue(val,sel) {
-  return (val>>((3-sel)*8)&255);
-}
-
-// Abwärtskompatibilität
-global func GetRGBValue(val,sel) {
-  return (GetRGBaValue(val,sel));
-}
-
-// Hiermit lässt sich eine Farbe eines RGB Wertes setzen
-// select 0: a, select 1: R, select 2: G, select 3: B
-global func SetRGBaValue(int val, int newval, int sel) {
-    // Alte Farbe 'löschen'
-    val = val&~(255<<((3-sel)*8));
-    // Neue hinzufügen
-    return (val|newval<<((3-sel)*8));
-}
-
-// Diese Funktion verändert die angegeben Farbe eines RGB Wertes
-// select 0: a, select 1: R, select 2: G, select 3: B
-global func DoRGBaValue(int val, int chng, int sel) {
-    return (val + (chng<<((3-sel)*8)));
-}
-
-global func SplitRGBaValue(rgb, &red, &green, &blue, &alpha) {
-    red=GetRGBaValue(rgb,1);
-    green=GetRGBaValue(rgb,2);
-    blue=GetRGBaValue(rgb,3);
-    alpha=GetRGBaValue(rgb,0);
-}
-
-global func HSL2RGB(hsl) {
-    var hue=GetRGBaValue(hsl,1), sat=GetRGBaValue(hsl,2),lightness=GetRGBaValue(hsl,3);
-    var red, green, blue;
-    var var1, var2;
-    
-    //Log("hue: %d sat: %d lightness: %d",hue,sat, lightness);
-    
-    if(sat==0) {
-        red = green = blue = lightness;
-    } else {
-        if(lightness<128) var2 = (lightness*(255 + sat))/255;
-            else var2 = lightness+sat-lightness*sat/255;
-                
-        var1 = 2*lightness-var2;
-            
-        red   = Hue_2_RGB( var1, var2, hue+85);
-        green= Hue_2_RGB( var1, var2, hue );
-        blue  = Hue_2_RGB( var1, var2, hue-85);
-    }
-    
-    //Log("red: %d green: %d blue: %d",red, green, blue);
-    
-    return RGB(red, green, blue);
-}
-
-global func Hue_2_RGB(var1, var2, hue) {
-     if(hue<0) hue+=255;
-   if(hue>255) hue-=255;
-   if(6*hue<255) return ( var1 + ((var2 - var1) * 6 * hue)/255);
-   if(2*hue<255) return ( var2 );
-   if(3*hue<510) return ( var1 + ((var2 - var1)*( 510 / 3 - hue )*6)/255);
-   return (var1);
-}
-
-global func RGB2HSL(rgb) {
-    var red=GetRGBaValue(rgb,1), green=GetRGBaValue(rgb,2),blue=GetRGBaValue(rgb,3);
-    var min_val = Min(red, Min(green, blue)), max_val = Max(red, Max(green, blue));
-    var diff_val = max_val - min_val;
-    var lightness = (max_val + min_val)/2;
-    var hue, sat, diff_red, diff_green, diff_blue;
-
-    //Log("red: %d green: %d blue: %d",red, green, blue);
-    //Log("max_val: %d, min_val: %d",max_val, min_val);
-    
-    if (diff_val==0) {
-   hue=0;                             
-   sat=0;
-    } else {
-        //Log("%d/%d",255*diff_val,510-(max_val+min_val));
-        if(lightness<128) sat=(255*diff_val)/(max_val+min_val);
-            else sat=(255*diff_val)/(510-(max_val+min_val));
-
-        diff_red  = ((255*(max_val-red  ))/6 + (255*diff_val)/2)/diff_val;
-        diff_green= ((255*(max_val-green))/6 + (255*diff_val)/2)/diff_val;
-        diff_blue = ((255*(max_val-blue ))/6 + (255*diff_val)/2)/diff_val;
-            
-        if      (red  ==max_val) hue=diff_blue-diff_green;
-        else if (green==max_val) hue=255/3+diff_red-diff_blue;
-        else if (blue ==max_val) hue=510/3+diff_green-diff_red;
-        
-        if (hue<0)   hue+=255;
-        if (hue>255) hue-=255;
-    }
-    
-    //Log("hue: %d",hue);
-    //Log("sat: %d",sat);
-    //Log("lightness: %d",lightness);
-    
-    return (RGB(hue,sat,lightness));
-}
 
 // Prüft ob die angegebene Definition vorhanden ist
 global func FindDefinition(id idDef) {
@@ -343,39 +202,31 @@ global func LaunchVolcano(int x, int y, int strength, string mat) {
   return 1;
 }
 
-// Gleich wie CastObjects nur dass man hier Schleuderwinkel verändern kann
-global func CastObjectsX(iddef,am,lev,x,y,angs,angw,callback) {
-  var ang, obj, xdir;
-  for(var i=0;i<am;i++) {
-    ang=angs+Random(angw) - angw/2;
-    SetR(Random(360),obj=CreateObject(iddef,x,y,-1));
-    SetXDir(xdir=Cos(ang,lev)+RandomX(-3,3),obj);
-    SetYDir(Sin(ang,lev)+RandomX(-3,3),obj);
-    SetRDir((10+Random(21))*xdir/Abs(xdir),obj);
-        if(callback)
-            if(callback==-1) GameCall("ObjectCast",obj);
-                else Call(callback,obj);
+global func CastObjects(iddef,am,lev,x,y,angs,angw) {
+	if(!angw) angw = 180;
+  for(var i=0; i<am; i++) {
+		var obj = CreateObject(iddef,x,y,NO_OWNER);
+		var ang = angs + RandomX(-angw/2,angw/2);
+		var xdir = xdir=Cos(ang,lev) + RandomX(-3,3)
+    obj->SetR(Random(360));
+    obj->SetXDir(xdir);
+    obj->SetYDir(Sin(ang,lev) + RandomX(-3,3));
+    obj->SetRDir((10+Random(21))*xdir/Abs(xdir));
   }
 }
-  
-// Gleich wie CastPXS nur dass man hier Schleuderwinkel verändern kann
-global func CastPXSX(string mat,int am,int lev,int x,int y,int angs,int angw) {
-  var ang;
+
+global func CastPXS(string mat,int am,int lev,int x,int y,int angs,int angw) {
+	if(!angw) angw = 180;
   for(var i=0;i<am;i++) {
-    ang=angs+Random(angw) - angw/2;
+		var ang = angs + RandomX(-angw/2,angw/2);
     InsertMaterial(Material(mat),x,y,Cos(ang,lev)+RandomX(-3,3),Sin(ang,lev)+RandomX(-3,3));
   }
 }
 
-// selbsterklärend...
+
 global func Tan(int iAngle, int iRadius) {
     return  (iRadius * Sin(iAngle,iRadius*100)) / Cos(iAngle,iRadius*100) ;
 }
-
-global func GetMaterialColorX(mat, num) {
-  return RGB(GetMaterialColor(mat, num,0),GetMaterialColor(mat, num,1),GetMaterialColor(mat, num,2));
-}
-
 
 /*-- Roscher --*/
 
@@ -416,9 +267,6 @@ global func Visible(int iPlr, object pObj)
 
   return false;
 }
-
-global func HSL(int h, int s, int l)  { return HSL2RGB(RGB(h,s,l)); }
-global func HSLa(int h, int s, int l, int a) { return  HSL2RGB(RGB(h,s,l)) | (a & 255)<<24; }
 
 /*-- timi --*/
 

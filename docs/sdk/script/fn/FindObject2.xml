@@ -3,9 +3,9 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
 	<func>
-		<title>FindObject2</title>
+		<title>FindObject</title>
 		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.9.6.0 CR</version>
+		<version>4.10.0.0 OC</version>
 		<syntax>
 			<rtype>object</rtype>
 			<params>
@@ -14,11 +14,11 @@
 			</params>
 		</syntax>
 		<desc>Gibt ein Objekt zurück, das die angegebenen Suchkriterien erfüllt. Die Suchkriterien werden mittels speziellen Kriteriums-Funktionen der Form "Find_*" angegeben.</desc>
-		<remark>Anders als bei <funclink>FindObject</funclink> findet sich bei objektlokalen Aufrufen von FindObject2 das aufrufende Objekt selbst. Dies kann durch <funclink>Find_Exclude</funclink>() verhindert werden.</remark>
-		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObjects</funclink> und <funclink>ObjectCount2</funclink>. Siehe <funclink>FindObjects</funclink> für weitere Kriterium-Beispiele.</remark>
+		<remark>Das aufrufende Objekt findet sich in FindObject auch selbst. Dies kann durch <funclink>Find_Exclude</funclink>() verhindert werden.</remark>
+		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObjects</funclink> und <funclink>ObjectCount</funclink>. Siehe <funclink>FindObjects</funclink> für weitere Kriterium-Beispiele.</remark>
 		<examples>
 			<example>
-<code><funclink>if</funclink>(<funclink>FindObject2</funclink>(<funclink>Find_Distance</funclink>(10), <funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>), <funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>()))
+<code><funclink>if</funclink>(<funclink>FindObject</funclink>(<funclink>Find_Distance</funclink>(10), <funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>), <funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>()))
   <funclink>Explode</funclink>(20);</code>
 				<text>Wenn sich ein feindlicher Clonk näher als 10 Pixel an das Objekt heranwagt, explodiert dieses.</text>
 			</example>
@@ -45,8 +45,7 @@
 			<funclink>Find_Owner</funclink>
 			<funclink>FindObject</funclink>
 			<funclink>FindObjects</funclink>
-			<funclink>FindObjectOwner</funclink>
-			<funclink>ObjectCount2</funclink>
+			<funclink>ObjectCount</funclink>
 		</related>
 	</func>
 	<author>Clonkonaut</author><date>Juli 2006</date>

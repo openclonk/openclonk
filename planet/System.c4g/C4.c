@@ -30,14 +30,6 @@ global func GetActMapVal(string strEntry, string strAction, id idDef, int iEntry
   return GetProperty(strEntry, GetProperty(strAction, idDef));
 }
 
-global func CastC4ID(x) { return x; }
-
-// Abgelöst durch SetPosition
-global func ForcePosition(object obj, int x, int y) { return SetPosition(x, y, obj); }
-
-// Abgelöst durch RemoveObject
-global func AssignRemoval(object obj) { return RemoveObject(obj); }
-
 // Für Szenarien ohne Objects.c4d...
 global func EmptyBarrelID() { return BARL; }
 
@@ -96,26 +88,6 @@ global func ShowNeededMaterial(object pOfObject)
 {
   MessageWindow(GetNeededMatStr(pOfObject), GetOwner(),CXCN,GetName(pOfObject));
   return 1;
-}
-
-global func SetOnlyVisibleToOwner(bool fVisible, object pObj)
-{
-  var oldVal=GetOnlyVisibleToOwner(pObj);
-  if (fVisible) 
-    SetVisibility(VIS_Owner | VIS_God, pObj);
-  else
-    SetVisibility(VIS_All, pObj);
-  return oldVal;
-}
-  
-global func GetOnlyVisibleToOwner(object pObj)
-{
-  return (GetVisibility(pObj) == VIS_Owner | VIS_God);
-}
-
-global func MessageBoard(string msg, par0, par1, par2, par3, par4, par5, par6, par7, par8)
-{
-  return Log(msg, par0, par1, par2, par3, par4, par5, par6, par7, par8);
 }
 
 // Fasskonfiguration

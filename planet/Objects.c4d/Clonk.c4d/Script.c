@@ -57,17 +57,17 @@ public func AtTreeToChop() { return !Contained() && FindTree() && GetPhysical("C
 
 public func FindConstructionSite()
 {
-  return FindObject2(Find_AtRect(-1,-16,2,32), Find_OCF(OCF_Construct), Find_Layer(GetObjectLayer()));
+  return FindObject(Find_AtRect(-1,-16,2,32), Find_OCF(OCF_Construct), Find_Layer(GetObjectLayer()));
 }
 
 public func FindEnergySite()
 {
-  return FindObject2(Find_AtPoint(), Find_OCF(OCF_PowerConsumer), Find_NoContainer(), Find_Layer(GetObjectLayer()), Find_Func("NeedsEnergy"));
+  return FindObject(Find_AtPoint(), Find_OCF(OCF_PowerConsumer), Find_NoContainer(), Find_Layer(GetObjectLayer()), Find_Func("NeedsEnergy"));
 }
 
 public func FindTree()
 {
-  return FindObject2(Find_AtPoint(), Find_OCF(OCF_Chop), Find_Layer(GetObjectLayer()));
+  return FindObject(Find_AtPoint(), Find_OCF(OCF_Chop), Find_Layer(GetObjectLayer()));
 }
 
 /* Steuerung */
@@ -748,7 +748,7 @@ public func FxIntNotAvailableTimer(target, number)
 
 public func GetProducerOf(def)
 {
-  return FindObject2(Find_InRect(-500,-250,1000,500), Find_Func("IsProducerOf", this, def), Sort_Distance());
+  return FindObject(Find_InRect(-500,-250,1000,500), Find_Func("IsProducerOf", this, def), Sort_Distance());
 }
 
 /* Trinken */

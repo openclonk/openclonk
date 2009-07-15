@@ -20,7 +20,6 @@
 		<related>
 			<funclink>Find_AnyContainer</funclink>
 			<funclink>FindObject</funclink>
-			<funclink>FindObjectOwner</funclink>
 		</related>
 	</func>
 	<author>jwk</author><date>April 2002</date>
