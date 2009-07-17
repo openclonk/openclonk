@@ -6887,6 +6887,7 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "C4V_C4Object"           ,C4V_Int,          C4V_C4Object},
 	{ "C4V_String"             ,C4V_Int,          C4V_String},
 	{ "C4V_Array"              ,C4V_Int,          C4V_Array},
+	{ "C4V_Nil"                ,C4V_Int,          C4V_Nil},
 
 	{ "COMD_None"              ,C4V_Int,          COMD_None},
 	{ "COMD_Stop"              ,C4V_Int,          COMD_Stop},

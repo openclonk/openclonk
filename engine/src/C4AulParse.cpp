@@ -83,6 +83,7 @@
 
 #define C4AUL_True					"true"
 #define C4AUL_False					"false"
+#define C4AUL_Nil           "nil"
 
 #define C4AUL_CodeBufSize		16
 
@@ -95,6 +96,7 @@ enum C4AulTokenType
 	ATT_INT,		// integer constant
 	ATT_BOOL,		// boolean constant
 	ATT_STRING,	// string constant
+	ATT_NIL,    // "nil"
 	ATT_C4ID,		// C4ID constant
 	ATT_COMMA,	// ","
 	ATT_COLON,	// ":"
@@ -715,6 +717,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 						// check reserved names
 						if(SEqual(pToken, C4AUL_False)) { *pInt = false; return ATT_BOOL; }
 						if(SEqual(pToken, C4AUL_True))	{ *pInt = true; return ATT_BOOL; }
+						if(SEqual(pToken, C4AUL_Nil))   { return ATT_NIL; }
 						// everything else is an identifier
 						return ATT_IDTF;
 						}
@@ -913,6 +916,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_BOOL: return "BOOL";		// constant: bool
 	case AB_STRING: return "STRING";	// constant: string
 	case AB_C4ID: return "C4ID";		// constant: C4ID
+	case AB_NIL: return "NIL";		// constant: nil
 	case AB_ARRAY: return "ARRAY";		// semi-constant: array
 	case AB_IVARN: return "IVARN";		// initialization of named var
 	case AB_JUMP: return "JUMP";		// jump
@@ -1026,6 +1030,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_BOOL:
 		case AB_STRING:
 		case AB_C4ID:
+		case AB_NIL:
 		case AB_VARN_R:
 		case AB_VARN_V:
 		case AB_PARN_R:
@@ -1122,7 +1127,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		}
 
 	// Use stack operation instead of 0-Int (enable optimization)
-	if((eType == AB_INT || eType == AB_BOOL) && !X)
+	if(eType == AB_NIL)
 		{
 		eType = AB_STACK;
 		X = 1;
@@ -1253,6 +1258,7 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 		case ATT_BOOL: return "boolean constant";
 		case ATT_STRING: return "string constant";
 		case ATT_C4ID: return "id constant";
+		case ATT_NIL: return "nil";
 		case ATT_COMMA: return "','";
 		case ATT_COLON: return "':'";
 		case ATT_DCOLON: return "'::'";
@@ -2265,7 +2271,7 @@ void C4AulParseState::Parse_Array()
 			// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 			if (size > 0)
 				{
-				AddBCC(AB_INT);
+				AddBCC(AB_NIL);
 				++size;
 				}
 			fDone = true;
@@ -2273,8 +2279,8 @@ void C4AulParseState::Parse_Array()
 			}
 		case ATT_COMMA:
 			{
-			// got no parameter before a ","? then push a 0-constant
-			AddBCC(AB_INT);
+			// got no parameter before a ","? then push nil
+			AddBCC(AB_NIL);
 			Shift();
 			++size;
 			break;
@@ -2647,6 +2653,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 								AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
 								break;
 							case C4V_C4ID:   AddBCC(AB_C4ID,   val.GetData().Int); break;
+							case C4V_Nil:    AddBCC(AB_NIL); break;
 							case C4V_Any:
 								// any: allow zero; add it as int
 								if (!val.GetData())
@@ -2700,6 +2707,12 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		case ATT_C4ID: // converted ID in cInt
 			{
 			AddBCC(AB_C4ID, cInt);
+			Shift();
+			break;
+			}
+		case ATT_NIL:
+			{
+			AddBCC(AB_NIL);
 			Shift();
 			break;
 			}
@@ -2808,7 +2821,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 					{
 					switch (TokenType)
 						{
-						case ATT_IDTF: case ATT_INT: case ATT_BOOL: case ATT_STRING: case ATT_C4ID:
+						case ATT_IDTF: case ATT_INT: case ATT_BOOL: case ATT_STRING: case ATT_C4ID: case ATT_NIL:
 						case ATT_OPERATOR: case ATT_BOPEN: case ATT_BOPEN2:
 						Parse_Expression(C4ScriptOpMap[OpID].Priority);
 						// If the operator does not modify the second argument, no reference is necessary
@@ -3085,6 +3098,7 @@ void C4AulParseState::Parse_Const()
 				case ATT_BOOL: vGlobalValue.SetBool(!!cInt); break;
 				case ATT_STRING: vGlobalValue.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
 				case ATT_C4ID: vGlobalValue.SetC4ID(cInt); break;
+				case ATT_NIL: vGlobalValue.Set0(); break;
 				case ATT_IDTF:
 					// identifier is only OK if it's another constant
 					if (!a->Engine->GetGlobalConstant(Idtf, &vGlobalValue))

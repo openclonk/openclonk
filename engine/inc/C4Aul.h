@@ -194,6 +194,7 @@ enum C4AulBCCType
 	AB_BOOL,		// constant: bool
 	AB_STRING,	// constant: string
 	AB_C4ID,		// constant: C4ID
+	AB_NIL,		  // constant: nil
 	AB_ARRAY,		// semi-constant: array
 	AB_IVARN,		// initialization of named var
 	AB_JUMP,		// jump

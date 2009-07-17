@@ -342,6 +342,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					PushValue(C4VID(pCPos->Par.i));
 					break;
 
+				case AB_NIL:
+					PushValue(C4VNull);
+					break;
+
 				case AB_EOFN:
 					throw new C4AulExecError(pCurCtx->Obj, "function didn't return");
 

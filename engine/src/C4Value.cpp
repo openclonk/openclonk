@@ -108,7 +108,7 @@ void C4Value::Set(C4V_Data nData, C4V_Type nType)
 
 	// change
 	Data = nData;
-	Type = nData ? nType : C4V_Any;
+	Type = nData || nType == C4V_Int || nType == C4V_Bool ? nType : C4V_Nil;
 
 	// hold
 	AddDataRef();
@@ -124,7 +124,7 @@ void C4Value::Set0()
 
 	// change
 	Data = 0;
-	Type = C4V_Any;
+	Type = C4V_Nil;
 
 	// clean up (save even if Data was 0 before)
 	DelDataRef(oData, oType, HasBaseArray ? NULL : NextRef, HasBaseArray ? BaseArray : NULL);
@@ -295,6 +295,8 @@ const char* GetC4VName(const C4V_Type Type)
 		return "array";
 	case C4V_pC4Value:
 		return "&";
+	case C4V_Nil:
+		return "nil";
 	default:
 		return "!Fehler!";
 	}
@@ -322,6 +324,8 @@ char GetC4VID(const C4V_Type Type)
 		return 'O';
 	case C4V_Array:
 		return 'a';
+	case C4V_Nil:
+		return 'n';
 	}
 	return ' ';
 }
@@ -348,6 +352,8 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_C4ObjectEnum;
 	case 'a':
 		return C4V_Array;
+	case 'n':
+		return C4V_Nil;
 	}
 	return C4V_Any;
 }
@@ -424,6 +430,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvGuess		}, // String
 		{ CnvGuess		}, // Array
 		{ CnvError		}, // pC4Value
+		{ CnvOK       }, // Nil
 	},
 	{ // C4V_Int
 		{ CnvOK			}, // any
@@ -434,6 +441,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
+		{ CnvOK       }, // Nil
 	},
 	{ // C4V_Bool
 		{ CnvOK			}, // any
@@ -444,6 +452,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
+		{ CnvOK       }, // Nil
 	},
 	{ // C4V_C4ID
 		{ CnvOK			}, // any
@@ -454,6 +463,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
+		{ CnvOK       }, // Nil
 	},
 	{ // C4V_Object
 		{ CnvOK			}, // any
@@ -464,6 +474,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
+		{ CnvOK       }, // Nil
 	},
 	{ // C4V_String
 		{ CnvOK			}, // any
@@ -474,6 +485,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK			}, // String     same
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
+		{ CnvOK       }, // Nil
 	},
 	{ // C4V_Array
 		{ CnvOK			}, // any
@@ -484,6 +496,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvOK			}, // Array      same
 		{ CnvError		}, // pC4Value   NEVER!
+		{ CnvOK       }, // Nil
 	},
 	{ // C4V_pC4Value - resolve reference and retry type check
 		{ CnvDeref		}, // any
@@ -494,6 +507,18 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvDeref		}, // String
 		{ CnvDeref		}, // Array
 		{ CnvOK			}, // pC4Value   same
+		{ CnvOK       }, // Nil
+	},
+	{ // C4V_Nil
+		{ CnvOK		}, // any
+		{ CnvOK		}, // int
+		{ CnvOK		}, // Bool
+		{ CnvOK		}, // C4ID
+		{ CnvOK		}, // C4Object
+		{ CnvOK		}, // String
+		{ CnvOK		}, // Array
+		{ CnvError}, // pC4Value
+		{ CnvOK   }, // Nil		same
 	},
 };
 
@@ -548,6 +573,8 @@ StdStrBuf C4Value::GetDataString()
 			DataString.AppendChar(']');
 			return DataString;
 		}
+	case C4V_Nil:
+		return StdStrBuf("nil");
 	default:
 		return StdStrBuf("-unknown type- ");
 	}
@@ -596,7 +623,7 @@ void C4Value::DenumeratePointer()
 		}
 		// object: invalid value - set to zero
 		else
-			Set(0);
+			Set0();
 	}
 }
 
@@ -618,7 +645,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	else
 		{
 		// Clear
-		Set(0);
+		Set0();
 		// Read type
 		char cC4VID;
 		try
@@ -712,6 +739,9 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	// shouldn't happen
 	case C4V_pC4Value:
 
+	case C4V_Nil:
+		// doesn't have a value, so nothing to store
+		break;
 
 	default:
 		assert(false);
@@ -775,6 +805,8 @@ bool C4Value::operator == (const C4Value& Value2) const
 			return Type == Value2.Type && Data.Str->Data == Value2.Data.Str->Data;
 		case C4V_Array:
 			return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
+		case C4V_Nil:
+			return Type == Value2.Type;
 		default:
 			// C4AulExec should have dereferenced both values, no need to implement comparison here
 			return Data == Value2.Data;

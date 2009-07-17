@@ -45,11 +45,12 @@ enum C4V_Type
 	C4V_Array=6,			// pointer on array of values
 
 	C4V_pC4Value=7,		// reference on a value (variable)
+	C4V_Nil=8,        // nothing
 
-	C4V_C4ObjectEnum=8, // enumerated object
+	C4V_C4ObjectEnum=9, // enumerated object
 };
 
-#define C4V_Last (int) C4V_pC4Value
+#define C4V_Last (int) C4V_Nil
 
 const char* GetC4VName(const C4V_Type Type);
 char GetC4VID(const C4V_Type Type);
@@ -80,22 +81,22 @@ class C4Value
 {
 public:
 
-	C4Value() : Type(C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL) { Data.Ref = 0; }
+	C4Value() : Type(C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL) { Data.Ref = 0; }
 
 	C4Value(const C4Value &nValue) : Data(nValue.Data), Type(nValue.Type), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ AddDataRef(); }
 
-	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), Type(nData ? nType : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ AddDataRef(); }
-	C4Value(int32_t nData, C4V_Type nType): Type(nData ? nType : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ Data.Int = nData; AddDataRef(); }
-	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+	C4Value(C4V_Data nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Set(nData, nType); AddDataRef(); }
+	C4Value(long nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Set(nData, nType); AddDataRef(); }
+	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Obj = pObj; AddDataRef(); }
-	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Str = pStr; AddDataRef(); }
-	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Array = pArray; AddDataRef(); }
-	explicit C4Value(C4Value *pVal): Type(pVal ? C4V_pC4Value : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+	explicit C4Value(C4Value *pVal): Type(pVal ? C4V_pC4Value : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Ref = pVal; AddDataRef(); }
 
 	C4Value& operator = (const C4Value& nValue);
@@ -215,7 +216,7 @@ protected:
 	C4Value * GetNextRef() { if (HasBaseArray) return 0; else return NextRef; }
 	C4ValueArray * GetBaseArray() { if (HasBaseArray) return BaseArray; else return 0; }
 
-	void Set(long nData, C4V_Type nType = C4V_Any) { C4V_Data d; d.Int = nData; Set(d, nType); }
+	void Set(long nData, C4V_Type nType = C4V_Nil) { C4V_Data d; d.Int = nData; Set(d, nType); }
 	void Set(C4V_Data nData, C4V_Type nType);
 
 	void AddRef(C4Value *pRef);
