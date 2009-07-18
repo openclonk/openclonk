@@ -53,7 +53,8 @@ If you want DirectX support, get a DirectX 9 SDK from Microsoft. Copy the
 contents of its include dir to the include dir of your MinGW installation,
 and pass --with-directx to configure below.
 
-Start msys, cd to this directory, and execute:
+Start msys (your MinGW directory, e.g. C:\MinGW -> msys.bat),
+cd to this directory, and execute:
 
     ./autogen.sh && ./configure && make
 
