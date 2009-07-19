@@ -110,7 +110,7 @@ class CStdGL : public CStdDDraw
 #endif
 		// Blit
 		virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
-		virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt);
+		virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform);
 		virtual void BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
 		                      SURFACE sfcTarget, float tx, float ty, float wdt, float hgt);
 		void FillBG(DWORD dwClr=0);

@@ -306,7 +306,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	}
 
-void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt)
+void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform)
 {
 	const StdMesh& mesh = instance.Mesh;
 	const StdMeshBox& box = mesh.GetBoundingBox();
@@ -314,36 +314,36 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glPushMatrix();
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
 
-/*	float twdt = wdt;
-	float thgt = hgt;*/
-	tx = (tx - ZoomX) * Zoom + ZoomX;
-	ty = (ty - ZoomY) * Zoom + ZoomY;
-	twdt *= Zoom;
-	thgt *= Zoom;
+	// Apply zoom
+	glTranslatef(ZoomX, ZoomY, 0.0f);
+	glScalef(Zoom, Zoom, 1.0f);
+	glTranslatef(-ZoomX, -ZoomY, 0.0f);
+
+	if(pTransform)
+	{
+		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
+		glMultMatrixf(transform);
+	}
 
 	// TODO: ClrMod, ...
 
-	//glColor4f(1.0f, 1.0f, 1.0f, 0.0f);
-	
 	// Scale so that the mesh fits in (tx,ty,twdt,thgt)
 	float rx = -box.x1 / (box.x2 - box.x1);
 	float ry = -box.y1 / (box.y2 - box.y1);
-	glTranslatef(tx + rx*twdt, ty + ry*thgt, 0.0f);
-
-	// Put a light source in front of the object
-	GLfloat light_position[] = { 0.0f, 0.0f, 15.0f*Zoom, 1.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glEnable(GL_LIGHT0);
-
 	float scx = twdt/(box.x2 - box.x1);
 	float scy = thgt/(box.y2 - box.y1);
 	// Keep aspect ratio:
 	//if(scx < scy) scy = scx;
 	//else scx = scy;
+	glTranslatef(tx + rx*twdt, ty + ry*thgt, 0.0f);
 	glScalef(scx, scy, 1.0f);
+
+	// Put a light source in front of the object
+	GLfloat light_position[] = { 0.0f, 0.0f, 15.0f*Zoom, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glEnable(GL_LIGHT0);
 
 	// TODO: Find a working technique, we currently always use the
 	// first one:
@@ -363,7 +363,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
 
 		// TODO: Set up texture units
+
 		// Render mesh
+		// TODO: Use glInterleavedArrays?
 		glBegin(GL_TRIANGLES);
 		for(unsigned int j = 0; j < mesh.GetNumFaces(); ++j)
 		{

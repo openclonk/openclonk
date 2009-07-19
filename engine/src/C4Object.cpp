@@ -485,7 +485,7 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 				TRUE, transform);
 			break;
 		case C4DefGraphics::TYPE_Mesh:
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt);
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, transform);
 			break;
 		}
 	}

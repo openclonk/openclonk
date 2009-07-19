@@ -1050,7 +1050,7 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	return TRUE;
 	}
 
-BOOL CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt)
+BOOL CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform)
 {
 	// TODO: Emulate rendering
 	if (!sfcTarget->IsRenderTarget()) return FALSE;
@@ -1062,7 +1062,7 @@ BOOL CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float t
 	// store current state
 	StoreStateBlock();
 
-	PerformMesh(instance, tx, ty, twdt, thgt);
+	PerformMesh(instance, tx, ty, twdt, thgt, pTransform);
 
 	// restore state
 	RestoreStateBlock();
