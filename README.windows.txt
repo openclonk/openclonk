@@ -6,7 +6,6 @@ You can build on Windows using either:
 * vc9 (Microsoft Visual C++ 2008)
 	you need CMake (http://www.cmake.org/cmake/resources/software.html) to create the "solution"
 	you might have to set the correct DXSDK include and library directories
-	professional edition required to compile resources
 
 * MinGW and MSYS
 	plus DXSDK 9 (if you want DirectX support)
