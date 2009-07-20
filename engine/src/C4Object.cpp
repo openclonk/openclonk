@@ -3890,7 +3890,7 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 																							 iTx,
 																							 C4VInt(iTy),
 																							 C4VObj(pTarget2),
-																							 C4VInt(iData))))
+																							 iData)))
 			return;
 	// Inside vehicle control overload
   if (Contained)
@@ -3902,7 +3902,7 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 																														iTx,
 																														C4VInt(iTy),
 																														C4VObj(pTarget2),
-																														C4VInt(iData),
+																														iData,
                                                             C4VObj(this))))
 				return;
 			}
@@ -3916,7 +3916,7 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 																																iTx,
 																																C4VInt(iTy),
 																																C4VObj(pTarget2),
-																																C4VInt(iData))))
+																																iData)))
 				return;
 			}
 	// Add new command
