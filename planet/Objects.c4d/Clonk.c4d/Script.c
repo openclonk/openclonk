@@ -889,14 +889,14 @@ public func DescendVehicle()
 private func Control2Effect(string szControl)
   {
   // Von Effektzahl abwärts zählen
-  var i = GetEffectCount(0, this), iEffect;
+  var i = GetEffectCount(nil, this), iEffect;
   var res;
   while (i--)
     {
     // Effekte mit Control im Namen benachrichtigen	  
     iEffect = GetEffect("*Control*", this, i);
     //  Message("%s", this, GetEffect(0, this, iEffect, 1));
-    if ( GetEffect(0, this, iEffect, 1) )
+    if ( GetEffect(nil, this, iEffect, 1) )
       res += EffectCall(this, iEffect, szControl);
     }
   return res;

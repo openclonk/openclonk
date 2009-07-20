@@ -8,7 +8,7 @@
 
 global func Explode(int iLevel, object pObj) {
   // Viewport wackeln
-  ShakeViewPort(iLevel, 0, GetX(pObj), GetY(pObj));
+  ShakeViewPort(iLevel, nil, GetX(pObj), GetY(pObj));
 
   // Sound muss vor dem Löschen des Objektes erzeugt werden, damit die Position stimmt
   var grade = BoundBy((iLevel/10)-1,1,3);
@@ -253,7 +253,7 @@ global func FxShakeEffectTimer(object pTarget, int iEffectNumber, int iTime) {
 }
 
 global func FxShakeEffectStart(object pTarget, int iEffectNumber) {
-  FxShakeEffectTimer(pTarget, iEffectNumber, GetEffect (0, pTarget, iEffectNumber, 6));
+  FxShakeEffectTimer(pTarget, iEffectNumber, GetEffect (nil, pTarget, iEffectNumber, 6));
 }
 
 global func FxShakeEffectStop() {
@@ -268,7 +268,7 @@ global func FxShakeEffectStop() {
 global func CreateSmokeTrail(int iStrength, int iAngle, int iX, int iY, object pObj) {
     iX += GetX(pObj);
     iY += GetY(pObj);
-  AddEffect("SmokeTrail", 0, 300, 1, 0, 0, iStrength, iAngle, iX, iY);
+  AddEffect("SmokeTrail", nil, 300, 1, nil, nil, iStrength, iAngle, iX, iY);
 }
 
 // Variables:

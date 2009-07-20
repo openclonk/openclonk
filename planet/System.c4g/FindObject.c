@@ -75,7 +75,7 @@ global func Find_Container(object container) {
 }
 
 global func Find_NoContainer() {
-	return Find_Container(0);
+	return Find_Container(nil);
 }
 
 global func Find_AnyContainer() {

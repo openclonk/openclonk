@@ -54,7 +54,7 @@ public func Use(object clonk)
 	
 	// put into ...
 	Sound("Connect");
-	Exit(0, x*6/10, y + GetDefHeight(GetID())/2, Angle(x,y,0,0) + RandomX(-25,25));
+	Exit(this, x*6/10, y + GetDefHeight(GetID())/2, Angle(x,y,0,0) + RandomX(-25,25));
 
 	return true;
 }
