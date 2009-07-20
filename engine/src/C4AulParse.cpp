@@ -1126,7 +1126,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 			assert(false);
 		}
 
-	// Use stack operation instead of 0-Int (enable optimization)
+	// Use stack operation instead of 0-Any (enable optimization)
 	if(eType == AB_NIL)
 		{
 		eType = AB_STACK;
@@ -2653,12 +2653,11 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 								AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
 								break;
 							case C4V_C4ID:   AddBCC(AB_C4ID,   val.GetData().Int); break;
-							case C4V_Nil:    AddBCC(AB_NIL); break;
 							case C4V_Any:
-								// any: allow zero; add it as int
+								// any: allow zero
 								if (!val.GetData())
 									{
-									AddBCC(AB_INT, 0);
+									AddBCC(AB_NIL, 0);
 									break;
 									}
 								// otherwise: fall through to error

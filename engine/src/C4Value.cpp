@@ -58,10 +58,10 @@ C4Value &C4Value::operator = (const C4Value &nValue)
 
 void C4Value::AddDataRef()
 {
+	assert(Type != C4V_Any || !Data);
 	switch (Type)
 	{
 		case C4V_pC4Value: Data.Ref->AddRef(this); break;
-		case C4V_Any: if (Data)	{ GuessType(); } break;
 		case C4V_Array: Data.Array = Data.Array->IncRef(); break;
 		case C4V_String: Data.Str->IncRef(); break;
 		case C4V_C4Object:
@@ -97,6 +97,7 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 
 void C4Value::Set(C4V_Data nData, C4V_Type nType)
 {
+	assert(nType != C4V_Any || !nData);
 	// Do not add this to the same linked list twice.
 	if (Data == nData && Type == nType) return;
 
@@ -108,7 +109,7 @@ void C4Value::Set(C4V_Data nData, C4V_Type nType)
 
 	// change
 	Data = nData;
-	Type = nData || nType == C4V_Int || nType == C4V_Bool ? nType : C4V_Nil;
+	Type = nData || IsNullableType(nType) ? nType : C4V_Any;
 
 	// hold
 	AddDataRef();
@@ -124,7 +125,7 @@ void C4Value::Set0()
 
 	// change
 	Data = 0;
-	Type = C4V_Nil;
+	Type = C4V_Any;
 
 	// clean up (save even if Data was 0 before)
 	DelDataRef(oData, oType, HasBaseArray ? NULL : NextRef, HasBaseArray ? BaseArray : NULL);
@@ -144,7 +145,7 @@ void C4Value::Move(C4Value *nValue)
 
 	// delete usself
 	FirstRef = NULL;
-	Set(0);
+	Set0();
 }
 
 void C4Value::GetArrayElement(int32_t Index, C4Value & target, C4AulContext *pctx, bool noref)
@@ -241,40 +242,6 @@ void C4Value::DelRef(const C4Value *pRef, C4Value * pNextRef, C4ValueArray * pBa
 	}
 }
 
-C4V_Type C4Value::GuessType()
-{
-	// guaranteed by the caller
-	assert(Data);
-
-	if (Type != C4V_Any) return Type;
-
-	// C4ID?
-	if (LooksLikeID(Data.Int) && Data.Int >= 10000)
-		return Type = C4V_C4ID;
-
-	// object?
-	if (::Objects.ObjectNumber(Data.Obj))
-		{
-		Type = C4V_C4Object;
-		// With the type now known, the destructor will clean up the reference
-		// which only works if the reference is added first
-		AddDataRef();
-		return Type;
-		}
-
-	// string?
-	if (::ScriptEngine.Strings.FindString(Data.Str))
-		{
-		Type = C4V_String;
-		// see above
-		AddDataRef();
-		return Type;
-		}
-
-	// must be int now
-	return Type = C4V_Int;
-}
-
 const char* GetC4VName(const C4V_Type Type)
 {
 	switch(Type)
@@ -295,8 +262,6 @@ const char* GetC4VName(const C4V_Type Type)
 		return "array";
 	case C4V_pC4Value:
 		return "&";
-	case C4V_Nil:
-		return "nil";
 	default:
 		return "!Fehler!";
 	}
@@ -324,8 +289,6 @@ char GetC4VID(const C4V_Type Type)
 		return 'O';
 	case C4V_Array:
 		return 'a';
-	case C4V_Nil:
-		return 'n';
 	}
 	return ' ';
 }
@@ -352,8 +315,6 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_C4ObjectEnum;
 	case 'a':
 		return C4V_Array;
-	case 'n':
-		return C4V_Nil;
 	}
 	return C4V_Any;
 }
@@ -387,22 +348,6 @@ static bool FnCnvDeref(C4Value *Val, C4V_Type toType, BOOL fStrict)
 	return Val->ConvertTo(toType, fStrict);
 	}
 
-bool C4Value::FnCnvGuess(C4Value *Val, C4V_Type toType, BOOL fStrict)
-	{
-	if (Val->Data)
-		{
-		// guess type (always possible because data is not 0)
-		Val->GuessType();
-		//  try to convert new type
-		return Val->ConvertTo(toType, fStrict);
-		}
-	else
-		{
-		// 0 is every possible type except a reference at the same time
-		return true;
-		}
-	}
-
 bool C4Value::FnCnvInt2Id(C4Value *Val, C4V_Type toType, BOOL fStrict)
 	{
 	// inside range?
@@ -415,22 +360,20 @@ bool C4Value::FnCnvInt2Id(C4Value *Val, C4V_Type toType, BOOL fStrict)
 // Type conversion table
 #define CnvOK        0, false								// allow conversion by same value
 #define CnvError     FnCnvError, true
-#define CnvGuess     C4Value::FnCnvGuess, false
 #define CnvInt2Id    C4Value::FnCnvInt2Id, false
 #define CnvDirectOld FnCnvDirectOld, true
 #define CnvDeref     FnCnvDeref, false
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
-	{ // C4V_Any - always try guess
+	{ // C4V_Any - is always 0, convertible to everything
 		{ CnvOK			}, // any        same
-		{ CnvGuess		}, // int
-		{ CnvGuess		}, // Bool
-		{ CnvGuess		}, // C4ID
-		{ CnvGuess		}, // C4Object
-		{ CnvGuess		}, // String
-		{ CnvGuess		}, // Array
+		{ CnvOK			}, // int
+		{ CnvOK			}, // Bool
+		{ CnvOK			}, // C4ID
+		{ CnvOK			}, // C4Object
+		{ CnvOK			}, // String
+		{ CnvOK			}, // Array
 		{ CnvError		}, // pC4Value
-		{ CnvOK       }, // Nil
 	},
 	{ // C4V_Int
 		{ CnvOK			}, // any
@@ -441,7 +384,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
-		{ CnvOK       }, // Nil
 	},
 	{ // C4V_Bool
 		{ CnvOK			}, // any
@@ -452,7 +394,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
-		{ CnvOK       }, // Nil
 	},
 	{ // C4V_C4ID
 		{ CnvOK			}, // any
@@ -463,7 +404,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
-		{ CnvOK       }, // Nil
 	},
 	{ // C4V_Object
 		{ CnvOK			}, // any
@@ -474,7 +414,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
-		{ CnvOK       }, // Nil
 	},
 	{ // C4V_String
 		{ CnvOK			}, // any
@@ -485,7 +424,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK			}, // String     same
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
-		{ CnvOK       }, // Nil
 	},
 	{ // C4V_Array
 		{ CnvOK			}, // any
@@ -496,7 +434,6 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError		}, // String     NEVER!
 		{ CnvOK			}, // Array      same
 		{ CnvError		}, // pC4Value   NEVER!
-		{ CnvOK       }, // Nil
 	},
 	{ // C4V_pC4Value - resolve reference and retry type check
 		{ CnvDeref		}, // any
@@ -507,24 +444,11 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvDeref		}, // String
 		{ CnvDeref		}, // Array
 		{ CnvOK			}, // pC4Value   same
-		{ CnvOK       }, // Nil
-	},
-	{ // C4V_Nil
-		{ CnvOK		}, // any
-		{ CnvOK		}, // int
-		{ CnvOK		}, // Bool
-		{ CnvOK		}, // C4ID
-		{ CnvOK		}, // C4Object
-		{ CnvOK		}, // String
-		{ CnvOK		}, // Array
-		{ CnvError}, // pC4Value
-		{ CnvOK   }, // Nil		same
 	},
 };
 
 #undef CnvOK
 #undef CvnError
-#undef CnvGuess
 #undef CnvInt2Id
 #undef CnvDirectOld
 #undef CnvDeref
@@ -539,7 +463,6 @@ StdStrBuf C4Value::GetDataString()
 	switch(GetType())
 	{
 	case C4V_Int:
-	case C4V_Any:
 		return FormatString("%ld", Data.Int);
 	case C4V_Bool:
 		return StdStrBuf(Data ? "true" : "false");
@@ -573,7 +496,7 @@ StdStrBuf C4Value::GetDataString()
 			DataString.AppendChar(']');
 			return DataString;
 		}
-	case C4V_Nil:
+	case C4V_Any:
 		return StdStrBuf("nil");
 	default:
 		return StdStrBuf("-unknown type- ");
@@ -616,14 +539,8 @@ void C4Value::DenumeratePointer()
 		SetObject(pObj);
 	else
 	{
-		// any: guess type
-		if(Type == C4V_Any)
-		{
-			if (Data) GuessType();
-		}
 		// object: invalid value - set to zero
-		else
-			Set0();
+		Set0();
 	}
 }
 
@@ -634,7 +551,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	if(!fCompiler)
 		{
 		// Get type
-		if(Type == C4V_Any && Data) GuessType();
+		assert(Type != C4V_Any || !Data);
 		char cC4VID = GetC4VID(Type);
 		// Object reference is saved enumerated
 		if(Type == C4V_C4Object)
@@ -681,7 +598,6 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		{
 
 	// simple data types: just save
-	case C4V_Any:
 	case C4V_Int:
 	case C4V_Bool:
 	case C4V_C4ID:
@@ -739,7 +655,8 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	// shouldn't happen
 	case C4V_pC4Value:
 
-	case C4V_Nil:
+	case C4V_Any:
+		assert(!Data);
 		// doesn't have a value, so nothing to store
 		break;
 
@@ -755,13 +672,10 @@ bool C4Value::operator == (const C4Value& Value2) const
 		{
 		case C4V_Any:
 			assert(!Data);
-			return Data == Value2.Data;
+			return Value2.Type == Type;
 		case C4V_Int:
 			switch (Value2.Type)
 				{
-				case C4V_Any:
-					assert(!Value2.Data);
-					return Data == Value2.Data;
 				case C4V_Int:
 				case C4V_Bool:
 					return Data == Value2.Data;
@@ -775,9 +689,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 		case C4V_Bool:
 			switch (Value2.Type)
 				{
-				case C4V_Any:
-					assert(!Value2.Data);
-					return Data == Value2.Data;
 				case C4V_Int:
 				case C4V_Bool:
 					return Data == Value2.Data;
@@ -787,9 +698,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 		case C4V_C4ID:
 			switch (Value2.Type)
 				{
-				case C4V_Any:
-					assert(!Value2.Data);
-					return Data == Value2.Data;
 				case C4V_C4ID:
 					return Data == Value2.Data;
 					case C4V_Int:
@@ -805,8 +713,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 			return Type == Value2.Type && Data.Str->Data == Value2.Data.Str->Data;
 		case C4V_Array:
 			return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
-		case C4V_Nil:
-			return Type == Value2.Type;
 		default:
 			// C4AulExec should have dereferenced both values, no need to implement comparison here
 			return Data == Value2.Data;

@@ -34,7 +34,7 @@ const long C4EnumPointer1 = 1000000000,
 // C4Value type
 enum C4V_Type
 {
-	C4V_Any=0,				// unknown / no type
+	C4V_Any=0,				// no type
 	C4V_Int=1,				// Integer
 	C4V_Bool=2,				// Boolean
 	C4V_C4ID=3,				// C4ID
@@ -45,12 +45,11 @@ enum C4V_Type
 	C4V_Array=6,			// pointer on array of values
 
 	C4V_pC4Value=7,		// reference on a value (variable)
-	C4V_Nil=8,        // nothing
 
 	C4V_C4ObjectEnum=9, // enumerated object
 };
 
-#define C4V_Last (int) C4V_Nil
+#define C4V_Last (int) C4V_pC4Value
 
 const char* GetC4VName(const C4V_Type Type);
 char GetC4VID(const C4V_Type Type);
@@ -81,24 +80,24 @@ class C4Value
 {
 public:
 
-	C4Value() : Type(C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL) { Data.Ref = 0; }
+	C4Value() : Type(C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL) { Data.Ref = 0; }
 
 	C4Value(const C4Value &nValue) : Data(nValue.Data), Type(nValue.Type), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ AddDataRef(); }
 
-	C4Value(C4V_Data nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ Set(nData, nType); }
-	C4Value(long nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ Set(nData, nType); }
+	explicit C4Value(C4ID data): Type(C4V_C4ID), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Data.Int = data; AddDataRef(); }
+	explicit C4Value(bool data): Type(C4V_Bool), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Data.Int = data; AddDataRef(); }
 	explicit C4Value(int32_t data): Type(C4V_Int), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Int = data; AddDataRef(); }
-	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Obj = pObj; AddDataRef(); }
-	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Str = pStr; AddDataRef(); }
-	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Array = pArray; AddDataRef(); }
-	explicit C4Value(C4Value *pVal): Type(pVal ? C4V_pC4Value : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+	explicit C4Value(C4Value *pVal): Type(pVal ? C4V_pC4Value : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Ref = pVal; AddDataRef(); }
 
 	C4Value& operator = (const C4Value& nValue);
@@ -219,7 +218,14 @@ protected:
 	C4Value * GetNextRef() { if (HasBaseArray) return 0; else return NextRef; }
 	C4ValueArray * GetBaseArray() { if (HasBaseArray) return BaseArray; else return 0; }
 
-	void Set(long nData, C4V_Type nType = C4V_Nil) { C4V_Data d; d.Int = nData; Set(d, nType); }
+	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
+	friend class C4AulDefCastFunc;
+
+	C4Value(long nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Data.Int = nData; Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
+
+	void Set(long nData, C4V_Type nType) { C4V_Data d; d.Int = nData; Set(d, nType); }
 	void Set(C4V_Data nData, C4V_Type nType);
 
 	void AddRef(C4Value *pRef);
@@ -228,21 +234,20 @@ protected:
 	void AddDataRef();
 	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray);
 
-	// guess type from data (if type == c4v_any)
-	C4V_Type GuessType();
+	static inline bool IsNullableType(C4V_Type Type)
+		{ return Type == C4V_Int || Type == C4V_Bool || Type == C4V_C4ID; }
 
 	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
 	static bool FnCnvInt2Id(C4Value *Val, C4V_Type toType, BOOL fStrict);
-	static bool FnCnvGuess(C4Value *Val, C4V_Type toType, BOOL fStrict);
 
 	friend class C4Object;
 	friend class C4AulDefFunc;
 };
 
 // converter
-inline C4Value C4VInt(int32_t iVal) { C4V_Data d; d.Int = iVal; return C4Value(d, C4V_Int); }
-inline C4Value C4VBool(bool fVal) { C4V_Data d; d.Int = fVal; return C4Value(d, C4V_Bool); }
-inline C4Value C4VID(C4ID iVal) { C4V_Data d; d.Int = iVal; return C4Value(d, C4V_C4ID); }
+inline C4Value C4VInt(int32_t iVal) { return C4Value(iVal); }
+inline C4Value C4VBool(bool fVal) { return C4Value(fVal); }
+inline C4Value C4VID(C4ID iVal) { return C4Value(iVal); }
 inline C4Value C4VObj(C4Object *pObj) { return C4Value(pObj); }
 inline C4Value C4VString(C4String *pStr) { return C4Value(pStr); }
 inline C4Value C4VArray(C4ValueArray *pArray) { return C4Value(pArray); }

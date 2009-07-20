@@ -329,7 +329,7 @@ void C4Object::AssignRemoval(BOOL fExitContents)
   if (Info) Info->Retire();
 	Info = NULL;
   // Object system operation
-  while(FirstRef) FirstRef->Set(0);
+  while(FirstRef) FirstRef->Set0();
   Game.ClearPointers(this);
   ClearCommands();
 	if (pSolidMaskData)
@@ -3196,7 +3196,7 @@ void C4Object::Clear()
 		}
 	if (pDrawTransform) { delete pDrawTransform; pDrawTransform=NULL; }
 	if (pGfxOverlay) { delete pGfxOverlay; pGfxOverlay=NULL; }
-  while (FirstRef) FirstRef->Set(0);
+  while (FirstRef) FirstRef->Set0();
 	}
 
 BOOL C4Object::ContainedControl(BYTE byCom)

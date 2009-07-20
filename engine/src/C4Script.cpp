@@ -6464,7 +6464,10 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	{
 	// add all def constants (all Int)
 	for (C4ScriptConstDef *pCDef = &C4ScriptConstMap[0]; pCDef->Identifier; pCDef++)
-		::ScriptEngine.RegisterGlobalConstant(pCDef->Identifier, C4Value(pCDef->Data, pCDef->ValType));
+		{
+		assert(pCDef->ValType == C4V_Int); // only int supported currently
+		::ScriptEngine.RegisterGlobalConstant(pCDef->Identifier, C4Value(pCDef->Data));
+		}
 
 	// add all def script funcs
 	for (C4ScriptFnDef *pDef = &C4ScriptFnMap[0]; pDef->Identifier; pDef++)
