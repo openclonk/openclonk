@@ -29,7 +29,9 @@ AM_INIT_AUTOMAKE([foreign nostdinc no-define 1.10])
 AC_PROG_CXX
 AC_LANG([C++])
 AX_CHECK_COMPILER_FLAGS([-std=gnu++0x], [CXX="${CXX} -std=gnu++0x"])
-AX_PROG_CXX_REFTOTEMP
+AC_COMPILE_IFELSE([
+void f(struct D&&); int main() { return 0; }
+], [AC_DEFINE([HAVE_RVALUE_REF], [], [C++ Compiler has rvalue references, a C++0x feature.])], [AX_PROG_CXX_REFTOTEMP])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
