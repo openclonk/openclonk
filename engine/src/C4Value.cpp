@@ -159,7 +159,7 @@ void C4Value::GetArrayElement(int32_t Index, C4Value & target, C4AulContext *pct
 		if (Index < Ref.Data.Array->GetSize())
 			target.Set(Ref.Data.Array->GetItem(Index));
 		else
-			target.Set(0);
+			target.Set0();
 	}
 	else
 	{

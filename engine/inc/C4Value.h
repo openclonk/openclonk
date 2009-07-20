@@ -87,9 +87,9 @@ public:
 		{ AddDataRef(); }
 
 	C4Value(C4V_Data nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ Set(nData, nType); AddDataRef(); }
+		{ Set(nData, nType); }
 	C4Value(long nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ Set(nData, nType); AddDataRef(); }
+		{ Set(nData, nType); }
 	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Obj = pObj; AddDataRef(); }
 	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
