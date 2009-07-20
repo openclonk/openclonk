@@ -413,7 +413,7 @@ void C4ControlPlayerCommand::Execute() const
 												::Objects.ObjectPointer(iTarget),
 												iX,iY,
 												::Objects.ObjectPointer(iTarget2),
-												iData,
+												C4Value(iData),
 												iAddMode);
 		}
 }

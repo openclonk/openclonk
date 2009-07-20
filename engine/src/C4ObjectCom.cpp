@@ -1033,8 +1033,8 @@ BOOL PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t t
 			}
 		// Jump'n'Run: Drop on combined Down/Left/Right+Throw
 		if (pPlr->PrefControlStyle && (pPlr->PressedComs & (1 << COM_Down))) fConvertToDrop = true;
-		if (fConvertToDrop) return pPlr->ObjectCommand(C4CMD_Drop,pTarget,tx,ty,NULL,0,iAddMode);
+		if (fConvertToDrop) return pPlr->ObjectCommand(C4CMD_Drop,pTarget,tx,ty,NULL,C4VNull,iAddMode);
 		}
 	// Route to player
-	return pPlr->ObjectCommand(cmdf,pTarget,tx,ty,NULL,0,iAddMode);
+	return pPlr->ObjectCommand(cmdf,pTarget,tx,ty,NULL,C4VNull,iAddMode);
 	}

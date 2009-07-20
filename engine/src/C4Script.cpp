@@ -840,18 +840,16 @@ static C4Value FnSetCommand(C4AulContext *cthr, C4Value *pPars)
 	if (!iCommand) { pObj->ClearCommands(); return C4VFalse; }
 	// Special: convert iData to szText
 	C4String *szText=NULL;
-	int32_t iData=0;
 	if (iCommand==C4CMD_Call)
 		{
 		szText=Data.getStr();
 		}
 	else
 		{
-		iData = Data.getIntOrID();
 		Tx.ConvertTo(C4V_Int);
 		}
 	// Set
-	pObj->SetCommand(iCommand,pTarget,Tx,iTy,pTarget2,FALSE,iData,iRetries,szText);
+	pObj->SetCommand(iCommand,pTarget,Tx,iTy,pTarget2,FALSE,Data,iRetries,szText);
 	// Success
   return C4VTrue;
   }
@@ -867,18 +865,16 @@ static C4Value FnAddCommand(C4AulContext *cthr, C4Value *pPars)
 	if (!iCommand) return C4VFalse;
 	// Special: convert iData to szText
 	C4String *szText=NULL;
-	int32_t iData=0;
 	if (iCommand==C4CMD_Call)
 		{
 		szText=Data.getStr();
 		}
 	else
 		{
-		iData = Data.getIntOrID();
 		Tx.ConvertTo(C4V_Int);
 		}
 	// Add
-	return C4VBool(pObj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,TRUE,iData,FALSE,iRetries,szText,iBaseMode));
+	return C4VBool(pObj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,TRUE,Data,FALSE,iRetries,szText,iBaseMode));
 	}
 
 static C4Value FnAppendCommand(C4AulContext *cthr, C4Value *pPars)
@@ -892,18 +888,16 @@ static C4Value FnAppendCommand(C4AulContext *cthr, C4Value *pPars)
 	if (!iCommand) return C4VFalse;
 	// Special: convert iData to szText
 	C4String *szText=NULL;
-	int32_t iData=0;
 	if (iCommand==C4CMD_Call)
 		{
 		szText=Data.getStr();
 		}
 	else
 		{
-		iData = Data.getIntOrID();
 		Tx.ConvertTo(C4V_Int);
 		}
 	// Add
-	return C4VBool(pObj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,TRUE,iData,TRUE,iRetries,szText,iBaseMode));
+	return C4VBool(pObj->AddCommand(iCommand,pTarget,Tx,iTy,iUpdateInterval,pTarget2,TRUE,Data,TRUE,iRetries,szText,iBaseMode));
 	}
 
 static C4Value FnGetCommand(C4AulContext *cthr, C4Value *pPars)
@@ -930,7 +924,7 @@ static C4Value FnGetCommand(C4AulContext *cthr, C4Value *pPars)
 		case 4: // Target2
 			return C4VObj(Command->Target2);
 		case 5: // Data
-			return Command->Command == C4CMD_Call ? C4VString(Command->Text) : C4Value(Command->Data, C4V_Any);
+			return Command->Command == C4CMD_Call ? C4VString(Command->Text) : Command->Data;
 		}
 	// Undefined element
 	return C4VNull;
@@ -960,7 +954,7 @@ static C4Value FnPlayerObjectCommand(C4AulContext *cthr, C4Value *pPars)
 	long iCommand = CommandByName(FnStringPar(szCommand)); if (!iCommand) return C4VFalse;
 	// Special: convert iData to szText
 	const char *szText=NULL;
-	int32_t iData=0, iTx;
+	int32_t iTx;
 	if (iCommand==C4CMD_Call)
 		{
 		szText=FnStringPar(Data.getStr());
@@ -968,11 +962,10 @@ static C4Value FnPlayerObjectCommand(C4AulContext *cthr, C4Value *pPars)
 		}
 	else
 		{
-		iData = Data.getIntOrID();
 		iTx=Tx.getInt();
 		}
 	// Set
-	pPlr->ObjectCommand(iCommand, pTarget, iTx, iTy, pTarget2, iData, C4P_Command_Set);
+	pPlr->ObjectCommand(iCommand, pTarget, iTx, iTy, pTarget2, Data, C4P_Command_Set);
 	// Success
   return C4VTrue;
   }
@@ -6887,7 +6880,6 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "C4V_C4Object"           ,C4V_Int,          C4V_C4Object},
 	{ "C4V_String"             ,C4V_Int,          C4V_String},
 	{ "C4V_Array"              ,C4V_Int,          C4V_Array},
-	{ "C4V_Nil"                ,C4V_Int,          C4V_Nil},
 
 	{ "COMD_None"              ,C4V_Int,          COMD_None},
 	{ "COMD_Stop"              ,C4V_Int,          COMD_Stop},

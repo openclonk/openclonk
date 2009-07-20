@@ -1719,7 +1719,7 @@ BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 			// Builder is a crew member...
 			if (pBuilder->OCF & OCF_CrewMember)
 				// ...tell builder to acquire the material
-				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,NeededMaterial,FALSE,1);
+				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,C4Value(NeededMaterial),FALSE,1);
 			// ...game message if not overloaded
 			::Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
 			}
@@ -2294,19 +2294,19 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 					//sprintf(szCommand,"%s %d/%d",CommandName(pCom->Command),pCom->Tx,pCom->Ty,iAngle);
           break;
 				case C4CMD_Put:
-					sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? C4IdText(pCom->Data) : "Content",pCom->Target ? pCom->Target->GetName() : "");
+					sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? C4IdText(pCom->Data.getC4ID()) : "Content",pCom->Target ? pCom->Target->GetName() : "");
 					break;
 				case C4CMD_Buy: case C4CMD_Sell:
-					sprintf(szCommand,"%s %s at %s",CommandName(pCom->Command),C4IdText(pCom->Data),pCom->Target ? pCom->Target->GetName() : "closest base");
+					sprintf(szCommand,"%s %s at %s",CommandName(pCom->Command),C4IdText(pCom->Data.getC4ID()),pCom->Target ? pCom->Target->GetName() : "closest base");
 					break;
 				case C4CMD_Acquire:
-					sprintf(szCommand,"%s %s",CommandName(pCom->Command),C4IdText(pCom->Data));
+					sprintf(szCommand,"%s %s",CommandName(pCom->Command),C4IdText(pCom->Data.getC4ID()));
 					break;
 				case C4CMD_Call:
 					sprintf(szCommand,"%s %s in %s",CommandName(pCom->Command),pCom->Text->GetCStr(),pCom->Target ? pCom->Target->GetName() : "(null)");
 					break;
 				case C4CMD_Construct:
-					C4Def *pDef; pDef=C4Id2Def(pCom->Data);
+					C4Def *pDef; pDef=C4Id2Def(pCom->Data.getC4ID());
 					sprintf(szCommand,"%s %s",CommandName(pCom->Command),pDef ? pDef->GetName() : "");
 					break;
 				case C4CMD_None:
@@ -3840,7 +3840,7 @@ void C4Object::ClearCommand(C4Command *pUntil)
 
 bool C4Object::AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy,
 													int32_t iUpdateInterval, C4Object *pTarget2,
-													bool fInitEvaluation, int32_t iData, bool fAppend,
+													bool fInitEvaluation, C4Value iData, bool fAppend,
 													int32_t iRetries, C4String *szText, int32_t iBaseMode)
 	{
 	// Command stack size safety
@@ -3873,7 +3873,7 @@ bool C4Object::AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 	}
 
 void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy,
-													C4Object *pTarget2, BOOL fControl, int32_t iData,
+													C4Object *pTarget2, BOOL fControl, C4Value iData,
 													int32_t iRetries, C4String *szText)
 	{
   // Decrease NoCollectDelay
@@ -3938,7 +3938,7 @@ BOOL C4Object::ExecuteCommand()
 	if (Command) Command->Execute();
 	// Command finished: engine call
 	if (Command && Command->Finished)
-		Call(PSF_ControlCommandFinished,&C4AulParSet(C4VString(CommandName(Command->Command)), C4VObj(Command->Target), Command->Tx, C4VInt(Command->Ty), C4VObj(Command->Target2), C4Value(Command->Data, C4V_Any)));
+		Call(PSF_ControlCommandFinished,&C4AulParSet(C4VString(CommandName(Command->Command)), C4VObj(Command->Target), Command->Tx, C4VInt(Command->Ty), C4VObj(Command->Target2), Command->Data));
 	// Clear finished commands
 	while (Command && Command->Finished) ClearCommand(Command);
 	// Done

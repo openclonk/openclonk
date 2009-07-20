@@ -90,6 +90,8 @@ public:
 		{ Set(nData, nType); }
 	C4Value(long nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Set(nData, nType); }
+	explicit C4Value(int32_t data): Type(C4V_Int), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Data.Int = data; AddDataRef(); }
 	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Obj = pObj; AddDataRef(); }
 	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Nil), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
@@ -128,6 +130,7 @@ public:
 	template <typename T> inline T _Get() { return C4ValueConv<T>::_FromC4V(*this); }
 
 	bool operator ! () const { return !GetData(); }
+	inline operator bool () const { return !!GetData(); }  // To allow use of C4Value in conditions
 
 	void Set(const C4Value &nValue) { if (this != &nValue) Set(nValue.Data, nValue.Type); }
 
