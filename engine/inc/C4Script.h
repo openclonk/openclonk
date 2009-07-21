@@ -153,6 +153,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
 #define PSF_OnHostilityChange    "~OnHostilityChange" // int iPlr1, int iPlr2, bool fNewHostility, bool fOldHostility
 #define PSF_OnTeamSwitch         "~OnTeamSwitch" // int iPlr1, int idNewTeam, int idOldTeam
 #define PSF_OnOwnerRemoved       "~OnOwnerRemoved"
+#define PSF_Definition           "~Definition" // proplist definition
 
 // Fx%s is automatically prefixed
 #define PSFS_FxAdd              "Add" // C4Object *pTarget, int iEffectNumber, C4String *szNewEffect, int iNewTimer, C4Value vNewEffectVar1, C4Value vNewEffectVar2, C4Value vNewEffectVar3, C4Value vNewEffectVar4

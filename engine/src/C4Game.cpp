@@ -252,7 +252,7 @@ BOOL C4Game::OpenScenario()
 
 	// Load Strings (since kept objects aren't denumerated in sect-load, no problems should occur...)
 	if (ScenarioFile.FindEntry(C4CFN_Strings))
-		if (!ScriptEngine.Strings.Load(ScenarioFile))
+		if (!Strings.Load(ScenarioFile))
 			{ LogFatal(LoadResStr("IDS_ERR_STRINGS")); return FALSE; }
 	SetInitProgress(4);
 
@@ -948,8 +948,10 @@ void C4Game::ClearObjectPtrs(C4Object *pObj)
   Application.SoundSystem.ClearPointers(pObj);
   }
 
-void C4Game::ClearPointers(C4Object *pObj)
-  {
+void C4Game::ClearPointers(C4PropList * PropList)
+	{
+	C4Object * pObj = dynamic_cast<C4Object *>(PropList);
+	if (!pObj) return; // FIXME
 	::Objects.BackObjects.ClearPointers(pObj);
 	::Objects.ForeObjects.ClearPointers(pObj);
 	::Messages.ClearPointers(pObj);
@@ -1033,7 +1035,7 @@ bool C4Game::IsPaused()
 	}
 
 
-C4Object* C4Game::NewObject( C4Def *pDef, C4Object *pCreator,
+C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
                              int32_t iOwner, C4ObjectInfo *pInfo,
                              int32_t iX, int32_t iY, int32_t iR,
                              FIXED xdir, FIXED ydir, FIXED rdir,
@@ -1053,8 +1055,6 @@ C4Object* C4Game::NewObject( C4Def *pDef, C4Object *pCreator,
   if (!(pObj=new C4Object)) return NULL;
 	// Initialize object
 	pObj->Init(	pDef,pCreator,iOwner,pInfo,iX,iY,iR,xdir,ydir,rdir, iController );
-	// Enumerate object
-	pObj->Number = ++ObjectEnumerationIndex;
 	// Add to object list
   if (!Objects.Add(pObj)) { delete pObj; return NULL; }
 	// ---- From now on, object is ready to be used in scripts!
@@ -1094,7 +1094,22 @@ C4Object* C4Game::CreateObject(C4ID id, C4Object *pCreator, int32_t iOwner,
                    FullCon, iController);
   }
 
-C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner,
+C4Object* C4Game::CreateObject(C4PropList * PropList, C4Object *pCreator, int32_t iOwner,
+                               int32_t x, int32_t y, int32_t r,
+                               FIXED xdir, FIXED ydir, FIXED rdir, int32_t iController)                  
+  {
+  C4Def *pDef;
+  // Get pDef
+  if (!PropList || !(pDef=PropList->GetDef())) return NULL;
+  // Create object
+  return NewObject(pDef,pCreator,
+                   iOwner,NULL,
+                   x,y,r,
+                   xdir,ydir,rdir,
+                   FullCon, iController);
+  }
+
+C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner, 
                                    int32_t tx, int32_t ty)
   {
   C4Def *def;
@@ -1110,18 +1125,19 @@ C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner,
                     FullCon, NO_OWNER );
   }
 
-C4Object* C4Game::CreateObjectConstruction(C4ID id,
-																					 C4Object *pCreator,
+C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
+                                           C4Object *pCreator,
                                            int32_t iOwner,
                                            int32_t iX, int32_t iBY,
                                            int32_t iCon,
-																					 BOOL fTerrain)
+                                           BOOL fTerrain)
   {
   C4Def *pDef;
   C4Object *pObj;
 
   // Get def
-  if (!(pDef=C4Id2Def(id))) return NULL;
+  if (!PropList) return NULL;
+  if (!(pDef=PropList->GetDef())) return NULL;
 
   int32_t dx,dy,dwdt,dhgt;
   dwdt=pDef->Shape.Wdt; dhgt=pDef->Shape.Hgt;
@@ -1199,8 +1215,8 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 									{
 									if (cObj->Category & C4D_Vehicle)
 										continue;
-									if (cObj->Action.Act>=0)
-										if (cObj->Def->ActMap[cObj->Action.Act].Procedure == DFA_FLOAT)
+									if (cObj->Action.pActionDef)
+										if (cObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_FLOAT)
 											continue;
 									}
 								if (cObj->Category & C4D_Living)
@@ -1303,9 +1319,9 @@ C4Object* C4Game::FindObject(C4ID id,
 		// Exclude
 		if (cObj!=pExclude)
 		// Action
-		if (!szAction || !szAction[0]  || (bFindActIdle && cObj->Action.Act<=ActIdle) || ((cObj->Action.Act>ActIdle) && SEqual(szAction,cObj->Def->ActMap[cObj->Action.Act].Name)) )
+		if (!szAction || !szAction[0]  || (bFindActIdle && !cObj->Action.pActionDef) || (cObj->Action.pActionDef && SEqual(szAction,cObj->Action.pActionDef->GetName())) )
 		// ActionTarget
-		if(!pActionTarget || ((cObj->Action.Act>ActIdle) && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
+		if(!pActionTarget || (cObj->Action.pActionDef && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
 		// Container
 		if ( !pContainer || (cObj->Contained == pContainer) || ((reinterpret_cast<long>(pContainer)==NO_CONTAINER) && !cObj->Contained) || ((reinterpret_cast<long>(pContainer)==ANY_CONTAINER) && cObj->Contained) )
 		// Owner
@@ -1457,9 +1473,9 @@ int32_t C4Game::ObjectCount(C4ID id,
 		// Exclude
 		if (cObj!=pExclude)
 		// Action
-		if (!szAction || !szAction[0] || (bFindActIdle && cObj->Action.Act<=ActIdle) || ((cObj->Action.Act>ActIdle) && SEqual(szAction,cObj->Def->ActMap[cObj->Action.Act].Name)) )
+		if (!szAction || !szAction[0]  || (bFindActIdle && !cObj->Action.pActionDef) || (cObj->Action.pActionDef && SEqual(szAction,cObj->Action.pActionDef->GetName())) )
 		// ActionTarget
-		if (!pActionTarget || ((cObj->Action.Act>ActIdle) && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
+		if(!pActionTarget || (cObj->Action.pActionDef && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
 		// Container
 		if ( !pContainer || (cObj->Contained == pContainer) || ((reinterpret_cast<long>(pContainer)==NO_CONTAINER) && !cObj->Contained) || ((reinterpret_cast<long>(pContainer)==ANY_CONTAINER) && cObj->Contained) )
 		// Owner
@@ -1556,9 +1572,9 @@ BOOL C4Game::CreateViewport(int32_t iPlayer, bool fSilent)
 C4ID DefFileGetID(const char *szFilename)
 	{
 	C4Group hDef;
-	C4DefCore DefCore;
+	C4Def DefCore;
 	if (!hDef.Open(szFilename)) return C4ID_None;
-	if (!DefCore.Load(hDef)) { hDef.Close(); return C4ID_None; }
+	if (!DefCore.LoadDefCore(hDef)) { hDef.Close(); return C4ID_None; }
 	hDef.Close();
 	return DefCore.id;
 	}
@@ -2681,7 +2697,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 					{
 					if (!pDef->Growth) iGrowth=FullCon;
 					iTy+=5;
-					return CreateObjectConstruction(id,NULL,NO_OWNER,iTx,iTy,iGrowth);
+					return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
 					}
 				}
 			break;
@@ -2698,7 +2714,7 @@ C4Object* C4Game::PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt,
 			if (!SemiAboveSolid(iTx,iTy)) return NULL;
 			iTy+=3;
 			// Create object
-			return CreateObjectConstruction(id,NULL,NO_OWNER,iTx,iTy,iGrowth);
+			return CreateObjectConstruction(C4Id2Def(id),NULL,NO_OWNER,iTx,iTy,iGrowth);
 
 		}
 
@@ -3627,8 +3643,7 @@ BOOL C4Game::CheckObjectEnumeration()
 		cObj = clnk->Obj;
 		if (cObj->Number<1)
 			{
-			LogF("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, C4IdText(cObj->id), cObj->GetX());
-			return FALSE;
+			LogFatal(FormatString("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, C4IdText(cObj->id), cObj->GetX()).getData()); return FALSE;
 			}
 		// Max
 		if (cObj->Number>iMax) iMax=cObj->Number;
@@ -3636,11 +3651,11 @@ BOOL C4Game::CheckObjectEnumeration()
 		for (clnk2=Objects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
 			if (cObj2!=cObj)
 				if (cObj->Number==cObj2->Number)
-					{ LogF("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()); return FALSE; }
+					{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s)",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return FALSE; }
 		for (clnk2=Objects.InactiveObjects.First; clnk2 && (cObj2=clnk2->Obj); clnk2=clnk2->Next)
 			if (cObj2!=cObj)
 				if (cObj->Number==cObj2->Number)
-					{ LogF("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()); return FALSE; }
+					{ LogFatal(FormatString("Duplicate object enumeration number %d (%s and %s(i))",cObj2->Number,cObj->GetName(),cObj2->GetName()).getData()); return FALSE; }
 		// next
 		if (!clnk->Next)
 			if (clnk == Objects.Last) clnk=Objects.InactiveObjects.First; else clnk=NULL;

@@ -64,7 +64,7 @@ void FrameDecoration::Clear()
 bool FrameDecoration::SetFacetByAction(C4Def *pOfDef, C4TargetFacet &rfctTarget, const char *szFacetName)
 	{
 	// get action
-	StdStrBuf sActName;
+/*FIXME	StdStrBuf sActName;
 	sActName.Format("FrameDeco%s", szFacetName);
 	int cnt; C4ActionDef *pAct = pOfDef->ActMap;
   for (cnt=pOfDef->ActNum; cnt; --cnt,++pAct)
@@ -73,7 +73,7 @@ bool FrameDecoration::SetFacetByAction(C4Def *pOfDef, C4TargetFacet &rfctTarget,
 	if (!cnt) return false;
 	// set facet by it
 	rfctTarget.Set(pOfDef->Graphics.GetBitmap(), pAct->Facet.x, pAct->Facet.y, pAct->Facet.Wdt, pAct->Facet.Hgt, pAct->Facet.tx, pAct->Facet.ty);
-	return true;
+*/	return true;
 	}
 
 bool FrameDecoration::SetByDef(C4ID idSourceDef)

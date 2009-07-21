@@ -66,86 +66,13 @@ const char *ProcedureName[C4D_MaxDFA]={ "WALK",
 																				"PULL"
 																			};
 
-//-------------------------------- C4ActionDef --------------------------------------------
-
-C4ActionDef::C4ActionDef()
-	{
-	Default();
-	}
-
-void C4ActionDef::Default()
-	{
-	ZeroMem(this,sizeof(C4ActionDef));
-	Procedure=DFA_NONE;
-	NextAction=ActIdle;
-	Directions=1;
-	FlipDir=0;
-	Length=1;
-	Delay=0;
-	FacetBase=0;
-	Step=1;
-	StartCall=PhaseCall=EndCall=AbortCall=NULL;
-	}
-
-void C4ActionDef::CompileFunc(StdCompiler *pComp)
-	{
-	pComp->Value(mkNamingAdapt(toC4CStr(Name),						"Name",								""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(ProcedureName),		"Procedure",					""								));
-	pComp->Value(mkNamingAdapt(Directions,								"Directions",         1									));
-	pComp->Value(mkNamingAdapt(FlipDir,	                  "FlipDir",            0                 ));
-	pComp->Value(mkNamingAdapt(Length,										"Length",							1									));
-
-	StdBitfieldEntry<int32_t> CNATs[] = {
-
-		{ "CNAT_None"                 ,CNAT_None                  },
-		{ "CNAT_Left"                 ,CNAT_Left                  },
-		{ "CNAT_Right"                ,CNAT_Right                 },
-		{ "CNAT_Top"                  ,CNAT_Top                   },
-		{ "CNAT_Bottom"               ,CNAT_Bottom                },
-		{ "CNAT_Center"               ,CNAT_Center                },
-		{ "CNAT_MultiAttach"          ,CNAT_MultiAttach           },
-		{ "CNAT_NoCollision"          ,CNAT_NoCollision           },
-
-		{ NULL												,0													}
-
-	};
-
-	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(Attach, CNATs),
-																												"Attach",							0									));
-
-	pComp->Value(mkNamingAdapt(Delay,											"Delay",							0									));
-	pComp->Value(mkNamingAdapt(Facet,											"Facet",							TargetRect0				));
-	pComp->Value(mkNamingAdapt(FacetBase,									"FacetBase",					0									));
-	pComp->Value(mkNamingAdapt(FacetTopFace,							"FacetTopFace",				0									));
-	pComp->Value(mkNamingAdapt(FacetTargetStretch,				"FacetTargetStretch",	0									));
-	pComp->Value(mkNamingAdapt(toC4CStr(NextActionName),	"NextAction",					""								));
-	pComp->Value(mkNamingAdapt(NoOtherAction,							"NoOtherAction",			0									));
-	pComp->Value(mkNamingAdapt(toC4CStr(SStartCall),			"StartCall",					""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(SEndCall),				"EndCall",						""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(SAbortCall),			"AbortCall",					""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(SPhaseCall),			"PhaseCall",					""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(Sound),						"Sound",							""								));
-	pComp->Value(mkNamingAdapt(Disabled,									"ObjectDisabled",			0									));
-	pComp->Value(mkNamingAdapt(DigFree,										"DigFree",						0									));
-	pComp->Value(mkNamingAdapt(EnergyUsage,								"EnergyUsage",				0									));
-	pComp->Value(mkNamingAdapt(toC4CStr(InLiquidAction),	"InLiquidAction",			""								));
-	pComp->Value(mkNamingAdapt(toC4CStr(TurnAction),			"TurnAction",					""								));
-	pComp->Value(mkNamingAdapt(Reverse,										"Reverse",						0									));
-	pComp->Value(mkNamingAdapt(Step,											"Step",								1									));
-	}
 
 //--------------------------------- C4DefCore ----------------------------------------------
 
-C4DefCore::C4DefCore()
-	{
-	Default();
-	}
-
-void C4DefCore::Default()
+void C4Def::DefaultDefCore()
   {
 	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=rC4XVer[3]=0;
 	RequireDef.Clear();
-	Name.Ref("Undefined");
 	Physical.Default();
   Shape.Default();
   Entrance.Default();
@@ -224,7 +151,7 @@ void C4DefCore::Default()
 	NoTransferZones=0;
 	}
 
-BOOL C4DefCore::Load(C4Group &hGroup)
+BOOL C4Def::LoadDefCore(C4Group &hGroup)
 	{
 	StdStrBuf Source;
 	if (hGroup.LoadEntryString(C4CFN_DefCore,Source))
@@ -267,7 +194,7 @@ BOOL C4DefCore::Load(C4Group &hGroup)
 	return FALSE;
 	}
 
-BOOL C4DefCore::Save(C4Group &hGroup)
+BOOL C4Def::Save(C4Group &hGroup)
 	{
 	StdStrBuf Out;
 	if (! Decompile(&Out, FormatString("%s::DefCore.txt", C4IdText(id)).getData()) )
@@ -275,22 +202,22 @@ BOOL C4DefCore::Save(C4Group &hGroup)
 	return hGroup.Add(C4CFN_DefCore,Out,FALSE,TRUE);
 	}
 
-BOOL C4DefCore::Compile(const char *szSource, const char *szName)
+BOOL C4Def::Compile(const char *szSource, const char *szName)
 	{
 	return CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(*this, "DefCore"), StdStrBuf(szSource), szName);
 	}
 
-BOOL C4DefCore::Decompile(StdStrBuf *pOut, const char *szName)
+BOOL C4Def::Decompile(StdStrBuf *pOut, const char *szName)
 	{
 	return DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*this, "DefCore"), pOut, szName);
 	}
 
-void C4DefCore::CompileFunc(StdCompiler *pComp)
+void C4Def::CompileFunc(StdCompiler *pComp)
 	{
 
 	pComp->Value(mkNamingAdapt(mkC4IDAdapt(id),								"id",									C4ID_None					));
 	pComp->Value(mkNamingAdapt(toC4CArr(rC4XVer),							"Version"																));
-	pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),					    "Name",								"Undefined"				));
+	//FIXME pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),					    "Name",								"Undefined"				));
 	pComp->Value(mkNamingAdapt(mkParAdapt(RequireDef, false),	"RequireDef",					C4IDList()				));
 
 	const StdBitfieldEntry<int32_t> Categories[] = {
@@ -410,7 +337,7 @@ void C4DefCore::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(GrabPutGet, GrabPutGetTypes),
 																														"GrabPutGet",					0									));
-
+	
 	pComp->Value(mkNamingAdapt(Carryable,											"Collectible",				0									));
 	pComp->Value(mkNamingAdapt(Rotateable,										"Rotate",							0									));
 	pComp->Value(mkNamingAdapt(RotatedEntrance,								"RotatedEntrance",		0									));
@@ -481,14 +408,12 @@ C4Def::C4Def()
 
 void C4Def::Default()
 	{
-	C4DefCore::Default();
+	DefaultDefCore();
 
 #if !defined(C4ENGINE) && !defined(C4GROUP)
   Picture=NULL;
   Image=NULL;
 #endif
-  ActNum=0;
-  ActMap=NULL;
   Next=NULL;
   Temporary=FALSE;
 	Maker[0]=0;
@@ -531,10 +456,8 @@ void C4Def::Clear()
 	Portraits = NULL;
 
 
-  if (ActMap) delete [] ActMap; ActMap=NULL;
 	Desc.Clear();
-
-  }
+	}
 
 BOOL C4Def::Load(C4Group &hGroup,
                  DWORD dwLoadWhat,
@@ -576,13 +499,12 @@ BOOL C4Def::Load(C4Group &hGroup,
 
 
   // Read DefCore
-	if (fSuccess) fSuccess=C4DefCore::Load(hGroup);
+	if (fSuccess) fSuccess=LoadDefCore(hGroup);
 	// check id
 	if (fSuccess) if (!LooksLikeID(id))
 		{
 		// wie geth ID?????ßßßß
-		if (!Name[0]) Name = GetFilename(hGroup.GetName());
-		LogF(LoadResStr("IDS_ERR_INVALIDID"), Name.getData());
+		LogF(LoadResStr("IDS_ERR_INVALIDID"), GetFilename(hGroup.GetName()));
 		fSuccess=FALSE;
 		}
 
@@ -655,14 +577,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 						return FALSE;
 #endif
 
-  // Read ActMap
-  if (dwLoadWhat & C4D_Load_ActMap)
-		if (!LoadActMap(hGroup))
-			{
-			DebugLogF("  Error loading ActMap of %s (%s)", hGroup.GetFullName().getData(), C4IdText(id));
-      return FALSE;
-			}
-
   // Read script
   if (dwLoadWhat & C4D_Load_Script)
 		{
@@ -672,12 +586,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 		// for downwards compatibility with packing order
 		Script.Load("Script", hGroup, C4CFN_Script, szLanguage, this, &StringTable, true);
 		}
-
-	// Read name
-	C4ComponentHost DefNames;
-	if (DefNames.LoadEx("Names", hGroup, C4CFN_DefNames, szLanguage))
-		DefNames.GetLanguageString(szLanguage, Name);
-	DefNames.Close();
 
 	// read clonknames
 	if (dwLoadWhat & C4D_Load_ClonkNames)
@@ -778,70 +686,17 @@ BOOL C4Def::Load(C4Group &hGroup,
 		{
 		TopFace.Default();
 		// warn in debug mode
-		DebugLogF("invalid TopFace in %s(%s)", Name.getData(), C4IdText(id));
+		DebugLogF("invalid TopFace in %s(%s)", GetName(), C4IdText(id));
 		}
 
 
 
-  // Temporary flag
-  if (dwLoadWhat & C4D_Load_Temporary) Temporary=TRUE;
-
-  return TRUE;
-  }
-
-BOOL C4Def::LoadActMap(C4Group &hGroup)
-	{
-	// New format
-	StdStrBuf Data;
-	if (hGroup.LoadEntryString(C4CFN_DefActMap, Data))
-		{
-		// Get action count (hacky), create buffer
-		int actnum;
-		if(!(actnum = SCharCount('[', Data.getData()))
-			|| !(ActMap = new C4ActionDef [actnum]))
-				return FALSE;
-		// Compile
-		if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-				mkNamingAdapt(mkArrayAdapt(ActMap, actnum), "Action"),
-				Data,
-				(hGroup.GetFullName() + DirSep C4CFN_DefActMap).getData()))
-			return FALSE;
-		ActNum = actnum;
-		// Process map
-		CrossMapActMap();
-		return TRUE;
-		}
-
-	// No act map in group: okay
+	// Temporary flag
+	if (dwLoadWhat & C4D_Load_Temporary) Temporary=TRUE;
+	
+	if (Carryable) SetProperty(Strings.P[P_Collectible], C4VTrue);
+  
 	return TRUE;
-	}
-
-void C4Def::CrossMapActMap()
-	{
-	int32_t cnt,cnt2;
-	for (cnt=0; cnt<ActNum; cnt++)
-		{
-		// Map standard procedures
-		ActMap[cnt].Procedure=DFA_NONE;
-		for (cnt2=0; cnt2<C4D_MaxDFA; cnt2++)
-			if (SEqual(ActMap[cnt].ProcedureName,ProcedureName[cnt2]))
-				ActMap[cnt].Procedure=cnt2;
-    // Map next action
-    if (ActMap[cnt].NextActionName[0])
-      {
-      if (SEqualNoCase(ActMap[cnt].NextActionName,"Hold"))
-        ActMap[cnt].NextAction=ActHold;
-      else
-        for (cnt2=0; cnt2<ActNum; cnt2++)
-          if (SEqual(ActMap[cnt].NextActionName,ActMap[cnt2].Name))
-            ActMap[cnt].NextAction=cnt2;
-      }
-    // Check act calls
-    if (SEqualNoCase(ActMap[cnt].SStartCall,"None"))	ActMap[cnt].SStartCall[0]=0;
-    if (SEqualNoCase(ActMap[cnt].SPhaseCall,"None"))	ActMap[cnt].SPhaseCall[0]=0;
-    if (SEqualNoCase(ActMap[cnt].SEndCall,"None"))	ActMap[cnt].SEndCall[0]=0;
-    if (SEqualNoCase(ActMap[cnt].SAbortCall,"None"))	ActMap[cnt].SAbortCall[0]=0;
-		}
 	}
 
 BOOL C4Def::ColorizeByMaterial(C4MaterialMap &rMats, BYTE bGBM)
@@ -1418,8 +1273,6 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	// backup graphics names and pointers
 	// GfxBackup-dtor will ensure that upon loading-failure all graphics are reset to default
 	C4DefGraphicsPtrBackup GfxBackup(&pDef->Graphics);
-	// clear any pointers into def (name)
-	::Objects.ClearDefPointers(pDef);
 	// Clear def
 	pDef->Clear(); // Assume filename is being kept
 	// Reload def
@@ -1431,8 +1284,6 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	BuildTable();
 	// update script engine - this will also do include callbacks
 	::ScriptEngine.ReLink(this);
-	// update definition pointers
-	::Objects.UpdateDefPointers(pDef);
 	// restore graphics
 	GfxBackup.AssignUpdate(&pDef->Graphics);
 	// Success
@@ -1670,6 +1521,16 @@ void C4DefList::ResetIncludeDependencies()
 	C4Def *pDef;
 	for (pDef=FirstDef; pDef; pDef=pDef->Next)
 		pDef->ResetIncludeDependencies();
+	}
+
+void C4DefList::CallEveryDefinition()
+	{
+	C4Def *pDef;
+	for (pDef=FirstDef; pDef; pDef=pDef->Next)
+		{
+		C4AulParSet Pars(C4VPropList(pDef));
+		pDef->Script.Call(PSF_Definition, 0, &Pars, true);
+		}
 	}
 
 C4DefList Definitions;

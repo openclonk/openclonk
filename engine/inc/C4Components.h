@@ -93,7 +93,6 @@
 #define C4CFN_DefGraphicsScaled		 "Graphics.*.bmp"
 #define C4CFN_DefGraphicsScaledPNG "Graphics.*.png"
 #define C4CFN_ClrByOwnerExPNG	"Overlay*.png"
-#define C4CFN_DefNames				"Names%s.txt|Names.txt"
 #define C4CFN_DefActMap				"ActMap.txt"
 #define C4CFN_DefDesc					"Desc%s.txt"
 #define C4CFN_BigIcon 				"BigIcon.png"

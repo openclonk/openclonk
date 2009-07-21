@@ -86,7 +86,7 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 	if(Obj)
 		Dump.AppendFormat(" (obj %s)", C4VObj(Obj).GetDataString().getData());
 	else if(Func->Owner->Def != NULL)
-		Dump.AppendFormat(" (def %s)", Func->Owner->Def->Name.getData());
+		Dump.AppendFormat(" (def %s)", Func->Owner->Def->GetName());
 	// Script
 	if(!fDirectExec && Func->Owner)
 		Dump.AppendFormat(" (%s:%d)",
@@ -185,6 +185,12 @@ class C4AulExec
 		{
 			CheckOverflow(1);
 			(++pCurVal)->SetArray(Array);
+		}
+		
+		void PushPropList(C4PropList * PropList)
+		{
+			CheckOverflow(1);
+			(++pCurVal)->SetPropList(PropList);
 		}
 
 		void PushValue(const C4Value &rVal)
@@ -339,7 +345,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 
 				case AB_C4ID:
-					PushValue(C4VID(pCPos->Par.i));
+					PushValue(C4VPropList(C4Id2Def(pCPos->Par.i)));
 					break;
 
 				case AB_NIL:
@@ -759,6 +765,23 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 					}
 
+				case AB_PROPLIST:
+					{
+					PushPropList(new C4PropList);
+					break;
+					}
+				case AB_PROPSET:
+					{
+					C4Value *pPropSet = pCurVal - 2, *pKey = pCurVal -1, *pValue = pCurVal;
+					if(!pPropSet->ConvertTo(C4V_PropList))
+						throw new C4AulExecError(pCurCtx->Obj, FormatString("Propset: proplist expected, got %s!", pPropSet->GetTypeName()).getData());
+					if(!pKey->ConvertTo(C4V_String))
+						throw new C4AulExecError(pCurCtx->Obj, FormatString("Propset: string expected, got %s!", pPropSet->GetTypeName()).getData());
+					pPropSet->_getPropList()->SetProperty(pKey->_getStr(), *pValue);
+					PopValues(2);
+					break;
+					}
+
 				case AB_ARRAYA_R: case AB_ARRAYA_V:
 					{
 					C4Value &Index = pCurVal[0];
@@ -963,15 +986,15 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 						pDestObj = pTargetVal->_getObj();
 						pDestDef = pDestObj->Def;
 						}
-					else if(pTargetVal->ConvertTo(C4V_C4ID))
+					else if(pTargetVal->ConvertTo(C4V_PropList) && pTargetVal->_getPropList())
 						{
 						// definition call
 						pDestObj = NULL;
-						pDestDef = C4Id2Def(pTargetVal->_getC4ID());
+						pDestDef = pTargetVal->_getPropList()->GetDef();
 						// definition must be known
 						if(!pDestDef)
 							throw new C4AulExecError(pCurCtx->Obj,
-								FormatString("Definition call: Definition for id %s not found!", C4IdText(pTargetVal->_getC4ID())).getData());
+								FormatString("Definition call: Definition for %s not found!", pTargetVal->_getPropList()->GetName()).getData());
 						}
 					else
 						throw new C4AulExecError(pCurCtx->Obj,
@@ -995,7 +1018,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 								FormatString("Object call: No function \"%s\" in object \"%s\"!", szFuncName, pTargetVal->GetDataString().getData()).getData());
 						else
 							throw new C4AulExecError(pCurCtx->Obj,
-								FormatString("Definition call: No function \"%s\" in definition \"%s\"!", szFuncName, pDestDef->Name.getData()).getData());
+								FormatString("Definition call: No function \"%s\" in definition \"%s\"!", szFuncName, pDestDef->GetName()).getData());
 						}
 
 					// Resolve overloads

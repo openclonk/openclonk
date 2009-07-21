@@ -2067,52 +2067,44 @@ BOOL FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2,
 	return FALSE;
 	}
 
-BOOL ConstructionCheck(C4ID id, int32_t iX, int32_t iY, C4Object *pByObj)
-  {
-  C4Def *ndef;
-  char idostr[5];
-
-  // Check def
-  if (!(ndef=C4Id2Def(id)))
-    {
-    GetC4IdText(id,idostr);
-    if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_UNDEF"),idostr).getData(),pByObj,FRed);
-    return FALSE;
-    }
-
-  // Constructable?
-  if (!ndef->Constructable)
-    {
-    if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCON"),ndef->GetName()).getData(),pByObj,FRed);
-    return FALSE;
-    }
-
-  // Check area
-  int32_t rtx,rty,wdt,hgt;
-  wdt=ndef->Shape.Wdt; hgt=ndef->Shape.Hgt-ndef->ConSizeOff;
-  rtx=iX-wdt/2; rty=iY-hgt;
-  if (::Landscape.AreaSolidCount(rtx,rty,wdt,hgt)>(wdt*hgt/20))
-    {
-    if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOROOM"),pByObj,FRed);
-    return FALSE;
-    }
-  if (::Landscape.AreaSolidCount(rtx,rty+hgt,wdt,5)<(wdt*2))
-    {
-    if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOLEVEL"),pByObj,FRed);
-    return FALSE;
-    }
-
-  // Check other structures
-  C4Object *other;
-  if (other=Game.OverlapObject(rtx,rty,wdt,hgt,ndef->Category))
-    {
-    if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOOTHER"),other->GetName ()).getData(),pByObj,FRed);
-    return FALSE;
-    }
-
-  return TRUE;
-  }
-
+BOOL ConstructionCheck(C4PropList * PropList, int32_t iX, int32_t iY, C4Object *pByObj)
+	{
+	C4Def *ndef;
+	// Check def
+	if (!(ndef=PropList->GetDef()))
+		{
+		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_UNDEF"), PropList->GetName()).getData(),pByObj,FRed);
+		return FALSE;
+	}
+	// Constructable?
+	if (!ndef->Constructable)
+		{
+		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCON"),ndef->GetName()).getData(),pByObj,FRed);
+		return FALSE;
+		}
+	// Check area
+	int32_t rtx,rty,wdt,hgt;
+	wdt=ndef->Shape.Wdt; hgt=ndef->Shape.Hgt-ndef->ConSizeOff;
+	rtx=iX-wdt/2; rty=iY-hgt;
+	if (::Landscape.AreaSolidCount(rtx,rty,wdt,hgt)>(wdt*hgt/20))
+		{
+		if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOROOM"),pByObj,FRed);
+		return FALSE;
+		}  
+	if (::Landscape.AreaSolidCount(rtx,rty+hgt,wdt,5)<(wdt*2))
+		{
+		if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOLEVEL"),pByObj,FRed);
+		return FALSE;
+		}
+	// Check other structures
+	C4Object *other;
+	if (other=Game.OverlapObject(rtx,rty,wdt,hgt,ndef->Category))
+		{
+		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOOTHER"),other->GetName ()).getData(),pByObj,FRed);
+		return FALSE;
+		}
+	return TRUE;
+	}
 
 int32_t PixCol2Mat(BYTE pixc)
 	{

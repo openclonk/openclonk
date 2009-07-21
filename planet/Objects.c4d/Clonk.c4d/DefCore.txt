@@ -1,7 +1,6 @@
 [DefCore]
 id=CLNK
 Version=4,9,8,8
-Name=Clonk
 Category=C4D_Living|C4D_SelectHomebase
 MaxUserSelect=10
 Width=16

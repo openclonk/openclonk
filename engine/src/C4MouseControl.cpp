@@ -1144,7 +1144,7 @@ void C4MouseControl::DragConstruct()
 	Cursor=C4MC_Cursor_Construct;
 	// Check site
 	DragImagePhase=1;
-	if (!FogOfWar && ConstructionCheck(DragID,int32_t(GameX),int32_t(GameY))) DragImagePhase=0;
+	if (!FogOfWar && ConstructionCheck(C4Id2Def(DragID),int32_t(GameX),int32_t(GameY))) DragImagePhase=0;
 	}
 
 void C4MouseControl::LeftUpDragNone()

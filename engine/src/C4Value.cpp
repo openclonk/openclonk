@@ -65,13 +65,14 @@ void C4Value::AddDataRef()
 		case C4V_Array: Data.Array = Data.Array->IncRef(); break;
 		case C4V_String: Data.Str->IncRef(); break;
 		case C4V_C4Object:
-		Data.Obj->AddRef(this);
+		case C4V_PropList:
+		Data.PropList->AddRef(this);
 #ifdef _DEBUG
 		// check if the object actually exists
-		if(!::Objects.ObjectNumber(Data.Obj))
-			{ LogF("Warning: using wild object ptr %p!", Data.Obj); }
-		else if(!Data.Obj->Status)
-			{ LogF("Warning: using ptr on deleted object %p (%s)!", Data.Obj, Data.Obj->GetName()); }
+		if(!::Objects.ObjectNumber(Data.PropList))
+			{ LogF("Warning: using wild object ptr %p!", Data.PropList); }
+		else if(!Data.PropList->Status)
+			{ LogF("Warning: using ptr on deleted object %p (%s)!", Data.PropList, Data.PropList->GetName()); }
 #endif
 		break;
 		default: break;
@@ -88,7 +89,7 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 		HasBaseArray = false;
 		Data.Ref->DelRef(this, pNextRef, pBaseArray);
 		break;
-		case C4V_C4Object: Data.Obj->DelRef(this, pNextRef); break;
+		case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
 		case C4V_Array: Data.Array->DecRef(); break;
 		case C4V_String: Data.Str->DecRef(); break;
 		default: break;
@@ -254,12 +255,12 @@ const char* GetC4VName(const C4V_Type Type)
 		return "bool";
 	case C4V_C4Object:
 		return "object";
-	case C4V_C4ID:
-		return "id";
 	case C4V_String:
 		return "string";
 	case C4V_Array:
 		return "array";
+	case C4V_PropList:
+		return "proplist";
 	case C4V_pC4Value:
 		return "&";
 	default:
@@ -279,8 +280,6 @@ char GetC4VID(const C4V_Type Type)
 		return 'b';
 	case C4V_C4Object:
 		return 'o';
-	case C4V_C4ID:
-		return 'I';
 	case C4V_String:
 		return 's';
 	case C4V_pC4Value:
@@ -289,6 +288,8 @@ char GetC4VID(const C4V_Type Type)
 		return 'O';
 	case C4V_Array:
 		return 'a';
+	case C4V_PropList:
+		return 'p';
 	}
 	return ' ';
 }
@@ -305,8 +306,6 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_Bool;
 	case 'o':
 		return C4V_C4Object;
-	case 'I':
-		return C4V_C4ID;
 	case 's':
 		return C4V_String;
 	case 'V':
@@ -315,6 +314,8 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_C4ObjectEnum;
 	case 'a':
 		return C4V_Array;
+	case 'p':
+		return C4V_PropList;
 	}
 	return C4V_Any;
 }
@@ -348,28 +349,26 @@ static bool FnCnvDeref(C4Value *Val, C4V_Type toType, BOOL fStrict)
 	return Val->ConvertTo(toType, fStrict);
 	}
 
-bool C4Value::FnCnvInt2Id(C4Value *Val, C4V_Type toType, BOOL fStrict)
+bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType, BOOL fStrict)
 	{
-	// inside range?
-	if (!Inside<long>(Val->Data.Int, 0, 9999)) return FALSE;
-	// convert
-	Val->Type = C4V_C4ID;
-	return TRUE;
+	// try casting
+	if (dynamic_cast<C4Object *>(Val->Data.PropList)) return true;
+	return false;
 	}
 
 // Type conversion table
 #define CnvOK        0, false								// allow conversion by same value
 #define CnvError     FnCnvError, true
-#define CnvInt2Id    C4Value::FnCnvInt2Id, false
 #define CnvDirectOld FnCnvDirectOld, true
 #define CnvDeref     FnCnvDeref, false
+#define CnvObject    FnCnvObject, false
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 	{ // C4V_Any - is always 0, convertible to everything
 		{ CnvOK			}, // any        same
 		{ CnvOK			}, // int
 		{ CnvOK			}, // Bool
-		{ CnvOK			}, // C4ID
+		{ CnvOK			}, // PropList
 		{ CnvOK			}, // C4Object
 		{ CnvOK			}, // String
 		{ CnvOK			}, // Array
@@ -379,7 +378,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK			}, // any
 		{ CnvOK			}, // int        same
 		{ CnvOK			}, // Bool
-		{ CnvInt2Id		}, // C4ID       numerical ID?
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
@@ -389,27 +388,27 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK			}, // any
 		{ CnvOK			}, // int        might be used
 		{ CnvOK			}, // Bool       same
-		{ CnvDirectOld	}, // C4ID       #strict forbid
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
 		{ CnvError		}, // pC4Value
 	},
-	{ // C4V_C4ID
+	{ // C4V_PropList
 		{ CnvOK			}, // any
-		{ CnvDirectOld	}, // int        #strict forbid
+		{ CnvError		}, // int        NEVER!
 		{ CnvOK			}, // Bool
-		{ CnvOK			}, // C4ID       same
-		{ CnvError		}, // C4Object   NEVER!
+		{ CnvOK			}, // PropList   same
+		{ CnvObject		}, // C4Object
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // pC4Value
+		{ CnvError		}, // pC4Value   NEVER!
 	},
 	{ // C4V_Object
 		{ CnvOK			}, // any
 		{ CnvDirectOld	}, // int        #strict forbid
 		{ CnvOK			}, // Bool
-		{ CnvError		}, // C4ID       Senseless, thus error
+		{ CnvOK			}, // PropList
 		{ CnvOK			}, // C4Object   same
 		{ CnvError		}, // String     NEVER!
 		{ CnvError		}, // Array      NEVER!
@@ -419,7 +418,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK			}, // any
 		{ CnvDirectOld	}, // int        #strict forbid
 		{ CnvOK			}, // Bool
-		{ CnvError		}, // C4ID       Sensless, thus error
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvOK			}, // String     same
 		{ CnvError		}, // Array      NEVER!
@@ -429,7 +428,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK			}, // any
 		{ CnvError		}, // int        NEVER!
 		{ CnvOK			}, // Bool
-		{ CnvError		}, // C4ID       NEVER!
+		{ CnvError		}, // PropList   NEVER!
 		{ CnvError		}, // C4Object   NEVER!
 		{ CnvError		}, // String     NEVER!
 		{ CnvOK			}, // Array      same
@@ -439,7 +438,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvDeref		}, // any
 		{ CnvDeref		}, // int
 		{ CnvDeref		}, // Bool
-		{ CnvDeref		}, // C4ID
+		{ CnvDeref		}, // PropList
 		{ CnvDeref		}, // C4Object
 		{ CnvDeref		}, // String
 		{ CnvDeref		}, // Array
@@ -466,19 +465,18 @@ StdStrBuf C4Value::GetDataString()
 		return FormatString("%ld", Data.Int);
 	case C4V_Bool:
 		return StdStrBuf(Data ? "true" : "false");
-	case C4V_C4ID:
-		return StdCopyStrBuf(C4IdText(Data.Int));
 	case C4V_C4Object:
+	case C4V_PropList:
 		{
 		// obj exists?
-		if(!::Objects.ObjectNumber(Data.Obj) && !::Objects.InactiveObjects.ObjectNumber(Data.Obj))
+		if(!::Objects.ObjectNumber(Data.PropList))
 			return FormatString("%ld", Data.Int);
 		else
-			if (Data.Obj)
+			if (Data.PropList)
 				if (Data.Obj->Status == C4OS_NORMAL)
-					return FormatString("%s #%d", Data.Obj->GetName(), (int) Data.Obj->Number);
+					return FormatString("%s #%d", Data.PropList->GetName(), (int) Data.PropList->Number);
 				else
-					return FormatString("{%s #%d}", Data.Obj->GetName(), (int) Data.Obj->Number);
+					return FormatString("{%s #%d}", Data.PropList->GetName(), (int) Data.PropList->Number);
 			else
 				return StdStrBuf("0"); // (impossible)
 		}
@@ -507,14 +505,14 @@ C4Value C4VString(const char *strString)
 {
 	// safety
 	if(!strString) return C4Value();
-	return C4Value(::ScriptEngine.Strings.RegString(strString));
+	return C4Value(::Strings.RegString(strString));
 }
 
 C4Value C4VString(StdStrBuf Str)
 {
 	// safety
 	if(Str.isNull()) return C4Value();
-	return C4Value(::ScriptEngine.Strings.RegString(Str));
+	return C4Value(::Strings.RegString(Str));
 }
 
 void C4Value::DenumeratePointer()
@@ -527,16 +525,12 @@ void C4Value::DenumeratePointer()
 	}
 	// object types only
 	if(Type != C4V_C4ObjectEnum && Type != C4V_Any) return;
-	// in range?
-	if(Type != C4V_C4ObjectEnum && !Inside(Data.Int, C4EnumPointer1, C4EnumPointer2)) return;
 	// get obj id, search object
-	int iObjID = (Data.Int >= C4EnumPointer1 ? Data.Int - C4EnumPointer1 : Data.Int);
-	C4Object *pObj = ::Objects.ObjectPointer(iObjID);
-	if (!pObj)
-		pObj = ::Objects.InactiveObjects.ObjectPointer(iObjID);
+	int iObjID = Data.Int;
+	C4PropList *pObj = ::Objects.ObjectPointer(iObjID);
 	if(pObj)
 		// set
-		SetObject(pObj);
+		SetPropList(pObj);
 	else
 	{
 		// object: invalid value - set to zero
@@ -580,7 +574,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 			int32_t iTmp;
 			pComp->Value(iTmp);
 			// search
-			C4String *pString = ::ScriptEngine.Strings.FindString(iTmp);
+			C4String *pString = ::Strings.FindString(iTmp);
 			if(pString)
 				{
 				Data.Str = pString;
@@ -600,7 +594,6 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 	// simple data types: just save
 	case C4V_Int:
 	case C4V_Bool:
-	case C4V_C4ID:
 
 		// these are 32-bit integers
 		iTmp = Data.Int;
@@ -610,9 +603,9 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		break;
 
 	// object: save object number instead
-	case C4V_C4Object:
+	case C4V_C4Object: case C4V_PropList:
 		if(!fCompiler)
-			iTmp = ::Objects.ObjectNumber(getObj());
+			iTmp = ::Objects.ObjectNumber(getPropList());
 	case C4V_C4ObjectEnum:
 		if(!fCompiler) if (Type == C4V_C4ObjectEnum)
 			iTmp = Data.Int;
@@ -633,7 +626,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		pComp->Value(s);
 		if(fCompiler)
 			{
-			C4String *pString = ::ScriptEngine.Strings.RegString(s);
+			C4String *pString = ::Strings.RegString(s);
 			if(pString)
 				{
 				Data.Str = pString;
@@ -652,14 +645,13 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		pComp->Seperator(StdCompiler::SEP_END2);
 		break;
 
-	// shouldn't happen
-	case C4V_pC4Value:
-
 	case C4V_Any:
 		assert(!Data);
 		// doesn't have a value, so nothing to store
 		break;
 
+	// shouldn't happen
+	case C4V_pC4Value:
 	default:
 		assert(false);
 		break;
@@ -679,10 +671,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 				case C4V_Int:
 				case C4V_Bool:
 					return Data == Value2.Data;
-					case C4V_C4ID:
-					if (Inside<long>(Value2.Data.Int, 0, 9999))
-						return Data == Value2.Data;
-					return false;
 				default:
 					return false;
 				}
@@ -695,22 +683,10 @@ bool C4Value::operator == (const C4Value& Value2) const
 					default:
 					return false;
 				}
-		case C4V_C4ID:
-			switch (Value2.Type)
-				{
-				case C4V_C4ID:
-					return Data == Value2.Data;
-					case C4V_Int:
-					if (Inside<long>(Value2.Data.Int, 0, 9999))
-						return Data == Value2.Data;
-					return false;
-				default:
-					return false;
-				}
-		case C4V_C4Object:
+		case C4V_C4Object: case C4V_PropList:
 			return Data == Value2.Data && Type == Value2.Type;
 		case C4V_String:
-			return Type == Value2.Type && Data.Str->Data == Value2.Data.Str->Data;
+			return Type == Value2.Type && Data.Str == Value2.Data.Str;
 		case C4V_Array:
 			return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
 		default:
@@ -724,4 +700,14 @@ bool C4Value::operator != (const C4Value& Value2) const
 {
 	// Fixme: implement faster
 	return !(*this == Value2);
+}
+
+C4Value C4VID(C4ID iVal) { return C4Value(::Definitions.ID2Def(iVal)); }
+C4ID C4Value::getC4ID()
+{
+	C4PropList * p = getPropList();
+	if(!p) return 0;
+	C4Def * d = p->GetDef();
+	if (!d) return 0;
+	return d->id;
 }

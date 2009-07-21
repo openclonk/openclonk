@@ -318,7 +318,7 @@ void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 		C4Def *pDef = ::Definitions.ID2Def(id);
 		// search def-graphics
 		if(!pDef || !( pDefGraphics = pDef->Graphics.Get(Name.getData()) ))
-			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), C4IdText(id), pDef ? pDef->Name.getData() : "def not found");
+			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), C4IdText(id), pDef ? pDef->GetName() : "def not found");
 		}
 	}
 
@@ -630,7 +630,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			break;
 
 		case MODE_Action: // graphics of specified action
-			{
+/*FIXME			{
 			// Find act in ActMap of object
 			int32_t cnt;
 			for (cnt=0; cnt<pDef->ActNum; cnt++)
@@ -641,7 +641,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			// doesn't catch any special action parameters (FacetBase, etc.)...
 			C4ActionDef *pAct = pDef->ActMap+cnt;
 			fctBlit.Set(pSourceGfx->GetBitmap(), pAct->Facet.x, pAct->Facet.y, pAct->Facet.Wdt, pAct->Facet.Hgt);
-			}
+			}*/
 			break;
 
 		case MODE_IngamePicture:

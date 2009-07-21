@@ -606,7 +606,7 @@ bool C4FindObjectCategory::IsEnsured()
 
 bool C4FindObjectAction::Check(C4Object *pObj)
 {
-	return SEqual(pObj->Action.Name, szAction);
+	return SEqual(pObj->Action.pActionDef->GetName(), szAction);
 }
 
 bool C4FindObjectActionTarget::Check(C4Object *pObj)

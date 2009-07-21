@@ -586,8 +586,8 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	cobj = 0;
 	if (!pObj->Def->IncompleteActivity && !pObj->Def->NoBurnDecay)
 		while (cobj = Game.FindObject(0, 0, 0, 0, 0, OCF_All, 0, pObj, 0, 0, ANY_OWNER, cobj))
-			if ((cobj->Action.Act > ActIdle) && (cobj->Def->ActMap[cobj->Action.Act].Procedure == DFA_ATTACH))
-				cobj->SetAction(ActIdle);
+			if (cobj->Action.pActionDef && (cobj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH))
+				cobj->SetAction(0);
 	// fire caused?
 	if (!fFireCaused)
 		{
@@ -778,7 +778,7 @@ int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t
 
 C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber)
 	{
-	return ::ScriptEngine.Strings.RegString(LoadResStr("IDS_OBJ_BURNS"));
+	return Strings.RegString(LoadResStr("IDS_OBJ_BURNS"));
 	}
 
 
@@ -846,7 +846,7 @@ void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
 	// Create smoke
 	level=BoundBy<int32_t>(level,3,32);
 	C4Object *pObj;
-	if (pObj = Game.CreateObjectConstruction(C4Id("FXS1"),NULL,NO_OWNER,tx,ty,FullCon*level/32))
+	if (pObj = Game.CreateObjectConstruction(C4Id2Def(C4Id("FXS1")),NULL,NO_OWNER,tx,ty,FullCon*level/32))
 		pObj->Call(PSF_Activate);
   }
 
@@ -885,7 +885,7 @@ void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t i
 				::Particles.Cast(::Particles.pFSpark, level/5+1, (float) tx, (float) ty, level, level/2+1.0f, 0x00ef0000, level+1.0f, 0xffff1010);
 			}
 		else
-			if (pBlast = Game.CreateObjectConstruction(idEffect ? idEffect : C4Id("FXB1"),pByObj,iCausedBy,tx,ty+level,FullCon*level/20))
+			if (pBlast = Game.CreateObjectConstruction(C4Id2Def(idEffect ? idEffect : C4Id("FXB1")),pByObj,iCausedBy,tx,ty+level,FullCon*level/20))
 				pBlast->Call(PSF_Activate);
     }
   // Blast objects

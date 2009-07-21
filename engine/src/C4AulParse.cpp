@@ -78,6 +78,7 @@
 #define C4AUL_TypeBool			"bool"
 #define C4AUL_TypeC4ID			"id"
 #define C4AUL_TypeC4Object	"object"
+#define C4AUL_TypePropList	"proplist"
 #define C4AUL_TypeString		"string"
 #define C4AUL_TypeArray			"array"
 
@@ -147,6 +148,7 @@ class C4AulParseState
 	void Parse_Block();
 	int Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc = 0);
 	void Parse_Array();
+	void Parse_PropList();
 	void Parse_While();
 	void Parse_If();
 	void Parse_For();
@@ -802,8 +804,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					if(HoldStrings == Discard) return ATT_STRING;
 					// reg string (if not already done so)
 					C4String *pString;
-					pString = a->Engine->Strings.RegString(StdStrBuf(StrBuff,static_cast<long>(pStrPos - StrBuff)));
-					if (HoldStrings == Hold) pString->Hold = 1;
+					pString = Strings.RegString(StdStrBuf(StrBuff,static_cast<long>(pStrPos - StrBuff)));
 					// return pointer on string object
 					*pInt = (long) pString;
 					return ATT_STRING;
@@ -918,6 +919,8 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_C4ID: return "C4ID";		// constant: C4ID
 	case AB_NIL: return "NIL";		// constant: nil
 	case AB_ARRAY: return "ARRAY";		// semi-constant: array
+	case AB_PROPLIST: return "PROPLIST";		// semi-constant: array
+	case AB_PROPSET: return "PROPSET";
 	case AB_IVARN: return "IVARN";		// initialization of named var
 	case AB_JUMP: return "JUMP";		// jump
 	case AB_JUMPAND: return "JUMPAND";
@@ -1030,6 +1033,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_BOOL:
 		case AB_STRING:
 		case AB_C4ID:
+		case AB_PROPLIST:
 		case AB_NIL:
 		case AB_VARN_R:
 		case AB_VARN_V:
@@ -1120,6 +1124,10 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 
 		case AB_ARRAY:
 			iStack-=X-1;
+			break;
+
+		case AB_PROPSET:
+			iStack -= 2;
 			break;
 
 		default:
@@ -1577,8 +1585,9 @@ void C4AulParseState::Parse_FuncHead()
 			// type identifier?
 			if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_C4ID; Shift(Discard,false); }
+			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(Discard,false); }
+			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(Discard,false); }
 			// ampersand?
@@ -2306,6 +2315,43 @@ void C4AulParseState::Parse_Array()
 	AddBCC(AB_ARRAY, size);
 	}
 
+void C4AulParseState::Parse_PropList()
+	{
+	AddBCC(AB_PROPLIST);
+	Shift();
+	// insert block in byte code
+	while (1)
+		{
+		if (TokenType == ATT_BLCLOSE)
+			{
+			Shift();
+			return;
+			}
+		C4String * pKey;
+		if (TokenType == ATT_IDTF)
+			{
+			pKey = Strings.RegString(Idtf);
+			AddBCC(AB_STRING, (intptr_t) pKey);
+			Shift();
+			}
+		else if (TokenType == ATT_STRING)
+			{
+			AddBCC(AB_STRING, cInt);
+			Shift();
+			}
+		else UnexpectedToken("string or identifier");
+		if (TokenType != ATT_COLON && (TokenType != ATT_OPERATOR || !SEqual(C4ScriptOpMap[cInt].Identifier,"=")))
+			UnexpectedToken("':' or '='");
+		Shift();
+		Parse_Expression();
+		AddBCC(AB_PROPSET);
+		if (TokenType == ATT_COMMA)
+			Shift();
+		else if (TokenType != ATT_BLCLOSE)
+			UnexpectedToken("'}' or ','");
+		}
+	}
+
 void C4AulParseState::Parse_While()
 	{
 	// Save position for later jump back
@@ -2652,7 +2698,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 							case C4V_String:
 								AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
 								break;
-							case C4V_C4ID:   AddBCC(AB_C4ID,   val.GetData().Int); break;
+							case C4V_PropList:   AddBCC(AB_C4ID,   C4ValueConv<C4ID>::FromC4V(val)); break;
 							case C4V_Any:
 								// any: allow zero
 								if (!val.GetData())
@@ -2755,6 +2801,11 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			if(!Fn->pOrgScript->Strict)
 				throw new C4AulParseError(this, "unexpected '['");
 			Parse_Array();
+			break;
+			}
+		case ATT_BLOPEN:
+			{
+			Parse_PropList();
 			break;
 			}
 		default:
@@ -2921,7 +2972,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 				}
 			if (Type == PARSER)
 				{
-				pName = ::ScriptEngine.Strings.RegString(Idtf);
+				pName = ::Strings.RegString(Idtf);
 				}
 			// add call chunk
 			Shift();
@@ -3096,7 +3147,7 @@ void C4AulParseState::Parse_Const()
 				case ATT_INT: vGlobalValue.SetInt(cInt); break;
 				case ATT_BOOL: vGlobalValue.SetBool(!!cInt); break;
 				case ATT_STRING: vGlobalValue.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
-				case ATT_C4ID: vGlobalValue.SetC4ID(cInt); break;
+				//FIXME case ATT_C4ID: vGlobalValue.SetC4ID(cInt); break;
 				case ATT_NIL: vGlobalValue.Set0(); break;
 				case ATT_IDTF:
 					// identifier is only OK if it's another constant

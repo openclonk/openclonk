@@ -67,7 +67,7 @@ inline const static char *FnStringPar(C4String *pString)
 }
 inline C4String *String(const char * str)
 {
-	return str ? ::ScriptEngine.Strings.RegString(str) : NULL;
+	return str ? ::Strings.RegString(str) : NULL;
 }
 
 static StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4Value * Par0=0, C4Value * Par1=0, C4Value * Par2=0, C4Value * Par3=0,
@@ -91,8 +91,6 @@ static StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4V
 		// Field
 		if (*cpFormat=='%')
 			{
-			// arrays now valid in %v
-			//if (Par[cPar] && Par[cPar]->Type == C4V_Array) throw new C4AulExecError(0, cthr, 0, "array argument to format");
 			// Scan field type
 			for (cpType=cpFormat+1; *cpType && (*cpType=='.' || Inside(*cpType,'0','9')); cpType++) {}
 			// Copy field
@@ -749,8 +747,8 @@ static bool FnSetBridgeActionData(C4AulContext *cthr, long iBridgeLength, bool f
 	{
 	if (!pObj) pObj=cthr->Obj; if (!pObj || !pObj->Status) return FALSE;
 	// action must be BRIDGE
-	if (pObj->Action.Act <= ActIdle) return FALSE;
-	if (pObj->Def->ActMap[pObj->Action.Act].Procedure != DFA_BRIDGE) return FALSE;
+	if (!pObj->Action.pActionDef) return FALSE;
+	if (pObj->Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_BRIDGE) return FALSE;
 	// set data
 	pObj->Action.SetBridgeData(iBridgeLength, fMoveClonk, fWall, iBridgeMaterial);
 	return TRUE;
@@ -760,10 +758,10 @@ static bool FnSetActionData(C4AulContext *cthr, long iData, C4Object *pObj)
 	{
 	if (!pObj) pObj=cthr->Obj; if (!pObj || !pObj->Status) return FALSE;
 	// bridge: Convert from old style
-	if ((pObj->Action.Act > ActIdle) && (pObj->Def->ActMap[pObj->Action.Act].Procedure == DFA_BRIDGE))
+	if (pObj->Action.pActionDef && (pObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_BRIDGE))
 		return FnSetBridgeActionData(cthr, 0, false, false, iData, pObj);
 	// attach: check for valid vertex indices
-	if ((pObj->Action.Act > ActIdle) && (pObj->Def->ActMap[pObj->Action.Act].Procedure == DFA_ATTACH)) // Fixed Action.Act check here... matthes
+	if (pObj->Action.pActionDef && (pObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)) // Fixed Action.Act check here... matthes
 		if (((iData&255) >= C4D_MaxVertex) || ((iData>>8) >= C4D_MaxVertex))
 			return FALSE;
 	// set data
@@ -973,9 +971,39 @@ static C4Value FnPlayerObjectCommand(C4AulContext *cthr, C4Value *pPars)
 static C4String *FnGetAction(C4AulContext *cthr, C4Object *pObj)
   {
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
-  if (pObj->Action.Act<=ActIdle) return String("Idle");
-  return String(pObj->Def->ActMap[pObj->Action.Act].Name);
+  if (!pObj->Action.pActionDef) return String("Idle");
+  return String(pObj->Action.pActionDef->GetName());
   }
+
+static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
+	{
+	return new C4PropList(prototype);
+	}
+
+static C4Value FnGetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * pObj_C4V)
+	{
+	C4PropList * pObj = pObj_C4V->_getPropList();
+	if (!pObj) pObj=cthr->Obj;
+	if (!pObj) pObj=cthr->Def;
+	if (!pObj) return C4VFalse;
+	C4String * key = key_C4V->_getStr();
+	if(!key) return C4VFalse;
+	C4Value r;
+	pObj->GetProperty(key, r);
+	return r;
+	}
+
+static C4Value FnSetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * to, C4Value * pObj_C4V)
+	{
+	C4PropList * pObj = pObj_C4V->_getPropList();
+	if (!pObj) pObj=cthr->Obj;
+	if (!pObj) pObj=cthr->Def;
+	if (!pObj) return C4VFalse;
+	C4String * key = key_C4V->_getStr();
+	if(!key) return C4VFalse;
+	pObj->SetProperty(key, *to);
+	return C4VTrue;
+	}
 
 static C4String *FnGetName(C4AulContext *cthr, C4Object *pObj, C4ID idDef/*, bool fFilename, long idx*/)
   {
@@ -1011,7 +1039,7 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, C4Object *pObj, C4
 
 	if (idDef)
 		if (pDef=C4Id2Def(idDef))
-			pDef->Name.Copy(FnStringPar(pNewName));
+			pDef->SetName(FnStringPar(pNewName));
 		else
 			return false;
 	else
@@ -1530,11 +1558,9 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 	case C4V_Bool:
 		SCopy(Parameter.getBool() ? "true" : "false", parameter);
 		break;
-	case C4V_C4ID:
-		sprintf(parameter, "%s", C4IdText(Parameter.getC4ID()));
-		break;
 	case C4V_C4Object:
-		sprintf(parameter, "Object(%d)", Parameter.getObj()->Number);
+	case C4V_PropList:
+		sprintf(parameter, "Object(%d)", Parameter.getPropList()->Number);
 		break;
 	case C4V_String:
     // note this breaks if there is '"' in the string.
@@ -1838,7 +1864,7 @@ static C4Object *FnFindOtherContents(C4AulContext *cthr, C4ID c_id, C4Object *pO
 static bool FnActIdle(C4AulContext *cthr, C4Object *pObj)
   {
   if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
-  if (pObj->Action.Act==ActIdle) return TRUE;
+  if (!pObj->Action.pActionDef) return TRUE;
   return FALSE;
   }
 
@@ -1895,7 +1921,7 @@ static bool FnComponentAll(C4AulContext *cthr, C4Object *pObj, C4ID c_id)
   }
 
 static C4Object *FnCreateObject(C4AulContext *cthr,
-                         C4ID id, long iXOffset, long iYOffset, long iOwner)
+                         C4PropList * PropList, long iXOffset, long iYOffset, long iOwner)
   {
 	if (cthr->Obj) // Local object calls override
 		{
@@ -1905,16 +1931,16 @@ static C4Object *FnCreateObject(C4AulContext *cthr,
 			iOwner=cthr->Obj->Owner;
 		}
 
-  C4Object *pNewObj = Game.CreateObject(id,cthr->Obj,iOwner,iXOffset,iYOffset);
+  C4Object *pNewObj = Game.CreateObject(PropList,cthr->Obj,iOwner,iXOffset,iYOffset);
 
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
-	if (pNewObj && cthr->Obj && cthr->Obj->Controller>NO_OWNER) pNewObj->Controller = cthr->Obj->Controller;
+	if (pNewObj && cthr->Obj && cthr->Obj->Controller > NO_OWNER) pNewObj->Controller = cthr->Obj->Controller;
 
 	return pNewObj;
   }
 
 static C4Object *FnCreateConstruction(C4AulContext *cthr,
-            C4ID id, long iXOffset, long iYOffset, long iOwner,
+            C4PropList * PropList, long iXOffset, long iYOffset, long iOwner,
 						long iCompletion, bool fTerrain, bool fCheckSite)
   {
 	// Local object calls override position offset, owner
@@ -1928,11 +1954,11 @@ static C4Object *FnCreateConstruction(C4AulContext *cthr,
 
 	// Check site
 	if (fCheckSite)
-	  if (!ConstructionCheck(id,iXOffset,iYOffset,cthr->Obj))
+	  if (!ConstructionCheck(PropList,iXOffset,iYOffset,cthr->Obj))
 			return NULL;
 
 	// Create site object
-	C4Object *pNewObj = Game.CreateObjectConstruction(id,cthr->Obj,iOwner,iXOffset,iYOffset,iCompletion*FullCon/100,fTerrain);
+	C4Object *pNewObj = Game.CreateObjectConstruction(PropList,cthr->Obj,iOwner,iXOffset,iYOffset,iCompletion*FullCon/100,fTerrain);
 
 	// Set initial controller to creating controller, so more complicated cause-effect-chains can be traced back to the causing player
 	if (pNewObj && cthr->Obj && cthr->Obj->Controller>NO_OWNER) pNewObj->Controller = cthr->Obj->Controller;
@@ -1940,7 +1966,7 @@ static C4Object *FnCreateConstruction(C4AulContext *cthr,
 	return pNewObj;
   }
 
-static C4Object *FnCreateContents(C4AulContext *cthr, C4ID c_id, C4Object *pObj, long iCount)
+static C4Object *FnCreateContents(C4AulContext *cthr, C4PropList * PropList, C4Object *pObj, long iCount)
   {
 	// local call / safety
   if (!pObj) pObj=cthr->Obj; if (!pObj) return NULL;
@@ -1948,7 +1974,7 @@ static C4Object *FnCreateContents(C4AulContext *cthr, C4ID c_id, C4Object *pObj,
 	if (!iCount) ++iCount;
 	// create objects
 	C4Object *pNewObj = NULL;
-	while (iCount-- > 0) pNewObj = pObj->CreateContents(c_id);
+	while (iCount-- > 0) pNewObj = pObj->CreateContents(PropList);
 	// controller will automatically be set upon entrance
 	// return last created
   return pNewObj;
@@ -2004,11 +2030,11 @@ static C4Object *FnComposeContents(C4AulContext *cthr, C4ID c_id, C4Object *pObj
 	return C4VBool(!!fSuccess);
 	}*/
 
-static bool FnFindConstructionSite(C4AulContext *cthr, C4ID id, long iVarX, long iVarY)
+static bool FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, long iVarX, long iVarY)
   {
 	// Get def																			Old-style implementation (fixed)...
   C4Def *pDef;
-  if (!(pDef=C4Id2Def(id))) return FALSE;
+  if (!(pDef=PropList->GetDef())) return FALSE;
 	// Var indices out of range
   if (!Inside<long>(iVarX,0,C4AUL_MAX_Par-1) || !Inside<long>(iVarY,0,C4AUL_MAX_Par-1)) return FALSE;
 	// Get thread vars
@@ -2016,7 +2042,7 @@ static bool FnFindConstructionSite(C4AulContext *cthr, C4ID id, long iVarX, long
   C4Value& V1 = cthr->Caller->NumVars[iVarX];
 	C4Value& V2 = cthr->Caller->NumVars[iVarY];
   // Construction check at starting position
-  if (ConstructionCheck(id,V1.getInt(),V2.getInt()))
+  if (ConstructionCheck(PropList,V1.getInt(),V2.getInt()))
     return TRUE;
   // Search for real
   int32_t v1 = V1.getInt(), v2 = V2.getInt();
@@ -2972,7 +2998,7 @@ static const int32_t CSPF_FixedAttributes = 1<<0,
 static bool FnCreateScriptPlayer(C4AulContext *cthr, C4String *szName, long dwColor, long idTeam, long dwFlags, C4ID idExtra)
 	{
 	// safety
-	if (!szName || !szName->Data.getLength()) return false;
+	if (!szName || !szName->GetData().getLength()) return false;
 	// this script command puts a new script player info into the list
 	// the actual join will be delayed and synchronized via queue
 	// processed by control host only - clients/replay/etc. will perform the join via queue
@@ -3829,9 +3855,9 @@ static C4String *FnGetProcedure(C4AulContext *cthr, C4Object *pObj)
 	// local/safety
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return NULL;
 	// no action?
-	if (pObj->Action.Act <= ActIdle) return NULL;
+	if (!pObj->Action.pActionDef) return NULL;
 	// get proc
-	long iProc = pObj->Def->ActMap[pObj->Action.Act].Procedure;
+	long iProc = pObj->Action.pActionDef->GetPropertyInt(P_Procedure);
 	// NONE?
 	if (iProc <= DFA_NONE) return NULL;
 	// return procedure name
@@ -3921,7 +3947,7 @@ static C4Value FnGetLength(C4AulContext *cthr, C4Value *pPars)
 		return C4VInt(pArray->GetSize());
 	C4String * pStr = pPars->getStr();
 	if (pStr)
-		return C4VInt(pStr->Data.getLength());
+		return C4VInt(pStr->GetData().getLength());
 	throw new C4AulExecError(cthr->Obj, "func \"GetLength\" par 0 cannot be converted to string or array");
 }
 
@@ -4163,71 +4189,6 @@ protected:
 		{ Res = (fIsID ? C4VID(C4Id(*pszString)) : C4VString(*pszString)); }
 };
 
-class C4ValueSetCompiler : public C4ValueCompiler
-{
-private:
-  C4Value Val;       // value to which the setting should be set
-	bool fSuccess;     // set if the value could be set successfully
-	int32_t iRuntimeWriteAllowed; // if >0, runtime writing of values is allowed
-
-public:
- C4ValueSetCompiler(const char **pszNames, int iNameCnt, int iEntryNr, const C4Value &rSetVal)
-    : C4ValueCompiler(pszNames, iNameCnt, iEntryNr), Val(rSetVal), fSuccess(false), iRuntimeWriteAllowed(0)
-  {  }
-
-  // Query successful setting
-  bool getSuccess() const { return fSuccess; }
-
-	virtual void setRuntimeWritesAllowed(int32_t iChange) { iRuntimeWriteAllowed += iChange; }
-
-protected:
-	// set values as C4Value, only if type matches or is convertible
-	virtual void ProcessInt(int32_t &rInt) { if (iRuntimeWriteAllowed > 0 && Val.ConvertTo(C4V_Int)) { rInt = Val.getInt(); fSuccess=true; } }
-	virtual void ProcessBool(bool &rBool)  { if (iRuntimeWriteAllowed > 0 && Val.ConvertTo(C4V_Bool)) { rBool = Val.getBool(); fSuccess=true; } }
-	virtual void ProcessChar(char &rChar)  { C4String *s; if (iRuntimeWriteAllowed > 0 && (s = Val.getStr())) { rChar = s->GetCStr() ? *s->GetCStr() : 0; fSuccess=true; } }
-
-	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID)
-		{
-		if (iRuntimeWriteAllowed <= 0 || !Val.ConvertTo(fIsID ? C4V_C4ID : C4V_String)) return;
-		if (fIsID)
-			{
-			assert(iMaxLength >= 4); // fields that should carry an ID are guaranteed to have a buffer that's large enough
-			GetC4IdText(Val.getC4ID(), szString);
-			}
-		else
-			{
-			C4String *s = Val.getStr(); if (!s) return;
-			if (s->GetCStr()) SCopy(s->GetCStr(), szString, iMaxLength); else *szString = 0;
-			}
-		fSuccess = true;
-		}
-
-	virtual void ProcessString(char **pszString, bool fIsID)
-		{
-		if (iRuntimeWriteAllowed <= 0 || !Val.ConvertTo(fIsID ? C4V_C4ID : C4V_String)) return;
-		// This cannot be allowed, because it is run during decompilation and wouldn't update assiciated length fields in StdStrBuf!
-		/*
-		assert(pszString);
-		if (fIsID)
-			{
-			*pszString = new char[5];
-			GetC4IdText(Val.getC4ID(), *pszString);
-			}
-		else
-			{
-			C4String *s = Val.getStr(); if (!s) return;
-			StdStrBuf &rsBuf = s->Data;
-			if (rsBuf.getData() && rsBuf.getSize())
-				{
-				*pszString = new char[rsBuf.getSize()];
-				SCopy(rsBuf.getData(), *pszString);
-				}
-			else
-				pszString = NULL;
-			}*/
-		}
-};
-
 // Use the compiler to find a named value in a structure
 template <class T>
 	C4Value GetValByStdCompiler(const char *strEntry, const char *strSection, int iEntryNr, const T &rFrom)
@@ -4246,27 +4207,6 @@ template <class T>
 		catch(StdCompiler::Exception *)
 		{
 			return C4VNull;
-		}
-	}
-
-// Use the compiler to set a named value in a structure
-template <class T>
-	bool SetValByStdCompiler(const char *strEntry, const char *strSection, int iEntryNr, const T &rTo, const C4Value &rvNewVal)
-	{
-		// Set up name array, create compiler
-		const char *szNames[2] = { strSection ? strSection : strEntry, strSection ? strEntry : NULL };
-		C4ValueSetCompiler Comp(szNames, strSection ? 2 : 1, iEntryNr, rvNewVal);
-
-		// Compile
-		try
-		{
-			Comp.Decompile(rTo);
-			return Comp.getSuccess();
-		}
-		// Should not happen, catch it anyway.
-		catch(StdCompiler::Exception *)
-		{
-			return false;
 		}
 	}
 
@@ -4326,37 +4266,6 @@ static C4Value FnGetObjectInfoCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V,
 	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*pObjInfoCore, "ObjectInfo"));
 }
 
-static C4Value FnGetActMapVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strAction_C4V, C4Value* idDef_C4V, C4Value *iEntryNr_C4V)
-{
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strAction = FnStringPar(strAction_C4V->getStr());
-	C4ID idDef = idDef_C4V->getC4ID();
-	long iEntryNr = iEntryNr_C4V->getInt();
-
-	if(!idDef) if(cthr->Def) idDef = cthr->Def->id;
-	if(!idDef) return C4Value();
-
-	C4Def* pDef = C4Id2Def(idDef);
-
-	if(!pDef) return C4Value();
-
-	C4ActionDef* pAct = pDef->ActMap;
-
-	if(!pAct) return C4Value();
-
-	long iAct;
-	for(iAct = 0; iAct < pDef->ActNum; iAct++, pAct++)
-		if(SEqual(pAct->Name, strAction))
-			break;
-
-	// not found?
-	if(iAct >= pDef->ActNum)
-		return C4Value();
-
-	// get value
-	return GetValByStdCompiler(strEntry, NULL, iEntryNr, *pAct);
-}
-
 static C4Value FnGetScenarioVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
 {
 	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
@@ -4366,21 +4275,6 @@ static C4Value FnGetScenarioVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Val
   if(strSection && !*strSection) strSection = NULL;
 
 	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkParAdapt(Game.C4S, false));
-}
-
-static C4Value FnSetScenarioVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V, C4Value *setVal_C4V)
-{
-	const char *strEntry = FnStringPar(strEntry_C4V->getStr());
-	const char *strSection = FnStringPar(strSection_C4V->getStr());
-	long iEntryNr = iEntryNr_C4V->getInt();
-
-  if(strSection && !*strSection) strSection = NULL;
-
-	// only set dereferenced values
-	C4Value setVal(*setVal_C4V);
-	setVal.Deref();
-
-	return C4VBool(SetValByStdCompiler(strEntry, strSection, iEntryNr, mkParAdapt(Game.C4S, false), setVal));
 }
 
 static C4Value FnGetPlayerVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value* iPlayer_C4V, C4Value *iEntryNr_C4V)
@@ -4827,8 +4721,7 @@ static C4Value FnSetPlrExtraData(C4AulContext *cthr, C4Value *iPlayer_C4V, C4Val
 	// do not allow data type C4V_String or C4V_C4Object
 	if(Data->GetType() != C4V_Any &&
 		Data->GetType() != C4V_Int &&
-		Data->GetType() != C4V_Bool &&
-		Data->GetType() != C4V_C4ID) return C4VNull;
+		Data->GetType() != C4V_Bool) return C4VNull;
 	// get pointer on player...
 	C4Player* pPlayer = ::Players.Get(iPlayer);
 	// no name list created yet?
@@ -4877,8 +4770,7 @@ static C4Value FnSetCrewExtraData(C4AulContext *cthr, C4Value *pCrew_C4V, C4Valu
 	// do not allow data type C4V_String or C4V_C4Object
 	if(Data->GetType() != C4V_Any &&
 		Data->GetType() != C4V_Int &&
-		Data->GetType() != C4V_Bool &&
-		Data->GetType() != C4V_C4ID) return C4VNull;
+		Data->GetType() != C4V_Bool) return C4VNull;
 	// get pointer on info...
 	C4ObjectInfo *pInfo = pCrew->Info;
 	// no name list created yet?
@@ -6306,7 +6198,7 @@ static bool FnPauseGame(C4AulContext *ctx, bool fToggle)
 
 static bool FnSetNextMission(C4AulContext *ctx, C4String *szNextMission, C4String *szNextMissionText, C4String *szNextMissionDesc)
 	{
-	if (!szNextMission || !szNextMission->Data.getLength())
+	if (!szNextMission || !szNextMission->GetData().getLength())
 	{
 		// param empty: clear next mission
 		Game.NextMission.Clear();
@@ -6315,10 +6207,10 @@ static bool FnSetNextMission(C4AulContext *ctx, C4String *szNextMission, C4Strin
 	else
 	{
 		// set next mission, button and button desc if given
-		Game.NextMission.Copy(szNextMission->Data);
+		Game.NextMission.Copy(szNextMission->GetData());
 		if (szNextMissionText && szNextMissionText->GetCStr())
 		{
-			Game.NextMissionText.Copy(szNextMissionText->Data);
+			Game.NextMissionText.Copy(szNextMissionText->GetData());
 		}
 		else
 		{
@@ -6326,7 +6218,7 @@ static bool FnSetNextMission(C4AulContext *ctx, C4String *szNextMission, C4Strin
 		}
 		if (szNextMissionDesc && szNextMissionDesc->GetCStr())
 		{
-			Game.NextMissionDesc.Copy(szNextMissionDesc->Data);
+			Game.NextMissionDesc.Copy(szNextMissionDesc->GetData());
 		}
 		else
 		{
@@ -6572,6 +6464,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetYDir", FnSetYDir);
 	AddFunc(pEngine, "SetR", FnSetR);
 	AddFunc(pEngine, "SetOwner", FnSetOwner);
+	AddFunc(pEngine, "CreatePropList", FnCreatePropList);
 	AddFunc(pEngine, "CreateObject", FnCreateObject);
 	AddFunc(pEngine, "MakeCrewMember", FnMakeCrewMember);
 	AddFunc(pEngine, "GrabObjectInfo", FnGrabObjectInfo);
@@ -6828,10 +6721,9 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "LocateFunc", FnLocateFunc);
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "SetNextMission", FnSetNextMission);
-	new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
+	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 	new C4AulDefCastFunc(pEngine, "CastInt", C4V_Any, C4V_Int);
 	new C4AulDefCastFunc(pEngine, "CastBool", C4V_Any, C4V_Bool);
-	new C4AulDefCastFunc(pEngine, "CastC4ID", C4V_Any, C4V_C4ID);
 	new C4AulDefCastFunc(pEngine, "CastAny", C4V_Any, C4V_Any);
 	}
 
@@ -6879,10 +6771,10 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "C4V_Any"                ,C4V_Int,          C4V_Any},
 	{ "C4V_Int"                ,C4V_Int,          C4V_Int},
 	{ "C4V_Bool"               ,C4V_Int,          C4V_Bool},
-	{ "C4V_C4ID"               ,C4V_Int,          C4V_C4ID},
 	{ "C4V_C4Object"           ,C4V_Int,          C4V_C4Object},
 	{ "C4V_String"             ,C4V_Int,          C4V_String},
 	{ "C4V_Array"              ,C4V_Int,          C4V_Array},
+	{ "C4V_PropList"           ,C4V_Int,          C4V_PropList},
 
 	{ "COMD_None"              ,C4V_Int,          COMD_None},
 	{ "COMD_Stop"              ,C4V_Int,          COMD_Stop},
@@ -7180,7 +7072,9 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "Global",								1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGlobal_C4V ,                0 },
   { "SetLocal",							1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetLocal_C4V ,              0 },
   { "Local",								1	,C4V_Any			,{ C4V_Int		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnLocal_C4V ,                 0 },
-  { "Explode",							1	,C4V_Bool			,{ C4V_Int		,C4V_C4Object,C4V_C4ID	,C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnExplode },
+  { "SetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetProperty_C4V ,           0 },
+  { "GetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetProperty_C4V ,           0 },
+  { "Explode",							1	,C4V_Bool			,{ C4V_Int		,C4V_C4Object,C4V_PropList,C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnExplode },
   { "Incinerate",						1	,C4V_Bool			,{ C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnIncinerate },
 	{ "IncinerateLandscape",  1	,C4V_Bool			,{ C4V_Int    ,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnIncinerateLandscape },
   { "Extinguish",						1	,C4V_Bool			,{ C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnExtinguish },
@@ -7189,7 +7083,7 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "Kill",									1	,C4V_Bool			,{ C4V_C4Object,C4V_Bool	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnKill },
   { "Fling",								1	,C4V_Bool			,{ C4V_C4Object,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnFling },
   { "Jump",									1	,C4V_Bool			,{ C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnJump },
-  { "ChangeDef",						1	,C4V_Bool			,{ C4V_C4ID		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnChangeDef },
+  { "ChangeDef",						1	,C4V_Bool			,{ C4V_PropList,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnChangeDef },
   { "Exit",									1	,C4V_Bool			,{ C4V_C4Object,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnExit },
   { "Enter",								1	,C4V_Bool			,{ C4V_C4Object,C4V_C4Object,C4V_Any	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnEnter },
   { "Collect",							1	,C4V_Bool			,{ C4V_C4Object,C4V_C4Object,C4V_Any	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnCollect },
@@ -7202,21 +7096,21 @@ C4ScriptFnDef C4ScriptFnMap[]={
 //{ "FindConstructionSite",	0	,C4V_Bool			,{ C4V_C4ID		,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnFindConstructionSite ,    0 },
   { "PathFree2",						1	,C4V_Bool			,{ C4V_pC4Value,C4V_pC4Value,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any	,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnPathFree2_C4V ,                  0 },
   { "DeathAnnounce",				1	,C4V_Bool			,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnDeathAnnounce },
-  { "FindObject",						1	,C4V_C4Object	,{ C4V_C4ID		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_String	,C4V_C4Object,C4V_Any		,C4V_C4Object}  ,0 ,                            FnFindObject },
+  { "FindObject",						1	,C4V_C4Object	,{ C4V_PropList,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_String	,C4V_C4Object,C4V_Any		,C4V_C4Object}  ,0 ,                            FnFindObject },
   { "FindObject2",					1	,C4V_C4Object	,{ C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array},0 ,																		FnFindObject2 },
   { "FindObjects",					1	,C4V_Array		,{ C4V_Array	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,																		FnFindObjects },
-  { "ObjectCount",					1	,C4V_Int			,{ C4V_C4ID		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_String	,C4V_C4Object,C4V_Any		,C4V_Int},0 ,																		FnObjectCount },
+  { "ObjectCount",					1	,C4V_Int			,{ C4V_PropList,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_String	,C4V_C4Object,C4V_Any		,C4V_Int},0 ,																		FnObjectCount },
   { "ObjectCount2",					1	,C4V_Int			,{ C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array},0 ,																		FnObjectCount2 },
   { "ObjectCall",						1	,C4V_Any			,{ C4V_C4Object,C4V_String,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnObjectCall_C4V ,            0 },
   { "ProtectedCall",				1	,C4V_Any			,{ C4V_C4Object,C4V_String,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnProtectedCall_C4V ,         0 },
   { "PrivateCall",					1	,C4V_Any			,{ C4V_C4Object,C4V_String,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnPrivateCall_C4V ,           0 },
   { "GameCall",							1	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGameCall_C4V ,              0 },
   { "GameCallEx",						1	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGameCallEx_C4V ,            0 },
-  { "DefinitionCall",				1	,C4V_Any			,{ C4V_C4ID		,C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnDefinitionCall_C4V ,        0 },
+  { "DefinitionCall",				1	,C4V_Any			,{ C4V_PropList,C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnDefinitionCall_C4V ,        0 },
   { "Call",									0	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnCall_C4V ,                  0 },
-  { "GetPlrKnowledge",			1	,C4V_Int			,{ C4V_Int		,C4V_C4ID		,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetPlrKnowledge_C4V ,       0 },
-  { "GetPlrMagic",					1	,C4V_Int			,{ C4V_Int		,C4V_C4ID		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetPlrMagic_C4V ,           0 },
-  { "GetComponent",					1	,C4V_Int			,{ C4V_C4ID		,C4V_Int		,C4V_C4Object,C4V_C4ID	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetComponent_C4V ,          0 },
+  { "GetPlrKnowledge",			1	,C4V_Int			,{ C4V_Int		,C4V_PropList,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetPlrKnowledge_C4V ,       0 },
+  { "GetPlrMagic",					1	,C4V_Int			,{ C4V_Int		,C4V_PropList,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetPlrMagic_C4V ,           0 },
+  { "GetComponent",					1	,C4V_Int			,{ C4V_PropList,C4V_Int		,C4V_C4Object,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetComponent_C4V ,          0 },
 	{ "PlayerMessage",				1	,C4V_Int			,{ C4V_Int		,C4V_String	,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V &FnPlayerMessage_C4V,					0 },
 	{ "Message",							1	,C4V_Bool			,{ C4V_String	,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V &FnMessage_C4V,								0 },
 	{ "AddMessage",						1	,C4V_Bool			,{ C4V_String	,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V &FnAddMessage_C4V,						0 },
@@ -7225,12 +7119,12 @@ C4ScriptFnDef C4ScriptFnMap[]={
 	{ "DebugLog",							1	,C4V_Bool			,{ C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V &FnDebugLog_C4V,							0 },
 	{ "Format",								1	,C4V_String		,{ C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V &FnFormat_C4V,								0 },
 	{ "EditCursor",						1	,C4V_C4Object	,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnEditCursor },
-	{ "AddMenuItem",					1	,C4V_Bool			,{ C4V_String	,C4V_String	,C4V_C4ID		,C4V_C4Object,C4V_Int		,C4V_Any		,C4V_String	,C4V_Int		,C4V_Any		,C4V_Any}  ,0 ,														        FnAddMenuItem },
+	{ "AddMenuItem",					1	,C4V_Bool			,{ C4V_String	,C4V_String	,C4V_PropList,C4V_C4Object,C4V_Int		,C4V_Any		,C4V_String	,C4V_Int		,C4V_Any		,C4V_Any}  ,0 ,														        FnAddMenuItem },
 	{ "SetSolidMask",					1	,C4V_Bool			,{ C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnSetSolidMask },
 	{ "SetGravity",						1	,C4V_Bool			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnSetGravity },
 	{ "GetGravity",						1	,C4V_Int			,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnGetGravity },
-	{ "GetHomebaseMaterial",	1	,C4V_Int			,{ C4V_Int		,C4V_C4ID		,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetHomebaseMaterial_C4V ,   0 },
-	{ "GetHomebaseProduction",	1	,C4V_Int			,{ C4V_Int		,C4V_C4ID		,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetHomebaseProduction_C4V ,   0 },
+	{ "GetHomebaseMaterial",	1	,C4V_Int			,{ C4V_Int		,C4V_PropList,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetHomebaseMaterial_C4V ,   0 },
+	{ "GetHomebaseProduction",	1	,C4V_Int			,{ C4V_Int		,C4V_PropList,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetHomebaseProduction_C4V ,   0 },
 
 	{ "Set",									1	,C4V_Any			,{ C4V_pC4Value,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnSet,                        0 },
 	{ "Inc",									1	,C4V_Any			,{ C4V_pC4Value,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnInc,                        0 },
@@ -7244,8 +7138,7 @@ C4ScriptFnDef C4ScriptFnMap[]={
 	{ "SetLength",						1	,C4V_Bool			,{ C4V_pC4Value,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,0,                                    FnSetLength },
 
 
-	{ "GetDefCoreVal",				1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_C4ID		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetDefCoreVal,              0 },
-	{ "GetActMapVal",					1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_C4ID		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetActMapVal,               0 },
+	{ "GetDefCoreVal",				1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetDefCoreVal,              0 },
 	{ "GetObjectVal",					1	,C4V_Any			,{ C4V_String	,C4V_String ,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetObjectVal,               0 },
 	{ "GetObjectInfoCoreVal",	1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetObjectInfoCoreVal,       0 },
 	{ "GetScenarioVal",				1	,C4V_Any			,{ C4V_String	,C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetScenarioVal,             0 },
@@ -7260,7 +7153,7 @@ C4ScriptFnDef C4ScriptFnMap[]={
 	{ "GetCrewExtraData",			1	,C4V_Any			,{ C4V_C4Object,C4V_String,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetCrewExtraData,           0 },
 	{ "SimFlight",						1	,C4V_Bool			,{ C4V_pC4Value,C4V_pC4Value,C4V_pC4Value,C4V_pC4Value,C4V_Int,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnSimFlight,                  0 },
 	{ "GetPortrait",          1	,C4V_Any			,{ C4V_C4Object,C4V_Bool	,C4V_Bool		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetPortrait,                0 },
-	{ "AddEffect",            1	,C4V_Int			,{ C4V_String	,C4V_C4Object,C4V_Int		,C4V_Int		,C4V_C4Object,C4V_C4ID	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnAddEffect_C4V,              0 },
+	{ "AddEffect",            1	,C4V_Int			,{ C4V_String	,C4V_C4Object,C4V_Int		,C4V_Int		,C4V_C4Object,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnAddEffect_C4V,              0 },
 	{ "GetEffect",            1	,C4V_Any			,{ C4V_String	,C4V_C4Object,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetEffect_C4V,              0 },
 	{ "CheckEffect",          1	,C4V_Int			,{ C4V_String	,C4V_C4Object,C4V_Int		,C4V_Int	  ,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnCheckEffect_C4V,            0 },
 	{ "EffectCall",           1	,C4V_Any			,{ C4V_C4Object,C4V_Int		,C4V_String	,C4V_Any    ,C4V_Any  	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any    ,C4V_Any}	 ,MkFnC4V FnEffectCall_C4V,             0 },

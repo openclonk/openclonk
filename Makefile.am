@@ -388,7 +388,9 @@ clonk_SOURCES = \
   engine/res/Picker.h \
   engine/res/Play.h \
   engine/res/Rect.h \
-  engine/res/Static.h
+  engine/res/Static.h \
+  engine/src/C4PropList.cpp \
+  engine/inc/C4PropList.h
 
 if WIN32
 clonk_SOURCES += engine/src/C4FileClasses.cpp

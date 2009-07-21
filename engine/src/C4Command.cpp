@@ -310,7 +310,7 @@ void C4Command::MoveTo()
     }
 
   // Idles can't move to
-  if (cObj->Action.Act<=ActIdle)
+  if (!cObj->Action.pActionDef)
     { Finish(); return; }
 
   // Action
@@ -621,7 +621,7 @@ void C4Command::Exit()
 			if (cObj->Contained->GetEntranceArea(ex,ey,ewdt,ehgt))
 				{ cObj->Exit(ex+ewdt/2,ey+ehgt+cObj->Shape.GetY()-1); Finish(TRUE); return; }
 		// Exit jump out of collection area
-		if (cObj->Def->Carryable)
+		if (cObj->GetPropertyInt(P_Collectible))
 			if (cObj->Contained->Def->Collection.Wdt)
 				{
 				cObj->Exit(cObj->Contained->GetX(),cObj->Contained->GetY()+cObj->Contained->Def->Collection.y-1);
@@ -1668,7 +1668,7 @@ void C4Command::Construct()
 	// Has no construction kit: acquire one
 	C4Object *pKit;
 	if (!(pKit=cObj->Contents.Find(C4ID_Conkit)))
-		{ cObj->AddCommand(C4CMD_Acquire,0,0,0,50,0,TRUE,C4Value(C4ID_Conkit),FALSE,5,0,C4CMD_Mode_Sub); return; }
+		{ cObj->AddCommand(C4CMD_Acquire,0,0,0,50,0,TRUE,C4VID(C4ID_Conkit),FALSE,5,0,C4CMD_Mode_Sub); return; }
 
 	// Move to construction site
 	if (!Inside<int32_t>(cObj->GetX() - Tx._getInt(), -iMoveToRange, +iMoveToRange)
@@ -1676,12 +1676,12 @@ void C4Command::Construct()
 		{ cObj->AddCommand(C4CMD_MoveTo,NULL,Tx,Ty,50); return; }
 
 	// Check construction site
-	if (!ConstructionCheck(Data.getC4ID(),Tx._getInt(),Ty,cObj))
+	if (!ConstructionCheck(Data.getPropList(),Tx._getInt(),Ty,cObj))
 		// Site no good: fail
 		{ Finish(); return; }
 
 	// Create construction
-	C4Object *pConstruction = Game.CreateObjectConstruction(Data.getC4ID(),NULL,cObj->Owner,Tx._getInt(),Ty,1,TRUE);
+	C4Object *pConstruction = Game.CreateObjectConstruction(Data.getPropList(),NULL,cObj->Owner,Tx._getInt(),Ty,1,TRUE);
 
 	// Remove conkit
 	pKit->AssignRemoval();
@@ -1700,10 +1700,9 @@ BOOL C4Command::FlightControl() // Called by DFA_WALK, DFA_FLIGHT
 	if (!((cObj->OCF & OCF_CrewMember) || cObj->Def->Pathfinder)) return FALSE;
 
 	// Not while in a disabled action
-  if (cObj->Action.Act > ActIdle)
+	if (cObj->Action.pActionDef)
 	{
-		C4ActionDef *actdef = &(cObj->Def->ActMap[cObj->Action.Act]);
-		if (actdef->Disabled) return FALSE;
+		if (cObj->Action.pActionDef->GetPropertyInt(P_ObjectDisabled)) return FALSE;
 	}
 
 	// Target angle
@@ -2146,7 +2145,7 @@ void C4Command::Energy()
 	// No linekit: get one
 	C4Object *pKit, *pLine = NULL, *pKitWithLine;
 	if (!(pKit=cObj->Contents.Find(C4ID_Linekit)))
-		{ cObj->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,C4Value(C4ID_Linekit)); return; }
+		{ cObj->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,C4VID(C4ID_Linekit)); return; }
 	// Find line constructing kit
 	for (int32_t cnt=0; pKitWithLine=cObj->Contents.GetObject(cnt); cnt++)
 		if ((pKitWithLine->id==C4ID_Linekit) && (pLine=Game.FindObject(C4ID_PowerLine,0,0,0,0,OCF_All,"Connect",pKitWithLine)))
@@ -2289,7 +2288,7 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	if(pComp->isDecompiler())
 		{
 		if(Text)
-			TextBuf.Ref(Text->Data);
+			TextBuf.Ref(Text->GetData());
 		else
 			TextBuf.Ref("0");
 		}
@@ -2301,7 +2300,7 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 		if(TextBuf == "0")
 			{ Text = NULL; }
 		else
-			{ Text = ::ScriptEngine.Strings.RegString(TextBuf); Text->IncRef(); }
+			{ Text = Strings.RegString(TextBuf); Text->IncRef(); }
 		}
   }
 

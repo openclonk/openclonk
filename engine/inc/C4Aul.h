@@ -196,6 +196,8 @@ enum C4AulBCCType
 	AB_C4ID,		// constant: C4ID
 	AB_NIL,		  // constant: nil
 	AB_ARRAY,		// semi-constant: array
+	AB_PROPLIST,		// create a new proplist
+	AB_PROPSET,		// set a property of a proplist
 	AB_IVARN,		// initialization of named var
 	AB_JUMP,		// jump
 	AB_JUMPAND,		// jump if zero, else pop the stack
@@ -539,8 +541,6 @@ class C4AulScriptEngine : public C4AulScript
 		C4ValueList Global;
 		C4ValueMapNames GlobalNamedNames;
 		C4ValueMapData GlobalNamed;
-
-		C4StringTable Strings;
 
 		// global constants (such as "static const C4D_Structure = 2;")
 		// cannot share var lists, because it's so closely tied to the data lists
