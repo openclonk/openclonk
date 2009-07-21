@@ -140,7 +140,7 @@ class C4StartupOptionsDlg : public C4StartupDlg
 
 		C4GUI::CheckBox *pCheckGfxEngines[3], *pCheckGfxClrDepth[2];
 		C4GUI::GroupBox *pGroupTrouble;
-		C4GUI::CheckBox *pCheckGfxNoAlphaAdd, *pCheckGfxPointFilter, *pCheckGfxNoAddBlit, *pCheckGfxNoBoxFades, *pCheckGfxClipManually;
+		C4GUI::CheckBox *pCheckGfxNoAlphaAdd, *pCheckGfxPointFilter, *pCheckGfxNoAddBlit, *pCheckGfxNoBoxFades, *pCheckGfxClipManually, *pShaders;
 		int32_t iGfxTexIndent, iGfxBlitOff; EditConfig *pEdtGfxBlitOff;
 		C4GUI::ScrollBar *pEffectLevelSlider;
 

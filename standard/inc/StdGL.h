@@ -54,6 +54,7 @@ class CStdGLCtx
 		bool PageFlip();						// present scene
 
 	protected:
+		void SelectCommon();
 		// this handles are declared as pointers to structs
 		CStdWindow * pWindow; // window to draw in
 #ifdef _WIN32
@@ -89,6 +90,8 @@ class CStdGL : public CStdDDraw
 		GLuint shaders[12];
 		// vertex buffer object
 		GLuint vbo;
+		// texture for smooth lines
+		GLuint lines_tex;
 	public:
 		// General
 		void Clear();
@@ -109,9 +112,10 @@ class CStdGL : public CStdDDraw
 		virtual CStdGLCtx *CreateContext(HWND hWindow, CStdApp *pApp);
 #endif
 		// Blit
+		void SetupTextureEnv(bool fMod2, bool landscape);
 		void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
-		virtual void BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
-		                      SURFACE sfcTarget, float tx, float ty, float wdt, float hgt);
+		virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
+		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 		void FillBG(DWORD dwClr=0);
 		// Drawing
 		void DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4);
@@ -121,14 +125,10 @@ class CStdGL : public CStdDDraw
 		virtual bool ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce);
 		virtual bool SaveDefaultGammaRamp(CStdWindow * pWindow);
 		// device objects
-		bool InitDeviceObjects();				// init device dependent objects
 		bool RestoreDeviceObjects();		// restore device dependent objects
 		bool InvalidateDeviceObjects();	// free device dependent objects
-		bool DeleteDeviceObjects();			// free device dependent objects
-		bool StoreStateBlock();
 		void SetTexture();
 		void ResetTexture();
-		bool RestoreStateBlock();
 #ifdef _WIN32
 		bool DeviceReady() { return !!MainCtx.hrc; }
 #elif defined(USE_X11)
@@ -139,7 +139,6 @@ class CStdGL : public CStdDDraw
 
 	protected:
 		bool CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
-		BOOL CreateDirectDraw();
 
 		bool CheckGLError(const char *szAtOp);
 #ifdef USE_X11
