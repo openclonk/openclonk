@@ -326,6 +326,8 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 	engine/res/Play.h
 	engine/res/Rect.h
 	engine/res/Static.h
+	engine/src/C4PropList.cpp
+	engine/inc/C4PropList.h
 )
 
 add_executable(c4group
