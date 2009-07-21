@@ -31,7 +31,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #ifndef WINSOCK_VERSION
-#define WINSOCK_VERSION 0x22
+#define WINSOCK_VERSION MAKEWORD(2,2)
 #endif
 // Events are Windows-specific
 #define HAVE_WINSOCK
