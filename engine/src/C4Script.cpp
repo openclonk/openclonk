@@ -2267,16 +2267,6 @@ static bool FnGrabObjectInfo(C4AulContext *cthr, C4Object *pFrom, C4Object *pTo)
 	return !!pTo->GrabInfo(pFrom);
 	}
 
-static bool FnFlameConsumeMaterial(C4AulContext *cthr, long x, long y)
-	{
-	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
-	long mat=GBackMat(x,y);
-	if (!MatValid(mat)) return false;
-	if (!::MaterialMap.Map[mat].Inflammable) return false;
-	if (::Landscape.ExtractMaterial(x,y)==MNone) return false;
-	return true;
-	}
-
 static bool FnSmoke(C4AulContext *cthr, long tx, long ty, long level, long dwClr)
   {
 	if (cthr->Obj) { tx+=cthr->Obj->GetX(); ty+=cthr->Obj->GetY(); }
@@ -2290,13 +2280,6 @@ static bool FnBubble(C4AulContext *cthr, long tx, long ty)
   BubbleOut(tx,ty);
   return TRUE;
   }
-
-static long FnExtractLiquid(C4AulContext *cthr, long x, long y)
-	{
-	if (cthr->Obj) { x+=cthr->Obj->GetX(); y+=cthr->Obj->GetY(); }
-	if (!GBackLiquid(x,y)) return MNone;
-	return ::Landscape.ExtractMaterial(x,y);
-	}
 
 static bool FnInsertMaterial(C4AulContext *cthr, long mat, long x, long y, long vx, long vy)
 	{
@@ -3198,25 +3181,6 @@ static long FnLandscapeHeight(C4AulContext *cthr)
 	return GBackHgt;
 	}
 
-static long FnLaunchLightning(C4AulContext *cthr, long x, long y, long xdir, long xrange, long ydir, long yrange, bool fDoGamma)
-	{
-	return ::Weather.LaunchLightning(x,y,xdir,xrange,ydir,yrange, fDoGamma);
-	}
-
-static long FnLaunchVolcano(C4AulContext *cthr, long x)
-	{
-	return ::Weather.LaunchVolcano(
-		       ::MaterialMap.Get("Lava"),
-					 x,GBackHgt-1,
-					 BoundBy(15*GBackHgt/500+Random(10),10,60));
-	}
-
-static bool FnLaunchEarthquake(C4AulContext *cthr, long x, long y)
-	{
-	::Weather.LaunchEarthquake(x,y);
-	return 1;
-	}
-
 static bool FnShakeFree(C4AulContext *cthr, long x, long y, long rad)
 	{
 	::Landscape.ShakeFree(x,y,rad);
@@ -3488,50 +3452,9 @@ static long FnAsyncRandom(C4AulContext *cthr, long iRange)
   return SafeRandom(iRange);
   }
 
-static C4Value FnSetVar_C4V(C4AulContext *cthr, C4Value* iVarIndex, C4Value* iValue)
-  {
-	if(!cthr->Caller) return C4VNull;
-  cthr->Caller->NumVars[iVarIndex->getInt()] = *iValue;
-  return *iValue;
-  }
-
-static C4Value FnIncVar_C4V(C4AulContext *cthr, C4Value* iVarIndex)
-  {
-	if(!cthr->Caller) return C4VNull;
-  return ++cthr->Caller->NumVars[iVarIndex->getInt()];
-  }
-
-static C4Value FnDecVar_C4V(C4AulContext *cthr, C4Value* iVarIndex)
-  {
-	if(!cthr->Caller) return C4VNull;
-  return --cthr->Caller->NumVars[iVarIndex->getInt()];
-  }
-
-static C4Value FnVar_C4V(C4AulContext *cthr, C4Value* iVarIndex)
-  {
-	if(!cthr->Caller) return C4VNull;
-	// Referenz zurückgeben
-  return cthr->Caller->NumVars[iVarIndex->getInt()].GetRef();
-  }
-
-static C4Value FnSetGlobal_C4V(C4AulContext *cthr, C4Value* iVarIndex, C4Value* iValue)
-  {
-	::ScriptEngine.Global[iVarIndex->getInt()]=*iValue;
-  return *iValue;
-  }
-
 static C4Value FnGlobal_C4V(C4AulContext *cthr, C4Value* iVarIndex)
   {
   return ::ScriptEngine.Global[iVarIndex->getInt()].GetRef();
-  }
-
-static C4Value FnSetLocal_C4V(C4AulContext *cthr, C4Value* iVarIndex, C4Value* iValue, C4Value* pObj_C4V)
-  {
-	C4Object* pObj = pObj_C4V->getObj();
-
-	if (!pObj) pObj=cthr->Obj; if (!pObj) return C4VBool(FALSE);
-	pObj->Local[iVarIndex->getInt()] = *iValue;
-  return *iValue;
   }
 
 static C4Value FnLocal_C4V(C4AulContext *cthr, C4Value* iVarIndex, C4Value* pObj_C4V)
@@ -3555,26 +3478,6 @@ static C4Value FnCall_C4V(C4AulContext *cthr, C4Value* szFunction_C4V,
 	C4AulParSet Pars;
 	Copy2ParSet9(Pars, *par);
   return cthr->Obj->Call(FnStringPar(szFunction),&Pars, true);
-  }
-
-static C4Value FnObjectCall_C4V(C4AulContext *cthr,
-                 C4Value* pObj_C4V, C4Value* szFunction_C4V,
-								 C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
-								 C4Value* par5, C4Value* par6, C4Value* par7/*, C4Value* par8, C4Value* par9*/)
-  {
-	C4Object *pObj = pObj_C4V->getObj();
-	C4String *szFunction = szFunction_C4V->getStr();
-
-  if (!pObj || !szFunction) return C4Value();
-	if (!pObj->Def) return C4Value();
-	// get func
-	C4AulFunc *f;
-	if (!(f = pObj->Def->Script.GetSFunc(FnStringPar(szFunction), AA_PUBLIC, TRUE))) return C4Value();
-	// copy pars
-	C4AulParSet Pars;
-	Copy2ParSet8(Pars, *par);
-	// exec
-  return f->Exec(pObj,&Pars, true);
   }
 
 static C4Value FnDefinitionCall_C4V(C4AulContext *cthr,
@@ -3768,28 +3671,11 @@ static long FnSetMass(C4AulContext *cthr, long iValue, C4Object *pObj)
 
 static long FnGetColor(C4AulContext *cthr, C4Object *pObj)
   {
-	// oldgfx
-	return 0;
-  }
-
-static long FnSetColor(C4AulContext *cthr, long iValue, C4Object *pObj)
-  {
-	if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
-	if (!Inside<long>(iValue, 0, C4MaxColor-1)) return FALSE;
-	iValue=Application.DDraw->Pal.GetClr(FColors[FPlayer+iValue]);
-	pObj->Color=iValue;
-	pObj->UpdateGraphics(false);
-	pObj->UpdateFace(false);
-	return TRUE;
-  }
-
-static long FnGetColorDw(C4AulContext *cthr, C4Object *pObj)
-  {
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
 	return pObj->Color;
   }
 
-static long FnGetPlrColorDw(C4AulContext *cthr, long iPlr)
+static long FnGetPlrColor(C4AulContext *cthr, long iPlr)
   {
 	// get player
 	C4Player *pPlr = ::Players.Get(iPlr);
@@ -3799,7 +3685,7 @@ static long FnGetPlrColorDw(C4AulContext *cthr, long iPlr)
 	return pPlr->ColorDw;
   }
 
-static bool FnSetColorDw(C4AulContext *cthr, long iValue, C4Object *pObj)
+static bool FnSetColor(C4AulContext *cthr, long iValue, C4Object *pObj)
   {
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
 	pObj->Color=iValue;
@@ -3893,34 +3779,6 @@ static long FnSell(C4AulContext *cthr, long iToPlr, C4Object *pObj)
 	// sell
 	return ::Players.Get(iToPlr)->Sell2Home(pObj);
 	}
-
-// ** additional funcs for references/type info
-
-static C4Value FnSet(C4AulContext *cthr, C4Value* Dest, C4Value* Src)
-{
-	*Dest = *Src;
-	return *Dest;
-}
-
-static C4Value FnInc(C4AulContext *cthr, C4Value* Value, C4Value* Diff)
-{
-	if(!Value->GetRefVal().ConvertTo(C4V_Int))
-		return C4Value();
-
-	*Value += Diff->getInt();
-
-	return *Value;
-}
-
-static C4Value FnDec(C4AulContext *cthr, C4Value* Value, C4Value* Diff)
-{
-	if(!Value->GetRefVal().ConvertTo(C4V_Int))
-		return C4Value();
-
-	*Value -= Diff->getInt();
-
-	return *Value;
-}
 
 static C4Value FnIsRef(C4AulContext *cthr, C4Value* Value)
 {
@@ -6502,9 +6360,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetSkyColor", FnGetSkyColor);
 	AddFunc(pEngine, "GetTemperature", FnGetTemperature);
 	AddFunc(pEngine, "SetTemperature", FnSetTemperature);
-	AddFunc(pEngine, "LaunchLightning", FnLaunchLightning);
-	AddFunc(pEngine, "LaunchVolcano", FnLaunchVolcano);
-	AddFunc(pEngine, "LaunchEarthquake", FnLaunchEarthquake);
 	AddFunc(pEngine, "ShakeFree", FnShakeFree);
 	AddFunc(pEngine, "ShakeObjects", FnShakeObjects);
 	AddFunc(pEngine, "DigFree", FnDigFree);
@@ -6537,7 +6392,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetSelectCount", FnGetSelectCount);
 	AddFunc(pEngine, "SetCrewStatus", FnSetCrewStatus, false);
 	AddFunc(pEngine, "SetPosition", FnSetPosition);
-	AddFunc(pEngine, "ExtractLiquid", FnExtractLiquid);
 	AddFunc(pEngine, "GetMaterial", FnGetMaterial);
 	AddFunc(pEngine, "GetTexture", FnGetTexture);
 	AddFunc(pEngine, "GetMaterialCount", FnGetMaterialCount);
@@ -6551,7 +6405,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "BlastFree", FnBlastFree);
 	AddFunc(pEngine, "InsertMaterial", FnInsertMaterial);
 	AddFunc(pEngine, "DrawVolcanoBranch", FnDrawVolcanoBranch, false);
-	AddFunc(pEngine, "FlameConsumeMaterial", FnFlameConsumeMaterial, false);
 	AddFunc(pEngine, "LandscapeWidth", FnLandscapeWidth);
 	AddFunc(pEngine, "LandscapeHeight", FnLandscapeHeight);
 	AddFunc(pEngine, "Resort", FnResort);
@@ -6642,9 +6495,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FrameCounter", FnFrameCounter);
 	AddFunc(pEngine, "SetLandscapePixel", FnSetLandscapePixel);
 	AddFunc(pEngine, "SetObjectOrder", FnSetObjectOrder);
-	AddFunc(pEngine, "SetColorDw", FnSetColorDw);
-	AddFunc(pEngine, "GetColorDw", FnGetColorDw);
-	AddFunc(pEngine, "GetPlrColorDw", FnGetPlrColorDw);
+	AddFunc(pEngine, "GetPlrColor", FnGetPlrColor);
 	AddFunc(pEngine, "DrawMaterialQuad", FnDrawMaterialQuad);
 	AddFunc(pEngine, "FightWith", FnFightWith);
 	AddFunc(pEngine, "SetFilmView", FnSetFilmView);
@@ -7047,14 +6898,7 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "goto",									1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   Fn_goto },
   { "this",									1	,C4V_C4Object	,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   Fn_this },
   { "Equal",								1	,C4V_Any			,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnEqual_C4V ,                   0 },
-  { "Var",									1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnVar_C4V ,                   0 },
-  { "AssignVar",						0	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetVar_C4V ,                0 },
-  { "SetVar",								1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetVar_C4V ,                0 },
-  { "IncVar",								1	,C4V_Int			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnIncVar_C4V ,                0 },
-  { "DecVar",								1	,C4V_Int			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnDecVar_C4V ,                0 },
-  { "SetGlobal",						1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetGlobal_C4V ,             0 },
   { "Global",								1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGlobal_C4V ,                0 },
-  { "SetLocal",							1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetLocal_C4V ,              0 },
   { "Local",								1	,C4V_Any			,{ C4V_Int		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnLocal_C4V ,                 0 },
   { "SetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetProperty_C4V ,           0 },
   { "GetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetProperty_C4V ,           0 },
@@ -7085,7 +6929,6 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "FindObjects",					1	,C4V_Array		,{ C4V_Array	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,																		FnFindObjects },
   { "ObjectCount",					1	,C4V_Int			,{ C4V_PropList,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_Int		,C4V_String	,C4V_C4Object,C4V_Any		,C4V_Int},0 ,																		FnObjectCount },
   { "ObjectCount2",					1	,C4V_Int			,{ C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array	,C4V_Array},0 ,																		FnObjectCount2 },
-  { "ObjectCall",						1	,C4V_Any			,{ C4V_C4Object,C4V_String,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnObjectCall_C4V ,            0 },
   { "ProtectedCall",				1	,C4V_Any			,{ C4V_C4Object,C4V_String,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnProtectedCall_C4V ,         0 },
   { "PrivateCall",					1	,C4V_Any			,{ C4V_C4Object,C4V_String,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnPrivateCall_C4V ,           0 },
   { "GameCall",							1	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGameCall_C4V ,              0 },
@@ -7110,9 +6953,6 @@ C4ScriptFnDef C4ScriptFnMap[]={
 	{ "GetHomebaseMaterial",	1	,C4V_Int			,{ C4V_Int		,C4V_PropList,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetHomebaseMaterial_C4V ,   0 },
 	{ "GetHomebaseProduction",	1	,C4V_Int			,{ C4V_Int		,C4V_PropList,C4V_Int		,C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetHomebaseProduction_C4V ,   0 },
 
-	{ "Set",									1	,C4V_Any			,{ C4V_pC4Value,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnSet,                        0 },
-	{ "Inc",									1	,C4V_Any			,{ C4V_pC4Value,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnInc,                        0 },
-	{ "Dec",									1	,C4V_Any			,{ C4V_pC4Value,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnDec,                        0 },
 	{ "IsRef",								1	,C4V_Bool			,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnIsRef,                      0 },
 	{ "GetType",							1	,C4V_Int			,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}	 ,MkFnC4V FnGetType,                    0 },
 

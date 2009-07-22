@@ -815,7 +815,7 @@ private func GetSpecialCount(szTest)
   var iCnt, pObj; 
   // Einzelne Pfeile... 
   for(var i = 0; pObj = Contents(i); i++) 
-    if(ObjectCall(pObj, szTest)) 
+    if(pObj->Call(szTest)) 
       iCnt++; 
   // Pakete... 
   for(var i = 0; pObj = Contents(i); i++) 
@@ -832,7 +832,7 @@ private func IsSpecialItem(pObj)
   // Spezialitem?
   var j=-1;
   while(GetMaxSpecialCount(++j, 1))
-    if(ObjectCall(pObj, GetMaxSpecialCount(j)))
+    if(pObj->GetMaxSpecialCount(j))
       return j+1;
   // Spezialitempacket?
   if(pObj->~UnpackTo())
