@@ -6339,19 +6339,6 @@ TEMPLATE(10)
 #undef CONV_FROM_C4V
 #undef TEMPLATE
 
-// :'(
-// is needed
-class C4AulDefCastFunc: public C4AulDefFuncHelper
-	{
-	public:
-		C4AulDefCastFunc(C4AulScript *pOwner, const char *pName, C4V_Type ParType, C4V_Type RType):
-			C4AulDefFuncHelper(pOwner, pName, false, ParType), RType(RType) { }
-		C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false)
-			{ return C4Value(pPars->GetData(), RType); }
-		C4V_Type RType;
-	};
-
-
 void InitFunctionMap(C4AulScriptEngine *pEngine)
 	{
 	// add all def constants (all Int)
@@ -6722,9 +6709,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "SetNextMission", FnSetNextMission);
 	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
-	new C4AulDefCastFunc(pEngine, "CastInt", C4V_Any, C4V_Int);
-	new C4AulDefCastFunc(pEngine, "CastBool", C4V_Any, C4V_Bool);
-	new C4AulDefCastFunc(pEngine, "CastAny", C4V_Any, C4V_Any);
 	}
 
 C4ScriptConstDef C4ScriptConstMap[]={
