@@ -652,6 +652,18 @@ void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwC
 	glShadeModel(GL_FLAT);
 	}
 
+#ifdef _MSC_VER
+static inline long int lrintf(float f)
+{
+	long int i;
+	__asm {
+		fld f
+		fistp i
+	};
+	return i;
+}
+#endif
+
 void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 	{
 	// render target?

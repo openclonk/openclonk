@@ -1064,7 +1064,6 @@ bool CStdD3D::RestoreDeviceObjects()
 	CreateStateBlock(&bltBaseState[1], true, false, true, true, false);
 	CreateStateBlock(&bltBaseState[2], true, false, true, false, true);
 	CreateStateBlock(&bltBaseState[3], true, false, true, true, true);
-	StoreStateBlock();
 	// activate if successful
 	Active=fSuccess;
 	// restore gamma if active
