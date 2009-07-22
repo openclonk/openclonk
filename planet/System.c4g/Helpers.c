@@ -29,16 +29,6 @@ global func RemoveAll(id idDef, int dwOCF)
   return Cnt;
   }
 
-global func CastlePanic()
-  {
-  return ResortObjects("CastlePanicResort", 1);
-  }
-
-global func CastlePanicResort(object pObj1, object pObj2)
-  {
-  return GetDefBottom(pObj1)-GetDefBottom(pObj2);
-  }
-
 global func SetBit(int iOldVal, int iBitNr, bool iBit)
   {
   if(GetBit(iOldVal, iBitNr) != (iBit != 0)) 

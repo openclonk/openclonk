@@ -8,24 +8,6 @@ global func AbsX(int x) { return x - GetX(); }
 // Liefert das Offset zur gewünschten Landscape-Y-Position zurück
 global func AbsY(int y) { return y - GetY(); }
 
-// Erzeugt ein Objekt mit der angegeben ID in iMaterial. iRetries ist die Anzahl der Versuche.
-global func PlaceInMaterial(id def, int material, int _retries) { // C4ID id, int iMaterial, [int iRetries]
-  // Gültiger Materialindex? (-1 ist Sky)
-  if (!Inside(material, 0, 127)) return 0;
-
-  // Standardwert von 50000
-  var retries = _retries;
-  if (!retries) retries = 50000;
-
-  for (var retry_num = 0; retry_num < retries; retry_num++) {
-    var x = Random(LandscapeWidth());
-    var y = Random(LandscapeHeight());
-    if (GetMaterial(x, y) == material)
-      return CreateObject(def, x, y, -1);
-  }
-  return 0;
-}
-
 // Unterstützt negative Werte und kann Zufallszahlen zwischen 2 Werten liefern
 
 global func RandomX(int iStart, int iEnd) {

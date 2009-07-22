@@ -1384,13 +1384,6 @@ static long FnGetRank(C4AulContext *cthr, C4Object *pObj)
   return pObj->Info->Rank;
   }
 
-static long FnValue(C4AulContext *cthr, C4ID id)
-  {
-	C4Def *pDef = C4Id2Def(id);
-	if (pDef) return pDef->Value;
-  return 0;
-  }
-
 static long FnGetActTime(C4AulContext *cthr, C4Object *pObj)
   {
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
@@ -2079,6 +2072,12 @@ C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4So
 	if (pSO) pFO->SetSort(pSO);
 	return pFO;
 	}
+
+static bool FnMakeCrewMember(C4AulContext *cthr, C4Object *pObj, long iPlayer)
+{
+	if (!ValidPlr(iPlayer)) return false;
+	return !!::Players.Get(iPlayer)->MakeCrewMember(pObj);
+} 
 
 static C4Value FnObjectCount(C4AulContext *cthr, C4Value *pPars)
 	{
