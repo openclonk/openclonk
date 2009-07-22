@@ -133,7 +133,6 @@ class C4Object: public C4PropList
 		int32_t Timer;
 		int32_t ViewEnergy; // NoSave //
 		int32_t Audible, AudiblePan; // NoSave //
-		C4ValueList Local;
 		C4ValueMapData LocalNamed;
 		int32_t PlrViewRange;
 		FIXED fix_x,fix_y,fix_r; // SyncClearance-Fix //

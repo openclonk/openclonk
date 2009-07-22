@@ -114,7 +114,6 @@ void C4Object::Default()
 	InMat=MNone;
 	Color=0;
 	ViewEnergy=0;
-	Local.Reset();
 	PlrViewRange=0;
 	fix_x=fix_y=fix_r=0;
   xdir=ydir=rdir=0;
@@ -2701,7 +2700,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( FirePhase,												"FirePhase",					0									));
 	pComp->Value(mkNamingAdapt( Color,														"Color",							0u								)); // TODO: Convert
 	pComp->Value(mkNamingAdapt( Color,														"ColorDw",						0u								));
-	pComp->Value(mkNamingAdapt( Local,														"Locals",							C4ValueList()			));
 	// default to X/Y values to support objects where FixX/FixY was manually removed
 	pComp->Value(mkNamingAdapt( fix_x,														"FixX",								itofix(qX)									));
 	pComp->Value(mkNamingAdapt( fix_y,														"FixY",								itofix(qY)									));
@@ -2849,7 +2847,6 @@ void C4Object::DenumeratePointers()
 	Contents.DenumerateRead();
 
 	// Local variable pointers
-	Local.DenumeratePointers();
 	LocalNamed.DenumeratePointers();
 
 	// Commands

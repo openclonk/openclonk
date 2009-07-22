@@ -3217,16 +3217,6 @@ static long FnAsyncRandom(C4AulContext *cthr, long iRange)
   return SafeRandom(iRange);
   }
 
-static C4Value FnLocal_C4V(C4AulContext *cthr, C4Value* iVarIndex, C4Value* pObj_C4V)
-  {
-	C4Object* pObj = pObj_C4V->getObj();
-	long iIndex = iVarIndex->getInt();
-
-	if (!pObj) pObj=cthr->Obj; if (!pObj) return C4Value();
-	if (iIndex<0) return C4Value();
-  return pObj->Local[iIndex].GetRef();
-  }
-
 static C4Value FnCall_C4V(C4AulContext *cthr, C4Value* szFunction_C4V,
            C4Value* par0, C4Value* par1, C4Value* par2, C4Value* par3, C4Value* par4,
 					 C4Value* par5, C4Value* par6, C4Value* par7, C4Value* par8/*, C4Value* par9*/)
@@ -4463,139 +4453,6 @@ void SmoothChars(signed char &r1, signed char &r2)
 	// lower the difference between two numbers
 	signed char d=(r2-r1)/4;
 	r1+=d; r2-=d;
-	}
-
-static bool FnDrawModLandscape(C4AulContext *cctx, long iX, long iY, long iWdt, long iHgt, C4Object *pObj)
-	{
-	// hardcoded function for Lhûnrim.c4s - make the map look beautiful
-	// safety
-	if (!pObj) { pObj=cctx->Obj; if (!pObj) return FALSE; }
-	// clip to landscape size
-
-	// ClipRect wants int& instead of long&
-	int32_t i_x = iX, i_y = iY, i_w = iWdt, i_h = iHgt;
-	if (!::Landscape.ClipRect(i_x, i_y, i_w, i_h)) return FALSE;
-	iX = i_x; iY = i_y; iWdt = i_w; iHgt = i_h;
-
-	long iX2=iX+iWdt; long iY2=iY+iHgt;
-	// get material modification values
-	C4ModLandscapeMatRec *MatInfo = new C4ModLandscapeMatRec[::MaterialMap.Num];
-	for (int i=0; i< ::MaterialMap.Num; ++i)
-		{
-		MatInfo[i].iMode=pObj->Local.GetItem(i*3+0).getInt();
-		MatInfo[i].iClr1=pObj->Local.GetItem(i*3+1).getInt();
-		MatInfo[i].iClr2=pObj->Local.GetItem(i*3+2).getInt();
-		}
-	// go through it horizontally and vertically in two directions, building a distance-to-lower-mat-map
-	signed char *map = new signed char[iWdt*iHgt]; ZeroMemory(map, iWdt*iHgt);
-	signed char *pZ;
-	for (int d=0; d<=1; ++d) for (int i=0; i<=1; ++i)
-		for (int x1 = d?(i?iX2-1:iY2-1):(i?iX:iY); d?(x1>=(i?iX:iY)):(x1<(i?iX2:iY2)); d?(--x1):(++x1))
-			{
-			long iLastPlacement=0,z=0; // placement out of map
-			for (int x2 = d?(i?iY2-1:iX2-1):(i?iY:iX); d?(x2>=(i?iY:iX)):(x2<(i?iY2:iX2)); d?(--x2):(++x2))
-				{
-				// get current placement
-				long iPlacement = MatPlacement(GBackMat(i?x1:x2, i?x2:x1));
-				// compare ot to the given
-				if (!iLastPlacement) iLastPlacement=iPlacement;
-				if (iLastPlacement == iPlacement)
-					{
-					// it stayed the same: adjust z
-					if (z<0) ++z; else if (z>0) --z;
-					}
-				else
-					{
-					// placement changed
-					if (iLastPlacement < iPlacement)
-						// upwards: count up from zero
-						z=-30;
-					else
-						// downwards: count down
-						z=30;
-					iLastPlacement=iPlacement;
-					}
-				// adjust buffer
-				if (z)
-					{
-					pZ=map + (i?x1:x2)-iX + iWdt*((i?x2:x1)-iY);
-					*pZ = static_cast<signed char>(BoundBy<long>(*pZ+z, -128, 127));
-					}
-				}
-			}
-
-	// go through the buffer again and smooth it
-	if (iWdt>2 && iHgt>2) for (int i=0; i<10; ++i)
-		{
-		pZ=map+iWdt+1;
-		for (int y=iY+1; y<iY2-1; ++y)
-			{
-			for (int x=iX+1; x<iX2-1; ++x)
-				{
-				long iPlac1=MatPlacement(GBackMat(x,y));
-				if (iPlac1 == MatPlacement(GBackMat(x,y-1))) SmoothChars(*pZ, *(pZ-iWdt));
-				if (iPlac1 == MatPlacement(GBackMat(x,y+1))) SmoothChars(*pZ, *(pZ+iWdt));
-				if (iPlac1 == MatPlacement(GBackMat(x-1,y))) SmoothChars(*pZ, *(pZ-1));
-				if (iPlac1 == MatPlacement(GBackMat(x+1,y))) SmoothChars(*pZ, *(pZ+1));
-				++pZ;
-				}
-			pZ+=2;
-			}
-		}
-
-	// apply buffer
-	//Application.DDraw->DefinePattern(::TextureMap.GetTexture("Smooth2"));
-	pZ=map;
-	for (int y=iY; y<iY2; ++y)
-		for (int x=iX; x<iX2; ++x)
-			{
-			BYTE byPix=GBackPix(x,y);
-			long iMat=PixCol2Mat(byPix);
-			if (MatValid(iMat))
-				{
-				C4ModLandscapeMatRec *pMatI=MatInfo+iMat;
-				DWORD dwPix; bool fDrawPix=true;
-				switch (pMatI->iMode)
-					{
-					case 0: // draw nothing
-						fDrawPix=false; break;
-
-					case 1: // normal case: Clr1 is bordercolor
-						if (*pZ<0)
-							{
-							if (*pZ<=-16)
-								dwPix=pMatI->iClr1;
-							else
-								dwPix=FadeClr(pMatI->iClr1, pMatI->iClr2, (int)*pZ*-16);
-							}
-						else
-							dwPix=pMatI->iClr2;
-						// does the color contain transparency?
-						if (dwPix>>24)
-							{
-							// apply it!
-							DWORD dwPixUnder = ::Landscape._GetPixDw(x,y, false);
-							BltAlpha(dwPixUnder, dwPix); dwPix=dwPixUnder;
-							}
-						break;
-					default:
-						dwPix=0xFF000000; //FIXME: What would be a sane default?
-						break;
-					}
-				if (fDrawPix)
-					{
-					//dwPix=Application.DDraw->PatternedClr(x,y,dwPix);
-					// TODO: ::Landscape.SetPixDw(x,y,dwPix);
-					}
-				}
-			++pZ;
-			}
-	//Application.DDraw->NoPattern();
-	// free map
-	delete [] map;
-	delete [] MatInfo;
-	// success
-	return TRUE;
 	}
 
 static bool FnCreateParticle(C4AulContext *cthr, C4String *szName, long iX, long iY, long iXDir, long iYDir, long a, long b, C4Object *pObj, bool fBack)
@@ -6164,7 +6021,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "UnselectCrew", FnUnselectCrew);
 	AddFunc(pEngine, "DrawMap", FnDrawMap);
 	AddFunc(pEngine, "DrawDefMap", FnDrawDefMap);
-	AddFunc(pEngine, "DrawModLandscape", FnDrawModLandscape, false);
 	AddFunc(pEngine, "CreateParticle", FnCreateParticle);
 	AddFunc(pEngine, "CastParticles", FnCastParticles);
 	AddFunc(pEngine, "CastBackParticles", FnCastBackParticles);
@@ -6586,7 +6442,6 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "goto",									1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   Fn_goto },
   { "this",									1	,C4V_C4Object	,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   Fn_this },
   { "Equal",								1	,C4V_Any			,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnEqual_C4V ,                   0 },
-  { "Local",								1	,C4V_Any			,{ C4V_Int		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnLocal_C4V ,                 0 },
   { "SetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetProperty_C4V ,           0 },
   { "GetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetProperty_C4V ,           0 },
   { "Explode",							1	,C4V_Bool			,{ C4V_Int		,C4V_C4Object,C4V_PropList,C4V_String	,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   FnExplode },
