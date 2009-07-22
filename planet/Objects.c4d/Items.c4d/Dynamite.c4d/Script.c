@@ -99,3 +99,19 @@ private func Fusing() {
 	else if(GetActTime() > 140)
 		Explode(18);
 }
+
+protected func Definition(def) {
+	SetProperty("ActMap", {
+			Fuse = {
+				Prototype = Action,
+				Name = "Fuse",
+				Procedure = DFA_FLOAT,
+				NextAction = "Fuse",
+				Length = 1,
+				Delay = 1,
+				FacetBase = 1,
+				Sound = "Fusing",
+				StartCall = "Fusing"
+			}
+		}, def);
+}
