@@ -287,6 +287,7 @@ C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 	// search own list
 	C4PropList *pObj = PropLists.Get(iNumber);
 	if (pObj) return pObj->GetObject();
+	return 0;
 	}
 
 int32_t C4GameObjects::ObjectNumber(C4PropList *pObj)
