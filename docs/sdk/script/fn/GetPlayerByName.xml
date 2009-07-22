@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+        <func>
+                <title>GetPlayerByName</title>
+                <category>Spieler</category>
+                <version>4.9.4.0 GWE</version>
+                <syntax>
+                        <rtype>int</rtype>
+			<params>
+				<param><type>string</type><name>szName</name><desc>Name des Spielers</desc></param>
+			</params>
+                </syntax>
+                <desc>Gibt die Spielernummer des angegebenen Spielers oder -1 wenn kein solcher Spiler gefunden wurde zurück.</desc>
+                <related>
+                        <funclink>GetPlayerName</funclink>
+                        <funclink>GetPlayerByIndex</funclink>
+                </related>
+        </func>
+        <author>Newton</author><date>Juli 2009</date>
+</funcs>
+

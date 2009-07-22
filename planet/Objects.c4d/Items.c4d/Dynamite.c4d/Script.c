@@ -109,7 +109,9 @@ protected func Definition(def) {
 				Prototype = Action,
 				Name = "Fuse",
 				Procedure = DFA_FLOAT,
-				NextAction = "Hold",
+				NextAction = "Fuse",
+				Delay = 1,
+				Length = 1,
 				FacetBase = 1,
 				Sound = "Fusing",
 				StartCall = "Fusing"

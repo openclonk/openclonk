@@ -57,6 +57,14 @@
 			<funclink>Find_OCF</funclink>
 			<funclink>Find_Or</funclink>
 			<funclink>Find_Owner</funclink>
+			<funclink>Sort_Random</funclink>
+			<funclink>Sort_Reverse</funclink>
+			<funclink>Sort_Multiple</funclink>
+			<funclink>Sort_Value</funclink>
+			<funclink>Sort_Speed</funclink>
+			<funclink>Sort_Mass</funclink>
+			<funclink>Sort_Distance</funclink>
+			<funclink>Sort_Func</funclink>
 			<funclink>FindObject</funclink>
 			<funclink>ObjectCount</funclink>	
 		</related>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>GetBit</title>
+		<category>Arithmetik</category>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iOldVal</name><desc>Alter Wert der Bitmaske</desc></param>
+				<param><type>int</type><name>iBitNumber</name><desc>Das abzufragende Bit</desc></param>
+			</params>
+		</syntax>
+		<desc>Gibt den Wert des iBitNumber'nten Bits zurück.</desc>
+		<related>
+			<funclink>SetBit</funclink>
+			<funclink>ToggleBit</funclink>
+		</related>
+	</func>
+	<author>Newton</author><date>Juli 2009</date>
+</funcs>
+

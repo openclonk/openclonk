@@ -3,9 +3,9 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
 	<func>
-		<title>Cos</title>
+		<title>Tan</title>
 		<category>Arithmetik</category>
-		<version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
+		<version>4.9.1.0 GWE</version>
 		<syntax>
 			<rtype>int</rtype>
 			<params>
@@ -14,14 +14,13 @@
 				<param><type>int</type><name>iPrec</name><desc>Der angegebene Winkel wird, wenn angegeben, vor der Berechnung durch diesen Wert dividiert. Bei einem Winkel von 455 und einer Präzision von 10 würde intern also mit einem Winkel von 45,5° gerechnet werden.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Liefert cos(iAngle) * iRadius.</desc>
+		<desc>Liefert tan(iAngle) * iRadius.</desc>
 		<related>
+			<funclink>Cos</funclink>
 			<funclink>Sin</funclink>
-			<funclink>Tan</funclink>
 			<funclink>Angle</funclink>
 		</related>
 	</func>
-	<author>springer</author><date>April 2002</date>
-	<author>Clonk-Karl</author><date>September 2004</date>
+	<author>Newton</author><date>Juli 2009</date>
 </funcs>
 

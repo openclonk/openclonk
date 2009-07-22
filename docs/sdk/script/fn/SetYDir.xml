@@ -20,6 +20,7 @@
 			<funclink>GetYDir</funclink>
 			<funclink>SetXDir</funclink>
 			<funclink>SetRDir</funclink>
+			<funclink>SetSpeed</funclink>
 			<funclink>SetR</funclink>
 		</related>
 	</func>
