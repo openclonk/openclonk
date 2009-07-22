@@ -6411,7 +6411,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ObjectDistance", FnObjectDistance);
 	AddFunc(pEngine, "GetValue", FnGetValue);
 	AddFunc(pEngine, "GetRank", FnGetRank);
-	AddFunc(pEngine, "Value", FnValue);
 	AddFunc(pEngine, "Angle", FnAngle);
 	AddFunc(pEngine, "DoHomebaseMaterial", FnDoHomebaseMaterial);
 	AddFunc(pEngine, "DoHomebaseProduction", FnDoHomebaseProduction);
