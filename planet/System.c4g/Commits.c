@@ -27,12 +27,12 @@ global func SetCon(int new_con, object obj) { // int iNewCon, [C4Object *pObj]
 }
 
 // Setzt X- und Y-Dir eines Objektes
-global func SetSpeed(int x_dir, int y_dir, object obj) { // int iXDir, int iYDir, [C4Object *pObj]
+global func SetSpeed(int x_dir, int y_dir, object obj, int prec) { // int iXDir, int iYDir, [C4Object *pObj]
   // Kein Objekt vorhanden?
   if (!obj && !this) return 0;
 
-  if (!SetXDir(x_dir, obj)) return 0;
-  if (!SetYDir(y_dir, obj)) return 0;
+  if (!SetXDir(x_dir, obj, prec)) return 0;
+  if (!SetYDir(y_dir, obj, prec)) return 0;
   return 1;
 }
 
@@ -73,19 +73,6 @@ global func VerticesStuck(object obj) { // [C4Object *pObj]
   return vertices;
 }
 
-// Verbindet zwei oder mehrere Strings miteinander und liefert den resultierenden String zurück
-global func Concat() {
-  var string;
-
-  // Parameter durchgehen
-  var par_num = 0;
-  var new_string;
-  while (new_string = Par(par_num++))
-    string = Format("%s%s", string, new_string);
-
-  return string;
-}
-
 /*-- Joern --*/
 
 //Fügt zum Konto des genannten Spielers iValue Gold hinzu
@@ -99,7 +86,7 @@ global func DoWealth(int iPlayer, int iValue)
 
 // Prüft ob die angegebene Definition vorhanden ist
 global func FindDefinition(id idDef) {
- if(GetDefCoreVal("id","DefCore",idDef)) return 1;
+ if(GetDefCoreVal("id","DefCore",idDef)) return true;
 }
 
 // Erzeugt amount viele Objekte des Typs id im angegebenen Zielrechteck (optional) im angegeben Material. Gibt die Anzahl der Iterationen zurück, oder -1 wenn die Erzeugung fehlschlägt
@@ -206,8 +193,8 @@ global func CastPXS(string mat,int am,int lev,int x,int y,int angs,int angw) {
 }
 
 
-global func Tan(int iAngle, int iRadius) {
-    return  (iRadius * Sin(iAngle,iRadius*100)) / Cos(iAngle,iRadius*100) ;
+global func Tan(int iAngle, int iRadius, int iPrec) {
+    return  (iRadius * Sin(iAngle,iRadius*100, iPrec)) / Cos(iAngle,iRadius*100, iPrec) ;
 }
 
 /*-- Roscher --*/
@@ -224,7 +211,7 @@ global func FindConstructionSiteX(id idDef, &iVarX, &iVarY)
 
 /*-- Newton -- */
 
-global func Visible(int iPlr, object pObj)
+global func CheckVisibility(int iPlr, object pObj)
 {
   var iVisible = GetVisibility(pObj);
 

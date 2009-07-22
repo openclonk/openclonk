@@ -5,21 +5,22 @@
   <func>
     <title>LaunchVolcano</title>
     <category>Umwelt</category>
-    <version>4.6.5.0 CP</version>
+    <version>4.6.5.0 CP <extversion>4.10.0.0 OC</extversion></version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>int</type>
-          <name>iX</name>
-          <desc>X-Zielposition</desc>
+          <type>int</type><name>iX</name><desc>X-Zielposition</desc>
+          <type>int</type><name>iY</name><desc>Y-Zielposition. Default: am unteren Ende der Landschaft</desc><optional/>
+          <type>int</type><name>iStrength</name><desc>Stärke. Default: relativ zur Höhe der Landschaft</desc><optional/>
+          <type>string</type><name>szMaterial</name><desc>Name des Materials. Default ist "Lava"</desc><optional/>
         </param>
       </params>
     </syntax>
-    <desc>Erzeugt einen Vulkan an angegebener Position. Da Vulkane immer von der Unterseite der Landschaft ausgehen, wird hier kein Y-Parameter benötigt.</desc>
+    <desc>Erzeugt einen Vulkan an angegebener Position</desc>
     <related>
       <funclink>LaunchLightning</funclink> <funclink>LaunchEarthquake</funclink>
     </related>
   </func>
-  <author>PeterW</author><date>November 2001</date>
+  <author>Newton</author><date>Juli 2009</date>
 </funcs>

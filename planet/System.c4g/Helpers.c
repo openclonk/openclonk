@@ -15,19 +15,19 @@ global func MessageWindow(string pMsg, int iForPlr, id idIcon, string pCaption)
   return 1;
   }
 
-global func RemoveAll(id idDef, int dwOCF)
-  {
-  var Cnt, obj = FindObject(idDef, 0,0,0,0, dwOCF), next;
-  while (obj)
-    {
-    // Get the next object in case obj->Destruction does funny things
-    next = FindObject(idDef, 0,0,0,0, dwOCF, 0,0,0, obj);
-    if(RemoveObject(obj))
-      ++Cnt;
-    obj = next;
-    }
-  return Cnt;
-  }
+global func RemoveAll()
+{
+	var cnt;
+	for(var obj in FindObjects(...))
+	{
+		if(obj) 
+		{
+			RemoveObject(obj);
+			cnt++;
+		}
+	}
+	return cnt;
+}
 
 global func SetBit(int iOldVal, int iBitNr, bool iBit)
   {

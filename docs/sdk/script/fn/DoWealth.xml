@@ -3,27 +3,21 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>SetWealth</title>
+    <title>DoWealth</title>
     <category>Spieler</category>
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>bool</rtype>
       <params>
         <param><type>int</type><name>iPlr</name><desc>Spielernummer des Spielers, dessen Vermögen verändert werden soll</desc></param>
-        <param><type>int</type><name>iValue</name><desc>Das neue Vermögen.</desc></param>
+        <param><type>int</type><name>iValue</name><desc>Die Änderung des Vermögens.</desc></param>
       </params>
     </syntax>
-    <desc>Setzt das Vermögen eines Spielers.</desc>
-    <examples>
-      <example>
-        <code>SetWealth(5, 0);</code>
-        <text>Ruiniert den sechsten Spieler.</text>
-      </example>
-    </examples>
+    <desc>Verändert das Vermögen eines Spielers.</desc>
     <related>
       <funclink>GetWealth</funclink>
-      <funclink>DoWealth</funclink>
+      <funclink>SetWealth</funclink>
     </related>
   </func>
-  <author>jwk</author><date>August 2002</date>
+  <author>Newton</author><date>Juli 2009</date>
 </funcs>
