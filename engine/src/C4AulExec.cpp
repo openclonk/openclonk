@@ -906,16 +906,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 					}
 
-				case AB_VAR_R: case AB_VAR_V:
-					if(!pCurVal->ConvertTo(C4V_Int))
-						throw new C4AulExecError(pCurCtx->Obj, FormatString("Var: index of type %s, int expected!", pCurVal->GetTypeName()).getData());
-					// Push reference to variable on the stack
-					if (pCPos->bccType == AB_VAR_R)
-						pCurVal->SetRef(&pCurCtx->NumVars.GetItem(pCurVal->_getInt()));
-					else
-						pCurVal->Set(pCurCtx->NumVars.GetItem(pCurVal->_getInt()));
-					break;
-
 				case AB_PAR_R: case AB_PAR_V:
 					if(!pCurVal->ConvertTo(C4V_Int))
 						throw new C4AulExecError(pCurCtx->Obj, FormatString("Par: index of type %s, int expected!", pCurVal->GetTypeName()).getData());

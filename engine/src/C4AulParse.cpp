@@ -857,8 +857,6 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_LOCALN_V: return "LOCALN_V";
 	case AB_GLOBALN_R: return "GLOBALN_R";	// a named global
 	case AB_GLOBALN_V: return "GLOBALN_V";
-	case AB_VAR_R: return "VAR_R";			// Var statement
-	case AB_VAR_V: return "VAR_V";
 	case AB_PAR_R: return "PAR_R";			// Par statement
 	case AB_PAR_V: return "PAR_V";
 	case AB_FUNC: return "FUNC";		// function
@@ -1106,8 +1104,6 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_Neg:
 		case AB_Inc1_Postfix:
 		case AB_Dec1_Postfix:
-		case AB_VAR_R:
-		case AB_VAR_V:
 		case AB_PAR_R:
 		case AB_PAR_V:
 		case AB_FOREACH_NEXT:
@@ -1177,7 +1173,6 @@ void C4AulParseState::SetNoRef()
 		{
 		case AB_ARRAYA_R: CPos->bccType = AB_ARRAYA_V; break;
 		case AB_PAR_R: CPos->bccType = AB_PAR_V; break;
-		case AB_VAR_R: CPos->bccType = AB_VAR_V; break;
 		case AB_PARN_R: CPos->bccType = AB_PARN_V; break;
 		case AB_VARN_R: CPos->bccType = AB_VARN_V; break;
 		case AB_LOCALN_R: CPos->bccType = AB_LOCALN_V; break;
@@ -2234,7 +2229,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 					case AB_UNOP: case AB_BINOP: from = C4ScriptOpMap[(a->CPos-1)->Par.i].RetType; break;
 					case AB_FUNC: case AB_CALL: case AB_CALLFS:
 						if((a->CPos-1)->Par.i) from = reinterpret_cast<C4AulFunc *>((a->CPos-1)->Par.i)->GetRetType(); break;
-					case AB_ARRAYA_R: case AB_PAR_R: case AB_VAR_R: case AB_PARN_R: case AB_VARN_R: case AB_LOCALN_R: case AB_GLOBALN_R:
+					case AB_ARRAYA_R: case AB_PAR_R: case AB_PARN_R: case AB_VARN_R: case AB_LOCALN_R: case AB_GLOBALN_R:
 						from = C4V_pC4Value; break;
 					}
 				C4V_Type to = pFunc->GetParType()[size];
@@ -2617,13 +2612,6 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 				Shift();
 				Parse_Params(1, C4AUL_Par);
 				AddBCC(AB_PAR_R);
-				}
-			else if (SEqual(Idtf, C4AUL_Var))
-				{
-				// same for Var
-				Shift();
-				Parse_Params(1, C4AUL_Var);
-				AddBCC(AB_VAR_R);
 				}
 			else if (SEqual(Idtf, C4AUL_Inherited) || SEqual(Idtf, C4AUL_SafeInherited))
 				{

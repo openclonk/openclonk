@@ -216,10 +216,6 @@ protected:
 
 	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
-	friend class C4AulDefCastFunc;
-
-	C4Value(long nData, C4V_Type nType): HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ Data.Int = nData; Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
 
 	void Set(long nData, C4V_Type nType) { C4V_Data d; d.Int = nData; Set(d, nType); }
 	void Set(C4V_Data nData, C4V_Type nType);

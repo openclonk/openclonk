@@ -2030,17 +2030,15 @@ static C4Object *FnComposeContents(C4AulContext *cthr, C4ID c_id, C4Object *pObj
 	return C4VBool(!!fSuccess);
 	}*/
 
-static bool FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, long iVarX, long iVarY)
+static bool FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, C4Value * VarX, C4Value * VarY)
   {
 	// Get def																			Old-style implementation (fixed)...
   C4Def *pDef;
   if (!(pDef=PropList->GetDef())) return FALSE;
-	// Var indices out of range
-  if (!Inside<long>(iVarX,0,C4AUL_MAX_Par-1) || !Inside<long>(iVarY,0,C4AUL_MAX_Par-1)) return FALSE;
 	// Get thread vars
 	if(!cthr->Caller) return false;
-  C4Value& V1 = cthr->Caller->NumVars[iVarX];
-	C4Value& V2 = cthr->Caller->NumVars[iVarY];
+  C4Value& V1 = VarX->GetRefVal();
+	C4Value& V2 = VarY->GetRefVal();
   // Construction check at starting position
   if (ConstructionCheck(PropList,V1.getInt(),V2.getInt()))
     return TRUE;
@@ -3452,11 +3450,6 @@ static long FnAsyncRandom(C4AulContext *cthr, long iRange)
   return SafeRandom(iRange);
   }
 
-static C4Value FnGlobal_C4V(C4AulContext *cthr, C4Value* iVarIndex)
-  {
-  return ::ScriptEngine.Global[iVarIndex->getInt()].GetRef();
-  }
-
 static C4Value FnLocal_C4V(C4AulContext *cthr, C4Value* iVarIndex, C4Value* pObj_C4V)
   {
 	C4Object* pObj = pObj_C4V->getObj();
@@ -3836,7 +3829,7 @@ static C4Value FnSetLength(C4AulContext *cthr, C4Value *pPars)
 	PAR(int, iNewSize);
 
 	// safety
-	if (iNewSize<0 || iNewSize > C4ValueList::MaxSize)
+	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
 		throw new C4AulExecError(cthr->Obj, FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
 
 	// set new size
@@ -6898,7 +6891,6 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "goto",									1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   Fn_goto },
   { "this",									1	,C4V_C4Object	,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,0 ,                                   Fn_this },
   { "Equal",								1	,C4V_Any			,{ C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnEqual_C4V ,                   0 },
-  { "Global",								1	,C4V_Any			,{ C4V_Int		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGlobal_C4V ,                0 },
   { "Local",								1	,C4V_Any			,{ C4V_Int		,C4V_C4Object,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnLocal_C4V ,                 0 },
   { "SetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_Any		,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnSetProperty_C4V ,           0 },
   { "GetProperty",					1	,C4V_Any			,{ C4V_String	,C4V_PropList,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any		,C4V_Any}  ,MkFnC4V FnGetProperty_C4V ,           0 },
