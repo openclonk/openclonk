@@ -173,7 +173,7 @@ void C4AulScript::Default()
 	IncludesResolved = false;
 
 	// defaults
-	Strict = NONSTRICT;
+	Strict = MAXSTRICT;
 	Preparsing=Resolving=false;
 	Temporary = false;
 	LocalNamed.Reset();
@@ -390,7 +390,6 @@ void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
 	Script = FromFunc.Script;
 	VarNamed = FromFunc.VarNamed;
 	ParNamed = FromFunc.ParNamed;
-	bNewFormat = FromFunc.bNewFormat;
 	bReturnRef = FromFunc.bReturnRef;
 	pOrgScript = FromFunc.pOrgScript;
 	for(int i = 0; i < C4AUL_MAX_Par; i++)

@@ -163,17 +163,13 @@ enum C4AulBCCType
 	AB_LessThanEqual,	// <=
 	AB_GreaterThan,	// >
 	AB_GreaterThanEqual,	// >=
-	AB_EqualIdent,	// old ==
-	AB_Equal,	// new ==
-	AB_NotEqualIdent,	// old !=
-	AB_NotEqual,	// new !=
+	AB_Equal,	// ==
+	AB_NotEqual,	// !=
 	AB_SEqual,	// S=, eq
 	AB_SNEqual,	// ne
 	AB_BitAnd,	// &
 	AB_BitXOr,	// ^
 	AB_BitOr,	// |
-	AB_And, 	// &&
-	AB_Or,  	// ||
 	AB_MulIt,	// *=
 	AB_DivIt,	// /=
 	AB_ModIt,	// %=
@@ -326,7 +322,6 @@ class C4AulScriptFunc : public C4AulFunc
 		C4ValueMapNames VarNamed; // list of named vars in this function
 		C4ValueMapNames ParNamed; // list of named pars in this function
 		C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
-		bool bNewFormat; // new func format? [ func xyz(par abc) { ... } ]
 		bool bReturnRef; // return reference
 		C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
