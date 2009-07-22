@@ -2600,34 +2600,25 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	// additive mode?
 	PrepareDrawing();
 	// Draw line segments
+	C4Value colorsV; GetProperty(Strings.P[P_LineColors], colorsV);
+	C4ValueArray *colors = colorsV.getArray();
+	int32_t color0 = 0x00FF00FF, color1 = 0x00FF00FF;	// use bright colors so author notices
+	if (colors)
+		{
+		color0 = colors->GetItem(0).getInt(); color1 = colors->GetItem(1).getInt();
+		}
   for (int32_t vtx=0; vtx+1<Shape.VtxNum; vtx++)
 		switch (Def->Line)
 			{
 			case C4D_Line_Power:
-				cgo.DrawLine(Shape.VtxX[vtx],Shape.VtxY[vtx],
-										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 68,26);
-				break;
 			case C4D_Line_Source: case C4D_Line_Drain:
-				cgo.DrawLine(Shape.VtxX[vtx],Shape.VtxY[vtx],
-										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 23,26);
-				break;
 			case C4D_Line_Lightning:
-				cgo.DrawBolt(Shape.VtxX[vtx],Shape.VtxY[vtx],
-										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 CWhite,CWhite);
-				break;
 			case C4D_Line_Rope:
-				cgo.DrawLine(Shape.VtxX[vtx],Shape.VtxY[vtx],
-										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 65,65);
-				break;
 			case C4D_Line_Vertex:
 			case C4D_Line_Colored:
-				cgo.DrawLine(Shape.VtxX[vtx],Shape.VtxY[vtx],
+				cgo.DrawLineDw(Shape.VtxX[vtx],Shape.VtxY[vtx],
 										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 BYTE(Local[0].getInt()),BYTE(Local[1].getInt()));
+										 color0, color1);
 				break;
 			}
 	// reset blit mode
@@ -5213,6 +5204,17 @@ void C4Object::ExecAction()
 			BOOL fBroke;
 			fBroke=FALSE;
 			int32_t iConnectX,iConnectY;
+			int32_t attachVertex0,attachVertex1;
+			attachVertex0=attachVertex1=0;
+				{
+				C4Value lineAttachV; GetProperty(Strings.P[P_LineAttach], lineAttachV);
+				C4ValueArray *lineAttach = lineAttachV.getArray();
+				if (lineAttach)
+					{
+					attachVertex0 = lineAttach->GetItem(0).getInt();
+					attachVertex1 = lineAttach->GetItem(1).getInt();
+					}
+				}
 
 			// Line destruction check: Target missing or incomplete
 			if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=TRUE;
@@ -5229,8 +5231,8 @@ void C4Object::ExecAction()
 				{
 				// Connect to vertex
 				if (Def->Line == C4D_Line_Vertex)
-					{ iConnectX=Action.Target->GetX()+Action.Target->Shape.GetVertexX(Local[2].getInt());
-						iConnectY=Action.Target->GetY()+Action.Target->Shape.GetVertexY(Local[2].getInt()); }
+					{ iConnectX=Action.Target->GetX()+Action.Target->Shape.GetVertexX(attachVertex0);
+						iConnectY=Action.Target->GetY()+Action.Target->Shape.GetVertexY(attachVertex0); }
 				// Connect to bottom center
 				else
 					{ iConnectX=Action.Target->GetX();
@@ -5251,8 +5253,8 @@ void C4Object::ExecAction()
 				{
 				// Connect to vertex
 				if (Def->Line == C4D_Line_Vertex)
-					{ iConnectX=Action.Target2->GetX()+Action.Target2->Shape.GetVertexX(Local[3].getInt());
-						iConnectY=Action.Target2->GetY()+Action.Target2->Shape.GetVertexY(Local[3].getInt()); }
+					{ iConnectX=Action.Target2->GetX()+Action.Target2->Shape.GetVertexX(attachVertex1);
+						iConnectY=Action.Target2->GetY()+Action.Target2->Shape.GetVertexY(attachVertex1); }
 				// Connect to bottom center
 				else
 					{	iConnectX=Action.Target2->GetX();

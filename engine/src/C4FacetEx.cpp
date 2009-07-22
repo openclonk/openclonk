@@ -45,15 +45,20 @@ void C4TargetFacet::SetRect(C4TargetRect &rSrc)
 	X=rSrc.x; Y=rSrc.y; Wdt=rSrc.Wdt; Hgt=rSrc.Hgt; TargetX=rSrc.tx; TargetY=rSrc.ty;
 	}
 
-void C4TargetFacet::DrawLine(int iX1, int iY1, int iX2, int iY2, BYTE bCol1, BYTE bCol2)
+void C4TargetFacet::DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2)
 	{
 	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
 	// Scroll position
 	iX1-=TargetX; iY1-=TargetY; iX2-=TargetX; iY2-=TargetY;
 	// No clipping is done here, because clipping will be done by gfx wrapper anyway
 	// Draw line
-	lpDDraw->DrawLine(Surface,X+iX1,Y+iY1,X+iX2,Y+iY2,bCol1);
-	lpDDraw->DrawPix(Surface,(float)(X+iX1),(float)(Y+iY1),lpDDraw->Pal.GetClr(bCol2));
+	lpDDraw->DrawLineDw(Surface,X+iX1,Y+iY1,X+iX2,Y+iY2,col1);
+	lpDDraw->DrawPix(Surface,(float)(X+iX1),(float)(Y+iY1),col2);
+	}
+
+void C4TargetFacet::DrawLine(int iX1, int iY1, int iX2, int iY2, BYTE bCol1, BYTE bCol2)
+	{
+		DrawLineDw(iX1, iY1, iX2, iY2, lpDDraw->Pal.GetClr(bCol1), lpDDraw->Pal.GetClr(bCol2));
 	}
 
 // bolt random size
