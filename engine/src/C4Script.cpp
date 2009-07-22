@@ -3606,25 +3606,6 @@ static C4Value FnSetLength(C4AulContext *cthr, C4Value *pPars)
 	return C4VBool(true);
 }
 
-static bool FnSetVisibility(C4AulContext *cthr, long iVisibility, C4Object *pObj)
-{
-	// local call/safety
-	if(!pObj) pObj = cthr->Obj;
-	if(!pObj) return FALSE;
-
-	pObj->Visibility=iVisibility;
-
-	return TRUE;
-}
-
-static long FnGetVisibility(C4AulContext *cthr, C4Object *pObj)
-{
-	if(!pObj) pObj = cthr->Obj;
-	if(!pObj) return 0;
-
-	return pObj->Visibility;
-}
-
 static bool FnSetClrModulation(C4AulContext *cthr, long dwClr, C4Object *pObj, long iOverlayID)
 	{
 	// local call/safety
@@ -6167,8 +6148,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "ShowInfo", FnShowInfo);
 	AddFunc(pEngine, "GetTime", FnGetTime);
 	AddFunc(pEngine, "GetSystemTime", FnGetSystemTime, false);
-	AddFunc(pEngine, "SetVisibility", FnSetVisibility);
-	AddFunc(pEngine, "GetVisibility", FnGetVisibility);
 	AddFunc(pEngine, "SetClrModulation", FnSetClrModulation);
 	AddFunc(pEngine, "GetClrModulation", FnGetClrModulation);
 	AddFunc(pEngine, "GetMissionAccess", FnGetMissionAccess);
@@ -6384,7 +6363,7 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "VIS_Owner"              ,C4V_Int,          VIS_Owner},
 	{ "VIS_Allies"             ,C4V_Int,          VIS_Allies},
 	{ "VIS_Enemies"            ,C4V_Int,          VIS_Enemies},
-	{ "VIS_Local"              ,C4V_Int,          VIS_Local},
+	{ "VIS_Select"             ,C4V_Int,          VIS_Select},
 	{ "VIS_God"                ,C4V_Int,          VIS_God},
 	{ "VIS_LayerToggle"        ,C4V_Int,          VIS_LayerToggle},
 	{ "VIS_OverlayOnly"        ,C4V_Int,          VIS_OverlayOnly},

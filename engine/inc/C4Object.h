@@ -68,7 +68,7 @@
 #define VIS_Owner		2
 #define VIS_Allies	4
 #define VIS_Enemies	8
-#define VIS_Local		16
+#define VIS_Select	16
 #define VIS_God			32
 #define VIS_LayerToggle	64
 #define VIS_OverlayOnly 128
@@ -148,7 +148,6 @@ class C4Object: public C4PropList
 		bool NeedEnergy;
 		uint32_t t_contact; // SyncClearance-NoSave //
 		uint32_t OCF;
-		int32_t Visibility;
 		unsigned int Marker; // state var used by Objects::CrossCheck and C4FindObject - NoSave
 		union
 			{

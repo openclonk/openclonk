@@ -147,7 +147,6 @@ void C4Object::Default()
 	PhysicalTemporary=false;
 	TemporaryPhysical.Default();
 	MaterialContents=NULL;
-	Visibility=VIS_All;
 	LocalNamed.Reset();
 	Marker=0;
 	ColorMod=BlitMode=0;
@@ -2218,7 +2217,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (!Status || !Def) return;
 
 	// visible?
-	if (Visibility || pLayer) if(!IsVisible(iByPlayer, !!eDrawMode)) return;
+	if(!IsVisible(iByPlayer, !!eDrawMode)) return;
 
 	// Line
 	if (Def->Line) { DrawLine(cgo);	return;	}
@@ -2493,7 +2492,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// Status
   if (!Status || !Def) return;
 	// visible?
-	if (Visibility) if(!IsVisible(iByPlayer, eDrawMode==ODM_Overlay)) return;
+	if(!IsVisible(iByPlayer, eDrawMode==ODM_Overlay)) return;
 	// target pos (parallax)
 	float cotx = cgo.TargetX, coty = cgo.TargetY; if (eDrawMode!=ODM_Overlay) TargetPos(cotx, coty, cgo);
 	// Clonk name
@@ -2738,7 +2737,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Component,												"Component"															));
 	pComp->Value(mkNamingAdapt( Contents,													"Contents"															));
 	pComp->Value(mkNamingAdapt( PlrViewRange,											"PlrViewRange",				0									));
-	pComp->Value(mkNamingAdapt( Visibility,												"Visibility",					VIS_All						));
 	pComp->Value(mkNamingAdapt( LocalNamed,												"LocalNamed"														));
 	pComp->Value(mkNamingAdapt( ColorMod,													"ColorMod",						0u								));
 	pComp->Value(mkNamingAdapt( BlitMode,													"BlitMode",						0u								));
@@ -5421,34 +5419,48 @@ void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
 bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 	{
 	bool fDraw;
+	C4Value vis;
+	if (!GetProperty(Strings.P[P_Visibility], vis))
+		return true;
+
+	int32_t Visibility;
+	C4ValueArray *parameters = vis.getArray();
+	if (parameters && parameters->GetSize())
+	{
+		Visibility = parameters->GetItem(0).getInt();
+	} else {
+		Visibility = vis.getInt();
+	}
 	// check overlay
 	if (Visibility & VIS_OverlayOnly)
-		{
+	{
 		if (!fAsOverlay) return false;
 		if (Visibility == VIS_OverlayOnly) return true;
-		}
+	}
 	// check layer
 	if (pLayer && pLayer != this && !fAsOverlay)
-		{
+	{
 		fDraw = pLayer->IsVisible(iForPlr, false);
-		if (pLayer->Visibility & VIS_LayerToggle) fDraw = !fDraw;
+		if (pLayer->GetPropertyInt(P_Visibility) & VIS_LayerToggle) fDraw = !fDraw;
 		if (!fDraw) return false;
-		}
+	}
 	// no flags set?
 	if (!Visibility) return true;
 	// check visibility
 	fDraw=false;
 	if (Visibility & VIS_Owner) fDraw = fDraw || (iForPlr==Owner);
 	if (iForPlr!=NO_OWNER)
-		{
+	{
 		// check all
 		if (Visibility & VIS_Allies)	fDraw = fDraw || (iForPlr!=Owner && !Hostile(iForPlr, Owner));
 		if (Visibility & VIS_Enemies)	fDraw = fDraw || (iForPlr!=Owner && Hostile(iForPlr, Owner));
-		if (Visibility & VIS_Local)		fDraw = fDraw || (Local[iForPlr/32].getInt() & (1<<(iForPlr%32)));
+		if (parameters) {
+			if (Visibility & VIS_Select)	fDraw = fDraw || parameters->GetItem(1+iForPlr).getBool();
 		}
+	}
 	else fDraw = fDraw || (Visibility & VIS_God);
 	return fDraw;
-	}
+}
 
 bool C4Object::IsInLiquidCheck()
 	{

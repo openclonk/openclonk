@@ -114,6 +114,7 @@ C4StringTable::C4StringTable()
 	P[P_TurnAction] = RegString("TurnAction");
 	P[P_Reverse] = RegString("Reverse");
 	P[P_Step] = RegString("Step");
+	P[P_Visibility] = RegString("Visibility");
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
 	}
 
@@ -150,6 +151,7 @@ C4String *C4StringTable::FindString(C4String *pString)
 	for (C4String * const * i = Set.First(); i; i = Set.Next(i))
 		if (*i == pString)
 			return pString;
+	return NULL;
 	}
 
 C4String *C4StringTable::FindString(int iEnumID)

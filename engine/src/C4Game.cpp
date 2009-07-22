@@ -1399,7 +1399,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 			// Owner
 			if ((iOwner==ANY_OWNER) || (cObj->Owner==iOwner))
 			// Visibility
-			if (!cObj->Visibility || cObj->IsVisible(iPlr, false))
+			if (cObj->IsVisible(iPlr, false))
 			// Area
 				{
 				// Layer check: Layered objects are invisible to players whose cursor is in another layer
