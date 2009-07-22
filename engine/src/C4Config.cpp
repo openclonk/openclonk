@@ -134,7 +134,8 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ShowCommands,					"ShowCommands",					1							,false, true));
 	pComp->Value(mkNamingAdapt(ShowCommandKeys,				"ShowCommandKeys",			1							,false, true));
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,		"ShowStartupMessages",	1							,false, true));
-	pComp->Value(mkNamingAdapt(ColorAnimation,				"ColorAnimation",				0							,false,true));
+	pComp->Value(mkNamingAdapt(ColorAnimation,				"ColorAnimation",				0							,false, true));
+	pComp->Value(mkNamingAdapt(HighResLandscape,			"HighResLandscape",			0							,false, true));
 	pComp->Value(mkNamingAdapt(SmokeLevel,						"SmokeLevel",						200						,false, true));
 	pComp->Value(mkNamingAdapt(VerboseObjectLoading,	"VerboseObjectLoading",	0							));
 	pComp->Value(mkNamingAdapt(VideoModule,						"VideoModule",					0							,false, true));

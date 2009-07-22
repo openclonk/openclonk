@@ -181,7 +181,7 @@ void C4Object::SideBounds(int32_t &ctcox)
 	{
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
-		if (Action.Act<=ActIdle || Def->ActMap[Action.Act].Procedure != DFA_ATTACH)
+		if (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			if (Category & C4D_StaticBack)
 				TargetBounds(ctcox,pLayer->GetX()+pLayer->Shape.GetX(),pLayer->GetX()+pLayer->Shape.GetX()+pLayer->Shape.Wdt,CNAT_Left,CNAT_Right);
 			else
@@ -195,7 +195,7 @@ void C4Object::VerticalBounds(int32_t &ctcoy)
 	{
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
-		if (Action.Act<=ActIdle || Def->ActMap[Action.Act].Procedure != DFA_ATTACH)
+		if (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			if (Category & C4D_StaticBack)
 				TargetBounds(ctcoy,pLayer->GetY()+pLayer->Shape.GetY(),pLayer->GetY()+pLayer->Shape.GetY()+pLayer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
 			else
@@ -215,11 +215,11 @@ void C4Object::DoMovement()
 	// Restrictions
 	if (Def->NoHorizontalMove) xdir=0;
 	// Dig free target area
-	if (Action.Act>ActIdle)
-		if (Def->ActMap[Action.Act].DigFree)
+	if (Action.pActionDef)
+		if (Action.pActionDef->GetPropertyInt(P_DigFree))
 			{
 			// Shape size square
-			if (Def->ActMap[Action.Act].DigFree==1)
+			if (Action.pActionDef->GetPropertyInt(P_DigFree)==1)
 				{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
 				::Landscape.DigFreeRect(ctcox+Shape.GetX(),ctcoy+Shape.GetY(),Shape.Wdt,Shape.Hgt,Action.Data,this);
@@ -228,7 +228,7 @@ void C4Object::DoMovement()
 			else
 				{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
-				int32_t rad = Def->ActMap[Action.Act].DigFree;
+				int32_t rad = Action.pActionDef->GetPropertyInt(P_DigFree);
 				if (Con<FullCon) rad = rad*6*Con/5/FullCon;
 				::Landscape.DigFree(ctcox,ctcoy-1,rad,Action.Data,this);
 				}
@@ -552,7 +552,7 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
   if ((!Inside<int32_t>(GetX(),0,GBackWdt) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
 		//  and the attached objects follow one frame later
-		if (Action.Act<0 || !Action.Target || Def->ActMap[Action.Act].Procedure != DFA_ATTACH)
+		if (!Action.pActionDef || !Action.Target || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			{
 			bool fRemove = true;
 			// never remove HUD objects
@@ -560,8 +560,8 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
 				{
 				fRemove = false;
 				if (GetX()>GBackWdt || GetY()>GBackHgt) fRemove = true; // except if they are really out of the viewport to the right...
-				else if (GetX()<0 && Local[0].Data) fRemove = true; // ...or it's not HUD horizontally and it's out to the left
-				else if (!Local[0].Data && GetX()<-GBackWdt) fRemove = true; // ...or it's HUD horizontally and it's out to the left
+				else if (GetX()<0 && Local[0].getBool()) fRemove = true; // ...or it's not HUD horizontally and it's out to the left
+				else if (!Local[0].getBool() && GetX()<-GBackWdt) fRemove = true; // ...or it's HUD horizontally and it's out to the left
 				}
 			if (fRemove)
 				{

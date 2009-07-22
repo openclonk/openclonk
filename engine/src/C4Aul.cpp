@@ -415,8 +415,6 @@ C4AulScriptEngine::C4AulScriptEngine():
 	ScriptName.Ref(C4CFN_System);
 	Strict = MAXSTRICT;
 
-	Global.Reset();
-
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
@@ -439,7 +437,6 @@ void C4AulScriptEngine::Clear()
 	warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
 	// except not...
-	Global.Reset();
 	GlobalNamedNames.Reset();
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
@@ -487,14 +484,12 @@ bool C4AulScriptEngine::GetGlobalConstant(const char *szName, C4Value *pTargetVa
 
 BOOL C4AulScriptEngine::DenumerateVariablePointers()
 	{
-	Global.DenumeratePointers();
 	GlobalNamed.DenumeratePointers();
 	// runtime data only: don't denumerate consts
 	return TRUE;
 	}
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
   {
-	pComp->Value(mkNamingAdapt(Global,         "Globals"                , C4ValueList()));
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(GlobalNamed,    "GlobalNamed"            , GlobalNamedDefault));

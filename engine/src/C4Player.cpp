@@ -588,7 +588,7 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
         ctx=tx; cty=ty;
 				if (Game.C4S.PlrStart[PlrStartIndex].EnforcePosition
   			 || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,def->Category,20))
-          if (cbase=Game.CreateObjectConstruction(cid,NULL,Number,ctx,cty,FullCon,TRUE))
+          if (cbase=Game.CreateObjectConstruction(C4Id2Def(cid),NULL,Number,ctx,cty,FullCon,TRUE))
             {
 						// FirstBase
             if (!(*pFirstBase)) if (cbase->Def->CanBeBase)
@@ -1194,7 +1194,7 @@ BOOL C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 
 		// Set object info
 		pObj->Info = cInf;
-		if(pObj->Name.isRef()) pObj->Name = cInf->Name;
+		pObj->SetName(cInf->Name);
 		}
 
 	// Add to crew
@@ -1409,7 +1409,7 @@ BOOL C4Player::ObjectCom(BYTE byCom, int32_t iData) // By DirectCom
   return TRUE;
   }
 
-BOOL C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, int32_t iData, int32_t iMode)
+BOOL C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
   {
 	// Eliminated
   if (Eliminated) return FALSE;
@@ -1434,8 +1434,8 @@ BOOL C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, in
 						// has something to put. Also, the put count is adjusted to that the clonk will not try to put
 						// more items than he actually has. This workaround is needed so the put command can be used
 						// to tell all selected clonks to put when in a container, simulating the old all-throw behavior.
-						if (cObj->Contents.ObjectCount(iData))
-							ObjectCommand2Obj(cObj, iCommand, pTarget, Min<int32_t>(iX, cObj->Contents.ObjectCount(iData)), iY, pTarget2, iData, iMode);
+						if (cObj->Contents.ObjectCount(iData.getC4ID()))
+							ObjectCommand2Obj(cObj, iCommand, pTarget, Min<int32_t>(iX, cObj->Contents.ObjectCount(iData.getC4ID())), iY, pTarget2, iData, iMode);
 					}
 					// Other command
 					else
@@ -1457,7 +1457,7 @@ BOOL C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, in
   return TRUE;
   }
 
-void C4Player::ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, int32_t iData, int32_t iMode)
+void C4Player::ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
 	{
 	// forward to object
 	if (iMode & C4P_Command_Append) cObj->AddCommand(iCommand,pTarget,iX,iY,0,pTarget2,TRUE,iData,TRUE,0,NULL,C4CMD_Mode_Base); // append: by Shift-click and for dragging of multiple objects (all independant; thus C4CMD_Mode_Base)

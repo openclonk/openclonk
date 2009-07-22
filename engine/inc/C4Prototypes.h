@@ -29,7 +29,6 @@ class C4Playback;
 class C4Scenario;
 class C4PlayerInfoCore;
 class C4ObjectInfoCore;
-class C4DefCore;
 class C4Def;
 class C4DefList;
 class C4IDList;
@@ -95,6 +94,7 @@ class C4FacetSurface;
 class C4Surface;
 class C4League;
 class C4RoundResults;
+class C4PropList;
 
 namespace C4GUI { class Screen; }
 typedef C4GUI::Screen C4GUIScreen;

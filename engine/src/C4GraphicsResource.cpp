@@ -61,7 +61,6 @@ void C4GraphicsResource::Default()
 	fctRank.Default();
 	fctFire.Default();
 	fctBackground.Default();
-	sfcLiquidAnimation.Default(); idSfcLiquidAnimation = 0;
 	fctCaptain.Default();
 	fctMouseCursor.Default();
 	fctSelectMark.Default();
@@ -122,7 +121,6 @@ void C4GraphicsResource::Clear()
 	fctRank.Clear();
 	fctFire.Clear();
 	fctBackground.Clear();
-	sfcLiquidAnimation.Clear();
 	fctCaptain.Clear();
 	fctMouseCursor.Clear();
 	fctSelectMark.Clear();
@@ -236,7 +234,6 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 	if (!LoadFile(fctGamepad,			"Gamepad",			Files, 80)) return FALSE;
 	if (!LoadFile(fctBuild,				"Build",				Files)) return FALSE;
 	if (!LoadFile(fctEnergyBars,	"EnergyBars",		Files)) return FALSE;
-	if (!LoadFile(sfcLiquidAnimation, "Liquid", Files, idSfcLiquidAnimation)) return FALSE;
 	// life bar facets
 	if (fctEnergyBars.Surface)
 		{

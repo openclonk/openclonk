@@ -57,7 +57,10 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		C4Object *FindInternal(C4ID id); // find object in first sector
 		virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
-		long ObjectNumber(C4Object *pObj); // object number by pointer
+		int32_t ObjectNumber(C4PropList *pObj); // object number by pointer
+		C4Object* SafeObjectPointer(int32_t iNumber);
+		C4Object* Denumerated(C4Object *pObj);
+		C4Object* Enumerated(C4Object *pObj);
 
 		C4ObjectList &ObjectsInt(); // return object list containing system objects
 
@@ -82,11 +85,17 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		void DeleteObjects(bool fDeleteInactive); // delete all objects and links
 
-		void ClearDefPointers(C4Def *pDef); // clear all pointers into definition
-		void UpdateDefPointers(C4Def *pDef); // restore any cleared pointers after def reload
-
 		bool ValidateOwners();
 		bool AssignInfo();
+		void AssignPlrViewRange();
+		void SortByCategory();
+		void SyncClearance();
+		void ResetAudibility();
+		void UpdateTransferZones();
+		void SetOCF();
+	protected:
+		C4Set<C4PropList *> PropLists;
+		friend class C4PropList;
 	};
 
 extern C4GameObjects Objects;

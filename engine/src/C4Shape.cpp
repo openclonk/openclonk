@@ -661,7 +661,7 @@ void C4Shape::CreateOwnOriginalCopy(C4Shape &rFrom)
 void C4Shape::CompileFunc(StdCompiler *pComp, bool fRuntime)
 	{
 	// Note: Compiled directly into "Object" and "DefCore"-categories, so beware of name clashes
-	// (see C4Object::CompileFunc and C4DefCore::CompileFunc)
+	// (see C4Object::CompileFunc and C4Def::CompileFunc)
 	pComp->Value(mkNamingAdapt( Wdt,												"Width",							0									));
 	pComp->Value(mkNamingAdapt( Hgt,												"Height",							0									));
 	pComp->Value(mkNamingAdapt( mkArrayAdapt(&x,2,0),				"Offset"																));

@@ -202,14 +202,6 @@ void C4DefScriptHost::AfterLink()
 	if (Def)
 		{
 		C4AulAccess CallAccess = /*Strict ? AA_PROTECTED : */AA_PRIVATE;
-		for (int32_t cnt=0; cnt<Def->ActNum; cnt++)
-			{
-			C4ActionDef *pad=&Def->ActMap[cnt];
-			sprintf(WhereStr, "Action %s: StartCall", pad->Name); pad->StartCall	= GetSFuncWarn((const char *) &pad->SStartCall, CallAccess, WhereStr);
-			sprintf(WhereStr, "Action %s: PhaseCall", pad->Name); pad->PhaseCall	= GetSFuncWarn((const char *) &pad->SPhaseCall, CallAccess, WhereStr);
-			sprintf(WhereStr, "Action %s: EndCall"	, pad->Name); pad->EndCall		= GetSFuncWarn((const char *) &pad->SEndCall,		CallAccess, WhereStr);
-			sprintf(WhereStr, "Action %s: AbortCall", pad->Name); pad->AbortCall	= GetSFuncWarn((const char *) &pad->SAbortCall,	CallAccess, WhereStr);
-			}
 		Def->TimerCall=GetSFuncWarn((const char *) Def->STimerCall, CallAccess, "TimerCall");
 		}
 	// Check if there are any Control/Contained/Activation script functions

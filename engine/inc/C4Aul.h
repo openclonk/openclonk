@@ -134,8 +134,6 @@ enum C4AulBCCType
 	AB_LOCALN_V,
 	AB_GLOBALN_R,	// a named global
 	AB_GLOBALN_V,
-	AB_VAR_R,			// Var statement
-	AB_VAR_V,
 	AB_PAR_R,			// Par statement
 	AB_PAR_V,
 	AB_FUNC,		// function
@@ -194,7 +192,10 @@ enum C4AulBCCType
 	AB_BOOL,		// constant: bool
 	AB_STRING,	// constant: string
 	AB_C4ID,		// constant: C4ID
+	AB_NIL,		  // constant: nil
 	AB_ARRAY,		// semi-constant: array
+	AB_PROPLIST,		// create a new proplist
+	AB_PROPSET,		// set a property of a proplist
 	AB_IVARN,		// initialization of named var
 	AB_JUMP,		// jump
 	AB_JUMPAND,		// jump if zero, else pop the stack
@@ -255,7 +256,6 @@ struct C4AulScriptContext : public C4AulContext
 	C4Value *Vars;
 	C4AulScriptFunc *Func;
 	bool TemporaryScript;
-	C4ValueList NumVars;
 	C4AulBCC *CPos;
 	time_t tTime; // initialized only by profiler if active
 
@@ -535,11 +535,8 @@ class C4AulScriptEngine : public C4AulScript
 		int nonStrictCnt; // number of non-strict scripts
 		int lineCnt; // line count parsed
 
-		C4ValueList Global;
 		C4ValueMapNames GlobalNamedNames;
 		C4ValueMapData GlobalNamed;
-
-		C4StringTable Strings;
 
 		// global constants (such as "static const C4D_Structure = 2;")
 		// cannot share var lists, because it's so closely tied to the data lists

@@ -413,7 +413,7 @@ void C4ControlPlayerCommand::Execute() const
 												::Objects.ObjectPointer(iTarget),
 												iX,iY,
 												::Objects.ObjectPointer(iTarget2),
-												iData,
+												C4Value(iData),
 												iAddMode);
 		}
 }
@@ -899,7 +899,7 @@ void C4ControlEMMoveObject::Execute() const
 			for (int i=0; i<iObjectNum; ++i)
 				if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
 					{
-					pObj = Game.CreateObject(pObj->id, pObj, pObj->Owner, pObj->GetX(), pObj->GetY());
+					pObj = Game.CreateObject(pObj->GetPrototype(), pObj, pObj->Owner, pObj->GetX(), pObj->GetY());
 					if (pObj && fLocalCall) Console.EditCursor.GetSelection().Add(pObj, C4ObjectList::stNone);
 					}
 			// update status
@@ -1077,7 +1077,7 @@ void C4ControlMessage::Execute() const
 			{
 			if (Game.C4S.Head.Film == C4SFilm_Cinematic)
 				{
-				StdStrBuf sMessage; sMessage.Format("<%s> %s", pPlr->Cursor->Name.getData(), szMessage);
+				StdStrBuf sMessage; sMessage.Format("<%s> %s", pPlr->Cursor->GetName(), szMessage);
 				uint32_t dwClr = pPlr->Cursor->Color;
 				if (!dwClr) dwClr = 0xff;
 				GameMsgObjectDw(sMessage.getData(), pPlr->Cursor, dwClr|0xff000000);

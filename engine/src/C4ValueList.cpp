@@ -81,7 +81,7 @@ class C4SortObjectSTLCache
 		bool operator ()(int32_t n1, int32_t n2) { return rSorter.CompareCache(n1, n2, pVals[n1]._getObj(), pVals[n2]._getObj()) > 0; }
 	};
 
-void C4ValueList::Sort(class C4SortObject &rSort)
+void C4ValueArray::Sort(class C4SortObject &rSort)
 	{
 	if(rSort.PrepareCache(this))
 		{

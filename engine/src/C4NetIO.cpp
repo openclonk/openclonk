@@ -71,10 +71,6 @@ const uint16_t C4NetIO::P_NONE = ~0;
 
 #ifdef HAVE_WINSOCK
 
-#ifndef WINSOCK_VERSION
-#define WINSOCK_VERSION 0x22
-#endif
-
 const char *GetSocketErrorMsg(int iError)
 {
 	switch(iError)

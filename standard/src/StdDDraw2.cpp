@@ -832,8 +832,8 @@ bool CStdDDraw::ClipPoly(CBltData &rBltData)
 	return true;
 	}
 
-void CStdDDraw::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcSource3, float fx, float fy,
-								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt)
+void CStdDDraw::BlitLandscape(SURFACE sfcSource, float fx, float fy,
+                              SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[])
 	{
 	Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt, FALSE);
 	}
@@ -953,8 +953,6 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	CBltData BltData;
 	// pass down pTransform
 	BltData.pTransform=pTransform;
-	// store current state
-	StoreStateBlock();
 	// blit with basesfc?
 	bool fBaseSfc=false;
 	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->ppTex) fBaseSfc=true;
@@ -968,8 +966,9 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	// calc stretch regarding texture size and indent
 	float scaleX2 = scaleX * iTexSize;
 	float scaleY2 = scaleY * iTexSize;
-	// blit from all these textures
+	// Enable textures
 	SetTexture();
+	// blit from all these textures
 	for (int iY=iTexY; iY<iTexY2; ++iY)
 		{
 		for (int iX=iTexX; iX<iTexX2; ++iX)
@@ -1044,8 +1043,6 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 		}
 	// reset texture
 	ResetTexture();
-	// restore state
-	RestoreStateBlock();
 	// success
 	return TRUE;
 	}
@@ -1691,16 +1688,8 @@ bool CStdDDraw::Init(CStdApp * pApp, BOOL Fullscreen, BOOL fUsePageLock, unsigne
 	// store default gamma
 	SaveDefaultGammaRamp(pApp->pWindow);
 
-	DebugLog("Init DX");
-	DebugLog("  Create DirectDraw...");
-
-	if (!CreateDirectDraw())
-		return Error("  CreateDirectDraw failure.");
-
-	DebugLog("  Create Device...");
-
 	if (!CreatePrimarySurfaces(Fullscreen, iXRes, iYRes, iBitDepth, iMonitor))
-		return Error("  CreateDevice failure.");
+		return false;
 
 	DebugLog("  Create Clipper");
 

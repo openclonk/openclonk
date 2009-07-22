@@ -174,8 +174,8 @@ class C4Player: public C4PlayerInfoCore
 		void DirectCom(BYTE byCom, int32_t iData);
 		void InCom(BYTE byCom, int32_t iData);
 		BOOL ObjectCom(BYTE byCom, int32_t iData);
-		BOOL ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, int32_t iData=0, int32_t iAddMode=C4P_Command_Set);
-		void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, int32_t iData, int32_t iMode);
+		BOOL ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, C4Value iData=C4VNull, int32_t iAddMode=C4P_Command_Set);
+		void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode);
 	  BOOL DoPoints(int32_t iChange);
     BOOL Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName, const char *szFilename, BOOL fScenarioInit, class C4PlayerInfo *pInfo);
 		bool ScenarioAndTeamInit(int32_t idTeam);

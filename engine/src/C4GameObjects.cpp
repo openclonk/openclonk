@@ -178,7 +178,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy); // hit energy reduced to 1/3rd, but do not drop to zero because of this division
 													obj1->DoEnergy(-iHitEnergy/5, false, C4FxCall_EngObjHit, obj2->Controller);
 													int tmass=Max<int32_t>(obj1->Mass,50);
-													if (!::Game.iTick3 || (obj1->Action.Act>=0 && obj1->Def->ActMap[obj1->Action.Act].Procedure != DFA_FLIGHT))
+													if (!::Game.iTick3 || (obj1->Action.pActionDef && obj1->Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_FLIGHT))
 														obj1->Fling(obj2->xdir*50/tmass,-Abs(obj2->ydir/2)*50/tmass, false);
 													obj1->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(-iHitEnergy/5),
 																																C4VObj(obj2)));
@@ -285,19 +285,45 @@ C4Object *C4GameObjects::FindInternal(C4ID id)
 C4Object *C4GameObjects::ObjectPointer(int32_t iNumber)
 	{
 	// search own list
-	C4Object *pObj = C4ObjectList::ObjectPointer(iNumber);
-	if (pObj) return pObj;
-	// search deactivated
-	return InactiveObjects.ObjectPointer(iNumber);
+	C4PropList *pObj = PropLists.Get(iNumber);
+	if (pObj) return pObj->GetObject();
+	return 0;
 	}
 
-long C4GameObjects::ObjectNumber(C4Object *pObj)
+int32_t C4GameObjects::ObjectNumber(C4PropList *pObj)
 	{
-	// search own list
-	long iNum = C4ObjectList::ObjectNumber(pObj);
-	if (iNum) return iNum;
-	// search deactivated
-	return InactiveObjects.ObjectNumber(pObj);
+	if(!pObj) return 0;
+	C4PropList * const * p = PropLists.First();
+	while (p)
+		{
+		if(*p == pObj) return (*p)->Number;
+		p = PropLists.Next(p);
+		}
+	return 0;
+	}
+
+C4Object *C4GameObjects::SafeObjectPointer(int32_t iNumber)
+	{
+	C4Object *pObj = ObjectPointer(iNumber); 
+	if (pObj) if (!pObj->Status) return NULL;
+	return pObj;
+	}
+
+const uint32_t C4EnumPointer1 = 1000000000;
+C4Object* C4GameObjects::Enumerated(C4Object *pObj)
+	{
+	uint32_t iPtrNum;
+	// If object is enumerated, convert to enumerated pointer
+	if (iPtrNum = ObjectNumber(pObj)) 
+		return (C4Object*) (C4EnumPointer1 + iPtrNum);
+	// Oops!
+	return (C4Object*)-1;
+	}
+
+C4Object* C4GameObjects::Denumerated(C4Object *pObj)
+	{
+	// convert to pointer
+	return ObjectPointer((uint32_t)(intptr_t) pObj - C4EnumPointer1);
 	}
 
 C4ObjectList &C4GameObjects::ObjectsInt()
@@ -868,20 +894,6 @@ void C4GameObjects::FixObjectOrder()
 	// objects fixed!
 	}
 
-void C4GameObjects::ClearDefPointers(C4Def *pDef)
-	{
-	// call in sublists
-	C4ObjectList::ClearDefPointers(pDef);
-	InactiveObjects.ClearDefPointers(pDef);
-	}
-
-void C4GameObjects::UpdateDefPointers(C4Def *pDef)
-	{
-	// call in sublists
-	C4ObjectList::UpdateDefPointers(pDef);
-	InactiveObjects.UpdateDefPointers(pDef);
-	}
-
 void C4GameObjects::ResortUnsorted()
 	{
   C4ObjectLink *clnk=First; C4Object *cObj;
@@ -933,6 +945,64 @@ bool C4GameObjects::AssignInfo()
 	if (!C4ObjectList::AssignInfo()) fSucc = false;
 	if (!InactiveObjects.AssignInfo()) fSucc = false;
 	return fSucc;
+	}
+
+void C4GameObjects::AssignPlrViewRange()
+	{
+	C4ObjectLink *cLnk;
+	for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
+		if (cLnk->Obj->Status)
+			cLnk->Obj->AssignPlrViewRange();
+	}
+
+void C4GameObjects::SortByCategory()
+	{
+	C4ObjectLink *cLnk;
+	BOOL fSorted;
+	// Sort by category
+	do
+		{
+		fSorted = TRUE;
+		for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
+			if ((cLnk->Obj->Category & C4D_SortLimit) < (cLnk->Next->Obj->Category & C4D_SortLimit))
+				{			
+				RemoveLink(cLnk);
+				InsertLink(cLnk,cLnk->Next);
+				fSorted = FALSE;
+				break;
+				}
+		}
+	while (!fSorted);
+	}
+
+void C4GameObjects::SyncClearance()
+	{
+	C4ObjectLink *cLnk;
+	for (cLnk=First; cLnk; cLnk=cLnk->Next)
+		if (cLnk->Obj)
+			cLnk->Obj->SyncClearance();
+	}
+
+void C4GameObjects::UpdateTransferZones()
+	{
+	C4Object *cobj; C4ObjectLink *clnk;
+	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+		cobj->Call(PSF_UpdateTransferZone);
+	}
+
+void C4GameObjects::ResetAudibility()
+	{
+	C4Object *cobj; C4ObjectLink *clnk;
+	for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+		cobj->Audible=cobj->AudiblePan=0;
+	}
+
+void C4GameObjects::SetOCF()
+	{
+	C4ObjectLink *cLnk;
+	for (cLnk=First; cLnk; cLnk=cLnk->Next)
+		if (cLnk->Obj->Status)
+			cLnk->Obj->SetOCF();
 	}
 
 C4GameObjects Objects;

@@ -147,10 +147,8 @@ class CStdD3D : public CStdDDraw
     bool RestoreDeviceObjects();    // restore device dependent objects
     bool InvalidateDeviceObjects(); // free device dependent objects
     bool DeleteDeviceObjects();     // free device dependent objects
-    bool StoreStateBlock();
     void SetTexture();
     void ResetTexture();
-    bool RestoreStateBlock();
     bool DeviceReady() { return !!lpDevice; }
 
 	BOOL CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent, bool fSolid, bool fBaseTex, bool fAdditive, bool fMod2); // capture state blocks for blitting
@@ -160,7 +158,6 @@ class CStdD3D : public CStdDDraw
 		BOOL FindDisplayMode(unsigned int iXRes, unsigned int iYRes, D3DFORMAT format, unsigned int iMonitor);
 		virtual bool CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
     bool SetOutputAdapter(unsigned int iMonitor);
-    BOOL CreateDirectDraw();
 	inline bool HasShaders() const { return !!pShaders[0]; }
 
 

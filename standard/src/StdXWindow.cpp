@@ -96,26 +96,34 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 		ButtonReleaseMask;
 	attr.colormap = XCreateColormap(dpy, DefaultRootWindow(dpy), ((XVisualInfo*)Info)->visual, AllocNone);
 	unsigned long attrmask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
-	Pixmap bitmap;
-	if (HideCursor)
-		{
+	Pixmap bitmap = 0;
+	if (HideCursor) {
 		// Hide the mouse cursor
 		XColor cursor_color;
 		// We do not care what color the invisible cursor has
 		memset(&cursor_color, 0, sizeof(cursor_color));
 		bitmap = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy), "\000", 1, 1);
-		attr.cursor = XCreatePixmapCursor(dpy, bitmap, bitmap, &cursor_color, &cursor_color, 0, 0);
-		attrmask |= CWCursor;
+		if (bitmap) {
+			attr.cursor = XCreatePixmapCursor(dpy, bitmap, bitmap, &cursor_color, &cursor_color, 0, 0);
+			if (attr.cursor)
+				attrmask |= CWCursor;
+			else
+				Log("Error creating cursor.");
+		} else {
+			Log("Error creating bitmap for cursor.");
+			attr.cursor = 0;
 		}
+	} else {
+		attr.cursor = 0;
+	}
 
 	wnd = XCreateWindow(dpy, DefaultRootWindow(dpy),
 		0, 0, 640, 480, 0, ((XVisualInfo*)Info)->depth, InputOutput, ((XVisualInfo*)Info)->visual,
 		attrmask, &attr);
-	if (HideCursor)
-		{
+	if (attr.cursor)
 		XFreeCursor(dpy, attr.cursor);
+	if (bitmap)
 		XFreePixmap(dpy, bitmap);
-		}
 	if (!wnd) {
 		Log("Error creating window.");
 		return 0;

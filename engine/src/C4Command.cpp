@@ -184,7 +184,7 @@ void C4Command::Default()
 	Tx=C4VNull;
 	Ty=0;
   Target=Target2=NULL;
-	Data=0;
+	Data.Set0();
   UpdateInterval=0;
 	Failures=0;
 	Retries=0;
@@ -263,7 +263,7 @@ void C4Command::MoveTo()
 	// Pushing grab only or not desired: let go (pulling, too?)
   if (cObj->GetProcedure()==DFA_PUSH)
     if (cObj->Action.Target)
-			if (cObj->Action.Target->Def->Grab == 2 || !(Data & C4CMD_MoveTo_PushTarget))
+			if (cObj->Action.Target->Def->Grab == 2 || !(Data.getInt() & C4CMD_MoveTo_PushTarget))
 		    {
 				// Re-evaluate this command because vehicle control might have blocked evaluation
 				Evaluated=FALSE;
@@ -310,7 +310,7 @@ void C4Command::MoveTo()
     }
 
   // Idles can't move to
-  if (cObj->Action.Act<=ActIdle)
+  if (!cObj->Action.pActionDef)
     { Finish(); return; }
 
   // Action
@@ -415,7 +415,7 @@ void C4Command::Dig()
   int32_t cx,cy,tx,ty;
   cx=cObj->GetX(); cy=cObj->GetY();
   tx=Tx._getInt(); ty=Ty+cObj->Shape.GetY() + 3; // Target coordinates are bottom center
-	BOOL fDigOutMaterial=Data;
+	BOOL fDigOutMaterial=Data.getBool();
 
   // Grabbing: let go
   if (cObj->GetProcedure()==DFA_PUSH)
@@ -549,7 +549,7 @@ void C4Command::Enter()
 	// Pushing grab only or pushing not desired: let go
   if (cObj->GetProcedure()==DFA_PUSH)
     if (cObj->Action.Target)
-			if (cObj->Action.Target->Def->Grab == 2 || !(Data & C4CMD_Enter_PushTarget))
+			if (cObj->Action.Target->Def->Grab == 2 || !(Data.getInt() & C4CMD_Enter_PushTarget))
 		    { cObj->AddCommand(C4CMD_UnGrab,NULL,0,0,50); return; }
 
 	// Pushing target: let go
@@ -594,7 +594,7 @@ void C4Command::Enter()
     {
     int32_t ex,ey,ewdt,ehgt;
     if (Target->GetEntranceArea(ex,ey,ewdt,ehgt))
-      cObj->AddCommand(C4CMD_MoveTo,NULL,ex+ewdt/2,ey+ehgt/2,50, NULL, true, (Data & C4CMD_Enter_PushTarget) ? C4CMD_MoveTo_PushTarget : 0);
+			cObj->AddCommand(C4CMD_MoveTo,NULL,ex+ewdt/2,ey+ehgt/2,50, NULL, true, C4VInt((Data.getInt() & C4CMD_Enter_PushTarget) ? C4CMD_MoveTo_PushTarget : 0));
     }
 
   }
@@ -621,7 +621,7 @@ void C4Command::Exit()
 			if (cObj->Contained->GetEntranceArea(ex,ey,ewdt,ehgt))
 				{ cObj->Exit(ex+ewdt/2,ey+ehgt+cObj->Shape.GetY()-1); Finish(TRUE); return; }
 		// Exit jump out of collection area
-		if (cObj->Def->Carryable)
+		if (cObj->GetPropertyInt(P_Collectible))
 			if (cObj->Contained->Def->Collection.Wdt)
 				{
 				cObj->Exit(cObj->Contained->GetX(),cObj->Contained->GetY()+cObj->Contained->Def->Collection.y-1);
@@ -722,9 +722,9 @@ void C4Command::PushTo()
 
 	// Move to target position / enter target object
 	if (Target2)
-		{	cObj->AddCommand(C4CMD_Enter,Target2,0,0,40, NULL, true, C4CMD_Enter_PushTarget); return; }
+		{	cObj->AddCommand(C4CMD_Enter,Target2,0,0,40, NULL, true, C4Value(C4CMD_Enter_PushTarget)); return; }
 	else
-		{	cObj->AddCommand(C4CMD_MoveTo,NULL,Tx,Ty,40, NULL, true, C4CMD_MoveTo_PushTarget); return; }
+		{	cObj->AddCommand(C4CMD_MoveTo,NULL,Tx,Ty,40, NULL, true, C4Value(C4CMD_MoveTo_PushTarget)); return; }
 
 	}
 
@@ -1066,15 +1066,15 @@ void C4Command::Get()
   {
 
 	// Data set and target specified: open get menu & done (old style)
-	if (((Data==1) || (Data==2)) && Target)
+		if (((Data.getInt()==1) || (Data.getInt()==2)) && Target)
 		{
-		cObj->ActivateMenu((Data==1) ? C4MN_Get : C4MN_Contents,0,0,0,Target);
+		cObj->ActivateMenu((Data.getInt()==1) ? C4MN_Get : C4MN_Contents,0,0,0,Target);
 		Finish(TRUE); return;
 		}
 
 	// Get target specified by container and type
 	if (!Target && Target2 && Data)
-		if (!(Target = Target2->Contents.Find(Data)))
+		if (!(Target = Target2->Contents.Find(Data.getC4ID())))
 			{ Finish(); return; }
 
 	// No target: failure
@@ -1262,7 +1262,7 @@ void C4Command::Activate()
 			C4Object *pObj; C4ObjectLink *cLnk;
 			if (!Target)
 				for (cLnk=Target2->Contents.First; cLnk && (pObj=cLnk->Obj); cLnk=cLnk->Next)
-					if (pObj->Status && (pObj->Def->id==static_cast<C4ID>(Data)))
+					if (pObj->Status && (pObj->Def->id==Data.getC4ID()))
 						if (!pObj->Command || (pObj->Command->Command!=C4CMD_Exit))
 							{ Target=pObj; break; }
 			// No target
@@ -1304,7 +1304,7 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 
 	// Thing to put specified by type
 	if (!Target2 && Data)
-		if (!(Target2 = cObj->Contents.Find(Data)))
+		if (!(Target2 = cObj->Contents.Find(Data.getC4ID())))
 			{ Finish(); return; }
 
 	// No thing to put specified
@@ -1533,7 +1533,7 @@ BOOL C4Command::InitEvaluation()
 			if (Target) { Tx+=Target->GetX(); Ty+=Target->GetY(); Target=NULL; }
 			// Adjust coordinates
 			int32_t iTx = Tx._getInt();
-			if (~Data & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
+			if (~Data.getInt() & C4CMD_MoveTo_NoPosAdjust) AdjustMoveToTarget(iTx,Ty,FreeMoveTo(cObj),cObj->Shape.Hgt);
 			Tx.SetInt(iTx);
  			return TRUE;
 			}
@@ -1554,7 +1554,7 @@ BOOL C4Command::InitEvaluation()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CMD_Wait:
 			// Update interval by Data
-			if (Data) UpdateInterval=Data;
+			if (!Data) UpdateInterval=Data.getInt();
 			// Else update interval by Tx
 			else if (Tx._getInt()) UpdateInterval=Tx._getInt();
 			return TRUE;
@@ -1629,11 +1629,11 @@ void C4Command::Construct()
 		}
 
   // No valid target type: fail
-	C4Def *pDef; if (!(pDef=C4Id2Def(Data))) { Finish(); return; }
+	C4Def *pDef; if (!(pDef=C4Id2Def(Data.getC4ID()))) { Finish(); return; }
 
 	// player has knowledge of this construction?
 	C4Player *pPlayer = ::Players.Get(cObj->Owner);
-	if(pPlayer) if(!pPlayer->Knowledge.GetIDCount(Data, 1)) { Finish(); return; }
+	if(pPlayer) if(!pPlayer->Knowledge.GetIDCount(Data.getC4ID(), 1)) { Finish(); return; }
 
   // Building, chopping, digging: stop
   if ((cObj->GetProcedure()==DFA_CHOP) || (cObj->GetProcedure()==DFA_BUILD) || (cObj->GetProcedure()==DFA_DIG))
@@ -1656,7 +1656,7 @@ void C4Command::Construct()
 		}
 
 	// command has been validated: check for script overload now
-	int32_t scriptresult = cObj->Call(PSF_ControlCommandConstruction, &C4AulParSet(C4VObj(Target), Tx, C4VInt(Ty), C4VObj(Target2), C4VID(Data))).getInt ();
+	int32_t scriptresult = cObj->Call(PSF_ControlCommandConstruction, &C4AulParSet(C4VObj(Target), Tx, C4VInt(Ty), C4VObj(Target2), Data)).getInt ();
 	// script call might have deleted object
 	if (!cObj->Status) return;
   if (1 == scriptresult) return;
@@ -1668,7 +1668,7 @@ void C4Command::Construct()
 	// Has no construction kit: acquire one
 	C4Object *pKit;
 	if (!(pKit=cObj->Contents.Find(C4ID_Conkit)))
-		{ cObj->AddCommand(C4CMD_Acquire,0,0,0,50,0,TRUE,C4ID_Conkit,FALSE,5,0,C4CMD_Mode_Sub); return; }
+		{ cObj->AddCommand(C4CMD_Acquire,0,0,0,50,0,TRUE,C4VID(C4ID_Conkit),FALSE,5,0,C4CMD_Mode_Sub); return; }
 
 	// Move to construction site
 	if (!Inside<int32_t>(cObj->GetX() - Tx._getInt(), -iMoveToRange, +iMoveToRange)
@@ -1676,12 +1676,12 @@ void C4Command::Construct()
 		{ cObj->AddCommand(C4CMD_MoveTo,NULL,Tx,Ty,50); return; }
 
 	// Check construction site
-	if (!ConstructionCheck(Data,Tx._getInt(),Ty,cObj))
+	if (!ConstructionCheck(Data.getPropList(),Tx._getInt(),Ty,cObj))
 		// Site no good: fail
 		{ Finish(); return; }
 
 	// Create construction
-	C4Object *pConstruction = Game.CreateObjectConstruction(Data,NULL,cObj->Owner,Tx._getInt(),Ty,1,TRUE);
+	C4Object *pConstruction = Game.CreateObjectConstruction(Data.getPropList(),NULL,cObj->Owner,Tx._getInt(),Ty,1,TRUE);
 
 	// Remove conkit
 	pKit->AssignRemoval();
@@ -1700,10 +1700,9 @@ BOOL C4Command::FlightControl() // Called by DFA_WALK, DFA_FLIGHT
 	if (!((cObj->OCF & OCF_CrewMember) || cObj->Def->Pathfinder)) return FALSE;
 
 	// Not while in a disabled action
-  if (cObj->Action.Act > ActIdle)
+	if (cObj->Action.pActionDef)
 	{
-		C4ActionDef *actdef = &(cObj->Def->ActMap[cObj->Action.Act]);
-		if (actdef->Disabled) return FALSE;
+		if (cObj->Action.pActionDef->GetPropertyInt(P_ObjectDisabled)) return FALSE;
 	}
 
 	// Target angle
@@ -1905,10 +1904,10 @@ void C4Command::Buy()
 	if (!ValidPlr(Target->Base) || Hostile(Target->Base,cObj->Owner))
 		{ Finish(); return; }
 	// Target material undefined: fail
-	C4Def *pDef = C4Id2Def(Data);
+	C4Def *pDef = C4Id2Def(Data.getC4ID());
 	if (!pDef) { Finish(); return; }
 	// Material not available for purchase at base: fail
-	if (!::Players.Get(Target->Base)->HomeBaseMaterial.GetIDCount(Data))
+	if (!::Players.Get(Target->Base)->HomeBaseMaterial.GetIDCount(Data.getC4ID()))
 		{
 		Finish(false, FormatString(LoadResStr("IDS_PLR_NOTAVAIL"),pDef->GetName()).getData());
 		return;
@@ -1921,7 +1920,7 @@ void C4Command::Buy()
 		{ cObj->AddCommand(C4CMD_Enter,Target,0,0,50); return; }
 	// Buy object(s)
 	for (Tx.SetInt(Max<int32_t>(Tx._getInt(),1)); Tx._getInt(); Tx--)
-		if (!Buy2Base(cObj->Owner,Target,Data))
+		if (!Buy2Base(cObj->Owner,Target,Data.getC4ID()))
 			// Failed (with ugly message)
 			{ Finish(); return; }
 	// Done: success
@@ -1954,7 +1953,7 @@ void C4Command::Sell()
 		{ cObj->AddCommand(C4CMD_Enter,Target,0,0,50); return; }
 	// Sell object(s)
 	for (Tx.SetInt(Max<int32_t>(Tx._getInt(),1)); Tx._getInt(); Tx--)
-		if (!SellFromBase(cObj->Owner,Target,Data,Target2))
+		if (!SellFromBase(cObj->Owner,Target,Data.getC4ID(),Target2))
 			// Failed
 			{ Finish(); return; }
 		else
@@ -1971,11 +1970,11 @@ void C4Command::Acquire()
 	if (!Data) { Finish(); return; }
 
 	// Target material in inventory: done
-	if (cObj->Contents.Find(Data))
+	if (cObj->Contents.Find(Data.getC4ID()))
 		 { Finish(TRUE); return; }
 
 	// script overload
-	int32_t scriptresult = cObj->Call(PSF_ControlCommandAcquire, &C4AulParSet(C4VObj(Target), Tx, C4VInt(Ty), C4VObj(Target2), C4VID(Data))).getInt ();
+	int32_t scriptresult = cObj->Call(PSF_ControlCommandAcquire, &C4AulParSet(C4VObj(Target), Tx, C4VInt(Ty), C4VObj(Target2), Data)).getInt ();
 
 	// script call might have deleted object
 	if (!cObj->Status) return;
@@ -1988,7 +1987,7 @@ void C4Command::Acquire()
 	// Find available material
 	C4Object *pMaterial=NULL;
 	// Next closest
-	while (pMaterial = Game.FindObject(Data,cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,NULL,NULL,NULL,NULL,ANY_OWNER,pMaterial))
+	while (pMaterial = Game.FindObject(Data.getC4ID(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,NULL,NULL,NULL,NULL,ANY_OWNER,pMaterial))
 		// Object is not in container to be ignored
 		if (!Target2 || pMaterial->Contained!=Target2)
 			// Object is near enough
@@ -2095,7 +2094,7 @@ void C4Command::Fail(const char *szFailMessage)
 				if (szFailMessage) break;
 				// Fail message with name of target type
 				SCopy(LoadResStr(CommandNameID(Command)), szCommandName);
-				C4Def *pDef; pDef = ::Definitions.ID2Def(Data);
+				C4Def *pDef; pDef = ::Definitions.ID2Def(Data.getC4ID());
 				SCopy(pDef ? pDef->GetName() : LoadResStr("IDS_OBJ_UNKNOWN"), szObjectName);
 				str.Format(LoadResStr("IDS_CON_FAILUREOF"), szCommandName, szObjectName);
 				break;
@@ -2146,7 +2145,7 @@ void C4Command::Energy()
 	// No linekit: get one
 	C4Object *pKit, *pLine = NULL, *pKitWithLine;
 	if (!(pKit=cObj->Contents.Find(C4ID_Linekit)))
-		{ cObj->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,C4ID_Linekit); return; }
+		{ cObj->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,C4VID(C4ID_Linekit)); return; }
 	// Find line constructing kit
 	for (int32_t cnt=0; pKitWithLine=cObj->Contents.GetObject(cnt); cnt++)
 		if ((pKitWithLine->id==C4ID_Linekit) && (pLine=Game.FindObject(C4ID_PowerLine,0,0,0,0,OCF_All,"Connect",pKitWithLine)))
@@ -2207,7 +2206,7 @@ void C4Command::Home()
 	}
 
 void C4Command::Set(int32_t iCommand, C4Object *pObj, C4Object *pTarget, C4Value nTx, int32_t iTy,
-										C4Object *pTarget2, int32_t iData, int32_t iUpdateInterval,
+										C4Object *pTarget2, C4Value iData, int32_t iUpdateInterval,
 										BOOL fEvaluated, int32_t iRetries, C4String * szText, int32_t iBaseMode)
 	{
 	// Reset
@@ -2268,7 +2267,7 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkIntPackAdapt(reinterpret_cast<int32_t &>(Target))); pComp->Seperator(StdCompiler::SEP_SEP);
 	pComp->Value(mkIntPackAdapt(reinterpret_cast<int32_t &>(Target2))); pComp->Seperator(StdCompiler::SEP_SEP);
 	// Data
-	pComp->Value(mkIntPackAdapt(Data)); pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Value(Data); pComp->Seperator(StdCompiler::SEP_SEP);
 	// Update interval
 	pComp->Value(mkIntPackAdapt(UpdateInterval)); pComp->Seperator(StdCompiler::SEP_SEP);
 	// Flags
@@ -2289,7 +2288,7 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	if(pComp->isDecompiler())
 		{
 		if(Text)
-			TextBuf.Ref(Text->Data);
+			TextBuf.Ref(Text->GetData());
 		else
 			TextBuf.Ref("0");
 		}
@@ -2301,7 +2300,7 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 		if(TextBuf == "0")
 			{ Text = NULL; }
 		else
-			{ Text = ::ScriptEngine.Strings.RegString(TextBuf); Text->IncRef(); }
+			{ Text = Strings.RegString(TextBuf); Text->IncRef(); }
 		}
   }
 

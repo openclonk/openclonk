@@ -606,7 +606,7 @@ bool C4FindObjectCategory::IsEnsured()
 
 bool C4FindObjectAction::Check(C4Object *pObj)
 {
-	return SEqual(pObj->Action.Name, szAction);
+	return SEqual(pObj->Action.pActionDef->GetName(), szAction);
 }
 
 bool C4FindObjectActionTarget::Check(C4Object *pObj)
@@ -771,7 +771,7 @@ C4SortObjectByValue::~C4SortObjectByValue()
 	delete [] pVals; pVals = NULL;
 	}
 
-bool C4SortObjectByValue::PrepareCache(const C4ValueList *pObjs)
+bool C4SortObjectByValue::PrepareCache(const C4ValueArray *pObjs)
 	{
 	// Clear old cache
 	delete [] pVals; pVals = NULL; iSize = 0;
@@ -810,7 +810,7 @@ int32_t C4SortObjectReverse::Compare(C4Object *pObj1, C4Object *pObj2)
 	return pSort->Compare(pObj2, pObj1);
 	}
 
-bool C4SortObjectReverse::PrepareCache(const C4ValueList *pObjs)
+bool C4SortObjectReverse::PrepareCache(const C4ValueArray *pObjs)
 	{
 	return pSort->PrepareCache(pObjs);
 	}
@@ -837,7 +837,7 @@ int32_t C4SortObjectMultiple::Compare(C4Object *pObj1, C4Object *pObj2)
 	return 0;
 	}
 
-bool C4SortObjectMultiple::PrepareCache(const C4ValueList *pObjs)
+bool C4SortObjectMultiple::PrepareCache(const C4ValueArray *pObjs)
 	{
 	bool fCaches = false;
 	for (int32_t i=0; i<iCnt; ++i)

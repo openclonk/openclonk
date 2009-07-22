@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>Definition</title>
+		<category>Callbacks</category>
+		<subcat>Definition</subcat>
+		<version>4.10.0.0</version>
+		<syntax>
+			<params>
+				<param><type>proplist</type><name>def</name><desc>Definition, die initialisiert wird.</desc></param>
+			</params>
+		</syntax>
+		<desc>Wird nach dem Laden der Definitionen aufgerufen. Sollte nur die aktuelle Definiton ändern.</desc>
+	</func>
+	<author>Günther</author><date>Mai 2009</date>
+</funcs>

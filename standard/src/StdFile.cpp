@@ -46,6 +46,11 @@
 #include <string>
 
 /* Path & Filename */
+#ifdef _WIN32
+static const char *DirectorySeparators = "/\\";
+#else
+static const char *DirectorySeparators = "/";
+#endif
 
 // Return pointer to position after last backslash.
 

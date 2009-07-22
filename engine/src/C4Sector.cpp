@@ -189,14 +189,16 @@ void C4LSectors::Remove(C4Object *pObj)
 
 void C4LSectors::AssertObjectNotInList(C4Object *pObj)
 	{
+#ifndef NDEBUG
 	C4LSector *sct=Sectors;
 	for (int cnt=0; cnt<Size; cnt++, sct++)
 		{
-		if (sct->Objects.IsContained(pObj)) assert(false);
-		if (sct->ObjectShapes.IsContained(pObj)) assert(false);
+		assert(!sct->Objects.IsContained(pObj));
+		assert(!sct->ObjectShapes.IsContained(pObj));
 		}
-	if (SectorOut.Objects.IsContained(pObj)) assert(false);
-	if (SectorOut.ObjectShapes.IsContained(pObj)) assert(false);
+	assert(!SectorOut.Objects.IsContained(pObj));
+	assert(!SectorOut.ObjectShapes.IsContained(pObj));
+#endif
 	}
 
 int C4LSectors::getShapeSum() const

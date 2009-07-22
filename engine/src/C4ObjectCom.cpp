@@ -669,9 +669,9 @@ BOOL ObjectComDrop(C4Object *cObj, C4Object *pThing)
   int32_t tdir=0; int right=0;
 	bool isHanglingOrSwimming = false;
 	int32_t iProc = DFA_NONE;
-	if (cObj->Action.Act >= 0)
+	if (cObj->Action.pActionDef)
 		{
-		iProc = cObj->Def->ActMap[cObj->Action.Act].Procedure;
+		iProc = cObj->Action.pActionDef->GetPropertyInt(P_Procedure);
 		if (iProc == DFA_HANGLE || iProc == DFA_SWIM) isHanglingOrSwimming = true;
 		}
 	int32_t iOutposReduction = 1; // don't exit object too far forward during jump
@@ -709,7 +709,7 @@ BOOL ObjectComBuild(C4Object *cObj, C4Object *pTarget)
   {
   if (!pTarget) return FALSE;
   // Needs to be idle or walking
-  if (cObj->Action.Act!=ActIdle)
+  if (cObj->Action.pActionDef)
     if (cObj->GetProcedure()!=DFA_WALK)
       return FALSE;
   return ObjectActionBuild(cObj,pTarget);
@@ -782,7 +782,7 @@ BOOL ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 BOOL ObjectComCancelAttach(C4Object *cObj)
   {
   if (cObj->GetProcedure()==DFA_ATTACH)
-    return cObj->SetAction(ActIdle);
+    return cObj->SetAction(0);
   return FALSE;
   }
 
@@ -1033,8 +1033,8 @@ BOOL PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t t
 			}
 		// Jump'n'Run: Drop on combined Down/Left/Right+Throw
 		if (pPlr->PrefControlStyle && (pPlr->PressedComs & (1 << COM_Down))) fConvertToDrop = true;
-		if (fConvertToDrop) return pPlr->ObjectCommand(C4CMD_Drop,pTarget,tx,ty,NULL,0,iAddMode);
+		if (fConvertToDrop) return pPlr->ObjectCommand(C4CMD_Drop,pTarget,tx,ty,NULL,C4VNull,iAddMode);
 		}
 	// Route to player
-	return pPlr->ObjectCommand(cmdf,pTarget,tx,ty,NULL,0,iAddMode);
+	return pPlr->ObjectCommand(cmdf,pTarget,tx,ty,NULL,C4VNull,iAddMode);
 	}

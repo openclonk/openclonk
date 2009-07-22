@@ -1,2 +1,0 @@
-DE:Inventar
-US:Inventory

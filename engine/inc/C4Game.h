@@ -193,11 +193,14 @@ class C4Game
 	  BOOL ReloadDef(C4ID id);
 		BOOL ReloadParticle(const char *szName);
     // Object functions
-    void ClearPointers(C4Object *cobj);
+    void ClearPointers(C4PropList *cobj);
+    C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
+                           int32_t x=50, int32_t y=50, int32_t r=0,
+                           FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
     C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
                            int32_t x=50, int32_t y=50, int32_t r=0,
                            FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
-    C4Object *CreateObjectConstruction(C4ID type,
+    C4Object *CreateObjectConstruction(C4PropList * type,
 		                                   C4Object *pCreator,
                                        int32_t owner,
                                        int32_t ctx=0, int32_t bty=0,
@@ -297,7 +300,7 @@ class C4Game
 	  BOOL RecreatePlayerFiles();
 
     // Object function internals
-    C4Object *NewObject( C4Def *ndef, C4Object *pCreator,
+    C4Object *NewObject( C4PropList *ndef, C4Object *pCreator,
                          int32_t owner, C4ObjectInfo *info,
                          int32_t tx, int32_t ty, int32_t tr,
                          FIXED xdir, FIXED ydir, FIXED rdir,

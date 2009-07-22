@@ -1,7 +1,6 @@
 [DefCore]
 id=ROCK
 Version=4,10,0,0
-Name=Rock
 Category=C4D_Object|C4D_SelectMaterial|C4D_SelectHomebase|C4D_SelectInEarth
 MaxUserSelect=10
 Width=6
@@ -14,6 +13,5 @@ Value=1
 Mass=10
 Components=IROC=3
 Rebuy=1
-Collectible=1
 Projectile=1
 

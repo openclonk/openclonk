@@ -26,9 +26,6 @@
 
 #include <StdAdaptors.h>
 
-// Use 64 Bit for C4ID (on x86_64) to pass 64 bit for each script function
-// parameter
-
 class C4ID
 	{
 	uint32_t v;

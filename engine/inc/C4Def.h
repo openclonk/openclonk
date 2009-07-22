@@ -31,6 +31,7 @@
 #include <C4Facet.h>
 #include <C4Surface.h>
 #include <C4ComponentHost.h>
+#include <C4PropList.h>
 
 #include <C4ScriptHost.h>
 #include <C4DefGraphics.h>
@@ -120,14 +121,13 @@ const DWORD C4D_Load_None      =  0,
 						C4D_Load_Bitmap    =  2,
 						C4D_Load_Script    =  4,
 						C4D_Load_Desc      =  8,
-						C4D_Load_ActMap    = 16,
 						C4D_Load_Image     = 32,
 						C4D_Load_Sounds		 = 64,
 						C4D_Load_ClonkNames= 128,
 						C4D_Load_RankNames = 256,
 						C4D_Load_RankFaces = 512,
 						C4D_Load_FE        = C4D_Load_Image | C4D_Load_Desc,
-						C4D_Load_RX        = C4D_Load_Bitmap | C4D_Load_Script | C4D_Load_ClonkNames | C4D_Load_Desc | C4D_Load_ActMap | C4D_Load_Sounds | C4D_Load_RankNames | C4D_Load_RankFaces,
+						C4D_Load_RX        = C4D_Load_Bitmap | C4D_Load_Script | C4D_Load_ClonkNames | C4D_Load_Desc | C4D_Load_Sounds | C4D_Load_RankNames | C4D_Load_RankFaces,
 						C4D_Load_Temporary = 1024;
 
 #define C4D_Blit_Normal     0
@@ -137,58 +137,11 @@ const DWORD C4D_Load_None      =  0,
 #define C4DGFXMODE_NEWGFX 1
 #define C4DGFXMODE_OLDGFX 2
 
-const int32_t ActIdle=-1;
-const int32_t ActHold=-2;
-
-class C4ActionDef
+class C4Def: public C4PropList
   {
-	public:
-		C4ActionDef();
-  public:
-    char Name[C4D_MaxIDLen+1];
-    char ProcedureName[C4D_MaxIDLen+1];
-    int32_t Procedure; // Mapped by C4Def::Load
-    int32_t Directions;
-		int32_t FlipDir;
-    int32_t Length;
-		int32_t Delay;
-		int32_t Attach;
-    char NextActionName[C4D_MaxIDLen+1];
-    int32_t NextAction; // Mapped by C4Def::Load
-    char InLiquidAction[C4D_MaxIDLen+1];
-    char TurnAction[C4D_MaxIDLen+1];
-    int32_t FacetBase;
-    C4TargetRect Facet;
-		int32_t FacetTopFace;
-    int32_t NoOtherAction;
-    int32_t Disabled;
-    int32_t DigFree;
-    int32_t FacetTargetStretch;
-    char Sound[C4D_MaxIDLen+1];
-		int32_t EnergyUsage;
-		int32_t Reverse;
-		int32_t Step;
-    char SStartCall[C4D_MaxIDLen+1];
-    char SEndCall[C4D_MaxIDLen+1];
-    char SAbortCall[C4D_MaxIDLen+1];
-    char SPhaseCall[C4D_MaxIDLen+1];
-		class C4AulScriptFunc *StartCall;
-		C4AulScriptFunc *EndCall;
-		C4AulScriptFunc *AbortCall;
-		C4AulScriptFunc *PhaseCall;
-	public:
-		void Default();
-		void CompileFunc(StdCompiler *pComp);
-  };
-
-class C4DefCore
-  {
-	public:
-		C4DefCore();
   public:
     C4ID id;
 		int32_t rC4XVer[4];
-    StdCopyStrBuf Name;
 		C4IDList RequireDef;
 		C4PhysicalInfo Physical;
     C4Shape Shape;
@@ -270,19 +223,16 @@ class C4DefCore
 		int32_t AutoContextMenu;  // automatically open context menu for this object
 		int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
 	public:
-		void Default();
-    BOOL Load(C4Group &hGroup);
+		void DefaultDefCore();
+    BOOL LoadDefCore(C4Group &hGroup);
 		BOOL Save(C4Group &hGroup);
 		void CompileFunc(StdCompiler *pComp);
-		const char * GetName() const { return Name.getData(); }
 	protected:
 		BOOL Compile(const char *szSource, const char *szName);
 		BOOL Decompile(StdStrBuf *pOut, const char *szName);
-  };
 
 
-class C4Def: public C4DefCore
-  {
+// Here begins the C4Def
   friend class C4DefList;
   public:
     C4Def();
@@ -293,8 +243,6 @@ class C4Def: public C4DefCore
     HBITMAP Picture;
     HBITMAP Image;
 #endif
-
-    int32_t ActNum; C4ActionDef *ActMap;
 		char Maker[C4MaxName+1];
 		char Filename[_MAX_FNAME+1];
 		int32_t Creation;
@@ -341,6 +289,7 @@ class C4Def: public C4DefCore
     void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
 		void Synchronize();
 		const char *GetDesc() { return Desc.GetData(); }
+		virtual C4Def* GetDef() { return this; }
   protected:
 	  bool LoadPortraits(C4Group &hGroup);
 		BOOL ColorizeByMaterial(class C4MaterialMap &rMats, BYTE bGBM);
@@ -407,6 +356,7 @@ class C4DefList
     BOOL Add(C4Def *ndef, BOOL fOverload);
 		void BuildTable(); // build quick access table
 		void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
+		void CallEveryDefinition();
 		void Synchronize();
 
 		// callback from font renderer: get ID image

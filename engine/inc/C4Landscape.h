@@ -73,7 +73,6 @@ class C4Landscape
     BYTE *pInitial; // Initial landscape after creation - used for diff
 	protected:
 		CSurface * Surface32;
-		CSurface * AnimationSurface;
 		CSurface8 * Surface8;
 		int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 		int32_t PixCntPitch;
@@ -253,7 +252,7 @@ BOOL FindThrowingPosition(int32_t iTx, int32_t iTy, FIXED fXDir, FIXED fYDir, in
 BOOL PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
 BOOL PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
 BOOL FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2, int32_t iExcludeAngle1, int32_t iExcludeAngle2);
-BOOL ConstructionCheck(C4ID id, int32_t iX, int32_t iY, C4Object *pByObj=NULL);
+BOOL ConstructionCheck(C4PropList *, int32_t iX, int32_t iY, C4Object *pByObj=NULL);
 int32_t PixCol2Mat(BYTE pixc);
 
 #define GBackWdt ::Landscape.Width

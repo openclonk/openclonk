@@ -206,7 +206,7 @@ void C4PhysicalInfo::PromotionUpdate(int32_t iRank, bool fUpdateTrainablePhysica
 		const char *szPhysName; C4PhysicalInfo::Offset PhysOff;
 		for (int32_t iPhysIdx=0; szPhysName = GetNameByIndex(iPhysIdx, &PhysOff); ++iPhysIdx)
 			{
-			C4Value PhysVal(this->*PhysOff, C4V_Int);
+			C4Value PhysVal(this->*PhysOff);
 			C4AulParSet Pars(C4VString(szPhysName), C4VInt(iRank), C4VRef(&PhysVal));
 			if (!!pTrainDef->Script.Call(PSF_GetFairCrewPhysical, 0, &Pars))
 				{

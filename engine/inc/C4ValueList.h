@@ -42,8 +42,6 @@ protected:
 public:
 	int32_t GetSize() const { return iSize; }
 
-	void Sort(class C4SortObject &rSort);
-
 	const C4Value &GetItem(int32_t iElem) const
 	{
 		if (-iSize <= iElem && iElem < 0)
@@ -88,6 +86,7 @@ public:
 	void DecRef();
 	void DecElementRef();
 
+	void Sort(class C4SortObject &rSort);
 private:
 	// Only for IncRef/AddElementRef
 	C4ValueArray(const C4ValueArray &Array2);
