@@ -43,11 +43,9 @@ bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
 #endif
 
 #ifdef _WIN32
-static const char *DirectorySeparators = "/\\";
 #define DirectorySeparator '\\'
 #define AltDirectorySeparator '/'
 #else
-static const char *DirectorySeparators = "/";
 #define DirectorySeparator '/'
 #define AltDirectorySeparator '\\'
 #define DIRECTORYSEPARATORS "/"
