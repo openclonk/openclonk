@@ -1,11 +1,13 @@
 [Material]
-Name=Granite
+Name=Gold
 Color=128,128,128,128,128,128,128,128,128
 Shape=3
 Density=50
 Friction=100
+BlastFree=1
+Blast2Object=GOLD
+Blast2ObjectRatio=75
 MaxAirSpeed=100
 MaxSlide=250
-BlastShiftTo=Rock
-Placement=60
-TextureOverlay=granite
+Placement=50
+TextureOverlay=gold
