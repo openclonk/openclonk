@@ -1569,7 +1569,7 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
     SAppendChar('"', command);
 		break;
 	case C4V_Any:
-		sprintf(parameter, "CastAny(%ld)", Parameter.GetData().Int);
+		SCopy("nil", parameter);
 		break;
 	case C4V_Array:
 		// Arrays were never allowed, so tell the scripter
