@@ -5643,11 +5643,24 @@ void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
 	return;
 	}
 
+void C4Object::GetParallaxity(int32_t *parX, int32_t *parY)
+{
+	assert(parX); assert(parY);
+	*parX = 100; *parY = 100;
+	if (!(Category & C4D_Parallax)) return;
+	C4Value parV; GetProperty(Strings.P[P_Parallaxity], parV);
+	C4ValueArray *par = parV.getArray();
+	if (!par) return;
+	*parX = par->GetItem(0).getInt();
+	*parY = par->GetItem(1).getInt();
+}
+
 void C4Object::ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctViewport)
 	{
 	// parallaxity by locals
 	// special: Negative positions with parallaxity 0 mean HUD elements positioned to the right/bottom
-	int iParX = Local[0].getInt(), iParY = Local[1].getInt();
+	int iParX, iParY;
+	GetParallaxity(&iParX, &iParY);
 	if (!iParX && GetX()<0)
 		riTx = -fctViewport.Wdt;
 	else
@@ -5680,7 +5693,8 @@ void C4Object::UnSelect(BOOL fCursor)
 
 void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)
 	{
-	float iParX = float(Local[0].getInt()), iParY = float(Local[1].getInt());
+	int iParX, iParY;
+	GetParallaxity(&iParX, &iParY);
 	// get drawing pos, then subtract original target pos to get drawing pos on landscape
 	if (!iParX && GetX()<0)
 		// HUD element at right viewport pos

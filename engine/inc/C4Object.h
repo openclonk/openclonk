@@ -360,6 +360,7 @@ class C4Object: public C4PropList
 		void DirectComContents(C4Object *pTarget, bool fDoCalls);		// direct com: scroll contents to given ID
 		inline void TargetPos(float &riTx, float &riTy, const C4Facet &fctViewport)    // update scroll pos applying parallaxity
 			{ if (Category & C4D_Parallax) ApplyParallaxity(riTx, riTy, fctViewport); }
+		void GetParallaxity(int32_t *parX, int32_t *parY);
 		void ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctViewport);   // apply parallaxity by locals of object
 		bool IsInLiquidCheck();                        // returns whether the Clonk is within liquid material
 		void UpdateInLiquid(); // makes splash when a liquid is entered

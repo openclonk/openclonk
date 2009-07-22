@@ -115,6 +115,7 @@ C4StringTable::C4StringTable()
 	P[P_Reverse] = RegString("Reverse");
 	P[P_Step] = RegString("Step");
 	P[P_Visibility] = RegString("Visibility");
+	P[P_Parallaxity] = RegString("Parallaxity");
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
 	}
 
