@@ -534,15 +534,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					PopValue();
 					break;
 					}
-				case AB_EqualIdent:	// old ==
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(pPar1->_getRaw() == pPar2->_getRaw());
-					PopValue();
-					break;
-					}
-				case AB_Equal:	// new ==
+				case AB_Equal:	// ==
 					{
 					CheckOpPars(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
@@ -550,15 +542,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					PopValue();
 					break;
 					}
-				case AB_NotEqualIdent:	// old !=
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(pPar1->_getRaw() != pPar2->_getRaw());
-					PopValue();
-					break;
-					}
-				case AB_NotEqual:	// new !=
+				case AB_NotEqual:	// !=
 					{
 					CheckOpPars(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
@@ -605,22 +589,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					CheckOpPars(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 					pPar1->SetInt(pPar1->_getInt() | pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_And: 	// &&
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(pPar1->_getRaw() && pPar2->_getRaw());
-					PopValue();
-					break;
-					}
-				case AB_Or:  	// ||
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(pPar1->_getRaw() || pPar2->_getRaw());
 					PopValue();
 					break;
 					}

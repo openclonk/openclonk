@@ -1911,8 +1911,6 @@ static C4Object *FnCreateObject(C4AulContext *cthr,
 		{
 		iXOffset+=cthr->Obj->GetX();
 		iYOffset+=cthr->Obj->GetY();
-		if (!cthr->Caller || !cthr->Caller->Func->Owner->Strict)
-			iOwner=cthr->Obj->Owner;
 		}
 
   C4Object *pNewObj = Game.CreateObject(PropList,cthr->Obj,iOwner,iXOffset,iYOffset);
@@ -1932,8 +1930,6 @@ static C4Object *FnCreateConstruction(C4AulContext *cthr,
 		{
 		iXOffset+=cthr->Obj->GetX();
 		iYOffset+=cthr->Obj->GetY();
-		if (!cthr->Caller || !cthr->Caller->Func->Owner->Strict)
-			iOwner=cthr->Obj->Owner;
 		}
 
 	// Check site
