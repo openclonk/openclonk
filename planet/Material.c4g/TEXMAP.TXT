@@ -40,7 +40,7 @@
 
 54=Coal-coal
 
-#55=Sand-Smooth
+55=Sand-sand_rough
 #56=Sand-Smooth2
 #57=Sand-Smooth3
 
