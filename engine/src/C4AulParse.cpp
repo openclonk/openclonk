@@ -1615,7 +1615,7 @@ void C4AulParseState::Parse_Function()
 			C4AulBCC * CPos = a->GetCodeByPos(Max(a->GetCodePos() - 1,0));
 			if (!CPos || CPos->bccType != AB_RETURN || fJump)
 				{
-				AddBCC(AB_INT);
+				AddBCC(AB_NIL);
 				AddBCC(AB_RETURN);
 				}
 			// and break
