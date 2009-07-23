@@ -306,6 +306,47 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	}
 
+namespace
+{
+	void RenderMeshVertex(const StdMeshVertex& vtx, const StdMeshMaterialPass& pass, CBltTransform* pTransform, CClrModAddMap* pClrModMap, DWORD dwModClr)
+	{
+		// TODO: We might also want to modulate emissive
+		float Ambient[4];
+		float Diffuse[4];
+		float Specular[4];
+
+		float x = vtx.x;
+		float y = vtx.y;
+		pTransform->TransformPoint(x, y);
+		DWORD dwClr = pClrModMap ? pClrModMap->GetModAt(x, y) : 0xffffff;
+		ModulateClr(dwClr, dwModClr);
+
+		Ambient[0] = pass.Ambient[0] * ((dwClr >> 16) & 0xff) / 255.0f;
+		Ambient[1] = pass.Ambient[1] * ((dwClr >>  8) & 0xff) / 255.0f;
+		Ambient[2] = pass.Ambient[2] * ((dwClr      ) & 0xff) / 255.0f;
+		Ambient[3] = 1 - ((1-pass.Ambient[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
+
+		Diffuse[0] = pass.Diffuse[0] * ((dwClr >> 16) & 0xff) / 255.0f;
+		Diffuse[1] = pass.Diffuse[1] * ((dwClr >>  8) & 0xff) / 255.0f;
+		Diffuse[2] = pass.Diffuse[2] * ((dwClr      ) & 0xff) / 255.0f;
+		Diffuse[3] = 1 - ((1-pass.Diffuse[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
+
+		Specular[0] = pass.Specular[0] * ((dwClr >> 16) & 0xff) / 255.0f;
+		Specular[1] = pass.Specular[1] * ((dwClr >>  8) & 0xff) / 255.0f;
+		Specular[2] = pass.Specular[2] * ((dwClr      ) & 0xff) / 255.0f;
+		Specular[3] = 1 - ((1-pass.Specular[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
+
+		glTexCoord2f(vtx.u, vtx.v);
+		glTexCoord2f(vtx.u, vtx.v);
+		glNormal3f(vtx.nx, vtx.ny, vtx.nz);
+		glVertex3f(vtx.x, vtx.y, vtx.z);
+	}
+}
+
 void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform)
 {
 	const StdMesh& mesh = instance.Mesh;
@@ -327,22 +368,21 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glMultMatrixf(transform);
 	}
 
-	// TODO: ClrMod, ...
-
 	// Scale so that the mesh fits in (tx,ty,twdt,thgt)
-	float rx = -box.x1 / (box.x2 - box.x1);
-	float ry = -box.y1 / (box.y2 - box.y1);
-	float scx = twdt/(box.x2 - box.x1);
-	float scy = thgt/(box.y2 - box.y1);
+	const float rx = -box.x1 / (box.x2 - box.x1);
+	const float ry = -box.y1 / (box.y2 - box.y1);
+	const float dx = tx + rx*twdt;
+	const float dy = ty + ry*thgt;
+	const float scx = twdt/(box.x2 - box.x1);
+	const float scy = thgt/(box.y2 - box.y1);
 	// Keep aspect ratio:
 	//if(scx < scy) scy = scx;
 	//else scx = scy;
-	glTranslatef(tx + rx*twdt, ty + ry*thgt, 0.0f);
+	glTranslatef(dx, dy, 0.0f);
 	glScalef(scx, scy, 1.0f);
 
 	// Put a light source in front of the object
-	GLfloat light_position[] = { 0.0f, 0.0f, 15.0f*Zoom, 1.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	const GLfloat light_position[] = { 0.0f, 0.0f, 15.0f*Zoom, 1.0f };
 	glEnable(GL_LIGHT0);
 
 	// TODO: Find a working technique, we currently always use the
@@ -350,22 +390,41 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	const StdMeshMaterial& material = mesh.GetMaterial();
 	const StdMeshMaterialTechnique& technique = material.Techniques[0];
 
+	// Create a transformation which transfers a vertex from mesh
+	// coordinates to screen coordinates. This is basically the same
+	// as the current GL modelview matrix, but we need it to access the
+	// ClrModMap for each vertex with the correct coordinates.
+	CBltTransform Transform;
+	Transform.SetMoveScale(dx, dy, scx, scy);
+	if(pTransform) Transform *= *pTransform;
+
+	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
+	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffff;
+
 	// Render each pass
 	for(unsigned int i = 0; i < technique.Passes.size(); ++i)
 	{
 		const StdMeshMaterialPass& pass = technique.Passes[i];
 
 		// Set up material
+#if 0
 		glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
 		glMaterialfv(GL_FRONT, GL_DIFFUSE, pass.Diffuse);
 		glMaterialfv(GL_FRONT, GL_SPECULAR, pass.Specular);
+#endif
 		glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
 		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
 
 		// TODO: Set up texture units
 
 		// Render mesh
-		// TODO: Use glInterleavedArrays?
+		// TODO: Use glInterleavedArrays? Hm, might be impossible as
+		// we need to set material for each vertex. Can't use
+		// glMaterialColor either, because we set all diffuse, ambient
+		// and specular material...
+		// TODO: We might not want to calculate the material for each
+		// vertex separately. This looks odd when the mesh is moving
+		// at FoW borders anyway.
 		glBegin(GL_TRIANGLES);
 		for(unsigned int j = 0; j < mesh.GetNumFaces(); ++j)
 		{
@@ -374,15 +433,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 			const StdMeshVertex& vtx2 = instance.GetVertex(face.Vertices[1]);
 			const StdMeshVertex& vtx3 = instance.GetVertex(face.Vertices[2]);
 
-			glTexCoord2f(vtx1.u, vtx1.v);
-			glNormal3f(vtx1.nx, vtx1.ny, vtx1.nz);
-			glVertex3f(vtx1.x, vtx1.y, vtx1.z);
-			glTexCoord2f(vtx2.u, vtx2.v);
-			glNormal3f(vtx2.nx, vtx2.ny, vtx2.nz);
-			glVertex3f(vtx2.x, vtx2.y, vtx2.z);
-			glTexCoord2f(vtx3.u, vtx3.v);
-			glNormal3f(vtx3.nx, vtx3.ny, vtx3.nz);
-			glVertex3f(vtx3.x, vtx3.y, vtx3.z);
+			RenderMeshVertex(vtx1, pass, &Transform, ClrModMap, dwModClr);
+			RenderMeshVertex(vtx2, pass, &Transform, ClrModMap, dwModClr);
+			RenderMeshVertex(vtx3, pass, &Transform, ClrModMap, dwModClr);
 		}
 		glEnd(); // GL_TRIANGLES
 	}

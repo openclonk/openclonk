@@ -28,6 +28,7 @@ VehicleControl=2
 Pathfinder=1
 ClosedContainer=2
 NoFight=1
+Rotate=1
 
 [Physical]
 Energy=250000
