@@ -20,8 +20,41 @@
 
 #include <tinyxml/tinyxml.h>
 
+#include <algorithm>
+
 namespace
 {
+  // Helper to sort faces for FaceOrdering
+  struct StdMeshInstanceFaceOrderingCmpPred
+  {
+    const StdMeshInstance& m_inst;
+    StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& inst):
+      m_inst(inst) {}
+
+    bool operator()(const StdMeshFace* face1, const StdMeshFace* face2) const
+    {
+      switch(m_inst.GetFaceOrdering())
+      {
+      case StdMeshInstance::FO_Fixed:
+        // Faces are in a vector, thus contiuous in memory
+        return face1 < face2; // TODO: face1 > face2?
+      case StdMeshInstance::FO_FarthestToNearest:
+      case StdMeshInstance::FO_NearestToFarthest:
+        {
+          float z1 = m_inst.GetVertex(face1->Vertices[0]).z + m_inst.GetVertex(face1->Vertices[1]).z + m_inst.GetVertex(face1->Vertices[2]).z;
+          float z2 = m_inst.GetVertex(face2->Vertices[0]).z + m_inst.GetVertex(face2->Vertices[1]).z + m_inst.GetVertex(face2->Vertices[2]).z;
+          if(m_inst.GetFaceOrdering() == StdMeshInstance::FO_FarthestToNearest)
+            return z1 < z2;
+          else
+            return z2 < z1;
+        }
+      default:
+        assert(false);
+        return false;
+      }
+    }
+  };
+
   // Generate matrix to convert the mesh from Ogre coordinate system to Clonk
   // coordinate system. When making changes here, don't forget to make
   // corresponding changes for the inverse matrix below.
@@ -697,11 +730,22 @@ const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
-  Mesh(mesh), Animation(NULL), Position(0.0f),
-  BoneTransforms(Mesh.GetNumBones()), Vertices(Mesh.GetNumVertices())
+  Mesh(mesh), CurrentFaceOrdering(FO_Fixed), Animation(NULL), Position(0.0f),
+  BoneTransforms(Mesh.GetNumBones()), Vertices(Mesh.GetNumVertices()),
+  Faces(Mesh.GetNumFaces())
 {
   for(unsigned int i = 0; i < Mesh.GetNumVertices(); ++i)
     Vertices[i] = Mesh.GetVertex(i);
+
+  // This is FO_Fixed actually
+  for(unsigned int i = 0; i < Mesh.GetNumFaces(); ++i)
+    Faces[i] = &Mesh.GetFace(i);
+}
+
+void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
+{
+  CurrentFaceOrdering = ordering;
+  ReorderFaces();
 }
 
 bool StdMeshInstance::SetAnimationByName(const StdStrBuf& animation_name)
@@ -785,6 +829,15 @@ void StdMeshInstance::SetPosition(float position)
       Vertices[i] = vertex;
     }
   }
+
+  if(CurrentFaceOrdering != FO_Fixed)
+    ReorderFaces();
+}
+
+void StdMeshInstance::ReorderFaces()
+{
+  StdMeshInstanceFaceOrderingCmpPred pred(*this);
+  std::sort(Faces.begin(), Faces.end(), pred);
 }
 
 // vim: et ts=2 sw=2

@@ -426,9 +426,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// vertex separately. This looks odd when the mesh is moving
 		// at FoW borders anyway.
 		glBegin(GL_TRIANGLES);
-		for(unsigned int j = 0; j < mesh.GetNumFaces(); ++j)
+		for(unsigned int j = 0; j < instance.GetNumFaces(); ++j)
 		{
-			const StdMeshFace& face = mesh.GetFace(j);
+			const StdMeshFace& face = instance.GetFace(j);
 			const StdMeshVertex& vtx1 = instance.GetVertex(face.Vertices[0]);
 			const StdMeshVertex& vtx2 = instance.GetVertex(face.Vertices[1]);
 			const StdMeshVertex& vtx3 = instance.GetVertex(face.Vertices[2]);

@@ -223,6 +223,15 @@ class StdMeshInstance
 public:
   StdMeshInstance(const StdMesh& mesh);
 
+  enum FaceOrdering {
+    FO_Fixed, // don't reorder, keep faces as in mesh
+    FO_FarthestToNearest,
+    FO_NearestToFarthest
+  };
+
+  FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
+  void SetFaceOrdering(FaceOrdering ordering);
+
   bool SetAnimationByName(const StdStrBuf& animation_name);
   void SetAnimation(const StdMeshAnimation& animation);
   void UnsetAnimation();
@@ -237,14 +246,24 @@ public:
   const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
   unsigned int GetNumVertices() const { return Vertices.size(); }
 
+  // Get face of instance. The instance faces are the same as the mesh faces,
+  // with the exception that they are differently ordered, depending on the
+  // current FaceOrdering. See also SetFaceOrdering.
+  const StdMeshFace& GetFace(unsigned int i) const { return *Faces[i]; }
+  unsigned int GetNumFaces() const { return Faces.size(); }
+
   const StdMesh& Mesh;
 
 protected:
+  void ReorderFaces();
+
+  FaceOrdering CurrentFaceOrdering;
   const StdMeshAnimation* Animation;
   float Position;
 
   std::vector<StdMeshMatrix> BoneTransforms;
   std::vector<StdMeshVertex> Vertices;
+  std::vector<const StdMeshFace*> Faces;
 };
 
 #endif

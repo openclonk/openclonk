@@ -188,9 +188,14 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	// graphics
 	pGraphics = &Def->Graphics;
 	if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+		{
 		pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+		pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+		}
 	else
+		{
 		pMeshInstance = NULL;
+		}
 	BlitMode = Def->BlitMode;
 
 	// Position
@@ -426,9 +431,14 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 
 		delete pMeshInstance;
 		if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+			{
 			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+			pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+			}
 		else
+			{
 			pMeshInstance = NULL;
+			}
 
 		// update face - this also puts any SolidMask
 		UpdateFace(false);
