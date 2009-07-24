@@ -678,16 +678,13 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					Len = Min(Len, C4AUL_MAX_Identifier);
 					SCopy(SPos0, pToken, Len);
 					// check if it's a C4ID (and NOT a label)
-					BOOL fllid = LooksLikeID(pToken);
-					if ((C != '(') && (C != ':' || *(SPos+1) == ':') && fllid)
+					if (LooksLikeID(pToken))
 						{
 						// will be parsed next time
 						State = TGS_C4ID; SPos--; Len--;
 						}
 					else
 						{
-						// warn if using C4ID as func label
-						if (fllid) Strict2Error("stupid func label: ", pToken);
 						// directive?
 						if (State == TGS_Dir) return ATT_DIR;
 						// check reserved names
