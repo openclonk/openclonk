@@ -204,7 +204,6 @@ class C4Def: public C4PropList
 		int32_t NoComponentMass;
 		int32_t NoStabilize;
     char STimerCall[C4D_MaxIDLen];
-		char ColorByMaterial[C4M_MaxName+1];
 		int32_t ClosedContainer;	// if set, contained objects are not damaged by lava/acid etc. 1: Contained objects can't view out; 2: They can
 		int32_t SilentCommands;		// if set, no command failure messages are printed
 		int32_t NoBurnDamage;			// if set, the object won't take damage when burning
@@ -292,7 +291,6 @@ class C4Def: public C4PropList
 		virtual C4Def* GetDef() { return this; }
   protected:
 	  bool LoadPortraits(C4Group &hGroup);
-		BOOL ColorizeByMaterial(class C4MaterialMap &rMats, BYTE bGBM);
 		BOOL LoadActMap(C4Group &hGroup);
 		void CrossMapActMap();
 	private:
@@ -346,7 +344,6 @@ class C4DefList
 		int32_t GetDefCount(DWORD dwCategory = C4D_All);
     int32_t GetIndex(C4ID id);
     int32_t RemoveTemporary();
-		int32_t ColorizeByMaterial(C4MaterialMap &rMats, BYTE bGBM);
 		int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);
 		int32_t CheckRequireDef();
 		void Draw(C4ID id, C4Facet &cgo, BOOL fSelected, int32_t iColor);

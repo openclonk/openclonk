@@ -307,7 +307,7 @@ void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
 		const CSurface * Surfaces[C4M_MaxTexIndex];
 		if (Config.Graphics.HighResLandscape)
 			for (int i = 0; i < C4M_MaxTexIndex; ++i)
-				Surfaces[i] = ::TextureMap.GetEntry(i)->getPattern().getSurface();
+				Surfaces[i] = ::TextureMap.GetEntry(i)->GetPattern().getSurface();
 		Application.DDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
 			cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt,
 			Config.Graphics.HighResLandscape ? Surfaces : 0);
@@ -2558,15 +2558,14 @@ DWORD C4Landscape::GetClrByTex(int32_t iX, int32_t iY)
 	{
 	// Get pixel and default color
 	BYTE pix = _GetPix(iX, iY);
-	DWORD dwPix = Surface8->pPal->GetClr(pix);
 	// get texture map entry for pixel
 	const C4TexMapEntry *pTex;
 	if(pix && (pTex = ::TextureMap.GetEntry(PixCol2Tex(pix))))
 		{
 		// pattern color
-		pTex->getPattern().PatternClr(iX, iY, pix, dwPix, Application.DDraw->Pal);
+		return pTex->GetPattern().PatternClr(iX, iY);
 		}
-	return dwPix;
+	return Surface8->pPal->GetClr(pix);
 	}
 
 BOOL C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef)
@@ -2769,13 +2768,14 @@ bool C4Landscape::Mat2Pal()
 		if(!pTex || pTex->isNull())
 			continue;
 		// colors
+		DWORD dwPix = pTex->GetPattern().PatternClr(0, 0);
 		for (rgb=0; rgb<3; rgb++)
 			Surface8->pPal->Colors[MatTex2PixCol(tex)*3+rgb]
 				= Surface8->pPal->Colors[(MatTex2PixCol(tex)+IFT)*3+rgb]
-				= pTex->GetMaterial()->Color[rgb];
+				= dwPix >> ((2-rgb) * 8);
 		// alpha
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)] = pTex->GetMaterial()->Alpha[0];
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)+IFT] = pTex->GetMaterial()->Alpha[C4M_ColsPerMat];
+		Surface8->pPal->Alpha[MatTex2PixCol(tex)] = 0;
+		Surface8->pPal->Alpha[MatTex2PixCol(tex)+IFT] = 0;
 		}
 	// success
 	return true;

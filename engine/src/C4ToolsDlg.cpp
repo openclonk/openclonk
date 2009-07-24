@@ -671,8 +671,7 @@ void C4ToolsDlg::UpdatePreview()
 	// Sky material: sky as pattern only
 	if (SEqual(Material,C4TLS_MatSky))
 		{
-		Pattern.SetColors(0, 0);
-		Pattern.Set(::Landscape.Sky.Surface, 0, false);
+		Pattern.Set(::Landscape.Sky.Surface, 0);
 		}
 	// Material-Texture
 	else
@@ -688,7 +687,7 @@ void C4ToolsDlg::UpdatePreview()
 			if(pTex)
 				{
 				// Set drawing pattern
-				Pattern = pTex->getPattern();
+				Pattern = pTex->GetPattern();
 				}
 			}
 		}

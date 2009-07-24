@@ -1,7 +1,5 @@
 [Material]
 Name=Water
-Color=128,128,128,128,128,128,128,128,128
-Alpha=0,0,0,0,0,0
 ColorAnimation=1
 Density=25
 Instable=1

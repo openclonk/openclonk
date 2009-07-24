@@ -227,20 +227,6 @@ bool C4DefGraphics::LoadBitmaps(C4Group &hGroup, bool fColorByOwner)
 	return true;
 	}
 
-bool C4DefGraphics::ColorizeByMaterial(int32_t iMat, C4MaterialMap &rMats, BYTE bGBM)
-	{
-	SURFACE sfcBitmap = GetBitmap(); // first bitmap only
-	if (sfcBitmap)
-		{
-		DWORD dwMatColors[C4M_ColsPerMat];
-		for (int32_t i=0; i<C4M_ColsPerMat; ++i)
-			dwMatColors[i] = rMats.Map[iMat].GetDWordColor(i);
-		Application.DDraw->SurfaceAllowColor(sfcBitmap,dwMatColors,C4M_ColsPerMat,TRUE);
-		}
-	// colorize other graphics
-	if (pNext) return pNext->ColorizeByMaterial(iMat, rMats, bGBM); else return true;
-	}
-
 C4DefGraphics *C4DefGraphics::Get(const char *szGrpName)
 	{
 	// no group or empty string: base graphics

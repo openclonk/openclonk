@@ -32,7 +32,6 @@
 #define C4MatOv_Exact				1
 #define C4MatOv_None				2
 #define C4MatOv_HugeZoom		4
-#define C4MatOv_Monochrome	8
 
 enum MaterialInteractionEvent
 	{
@@ -81,8 +80,6 @@ class C4MaterialCore
 		std::vector<C4MaterialReaction> CustomReactionList;
   public:
     char Name[C4M_MaxName+1];
-    uint32_t Color[C4M_ColsPerMat*3];
-		uint32_t Alpha[C4M_ColsPerMat*2];
     int32_t  MapChunkType;
     int32_t  Density;
     int32_t  Friction;
@@ -128,7 +125,6 @@ class C4MaterialCore
 		void Clear();
 		void Default();
 		BOOL Load(C4Group &hGroup, const char *szEntryName);
-		DWORD GetDWordColor(int32_t iIndex); // get indexed material color as DWord
 		void CompileFunc(StdCompiler *pComp);
   };
 

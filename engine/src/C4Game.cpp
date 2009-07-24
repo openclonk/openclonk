@@ -2272,19 +2272,15 @@ BOOL C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		// After defs to get overloading priority
 		if (!LoadScenarioScripts())
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return FALSE; }
-		SetInitProgress(56);
+		SetInitProgress(57);
 
 		// Link scripts
 		if (!LinkScriptEngine()) return FALSE;
-		SetInitProgress(57);
+		SetInitProgress(58);
 
 		// Materials
 		if (!InitMaterialTexture())
 			{ LogFatal(LoadResStr("IDS_PRC_MATERROR")); return FALSE; }
-		SetInitProgress(58);
-
-		// Colorize defs by material
-		::Definitions.ColorizeByMaterial(::MaterialMap,GBM);
 		SetInitProgress(59);
 
 		// Videos

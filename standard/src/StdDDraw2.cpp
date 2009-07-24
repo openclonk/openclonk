@@ -101,8 +101,6 @@ void CBltTransform::TransformPoint(float &rX, float &rY)
 
 CPattern& CPattern::operator=(const CPattern& nPattern)
 	{
-	pClrs = nPattern.pClrs;
-	pAlpha = nPattern.pAlpha;
 	sfcPattern32 = nPattern.sfcPattern32;
 	if (sfcPattern32) sfcPattern32->Lock();
 	delete [] CachedPattern;
@@ -118,11 +116,10 @@ CPattern& CPattern::operator=(const CPattern& nPattern)
 	Wdt = nPattern.Wdt;
 	Hgt = nPattern.Hgt;
 	Zoom = nPattern.Zoom;
-	Monochrome = nPattern.Monochrome;
 	return *this;
 	}
 
-bool CPattern::Set(SURFACE sfcSource, int iZoom, bool fMonochrome)
+bool CPattern::Set(SURFACE sfcSource, int iZoom)
 	{
 	// Safety
 	if (!sfcSource) return false;
@@ -136,7 +133,6 @@ bool CPattern::Set(SURFACE sfcSource, int iZoom, bool fMonochrome)
 	// set zoom
 	Zoom=iZoom;
 	// set flags
-	Monochrome=fMonochrome;
 	CachedPattern = new uint32_t[Wdt * Hgt];
 	if (!CachedPattern) return false;
 	for (int y = 0; y < Hgt; ++y)
@@ -153,8 +149,6 @@ CPattern::CPattern()
 	sfcPattern32=NULL;
 	CachedPattern = 0;
 	Zoom=0;
-	Monochrome=false;
-	pClrs=NULL; pAlpha=NULL;
 	}
 
 void CPattern::Clear()
@@ -170,25 +164,12 @@ void CPattern::Clear()
 	delete[] CachedPattern; CachedPattern = 0;
 	}
 
-bool CPattern::PatternClr(int iX, int iY, BYTE &byClr, DWORD &dwClr, CStdPalette &rPal) const
+DWORD CPattern::PatternClr(unsigned int iX, unsigned int iY) const
 	{
-	if (!CachedPattern) return false;
-	// position zoomed?
-	if (Zoom) { iX/=Zoom; iY/=Zoom; }
-	// modulate position
-	((unsigned int &)iX) %= Wdt; ((unsigned int &)iY) %= Hgt;
-	// modulate clr
-	DWORD dwPix = CachedPattern[iY * Wdt + iX];
-	if (byClr)
-		{
-		if (Monochrome)
-			ModulateClrMonoA(dwClr, BYTE(dwPix), BYTE(dwPix>>24));
-		else
-			ModulateClrA(dwClr, dwPix);
-		LightenClr(dwClr);
-		}
-	else dwClr=dwPix;
-	return true;
+	if (!CachedPattern) return 0;
+	// wrap position
+	iX %= Wdt; iY %= Hgt;
+	return CachedPattern[iY * Wdt + iX];
 	}
 
 void CGammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
@@ -1541,10 +1522,7 @@ void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE c
 		// Set line
 		for (int xcnt = x - lwdt; xcnt < x + lwdt; ++xcnt)
 			{
-			// apply both patterns
-			DWORD dwClr=rPal.GetClr(col);
-			Pattern.PatternClr(xcnt, y + ycnt, col, dwClr, rPal);
-			sfcDest->SetPixDw(xcnt, y + ycnt, dwClr);
+			sfcDest->SetPixDw(xcnt, y + ycnt, Pattern.PatternClr(xcnt, y + ycnt));
 			}
 		}
 	sfcDest->Unlock();

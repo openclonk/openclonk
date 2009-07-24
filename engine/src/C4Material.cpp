@@ -110,9 +110,6 @@ void C4MaterialCore::Clear()
 	sBelowTempConvertTo.Clear();
 	sAboveTempConvertTo.Clear();
 	*Name='\0';
-	int32_t i;
-	for (i=0; i<C4M_ColsPerMat*3; ++i) Color[i]=0;
-	for (i=0; i<C4M_ColsPerMat*2; ++i) Alpha[i]=0;
 	MapChunkType = 0;
 	Density = 0;
 	Friction = 0;
@@ -180,22 +177,11 @@ BOOL C4MaterialCore::Load(C4Group &hGroup,
 	return TRUE;
 	}
 
-DWORD C4MaterialCore::GetDWordColor(int32_t iIndex)
-	{
-	if (iIndex<0) return 0;
-	iIndex %= (C4M_ColsPerMat*2);
-	int32_t iClrIndex = iIndex % C4M_ColsPerMat;
-	return RGB(Color[iClrIndex*3+2],Color[iClrIndex*3+1],Color[iClrIndex*3]) | (Alpha[iIndex]<<24);
-	}
-
 void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	{
 	if (pComp->isCompiler()) Clear();
 	pComp->Name("Material");
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),					"Name",								""								));
-	pComp->Value(mkNamingAdapt(toC4CArrU(Color),				"Color"																	));
-	pComp->Value(mkNamingAdapt(toC4CArrU(Color),				"ColorX",							Color							));
-	pComp->Value(mkNamingAdapt(toC4CArrU(Alpha),				"Alpha"																	));
 	pComp->Value(mkNamingAdapt(ColorAnimation,					"ColorAnimation",			0									));
 	pComp->Value(mkNamingAdapt(MapChunkType,						"Shape",							0									));
 	pComp->Value(mkNamingAdapt(Density,									"Density",						0									));

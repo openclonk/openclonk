@@ -1,6 +1,5 @@
 [Material]
 Name=Lava
-Color=128,128,128,128,128,128,128,128,128
 ColorAnimation=1
 Density=25
 Instable=1

@@ -131,20 +131,11 @@ class CPattern
 		uint32_t * CachedPattern; int Wdt; int Hgt;
 		// pattern zoom factor; 0 means no zoom
 		int Zoom;
-		// pattern is to be applied monochromatic
-		bool Monochrome;
-		// color array for old-style patterns
-		uint32_t *pClrs;
-		// alpha array for old-style patterns
-		uint32_t *pAlpha;
 	public:
 		CPattern& operator=(const CPattern&);
 		const CSurface *getSurface() const { return sfcPattern32; }
-		bool PatternClr(int iX, int iY, BYTE &byClr, DWORD &dwClr, CStdPalette &rPal) const;	// apply pattern to color
-		bool IsNewStyle() { if (sfcPattern32) return true; }
-		bool Set(class CSurface *sfcSource, int iZoom=0, bool fMonochrome=false);	// set and enable pattern
-		bool Set(class CSurface8 *sfcSource, int iZoom=0, bool fMonochrome=false);	// set and enable pattern
-		void SetColors(uint32_t *pClrs, uint32_t *pAlpha) { this->pClrs=pClrs; this->pAlpha=pAlpha; } // set color triplet for old-style textures
+		DWORD PatternClr(unsigned int iX, unsigned int iY) const;	// apply pattern to color
+		bool Set(class CSurface *sfcSource, int iZoom=0);	// set and enable pattern
 		void SetZoom(int iZoom) { Zoom = iZoom; }
 		void Clear();											// clear pattern
 		CPattern();					// ctor

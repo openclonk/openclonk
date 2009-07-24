@@ -53,7 +53,7 @@ class C4TexMapEntry
 		const char *GetTextureName() const { return Texture.getData(); }
 		int32_t GetMaterialIndex() const { return iMaterialIndex; }
 		C4Material *GetMaterial() const { return pMaterial; }
-		const CPattern &getPattern() const { return MatPattern; }
+		const CPattern &GetPattern() const { return MatPattern; }
 		void Clear();
 		bool Create(const char *szMaterial, const char *szTexture);
 		bool Init();

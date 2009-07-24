@@ -91,13 +91,11 @@ bool C4TexMapEntry::Init()
 		}
 	// Get overlay properties
 	int32_t iOverlayType=pMaterial->OverlayType;
-	bool fMono = !!(iOverlayType & C4MatOv_Monochrome);
 	int32_t iZoom=0;
 	if (iOverlayType & C4MatOv_Exact) iZoom=1;
 	if (iOverlayType & C4MatOv_HugeZoom) iZoom=4;
 	// Create pattern
-	MatPattern.Set(sfcTexture->Surface32, iZoom, fMono);
-	MatPattern.SetColors(pMaterial->Color, pMaterial->Alpha);
+	MatPattern.Set(sfcTexture->Surface32, iZoom);
 	return true;
 	}
 
@@ -405,17 +403,14 @@ void C4TextureMap::StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterial)
 	for(i = 0; i < C4M_MaxTexIndex; i++)
 		{
 		// Find material
-		C4Material *pMat = Entry[i].GetMaterial();
-		if (pMat)
-			{
-			bypPalette[3*i+0]=pMat->Color[6];
-			bypPalette[3*i+1]=pMat->Color[7];
-			bypPalette[3*i+2]=pMat->Color[8];
-			bypPalette[3*(i+IFT)+0]=pMat->Color[3];
-			bypPalette[3*(i+IFT)+1]=pMat->Color[4];
-			bypPalette[3*(i+IFT)+2]=pMat->Color[5];
-      fSet[i] = fSet[i + IFT] = true;
-			}
+		DWORD dwPix = Entry[i].GetPattern().PatternClr(0, 0);
+		bypPalette[3*i+0]=dwPix >> 16;
+		bypPalette[3*i+1]=dwPix >> 8;
+		bypPalette[3*i+2]=dwPix;
+		bypPalette[3*(i+IFT)+0]=dwPix >> 16;
+		bypPalette[3*(i+IFT)+1]=dwPix >> 8;
+		bypPalette[3*(i+IFT)+2]=dwPix | 0x0F; // IFT arbitrarily gets more blue
+		fSet[i] = fSet[i + IFT] = true;
 		}
   // Crosscheck colors, change equal palette entries
   for(i = 0; i < 256; i++) if(fSet[i])

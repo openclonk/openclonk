@@ -85,7 +85,6 @@ void C4Def::DefaultDefCore()
 	BuildTurnTo=C4ID_None;
 	STimerCall[0]=0;
 	Timer=35;
-	ColorByMaterial[0]=0;
 	GrowthType=0;
 	Basement=0;
 	CanBeBase=0;
@@ -345,7 +344,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Float,													"Float",							0									));
 	pComp->Value(mkNamingAdapt(ContainBlast,									"ContainBlast",				0									));
 	pComp->Value(mkNamingAdapt(ColorByOwner,									"ColorByOwner",				0									));
-	pComp->Value(mkNamingAdapt(toC4CStr(ColorByMaterial),			"ColorByMaterial",		""								));
 	pComp->Value(mkNamingAdapt(NoHorizontalMove,							"HorizontalFix",			0									));
 	pComp->Value(mkNamingAdapt(BorderBound,										"BorderBound",				0									));
 	pComp->Value(mkNamingAdapt(LiftTop,												"LiftTop",						0									));
@@ -696,18 +694,6 @@ BOOL C4Def::Load(C4Group &hGroup,
 	
 	if (Carryable) SetProperty(Strings.P[P_Collectible], C4VTrue);
   
-	return TRUE;
-	}
-
-BOOL C4Def::ColorizeByMaterial(C4MaterialMap &rMats, BYTE bGBM)
-	{
-	if (ColorByMaterial[0])
-		{
-		int32_t mat=rMats.Get(ColorByMaterial);
-		if (mat==MNone) { LogF("C4Def::ColorizeByMaterial: mat %s not defined", ColorByMaterial); return FALSE; }
-		if (!Graphics.ColorizeByMaterial(mat, rMats, bGBM)) return FALSE;
-		}
-	// success
 	return TRUE;
 	}
 
@@ -1194,16 +1180,6 @@ int32_t C4DefList::CheckRequireDef()
 		}
 	while(rcount != rcount2);
 	return rcount;
-	}
-
-int32_t C4DefList::ColorizeByMaterial(C4MaterialMap &rMats, BYTE bGBM)
-	{
-  C4Def *cdef;
-	int32_t rval=0;
-  for (cdef=FirstDef; cdef; cdef=cdef->Next)
-		if (cdef->ColorizeByMaterial(rMats,bGBM))
-			rval++;
-	return rval;
 	}
 
 void C4DefList::Draw(C4ID id, C4Facet &cgo, BOOL fSelected, int32_t iColor)

@@ -54,7 +54,6 @@ class C4DefGraphics
 
 		bool LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner); // load specified graphics from group
 		bool LoadBitmaps(C4Group &hGroup, bool fColorByOwner); // load graphics from group
-		bool ColorizeByMaterial(int32_t iMat, C4MaterialMap &rMats, BYTE bGBM); // colorize all graphics by material
 		C4DefGraphics *Get(const char *szGrpName); // get graphics by name
 		void Clear(); // clear fields; delete additional graphics
 		bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created
