@@ -517,6 +517,18 @@ if(NOT USE_GL AND NOT USE_DIRECTX)
 	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
 endif()
 
+# Find win32 SDK, since a lot of users don't have the include path in their environment
+if(WIN32)
+	get_filename_component(WINSDK_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" ABSOLUTE CACHE)
+	mark_as_advanced(WINSDK_ROOT)
+	include_directories(SYSTEM ${WINSDK_ROOT}/Include)
+	if(${FIND_LIBRARY_USE_LIB64_PATHS})
+		list(APPEND CMAKE_LIBRARY_PATH ${WINSDK_ROOT}/Lib/x64)
+	else()
+		list(APPEND CMAKE_LIBRARY_PATH ${WINSDK_ROOT}/Lib)
+	endif()
+endif()
+
 SET(JPEG_NAMES ${JPEG_NAMES} libjpeg)
 include(FindJPEG)
 include(FindPNG)
