@@ -210,6 +210,27 @@ inline t_array getPar_array(C4Value *pVal) { return pVal->getArray(); }
 
 #define PAR(type, name) t_##type name = getPar_##type(pPars++)
 
+// Allow parameters to be nil
+template<typename T>
+class Nillable
+{
+	bool _nil;
+	T _val;
+public:
+	inline Nillable(bool isNil, const T &value) : _nil(isNil), _val(value) {}
+	inline bool IsNil() const { return _nil; }
+	inline operator T () const { return _val; }
+};
+template<typename T>
+struct C4ValueConv<Nillable<T> >
+{
+	inline static Nillable<T> FromC4V(C4Value &v) { return Nillable<T>(v.GetType() == C4V_Any, C4ValueConv<T>::FromC4V(v)); }
+	inline static Nillable<T> _FromC4V(C4Value &v) { return Nillable<T>(v.GetType() == C4V_Any, C4ValueConv<T>::_FromC4V(v)); }
+	inline static C4V_Type Type() { return C4ValueConv<T>::Type(); }
+	inline static C4Value ToC4V(Nillable<T> &v) { if(v.IsNil()) return C4VNull; else return C4ValueConv<T>::ToC4V(v.operator T()) }
+};
+
+
 //=============================== C4Script Functions ====================================
 
 static C4Value Fn_this(C4AulContext *cthr, C4Value *pPars)
@@ -1905,13 +1926,20 @@ static bool FnComponentAll(C4AulContext *cthr, C4Object *pObj, C4ID c_id)
   }
 
 static C4Object *FnCreateObject(C4AulContext *cthr,
-                         C4PropList * PropList, long iXOffset, long iYOffset, long iOwner)
+                         C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> owner)
   {
 	if (cthr->Obj) // Local object calls override
 		{
 		iXOffset+=cthr->Obj->GetX();
 		iYOffset+=cthr->Obj->GetY();
 		}
+
+	long iOwner = owner;
+	if (owner.IsNil())
+		if (cthr->Obj)
+			iOwner = cthr->Obj->Controller;
+		else
+			iOwner = NO_OWNER;
 
   C4Object *pNewObj = Game.CreateObject(PropList,cthr->Obj,iOwner,iXOffset,iYOffset);
 
@@ -1922,7 +1950,7 @@ static C4Object *FnCreateObject(C4AulContext *cthr,
   }
 
 static C4Object *FnCreateConstruction(C4AulContext *cthr,
-            C4PropList * PropList, long iXOffset, long iYOffset, long iOwner,
+            C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> iOwner,
 						long iCompletion, bool fTerrain, bool fCheckSite)
   {
 	// Local object calls override position offset, owner
@@ -1936,6 +1964,13 @@ static C4Object *FnCreateConstruction(C4AulContext *cthr,
 	if (fCheckSite)
 	  if (!ConstructionCheck(PropList,iXOffset,iYOffset,cthr->Obj))
 			return NULL;
+
+	long iOwner = owner;
+	if (owner.IsNil())
+		if (cthr->Obj)
+			iOwner = cthr->Obj->Controller;
+		else
+			iOwner = NO_OWNER;
 
 	// Create site object
 	C4Object *pNewObj = Game.CreateObjectConstruction(PropList,cthr->Obj,iOwner,iXOffset,iYOffset,iCompletion*FullCon/100,fTerrain);
