@@ -39,8 +39,6 @@ protected func Swimming2()
 /* Bei Hinzufügen zu der Crew eines Spielers */
 
 protected func Recruitment(int iPlr) {
-  // Alchemieregel: Jeder Clonk kriegt einen angelegten Beutel spendiert
-  if(ObjectCount(ALCO)) CreateObject(ALC_,0,0,-1)->~BelongTo(this);
   // Broadcast für Crew
   GameCallEx("OnClonkRecruitment", this, iPlr);
 }
@@ -280,9 +278,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
   // RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
   if(szCommand == "Construct")
   {
-    // Data ist eigentlich keine ID, sondern ein C4Value* - Damit ein DirectCall
-    // möglich ist, muss sie aber zu einer C4ID gecastet werden.
-    if(CastC4ID(Data)->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
+    if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
     {
       return 1;
     }
@@ -706,7 +702,7 @@ public func ControlCommandAcquire(target, x, y, target2, def)
   // Gebäude suchen worin man's herstellen kann  
   if (obj = GetProducerOf (def)) {
     AddCommand (this (), "Call", this, 0, 0, 0, 0, "AutoProduction", 0, 1);
-    obj -> HowToProduce (this, def);
+    obj -> ~HowToProduce (this, def);
     return 1;
   }
   AddCommand (this, "Buy", 0, 0, 0, 0, 100, def, 0, C4CMD_Sub);
@@ -804,7 +800,7 @@ private func GetObjectCount(idObj)
   var idUnpackedObj; 
   if (idUnpackedObj = idObj->~UnpackTo()) 
     // Auch verschachtelte Pakete mitzählen 
-    return GetObjectCount(idUnpackedObj) * idObj->PackCount(); 
+    return GetObjectCount(idUnpackedObj) * (idObj->~PackCount()||1);
   // Ansonsten ist es nur ein Objekt 
   return 1; 
   }
@@ -985,7 +981,7 @@ public func SpellFailed(id idSpell, object pByCaller)
     // Zauber bereit gestellt, und diese sollten nicht an den Clonk zurück gegeben werden
     return (pSpellOrigin->~SpellFailed(idSpell, this));
   // Magieenergie zurückgeben
-  DoMagicEnergy(Value(idSpell), 0, true);
+  DoMagicEnergy(GetDefValue(idSpell), 0, true);
   // Alchemische Zutaten zurückgeben
   if(ObjectCount(ALCO)) IncreaseAlchem(idSpell);
 }
@@ -1007,139 +1003,6 @@ private func SetMagicAction(id idForSpell) {}
 private func SetCastAction() {}
 private func EndMagicAction() {}
 
-
-/* Zielsteuerung - nur aktiv, wenn das Fantasypack die globalen Funktionen CreateAimer und CreateSelector überladen hat */
-
-public func DoSpellAim(object pSpell, object pSpellOrigin)
-  {
-  pAimedSpell = pSpell;
-  pAimedSpellOrigin = pSpellOrigin;
-  pAimer = CreateAimer(this, this, GetDir()*180-90);
-
-  if (!pAimer) return 0;
-  
-  // Callback an die Zauberquelle, dass noch gezielt wird
-  if (pSpellOrigin) pSpellOrigin->~SpellAiming(pSpell, this);
-
-  // Zielvorgang für Zauber
-  SetComDir(COMD_Stop);
-  SetCastAction();
-  return pAimer;
-  }
-
-public func OnAimerEnter(int iAngle)
-  {
-  // Zauber weg?
-  if (!pAimedSpell) return OnAimerAbort(iAngle);
-  var idSpell = GetID(pAimedSpell);
-  // Aktivität
-  SetMagicAction();
-  // Zauber benachrichtigen
-  if (!pAimedSpell->~ActivateAngle(this, iAngle))
-  {
-    SpellFailed(idSpell);
-    return 0;
-  }
-  // OK; Zauber erfolgreich
-  return SpellSucceeded(idSpell);
-  }
-
-public func AimingAngle(int iAngle)
-  {
-  // Zauber weg?
-  if (!pAimedSpell) return OnAimerAbort(iAngle);
-  // Zielaktion setzen, wenn im Laufen. Das ist etwas ungeschickt, weil damit
-  // die Magic-Aktion abgebrochen wird, die der Magier bereits bis zur Haelfte
-  // durchgefuehrt hat. Dummerweise laesst sich frueher nicht feststellen, ob
-  // der auszufuehrende Zauber einen Aimer brauchen wird...
-  if(GetActMapVal("Name", "AimMagic") )
-    if(GetAction() == "Walk" || GetAction() == "Magic")
-      SetAction("AimMagic");
-
-  // Phase anpassen
-  if(GetAction() == "AimMagic")
-    {
-    // Auch richtigen Winkel verwenden wenn nach links gedreht
-    var iHalfAngle = iAngle;
-    if(iHalfAngle < 0) iHalfAngle = -iHalfAngle;
-    SetPhase(BoundBy((iHalfAngle + 9) / 18, 0, 9) );
-    }
-  // Weitergabe an den Zauber
-  return pAimedSpell->~AimingAngle(this, iAngle);
-  }
-
-public func OnAimerAbort(int iAngle)
-  {
-  // Aktivität zurücksetzen
-  EndMagicAction();
-  // Benachrichtigung
-  if (!pAimedSpell) return 1;
-  var idSpell = GetID(pAimedSpell);
-  if (!pAimedSpell->~AbortAiming(this))
-    // Standardaktion: Zauber löschen
-    RemoveObject(pAimedSpell);
-  pAimedSpell = 0;
-  // OK; Zauber nicht erfolgreich
-  return SpellFailed(idSpell);
-  }
-
-public func DoSpellSelect(object pSpell, int iRadius, object pSpellOrigin)
-  {
-  // Zauber sichern
-  pAimedSpell = pSpell;
-  pAimedSpellOrigin = pSpellOrigin;
-  pAimer = CreateSelector(pSpell, this, iRadius);
-  if (!pAimer) return;
-  // Callback an die Zauberquelle, dass noch gezielt wird
-  if (pSpellOrigin) pSpellOrigin->~SpellAiming(pSpell, this);
-  // Zielvorgang für Zauber
-  SetComDir(COMD_Stop);
-  SetCastAction();
-  return pAimer;
-  }
-
-public func OnSelectorEnter(object pTarget)
-  {
-  // Zauber weg?
-  if (!pAimedSpell) return OnAimerAbort();
-  var idSpell = GetID(pAimedSpell);
-  // Aktivität
-  SetMagicAction();
-  // Zauber benachrichtigen
-  if (!pAimedSpell->~ActivateTarget(this, pTarget))
-  {
-    SpellFailed(idSpell);
-    return 0;
-  }
-  // OK; Zauber erfolgreich
-  return SpellSucceeded(idSpell);
-  }
-
-public func OnSelectorAbort()
-  {
-  // Aktivität zurücksetzen
-  EndMagicAction();
-  // Benachrichtigung
-  if (!pAimedSpell) return 1;
-  var idSpell = GetID(pAimedSpell);
-  if (!pAimedSpell->~AbortSelecting(this))
-    // Standardaktion: Zauber löschen
-    RemoveObject(pAimedSpell);
-  pAimedSpell = 0;
-  // OK; Zauber nicht erfolgreich
-  return SpellFailed(idSpell);
-  }
-
-public func SelectorTarget(object pTarget) { if(pAimedSpell) return pAimedSpell->~SelectorTarget(this,pTarget); }
-
-// Momentanen Zauber abbrechen
-protected func AbortCasting()
-  {
-  if (pAimer) pAimer->Abort();
-  return 1;
-  }
-  
-public func Abort() {} // dummy call to instantiate function name
 func Definition(def) {
   SetProperty("ActMap", {
 Walk = {

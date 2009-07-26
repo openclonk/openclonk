@@ -150,27 +150,6 @@ global func PlaceObjects(id id,int amount,string strmat,int x,int y,int wdt,int 
   return j;
 }
 
-// Erzeugt eine Regenwolke
-global func LaunchRain(int x, int mat, int wdt, int lev) {
-  var obj=CreateObject(FXP1,x-GetX(),-GetY(),-1);
-  if(!obj) return 0;
-  obj->Activate(mat,wdt,lev);
-  return obj;
-}
-
-// Erzeugt einen Vulkan
-global func LaunchVolcano(int x, int y, int strength, string mat) {
-  var obj=CreateObject(FXV1,x-GetX(),y-GetY());
-  if(!obj) return 0;
-  // old 'LaunchVolcano (int iX);' Function
-  if(!y) y=LandscapeHeight()-1;
-  if(!strength) strength=BoundBy(15*LandscapeHeight()/500+Random(10),10,60);
-  if(!mat) mat="Lava";
-
-  obj->Activate(x,y,strength,Material(mat));
-  return 1;
-}
-
 global func CastObjects(iddef,am,lev,x,y,angs,angw) {
 	if(!angw) angw = 180;
   for(var i=0; i<am; i++) {
@@ -197,23 +176,12 @@ global func Tan(int iAngle, int iRadius, int iPrec) {
     return  (iRadius * Sin(iAngle,iRadius*100, iPrec)) / Cos(iAngle,iRadius*100, iPrec) ;
 }
 
-/*-- Roscher --*/
-
-// Wie FindConstructionSite, arbeitet jedoch mit Referenzen auf zwei benannte Variablen
-
-global func FindConstructionSiteX(id idDef, &iVarX, &iVarY)
-{
-  Var(0) = iVarX; Var(1) = iVarY;
-  if (!FindConstructionSite(idDef, 0, 1)) return 0;
-  iVarX = Var(0); iVarY = Var(1);
-  return 1;
-}
-
 /*-- Newton -- */
 
 global func CheckVisibility(int iPlr, object pObj)
 {
-  var iVisible = GetVisibility(pObj);
+  var iVisible = pObj["Visibility"];
+  if (GetType(iVisible) == C4V_Array) iVisible = iVisible[0];
 
   // garnicht sichtbar
   if(iVisible == VIS_None) return false;
@@ -230,8 +198,8 @@ global func CheckVisibility(int iPlr, object pObj)
   else
     { if(iVisible & VIS_Allies) return true; }
 
-  if(iVisible & VIS_Local)
-    if(Local(iPlr/32,pObj) & 1<<iPlr)
+  if(iVisible & VIS_Select)
+    if(pObj["Visibility"][1+iPlr/32] & 1<<iPlr)
       return true;
 
   return false;

@@ -104,7 +104,8 @@ private func Fusing() {
 }
 
 protected func Definition(def) {
-	SetProperty("ActMap", {
+	def["Name"] = "Dynamite";
+	def["ActMap"] = {
 			Fuse = {
 				Prototype = Action,
 				Name = "Fuse",
@@ -116,5 +117,5 @@ protected func Definition(def) {
 				Sound = "Fusing",
 				StartCall = "Fusing"
 			}
-		}, def);
+		};
 }

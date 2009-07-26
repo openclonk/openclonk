@@ -7,7 +7,7 @@ static const MCLK_UnlimitedCast = 100; // Endloszauberei
 
 global func CheckMana(idMagic,pCaster)
   {
-  var iMagicReq = Value(idMagic);
+  var iMagicReq = GetDefValue(idMagic);
   // Keine Zauberenergie benötigt: Kann immer zaubern
   if (!iMagicReq || ObjectCount(NMGE)) return MCLK_UnlimitedCast;
   // Ansonsten zurückgeben, wie oft gezaubert werden kann
@@ -28,7 +28,7 @@ global func OnClonkSucceededSpell(id idSpell, object pClonk)
     // Training wird eh nicht permanent gesichert; nach aktueller Definition richten
     if (!iMaxTrain) iMaxTrain = pClonk->~MaxMagicPhysical();
     // Trainieren
-    TrainPhysical("Magic", Value(idSpell)/MCLK_ManaTrainRate, iMaxTrain, pClonk);
+    TrainPhysical("Magic", GetDefValue(idSpell)/MCLK_ManaTrainRate, iMaxTrain, pClonk);
     }
   // Gegebenenfalls weitere Hooks erlauben
   return (_inherited(idSpell, pClonk));

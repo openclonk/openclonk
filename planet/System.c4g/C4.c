@@ -1,7 +1,5 @@
 /*-- Altes Zeug, das nicht mehr in die Engine muss --*/
 
-#strict 2
-
 // stuff for the proplist changes
 static const DFA_NONE    =-1;
 static const DFA_WALK    = 0;
@@ -29,61 +27,7 @@ global func GetActMapVal(string strEntry, string strAction, id idDef, int iEntry
   if (strEntry == "Facet") strEntry = ["X", "Y", "Wdt", "Hgt", "OffX", "OffY"][iEntryNr];
   return GetProperty(strEntry, GetProperty(strAction, idDef));
 }
-
-// Für Szenarien ohne Objects.c4d...
-global func EmptyBarrelID() { return BARL; }
-
-// Fügt das Material in ein Fass im Objekt ein
-global func ObjectInsertMaterial(int imat, object pTarget)
-{
-  if (!pTarget || imat == -1) return; // Kein Zielobjekt / Material?
-  // Fasstyp ermitteln
-  var idBarl;
-  if (idBarl = GetBarrelType(imat))
-  {
-    // Fass suchen
-    var pBarl = FindFillBarrel(pTarget, idBarl);
-    if (pBarl)
-      // Fass auffüllen
-      return pBarl->BarrelDoFill(1, imat+1);
-  }
-  // Kein Fass? Dann Objekt überlaufen lassen
-  return InsertMaterial(imat, GetX(pTarget)-GetX(), GetY(pTarget)-GetY());
-}
-  
-// Auffüllbares Fass im Objekt suchen
-global func FindFillBarrel(object pInObj, id type)
-{
-  // Alle Inhaltsobjekte durchlaufen
-  var pObj;
-  for(var i = 0; pObj = Contents(i, pInObj); i++)
-    // ID stimmt?
-    if(pObj->GetID() == type)
-      // Fass nicht voll?
-      if (!pObj->~BarrelIsFull())
-        // Nehmen wir doch das
-        return pObj;
-  // Nix? Dann halt ein leeres Fass suchen und füllen
-  if (!(pObj=FindContents(EmptyBarrelID(), pInObj))) return;
-  ChangeDef(type, pObj);
-  return pObj;
-}
-
-// Flüssigkeit aus Fässern im Objekt extrahieren
-global func ObjectExtractLiquid(object pFrom)
-{
-  // Alle Inhaltsobjekte durchlaufen
-  var pObj;
-  for(var i = 0; pObj = Contents(i, pFrom); i++)
-  {
-    // Extrahieren
-    var iRet = pObj->~BarrelExtractLiquid();
-    if(iRet != -1) return iRet;
-  }
-  // Extrahieren nicht möglich
-  return -1;
-}
-  
+ 
 global func ShowNeededMaterial(object pOfObject)
 {
   MessageWindow(GetNeededMatStr(pOfObject), GetOwner(),CXCN,GetName(pOfObject));
@@ -125,7 +69,7 @@ global func ExtractLiquid(int x, int y)
 /*-- Special effects --*/
 global func LaunchEffect(id type, int x, int y /*, ... */)
 {
-	var fx = CreateObject(type, x, y);
+	var fx = CreateObject(type, AbsX(x), AbsY(y));
 	return fx && fx->Activate(AbsX(x), AbsY(y), ...);
 }
 
@@ -150,5 +94,29 @@ global func LaunchEarthquake(int x, int y)
 global func LaunchLightning(int x, int y, int xdir, int xrange, int ydir, int yrange, bool fDoGamma)
 {
 	return LaunchEffect(FXL1, x, y, xdir, xrange, ydir, yrange, fDoGamma);
+}
+
+/// Creates a cloud at the specified location.
+/// \par x X coordinate. Always global.
+/// \par mat Number of the material to rain.
+/// \par wdt Width of the precipitation region.
+/// \par lev Strength of rain. (?)
+/// \returns \c true if the rain started, \c false otherwise.
+global func LaunchRain(int x, int mat, int wdt, int lev)
+{
+	return LaunchEffect(FXP1, x, 0, mat, lev);
+}
+
+/// Creates a volcano at the specified location.
+/// \par x X coordinate. Always global.
+/// \par y Y coordinate. Always global.
+/// \par strength Width of the eruption.
+/// \par mat Number of the material to use.
+global func LaunchVolcano(int x, int y, int strength, int mat)
+{
+	if (!y) y=LandscapeHeight()-1;
+	if (!strength) strength=BoundBy(15*LandscapeHeight()/500+Random(10),10,60);
+	if (!mat) mat=Material("Lava");
+	return LaunchEffect(FXV1, x, y, strength, mat);
 }
 

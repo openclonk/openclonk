@@ -1,7 +1,6 @@
 [DefCore]
 id=DYNA
 Version=4,9,8,8
-Name=Dynamite
 Category=16
 Width=3
 Height=12
