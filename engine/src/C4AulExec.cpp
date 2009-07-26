@@ -772,10 +772,14 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 						assert(proplist);
 						if(!proplist->GetProperty(Index._getStr(), pCurVal[-1]))
 							{
+							C4Value PropList(pCurVal[-1]); // Keep proplist alive
 							pCurVal[-1].Set0();
 							if(pCPos->bccType == AB_ARRAYA_R)
+								{
 								// Insert into proplist to allow changes
-								proplist->SetProperty(Index._getStr(), pCurVal[-1].GetRef());
+								proplist->SetProperty(Index._getStr(), C4VNull);
+								proplist->GetProperty(Index._getStr(), pCurVal[-1]);
+								}
 							}
 						}
 					// Remove index
