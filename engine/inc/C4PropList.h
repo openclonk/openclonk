@@ -26,10 +26,17 @@
 
 class C4Property {
 	public:
+	C4Property() : Key(0) {}
+	C4Property(C4String *Key, const C4Value &Value) : Key(Key), Value(Value)
+		{ assert(Key); Key->IncRef(); assert(Strings.Set.Has(Key)); }
+	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if(Key) Key->IncRef(); }
+	C4Property & operator = (const C4Property &o)
+		{ assert(o.Key); o.Key->IncRef(); if(Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+	~C4Property() { if(Key) Key->DecRef();}
 	C4String * Key;
 	C4Value Value;
 	operator void * () { return Key; }
-	C4Property & operator = (void * p) { assert(!p); Key = 0; Value.Set0(); return *this; }
+	C4Property & operator = (void * p) { assert(!p); if(Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
 };
 
 class C4PropList {

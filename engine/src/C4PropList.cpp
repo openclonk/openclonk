@@ -176,6 +176,7 @@ int32_t C4PropList::GetPropertyInt(C4PropertyName n)
 
 void C4PropList::SetProperty(C4String * k, const C4Value & to)
 	{
+	assert(Strings.Set.Has(k));
 	if (k == Strings.P[P_Prototype] && to.GetType() == C4V_PropList)
 		{
 		prototype = to.GetData().PropList;
@@ -187,7 +188,7 @@ void C4PropList::SetProperty(C4String * k, const C4Value & to)
 		}
 	else
 		{
-		C4Property p = { k, to };
+		C4Property p(k, to);
 		Properties.Add(p);
 		}
 	}
