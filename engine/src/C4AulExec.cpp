@@ -755,16 +755,29 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					C4Value &Index = pCurVal[0];
 					C4Value &Array = pCurVal[-1].GetRefVal();
 					// Typcheck
-					if(!Array.ConvertTo(C4V_Array))
+					if(!Array.ConvertTo(C4V_Array) && !Array.ConvertTo(C4V_PropList) || Array.GetType() == C4V_Any)
 						throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: can't access %s as an array!", Array.GetTypeName()).getData());
-					if(!Index.ConvertTo(C4V_Int))
-						throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, int expected!", Index.GetTypeName()).getData());
-					// Set reference to array element
-					if (pCPos->bccType == AB_ARRAYA_R)
-						Array.GetArrayElement(Index._getInt(), pCurVal[-1], pCurCtx);
+					else if(Array.GetType() == C4V_Array)
+						{
+						if(!Index.ConvertTo(C4V_Int))
+							throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, int expected!", Index.GetTypeName()).getData());
+						// Set reference to array element
+						Array.GetArrayElement(Index._getInt(), pCurVal[-1], pCurCtx, pCPos->bccType == AB_ARRAYA_V);
+						}
 					else
-					// do not mark array as having element references
-						Array.GetArrayElement(Index._getInt(), pCurVal[-1], pCurCtx, true);
+						{
+						if(!Index.ConvertTo(C4V_String))
+							throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, string expected!", Index.GetTypeName()).getData());
+						C4PropList *proplist = Array.getPropList();
+						assert(proplist);
+						if(!proplist->GetProperty(Index._getStr(), pCurVal[-1]))
+							{
+							pCurVal[-1].Set0();
+							if(pCPos->bccType == AB_ARRAYA_R)
+								// Insert into proplist to allow changes
+								proplist->SetProperty(Index._getStr(), pCurVal[-1].GetRef());
+							}
+						}
 					// Remove index
 					PopValue();
 					break;
