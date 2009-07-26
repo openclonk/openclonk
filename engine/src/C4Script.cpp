@@ -1950,7 +1950,7 @@ static C4Object *FnCreateObject(C4AulContext *cthr,
   }
 
 static C4Object *FnCreateConstruction(C4AulContext *cthr,
-            C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> iOwner,
+            C4PropList * PropList, long iXOffset, long iYOffset, Nillable<long> owner,
 						long iCompletion, bool fTerrain, bool fCheckSite)
   {
 	// Local object calls override position offset, owner
