@@ -248,7 +248,7 @@ const char* GetC4VName(const C4V_Type Type)
 	switch(Type)
 	{
 	case C4V_Any:
-		return "any";
+		return "nil";
 	case C4V_Int:
 		return "int";
 	case C4V_Bool:
