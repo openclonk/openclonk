@@ -2898,4 +2898,4 @@ bool C4Network2::isStreaming() const
 	return fStreaming;
 	}
 
-C4Network2 Network;
+//C4Network2 Network;

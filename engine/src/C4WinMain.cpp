@@ -31,16 +31,18 @@
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4Version.h>
+#include "C4Network2.h"
 
 C4Application Application;
 C4Console			Console;
 C4FullScreen	FullScreen;
 C4Game				Game;
+C4Network2		Network;
 
 #ifdef _WIN32
 
 #if defined(_MSC_VER) && !defined(_DEBUG)
-#define GENERATE_MINI_DUMP
+//#define GENERATE_MINI_DUMP
 #endif
 
 #ifdef GENERATE_MINI_DUMP
