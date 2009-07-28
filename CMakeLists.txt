@@ -398,6 +398,8 @@ add_library(standard STATIC
 	standard/src/StdGL.cpp
 	standard/src/StdGLCtx.cpp
 	standard/src/StdMarkup.cpp
+	standard/src/StdMesh.cpp
+	standard/src/StdMeshMaterial.cpp
 	standard/src/StdNoGfx.cpp
 	standard/src/StdPNG.cpp
 	standard/src/StdRegistry.cpp
@@ -428,6 +430,8 @@ add_library(standard STATIC
 	standard/inc/StdFont.h
 	standard/inc/StdGL.h
 	standard/inc/StdMarkup.h
+	standard/inc/StdMesh.h
+	standard/inc/StdMeshMaterial.h
 	standard/inc/StdNoGfx.h
 	standard/inc/StdPNG.h
 	standard/inc/StdRandom.h
@@ -442,6 +446,12 @@ add_library(standard STATIC
 	standard/inc/StdWindow.h
 	standard/zlib/gzio.c
 	standard/zlib/zutil.h
+	standard/tinyxml/tinystr.cpp
+	standard/tinyxml/tinyxml.cpp
+	standard/tinyxml/tinyxmlparser.cpp
+	standard/tinyxml/tinyxmlerror.cpp
+	standard/tinyxml/tinyxml.h
+	standard/tinyxml/tinystr.h
 )
 
 include_directories(

@@ -525,7 +525,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 
 	// Read surface bitmap
 	if (dwLoadWhat & C4D_Load_Bitmap)
-		if (!Graphics.LoadBitmaps(hGroup, !!ColorByOwner))
+		if (!Graphics.Load(hGroup, !!ColorByOwner)) 
 			{
 			DebugLogF("  Error loading graphics of %s (%s)", hGroup.GetFullName().getData(), C4IdText(id));
 			return FALSE;
@@ -707,14 +707,31 @@ void C4Def::Draw(C4Facet &cgo, BOOL fSelected, DWORD iColor, C4Object *pObj, int
 	// if assigned: use object specific rect and graphics
 	if (pObj) if(pObj->PictureRect.Wdt) fctPicRect = pObj->PictureRect;
 
-	fctPicture.Set((pObj ? *pObj->GetGraphics() : Graphics).GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
-
 	if (fSelected)
 		Application.DDraw->DrawBox(cgo.Surface,cgo.X,cgo.Y,cgo.X+cgo.Wdt-1,cgo.Y+cgo.Hgt-1,CRed);
 
+	C4DefGraphics* graphics = pObj ? pObj->GetGraphics() : &Graphics;
+
 	// specific object color?
 	if (pObj) pObj->PrepareDrawing();
-	fctPicture.Draw(cgo,TRUE,iPhaseX,iPhaseY,TRUE);
+
+	switch(graphics->Type)
+		{
+		case C4DefGraphics::TYPE_Bitmap:
+			fctPicture.Set((pObj ? *pObj->GetGraphics() : Graphics).GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
+			fctPicture.Draw(cgo,TRUE,iPhaseX,iPhaseY,TRUE);
+			break;
+		case C4DefGraphics::TYPE_Mesh:
+			{
+				// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
+				StdMeshInstance dummy(*graphics->Mesh);
+				dummy.SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+				// TODO: Keep aspect ratio of mesh dimensions
+				lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, NULL);
+			}
+			break;
+		}
+
 	if (pObj) pObj->FinishedDrawing();
 
 	// draw overlays

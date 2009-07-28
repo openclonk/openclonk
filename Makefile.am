@@ -434,6 +434,8 @@ libstandard_a_SOURCES = \
   standard/src/StdGL.cpp \
   standard/src/StdGLCtx.cpp \
   standard/src/StdMarkup.cpp \
+  standard/src/StdMesh.cpp \
+  standard/src/StdMeshMaterial.cpp \
   standard/src/StdNoGfx.cpp \
   standard/src/StdPNG.cpp \
   standard/src/StdRegistry.cpp \
@@ -464,6 +466,8 @@ libstandard_a_SOURCES = \
   standard/inc/StdFont.h \
   standard/inc/StdGL.h \
   standard/inc/StdMarkup.h \
+  standard/inc/StdMesh.h \
+  standard/inc/StdMeshMaterial.h \
   standard/inc/StdNoGfx.h \
   standard/inc/StdPNG.h \
   standard/inc/StdRandom.h \
@@ -477,7 +481,13 @@ libstandard_a_SOURCES = \
   standard/inc/StdVideo.h \
   standard/inc/StdWindow.h \
   standard/zlib/gzio.c \
-  standard/zlib/zutil.h
+  standard/zlib/zutil.h \
+  standard/tinyxml/tinystr.cpp \
+  standard/tinyxml/tinyxml.cpp \
+  standard/tinyxml/tinyxmlparser.cpp \
+  standard/tinyxml/tinyxmlerror.cpp \
+  standard/tinyxml/tinyxml.h \
+  standard/tinyxml/tinystr.h
 
 if WIN32
 libstandard_a_SOURCES += standard/src/StdWindow.cpp standard/src/StdJoystick.cpp standard/inc/StdJoystick.h

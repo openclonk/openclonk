@@ -210,11 +210,13 @@ bool CStdWindow::FindInfo()
 	// attributes for a single buffered visual in RGBA format with at least 4 bits per color
 	static int attrListSgl[] = { GLX_RGBA,
 		GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
+		GLX_DEPTH_SIZE, 8,
 		None };
 	// attributes for a double buffered visual in RGBA format with at least 4 bits per color
 	static int attrListDbl[] = { GLX_RGBA, GLX_DOUBLEBUFFER,
 		GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
 		GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
+		GLX_DEPTH_SIZE, 8,
 		None };
 	// doublebuffered is the best
 	Info = glXChooseVisual(dpy, DefaultScreen(dpy), attrListDbl);

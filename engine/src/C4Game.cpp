@@ -594,6 +594,7 @@ void C4Game::Clear()
 	KeyboardInput.Clear();
 	SetMusicLevel(100);
 	PlayList.Clear();
+	MaterialManager.Clear();
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)

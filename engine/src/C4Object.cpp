@@ -153,6 +153,7 @@ void C4Object::Default()
 	pLayer=NULL;
 	pSolidMaskData=NULL;
 	pGraphics=NULL;
+	pMeshInstance=NULL;
 	pDrawTransform=NULL;
 	pEffects=NULL;
 	pGfxOverlay=NULL;
@@ -182,6 +183,15 @@ BOOL C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 
 	// graphics
 	pGraphics = &Def->Graphics;
+	if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+		{
+		pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+		pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+		}
+	else
+		{
+		pMeshInstance = NULL;
+		}
 	BlitMode = Def->BlitMode;
 
 	// Position
@@ -411,6 +421,18 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 			// ensure SolidMask-rect lies within new graphics-rect
 			CheckSolidMaskRect();
 			}
+
+		delete pMeshInstance;
+		if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+			{
+			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+			pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+			}
+		else
+			{
+			pMeshInstance = NULL;
+			}
+
 		// update face - this also puts any SolidMask
 		UpdateFace(false);
 		}
@@ -452,6 +474,25 @@ void C4Object::UpdateFlipDir()
 		}
 	}
 
+void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform)
+	{
+	CSurface* sfc;
+	switch(GetGraphics()->Type)
+		{
+		case C4DefGraphics::TYPE_Bitmap:
+			sfc = action ? Action.Facet.Surface : GetGraphics()->GetBitmap(Color);
+
+			lpDDraw->Blit(sfc,
+				fx, fy, fwdt, fhgt,
+				cgo.Surface, tx, ty, twdt, thgt,
+				TRUE, transform);
+			break;
+		case C4DefGraphics::TYPE_Mesh:
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, transform);
+			break;
+		}
+	}
+
 void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPhaseX, int32_t iPhaseY)
 	{
 	const float swdt = float(Def->Shape.Wdt);
@@ -481,10 +522,11 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 	// Straight
 	if ((!Def->Rotateable || (r==0)) && !pDrawTransform)
 		{
-		lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
+		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
+/*		lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
 			fx, fy, fwdt, fhgt,
 			cgo.Surface, tx, ty, twdt, thgt,
-			TRUE, NULL);
+			TRUE, NULL);*/
 		}
 	// Rotated or transformed
 	else
@@ -499,10 +541,11 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 			{
 			rot.SetRotate(r * 100, offX, offY);
 			}
-		lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
+		DrawFaceImpl(cgo, false, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
+/*		lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
 			fx, fy, fwdt, fhgt,
 			cgo.Surface, tx, ty, twdt, thgt,
-			TRUE, &rot);
+			TRUE, &rot);*/
 		}
 	}
 
@@ -547,10 +590,11 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 	// Straight
 	if ((!Def->Rotateable || (r==0)) && !pDrawTransform)
 		{
-		lpDDraw->Blit(Action.Facet.Surface,
+		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, NULL);
+		/*lpDDraw->Blit(Action.Facet.Surface,
 			fx, fy, fwdt, fhgt,
 			cgo.Surface, tx, ty, twdt, thgt,
-			TRUE, NULL);
+			TRUE, NULL);*/
 		}
 	// Rotated or transformed
 	else
@@ -567,10 +611,11 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 			{
 			rot.SetRotate(r * 100, offX, offY);
 			}
-		lpDDraw->Blit(Action.Facet.Surface,
+		DrawFaceImpl(cgo, true, fx, fy, fwdt, fhgt, tx, ty, twdt, thgt, &rot);
+/*		lpDDraw->Blit(Action.Facet.Surface,
 			fx, fy, fwdt, fhgt,
 			cgo.Surface, tx, ty, twdt, thgt,
-			TRUE, &rot);
+			TRUE, &rot);*/
 		}
 	}
 
@@ -2204,7 +2249,21 @@ C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPas
 BOOL C4Object::SetPhase(int32_t iPhase)
 	{
 	if (!Action.pActionDef) return FALSE;
-	Action.Phase=BoundBy<int32_t>(iPhase,0,Action.pActionDef->GetPropertyInt(P_Length));
+
+	const int32_t length = Action.pActionDef->GetPropertyInt(P_Length);
+	const int32_t delay = Action.pActionDef->GetPropertyInt(P_Delay);
+
+	Action.Phase=BoundBy<int32_t>(iPhase,0,length);
+	Action.PhaseDelay = 0;
+
+	if(pMeshInstance)
+		{
+		if(delay)
+			pMeshInstance->SetPosition(static_cast<float>(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * pMeshInstance->GetAnimation()->Length);
+		else
+			pMeshInstance->SetPosition(static_cast<float>(Action.Phase) / length * pMeshInstance->GetAnimation()->Length);
+		}
+
 	return TRUE;
 	}
 
@@ -2253,7 +2312,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				{ if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); return; }
 
 	// ensure correct color is set
-	if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
+	if (GetGraphics()->Type == C4DefGraphics::TYPE_Bitmap)
+		if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
 
   // Debug Display //////////////////////////////////////////////////////////////////////
   if (::GraphicsSystem.ShowCommand && !eDrawMode)
@@ -2405,7 +2465,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 					(fixtof(Action.Target->fix_y) + Action.Target->Shape.GetY()) - (fixtof(fix_y) + Shape.GetY() + Action.FacetY),
 					TRUE);
 			}
-		else if (Action.Facet.Surface)
+		else if (Action.Facet.Surface || GetGraphics()->Type != C4DefGraphics::TYPE_Bitmap)
 			DrawActionFace(cgo, offX, offY);
 		}
 
@@ -3161,7 +3221,7 @@ void C4Object::Clear()
 	if (pEffects) { delete pEffects; pEffects=NULL; }
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
-  if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
+	if (pSolidMaskData) { delete pSolidMaskData; pSolidMaskData=NULL; }
 	if (Menu) delete Menu; Menu=NULL;
 	if (MaterialContents) delete MaterialContents; MaterialContents=NULL;
 	// clear commands!
@@ -3172,6 +3232,7 @@ void C4Object::Clear()
 		}
 	if (pDrawTransform) { delete pDrawTransform; pDrawTransform=NULL; }
 	if (pGfxOverlay) { delete pGfxOverlay; pGfxOverlay=NULL; }
+	if (pMeshInstance) { delete pMeshInstance; pMeshInstance = NULL; }
 	}
 
 BOOL C4Object::ContainedControl(BYTE byCom)
@@ -3731,6 +3792,9 @@ void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, 
 
 bool C4Object::CheckSolidMaskRect()
 	{
+	// SolidMasks are only supported for bitmap graphics
+	if(GetGraphics()->Type != C4DefGraphics::TYPE_Bitmap) return false;
+
 	// check NewGfx only, because invalid SolidMask-rects are OK in OldGfx
 	// the bounds-check is done in CStdDDraw::GetPixel()
 	CSurface *sfcGraphics = GetGraphics()->GetBitmap();
@@ -4028,6 +4092,16 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 		if (LastAction->GetPropertyInt(P_NoOtherAction) && !fForce)
 			if (Act != LastAction)
 				return FALSE;
+	// Set animation on instance. Abort if the mesh does not have
+	// such an animation.
+	if(pMeshInstance)
+		{
+		C4String* Animation = Act ? Act->GetPropertyStr(P_Animation) : NULL;
+		if(!Animation || Animation->GetData() == "")
+			pMeshInstance->UnsetAnimation();
+		else if(!pMeshInstance->SetAnimationByName(Animation->GetData()))
+			return FALSE;
+		}
 	// Stop previous act sound
 	if (LastAction)
 		if (Act != LastAction)
@@ -5301,6 +5375,7 @@ void C4Object::ExecAction()
 	if (pAction->GetPropertyInt(P_Delay))
 		{  
 		Action.PhaseDelay+=iPhaseAdvance;
+		bool set_new_action = false;
 		if (Action.PhaseDelay >= pAction->GetPropertyInt(P_Delay))
 			{
 			// Advance Phase
@@ -5316,15 +5391,25 @@ void C4Object::ExecAction()
 				{
 				// set new action if it's not Hold
 				if (pAction->GetPropertyStr(P_NextAction) == Strings.P[P_Hold])
+					{
 					Action.Phase = pAction->GetPropertyInt(P_Length)-1;
+					Action.PhaseDelay = pAction->GetPropertyInt(P_Delay)-1;
+					}
 				else
 					{
 					// Set new action
+					set_new_action = true;
 					SetActionByName(pAction->GetPropertyStr(P_NextAction), NULL, NULL, SAC_StartCall | SAC_EndCall);
 					}
 				}
-			}  
+			}
+
+		// Update animation on mesh instance. If a new action was set,
+		// then will already have happened for the new action.
+		if(pMeshInstance && pMeshInstance->GetAnimation() && !set_new_action)
+			pMeshInstance->SetPosition(static_cast<float>(Action.Phase * pAction->GetPropertyInt(P_Delay) + Action.PhaseDelay) / (pAction->GetPropertyInt(P_Delay) * pAction->GetPropertyInt(P_Length)) * pMeshInstance->GetAnimation()->Length);
 		}
+
 	return;
 	}
 

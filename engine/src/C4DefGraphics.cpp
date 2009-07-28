@@ -42,6 +42,35 @@
 #include <C4GameObjects.h>
 #endif
 
+// Helper class to load additional ressources required for meshes from
+// a C4Group.
+class AdditionalRessourcesLoader:
+	public StdMeshMaterialTextureLoader, public StdMeshSkeletonLoader
+{
+public:
+	AdditionalRessourcesLoader(C4Group& hGroup): Group(hGroup) {}
+
+	virtual bool LoadTexture(const char* filename, CPNGFile& dest)
+	{
+		char* buf;
+		size_t size;
+		if(!Group.LoadEntry(filename, &buf, &size, 1)) return false;
+		bool ret = dest.Load(reinterpret_cast<BYTE*>(buf), size);
+		delete[] buf;
+		return ret;
+	}
+
+	virtual StdStrBuf LoadSkeleton(const char* filename)
+	{
+		StdStrBuf ret;
+		if(!Group.LoadEntryString(filename, ret)) return StdStrBuf();
+		return ret;
+	}
+
+private:
+	C4Group& Group;
+};
+
 //-------------------------------- C4DefGraphics -----------------------------------------------
 
 C4DefGraphics::C4DefGraphics(C4Def *pOwnDef)
@@ -49,6 +78,7 @@ C4DefGraphics::C4DefGraphics(C4Def *pOwnDef)
 	// store def
 	pDef = pOwnDef;
 	// zero fields
+	Type = TYPE_Bitmap;
 	Bitmap = BitmapClr = NULL;
 	pNext = NULL;
 	fColorBitmapAutoCreated = false;
@@ -64,8 +94,17 @@ C4DefGraphics *C4DefGraphics::GetLast()
 void C4DefGraphics::Clear()
 	{
 	// zero own fields
-	if (BitmapClr) { delete BitmapClr; BitmapClr=NULL; }
-	if (Bitmap) { delete Bitmap; Bitmap=NULL; }
+	switch (Type)
+	{
+	case TYPE_Bitmap:
+		if (BitmapClr) { delete BitmapClr; BitmapClr=NULL; }
+		if (Bitmap) { delete Bitmap; Bitmap=NULL; }
+		break;
+	case TYPE_Mesh:
+		if (Mesh) { delete Mesh; Mesh = NULL; }
+		break;
+	}
+
 	// delete additonal graphics
 	C4AdditionalDefGraphics *pGrp2N = pNext, *pGrp2;
 	while (pGrp2=pGrp2N) { pGrp2N = pGrp2->pNext; pGrp2->pNext = NULL; delete pGrp2; }
@@ -116,17 +155,74 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 			if (!BitmapClr->CreateColorByOwner(Bitmap)) return false;
 			fColorBitmapAutoCreated = true;
 		}
+	Type = TYPE_Bitmap;
 	// success
 	return true;
 	}
 
-bool C4DefGraphics::LoadBitmaps(C4Group &hGroup, bool fColorByOwner)
+bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
+{
+	char* buf;
+	size_t size;
+	if(!hGroup.LoadEntry(C4CFN_DefMesh, &buf, &size, 1)) return false;
+
+	Mesh = new StdMesh;
+
+	bool result;
+	try
 	{
+		Mesh->InitXML(C4CFN_DefMesh, buf, loader, Game.MaterialManager);
+		result = true;
+	}
+	catch(const StdMeshError& ex)
+	{
+		DebugLogF("Failed to load mesh: %s\n", ex.what());
+		result = false;
+	}
+
+	delete[] buf;
+	if(!result)
+	{
+		delete Mesh;
+		Mesh = NULL;
+
+		return false;
+	}
+
+	Type = TYPE_Mesh;
+	return true;
+}
+
+bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
+	{
+	char Filename[_MAX_PATH+1]; *Filename=0;
+	AdditionalRessourcesLoader loader(hGroup);
+
+	// Load all materials for this definition:
+	hGroup.ResetSearch();
+	while (hGroup.FindNextEntry(C4CFN_DefMaterials, Filename, NULL, NULL, !!*Filename))
+	{
+		StdStrBuf material;
+		if(hGroup.LoadEntryString(Filename, material))
+		{
+			try
+			{
+				Game.MaterialManager.Parse(material.getData(), Filename, loader);
+			}
+			catch(const StdMeshMaterialError& ex)
+			{
+				DebugLogF("Failed to read material script: %s\n", ex.what());
+			}
+		}
+	}
+	
+	// Try from Mesh first
+	if (LoadMesh(hGroup, loader)) return true;
 	// load basic graphics
 	if (!LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
+
 	// load additional graphics
 	// first, search all png-graphics in NewGfx
-	char Filename[_MAX_PATH+1]; *Filename=0;
 	C4DefGraphics *pLastGraphics = this;
 	int32_t iWildcardPos;
 	iWildcardPos = SCharPos('*', C4CFN_DefGraphicsExPNG);
@@ -251,6 +347,7 @@ C4PortraitGraphics *C4PortraitGraphics::Get(const char *szGrpName)
 
 bool C4DefGraphics::CopyGraphicsFrom(C4DefGraphics &rSource)
 	{
+	if (Type != TYPE_Bitmap) return false; // TODO!
 	// clear previous
 	if (BitmapClr) { delete BitmapClr; BitmapClr=NULL; }
 	if (Bitmap) { delete Bitmap; Bitmap=NULL; }
@@ -277,6 +374,7 @@ bool C4DefGraphics::CopyGraphicsFrom(C4DefGraphics &rSource)
 
 void C4DefGraphics::DrawClr(C4Facet &cgo, BOOL fAspect, DWORD dwClr)
 	{
+	if(Type != TYPE_Bitmap) return; // TODO
 	// create facet and draw it
 	C4Surface *pSfc = BitmapClr ? BitmapClr : Bitmap; if (!pSfc) return;
 	C4Facet fct(pSfc, 0,0,pSfc->Wdt, pSfc->Hgt);
@@ -493,7 +591,7 @@ bool C4Portrait::Link(C4DefGraphics *pGfxPortrait)
 bool C4Portrait::SavePNG(C4Group &rGroup, const char *szFilename, const char *szOverlayFN)
 	{
 	// safety
-	if (!pGfxPortrait || !szFilename || !pGfxPortrait->Bitmap) return false;
+	if (!pGfxPortrait || !szFilename || pGfxPortrait->Type != C4DefGraphics::TYPE_Bitmap || !pGfxPortrait->Bitmap) return false;
 	// save files
 	if (pGfxPortrait->fColorBitmapAutoCreated)
 		{
@@ -602,6 +700,7 @@ void C4GraphicsOverlay::UpdateFacet()
 	if (eMode == MODE_Object) return;
 	// otherwise, source graphics must be specified
 	if (!pSourceGfx) return;
+	if (pSourceGfx->Type != C4DefGraphics::TYPE_Bitmap) return;
 	C4Def *pDef = pSourceGfx->pDef;
 	assert(pDef);
 	fZoomToShape = false;
