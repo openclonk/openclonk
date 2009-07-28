@@ -18,6 +18,11 @@
 
 #include <StdMesh.h>
 
+#ifdef _MSC_VER
+#	define _USE_MATH_DEFINES
+#	include <math.h>
+#endif
+
 #include <tinyxml/tinyxml.h>
 
 #include <algorithm>
