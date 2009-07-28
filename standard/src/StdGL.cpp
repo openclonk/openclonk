@@ -342,7 +342,6 @@ namespace
 		glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
 
 		glTexCoord2f(vtx.u, vtx.v);
-		glTexCoord2f(vtx.u, vtx.v);
 		glNormal3f(vtx.nx, vtx.ny, vtx.nz);
 		glVertex3f(vtx.x, vtx.y, vtx.z);
 	}
@@ -353,10 +352,13 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	const StdMesh& mesh = instance.Mesh;
 	const StdMeshBox& box = mesh.GetBoundingBox();
 
-	glPushMatrix();
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
 
 	// Apply zoom
 	glTranslatef(ZoomX, ZoomY, 0.0f);
@@ -384,6 +386,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	// Put a light source in front of the object
 	const GLfloat light_position[] = { 0.0f, 0.0f, 15.0f*Zoom, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
 
 	// TODO: Find a working technique, we currently always use the
@@ -398,6 +401,11 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	CBltTransform Transform;
 	Transform.SetMoveScale(dx, dy, scx, scy);
 	if(pTransform) Transform *= *pTransform;
+
+	// TODO: Is the following correct?
+	Transform.MoveScale(-ZoomX, -ZoomY, 1.0f, 1.0f);
+	Transform.MoveScale(0.0f, 0.0f, Zoom, Zoom);
+	Transform.MoveScale(ZoomX, ZoomY, 1.0f, 1.0f);
 
 	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffff;
