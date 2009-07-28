@@ -41,7 +41,7 @@ public:
   virtual const char* what() const throw() { return Buf.getData(); }
 
 protected:
-  StdStrBuf Buf;
+  StdCopyStrBuf Buf;
 };
 
 // Interface to load textures. Given a texture filename occuring in the
@@ -112,11 +112,11 @@ public:
   void Load(StdMeshMaterialParserCtx& ctx);
 
   // Location the Material was loaded from
-  StdStrBuf FileName;
+  StdCopyStrBuf FileName;
   unsigned int Line;
 
   // Material name
-  StdStrBuf Name;
+  StdCopyStrBuf Name;
 
   // Not currently used in Clonk, but don't fail when we see this in a
   // Material script:
@@ -143,7 +143,7 @@ public:
   const StdMeshMaterial* GetMaterial(const char* material_name) const;
 
 private:
-  std::map<StdStrBuf, StdMeshMaterial> Materials;
+  std::map<StdCopyStrBuf, StdMeshMaterial> Materials;
 };
 
 #endif

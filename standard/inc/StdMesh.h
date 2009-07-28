@@ -156,7 +156,7 @@ public:
 
   StdMeshAnimation& operator=(const StdMeshAnimation& other);
 
-  StdStrBuf Name;
+  StdCopyStrBuf Name;
   float Length;
 
 private:
@@ -212,7 +212,7 @@ private:
   std::vector<StdMeshFace> Faces;
   std::vector<StdMeshBone*> Bones; // Master Bone Table
 
-  std::map<StdStrBuf, StdMeshAnimation> Animations;
+  std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
 
   StdMeshBox BoundingBox;
   const StdMeshMaterial* Material;

@@ -55,7 +55,7 @@ public:
   unsigned int Line;
   const char* Script;
 
-  StdStrBuf FileName;
+  StdCopyStrBuf FileName;
   StdMeshMaterialTextureLoader& TextureLoader;
 };
 
@@ -116,7 +116,7 @@ Token StdMeshMaterialParserCtx::Advance(StdStrBuf& name)
 Token StdMeshMaterialParserCtx::AdvanceNonEOF(StdStrBuf& name)
 {
   Token token = Advance(name);
-  if(token == TOKEN_EOF) Error(StdStrBuf("Unexpected end of file"));
+  if(token == TOKEN_EOF) Error(StdCopyStrBuf("Unexpected end of file"));
   return token;
 }
 
@@ -124,7 +124,7 @@ Token StdMeshMaterialParserCtx::AdvanceRequired(StdStrBuf& name, Token expect)
 {
   Token token = AdvanceNonEOF(name);
   // TODO: Explain what was actually expected
-  if(token != expect) Error(StdStrBuf("'") + name + "' unexpected");
+  if(token != expect) Error(StdCopyStrBuf("'") + name + "' unexpected");
   return token;
 }
 
@@ -170,11 +170,11 @@ bool StdMeshMaterialParserCtx::AdvanceFloatOptional(float& value)
 
 bool StdMeshMaterialParserCtx::AdvanceBoolean()
 {
-  StdStrBuf buf;
+  StdCopyStrBuf buf;
   AdvanceRequired(buf, TOKEN_IDTF);
   if(buf == "on") return true;
   if(buf == "off") return false;
-  Error(StdStrBuf("Expected either 'on' or 'off', but not '") + buf + "'");
+  Error(StdCopyStrBuf("Expected either 'on' or 'off', but not '") + buf + "'");
   return false; // Never reached
 }
 
@@ -185,7 +185,7 @@ void StdMeshMaterialParserCtx::Error(const StdStrBuf& message)
 
 void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identifier)
 {
-  Error(StdStrBuf("Unexpected identifier: '") + identifier + "'");
+  Error(StdCopyStrBuf("Unexpected identifier: '") + identifier + "'");
 }
 
 StdMeshMaterialTextureUnit::TexRef::TexRef(unsigned int size):
@@ -228,7 +228,7 @@ StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshM
 void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 {
   Token token;
-  StdStrBuf token_name;
+  StdCopyStrBuf token_name;
   while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
   {
     if(token_name == "texture")
@@ -237,10 +237,10 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 
       CPNGFile png;
       if(!ctx.TextureLoader.LoadTexture(token_name.getData(), png))
-        ctx.Error(StdStrBuf("Could not load texture '") + token_name + "'");
+        ctx.Error(StdCopyStrBuf("Could not load texture '") + token_name + "'");
 
       if(png.iWdt != png.iHgt)
-        ctx.Error(StdStrBuf("Texture '") + token_name + "' is not quadratic");
+        ctx.Error(StdCopyStrBuf("Texture '") + token_name + "' is not quadratic");
 
       Texture = new TexRef(png.iWdt);
 
@@ -255,7 +255,7 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
   }
 
   if(token != TOKEN_BRACE_CLOSE)
-    ctx.Error(StdStrBuf("'") + token_name.getData() + "' unexpected");
+    ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 StdMeshMaterialPass::StdMeshMaterialPass()
@@ -270,7 +270,7 @@ StdMeshMaterialPass::StdMeshMaterialPass()
 void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 {
   Token token;
-  StdStrBuf token_name;
+  StdCopyStrBuf token_name;
   while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
   {
     if(token_name == "texture_unit")
@@ -329,13 +329,13 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
   }
 
   if(token != TOKEN_BRACE_CLOSE)
-    ctx.Error(StdStrBuf("'") + token_name.getData() + "' unexpected");
+    ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 {
   Token token;
-  StdStrBuf token_name;
+  StdCopyStrBuf token_name;
   while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
   {
     if(token_name == "pass")
@@ -350,7 +350,7 @@ void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
   }
 
   if(token != TOKEN_BRACE_CLOSE)
-    ctx.Error(StdStrBuf("'") + token_name.getData() + "' unexpected");
+    ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 StdMeshMaterial::StdMeshMaterial():
@@ -361,7 +361,7 @@ StdMeshMaterial::StdMeshMaterial():
 void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
 {
   Token token;
-  StdStrBuf token_name;
+  StdCopyStrBuf token_name;
   while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
   {
     if(token_name == "technique")
@@ -380,7 +380,7 @@ void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
   }
   
   if(token != TOKEN_BRACE_CLOSE)
-    ctx.Error(StdStrBuf("'") + token_name.getData() + "' unexpected");
+    ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 void StdMeshMatManager::Clear()
@@ -393,17 +393,17 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
   StdMeshMaterialParserCtx ctx(mat_script, filename, tex_loader);
 
   Token token;
-  StdStrBuf token_name;
+  StdCopyStrBuf token_name;
   while((token = ctx.Advance(token_name)) == TOKEN_IDTF)
   {
     if(token_name == "material")
     {
       // Read name
-      StdStrBuf material_name;
+      StdCopyStrBuf material_name;
       ctx.AdvanceRequired(material_name, TOKEN_IDTF);
 
       // Check for uniqueness
-      std::map<StdStrBuf, StdMeshMaterial>::iterator iter = Materials.find(material_name);
+      std::map<StdCopyStrBuf, StdMeshMaterial>::iterator iter = Materials.find(material_name);
       if(iter != Materials.end())
         ctx.Error(FormatString("Material with name '%s' is already defined in %s:%u", material_name.getData(), iter->second.FileName.getData(), iter->second.Line));
 
@@ -417,13 +417,13 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
         // already. This currently makes only sense when its defined above
         // in the same material script file or in a parent definition.
         // We could later support material scripts in the System.c4g.
-        StdStrBuf parent_name;
+        StdCopyStrBuf parent_name;
         ctx.AdvanceRequired(parent_name, TOKEN_IDTF);
         ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
 
         iter = Materials.find(parent_name);
         if(iter == Materials.end())
-          ctx.Error(StdStrBuf("Parent material '") + parent_name + "' does not exist (or is not yet loaded)");
+          ctx.Error(StdCopyStrBuf("Parent material '") + parent_name + "' does not exist (or is not yet loaded)");
         parent = &iter->second;
       }
 
@@ -442,12 +442,12 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
   }
 
   if(token != TOKEN_EOF)
-    ctx.Error(StdStrBuf("'") + token_name.getData() + "' unexpected");
+    ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name) const
 {
-  std::map<StdStrBuf, StdMeshMaterial>::const_iterator iter = Materials.find(StdStrBuf(material_name));
+  std::map<StdCopyStrBuf, StdMeshMaterial>::const_iterator iter = Materials.find(StdCopyStrBuf(material_name));
   if(iter == Materials.end()) return NULL;
   return &iter->second;
 }

@@ -488,7 +488,7 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
   // Read skeleton
   TiXmlElement* skeletonlink_elem = mesh.RequireFirstChild(mesh_elem, "skeletonlink");
   const char* name = mesh.RequireStrAttribute(skeletonlink_elem, "name");
-  StdStrBuf xml_filename(name); xml_filename.Append(".xml");
+  StdCopyStrBuf xml_filename(name); xml_filename.Append(".xml");
 
   StdStrBuf skeleton_xml_data = skel_loader.LoadSkeleton(xml_filename.getData());
   if(skeleton_xml_data.isNull()) mesh.Error(FormatString("Failed to load '%s'", xml_filename.getData()), skeletonlink_elem);
@@ -620,7 +620,8 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
   TiXmlElement* animations_elem = skeleton.RequireFirstChild(skeleton_elem, "animations");
   for(TiXmlElement* animation_elem = animations_elem->FirstChildElement("animation"); animation_elem != NULL; animation_elem = animation_elem->NextSiblingElement("animation"))
   {
-    StdStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
+    StdCopyStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
+    //StdStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
     if(Animations.find(name) != Animations.end())
       skeleton.Error(FormatString("There is already an animation with name '%s'", name.getData()), animation_elem);
 
@@ -729,7 +730,8 @@ void StdMesh::AddMasterBone(StdMeshBone* bone)
 
 const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 {
-  std::map<StdStrBuf, StdMeshAnimation>::const_iterator iter = Animations.find(name);
+	StdCopyStrBuf name2(name);
+  std::map<StdCopyStrBuf, StdMeshAnimation>::const_iterator iter = Animations.find(name2);
   if(iter == Animations.end()) return NULL;
   return &iter->second;
 }
