@@ -137,6 +137,13 @@ Token StdMeshMaterialParserCtx::AdvanceRequired(StdStrBuf& name, Token expect1, 
   return token;
 }
 
+#ifdef _MSC_VER
+static inline float strtof(const char *_Str, char **_EndPtr)
+{
+	return static_cast<float>(strtod(_Str, _EndPtr));
+}
+#endif
+
 float StdMeshMaterialParserCtx::AdvanceFloat()
 {
   StdStrBuf buf;
