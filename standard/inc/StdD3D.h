@@ -129,6 +129,7 @@ class CStdD3D : public CStdDDraw
     // Surface
     bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
     // Blit
+	virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform);
     void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
     BOOL BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo);
     BOOL BlitSurface2Window(SURFACE sfcSource, int fX, int fY, int fWdt, int fHgt, HWND hWnd, int tX, int tY, int tWdt, int tHgt);
