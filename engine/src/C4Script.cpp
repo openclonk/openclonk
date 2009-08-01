@@ -227,7 +227,7 @@ struct C4ValueConv<Nillable<T> >
 	inline static Nillable<T> FromC4V(C4Value &v) { return Nillable<T>(v.GetType() == C4V_Any, C4ValueConv<T>::FromC4V(v)); }
 	inline static Nillable<T> _FromC4V(C4Value &v) { return Nillable<T>(v.GetType() == C4V_Any, C4ValueConv<T>::_FromC4V(v)); }
 	inline static C4V_Type Type() { return C4ValueConv<T>::Type(); }
-	inline static C4Value ToC4V(Nillable<T> &v) { if(v.IsNil()) return C4VNull; else return C4ValueConv<T>::ToC4V(v.operator T()) }
+	inline static C4Value ToC4V(Nillable<T> &v) { if(v.IsNil()) return C4VNull; else return C4ValueConv<T>::ToC4V(v.operator T()); }
 };
 
 
