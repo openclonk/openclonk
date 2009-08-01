@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009 Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,13 +26,13 @@
 class StdMeshError: public std::exception
 {
 public:
-  StdMeshError(const StdStrBuf& message, const char* file, unsigned int line);
-  virtual ~StdMeshError() throw() {}
+	StdMeshError(const StdStrBuf& message, const char* file, unsigned int line);
+	virtual ~StdMeshError() throw() {}
 
-  virtual const char* what() const throw() { return Buf.getData(); }
+	virtual const char* what() const throw() { return Buf.getData(); }
 
 protected:
-  StdStrBuf Buf;
+	StdStrBuf Buf;
 };
 
 // Interface to load skeleton files. Given a filename occuring in the
@@ -42,228 +42,228 @@ protected:
 class StdMeshSkeletonLoader
 {
 public:
-  virtual StdStrBuf LoadSkeleton(const char* filename) = 0;
+	virtual StdStrBuf LoadSkeleton(const char* filename) = 0;
 };
 
 class StdMeshMatrix
 {
 public:
-  void SetIdentity();
-  void SetTranslate(float dx, float dy, float dz);
-  void SetScale(float sx, float sy, float sz);
-  void SetRotate(float angle, float rx, float ry, float rz);
+	void SetIdentity();
+	void SetTranslate(float dx, float dy, float dz);
+	void SetScale(float sx, float sy, float sz);
+	void SetRotate(float angle, float rx, float ry, float rz);
 
-  float& operator()(int i, int j) { return a[i][j]; }
-  float operator()(int i, int j) const { return a[i][j]; }
+	float& operator()(int i, int j) { return a[i][j]; }
+	float operator()(int i, int j) const { return a[i][j]; }
 
-  // *this *= other
-  void Mul(const StdMeshMatrix& other);
-  void Mul(float f);
-  // *this += other
-  void Add(const StdMeshMatrix& other);
+	// *this *= other
+	void Mul(const StdMeshMatrix& other);
+	void Mul(float f);
+	// *this += other
+	void Add(const StdMeshMatrix& other);
 
-  // *this = other * *this
-  void Transform(const StdMeshMatrix& other);
+	// *this = other * *this
+	void Transform(const StdMeshMatrix& other);
 private:
-  // 3x3 orthogonal + translation in last column
-  float a[3][4];
+	// 3x3 orthogonal + translation in last column
+	float a[3][4];
 };
 
 class StdMeshBone
 {
-  friend class StdMesh;
+	friend class StdMesh;
 public:
-  StdMeshBone() {}
+	StdMeshBone() {}
 
-  unsigned int Index; // Index in master bone table
-  int ID; // Bone ID
-  StdStrBuf Name; // Bone name
+	unsigned int Index; // Index in master bone table
+	int ID; // Bone ID
+	StdStrBuf Name; // Bone name
 
-  // Bone transformation
-  StdMeshMatrix Trans;
-  // Inverse transformation
-  StdMeshMatrix InverseTrans;
+	// Bone transformation
+	StdMeshMatrix Trans;
+	// Inverse transformation
+	StdMeshMatrix InverseTrans;
 
-  const StdMeshBone* GetParent() const { return Parent; }
+	const StdMeshBone* GetParent() const { return Parent; }
 
-  const StdMeshBone& GetChild(unsigned int i) const { return *Children[i]; }
-  unsigned int GetNumChildren() const { return Children.size(); }
+	const StdMeshBone& GetChild(unsigned int i) const { return *Children[i]; }
+	unsigned int GetNumChildren() const { return Children.size(); }
 
 private:
-  StdMeshBone* Parent; // Parent bone
-  std::vector<StdMeshBone*> Children; // Children. Not owned.
+	StdMeshBone* Parent; // Parent bone
+	std::vector<StdMeshBone*> Children; // Children. Not owned.
 
-  StdMeshBone(const StdMeshBone&); // non-copyable
-  StdMeshBone& operator=(const StdMeshBone&); // non-assignable
+	StdMeshBone(const StdMeshBone&); // non-copyable
+	StdMeshBone& operator=(const StdMeshBone&); // non-assignable
 };
 
 class StdMeshVertexBoneAssignment
 {
 public:
-  unsigned int BoneIndex;
-  float Weight;
+	unsigned int BoneIndex;
+	float Weight;
 };
 
 class StdMeshVertex
 {
 public:
-  float x, y, z;
-  float nx, ny, nz;
-  float u, v;
+	float x, y, z;
+	float nx, ny, nz;
+	float u, v;
 
-  // *this = trans * *this
-  void Transform(const StdMeshMatrix& trans);
+	// *this = trans * *this
+	void Transform(const StdMeshMatrix& trans);
 
-  // *this *= f;
-  void Mul(float f);
-  // *this += other;
-  void Add(const StdMeshVertex& other);
+	// *this *= f;
+	void Mul(float f);
+	// *this += other;
+	void Add(const StdMeshVertex& other);
 };
 
 class StdMeshFace
 {
 public:
-  unsigned int Vertices[3];
+	unsigned int Vertices[3];
 };
 
 // Keyframe, specifies transformation for one bone in a particular frame
 class StdMeshKeyFrame
 {
 public:
-  StdMeshMatrix Trans;
+	StdMeshMatrix Trans;
 };
 
 // Animation track, specifies transformation for one bone for each keyframe
 class StdMeshTrack
 {
-  friend class StdMesh;
+	friend class StdMesh;
 public:
-  StdMeshMatrix GetTransformAt(float time) const;
+	StdMeshMatrix GetTransformAt(float time) const;
 
 private:
-  std::map<float, StdMeshKeyFrame> Frames;
+	std::map<float, StdMeshKeyFrame> Frames;
 };
 
 // Animation, consists of one Track for each animated Bone
 class StdMeshAnimation
 {
-  friend class StdMesh;
-  friend class StdMeshInstance;
+	friend class StdMesh;
+	friend class StdMeshInstance;
 public:
-  StdMeshAnimation() {}
-  StdMeshAnimation(const StdMeshAnimation& other);
-  ~StdMeshAnimation();
+	StdMeshAnimation() {}
+	StdMeshAnimation(const StdMeshAnimation& other);
+	~StdMeshAnimation();
 
-  StdMeshAnimation& operator=(const StdMeshAnimation& other);
+	StdMeshAnimation& operator=(const StdMeshAnimation& other);
 
-  StdCopyStrBuf Name;
-  float Length;
+	StdCopyStrBuf Name;
+	float Length;
 
 private:
-  std::vector<StdMeshTrack*> Tracks; // bone-indexed
+	std::vector<StdMeshTrack*> Tracks; // bone-indexed
 };
 
 struct StdMeshBox
 {
-  float x1, y1, z1;
-  float x2, y2, z2;
+	float x1, y1, z1;
+	float x2, y2, z2;
 };
 
 class StdMesh
 {
-  friend class StdMeshInstance;
+	friend class StdMeshInstance;
 public:
-  StdMesh();
-  ~StdMesh();
+	StdMesh();
+	~StdMesh();
 
-  // filename is only used to show it in error messages. The model is
-  // loaded from xml_data.
-  // Throws StdMeshError.
-  void InitXML(const char* filename, const char* xml_data, StdMeshSkeletonLoader& skel_loader, const StdMeshMatManager& manager);
+	// filename is only used to show it in error messages. The model is
+	// loaded from xml_data.
+	// Throws StdMeshError.
+	void InitXML(const char* filename, const char* xml_data, StdMeshSkeletonLoader& skel_loader, const StdMeshMatManager& manager);
 
-  const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
-  unsigned int GetNumVertices() const { return Vertices.size(); }
+	const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
+	unsigned int GetNumVertices() const { return Vertices.size(); }
 
-  const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
-  unsigned int GetNumFaces() const { return Faces.size(); }
+	const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
+	unsigned int GetNumFaces() const { return Faces.size(); }
 
-  const StdMeshBone& GetBone(unsigned int i) const { return *Bones[i]; }
-  unsigned int GetNumBones() const { return Bones.size(); }
+	const StdMeshBone& GetBone(unsigned int i) const { return *Bones[i]; }
+	unsigned int GetNumBones() const { return Bones.size(); }
 
-  const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
-  const StdMeshMaterial& GetMaterial() const { return *Material; }
+	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
+	const StdMeshMaterial& GetMaterial() const { return *Material; }
 
-  const StdMeshBox& GetBoundingBox() const { return BoundingBox; }
+	const StdMeshBox& GetBoundingBox() const { return BoundingBox; }
 
 private:
-  void AddMasterBone(StdMeshBone* bone);
+	void AddMasterBone(StdMeshBone* bone);
 
-  StdMesh(const StdMesh& other); // non-copyable
-  StdMesh& operator=(const StdMesh& other); // non-assignable
+	StdMesh(const StdMesh& other); // non-copyable
+	StdMesh& operator=(const StdMesh& other); // non-assignable
 
-  // Remember bone assignments for vertices
-  class Vertex: public StdMeshVertex
-  {
-  public:
-    std::vector<StdMeshVertexBoneAssignment> BoneAssignments;
-  };
+	// Remember bone assignments for vertices
+	class Vertex: public StdMeshVertex
+	{
+	public:
+		std::vector<StdMeshVertexBoneAssignment> BoneAssignments;
+	};
 
-  std::vector<Vertex> Vertices;
-  std::vector<StdMeshFace> Faces;
-  std::vector<StdMeshBone*> Bones; // Master Bone Table
+	std::vector<Vertex> Vertices;
+	std::vector<StdMeshFace> Faces;
+	std::vector<StdMeshBone*> Bones; // Master Bone Table
 
-  std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
+	std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
 
-  StdMeshBox BoundingBox;
-  const StdMeshMaterial* Material;
+	StdMeshBox BoundingBox;
+	const StdMeshMaterial* Material;
 };
 
 class StdMeshInstance
 {
 public:
-  StdMeshInstance(const StdMesh& mesh);
+	StdMeshInstance(const StdMesh& mesh);
 
-  enum FaceOrdering {
-    FO_Fixed, // don't reorder, keep faces as in mesh
-    FO_FarthestToNearest,
-    FO_NearestToFarthest
-  };
+	enum FaceOrdering {
+		FO_Fixed, // don't reorder, keep faces as in mesh
+		FO_FarthestToNearest,
+		FO_NearestToFarthest
+	};
 
-  FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
-  void SetFaceOrdering(FaceOrdering ordering);
+	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
+	void SetFaceOrdering(FaceOrdering ordering);
 
-  bool SetAnimationByName(const StdStrBuf& animation_name);
-  void SetAnimation(const StdMeshAnimation& animation);
-  void UnsetAnimation();
+	bool SetAnimationByName(const StdStrBuf& animation_name);
+	void SetAnimation(const StdMeshAnimation& animation);
+	void UnsetAnimation();
 
-  const StdMeshAnimation* GetAnimation() const { return Animation; }
+	const StdMeshAnimation* GetAnimation() const { return Animation; }
 
-  void SetPosition(float position);
-  float GetPosition() const { return Position; }
+	void SetPosition(float position);
+	float GetPosition() const { return Position; }
 
-  // Get vertex of instance, with current animation applied. This needs to
-  // go elsewhere if/when we want to calculate this on the hardware.
-  const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
-  unsigned int GetNumVertices() const { return Vertices.size(); }
+	// Get vertex of instance, with current animation applied. This needs to
+	// go elsewhere if/when we want to calculate this on the hardware.
+	const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
+	unsigned int GetNumVertices() const { return Vertices.size(); }
 
-  // Get face of instance. The instance faces are the same as the mesh faces,
-  // with the exception that they are differently ordered, depending on the
-  // current FaceOrdering. See also SetFaceOrdering.
-  const StdMeshFace& GetFace(unsigned int i) const { return *Faces[i]; }
-  unsigned int GetNumFaces() const { return Faces.size(); }
+	// Get face of instance. The instance faces are the same as the mesh faces,
+	// with the exception that they are differently ordered, depending on the
+	// current FaceOrdering. See also SetFaceOrdering.
+	const StdMeshFace& GetFace(unsigned int i) const { return *Faces[i]; }
+	unsigned int GetNumFaces() const { return Faces.size(); }
 
-  const StdMesh& Mesh;
+	const StdMesh& Mesh;
 
 protected:
-  void ReorderFaces();
+	void ReorderFaces();
 
-  FaceOrdering CurrentFaceOrdering;
-  const StdMeshAnimation* Animation;
-  float Position;
+	FaceOrdering CurrentFaceOrdering;
+	const StdMeshAnimation* Animation;
+	float Position;
 
-  std::vector<StdMeshMatrix> BoneTransforms;
-  std::vector<StdMeshVertex> Vertices;
-  std::vector<const StdMeshFace*> Faces;
+	std::vector<StdMeshMatrix> BoneTransforms;
+	std::vector<StdMeshVertex> Vertices;
+	std::vector<const StdMeshFace*> Faces;
 };
 
 #endif

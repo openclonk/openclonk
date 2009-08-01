@@ -35,13 +35,13 @@ class StdMeshMaterialParserCtx;
 class StdMeshMaterialError: public std::exception
 {
 public:
-  StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line);
-  virtual ~StdMeshMaterialError() throw() {}
+	StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line);
+	virtual ~StdMeshMaterialError() throw() {}
 
-  virtual const char* what() const throw() { return Buf.getData(); }
+	virtual const char* what() const throw() { return Buf.getData(); }
 
 protected:
-  StdCopyStrBuf Buf;
+	StdCopyStrBuf Buf;
 };
 
 // Interface to load textures. Given a texture filename occuring in the
@@ -50,100 +50,100 @@ protected:
 class StdMeshMaterialTextureLoader
 {
 public:
-  virtual bool LoadTexture(const char* filename, CPNGFile& dest) = 0;
+	virtual bool LoadTexture(const char* filename, CPNGFile& dest) = 0;
 };
 
 class StdMeshMaterialTextureUnit
 {
 public:
-  // Ref-counted texture. When a meterial inherits from one which contains
-  // a TextureUnit, then they will share the same CTexRef.
-  class TexRef
-  {
-  public:
-    TexRef(unsigned int size);
-    ~TexRef();
+	// Ref-counted texture. When a meterial inherits from one which contains
+	// a TextureUnit, then they will share the same CTexRef.
+	class TexRef
+	{
+	public:
+		TexRef(unsigned int size);
+		~TexRef();
 
-    unsigned int RefCount;
-    CTexRef Tex;
-  };
+		unsigned int RefCount;
+		CTexRef Tex;
+	};
 
-  StdMeshMaterialTextureUnit();
-  StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other);
-  ~StdMeshMaterialTextureUnit();
+	StdMeshMaterialTextureUnit();
+	StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other);
+	~StdMeshMaterialTextureUnit();
 
-  StdMeshMaterialTextureUnit& operator=(const StdMeshMaterialTextureUnit&);
+	StdMeshMaterialTextureUnit& operator=(const StdMeshMaterialTextureUnit&);
 
-  void Load(StdMeshMaterialParserCtx& ctx);
+	void Load(StdMeshMaterialParserCtx& ctx);
 
-  const CTexRef& GetTexture() const { return Texture->Tex; }
+	const CTexRef& GetTexture() const { return Texture->Tex; }
 
 private:
-  TexRef* Texture;
+	TexRef* Texture;
 };
 
 class StdMeshMaterialPass
 {
 public:
-  StdMeshMaterialPass();
-  void Load(StdMeshMaterialParserCtx& ctx);
+	StdMeshMaterialPass();
+	void Load(StdMeshMaterialParserCtx& ctx);
 
-  std::vector<StdMeshMaterialTextureUnit> TextureUnits;
+	std::vector<StdMeshMaterialTextureUnit> TextureUnits;
 
-  float Ambient[4];
-  float Diffuse[4];
-  float Specular[4];
-  float Emissive[4];
-  float Shininess;
+	float Ambient[4];
+	float Diffuse[4];
+	float Specular[4];
+	float Emissive[4];
+	float Shininess;
 };
 
 class StdMeshMaterialTechnique
 {
 public:
-  void Load(StdMeshMaterialParserCtx& ctx);
+	void Load(StdMeshMaterialParserCtx& ctx);
 
-  std::vector<StdMeshMaterialPass> Passes;
+	std::vector<StdMeshMaterialPass> Passes;
 };
 
 class StdMeshMaterial
 {
 public:
-  StdMeshMaterial();
-  void Load(StdMeshMaterialParserCtx& ctx);
+	StdMeshMaterial();
+	void Load(StdMeshMaterialParserCtx& ctx);
 
-  // Location the Material was loaded from
-  StdCopyStrBuf FileName;
-  unsigned int Line;
+	// Location the Material was loaded from
+	StdCopyStrBuf FileName;
+	unsigned int Line;
 
-  // Material name
-  StdCopyStrBuf Name;
+	// Material name
+	StdCopyStrBuf Name;
 
-  // Not currently used in Clonk, but don't fail when we see this in a
-  // Material script:
-  bool ReceiveShadows;
+	// Not currently used in Clonk, but don't fail when we see this in a
+	// Material script:
+	bool ReceiveShadows;
 
-  // Available techniques
-  std::vector<StdMeshMaterialTechnique> Techniques;
+	// Available techniques
+	std::vector<StdMeshMaterialTechnique> Techniques;
 };
 
 class StdMeshMatManager
 {
 public:
-  // Remove all materials from manager. Make sure there is no StdMesh
-  // referencing any out there before calling this.
-  void Clear();
+	// Remove all materials from manager. Make sure there is no StdMesh
+	// referencing any out there before calling this.
+	void Clear();
 
-  // Parse a material script file, and add the materials to the manager.
-  // filename may be NULL if the source is not a file. It will only be used
-  // for error messages.
-  // Throws StdMeshMaterialError.
-  void Parse(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader);
+	// Parse a material script file, and add the materials to the manager.
+	// filename may be NULL if the source is not a file. It will only be used
+	// for error messages.
+	// Throws StdMeshMaterialError.
+	void Parse(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader);
 
-  // Get material by name. NULL if there is no such material with this name.
-  const StdMeshMaterial* GetMaterial(const char* material_name) const;
+	// Get material by name. NULL if there is no such material with this name.
+	const StdMeshMaterial* GetMaterial(const char* material_name) const;
 
 private:
-  std::map<StdCopyStrBuf, StdMeshMaterial> Materials;
+	std::map<StdCopyStrBuf, StdMeshMaterial> Materials;
 };
 
 #endif
