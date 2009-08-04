@@ -23,7 +23,6 @@
 
 #include <C4Include.h>
 #include <C4Facet.h>
-#include <C4Game.h>
 #include <C4GraphicsResource.h>
 
 #include <StdD3D.h>

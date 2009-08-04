@@ -21,6 +21,9 @@
 #include <C4Include.h>
 #include <C4Random.h>
 
+int RandomCount = 0;
+unsigned int RandomHold = 0;
+
 //--------------------------------------- Random3 -------------------------------------------------------
 
 const int FRndRes=500;

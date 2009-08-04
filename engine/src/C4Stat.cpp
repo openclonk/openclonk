@@ -21,10 +21,6 @@
 #include <C4Include.h>
 #include <C4Stat.h>
 
-#ifndef BIG_C4INCLUDE
-#include <C4Game.h>
-#endif
-
 // ** implemetation of C4MainStat
 
 C4MainStat::C4MainStat()
@@ -155,12 +151,12 @@ void C4MainStat::Show()
 	LogSilent("** Stat end");
 }
 
-void C4MainStat::ShowPart()
+void C4MainStat::ShowPart(int FrameCounter)
 {
 	C4Stat* pAkt;
 
 	// insert tick nr
-	LogSilentF("** PartStat begin %d", Game.FrameCounter);
+	LogSilentF("** PartStat begin %d", FrameCounter);
 
 	// insert all stats
 	for(pAkt = pFirst; pAkt; pAkt = pAkt->pNext)

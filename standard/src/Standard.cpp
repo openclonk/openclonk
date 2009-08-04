@@ -790,11 +790,6 @@ const char* SGetParameter(const char *strCommandLine, int iParameter, char *strT
 	return NULL;
 }
 
-//------------------------- Global variables used by StdRandom -------------------------------
-
-/* extern */ int RandomCount = 0;
-/* extern */ unsigned int RandomHold = 0;
-
 /* Some part of the Winapi */
 
 #if defined(HAVE_PTHREAD) && defined(C4ENGINE) && defined(NEED_FALLBACK_ATOMIC_FUNCS)

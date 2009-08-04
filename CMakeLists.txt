@@ -430,7 +430,6 @@ add_library(standard STATIC
 	standard/inc/StdMarkup.h
 	standard/inc/StdNoGfx.h
 	standard/inc/StdPNG.h
-	standard/inc/StdRandom.h
 	standard/inc/StdRegistry.h
 	standard/inc/StdResStr2.h
 	standard/inc/StdResStr.h

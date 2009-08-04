@@ -32,7 +32,7 @@ public:
 	~C4MainStat();
 
 	void Show();
-	void ShowPart();
+	void ShowPart(int FrameCounter);
 
 	void Reset();
 	void ResetPart();
@@ -141,7 +141,7 @@ protected:
 	#define C4ST_SHOWSTAT C4Stat::getMainStat()->Show();
 
 	// shows the statistic (to log)
-	#define C4ST_SHOWPARTSTAT C4Stat::getMainStat()->ShowPart();
+	#define C4ST_SHOWPARTSTAT(FrameCounter) C4Stat::getMainStat()->ShowPart(FrameCounter);
 
 	// resets the whole statistic
 	#define C4ST_RESET C4Stat::getMainStat()->Reset();
@@ -156,7 +156,7 @@ protected:
 	#define C4ST_START(StatName)
 	#define C4ST_STOP(StatName)
 	#define C4ST_SHOWSTAT
-	#define C4ST_SHOWPARTSTAT
+	#define C4ST_SHOWPARTSTAT(FrameCounter)
 	#define C4ST_RESET
 	#define C4ST_RESETPART
 

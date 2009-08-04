@@ -801,7 +801,7 @@ BOOL C4Game::Execute() // Returns true if the game is over
   // show stat each 1000 ticks
 	if(!(FrameCounter % 1000))
 	{
-		C4ST_SHOWPARTSTAT
+		C4ST_SHOWPARTSTAT(FrameCounter)
 		C4ST_RESETPART
 	}
 

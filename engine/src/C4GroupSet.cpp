@@ -24,6 +24,8 @@
 #include <C4GroupSet.h>
 
 #include <C4Game.h>
+#include <C4Components.h>
+#include <C4Group.h>
 #include <C4Log.h>
 
 C4GroupSetNode::C4GroupSetNode(C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id)
