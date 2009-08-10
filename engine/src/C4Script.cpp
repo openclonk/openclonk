@@ -5688,7 +5688,7 @@ static long FnGetPlayerControlState(C4AulContext *ctx, long iPlr, long iControl)
 		}
 	else
 		{
-		C4Player *pPlr = Game.Players.Get(iPlr);
+		C4Player *pPlr = ::Players.Get(iPlr);
 		if (pPlr)
 			{
 			pCheckCtrl = &(pPlr->Control);

@@ -119,6 +119,7 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 	engine/src/C4Particles.cpp
 	engine/src/C4PathFinder.cpp
 	engine/src/C4Player.cpp
+	engine/src/C4PlayerControl.cpp
 	engine/src/C4PlayerInfo.cpp
 	engine/src/C4PlayerInfoConflicts.cpp
 	engine/src/C4PlayerInfoListBox.cpp

@@ -453,7 +453,7 @@ void C4ObjectMenu::OnUserEnter(int32_t Player, int32_t iIndex, bool fRight)
 void C4ObjectMenu::OnUserClose()
 	{
 	// Queue 2do
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Game.MouseControl.GetPlayer(),Game.PlayerControlDefs.InternalCons.CON_MenuClose,0));
+	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(::MouseControl.GetPlayer(),Game.PlayerControlDefs.InternalCons.CON_MenuClose,0));
 	}
 
 bool C4ObjectMenu::IsReadOnly()

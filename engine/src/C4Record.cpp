@@ -255,7 +255,7 @@ bool C4Record::Rec(C4PacketType eCtrlType, C4ControlPacket *pCtrl, int iFrame)
 bool C4Record::Rec(int iFrame, const StdBuf &sBuf, C4RecordChunkType eType)
 	{
 	// filler chunks (this should never be necessary, though)
-	while(iFrame > iLastFrame + 0xff)
+	while(iFrame > int(iLastFrame + 0xff))
 		Rec(iLastFrame + 0xff, StdBuf(), RCT_Frame);
 	// get frame difference
 	uint8_t iFrameDiff = Max<uint8_t>(0, iFrame - iLastFrame);
@@ -990,7 +990,7 @@ StdStrBuf GetDbgRecPktData(C4RecordChunkType eType, const StdBuf & RawData)
 		case RCT_AulFunc: r.Ref(reinterpret_cast<const char*>(RawData.getData()), RawData.getSize()-1);
 		break;
 		default:
-		for (int i=0; i<RawData.getSize(); ++i)
+		for (unsigned int i=0; i<RawData.getSize(); ++i)
 			r.AppendFormat("%02x ", (uint32_t) ((uint8_t *)RawData.getData())[i]);
 		break;
 		}

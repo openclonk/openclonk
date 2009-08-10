@@ -3526,7 +3526,7 @@ void C4Object::Resort()
 	// Must not immediately resort - link change/removal would crash Game::ExecObjects
 	}
 
-BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
+bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
 	{
 	C4PropList * LastAction = Action.pActionDef;
 	int32_t iLastPhase=Action.Phase;
@@ -3534,7 +3534,7 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 	if (LastAction)
 		if (LastAction->GetPropertyInt(P_NoOtherAction) && !fForce)
 			if (Act != LastAction)
-				return FALSE;
+				return false;
 	// Stop previous act sound
 	if (LastAction)
 		if (Act != LastAction)
@@ -3581,7 +3581,7 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				C4Def *pOldDef = Def;
 				Call(Action.pActionDef->GetPropertyStr(P_StartCall)->GetCStr());
 				// abort exeution if def changed
-				if (Def != pOldDef || !Status) return TRUE;
+				if (Def != pOldDef || !Status) return true;
 				}
 			}
 	// Execute EndCall
@@ -3593,7 +3593,7 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				C4Def *pOldDef = Def;
 				Call(LastAction->GetPropertyStr(P_EndCall)->GetCStr());
 				// abort exeution if def changed
-				if (Def != pOldDef || !Status) return TRUE;
+				if (Def != pOldDef || !Status) return true;
 				}
 			}
 	// Execute AbortCall
@@ -3605,10 +3605,10 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				C4Def *pOldDef = Def;
 				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase)));
 				// abort exeution if def changed
-				if (Def != pOldDef || !Status) return TRUE;
+				if (Def != pOldDef || !Status) return true;
 				}
 			}
-	return TRUE;
+	return true;
 	}
 
 void C4Object::UpdateActionFace()

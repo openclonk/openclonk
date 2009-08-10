@@ -174,7 +174,7 @@ class C4PlayerControlAssignment
 		const char *GetControlName() const { return sControlName.getData(); }
 		int32_t GetControl() const { return iControl; }
 		bool IsRefsResolved() const { return fRefsResolved; }
-		bool IsAlwaysUnhandled() const { return iTriggerMode & CTM_AlwaysUnhandled; }
+		bool IsAlwaysUnhandled() const { return !!(iTriggerMode & CTM_AlwaysUnhandled); }
 		int32_t GetTriggerMode() const { return iTriggerMode; }
 		const C4KeyCodeEx &GetTriggerKey() const { return TriggerKey; }
 		bool HasCombo() const { return KeyCombo.size()>1; }

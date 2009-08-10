@@ -384,7 +384,7 @@ void C4ControlPlayerControl::Execute() const
 	else
 	{
 		// player-based control: Execute on control owned by player
-		C4Player *pPlr=Game.Players.Get(iPlr);
+		C4Player *pPlr=::Players.Get(iPlr);
 		if (pPlr)
 		{
 			pTargetCtrl = &(pPlr->Control);

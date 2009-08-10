@@ -22,9 +22,10 @@
 #ifndef BIG_C4INCLUDE
 #include <C4LangStringTable.h>
 #include <C4Player.h>
+#include <C4PlayerList.h>
 #include <C4Control.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #endif
 
 /* C4PlayerControlDef */
@@ -117,7 +118,7 @@ void C4PlayerControlDefs::MergeFrom(const C4PlayerControlDefs &Src)
 const C4PlayerControlDef *C4PlayerControlDefs::GetControlByIndex(int32_t idx) const
 	{
 	// safe index
-	if (idx<0 || idx>=Defs.size()) return NULL;
+	if (idx<0 || idx>=int32_t(Defs.size())) return NULL;
 	return &(Defs[idx]);
 	}
 
@@ -138,7 +139,7 @@ void C4PlayerControlDefs::FinalInit()
 		const char *szIdtf  = (*i).GetIdentifier();
 		if (szIdtf && *szIdtf && !SEqual(szIdtf, "None"))
 			{
-			Game.ScriptEngine.RegisterGlobalConstant(FormatString("CON_%s", szIdtf).getData(), C4VInt(i-Defs.begin()));
+			::ScriptEngine.RegisterGlobalConstant(FormatString("CON_%s", szIdtf).getData(), C4VInt(i-Defs.begin()));
 			}
 		}
 	}
@@ -528,14 +529,14 @@ bool C4PlayerControl::CSync::ControlDownState::operator ==(const ControlDownStat
 const C4PlayerControl::CSync::ControlDownState *C4PlayerControl::CSync::GetControlDownState(int32_t iControl) const
 	{
 	// safe access
-	if (iControl < 0 || iControl >= ControlDownStates.size()) return NULL;
+	if (iControl < 0 || iControl >= int32_t(ControlDownStates.size())) return NULL;
 	return &ControlDownStates[iControl];
 	}
 
 int32_t C4PlayerControl::CSync::GetControlDisabled(int32_t iControl) const
 	{
 	// safe access
-	if (iControl < 0 || iControl >= ControlDisableStates.size()) return 0;
+	if (iControl < 0 || iControl >= int32_t(ControlDisableStates.size())) return 0;
 	return ControlDisableStates[iControl];
 	}
 
@@ -543,7 +544,7 @@ void C4PlayerControl::CSync::SetControlDownState(int32_t iControl, const C4KeyEv
 	{
 	// update state
 	if (iControl < 0) return;
-	if (iControl >= ControlDownStates.size()) ControlDownStates.resize(iControl+1);
+	if (iControl >= int32_t(ControlDownStates.size())) ControlDownStates.resize(iControl+1);
 	ControlDownState &rState = ControlDownStates[iControl];
 	rState.DownState = rDownState;
 	rState.iDownFrame = iDownFrame;
@@ -554,7 +555,7 @@ void C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
 	{
 	// disable control
 	if (iControl < 0) return;
-	if (iControl >= ControlDisableStates.size()) ControlDisableStates.resize(iControl+1);
+	if (iControl >= int32_t(ControlDisableStates.size())) ControlDisableStates.resize(iControl+1);
 	ControlDisableStates[iControl] = iVal;
 	// if a control is disabled, its down-state is reset silently
 	const ControlDownState *pDownState = GetControlDownState(iControl);
@@ -749,7 +750,7 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	C4Player *pPlr = NULL;
 	if (iPlr > -1)
 		{
-		pPlr = Game.Players.Get(iPlr);
+		pPlr = ::Players.Get(iPlr);
 		if (!pPlr) return false;
 		}
 	// exec action (on player)
@@ -775,7 +776,7 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 
 bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtraData, bool fUp, const C4KeyEventData &rKeyExtraData, bool fRepeated)
 	{
-	C4Player *pPlr = Game.Players.Get(iPlr);
+	C4Player *pPlr = ::Players.Get(iPlr);
 	if (pPlr)
 		{
 		// Not for eliminated (checked again in DirectCom, but make sure no control is generated for eliminated players!)
@@ -789,7 +790,7 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 		return false;
 		}
 	// control down
-	C4AulFunc *pFunc = Game.ScriptEngine.GetFirstFunc(PSF_PlayerControl);
+	C4AulFunc *pFunc = ::ScriptEngine.GetFirstFunc(PSF_PlayerControl);
 	if (!pFunc) return false;
 	C4AulParSet Pars(C4VInt(iPlr), C4VInt(iControl), C4VID(idControlExtraData), C4VInt(rKeyExtraData.x), C4VInt(rKeyExtraData.y), C4VInt(rKeyExtraData.iStrength), C4VBool(fRepeated), C4VBool(fUp));
 	return !!pFunc->Exec(NULL, &Pars);
