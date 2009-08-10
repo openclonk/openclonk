@@ -2,7 +2,7 @@
 //
 #include "resource.h"
 
-#include "../inc/C4Version.h"
+#include "C4Version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////

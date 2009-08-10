@@ -25,7 +25,7 @@
 #include <StdFile.h>
 #include <StdBuf.h>
 
-#include "../../engine/inc/C4Version.h"
+#include "C4Version.h"
 
 /* CStdWindow */
 

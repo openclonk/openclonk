@@ -46,8 +46,8 @@
 
 #endif
 
-#include "../../engine/res/resource.h"
-#include "../../engine/inc/C4Version.h"
+#include "resource.h"
+#include "C4Version.h"
 
 #define C4FullScreenClassName "C4FullScreen"
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

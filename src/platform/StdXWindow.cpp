@@ -27,11 +27,11 @@
 #include <StdFile.h>
 #include <StdBuf.h>
 
-#include "../../engine/inc/C4Version.h"
+#include "C4Version.h"
 
 #ifdef USE_X11
 #define BOOL _BOOL
-#include "../../engine/res/c4x.xpm"
+#include "c4x.xpm"
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 #include <X11/Xatom.h>

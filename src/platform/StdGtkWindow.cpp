@@ -20,13 +20,13 @@
 
 #include <StdGtkWindow.h>
 
-#include "../../engine/res/c4x.xpm"
+#include "c4x.xpm"
 #include <X11/Xlib.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtklayout.h>
 
-#include "../../engine/inc/C4Version.h"
+#include "C4Version.h"
 
 /* CStdGtkWindow */
 

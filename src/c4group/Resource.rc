@@ -9,7 +9,7 @@
 //
 #include "afxres.h"
 
-#include "..\engine\inc\C4Version.h"
+#include "C4Version.h"
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
