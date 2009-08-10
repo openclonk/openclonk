@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2005  Tobias Zwick
+ * Copyright (c) 2005, 2008  Sven Eberhardt
+ * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -40,7 +44,6 @@
 	#define C4_OS "unknown";
 #endif
 
-#ifdef C4ENGINE
 
 #ifndef HAVE_CONFIG_H
 // different debugrec options
@@ -79,7 +82,6 @@
 #if defined(HAVE_MIDI_H) && !defined(USE_FMOD)
 #define USE_WINDOWS_MIDI
 #endif
-#endif // C4ENGINE
 
 #include <Standard.h>
 #include <CStdFile.h>
@@ -247,7 +249,6 @@
 #include "C4Video.h"
 #include "C4Viewport.h"
 #include "C4Weather.h"
-#include "C4Wrappers.h"
 #endif
 
 #endif // INC_C4Include

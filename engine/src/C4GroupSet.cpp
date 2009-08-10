@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2002, 2004-2005, 2007  Sven Eberhardt
+ * Copyright (c) 2004  Matthes Bender
+ * Copyright (c) 2005, 2007  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,13 +23,8 @@
 #include <C4Include.h>
 #include <C4GroupSet.h>
 
-#ifdef C4ENGINE
 #include <C4Game.h>
 #include <C4Log.h>
-#else
-#include <C4Group.h>
-#include <C4Components.h>
-#endif
 
 C4GroupSetNode::C4GroupSetNode(C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id)
 	{
@@ -278,7 +276,6 @@ bool C4GroupSet::UnregisterGroup(int32_t iIndex)
 
 }
 
-#ifdef C4ENGINE
 C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 	{
 	// the scenario filename may be a scenario or directly a group folder
@@ -360,4 +357,3 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 		}
 	return pParentGroup;
 	}
-#endif

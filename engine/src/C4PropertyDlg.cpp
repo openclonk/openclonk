@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2006  Peter Wortmann
+ * Copyright (c) 2001  Sven Eberhardt
+ * Copyright (c) 2005, 2007  Günther Brammer
+ * Copyright (c) 2006-2007  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,8 +30,10 @@
 #include <C4Console.h>
 #include <C4Application.h>
 #include <C4Object.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 #include <StdRegistry.h>
@@ -143,7 +151,7 @@ BOOL C4PropertyDlg::Open()
 
 		gtk_widget_show_all(vbox);
 
-		C4DevmodeDlg::AddPage(vbox, GTK_WINDOW(Console.window), LoadResStrUtf8("IDS_DLG_PROPERTIES").getData());
+		C4DevmodeDlg::AddPage(vbox, GTK_WINDOW(Console.window), LoadResStr("IDS_DLG_PROPERTIES"));
 
 		g_signal_connect(G_OBJECT(entry), "activate", G_CALLBACK(OnScriptActivate), this);
 
@@ -170,7 +178,7 @@ BOOL C4PropertyDlg::Update(C4ObjectList &rSelection)
 
 BOOL IsObjectPointer(int iValue)
 	{
-  for (C4ObjectLink *cLnk=Game.Objects.First; cLnk; cLnk=cLnk->Next)
+  for (C4ObjectLink *cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj == (C4Object*) iValue)
 			return TRUE;
 	return FALSE;
@@ -202,36 +210,24 @@ BOOL C4PropertyDlg::Update()
 			if (ValidPlr(cobj->Owner))
 				{
 				Output.Append(LineFeed);
-				Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),Game.Players.Get(cobj->Owner)->GetName());
+				Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),::Players.Get(cobj->Owner)->GetName());
 				}
 			// Contents
 			if (cobj->Contents.ObjectCount())
 				{
 				Output.Append(LineFeed);
 				Output.Append(LoadResStr("IDS_CNS_CONTENTS"));
-				Output.Append(static_cast<const StdStrBuf &>(cobj->Contents.GetNameList(Game.Defs)));
+				Output.Append(static_cast<const StdStrBuf &>(cobj->Contents.GetNameList(::Definitions)));
 				}
 			// Action
-			if (cobj->Action.Act!=ActIdle)
+			if (cobj->Action.pActionDef)
 				{
 				Output.Append(LineFeed);
 				Output.Append(LoadResStr("IDS_CNS_ACTION"));
-				Output.Append(cobj->Def->ActMap[cobj->Action.Act].Name);
+				Output.Append(cobj->Action.pActionDef->GetName());
 				}
 			// Locals
 			int cnt; bool fFirstLocal = true;
-			for (cnt=0; cnt<cobj->Local.GetSize(); cnt++)
-				if (!!cobj->Local[cnt])
-					{
-					// Header
-					if (fFirstLocal) { Output.Append(LineFeed); Output.Append(LoadResStr("IDS_CNS_LOCALS")); fFirstLocal = false; }
-					Output.Append(LineFeed);
-					// Append id
-					Output.AppendFormat(" Local(%d) = ", cnt);
-					// write value
-					Output.Append(static_cast<const StdStrBuf &>(cobj->Local[cnt].GetDataString()));
-					}
-			// Locals (named)
 			for (cnt=0; cnt < cobj->LocalNamed.GetAnzItems(); cnt++)
 				{
 				// Header
@@ -273,7 +269,7 @@ BOOL C4PropertyDlg::Update()
 #else
 #ifdef WITH_DEVELOPER_MODE
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(textview));
-	gtk_text_buffer_set_text(buffer, C4Language::IconvUtf8(Output.getData()).getData(), -1);
+	gtk_text_buffer_set_text(buffer, Output.getData(), -1);
 #endif
 #endif
 	return TRUE;
@@ -348,7 +344,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 #endif // _WIN32
 
 	// add global and standard functions
-	for (C4AulFunc *pFn = Game.ScriptEngine.GetFirstFunc(); pFn; pFn = Game.ScriptEngine.GetNextFunc(pFn))
+	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
 		if (pFn->GetPublic())
 			{
 #ifdef _WIN32
@@ -390,7 +386,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 #ifdef _WIN32
 	// Restore old text
 	SetWindowText(hCombo,szLastText);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Reassociate list store with completion
 	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(store));
 #endif
@@ -398,7 +394,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 
 void C4PropertyDlg::Execute()
 	{
-	if (!Tick35) Update();
+	if (!::Game.iTick35) Update();
 	}
 
 void C4PropertyDlg::ClearPointers(C4Object *pObj)

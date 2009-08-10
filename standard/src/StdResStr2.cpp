@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003, 2005-2006  Matthes Bender
+ * Copyright (c) 2005-2007  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -164,15 +166,6 @@ char *GetResStr(const char *id, const char *strTable)
 		if ((pos = SSearch(strTable, idExt)))
 			// Get string until end of line
 			SCopyUntil(pos, strResult, "\r\n", ResStrMaxLen);
-#ifdef _DEBUG
-#ifdef _MSC_VER
-	if (SEqual2(strResult, "[Undefined:"))
-		if (!SEqual(id, "IDS_LANG_CHARSET"))
-			{
-			/* __asm int 3 */
-			}
-#endif
-#endif
 	// Return string
 	return strResult;
 }

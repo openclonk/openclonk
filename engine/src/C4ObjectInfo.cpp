@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2005  Matthes Bender
+ * Copyright (c) 2002, 2004, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2006  Peter Wortmann
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,7 +26,6 @@
 #include <C4ObjectInfo.h>
 
 #ifndef BIG_C4INCLUDE
-#include <C4Wrappers.h>
 #include <C4Random.h>
 #include <C4Components.h>
 #include <C4Game.h>
@@ -30,6 +34,8 @@
 #include <C4RankSystem.h>
 #include <C4Log.h>
 #include <C4Player.h>
+#include <C4GraphicsResource.h>
+#include <C4PlayerList.h>
 #endif
 
 #ifdef _MSC_VER
@@ -56,11 +62,9 @@ void C4ObjectInfo::Default()
 	Filename[0]=0;
   Next=NULL;
 	pDef = NULL;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	Portrait.Default();
 	pNewPortrait = NULL;
 	pCustomPortrait = NULL;
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 BOOL C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPortrait)
@@ -76,9 +80,7 @@ BOOL C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPor
 				{ hChild.Close(); return FALSE; }
 			// resolve definition, if possible
 			// only works in game, but is not needed in frontend or startup editing anyway
-#ifdef C4ENGINE
 			pDef = C4Id2Def(id);
-#endif
 			hChild.Close();
 			return TRUE;
 			}
@@ -93,7 +95,6 @@ BOOL C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 	SCopy(GetFilename(hGroup.GetName()),Filename,_MAX_FNAME);
 	// Load core
 	if (!C4ObjectInfoCore::Load(hGroup)) return FALSE;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Load portrait - always try linking, even if fLoadPortrait is false (doesn't cost mem anyway)
 	// evaluate portrait string in info
 	bool fPortraitFileChecked=false;
@@ -130,7 +131,7 @@ BOOL C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 			const char *szPortraitName; C4ID idPortraitID;
 			szPortraitName = C4Portrait::EvaluatePortraitString(PortraitFile, idPortraitID, id, NULL);
 			// get portrait def
-			C4Def *pPortraitDef = Game.Defs.ID2Def(idPortraitID);
+			C4Def *pPortraitDef = ::Definitions.ID2Def(idPortraitID);
 			// def found?
 			if (pPortraitDef && pPortraitDef->Portraits)
 				{
@@ -159,7 +160,6 @@ BOOL C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 		else if (Config.Graphics.AddNewCrewPortraits)
 			// assign a new random crew portrait
 			SetRandomPortrait(0, true, false);
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	return TRUE;
 	}
 
@@ -204,7 +204,6 @@ BOOL C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 	C4Group hTemp;
 	if (!hTemp.OpenAsChild(&hGroup, Filename, FALSE, TRUE))
 		return FALSE;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// New portrait present, or old portrait not saved yet (old player begin updated)?
 	if (!fStoreTiny && Config.Graphics.SaveDefaultPortraits) if (pNewPortrait || (Config.Graphics.AddNewCrewPortraits && Portrait.GetGfx() && !hTemp.FindEntry(C4CFN_Portrait)))
 		{
@@ -276,7 +275,6 @@ BOOL C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 			}
 		}
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	// Save info to temp group
 	if (!C4ObjectInfoCore::Save(hTemp, pDefs))
 		{ hTemp.Close(); return FALSE; }
@@ -294,17 +292,14 @@ void C4ObjectInfo::Evaluate()
 
 void C4ObjectInfo::Clear()
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	Portrait.Clear();
 	if (pNewPortrait) { delete pNewPortrait; pNewPortrait=NULL; }
 	if (pCustomPortrait) { delete pCustomPortrait; pCustomPortrait=NULL; }
 	pDef=NULL;
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Object *pOfObj)
 	{
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	int iX=0;
 
@@ -317,8 +312,8 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 			//C4Facet fctPortrait; fctPortrait.Set(Portrait);
 			C4Facet ccgo; ccgo.Set(cgo.Surface,cgo.X+iX,cgo.Y,4*cgo.Hgt/3+10,cgo.Hgt+10);
 			DWORD dwColor = 0xFFFFFFFF;
-			if (pOfObj && Game.Players.Get(pOfObj->Owner))
-				dwColor = Game.Players.Get(pOfObj->Owner)->ColorDw;
+			if (pOfObj && ::Players.Get(pOfObj->Owner))
+				dwColor = ::Players.Get(pOfObj->Owner)->ColorDw;
 			pPortraitGfx->DrawClr(ccgo, TRUE, dwColor);
 			iX+=4*cgo.Hgt/3;
 			}
@@ -327,14 +322,14 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 	// Captain symbol
 	if (fCaptain)
 		{
-		Game.GraphicsResource.fctCaptain.Draw(cgo.Surface,cgo.X+iX,cgo.Y,0,0);
-		iX+=Game.GraphicsResource.fctCaptain.Wdt;
+		::GraphicsResource.fctCaptain.Draw(cgo.Surface,cgo.X+iX,cgo.Y,0,0);
+		iX+=::GraphicsResource.fctCaptain.Wdt;
 		}
 
 	// Rank symbol
-	C4RankSystem *pRankSys = &Game.Rank;
-	C4Facet *pRankRes=&Game.GraphicsResource.fctRank;
-	int iRankCnt=Game.GraphicsResource.iNumRanks;
+	C4RankSystem *pRankSys = &::DefaultRanks;
+	C4Facet *pRankRes=&::GraphicsResource.fctRank;
+	int iRankCnt=::GraphicsResource.iNumRanks;
 	if (pOfObj)
 		{
 		C4Def *pDef=pOfObj->Def;
@@ -349,14 +344,13 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 			}
 		}
 	pRankSys->DrawRankSymbol(NULL, Rank, pRankRes, iRankCnt, false, iX, &cgo);
-	iX+=Game.GraphicsResource.fctRank.Wdt;
+	iX+=::GraphicsResource.fctRank.Wdt;
 	// Rank & Name
 	StdStrBuf name;
 	if (Rank>0)	name.Format("%s|%s",sRankName.getData(),pOfObj->GetName ());
 	else name.Format("%s",pOfObj->GetName ());
-	Application.DDraw->TextOut(name.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
+	Application.DDraw->TextOut(name.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
 
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4ObjectInfo::Recruit()
@@ -365,16 +359,14 @@ void C4ObjectInfo::Recruit()
 	if (InAction) return;
   WasInAction=TRUE;
   InAction=TRUE;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	InActionTime=Game.Time;
 	// rank name overload by def?
-	C4Def *pDef=Game.Defs.ID2Def(id);
+	C4Def *pDef=::Definitions.ID2Def(id);
 	if (pDef) if (pDef->pRankNames)
 		{
 		StdStrBuf sRank(pDef->pRankNames->GetRankName(Rank, true));
 		if (sRank) sRankName.Copy(sRank);
 		}
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4ObjectInfo::Retire()
@@ -383,9 +375,7 @@ void C4ObjectInfo::Retire()
 	if (!InAction) return;
 	// retire
 	InAction=FALSE;
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	TotalPlayingTime+=(Game.Time-InActionTime);
-#endif // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 
 void C4ObjectInfo::SetBirthday()
@@ -394,7 +384,6 @@ void C4ObjectInfo::SetBirthday()
 	}
 
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 bool C4ObjectInfo::SetRandomPortrait(C4ID idSourceDef, bool fAssignPermanently, bool fCopyFile)
 	{
@@ -402,7 +391,7 @@ bool C4ObjectInfo::SetRandomPortrait(C4ID idSourceDef, bool fAssignPermanently, 
 	if (!idSourceDef)
 		idSourceDef = id;
 	// Get source def
-	C4Def* pPortraitDef = Game.Defs.ID2Def(idSourceDef);
+	C4Def* pPortraitDef = ::Definitions.ID2Def(idSourceDef);
 	// Portrait source def not loaded: do not assign a portrait now, so the clonk can get
 	// the correct portrait later when the source def is available (assuming this clonk is
 	// not going to be used in this round anyway)
@@ -412,7 +401,7 @@ bool C4ObjectInfo::SetRandomPortrait(C4ID idSourceDef, bool fAssignPermanently, 
 	if (!pPortraitDef->PortraitCount)
 		{
 		// Then use CLNK portraits (2do: base on include chains in latter case)?
-		pPortraitDef = Game.Defs.ID2Def(C4ID_Clonk);
+		pPortraitDef = ::Definitions.ID2Def(C4ID_Clonk);
 		// Assign permanently, assuming it is some kind of normal clonk here...
 		fAssignPermanently=true;
 		fCopyFile=false;
@@ -465,4 +454,3 @@ bool C4ObjectInfo::ClearPortrait(bool fPermanently)
 	return true;
 	}
 
-#endif

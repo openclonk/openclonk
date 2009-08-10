@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003-2008  Sven Eberhardt
+ * Copyright (c) 2005, 2009  Peter Wortmann
+ * Copyright (c) 2005-2006  Günther Brammer
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2007-2008  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,10 +29,12 @@
 #include "C4Network2Dialogs.h"
 #include "C4GameOptions.h"
 #include "C4GameDialogs.h"
-#include "C4Wrappers.h"
 #include "C4RTF.H"
 #include "C4ChatDlg.h"
 #include "C4PlayerInfoListBox.h"
+#include <C4MessageInput.h>
+#include <C4Game.h>
+#include <C4Network2.h>
 #endif
 
 namespace C4GameLobby {
@@ -300,7 +307,7 @@ void MainDlg::OnTestBtn(C4GUI::Control *btn)
 	{
 	pPlayerList->SetMode(C4PlayerInfoListBox::PILBM_Evaluation);
 	pPlayerList->SetTeamFilter(1);
-	//pPlayerList->SetCustomFont(&Game.GraphicsResource.FontTooltip, 0xff000000);
+	//pPlayerList->SetCustomFont(&::GraphicsResource.FontTooltip, 0xff000000);
 	}
 
 void MainDlg::SetCountdownState(CountdownState eToState, int32_t iTimer)
@@ -397,9 +404,9 @@ void MainDlg::OnClosed(bool fOK)
 void MainDlg::OnRunBtn(C4GUI::Control *btn)
 	{
 	// only for host
-	if (!Game.Network.isHost()) return;
+	if (!::Network.isHost()) return;
 	// already started? then abort
-	if (eCountdownState) { Game.Network.AbortLobbyCountdown(); return; }
+	if (eCountdownState) { ::Network.AbortLobbyCountdown(); return; }
 	// otherwise start, utilizing correct countdown time
 	Start(Config.Lobby.CountdownTime);
 	}
@@ -418,10 +425,10 @@ void MainDlg::Start(int32_t iCountdownTime)
 	iCountdownTime = ValidatedCountdownTime(iCountdownTime);
 	// either direct start...
 	if (!iCountdownTime)
-		Game.Network.Start();
+		::Network.Start();
 	else
 		// ...or countdown
-		Game.Network.StartLobbyCountdown(iCountdownTime);
+		::Network.StartLobbyCountdown(iCountdownTime);
 	}
 
 C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, bool fPastingMore)
@@ -439,10 +446,14 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 		{
 		// store input in backbuffer before processing commands
 		// because those might kill the edit field
-		Game.MessageInput.StoreBackBuffer(szInputText);
+		::MessageInput.StoreBackBuffer(szInputText);
 		bool fProcessed = false;
 		// check confidential data
-		if (C4InVal::IsConfidentialData(szInputText, true)) fProcessed = true;
+		if (Config.IsConfidentialData(szInputText))
+		{
+			::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
+			fProcessed = true;
+		}
 		// CAUTION when implementing special commands (like /quit) here:
 		// those must not be executed when text is pasted, because that could crash the GUI system
 		// when there are additional lines to paste, but the edit field is destructed by the command
@@ -480,7 +491,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 					LobbyError(FormatString(LoadResStr("IDS_MSG_CMD_JOINPLR_NOFILE"), plrPath.getData()).getData());
 					}
 				else
-					Game.Network.Players.JoinLocalPlayer(plrPath.getData(), true);
+					::Network.Players.JoinLocalPlayer(plrPath.getData(), true);
 				}
 			// ------------------------------------------------------
 			else if (SEqualNoCase(Command, "/plrclr"))
@@ -489,7 +500,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 				int iSepPos = SCharPos(' ', szPar, 0);
 				C4PlayerInfo *pNfo=NULL;
 				int32_t idLocalClient = -1;
-				if (Game.Network.Clients.GetLocal()) idLocalClient = Game.Network.Clients.GetLocal()->getID();
+				if (::Network.Clients.GetLocal()) idLocalClient = ::Network.Clients.GetLocal()->getID();
 				if (iSepPos>0)
 					{
 					// a player name is given: Parse it
@@ -514,7 +525,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 				else
 					{
 					// may color of this client be set?
-					if (pCltNfo->GetClientID() != idLocalClient && !Game.Network.isHost())
+					if (pCltNfo->GetClientID() != idLocalClient && !::Network.isHost())
 						{
 						LobbyError(LoadResStr("IDS_MSG_CMD_PLRCLR_NOACCESS"));
 						}
@@ -538,7 +549,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 							if (pPlrInfo)
 								{
 								pPlrInfo->SetOriginalColor(dwNewClr); // set this as a new color wish
-								Game.Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
+								::Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
 								}
 							}
 						}
@@ -549,14 +560,14 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 				{
 				// timeout given?
 				int32_t iTimeout = Config.Lobby.CountdownTime;
-				if (!Game.Network.isHost())
+				if (!::Network.isHost())
 					LobbyError(LoadResStr("IDS_MSG_CMD_HOSTONLY"));
 				else if (szPar && *szPar && (!sscanf(szPar, "%d", &iTimeout) || iTimeout<0))
 					LobbyError(LoadResStr("IDS_MSG_CMD_START_USAGE"));
 				else
 					{
 					// abort previous countdown
-					if (eCountdownState) Game.Network.AbortLobbyCountdown();
+					if (eCountdownState) ::Network.AbortLobbyCountdown();
 					// start new countdown (aborts previous if necessary)
 					Start(iTimeout);
 					}
@@ -564,10 +575,10 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 			// ------------------------------------------------------
 			else if (SEqualNoCase(Command, "/abort"))
 				{
-				if (!Game.Network.isHost())
+				if (!::Network.isHost())
 					LobbyError(LoadResStr("IDS_MSG_CMD_HOSTONLY"));
 				else if (eCountdownState)
-					Game.Network.AbortLobbyCountdown();
+					::Network.AbortLobbyCountdown();
 				else
 					LobbyError(LoadResStr("IDS_MSG_CMD_ABORT_NOCOUNTDOWN"));
 				}
@@ -600,7 +611,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 				}
 			}
 		// not processed? Then forward to messageinput, which parses additional commands and sends regular messages
-		if (!fProcessed) Game.MessageInput.ProcessInput(szInputText);
+		if (!fProcessed) ::MessageInput.ProcessInput(szInputText);
 		}
 	// clear edit field after text has been processed
 	pEdt->SelectAll(); pEdt->DeleteSelection();
@@ -656,7 +667,7 @@ bool MainDlg::OnMessage(C4Client *pOfClient, const char *szMessage)
 	// 2do: log with player colors?
 	if (pChatBox && C4GUI::GetRes())
 		{
-		pChatBox->AddTextLine(szMsgBuf, &C4GUI::GetRes()->TextFont, Game.Network.Players.GetClientChatColor(pOfClient ? pOfClient->getID() : Game.Clients.getLocalID(), true) | C4GUI_MessageFontAlpha, true, true);
+		pChatBox->AddTextLine(szMsgBuf, &C4GUI::GetRes()->TextFont, ::Network.Players.GetClientChatColor(pOfClient ? pOfClient->getID() : Game.Clients.getLocalID(), true) | C4GUI_MessageFontAlpha, true, true);
 		pChatBox->ScrollToBottom();
 		}
 	// log it
@@ -743,7 +754,7 @@ void MainDlg::OnClientAddPlayer(const char *szFilename, int32_t idClient)
 		return;
 		}
 	// join!
-	Game.Network.Players.JoinLocalPlayer(Config.AtRelativePath(szFilename), true);
+	::Network.Players.JoinLocalPlayer(Config.AtRelativePath(szFilename), true);
 	}
 
 void MainDlg::OnTabPlayers(C4GUI::Control *btn)
@@ -823,7 +834,7 @@ bool MainDlg::KeyHistoryUpDown(bool fUp)
 	// chat input only
 	if (!IsFocused(pEdt)) return false;
 	pEdt->SelectAll(); pEdt->DeleteSelection();
-	const char *szPrevInput = Game.MessageInput.GetBackBuffer(fUp ? (++iBackBufferIndex) : (--iBackBufferIndex));
+	const char *szPrevInput = ::MessageInput.GetBackBuffer(fUp ? (++iBackBufferIndex) : (--iBackBufferIndex));
 	if (!szPrevInput || !*szPrevInput)
 		iBackBufferIndex = -1;
 	else
@@ -863,7 +874,7 @@ void MainDlg::ClearLog()
 void LobbyError(const char *szErrorMsg)
 	{
 	// get lobby
-	MainDlg *pLobby = Game.Network.GetLobby();
+	MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby) pLobby->OnError(szErrorMsg);
 	}
 
@@ -873,12 +884,12 @@ void LobbyError(const char *szErrorMsg)
 Countdown::Countdown(int32_t iStartTimer) : iStartTimer(iStartTimer)
 	{
 	// only on network hosts
-	assert(Game.Network.isHost());
+	assert(::Network.isHost());
 	// ctor: Init; sends initial countdown packet
 	C4PacketCountdown pck(iStartTimer);
-	Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_LobbyCountdown, pck));
+	::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_LobbyCountdown, pck));
 	// also process on host
-	MainDlg *pLobby = Game.Network.GetLobby();
+	MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby)
 		{
 		pLobby->OnCountdownPacket(pck);
@@ -909,9 +920,9 @@ void Countdown::OnSec1Timer()
 		!(iStartTimer % 60)) // otherwise, minute interval
 		{
 		C4PacketCountdown pck(iStartTimer);
-		Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_LobbyCountdown, pck));
+		::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_LobbyCountdown, pck));
 		// also process on host
-		MainDlg *pLobby = Game.Network.GetLobby();
+		MainDlg *pLobby = ::Network.GetLobby();
 		if (pLobby)
 			pLobby->OnCountdownPacket(pck);
 		else if (iStartTimer)
@@ -924,25 +935,25 @@ void Countdown::OnSec1Timer()
 	if (!iStartTimer)
 		{
 		// Dedicated server: if there are not enough players for this game, abort and quit the application
-		if (!Game.Network.GetLobby() && (Game.PlayerInfos.GetPlayerCount() < Game.C4S.GetMinPlayer()))
+		if (!::Network.GetLobby() && (Game.PlayerInfos.GetPlayerCount() < Game.C4S.GetMinPlayer()))
 		{
 			Log(LoadResStr("IDS_MSG_NOTENOUGHPLAYERSFORTHISRO")); // it would also be nice to send this message to all clients...
 			Application.Quit();
 		}
 		// Start the game
 		else
-			Game.Network.Start();
+			::Network.Start();
 		}
 	}
 
 void Countdown::Abort()
 	{
 	// host sends packets
-	if (!Game.Network.isHost()) return;
+	if (!::Network.isHost()) return;
 	C4PacketCountdown pck(C4PacketCountdown::Abort);
-	Game.Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_LobbyCountdown, pck));
+	::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_LobbyCountdown, pck));
 	// also process on host
-	MainDlg *pLobby = Game.Network.GetLobby();
+	MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby)
 		{
 		pLobby->OnCountdownPacket(pck);

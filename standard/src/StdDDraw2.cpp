@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2002-2007  Sven Eberhardt
+ * Copyright (c) 2002, 2005  Peter Wortmann
+ * Copyright (c) 2004, 2008  Matthes Bender
+ * Copyright (c) 2005-2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -97,8 +101,6 @@ void CBltTransform::TransformPoint(float &rX, float &rY)
 
 CPattern& CPattern::operator=(const CPattern& nPattern)
 	{
-	pClrs = nPattern.pClrs;
-	pAlpha = nPattern.pAlpha;
 	sfcPattern32 = nPattern.sfcPattern32;
 	if (sfcPattern32) sfcPattern32->Lock();
 	delete [] CachedPattern;
@@ -114,11 +116,10 @@ CPattern& CPattern::operator=(const CPattern& nPattern)
 	Wdt = nPattern.Wdt;
 	Hgt = nPattern.Hgt;
 	Zoom = nPattern.Zoom;
-	Monochrome = nPattern.Monochrome;
 	return *this;
 	}
 
-bool CPattern::Set(SURFACE sfcSource, int iZoom, bool fMonochrome)
+bool CPattern::Set(SURFACE sfcSource, int iZoom)
 	{
 	// Safety
 	if (!sfcSource) return false;
@@ -132,7 +133,6 @@ bool CPattern::Set(SURFACE sfcSource, int iZoom, bool fMonochrome)
 	// set zoom
 	Zoom=iZoom;
 	// set flags
-	Monochrome=fMonochrome;
 	CachedPattern = new uint32_t[Wdt * Hgt];
 	if (!CachedPattern) return false;
 	for (int y = 0; y < Hgt; ++y)
@@ -149,8 +149,6 @@ CPattern::CPattern()
 	sfcPattern32=NULL;
 	CachedPattern = 0;
 	Zoom=0;
-	Monochrome=false;
-	pClrs=NULL; pAlpha=NULL;
 	}
 
 void CPattern::Clear()
@@ -166,25 +164,12 @@ void CPattern::Clear()
 	delete[] CachedPattern; CachedPattern = 0;
 	}
 
-bool CPattern::PatternClr(int iX, int iY, BYTE &byClr, DWORD &dwClr, CStdPalette &rPal) const
+DWORD CPattern::PatternClr(unsigned int iX, unsigned int iY) const
 	{
-	if (!CachedPattern) return false;
-	// position zoomed?
-	if (Zoom) { iX/=Zoom; iY/=Zoom; }
-	// modulate position
-	((unsigned int &)iX) %= Wdt; ((unsigned int &)iY) %= Hgt;
-	// modulate clr
-	DWORD dwPix = CachedPattern[iY * Wdt + iX];
-	if (byClr)
-		{
-		if (Monochrome)
-			ModulateClrMonoA(dwClr, BYTE(dwPix), BYTE(dwPix>>24));
-		else
-			ModulateClrA(dwClr, dwPix);
-		LightenClr(dwClr);
-		}
-	else dwClr=dwPix;
-	return true;
+	if (!CachedPattern) return 0;
+	// wrap position
+	iX %= Wdt; iY %= Hgt;
+	return CachedPattern[iY * Wdt + iX];
 	}
 
 void CGammaControl::SetClrChannel(WORD *pBuf, BYTE c1, BYTE c2, int c3)
@@ -828,8 +813,8 @@ bool CStdDDraw::ClipPoly(CBltData &rBltData)
 	return true;
 	}
 
-void CStdDDraw::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcSource3, float fx, float fy,
-								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt)
+void CStdDDraw::BlitLandscape(SURFACE sfcSource, float fx, float fy,
+                              SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[])
 	{
 	Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt, FALSE);
 	}
@@ -949,8 +934,6 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	CBltData BltData;
 	// pass down pTransform
 	BltData.pTransform=pTransform;
-	// store current state
-	StoreStateBlock();
 	// blit with basesfc?
 	bool fBaseSfc=false;
 	if (sfcSource->pMainSfc) if (sfcSource->pMainSfc->ppTex) fBaseSfc=true;
@@ -964,8 +947,9 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	// calc stretch regarding texture size and indent
 	float scaleX2 = scaleX * iTexSize;
 	float scaleY2 = scaleY * iTexSize;
-	// blit from all these textures
+	// Enable textures
 	SetTexture();
+	// blit from all these textures
 	for (int iY=iTexY; iY<iTexY2; ++iY)
 		{
 		for (int iX=iTexX; iX<iTexX2; ++iX)
@@ -1040,8 +1024,6 @@ BOOL CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 		}
 	// reset texture
 	ResetTexture();
-	// restore state
-	RestoreStateBlock();
 	// success
 	return TRUE;
 	}
@@ -1185,7 +1167,6 @@ BOOL CStdDDraw::BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt
   return TRUE;
 	}
 
-#ifdef C4ENGINE
 
 bool CStdDDraw::Error(const char *szMsg)
 	{
@@ -1193,15 +1174,6 @@ bool CStdDDraw::Error(const char *szMsg)
 	Log(szMsg); return false;
 	}
 
-#else
-
-bool CStdDDraw::Error(const char *szMsg)
-	{
-	sLastError.Copy(szMsg);
-	return false;
-	}
-
-#endif
 
 bool CStdDDraw::CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes)
 	{
@@ -1340,9 +1312,7 @@ bool CStdDDraw::StringOut(const char *szText, SURFACE sfcDest, float iTx, float 
 		}
 	if (!fDoMarkup) iFlags|=STDFONT_NOMARKUP;
 	// draw text
-#ifdef C4ENGINE
 	pFont->DrawText(sfcDest, iTx  , iTy  , dwFCol, szText, iFlags, Markup, fZoom);
-#endif
 	// done, success
 	return true;
 	}
@@ -1552,10 +1522,7 @@ void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE c
 		// Set line
 		for (int xcnt = x - lwdt; xcnt < x + lwdt; ++xcnt)
 			{
-			// apply both patterns
-			DWORD dwClr=rPal.GetClr(col);
-			Pattern.PatternClr(xcnt, y + ycnt, col, dwClr, rPal);
-			sfcDest->SetPixDw(xcnt, y + ycnt, dwClr);
+			sfcDest->SetPixDw(xcnt, y + ycnt, Pattern.PatternClr(xcnt, y + ycnt));
 			}
 		}
 	sfcDest->Unlock();
@@ -1699,16 +1666,8 @@ bool CStdDDraw::Init(CStdApp * pApp, BOOL Fullscreen, BOOL fUsePageLock, unsigne
 	// store default gamma
 	SaveDefaultGammaRamp(pApp->pWindow);
 
-	DebugLog("Init DX");
-	DebugLog("  Create DirectDraw...");
-
-	if (!CreateDirectDraw())
-		return Error("  CreateDirectDraw failure.");
-
-	DebugLog("  Create Device...");
-
 	if (!CreatePrimarySurfaces(Fullscreen, iXRes, iYRes, iBitDepth, iMonitor))
-		return Error("  CreateDevice failure.");
+		return false;
 
 	DebugLog("  Create Clipper");
 

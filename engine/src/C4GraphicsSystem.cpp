@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
+ * Copyright (c) 2001-2003, 2005-2009  Sven Eberhardt
+ * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -29,9 +33,15 @@
 #include <C4FullScreen.h>
 #include <C4Gui.h>
 #include <C4LoaderScreen.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4SoundSystem.h>
+#include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
+#include <C4Landscape.h>
+#include <C4Network2.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 #include <StdPNG.h>
@@ -112,7 +122,7 @@ void C4GraphicsSystem::Clear()
 BOOL C4GraphicsSystem::SetPalette()
 	{
 	// Set primary palette by game palette
-	if (!Application.DDraw->SetPrimaryPalette(Game.GraphicsResource.GamePalette, Game.GraphicsResource.AlphaPalette)) return FALSE;
+	if (!Application.DDraw->SetPrimaryPalette(::GraphicsResource.GamePalette, ::GraphicsResource.AlphaPalette)) return FALSE;
 	return TRUE;
 	}
 
@@ -147,23 +157,23 @@ void C4GraphicsSystem::Execute()
 	bool fBGDrawn = false;
 
 	// If lobby running, message board only (page flip done by startup message board)
-	if (!Game.pGUI || !Game.pGUI->HasFullscreenDialog(true)) // allow for message board behind GUI
-		if(Game.Network.isLobbyActive() || !Game.IsRunning)
+	if (!::pGUI || !::pGUI->HasFullscreenDialog(true)) // allow for message board behind GUI
+		if(::Network.isLobbyActive() || !Game.IsRunning)
 			if (Application.isFullScreen)
 				{
 				// Message board
 				if (iRedrawBackground) ClearFullscreenBackground();
 				MessageBoard.Execute();
-				if (!Game.pGUI || !C4GUI::IsActive())
+				if (!::pGUI || !C4GUI::IsActive())
 					{ FinishDrawing(); return; }
 				fBGDrawn = true;
 				}
 
 	// fullscreen GUI?
-	if (Application.isFullScreen && Game.pGUI && C4GUI::IsActive() && (Game.pGUI->HasFullscreenDialog(false) || !Game.IsRunning))
+	if (Application.isFullScreen && ::pGUI && C4GUI::IsActive() && (::pGUI->HasFullscreenDialog(false) || !Game.IsRunning))
 		{
 		if (!fBGDrawn && iRedrawBackground) ClearFullscreenBackground();
-		Game.pGUI->Render(!fBGDrawn);
+		::pGUI->Render(!fBGDrawn);
 		FinishDrawing();
 		return;
 		}
@@ -180,11 +190,11 @@ void C4GraphicsSystem::Execute()
 	ScreenTick++; if (ScreenTick>=ScreenRate) ScreenTick=0;
 
 	// Reset object audibility
-	Game.Objects.ResetAudibility();
+	::Objects.ResetAudibility();
 
 	// some hack to ensure the mouse is drawn after a dialog close and before any
 	// movement messages
-	if (Game.pGUI && !C4GUI::IsActive())
+	if (::pGUI && !C4GUI::IsActive())
 		SetMouseInGUI(false, false);
 
 	// Viewports
@@ -206,9 +216,9 @@ void C4GraphicsSystem::Execute()
 		}
 
 	// InGame-GUI
-	if (Game.pGUI && C4GUI::IsActive())
+	if (::pGUI && C4GUI::IsActive())
 		{
-		Game.pGUI->Render(false);
+		::pGUI->Render(false);
 		}
 
 	// Palette update
@@ -337,7 +347,7 @@ void C4GraphicsSystem::DrawFullscreenBackground()
 	for (int i=0, iNum=BackgroundAreas.GetCount(); i<iNum; ++i)
 		{
 		const C4Rect &rc = BackgroundAreas.Get(i);
-		Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,Application.DDraw->lpBack,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
+		Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,Application.DDraw->lpBack,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
 		}
 	--iRedrawBackground;
 	}
@@ -350,7 +360,7 @@ void C4GraphicsSystem::ClearFullscreenBackground()
 
 void OnSurfaceRestore()
 	{
-	Game.GraphicsSystem.InvalidateBg();
+	::GraphicsSystem.InvalidateBg();
 	}
 
 BOOL C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst)
@@ -423,8 +433,8 @@ void C4GraphicsSystem::RecalculateViewports()
 	// StdWindow handles this.
 #endif
 	// reset GUI dlg pos
-	if (Game.pGUI)
-		Game.pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
+	if (::pGUI)
+		::pGUI->SetPreferredDlgRect(C4Rect(ViewportArea.X, ViewportArea.Y, ViewportArea.Wdt, ViewportArea.Hgt));
 
 	// fullscreen background: First, cover all of screen
 	BackgroundAreas.Clear();
@@ -512,8 +522,8 @@ void C4GraphicsSystem::SortViewportsByPlayerControl()
 		for (pPrev=NULL,pView=FirstViewport; pView && (pNext = pView->Next); pView=pNext)
 			{
 			// Get players
-			pPlr1 = Game.Players.Get(pView->Player);
-			pPlr2 = Game.Players.Get(pNext->Player);
+			pPlr1 = ::Players.Get(pView->Player);
+			pPlr2 = ::Players.Get(pNext->Player);
 			// Swap order
 			if (pPlr1 && pPlr2 && ( LayoutOrder(pPlr1->ControlSet) > LayoutOrder(pPlr2->ControlSet) ))
 				{
@@ -539,10 +549,10 @@ void C4GraphicsSystem::MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD 
 	{
 	// pass on to GUI
 	// Special: Don't pass if dragging and button is not upped
-	if (Game.pGUI && Game.pGUI->IsActive() && !Game.MouseControl.IsDragging())
+	if (::pGUI && ::pGUI->IsActive() && !::MouseControl.IsDragging())
 		{
-		bool fResult = Game.pGUI->MouseInput(iButton, iX, iY, dwKeyParam, NULL, pVP);
-		if (Game.pGUI && Game.pGUI->HasMouseFocus()) { SetMouseInGUI(true, true); return; }
+		bool fResult = ::pGUI->MouseInput(iButton, iX, iY, dwKeyParam, NULL, pVP);
+		if (::pGUI && ::pGUI->HasMouseFocus()) { SetMouseInGUI(true, true); return; }
 		// non-exclusive GUI: inform mouse-control about GUI-result
 		SetMouseInGUI(fResult, true);
 		// abort if GUI processed it
@@ -552,10 +562,10 @@ void C4GraphicsSystem::MouseMove(int32_t iButton, int32_t iX, int32_t iY, DWORD 
 		// no GUI: mouse is not in GUI
 		SetMouseInGUI(false, true);
 	// mouse control enabled?
-	if (!Game.MouseControl.IsActive())
+	if (!::MouseControl.IsActive())
 		{
 		// enable mouse in GUI, if a mouse-only-dlg is displayed
-		if (Game.pGUI && Game.pGUI->GetMouseControlledDialogCount())
+		if (::pGUI && ::pGUI->GetMouseControlledDialogCount())
 			SetMouseInGUI(true, true);
 		return;
 		}
@@ -567,8 +577,8 @@ void C4GraphicsSystem::MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t 
 	{
 	// Pass on to mouse controlled viewport
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-		if (Game.MouseControl.IsViewport(cvp))
-			Game.MouseControl.Move( iButton,
+		if (::MouseControl.IsViewport(cvp))
+			::MouseControl.Move( iButton,
 															BoundBy<int32_t>(iX-cvp->OutX,0,cvp->ViewWdt-1),
 															BoundBy<int32_t>(iY-cvp->OutY,0,cvp->ViewHgt-1),
 															dwKeyParam );
@@ -577,17 +587,17 @@ void C4GraphicsSystem::MouseMoveToViewport(int32_t iButton, int32_t iX, int32_t 
 void C4GraphicsSystem::SetMouseInGUI(bool fInGUI, bool fByMouse)
 	{
 	// inform mouse control and GUI
-	if (Game.pGUI)
+	if (::pGUI)
 		{
-		Game.pGUI->Mouse.SetOwnedMouse(fInGUI);
+		::pGUI->Mouse.SetOwnedMouse(fInGUI);
 		// initial movement to ensure mouse control pos is correct
-		if (!Game.MouseControl.IsMouseOwned() && !fInGUI && !fByMouse)
+		if (!::MouseControl.IsMouseOwned() && !fInGUI && !fByMouse)
 			{
-			Game.MouseControl.SetOwnedMouse(true);
-			MouseMoveToViewport(C4MC_Button_None, int32_t(Game.pGUI->Mouse.x*C4GUI::GetZoom()), int32_t(Game.pGUI->Mouse.y*C4GUI::GetZoom()), Game.pGUI->Mouse.dwKeys);
+			::MouseControl.SetOwnedMouse(true);
+			MouseMoveToViewport(C4MC_Button_None, int32_t(::pGUI->Mouse.x*C4GUI::GetZoom()), int32_t(::pGUI->Mouse.y*C4GUI::GetZoom()), ::pGUI->Mouse.dwKeys);
 			}
 		}
-	Game.MouseControl.SetOwnedMouse(!fInGUI);
+	::MouseControl.SetOwnedMouse(!fInGUI);
 	}
 
 bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
@@ -632,8 +642,8 @@ BOOL C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 		// mark background to be redrawn
 		InvalidateBg();
 		// backup and clear sky parallaxity
-		int32_t iParX=Game.Landscape.Sky.ParX; Game.Landscape.Sky.ParX=10;
-		int32_t iParY=Game.Landscape.Sky.ParY; Game.Landscape.Sky.ParY=10;
+		int32_t iParX=::Landscape.Sky.ParX; ::Landscape.Sky.ParX=10;
+		int32_t iParY=::Landscape.Sky.ParY; ::Landscape.Sky.ParY=10;
 		// temporarily change viewport player
 		int32_t iVpPlr=pVP->Player; pVP->Player=NO_OWNER;
 		// blit all tiles needed
@@ -663,8 +673,8 @@ BOOL C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 		// restore viewport player
 		pVP->Player=iVpPlr;
 		// restore parallaxity
-		Game.Landscape.Sky.ParX=iParX;
-		Game.Landscape.Sky.ParY=iParY;
+		::Landscape.Sky.ParX=iParX;
+		::Landscape.Sky.ParY=iParY;
 		// save!
 		return png.Save(szFilename);
 		}
@@ -687,11 +697,11 @@ void C4GraphicsSystem::DrawHoldMessages()
 	{
 	if (Application.isFullScreen && Game.HaltCount)
 		{
-		Application.DDraw->TextOut("Pause", Game.GraphicsResource.FontRegular,1.0,
+		Application.DDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
 			Application.DDraw->lpBack, C4GUI::GetScreenWdt()/2,
-			C4GUI::GetScreenHgt()/2 - Game.GraphicsResource.FontRegular.iLineHgt*2,
+			C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.iLineHgt*2,
 			CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
-		Game.GraphicsSystem.OverwriteBg();
+		::GraphicsSystem.OverwriteBg();
 		}
 	}
 
@@ -709,7 +719,7 @@ void C4GraphicsSystem::SetDarkColorTable()
 	{
 	const int32_t iDarkening=80;
 	// Using GamePalette
-	BYTE *bypPalette = Game.GraphicsResource.GamePalette;
+	BYTE *bypPalette = ::GraphicsResource.GamePalette;
 	for (int32_t iColor=0; iColor<256; iColor++)
 		DarkColorTable[iColor]=FindPaletteColor(bypPalette,Max<int32_t>(bypPalette[iColor*3+0]-iDarkening,0),Max<int32_t>(bypPalette[iColor*3+1]-iDarkening,0),Max<int32_t>(bypPalette[iColor*3+2]-iDarkening,0));
 	}
@@ -744,7 +754,7 @@ void C4GraphicsSystem::DrawFlashMessage()
 	{
 	if (!FlashMessageTime) return;
 	if (!Application.isFullScreen) return;
-	Application.DDraw->TextOut(FlashMessageText, Game.GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(FlashMessageText, ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
 		(FlashMessageX==-1) ? C4GUI::GetScreenWdt()/2 : FlashMessageX,
 		(FlashMessageY==-1) ? C4GUI::GetScreenHgt()/2 : FlashMessageY,
 		CStdDDraw::DEFAULT_MESSAGE_COLOR,
@@ -780,7 +790,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("\n<c ffff00>%s</c> - %s\n", GetKeyboardInputName("Screenshot").getData(), LoadResStr("IDS_CTL_SCREENSHOT"));
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("ScreenshotEx").getData(), LoadResStr("IDS_CTL_SCREENSHOTEX"));
 
-	Application.DDraw->TextOut(strText.getData(), Game.GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
 														 iX + 128, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
 
 	// right coloumn
@@ -794,7 +804,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowVtxToggle").getData(), "Entrance+Vertices");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowActionToggle").getData(), "Actions/Commands/Pathfinder");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowSolidMaskToggle").getData(), "SolidMasks");
-	Application.DDraw->TextOut(strText.getData(), Game.GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
 														 iX + iWdt/2 + 64, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
 	}
 
@@ -901,7 +911,7 @@ bool C4GraphicsSystem::ToggleShowHelp()
 bool C4GraphicsSystem::ViewportNextPlayer()
 	{
 	// safety: switch valid?
-	if ((!Game.C4S.Head.Film || !Game.C4S.Head.Replay) && !Game.GraphicsSystem.GetViewport(NO_OWNER)) return false;
+	if ((!Game.C4S.Head.Film || !Game.C4S.Head.Replay) && !::GraphicsSystem.GetViewport(NO_OWNER)) return false;
 	// do switch then
 	C4Viewport *vp = GetFirstViewport();
 	if (!vp) return false;
@@ -912,7 +922,7 @@ bool C4GraphicsSystem::ViewportNextPlayer()
 bool C4GraphicsSystem::FreeScroll(C4Vec2D vScrollBy)
 	{
 	// safety: move valid?
-	if ((!Game.C4S.Head.Replay || !Game.C4S.Head.Film) && !Game.GraphicsSystem.GetViewport(NO_OWNER)) return false;
+	if ((!Game.C4S.Head.Replay || !Game.C4S.Head.Film) && !::GraphicsSystem.GetViewport(NO_OWNER)) return false;
 	C4Viewport *vp = GetFirstViewport();
 	if (!vp) return false;
 	// move then (old static code crap...)
@@ -938,3 +948,5 @@ bool C4GraphicsSystem::ViewportZoomIn()
 	if (FirstViewport) FlashMessage(FormatString("%s: %f", "[!]Zoom", (float)FirstViewport->ZoomTarget).getData());
 	return true;
 	}
+
+C4GraphicsSystem GraphicsSystem;

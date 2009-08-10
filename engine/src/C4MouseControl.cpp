@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2004  Matthes Bender
+ * Copyright (c) 2001-2003, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2002, 2004  Peter Wortmann
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,9 +32,15 @@
 #include <C4Application.h>
 #include <C4FullScreen.h>
 #include <C4Gui.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #include <C4Player.h>
 #include "C4ChatDlg.h"
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 const int32_t C4MC_Drag_None					= 0,
@@ -144,7 +155,7 @@ void C4MouseControl::Execute()
 	if (!Active || !fMouseOwned) return;
 
 	// Scrolling/continuous update
-	if (Scrolling || !Tick5)
+	if (Scrolling || !::Game.iTick5)
 		{
 		WORD wKeyState=0;
 		if (Application.IsControlDown()) wKeyState|=MK_CONTROL;
@@ -186,9 +197,9 @@ void C4MouseControl::UpdateClip()
 	// fullscreen only
 	if (!Application.isFullScreen) return;
 	// application or mouse control not active? remove any clips
-	if (!Active || !Application.Active || (Game.pGUI && Game.pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
+	if (!Active || !Application.Active || (::pGUI && ::pGUI->HasMouseFocus())) { ClipCursor(NULL); return; }
 	// get controlled viewport
-	C4Viewport *pVP=Game.GraphicsSystem.GetViewport(Player);
+	C4Viewport *pVP=::GraphicsSystem.GetViewport(Player);
 	if (!pVP) { ClipCursor(NULL); return; }
 	// adjust size by viewport size
 	RECT vpRct;
@@ -202,8 +213,8 @@ void C4MouseControl::UpdateClip()
 		}
 	ClipCursor(&vpRct);
 	// and inform GUI
-	if (Game.pGUI)
-		Game.pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
+	if (::pGUI)
+		::pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
 #endif
 	//StdWindow manages this.
 	}
@@ -215,9 +226,9 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	// Execute caption
 	if (KeepCaption) KeepCaption--; else { Caption.Clear(); IsHelpCaption=false; CaptionBottomY=0; }
 	// Check player
-	if ((Player>NO_OWNER) && !(pPlayer=Game.Players.Get(Player))) { Active=FALSE; return; }
+	if ((Player>NO_OWNER) && !(pPlayer=::Players.Get(Player))) { Active=FALSE; return; }
 	// Check viewport
-	if (!(Viewport=Game.GraphicsSystem.GetViewport(Player))) return;
+	if (!(Viewport=::GraphicsSystem.GetViewport(Player))) return;
 	// get view position
 	C4Rect rcViewport = Viewport->GetOutputRect();
 	fctViewport.Set(NULL, rcViewport.x, rcViewport.y, rcViewport.Wdt, rcViewport.Hgt);
@@ -453,7 +464,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	// Draw caption
 	if (Caption)
 		{
-		if (IsHelpCaption && Game.pGUI)
+		if (IsHelpCaption && ::pGUI)
 			{
 			// Help: Tooltip style
 			C4TargetFacet cgoTip; cgoTip = static_cast<const C4Facet &>(cgo);
@@ -463,8 +474,8 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			{
 			// Otherwise red mouse control style
 			int32_t iWdt,iHgt;
-			Game.GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
-			Application.DDraw->TextOut(Caption.getData(), Game.GraphicsResource.FontRegular, 1.0,
+			::GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
+			Application.DDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
 													cgo.Surface,
 													float(cgo.X)+BoundBy<float>(GuiX,float(iWdt)/2+1,float(cgo.Wdt)-iWdt/2-1),
 													float(cgo.Y)+Min<float>( CaptionBottomY ? float(CaptionBottomY-iHgt-1) : GuiY+13, float(cgo.Hgt-iHgt)),
@@ -547,7 +558,7 @@ void C4MouseControl::UpdateCursorTarget()
 		// Select
     if (ocf & OCF_Alive)
       if (ValidPlr(Player))
-        if (Game.Players.Get(Player)->ObjectInCrew(TargetObject))
+        if (::Players.Get(Player)->ObjectInCrew(TargetObject))
           Cursor=C4MC_Cursor_Select;
 		// select custom region
 		if (TargetObject->Category & C4D_MouseSelect)
@@ -605,7 +616,7 @@ void C4MouseControl::UpdateCursorTarget()
 					{
 					int32_t iMat = GBackMat(int32_t(GameX),int32_t(GameY));
 					if (MatValid(iMat))
-						if (pDef=C4Id2Def(Game.Material.Map[iMat].Dig2Object))
+						if (pDef=C4Id2Def(::MaterialMap.Map[iMat].Dig2Object))
 							{ idCaption="IDS_CON_DIGOUT"; fDouble=true; szName=pDef->GetName(); }
 					}
 					break;
@@ -646,7 +657,7 @@ int32_t C4MouseControl::UpdateObjectSelection()
 	Selection.Clear();
 	// Add all collectible objects in drag frame to Selection
   C4Object *cObj; C4ObjectLink *cLnk;
-  for (cLnk=Game.Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
+  for (cLnk=::Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 		if (cObj->Status)
 			if (cObj->OCF & OCF_Carryable)
 				if (!cObj->Contained)
@@ -671,7 +682,7 @@ int32_t C4MouseControl::UpdateSingleSelection()
 
 	// Cursor has moved off single crew (or target object) selection: clear selection
 	else if (Selection.GetObject())
-		if (Game.Players.Get(Player)->ObjectInCrew(Selection.GetObject())
+		if (::Players.Get(Player)->ObjectInCrew(Selection.GetObject())
 			|| (Selection.GetObject()->Category & C4D_MouseSelect))
 			Selection.Clear();
 
@@ -911,7 +922,7 @@ void C4MouseControl::DragNone()
 			{
 			// Hold down on region
 			case C4MC_Cursor_Region:
-				if (!Tick5)
+				if (!::Game.iTick5)
 					if (DownRegion.HoldCom)
 						SendControl(DownRegion.HoldCom);
 				break;
@@ -1078,7 +1089,7 @@ BOOL C4MouseControl::IsValidMenu(C4Menu *pMenu)
 			return TRUE;
 	// Local control player menu
 	C4Player *pPlr;
-	for (int32_t cnt=0; pPlr=Game.Players.Get(cnt); cnt++)
+	for (int32_t cnt=0; pPlr=::Players.Get(cnt); cnt++)
 		if (pMenu == &(pPlr->Menu))
 			if (pMenu->IsActive())
 				return TRUE;
@@ -1134,7 +1145,7 @@ void C4MouseControl::DragConstruct()
 	Cursor=C4MC_Cursor_Construct;
 	// Check site
 	DragImagePhase=1;
-	if (!FogOfWar && ConstructionCheck(DragID,int32_t(GameX),int32_t(GameY))) DragImagePhase=0;
+	if (!FogOfWar && ConstructionCheck(C4Id2Def(DragID),int32_t(GameX),int32_t(GameY))) DragImagePhase=0;
 	}
 
 void C4MouseControl::LeftUpDragNone()
@@ -1262,7 +1273,7 @@ void C4MouseControl::SendCommand(int32_t iCommand, int32_t iX, int32_t iY, C4Obj
 	// no commands in passive mode
 	if (IsPassive()) return;
 	// no commands if player is eliminated or doesn't exist any more
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 	if (!pPlr || pPlr->Eliminated) return;
 	// User add multiple command mode
 	if (ShiftDown) iAddMode|=C4P_Command_Append;
@@ -1370,7 +1381,7 @@ C4Object *C4MouseControl::GetTargetObject(float iX, float iY, DWORD &dwOCF, C4Ob
 
 BOOL C4MouseControl::IsPassive()
 	{
-	return Game.Control.isReplay() || Player<=NO_OWNER;
+	return ::Control.isReplay() || Player<=NO_OWNER;
 	}
 
 void C4MouseControl::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt)
@@ -1401,3 +1412,5 @@ void C4MouseControl::StartConstructionDrag(C4ID id)
 	CreateDragImage(DragID);
 	Selection.Clear();
 	}
+
+C4MouseControl MouseControl;

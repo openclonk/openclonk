@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 		</syntax>
-		<desc>Spielernummer: Kein Spieler. Diese Konstante kann als Besitzerangabe für diverse Funktionen wie <funclink>CreateObject</funclink> oder <funclink>FindObjectOwner</funclink> verwendet werden, um einen neutralen Spieler anzugeben.</desc>
+		<desc>Spielernummer: Kein Spieler. Diese Konstante kann als Besitzerangabe für diverse Funktionen wie <funclink>CreateObject</funclink> verwendet werden, um einen neutralen Spieler anzugeben.</desc>
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
 		<examples>
 			<example>

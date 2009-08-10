@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003, 2005, 2008  Sven Eberhardt
+ * Copyright (c) 2007  Peter Wortmann
+ * Copyright (c) 2007-2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,7 +25,9 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 
@@ -251,7 +256,7 @@ void C4SolidMask::Remove(bool fCauseInstability, bool fBackupAttachment)
 				_SBackPixIfMask(iTx,iTy,*pPix,MCVehic);
 				// Instability
 				if (fCauseInstability)
-					Game.Landscape.CheckInstabilityRange(iTx,iTy);
+					::Landscape.CheckInstabilityRange(iTx,iTy);
 				}
 		}
 	// Mask not put flag
@@ -275,7 +280,7 @@ void C4SolidMask::Remove(bool fCauseInstability, bool fBackupAttachment)
 		MaskRemovalX = pForObject->GetX();
 		MaskRemovalY = pForObject->GetY();
 		iAttachingObjectsCount = 0;
-		C4LArea SolidArea(&Game.Objects.Sectors, MaskPutRect.x-1, MaskPutRect.y-1, MaskPutRect.Wdt+2, MaskPutRect.Hgt+2);
+		C4LArea SolidArea(&::Objects.Sectors, MaskPutRect.x-1, MaskPutRect.y-1, MaskPutRect.Wdt+2, MaskPutRect.Hgt+2);
 		C4LSector *pSct; C4Object *pObj;
 		for (C4ObjectList *pLst=SolidArea.FirstObjectShapes(&pSct); pLst; pLst=SolidArea.NextObjectShapes(pLst, &pSct))
 			for (C4ObjectLink *clnk=pLst->First; clnk; clnk=clnk->Next)
@@ -453,7 +458,7 @@ bool C4SolidMask::CheckConsistency()
 		{
 		pSolid->RemoveTemporary(SolidMaskRect);
 		}
-	assert(!Game.Landscape.MatCount[MVehic]);
+	assert(!::Landscape.MatCount[MVehic]);
 	// Restore Solidmasks
 	for (pSolid = C4SolidMask::First; pSolid; pSolid = pSolid->Next)
 		{

@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005, 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,9 +25,6 @@
 #define INC_C4Id
 
 #include <StdAdaptors.h>
-
-// Use 64 Bit for C4ID (on x86_64) to pass 64 bit for each script function
-// parameter
 
 class C4ID
 	{

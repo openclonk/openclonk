@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2002, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,6 +29,7 @@
 #include <C4ComponentHost.h>
 #include <C4FacetEx.h>
 #include <C4Game.h>
+#include <C4GraphicsResource.h>
 #endif
 
 #include <StdRegistry.h>
@@ -276,7 +280,6 @@ void C4RankSystem::Default()
 	iRankExtNum=0;
 	}
 
-#ifdef C4ENGINE
 bool C4RankSystem::DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Facet *pfctRankSymbols, int32_t iRankSymbolCount, bool fOwnSurface, int32_t iXOff, C4Facet *cgoDrawDirect)
 	{
 	// safety
@@ -291,7 +294,7 @@ bool C4RankSystem::DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Fa
 			{
 			// extended rank: draw
 			// extension star defaults to captain star; but use extended symbols if they are in the gfx
-			C4Facet fctExtended = Game.GraphicsResource.fctCaptain;
+			C4Facet fctExtended = ::GraphicsResource.fctCaptain;
 			if (iMaxRankSym > iRankSymbolCount)
 				{
 				int32_t iExtended = iRank / iRankSymbolCount - 1 + iRankSymbolCount;
@@ -339,4 +342,4 @@ bool C4RankSystem::DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Fa
 	return false;
 	}
 
-#endif
+C4RankSystem DefaultRanks;

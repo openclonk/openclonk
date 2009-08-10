@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2007  Peter Wortmann
+ * Copyright (c) 2005-2007  Sven Eberhardt
+ * Copyright (c) 2006-2007  Günther Brammer
+ * Copyright (c) 2008  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -77,7 +81,7 @@ class C4SortObjectSTLCache
 		bool operator ()(int32_t n1, int32_t n2) { return rSorter.CompareCache(n1, n2, pVals[n1]._getObj(), pVals[n2]._getObj()) > 0; }
 	};
 
-void C4ValueList::Sort(class C4SortObject &rSort)
+void C4ValueArray::Sort(class C4SortObject &rSort)
 	{
 	if(rSort.PrepareCache(this))
 		{
@@ -102,15 +106,14 @@ void C4ValueList::Sort(class C4SortObject &rSort)
 
 C4Value &C4ValueList::GetItem(int32_t iElem)
 {
-	if(iElem < 0) iElem = 0;
-	if(iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
+	if(iElem < -iSize)
+		throw new C4AulExecError(NULL,"invalid subscript");
+	else if(iElem < 0)
+		iElem = iSize + iElem;
+	else if(iElem >= iSize && iElem < MaxSize) this->SetSize(iElem + 1);
 	// out-of-memory? This might not be catched, but it's better than a segfault
 	if(iElem >= iSize)
-#ifdef C4ENGINE
 		throw new C4AulExecError(NULL,"out of memory");
-#else
-		return pData[0]; // must return something here...
-#endif
 	// return
 	return pData[iElem];
 }
@@ -122,11 +125,7 @@ void C4ValueList::SetItem(int32_t iElemNr, C4Value iValue)
 	if(iElemNr >= iSize && iElemNr < MaxSize) this->SetSize(iElemNr + 1);
 	// out-of-memory? This might not be catched, but it's better than a segfault
 	if(iElemNr >= iSize)
-#ifdef C4ENGINE
 		throw new C4AulExecError(NULL,"out of memory");
-#else
-		return;
-#endif
 	// set
 	pData[iElemNr]=iValue;
 }

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2002, 2007  Sven Eberhardt
+ * Copyright (c) 2007  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -50,7 +53,7 @@ class C4TexMapEntry
 		const char *GetTextureName() const { return Texture.getData(); }
 		int32_t GetMaterialIndex() const { return iMaterialIndex; }
 		C4Material *GetMaterial() const { return pMaterial; }
-		const CPattern &getPattern() const { return MatPattern; }
+		const CPattern &GetPattern() const { return MatPattern; }
 		void Clear();
 		bool Create(const char *szMaterial, const char *szTexture);
 		bool Init();
@@ -91,5 +94,7 @@ class C4TextureMap
   protected:
     BOOL AddTexture(const char *szTexture, CSurface * sfcSurface);
   };
+
+extern C4TextureMap TextureMap;
 
 #endif

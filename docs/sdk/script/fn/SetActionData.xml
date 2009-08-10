@@ -31,7 +31,6 @@
 		</examples>
 		<related>
 			<funclink>SetAction</funclink>
-			<funclink>ObjectSetAction</funclink>
 			<funclink>SetBridgeActionData</funclink>
 			<funclink>GetAction</funclink>
 			<funclink>GetActionTarget</funclink>

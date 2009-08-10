@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2005, 2007  Sven Eberhardt
+ * Copyright (c) 2004-2005  Peter Wortmann
+ * Copyright (c) 2006-2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,6 +31,7 @@
 #include "C4ValueList.h"
 #include "C4Effects.h"
 #include "C4Particles.h"
+#include "C4PropList.h"
 
 /* Object status */
 
@@ -63,7 +68,7 @@
 #define VIS_Owner		2
 #define VIS_Allies	4
 #define VIS_Enemies	8
-#define VIS_Local		16
+#define VIS_Select	16
 #define VIS_God			32
 #define VIS_LayerToggle	64
 #define VIS_OverlayOnly 128
@@ -77,13 +82,12 @@ class C4SolidMask;
 
 
 class C4Action
-  {
-  public:
-    C4Action();
-    ~C4Action();
-  public:
-    char Name[C4D_MaxIDLen+1];
-    int32_t Act; // NoSave //
+	{
+	public:
+		C4Action();
+		~C4Action();
+	public:
+		C4PropList * pActionDef;
     int32_t Dir;
 		int32_t DrawDir; // NoSave // - needs to be calculated for old-style objects.txt anyway
     int32_t ComDir;
@@ -103,15 +107,12 @@ class C4Action
 		void GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfWall, int32_t &riBridgeMaterial);
   };
 
-class C4Object
+class C4Object: public C4PropList
 	{
 	public:
 		C4Object();
 		~C4Object();
-		int32_t Number; // int32_t, for sync safety on all machines
 		C4ID id;
-		StdStrBuf Name;
-		int32_t Status; // NoSave //
 		int32_t RemovalDelay; // NoSave //
 		int32_t Owner;
 		int32_t Controller;
@@ -132,7 +133,6 @@ class C4Object
 		int32_t Timer;
 		int32_t ViewEnergy; // NoSave //
 		int32_t Audible, AudiblePan; // NoSave //
-		C4ValueList Local;
 		C4ValueMapData LocalNamed;
 		int32_t PlrViewRange;
 		FIXED fix_x,fix_y,fix_r; // SyncClearance-Fix //
@@ -147,7 +147,6 @@ class C4Object
 		bool NeedEnergy;
 		uint32_t t_contact; // SyncClearance-NoSave //
 		uint32_t OCF;
-		int32_t Visibility;
 		unsigned int Marker; // state var used by Objects::CrossCheck and C4FindObject - NoSave
 		union
 			{
@@ -191,8 +190,6 @@ class C4Object
 		int32_t nContained;
 		StdCopyStrBuf nInfo;
 
-		C4Value *FirstRef; // No-Save
-
 		class C4GraphicsOverlay *pGfxOverlay;  // singly linked list of overlay graphics
 	protected:
 		bool OnFire;
@@ -203,11 +200,11 @@ class C4Object
 		int32_t GetAudible();
 		void DigOutMaterialCast(BOOL fRequest);
 		void AddMaterialContents(int32_t iMaterial, int32_t iAmount);
-		void SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, C4Object *pTarget2=NULL, BOOL fControl=FALSE, int32_t iData=0, int32_t iRetries=0, C4String *szText=NULL);
-		void SetCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, C4Object *pTarget2=NULL, BOOL fControl=FALSE, int32_t iData=0, int32_t iRetries=0, C4String *szText=NULL)
+		void SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, C4Object *pTarget2=NULL, BOOL fControl=FALSE, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL);
+		void SetCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, C4Object *pTarget2=NULL, BOOL fControl=FALSE, C4Value iData=C4VNull, int32_t iRetries=0, C4String *szText=NULL)
 		{ SetCommand(iCommand, pTarget, C4VInt(iTx), iTy, pTarget2, fControl, iData, iRetries, szText); }
-		bool AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=NULL, bool fInitEvaluation=true, int32_t iData=0, bool fAppend=false, int32_t iRetries=0, C4String *szText=NULL, int32_t iBaseMode=0);
-		bool AddCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=NULL, bool fInitEvaluation=true, int32_t iData=0, bool fAppend=false, int32_t iRetries=0, C4String *szText=NULL, int32_t iBaseMode=0)
+		bool AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=NULL, bool fInitEvaluation=true, C4Value iData=C4VNull, bool fAppend=false, int32_t iRetries=0, C4String *szText=NULL, int32_t iBaseMode=0);
+		bool AddCommand(int32_t iCommand, C4Object *pTarget=NULL, int32_t iTx=0, int32_t iTy=0, int32_t iUpdateInterval=0, C4Object *pTarget2=NULL, bool fInitEvaluation=true, C4Value iData=C4VNull, bool fAppend=false, int32_t iRetries=0, C4String *szText=NULL, int32_t iBaseMode=0)
 		{ return AddCommand(iCommand, pTarget, C4VInt(iTx), iTy, iUpdateInterval, pTarget2, fInitEvaluation, iData, fAppend, iRetries, szText, iBaseMode); }
 		C4Command *FindCommand(int32_t iCommandType); // find a command of the given type
 		void ClearCommand(C4Command *pUntil);
@@ -235,7 +232,7 @@ class C4Object
 		void DenumeratePointers();
 		void EnumeratePointers();
 		void Default();
-		BOOL Init(C4Def *ndef, C4Object *pCreator,
+		BOOL Init(C4PropList *ndef, C4Object *pCreator,
 							int32_t owner, C4ObjectInfo *info,
 							int32_t nx, int32_t ny, int32_t nr,
 							FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController);
@@ -290,8 +287,9 @@ class C4Object
 		BOOL Contact(int32_t cnat);
 		void TargetBounds(int32_t &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 		enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4, };
-		BOOL SetAction(int32_t iAct, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
-		BOOL SetActionByName(const char *szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+		BOOL SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+		bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
+		bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 		void SetDir(int32_t tdir);
 		void SetCategory(int32_t Category) { this->Category = Category; Resort(); SetOCF(); }
 		int32_t GetProcedure();
@@ -319,7 +317,7 @@ class C4Object
 		BOOL Push(FIXED txdir, FIXED dforce, BOOL fStraighten);
 		BOOL Lift(FIXED tydir, FIXED dforce);
 		void Fling(FIXED txdir, FIXED tydir, bool fAddSpeed); // set/add given speed to current, setting jump/tumble-actions
-		C4Object* CreateContents(C4ID n_id);
+		C4Object* CreateContents(C4PropList *);
 		BOOL CreateContentsByList(C4IDList &idlist);
 		BYTE GetArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
 		inline int32_t addtop() { return Max<int32_t>(18-Shape.Hgt,0); } // Minimum top action size for build check
@@ -334,7 +332,6 @@ class C4Object
 		FIXED GetSpeed();
 		C4PhysicalInfo *GetPhysical(bool fPermanent=false);
 		bool TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
-		const char *GetName();
 		void SetName (const char *NewName = 0);
 		int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
 		BOOL BuyEnergy();
@@ -358,6 +355,7 @@ class C4Object
 		void DirectComContents(C4Object *pTarget, bool fDoCalls);		// direct com: scroll contents to given ID
 		inline void TargetPos(float &riTx, float &riTy, const C4Facet &fctViewport)    // update scroll pos applying parallaxity
 			{ if (Category & C4D_Parallax) ApplyParallaxity(riTx, riTy, fctViewport); }
+		void GetParallaxity(int32_t *parX, int32_t *parY);
 		void ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctViewport);   // apply parallaxity by locals of object
 		bool IsInLiquidCheck();                        // returns whether the Clonk is within liquid material
 		void UpdateInLiquid(); // makes splash when a liquid is entered
@@ -395,9 +393,6 @@ class C4Object
 
 		bool AdjustWalkRotation(int32_t iRangeX, int32_t iRangeY, int32_t iSpeed);
 
-    void AddRef(C4Value *pRef);
-    void DelRef(const C4Value *pRef, C4Value * pNextRef);
-
 		StdStrBuf GetInfoString(); // return def desc plus effects
 
 		bool CanConcatPictureWith(C4Object *pOtherObject); // return whether this object should be grouped with the other in activation lists, contents list, etc.
@@ -410,7 +405,7 @@ class C4Object
 				&& !(Category & (C4D_StaticBack | C4D_Structure))
 				&& !Contained
 				&& ((~Category & C4D_Vehicle) || (OCF & OCF_Grab))
-				&& (Action.Act<=ActIdle || Def->ActMap[Action.Act].Procedure != DFA_FLOAT)
+				&& (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_FLOAT)
 				;
 			}
 
@@ -424,6 +419,9 @@ class C4Object
 		// This function is used for:
 		// -Objects that are not to be saved in "SaveScenario"-mode
 		bool IsUserPlayerObject();// true for any object that belongs to any player (NO_OWNER) or a specified player
+
+		// overloaded from C4PropList
+		virtual C4Object * GetObject() { return this; }
   };
 
 #endif

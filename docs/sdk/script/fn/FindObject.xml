@@ -5,58 +5,56 @@
 	<func>
 		<title>FindObject</title>
 		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
-		<deprecated />
+		<version>4.10.0.0 OC</version>
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>id</type><name>idDef</name><desc>Objekttyp</desc><optional /></param>
-				<param><type>int</type><name>iX</name><desc>Suchposition bzw. linker Rand des Suchrechtecks. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-				<param><type>int</type><name>iY</name><desc>Suchposition bzw. oberer Rand des Suchrechtecks. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-				<param><type>int</type><name>iWdt</name><desc>Breite des Suchrechtecks. Siehe auch Hinweis unten.</desc><optional /></param>
-				<param><type>int</type><name>iHgt</name><desc>Höhe des Suchrechtecks. Siehe auch Hinweis unten.</desc><optional /></param>
-				<param><type>int</type><name>dwOCF</name><desc>Bitmaske von Objektattributen. Es werden alle Objekte gefunden, die mindestens eines der übergebenen Objektattribute besitzen. 0 findet alle Objekte.</desc><optional /></param>
-				<param><type>string</type><name>szAction</name><desc>Aktivität des zu findenden Objekts.</desc><optional /></param>
-				<param><type>object</type><name>pActionTarget</name><desc>Aktivitätsziel des zu findenden Objekts. Siehe dazu auch <funclink>SetAction</funclink>, <funclink>GetActionTarget</funclink></desc><optional /></param>
-				<param><type>any</type><name>pContainer</name><desc>Behälter des zu findenden Objekts. Wenn angegeben, wird nur dieser Behälter durchsucht. Möglich sind auch <funclink>NoContainer</funclink> für Objekte, die sich im Freien befinden und <funclink>AnyContainer</funclink> für alle Objekte.</desc><optional /></param>
-				<param><type>object</type><name>pFindNext</name><desc>Objekt, nach dem die Suche begonnen wird. Über diesen Parameter können in einer Schleife nacheinander alle Objekte gefunden werden, die den Suchkriterien entsprechen.</desc><optional /></param>
+				<param><type>array</type><name>Criteria</name><desc>Suchkriterium in Form einer Find_*-Funktion</desc></param>
+				<param><type></type><name>...</name><desc>Weitere Suchkriterium in Form einer Find_*-Funktion</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Liefert das erste gefundene Objekt, das den angegebenen Suchkriterien entspricht. Sind iWdt und iHgt beide -1, so wird das nächstliegende Objekt gefunden. Sind sie beide 0, wird nur am Punkt iX/iY gesucht. Sind iX, iY, iWdt und iHgt alle 0, gilt als Suchrechteck die gesamte Karte (auch bei lokalen Aufrufen). Es müssen stets die Bedingungen aller Parameter erfüllt sein, die angegeben und nicht 0 sind.</desc>
-		<remark>Bei objektlokalem Aufruf findet sich das aufrufende Objekt nicht selber.</remark>
-		<remark>Wird ein vollständiges Suchrechteck angegeben, so werden Objekte gefunden, deren Mittelpunkt sich innerhalb dieses Rechtecks befindet. Sind alle vier Werte des Suchrechtecks (iX, iY, iWdt, iHgt) gleich 0 oder wurden nicht angegeben, so wird immer die gesamte Spielfläche durchsucht. Sind Breite und Höhe des Suchrechtecks (iWdt, iHgt) gleich 0, so gelten die Koordinaten (iX, iY) als Suchpunkt und es werden nur Objekte gefunden, die diesen Suchpunkt überlappen. Sind Breite und Höhe des Suchrechtecks beide gleich -1, so wird vom Suchpunkt ausgehend das jeweils nächstliegende Objekt gefunden.</remark>
-		<remark>Die Funktion ist veraltet. Es wird empfohlen, FindObjects bzw. FindObject2 zu verwenden, da diese Funktionen mehr Suchparameter unterstützen und für viele Fälle besser optimiert sind.</remark>
+		<desc>Gibt ein Objekt zurück, das die angegebenen Suchkriterien erfüllt. Die Suchkriterien werden mittels speziellen Kriteriums-Funktionen der Form "Find_*" angegeben.</desc>
+		<remark>Das aufrufende Objekt findet sich in FindObject auch selbst. Dies kann durch <funclink>Find_Exclude</funclink>() verhindert werden.</remark>
+		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObjects</funclink> und <funclink>ObjectCount</funclink>. Siehe <funclink>FindObjects</funclink> für weitere Kriterium-Beispiele.</remark>
 		<examples>
 			<example>
-<code>var obj;
-if (FindObject(0, <funclink>LandscapeWidth</funclink>()-100, 0, 100,<funclink>LandscapeHeight</funclink>(), <funclink>OCF_CrewMember</funclink>()))
-  <funclink>Message</funclink> (<funclink>Format</funclink> ("&lt;%s&gt;|Hier gehts nicht weiter.", obj, <funclink>GetName</funclink> (obj)");</code>
-				<text>Lässt den Clonk realisieren, dass die Landschaft am rechten Rand endlich ist.</text>
-			</example>
-			<example>
-				<code><funclink>Incinerate</funclink>(FindObject(CLNK, 0,0, -1,-1));</code>
-				<text>Entzündet den nächstliegenden Clonk.</text>
-			</example>
-			<example>
-				<code><funclink>Explode</funclink>(100, FindObject(0, 100, 100, 0, 0, <funclink>OCF_Living</funclink>(), "Jump"));</code>
-				<text>Lässt einen Clonk explodieren, der sich an Position 100/100 befindet, und springt.</text>
-			</example>
-			<example>
-
-<code>var obj;
-<funclink>while</funclink> (obj=FindObject(WIPF, 0,0,0,0, 0, 0,0, <funclink>NoContainer</funclink>(), obj)) <funclink>Incinerate</funclink>(obj);</code>
-
-				<text>Entzündet alle Wipfe, die nirgends enthalten sind.</text>
+<code><funclink>if</funclink>(<funclink>FindObject</funclink>(<funclink>Find_Distance</funclink>(10), <funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>), <funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>()))
+  <funclink>Explode</funclink>(20);</code>
+				<text>Wenn sich ein feindlicher Clonk näher als 10 Pixel an das Objekt heranwagt, explodiert dieses.</text>
 			</example>
 		</examples>
 		<related>
-			<funclink>NoContainer</funclink>
-			<funclink>AnyContainer</funclink>
+			<funclink>Find_Action</funclink>
+			<funclink>Find_ActionTarget</funclink>
+			<funclink>Find_Allied</funclink>
+			<funclink>Find_And</funclink>
+			<funclink>Find_AnyContainer</funclink>
+			<funclink>Find_AtPoint</funclink>
+			<funclink>Find_Category</funclink>
+			<funclink>Find_Container</funclink>
+			<funclink>Find_Distance</funclink>
+			<funclink>Find_Exclude</funclink>
+			<funclink>Find_Func</funclink>
+			<funclink>Find_Hostile</funclink>
+			<funclink>Find_ID</funclink>
+			<funclink>Find_InRect</funclink>
+			<funclink>Find_NoContainer</funclink>
+			<funclink>Find_Not</funclink>
+			<funclink>Find_OCF</funclink>
+			<funclink>Find_Or</funclink>
+			<funclink>Find_Owner</funclink>
+			<funclink>Sort_Random</funclink>
+			<funclink>Sort_Reverse</funclink>
+			<funclink>Sort_Multiple</funclink>
+			<funclink>Sort_Value</funclink>
+			<funclink>Sort_Speed</funclink>
+			<funclink>Sort_Mass</funclink>
+			<funclink>Sort_Distance</funclink>
+			<funclink>Sort_Func</funclink>
+			<funclink>FindObject</funclink>
 			<funclink>FindObjects</funclink>
-			<funclink>FindObject2</funclink>
-			<funclink>FindObjectOwner</funclink>
+			<funclink>ObjectCount</funclink>
 		</related>
 	</func>
-	<author>Sven2</author><date>November 2001</date>
-	<author>matthes</author><date>Juni 2004</date>
+	<author>Clonkonaut</author><date>Juli 2006</date>
 </funcs>

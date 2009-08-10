@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2008  Sven Eberhardt
+ * Copyright (c) 2005, 2007, 2009  Peter Wortmann
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,7 +32,9 @@
 #include <C4Viewport.h>
 #include <C4Console.h>
 #include <C4Def.h>
-#include <C4Wrappers.h>
+#include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
+#include <C4Game.h>
 #endif
 
 #include <StdGL.h>
@@ -57,7 +64,7 @@ void FrameDecoration::Clear()
 bool FrameDecoration::SetFacetByAction(C4Def *pOfDef, C4TargetFacet &rfctTarget, const char *szFacetName)
 	{
 	// get action
-	StdStrBuf sActName;
+/*FIXME	StdStrBuf sActName;
 	sActName.Format("FrameDeco%s", szFacetName);
 	int cnt; C4ActionDef *pAct = pOfDef->ActMap;
   for (cnt=pOfDef->ActNum; cnt; --cnt,++pAct)
@@ -66,7 +73,7 @@ bool FrameDecoration::SetFacetByAction(C4Def *pOfDef, C4TargetFacet &rfctTarget,
 	if (!cnt) return false;
 	// set facet by it
 	rfctTarget.Set(pOfDef->Graphics.GetBitmap(), pAct->Facet.x, pAct->Facet.y, pAct->Facet.Wdt, pAct->Facet.Hgt, pAct->Facet.tx, pAct->Facet.ty);
-	return true;
+*/	return true;
 	}
 
 bool FrameDecoration::SetByDef(C4ID idSourceDef)
@@ -205,7 +212,7 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	// Determine dialog
-	Dialog *pDlg = Game.pGUI ? Game.pGUI->GetDialog(hwnd) : NULL;
+	Dialog *pDlg = ::pGUI ? ::pGUI->GetDialog(hwnd) : NULL;
 	if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 	// Process message
@@ -243,29 +250,29 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
     //----------------------------------------------------------------------------------------------------------------------------------
 		case WM_PAINT:
 			// 2do: only draw specific dlg?
-			//Game.GraphicsSystem.Execute();
+			//::GraphicsSystem.Execute();
 			break;
 			return 0;
     //----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDOWN: Game.pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
+		case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONUP: Game.pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
+		case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDOWN: Game.pGUI->MouseInput(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		case WM_RBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONUP: Game.pGUI->MouseInput(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
+		case WM_RBUTTONUP: ::pGUI->MouseInput(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL); break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_LBUTTONDBLCLK: Game.pGUI->MouseInput(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
+		case WM_LBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_RBUTTONDBLCLK: Game.pGUI->MouseInput(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
+		case WM_RBUTTONDBLCLK: ::pGUI->MouseInput(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEMOVE:
 			//SetCursor(NULL);
-			Game.pGUI->MouseInput(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+			::pGUI->MouseInput(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
 			break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_MOUSEWHEEL:
-			Game.pGUI->MouseInput(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
+			::pGUI->MouseInput(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);
 			break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 		}
@@ -310,7 +317,7 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 void DialogWindow::Close()
 	{
 	// FIXME: Close the dialog of this window
-	//Dialog *pDlg = Game.pGUI ? Game.pGUI->GetDialog(hWindow) : NULL;
+	//Dialog *pDlg = ::pGUI ? ::pGUI->GetDialog(hWindow) : NULL;
 	//if (pDlg) pDlg->Close();
 	}
 
@@ -863,7 +870,7 @@ FullscreenDialog::FullscreenDialog(const char *szTitle, const char *szSubtitle)
 		{
 		// help button disabled; use meaningful captions instead
 		//pBtnHelp = new CallbackButton<FullscreenDialog, IconButton>(Ico_UnknownClient /* 2do: Help icon */, C4Rect(0,0,32,32), 'H' /* 2do */, &FullscreenDialog::OnHelpBtn, this);
-		//C4Facet fctHelp = Game.GraphicsResource.fctOKCancel;
+		//C4Facet fctHelp = ::GraphicsResource.fctOKCancel;
 		//fctHelp.Y += fctHelp.Hgt;
 		//pBtnHelp->SetFacet(fctHelp);
 		//pBtnHelp->SetToolTip("[.!]Help button: Press this button and hover the element you want help for!");
@@ -893,7 +900,7 @@ void FullscreenDialog::DrawElement(C4TargetFacet &cgo)
 	{
 	// draw upper board
 	if (HasUpperBoard())
-		lpDDraw->BlitSurfaceTile(Game.GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-Game.GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,Game.GraphicsResource.fctUpperBoard.Hgt);
+		lpDDraw->BlitSurfaceTile(::GraphicsResource.fctUpperBoard.Surface,cgo.Surface,0,Min<int32_t>(iFade-::GraphicsResource.fctUpperBoard.Hgt, 0),cgo.Wdt,::GraphicsResource.fctUpperBoard.Hgt);
 	}
 
 void FullscreenDialog::UpdateOwnPos()
@@ -923,7 +930,7 @@ void FullscreenDialog::DrawBackground(C4TargetFacet &cgo, C4Facet &rFromFct)
 
 void FullscreenDialog::OnHelpBtn(C4GUI::Control *pBtn)
 	{
-	Game.MouseControl.SetHelp();
+	::MouseControl.SetHelp();
 	}
 
 

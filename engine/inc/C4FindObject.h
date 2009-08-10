@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2006-2007  Peter Wortmann
+ * Copyright (c) 2006, 2008  Günther Brammer
+ * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -348,7 +351,7 @@ class C4SortObject
 		// Overridables
 		virtual int32_t Compare(C4Object *pObj1, C4Object *pObj2) = 0; // return value <0 if obj1 is to be sorted before obj2
 
-		virtual bool PrepareCache(const C4ValueList *pObjs) { return false; }
+		virtual bool PrepareCache(const C4ValueArray *pObjs) { return false; }
 		virtual int32_t CompareCache(int32_t iObj1, int32_t iObj2, C4Object *pObj1, C4Object *pObj2) { return Compare(pObj1, pObj2); }
 
 	public:
@@ -373,7 +376,7 @@ class C4SortObjectByValue : public C4SortObject
 		virtual int32_t Compare(C4Object *pObj1, C4Object *pObj2);
 		virtual int32_t CompareGetValue(C4Object *pOf) = 0;
 
-		virtual bool PrepareCache(const C4ValueList *pObjs);
+		virtual bool PrepareCache(const C4ValueArray *pObjs);
 		virtual int32_t CompareCache(int32_t iObj1, int32_t iObj2, C4Object *pObj1, C4Object *pObj2);
 
 	};
@@ -390,7 +393,7 @@ class C4SortObjectReverse : public C4SortObject // reverse sort
 	protected:
 		int32_t Compare(C4Object *pObj1, C4Object *pObj2);
 
-		virtual bool PrepareCache(const C4ValueList *pObjs);
+		virtual bool PrepareCache(const C4ValueArray *pObjs);
 		virtual int32_t CompareCache(int32_t iObj1, int32_t iObj2, C4Object *pObj1, C4Object *pObj2);
 	};
 
@@ -408,7 +411,7 @@ class C4SortObjectMultiple : public C4SortObject // apply next sort if previous 
 	protected:
 		int32_t Compare(C4Object *pObj1, C4Object *pObj2);
 
-		virtual bool PrepareCache(const C4ValueList *pObjs);
+		virtual bool PrepareCache(const C4ValueArray *pObjs);
 		virtual int32_t CompareCache(int32_t iObj1, int32_t iObj2, C4Object *pObj1, C4Object *pObj2);
 	};
 

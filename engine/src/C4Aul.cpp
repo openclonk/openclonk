@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001, 2007-2008  Sven Eberhardt
+ * Copyright (c) 2001  Peter Wortmann
+ * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -31,11 +35,9 @@ C4AulError::C4AulError() {}
 
 void C4AulError::show()
 	{
-#ifdef C4ENGINE
 	// simply log error message
 	if(sMessage)
 		DebugLog(sMessage.getData());
-#endif
 	}
 
 C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
@@ -171,7 +173,7 @@ void C4AulScript::Default()
 	IncludesResolved = false;
 
 	// defaults
-	Strict = NONSTRICT;
+	Strict = MAXSTRICT;
 	Preparsing=Resolving=false;
 	Temporary = false;
 	LocalNamed.Reset();
@@ -388,7 +390,6 @@ void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
 	Script = FromFunc.Script;
 	VarNamed = FromFunc.VarNamed;
 	ParNamed = FromFunc.ParNamed;
-	bNewFormat = FromFunc.bNewFormat;
 	bReturnRef = FromFunc.bReturnRef;
 	pOrgScript = FromFunc.pOrgScript;
 	for(int i = 0; i < C4AUL_MAX_Par; i++)
@@ -413,8 +414,6 @@ C4AulScriptEngine::C4AulScriptEngine():
 	ScriptName.Ref(C4CFN_System);
 	Strict = MAXSTRICT;
 
-	Global.Reset();
-
 	GlobalNamedNames.Reset();
 	GlobalNamed.Reset();
 	GlobalNamed.SetNameList(&GlobalNamedNames);
@@ -437,7 +436,6 @@ void C4AulScriptEngine::Clear()
 	warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
 	// resetting name lists will reset all data lists, too
 	// except not...
-	Global.Reset();
 	GlobalNamedNames.Reset();
 	GlobalConstNames.Reset();
 	GlobalConsts.Reset();
@@ -485,14 +483,12 @@ bool C4AulScriptEngine::GetGlobalConstant(const char *szName, C4Value *pTargetVa
 
 BOOL C4AulScriptEngine::DenumerateVariablePointers()
 	{
-	Global.DenumeratePointers();
 	GlobalNamed.DenumeratePointers();
 	// runtime data only: don't denumerate consts
 	return TRUE;
 	}
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
   {
-	pComp->Value(mkNamingAdapt(Global,         "Globals"                , C4ValueList()));
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(GlobalNamed,    "GlobalNamed"            , GlobalNamedDefault));
@@ -609,3 +605,5 @@ void C4AulFuncMap::Remove(C4AulFunc * func)
 	*pFunc = (*pFunc)->MapNext;
 	--FuncCnt;
 	}
+
+C4AulScriptEngine ScriptEngine;

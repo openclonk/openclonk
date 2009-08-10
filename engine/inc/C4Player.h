@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2004-2007  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -167,8 +169,8 @@ class C4Player: public C4PlayerInfoCore
 		void CursorToggle();
 		void SelectAllCrew();
 		void UpdateSelectionToggleStatus();
-		BOOL ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, int32_t iData=0, int32_t iAddMode=C4P_Command_Set);
-		void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, int32_t iData, int32_t iMode);
+		BOOL ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, C4Value iData=C4VNull, int32_t iAddMode=C4P_Command_Set);
+		void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode);
 	  BOOL DoPoints(int32_t iChange);
     BOOL Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName, const char *szFilename, BOOL fScenarioInit, class C4PlayerInfo *pInfo);
 		bool ScenarioAndTeamInit(int32_t idTeam);
@@ -229,9 +231,7 @@ class C4Player: public C4PlayerInfoCore
 		void ClearGraphs();
 		void CountControl(ControlType eType, int32_t iID, int32_t iCntAdd=1);
 
-#ifdef C4ENGINE
 		class C4PlayerInfo *GetInfo(); // search info by ID
-#endif
 
 	private:
 		// messageboard-calls for this player

@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2008  Sven Eberhardt
+ * Copyright (c) 2005  Armin Burgmeier
+ * Copyright (c) 2005-2006  Günther Brammer
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -31,6 +37,9 @@
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
 #include <C4Log.h>
+#include <C4Material.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 //-------------------------------- C4DefGraphics -----------------------------------------------
@@ -218,20 +227,6 @@ bool C4DefGraphics::LoadBitmaps(C4Group &hGroup, bool fColorByOwner)
 	return true;
 	}
 
-bool C4DefGraphics::ColorizeByMaterial(int32_t iMat, C4MaterialMap &rMats, BYTE bGBM)
-	{
-	SURFACE sfcBitmap = GetBitmap(); // first bitmap only
-	if (sfcBitmap)
-		{
-		DWORD dwMatColors[C4M_ColsPerMat];
-		for (int32_t i=0; i<C4M_ColsPerMat; ++i)
-			dwMatColors[i] = rMats.Map[iMat].GetDWordColor(i);
-		Application.DDraw->SurfaceAllowColor(sfcBitmap,dwMatColors,C4M_ColsPerMat,TRUE);
-		}
-	// colorize other graphics
-	if (pNext) return pNext->ColorizeByMaterial(iMat, rMats, bGBM); else return true;
-	}
-
 C4DefGraphics *C4DefGraphics::Get(const char *szGrpName)
 	{
 	// no group or empty string: base graphics
@@ -306,10 +301,10 @@ void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 	if(fCompiler)
 		{
 		// search definition, throw expection if not found
-		C4Def *pDef = Game.Defs.ID2Def(id);
+		C4Def *pDef = ::Definitions.ID2Def(id);
 		// search def-graphics
 		if(!pDef || !( pDefGraphics = pDef->Graphics.Get(Name.getData()) ))
-			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), C4IdText(id), pDef ? pDef->Name.getData() : "def not found");
+			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), C4IdText(id), pDef ? pDef->GetName() : "def not found");
 		}
 	}
 
@@ -365,7 +360,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 		{
 		// check all objects
 		C4Object *pObj;
-		for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk=pLnk->Next)
+		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
 			if (pObj=pLnk->Obj) if (pObj->Status)
 				{
 				if (pObj->pGraphics == pGraphicsPtr)
@@ -400,7 +395,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 							pObj->Menu->SetFrameDeco(NULL);
 				}
 		// check all object infos for portraits
-		for (C4Player *pPlr = Game.Players.First; pPlr; pPlr=pPlr->Next)
+		for (C4Player *pPlr = ::Players.First; pPlr; pPlr=pPlr->Next)
 			for (C4ObjectInfo *pInfo = pPlr->CrewInfoList.GetFirst(); pInfo; pInfo=pInfo->Next)
 				{
 				if (pInfo->Portrait.GetGfx() == pGraphicsPtr)
@@ -431,7 +426,7 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 		{
 		// check all objects
 		C4Object *pObj;
-		for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk=pLnk->Next)
+		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
 			if (pObj=pLnk->Obj) if (pObj->Status)
 				{
 				if (pObj->pGraphics == pGraphicsPtr)
@@ -621,7 +616,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			break;
 
 		case MODE_Action: // graphics of specified action
-			{
+/*FIXME			{
 			// Find act in ActMap of object
 			int32_t cnt;
 			for (cnt=0; cnt<pDef->ActNum; cnt++)
@@ -632,7 +627,7 @@ void C4GraphicsOverlay::UpdateFacet()
 			// doesn't catch any special action parameters (FacetBase, etc.)...
 			C4ActionDef *pAct = pDef->ActMap+cnt;
 			fctBlit.Set(pSourceGfx->GetBitmap(), pAct->Facet.x, pAct->Facet.y, pAct->Facet.Wdt, pAct->Facet.Hgt);
-			}
+			}*/
 			break;
 
 		case MODE_IngamePicture:
@@ -700,7 +695,7 @@ void C4GraphicsOverlay::Read(const char **ppInput)
 		}
 	// get ID
 	char id[5]; SCopy(szReadFrom, id, 4); szReadFrom += 6;
-	C4Def *pSrcDef = Game.Defs.ID2Def(C4Id(id)); // defaults to NULL for unloaded def
+	C4Def *pSrcDef = ::Definitions.ID2Def(C4Id(id)); // defaults to NULL for unloaded def
 	if (pSrcDef)
 		{
 		char GfxName[C4MaxName+1];
@@ -819,12 +814,12 @@ void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)
 
 void C4GraphicsOverlay::EnumeratePointers()
 	{
-	nOverlayObj = Game.Objects.ObjectNumber(pOverlayObj);
+	nOverlayObj = ::Objects.ObjectNumber(pOverlayObj);
 	}
 
 void C4GraphicsOverlay::DenumeratePointers()
 	{
-	pOverlayObj = Game.Objects.ObjectPointer(nOverlayObj);
+	pOverlayObj = ::Objects.ObjectPointer(nOverlayObj);
 	}
 
 void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByPlayer)

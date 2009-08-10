@@ -15,7 +15,7 @@
 		<desc>Eliminiert einen Spieler. Die Runde gilt für diesen Spieler als verloren.</desc>
 		<examples>
 			<example>
-				<code>if (!<funclink>FindObjectOwner</funclink>(FLAG, 0)) EliminatePlayer(0);</code>
+				<code>if (!<funclink>FindObject</funclink>(Find_ID(FLAG), Find_Owner(0))) EliminatePlayer(0);</code>
 				<text>Wenn der erste Spieler keine Flagge mehr hat, wird er eliminiert.</text>
 			</example>
 		</examples>

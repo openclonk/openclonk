@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2002  Sven Eberhardt
+ * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2007  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,9 +24,6 @@
 #ifndef INC_C4Random
 #define INC_C4Random
 
-#ifndef C4ENGINE
-#include <StdRandom.h>
-#endif
 
 #ifdef DEBUGREC
 	#include <C4Record.h>
@@ -30,7 +31,6 @@
 
 extern int RandomCount;
 extern unsigned int RandomHold;
-#ifdef C4ENGINE
 
 inline void FixedRandom(DWORD dwSeed)
 	{
@@ -78,7 +78,6 @@ inline unsigned int SeededRandom(unsigned int iSeed, unsigned int iRange)
 	return (iSeed >> 16) % iRange;
 	}
 
-#endif
 
 inline int SafeRandom(int range)
 	{

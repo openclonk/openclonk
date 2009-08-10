@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002, 2005  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2008  Peter Wortmann
+ * Copyright (c) 2004, 2006-2008  Günther Brammer
+ * Copyright (c) 2005-2006  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -19,16 +23,10 @@
 #include <C4Include.h>
 #include <C4MapCreatorS2.h>
 #include <C4Random.h>
-
-
-#ifdef C4ENGINE
 #include <C4Game.h>
-#include <C4Wrappers.h>
-#else
 #include <C4Aul.h>
 #include <C4Material.h>
 #include <C4Texture.h>
-#endif
 
 /* --- C4MCCallbackArray --- */
 
@@ -380,12 +378,10 @@ bool C4MCOverlay::SetField(C4MCParser *pParser, const char *szField, const char 
 				case C4MCV_ScriptFunc:
 					{
 					// get script func of main script
-#ifdef C4ENGINE
 					C4AulFunc *pSFunc = Game.Script.GetSFunc(StrPar, AA_PROTECTED);
 					if (!pSFunc) throw C4MCParserErr(pParser, C4MCErr_SFuncNotFound, StrPar);
 					// add to main
 					*((C4MCCallbackArray **) pTarget) = new C4MCCallbackArray(pSFunc, MapCreator);
-#endif
 					}
 				}
 			// done
@@ -796,7 +792,6 @@ C4MCMap *C4MapCreatorS2::GetMap(const char *szMapName)
 	return pMap;
 	}
 
-#ifdef C4ENGINE // - -  - - -  -- -- - -- - --  - --  - -
 CSurface8 * C4MapCreatorS2::Render(const char *szMapName)
 	{
 	// get map
@@ -817,7 +812,11 @@ CSurface8 * C4MapCreatorS2::Render(const char *szMapName)
 	// success
 	return sfc;
 	}
-#endif // ----- --  - - - - - -- -  - - - -
+
+static inline void DWordAlign(int &val)
+  {
+  if (val%4) { val>>=2; val<<=2; val+=4; }
+  }
 
 BYTE *C4MapCreatorS2::RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t &sfcHgt)
 	{
@@ -856,12 +855,8 @@ C4MCParserErr::C4MCParserErr(C4MCParser *pParser, const char *szMsg, const char 
 
 void C4MCParserErr::show()
 	{
-#ifdef C4ENGINE
 	// log error
 	Log(Msg);
-#else
-	MessageBox(NULL, Msg, "Landscape Generator", MB_OK);
-#endif
 	}
 
 
@@ -1561,7 +1556,6 @@ bool AlgoGradient(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 
 bool AlgoScript(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 {
-#ifdef C4ENGINE
 	// get script function
 	C4AulFunc *pFunc = Game.Script.GetSFunc(FormatString("ScriptAlgo%s", pOvrl->Name).getData());
 	// failsafe
@@ -1578,7 +1572,6 @@ bool AlgoScript(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 		// do nothing
 		delete err;
 	}
-#endif
 	return false;
 }
 

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2003  Matthes Bender
+ * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,12 +25,13 @@
 #ifndef BIG_C4INCLUDE
 #include <C4LogBuf.h>
 #include <C4Log.h>
-#include <C4Game.h>
+#include <C4GraphicsResource.h>
 #include <C4Random.h>
 #include <C4GroupSet.h>
+#include <C4Game.h>
 #endif
 
-C4LoaderScreen::C4LoaderScreen() : TitleFont(Game.GraphicsResource.FontTitle), LogFont(Game.GraphicsResource.FontTiny)
+C4LoaderScreen::C4LoaderScreen() : TitleFont(::GraphicsResource.FontTitle), LogFont(::GraphicsResource.FontTiny)
 	{
 	// zero fields
 	szInfo=NULL;
@@ -116,7 +120,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 		}*/
 
 	// init fonts
-	if (!Game.GraphicsResource.InitFonts())
+	if (!::GraphicsResource.InitFonts())
 		return false;
 
 	// initial draw
@@ -170,7 +174,7 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 	int iLogBoxMargin=2;
 	int iVMargin=5;
 	int iProgressBarHgt=15;
-	CStdFont &rLogBoxFont=LogFont, &rProgressBarFont=Game.GraphicsResource.FontRegular;
+	CStdFont &rLogBoxFont=LogFont, &rProgressBarFont=::GraphicsResource.FontRegular;
 	float fLogBoxFontZoom=1.0f;
 	// Background (loader)
 	fctBackground.DrawFullScreen(cgo);

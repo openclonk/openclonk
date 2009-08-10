@@ -33,6 +33,7 @@
 		</examples>
 		<related>
 			<funclink>GetVisibility</funclink>
+			<funclink>CheckVisibility</funclink>
 			<funclink>VIS_All</funclink>
 			<funclink>VIS_None</funclink>
 			<funclink>VIS_Owner</funclink>

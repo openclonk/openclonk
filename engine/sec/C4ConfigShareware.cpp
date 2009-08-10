@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003-2004, 2007-2008  Matthes Bender
+ * Copyright (c) 2004-2005, 2007  Günther Brammer
+ * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2007  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -19,6 +23,7 @@
 #include <C4ConfigShareware.h>
 #include <C4SecurityCertificates.h>
 #include <C4Log.h>
+#include <C4Gui.h>
 
 #include <StdFile.h>
 
@@ -480,3 +485,23 @@ void C4ConfigShareware::ClearRegistrationError()
 	// Reset error message(s)
 	RegistrationError.Clear();
 }
+
+bool C4ConfigShareware::IsConfidentialData(const char *szInput)
+	{
+	// safety
+	if (!szInput) return false;
+	// unreg users don't have confidential data
+	if (!Config.Registered()) return false;
+	// shouldn't send the webcode!
+	const char *szWebCode = GetRegistrationData("WebCode");
+	if (szWebCode && *szWebCode) if (SSearchNoCase(szInput, szWebCode))
+		{
+/*		if (fShowWarningMessage && ::pGUI)
+			::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));*/
+		return true;
+		}
+	// all OK
+	return false;
+	}
+
+C4ConfigShareware Config;

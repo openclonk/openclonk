@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2006  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2008  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,6 +25,8 @@
 #include <C4Network2Client.h>
 #include <C4Game.h>
 #include <C4Log.h>
+#include <C4PlayerList.h>
+#include <C4GameControl.h>
 #endif
 
 #ifndef HAVE_WINSOCK
@@ -133,7 +138,7 @@ void C4Client::SetLocal()
 void C4Client::Remove()
 {
 	// remove players for this client
-	Game.Players.RemoveAtClient(getID(), true);
+	::Players.RemoveAtClient(getID(), true);
 }
 
 void C4Client::CompileFunc(StdCompiler *pComp)
@@ -317,7 +322,7 @@ void C4ClientList::CtrlRemove(const C4Client *pClient, const char *szReason)
 	if(pClient->getNetClient())
 		pClient->getNetClient()->SetStatus(NCS_Remove);
 	// add control
-	Game.Control.DoInput(CID_ClientRemove,
+	::Control.DoInput(CID_ClientRemove,
 		new C4ControlClientRemove(pClient->getID(), szReason),
 		CDT_Sync);
 }

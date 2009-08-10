@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2004-2005, 2007  Sven Eberhardt
+ * Copyright (c) 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -54,7 +57,6 @@ class C4GraphicsResource
 		int32_t iNumRanks;
 		C4FacetID fctFire;
 		C4FacetID fctBackground;
-		C4Surface sfcLiquidAnimation; int32_t idSfcLiquidAnimation;
 		C4FacetID fctCaptain;
 		C4FacetID	fctMouseCursor;
 		bool fOldStyleCursor; // if set, offsets need to be applied to some cursor facets
@@ -116,4 +118,6 @@ class C4GraphicsResource
 		friend class C4StartupGraphics;
 	};
 
+extern C4GraphicsResource GraphicsResource;
+#define GfxR (&(::GraphicsResource))
 #endif

@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
+ * Copyright (c) 2002, 2004, 2007-2008  Sven Eberhardt
+ * Copyright (c) 2004-2005  Peter Wortmann
+ * Copyright (c) 2005, 2007  GÃ¼nther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -74,44 +78,6 @@ int Pow(int base, int exponent)
 	return result;
 	}
 
-bool PathMove(int &rX, int &rY, int iTargetX, int iTargetY, int iSteps, int &rDelta)
-	{
-  int iDeltaX,iDeltaY,aincr,bincr,iDirX,iDirY,x,y;
-	// No steps
-	if (iSteps<=0) return false;
-	// Y based
-  if (Abs(iTargetX-rX)<Abs(iTargetY-rY))
-    {
-    iDirX=(iTargetX>rX) ? +1 : -1; iDirY=(iTargetY>rY) ? +1 : -1;
-    iDeltaY=Abs(iTargetY-rY); iDeltaX=Abs(iTargetX-rX);
-		if (!rDelta) rDelta=2*iDeltaX-iDeltaY;
-		aincr=2*(iDeltaX-iDeltaY); bincr=2*iDeltaX; x=rX; y=rY;
-		while (y!=iTargetY)
-      {
-      if (rDelta>=0) { x+=iDirX; rDelta+=aincr; } else rDelta+=bincr;
-			y+=iDirY;
-			iSteps--; if (iSteps==0) { rX=x; rY=y; return true; }
-      }
-    }
-	// X based
-  else
-    {
-    iDirY=(iTargetY>rY) ? +1 : -1; iDirX=(iTargetX>rX) ? +1 : -1;
-		iDeltaX=Abs(iTargetX-rX); iDeltaY=Abs(iTargetY-rY);
-		if (!rDelta) rDelta=2*iDeltaY-iDeltaX;
-		aincr=2*(iDeltaY-iDeltaX); bincr=2*iDeltaY; x=rX; y=rY;
-		while (x!=iTargetX)
-      {
-      if (rDelta>=0)	{ y+=iDirY; rDelta+=aincr; } else rDelta+=bincr;
-			x+=iDirX;
-			iSteps--; if (iSteps==0) { rX=x; rY=y; return true; }
-      }
-    }
-	// Target reached (step overshoot)
-	rX=x; rY=y;
-  return false;
-	}
-
 bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
              bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar,
 						 int32_t *lastx, int32_t *lasty)
@@ -158,15 +124,6 @@ bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
 
 //--------------------------------- Characters ------------------------------------------
 
-char CharCapital(char cChar)
-	{
-  if (Inside(cChar,'a','z')) return (cChar-32);
-  if (cChar=='ä') return 'Ä';
-  if (cChar=='ö') return 'Ö';
-  if (cChar=='ü') return 'Ü';
-	return cChar;
-	}
-
 bool IsIdentifier(char cChar)
 	{
   if (Inside(cChar,'A','Z')) return true;
@@ -179,42 +136,7 @@ bool IsIdentifier(char cChar)
 	return false;
 	}
 
-bool IsWhiteSpace(char cChar)
-	{
-  if (cChar==' ') return true;
-  if (cChar==0x09) return true; // Tab
-  if (cChar==0x0D) return true; // Line feed
-  if (cChar==0x0A) return true; // Line feed
-	return false;
-	}
-
-bool IsUpperCase(char cChar)
-	{
-  if (Inside(cChar,'A','Z')) return true;
-  if (cChar=='Ä') return true;
-  if (cChar=='Ö') return true;
-  if (cChar=='Ü') return true;
-	return false;
-	}
-
-bool IsLowerCase(char cChar)
-	{
-  if (Inside(cChar,'a','z')) return true;
-  if (cChar=='ä') return true;
-  if (cChar=='ö') return true;
-  if (cChar=='ü') return true;
-	return false;
-	}
-
 //------------------------------- Strings ------------------------------------------------
-
-int SLen(const char *sptr)
-  {
-  int slen=0;
-  if (!sptr) return 0;
-  while (*sptr) { slen++; sptr++; }
-  return slen;
-  }
 
 void SCopyL(const char *szSource, char *sTarget, int iMaxL)
   {
@@ -252,18 +174,6 @@ void SCopyUntil(const char *szSource, char *sTarget, const char * sUntil, size_t
 	strncpy(sTarget, szSource, n);
 	sTarget[n] = 0;
 	}
-
-int SCompare(const char *szStr1, const char *szStr2)
-  {
-  if (!szStr1 || !szStr2) return false;
-	return strcmp(szStr1,szStr2);
-  }
-
-bool SEqual(const char *szStr1, const char *szStr2)
-  {
-  if (!szStr1 || !szStr2) return false;
-	return !strcmp(szStr1,szStr2);
-  }
 
 bool SEqualUntil(const char *szStr1, const char *szStr2, char cWild)
   {
@@ -589,13 +499,6 @@ int SClearFrontBack(char *szString, char cClear)
   return cleared;
 	}
 
-int SLenUntil(const char *szStr, char cUntil)
-  {
-  int slen;
-  for (slen=0; *szStr && (*szStr!=cUntil); slen++,szStr++) {}
-  return slen;
-  }
-
 void SNewSegment(char *szStr, const char *szSepa)
 	{
 	if (szStr[0]) SAppend(szSepa,szStr);
@@ -886,142 +789,6 @@ const char* SGetParameter(const char *strCommandLine, int iParameter, char *strT
 	// Not found
 	return NULL;
 }
-
-//--------------------------------- Blitting ---------------------------------------------
-
-void BufferBlit(uint8_t *bypSource, int iSourcePitch,
-                int iSrcBufHgt, // Positive: Bottom up
-                int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-                uint8_t *bypTarget, int iTargetPitch,
-                int iTrgBufHgt, // Positive: Bottom up
-                int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt)
-  {
-  if (!bypSource || !bypTarget) return;
-  if (!iTrgWdt || !iTrgHgt) return;
-  int xcnt,ycnt,sline,tline,fy;
-  for (ycnt=0; ycnt<iTrgHgt; ycnt++)
-    {
-    fy = iSrcHgt * ycnt / iTrgHgt;
-    if (iSrcBufHgt>0) sline = ( iSrcBufHgt - 1 - iSrcY - fy ) * iSourcePitch;
-    else sline = ( iSrcY + fy ) * iSourcePitch;
-    if (iTrgBufHgt>0) tline = ( iTrgBufHgt - 1 - iTrgY - ycnt ) * iTargetPitch;
-    else tline = ( iTrgY + ycnt ) * iTargetPitch;
-    for (xcnt=0; xcnt<iTrgWdt; xcnt++)
-       bypTarget [ tline + iTrgX + xcnt ]
-         = bypSource [ sline + iSrcX + iSrcWdt * xcnt / iTrgWdt ];
-    }
-  }
-
-void BufferBlitDw(uint32_t *bypSource, int iSourcePitch,
-                int iSrcBufHgt, // Positive: Bottom up
-                int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-                uint32_t *bypTarget, int iTargetPitch,
-                int iTrgBufHgt, // Positive: Bottom up
-                int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt)
-  {
-  if (!bypSource || !bypTarget) return;
-  if (!iTrgWdt || !iTrgHgt) return;
-  int xcnt,ycnt,sline,tline,fy;
-  for (ycnt=0; ycnt<iTrgHgt; ycnt++)
-    {
-    fy = iSrcHgt * ycnt / iTrgHgt;
-    if (iSrcBufHgt>0) sline = ( iSrcBufHgt - 1 - iSrcY - fy ) * iSourcePitch;
-    else sline = ( iSrcY + fy ) * iSourcePitch;
-    if (iTrgBufHgt>0) tline = ( iTrgBufHgt - 1 - iTrgY - ycnt ) * iTargetPitch;
-    else tline = ( iTrgY + ycnt ) * iTargetPitch;
-    for (xcnt=0; xcnt<iTrgWdt; xcnt++)
-       bypTarget [ tline + iTrgX + xcnt ]
-         = bypSource [ sline + iSrcX + iSrcWdt * xcnt / iTrgWdt ];
-		}
-  }
-
-void BufferBlitAspect(uint8_t *bypSource, int iSourcePitch,
-                int iSrcBufHgt, // Positive: Bottom up
-                int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-                uint8_t *bypTarget, int iTargetPitch,
-                int iTrgBufHgt, // Positive: Bottom up
-                int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt)
-  {
-  int nhgt,nwdt;
-  if (!iSrcWdt || !iSrcHgt) return;
-  // Adjust height aspect by width aspect
-  if (100*iTrgWdt/iSrcWdt<100*iTrgHgt/iSrcHgt)
-    {
-    nhgt=iSrcHgt*iTrgWdt/iSrcWdt;
-    iTrgY+=(iTrgHgt-nhgt)/2; iTrgHgt=nhgt;
-    }
-  else // Adjust width aspect by height aspect
-    if (100*iTrgHgt/iSrcHgt<100*iTrgWdt/iSrcWdt)
-      {
-      nwdt=iSrcWdt*iTrgHgt/iSrcHgt;
-      iTrgX+=(iTrgWdt-nwdt)/2; iTrgWdt=nwdt;
-      }
-  BufferBlit(bypSource,iSourcePitch,iSrcBufHgt,
-             iSrcX,iSrcY,iSrcWdt,iSrcHgt,
-             bypTarget,iTargetPitch,iTrgBufHgt,
-             iTrgX,iTrgY,iTrgWdt,iTrgHgt);
-  }
-
-void BufferBlitAspectDw(uint32_t *bypSource, int iSourcePitch,
-                int iSrcBufHgt, // Positive: Bottom up
-                int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-                uint32_t *bypTarget, int iTargetPitch,
-                int iTrgBufHgt, // Positive: Bottom up
-                int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt)
-	{
-  int nhgt,nwdt;
-  if (!iSrcWdt || !iSrcHgt) return;
-  // Adjust height aspect by width aspect
-  if (100*iTrgWdt/iSrcWdt<100*iTrgHgt/iSrcHgt)
-    {
-    nhgt=iSrcHgt*iTrgWdt/iSrcWdt;
-    iTrgY+=(iTrgHgt-nhgt)/2; iTrgHgt=nhgt;
-    }
-  else // Adjust width aspect by height aspect
-    if (100*iTrgHgt/iSrcHgt<100*iTrgWdt/iSrcWdt)
-      {
-      nwdt=iSrcWdt*iTrgHgt/iSrcHgt;
-      iTrgX+=(iTrgWdt-nwdt)/2; iTrgWdt=nwdt;
-      }
-  BufferBlitDw(bypSource,iSourcePitch,iSrcBufHgt,
-             iSrcX,iSrcY,iSrcWdt,iSrcHgt,
-             bypTarget,iTargetPitch,iTrgBufHgt,
-             iTrgX,iTrgY,iTrgWdt,iTrgHgt);
-
-	}
-
-void StdBlit(uint8_t *bypSource, int iSourcePitch, int iSrcBufHgt,
-          int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-          uint8_t *bypTarget, int iTargetPitch, int iTrgBufHgt,
-          int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt,
-					int iBytesPerPixel, bool fFlip)
-  {
-  if (!bypSource || !bypTarget) return;
-  if (!iTrgWdt || !iTrgHgt) return;
-  int xcnt,ycnt,zcnt,sline,tline,fy;
-  for (ycnt=0; ycnt<iTrgHgt; ycnt++)
-    {
-    fy = iSrcHgt * ycnt / iTrgHgt;
-    if (iSrcBufHgt>0) sline = ( iSrcBufHgt - 1 - iSrcY - fy ) * iSourcePitch;
-    else sline = ( iSrcY + fy ) * iSourcePitch;
-    if (iTrgBufHgt>0) tline = ( iTrgBufHgt - 1 - iTrgY - ycnt ) * iTargetPitch;
-    else tline = ( iTrgY + ycnt ) * iTargetPitch;
-		if (!fFlip)
-			{
-	    for (xcnt=0; xcnt<iTrgWdt; xcnt++)
-				for (zcnt=0; zcnt<iBytesPerPixel; zcnt++)
-		      bypTarget [ tline + (iTrgX + xcnt) * iBytesPerPixel + zcnt]
-			     = bypSource [ sline + (iSrcX + iSrcWdt * xcnt / iTrgWdt) * iBytesPerPixel + zcnt ];
-			}
-		else
-			{
-	    for (xcnt=0; xcnt<iTrgWdt; xcnt++)
-				for (zcnt=0; zcnt<iBytesPerPixel; zcnt++)
-		      bypTarget [ tline + (iTrgX + iTrgWdt - 1 -xcnt) * iBytesPerPixel + zcnt]
-			     = bypSource [ sline + (iSrcX + iSrcWdt * xcnt / iTrgWdt) * iBytesPerPixel + zcnt ];
-			}
-    }
-  }
 
 //------------------------- Global variables used by StdRandom -------------------------------
 

@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2002, 2004-2005, 2007  Sven Eberhardt
+ * Copyright (c) 2005, 2007, 2009  Peter Wortmann
+ * Copyright (c) 2005-2009  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,12 +27,7 @@
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#elif defined(_WIN32)
-#define HAVE_IO_H 1
-#define HAVE_DIRECT_H 1
-#define HAVE_SHARE_H 1
-#define HAVE_FREETYPE
-#endif //_WIN32, HAVE_CONFIG_H
+#endif // HAVE_CONFIG_H
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4786) // long symbol names
@@ -99,11 +99,6 @@ typedef __int32 intptr_t;
 #define ALLOW_TEMP_TO_REF(ClassName)
 #endif
 
-#if defined(__GXX_EXPERIMENTAL_CXX0X__) || (defined(__GNUC__) && ((__GNUC__ > 4) || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3)))
-// Another temporary-to-reference-fix: this time using C++0x's rvalue references
-#define HAVE_RVALUE_REF
-#endif
-
 #ifdef HAVE_RVALUE_REF
 #	define RREF &&
 #else
@@ -126,8 +121,6 @@ typedef __int32 intptr_t;
 #  define BREAKPOINT_HERE
 #endif
 
-#include <string.h>
-
 #ifdef _WIN32
 
 #ifndef _INC_WINDOWS
@@ -136,6 +129,7 @@ typedef __int32 intptr_t;
 #define WINVER 0x0500
 //#define _WIN32_WINNT 0x0500
 #define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <windows.h>
 #include <mmsystem.h>
 #endif
@@ -161,6 +155,7 @@ typedef struct {
 
 unsigned long timeGetTime(void);
 
+#include <strings.h>
 inline int stricmp(const char *s1, const char *s2) {
 	return strcasecmp(s1, s2);
 }
@@ -178,9 +173,6 @@ bool LogSilent(const char *szMessage);
 BOOL LogF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
 BOOL LogSilentF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
 
-#include <memory.h>
-#include <math.h>
-
 // Color triplets
 #define C4RGB(r, g, b) ((((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
 
@@ -196,77 +188,51 @@ template <class T> inline void Toggle(T &v) { v = !v; }
 
 const double pi = 3.14159265358979323846;
 
-inline void DWordAlign(int &val)
-  {
-  if (val%4) { val>>=2; val<<=2; val+=4; }
-  }
-
 inline int DWordAligned(int val)
   {
   if (val%4) { val>>=2; val<<=2; val+=4; }
 	return val;
   }
 
-inline int QWordAligned(int val)
-  {
-  if (val%8) { val>>=3; val<<=3; val+=8; }
-	return val;
-  }
-
-
-inline int32_t ForceLimits(int32_t &rVal, int32_t iLow, int32_t iHi)
-	{
-	if (rVal<iLow) { rVal=iLow; return -1; }
-	if (rVal>iHi)  { rVal=iHi;  return +1; }
-	return 0;
-	}
-
 int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2);
 int Angle(int iX1, int iY1, int iX2, int iY2);
 int Pow(int base, int exponent);
 
-inline void FillMem(void *lpMem, size_t dwSize, char bValue)
-  {
-	memset(lpMem,bValue,dwSize);
-  }
-
+#include <cstring>
 inline void ZeroMem(void *lpMem, size_t dwSize)
   {
-	FillMem(lpMem,dwSize,0);
-  }
-
-inline bool MemEqual(const void *lpMem1, const void *lpMem2, size_t dwSize)
-  {
-	return !memcmp(lpMem1,lpMem2,dwSize);
+	std::memset(lpMem,'\0',dwSize);
   }
 
 inline void MemCopy(const void *lpMem1, void *lpMem2, size_t dwSize)
   {
-	memmove(lpMem2,lpMem1,dwSize);
+	std::memmove(lpMem2,lpMem1,dwSize);
 	}
 
 bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
              bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar=0,
 						 int32_t *lastx=NULL, int32_t *lasty=NULL);
 
-bool PathMove(int &rX, int &rY, int iTargetX, int iTargetY, int iSteps, int &rDelta);
-
-char CharCapital(char cChar);
+#include <cctype>
+inline char CharCapital(char cChar) { return std::toupper(cChar); }
 bool IsIdentifier(char cChar);
-bool IsUpperCase(char cChar);
-bool IsLowerCase(char cChar);
-bool IsWhiteSpace(char cChar);
+inline bool IsWhiteSpace(char cChar) { return !!std::isspace(cChar); }
 
-int  SLen(const char *sptr);
-int  SLenUntil(const char *szStr, char cUntil);
+inline int SLen(const char *sptr) { return sptr?std::strlen(sptr):0; }
+inline int SLenUntil(const char *szStr, char cUntil)
+{
+	if (!szStr) return 0;
+	const char *end = std::strchr(szStr, cUntil);
+	return end ? end-szStr : std::strlen(szStr);
+}
 
-bool SEqual(const char *szStr1, const char *szStr2);
+inline bool SEqual(const char *szStr1, const char *szStr2) { return szStr1&&szStr2?!std::strcmp(szStr1,szStr2):false; }
 bool SEqual2(const char *szStr1, const char *szStr2);
 bool SEqualUntil(const char *szStr1, const char *szStr2, char cWild);
 bool SEqualNoCase(const char *szStr1, const char *szStr2, int iLen=-1);
 bool SEqual2NoCase(const char *szStr1, const char *szStr2, int iLen = -1);
 
-int  SCompare(const char *szStr1, const char *szStr2);
+inline int SCompare(const char *szStr1, const char *szStr2) { return szStr1&&szStr2?std::strcmp(szStr1,szStr2):0; }
 
 void SCopy(const char *szSource, char *sTarget, int iMaxL=-1);
 void SCopyUntil(const char *szSource, char *sTarget, char cUntil, int iMaxL=-1, int iIndex=0);
@@ -330,40 +296,6 @@ BOOL SWildcardMatchEx(const char *szString, const char *szWildcard);
 #else
 #define DirSep "/"
 #endif
-
-void BufferBlit(uint8_t *bypSource, int iSourcePitch,
-                int iSrcBufHgt, // Positive: Bottom up
-                int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-                uint8_t *bypTarget, int iTargetPitch,
-                int iTrgBufHgt, // Positive: Bottom up
-                int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt);
-
-void BufferBlitDw(uint32_t *bypSource, int iSourcePitch,
-                int iSrcBufHgt, // Positive: Bottom up
-                int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-                uint32_t *bypTarget, int iTargetPitch,
-                int iTrgBufHgt, // Positive: Bottom up
-                int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt);
-
-void BufferBlitAspect(uint8_t *bypSource, int iSourcePitch,
-                int iSrcBufHgt, // Positive: Bottom up
-                int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-                uint8_t *bypTarget, int iTargetPitch,
-                int iTrgBufHgt, // Positive: Bottom up
-                int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt);
-
-void BufferBlitAspectDw(uint32_t *bypSource, int iSourcePitch,
-                int iSrcBufHgt, // Positive: Bottom up
-                int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-                uint32_t *bypTarget, int iTargetPitch,
-                int iTrgBufHgt, // Positive: Bottom up
-                int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt);
-
-void StdBlit(uint8_t *bypSource, int iSourcePitch, int iSrcBufHgt,
-							int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-							uint8_t *bypTarget, int iTargetPitch, int iTrgBufHgt,
-							int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt,
-							int iBytesPerPixel=1, bool fFlip=false);
 
 // sprintf wrapper
 

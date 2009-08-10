@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2005  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,6 +22,7 @@
 #ifndef INC_C4NameList
 #define INC_C4NameList
 
+#include <cstring>
 class C4NameList
   {
   public:
@@ -36,7 +39,7 @@ class C4NameList
 	public:
 		bool IsEmpty();
 		bool operator==(const C4NameList& rhs)
-			{	return MemEqual((const uint8_t*)this,(const uint8_t*)&rhs,sizeof(C4NameList)); }
+			{	return !std::memcmp((const uint8_t*)this,(const uint8_t*)&rhs,sizeof(C4NameList)); }
     void CompileFunc(StdCompiler *pComp, bool fValues = true);
   };
 

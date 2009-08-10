@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2005  Sven Eberhardt
+ * Copyright (c) 2005-2007  Peter Wortmann
+ * Copyright (c) 2007, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,6 +28,7 @@
 #include "C4Shape.h"
 
 #include <StdSurface8.h>
+#include <C4Material.h>
 
 const uint8_t GBM = 128,
            GBM_ColNum = 64,
@@ -68,7 +73,6 @@ class C4Landscape
     BYTE *pInitial; // Initial landscape after creation - used for diff
 	protected:
 		CSurface * Surface32;
-		CSurface * AnimationSurface;
 		CSurface8 * Surface8;
 		int32_t Pix2Mat[256], Pix2Dens[256], Pix2Place[256];
 		int32_t PixCntPitch;
@@ -232,6 +236,8 @@ class C4Landscape
 		bool DebugSave(const char *szFilename);
   };
 
+extern C4Landscape Landscape;
+
 /* Some global landscape functions */
 
 BOOL AboveSolid(int32_t &rx, int32_t &ry);
@@ -246,6 +252,82 @@ BOOL FindThrowingPosition(int32_t iTx, int32_t iTy, FIXED fXDir, FIXED fYDir, in
 BOOL PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
 BOOL PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
 BOOL FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2, int32_t iExcludeAngle1, int32_t iExcludeAngle2);
-BOOL ConstructionCheck(C4ID id, int32_t iX, int32_t iY, C4Object *pByObj=NULL);
+BOOL ConstructionCheck(C4PropList *, int32_t iX, int32_t iY, C4Object *pByObj=NULL);
+int32_t PixCol2Mat(BYTE pixc);
 
+#define GBackWdt ::Landscape.Width
+#define GBackHgt ::Landscape.Height
+#define GBackPix ::Landscape.GetPix
+#define SBackPix ::Landscape.SetPix
+#define ClearBackPix ::Landscape.ClearPix
+#define _GBackPix ::Landscape._GetPix
+#define _SBackPix ::Landscape._SetPix
+#define _SBackPixIfMask ::Landscape._SetPixIfMask
+
+inline bool DensitySolid(int32_t dens)
+  {
+  return (dens>=C4M_Solid);
+  }
+
+inline bool DensitySemiSolid(int32_t dens)
+  {
+  return (dens>=C4M_SemiSolid);
+  }
+
+inline bool DensityLiquid(int32_t dens)
+  {
+  return ((dens>=C4M_Liquid) && (dens<C4M_Solid));
+  }
+
+inline BYTE PixColIFT(BYTE pixc)
+  {
+	return pixc & IFT;
+  }
+
+// always use OldGfx-version (used for convert)
+inline BYTE PixColIFTOld(BYTE pixc)
+  {
+  if (pixc>=GBM+IFTOld) return IFTOld;
+  return 0;
+  }
+
+inline int32_t PixCol2Tex(BYTE pixc)
+	{
+	// Remove IFT
+	int32_t iTex = int32_t(pixc & (IFT - 1));
+	// Validate
+	if(iTex >= C4M_MaxTexIndex) return 0;
+	// Done
+	return iTex;
+	}
+
+inline BYTE GBackIFT(int32_t x, int32_t y)
+  {
+  return PixColIFT(GBackPix(x,y));
+  }
+
+inline int32_t GBackMat(int32_t x, int32_t y)
+  {
+	return ::Landscape.GetMat(x, y);
+  }
+
+inline int32_t GBackDensity(int32_t x, int32_t y)
+  {
+	return ::Landscape.GetDensity(x, y);
+  }
+
+inline bool GBackSolid(int32_t x, int32_t y)
+  {
+  return DensitySolid(GBackDensity(x,y));
+  }
+
+inline bool GBackSemiSolid(int32_t x, int32_t y)
+  {
+  return DensitySemiSolid(GBackDensity(x,y));
+  }
+
+inline bool GBackLiquid(int32_t x, int32_t y)
+  {
+  return DensityLiquid(GBackDensity(x,y));
+  }
 #endif

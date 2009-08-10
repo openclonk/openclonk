@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2005  Sven Eberhardt
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +26,8 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4FacetEx.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4GameObjects.h>
 #endif
 
 C4TransferZone::C4TransferZone()
@@ -116,7 +120,7 @@ BOOL C4TransferZones::Add(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4
 void C4TransferZones::Synchronize()
 	{
 	Clear();
-	Game.Objects.UpdateTransferZones();
+	::Objects.UpdateTransferZones();
 	}
 
 C4TransferZone* C4TransferZones::Find(int32_t iX, int32_t iY)

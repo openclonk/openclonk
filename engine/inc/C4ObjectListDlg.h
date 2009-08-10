@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2007  Günther Brammer
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed

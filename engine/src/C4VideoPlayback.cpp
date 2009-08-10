@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2006  Sven Eberhardt
+ * Copyright (c) 2007  Günther Brammer
  * Copyright (c) 2006-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -302,7 +304,7 @@ bool C4VideoPlayer::PlayVideo(C4VideoFile *pVideoFile)
 	// cannot play in console mode
 	if (!FullScreen.Active) return false;
 	// videos are played in a fullscreen GUI dialog
-	if (!Game.pGUI) return false;
+	if (!::pGUI) return false;
 	C4VideoShowDialog *pVideoDlg = new C4VideoShowDialog();
 	if (!pVideoDlg->LoadVideo(pVideoFile))
 		{
@@ -311,7 +313,7 @@ bool C4VideoPlayer::PlayVideo(C4VideoFile *pVideoFile)
 		return false;
 		}
 	++Game.HaltCount;
-	Game.pGUI->ShowModalDlg(pVideoDlg, true); // ignore result; even an aborted video was shown successfully
+	::pGUI->ShowModalDlg(pVideoDlg, true); // ignore result; even an aborted video was shown successfully
 	--Game.HaltCount;
 	return true;
 	}

@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2001, 2004, 2006  Peter Wortmann
+ * Copyright (c) 2004, 2006-2009  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -129,8 +134,6 @@ enum C4AulBCCType
 	AB_LOCALN_V,
 	AB_GLOBALN_R,	// a named global
 	AB_GLOBALN_V,
-	AB_VAR_R,			// Var statement
-	AB_VAR_V,
 	AB_PAR_R,			// Par statement
 	AB_PAR_V,
 	AB_FUNC,		// function
@@ -160,17 +163,13 @@ enum C4AulBCCType
 	AB_LessThanEqual,	// <=
 	AB_GreaterThan,	// >
 	AB_GreaterThanEqual,	// >=
-	AB_EqualIdent,	// old ==
-	AB_Equal,	// new ==
-	AB_NotEqualIdent,	// old !=
-	AB_NotEqual,	// new !=
+	AB_Equal,	// ==
+	AB_NotEqual,	// !=
 	AB_SEqual,	// S=, eq
 	AB_SNEqual,	// ne
 	AB_BitAnd,	// &
 	AB_BitXOr,	// ^
 	AB_BitOr,	// |
-	AB_And, 	// &&
-	AB_Or,  	// ||
 	AB_MulIt,	// *=
 	AB_DivIt,	// /=
 	AB_ModIt,	// %=
@@ -189,7 +188,10 @@ enum C4AulBCCType
 	AB_BOOL,		// constant: bool
 	AB_STRING,	// constant: string
 	AB_C4ID,		// constant: C4ID
+	AB_NIL,		  // constant: nil
 	AB_ARRAY,		// semi-constant: array
+	AB_PROPLIST,		// create a new proplist
+	AB_PROPSET,		// set a property of a proplist
 	AB_IVARN,		// initialization of named var
 	AB_JUMP,		// jump
 	AB_JUMPAND,		// jump if zero, else pop the stack
@@ -250,7 +252,6 @@ struct C4AulScriptContext : public C4AulContext
 	C4Value *Vars;
 	C4AulScriptFunc *Func;
 	bool TemporaryScript;
-	C4ValueList NumVars;
 	C4AulBCC *CPos;
 	time_t tTime; // initialized only by profiler if active
 
@@ -321,7 +322,6 @@ class C4AulScriptFunc : public C4AulFunc
 		C4ValueMapNames VarNamed; // list of named vars in this function
 		C4ValueMapNames ParNamed; // list of named pars in this function
 		C4V_Type ParType[C4AUL_MAX_Par]; // parameter types
-		bool bNewFormat; // new func format? [ func xyz(par abc) { ... } ]
 		bool bReturnRef; // return reference
 		C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
@@ -397,7 +397,6 @@ enum C4AulScriptState
 	ASS_PARSED			// byte code generated
 	};
 
-#ifdef C4ENGINE
 
 // script profiler entry
 class C4AulProfiler
@@ -424,7 +423,6 @@ class C4AulProfiler
 		static void StopProfiling();
 	};
 
-#endif
 
 // script class
 class C4AulScript
@@ -532,11 +530,8 @@ class C4AulScriptEngine : public C4AulScript
 		int nonStrictCnt; // number of non-strict scripts
 		int lineCnt; // line count parsed
 
-		C4ValueList Global;
 		C4ValueMapNames GlobalNamedNames;
 		C4ValueMapData GlobalNamed;
-
-		C4StringTable Strings;
 
 		// global constants (such as "static const C4D_Structure = 2;")
 		// cannot share var lists, because it's so closely tied to the data lists
@@ -575,4 +570,5 @@ class C4AulScriptEngine : public C4AulScript
 		friend class C4AulParseState;
 	};
 
+extern C4AulScriptEngine ScriptEngine;
 #endif

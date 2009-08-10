@@ -49,17 +49,17 @@ public func AtTreeToChop() { return !Contained() && FindTree() && GetPhysical("C
 
 public func FindConstructionSite()
 {
-  return FindObject2(Find_AtRect(-1,-16,2,32), Find_OCF(OCF_Construct), Find_Layer(GetObjectLayer()));
+  return FindObject(Find_AtRect(-1,-16,2,32), Find_OCF(OCF_Construct), Find_Layer(GetObjectLayer()));
 }
 
 public func FindEnergySite()
 {
-  return FindObject2(Find_AtPoint(), Find_OCF(OCF_PowerConsumer), Find_NoContainer(), Find_Layer(GetObjectLayer()), Find_Func("NeedsEnergy"));
+  return FindObject(Find_AtPoint(), Find_OCF(OCF_PowerConsumer), Find_NoContainer(), Find_Layer(GetObjectLayer()), Find_Func("NeedsEnergy"));
 }
 
 public func FindTree()
 {
-  return FindObject2(Find_AtPoint(), Find_OCF(OCF_Chop), Find_Layer(GetObjectLayer()));
+  return FindObject(Find_AtPoint(), Find_OCF(OCF_Chop), Find_Layer(GetObjectLayer()));
 }
 
 
@@ -169,9 +169,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
   // RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
   if(szCommand == "Construct")
   {
-    // Data ist eigentlich keine ID, sondern ein C4Value* - Damit ein DirectCall
-    // möglich ist, muss sie aber zu einer C4ID gecastet werden.
-    if(CastC4ID(Data)->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
+    if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
     {
       return 1;
     }
@@ -574,7 +572,7 @@ public func ControlCommandAcquire(target, x, y, target2, def)
   // Gebäude suchen worin man's herstellen kann  
   if (obj = GetProducerOf (def)) {
     AddCommand (this (), "Call", this, 0, 0, 0, 0, "AutoProduction", 0, 1);
-    obj -> HowToProduce (this, def);
+    obj -> ~HowToProduce (this, def);
     return 1;
   }
   AddCommand (this, "Buy", 0, 0, 0, 0, 100, def, 0, C4CMD_Sub);
@@ -616,7 +614,7 @@ public func FxIntNotAvailableTimer(target, number)
 
 public func GetProducerOf(def)
 {
-  return FindObject2(Find_InRect(-500,-250,1000,500), Find_Func("IsProducerOf", this, def), Sort_Distance());
+  return FindObject(Find_InRect(-500,-250,1000,500), Find_Func("IsProducerOf", this, def), Sort_Distance());
 }
 
 
@@ -675,7 +673,7 @@ private func GetObjectCount(idObj)
   var idUnpackedObj; 
   if (idUnpackedObj = idObj->~UnpackTo()) 
     // Auch verschachtelte Pakete mitzählen 
-    return GetObjectCount(idUnpackedObj) * idObj->PackCount(); 
+    return GetObjectCount(idUnpackedObj) * (idObj->~PackCount()||1);
   // Ansonsten ist es nur ein Objekt 
   return 1; 
   }
@@ -686,7 +684,7 @@ private func GetSpecialCount(szTest)
   var iCnt, pObj; 
   // Einzelne Pfeile... 
   for(var i = 0; pObj = Contents(i); i++) 
-    if(ObjectCall(pObj, szTest)) 
+    if(pObj->Call(szTest)) 
       iCnt++; 
   // Pakete... 
   for(var i = 0; pObj = Contents(i); i++) 
@@ -703,7 +701,7 @@ private func IsSpecialItem(pObj)
   // Spezialitem?
   var j=-1;
   while(GetMaxSpecialCount(++j, 1))
-    if(ObjectCall(pObj, GetMaxSpecialCount(j)))
+    if(pObj->GetMaxSpecialCount(j))
       return j+1;
   // Spezialitempacket?
   if(pObj->~UnpackTo())
@@ -831,3 +829,481 @@ private func GetArrowCount()
 func Activate() {}
 func HowToProduce() {}
 func PackCount() {}
+func Definition(def) {
+  SetProperty("ActMap", {
+Walk = {
+Prototype = Action,
+Name = "Walk",
+Procedure = DFA_WALK,
+Directions = 2,
+FlipDir = 1,
+Length = 16,
+Delay = 15,
+X = 0,
+Y = 0,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Walk",
+InLiquidAction = "Swim",
+},
+StillTrans1 = {
+Prototype = Action,
+Name = "StillTrans1",
+Procedure = DFA_THROW,
+Directions = 2,
+FlipDir = 1,
+Length = 4,
+Delay = 2,
+X = 0,
+Y = 280,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Still",
+InLiquidAction = "Swim",
+},
+Still = {
+Prototype = Action,
+Name = "Still",
+Procedure = DFA_THROW,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 10,
+X = 64,
+Y = 280,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Still",
+InLiquidAction = "Swim",
+},
+StillTrans2 = {
+Prototype = Action,
+Name = "StillTrans2",
+Procedure = DFA_THROW,
+Directions = 2,
+Reverse = 1,
+FlipDir = 1,
+Length = 4,
+Delay = 2,
+X = 192,
+Y = 280,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Still",
+InLiquidAction = "Swim",
+},
+Scale = {
+Prototype = Action,
+Name = "Scale",
+Procedure = DFA_SCALE,
+Directions = 2,
+FlipDir = 1,
+Length = 16,
+Delay = 15,
+X = 0,
+Y = 20,
+Wdt = 16,
+Hgt = 20,
+OffX = 2,
+OffY = 0,
+NextAction = "Scale",
+StartCall = "Scaling",
+},
+ScaleDown = {
+Prototype = Action,
+Name = "ScaleDown",
+Procedure = DFA_SCALE,
+Directions = 2,
+FlipDir = 1,
+Length = 16,
+Delay = 15,
+X = 0,
+Y = 20,
+Wdt = 16,
+Hgt = 20,
+OffX = 2,
+OffY = 0,
+Reverse = 1,
+NextAction = "ScaleDown",
+StartCall = "Scaling",
+},
+Tumble = {
+Prototype = Action,
+Name = "Tumble",
+Procedure = DFA_FLIGHT,
+Directions = 2,
+FlipDir = 1,
+Length = 16,
+Delay = 1,
+X = 0,
+Y = 40,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Tumble",
+ObjectDisabled = 1,
+InLiquidAction = "Swim",
+EndCall = "CheckStuck",
+},
+Dig = {
+Prototype = Action,
+Name = "Dig",
+Procedure = DFA_DIG,
+Directions = 2,
+FlipDir = 1,
+Length = 16,
+Delay = 15,
+X = 0,
+Y = 60,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Dig",
+StartCall = "Digging",
+DigFree = 11,
+InLiquidAction = "Swim",
+},
+Bridge = {
+Prototype = Action,
+Name = "Bridge",
+Procedure = DFA_BRIDGE,
+Directions = 2,
+FlipDir = 1,
+Length = 16,
+Delay = 1,
+X = 0,
+Y = 60,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Bridge",
+StartCall = "Digging",
+InLiquidAction = "Swim",
+},
+Swim = {
+Prototype = Action,
+Name = "Swim",
+Procedure = DFA_SWIM,
+Directions = 2,
+FlipDir = 1,
+Length = 12,
+Delay = 15,
+X = 0,
+Y = 80,
+Wdt = 20,
+Hgt = 20,
+OffX = 0,
+OffY = 1,
+NextAction = "Swim",
+StartCall = "Swimming",
+},
+Swim2 = {
+Prototype = Action,
+Name = "Swim2",
+Procedure = DFA_SWIM,
+Directions = 2,
+FlipDir = 1,
+Length = 12,
+Delay = 15,
+X = 0,
+Y = 300,
+Wdt = 20,
+Hgt = 20,
+OffX = 0,
+OffY = 1,
+NextAction = "Swim2",
+StartCall = "Swimming2",
+},
+Hangle = {
+Prototype = Action,
+Name = "Hangle",
+Procedure = DFA_HANGLE,
+Directions = 2,
+FlipDir = 1,
+Length = 11,
+Delay = 16,
+X = 0,
+Y = 100,
+Wdt = 16,
+Hgt = 20,
+OffX = 0,
+OffY = 3,
+NextAction = "Hangle",
+InLiquidAction = "Swim",
+},
+Jump = {
+Prototype = Action,
+Name = "Jump",
+Procedure = DFA_FLIGHT,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 3,
+X = 0,
+Y = 120,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Hold",
+InLiquidAction = "Swim",
+PhaseCall = "CheckStuck",
+},
+KneelDown = {
+Prototype = Action,
+Name = "KneelDown",
+Procedure = DFA_KNEEL,
+Directions = 2,
+FlipDir = 1,
+Length = 4,
+Delay = 1,
+X = 0,
+Y = 140,
+Wdt = 16,
+Hgt = 20,
+NextAction = "KneelUp",
+},
+KneelUp = {
+Prototype = Action,
+Name = "KneelUp",
+Procedure = DFA_KNEEL,
+Directions = 2,
+FlipDir = 1,
+Length = 4,
+Delay = 1,
+X = 64,
+Y = 140,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Walk",
+},
+Dive = {
+Prototype = Action,
+Name = "Dive",
+Procedure = DFA_FLIGHT,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 4,
+X = 0,
+Y = 160,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Hold",
+ObjectDisabled = 1,
+InLiquidAction = "Swim",
+PhaseCall = "CheckStuck",
+},
+FlatUp = {
+Prototype = Action,
+Name = "FlatUp",
+Procedure = DFA_KNEEL,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 1,
+X = 0,
+Y = 180,
+Wdt = 16,
+Hgt = 20,
+NextAction = "KneelUp",
+ObjectDisabled = 1,
+},
+Throw = {
+Prototype = Action,
+Name = "Throw",
+Procedure = DFA_THROW,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 1,
+X = 0,
+Y = 200,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Walk",
+InLiquidAction = "Swim",
+},
+Punch = {
+Prototype = Action,
+Name = "Punch",
+Procedure = DFA_FIGHT,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 2,
+X = 0,
+Y = 220,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Fight",
+EndCall = "Punching",
+ObjectDisabled = 1,
+},
+Dead = {
+Prototype = Action,
+Name = "Dead",
+Directions = 2,
+FlipDir = 1,
+X = 0,
+Y = 240,
+Wdt = 16,
+Hgt = 20,
+Length = 6,
+Delay = 3,
+NextAction = "Hold",
+NoOtherAction = 1,
+ObjectDisabled = 1,
+},
+Ride = {
+Prototype = Action,
+Name = "Ride",
+Procedure = DFA_ATTACH,
+Directions = 2,
+FlipDir = 1,
+Length = 4,
+Delay = 3,
+X = 128,
+Y = 120,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Ride",
+StartCall = "Riding",
+InLiquidAction = "Swim",
+},
+RideStill = {
+Prototype = Action,
+Name = "RideStill",
+Procedure = DFA_ATTACH,
+Directions = 2,
+FlipDir = 1,
+Length = 1,
+Delay = 10,
+X = 128,
+Y = 120,
+Wdt = 16,
+Hgt = 20,
+NextAction = "RideStill",
+StartCall = "Riding",
+InLiquidAction = "Swim",
+},
+Push = {
+Prototype = Action,
+Name = "Push",
+Procedure = DFA_PUSH,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 15,
+X = 128,
+Y = 140,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Push",
+InLiquidAction = "Swim",
+},
+Chop = {
+Prototype = Action,
+Name = "Chop",
+Procedure = DFA_CHOP,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 3,
+X = 128,
+Y = 160,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Chop",
+StartCall = "Chopping",
+InLiquidAction = "Swim",
+},
+Fight = {
+Prototype = Action,
+Name = "Fight",
+Procedure = DFA_FIGHT,
+Directions = 2,
+FlipDir = 1,
+Length = 7,
+Delay = 4,
+X = 128,
+Y = 180,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Fight",
+StartCall = "Fighting",
+ObjectDisabled = 1,
+},
+GetPunched = {
+Prototype = Action,
+Name = "GetPunched",
+Procedure = DFA_FIGHT,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 3,
+X = 128,
+Y = 200,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Fight",
+ObjectDisabled = 1,
+},
+Build = {
+Prototype = Action,
+Name = "Build",
+Procedure = DFA_BUILD,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 2,
+X = 128,
+Y = 220,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Build",
+StartCall = "Building",
+InLiquidAction = "Swim",
+},
+RideThrow = {
+Prototype = Action,
+Name = "RideThrow",
+Procedure = DFA_ATTACH,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 1,
+X = 128,
+Y = 240,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Ride",
+StartCall = "Throwing",
+InLiquidAction = "Swim",
+},
+Process = {
+Prototype = Action,
+Name = "Process",
+Procedure = DFA_THROW,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 3,
+X = 0,
+Y = 260,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Process",
+EndCall = "Processing",
+},
+Drink = {
+Prototype = Action,
+Name = "Drink",
+Procedure = DFA_THROW,
+Directions = 2,
+FlipDir = 1,
+Length = 8,
+Delay = 3,
+X = 128,
+Y = 260,
+Wdt = 16,
+Hgt = 20,
+NextAction = "Walk",
+},  }, def);
+  SetProperty("Name", "Clonk", def);
+}

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002  Peter Wortmann
+ * Copyright (c) 2005, 2009  Günther Brammer
+ * Copyright (c) 2009  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -18,14 +21,14 @@
 
 #define C4VERSION_H
 
-#define C4ENGINENAME          "Clonk Zoom"
-#define C4ENGINENICK          "zoom"
+#define C4ENGINENAME          "OpenClonk"
+#define C4ENGINENICK          "openclonk"
 
 #define C4ENGINECAPTION       C4ENGINENAME
 #define C4EDITORCAPTION       "Clonk Editor"
 
 #define C4CFG_Company "RedWolf Design"
-#define C4COPYRIGHT_YEAR	 "2008" // might make this dynamic some time...
+#define C4COPYRIGHT_YEAR	 "2009" // might make this dynamic some time...
 #define C4COPYRIGHT_COMPANY "RedWolf Design GmbH"
 
 #define C4VERSIONBUILDNAME "Blue"

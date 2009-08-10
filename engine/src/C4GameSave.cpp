@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2005, 2007-2008  Sven Eberhardt
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,6 +32,12 @@
 #include <C4Console.h>
 #include <C4Log.h>
 #include <C4Player.h>
+#include <C4Landscape.h>
+#include <C4PXS.h>
+#include <C4MassMover.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
+#include <C4Record.h>
 #endif
 
 // *** C4GameSave main class
@@ -145,30 +156,30 @@ bool C4GameSave::SaveScenarioSections()
 bool C4GameSave::SaveLandscape()
 	{
 	// exact?
-	if (Game.Landscape.Mode == C4LSC_Exact || GetForceExactLandscape())
+	if (::Landscape.Mode == C4LSC_Exact || GetForceExactLandscape())
 		{
 		C4DebugRecOff DBGRECOFF;
 		// Landscape
-		Game.Objects.RemoveSolidMasks();
+		::Objects.RemoveSolidMasks();
 		bool fSuccess;
-		if(Game.Landscape.Mode == C4LSC_Exact)
-			fSuccess = !!Game.Landscape.Save(*pSaveGroup);
+		if(::Landscape.Mode == C4LSC_Exact)
+			fSuccess = !!::Landscape.Save(*pSaveGroup);
 		else
-			fSuccess = !!Game.Landscape.SaveDiff(*pSaveGroup, !IsSynced());
-		Game.Objects.PutSolidMasks();
+			fSuccess = !!::Landscape.SaveDiff(*pSaveGroup, !IsSynced());
+		::Objects.PutSolidMasks();
 		if (!fSuccess) return false;
 		DBGRECOFF.Clear();
 		// PXS
-		if (!Game.PXS.Save(*pSaveGroup)) return false;
+		if (!::PXS.Save(*pSaveGroup)) return false;
 		// MassMover (create copy, may not modify running data)
 		C4MassMoverSet MassMoverSet;
-		MassMoverSet.Copy(Game.MassMover);
+		MassMoverSet.Copy(::MassMover);
 		if (!MassMoverSet.Save(*pSaveGroup)) return false;
 		// Material enumeration
-		if (!Game.Material.SaveEnumeration(*pSaveGroup)) return false;
+		if (!::MaterialMap.SaveEnumeration(*pSaveGroup)) return false;
 		}
 	// static / dynamic
-	if (Game.Landscape.Mode == C4LSC_Static)
+	if (::Landscape.Mode == C4LSC_Static)
 		{
 		// static map
 		// remove old-style landscape.bmp
@@ -177,12 +188,12 @@ bool C4GameSave::SaveLandscape()
 		if(!GetForceExactLandscape())
 			{
 			// save map
-			if (!Game.Landscape.SaveMap(*pSaveGroup)) return FALSE;
+			if (!::Landscape.SaveMap(*pSaveGroup)) return FALSE;
 			// save textures (if changed)
-			if (!Game.Landscape.SaveTextures(*pSaveGroup)) return FALSE;
+			if (!::Landscape.SaveTextures(*pSaveGroup)) return FALSE;
 			}
 		}
-	else if (Game.Landscape.Mode != C4LSC_Exact)
+	else if (::Landscape.Mode != C4LSC_Exact)
 		{
 		// dynamic map by landscape.txt or scenario core: nothing to save
 		// in fact, it doesn't even make much sense to save the Objects.txt
@@ -199,7 +210,7 @@ bool C4GameSave::SaveRuntimeData()
 	// landscape
 	if (!SaveLandscape()) { Log(LoadResStr("IDS_ERR_SAVE_LANDSCAPE")); return false; }
 	// Objects
-	if (!Game.Objects.Save((*pSaveGroup),IsExact(),true))
+	if (!::Objects.Save((*pSaveGroup),IsExact(),true))
 		{ Log(LoadResStr("IDS_ERR_SAVE_OBJECTS")); return false; }
 	// Round results
 	if (GetSaveUserPlayers()) if (!Game.RoundResults.Save(*pSaveGroup))
@@ -232,7 +243,7 @@ bool C4GameSave::SaveRuntimeData()
 		// synchronization (via control queue)
 		if (GetSaveUserPlayerFiles() || GetSaveScriptPlayerFiles())
 			{
-			if (!Game.Players.Save((*pSaveGroup), GetCreateSmallFile(), RestoreInfos))
+			if (!::Players.Save((*pSaveGroup), GetCreateSmallFile(), RestoreInfos))
 				{ Log(LoadResStr("IDS_ERR_SAVE_PLAYERS")); return false; }
 			}
 		}
@@ -255,7 +266,7 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 	StdStrBuf sBuffer;
 
 	// Header
-	sBuffer.AppendFormat("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1031{\\fonttbl {\\f0\\fnil\\fcharset%d Times New Roman;}}", GetCharsetCode(LoadResStr("IDS_LANG_CHARSET")));
+	sBuffer.AppendFormat("{\\rtf1\\ansi\\ansicpg1252\\deff0\\deflang1031{\\fonttbl {\\f0\\fnil\\fcharset%d Times New Roman;}}", 0 /*FIXME: a number for UTF-8 here*/);
 	sBuffer.Append(LineFeed);
 
 	// Scenario title
@@ -289,7 +300,7 @@ void C4GameSave::WriteDescDate(StdStrBuf &sBuf, bool fRecord)
 	time_t tTime; time(&tTime);
 	struct tm *pLocalTime;
 	pLocalTime=localtime(&tTime);
-	sBuf.AppendFormat(LoadResStr(fRecord ? "IDS_DESC_DATEREC" : (Game.Network.isEnabled() ? "IDS_DESC_DATENET" : "IDS_DESC_DATE")),
+	sBuf.AppendFormat(LoadResStr(fRecord ? "IDS_DESC_DATEREC" : (::Network.isEnabled() ? "IDS_DESC_DATENET" : "IDS_DESC_DATE")),
 							 pLocalTime->tm_mday,
 							 pLocalTime->tm_mon+1,
 							 pLocalTime->tm_year+1900,
@@ -356,7 +367,7 @@ void C4GameSave::WriteDescNetworkClients(StdStrBuf &sBuf)
 	// Desc
 	sBuf.Append(LoadResStr("IDS_DESC_CLIENTS"));
 	// Client names
-	for (C4Network2Client *pClient=Game.Network.Clients.GetNextClient(NULL); pClient; pClient=Game.Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 		{ sBuf.Append(", ");	sBuf.Append(pClient->getName()); }
 	// End of line
 	WriteDescLineFeed(sBuf);
@@ -502,10 +513,10 @@ bool C4GameSaveSavegame::OnSaving()
 	// this resets playing times and stores them in the players?
 	// but doing so would be too late when the queue is executed!
 	// TODO: remove it? (-> PeterW ;))
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 		Game.Input.Add(CID_Synchronize, new C4ControlSynchronize(TRUE));
 	else
-		Game.Players.SynchronizeLocalFiles();
+		::Players.SynchronizeLocalFiles();
 	// OK; save now
 	return true;
 	}
@@ -537,7 +548,7 @@ bool C4GameSaveSavegame::WriteDesc(StdStrBuf &sBuf)
 	WriteDescDate(sBuf);
 	WriteDescGameTime(sBuf);
 	WriteDescDefinitions(sBuf);
-	if (Game.Network.isEnabled()) WriteDescNetworkClients(sBuf);
+	if (::Network.isEnabled()) WriteDescNetworkClients(sBuf);
 	WriteDescPlayers(sBuf);
 	// done, success
 	return true;
@@ -577,7 +588,7 @@ bool C4GameSaveRecord::WriteDesc(StdStrBuf &sBuf)
 	WriteDescEngine(sBuf);
 	WriteDescDefinitions(sBuf);
 	WriteDescLeague(sBuf, fLeague, Game.Parameters.League.getData());
-	if (Game.Network.isEnabled()) WriteDescNetworkClients(sBuf);
+	if (::Network.isEnabled()) WriteDescNetworkClients(sBuf);
 	WriteDescPlayers(sBuf);
 	// done, success
 	return true;

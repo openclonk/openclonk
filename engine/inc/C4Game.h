@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
+ * Copyright (c) 2001-2002, 2004-2005, 2008  Sven Eberhardt
+ * Copyright (c) 2004, 2006  Peter Wortmann
+ * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,44 +24,19 @@
 #ifndef INC_C4Game
 #define INC_C4Game
 
-#ifdef C4ENGINE
 
-#include <C4Def.h>
-#include <C4Texture.h>
-#include <C4RankSystem.h>
-#include <C4GraphicsSystem.h>
-#include <C4GraphicsResource.h>
-#include <C4GameMessage.h>
-#include <C4MouseControl.h>
-#include <C4MessageInput.h>
-#include <C4Weather.h>
-#include <C4Material.h>
-#include <C4GameObjects.h>
-#include <C4Landscape.h>
-#include <C4Scenario.h>
-#include <C4MassMover.h>
-#include <C4PXS.h>
-#include <C4PlayerList.h>
-#include <C4Teams.h>
+#include <C4GameParameters.h>
 #include <C4PlayerInfo.h>
+#include <C4RoundResults.h>
+#include <C4Scenario.h>
 #include <C4Control.h>
 #include <C4PathFinder.h>
-#include <C4ComponentHost.h>
-#include <C4ScriptHost.h>
-#include <C4Particles.h>
-#include <C4GroupSet.h>
 #include <C4Extra.h>
-#include <C4GameControl.h>
 #include <C4Effects.h>
 #include <C4Fonts.h>
-#include "C4LangStringTable.h"
 #include "C4Scoreboard.h"
-#include <C4Network2.h>
-#include <C4Scenario.h>
-#include <C4Client.h>
-#include <C4Network2Reference.h>
 #include <C4VideoPlayback.h>
-#include <C4RoundResults.h>
+#include <C4ScriptHost.h>
 #include <C4PlayerControl.h>
 
 class C4Game
@@ -86,41 +65,20 @@ class C4Game
 		C4Game();
 		~C4Game();
 	public:
-		C4DefList						Defs;
-		C4TextureMap				TextureMap;
-		C4RankSystem				Rank;
-		C4GraphicsSystem		GraphicsSystem;
-		C4MessageInput      MessageInput;
-		C4GraphicsResource	GraphicsResource;
-		C4Network2					Network;
 		C4ClientList			 &Clients; // Shortcut
 		C4GameParameters		Parameters;
 		C4TeamList				 &Teams; // Shortcut
 		C4PlayerInfoList	 &PlayerInfos; // Shortcut
 		C4PlayerInfoList	 &RestorePlayerInfos; // Shortcut
 		C4RoundResults      RoundResults;
-		C4GameMessageList		Messages;
-		C4MouseControl			MouseControl;
-		C4Weather						Weather;
-		C4MaterialMap				Material;
-		C4GameObjects				Objects;
-		C4ObjectList				BackObjects;		// objects in background (C4D_Background)
-		C4ObjectList				ForeObjects;		// objects in foreground (C4D_Foreground)
-		C4Landscape					Landscape;
 		C4Scenario					C4S;
 		C4ComponentHost			Info;
 		C4ComponentHost			Title;
 		C4ComponentHost			Names;
 		C4ComponentHost			GameText;
-		C4AulScriptEngine		ScriptEngine;
 		C4GameScriptHost		Script;
 		C4LangStringTable   MainSysLangStringTable, ScenarioLangStringTable, ScenarioSysLangStringTable;
-		C4MassMoverSet			MassMover;
-		C4PXSSystem					PXS;
-		C4ParticleSystem		Particles;
-		C4PlayerList				Players;
 		StdStrBuf           PlayerNames;
-		C4GameControl				Control;
 		C4Control					 &Input; // shortcut
 
 		C4PathFinder				PathFinder;
@@ -129,7 +87,6 @@ class C4Game
 		C4GroupSet					GroupSet;
 		C4Group             *pParentGroup;
 		C4Extra							Extra;
-		C4GUIScreen         *pGUI;
 		C4ScenarioSection   *pScenarioSections, *pCurrentScenarioSection;
 		C4Effect            *pGlobalEffects;
 		C4PlayerControlDefs PlayerControlDefs;
@@ -171,7 +128,7 @@ class C4Game
 		bool TempScenarioFile;
 		bool fPreinited; // set after PreInit has been called; unset by Clear and Default
 		int32_t FrameCounter;
-		int32_t iTick2,iTick3,iTick5,iTick10,iTick35,iTick255,iTick500,iTick1000;
+		int32_t iTick2,iTick3,iTick5,iTick10,iTick35,iTick255,iTick1000;
 		bool TimeGo;
 		int32_t Time;
 		int32_t StartTime;
@@ -236,11 +193,14 @@ class C4Game
 		BOOL ReloadDef(C4ID id);
 		BOOL ReloadParticle(const char *szName);
 		// Object functions
-		void ClearPointers(C4Object *cobj);
+    void ClearPointers(C4PropList *cobj);
+    C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
+                           int32_t x=50, int32_t y=50, int32_t r=0,
+                           FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
 		C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
 				int32_t x=50, int32_t y=50, int32_t r=0,
 				FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
-		C4Object *CreateObjectConstruction(C4ID type,
+    C4Object *CreateObjectConstruction(C4PropList * type,
 				C4Object *pCreator,
 				int32_t owner,
 				int32_t ctx=0, int32_t bty=0,
@@ -329,7 +289,6 @@ class C4Game
     BOOL OpenScenario();
     BOOL InitDefs();
     BOOL InitMaterialTexture();
-    BOOL EnumerateMaterials();
 		BOOL GameOverCheck();
 		BOOL PlaceInEarth(C4ID id);
 		BOOL Compile(const char *szSource);
@@ -343,7 +302,7 @@ class C4Game
 	  BOOL RecreatePlayerFiles();
 
     // Object function internals
-    C4Object *NewObject( C4Def *ndef, C4Object *pCreator,
+    C4Object *NewObject( C4PropList *ndef, C4Object *pCreator,
                          int32_t owner, C4ObjectInfo *info,
                          int32_t tx, int32_t ty, int32_t tr,
                          FIXED xdir, FIXED ydir, FIXED rdir,
@@ -373,6 +332,5 @@ inline StdStrBuf GetKeyboardInputName(const char *szKeyName, bool fShort = false
 	return Game.KeyboardInput.GetKeyCodeNameByKeyName(szKeyName, fShort, iIndex);
 }
 
-#endif // C4ENGINE
 
 #endif

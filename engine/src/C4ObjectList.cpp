@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2006, 2008  Sven Eberhardt
+ * Copyright (c) 2004-2006  Peter Wortmann
+ * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,8 +27,11 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
-#include <C4Wrappers.h>
 #include <C4Application.h>
+#include <C4Region.h>
+#include <C4GraphicsResource.h>
+#include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 C4ObjectList::C4ObjectList(): FirstIter(0)
@@ -370,7 +378,7 @@ void C4ObjectList::DrawIDList(C4Facet &cgo, int iSelection,
 		// Draw count
 		sprintf(szCount,"%dx",iCount);
 	  if ((iCount!=1) || fDrawOneCounts)
-			Application.DDraw->TextOut(szCount, Game.GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-Game.GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+			Application.DDraw->TextOut(szCount, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1-::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
 		// Region
 		if (pRegions) pRegions->Add(cgo2.X,cgo2.Y,cgo2.Wdt,cgo2.Hgt,pFirstObj->GetName(),iRegionCom,pFirstObj,COM_None,COM_None,pFirstObj->Number);
 		// Next section
@@ -457,16 +465,6 @@ void C4ObjectList::Enumerate()
 			cLnk->Obj->EnumeratePointers();
 	}
 
-long C4ObjectList::ObjectNumber(C4Object *pObj)
-	{
-  C4ObjectLink *cLnk;
-	if(!pObj) return 0;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj==pObj)
-			return cLnk->Obj->Number;
-	return 0;
-	}
-
 bool C4ObjectList::IsContained(C4Object *pObj)
 	{
   C4ObjectLink *cLnk;
@@ -481,18 +479,12 @@ BOOL C4ObjectList::IsClear() const
 	return (ObjectCount()==0);
 	}
 
-BOOL C4ObjectList::ReadEnumerated(const char *szSource)
-	{
-	assert(false);
-	return FALSE;
-	}
-
 BOOL C4ObjectList::DenumerateRead()
 	{
 	if(!pEnumerated) return FALSE;
 	// Denumerate all object pointers
 	for(std::list<int32_t>::const_iterator pNum = pEnumerated->begin(); pNum != pEnumerated->end(); ++pNum)
-		Add(Game.Objects.ObjectPointer(*pNum), stNone); // Add to tail, unsorted
+		Add(::Objects.ObjectPointer(*pNum), stNone); // Add to tail, unsorted
 	// Delete old list
 	delete pEnumerated; pEnumerated = NULL;
 	return TRUE;
@@ -587,22 +579,6 @@ void C4ObjectList::CompileFunc(StdCompiler *pComp, bool fSaveRefs, bool fSkipPla
     }
 	}
 
-C4Object* C4ObjectList::ObjectPointer(int32_t iNumber)
-	{
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Number==iNumber)
-			return cLnk->Obj;
-	return NULL;
-	}
-
-C4Object *C4ObjectList::SafeObjectPointer(int32_t iNumber)
-	{
-	C4Object *pObj = ObjectPointer(iNumber);
-	if (pObj) if (!pObj->Status) return NULL;
-	return pObj;
-	}
-
 StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs, DWORD dwCategory)
 	{
 	int cpos,idcount;
@@ -640,63 +616,12 @@ BOOL C4ObjectList::AssignInfo()
 	return TRUE;
 	}
 
-BOOL C4ObjectList::AssignPlrViewRange()
-	{
-  C4ObjectLink *cLnk;
-  for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->AssignPlrViewRange();
-	return TRUE;
-
-	}
-
 void C4ObjectList::ClearInfo(C4ObjectInfo *pInfo)
 	{
   C4ObjectLink *cLnk;
   for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->ClearInfo(pInfo);
-	}
-
-void C4ObjectList::ClearDefPointers(C4Def *pDef)
-	{
-	// clear all pointers into definition
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Def == pDef)
-			{
-			cLnk->Obj->Name.Clear();
-			}
-	}
-
-void C4ObjectList::UpdateDefPointers(C4Def *pDef)
-	{
-	// restore any cleared pointers after def reload
-	C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Def == pDef)
-			{
-			cLnk->Obj->SetName(NULL);
-			}
-	}
-
-C4Object* C4ObjectList::Enumerated(C4Object *pObj)
-	{
-	int iPtrNum;
-	// If object is enumerated, convert to enumerated pointer
-	if (iPtrNum = ObjectNumber(pObj))
-		return (C4Object*) (C4EnumPointer1 + iPtrNum);
-	// Oops!
-	return 0;
-	}
-
-C4Object* C4ObjectList::Denumerated(C4Object *pObj)
-	{
-	// If valid enumeration, convert to pointer
-	if (Inside( (long) pObj, C4EnumPointer1, C4EnumPointer2 ))
-		return ObjectPointer( (long) pObj - C4EnumPointer1 );
-	// Oops!
-	return NULL;
 	}
 
 void C4ObjectList::DrawList(C4Facet &cgo, int iSelection, DWORD dwCategory)
@@ -800,14 +725,6 @@ void C4NotifyingObjectList::RemoveLink(C4ObjectLink *pLnk)
 	ObjectListChangeListener.OnObjectRemove(this, pLnk);
 	}
 
-void C4ObjectList::SyncClearance()
-	{
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj)
-			cLnk->Obj->SyncClearance();
-	}
-
 void C4ObjectList::UpdateGraphics(bool fGraphicsChanged)
 	{
   C4ObjectLink *cLnk;
@@ -831,30 +748,11 @@ void C4ObjectList::DrawSelectMark(C4TargetFacet &cgo, float Zoom)
 		cLnk->Obj->DrawSelectMark(cgo, Zoom);
 	}
 
-void C4ObjectList::GetIDList(C4IDList &rList, int32_t dwCategory)
-	{
-	C4ObjectLink *clnk;
-	C4Def *pDef;
-	rList.Clear();
-  for (clnk=First; clnk && clnk->Obj; clnk=clnk->Next)
-		if (clnk->Obj->Status)
-			if ((dwCategory==C4D_All) || ( (pDef=C4Id2Def(clnk->Obj->Def->id)) && (pDef->Category & dwCategory) ))
-				rList.IncreaseIDCount(clnk->Obj->Def->id);
-	}
-
 void C4ObjectList::CloseMenus()
 	{
   C4Object *cobj; C4ObjectLink *clnk;
   for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
     cobj->CloseMenu(true);
-	}
-
-void C4ObjectList::SetOCF()
-	{
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
-		if (cLnk->Obj->Status)
-			cLnk->Obj->SetOCF();
 	}
 
 void C4ObjectList::Copy(const C4ObjectList &rList)
@@ -869,40 +767,6 @@ void C4ObjectList::Default()
   First=Last=NULL;
   Mass=0;
 	pEnumerated=NULL;
-	}
-
-void C4ObjectList::UpdateTransferZones()
-	{
-  C4Object *cobj; C4ObjectLink *clnk;
-  for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->Call(PSF_UpdateTransferZone);
-	}
-
-void C4ObjectList::ResetAudibility()
-	{
-  C4Object *cobj; C4ObjectLink *clnk;
-  for (clnk=First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		cobj->Audible=cobj->AudiblePan=0;
-	}
-
-void C4ObjectList::SortByCategory()
-	{
-  C4ObjectLink *cLnk;
-	BOOL fSorted;
-	// Sort by category
-	do
-		{
-		fSorted = TRUE;
-		for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
-			if ((cLnk->Obj->Category & C4D_SortLimit) < (cLnk->Next->Obj->Category & C4D_SortLimit))
-				{
-				RemoveLink(cLnk);
-				InsertLink(cLnk,cLnk->Next);
-				fSorted = FALSE;
-				break;
-				}
-		}
-	while (!fSorted);
 	}
 
 BOOL C4ObjectList::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001, 2006-2008  Sven Eberhardt
+ * Copyright (c) 2005, 2008  Günther Brammer
+ * Copyright (c) 2006  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,6 +27,7 @@
 #include <C4Object.h>
 #include <C4Log.h>
 #include <C4Record.h>
+#include <C4GameObjects.h>
 #endif
 
 /* sector */
@@ -185,14 +189,16 @@ void C4LSectors::Remove(C4Object *pObj)
 
 void C4LSectors::AssertObjectNotInList(C4Object *pObj)
 	{
+#ifndef NDEBUG
 	C4LSector *sct=Sectors;
 	for (int cnt=0; cnt<Size; cnt++, sct++)
 		{
-		if (sct->Objects.IsContained(pObj)) assert(false);
-		if (sct->ObjectShapes.IsContained(pObj)) assert(false);
+		assert(!sct->Objects.IsContained(pObj));
+		assert(!sct->ObjectShapes.IsContained(pObj));
 		}
-	if (SectorOut.Objects.IsContained(pObj)) assert(false);
-	if (SectorOut.ObjectShapes.IsContained(pObj)) assert(false);
+	assert(!SectorOut.Objects.IsContained(pObj));
+	assert(!SectorOut.ObjectShapes.IsContained(pObj));
+#endif
 	}
 
 int C4LSectors::getShapeSum() const
@@ -214,9 +220,9 @@ void C4LSectors::Dump()
 bool C4LSectors::CheckSort()
 	{
 	for (int cnt=0; cnt<Size; cnt++)
-		if (!Sectors[cnt].Objects.CheckSort(&Game.Objects))
+		if (!Sectors[cnt].Objects.CheckSort(&::Objects))
 			return false;
-	if (!SectorOut.Objects.CheckSort(&Game.Objects)) return false;
+	if (!SectorOut.Objects.CheckSort(&::Objects)) return false;
 	return true;
 	}
 

@@ -22,12 +22,7 @@
 #include "C4Group.h"
 #include "C4Log.h"
 
-#ifdef C4FRONTEND
-#include "C4ExplorerCfg.h"
-C4ExplorerCfg *GetCfg();
-#else
 C4Config *GetCfg();
-#endif
 
 #ifdef _WIN32
 #include <direct.h>
@@ -333,7 +328,7 @@ BOOL C4UpdatePackage::Execute(C4Group *pGroup)
 				// GrpUpdate -> file must exist
 				if(GrpUpdate) return FALSE;
 				// create dir
-				CreateDirectory(strTarget, NULL);
+				CreatePath(strTarget);
 			}
 		*p = '\\'; lp = p + 1;
 	}
@@ -706,6 +701,8 @@ BOOL C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 	return TRUE;
 }
 
+extern char C4Group_TempPath[_MAX_PATH+1];
+
 BOOL C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, BOOL *fModified)
 {
 	// (CAUTION: pGrp1 may be NULL - that means that there is no counterpart for Grp2
@@ -756,7 +753,8 @@ BOOL C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, BO
 			if(!UpdGroup.OpenAsChild(pUpGrp, strItemName))
 			{
 				// create new group (may be temporary)
-				SCopy(GetCfg()->AtTempPath("~upd"), strTempGroupName, _MAX_FNAME);
+				if (C4Group_TempPath[0]) { SCopy(C4Group_TempPath,strTempGroupName,_MAX_FNAME); SAppend("~upd",strTempGroupName,_MAX_FNAME); }
+				else SCopy("~upd",strTempGroupName,_MAX_FNAME);
 				MakeTempFilename(strTempGroupName);
 				if(!UpdGroup.Open(strTempGroupName, TRUE)) { delete pChildGrp1; WriteLog("Error: could not create temp group\n"); return FALSE; }
 			}
@@ -850,7 +848,5 @@ void C4UpdatePackage::WriteLog(const char *strMsg, ...)
 	vsprintf(strOutp, strMsg, arglist);
 	Log.Write(strOutp, strlen(strOutp));
 	Log.Flush();
-#ifdef C4GROUP
-	printf(strOutp);
-#endif
+	::Log(strOutp);
 }

@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -17,12 +19,6 @@
 #include <Standard.h>
 #include <StdNoGfx.h>
 
-BOOL CStdNoGfx::CreateDirectDraw()
-	{
-	Log("  Graphics disabled");
-	return TRUE;
-	}
-
 CStdNoGfx::CStdNoGfx()
 	{
 	Default();
@@ -36,6 +32,7 @@ CStdNoGfx::~CStdNoGfx()
 
 bool CStdNoGfx::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 	{
+	Log("Graphics disabled.");
 	// Save back color depth
 	byByteCnt = iColorDepth / 8;
 	// Create dummy surface

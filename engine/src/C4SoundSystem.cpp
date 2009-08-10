@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2004, 2008  Matthes Bender
+ * Copyright (c) 2003-2004  Peter Wortmann
+ * Copyright (c) 2005-2006, 2008  Sven Eberhardt
+ * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,6 +30,7 @@
 #include <C4Game.h>
 #include <C4Config.h>
 #include <C4Application.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 C4SoundEffect::C4SoundEffect():
@@ -304,7 +309,7 @@ BOOL C4SoundInstance::Playing()
                      : timeGetTime() < iStarted + pEffect->Length;
 #endif
 #ifdef HAVE_LIBSDL_MIXER
-	return Application.MusicSystem.MODInitialized && Mix_Playing(iChannel);
+	return Application.MusicSystem.MODInitialized && (iChannel != -1) && Mix_Playing(iChannel);
 #endif
 	return false;
   }
@@ -363,7 +368,7 @@ void C4SoundInstance::Execute()
 
 void C4SoundInstance::SetVolumeByPos(int32_t x, int32_t y)
   {
-  iVolume = Game.GraphicsSystem.GetAudibility(x, y, &iPan);
+  iVolume = ::GraphicsSystem.GetAudibility(x, y, &iPan);
   }
 
 void C4SoundInstance::ClearPointers(C4Object *pDelete)
@@ -611,4 +616,59 @@ void C4SoundSystem::ClearPointers(C4Object *pObj)
   {
 	for (C4SoundEffect *pEff=FirstSound; pEff; pEff=pEff->Next)
     pEff->ClearPointers(pObj);
+  }
+
+C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance)
+  {
+  // Sound check
+  if (!Config.Sound.RXSound) return FALSE;
+  // Start new
+  return Application.SoundSystem.NewEffect(szSndName, fLoop, iVolume, pObj, iCustomFalloffDistance);
+  }
+
+C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, bool fLoop, int32_t iVolume)
+  {
+  // Sound check
+  if (!Config.Sound.RXSound) return FALSE;
+  // Create
+  C4SoundInstance *pInst = StartSoundEffect(szSndName, fLoop, iVolume);
+  // Set volume by position
+  if(pInst) pInst->SetVolumeByPos(iX, iY);
+  // Return
+  return pInst;
+  }
+
+C4SoundInstance *GetSoundInstance(const char *szSndName, C4Object *pObj)
+  {
+  return Application.SoundSystem.FindInstance(szSndName, pObj);
+  }
+
+void StopSoundEffect(const char *szSndName, C4Object *pObj)
+  {
+  // Find instance
+  C4SoundInstance *pInst = Application.SoundSystem.FindInstance(szSndName, pObj);
+  if(!pInst) return;
+  // Stop
+  pInst->Stop();
+  }
+void SoundLevel(const char *szSndName, C4Object *pObj, int32_t iLevel)
+  {
+  // Sound level zero? Stop
+  if(!iLevel) { StopSoundEffect(szSndName, pObj); return; }
+  // Find or create instance
+  C4SoundInstance *pInst = Application.SoundSystem.FindInstance(szSndName, pObj);
+  if(!pInst) pInst = StartSoundEffect(szSndName, true, iLevel, pObj);
+  if(!pInst) return;
+  // Set volume
+  pInst->SetVolume(iLevel);
+  pInst->Execute();
+  }
+void SoundPan(const char *szSndName, C4Object *pObj, int32_t iPan)
+  {
+  // Find instance
+  C4SoundInstance *pInst = Application.SoundSystem.FindInstance(szSndName, pObj);
+  if(!pInst) return;
+  // Set pan
+  pInst->SetPan(iPan);
+  pInst->Execute();
   }

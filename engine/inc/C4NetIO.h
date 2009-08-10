@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003-2007  Peter Wortmann
+ * Copyright (c) 2005-2006, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -28,6 +30,9 @@
 #ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#ifndef WINSOCK_VERSION
+#define WINSOCK_VERSION MAKEWORD(2,2)
+#endif
 // Events are Windows-specific
 #define HAVE_WINSOCK
 #else

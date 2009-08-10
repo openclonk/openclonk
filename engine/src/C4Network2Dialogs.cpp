@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2009  Sven Eberhardt
+ * Copyright (c) 2005, 2007  Peter Wortmann
+ * Copyright (c) 2005-2006  Günther Brammer
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,9 +27,12 @@
 #ifndef BIG_C4INCLUDE
 #include "C4Network2.h"
 #include "C4Network2Stats.h"
-#include "C4Game.h"
+
 #include "C4Viewport.h"
 #include "C4GameOptions.h"
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameControl.h>
 #endif
 
 #ifndef HAVE_WINSOCK
@@ -65,7 +73,7 @@ void C4Network2ClientDlg::UpdateText()
 		AddLineFmt(LoadResStr("IDS_NET_CLIENT_INFO_FORMAT"),
 			strActivated.getData(), strLocal.getData(), strHost.getData(),
 			pClient->getName(), iClientID,
-			Game.Network.isHost() && pNetClient && !pNetClient->isReady() ? " (!ack)" : "");
+			::Network.isHost() && pNetClient && !pNetClient->isReady() ? " (!ack)" : "");
 		// show addresses
 		int iCnt;
 		if (iCnt=pNetClient->getAddrCnt())
@@ -89,13 +97,13 @@ void C4Network2ClientDlg::UpdateText()
 				{
 				AddLineFmt(LoadResStr("IDS_NET_CLIENT_INFO_CONNECTIONS"),
 					pNetClient->getMsgConn() == pNetClient->getDataConn() ? "Msg/Data" : "Msg",
-					Game.Network.NetIO.getNetIOName(pNetClient->getMsgConn()->getNetClass()),
+					::Network.NetIO.getNetIOName(pNetClient->getMsgConn()->getNetClass()),
 					inet_ntoa(pNetClient->getMsgConn()->getPeerAddr().sin_addr),
 					htons(pNetClient->getMsgConn()->getPeerAddr().sin_port),
 					pNetClient->getMsgConn()->getPingTime());
 				if(pNetClient->getMsgConn() != pNetClient->getDataConn())
 				AddLineFmt(LoadResStr("IDS_NET_CLIENT_INFO_CONNDATA"),
-					Game.Network.NetIO.getNetIOName(pNetClient->getDataConn()->getNetClass()),
+					::Network.NetIO.getNetIOName(pNetClient->getDataConn()->getNetClass()),
 					inet_ntoa(pNetClient->getDataConn()->getPeerAddr().sin_addr),
 					htons(pNetClient->getDataConn()->getPeerAddr().sin_port),
 					pNetClient->getDataConn()->getPingTime());
@@ -141,8 +149,8 @@ C4Network2ClientListBox::ClientListItem::ClientListItem(class C4Network2ClientLi
 		}
 	pName = new C4GUI::Label(sNameLabel.getData(), iIconSize + IconLabelSpacing,iVerticalIndent, ALeft);
 	int iPingRightPos = GetBounds().Wdt - IconLabelSpacing;
-	if (Game.Network.isHost()) iPingRightPos -= 48;
-	if (Game.Network.isHost() && pClient && !pClient->isHost())
+	if (::Network.isHost()) iPingRightPos -= 48;
+	if (::Network.isHost() && pClient && !pClient->isHost())
 		{
 		// activate/deactivate and kick btns for clients at host
 		if (!pForDlg->IsStartup())
@@ -175,7 +183,7 @@ void C4Network2ClientListBox::ClientListItem::Update()
 	// update wait label
 	if (pPing)
 		{
-		int iWait = Game.Control.Network.ClientPerfStat(iClientID);
+		int iWait = ::Control.Network.ClientPerfStat(iClientID);
 		pPing->SetText(FormatString("%d ms", iWait).getData());
 		pPing->SetColor(RGB(
 			BoundBy(255-Abs(iWait)*5, 0, 255),
@@ -228,7 +236,7 @@ void C4Network2ClientListBox::ClientListItem::Update()
 	// network OK - control ready?
 	if (!pForDlg->IsStartup() && (icoStatus == C4GUI::Ico_Ready))
 		{
-		if (!Game.Control.Network.ClientReady(iClientID, Game.Control.ControlTick))
+		if (!::Control.Network.ClientReady(iClientID, ::Control.ControlTick))
 			{
 			// control not ready
 			icoStatus = C4GUI::Ico_NetWait;
@@ -246,21 +254,21 @@ const C4Client *C4Network2ClientListBox::ClientListItem::GetClient() const
 void C4Network2ClientListBox::ClientListItem::OnButtonActivate(C4GUI::Control *pButton)
 	{
 	// league: Do not deactivate clients with players
-	if (Game.Parameters.isLeague() && Game.Players.GetAtClient(iClientID))
+	if (Game.Parameters.isLeague() && ::Players.GetAtClient(iClientID))
 		{
 		Log(LoadResStr("IDS_LOG_COMMANDNOTALLOWEDINLEAGUE"));
 		return;
 		}
 	// change to status that is not currently shown
-	Game.Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(iClientID, CUT_Activate, !fShownActive), CDT_Sync);
+	::Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(iClientID, CUT_Activate, !fShownActive), CDT_Sync);
 	}
 
 void C4Network2ClientListBox::ClientListItem::OnButtonKick(C4GUI::Control *pButton)
 	{
 	// try kick
 	// league: Kick needs voting
-	if(Game.Parameters.isLeague() && Game.Players.GetAtClient(iClientID))
-		Game.Network.Vote(VT_Kick, true, iClientID);
+	if(Game.Parameters.isLeague() && ::Players.GetAtClient(iClientID))
+		::Network.Vote(VT_Kick, true, iClientID);
 	else
 		Game.Clients.CtrlRemove(GetClient(), LoadResStr(pForDlg->IsStartup() ? "IDS_MSG_KICKFROMSTARTUPDLG" : "IDS_MSG_KICKFROMCLIENTLIST"));
 	}
@@ -312,7 +320,7 @@ C4Network2ClientListBox::ConnectionListItem::ConnectionListItem(class C4Network2
 C4Network2IOConnection *C4Network2ClientListBox::ConnectionListItem::GetConnection() const
 	{
 	// get connection by connection ID
-	C4Network2Client *pNetClient = Game.Network.Clients.GetClientByID(iClientID);
+	C4Network2Client *pNetClient = ::Network.Clients.GetClientByID(iClientID);
 	if (!pNetClient) return NULL;
 	if (iConnID == 0) return pNetClient->getDataConn();
 	if (iConnID == 1) return pNetClient->getMsgConn();
@@ -335,7 +343,7 @@ void C4Network2ClientListBox::ConnectionListItem::Update()
 	// update description
 	// get connection usage
 	const char *szConnType;
-	C4Network2Client *pNetClient = Game.Network.Clients.GetClientByID(iClientID);
+	C4Network2Client *pNetClient = ::Network.Clients.GetClientByID(iClientID);
 	if (pNetClient->getDataConn() == pNetClient->getMsgConn())
 		szConnType = "Data/Msg";
 	else if (iConnID)
@@ -345,7 +353,7 @@ void C4Network2ClientListBox::ConnectionListItem::Update()
 	// display info
 	pDesc->SetText(FormatString("%s: %s (%s:%d l%d)",
 		szConnType,
-		Game.Network.NetIO.getNetIOName(pConn->getNetClass()),
+		::Network.NetIO.getNetIOName(pConn->getNetClass()),
 		inet_ntoa(pConn->getPeerAddr().sin_addr),
 		htons(pConn->getPeerAddr().sin_port),
     pConn->getPacketLoss()).getData());
@@ -451,7 +459,7 @@ void C4Network2ClientListBox::Update()
 C4Network2ClientListDlg *C4Network2ClientListDlg::pInstance = NULL;
 
 C4Network2ClientListDlg::C4Network2ClientListDlg()
-: Dialog(Game.pGUI->GetPreferredDlgRect().Wdt*3/4, Game.pGUI->GetPreferredDlgRect().Hgt*3/4, LoadResStr("IDS_NET_CAPTION"), false)
+: Dialog(::pGUI->GetPreferredDlgRect().Wdt*3/4, ::pGUI->GetPreferredDlgRect().Hgt*3/4, LoadResStr("IDS_NET_CAPTION"), false)
 	{
 	// component layout
 	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
@@ -480,9 +488,9 @@ void C4Network2ClientListDlg::Update()
 	// Compose status text
 	StdStrBuf sStatusText;
 	sStatusText.Format("Tick %d, Behind %d, Rate %d, PreSend %d, ACT: %d",
-		(int)Game.Control.ControlTick, (int)Game.Control.Network.GetBehind(Game.Control.ControlTick),
-    (int)Game.Control.ControlRate, (int)Game.Control.Network.getControlPreSend(),
-		(int)Game.Control.Network.getAvgControlSendTime());
+		(int)::Control.ControlTick, (int)::Control.Network.GetBehind(::Control.ControlTick),
+    (int)::Control.ControlRate, (int)::Control.Network.getControlPreSend(),
+		(int)::Control.Network.getAvgControlSendTime());
 	// Update status label
 	pStatusLabel->SetText(sStatusText.getData());
 	}
@@ -494,7 +502,7 @@ bool C4Network2ClientListDlg::Toggle()
 	// toggle off?
 	if (pInstance) { pInstance->Close(true); return true; }
   // toggle on!
-	return Game.pGUI->ShowRemoveDlg(pInstance = new C4Network2ClientListDlg());
+	return ::pGUI->ShowRemoveDlg(pInstance = new C4Network2ClientListDlg());
 	}
 
 
@@ -572,7 +580,7 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 	else btnLeague=NULL;
 	if (fNetwork && fHost)
 		{
-		btnPassword = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(Game.Network.isPassworded() ? C4GUI::Ico_Ex_Locked : C4GUI::Ico_Ex_Unlocked, caButtons.GetFromLeft(iIconSize, iIconSize), 'P' /* 2do */, &C4GameOptionButtons::OnBtnPassword, this);
+		btnPassword = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(::Network.isPassworded() ? C4GUI::Ico_Ex_Locked : C4GUI::Ico_Ex_Unlocked, caButtons.GetFromLeft(iIconSize, iIconSize), 'P' /* 2do */, &C4GameOptionButtons::OnBtnPassword, this);
 		btnPassword->SetToolTip(LoadResStr("IDS_NET_PASSWORD_DESC"));
 		AddElement(btnPassword);
 		btnComment = new C4GUI::CallbackButton<C4GameOptionButtons, C4GUI::IconButton>(C4GUI::Ico_Ex_Comment, caButtons.GetFromLeft(iIconSize, iIconSize), 'M' /* 2do */, &C4GameOptionButtons::OnBtnComment, this);
@@ -598,11 +606,11 @@ void C4GameOptionButtons::OnBtnInternet(C4GUI::Control *btn)
 		{
 		if (fCheck)
 			{
-			fCheck = Game.Network.LeagueSignupEnable();
+			fCheck = ::Network.LeagueSignupEnable();
 			}
 		else
 			{
-			Game.Network.LeagueSignupDisable();
+			::Network.LeagueSignupDisable();
 			}
 		}
 	btnInternet->SetIcon(fCheck ? C4GUI::Ico_Ex_InternetOn : C4GUI::Ico_Ex_InternetOff);
@@ -634,7 +642,7 @@ void C4GameOptionButtons::OnBtnFairCrew(C4GUI::Control *btn)
 		{
 		// altering button in lobby: Must be distributed as a control to all clients
 		if (Game.Parameters.FairCrewForced) return;
-		Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_FairCrew, Game.Parameters.UseFairCrew ? -1 : Config.General.FairCrewStrength), CDT_Sync);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_FairCrew, Game.Parameters.UseFairCrew ? -1 : Config.General.FairCrewStrength), CDT_Sync);
 		// button will be updated through control
 		}
 	else
@@ -656,7 +664,7 @@ void C4GameOptionButtons::OnBtnPassword(C4GUI::Control *btn)
 	{
 	if (!fNetwork || !fHost) return;
 	// password is currently set - a single click only clears the password
-	if (Game.Network.GetPassword() && *Game.Network.GetPassword())
+	if (::Network.GetPassword() && *::Network.GetPassword())
 		{
 		StdStrBuf empty;
 		OnPasswordSet(empty);
@@ -666,7 +674,7 @@ void C4GameOptionButtons::OnBtnPassword(C4GUI::Control *btn)
 	C4GUI::InputDialog *pDlg;
 	GetScreen()->ShowRemoveDlg(pDlg=new C4GUI::InputDialog(LoadResStr("IDS_MSG_ENTERPASSWORD"), LoadResStr("IDS_DLG_PASSWORD"), C4GUI::Ico_Ex_LockedFrontal, new C4GUI::InputCallback<C4GameOptionButtons>(this, &C4GameOptionButtons::OnPasswordSet), false));
 	pDlg->SetMaxText(CFG_MaxString);
-	const char *szPassPreset = Game.Network.GetPassword();
+	const char *szPassPreset = ::Network.GetPassword();
 	if (!szPassPreset || !*szPassPreset) szPassPreset = Config.Network.LastPassword;
 	if (*szPassPreset) pDlg->SetInputText(szPassPreset);
 	}
@@ -675,7 +683,7 @@ void C4GameOptionButtons::OnPasswordSet(const StdStrBuf &rsNewPassword)
 	{
 	// password input dialog answered with OK: Set/clear network password
 	const char *szPass;
-	Game.Network.SetPassword(szPass=rsNewPassword.getData());
+	::Network.SetPassword(szPass=rsNewPassword.getData());
 	// update icon to reflect if a password is set
 	UpdatePasswordBtn();
 	// remember password for next round
@@ -691,7 +699,7 @@ void C4GameOptionButtons::OnPasswordSet(const StdStrBuf &rsNewPassword)
 void C4GameOptionButtons::UpdatePasswordBtn()
 	{
 	// update icon to reflect if a password is set
-	const char *szPass = Game.Network.GetPassword();
+	const char *szPass = ::Network.GetPassword();
 	bool fHasPassword = szPass && *szPass;
 //btnPassword->SetHighlight(fHasPassword);
 	btnPassword->SetIcon(fHasPassword ? C4GUI::Ico_Ex_Locked : C4GUI::Ico_Ex_Unlocked);
@@ -712,7 +720,7 @@ void C4GameOptionButtons::OnCommentSet(const StdStrBuf &rsNewComment)
 	if (rsNewComment == Config.Network.Comment) return;
   // Set in configuration, update reference
 	Config.Network.Comment.CopyValidated(rsNewComment.getData());
-  Game.Network.InvalidateReference();
+  ::Network.InvalidateReference();
 	// message feedback
 	Log(LoadResStr("IDS_NET_COMMENTCHANGED"));
 	// acoustic feedback
@@ -921,7 +929,7 @@ C4ChartDialog::C4ChartDialog() : Dialog(DialogWidth, DialogHeight, LoadResStr("I
 	AddChart(StdStrBuf("oc"));
 	AddChart(StdStrBuf("FPS"));
 	AddChart(StdStrBuf("NetIO"));
-	if (Game.Network.isEnabled())
+	if (::Network.isEnabled())
 		AddChart(StdStrBuf("Pings"));
 	AddChart(StdStrBuf("Control"));
 	AddChart(StdStrBuf("APM"));
@@ -950,5 +958,5 @@ void C4ChartDialog::Toggle()
 	if (pChartDlg) { pChartDlg->Close(false); return; }
 	// otherwise, open
 	C4ChartDialog *pDlg = new C4ChartDialog();
-	if (!Game.pGUI->ShowRemoveDlg(pDlg)) if (pChartDlg) delete pChartDlg;
+	if (!::pGUI->ShowRemoveDlg(pDlg)) if (pChartDlg) delete pChartDlg;
 	}

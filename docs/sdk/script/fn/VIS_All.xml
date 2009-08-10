@@ -14,8 +14,7 @@
 		<examples>
 			<example>
 
-<code>var obj;
-while (obj=FindObject(0,0,0,0,0,0,0,0,0,obj)) SetVisibility(VIS_All(), obj);</code>
+<code>for(var obj in FindObjects()) SetVisibility(VIS_All(), obj);</code>
 
 				<text>Macht alle Objekte sichtbar.</text>
 			</example>

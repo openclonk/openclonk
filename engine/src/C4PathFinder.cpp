@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2005  Matthes Bender
+ * Copyright (c) 2005  Sven Eberhardt
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -49,6 +52,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4FacetEx.h>
 #include <C4Game.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 const int32_t C4PF_MaxDepth				 = 35,
@@ -610,13 +614,13 @@ BOOL C4PathFinder::Execute()
 	if (iRays>=C4PF_MaxRay) return FALSE;
 
 	// Draw
-	if (Game.GraphicsSystem.ShowPathfinder)
+	if (::GraphicsSystem.ShowPathfinder)
 		{
 		static int32_t iDelay=0;
 		iDelay++; if (iDelay>C4PF_Draw_Rate)
 			{
 			iDelay=0;
-			Game.GraphicsSystem.Execute();
+			::GraphicsSystem.Execute();
 			}
 		}
 

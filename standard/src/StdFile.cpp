@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2004, 2007  Matthes Bender
+ * Copyright (c) 2002-2003, 2006-2008  Sven Eberhardt
+ * Copyright (c) 2002, 2004-2005, 2008  Peter Wortmann
+ * Copyright (c) 2004-2006, 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -39,8 +43,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <zlib.h>
+#include <string>
 
 /* Path & Filename */
+#ifdef _WIN32
+static const char *DirectorySeparators = "/\\";
+#else
+static const char *DirectorySeparators = "/";
+#endif
 
 // Return pointer to position after last backslash.
 
@@ -564,13 +574,55 @@ bool SetWorkingDirectory(const char *path)
 #endif
   }
 
-#ifndef _WIN32
-// CreateDirectory: true on success
-bool CreateDirectory(const char * pathname, void*) {
-	// mkdir: false on success
-	return !mkdir(pathname,S_IREAD | S_IWRITE | S_IEXEC);
-}
+bool CreatePath(const std::string &path)
+{
+	assert(!path.empty());
+#ifdef _WIN32
+	if (CreateDirectory(path.c_str(), NULL))
+	{
+		return true;
+	} else {
+		DWORD err = GetLastError();
+		switch(err)
+		{
+		case ERROR_PATH_NOT_FOUND:
+			break;
+		case ERROR_ALREADY_EXISTS:
+			return true;
+		default:
+			// Something major has happened: Log
+			{
+				LPSTR str;
+				if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+					NULL, err, 0, (LPSTR)&str, 0, NULL))
+				{
+					LogF("CreateDirectory failed: %s", str);
+					LocalFree(str);
+				}
+				return false;
+			}
+		}
+	}
+#else
+	if (!mkdir(path.c_str(), S_IREAD | S_IWRITE | S_IEXEC))
+		return true;
+	switch(errno)
+	{
+	case ENOENT:
+		break;
+	case EEXIST:
+		// FIXME: Check whether the path is blocked by a non-directory
+		return true;
+	default:
+		return false;
+	}
 #endif
+	// Recursively create parent path
+	std::string::size_type slash = path.find_last_of(DirectorySeparators);
+	if (slash == 0 || slash == std::string::npos)
+		return false;
+	return CreatePath(path.substr(0, slash)) && CreatePath(path);
+}
 
 bool DirectoryExists(const char *szFilename)
 	{

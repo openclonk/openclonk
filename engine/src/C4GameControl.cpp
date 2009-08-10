@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2008  Peter Wortmann
+ * Copyright (c) 2005-2008  Sven Eberhardt
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -104,8 +107,8 @@ void C4GameControl::ChangeToLocal()
 	if(eMode == CM_Network)
 		{
 		Network.Clear();
-		if(Game.Network.isEnabled())
-			Game.Network.Clear();
+		if(::Network.isEnabled())
+			::Network.Clear();
 		}
 	// replay: close playback
 	else if(eMode == CM_Replay)
@@ -149,7 +152,7 @@ bool C4GameControl::StartRecord(bool fInitial, bool fStreaming)
 	if(fStreaming)
 	{
 		if(!pRecord->StartStreaming(fInitial) ||
-			 !Game.Network.StartStreaming(pRecord))
+			 !::Network.StartStreaming(pRecord))
 		{
 			delete pRecord; pRecord = NULL;
 			return false;
@@ -166,7 +169,7 @@ void C4GameControl::StopRecord(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 {
 	if(pRecord)
 	{
-		Game.Network.FinishStreaming();
+		::Network.FinishStreaming();
     pRecord->Stop(pRecordName, pRecordSHA1);
 		// just delete
 		delete pRecord; pRecord = NULL;
@@ -180,7 +183,7 @@ void C4GameControl::RequestRuntimeRecord()
 	// request through a synchronize-call
 	// currnetly do not request, but start record with next gamesync, so network runtime join can be debugged
 #ifndef DEBUGREC
-	Game.Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
+	::Control.DoInput(CID_Synchronize, new C4ControlSynchronize(false, true), CDT_Queue);
 #endif
 	}
 
@@ -245,7 +248,7 @@ bool C4GameControl::Prepare()
 
     // deactivated and got control: request activate
     if(Input.firstPkt() && !Game.Clients.getLocal()->isActivated())
-      Game.Network.RequestActivate();
+      ::Network.RequestActivate();
 
 		// needs input?
 		while(Network.CtrlNeeded(Game.FrameCounter))
@@ -363,7 +366,7 @@ void C4GameControl::AdjustControlRate(int32_t iBy)
 {
 	// control host only
 	if(isCtrlHost())
-		Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_ControlRate, iBy), CDT_Decide);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_ControlRate, iBy), CDT_Decide);
 }
 
 void C4GameControl::SetActivated(bool fnActivated)
@@ -512,3 +515,5 @@ void C4GameControl::RemoveOldSyncChecks()
 			SyncChecks.Delete(pPkt);
 	}
 }
+
+C4GameControl Control;

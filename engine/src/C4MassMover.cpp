@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2005-2006  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,7 +28,7 @@
 #include <C4Random.h>
 #include <C4Material.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
 #endif
 
 // Note: creation optimized using advancing CreatePtr, so sequential
@@ -108,7 +112,7 @@ BOOL C4MassMover::Init(int32_t tx, int32_t ty)
   // Check mat
   Mat=GBackMat(tx,ty);
   x=tx; y=ty;
-	Game.MassMover.Count++;
+	::MassMover.Count++;
   return (Mat!=MNone);
   }
 
@@ -119,7 +123,7 @@ void C4MassMover::Cease()
 	rc.x=x; rc.y=y;
 	AddDbgRec(RCT_MMD, &rc, sizeof(rc));
 #endif
-	Game.MassMover.Count--;
+	::MassMover.Count--;
   Mat=MNone;
   }
 
@@ -131,15 +135,15 @@ BOOL C4MassMover::Execute()
   if (GBackMat(x,y)!=Mat) { Cease(); return FALSE; }
 
   // Check for transfer target space
-	C4Material *pMat = Game.Material.Map+Mat;
+	C4Material *pMat = ::MaterialMap.Map+Mat;
   tx=x; ty=y;
-  if (!Game.Landscape.FindMatPath(tx,ty,+1,pMat->Density,pMat->MaxSlide))
+  if (!::Landscape.FindMatPath(tx,ty,+1,pMat->Density,pMat->MaxSlide))
     {
 		// Contact material reaction check: corrosion/evaporation/inflammation/etc.
 		if (Corrosion(+0,+1) || Corrosion(-1,+0) || Corrosion(+1,+0))
 			{
 			// material has been used up
-			Game.Landscape.ExtractMaterial(x,y);
+			::Landscape.ExtractMaterial(x,y);
 			return TRUE;
 			}
 
@@ -151,7 +155,7 @@ BOOL C4MassMover::Execute()
 /*	if (Corrosion(0,0))
 		{
 		// material has been used up by conversion
-		Game.Landscape.ExtractMaterial(x,y);
+		::Landscape.ExtractMaterial(x,y);
 		return TRUE;
 		}*/
 
@@ -162,16 +166,16 @@ BOOL C4MassMover::Execute()
 
   // Transfer mass
 	if(Random(10))
-		SBackPix(tx,ty,Mat2PixColDefault(Game.Landscape.ExtractMaterial(x,y))+GBackIFT(tx,ty));
+		SBackPix(tx,ty,Mat2PixColDefault(::Landscape.ExtractMaterial(x,y))+GBackIFT(tx,ty));
 	else
-		Game.Landscape.InsertMaterial(Game.Landscape.ExtractMaterial(x,y), tx, ty, 0, 1);
+		::Landscape.InsertMaterial(::Landscape.ExtractMaterial(x,y), tx, ty, 0, 1);
 
 	// Reinsert material (thrusted aside)
-	if(Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat) && Game.Material.Map[omat].Density > 0)
-		Game.Landscape.InsertMaterial(omat, tx, ty + 1);
+	if(Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat) && ::MaterialMap.Map[omat].Density > 0)
+		::Landscape.InsertMaterial(omat, tx, ty + 1);
 
   // Create new mover at target
-  Game.MassMover.Create(tx,ty,!Rnd3());
+  ::MassMover.Create(tx,ty,!Rnd3());
 
   return TRUE;
   }
@@ -180,7 +184,7 @@ BOOL C4MassMover::Corrosion(int32_t dx, int32_t dy)
 	{
 	// check reaction map of massmover-mat to target mat
 	int32_t tmat=GBackMat(x+dx,y+dy);
-	C4MaterialReaction *pReact = Game.Material.GetReactionUnsafe(Mat, tmat);
+	C4MaterialReaction *pReact = ::MaterialMap.GetReactionUnsafe(Mat, tmat);
 	if (pReact)
 		{
 		FIXED xdir=Fix0, ydir=Fix0;
@@ -276,3 +280,5 @@ void C4MassMoverSet::Copy(C4MassMoverSet &rSet)
 	CreatePtr=rSet.CreatePtr;
   for (int32_t cnt=0; cnt<C4MassMoverChunk; cnt++) Set[cnt]=rSet.Set[cnt];
 	}
+
+C4MassMoverSet MassMover;

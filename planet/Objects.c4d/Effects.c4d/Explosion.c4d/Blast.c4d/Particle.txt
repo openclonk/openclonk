@@ -1,0 +1,12 @@
+[Particle]
+Name=Blast
+MaxCount=300
+InitFn=StdInit
+ExecFn=StdExec
+DrawFn=Std
+Face=0,0,40,40,-20,-20
+Delay=1
+AlphaFade=1
+Repeats=1
+Reverse=1
+Additive=1

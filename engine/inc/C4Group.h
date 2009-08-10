@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2004, 2007  Matthes Bender
+ * Copyright (c) 2002, 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2004, 2006, 2008  Peter Wortmann
+ * Copyright (c) 2004-2005, 2007  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -239,18 +243,6 @@ class C4Group: public CStdStream
 											 bool fStartAtFilename=false);
     bool Read(void *pBuffer, size_t iSize);
 		bool Advance(int iOffset);
-#ifdef C4FRONTEND
-		// Stuff for the FE
-		bool LoadIcon(const char *szEntryname, HICON *lphIcon);
-		bool ReadDDB(HBITMAP *lphBitmap, HDC hdc = NULL);
-		bool ReadDDBSection(HBITMAP *lphBitmap, HDC hdc,
-                        int iSecX, int iSecY, int iSecWdt, int iSecHgt,
-                        int iImgWdt=-1, int iImgHgt=-1,
-                        BOOL fTransCol = FALSE);
-		bool ReadPNGSection(HBITMAP *lphBitmap, HDC hdc,
-                        int iSecX, int iSecY, int iSecWdt, int iSecHgt,
-                        int iImgWdt=-1, int iImgHgt=-1);
-#endif
 		void SetMaker(const char *szMaker);
 		void SetPassword(const char *szPassword);
 		void SetStdOutput(BOOL fStatus);
@@ -311,15 +303,6 @@ class C4Group: public CStdStream
     C4GroupEntry *GetEntry(const char *szName);
     C4GroupEntry *SearchNextEntry(const char *szName);
     C4GroupEntry *GetNextFolderEntry();
-#ifdef C4FRONTEND
-    HBITMAP SubReadDDB(HDC hdc,
-                       int sx=-1, int sy=-1, int swdt=-1, int shgt=-1,
-                       int twdt=-1, int thgt=-1,
-                       BOOL transcol=FALSE);
-    HBITMAP SubReadPNG(HDC hdc,
-                       int sx=-1, int sy=-1, int swdt=-1, int shgt=-1,
-                       int twdt=-1, int thgt=-1);
-#endif
 		bool CalcCRC32(C4GroupEntry *pEntry);
    };
 

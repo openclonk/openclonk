@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001  Sven Eberhardt
+ * Copyright (c) 2001, 2004, 2006  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -39,9 +42,15 @@ protected:
 public:
 	int32_t GetSize() const { return iSize; }
 
-	void Sort(class C4SortObject &rSort);
-
-	const C4Value &GetItem(int32_t iElem) const { return Inside<int32_t>(iElem, 0, iSize-1) ? pData[iElem] : C4VNull; }
+	const C4Value &GetItem(int32_t iElem) const
+	{
+		if (-iSize <= iElem && iElem < 0)
+			return pData[iSize + iElem];
+		else if (0 <= iElem && iElem < iSize)
+			return pData[iElem];
+		else
+			return C4VNull;
+	}
 	C4Value &GetItem(int32_t iElem);
 
 	C4Value operator[](int32_t iElem) const { return GetItem(iElem); }
@@ -77,6 +86,7 @@ public:
 	void DecRef();
 	void DecElementRef();
 
+	void Sort(class C4SortObject &rSort);
 private:
 	// Only for IncRef/AddElementRef
 	C4ValueArray(const C4ValueArray &Array2);

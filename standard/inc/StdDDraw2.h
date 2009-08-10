@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2002-2005  Sven Eberhardt
+ * Copyright (c) 2004-2008  Günther Brammer
+ * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -128,19 +131,11 @@ class CPattern
 		uint32_t * CachedPattern; int Wdt; int Hgt;
 		// pattern zoom factor; 0 means no zoom
 		int Zoom;
-		// pattern is to be applied monochromatic
-		bool Monochrome;
-		// color array for old-style patterns
-		uint32_t *pClrs;
-		// alpha array for old-style patterns
-		uint32_t *pAlpha;
 	public:
 		CPattern& operator=(const CPattern&);
-		bool PatternClr(int iX, int iY, BYTE &byClr, DWORD &dwClr, CStdPalette &rPal) const;	// apply pattern to color
-		bool IsNewStyle() { if (sfcPattern32) return true; }
-		bool Set(class CSurface *sfcSource, int iZoom=0, bool fMonochrome=false);	// set and enable pattern
-		bool Set(class CSurface8 *sfcSource, int iZoom=0, bool fMonochrome=false);	// set and enable pattern
-		void SetColors(uint32_t *pClrs, uint32_t *pAlpha) { this->pClrs=pClrs; this->pAlpha=pAlpha; } // set color triplet for old-style textures
+		const CSurface *getSurface() const { return sfcPattern32; }
+		DWORD PatternClr(unsigned int iX, unsigned int iY) const;	// apply pattern to color
+		bool Set(class CSurface *sfcSource, int iZoom=0);	// set and enable pattern
 		void SetZoom(int iZoom) { Zoom = iZoom; }
 		void Clear();											// clear pattern
 		CPattern();					// ctor
@@ -285,8 +280,8 @@ class CStdDDraw
 		void PrimaryUnlocked() { PrimaryLocked=false; }
 		virtual bool PrepareRendering(SURFACE sfcToSurface) = 0; // check if/make rendering possible to given surface
 		// Blit
-		virtual void BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
-		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt);
+		virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
+		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 		void Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 		               SURFACE sfcTarget, int tx, int ty, int wdt, int hgt);
 		BOOL Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
@@ -349,16 +344,12 @@ class CStdDDraw
 		void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }
 		void ApplyZoom(float & X, float & Y);
 		void RemoveZoom(float & X, float & Y);
-		virtual bool StoreStateBlock() = 0;
 		virtual void SetTexture() = 0;
 		virtual void ResetTexture() = 0;
-		virtual bool RestoreStateBlock() = 0;
 
 		// device objects
-		virtual bool InitDeviceObjects() = 0;				// init device dependant objects
 		virtual bool RestoreDeviceObjects() = 0;		// restore device dependant objects
 		virtual bool InvalidateDeviceObjects() = 0;	// free device dependant objects
-		virtual bool DeleteDeviceObjects() = 0;			// free device dependant objects
 		virtual bool DeviceReady() = 0;							// return whether device exists
 
 		int GetByteCnt() { return byByteCnt; } // return bytes per pixel
@@ -370,13 +361,10 @@ class CStdDDraw
 		bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
 		virtual bool CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 		bool Error(const char *szMsg);
-		virtual BOOL CreateDirectDraw() = 0;
 		void DebugLog(const char *szMsg)
 			{
 #ifdef _DEBUG
-#ifdef C4ENGINE
 			Log(szMsg);
-#endif
 #endif
 			}
 

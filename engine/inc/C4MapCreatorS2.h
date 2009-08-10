@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2002, 2005  Sven Eberhardt
+ * Copyright (c) 2004, 2007  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -334,9 +336,7 @@ class C4MapCreatorS2 : public C4MCNode
 		C4MCMap *GetMap(const char *szMapName); // get map by name
 
 	public:
-#ifdef C4ENGINE
 		CSurface8 * Render(const char *szMapName); // create map surface
-#endif
 		BYTE *RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t &sfcHgt); // create buffer and render it
 
 		void SetC4SLandscape(C4SLandscape *pLandscape) // update source for map size

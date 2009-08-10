@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005-2009  Günther Brammer
+ * Copyright (c) 2006, 2008  Armin Burgmeier
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,11 +30,14 @@
 #include "../../engine/inc/C4Version.h"
 
 #ifdef USE_X11
+#define BOOL _BOOL
 #include "../../engine/res/c4x.xpm"
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/xf86vmode.h>
+#include <GL/glx.h>
+#undef BOOL
 #endif
 
 #include <string>
@@ -90,26 +96,34 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 		ButtonReleaseMask;
 	attr.colormap = XCreateColormap(dpy, DefaultRootWindow(dpy), ((XVisualInfo*)Info)->visual, AllocNone);
 	unsigned long attrmask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
-	Pixmap bitmap;
-	if (HideCursor)
-		{
+	Pixmap bitmap = 0;
+	if (HideCursor) {
 		// Hide the mouse cursor
 		XColor cursor_color;
 		// We do not care what color the invisible cursor has
 		memset(&cursor_color, 0, sizeof(cursor_color));
 		bitmap = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy), "\000", 1, 1);
-		attr.cursor = XCreatePixmapCursor(dpy, bitmap, bitmap, &cursor_color, &cursor_color, 0, 0);
-		attrmask |= CWCursor;
+		if (bitmap) {
+			attr.cursor = XCreatePixmapCursor(dpy, bitmap, bitmap, &cursor_color, &cursor_color, 0, 0);
+			if (attr.cursor)
+				attrmask |= CWCursor;
+			else
+				Log("Error creating cursor.");
+		} else {
+			Log("Error creating bitmap for cursor.");
+			attr.cursor = 0;
 		}
+	} else {
+		attr.cursor = 0;
+	}
 
 	wnd = XCreateWindow(dpy, DefaultRootWindow(dpy),
 		0, 0, 640, 480, 0, ((XVisualInfo*)Info)->depth, InputOutput, ((XVisualInfo*)Info)->visual,
 		attrmask, &attr);
-	if (HideCursor)
-		{
+	if (attr.cursor)
 		XFreeCursor(dpy, attr.cursor);
+	if (bitmap)
 		XFreePixmap(dpy, bitmap);
-		}
 	if (!wnd) {
 		Log("Error creating window.");
 		return 0;

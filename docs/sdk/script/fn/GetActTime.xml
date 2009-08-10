@@ -41,7 +41,6 @@
       <funclink>GetAction</funclink>
       <funclink>GetActionTarget</funclink>
       <funclink>GetPhase</funclink>
-      <funclink>ObjectSetAction</funclink>
       <funclink>SetAction</funclink>
       <funclink>SetPhase</funclink>
     </related>

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2006  Sven Eberhardt
+ * Copyright (c) 2005-2007  Günther Brammer
+ * Copyright (c) 2006  Julian Raschke
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,6 +26,25 @@
 #include <StdWindow.h>
 
 #ifdef USE_GL
+
+void CStdGLCtx::SelectCommon()
+	{
+	pGL->pCurrCtx = this;
+	// update size
+	UpdateSize();
+	// assign size
+	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
+	// set some default states
+	glDisable(GL_DEPTH_TEST);
+	glShadeModel(GL_FLAT);
+	glDisable(GL_ALPHA_TEST);
+	glDisable(GL_CULL_FACE);
+	glEnable(GL_BLEND);
+	//glEnable(GL_LINE_SMOOTH);
+	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
+	//glEnable(GL_POINT_SMOOTH);
+	}
+
 #ifdef _WIN32
 CStdGLCtx::CStdGLCtx(): hrc(0), pWindow(0), hDC(0), cx(0), cy(0) { }
 
@@ -106,20 +128,7 @@ bool CStdGLCtx::Select(bool verbose)
 	if (!pGL || !hrc) return false; if (!pGL->lpPrimary) return false;
 	// make context current
 	if (!wglMakeCurrent (hDC, hrc)) return false;
-	pGL->pCurrCtx = this;
-	// update size
-	UpdateSize();
-	// assign size
-	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
-	// set some default states
-	glDisable(GL_DEPTH_TEST);
-	glShadeModel(GL_FLAT);
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-	//glEnable(GL_POINT_SMOOTH);
+	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
 	if (!pGL->UpdateClipper()) return false;
@@ -190,7 +199,12 @@ bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 
 #elif defined(USE_X11)
 
+//  Xmd.h typedefs BOOL to CARD8, whereas microsoft windows and Clonk use int
+#define BOOL _BOOL
+#include <X11/Xmd.h>
+#include <GL/glx.h>
 #include <X11/extensions/xf86vmode.h>
+#undef BOOL
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), cx(0), cy(0) { }
 
@@ -199,7 +213,7 @@ void CStdGLCtx::Clear()
 	Deselect();
 	if (ctx)
 		{
-		glXDestroyContext(pWindow->dpy, ctx);
+		glXDestroyContext(pWindow->dpy, (GLXContext)ctx);
 		ctx = 0;
 		}
 	pWindow = 0;
@@ -215,10 +229,10 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	// try direct rendering first
 	if (!DDrawCfg.NoAcceleration)
-		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, pGL->MainCtx.ctx, True);
+		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, True);
 	// without, rendering will be unacceptable slow, but that's better than nothing at all
 	if (!ctx)
-		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, pGL->MainCtx.ctx, False);
+		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, False);
 	// No luck at all?
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
@@ -246,25 +260,12 @@ bool CStdGLCtx::Select(bool verbose)
 		return false;
 		}
 	// make context current
-	if (!pWindow->renderwnd || !glXMakeCurrent(pWindow->dpy, pWindow->renderwnd, ctx))
+	if (!pWindow->renderwnd || !glXMakeCurrent(pWindow->dpy, pWindow->renderwnd, (GLXContext)ctx))
 		{
 		if (verbose) pGL->Error("  gl: glXMakeCurrent failed");
 		return false;
 		}
-	pGL->pCurrCtx = this;
-	// update size FIXME: Don't call this every frame
-	UpdateSize();
-	// assign size
-	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
-	// set some default states
-	glDisable(GL_DEPTH_TEST);
-	glShadeModel(GL_FLAT);
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-	//glEnable(GL_POINT_SMOOTH);
+	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
 	if (!pGL->UpdateClipper())
@@ -378,27 +379,14 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 
 bool CStdGLCtx::Select(bool verbose)
 {
-	pGL->pCurrCtx = this;
-	// update size FIXME: Don't call this every frame
-	UpdateSize();
-	// assign size
-	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
-	// set some default states
-	glDisable(GL_DEPTH_TEST);
-	glShadeModel(GL_FLAT);
-	glDisable(GL_ALPHA_TEST);
-	glDisable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	//glEnable(GL_LINE_SMOOTH);
-	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
-	//glEnable(GL_POINT_SMOOTH);
+	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
 	if (!pGL->UpdateClipper())
-    {
+		{
 		if (verbose) pGL->Error("  gl: UpdateClipper failed");
 		return false;
-    }
+		}
 	// success
 	return true;
 }

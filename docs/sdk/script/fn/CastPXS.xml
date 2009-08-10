@@ -5,7 +5,7 @@
 	<func>
 		<title>CastPXS</title>
 		<category>Landschaft</category>
-		<version>4.6.5.0 CP</version>
+		<version>4.6.5.0 CP <extversion>4.10.0.0 OC</extversion></version>
 		<syntax>
 			<rtype>int</rtype>
 			<params>
@@ -14,6 +14,8 @@
 				<param><type>int</type><name>iLevel</name><desc>Stärke</desc></param>
 				<param><type>int</type><name>iX</name><desc>X-Koordinate</desc></param>
 				<param><type>int</type><name>iY</name><desc>Y-Koordinate</desc></param>
+				<param><type>int </type><name>iAngle</name><desc>Winkel in den die Materialpixel verschleudert werden.</desc><optional /></param>
+				<param><type>int </type><name>iAngleVariance</name><desc>Maximale Abweichung von diesem Winkel. Wenn nicht angegeben werden Materialpixel in alle Richtungen verschleudert.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Verschleudert namentlich angegebene Materialpixel an angegebener Position. Bei einem lokalen Aufruf gelten die Koordinaten als Offset zum aufrufenden Objekt.</desc>
@@ -28,4 +30,5 @@
 		</related>
 	</func>
 	<author>jwk</author><date>April 2002</date>
+	<author>Newton</author><date>Juli 2009</date>
 </funcs>

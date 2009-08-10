@@ -15,14 +15,13 @@
 		<desc>Liefert den Namen der momentanen Aktivität eines Objekts zurück, "Idle", wenn das Objekt keine Aktivität ausführt.</desc>
 		<examples>
 			<example>
-				<code><funclink>if</funclink>(GetAction(<funclink>FindObject</funclink>(CLNK)) <emlink href="script/operatoren.html">eq</emlink> "Swim") <funclink>Message</funclink>("Toll, irgendein Clonk schwimmt");</code>
+				<code><funclink>if</funclink>(GetAction(<funclink>FindObject</funclink>(Find_ID(CLNK))) <emlink href="script/operatoren.html">eq</emlink> "Swim") <funclink>Message</funclink>("Toll, irgendein Clonk schwimmt");</code>
 			</example>
 		</examples>
 		<related>
 			<funclink>GetActionTarget</funclink>
 			<funclink>GetActTime</funclink>
 			<funclink>GetPhase</funclink>
-			<funclink>ObjectSetAction</funclink>
 			<funclink>SetAction</funclink>
 			<funclink>SetActionTargets</funclink>
 			<funclink>SetPhase</funclink>

@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,13 +22,13 @@
 #ifndef INC_C4Prototypes
 #define INC_C4Prototypes
 
+class C4AulFunc;
 class C4Game;
 class C4Record;
 class C4Playback;
 class C4Scenario;
 class C4PlayerInfoCore;
 class C4ObjectInfoCore;
-class C4DefCore;
 class C4Def;
 class C4DefList;
 class C4IDList;
@@ -92,6 +94,7 @@ class C4FacetSurface;
 class C4Surface;
 class C4League;
 class C4RoundResults;
+class C4PropList;
 
 namespace C4GUI { class Screen; }
 typedef C4GUI::Screen C4GUIScreen;

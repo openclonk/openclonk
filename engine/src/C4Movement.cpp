@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2002, 2004-2006, 2008  Sven Eberhardt
+ * Copyright (c) 2002-2004  Peter Wortmann
+ * Copyright (c) 2006, 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +27,8 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Physics.h>
 #include <C4SolidMask.h>
-#include <C4Wrappers.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
 #endif
 
 /* Some physical constants */
@@ -127,6 +132,13 @@ void C4Object::DoMotion(int32_t mx, int32_t my)
   fix_x += mx; fix_y += my;
   }
 
+static inline int32_t ForceLimits(int32_t &rVal, int32_t iLow, int32_t iHi)
+	{
+	if (rVal<iLow) { rVal=iLow; return -1; }
+	if (rVal>iHi)  { rVal=iHi;  return +1; }
+	return 0;
+	}
+
 void C4Object::TargetBounds(int32_t &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi)
 	{
 	switch (ForceLimits(ctco,limit_low,limit_hi))
@@ -169,7 +181,7 @@ void C4Object::SideBounds(int32_t &ctcox)
 	{
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
-		if (Action.Act<=ActIdle || Def->ActMap[Action.Act].Procedure != DFA_ATTACH)
+		if (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			if (Category & C4D_StaticBack)
 				TargetBounds(ctcox,pLayer->GetX()+pLayer->Shape.GetX(),pLayer->GetX()+pLayer->Shape.GetX()+pLayer->Shape.Wdt,CNAT_Left,CNAT_Right);
 			else
@@ -183,7 +195,7 @@ void C4Object::VerticalBounds(int32_t &ctcoy)
 	{
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
-		if (Action.Act<=ActIdle || Def->ActMap[Action.Act].Procedure != DFA_ATTACH)
+		if (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			if (Category & C4D_StaticBack)
 				TargetBounds(ctcoy,pLayer->GetY()+pLayer->Shape.GetY(),pLayer->GetY()+pLayer->Shape.GetY()+pLayer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
 			else
@@ -203,22 +215,22 @@ void C4Object::DoMovement()
 	// Restrictions
 	if (Def->NoHorizontalMove) xdir=0;
 	// Dig free target area
-	if (Action.Act>ActIdle)
-		if (Def->ActMap[Action.Act].DigFree)
+	if (Action.pActionDef)
+		if (Action.pActionDef->GetPropertyInt(P_DigFree))
 			{
 			// Shape size square
-			if (Def->ActMap[Action.Act].DigFree==1)
+			if (Action.pActionDef->GetPropertyInt(P_DigFree)==1)
 				{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
-				Game.Landscape.DigFreeRect(ctcox+Shape.GetX(),ctcoy+Shape.GetY(),Shape.Wdt,Shape.Hgt,Action.Data,this);
+				::Landscape.DigFreeRect(ctcox+Shape.GetX(),ctcoy+Shape.GetY(),Shape.Wdt,Shape.Hgt,Action.Data,this);
 				}
 			// Free size round (variable size)
 			else
 				{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
-				int32_t rad = Def->ActMap[Action.Act].DigFree;
+				int32_t rad = Action.pActionDef->GetPropertyInt(P_DigFree);
 				if (Con<FullCon) rad = rad*6*Con/5/FullCon;
-				Game.Landscape.DigFree(ctcox,ctcoy-1,rad,Action.Data,this);
+				::Landscape.DigFree(ctcox,ctcoy-1,rad,Action.Data,this);
 				}
 			}
 
@@ -524,7 +536,7 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
     // Check for stabilization
     Stabilize();
     // Check for mobilization
-    if (!Tick10)
+    if (!::Game.iTick10)
       {
       // Gravity mobilization
       xdir=ydir=rdir=0;
@@ -540,16 +552,18 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
   if ((!Inside<int32_t>(GetX(),0,GBackWdt) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
 		//  and the attached objects follow one frame later
-		if (Action.Act<0 || !Action.Target || Def->ActMap[Action.Act].Procedure != DFA_ATTACH)
+		if (!Action.pActionDef || !Action.Target || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			{
 			bool fRemove = true;
 			// never remove HUD objects
 			if (Category & C4D_Parallax)
 				{
+				int parX, parY;
+				GetParallaxity(&parX, &parY);
 				fRemove = false;
 				if (GetX()>GBackWdt || GetY()>GBackHgt) fRemove = true; // except if they are really out of the viewport to the right...
-				else if (GetX()<0 && Local[0].Data) fRemove = true; // ...or it's not HUD horizontally and it's out to the left
-				else if (!Local[0].Data && GetX()<-GBackWdt) fRemove = true; // ...or it's HUD horizontally and it's out to the left
+				else if (GetX()<0 && !!parX) fRemove = true; // ...or it's not HUD horizontally and it's out to the left
+				else if (!parX && GetX()<-GBackWdt) fRemove = true; // ...or it's HUD horizontally and it's out to the left
 				}
 			if (fRemove)
 				{

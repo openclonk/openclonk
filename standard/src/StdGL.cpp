@@ -1,7 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2002, 2005-2006  Sven Eberhardt
+ * Copyright (c) 2005-2009  Günther Brammer <gbrammer@gmx.de>
+ * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
+ * Copyright (c) 2009 Carl-Philip Hänsch <c-p.haensch@vr-web.de>
  *
  * Portions might be copyrighted by other authors who have contributed
  * to OpenClonk.
@@ -65,7 +70,15 @@ void CStdGL::Clear()
 	#endif
 	NoPrimaryClipper();
 	if (pTexMgr) pTexMgr->IntUnlock();
-	DeleteDeviceObjects();
+	InvalidateDeviceObjects();
+	NoPrimaryClipper();
+	// del main surfaces
+	if (lpPrimary) delete lpPrimary;
+	lpPrimary = lpBack = NULL;
+	RenderTarget = NULL;
+	if (lines_tex) { glDeleteTextures(1, &lines_tex); lines_tex = 0; }
+	// clear context
+	if (pCurrCtx) pCurrCtx->Deselect();
 	MainCtx.Clear();
 	pCurrCtx=NULL;
 	#ifndef USE_SDL_MAINLOOP
@@ -144,6 +157,46 @@ bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
 	return true;
 	}
 
+void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
+	{
+	if (shaders[0])
+		{
+		GLuint s = landscape ? 2 : (fMod2 ? 1 : 0);
+		if (Saturation < 255)
+			{
+			s += 3;
+			}
+		if (fUseClrModMap)
+			{
+			s += 6;
+			}
+		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
+		if (Saturation < 255)
+			{
+			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
+			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
+			}
+		}
+	// texture environment
+	else
+		{
+		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, fMod2 ? GL_ADD_SIGNED : GL_MODULATE);
+		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, fMod2 ? 2.0f : 1.0f);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_ADD);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+		}
+	// set modes
+	glShadeModel((fUseClrModMap && !shaders[0] && !DDrawCfg.NoBoxFades) ? GL_SMOOTH : GL_FLAT);
+	}
+
 void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 	{
 	// clipping
@@ -174,49 +227,8 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 			DwTo4UB(dwModClr, rBltData.vtVtx[i].color);
 		}
 	// reset MOD2 for completely black modulations
-	if (fMod2 && !fAnyModNotBlack) fMod2 = 0;
-	if (shaders[0])
-		{
-		glEnable(GL_FRAGMENT_PROGRAM_ARB);
-		GLuint s = fMod2 ? 1 : 0;
-		if (Saturation < 255)
-			{
-			s += 3;
-			}
-		if (fUseClrModMap)
-			{
-			s += 6;
-			glActiveTexture(GL_TEXTURE3);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glActiveTexture(GL_TEXTURE0);
-			}
-		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
-		if (Saturation < 255)
-			{
-			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
-			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
-			}
-		}
-	else
-		{
-		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, fMod2 ? GL_ADD_SIGNED : GL_MODULATE);
-		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, fMod2 ? 2.0f : 1.0f);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_ADD);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
-		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-		}
-	// set texture+modes
-	glShadeModel((fUseClrModMap && !DDrawCfg.NoBoxFades) ? GL_SMOOTH : GL_FLAT);
+	fMod2 = fMod2 && fAnyModNotBlack;
+	SetupTextureEnv(fMod2, false);
 	glBindTexture(GL_TEXTURE_2D, pTex->texName);
 	if (!fExact && !DDrawCfg.PointFiltering)
 		{
@@ -229,7 +241,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	matrix[0]=rBltData.TexPos.mat[0];  matrix[1]=rBltData.TexPos.mat[3];  matrix[2]=0;  matrix[3]=rBltData.TexPos.mat[6];
 	matrix[4]=rBltData.TexPos.mat[1];  matrix[5]=rBltData.TexPos.mat[4];  matrix[6]=0;  matrix[7]=rBltData.TexPos.mat[7];
 	matrix[8]=0;                       matrix[9]=0;                       matrix[10]=1; matrix[11]=0;
-	matrix[12]=rBltData.TexPos.mat[2]; matrix[13]=rBltData.TexPos.mat[5]; matrix[14]=0;	matrix[15]=rBltData.TexPos.mat[8];
+	matrix[12]=rBltData.TexPos.mat[2]; matrix[13]=rBltData.TexPos.mat[5]; matrix[14]=0; matrix[15]=rBltData.TexPos.mat[8];
 	glLoadMatrixf(matrix);
 
 	if (shaders[0] && fUseClrModMap)
@@ -288,13 +300,6 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	glDrawArrays(GL_POLYGON, 0, rBltData.byNumVertices);
 	glLoadIdentity();
-	if (shaders[0])
-		{
-		glDisable(GL_FRAGMENT_PROGRAM_ARB);
-		glActiveTexture(GL_TEXTURE3);
-		glDisable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE0);
-		}
 	if (!fExact && !DDrawCfg.PointFiltering)
 		{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -302,10 +307,10 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	}
 
-void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiquidAnimation, float fx, float fy,
-								SURFACE sfcTarget, float tx, float ty, float wdt, float hgt)
+void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
+                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
 	{
-	Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
+	//Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
 	// safety
 	if (!sfcSource || !sfcTarget || !wdt || !hgt) return;
 	assert(sfcTarget->IsRenderTarget());
@@ -373,83 +378,14 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 	int iTexY2=Min((int)(fy+hgt-1)/iTexSize +1, sfcSource->iTexY);
 	// blit from all these textures
 	SetTexture();
-	if (sfcSource2)
+	if (mattextures)
 		{
 		glActiveTexture(GL_TEXTURE1);
 		glEnable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE2);
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, (*sfcLiquidAnimation->ppTex)->texName);
 		glActiveTexture(GL_TEXTURE0);
 		}
 	DWORD dwModMask = 0;
-	if (shaders[0])
-		{
-		glEnable(GL_FRAGMENT_PROGRAM_ARB);
-		GLuint s = sfcSource2 ? 2 : 0;
-		if (Saturation < 255)
-			{
-			s += 3;
-			}
-		if (fUseClrModMap)
-			{
-			s += 6;
-			glActiveTexture(GL_TEXTURE3);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glActiveTexture(GL_TEXTURE0);
-			}
-		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
-		if (Saturation < 255)
-			{
-			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
-			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
-			}
-		if (sfcSource2)
-			{
-			static GLfloat bla[4] = { -0.6f/3, 0.0f, 0.6f/3, 0.0f };
-			bla[0] += 0.05f; bla[1] += 0.05f; bla[2] += 0.05f;
-			GLfloat mod[4];
-			for (int i = 0; i < 3; ++i)
-				{
-				if (bla[i] > 0.9f) bla[i] = -0.3f;
-				mod[i] = (bla[i] > 0.3f ? 0.6f - bla[i] : bla[i]) / 3.0f;
-				}
-			mod[3] = 0;
-			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, mod);
-			}
-		dwModMask = 0;
-		}
-	// texture environment
-	else
-		{
-		if (DDrawCfg.NoAlphaAdd)
-			{
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 1.0f);
-			dwModMask = 0xff000000;
-			}
-		else
-			{
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, GL_MODULATE);
-			glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, 1.0f);
-			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_ADD);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
-			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_ALPHA, GL_PRIMARY_COLOR);
-			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-			dwModMask = 0;
-			}
-		}
-	// set texture+modes
-	glShadeModel((fUseClrModMap && !DDrawCfg.NoBoxFades) ? GL_SMOOTH : GL_FLAT);
+	SetupTextureEnv(false, mattextures);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glMatrixMode(GL_TEXTURE);
@@ -461,25 +397,18 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 			// blit
 			DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffff;
 
-			if (sfcSource2)
-				glActiveTexture(GL_TEXTURE0);
+			glActiveTexture(GL_TEXTURE0);
 			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
 			glBindTexture(GL_TEXTURE_2D, pTex->texName);
-			if (Zoom != 1.0 && !DDrawCfg.PointFiltering)
+			if (!mattextures && Zoom != 1.0)
 				{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				}
-			if (sfcSource2)
+			else
 				{
-				CTexRef *pTex = *(sfcSource2->ppTex + iY * sfcSource2->iTexX + iX);
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, pTex->texName);
-				if (Zoom != 1.0 && !DDrawCfg.PointFiltering)
-					{
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-					}
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				}
 
 			// get current blitting offset in texture (beforing any last-tex-size-changes)
@@ -517,10 +446,22 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 
 			// color modulation
 			// global modulation map
-			int i;
-			if (fUseClrModMap && dwModClr)
+			if (shaders[0] && fUseClrModMap)
 				{
-				for (i=0; i<4; ++i)
+				glActiveTexture(GL_TEXTURE3);
+				glLoadIdentity();
+				CSurface * pSurface = pClrModMap->GetSurface();
+				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSize), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSize), 1.0f);
+				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+
+				glClientActiveTexture(GL_TEXTURE3);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &Vtx[0].ftx);
+				glClientActiveTexture(GL_TEXTURE0);
+				}
+			if (!shaders[0] && fUseClrModMap && dwModClr)
+				{
+				for (int i=0; i<4; ++i)
 					{
 					DWORD c = pClrModMap->GetModAt(int(Vtx[i].ftx), int(Vtx[i].fty));
 					ModulateClr(c, dwModClr);
@@ -529,10 +470,10 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 				}
 			else
 				{
-				for (i=0; i<4; ++i)
+				for (int i=0; i<4; ++i)
 					DwTo4UB(dwModClr | dwModMask, Vtx[i].color);
 				}
-			for (i=0; i<4; ++i)
+			for (int i=0; i<4; ++i)
 				{
 				Vtx[i].tx /= iTexSize;
 				Vtx[i].ty /= iTexSize;
@@ -540,20 +481,40 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 				Vtx[i].fty += DDrawCfg.fBlitOff;
 				Vtx[i].ftz = 0;
 				}
+			if(mattextures)
+				{
+				GLfloat shaderparam[4];
+				for (int cnt=1;cnt<127;cnt++)
+					{
+					if(mattextures[cnt])
+						{
+						shaderparam[0]=static_cast<GLfloat>(cnt)/255.0f;
+						glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, shaderparam);
+						//Bind Mat Texture
+						glActiveTexture(GL_TEXTURE1);
+						glBindTexture(GL_TEXTURE_2D, (*(mattextures[cnt]->ppTex))->texName);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+						glActiveTexture(GL_TEXTURE0);
 
-			glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
-			glDrawArrays(GL_POLYGON, 0, 4);
+						glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+						glDrawArrays(GL_QUADS, 0, 4);
+						}
+					}
+				}
+			else
+				{
+				glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
+				glDrawArrays(GL_QUADS, 0, 4);
+				}
+
 			}
 		}
-	if (shaders[0])
-		{
-		glDisable(GL_FRAGMENT_PROGRAM_ARB);
-		}
-	if (sfcSource2)
+	if (mattextures)
 		{
 		glActiveTexture(GL_TEXTURE1);
-		glDisable(GL_TEXTURE_2D);
-		glActiveTexture(GL_TEXTURE2);
 		glDisable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
 		}
@@ -561,14 +522,9 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, SURFACE sfcSource2, SURFACE sfcLiq
 	ResetTexture();
 	}
 
-BOOL CStdGL::CreateDirectDraw()
-	{
-	Log("  Using OpenGL...");
-	return TRUE;
-	}
-
 CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 	{
+	DebugLog("  gl: Create Context...");
 	// safety
 	if (!pWindow) return NULL;
 	// create it
@@ -577,8 +533,6 @@ CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 		{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 		}
-	// reselect current context
-	//if (pCurrCtx) pCurrCtx->Select(); else pCurrCtx=pCtx;
 	// done
 	return pCtx;
 	}
@@ -594,8 +548,6 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
 		{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 		}
-	// reselect current context
-	//if (pCurrCtx) pCurrCtx->Select(); else pCurrCtx=pCtx;
 	// done
 	return pCtx;
 	}
@@ -606,6 +558,7 @@ bool CStdGL::CreatePrimarySurfaces(BOOL Playermode, unsigned int iXRes, unsigned
 	//remember fullscreen setting
 	fFullscreen = Playermode && !DDrawCfg.Windowed;
 
+	DebugLog("  gl: SetVideoMode...");
 	// Set window size only in playermode
 	if (Playermode)
 		{
@@ -631,10 +584,30 @@ bool CStdGL::CreatePrimarySurfaces(BOOL Playermode, unsigned int iXRes, unsigned
 	lpPrimary->byBytesPP=byByteCnt;
 
 	// create+select gl context
+	DebugLog("  gl: Create Main Context...");
 	if (!MainCtx.Init(pApp->pWindow, pApp)) return Error("  gl: Error initializing context");
 
-	// done, init device stuff
-	return InitDeviceObjects();
+	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
+	if (!GLEW_VERSION_1_3)
+		{
+		return Error("  gl: OpenGL Version 1.3 or higher required.");
+		}
+	MaxTexSize = 64;
+	GLint s = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
+	if (s>0) MaxTexSize = s;
+
+	// lines texture
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &lines_tex);
+	glBindTexture(GL_TEXTURE_2D, lines_tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	const char * linedata = byByteCnt == 2 ? "\xff\xff\xff\xf0" : "\xff\xff\xff\xff\xff\xff\xff\x00";
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
+	return RestoreDeviceObjects();
 	}
 
 void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
@@ -675,8 +648,21 @@ void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwC
 	glColorPointer(4,GL_UNSIGNED_BYTE,0,colors);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glDrawArrays(GL_POLYGON, 0, 4);
+	glDisableClientState(GL_COLOR_ARRAY);
 	glShadeModel(GL_FLAT);
 	}
+
+#ifdef _MSC_VER
+static inline long int lrintf(float f)
+{
+	long int i;
+	__asm {
+		fld f
+		fistp i
+	};
+	return i;
+}
+#endif
 
 void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 	{
@@ -685,28 +671,64 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 		{
 		// prepare rendering to target
 		if (!PrepareRendering(sfcTarget)) return;
-		// set blitting state
-		int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
-		// use a different blendfunc here, because GL_LINE_SMOOTH expects this one
-		glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
-		// draw one line
-		glBegin(GL_LINES);
+		SetTexture();
+		SetupTextureEnv(false, false);
+		float offx = y1 - y2;
+		float offy = x2 - x1;
+		float l = sqrtf(offx * offx + offy * offy);
+		// avoid division by zero
+		l += 0.000000005f;
+		offx /= l; offx *= Zoom;
+		offy /= l; offy *= Zoom;
+		CBltVertex vtx[4];
+		vtx[0].ftx = x1 + offx; vtx[0].fty = y1 + offy; vtx[0].ftz = 0;
+		vtx[1].ftx = x1 - offx; vtx[1].fty = y1 - offy; vtx[1].ftz = 0;
+		vtx[2].ftx = x2 - offx; vtx[2].fty = y2 - offy; vtx[2].ftz = 0;
+		vtx[3].ftx = x2 + offx; vtx[3].fty = y2 + offy; vtx[3].ftz = 0;
 		// global clr modulation map
 		DWORD dwClr1 = dwClr;
+		glMatrixMode(GL_TEXTURE);
+		glLoadIdentity();
 		if (fUseClrModMap)
 			{
-			ModulateClr(dwClr1, pClrModMap->GetModAt((int)x1, (int)y1));
+			if (shaders[0])
+				{
+				glActiveTexture(GL_TEXTURE3);
+				glLoadIdentity();
+				CSurface * pSurface = pClrModMap->GetSurface();
+				glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSize), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSize), 1.0f);
+				glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
+
+				glClientActiveTexture(GL_TEXTURE3);
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &vtx[0].ftx);
+				glClientActiveTexture(GL_TEXTURE0);
+				}
+			else
+				{
+				ModulateClr(dwClr1, pClrModMap->GetModAt(lrintf(x1), lrintf(y1)));
+				ModulateClr(dwClr, pClrModMap->GetModAt(lrintf(x2), lrintf(y2)));
+				}
 			}
-		// convert from clonk-alpha to GL_LINE_SMOOTH alpha
-		glColorDw(InvertRGBAAlpha(dwClr1));
-		glVertex2f(x1 + 0.5f, y1 + 0.5f);
-		if (fUseClrModMap)
-			{
-			ModulateClr(dwClr, pClrModMap->GetModAt((int)x2, (int)y2));
-			glColorDw(InvertRGBAAlpha(dwClr));
-			}
-		glVertex2f(x2 + 0.5f, y2 + 0.5f);
-		glEnd();
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		DwTo4UB(dwClr1,vtx[0].color);
+		DwTo4UB(dwClr1,vtx[1].color);
+		DwTo4UB(dwClr,vtx[2].color);
+		DwTo4UB(dwClr,vtx[3].color);
+		vtx[0].tx = 0; vtx[0].ty = 0;
+		vtx[1].tx = 0; vtx[1].ty = 2;
+		vtx[2].tx = 1; vtx[2].ty = 2;
+		vtx[3].tx = 1; vtx[3].ty = 0;
+		// draw two triangles
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, lines_tex);
+		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), vtx);
+		glDrawArrays(GL_POLYGON, 0, 4);
+		glClientActiveTexture(GL_TEXTURE3);
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		glClientActiveTexture(GL_TEXTURE0);
+		ResetTexture();
 		}
 	else
 		{
@@ -739,21 +761,6 @@ void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
 		}
   }
 
-bool CStdGL::InitDeviceObjects()
-	{
-	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
-	if (!GLEW_VERSION_1_3)
-		{
-		Log("  gl: OpenGL Version 1.3 or higher required.");
-		return false;
-		}
-	MaxTexSize = 64;
-	GLint s = 0;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
-	if (s>0) MaxTexSize = s;
-	return RestoreDeviceObjects();
-	}
-
 static void DefineShaderARB(const char * p, GLuint & s)
 	{
 	glBindProgramARB (GL_FRAGMENT_PROGRAM_ARB, s);
@@ -772,22 +779,20 @@ bool CStdGL::RestoreDeviceObjects()
 	if (!lpPrimary) return false;
 	// delete any previous objects
 	InvalidateDeviceObjects();
-	bool fSuccess=true;
 	// restore primary/back
 	RenderTarget=lpPrimary;
 	//lpPrimary->AttachSfc(NULL);
 	lpPrimary->byBytesPP=byByteCnt;
 
 	// set states
-	fSuccess = pCurrCtx ? (pCurrCtx->Select()) : MainCtx.Select();
-	// activate if successful
-	Active=fSuccess;
+	Active = pCurrCtx ? (pCurrCtx->Select()) : MainCtx.Select();
 	// restore gamma if active
 	if (Active)
 		EnableGamma();
 	// reset blit states
 	dwBlitMode = 0;
 
+	// Vertex Buffer Objects crash some versions of the free radeon driver. TODO: provide an option for them
 	if (0 && GLEW_ARB_vertex_buffer_object)
 		{
 		glGenBuffersARB(1, &vbo);
@@ -818,17 +823,21 @@ bool CStdGL::RestoreDeviceObjects()
 		"TEMP grey;\n"
 		"DP3 grey, tmp, { 0.299, 0.587, 0.114, 1.0 };\n"
 		"LRP tmp.rgb, program.local[0], tmp, grey;\n";
-		const char * liquid =
-		"TEMP mask;\n"
-		"TEMP liquid;\n"
-		"TXP mask, fragment.texcoord, texture[1], 2D;\n"
-		"TXP liquid, fragment.texcoord, texture[2], 2D;\n"
-		// animation
-		"SUB liquid.rgb, liquid, {0.5, 0.5, 0.5, 0};\n"
-		"DP3 liquid.rgb, liquid, program.local[1];\n"
-		//"MAD_SAT tmp.rgb, mask.aaa, liquid, tmp;\n"
-		"MUL liquid.rgb, mask.aaaa, liquid;\n"
-		"ADD_SAT tmp.rgb, liquid, tmp;\n";
+		const char * landscape =
+		"TEMP col;\n"
+		"MOV col.x, program.local[1].x;\n" //Load color to indentify
+		"ADD col.y, col.x, 0.001;\n"
+		"SUB col.z, col.x, 0.001;\n"  //epsilon-range
+		"SGE tmp.r, tmp.b, 0.5015;\n" //Tunnel?
+		"MAD tmp.r, tmp.r, -0.5019, tmp.b;\n"
+		"SGE col.z, tmp.r, col.z;\n" //mat identified?
+		"SLT col.y, tmp.r, col.y;\n"
+		"TEMP coo;\n"
+		"MOV coo, fragment.texcoord;\n"
+		"MUL coo.xy, coo, 3.0;\n"
+		"TXP tmp, coo, texture[1], 2D;\n"
+		"MUL tmp.a, col.y, col.z;\n"
+		"SUB tmp.a, 1.0, tmp.a;\n";
 		const char * fow =
 		"TEMP fow;\n"
 		// sample the texture
@@ -837,18 +846,18 @@ bool CStdGL::RestoreDeviceObjects()
 		const char * end =
 		"MOV result.color, tmp;\n"
 		"END\n";
-		DefineShaderARB(FormatString("%s%s%s",       preface,         alpha_add,            end).getData(), shaders[0]);
-		DefineShaderARB(FormatString("%s%s%s",       preface,         funny_add,            end).getData(), shaders[1]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface, liquid, alpha_add,            end).getData(), shaders[2]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,         alpha_add, grey,      end).getData(), shaders[3]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,         funny_add, grey,      end).getData(), shaders[4]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, liquid, alpha_add, grey,      end).getData(), shaders[5]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,         alpha_add,       fow, end).getData(), shaders[6]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,         funny_add,       fow, end).getData(), shaders[7]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, liquid, alpha_add,       fow, end).getData(), shaders[8]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,         alpha_add, grey, fow, end).getData(), shaders[9]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,         funny_add, grey, fow, end).getData(), shaders[10]);
-		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, liquid, alpha_add, grey, fow, end).getData(), shaders[11]);
+		DefineShaderARB(FormatString("%s%s%s",       preface,            alpha_add,            end).getData(), shaders[0]);
+		DefineShaderARB(FormatString("%s%s%s",       preface,            funny_add,            end).getData(), shaders[1]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface, landscape, alpha_add,            end).getData(), shaders[2]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_add, grey,      end).getData(), shaders[3]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            funny_add, grey,      end).getData(), shaders[4]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_add, grey,      end).getData(), shaders[5]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_add,       fow, end).getData(), shaders[6]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            funny_add,       fow, end).getData(), shaders[7]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_add,       fow, end).getData(), shaders[8]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            alpha_add, grey, fow, end).getData(), shaders[9]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            funny_add, grey, fow, end).getData(), shaders[10]);
+		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, landscape, alpha_add, grey, fow, end).getData(), shaders[11]);
 		}
 	// done
 	return Active;
@@ -879,26 +888,33 @@ bool CStdGL::InvalidateDeviceObjects()
 	return fSuccess;
 }
 
-bool CStdGL::StoreStateBlock()
-	{
-	return true;
-	}
-
 void CStdGL::SetTexture()
 	{
 	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, (dwBlitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_SRC_ALPHA);
+	if (shaders[0] && fUseClrModMap)
+		{
+		glEnable(GL_FRAGMENT_PROGRAM_ARB);
+		glActiveTexture(GL_TEXTURE3);
+		glEnable(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		}
+	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
 	}
 
 void CStdGL::ResetTexture()
 	{
 	// disable texturing
+	if (shaders[0])
+		{
+		glDisable(GL_FRAGMENT_PROGRAM_ARB);
+		glActiveTexture(GL_TEXTURE3);
+		glDisable(GL_TEXTURE_2D);
+		glActiveTexture(GL_TEXTURE0);
+		}
 	glDisable(GL_TEXTURE_2D);
-	}
-
-bool CStdGL::RestoreStateBlock()
-	{
-	return true;
 	}
 
 bool CStdGL::CheckGLError(const char *szAtOp)
@@ -921,27 +937,12 @@ bool CStdGL::CheckGLError(const char *szAtOp)
 
 CStdGL *pGL=NULL;
 
-bool CStdGL::DeleteDeviceObjects()
-	{
-	InvalidateDeviceObjects();
-	NoPrimaryClipper();
-	// del font objects
-	// del main surfaces
-	if (lpPrimary) delete lpPrimary;
-	lpPrimary=lpBack=NULL;
-	RenderTarget=NULL;
-	// clear context
-	if (pCurrCtx) pCurrCtx->Deselect();
-	MainCtx.Clear();
-	return true;
-	}
-
 void CStdGL::TaskOut()
 	{
 	// deactivate
 	// backup textures
 	if (pTexMgr && fFullscreen) pTexMgr->IntLock();
-	// shotdown gl
+	// shutdown gl
 	InvalidateDeviceObjects();
 	if (pCurrCtx) pCurrCtx->Deselect();
 	}

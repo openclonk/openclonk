@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2006  Sven Eberhardt
+ * Copyright (c) 2004-2008  Peter Wortmann
+ * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -16,10 +19,13 @@
  */
 #include "C4Include.h"
 
-#include "C4Game.h"
+
 #include "C4Network2Res.h"
 #include "C4Version.h"
 #include "C4GameLobby.h"
+#include <C4Network2.h>
+#include <C4RoundResults.h>
+#include <C4GameControlNetwork.h>
 
 // *** constants
 

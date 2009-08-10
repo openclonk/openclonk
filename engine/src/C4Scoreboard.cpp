@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005, 2007-2008  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2006-2007  Günther Brammer
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -19,8 +22,9 @@
 #include "C4Include.h"
 #include "C4Scoreboard.h"
 #include "C4Gui.h"
-#include "C4Game.h"
+
 #include "C4GameOverDlg.h"
+#include <C4GraphicsResource.h>
 
 // ************************************************
 // *** C4Scoreboard
@@ -256,7 +260,7 @@ void C4Scoreboard::InvalidateRows()
 void C4Scoreboard::DoDlgShow(int32_t iChange, bool fUserToggle)
 	{
 	// safety: Only if GUI loaded, and GUI already in exclusive mode
-	if (!C4GUI::IsGUIValid() || Game.pGUI->IsExclusive()) return;
+	if (!C4GUI::IsGUIValid() || ::pGUI->IsExclusive()) return;
 	// update dlg show
 	iDlgShow += iChange;
 	if (!fUserToggle)
@@ -270,7 +274,7 @@ void C4Scoreboard::DoDlgShow(int32_t iChange, bool fUserToggle)
 		if (!pDlg)
 			{
 			if (!C4GameOverDlg::IsShown()) // never show during game over dlg
-				Game.pGUI->ShowRemoveDlg(pDlg = new C4ScoreboardDlg(this));
+				::pGUI->ShowRemoveDlg(pDlg = new C4ScoreboardDlg(this));
 			}
 		else
 			pDlg->Close(false);
@@ -280,7 +284,7 @@ void C4Scoreboard::DoDlgShow(int32_t iChange, bool fUserToggle)
 void C4Scoreboard::HideDlg()
 	{
 	// safety: Only if GUI loaded, and GUI already in exclusive mode
-	if (!C4GUI::IsGUIValid() || Game.pGUI->IsExclusive()) return;
+	if (!C4GUI::IsGUIValid() || ::pGUI->IsExclusive()) return;
 	// hide scoreboard if it was active
 	if (pDlg) pDlg->Close(false);
 	}
@@ -341,13 +345,13 @@ void C4ScoreboardDlg::Update()
 		for (int32_t iRow = 0; iRow < iRowCount; ++iRow)
 			{
 			C4Scoreboard::Entry *pCell = pBrd->GetCell(iCol, iRow);
-			if ((iRow || iCol) && !pCell->Text.isNull()) piColWidths[iCol] = Max<int32_t>(piColWidths[iCol], Game.GraphicsResource.FontRegular.GetTextWidth(pCell->Text.getData()) + XIndent);
+			if ((iRow || iCol) && !pCell->Text.isNull()) piColWidths[iCol] = Max<int32_t>(piColWidths[iCol], ::GraphicsResource.FontRegular.GetTextWidth(pCell->Text.getData()) + XIndent);
 			}
 		iWdt += piColWidths[iCol];
 		}
-	iHgt += iRowCount * (Game.GraphicsResource.FontRegular.GetLineHeight() + YIndent);
+	iHgt += iRowCount * (::GraphicsResource.FontRegular.GetLineHeight() + YIndent);
 	const char *szTitle = pBrd->GetCell(0,0)->Text.getData();
-	if (szTitle) iWdt = Max<int32_t>(iWdt, Game.GraphicsResource.FontRegular.GetTextWidth(szTitle) + 40);
+	if (szTitle) iWdt = Max<int32_t>(iWdt, ::GraphicsResource.FontRegular.GetTextWidth(szTitle) + 40);
 	if (!pTitle != !szTitle) SetTitle(szTitle); // needed for title margin...
 	iWdt += GetMarginLeft() + GetMarginRight();
 	iHgt += GetMarginTop() + GetMarginBottom();
@@ -388,9 +392,9 @@ void C4ScoreboardDlg::DrawElement(C4TargetFacet &cgo)
 			{
 			const char *szText = pBrd->GetCell(iCol, iRow)->Text.getData();
 			if (szText && *szText && (iRow || iCol))
-				lpDDraw->TextOut(szText, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface, iCol ? iX + piColWidths[iCol]/2 : iX, iY, 0xffffffff, iCol ? ACenter : ALeft);
+				lpDDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, iCol ? iX + piColWidths[iCol]/2 : iX, iY, 0xffffffff, iCol ? ACenter : ALeft);
 			iX += piColWidths[iCol];
 			}
-		iY += Game.GraphicsResource.FontRegular.GetLineHeight() + YIndent;
+		iY += ::GraphicsResource.FontRegular.GetLineHeight() + YIndent;
 		}
 	}

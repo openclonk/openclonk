@@ -1,6 +1,7 @@
 #include <CStdFile.h>
 #include <stdio.h>
 
+ * Copyright (c) 2007  Günther Brammer
 int main(int argc, char *argv[]) {
 	char *pData; int iSize;
 	CStdFile MyFile;

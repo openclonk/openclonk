@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2008  Sven Eberhardt
+ * Copyright (c) 2008  Günther Brammer
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,9 +24,13 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4ObjectCom.h>
-#include <C4Wrappers.h>
 #include <C4Player.h>
 #include <C4Viewport.h>
+#include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 
@@ -113,7 +119,7 @@ void C4ObjectMenu::ClearPointers(C4Object *pObj)
 C4Object* C4ObjectMenu::GetParentObject()
 	{
   C4Object *cObj; C4ObjectLink *cLnk;
-	for (cLnk=Game.Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
+	for (cLnk=::Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 		if ( cObj->Menu == this )
 			return cObj;
 	return NULL;
@@ -188,10 +194,10 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			// Refill target
 			if (!(pTarget=RefillObject)) return false;
 			// Add base owner's homebase material
-			if (!(pPlayer = Game.Players.Get(pTarget->Base))) return FALSE;
-			C4Player *pBuyPlayer = Object ? Game.Players.Get(Object->Owner) : NULL;
+			if (!(pPlayer = ::Players.Get(pTarget->Base))) return FALSE;
+			C4Player *pBuyPlayer = Object ? ::Players.Get(Object->Owner) : NULL;
 			C4ID idDef;
-		  for (cnt=0; idDef=pPlayer->HomeBaseMaterial.GetID(Game.Defs,C4D_All,cnt,&iCount); cnt++)
+		  for (cnt=0; idDef=pPlayer->HomeBaseMaterial.GetID(::Definitions,C4D_All,cnt,&iCount); cnt++)
 				{
 				pDef=C4Id2Def(idDef);
 				if (!pDef) continue; // skip invalid defs
@@ -318,14 +324,14 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 						sprintf(szCommand, "PlayerObjectCommand(%d, \"Put\", Object(%d), 0, 0) && ExecuteCommand()", Object->Owner, pTarget->Number);
 						// Secondary command: put all inventory items (all selected clonks)
 						szCommand2[0] = 0;
-						if ((Object->Contents.ObjectCount() > 1) || (Game.Players.Get(Object->Owner)->GetSelectedCrewCount() > 1))
+						if ((Object->Contents.ObjectCount() > 1) || (::Players.Get(Object->Owner)->GetSelectedCrewCount() > 1))
 							sprintf(szCommand2, "PlayerObjectCommand(%d, \"Put\", Object(%d), 1000, 0) && ExecuteCommand()", Object->Owner, pTarget->Number); // Workaround: specifying a really high put count here; will be adjusted later by C4Menu::ObjectCommand...
 						// Create symbol
 						fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 						fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Right, C4FCT_Top);
 						Object->Contents.GetObject(0)->DrawPicture(fctTarget);
 						fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom);
-						Game.GraphicsResource.fctHand.Draw(fctTarget, TRUE, 0);
+						::GraphicsResource.fctHand.Draw(fctTarget, TRUE, 0);
 						// Add menu item
 						Add(LoadResStr("IDS_CON_PUT2"), fctSymbol, szCommand, C4MN_Item_NoCount, NULL, NULL, C4ID_None, szCommand2);
 						// Preserve symbol
@@ -403,7 +409,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 					{
 					sprintf(szCommand, "PlayerObjectCommand(GetOwner(), \"Exit\") && ExecuteCommand()"); // Exit all selected clonks...
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-					Game.GraphicsResource.fctExit.Draw(fctSymbol);
+					::GraphicsResource.fctExit.Draw(fctSymbol);
 					Add(LoadResStr("IDS_COMM_EXIT"), fctSymbol, szCommand);
 					fctSymbol.Default();
 					}
@@ -464,7 +470,7 @@ bool C4ObjectMenu::IsReadOnly()
 	// if the player is eliminated, do not control either!
 	if (!pVP->fIsNoOwnerViewport)
 		{
-		C4Player *pPlr = Game.Players.Get(Game.MouseControl.GetPlayer());
+		C4Player *pPlr = ::Players.Get(::MouseControl.GetPlayer());
 		if (pPlr && pPlr->Eliminated) return true;
 		}
 	return false;
@@ -514,7 +520,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 	C4FacetSurface fctSymbol;
 
 	// ActionContext functions of target's action target (for first target only, because otherwise strange stuff can happen with outdated Target2s...)
-	if (pTarget->Action.Act > ActIdle)
+	if (pTarget->Action.pActionDef)
 		if (cObj = pTarget->Action.Target)
 			for (iFunction=0; pFunction=cObj->Def->Script.GetSFunc(iFunction, "ActionContext"); iFunction++)
 				if (!pFunction->OverloadedBy)
@@ -552,10 +558,10 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 			}
 
 	// Script context functions of any objects attached to target (search global list, because attachment objects might be moved just about anywhere...)
-	for (clnk=Game.Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
+	for (clnk=::Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
 		if (cObj->Status && cObj->Action.Target == pTarget)
-			if (cObj->Action.Act > ActIdle)
-				if (cObj->Def->ActMap[cObj->Action.Act].Procedure == DFA_ATTACH)
+			if (cObj->Action.pActionDef)
+				if (cObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)
 					for (iFunction=0; pFunction=cObj->Def->Script.GetSFunc(iFunction, "AttachContext"); iFunction++)
 						if (!pFunction->OverloadedBy)
 							if (!pFunction->Condition || !! pFunction->Condition->Exec(cObj, &C4AulParSet(C4VObj(Object), C4VID(pFunction->idImage), C4VObj(pTarget))))

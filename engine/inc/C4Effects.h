@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2004-2005  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,6 +28,7 @@
 #define INC_C4Effects
 
 #include <C4Constants.h>
+#include <C4ValueList.h>
 
 // callback return values
 #define C4Fx_OK                      0 // generic standard behaviour for all effect callbacks

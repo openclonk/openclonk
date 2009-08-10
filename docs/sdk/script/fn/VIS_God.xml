@@ -13,7 +13,7 @@
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
 		<examples>
 			<example>
-				<code>SetVisibility(VIS_God(), FindObject(GIDL));</code>
+				<code>SetVisibility(VIS_God(), FindObject(Find_ID(GIDL)));</code>
 				<text>Eine Goldstatue ist nur noch im allgemeinen Viewport sichtbar.</text>
 			</example>
 		</examples>

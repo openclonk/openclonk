@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2004, 2008-2009  Sven Eberhardt
+ * Copyright (c) 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -49,6 +52,7 @@ class C4TargetFacet: public C4Facet
 
 		void DrawBolt(int iX1, int iY1, int iX2, int iY2, BYTE bCol, BYTE bCol2);
 		void DrawLine(int iX1, int iY1, int iX2, int iY2, BYTE bCol1, BYTE bCol2);
+		void DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2);
 	public:
 		C4TargetFacet &operator = (const C4Facet& rhs)
 			{

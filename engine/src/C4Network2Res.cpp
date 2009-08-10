@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2007  Peter Wortmann
+ * Copyright (c) 2005-2007  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,6 +29,7 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
+#include <C4GameControl.h>
 #endif
 
 #include <fcntl.h>
@@ -1686,7 +1692,7 @@ void C4Network2ResList::OnResComplete(C4Network2Res *pRes)
 	// log (network thread -> ThreadLog)
 	Application.InteractiveThread.ThreadLogS("Network: %s received.", pRes->getCore().getFileName());
 	// call handler (ctrl might wait for this ressource)
-	Game.Control.Network.OnResComplete(pRes);
+	::Control.Network.OnResComplete(pRes);
 }
 
 bool C4Network2ResList::CreateNetworkFolder()
@@ -1700,7 +1706,7 @@ bool C4Network2ResList::CreateNetworkFolder()
 	// does not exist?
 	if(access(szNetworkPath, 00))
 	{
-		if(!CreateDirectory(szNetworkPath, 0))
+		if(!CreatePath(szNetworkPath))
 			{ LogFatal("Network: could not create network path!"); return false; }
 		return true;
 	}

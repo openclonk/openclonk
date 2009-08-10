@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2005, 2007  Matthes Bender
+ * Copyright (c) 2001-2003, 2005-2008  Sven Eberhardt
+ * Copyright (c) 2002-2008  Peter Wortmann
+ * Copyright (c) 2004-2008  Günther Brammer
+ * Copyright (c) 2005  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -68,10 +73,8 @@ char *szCurrAccessedEntry=NULL;
 int iC4GroupRewindFilePtrNoWarn=0;
 #endif
 
-#ifdef C4ENGINE
 #ifdef _DEBUG
 //#define C4GROUP_DUMP_ACCESS
-#endif
 #endif
 
 //---------------------------- Global C4Group_Functions -------------------------------------------
@@ -375,7 +378,7 @@ BOOL C4Group_UnpackDirectory(const char *szFilename)
 	char szFoldername[_MAX_PATH+1];
   SCopy(szFilename,szFoldername,_MAX_PATH);
   MakeTempFilename(szFoldername);
-  if (!CreateDirectory(szFoldername,NULL)) { hGroup.Close(); return FALSE; }
+  if (!CreatePath(szFoldername)) { hGroup.Close(); return FALSE; }
 
   // Extract files to folder
 	if (!hGroup.Extract("*",szFoldername)) { hGroup.Close(); return FALSE; }
@@ -774,7 +777,7 @@ bool C4Group::OpenRealGrpFile()
 		if (!StdFile.Read((BYTE*)&corebuf,sizeof(C4GroupEntryCore))) return Error("OpenRealGrpFile: Error reading entries");
 		// New C4Groups have filenames in UTF-8
 		StdStrBuf entryname(corebuf.FileName);
-		if (pConfig->General.IsUTF8()) entryname.EnsureUnicode();
+		entryname.EnsureUnicode();
 		// Prevent overwriting of user stuff by malicuous groups
 		C4InVal::ValidateFilename(const_cast<char *>(entryname.getData()),entryname.getLength());
 		EntryOffset+=sizeof(C4GroupEntryCore);
@@ -982,7 +985,8 @@ bool C4Group::Save(BOOL fReOpen)
 		{
 		// Create target temp file (in temp directory!)
 		SCopy(FileName,szGrpFileName,_MAX_FNAME);
-		SCopy(Config.AtTempPath(GetFilename(FileName)),szTempFileName,_MAX_FNAME);
+		if (C4Group_TempPath[0]) { SCopy(C4Group_TempPath,szTempFileName,_MAX_FNAME); SAppend(GetFilename(FileName),szTempFileName,_MAX_FNAME); }
+		else SCopy(FileName,szTempFileName,_MAX_FNAME);
 		MakeTempFilename(szTempFileName);
 		// (Temp file must not have the same name as the group.)
 		if (SEqual(szTempFileName,szGrpFileName))
@@ -1353,13 +1357,11 @@ bool C4Group::RewindFilePtr()
   {
 
 #ifdef _DEBUG
-#ifdef C4ENGINE
 	if (szCurrAccessedEntry && !iC4GroupRewindFilePtrNoWarn)
 		{
 		LogF ("C4Group::RewindFilePtr() for %s (%s)", szCurrAccessedEntry ? szCurrAccessedEntry : "???", FileName);
 		szCurrAccessedEntry=NULL;
 		}
-#endif
 #endif
 
   // Child group file: pass command to mother
@@ -2166,249 +2168,6 @@ bool C4Group::Add(const char *szName, StdStrBuf &pBuffer, bool fChild, bool fHol
 	return true;
 	}
 
-#ifdef C4FRONTEND
-HBITMAP C4Group::SubReadDDB(HDC hdc,
-                      int sx, int sy, int swdt, int shgt,
-                      int twdt, int thgt,
-                      BOOL transcol)
-  {
-  HBITMAP hbmp;
-  BITMAPFILEHEADER fhead;
-  BITMAPINFO* pbmi = (BITMAPINFO*) new BYTE[sizeof(BITMAPINFOHEADER)+256*sizeof(RGBQUAD)];
-  long bfoffs;
-  BYTE fbuf;
-  uint8_t *bmpbits;
-  const BOOL f256Only=TRUE; // Format accept flag
-
-  // Read and check file header
-  if (!Read(&fhead,sizeof(fhead))) { delete pbmi; return NULL; }
-  if (fhead.bfType!= *((WORD*)"BM") ) { delete pbmi; return NULL; }
-
-  // Read and check bitmap info header
-  if (!Read(&(pbmi->bmiHeader),sizeof(BITMAPINFOHEADER))) { delete pbmi; return NULL; }
-  if (f256Only)
-    if ((pbmi->bmiHeader.biBitCount!=8) || (pbmi->bmiHeader.biCompression!=0))
-      { delete pbmi; return NULL; }
-  if (!pbmi->bmiHeader.biSizeImage) { delete pbmi; return NULL; }
-
-  // Read colors
-  if (!Read(pbmi->bmiColors,256*sizeof(RGBQUAD))) { delete pbmi; return NULL; }
-
-  if (transcol)
-    {
-    pbmi->bmiColors[0].rgbRed=0xFF;
-    pbmi->bmiColors[0].rgbBlue=0xFF;
-    pbmi->bmiColors[0].rgbGreen=0x00;
-    }
-
-  // Read offset to pixels
-  for (bfoffs=fhead.bfOffBits-sizeof(BITMAPFILEHEADER)-sizeof(BITMAPINFOHEADER)-256*sizeof(RGBQUAD); bfoffs>0; bfoffs--)
-    if (!Read(&fbuf,1))
-			{ delete pbmi; return NULL; }
-
-  // Read the pixels
-	int iBufferSize = pbmi->bmiHeader.biHeight*DWordAligned(pbmi->bmiHeader.biWidth);
-  if (!(bmpbits=new uint8_t [iBufferSize])) { delete pbmi; return NULL; }
-  if (!Read(bmpbits,iBufferSize))
-    { delete [] bmpbits; delete pbmi; return NULL; }
-
-  // Cut bitmap to section if desired
-  if ((sx>-1) && (sy>-1) && (swdt>-1) && (shgt>-1))
-    {
-    if (twdt==-1) twdt=swdt; if (thgt==-1) thgt=shgt;
-
-		if (sx+swdt>pbmi->bmiHeader.biWidth){ delete pbmi; return NULL; }
-		if (sy+shgt>pbmi->bmiHeader.biHeight) { delete pbmi; return NULL; }
-
-    int tbufwdt=twdt; DWordAlign(tbufwdt);
-    int tbufhgt=thgt;
-    int sbufwdt=pbmi->bmiHeader.biWidth; DWordAlign(sbufwdt);
-    int sbufhgt=pbmi->bmiHeader.biHeight;
-    uint8_t *tbuf;
-    if (tbuf = new uint8_t [tbufhgt*tbufwdt])
-      {
-      ZeroMem(tbuf,tbufhgt*tbufwdt);
-      BufferBlitAspect(bmpbits,sbufwdt,sbufhgt, sx,sy,swdt,shgt,
-                       tbuf,tbufwdt,tbufhgt, 0,0,twdt,thgt);
-      delete [] bmpbits;
-      bmpbits=tbuf;
-      pbmi->bmiHeader.biSizeImage=tbufwdt*tbufhgt;
-      pbmi->bmiHeader.biWidth=twdt;
-      pbmi->bmiHeader.biHeight=thgt;
-      }
-
-    }
-
-  // Create the bitmap
-  hbmp= (HBITMAP) CreateDIBitmap(hdc,
-                      (BITMAPINFOHEADER*) &(pbmi->bmiHeader),
-                      CBM_INIT,
-                      bmpbits,
-                      (BITMAPINFO*) pbmi,
-                      DIB_RGB_COLORS
-                     );
-
-  delete [] bmpbits;
-	delete pbmi;
-
-  return hbmp;
-  }
-
-bool C4Group::ReadDDB(HBITMAP *lphBitmap, HDC hdc)
-  {
-  BOOL fOwnHDC=FALSE;
-  if (!lphBitmap) return FALSE;
-  // Check DC
-  if (!hdc) { hdc= (HDC) GetDC(NULL); fOwnHDC=TRUE; }
-  // Read bitmap
-  *lphBitmap=SubReadDDB(hdc);
-  // Release DC
-  if (fOwnHDC) ReleaseDC(NULL,hdc);
-  if (!(*lphBitmap)) return FALSE;
-  return TRUE;
-  }
-
-bool C4Group::ReadDDBSection(HBITMAP *lphBitmap, HDC hdc,
-                      int iSecX, int iSecY, int iSecWdt, int iSecHgt,
-                      int iImgWdt, int iImgHgt, BOOL fTransCol)
-  {
-  BOOL fOwnHDC=FALSE;
-  // Init & argument check
-  if (!lphBitmap) return FALSE;
-  // Check DC
-  if (!hdc) { hdc= (HDC) GetDC(NULL); fOwnHDC=TRUE; }
-  // Read bitmap
-  *lphBitmap=SubReadDDB(hdc,iSecX,iSecY,iSecWdt,iSecHgt,iImgWdt,iImgHgt,fTransCol);
-  // Release DC
-  if (fOwnHDC) ReleaseDC(NULL,hdc);
-  if (!(*lphBitmap)) return FALSE;
-  return TRUE;
-  }
-
-void BltAlpha2(DWORD &dwDst, DWORD dwSrc)
-	{
-	BYTE byAlphaDst=(BYTE)(dwSrc>>24); BYTE byAlphaSrc=255-byAlphaDst;
-	BYTE *pPixChanD = (BYTE *) &dwDst;
-	BYTE *pPixChanS = (BYTE *) &dwSrc;
-	*pPixChanD = (((int) *pPixChanD * byAlphaDst) >> 8) + (((int) *pPixChanS * byAlphaSrc) >> 8); ++pPixChanS; ++pPixChanD;
-	*pPixChanD = (((int) *pPixChanD * byAlphaDst) >> 8) + (((int) *pPixChanS * byAlphaSrc) >> 8); ++pPixChanS; ++pPixChanD;
-	*pPixChanD = (((int) *pPixChanD * byAlphaDst) >> 8) + (((int) *pPixChanS * byAlphaSrc) >> 8);
-	}
-
-HBITMAP C4Group::SubReadPNG(HDC hdc,
-                      int sx, int sy, int swdt, int shgt,
-                      int twdt, int thgt)
-  {
-	// read data
-	int iSize = AccessedEntrySize();
-	if (!iSize) return 0;
-	BYTE *pData = new BYTE[iSize];
-	if (!Read(pData, iSize)) { delete [] pData; return 0; }
-
-	// load png
-	CPNGFile png;
-	if (!png.Load(pData, iSize)) { delete [] pData; return 0; }
-
-	// free compressed data
-	delete [] pData;
-
-	// create DIB bitmap
-	BITMAPINFO bmi; ZeroMemory(&bmi, sizeof(bmi));
-	bmi.bmiHeader.biSize = sizeof(bmi.bmiHeader);
-	bmi.bmiHeader.biWidth = png.iWdt;
-	bmi.bmiHeader.biHeight = (int)png.iHgt;
-	bmi.bmiHeader.biPlanes = 1;
-	bmi.bmiHeader.biBitCount = 32;
-	bmi.bmiHeader.biCompression = BI_RGB;
-
-	// read into mem; reverse orientation; render against white bg; make transparent pixels have purple bg
-	DWORD *tbuf = new DWORD[png.iWdt*png.iHgt];
-	DWORD *pdwBuf = tbuf;
-	for (int y=(int)png.iHgt-1; y>=0; --y) for (int x=0; x<(int)png.iWdt; ++x)
-		{
-		DWORD dwPix = png.GetPix(x,y);
-		DWORD dwWhite;
-		if (dwPix & 0xa0000000)
-			{
-			dwWhite = 0xff00ff;
-			}
-		else
-			{
-			dwWhite = 0xffffff;
-			BltAlpha2(dwWhite, dwPix);
-			}
-		*pdwBuf++ = dwWhite;
-		}
-
-	// No section specified, but target size specified: use full image as section
-  if ((sx == -1) && (sy == -1) && (swdt == -1) && (shgt == -1))
-		if ((twdt > -1) && (thgt > -1))
-			{ sx = 0; sy = 0; swdt = png.iWdt; shgt = png.iHgt; }
-
-	// cut bitmap to section if desired
-  if ((sx>-1) && (sy>-1) && (swdt>-1) && (shgt>-1))
-    {
-    if (twdt==-1) twdt=swdt; if (thgt==-1) thgt=shgt;
-
-		if (sx+swdt>(int)png.iWdt || sy+shgt>(int)png.iHgt) { delete [] tbuf; return 0; }
-
-    int tbufwdt=twdt; DWordAlign(tbufwdt);
-    int tbufhgt=thgt;
-    int sbufwdt=png.iWdt;
-    int sbufhgt=png.iHgt;
-
-    DWORD *tbuf2 = new DWORD[tbufhgt*tbufwdt];
-
-		// Fill target buffer with purple background color
-		int iFill = tbufhgt * tbufwdt;
-		while (iFill)
-			tbuf2[--iFill] = 0x00ff00ff;
-    //FillMemory(tbuf2, tbufhgt * tbufwdt, 0xff); ...this was double - and it was incorrect buffer size??
-
-    BufferBlitAspectDw(reinterpret_cast<uint32_t *>(tbuf),sbufwdt,sbufhgt, sx,sy,swdt,shgt,
-                       reinterpret_cast<uint32_t *>(tbuf2),tbufwdt,tbufhgt, 0,0,twdt,thgt);
-
-		delete [] tbuf; tbuf=tbuf2;
-
-    bmi.bmiHeader.biSizeImage=tbufwdt*tbufhgt*png.GetBitsPerPixel()/8;
-    bmi.bmiHeader.biWidth=twdt;
-    bmi.bmiHeader.biHeight=thgt;
-    }
-	else
-		{
-		}
-
-  // Create the bitmap
-  HBITMAP hbmp= (HBITMAP) CreateDIBitmap(hdc,
-                      &(bmi.bmiHeader),
-                      CBM_INIT,
-                      (BYTE *)tbuf,
-                      &bmi,
-                      DIB_RGB_COLORS);
-
-	// free image buffer
-  delete [] tbuf;
-
-  return hbmp;
-  }
-
-bool C4Group::ReadPNGSection(HBITMAP *lphBitmap, HDC hdc,
-                      int iSecX, int iSecY, int iSecWdt, int iSecHgt,
-                      int iImgWdt, int iImgHgt)
-  {
-  BOOL fOwnHDC=FALSE;
-  // Init & argument check
-  if (!lphBitmap) return FALSE;
-  // Check DC
-  if (!hdc) { hdc= (HDC) GetDC(NULL); fOwnHDC=TRUE; }
-  // Read bitmap
-  *lphBitmap=SubReadPNG(hdc,iSecX,iSecY,iSecWdt,iSecHgt,iImgWdt,iImgHgt);
-  // Release DC
-  if (fOwnHDC) ReleaseDC(NULL,hdc);
-  if (!(*lphBitmap)) return FALSE;
-  return TRUE;
-  }
-#endif //C4ENGINE
 
 const char* C4Group::GetName()
   {
@@ -2621,28 +2380,6 @@ C4Group* C4Group::GetMother()
 	return Mother;
 	}
 
-#ifdef C4FRONTEND
-bool C4Group::LoadIcon(const char *szEntryname, HICON *lphIcon)
-	{
-	if (!szEntryname || !lphIcon) return FALSE;
-
-	*lphIcon = NULL;
-
-	BYTE *bpBuf; unsigned int iSize;
-	if (!LoadEntry(szEntryname,reinterpret_cast<char **>(&bpBuf),&iSize))
-		return FALSE;
-
-	*lphIcon = CreateIconFromResource(bpBuf,iSize,TRUE,0x00030000);
-
-	DWORD err = GetLastError();
-
-	delete [] bpBuf;
-
-	if (*lphIcon)
-		return TRUE;
-	return FALSE;
-	}
-#endif //C4FRONTEND
 
 int C4Group::GetStatus()
 	{

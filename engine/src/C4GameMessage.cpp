@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2004  Matthes Bender
+ * Copyright (c) 2002, 2005-2008  Sven Eberhardt
+ * Copyright (c) 2004, 2006, 2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,8 +26,10 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Application.h>
+#include <C4GraphicsResource.h>
 #include <C4Game.h>
 #include <C4Player.h>
+#include <C4PlayerList.h>
 #endif
 
 const int32_t TextMsgDelayFactor = 2; // frames per char message display time
@@ -120,7 +125,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 			if (PortraitDef)
 				{
 				if (!wdt) wdt = BoundBy<int32_t>(cgo.Wdt/2, 50, Min<int32_t>(500, cgo.Wdt-10));
-				int32_t iUnbrokenTextWidth = Game.GraphicsResource.FontRegular.GetTextWidth(Text.getData(), true);
+				int32_t iUnbrokenTextWidth = ::GraphicsResource.FontRegular.GetTextWidth(Text.getData(), true);
 				wdt = Min<int32_t>(wdt, iUnbrokenTextWidth+10);
 				}
 			else
@@ -131,11 +136,11 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 					wdt = BoundBy<int32_t>(wdt, 10, cgo.Wdt-10);
 				}
 			iTextWdt = wdt;
-			iTextHgt = Game.GraphicsResource.FontRegular.BreakMessage(Text.getData(), iTextWdt, &sText, true);
+			iTextHgt = ::GraphicsResource.FontRegular.BreakMessage(Text.getData(), iTextWdt, &sText, true);
 			}
 		else
 			{
-			Game.GraphicsResource.FontRegular.GetTextExtent(Text.getData(), iTextWdt, iTextHgt, true);
+			::GraphicsResource.FontRegular.GetTextExtent(Text.getData(), iTextWdt, iTextHgt, true);
 			sText.Ref(Text);
 			}
 		int32_t iDrawX = cgo.X+x;
@@ -169,7 +174,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 			C4Facet facet(cgo.Surface, iDrawX, iDrawY, PortraitWidth, PortraitWidth);
 			fctPortrait.Draw(facet);
 			// draw message
-			Application.DDraw->TextOut(sText.getData(),Game.GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX+PortraitWidth+PortraitIndent,iDrawY,ColorDw,ALeft);
+			Application.DDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX+PortraitWidth+PortraitIndent,iDrawY,ColorDw,ALeft);
 			}
 		else
 			{
@@ -177,7 +182,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 			iDrawX += cgo.Wdt/2;
 			iDrawY += 2 * cgo.Hgt / 3 + 50;
 			if (!(dwFlags & C4GM_Bottom)) iDrawY += DrawMessageOffset;
-			Application.DDraw->TextOut(sText.getData(),Game.GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX,iDrawY,ColorDw,ACenter);
+			Application.DDraw->TextOut(sText.getData(),::GraphicsResource.FontRegular,1.0,cgo.Surface,iDrawX,iDrawY,ColorDw,ACenter);
 			}
 		}
 	// Positioned
@@ -204,7 +209,7 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 						if(!Target->IsVisible(iPlayer, false))
 							return;
 					// check fog of war
-					C4Player *pPlr = Game.Players.Get(iPlayer);
+					C4Player *pPlr = ::Players.Get(iPlayer);
 					if(pPlr && pPlr->fFogOfWar)
 						if(!pPlr->FoWIsVisible(iMsgX, iMsgY))
 							{
@@ -215,16 +220,16 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 					// Word wrap to cgo width
 					StdStrBuf sText;
 					if (~dwFlags & C4GM_NoBreak)
-						Game.GraphicsResource.FontRegular.BreakMessage(Text.getData(), BoundBy<int32_t>(cgo.Wdt, 50, 200), &sText, true);
+						::GraphicsResource.FontRegular.BreakMessage(Text.getData(), BoundBy<int32_t>(cgo.Wdt, 50, 200), &sText, true);
 					else
 						sText.Ref(Text);
 					// Adjust position by output boundaries
 					int32_t iTX,iTY,iTWdt,iTHgt;
-					Game.GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iTWdt,iTHgt,true);
+					::GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iTWdt,iTHgt,true);
 					iTX = BoundBy<float>((iMsgX - cgo.TargetX) * Zoom, iTWdt/2, cgo.Wdt - iTWdt / 2);
 					iTY = BoundBy<float>((iMsgY - cgo.TargetY) * Zoom - iTHgt, 0, cgo.Hgt - iTHgt);
 					// Draw
-					Application.DDraw->TextOut(sText.getData(), Game.GraphicsResource.FontRegular, 1.0,
+					Application.DDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
 														cgo.Surface,
 														cgo.X + iTX,
 														cgo.Y + iTY,
@@ -342,13 +347,13 @@ bool C4GameMessageList::Append(int32_t iType, const char *szText, C4Object *pTar
 	C4GameMessage *cmsg = NULL;
   if (iType == C4GM_Target)
 		{
-	  for (cmsg=Game.Messages.First; cmsg; cmsg=cmsg->Next)
+	  for (cmsg=::Messages.First; cmsg; cmsg=cmsg->Next)
 		  if (pTarget == cmsg->Target)
 				break;
 		}
   if (iType == C4GM_Global || iType == C4GM_GlobalPlayer)
 		{
-	  for (cmsg=Game.Messages.First; cmsg; cmsg=cmsg->Next)
+	  for (cmsg=::Messages.First; cmsg; cmsg=cmsg->Next)
 		  if (iPlayer == cmsg->Player)
 				break;
 		}
@@ -389,3 +394,4 @@ void C4GameMessageList::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 		cmsg->Draw(cgo,iPlayer,Zoom);
 	}
 
+C4GameMessageList Messages;

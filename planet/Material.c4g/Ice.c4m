@@ -1,6 +1,5 @@
 [Material]
 Name=Ice
-Color=128,128,128,128,128,128,128,128,128
 Shape=1
 Density=50
 Friction=15

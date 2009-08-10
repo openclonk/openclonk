@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2008-2009  Sven Eberhardt
+ * Copyright (c) 2008  Julian Raschke
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,7 +26,8 @@
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
 #include <C4Object.h>
-#include <C4Wrappers.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 // *** C4RoundResultsPlayer
@@ -272,12 +275,12 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 	// Items
 	bool fRivalvry = !!Game.ObjectCount(C4Id("RVLR"));
 	int32_t cnt; C4ID idGoal;
-	for (cnt=0; idGoal=Game.Objects.GetListID(C4D_Goal,cnt); cnt++)
+	for (cnt=0; idGoal=::Objects.GetListID(C4D_Goal,cnt); cnt++)
 		{
 		// determine if the goal is fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 		bool fFulfilled = false;;
 		C4Object *pObj;
-		if (pObj = Game.Objects.Find(idGoal))
+		if (pObj = ::Objects.Find(idGoal))
 			{
 			if (fRivalvry)
 				{
@@ -295,7 +298,7 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 void C4RoundResults::EvaluateGame()
 	{
 	// set game data
-	C4Player *pFirstLocalPlayer = Game.Players.GetLocalByIndex(0);
+	C4Player *pFirstLocalPlayer = ::Players.GetLocalByIndex(0);
 	int32_t iFirstLocalPlayer = pFirstLocalPlayer ? pFirstLocalPlayer->Number : NO_OWNER;
 	EvaluateGoals(Goals, FulfilledGoals, iFirstLocalPlayer);
 	iPlayingTime = Game.Time;

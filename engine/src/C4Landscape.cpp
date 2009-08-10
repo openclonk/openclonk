@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2008  Sven Eberhardt
+ * Copyright (c) 2002, 2004-2008  Peter Wortmann
+ * Copyright (c) 2006-2009  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,6 +24,7 @@
 #include <C4Include.h>
 #include <C4Landscape.h>
 #include <C4SolidMask.h>
+#include <C4Game.h>
 
 #ifndef BIG_C4INCLUDE
 #include <C4Map.h>
@@ -34,16 +39,20 @@
 #include <C4Record.h>
 #endif
 #include <C4Material.h>
-#include <C4Game.h>
+#include <C4GameMessage.h>
 #include <C4Application.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #include <C4Stat.h>
+#include <C4MassMover.h>
+#include <C4PXS.h>
+#include <C4Weather.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Texture.h>
+#include <C4Record.h>
 #endif
 
 #include <StdPNG.h>
-
-int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MSnow=MNone,MEarth=MNone,MGranite=MNone,MFlyAshes=MNone;
-BYTE MCVehic=0;
 
 const int C4LS_MaxLightDistY = 8;
 const int C4LS_MaxLightDistX = 1;
@@ -79,24 +88,24 @@ void C4Landscape::Execute()
 	// move sky
 	Sky.Execute();
   // Side open scan
-  /*if (!Tick255)
+  /*if (!::Game.iTick255)
     if (Game.C4S.LScape.AutoScanSideOpen)
       ScanSideOpen(); */
 #ifdef _DEBUG
-	/*if(!Tick255)
+	/*if(!::Game.iTick255)
 		UpdatePixCnt(C4Rect(0, 0, Width, Height), true);
-	if(!Tick255)
+	if(!::Game.iTick255)
     {
     DWORD MatCountCheck[C4MaxMaterial], EffectiveMatCountCheck[C4MaxMaterial];
     int32_t iMat;
-    for(iMat = 0; iMat < Game.Material.Num; iMat++)
+    for(iMat = 0; iMat < ::MaterialMap.Num; iMat++)
       {
       MatCountCheck[iMat] = MatCount[iMat];
       EffectiveMatCountCheck[iMat] = EffectiveMatCount[iMat];
       }
     ClearMatCount();
     UpdateMatCnt(C4Rect(0,0,Width,Height), true);
-    for(iMat = 0; iMat < Game.Material.Num; iMat++)
+    for(iMat = 0; iMat < ::MaterialMap.Num; iMat++)
       {
       assert(MatCount[iMat] == MatCountCheck[iMat]);
       assert(EffectiveMatCount[iMat] == EffectiveMatCountCheck[iMat]);
@@ -104,7 +113,7 @@ void C4Landscape::Execute()
     }*/
 #endif
 	// Relights
-  if (!Tick35)
+  if (!::Game.iTick35)
 		DoRelights();
   }
 
@@ -116,16 +125,16 @@ void C4Landscape::ExecuteScan()
   int32_t cy,mat;
 
   // Check: Scan needed?
-	const int32_t iTemperature = Game.Weather.GetTemperature();
-  for(mat = 0; mat < Game.Material.Num; mat++)
+	const int32_t iTemperature = ::Weather.GetTemperature();
+  for(mat = 0; mat < ::MaterialMap.Num; mat++)
     if(MatCount[mat])
-      if(Game.Material.Map[mat].BelowTempConvertTo &&
-          iTemperature < Game.Material.Map[mat].BelowTempConvert)
+      if(::MaterialMap.Map[mat].BelowTempConvertTo &&
+          iTemperature < ::MaterialMap.Map[mat].BelowTempConvert)
         break;
-      else if(Game.Material.Map[mat].AboveTempConvertTo &&
-          iTemperature > Game.Material.Map[mat].AboveTempConvert)
+      else if(::MaterialMap.Map[mat].AboveTempConvertTo &&
+          iTemperature > ::MaterialMap.Map[mat].AboveTempConvert)
         break;
-  if(mat >= Game.Material.Num)
+  if(mat >= ::MaterialMap.Num)
     return;
 
 #ifdef DEBUGREC_MATSCAN
@@ -167,23 +176,23 @@ void C4Landscape::ExecuteScan()
 int32_t C4Landscape::DoScan(int32_t cx, int32_t cy, int32_t mat, int32_t dir)
 	{
   int32_t conv_to_tex = 0;
-	int32_t iTemperature = Game.Weather.GetTemperature();
+	int32_t iTemperature = ::Weather.GetTemperature();
   // Check below conv
-  if(Game.Material.Map[mat].BelowTempConvertDir == dir)
-		if (Game.Material.Map[mat].BelowTempConvertTo)
-			if (iTemperature<Game.Material.Map[mat].BelowTempConvert)
-				conv_to_tex=Game.Material.Map[mat].BelowTempConvertTo;
+  if(::MaterialMap.Map[mat].BelowTempConvertDir == dir)
+		if (::MaterialMap.Map[mat].BelowTempConvertTo)
+			if (iTemperature< ::MaterialMap.Map[mat].BelowTempConvert)
+				conv_to_tex=::MaterialMap.Map[mat].BelowTempConvertTo;
   // Check above conv
-  if(Game.Material.Map[mat].AboveTempConvertDir == dir)
-		if (Game.Material.Map[mat].AboveTempConvertTo)
-			if (iTemperature>Game.Material.Map[mat].AboveTempConvert)
-				conv_to_tex=Game.Material.Map[mat].AboveTempConvertTo;
+  if(::MaterialMap.Map[mat].AboveTempConvertDir == dir)
+		if (::MaterialMap.Map[mat].AboveTempConvertTo)
+			if (iTemperature>::MaterialMap.Map[mat].AboveTempConvert)
+				conv_to_tex=::MaterialMap.Map[mat].AboveTempConvertTo;
 	// nothing to do?
 	if (!conv_to_tex) return 0;
 	// find material
-	int32_t conv_to = Game.TextureMap.GetEntry(conv_to_tex)->GetMaterialIndex();
+	int32_t conv_to = ::TextureMap.GetEntry(conv_to_tex)->GetMaterialIndex();
 	// find mat top
-	int32_t mconv = Game.Material.Map[mat].TempConvStrength,
+	int32_t mconv = ::MaterialMap.Map[mat].TempConvStrength,
           mconvs = mconv;
 #ifdef DEBUGREC_MATSCAN
 	C4RCMatScan rc = { cx, cy, mat, conv_to, dir, mconvs };
@@ -273,7 +282,6 @@ void C4Landscape::Clear(bool fClearMapCreator, bool fClearSky)
 	if (fClearSky) Sky.Clear();
 	// clear surfaces, if assigned
 	delete Surface32; Surface32=NULL;
-	delete AnimationSurface; AnimationSurface=0;
 	delete Surface8; Surface8=NULL;
 	delete Map; Map=NULL;
   // clear initial landscape
@@ -292,10 +300,18 @@ void C4Landscape::Draw(C4TargetFacet &cgo, int32_t iPlayer)
   // do relights
   DoRelights();
 	// blit landscape
-	if (Game.GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.ShowSolidMask)
 		Application.DDraw->Blit8Fast(Surface8, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
 	else
-		Application.DDraw->BlitLandscape(Surface32, AnimationSurface, &Game.GraphicsResource.sfcLiquidAnimation, cgo.TargetX, cgo.TargetY, cgo.Surface, cgo.X,cgo.Y,cgo.Wdt,cgo.Hgt);
+		{
+		const CSurface * Surfaces[C4M_MaxTexIndex];
+		if (Config.Graphics.HighResLandscape)
+			for (int i = 0; i < C4M_MaxTexIndex; ++i)
+				Surfaces[i] = ::TextureMap.GetEntry(i)->GetPattern().getSurface();
+		Application.DDraw->BlitLandscape(Surface32, cgo.TargetX, cgo.TargetY, cgo.Surface,
+			cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt,
+			Config.Graphics.HighResLandscape ? Surfaces : 0);
+		}
 	if (Modulation) Application.DDraw->DeactivateBlitModulation();
 	}
 
@@ -364,7 +380,7 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 	int32_t iIFT;
 	BYTE byMapPixel, byMapPixelBelow;
 	int iMapWidth,iMapHeight;
-	C4Material *pMaterial = Game.TextureMap.GetEntry(iTexture)->GetMaterial();
+	C4Material *pMaterial = ::TextureMap.GetEntry(iTexture)->GetMaterial();
 	if(!pMaterial) return;
 	int32_t iChunkType=pMaterial->MapChunkType;
 	BYTE byColor=MatTex2PixCol(iTexture);
@@ -376,7 +392,6 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 	// get chunk size
 	iChunkWidth=MapZoom; iChunkHeight=MapZoom;
 	Surface32->Lock();
-	if (AnimationSurface) AnimationSurface->Lock();
 	// Scan map lines
 	for (iY=iMapY; iY<iMapY+iMapHgt; iY++)
 		{
@@ -424,7 +439,6 @@ void C4Landscape::ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, i
 			}
 		}
 	Surface32->Unlock();
-	if (AnimationSurface) AnimationSurface->Unlock();
 	}
 
 BOOL C4Landscape::GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage)
@@ -483,7 +497,6 @@ BOOL C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 	// assign clipper
 	Surface8->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
 	Surface32->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
-	if (AnimationSurface) AnimationSurface->Clip(iToX,iToY,iToX+iToWdt-1,iToY+iToHgt-1);
 	Application.DDraw->NoPrimaryClipper();
 
 	// Enlarge map segment for chunky rim
@@ -498,7 +511,6 @@ BOOL C4Landscape::MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY,
 	// remove clipper
 	Surface8->NoClip();
 	Surface32->NoClip();
-	if (AnimationSurface) AnimationSurface->NoClip();
 
 	// success
 	return TRUE;
@@ -526,12 +538,10 @@ BOOL C4Landscape::MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMap
 	To.Hgt = iMapHgt*MapZoom;
 
 	Surface32->Lock();
-	if (AnimationSurface) AnimationSurface->Lock();
 	PrepareChange(To);
 	MapToSurface(sfcMap, iMapX, iMapY, iMapWdt, iMapHgt, To.x, To.y, To.Wdt, To.Hgt, iOffsX, iOffsY);
 	FinishChange(To);
 	Surface32->Unlock();
-	if (AnimationSurface) AnimationSurface->Unlock();
 	return TRUE;
 	}
 
@@ -548,7 +558,7 @@ CSurface8 * C4Landscape::CreateMap()
   // Fill sfcMap
     C4MapCreator MapCreator;
     MapCreator.Create(sfcMap,
-                      Game.C4S.Landscape, Game.TextureMap,
+                      Game.C4S.Landscape, ::TextureMap,
                       TRUE,Game.StartupPlayerCount);
 
   return sfcMap;
@@ -561,7 +571,7 @@ CSurface8 * C4Landscape::CreateMapS2(C4Group &ScenFile)
 
 	// create map creator
 	if (!pMapCreator)
-		pMapCreator = new C4MapCreatorS2(&Game.C4S.Landscape, &Game.TextureMap, &Game.Material, Game.StartupPlayerCount);
+		pMapCreator = new C4MapCreatorS2(&Game.C4S.Landscape, &::TextureMap, &::MaterialMap, Game.StartupPlayerCount);
 
 	// read file
 	pMapCreator->ReadFile(C4CFN_DynLandscape, &ScenFile);
@@ -715,15 +725,12 @@ BOOL C4Landscape::Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bo
 		// Create landscape surface
 		Surface32 = new CSurface();
 		Surface8 = new CSurface8();
-		if (Config.Graphics.ColorAnimation && DDrawCfg.Shader)
-			AnimationSurface = new CSurface(Width, Height);
 		if (!Surface32->Create(Width, Height, true, false, lpDDraw->IsShaderific() ? 0 : 64)
 			|| !Surface8->Create(Width, Height, true)
-			|| (AnimationSurface && !AnimationSurface->Create(Width, Height))
 			|| !Mat2Pal())
 			{
-			delete Surface8; delete Surface32; delete AnimationSurface;
-			Surface8 = 0; Surface32 = 0; AnimationSurface = 0;
+			delete Surface8; delete Surface32;
+			Surface8 = 0; Surface32 = 0;
 			return FALSE;
 			}
 
@@ -821,10 +828,10 @@ BOOL C4Landscape::_SetPix(int32_t x, int32_t y, BYTE npix)
   // count effective material
   if(omat != nmat)
     {
-    if(npix && Game.Material.Map[nmat].MinHeightCount)
+    if(npix && ::MaterialMap.Map[nmat].MinHeightCount)
       {
       // Check for material above & below
-      int iMinHeight = Game.Material.Map[nmat].MinHeightCount,
+      int iMinHeight = ::MaterialMap.Map[nmat].MinHeightCount,
           iBelow = GetMatHeight(x, y+1, +1, nmat, iMinHeight),
           iAbove = GetMatHeight(x, y-1, -1, nmat, iMinHeight);
       // Will be above treshold?
@@ -838,10 +845,10 @@ BOOL C4Landscape::_SetPix(int32_t x, int32_t y, BYTE npix)
         EffectiveMatCount[nmat] += iChange;
         }
       }
-    if(opix && Game.Material.Map[omat].MinHeightCount)
+    if(opix && ::MaterialMap.Map[omat].MinHeightCount)
       {
       // Check for material above & below
-      int iMinHeight = Game.Material.Map[omat].MinHeightCount,
+      int iMinHeight = ::MaterialMap.Map[omat].MinHeightCount,
           iBelow = GetMatHeight(x, y+1, +1, omat, iMinHeight),
           iAbove = GetMatHeight(x, y-1, -1, omat, iMinHeight);
       // Not already below threshold?
@@ -876,8 +883,8 @@ BOOL C4Landscape::CheckInstability(int32_t tx, int32_t ty)
   {
   int32_t mat=GetMat(tx,ty);
   if (MatValid(mat))
-    if (Game.Material.Map[mat].Instable)
-      return Game.MassMover.Create(tx,ty);
+    if (::MaterialMap.Map[mat].Instable)
+      return ::MassMover.Create(tx,ty);
   return FALSE;
   }
 
@@ -953,7 +960,7 @@ int32_t C4Landscape::DigFreePix(int32_t tx, int32_t ty)
   {
   int32_t mat=GetMat(tx,ty);
   if (mat!=MNone)
-    if (Game.Material.Map[mat].DigFree)
+    if (::MaterialMap.Map[mat].DigFree)
       ClearPix(tx,ty);
   CheckInstabilityRange(tx,ty);
   return mat;
@@ -963,10 +970,10 @@ int32_t C4Landscape::ShakeFreePix(int32_t tx, int32_t ty)
   {
   int32_t mat=GetMat(tx,ty);
   if (mat!=MNone)
-    if (Game.Material.Map[mat].DigFree)
+    if (::MaterialMap.Map[mat].DigFree)
 			{
 			ClearPix(tx,ty);
-			Game.PXS.Create(mat,itofix(tx),itofix(ty));
+			::PXS.Create(mat,itofix(tx),itofix(ty));
 			}
   CheckInstabilityRange(tx,ty);
   return mat;
@@ -978,14 +985,14 @@ int32_t C4Landscape::BlastFreePix(int32_t tx, int32_t ty, int32_t grade, int32_t
   if (MatValid(mat))
     {
     // Blast Shift
-    if (Game.Material.Map[mat].BlastShiftTo)
+    if (::MaterialMap.Map[mat].BlastShiftTo)
 			{
 			// blast free amount; always blast if 100% is to be blasted away
 			if (Random(BlastMatCount[mat]) < iBlastSize * grade / 6)
-				SetPix(tx,ty,MatTex2PixCol(Game.Material.Map[mat].BlastShiftTo)+GBackIFT(tx,ty));
+				SetPix(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo)+GBackIFT(tx,ty));
 			}
     // Blast Free
-    if (Game.Material.Map[mat].BlastFree) ClearPix(tx,ty);
+    if (::MaterialMap.Map[mat].BlastFree) ClearPix(tx,ty);
     }
 
   CheckInstabilityRange(tx,ty);
@@ -1013,7 +1020,7 @@ void C4Landscape::DigFree(int32_t tx, int32_t ty, int32_t rad, BOOL fRequest, C4
   for (xcnt=-iLineWidth; xcnt<iLineWidth+(iLineWidth==0); xcnt++)
     DigFreeSinglePix(tx + xcnt, ty + rad, 0, +1);
   // Dig out material cast
-  if (!Tick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
+  if (!::Game.iTick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
   }
 
 void C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, BOOL fRequest, C4Object *pByObj)
@@ -1027,7 +1034,7 @@ void C4Landscape::DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, 
   // Clear single pixels
 
   // Dig out material cast
-  if (!Tick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
+  if (!::Game.iTick5) if (pByObj) pByObj->DigOutMaterialCast(fRequest);
   }
 
 void C4Landscape::ShakeFree(int32_t tx, int32_t ty, int32_t rad)
@@ -1079,19 +1086,19 @@ void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t grade, 
     }
 
   // Evaluate material count
-  for (cnt=0; cnt<Game.Material.Num; cnt++)
+  for (cnt=0; cnt< ::MaterialMap.Num; cnt++)
     if (BlastMatCount[cnt])
       {
 
-      if (Game.Material.Map[cnt].Blast2Object != C4ID_None)
-        if (Game.Material.Map[cnt].Blast2ObjectRatio != 0)
-          Game.BlastCastObjects(Game.Material.Map[cnt].Blast2Object,NULL,
-                           BlastMatCount[cnt]/Game.Material.Map[cnt].Blast2ObjectRatio,
+      if (::MaterialMap.Map[cnt].Blast2Object != C4ID_None)
+        if (::MaterialMap.Map[cnt].Blast2ObjectRatio != 0)
+          Game.BlastCastObjects(::MaterialMap.Map[cnt].Blast2Object,NULL,
+                           BlastMatCount[cnt]/::MaterialMap.Map[cnt].Blast2ObjectRatio,
                            tx,ty,iByPlayer);
 
-      if (Game.Material.Map[cnt].Blast2PXSRatio != 0)
-        Game.PXS.Cast(cnt,
-                BlastMatCount[cnt]/Game.Material.Map[cnt].Blast2PXSRatio,
+      if (::MaterialMap.Map[cnt].Blast2PXSRatio != 0)
+        ::PXS.Cast(cnt,
+                BlastMatCount[cnt]/::MaterialMap.Map[cnt].Blast2PXSRatio,
                 tx,ty,60);
       }
 
@@ -1139,7 +1146,7 @@ void C4Landscape::FindMatTop(int32_t mat, int32_t &x, int32_t &y)
   BOOL fLeft,fRight;
 
   if (!MatValid(mat)) return;
-  mslide=Game.Material.Map[mat].MaxSlide;
+  mslide=::MaterialMap.Map[mat].MaxSlide;
 
   do
     {
@@ -1193,7 +1200,7 @@ BOOL C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 		// Same or higher density?
 		if(GetDensity(tx, ty) >= mdens)
 			// Push
-			if(!FindMatPathPush(tx, ty, mdens, Game.Material.Map[mat].MaxSlide, !! Game.Material.Map[mat].Instable))
+			if(!FindMatPathPush(tx, ty, mdens, ::MaterialMap.Map[mat].MaxSlide, !! ::MaterialMap.Map[mat].Instable))
 				// Or die
 				return FALSE;
 		}
@@ -1212,13 +1219,13 @@ BOOL C4Landscape::InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx
 		}
 
   // Try slide
-  while (FindMatSlide(tx,ty,+1,mdens,Game.Material.Map[mat].MaxSlide))
+  while (FindMatSlide(tx,ty,+1,mdens,::MaterialMap.Map[mat].MaxSlide))
 		if (GetDensity(tx,ty+1)<mdens)
-			{ Game.PXS.Create(mat,itofix(tx),itofix(ty),FIXED10(vx),FIXED10(vy)); return TRUE; }
+			{ ::PXS.Create(mat,itofix(tx),itofix(ty),FIXED10(vx),FIXED10(vy)); return TRUE; }
 
 	// Try reaction with material below
 	C4MaterialReaction *pReact; int32_t tmat;
-	if (pReact = Game.Material.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+Sign(GravAccel))))
+	if (pReact = ::MaterialMap.GetReactionUnsafe(mat, tmat=GetMat(tx,ty+Sign(GravAccel))))
 		{
 		FIXED fvx=FIXED10(vx), fvy=FIXED10(vy);
 		if ((*pReact->pFunc)(pReact, tx,ty, tx,ty+Sign(GravAccel), fvx,fvy, mat,tmat, meePXSPos,NULL))
@@ -1437,7 +1444,7 @@ BOOL C4Landscape::Incinerate(int32_t x, int32_t y)
 	{
 	int32_t mat=GetMat(x,y);
 	if (MatValid(mat))
-		if (Game.Material.Map[mat].Inflammable)
+		if (::MaterialMap.Map[mat].Inflammable)
 			// Not too much FLAMs
 			if (!Game.FindObject (C4Id ("FLAM"), x - 4, y - 1, 8, 20))
 				if (Game.CreateObject(C4Id("FLAM"),NULL,NO_OWNER,x,y))
@@ -1547,8 +1554,6 @@ BOOL C4Landscape::Load(C4Group &hGroup, bool fLoadSky, bool fSavegame)
 	Surface8->GetSurfaceSize(iWidth,iHeight);
 	Width = iWidth; Height = iHeight;
 	Surface32 = new CSurface(Width, Height);
-	if (Config.Graphics.ColorAnimation && DDrawCfg.Shader)
-		AnimationSurface = new CSurface(Width, Height);
 	// adjust pal
 	if (!Mat2Pal()) return FALSE;
 	// load the 32bit-surface, too
@@ -1646,7 +1651,6 @@ void C4Landscape::Default()
 	Mode=C4LSC_Undefined;
 	Surface8=NULL;
 	Surface32=NULL;
-	AnimationSurface=0;
 	Map=NULL;
 	Width=Height=0;
 	MapWidth=MapHeight=MapZoom=0;
@@ -1985,7 +1989,7 @@ BOOL PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32
 bool PathFreeIgnoreVehiclePix(int32_t x, int32_t y, int32_t par)
   {
 	BYTE byPix=GBackPix(x,y);
-	return !byPix || !DensitySolid(Game.Landscape.GetPixMat(byPix)) || Game.Landscape.GetPixMat(byPix) == MVehic;
+	return !byPix || !DensitySolid(::Landscape.GetPixMat(byPix)) || ::Landscape.GetPixMat(byPix) == MVehic;
   }
 
 BOOL PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix, int32_t *iy)
@@ -2063,52 +2067,55 @@ BOOL FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2,
 	return FALSE;
 	}
 
-BOOL ConstructionCheck(C4ID id, int32_t iX, int32_t iY, C4Object *pByObj)
-  {
-  C4Def *ndef;
-  char idostr[5];
+BOOL ConstructionCheck(C4PropList * PropList, int32_t iX, int32_t iY, C4Object *pByObj)
+	{
+	C4Def *ndef;
+	// Check def
+	if (!(ndef=PropList->GetDef()))
+		{
+		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_UNDEF"), PropList->GetName()).getData(),pByObj,FRed);
+		return FALSE;
+	}
+	// Constructable?
+	if (!ndef->Constructable)
+		{
+		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCON"),ndef->GetName()).getData(),pByObj,FRed);
+		return FALSE;
+		}
+	// Check area
+	int32_t rtx,rty,wdt,hgt;
+	wdt=ndef->Shape.Wdt; hgt=ndef->Shape.Hgt-ndef->ConSizeOff;
+	rtx=iX-wdt/2; rty=iY-hgt;
+	if (::Landscape.AreaSolidCount(rtx,rty,wdt,hgt)>(wdt*hgt/20))
+		{
+		if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOROOM"),pByObj,FRed);
+		return FALSE;
+		}  
+	if (::Landscape.AreaSolidCount(rtx,rty+hgt,wdt,5)<(wdt*2))
+		{
+		if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOLEVEL"),pByObj,FRed);
+		return FALSE;
+		}
+	// Check other structures
+	C4Object *other;
+	if (other=Game.OverlapObject(rtx,rty,wdt,hgt,ndef->Category))
+		{
+		if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOOTHER"),other->GetName ()).getData(),pByObj,FRed);
+		return FALSE;
+		}
+	return TRUE;
+	}
 
-  // Check def
-  if (!(ndef=C4Id2Def(id)))
-    {
-    GetC4IdText(id,idostr);
-    if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_UNDEF"),idostr).getData(),pByObj,FRed);
-    return FALSE;
-    }
-
-  // Constructable?
-  if (!ndef->Constructable)
-    {
-    if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCON"),ndef->GetName()).getData(),pByObj,FRed);
-    return FALSE;
-    }
-
-  // Check area
-  int32_t rtx,rty,wdt,hgt;
-  wdt=ndef->Shape.Wdt; hgt=ndef->Shape.Hgt-ndef->ConSizeOff;
-  rtx=iX-wdt/2; rty=iY-hgt;
-  if (Game.Landscape.AreaSolidCount(rtx,rty,wdt,hgt)>(wdt*hgt/20))
-    {
-    if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOROOM"),pByObj,FRed);
-    return FALSE;
-    }
-  if (Game.Landscape.AreaSolidCount(rtx,rty+hgt,wdt,5)<(wdt*2))
-    {
-    if (pByObj) GameMsgObject(LoadResStr("IDS_OBJ_NOLEVEL"),pByObj,FRed);
-    return FALSE;
-    }
-
-  // Check other structures
-  C4Object *other;
-  if (other=Game.OverlapObject(rtx,rty,wdt,hgt,ndef->Category))
-    {
-    if (pByObj) GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOOTHER"),other->GetName ()).getData(),pByObj,FRed);
-    return FALSE;
-    }
-
-  return TRUE;
-  }
-
+int32_t PixCol2Mat(BYTE pixc)
+	{
+	// Get texture
+	int32_t iTex = PixCol2Tex(pixc);
+	if(!iTex) return MNone;
+	// Get material-texture mapping
+	const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
+	// Return material
+	return pTex ? pTex->GetMaterialIndex() : MNone;
+	}
 
 void C4Landscape::ClearRect(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt)
 	{
@@ -2150,7 +2157,7 @@ BOOL C4Landscape::SaveMap(C4Group &hGroup)
 
 	// Create map palette
 	BYTE bypPalette[3*256];
-	Game.TextureMap.StoreMapPalette(bypPalette,Game.Material);
+	::TextureMap.StoreMapPalette(bypPalette,::MaterialMap);
 
 	// Save map surface
 	if (!Map->Save(Config.AtTempPath(C4CFN_TempMap), bypPalette))
@@ -2168,7 +2175,7 @@ BOOL C4Landscape::SaveMap(C4Group &hGroup)
 bool C4Landscape::SaveTextures(C4Group &hGroup)
 	{
 	// if material-texture-combinations have been added, write the texture map
-	if (Game.TextureMap.fEntriesAdded)
+	if (::TextureMap.fEntriesAdded)
 		{
 		C4Group *pMatGroup = new C4Group();
 		bool fSuccess=false;
@@ -2180,7 +2187,7 @@ bool C4Landscape::SaveTextures(C4Group &hGroup)
 			// create at temp path
 			if (pMatGroup->Open(Config.AtTempPath(C4CFN_Material), TRUE))
 				// write to it
-				if (Game.TextureMap.SaveMap(*pMatGroup, C4CFN_TexMap))
+				if (::TextureMap.SaveMap(*pMatGroup, C4CFN_TexMap))
 					// close (flush)
 					if (pMatGroup->Close())
 						// add it
@@ -2192,7 +2199,7 @@ bool C4Landscape::SaveTextures(C4Group &hGroup)
 		else
 			// simply write it to the local material file
 			if (pMatGroup->OpenAsChild(&hGroup, C4CFN_Material))
-				fSuccess = Game.TextureMap.SaveMap(*pMatGroup, C4CFN_TexMap);
+				fSuccess = ::TextureMap.SaveMap(*pMatGroup, C4CFN_TexMap);
 		// close material group again
 		if (pMatGroup->IsOpen()) pMatGroup->Close();
 		delete pMatGroup;
@@ -2227,7 +2234,7 @@ BOOL C4Landscape::GetMapColorIndex(const char *szMaterial, const char *szTexture
 	// Material-Texture
 	else
 		{
-		if (!(rbyCol=Game.TextureMap.GetIndex(szMaterial,szTexture))) return FALSE;
+		if (!(rbyCol=::TextureMap.GetIndex(szMaterial,szTexture))) return FALSE;
 		if (fIFT) rbyCol+=IFT;
 		}
 	// Found
@@ -2272,14 +2279,14 @@ BYTE DrawLineCol;
 
 bool C4Landscape::DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade)
 	{
-	Game.Landscape.Surface8->Circle(iX,iY,iGrade, DrawLineCol);
+	::Landscape.Surface8->Circle(iX,iY,iGrade, DrawLineCol);
 	return TRUE;
 	}
 
 bool DrawLineMap(int32_t iX, int32_t iY, int32_t iRadius)
 	{
-	if (iRadius==1) { if (Game.Landscape.Map) Game.Landscape.Map->SetPix(iX,iY,DrawLineCol); }
-	else Game.Landscape.Map->Circle(iX,iY,iRadius,DrawLineCol);
+	if (iRadius==1) { if (::Landscape.Map) ::Landscape.Map->SetPix(iX,iY,DrawLineCol); }
+	else ::Landscape.Map->Circle(iX,iY,iRadius,DrawLineCol);
 	return TRUE;
 	}
 
@@ -2361,7 +2368,7 @@ BOOL C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 	BYTE byColor;
 	if (!GetMapColorIndex(szMaterial, szTexture, bIFT, byColor)) return FALSE;
 
-	int32_t iMaterial = Game.Material.Get(szMaterial); if (!MatValid(iMaterial)) return FALSE;
+	int32_t iMaterial = ::MaterialMap.Get(szMaterial); if (!MatValid(iMaterial)) return FALSE;
 
 	C4Rect BoundingBox(tx - 5, ty - 5, wdt + 10, hgt + 10);
 	PrepareChange(BoundingBox);
@@ -2374,7 +2381,7 @@ BOOL C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 	int32_t x, y;
 	for(x = 0; x < icntx; x++)
 		for(y = 0; y < icnty; y++)
-			DrawChunk(tx+wdt*x/icntx,ty+hgt*y/icnty,wdt/icntx,hgt/icnty,byColor,Game.Material.Map[iMaterial].MapChunkType,Random(1000));
+			DrawChunk(tx+wdt*x/icntx,ty+hgt*y/icnty,wdt/icntx,hgt/icnty,byColor,::MaterialMap.Map[iMaterial].MapChunkType,Random(1000));
 
 	// remove clipper
 	Surface8->NoClip();
@@ -2388,7 +2395,7 @@ BOOL C4Landscape::DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, i
 BOOL C4Landscape::DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool fIFT)
   {
 	// get texture
-	int32_t iMatTex = Game.TextureMap.GetIndexMatTex(szMaterial);
+	int32_t iMatTex = ::TextureMap.GetIndexMatTex(szMaterial);
 	if(!iMatTex) return FALSE;
 	// prepate pixel count update
 	C4Rect BoundingBox(iX1, iY1, 1, 1);
@@ -2485,11 +2492,14 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 	if (To.Wdt<=0 || To.Hgt<=0) return true;
 	if (!Surface32->Lock()) return false;
 	Surface32->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
-	if (AnimationSurface)
+
+	if(lpDDraw->IsShaderific() && Config.Graphics.HighResLandscape)
 		{
-		AnimationSurface->Lock();
-		AnimationSurface->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
+		for (int32_t iX=To.x; iX<To.x+To.Wdt; ++iX)
+			for (int32_t iY=To.y; iY<To.y+To.Hgt; ++iY)
+				Surface32->SetPixDw(iX, iY, _GetPix(iX, iY));
 		}
+	else
 	// do lightning
 	for (int32_t iX=To.x; iX<To.x+To.Wdt; ++iX)
 		{
@@ -2537,11 +2547,9 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 				DarkenClrBy(dwBackClr, Min(30, 2 * (iOwnDens - iCompareDens)));
 				}
 			Surface32->SetPixDw(iX, iY, dwBackClr);
-			if (AnimationSurface) AnimationSurface->SetPixDw(iX, iY, DensityLiquid(Pix2Dens[pix]) ? 255 << 24 : 0);
 			}
 		}
 	Surface32->Unlock();
-	if (AnimationSurface) AnimationSurface->Unlock();
 	// done
 	return true;
 	}
@@ -2550,15 +2558,14 @@ DWORD C4Landscape::GetClrByTex(int32_t iX, int32_t iY)
 	{
 	// Get pixel and default color
 	BYTE pix = _GetPix(iX, iY);
-	DWORD dwPix = Surface8->pPal->GetClr(pix);
 	// get texture map entry for pixel
 	const C4TexMapEntry *pTex;
-	if(pix && (pTex = Game.TextureMap.GetEntry(PixCol2Tex(pix))))
+	if(pix && (pTex = ::TextureMap.GetEntry(PixCol2Tex(pix))))
 		{
 		// pattern color
-		pTex->getPattern().PatternClr(iX, iY, pix, dwPix, Application.DDraw->Pal);
+		return pTex->GetPattern().PatternClr(iX, iY);
 		}
-	return dwPix;
+	return Surface8->pPal->GetClr(pix);
 	}
 
 BOOL C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef)
@@ -2574,7 +2581,7 @@ BOOL C4Landscape::DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, co
 	FakeLS.MapWdt.Set(iMapWdt, 0, iMapWdt, iMapWdt);
 	FakeLS.MapHgt.Set(iMapHgt, 0, iMapHgt, iMapHgt);
 	// create map creator
-	C4MapCreatorS2 MapCreator(&FakeLS, &Game.TextureMap, &Game.Material, Game.StartupPlayerCount);
+	C4MapCreatorS2 MapCreator(&FakeLS, &::TextureMap, &::MaterialMap, Game.StartupPlayerCount);
 	// read file
 	MapCreator.ReadScript(szMapDef);
 	// render map
@@ -2659,13 +2666,13 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 	// get last mat index - returns zero for not found (valid for insertion mode)
 	StdStrBuf Material, Texture;
 	Material.CopyUntil(szMatTex, '-'); Texture.Copy(SSearch(szMatTex, "-"));
-	BYTE iOldIndex = (szMatTex && *szMatTex) ? Game.TextureMap.GetIndex(Material.getData(), Texture.getData(), FALSE) : 0;
+	BYTE iOldIndex = (szMatTex && *szMatTex) ? ::TextureMap.GetIndex(Material.getData(), Texture.getData(), FALSE) : 0;
 	// insertion mode?
 	if (fInsert)
 		{
 		// there must be room to move up to
 		BYTE byLastMoveIndex = C4M_MaxTexIndex - 1;
-		while (Game.TextureMap.GetEntry(byLastMoveIndex))
+		while (::TextureMap.GetEntry(byLastMoveIndex))
 			if (--byLastMoveIndex == iNewIndex)
 				{
 				DebugLogF("Cannot insert new texture %s to index %d: No room for insertion.", (const char *) szMatTex, (int) iNewIndex);
@@ -2674,10 +2681,10 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 		// then move up all other textures first
 		// could do this in one loop, but it's just a developement call anyway, so move one index at a time
 		while (--byLastMoveIndex >= iNewIndex)
-			if (Game.TextureMap.GetEntry(byLastMoveIndex))
+			if (::TextureMap.GetEntry(byLastMoveIndex))
 				{
 				ReplaceMapColor(byLastMoveIndex, byLastMoveIndex+1);
-				Game.TextureMap.MoveIndex(byLastMoveIndex, byLastMoveIndex+1);
+				::TextureMap.MoveIndex(byLastMoveIndex, byLastMoveIndex+1);
 				}
 		// new insertion desired?
 		if (szMatTex && *szMatTex)
@@ -2686,14 +2693,14 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 			if (iOldIndex)
 				{
 				ReplaceMapColor(iOldIndex, iNewIndex);
-				Game.TextureMap.MoveIndex(iOldIndex, iNewIndex);
+				::TextureMap.MoveIndex(iOldIndex, iNewIndex);
 				}
 			else
 				{
 				StdStrBuf Material, Texture;
 				Material.CopyUntil(szMatTex, '-'); Texture.Copy(SSearch(szMatTex, "-"));
 				// new insertion
-				if (!Game.TextureMap.AddEntry(iNewIndex, Material.getData(), Texture.getData()))
+				if (!::TextureMap.AddEntry(iNewIndex, Material.getData(), Texture.getData()))
 					{
 					LogF("Cannot insert new texture %s to index %d: Texture map entry error", (const char *) szMatTex, (int) iNewIndex);
 					return FALSE;
@@ -2707,7 +2714,7 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 		{
 		// new index must not be occupied
 		const C4TexMapEntry *pOld;
-		if ((pOld = Game.TextureMap.GetEntry(iNewIndex)) && !pOld->isNull())
+		if ((pOld = ::TextureMap.GetEntry(iNewIndex)) && !pOld->isNull())
 			{
 			DebugLogF("Cannot move texture %s to index %d: Index occupied by %s-%s.", (const char *) szMatTex, (int) iNewIndex, pOld->GetMaterialName(), pOld->GetTextureName());
 			return FALSE;
@@ -2721,7 +2728,7 @@ BOOL C4Landscape::SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fIn
 		// update map
 		ReplaceMapColor(iOldIndex, iNewIndex);
 		// change to new index in texmap
-		Game.TextureMap.MoveIndex(iOldIndex, iNewIndex);
+		::TextureMap.MoveIndex(iOldIndex, iNewIndex);
 		// done, success
 		return TRUE;
 		}
@@ -2740,7 +2747,7 @@ void C4Landscape::UpdatePixMaps()
 	int32_t i;
 	for(i = 0; i < 256; i++) Pix2Mat[i] = PixCol2Mat(i);
 	for(i = 0; i < 256; i++) Pix2Dens[i] = MatDensity(Pix2Mat[i]);
-	for(i = 0; i < 256; i++) Pix2Place[i] = MatValid(Pix2Mat[i]) ? Game.Material.Map[Pix2Mat[i]].Placement : 0;
+	for(i = 0; i < 256; i++) Pix2Place[i] = MatValid(Pix2Mat[i]) ? ::MaterialMap.Map[Pix2Mat[i]].Placement : 0;
 	Pix2Place[0] = 0;
 	}
 
@@ -2757,17 +2764,18 @@ bool C4Landscape::Mat2Pal()
 	int32_t tex,rgb;
 	for (tex=0; tex<C4M_MaxTexIndex; tex++)
 		{
-		const C4TexMapEntry *pTex = Game.TextureMap.GetEntry(tex);
+		const C4TexMapEntry *pTex = ::TextureMap.GetEntry(tex);
 		if(!pTex || pTex->isNull())
 			continue;
 		// colors
+		DWORD dwPix = pTex->GetPattern().PatternClr(0, 0);
 		for (rgb=0; rgb<3; rgb++)
 			Surface8->pPal->Colors[MatTex2PixCol(tex)*3+rgb]
 				= Surface8->pPal->Colors[(MatTex2PixCol(tex)+IFT)*3+rgb]
-				= pTex->GetMaterial()->Color[rgb];
+				= dwPix >> ((2-rgb) * 8);
 		// alpha
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)] = pTex->GetMaterial()->Alpha[0];
-		Surface8->pPal->Alpha[MatTex2PixCol(tex)+IFT] = pTex->GetMaterial()->Alpha[C4M_ColsPerMat];
+		Surface8->pPal->Alpha[MatTex2PixCol(tex)] = 0;
+		Surface8->pPal->Alpha[MatTex2PixCol(tex)+IFT] = 0;
 		}
 	// success
 	return true;
@@ -2844,7 +2852,7 @@ void C4Landscape::UpdateMatCnt(C4Rect Rect, bool fPlus)
           // Normal material counting
           MatCount[iMat] += iMul * (iHgt + 1);
           // Effective material counting enabled?
-          if(int32_t iMinHgt = Game.Material.Map[iMat].MinHeightCount)
+          if(int32_t iMinHgt = ::MaterialMap.Map[iMat].MinHeightCount)
             {
             // First chunk? Add any material above when checking chunk height
             int iAddedHeight = 0;
@@ -2870,7 +2878,7 @@ void C4Landscape::UpdateMatCnt(C4Rect Rect, bool fPlus)
       // Normal material counting
       MatCount[iMat] += iMul * (iHgt + 1);
       // Minimum height counting?
-      if(int32_t iMinHgt = Game.Material.Map[iMat].MinHeightCount)
+      if(int32_t iMinHgt = ::MaterialMap.Map[iMat].MinHeightCount)
         {
         int iAddedHeight1 = 0, iAddedHeight2 = 0;
         // Add any material above for chunk size check
@@ -2880,7 +2888,7 @@ void C4Landscape::UpdateMatCnt(C4Rect Rect, bool fPlus)
         if(Rect.y+y < Height)
           iAddedHeight2 = GetMatHeight(Rect.x+x, Rect.y+Rect.Hgt, 1, iMat, iMinHgt);
         // Chunk tall enough?
-        if(iHgt + 1 + iAddedHeight1 + iAddedHeight2 >= Game.Material.Map[iMat].MinHeightCount)
+        if(iHgt + 1 + iAddedHeight1 + iAddedHeight2 >= ::MaterialMap.Map[iMat].MinHeightCount)
           {
           EffectiveMatCount[iMat] += iMul * (iHgt + 1);
           if(iAddedHeight1 < iMinHgt)
@@ -2915,9 +2923,9 @@ void C4Landscape::RemoveUnusedTexMapEntries()
     for (int32_t x=0; x<Width; ++x)
       fTexUsage[Surface8->GetPix(x,y) & 0x7f] = true;
   // check usage by materials
-  for (int32_t iMat = 0; iMat < Game.Material.Num; ++iMat)
+  for (int32_t iMat = 0; iMat < ::MaterialMap.Num; ++iMat)
     {
-    C4Material *pMat = Game.Material.Map + iMat;
+    C4Material *pMat = ::MaterialMap.Map + iMat;
     if (pMat->BlastShiftTo >= 0) fTexUsage[pMat->BlastShiftTo & 0x7f] = true;
     if (pMat->BelowTempConvertTo >= 0) fTexUsage[pMat->BelowTempConvertTo & 0x7f] = true;
     if (pMat->AboveTempConvertTo >= 0) fTexUsage[pMat->AboveTempConvertTo & 0x7f] = true;
@@ -2926,9 +2934,9 @@ void C4Landscape::RemoveUnusedTexMapEntries()
   // remove unused
   for (iMatTex = 1; iMatTex < C4M_MaxTexIndex; ++iMatTex)
     if (!fTexUsage[iMatTex])
-      Game.TextureMap.RemoveEntry(iMatTex);
+      ::TextureMap.RemoveEntry(iMatTex);
   // flag rewrite
-  Game.TextureMap.fEntriesAdded = true;
+  ::TextureMap.fEntriesAdded = true;
   }
 
 bool C4Landscape::DebugSave(const char *szFilename)
@@ -2941,3 +2949,5 @@ bool C4Landscape::DebugSave(const char *szFilename)
 		}
 	return fSuccess;
 	}
+
+C4Landscape Landscape;

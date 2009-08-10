@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003, 2007  Matthes Bender
+ * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -51,6 +53,8 @@ class C4ConfigShareware: public C4Config
 		const char* GetInvalidKeyFilename();
 		const char* GetKeyPath();
 		StdStrBuf GetKeyMD5();
+		// checks for phising attacks: Return true if input contains user's webcode
+		bool IsConfidentialData(const char *szInput);
 	protected:
 		StdStrBuf RegistrationError;
 		bool HandleError(const char *strMessage);

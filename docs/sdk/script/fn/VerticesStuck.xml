@@ -22,7 +22,7 @@
 
       <examples>
         <example>
-          <code>var obj=FindObject(FLAG);
+          <code>var obj=FindObject(Find_ID(FLAG));
 if (VerticesStuck(obj)) RemoveObject(obj);</code>
           <text>Entfernt obj wenn einer seiner Vertices feststeckt</text>
         </example>

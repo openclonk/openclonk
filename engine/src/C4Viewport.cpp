@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2004, 2007-2008  Matthes Bender
+ * Copyright (c) 2001-2002, 2005-2008  Sven Eberhardt
+ * Copyright (c) 2003-2005, 2007-2008  Peter Wortmann
+ * Copyright (c) 2005-2009  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,7 +30,6 @@
 #include <C4UserMessages.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
-#include <C4Wrappers.h>
 #include <C4FullScreen.h>
 #include <C4Application.h>
 #include <C4ObjectCom.h>
@@ -36,6 +40,16 @@
 #include <C4Player.h>
 #include <C4ChatDlg.h>
 #include <C4ObjectMenu.h>
+#include <C4MouseControl.h>
+#include <C4PXS.h>
+#include <C4GameMessage.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Landscape.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
+#include <C4Network2.h>
 #endif
 
 #include <StdGL.h>
@@ -73,7 +87,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
   {
 	// Determine viewport
 	C4Viewport *cvp;
-	if (!(cvp=Game.GraphicsSystem.GetViewport(hwnd)))
+	if (!(cvp=::GraphicsSystem.GetViewport(hwnd)))
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 	// Process message
@@ -128,7 +142,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			break;
     //----------------------------------------------------------------------------------------------------------------------------------
 		case WM_PAINT:
-			Game.GraphicsSystem.Execute();
+			::GraphicsSystem.Execute();
 			break;
     //----------------------------------------------------------------------------------------------------------------------------------
 		case WM_HSCROLL:
@@ -160,32 +174,32 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
     }
 
 	// Viewport mouse control
-	if (Game.MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 		{
 		switch (uMsg)
 			{
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_LBUTTONDOWN: Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
+			case WM_LBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_LBUTTONUP: Game.GraphicsSystem.MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
+			case WM_LBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONDOWN: Game.GraphicsSystem.MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+			case WM_RBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONUP: Game.GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+			case WM_RBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_LBUTTONDBLCLK: Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
+			case WM_LBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONDBLCLK: Game.GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
+			case WM_RBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 			case WM_MOUSEMOVE:
 				if ( Inside<int32_t>(LOWORD(lParam)-cvp->DrawX,0,cvp->ViewWdt-1)
 					&& Inside<int32_t>(HIWORD(lParam)-cvp->DrawY,0,cvp->ViewHgt-1) )
 						SetCursor(NULL);
-				Game.GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
 				break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 			case WM_MOUSEWHEEL:
-				Game.GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
 				break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 
@@ -500,15 +514,15 @@ gboolean C4ViewportWindow::OnScrollStatic(GtkWidget* widget, GdkEventScroll* eve
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
-	if (Game.MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		switch(event->direction)
 		{
 		case GDK_SCROLL_UP:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(1) << 16), window->cvp);
+			::GraphicsSystem.MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(1) << 16), window->cvp);
 			break;
 		case GDK_SCROLL_DOWN:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(-1) << 16), window->cvp);
+			::GraphicsSystem.MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(-1) << 16), window->cvp);
 			break;
 		}
 	}
@@ -520,24 +534,24 @@ gboolean C4ViewportWindow::OnButtonPressStatic(GtkWidget* widget, GdkEventButton
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
-	if (Game.MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		switch(event->button)
 		{
 		case 1:
 			if(event->type == GDK_BUTTON_PRESS)
-				Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_LeftDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			else if(event->type == GDK_2BUTTON_PRESS)
-				Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 2:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_MiddleDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 3:
 			if(event->type == GDK_BUTTON_PRESS)
-				Game.GraphicsSystem.MouseMove(C4MC_Button_RightDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_RightDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			else if(event->type == GDK_2BUTTON_PRESS)
-				Game.GraphicsSystem.MouseMove(C4MC_Button_RightDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_RightDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		}
 	}
@@ -561,18 +575,18 @@ gboolean C4ViewportWindow::OnButtonReleaseStatic(GtkWidget* widget, GdkEventButt
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
-	if (Game.MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
 		switch (event->button)
 		{
 		case 1:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_LeftUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			::GraphicsSystem.MouseMove(C4MC_Button_LeftUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 2:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			::GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 3:
-			Game.GraphicsSystem.MouseMove(C4MC_Button_RightUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+			::GraphicsSystem.MouseMove(C4MC_Button_RightUp, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		}
 	}
@@ -596,9 +610,9 @@ gboolean C4ViewportWindow::OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotio
 {
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
-	if (Game.MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
-		Game.GraphicsSystem.MouseMove(C4MC_Button_None, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
+		::GraphicsSystem.MouseMove(C4MC_Button_None, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 	}
 	else
 	{
@@ -665,42 +679,42 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 		case ButtonPress:
 			{
 			static int last_left_click, last_right_click;
-			if (Game.MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+			if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 				{
 				switch (e.xbutton.button)
 					{
 					case Button1:
 					if (timeGetTime() - last_left_click < 400) {
-						Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,
+						::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,
 							e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 						last_left_click = 0;
 					} else {
-						Game.GraphicsSystem.MouseMove(C4MC_Button_LeftDown,
+						::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,
 							e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 						last_left_click = timeGetTime();
 					}
 					break;
 					case Button2:
-					Game.GraphicsSystem.MouseMove(C4MC_Button_MiddleDown,
+					::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown,
 						e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 					break;
 					case Button3:
 					if (timeGetTime() - last_right_click < 400) {
-						Game.GraphicsSystem.MouseMove(C4MC_Button_RightDouble,
+						::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,
 							e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 						last_right_click = 0;
 					} else {
-						Game.GraphicsSystem.MouseMove(C4MC_Button_RightDown,
+						::GraphicsSystem.MouseMove(C4MC_Button_RightDown,
 							e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 						last_right_click = timeGetTime();
 					}
 					break;
 					case Button4:
-					Game.GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+					::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
 						e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(1) << 16), cvp);
 					break;
 					case Button5:
-					Game.GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+					::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
 						e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-1) << 16), cvp);
 					break;
 					default:
@@ -722,18 +736,18 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 			}
 		break;
 		case ButtonRelease:
-		if (Game.MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 			{
 			switch (e.xbutton.button)
 				{
 				case Button1:
-				Game.GraphicsSystem.MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 				break;
 				case Button2:
-				Game.GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 				break;
 				case Button3:
-				Game.GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				::GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 				break;
 				default:
 				break;
@@ -753,9 +767,9 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 			}
 		break;
 		case MotionNotify:
-		if (Game.MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 			{
-			Game.GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+			::GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
 			}
 		else
 			{
@@ -771,7 +785,7 @@ void C4ViewportWindow::HandleMessage (XEvent & e)
 #endif // WITH_DEVELOPER_MODE/_WIN32
 
 void C4ViewportWindow::Close() {
-	Game.GraphicsSystem.CloseViewport(cvp);
+	::GraphicsSystem.CloseViewport(cvp);
 }
 
 BOOL C4Viewport::UpdateOutputSize()
@@ -848,20 +862,20 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		}
 	// Game messages
  	C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
-	Game.Messages.Draw(cgo, Player, Zoom);
+	::Messages.Draw(cgo, Player, Zoom);
 	C4ST_STOP(MsgStat)
 
 	// Control overlays (if not film/replay)
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
 		// Mouse control
-		if (Game.MouseControl.IsViewport(this))
+		if (::MouseControl.IsViewport(this))
 			{
 			C4ST_STARTNEW(MouseStat, "C4Viewport::DrawOverlay: Mouse")
 			if (Config.Graphics.ShowCommands) // Now, ShowCommands is respected even for mouse control...
 				DrawMouseButtons(cgo);
-			Game.MouseControl.Draw(cgo, GameZoom);
+			::MouseControl.Draw(cgo, GameZoom);
 			// Draw GUI-mouse in EM if active
-			if (pWindow && Game.pGUI) Game.pGUI->RenderMouse(cgo);
+			if (pWindow && ::pGUI) ::pGUI->RenderMouse(cgo);
 			C4ST_STOP(MouseStat)
 			}
 		// Keyboard/Gamepad
@@ -883,7 +897,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 
 	// Get cursor
 	C4Object *cursor, *realcursor;
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 	if (!pPlr) return;
 	realcursor = pPlr->Cursor;
 	if (!(cursor=pPlr->ViewCursor))
@@ -897,8 +911,8 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 			C4ST_STARTNEW(ObjInfStat, "C4Viewport::DrawCursorInfo: Object info")
 			ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+C4SymbolBorder,3*C4SymbolSize,C4SymbolSize);
 			cursor->Info->Draw(	ccgo,
-													Config.Graphics.ShowPortraits, // && Game.Players.Get(Player)->CursorFlash,
-													(cursor == Game.Players.Get(Player)->Captain), cursor );
+													Config.Graphics.ShowPortraits, // && ::Players.Get(Player)->CursorFlash,
+													(cursor == ::Players.Get(Player)->Captain), cursor );
 			C4ST_STOP(ObjInfStat)
 			}
 
@@ -915,7 +929,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 		{
 		// Object list
 		ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+cgo.Hgt-C4SymbolBorder-C4SymbolSize,7*C4SymbolSize,C4SymbolSize);
-		cursor->Contents.DrawIDList(ccgo,-1,Game.Defs,C4D_All,SetRegions,COM_Contents,FALSE);
+		cursor->Contents.DrawIDList(ccgo,-1,::Definitions,C4D_All,SetRegions,COM_Contents,FALSE);
 		}
 
 	C4ST_STOP(ContStat)
@@ -927,7 +941,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 			{
 			int32_t cx = C4SymbolBorder;
 			C4ST_STARTNEW(EnStat, "C4Viewport::DrawCursorInfo: Energy")
-			int32_t bar_wdt = Game.GraphicsResource.fctEnergyBars.Wdt;
+			int32_t bar_wdt = ::GraphicsResource.fctEnergyBars.Wdt;
 			int32_t iYOff = Config.Graphics.ShowPortraits ? 10 : 0;
 			// Energy
 			ccgo.Set(cgo.Surface,cgo.X+cx,cgo.Y+C4SymbolSize+2*C4SymbolBorder+iYOff,bar_wdt,cgo.Hgt-3*C4SymbolBorder-2*C4SymbolSize-iYOff);
@@ -942,7 +956,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 			}
 
 	// Draw commands
-	if (Config.Graphics.ShowCommands /*|| Game.MouseControl.IsViewport(this)*/ ) // Now, ShowCommands is respected even for mouse control
+	if (Config.Graphics.ShowCommands /*|| ::MouseControl.IsViewport(this)*/ ) // Now, ShowCommands is respected even for mouse control
 		if (realcursor)
 			if (cgo.Hgt>C4SymbolSize)
 				{
@@ -964,13 +978,13 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 	{
 
 	// Get player
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 
 	// Player eliminated
 	if (pPlr && pPlr->Eliminated)
 		{
 		Application.DDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :	"IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
-			Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+2*cgo.Hgt/3,0xfaFF0000,ACenter);
+			::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+2*cgo.Hgt/3,0xfaFF0000,ACenter);
 		return;
 		}
 
@@ -985,7 +999,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 		if (ResetMenuPositions) pPlr->Cursor->Menu->ResetLocation();
 		// if mouse is dragging, make it transparent to easy construction site drag+drop
 		bool fDragging=false;
-		if (Game.MouseControl.IsDragging() && Game.MouseControl.IsViewport(this))
+		if (::MouseControl.IsDragging() && ::MouseControl.IsViewport(this))
 			{
 			fDragging = true;
 			lpDDraw->ActivateBlitModulation(0xafffffff);
@@ -1033,10 +1047,10 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 	if (fDrawOverlay)
 		{
 		// Draw landscape borders. Only if overlay, so complete map screenshots don't get messed up
-		if (BorderLeft)  Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
-		if (BorderTop)   Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
-		if (BorderRight) Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
-		if (BorderBottom)Application.DDraw->BlitSurfaceTile(Game.GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
+		if (BorderLeft)  Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
+		if (BorderTop)   Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
+		if (BorderRight) Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+ViewWdt-BorderRight,DrawY,BorderRight,ViewHgt,-DrawX-ViewWdt+BorderRight,-DrawY);
+		if (BorderBottom)Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY+ViewHgt-BorderBottom,ViewWdt-BorderLeft-BorderRight,BorderBottom,-DrawX-BorderLeft,-DrawY-ViewHgt+BorderBottom);
 
 		// Set clippers
 		cgo.X += BorderLeft; cgo.Y += BorderTop; cgo.Wdt -= int(float(BorderLeft+BorderRight)/Zoom); cgo.Hgt -= int(float(BorderTop+BorderBottom)/Zoom);
@@ -1048,7 +1062,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		}
 
 	// landscape mod by FoW
-	C4Player *pPlr=Game.Players.Get(Player);
+	C4Player *pPlr=::Players.Get(Player);
 	if (pPlr && pPlr->fFogOfWar)
 		{
 		ClrModMap.Reset(Game.C4S.Landscape.FoWRes, Game.C4S.Landscape.FoWRes, ViewWdt, ViewHgt, int(cgo.TargetX*Zoom), int(cgo.TargetY*Zoom), 0, cgo.X-BorderLeft, cgo.Y-BorderTop, Game.FoWColor, cgo.Surface);
@@ -1060,35 +1074,35 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		lpDDraw->SetClrModMapEnabled(false);
 
 	C4ST_STARTNEW(SkyStat, "C4Viewport::Draw: Sky")
-	Game.Landscape.Sky.Draw(cgo);
+	::Landscape.Sky.Draw(cgo);
 	C4ST_STOP(SkyStat)
-	Game.BackObjects.DrawAll(cgo, Player);
+	::Objects.BackObjects.DrawAll(cgo, Player);
 
 	// Draw Landscape
 	C4ST_STARTNEW(LandStat, "C4Viewport::Draw: Landscape")
-	Game.Landscape.Draw(cgo,Player);
+	::Landscape.Draw(cgo,Player);
 	C4ST_STOP(LandStat)
 
 	// draw PXS (unclipped!)
 	C4ST_STARTNEW(PXSStat, "C4Viewport::Draw: PXS")
-	Game.PXS.Draw(cgo);
+	::PXS.Draw(cgo);
 	C4ST_STOP(PXSStat)
 
 	// draw objects
 	C4ST_STARTNEW(ObjStat, "C4Viewport::Draw: Objects")
-	Game.Objects.Draw(cgo, Player);
+	::Objects.Draw(cgo, Player);
 	C4ST_STOP(ObjStat)
 
 	// draw global particles
 	C4ST_STARTNEW(PartStat, "C4Viewport::Draw: Particles")
-	Game.Particles.GlobalParticles.Draw(cgo,NULL);
+	::Particles.GlobalParticles.Draw(cgo,NULL);
 	C4ST_STOP(PartStat)
 
 	// draw foreground objects
-	Game.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, true);
+	::Objects.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, true);
 
 	// Draw PathFinder
-	if (Game.GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
+	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
 
 	// Draw overlay
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay) Game.DrawCursors(cgo, Player);
@@ -1106,7 +1120,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		cgo.Set(Application.DDraw->lpBack,DrawX,DrawY,int(float(ViewWdt)/fGUIZoom),int(float(ViewHgt)/fGUIZoom),ViewX,ViewY);
 
 		// draw custom GUI objects
-		Game.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, false);
+		::Objects.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, false);
 
 		// Draw overlay
 		C4ST_STARTNEW(OvrStat, "C4Viewport::Draw: Overlay")
@@ -1116,8 +1130,8 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		DrawOverlay(cgo, GameZoom);
 
 		// Netstats
-		if (Game.GraphicsSystem.ShowNetstatus)
-			Game.Network.DrawStatus(cgo);
+		if (::GraphicsSystem.ShowNetstatus)
+			::Network.DrawStatus(cgo);
 
 		C4ST_STOP(OvrStat)
 
@@ -1165,8 +1179,8 @@ void C4Viewport::Execute()
 	Draw(cgo, true);
 	// Video record & status (developer mode, first player viewport)
 	if (!Application.isFullScreen)
-		if (Player==0 && (this==Game.GraphicsSystem.GetViewport((int32_t) 0)))
-			Game.GraphicsSystem.Video.Execute();
+		if (Player==0 && (this==::GraphicsSystem.GetViewport((int32_t) 0)))
+			::GraphicsSystem.Video.Execute();
 	// Blit output
 	BlitOutput();
 #ifdef USE_GL
@@ -1187,7 +1201,7 @@ void C4Viewport::AdjustPosition()
 	// View position
 	if (PlayerLock && ValidPlr(Player))
 		{
-		C4Player *pPlr = Game.Players.Get(Player);
+		C4Player *pPlr = ::Players.Get(Player);
 		float iScrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
 		float iExtraBoundsX = 0, iExtraBoundsY = 0;
 		if(pPlr->ViewMode == C4PVM_Scrolling)
@@ -1210,13 +1224,13 @@ void C4Viewport::AdjustPosition()
 		float iTargetViewY = pPlr->ViewY - ViewHgt / (Zoom * 2);
 		// add mouse auto scroll
 		float iPrefViewX = ViewX - ViewOffsX, iPrefViewY = ViewY - ViewOffsY;
-		if(pPlr->MouseControl && Game.MouseControl.InitCentered && Config.General.MouseAScroll)
+		if(pPlr->MouseControl && ::MouseControl.InitCentered && Config.General.MouseAScroll)
 			{
 			int32_t iAutoScrollBorder = Min(Min(ViewWdt/10,ViewHgt/10), C4SymbolSize);
 			if(iAutoScrollBorder)
 				{
-				iPrefViewX += BoundBy<int32_t>(0, Game.MouseControl.VpX - ViewWdt + iAutoScrollBorder, Game.MouseControl.VpX - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
-				iPrefViewY += BoundBy<int32_t>(0, Game.MouseControl.VpY - ViewHgt + iAutoScrollBorder, Game.MouseControl.VpY - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
+				iPrefViewX += BoundBy<int32_t>(0, ::MouseControl.VpX - ViewWdt + iAutoScrollBorder, ::MouseControl.VpX - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
+				iPrefViewY += BoundBy<int32_t>(0, ::MouseControl.VpY - ViewHgt + iAutoScrollBorder, ::MouseControl.VpY - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
 				}
 			}
 		// scroll range
@@ -1320,7 +1334,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 	if (!ValidPlr(Player)) return;
 
 	// Wealth
-	if (Game.Players.Get(Player)->ViewWealth || Config.Graphics.ShowPlayerInfoAlways)
+	if (::Players.Get(Player)->ViewWealth || Config.Graphics.ShowPlayerInfoAlways)
 		{
 		int32_t wdt = C4SymbolSize;
 		int32_t hgt = C4SymbolSize/2;
@@ -1328,11 +1342,11 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 						 cgo.X+cgo.Wdt-wdt-C4SymbolBorder,
 						 cgo.Y+C4SymbolBorder,
 						 wdt,hgt);
-		Game.GraphicsResource.fctWealth.DrawValue(ccgo,Game.Players.Get(Player)->Wealth, 0, Config.Graphics.Currency);
+		::GraphicsResource.fctWealth.DrawValue(ccgo,::Players.Get(Player)->Wealth, 0, Config.Graphics.Currency);
 		}
 
 	// Value gain
-	if ( (Game.C4S.Game.ValueGain && Game.Players.Get(Player)->ViewValue)
+	if ( (Game.C4S.Game.ValueGain && ::Players.Get(Player)->ViewValue)
 		|| Config.Graphics.ShowPlayerInfoAlways)
 			{
 			int32_t wdt = C4SymbolSize;
@@ -1341,7 +1355,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 							 cgo.X+cgo.Wdt-2*wdt-2*C4SymbolBorder,
 							 cgo.Y+C4SymbolBorder,
 							 wdt,hgt);
-			Game.GraphicsResource.fctScore.DrawValue(ccgo,Game.Players.Get(Player)->ValueGain);
+			::GraphicsResource.fctScore.DrawValue(ccgo,::Players.Get(Player)->ValueGain);
 			}
 
 	// Crew
@@ -1353,7 +1367,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 						 cgo.X+cgo.Wdt-3*wdt-3*C4SymbolBorder,
 						 cgo.Y+C4SymbolBorder,
 						 wdt,hgt);
-		Game.GraphicsResource.fctCrewClr.DrawValue2Clr(ccgo,Game.Players.Get(Player)->SelectCount,Game.Players.Get(Player)->ActiveCrewCount(),Game.Players.Get(Player)->ColorDw);
+		::GraphicsResource.fctCrewClr.DrawValue2Clr(ccgo,::Players.Get(Player)->SelectCount,::Players.Get(Player)->ActiveCrewCount(),::Players.Get(Player)->ColorDw);
 		}
 
 	// Controls
@@ -1370,7 +1384,7 @@ BOOL C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	Player=iPlayer;
 	if (!fSetTempOnly) fIsNoOwnerViewport = (iPlayer == NO_OWNER);
 	// Owned viewport: clear any flash message explaining observer menu
-	if (ValidPlr(iPlayer)) Game.GraphicsSystem.FlashMessage("");
+	if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
 	return TRUE;
 	}
 
@@ -1383,7 +1397,7 @@ BOOL C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	fIsNoOwnerViewport = (Player == NO_OWNER);
 	// Create window
 	pWindow = new C4ViewportWindow(this);
-	if (!pWindow->Init(pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : Game.Players.Get(Player)->GetName(), pParent, false))
+	if (!pWindow->Init(pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName(), pParent, false))
 		return FALSE;
 	// Position and size
 	pWindow->RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
@@ -1403,7 +1417,7 @@ BOOL C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 	{
 	// determine player
-	C4Player *pPlr = Game.Players.Get(iPlayer);
+	C4Player *pPlr = ::Players.Get(iPlayer);
 	// player control
 	if (pPlr)
 		{
@@ -1434,11 +1448,11 @@ StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
 	{
 	if (!ValidPlr(Player)) return;
-	if (!Game.Players.Get(Player)->ShowControl) return;
+	if (!::Players.Get(Player)->ShowControl) return;
 	int32_t size = Min( cgo.Wdt/3, 7*cgo.Hgt/24 );
 	int32_t tx;
 	int32_t ty;
-	switch (Game.Players.Get(Player)->ShowControlPos)
+	switch (::Players.Get(Player)->ShowControlPos)
 		{
 		case 1: // Position 1: bottom right corner
 			tx = cgo.X+cgo.Wdt*3/4-size/2;
@@ -1470,7 +1484,7 @@ extern int32_t DrawMessageOffset;
 void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 	{
 	C4Player *pPlr;
-	if (!(pPlr = Game.Players.Get(Player))) return;
+	if (!(pPlr = ::Players.Get(Player))) return;
 	if (!pPlr->LocalControl || !pPlr->ShowStartup) return;
 	int32_t iNameHgtOff=0;
 
@@ -1498,7 +1512,7 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 		}
 
 	// Name
-	Application.DDraw->TextOut(pPlr->GetName(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,
+	Application.DDraw->TextOut(pPlr->GetName(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
 				cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt*2/3+iNameHgtOff + DrawMessageOffset,
 				pPlr->ColorDw | 0xff000000, ACenter);
 	}
@@ -1517,14 +1531,14 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	ResetMenuPositions=TRUE;
 	// player uses mouse control? then clip the cursor
 	C4Player *pPlr;
-	if (pPlr=Game.Players.Get(Player))
+	if (pPlr=::Players.Get(Player))
 		if (pPlr->MouseControl)
 			{
-			Game.MouseControl.UpdateClip();
+			::MouseControl.UpdateClip();
 			// and inform GUI
-			if (Game.pGUI)
-				//Game.pGUI->SetBounds(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
-				Game.pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
+			if (::pGUI)
+				//::pGUI->SetBounds(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
+				::pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
 			}
 	}
 
@@ -1560,7 +1574,7 @@ void C4Viewport::DrawMouseButtons(C4TargetFacet &cgo)
 void C4Viewport::DrawPlayerFogOfWar(C4TargetFacet &cgo)
 	{
 	/*
-	C4Player *pPlr=Game.Players.Get(Player);
+	C4Player *pPlr=::Players.Get(Player);
 	if (!pPlr || !pPlr->FogOfWar) return;
 	pPlr->FogOfWar->Draw(cgo);*/ // now done by modulation
 	}
@@ -1568,14 +1582,14 @@ void C4Viewport::DrawPlayerFogOfWar(C4TargetFacet &cgo)
 void C4Viewport::NextPlayer()
 	{
 	C4Player *pPlr; int32_t iPlr;
-	if (!(pPlr = Game.Players.Get(Player)))
+	if (!(pPlr = ::Players.Get(Player)))
 		{
-		if (!(pPlr = Game.Players.First)) return;
+		if (!(pPlr = ::Players.First)) return;
 		}
 	else
 		if (!(pPlr = pPlr->Next))
 			if (Game.C4S.Head.Film && Game.C4S.Head.Replay)
-				pPlr = Game.Players.First; // cycle to first in film mode only; in network obs mode allow NO_OWNER-view
+				pPlr = ::Players.First; // cycle to first in film mode only; in network obs mode allow NO_OWNER-view
 	if (pPlr) iPlr = pPlr->Number; else iPlr = NO_OWNER;
 	if (iPlr != Player) Init(iPlr, true);
 	}
@@ -1584,7 +1598,7 @@ bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
 	{
 	// check all associated menus
 	// Get player
-	C4Player *pPlr = Game.Players.Get(Player);
+	C4Player *pPlr = ::Players.Get(Player);
 	// Player eliminated: No menu
 	if (pPlr && pPlr->Eliminated) return false;
 	// Player cursor object menu

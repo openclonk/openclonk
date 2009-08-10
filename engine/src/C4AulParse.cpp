@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001-2004, 2006-2008  Sven Eberhardt
+ * Copyright (c) 2001-2004, 2006-2008  Peter Wortmann
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2006-2009  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,7 +27,7 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Def.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #endif
 
 #define DEBUG_BYTECODE_DUMP 0
@@ -73,11 +78,13 @@
 #define C4AUL_TypeBool			"bool"
 #define C4AUL_TypeC4ID			"id"
 #define C4AUL_TypeC4Object	"object"
+#define C4AUL_TypePropList	"proplist"
 #define C4AUL_TypeString		"string"
 #define C4AUL_TypeArray			"array"
 
 #define C4AUL_True					"true"
 #define C4AUL_False					"false"
+#define C4AUL_Nil           "nil"
 
 #define C4AUL_CodeBufSize		16
 
@@ -90,6 +97,7 @@ enum C4AulTokenType
 	ATT_INT,		// integer constant
 	ATT_BOOL,		// boolean constant
 	ATT_STRING,	// string constant
+	ATT_NIL,    // "nil"
 	ATT_C4ID,		// C4ID constant
 	ATT_COMMA,	// ","
 	ATT_COLON,	// ":"
@@ -140,6 +148,7 @@ class C4AulParseState
 	void Parse_Block();
 	int Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc = 0);
 	void Parse_Array();
+	void Parse_PropList();
 	void Parse_While();
 	void Parse_If();
 	void Parse_For();
@@ -163,8 +172,7 @@ class C4AulParseState
 	const char * GetTokenName(C4AulTokenType TokenType);
 
 	void Warn(const char *pMsg, const char *pIdtf=0);
-	void StrictError(const char *pMsg, const char *pIdtf=0);
-	void Strict2Error(const char *pMsg, const char *pIdtf=0);
+	void Error(const char *pMsg, const char *pIdtf=0);
 
 	private:
 
@@ -206,7 +214,7 @@ void C4AulScript::Warn(const char *pMsg, const char *pIdtf)
 	// display it
 	warning.show();
 	// count warnings
-	++Game.ScriptEngine.warnCnt;
+	++::ScriptEngine.warnCnt;
 	}
 
 void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
@@ -215,7 +223,7 @@ void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 	if (Fn && !Fn->Owner->Def && Fn->Owner->Appends) return;
 	// script doesn't own function -> skip
 	// (exception: global functions)
-	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&Game.ScriptEngine) return;
+	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&::ScriptEngine) return;
 	// display error
 
 	C4AulParseError warning(this, pMsg, pIdtf, TRUE);
@@ -224,22 +232,12 @@ void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 	if (Fn && Fn->pOrgScript != a)
 		DebugLogF("  (as #appendto/#include to %s)", Fn->Owner->ScriptName.getData());
 	// count warnings
-	++Game.ScriptEngine.warnCnt;
+	++::ScriptEngine.warnCnt;
 	}
 
-void C4AulParseState::StrictError(const char *pMsg, const char *pIdtf)
+void C4AulParseState::Error(const char *pMsg, const char *pIdtf)
 	{
-	if (Fn ? (Fn->pOrgScript->Strict < C4AulScript::STRICT1) : (a->Strict < C4AulScript::STRICT1))
-		Warn(pMsg, pIdtf);
-	else
-		throw new C4AulParseError(this, pMsg, pIdtf);
-	}
-void C4AulParseState::Strict2Error(const char *pMsg, const char *pIdtf)
-	{
-	if (Fn ? (Fn->pOrgScript->Strict < C4AulScript::STRICT2) : (a->Strict < C4AulScript::STRICT2))
-		Warn(pMsg, pIdtf);
-	else
-		throw new C4AulParseError(this, pMsg, pIdtf);
+	throw new C4AulParseError(this, pMsg, pIdtf);
 	}
 
 C4AulParseError::C4AulParseError(C4AulParseState * state, const char *pMsg, const char *pIdtf, BOOL Warn)
@@ -448,8 +446,8 @@ C4ScriptOpDef C4ScriptOpMap[] = {
 	{ 8, "&",   AB_BitAnd,          1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
 	{ 6, "^",   AB_BitXOr,          1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
 	{ 6, "|",   AB_BitOr,           1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 5, "&&",  AB_And,             1, 0, 0, C4V_Bool, C4V_Bool,     C4V_Bool},
-	{ 4, "||",  AB_Or,              1, 0, 0, C4V_Bool, C4V_Bool,     C4V_Bool},
+	{ 5, "&&",  AB_JUMPAND,         1, 0, 0, C4V_Bool, C4V_Bool,     C4V_Bool},
+	{ 4, "||",  AB_JUMPOR,          1, 0, 0, C4V_Bool, C4V_Bool,     C4V_Bool},
 	{ 2, "*=",  AB_MulIt,           1, 1, 0, C4V_Any,  C4V_pC4Value, C4V_Int},
 	{ 2, "/=",  AB_DivIt,           1, 1, 0, C4V_Any,  C4V_pC4Value, C4V_Int},
 	{ 2, "%=",  AB_ModIt,           1, 1, 0, C4V_Any,  C4V_pC4Value, C4V_Int},
@@ -472,20 +470,11 @@ int C4AulParseState::GetOperator(const char* pScript)
 	unsigned int i;
 
 	if(!*pScript) return 0;
-	// text with > 2 characters or text and #strict 2?
-	// then break (may be misinterpreted as operator
+	// operators are not alphabetical
 	if((*pScript >= 'a' && *pScript <= 'z') ||
 		 (*pScript >= 'A' && *pScript <= 'Z'))
 	{
-		if(Fn ? (Fn->pOrgScript->Strict >= C4AulScript::STRICT2) : (a->Strict >= C4AulScript::STRICT2))
-			return -1;
-		if((*(pScript+1) >= 'a' && *(pScript+1) <= 'z') ||
-			 (*(pScript+1) >= 'A' && *(pScript+1) <= 'Z'))
-			if((*(pScript+2) >= 'a' && *(pScript+2) <= 'z') ||
-				 (*(pScript+2) >= 'A' && *(pScript+2) <= 'Z') ||
-				 (*(pScript+2) >= '0' && *(pScript+2) <= '9') ||
-				  *(pScript+2) == '_')
-				 return -1;
+		return -1;
 	}
 
 	// it is a two-char-operator?
@@ -637,14 +626,8 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					// identifier by all non-special chars
 					if (C >= '@')
 						{
-						// Old Scripts could have wacky identifier
-						if (a->Strict < C4AulScript::STRICT2)
-							{
-							State = TGS_Ident;
-							break;
-							}
-						// But now only the alphabet and '_' is allowed
-						else if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
+						// only the alphabet and '_' is allowed
+						if ((C >= 'A' && C <= 'Z') || (C >= 'a' && C <= 'z') || (C == '_'))
 							{
 							State = TGS_Ident;
 							break;
@@ -695,21 +678,19 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					Len = Min(Len, C4AUL_MAX_Identifier);
 					SCopy(SPos0, pToken, Len);
 					// check if it's a C4ID (and NOT a label)
-					BOOL fllid = LooksLikeID(pToken);
-					if ((C != '(') && (C != ':' || *(SPos+1) == ':') && fllid)
+					if (LooksLikeID(pToken))
 						{
 						// will be parsed next time
 						State = TGS_C4ID; SPos--; Len--;
 						}
 					else
 						{
-						// warn if using C4ID as func label
-						if (fllid) Strict2Error("stupid func label: ", pToken);
 						// directive?
 						if (State == TGS_Dir) return ATT_DIR;
 						// check reserved names
 						if(SEqual(pToken, C4AUL_False)) { *pInt = false; return ATT_BOOL; }
 						if(SEqual(pToken, C4AUL_True))	{ *pInt = true; return ATT_BOOL; }
+						if(SEqual(pToken, C4AUL_Nil))   { return ATT_NIL; }
 						// everything else is an identifier
 						return ATT_IDTF;
 						}
@@ -747,12 +728,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					// return integer
 					Len = Min(Len, C4AUL_MAX_Identifier);
 					SCopy(SPos0, pToken, Len);
-					// or is it a func label?
-					if ((C == '(') || (C == ':'))
-						{
-						Strict2Error("stupid func label: ", pToken);
-						return ATT_IDTF;
-						}
 					// do not parse 0x prefix for hex
 					if (State == TGS_IntHex) pToken += 2;
 					// it's not, so return the int
@@ -769,12 +744,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					// return C4ID string
 					Len = Min(Len, C4AUL_MAX_Identifier);
 					SCopy(SPos0, pToken, Len);
-					// another stupid label identifier?
-					if ((C == '(') || (C == ':' && *(SPos+1) != ':'))
-						{
-						Strict2Error("stupid func label: ", pToken);
-						return ATT_IDTF;
-						}
 					// check if valid
 					if (!LooksLikeID(pToken)) throw new C4AulParseError(this, "erroneous Ident: ", pToken);
 					// get id of it
@@ -794,8 +763,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					if(HoldStrings == Discard) return ATT_STRING;
 					// reg string (if not already done so)
 					C4String *pString;
-					pString = a->Engine->Strings.RegString(StdStrBuf(StrBuff,static_cast<long>(pStrPos - StrBuff)));
-					if (HoldStrings == Hold) pString->Hold = 1;
+					pString = Strings.RegString(StdStrBuf(StrBuff,static_cast<long>(pStrPos - StrBuff)));
 					// return pointer on string object
 					*pInt = (long) pString;
 					return ATT_STRING;
@@ -848,8 +816,6 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_LOCALN_V: return "LOCALN_V";
 	case AB_GLOBALN_R: return "GLOBALN_R";	// a named global
 	case AB_GLOBALN_V: return "GLOBALN_V";
-	case AB_VAR_R: return "VAR_R";			// Var statement
-	case AB_VAR_V: return "VAR_V";
 	case AB_PAR_R: return "PAR_R";			// Par statement
 	case AB_PAR_V: return "PAR_V";
 	case AB_FUNC: return "FUNC";		// function
@@ -879,17 +845,13 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_LessThanEqual: return "LessThanEqual";	// <=
 	case AB_GreaterThan: return "GreaterThan";	// >
 	case AB_GreaterThanEqual: return "GreaterThanEqual";	// >=
-	case AB_EqualIdent: return "EqualIdent";	// old ==
-	case AB_Equal: return "Equal";	// new ==
-	case AB_NotEqualIdent: return "NotEqualIdent";	// old !=
-	case AB_NotEqual: return "NotEqual";	// new !=
+	case AB_Equal: return "Equal";	// ==
+	case AB_NotEqual: return "NotEqual";	// !=
 	case AB_SEqual: return "SEqual";	// S=, eq
 	case AB_SNEqual: return "SNEqual";	// ne
 	case AB_BitAnd: return "BitAnd";	// &
 	case AB_BitXOr: return "BitXOr";	// ^
 	case AB_BitOr: return "BitOr";	// |
-	case AB_And: return "And"; 	// &&
-	case AB_Or: return "Or";  	// ||
 	case AB_MulIt: return "MulIt";	// *=
 	case AB_DivIt: return "DivIt";	// /=
 	case AB_ModIt: return "ModIt";	// %=
@@ -908,7 +870,10 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_BOOL: return "BOOL";		// constant: bool
 	case AB_STRING: return "STRING";	// constant: string
 	case AB_C4ID: return "C4ID";		// constant: C4ID
+	case AB_NIL: return "NIL";		// constant: nil
 	case AB_ARRAY: return "ARRAY";		// semi-constant: array
+	case AB_PROPLIST: return "PROPLIST";		// semi-constant: array
+	case AB_PROPSET: return "PROPSET";
 	case AB_IVARN: return "IVARN";		// initialization of named var
 	case AB_JUMP: return "JUMP";		// jump
 	case AB_JUMPAND: return "JUMPAND";
@@ -995,7 +960,7 @@ BOOL C4AulScript::Preparse()
 	state.Parse_Script();
 
 	// no #strict? we don't like that :(
-	if (!Strict)
+	if (Strict < MAXSTRICT)
 		{
 		Engine->nonStrictCnt++;
 		}
@@ -1021,6 +986,8 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_BOOL:
 		case AB_STRING:
 		case AB_C4ID:
+		case AB_PROPLIST:
+		case AB_NIL:
 		case AB_VARN_R:
 		case AB_VARN_V:
 		case AB_PARN_R:
@@ -1045,16 +1012,12 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_GreaterThan:
 		case AB_GreaterThanEqual:
 		case AB_Equal:
-		case AB_EqualIdent:
 		case AB_NotEqual:
-		case AB_NotEqualIdent:
 		case AB_SEqual:
 		case AB_SNEqual:
 		case AB_BitAnd:
 		case AB_BitXOr:
 		case AB_BitOr:
-		case AB_And:
-		case AB_Or:
 		case AB_MulIt:
 		case AB_DivIt:
 		case AB_ModIt:
@@ -1092,8 +1055,6 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_Neg:
 		case AB_Inc1_Postfix:
 		case AB_Dec1_Postfix:
-		case AB_VAR_R:
-		case AB_VAR_V:
 		case AB_PAR_R:
 		case AB_PAR_V:
 		case AB_FOREACH_NEXT:
@@ -1112,12 +1073,16 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 			iStack-=X-1;
 			break;
 
+		case AB_PROPSET:
+			iStack -= 2;
+			break;
+
 		default:
 			assert(false);
 		}
 
-	// Use stack operation instead of 0-Int (enable optimization)
-	if((eType == AB_INT || eType == AB_BOOL) && !X)
+	// Use stack operation instead of 0-Any (enable optimization)
+	if(eType == AB_NIL)
 		{
 		eType = AB_STACK;
 		X = 1;
@@ -1159,7 +1124,6 @@ void C4AulParseState::SetNoRef()
 		{
 		case AB_ARRAYA_R: CPos->bccType = AB_ARRAYA_V; break;
 		case AB_PAR_R: CPos->bccType = AB_PAR_V; break;
-		case AB_VAR_R: CPos->bccType = AB_VAR_V; break;
 		case AB_PARN_R: CPos->bccType = AB_PARN_V; break;
 		case AB_VARN_R: CPos->bccType = AB_VARN_V; break;
 		case AB_LOCALN_R: CPos->bccType = AB_LOCALN_V; break;
@@ -1248,6 +1212,7 @@ const char * C4AulParseState::GetTokenName(C4AulTokenType TokenType)
 		case ATT_BOOL: return "boolean constant";
 		case ATT_STRING: return "string constant";
 		case ATT_C4ID: return "id constant";
+		case ATT_NIL: return "nil";
 		case ATT_COMMA: return "','";
 		case ATT_COLON: return "':'";
 		case ATT_DCOLON: return "'::'";
@@ -1512,7 +1477,7 @@ void C4AulParseState::Parse_FuncHead()
 				if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
 					throw new C4AulParseError(this, "function definition: name already in use (global variable)");
 				if (a->Engine->GlobalConstNames.GetItemNr(Idtf) != -1)
-					Strict2Error("function definition: name already in use (global variable)", 0);
+					Error("function definition: name already in use (global constant)", 0);
 			}
 		// create script fn
 		if (Acc == AA_GLOBAL)
@@ -1531,7 +1496,7 @@ void C4AulParseState::Parse_FuncHead()
 		// set up func (in the case we got an error)
 		Fn->Script = SPos; // temporary
 		Fn->Access = Acc; Fn->pOrgScript = a;
-		Fn->bNewFormat = true; Fn->bReturnRef = bReturnRef;
+		Fn->bReturnRef = bReturnRef;
 		Shift(Discard,false);
 		// expect an opening bracket now
 		if (TokenType != ATT_BOPEN)
@@ -1558,28 +1523,19 @@ void C4AulParseState::Parse_FuncHead()
 				{
 				UnexpectedToken("parameter or closing bracket");
 				}
-			char TypeIdtf[C4AUL_MAX_Identifier] = ""; // current identifier
-			if (TokenType == ATT_IDTF)
-				{
-				SCopy(Idtf, TypeIdtf);
-				}
 			// type identifier?
 			if (SEqual(Idtf, C4AUL_TypeInt)) { Fn->ParType[cpar] = C4V_Int; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeBool)) { Fn->ParType[cpar] = C4V_Bool; Shift(Discard,false); }
-			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_C4ID; Shift(Discard,false); }
+			else if (SEqual(Idtf, C4AUL_TypeC4ID)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeC4Object)) { Fn->ParType[cpar] = C4V_C4Object; Shift(Discard,false); }
+			else if (SEqual(Idtf, C4AUL_TypePropList)) { Fn->ParType[cpar] = C4V_PropList; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(Discard,false); }
 			// ampersand?
 			if (TokenType == ATT_AMP) { Fn->ParType[cpar] = C4V_pC4Value; Shift(Discard,false); }
 			if (TokenType != ATT_IDTF)
 				{
-				if (SEqual(TypeIdtf,""))
-					UnexpectedToken("parameter or closing bracket");
-				// A parameter with the same name as a type
-				Strict2Error("parameter has the same name as type ", TypeIdtf);
-				Fn->ParType[cpar] = C4V_Any;
-				Fn->ParNamed.AddName(TypeIdtf);
+				UnexpectedToken("parameter name");
 				}
 			else
 				{
@@ -1599,132 +1555,14 @@ void C4AulParseState::Parse_FuncHead()
 			Shift(Discard,false);
 			cpar++;
 			}
-		// ok, expect opening block
-		if(TokenType != ATT_BLOPEN)
-			{
-			// warn
-			Strict2Error("'func': expecting opening block ('{') after func declaration", 0);
-			// not really new syntax (a sort of legacy mode)
-			Fn->bNewFormat = false;
-			}
-		else
-			{
-			Fn->Script = SPos;
-			Shift();
-			}
+		Fn->Script = SPos;
+		Match(ATT_BLOPEN);
 		Parse_Desc();
 		Parse_Function();
 		Match(ATT_BLCLOSE);
 		return;
 		}
-	// Must be old-style function declaration now
-	if (a->Strict >= C4AulScript::STRICT2)
-		throw new C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
-	// check: symbol already in use?
-	switch(Acc)
-		{
-		case AA_PRIVATE:
-		case AA_PROTECTED:
-		case AA_PUBLIC:
-			if(a->LocalNamed.GetItemNr(Idtf) != -1)
-				throw new C4AulParseError(this, "function definition: name already in use (local variable)");
-			if(a->Def)
-				break;
-			// func in global context: fallthru
-		case AA_GLOBAL:
-			if(a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-				throw new C4AulParseError(this, "function definition: name already in use (global variable)");
-		}
-	char FuncIdtf[C4AUL_MAX_Identifier] = ""; // current identifier
-	SCopy(Idtf, FuncIdtf);
-	Shift();
-	if (TokenType != ATT_COLON)
-		throw new C4AulParseError(this, FormatString("declaration expected, but found identifier '%s'", FuncIdtf).getData());
-	// create script fn
-	if (Acc == AA_GLOBAL)
-		{
-		// global func
-		Fn = new C4AulScriptFunc(a->Engine, FuncIdtf);
-		C4AulFunc *FnLink = new C4AulFunc(a, NULL);
-		FnLink->LinkedTo = Fn; Fn->LinkedTo = FnLink;
-		Acc = AA_PUBLIC;
-		}
-	else
-		{
-		// normal, local func
-		Fn = new C4AulScriptFunc(a, FuncIdtf);
-		}
-	Fn->Script = SPos;
-	Fn->Access = Acc;
-	Fn->pOrgScript = a;
-	Fn->bNewFormat = false;
-	Fn->bReturnRef = false;
-	Shift();
-	Parse_Desc();
-	const char * SPos0 = SPos;
-	while(1) switch(TokenType)
-		{
-		// end of function
-		case ATT_EOF: case ATT_DIR: return;
-		case ATT_IDTF:
-			{
-			// check for func declaration
-			if (SEqual(Idtf, C4AUL_Private)) return;
-			else if (SEqual(Idtf, C4AUL_Protected)) return;
-			else if (SEqual(Idtf, C4AUL_Public)) return;
-			else if (SEqual(Idtf, C4AUL_Global)) return;
-			else if (SEqual(Idtf, C4AUL_Func)) return;
-			// check for variable definition (var)
-			else if(SEqual(Idtf, C4AUL_VarNamed))
-				{
-				Shift();
-				Parse_Var();
-				}
-			// check for variable definition (local)
-			else if(SEqual(Idtf, C4AUL_LocalNamed))
-				{
-				if(a->Def)
-					{
-					Shift();
-					Parse_Local();
-					}
-				else
-					throw new C4AulParseError(this, "'local' variable declaration in global script");
-				}
-			// check for variable definition (static)
-			else if(SEqual(Idtf, C4AUL_GlobalNamed))
-				{
-				Shift();
-				Parse_Static();
-				}
-			// might be old style declaration
-			else
-				{
-				const char * SPos0_ = SPos;
-				Shift();
-				if (TokenType == ATT_COLON)
-					{
-					// Reset source position to the point before the label
-					SPos = SPos0;
-					Shift();
-					return;
-					}
-				else
-					{
-					// The current token might be a label
-					// In that case the next round of the loop will need to reset the position to what's in SPos0_ now
-					SPos0 = SPos0_;
-					}
-				}
-			break;
-			}
-		default:
-			{
-			SPos0 = SPos;
-			Shift();
-			break;
-			}
-		}
+	throw new C4AulParseError(this, "Declaration expected, but found identifier ", Idtf);
 	}
 
 void C4AulParseState::Parse_Desc()
@@ -1770,23 +1608,18 @@ void C4AulParseState::Parse_Function()
 		// a block end?
 		case ATT_BLCLOSE:
 			{
-			// new-form func?
-			if(Fn->bNewFormat)
+			// all ok, insert a return
+			C4AulBCC * CPos = a->GetCodeByPos(Max(a->GetCodePos() - 1,0));
+			if (!CPos || CPos->bccType != AB_RETURN || fJump)
 				{
-				// all ok, insert a return
-				C4AulBCC * CPos = a->GetCodeByPos(Max(a->GetCodePos() - 1,0));
-				if (!CPos || CPos->bccType != AB_RETURN || fJump)
-					{
-					AddBCC(AB_INT);
-					AddBCC(AB_RETURN);
-					}
-				// and break
-				Done = TRUE;
-				// Do not blame this function for script errors between functions
-				Fn = 0;
-				return;
+				AddBCC(AB_NIL);
+				AddBCC(AB_RETURN);
 				}
-			throw new C4AulParseError(this, "no '{' found for '}'");
+			// and break
+			Done = TRUE;
+			// Do not blame this function for script errors between functions
+			Fn = 0;
+			return;
 			}
 		case ATT_EOF:
 			{
@@ -1885,7 +1718,7 @@ void C4AulParseState::Parse_Statement()
 			else if(a->LocalNamed.GetItemNr(Idtf) != -1)
 				{
 				// global func?
-				if(Fn->Owner == &Game.ScriptEngine)
+				if(Fn->Owner == &::ScriptEngine)
 					throw new C4AulParseError(this, "using local variable in global function!");
 				// insert variable by id
 				Parse_Expression();
@@ -1952,23 +1785,11 @@ void C4AulParseState::Parse_Statement()
 				}
 			else if (SEqual(Idtf, C4AUL_Return)) // return
 				{
-				bool multi_params_hack = false;
 				Shift();
-				if (TokenType == ATT_BOPEN && Fn->pOrgScript->Strict < C4AulScript::STRICT2)
+				if(TokenType == ATT_SCOLON)
 					{
-					// parse return(retvals) - return(retval, unused, parameters, ...) allowed for backwards compatibility
-					if (Parse_Params(1, NULL) == 1)
-						{
-						// return (1 + 1) * 3 returns 6, not 2
-						Parse_Expression2();
-						}
-					else
-						multi_params_hack = true;
-					}
-				else if(TokenType == ATT_SCOLON)
-					{
-					// allow return; without return value (implies 0)
-					AddBCC(AB_INT);
+					// allow return; without return value (implies nil)
+					AddBCC(AB_NIL);
 					}
 				else
 					{
@@ -1978,15 +1799,6 @@ void C4AulParseState::Parse_Statement()
 				if(!Fn->bReturnRef)
 					SetNoRef();
 				AddBCC(AB_RETURN);
-				if (multi_params_hack && TokenType != ATT_SCOLON)
-					{
-					// return (1, 1) * 3 returns 1
-					// but warn about it, the * 3 won't get executed and a stray ',' could lead to unexpected results
-					Warn("';' expected, but found ", GetTokenName(TokenType));
-					AddBCC(AB_STACK, +1);
-					Parse_Expression2();
-					AddBCC(AB_STACK, -1);
-					}
 				}
 			else if (SEqual(Idtf, C4AUL_this)) // this on top level
 				{
@@ -2002,7 +1814,7 @@ void C4AulParseState::Parse_Statement()
 					// Must be inside a loop
 					if(!pLoopStack)
 						{
-						Strict2Error("'break' is only allowed inside loops");
+						Error("'break' is only allowed inside loops");
 						}
 					else
 						{
@@ -2022,7 +1834,7 @@ void C4AulParseState::Parse_Statement()
 					// Must be inside a loop
 					if(!pLoopStack)
 						{
-						Strict2Error("'continue' is only allowed inside loops");
+						Error("'continue' is only allowed inside loops");
 						}
 					else
 						{
@@ -2078,23 +1890,14 @@ void C4AulParseState::Parse_Statement()
 				}
 			else
 				{
-				bool gotohack = false;
 				// none of these? then it's a function
 				// if it's a label, it will be missinterpreted here, which will be corrected later
-				// it may be the first goto() found? (old syntax only!)
-				if (SEqual(Idtf, C4AUL_Goto) && !Fn->pOrgScript->Strict)
-					// add AB_RETURN later on
-					gotohack=true;
 				C4AulFunc *FoundFn;
-				// old syntax: do not allow recursive calls in overloaded functions
-				if (!Fn->pOrgScript->Strict && Fn->OwnerOverloaded && SEqual(Idtf, Fn->Name))
-					FoundFn = Fn->OwnerOverloaded;
+				// get regular function
+				if(Fn->Owner == &::ScriptEngine)
+					FoundFn = a->Owner->GetFuncRecursive(Idtf);
 				else
-					// get regular function
-					if(Fn->Owner == &Game.ScriptEngine)
-						FoundFn = a->Owner->GetFuncRecursive(Idtf);
-					else
-						FoundFn = a->GetFuncRecursive(Idtf);
+					FoundFn = a->GetFuncRecursive(Idtf);
 				// ignore func-not-found errors in the preparser, because the function tables are not built yet
 				if (!FoundFn && Type == PARSER)
 					{
@@ -2123,11 +1926,6 @@ void C4AulParseState::Parse_Statement()
 				if (TokenType == ATT_BOPEN || Type == PARSER)
 					Parse_Params(FoundFn ? FoundFn->GetParCount() : 10, FoundFn ? FoundFn->Name : Idtf, FoundFn);
 				AddBCC(AB_FUNC, (long) FoundFn);
-				if (gotohack)
-					{
-					AddBCC(AB_RETURN);
-					AddBCC(AB_STACK, +1);
-					}
 				Parse_Expression2();
 				SetNoRef();
 				AddBCC(AB_STACK, -1);
@@ -2214,7 +2012,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 					case AB_UNOP: case AB_BINOP: from = C4ScriptOpMap[(a->CPos-1)->Par.i].RetType; break;
 					case AB_FUNC: case AB_CALL: case AB_CALLFS:
 						if((a->CPos-1)->Par.i) from = reinterpret_cast<C4AulFunc *>((a->CPos-1)->Par.i)->GetRetType(); break;
-					case AB_ARRAYA_R: case AB_PAR_R: case AB_VAR_R: case AB_PARN_R: case AB_VARN_R: case AB_LOCALN_R: case AB_GLOBALN_R:
+					case AB_ARRAYA_R: case AB_PAR_R: case AB_PARN_R: case AB_VARN_R: case AB_LOCALN_R: case AB_GLOBALN_R:
 						from = C4V_pC4Value; break;
 					}
 				C4V_Type to = pFunc->GetParType()[size];
@@ -2260,7 +2058,7 @@ void C4AulParseState::Parse_Array()
 			// [] -> size 0, [*,] -> size 2, [*,*,] -> size 3
 			if (size > 0)
 				{
-				AddBCC(AB_INT);
+				AddBCC(AB_NIL);
 				++size;
 				}
 			fDone = true;
@@ -2268,8 +2066,8 @@ void C4AulParseState::Parse_Array()
 			}
 		case ATT_COMMA:
 			{
-			// got no parameter before a ","? then push a 0-constant
-			AddBCC(AB_INT);
+			// got no parameter before a ","? then push nil
+			AddBCC(AB_NIL);
 			Shift();
 			++size;
 			break;
@@ -2295,19 +2093,51 @@ void C4AulParseState::Parse_Array()
 	AddBCC(AB_ARRAY, size);
 	}
 
+void C4AulParseState::Parse_PropList()
+	{
+	AddBCC(AB_PROPLIST);
+	Shift();
+	// insert block in byte code
+	while (1)
+		{
+		if (TokenType == ATT_BLCLOSE)
+			{
+			Shift();
+			return;
+			}
+		C4String * pKey;
+		if (TokenType == ATT_IDTF)
+			{
+			pKey = Strings.RegString(Idtf);
+			AddBCC(AB_STRING, (intptr_t) pKey);
+			Shift();
+			}
+		else if (TokenType == ATT_STRING)
+			{
+			AddBCC(AB_STRING, cInt);
+			Shift();
+			}
+		else UnexpectedToken("string or identifier");
+		if (TokenType != ATT_COLON && (TokenType != ATT_OPERATOR || !SEqual(C4ScriptOpMap[cInt].Identifier,"=")))
+			UnexpectedToken("':' or '='");
+		Shift();
+		Parse_Expression();
+		AddBCC(AB_PROPSET);
+		if (TokenType == ATT_COMMA)
+			Shift();
+		else if (TokenType != ATT_BLCLOSE)
+			UnexpectedToken("'}' or ','");
+		}
+	}
+
 void C4AulParseState::Parse_While()
 	{
 	// Save position for later jump back
 	int iStart = JumpHere();
 	// Execute condition
-	if (Fn->pOrgScript->Strict >= C4AulScript::STRICT2)
-		{
-		Match(ATT_BOPEN);
-		Parse_Expression();
-		Match(ATT_BCLOSE);
-		}
-	else
-		Parse_Params(1, C4AUL_While);
+	Match(ATT_BOPEN);
+	Parse_Expression();
+	Match(ATT_BCLOSE);
 	SetNoRef();
 	// Check condition
 	int iCond = a->GetCodePos();
@@ -2332,14 +2162,9 @@ void C4AulParseState::Parse_While()
 
 void C4AulParseState::Parse_If()
 	{
-	if (Fn->pOrgScript->Strict >= C4AulScript::STRICT2)
-		{
-		Match(ATT_BOPEN);
-		Parse_Expression();
-		Match(ATT_BCLOSE);
-		}
-	else
-		Parse_Params(1, C4AUL_If);
+	Match(ATT_BOPEN);
+	Parse_Expression();
+	Match(ATT_BCLOSE);
 	SetNoRef();
 	// create bytecode, remember position
 	int iCond = a->GetCodePos();
@@ -2519,7 +2344,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			else if(a->LocalNamed.GetItemNr(Idtf) != -1)
 				{
 				// global func?
-				if(Fn->Owner == &Game.ScriptEngine)
+				if(Fn->Owner == &::ScriptEngine)
 					throw new C4AulParseError(this, "using local variable in global function!");
 				// insert variable by id
 				AddBCC(AB_LOCALN_R, a->LocalNamed.GetItemNr(Idtf));
@@ -2547,12 +2372,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 				throw new C4AulParseError(this, "'for' may not be used as a parameter");
 			else if (SEqual(Idtf, C4AUL_Return))
 				{
-				// return: treat as regular function with special byte code
-				Strict2Error("return used as a parameter", 0);
-				Shift();
-				Parse_Params(1, NULL);
-				AddBCC(AB_RETURN);
-				AddBCC(AB_STACK, +1);
+				Error("return may not be used as a parameter", 0);
 				}
 			else if (SEqual(Idtf, C4AUL_Par))
 				{
@@ -2561,18 +2381,9 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 				Parse_Params(1, C4AUL_Par);
 				AddBCC(AB_PAR_R);
 				}
-			else if (SEqual(Idtf, C4AUL_Var))
-				{
-				// same for Var
-				Shift();
-				Parse_Params(1, C4AUL_Var);
-				AddBCC(AB_VAR_R);
-				}
 			else if (SEqual(Idtf, C4AUL_Inherited) || SEqual(Idtf, C4AUL_SafeInherited))
 				{
 				Shift();
-				// inherited keyword: check strict syntax
-				if (!Fn->pOrgScript->Strict) throw new C4AulParseError(this, "inherited disabled; use #strict syntax!");
 				// get function
 				if (Fn->OwnerOverloaded)
 					{
@@ -2583,7 +2394,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 				else
 					// not found? raise an error, if it's not a safe call
 					if (SEqual(Idtf, C4AUL_Inherited) && Type == PARSER)
-						throw new C4AulParseError(this, "inherited function not found, use _inherited to call failsafe");
+						throw new C4AulParseError(this, "inherited function not found (use _inherited to disable this message)");
 					else
 						{
 						// otherwise, parse parameters, but discard them
@@ -2592,18 +2403,11 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 						AddBCC(AB_STACK, 1);
 						}
 				}
-			else if (!Fn->pOrgScript->Strict && Fn->OwnerOverloaded && SEqual(Idtf, Fn->Name))
-				{
-				// old syntax: do not allow recursive calls in overloaded functions
-				Shift();
-				Parse_Params(Fn->OwnerOverloaded->GetParCount(), Fn->Name, Fn);
-				AddBCC(AB_FUNC,  (long) Fn->OwnerOverloaded);
-				}
 			else
 				{
 				C4AulFunc *FoundFn;
 				// get regular function
-				if(Fn->Owner == &Game.ScriptEngine)
+				if(Fn->Owner == &::ScriptEngine)
 					FoundFn = Fn->Owner->GetFuncRecursive(Idtf);
 				else
 					FoundFn = a->GetFuncRecursive(Idtf);
@@ -2641,12 +2445,12 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 							case C4V_String:
 								AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
 								break;
-							case C4V_C4ID:   AddBCC(AB_C4ID,   val.GetData().Int); break;
+							case C4V_PropList:   AddBCC(AB_C4ID,   C4ValueConv<C4ID>::FromC4V(val)); break;
 							case C4V_Any:
-								// any: allow zero; add it as int
+								// any: allow zero
 								if (!val.GetData())
 									{
-									AddBCC(AB_INT, 0);
+									AddBCC(AB_NIL, 0);
 									break;
 									}
 								// otherwise: fall through to error
@@ -2656,14 +2460,6 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 								}
 							}
 						Shift();
-						// now let's check whether it used old- or new-style
-						if (TokenType == ATT_BOPEN && Fn->pOrgScript->Strict < C4AulScript::STRICT2)
-							{
-							// old-style usage: ignore function call
-							// must not use parameters here (although generating the byte code for that would be possible)
-							Shift();
-							Match(ATT_BCLOSE, "parameters not allowed in functional usage of constants");
-							}
 						}
 					else
 						{
@@ -2695,6 +2491,12 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 		case ATT_C4ID: // converted ID in cInt
 			{
 			AddBCC(AB_C4ID, cInt);
+			Shift();
+			break;
+			}
+		case ATT_NIL:
+			{
+			AddBCC(AB_NIL);
 			Shift();
 			break;
 			}
@@ -2734,10 +2536,12 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 			}
 		case ATT_BOPEN2:
 			{
-			// Arrays are not tested in non-strict mode at all
-			if(!Fn->pOrgScript->Strict)
-				throw new C4AulParseError(this, "unexpected '['");
 			Parse_Array();
+			break;
+			}
+		case ATT_BLOPEN:
+			{
+			Parse_PropList();
 			break;
 			}
 		default:
@@ -2784,12 +2588,12 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 				SetNoRef();
 			Shift();
 
-			if ((C4ScriptOpMap[OpID].Code == AB_And || C4ScriptOpMap[OpID].Code == AB_Or) && Fn->pOrgScript->Strict >= C4AulScript::STRICT2)
+			if (C4ScriptOpMap[OpID].Code == AB_JUMPAND || C4ScriptOpMap[OpID].Code == AB_JUMPOR)
 				{
 				// create bytecode, remember position
 				int iCond = a->GetCodePos();
 				// Jump or discard first parameter
-				AddBCC(C4ScriptOpMap[OpID].Code == AB_And ? AB_JUMPAND : AB_JUMPOR);
+				AddBCC(C4ScriptOpMap[OpID].Code);
 				// parse second expression
 				Parse_Expression(C4ScriptOpMap[OpID].Priority);
 				// set condition jump target
@@ -2801,38 +2605,18 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 				// expect second parameter for operator
 				if(!C4ScriptOpMap[OpID].NoSecondStatement)
 					{
-					switch (TokenType)
-						{
-						case ATT_IDTF: case ATT_INT: case ATT_BOOL: case ATT_STRING: case ATT_C4ID:
-						case ATT_OPERATOR: case ATT_BOPEN: case ATT_BOPEN2:
-						Parse_Expression(C4ScriptOpMap[OpID].Priority);
-						// If the operator does not modify the second argument, no reference is necessary
-						if(C4ScriptOpMap[OpID].Type2 != C4V_pC4Value)
-							SetNoRef();
-						break;
-						default:
-						// Stuff like foo(42+,1) used to silently work
-						Strict2Error(FormatString("Operator %s: Second expression expected, but %s found",
-							C4ScriptOpMap[OpID].Identifier, GetTokenName(TokenType)).getData(), NULL);
-						AddBCC(AB_INT, 0);
-						break;
-						}
+					Parse_Expression(C4ScriptOpMap[OpID].Priority);
+					// If the operator does not modify the second argument, no reference is necessary
+					if(C4ScriptOpMap[OpID].Type2 != C4V_pC4Value)
+						SetNoRef();
 					}
-				// write byte code, with a few backward compat changes
-				if (C4ScriptOpMap[OpID].Code == AB_Equal && Fn->pOrgScript->Strict < C4AulScript::STRICT2)
-					AddBCC(AB_EqualIdent, OpID);
-				else if (C4ScriptOpMap[OpID].Code == AB_NotEqual && Fn->pOrgScript->Strict < C4AulScript::STRICT2)
-					AddBCC(AB_NotEqualIdent, OpID);
-				else
-					AddBCC(C4ScriptOpMap[OpID].Code, OpID);
+				// write byte code
+				AddBCC(C4ScriptOpMap[OpID].Code, OpID);
 				}
 			break;
 			}
 		case ATT_BOPEN2:
 			{
-			// Arrays are not tested in non-strict mode at all
-			if(!Fn->pOrgScript->Strict)
-				throw new C4AulParseError(this, "unexpected '['");
 			// Access the array
 			Shift();
 			Parse_Expression();
@@ -2904,7 +2688,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 				}
 			if (Type == PARSER)
 				{
-				pName = Game.ScriptEngine.Strings.RegString(Idtf);
+				pName = ::Strings.RegString(Idtf);
 				}
 			// add call chunk
 			Shift();
@@ -3017,10 +2801,10 @@ void C4AulParseState::Parse_Static()
 				UnexpectedToken("variable name");
 			// global variable definition
 			// check: symbol already in use?
-			if(a->Engine->GetFuncRecursive(Idtf)) throw new C4AulParseError(this, "variable definition: name already in use");
-			if (a->Engine->GetGlobalConstant(Idtf, NULL)) Strict2Error("constant and variable with name ", Idtf);
+			if (a->Engine->GetFuncRecursive(Idtf)) Error("function and variable with name ", Idtf);
+			if (a->Engine->GetGlobalConstant(Idtf, NULL)) Error("constant and variable with name ", Idtf);
 			// insert variable if not defined already
-			if(a->Engine->GlobalNamedNames.GetItemNr(Idtf) == -1)
+			if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) == -1)
 				a->Engine->GlobalNamedNames.AddName(Idtf);
 			}
 		Match(ATT_IDTF);
@@ -3057,9 +2841,9 @@ void C4AulParseState::Parse_Const()
 		// (e.g., for overloading constants such as OCF_Living() in chaos scenarios)
 		// it is not encouraged though, so better warn
 		if(a->Engine->GetFuncRecursive(Idtf))
-			Strict2Error("definition of constant hidden by function ", Idtf);
+			Error("definition of constant hidden by function ", Idtf);
 		if(a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-			Strict2Error("constant and variable with name ", Idtf);
+			Error("constant and variable with name ", Idtf);
 		Match(ATT_IDTF);
 		// expect '='
 		if (TokenType != ATT_OPERATOR || !SEqual(C4ScriptOpMap[cInt].Identifier,"="))
@@ -3079,7 +2863,8 @@ void C4AulParseState::Parse_Const()
 				case ATT_INT: vGlobalValue.SetInt(cInt); break;
 				case ATT_BOOL: vGlobalValue.SetBool(!!cInt); break;
 				case ATT_STRING: vGlobalValue.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
-				case ATT_C4ID: vGlobalValue.SetC4ID(cInt); break;
+				//FIXME case ATT_C4ID: vGlobalValue.SetC4ID(cInt); break;
+				case ATT_NIL: vGlobalValue.Set0(); break;
 				case ATT_IDTF:
 					// identifier is only OK if it's another constant
 					if (!a->Engine->GetGlobalConstant(Idtf, &vGlobalValue))
@@ -3159,7 +2944,7 @@ BOOL C4AulScript::Parse()
 					if (Fn->pOrgScript != this)
 						DebugLogF("  (as #appendto/#include to %s)", Fn->Owner->ScriptName.getData());
 					// and count (visible only ;) )
-					++Game.ScriptEngine.errCnt;
+					++::ScriptEngine.errCnt;
 				}
 				delete err;
 				// make all jumps that don't have their destination yet jump here
@@ -3252,7 +3037,7 @@ void C4AulScript::ParseDescs()
 C4AulScript *C4AulScript::FindFirstNonStrictScript()
 	{
 	// self is not #strict?
-	if (Script && !Strict) return this;
+	if (Script && Strict < MAXSTRICT) return this;
 	// search children
 	C4AulScript *pNonStrScr;
 	for (C4AulScript *pScr=Child0; pScr; pScr=pScr->Next)

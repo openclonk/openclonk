@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2008  Sven Eberhardt
+ * Copyright (c) 2006, 2008  Günther Brammer
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2007  Julian Raschke
+ * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2008  Armin Burgmeier
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,7 +31,8 @@
 #include <C4GamePadCon.h>
 #include <C4Game.h>
 #include <C4Log.h>
-#include <C4Wrappers.h>
+#include <C4GraphicsResource.h>
+#include <C4Network2.h>
 #endif
 
 #include <StdGL.h>
@@ -200,7 +207,7 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 	{
 	// draw key
 	C4Facet cgoDraw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY, rcBounds.Wdt, rcBounds.Hgt);
-	Game.GraphicsResource.fctKey.Draw(cgoDraw, TRUE, fDown);
+	::GraphicsResource.fctKey.Draw(cgoDraw, TRUE, fDown);
 	int32_t iKeyIndent = cgoDraw.Wdt / 5;
 	cgoDraw.X += iKeyIndent; cgoDraw.Wdt -= 2*iKeyIndent;
 	cgoDraw.Y += iKeyIndent*3/4; cgoDraw.Hgt -= 2*iKeyIndent;
@@ -214,7 +221,7 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 			ModulateClr(dwModClr, dwOldBlitModClr);
 		lpDDraw->ActivateBlitModulation(dwModClr);
 		}
-	Game.GraphicsResource.fctCommand.Draw(cgoDraw, TRUE, iKeyID, 0);
+	::GraphicsResource.fctCommand.Draw(cgoDraw, TRUE, iKeyID, 0);
 	if (!fDoHightlight)
 		if (fHadBlitMod)
 			lpDDraw->ActivateBlitModulation(dwOldBlitModClr);
@@ -251,7 +258,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 		iMaxControlSets = C4MaxKeyboardSet;
 	ppKeyControlSetBtns = new C4GUI::IconButton *[iMaxControlSets];
 	// top line buttons to select keyboard set or gamepad
-	C4Facet fctCtrlPic = fGamepad ? Game.GraphicsResource.fctGamepad : Game.GraphicsResource.fctKeyboard;
+	C4Facet fctCtrlPic = fGamepad ? ::GraphicsResource.fctGamepad : ::GraphicsResource.fctKeyboard;
 	int32_t iCtrlSetWdt = caArea.GetWidth() - caArea.GetHMargin()*2;
 	int32_t iCtrlSetHMargin = 5, iCtrlSetVMargin = 5;
 	int32_t iCtrlSetBtnWdt = BoundBy<int32_t>((iCtrlSetWdt - iMaxControlSets*iCtrlSetHMargin*2) / iMaxControlSets, 5, fctCtrlPic.Wdt);
@@ -274,7 +281,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	caArea.ExpandTop(caArea.GetVMargin());
 	AddElement(new C4GUI::HorizontalLine(caArea.GetFromTop(2)));
 	caArea.ExpandTop(caArea.GetVMargin());
-	C4Facet &rfctKey = Game.GraphicsResource.fctKey;
+	C4Facet &rfctKey = ::GraphicsResource.fctKey;
 	int32_t iKeyAreaMaxWdt = caArea.GetWidth()-2*caArea.GetHMargin(), iKeyAreaMaxHgt = caArea.GetHeight()-2*caArea.GetVMargin();
 	int32_t iKeyWdt = rfctKey.Wdt*3/2, iKeyHgt = rfctKey.Hgt*3/2;
 	int32_t iKeyUseWdt = iKeyWdt + iKeyHgt*3; // add space for label
@@ -422,7 +429,7 @@ void C4StartupOptionsDlg::ControlConfigArea::OnGUIGamepadCheckChange(C4GUI::Elem
 	if (fChecked == !!Config.Controls.GamepadGuiControl) return;
 	// reflect change
 	Config.Controls.GamepadGuiControl = fChecked;
-	Game.pGUI->UpdateGamepadGUIControlEnabled();
+	::pGUI->UpdateGamepadGUIControlEnabled();
 	pOptionsDlg->RecreateDialog(false);
 	}
 
@@ -834,7 +841,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pSheetGraphics->AddElement(pGroupTrouble);
 	C4GUI::ComponentAligner caGroupTrouble(pGroupTrouble->GetClientRect(), iIndentX1, iIndentY2, true);
 	C4GUI::BaseCallbackHandler *pGfxGroubleCheckCB = new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxTroubleCheck);
-	int32_t iNumGfxOptions = 5, iOpt=0;
+	int32_t iNumGfxOptions = 6, iOpt=0;
 	// no alpha adding
 	pCheckGfxNoAlphaAdd = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_NOALPHAADD"), false);
 	pCheckGfxNoAlphaAdd->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
@@ -859,6 +866,12 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheckGfxNoBoxFades->SetToolTip(LoadResStr("IDS_MSG_NOCLRFADE_DESC"));
 	pCheckGfxNoBoxFades->SetOnChecked(pGfxGroubleCheckCB);
 	pGroupTrouble->AddElement(pCheckGfxNoBoxFades);
+	// Shaders
+	pShaders = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), "Shaders", false);
+	pShaders->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
+	pShaders->SetToolTip("Shaders");
+	pShaders->SetOnChecked(pGfxGroubleCheckCB);
+	pGroupTrouble->AddElement(pShaders);
 	// manual clipping
 	pCheckGfxClipManually = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_MANUALCLIP"), false);
 	pCheckGfxClipManually->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
@@ -896,7 +909,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pGroupEffects->SetColors(C4StartupEditBorderColor, C4StartupFontClr);
 	pSheetGraphics->AddElement(pGroupEffects);
 	C4GUI::ComponentAligner caGroupEffects(pGroupEffects->GetClientRect(), iIndentX1, iIndentY2, true);
-	iNumGfxOptions = 2; iOpt=0;
+	iNumGfxOptions = 3; iOpt=0;
 	// effects level slider
 	C4GUI::ComponentAligner caEffectsLevel(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions), 1,0,false);
 	StdStrBuf sEffectsTxt; sEffectsTxt.Copy(LoadResStr("IDS_CTL_SMOKELOW"));
@@ -913,6 +926,11 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	// fire particles
 	pCheck = new BoolConfig(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FIREPARTICLES"), NULL, &Config.Graphics.FireParticles);
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_FIREPARTICLES_DESC"));
+	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
+	pGroupEffects->AddElement(pCheck);
+	// high resolution landscape
+	pCheck = new BoolConfig(caGroupEffects.GetGridCell(0,1,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("[!]High resolution landscape"), NULL, &Config.Graphics.HighResLandscape);
+	pCheck->SetToolTip(LoadResStr("[!]An expensive effect."));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pGroupEffects->AddElement(pCheck);
 
@@ -1427,6 +1445,7 @@ void C4StartupOptionsDlg::LoadGfxTroubleshoot()
 	pCheckGfxNoAddBlit->SetChecked(!!(dwGfxCfg & C4GFXCFG_NOADDITIVEBLTS));
 	pCheckGfxNoBoxFades->SetChecked(!!(dwGfxCfg & C4GFXCFG_NOBOXFADES));
 	pCheckGfxClipManually->SetChecked(!!(dwGfxCfg & C4GFXCFG_CLIPMANUALLY));
+	pShaders->SetChecked(!!DDrawCfg.Shader);
 	pEdtGfxBlitOff->SetIntVal(iGfxBlitOff);
 	// title of troubleshooting-box by config set
 	pGroupTrouble->SetTitle(FormatString("%s: %s", LoadResStrNoAmp("IDS_CTL_TROUBLE"), fUseGL ? "OpenGL" : "DirectX").getData());
@@ -1442,6 +1461,7 @@ void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 	if (pCheckGfxNoAddBlit->GetChecked()) dwGfxCfg |= C4GFXCFG_NOADDITIVEBLTS;
 	if (pCheckGfxNoBoxFades->GetChecked()) dwGfxCfg |= C4GFXCFG_NOBOXFADES;
 	if (pCheckGfxClipManually->GetChecked()) dwGfxCfg |= C4GFXCFG_CLIPMANUALLY;
+	DDrawCfg.Shader=pShaders->GetChecked();
 	if (DDrawCfg.Windowed) dwGfxCfg |= C4GFXCFG_WINDOWED;
 	pEdtGfxBlitOff->Save2Config();
 	// get config set to be used

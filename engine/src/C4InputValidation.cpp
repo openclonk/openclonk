@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2007-2008  Sven Eberhardt
+ * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,10 +23,6 @@
 #include <C4Log.h>
 #include <C4Config.h>
 
-#ifdef C4ENGINE
-// FIXME: One should not have to include C4Game.h for pGUI
-#include <C4Game.h>
-#endif
 #include <cctype>
 
 namespace C4InVal
@@ -176,26 +174,4 @@ namespace C4InVal
 		else if (riVal > iMaxVal) { riVal = iMaxVal; return false; }
 		else return true;
 		}
-
-	bool IsConfidentialData(const char *szInput, bool fShowWarningMessage)
-		{
-		// safety
-		if (!szInput) return false;
-#ifdef C4ENGINE
-		// unreg users don't have confidential data
-		if (!Config.Registered()) return false;
-		// shouldn't send the webcode!
-		const char *szWebCode = Config.GetRegistrationData("WebCode");
-		if (szWebCode && *szWebCode) if (SSearchNoCase(szInput, szWebCode))
-			{
-			if (fShowWarningMessage && Game.pGUI)
-				Game.pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
-			return true;
-			}
-#endif
-		// all OK
-		return false;
-		}
-
 	};
-

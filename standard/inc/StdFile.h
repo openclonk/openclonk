@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2002  Peter Wortmann
+ * Copyright (c) 2004-2005  Günther Brammer
+ * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,6 +27,7 @@
 #include <Standard.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 
 #ifdef _WIN32
 #include <io.h>
@@ -34,7 +39,6 @@
 #define _MAX_PATH PATH_MAX
 #define _MAX_FNAME NAME_MAX
 
-bool CreateDirectory(const char * pathname, void* = 0);
 bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
 #endif
 
@@ -44,8 +48,15 @@ bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
 #else
 #define DirectorySeparator '/'
 #define AltDirectorySeparator '\\'
+#define DIRECTORYSEPARATORS "/"
 #endif
 #define Wildcard '*'
+
+/** Create a directory and all of its parents.
+ * \p[in] path Directory to create
+ * \returns true on success, false otherwise.
+ */
+bool CreatePath(const std::string &path);
 
 const char *GetWorkingDirectory();
 bool SetWorkingDirectory(const char *szPath);

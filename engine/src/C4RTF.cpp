@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2008  Günther Brammer
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -307,7 +310,7 @@ StdStrBuf C4RTFFile::GetPlainText()
 	// cleanup
 	ClearState();
 	// FIXME: This is wrong, RTF contains charset information which should be used
-	if (Config.General.IsUTF8()) sResult.EnsureUnicode();
+	sResult.EnsureUnicode();
 	// return result
 	return sResult;
 	}

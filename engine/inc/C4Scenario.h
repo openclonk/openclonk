@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -34,10 +37,12 @@ class C4SVal
     void Set(int32_t std=0, int32_t rnd=0, int32_t min=0, int32_t max=100);
     int32_t Evaluate();
     void CompileFunc(StdCompiler *pComp);
+	public:
+		inline bool operator==(const C4SVal &rhs) const
+		{
+			return rhs.Std == Std && rhs.Rnd == Rnd && rhs.Min == Min && rhs.Max == Max;
+		}
   };
-
-inline bool operator == (C4SVal Val1, C4SVal Val2)
-	{ return MemEqual((void *) &Val1, (void *) &Val2, sizeof(C4SVal)); }
 
 #define C4SGFXMODE_NEWGFX 1
 #define C4SGFXMODE_OLDGFX 2
@@ -317,7 +322,6 @@ class C4Scenario
 
 class C4ScenarioSection;
 
-#ifdef C4ENGINE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 extern const char *C4ScenSect_Main;
 
@@ -342,6 +346,5 @@ class C4ScenarioSection
 		bool EnsureTempStore(bool fExtractLandscape, bool fExtractObjects);               // make sure that a temp file is created, and nothing is modified within the main scenario file
 	};
 
-#endif // C4ENGINE - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 #endif // INC_C4Scenario

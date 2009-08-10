@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2004-2005, 2007-2008  Matthes Bender
+ * Copyright (c) 2004-2008  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2009  Peter Wortmann
+ * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,6 +31,10 @@
 #endif
 
 #ifndef BIG_C4INCLUDE
+#include "C4Game.h"
+#include "C4GraphicsSystem.h"
+#include "C4GraphicsResource.h"
+#include "C4MessageInput.h"
 #include <C4FileClasses.h>
 #include <C4FullScreen.h>
 #include <C4Language.h>
@@ -148,6 +157,27 @@ bool C4Application::DoInit()
 			return true;
 #endif
 
+	DDrawCfg.Shader = Config.Graphics.EnableShaders;
+	switch (Config.Graphics.Engine) {
+#ifdef USE_DIRECTX
+		case GFXENGN_DIRECTX:
+		case GFXENGN_DIRECTXS:
+			// Direct3D
+			DDrawCfg.Set(Config.Graphics.NewGfxCfg, (float) Config.Graphics.BlitOff/100.0f);
+			break;
+#endif
+#ifdef USE_GL
+		case GFXENGN_OPENGL:
+		// OpenGL
+		DDrawCfg.Set(Config.Graphics.NewGfxCfgGL, (float) Config.Graphics.BlitOffGL/100.0f);
+		break;
+#endif
+		default: ;	// Always have at least one statement
+	}
+
+	// Fixup resolution
+	ApplyResolutionConstraints();	
+
 	// activate
 	Active=TRUE;
 
@@ -210,6 +240,38 @@ bool C4Application::DoInit()
 	return true;
 	}
 
+	
+void C4Application::ApplyResolutionConstraints()
+{
+	// Enumerate display modes
+	int32_t idx = 0, iXRes, iYRes, iBitDepth;
+	int32_t best_match = -1;
+	uint32_t best_delta = ~0;
+	int32_t ResX = Config.Graphics.ResX, ResY = Config.Graphics.ResY, BitDepth = Config.Graphics.BitDepth;
+	while (GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor))
+	{
+		uint32_t delta = std::abs(ResX*ResY - iXRes*iYRes);
+		if (!delta && iBitDepth == BitDepth)
+			return; // Exactly the expected mode
+		if (delta < best_delta)
+		{
+			// Better match than before
+			best_match = idx;
+			best_delta = delta;
+		}
+	}
+	if (best_match != -1)
+	{
+		// Apply next-best mode
+		GetIndexedDisplayMode(best_match, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor);
+		if (iXRes != ResX || iYRes != ResY)
+			// Don't warn if only bit depth changes
+			// Also, lang table not loaded yet
+			LogF("Warning: The selected resolution %dx%d is not available and has been changed to %dx%d.", ResX, ResY, iXRes, iYRes);
+		ResX = iXRes; ResY = iYRes;
+	}
+}
+
 bool C4Application::PreInit()
 	{
 	if (!Game.PreInit()) return false;
@@ -222,7 +284,7 @@ bool C4Application::PreInit()
 		{
 		//Log(LoadResStr("IDS_PRC_INITLOADER"));
 		bool fUseBlackScreenLoader = UseStartupDialog && !C4Startup::WasFirstRun() && !Config.Startup.NoSplash && !NoSplash && FileExists(C4CFN_Splash);
-		if (!Game.GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
+		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
 		}
 
@@ -422,14 +484,14 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 	// first, check if the selected font can be created at all
 	// check regular font only - there's no reason why the other fonts couldn't be created
 	CStdFont TestFont;
-	if (!Game.FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &Game.GraphicsResource.Files))
+	if (!Game.FontLoader.InitFont(TestFont, szFontFace, C4FontLoader::C4FT_Main, iFontSize, &::GraphicsResource.Files))
 		return false;
 	// OK; reinit all fonts
 	StdStrBuf sOldFont; sOldFont.Copy(Config.General.RXFontName);
 	int32_t iOldFontSize = Config.General.RXFontSize;
 	SCopy(szFontFace, Config.General.RXFontName);
 	Config.General.RXFontSize = iFontSize;
-	if (!Game.GraphicsResource.InitFonts() || !C4Startup::Get()->Graphics.InitFonts())
+	if (!::GraphicsResource.InitFonts() || !C4Startup::Get()->Graphics.InitFonts())
 		{
 		// failed :o
 		// shouldn't happen. Better restore config.
@@ -446,7 +508,7 @@ void C4Application::OnCommand(const char *szCmd)
 	{
 	// reroute to whatever seems to take commands at the moment
 	if(AppState == C4AS_Game)
-		Game.MessageInput.ProcessInput(szCmd);
+		::MessageInput.ProcessInput(szCmd);
 	}
 
 void C4Application::Activate()

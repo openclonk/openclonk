@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003-2004, 2007  Sven Eberhardt
+ * Copyright (c) 2005, 2007  Günther Brammer
  * Copyright (c) 2003-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -42,7 +44,6 @@
 #define FW_MEDIUM 500
 #define FW_SEMIBOLD 600
 #define FW_BOLD 700
-#define DEFAULT_CHARSET         1
 #endif
 
 class CMarkup;
@@ -78,8 +79,6 @@ class CStdFont
 		int iSfcSizes;          // size for font surfaces
 		int iFontZoom;          // zoom of font in texture
 
-		bool fUTF8;             // if set, UTF8-characters are decoded
-
 		CSurface *sfcCurrent;  // current surface font data can be written to at runtime
 		int32_t iCurrentSfcX, iCurrentSfcY; // current character rendering position
 
@@ -110,12 +109,12 @@ class CStdFont
 		inline uint32_t GetNextCharacter(const char **pszString)
 			{
 			unsigned char c=**pszString;
-			if (!fUTF8 || c<128) { ++*pszString; return c; } else return GetNextUTF8Character(pszString);
+			if (c<128) { ++*pszString; return c; } else return GetNextUTF8Character(pszString);
 			}
 		uint32_t GetNextUTF8Character(const char **pszString);
 		CFacet &GetCharacterFacet(uint32_t c)
 			{
-			if (!fUTF8 || c<128) return fctAsciiTexCoords[c-' ']; else return GetUnicodeCharacterFacet(c);
+			if (c<128) return fctAsciiTexCoords[c-' ']; else return GetUnicodeCharacterFacet(c);
 			}
 		CFacet &GetUnicodeCharacterFacet(uint32_t c);
 
@@ -142,7 +141,7 @@ class CStdFont
 
 		// function throws std::runtime_error in case of failure
 		// font initialization - writes the surface data
-		void Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWeight=FW_NORMAL, const char * szCharset="", bool fDoShadow=true);
+		void Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWeight=FW_NORMAL, bool fDoShadow=true);
 
 		// font initialization - grabs the given surface data and extracts character sizes from it
 		void Init(const char *szFontName, CSurface *psfcFontSfc, int iIndent);

@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2007, 2009  Günther Brammer
+ * Copyright (c) 2007  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -40,22 +42,7 @@
 #include <C4Version.h>
 #include <C4Update.h>
 #include <C4ConfigShareware.h>
-
-// from http://cboard.cprogramming.com/archive/index.php/t-27714.html
-#include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
-int mygetch( ) {
-  struct termios oldt, newt;
-  int ch;
-  tcgetattr( STDIN_FILENO, &oldt );
-  newt = oldt;
-  newt.c_lflag &= ~( ICANON | ECHO );
-  tcsetattr( STDIN_FILENO, TCSANOW, &newt );
-  ch = getchar();
-  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
-  return ch;
-}
+#include <StdRegistry.h>
 
 int globalArgC;
 char **globalArgV;
@@ -65,32 +52,26 @@ bool fQuiet = true;
 bool fRecursive = false;
 bool fRegisterShell = false;
 bool fUnregisterShell = false;
-bool fPromptAtEnd = false;
 char strExecuteAtEnd[_MAX_PATH + 1] = "";
 
 int iResult = 0;
-
-C4ConfigShareware Config;
-C4Config *GetCfg() {
-  return &Config;
-}
-
-CDDrawCfg DDrawCfg;             // to satisfy the linker
 
 bool Log(const char *msg) {
   if (!fQuiet)
     printf("%s\n", msg);
   return 1;
 }
-BOOL LogF(const char *strMessage, ...) {
-  va_list args;
-  va_start(args, strMessage);
-  // Compose formatted message
-  StdStrBuf Buf;
-  Buf.FormatV(strMessage, args);
-  // Log
-  return Log(Buf.getData());
-}
+#define IMPLEMENT_LOGF(func) \
+	BOOL func(const char *msg, ...) { \
+		va_list args; va_start(args, msg); \
+		StdStrBuf Buf; \
+		Buf.FormatV(msg, args); \
+		return Log(Buf.getData()); \
+	}
+
+IMPLEMENT_LOGF(DebugLogF)
+IMPLEMENT_LOGF(LogF)
+IMPLEMENT_LOGF(LogSilentF)
 
 bool ProcessGroup(const char *FilenamePar) {
 
@@ -109,11 +90,10 @@ bool ProcessGroup(const char *FilenamePar) {
   LogF("Group: %s", szFilename);
 
   // Open group file
-  if (hGroup.Open(szFilename, TRUE && Config.Registered())) {
+  if (hGroup.Open(szFilename, TRUE)) {
     // No commands: display contents
     if (iFirstCommand >= argc) {
       hGroup.SetStdOutput(true);
-			if (Config.Registered())
 				hGroup.View("*");
       hGroup.SetStdOutput(!fQuiet);
     }
@@ -122,12 +102,6 @@ bool ProcessGroup(const char *FilenamePar) {
       for (int iArg = iFirstCommand; iArg < argc; ++iArg) {
         // This argument is a command
         if (argv[iArg][0] == '-') {
-					// Block unregistered commands
-					if (!Config.Registered() && (SCharPos(argv[iArg][1], "y") < 0))
-					{
-						printf("Command -%c not allowed in unregistered version: %s\n", argv[iArg][1], Config.GetRegistrationError());
-						continue;
-					}
 					// Handle commands
           switch (argv[iArg][1]) {
             // Add
@@ -365,11 +339,12 @@ int RegisterShellExtensions() {
   char strModule[2048];
   char strCommand[2048];
   char strClass[128];
+  int i;
   GetModuleFileName(NULL, strModule, 2048);
   // Groups
   const char *strClasses =
     "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
-  for (int i = 0; SCopySegment(strClasses, i, strClass); i++) {
+  for (i = 0; SCopySegment(strClasses, i, strClass); i++) {
     // Unpack
     sprintf(strCommand, "\"%s\" \"%%1\" \"-u\"", strModule);
     if (!SetRegShell(strClass, "MakeFolder", "C4Group Unpack", strCommand))
@@ -396,11 +371,12 @@ int UnregisterShellExtensions() {
 #ifdef _WIN32
   char strModule[2048];
   char strClass[128];
+  int i;
   GetModuleFileName(NULL, strModule, 2048);
   // Groups
   const char *strClasses =
     "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
-  for (int i = 0; SCopySegment(strClasses, i, strClass); i++) {
+  for (i = 0; SCopySegment(strClasses, i, strClass); i++) {
     // Unpack
     if (!RemoveRegShell(strClass, "MakeFolder"))
       return 0;
@@ -421,8 +397,10 @@ int UnregisterShellExtensions() {
 }
 
 int main(int argc, char *argv[]) {
+#ifndef WIN32
   // Always line buffer mode, even if the output is not sent to a terminal
-  setvbuf(stdout, NULL, _IOLBF, 0);
+	setvbuf(stdout, NULL, _IOLBF, 0);
+#endif
   // Scan options
   int iFirstGroup = 0;
   for (int i = 1; i < argc; ++i) {
@@ -447,8 +425,6 @@ int main(int argc, char *argv[]) {
       case 'u':
         fUnregisterShell = true;
         break;
-				// Prompt at end
-			case 'p': fPromptAtEnd = true; break;
 				// Execute at end
 			case 'x': SCopy(argv[i] + 3, strExecuteAtEnd, _MAX_PATH); break;
         // Unknown
@@ -470,12 +446,12 @@ int main(int argc, char *argv[]) {
   LogF("RedWolf Design C4Group %s", C4VERSION);
 
   // Registration check
-  Config.Init();
-  Config.Load(FALSE);
+/*  Config.Init();
+  Config.Load(FALSE);*/
 
   // Init C4Group
-  C4Group_SetMaker(Config.General.Name);
-  C4Group_SetTempPath(Config.General.TempPath);
+/*  C4Group_SetMaker(Config.General.Name);
+  C4Group_SetTempPath(Config.General.TempPath);*/
   C4Group_SetSortList(C4CFN_FLS);
 
   // Store command line parameters
@@ -520,9 +496,9 @@ int main(int argc, char *argv[]) {
     printf("          -g [source] [target] [title] Make update\n");
     printf("          -y Apply update\n");
     printf("\n");
-    printf("Options:  -v Verbose -r Recursive -p Prompt at end\n");
+    printf("Options:  -v Verbose -r Recursive\n");
     printf("          -i Register shell -u Unregister shell\n");
-		printf("          -x:<command> Execute shell command when done\n");
+    printf("          -x:<command> Execute shell command when done\n");
     printf("\n");
     printf("Examples: c4group pack.c4g -a myfile.dat -l \"*.dat\"\n");
     printf("          c4group pack.c4g -as myfile.dat myfile.bin\n");
@@ -535,17 +511,20 @@ int main(int argc, char *argv[]) {
     printf("          c4group -i\n");
   }
 
-	// Prompt at end
-	if (fPromptAtEnd)
-		{
-		printf("\nDone. Press any key to continue.\n");
-		mygetch();
-		}
-
 	// Execute when done
 	if (strExecuteAtEnd[0])
 		{
 		printf("Executing: %s\n", strExecuteAtEnd);
+#ifdef _WIN32
+
+		STARTUPINFO startInfo;
+		ZeroMem(&startInfo, sizeof(startInfo));
+		startInfo.cb = sizeof(startInfo);
+
+		PROCESS_INFORMATION procInfo;
+
+		CreateProcess(strExecuteAtEnd, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startInfo, &procInfo);
+#else
 		switch (fork())
 		  {
 		  // Error
@@ -560,8 +539,8 @@ int main(int argc, char *argv[]) {
 		  default:
 		    break;
 		  }
+#endif
 		}
-
   // Done
   return iResult;
 

@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003  Matthes Bender
+ * Copyright (c) 2001, 2005-2007  Sven Eberhardt
+ * Copyright (c) 2004-2005, 2007  Peter Wortmann
+ * Copyright (c) 2005-2008  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,7 +31,13 @@
 #include <C4Object.h>
 #include <C4Application.h>
 #include <C4Random.h>
-#include <C4Wrappers.h>
+#include <C4MouseControl.h>
+#include <C4Landscape.h>
+#include <C4Texture.h>
+#include <C4GraphicsResource.h>
+#include <C4Game.h>
+#include <C4GameObjects.h>
+#include <C4GameControl.h>
 #endif
 
 #ifdef WITH_DEVELOPER_MODE
@@ -93,9 +105,9 @@ BOOL C4EditCursor::Init()
 #ifdef WITH_DEVELOPER_MODE
 	menuContext = gtk_menu_new();
 
-	itemDelete = gtk_menu_item_new_with_label(LoadResStrUtf8("IDS_MNU_DELETE").getData());
-	itemDuplicate = gtk_menu_item_new_with_label(LoadResStrUtf8("IDS_MNU_DUPLICATE").getData());
-	itemGrabContents = gtk_menu_item_new_with_label(LoadResStrUtf8("IDS_MNU_CONTENTS").getData());
+	itemDelete = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DELETE"));
+	itemDuplicate = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_DUPLICATE"));
+	itemGrabContents = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_CONTENTS"));
 	itemProperties = gtk_menu_item_new_with_label(""); // Set dynamically in DoContextMenu
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuContext), itemDelete);
@@ -178,7 +190,7 @@ BOOL C4EditCursor::UpdateStatusBar()
 		{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModePlay:
-			if (Game.MouseControl.GetCaption()) str.CopyUntil(Game.MouseControl.GetCaption(),'|');
+			if (::MouseControl.GetCaption()) str.CopyUntil(::MouseControl.GetCaption(),'|');
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModeEdit:
@@ -186,7 +198,7 @@ BOOL C4EditCursor::UpdateStatusBar()
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModeDraw:
-			str.Format("%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? Game.Material.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
+			str.Format("%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? ::MaterialMap.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
@@ -354,7 +366,7 @@ bool C4EditCursor::Delete()
 	{
 	if (!EditingOK()) return FALSE;
 	EMMoveObject(EMMO_Remove, 0, 0, NULL, &Selection);
-	if(Game.Control.isCtrlHost())
+	if(::Control.isCtrlHost())
 		{
 		OnSelectionChanged();
 		}
@@ -417,9 +429,9 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 		Application.DDraw->DrawLine(cgo.Surface,X*Zoom+cgo.X-cgo.TargetX*Zoom,Y*Zoom+cgo.Y-cgo.TargetY*Zoom,X2*Zoom+cgo.X-cgo.TargetX*Zoom,Y2*Zoom+cgo.Y-cgo.TargetY*Zoom,CWhite);
 	// Draw drop target
 	if (DropTarget)
-		Game.GraphicsResource.fctDropTarget.Draw(cgo.Surface,
-											 DropTarget->GetX()*Zoom+cgo.X-cgo.TargetX*Zoom-Game.GraphicsResource.fctDropTarget.Wdt/2,
-											 DropTarget->GetY()*Zoom+DropTarget->Shape.y+cgo.Y-cgo.TargetY*Zoom-Game.GraphicsResource.fctDropTarget.Hgt);
+		::GraphicsResource.fctDropTarget.Draw(cgo.Surface,
+											 DropTarget->GetX()*Zoom+cgo.X-cgo.TargetX*Zoom-::GraphicsResource.fctDropTarget.Wdt/2,
+											 DropTarget->GetY()*Zoom+DropTarget->Shape.y+cgo.Y-cgo.TargetY*Zoom-::GraphicsResource.fctDropTarget.Hgt);
 	}
 
 
@@ -456,7 +468,7 @@ void C4EditCursor::FrameSelection()
 	{
 	Selection.Clear();
   C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=Game.Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+	for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (cobj->Status) if (cobj->OCF & OCF_NotContained)
 			{
 			if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
@@ -524,8 +536,8 @@ BOOL C4EditCursor::SetMode(int32_t iMode)
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 	// Update cursor
-	if (Mode==C4CNS_ModePlay) Game.MouseControl.ShowCursor();
-	else Game.MouseControl.HideCursor();
+	if (Mode==C4CNS_ModePlay) ::MouseControl.ShowCursor();
+	else ::MouseControl.HideCursor();
 	// Restore focus
 #ifdef _WIN32
 	SetFocus(hFocus);
@@ -561,7 +573,7 @@ void C4EditCursor::ApplyToolBrush()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
   // execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, Game.Landscape.Mode, X,Y,0,0, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
 void C4EditCursor::ApplyToolLine()
@@ -569,7 +581,7 @@ void C4EditCursor::ApplyToolLine()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
   // execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, Game.Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
 void C4EditCursor::ApplyToolRect()
@@ -577,7 +589,7 @@ void C4EditCursor::ApplyToolRect()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
   // execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, Game.Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
 void C4EditCursor::ApplyToolFill()
@@ -585,7 +597,7 @@ void C4EditCursor::ApplyToolFill()
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
   // execute/send control
-	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, Game.Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
+	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
 	}
 
 BOOL C4EditCursor::DoContextMenu()
@@ -623,7 +635,7 @@ BOOL C4EditCursor::DoContextMenu()
 	gtk_widget_set_sensitive(itemProperties, Mode!=C4CNS_ModePlay);
 
 	GtkLabel* label = GTK_LABEL(gtk_bin_get_child(GTK_BIN(itemProperties)));
-	gtk_label_set_text(label, LoadResStrUtf8((Mode==C4CNS_ModeEdit) ? "IDS_CNS_PROPERTIES" : "IDS_CNS_TOOLS").getData());
+	gtk_label_set_text(label, LoadResStr((Mode==C4CNS_ModeEdit) ? "IDS_CNS_PROPERTIES" : "IDS_CNS_TOOLS"));
 
 	gtk_menu_popup(GTK_MENU(menuContext), NULL, NULL, NULL, NULL, 3, 0);
 #endif
@@ -652,7 +664,7 @@ void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
 
 	if (wKeyFlags & MK_CONTROL)
 		if (Selection.GetObject())
-			for (clnk=Game.Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+			for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 				if (cobj->Status)
 					if (!cobj->Contained)
 						if (Inside<int32_t>(X-(cobj->GetX()+cobj->Shape.x),0,cobj->Shape.Wdt-1))
@@ -700,13 +712,13 @@ void C4EditCursor::ApplyToolPicker()
 	{
 	int32_t iMaterial;
 	BYTE byIndex;
-	switch (Game.Landscape.Mode)
+	switch (::Landscape.Mode)
 		{
 		case C4LSC_Static:
 			// Material-texture from map
-			if (byIndex=Game.Landscape.GetMapIndex(X/Game.Landscape.MapZoom,Y/Game.Landscape.MapZoom))
+			if (byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom))
 				{
-				const C4TexMapEntry *pTex = Game.TextureMap.GetEntry(byIndex & (IFT-1));
+				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
 				if(pTex)
 					{
 					Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
@@ -721,7 +733,7 @@ void C4EditCursor::ApplyToolPicker()
 			// Material only from landscape
 			if (MatValid(iMaterial=GBackMat(X,Y)))
 				{
-				Console.ToolsDlg.SelectMaterial(Game.Material.Map[iMaterial].Name);
+				Console.ToolsDlg.SelectMaterial(::MaterialMap.Map[iMaterial].Name);
 				Console.ToolsDlg.SetIFT(GBackIFT(X,Y));
 				}
 			else
@@ -752,7 +764,7 @@ void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int
 
 void C4EditCursor::EMControl(C4PacketType eCtrlType, C4ControlPacket *pCtrl)
   {
-  Game.Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
+  ::Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
   }
 
 #ifdef WITH_DEVELOPER_MODE

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001, 2004, 2007  Sven Eberhardt
+ * Copyright (c) 2001  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -151,6 +154,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
 #define PSF_OnTeamSwitch         "~OnTeamSwitch" // int iPlr1, int idNewTeam, int idOldTeam
 #define PSF_OnOwnerRemoved       "~OnOwnerRemoved"
 #define PSF_PlayerControl        "PlayerControl" // int iPlr, int iControl, C4ID idControlExtraData, int x, int y, int iStrength, bool fRepeated, bool fReleased
+#define PSF_Definition           "~Definition" // proplist definition
 
 // Fx%s is automatically prefixed
 #define PSFS_FxAdd              "Add" // C4Object *pTarget, int iEffectNumber, C4String *szNewEffect, int iNewTimer, C4Value vNewEffectVar1, C4Value vNewEffectVar2, C4Value vNewEffectVar3, C4Value vNewEffectVar4

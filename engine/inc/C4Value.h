@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001, 2004  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2006  Peter Wortmann
+ * Copyright (c) 2006-2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,25 +28,19 @@ class C4Object;
 class C4String;
 class C4ValueArray;
 
-const long C4EnumPointer1 = 1000000000,
-           C4EnumPointer2 = 1001000000;
-
 // C4Value type
 enum C4V_Type
 {
-	C4V_Any=0,				// unknown / no type
+	C4V_Any=0,				// no type
 	C4V_Int=1,				// Integer
 	C4V_Bool=2,				// Boolean
-	C4V_C4ID=3,				// C4ID
+	C4V_PropList=3,
 	C4V_C4Object=4,		// Pointer on Object
-
 	C4V_String=5,			// String
-
 	C4V_Array=6,			// pointer on array of values
-
 	C4V_pC4Value=7,		// reference on a value (variable)
 
-	C4V_C4ObjectEnum=8, // enumerated object
+	C4V_C4ObjectEnum=9, // enumerated object
 };
 
 #define C4V_Last (int) C4V_pC4Value
@@ -55,6 +52,7 @@ C4V_Type GetC4VFromID(char C4VID);
 union C4V_Data {
 	long Int;
 	C4Object * Obj;
+	C4PropList * PropList;
 	C4String * Str;
 	C4Value * Ref;
 	C4ValueArray * Array;
@@ -82,16 +80,18 @@ public:
 	C4Value(const C4Value &nValue) : Data(nValue.Data), Type(nValue.Type), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ AddDataRef(); }
 
-	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), Type(nData ? nType : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ AddDataRef(); }
-	C4Value(int32_t nData, C4V_Type nType): Type(nData ? nType : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
-		{ Data.Int = nData; AddDataRef(); }
+	explicit C4Value(bool data): Type(C4V_Bool), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Data.Int = data; AddDataRef(); }
+	explicit C4Value(int32_t data): Type(C4V_Int), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Data.Int = data; AddDataRef(); }
 	explicit C4Value(C4Object *pObj): Type(pObj ? C4V_C4Object : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Obj = pObj; AddDataRef(); }
 	explicit C4Value(C4String *pStr): Type(pStr ? C4V_String : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Str = pStr; AddDataRef(); }
 	explicit C4Value(C4ValueArray *pArray): Type(pArray ? C4V_Array : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Array = pArray; AddDataRef(); }
+	explicit C4Value(C4PropList *p): Type(p ? C4V_PropList : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Data.PropList = p; AddDataRef(); }
 	explicit C4Value(C4Value *pVal): Type(pVal ? C4V_pC4Value : C4V_Any), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
 		{ Data.Ref = pVal; AddDataRef(); }
 
@@ -101,21 +101,22 @@ public:
 
 	// Checked getters
 	int32_t getInt() { return ConvertTo(C4V_Int) ? Data.Int : 0; }
-	int32_t getIntOrID() { Deref(); if (Type == C4V_Int || Type == C4V_Bool || Type == C4V_C4ID) return Data.Int; else return 0; }
+	int32_t getIntOrID() { Deref(); if (Type == C4V_Int || Type == C4V_Bool /* FIXME || Type == C4V_C4ID*/) return Data.Int; else return 0; }
 	bool getBool() { return ConvertTo(C4V_Bool) ? !! Data : 0; }
-	C4ID getC4ID() { return ConvertTo(C4V_C4ID) ? Data.Int : 0; }
-	C4Object *getObj() { return ConvertTo(C4V_C4Object) ? Data.Obj : NULL; }
-	C4String *getStr() { return ConvertTo(C4V_String) ? Data.Str : NULL; }
-	C4ValueArray *getArray() { return ConvertTo(C4V_Array) ? Data.Array : NULL; }
-	C4Value *getRef() { return ConvertTo(C4V_pC4Value) ? Data.Ref : NULL; }
+	C4ID getC4ID();
+	C4Object * getObj() { return ConvertTo(C4V_C4Object) ? Data.Obj : NULL; }
+	C4PropList * getPropList() { return ConvertTo(C4V_PropList) ? Data.PropList : NULL; }
+	C4String * getStr() { return ConvertTo(C4V_String) ? Data.Str : NULL; }
+	C4ValueArray * getArray() { return ConvertTo(C4V_Array) ? Data.Array : NULL; }
+	C4Value * getRef() { return ConvertTo(C4V_pC4Value) ? Data.Ref : NULL; }
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
 	bool _getBool() const { return !! Data.Int; }
-	C4ID _getC4ID() const { return Data.Int; }
 	C4Object *_getObj() const { return Data.Obj; }
 	C4String *_getStr() const { return Data.Str; }
 	C4ValueArray *_getArray() const { return Data.Array; }
+	C4PropList *_getPropList() const { return Data.PropList; }
 	C4Value *_getRef() { return Data.Ref; }
 	long _getRaw() const { return Data.Int; }
 
@@ -124,6 +125,7 @@ public:
 	template <typename T> inline T _Get() { return C4ValueConv<T>::_FromC4V(*this); }
 
 	bool operator ! () const { return !GetData(); }
+	inline operator const void* () const { return GetData()?this:0; }  // To allow use of C4Value in conditions
 
 	void Set(const C4Value &nValue) { if (this != &nValue) Set(nValue.Data, nValue.Type); }
 
@@ -131,13 +133,13 @@ public:
 
 	void SetBool(bool b) { C4V_Data d; d.Int = b; Set(d, C4V_Bool); }
 
-	void SetC4ID(C4ID id) { C4V_Data d; d.Int = id; Set(d, C4V_C4ID); }
-
 	void SetObject(C4Object * Obj) { C4V_Data d; d.Obj = Obj; Set(d, C4V_C4Object); }
 
 	void SetString(C4String * Str) { C4V_Data d; d.Str = Str; Set(d, C4V_String); }
 
 	void SetArray(C4ValueArray * Array) { C4V_Data d; d.Array = Array; Set(d, C4V_Array); }
+
+	void SetPropList(C4PropList * PropList) { C4V_Data d; d.PropList = PropList; Set(d, C4V_PropList); }
 
 	void SetRef(C4Value* nValue) { C4V_Data d; d.Ref = nValue; Set(d, C4V_pC4Value); }
 
@@ -212,7 +214,10 @@ protected:
 	C4Value * GetNextRef() { if (HasBaseArray) return 0; else return NextRef; }
 	C4ValueArray * GetBaseArray() { if (HasBaseArray) return BaseArray; else return 0; }
 
-	void Set(long nData, C4V_Type nType = C4V_Any) { C4V_Data d; d.Int = nData; Set(d, nType); }
+	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), HasBaseArray(false), NextRef(NULL), FirstRef(NULL)
+		{ Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
+
+	void Set(long nData, C4V_Type nType) { C4V_Data d; d.Int = nData; Set(d, nType); }
 	void Set(C4V_Data nData, C4V_Type nType);
 
 	void AddRef(C4Value *pRef);
@@ -221,22 +226,24 @@ protected:
 	void AddDataRef();
 	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray);
 
-	// guess type from data (if type == c4v_any)
-	C4V_Type GuessType();
+	static inline bool IsNullableType(C4V_Type Type)
+		{ return Type == C4V_Int || Type == C4V_Bool; }
 
 	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
-	static bool FnCnvInt2Id(C4Value *Val, C4V_Type toType, BOOL fStrict);
-	static bool FnCnvGuess(C4Value *Val, C4V_Type toType, BOOL fStrict);
+	static bool FnCnvObject(C4Value *Val, C4V_Type toType, BOOL fStrict);
 
-	friend class C4Object;
+	friend class C4PropList;
 	friend class C4AulDefFunc;
+	friend C4Value C4VInt(int32_t iVal);
+	friend C4Value C4VBool(bool fVal);
 };
 
 // converter
 inline C4Value C4VInt(int32_t iVal) { C4V_Data d; d.Int = iVal; return C4Value(d, C4V_Int); }
 inline C4Value C4VBool(bool fVal) { C4V_Data d; d.Int = fVal; return C4Value(d, C4V_Bool); }
-inline C4Value C4VID(C4ID iVal) { C4V_Data d; d.Int = iVal; return C4Value(d, C4V_C4ID); }
+C4Value C4VID(C4ID iVal);
 inline C4Value C4VObj(C4Object *pObj) { return C4Value(pObj); }
+inline C4Value C4VPropList(C4PropList * p) { return C4Value(p); }
 inline C4Value C4VString(C4String *pStr) { return C4Value(pStr); }
 inline C4Value C4VArray(C4ValueArray *pArray) { return C4Value(pArray); }
 inline C4Value C4VRef(C4Value *pVal) { return pVal->GetRef(); }
@@ -261,9 +268,9 @@ template <> struct C4ValueConv<bool>
 };
 template <> struct C4ValueConv<C4ID>
 {
-	inline static C4V_Type Type() { return C4V_C4ID; }
+	inline static C4V_Type Type() { return C4V_PropList; }
 	inline static C4ID FromC4V(C4Value &v) { return v.getC4ID(); }
-	inline static C4ID _FromC4V(C4Value &v) { return v._getC4ID(); }
+	inline static C4ID _FromC4V(C4Value &v) { return FromC4V(v); }
 	inline static C4Value ToC4V(C4ID v) { return C4VID(v); }
 };
 template <> struct C4ValueConv<C4Object *>
@@ -286,6 +293,13 @@ template <> struct C4ValueConv<C4ValueArray *>
 	inline static C4ValueArray *FromC4V(C4Value &v) { return v.getArray(); }
 	inline static C4ValueArray *_FromC4V(C4Value &v) { return v._getArray(); }
 	inline static C4Value ToC4V(C4ValueArray *v) { return C4VArray(v); }
+};
+template <> struct C4ValueConv<C4PropList *>
+{
+	inline static C4V_Type Type() { return C4V_PropList; }
+	inline static C4PropList *FromC4V(C4Value &v) { return v.getPropList(); }
+	inline static C4PropList *_FromC4V(C4Value &v) { return v._getPropList(); }
+	inline static C4Value ToC4V(C4PropList *v) { return C4VPropList(v); }
 };
 template <> struct C4ValueConv<C4Value *>
 {

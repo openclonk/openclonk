@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2008  Sven Eberhardt
+ * Copyright (c) 2005-2006  Peter Wortmann
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -30,6 +35,9 @@
 #include <C4Log.h>
 #include <C4Player.h>
 #include <C4GameLobby.h>
+#include <C4GraphicsSystem.h>
+#include <C4PlayerList.h>
+#include <C4GameControl.h>
 #endif
 #include <cctype>
 
@@ -91,13 +99,13 @@ void C4ChatInputDialog::OnChatCancel()
 	if (fObjInput)
 		{
 		// check if the target input is still valid
-		C4Player *pPlr = Game.Players.Get(iPlr);
+		C4Player *pPlr = ::Players.Get(iPlr);
 		if (!pPlr) return;
 		if (pPlr->MarkMessageBoardQueryAnswered(pTarget))
 			{
 			// there was an associated query - it must be removed on all clients synchronized via queue
 			// do this by calling OnMessageBoardAnswer without an answer
-			Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, 0)", pTarget ? pTarget->Number : 0, iPlr).getData()), CDT_Decide);
+			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, 0)", pTarget ? pTarget->Number : 0, iPlr).getData()), CDT_Decide);
 			}
 		}
 	}
@@ -122,10 +130,11 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 	C4GUI::Edit *pEdt = reinterpret_cast<C4GUI::Edit *>(edt);
 	char *szInputText = const_cast<char *>(pEdt->GetText());
 	// Store to back buffer
-	Game.MessageInput.StoreBackBuffer(szInputText);
+	::MessageInput.StoreBackBuffer(szInputText);
 	// check confidential data - even for object input (script triggered), webcode should not be pasted here
-	if (C4InVal::IsConfidentialData(szInputText, true))
+	if (Config.IsConfidentialData(szInputText))
 		{
+		::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
 		szInputText = "";
 		}
 	// script queried input?
@@ -133,7 +142,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		{
 		fProcessed = true;
 		// check if the target input is still valid
-		C4Player *pPlr = Game.Players.Get(iPlr);
+		C4Player *pPlr = ::Players.Get(iPlr);
 		if (!pPlr) return C4GUI::Edit::IR_CloseDlg;
 		if (!pPlr->MarkMessageBoardQueryAnswered(pTarget))
 			{
@@ -145,12 +154,12 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 		StdStrBuf sInput;
 		sInput.Copy(szInputText);
 		sInput.EscapeString();
-		Game.Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, \"%s\")", pTarget ? pTarget->Number : 0, iPlr, sInput.getData()).getData()), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(FormatString("OnMessageBoardAnswer(Object(%d), %d, \"%s\")", pTarget ? pTarget->Number : 0, iPlr, sInput.getData()).getData()), CDT_Decide);
 		return C4GUI::Edit::IR_CloseDlg;
 		}
 	else
 		// reroute to message input class
-		Game.MessageInput.ProcessInput(szInputText);
+		::MessageInput.ProcessInput(szInputText);
 	// safety: message board commands may do strange things
 	if (!C4GUI::IsGUIValid() || this!=pInstance) return C4GUI::Edit::IR_Abort;
 	// select all text to be removed with next keypress
@@ -166,7 +175,7 @@ bool C4ChatInputDialog::KeyHistoryUpDown(bool fUp)
 	{
 	// browse chat history
 	pEdit->SelectAll(); pEdit->DeleteSelection();
-	const char *szPrevInput = Game.MessageInput.GetBackBuffer(fUp ? (++BackIndex) : (--BackIndex));
+	const char *szPrevInput = ::MessageInput.GetBackBuffer(fUp ? (++BackIndex) : (--BackIndex));
 	if (!szPrevInput || !*szPrevInput)
 		BackIndex = -1;
 	else
@@ -227,7 +236,7 @@ bool C4ChatInputDialog::KeyCompleteNick()
 	// get current word in edit
 	if (!pEdit->GetCurrentWord(IncompleteNick, 256)) return false;
 	if (!*IncompleteNick) return false;
-	C4Player *plr = Game.Players.First;
+	C4Player *plr = ::Players.First;
 	while (plr)
 		{
 		// Compare name and input
@@ -292,7 +301,7 @@ bool C4MessageInput::StartTypeIn(bool fObjInput, C4Object *pObj, bool fUpperCase
 	// close any previous
 	if (IsTypeIn()) CloseTypeIn();
 	// start new
-	return Game.pGUI->ShowRemoveDlg(new C4ChatInputDialog(fObjInput, pObj, fUpperCase, fTeam, iPlr, rsInputQuery));
+	return ::pGUI->ShowRemoveDlg(new C4ChatInputDialog(fObjInput, pObj, fUpperCase, fTeam, iPlr, rsInputQuery));
 	}
 
 bool C4MessageInput::KeyStartTypeIn(bool fTeam)
@@ -356,7 +365,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
     char szTargetPlr[C4MaxName + 1];
     SCopyUntil(szText + 9, szTargetPlr, ' ', C4MaxName);
     // search player
-    C4Player *pToPlr = Game.Players.GetByName(szTargetPlr);
+    C4Player *pToPlr = ::Players.GetByName(szTargetPlr);
     if(!pToPlr) return FALSE;
     // set
     eMsgType = C4CMT_Private;
@@ -429,9 +438,9 @@ bool C4MessageInput::ProcessInput(const char *szText)
 			SCopy(szMsg, szMessage, Min<unsigned long>(C4MaxMessage, szEnd - szMsg + 1));
 			}
     // get sending player (if any)
-		C4Player *pPlr = Game.IsRunning ? Game.Players.GetLocalByIndex(0) : NULL;
+		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : NULL;
     // send
-    Game.Control.DoInput(CID_Message,
+    ::Control.DoInput(CID_Message,
       new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->Number : -1, iToPlayer),
       CDT_Private);
   }
@@ -441,7 +450,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 
 bool C4MessageInput::ProcessCommand(const char *szCommand)
 	{
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	// command
 	char szCmdName[C4MaxName + 1];
 	SCopyUntil(szCommand + 1, szCmdName, ' ', C4MaxName);
@@ -476,10 +485,10 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		{
 		if (!Game.IsRunning) return FALSE;
 		if (!Game.DebugMode) return FALSE;
-		if (!Game.Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return FALSE;
-    if (Game.Network.isEnabled() && !Game.Network.isHost()) return FALSE;
+		if (!::Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return FALSE;
+    if (::Network.isEnabled() && !::Network.isHost()) return FALSE;
 
-    Game.Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+    ::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
 		return TRUE;
 		}
 	// set runtimte properties
@@ -487,14 +496,14 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		{
 		if(SEqual2(pCmdPar, "maxplayer "))
 		  {
-			if (Game.Control.isCtrlHost())
+			if (::Control.isCtrlHost())
 				{
 				if(atoi(pCmdPar+10) == 0 && !SEqual(pCmdPar+10, "0"))
 					{
 					Log("Syntax: /set maxplayer count");
 					return FALSE;
 					}
-				Game.Control.DoInput(CID_Set,
+				::Control.DoInput(CID_Set,
 	        new C4ControlSet(C4CVT_MaxPlayer, atoi(pCmdPar+10)),
 					CDT_Decide);
 				return TRUE;
@@ -502,17 +511,17 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		  }
 		if(SEqual2(pCmdPar, "comment ") || SEqual(pCmdPar, "comment"))
 		  {
-			if(!Game.Network.isEnabled() || !Game.Network.isHost()) return FALSE;
+			if(!::Network.isEnabled() || !::Network.isHost()) return FALSE;
       // Set in configuration, update reference
 			Config.Network.Comment.CopyValidated(pCmdPar[7] ? (pCmdPar+8) : "");
-      Game.Network.InvalidateReference();
+      ::Network.InvalidateReference();
 			Log(LoadResStr("IDS_NET_COMMENTCHANGED"));
 			return TRUE;
 		  }
 		if(SEqual2(pCmdPar, "password ") || SEqual(pCmdPar, "password"))
 		  {
-			if(!Game.Network.isEnabled() || !Game.Network.isHost()) return FALSE;
-			Game.Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
+			if(!::Network.isEnabled() || !::Network.isHost()) return FALSE;
+			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
 			if (pLobby) pLobby->UpdatePassword();
 			return TRUE;
 		  }
@@ -527,7 +536,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
         pSet = new C4ControlSet(C4CVT_FairCrew, atoi(pCmdPar + 9));
       else
         return FALSE;
-      Game.Control.DoInput(CID_Set, pSet, CDT_Decide);
+      ::Control.DoInput(CID_Set, pSet, CDT_Decide);
       return TRUE;
       }
 		// unknown property
@@ -536,12 +545,12 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// get szen from network folder - not in lobby; use res tab there
 	if(SEqual(szCmdName, "netgetscen"))
 		{
-		if (Game.Network.isEnabled() && !Game.Network.isHost() && !pLobby)
+		if (::Network.isEnabled() && !::Network.isHost() && !pLobby)
 			{
 			const C4Network2ResCore *pResCoreScen = Game.Parameters.Scenario.getResCore();
 			if (pResCoreScen)
 				{
-				C4Network2Res::Ref pScenario = Game.Network.ResList.getRefRes(pResCoreScen->getID());
+				C4Network2Res::Ref pScenario = ::Network.ResList.getRefRes(pResCoreScen->getID());
 				if (pScenario)
 					if (C4Group_CopyItem(pScenario->getFile(), Config.AtUserDataPath(GetFilename(Game.ScenarioFilename))))
 						{
@@ -561,8 +570,8 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			pLobby->ClearLog();
 			}
 		// fullscreen
-		else if (Game.GraphicsSystem.MessageBoard.Active)
-			Game.GraphicsSystem.MessageBoard.ClearLog();
+		else if (::GraphicsSystem.MessageBoard.Active)
+			::GraphicsSystem.MessageBoard.ClearLog();
 		else
 			{
 			// EM mode
@@ -573,7 +582,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// kick client
 	if(SEqual(szCmdName, "kick"))
 		{
-		if (Game.Network.isEnabled() && Game.Network.isHost())
+		if (::Network.isEnabled() && ::Network.isHost())
 			{
 			// find client
 			C4Client *pClient = Game.Clients.getClientByName(pCmdPar);
@@ -583,8 +592,8 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 				return FALSE;
 				}
 			// league: Kick needs voting
-			if(Game.Parameters.isLeague() && Game.Players.GetAtClient(pClient->getID()))
-				Game.Network.Vote(VT_Kick, true, pClient->getID());
+			if(Game.Parameters.isLeague() && ::Players.GetAtClient(pClient->getID()))
+				::Network.Vote(VT_Kick, true, pClient->getID());
 			else
 				// add control
 				Game.Clients.CtrlRemove(pClient, LoadResStr("IDS_MSG_KICKFROMMSGBOARD"));
@@ -616,7 +625,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	if (SEqual(szCmdName, "nodebug"))
 		{
 		if (!Game.IsRunning) return FALSE;
-		Game.Control.DoInput(CID_Set, new C4ControlSet(C4CVT_AllowDebug, false), CDT_Decide);
+		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_AllowDebug, false), CDT_Decide);
 		return TRUE;
 		}
 
@@ -626,13 +635,13 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		// get line cnt
 		int32_t iLineCnt = BoundBy(atoi(pCmdPar), 0, 20);
 		if(iLineCnt == 0)
-			Game.GraphicsSystem.MessageBoard.ChangeMode(2);
+			::GraphicsSystem.MessageBoard.ChangeMode(2);
 		else if(iLineCnt == 1)
-			Game.GraphicsSystem.MessageBoard.ChangeMode(0);
+			::GraphicsSystem.MessageBoard.ChangeMode(0);
 		else
 			{
-			Game.GraphicsSystem.MessageBoard.iLines = iLineCnt;
-			Game.GraphicsSystem.MessageBoard.ChangeMode(1);
+			::GraphicsSystem.MessageBoard.iLines = iLineCnt;
+			::GraphicsSystem.MessageBoard.ChangeMode(1);
 			}
 		return TRUE;
 		}
@@ -640,7 +649,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// kick/activate/deactivate/observer
 	if(SEqual(szCmdName, "activate") || SEqual(szCmdName, "deactivate") || SEqual(szCmdName, "observer"))
 		{
-    if (!Game.Network.isEnabled() || !Game.Network.isHost())
+    if (!::Network.isEnabled() || !::Network.isHost())
       { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return FALSE; }
 		// search for client
 		C4Client *pClient = Game.Clients.getClientByName(pCmdPar);
@@ -659,7 +668,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			pCtrl = new C4ControlClientUpdate(pClient->getID(), CUT_SetObserver);
 		// perform it
 		if (pCtrl)
-			Game.Control.DoInput(CID_ClientUpdate, pCtrl, CDT_Sync);
+			::Control.DoInput(CID_ClientUpdate, pCtrl, CDT_Sync);
 		else
 			Log(LoadResStr("IDS_LOG_COMMANDNOTALLOWEDINLEAGUE"));
 		return TRUE;
@@ -668,9 +677,9 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// control mode
 	if(SEqual(szCmdName, "centralctrl") || SEqual(szCmdName, "decentralctrl")  || SEqual(szCmdName, "asyncctrl"))
     {
-    if (!Game.Network.isEnabled() || !Game.Network.isHost())
+    if (!::Network.isEnabled() || !::Network.isHost())
       { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return FALSE; }
-    Game.Network.SetCtrlMode(*szCmdName == 'c' ? CNM_Central : *szCmdName == 'd' ? CNM_Decentral : CNM_Async);
+    ::Network.SetCtrlMode(*szCmdName == 'c' ? CNM_Central : *szCmdName == 'd' ? CNM_Decentral : CNM_Async);
 		return TRUE;
     }
 
@@ -726,7 +735,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		else
 			Script = pCmd->Script;
 		// add script
-		Game.Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
 		// ok
 		return TRUE;
 	}
@@ -809,3 +818,5 @@ void C4MessageBoardQuery::CompileFunc(StdCompiler *pComp)
 	// list end
 	pComp->Seperator(StdCompiler::SEP_END); // ')'
 	}
+
+C4MessageInput MessageInput;

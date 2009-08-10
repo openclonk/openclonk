@@ -5,7 +5,7 @@
 	<func>
 		<title>CastObjects</title>
 		<category>Objekte</category><subcat>Erzeugung</subcat>
-		<version>4.6.5.0 CP</version>
+		<version>4.6.5.0 CP<extversion>4.10.0.0 OC</extversion></version>
 		<syntax>
 			<rtype>int</rtype>
 			<params>
@@ -14,6 +14,8 @@
 				<param><type>int </type><name>iLevel</name><desc>Geschwindigkeit der verschleuderten Objekte</desc></param>
 				<param><type>int </type><name>iX</name><desc>X-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
 				<param><type>int </type><name>iY</name><desc>Y-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int </type><name>iAngle</name><desc>Winkel in den die Objekte verschleudert werden.</desc><optional /></param>
+				<param><type>int </type><name>iAngleVariance</name><desc>Maximale Abweichung von diesem Winkel. Wenn nicht angegeben werden Objekte in alle Richtungen verschleudert.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Verschleudert iNumber Objekte an angegebener Position mit einer Geschwindigkeit von iLevel. Bei einem lokalen Aufruf haben die erzeugten Objekte den selben Besitzer wie das aufrufende Objekt.</desc>
@@ -30,4 +32,5 @@ CastObjects(SPRK,1,20,<funclink>GetVertex</funclink>(num, 0)<emlink href="script
 		</related>
 	</func>
 	<author>Günther</author><date>Februar 2002</date>
+	<author>Newton</author><date>Juli 2009</date>
 </funcs>

@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2002, 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2003-2005  Peter Wortmann
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2006-2007  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,7 +29,8 @@
 #include <C4Console.h>
 #include <C4ObjectCom.h>
 #include <C4Object.h>
-#include <C4Wrappers.h>
+#include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 /*--- C4ScriptHost ---*/
@@ -61,9 +67,7 @@ BOOL C4ScriptHost::Load(const char *szName, C4Group &hGroup, const char *szFilen
 	// set name
 	ScriptName.Format("%s" DirSep "%s", hGroup.GetFullName().getData(), Filename);
 	// preparse script
-#ifdef C4ENGINE
 	MakeScript();
-#endif
 	// Success
 	return fSuccess;
 	}
@@ -95,9 +99,7 @@ void C4ScriptHost::Close()
 	// Make executable script
 	MakeScript();
 	// Update console
-#if defined(C4ENGINE)
 	Console.UpdateInputCtrl();
-#endif
 	}
 
 int32_t C4ScriptHost::GetControlMethod(int32_t com, int32_t first, int32_t second)
@@ -113,7 +115,6 @@ void C4ScriptHost::GetControlMethodMask(const char *szFunctionFormat, int32_t& f
 	if (!Script) return;
 
 	// Scan for com defined control functions
-#ifdef C4ENGINE
 	int32_t iCom;
 	char szFunction[256+1];
 	for (iCom=0; iCom<ComOrderNum; iCom++)
@@ -127,21 +128,16 @@ void C4ScriptHost::GetControlMethodMask(const char *szFunctionFormat, int32_t& f
 			second |= ((func->ControlMethod >> 1) & 0x01) << iCom;
 			}
 		}
-#endif
 	}
 
 
 C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *Pars, bool fPrivateCall, bool fPassError)
 	{
-#ifdef C4ENGINE
 	// get function
 	C4AulScriptFunc *pFn;
 	if (!(pFn = GetSFunc(szFunction, AA_PRIVATE))) return C4VNull;
 	// Call code
 	return pFn->Exec(pObj,Pars, fPassError);
-#else
-	return 0;
-#endif
 	}
 
 BOOL C4ScriptHost::ReloadScript(const char *szPath)
@@ -167,7 +163,6 @@ void C4ScriptHost::SetError(const char *szMessage)
 
 const char *C4ScriptHost::GetControlDesc(const char *szFunctionFormat, int32_t iCom, C4ID *pidImage, int32_t* piImagePhase)
 	{
-#ifdef C4ENGINE
 	// Compose script function
 	char szFunction[256+1];
 	sprintf(szFunction,szFunctionFormat,ComName(iCom));
@@ -181,7 +176,6 @@ const char *C4ScriptHost::GetControlDesc(const char *szFunctionFormat, int32_t i
 	if(piImagePhase) { *piImagePhase = 0; if(pFn) *piImagePhase = pFn->iImagePhase; }
 	// Return function desc
 	if (pFn && pFn->Desc.getLength()) return pFn->DescText.getData();
-#endif
 	// No function
 	return NULL;
 	}
@@ -208,14 +202,6 @@ void C4DefScriptHost::AfterLink()
 	if (Def)
 		{
 		C4AulAccess CallAccess = /*Strict ? AA_PROTECTED : */AA_PRIVATE;
-		for (int32_t cnt=0; cnt<Def->ActNum; cnt++)
-			{
-			C4ActionDef *pad=&Def->ActMap[cnt];
-			sprintf(WhereStr, "Action %s: StartCall", pad->Name); pad->StartCall	= GetSFuncWarn((const char *) &pad->SStartCall, CallAccess, WhereStr);
-			sprintf(WhereStr, "Action %s: PhaseCall", pad->Name); pad->PhaseCall	= GetSFuncWarn((const char *) &pad->SPhaseCall, CallAccess, WhereStr);
-			sprintf(WhereStr, "Action %s: EndCall"	, pad->Name); pad->EndCall		= GetSFuncWarn((const char *) &pad->SEndCall,		CallAccess, WhereStr);
-			sprintf(WhereStr, "Action %s: AbortCall", pad->Name); pad->AbortCall	= GetSFuncWarn((const char *) &pad->SAbortCall,	CallAccess, WhereStr);
-			}
 		Def->TimerCall=GetSFuncWarn((const char *) Def->STimerCall, CallAccess, "TimerCall");
 		}
 	// Check if there are any Control/Contained/Activation script functions
@@ -242,14 +228,12 @@ void C4GameScriptHost::Default()
 BOOL C4GameScriptHost::Execute()
 	{
 	if (!Script) return FALSE;
-#ifdef C4ENGINE
 	char buffer[500];
-	if (Go && !Tick10)
+	if (Go && !::Game.iTick10)
 		{
 		sprintf(buffer,PSF_Script,Counter++);
 		return !! Call(buffer);
 		}
-#endif
 	return FALSE;
 	}
 
@@ -257,7 +241,7 @@ C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars
 	{
 	// call objects first - scenario script might overwrite hostility, etc...
 	C4Object *pObj;
-	for (C4ObjectLink *clnk=Game.Objects.ObjectsInt().First; clnk; clnk=clnk->Next) if (pObj=clnk->Obj)
+	for (C4ObjectLink *clnk=::Objects.ObjectsInt().First; clnk; clnk=clnk->Next) if (pObj=clnk->Obj)
 		if (pObj->Category & (C4D_Goal | C4D_Rule | C4D_Environment))
 			if (pObj->Status)
 				{

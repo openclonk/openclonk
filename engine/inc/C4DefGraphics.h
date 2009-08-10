@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2006  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -51,7 +54,6 @@ class C4DefGraphics
 
 		bool LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner); // load specified graphics from group
 		bool LoadBitmaps(C4Group &hGroup, bool fColorByOwner); // load graphics from group
-		bool ColorizeByMaterial(int32_t iMat, C4MaterialMap &rMats, BYTE bGBM); // colorize all graphics by material
 		C4DefGraphics *Get(const char *szGrpName); // get graphics by name
 		void Clear(); // clear fields; delete additional graphics
 		bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created
@@ -172,11 +174,9 @@ class C4GraphicsOverlay
 		C4TargetFacet fctBlit;         // current blit data
 		uint32_t dwBlitMode;          // extra parameters for additive blits, etc.
 		uint32_t dwClrModulation;        // colormod for this overlay
-#ifdef C4ENGINE
 		C4Object *pOverlayObj; // object to be drawn as overlay in MODE_Object
 		int32_t nOverlayObj; // compiled ptr
 		C4DrawTransform Transform; // drawing transformation: Rotation, zoom, etc.
-#endif
 		int32_t iPhase;                // action face for MODE_Action
 		bool fZoomToShape;             // if true, overlay will be zoomed to match the target object shape
 
@@ -189,9 +189,7 @@ class C4GraphicsOverlay
 
 	public:
 		C4GraphicsOverlay() : eMode(MODE_None), pSourceGfx(NULL), fctBlit(), dwBlitMode(0), dwClrModulation(0xffffff),
-#ifdef C4ENGINE
 			pOverlayObj(NULL), nOverlayObj(0), Transform(+1),
-#endif
 			iPhase(0), fZoomToShape(false), iID(0), pNext(NULL) { *Action=0; } // std ctor
 		~C4GraphicsOverlay(); // dtor
 
@@ -218,10 +216,8 @@ class C4GraphicsOverlay
 
 		bool IsValid(const C4Object *pForObj) const;
 
-#ifdef C4ENGINE
 		C4DrawTransform *GetTransform() { return &Transform; }
 		C4Object *GetOverlayObject() const { return pOverlayObj; }
-#endif
 		int32_t GetID() const { return iID; }
 		void SetID(int32_t aID) { iID = aID; }
 		void SetPhase(int32_t iToPhase);

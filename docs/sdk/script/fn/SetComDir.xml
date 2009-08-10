@@ -24,7 +24,7 @@ SetComDir(<funclink>COMD_None</funclink>(), pClnk);
         <text>Gibt dem höchstrangigsten Clonk von Spieler 1 den Befehl, stehen zu bleiben. Vorhandene Kommandos werden gelöscht.</text>
 
 <code>var pClnk = <funclink>GetHiRank</funclink>(0);
-<funclink>ObjectSetAction</funclink>(pClnk, "Dig");
+<funclink>pClnk->SetAction</funclink>("Dig");
 SetComDir(<funclink>COMD_DownRight</funclink>());</code>
 
         <text>Lässt den höchstrangigsten Clonk von Spieler 1 nach rechts unten graben.</text>

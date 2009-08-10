@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2001, 2006-2007  Sven Eberhardt
+ * Copyright (c) 2001-2002, 2004, 2007  Peter Wortmann
+ * Copyright (c) 2006-2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,7 +24,9 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Def.h>
+#include <C4Material.h>
 #include <C4Game.h>
+#include <C4GameObjects.h>
 #endif
 
 // ResolveAppends and ResolveIncludes must be called both
@@ -223,7 +228,6 @@ BOOL C4AulScript::ReloadScript(const char *szPath)
 void C4AulScriptEngine::Link(C4DefList *rDefs)
 	{
 
-#ifdef C4ENGINE
 
 	try
 		{
@@ -263,8 +267,17 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 			}
 
 		// update material pointers
-		Game.Material.UpdateScriptPointers();
+		::MaterialMap.UpdateScriptPointers();
 
+		// FIXME: move this to script
+		C4PropList * Action = new C4PropList;
+		Action->SetProperty(Strings.P[P_Length], C4VInt(1));
+		Action->SetProperty(Strings.P[P_Directions], C4VInt(1));
+		Action->SetProperty(Strings.P[P_Step], C4VInt(1));
+		Action->SetProperty(Strings.P[P_Procedure], C4VInt(DFA_NONE));
+		GlobalNamed.GetItem("Action")->SetPropList(Action);
+
+		rDefs->CallEveryDefinition();
 		// display state
 		LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
       lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
@@ -279,7 +292,6 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		delete err;
 		}
 
-#endif
 
 	}
 
@@ -299,10 +311,10 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	Link(rDefs);
 
 	// update effect pointers
-	Game.Objects.UpdateScriptPointers();
+	::Objects.UpdateScriptPointers();
 
 	// update material pointers
-	Game.Material.UpdateScriptPointers();
+	::MaterialMap.UpdateScriptPointers();
 	}
 
 BOOL C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs)

@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2001  Matthes Bender
+ * Copyright (c) 2001-2007  Sven Eberhardt
+ * Copyright (c) 2003  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,12 +31,11 @@
 #include <C4Facet.h>
 #include <C4Surface.h>
 #include <C4ComponentHost.h>
+#include <C4PropList.h>
 
-#ifdef C4ENGINE
 #include <C4ScriptHost.h>
 #include <C4DefGraphics.h>
 #include "C4LangStringTable.h"
-#endif
 
 const int32_t C4D_None           =    0,
 							C4D_All            =		~C4D_None,
@@ -118,14 +121,13 @@ const DWORD C4D_Load_None      =  0,
 						C4D_Load_Bitmap    =  2,
 						C4D_Load_Script    =  4,
 						C4D_Load_Desc      =  8,
-						C4D_Load_ActMap    = 16,
 						C4D_Load_Image     = 32,
 						C4D_Load_Sounds		 = 64,
 						C4D_Load_ClonkNames= 128,
 						C4D_Load_RankNames = 256,
 						C4D_Load_RankFaces = 512,
 						C4D_Load_FE        = C4D_Load_Image | C4D_Load_Desc,
-						C4D_Load_RX        = C4D_Load_Bitmap | C4D_Load_Script | C4D_Load_ClonkNames | C4D_Load_Desc | C4D_Load_ActMap | C4D_Load_Sounds | C4D_Load_RankNames | C4D_Load_RankFaces,
+						C4D_Load_RX        = C4D_Load_Bitmap | C4D_Load_Script | C4D_Load_ClonkNames | C4D_Load_Desc | C4D_Load_Sounds | C4D_Load_RankNames | C4D_Load_RankFaces,
 						C4D_Load_Temporary = 1024;
 
 #define C4D_Blit_Normal     0
@@ -135,67 +137,17 @@ const DWORD C4D_Load_None      =  0,
 #define C4DGFXMODE_NEWGFX 1
 #define C4DGFXMODE_OLDGFX 2
 
-const int32_t ActIdle=-1;
-const int32_t ActHold=-2;
-
-class C4ActionDef
+class C4Def: public C4PropList
   {
-	public:
-		C4ActionDef();
-  public:
-    char Name[C4D_MaxIDLen+1];
-    char ProcedureName[C4D_MaxIDLen+1];
-    int32_t Procedure; // Mapped by C4Def::Load
-    int32_t Directions;
-		int32_t FlipDir;
-    int32_t Length;
-		int32_t Delay;
-		int32_t Attach;
-    char NextActionName[C4D_MaxIDLen+1];
-    int32_t NextAction; // Mapped by C4Def::Load
-    char InLiquidAction[C4D_MaxIDLen+1];
-    char TurnAction[C4D_MaxIDLen+1];
-    int32_t FacetBase;
-    C4TargetRect Facet;
-		int32_t FacetTopFace;
-    int32_t NoOtherAction;
-    int32_t Disabled;
-    int32_t DigFree;
-    int32_t FacetTargetStretch;
-    char Sound[C4D_MaxIDLen+1];
-		int32_t EnergyUsage;
-		int32_t Reverse;
-		int32_t Step;
-    char SStartCall[C4D_MaxIDLen+1];
-    char SEndCall[C4D_MaxIDLen+1];
-    char SAbortCall[C4D_MaxIDLen+1];
-    char SPhaseCall[C4D_MaxIDLen+1];
-		class C4AulScriptFunc *StartCall;
-		C4AulScriptFunc *EndCall;
-		C4AulScriptFunc *AbortCall;
-		C4AulScriptFunc *PhaseCall;
-	public:
-		void Default();
-		void CompileFunc(StdCompiler *pComp);
-  };
-
-class C4DefCore
-  {
-	public:
-		C4DefCore();
   public:
     C4ID id;
 		int32_t rC4XVer[4];
-    StdCopyStrBuf Name;
 		C4IDList RequireDef;
 		C4PhysicalInfo Physical;
     C4Shape Shape;
     C4Rect Entrance;
     C4Rect Collection;
     C4Rect PictureRect;
-#ifndef C4ENGINE
-    C4Rect PictureRectFE;
-#endif
     C4TargetRect SolidMask;
     C4TargetRect TopFace;
     C4IDList Component;
@@ -252,7 +204,6 @@ class C4DefCore
 		int32_t NoComponentMass;
 		int32_t NoStabilize;
     char STimerCall[C4D_MaxIDLen];
-		char ColorByMaterial[C4M_MaxName+1];
 		int32_t ClosedContainer;	// if set, contained objects are not damaged by lava/acid etc. 1: Contained objects can't view out; 2: They can
 		int32_t SilentCommands;		// if set, no command failure messages are printed
 		int32_t NoBurnDamage;			// if set, the object won't take damage when burning
@@ -271,19 +222,16 @@ class C4DefCore
 		int32_t AutoContextMenu;  // automatically open context menu for this object
 		int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
 	public:
-		void Default();
-    BOOL Load(C4Group &hGroup);
+		void DefaultDefCore();
+    BOOL LoadDefCore(C4Group &hGroup);
 		BOOL Save(C4Group &hGroup);
 		void CompileFunc(StdCompiler *pComp);
-		const char * GetName() const { return Name.getData(); }
 	protected:
 		BOOL Compile(const char *szSource, const char *szName);
 		BOOL Decompile(StdStrBuf *pOut, const char *szName);
-  };
 
 
-class C4Def: public C4DefCore
-  {
+// Here begins the C4Def
   friend class C4DefList;
   public:
     C4Def();
@@ -294,8 +242,6 @@ class C4Def: public C4DefCore
     HBITMAP Picture;
     HBITMAP Image;
 #endif
-
-    int32_t ActNum; C4ActionDef *ActMap;
 		char Maker[C4MaxName+1];
 		char Filename[_MAX_FNAME+1];
 		int32_t Creation;
@@ -303,7 +249,6 @@ class C4Def: public C4DefCore
 		C4AulScriptFunc *TimerCall;
 		C4ComponentHost Desc;
 
-#ifdef C4ENGINE
 		// Currently cannot have script host in frontend because that
 		// would need C4Script, C4AulScript, and all that as well...
 		C4DefScriptHost Script;
@@ -325,7 +270,6 @@ class C4Def: public C4DefCore
 		C4PhysicalInfo *pFairCrewPhysical;
 
 		C4Facet MainFace;
-#endif
 
   protected:
     C4Def *Next;
@@ -338,17 +282,15 @@ class C4Def: public C4DefCore
 							class C4SoundSystem *pSoundSystem = NULL);
 		void Draw(C4Facet &cgo, BOOL fSelected=FALSE, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0);
 
-#ifdef C4ENGINE
 		inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
 		int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
 		C4PhysicalInfo *GetFairCrewPhysicals(); // get fair crew physicals at current fair crew strength
     void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
 		void Synchronize();
-#endif
 		const char *GetDesc() { return Desc.GetData(); }
+		virtual C4Def* GetDef() { return this; }
   protected:
 	  bool LoadPortraits(C4Group &hGroup);
-		BOOL ColorizeByMaterial(class C4MaterialMap &rMats, BYTE bGBM);
 		BOOL LoadActMap(C4Group &hGroup);
 		void CrossMapActMap();
 	private:
@@ -364,9 +306,7 @@ class C4Def: public C4DefCore
   };
 
 class C4DefList
-#ifdef C4ENGINE
 : public CStdFont::CustomImages
-#endif
   {
   public:
     C4DefList();
@@ -404,7 +344,6 @@ class C4DefList
 		int32_t GetDefCount(DWORD dwCategory = C4D_All);
     int32_t GetIndex(C4ID id);
     int32_t RemoveTemporary();
-		int32_t ColorizeByMaterial(C4MaterialMap &rMats, BYTE bGBM);
 		int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);
 		int32_t CheckRequireDef();
 		void Draw(C4ID id, C4Facet &cgo, BOOL fSelected, int32_t iColor);
@@ -414,9 +353,8 @@ class C4DefList
     BOOL Add(C4Def *ndef, BOOL fOverload);
 		void BuildTable(); // build quick access table
 		void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
-#ifdef C4ENGINE
+		void CallEveryDefinition();
 		void Synchronize();
-#endif
 
 		// callback from font renderer: get ID image
 		virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet);
@@ -424,6 +362,13 @@ class C4DefList
 	private:
 		void SortByID(); // sorts list by quick access table
   };
+
+extern C4DefList Definitions;
+
+inline C4Def *C4Id2Def(C4ID id)
+	{
+	return ::Definitions.ID2Def(id);
+	}
 
 // Default Action Procedures
 

@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2004, 2008  Matthes Bender
+ * Copyright (c) 2001  Sven Eberhardt
+ * Copyright (c) 2009  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -90,7 +93,6 @@
 #define C4CFN_DefGraphicsScaled		 "Graphics.*.bmp"
 #define C4CFN_DefGraphicsScaledPNG "Graphics.*.png"
 #define C4CFN_ClrByOwnerExPNG	"Overlay*.png"
-#define C4CFN_DefNames				"Names%s.txt|Names.txt"
 #define C4CFN_DefActMap				"ActMap.txt"
 #define C4CFN_DefDesc					"Desc%s.txt"
 #define C4CFN_BigIcon 				"BigIcon.png"

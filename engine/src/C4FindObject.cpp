@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2006-2008  Peter Wortmann
+ * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2007  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -20,8 +23,9 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Game.h>
-#include <C4Wrappers.h>
 #include <C4Random.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 // *** C4FindObject
@@ -233,13 +237,13 @@ int32_t C4FindObject::Count(const C4ObjectList &Objs, const C4LSectors &Sct)
 	else if (UseShapes())
 	{
 		// Get area
-		C4LArea Area(&Game.Objects.Sectors, *pBounds); C4LSector *pSct;
+		C4LArea Area(&::Objects.Sectors, *pBounds); C4LSector *pSct;
 		C4ObjectList *pLst = Area.FirstObjectShapes(&pSct);
 		// Check if a single-sector check is enough
 		if(!Area.Next(pSct))
 			return Count(pSct->ObjectShapes);
 		// Create marker, count over all areas
-		unsigned int iMarker = ++Game.Objects.LastUsedMarker;
+		unsigned int iMarker = ++::Objects.LastUsedMarker;
 		int32_t iCount = 0;
 		for (; pLst; pLst=Area.NextObjectShapes(pLst, &pSct))
 			for(C4ObjectLink *pLnk = pLst->First; pLnk; pLnk = pLnk->Next)
@@ -255,7 +259,7 @@ int32_t C4FindObject::Count(const C4ObjectList &Objs, const C4LSectors &Sct)
 	else
 	{
 		// Count objects per area
-		C4LArea Area(&Game.Objects.Sectors, *pBounds); C4LSector *pSct;
+		C4LArea Area(&::Objects.Sectors, *pBounds); C4LSector *pSct;
 		int32_t iCount = 0;
 		for (C4ObjectList *pLst=Area.FirstObjects(&pSct); pLst; pLst=Area.NextObjects(pLst, &pSct))
 			iCount += Count(*pLst);
@@ -276,7 +280,7 @@ C4Object *C4FindObject::Find(const C4ObjectList &Objs, const C4LSectors &Sct)
 	// Traverse areas, return first matching object w/o sort or best with sort
 	else if (UseShapes())
 	{
-		C4LArea Area(&Game.Objects.Sectors, *pBounds); C4LSector *pSct;
+		C4LArea Area(&::Objects.Sectors, *pBounds); C4LSector *pSct;
 		C4Object *pObj;
 		for (C4ObjectList *pLst=Area.FirstObjectShapes(&pSct); pLst; pLst=Area.NextObjectShapes(pLst, &pSct))
 			if(pObj = Find(*pLst))
@@ -288,7 +292,7 @@ C4Object *C4FindObject::Find(const C4ObjectList &Objs, const C4LSectors &Sct)
 	}
 	else
 	{
-		C4LArea Area(&Game.Objects.Sectors, *pBounds); C4LSector *pSct;
+		C4LArea Area(&::Objects.Sectors, *pBounds); C4LSector *pSct;
 		C4Object *pObj;
 		for (C4ObjectList *pLst=Area.FirstObjects(&pSct); pLst; pLst=Area.NextObjects(pLst, &pSct))
 			if(pObj = Find(*pLst))
@@ -315,7 +319,7 @@ C4ValueArray *C4FindObject::FindMany(const C4ObjectList &Objs, const C4LSectors 
 	if (UseShapes())
 	{
 		// Get area
-		C4LArea Area(&Game.Objects.Sectors, *pBounds); C4LSector *pSct;
+		C4LArea Area(&::Objects.Sectors, *pBounds); C4LSector *pSct;
 		C4ObjectList *pLst = Area.FirstObjectShapes(&pSct);
 		// Check if a single-sector check is enough
 		if(!Area.Next(pSct))
@@ -323,7 +327,7 @@ C4ValueArray *C4FindObject::FindMany(const C4ObjectList &Objs, const C4LSectors 
 		// Set up array
 		pArray = new C4ValueArray(32); iSize = 0;
 		// Create marker, search all areas
-		unsigned int iMarker = ++Game.Objects.LastUsedMarker;
+		unsigned int iMarker = ++::Objects.LastUsedMarker;
 		for (; pLst; pLst=Area.NextObjectShapes(pLst, &pSct))
 			for(C4ObjectLink *pLnk = pLst->First; pLnk; pLnk = pLnk->Next)
 				if(pLnk->Obj->Status)
@@ -345,7 +349,7 @@ C4ValueArray *C4FindObject::FindMany(const C4ObjectList &Objs, const C4LSectors 
 		// Set up array
 		pArray = new C4ValueArray(32); iSize = 0;
 		// Search
-		C4LArea Area(&Game.Objects.Sectors, *pBounds); C4LSector *pSct;
+		C4LArea Area(&::Objects.Sectors, *pBounds); C4LSector *pSct;
 		for(C4ObjectList *pLst=Area.FirstObjects(&pSct); pLst; pLst=Area.NextObjects(pLst, &pSct))
 			for(C4ObjectLink *pLnk = pLst->First; pLnk; pLnk = pLnk->Next)
 				if(pLnk->Obj->Status)
@@ -602,7 +606,7 @@ bool C4FindObjectCategory::IsEnsured()
 
 bool C4FindObjectAction::Check(C4Object *pObj)
 {
-	return SEqual(pObj->Action.Name, szAction);
+	return SEqual(pObj->Action.pActionDef->GetName(), szAction);
 }
 
 bool C4FindObjectActionTarget::Check(C4Object *pObj)
@@ -767,7 +771,7 @@ C4SortObjectByValue::~C4SortObjectByValue()
 	delete [] pVals; pVals = NULL;
 	}
 
-bool C4SortObjectByValue::PrepareCache(const C4ValueList *pObjs)
+bool C4SortObjectByValue::PrepareCache(const C4ValueArray *pObjs)
 	{
 	// Clear old cache
 	delete [] pVals; pVals = NULL; iSize = 0;
@@ -806,7 +810,7 @@ int32_t C4SortObjectReverse::Compare(C4Object *pObj1, C4Object *pObj2)
 	return pSort->Compare(pObj2, pObj1);
 	}
 
-bool C4SortObjectReverse::PrepareCache(const C4ValueList *pObjs)
+bool C4SortObjectReverse::PrepareCache(const C4ValueArray *pObjs)
 	{
 	return pSort->PrepareCache(pObjs);
 	}
@@ -833,7 +837,7 @@ int32_t C4SortObjectMultiple::Compare(C4Object *pObj1, C4Object *pObj2)
 	return 0;
 	}
 
-bool C4SortObjectMultiple::PrepareCache(const C4ValueList *pObjs)
+bool C4SortObjectMultiple::PrepareCache(const C4ValueArray *pObjs)
 	{
 	bool fCaches = false;
 	for (int32_t i=0; i<iCnt; ++i)

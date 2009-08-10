@@ -1,6 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2007  Sven Eberhardt
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -139,7 +140,7 @@ class C4StartupOptionsDlg : public C4StartupDlg
 
 		C4GUI::CheckBox *pCheckGfxEngines[3], *pCheckGfxClrDepth[2];
 		C4GUI::GroupBox *pGroupTrouble;
-		C4GUI::CheckBox *pCheckGfxNoAlphaAdd, *pCheckGfxPointFilter, *pCheckGfxNoAddBlit, *pCheckGfxNoBoxFades, *pCheckGfxClipManually;
+		C4GUI::CheckBox *pCheckGfxNoAlphaAdd, *pCheckGfxPointFilter, *pCheckGfxNoAddBlit, *pCheckGfxNoBoxFades, *pCheckGfxClipManually, *pShaders;
 		int32_t iGfxTexIndent, iGfxBlitOff; EditConfig *pEdtGfxBlitOff;
 		C4GUI::ScrollBar *pEffectLevelSlider;
 

@@ -120,7 +120,7 @@
 
     <examples>
       <example>
-        <code>SetCommand(<funclink>this</funclink>(), "Attack", <funclink>FindObjectOwner</funclink>(CLNK, 1, 0, 0, -1, -1), 0, 0, 0, 0, 10);</code>
+        <code>SetCommand(<funclink>this</funclink>(), "Attack", <funclink>FindObject</funclink>(Find_ID(CLNK),Sort_Distance(0,0)), 0, 0, 0, 0, 10);</code>
         <text>
 Dieser Script gibt dem ausführenden Clonk den Befehl, den nächstgelegenen Clonk von Spieler 1 zu attackieren. Dabei soll er nicht so schnell aufgeben und (wenn er z.B.
 daran scheitert, den Weg zum Feind zu finden) es 10 Mal zu versuchen, bis er sein Ziel erreicht hat oder abbricht.

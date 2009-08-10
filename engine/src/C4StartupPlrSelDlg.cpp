@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2008  Sven Eberhardt
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2006  Florian Groß
+ * Copyright (c) 2006-2008  Matthes Bender
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -27,6 +32,8 @@
 #include <C4Language.h>
 #include <C4FileSelDlg.h>
 #include <C4Log.h>
+#include <C4GraphicsResource.h>
+#include <C4RankSystem.h>
 #endif
 #include <cctype>
 
@@ -166,7 +173,7 @@ void C4StartupPlrSelDlg::ListItem::CreateColoredPortrait()
 
 void C4StartupPlrSelDlg::ListItem::SetDefaultPortrait()
 	{
-	fctPortrait.Set(Game.GraphicsResource.fctPlayerClr);
+	fctPortrait.Set(::GraphicsResource.fctPlayerClr);
 	}
 
 void C4StartupPlrSelDlg::ListItem::GrabPortrait(C4FacetSurface *pFromFacet)
@@ -235,7 +242,7 @@ void C4StartupPlrSelDlg::PlayerListItem::Load(const StdStrBuf &rsFilename)
 		{
 		// no custom icon: create default by player color
 		fctIcon.Create(iHeight,iHeight);
-		Game.GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
+		::GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
 		}
 	GrabIcon(fctIcon);
 	// load portrait
@@ -285,7 +292,7 @@ void C4StartupPlrSelDlg::PlayerListItem::UpdateCore(C4PlayerInfoCore & NewCore)
 		fHasCustomIcon = false;
 		int32_t iHeight = GetBounds().Hgt;
 		C4FacetSurface fctIcon; fctIcon.Create(iHeight,iHeight);
-		Game.GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
+		::GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
 		GrabIcon(fctIcon);
 		}
 	// update in selection
@@ -368,7 +375,7 @@ void C4StartupPlrSelDlg::CrewListItem::Load(C4Group &rGrp, const StdStrBuf &rsFi
 	else
 		{
 		// no custom icon: create default by rank system
-		if (C4RankSystem::DrawRankSymbol(&fctIcon, Core.Rank, &Game.GraphicsResource.fctRank, Game.GraphicsResource.iNumRanks, true))
+		if (C4RankSystem::DrawRankSymbol(&fctIcon, Core.Rank, &::GraphicsResource.fctRank, ::GraphicsResource.iNumRanks, true))
 			GrabIcon(fctIcon);
 		}
 	// load portrait; empty by default
@@ -396,7 +403,7 @@ void C4StartupPlrSelDlg::CrewListItem::OnDeathMessageCtx(C4GUI::Element *el)
 	// Registered version only
 	if (!Config.Registered())
 		{
-		Game.pGUI->ShowMessageModal(LoadResStr("IDS_CTL_REGISTEREDONLY"), LoadResStr("IDS_MSG_SETDEATHMESSAGE"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+		::pGUI->ShowMessageModal(LoadResStr("IDS_CTL_REGISTEREDONLY"), LoadResStr("IDS_MSG_SETDEATHMESSAGE"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
 		}
 	// Death message dialog
@@ -448,14 +455,14 @@ bool C4StartupPlrSelDlg::CrewListItem::SetName(const char *szNewName)
 		if (pParentGrp->FindEntry(fn))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_CLONKCOLLISION"), fn);
-			Game.pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		// OK; then rename
 		if (!pParentGrp->Rename(GetFilename().getData(), fn) || !pParentGrp->Save(TRUE))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_RENAMEFILE"), GetFilename().getData(), fn);
-			Game.pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
+			::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return false;
 			}
 		const char *szConstFn = fn;
@@ -484,7 +491,7 @@ void C4StartupPlrSelDlg::CrewListItem::SetSelectionInfo(C4GUI::TextWindow *pSele
 	pSelectionInfo->AddTextLine(FormatString("%s %s", Core.sRankName.getData(), Core.Name).getData(), &C4Startup::Get()->Graphics.BookFontCapt, ClrPlayerItem, false, false);
 	StdStrBuf sPromo;
 	int32_t iNextRankExp; StdStrBuf sNextRankName;
-	if (Core.GetNextRankInfo(Game.Rank, &iNextRankExp, &sNextRankName))
+	if (Core.GetNextRankInfo(::DefaultRanks, &iNextRankExp, &sNextRankName))
 		sPromo.Format(LoadResStr("IDS_DESC_PROMO"),sNextRankName.getData(),(int) iNextRankExp);
 	else
 		sPromo.Copy(LoadResStr("IDS_DESC_NOPROMO"));
@@ -1124,7 +1131,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 		{
 		// create new player: Use default C4P values, with a few exceptions
 		// FIXME: Use Player, not Clonkranks
-		C4P.Default(&Game.Rank);
+		C4P.Default(&::DefaultRanks);
 		// Set name, color, comment
 		SCopy(LoadResStr("IDS_PLR_NEWCOMMENT"), C4P.Comment, C4MaxComment);
 		C4P.PrefColor = SafeRandom(8);
@@ -1176,7 +1183,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	szTip = LoadResStr("IDS_DLGTIP_PLAYERCOLORS");
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caColorArea.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnClrChangeLeft));
 	pBtn->SetToolTip(szTip);
-	C4Facet &rfctClrPreviewPic = Game.GraphicsResource.fctFlagClr; //C4Startup::Get()->Graphics.fctCrewClr; //Game.GraphicsResource.fctCrewClr;
+	C4Facet &rfctClrPreviewPic = ::GraphicsResource.fctFlagClr; //C4Startup::Get()->Graphics.fctCrewClr; //::GraphicsResource.fctCrewClr;
 	pClrPreview = new C4GUI::Picture(caColorArea.GetFromLeft(rfctClrPreviewPic.GetWidthByHeight(caColorArea.GetHeight())), true);
 	pClrPreview->SetFacet(rfctClrPreviewPic);
 	AddElement(pClrPreview);
@@ -1212,7 +1219,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	szTip = LoadResStr("IDS_DLGTIP_PLAYERCONTROL");
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Left, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeLeft));
 	pBtn->SetToolTip(szTip);
-	C4Facet &rfctCtrlPic = Game.GraphicsResource.fctKeyboard; // UpdatePlayerControl() will alternatively set fctGamepad
+	C4Facet &rfctCtrlPic = ::GraphicsResource.fctKeyboard; // UpdatePlayerControl() will alternatively set fctGamepad
 	AddElement(pCtrlImg = new C4GUI::Picture(caControl.GetFromLeft(rfctCtrlPic.GetWidthByHeight(caControl.GetHeight())), true));
 	pCtrlImg->SetToolTip(szTip);
 	AddElement(pBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::ArrowButton>(C4GUI::ArrowButton::Right, caControl.GetFromLeft(C4GUI::ArrowButton::GetDefaultWidth()), &C4StartupPlrPropertiesDlg::OnCtrlChangeRight));
@@ -1332,7 +1339,7 @@ void C4StartupPlrPropertiesDlg::OnClrSliderBChange(int32_t iNewVal)
 void C4StartupPlrPropertiesDlg::UpdatePlayerControl()
 	{
 	// update keyboard image of selected control
-	C4Facet &rfctCtrlPic = (C4P.PrefControl < C4P_Control_GamePad1) ? Game.GraphicsResource.fctKeyboard : Game.GraphicsResource.fctGamepad;
+	C4Facet &rfctCtrlPic = (C4P.PrefControl < C4P_Control_GamePad1) ? ::GraphicsResource.fctKeyboard : ::GraphicsResource.fctGamepad;
 	pCtrlImg->SetFacet(rfctCtrlPic);
 	pCtrlImg->GetMFacet().X += rfctCtrlPic.Wdt * (C4P.PrefControl - ((C4P.PrefControl < C4P_Control_GamePad1) ? 0 : C4P_Control_GamePad1));
 	// update mouse image
@@ -1564,6 +1571,6 @@ void C4StartupPlrPropertiesDlg::UpdateBigIcon()
 	// no icon: Set default
 	if (!fHasIcon)
 		{
-		pPictureBtn->SetFacet(Game.GraphicsResource.fctPlayerClr);
+		pPictureBtn->SetFacet(::GraphicsResource.fctPlayerClr);
 		}
 	}

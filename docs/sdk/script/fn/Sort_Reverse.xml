@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>Sort_Reverse</title>
+		<category>Objekte</category><subcat>Suche</subcat>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>array</rtype>
+			<params>
+				<param><type>array</type><name>iSort</name><desc>Sortierfunktion</desc><optional /></param>
+		</syntax>
+		<desc>Sortiermodifier: Kehrt die Sortierung der angegebenen Sortierfunktion um.</desc>
+		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
+		<related>
+			<funclink>FindObjects</funclink>
+		</related>
+	</func>
+	<author>Newton</author><date>Juli 2009</date>
+</funcs>

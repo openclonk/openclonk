@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2007  Sven Eberhardt
+ * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2007  Peter Wortmann
+ * Copyright (c) 2007  GÃ¼nther Brammer
  * Copyright (c) 2007-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -18,20 +22,21 @@
 
 #include "C4Include.h"
 #include "C4ChatDlg.h"
-#include "C4Game.h"
+
 #include "C4InputValidation.h"
 #include "C4Network2IRC.h"
+#include "C4MessageInput.h"
 
-void convUTF8toWindows(StdStrBuf &sText)
+void ConvWindowsToUTF8(StdStrBuf &sText)
 {
-	// workaround until we have UTF-8 support: convert German umlauts and ß
-	sText.Replace("\xc3\x84", "Ä");
-	sText.Replace("\xc3\x96", "Ö");
-	sText.Replace("\xc3\x9c", "Ü");
-	sText.Replace("\xc3\xa4", "ä");
-	sText.Replace("\xc3\xb6", "ö");
-	sText.Replace("\xc3\xbc", "ü");
-	sText.Replace("\xc3\x9f", "ß");
+	// work around (German) legacy clients using windows-1252
+	sText.Replace("Ä", "\xc3\x84");
+	sText.Replace("Ö", "\xc3\x96");
+	sText.Replace("Ü", "\xc3\x9c");
+	sText.Replace("ä", "\xc3\xa4");
+	sText.Replace("ö", "\xc3\xb6");
+	sText.Replace("ü", "\xc3\xbc");
+	sText.Replace("ß", "\xc3\x9f");
 }
 
 /* C4ChatControl::ChatSheet::NickItem */
@@ -173,7 +178,7 @@ C4GUI::Edit::InputResult C4ChatControl::ChatSheet::OnChatInput(C4GUI::Edit *edt,
 	else
 		{
 		// remember in history
-		Game.MessageInput.StoreBackBuffer(szInputText);
+		::MessageInput.StoreBackBuffer(szInputText);
 		// forward to chat control for processing
 		if (!pChatControl->ProcessInput(szInputText, this)) eResult = C4GUI::Edit::IR_Abort;
 		}
@@ -190,7 +195,7 @@ bool C4ChatControl::ChatSheet::KeyHistoryUpDown(bool fUp)
 	// chat input only
 	if (!IsFocused(pInputEdit)) return false;
 	pInputEdit->SelectAll(); pInputEdit->DeleteSelection();
-	const char *szPrevInput = Game.MessageInput.GetBackBuffer(fUp ? (++iBackBufferIndex) : (--iBackBufferIndex));
+	const char *szPrevInput = ::MessageInput.GetBackBuffer(fUp ? (++iBackBufferIndex) : (--iBackBufferIndex));
 	if (!szPrevInput || !*szPrevInput)
 		iBackBufferIndex = -1;
 	else
@@ -214,8 +219,8 @@ void C4ChatControl::ChatSheet::AddTextLine(const char *szText, uint32_t dwClr)
 	StdStrBuf sText; sText.Copy(szText);
 	for (char c='\x01'; c<' '; ++c)
 		sText.ReplaceChar(c, ' ');
-	// convert incoming UTF-8
-	convUTF8toWindows(sText);
+	// convert incoming Windows-1252
+	ConvWindowsToUTF8(sText);
 	// add text line to chat box
 	CStdFont *pUseFont = &C4GUI::GetRes()->TextFont;
 	pChatBox->AddTextLine(sText.getData(), pUseFont, dwClr, true, false);
@@ -267,7 +272,7 @@ void C4ChatControl::ChatSheet::Update(bool fLock)
 			// update topic
 			const char *szTopic = pIRCChan->getTopic();
 			sChatTitle.Format("%s%s%s", sIdent.getData(), szTopic ? ": " : "", szTopic ? szTopic : "");
-			convUTF8toWindows(sChatTitle);
+			ConvWindowsToUTF8(sChatTitle);
 			}
 		}
 	}
@@ -831,7 +836,11 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 	// safety
 	if (!szInput || !*szInput || !pChatSheet) return fResult;
 	// check confidential data
-	if (C4InVal::IsConfidentialData(szInput, true)) return fResult;
+	if (Config.IsConfidentialData(szInput))
+	{
+		pChatSheet->DoError(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
+		return fResult;
+	}
 	// command?
 	if (*szInput == '/' && !SEqual2NoCase(szInput + 1, "me "))
 		{
@@ -982,15 +991,15 @@ C4ChatDlg::~C4ChatDlg()
 
 C4ChatDlg *C4ChatDlg::ShowChat()
 	{
-	if (!Game.pGUI) return NULL;
+	if (!::pGUI) return NULL;
 	if (!pInstance)
 		{
 		pInstance = new C4ChatDlg();
-		pInstance->Show(Game.pGUI, true);
+		pInstance->Show(::pGUI, true);
 		}
 	else
 		{
-		Game.pGUI->ActivateDialog(pInstance);
+		::pGUI->ActivateDialog(pInstance);
 		}
 	return pInstance;
 	}

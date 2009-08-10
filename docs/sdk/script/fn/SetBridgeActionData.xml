@@ -19,7 +19,6 @@
 		<desc>Setzt Zusatzparameter für eine aktuell ausgeführte BRIDGE-Prozedur.</desc>
 		<related>
 			<funclink>SetAction</funclink>
-			<funclink>ObjectSetAction</funclink>
 			<funclink>SetActionData</funclink>
 			<funclink>GetAction</funclink>
 			<funclink>GetActionTarget</funclink>

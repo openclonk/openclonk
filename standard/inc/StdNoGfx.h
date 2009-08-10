@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2007  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,7 +28,6 @@ class CStdNoGfx : public CStdDDraw
 public:
 	CStdNoGfx();
 	virtual ~CStdNoGfx();
-	virtual BOOL CreateDirectDraw();
 public:
 	virtual bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL, CStdWindow * pWindow = NULL) { return true; }
 	virtual bool BeginScene() { return true; }
@@ -44,10 +45,8 @@ public:
 	virtual void PerformPix(SURFACE, float, float, DWORD) { }
 	virtual bool ApplyGammaRamp(D3DGAMMARAMP &, bool ) { return true; }
 	virtual bool SaveDefaultGammaRamp(CStdWindow *) { return true; }
-	virtual bool StoreStateBlock() { return true; }
 	virtual void SetTexture() { }
 	virtual void ResetTexture() { }
-	virtual bool RestoreStateBlock() { return true; }
 	virtual bool InitDeviceObjects() { return true; }
 	virtual bool RestoreDeviceObjects() { return true; }
 	virtual bool InvalidateDeviceObjects() { return true; }

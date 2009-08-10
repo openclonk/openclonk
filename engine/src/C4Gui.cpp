@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2003-2008  Sven Eberhardt
+ * Copyright (c) 2006-2008  Günther Brammer
+ * Copyright (c) 2007-2008  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,9 +28,11 @@
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
 #include <C4Viewport.h>
-#include <C4Wrappers.h>
 #include <C4Log.h>
 #include <C4GamePadCon.h>
+#include <C4MouseControl.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 namespace C4GUI {
@@ -467,7 +472,7 @@ void CMouse::Draw(C4TargetFacet &cgo, bool fDrawToolTip)
 		iOffsetY = -GfxR->fctMouseCursor.Hgt/2;
 		}
 	GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX,y+iOffsetY,0);
-	if (Game.MouseControl.IsHelp())
+	if (::MouseControl.IsHelp())
 		GfxR->fctMouseCursor.Draw(cgo.Surface,x+iOffsetX+5,y+iOffsetY-5,29);
 	// ToolTip
 	if (fDrawToolTip && pMouseOverElement)
@@ -562,7 +567,7 @@ void Screen::ElementPosChanged(Element *pOfElement)
 	{
 	// redraw fullscreen BG if dlgs are dragged around in shared mode
 	if (!IsExclusive())
-		Game.GraphicsSystem.InvalidateBg();
+		::GraphicsSystem.InvalidateBg();
 	}
 
 void Screen::ShowDialog(Dialog *pDlg, bool fFade)
@@ -634,7 +639,7 @@ void Screen::CloseDialog(Dialog *pDlg, bool fFade)
 		if (pActiveDlg && pActiveDlg->IsFading()) pActiveDlg = NULL;
 		}
 	// redraw background; clip update
-	Game.GraphicsSystem.InvalidateBg(); UpdateMouseFocus();
+	::GraphicsSystem.InvalidateBg(); UpdateMouseFocus();
 	}
 
 void Screen::RecheckActiveDialog()
@@ -686,7 +691,7 @@ void Screen::Render(bool fDoBG)
 void Screen::RenderMouse(C4TargetFacet &cgo)
 	{
 	// draw mouse cursor
-	Mouse.Draw(cgo, (Mouse.IsMouseStill() && Mouse.IsActiveInput()) || Game.MouseControl.IsHelp());
+	Mouse.Draw(cgo, (Mouse.IsMouseStill() && Mouse.IsActiveInput()) || ::MouseControl.IsHelp());
 	}
 
 void Screen::Draw(C4TargetFacet &cgo, bool fDoBG)
@@ -697,8 +702,8 @@ void Screen::Draw(C4TargetFacet &cgo, bool fDoBG)
 		Dialog *pFSDlg = GetFullscreenDialog(false);
 		if (!pFSDlg || !pFSDlg->HasBackground())
 			{
-			if (Game.GraphicsSystem.pLoaderScreen)
-				Game.GraphicsSystem.pLoaderScreen->fctBackground.DrawFullScreen(cgo);
+			if (::GraphicsSystem.pLoaderScreen)
+				::GraphicsSystem.pLoaderScreen->fctBackground.DrawFullScreen(cgo);
 			else
 				// loader not yet loaded: black BG
 				lpDDraw->DrawBoxDw(cgo.Surface, 0,0, cgo.Wdt+1, cgo.Hgt+1, 0x00000000);
@@ -758,7 +763,7 @@ bool Screen::MouseInput(int32_t iButton, int32_t iPxX, int32_t iPxY, DWORD dwKey
 	float fX = float(iPxX) / fZoom;
 	float fY = float(iPxY) / fZoom;
 	// help mode and button pressed: Abort help and discard button
-	if (Game.MouseControl.IsHelp())
+	if (::MouseControl.IsHelp())
 		{
 		switch (iButton)
 			{
@@ -773,7 +778,7 @@ bool Screen::MouseInput(int32_t iButton, int32_t iPxX, int32_t iPxY, DWORD dwKey
 				break;
 			default:
 				// buttons stop help
-				Game.MouseControl.AbortHelp();
+				::MouseControl.AbortHelp();
 				iButton = C4MC_Button_None;
 				break;
 			}
@@ -906,7 +911,7 @@ bool Screen::RecheckMouseInput()
 void Screen::UpdateMouseFocus()
 	{
 	// when exclusive mode has changed: Make sure mouse clip is correct
-	Game.MouseControl.UpdateClip();
+	::MouseControl.UpdateClip();
 	}
 
 void Screen::DoContext(ContextMenu *pNewCtx, Element *pAtElement, int32_t iX, int32_t iY)
@@ -966,7 +971,7 @@ void Screen::DrawToolTip(const char *szTip, C4TargetFacet &cgo, float x, float y
 		// draw tooltip
 		lpDDraw->TextOut(sText.getData(), *pUseFont, 1.0f, cgo.Surface, tX+3,tY+1, C4GUI_ToolTipColor, ALeft);
 		// while there's a tooltip, redraw the bg, because it might overlap
-		Game.GraphicsSystem.InvalidateBg();
+		::GraphicsSystem.InvalidateBg();
 		}
 	}
 
@@ -1122,28 +1127,28 @@ C4Rect &ComponentAligner::GetGridCell(int32_t iSectX, int32_t iSectXMax, int32_t
 
 bool Resource::Load(C4GroupSet &rFromGroup)
 	{
-	// load gfx - using helper funcs from Game.GraphicsResource here...
-	if (!Game.GraphicsResource.LoadFile(sfcCaption, "GUICaption", rFromGroup, idSfcCaption)) return false;
+	// load gfx - using helper funcs from ::GraphicsResource here...
+	if (!::GraphicsResource.LoadFile(sfcCaption, "GUICaption", rFromGroup, idSfcCaption)) return false;
 	barCaption.SetHorizontal(sfcCaption, sfcCaption.Hgt, 32);
-	if (!Game.GraphicsResource.LoadFile(sfcButton, "GUIButton", rFromGroup, idSfcButton)) return false;
+	if (!::GraphicsResource.LoadFile(sfcButton, "GUIButton", rFromGroup, idSfcButton)) return false;
 	barButton.SetHorizontal(sfcButton);
-	if (!Game.GraphicsResource.LoadFile(sfcButtonD, "GUIButtonDown", rFromGroup, idSfcButtonD)) return false;
+	if (!::GraphicsResource.LoadFile(sfcButtonD, "GUIButtonDown", rFromGroup, idSfcButtonD)) return false;
 	barButtonD.SetHorizontal(sfcButtonD);
-	if (!Game.GraphicsResource.LoadFile(fctButtonHighlight, "GUIButtonHighlight", rFromGroup)) return false;
-	if (!Game.GraphicsResource.LoadFile(fctIcons, "GUIIcons", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctButtonHighlight, "GUIButtonHighlight", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctIcons, "GUIIcons", rFromGroup)) return false;
 	fctIcons.Set(fctIcons.Surface,0,0,C4GUI_IconWdt,C4GUI_IconHgt);
-	if (!Game.GraphicsResource.LoadFile(fctIconsEx, "GUIIcons2", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctIconsEx, "GUIIcons2", rFromGroup)) return false;
 	fctIconsEx.Set(fctIconsEx.Surface,0,0,C4GUI_IconExWdt,C4GUI_IconExHgt);
-	if (!Game.GraphicsResource.LoadFile(sfcScroll, "GUIScroll", rFromGroup, idSfcScroll)) return false;
+	if (!::GraphicsResource.LoadFile(sfcScroll, "GUIScroll", rFromGroup, idSfcScroll)) return false;
 	sfctScroll.Set(C4Facet(&sfcScroll,0,0,32,32));
-	if (!Game.GraphicsResource.LoadFile(sfcContext, "GUIContext", rFromGroup, idSfcContext)) return false;
+	if (!::GraphicsResource.LoadFile(sfcContext, "GUIContext", rFromGroup, idSfcContext)) return false;
 	fctContext.Set(&sfcContext,0,0,16,16);
-	if (!Game.GraphicsResource.LoadFile(fctSubmenu, "GUISubmenu", rFromGroup)) return false;
-	if (!Game.GraphicsResource.LoadFile(fctCheckbox, "GUICheckbox", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctSubmenu, "GUISubmenu", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctCheckbox, "GUICheckbox", rFromGroup)) return false;
 	fctCheckbox.Set(fctCheckbox.Surface, 0,0,fctCheckbox.Hgt,fctCheckbox.Hgt);
-	if (!Game.GraphicsResource.LoadFile(fctBigArrows, "GUIBigArrows", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctBigArrows, "GUIBigArrows", rFromGroup)) return false;
 	fctBigArrows.Set(fctBigArrows.Surface, 0,0, fctBigArrows.Wdt/4, fctBigArrows.Hgt);
-	if (!Game.GraphicsResource.LoadFile(fctProgressBar, "GUIProgress", rFromGroup)) return false;
+	if (!::GraphicsResource.LoadFile(fctProgressBar, "GUIProgress", rFromGroup)) return false;
 	fctProgressBar.Set(fctProgressBar.Surface, 1,0, fctProgressBar.Wdt-2, fctProgressBar.Hgt);
 	// loaded sucessfully
 	pRes = this;
@@ -1206,3 +1211,5 @@ Screen *Screen::pScreen;
 
 
 }; // end of namespace
+
+C4GUIScreen *pGUI;

@@ -1,6 +1,8 @@
 /* Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
 
 Permission to use, copy, modify, and/or distribute this software for any
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2005  Günther Brammer
 purpose with or without fee is hereby granted, provided that the above
 copyright notice and this permission notice appear in all copies.
 

@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2002, 2004-2008  Sven Eberhardt
+ * Copyright (c) 2003, 2008  Matthes Bender
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005, 2007-2008  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -222,7 +227,15 @@ bool CSurface::CreateTextures(int MaxTextureSize)
 	// free previous
 	FreeTextures();
 	// get needed tex size - begin with smaller value of wdt/hgt, so there won't be too much space wasted
-	int iNeedSize=Min(Wdt, Hgt); int n=0; while ((1<<++n) < iNeedSize) {} iNeedSize=1<<n;
+	int iNeedSize=Min(Wdt, Hgt);
+#ifdef USE_GL
+	if (!pGL || !GLEW_ARB_texture_non_power_of_two)
+#endif
+		{
+		int n=0;
+		while ((1<<++n) < iNeedSize) {}
+		iNeedSize = 1<<n;
+		}
 	// adjust to available texture size
 	iTexSize=Min(iNeedSize, lpDDraw->MaxTexSize);
 	if (MaxTextureSize)
@@ -246,7 +259,14 @@ bool CSurface::CreateTextures(int MaxTextureSize)
 			{
 			// last texture might be smaller
 			iNeedSize=Max(Wdt%iTexSize, Hgt%iTexSize);
-			int n=0; while ((1<<++n) < iNeedSize) {} iNeedSize=1<<n;
+#ifdef USE_GL
+			if (!pGL || !GLEW_ARB_texture_non_power_of_two)
+#endif
+				{
+				int n=0;
+				while ((1<<++n) < iNeedSize) {}
+				iNeedSize=1<<n;
+				}
 			*ppCTex = new CTexRef(iNeedSize, fIsRenderTarget);
 			}
 		if (fIsBackground && ppCTex) (*ppCTex)->FillBlack();

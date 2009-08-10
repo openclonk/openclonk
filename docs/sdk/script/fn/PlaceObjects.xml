@@ -47,7 +47,6 @@ Es wird sichergestellt, dass keine Endlosschleife entsteht.
 		</examples>
 		<related>
 			<funclink>CreateObject</funclink>
-			<funclink>PlaceInMaterial</funclink>
 		</related>
 	</func>
 	<author>Tyron</author><date>August 2004</date>

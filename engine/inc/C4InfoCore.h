@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2006  Matthes Bender
+ * Copyright (c) 2001, 2005-2006, 2008  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -101,16 +103,12 @@ class C4TempPhysicalInfo : public C4PhysicalInfo
 	{
 	private:
 		// changes done to the original physicals; used for backtracing
-#ifdef C4ENGINE
 		std::vector<C4PhysicalChange> Changes;
-#endif
 
 	public:
 		void Clear()
 		{
-#ifdef C4ENGINE
 			Changes.clear();
-#endif
 		}
 		void Default() { Clear(); C4PhysicalInfo::Default(); } // clears
 		void CompileFunc(StdCompiler *pComp);

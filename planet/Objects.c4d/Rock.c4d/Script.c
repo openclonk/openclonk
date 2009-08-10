@@ -10,3 +10,7 @@ protected func Hit()
 
 func IsAlchemContainer() { return true; }
 func AlchemProcessTime() { return 160; }
+func Definition(def) {
+  SetProperty("Collectible", 1, def);
+  SetProperty("Name", "$Name$", def);
+}

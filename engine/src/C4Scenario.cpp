@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007  Matthes Bender
+ * Copyright (c) 2002, 2004-2008  Sven Eberhardt
+ * Copyright (c) 2004-2005  Peter Wortmann
+ * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,13 +30,6 @@
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
-#ifdef C4ENGINE
-#include <C4Wrappers.h>
-#endif
-#endif
-
-#if defined(C4FRONTEND) || defined (C4GROUP)
-#include "C4CompilerWrapper.h"
 #endif
 
 //==================================== C4SVal ==============================================
@@ -152,11 +149,18 @@ const int32_t C4S_MaxPlayerDefault = 12;
 void C4SHead::Default()
   {
 	Origin.Clear();
-	ZeroMem(this,sizeof (C4SHead));
-  Icon=18;
+	Icon=18;
+	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
+	C4XVer[0] = C4XVer[1] = C4XVer[2] = C4XVer[3] = 0;
+	Difficulty = StartupPlayerCount = RandomSeed = SaveGame = Replay =
+		Film = EnableUnregisteredAccess = DisableMouse = 
+		IgnoreSyncChecks = NoInitialize = ForcedGfxMode = 
+		ForcedFairCrew = FairCrewStrength = 0;
+	NetworkGame = NetworkRuntimeJoin = false;
+
 	MaxPlayer=MaxPlayerLeague=C4S_MaxPlayerDefault;
 	MinPlayer=0; // auto-determine by mode
-  SCopy("Default Title",Title,C4MaxTitle);
+	SCopy("Default Title",Title,C4MaxTitle);
   }
 
 void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
@@ -649,7 +653,6 @@ BOOL C4SGame::IsMelee()
 
 
 
-#ifdef C4ENGINE
 
 // scenario sections
 
@@ -730,7 +733,7 @@ bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObj
 	// main section: extract section files from main scenario group (create group as open dir)
 	if (!szFilename)
 		{
-		if (!CreateDirectory(szTmp, NULL)) return false;
+		if (!CreatePath(szTmp)) return false;
 		C4Group hGroup;
 		if (!hGroup.Open(szTmp, TRUE)) { EraseItem(szTmp); return false; }
 		// extract all desired section files
@@ -764,4 +767,3 @@ bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObj
 	return true;
 	}
 
-#endif // C4ENGINE

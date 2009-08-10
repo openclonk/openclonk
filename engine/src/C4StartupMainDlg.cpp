@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2007  Sven Eberhardt
+ * Copyright (c) 2005-2008  Matthes Bender
+ * Copyright (c) 2006  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -31,6 +35,7 @@
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4Language.h>
+#include <C4GraphicsResource.h>
 #endif
 
 
@@ -112,7 +117,7 @@ void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
 	typedef C4GUI::FullscreenDialog Base;
 	Base::DrawElement(cgo);
 	// draw logo
-	C4Facet &fctLogo = Game.GraphicsResource.fctLogo;
+	C4Facet &fctLogo = ::GraphicsResource.fctLogo;
 	float fLogoZoom = 1.0f;
 	fctLogo.DrawX(cgo.Surface, rcBounds.Wdt *1/21, rcBounds.Hgt/14 - 5, int32_t(fLogoZoom*fctLogo.Wdt), int32_t(fLogoZoom*fctLogo.Hgt));
 	// draw version info
@@ -429,7 +434,7 @@ void C4StartupMainDlg::HandleIncomingKeyfile(const char *strIncomingKey)
 		if (GetScreen()->ShowMessageModal(strMessage.getData(), LoadResStr("IDS_DLG_REGISTRATION"),	C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Confirm))
 			{
 			// Create key path if it doesn't already exist
-			if (!DirectoryExists(Config.GetKeyPath())) CreateDirectory(Config.GetKeyPath(), NULL);
+			CreatePath(Config.GetKeyPath());
 			// Move key into key path
 			StdStrBuf strTarget; strTarget.Format("%s%s", Config.GetKeyPath(), GetFilename(strKeyFilename.getData()));
 			if (!MoveItem(strKeyFilename.getData(), strTarget.getData()))
@@ -446,7 +451,7 @@ void C4StartupMainDlg::HandleIncomingKeyfile(const char *strIncomingKey)
 		// Say thank you
 		GetScreen()->ShowMessageModal(LoadResStr("IDS_CTL_REGISTERED"), LoadResStr("IDS_DLG_REGISTRATION"),	C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
 		// Create key path if it doesn't already exist
-		if (!DirectoryExists(Config.GetKeyPath())) CreateDirectory(Config.GetKeyPath(), NULL);
+		CreatePath(Config.GetKeyPath());
 		// Now try to copy it into the key path (preferred)
 		StdStrBuf strTarget; strTarget.Format("%s%s", Config.GetKeyPath(), GetFilename(strKeyFilename.getData()));
 		if (!CopyItem(strKeyFilename.getData(), strTarget.getData()))

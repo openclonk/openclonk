@@ -1,6 +1,15 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2001, 2003-2004, 2007-2008  Matthes Bender
+ * Copyright (c) 2001-2007  Peter Wortmann
+ * Copyright (c) 2001-2009  Sven Eberhardt
+ * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2001  Carlo Teubner
+ * Copyright (c) 2004-2009  Günther Brammer
+ * Copyright (c) 2005  Tobias Zwick
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -33,9 +42,18 @@
 #endif
 #include <C4SolidMask.h>
 #include <C4Random.h>
-#include <C4Wrappers.h>
+#include <C4Log.h>
 #include <C4Player.h>
 #include <C4ObjectMenu.h>
+#include <C4RankSystem.h>
+#include <C4GameVersion.h>
+#include <C4GameMessage.h>
+#include <C4GraphicsResource.h>
+#include <C4GraphicsSystem.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
+#include <C4Record.h>
 #endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
@@ -51,7 +69,7 @@ void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t conta
 void C4Action::SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, int32_t iBridgeMaterial)
 	{
 	// validity
-	iBridgeMaterial = Min<int32_t>(iBridgeMaterial, Game.Material.Num-1);
+	iBridgeMaterial = Min<int32_t>(iBridgeMaterial, ::MaterialMap.Num-1);
 	if (iBridgeMaterial < 0) iBridgeMaterial = 0xff;
 	iBridgeTime = BoundBy<int32_t>(iBridgeTime, 0, 0xffff);
 	// mask in this->Data
@@ -77,8 +95,6 @@ C4Object::C4Object()
 void C4Object::Default()
 	{
 	id=C4ID_None;
-	Number=-1;
-	Status=1;
 	nInfo.Clear();
 	RemovalDelay=0;
 	Owner=NO_OWNER;
@@ -98,7 +114,6 @@ void C4Object::Default()
 	InMat=MNone;
 	Color=0;
 	ViewEnergy=0;
-	Local.Reset();
 	PlrViewRange=0;
 	fix_x=fix_y=fix_r=0;
   xdir=ydir=rdir=0;
@@ -131,7 +146,6 @@ void C4Object::Default()
 	PhysicalTemporary=false;
 	TemporaryPhysical.Default();
 	MaterialContents=NULL;
-	Visibility=VIS_All;
 	LocalNamed.Reset();
 	Marker=0;
 	ColorMod=BlitMode=0;
@@ -141,12 +155,11 @@ void C4Object::Default()
 	pGraphics=NULL;
 	pDrawTransform=NULL;
 	pEffects=NULL;
-  FirstRef=NULL;
 	pGfxOverlay=NULL;
 	iLastAttachMovementFrame=-1;
 	}
 
-BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
+BOOL C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 										int32_t iOwner, C4ObjectInfo *pInfo,
 										int32_t nx, int32_t ny, int32_t nr,
 										FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController)
@@ -155,13 +168,14 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	Initializing=TRUE;
 
 	// Def & basics
-	id=pDef->id;
   Owner=iOwner;
 	if (iController > NO_OWNER) Controller = iController; else Controller=iOwner;
 	LastEnergyLossCausePlayer=NO_OWNER;
   Info=pInfo;
-  Def=pDef;
-	if (Info) Name = pInfo->Name; else Name = pDef->Name;
+  Def=pDef->GetDef();assert(Def);
+	prototype = pDef;
+	id=Def->id;
+	if (Info) SetName(pInfo->Name);
   Category=Def->Category;
 	Def->Count++;
 	if (pCreator) pLayer=pCreator->pLayer;
@@ -198,7 +212,7 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
 	// Color
   if (Def->ColorByOwner)
     if (ValidPlr(Owner))
-			Color=Game.Players.Get(Owner)->ColorDw;
+			Color=::Players.Get(Owner)->ColorDw;
 
 	// Shape & face
 	Shape=Def->Shape;
@@ -208,13 +222,13 @@ BOOL C4Object::Init(C4Def *pDef, C4Object *pCreator,
   UpdateFace(true);
 
   // Initial audibility
-  Audible=Game.GraphicsSystem.GetAudibility(GetX(), GetY(), &AudiblePan);
+  Audible=::GraphicsSystem.GetAudibility(GetX(), GetY(), &AudiblePan);
 
 	// Initial OCF
 	SetOCF();
 
 	// local named vars
-	LocalNamed.SetNameList(&pDef->Script.LocalNamed);
+	LocalNamed.SetNameList(&Def->Script.LocalNamed);
 
 	// finished initializing
 	Initializing=FALSE;
@@ -228,9 +242,7 @@ C4Object::~C4Object()
 
 #if defined(_DEBUG)
 	// debug: mustn't be listed in any list now
-	assert(!Game.Objects.ObjectNumber(this));
-	assert(!Game.Objects.InactiveObjects.ObjectNumber(this));
-	Game.Objects.Sectors.AssertObjectNotInList(this);
+	::Objects.Sectors.AssertObjectNotInList(this);
 #endif
   }
 
@@ -273,14 +285,14 @@ void C4Object::AssignRemoval(BOOL fExitContents)
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
 	// Action idle
-  SetAction(ActIdle);
-  // Object system operation
+	SetAction(0);
+	// Object system operation
 	if (Status == C4OS_INACTIVE)
 		{
 		// object was inactive: activate first, then delete
-		Game.Objects.InactiveObjects.Remove(this);
+		::Objects.InactiveObjects.Remove(this);
 		Status = C4OS_NORMAL;
-		Game.Objects.Add(this);
+		::Objects.Add(this);
 		}
   Status=0;
 	// count decrease
@@ -310,9 +322,8 @@ void C4Object::AssignRemoval(BOOL fExitContents)
   // Object info
   if (Info) Info->Retire();
 	Info = NULL;
-  // Object system operation
-  while(FirstRef) FirstRef->Set(0);
-  Game.ClearPointers(this);
+	// Object system operation
+	C4PropList::AssignRemoval();
   ClearCommands();
 	if (pSolidMaskData)
 		{
@@ -354,7 +365,7 @@ void C4Object::UpdatePos()
 	// get new area covered
 	// do *NOT* do this while initializing, because object cannot be sorted by main list
 	if (!Initializing && Status == C4OS_NORMAL)
-		Game.Objects.UpdatePos(this);
+		::Objects.UpdatePos(this);
 	}
 
 void C4Object::UpdateFace(bool bUpdateShape, bool fTemp)
@@ -409,9 +420,9 @@ void C4Object::UpdateFlipDir()
 	{
 	int32_t iFlipDir;
 	// We're active
-	if (Action.Act > ActIdle)
+	if (Action.pActionDef)
 		// Get flipdir value from action
-		if (iFlipDir = Def->ActMap[Action.Act].FlipDir)
+		if (iFlipDir = Action.pActionDef->GetPropertyInt(P_FlipDir))
 			// Action dir is in flipdir range
 			if (Action.Dir >= iFlipDir)
 				{
@@ -501,7 +512,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 	const float swdt = float(Action.Facet.Wdt);
 	const float shgt = float(Action.Facet.Hgt);
 	int32_t iPhase = Action.Phase;
-	if (Def->ActMap[Action.Act].Reverse) iPhase = Def->ActMap[Action.Act].Length - 1 - Action.Phase;
+	if (Action.pActionDef->GetPropertyInt(P_Reverse)) iPhase = Action.pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
 
 	// Grow Type Display
 	float fx = float(Action.Facet.X + swdt * iPhase);
@@ -600,7 +611,7 @@ void C4Object::SetOCF()
 	// Update the object character flag according to the object's current situation
   FIXED cspeed=GetSpeed();
 #ifdef _DEBUG
-	if(Contained && !Game.Objects.ObjectNumber(Contained))
+	if(Contained && !::Objects.ObjectNumber(Contained))
 		{ LogF("Warning: contained in wild object %p!", Contained); }
 	else if(Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", Contained, Contained->GetName()); }
@@ -619,7 +630,7 @@ void C4Object::SetOCF()
   if (Def->Grab && !(Category & C4D_StaticBack))
       OCF|=OCF_Grab;
   // OCF_Carryable: Can be picked up
-  if (Def->Carryable)
+  if (GetPropertyInt(P_Collectible))
     OCF|=OCF_Carryable;
   // OCF_OnFire: Is burning
   if (OnFire)
@@ -636,7 +647,7 @@ void C4Object::SetOCF()
 	DWORD cocf = OCF_Exclusive;
   if (Def->Chopable)
     if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!Game.Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
+			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
 				OCF|=OCF_Chop;
   // OCF_Rotate: Can be rotated
   if (Def->Rotateable)
@@ -659,7 +670,7 @@ void C4Object::SetOCF()
   if ((OCF & OCF_FullCon) || Def->IncompleteActivity)
     if ((Def->Collection.Wdt>0) && (Def->Collection.Hgt>0))
       if (!Def->CollectionLimit || (Contents.ObjectCount()<Def->CollectionLimit) )
-        if ((Action.Act<=ActIdle) || (!Def->ActMap[Action.Act].Disabled))
+        if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
           if (NoCollectDelay==0)
             OCF|=OCF_Collection;
   // OCF_Living
@@ -670,7 +681,7 @@ void C4Object::SetOCF()
 		}
   // OCF_FightReady
   if (OCF & OCF_Alive)
-    if ((Action.Act<=ActIdle) || (!Def->ActMap[Action.Act].Disabled))
+    if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
 			if (!Def->NoFight)
 				OCF|=OCF_FightReady;
 	// OCF_LineConstruct
@@ -739,7 +750,7 @@ void C4Object::UpdateOCF()
 	// Update the object character flag according to the object's current situation
   FIXED cspeed=GetSpeed();
 #ifdef _DEBUG
-	if(Contained && !Game.Objects.ObjectNumber(Contained))
+	if(Contained && !::Objects.ObjectNumber(Contained))
 		{ LogF("Warning: contained in wild object %p!", Contained); }
 	else if(Contained && !Contained->Status)
 		{ LogF("Warning: contained in deleted object %p (%s)!", Contained, Contained->GetName()); }
@@ -749,11 +760,14 @@ void C4Object::UpdateOCF()
 	else
 		InMat = GBackMat(GetX(), GetY());
 	// Keep the bits that only have to be updated with SetOCF (def, category, con, alive, onfire)
-	OCF=OCF & (OCF_Normal | OCF_Carryable | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
+	OCF=OCF & (OCF_Normal | OCF_Exclusive | OCF_Edible | OCF_Grab | OCF_FullCon
 	       /*| OCF_Chop - now updated regularly, see below */
 					 | OCF_Rotate | OCF_OnFire | OCF_Inflammable | OCF_Living | OCF_Alive
 	         | OCF_LineConstruct | OCF_Prey | OCF_CrewMember | OCF_AttractLightning
 	         | OCF_PowerConsumer);
+  // OCF_Carryable: Can be picked up
+  if (GetPropertyInt(P_Collectible))
+    OCF|=OCF_Carryable;
   // OCF_Construct: Can be built outside
   if (Def->Constructable && (Con<FullCon)
     && (r==0) && !OnFire)
@@ -766,7 +780,7 @@ void C4Object::UpdateOCF()
 	DWORD cocf = OCF_Exclusive;
   if (Def->Chopable)
     if (Category & C4D_StaticBack) // Must be static back: this excludes trees that have already been chopped
-			if (!Game.Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
+			if (!::Objects.AtObject(GetX(), GetY(), cocf)) // Can only be chopped if the center is not blocked by an exclusive object
 				OCF|=OCF_Chop;
   // HitSpeeds
   if (cspeed>=HitSpeed1) OCF|=OCF_HitSpeed1;
@@ -777,12 +791,12 @@ void C4Object::UpdateOCF()
   if ((OCF & OCF_FullCon) || Def->IncompleteActivity)
     if ((Def->Collection.Wdt>0) && (Def->Collection.Hgt>0))
       if (!Def->CollectionLimit || (Contents.ObjectCount()<Def->CollectionLimit) )
-        if ((Action.Act<=ActIdle) || (!Def->ActMap[Action.Act].Disabled))
+        if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
           if (NoCollectDelay==0)
             OCF|=OCF_Collection;
   // OCF_FightReady
   if (OCF & OCF_Alive)
-    if ((Action.Act<=ActIdle) || (!Def->ActMap[Action.Act].Disabled))
+    if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
 			if (!Def->NoFight)
 				OCF|=OCF_FightReady;
 	// OCF_NotContained
@@ -830,7 +844,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
   // Fire Phase
   FirePhase++; if (FirePhase>=MaxFirePhase) FirePhase=0;
   // Extinguish in base
-  if (!Tick5)
+  if (!::Game.iTick5)
 		if (Category & C4D_Living)
 			if (Contained && ValidPlr(Contained->Base))
 				if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Extinguish)
@@ -839,9 +853,9 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 	if (!Def->NoBurnDecay)
 		DoCon(-100);
   // Damage
-  if (!Tick10) if (!Def->NoBurnDamage) DoDamage(+2,iCausedByPlr,C4FxCall_DmgFire);
+  if (!::Game.iTick10) if (!Def->NoBurnDamage) DoDamage(+2,iCausedByPlr,C4FxCall_DmgFire);
   // Energy
-  if (!Tick5) DoEnergy(-1,false,C4FxCall_EngFire, iCausedByPlr);
+  if (!::Game.iTick5) DoEnergy(-1,false,C4FxCall_EngFire, iCausedByPlr);
   // Effects
   int32_t smoke_level=2*Shape.Wdt/3;
 	int32_t smoke_rate=Def->SmokeRate;
@@ -852,17 +866,17 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 	    Smoke(GetX(), GetY(),smoke_level);
 		}
   // Background Effects
-  if (!Tick5)
+  if (!::Game.iTick5)
     {
     int32_t mat;
     if (MatValid(mat=GBackMat(GetX(), GetY())))
       {
 			// Extinguish
-      if (Game.Material.Map[mat].Extinguisher)
+      if (::MaterialMap.Map[mat].Extinguisher)
         { Extinguish(iFireNumber); if (GBackLiquid(GetX(), GetY())) StartSoundEffect("Pshshsh",false,100,this); }
 			// Inflame
 			if (!Random(3))
-				Game.Landscape.Incinerate(GetX(), GetY());
+				::Landscape.Incinerate(GetX(), GetY());
       }
     }
 
@@ -871,7 +885,7 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
 
 BOOL C4Object::BuyEnergy()
   {
-	C4Player *pPlr = Game.Players.Get(Base); if (!pPlr) return FALSE;
+	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return FALSE;
 	if (!GetPhysical()->Energy) return FALSE;
   if (pPlr->Eliminated) return FALSE;
   if (pPlr->Wealth<Game.C4S.Game.Realism.BaseRegenerateEnergyPrice) return FALSE;
@@ -884,7 +898,7 @@ BOOL C4Object::ExecLife()
   {
 
   // Growth
-  if (!Tick35)
+  if (!::Game.iTick35)
 		// Growth specified by definition
     if (Def->Growth)
 			// Alive livings && trees only
@@ -899,7 +913,7 @@ BOOL C4Object::ExecLife()
 
   // Energy reload in base
   int32_t transfer;
-  if (!Tick3) if (Alive)
+  if (!::Game.iTick3) if (Alive)
     if (Contained && ValidPlr(Contained->Base))
       if (!Hostile(Owner,Contained->Base))
         if (Energy<GetPhysical()->Energy)
@@ -915,7 +929,7 @@ BOOL C4Object::ExecLife()
 						}
 
   // Magic reload
-  if (!Tick3) if (Alive)
+  if (!::Game.iTick3) if (Alive)
     if (Contained)
       if (!Hostile(Owner,Contained->Owner))
         if (MagicEnergy<GetPhysical()->Magic)
@@ -925,7 +939,7 @@ BOOL C4Object::ExecLife()
             {
 						// do energy transfer via script, so it can be overloaded by No-Magic-Energy-rule
 						// always use global func instead of local to save double search
-						C4AulFunc *pMagicEnergyFn = Game.ScriptEngine.GetFuncRecursive(PSF_DoMagicEnergy);
+						C4AulFunc *pMagicEnergyFn = ::ScriptEngine.GetFuncRecursive(PSF_DoMagicEnergy);
 						if (pMagicEnergyFn) // should always be true
 							{
 							C4AulParSet pars(C4VInt(-transfer), C4VObj(Contained));
@@ -939,7 +953,7 @@ BOOL C4Object::ExecLife()
           }
 
   // Breathing
-  if (!Tick5)
+  if (!::Game.iTick5)
     if (Alive && !Def->NoBreath)
 			{
 			// Supply check
@@ -975,22 +989,22 @@ BOOL C4Object::ExecLife()
 			}
 
 	// Corrosion energy loss
-  if (!Tick10)
+  if (!::Game.iTick10)
     if (Alive)
 			if (InMat!=MNone)
-				if (Game.Material.Map[InMat].Corrosive)
+				if (::MaterialMap.Map[InMat].Corrosive)
 					if (!GetPhysical()->CorrosionResist)
-						DoEnergy(-Game.Material.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
+						DoEnergy(-::MaterialMap.Map[InMat].Corrosive/15,false,C4FxCall_EngCorrosion, NO_OWNER);
 
 	// InMat incineration
-  if (!Tick10)
+  if (!::Game.iTick10)
 		if (InMat!=MNone)
-			if (Game.Material.Map[InMat].Incindiary)
+			if (::MaterialMap.Map[InMat].Incindiary)
 				if (Def->ContactIncinerate)
 					Incinerate(NO_OWNER);
 
   // Nonlife normal energy loss
-	if (!Tick10) if (Energy)
+	if (!::Game.iTick10) if (Energy)
 		if (!(Category & C4D_Living))
 			if (!ValidPlr(Base) || (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RegenerateEnergy))
 				// don't loose if assigned as Energy-holder
@@ -998,7 +1012,7 @@ BOOL C4Object::ExecLife()
 					DoEnergy(-1,false,C4FxCall_EngStruct, NO_OWNER);
 
 	// birthday
-	if (!Tick255)
+	if (!::Game.iTick255)
 		if (Alive)
 			if(Info)
 			{
@@ -1024,7 +1038,7 @@ BOOL C4Object::ExecLife()
 void C4Object::AutoSellContents()
   {
   C4ObjectLink *clnk; C4Object *cobj1,*cobj2;
-	C4Player *pPlr = Game.Players.Get(Base); if (!pPlr) return;
+	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return;
 
   // Content's gold contents
   for (clnk=Contents.First; clnk && (cobj1=clnk->Obj); clnk=clnk->Next)
@@ -1043,7 +1057,7 @@ void C4Object::ExecBase()
   C4Object *flag;;
 
   // New base assignment by flag (no old base removal)
-  if (!Tick10)
+  if (!::Game.iTick10)
     if (Def->CanBeBase) if (!ValidPlr(Base))
       if (flag=Contents.Find(C4ID_Flag))
         if (ValidPlr(flag->Owner) && (flag->Owner!=Base))
@@ -1059,7 +1073,7 @@ void C4Object::ExecBase()
           }
 
   // Base execution
-  if (!Tick35)
+  if (!::Game.iTick35)
     if (ValidPlr(Base))
       {
 			// Auto sell contents
@@ -1073,14 +1087,14 @@ void C4Object::ExecBase()
       }
 
   // Environmental action
-  if (!Tick35)
+  if (!::Game.iTick35)
     {
     // Structures dig free snow
     if ((Category & C4D_Structure) && !(Game.Rules & C4RULE_StructuresSnowIn))
       if (r==0)
 				{
-				Game.Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MSnow);
-				Game.Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MFlyAshes);
+				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MSnow);
+				::Landscape.DigFreeMat(GetX() + Shape.GetX(), GetY() + Shape.GetY(), Shape.Wdt, Shape.Hgt, MFlyAshes);
 				}
     }
 
@@ -1209,7 +1223,7 @@ void C4Object::AssignDeath(bool fForced)
   // Lose contents
   while (thing=Contents.GetObject()) thing->Exit(thing->GetX(),thing->GetY());
   // Remove from crew/cursor/view
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
   if (pPlr) pPlr->ClearPointers(this, true);
 	// ensure objects that won't be affected by dead-plrview-decay are handled properly
 	if (!pPlr || !(Category & C4D_Living) || !pPlr->FoWViewObjs.IsContained(this))
@@ -1232,16 +1246,15 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	C4Object *pContainer=Contained;
 	// Exit container (no Ejection/Departure)
 	if (Contained) Exit(0,0,0,Fix0,Fix0,Fix0,FALSE);
-  // Pre change resets
-  SetAction(ActIdle);
-	Action.Act=ActIdle; // Enforce ActIdle because SetAction may have failed due to NoOtherAction
+	// Pre change resets
+	SetAction(0);
+	Action.pActionDef = 0; // Enforce ActIdle because SetAction may have failed due to NoOtherAction
 	SetDir(0); // will drop any outdated flipdir
   if (pSolidMaskData) { pSolidMaskData->Remove(true, false); delete pSolidMaskData; pSolidMaskData=NULL; }
 	Def->Count--;
-	// change the name to the name of the new def, if the name of the old def was in use before
-	if (Name.getData() == Def->Name.getData()) Name = pDef->Name;
   // Def change
   Def=pDef;
+	prototype = pDef;
 	id=pDef->id;
 	Def->Count++;
 	LocalNamed.SetNameList(&pDef->Script.LocalNamed);
@@ -1254,7 +1267,7 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	// an object may have newly become an ColorByOwner-object
 	// if it had been ColorByOwner, but is not now, this will be caught in UpdateGraphics()
 	if (!Color && ValidPlr(Owner))
-		Color=Game.Players.Get(Owner)->ColorDw;
+		Color=::Players.Get(Owner)->ColorDw;
 	if (!Def->Rotateable) { r=0; fix_r=rdir=Fix0; }
 	// Reset solid mask
 	SolidMask=Def->SolidMask;
@@ -1266,7 +1279,7 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	// Any effect callbacks to this object might need to reinitialize their target functions
 	// This is ugly, because every effect there is must be updated...
 	if (Game.pGlobalEffects) Game.pGlobalEffects->OnObjectChangedDef(this);
-	for (C4ObjectLink *pLnk = Game.Objects.First; pLnk; pLnk = pLnk->Next)
+	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
 		if (pLnk->Obj->pEffects) pLnk->Obj->pEffects->OnObjectChangedDef(this);
 	// Containment (no Entrance)
 	if (pContainer) Enter(pContainer,FALSE);
@@ -1442,11 +1455,11 @@ void C4Object::DoCon(int32_t iChange, BOOL fInitial, bool fNoComponentChange)
 			// No energy need
 			NeedEnergy=0;
 			}
-    // Decay from full stop action
-    if (fWasFull && (Con<FullCon))
+		// Decay from full stop action
+		if (fWasFull && (Con<FullCon))
 			if (!Def->IncompleteActivity)
-				SetAction(ActIdle);
-    }
+				SetAction(0);
+		}
 	else
 		// set first position
 		if (fInitial) UpdatePos();
@@ -1491,7 +1504,7 @@ void C4Object::DoExperience(int32_t change)
 
   // Promotion check
 	if (Info->Experience<MaxExperience)
-		if (Info->Experience>=Game.Rank.Experience(Info->Rank+1))
+		if (Info->Experience>=::DefaultRanks.Experience(Info->Rank+1))
 			Promote(Info->Rank+1, FALSE, false);
   }
 
@@ -1620,7 +1633,7 @@ BOOL C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
   if (Hostile(by_plr,Base) && (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RejectEntrance))
     {
     if (ValidPlr(Owner))
-      GameMsgObject(FormatString(LoadResStr("IDS_OBJ_HOSTILENOENTRANCE"),Game.Players.Get(Owner)->GetName()).getData(),this);
+      GameMsgObject(FormatString(LoadResStr("IDS_OBJ_HOSTILENOENTRANCE"),::Players.Get(Owner)->GetName()).getData(),this);
     return FALSE;
     }
   // Try entrance activation
@@ -1701,9 +1714,9 @@ BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 			// Builder is a crew member...
 			if (pBuilder->OCF & OCF_CrewMember)
 				// ...tell builder to acquire the material
-				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,NeededMaterial,FALSE,1);
+				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,C4VID(NeededMaterial),FALSE,1);
 			// ...game message if not overloaded
-			Game.Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
+			::Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
 			}
 		// Still in need: done/fail
 		return FALSE;
@@ -1740,7 +1753,7 @@ BOOL C4Object::Chop(C4Object *pByObject)
   if (!Status || !Def || Contained || !(OCF & OCF_Chop))
     return FALSE;
   // Chop
-  if (!Tick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
+  if (!::Game.iTick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
   return TRUE;
   }
 
@@ -1782,7 +1795,7 @@ BOOL C4Object::Push(FIXED txdir, FIXED dforce, BOOL fStraighten)
   if (!!xdir || !!ydir || !!rdir) Mobile=1;
 
   // Stuck check
-  if (!Tick35) if (txdir) if (!Def->NoHorizontalMove)
+  if (!::Game.iTick35) if (txdir) if (!Def->NoHorizontalMove)
     if (ContactCheck(GetX(), GetY())) // Resets t_contact
       {
 			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_STUCK"),GetName()).getData(),this);
@@ -1819,10 +1832,10 @@ BOOL C4Object::Lift(FIXED tydir, FIXED dforce)
   return TRUE;
   }
 
-C4Object* C4Object::CreateContents(C4ID n_id)
+C4Object* C4Object::CreateContents(C4PropList * PropList)
   {
   C4Object *nobj;
-  if (!(nobj=Game.CreateObject(n_id,this,Owner))) return NULL;
+  if (!(nobj=Game.CreateObject(PropList,this,Owner))) return NULL;
   if (!nobj->Enter(this)) { nobj->AssignRemoval(); return NULL; }
   return nobj;
   }
@@ -1832,7 +1845,7 @@ BOOL C4Object::CreateContentsByList(C4IDList &idlist)
   int32_t cnt,cnt2;
   for (cnt=0; idlist.GetID(cnt); cnt++)
     for (cnt2=0; cnt2<idlist.GetCount(cnt); cnt2++)
-      if (!CreateContents(idlist.GetID(cnt)))
+      if (!CreateContents(C4Id2Def(idlist.GetID(cnt))))
         return FALSE;
   return TRUE;
   }
@@ -1923,7 +1936,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			if (!pTarget) break;
 
 			// Create symbol & init menu
-			pPlayer=Game.Players.Get(pTarget->Owner);
+			pPlayer=::Players.Get(pTarget->Owner);
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 			pTarget->Def->Draw(fctSymbol,FALSE,pTarget->Color, pTarget);
 			Menu->Init(fctSymbol,pTarget->GetName(),this,C4MN_Extra_None,0,iMenu,C4MN_Style_Context);
@@ -1940,7 +1953,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Construction:
 			// Check valid player
-			if (!(pPlayer = Game.Players.Get(Owner))) break;
+			if (!(pPlayer = ::Players.Get(Owner))) break;
 			// Create symbol
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 			DrawMenuSymbol(C4MN_Construction,fctSymbol,-1,NULL);
@@ -1948,7 +1961,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_PLR_NOBKNOW"),pPlayer->GetName()).getData(),
 				this,C4MN_Extra_Components,0,iMenu);
 			// Add player's structure build knowledge
-		  for (cnt=0; pDef=C4Id2Def(pPlayer->Knowledge.GetID(Game.Defs,C4D_Structure,cnt,&iCount)); cnt++)
+		  for (cnt=0; pDef=C4Id2Def(pPlayer->Knowledge.GetID(::Definitions,C4D_Structure,cnt,&iCount)); cnt++)
 				{
 				// Caption
 				sprintf(szCaption,LoadResStr("IDS_MENU_CONSTRUCT"),pDef->GetName());
@@ -1968,13 +1981,13 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 		case C4MN_Info:
 			// Target by parameter
 			if (!pTarget) break;
-			pPlayer=Game.Players.Get(pTarget->Owner);
+			pPlayer=::Players.Get(pTarget->Owner);
 			// Create symbol & init menu
 			fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,TRUE,0,1);
 			Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
 			Menu->SetPermanent(TRUE);
 			Menu->SetAlignment(C4MN_Align_Free);
-			C4Viewport *pViewport = Game.GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
+			C4Viewport *pViewport = ::GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
 			if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->ViewX) * pViewport->Zoom,
 			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->ViewY) * pViewport->Zoom);
 			// Add info item
@@ -2011,7 +2024,7 @@ void C4Object::AutoContextMenu(int32_t iMenuSelect)
 			if (OCF & OCF_CrewMember)
 				{
 				// Player has AutoContextMenus enabled
-				C4Player* pPlayer = Game.Players.Get(Controller);
+				C4Player* pPlayer = ::Players.Get(Controller);
 				if (pPlayer && pPlayer->PrefAutoContextMenu)
 					{
 					// Open context menu for structure
@@ -2067,18 +2080,13 @@ FIXED C4Object::GetSpeed()
   return cobjspd;
   }
 
-const char* C4Object::GetName()
-  {
-	return Name.getData();
-  }
-
-void C4Object::SetName(const char* NewName)
-  {
-	if(!NewName)
-		if (Info) Name = Info->Name; else Name = Def->Name;
+void C4Object::SetName(const char * NewName)
+	{
+	if(!NewName && Info)
+		C4PropList::SetName(Info->Name);
 	else
-		Name.Copy(NewName);
-  }
+		C4PropList::SetName(NewName);
+	}
 
 int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
   {
@@ -2146,7 +2154,7 @@ BOOL C4Object::Promote(int32_t torank, BOOL exception, bool fForceRankName)
 	if (pUseDef && pUseDef->pRankNames)
 		pRankSys = pUseDef->pRankNames;
 	else
-		pRankSys = &Game.Rank;
+		pRankSys = &::DefaultRanks;
 	// always promote info
 	Info->Promote(torank,*pRankSys, fForceRankName);
 	// silent update?
@@ -2195,9 +2203,8 @@ C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPas
 
 BOOL C4Object::SetPhase(int32_t iPhase)
 	{
-  if (Action.Act<=ActIdle) return FALSE;
-	C4ActionDef *actdef=&(Def->ActMap[Action.Act]);
-  Action.Phase=BoundBy<int32_t>(iPhase,0,actdef->Length);
+	if (!Action.pActionDef) return FALSE;
+	Action.Phase=BoundBy<int32_t>(iPhase,0,Action.pActionDef->GetPropertyInt(P_Length));
 	return TRUE;
 	}
 
@@ -2209,7 +2216,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (!Status || !Def) return;
 
 	// visible?
-	if (Visibility || pLayer) if(!IsVisible(iByPlayer, !!eDrawMode)) return;
+	if(!IsVisible(iByPlayer, !!eDrawMode)) return;
 
 	// Line
 	if (Def->Line) { DrawLine(cgo);	return;	}
@@ -2223,8 +2230,8 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	float offX = cgo.X + fixtof(fix_x) - cotx, offY = cgo.Y + fixtof(fix_y) - coty;
 
 	BOOL fYStretchObject=FALSE;
-	if (Action.Act>ActIdle)
-		if (Def->ActMap[Action.Act].FacetTargetStretch)
+	if (Action.pActionDef)
+		if (Action.pActionDef->GetPropertyInt(P_FacetTargetStretch))
 			fYStretchObject=TRUE;
 
 	// Set audibility
@@ -2232,7 +2239,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 
   // Output boundary
 	if (!fYStretchObject && !eDrawMode)
-		if (Action.Act>ActIdle && !r && !Def->ActMap[Action.Act].FacetBase && Con<=FullCon)
+		if (Action.pActionDef && !r && !Action.pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
 			{
 			// active
 			if ( !Inside<float>(cox+Action.FacetX,1-Action.Facet.Wdt,cgo.Wdt)
@@ -2249,7 +2256,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
 
   // Debug Display //////////////////////////////////////////////////////////////////////
-  if (Game.GraphicsSystem.ShowCommand && !eDrawMode)
+  if (::GraphicsSystem.ShowCommand && !eDrawMode)
     {
     C4Command *pCom;
     int32_t ccx=GetX(),ccy=GetY();
@@ -2276,19 +2283,19 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 					//sprintf(szCommand,"%s %d/%d",CommandName(pCom->Command),pCom->Tx,pCom->Ty,iAngle);
           break;
 				case C4CMD_Put:
-					sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? C4IdText(pCom->Data) : "Content",pCom->Target ? pCom->Target->GetName() : "");
+					sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? C4IdText(pCom->Data.getC4ID()) : "Content",pCom->Target ? pCom->Target->GetName() : "");
 					break;
 				case C4CMD_Buy: case C4CMD_Sell:
-					sprintf(szCommand,"%s %s at %s",CommandName(pCom->Command),C4IdText(pCom->Data),pCom->Target ? pCom->Target->GetName() : "closest base");
+					sprintf(szCommand,"%s %s at %s",CommandName(pCom->Command),C4IdText(pCom->Data.getC4ID()),pCom->Target ? pCom->Target->GetName() : "closest base");
 					break;
 				case C4CMD_Acquire:
-					sprintf(szCommand,"%s %s",CommandName(pCom->Command),C4IdText(pCom->Data));
+					sprintf(szCommand,"%s %s",CommandName(pCom->Command),C4IdText(pCom->Data.getC4ID()));
 					break;
 				case C4CMD_Call:
 					sprintf(szCommand,"%s %s in %s",CommandName(pCom->Command),pCom->Text->GetCStr(),pCom->Target ? pCom->Target->GetName() : "(null)");
 					break;
 				case C4CMD_Construct:
-					C4Def *pDef; pDef=C4Id2Def(pCom->Data);
+					C4Def *pDef; pDef=C4Id2Def(pCom->Data.getC4ID());
 					sprintf(szCommand,"%s %s",CommandName(pCom->Command),pDef ? pDef->GetName() : "");
 					break;
 				case C4CMD_None:
@@ -2324,13 +2331,13 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		// Open MoveTo stack
 		if (iMoveTos) { Cmds.AppendChar('|'); Cmds.AppendFormat("%dx MoveTo",iMoveTos); iMoveTos=0; }
 		// Draw message
-		int32_t cmwdt,cmhgt;  Game.GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
-		Application.DDraw->TextOut(Cmds.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+		int32_t cmwdt,cmhgt;  ::GraphicsResource.FontRegular.GetTextExtent(Cmds.getData(),cmwdt,cmhgt,true);
+		Application.DDraw->TextOut(Cmds.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-10-cmhgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
     }
   // Debug Display ///////////////////////////////////////////////////////////////////////////////
 
 	// Don't draw (show solidmask)
-	if (Game.GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.ShowSolidMask)
 		if (SolidMask.Wdt)
 			{
 			// DrawSolidMask(cgo); - no need to draw it, because the 8bit-surface will be shown
@@ -2349,7 +2356,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		}
 
 	// Fire facet - always draw, even if particles are drawn as well
-	if (OnFire /*&& !Game.Particles.IsFireParticleLoaded()*/) if (eDrawMode!=ODM_BaseOnly)
+	if (OnFire /*&& !::Particles.IsFireParticleLoaded()*/) if (eDrawMode!=ODM_BaseOnly)
 		{
 		C4Facet fgo;
 		// Straight: Full Shape.Rect on fire
@@ -2368,14 +2375,14 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 			        offY + fr.y,
 			        fr.Wdt, fr.Hgt);
 			}
-		Game.GraphicsResource.fctFire.Draw(fgo,FALSE,FirePhase);
+		::GraphicsResource.fctFire.Draw(fgo,FALSE,FirePhase);
 		}
 
 	// color modulation (including construction sign...)
 	if (ColorMod || BlitMode) if (!eDrawMode) PrepareDrawing();
 
 	// Not active or rotated: BaseFace only
-	if ((Action.Act<=ActIdle))
+	if (!Action.pActionDef)
 		{
 		DrawFace(cgo, offX, offY);
 		}
@@ -2384,11 +2391,11 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	else
 		{
 		// FacetBase
-		if (Def->ActMap[Action.Act].FacetBase)
+		if (Action.pActionDef->GetPropertyInt(P_FacetBase))
 			DrawFace(cgo, offX, offY, 0, Action.DrawDir);
 
 		// Special: stretched action facet
-		if (Action.Facet.Surface && Def->ActMap[Action.Act].FacetTargetStretch)
+		if (Action.Facet.Surface && Action.pActionDef->GetPropertyInt(P_FacetTargetStretch))
 			{
 			if (Action.Target)
 				lpDDraw->Blit(Action.Facet.Surface,
@@ -2419,20 +2426,20 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		if (eDrawMode!=ODM_BaseOnly)
 			if (ValidPlr(Owner))
 				if (Owner == iByPlayer)
-					if (Game.Players.Get(Owner)->SelectFlash)
+					if (::Players.Get(Owner)->SelectFlash)
 						DrawSelectMark(cgo, 1);
 
 	// Energy shortage
-	if (NeedEnergy) if (Tick35>12) if (eDrawMode!=ODM_BaseOnly)
+	if (NeedEnergy) if (::Game.iTick35>12) if (eDrawMode!=ODM_BaseOnly)
 		{
-		C4Facet &fctEnergy = Game.GraphicsResource.fctEnergy;
+		C4Facet &fctEnergy = ::GraphicsResource.fctEnergy;
 		int32_t tx=cox+Shape.Wdt/2-fctEnergy.Wdt/2, ty=coy-fctEnergy.Hgt-5;
 		fctEnergy.Draw(cgo.Surface,cgo.X+tx,cgo.Y+ty);
 		}
 
 
 	// Debug Display ////////////////////////////////////////////////////////////////////////
-	if (Game.GraphicsSystem.ShowVertices) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowVertices) if (eDrawMode!=ODM_BaseOnly)
 		{
 		int32_t cnt;
 		if (Shape.VtxNum>1)
@@ -2446,7 +2453,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 				}
 		}
 
-	if (Game.GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowEntrance) if (eDrawMode!=ODM_BaseOnly)
 		{
 		if (OCF & OCF_Entrance)
 			Application.DDraw->DrawFrame(cgo.Surface,cgo.X+cox-Shape.x+Def->Entrance.x,
@@ -2462,14 +2469,14 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 						 CRed);
 		}
 
-	if (Game.GraphicsSystem.ShowAction) if (eDrawMode!=ODM_BaseOnly)
+	if (::GraphicsSystem.ShowAction) if (eDrawMode!=ODM_BaseOnly)
 		{
-		if (Action.Act>ActIdle)
+		if (Action.pActionDef)
 			{
 			StdStrBuf str;
-			str.Format("%s (%d)",Def->ActMap[Action.Act].Name,Action.Phase);
-			int32_t cmwdt,cmhgt; Game.GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
-			Application.DDraw->TextOut(str.getData(), Game.GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-cmhgt,InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
+			str.Format("%s (%d)",Action.pActionDef->GetName(),Action.Phase);
+			int32_t cmwdt,cmhgt; ::GraphicsResource.FontRegular.GetTextExtent(str.getData(),cmwdt,cmhgt,true);
+			Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cox-Shape.GetX(),cgo.Y+coy-cmhgt,InLiquid ? 0xfa0000FF : CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
 			}
 		}
   // Debug Display ///////////////////////////////////////////////////////////////////////
@@ -2484,7 +2491,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// Status
   if (!Status || !Def) return;
 	// visible?
-	if (Visibility) if(!IsVisible(iByPlayer, eDrawMode==ODM_Overlay)) return;
+	if(!IsVisible(iByPlayer, eDrawMode==ODM_Overlay)) return;
 	// target pos (parallax)
 	float cotx = cgo.TargetX, coty = cgo.TargetY; if (eDrawMode!=ODM_Overlay) TargetPos(cotx, coty, cgo);
 	// Clonk name
@@ -2496,7 +2503,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			if (!Inside<int>(GetX() + Shape.GetX() - cotx, 1 - Shape.Wdt, cgo.Wdt)
 			|| !Inside<int>(GetY() + Shape.GetY() - coty, 1 - Shape.Hgt, cgo.Hgt)) return;
 			// get player
-			C4Player* pOwner = Game.Players.Get(Owner);
+			C4Player* pOwner = ::Players.Get(Owner);
 			if (pOwner) if (!Hostile(Owner, iByPlayer)) if (!pOwner->IsInvisible())
 				{
 				int32_t X = GetX();
@@ -2511,16 +2518,16 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 				else
 					SCopy(GetName(),szText);
 				// Word wrap to cgo width
-				int32_t iCharWdt, dummy; Game.GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
+				int32_t iCharWdt, dummy; ::GraphicsResource.FontRegular.GetTextExtent("m", iCharWdt, dummy, false);
 				int32_t iMaxLine = Max<int32_t>( cgo.Wdt / iCharWdt, 20 );
 				SWordWrap(szText,' ','|',iMaxLine);
 				// Adjust position by output boundaries
 				int32_t iTX,iTY,iTWdt,iTHgt;
-				Game.GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
+				::GraphicsResource.FontRegular.GetTextExtent(szText,iTWdt,iTHgt, true);
 				iTX = BoundBy<int>( X-cotx, iTWdt/2, cgo.Wdt-iTWdt/2 );
 				iTY = BoundBy<int>( Y-coty-iTHgt, 0, cgo.Hgt-iTHgt );
 				// Draw
-				Application.DDraw->TextOut(szText, Game.GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + iTX, cgo.Y + iTY,
+				Application.DDraw->TextOut(szText, ::GraphicsResource.FontRegular, 1.0, cgo.Surface, cgo.X + iTX, cgo.Y + iTY,
 														pOwner->ColorDw|0x7f000000,ACenter);
 				}
 			}
@@ -2534,7 +2541,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		|| !Inside<float>(coy,1-Shape.Hgt,cgo.Hgt))
 			return;
 	// Don't draw (show solidmask)
-	if (Game.GraphicsSystem.ShowSolidMask)
+	if (::GraphicsSystem.ShowSolidMask)
 		if (SolidMask.Wdt)
 			return;
 	// Contained
@@ -2542,7 +2549,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 	// Construction sign
 	if (OCF & OCF_Construct) if (r==0) if (eDrawMode!=ODM_BaseOnly)
 		{
-		C4Facet &fctConSign = Game.GraphicsResource.fctConstruction;
+		C4Facet &fctConSign = ::GraphicsResource.fctConstruction;
 		lpDDraw->Blit(fctConSign.Surface,
 			fctConSign.X, fctConSign.Y,
 			fctConSign.Wdt, fctConSign.Hgt,
@@ -2551,13 +2558,12 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			fctConSign.Wdt, fctConSign.Hgt, TRUE);
 		}
 	// FacetTopFace: Override TopFace.GetX()/GetY()
-	if ((Action.Act>ActIdle) && Def->ActMap[Action.Act].FacetTopFace)
+	if (Action.pActionDef && Action.pActionDef->GetPropertyInt(P_FacetTopFace))
 		{
-		C4ActionDef *actdef = &Def->ActMap[Action.Act];
 		int32_t iPhase = Action.Phase;
-		if (actdef->Reverse) iPhase = actdef->Length - 1 - Action.Phase;
-		TopFace.X = actdef->Facet.x + Def->TopFace.x + actdef->Facet.Wdt * iPhase;
-		TopFace.Y = actdef->Facet.y + Def->TopFace.y + actdef->Facet.Hgt * Action.DrawDir;
+		if (Action.pActionDef->GetPropertyInt(P_Reverse)) iPhase = Action.pActionDef->GetPropertyInt(P_Length) - 1 - Action.Phase;
+		TopFace.X = Action.pActionDef->GetPropertyInt(P_X) + Def->TopFace.x + Action.pActionDef->GetPropertyInt(P_Wdt) * iPhase;
+		TopFace.Y = Action.pActionDef->GetPropertyInt(P_Y) + Def->TopFace.y + Action.pActionDef->GetPropertyInt(P_Hgt) * Action.DrawDir;
 		}
 	// ensure correct color is set
 	if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
@@ -2593,34 +2599,25 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	// additive mode?
 	PrepareDrawing();
 	// Draw line segments
+	C4Value colorsV; GetProperty(Strings.P[P_LineColors], colorsV);
+	C4ValueArray *colors = colorsV.getArray();
+	int32_t color0 = 0x00FF00FF, color1 = 0x00FF00FF;	// use bright colors so author notices
+	if (colors)
+		{
+		color0 = colors->GetItem(0).getInt(); color1 = colors->GetItem(1).getInt();
+		}
   for (int32_t vtx=0; vtx+1<Shape.VtxNum; vtx++)
 		switch (Def->Line)
 			{
 			case C4D_Line_Power:
-				cgo.DrawLine(Shape.VtxX[vtx],Shape.VtxY[vtx],
-										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 68,26);
-				break;
 			case C4D_Line_Source: case C4D_Line_Drain:
-				cgo.DrawLine(Shape.VtxX[vtx],Shape.VtxY[vtx],
-										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 23,26);
-				break;
 			case C4D_Line_Lightning:
-				cgo.DrawBolt(Shape.VtxX[vtx],Shape.VtxY[vtx],
-										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 CWhite,CWhite);
-				break;
 			case C4D_Line_Rope:
-				cgo.DrawLine(Shape.VtxX[vtx],Shape.VtxY[vtx],
-										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 65,65);
-				break;
 			case C4D_Line_Vertex:
 			case C4D_Line_Colored:
-				cgo.DrawLine(Shape.VtxX[vtx],Shape.VtxY[vtx],
+				cgo.DrawLineDw(Shape.VtxX[vtx],Shape.VtxY[vtx],
 										 Shape.VtxX[vtx+1],Shape.VtxY[vtx+1],
-										 BYTE(Local[0].getInt()),BYTE(Local[1].getInt()));
+										 color0, color1);
 				break;
 			}
 	// reset blit mode
@@ -2630,20 +2627,20 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 void C4Object::DrawEnergy(C4Facet &cgo)
 	{
 	//cgo.DrawEnergyLevel(Energy,GetPhysical()->Energy);
-	cgo.DrawEnergyLevelEx(Energy,GetPhysical()->Energy, Game.GraphicsResource.fctEnergyBars, 0);
+	cgo.DrawEnergyLevelEx(Energy,GetPhysical()->Energy, ::GraphicsResource.fctEnergyBars, 0);
 	}
 
 void C4Object::DrawMagicEnergy(C4Facet &cgo)
 	{
 	// draw in units of MagicPhysicalFactor, so you can get a full magic energy bar by script even if partial magic energy training is not fulfilled
 	//cgo.DrawEnergyLevel(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor,39);
-	cgo.DrawEnergyLevelEx(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor, Game.GraphicsResource.fctEnergyBars, 1);
+	cgo.DrawEnergyLevelEx(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor, ::GraphicsResource.fctEnergyBars, 1);
 	}
 
 void C4Object::DrawBreath(C4Facet &cgo)
 	{
 	//cgo.DrawEnergyLevel(Breath,GetPhysical()->Breath,99);
-	cgo.DrawEnergyLevelEx(Breath,GetPhysical()->Breath, Game.GraphicsResource.fctEnergyBars, 2);
+	cgo.DrawEnergyLevelEx(Breath,GetPhysical()->Breath, ::GraphicsResource.fctEnergyBars, 2);
 	}
 
 void C4Object::CompileFunc(StdCompiler *pComp)
@@ -2656,19 +2653,20 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( mkC4IDAdapt(id),									"id",									C4ID_None					));
 	if(fCompiler)
 		{
-		Def = Game.Defs.ID2Def(id);
+		Def = ::Definitions.ID2Def(id);
+		prototype = Def;
 		if(!Def)
 			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),C4IdText(id)); return; }
 		}
 
 	// Write the name only if the object has an individual name, use def name as default for reading.
 	// (Info may overwrite later, see C4Player::MakeCrewMember)
-	if (pComp->isCompiler())
+	/*if (pComp->isCompiler())
 		pComp->Value(mkNamingAdapt(Name, "Name", Def->Name));
 	else if (!Name.isRef())
 		// Write the name only if the object has an individual name
 		// 2do: And what about binary compilers?
-		pComp->Value(mkNamingAdapt(Name, "Name"));
+		pComp->Value(mkNamingAdapt(Name, "Name"));*/
 
 	pComp->Value(mkNamingAdapt( Number,														"Number",							-1								));
 	pComp->Value(mkNamingAdapt( Status,														"Status",							1									));
@@ -2702,7 +2700,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( FirePhase,												"FirePhase",					0									));
 	pComp->Value(mkNamingAdapt( Color,														"Color",							0u								)); // TODO: Convert
 	pComp->Value(mkNamingAdapt( Color,														"ColorDw",						0u								));
-	pComp->Value(mkNamingAdapt( Local,														"Locals",							C4ValueList()			));
 	// default to X/Y values to support objects where FixX/FixY was manually removed
 	pComp->Value(mkNamingAdapt( fix_x,														"FixX",								itofix(qX)									));
 	pComp->Value(mkNamingAdapt( fix_y,														"FixY",								itofix(qY)									));
@@ -2729,7 +2726,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Component,												"Component"															));
 	pComp->Value(mkNamingAdapt( Contents,													"Contents"															));
 	pComp->Value(mkNamingAdapt( PlrViewRange,											"PlrViewRange",				0									));
-	pComp->Value(mkNamingAdapt( Visibility,												"Visibility",					VIS_All						));
 	pComp->Value(mkNamingAdapt( LocalNamed,												"LocalNamed"														));
 	pComp->Value(mkNamingAdapt( ColorMod,													"ColorMod",						0u								));
 	pComp->Value(mkNamingAdapt( BlitMode,													"BlitMode",						0u								));
@@ -2787,12 +2783,12 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	  int32_t iTime=Action.Time;
 	  int32_t iPhase=Action.Phase;
 	  int32_t iPhaseDelay=Action.PhaseDelay;
-	  if (SetActionByName(Action.Name,0,0,FALSE))
+	  /* FIXME if (SetActionByName(Action.pActionDef->GetName(),0,0,FALSE)) 
 		  {
 		  Action.Time=iTime;
 		  Action.Phase=iPhase; // No checking for valid phase
 		  Action.PhaseDelay=iPhaseDelay;
-		  }
+		  }*/
 
 	  // if on fire but no effect is present (old-style savegames), re-incinerate
 	  int32_t iFireNumber;
@@ -2816,10 +2812,10 @@ void C4Object::EnumeratePointers()
 	{
 
 	// Standard enumerated pointers
-	nContained = Game.Objects.ObjectNumber(Contained);
-	nActionTarget1 = Game.Objects.ObjectNumber(Action.Target);
-	nActionTarget2 = Game.Objects.ObjectNumber(Action.Target2);
-	nLayer = Game.Objects.ObjectNumber(pLayer);
+	nContained = ::Objects.ObjectNumber(Contained);
+	nActionTarget1 = ::Objects.ObjectNumber(Action.Target);
+	nActionTarget2 = ::Objects.ObjectNumber(Action.Target2);
+	nLayer = ::Objects.ObjectNumber(pLayer);
 
 	// Info by name
 	//if (Info) SCopy(Info->Name,nInfo,C4MaxName);
@@ -2842,16 +2838,15 @@ void C4Object::DenumeratePointers()
 	{
 
 	// Standard enumerated pointers
-	Contained = Game.Objects.ObjectPointer(nContained);
-	Action.Target = Game.Objects.ObjectPointer(nActionTarget1);
-	Action.Target2 = Game.Objects.ObjectPointer(nActionTarget2);
-	pLayer = Game.Objects.ObjectPointer(nLayer);
+	Contained = ::Objects.ObjectPointer(nContained);
+	Action.Target = ::Objects.ObjectPointer(nActionTarget1);
+	Action.Target2 = ::Objects.ObjectPointer(nActionTarget2);
+	pLayer = ::Objects.ObjectPointer(nLayer);
 
 	// Post-compile object list
 	Contents.DenumerateRead();
 
 	// Local variable pointers
-	Local.DenumeratePointers();
 	LocalNamed.DenumeratePointers();
 
 	// Commands
@@ -2870,7 +2865,7 @@ void C4Object::DenumeratePointers()
 bool DrawCommandQuery(int32_t controller, C4ScriptHost& scripthost, int32_t* mask, int com)
   {
   int method = scripthost.GetControlMethod(com, mask[0], mask[1]);
-  C4Player* player = Game.Players.Get(controller);
+  C4Player* player = ::Players.Get(controller);
   if(!player) return false;
 
   switch(method)
@@ -2898,21 +2893,21 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 	if (Menu && Menu->IsActive()) return;
 
 	DWORD ocf = OCF_Construct;
-	if(Action.ComDir == COMD_Stop && iDFA == DFA_WALK && (tObj = Game.Objects.AtObject(GetX(), GetY(), ocf, this)))
+	if(Action.ComDir == COMD_Stop && iDFA == DFA_WALK && (tObj = ::Objects.AtObject(GetX(), GetY(), ocf, this)))
 		{
 		int32_t com = COM_Down_D;
-		if(Game.Players.Get(Controller)->PrefControlStyle) com = COM_Down;
+		if(::Players.Get(Controller)->PrefControlStyle) com = COM_Down;
 
 		tObj->DrawCommand(cgoBottom,C4FCT_Right,NULL,com,pRegions,Owner,
 			FormatString(LoadResStr("IDS_CON_BUILD"), tObj->GetName()).getData(),&ccgo);
 		tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-		Game.GraphicsResource.fctBuild.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE);
+		::GraphicsResource.fctBuild.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE);
 		}
 
 	// Grab target control (control flag)
 	if (iDFA==DFA_PUSH && Action.Target)
 		{
-		bool letgobydouble = !Game.Players.Get(Controller)->PrefControlStyle
+		bool letgobydouble = !::Players.Get(Controller)->PrefControlStyle
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 3)
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 11)
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 19);
@@ -2928,7 +2923,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Action.Target->DrawCommand(cgoBottom, C4FCT_Right, NULL, ComOrder(cnt), pRegions, Owner, 
 					FormatString(LoadResStr("IDS_CON_UNGRAB"), Action.Target->GetName()).getData(), &ccgo);
 				Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Action.Target->Color, Action.Target);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 6);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 6);
 				}
 			else if (ComOrder(cnt) == COM_Throw)
 				{
@@ -2938,7 +2933,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 					Action.Target->DrawCommand(cgoBottom, C4FCT_Right, NULL, COM_Throw, pRegions, Owner,
 						FormatString(LoadResStr("IDS_CON_PUT"), tObj->GetName(), Action.Target->GetName()).getData(), &ccgo);
 					tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-					Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 					}
 				// Get
 				else if (Action.Target->Contents.ListIDCount(C4D_Get) && (Action.Target->Def->GrabPutGet & C4D_Grab_Get))
@@ -2946,7 +2941,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 					Action.Target->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 						FormatString(LoadResStr("IDS_CON_GET"),Action.Target->GetName()).getData(), &ccgo);
 					Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Action.Target->Color, Action.Target);
-					Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
+					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
 					}
 				}
 		}
@@ -2969,7 +2964,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			{
 			DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Down,pRegions,Owner,
 								LoadResStr("IDS_CON_EXIT"),&ccgo);
-			Game.GraphicsResource.fctExit.Draw(ccgo);
+			::GraphicsResource.fctExit.Draw(ccgo);
 			}
 		// Contained base commands
 		if (ValidPlr(Contained->Base))
@@ -3000,7 +2995,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Right,pRegions,Owner,
 					FormatString(LoadResStr("IDS_CON_GET"),Contained->GetName()).getData(),&ccgo);
 				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
 				}
 			// carlo: Get ("Take")
 			if (!fContainedLeftOverride)
@@ -3008,7 +3003,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Left,pRegions,Owner,
 					FormatString(LoadResStr("IDS_CON_ACTIVATEFROM"),Contained->GetName()).getData(),&ccgo);
 				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-				Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 				}
 			}
 		if (tObj=Contents.GetObject())
@@ -3017,7 +3012,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 				FormatString(LoadResStr("IDS_CON_PUT"),tObj->GetName(),Contained->GetName()).getData(),&ccgo);
 			tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-			Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 			}
 		else if (nContents)
 			{
@@ -3025,7 +3020,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 				FormatString(LoadResStr("IDS_CON_ACTIVATEFROM"),Contained->GetName()).getData(),&ccgo);
 			Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-			Game.GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
 			}
 		}
 
@@ -3116,11 +3111,11 @@ BOOL C4Object::AssignInfo()
 	{
 	if (Info || !ValidPlr(Owner)) return FALSE;
 	// In crew list?
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr->Crew.GetLink(this))
 		{
 		// Register with player
-		if(!Game.Players.Get(Owner)->MakeCrewMember(this, true, false))
+		if(!::Players.Get(Owner)->MakeCrewMember(this, true, false))
 			pPlr->Crew.Remove(this);
 		return TRUE;
 		}
@@ -3130,13 +3125,13 @@ BOOL C4Object::AssignInfo()
 	// or c) The clonk belongs to a script player that's restored without Game.txt
 	else if (nInfo.getLength())
 		{
-		if(!Game.Players.Get(Owner)->MakeCrewMember(this, true, false))
+		if(!::Players.Get(Owner)->MakeCrewMember(this, true, false))
 			return FALSE;
 		// Dead and gone (info flags, remove from crew/cursor)
 		if (!Alive)
 			{
 			Info->HasDied=TRUE;
-			if (ValidPlr(Owner)) Game.Players.Get(Owner)->ClearPointers(this, true);
+			if (ValidPlr(Owner)) ::Players.Get(Owner)->ClearPointers(this, true);
 			}
 		return TRUE;
 		}
@@ -3157,7 +3152,6 @@ void C4Object::ClearInfo(C4ObjectInfo *pInfo)
 	{
 	if (Info==pInfo)
 		{
-		if (Info) if (Name.getData() == Info->Name) Name = Def->Name;
 		Info=NULL;
 		}
 	}
@@ -3178,7 +3172,6 @@ void C4Object::Clear()
 		}
 	if (pDrawTransform) { delete pDrawTransform; pDrawTransform=NULL; }
 	if (pGfxOverlay) { delete pGfxOverlay; pGfxOverlay=NULL; }
-  while (FirstRef) FirstRef->Set(0);
 	}
 
 BOOL C4Object::MenuCommand(const char *szCommand)
@@ -3230,7 +3223,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	// Create composed object
 	// the object is created with default components instead of builder components
 	// this is done because some objects (e.g. arrow packs) will set custom components during initialization, which should not be overriden
-	return CreateContents(id);
+	return CreateContents(C4Id2Def(id));
 	}
 
 void C4Object::SetSolidMask(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)
@@ -3329,7 +3322,7 @@ void C4Object::ClearCommand(C4Command *pUntil)
 
 bool C4Object::AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy,
 													int32_t iUpdateInterval, C4Object *pTarget2,
-													bool fInitEvaluation, int32_t iData, bool fAppend,
+													bool fInitEvaluation, C4Value iData, bool fAppend,
 													int32_t iRetries, C4String *szText, int32_t iBaseMode)
 	{
 	// Command stack size safety
@@ -3362,7 +3355,7 @@ bool C4Object::AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 	}
 
 void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy,
-													C4Object *pTarget2, BOOL fControl, int32_t iData,
+													C4Object *pTarget2, BOOL fControl, C4Value iData,
 													int32_t iRetries, C4String *szText)
 	{
   // Decrease NoCollectDelay
@@ -3379,7 +3372,7 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 																							 iTx,
 																							 C4VInt(iTy),
 																							 C4VObj(pTarget2),
-																							 C4VInt(iData))))
+																							 iData)))
 			return;
 	// Inside vehicle control overload
   if (Contained)
@@ -3391,7 +3384,7 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 																														iTx,
 																														C4VInt(iTy),
 																														C4VObj(pTarget2),
-																														C4VInt(iData),
+																														iData,
                                                             C4VObj(this))))
 				return;
 			}
@@ -3405,7 +3398,7 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 																																iTx,
 																																C4VInt(iTy),
 																																C4VObj(pTarget2),
-																																C4VInt(iData))))
+																																iData)))
 				return;
 			}
 	// Add new command
@@ -3427,7 +3420,7 @@ BOOL C4Object::ExecuteCommand()
 	if (Command) Command->Execute();
 	// Command finished: engine call
 	if (Command && Command->Finished)
-		Call(PSF_ControlCommandFinished,&C4AulParSet(C4VString(CommandName(Command->Command)), C4VObj(Command->Target), Command->Tx, C4VInt(Command->Ty), C4VObj(Command->Target2), C4Value(Command->Data, C4V_Any)));
+		Call(PSF_ControlCommandFinished,&C4AulParSet(C4VString(CommandName(Command->Command)), C4VObj(Command->Target), Command->Tx, C4VInt(Command->Ty), C4VObj(Command->Target2), Command->Data));
 	// Clear finished commands
 	while (Command && Command->Finished) ClearCommand(Command);
 	// Done
@@ -3446,14 +3439,14 @@ void C4Object::DigOutMaterialCast(BOOL fRequest)
 	{
 	// Check material contents for sufficient object cast amounts
 	if (!MaterialContents) return;
-  for (int32_t iMaterial=0; iMaterial<Game.Material.Num; iMaterial++)
+  for (int32_t iMaterial=0; iMaterial< ::MaterialMap.Num; iMaterial++)
     if (MaterialContents->Amount[iMaterial])
-      if (Game.Material.Map[iMaterial].Dig2Object!=C4ID_None)
-        if (Game.Material.Map[iMaterial].Dig2ObjectRatio!=0)
-          if (fRequest || !Game.Material.Map[iMaterial].Dig2ObjectOnRequestOnly)
-            if (MaterialContents->Amount[iMaterial]>=Game.Material.Map[iMaterial].Dig2ObjectRatio)
+      if (::MaterialMap.Map[iMaterial].Dig2Object!=C4ID_None)
+        if (::MaterialMap.Map[iMaterial].Dig2ObjectRatio!=0)
+          if (fRequest || !::MaterialMap.Map[iMaterial].Dig2ObjectOnRequestOnly)
+            if (MaterialContents->Amount[iMaterial]>=::MaterialMap.Map[iMaterial].Dig2ObjectRatio)
               {
-              Game.CreateObject(Game.Material.Map[iMaterial].Dig2Object,this,NO_OWNER,GetX(), GetY()+Shape.GetY()+Shape.Hgt,Random(360));
+              Game.CreateObject(::MaterialMap.Map[iMaterial].Dig2Object,this,NO_OWNER,GetX(), GetY()+Shape.GetY()+Shape.Hgt,Random(360));
               MaterialContents->Amount[iMaterial]=0;
               }
 	}
@@ -3471,7 +3464,7 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 
 	// Flash
 	C4Player *pPlr;
-	if (pPlr=Game.Players.Get(Owner))
+	if (pPlr=::Players.Get(Owner))
 		if (iCom==pPlr->FlashCom)
 			fFlash=TRUE;
 
@@ -3515,7 +3508,7 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 		DrawPicture(cgoRight);
 
 	// Command
-	if (!fFlash || Tick35>15)
+	if (!fFlash || ::Game.iTick35>15)
 		DrawCommandKey(cgoLeft,iCom,FALSE,
 									 Config.Graphics.ShowCommandKeys ? PlrControlKeyName(iPlayer,Com2Control(iCom), true).getData() : NULL );
 
@@ -3533,176 +3526,159 @@ void C4Object::Resort()
 	// Must not immediately resort - link change/removal would crash Game::ExecObjects
 	}
 
-BOOL C4Object::SetAction(int32_t iAct, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
-  {
-  int32_t iLastAction=Action.Act;
+BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
+	{
+	C4PropList * LastAction = Action.pActionDef;
 	int32_t iLastPhase=Action.Phase;
-  C4ActionDef *pAction;
-
-	// Def lost actmap: idle (safety)
-	if (!Def->ActMap) iLastAction = ActIdle;
-
-  // No other action
-  if (iLastAction>ActIdle)
-    if (Def->ActMap[iLastAction].NoOtherAction && !fForce)
-      if (iAct!=iLastAction)
-        return FALSE;
-
-  // Invalid action
-  if (Def && !Inside<int32_t>(iAct,ActIdle,Def->ActNum-1))
-		return FALSE;
-
-  // Stop previous act sound
-  if (iLastAction>ActIdle)
-    if (iAct!=iLastAction)
-      if (Def->ActMap[iLastAction].Sound[0])
-        StopSoundEffect(Def->ActMap[iLastAction].Sound,this);
-
-  // Unfullcon objects no action
-  if (Con<FullCon)
+	// No other action
+	if (LastAction)
+		if (LastAction->GetPropertyInt(P_NoOtherAction) && !fForce)
+			if (Act != LastAction)
+				return FALSE;
+	// Stop previous act sound
+	if (LastAction)
+		if (Act != LastAction)
+			if (LastAction->GetPropertyStr(P_Sound))
+				StopSoundEffect(LastAction->GetPropertyStr(P_Sound)->GetCStr(),this);
+	// Unfullcon objects no action
+	if (Con<FullCon)
 		if (!Def->IncompleteActivity)
-			iAct = ActIdle;
-
-  // Reset action time on change
-  if (iAct!=iLastAction)
+			Act = 0;
+	// Reset action time on change
+	if (Act!=LastAction)
 		{
 		Action.Time=0;
 		// reset action data if procedure is changed
-		if (((iAct>ActIdle) ? Def->ActMap[iAct].Procedure : DFA_NONE)
-			!= ((iLastAction>ActIdle) ? Def->ActMap[iLastAction].Procedure : DFA_NONE))
-				Action.Data=0;
+		if ((Act ? Act->GetPropertyInt(P_Procedure) : DFA_NONE)
+			!= (LastAction ? LastAction->GetPropertyInt(P_Procedure) : DFA_NONE))
+				Action.Data = 0;
 		}
-
-  // Set new action
-  Action.Act=iAct;
-	ZeroMem(Action.Name,C4D_MaxIDLen+1);
-	if (Action.Act>ActIdle) SCopy(Def->ActMap[Action.Act].Name,Action.Name);
-  Action.Phase=Action.PhaseDelay=0;
-
+	// Set new action
+	Action.pActionDef = Act;
+	Action.Phase=Action.PhaseDelay=0;
 	// Set target if specified
-  if (pTarget) Action.Target=pTarget;
-  if (pTarget2) Action.Target2=pTarget2;
-
+	if (pTarget) Action.Target=pTarget;
+	if (pTarget2) Action.Target2=pTarget2;
 	// Set Action Facet
 	UpdateActionFace();
-
 	// update flipdir
-	if (((iLastAction>ActIdle) ? Def->ActMap[iLastAction].FlipDir : 0)
-	 != ((iAct       >ActIdle) ? Def->ActMap[iAct       ].FlipDir : 0)) UpdateFlipDir();
-
-  // Start act sound
-  if (Action.Act>ActIdle)
-    if (Action.Act!=iLastAction)
-      if (Def->ActMap[Action.Act].Sound[0])
-        StartSoundEffect(Def->ActMap[Action.Act].Sound,+1,100,this);
-
-  // Reset OCF
-  SetOCF();
-
+	if ((LastAction ? LastAction->GetPropertyInt(P_FlipDir) : 0)
+	 != (Act ? Act->GetPropertyInt(P_FlipDir) : 0)) UpdateFlipDir();
+	// Start act sound
+	if (Action.pActionDef)
+		if (Action.pActionDef != LastAction)
+			if (Action.pActionDef->GetPropertyStr(P_Sound))
+				StartSoundEffect(Action.pActionDef->GetPropertyStr(P_Sound)->GetCStr(),+1,100,this);
+	// Reset OCF
+	SetOCF();
 	// issue calls
-
-  // Execute StartCall
+	// Execute StartCall
 	if (iCalls & SAC_StartCall)
-		if (Action.Act>ActIdle)
+		if (Action.pActionDef)
 			{
-			pAction=&(Def->ActMap[Action.Act]);
-			if (pAction->StartCall)
+			if (Action.pActionDef->GetPropertyStr(P_StartCall))
 				{
 				C4Def *pOldDef = Def;
-				pAction->StartCall->Exec(this);
+				Call(Action.pActionDef->GetPropertyStr(P_StartCall)->GetCStr());
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return TRUE;
 				}
 			}
-
-  // Execute EndCall
-	if(iCalls & SAC_EndCall && !fForce)
-		if(iLastAction > ActIdle)
+	// Execute EndCall
+	if (iCalls & SAC_EndCall && !fForce)
+		if (LastAction)
 			{
-			pAction=&(Def->ActMap[iLastAction]);
-			if (pAction->EndCall)
+			if (LastAction->GetPropertyStr(P_EndCall))
 				{
 				C4Def *pOldDef = Def;
-				pAction->EndCall->Exec(this);
+				Call(LastAction->GetPropertyStr(P_EndCall)->GetCStr());
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return TRUE;
 				}
 			}
-
-  // Execute AbortCall
-	if(iCalls & SAC_AbortCall && !fForce)
-		if(iLastAction > ActIdle)
+	// Execute AbortCall
+	if (iCalls & SAC_AbortCall && !fForce)
+		if (LastAction)
 			{
-			pAction=&(Def->ActMap[iLastAction]);
-			if (pAction->AbortCall)
+			if (LastAction->GetPropertyStr(P_AbortCall))
 				{
 				C4Def *pOldDef = Def;
-				pAction->AbortCall->Exec(this, &C4AulParSet(C4VInt(iLastPhase)));
+				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase)));
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return TRUE;
 				}
 			}
-
-  return TRUE;
-  }
+	return TRUE;
+	}
 
 void C4Object::UpdateActionFace()
 	{
 	// Default: no action face
 	Action.Facet.Default();
 	// Active: get action facet from action definition
-  if (Action.Act>ActIdle)
-    {
-    C4ActionDef *pAction=&(Def->ActMap[Action.Act]);
-    if (pAction->Facet.Wdt>0)
-      {
-			Action.Facet.Set(GetGraphics()->GetBitmap(Color),pAction->Facet.x,pAction->Facet.y,pAction->Facet.Wdt,pAction->Facet.Hgt);
-      Action.FacetX=pAction->Facet.tx;
-      Action.FacetY=pAction->Facet.ty;
-      }
-    }
+	if (Action.pActionDef)
+		{
+		if (Action.pActionDef->GetPropertyInt(P_Wdt)>0)
+			{
+			Action.Facet.Set(GetGraphics()->GetBitmap(Color),
+				Action.pActionDef->GetPropertyInt(P_X),Action.pActionDef->GetPropertyInt(P_Y),
+				Action.pActionDef->GetPropertyInt(P_Wdt),Action.pActionDef->GetPropertyInt(P_Hgt));
+			Action.FacetX=Action.pActionDef->GetPropertyInt(P_OffX);
+			Action.FacetY=Action.pActionDef->GetPropertyInt(P_OffY);
+			}
+		}
 	}
 
-BOOL C4Object::SetActionByName(const char *szActName,
+bool C4Object::SetActionByName(C4String * ActName,
 															 C4Object *pTarget, C4Object *pTarget2,
 															 int32_t iCalls, bool fForce)
-  {
-  int32_t cnt;
-  // Check for ActIdle passed by name
-  if (SEqual(szActName,"ActIdle") || SEqual(szActName,"Idle"))
-    return SetAction(ActIdle,0,0,SAC_StartCall | SAC_AbortCall,fForce);
-  // Find act in ActMap of object
-  for (cnt=0; cnt<Def->ActNum; cnt++)
-    if (SEqual(szActName,Def->ActMap[cnt].Name))
-      return SetAction(cnt,pTarget,pTarget2,iCalls,fForce);
-  return FALSE;
-  }
+	{
+	int32_t cnt;
+	// Check for ActIdle passed by name
+	if (ActName == Strings.P[P_Idle])
+		return SetAction(0,0,0,iCalls,fForce);
+	C4Value ActMap; GetProperty(Strings.P[P_ActMap], ActMap);
+	if (!ActMap.getPropList()) return false;
+	C4Value Action; ActMap.getPropList()->GetProperty(ActName, Action);
+	if (!Action.getPropList()) return false;
+	return SetAction(Action.getPropList(),pTarget,pTarget2,iCalls,fForce);      
+	}
+
+bool C4Object::SetActionByName(const char * szActName, 
+															 C4Object *pTarget, C4Object *pTarget2, 
+															 int32_t iCalls, bool fForce)
+	{
+	C4String * ActName = Strings.RegString(szActName);
+	ActName->IncRef();
+	bool r = SetActionByName(ActName);
+	ActName->DecRef();
+	return r;
+	}
 
 void C4Object::SetDir(int32_t iDir)
   {
 	// Not active
-  if (Action.Act<=ActIdle) return;
+	if (!Action.pActionDef) return;
 	// Invalid direction
-  if (!Inside<int32_t>(iDir,0,Def->ActMap[Action.Act].Directions-1)) return;
+	if (!Inside<int32_t>(iDir,0,Action.pActionDef->GetPropertyInt(P_Directions)-1)) return;
 	// Execute turn action
-	C4ActionDef *pAction=&(Def->ActMap[Action.Act]);
 	if (iDir != Action.Dir)
-	  if (pAction->TurnAction[0])
-      { SetActionByName(pAction->TurnAction); }
+		if (Action.pActionDef->GetPropertyStr(P_TurnAction))
+			{ SetActionByName(Action.pActionDef->GetPropertyStr(P_TurnAction)); }
 	// Set dir
-  Action.Dir=iDir;
+	Action.Dir=iDir;
 	// update by flipdir?
-	if (Def->ActMap[Action.Act].FlipDir)
+	if (Action.pActionDef->GetPropertyInt(P_FlipDir))
 		UpdateFlipDir();
 	else
 		Action.DrawDir=iDir;
   }
 
 int32_t C4Object::GetProcedure()
-  {
-  if (Action.Act<=ActIdle) return DFA_NONE;
-  return Def->ActMap[Action.Act].Procedure;
-  }
+	{
+	if (!Action.pActionDef) return DFA_NONE;
+	return Action.pActionDef->GetPropertyInt(P_Procedure);
+	}
 
 void GrabLost(C4Object *cObj)
 	{
@@ -3722,7 +3698,7 @@ void DoGravity(C4Object *cobj, BOOL fFloatFriction=TRUE);
 void C4Object::NoAttachAction()
 	{
 	// Active objects
-	if (Action.Act > ActIdle)
+	if (Action.pActionDef)
 		{
 		int32_t iProcedure = GetProcedure();
 		// Scaling upwards: corner scale
@@ -3762,9 +3738,9 @@ void C4Object::ContactAction()
 	C4PhysicalInfo *pPhysical=GetPhysical();
 
 	// Determine Procedure
-	if (Action.Act<=ActIdle) return;
-	int32_t iProcedure=Def->ActMap[Action.Act].Procedure;
-	int32_t fDisabled=Def->ActMap[Action.Act].Disabled;
+	if (!Action.pActionDef) return;
+	int32_t iProcedure=Action.pActionDef->GetPropertyInt(P_Procedure);
+	int32_t fDisabled=Action.pActionDef->GetPropertyInt(P_ObjectDisabled);
 
 	//------------------------------- Hit Bottom ---------------------------------------------
 	if (t_contact & CNAT_Bottom)
@@ -4059,7 +4035,7 @@ bool DoBridge(C4Object *clk)
 			}
 		}
 	// draw bridge into landscape
-  Game.Landscape.DrawMaterialRect(iBridgeMaterial,tx-2,ty,4,3);
+  ::Landscape.DrawMaterialRect(iBridgeMaterial,tx-2,ty,4,3);
 	// Move Clonk
 	if (fMoveClonk) clk->MovePosition(cx-clk->GetX(), cy-clk->GetY());
 	return true;
@@ -4128,30 +4104,30 @@ void C4Object::ExecAction()
         Mobile=1;
         }
 
-  // Idle objects do natural gravity only
-  if (Action.Act<=ActIdle)
-    {
-    if (Mobile) DoGravity(this);
-    return;
-    }
-
+	// Idle objects do natural gravity only
+	if (!Action.pActionDef)
+		{
+		if (Mobile) DoGravity(this);
+		return;
+		}
+  
 	// No IncompleteActivity? Reset action
 	if (!(OCF & OCF_FullCon) && !Def->IncompleteActivity)
-		{ SetAction(ActIdle); return; }
+		{ SetAction(0); return; }
 
-  // Determine ActDef & Physical Info
-  C4ActionDef *pAction=&(Def->ActMap[Action.Act]);
-  C4PhysicalInfo *pPhysical=GetPhysical();
-  FIXED lLimit;
+	// Determine ActDef & Physical Info
+	C4PropList * pAction = Action.pActionDef;
+	C4PhysicalInfo *pPhysical=GetPhysical();
+	FIXED lLimit;
 	FIXED fWalk,fMove;
-  int32_t smpx,smpy;
+	int32_t smpx,smpy;
 
 	// Energy usage
 	if (Game.Rules & C4RULE_StructuresNeedEnergy)
-		if (pAction->EnergyUsage)
-			if (pAction->EnergyUsage <= Energy )
+		if (pAction->GetPropertyInt(P_EnergyUsage))
+			if (pAction->GetPropertyInt(P_EnergyUsage) <= Energy ) 
 				{
-				Energy -= pAction->EnergyUsage;
+				Energy -= pAction->GetPropertyInt(P_EnergyUsage); 
 				// No general DoEnergy-Process
 				NeedEnergy=0;
 				}
@@ -4159,34 +4135,34 @@ void C4Object::ExecAction()
 			else
 				{
 				NeedEnergy=1;
-		    if (Mobile) DoGravity(this);
+				if (Mobile) DoGravity(this);
 				return;
 				}
 
 	// Action time advance
-  Action.Time++;
-
-  // InLiquidAction check
-  if (InLiquid)
-	  if (pAction->InLiquidAction[0])
-      { SetActionByName(pAction->InLiquidAction); return; }
+	Action.Time++;
+  
+	// InLiquidAction check
+	if (InLiquid)
+		if (pAction->GetPropertyStr(P_InLiquidAction))
+			{ SetActionByName(pAction->GetPropertyStr(P_InLiquidAction)); return; }
 
 	// assign extra action attachment (CNAT_MultiAttach)
 	// regular attachment values cannot be set for backwards compatibility reasons
 	// this parameter had always been ignored for actions using an internal procedure,
 	// but is for some obscure reasons set in the KneelDown-actions of the golems
-	Action.t_attach |= (pAction->Attach & CNAT_MultiAttach);
+	Action.t_attach |= (pAction->GetPropertyInt(P_Attach) & CNAT_MultiAttach);
 
 	// if an object is in controllable state, so it can be assumed that if it dies later because of NO_OWNER's cause,
 	// it has been its own fault and not the fault of the last one who threw a flint on it
 	// do not reset for burning objects to make sure the killer is set correctly if they fall out of the map while burning
-	if (!pAction->Disabled && pAction->Procedure != DFA_FLIGHT && !OnFire)
+	if (!pAction->GetPropertyInt(P_ObjectDisabled) && pAction->GetPropertyInt(P_Procedure) != DFA_FLIGHT && !OnFire)
 		LastEnergyLossCausePlayer = NO_OWNER;
 
-  // Handle Default Action Procedure: evaluates Procedure and Action.ComDir
-  // Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
-  switch (pAction->Procedure)
-    {
+	// Handle Default Action Procedure: evaluates Procedure and Action.ComDir
+	// Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
+	switch (pAction->GetPropertyInt(P_Procedure))
+		{
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_WALK:
       lLimit=ValByPhysical(280, pPhysical->Walk);
@@ -4227,7 +4203,7 @@ void C4Object::ExecAction()
 			lLimit=ValByPhysical(200, pPhysical->Scale);
 
 			// Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				if (Abs(ydir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Scale, 1, C4MaxPhysical);
 			int ComDir = Action.ComDir;
@@ -4262,7 +4238,7 @@ void C4Object::ExecAction()
 			lLimit=ValByPhysical(160, pPhysical->Hangle);
 
 			// Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				if (Abs(xdir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Hangle, 1, C4MaxPhysical);
 
@@ -4295,7 +4271,7 @@ void C4Object::ExecAction()
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_FLIGHT:
 			// Contained: fall out (one try only)
-      if (!Tick10)
+      if (!::Game.iTick10)
         if (Contained)
 					{
 					StopActionDelayCommand(this);
@@ -4340,7 +4316,7 @@ void C4Object::ExecAction()
       lLimit=ValByPhysical(160, pPhysical->Swim);
 
       // Physical training
-			if (!Tick10)
+			if (!::Game.iTick10)
 				if (Abs(xdir)==lLimit)
 					TrainPhysical(&C4PhysicalInfo::Swim, 1, C4MaxPhysical);
 
@@ -4593,7 +4569,7 @@ void C4Object::ExecAction()
       // Valid check
       if (!Action.Target) { ObjectActionStand(this); return; }
       // Chop
-      if (!Tick3)
+      if (!::Game.iTick3)
         if (!Action.Target->Chop(this))
           { ObjectActionStand(this); return; }
       // Valid check (again, target might have been destroyed)
@@ -4619,7 +4595,7 @@ void C4Object::ExecAction()
 					{ ObjectActionStand(this); return; }
 
       // Physical training
-			if (!Tick5)
+			if (!::Game.iTick5)
 				TrainPhysical(&C4PhysicalInfo::Fight, 1, C4MaxPhysical);
 
 			// Direction
@@ -4642,12 +4618,12 @@ void C4Object::ExecAction()
       ydir=0;
       Mobile=1;
 			// Experience
-			if (!Tick35) DoExperience(+2);
+			if (!::Game.iTick35) DoExperience(+2);
       break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_LIFT:
       // Valid check
-      if (!Action.Target) { SetAction(ActIdle); return; }
+      if (!Action.Target) { SetAction(0); return; }
       // Target lifting force
       lftspeed=itofix(2); tydir=0;
       switch (Action.ComDir)
@@ -4658,7 +4634,7 @@ void C4Object::ExecAction()
         }
       // Lift object
       if (!Action.Target->Lift(tydir,FIXED100(50)))
-        { SetAction(ActIdle); return; }
+        { SetAction(0); return; }
       // Check LiftTop
       if (Def->LiftTop)
         if (Action.Target->GetY()<=(GetY()+Def->LiftTop))
@@ -4699,7 +4675,7 @@ void C4Object::ExecAction()
 				{
 				if (Status)
 					{
-					SetAction(ActIdle);
+					SetAction(0);
 					Call(PSF_AttachTargetLost);
 					}
 				return;
@@ -4708,7 +4684,7 @@ void C4Object::ExecAction()
 			// Target incomplete and no incomplete activity
 			if (!(Action.Target->OCF & OCF_FullCon))
 				if (!Action.Target->Def->IncompleteActivity)
-          { SetAction(ActIdle); return; }
+					{ SetAction(0); return; }
 
       // Force containment
       if (Action.Target->Contained!=Contained)
@@ -4732,6 +4708,17 @@ void C4Object::ExecAction()
 			BOOL fBroke;
 			fBroke=FALSE;
 			int32_t iConnectX,iConnectY;
+			int32_t attachVertex0,attachVertex1;
+			attachVertex0=attachVertex1=0;
+				{
+				C4Value lineAttachV; GetProperty(Strings.P[P_LineAttach], lineAttachV);
+				C4ValueArray *lineAttach = lineAttachV.getArray();
+				if (lineAttach)
+					{
+					attachVertex0 = lineAttach->GetItem(0).getInt();
+					attachVertex1 = lineAttach->GetItem(1).getInt();
+					}
+				}
 
 			// Line destruction check: Target missing or incomplete
 			if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=TRUE;
@@ -4748,8 +4735,8 @@ void C4Object::ExecAction()
 				{
 				// Connect to vertex
 				if (Def->Line == C4D_Line_Vertex)
-					{ iConnectX=Action.Target->GetX()+Action.Target->Shape.GetVertexX(Local[2].getInt());
-						iConnectY=Action.Target->GetY()+Action.Target->Shape.GetVertexY(Local[2].getInt()); }
+					{ iConnectX=Action.Target->GetX()+Action.Target->Shape.GetVertexX(attachVertex0);
+						iConnectY=Action.Target->GetY()+Action.Target->Shape.GetVertexY(attachVertex0); }
 				// Connect to bottom center
 				else
 					{ iConnectX=Action.Target->GetX();
@@ -4770,8 +4757,8 @@ void C4Object::ExecAction()
 				{
 				// Connect to vertex
 				if (Def->Line == C4D_Line_Vertex)
-					{ iConnectX=Action.Target2->GetX()+Action.Target2->Shape.GetVertexX(Local[3].getInt());
-						iConnectY=Action.Target2->GetY()+Action.Target2->Shape.GetVertexY(Local[3].getInt()); }
+					{ iConnectX=Action.Target2->GetX()+Action.Target2->Shape.GetVertexX(attachVertex1);
+						iConnectY=Action.Target2->GetY()+Action.Target2->Shape.GetVertexY(attachVertex1); }
 				// Connect to bottom center
 				else
 					{	iConnectX=Action.Target2->GetX();
@@ -4797,18 +4784,18 @@ void C4Object::ExecAction()
 				}
 
 			// Reduce line segments
-			if (!Tick35)
-				ReduceLineSegments(Shape, !Tick2);
+			if (!::Game.iTick35)
+				ReduceLineSegments(Shape, !::Game.iTick2);
 
 			break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     default:
 			// Attach
-			if (pAction->Attach)
+			if (pAction->GetPropertyInt(P_Attach))
 				{
-				Action.t_attach|=pAction->Attach;
-				xdir=ydir=0;
-				Mobile=1;
+				Action.t_attach |= pAction->GetPropertyInt(P_Attach);
+				xdir = ydir = 0;
+				Mobile = 1;
 				}
 			// Free gravity
 			else
@@ -4817,35 +4804,36 @@ void C4Object::ExecAction()
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     }
 
-  // Phase Advance (zero delay means no phase advance)
-  if (pAction->Delay)
-  	{
+	// Phase Advance (zero delay means no phase advance)
+	if (pAction->GetPropertyInt(P_Delay))
+		{  
 		Action.PhaseDelay+=iPhaseAdvance;
-		if (Action.PhaseDelay>=pAction->Delay)
+		if (Action.PhaseDelay >= pAction->GetPropertyInt(P_Delay))
 			{
 			// Advance Phase
 			Action.PhaseDelay=0;
-			Action.Phase += pAction->Step;
+			Action.Phase += pAction->GetPropertyInt(P_Step);
 			// Phase call
-			if (pAction->PhaseCall)
+			if (pAction->GetPropertyStr(P_PhaseCall))
 				{
-				pAction->PhaseCall->Exec(this);
+				Call(pAction->GetPropertyStr(P_PhaseCall)->GetCStr());
 				}
 			// Phase end
-			if (Action.Phase>=pAction->Length)
+			if (Action.Phase>=pAction->GetPropertyInt(P_Length)) 
 				{
 				// set new action if it's not Hold
-				if (pAction->NextAction==ActHold)
-					Action.Phase = pAction->Length-1;
+				if (pAction->GetPropertyStr(P_NextAction) == Strings.P[P_Hold])
+					Action.Phase = pAction->GetPropertyInt(P_Length)-1;
 				else
+					{
 					// Set new action
-					SetAction(pAction->NextAction, NULL, NULL, SAC_StartCall | SAC_EndCall);
+					SetActionByName(pAction->GetPropertyStr(P_NextAction), NULL, NULL, SAC_StartCall | SAC_EndCall);
+					}
 				}
-			}
+			}  
 		}
-
-  return;
-  }
+	return;
+	}
 
 
 BOOL C4Object::SetOwner(int32_t iOwner)
@@ -4857,7 +4845,7 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	if (iOwner != NO_OWNER)
 		if (GetGraphics()->IsColorByOwner())
 			{
-			Color=Game.Players.Get(iOwner)->ColorDw;
+			Color=::Players.Get(iOwner)->ColorDw;
 			UpdateFace(false);
 			}
 	// no change?
@@ -4865,11 +4853,11 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	// remove old owner view
 	if (ValidPlr(Owner))
 		{
-		pPlr = Game.Players.Get(Owner);
+		pPlr = ::Players.Get(Owner);
 		while (pPlr->FoWViewObjs.Remove(this)) {}
 		}
 	else
-		for (pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 			while (pPlr->FoWViewObjs.Remove(this)) {}
 	// set new owner
 	int32_t iOldOwner=Owner;
@@ -4880,7 +4868,7 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	// this automatically updates controller
 	Controller = Owner;
 	// if this is a flag flying on a base, the base must be updated
-	if (id == C4ID_Flag) if (SEqual(Action.Name, "FlyBase")) if (Action.Target && Action.Target->Status)
+	if (id == C4ID_Flag) if (SEqual(Action.pActionDef->GetName(), "FlyBase")) if (Action.Target && Action.Target->Status)
 		if (Action.Target->Base == iOldOwner)
 			{
 			Action.Target->Base = Owner;
@@ -4910,7 +4898,7 @@ void C4Object::PlrFoWActualize()
 	if (ValidPlr(Owner))
 		{
 		// single player's FoW-list
-		pPlr = Game.Players.Get(Owner);
+		pPlr = ::Players.Get(Owner);
 		while (pPlr->FoWViewObjs.Remove(this)) {}
 		if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
 		}
@@ -4918,7 +4906,7 @@ void C4Object::PlrFoWActualize()
 	else
 		{
 		// all players!
-		for (pPlr = Game.Players.First; pPlr; pPlr = pPlr->Next)
+		for (pPlr = ::Players.First; pPlr; pPlr = pPlr->Next)
 			{
 			while (pPlr->FoWViewObjs.Remove(this)) {}
 			if (PlrViewRange) pPlr->FoWViewObjs.Add(this, C4ObjectList::stNone);
@@ -4937,34 +4925,48 @@ void C4Object::SetAudibilityAt(C4TargetFacet &cgo, int32_t iX, int32_t iY)
 bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 	{
 	bool fDraw;
+	C4Value vis;
+	if (!GetProperty(Strings.P[P_Visibility], vis))
+		return true;
+
+	int32_t Visibility;
+	C4ValueArray *parameters = vis.getArray();
+	if (parameters && parameters->GetSize())
+	{
+		Visibility = parameters->GetItem(0).getInt();
+	} else {
+		Visibility = vis.getInt();
+	}
 	// check overlay
 	if (Visibility & VIS_OverlayOnly)
-		{
+	{
 		if (!fAsOverlay) return false;
 		if (Visibility == VIS_OverlayOnly) return true;
-		}
+	}
 	// check layer
 	if (pLayer && pLayer != this && !fAsOverlay)
-		{
+	{
 		fDraw = pLayer->IsVisible(iForPlr, false);
-		if (pLayer->Visibility & VIS_LayerToggle) fDraw = !fDraw;
+		if (pLayer->GetPropertyInt(P_Visibility) & VIS_LayerToggle) fDraw = !fDraw;
 		if (!fDraw) return false;
-		}
+	}
 	// no flags set?
 	if (!Visibility) return true;
 	// check visibility
 	fDraw=false;
 	if (Visibility & VIS_Owner) fDraw = fDraw || (iForPlr==Owner);
 	if (iForPlr!=NO_OWNER)
-		{
+	{
 		// check all
 		if (Visibility & VIS_Allies)	fDraw = fDraw || (iForPlr!=Owner && !Hostile(iForPlr, Owner));
 		if (Visibility & VIS_Enemies)	fDraw = fDraw || (iForPlr!=Owner && Hostile(iForPlr, Owner));
-		if (Visibility & VIS_Local)		fDraw = fDraw || (Local[iForPlr/32].getInt() & (1<<(iForPlr%32)));
+		if (parameters) {
+			if (Visibility & VIS_Select)	fDraw = fDraw || parameters->GetItem(1+iForPlr).getBool();
 		}
+	}
 	else fDraw = fDraw || (Visibility & VIS_God);
 	return fDraw;
-	}
+}
 
 bool C4Object::IsInLiquidCheck()
 	{
@@ -5043,9 +5045,9 @@ BOOL C4Object::Collect(C4Object *pObj)
 	// Special: attached Flag may not be collectable
 	if (pObj->Def->id==C4ID_Flag)
 		if (!(Game.Rules & C4RULE_FlagRemoveable))
-			if (pObj->Action.Act>ActIdle)
-				if (SEqual(pObj->Def->ActMap[pObj->Action.Act].Name,"FlyBase"))
-					return FALSE;
+			if (pObj->Action.pActionDef)
+				if (SEqual(pObj->Action.pActionDef->GetName(),"FlyBase"))
+					return FALSE;       
 	// Object enter container
 	bool fRejectCollect;
 	if(!pObj->Enter(this, TRUE, false, &fRejectCollect))
@@ -5079,12 +5081,12 @@ BOOL C4Object::GrabInfo(C4Object *pFrom)
 		ClearInfo (Info);
 		}
 	// remove objects from any owning crews
-	Game.Players.ClearPointers(pFrom);
-	Game.Players.ClearPointers(this);
+	::Players.ClearPointers(pFrom);
+	::Players.ClearPointers(this);
 	// set info
 	Info = pFrom->Info; pFrom->ClearInfo (pFrom->Info);
 	// set name
-	if(Name.isRef()) Name = Info->Name;
+	if(!Properties.Has(Strings.P[P_Name])) SetName(Info->Name);
 	// retire from old crew
 	Info->Retire();
 	// set death status
@@ -5092,7 +5094,7 @@ BOOL C4Object::GrabInfo(C4Object *pFrom)
 	// if alive, recruit to new crew
 	if (Alive) Info->Recruit();
 	// make new crew member
-	C4Player *pPlr = Game.Players.Get(Owner);
+	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->MakeCrewMember(this);
 	// done, success
 	return TRUE;
@@ -5147,11 +5149,24 @@ void C4Object::DirectComContents(C4Object *pTarget, bool fDoCalls)
 	return;
 	}
 
+void C4Object::GetParallaxity(int32_t *parX, int32_t *parY)
+{
+	assert(parX); assert(parY);
+	*parX = 100; *parY = 100;
+	if (!(Category & C4D_Parallax)) return;
+	C4Value parV; GetProperty(Strings.P[P_Parallaxity], parV);
+	C4ValueArray *par = parV.getArray();
+	if (!par) return;
+	*parX = par->GetItem(0).getInt();
+	*parY = par->GetItem(1).getInt();
+}
+
 void C4Object::ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctViewport)
 	{
 	// parallaxity by locals
 	// special: Negative positions with parallaxity 0 mean HUD elements positioned to the right/bottom
-	int iParX = Local[0].Data.Int, iParY = Local[1].Data.Int;
+	int iParX, iParY;
+	GetParallaxity(&iParX, &iParY);
 	if (!iParX && GetX()<0)
 		riTx = -fctViewport.Wdt;
 	else
@@ -5184,20 +5199,21 @@ void C4Object::UnSelect(BOOL fCursor)
 
 void C4Object::GetViewPosPar(float &riX, float &riY, float tx, float ty, const C4Facet &fctViewport)
 	{
-	float iParX = float(Local[0].Data.Int), iParY = float(Local[1].Data.Int);
+	int iParX, iParY;
+	GetParallaxity(&iParX, &iParY);
 	// get drawing pos, then subtract original target pos to get drawing pos on landscape
 	if (!iParX && GetX()<0)
 		// HUD element at right viewport pos
-		riX=float(GetX())+tx+fctViewport.Wdt;
+		riX=fixtof(fix_x)+tx+fctViewport.Wdt;
 	else
 		// regular parallaxity
-		riX=float(GetX())-(tx*(iParX-100)/100);
+		riX=fixtof(fix_x)-(tx*(iParX-100)/100);
 	if (!iParY && GetY()<0)
 		// HUD element at bottom viewport pos
-		riY=float(GetY())+ty+fctViewport.Hgt;
+		riY=fixtof(fix_y)+ty+fctViewport.Hgt;
 	else
 		// regular parallaxity
-		riY=float(GetY())-(ty*(iParY-100)/100);
+		riY=fixtof(fix_y)-(ty*(iParY-100)/100);
 	}
 
 bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
@@ -5322,9 +5338,9 @@ bool C4Object::HasGraphicsOverlayRecursion(const C4Object *pCheckObj) const
 bool C4Object::StatusActivate()
 	{
 	// readd to main list
-	Game.Objects.InactiveObjects.Remove(this);
+	::Objects.InactiveObjects.Remove(this);
 	Status = C4OS_NORMAL;
-	Game.Objects.Add(this);
+	::Objects.Add(this);
 	// update some values
 	UpdateGraphics(false);
 	UpdateFace(true);
@@ -5340,9 +5356,9 @@ bool C4Object::StatusDeactivate(bool fClearPointers)
 	if (FrontParticles) FrontParticles.Clear();
 	if (BackParticles) BackParticles.Clear();
 	// put into inactive list
-	Game.Objects.Remove(this);
+	::Objects.Remove(this);
 	Status = C4OS_INACTIVE;
-	Game.Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
+	::Objects.InactiveObjects.Add(this, C4ObjectList::stMain);
 	// if desired, clear game pointers
 	if (fClearPointers)
 		{
@@ -5452,27 +5468,6 @@ void C4Object::UpdateInLiquid()
     }
 	}
 
-void C4Object::AddRef(C4Value *pRef)
-	{
-	pRef->NextRef = FirstRef;
-	FirstRef = pRef;
-	}
-
-void C4Object::DelRef(const C4Value * pRef, C4Value * pNextRef)
-	{
-	// References to objects never have HasBaseArray set
-	if(pRef == FirstRef)
-		FirstRef = pNextRef;
-	else
-		{
-		C4Value *pVal = FirstRef;
-		while(pVal->NextRef && pVal->NextRef != pRef)
-			pVal = pVal->NextRef;
-		assert(pVal->NextRef);
-		pVal->NextRef = pNextRef;
-		}
-	}
-
 StdStrBuf C4Object::GetInfoString()
 	{
 	StdStrBuf sResult;
@@ -5538,7 +5533,7 @@ bool C4Object::CanConcatPictureWith(C4Object *pOtherObject)
 	if (!(allow_picture_stack & APS_Name))
 	{
 		// check name, so zagabar's sandwiches don't stack
-		if (Name.getData() != pOtherObject->Name.getData()) if (Name != pOtherObject->Name) return false;
+		if (GetName() != pOtherObject->GetName()) return false;
 	}
 	if (!(allow_picture_stack & APS_Overlay))
 	{
@@ -5623,7 +5618,7 @@ bool C4Object::IsPlayerObject(int32_t iPlayerNumber)
 	  // flags are player objects
 	  if (id == C4ID_Flag) return true;
 
-		C4Player *pOwner = Game.Players.Get(Owner);
+		C4Player *pOwner = ::Players.Get(Owner);
 		if (pOwner)
 			{
 			if (pOwner && pOwner->Crew.IsContained(this)) return true;
@@ -5644,7 +5639,7 @@ bool C4Object::IsUserPlayerObject()
 	// must be a player object at all
 	if (!IsPlayerObject()) return false;
 	// and the owner must not be a script player
-	C4Player *pOwner = Game.Players.Get(Owner);
+	C4Player *pOwner = ::Players.Get(Owner);
 	if (!pOwner || pOwner->GetType() != C4PT_User) return false;
 	// otherwise, it's a user playeer object
 	return true;

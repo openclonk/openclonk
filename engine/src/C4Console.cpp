@@ -1,6 +1,12 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2003-2004, 2008  Matthes Bender
+ * Copyright (c) 2001-2002, 2004-2007  Sven Eberhardt
+ * Copyright (c) 2004, 2007, 2009  Peter Wortmann
+ * Copyright (c) 2005-2007, 2009  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,10 +28,16 @@
 #include <C4Application.h>
 
 #include <C4GameSave.h>
+#include <C4Game.h>
+#include <C4MessageInput.h>
 #include <C4UserMessages.h>
 #include <C4Version.h>
 #include <C4Language.h>
 #include <C4Player.h>
+#include <C4Landscape.h>
+#include <C4GraphicsSystem.h>
+#include <C4PlayerList.h>
+#include <C4GameControl.h>
 
 #include <StdFile.h>
 #include <StdRegistry.h>
@@ -49,11 +61,7 @@ namespace {
 #endif
 #endif // _WIN32
 
-#ifndef WITH_DEVELOPER_MODE
-#define WITH_DEVELOPER_MODE 0
-#endif
-
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 # include <gdk/gdkcursor.h>
 # include <gdk/gdkx.h>
 # include <gtk/gtkstock.h>
@@ -89,22 +97,6 @@ namespace {
 		gdk_pixbuf_unref(pixbuf);
 		return image;
 	}
-
-	class ImplicitStrBuf: public StdStrBuf {
-		public:
-		ImplicitStrBuf(StdStrBuf RREF Buf2): StdStrBuf(static_cast<StdStrBuf RREF>(Buf2)) { }
-#ifdef HAVE_RVALUE_REF
-		ImplicitStrBuf(const StdStrBuf & Buf2): StdStrBuf(Buf2) { }
-#endif
-		ImplicitStrBuf(ImplicitStrBuf RREF Buf2): StdStrBuf(static_cast<ImplicitStrBuf RREF>(Buf2)) { }
-		ImplicitStrBuf(const ImplicitStrBuf & Buf2): StdStrBuf(Buf2) { }
-		operator const char *() const { return getData(); }
-	};
-
-	inline ImplicitStrBuf LoadResStrUtf8I(const char * ident)
-	{
-		return ImplicitStrBuf(Languages.IconvUtf8(LoadResStr(ident)));
-	}
 }
 #endif
 
@@ -126,7 +118,7 @@ C4Console::C4Console()
 	hbmPlay2=NULL;
 	hbmHalt=NULL;
 	hbmHalt2=NULL;
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	cursorDefault = NULL;
 	cursorWait = NULL;
 	itemNet = NULL;
@@ -153,7 +145,7 @@ C4Console::~C4Console()
 	if (hbmPlay2) DeleteObject(hbmPlay2);
 	if (hbmHalt) DeleteObject(hbmHalt);
 	if (hbmHalt2) DeleteObject(hbmHalt2);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	if(cursorDefault) gdk_cursor_unref(cursorDefault);
 	if(cursorWait) gdk_cursor_unref(cursorWait);
 #endif // WITH_DEVELOPER_MODE / _WIN32
@@ -260,14 +252,14 @@ BOOL CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			// Remove player
 			if (Inside((int) LOWORD(wParam),IDM_PLAYER_QUIT1,IDM_PLAYER_QUIT2))
 				{
-				Game.Control.Input.Add(CID_Script, new C4ControlScript(
+				::Control.Input.Add(CID_Script, new C4ControlScript(
 					FormatString("EliminatePlayer(%d)", LOWORD(wParam)-IDM_PLAYER_QUIT1).getData()));
 				return TRUE;
 				}
 			// Remove client
 			if (Inside((int) LOWORD(wParam),IDM_NET_CLIENT1,IDM_NET_CLIENT2))
 				{
-				if(!Game.Control.isCtrlHost()) return FALSE;
+				if(!::Control.isCtrlHost()) return FALSE;
 				Game.Clients.CtrlRemove(Game.Clients.getClientByID(LOWORD(wParam)-IDM_NET_CLIENT1), LoadResStr("IDS_MSG_KICKBYMENU"));
 				return TRUE;
 				}
@@ -295,7 +287,7 @@ BOOL CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 	return FALSE;
 	}
-#elif defined(USE_X11) && !WITH_DEVELOPER_MODE
+#elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 void C4Console::HandleMessage (XEvent & e)
 {
 	// Parent handling
@@ -368,7 +360,7 @@ CStdWindow * C4Console::Init(CStdApp * pApp)
 	ShowCursor(TRUE);
 	// Success
 	return this;
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	cursorWait = gdk_cursor_new(GDK_WATCH);
 	cursorDefault = gdk_cursor_new(GDK_ARROW);
 
@@ -383,7 +375,7 @@ CStdWindow * C4Console::Init(CStdApp * pApp)
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	}
 
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 GtkWidget* C4Console::InitGUI()
 {
 	// ------------ Play/Pause and Mode ---------------------
@@ -462,10 +454,10 @@ GtkWidget* C4Console::InitGUI()
 	// ------------ Menu -------------------
 	menuBar = gtk_menu_bar_new();
 
-	GtkWidget* itemFile = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_FILE"));
-	GtkWidget* itemComponents = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_COMPONENTS"));
-	GtkWidget* itemPlayer = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_PLAYER"));
-	GtkWidget* itemViewport = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_VIEWPORT"));
+	GtkWidget* itemFile = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_FILE"));
+	GtkWidget* itemComponents = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_COMPONENTS"));
+	GtkWidget* itemPlayer = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_PLAYER"));
+	GtkWidget* itemViewport = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_VIEWPORT"));
 	GtkWidget* itemHelp = gtk_menu_item_new_with_label("?");
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuBar), itemFile);
@@ -487,58 +479,58 @@ GtkWidget* C4Console::InitGUI()
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(itemViewport), menuViewport);
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(itemHelp), menuHelp);
 
-	fileOpen = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_OPEN"));
+	fileOpen = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_OPEN"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileOpen);
 
-	fileOpenWithPlayers = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_OPENWPLRS"));
+	fileOpenWithPlayers = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_OPENWPLRS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileOpenWithPlayers);
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), GTK_WIDGET(gtk_separator_menu_item_new()));
 
-	fileSave = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SAVESCENARIO"));
+	fileSave = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVESCENARIO"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSave);
 
-	fileSaveAs = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SAVESCENARIOAS"));
+	fileSaveAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVESCENARIOAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveAs);
 
-	fileSaveGame = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SAVEGAME"));
+	fileSaveGame = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAME"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGame);
 
-	fileSaveGameAs = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SAVEGAMEAS"));
+	fileSaveGameAs = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SAVEGAMEAS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileSaveGameAs);
 
-	fileRecord = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_RECORD"));
+	fileRecord = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_RECORD"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileRecord);
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), GTK_WIDGET(gtk_separator_menu_item_new()));
 
-	fileClose = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_CLOSE"));
+	fileClose = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_CLOSE"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileClose);
 
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), GTK_WIDGET(gtk_separator_menu_item_new()));
 
-	fileQuit = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_QUIT"));
+	fileQuit = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_QUIT"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuFile), fileQuit);
 
-	compObjects = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_BTN_OBJECTS"));
+	compObjects = gtk_menu_item_new_with_label(LoadResStr("IDS_BTN_OBJECTS"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compObjects);
 
-	compScript = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_SCRIPT"));
+	compScript = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_SCRIPT"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compScript);
 
-	compTitle = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_TITLE"));
+	compTitle = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_TITLE"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compTitle);
 
-	compInfo = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_INFO"));
+	compInfo = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_INFO"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuComponents), compInfo);
 
-	plrJoin = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_JOIN"));
+	plrJoin = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_JOIN"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuPlayer), plrJoin);
 
-	viewNew = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_NEW"));
+	viewNew = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NEW"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuViewport), viewNew);
 
-	helpAbout = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MENU_ABOUT"));
+	helpAbout = gtk_menu_item_new_with_label(LoadResStr("IDS_MENU_ABOUT"));
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuHelp), helpAbout);
 
 	// ------------ Window ---------------------
@@ -592,20 +584,20 @@ bool C4Console::In(const char *szText)
 	// begins with '/'? then it's a command
 	if (*szText == '/')
 		{
-		Game.MessageInput.ProcessCommand(szText);
+		::MessageInput.ProcessCommand(szText);
 		// done
 		return TRUE;
 		}
 	// begins with '#'? then it's a message. Route cia ProcessInput to allow #/sound
 	if (*szText == '#')
 		{
-		Game.MessageInput.ProcessInput(szText + 1);
+		::MessageInput.ProcessInput(szText + 1);
 		return TRUE;
 		}
 	// editing enabled?
 	if (!EditCursor.EditingOK()) return FALSE;
 	// pass through network queue
-	Game.Control.DoInput(CID_Script, new C4ControlScript(szText, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+	::Control.DoInput(CID_Script, new C4ControlScript(szText, C4ControlScript::SCOPE_Console, false), CDT_Decide);
 	return TRUE;
 	}
 
@@ -628,7 +620,7 @@ bool C4Console::Out(const char *szText)
 	lines = SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_GETLINECOUNT,(WPARAM)0,(LPARAM)0);
 	SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,(LPARAM)lines);
 	UpdateWindow(hWindow);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Append text to log
 	if(!window) return true;
 
@@ -636,7 +628,7 @@ bool C4Console::Out(const char *szText)
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtLog));
 	gtk_text_buffer_get_end_iter(buffer, &end);
 
-	gtk_text_buffer_insert(buffer, &end, C4Language::IconvUtf8(szText).getData(), -1);
+	gtk_text_buffer_insert(buffer, &end, szText, -1);
 	gtk_text_buffer_insert(buffer, &end, "\n", 1);
 
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(txtLog), gtk_text_buffer_get_insert(buffer), 0.0, FALSE, 0.0, 0.0);
@@ -654,7 +646,7 @@ bool C4Console::ClearLog()
 	SetDlgItemText(hWindow,IDC_EDITOUTPUT,"");
 	SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,0);
 	UpdateWindow(hWindow);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtLog)), "", 0);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	return true;
@@ -687,7 +679,7 @@ bool C4Console::UpdateStatusBars()
 #ifdef _WIN32
 		SetDlgItemText(hWindow,IDC_STATICFRAME,str.getData());
 		UpdateWindow(GetDlgItem(hWindow,IDC_STATICFRAME));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblFrame), str.getData());
 #endif // WITH_DEVELOPER_MODE / _WIN32
 		}
@@ -700,7 +692,7 @@ bool C4Console::UpdateStatusBars()
 #ifdef _WIN32
 		SetDlgItemText(hWindow,IDC_STATICSCRIPT,str.getData());
 		UpdateWindow(GetDlgItem(hWindow,IDC_STATICSCRIPT));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblScript), str.getData());
 #endif // WITH_DEVELOPER_MODE / _WIN32
 		}
@@ -714,7 +706,7 @@ bool C4Console::UpdateStatusBars()
 #ifdef _WIN32
 		SetDlgItemText(hWindow,IDC_STATICTIME,str.getData());
 		UpdateWindow(GetDlgItem(hWindow,IDC_STATICTIME));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblTime), str.getData());
 #endif // WITH_DEVELOPER_MODE
 		}
@@ -729,7 +721,7 @@ bool C4Console::UpdateHaltCtrls(bool fHalt)
 	UpdateWindow(GetDlgItem(hWindow,IDC_BUTTONPLAY));
 	SendDlgItemMessage(hWindow,IDC_BUTTONHALT,BM_SETSTATE,fHalt,0);
 	UpdateWindow(GetDlgItem(hWindow,IDC_BUTTONHALT));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Prevents recursion
 	g_signal_handler_block(btnPlay, handlerPlay);
 	g_signal_handler_block(btnHalt, handlerHalt);
@@ -749,7 +741,7 @@ bool C4Console::UpdateHaltCtrls(bool fHalt)
 BOOL C4Console::SaveGame(BOOL fSaveGame)
 	{
 	// Network hosts only
-	if (Game.Network.isEnabled() && !Game.Network.isHost())
+	if (::Network.isEnabled() && !::Network.isHost())
 		{ Message(LoadResStr("IDS_GAME_NOCLIENTSAVE")); return FALSE; }
 
 
@@ -767,7 +759,7 @@ BOOL C4Console::SaveGame(BOOL fSaveGame)
 	BOOL fOkay=TRUE;
 #ifdef _WIN32
 	SetCursor(LoadCursor(0,IDC_WAIT));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Seems not to work. Don't know why...
 	gdk_window_set_cursor(window->window, cursorWait);
 #endif
@@ -776,7 +768,7 @@ BOOL C4Console::SaveGame(BOOL fSaveGame)
 	if (fSaveGame)
 		pGameSave = new C4GameSaveSavegame();
 	else
-		pGameSave = new C4GameSaveScenario(!Console.Active || Game.Landscape.Mode==C4LSC_Exact, false);
+		pGameSave = new C4GameSaveScenario(!Console.Active || ::Landscape.Mode==C4LSC_Exact, false);
 	if (!pGameSave->Save(Game.ScenarioFile, false))
 		{ Out("Game::Save failed"); fOkay=FALSE; }
 	delete pGameSave;
@@ -789,7 +781,7 @@ BOOL C4Console::SaveGame(BOOL fSaveGame)
 
 #ifdef _WIN32
 	SetCursor(LoadCursor(0,IDC_ARROW));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gdk_window_set_cursor(window->window, NULL);
 #endif
 
@@ -857,7 +849,7 @@ bool C4Console::Message(const char *szMessage, bool fQuery)
 	if (!Active) return FALSE;
 #ifdef _WIN32
 	return (IDOK==MessageBox(hWindow,szMessage,C4ENGINECAPTION,fQuery ? (MB_OKCANCEL | MB_ICONEXCLAMATION) : MB_ICONEXCLAMATION));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkWidget* dialog = gtk_message_dialog_new(GTK_WINDOW(window), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, fQuery ? (GTK_BUTTONS_OK_CANCEL) : (GTK_BUTTONS_OK), "%s", szMessage);
 	int response = gtk_dialog_run(GTK_DIALOG(dialog));
 	gtk_widget_destroy(dialog);
@@ -870,22 +862,22 @@ void C4Console::EnableControls(bool fEnable)
 	{
 	if (!Active) return;
 	// disable Editing if no input allowed
-	Editing &= !Game.Control.NoInput();
+	Editing &= !::Control.NoInput();
 
 #ifdef _WIN32
 	// Set button images (edit modes & halt controls)
 	SendDlgItemMessage(hWindow,IDC_BUTTONMODEPLAY,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(fEnable ? hbmMouse : hbmMouse2));
 	SendDlgItemMessage(hWindow,IDC_BUTTONMODEEDIT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((fEnable && Editing) ? hbmCursor : hbmCursor2));
 	SendDlgItemMessage(hWindow,IDC_BUTTONMODEDRAW,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)((fEnable && Editing) ? hbmBrush : hbmBrush2));
-	SendDlgItemMessage(hWindow,IDC_BUTTONPLAY,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(Game.Network.isLobbyActive() || fEnable ? hbmPlay : hbmPlay2));
-	SendDlgItemMessage(hWindow,IDC_BUTTONHALT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(Game.Network.isLobbyActive() || fEnable ? hbmHalt : hbmHalt2));
+	SendDlgItemMessage(hWindow,IDC_BUTTONPLAY,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(::Network.isLobbyActive() || fEnable ? hbmPlay : hbmPlay2));
+	SendDlgItemMessage(hWindow,IDC_BUTTONHALT,BM_SETIMAGE,IMAGE_BITMAP,(LPARAM)(::Network.isLobbyActive() || fEnable ? hbmHalt : hbmHalt2));
 
 	// OK
 	EnableWindow( GetDlgItem(hWindow,IDOK), fEnable);
 
 	// Halt controls
-	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONPLAY), Game.Network.isLobbyActive() || fEnable);
-	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONHALT), Game.Network.isLobbyActive() || fEnable);
+	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONPLAY), ::Network.isLobbyActive() || fEnable);
+	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONHALT), ::Network.isLobbyActive() || fEnable);
 
 	// Edit modes
 	EnableWindow(GetDlgItem(hWindow,IDC_BUTTONMODEPLAY),(fEnable));
@@ -899,9 +891,9 @@ void C4Console::EnableControls(bool fEnable)
 	// C4Network2 will have to handle that cases somehow (TODO: test)
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_OPEN, MF_BYCOMMAND | MF_ENABLED );
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_OPENWPLRS, MF_BYCOMMAND | MF_ENABLED );
-	EnableMenuItem(GetMenu(hWindow),IDM_FILE_RECORD, MF_BYCOMMAND | ((Game.IsRunning && Game.Control.IsRuntimeRecordPossible()) ? MF_ENABLED : MF_GRAYED));
-	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAME, MF_BYCOMMAND | ((fEnable && Game.Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
-	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAMEAS, MF_BYCOMMAND | ((fEnable && Game.Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
+	EnableMenuItem(GetMenu(hWindow),IDM_FILE_RECORD, MF_BYCOMMAND | ((Game.IsRunning && ::Control.IsRuntimeRecordPossible()) ? MF_ENABLED : MF_GRAYED));
+	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAME, MF_BYCOMMAND | ((fEnable && ::Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
+	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEGAMEAS, MF_BYCOMMAND | ((fEnable && ::Players.GetCount()) ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVE, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_SAVEAS, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_CLOSE, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
@@ -914,24 +906,24 @@ void C4Console::EnableControls(bool fEnable)
 	// Player & viewport menu
 	EnableMenuItem(GetMenu(hWindow),IDM_PLAYER_JOIN, MF_BYCOMMAND | ((fEnable && Editing) ? MF_ENABLED : MF_GRAYED));
 	EnableMenuItem(GetMenu(hWindow),IDM_VIEWPORT_NEW, MF_BYCOMMAND | (fEnable ? MF_ENABLED : MF_GRAYED));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Halt controls
-	gtk_widget_set_sensitive(btnPlay, Game.Network.isLobbyActive() || fEnable);
-	gtk_widget_set_sensitive(btnHalt, Game.Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnPlay, ::Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnHalt, ::Network.isLobbyActive() || fEnable);
 
 	// Edit modes
-	gtk_widget_set_sensitive(btnModePlay, Game.Network.isLobbyActive() || fEnable);
-	gtk_widget_set_sensitive(btnModeEdit, Game.Network.isLobbyActive() || fEnable);
-	gtk_widget_set_sensitive(btnModeDraw, Game.Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnModePlay, ::Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnModeEdit, ::Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(btnModeDraw, ::Network.isLobbyActive() || fEnable);
 
 	// Console input
-	gtk_widget_set_sensitive(txtScript, Game.Network.isLobbyActive() || fEnable);
+	gtk_widget_set_sensitive(txtScript, ::Network.isLobbyActive() || fEnable);
 
 	// File menu
 	// C4Network2 will have to handle that cases somehow (TODO: test)
-	gtk_widget_set_sensitive(fileRecord, Game.IsRunning && Game.Control.IsRuntimeRecordPossible());
-	gtk_widget_set_sensitive(fileSaveGame, fEnable && Game.Players.GetCount());
-	gtk_widget_set_sensitive(fileSaveGameAs, fEnable && Game.Players.GetCount());
+	gtk_widget_set_sensitive(fileRecord, Game.IsRunning && ::Control.IsRuntimeRecordPossible());
+	gtk_widget_set_sensitive(fileSaveGame, fEnable && ::Players.GetCount());
+	gtk_widget_set_sensitive(fileSaveGameAs, fEnable && ::Players.GetCount());
 	gtk_widget_set_sensitive(fileSave, fEnable);
 	gtk_widget_set_sensitive(fileSaveAs, fEnable);
 	gtk_widget_set_sensitive(fileClose, fEnable);
@@ -1021,15 +1013,16 @@ BOOL C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 	ofn.Flags=dwFlags;
 
 	BOOL fResult;
+	const char *wd = GetWorkingDirectory();
 	if (fSave)
 		fResult = GetSaveFileName(&ofn);
 	else
 		fResult = GetOpenFileName(&ofn);
 
 	// Reset working directory to exe path as Windows file dialog might have changed it
-	SetCurrentDirectory(Config.General.ExePath);
+	SetCurrentDirectory(wd);
 	return fResult;
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkWidget* dialog = gtk_file_chooser_dialog_new(fSave ? "Save file..." : "Load file...", GTK_WINDOW(window), fSave ? GTK_FILE_CHOOSER_ACTION_SAVE : GTK_FILE_CHOOSER_ACTION_OPEN, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, fSave ? GTK_STOCK_SAVE : GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
 
 	// TODO: Set dialog modal?
@@ -1155,13 +1148,13 @@ BOOL C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 BOOL C4Console::FileRecord()
 	{
 	// only in running mode
-	if (!Game.IsRunning || !Game.Control.IsRuntimeRecordPossible()) return FALSE;
+	if (!Game.IsRunning || !::Control.IsRuntimeRecordPossible()) return FALSE;
 	// start record!
-	Game.Control.RequestRuntimeRecord();
+	::Control.RequestRuntimeRecord();
 	// disable menuitem
 #ifdef _WIN32
 	EnableMenuItem(GetMenu(hWindow),IDM_FILE_RECORD, MF_BYCOMMAND | MF_GRAYED);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_widget_set_sensitive(fileRecord, false);
 #endif
 	return TRUE;
@@ -1184,7 +1177,7 @@ void C4Console::Clear()
 	{
 	C4ConsoleBase::Clear();
 
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 //	txtLog = NULL;
 //	txtScript = NULL;
 //	btnPlay = NULL;
@@ -1219,7 +1212,7 @@ void C4Console::HelpAbout()
 #ifdef _WIN32
 	StdStrBuf strMessage; strMessage.Format("%s %s\n\n%s", C4ENGINECAPTION, C4VERSION, strCopyright.getData());
 	MessageBox(NULL, strMessage.getData(), C4ENGINECAPTION, MB_ICONINFORMATION | MB_TASKMODAL);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_show_about_dialog(GTK_WINDOW(window), "name", C4ENGINECAPTION, "version", C4VERSION, "copyright", strCopyright.getData(), NULL);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	}
@@ -1236,8 +1229,8 @@ bool C4Console::UpdateCursorBar(const char *szCursor)
 	// Cursor
 	SetDlgItemText(hWindow,IDC_STATICCURSOR,szCursor);
 	UpdateWindow(GetDlgItem(hWindow,IDC_STATICCURSOR));
-#elif WITH_DEVELOPER_MODE
-	gtk_label_set_label(GTK_LABEL(lblCursor), Languages.IconvUtf8(szCursor).getData());
+#elif defined(WITH_DEVELOPER_MODE)
+	gtk_label_set_label(GTK_LABEL(lblCursor), szCursor);
 #endif
 	return TRUE;
 	}
@@ -1249,14 +1242,14 @@ bool C4Console::UpdateViewportMenu()
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexViewport);
 #endif
-	for (C4Player *pPlr=Game.Players.First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=::Players.First; pPlr; pPlr=pPlr->Next)
 		{
 		StdStrBuf sText;
 		sText.Format(LoadResStr("IDS_CNS_NEWPLRVIEWPORT"),pPlr->GetName());
 #ifdef _WIN32
 		AddMenuItem(hMenu,IDM_VIEWPORT_NEW1+pPlr->Number,sText.getData());
-#elif WITH_DEVELOPER_MODE
-		GtkWidget* menuItem = gtk_menu_item_new_with_label(Languages.IconvUtf8(sText.getData()).getData());
+#elif defined(WITH_DEVELOPER_MODE)
+		GtkWidget* menuItem = gtk_menu_item_new_with_label(sText.getData());
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuViewport), menuItem);
 		g_signal_connect(G_OBJECT(menuItem), "activate", G_CALLBACK(OnViewNewPlr), GINT_TO_POINTER(pPlr->Number));
 		gtk_widget_show(menuItem);
@@ -1271,7 +1264,7 @@ void C4Console::ClearViewportMenu()
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexViewport);
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GList* children = gtk_container_get_children(GTK_CONTAINER(menuViewport));
 	for(GList* item = children; item != NULL; item = item->next)
 	{
@@ -1310,7 +1303,7 @@ bool C4Console::UpdateModeCtrls(int iMode)
 	UpdateWindow(GetDlgItem(hWindow,IDC_BUTTONMODEEDIT));
 	SendDlgItemMessage(hWindow,IDC_BUTTONMODEDRAW,BM_SETSTATE,(iMode==C4CNS_ModeDraw),0);
 	UpdateWindow(GetDlgItem(hWindow,IDC_BUTTONMODEDRAW));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	// Prevents recursion
 	g_signal_handler_block(btnModePlay, handlerModePlay);
 	g_signal_handler_block(btnModeEdit, handlerModeEdit);
@@ -1329,20 +1322,20 @@ bool C4Console::UpdateModeCtrls(int iMode)
 
 void C4Console::EditTitle()
 	{
-	if (Game.Network.isEnabled()) return;
+	if (::Network.isEnabled()) return;
 	Game.Title.Open();
 	}
 
 void C4Console::EditScript()
 	{
-	if (Game.Network.isEnabled()) return;
+	if (::Network.isEnabled()) return;
 	Game.Script.Open();
-  Game.ScriptEngine.ReLink(&Game.Defs);
+  ::ScriptEngine.ReLink(&::Definitions);
 	}
 
 void C4Console::EditInfo()
 	{
-	if (Game.Network.isEnabled()) return;
+	if (::Network.isEnabled()) return;
 	Game.Info.Open();
 	}
 
@@ -1359,7 +1352,7 @@ void C4Console::UpdateInputCtrl()
 	HWND hCombo = GetDlgItem(hWindow,IDC_COMBOINPUT);
 	// Clear
 	SendMessage(hCombo,CB_RESETCONTENT,0,0);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(txtScript));
 	if(!completion)
 	{
@@ -1378,13 +1371,13 @@ void C4Console::UpdateInputCtrl()
 	gtk_list_store_clear(store);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	// add global and standard functions
-	for (C4AulFunc *pFn = Game.ScriptEngine.GetFirstFunc(); pFn; pFn = Game.ScriptEngine.GetNextFunc(pFn))
+	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
 		if (pFn->GetPublic())
 			{
 #ifdef _WIN32
 			SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)pFn->Name);
 #else
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 			gtk_list_store_append(store, &iter);
 			gtk_list_store_set(store, &iter, 0, pFn->Name, -1);
 #endif
@@ -1399,7 +1392,7 @@ void C4Console::UpdateInputCtrl()
 		{
 #ifdef _WIN32
 		SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)pRef->Name);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, pRef->Name, -1);
 #endif
@@ -1413,23 +1406,23 @@ bool C4Console::UpdatePlayerMenu()
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexPlayer);
 #endif
-	for (C4Player *pPlr=Game.Players.First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=::Players.First; pPlr; pPlr=pPlr->Next)
 		{
 		StdStrBuf sText;
-		if (Game.Network.isEnabled())
+		if (::Network.isEnabled())
 			sText.Format(LoadResStr("IDS_CNS_PLRQUITNET"),pPlr->GetName(),pPlr->AtClientName);
 		else
 			sText.Format(LoadResStr("IDS_CNS_PLRQUIT"),pPlr->GetName());
 #ifdef _WIN32
-		AddMenuItem(hMenu,IDM_PLAYER_QUIT1+pPlr->Number,sText.getData(),(!Game.Network.isEnabled() || Game.Network.isHost()) && Editing);
-#elif WITH_DEVELOPER_MODE
+		AddMenuItem(hMenu,IDM_PLAYER_QUIT1+pPlr->Number,sText.getData(),(!::Network.isEnabled() || ::Network.isHost()) && Editing);
+#elif defined(WITH_DEVELOPER_MODE)
 		// TODO: Implement AddMenuItem...
-		GtkWidget* menuItem = gtk_menu_item_new_with_label(Languages.IconvUtf8(sText.getData()).getData());
+		GtkWidget* menuItem = gtk_menu_item_new_with_label(sText.getData());
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuPlayer), menuItem);
 		g_signal_connect(G_OBJECT(menuItem), "activate", G_CALLBACK(OnPlrQuit), GINT_TO_POINTER(pPlr->Number));
 		gtk_widget_show(menuItem);
 
-		gtk_widget_set_sensitive(menuItem, (!Game.Network.isEnabled() || Game.Network.isHost()) && Editing);
+		gtk_widget_set_sensitive(menuItem, (!::Network.isEnabled() || ::Network.isHost()) && Editing);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 		}
 	return TRUE;
@@ -1441,7 +1434,7 @@ void C4Console::ClearPlayerMenu()
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexPlayer);
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GList* children = gtk_container_get_children(GTK_CONTAINER(menuPlayer));
 	for(GList* item = children; item != NULL; item = item->next)
 	{
@@ -1494,10 +1487,10 @@ void C4Console::PlayerJoin()
 	char szPlayerFilename[_MAX_PATH+1];
 	for (int iPar=0; SCopySegment(c4plist,iPar,szPlayerFilename,';',_MAX_PATH); iPar++)
 		if (szPlayerFilename[0])
-			if (Game.Network.isEnabled())
-				Game.Network.Players.JoinLocalPlayer(szPlayerFilename, true);
+			if (::Network.isEnabled())
+				::Network.Players.JoinLocalPlayer(szPlayerFilename, true);
 			else
-				Game.Players.CtrlJoinLocalNoNetwork(szPlayerFilename, Game.Clients.getLocalID(), Game.Clients.getLocalName());
+				::Players.CtrlJoinLocalNoNetwork(szPlayerFilename, Game.Clients.getLocalID(), Game.Clients.getLocalName());
 
 	}
 
@@ -1542,14 +1535,14 @@ void C4Console::UpdateNetMenu()
 	{
 	// Active & network hosting check
 	if (!Active) return;
-	if (!Game.Network.isHost() || !Game.Network.isEnabled()) return;
+	if (!::Network.isHost() || !::Network.isEnabled()) return;
 	// Clear old
 	ClearNetMenu();
 	// Insert menu
 #ifdef _WIN32
 	if (!InsertMenu(GetMenu(hWindow),MenuIndexHelp,MF_BYPOSITION | MF_POPUP,(UINT)CreateMenu(),LoadResStr("IDS_MNU_NET"))) return;
-#elif WITH_DEVELOPER_MODE
-	itemNet = gtk_menu_item_new_with_label(LoadResStrUtf8I("IDS_MNU_NET"));
+#elif defined(WITH_DEVELOPER_MODE)
+	itemNet = gtk_menu_item_new_with_label(LoadResStr("IDS_MNU_NET"));
 	GtkWidget* menuNet = gtk_menu_new();
 	gtk_menu_item_set_submenu(GTK_MENU_ITEM(itemNet), menuNet);
 	gtk_menu_shell_insert(GTK_MENU_SHELL(menuBar), itemNet, MenuIndexHelp);
@@ -1568,25 +1561,25 @@ void C4Console::UpdateNetMenu()
 	str.Format(LoadResStr("IDS_MNU_NETHOST"),Game.Clients.getLocalName(),Game.Clients.getLocalID());
 #ifdef _WIN32
 	AddMenuItem(hMenu,IDM_NET_CLIENT1+Game.Clients.getLocalID(),str.getData());
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	GtkWidget* item = gtk_menu_item_new_with_label(str.getData());
 	gtk_menu_shell_append(GTK_MENU_SHELL(menuNet), item);
 	g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(OnNetClient), GINT_TO_POINTER(Game.Clients.getLocalID()));
 #endif
 	// Clients
-	for (C4Network2Client *pClient=Game.Network.Clients.GetNextClient(NULL); pClient; pClient=Game.Network.Clients.GetNextClient(pClient))
+	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
 		{
 			str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT" : "IDS_MNU_NETCLIENTDE"),
 			           pClient->getName(), pClient->getID());
 #ifdef _WIN32
 		AddMenuItem(hMenu,IDM_NET_CLIENT1+pClient->getID(), str.getData());
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 		item = gtk_menu_item_new_with_label(str.getData());
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuNet), item);
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(OnNetClient), GINT_TO_POINTER(pClient->getID()));
 #endif
 		}
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 	gtk_widget_show_all(itemNet);
 #endif
 	return;
@@ -1598,7 +1591,7 @@ void C4Console::ClearNetMenu()
 	if (MenuIndexNet<0) return;
 #ifdef _WIN32
 	DeleteMenu(GetMenu(hWindow),MenuIndexNet,MF_BYPOSITION);
-#elif WITH_DEVELOPER_MODE
+#elif defined(WITH_DEVELOPER_MODE)
 	gtk_container_remove(GTK_CONTAINER(menuBar), itemNet);
 	itemNet = NULL;
 #endif
@@ -1627,7 +1620,7 @@ void C4Console::Execute()
 	PropertyDlg.Execute();
 	ObjectListDlg.Execute();
 	UpdateStatusBars();
-	Game.GraphicsSystem.Execute();
+	::GraphicsSystem.Execute();
 	}
 
 bool C4Console::OpenGame(const char *szCmdLine)
@@ -1686,7 +1679,7 @@ bool C4Console::TogglePause()
 	}
 
 // GTK+ callbacks
-#if WITH_DEVELOPER_MODE
+#ifdef WITH_DEVELOPER_MODE
 void C4Console::OnScriptEntry(GtkWidget* entry, gpointer data)
 {
 	C4Console* console = static_cast<C4Console*>(data);
@@ -1799,7 +1792,7 @@ void C4Console::OnPlrJoin(GtkWidget* item, gpointer data)
 
 void C4Console::OnPlrQuit(GtkWidget* item, gpointer data)
 {
-	Game.Control.Input.Add(CID_Script, new C4ControlScript(FormatString("EliminatePlayer(%d)", GPOINTER_TO_INT(data)).getData()));
+	::Control.Input.Add(CID_Script, new C4ControlScript(FormatString("EliminatePlayer(%d)", GPOINTER_TO_INT(data)).getData()));
 }
 
 void C4Console::OnViewNew(GtkWidget* item, gpointer data)
@@ -1819,7 +1812,7 @@ void C4Console::OnHelpAbout(GtkWidget* item, gpointer data)
 
 void C4Console::OnNetClient(GtkWidget* item, gpointer data)
 {
-	if(!Game.Control.isCtrlHost()) return;
+	if(!::Control.isCtrlHost()) return;
 	Game.Clients.CtrlRemove(Game.Clients.getClientByID(GPOINTER_TO_INT(data)), LoadResStr("IDS_MSG_KICKBYMENU"));
 }
 #endif // WITH_DEVELOPER_MODE

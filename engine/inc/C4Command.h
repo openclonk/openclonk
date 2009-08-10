@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2005, 2007  Sven Eberhardt
+ * Copyright (c) 2008  Günther Brammer
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -83,7 +87,7 @@ class C4Command
 		C4Value Tx;
 		int32_t Ty;
     C4Object *Target,*Target2;
-		int32_t Data;
+		C4Value Data;
     int32_t UpdateInterval;
     int32_t Evaluated,PathChecked,Finished;
 		int32_t Failures,Retries,Permit;
@@ -92,7 +96,7 @@ class C4Command
 		int32_t iExec; // 0 = not executing, 1 = executing, 2 = executing, command should delete himself on finish
 		int32_t BaseMode; // 0: subcommand/unmarked base (if failing, base will fail, too); 1: base command; 2: silent base command
   public:
-	  void Set(int32_t iCommand, C4Object *pObj, C4Object *pTarget, C4Value iTx, int32_t iTy, C4Object *pTarget2, int32_t iData, int32_t iUpdateInterval, BOOL fEvaluated, int32_t iRetries, C4String *szText, int32_t iBaseMode);
+		void Set(int32_t iCommand, C4Object *pObj, C4Object *pTarget, C4Value iTx, int32_t iTy, C4Object *pTarget2, C4Value iData, int32_t iUpdateInterval, BOOL fEvaluated, int32_t iRetries, C4String *szText, int32_t iBaseMode);
 	  void Clear();
 	  void Execute();
 	  void ClearPointers(C4Object *pObj);

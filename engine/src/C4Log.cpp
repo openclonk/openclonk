@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2008  Matthes Bender
+ * Copyright (c) 2004-2006  Sven Eberhardt
+ * Copyright (c) 2004-2008  Peter Wortmann
+ * Copyright (c) 2005-2007  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,8 +28,11 @@
 #ifndef BIG_C4INCLUDE
 #include <C4Console.h>
 #include <C4GameLobby.h>
+#include <C4Game.h>
 #include <C4LogBuf.h>
 #include <C4Language.h>
+#include <C4Network2.h>
+#include <C4GraphicsSystem.h>
 #endif
 
 #if defined(HAVE_SHARE_H) || defined(_WIN32)
@@ -152,14 +160,14 @@ bool Log(const char *szMessage)
 	// Pass on to console
 	Console.Out(szMessage);
 	// pass on to lobby
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
-	if (pLobby && Game.pGUI) pLobby->OnLog(szMessage);
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
+	if (pLobby && ::pGUI) pLobby->OnLog(szMessage);
 
 	// Add message to log buffer
 	bool fNotifyMsgBoard = false;
-	if (Game.GraphicsSystem.MessageBoard.Active)
+	if (::GraphicsSystem.MessageBoard.Active)
 		{
-		Game.GraphicsSystem.MessageBoard.AddLog(szMessage);
+		::GraphicsSystem.MessageBoard.AddLog(szMessage);
 		fNotifyMsgBoard = true;
 		}
 
@@ -167,7 +175,7 @@ bool Log(const char *szMessage)
 	LogSilent(szMessage, true);
 
 	// Notify message board
-	if(fNotifyMsgBoard) Game.GraphicsSystem.MessageBoard.LogNotify();
+	if(fNotifyMsgBoard) ::GraphicsSystem.MessageBoard.LogNotify();
 
 	return true;
 	}

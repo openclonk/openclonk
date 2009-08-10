@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001-2002, 2006-2007  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -48,9 +50,9 @@ class C4RankSystem
 		BOOL Check(int iRank, const char  *szDefRankName);
 		int32_t GetExtendedRankNum() const { return iRankExtNum; }
 		//void Reset(const char *szDefRanks);
-#ifdef C4ENGINE
 		static bool DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Facet *pfctRankSymbols, int32_t iRankSymbolCount, bool fOwnSurface, int32_t iXOff=0, C4Facet *cgoDrawDirect=NULL); // create facet from rank symbol for definition - use custom rank facets if present
-#endif
   };
+
+extern C4RankSystem DefaultRanks;
 
 #endif

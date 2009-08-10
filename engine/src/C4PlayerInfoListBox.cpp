@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2008  Sven Eberhardt
+ * Copyright (c) 2008  Matthes Bender
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -26,6 +29,10 @@
 #include <C4Teams.h>
 #include <C4Game.h>
 #include <C4FileSelDlg.h>
+#include <C4GraphicsResource.h>
+#include <C4MouseControl.h>
+#include <C4Network2.h>
+#include <C4GameControl.h>
 #endif
 
 DWORD GenerateRandomPlayerColor(int32_t iTry); // in C4PlayerInfoConflicts.cpp
@@ -35,7 +42,7 @@ DWORD GenerateRandomPlayerColor(int32_t iTry); // in C4PlayerInfoConflicts.cpp
 // helper
 C4GameLobby::MainDlg *C4PlayerInfoListBox::ListItem::GetLobby() const
 	{
-	return Game.Network.GetLobby();
+	return ::Network.GetLobby();
 	}
 
 bool C4PlayerInfoListBox::ListItem::CanLocalChooseTeams(int32_t idPlayer) const
@@ -255,7 +262,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 			fResPresent = pRes->isComplete();
 	C4RoundResultsPlayer *pEvaluationPlayer = NULL;
 	if (pList->IsEvaluation()) pEvaluationPlayer = Game.RoundResults.GetPlayers().GetByID(idPlayer);
-	bool fHasIcon = fResPresent || pEvaluationPlayer || (!Game.Network.isEnabled() && pInfo);
+	bool fHasIcon = fResPresent || pEvaluationPlayer || (!::Network.isEnabled() && pInfo);
 	// check whether joined info is present
 	bool fHasJoinedInfo = !!pJoinedInfo;
 	DWORD dwJoinedInfoClr = pJoinedInfo ? pJoinedInfo->GetLobbyColor() : 0;
@@ -278,7 +285,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 			{
 			// no custom icon: create default by player color
 			pIcon->GetMFacet().Create(C4GUI_IconWdt,C4GUI_IconHgt);
-			Game.GraphicsResource.fctPlayerClr.DrawClr(pIcon->GetMFacet(), TRUE, dwPlayerClr);
+			::GraphicsResource.fctPlayerClr.DrawClr(pIcon->GetMFacet(), TRUE, dwPlayerClr);
 			}
 		fIconSet = true;
 		// unreg icon? Grayscale and stamp!
@@ -316,11 +323,11 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 		// shadow
 		DWORD dwPrevMod; bool fPrevMod = lpDDraw->GetBlitModulation(dwPrevMod);
 		Application.DDraw->ActivateBlitModulation(1);
-		Game.GraphicsResource.fctCrewClr.DrawClr(fctDraw, TRUE, dwJoinedInfoClr);
+		::GraphicsResource.fctCrewClr.DrawClr(fctDraw, TRUE, dwJoinedInfoClr);
 		if (fPrevMod) lpDDraw->ActivateBlitModulation(dwPrevMod); else lpDDraw->DeactivateBlitModulation();
 		fctDraw.X = 0;
 		// gfx
-		Game.GraphicsResource.fctCrewClr.DrawClr(fctDraw, TRUE, dwJoinedInfoClr);
+		::GraphicsResource.fctCrewClr.DrawClr(fctDraw, TRUE, dwJoinedInfoClr);
 		}
 	fJoinedInfoSet = fHasJoinedInfo;
 	dwJoinClr = dwJoinedInfoClr;
@@ -503,7 +510,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContext(C4GUI::Elemen
 	else
 		{
 		// owned players or host can manipulate players
-		if (Game.Network.isHost() || IsLocalClientPlayer())
+		if (::Network.isHost() || IsLocalClientPlayer())
 			{
 			// player removal (except for joined script players)
 			if (pInfo->GetType() != C4PT_Script || !pInfo->GetAssociatedSavegamePlayerID())
@@ -532,7 +539,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContextTakeOver(C4GUI
 	// create context menu
 	C4GUI::ContextMenu *pMenu = new C4GUI::ContextMenu();
 	// add options for all own, unassigned players
-	C4ClientPlayerInfos *pkInfo = Game.Network.Players.GetLocalPlayerInfoPacket();
+	C4ClientPlayerInfos *pkInfo = ::Network.Players.GetLocalPlayerInfoPacket();
 	if (pkInfo)
 		{
 		int32_t i=0; C4PlayerInfo *pInfo;
@@ -558,7 +565,7 @@ void C4PlayerInfoListBox::PlayerListItem::OnCtxTakeOver(C4GUI::Element *pListIte
 	// use player idPlayer to take over this one
 	// this must be processed as a request by the host
 	// some safety first...
-	C4ClientPlayerInfos *pLocalInfo = Game.Network.Players.GetLocalPlayerInfoPacket();
+	C4ClientPlayerInfos *pLocalInfo = ::Network.Players.GetLocalPlayerInfoPacket();
 	if (!fFreeSavegamePlayer || !idPlayer || !pLocalInfo) return;
 	C4ClientPlayerInfos LocalInfoRequest(*pLocalInfo);
 	C4PlayerInfo *pGrabbingInfo = LocalInfoRequest.GetPlayerInfoByID(idPlayer);
@@ -566,13 +573,13 @@ void C4PlayerInfoListBox::PlayerListItem::OnCtxTakeOver(C4GUI::Element *pListIte
 	// now adjust info packet
 	pGrabbingInfo->SetAssociatedSavegamePlayer(this->idPlayer);
 	// and request this update (host processes it directly)
-	Game.Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
+	::Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
 	}
 
 void C4PlayerInfoListBox::PlayerListItem::OnCtxRemove(C4GUI::Element *pListItem)
 	{
 	// only host or own player
-	if (!Game.Network.isEnabled() || (!Game.Network.isHost() && !IsLocalClientPlayer())) return;
+	if (!::Network.isEnabled() || (!::Network.isHost() && !IsLocalClientPlayer())) return;
 	// remove the player
 	// this must be processed as a request by the host
 	// now change it in its own request packet
@@ -582,13 +589,13 @@ void C4PlayerInfoListBox::PlayerListItem::OnCtxRemove(C4GUI::Element *pListItem)
 	if (!LocalInfoRequest.GetPlayerInfoByID(idPlayer)) return;
 	LocalInfoRequest.RemoveInfo(idPlayer);
 	// and request this update (host processes it directly)
-	Game.Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
+	::Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
 	}
 
 void C4PlayerInfoListBox::PlayerListItem::OnCtxNewColor(C4GUI::Element *pListItem)
 	{
 	// only host or own player
-	if (!Game.Network.isEnabled() || (!Game.Network.isHost() && !IsLocalClientPlayer())) return;
+	if (!::Network.isEnabled() || (!::Network.isHost() && !IsLocalClientPlayer())) return;
 	// just send a request to reclaim the original color to the host
 	// the host will deny this and decide on a new color
 	C4ClientPlayerInfos *pChangeInfo = Game.PlayerInfos.GetInfoByClientID(idClient);
@@ -598,7 +605,7 @@ void C4PlayerInfoListBox::PlayerListItem::OnCtxNewColor(C4GUI::Element *pListIte
 	if (!pPlrInfo) return;
 	pPlrInfo->SetColor(pPlrInfo->GetOriginalColor());
 	// and request this update (host processes it directly)
-	Game.Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
+	::Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
 	}
 
 void C4PlayerInfoListBox::PlayerListItem::OnTeamComboFill(C4GUI::ComboBox_FillCB *pFiller)
@@ -626,7 +633,7 @@ bool C4PlayerInfoListBox::PlayerListItem::OnTeamComboSelChange(C4GUI::ComboBox *
 	if (!pChangedInfo) return true;
 	pChangedInfo->SetTeam(pNewTeam->GetID());
 	// and request this update (host processes it directly)
-	Game.Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
+	::Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
 	// next update will change the combo box text
 	return true;
 	}
@@ -700,7 +707,7 @@ bool C4PlayerInfoListBox::PlayerListItem::CanLocalChooseTeam() const
 	// never on savegame players
 	if (fFreeSavegamePlayer || GetJoinedInfo()) return false;
 	// only host or own player
-	if (!Game.Network.isHost() && !IsLocalClientPlayer()) return false;
+	if (!::Network.isHost() && !IsLocalClientPlayer()) return false;
 	// finally, only if team settings permit
 	return CanLocalChooseTeams(idPlayer);
 	}
@@ -715,7 +722,7 @@ bool C4PlayerInfoListBox::PlayerListItem::IsLocalClientPlayer() const
 
 C4Network2Client *C4PlayerInfoListBox::PlayerListItem::GetNetClient() const
 	{
-	return Game.Network.Clients.GetClientByID(idClient);
+	return ::Network.Clients.GetClientByID(idClient);
 	}
 
 
@@ -793,7 +800,7 @@ void C4PlayerInfoListBox::ClientListItem::SetPing(int32_t iToPing)
 void C4PlayerInfoListBox::ClientListItem::UpdateInfo()
 	{
 	// update color (always, because it can change silently)
-	SetColor(Game.Network.Players.GetClientChatColor(idClient, true));
+	SetColor(::Network.Players.GetClientChatColor(idClient, true));
 	// update activation status
 	fIsShownActive = GetClient() && GetClient()->isActivated();
 	// update status icon
@@ -817,7 +824,7 @@ bool C4PlayerInfoListBox::ClientListItem::IsLocalClientPlayer() const
 
 C4Network2Client *C4PlayerInfoListBox::ClientListItem::GetNetClient() const
 	{
-	return Game.Network.Clients.GetClientByID(idClient);
+	return ::Network.Clients.GetClientByID(idClient);
 	}
 
 bool C4PlayerInfoListBox::ClientListItem::IsLocal() const
@@ -892,13 +899,13 @@ void C4PlayerInfoListBox::ClientListItem::SetSoundIcon()
 C4GUI::ContextMenu *C4PlayerInfoListBox::ClientListItem::OnContext(C4GUI::Element *pListItem, int32_t iX, int32_t iY)
 	{
 	// safety
-	if (!Game.Network.isEnabled()) return NULL;
+	if (!::Network.isEnabled()) return NULL;
 	// get associated client
 	C4Client *pClient = GetClient();
 	// create context menu
 	C4GUI::ContextMenu *pMenu = new C4GUI::ContextMenu();
 	// host options
-	if (Game.Network.isHost() && GetNetClient())
+	if (::Network.isHost() && GetNetClient())
 		{
       StdCopyStrBuf strKickDesc(LoadResStr("IDS_NET_KICKCLIENT_DESC"));
 		pMenu->AddItem(LoadResStr("IDS_NET_KICKCLIENT"), strKickDesc.getData(), C4GUI::Ico_None,
@@ -919,7 +926,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::ClientListItem::OnContext(C4GUI::Elemen
 void C4PlayerInfoListBox::ClientListItem::OnCtxKick(C4GUI::Element *pListItem)
 	{
 	// host only
-	if (!Game.Network.isEnabled() || !Game.Network.isHost()) return;
+	if (!::Network.isEnabled() || !::Network.isHost()) return;
 	// add control
 	Game.Clients.CtrlRemove(GetClient(), LoadResStr("IDS_MSG_KICKFROMLOBBY"));
 	}
@@ -928,15 +935,15 @@ void C4PlayerInfoListBox::ClientListItem::OnCtxActivate(C4GUI::Element *pListIte
 	{
 	// host only
 	C4Client *pClient = GetClient();
-	if (!Game.Network.isEnabled() || !Game.Network.isHost() || !pClient) return;
+	if (!::Network.isEnabled() || !::Network.isHost() || !pClient) return;
 	// add control
-	Game.Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(idClient, CUT_Activate, !pClient->isActivated()), CDT_Sync);
+	::Control.DoInput(CID_ClientUpdate, new C4ControlClientUpdate(idClient, CUT_Activate, !pClient->isActivated()), CDT_Sync);
 	}
 
 void C4PlayerInfoListBox::ClientListItem::OnCtxInfo(C4GUI::Element *pListItem)
 	{
 	// show client info dialog
-	Game.pGUI->ShowRemoveDlg(new C4Network2ClientDlg(idClient));
+	::pGUI->ShowRemoveDlg(new C4Network2ClientDlg(idClient));
 	}
 
 void C4PlayerInfoListBox::ClientListItem::OnBtnAddPlr(C4GUI::Control *btn)
@@ -1048,7 +1055,7 @@ void C4PlayerInfoListBox::TeamListItem::MoveLocalPlayersIntoTeam()
 				}
 	if (!fAnyChange) return;
 	// and request this update (host processes it directly)
-	Game.Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
+	::Network.Players.RequestPlayerInfoUpdate(LocalInfoRequest);
 	// next update will move the player labels
 	}
 
@@ -1122,7 +1129,7 @@ C4PlayerInfoListBox::ScriptPlayersListItem::ScriptPlayersListItem(C4PlayerInfoLi
 	pIcon = new C4GUI::Icon(C4Rect(0, 0, iIconSize, iIconSize), C4GUI::Ico_Record);
 	pNameLabel = new C4GUI::Label(LoadResStr("IDS_CTL_SCRIPTPLAYERS"), iIconSize + IconLabelSpacing,0, ALeft);
 	btnAddPlayer = NULL;
-	if (Game.Control.isCtrlHost())
+	if (::Control.isCtrlHost())
 		{
 		btnAddPlayer = new C4GUI::CallbackButton<ScriptPlayersListItem, C4GUI::IconButton>(C4GUI::Ico_AddPlr, C4Rect(0, 0, iIconSize, iIconSize), 'A' /* 2do TODO */, &ScriptPlayersListItem::OnBtnAddPlr, this);
 		}
@@ -1165,7 +1172,7 @@ void C4PlayerInfoListBox::ScriptPlayersListItem::OnBtnAddPlr(C4GUI::Control *btn
 	int32_t iCurrScriptPlrCount = Game.PlayerInfos.GetActiveScriptPlayerCount(true, true);
 	bool fCanJoinScriptPlayers = (Game.Teams.GetMaxScriptPlayers() - iCurrScriptPlrCount > 0);
 	if (!fCanJoinScriptPlayers) return;
-	if (!Game.Control.isCtrlHost()) return;
+	if (!::Control.isCtrlHost()) return;
 	// request a script player join
 	C4PlayerInfo *pScriptPlrInfo = new C4PlayerInfo();
 	pScriptPlrInfo->SetAsScriptPlayer(Game.Teams.GetScriptPlayerName().getData(), GenerateRandomPlayerColor(iCurrScriptPlrCount), 0, C4ID_None);

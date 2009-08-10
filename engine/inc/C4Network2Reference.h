@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2006-2007  Peter Wortmann
+ * Copyright (c) 2007-2008  Sven Eberhardt
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -17,12 +19,8 @@
 #ifndef C4NETWORK2REFERENCE_H
 #define C4NETWORK2REFERENCE_H
 
-#ifdef C4ENGINE
 #include "C4Network2.h"
 #include "C4Network2Client.h"
-#else
-#include "C4NetIO.h"
-#endif
 #include "C4GameParameters.h"
 #include "C4Version.h"
 #include "C4GameVersion.h"
@@ -81,7 +79,7 @@ public:
 
 	void SetSourceIP(in_addr ip);
 
-	void InitLocal(C4Game *pGame);
+	void InitLocal();
 
   void SortNullIPsBack();
 

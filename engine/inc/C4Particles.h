@@ -1,6 +1,9 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2002, 2004-2005  Sven Eberhardt
+ * Copyright (c) 2004, 2006, 2008  Günther Brammer
+ * Copyright (c) 2005  Tobias Zwick
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +26,7 @@
 // thus, more complex partivle behaviour should be solved via
 // objects
 // note: this particle system will always assume the owning def
-//  object to be a static class named Game.Particles!
+//  object to be a static class named ::Particles!
 
 #ifndef INC_C4Particles
 #define INC_C4Particles
@@ -47,7 +50,7 @@ typedef C4ParticleProc C4ParticleExecProc; // particle execution proc - returns 
 typedef C4ParticleProc C4ParticleCollisionProc; // particle collision proc - returns whether particle died
 typedef void (*C4ParticleDrawProc)(C4Particle *, C4TargetFacet &, C4Object *); // particle drawing code
 
-#define ParticleSystem Game.Particles
+#define ParticleSystem ::Particles
 
 // core for particle defs
 class C4ParticleDefCore
@@ -70,7 +73,8 @@ class C4ParticleDefCore
 		int32_t VertexY;									// y-offset of vertex; 100 is object height
 		int32_t Additive;									// whether particle should be drawn additively
 		int32_t Attach;								  	// whether the particle moves relatively to the target
-		int32_t AlphaFade;								// fadeout in each frame
+		int32_t AlphaFade;								// fadeout in each* frame
+		int32_t FadeDelay;								// *each = well, can be redefined here. Standard is 1
 		int32_t Parallaxity [2];          // parallaxity
 
 		StdStrBuf InitFn;	// proc to be used for initialization
@@ -220,6 +224,8 @@ class C4ParticleSystem
 		friend class C4Particle;
 		friend class C4ParticleChunk;
 	};
+
+extern C4ParticleSystem Particles;
 
 // default particle execution/drawing functions
 bool fxStdInit(C4Particle *pPrt, C4Object *pTarget);

@@ -1,6 +1,10 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000  Matthes Bender
+ * Copyright (c) 2001  Sven Eberhardt
+ * Copyright (c) 2005  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,7 +28,6 @@
 #include "C4ToolsDlg.h"
 #include "C4ObjectListDlg.h"
 #include "C4EditCursor.h"
-#include "C4Game.h"
 
 #include <StdWindow.h>
 

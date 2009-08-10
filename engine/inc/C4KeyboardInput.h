@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2005-2006  Sven Eberhardt
+ * Copyright (c) 2005  Günther Brammer
  * Copyright (c) 2005-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -18,6 +20,8 @@
 
 #ifndef INC_C4KeyboardInput
 #define INC_C4KeyboardInput
+
+#include <cctype>
 
 // key context classifications
 enum C4KeyScope

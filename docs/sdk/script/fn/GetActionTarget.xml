@@ -24,7 +24,6 @@
 			<funclink>GetAction</funclink>
 			<funclink>GetActTime</funclink>
 			<funclink>GetPhase</funclink>
-			<funclink>ObjectSetAction</funclink>
 			<funclink>SetAction</funclink>
 			<funclink>SetActionTargets</funclink>
 			<funclink>SetPhase</funclink>

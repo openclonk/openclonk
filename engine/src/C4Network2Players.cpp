@@ -1,6 +1,8 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 2004-2008  Sven Eberhardt
+ * Copyright (c) 2005-2007  Peter Wortmann
  * Copyright (c) 2004-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -23,7 +25,10 @@
 #include "C4Network2Players.h"
 #include "C4PlayerInfo.h"
 #include "C4GameLobby.h"
-#include "C4Game.h"
+#include <C4Game.h>
+#include <C4Network2.h>
+#include <C4GameControl.h>
+
 #include "C4Control.h"
 
 // *** C4Network2Players
@@ -40,13 +45,13 @@ void C4Network2Players::Init()
 	// not in replay
 	if (Game.C4S.Head.Replay) return;
 	// network only
-	assert(Game.Network.isEnabled());
+	assert(::Network.isEnabled());
 	// must init before game is running
 	assert(!Game.IsRunning);
 	// join the local player(s)
 	JoinLocalPlayer(Game.PlayerFilenames, false);
 	// host: Rejoin script players from savegame
-	if (Game.Network.isHost())
+	if (::Network.isHost())
 		Game.PlayerInfos.CreateRestoreInfosForJoinedScriptPlayers(Game.RestorePlayerInfos);
 	}
 
@@ -64,7 +69,7 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
   // if observing: don't try
   if (Game.Clients.getLocal()->isObserver()) return false;
 	// network only
-	assert(Game.Network.isEnabled());
+	assert(::Network.isEnabled());
 	// create join info packet
 	C4ClientPlayerInfos JoinInfo(szLocalPlayerFilename, fAdd);
 	// league game: get authentication for players
@@ -72,14 +77,14 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
 		for(int i = 0; i < JoinInfo.GetPlayerCount(); i++)
 			{
 			C4PlayerInfo *pInfo = JoinInfo.GetPlayerInfo(i);
-			if(!Game.Network.LeaguePlrAuth(pInfo))
+			if(!::Network.LeaguePlrAuth(pInfo))
 				{
 				JoinInfo.RemoveIndexedInfo(i);
 				i--;
 				}
 			}
 	// host or client?
-	if (Game.Network.isHost())
+	if (::Network.isHost())
 		{
 		// error joining players? Zero players is OK for initial packet; marks host as observer
 		if (fAdd && !JoinInfo.GetPlayerCount()) return false;
@@ -95,10 +100,10 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
 		// it's also necessary to send the empty player info packet, so the host will answer
 		// with infos of all other clients
  		if (fAdd && !JoinRequest.Info.GetPlayerCount()) return false;
-		Game.Network.Clients.SendMsgToHost(MkC4NetIOPacket(PID_PlayerInfoUpdReq, JoinRequest));
+		::Network.Clients.SendMsgToHost(MkC4NetIOPacket(PID_PlayerInfoUpdReq, JoinRequest));
     // request activation
     if(JoinRequest.Info.GetPlayerCount() && !Game.Clients.getLocal()->isActivated())
-      Game.Network.RequestActivate();
+      ::Network.RequestActivate();
 		}
 	// done, success
 	return true;
@@ -107,9 +112,9 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
 void C4Network2Players::RequestPlayerInfoUpdate(const class C4ClientPlayerInfos &rRequest)
 	{
 	// network only
-	assert(Game.Network.isEnabled());
+	assert(::Network.isEnabled());
 	// host or client?
-	if (Game.Network.isHost())
+	if (::Network.isHost())
 		{
 		// host processes directly
 		HandlePlayerInfoUpdRequest(&rRequest, true);
@@ -118,15 +123,15 @@ void C4Network2Players::RequestPlayerInfoUpdate(const class C4ClientPlayerInfos 
 		{
 		// client sends request to host
 		C4PacketPlayerInfoUpdRequest UpdateRequest(rRequest);
-		Game.Network.Clients.SendMsgToHost(MkC4NetIOPacket(PID_PlayerInfoUpdReq, UpdateRequest));
+		::Network.Clients.SendMsgToHost(MkC4NetIOPacket(PID_PlayerInfoUpdReq, UpdateRequest));
 		}
 	}
 
 void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInfos *pInfoPacket, bool fByHost)
 	{
 	// network host only
-	assert(Game.Network.isEnabled());
-	assert(Game.Network.isHost());
+	assert(::Network.isEnabled());
+	assert(::Network.isHost());
 	// copy client infos (need to be adjusted)
 	C4ClientPlayerInfos OwnInfoPacket(*pInfoPacket);
 	// safety: check any duplicate, unjoined players first
@@ -180,7 +185,7 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 	if (Game.Parameters.isLeague())
 		{
 		// lobby only
-		if(!Game.Network.isLobbyActive())
+		if(!::Network.isLobbyActive())
 			return;
 		// check league authentication for new players
 		for(int i = 0; i < OwnInfoPacket.GetPlayerCount(); i++)
@@ -188,7 +193,7 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 			{
 			C4PlayerInfo *pInfo = OwnInfoPacket.GetPlayerInfo(i);
 			// remove player infos without authentication
-			if(!Game.Network.LeaguePlrAuthCheck(pInfo))
+			if(!::Network.LeaguePlrAuthCheck(pInfo))
 				{
 				OwnInfoPacket.RemoveIndexedInfo(i);
 				i--;
@@ -205,16 +210,16 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 	// so future player join request will take the other joined  clients into consideration
 	// when assigning player colors, etc.; it will also start resource loading
 	// in running mode, this call will also put the actual player joins into the queue
-  Game.Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(OwnInfoPacket), CDT_Direct);
+  ::Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(OwnInfoPacket), CDT_Direct);
 	// notify lobby of updates
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby) pLobby->OnPlayersChange();
 	}
 
 void C4Network2Players::HandlePlayerInfo(const class C4ClientPlayerInfos &rInfoPacket)
 	{
 	// network only
-	assert(Game.Network.isEnabled());
+	assert(::Network.isEnabled());
 	// copy client player infos out of packet to be used in local list
 	C4ClientPlayerInfos *pClientInfo = new C4ClientPlayerInfos(rInfoPacket);
 	// add client info  to local player info list - eventually deleting pClientInfo and
@@ -230,17 +235,17 @@ void C4Network2Players::HandlePlayerInfo(const class C4ClientPlayerInfos &rInfoP
 		{
 		const C4Client *pClient = Game.Clients.getClientByID(pClientInfo->GetClientID());
 		// host, game running and client active already?
-		if (Game.Network.isHost() && Game.Network.isRunning() && pClient && pClient->isActivated())
+		if (::Network.isHost() && ::Network.isRunning() && pClient && pClient->isActivated())
 			{
 			// then join the players immediately
 			JoinUnjoinedPlayersInControlQueue(pClientInfo);
 			}
 		}
 	// lobby: update players
-	C4GameLobby::MainDlg *pLobby = Game.Network.GetLobby();
+	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby) pLobby->OnPlayersChange();
 	// invalidate reference
-	Game.Network.InvalidateReference();
+	::Network.InvalidateReference();
 	}
 
 void C4Network2Players::SendUpdatedPlayers()
@@ -252,7 +257,7 @@ void C4Network2Players::SendUpdatedPlayers()
 			{
 			C4ControlPlayerInfo *pkSend = new C4ControlPlayerInfo(*pUpdInfo);
 			// send info to all
-			Game.Control.DoInput(CID_PlrInfo, pkSend, CDT_Direct);
+			::Control.DoInput(CID_PlrInfo, pkSend, CDT_Direct);
 			}
 	ResetUpdatedPlayers();
 	}
@@ -318,7 +323,7 @@ void C4Network2Players::ResetUpdatedPlayers()
 void C4Network2Players::JoinUnjoinedPlayersInControlQueue(C4ClientPlayerInfos *pNewPacket)
 	{
 	// only host may join any players to the queue
-	assert(Game.Network.isHost());
+	assert(::Network.isHost());
 	// check all players
 	int i=0; C4PlayerInfo *pInfo;
 	while (pInfo = pNewPacket->GetPlayerInfo(i++))
@@ -330,8 +335,8 @@ void C4Network2Players::JoinUnjoinedPlayersInControlQueue(C4ClientPlayerInfos *p
 			pInfo->SetJoinIssued();
 			// do so!
 			C4Network2Res *pPlrRes = pInfo->GetRes();
-      C4Network2Client *pClient = Game.Network.Clients.GetClientByID(pNewPacket->GetClientID());
-			if (!pPlrRes || (!pClient && pNewPacket->GetClientID() != Game.Control.ClientID()))
+      C4Network2Client *pClient = ::Network.Clients.GetClientByID(pNewPacket->GetClientID());
+			if (!pPlrRes || (!pClient && pNewPacket->GetClientID() != ::Control.ClientID()))
 				if (pInfo->GetType() != C4PT_Script)
 					{
 					// failure: Non-script players must have a res to join from!
@@ -359,8 +364,8 @@ void C4Network2Players::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
   if(!pConn) return;
 
 	// find associated client
-	C4Network2Client *pClient = Game.Network.Clients.GetClient(pConn);
-	if(!pClient) pClient = Game.Network.Clients.GetClientByID(pConn->getClientID());
+	C4Network2Client *pClient = ::Network.Clients.GetClient(pConn);
+	if(!pClient) pClient = ::Network.Clients.GetClientByID(pConn->getClientID());
 
 	#define GETPKT(type, name) \
 		assert(pPacket); const type &name = \
@@ -371,7 +376,7 @@ void C4Network2Players::HandlePacket(char cStatus, const C4PacketBase *pPacket, 
 		{
 		GETPKT(C4PacketPlayerInfoUpdRequest, pkPlrInfo);
 		// this packet is sent to the host only, and thus cannot have been sent from the host
-		if(!Game.Network.isHost()) return;
+		if(!::Network.isHost()) return;
 		// handle this packet
 		HandlePlayerInfoUpdRequest(&pkPlrInfo.Info, false);
 		}
@@ -411,7 +416,7 @@ void C4Network2Players::OnClientPart(C4Client *pPartClient)
 	// update team association to left player
 	Game.Teams.RecheckPlayers();
 	// host: update player data according to leaver
-	if (Game.Network.isHost() && Game.Network.isEnabled())
+	if (::Network.isHost() && ::Network.isEnabled())
 		{
 		// host: update any player colors and names
 		rInfoList.UpdatePlayerAttributes();
@@ -423,14 +428,14 @@ void C4Network2Players::OnClientPart(C4Client *pPartClient)
 		SendUpdatedPlayers();
 		}
 	// invalidate reference
-	if(Game.Network.isHost())
-		Game.Network.InvalidateReference();
+	if(::Network.isHost())
+		::Network.InvalidateReference();
 	}
 
 void C4Network2Players::OnStatusGoReached()
 	{
 	// host only
-	if (!Game.Network.isHost()) return;
+	if (!::Network.isHost()) return;
 	// check all player lists
 	int i=0; C4ClientPlayerInfos *pkInfo;
 	while (pkInfo = rInfoList.GetIndexedInfo(i++))

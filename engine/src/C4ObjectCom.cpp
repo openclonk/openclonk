@@ -1,6 +1,13 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2000, 2007-2008  Matthes Bender
+ * Copyright (c) 2001-2004  Peter Wortmann
+ * Copyright (c) 2001, 2005-2006, 2008-2009  Sven Eberhardt
+ * Copyright (c) 2001  Michael Käser
+ * Copyright (c) 2005-2006, 2008  Günther Brammer
+ * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -25,10 +32,14 @@
 #include <C4Physics.h>
 #include <C4Command.h>
 #include <C4Random.h>
-#include <C4Game.h>
-#include <C4Wrappers.h>
+#include <C4GameMessage.h>
 #include <C4ObjectMenu.h>
 #include <C4Player.h>
+#include <C4GraphicsResource.h>
+#include <C4Material.h>
+#include <C4Game.h>
+#include <C4PlayerList.h>
+#include <C4GameObjects.h>
 #endif
 
 BOOL SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir);
@@ -332,7 +343,7 @@ BOOL ObjectComEnter(C4Object *cObj) // by pusher
   // Check object entrance, try command enter
   C4Object *pTarget;
   DWORD ocf=OCF_Entrance;
-  if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
     if (ocf & OCF_Entrance)
       { cObj->SetCommand(C4CMD_Enter,pTarget); return TRUE; }
 
@@ -347,7 +358,7 @@ BOOL ObjectComUp(C4Object *cObj) // by DFA_WALK or DFA_SWIM
   // Check object entrance, try command enter
   C4Object *pTarget;
   DWORD ocf=OCF_Entrance;
-  if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
     if (ocf & OCF_Entrance)
       return PlayerObjectCommand(cObj->Owner,C4CMD_Enter,pTarget);
 
@@ -406,7 +417,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 		if (cObj->Def->CollectionLimit && (cObj->Contents.ObjectCount()>=cObj->Def->CollectionLimit) ) return FALSE;
     // Check line pickup
 		ocf=OCF_LineConstruct;
-		tstruct=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
+		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
 		if (!tstruct || !(ocf & OCF_LineConstruct)) return FALSE;
 		if (!(cline=Game.FindObject(C4ID_None,0,0,0,0,OCF_All,"Connect",tstruct))) return FALSE;
 		// Check line connected to linekit at other end
@@ -442,7 +453,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 
 		// Check for structure connection
 		ocf=OCF_LineConstruct;
-		tstruct=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
+		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
 		// No structure
 		if (!tstruct || !(ocf & OCF_LineConstruct))
 			{
@@ -498,7 +509,7 @@ BOOL ObjectComLineConstruction(C4Object *cObj)
 
 	// Check for new structure connection
 	ocf=OCF_LineConstruct;
-	tstruct=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
+	tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
 	if (!tstruct || !(ocf & OCF_LineConstruct))
 		{
 		StartSoundEffect("Error",false,100,cObj);
@@ -560,7 +571,7 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
   ocf=OCF_Chop;
   if (phys->CanChop)
 		if (cObj->GetProcedure()!=DFA_SWIM)
-	    if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+	    if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
 		    if (ocf & OCF_Chop)
 			    {
 				  PlayerObjectCommand(cObj->Owner,C4CMD_Chop,pTarget);
@@ -571,7 +582,7 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
   ocf=OCF_LineConstruct;
   if (phys->CanConstruct)
 	  if (!cObj->Contents.GetObject())
-	    if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+	    if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
 		    if (ocf & OCF_LineConstruct)
 			    if (ObjectComLineConstruction(cObj))
 						return;
@@ -585,7 +596,7 @@ BOOL ObjectComDownDouble(C4Object *cObj) // by DFA_WALK
   {
   C4Object *pTarget;
   DWORD ocf= OCF_Construct | OCF_Grab;
-  if ((pTarget=Game.Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
     {
     if (ocf & OCF_Construct)
       { PlayerObjectCommand(cObj->Owner,C4CMD_Build,pTarget); return TRUE; }
@@ -658,9 +669,9 @@ BOOL ObjectComDrop(C4Object *cObj, C4Object *pThing)
   int32_t tdir=0; int right=0;
 	bool isHanglingOrSwimming = false;
 	int32_t iProc = DFA_NONE;
-	if (cObj->Action.Act >= 0)
+	if (cObj->Action.pActionDef)
 		{
-		iProc = cObj->Def->ActMap[cObj->Action.Act].Procedure;
+		iProc = cObj->Action.pActionDef->GetPropertyInt(P_Procedure);
 		if (iProc == DFA_HANGLE || iProc == DFA_SWIM) isHanglingOrSwimming = true;
 		}
 	int32_t iOutposReduction = 1; // don't exit object too far forward during jump
@@ -698,7 +709,7 @@ BOOL ObjectComBuild(C4Object *cObj, C4Object *pTarget)
   {
   if (!pTarget) return FALSE;
   // Needs to be idle or walking
-  if (cObj->Action.Act!=ActIdle)
+  if (cObj->Action.pActionDef)
     if (cObj->GetProcedure()!=DFA_WALK)
       return FALSE;
   return ObjectActionBuild(cObj,pTarget);
@@ -771,7 +782,7 @@ BOOL ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 BOOL ObjectComCancelAttach(C4Object *cObj)
   {
   if (cObj->GetProcedure()==DFA_ATTACH)
-    return cObj->SetAction(ActIdle);
+    return cObj->SetAction(0);
   return FALSE;
   }
 
@@ -917,14 +928,14 @@ bool ComDirLike(int32_t iComDir, int32_t iSample)
 void DrawCommandKey(C4Facet &cgo, int32_t iCom, BOOL fPressed, const char *szText)
 	{
 	// Draw key
-	Game.GraphicsResource.fctKey.Draw(cgo,FALSE,fPressed);
+	::GraphicsResource.fctKey.Draw(cgo,FALSE,fPressed);
 	// Draw control symbol
 	if (iCom == COM_PlayerMenu)
-		Game.GraphicsResource.fctOKCancel.Draw(cgo,TRUE,1,1);
+		::GraphicsResource.fctOKCancel.Draw(cgo,TRUE,1,1);
 	else
-		Game.GraphicsResource.fctCommand.Draw(cgo,TRUE,Com2Control(iCom),((iCom & COM_Double)!=0));
+		::GraphicsResource.fctCommand.Draw(cgo,TRUE,Com2Control(iCom),((iCom & COM_Double)!=0));
 	// Use smaller font on smaller buttons
-	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? Game.GraphicsResource.FontTiny : Game.GraphicsResource.FontRegular;
+	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? ::GraphicsResource.FontTiny : ::GraphicsResource.FontRegular;
 	// Draw text
 	if (szText && Config.Graphics.ShowCommandKeys)
 		Application.DDraw->TextOut(szText, rFont, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt-rFont.iLineHgt-2,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
@@ -933,11 +944,11 @@ void DrawCommandKey(C4Facet &cgo, int32_t iCom, BOOL fPressed, const char *szTex
 void DrawControlKey(C4Facet &cgo, int32_t iControl, BOOL fPressed, const char *szText)
 	{
 	// Draw key
-	Game.GraphicsResource.fctKey.Draw(cgo,FALSE,fPressed);
+	::GraphicsResource.fctKey.Draw(cgo,FALSE,fPressed);
 	// Draw control symbol
-	Game.GraphicsResource.fctCommand.Draw(cgo,TRUE,iControl);
+	::GraphicsResource.fctCommand.Draw(cgo,TRUE,iControl);
 	// Use smaller font on smaller buttons
-	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? Game.GraphicsResource.FontRegular : Game.GraphicsResource.FontTiny;
+	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? ::GraphicsResource.FontRegular : ::GraphicsResource.FontTiny;
 	// Draw text
 	if (szText)
 		Application.DDraw->TextOut(szText, rFont, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt-rFont.iLineHgt-2,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
@@ -951,17 +962,17 @@ BOOL SellFromBase(int32_t iPlr, C4Object *pBaseObj, C4ID id, C4Object *pSellObj)
   if (!pBaseObj || !ValidPlr(pBaseObj->Base)) return FALSE;
 	if (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell) return FALSE;
   // Base owner eliminated
-  if (Game.Players.Get(pBaseObj->Base)->Eliminated)
+  if (::Players.Get(pBaseObj->Base)->Eliminated)
     {
     StartSoundEffect("Error",false,100,pBaseObj);
-    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),Game.Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
+    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),::Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
 		return FALSE;
     }
   // Base owner hostile
   if (Hostile(iPlr,pBaseObj->Base))
     {
     StartSoundEffect("Error",false,100,pBaseObj);
-    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),Game.Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
+    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),::Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
 		return FALSE;
     }
 	// check validity of sell object, if specified
@@ -974,7 +985,7 @@ BOOL SellFromBase(int32_t iPlr, C4Object *pBaseObj, C4ID id, C4Object *pSellObj)
 	// check definition NoSell
 	if (pThing->Def->NoSell) return FALSE;
   // Sell object (pBaseObj owner gets the money)
-  return Game.Players.Get(pBaseObj->Base)->Sell2Home(pThing);
+  return ::Players.Get(pBaseObj->Base)->Sell2Home(pThing);
   }
 
 BOOL Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, BOOL fShowErrors)
@@ -989,10 +1000,10 @@ BOOL Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, BOOL fShowErrors)
 		{
 		if (!fShowErrors) return FALSE;
 		StartSoundEffect("Error",false,100,pBase);
-		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),Game.Players.Get(pBase->Base)->GetName()).getData(),iPlr); return FALSE;
+		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),::Players.Get(pBase->Base)->GetName()).getData(),iPlr); return FALSE;
 		}
 	// buy
-	if (!(pThing=Game.Players.Get(pBase->Base)->Buy(id, fShowErrors, iPlr, pBase))) return FALSE;
+	if (!(pThing=::Players.Get(pBase->Base)->Buy(id, fShowErrors, iPlr, pBase))) return FALSE;
 	// Object enter target object
 	pThing->Enter(pBase);
 	// Success
@@ -1001,7 +1012,7 @@ BOOL Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, BOOL fShowErrors)
 
 BOOL PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t tx, int32_t ty)
 	{
-	C4Player *pPlr=Game.Players.Get(plr);
+	C4Player *pPlr=::Players.Get(plr);
 	if (!pPlr) return FALSE;
 	int32_t iAddMode = C4P_Command_Set;
 	// Adjust for old-style keyboard throw/drop control: add & in range
@@ -1022,8 +1033,8 @@ BOOL PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t t
 			}
 		// Jump'n'Run: Drop on combined Down/Left/Right+Throw
 		if (pPlr->PrefControlStyle && (pPlr->PressedComs & (1 << COM_Down))) fConvertToDrop = true;*/
-		if (fConvertToDrop) return pPlr->ObjectCommand(C4CMD_Drop,pTarget,tx,ty,NULL,0,iAddMode);
+		if (fConvertToDrop) return pPlr->ObjectCommand(C4CMD_Drop,pTarget,tx,ty,NULL,C4VNull,iAddMode);
 		}
 	// Route to player
-	return pPlr->ObjectCommand(cmdf,pTarget,tx,ty,NULL,0,iAddMode);
+	return pPlr->ObjectCommand(cmdf,pTarget,tx,ty,NULL,C4VNull,iAddMode);
 	}

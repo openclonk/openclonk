@@ -1,6 +1,11 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
+ * Copyright (c) 1998-2001, 2003, 2006  Matthes Bender
+ * Copyright (c) 2002, 2004-2009  Sven Eberhardt
+ * Copyright (c) 2005  Peter Wortmann
+ * Copyright (c) 2005-2007  Günther Brammer
+ * Copyright (c) 2008  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,6 +29,8 @@
 #include <C4Gui.h>
 #include <C4Log.h>
 #include <C4Game.h>
+#include <C4GraphicsSystem.h>
+#include <C4GameObjects.h>
 #endif
 
 #include <StdGL.h>
@@ -54,7 +61,6 @@ void C4GraphicsResource::Default()
 	fctRank.Default();
 	fctFire.Default();
 	fctBackground.Default();
-	sfcLiquidAnimation.Default(); idSfcLiquidAnimation = 0;
 	fctCaptain.Default();
 	fctMouseCursor.Default();
 	fctSelectMark.Default();
@@ -115,7 +121,6 @@ void C4GraphicsResource::Clear()
 	fctRank.Clear();
 	fctFire.Clear();
 	fctBackground.Clear();
-	sfcLiquidAnimation.Clear();
 	fctCaptain.Clear();
 	fctMouseCursor.Clear();
 	fctSelectMark.Clear();
@@ -157,12 +162,12 @@ bool C4GraphicsResource::InitFonts()
 	if (!Game.FontLoader.InitFont(FontRegular, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Files))
 		return false;
 	// assign def list as custom image source
-	FontRegular.SetCustomImages(&Game.Defs);
+	FontRegular.SetCustomImages(&::Definitions);
 	// load additional fonts
-	if (!Game.FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &Game.GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &Game.GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &Game.GraphicsResource.Files)) return false;
-	if (!Game.FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &Game.GraphicsResource.Files, false)) return false;
+	if (!Game.FontLoader.InitFont(FontTitle, szFont, C4FontLoader::C4FT_Title, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!Game.FontLoader.InitFont(FontCaption, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!Game.FontLoader.InitFont(FontTiny, szFont, C4FontLoader::C4FT_Log, Config.General.RXFontSize, &::GraphicsResource.Files)) return false;
+	if (!Game.FontLoader.InitFont(FontTooltip, szFont, C4FontLoader::C4FT_Main, Config.General.RXFontSize, &::GraphicsResource.Files, false)) return false;
 #endif
 	// done, success
 	return true;
@@ -192,7 +197,7 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 		AlphaPalette[0]=255;
 		AlphaPalette[191]=127;
 		// update game pal
-		if (!Game.GraphicsSystem.SetPalette()) { LogFatal("Pal error (2)!"); return FALSE; }
+		if (!::GraphicsSystem.SetPalette()) { LogFatal("Pal error (2)!"); return FALSE; }
 		idPalGrp = idNewPalGrp;
 		}
 
@@ -229,7 +234,6 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 	if (!LoadFile(fctGamepad,			"Gamepad",			Files, 80)) return FALSE;
 	if (!LoadFile(fctBuild,				"Build",				Files)) return FALSE;
 	if (!LoadFile(fctEnergyBars,	"EnergyBars",		Files)) return FALSE;
-	if (!LoadFile(sfcLiquidAnimation, "Liquid", Files, idSfcLiquidAnimation)) return FALSE;
 	// life bar facets
 	if (fctEnergyBars.Surface)
 		{
@@ -492,3 +496,5 @@ bool C4GraphicsResource::ReloadResolutionDependantFiles()
 	fctMouseCursor.idSourceGroup = 0;
 	return LoadCursorGfx();
 	}
+
+C4GraphicsResource GraphicsResource;
