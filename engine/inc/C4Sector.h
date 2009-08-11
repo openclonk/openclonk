@@ -51,6 +51,7 @@ class C4LSector
 		C4ObjectList ObjectShapes; // objects with shapes that overlap this sector
 
 		void CompileFunc(StdCompiler *pComp);
+		void ClearObjects(); // remove all objects from object lists
 
 		friend class C4LSectors;
 	};
@@ -73,6 +74,7 @@ class C4LSectors
 		void Add(C4Object *pObj, C4ObjectList *pMainList);
 		void Update(C4Object *pObj, C4ObjectList *pMainList); // does not update object order!
 		void Remove(C4Object *pObj);
+		void ClearObjects(); // remove all objects from object lists
 
 		void AssertObjectNotInList(C4Object *pObj); // searches all sector lists for object, and assert if it's inside a list
 

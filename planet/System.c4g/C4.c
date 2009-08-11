@@ -1,6 +1,5 @@
 /*-- Altes Zeug, das nicht mehr in die Engine muss --*/
 
-/* proplist changes aren't in this branch? 
 // stuff for the proplist changes
 static const DFA_NONE    =-1;
 static const DFA_WALK    = 0;
@@ -27,7 +26,7 @@ global func GetActMapVal(string strEntry, string strAction, id idDef, int iEntry
   if (!idDef) idDef = GetID();
   if (strEntry == "Facet") strEntry = ["X", "Y", "Wdt", "Hgt", "OffX", "OffY"][iEntryNr];
   return GetProperty(strEntry, GetProperty(strAction, idDef));
-} */
+}
  
 global func ShowNeededMaterial(object pOfObject)
 {
