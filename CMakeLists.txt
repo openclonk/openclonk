@@ -440,6 +440,22 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
 )
 
+source_group("Unsorted" .*)
+source_group("Library\\Platform abstraction" src/platform/.*)
+source_group("Library\\Utility" src/lib/.*)
+source_group("Library\\C4Group" src/c4group/.*)
+source_group("Library\\Graphics" src/lib/texture/.*)
+source_group("GUI" src/gui/.*)
+source_group("Network" src/network/.*)
+source_group("Game\\Objects" src/game/object/.*)
+source_group("Game\\Scenario" src/game/landscape/.*)
+source_group("Game\\Player" src/game/player/.*)
+source_group("Game\\Script" src/game/script/.*)
+source_group("Scripting" src/script/.*)
+source_group("Config" src/config/.*)
+source_group("Control" src/control/.*)
+source_group("Editing" src/editor/.*)
+
 add_executable(c4group
 	src/c4group/c4group_ng.cpp
 	src/c4group/C4Group.cpp
