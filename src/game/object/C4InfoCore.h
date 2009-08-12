@@ -25,6 +25,7 @@
 #include <C4Id.h>
 #include <C4ValueMap.h>
 #include <Fixed.h>
+#include "C4InputValidation.h"
 
 class C4RankSystem;
 

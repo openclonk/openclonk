@@ -18,10 +18,10 @@
  */
 // user input validation functions
 
-#include <C4Include.h>
+#include <Standard.h>
 #include <C4InputValidation.h>
 #include <C4Log.h>
-#include <C4Config.h>
+#include "StdMarkup.h"
 
 #include <cctype>
 

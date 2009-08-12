@@ -299,8 +299,8 @@ BOOL SWildcardMatchEx(const char *szString, const char *szWildcard);
 
 // sprintf wrapper
 
-#include <stdio.h>
-#include <stdarg.h>
+#include <cstdio>
+#include <cstdarg>
 
 #ifdef _MSC_VER
 #define vsnprintf _vsnprintf
@@ -335,6 +335,12 @@ template <typename T>
 
 // open a weblink in an external browser
 bool OpenURL(const char *szURL);
+
+class StdCompiler;
+
+#include <cstdlib>
+#include <cassert>
+#include <cmath>
 
 #endif // INC_STANDARD
 

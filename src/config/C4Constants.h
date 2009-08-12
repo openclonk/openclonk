@@ -25,17 +25,10 @@
 
 //============================= Main =====================================================
 
-const int C4MaxNameList   =  10,
-          C4MaxName       =  30, // player names, etc.
-					C4MaxLongName   = 120, // scenario titles, etc. - may include markup
-          C4MaxComment    = 256, // network game and player comments
+const int
           C4MaxDefString  = 100,
           C4MaxTitle      = 512,
 					C4MaxMessage		= 256,
-
-					C4MaxServerName = 255,
-
-					C4MaxVariable		=	 10,
 
 					C4ViewDelay			= 100,
 					C4RetireDelay		=  60,
@@ -64,19 +57,11 @@ const int C4MaxNameList   =  10,
 
 const int C4M_MaxName     = 15,
           C4M_MaxDefName  = 2*C4M_MaxName+1,
-					C4M_ColsPerMat  = 3,
 					C4M_MaxTexIndex = 127; // last texture map index is reserved for diff
 
 const int C4S_MaxPlayer		= 4;
 
-const int C4D_MaxName     = C4MaxName,
-          C4D_MaxVertex   = 30,
-          C4D_MaxIDLen    = C4D_MaxName;
-
-const int C4Px_MaxName		= C4MaxName,// maximum length of a particle def name
-					C4Px_MaxParticle= 256,			// maximum number of particles of one type
-					C4Px_BufSize		= 128,			// number of particles in one buffer
-					C4Px_MaxIDLen		= 30;				// maximum length of internal identifiers
+const int C4D_MaxVertex   = 30;
 
 const int C4SymbolSize			 = 35,
 					C4SymbolBorder		 = 5,

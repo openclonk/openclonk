@@ -36,6 +36,7 @@
 #include <C4ScriptHost.h>
 #include <C4DefGraphics.h>
 #include "C4LangStringTable.h"
+#include "C4InputValidation.h"
 
 const int32_t C4D_None           =    0,
 							C4D_All            =		~C4D_None,
@@ -203,7 +204,7 @@ class C4Def: public C4PropList
 		int32_t Timer;
 		int32_t NoComponentMass;
 		int32_t NoStabilize;
-    char STimerCall[C4D_MaxIDLen];
+    char STimerCall[C4AUL_MAX_Identifier];
 		int32_t ClosedContainer;	// if set, contained objects are not damaged by lava/acid etc. 1: Contained objects can't view out; 2: They can
 		int32_t SilentCommands;		// if set, no command failure messages are printed
 		int32_t NoBurnDamage;			// if set, the object won't take damage when burning

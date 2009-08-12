@@ -42,6 +42,7 @@ set(OC_CLONK_SOURCES
 	src/config/C4Config.h
 	src/config/C4ConfigShareware.cpp
 	src/config/C4ConfigShareware.h
+	src/config/C4Constants.h
 	src/config/C4SecurityCertificates.cpp
 	src/config/C4SecurityCertificates.h
 	src/control/C4Control.cpp
@@ -73,7 +74,6 @@ set(OC_CLONK_SOURCES
 	src/editor/C4PropertyDlg.h
 	src/editor/C4ToolsDlg.cpp
 	src/editor/C4ToolsDlg.h
-	src/game/C4Constants.h
 	src/game/C4GameVersion.h
 	src/game/C4Physics.h
 	src/game/landscape/C4Landscape.cpp

@@ -19,6 +19,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE. */
 #ifndef INC_C4RTF
 #define INC_C4RTF
 
+#include <StdBuf.h>
+
 class C4RTFFile
 	{
 	public:
@@ -73,7 +75,7 @@ class C4RTFFile
 		class ParserError
 			{
 			public:
-				StdStrBuf ErrorText;
+				StdCopyStrBuf ErrorText;
 				ParserError(const char *szErr) { ErrorText.Copy(szErr); }
 			};
 

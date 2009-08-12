@@ -21,6 +21,12 @@
 #define INC_C4InputValidation
 
 #include "StdBuf.h"
+#include "StdFile.h"
+#include "StdAdaptors.h"
+
+const int C4MaxName = 30; // player names, etc.
+const int C4MaxLongName = 120; // scenario titles, etc. - may include markup
+const int C4MaxComment = 256; // network game and player comments
 
 namespace C4InVal
 	{

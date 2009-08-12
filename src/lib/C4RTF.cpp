@@ -19,9 +19,8 @@
  */
 // RTF file parsing functionality
 
-#include "C4Include.h"
+#include "Standard.h"
 #include "C4RTF.H"
-#include "C4Config.h"
 
 #include <cctype>
 

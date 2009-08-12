@@ -52,6 +52,11 @@ typedef void (*C4ParticleDrawProc)(C4Particle *, C4TargetFacet &, C4Object *); /
 
 #define ParticleSystem ::Particles
 
+const int 
+	C4Px_MaxParticle = 256,			// maximum number of particles of one type
+	C4Px_BufSize = 128,			// number of particles in one buffer
+	C4Px_MaxIDLen = 30;			// maximum length of internal identifiers
+
 // core for particle defs
 class C4ParticleDefCore
 	{

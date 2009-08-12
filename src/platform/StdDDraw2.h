@@ -199,9 +199,7 @@ class CGammaControl
 	friend class CStdGL;
 	};
 
-// helper structs
-struct FLOAT_RECT { float left,right,top,bottom; };
-
+// helper struct
 struct ZoomData
 	{
 	float Zoom;

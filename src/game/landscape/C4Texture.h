@@ -24,6 +24,7 @@
 #define INC_C4Texture
 
 #include <C4Surface.h>
+#include <C4Constants.h>
 
 class C4Texture
   {

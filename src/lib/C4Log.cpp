@@ -33,6 +33,9 @@
 #include <C4Language.h>
 #include <C4Network2.h>
 #include <C4GraphicsSystem.h>
+#include <C4Config.h>
+#include <C4Components.h>
+#include <StdWindow.h>
 #endif
 
 #if defined(HAVE_SHARE_H) || defined(_WIN32)

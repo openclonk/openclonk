@@ -22,8 +22,9 @@
 #ifndef INC_C4DefGraphics
 #define INC_C4DefGraphics
 
-#include <C4FacetEx.h>
-#include <C4Surface.h>
+#include "C4FacetEx.h"
+#include "C4Surface.h"
+#include "C4InputValidation.h"
 
 #define C4Portrait_None   "none"
 #define C4Portrait_Random "random"

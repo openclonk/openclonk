@@ -101,7 +101,6 @@
 
 #include "C4Id.h"
 #include "C4Prototypes.h"
-#include "C4Constants.h"
 
 #ifdef _WIN32
 #include <mmsystem.h>

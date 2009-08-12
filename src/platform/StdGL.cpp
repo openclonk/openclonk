@@ -26,6 +26,7 @@
 #include <StdGL.h>
 #include <StdSurface2.h>
 #include <StdWindow.h>
+#include "C4Rect.h"
 
 #ifdef USE_GL
 

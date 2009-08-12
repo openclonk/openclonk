@@ -22,6 +22,11 @@
 #ifndef INC_C4NameList
 #define INC_C4NameList
 
+const int C4MaxNameList = 10;
+
+#include "C4Constants.h"
+#include "C4InputValidation.h"
+
 #include <cstring>
 class C4NameList
   {

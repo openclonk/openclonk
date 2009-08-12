@@ -23,6 +23,7 @@
 #define INC_C4Region
 
 #include <C4Id.h>
+#include <C4Constants.h>
 
 const int C4RGN_MaxCaption=256;
 

@@ -21,6 +21,8 @@
 #ifndef INC_C4Teams
 #define INC_C4Teams
 
+#include "C4InputValidation.h"
+
 // class predec
 namespace C4GUI { class ComboBox_FillCB; };
 

@@ -29,6 +29,7 @@
 #include <StdMarkup.h>
 #include <StdFont.h>
 #include <StdWindow.h>
+#include "C4Rect.h"
 
 #include <stdio.h>
 #include <math.h>

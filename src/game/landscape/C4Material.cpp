@@ -867,12 +867,13 @@ void C4MaterialMap::UpdateScriptPointers()
 
 
 int32_t PixCol2MatOld(BYTE pixc)
-  {
-  if (pixc < GBM) return MNone;
-  pixc &= 63; // Substract GBM, ignore IFT
-  if (pixc > ::MaterialMap.Num*C4M_ColsPerMat-1) return MNone;
-  return pixc / C4M_ColsPerMat;
-  }
+	{
+	const int C4M_ColsPerMat = 3;
+	if (pixc < GBM) return MNone;
+	pixc &= 63; // Substract GBM, ignore IFT
+	if (pixc > ::MaterialMap.Num*C4M_ColsPerMat-1) return MNone;
+	return pixc / C4M_ColsPerMat;
+	}
 
 int32_t PixCol2MatOld2(BYTE pixc)
   {

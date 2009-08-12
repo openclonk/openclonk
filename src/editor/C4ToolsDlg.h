@@ -28,6 +28,8 @@
 #include <gtk/gtkwidget.h>
 #endif
 
+#include "C4Constants.h"
+
 const int32_t C4TLS_Brush  = 0,
 					C4TLS_Line	 = 1,
 					C4TLS_Rect	 = 2,
