@@ -33,6 +33,8 @@
 #include <time.h>
 #include <errno.h>
 
+#include "MacUtility.h"
+
 /* CStdApp */
 
 CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
@@ -72,6 +74,11 @@ bool CStdApp::Init(int argc, char * argv[]) {
 	}
 
 	SDL_EnableUNICODE(1);
+#ifdef __APPLE__
+	SDL_EnableKeyRepeat(MacUtility::keyRepeatDelay(SDL_DEFAULT_REPEAT_DELAY), MacUtility::keyRepeatInterval(SDL_DEFAULT_REPEAT_INTERVAL));
+#else
+	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
+#endif
 
 	// create pipe
 	if(pipe(this->Pipe) != 0) {
