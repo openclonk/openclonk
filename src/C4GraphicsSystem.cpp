@@ -828,6 +828,7 @@ void C4GraphicsSystem::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_
 	{
 	// No gamma effects
 	if (Config.Graphics.DisableGamma) return;
+	if (iRampIndex < 0 || iRampIndex >= C4MaxGammaRamps) return;
 	// turn ramp index into array offset
 	iRampIndex*=3;
 	// set array members
