@@ -237,6 +237,8 @@ namespace
                       int32_t& button, DWORD& flags)
     {
         static int lastLeftClick = 0, lastRightClick = 0;
+		static int lastX = 0, lastY = 0;
+		static const int clickDist = 2;
 
         button = C4MC_Button_None;
         flags = 0;
@@ -245,7 +247,7 @@ namespace
         {
         case SDL_BUTTON_LEFT:
             if (e.state == SDL_PRESSED)
-                if (timeGetTime() - lastLeftClick < 400)
+                if (timeGetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
                 {
                     lastLeftClick = 0;
                     button = C4MC_Button_LeftDouble;
@@ -288,6 +290,8 @@ namespace
             flags = (-32) << 16;
             break;
         }
+		lastX = e.x;
+		lastY = e.y;
     }
 
     bool isSpecialKey(unsigned unicode)
