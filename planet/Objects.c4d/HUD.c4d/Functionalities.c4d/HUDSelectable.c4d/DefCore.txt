@@ -1,0 +1,4 @@
+[DefCore]
+id=HUDS
+Version=4,9,5
+Category=C4D_StaticBack

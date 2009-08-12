@@ -16,7 +16,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.59)
 AC_INIT(clonk, m4_format([[[%s.%s.%s.%s]]], m4_include(version)))
 AC_COPYRIGHT([©2005-2009 Günther Brammer])
-AC_CONFIG_SRCDIR([engine/src/C4Map.cpp])
+AC_CONFIG_SRCDIR([/src/C4Game.cpp])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
