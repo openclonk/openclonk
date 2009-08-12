@@ -119,6 +119,10 @@ void CStdApp::HandleSDLEvent(SDL_Event& event) {
 		  Quit();
 		  break;
 	}
+	
+#ifdef __APPLE__
+	MacUtility::ensureWindowInFront();
+#endif
 
     // Everything else goes to the window.
 	if (pWindow)
