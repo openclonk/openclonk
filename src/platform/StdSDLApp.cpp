@@ -170,18 +170,29 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 void CStdApp::RestoreVideoMode() {
 }
 
-// Clipboard not implemented.
+#ifndef __APPLE__
+
+// stubs
 
 void CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
 }
+
 StdStrBuf CStdApp::Paste(bool fClipboard) {
 	return StdStrBuf(0);
 }
+
 bool CStdApp::IsClipboardFull(bool fClipboard) {
 	return false;
 }
+
 void CStdApp::ClearClipboard(bool fClipboard) {
 }
+
+void CStdApp::MessageDialog(const char * message)
+{
+}
+
+#endif
 
 // Event-pipe-whatever stuff I do not understand.
 
@@ -196,9 +207,4 @@ bool CStdApp::ReadStdInCommand() {
 	} else if(isprint((unsigned char)c))
 		CmdBuf.AppendChar(c);
 	return true;
-}
-
-void CStdApp::MessageDialog(const char * message)
-{
-// FIXME: At least for macosx something could be done here
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		58508E1D103482EF00533E7D /* StdMacApp.mm in Sources */ = {isa = PBXBuildFile; fileRef = 58508E1C103482EF00533E7D /* StdMacApp.mm */; };
 		5862E1191032E57A002CAE9E /* C4Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5862DF3B1032E57A002CAE9E /* C4Application.cpp */; };
 		5862E11A1032E57A002CAE9E /* C4FullScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5862DF3D1032E57A002CAE9E /* C4FullScreen.cpp */; };
 		5862E11B1032E57A002CAE9E /* C4Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5862DF3F1032E57A002CAE9E /* C4Game.cpp */; };
@@ -298,6 +299,7 @@
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		58508E1C103482EF00533E7D /* StdMacApp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StdMacApp.mm; sourceTree = "<group>"; };
 		5862DF3B1032E57A002CAE9E /* C4Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4Application.cpp; sourceTree = "<group>"; };
 		5862DF3C1032E57A002CAE9E /* C4Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4Application.h; sourceTree = "<group>"; };
 		5862DF3D1032E57A002CAE9E /* C4FullScreen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4FullScreen.cpp; sourceTree = "<group>"; };
@@ -1408,6 +1410,7 @@
 				5862E0B91032E57A002CAE9E /* StdXPrivate.h */,
 				5862E0BA1032E57A002CAE9E /* StdXWindow.cpp */,
 				5862E2861032E7E8002CAE9E /* MacUtility.h */,
+				58508E1C103482EF00533E7D /* StdMacApp.mm */,
 			);
 			path = platform;
 			sourceTree = "<group>";
@@ -1905,6 +1908,7 @@
 				5862E21A1032E57A002CAE9E /* C4ValueList.cpp in Sources */,
 				5862E21B1032E57A002CAE9E /* C4ValueMap.cpp in Sources */,
 				5862E21C1032E57A002CAE9E /* gzio.c in Sources */,
+				58508E1D103482EF00533E7D /* StdMacApp.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
