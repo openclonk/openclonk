@@ -1345,12 +1345,6 @@ static long FnGetOwner(C4AulContext *cthr, C4Object *pObj)
   return pObj->Owner;
   }
 
-static long FnCrewMember(C4AulContext *cthr, C4Object *pObj)
-  {
-	if (!pObj) pObj=cthr->Obj; if (!pObj) return FALSE;
-  return pObj->Def->CrewMember;
-  }
-
 static long FnGetController(C4AulContext *cthr, C4Object *pObj)
   {
 	if (!pObj) pObj=cthr->Obj; if (!pObj) return NO_OWNER;
@@ -5871,7 +5865,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetAlive", FnSetAlive);
 	AddFunc(pEngine, "GetAlive", FnGetAlive);
 	AddFunc(pEngine, "GetDamage", FnGetDamage);
-	AddFunc(pEngine, "CrewMember", FnCrewMember);
 	AddFunc(pEngine, "ComponentAll", FnComponentAll);
 	AddFunc(pEngine, "SetComDir", FnSetComDir);
 	AddFunc(pEngine, "GetComDir", FnGetComDir);
