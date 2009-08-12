@@ -188,25 +188,12 @@ void C4ValueList::CompileFunc(class StdCompiler *pComp)
 		{ pComp->Value(inSize); }
 	catch(StdCompiler::NotFoundException *pExc)
 		{ Reset(); delete pExc; return; }
-  // Seperator
-  if(!pComp->Seperator(StdCompiler::SEP_SEP2))
-	{
-		assert(pComp->isCompiler());
-		// No ';'-seperator? So it's a really old value list format, or empty
-		pComp->Seperator(StdCompiler::SEP_SEP);
-		this->SetSize(C4MaxVariable);
-		// First variable was misinterpreted as size
-		pData[0].SetInt(inSize);
-		// Read remaining data
-		pComp->Value(mkArrayAdapt(pData + 1, C4MaxVariable - 1, C4Value()));
-	}
-	else
-	{
-    // Allocate
-    if(pComp->isCompiler()) this->SetSize(inSize);
-		// Values
-		pComp->Value(mkArrayAdapt(pData, iSize, C4Value()));
-	}
+	// Seperator
+	pComp->Seperator(StdCompiler::SEP_SEP2);
+	// Allocate
+	if(pComp->isCompiler()) this->SetSize(inSize);
+	// Values
+	pComp->Value(mkArrayAdapt(pData, iSize, C4Value()));
 }
 
 C4ValueArray::C4ValueArray()
