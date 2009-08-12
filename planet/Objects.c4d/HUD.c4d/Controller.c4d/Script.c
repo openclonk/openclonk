@@ -59,7 +59,7 @@ protected func OnClonkRecruitment(object clonk, int plr)
 
 protected func OnClonkDeath(object clonk, int killer)
 {
-	if(GetController(clonk) != GetOwner()) return;
+	if(clonk->GetController() != GetOwner()) return;
 	
 	if(!(clonk->HUDSelectable())) return;
 	
@@ -89,7 +89,7 @@ public func ReorderCrewSelectors()
 		var sel = crew->GetSelector();
 		if(sel)
 		{
-			sel->SetPosition(32 + j * (GetDefWidth(CSLR) + spacing) + GetDefWidth(CSLR)/2, 16+GetDefHeight(CSLR)/2);
+			sel->SetPosition(32 + j * (CSLR->GetDefWidth() + spacing) + CSLR->GetDefWidth()/2, 16+CSLR->GetDefHeight()/2);
 			if(j+1 == 10) sel->SetHotkey(0);
 			else sel->SetHotkey(j+1);
 		}

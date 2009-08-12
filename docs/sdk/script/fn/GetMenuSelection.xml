@@ -7,15 +7,12 @@
 		<category>Objekte</category><subcat>Menü</subcat>
 		<version>4.9.1.0 GWE</version>
 		<syntax>
-			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Menü abgefragt wird. 0 bei lokalem Aufruf.</desc></param>
-			</params>
+			<rtype>int?</rtype>
 		</syntax>
-		<desc>Ermittelt den gerade ausgewählten Menüeintrag des geöffneten Menüs eines Objekts.</desc>
+		<desc>Ermittelt den gerade ausgewählten Menüeintrag des geöffneten Menüs des aufrufenden Objekts, oder nil, wenn kein Menü geöffnet ist.</desc>
 		<examples>
 			<example>
-				<code><funclink>Log</funclink>("Aktuelle Auswahl: Punkt %d...", GetMenuSelection(<funclink>GetCursor</funclink>(0));</code>
+				<code><funclink>Log</funclink>("Aktuelle Auswahl: Punkt %d...", <funclink>GetCursor</funclink>(0)->GetMenuSelection();</code>
 				<text>Gibt ins Log aus, welchen Menüpunkt der Spieler gerade gewählt hat.</text>
 			</example>
 		</examples>

@@ -8,14 +8,11 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>id</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Das Objekt, dessen ID gesucht wird.</desc></param>
-			</params>
 		</syntax>
-		<desc>Gibt die ID eines Objekts zurück.</desc>
+		<desc>Gibt die ID des aufrufenden Objekts zurück.</desc>
 		<examples>
 			<example>
-				<code><funclink>CreateObject</funclink>(GetID(<funclink>this</funclink>()))</code>
+				<code><funclink>CreateObject</funclink>(GetID())</code>
 				<text>Erstellt ein Duplikat des aufrufenden Objekts.</text>
 			</example>
 		</examples>

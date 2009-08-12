@@ -10,10 +10,9 @@
       <rtype>bool</rtype>
       <params>
         <param><type>int</type><name>iR</name><desc>Winkel in Grad</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Zielobjekt. 0 bei lokalem Aufruf.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Setzt die Drehung eines Objekts.</desc>
+    <desc>Setzt die Drehung des aufrufenden Objekts.</desc>
     <related>
       <funclink>SetRDir</funclink>
       <funclink>SetXDir</funclink>

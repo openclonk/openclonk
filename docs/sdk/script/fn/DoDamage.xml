@@ -7,16 +7,17 @@
 		<category>Objekte</category><subcat>Status</subcat>
 		<version>4.6.5.0 CP</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iChange</name><desc>Veränderung des Schadenswertes; positiv oder negativ</desc></param>
-				<param><type>object</type><name>pTarget</name><desc>Objekt, das beschädigt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int</type><name>iDmgType</name><desc>Schadensursache, die an Fx*Damage-Callbacks von Effekten übergeben wird (siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>). Standard ist FX_Call_DmgScript.</desc><optional /></param>
+				<param><type>int</type><name>iCausedBy</name><desc>Spielernummer des Spielers, der den Schaden verursacht hat.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Verändert den Schadenswert eines Objekts. Bei iChange ungleich Null wird im Zielobjekt außerdem die Funktion Damage aufgerufen. Bei lokalem Aufruf gilt der Besitzer des aufrufenden Objekts als Verursacher des Schadens.</desc>
+		<desc>Verändert den Schadenswert des aufrufenden Objekts. Bei iChange ungleich Null wird im Zielobjekt außerdem die Funktion Damage aufgerufen.</desc>
 		<examples>
 			<example>
-				<code>DoDamage(500, <funclink>FindObject</funclink>(TREE));</code>
+				<code><funclink>FindObject</funclink>(TREE)->DoDamage(500);</code>
 				<text>Fällt einen Baum, wenn er noch nicht gefällt ist.</text>
 			</example>
 		</examples>

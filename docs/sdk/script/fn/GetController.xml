@@ -9,11 +9,8 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen kontrollierender Spieler abgegfragt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
 		</syntax>
-		<desc>Fragt ab, welcher Spieler ein Objekt zur Zeit kontrolliert bzw. zuletzt kontrolliert hat. Bei Mannschaftsmitgliedern ist dies normalerweise immer der Besitzer; bei Fahrzeugen der Controller des Clonks, der es zuletzt bedient (angefasst und geschoben/gezogen) hat. Objekte, die von Lebewesen aufgenommen werden, nehmen automatisch den Controller ihres Containers an. Beim Besitzerwechsel (siehe <funclink>SetOwner</funclink>())wird automatisch auch der Controller auf den neuen Besitzer geändert.</desc>
+		<desc>Fragt ab, welcher Spieler das aufrufende Objekt zur Zeit kontrolliert bzw. zuletzt kontrolliert hat. Bei Mannschaftsmitgliedern ist dies normalerweise immer der Besitzer; bei Fahrzeugen der Controller des Clonks, der es zuletzt bedient (angefasst und geschoben/gezogen) hat. Objekte, die von Lebewesen aufgenommen werden, nehmen automatisch den Controller ihres Containers an. Beim Besitzerwechsel (siehe <funclink>SetOwner</funclink>())wird automatisch auch der Controller auf den neuen Besitzer geändert.</desc>
 		<remark>Der Controller wird durch eine temporäre Kontrolle durch beispielsweise <funclink>SetCursor</funclink> nicht verändert.</remark>
 		<examples>
 			<example>

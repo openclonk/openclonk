@@ -7,7 +7,7 @@
     <category>Objekte</category>
     <version>4.6.5.0 CP</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>void</rtype>
       <params>
         <param><type>int</type><name>iX</name><desc>X-Mittelposition des durchgeschüttelten Kreises. Immer global.</desc></param>
         <param><type>int</type><name>iY</name><desc>Y-Mittelposition des durchgeschüttelten Kreises. Immer global.</desc></param>

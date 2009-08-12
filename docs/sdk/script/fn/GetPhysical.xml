@@ -10,22 +10,25 @@
                         <rtype>int</rtype>
                         <params>
                                 <param><type>string</type><name>szPhysical</name><desc>Name der abzufragenden physischen Eigenschaft.</desc></param>
-                                <param><type>int</type><name>iMode</name><desc>iMode 0 liefert die gerade aktuellen Eigenschaften (permanent oder temporär) und kann auch bei Objekten ohne Objektinfo (z.B. Fahrzeugen oder Gebäuden) angewendet werden. iMode 1 liefert die permanenten Eigenschaften aus der Objektinfo. iMode 2 liefert die temporären Eigenschaften, allerdings nur wenn sich die Eigenschaften auch gerade im temporären Modus befinden.</desc></param>
-			        <param><type>object</type><name>pObj</name><desc>Das Objekt, dessen Physical festgestellt wird. Null bei lokalen Aufrufen.</desc></param>
-			        <param><type>id</type><name>idDef</name><desc>Wenn angegeben, wird stattdessen der Definitionswert der angegebenen Definition aus der DefCore.txt, Sektion [Physical] zurückgegeben.</desc></param>
+                                <param><type>int</type><name>iMode</name><desc>Änderungsmodus (symbolische Konstanten ab CR):<br />
+					<table><rowh><col>Konstante</col><col>Wert</col><col>Bedeutung</col></rowh>
+					<row><col>PHYS_Current</col><col>0</col><col>Im Objektkontext: Die Eigenschaften werden im gerade aktiven Modus (temporär oder permanent) des Objektes abgefragt. Dieser Modus funktioniert als einziger auch bei Objekten ohne Objektinfo. Im Definitionskontext: Die Standardwerte der Definition werden abgefragt.</col></row>
+					<row><col>PHYS_Permanent</col><col>1</col><col>Die permanenten Eigenschaften aus der Spielerdatei werden abgefragt. Dies ist nur bei Spielercrew-Mitgliedern möglich.</col></row>
+					<row><col>PHYS_Temporary</col><col>2</col><col>Die temporären Eigenschaften werden abgefragt, wenn sie existieren.</col></row>
+				</param>
 		        </params>
                 </syntax>
-                <desc>Liefert die physischen Eigenschaften eines Objekts.</desc>
+                <desc>Liefert die physischen Eigenschaften des Objekts oder der Definition im Aufrufkontext.</desc>
 		<examples>
 			<example>
-				<code><funclink>if</funclink> (GetPhysical("Magic", 0, <funclink>GetCursor</funclink>())) <funclink>Message</funclink>("Ich kann zaubern!", <funclink>GetCursor</funclink>());</code>
+				<code><funclink>if</funclink> (<funclink>GetCursor</funclink>()->GetPhysical("Magic")) <funclink>GetCursor</funclink>()-><funclink>Message</funclink>("Ich kann zaubern!");</code>
 				<text>Der ausgewählte Clonk des ersten Spielers freut sich, wenn er gerade Zauberenergie aufnehmen kann.</text>
 			</example>
 		</examples>
                 <related>
                         <funclink>SetPhysical</funclink>
                         <funclink>TrainPhysical</funclink>
-      <funclink>ResetPhysical</funclink>
+			<funclink>ResetPhysical</funclink>
                 </related>
         </func>
         <author>jwk</author><date>Juni 2002</date>

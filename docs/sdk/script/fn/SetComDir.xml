@@ -10,22 +10,21 @@
       <rtype>int</rtype>
       <params>
         <param><type>int</type><name>iComDir</name><desc>Befehlsrichtung. Muss <funclink>COMD_None</funclink>(), <funclink>COMD_Down</funclink>(), <funclink>COMD_DownLeft</funclink>(), <funclink>COMD_DownRight</funclink>(), <funclink>COMD_Left</funclink>(), <funclink>COMD_Right</funclink>(), <funclink>COMD_Up</funclink>(), <funclink>COMD_UpLeft</funclink>() oder <funclink>COMD_UpRight</funclink>() sein.</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Befehlsrichtung gesetzt werden soll. 0 bei lokalem Aufruf.</desc><optional/></param>
       </params>
     </syntax>
-    <desc>Setzt die Befehlsrichtung eines Objekts (siehe <funclink>GetComDir</funclink>)</desc>
+    <desc>Setzt die Befehlsrichtung des aufrufenden Objekts (siehe <funclink>GetComDir</funclink>)</desc>
     <examples>
       <example>
 
 <code>var pClnk = <funclink>GetHiRank</funclink>(0);
-SetComDir(<funclink>COMD_None</funclink>(), pClnk);
-<funclink>SetCommand</funclink>(pClnk, "");</code>
+pClnk->SetComDir(<funclink>COMD_None</funclink>());
+pClnk-><funclink>SetCommand</funclink>("");</code>
 
         <text>Gibt dem höchstrangigsten Clonk von Spieler 1 den Befehl, stehen zu bleiben. Vorhandene Kommandos werden gelöscht.</text>
 
 <code>var pClnk = <funclink>GetHiRank</funclink>(0);
 <funclink>pClnk->SetAction</funclink>("Dig");
-SetComDir(<funclink>COMD_DownRight</funclink>());</code>
+pClnk->SetComDir(<funclink>COMD_DownRight</funclink>());</code>
 
         <text>Lässt den höchstrangigsten Clonk von Spieler 1 nach rechts unten graben.</text>
 

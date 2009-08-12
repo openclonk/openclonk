@@ -39,14 +39,14 @@ public func SetBarLayers(int la, int num)
 
 	// new layers
 	layer[num] = la;
-	SetGraphics("Empty",nil,BAR0,layer[num],GFXOV_MODE_Base);
-	SetGraphics("Bar",nil,BAR0,layer[num]+1,GFXOV_MODE_Base);
+	SetGraphics("Empty",BAR0,layer[num],GFXOV_MODE_Base);
+	SetGraphics("Bar",BAR0,layer[num]+1,GFXOV_MODE_Base);
 }
 
 public func SetBarDimensions(int wdt, int hgt, int num)
 {
-	width[num] = 1000 * wdt / GetDefWidth(BAR0);
-	height[num] = 1000 * hgt / GetDefHeight(BAR0);
+	width[num] = 1000 * wdt / BAR0->GetDefWidth();
+	height[num] = 1000 * hgt / BAR0->GetDefHeight();
 }
 
 public func SetBarProgress(int promille, int num)
@@ -58,15 +58,15 @@ public func SetBarProgress(int promille, int num)
 	if(!width[num]) width[num] = 1000;
 	if(!height[num]) height[num] = 1000;
 
-	var w = GetDefWidth(BAR0)/2;
+	var w = BAR0->GetDefWidth()/2;
 	
 	// the bar does not start on the left side of the graphics... correct this
 	var graphicscorrect = 100;
 	
 	var baroffset = offsx[num]*1000 - width[num]*w * (1000-promille)/(1000+graphicscorrect);
 
-	SetObjDrawTransform(width[num],0,offsx[num]*1000, 0, height[num], offsy[num]*1000,nil, layer[num]);
-	SetObjDrawTransform((promille * width[num])/1000,0, baroffset, 0, height[num], offsy[num]*1000, nil, layer[num]+1);
+	SetObjDrawTransform(width[num],0,offsx[num]*1000, 0, height[num], offsy[num]*1000, layer[num]);
+	SetObjDrawTransform((promille * width[num])/1000,0, baroffset, 0, height[num], offsy[num]*1000, layer[num]+1);
 
 	return true;
 }

@@ -196,6 +196,9 @@ public:
 	// Compilation
 	void CompileFunc(StdCompiler *pComp);
 
+	static inline bool IsNullableType(C4V_Type Type)
+		{ return Type == C4V_Int || Type == C4V_Bool; }
+
 protected:
 	// data
 	C4V_Data Data;
@@ -225,9 +228,6 @@ protected:
 
 	void AddDataRef();
 	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray);
-
-	static inline bool IsNullableType(C4V_Type Type)
-		{ return Type == C4V_Int || Type == C4V_Bool; }
 
 	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
 	static bool FnCnvObject(C4Value *Val, C4V_Type toType, BOOL fStrict);
@@ -315,7 +315,11 @@ template <> struct C4ValueConv<long> : public C4ValueConv<int32_t> { };
 template <> struct C4ValueConv<int> : public C4ValueConv<int32_t> { };
 #endif
 
-extern const C4Value C4VNull, C4VFalse, C4VTrue;
+extern const C4Value C4VFalse, C4VTrue;
+
+// type tag to allow other code to recognize C4VNull at compile time
+class C4NullValue : public C4Value {};
+extern const C4NullValue C4VNull;
 
 #endif
 

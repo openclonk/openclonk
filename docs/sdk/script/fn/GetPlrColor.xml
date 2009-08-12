@@ -3,7 +3,7 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
   <func>
-    <title>GetPlrColorDw</title>
+    <title>GetPlrColor</title>
     <category>Spieler</category>
     <version>4.9.5.0 CE</version>
     <syntax>
@@ -16,14 +16,14 @@
     <examples>
       <example>
 
-<code><funclink>Message</funclink>("&lt;c %x&gt;%s&lt;/c&gt; hat %d Punkte.", 0, GetPlrColorDw(0), <funclink>GetPlayerName</funclink>(0), <funclink>GetScore</funclink>(0));</code>
+<code><funclink>Message</funclink>("&lt;c %x&gt;%s&lt;/c&gt; hat %d Punkte.", 0, GetPlrColor(0), <funclink>GetPlayerName</funclink>(0), <funclink>GetScore</funclink>(0));</code>
 
         <text>Gibt Statusinformationen über den ersten Spieler aus, wobei dessen Spielername in seiner Spielerfarbe gefärbt wird.</text>
       </example>
     </examples>
     <related>
-      <funclink>GetColorDw</funclink>
-      <funclink>SetColorDw</funclink>
+      <funclink>GetColor</funclink>
+      <funclink>SetColor</funclink>
     </related>
   </func>
   <author>Sven2</author><date>Oktober 2003</date>

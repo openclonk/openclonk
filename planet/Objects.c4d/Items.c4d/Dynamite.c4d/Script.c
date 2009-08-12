@@ -20,12 +20,12 @@ public func Use(object clonk)
 	// hangling
 	if(WildcardMatch(clonk->GetAction(),"Hangle*"))
 	{
-		y = -GetDefHeight(clonk->GetID())/2;
+		y = -clonk->GetDefHeight()/2;
 	}
 	// climbing
 	else if(WildcardMatch(clonk->GetAction(), "Climb*"))
 	{
-		x = GetDefWidth(clonk->GetID())/2;
+		x = clonk->GetDefWidth()/2;
 		if(clonk->GetDir() == DIR_Left) x = -x;
 	}
 	// something else
@@ -35,9 +35,9 @@ public func Use(object clonk)
 		if(!getWall(x, y, clonk))
 		{
 			// contact to ground
-			if(GetContact(clonk, -1) & CNAT_Bottom)
+			if(clonk->GetContact(-1) & CNAT_Bottom)
 			{
-				y = GetDefHeight(clonk->GetID())/2;
+				y = clonk->GetDefHeight()/2;
 			}
 			// probably flying or swimming
 			else
@@ -54,7 +54,7 @@ public func Use(object clonk)
 	
 	// put into ...
 	Sound("Connect");
-	Exit(this, x*6/10, y + GetDefHeight(GetID())/2, Angle(x,y,0,0) + RandomX(-25,25));
+	Exit(x*6/10, y + GetDefHeight()/2, Angle(x,y,0,0) + RandomX(-25,25));
 
 	return true;
 }
@@ -72,7 +72,7 @@ public func Fuse()
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
 private func getWall(&xo, &yo, object clonk)
 {
-	var wdt = GetDefWidth(clonk->GetID());
+	var wdt = clonk->GetDefWidth();
 	var dir = clonk->GetDir()*2-1;
 	var x = (wdt/2)*dir;
 	var s = false;
@@ -95,7 +95,7 @@ private func Fusing() {
 	// Effekt
 	if(GetActTime() < 120)
 	{
-		var h = GetDefHeight(GetID())/2;
+		var h = GetDefHeight()/2;
 		CastParticles("Spark",1,20,Sin(GetR(),h),-Cos(GetR(),h),15,25,RGB(255,200,0),RGB(255,255,150));
 	}
 	// Explosion

@@ -64,8 +64,8 @@ protected func Construction()
 	// health bar
 	SetBarLayers(2,0);
 	SetBarOffset(0,BarOffset(0),0);
-	SetBarDimensions(GetDefWidth(GetID()),HealthBarHeight(),0);
-	SetClrModulation(RGB(200,0,0),nil,3);
+	SetBarDimensions(GetDefWidth(),HealthBarHeight(),0);
+	SetClrModulation(RGB(200,0,0),3);
 }
 
 public func MouseSelection(int plr)
@@ -74,7 +74,7 @@ public func MouseSelection(int plr)
 	if(plr != GetOwner()) return false;
 
 	// select this clonk
-	SetCursor(plr, crew);
+	crew->SetCursor(plr);
 	
 	return true;
 }
@@ -106,9 +106,9 @@ public func SetHotkey(int num)
 	
 	hotkey = true;
 	var name = Format("%d",num);
-	SetGraphics(name,nil,NUMB,12,GFXOV_MODE_IngamePicture);
-	SetObjDrawTransform(300,0,16000,0,300,-30000, nil, 12);
-	SetClrModulation(HSL(0,0,180),nil,12);
+	SetGraphics(name,NUMB,12,GFXOV_MODE_IngamePicture);
+	SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
+	SetClrModulation(HSL(0,0,180),12);
 }
 
 public func CrewGone()
@@ -129,9 +129,9 @@ public func UpdateSelectionStatus()
 	if(!hotkey) return;
 
 	if(crew == GetCursor(GetOwner()))
-		SetClrModulation(HSL(0,0,250),nil,12);
+		SetClrModulation(HSL(0,0,250),12);
 	else
-		SetClrModulation(HSL(0,0,180),nil,12);
+		SetClrModulation(HSL(0,0,180),12);
 }
 
 public func UpdateRank()
@@ -142,21 +142,21 @@ public func UpdateRank()
 	var nrank = rank % 25;
 	var brank = rank / 25;
 	
-	var rankx = -1000 * GetDefWidth(GetID())/2 + 10000;
+	var rankx = -1000 * GetDefWidth()/2 + 10000;
 	var ranky = -15000;
 	
-	SetGraphics(nil,nil,RANK,10,GFXOV_MODE_Action,Format("Rank%d",nrank));
+	SetGraphics(nil,RANK,10,GFXOV_MODE_Action,Format("Rank%d",nrank));
 	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, nil, 10);
 	
 	// extra rank (the star if the clonk is too experienced for normal ranks)
 	if(brank > 0)
 	{
-		SetGraphics(nil,nil,RANK,11,GFXOV_MODE_Action,Format("RankExtra%d",brank));
-		SetObjDrawTransform(1000,0,rankx-6000,0,1000,ranky-4000, nil, 11);
+		SetGraphics(nil,RANK,11,GFXOV_MODE_Action,Format("RankExtra%d",brank));
+		SetObjDrawTransform(1000,0,rankx-6000,0,1000,ranky-4000, 11);
 	}
 	else
 	{
-		SetGraphics(nil,nil,nil,11);
+		SetGraphics(nil,nil,11);
 	}
 }
 
@@ -164,7 +164,7 @@ public func UpdateTitleGraphic()
 {
 	if(!crew) return;
 	
-	SetGraphics(nil,nil,crew->GetID(),1,GFXOV_MODE_Object,nil,nil,crew);
+	SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_Object,nil,nil,crew);
 	
 	//SetGraphics(nil,nil,crew->GetID(),1,GFXOV_MODE_IngamePicture);
 	
@@ -234,7 +234,7 @@ public func UpdateMagicBar()
 
 private func BarOffset(int num)
 {
-	var offset = GetDefWidth(GetID())/2 + HealthBarHeight()/2 + num * BarSpacing() + num;
+	var offset = GetDefWidth()/2 + HealthBarHeight()/2 + num * BarSpacing() + num;
 	if(num > 0) offset += HealthBarHeight();
 	if(num > 1) offset += BreathBarHeight();
 	return offset;
@@ -245,7 +245,7 @@ private func AddBreathBar()
 	// breath bar
 	SetBarLayers(4,1);
 	SetBarOffset(0,BarOffset(1),1);
-	SetBarDimensions(GetDefWidth(GetID()),BreathBarHeight(),1);
+	SetBarDimensions(GetDefWidth(),BreathBarHeight(),1);
 	SetClrModulation(RGB(0,200,200),nil,5);
 	
 	breathbar = true;
@@ -273,8 +273,8 @@ private func AddMagicBar()
 
 	SetBarLayers(6,2);
 	SetBarOffset(0,BarOffset(num),2);
-	SetBarDimensions(GetDefWidth(GetID()),MagicBarHeight(),2);
-	SetClrModulation(RGB(0,0,200),nil,7);
+	SetBarDimensions(GetDefWidth(),MagicBarHeight(),2);
+	SetClrModulation(RGB(0,0,200),7);
 	
 	magicbar = true;
 }

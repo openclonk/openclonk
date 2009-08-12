@@ -17,31 +17,30 @@
 					<row><col>PHYS_Permanent</col><col>1</col><col>Die Eigenschaften werden permanent geändert. Das heißt, dass auch die Infosektion des Objektes modifiziert wird, und die Änderungen somit auch in die Spielerdatei geschrieben werden. Nur Spielercrewobjekte besitzen eine Infosektion.</col></row>
 					<row><col>PHYS_Temporary</col><col>2</col><col>Für das Objekt wird eine temporäre Infosektion erzeugt, sofern noch nicht vorhanden, und temporären Modus gesetzt. Änderungen im temporären Modus landen nicht in der Spielerdatei. Um temporäre Physicals wieder zu den Originalen zurückzusetzen, sollte <funclink>ResetPhysical</funclink> verwendet werden.</col></row>
 					<row><col>PHYS_StackTemporary</col><col>3</col><col>Wie PHYS_Temporary, jedoch wird zusätzlich der vorherige Physical-Wert gesichert und kann einzeln mit einem <funclink>ResetPhysical</funclink>-Aufruf wiederhergestellt werden. Ab CR.</col></row></table><br /></desc><optional /></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Physical gesetzt werden soll. 0 bei lokalen Aufrufen.</desc><optional /></param>
 			</params>
 		</syntax>
-                <desc>Ändert die physischen Eigenschaften eines Objekts. Hiermit können die in der Physical-Sektion der <emlink href="definition/DefCore.html">DefCore.txt</emlink> angegebenen Werte temporär oder permanent angepasst werden.</desc>
+                <desc>Ändert die physischen Eigenschaften des aufrufenden Objekts. Hiermit können die in der Physical-Sektion der <emlink href="definition/DefCore.html">DefCore.txt</emlink> angegebenen Werte temporär oder permanent angepasst werden.</desc>
 		<examples>
 			<example>
 <code>protected func Activate(pEater)
   {
   [$DescEatPill$]
-  SetPhysical("Magic", 1000000, PHYS_Temporary, pEater);
-  <funclink>while</funclink>(<funclink>DoMagicEnergy</funclink>(1, pEater)) ;
-  <funclink>return</funclink>(<funclink>RemoveObject</funclink>());
+  pEater->SetPhysical("Magic", 1000000, PHYS_Temporary);
+  <funclink>while</funclink>(pEater-><funclink>DoMagicEnergy</funclink>(1)) ;
+  <funclink>RemoveObject</funclink>();
   }</code>
 				<text>Script für eine Magiepille: Der essende Clonk bekommt temporär Zauberenergie.</text>
 			</example>
 			<example>
 <code>protected func FxJumpBoostStart(object trg, int num, int iTemp)
   {
-  SetPhysical("Jump", <funclink>GetPhysical</funclink>("Jump", PHYS_Current, trg) + 10000, PHYS_StackTemporary, trg);
+  trg->SetPhysical("Jump", trg-><funclink>GetPhysical</funclink>("Jump", PHYS_Current) + 10000, PHYS_StackTemporary);
   <funclink>return</funclink>(FX_OK);
   }
 		
 protected func FxJumpBoostStop(object trg, int num, int reason, bool tmp)
   {
-  <funclink>ResetPhysical</funclink>(trg, "Jump");
+  trg-><funclink>ResetPhysical</funclink>("Jump");
   <funclink>return</funclink>(FX_OK);
   }</code>
 				<text>Script für einen Effekt namens JumpBoost: Wenn auf ein Objekt angewendet, kann es bis zum Löschen des Effektes höher springen. Die Kombination von PHYS_StackTemporary beim Setzen und  Angabe der geänderten Physical in <funclink>ResetPhysical</funclink> sorgt dafür, dass sich mehrere solcher Effekte problemlos kombinieren lassen.</text>

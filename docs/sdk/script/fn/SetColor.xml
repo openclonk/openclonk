@@ -7,25 +7,24 @@
     <category>Objekte</category><subcat>Darstellung</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>iColor</name><desc>Neue Farbe für ColorByOwner-Flächen</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Zielobjekt. 0 bei lokalem Aufruf.</desc><optional /></param>
+        <param><type>int</type><name>dwNewColor</name><desc>Neue Farbe für ColorByOwner-Flächen</desc></param>
       </params>
     </syntax>
-    <desc>Setzt die ColorByOwner-Färbung eines Objekts. Dieser Aufruf entspricht dem Setzen eines neuen Besitzers mit <funclink>SetOwner</funclink> bei einem Spieler mit der Spielerfarbe iColor.</desc>
+    <desc>Setzt die ColorByOwner-Färbung des aufrufenden Objekts. Dieser Aufruf entspricht dem Setzen eines neuen Besitzers mit <funclink>SetOwner</funclink> bei einem Spieler mit der Spielerfarbe dwNewColor.</desc>
     <examples>
       <example>
 
-<code>SetColor(2, <funclink>GetCursor</funclink>(0));</code>
+	      <code><funclink>GetCursor</funclink>(0)->SetColor(<funclink>RGBa</funclink>(255, 255, 255, 127));</code>
 
-        <text>Färbt die nach dem Besitzer gefärbten Flächen des ausgewählten Clonk des ersten Spielers rot.</text>
+        <text>Färbt die nach dem Besitzer gefärbten Flächen des ausgewählten Clonk des ersten Spielers weiß und halbdurchsichtig.</text>
       </example>
     </examples>
     <related>
-      <funclink>SetColorDw</funclink>
       <funclink>GetColor</funclink>
+      <funclink>SetClrModulation</funclink>
     </related>
   </func>
-  <author>jwk</author><date>August 2002</date>
+  <author>Sven2</author><date>Mai 2002</date>
 </funcs>

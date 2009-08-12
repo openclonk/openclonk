@@ -6,24 +6,23 @@
 
 #strict 2
 
-global func Explode(int iLevel, object pObj) {
+global func Explode(int iLevel) {
   // Viewport wackeln
-  ShakeViewPort(iLevel, nil, GetX(pObj), GetY(pObj));
+  ShakeViewPort(iLevel, nil, GetX(), GetY());
 
   // Sound muss vor dem Löschen des Objektes erzeugt werden, damit die Position stimmt
   var grade = BoundBy((iLevel/10)-1,1,3);
-  Sound(Format("Blast%d", grade), false, pObj);
+  Sound(Format("Blast%d", grade), false);
 
   // Explosionsparameter
-  if (!pObj) if (!(pObj = this)) return false;
-  var x=GetX(pObj), y=GetY(pObj);
-  var cause_plr = GetController(pObj);
-  var container = Contained(pObj);
-  var exploding_id = GetID(pObj);
-  var layer = GetObjectLayer(pObj);
+  var x=GetX(), y=GetY();
+  var cause_plr = GetController();
+  var container = Contained();
+  var exploding_id = GetID();
+  var layer = GetObjectLayer();
 
   // Explosionsparameter gesichert: Jetzt das Objekt entfernen, damit es von der Explosion selber nicht betroffen ist
-  RemoveObject(pObj);
+  RemoveObject();
 
   // Und die Explosion im globalen Kontext ausführen
   // Leider gibt es keine Möglichkeit, auf den globalen Kontext zuzugreifen (außer GameCall, aber das löst die Funktion immer neu auf)
@@ -37,8 +36,8 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	var container = inobj;
 	while(container)
 	{
-		if(GetDefContainBlast(GetID(container))) break;
-		else container = Contained(container);
+		if(container->GetID()->GetDefContainBlast()) break;
+		else container = container->Contained();
 	}
 
 	// Explosion outside: Explosion effects
@@ -73,13 +72,13 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
   }
 
   // Schaden in den Objekten bzw. draußen
-  BlastObjects(x+GetX(),y+GetY(), level, inobj, cause_plr+1, layer);
-  if (inobj != container) BlastObjects(x+GetX(),y+GetY(), level, container, cause_plr+1, layer);
+  BlastObjects(x+GetX(),y+GetY(), level, inobj, cause_plr, layer);
+  if (inobj != container) BlastObjects(x+GetX(),y+GetY(), level, container, cause_plr, layer);
 
   // Landschaft zerstören. Nach BlastObjects, damit neu freigesprengte Materialien nicht betroffen sind
   if (!container)
     {
-    BlastFree(x,y, level, cause_plr+1);
+    BlastFree(x,y, level, cause_plr);
     }
 
   return true;
@@ -89,7 +88,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 /* ----------------------- Blast objects & shockwaves  --------------------- */
 
 // Objekte beschädigen und wegschleudern
-global func BlastObjects(int x, int y, int level, object container, int cause_plr_plus_one, object layer)
+global func BlastObjects(int x, int y, int level, object container, int cause_plr, object layer)
   {
   var obj;
   
@@ -99,12 +98,12 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
   // Im Container?
   if (container)
     {
-    if (GetObjectLayer(container) == layer)
+    if (container->GetObjectLayer() == layer)
       {
-      BlastObject(level, container, cause_plr_plus_one);
+      container->BlastObject(level, cause_plr);
       if (!container) return true; // Container koennte inzwischen entfernt worden sein
       for (obj in FindObjects(Find_Container(container), Find_Layer(layer)))
-        if (obj) BlastObject(level, obj, cause_plr_plus_one);
+        if (obj) obj->BlastObject(level, cause_plr);
       }
     }
   else
@@ -112,7 +111,7 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
     // Objekt ist draußen
     // Objekte am Explosionspunkt beschädigen
     for (var obj in FindObjects(Find_AtRect(l_x-5, l_y-5, 10,10), Find_NoContainer(), Find_Layer(layer)))
-      if (obj) BlastObject(level, obj, cause_plr_plus_one);
+      if (obj) obj->BlastObject(level, cause_plr);
 
 		// TODO: -> Shockwave in own global func(?)
  
@@ -130,19 +129,19 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
         // Objekt hat benutzerdefinierte Reaktion auf die Schockwelle?
         if (obj->~OnShockwaveHit(level, x,y)) continue;
         // Lebewesen leiden besonders
-        var cat = GetCategory(obj);
+        var cat = obj->GetCategory();
         if (cat & C4D_Living)
           {
-          DoEnergy(level/-2, obj, false, FX_Call_EngBlast, cause_plr_plus_one);
-          DoDamage(level/2, obj, FX_Call_DmgBlast, cause_plr_plus_one);
+          obj->DoEnergy(level/-2, false, FX_Call_EngBlast, cause_plr);
+          obj->DoDamage(level/2, FX_Call_DmgBlast, cause_plr);
           }
         // Killverfolgung bei Projektilen
-        if (cat & C4D_Object) SetController(cause_plr_plus_one-1, obj);
+        if (cat & C4D_Object) obj->SetController(cause_plr);
         // Schockwelle
         var mass_fact = 20, mass_mul = 100; if (cat & C4D_Living) { mass_fact = 8; mass_mul = 80; }
-        mass_fact = BoundBy(GetMass(obj)*mass_mul/1000, 4, mass_fact);
-        var dx = 100*(GetX(obj)-x)+Random(51)-25;
-        var dy = 100*(GetY(obj)-y)+Random(51)-25;
+        mass_fact = BoundBy(obj->GetMass()*mass_mul/1000, 4, mass_fact);
+        var dx = 100*(obj->GetX()-x)+Random(51)-25;
+        var dy = 100*(obj->GetY()-y)+Random(51)-25;
         var vx, vy;
         if (dx)
           {
@@ -152,12 +151,12 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
         if (cat & C4D_Object)
           {
           // Objekte nicht zu schnell werden lassen
-          var ovx = GetXDir(obj, 100), ovy = GetYDir(obj, 100);
+          var ovx = obj->GetXDir(100), ovy = obj->GetYDir(100);
           if (ovx*vx > 0) vx = (Sqrt(vx*vx + ovx*ovx) - Abs(vx)) * Abs(vx)/vx;
           if (ovy*vy > 0) vy = (Sqrt(vy*vy + ovy*ovy) - Abs(vy)) * Abs(vy)/vy;
           }
         //Log("%v v(%v %v)   d(%v %v)  m=%v  l=%v  s=%v", obj, vx,vy, dx,dy, mass_fact, level, shock_speed);
-        Fling(obj, vx,vy, 100, true);
+        obj->Fling(vx,vy, 100, true);
         }
       }
     }
@@ -167,10 +166,10 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
   
 global func BlastObjectsShockwaveCheck(int x, int y)
   {
-  var def;
+  var def = GetID();
   // Einige Spezialfälle, die schwer in FindObjects passen
-  if (GetDefHorizontalFix(def = GetID())) return false;
-  if (GetDefGrab(def) != 1)
+  if (def->GetDefHorizontalFix()) return false;
+  if (def->GetDefGrab() != 1)
     {
     if (GetCategory() & C4D_Vehicle) return false;
     if (GetProcedure() == "FLOAT") return false;
@@ -190,33 +189,33 @@ global func BlastObjectsShockwaveCheck(int x, int y)
 
 /* ---------------------------- Shake view port  --------------------------- */
 
-global func ShakeViewPort(int iLevel, object pObj, int iOffX, int iOffY) {
+global func ShakeViewPort(int iLevel, int iOffX, int iOffY) {
   if(iLevel <= 0) return false;
 
-  var eff=GetEffect("ShakeEffect",pObj);
+  var eff=GetEffect("ShakeEffect",this);
 
   if(eff)
 	{
-    EffectVar(0,pObj,eff)+=iLevel;
+    EffectVar(0,this,eff)+=iLevel;
     return true;
   }
 
-  eff=AddEffect("ShakeEffect",pObj,200,1);
+  eff=AddEffect("ShakeEffect",this,200,1);
   if (!eff) return false;
 
-  EffectVar(0,pObj,eff)=iLevel;
+  EffectVar(0,this,eff)=iLevel;
 
   if(iOffX || iOffY)
 	{
-    EffectVar(1,pObj,eff)=iOffX;
-    EffectVar(2,pObj,eff)=iOffY;
+    EffectVar(1,this,eff)=iOffX;
+    EffectVar(2,this,eff)=iOffY;
   }
 	else
 	{
-    EffectVar(1,pObj,eff)=GetX(pObj);
-    EffectVar(2,pObj,eff)=GetY(pObj);
+    EffectVar(1,this,eff)=GetX();
+    EffectVar(2,this,eff)=GetY();
   }
-  return (true);
+  return true;
 }
 
 // Variables:
@@ -238,7 +237,7 @@ global func FxShakeEffectTimer(object pTarget, int iEffectNumber, int iTime) {
 
   for(var i=0; i<GetPlayerCount(); i++) {
     var iPlr=GetPlayerByIndex(i);
-		var distance = Distance(GetX(GetCursor(iPlr)),GetY(GetCursor(iPlr)),xpos,ypos);
+		var distance = Distance(GetCursor(iPlr)->GetX(),GetCursor(iPlr)->GetY(),xpos,ypos);
 
     // Schütteleffekt verringert sich je nach Entfernung
     var iLevel= (300*str) / Max(300,distance);
@@ -265,9 +264,9 @@ global func FxShakeEffectStop() {
 
 /* ----------------------------- Smoke trails ------------------------------ */
 
-global func CreateSmokeTrail(int iStrength, int iAngle, int iX, int iY, object pObj) {
-    iX += GetX(pObj);
-    iY += GetY(pObj);
+global func CreateSmokeTrail(int iStrength, int iAngle, int iX, int iY) {
+    iX += GetX();
+    iY += GetY();
   AddEffect("SmokeTrail", nil, 300, 1, nil, nil, iStrength, iAngle, iX, iY);
 }
 

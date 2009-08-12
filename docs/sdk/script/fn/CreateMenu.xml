@@ -7,10 +7,9 @@
 		<category>Objekte</category><subcat>Menü</subcat>
 		<version>4.6.5.0 CP</version><extversion>4.9.6.0 CR</extversion>
 		<syntax>
-			<rtype>int</rtype>
+			<rtype>bool</rtype>
 			<params>
 				<param><type>id</type><name>idSymbol</name><desc>Objektdefinition, deren Bild als Symbol verwendet wird</desc></param>
-				<param><type>object</type><name>pMenuObject</name><desc>Objekt, in welchem das Menü geöffnet wird; kann bei lokalen Aufrufen Null sein</desc></param>
 				<param><type>object</type><name>pCommandObject</name><desc>Erhält das Menükommando (siehe <funclink>AddMenuItem</funclink>); kann bei lokalen Aufrufen Null sein</desc></param>
 				<param><type>int</type><name>iExtra</name><desc>Zusätzliche Information im Menü über das jeweils markierte Objekt. Die angegebenen C4MN_*-Konstanten sind seit 4.9.5.0 CE ebenfalls definiert und sollten statt der numerischen Werte verwendet werden:
 				      <table>
@@ -37,7 +36,7 @@
 				<param><type>id</type><name>idMenuID</name><desc>Wenn angegeben, wird diese ID als Menü-ID gesetzt. Die aktuelle Menü-ID wird zum Beispiel von <funclink>GetMenu</funclink> zurückgegeben.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Erzeugt ein benutzerdefiniertes Menü in pMenuObject. Menüeinträge müssen mit <funclink>AddMenuItem</funclink> hinzugefügt werden.</desc>
+		<desc>Erzeugt ein benutzerdefiniertes Menü im aufrufenden Objekt. Menüeinträge müssen mit <funclink>AddMenuItem</funclink> hinzugefügt werden.</desc>
 		<examples>
 			<example>
 				<text>siehe <funclink>AddMenuItem</funclink></text>

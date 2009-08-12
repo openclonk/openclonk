@@ -10,10 +10,9 @@
       <rtype>bool</rtype>
       <params>
         <param><type>int</type><name>iItem</name><desc>Nummer des MenuItems, das selektiert werden soll. Der erste Eintrag hat die Nummer 0.</desc></param>
-        <param><type>object</type><name>pMenuObj</name><desc>Menüobjekt für das die Selektion geändert werden soll. 0 wenn sich das Menu im aufrufenden Objekt befindet.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Setzt die Auswahl in einem Menu.</desc>
+    <desc>Setzt die Auswahl in einem Menü.</desc>
     <examples>
       <example>
         <text>SelectMenuItem kann zusammen mit <funclink>GetMenuSelection</funclink> dazu verwendet werden, ein Menu zu aktualisieren, ohne dabei die Selektion zu verändern:</text>

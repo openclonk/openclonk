@@ -21,12 +21,6 @@
           <optional/>
         </param>
         <param>
-          <type>object</type>
-          <name>pObj</name>
-          <desc>Objekt, von dem der Eintrag abgefragt werden soll. Null bei lokalen Aufrufen.</desc>
-          <optional/>
-        </param>
-        <param>
           <type>int</type>
           <name>iEntryNr</name>
           <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
@@ -35,7 +29,7 @@
       </params>
     </syntax>
 
-    <desc>Gibt einen Eigenschaftswert eines Objekts nach seinem Namen in der Objects.txt zurück.</desc>
+    <desc>Gibt einen Eigenschaftswert des aufrufenden Objekts nach seinem Namen in der Objects.txt zurück.</desc>
 
     <remark>Die meisten Möglichkeiten für Werte von strEntry sind bereits in System.c4g/GetXVal.c vordefiniert</remark>
 

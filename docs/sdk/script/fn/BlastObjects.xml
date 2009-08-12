@@ -13,7 +13,7 @@
 				<param><type>int</type><name>iY</name><desc>Y-Koordinate</desc></param>
 				<param><type>int</type><name>iLevel</name><desc>Stärke</desc></param>
 				<param><type>object</type><name>pContainer</name><desc>Objekt, in dem die zu sprengenden Objekte enthalten sind.</desc></param>
-				<param><type>int</type><name>iCausedBy</name><desc>Spielernummer des Spielers, der der Verursacher des Schaden ist, plus eins.</desc></param>
+				<param><type>int</type><name>iCausedBy</name><desc>Spielernummer des Spielers, der der Verursacher des Schaden ist.</desc></param>
 			</params>
 		</syntax>
 		<desc>Fügt allen Objekten an angegebener Position Explosionsschaden zu. iX und iY sind immer globale Koordinaten. Wenn ein pContainer angegeben ist, wird der Schaden nur den Objekten zugefügt, die in pContainer enthalten sind. Explosionsschaden kann zur Entzündung führen oder auch Lebewesen wegschleudern. Bei lokalen Aufrufen gilt der Schaden als vom Controller des aufrufenden Objekts verursacht.</desc>

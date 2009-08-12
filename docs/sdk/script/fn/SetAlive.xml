@@ -10,7 +10,6 @@
 			<rtype>int</rtype>
 			<params>
 				<param><type>bool</type><name>fAlive</name><desc>0 = Tot; ansonsten lebendig</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Zustand gesetzt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Legt fest, ob ein Objekt lebt.</desc>

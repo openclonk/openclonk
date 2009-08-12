@@ -8,15 +8,11 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Kategorie abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>id</type><name>idDef</name><desc>Wenn angegeben, wird die Kategorie dieser Definition zurückgegeben.</desc><optional /></param>
-			</params>
 		</syntax>
-		<desc>Fragt die Objektkategorie eines Objekts ab. Die Objektkategorie wird normalerweise über die <emlink href="definition/defcore.html">DefCore</emlink> gesetzt, und danach höchstens in seltenen Fällen mit <funclink>SetCategory</funclink> geändert. Sie bestimmt das allgemeine Verhalten eines Objekts und dessen Platzierung. Eine mit GetCategory abgefragt Kategorie kann mit dem &amp;-Operator gegen eine C4D_-Konstante geprüft werden.</desc>
+		<desc>Fragt die Objektkategorie des aufrufenden Objekts oder der aufrufenden Definition ab. Die Objektkategorie wird normalerweise über die <emlink href="definition/defcore.html">DefCore</emlink> gesetzt, und danach höchstens in seltenen Fällen mit <funclink>SetCategory</funclink> geändert. Sie bestimmt das allgemeine Verhalten eines Objekts und dessen Platzierung. Eine mit GetCategory abgefragt Kategorie kann mit dem &amp;-Operator gegen eine C4D_-Konstante geprüft werden.</desc>
 		<examples>
 			<example>
-				<code><funclink>if</funclink> (GetCategory(obj) &amp; <funclink>C4D_Structure</funclink>()) <funclink>Incinerate</funclink>(obj);</code>
+				<code><funclink>if</funclink> (obj->GetCategory() &amp; <funclink>C4D_Structure</funclink>()) <funclink>Incinerate</funclink>(obj);</code>
 				<text>Zündet obj an, wenn es ein Gebäude ist.</text>
 			</example>
 		</examples>

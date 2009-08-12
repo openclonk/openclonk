@@ -8,14 +8,11 @@
 		<version>4.9.1.0 GWE</version>
 		<syntax>
 			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Menü geschlossen wird. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
 		</syntax>
-		<desc>Schließt das Menü eines Objekts.</desc>
+		<desc>Schließt das Menü des aufrufenden Objekts.</desc>
 		<examples>
 			<example>
-				<code>CloseMenu(<funclink>Contained</funclink>());</code>
+				<code><funclink>Contained</funclink>()->CloseMenu();</code>
 				<text>Schließt das Menü des eigenen Behälters.</text>
 			</example>
 		</examples>

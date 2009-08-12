@@ -31,7 +31,7 @@
 #include <C4Log.h>
 #endif
 
-const C4Value C4VNull = C4Value();
+const C4NullValue C4VNull = C4NullValue();
 const C4Value C4VTrue = C4VBool(true);
 const C4Value C4VFalse = C4VBool(false);
 

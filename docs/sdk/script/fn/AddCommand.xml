@@ -11,11 +11,6 @@
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>object</type>
-          <name>pObj</name>
-          <desc>Objekt, dem das Kommando gegeben wird.</desc>
-        </param>
-        <param>
           <type>string</type>
           <name>szCommand</name>
           <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
@@ -84,7 +79,7 @@
       </params>
     </syntax>
 
-    <desc>Fügt ein Kommado in die Kommandoliste eines Objekts hinzu (an den Anfang, siehe auch <funclink>AppendCommand</funclink>). D.h. es wird ein Kommando hinzugefügt, welches das Objekt vor anderen vorher gegebenen Kommandos auszuführen hat (war vorher kein Kommando gesetzt, so entspricht AddCommand <funclink>SetCommand</funclink>) <br />
+    <desc>Fügt ein Kommado in die Kommandoliste des aufrufenden Objekts hinzu (an den Anfang, siehe auch <funclink>AppendCommand</funclink>). D.h. es wird ein Kommando hinzugefügt, welches das Objekt vor anderen vorher gegebenen Kommandos auszuführen hat (war vorher kein Kommando gesetzt, so entspricht AddCommand <funclink>SetCommand</funclink>) <br />
           Für Kommando-Beschreibungen siehe <funclink>SetCommand</funclink>
 	</desc>
     <remark>
@@ -95,8 +90,8 @@
         <code>Timer:
   var obj = <funclink>FindObject</funclink>(0, -20, -40, 40, 40, <funclink>OCF_CrewMember</funclink>();
   if(obj)
-    if(<funclink>GetComDir</funclink>(obj) == <funclink>COMD_Right</funclink>())
-      <funclink>AddCommand</funclink>(obj, "Jump");
+    if(obj-><funclink>GetComDir</funclink>() == <funclink>COMD_Right</funclink>())
+      obj-><funclink>AddCommand</funclink>("Jump");
   return();</code>
         <text>
 Dieser Timer-Script bewirkt (aus einem Objekt aufgerufen, welches auf dem Boden liegt), dass jeder Clonk, der über das Objekt von links nach rechts hinübergeht, springt. Dazu wird erst ein Clonk (bzw. CrewMember) über dem Objekt gesucht. Wurde ein solcher gefunden, und läuft er im Moment nach rechts (ComDir), so wird dem Clonk das Kommando "Jump" hinzugefügt.

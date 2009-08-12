@@ -7,7 +7,7 @@
 		<category>Global</category>
 		<version>4.6.5.0 CP</version>
 		<syntax>
-			<rtype>int</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iGravity</name><desc>Neue Schwerkraft: Werte -300 bis 300 (in Prozent)</desc></param>
 			</params>

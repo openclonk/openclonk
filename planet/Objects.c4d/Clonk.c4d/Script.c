@@ -47,7 +47,7 @@ protected func Recruitment(int iPlr) {
 
 public func HasConstructMenu() { return HasKnowledge() && GetPhysical("CanConstruct"); }
 public func HasKnowledge() { return GetPlrKnowledge(GetOwner(),0,0,C4D_Structure); }
-public func HasBase()      { return FindBase(GetOwner()) && GetBase(Contained()) != GetOwner(); }
+public func HasBase()      { return FindBase(GetOwner()) && Contained()->GetBase() != GetOwner(); }
 public func ReleaseAllowed() { return ObjectCount(REAC); }
 public func AtConstructionSite() { return !Contained() && FindConstructionSite() && ObjectCount(CNMT); }
 public func AtEnergySite() { return !Contained() && FindEnergySite(); }
@@ -152,7 +152,7 @@ private func DolphinJump()
   if(!InLiquid()) return 0;
   if(GBackSemiSolid(0,-1)) return 0;
   // Nicht wenn deaktiviert (z.B. Ohnmacht)
-  if (GetActMapVal("ObjectDisabled", GetAction(), GetID())) return false;
+  if (GetID()->GetActMapVal("ObjectDisabled", GetAction())) return false;
   // herausspringen
   SetPosition(GetX(),GetY()-1);
   SetAction("Jump");
@@ -272,7 +272,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
   // Anderes Kommando beim Reiten: absteigen (Ausnahme: Context)
   if (IsRiding() && szCommand != "Context")
   {
-    SetComDir(COMD_Stop,GetActionTarget());
+    GetActionTarget()->SetComDir(COMD_Stop);
     GetActionTarget()->~ControlDownDouble(this);
   }
   // RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
@@ -292,8 +292,8 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 private func RedefinePhysical(szPhys, idTo)
 {
   // Physical-Werte ermitteln
-  var physDefFrom = GetPhysical(szPhys, 0, 0, GetID()),
-      physDefTo   = GetPhysical(szPhys, 0, 0, idTo),
+  var physDefFrom = GetID()->GetPhysical(szPhys),
+      physDefTo   = idTo->GetPhysical(szPhys),
       physCurr    = GetPhysical(szPhys);
   // Neuen Wert berechnen
   var physNew; if (physDefTo) physNew=BoundBy(physDefTo-physDefFrom+physCurr, 0, 100000);
@@ -347,25 +347,25 @@ protected func FxIntRedefineStart(object trg, int num, int tmp, id idTo)
 protected func FxIntRedefineStop(object trg, int num, int iReason, bool tmp)
   {
   // Physicals wiederherstellen
-  ResetPhysical(0, "BreatheWater");
-  ResetPhysical(0, "CorrosionResist");
-  ResetPhysical(0, "CanSwimDig");
-  ResetPhysical(0, "CanChop");
-  ResetPhysical(0, "CanConstruct");
-  ResetPhysical(0, "CanDig");
-  ResetPhysical(0, "Float");
-  ResetPhysical(0, "Magic");
-  ResetPhysical(0, "Fight");
-  ResetPhysical(0, "Push");
-  ResetPhysical(0, "Throw");
-  ResetPhysical(0, "Swim");
-  ResetPhysical(0, "Dig");
-  ResetPhysical(0, "Hangle");
-  ResetPhysical(0, "Scale");
-  ResetPhysical(0, "Jump");
-  ResetPhysical(0, "Walk");
-  ResetPhysical(0, "Breath");
-  ResetPhysical(0, "Energy");
+  ResetPhysical("BreatheWater");
+  ResetPhysical("CorrosionResist");
+  ResetPhysical("CanSwimDig");
+  ResetPhysical("CanChop");
+  ResetPhysical("CanConstruct");
+  ResetPhysical("CanDig");
+  ResetPhysical("Float");
+  ResetPhysical("Magic");
+  ResetPhysical("Fight");
+  ResetPhysical("Push");
+  ResetPhysical("Throw");
+  ResetPhysical("Swim");
+  ResetPhysical("Dig");
+  ResetPhysical("Hangle");
+  ResetPhysical("Scale");
+  ResetPhysical("Jump");
+  ResetPhysical("Walk");
+  ResetPhysical("Breath");
+  ResetPhysical("Energy");
   // Keine Rückänderung bei temporären Aufrufen oder beim Tod/Löschen
   if (tmp || iReason) return;
   // Damit Aufwertungen von nicht-Magiern keine Zauberenergie übrig lassen
@@ -410,7 +410,7 @@ public func Feed(iLevel)
 private func Riding()
 {
   // Richtung an die des Pferdes anpassen
-  SetDir(GetDir(GetActionTarget()));
+  SetDir(GetActionTarget()->GetDir());
   // Pferd steht still: Clonk soll auch still sitzen
   if (GetActionTarget()->~IsStill())
   {
@@ -439,11 +439,11 @@ private func Throwing()
   // Reitet? Eigengeschwindigkeit addieren
   if (GetActionTarget())
   {
-    iXDir += GetXDir(GetActionTarget()) / 10;
-    iYDir += GetYDir(GetActionTarget()) / 10;
+    iXDir += GetActionTarget()->GetXDir() / 10;
+    iYDir += GetActionTarget()->GetYDir() / 10;
   }
   // Werfen!
-  Exit(pObj, iX, iY, iR, iXDir, iYDir, iRDir);  
+  pObj->Exit(iX, iY, iR, iXDir, iYDir, iRDir);  
   // Fertig
   return 1;  
 }
@@ -459,7 +459,7 @@ private func Punching()
   if (!Random(3)) Sound("Kime*");
   if (!Random(5)) Sound("Punch*");
   if (!Random(2)) return 1;
-  Punch(GetActionTarget());
+  GetActionTarget()->Punch();
   return 1;
 }
   
@@ -685,7 +685,7 @@ public func ControlCommandConstruction(target, x, y, target2, def)
   // Keine Konstruktion erlaubt?
   if(def->~RejectConstruction(x - GetX(), y - GetY(), this) )
     // Construct-Kommando beenden
-    return FinishCommand(this, false, 0) ;
+    return FinishCommand(false, 0) ;
 }
 
 /* Automatische Produktion */
@@ -696,16 +696,16 @@ public func ControlCommandAcquire(target, x, y, target2, def)
   var obj = GetAvailableObject (def, target2);
   if (obj) {
     AddEffect("IntNotAvailable", obj, 1, 5, this);
-    AddCommand (this, "Get", obj, 0, 0, 0, 40);
+    AddCommand ("Get", obj, 0, 0, 0, 40);
     return 1;
   }
   // Gebäude suchen worin man's herstellen kann  
   if (obj = GetProducerOf (def)) {
-    AddCommand (this (), "Call", this, 0, 0, 0, 0, "AutoProduction", 0, 1);
+    AddCommand ("Call", this, 0, 0, 0, 0, "AutoProduction", 0, 1);
     obj -> ~HowToProduce (this, def);
     return 1;
   }
-  AddCommand (this, "Buy", 0, 0, 0, 0, 100, def, 0, C4CMD_Sub);
+  AddCommand ("Buy", 0, 0, 0, 0, 100, def, 0, C4CMD_Sub);
   return 1;
 }
 
@@ -713,15 +713,15 @@ public func AutoProduction() { return 1; }
 
 public func AutoProductionFailed() 
 {
-  var def = GetCommand (this (), 5, 1);
+  var def = GetCommand (5, 1);
   if (!FindContents(def)) {
-    var obj = GetAvailableObject (def, GetCommand (this (), 4, 1));
+    var obj = GetAvailableObject (def, GetCommand (4, 1));
     if (obj) {
       AddEffect("IntNotAvailable", obj, 1, 5, this);
-      AddCommand (this, "Get", obj,0,0,0,40);
+      AddCommand ("Get", obj,0,0,0,40);
       return 1;
     }
-    AddCommand (this, "Buy", 0, 0, 0, 0, 100, GetCommand(this, 5, 1), 0, C4CMD_Sub);
+    AddCommand ("Buy", 0, 0, 0, 0, 100, GetCommand(5, 1), 0, C4CMD_Sub);
   }
   return 1;
 }
@@ -870,7 +870,7 @@ public func DescendVehicle()
   if (Stuck()) if (pOldVehicle)
   {
     var x=GetX(), y=GetY();
-    SetPosition(GetX(pOldVehicle), GetY(pOldVehicle));
+    SetPosition(pOldVehicle->GetX(), pOldVehicle->GetY());
     if (Stuck())
     {
       // Das Gefährt steckt auch? Dann hilft es alles nichts. Zurück zum Ursprungsort.
@@ -981,7 +981,7 @@ public func SpellFailed(id idSpell, object pByCaller)
     // Zauber bereit gestellt, und diese sollten nicht an den Clonk zurück gegeben werden
     return (pSpellOrigin->~SpellFailed(idSpell, this));
   // Magieenergie zurückgeben
-  DoMagicEnergy(GetDefValue(idSpell), 0, true);
+  DoMagicEnergy(idSpell->GetDefValue(), true);
   // Alchemische Zutaten zurückgeben
   if(ObjectCount(ALCO)) IncreaseAlchem(idSpell);
 }

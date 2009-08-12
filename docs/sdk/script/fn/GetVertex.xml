@@ -2,24 +2,31 @@
 <!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
-				<func>
-								<title>GetVertex</title>
-								<category>Objekte</category><subcat>Vertices</subcat>
-								<version>4.6.5.0 CP</version>
-								<syntax>
-												<rtype>int</rtype>
-												<params>
-																<param><type>int</type><name>iIndex</name><desc>Index des Vertex.</desc></param>
-				<param><type>bool</type><name>fY</name><desc>Bei fY 0 wird die X-Koordinate, bei fY 1 die Y-Koordinate zurückgegeben.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Vertices ausgelesen werden. 0 bei lokalem Aufruf.</desc><optional/></param>
-												</params>
-								</syntax>
-								<desc>Liefert eine Koordinate des indizierten Vertex (siehe <emlink href="definition/defcore.html">DefCore.txt</emlink>) eines Objekts. Koordinaten in Relation zur Objektmitte.</desc>
-								<related>
+	<func>
+		<title>GetVertex</title>
+		<category>Objekte</category><subcat>Vertices</subcat>
+		<version>4.6.5.0 CP</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>iIndex</name><desc>Index des Vertex.</desc></param>
+				<param><type>int</type><name>data</name><desc>
+					<table><rowh><col>Wert</col><col>Bedeutung</col></rowh>
+							<row><col>VTX_X</col><col>X-Koordinate des Vertex.</col></row>
+							<row><col>VTX_Y</col><col>Y-Koordinate des Vertex.</col></row>
+							<row><col>VTX_CNAT</col><col><emlink href="definition/cnat.html">CNAT-Wert</emlink> des Vertex.</col></row>
+							<row><col>VTX_Friction</col><col>Reibung des Vertex.</col></row>
+					</table></desc>
+				</param>
+			</params>
+		</syntax>
+		<desc>Liefert eine Koordinate des indizierten Vertex (siehe <emlink href="definition/defcore.html">DefCore.txt</emlink>) des aufrufenden Objekts. Koordinaten in Relation zur Objektmitte.</desc>
+		<related>
 			<funclink>SetVertex</funclink>
-						<funclink>GetVertexNum</funclink>
-								</related>
-				</func>
-				<author>jwk</author><date>August 2002</date>
+			<funclink>GetVertexNum</funclink>
+		</related>
+	</func>
+	<author>jwk</author><date>August 2002</date>
+	<author>isilkor</author><date>2009-08-12</date>
 </funcs>
 

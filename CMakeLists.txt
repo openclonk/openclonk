@@ -377,7 +377,7 @@ set(OC_CLONK_SOURCES
 	src/zlib/zutil.h
 )
 mark_as_advanced(OC_CLONK_SOURCES)
-mark_as_advanced(OC_SYSTEM_SORUCES)
+mark_as_advanced(OC_SYSTEM_SOURCES)
 
 if(WIN32)
 	list(APPEND OC_CLONK_SOURCES

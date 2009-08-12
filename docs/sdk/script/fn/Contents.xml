@@ -10,10 +10,9 @@
 			<rtype>object</rtype>
 			<params>
 				<param><type>int</type><name>iIndex</name><desc>Index des Objekts in pObj, Zählung beginnt mit 0</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, in welchem gesucht werden soll; null für lokale Aufrufe</desc></param>
 			</params>
 		</syntax>
-		<desc>Liefert das indizierte Objekt, das in pObj enthalten ist.</desc>
+		<desc>Liefert das indizierte Objekt, das im aufrufenden Objekt enthalten ist.</desc>
 		<related>
 			<funclink>Contained</funclink>
 			<funclink>FindContents</funclink>

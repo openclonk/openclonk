@@ -10,7 +10,6 @@
       <rtype>bool</rtype>
       <params>
         <param><type>id</type><name>idNewDef</name><desc>ID der neuen Definition für das Objekt</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Typ geändert wird. 0 bei lokalem Aufruf.</desc></param>
       </params>
     </syntax>
     <desc>Weist einem Objekt eine neue Definition zu.</desc>
@@ -24,7 +23,7 @@
             eine gleichnamige in der Zieldefinition existiert).</remark>
     <examples>
       <example>
-        <code>ChangeDef(MONS, <funclink>GetCursor</funclink>(0));</code>
+        <code><funclink>GetCursor</funclink>(0)->ChangeDef(MONS);</code>
         <text>Verwandelt den ausgewählten Clonk des ersten Spielers in ein Monster.</text>
       </example>
     </examples>

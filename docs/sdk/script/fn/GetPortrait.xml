@@ -9,22 +9,21 @@
     <syntax>
       <rtype>any</rtype>
       <params>
-        <param><type>object</type><name>pObj</name><desc>Objekt, über dessen Portrait Informationen abgefragt werden sollen. 0 bei lokalem Aufruf.</desc><optional /></param>
         <param><type>bool</type><name>fGetID</name><desc>Wenn TRUE gibt die Funktion die ID der Definition zurück, aus der das Portrait stammt. Andernfalls wird der Name des Portraits zurückgegeben.</desc><optional /></param>
         <param><type>bool</type><name>fGetPermanent</name><desc>Wenn TRUE gibt die Funktion die Portraitwerte des permanenten Portraits zurück, sonst die des momentan verwendeten.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Fragt Name oder ID des Portraits eines Crew-Mitglieds ab.</desc>
+    <desc>Fragt Name oder ID des Portraits des aufrufenden Crew-Mitglieds ab.</desc>
     <remark>Hat das Crew-Mitglied ein individuelles Portrait, so gibt die Funktion "custom" bzw. die ID NONE zurück. Siehe dazu auch die Tabelle und die Beschreibung des fCopyGfx-Parameters von <funclink>SetPortrait</funclink></remark>
     <examples>
       <example>
-        <code>if(!WildcardMatch(<funclink>GetPortrait</funclink>(0, 0, 1), "?") )
-  <funclink>SetPortrait</funclink>("random", 0, <funclink>GetPortrait</funclink>(0, 1, 1), 1);
+        <code>if(!WildcardMatch(<funclink>GetPortrait</funclink>(0, 1), "?") )
+  <funclink>SetPortrait</funclink>("random", <funclink>GetPortrait</funclink>(1, 1), 1);
         </code>
-        <text>Weißt dem aufrufenden Clonk ein zufälliges Portrait zu, wenn der Name des momentanen Portraits nicht aus nur einem Zeichen besteht (zum Beispiel wenn die Portraits mit "1", "2", "3" etc. durchnummeriert sind), sondern länger ist (beispielsweise "Armored1" oder "Armored2").</text>
+        <text>Weist dem aufrufenden Clonk ein zufälliges Portrait zu, wenn der Name des momentanen Portraits nicht aus nur einem Zeichen besteht (zum Beispiel wenn die Portraits mit "1", "2", "3" etc. durchnummeriert sind), sondern länger ist (beispielsweise "Armored1" oder "Armored2").</text>
       </example>
       <example>
-        <code><funclink>SetPortrait</funclink>(<funclink>GetPortrait</funclink>(0, 0, 1), 0, <funclink>GetPortrait</funclink>(0, 1, 1) );
+        <code><funclink>SetPortrait</funclink>(<funclink>GetPortrait</funclink>(0, 1), <funclink>GetPortrait</funclink>(1, 1) );
         </code>
         <text>Stellt das Standardportrait eines Clonkes wieder her, falls es zwischenzeitlich durch andere SetPortrait-Aufrufe geändert wurde.</text>
       </example>

@@ -8,14 +8,11 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>pObject</name><desc>Objekt, von dem ermittelt werden soll, ob es feststeckt. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
 		</syntax>
-		<desc>Ermittelt, ob ein Objekt feststeckt, d.h., ob sich einer seiner Vertices in festem Material befindet.</desc>
+		<desc>Ermittelt, ob das aufrufende Objekt feststeckt, d.h., ob sich einer seiner Vertices in festem Material befindet.</desc>
 		<examples>
 			<example>
-				<code><funclink>if</funclink>(Stuck(<funclink>GetCursor</funclink>())) <funclink>Message</funclink>("Help!, <funclink>GetCursor</funclink>());</code>
+				<code><funclink>if</funclink>(<funclink>GetCursor</funclink>()->Stuck()) <funclink>Message</funclink>("Help!, <funclink>GetCursor</funclink>());</code>
 				<text>Lässt eine Nachricht über dem ausgewählten Clonk des ersten Spielers ausgeben, wenn dieser zum Zeitpunkt des Aufrufes feststeckt.</text>
 			</example>
 		</examples>

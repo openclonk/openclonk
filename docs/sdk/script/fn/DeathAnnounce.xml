@@ -7,7 +7,7 @@
     <category>Objekte</category><subcat>Lebewesen</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>void</rtype>
     </syntax>
     <desc>Gibt eine Botschaft a la "[name] ist von uns gegangen"  über dem aufrufenden Objekt aus.</desc>
     <related>

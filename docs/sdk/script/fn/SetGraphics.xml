@@ -10,7 +10,6 @@
       <rtype>bool</rtype>
       <params>
         <param><type>string</type><name>szGfxName</name><desc>Name der neu zu setzenden Grafik. Bei 0 wird die Standardgrafik (Graphics.png bzw. bmp) gesetzt.</desc><optional /></param>
-        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Grafik geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
         <param><type>id</type><name>idSrcDef</name><desc>Definition, von der die Grafik entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird. Wenn nicht angegeben für iOverlay!=0, wird das entsprechende Overlay entfernt.</desc><optional /></param>
         <param><type>int</type><name>iOverlay</name><desc>Index der zu setzenden Overlaygrafik. Muss wenn angegeben größer 0 sein, und fügt dem Objekt eine Grafik mit dem gegebenen Index hinzu, bzw. ändert sie wenn eine Grafik mit dem gegebenen Overlayindex schon existiert. Overlays mit größerem Index werden stets über denen mit kleinerem Index gezeichnet. Wenn ein Objekt nur eine Overlaygrafik hat, kann die symbolische Konstante GFX_Overlay (=1) verwendet werden.</desc><optional /></param>
         <param><type>int</type><name>iOverlayMode</name><desc>
@@ -31,27 +30,27 @@
         <param><type>object</type><name>pOvelayObject</name><desc>Nur für iOverlayMode==GFXOV_MODE_Object: Objekt, dessen Grafik über das Zielobjekt gelegt werden soll. Ab CR.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Ändert die Grafik eines Objekts. Diese beeinflusst die Darstellung des betreffenden Objekts überall im Spiel: In der Landschaft, im Menü oder auf Maussteuerungssymbolen.</desc>
+    <desc>Ändert die Grafik des aufrufenden Objekts. Diese beeinflusst die Darstellung des betreffenden Objekts überall im Spiel: In der Landschaft, im Menü oder auf Maussteuerungssymbolen.</desc>
     <remark>Es wird bei iOverlay=0 nur die Grafik eines Objekts geändert. Der Effekt entspricht dem Ersetzen der Graphics.bmp/-.png/Overlay.png in der <emlink href="definition/index.html">Definition</emlink>; Quellangaben aus der <emlink href="definition/actmap.html">ActMap.txt</emlink> oder <emlink href="definition/defcore.html">DefCore.txt</emlink> werden dadurch nicht beeinflusst; diese Koordinaten sollten also in der neuen Grafik auf sinnvolle Positionen verweisen (Das gilt auch für SolidMasks!).</remark>
     <examples>
       <example>
-        <code>SetGraphics(0, <funclink>FindObject</funclink>(ROCK), GOLD);</code>
+        <code><funclink>FindObject</funclink>(ROCK)->SetGraphics(nil, GOLD);</code>
         <text>Gibt einem zufälligen Stein aus der Landschaft die Grafik des Goldes.</text>
       </example>
       <example>
-        <code>SetGraphics("Armored", <funclink>FindObject</funclink>(KNIG));</code>
+        <code><funclink>FindObject</funclink>(KNIG)->SetGraphics("Armored");</code>
         <text>Gibt dem zuletzt erstellten Ritter im Spiel das Aussehen eines rüstungstragenden Ritters. Dazu werden die Dateien GraphicsArmored.png und OverlayArmored.png aus der Ritter-Gruppendatei für die Darstellung verwendet.</text>
       </example>
       <example>
-        <code>var obj; <funclink>while</funclink> (obj = <funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj)) SetGraphics(0, obj);</code>
+        <code>var obj; <funclink>while</funclink> (obj = <funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj)) obj->SetGraphics();</code>
         <text>Gibt allen Objekten im Spiel ihre Ursprungsgrafiken zurück.</text>
       </example>
       
-<example><code>SetGraphics(0, <funclink>this</funclink>(), CLNK, GFX_Overlay, GFXOV_MODE_Picture);
+<example><code>SetGraphics(nil, CLNK, GFX_Overlay, GFXOV_MODE_Picture);
 <funclink>SetObjDrawTransform</funclink>(800,0,0, 0,800,0, <funclink>this</funclink>(), GFX_Overlay);</code>
 <text>Objektscript: Das aufrufende Objekt bekommt ein verkleinertes Clonk-Bild auf die Picture-Grafik gedruckt.</text></example>
 
-<example><code>SetGraphics(0, <funclink>FindObject</funclink>(KNIG), SHIA, GFX_Overlay, GFXOV_MODE_Base, 0, GFX_BLIT_Additive);</code>
+<example><code><funclink>FindObject</funclink>(KNIG)->SetGraphics(nil, SHIA, GFX_Overlay, GFXOV_MODE_Base, 0, GFX_BLIT_Additive);</code>
 <text>Es wird bei irgendeinem Ritter ein Schild auf die Grafik gesetzt, und additiv gezeichnet.</text></example>
 
     </examples>

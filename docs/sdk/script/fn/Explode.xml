@@ -7,10 +7,9 @@
 		<category>Objekte</category><subcat>Existenz</subcat>
 		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iLevel</name><desc>Explosionsstärke. Die Explosionsstärke bestimmt das Ausmaß des Explosionsschadens sowie die akustische Gestaltung. Bis Stärke 29 einschließlich wird Blast1 abgespielt, von Stärke 30 bis stärke 39 einschließlich Blast2, und bei Werten darüber Blast3.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, das explodiert. 0 bei lokalem Aufruf.</desc><optional /></param>
 				<param><type>id</type><name>idEffect</name><desc>Wenn angegeben, wird ein Objekt dieser Art und keine Partikel erzeugt. Es wird angenommen, dass das neu erstellte Objekt den Explosionseffekt übernimmt. Ab 4.9.6.0 CR</desc><optional /></param>
 				<param><type>string</type><name>szParticle</name><desc>Name eines Partikels, der statt der normalen Explosionspartikel erzeugt wird.</desc><optional /></param>
 			</params>
@@ -19,7 +18,7 @@
 		<remark>Siehe Hinweis zu <funclink>RemoveObject</funclink>.</remark>
 		<examples>
 			<example>
-				<code>Explode(25, <funclink>GetHiRank</funclink>(0));</code>
+				<code><funclink>GetHiRank</funclink>(0)->Explode(25);</code>
 				<text>Der höchstrangige Clonk des ersten Spielers explodiert.</text>
 			</example>
 		</examples>

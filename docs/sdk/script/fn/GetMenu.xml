@@ -7,13 +7,10 @@
     <category>Objekte</category><subcat>Menü</subcat>
     <version>4.9.1.0 GWE</version>
     <syntax>
-      <rtype>id</rtype>
-      <params>
-        <param><type>object</type><name>pObj</name><desc>Menüobjekt</desc></param>
-      </params>
+      <rtype>id?</rtype>
     </syntax>
-    <desc>Liefert die ID des Menüs, falls das Objekt ein Menü geöffnet hat. Normalerweise ist das die ID des Menüsymbols (idSymbol), wenn nicht bei <funclink>CreateMenu</funclink> explizit eine andere Menü-ID als idMenuID angegeben wurde. 0 bei keinem Menü oder bei keinem Symbol.</desc>
-    <remark>Ein Rückgabewert von -1 bedeutet, dass kein gültiges Symbol ermittelt werden konnte. Dies kann z.B. dann auftreten, wenn bei einem globalen Aufruf kein Objektzeiger an die Funktion übergeben wurde. Engineinterne Menüs (Kaufen, Verkaufen, etc.) geben keine gültigen IDs zurück.</remark>
+    <desc>Liefert die ID des Menüs, falls das Objekt ein Menü geöffnet hat. Normalerweise ist das die ID des Menüsymbols (idSymbol), wenn nicht bei <funclink>CreateMenu</funclink> explizit eine andere Menü-ID als idMenuID angegeben wurde. NONE bei keinem Symbol.</desc>
+    <remark>Ein Rückgabewert von nil bedeutet, dass kein gültiges Symbol ermittelt werden konnte. Dies kann z.B. dann auftreten, wenn kein Menü geöffnet ist. Engineinterne Menüs (Kaufen, Verkaufen, etc.) geben keine gültigen IDs zurück.</remark>
     <examples>
       <example>
         <code>/* Wird bei klick auf Spezial aufgerufen */

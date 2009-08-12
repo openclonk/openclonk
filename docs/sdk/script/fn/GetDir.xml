@@ -8,11 +8,8 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Richtung abgefragt wird. 0 bei lokalem Aufruf.</desc></param>
-			</params>
 		</syntax>
-		<desc>Liefert die aktuelle Richtung eines Objekts als DIR_x()-Wert.</desc>
+		<desc>Liefert die aktuelle Richtung des aufrufenden Objekts als DIR_x-Wert.</desc>
 		<examples>
 			<example>
 				<code>/* Wird bei Doppelklick auf Graben aufgerufen */
@@ -27,12 +24,12 @@ protected func Activate()
 	// Rotation des Pfeiles
 	var irot = -90 + 180 * <funclink>GetDir</funclink>();
 	// Pfeil schleudern
-	<funclink>Exit</funclink>(pArrow, iexitX, 0, irot, ispeedX, 0);
-	<funclink>return</funclink>(1);
+	pArrow-><funclink>Exit</funclink>(iexitX, 0, irot, ispeedX, 0);
+	<funclink>return</funclink> 1;
 } 
 				</code>
 				<text>Clonk der einen Bogen verschluckt hat.</text>
-				<text>Hinweis: <funclink>DIR_Left</funclink>() = 0 / <funclink>DIR_Right</funclink>() = 1</text>
+				<text>Hinweis: <funclink>DIR_Left</funclink> = 0 / <funclink>DIR_Right</funclink> = 1</text>
 			</example>
 		</examples>
 								<related>

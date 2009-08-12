@@ -11,9 +11,8 @@
       <params>
         <param><type>string</type><name>szSound</name><desc>Name des Soundeffekts (ohne .wav-Endung)</desc></param>
         <param><type>bool</type><name>fGlobal</name><desc>Gibt an, ob der Sound global, d.h. unabhängig von der Objektposition immer in derselben Lautstärke abgespielt werden soll.</desc><optional /></param>
-        <param><type>object</type><name>pObj</name><desc>Objekt, bei dem der Sound abgespielt werden soll. 0 bei lokalem Aufruf. Die Position des Objekts relativ zum Viewport des Spielers ist entscheidend für die Lautstärke, in der der Sound abgespielt wird.</desc><optional /></param>
-        <param><type>int</type><name>iVolume</name><desc>0-100: Lautstärke, in der der Sound abgespielt wird. Bei 0 wird 100 als Standard angenommen.</desc><optional /></param>
-        <param><type>int</type><name>iPlayer</name><desc>Um eins erhöhte Spielernummer des Spielers, für den der Sound abgespielt werden soll. Im Netzwerkspiel wird der Sound dann nicht bei einem Spieler abgespielt, der an einem anderen Rechner spielt. Achtung: Die Spielernummer muss für den Parameter um eins erhöht angegeben werden, da der Standardparameter 0 für einen Sound für alle Spieler steht!</desc><optional /></param>
+        <param><type>int</type><name>iVolume</name><desc>0-100: Lautstärke, in der der Sound abgespielt wird. Bei nil wird 100 als Standard angenommen.</desc><optional /></param>
+        <param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spielers, für den der Sound abgespielt werden soll. Im Netzwerkspiel wird der Sound dann nicht bei einem Spieler abgespielt, der an einem anderen Rechner spielt. Wenn nil oder nicht angegeben, wird der Sound für alle Spieler abgespielt.</desc><optional /></param>
         <param><type>int</type><name>iLoopCount</name><desc>Erhöht oder verringert die Anzahl der in einer Endlosschleife laufenden Sounds. Bei +1 wird dieser Sound unendlich oft abgespielt bis diese Funktion noch einmal mit -1 aufgerufen wird. Bei 0 wird der Sound normal abgespielt.</desc><optional /></param>
       </params>
     </syntax>
@@ -21,7 +20,7 @@
     <examples>
       <example>
 
-				<code>Sound("Applause", 0, <funclink>FindObject</funclink>(HUT2), 50);</code>
+	      <code><funclink>FindObject</funclink>(HUT2)->Sound("Applause", false, 50);</code>
         <text>Spielt einen Applaus-Sound bei der ersten, gefundenen Holzhütte in halber Lautstärke ab.</text>
       </example>
     </examples>

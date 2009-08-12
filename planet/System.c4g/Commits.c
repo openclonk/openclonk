@@ -18,55 +18,35 @@ global func RandomX(int iStart, int iEnd) {
   return Random(iEnd-iStart+1)+iStart;
 }
 
-// Setzt die Fertigstellung von *pObj auf iNewCon
-global func SetCon(int new_con, object obj) { // int iNewCon, [C4Object *pObj]
-  // Kein Objekt vorhanden?
-  if (!obj && !this) return 0;
-
-  return DoCon(new_con - GetCon(obj), obj);
+// Setzt die Fertigstellung von this auf iNewCon
+global func SetCon(int new_con) {
+  return DoCon(new_con - GetCon());
 }
 
 // Setzt X- und Y-Dir eines Objektes
-global func SetSpeed(int x_dir, int y_dir, object obj, int prec) { // int iXDir, int iYDir, [C4Object *pObj]
-  // Kein Objekt vorhanden?
-  if (!obj && !this) return 0;
-
-  if (!SetXDir(x_dir, obj, prec)) return 0;
-  if (!SetYDir(y_dir, obj, prec)) return 0;
-  return 1;
+global func SetSpeed(int x_dir, int y_dir, int prec) {
+  SetXDir(x_dir, prec);
+  SetYDir(y_dir, prec);
 }
 
 // Setzt X- und Y-Koordinate eines Vertices zugleich
-global func SetVertexXY(int index, int x, int y, object obj) { // int iIndex, int iXPos, int iYPos, [C4Object *pObj]
-  // Kein Objekt vorhanden?
-  if (!obj && !this) return 0;
-
+global func SetVertexXY(int index, int x, int y) {
   // Vertices setzen
-  if (!SetVertex(index, 0, x, obj)) return 0;
-  if (!SetVertex(index, 1, y, obj)) return 0;
-  return 1;
+  SetVertex(index, VTX_X, x);
+  SetVertex(index, VTX_Y, y);
 }
 
-// Liefert die Anzahl aller feststeckenden Vertices von *pObj zurück
-global func VerticesStuck(object obj) { // [C4Object *pObj]
-  // Kein Objekt vorhanden?
-  if (!obj && !this) return 0; 
- 
+// Liefert die Anzahl aller feststeckenden Vertices von this zurück
+global func VerticesStuck() {
   var vertices;
   var x_offset;
   var y_offset;
 
- // Offset zum Objekt anpassen
- if (obj) {
-   x_offset = AbsX(GetX(obj));
-   y_offset = AbsY(GetY(obj));
- }
-
   // Vertices durchgehen
-  for (var i = -1; i < GetVertexNum(obj); i++) {
+  for (var i = -1; i < GetVertexNum(); i++) {
     // solid?
-    if (GBackSolid(x_offset + GetVertex(i, 0, obj),
-                   y_offset + GetVertex(i, 1, obj)))
+    if (GBackSolid(x_offset + GetVertex(i, VTX_X),
+                   y_offset + GetVertex(i, VTX_Y)))
       // hochzählen
       vertices++;
   }
@@ -121,9 +101,9 @@ global func PlaceObjects(id id,int amount,string strmat,int x,int y,int wdt,int 
         if(rndy<y) continue;
         // create and verify stuckness ;)
         obj=CreateObject(id,rndx,rndy+objhgt/2,-1);
-        SetR(Random(360),obj);
-        if(Stuck(obj) || nostuck) i++;
-          else RemoveObject(obj);
+        obj->SetR(Random(360));
+        if(obj->Stuck() || nostuck) i++;
+          else obj->RemoveObject();
       }
     }
 
@@ -141,9 +121,9 @@ global func PlaceObjects(id id,int amount,string strmat,int x,int y,int wdt,int 
         if(rndy<y)  continue;
         // create and verify stuckness ;)
         obj=CreateObject(id,rndx,rndy+objhgt/2,-1);
-        SetR(Random(360),obj);
-        if(Stuck(obj) || nostuck) i++;
-          else RemoveObject(obj);
+        obj->SetR(Random(360));
+        if(obj->Stuck() || nostuck) i++;
+          else obj->RemoveObject();
       }
     }
 
@@ -178,9 +158,9 @@ global func Tan(int iAngle, int iRadius, int iPrec) {
 
 /*-- Newton -- */
 
-global func CheckVisibility(int iPlr, object pObj)
+global func CheckVisibility(int iPlr)
 {
-  var iVisible = pObj["Visibility"];
+  var iVisible = this["Visibility"];
   if (GetType(iVisible) == C4V_Array) iVisible = iVisible[0];
 
   // garnicht sichtbar
@@ -189,17 +169,17 @@ global func CheckVisibility(int iPlr, object pObj)
   if(iVisible == VIS_All) return true;
 
   // Objekt gehört dem anggb. Spieler
-  if(GetOwner(pObj) == iPlr)
+  if(GetOwner() == iPlr)
     { if(iVisible & VIS_Owner) return true; }
   // Objekt gehört einem Spieler, der iPlr feindlich gesonnen ist
-  else if(Hostile(GetOwner(pObj),iPlr))
+  else if(Hostile(GetOwner(),iPlr))
     { if(iVisible & VIS_Enemies) return true; }
   // Objekt gehört einem Spieler, der iPlr freundlich gesonnen ist
   else
     { if(iVisible & VIS_Allies) return true; }
 
   if(iVisible & VIS_Select)
-    if(pObj["Visibility"][1+iPlr/32] & 1<<iPlr)
+    if(this["Visibility"][1+iPlr/32] & 1<<iPlr)
       return true;
 
   return false;

@@ -8,22 +8,19 @@
 		<version>4.9.1.0 GWE</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pMenuObject</name><desc>Objekt, aus dessen Menü alle Einträge geleert werden sollen. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
 		</syntax>
 		<desc>Entfernt alle Einträge aus einem Menü.</desc>
 		<examples>
 			<example>
 
 <code>var pClonk=<funclink>GetCursor</funclink>();
-<funclink>CreateMenu</funclink>(CLNK, pClonk, pClonk, 0, "", 0, 2);
-<funclink>AddMenuItem</funclink>("", "", TIM1, pClonk,0,0,"Alter Text");
+pClonk-><funclink>CreateMenu</funclink>(CLNK, pClonk, nil, "", 0, 2);
+pClonk-><funclink>AddMenuItem</funclink>("", "", TIM1, nil,nil,"Alter Text");
 
 [...]
 
-ClearMenuItems(pClonk);
-<funclink>AddMenuItem</funclink>(0, "", TIM1, pClonk,0,0,"Neuer Text");</code>
+pClonk->ClearMenuItems();
+pClonk-><funclink>AddMenuItem</funclink>(nil, "", TIM1, nil,0,0,"Neuer Text");</code>
 				<text>Öffnet zunächst ein Textfenster mit dem Inhalt "Alter Text" für den ausgewählten Clonk des ersten Spielers, und ändert die Beschriftung dann später auf "Neuer Text".</text>
 			</example>
 		</examples>

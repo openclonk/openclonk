@@ -8,11 +8,8 @@
                 <version>4.6.5.0 CP</version>
                 <syntax>
                         <rtype>int</rtype>
-                        <params>
-                                <param><type>object</type><name>pObj</name><desc>Zu prüfende Heimatbasis. Null bei lokalem Aufruf.</desc></param>
-                        </params>
                 </syntax>
-                <desc>Liefert die Nummer des Spielers, dessen Heimatbasis pObj ist. Rückgabewert -1 wenn pObj keine Heimatbasis ist.</desc>
+		<desc>Liefert die Nummer des Spielers, dessen Heimatbasis das aufrufende Objekt ist. Rückgabewert <funclink>NO_OWNER</funclink> wenn es keine Heimatbasis ist.</desc>
                 <related>
                         <funclink>FindBase</funclink>
                 </related>

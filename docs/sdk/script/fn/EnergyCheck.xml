@@ -10,10 +10,9 @@
 			<rtype>bool</rtype>
 			<params>
 				<param><type>int</type><name>iEnergy</name><desc>Abgefragter Energiewert</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Energiezustand abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Gibt zurück, ob der Energiewert eines Objekts größer oder gleich iEnergy ist. Wenn die Spielregel "Energiebedarf" nicht aktiviert ist, gibt diese Funktion immer TRUE zurück. Außerdem werden Leitungen dazu motiviert, Energie hierhin zu transferieren.</desc>
+		<desc>Gibt zurück, ob der Energiewert des aufrufenden Objekts größer oder gleich iEnergy ist. Wenn die Spielregel "Energiebedarf" nicht aktiviert ist, gibt diese Funktion immer TRUE zurück. Außerdem werden Leitungen dazu motiviert, Energie hierhin zu transferieren.</desc>
 		<examples>
 			<example>
 				<code><funclink>if</funclink>(EnergyCheck(10000)) { <funclink>DoEnergy</funclink>(-10000); <funclink>SetAction</funclink>("Working"); }</code>

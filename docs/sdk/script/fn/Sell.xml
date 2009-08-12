@@ -7,19 +7,18 @@
 		<category>Objekte</category><subcat>Existenz</subcat>
 		<version>4.9.1.0 GWE</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iPlr</name><desc>Nummer des Spielers, an den verkauft wird</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, das verkauft wird. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Verkauft ein Objekt mitsamt Inhalt.</desc>
+		<desc>Verkauft das aufrufende Objekt mitsamt Inhalt.</desc>
 		<remark>CrewMember können nicht verkauft werden.</remark>
 		<examples>
 			<example>
 
 <code>var obj;
-<funclink>if</funclink> (obj=<funclink>FindObject</funclink>()) Sell(obj, 0);</code>
+<funclink>if</funclink> (obj=<funclink>FindObject</funclink>()) obj->Sell(0);</code>
 
 				<text>Verkauft irgendein Objekt an den ersten Spieler.</text>
 			</example>
