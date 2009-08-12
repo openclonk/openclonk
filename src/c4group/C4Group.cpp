@@ -47,6 +47,8 @@
 #include <fcntl.h>
 #include <openssl/sha.h>
 
+#include "MacUtility.h"
+
 //------------------------------ File Sort Lists -------------------------------------------
 
 const char *C4CFN_FLS[] =
@@ -1614,8 +1616,7 @@ BOOL EraseItemSafe(const char *szFilename)
 	shs.lpszProgressTitle=NULL;
 	return !SHFileOperation(&shs);
 #elif defined(USE_SDL_MAINLOOP) && defined(C4ENGINE) && defined(__APPLE__)
-    bool sendFileToTrash(const char* filename);
-    sendFileToTrash(szFilename);
+	MacUtility::sendFileToTrash(szFilename);
 #else
   return false;
 #endif

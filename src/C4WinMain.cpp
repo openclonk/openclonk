@@ -39,6 +39,8 @@ C4FullScreen	FullScreen;
 C4Game				Game;
 C4Network2		Network;
 
+#include "MacUtility.h"
+
 #ifdef _WIN32
 
 #if defined(_MSC_VER) && !defined(_DEBUG)
@@ -187,7 +189,9 @@ static void crash_handler(int signo)
 #endif
 
 #ifdef __APPLE__
-void restart(char*[]); // MacUtility.mm
+void restart(char* args[]) {
+	MacUtility::restart(args);
+}
 #else
 static void restart(char * argv[])
 	{

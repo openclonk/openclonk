@@ -51,14 +51,14 @@
 #include <locale.h>
 #endif
 
+#include "MacUtility.h"
 
 bool isGermanSystem()
 {
 #ifdef _WIN32
 		if (PRIMARYLANGID(GetUserDefaultLangID()) == LANG_GERMAN) return true;
 #elif defined(__APPLE__) and defined(C4ENGINE)
-    bool isGerman();
-    if (isGerman()) return true;
+	return MacUtility::isGerman();
 #else
 		if (strstr(setlocale(LC_MESSAGES, 0), "de")) return true;
 #endif

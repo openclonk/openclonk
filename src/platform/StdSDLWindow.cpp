@@ -27,6 +27,8 @@
 
 #include "C4Version.h"
 
+#include "MacUtility.h"
+
 /* CStdWindow */
 
 CStdWindow::CStdWindow ():
@@ -74,9 +76,7 @@ void CStdWindow::SetTitle(const char * Title) {
 	SDL_WM_SetCaption(Title, 0);
 }
 
+#ifndef __APPLE__
 void CStdWindow::FlashWindow() {
-#ifdef __APPLE__
-    void requestUserAttention();
-    requestUserAttention();
-#endif
 }
+#endif
