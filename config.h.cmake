@@ -116,7 +116,7 @@
 #cmakedefine HAVE_X11_XPM_H 1
 
 /* Define as const if the declaration of iconv() needs const. */
-#cmakedefine ICONV_CONST 1
+#cmakedefine ICONV_CONST
 
 /* compile without debug options */
 #cmakedefine NDEBUG 1
@@ -125,23 +125,23 @@
 #cmakedefine NO_MINUS_C_MINUS_O 1
 
 /* Define to the address where bug reports for this package should be sent. */
-#cmakedefine PACKAGE_BUGREPORT 1
+#cmakedefine PACKAGE_BUGREPORT
 
 /* Define to the full name of this package. */
-#cmakedefine PACKAGE_NAME 1
+#cmakedefine PACKAGE_NAME
 
 /* Define to the full name and version of this package. */
-#cmakedefine PACKAGE_STRING 1
+#cmakedefine PACKAGE_STRING
 
 /* Define to the one symbol short name of this package. */
-#cmakedefine PACKAGE_TARNAME 1
+#cmakedefine PACKAGE_TARNAME
 
 /* Define to the version of this package. */
-#cmakedefine PACKAGE_VERSION 1
+#cmakedefine PACKAGE_VERSION
 
 /* Define to necessary symbol if this constant uses a non-standard name on
    your system. */
-#cmakedefine PTHREAD_CREATE_JOINABLE 1
+#cmakedefine PTHREAD_CREATE_JOINABLE
 
 /* Define to 1 if you have the ANSI C header files. */
 #cmakedefine STDC_HEADERS 1
@@ -177,7 +177,7 @@
 #cmakedefine X_DISPLAY_MISSING 1
 
 /* compile with debug options */
-#cmakedefine _DEBUG 1
+#cmakedefine _DEBUG
 
 /* Define to 1 if rvalue references are supported */
 #cmakedefine HAVE_RVALUE_REF 1
