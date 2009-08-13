@@ -360,7 +360,7 @@ static C4Void FnDeathAnnounce(C4AulObjectContext *cthr)
 	char *szMsg;
 	if (cthr->Obj->Info)
 		if(*(szMsg = cthr->Obj->Info->DeathMessage))
-			sprintf(pscOSTR, szMsg);
+			sprintf(pscOSTR, "%s", szMsg);
 	if (!*pscOSTR)
 	{
 		char idDeathMsg[128+1]; sprintf(idDeathMsg, "IDS_OBJ_DEATH%d", 1 + SafeRandom(MaxDeathMsg));
