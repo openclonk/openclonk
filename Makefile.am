@@ -17,6 +17,8 @@ bin_PROGRAMS = clonk
 
 EXTRA_PROGRAMS = tstc4netio puncher c4group gunzip4c4group
 
+noinst_LIBRARIES = lib.a
+
 # Some defines and warning options
 if RECENT_GCC
 GCC_FLAGS = -pipe
@@ -83,7 +85,56 @@ WARNING_FLAGS += -Winvalid-pch
 
 endif
 
+lib_a_SOURCES = \
+src/lib/C4InputValidation.cpp \
+src/lib/C4InputValidation.h \
+src/lib/C4LogBuf.cpp \
+src/lib/C4LogBuf.h \
+src/lib/C4Random.cpp \
+src/lib/C4Random.h \
+src/lib/C4Rect.cpp \
+src/lib/C4Rect.h \
+src/lib/C4RTF.cpp \
+src/lib/C4RTF.H \
+src/lib/C4Stat.cpp \
+src/lib/C4Stat.h \
+src/lib/Fixed.cpp \
+src/lib/Fixed.h \
+src/lib/PathFinder.cpp \
+src/lib/PathFinder.h \
+src/lib/Standard.cpp \
+src/lib/Standard.h \
+src/lib/StdAdaptors.h \
+src/lib/StdBase64.cpp \
+src/lib/StdBase64.h \
+src/lib/StdBuf.cpp \
+src/lib/StdBuf.h \
+src/lib/StdColors.h \
+src/lib/StdCompiler.cpp \
+src/lib/StdCompiler.h \
+src/lib/StdMarkup.cpp \
+src/lib/StdMarkup.h \
+src/lib/StdResStr2.cpp \
+src/lib/StdResStr2.h \
+src/lib/StdResStr.h \
+src/lib/texture/C4Facet.cpp \
+src/lib/texture/C4FacetEx.cpp \
+src/lib/texture/C4FacetEx.h \
+src/lib/texture/C4Facet.h \
+src/lib/texture/C4Surface.cpp \
+src/lib/texture/C4SurfaceFile.cpp \
+src/lib/texture/C4SurfaceFile.h \
+src/lib/texture/C4Surface.h \
+src/lib/texture/StdPNG.cpp \
+src/lib/texture/StdPNG.h
+
 clonk_SOURCES = \
+src/lib/C4Log.cpp \
+src/lib/C4Log.h \
+src/lib/C4NameList.cpp \
+src/lib/C4NameList.h \
+src/lib/texture/C4GraphicsResource.cpp \
+src/lib/texture/C4GraphicsResource.h \
 src/C4Application.cpp \
 src/C4Application.h \
 src/C4FullScreen.cpp \
@@ -92,7 +143,11 @@ src/C4Game.cpp \
 src/C4Game.h \
 src/C4GraphicsSystem.cpp \
 src/C4GraphicsSystem.h \
+src/c4group/C4LangStringTable.cpp \
+src/c4group/C4LangStringTable.h \
 src/c4group/C4Components.h \
+src/c4group/C4ComponentHost.cpp \
+src/c4group/C4ComponentHost.h \
 src/c4group/C4Extra.cpp \
 src/c4group/C4Extra.h \
 src/c4group/C4Group.cpp \
@@ -292,55 +347,6 @@ src/gui/C4UpperBoard.h \
 src/gui/C4UserMessages.h \
 src/gui/C4Viewport.cpp \
 src/gui/C4Viewport.h \
-src/lib/C4ComponentHost.cpp \
-src/lib/C4ComponentHost.h \
-src/lib/C4InputValidation.cpp \
-src/lib/C4InputValidation.h \
-src/lib/C4LangStringTable.cpp \
-src/lib/C4LangStringTable.h \
-src/lib/C4LogBuf.cpp \
-src/lib/C4LogBuf.h \
-src/lib/C4Log.cpp \
-src/lib/C4Log.h \
-src/lib/C4NameList.cpp \
-src/lib/C4NameList.h \
-src/lib/C4Random.cpp \
-src/lib/C4Random.h \
-src/lib/C4RTF.cpp \
-src/lib/C4RTF.H \
-src/lib/C4Stat.cpp \
-src/lib/C4Stat.h \
-src/lib/Fixed.cpp \
-src/lib/Fixed.h \
-src/lib/PathFinder.cpp \
-src/lib/PathFinder.h \
-src/lib/Standard.cpp \
-src/lib/Standard.h \
-src/lib/StdAdaptors.h \
-src/lib/StdBase64.cpp \
-src/lib/StdBase64.h \
-src/lib/StdBuf.cpp \
-src/lib/StdBuf.h \
-src/lib/StdColors.h \
-src/lib/StdCompiler.cpp \
-src/lib/StdCompiler.h \
-src/lib/StdMarkup.cpp \
-src/lib/StdMarkup.h \
-src/lib/StdResStr2.cpp \
-src/lib/StdResStr2.h \
-src/lib/StdResStr.h \
-src/lib/texture/C4Facet.cpp \
-src/lib/texture/C4FacetEx.cpp \
-src/lib/texture/C4FacetEx.h \
-src/lib/texture/C4Facet.h \
-src/lib/texture/C4GraphicsResource.cpp \
-src/lib/texture/C4GraphicsResource.h \
-src/lib/texture/C4Surface.cpp \
-src/lib/texture/C4SurfaceFile.cpp \
-src/lib/texture/C4SurfaceFile.h \
-src/lib/texture/C4Surface.h \
-src/lib/texture/StdPNG.cpp \
-src/lib/texture/StdPNG.h \
 src/network/C4Client.cpp \
 src/network/C4Client.h \
 src/network/C4GameControlNetwork.cpp \
@@ -483,6 +489,7 @@ clonk_SOURCES += src/platform/StdGtkWindow.cpp src/platform/StdGtkWindow.h
 endif
 
 clonk_LDADD = \
+  lib.a \
   $(LIBICONV) \
   $(GTK_LIBS) \
   $(FREETYPE_LIBS) \

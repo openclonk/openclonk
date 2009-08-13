@@ -25,7 +25,7 @@
 
 #ifndef BIG_C4INCLUDE
 #include <C4Random.h>
-#include <C4Shape.h>
+#include <C4Rect.h>
 #include <C4Group.h>
 #endif
 

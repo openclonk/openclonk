@@ -18,12 +18,16 @@ set(OC_CLONK_SOURCES
 	src/C4GraphicsSystem.cpp
 	src/C4GraphicsSystem.h
 	src/c4group/C4Components.h
+	src/c4group/C4ComponentHost.cpp
+	src/c4group/C4ComponentHost.h
 	src/c4group/C4Extra.cpp
 	src/c4group/C4Extra.h
 	src/c4group/C4Group.cpp
 	src/c4group/C4Group.h
 	src/c4group/C4GroupSet.cpp
 	src/c4group/C4GroupSet.h
+	src/c4group/C4LangStringTable.cpp
+	src/c4group/C4LangStringTable.h
 	src/c4group/C4Language.cpp
 	src/c4group/C4Language.h
 	src/c4group/C4Update.cpp
@@ -217,12 +221,8 @@ set(OC_CLONK_SOURCES
 	src/gui/C4UserMessages.h
 	src/gui/C4Viewport.cpp
 	src/gui/C4Viewport.h
-	src/lib/C4ComponentHost.cpp
-	src/lib/C4ComponentHost.h
 	src/lib/C4InputValidation.cpp
 	src/lib/C4InputValidation.h
-	src/lib/C4LangStringTable.cpp
-	src/lib/C4LangStringTable.h
 	src/lib/C4LogBuf.cpp
 	src/lib/C4LogBuf.h
 	src/lib/C4Log.cpp
@@ -231,6 +231,8 @@ set(OC_CLONK_SOURCES
 	src/lib/C4NameList.h
 	src/lib/C4Random.cpp
 	src/lib/C4Random.h
+	src/lib/C4Rect.cpp
+	src/lib/C4Rect.h
 	src/lib/C4RTF.cpp
 	src/lib/C4RTF.H
 	src/lib/C4Stat.cpp
