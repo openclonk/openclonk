@@ -32,7 +32,7 @@ public:
 	virtual const char* what() const throw() { return Buf.getData(); }
 
 protected:
-	StdStrBuf Buf;
+	StdCopyStrBuf Buf;
 };
 
 // Interface to load skeleton files. Given a filename occuring in the
