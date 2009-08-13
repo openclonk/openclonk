@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (clonk CXX C)
 
-list(APPEND CMAKE_PREFIX_PATH deps)
+set(CMAKE_ADDITIONAL_DEPS_PATH deps CACHE PATH "Additional directory to search for libraries and headers")
+list(APPEND CMAKE_PREFIX_PATH ${CMAKE_ADDITIONAL_DEPS_PATH})
 set(OC_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 separate_arguments(OC_CXX_FLAGS)
 set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
@@ -599,10 +600,18 @@ FINDLIB(OPENSSL NAMES crypto libeay32)
 if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW NAMES GLEW glew32 glew32s)
+	target_link_libraries(clonk
+		${OPENGL_LIBRARIES}
+		${GLEW}
+	)
 endif()
 if(USE_DIRECTX)
 	FINDLIB(DIRECT3D d3d9)
 	FINDLIB(DIRECT3DX d3dx9)
+	target_link_libraries(clonk
+		${DIRECT3D}
+		${DIRECT3DX}
+	)
 endif()
 if(USE_GTK)
 	include(FindPkgConfig)
@@ -614,6 +623,9 @@ if(USE_GTK)
 		link_directories(${GTK_LIBRARY_DIRS})
 		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
 		SET(WITH_GLIB ${GTK_FOUND})
+		target_link_libraries(clonk
+			${GTK_LIBRARIES}
+		)
 	endif()
 endif()
 if(USE_X11)
@@ -621,11 +633,25 @@ if(USE_X11)
 	FINDLIB(XPM Xpm)
 	FINDLIB(XXF86VM Xxf86vm)
 	FINDLIB(XRANDR Xrandr)
+	target_link_libraries(clonk
+		${X11}
+		${XPM}
+		${XXF86VM}
+		${XRANDR}
+	)
 endif()
 if (WIN32)
 	FINDLIB(VFW vfw32)
 	FINDLIB(WS2 ws2_32)
 	FINDLIB(WINMM winmm)
+	target_link_libraries(clonk
+		${VFW}
+		${WS2}
+		${WINMM}
+	)
+	target_link_libraries(c4group
+		${WS2}
+	)
 endif()
 if (UNIX)
 	include(FindSDL)
@@ -634,32 +660,22 @@ if (UNIX)
 		include_directories(${SDL_INCLUDE_DIR})
 		FINDLIB(SDLMIXER SDL_mixer)
 		SET(HAVE_LIBSDL_MIXER ${SDLMIXER})
+		target_link_libraries(clonk
+			${SDL_LIBRARY}
+			${SDLMIXER}
+		)
 	endif()
 endif()
 
 target_link_libraries(clonk
 	${FREETYPE_LIBRARIES}
 	${ZLIB_LIBRARIES}
-	${VFW}
-	${WS2}
-	${WINMM}
-	${GLEW}
-	${OPENGL_LIBRARIES}
-	${DIRECT3D} ${DIRECT3DX}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${OPENSSL}
-	${GTK_LIBRARIES}
-	${X11}
-	${XPM}
-	${XXF86VM}
-	${XRANDR}
-	${SDL_LIBRARY}
-	${SDLMIXER}
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
-	${WS2}
 	${OPENSSL}
 )
 
