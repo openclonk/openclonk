@@ -11,11 +11,12 @@
 # WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 # OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
 ACLOCAL_AMFLAGS = -I autotools --install
 
-bin_PROGRAMS = clonk
+bin_PROGRAMS = clonk c4group
 
-EXTRA_PROGRAMS = tstc4netio puncher c4group gunzip4c4group
+EXTRA_PROGRAMS = tstc4netio puncher gunzip4c4group
 
 noinst_LIBRARIES = lib.a
 
@@ -495,6 +496,7 @@ clonk_LDADD = \
   $(FREETYPE_LIBS) \
   $(SDL_LIBS) \
   $(PTHREAD_LIBS) \
+  $(Z_LIBS) \
   $(CLONK_LIBS) \
   $(OPENSSL_LIBS)
 
@@ -546,6 +548,7 @@ endif
 
 c4group_LDADD = \
   $(LIBICONV) \
+  $(Z_LIBS) \
   $(OPENSSL_LIBS) \
   $(PTHREAD_LIBS)
 

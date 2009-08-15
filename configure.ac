@@ -166,7 +166,7 @@ AC_CHECK_LIB(png, png_read_image, [
 
 # Check for libz
 AC_CHECK_LIB(z, deflate, [
-  CLONK_LIBS="-lz $CLONK_LIBS"
+  Z_LIBS="-lz $Z_LIBS"
 ], [
   AC_MSG_ERROR([libz not found.])
 ])
@@ -276,6 +276,7 @@ else
 fi
 
 AC_SUBST(CLONK_LIBS)
+AC_SUBST(Z_LIBS)
 AC_SUBST(OPENSSL_LIBS)
 
 # precompiled headers and -Wextra

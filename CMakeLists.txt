@@ -603,8 +603,8 @@ if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW NAMES GLEW glew32 glew32s)
 	target_link_libraries(clonk
-		${OPENGL_LIBRARIES}
 		${GLEW}
+		${OPENGL_LIBRARIES}
 	)
 endif()
 if(USE_DIRECTX)
