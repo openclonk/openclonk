@@ -54,10 +54,10 @@ C4ObjectInfo::~C4ObjectInfo()
 
 void C4ObjectInfo::Default()
 	{
-	WasInAction=FALSE;
-	InAction=FALSE;
+	WasInAction=false;
+	InAction=false;
 	InActionTime=0;
-	HasDied=FALSE;
+	HasDied=false;
 	ControlCount=0;
 	Filename[0]=0;
   Next=NULL;
@@ -67,7 +67,7 @@ void C4ObjectInfo::Default()
 	pCustomPortrait = NULL;
 	}
 
-BOOL C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPortrait)
+bool C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPortrait)
 	{
 
 	// New version
@@ -77,24 +77,24 @@ BOOL C4ObjectInfo::Load(C4Group &hMother, const char *szEntryname, bool fLoadPor
 		if (hChild.OpenAsChild(&hMother,szEntryname))
 			{
 			if (!C4ObjectInfo::Load(hChild, fLoadPortrait))
-				{ hChild.Close(); return FALSE; }
+				{ hChild.Close(); return false; }
 			// resolve definition, if possible
 			// only works in game, but is not needed in frontend or startup editing anyway
 			pDef = C4Id2Def(id);
 			hChild.Close();
-			return TRUE;
+			return true;
 			}
 		}
 
-	return FALSE;
+	return false;
 	}
 
-BOOL C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
+bool C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 	{
 	// Store group file name
 	SCopy(GetFilename(hGroup.GetName()),Filename,_MAX_FNAME);
 	// Load core
-	if (!C4ObjectInfoCore::Load(hGroup)) return FALSE;
+	if (!C4ObjectInfoCore::Load(hGroup)) return false;
 	// Load portrait - always try linking, even if fLoadPortrait is false (doesn't cost mem anyway)
 	// evaluate portrait string in info
 	bool fPortraitFileChecked=false;
@@ -160,10 +160,10 @@ BOOL C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 		else if (Config.Graphics.AddNewCrewPortraits)
 			// assign a new random crew portrait
 			SetRandomPortrait(0, true, false);
-	return TRUE;
+	return true;
 	}
 
-BOOL C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
+bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 	{
 	// Set group file name; rename if necessary
 	char szTempGroup[_MAX_PATH+1];
@@ -202,8 +202,8 @@ BOOL C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 		}
 	// Open group
 	C4Group hTemp;
-	if (!hTemp.OpenAsChild(&hGroup, Filename, FALSE, TRUE))
-		return FALSE;
+	if (!hTemp.OpenAsChild(&hGroup, Filename, false, true))
+		return false;
 	// New portrait present, or old portrait not saved yet (old player begin updated)?
 	if (!fStoreTiny && Config.Graphics.SaveDefaultPortraits) if (pNewPortrait || (Config.Graphics.AddNewCrewPortraits && Portrait.GetGfx() && !hTemp.FindEntry(C4CFN_Portrait)))
 		{
@@ -277,11 +277,11 @@ BOOL C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 
 	// Save info to temp group
 	if (!C4ObjectInfoCore::Save(hTemp, pDefs))
-		{ hTemp.Close(); return FALSE; }
+		{ hTemp.Close(); return false; }
 	// Close temp group
 	hTemp.Close();
 	// Success
-	return TRUE;
+	return true;
 	}
 
 void C4ObjectInfo::Evaluate()
@@ -298,7 +298,7 @@ void C4ObjectInfo::Clear()
 	pDef=NULL;
 	}
 
-void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Object *pOfObj)
+void C4ObjectInfo::Draw(C4Facet &cgo, bool fShowPortrait, bool fCaptain, C4Object *pOfObj)
 	{
 
 	int iX=0;
@@ -314,7 +314,7 @@ void C4ObjectInfo::Draw(C4Facet &cgo, BOOL fShowPortrait, BOOL fCaptain, C4Objec
 			DWORD dwColor = 0xFFFFFFFF;
 			if (pOfObj && ::Players.Get(pOfObj->Owner))
 				dwColor = ::Players.Get(pOfObj->Owner)->ColorDw;
-			pPortraitGfx->DrawClr(ccgo, TRUE, dwColor);
+			pPortraitGfx->DrawClr(ccgo, true, dwColor);
 			iX+=4*cgo.Hgt/3;
 			}
 		}
@@ -357,8 +357,8 @@ void C4ObjectInfo::Recruit()
 	{
 	// already recruited?
 	if (InAction) return;
-  WasInAction=TRUE;
-  InAction=TRUE;
+  WasInAction=true;
+  InAction=true;
 	InActionTime=Game.Time;
 	// rank name overload by def?
 	C4Def *pDef=::Definitions.ID2Def(id);
@@ -374,7 +374,7 @@ void C4ObjectInfo::Retire()
 	// not recruited?
 	if (!InAction) return;
 	// retire
-	InAction=FALSE;
+	InAction=false;
 	TotalPlayingTime+=(Game.Time-InActionTime);
 	}
 

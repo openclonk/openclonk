@@ -25,40 +25,40 @@
 #include <midi.h>
 #include <stdio.h>
 
-BOOL PlayMidi(const char *sFileName, HWND appWnd)
+bool PlayMidi(const char *sFileName, HWND appWnd)
 	{
   char buf[256];
   sprintf(buf, "open \"%s\" type sequencer alias ITSMYMUSIC", sFileName);
 	if (mciSendString("close all", NULL, 0, NULL) != 0)
-    return FALSE;
+    return false;
   if (mciSendString(buf, NULL, 0, NULL) != 0)
-    return FALSE;
+    return false;
   if (mciSendString("play ITSMYMUSIC from 0 notify", NULL, 0, appWnd) != 0)
-    return FALSE;
-  return TRUE;
+    return false;
+  return true;
 	}
 
-BOOL PauseMidi()
+bool PauseMidi()
 	{
-	if (mciSendString("stop ITSMYMUSIC", NULL, 0, NULL) != 0) return FALSE;
-	return TRUE;
+	if (mciSendString("stop ITSMYMUSIC", NULL, 0, NULL) != 0) return false;
+	return true;
 	}
 
-BOOL ResumeMidi(HWND appWnd)
+bool ResumeMidi(HWND appWnd)
 	{
-	if (mciSendString("play ITSMYMUSIC notify", NULL, 0, appWnd) != 0) return FALSE;
-	return TRUE;
+	if (mciSendString("play ITSMYMUSIC notify", NULL, 0, appWnd) != 0) return false;
+	return true;
 	}
 
-BOOL StopMidi()
+bool StopMidi()
 	{
-	if (mciSendString("close all", NULL, 0, NULL) != 0) return FALSE;
-	return TRUE;
+	if (mciSendString("close all", NULL, 0, NULL) != 0) return false;
+	return true;
 	}
 
-BOOL ReplayMidi(HWND appWnd)
+bool ReplayMidi(HWND appWnd)
 	{
-	if (mciSendString("play ITSMYMUSIC from 0 notify", NULL, 0, appWnd) != 0) return FALSE;
-	return TRUE;
+	if (mciSendString("play ITSMYMUSIC from 0 notify", NULL, 0, appWnd) != 0) return false;
+	return true;
 	}
 #endif //HAVE_MIDI_H

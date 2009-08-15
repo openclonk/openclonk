@@ -21,10 +21,10 @@
 struct CSoundObject;
 
 CSoundObject *DSndObjCreate(BYTE *bpWaveBuf, int iConcurrent = 1);
-BOOL DSndObjPlay(CSoundObject *hSO, DWORD dwPlayFlags);
-BOOL DSndObjStop(CSoundObject *hSO);
-BOOL DSndObjPlaying(CSoundObject *hSO);
+bool DSndObjPlay(CSoundObject *hSO, DWORD dwPlayFlags);
+bool DSndObjStop(CSoundObject *hSO);
+bool DSndObjPlaying(CSoundObject *hSO);
 void DSndObjDestroy(CSoundObject *hSO);
-BOOL DSndObjSetVolume(CSoundObject *pSO, long lVolume);
+bool DSndObjSetVolume(CSoundObject *pSO, long lVolume);
 
 #define DSBPLAY_LOOPING 0x00000001

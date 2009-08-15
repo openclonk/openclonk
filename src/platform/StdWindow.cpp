@@ -112,7 +112,7 @@ bool CStdWindow::StorePosition(const char *szWindowName, const char *szSubKey, b
 bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden) {
 	if (!RestoreWindowPosition(hWindow, szWindowName, szSubKey, fHidden))
 		ShowWindow(hWindow,SW_SHOWNORMAL);
-	return TRUE;
+	return true;
 }
 
 void CStdWindow::SetTitle(const char *szToTitle) {
@@ -213,7 +213,6 @@ bool CStdMessageProc::Execute(int iTimeout, pollfd *)
 			return false;
 			}
 		// Dialog message transfer
-		BOOL MsgDone=FALSE;
 		if (!pApp->DialogMessageHandling(&msg))
 			{
 			TranslateMessage(&msg); DispatchMessage(&msg);

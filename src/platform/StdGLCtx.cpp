@@ -199,12 +199,12 @@ bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 
 #elif defined(USE_X11)
 
-//  Xmd.h typedefs BOOL to CARD8, whereas microsoft windows and Clonk use int
-#define BOOL _BOOL
+//  Xmd.h typedefs bool to CARD8, whereas microsoft windows and Clonk use int
+#define bool _BOOL
 #include <X11/Xmd.h>
 #include <GL/glx.h>
 #include <X11/extensions/xf86vmode.h>
-#undef BOOL
+#undef bool
 
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), cx(0), cy(0) { }
 

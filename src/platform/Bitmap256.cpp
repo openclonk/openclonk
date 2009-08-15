@@ -61,11 +61,11 @@ CBitmap256Info::CBitmap256Info()
 	Default();
 	}
 
-BOOL CBitmap256Info::Valid()
+bool CBitmap256Info::Valid()
 	{
-  if (Head.bfType != *((WORD*)"BM") ) return FALSE;
-  if ((Info.biBitCount!=8) || (Info.biCompression!=0)) return FALSE;
-	return TRUE;
+  if (Head.bfType != *((WORD*)"BM") ) return false;
+  if ((Info.biBitCount!=8) || (Info.biCompression!=0)) return false;
+	return true;
 	}
 
 int CBitmap256Info::FileBitsOffset()

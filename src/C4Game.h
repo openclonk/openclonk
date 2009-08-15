@@ -165,11 +165,11 @@ class C4Game
 		bool Init();
 		bool PreInit();
 	  void ParseCommandLine(const char *szCmdLine);
-    BOOL Execute();
+    bool Execute();
 	  class C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
-	  BOOL DoGameOver();
+	  bool DoGameOver();
 		bool CanQuickSave();
-	  BOOL QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);
+	  bool QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);
 		void SetInitProgress(float fToProgress);
 		void OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // update anything that's dependant on screen resolution
 		void InitFullscreenComponents(bool fRunning);
@@ -180,18 +180,18 @@ class C4Game
 		bool Unpause();
 		bool IsPaused();
 		// Network
-	  void Synchronize(BOOL fSavePlayerFiles);
+	  void Synchronize(bool fSavePlayerFiles);
 	  void SyncClearance();
-		BOOL ReSync();
+		bool ReSync();
 		void SyncCheckFiles(); // check if files are in sync
     // Editing
-		BOOL DropFile(const char *szFilename, float iX, float iY);
-		BOOL CreateViewport(int32_t iPlayer, bool fSilent=false);
-	  BOOL DropDef(C4ID id, float iX, float iY);
-	  BOOL LoadDef(const char *szFilename);
-	  BOOL ReloadFile(const char *szPath);
-	  BOOL ReloadDef(C4ID id);
-		BOOL ReloadParticle(const char *szName);
+		bool DropFile(const char *szFilename, float iX, float iY);
+		bool CreateViewport(int32_t iPlayer, bool fSilent=false);
+	  bool DropDef(C4ID id, float iX, float iY);
+	  bool LoadDef(const char *szFilename);
+	  bool ReloadFile(const char *szPath);
+	  bool ReloadDef(C4ID id);
+		bool ReloadParticle(const char *szName);
     // Object functions
     void ClearPointers(C4PropList *cobj);
     C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
@@ -204,7 +204,7 @@ class C4Game
 		                                   C4Object *pCreator,
                                        int32_t owner,
                                        int32_t ctx=0, int32_t bty=0,
-                                       int32_t con=1, BOOL terrain=FALSE);
+                                       int32_t con=1, bool terrain=false);
     C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
                                int32_t tx=50, int32_t ty=50);
     void BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj);
@@ -241,8 +241,8 @@ class C4Game
 		C4Object *PlaceVegetation(C4ID id, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iGrowth);
 		C4Object *PlaceAnimal(C4ID idAnimal);
 
-		BOOL LoadScenarioSection(const char *szSection, DWORD dwFlags);
-	  BOOL SaveDesc(C4Group &hGroup, BOOL fSaveGame=FALSE, BOOL fReference=FALSE, BOOL fLobby=FALSE, BOOL fUnregistered=FALSE, BOOL fRecord=FALSE);
+		bool LoadScenarioSection(const char *szSection, DWORD dwFlags);
+	  bool SaveDesc(C4Group &hGroup, bool fSaveGame=false, bool fReference=false, bool fLobby=false, bool fUnregistered=false, bool fRecord=false);
 
 		bool DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, uint32_t dwClr=0xff);
 		bool SpeedUp();
@@ -264,40 +264,40 @@ class C4Game
     void ExecObjects();
 		void Ticks();
 	  const char *FoldersWithLocalsDefs(const char *szPath);
-	  BOOL CheckObjectEnumeration();
-	  BOOL LocalFileMatch(const char *szFilename, int32_t iCreation);
-		BOOL DefinitionFilenamesFromSaveGame();
+	  bool CheckObjectEnumeration();
+	  bool LocalFileMatch(const char *szFilename, int32_t iCreation);
+		bool DefinitionFilenamesFromSaveGame();
 	  bool LoadScenarioComponents();
 		bool LoadScenarioScripts();
 	public:
-	  BOOL SaveGameTitle(C4Group &hGroup);
+	  bool SaveGameTitle(C4Group &hGroup);
 	protected:
-		BOOL InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky);
-		BOOL InitGameFinal();
-		BOOL InitNetworkFromAddress(const char *szAddress);
-		BOOL InitNetworkFromReference(const C4Network2Reference &Reference);
-		BOOL InitNetworkHost();
-		BOOL DoLobby();
-		BOOL PreInitControl();
-		BOOL InitControl();
-		BOOL InitScriptEngine();
-		BOOL LinkScriptEngine();
-		BOOL InitPlayers();
-		BOOL InitRecord();
-    BOOL OpenScenario();
-    BOOL InitDefs();
-    BOOL InitMaterialTexture();
-		BOOL GameOverCheck();
-		BOOL PlaceInEarth(C4ID id);
-		BOOL Compile(const char *szSource);
-		BOOL Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact);
+		bool InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky);
+		bool InitGameFinal();
+		bool InitNetworkFromAddress(const char *szAddress);
+		bool InitNetworkFromReference(const C4Network2Reference &Reference);
+		bool InitNetworkHost();
+		bool DoLobby();
+		bool PreInitControl();
+		bool InitControl();
+		bool InitScriptEngine();
+		bool LinkScriptEngine();
+		bool InitPlayers();
+		bool InitRecord();
+    bool OpenScenario();
+    bool InitDefs();
+    bool InitMaterialTexture();
+		bool GameOverCheck();
+		bool PlaceInEarth(C4ID id);
+		bool Compile(const char *szSource);
+		bool Decompile(StdStrBuf &rBuf, bool fSaveSection, bool fSaveExact);
 	public:
 		void CompileFunc(StdCompiler *pComp, CompileSettings comp);
-	  BOOL SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact);
+	  bool SaveData(C4Group &hGroup, bool fSaveSection, bool fInitial, bool fSaveExact);
 	protected:
-	  BOOL CompileRuntimeData(C4ComponentHost &rGameData);
-	  BOOL StoreParticipantPlayers();
-	  BOOL RecreatePlayerFiles();
+	  bool CompileRuntimeData(C4ComponentHost &rGameData);
+	  bool StoreParticipantPlayers();
+	  bool RecreatePlayerFiles();
 
     // Object function internals
     C4Object *NewObject( C4PropList *ndef, C4Object *pCreator,

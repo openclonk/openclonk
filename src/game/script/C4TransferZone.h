@@ -33,15 +33,15 @@ class C4TransferZone
 	public:
 		C4Object *Object;
 		int32_t X,Y,Wdt,Hgt;
-		BOOL Used;
+		bool Used;
 	protected:
 		C4TransferZone *Next;
 	public:
-		BOOL GetEntryPoint(int32_t &rX, int32_t &rY, int32_t iToX, int32_t iToY);
-		void Draw(C4TargetFacet &cgo, BOOL fHighlight=false);
+		bool GetEntryPoint(int32_t &rX, int32_t &rY, int32_t iToX, int32_t iToY);
+		void Draw(C4TargetFacet &cgo, bool fHighlight=false);
 		void Default();
 		void Clear();
-		BOOL At(int32_t iX, int32_t iY);
+		bool At(int32_t iX, int32_t iY);
 	};
 
 class C4TransferZones
@@ -61,8 +61,8 @@ class C4TransferZones
 		void Synchronize();
 		C4TransferZone* Find(C4Object *pObj);
 		C4TransferZone* Find(int32_t iX, int32_t iY);
-		BOOL Add(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4Object *pObj);
-		BOOL Set(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4Object *pObj);
+		bool Add(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4Object *pObj);
+		bool Set(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4Object *pObj);
 	};
 
 #endif

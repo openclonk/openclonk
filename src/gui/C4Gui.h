@@ -962,7 +962,7 @@ namespace C4GUI {
 		private:
 			class C4KeyBinding *pKeyContext;
 		protected:
-			virtual BOOL CharIn(const char * c) { return FALSE; }         // input: character key pressed - should return FALSE for none-character-inputs
+			virtual bool CharIn(const char * c) { return false; }         // input: character key pressed - should return false for none-character-inputs
 			virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. left-click sets focus
 
 			void DisableFocus(); // called when control gets disabled: Make sure it loses focus
@@ -1220,7 +1220,7 @@ namespace C4GUI {
 
 			bool fLeftBtnDown;         // flag whether left mouse button is down or not
 
-			virtual BOOL CharIn(const char * c);                                            // input: character key pressed - should return FALSE for none-character-inputs
+			virtual bool CharIn(const char * c);                                            // input: character key pressed - should return false for none-character-inputs
 			virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 			virtual void DoDragging(CMouse &rMouse, int32_t iX, int32_t iY, DWORD dwKeyParam);   // dragging: allow text selection outside the component
 			virtual bool IsFocusOnClick() { return true; } // edit fields do get focus on click
@@ -1428,7 +1428,7 @@ namespace C4GUI {
 			virtual bool IsFocusOnClick() { return true; } // list boxes do get focus on click
 			virtual Control *IsFocusElement() { return this; }; // this control can gain focus
 			virtual void OnGetFocus(bool fByMouse); // callback when control gains focus - select a list item if none are selected
-			virtual BOOL CharIn(const char * c); // character input for direct list element selection
+			virtual bool CharIn(const char * c); // character input for direct list element selection
 
 			virtual void AfterElementRemoval()
 				{ Container::AfterElementRemoval(); UpdateElementPositions(); } // called by ScrollWindow to parent after an element has been removed
@@ -1739,7 +1739,7 @@ namespace C4GUI {
 			bool CtxMouseInput(CMouse &rMouse, int32_t iButton, int32_t iScreenX, int32_t iScreenY, DWORD dwKeyParam);
 			virtual void RemoveElement(Element *pChild); // clear ptr - abort menu if target is destroyed
 
-			virtual BOOL CharIn(const char * c);                                            // input: character key pressed - should return FALSE for none-character-inputs
+			virtual bool CharIn(const char * c);                                            // input: character key pressed - should return false for none-character-inputs
 			virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse movement or buttons
 			void MouseLeaveEntry(CMouse &rMouse, Entry *pOldEntry); // callback: mouse leaves - deselect menu item if no submenu is open (callback done by menu item)
 
@@ -2005,7 +2005,7 @@ namespace C4GUI {
 			Control *GetFocus() { return pActiveCtrl; }
 			virtual Dialog *GetDlg() { return this; } // this is the dialog
 
-			virtual BOOL CharIn(const char * c);                                 // input: character key pressed - should return FALSE for none-character-inputs  (forward to focused control)
+			virtual bool CharIn(const char * c);                                 // input: character key pressed - should return false for none-character-inputs  (forward to focused control)
 			virtual void MouseInput(CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam); // input: mouse. forwards to child controls
 
 		private:
@@ -2488,7 +2488,7 @@ namespace C4GUI {
 			bool IsActive() { return !!GetTopDialog(); } // return whether GUI is active
 
 			bool KeyAny(); // to be called on keystrokes; resets some tooltip-times
-			virtual BOOL CharIn(const char * c);        // input: character key pressed - should return FALSE for none-character-inputs
+			virtual bool CharIn(const char * c);        // input: character key pressed - should return false for none-character-inputs
 			bool MouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, Dialog *pDlg, class C4Viewport *pVP); // input: mouse movement or buttons; sends MouseEnter/Leave; return whether inside dialog
 			bool RecheckMouseInput();                                       // do mouse movement iusing last input flags
 

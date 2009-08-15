@@ -66,13 +66,13 @@ void ApplyFriction(FIXED &tval, int32_t percent)
 // Compares all Shape.VtxContactCNAT[] CNAT flags to search flag.
 // Returns true if CNAT match has been found.
 
-BOOL ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir)
+bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir)
   {
   int32_t cnt;
-  BOOL fcontact=FALSE;
+  bool fcontact=false;
   for (cnt=0; cnt<cobj->Shape.VtxNum; cnt++)
     if (cobj->Shape.VtxContactCNAT[cnt] & cnat_dir)
-      fcontact=TRUE;
+      fcontact=true;
   return fcontact;
   }
 
@@ -117,13 +117,13 @@ const char *CNATName(int32_t cnat)
   return "Undefined";
   }
 
-BOOL C4Object::Contact(int32_t iCNAT)
+bool C4Object::Contact(int32_t iCNAT)
 	{
 	if (Def->ContactFunctionCalls)
 		{
 		return !! Call(FormatString(PSF_Contact, CNATName(iCNAT)).getData());
 		}
-  return FALSE;
+  return false;
 	}
 
 void C4Object::DoMotion(int32_t mx, int32_t my)
@@ -210,7 +210,7 @@ void C4Object::VerticalBounds(int32_t &ctcoy)
 void C4Object::DoMovement()
 	{
 	int32_t ctcox,ctcoy,ctcor/*,ctx,cty*/,iContact=0;
-	BOOL fAnyContact=FALSE, iContacts = 0;
+	bool fAnyContact=false, iContacts = 0;
 	BYTE fTurned=0,fRedirectYR=0,fNoAttach=0;
 	// Restrictions
 	if (Def->NoHorizontalMove) xdir=0;
@@ -255,7 +255,7 @@ void C4Object::DoMovement()
 			int step = Sign(ctcox - GetX());
 			if (iContact=ContactCheck(GetX() + step, GetY()))
 				{
-				fAnyContact=TRUE; iContacts |= t_contact;
+				fAnyContact=true; iContacts |= t_contact;
 				// Abort horizontal movement
 				ctcox = GetX();
 				new_x = fix_x;
@@ -279,7 +279,7 @@ void C4Object::DoMovement()
 			int step = Sign(ctcoy - GetY());
 			if (iContact=ContactCheck(GetX(), GetY() + step))
 				{
-				fAnyContact=TRUE; iContacts |= t_contact;
+				fAnyContact=true; iContacts |= t_contact;
 				ctcoy=GetY(); new_y = fix_y;
 				// Vertical contact horizontal friction
 				ApplyFriction(xdir,ContactVtxFriction(this));
@@ -328,7 +328,7 @@ void C4Object::DoMovement()
 			// Contact check & evaluation
 			if (iContact=ContactCheck(ctx,cty))
 				{
-				fAnyContact=TRUE; iContacts |= t_contact;
+				fAnyContact=true; iContacts |= t_contact;
 				// Abort movement
 				ctcox=GetX(); new_x = fix_x;
 				ctcoy=GetY(); new_y = fix_y;
@@ -379,7 +379,7 @@ void C4Object::DoMovement()
 			// check for contact
 			if (iContact=ContactCheck(ctx,cty)) // Contact
 				{
-				fAnyContact=TRUE; iContacts |= t_contact;
+				fAnyContact=true; iContacts |= t_contact;
 				// Undo step and abort movement
 				Shape=lshape;
 				r=lcobjr;
@@ -408,14 +408,14 @@ void C4Object::DoMovement()
 	UpdateSolidMask(true);
 	// Misc checks ===========================================================================================
 	// InLiquid check
-	// this equals C4Object::UpdateLiquid, but the "fNoAttach=FALSE;"-line
+	// this equals C4Object::UpdateLiquid, but the "fNoAttach=false;"-line
 	if (IsInLiquidCheck()) // In Liquid
 		{
 		if (!InLiquid) // Enter liquid
 			{
 			if (OCF & OCF_HitSpeed2) if (Mass>3)
 				Splash(GetX(),GetY()+1,Min(Shape.Wdt*Shape.Hgt/10,20),this);
-			fNoAttach=FALSE;
+			fNoAttach=false;
 			InLiquid=1;
 			}
 		}
@@ -507,7 +507,7 @@ void C4Object::MovePosition(int32_t dx, int32_t dy)
 	}
 
 
-BOOL C4Object::ExecMovement() // Every Tick1 by Execute
+bool C4Object::ExecMovement() // Every Tick1 by Execute
   {
 
   // Containment check
@@ -515,11 +515,11 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
     {
     CopyMotion(Contained);
 
-    return TRUE;
+    return true;
     }
 
   // General mobility check
-  if (Category & C4D_StaticBack) return FALSE;
+  if (Category & C4D_StaticBack) return false;
 
   // Movement execution
   if (Mobile) // Object is moving
@@ -572,7 +572,7 @@ BOOL C4Object::ExecMovement() // Every Tick1 by Execute
 				}
 			}
 
-  return TRUE;
+  return true;
   }
 
 bool SimFlight(FIXED &x, FIXED &y, FIXED &xdir, FIXED &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t iIter)
@@ -609,15 +609,15 @@ bool SimFlight(FIXED &x, FIXED &y, FIXED &xdir, FIXED &ydir, int32_t iDensityMin
 	return true;
 }
 
-BOOL SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir)
+bool SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir)
   {
 	// Start in water?
 	if(DensityLiquid(GBackDensity(fixtoi(fcx), fixtoi(fcy))))
 		if(!SimFlight(fcx, fcy, xdir, ydir, 0, C4M_Liquid - 1, 10))
-			return FALSE;
+			return false;
 	// Hits liquid?
 	if(!SimFlight(fcx, fcy, xdir, ydir, C4M_Liquid, 100, -1))
-		return FALSE;
+		return false;
 	// liquid & deep enough?
 	return GBackLiquid(fixtoi(fcx), fixtoi(fcy)) && GBackLiquid(fixtoi(fcx), fixtoi(fcy) + 9);
   }

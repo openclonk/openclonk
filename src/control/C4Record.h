@@ -270,8 +270,8 @@ class C4Record // demo recording
 		unsigned int GetStreamingPos() const { return iStreamingPos; }
 		const StdBuf &GetStreamingBuf() const { return StreamingData; }
 
-		BOOL Start(bool fInitial);
-    BOOL Stop(StdStrBuf *pRecordName = NULL, BYTE *pRecordSHA1 = NULL);
+		bool Start(bool fInitial);
+    bool Stop(StdStrBuf *pRecordName = NULL, BYTE *pRecordSHA1 = NULL);
 
     bool Rec(const C4Control &Ctrl, int iFrame); // record control
     bool Rec(C4PacketType eCtrlType, C4ControlPacket *pCtrl, int iFrame); // record control packet
@@ -307,16 +307,16 @@ class C4Playback // demo playback
 		C4Playback(); // constructor; init playback
 		~C4Playback(); // destructor; deinit playback
 
-		BOOL Open(C4Group &rGrp);
-		BOOL ReadBinary(const StdBuf &Buf);
-		BOOL ReadText(const StdStrBuf &Buf);
+		bool Open(C4Group &rGrp);
+		bool ReadBinary(const StdBuf &Buf);
+		bool ReadText(const StdStrBuf &Buf);
 		void NextChunk(); // point to next prepared chunk in mem or read it
 		bool NextSequentialChunk(); // read from seq file until a new chunk has been filled
 		StdStrBuf ReWriteText();
 		StdBuf ReWriteBinary();
 		void Strip();
-		BOOL ExecuteControl(C4Control *pCtrl, int iFrame); // assign control
-		BOOL IsFinished() { return Finished; }
+		bool ExecuteControl(C4Control *pCtrl, int iFrame); // assign control
+		bool IsFinished() { return Finished; }
 		void Clear();
 #ifdef DEBUGREC
 		void Check(C4RecordChunkType eType, const uint8_t *pData, int iSize); // compare with debugrec

@@ -41,18 +41,18 @@ class CPathFinderRay
 		CPathFinderRay *Next;
 		CPathFinder *pPathFinder;
 	protected:
-		BOOL IsCrawlAttach(int iX, int iY, int iAttach);
-		BOOL CheckBackRayShorten();
+		bool IsCrawlAttach(int iX, int iY, int iAttach);
+		bool CheckBackRayShorten();
 		int FindCrawlAttachDiagonal(int iX, int iY, int iDirection);
 		int FindCrawlAttach(int iX, int iY);
 		void TurnAttach(int &rAttach, int iDirection);
 		void CrawlToAttach(int &rX, int &rY, int iAttach);
 		void CrawlByAttach(int &rX, int &rY, int iAttach, int iDirection);
-		BOOL CrawlTargetFree(int iX, int iY, int iAttach, int iDirection);
-		BOOL PointFree(int iX, int iY);
-		BOOL Crawl();
-		BOOL PathFree(int &rX, int &rY, int iToX, int iToY);
-		BOOL Execute();
+		bool CrawlTargetFree(int iX, int iY, int iAttach, int iDirection);
+		bool PointFree(int iX, int iY);
+		bool Crawl();
+		bool PathFree(int &rX, int &rY, int iToX, int iToY);
+		bool Execute();
 	};
 
 class CPathFinder
@@ -62,9 +62,9 @@ class CPathFinder
 		CPathFinder();
 		~CPathFinder();
 	protected:
-		BOOL Success;
-		BOOL (*PointFree)(int, int, int);
-		BOOL (*SetWaypoint)(int, int, int);
+		bool Success;
+		bool (*PointFree)(int, int, int);
+		bool (*SetWaypoint)(int, int, int);
 		CPathFinderRay *FirstRay;
 		int WaypointParameter;
 		int PointFreeParameter;
@@ -75,12 +75,12 @@ class CPathFinder
 	public:
 		void Clear();
 		void Default();
-		void Init(BOOL (*fnPointFree)(int, int, int), int iPointFreeParameter, int iDepth=50, int iCrawl=1000, int iRay=500, int iThreshold=10);
-		BOOL Find(int iFromX, int iFromY, int iToX, int iToY, BOOL (*fnSetWaypoint)(int, int, int), int iWaypointParameter);
+		void Init(bool (*fnPointFree)(int, int, int), int iPointFreeParameter, int iDepth=50, int iCrawl=1000, int iRay=500, int iThreshold=10);
+		bool Find(int iFromX, int iFromY, int iToX, int iToY, bool (*fnSetWaypoint)(int, int, int), int iWaypointParameter);
 	protected:
-		BOOL SplitRay(CPathFinderRay *pRay, int iAtX, int iAtY);
-		BOOL AddRay(int iFromX, int iFromY, int iToX, int iToY, int iDepth, int iDirection, CPathFinderRay *pFrom);
-		BOOL Execute();
+		bool SplitRay(CPathFinderRay *pRay, int iAtX, int iAtY);
+		bool AddRay(int iFromX, int iFromY, int iToX, int iToY, int iDepth, int iDirection, CPathFinderRay *pFrom);
+		bool Execute();
 		void Run();
 	};
 

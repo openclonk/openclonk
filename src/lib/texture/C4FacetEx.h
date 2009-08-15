@@ -84,14 +84,14 @@ class C4FacetSurface : public C4Facet
 			{ C4Facet::Set(nsfc, nx,ny,nwdt,nhgt); }
 
 		void Grayscale(int32_t iOffset = 0);
-		BOOL Create(int iWdt, int iHgt, int iWdt2=C4FCT_Full, int iHgt2=C4FCT_Full);
+		bool Create(int iWdt, int iHgt, int iWdt2=C4FCT_Full, int iHgt2=C4FCT_Full);
 		C4Surface &GetFace() { return Face; } // get internal face
-		BOOL CreateClrByOwner(CSurface *pBySurface);
-		BOOL EnsureSize(int iMinWdt, int iMinHgt);
+		bool CreateClrByOwner(CSurface *pBySurface);
+		bool EnsureSize(int iMinWdt, int iMinHgt);
 		bool EnsureOwnSurface();
-		BOOL Load(C4Group &hGroup, const char *szName, int iWdt=C4FCT_Full, int iHgt=C4FCT_Full, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-		BOOL Load(BYTE *bpBitmap, int iWdt=C4FCT_Full, int iHgt=C4FCT_Full);
-		BOOL Save(C4Group &hGroup, const char *szName);
+		bool Load(C4Group &hGroup, const char *szName, int iWdt=C4FCT_Full, int iHgt=C4FCT_Full, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+		bool Load(BYTE *bpBitmap, int iWdt=C4FCT_Full, int iHgt=C4FCT_Full);
+		bool Save(C4Group &hGroup, const char *szName);
 		void GrabFrom(C4FacetSurface &rSource)
 			{
 			Clear(); Default();

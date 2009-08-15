@@ -28,13 +28,13 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 LPDIRECTSOUND lpDS = NULL;
 
-BOOL InitDirectSound(HWND hwnd)
+bool InitDirectSound(HWND hwnd)
   {
   if (!SUCCEEDED(DirectSoundCreate(NULL, &lpDS, NULL)))
-    return FALSE;
+    return false;
   if (!SUCCEEDED(lpDS->SetCooperativeLevel(hwnd,DSSCL_NORMAL)))
-    return FALSE;
-  return TRUE;
+    return false;
+  return true;
   }
 
 void DeInitDirectSound()
@@ -55,7 +55,7 @@ struct CSoundObject
   IDirectSoundBuffer* Buffers[1]; // list of buffers
   };
 
-BOOL DSGetWaveResource(BYTE *pvRes, WAVEFORMATEX **ppWaveHeader, BYTE **ppbWaveData,DWORD *pcbWaveSize)
+bool DSGetWaveResource(BYTE *pvRes, WAVEFORMATEX **ppWaveHeader, BYTE **ppbWaveData,DWORD *pcbWaveSize)
 	{
   DWORD *pdw;
   DWORD *pdwEnd;
@@ -88,7 +88,7 @@ BOOL DSGetWaveResource(BYTE *pvRes, WAVEFORMATEX **ppWaveHeader, BYTE **ppbWaveD
           if (dwLength < sizeof(WAVEFORMAT)) goto exit;
           *ppWaveHeader = (WAVEFORMATEX *)pdw;
           if ((!ppbWaveData || *ppbWaveData) && (!pcbWaveSize || *pcbWaveSize))
-            { return TRUE; }
+            { return true; }
 					}
         break;
 			case mmioFOURCC('d', 'a', 't', 'a'):
@@ -96,7 +96,7 @@ BOOL DSGetWaveResource(BYTE *pvRes, WAVEFORMATEX **ppWaveHeader, BYTE **ppbWaveD
 					{
           if (ppbWaveData) *ppbWaveData = (LPBYTE)pdw;
           if (pcbWaveSize) *pcbWaveSize = dwLength;
-          if (!ppWaveHeader || *ppWaveHeader) return TRUE;
+          if (!ppWaveHeader || *ppWaveHeader) return true;
 					}
         break;
       }
@@ -104,10 +104,10 @@ BOOL DSGetWaveResource(BYTE *pvRes, WAVEFORMATEX **ppWaveHeader, BYTE **ppbWaveD
 		}
 
 exit:
-  return FALSE;
+  return false;
 	}
 
-BOOL DSFillSoundBuffer(IDirectSoundBuffer *pDSB, BYTE *pbWaveData, DWORD cbWaveSize)
+bool DSFillSoundBuffer(IDirectSoundBuffer *pDSB, BYTE *pbWaveData, DWORD cbWaveSize)
 	{
   if (pDSB && pbWaveData && cbWaveSize)
     {
@@ -118,10 +118,10 @@ BOOL DSFillSoundBuffer(IDirectSoundBuffer *pDSB, BYTE *pbWaveData, DWORD cbWaveS
       CopyMemory(pMem1, pbWaveData, dwSize1);
       if ( 0 != dwSize2 ) CopyMemory(pMem2, pbWaveData+dwSize1, dwSize2);
       pDSB->Unlock( pMem1, dwSize1, pMem2, dwSize2);
-      return TRUE;
+      return true;
       }
     }
-  return FALSE;
+  return false;
 	}
 
 IDirectSoundBuffer *DSLoadSoundBuffer(IDirectSound *pDS, BYTE *bpWaveBuf)
@@ -262,11 +262,11 @@ IDirectSoundBuffer *DSndObjGetFreeBuffer(CSoundObject *pSO)
 	return pDSB;
 	}
 
-BOOL DSndObjPlay(CSoundObject *pSO, DWORD dwPlayFlags)
+bool DSndObjPlay(CSoundObject *pSO, DWORD dwPlayFlags)
   {
-  BOOL result = FALSE;
+  bool result = false;
 
-  if (!pSO)  return FALSE;
+  if (!pSO)  return false;
 
   if ( !(dwPlayFlags & DSBPLAY_LOOPING) || (pSO->iAlloc==1) )
     {
@@ -279,9 +279,9 @@ BOOL DSndObjPlay(CSoundObject *pSO, DWORD dwPlayFlags)
   return result;
   }
 
-BOOL DSndObjPlaying(CSoundObject *pSO)
+bool DSndObjPlaying(CSoundObject *pSO)
   {
-  BOOL result,fPlaying=FALSE;
+  bool result,fPlaying=false;
   DWORD dwStatus;
   int i;
   if (pSO)
@@ -290,44 +290,44 @@ BOOL DSndObjPlaying(CSoundObject *pSO)
       result=pSO->Buffers[i]->GetStatus(&dwStatus);
       if (FAILED(result)) dwStatus=0;
       if ((dwStatus & DSBSTATUS_PLAYING) == DSBSTATUS_PLAYING)
-        fPlaying=TRUE;
+        fPlaying=true;
       }
   return fPlaying;
   }
 
-BOOL DSndObjSetVolume(CSoundObject *pSO, long lVolume)
+bool DSndObjSetVolume(CSoundObject *pSO, long lVolume)
   {
-  BOOL result,fSuccess=TRUE;
+  bool result,fSuccess=true;
   if (pSO)
     for (int i=0; i<pSO->iAlloc; i++)
       {
       result=pSO->Buffers[i]->SetVolume(lVolume);
-      if (FAILED(result)) fSuccess=FALSE;
+      if (FAILED(result)) fSuccess=false;
       }
   return fSuccess;
   }
 
-BOOL DSndObjGetVolume(CSoundObject *pSO, long *lpVolume)
+bool DSndObjGetVolume(CSoundObject *pSO, long *lpVolume)
   {
-  BOOL result,fSuccess=TRUE;
+  bool result,fSuccess=true;
   if (pSO)
     {
     result=pSO->Buffers[0]->GetVolume(lpVolume);
-    if (FAILED(result)) fSuccess=FALSE;
+    if (FAILED(result)) fSuccess=false;
     }
   return fSuccess;
   }
 
-BOOL DSndObjStop(CSoundObject *pSO)
+bool DSndObjStop(CSoundObject *pSO)
   {
   int i;
-  if (!pSO) return FALSE;
+  if (!pSO) return false;
   for (i=0; i<pSO->iAlloc; i++)
     {
     pSO->Buffers[i]->Stop();
     pSO->Buffers[i]->SetCurrentPosition(0);
     }
-  return TRUE;
+  return true;
   }
 
 #endif //USE_DIRECTX

@@ -41,14 +41,14 @@ class C4Surface: public CSurface
 
 		C4Surface *Duplicate();	// create identical copy
 
-		BOOL LoadAny(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-		BOOL LoadAny(C4GroupSet &hGroupset, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-		BOOL Load(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-		BOOL Save(C4Group &hGroup, const char *szFilename);
-		BOOL SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
-		BOOL Copy(C4Surface &fromSfc);
+		bool LoadAny(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+		bool LoadAny(C4GroupSet &hGroupset, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+		bool Load(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+		bool Save(C4Group &hGroup, const char *szFilename);
+		bool SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
+		bool Copy(C4Surface &fromSfc);
 		bool Read(CStdStream &hGroup, const char * extension, bool fOwnPal=false);
-		BOOL ReadPNG(CStdStream &hGroup);
+		bool ReadPNG(CStdStream &hGroup);
 		bool ReadJPEG(CStdStream &hGroup);
 	};
 

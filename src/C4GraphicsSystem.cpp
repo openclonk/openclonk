@@ -48,7 +48,7 @@
 
 C4GraphicsSystem::C4GraphicsSystem()
 	{
-	fViewportClassRegistered=FALSE;
+	fViewportClassRegistered=false;
 	Default();
 	}
 
@@ -80,20 +80,20 @@ BOOL C4GraphicsSystem::RegisterViewportClass(HINSTANCE hInst)
 	return C4GUI::Dialog::RegisterWindowClass(hInst);
 	}
 #endif
-BOOL C4GraphicsSystem::Init()
+bool C4GraphicsSystem::Init()
 	{
 #ifdef _WIN32
 	// Register viewport class
 	if (!fViewportClassRegistered)
 		if (!RegisterViewportClass(Application.GetInstance()))
-			return FALSE;
-	fViewportClassRegistered=TRUE;
+			return false;
+	fViewportClassRegistered=true;
 #endif
 	// Init video module
 	if (Config.Graphics.VideoModule)
 		Video.Init(Application.DDraw->lpBack);
 	// Success
-	return TRUE;
+	return true;
 	}
 
 void C4GraphicsSystem::Clear()
@@ -119,11 +119,11 @@ void C4GraphicsSystem::Clear()
 	DeactivateDebugOutput();
 	}
 
-BOOL C4GraphicsSystem::SetPalette()
+bool C4GraphicsSystem::SetPalette()
 	{
 	// Set primary palette by game palette
-	if (!Application.DDraw->SetPrimaryPalette(::GraphicsResource.GamePalette, ::GraphicsResource.AlphaPalette)) return FALSE;
-	return TRUE;
+	if (!Application.DDraw->SetPrimaryPalette(::GraphicsResource.GamePalette, ::GraphicsResource.AlphaPalette)) return false;
+	return true;
 	}
 
 extern int32_t iLastControlSize,iPacketDelay;
@@ -222,13 +222,13 @@ void C4GraphicsSystem::Execute()
 		}
 
 	// Palette update
-	if (fSetPalette) { SetPalette(); /*SetDarkColorTable();*/ fSetPalette=FALSE; }
+	if (fSetPalette) { SetPalette(); /*SetDarkColorTable();*/ fSetPalette=false; }
 
 	// gamma update
 	if (fSetGamma)
 		{
 		ApplyGamma();
-		fSetGamma=FALSE;
+		fSetGamma=false;
 		}
 
 	// Video record & status (fullsrceen)
@@ -239,7 +239,7 @@ void C4GraphicsSystem::Execute()
 	FinishDrawing();
 	}
 
-BOOL C4GraphicsSystem::CloseViewport(C4Viewport * cvp)
+bool C4GraphicsSystem::CloseViewport(C4Viewport * cvp)
 	{
 	if (!cvp) return false;
 	/*C4Viewport *next,*prev=NULL;
@@ -276,7 +276,7 @@ BOOL C4GraphicsSystem::CloseViewport(C4Viewport * cvp)
 	// Recalculate viewports
 	RecalculateViewports();
 	// Done
-	return TRUE;
+	return true;
 	}
 #ifdef _WIN32
 C4Viewport* C4GraphicsSystem::GetViewport(HWND hwnd)
@@ -287,17 +287,17 @@ C4Viewport* C4GraphicsSystem::GetViewport(HWND hwnd)
 	return NULL;
 	}
 #endif
-BOOL C4GraphicsSystem::CreateViewport(int32_t iPlayer, bool fSilent)
+bool C4GraphicsSystem::CreateViewport(int32_t iPlayer, bool fSilent)
 	{
 	// Create and init new viewport, add to viewport list
 	int32_t iLastCount = GetViewportCount();
 	C4Viewport *nvp = new C4Viewport;
-	BOOL fOkay = FALSE;
+	bool fOkay = false;
 	if (Application.isFullScreen)
 		fOkay = nvp->Init(iPlayer, false);
 	else
 		fOkay = nvp->Init(&Console,&Application,iPlayer);
-	if (!fOkay)	{ delete nvp; return FALSE; }
+	if (!fOkay)	{ delete nvp; return false; }
 	C4Viewport *pLast;
 	for (pLast=FirstViewport; pLast && pLast->Next; pLast=pLast->Next) {}
 	if (pLast) pLast->Next=nvp; else FirstViewport=nvp;
@@ -308,7 +308,7 @@ BOOL C4GraphicsSystem::CreateViewport(int32_t iPlayer, bool fSilent)
 	// Action sound
 	if (GetViewportCount()!=iLastCount) if (!fSilent)
 		StartSoundEffect("CloseViewport");
-	return TRUE;
+	return true;
 	}
 
 void C4GraphicsSystem::ClearPointers(C4Object *pObj)
@@ -324,21 +324,21 @@ void C4GraphicsSystem::Default()
 	FirstViewport=NULL;
 	InvalidateBg();
 	ViewportArea.Default();
-	ShowVertices=FALSE;
-	ShowAction=FALSE;
-	ShowCommand=FALSE;
-	ShowEntrance=FALSE;
-	ShowPathfinder=FALSE;
-	ShowNetstatus=FALSE;
-	ShowSolidMask=FALSE;
-	ShowHelp=FALSE;
+	ShowVertices=false;
+	ShowAction=false;
+	ShowCommand=false;
+	ShowEntrance=false;
+	ShowPathfinder=false;
+	ShowNetstatus=false;
+	ShowSolidMask=false;
+	ShowHelp=false;
 	FlashMessageText[0]=0;
 	FlashMessageTime=0; FlashMessageX=FlashMessageY=0;
-	fSetPalette=FALSE;
+	fSetPalette=false;
 	Video.Default();
 	for (int32_t iRamp=0; iRamp<3*C4MaxGammaRamps; iRamp+=3)
 		{ dwGamma[iRamp+0]=0; dwGamma[iRamp+1]=0x808080; dwGamma[iRamp+2]=0xffffff; }
-	fSetGamma=FALSE;
+	fSetGamma=false;
 	pLoaderScreen=NULL;
 	}
 
@@ -363,18 +363,18 @@ void OnSurfaceRestore()
 	::GraphicsSystem.InvalidateBg();
 	}
 
-BOOL C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst)
+bool C4GraphicsSystem::InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst)
 	{
 	// create new loader; overwrite current only if successful
 	C4LoaderScreen *pNewLoader = new C4LoaderScreen();
 	pNewLoader->SetBlackScreen(fDrawBlackScreenFirst);
-	if (!pNewLoader->Init(szLoaderSpec)) { delete pNewLoader; return FALSE; }
+	if (!pNewLoader->Init(szLoaderSpec)) { delete pNewLoader; return false; }
 	if (pLoaderScreen) delete pLoaderScreen;
 	pLoaderScreen = pNewLoader;
 	// apply user gamma for loader
 	ApplyGamma();
 	// done, success
-	return TRUE;
+	return true;
 	}
 
 void C4GraphicsSystem::EnableLoaderDrawing()
@@ -383,7 +383,7 @@ void C4GraphicsSystem::EnableLoaderDrawing()
 	if (pLoaderScreen) pLoaderScreen->SetBlackScreen(false);
 	}
 
-BOOL C4GraphicsSystem::CloseViewport(int32_t iPlayer, bool fSilent)
+bool C4GraphicsSystem::CloseViewport(int32_t iPlayer, bool fSilent)
 	{
 	// Close all matching viewports
 	int32_t iLastCount = GetViewportCount();
@@ -405,7 +405,7 @@ BOOL C4GraphicsSystem::CloseViewport(int32_t iPlayer, bool fSilent)
 	// Action sound
 	if (GetViewportCount()!=iLastCount) if (!fSilent)
 		StartSoundEffect("CloseViewport");
-	return TRUE;
+	return true;
 	}
 
 void C4GraphicsSystem::RecalculateViewports()
@@ -513,12 +513,12 @@ void C4GraphicsSystem::SortViewportsByPlayerControl()
 	{
 
 	// Sort
-	BOOL fSorted;
+	bool fSorted;
 	C4Player *pPlr1,*pPlr2;
 	C4Viewport *pView,*pNext,*pPrev;
 	do
 		{
-		fSorted = TRUE;
+		fSorted = true;
 		for (pPrev=NULL,pView=FirstViewport; pView && (pNext = pView->Next); pView=pNext)
 			{
 			// Get players
@@ -532,7 +532,7 @@ void C4GraphicsSystem::SortViewportsByPlayerControl()
 				pNext->Next = pView;
 				pPrev = pNext;
 				pNext = pView;
-				fSorted = FALSE;
+				fSorted = false;
 				}
 			// Don't swap
 			else
@@ -609,7 +609,7 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
 	do
 		sprintf(szFilename,"Screenshot%03i.png",iScreenshotIndex++);
 	while (FileExists(strFilePath = Config.AtScreenshotPath(szFilename)));
-	BOOL fSuccess=DoSaveScreenshot(fSaveAll, strFilePath);
+	bool fSuccess=DoSaveScreenshot(fSaveAll, strFilePath);
 	// log if successful/where it has been stored
 	if (!fSuccess)
 		LogF(LoadResStr("IDS_PRC_SCREENSHOTERROR"), Config.AtUserDataRelativePath(Config.AtScreenshotPath(szFilename)));
@@ -619,24 +619,24 @@ bool C4GraphicsSystem::SaveScreenshot(bool fSaveAll)
 	return !!fSuccess;
 	}
 
-BOOL C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
+bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 	{
 	// Fullscreen only
-	if (!Application.isFullScreen) return FALSE;
+	if (!Application.isFullScreen) return false;
 	// back surface must be present
-	if (!Application.DDraw->lpBack) return FALSE;
+	if (!Application.DDraw->lpBack) return false;
 
 	// save landscape
 	if (fSaveAll)
 		{
 		// get viewport to draw in
-		C4Viewport *pVP=GetFirstViewport(); if (!pVP) return FALSE;
+		C4Viewport *pVP=GetFirstViewport(); if (!pVP) return false;
 		// create image large enough to hold the landcape
 		CPNGFile png; int32_t lWdt=GBackWdt,lHgt=GBackHgt;
-		if (!png.Create(lWdt, lHgt, false)) return FALSE;
+		if (!png.Create(lWdt, lHgt, false)) return false;
 		// get backbuffer size
 		int32_t bkWdt=C4GUI::GetScreenWdt(), bkHgt=C4GUI::GetScreenHgt();
-		if (!bkWdt || !bkHgt) return FALSE;
+		if (!bkWdt || !bkHgt) return false;
 		// facet for blitting
 		C4TargetFacet bkFct;
 		// mark background to be redrawn
@@ -684,13 +684,13 @@ BOOL C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 
 void C4GraphicsSystem::DeactivateDebugOutput()
 	{
-	ShowVertices=FALSE;
-	ShowAction=FALSE;
-	ShowCommand=FALSE;
-	ShowEntrance=FALSE;
-	ShowPathfinder=FALSE; // allow pathfinder! - why this??
-	ShowSolidMask=FALSE;
-	ShowNetstatus=FALSE;
+	ShowVertices=false;
+	ShowAction=false;
+	ShowCommand=false;
+	ShowEntrance=false;
+	ShowPathfinder=false; // allow pathfinder! - why this??
+	ShowSolidMask=false;
+	ShowNetstatus=false;
 	}
 
 void C4GraphicsSystem::DrawHoldMessages()
@@ -836,7 +836,7 @@ void C4GraphicsSystem::SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_
 	dwGamma[iRampIndex+1]=dwClr2;
 	dwGamma[iRampIndex+2]=dwClr3;
 	// mark gamma ramp to be recalculated
-	fSetGamma=TRUE;
+	fSetGamma=true;
 	}
 
 void C4GraphicsSystem::ApplyGamma()
@@ -883,13 +883,13 @@ bool C4GraphicsSystem::ToggleShowAction()
 	{
 	if (!Game.DebugMode && !Console.Active) { FlashMessage(LoadResStr("IDS_MSG_NODEBUGMODE")); return false; }
 	if (!(ShowAction || ShowCommand || ShowPathfinder))
-		{	ShowAction = TRUE; FlashMessage("Actions"); }
+		{	ShowAction = true; FlashMessage("Actions"); }
 	else if (ShowAction)
-		{	ShowAction = FALSE; ShowCommand = TRUE; FlashMessage("Commands"); }
+		{	ShowAction = false; ShowCommand = true; FlashMessage("Commands"); }
 	else if (ShowCommand)
-		{	ShowCommand = FALSE; ShowPathfinder = TRUE; FlashMessage("Pathfinder"); }
+		{	ShowCommand = false; ShowPathfinder = true; FlashMessage("Pathfinder"); }
 	else if (ShowPathfinder)
-		{	ShowPathfinder = FALSE; FlashMessageOnOff("Actions/Commands/Pathfinder", false); }
+		{	ShowPathfinder = false; FlashMessageOnOff("Actions/Commands/Pathfinder", false); }
 	return true;
 	}
 

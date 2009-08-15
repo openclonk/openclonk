@@ -21,6 +21,6 @@
 #ifndef INC_C4FileClasses
 #define INC_C4FileClasses
 
-BOOL SetC4FileClasses(const char *szEnginePath);
+bool SetC4FileClasses(const char *szEnginePath);
 
 #endif

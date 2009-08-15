@@ -229,7 +229,7 @@ bool C4ClientList::Init(int32_t iLocalClientID)
 	Clear();
 	// Add local client (activated, not observing)
 	AddLocal(iLocalClientID, true, false);
-	return TRUE;
+	return true;
 }
 
 void C4ClientList::InitNetwork(C4Network2ClientList *pnNetClients)

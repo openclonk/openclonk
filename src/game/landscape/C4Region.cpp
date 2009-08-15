@@ -75,22 +75,22 @@ void C4RegionList::Clear()
 	First=NULL;
 	}
 
-BOOL C4RegionList::Add(int iX, int iY, int iWdt, int iHgt, const char *szCaption,
+bool C4RegionList::Add(int iX, int iY, int iWdt, int iHgt, const char *szCaption,
 											 int iCom, C4Object *pTarget, int iMoveOverCom, int iHoldCom, int iData)
 	{
 	C4Region *pRgn = new C4Region;
 	pRgn->Set(iX+AdjustX,iY+AdjustY,iWdt,iHgt,szCaption,iCom,iMoveOverCom,iHoldCom,iData,pTarget);
 	pRgn->Next=First;
 	First=pRgn;
-	return TRUE;
+	return true;
 	}
 
-BOOL C4RegionList::Add(C4Facet &fctArea, const char *szCaption, int iCom, C4Object *pTarget, int iMoveOverCom, int iHoldCom, int iData)
+bool C4RegionList::Add(C4Facet &fctArea, const char *szCaption, int iCom, C4Object *pTarget, int iMoveOverCom, int iHoldCom, int iData)
 	{
 	return Add(fctArea.X,fctArea.Y,fctArea.Wdt,fctArea.Hgt,szCaption,iCom,pTarget,iMoveOverCom,iHoldCom,iData);
 	}
 
-BOOL C4RegionList::Add(C4Region &rRegion)
+bool C4RegionList::Add(C4Region &rRegion)
 	{
 	C4Region *pRgn = new C4Region;
 	*pRgn = rRegion;
@@ -98,7 +98,7 @@ BOOL C4RegionList::Add(C4Region &rRegion)
 	pRgn->Y+=AdjustY;
 	pRgn->Next=First;
 	First=pRgn;
-	return TRUE;
+	return true;
 	}
 
 void C4Region::Set(int iX, int iY, int iWdt, int iHgt, const char *szCaption,
@@ -147,7 +147,7 @@ void C4Region::Set(C4Facet &fctArea, const char *szCaption, C4Object *pTarget)
 	if (pTarget) Target=pTarget;
 	}
 
-BOOL C4RegionList::Add(C4RegionList &rRegionList, BOOL fAdjust)
+bool C4RegionList::Add(C4RegionList &rRegionList, bool fAdjust)
 	{
 	C4Region *pNewFirst=NULL,*pPrev=NULL;
 	for (C4Region *cRgn=rRegionList.First; cRgn; cRgn=cRgn->Next)
@@ -161,5 +161,5 @@ BOOL C4RegionList::Add(C4RegionList &rRegionList, BOOL fAdjust)
 		pPrev=pRgn;
 		}
 	if (pNewFirst) First=pNewFirst;
-	return TRUE;
+	return true;
 	}

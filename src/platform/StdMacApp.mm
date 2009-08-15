@@ -18,15 +18,11 @@
  */
 
 // based on SDL implementation
+
 #import <AppKit/AppKit.h>
 
-#undef TRUE
-#undef FALSE
-
-#define BOOL TheLib_BOOL
 #include <Standard.h>
 #include <StdWindow.h>
-#undef BOOL
 
 void CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
 	NSPasteboard* pasteboard = [NSPasteboard generalPasteboard];

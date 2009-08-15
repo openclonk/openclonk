@@ -272,25 +272,25 @@ void C4ConfigShareware::Default()
 	C4Config::Default();
 	}
 
-BOOL C4ConfigShareware::Load(BOOL forceWorkingDirectory, const char *szCustomFile)
+bool C4ConfigShareware::Load(bool forceWorkingDirectory, const char *szCustomFile)
 	{
 	// Load standard config
-	if (!C4Config::Load(forceWorkingDirectory, szCustomFile)) return FALSE;
+	if (!C4Config::Load(forceWorkingDirectory, szCustomFile)) return false;
 	// Load registration
 	LoadRegistration();
 	// Done
-	return TRUE;
+	return true;
 	}
 
-BOOL C4ConfigShareware::Save()
+bool C4ConfigShareware::Save()
 	{
 	// Save standard config
-	if (!C4Config::Save()) return FALSE;
+	if (!C4Config::Save()) return false;
 	// Done
-	return TRUE;
+	return true;
 	}
 
-BOOL C4ConfigShareware::Registered()
+bool C4ConfigShareware::Registered()
 	{
 	return RegistrationValid;
 	}

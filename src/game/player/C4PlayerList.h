@@ -58,33 +58,33 @@ class C4PlayerList
 		C4Player *GetAtClient(const char *szName, int iIndex=0) const;
 		C4Player *GetAtRemoteClient(int iIndex=0) const;
 		C4Player *GetByInfoID(int iInfoID) const;
-		C4Player *Join(const char *szFilename, BOOL fScenarioInit, int iAtClient, const char *szAtClientName, class C4PlayerInfo *pInfo);
-		BOOL CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName);
-		BOOL CtrlJoin(const class C4Network2ResCore &ResCore, int iClientID, int idPlayerInfo);
-		BOOL FileInUse(const char *szFilename) const;
-		BOOL Retire(C4Player *pPlr);
-		BOOL Evaluate();
-		BOOL Save(bool fSaveLocalOnly);
-		BOOL Save(C4Group &hGroup, bool fStoreTiny, const C4PlayerInfoList &rStoreList); // save all players present in the restore list
-	  BOOL Remove(int iPlayer, bool fDisonnected, bool fNoCalls);
+		C4Player *Join(const char *szFilename, bool fScenarioInit, int iAtClient, const char *szAtClientName, class C4PlayerInfo *pInfo);
+		bool CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName);
+		bool CtrlJoin(const class C4Network2ResCore &ResCore, int iClientID, int idPlayerInfo);
+		bool FileInUse(const char *szFilename) const;
+		bool Retire(C4Player *pPlr);
+		bool Evaluate();
+		bool Save(bool fSaveLocalOnly);
+		bool Save(C4Group &hGroup, bool fStoreTiny, const C4PlayerInfoList &rStoreList); // save all players present in the restore list
+	  bool Remove(int iPlayer, bool fDisonnected, bool fNoCalls);
 		bool RemoveUnjoined(int32_t iPlayer); // remove player objects only
-	  BOOL Remove(C4Player *pPlr, bool fDisonnected, bool fNoCalls);
-		BOOL RemoveAtRemoteClient(bool fDisonnected, bool fNoCalls);
-		BOOL RemoveLocal(bool fDisonnected, bool fNoCalls);
-		BOOL MouseControlTaken() const;
-		BOOL RemoveAtClient(int iClient, bool fDisconnect);
-		BOOL RemoveAtClient(const char *szName, bool fDisconnect);
-		BOOL CtrlRemove(int iPlayer, bool fDisonnected);
-		BOOL CtrlRemoveAtClient(int iClient, bool fDisonnected);
-		BOOL CtrlRemoveAtClient(const char *szName, bool fDisonnected);
-		BOOL Valid(int iPlayer) const;
-		BOOL Hostile(int iPlayer1, int iPlayer2) const;
+	  bool Remove(C4Player *pPlr, bool fDisonnected, bool fNoCalls);
+		bool RemoveAtRemoteClient(bool fDisonnected, bool fNoCalls);
+		bool RemoveLocal(bool fDisonnected, bool fNoCalls);
+		bool MouseControlTaken() const;
+		bool RemoveAtClient(int iClient, bool fDisconnect);
+		bool RemoveAtClient(const char *szName, bool fDisconnect);
+		bool CtrlRemove(int iPlayer, bool fDisonnected);
+		bool CtrlRemoveAtClient(int iClient, bool fDisonnected);
+		bool CtrlRemoveAtClient(const char *szName, bool fDisonnected);
+		bool Valid(int iPlayer) const;
+		bool Hostile(int iPlayer1, int iPlayer2) const;
 		bool HostilityDeclared(int iPlayer1, int iPlayer2) const; // check whether iPlayer1 treats iPlayer2 as hostile, but not vice versa!
-		BOOL PositionTaken(int iPosition) const;
-		BOOL ColorTaken(int iColor) const;
+		bool PositionTaken(int iPosition) const;
+		bool ColorTaken(int iColor) const;
 		int CheckColorDw(DWORD dwColor, C4Player *pExclude); // return minimum difference to the other player's colors
-		BOOL ControlTaken(int iControl) const;
-		BOOL SynchronizeLocalFiles(); // syncrhonize all local player files; resetting InGame times
+		bool ControlTaken(int iControl) const;
+		bool SynchronizeLocalFiles(); // syncrhonize all local player files; resetting InGame times
 		protected:
 			int GetFreeNumber() const;
 			void RecheckPlayerSort(C4Player *pForPlayer);

@@ -175,7 +175,7 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			}
 		}
 	// Store mask put status
-	MaskPut=TRUE;
+	MaskPut=true;
 	// restore attached object positions if moved
 	if (fRestoreAttachment && iAttachingObjectsCount)
 		{

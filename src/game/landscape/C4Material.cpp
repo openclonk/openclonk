@@ -151,15 +151,15 @@ void C4MaterialCore::Default()
 	Clear();
 	}
 
-BOOL C4MaterialCore::Load(C4Group &hGroup,
+bool C4MaterialCore::Load(C4Group &hGroup,
 													const char *szEntryName)
 	{
 	StdStrBuf Source;
 	if (!hGroup.LoadEntryString(szEntryName,Source))
-		return FALSE;
+		return false;
 	StdStrBuf Name = hGroup.GetFullName() + DirSep + szEntryName;
   if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Source, Name.getData()))
-		return FALSE;
+		return false;
 	// adjust placement, if not specified
 	if (!Placement)
 		{
@@ -174,7 +174,7 @@ BOOL C4MaterialCore::Load(C4Group &hGroup,
 			Placement=10;
 		else Placement=5;
 		}
-	return TRUE;
+	return true;
 	}
 
 void C4MaterialCore::CompileFunc(StdCompiler *pComp)
@@ -381,7 +381,7 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 		if (!szTextureOverlay)
 			szTextureOverlay = "Smooth";
 		// search/create entry in texmap
-		Map[cnt].DefaultMatTex = ::TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, TRUE,
+		Map[cnt].DefaultMatTex = ::TextureMap.GetIndex(Map[cnt].Name, szTextureOverlay, true,
 			FormatString("DefaultMatTex of mat %s", Map[cnt].Name).getData());
 		// init PXS facet
 		SURFACE sfcTexture;
@@ -472,13 +472,13 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
   for (cnt=0; cnt<Num; cnt++)
     {
     if (Map[cnt].sBlastShiftTo.getLength())
-			Map[cnt].BlastShiftTo=::TextureMap.GetIndexMatTex(Map[cnt].sBlastShiftTo.getData(), NULL, TRUE, FormatString("BlastShiftTo of mat %s", Map[cnt].Name).getData());
+			Map[cnt].BlastShiftTo=::TextureMap.GetIndexMatTex(Map[cnt].sBlastShiftTo.getData(), NULL, true, FormatString("BlastShiftTo of mat %s", Map[cnt].Name).getData());
     if (Map[cnt].sInMatConvertTo.getLength())
       Map[cnt].InMatConvertTo=Get(Map[cnt].sInMatConvertTo.getData());
     if (Map[cnt].sBelowTempConvertTo.getLength())
-      Map[cnt].BelowTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sBelowTempConvertTo.getData(), NULL, TRUE, FormatString("BelowTempConvertTo of mat %s", Map[cnt].Name).getData());
+      Map[cnt].BelowTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sBelowTempConvertTo.getData(), NULL, true, FormatString("BelowTempConvertTo of mat %s", Map[cnt].Name).getData());
     if (Map[cnt].sAboveTempConvertTo.getLength())
-      Map[cnt].AboveTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, TRUE, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
+      Map[cnt].AboveTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, true, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
 		}
 #if 0
 	int32_t i=0;
@@ -510,7 +510,7 @@ void C4MaterialMap::SetMatReaction(int32_t iPXSMat, int32_t iLSMat, C4MaterialRe
 	ppReactionMap[(iLSMat+1)*(Num+1) + iPXSMat+1] = pReact;
 	}
 
-BOOL C4MaterialMap::SaveEnumeration(C4Group &hGroup)
+bool C4MaterialMap::SaveEnumeration(C4Group &hGroup)
 	{
 	char *mapbuf = new char [1000];
 	mapbuf[0]=0;
@@ -521,20 +521,20 @@ BOOL C4MaterialMap::SaveEnumeration(C4Group &hGroup)
 		SAppend(LineFeed,mapbuf);
 		}
 	SAppend(EndOfFile,mapbuf);
-	return hGroup.Add(C4CFN_MatMap,mapbuf,SLen(mapbuf),FALSE,TRUE);
+	return hGroup.Add(C4CFN_MatMap,mapbuf,SLen(mapbuf),false,true);
 	}
 
-BOOL C4MaterialMap::LoadEnumeration(C4Group &hGroup)
+bool C4MaterialMap::LoadEnumeration(C4Group &hGroup)
 	{
 	// Load enumeration map (from savegame), succeed if not present
 	StdStrBuf mapbuf;
-	if (!hGroup.LoadEntryString(C4CFN_MatMap, mapbuf)) return TRUE;
+	if (!hGroup.LoadEntryString(C4CFN_MatMap, mapbuf)) return true;
 
 	// Sort material array by enumeration map, fail if some missing
 	const char *csearch;
 	char cmatname[C4M_MaxName+1];
 	int32_t cmat=0;
-	if (!(csearch = SSearch(mapbuf.getData(),"[Enumeration]"))) { return FALSE; }
+	if (!(csearch = SSearch(mapbuf.getData(),"[Enumeration]"))) { return false; }
 	csearch=SAdvanceSpace(csearch);
 	while (IsIdentifier(*csearch))
 		{
@@ -542,21 +542,21 @@ BOOL C4MaterialMap::LoadEnumeration(C4Group &hGroup)
 		if (!SortEnumeration(cmat,cmatname))
 			{
 			// Output error message!
-			return FALSE;
+			return false;
 			}
 		cmat++;
 		csearch+=SLen(cmatname);
 		csearch=SAdvanceSpace(csearch);
 		}
 
-	return TRUE;
+	return true;
 	}
 
-BOOL C4MaterialMap::SortEnumeration(int32_t iMat, const char *szMatName)
+bool C4MaterialMap::SortEnumeration(int32_t iMat, const char *szMatName)
 	{
 
 	// Not enough materials loaded
-	if (iMat>=Num) return FALSE;
+	if (iMat>=Num) return false;
 
 	// Find requested mat
 	int32_t cmat;
@@ -564,10 +564,10 @@ BOOL C4MaterialMap::SortEnumeration(int32_t iMat, const char *szMatName)
 		if (SEqual(szMatName,Map[cmat].Name))
 			break;
 	// Not found
-	if (cmat>=Num) return FALSE;
+	if (cmat>=Num) return false;
 
 	// already the same?
-	if (cmat == iMat) return TRUE;
+	if (cmat == iMat) return true;
 
 	// Move requested mat to indexed position
 	C4Material mswap;
@@ -575,7 +575,7 @@ BOOL C4MaterialMap::SortEnumeration(int32_t iMat, const char *szMatName)
 	Map[iMat] = Map[cmat];
 	Map[cmat] = mswap;
 
-	return TRUE;
+	return true;
 	}
 
 void C4MaterialMap::Default()

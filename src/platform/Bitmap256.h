@@ -79,7 +79,7 @@ class CBitmap256Info : public CBitmapInfo
 	public:
 		void Default();
 		void Set(int iWdt, int iHgt, BYTE *bypPalette);
-		BOOL Valid();
+		bool Valid();
 
 		int FileBitsOffset();
 	};

@@ -40,11 +40,11 @@ class C4ConfigShareware: public C4Config
 		char InvalidKeyFile[CFG_MaxString + 1];
 	public:
 		void Default();
-		BOOL Save();
-		BOOL Load(BOOL forceWorkingDirectory=TRUE, const char *szCustomFile=NULL);
+		bool Save();
+		bool Load(bool forceWorkingDirectory=true, const char *szCustomFile=NULL);
 	public:
 		void ClearRegistrationError();
-		BOOL Registered();
+		bool Registered();
 		bool LoadRegistration();
 		bool LoadRegistration(const char *szFrom);
 		const char* GetRegistrationData(const char* strField);

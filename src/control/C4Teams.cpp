@@ -656,7 +656,7 @@ bool C4TeamList::Save(C4Group &hGroup)
     {
     StdStrBuf Buf = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*this, "Teams"));
 	  // save it
-	  hGroup.Add(C4CFN_Teams, Buf, FALSE, TRUE);
+	  hGroup.Add(C4CFN_Teams, Buf, false, true);
     }
   catch(StdCompiler::Exception *)
     { return false; }

@@ -28,10 +28,10 @@
 #include <StdFile.h>
 #include <StdBuf.h>
 
-//  Xmd.h typedefs BOOL to CARD8, but we want int
-#define BOOL _BOOL
+//  Xmd.h typedefs bool to CARD8, but we want int
+#define bool _BOOL
 #include <X11/Xmd.h>
-#undef BOOL
+#undef bool
 
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
@@ -217,7 +217,7 @@ bool CStdApp::FlushMessages() {
 #ifdef WITH_GLIB
 namespace {
 	// Just indicate that the timeout elapsed
-	gboolean HandleMessageTimeout(gpointer data) { *static_cast<bool*>(data) = true; return FALSE; }
+	gboolean HandleMessageTimeout(gpointer data) { *static_cast<bool*>(data) = true; return false; }
 }
 #endif
 

@@ -242,7 +242,7 @@ void C4StartupPlrSelDlg::PlayerListItem::Load(const StdStrBuf &rsFilename)
 		{
 		// no custom icon: create default by player color
 		fctIcon.Create(iHeight,iHeight);
-		::GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
+		::GraphicsResource.fctPlayerClr.DrawClr(fctIcon, true, Core.PrefColorDw);
 		}
 	GrabIcon(fctIcon);
 	// load portrait
@@ -292,7 +292,7 @@ void C4StartupPlrSelDlg::PlayerListItem::UpdateCore(C4PlayerInfoCore & NewCore)
 		fHasCustomIcon = false;
 		int32_t iHeight = GetBounds().Hgt;
 		C4FacetSurface fctIcon; fctIcon.Create(iHeight,iHeight);
-		::GraphicsResource.fctPlayerClr.DrawClr(fctIcon, TRUE, Core.PrefColorDw);
+		::GraphicsResource.fctPlayerClr.DrawClr(fctIcon, true, Core.PrefColorDw);
 		GrabIcon(fctIcon);
 		}
 	// update in selection
@@ -429,7 +429,7 @@ void C4StartupPlrSelDlg::CrewListItem::RewriteCore()
 	C4Group CrewGroup;
 	if (!CrewGroup.OpenAsChild(pParentGrp, GetFilename().getData())
 		|| !Core.Save(CrewGroup, NULL)
-		|| !CrewGroup.Close() || !pParentGrp->Save(TRUE))
+		|| !CrewGroup.Close() || !pParentGrp->Save(true))
 		{
 		GetScreen()->ShowMessage(LoadResStr("IDS_FAIL_MODIFY"), "", C4GUI::Ico_Error);
 		return;
@@ -459,7 +459,7 @@ bool C4StartupPlrSelDlg::CrewListItem::SetName(const char *szNewName)
 			return false;
 			}
 		// OK; then rename
-		if (!pParentGrp->Rename(GetFilename().getData(), fn) || !pParentGrp->Save(TRUE))
+		if (!pParentGrp->Rename(GetFilename().getData(), fn) || !pParentGrp->Save(true))
 			{
 			StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_RENAMEFILE"), GetFilename().getData(), fn);
 			::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
@@ -1454,7 +1454,7 @@ void C4StartupPlrPropertiesDlg::OnClosed(bool fOK)
 						char *pBytes; size_t iSize;
 						if (GetPortrait(&pBytes,&iSize))
 							{
-							PlrGroup.Add(C4CFN_Portrait, pBytes, iSize, FALSE, TRUE);
+							PlrGroup.Add(C4CFN_Portrait, pBytes, iSize, false, true);
 							}
 						}
 					// Add BigIcon

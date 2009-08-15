@@ -79,21 +79,21 @@ class C4TextureMap
 	  void Default();
     void Clear();
 	  void StoreMapPalette(BYTE *bypPalette, C4MaterialMap &rMaterials);
-    static BOOL LoadFlags(C4Group &hGroup, const char *szEntryName, BOOL *pOverloadMaterials, BOOL *pOverloadTextures);
-    int32_t LoadMap(C4Group &hGroup, const char *szEntryName, BOOL *pOverloadMaterials, BOOL *pOverloadTextures);
+    static bool LoadFlags(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
+    int32_t LoadMap(C4Group &hGroup, const char *szEntryName, bool *pOverloadMaterials, bool *pOverloadTextures);
 		int32_t Init();
 		bool SaveMap(C4Group &hGroup, const char *szEntryName);
     int32_t LoadTextures(C4Group &hGroup, C4Group* OverloadFile=0);
 		bool HasTextures(C4Group &hGroup);
 	  const char *GetTexture(int32_t iIndex);
 		void MoveIndex(BYTE byOldIndex, BYTE byNewIndex); // change index of texture
-    int32_t GetIndex(const char *szMaterial, const char *szTexture, BOOL fAddIfNotExist=TRUE, const char *szErrorIfFailed=NULL);
-    int32_t GetIndexMatTex(const char *szMaterialTexture, const char *szDefaultTexture = NULL, BOOL fAddIfNotExist=TRUE, const char *szErrorIfFailed=NULL);
+    int32_t GetIndex(const char *szMaterial, const char *szTexture, bool fAddIfNotExist=true, const char *szErrorIfFailed=NULL);
+    int32_t GetIndexMatTex(const char *szMaterialTexture, const char *szDefaultTexture = NULL, bool fAddIfNotExist=true, const char *szErrorIfFailed=NULL);
     C4Texture * GetTexture(const char *szTexture);
 		bool CheckTexture(const char *szTexture); // return whether texture exists
-		BOOL AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
+		bool AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
   protected:
-    BOOL AddTexture(const char *szTexture, CSurface * sfcSurface);
+    bool AddTexture(const char *szTexture, CSurface * sfcSurface);
   };
 
 extern C4TextureMap TextureMap;

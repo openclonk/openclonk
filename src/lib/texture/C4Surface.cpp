@@ -42,7 +42,7 @@ C4Surface::~C4Surface()
 	}
 #endif
 
-BOOL C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound)
+bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool fNoErrIfNotFound)
 	{
 	// Entry name
 	char szFilename[_MAX_FNAME+1];
@@ -64,7 +64,7 @@ BOOL C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool 
 	}
 
 
-BOOL C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal, bool fNoErrIfNotFound)
+bool C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal, bool fNoErrIfNotFound)
 	{
 	// Entry name
 	char szFilename[_MAX_FNAME+1];
@@ -90,7 +90,7 @@ BOOL C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal,
 	return Load(*pGroup,szFilename,fOwnPal,fNoErrIfNotFound);
 	}
 
-BOOL C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool fNoErrIfNotFound)
+bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool fNoErrIfNotFound)
 	{
 	// Look for scaled images
 	StdStrBuf strFilename;
@@ -120,7 +120,7 @@ BOOL C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool
 		{
 		// file not found
 		if (!fNoErrIfNotFound) LogF("%s: %s%c%s", LoadResStr("IDS_PRC_FILENOTFOUND"), hGroup.GetFullName().getData(), (char) DirectorySeparator, szFilename);
-		return FALSE;
+		return false;
 		}
 	bool fSuccess = Read(hGroup, GetExtension(szFilename), fOwnPal);
 	// loading error? log!
@@ -146,7 +146,7 @@ bool C4Surface::Read(CStdStream &hGroup, const char * extension, bool fOwnPal)
 		return false;
 	}
 
-BOOL C4Surface::ReadPNG(CStdStream &hGroup)
+bool C4Surface::ReadPNG(CStdStream &hGroup)
 	{
 	// create mem block
 	int iSize=hGroup.AccessedEntrySize();
@@ -159,11 +159,11 @@ BOOL C4Surface::ReadPNG(CStdStream &hGroup)
 	// free data
 	delete [] pData;
 	// abort if loading wasn't successful
-	if (!fSuccess) return FALSE;
+	if (!fSuccess) return false;
 	// create surface(s) - do not create an 8bit-buffer!
-	if (!Create(png.iWdt, png.iHgt)) return FALSE;
+	if (!Create(png.iWdt, png.iHgt)) return false;
 	// lock for writing data
-	if (!Lock()) return FALSE;
+	if (!Lock()) return false;
 	if (!ppTex)
 		{
 		Unlock();
@@ -224,7 +224,7 @@ BOOL C4Surface::ReadPNG(CStdStream &hGroup)
 	return fSuccess;
 	}
 
-/*BOOL C4Surface::Save(C4Group &hGroup, const char *szFilename)
+/*bool C4Surface::Save(C4Group &hGroup, const char *szFilename)
 	{
 	// Using temporary file at C4Group temp path
 	char szTemp[_MAX_PATH+1];
@@ -232,14 +232,14 @@ BOOL C4Surface::ReadPNG(CStdStream &hGroup)
 	SAppend(GetFilename(szFilename),szTemp);
 	MakeTempFilename(szTemp);
 	// Save to temporary file
-	if (!CSurface::Save(szTemp)) return FALSE;
+	if (!CSurface::Save(szTemp)) return false;
 	// Move temp file to group
-	if (!hGroup.Move(szTemp,GetFilename(szFilename))) return FALSE;
+	if (!hGroup.Move(szTemp,GetFilename(szFilename))) return false;
 	// Success
-	return TRUE;
+	return true;
 	}*/
 
-BOOL C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly)
+bool C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly)
 	{
 	// Using temporary file at C4Group temp path
 	char szTemp[_MAX_PATH+1];
@@ -247,26 +247,26 @@ BOOL C4Surface::SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha
 	SAppend(GetFilename(szFilename),szTemp);
 	MakeTempFilename(szTemp);
 	// Save to temporary file
-	if (!CSurface::SavePNG(szTemp, fSaveAlpha, fApplyGamma, fSaveOverlayOnly)) return FALSE;
+	if (!CSurface::SavePNG(szTemp, fSaveAlpha, fApplyGamma, fSaveOverlayOnly)) return false;
 	// Move temp file to group
-	if (!hGroup.Move(szTemp,GetFilename(szFilename))) return FALSE;
+	if (!hGroup.Move(szTemp,GetFilename(szFilename))) return false;
 	// Success
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Surface::Copy(C4Surface &fromSfc)
+bool C4Surface::Copy(C4Surface &fromSfc)
 {
 	// Clear anything old
 	Clear();
 	// Default to other surface's color depth
 	Default();
 	// Create surface
-	if (!Create(fromSfc.Wdt, fromSfc.Hgt)) return FALSE;
+	if (!Create(fromSfc.Wdt, fromSfc.Hgt)) return false;
 	// Blit copy
 	if (!lpDDraw->BlitSurface(&fromSfc, this, 0, 0, false))
-		{ Clear(); return FALSE; }
+		{ Clear(); return false; }
 	// Success
-	return TRUE;
+	return true;
 }
 
 /* JPEG loading */
@@ -359,21 +359,21 @@ bool C4Surface::ReadJPEG(CStdStream &hGroup)
 	blub.term_source = jpeg_noop;
 
 	// a missing image is an error
-	jpeg_read_header(&cinfo, TRUE);
+	jpeg_read_header(&cinfo, true);
 
 	// Let libjpeg convert for us
 	cinfo.out_color_space = JCS_RGB;
 	jpeg_start_decompress(&cinfo);
 
 	// create surface(s) - do not create an 8bit-buffer!
-	if (!Create(cinfo.output_width, cinfo.output_height)) return FALSE;
+	if (!Create(cinfo.output_width, cinfo.output_height)) return false;
 	// JSAMPLEs per row in output buffer
 	row_stride = cinfo.output_width * cinfo.output_components;
 	// Make a one-row-high sample array that will go away at jpeg_destroy_decompress
 	buffer = (*cinfo.mem->alloc_sarray)
 		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 	// lock for writing data
-	if (!Lock()) return FALSE;
+	if (!Lock()) return false;
 	while (cinfo.output_scanline < cinfo.output_height)
 		{
 		// read an 1-row-array of scanlines

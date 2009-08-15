@@ -150,14 +150,14 @@ void C4Def::DefaultDefCore()
 	NoTransferZones=0;
 	}
 
-BOOL C4Def::LoadDefCore(C4Group &hGroup)
+bool C4Def::LoadDefCore(C4Group &hGroup)
 	{
 	StdStrBuf Source;
 	if (hGroup.LoadEntryString(C4CFN_DefCore,Source))
 		{
 		StdStrBuf Name = hGroup.GetFullName() + (const StdStrBuf &)FormatString("%cDefCore.txt", DirectorySeparator);
 		if (!Compile(Source.getData(), Name.getData()))
-			return FALSE;
+			return false;
 		Source.Clear();
 
 		// Let's be bold: Rewrite, with current version
@@ -188,25 +188,25 @@ BOOL C4Def::LoadDefCore(C4Group &hGroup)
 			Mass = 0;
 			}
 
-		return TRUE;
+		return true;
 		}
-	return FALSE;
+	return false;
 	}
 
-BOOL C4Def::Save(C4Group &hGroup)
+bool C4Def::Save(C4Group &hGroup)
 	{
 	StdStrBuf Out;
 	if (! Decompile(&Out, FormatString("%s::DefCore.txt", C4IdText(id)).getData()) )
-		return FALSE;
-	return hGroup.Add(C4CFN_DefCore,Out,FALSE,TRUE);
+		return false;
+	return hGroup.Add(C4CFN_DefCore,Out,false,true);
 	}
 
-BOOL C4Def::Compile(const char *szSource, const char *szName)
+bool C4Def::Compile(const char *szSource, const char *szName)
 	{
 	return CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(*this, "DefCore"), StdStrBuf(szSource), szName);
 	}
 
-BOOL C4Def::Decompile(StdStrBuf *pOut, const char *szName)
+bool C4Def::Decompile(StdStrBuf *pOut, const char *szName)
 	{
 	return DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*this, "DefCore"), pOut, szName);
 	}
@@ -413,7 +413,7 @@ void C4Def::Default()
   Image=NULL;
 #endif
   Next=NULL;
-  Temporary=FALSE;
+  Temporary=false;
 	Maker[0]=0;
 	Filename[0]=0;
 	Creation=0;
@@ -457,12 +457,12 @@ void C4Def::Clear()
 	Desc.Clear();
 	}
 
-BOOL C4Def::Load(C4Group &hGroup,
+bool C4Def::Load(C4Group &hGroup,
                  DWORD dwLoadWhat,
 								 const char *szLanguage,
 								 C4SoundSystem *pSoundSystem)
   {
-	BOOL fSuccess=TRUE;
+	bool fSuccess=true;
 
 	bool AddFileMonitoring = false;
 	if (Game.pFileMonitor && !SEqual(hGroup.GetFullName().getData(),Filename) && !hGroup.IsPacked())
@@ -483,7 +483,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 	if (hGroup.AccessEntry(C4CFN_ParticleCore))
 		{
 		// def loading not successful; abort after reading sounds
-		fSuccess=FALSE;
+		fSuccess=false;
 		// create new particle def
 		C4ParticleDef *pParticleDef = new C4ParticleDef();
 		// load it
@@ -503,14 +503,14 @@ BOOL C4Def::Load(C4Group &hGroup,
 		{
 		// wie geth ID?????ßßßß
 		LogF(LoadResStr("IDS_ERR_INVALIDID"), GetFilename(hGroup.GetName()));
-		fSuccess=FALSE;
+		fSuccess=false;
 		}
 
 	// skip def: don't even read sounds!
-	if (fSuccess && Game.C4S.Definitions.SkipDefs.GetIDCount(id, 1)) return FALSE;
+	if (fSuccess && Game.C4S.Definitions.SkipDefs.GetIDCount(id, 1)) return false;
 
 	// OldGfx is no longer supported
-	if (NeededGfxMode == C4DGFXMODE_OLDGFX) return FALSE;
+	if (NeededGfxMode == C4DGFXMODE_OLDGFX) return false;
 
 	if (!fSuccess)
 		{
@@ -520,7 +520,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 			if (pSoundSystem)
 				pSoundSystem->LoadEffects(hGroup);
 
-		return FALSE;
+		return false;
 		}
 
 	// Read surface bitmap
@@ -528,7 +528,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 		if (!Graphics.LoadBitmaps(hGroup, !!ColorByOwner))
 			{
 			DebugLogF("  Error loading graphics of %s (%s)", hGroup.GetFullName().getData(), C4IdText(id));
-			return FALSE;
+			return false;
 			}
 
 	// Read portraits
@@ -536,7 +536,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 		if (!LoadPortraits(hGroup))
 			{
 			DebugLogF("  Error loading portrait graphics of %s (%s)", hGroup.GetFullName().getData(), C4IdText(id));
-			return FALSE;
+			return false;
 			}
 
 
@@ -555,7 +555,7 @@ BOOL C4Def::Load(C4Group &hGroup,
 			if (!hGroup.AccessEntry(C4CFN_DefGraphics)
 			 || !hGroup.ReadDDBSection(&Picture,NULL,PictureRect.x,PictureRect.y,PictureRect.Wdt,PictureRect.Hgt))
 				// None loaded
-				return FALSE;
+				return false;
 
   // Read picture section for use in image list
   if (dwLoadWhat & C4D_Load_Image)
@@ -564,15 +564,15 @@ BOOL C4Def::Load(C4Group &hGroup,
 		 || !hGroup.ReadPNGSection(&Image, NULL, -1, -1, -1, -1, 32, 32))
 			// Load from BMP title
 			if (!hGroup.AccessEntry(C4CFN_ScenarioTitle)
-			 || !hGroup.ReadDDBSection(&Image, NULL, -1, -1, -1, -1, 32, 32, TRUE))
+			 || !hGroup.ReadDDBSection(&Image, NULL, -1, -1, -1, -1, 32, 32, true))
 				// Load from PNG graphics
 				if (!hGroup.AccessEntry(C4CFN_DefGraphicsPNG)
 				 || !hGroup.ReadPNGSection(&Image, NULL, PictureRect.x, PictureRect.y, PictureRect.Wdt, PictureRect.Hgt, 32, 32))
 					// Load from BMP graphics
 					if (!hGroup.AccessEntry(C4CFN_DefGraphics)
-					 || !hGroup.ReadDDBSection(&Image, NULL, PictureRect.x, PictureRect.y, PictureRect.Wdt, PictureRect.Hgt, 32, 32, TRUE))
+					 || !hGroup.ReadDDBSection(&Image, NULL, PictureRect.x, PictureRect.y, PictureRect.Wdt, PictureRect.Hgt, 32, 32, true))
 						// None loaded
-						return FALSE;
+						return false;
 #endif
 
   // Read script
@@ -690,14 +690,14 @@ BOOL C4Def::Load(C4Group &hGroup,
 
 
 	// Temporary flag
-	if (dwLoadWhat & C4D_Load_Temporary) Temporary=TRUE;
+	if (dwLoadWhat & C4D_Load_Temporary) Temporary=true;
 	
 	if (Carryable) SetProperty(Strings.P[P_Collectible], C4VTrue);
   
-	return TRUE;
+	return true;
 	}
 
-void C4Def::Draw(C4Facet &cgo, BOOL fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY)
+void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int32_t iPhaseX, int32_t iPhaseY)
 	{
 
 	// default: def picture rect
@@ -714,7 +714,7 @@ void C4Def::Draw(C4Facet &cgo, BOOL fSelected, DWORD iColor, C4Object *pObj, int
 
 	// specific object color?
 	if (pObj) pObj->PrepareDrawing();
-	fctPicture.Draw(cgo,TRUE,iPhaseX,iPhaseY,TRUE);
+	fctPicture.Draw(cgo,true,iPhaseX,iPhaseY,true);
 	if (pObj) pObj->FinishedDrawing();
 
 	// draw overlays
@@ -792,15 +792,15 @@ C4DefList::~C4DefList()
 int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 										const char *szLanguage,
 										C4SoundSystem *pSoundSystem,
-										BOOL fOverload,
-										BOOL fSearchMessage, int32_t iMinProgress, int32_t iMaxProgress, bool fLoadSysGroups)
+										bool fOverload,
+										bool fSearchMessage, int32_t iMinProgress, int32_t iMaxProgress, bool fLoadSysGroups)
   {
 	int32_t iResult=0;
   C4Def *nDef;
   char szEntryname[_MAX_FNAME+1];
 	C4Group hChild;
-	BOOL fPrimaryDef=FALSE;
-	BOOL fThisSearchMessage=FALSE;
+	bool fPrimaryDef=false;
+	bool fThisSearchMessage=false;
 
 	// This search message
 	if (fSearchMessage)
@@ -808,8 +808,8 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 		 || SEqualNoCase(GetExtension(hGroup.GetName()),"c4s")
 		 || SEqualNoCase(GetExtension(hGroup.GetName()),"c4f"))
 			{
-			fThisSearchMessage=TRUE;
-			fSearchMessage=FALSE;
+			fThisSearchMessage=true;
+			fSearchMessage=false;
 			}
 
 		if (fThisSearchMessage) {	LogF("%s...",GetFilename(hGroup.GetName())); }
@@ -817,7 +817,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	// Load primary definition
 	if (nDef=new C4Def)
 		if ( nDef->Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem) && Add(nDef,fOverload) )
-			{ iResult++; fPrimaryDef=TRUE; }
+			{ iResult++; fPrimaryDef=true; }
 		else
 			{ delete nDef; }
 
@@ -868,7 +868,7 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 int32_t C4DefList::LoadFolderLocal( const char *szPath,
 																DWORD dwLoadWhat, const char *szLanguage,
 																C4SoundSystem *pSoundSystem,
-																BOOL fOverload, char *sStoreName, int32_t iMinProgress, int32_t iMaxProgress)
+																bool fOverload, char *sStoreName, int32_t iMinProgress, int32_t iMaxProgress)
 	{
 	int32_t iResult = 0;
 
@@ -894,12 +894,12 @@ int32_t C4DefList::LoadFolderLocal( const char *szPath,
 	return iResult;
 	}
 
-extern BOOL C4EngineLoadProcess(const char *szMessage, int32_t iProcess);
+extern bool C4EngineLoadProcess(const char *szMessage, int32_t iProcess);
 
 int32_t C4DefList::Load(const char *szSearch,
                     DWORD dwLoadWhat, const char *szLanguage,
 										C4SoundSystem *pSoundSystem,
-										BOOL fOverload, int32_t iMinProgress, int32_t iMaxProgress)
+										bool fOverload, int32_t iMinProgress, int32_t iMaxProgress)
   {
   int32_t iResult=0;
 
@@ -922,7 +922,7 @@ int32_t C4DefList::Load(const char *szSearch,
 		{
 #ifdef _WIN32
 		struct _finddata_t fdt; int32_t fdthnd;
-		if ((fdthnd=_findfirst(szSearch,&fdt))<0) return FALSE;
+		if ((fdthnd=_findfirst(szSearch,&fdt))<0) return false;
 		do
 			{
 			iResult += Load(fdt.name,dwLoadWhat,szLanguage,pSoundSystem,fOverload);
@@ -957,10 +957,10 @@ int32_t C4DefList::Load(const char *szSearch,
 		{
 		// Specified file not found (failure)
 		LogFatal(FormatString(LoadResStr("IDS_PRC_DEFNOTFOUND"),szSearch).getData());
-		LoadFailure=TRUE;
+		LoadFailure=true;
 		return iResult;
 		}
-	iResult += Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem,fOverload,TRUE,iMinProgress,iMaxProgress);
+	iResult += Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem,fOverload,true,iMinProgress,iMaxProgress);
 	hGroup.Close();
 
 	// progress (could go down one level of recursion...)
@@ -969,13 +969,13 @@ int32_t C4DefList::Load(const char *szSearch,
   return iResult;
   }
 
-BOOL C4DefList::Add(C4Def *pDef, BOOL fOverload)
+bool C4DefList::Add(C4Def *pDef, bool fOverload)
   {
-  if (!pDef) return FALSE;
+  if (!pDef) return false;
 
   // Check old def to overload
 	C4Def *pLastDef = ID2Def(pDef->id);
-	if (pLastDef && !fOverload) return FALSE;
+	if (pLastDef && !fOverload) return false;
 
 	// Log overloaded def
 	if (Config.Graphics.VerboseObjectLoading>=1)
@@ -996,10 +996,10 @@ BOOL C4DefList::Add(C4Def *pDef, BOOL fOverload)
   pDef->Next=FirstDef;
   FirstDef=pDef;
 
-	return TRUE;
+	return true;
   }
 
-BOOL C4DefList::Remove(C4ID id)
+bool C4DefList::Remove(C4ID id)
   {
   C4Def *cdef,*prev;
   for (cdef=FirstDef,prev=NULL; cdef; prev=cdef,cdef=cdef->Next)
@@ -1008,9 +1008,9 @@ BOOL C4DefList::Remove(C4ID id)
       if (prev) prev->Next=cdef->Next;
       else FirstDef=cdef->Next;
       delete cdef;
-      return TRUE;
+      return true;
       }
-  return FALSE;
+  return false;
   }
 
 void C4DefList::Remove(C4Def *def)
@@ -1182,7 +1182,7 @@ int32_t C4DefList::CheckRequireDef()
 	return rcount;
 	}
 
-void C4DefList::Draw(C4ID id, C4Facet &cgo, BOOL fSelected, int32_t iColor)
+void C4DefList::Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor)
 	{
 	C4Def *cdef = ID2Def(id);
 	if (cdef) cdef->Draw(cgo,fSelected,iColor);
@@ -1191,7 +1191,7 @@ void C4DefList::Draw(C4ID id, C4Facet &cgo, BOOL fSelected, int32_t iColor)
 void C4DefList::Default()
 	{
 	FirstDef=NULL;
-	LoadFailure=FALSE;
+	LoadFailure=false;
 	ZeroMem(&Table, sizeof(Table));
 	fTable=false;
 	}
@@ -1201,7 +1201,7 @@ void C4DefList::Default()
 int32_t C4DefList::LoadForScenario(const char *szScenario,
 															 const char *szSelection,
 															 DWORD dwLoadWhat, const char *szLanguage,
-															 C4SoundSystem *pSoundSystem, BOOL fOverload,
+															 C4SoundSystem *pSoundSystem, bool fOverload,
 															 int32_t iMinProgress, int32_t iMaxProgress)
 	{
 	int32_t iDefs=0;
@@ -1242,10 +1242,10 @@ int32_t C4DefList::LoadForScenario(const char *szScenario,
 	return iDefs;
 	}
 
-BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem)
+bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem)
 	{
 	// Safety
-	if (!pDef) return FALSE;
+	if (!pDef) return false;
 	// backup graphics names and pointers
 	// GfxBackup-dtor will ensure that upon loading-failure all graphics are reset to default
 	C4DefGraphicsPtrBackup GfxBackup(&pDef->Graphics);
@@ -1253,8 +1253,8 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	pDef->Clear(); // Assume filename is being kept
 	// Reload def
 	C4Group hGroup;
-	if (!hGroup.Open(pDef->Filename)) return FALSE;
-	if (!pDef->Load( hGroup, dwLoadWhat, szLanguage, pSoundSystem )) return FALSE;
+	if (!hGroup.Open(pDef->Filename)) return false;
+	if (!pDef->Load( hGroup, dwLoadWhat, szLanguage, pSoundSystem )) return false;
 	hGroup.Close();
 	// rebuild quick access table
 	BuildTable();
@@ -1263,7 +1263,7 @@ BOOL C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	// restore graphics
 	GfxBackup.AssignUpdate(&pDef->Graphics);
 	// Success
-	return TRUE;
+	return true;
 	}
 
 void C4DefList::BuildTable()

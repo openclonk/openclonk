@@ -96,7 +96,7 @@ class C4Command
 		int32_t iExec; // 0 = not executing, 1 = executing, 2 = executing, command should delete himself on finish
 		int32_t BaseMode; // 0: subcommand/unmarked base (if failing, base will fail, too); 1: base command; 2: silent base command
   public:
-		void Set(int32_t iCommand, C4Object *pObj, C4Object *pTarget, C4Value iTx, int32_t iTy, C4Object *pTarget2, C4Value iData, int32_t iUpdateInterval, BOOL fEvaluated, int32_t iRetries, C4String *szText, int32_t iBaseMode);
+		void Set(int32_t iCommand, C4Object *pObj, C4Object *pTarget, C4Value iTx, int32_t iTy, C4Object *pTarget2, C4Value iData, int32_t iUpdateInterval, bool fEvaluated, int32_t iRetries, C4String *szText, int32_t iBaseMode);
 	  void Clear();
 	  void Execute();
 	  void ClearPointers(C4Object *pObj);
@@ -116,7 +116,7 @@ class C4Command
 	  void Attack();
 	  void Transfer();
 	  void Construct();
-	  void Finish(BOOL fSuccess=FALSE, const char *szFailMessage=0);
+	  void Finish(bool fSuccess=false, const char *szFailMessage=0);
     void Follow();
     void MoveTo();
     void Enter();
@@ -139,9 +139,9 @@ class C4Command
     void PushTo();
     void Context();
 	  int32_t CallFailed();
-	  BOOL JumpControl();
-	  BOOL FlightControl();
-	  BOOL InitEvaluation();
+	  bool JumpControl();
+	  bool FlightControl();
+	  bool InitEvaluation();
 		int32_t GetExpGain(); // get control counts gained by this command; 1EXP=5 ControlCounts
 		bool CheckMinimumCon (C4Object *pObj);
   };

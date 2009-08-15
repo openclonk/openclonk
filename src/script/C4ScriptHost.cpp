@@ -52,13 +52,13 @@ void C4ScriptHost::Clear()
 	pStringTable = NULL;
 	}
 
-BOOL C4ScriptHost::Load(const char *szName, C4Group &hGroup, const char *szFilename,
+bool C4ScriptHost::Load(const char *szName, C4Group &hGroup, const char *szFilename,
 												const char *szLanguage, C4Def *pDef, class C4LangStringTable *pLocalTable, bool fLoadTable)
 	{
 	// Set definition and id
 	Def = pDef;
 	// Base load
-	BOOL fSuccess = C4ComponentHost::LoadAppend(szName,hGroup,szFilename,szLanguage);
+	bool fSuccess = C4ComponentHost::LoadAppend(szName,hGroup,szFilename,szLanguage);
 	// String Table
 	pStringTable = pLocalTable;
 	// load it if specified
@@ -140,7 +140,7 @@ C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *
 	return pFn->Exec(pObj,Pars, fPassError);
 	}
 
-BOOL C4ScriptHost::ReloadScript(const char *szPath)
+bool C4ScriptHost::ReloadScript(const char *szPath)
   {
   // this?
   if(SEqualNoCase(szPath, FilePath) || (pStringTable && SEqualNoCase(szPath, pStringTable->GetFilePath())))
@@ -150,7 +150,7 @@ BOOL C4ScriptHost::ReloadScript(const char *szPath)
     if(GetParentPath(szPath, szParentPath))
       if(ParentGrp.Open(szParentPath))
         if(Load(Name, ParentGrp, Filename, Config.General.Language, NULL, pStringTable))
-          return TRUE;
+          return true;
   }
   // call for childs
   return C4AulScript::ReloadScript(szPath);
@@ -222,19 +222,19 @@ void C4GameScriptHost::Default()
 	{
 	C4ScriptHost::Default();
 	Counter=0;
-	Go=FALSE;
+	Go=false;
 	}
 
-BOOL C4GameScriptHost::Execute()
+bool C4GameScriptHost::Execute()
 	{
-	if (!Script) return FALSE;
+	if (!Script) return false;
 	char buffer[500];
 	if (Go && !::Game.iTick10)
 		{
 		sprintf(buffer,PSF_Script,Counter++);
 		return !! Call(buffer);
 		}
-	return FALSE;
+	return false;
 	}
 
 C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars, bool fPassError, bool fRejectTest)

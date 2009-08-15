@@ -99,12 +99,12 @@ class C4Viewport
 		void SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt);
 		void UpdateViewPosition(); // update view position: Clip properly; update border variables
 		void ChangeZoom(float by_factor);
-		BOOL Init(int32_t iPlayer, bool fSetTempOnly);
-		BOOL Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
+		bool Init(int32_t iPlayer, bool fSetTempOnly);
+		bool Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer);
 #ifdef _WIN32
-		BOOL DropFiles(HANDLE hDrop);
+		bool DropFiles(HANDLE hDrop);
 #endif
-		BOOL TogglePlayerLock();
+		bool TogglePlayerLock();
 		void NextPlayer();
 		C4Rect GetOutputRect() { return C4Rect(OutX, OutY, ViewWdt, ViewHgt); }
 		bool IsViewportMenu(class C4Menu *pMenu);
@@ -113,9 +113,9 @@ class C4Viewport
 		void CenterPosition();
 	protected:
 		int32_t Player;
-		BOOL PlayerLock;
+		bool PlayerLock;
 		int32_t OutX,OutY;
-		BOOL ResetMenuPositions;
+		bool ResetMenuPositions;
 		C4RegionList *SetRegions;
 		C4Viewport *Next;
 		CStdGLCtx *pCtx; // rendering context for OpenGL
@@ -132,9 +132,9 @@ class C4Viewport
 		void DrawPlayerControls(C4TargetFacet &cgo);
 		void BlitOutput();
 		void AdjustPosition();
-		BOOL UpdateOutputSize();
-		BOOL ViewPositionByScrollBars();
-		BOOL ScrollBarsByViewPosition();
+		bool UpdateOutputSize();
+		bool ViewPositionByScrollBars();
+		bool ScrollBarsByViewPosition();
 #ifdef _WIN32
 	friend LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif

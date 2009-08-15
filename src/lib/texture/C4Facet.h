@@ -140,12 +140,12 @@ class C4Facet
 		void DrawXFloat(SURFACE sfcTarget, float fX, float fY, float fWdt, float fHgt) const;
 	  void DrawValue(C4Facet &cgo, int32_t iValue, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center);
 	  void DrawValue2(C4Facet &cgo, int32_t iValue1, int32_t iValue2, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t iAlign=C4FCT_Center, int32_t *piUsedWidth=NULL);
-		void Draw(C4Facet &cgo, BOOL fAspect=TRUE, int32_t iPhaseX=0, int32_t iPhaseY=0, BOOL fTransparent=TRUE);
+		void Draw(C4Facet &cgo, bool fAspect=true, int32_t iPhaseX=0, int32_t iPhaseY=0, bool fTransparent=true);
 		void DrawFullScreen(C4Facet &cgo);
 		void DrawT(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform); // draw with transformation (if pTransform is assigned)
-		void DrawT(C4Facet &cgo, BOOL fAspect, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
+		void DrawT(C4Facet &cgo, bool fAspect, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
 		void DrawXT(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform);
-		void DrawClr(C4Facet &cgo, BOOL fAspect=TRUE, DWORD dwClr=0); // set surface color and draw
+		void DrawClr(C4Facet &cgo, bool fAspect=true, DWORD dwClr=0); // set surface color and draw
 		void DrawXClr(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, DWORD dwClr); // set surface color and draw
 		void DrawValue2Clr(C4Facet &cgo, int32_t iValue1, int32_t iValue2, DWORD dwClr); // set surface color and draw
 		void DrawXR(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX=0, int32_t iPhaseY=0, int32_t r=0); // draw rotated
@@ -163,7 +163,7 @@ class C4Facet
 		int32_t GetHeightByWidth(int32_t iWidth) // calc height so it matches facet aspect to width
 			{ return iWidth * Hgt / (Wdt ? Wdt : 1); }
 #ifdef _WIN32
-		void Draw(HWND hWnd, int32_t iTx, int32_t iTy, int32_t iTWdt, int32_t iTHgt, BOOL fAspect=TRUE, int32_t iPhaseX=0, int32_t iPhaseY=0);
+		void Draw(HWND hWnd, int32_t iTx, int32_t iTy, int32_t iTWdt, int32_t iTHgt, bool fAspect=true, int32_t iPhaseX=0, int32_t iPhaseY=0);
 #endif
   };
 

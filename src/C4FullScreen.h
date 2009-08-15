@@ -36,12 +36,12 @@ class C4FullScreen: public CStdWindow
 		C4FullScreen();
 		~C4FullScreen();
 		void Execute();
-		BOOL Restart();
-		BOOL ViewportCheck();
-		BOOL OpenGame(const char *szCmdLine);
+		bool Restart();
+		bool ViewportCheck();
+		bool OpenGame(const char *szCmdLine);
 		bool ShowAbortDlg(); // show game abort dialog (Escape pressed)
 		bool ActivateMenuMain();
-		BOOL MenuCommand(const char *szCommand);
+		bool MenuCommand(const char *szCommand);
 		void CloseMenu();
 		bool MenuKeyControl(BYTE byCom); // direct keyboard callback
 		// User requests close

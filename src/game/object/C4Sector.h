@@ -113,7 +113,7 @@ class C4LArea
 
 		// void MoveObject(C4Object *pObj, const C4LArea &toArea); // store object into new area
 
-		BOOL Contains(C4LSector *pSct) const; // return whether sector is contained in area
+		bool Contains(C4LSector *pSct) const; // return whether sector is contained in area
 
 		inline C4ObjectList *FirstObjects(C4LSector **ppSct) // get first object list of this area
 			{ *ppSct=NULL; return NextObjects(NULL, ppSct); }

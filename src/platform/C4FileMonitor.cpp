@@ -188,7 +188,7 @@ void C4FileMonitor::GetFDs(std::vector<struct pollfd> & fds)
 C4FileMonitor::C4FileMonitor(ChangeNotify pCallback)
 	: pCallback(pCallback), pWatches(NULL), fStarted(false)
 {
-	hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+	hEvent = CreateEvent(NULL, true, false, NULL);
 }
 
 C4FileMonitor::~C4FileMonitor()
@@ -235,7 +235,7 @@ void C4FileMonitor::AddDirectory(const char *szDir)
 	pWatch->Next = pWatches;
 	pWatches = pWatch;
 	// Start async directory change notification
-	if(!ReadDirectoryChangesW(hDir, pWatch->Buffer, sizeof(pWatch->Buffer), FALSE, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL))
+	if(!ReadDirectoryChangesW(hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL))
 		if(GetLastError() != ERROR_IO_PENDING)
 		{
 			delete pWatch;
@@ -253,7 +253,7 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd *)
 		{
 		DWORD dwBytes = 0;
 		// Has a notification?
-		if(GetOverlappedResult(pWatch->hDir, &pWatch->ov, &dwBytes, FALSE))
+		if(GetOverlappedResult(pWatch->hDir, &pWatch->ov, &dwBytes, false))
 			{
 			// Read notifications
 			const char *pPos = pWatch->Buffer;
@@ -270,11 +270,11 @@ bool C4FileMonitor::Execute(int iTimeout, pollfd *)
 				break;
 				}
 			// Restart directory change notification (flush queue)
-			ReadDirectoryChangesW(pWatch->hDir, pWatch->Buffer, sizeof(pWatch->Buffer), FALSE, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL);
+			ReadDirectoryChangesW(pWatch->hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL);
 			dwBytes = 0;
-			while(GetOverlappedResult(pWatch->hDir, &pWatch->ov, &dwBytes, FALSE))
+			while(GetOverlappedResult(pWatch->hDir, &pWatch->ov, &dwBytes, false))
 				{
-				ReadDirectoryChangesW(pWatch->hDir, pWatch->Buffer, sizeof(pWatch->Buffer), FALSE, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL);
+				ReadDirectoryChangesW(pWatch->hDir, pWatch->Buffer, sizeof(pWatch->Buffer), false, C4FileMonitorNotifies, NULL, &pWatch->ov, NULL);
 				dwBytes = 0;
 				}
 			}

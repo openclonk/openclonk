@@ -165,8 +165,8 @@ class C4MCNode
 		void Reg2Owner(C4MCNode *pOwner); // register into list
 
 	protected:
-		virtual BOOL GlobalScope() { return FALSE; } // whether node is a global scope
-		virtual BOOL SetOp(C4MCTokenType eOp) { return FALSE; } // set following operator
+		virtual bool GlobalScope() { return false; } // whether node is a global scope
+		virtual bool SetOp(C4MCTokenType eOp) { return false; } // set following operator
 		C4MCNode *GetNodeByName(const char *szName); // search node by name
 
 		virtual bool SetField(C4MCParser *pParser, const char *szField, const char *szSVal, int32_t iVal, C4MCTokenType ValType); // set field
@@ -248,7 +248,7 @@ class C4MCOverlay : public C4MCNode
 		C4MCCallbackArray *pEvaluateFunc;        // function called for nodes being evaluated and fulfilled
 		C4MCCallbackArray *pDrawFunc;            // function called when this node is drawn - pass drawcolor as first param, return color to be actually used
 
-		BOOL SetOp(C4MCTokenType eOp) { Op=eOp; return TRUE; } // set following operator
+		bool SetOp(C4MCTokenType eOp) { Op=eOp; return true; } // set following operator
 
 		C4MCAlgorithm *GetAlgo(const char *szName);
 
@@ -329,8 +329,8 @@ class C4MapCreatorS2 : public C4MCNode
 
 		void Default(); // set default data
 		void Clear(); // clear any data
-		BOOL ReadFile(const char *szFilename, C4Group *pGrp); // read defs of file
-		BOOL ReadScript(const char *szScript);		// reads def directly from mem
+		bool ReadFile(const char *szFilename, C4Group *pGrp); // read defs of file
+		bool ReadScript(const char *szScript);		// reads def directly from mem
 
 	public:
 		C4MCMap *GetMap(const char *szMapName); // get map by name
@@ -353,7 +353,7 @@ class C4MapCreatorS2 : public C4MCNode
 		C4MCCallbackArrayList CallbackArrays; // list of callback arrays
 		int PlayerCount; // player count for MapPlayerExtend
 
-		BOOL GlobalScope() { return TRUE; } // it's the global node
+		bool GlobalScope() { return true; } // it's the global node
 
 	public:
 		void ExecuteCallbacks(int32_t iMapZoom) { CallbackArrays.Execute(iMapZoom); }
@@ -390,8 +390,8 @@ class C4MCParser
 		int32_t CurrTokenVal; // current token value
 		char Filename[C4MaxName]; // filename
 
-		BOOL AdvanceSpaces(); // advance to next token char; return whether EOF is reached
-		BOOL GetNextToken(); // get token, store in fields and advance to next; return whether not EOF
+		bool AdvanceSpaces(); // advance to next token char; return whether EOF is reached
+		bool GetNextToken(); // get token, store in fields and advance to next; return whether not EOF
 		void ParseTo(C4MCNode *pToNode); // parse stuff into
 		void ParseValue(C4MCNode *pToNode, const char *szFieldName); // Set Field
 

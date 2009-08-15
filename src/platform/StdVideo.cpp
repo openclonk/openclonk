@@ -28,7 +28,7 @@
 
 #include <windows.h>
 
-BOOL AVIOpenOutput(const char *szFilename,
+bool AVIOpenOutput(const char *szFilename,
 									 PAVIFILE *ppAviFile,
 									 PAVISTREAM *ppAviStream,
 									 int iWidth, int iHeight)
@@ -44,7 +44,7 @@ BOOL AVIOpenOutput(const char *szFilename,
 					OF_CREATE | OF_WRITE,
 					NULL) != 0)
 		{
-		return FALSE;
+		return false;
 		}
 
 	// Create stream
@@ -74,25 +74,25 @@ BOOL AVIOpenOutput(const char *szFilename,
 					ppAviStream,
 					&avi_info) != 0)
 		{
-		return FALSE;
+		return false;
 		}
 
-	return TRUE;
+	return true;
 	}
 
 
-BOOL AVICloseOutput(PAVIFILE *ppAviFile,
+bool AVICloseOutput(PAVIFILE *ppAviFile,
  									  PAVISTREAM *ppAviStream)
 	{
 	if (ppAviStream && *ppAviStream)
 		{ AVIStreamRelease(*ppAviStream); *ppAviStream=NULL; }
 	if (ppAviFile && *ppAviFile)
 		{ AVIFileRelease(*ppAviFile); *ppAviFile=NULL; }
-	return TRUE;
+	return true;
 	}
 
 
-BOOL AVIPutFrame(PAVISTREAM pAviStream,
+bool AVIPutFrame(PAVISTREAM pAviStream,
 								 long lFrame,
 								 void *lpInfo, long lInfoSize,
 								 void *lpData, long lDataSize)
@@ -114,13 +114,13 @@ BOOL AVIPutFrame(PAVISTREAM pAviStream,
 					lDataSize,
 					AVIIF_KEYFRAME,
 					&lSamplesWritten,
-					&lBytesWritten) != 0) return FALSE;
+					&lBytesWritten) != 0) return false;
 
-	return TRUE;
+	return true;
 	}
 
 
-BOOL AVIOpenGrab(const char *szFilename,
+bool AVIOpenGrab(const char *szFilename,
 								 PAVISTREAM *ppAviStream,
 								 PGETFRAME *ppGetFrame,
 								 int &rAviLength, int &rFrameWdt, int &rFrameHgt,
@@ -134,7 +134,7 @@ BOOL AVIOpenGrab(const char *szFilename,
 					streamtypeVIDEO,
 					0,
 					OF_READ,
-					NULL) != 0) return FALSE;
+					NULL) != 0) return false;
 
 	// Get stream info
 	AVISTREAMINFO avi_info;
@@ -142,11 +142,11 @@ BOOL AVIOpenGrab(const char *szFilename,
 	rAviLength=avi_info.dwLength;
 
 	// Open get frame
-	if (!(*ppGetFrame = AVIStreamGetFrameOpen(*ppAviStream,NULL))) return FALSE;
+	if (!(*ppGetFrame = AVIStreamGetFrameOpen(*ppAviStream,NULL))) return false;
 
 	// Get sample frame
 	void *pframe;
-	if (!(pframe = AVIStreamGetFrame(*ppGetFrame,0))) return FALSE;
+	if (!(pframe = AVIStreamGetFrame(*ppGetFrame,0))) return false;
 
 	// Assign sample bmp info
 	BITMAPINFOHEADER *sample = (BITMAPINFOHEADER*) pframe;
@@ -155,7 +155,7 @@ BOOL AVIOpenGrab(const char *szFilename,
 	rFrameBitsPerPixel = sample->biBitCount;
 	rFramePitch = DWordAligned(rFrameWdt*rFrameBitsPerPixel/8);
 
-	return TRUE;
+	return true;
 	}
 
 void AVICloseGrab(PAVISTREAM *ppAviStream,

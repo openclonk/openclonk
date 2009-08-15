@@ -116,25 +116,25 @@ bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
 	int cnt,lcnt,iLineRest;
 	CBitmap256Info BitmapInfo;
 	// read bmpinfo-header
-	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return FALSE;
+	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return false;
 	// is it 8bpp?
 	if (BitmapInfo.Info.biBitCount == 8)
 		{
-		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(CBitmapInfo),sizeof(BitmapInfo)-sizeof(CBitmapInfo))) return FALSE;
-		if (!hGroup.Advance(BitmapInfo.FileBitsOffset())) return FALSE;
+		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(CBitmapInfo),sizeof(BitmapInfo)-sizeof(CBitmapInfo))) return false;
+		if (!hGroup.Advance(BitmapInfo.FileBitsOffset())) return false;
 		}
 	else
 		{
 		// read 24bpp
-		if (BitmapInfo.Info.biBitCount != 24) return FALSE;
-		if (!hGroup.Advance(((CBitmapInfo) BitmapInfo).FileBitsOffset())) return FALSE;
+		if (BitmapInfo.Info.biBitCount != 24) return false;
+		if (!hGroup.Advance(((CBitmapInfo) BitmapInfo).FileBitsOffset())) return false;
 		}
 	// no 8bpp-surface in newgfx!
 	// needs to be kept for some special surfaces
 	//f8BitSfc=false;
 
   // Create and lock surface
-	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, fOwnPal)) return FALSE;
+	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, fOwnPal)) return false;
 
 	if (BitmapInfo.Info.biBitCount == 8)
 		{
@@ -159,7 +159,7 @@ bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
   for (lcnt=Hgt-1; lcnt>=0; lcnt--)
     {
     if (!hGroup.Read(pBuf, iBufSize))
-      { Clear(); delete [] pBuf; return FALSE; }
+      { Clear(); delete [] pBuf; return false; }
 		BYTE *pPix=pBuf;
     for (int x=0; x<BitmapInfo.Info.biWidth; ++x)
 			switch (BitmapInfo.Info.biBitCount)
@@ -175,7 +175,7 @@ bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
 	// free buffer again
 	delete [] pBuf;
 
-  return TRUE;
+  return true;
 	}
 
 bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
@@ -188,24 +188,24 @@ bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
 
 	if ( !hFile.Create(szFilename)
 		|| !hFile.Write(&BitmapInfo,sizeof(BitmapInfo)) )
-		{ return FALSE; }
+		{ return false; }
 
 	// Write lines
 	char bpEmpty[4]; int iEmpty = DWordAligned(Wdt)-Wdt;
 	for (int cnt=Hgt-1; cnt>=0; cnt--)
 		{
 		if (!hFile.Write(Bits+(Pitch*cnt),Wdt))
-			{ return FALSE; }
+			{ return false; }
 		if (iEmpty)
 			if (!hFile.Write(bpEmpty,iEmpty))
-				{ return FALSE; }
+				{ return false; }
 		}
 
 	// Close file
   hFile.Close();
 
 	// Success
-  return TRUE;
+  return true;
 	}
 
 /*
@@ -214,7 +214,7 @@ double ColorDistance(BYTE *bpRGB1, BYTE *bpRGB2)
 	return (double) (Abs(bpRGB1[0]-bpRGB2[0]) + Abs(bpRGB1[1]-bpRGB2[1]) + Abs(bpRGB1[2]-bpRGB2[2])) / 6.0;
 	}
 
-void CSurface8::SetPalette(BYTE *bpPalette, BOOL fAdapt)
+void CSurface8::SetPalette(BYTE *bpPalette, bool fAdapt)
 	{
 	if (!HasOwnPal()) return;
 	// Adapt bitmap
@@ -351,11 +351,11 @@ void CSurface8::Polygon(int iNum, int *ipVtx, int iCol)
 	CPolyEdge *edge, *next_edge, *edgebuf;
 	CPolyEdge *active_edges = NULL;
 	CPolyEdge *inactive_edges = NULL;
-	BOOL use_qpb=FALSE;
+	bool use_qpb=false;
 
 	// Poly Buf
 	if (iNum<=QuickPolyBufSize)
-		{ edgebuf=QuickPolyBuf; use_qpb=TRUE; }
+		{ edgebuf=QuickPolyBuf; use_qpb=true; }
 	else
 		if (!(edgebuf = new CPolyEdge [iNum])) { return; }
 
@@ -372,7 +372,7 @@ void CSurface8::Polygon(int iNum, int *ipVtx, int iCol)
 				{
 				if (edge->y < top)  top = edge->y;
 				if (edge->bottom > bottom) bottom = edge->bottom;
-				inactive_edges = add_edge(inactive_edges, edge, FALSE);
+				inactive_edges = add_edge(inactive_edges, edge, false);
 				edge++;
 				}
 			}
@@ -388,7 +388,7 @@ void CSurface8::Polygon(int iNum, int *ipVtx, int iCol)
 			 {
 			 next_edge = edge->next;
 			 inactive_edges = remove_edge(inactive_edges, edge);
-			 active_edges = add_edge(active_edges, edge, TRUE);
+			 active_edges = add_edge(active_edges, edge, true);
 			 edge = next_edge;
 			 }
 
@@ -437,7 +437,7 @@ void CSurface8::Polygon(int iNum, int *ipVtx, int iCol)
 	if (!use_qpb) delete [] edgebuf;
 	}
 
-void CSurface8::AllowColor(BYTE iRngLo, BYTE iRngHi, BOOL fAllowZero)
+void CSurface8::AllowColor(BYTE iRngLo, BYTE iRngHi, bool fAllowZero)
 	{
 	// change colors
 	int xcnt,ycnt;

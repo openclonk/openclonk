@@ -92,41 +92,41 @@ class C4Landscape
     void ScanSideOpen();
 		void CheckInstabilityRange(int32_t tx, int32_t ty);
 		void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
-		void DigFree(int32_t tx, int32_t ty, int32_t rad, BOOL fRequest=FALSE, C4Object *pByObj=NULL);
-		void DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, BOOL fRequest=FALSE, C4Object *pByObj=NULL);
+		void DigFree(int32_t tx, int32_t ty, int32_t rad, bool fRequest=false, C4Object *pByObj=NULL);
+		void DigFreeRect(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, bool fRequest=false, C4Object *pByObj=NULL);
 		void DigFreeMat(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mat);
 		void BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t grade, int32_t iByPlayer);
 		void DrawMaterialRect(int32_t mat, int32_t tx, int32_t ty, int32_t wdt, int32_t hgt);
 		void RaiseTerrain(int32_t tx, int32_t ty, int32_t wdt);
 		void FindMatTop(int32_t mat, int32_t &x, int32_t &y);
 		BYTE GetMapIndex(int32_t iX, int32_t iY);
-		BOOL Load(C4Group &hGroup, bool fLoadSky, bool fSavegame);
-		BOOL Save(C4Group &hGroup);
-		BOOL SaveDiff(C4Group &hGroup, bool fSyncSave);
-		BOOL SaveMap(C4Group &hGroup);
-    BOOL SaveInitial();
+		bool Load(C4Group &hGroup, bool fLoadSky, bool fSavegame);
+		bool Save(C4Group &hGroup);
+		bool SaveDiff(C4Group &hGroup, bool fSyncSave);
+		bool SaveMap(C4Group &hGroup);
+    bool SaveInitial();
 		bool SaveTextures(C4Group &hGroup);
-		BOOL Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bool &rfLoaded, bool fSavegame);
-		BOOL MapToLandscape();
-		BOOL ApplyDiff(C4Group &hGroup);
-		BOOL SetMode(int32_t iMode);
-		BOOL SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
-		BOOL SetPixDw(int32_t x, int32_t y, DWORD dwPix); // set pixel how it is visible only
-		BOOL _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
-		BOOL _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
-		BOOL CheckInstability(int32_t tx, int32_t ty);
-		BOOL ClearPix(int32_t tx, int32_t ty);
-		BOOL InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx = 0, int32_t vy = 0);
-		BOOL FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
-		BOOL FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
-		BOOL FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32_t mslide, bool liquid);
-		BOOL FindMatPathPull(int32_t &fx, int32_t &fy, int32_t mdens, int32_t mslide, bool liquid);
-		BOOL Incinerate(int32_t x, int32_t y);
-		BOOL DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *szMaterial, const char *szTexture, BOOL fIFT);
-		BOOL DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, BOOL fIFT);
-		BOOL DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, BOOL fIFT);
-		BOOL DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t icntx, int32_t icnty, const char *szMaterial, const char *szTexture, bool bIFT);
-		BOOL DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool bIFT);
+		bool Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bool &rfLoaded, bool fSavegame);
+		bool MapToLandscape();
+		bool ApplyDiff(C4Group &hGroup);
+		bool SetMode(int32_t iMode);
+		bool SetPix(int32_t x, int32_t y, BYTE npix); // set landscape pixel (bounds checked)
+		bool SetPixDw(int32_t x, int32_t y, DWORD dwPix); // set pixel how it is visible only
+		bool _SetPix(int32_t x, int32_t y, BYTE npix); // set landsape pixel (bounds not checked)
+		bool _SetPixIfMask(int32_t x, int32_t y, BYTE npix, BYTE nMask) ; // set landscape pixel, if it matches nMask color (no bound-checks)
+		bool CheckInstability(int32_t tx, int32_t ty);
+		bool ClearPix(int32_t tx, int32_t ty);
+		bool InsertMaterial(int32_t mat, int32_t tx, int32_t ty, int32_t vx = 0, int32_t vy = 0);
+		bool FindMatPath(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
+		bool FindMatSlide(int32_t &fx, int32_t &fy, int32_t ydir, int32_t mdens, int32_t mslide);
+		bool FindMatPathPush(int32_t &fx, int32_t &fy, int32_t mdens, int32_t mslide, bool liquid);
+		bool FindMatPathPull(int32_t &fx, int32_t &fy, int32_t mdens, int32_t mslide, bool liquid);
+		bool Incinerate(int32_t x, int32_t y);
+		bool DrawBrush(int32_t iX, int32_t iY, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT);
+		bool DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT);
+		bool DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT);
+		bool DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t icntx, int32_t icnty, const char *szMaterial, const char *szTexture, bool bIFT);
+		bool DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool bIFT);
 		CStdPalette *GetPal() const { return Surface8 ? Surface8->pPal : NULL; }
 		inline BYTE _GetPix(int32_t x, int32_t y) // get landscape pixel (bounds not checked)
 			{
@@ -187,16 +187,16 @@ class C4Landscape
 		int32_t BlastFreePix(int32_t tx, int32_t ty, int32_t grade, int32_t iBlastSize);
 		int32_t AreaSolidCount(int32_t x, int32_t y, int32_t wdt, int32_t hgt);
 		int32_t ExtractMaterial(int32_t fx, int32_t fy);
-		BOOL DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef); // creates and draws a map section using MapCreatorS2
+		bool DrawMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef); // creates and draws a map section using MapCreatorS2
 		bool ClipRect(int32_t &rX, int32_t &rY, int32_t &rWdt, int32_t &rHgt); // clip given rect by landscape size; return whether anything is left unclipped
-		BOOL DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef); // creates and draws a map section using MapCreatorS2 and a map from the loaded Landscape.txt
+		bool DrawDefMap(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, const char *szMapDef); // creates and draws a map section using MapCreatorS2 and a map from the loaded Landscape.txt
 		bool SetModulation(DWORD dwWithClr) // adjust the way the landscape is blitted
 			{ Modulation=dwWithClr; return true; }
 		DWORD GetModulation() { return Modulation; }
 		void DiscardMap(); // discard map if present
 		bool PostInitMap();   // do script callbacks of MapCreatorS2 in finished landscape
 		bool ReplaceMapColor(BYTE iOldIndex, BYTE iNewIndex); // find every occurance of iOldIndex in map; replace it by new index
-		BOOL SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fInsert); // change color index of map texture, or insert a new one
+		bool SetTextureIndex(const char *szMatTex, BYTE iNewIndex, bool fInsert); // change color index of map texture, or insert a new one
 		void SetMapChanged() { fMapChanged = true; }
 		void HandleTexMapUpdate();
 		void UpdatePixMaps();
@@ -209,12 +209,12 @@ class C4Landscape
 		void DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, int32_t iChunkType, int32_t cro);
 		void DrawSmoothOChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, BYTE flip, int32_t cro);
 		void ChunkOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iTexture,int32_t iOffX=0,int32_t iOffY=0);
-		BOOL GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage);
-		BOOL TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage, int32_t iToX=0,int32_t iToY=0);
-		BOOL MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
-		BOOL MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX = 0, int32_t iOffsY = 0); // zoom map segment to surface (or sector surfaces)
-	  BOOL GetMapColorIndex(const char *szMaterial, const char *szTexture, BOOL fIFT, BYTE &rbyCol);
-	  BOOL SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
+		bool GetTexUsage(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage);
+		bool TexOZoom(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, DWORD *dwpTextureUsage, int32_t iToX=0,int32_t iToY=0);
+		bool MapToSurface(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
+		bool MapToLandscape(CSurface8 * sfcMap, int32_t iMapX, int32_t iMapY, int32_t iMapWdt, int32_t iMapHgt, int32_t iOffsX = 0, int32_t iOffsY = 0); // zoom map segment to surface (or sector surfaces)
+	  bool GetMapColorIndex(const char *szMaterial, const char *szTexture, bool fIFT, BYTE &rbyCol);
+	  bool SkyToLandscape(int32_t iToX, int32_t iToY, int32_t iToWdt, int32_t iToHgt, int32_t iOffX, int32_t iOffY);
 		CSurface8 * CreateMap(); // create map by landscape attributes
 		CSurface8 * CreateMapS2(C4Group &ScenFile); // create map by def file
 		bool Relight(C4Rect To);
@@ -240,19 +240,19 @@ extern C4Landscape Landscape;
 
 /* Some global landscape functions */
 
-BOOL AboveSolid(int32_t &rx, int32_t &ry);
-BOOL AboveSemiSolid(int32_t &rx, int32_t &ry);
-BOOL SemiAboveSolid(int32_t &rx, int32_t &ry);
-BOOL FindSolidGround(int32_t &rx, int32_t &ry, int32_t width);
-BOOL FindLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
-BOOL FindSurfaceLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
-BOOL FindLevelGround(int32_t &rx, int32_t &ry, int32_t width, int32_t hrange);
-BOOL FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt, DWORD category, int32_t hrange=-1);
-BOOL FindThrowingPosition(int32_t iTx, int32_t iTy, FIXED fXDir, FIXED fYDir, int32_t iHeight, int32_t &rX, int32_t &rY);
-BOOL PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
-BOOL PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
-BOOL FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2, int32_t iExcludeAngle1, int32_t iExcludeAngle2);
-BOOL ConstructionCheck(C4PropList *, int32_t iX, int32_t iY, C4Object *pByObj=NULL);
+bool AboveSolid(int32_t &rx, int32_t &ry);
+bool AboveSemiSolid(int32_t &rx, int32_t &ry);
+bool SemiAboveSolid(int32_t &rx, int32_t &ry);
+bool FindSolidGround(int32_t &rx, int32_t &ry, int32_t width);
+bool FindLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
+bool FindSurfaceLiquid(int32_t &rx, int32_t &ry, int32_t width, int32_t height);
+bool FindLevelGround(int32_t &rx, int32_t &ry, int32_t width, int32_t hrange);
+bool FindConSiteSpot(int32_t &rx, int32_t &ry, int32_t wdt, int32_t hgt, DWORD category, int32_t hrange=-1);
+bool FindThrowingPosition(int32_t iTx, int32_t iTy, FIXED fXDir, FIXED fYDir, int32_t iHeight, int32_t &rX, int32_t &rY);
+bool PathFree(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
+bool PathFreeIgnoreVehicle(int32_t x1, int32_t y1, int32_t x2, int32_t y2, int32_t *ix=NULL, int32_t *iy=NULL);
+bool FindClosestFree(int32_t &rX, int32_t &rY, int32_t iAngle1, int32_t iAngle2, int32_t iExcludeAngle1, int32_t iExcludeAngle2);
+bool ConstructionCheck(C4PropList *, int32_t iX, int32_t iY, C4Object *pByObj=NULL);
 int32_t PixCol2Mat(BYTE pixc);
 
 #define GBackWdt ::Landscape.Width

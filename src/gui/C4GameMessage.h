@@ -71,8 +71,8 @@ class C4GameMessage
     uint32_t dwFlags;
 	protected:
 		void Init(int32_t iType, const StdStrBuf & Text, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint32_t dwCol, C4ID idDecoID, const char *szPortraitDef, uint32_t dwFlags, int width);
-		void Append(const char *szText, BOOL fNoDuplicates = FALSE);
-		BOOL Execute();
+		void Append(const char *szText, bool fNoDuplicates = false);
+		bool Execute();
     const char *WordWrap(int32_t iMaxWidth);
 		void UpdateDef(C4ID idUpdDef);
 

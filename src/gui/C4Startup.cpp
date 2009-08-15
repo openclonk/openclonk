@@ -69,7 +69,7 @@ bool C4StartupGraphics::Init()
 /*	if (!LoadFile(fctCrew, "StartupCrew")) return false; - currently unused
 	if (fctCrew.idSourceGroup != fctCrewClr.idSourceGroup)
 		{
-		if (!fctCrewClr.CreateClrByOwner(fctCrew.Surface)) { LogFatal("ClrByOwner error! (11)"); return FALSE; }
+		if (!fctCrewClr.CreateClrByOwner(fctCrew.Surface)) { LogFatal("ClrByOwner error! (11)"); return false; }
 		fctCrewClr.Wdt=fctCrew.Wdt;
 		fctCrewClr.Hgt=fctCrew.Hgt;
 		fctCrewClr.idSourceGroup = fctCrew.idSourceGroup;
@@ -170,7 +170,7 @@ void C4Startup::Start()
 	{
 	assert(fInStartup);
 	// record if desired
-	if (Config.General.Record) Game.Record = TRUE;
+	if (Config.General.Record) Game.Record = true;
 	// flag game start
 	fAborted = false;
 	fInStartup = false;

@@ -39,8 +39,8 @@ class C4ObjectInfoList
 		void Evaluate();
 		void DetachFromObjects();
 		int32_t Load(C4Group &hGroup, bool fLoadPortraits);
-		BOOL Add(C4ObjectInfo *pInfo);
-		BOOL Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny, C4DefList *pDefs);
+		bool Add(C4ObjectInfo *pInfo);
+		bool Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny, C4DefList *pDefs);
 		C4ObjectInfo* New(C4ID n_id, C4DefList *pDefs);
 		C4ObjectInfo* GetIdle(C4ID c_id, C4DefList &rDefs);
 		C4ObjectInfo* GetIdle(const char *szByName);
@@ -49,7 +49,7 @@ class C4ObjectInfoList
 		void Strip(C4DefList &rDefs);
 	public:
 		void MakeValidName(char *sName);
-		BOOL NameExists(const char *szName);
+		bool NameExists(const char *szName);
 	protected:
 		C4ObjectInfo *GetLast();
 		C4ObjectInfo *GetPrevious(C4ObjectInfo *pInfo);

@@ -201,15 +201,15 @@ C4PXS* C4PXSSystem::New()
   return NULL;
   }
 
-BOOL C4PXSSystem::Create(int32_t mat, FIXED ix, FIXED iy, FIXED ixdir, FIXED iydir)
+bool C4PXSSystem::Create(int32_t mat, FIXED ix, FIXED iy, FIXED ixdir, FIXED iydir)
   {
   C4PXS *pxp;
-  if (!MatValid(mat)) return FALSE;
-  if (!(pxp=New())) return FALSE;
+  if (!MatValid(mat)) return false;
+  if (!(pxp=New())) return false;
   pxp->Mat=mat;
   pxp->x=ix; pxp->y=iy;
   pxp->xdir=ixdir; pxp->ydir=iydir;
-  return TRUE;
+  return true;
   }
 
 void C4PXSSystem::Execute()
@@ -325,7 +325,7 @@ void C4PXSSystem::Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t
            itofix(Random(level+1)-level)/10);
   }
 
-BOOL C4PXSSystem::Save(C4Group &hGroup)
+bool C4PXSSystem::Save(C4Group &hGroup)
 	{
 	unsigned int cnt;
 
@@ -339,61 +339,61 @@ BOOL C4PXSSystem::Save(C4Group &hGroup)
 	if (!iChunks)
 		{
 		hGroup.Delete(C4CFN_PXS);
-		return TRUE;
+		return true;
 		}
 
 	// Save chunks to temp file
 	CStdFile hTempFile;
 	if (!hTempFile.Create(Config.AtTempPath(C4CFN_TempPXS)))
-		return FALSE;
+		return false;
 #ifdef USE_FIXED
 	int32_t iNumFormat = 1;
 #else
 	int32_t iNumFormat = 2;
 #endif
 	if(!hTempFile.Write(&iNumFormat, sizeof (iNumFormat)))
-		return FALSE;
+		return false;
 	for (cnt=0; cnt<PXSMaxChunk; cnt++)
 		if (Chunk[cnt]) // must save all chunks in order to keep order consistent on all clients
 			if (!hTempFile.Write(Chunk[cnt],PXSChunkSize * sizeof(C4PXS)))
-				return FALSE;
+				return false;
 
 	if (!hTempFile.Close())
-		return FALSE;
+		return false;
 
 	// Move temp file to group
 	if (!hGroup.Move( Config.AtTempPath(C4CFN_TempPXS),
 										C4CFN_PXS ))
-		return FALSE;
+		return false;
 
-	return TRUE;
+	return true;
 	}
 
-BOOL C4PXSSystem::Load(C4Group &hGroup)
+bool C4PXSSystem::Load(C4Group &hGroup)
 	{
 	// load new
 	size_t iBinSize,iChunkNum,cnt2;
 	size_t iChunkSize = PXSChunkSize * sizeof(C4PXS);
-	if (!hGroup.AccessEntry(C4CFN_PXS,&iBinSize)) return FALSE;
+	if (!hGroup.AccessEntry(C4CFN_PXS,&iBinSize)) return false;
 	// clear previous
 	Clear();
 	// using FIXED or float?
 	int32_t iNumForm = 1;
 	if(iBinSize % iChunkSize == 4)
 	{
-		if(!hGroup.Read(&iNumForm, sizeof (iNumForm))) return FALSE;
-		if(!Inside<int32_t>(iNumForm, 1, 2)) return FALSE;
+		if(!hGroup.Read(&iNumForm, sizeof (iNumForm))) return false;
+		if(!Inside<int32_t>(iNumForm, 1, 2)) return false;
 		iBinSize -= 4;
 	}
 	// old pxs-files have no tag for the number format
-	else if(iBinSize % iChunkSize != 0) return FALSE;
+	else if(iBinSize % iChunkSize != 0) return false;
 	// calc chunk count
 	iChunkNum = iBinSize / iChunkSize;
-	if(iChunkNum > PXSMaxChunk) return FALSE;
+	if(iChunkNum > PXSMaxChunk) return false;
 	for (uint32_t cnt=0; cnt<iChunkNum; cnt++)
 		{
-		if (!(Chunk[cnt]=new C4PXS[PXSChunkSize])) return FALSE;
-		if (!hGroup.Read(Chunk[cnt],iChunkSize)) return FALSE;
+		if (!(Chunk[cnt]=new C4PXS[PXSChunkSize])) return false;
+		if (!hGroup.Read(Chunk[cnt],iChunkSize)) return false;
 		// count the PXS, Peter!
 		// convert num format, if neccessary
 		C4PXS *pxp; iChunkPXS[cnt]=0;
@@ -409,7 +409,7 @@ BOOL C4PXSSystem::Load(C4Group &hGroup)
 #endif
 			}
 		}
-	return TRUE;
+	return true;
 	}
 
 void C4PXSSystem::Synchronize()

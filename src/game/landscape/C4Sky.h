@@ -33,8 +33,8 @@ class C4Sky
 		~C4Sky();
 		void Default(); // zero fields
 
-		BOOL Init(bool fSavegame);
-		BOOL Save(C4Group &hGroup);
+		bool Init(bool fSavegame);
+		bool Save(C4Group &hGroup);
 		void Clear();
 		void SetColor(int32_t iIndex, int32_t iRed, int32_t iGreen, int32_t iBlue);
 		void SetFadePalette(int32_t *ipColors);

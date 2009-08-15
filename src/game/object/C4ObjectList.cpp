@@ -116,10 +116,10 @@ int C4ObjectList::ListIDCount(int32_t dwCategory)
 
 
 
-BOOL C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
+bool C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
   {
   C4ObjectLink *nLnk;
-  if (!nObj || !nObj->Def || !nObj->Status) return FALSE;
+  if (!nObj || !nObj->Def || !nObj->Status) return false;
 
 #ifdef _DEBUG
 	if (eSort==stMain)
@@ -137,7 +137,7 @@ BOOL C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
 	assert(pLstSorted != this);
 
   // Allocate new link
-  if (!(nLnk=new C4ObjectLink)) return FALSE;
+  if (!(nLnk=new C4ObjectLink)) return false;
   // Set link
   nLnk->Obj=nObj;
 
@@ -247,17 +247,17 @@ BOOL C4ObjectList::Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted)
   // Add mass
   Mass+=nObj->Mass;
 
-  return TRUE;
+  return true;
   }
 
-BOOL C4ObjectList::Remove(C4Object *pObj)
+bool C4ObjectList::Remove(C4Object *pObj)
 	{
 	C4ObjectLink *cLnk;
 
 	// Find link
 	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj==pObj) break;
-	if (!cLnk) return FALSE;
+	if (!cLnk) return false;
 
 	// Fix iterators
 	for (iterator * i = FirstIter; i; i = i->Next)
@@ -278,7 +278,7 @@ BOOL C4ObjectList::Remove(C4Object *pObj)
 	if (GetLink(pObj)) BREAKPOINT_HERE;
 #endif
 
-	return TRUE;
+	return true;
 	}
 
 C4Object* C4ObjectList::Find(C4ID id, int owner, DWORD dwOCF)
@@ -356,7 +356,7 @@ int C4ObjectList::MassCount()
 void C4ObjectList::DrawIDList(C4Facet &cgo, int iSelection,
 															C4DefList &rDefs, int32_t dwCategory,
 															C4RegionList *pRegions, int iRegionCom,
-															BOOL fDrawOneCounts)
+															bool fDrawOneCounts)
 	{
 	// Calculations & variables
 	/*int iSections = cgo.GetSectionCount();
@@ -474,23 +474,23 @@ bool C4ObjectList::IsContained(C4Object *pObj)
 	return false;
 	}
 
-BOOL C4ObjectList::IsClear() const
+bool C4ObjectList::IsClear() const
 	{
 	return (ObjectCount()==0);
 	}
 
-BOOL C4ObjectList::DenumerateRead()
+bool C4ObjectList::DenumerateRead()
 	{
-	if(!pEnumerated) return FALSE;
+	if(!pEnumerated) return false;
 	// Denumerate all object pointers
 	for(std::list<int32_t>::const_iterator pNum = pEnumerated->begin(); pNum != pEnumerated->end(); ++pNum)
 		Add(::Objects.ObjectPointer(*pNum), stNone); // Add to tail, unsorted
 	// Delete old list
 	delete pEnumerated; pEnumerated = NULL;
-	return TRUE;
+	return true;
 	}
 
-BOOL C4ObjectList::Write(char *szTarget)
+bool C4ObjectList::Write(char *szTarget)
 	{
 	char ostr[25];
 	szTarget[0]=0;
@@ -501,7 +501,7 @@ BOOL C4ObjectList::Write(char *szTarget)
 			sprintf(ostr,"%d;",cLnk->Obj->Number);
 			SAppend(ostr,szTarget);
 			}
-	return TRUE;
+	return true;
 	}
 
 void C4ObjectList::Denumerate()
@@ -595,16 +595,16 @@ StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs, DWORD dwCategory)
 	return Buf;
 	}
 
-BOOL C4ObjectList::ValidateOwners()
+bool C4ObjectList::ValidateOwners()
 	{
   C4ObjectLink *cLnk;
   for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->ValidateOwner();
-	return TRUE;
+	return true;
 	}
 
-BOOL C4ObjectList::AssignInfo()
+bool C4ObjectList::AssignInfo()
 	{
 	// the list seems to be traced backwards here, to ensure crew objects are added in correct order
 	// (or semi-correct, because this will work only if the crew order matches the main object list order)
@@ -613,7 +613,7 @@ BOOL C4ObjectList::AssignInfo()
   for (cLnk=Last; cLnk; cLnk=cLnk->Prev)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->AssignInfo();
-	return TRUE;
+	return true;
 	}
 
 void C4ObjectList::ClearInfo(C4ObjectInfo *pInfo)
@@ -647,17 +647,17 @@ void C4ObjectList::DrawList(C4Facet &cgo, int iSelection, DWORD dwCategory)
 void C4ObjectList::Sort()
 	{
   C4ObjectLink *cLnk;
-	BOOL fSorted;
+	bool fSorted;
 	// Sort by id
 	do
 		{
-		fSorted = TRUE;
+		fSorted = true;
 		for (cLnk=First; cLnk && cLnk->Next; cLnk=cLnk->Next)
 			if (cLnk->Obj->id > cLnk->Next->Obj->id)
 				{
 				RemoveLink(cLnk);
 				InsertLink(cLnk,cLnk->Next);
-				fSorted = FALSE;
+				fSorted = false;
 				break;
 				}
 		}
@@ -769,17 +769,17 @@ void C4ObjectList::Default()
 	pEnumerated=NULL;
 	}
 
-BOOL C4ObjectList::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)
+bool C4ObjectList::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)
 	{
 	// safety
-	if (pObj1->Status != C4OS_NORMAL || pObj2->Status != C4OS_NORMAL) return FALSE;
+	if (pObj1->Status != C4OS_NORMAL || pObj2->Status != C4OS_NORMAL) return false;
 	// get links (and check whether the objects are part of this list!)
-	C4ObjectLink *pLnk1=GetLink(pObj1); if (!pLnk1) return FALSE;
-	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return FALSE;
+	C4ObjectLink *pLnk1=GetLink(pObj1); if (!pLnk1) return false;
+	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return false;
 	// check if requirements are already fulfilled
 	C4ObjectLink *pLnk=pLnk1;
 	while (pLnk=pLnk->Next) if (pLnk==pLnk2) break;
-	if (pLnk) return TRUE;
+	if (pLnk) return true;
 	// if not, reorder pLnk1 directly before pLnk2
 	// unlink from current position
 	// no need to check pLnk1->Prev here, because pLnk1 cannot be first in the list
@@ -789,20 +789,20 @@ BOOL C4ObjectList::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)
 	if (pLnk1->Prev=pLnk2->Prev) pLnk2->Prev->Next=pLnk1; else First=pLnk1;
 	pLnk1->Next=pLnk2; pLnk2->Prev=pLnk1;
 	// done, success
-	return TRUE;
+	return true;
 	}
 
-BOOL C4ObjectList::OrderObjectAfter(C4Object *pObj1, C4Object *pObj2)
+bool C4ObjectList::OrderObjectAfter(C4Object *pObj1, C4Object *pObj2)
 	{
 	// safety
-	if (pObj1->Status != C4OS_NORMAL || pObj2->Status != C4OS_NORMAL) return FALSE;
+	if (pObj1->Status != C4OS_NORMAL || pObj2->Status != C4OS_NORMAL) return false;
 	// get links (and check whether the objects are part of this list!)
-	C4ObjectLink *pLnk1=GetLink(pObj1); if (!pLnk1) return FALSE;
-	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return FALSE;
+	C4ObjectLink *pLnk1=GetLink(pObj1); if (!pLnk1) return false;
+	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return false;
 	// check if requirements are already fulfilled
 	C4ObjectLink *pLnk=pLnk1;
 	while (pLnk=pLnk->Prev) if (pLnk==pLnk2) break;
-	if (pLnk) return TRUE;
+	if (pLnk) return true;
 	// if not, reorder pLnk1 directly after pLnk2
 	// unlink from current position
 	// no need to check pLnk1->Next here, because pLnk1 cannot be last in the list
@@ -812,16 +812,16 @@ BOOL C4ObjectList::OrderObjectAfter(C4Object *pObj1, C4Object *pObj2)
 	if (pLnk1->Next=pLnk2->Next) pLnk2->Next->Prev=pLnk1; else Last=pLnk1;
 	pLnk1->Prev=pLnk2; pLnk2->Next=pLnk1;
 	// done, success
-	return TRUE;
+	return true;
 	}
 
-BOOL C4ObjectList::ShiftContents(C4Object *pNewFirst)
+bool C4ObjectList::ShiftContents(C4Object *pNewFirst)
 	{
 	// get link of new first (this ensures list is not empty)
 	C4ObjectLink *pNewFirstLnk = GetLink(pNewFirst);
-	if (!pNewFirstLnk) return FALSE;
+	if (!pNewFirstLnk) return false;
 	// already at front?
-	if (pNewFirstLnk == First) return TRUE;
+	if (pNewFirstLnk == First) return true;
 	// sort it there:
 	// 1. Make cyclic list
 	Last->Next = First; First->Prev = Last;
@@ -831,7 +831,7 @@ BOOL C4ObjectList::ShiftContents(C4Object *pNewFirst)
 	// 3. Uncycle list
 	First->Prev = Last->Next = NULL;
 	// done, success
-	return TRUE;
+	return true;
 	}
 
 void C4ObjectList::DeleteObjects()
@@ -924,7 +924,7 @@ struct C4ObjectListDumpHelper
 	ALLOW_TEMP_TO_REF(C4ObjectListDumpHelper)
 	};
 
-BOOL C4ObjectList::CheckSort(C4ObjectList *pList)
+bool C4ObjectList::CheckSort(C4ObjectList *pList)
 	{
 	C4ObjectLink *cLnk = First, *cLnk2 = pList->First;
 	while (cLnk && cLnk->Obj->Unsorted) cLnk = cLnk->Next;

@@ -70,14 +70,14 @@ void GetC4IdText(C4ID id, char *sBuf)
 		}
   }
 
-BOOL LooksLikeID(const char *szText)
+bool LooksLikeID(const char *szText)
   {
   int cnt;
-  if (SLen(szText)!=4) return FALSE;
+  if (SLen(szText)!=4) return false;
   for (cnt=0; cnt<4; cnt++)
     if (!(Inside(szText[cnt],'A','Z') || Inside(szText[cnt],'0','9') || (szText[cnt] =='_')))
-      return FALSE;
-  return TRUE;
+      return false;
+  return true;
   }
 
 bool LooksLikeID(C4ID id)

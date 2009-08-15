@@ -254,9 +254,9 @@ void C4StartupMainDlg::OnNetJoin(const StdStrBuf &rsHostAddress)
 	// set default startup parameters
 	*Game.ScenarioFilename=0;
 	SCopy("Objects.c4d", Game.DefinitionFilenames);
-	Game.NetworkActive = TRUE;
-	Game.fLobby = TRUE;
-	Game.fObserve = FALSE;
+	Game.NetworkActive = true;
+	Game.fLobby = true;
+	Game.fObserve = false;
 	SCopy(rsHostAddress.getData(), Game.DirectJoinAddress, sizeof(Game.DirectJoinAddress)-1);
 	// start with this set!
 	C4Startup::Get()->Start();

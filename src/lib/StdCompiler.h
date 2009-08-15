@@ -694,13 +694,13 @@ template <class CompT, class StructT>
 		try
 		{
 			CompileFromBuf<CompT>(TargetStruct, SrcBuf);
-			return TRUE;
+			return true;
 		}
 		catch(StdCompiler::Exception *pExc)
 		{
 			LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
 			delete pExc;
-			return FALSE;
+			return false;
 		}
 	}
 template <class CompT, class StructT>
@@ -712,7 +712,7 @@ template <class CompT, class StructT>
 			Compiler.setInput(SrcBuf.getRef());
 			Compiler.setWarnCallback(StdCompilerWarnCallback, reinterpret_cast<void *>(const_cast<char *>(szName)));
 			Compiler.Compile(TargetStruct);
-			return TRUE;
+			return true;
 		}
 		catch(StdCompiler::Exception *pExc)
 		{
@@ -721,7 +721,7 @@ template <class CompT, class StructT>
 			else
 				LogF("ERROR: %s (in %s, %s)", pExc->Msg.getData(), pExc->Pos.getData(), szName);
 			delete pExc;
-			return FALSE;
+			return false;
 		}
 	}
 template <class CompT, class StructT>
@@ -731,13 +731,13 @@ template <class CompT, class StructT>
 		try
 		{
 			pOut->Take(DecompileToBuf<CompT>(TargetStruct));
-			return TRUE;
+			return true;
 		}
 		catch(StdCompiler::Exception *pExc)
 		{
 			LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
 			delete pExc;
-			return FALSE;
+			return false;
 		}
 	}
 

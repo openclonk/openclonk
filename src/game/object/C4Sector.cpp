@@ -283,14 +283,14 @@ C4LSector *C4LArea::Next(C4LSector *pPrev) const
 	return pOut;
 	}
 
-BOOL C4LArea::Contains(C4LSector *pSct) const
+bool C4LArea::Contains(C4LSector *pSct) const
 	{
 	assert(pSct);
 	// no area
-	if (!pFirst) return FALSE;
+	if (!pFirst) return false;
 	// outside?
-	if (pSct == pOut) return TRUE;
-	if (pFirst == pOut) return FALSE;
+	if (pSct == pOut) return true;
+	if (pFirst == pOut) return false;
 	// check bounds
 	return (pSct->x>=pFirst->x && pSct->y>=pFirst->y && pSct->x<=xL && pSct->y<=yL);
 	}

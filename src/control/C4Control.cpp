@@ -172,7 +172,7 @@ void C4ControlSet::Execute() const
 		// disable debug
 		if (!fSet && Game.DebugMode)
 		{
-			Game.DebugMode=FALSE;
+			Game.DebugMode=false;
 			::GraphicsSystem.DeactivateDebugOutput();
 		}
 		// save flag, log
@@ -874,7 +874,7 @@ void C4ControlEMMoveObject::Execute() const
 					{
 					pObj->ForcePosition(pObj->GetX()+tx,pObj->GetY()+ty);
 					pObj->xdir=pObj->ydir=0;
-					pObj->Mobile = FALSE;
+					pObj->Mobile = false;
 					}
 			}
 			break;
@@ -905,7 +905,7 @@ void C4ControlEMMoveObject::Execute() const
 			// update status
 			if (fLocalCall)
         {
-				Console.EditCursor.SetHold(TRUE);
+				Console.EditCursor.SetHold(true);
 		    Console.PropertyDlg.Update(Console.EditCursor.GetSelection());
         }
 			}

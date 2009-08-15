@@ -90,13 +90,13 @@ void C4Rect::Set(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
 	x=iX; y=iY; Wdt=iWdt; Hgt=iHgt;
 	}
 
-BOOL C4Rect::Overlap(C4Rect &rTarget)
+bool C4Rect::Overlap(C4Rect &rTarget)
   {
-  if (x+Wdt<=rTarget.x) return FALSE;
-  if (x>=rTarget.x+rTarget.Wdt) return FALSE;
-  if (y+Hgt<=rTarget.y) return FALSE;
-  if (y>=rTarget.y+rTarget.Hgt) return FALSE;
-  return TRUE;
+  if (x+Wdt<=rTarget.x) return false;
+  if (x>=rTarget.x+rTarget.Wdt) return false;
+  if (y+Hgt<=rTarget.y) return false;
+  if (y>=rTarget.y+rTarget.Hgt) return false;
+  return true;
   }
 
 void C4Rect::Intersect(const C4Rect &r2)

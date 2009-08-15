@@ -79,24 +79,24 @@ void C4PlayerList::ClearPointers(C4Object *pObj)
 		pPlr->ClearPointers(pObj, false);
 	}
 
-BOOL C4PlayerList::Valid(int iPlayer) const
+bool C4PlayerList::Valid(int iPlayer) const
 	{
 	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->Number==iPlayer)
-			return TRUE;
-	return FALSE;
+			return true;
+	return false;
 	}
 
-BOOL C4PlayerList::Hostile(int iPlayer1, int iPlayer2) const
+bool C4PlayerList::Hostile(int iPlayer1, int iPlayer2) const
 	{
 	C4Player *pPlr1=Get(iPlayer1);
 	C4Player *pPlr2=Get(iPlayer2);
-	if (!pPlr1 || !pPlr2) return FALSE;
-	if (pPlr1->Number==pPlr2->Number) return FALSE;
+	if (!pPlr1 || !pPlr2) return false;
+	if (pPlr1->Number==pPlr2->Number) return false;
 	if ( pPlr1->Hostility.GetIDCount(pPlr2->Number+1)
 		|| pPlr2->Hostility.GetIDCount(pPlr1->Number+1) )
-			return TRUE;
-	return FALSE;
+			return true;
+	return false;
 	}
 
 bool C4PlayerList::HostilityDeclared(int iPlayer1, int iPlayer2) const
@@ -111,20 +111,20 @@ bool C4PlayerList::HostilityDeclared(int iPlayer1, int iPlayer2) const
 	return false;
 	}
 
-BOOL C4PlayerList::PositionTaken(int iPosition) const
+bool C4PlayerList::PositionTaken(int iPosition) const
   {
 	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
     if (pPlr->Position==iPosition)
-      return TRUE;
-  return FALSE;
+      return true;
+  return false;
   }
 
-BOOL C4PlayerList::ColorTaken(int iColor) const
+bool C4PlayerList::ColorTaken(int iColor) const
   {
   for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
     if (pPlr->Color==iColor)
-      return TRUE;
-  return FALSE;
+      return true;
+  return false;
   }
 
 int C4PlayerList::CheckColorDw(DWORD dwColor, C4Player *pExclude)
@@ -146,13 +146,13 @@ int C4PlayerList::CheckColorDw(DWORD dwColor, C4Player *pExclude)
 	return iDiff;
 	}
 
-BOOL C4PlayerList::ControlTaken(int iControl) const
+bool C4PlayerList::ControlTaken(int iControl) const
   {
   for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
     if (pPlr->Control==iControl)
 			if (pPlr->LocalControl)
-				return TRUE;
-  return FALSE;
+				return true;
+  return false;
   }
 
 C4Player* C4PlayerList::Get(int iNumber) const
@@ -225,19 +225,19 @@ int C4PlayerList::GetCount(C4PlayerType eType) const
 int C4PlayerList::GetFreeNumber() const
 	{
 	int iNumber=-1;
-	BOOL fFree;
+	bool fFree;
 	do
 		{
-		iNumber++; fFree=TRUE;
+		iNumber++; fFree=true;
 	  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 			if (pPlr->Number==iNumber)
-				fFree=FALSE;
+				fFree=false;
 		}
 	while (!fFree);
 	return iNumber;
 	}
 
-BOOL C4PlayerList::Remove(int iPlayer, bool fDisconnect, bool fNoCalls)
+bool C4PlayerList::Remove(int iPlayer, bool fDisconnect, bool fNoCalls)
 	{
 	return Remove(Get(iPlayer), fDisconnect, fNoCalls);
 	}
@@ -249,13 +249,13 @@ bool C4PlayerList::RemoveUnjoined(int32_t iPlayer)
 	for (C4ObjectLink *clnk=::Objects.First; clnk && (pObj=clnk->Obj); clnk=clnk->Next)
 		if (pObj->Status)
 			if (pObj->IsPlayerObject(iPlayer))
-				pObj->AssignRemoval(TRUE);
+				pObj->AssignRemoval(true);
 	return true;
 	}
 
-BOOL C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
+bool C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 	{
-	if (!pPlr) return FALSE;
+	if (!pPlr) return false;
 
 	// inform script
 	if (!fNoCalls)
@@ -304,10 +304,10 @@ BOOL C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 
 	// Update console
 	Console.UpdateMenus();
-	return TRUE;
+	return true;
 	}
 
-C4Player* C4PlayerList::Join(const char *szFilename, BOOL fScenarioInit, int iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo)
+C4Player* C4PlayerList::Join(const char *szFilename, bool fScenarioInit, int iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo)
 	{
 	assert(pInfo);
 
@@ -345,7 +345,7 @@ C4Player* C4PlayerList::Join(const char *szFilename, BOOL fScenarioInit, int iAt
 	return pPlr;
 	}
 
-BOOL C4PlayerList::CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName)
+bool C4PlayerList::CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient, const char *szAtClientName)
 	{
 	assert(!::Network.isEnabled());
 	// Create temp copy of player file without portraits
@@ -356,7 +356,7 @@ BOOL C4PlayerList::CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient,
 	if (!Config.Network.SendPortraits)
 		{
 		SCopy(Config.AtTempPath(GetFilename(szFilename)), szTempFilename, _MAX_PATH);
-		if (!CopyItem(szFilename, szTempFilename)) return FALSE;
+		if (!CopyItem(szFilename, szTempFilename)) return false;
 		C4Group hGroup;
 		if (hGroup.Open(szTempFilename))
 			{
@@ -368,11 +368,11 @@ BOOL C4PlayerList::CtrlJoinLocalNoNetwork(const char *szFilename, int iAtClient,
 	// pack - not needed for new res system
 	/*if(DirectoryExists(szFilename))
 		if(!C4Group_PackDirectory(szFilename))
-			return FALSE;*/
+			return false;*/
 	// security
-	if(!ItemExists(szFilename)) return FALSE;
+	if(!ItemExists(szFilename)) return false;
 	// join via player info
-	BOOL fSuccess = Game.PlayerInfos.DoLocalNonNetworkPlayerJoin(szFilename);
+	bool fSuccess = Game.PlayerInfos.DoLocalNonNetworkPlayerJoin(szFilename);
 	// Delete temp player file
 	/*if(*szTempFilename) EraseItem(szTempFilename);*/
 
@@ -395,10 +395,10 @@ void SetClientPrefix(char *szFilename, const char *szClient)
 	SAppend(szTemp,szFilename);
 	}
 
-BOOL C4PlayerList::Save(C4Group &hGroup, bool fStoreTiny, const C4PlayerInfoList &rStoreList)
+bool C4PlayerList::Save(C4Group &hGroup, bool fStoreTiny, const C4PlayerInfoList &rStoreList)
 	{
 	StdStrBuf sTempFilename;
-	bool fSuccess = TRUE;
+	bool fSuccess = true;
 	// Save to external player files and add to group
 	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		{
@@ -412,43 +412,43 @@ BOOL C4PlayerList::Save(C4Group &hGroup, bool fStoreTiny, const C4PlayerInfoList
 		sTempFilename.Copy(Config.AtTempPath(pNfo->GetFilename()));
 		if(fStoreOnOriginal)
 			if(!C4Group_CopyItem(pPlr->Filename, sTempFilename.getData()))
-				return FALSE;
+				return false;
 		// Open group
 		C4Group PlrGroup;
 		if(!PlrGroup.Open(sTempFilename.getData(), !fStoreOnOriginal))
-			return FALSE;
+			return false;
 		// Save player
-		if (!pPlr->Save(PlrGroup, true, fStoreOnOriginal)) return FALSE;
+		if (!pPlr->Save(PlrGroup, true, fStoreOnOriginal)) return false;
 		PlrGroup.Close();
 		// Add temp file to group
-		if (!hGroup.Move(sTempFilename.getData(), pNfo->GetFilename())) return FALSE;
+		if (!hGroup.Move(sTempFilename.getData(), pNfo->GetFilename())) return false;
 		}
 	return fSuccess;
 	}
 
-BOOL C4PlayerList::Save(bool fSaveLocalOnly)
+bool C4PlayerList::Save(bool fSaveLocalOnly)
 	{
 	// do not save in replays
-	if (Game.C4S.Head.Replay) return TRUE;
+	if (Game.C4S.Head.Replay) return true;
 	// Save to external player files
 	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->GetType() != C4PT_Script)
 			if (!fSaveLocalOnly || pPlr->LocalControl)
 				if (!pPlr->Save())
-					return FALSE;
-	return TRUE;
+					return false;
+	return true;
 	}
 
-BOOL C4PlayerList::Evaluate()
+bool C4PlayerList::Evaluate()
 	{
 	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		pPlr->Evaluate();
-	return TRUE;
+	return true;
 	}
 
-BOOL C4PlayerList::Retire(C4Player *pPlr)
+bool C4PlayerList::Retire(C4Player *pPlr)
 	{
-	if (!pPlr) return FALSE;
+	if (!pPlr) return false;
 
 	if (!pPlr->Evaluated)
 		{
@@ -457,7 +457,7 @@ BOOL C4PlayerList::Retire(C4Player *pPlr)
 		}
 	Remove(pPlr, false, false);
 
-	return TRUE;
+	return true;
 	}
 
 int C4PlayerList::AverageValueGain() const
@@ -481,13 +481,13 @@ C4Player* C4PlayerList::GetByName(const char *szName, int iExcluding) const
 	return NULL;
 	}
 
-BOOL C4PlayerList::FileInUse(const char *szFilename) const
+bool C4PlayerList::FileInUse(const char *szFilename) const
 	{
 	// Check original player files
 	C4Player *cPlr=First;
 	for (; cPlr; cPlr=cPlr->Next)
 		if (ItemIdentical(cPlr->Filename,szFilename))
-			return TRUE;
+			return true;
 	// Compare to any network path player files with prefix (hack)
 	if (::Network.isEnabled())
 		{
@@ -496,10 +496,10 @@ BOOL C4PlayerList::FileInUse(const char *szFilename) const
 		SetClientPrefix(szWithPrefix, Game.Clients.getLocalName());
 		for (cPlr=First; cPlr; cPlr=cPlr->Next)
 			if (SEqualNoCase(GetFilename(cPlr->Filename),szWithPrefix))
-				return TRUE;
+				return true;
 		}
 	// Not in use
-	return FALSE;
+	return false;
 	}
 
 C4Player* C4PlayerList::GetLocalByIndex(int iIndex) const
@@ -514,7 +514,7 @@ C4Player* C4PlayerList::GetLocalByIndex(int iIndex) const
 	return NULL;
 	}
 
-BOOL C4PlayerList::RemoveAtClient(int iClient, bool fDisconnect)
+bool C4PlayerList::RemoveAtClient(int iClient, bool fDisconnect)
 	{
 	C4Player *pPlr;
 	// Get players
@@ -525,10 +525,10 @@ BOOL C4PlayerList::RemoveAtClient(int iClient, bool fDisconnect)
 		// Remove
 		Remove(pPlr, fDisconnect, false);
 		}
-	return TRUE;
+	return true;
 	}
 
-BOOL C4PlayerList::RemoveAtClient(const char *szName, bool fDisconnect)
+bool C4PlayerList::RemoveAtClient(const char *szName, bool fDisconnect)
 	{
 	C4Player *pPlr;
 	// Get players
@@ -539,34 +539,34 @@ BOOL C4PlayerList::RemoveAtClient(const char *szName, bool fDisconnect)
 		// Remove
 		Remove(pPlr, fDisconnect, false);
 		}
-	return TRUE;
+	return true;
 	}
 
-BOOL C4PlayerList::CtrlRemove(int iPlayer, bool fDisconnect)
+bool C4PlayerList::CtrlRemove(int iPlayer, bool fDisconnect)
 	{
 	// Add packet to input
 	Game.Input.Add(CID_RemovePlr, new C4ControlRemovePlr(iPlayer, fDisconnect));
 	return true;
 	}
 
-BOOL C4PlayerList::CtrlRemoveAtClient(int iClient, bool fDisconnect)
+bool C4PlayerList::CtrlRemoveAtClient(int iClient, bool fDisconnect)
 	{
 	// Get players
 	for(C4Player *pPlr = First; pPlr; pPlr = pPlr->Next)
 		if(pPlr->AtClient == iClient)
 			if(!CtrlRemove(pPlr->Number, fDisconnect))
-				return FALSE;
-	return TRUE;
+				return false;
+	return true;
 	}
 
-BOOL C4PlayerList::CtrlRemoveAtClient(const char *szName, bool fDisconnect)
+bool C4PlayerList::CtrlRemoveAtClient(const char *szName, bool fDisconnect)
 	{
 	// Get players
 	for(C4Player *pPlr = First; pPlr; pPlr = pPlr->Next)
 		if(SEqual(pPlr->AtClientName, szName))
 			if(!CtrlRemove(pPlr->Number, fDisconnect))
-				return FALSE;
-	return TRUE;
+				return false;
+	return true;
 	}
 
 C4Player* C4PlayerList::GetAtClient(int iClient, int iIndex) const
@@ -593,7 +593,7 @@ C4Player* C4PlayerList::GetAtClient(const char *szName, int iIndex) const
 	return NULL;
 	}
 
-BOOL C4PlayerList::RemoveAtRemoteClient(bool fDisconnect, bool fNoCalls)
+bool C4PlayerList::RemoveAtRemoteClient(bool fDisconnect, bool fNoCalls)
 	{
 	C4Player *pPlr;
 	// Get players
@@ -604,7 +604,7 @@ BOOL C4PlayerList::RemoveAtRemoteClient(bool fDisconnect, bool fNoCalls)
 		// Remove
 		Remove(pPlr, fDisconnect, fNoCalls);
 		}
-	return TRUE;
+	return true;
 	}
 
 C4Player* C4PlayerList::GetAtRemoteClient(int iIndex) const
@@ -619,7 +619,7 @@ C4Player* C4PlayerList::GetAtRemoteClient(int iIndex) const
 	return NULL;
 	}
 
-BOOL C4PlayerList::RemoveLocal(bool fDisconnect, bool fNoCalls)
+bool C4PlayerList::RemoveLocal(bool fDisconnect, bool fNoCalls)
 	{
 	// (used by league system the set local fate)
 	C4Player *pPlr;
@@ -635,7 +635,7 @@ BOOL C4PlayerList::RemoveLocal(bool fDisconnect, bool fNoCalls)
 			}
 	while(pPlr);
 
-	return TRUE;
+	return true;
 	}
 
 void C4PlayerList::EnumeratePointers()
@@ -659,13 +659,13 @@ int C4PlayerList::ControlTakenBy(int iControl) const
   return NO_OWNER;
 	}
 
-BOOL C4PlayerList::MouseControlTaken() const
+bool C4PlayerList::MouseControlTaken() const
 	{
   for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
     if (pPlr->MouseControl)
 			if (pPlr->LocalControl)
-				return TRUE;
-  return FALSE;
+				return true;
+  return false;
 	}
 
 int C4PlayerList::GetCountNotEliminated() const
@@ -677,7 +677,7 @@ int C4PlayerList::GetCountNotEliminated() const
 	return iCount;
 	}
 
-BOOL C4PlayerList::SynchronizeLocalFiles()
+bool C4PlayerList::SynchronizeLocalFiles()
 	{
 	// message
 	Log(LoadResStr("IDS_PRC_SYNCPLRS"));

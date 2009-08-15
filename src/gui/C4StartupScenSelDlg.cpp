@@ -679,7 +679,7 @@ bool C4ScenarioListLoader::Entry::SetTitleInGroup(C4Group &rGrp, const char *szN
 		}
 	// okay, make a title
 	StdStrBuf sTitle; sTitle.Format("%s:%s", Config.General.Language, szNewTitle);
-	if (!rGrp.Add(C4CFN_WriteTitle, sTitle, FALSE, TRUE))
+	if (!rGrp.Add(C4CFN_WriteTitle, sTitle, false, true))
 		{
 		StdStrBuf sMsg; sMsg.Format(LoadResStr("IDS_ERR_ERRORADDINGNEWTITLEFORFIL"), sFilename.getData(), rGrp.GetError());
 		::pGUI->ShowMessageModal(sMsg.getData(), LoadResStr("IDS_FAIL_RENAME"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
@@ -1650,7 +1650,7 @@ bool C4StartupScenSelDlg::StartScenario(C4ScenarioListLoader::Scenario *pStartSc
 	// set other default startup parameters
 	SCopy(pStartScen->GetEntryFilename().getData(), Game.ScenarioFilename);
 	Game.fLobby = !!Game.NetworkActive; // always lobby in network
-	Game.fObserve = FALSE;
+	Game.fObserve = false;
 	// start with this set!
 	C4Startup::Get()->Start();
 	return true;

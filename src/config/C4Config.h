@@ -78,9 +78,9 @@ class C4ConfigGeneral
 	public:
 		static int GetLanguageSequence(const char *strSource, char *strTarget);
 		void DefaultLanguage();
-		BOOL CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle);
+		bool CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle);
 		void AdoptOldSettings();
-		void DeterminePaths(BOOL forceWorkingDirectory);
+		void DeterminePaths(bool forceWorkingDirectory);
 		void CompileFunc(StdCompiler *pComp);
 		void AddAdditionalDataPath(const char *szPath);
 		void ClearAdditionalDataPaths();
@@ -319,10 +319,10 @@ class C4Config: protected CStdConfig
 	public:
 		const char* GetSubkeyPath(const char *strSubkey);
 		void Default();
-		BOOL Save();
-		BOOL Load(BOOL forceWorkingDirectory = TRUE, const char *szConfigFile = NULL);
-		BOOL Init();
-		BOOL Registered();
+		bool Save();
+		bool Load(bool forceWorkingDirectory = true, const char *szConfigFile = NULL);
+		bool Init();
+		bool Registered();
 		const char *AtExePath(const char *szFilename);
 		const char *AtTempPath(const char *szFilename);
 		const char *AtNetworkPath(const char *szFilename);

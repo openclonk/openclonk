@@ -30,12 +30,12 @@
 #include <C4Landscape.h>
 #endif
 
-BOOL C4Shape::AddVertex(int32_t iX, int32_t iY)
+bool C4Shape::AddVertex(int32_t iX, int32_t iY)
 	{
-	if (VtxNum>=C4D_MaxVertex) return FALSE;
+	if (VtxNum>=C4D_MaxVertex) return false;
 	VtxX[VtxNum]=iX; VtxY[VtxNum]=iY;
 	VtxNum++;
-	return TRUE;
+	return true;
 	}
 
 void C4Shape::Default()
@@ -179,12 +179,12 @@ void C4Shape::GetVertexOutline(C4Rect &rRect)
   }
 
 
-BOOL C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
+bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
   {
 	// Adjust given position to one pixel before contact
 	// at vertices matching CNAT request.
 
-  BOOL fAttached=FALSE;
+  bool fAttached=false;
 
 
   int32_t vtx,xcnt,ycnt,xcrng,ycrng,xcd,ycd;
@@ -287,13 +287,13 @@ BOOL C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
   }
 
 
-BOOL C4Shape::LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int32_t oldx, int32_t oldy)
+bool C4Shape::LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int32_t oldx, int32_t oldy)
 	{
 
-	if (VtxNum<2) return FALSE;
+	if (VtxNum<2) return false;
 
 	// No modification
-	if ((VtxX[cvtx]==tx) && (VtxY[cvtx]==ty)) return TRUE;
+	if ((VtxX[cvtx]==tx) && (VtxY[cvtx]==ty)) return true;
 
 	// Check new path
 	int32_t ix,iy;
@@ -301,7 +301,7 @@ BOOL C4Shape::LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int3
 		{
 		// Okay, set vertex
 		VtxX[cvtx]=tx; VtxY[cvtx]=ty;
-		return TRUE;
+		return true;
 		}
 	else
 		{
@@ -328,67 +328,67 @@ BOOL C4Shape::LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int3
 			ciy = oldy;
 			if (!PathFreeIgnoreVehicle(cix,ciy,tx,ty) || !PathFreeIgnoreVehicle(cix,ciy,VtxX[cvtx+ld],VtxY[cvtx+ld]))
 				if (!PathFreeIgnoreVehicle(cix,ciy,tx,ty) || !PathFreeIgnoreVehicle(cix,ciy,VtxX[cvtx+ld],VtxY[cvtx+ld]))
-					return FALSE; // Found no bend vertex
+					return false; // Found no bend vertex
 			}
 		// Insert bend vertex
 		if (ld>0)
 			{
-			if (!InsertVertex(cvtx+1,cix,ciy)) return FALSE;
+			if (!InsertVertex(cvtx+1,cix,ciy)) return false;
 			}
 		else
 			{
-			if (!InsertVertex(cvtx,cix,ciy)) return FALSE;
+			if (!InsertVertex(cvtx,cix,ciy)) return false;
 			cvtx++;
 			}
 		// Okay, set vertex
 		VtxX[cvtx]=tx; VtxY[cvtx]=ty;
-		return TRUE;
+		return true;
 		}
 
-	return FALSE;
+	return false;
 	}
 
-BOOL C4Shape::InsertVertex(int32_t iPos, int32_t tx, int32_t ty)
+bool C4Shape::InsertVertex(int32_t iPos, int32_t tx, int32_t ty)
 	{
-	if (VtxNum+1>C4D_MaxVertex) return FALSE;
+	if (VtxNum+1>C4D_MaxVertex) return false;
 	// Insert vertex before iPos
 	for (int32_t cnt=VtxNum; cnt>iPos; cnt--)
 		{ VtxX[cnt]=VtxX[cnt-1]; VtxY[cnt]=VtxY[cnt-1]; }
 	VtxX[iPos]=tx; VtxY[iPos]=ty;
 	VtxNum++;
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Shape::RemoveVertex(int32_t iPos)
+bool C4Shape::RemoveVertex(int32_t iPos)
 	{
-	if (!Inside<int32_t>(iPos,0,VtxNum-1)) return FALSE;
+	if (!Inside<int32_t>(iPos,0,VtxNum-1)) return false;
 	for (int32_t cnt=iPos; cnt+1<VtxNum; cnt++)
 		{ VtxX[cnt]=VtxX[cnt+1]; VtxY[cnt]=VtxY[cnt+1]; }
 	VtxNum--;
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Shape::CheckContact(int32_t cx, int32_t cy)
+bool C4Shape::CheckContact(int32_t cx, int32_t cy)
 	{
 	// Check all vertices at given object position.
-	// Return TRUE on any contact.
+	// Return true on any contact.
 
 
   for (int32_t cvtx=0; cvtx<VtxNum; cvtx++)
 		if (!(VtxCNAT[cvtx] & CNAT_NoCollision))
 			if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]) >= ContactDensity)
-				return TRUE;
+				return true;
 
 
-  return FALSE;
+  return false;
   }
 
-BOOL C4Shape::ContactCheck(int32_t cx, int32_t cy)
+bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 	{
 	// Check all vertices at given object position.
 	// Set ContactCNAT and ContactCount.
 	// Set VtxContactCNAT and VtxContactMat.
-	// Return TRUE on any contact.
+	// Return true on any contact.
 
 
   ContactCNAT=CNAT_None;

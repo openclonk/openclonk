@@ -160,7 +160,7 @@ class C4AulParseState
 	void Parse_Static();
 	void Parse_Const();
 
-	BOOL AdvanceSpaces(); // skip whitespaces; return whether script ended
+	bool AdvanceSpaces(); // skip whitespaces; return whether script ended
 	int GetOperator(const char* pScript);
 	// Simply discard the string, put it in the Table and delete it with the script or delete it when refcount drops
 	enum HoldStringsPolicy { Discard, Hold, Ref };
@@ -210,7 +210,7 @@ void C4AulScript::Warn(const char *pMsg, const char *pIdtf)
 	{
 	// display error
 
-	C4AulParseError warning(this, pMsg, pIdtf, TRUE);
+	C4AulParseError warning(this, pMsg, pIdtf, true);
 	// display it
 	warning.show();
 	// count warnings
@@ -226,7 +226,7 @@ void C4AulParseState::Warn(const char *pMsg, const char *pIdtf)
 	//if(pFunc) if(pFunc->pOrgScript != pScript && pScript != (C4AulScript *)&::ScriptEngine) return;
 	// display error
 
-	C4AulParseError warning(this, pMsg, pIdtf, TRUE);
+	C4AulParseError warning(this, pMsg, pIdtf, true);
 	// display it
 	warning.show();
 	if (Fn && Fn->pOrgScript != a)
@@ -240,7 +240,7 @@ void C4AulParseState::Error(const char *pMsg, const char *pIdtf)
 	throw new C4AulParseError(this, pMsg, pIdtf);
 	}
 
-C4AulParseError::C4AulParseError(C4AulParseState * state, const char *pMsg, const char *pIdtf, BOOL Warn)
+C4AulParseError::C4AulParseError(C4AulParseState * state, const char *pMsg, const char *pIdtf, bool Warn)
 	:	C4AulError()
 	{
 	// compose error string
@@ -273,7 +273,7 @@ C4AulParseError::C4AulParseError(C4AulParseState * state, const char *pMsg, cons
 
 	}
 
-C4AulParseError::C4AulParseError(C4AulScript *pScript, const char *pMsg, const char *pIdtf, BOOL Warn)
+C4AulParseError::C4AulParseError(C4AulScript *pScript, const char *pMsg, const char *pIdtf, bool Warn)
 	{
 	// compose error string
 	sMessage.Format("%s: %s%s",
@@ -365,7 +365,7 @@ void C4AulScriptFunc::ParseDesc()
 	DescText.CopyUntil(Desc.getData(), '|');
 	}
 
-BOOL C4AulParseState::AdvanceSpaces()
+bool C4AulParseState::AdvanceSpaces()
 	{
 		char C, C2 = (char) 0;
 		// defaultly, not in comment
@@ -384,14 +384,14 @@ BOOL C4AulParseState::AdvanceSpaces()
 							{
 							case '/': InComment = 1; break;
 							case '*': InComment = 2; break;
-							default: SPos--; return TRUE;
+							default: SPos--; return true;
 							}
 						}
 					// Skip those stupid "zero width no-break spaces" (also known as Byte Order Marks)
 					else if (C == '\xEF' && *(SPos + 1) == '\xBB' && *(SPos + 2) == '\xBF')
 						SPos += 2;
 					else
-						if ((BYTE) C > 32) return TRUE;
+						if ((BYTE) C > 32) return true;
 					break;
 				case 1:
 					if (((BYTE) C == 13) || ((BYTE) C == 10)) InComment = 0;
@@ -403,8 +403,8 @@ BOOL C4AulParseState::AdvanceSpaces()
 			// next char; store prev
 			SPos++; C2 = C;
 			}
-		// end of script reached; return FALSE
-		return FALSE;
+		// end of script reached; return false
+		return false;
 	}
 
 //=========================== C4Script Operator Map ===================================
@@ -563,7 +563,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 	char *pStrPos = StrBuff;
 
 	// loop until finished
-	while (TRUE)
+	while (true)
 		{
 		// get char
 		char C = *SPos;
@@ -867,7 +867,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_CALLNS: return "CALLNS";	// direct object call: namespace operator
 	case AB_STACK: return "STACK";		// push nulls / pop
 	case AB_INT: return "INT";			// constant: int
-	case AB_BOOL: return "BOOL";		// constant: bool
+	case AB_BOOL: return "bool";		// constant: bool
 	case AB_STRING: return "STRING";	// constant: string
 	case AB_C4ID: return "C4ID";		// constant: C4ID
 	case AB_NIL: return "NIL";		// constant: nil
@@ -933,11 +933,11 @@ void C4AulScript::ClearCode()
 	CPos = Code;
 	}
 
-BOOL C4AulScript::Preparse()
+bool C4AulScript::Preparse()
 	{
 	// handle easiest case first
-	if (State < ASS_NONE) return FALSE;
-	if (!Script) { State = ASS_PREPARSED; return TRUE; }
+	if (State < ASS_NONE) return false;
+	if (!Script) { State = ASS_PREPARSED; return true; }
 
 	// clear stuff
 	/* simply setting Includes to NULL will waste some space in the associative list
@@ -966,14 +966,14 @@ BOOL C4AulScript::Preparse()
 		}
 
 	// done, reset state var
-	Preparsing=FALSE;
+	Preparsing=false;
 
 	// #include will have to be resolved now...
 	IncludesResolved = false;
 
 	// return success
 	C4AulScript::State = ASS_PREPARSED;
-	return TRUE;
+	return true;
 	}
 
 void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
@@ -1616,14 +1616,14 @@ void C4AulParseState::Parse_Function()
 				AddBCC(AB_RETURN);
 				}
 			// and break
-			Done = TRUE;
+			Done = true;
 			// Do not blame this function for script errors between functions
 			Fn = 0;
 			return;
 			}
 		case ATT_EOF:
 			{
-			Done = TRUE;
+			Done = true;
 			return;
 			}
 		default:
@@ -1734,7 +1734,7 @@ void C4AulParseState::Parse_Statement()
 			else if(SEqual(Idtf, C4AUL_Func))
 				{
 				// break parsing: start of next func
-				Done = TRUE;
+				Done = true;
 				break;
 				}
 			// get function by identifier: first check special functions
@@ -1876,7 +1876,7 @@ void C4AulParseState::Parse_Statement()
 				if(TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_Func))
 					{
 					// ok, break here
-					Done = TRUE;
+					Done = true;
 					}
 				else
 					{
@@ -1884,7 +1884,7 @@ void C4AulParseState::Parse_Statement()
 					Match(ATT_IDTF);
 					Match(ATT_COLON);
 					// break here
-					Done = TRUE;
+					Done = true;
 					}
 				break;
 				}
@@ -1908,7 +1908,7 @@ void C4AulParseState::Parse_Statement()
 					if (GetNextToken(Idtf, &cInt, Discard, true) == ATT_COLON)
 						{
 						// OK, next function found. abort
-						Done = TRUE;
+						Done = true;
 						break;
 						}
 					// -> func not found
@@ -2897,7 +2897,7 @@ void C4AulParseState::Parse_Const()
 		}
 	}
 
-BOOL C4AulScript::Parse()
+bool C4AulScript::Parse()
 	{
 	if (DEBUG_BYTECODE_DUMP) {
 		C4ScriptHost * scripthost = 0;
@@ -2908,9 +2908,9 @@ BOOL C4AulScript::Parse()
 	C4AulScript *s = Child0;
 	while (s)	{	s->Parse();	s = s->Next; }
 	// check state
-	if (State != ASS_LINKED) return FALSE;
+	if (State != ASS_LINKED) return false;
 	// don't parse global funcs again, as they're parsed already through links
-	if (this == Engine) return FALSE;
+	if (this == Engine) return false;
 	// delete existing code
 	ClearCode();
 
@@ -3018,7 +3018,7 @@ BOOL C4AulScript::Parse()
 	// finished
 	State = ASS_PARSED;
 
-	return TRUE;
+	return true;
 	}
 
 

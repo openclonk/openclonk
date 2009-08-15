@@ -223,7 +223,7 @@ class CStdDDraw
 		int MaxTexSize;
 	protected:
 		BYTE								byByteCnt;		// bytes per pixel (2 or 4)
-		BOOL fFullscreen;
+		bool fFullscreen;
 		float fClipX1,fClipY1,fClipX2,fClipY2; // clipper in unzoomed coordinates
 		float fStClipX1,fStClipY1,fStClipX2,fStClipY2; // stored clipper in unzoomed coordinates
 		int32_t iClipX1,iClipY1,iClipX2,iClipY2; // clipper in pixel coordinates
@@ -240,7 +240,7 @@ class CStdDDraw
 	public:
 		float Zoom;
 		// General
-		bool Init(CStdApp * pApp, BOOL Fullscreen, BOOL fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
+		bool Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor);
 		virtual void Clear();
 		virtual void Default();
 		virtual CStdGLCtx *CreateContext(CStdWindow *, CStdApp *) { return NULL; }
@@ -255,24 +255,24 @@ class CStdDDraw
 		virtual bool IsOpenGL() { return false; }
 		virtual bool IsShaderific() { return false; }
 		// Palette
-		BOOL SetPrimaryPalette(BYTE *pBuf, BYTE *pAlphaBuf=NULL);
-		BOOL SetPrimaryPaletteQuad(BYTE *pBuf);
-		BOOL AttachPrimaryPalette(SURFACE sfcSurface);
+		bool SetPrimaryPalette(BYTE *pBuf, BYTE *pAlphaBuf=NULL);
+		bool SetPrimaryPaletteQuad(BYTE *pBuf);
+		bool AttachPrimaryPalette(SURFACE sfcSurface);
 		// Clipper
-		BOOL GetPrimaryClipper(float &rX1, float &rY1, float &rX2, float &rY2);
-		BOOL SetPrimaryClipper(float iX1, float iY1, float iX2, float iY2);
-		BOOL SubPrimaryClipper(float iX1, float iY1, float iX2, float iY2);
-		BOOL StorePrimaryClipper();
-		BOOL RestorePrimaryClipper();
-		BOOL NoPrimaryClipper();
-		BOOL ApplyPrimaryClipper(SURFACE sfcSurface);
-		BOOL DetachPrimaryClipper(SURFACE sfcSurface);
+		bool GetPrimaryClipper(float &rX1, float &rY1, float &rX2, float &rY2);
+		bool SetPrimaryClipper(float iX1, float iY1, float iX2, float iY2);
+		bool SubPrimaryClipper(float iX1, float iY1, float iX2, float iY2);
+		bool StorePrimaryClipper();
+		bool RestorePrimaryClipper();
+		bool NoPrimaryClipper();
+		bool ApplyPrimaryClipper(SURFACE sfcSurface);
+		bool DetachPrimaryClipper(SURFACE sfcSurface);
 		virtual bool UpdateClipper() = 0; // set current clipper to render target
 		bool ClipPoly(CBltData &rBltData); // clip polygon to clipper; return whether completely clipped out
 		// Surface
-		BOOL GetSurfaceSize(SURFACE sfcSurface, int &iWdt, int &iHgt);
-		BOOL WipeSurface(SURFACE sfcSurface);
-		void SurfaceAllowColor(SURFACE sfcSfc, DWORD *pdwColors, int iNumColors, BOOL fAllowZero=FALSE);
+		bool GetSurfaceSize(SURFACE sfcSurface, int &iWdt, int &iHgt);
+		bool WipeSurface(SURFACE sfcSurface);
+		void SurfaceAllowColor(SURFACE sfcSfc, DWORD *pdwColors, int iNumColors, bool fAllowZero=false);
 		void Grayscale(SURFACE sfcSfc, int32_t iOffset = 0);
 		void LockingPrimary() { PrimaryLocked=true; }
 		void PrimaryUnlocked() { PrimaryLocked=false; }
@@ -282,24 +282,24 @@ class CStdDDraw
 		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 		void Blit8Fast(CSurface8 * sfcSource, int fx, int fy,
 		               SURFACE sfcTarget, int tx, int ty, int wdt, int hgt);
-		BOOL Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
+		bool Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
 							SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
-							BOOL fSrcColKey=FALSE, CBltTransform *pTransform=NULL);
+							bool fSrcColKey=false, CBltTransform *pTransform=NULL);
 		virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
-		BOOL Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
+		bool Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 							SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
-							BOOL fSrcColKey=FALSE, CBltTransform *pTransform=NULL);
-		BOOL BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
+							bool fSrcColKey=false, CBltTransform *pTransform=NULL);
+		bool BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
 										SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
 										int iAngle, bool fTransparency=true);
-		BOOL BlitSurface(SURFACE sfcSurface, SURFACE sfcTarget, int tx, int ty, bool fBlitBase);
-		BOOL BlitSurfaceTile(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, BOOL fSrcColKey=FALSE);
-		BOOL BlitSurfaceTile2(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, BOOL fSrcColKey=FALSE);
+		bool BlitSurface(SURFACE sfcSurface, SURFACE sfcTarget, int tx, int ty, bool fBlitBase);
+		bool BlitSurfaceTile(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
+		bool BlitSurfaceTile2(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX=0, int iOffsetY=0, bool fSrcColKey=false);
 		virtual void FillBG(DWORD dwClr=0) = 0;
 		// Text
 		enum { DEFAULT_MESSAGE_COLOR = 0xffffffff };
-		BOOL TextOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
-		BOOL StringOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
+		bool TextOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
+		bool StringOut(const char *szText, CStdFont &rFont, float fZoom, SURFACE sfcDest, float iTx, float iTy, DWORD dwFCol=0xffffffff, BYTE byForm=ALeft, bool fDoMarkup=true);
 		// Drawing
 		virtual void DrawPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol);
 		void DrawBox(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, BYTE byCol);  // calls DrawBoxDw
@@ -357,7 +357,7 @@ class CStdDDraw
 		virtual void PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwCol) = 0; // without ClrModMap
 		virtual void PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr) = 0;
 		bool CreatePrimaryClipper(unsigned int iXRes, unsigned int iYRes);
-		virtual bool CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
+		virtual bool CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor) = 0;
 		bool Error(const char *szMsg);
 		void DebugLog(const char *szMsg)
 			{
@@ -377,5 +377,5 @@ bool UnLockSurfaceGlobal(SURFACE sfcTarget);
 bool DLineSPix(int32_t x, int32_t y, int32_t col);
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr);
 
-CStdDDraw *DDrawInit(CStdApp * pApp, BOOL Fullscreen, BOOL fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
+CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, int Engine, unsigned int iMonitor);
 #endif // INC_STDDDRAW2

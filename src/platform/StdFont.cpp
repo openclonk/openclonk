@@ -417,14 +417,14 @@ void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWei
 	const char *szFontName2;
 	if (szFontName && *szFontName) szFontName2 = szFontName; else szFontName2 = "Comic Sans MS";
 	int iFontHeight = dwDefFontHeight * GetDeviceCaps(hDC, LOGPIXELSY) * iFontZoom / 72;
-	hFont = ::CreateFont(iFontHeight, 0, 0, 0, dwFontWeight, FALSE,
-													 FALSE, FALSE, bCharset, OUT_DEFAULT_PRECIS,
+	hFont = ::CreateFont(iFontHeight, 0, 0, 0, dwFontWeight, false,
+													 false, false, bCharset, OUT_DEFAULT_PRECIS,
 	                         CLIP_DEFAULT_PRECIS, 5,
 	                         VARIABLE_PITCH, szFontName2);
 
 	// ClearType failed: try antialiased (not guaranteed)
-	if (!hFont) hFont = ::CreateFont(iFontHeight, 0, 0, 0, dwFontWeight, FALSE,
-															   FALSE, FALSE, bCharset, OUT_DEFAULT_PRECIS,
+	if (!hFont) hFont = ::CreateFont(iFontHeight, 0, 0, 0, dwFontWeight, false,
+															   false, false, bCharset, OUT_DEFAULT_PRECIS,
 	                               CLIP_DEFAULT_PRECIS, ANTIALIASED_QUALITY,
 																 VARIABLE_PITCH, szFontName2);
 
@@ -1136,7 +1136,7 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 		// blit character or image
 		lpDDraw->Blit(fctFromBlt.Surface, float(fctFromBlt.X), float(fctFromBlt.Y), float(fctFromBlt.Wdt),float(fctFromBlt.Hgt),
 									sfcDest, iX, iY, float(w2), float(h2),
-									TRUE, pbt);
+									true, pbt);
 		// advance pos and skip character indent
 		iX+=w2+iHSpace;
     }

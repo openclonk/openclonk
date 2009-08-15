@@ -127,23 +127,23 @@ c4_list_get_iter (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreePath * p
 	for (int i = 0; i < depth; ++i)
 	{
 		if (!pLnk)
-			return FALSE;
+			return false;
 		if (indices[i] < 0)
-			return FALSE;
+			return false;
 		for (int j = 0; j < indices[i]; ++j)
 		{
 			pLnk = pLnk->Next;
 			// Skip Contained Objects in the main list
 			while (i == 0 && pLnk && pLnk->Obj->Contained) pLnk = pLnk->Next;
 			if (!pLnk)
-				return FALSE;
+				return false;
 		}
 		iter->user_data  = pLnk;
 		iter->user_data2 = pLnk->Obj->Contained;
 		pLnk = pLnk->Obj->Contents.First;
 	}
 
-	return TRUE;
+	return true;
 }
 
 // converts 'iter' into a new tree path and returns that.
@@ -195,10 +195,10 @@ c4_list_get_path (GtkTreeModel * tree_model, GtkTreeIter * iter)
 static gboolean
 c4_list_iter_next (GtkTreeModel * tree_model, GtkTreeIter * iter)
 {
-	g_return_val_if_fail (C4_IS_LIST (tree_model), FALSE);
+	g_return_val_if_fail (C4_IS_LIST (tree_model), false);
 
 	if (iter == NULL || iter->user_data == NULL)
-		return FALSE;
+		return false;
 
 	C4ObjectLink * pLnk = (C4ObjectLink *) iter->user_data;
 
@@ -209,21 +209,21 @@ c4_list_iter_next (GtkTreeModel * tree_model, GtkTreeIter * iter)
 		while (pLnk && pLnk->Obj->Contained)
 			pLnk = pLnk->Next;
 	if (!pLnk)
-		return FALSE;
+		return false;
 
 	iter->user_data = pLnk;
 	iter->user_data2 = pLnk->Obj->Contained;
 
-	return TRUE;
+	return true;
 }
 
 // Set 'iter' to the first child of 'parent', or the first top-level row if
-// 'parent' is 0, or return FALSE if there aren't any children.
+// 'parent' is 0, or return false if there aren't any children.
 static gboolean
 c4_list_iter_children (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreeIter * parent)
 {
-	g_return_val_if_fail (parent == NULL || parent->user_data != NULL, FALSE);
-	g_return_val_if_fail (C4_IS_LIST (tree_model), FALSE);
+	g_return_val_if_fail (parent == NULL || parent->user_data != NULL, false);
+	g_return_val_if_fail (C4_IS_LIST (tree_model), false);
 
 	C4List  *c4_list = C4_LIST(tree_model);
 
@@ -240,23 +240,23 @@ c4_list_iter_children (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreeIte
 		while (pLnk && pLnk->Obj->Contained) pLnk = pLnk->Next;
 	}
 	if (!pLnk)
-		return FALSE;
+		return false;
 
 	/* Set iter to first item in list */
 	iter->stamp     = c4_list->stamp;
 	iter->user_data = pLnk;
 	iter->user_data2 = pLnk->Obj->Contained;
 
-	return TRUE;
+	return true;
 }
 
-// Return TRUE if 'parent' has children.
+// Return true if 'parent' has children.
 static gboolean
 c4_list_iter_has_child (GtkTreeModel *tree_model,
                             GtkTreeIter  *parent)
 {
-	g_return_val_if_fail (parent == NULL || parent->user_data != NULL, FALSE);
-	g_return_val_if_fail (C4_IS_LIST (tree_model), FALSE);
+	g_return_val_if_fail (parent == NULL || parent->user_data != NULL, false);
+	g_return_val_if_fail (C4_IS_LIST (tree_model), false);
 
 	C4List  *c4_list = C4_LIST(tree_model);
 
@@ -303,8 +303,8 @@ c4_list_iter_n_children (GtkTreeModel *tree_model, GtkTreeIter  *parent)
 static gboolean
 c4_list_iter_nth_child (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreeIter * parent, gint n)
 {
-	g_return_val_if_fail (C4_IS_LIST (tree_model), FALSE);
-	g_return_val_if_fail (parent == NULL || parent->user_data != NULL, FALSE);
+	g_return_val_if_fail (C4_IS_LIST (tree_model), false);
+	g_return_val_if_fail (parent == NULL || parent->user_data != NULL, false);
 
 	C4List  *c4_list = C4_LIST(tree_model);
 
@@ -316,7 +316,7 @@ c4_list_iter_nth_child (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreeIt
 		for (int i = 0; i < n; ++i)
 		{
 			if (!pLnk)
-				return FALSE;
+				return false;
 			pLnk = pLnk->Next;
 		}
 	}
@@ -326,27 +326,27 @@ c4_list_iter_nth_child (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreeIt
 		for (int i = 0; i < n; ++i)
 		{
 			if (!pLnk)
-				return FALSE;
+				return false;
 			pLnk = pLnk->Next;
 			// Skip...
 			while (pLnk && pLnk->Obj->Contained) pLnk = pLnk->Next;
 		}
 	}
 	if (!pLnk)
-		return FALSE;
+		return false;
 
 	iter->stamp = c4_list->stamp;
 	iter->user_data = pLnk;
 	iter->user_data2 = pLnk->Obj->Contained;
 
-	return TRUE;
+	return true;
 }
 
 // Helper function.
 static gboolean c4_list_iter_for_C4Object (GtkTreeModel * tree_model, GtkTreeIter * iter, C4ObjectList * pList, C4Object * pObj)
 {
 	if (!pObj)
-		return FALSE;
+		return false;
 
 	C4List * c4_list = C4_LIST(tree_model);
 
@@ -358,19 +358,19 @@ static gboolean c4_list_iter_for_C4Object (GtkTreeModel * tree_model, GtkTreeIte
 			iter->user_data = pLnk;
 			iter->user_data2 = pLnk->Obj->Contained;
 
-			return TRUE;
+			return true;
 		}
 	}
 
-	g_return_val_if_reached(FALSE);
+	g_return_val_if_reached(false);
 }
 
 // Sets 'iter' to the parent row of 'child'.
 static gboolean
 c4_list_iter_parent (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreeIter * child)
 {
-	g_return_val_if_fail (C4_IS_LIST (tree_model), FALSE);
-	g_return_val_if_fail (child == NULL || child->user_data != NULL, FALSE);
+	g_return_val_if_fail (C4_IS_LIST (tree_model), false);
+	g_return_val_if_fail (child == NULL || child->user_data != NULL, false);
 
 	C4List * c4_list = C4_LIST(tree_model);
 
@@ -719,7 +719,7 @@ static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 		if(object->Def->Graphics.BitmapClr) surface = object->Def->Graphics.BitmapClr;
 
 		const C4Rect& picture = object->Def->PictureRect;
-		pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, picture.Wdt, picture.Hgt);
+		pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, picture.Wdt, picture.Hgt);
 		guchar* pixels = gdk_pixbuf_get_pixels(pixbuf);
 		surface->Lock();
 		for(int y = 0; y < picture.Hgt; ++ y) for(int x = 0; x < picture.Wdt; ++ x)
@@ -767,7 +767,7 @@ void C4ObjectListDlg::Open()
 		// The Windows
 		window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-		gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
+		gtk_window_set_resizable(GTK_WINDOW(window), true);
 		gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_UTILITY);
 		gtk_window_set_role(GTK_WINDOW(window), "objectlist");
 		gtk_window_set_title(GTK_WINDOW(window), "Objects");
@@ -778,7 +778,7 @@ void C4ObjectListDlg::Open()
 		g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroy), this);
 
 		// The VBox and Tree
-		GtkWidget* vbox = gtk_vbox_new(FALSE, 8);
+		GtkWidget* vbox = gtk_vbox_new(false, 8);
 
 		GtkWidget* scrolled_wnd = gtk_scrolled_window_new(NULL, NULL);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -794,19 +794,19 @@ void C4ObjectListDlg::Open()
 		GtkCellRenderer * renderer;
 
 		renderer = gtk_cell_renderer_pixbuf_new();
-		gtk_tree_view_column_pack_start(col, renderer, FALSE);
+		gtk_tree_view_column_pack_start(col, renderer, false);
 		gtk_tree_view_column_set_cell_data_func(col, renderer, icon_cell_data_func, g_hash_table_new_full(NULL, NULL, NULL, (GDestroyNotify)g_object_unref), (GDestroyNotify)g_hash_table_unref);
 
 		renderer = gtk_cell_renderer_text_new();
-		gtk_tree_view_column_pack_start(col, renderer, TRUE);
+		gtk_tree_view_column_pack_start(col, renderer, true);
 		gtk_tree_view_column_set_cell_data_func(col, renderer, name_cell_data_func, NULL, NULL);
 
 		gtk_tree_view_column_set_title(col, "Name");
 		gtk_tree_view_column_set_sizing(col, GTK_TREE_VIEW_COLUMN_FIXED);
 		gtk_tree_view_append_column(GTK_TREE_VIEW(treeview),col);
 
-		gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview), FALSE);
-		gtk_tree_view_set_fixed_height_mode(GTK_TREE_VIEW(treeview), TRUE);
+		gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(treeview), false);
+		gtk_tree_view_set_fixed_height_mode(GTK_TREE_VIEW(treeview), true);
 
 		GtkTreeSelection * selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(treeview));
 		gtk_tree_selection_set_mode(selection, GTK_SELECTION_MULTIPLE);
@@ -814,7 +814,7 @@ void C4ObjectListDlg::Open()
 		g_signal_connect(G_OBJECT(selection), "changed", G_CALLBACK(OnSelectionChanged), this);
 
 		gtk_container_add(GTK_CONTAINER(scrolled_wnd), treeview);
-		gtk_box_pack_start(GTK_BOX(vbox), scrolled_wnd, TRUE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), scrolled_wnd, true, true, 0);
 
 		gtk_container_add(GTK_CONTAINER(window), vbox);
 

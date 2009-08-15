@@ -23,9 +23,9 @@ extern long MouseStatus;
 
 void SetMouseRange(int x1, int y1, int x2, int y2);
 void CenterMouse();
-BOOL InitDirectInput(HINSTANCE g_hinst, HWND hwnd, int resx, int resy);
+bool InitDirectInput(HINSTANCE g_hinst, HWND hwnd, int resx, int resy);
 void DeInitDirectInput();
-void DirectInputSyncAcquire(BOOL fActive);
+void DirectInputSyncAcquire(bool fActive);
 void DirectInputCritical();
 
 

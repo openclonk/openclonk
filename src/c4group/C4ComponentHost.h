@@ -36,18 +36,18 @@ class C4ComponentHost
 		const char *GetData() { return Data.getData(); }
 		size_t GetDataSize() { return Data.getLength(); }
 		virtual void Close();
-		BOOL Load(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-		BOOL Load(const char *szName, C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);
-		BOOL LoadEx(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-		BOOL LoadAppend(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
-		BOOL Set(const char *szData);
-		BOOL Save(C4Group &hGroup);
+		bool Load(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
+		bool Load(const char *szName, C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);
+		bool LoadEx(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
+		bool LoadAppend(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
+		bool Set(const char *szData);
+		bool Save(C4Group &hGroup);
 		bool GetLanguageString(const char *szLanguage, class StdStrBuf &rTarget);
-		BOOL SetLanguageString(const char *szLanguage, const char *szString);
+		bool SetLanguageString(const char *szLanguage, const char *szString);
 		void TrimSpaces();
 	protected:
 		StdCopyStrBuf Data;
-		BOOL Modified;
+		bool Modified;
 		char Name[_MAX_FNAME+1];
 		char Filename[_MAX_FNAME+1];
 		char FilePath[_MAX_PATH+1];

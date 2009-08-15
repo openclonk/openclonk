@@ -110,15 +110,15 @@ C4PropertyDlg::~C4PropertyDlg()
 #endif // WITH_DEVELOPER_MODE
 	}
 
-BOOL C4PropertyDlg::Open()
+bool C4PropertyDlg::Open()
 	{
 #ifdef _WIN32
-	if (hDialog) return TRUE;
+	if (hDialog) return true;
 	hDialog = CreateDialog(Application.GetInstance(),
 												 MAKEINTRESOURCE(IDD_PROPERTIES),
 												 Console.hWindow,
 												 (DLGPROC) PropertyDlgProc);
-	if (!hDialog) return FALSE;
+	if (!hDialog) return false;
 	// Set text
 	SetWindowText(hDialog,LoadResStr("IDS_DLG_PROPERTIES"));
 	// Enable controls
@@ -133,7 +133,7 @@ BOOL C4PropertyDlg::Open()
 #ifdef WITH_DEVELOPER_MODE
 	if(vbox == NULL)
 	{
-		vbox = gtk_vbox_new(FALSE, 6);
+		vbox = gtk_vbox_new(false, 6);
 
 		GtkWidget* scrolled_wnd = gtk_scrolled_window_new(NULL, NULL);
 		gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scrolled_wnd), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
@@ -143,10 +143,10 @@ BOOL C4PropertyDlg::Open()
 		entry = gtk_entry_new();
 
 		gtk_container_add(GTK_CONTAINER(scrolled_wnd), textview);
-		gtk_box_pack_start(GTK_BOX(vbox), scrolled_wnd, TRUE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), entry, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), scrolled_wnd, true, true, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), entry, false, false, 0);
 
-		gtk_text_view_set_editable(GTK_TEXT_VIEW(textview), FALSE);
+		gtk_text_view_set_editable(GTK_TEXT_VIEW(textview), false);
 		gtk_widget_set_sensitive(entry, Console.Editing);
 
 		gtk_widget_show_all(vbox);
@@ -162,12 +162,12 @@ BOOL C4PropertyDlg::Open()
 #endif // WITH_DEVELOPER_MODE
 #endif // _WIN32
 	Active = true;
-	return TRUE;
+	return true;
 	}
 
-BOOL C4PropertyDlg::Update(C4ObjectList &rSelection)
+bool C4PropertyDlg::Update(C4ObjectList &rSelection)
 	{
-	if (!Active) return FALSE;
+	if (!Active) return false;
 	// Set new selection
 	Selection.Copy(rSelection);
 	// Update input control
@@ -176,17 +176,17 @@ BOOL C4PropertyDlg::Update(C4ObjectList &rSelection)
 	return Update();
 	}
 
-BOOL IsObjectPointer(int iValue)
+bool IsObjectPointer(int iValue)
 	{
   for (C4ObjectLink *cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj == (C4Object*) iValue)
-			return TRUE;
-	return FALSE;
+			return true;
+	return false;
 	}
 
-BOOL C4PropertyDlg::Update()
+bool C4PropertyDlg::Update()
 	{
-	if (!Active) return FALSE;
+	if (!Active) return false;
 
 	StdStrBuf Output;
 
@@ -272,7 +272,7 @@ BOOL C4PropertyDlg::Update()
 	gtk_text_buffer_set_text(buffer, Output.getData(), -1);
 #endif
 #endif
-	return TRUE;
+	return true;
 	}
 
 void C4PropertyDlg::Default()
@@ -358,7 +358,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 			}
 	// Add object script functions
 #ifdef _WIN32
-	BOOL fDivider = FALSE;
+	bool fDivider = false;
 #endif
 	C4AulScriptFunc *pRef;
 	// Object script available
@@ -370,7 +370,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 				{
 #ifdef _WIN32
 				// Insert divider if necessary
-				if (!fDivider) { SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------"); fDivider=TRUE; }
+				if (!fDivider) { SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------"); fDivider=true; }
 #endif
 				// Add function
 #ifdef _WIN32
@@ -413,12 +413,12 @@ void C4PropertyDlg::OnScriptActivate(GtkWidget* widget, gpointer data)
 
 void C4PropertyDlg::OnWindowHide(GtkWidget* widget, gpointer user_data)
 {
-	static_cast<C4PropertyDlg*>(user_data)->Active = FALSE;
+	static_cast<C4PropertyDlg*>(user_data)->Active = false;
 }
 
 /*void C4PropertyDlg::OnDestroy(GtkWidget* widget, gpointer data)
 {
 	static_cast<C4PropertyDlg*>(data)->window = NULL;
-	static_cast<C4PropertyDlg*>(data)->Active = FALSE;
+	static_cast<C4PropertyDlg*>(data)->Active = false;
 }*/
 #endif

@@ -738,16 +738,16 @@ bool Screen::KeyAny()
 	return false;
 	}
 
-BOOL Screen::CharIn(const char * c)
+bool Screen::CharIn(const char * c)
 	{
 	// Special: Tab chars are ignored, because they are always handled as focus advance
-	if (c[0] == 0x09) return FALSE;
+	if (c[0] == 0x09) return false;
 	// mark in mouse
 	Mouse.ResetActiveInput();
 	// no processing if focus is not set
-	if (!HasKeyboardFocus()) return FALSE;
+	if (!HasKeyboardFocus()) return false;
 	// always return true in exclusive mode (which means: key processed)
-	BOOL fResult = IsExclusive();
+	bool fResult = IsExclusive();
 	// context menu: forward to context
 	if (pContext) return pContext->CharIn(c) || fResult;
 	// no active dlg?

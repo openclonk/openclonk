@@ -66,7 +66,7 @@ class C4DefGraphics
 		C4AdditionalDefGraphics *GetNext() { return pNext; }
 		virtual C4PortraitGraphics *IsPortrait() { return NULL; }
 
-		void DrawClr(C4Facet &cgo, BOOL fAspect=TRUE, DWORD dwClr=0); // set surface color and draw
+		void DrawClr(C4Facet &cgo, bool fAspect=true, DWORD dwClr=0); // set surface color and draw
 
 		void CompileFunc(StdCompiler *pComp);
 

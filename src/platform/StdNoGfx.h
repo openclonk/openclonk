@@ -52,7 +52,7 @@ public:
 	virtual bool InvalidateDeviceObjects() { return true; }
 	virtual bool DeleteDeviceObjects() { return true; }
 	virtual bool DeviceReady() { return true; }
-	virtual bool CreatePrimarySurfaces(BOOL, unsigned int, unsigned int, int, unsigned int);
+	virtual bool CreatePrimarySurfaces(bool, unsigned int, unsigned int, int, unsigned int);
 	virtual bool SetOutputAdapter(unsigned int) { return true; }
 };
 

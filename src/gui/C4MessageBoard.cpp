@@ -54,12 +54,12 @@ C4MessageBoard::~C4MessageBoard()
 void C4MessageBoard::Default()
 	{
 	Clear();
-	Active=FALSE;
+	Active=false;
 	Delay=-1;
 	Fader=0;
 	Speed=2;
 	Output.Default();
-	Startup=FALSE;
+	Startup=false;
 	Empty=true;
 	ScreenFader=0;
 	iMode = 0;
@@ -69,7 +69,7 @@ void C4MessageBoard::Default()
 
 void C4MessageBoard::Clear()
 	{
-	Active=FALSE;
+	Active=false;
 	LogBuffer.Clear();
 	LogBuffer.SetLBWidth(0);
 	}
@@ -235,9 +235,9 @@ void C4MessageBoard::Execute()
 	Draw(Output);
 	}
 
-void C4MessageBoard::Init(C4Facet &cgo, BOOL fStartup)
+void C4MessageBoard::Init(C4Facet &cgo, bool fStartup)
 	{
-	Active=TRUE;
+	Active=true;
 	Output=cgo;
 	Startup=fStartup;
 	iLineHgt=::GraphicsResource.FontRegular.iLineHgt;

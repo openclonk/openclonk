@@ -85,7 +85,7 @@ BYTE C4MapCreator::GetPix(int32_t x, int32_t y)
 
 void C4MapCreator::Create(CSurface8 *sfcMap,
 												  C4SLandscape &rLScape, C4TextureMap &rTexMap,
-													BOOL fLayers, int32_t iPlayerNum)
+													bool fLayers, int32_t iPlayerNum)
   {
   double fullperiod= 20.0 * pi;
   BYTE ccol;
@@ -185,27 +185,27 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 
   }
 
-/*BOOL C4MapCreator::Load(
+/*bool C4MapCreator::Load(
 				BYTE **pbypBuffer,
 				int32_t &rBufWdt, int32_t &rMapWdt, int32_t &rMapHgt,
 				C4Group &hGroup, const char *szEntryName,
 				C4TextureMap &rTexMap)
 	{
-	BOOL fOwnBuf=FALSE;
+	bool fOwnBuf=false;
 
 	CBitmap256Info Bmp;
 
 	// Access entry in group, read bitmap info
-	if (!hGroup.AccessEntry(szEntryName)) return FALSE;
-	if (!hGroup.Read(&Bmp,sizeof(Bmp))) return FALSE;
-	if (!Bmp.Valid()) return FALSE;
-	if (!hGroup.Advance(Bmp.FileBitsOffset())) return FALSE;
+	if (!hGroup.AccessEntry(szEntryName)) return false;
+	if (!hGroup.Read(&Bmp,sizeof(Bmp))) return false;
+	if (!Bmp.Valid()) return false;
+	if (!hGroup.Advance(Bmp.FileBitsOffset())) return false;
 
 	// If buffer is present, check for sufficient size
 	if (*pbypBuffer)
 		{
 		if ((Bmp.Info.biWidth>rMapWdt)
-		 || (Bmp.Info.biHeight>rMapHgt) ) return FALSE;
+		 || (Bmp.Info.biHeight>rMapHgt) ) return false;
 		}
 	// Else, allocate buffer, set sizes
 	else
@@ -214,14 +214,14 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 		rMapHgt = Bmp.Info.biHeight;
 		rBufWdt = rMapWdt; int dwBufWdt = rBufWdt; DWordAlign(dwBufWdt); rBufWdt = dwBufWdt;
 		if (!(*pbypBuffer = new BYTE [rBufWdt*rMapHgt]))
-			return FALSE;
-		fOwnBuf=TRUE;
+			return false;
+		fOwnBuf=true;
 		}
 
 	// Read bits to buffer
 	for (int32_t cline=Bmp.Info.biHeight-1; cline>=0; cline--)
 		if (!hGroup.Read(*pbypBuffer+rBufWdt*cline,rBufWdt))
-			{ if (fOwnBuf) delete [] *pbypBuffer; return FALSE; }
+			{ if (fOwnBuf) delete [] *pbypBuffer; return false; }
 
 	// Validate texture indices
 	MapBuf=*pbypBuffer;
@@ -229,7 +229,7 @@ void C4MapCreator::Create(CSurface8 *sfcMap,
 	MapWdt=rMapWdt; MapHgt=rMapHgt;
 	ValidateTextureIndices(rTexMap);
 
-	return TRUE;
+	return true;
 	}*/
 
 void C4MapCreator::ValidateTextureIndices(C4TextureMap &rTextureMap)

@@ -43,18 +43,18 @@ class C4GraphicsSystem
 		C4MessageBoard MessageBoard;
 		C4UpperBoard UpperBoard;
 		int32_t iRedrawBackground;
-		BOOL ShowHelp;
-		BOOL ShowVertices;
-		BOOL ShowAction;
-		BOOL ShowCommand;
-		BOOL ShowEntrance;
-		BOOL ShowPathfinder;
-		BOOL ShowNetstatus;
-		BOOL ShowSolidMask;
+		bool ShowHelp;
+		bool ShowVertices;
+		bool ShowAction;
+		bool ShowCommand;
+		bool ShowEntrance;
+		bool ShowPathfinder;
+		bool ShowNetstatus;
+		bool ShowSolidMask;
 		BYTE DarkColorTable[256];
-		BOOL fSetPalette;
+		bool fSetPalette;
 		uint32_t dwGamma[C4MaxGammaRamps*3];		// gamma ramps
-		BOOL fSetGamma;			// must gamma ramp be reassigned?
+		bool fSetGamma;			// must gamma ramp be reassigned?
 		C4Video Video;
 		C4LoaderScreen *pLoaderScreen;
 		void Default();
@@ -72,14 +72,14 @@ class C4GraphicsSystem
 		void ClearPointers(C4Object *pObj);
 		//void UpdateMouse(HWND hwnd, int32_t iX, int32_t iY, int32_t iB);
 		void RecalculateViewports();
-		BOOL Init();
-		BOOL InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst);
+		bool Init();
+		bool InitLoaderScreen(const char *szLoaderSpec, bool fDrawBlackScreenFirst);
 		void EnableLoaderDrawing(); // reset black screen loader flag
 		bool SaveScreenshot(bool fSaveAll);
-		BOOL DoSaveScreenshot(bool fSaveAll, const char *szFilename);
-		BOOL SetPalette();
-		BOOL CreateViewport(int32_t iPlayer, bool fSilent);
-		BOOL CloseViewport(int32_t iPlayer, bool fSilent);
+		bool DoSaveScreenshot(bool fSaveAll, const char *szFilename);
+		bool SetPalette();
+		bool CreateViewport(int32_t iPlayer, bool fSilent);
+		bool CloseViewport(int32_t iPlayer, bool fSilent);
 		int32_t GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, int32_t iAudibilityRadius=0);
 		int32_t GetViewportCount();
 		C4Viewport* GetViewport(int32_t iPlayer);
@@ -88,14 +88,14 @@ class C4GraphicsSystem
 		inline void OverwriteBg() { InvalidateBg(); }
 		void SetGamma(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, int32_t iRampIndex);	// set gamma ramp
 		void ApplyGamma();																				// apply gamma ramp to ddraw
-		BOOL CloseViewport(C4Viewport * cvp);
+		bool CloseViewport(C4Viewport * cvp);
 #ifdef _WIN32
 		C4Viewport* GetViewport(HWND hwnd);
 		BOOL RegisterViewportClass(HINSTANCE hInst);
 #endif
 	protected:
 		C4Viewport *FirstViewport;
-		BOOL fViewportClassRegistered;
+		bool fViewportClassRegistered;
 		C4Facet ViewportArea;
 		C4RectList BackgroundAreas; // rectangles covering background without viewports in fullscreen
 		char FlashMessageText[C4MaxTitle+1];

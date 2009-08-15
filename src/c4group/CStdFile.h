@@ -55,7 +55,7 @@ class CStdFile: public CStdStream
 		int MemoryPtr;
 		BYTE Buffer[CStdFileBufSize];
 		int BufferLoad,BufferPtr;
-		BOOL ModeWrite;
+		bool ModeWrite;
 	public:
 		bool Create(const char *szFileName, bool fCompressed=false, bool fExecutable=false, bool fMemory=false);
 		bool Open(const char *szFileName, bool fCompressed=false);
@@ -76,7 +76,7 @@ class CStdFile: public CStdStream
 		          int iSize,
 		          bool fCompressed = false);
 		// flush contents to disk
-		inline bool Flush() { if (ModeWrite && BufferLoad) return SaveBuffer(); else return TRUE; }
+		inline bool Flush() { if (ModeWrite && BufferLoad) return SaveBuffer(); else return true; }
 		int AccessedEntrySize();
 	protected:
 		void ClearBuffer();

@@ -36,10 +36,10 @@ class C4MessageBoard
 	public:
 		C4Facet Output;
 
-		BOOL Active;
+		bool Active;
 	protected:
 		int ScreenFader;
-		BOOL Startup;
+		bool Startup;
 		int iMode;	// 0 = one line (std), 1 = > 1 lines, 2 = invisible
 		// mode 0:
 		int Delay;	// how long the curr msg will stay
@@ -58,7 +58,7 @@ class C4MessageBoard
 	public:
 		void Default();
 		void Clear();
-		void Init(C4Facet &cgo, BOOL fStartup);
+		void Init(C4Facet &cgo, bool fStartup);
 		void Execute();
 		void DrawLoader(C4Facet &cgo);
 		void Draw(C4Facet &cgo);

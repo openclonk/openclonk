@@ -55,26 +55,26 @@ void C4Folder::Default()
 	Head.Default();
   }
 
-BOOL C4Folder::Load(C4Group &hGroup)
+bool C4Folder::Load(C4Group &hGroup)
   {
 	char *pSource;
 	// Load
-	if (!hGroup.LoadEntry(C4CFN_FolderCore, &pSource, NULL, 1)) return FALSE;
+	if (!hGroup.LoadEntry(C4CFN_FolderCore, &pSource, NULL, 1)) return false;
 	// Compile
-	if (!Compile(pSource)) { delete [] pSource; return FALSE; }
+	if (!Compile(pSource)) { delete [] pSource; return false; }
 	delete [] pSource;
 	// Success
-	return TRUE;
+	return true;
   }
 
-/*BOOL C4Folder::Save(C4Group &hGroup)
+/*bool C4Folder::Save(C4Group &hGroup)
 	{
 	char *Buffer; int32_t BufferSize;
 	if (!Decompile(&Buffer,&BufferSize))
-		return FALSE;
-	if (!hGroup.Add(C4Folder, Buffer, BufferSize, FALSE, TRUE))
-		{ StdBuf Buf; Buf.Take(Buffer, BufferSize); return FALSE; }
-	return TRUE;
+		return false;
+	if (!hGroup.Add(C4Folder, Buffer, BufferSize, false, true))
+		{ StdBuf Buf; Buf.Take(Buffer, BufferSize); return false; }
+	return true;
 	}*/
 
 void C4Folder::CompileFunc(StdCompiler *pComp)
@@ -82,7 +82,7 @@ void C4Folder::CompileFunc(StdCompiler *pComp)
   pComp->Value(mkNamingAdapt(Head, "Head"));
   }
 
-BOOL C4Folder::Compile(const char *szSource)
+bool C4Folder::Compile(const char *szSource)
 	{
 	Default();
   return CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, StdStrBuf(szSource), C4CFN_FolderCore);

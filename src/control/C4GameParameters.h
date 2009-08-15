@@ -148,9 +148,9 @@ public:
 	void EnforceLeagueRules(class C4Scenario *pScenario);
 
 	void Clear();
-	BOOL Load(C4Group &hGroup, C4Scenario *pDefault, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames);
-	BOOL InitNetwork(C4Network2ResList *pResList);
-	BOOL Save(C4Group &hGroup, C4Scenario *pDefault);
+	bool Load(C4Group &hGroup, C4Scenario *pDefault, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames);
+	bool InitNetwork(C4Network2ResList *pResList);
+	bool Save(C4Group &hGroup, C4Scenario *pDefault);
 
 	void CompileFunc(StdCompiler *pComp, C4Scenario *pScenario = NULL);
 };

@@ -205,7 +205,7 @@ class CSurface
 		bool IsRenderTarget();				// surface can be used as a render target?
 	protected:
 		int Locked;
-		BOOL Attached;
+		bool Attached;
 		bool fPrimary;
 
 		bool IsSingleSurface() { return iTexX*iTexY==1; } // return whether surface is not split
@@ -213,13 +213,13 @@ class CSurface
 	public:
 		void SetBackground() { fIsBackground = true; }
 		int IsLocked() const { return Locked; }
-		BOOL HLine(int iX, int iX2, int iY, int iCol);
-		BOOL Box(int iX, int iY, int iX2, int iY2, int iCol);
+		bool HLine(int iX, int iX2, int iY, int iCol);
+		bool Box(int iX, int iY, int iX2, int iY2, int iCol);
 		// Note: This uses partial locks, anything but SetPixDw and Unlock is undefined afterwards until unlock.
 		void ClearBoxDw(int iX, int iY, int iWdt, int iHgt);
 		void ClearBox8Only(int iX, int iY, int iWdt, int iHgt); // clear box in 8bpp-surface only
-		BOOL Unlock();
-		BOOL Lock();
+		bool Unlock();
+		bool Lock();
 		bool GetTexAt(CTexRef **ppTexRef, int &rX, int &rY);	// get texture and adjust x/y
 		bool GetLockTexAt(CTexRef **ppTexRef, int &rX, int &rY);	// get texture; ensure it's locked and adjust x/y
 		bool SetPix(int iX, int iY, BYTE byCol);	// set 8bit-px
@@ -228,17 +228,17 @@ class CSurface
 		bool SetPixDw(int iX, int iY, DWORD dwCol);				// set pix in surface only
 		bool SetPixAlpha(int iX, int iY, BYTE byAlpha);		// adjust alpha value of pixel
 		bool BltPix(int iX, int iY, CSurface *sfcSource, int iSrcX, int iSrcY, bool fTransparency);	// blit pixel from source to this surface (assumes clipped coordinates!)
-		BOOL Create(int iWdt, int iHgt, bool fOwnPal=false, bool fIsRenderTarget=false, int MaxTextureSize = 0);
+		bool Create(int iWdt, int iHgt, bool fOwnPal=false, bool fIsRenderTarget=false, int MaxTextureSize = 0);
 		bool CreateColorByOwner(CSurface *pBySurface);	// create ColorByOwner-surface
 		bool SetAsClrByOwnerOf(CSurface *pOfSurface);		// assume that ColorByOwner-surface has been created, and just assign it; fails if the size doesn't match
 #ifdef USE_GL
 		bool CreatePrimaryGLTextures();									// create primary textures from back buffer
 #endif
-		BOOL Attach(CSurface *sfcSurface);
+		bool Attach(CSurface *sfcSurface);
 #ifdef USE_DIRECTX
-		BOOL AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsigned int iYRes); // wdt and hgt not assigned in DirectX
+		bool AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsigned int iYRes); // wdt and hgt not assigned in DirectX
 #else
-		BOOL AttachSfc(void *sfcSurface, unsigned int iXRes, unsigned int iYRes);
+		bool AttachSfc(void *sfcSurface, unsigned int iXRes, unsigned int iYRes);
 #endif
 		void Clear();
 		void Default();
@@ -246,18 +246,18 @@ class CSurface
 		void NoClip();
 		bool ReadBMP(class CStdStream &hGroup, bool fOwnPal=false);
 		bool SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly);
-		BOOL AttachPalette();
-		BOOL Wipe(); // empty to transparent
+		bool AttachPalette();
+		bool Wipe(); // empty to transparent
 #ifdef USE_DIRECTX
 		IDirect3DSurface9 *GetSurface(); // get internal surface
 #endif
-		BOOL GetSurfaceSize(int &irX, int &irY); // get surface size
+		bool GetSurfaceSize(int &irX, int &irY); // get surface size
 		void SetClr(DWORD toClr) { ClrByOwnerClr=toClr?toClr:0xff; }
 		DWORD GetClr() { return ClrByOwnerClr; }
 		bool CopyBytes(BYTE *pImageData); // assumes an array of wdt*hgt*bitdepth/8 and copies data directly from it
 	protected:
 		void MapBytes(BYTE *bpMap);
-		BOOL ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);
+		bool ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);
 		bool CreateTextures(int MaxTextureSize = 0);		// create ppTex-array
 		void FreeTextures();			// free ppTex-array if existant
 

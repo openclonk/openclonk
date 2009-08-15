@@ -371,7 +371,7 @@ bool C4Network2::DoLobby()
 
 		// init lobby dialog
 		pLobby = new C4GameLobby::MainDlg(isHost());
-		if (!pLobby->FadeIn(::pGUI)) { delete pLobby; pLobby = NULL; Clear(); return FALSE; }
+		if (!pLobby->FadeIn(::pGUI)) { delete pLobby; pLobby = NULL; Clear(); return false; }
 
 		// init lobby countdown if specified
 		if (Game.iLobbyTimeout) StartLobbyCountdown(Game.iLobbyTimeout);
@@ -489,7 +489,7 @@ bool C4Network2::FinalInit()
 	}
   // synchronize
   Game.SyncClearance();
-  Game.Synchronize(FALSE);
+  Game.Synchronize(false);
   // finished
 	return isEnabled();
 }
@@ -1320,7 +1320,7 @@ void C4Network2::HandleActivateReq(int32_t iTick, C4Network2Client *pByClient)
   }
   // activate him
 	::Control.DoInput(CID_ClientUpdate,
-		new C4ControlClientUpdate(pByClient->getID(), CUT_Activate, TRUE),
+		new C4ControlClientUpdate(pByClient->getID(), CUT_Activate, true),
 		CDT_Sync);
 }
 
@@ -1754,7 +1754,7 @@ void C4Network2::RequestActivate()
 	{
 		// activate him
 		::Control.DoInput(CID_ClientUpdate,
-			new C4ControlClientUpdate(C4ClientIDHost, CUT_Activate, TRUE),
+			new C4ControlClientUpdate(C4ClientIDHost, CUT_Activate, true),
 			CDT_Sync);
 		return;
 	}

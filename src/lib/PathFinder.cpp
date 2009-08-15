@@ -68,7 +68,7 @@ void CPathFinderRay::Clear()
 
 	}
 
-BOOL CPathFinderRay::Execute()
+bool CPathFinderRay::Execute()
 	{
 	CPathFinderRay *pRay;
 	int iX,iY,iLastX,iLastY;
@@ -86,9 +86,9 @@ BOOL CPathFinderRay::Execute()
 				for (pRay=this; pRay->From; pRay=pRay->From)
 					pPathFinder->SetWaypoint(pRay->From->X2,pRay->From->Y2,pPathFinder->WaypointParameter);
 				// Success
-				pPathFinder->Success=TRUE;
+				pPathFinder->Success=true;
 				Status=PF_Ray_Still;
-				return TRUE;
+				return true;
 				}
 			// Path intersected
 			else
@@ -103,7 +103,7 @@ BOOL CPathFinderRay::Execute()
 				// Intersected but no attach found: unexpected failure
 				if (!CrawlAttach)
 					Status=PF_Ray_Failure;
-				return TRUE;
+				return true;
 				}
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -144,10 +144,10 @@ BOOL CPathFinderRay::Execute()
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case PF_Ray_Still: case PF_Ray_Failure: case PF_Ray_Deleted:
-			return FALSE;
+			return false;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
-	return TRUE;
+	return true;
 	}
 
 /*void CPathFinderRay::Draw(C4TargetFacet &cgo)
@@ -192,7 +192,7 @@ BOOL CPathFinderRay::Execute()
 
 	}*/
 
-BOOL CPathFinderRay::PathFree(int &rX, int &rY, int iToX, int iToY)
+bool CPathFinderRay::PathFree(int &rX, int &rY, int iToX, int iToY)
 	{
   int d,dx,dy,aincr,bincr,xincr,yincr,x,y;
 	// Y based
@@ -205,7 +205,7 @@ BOOL CPathFinderRay::PathFree(int &rX, int &rY, int iToX, int iToY)
     for (y=rY; y!=iToY; y+=yincr)
       {
 			if (PointFree(x,y)) { rY=y; rX=x; }
-			else return FALSE;
+			else return false;
       if (d>=0) { x+=xincr; d+=aincr; } else d+=bincr;
       }
     }
@@ -219,21 +219,21 @@ BOOL CPathFinderRay::PathFree(int &rX, int &rY, int iToX, int iToY)
 		for (x=rX; x!=iToX; x+=xincr)
       {
 			if (PointFree(x,y)) { rY=y; rX=x; }
-			else return FALSE;
+			else return false;
       if (d>=0)	{ y+=yincr; d+=aincr; }
       else d+=bincr;
       }
     }
 
-  return TRUE;
+  return true;
 	}
 
-BOOL CPathFinderRay::Crawl()
+bool CPathFinderRay::Crawl()
 	{
 
 	// No attach: crawl failure (shouldn't ever get here)
 	if (!CrawlAttach)
-		return FALSE;
+		return false;
 
 	// Last attach lost (don't check on first crawl for that might be a diagonal attach)
 	if (CrawlLength)
@@ -244,9 +244,9 @@ BOOL CPathFinderRay::Crawl()
 			TurnAttach(CrawlAttach,-Direction);
 			// Safety: new attach not found - unexpected failure
 			if (!IsCrawlAttach(X2,Y2,CrawlAttach))
-				return FALSE;
+				return false;
 			// Corner okay
-			return TRUE;
+			return true;
 			}
 
 	// Check crawl target by attach
@@ -257,23 +257,23 @@ BOOL CPathFinderRay::Crawl()
 		TurnAttach(CrawlAttach,Direction); iTurned++;
 		// Turned four times: all enclosed, crawl failure
 		if (iTurned==4)
-			return FALSE;
+			return false;
 		}
 
 	// Crawl by attach
 	CrawlByAttach(X2,Y2,CrawlAttach,Direction);
 
 	// Success
-	return TRUE;
+	return true;
 
 	}
 
-BOOL CPathFinderRay::PointFree(int iX, int iY)
+bool CPathFinderRay::PointFree(int iX, int iY)
 	{
 	return pPathFinder->PointFree(iX,iY,pPathFinder->PointFreeParameter);
 	}
 
-BOOL CPathFinderRay::CrawlTargetFree(int iX, int iY, int iAttach, int iDirection)
+bool CPathFinderRay::CrawlTargetFree(int iX, int iY, int iAttach, int iDirection)
 	{
 	CrawlByAttach(iX,iY,iAttach,iDirection);
 	return PointFree(iX,iY);
@@ -317,7 +317,7 @@ void CPathFinderRay::CrawlToAttach(int &rX, int &rY, int iAttach)
 		}
 	}
 
-BOOL CPathFinderRay::IsCrawlAttach(int iX, int iY, int iAttach)
+bool CPathFinderRay::IsCrawlAttach(int iX, int iY, int iAttach)
 	{
 	CrawlToAttach(iX,iY,iAttach);
 	return !PointFree(iX,iY);
@@ -352,7 +352,7 @@ int CPathFinderRay::FindCrawlAttachDiagonal(int iX, int iY, int iDirection)
 	return PF_Crawl_NoAttach;
 	}
 
-BOOL CPathFinderRay::CheckBackRayShorten()
+bool CPathFinderRay::CheckBackRayShorten()
 	{
 	CPathFinderRay *pRay,*pRay2;
 	int iX,iY;
@@ -369,10 +369,10 @@ BOOL CPathFinderRay::CheckBackRayShorten()
 			pRay->X2=X; pRay->Y2=Y;
 			From=pRay;
 			// Success
-			return TRUE;
+			return true;
 			}
 		}
-	return FALSE;
+	return false;
 	}
 
 //------------------------------- CPathFinder ---------------------------------------------
@@ -393,7 +393,7 @@ void CPathFinder::Default()
 	SetWaypoint=NULL;
 	FirstRay=NULL;
 	WaypointParameter=0;
-	Success=FALSE;
+	Success=false;
 	MaxDepth=50;
 	MaxCrawl=1000;
 	MaxRay=500;
@@ -407,7 +407,7 @@ void CPathFinder::Clear()
 	FirstRay=NULL;
 	}
 
-void CPathFinder::Init(BOOL (*fnPointFree)(int, int, int), int iPointFreeParameter, int iDepth, int iCrawl, int iRay, int iThreshold)
+void CPathFinder::Init(bool (*fnPointFree)(int, int, int), int iPointFreeParameter, int iDepth, int iCrawl, int iRay, int iThreshold)
 	{
 	// Set data
 	PointFree = fnPointFree;
@@ -426,43 +426,43 @@ void CPathFinder::Init(BOOL (*fnPointFree)(int, int, int), int iPointFreeParamet
 
 void CPathFinder::Run()
 	{
-	Success=FALSE;
+	Success=false;
 	while (!Success && Execute()) {}
 	}
 
-BOOL CPathFinder::Execute()
+bool CPathFinder::Execute()
 	{
 
 	// Execute & count rays
-	BOOL fContinue=FALSE;
+	bool fContinue=false;
 	int iRays=0;
 	for (CPathFinderRay *pRay=FirstRay; pRay && !Success; pRay=pRay->Next,iRays++)
 		if (pRay->Execute())
-			fContinue=TRUE;
+			fContinue=true;
 
 	// Max ray limit
-	if (iRays>=MaxRay) return FALSE;
+	if (iRays>=MaxRay) return false;
 
 	return fContinue;
 	}
 
-BOOL CPathFinder::Find(int iFromX, int iFromY, int iToX, int iToY, BOOL (*fnSetWaypoint)(int, int, int), int iWaypointParameter)
+bool CPathFinder::Find(int iFromX, int iFromY, int iToX, int iToY, bool (*fnSetWaypoint)(int, int, int), int iWaypointParameter)
 	{
 
 	// Prepare
 	Clear();
 
 	// Parameter safety
-	if (!fnSetWaypoint) return FALSE;
+	if (!fnSetWaypoint) return false;
 	SetWaypoint=fnSetWaypoint;
 	WaypointParameter=iWaypointParameter;
 
 	// Start & target coordinates must be free
-	if (!PointFree(iFromX,iFromY,PointFreeParameter) || !PointFree(iToX,iToY,PointFreeParameter)) return FALSE;
+	if (!PointFree(iFromX,iFromY,PointFreeParameter) || !PointFree(iToX,iToY,PointFreeParameter)) return false;
 
 	// Add the first two rays
-	if (!AddRay(iFromX,iFromY,iToX,iToY,0,PF_Direction_Left,NULL)) return FALSE;
-	if (!AddRay(iFromX,iFromY,iToX,iToY,0,PF_Direction_Right,NULL)) return FALSE;
+	if (!AddRay(iFromX,iFromY,iToX,iToY,0,PF_Direction_Left,NULL)) return false;
+	if (!AddRay(iFromX,iFromY,iToX,iToY,0,PF_Direction_Right,NULL)) return false;
 
 	// Run
 	Run();
@@ -472,13 +472,13 @@ BOOL CPathFinder::Find(int iFromX, int iFromY, int iToX, int iToY, BOOL (*fnSetW
 
 	}
 
-BOOL CPathFinder::AddRay(int iFromX, int iFromY, int iToX, int iToY, int iDepth, int iDirection, CPathFinderRay *pFrom)
+bool CPathFinder::AddRay(int iFromX, int iFromY, int iToX, int iToY, int iDepth, int iDirection, CPathFinderRay *pFrom)
 	{
 	// Max depth
-	if (iDepth>=MaxDepth) return FALSE;
+	if (iDepth>=MaxDepth) return false;
 	// Allocate and set new ray
 	CPathFinderRay *pRay;
-	if (!(pRay = new CPathFinderRay)) return FALSE;
+	if (!(pRay = new CPathFinderRay)) return false;
 	pRay->X=iFromX; pRay->Y=iFromY;
 	pRay->X2=iFromX; pRay->Y2=iFromY;
 	pRay->TargetX=iToX; pRay->TargetY=iToY;
@@ -488,16 +488,16 @@ BOOL CPathFinder::AddRay(int iFromX, int iFromY, int iToX, int iToY, int iDepth,
 	pRay->pPathFinder=this;
 	pRay->Next=FirstRay;
 	FirstRay=pRay;
-	return TRUE;
+	return true;
 	}
 
-BOOL CPathFinder::SplitRay(CPathFinderRay *pRay, int iAtX, int iAtY)
+bool CPathFinder::SplitRay(CPathFinderRay *pRay, int iAtX, int iAtY)
 	{
 	// Max depth
-	if (pRay->Depth>=MaxDepth) return FALSE;
+	if (pRay->Depth>=MaxDepth) return false;
 	// Allocate and set new ray
 	CPathFinderRay *pNewRay;
-	if (!(pNewRay = new CPathFinderRay)) return FALSE;
+	if (!(pNewRay = new CPathFinderRay)) return false;
 	pNewRay->Status=PF_Ray_Still;
 	pNewRay->X=pRay->X; pNewRay->Y=pRay->Y;
 	pNewRay->X2=iAtX; pNewRay->Y2=iAtY;
@@ -511,6 +511,6 @@ BOOL CPathFinder::SplitRay(CPathFinderRay *pRay, int iAtX, int iAtY)
 	// Adjust split ray
 	pRay->From=pNewRay;
 	pRay->X=iAtX; pRay->Y=iAtY;
-	return TRUE;
+	return true;
 	}
 

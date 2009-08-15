@@ -39,7 +39,7 @@ C4SoundEffect::C4SoundEffect():
 #if defined C4SOUND_USE_FMOD || defined HAVE_LIBSDL_MIXER
 	pSample (NULL),
 #endif
-	Static (FALSE),
+	Static (false),
 	Next (NULL),
 	FirstInst (NULL)
 	{
@@ -65,45 +65,45 @@ void C4SoundEffect::Clear()
 #endif
 	}
 
-BOOL C4SoundEffect::Load(const char *szFileName, C4Group &hGroup, BOOL fStatic)
+bool C4SoundEffect::Load(const char *szFileName, C4Group &hGroup, bool fStatic)
   {
   // Sound check
-  if (!Config.Sound.RXSound) return FALSE;
+  if (!Config.Sound.RXSound) return false;
   // Locate sound in file
   StdBuf WaveBuffer;
-  if (!hGroup.LoadEntry(szFileName, WaveBuffer)) return FALSE;
+  if (!hGroup.LoadEntry(szFileName, WaveBuffer)) return false;
 	// load it from mem
-	if (!Load((BYTE*)WaveBuffer.getData(), WaveBuffer.getSize(), fStatic)) return FALSE;
+	if (!Load((BYTE*)WaveBuffer.getData(), WaveBuffer.getSize(), fStatic)) return false;
   // Set name
   SCopy(szFileName,Name,C4MaxSoundName);
-	return TRUE;
+	return true;
   }
 
-BOOL C4SoundEffect::Load(BYTE *pData, size_t iDataLen, BOOL fStatic, bool fRaw)
+bool C4SoundEffect::Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw)
 	{
   // Sound check
-  if (!Config.Sound.RXSound) return FALSE;
+  if (!Config.Sound.RXSound) return false;
 	// load directly from memory
 #ifdef C4SOUND_USE_FMOD
 	int32_t iOptions = FSOUND_NORMAL | FSOUND_2D | FSOUND_LOADMEMORY;
 	if (fRaw) iOptions |= FSOUND_LOADRAW;
 	if(!(pSample = FSOUND_Sample_Load(FSOUND_UNMANAGED,	(const char *)pData,
 		iOptions, 0, iDataLen)))
-      { Clear(); return FALSE; }
+      { Clear(); return false; }
   // get length
   int32_t iSamples = FSOUND_Sample_GetLength(pSample);
 	int iSampleRate = SampleRate;
   if(!iSamples || !FSOUND_Sample_GetDefaults(pSample, &iSampleRate, 0, 0, 0))
-    return FALSE;
+    return false;
 	SampleRate = iSampleRate;
   Length = iSamples * 10 / (SampleRate / 100);
 #endif
 #ifdef HAVE_LIBSDL_MIXER
 	// Be paranoid about SDL_Mixer initialisation
 	if(!Application.MusicSystem.MODInitialized)
-		{ Clear(); return FALSE; }
+		{ Clear(); return false; }
 	if (!(pSample = Mix_LoadWAV_RW(SDL_RWFromConstMem(pData, iDataLen), 1)))
-		{ Clear(); return FALSE; }
+		{ Clear(); return false; }
 	//FIXME: Is this actually correct?
 	Length = 1000 * pSample->alen / (44100 * 2);
 	SampleRate = 0;
@@ -112,7 +112,7 @@ BOOL C4SoundEffect::Load(BYTE *pData, size_t iDataLen, BOOL fStatic, bool fRaw)
 	// Set usage time
   UsageTime=Game.Time;
   Static=fStatic;
-  return TRUE;
+  return true;
 	}
 
 void C4SoundEffect::Execute()
@@ -215,12 +215,12 @@ void C4SoundInstance::Clear()
   iChannel = -1;
 }
 
-BOOL C4SoundInstance::Create(C4SoundEffect *pnEffect, bool fLoop, int32_t inVolume, C4Object *pnObj, int32_t inNearInstanceMax, int32_t iFalloffDistance)
+bool C4SoundInstance::Create(C4SoundEffect *pnEffect, bool fLoop, int32_t inVolume, C4Object *pnObj, int32_t inNearInstanceMax, int32_t iFalloffDistance)
 {
   // Sound check
-  if (!Config.Sound.RXSound || !pnEffect) return FALSE;
+  if (!Config.Sound.RXSound || !pnEffect) return false;
 	// Already playing? Stop
-  if(Playing()) { Stop(); return FALSE; }
+  if(Playing()) { Stop(); return false; }
   // Set effect
   pEffect = pnEffect;
   // Set
@@ -234,33 +234,33 @@ BOOL C4SoundInstance::Create(C4SoundEffect *pnEffect, bool fLoop, int32_t inVolu
   Execute();
   // Safe usage
   pEffect->UsageTime = Game.Time;
-  return TRUE;
+  return true;
 }
 
-BOOL C4SoundInstance::CheckStart()
+bool C4SoundInstance::CheckStart()
 {
   // already started?
-  if(isStarted()) return TRUE;
+  if(isStarted()) return true;
   // don't bother if half the time is up and the sound is not looping
   if(timeGetTime() > iStarted + pEffect->Length / 2 && !fLooping)
-    return FALSE;
+    return false;
   // do near-instances check
   int32_t iNearInstances = pObj ? pEffect->GetStartedInstanceCount(pObj->GetX(), pObj->GetY(), C4NearSoundRadius)
                             : pEffect->GetStartedInstanceCount();
   // over maximum?
-  if(iNearInstances > iNearInstanceMax) return FALSE;
+  if(iNearInstances > iNearInstanceMax) return false;
   // Start
   return Start();
 }
 
-BOOL C4SoundInstance::Start()
+bool C4SoundInstance::Start()
 {
 #ifdef C4SOUND_USE_FMOD
   // Start
 	if((iChannel = FSOUND_PlaySound(FSOUND_FREE, pEffect->pSample)) == -1)
-    return FALSE;
+    return false;
   if(!FSOUND_SetLoopMode(iChannel, fLooping ? FSOUND_LOOP_NORMAL : FSOUND_LOOP_OFF))
-    { Stop(); return FALSE; }
+    { Stop(); return false; }
   // set position
   if(timeGetTime() > iStarted + 20)
   {
@@ -269,22 +269,22 @@ BOOL C4SoundInstance::Start()
   }
 #elif defined HAVE_LIBSDL_MIXER
 	// Be paranoid about SDL_Mixer initialisation
-	if(!Application.MusicSystem.MODInitialized) return FALSE;
+	if(!Application.MusicSystem.MODInitialized) return false;
 	if((iChannel = Mix_PlayChannel(-1, pEffect->pSample, fLooping? -1 : 0)) == -1)
-		return FALSE;
+		return false;
 #else
-	return FALSE;
+	return false;
 #endif
   // Update volume
   Execute();
-  return TRUE;
+  return true;
 }
 
-BOOL C4SoundInstance::Stop()
+bool C4SoundInstance::Stop()
 	{
-	if(!pEffect) return FALSE;
+	if(!pEffect) return false;
 	// Stop sound
-	BOOL fRet = TRUE;
+	bool fRet = true;
 #ifdef C4SOUND_USE_FMOD
 	if(Playing())
 		fRet = !! FSOUND_StopSound(iChannel);
@@ -300,11 +300,11 @@ BOOL C4SoundInstance::Stop()
 	return fRet;
 	}
 
-BOOL C4SoundInstance::Playing()
+bool C4SoundInstance::Playing()
   {
-  if(!pEffect) return FALSE;
+  if(!pEffect) return false;
 #ifdef C4SOUND_USE_FMOD
-  if(fLooping) return TRUE;
+  if(fLooping) return true;
   return isStarted() ? FSOUND_GetCurrentSample(iChannel) == pEffect->pSample
                      : timeGetTime() < iStarted + pEffect->Length;
 #endif
@@ -403,7 +403,7 @@ C4SoundSystem::~C4SoundSystem()
 
 	}
 
-BOOL C4SoundSystem::Init()
+bool C4SoundSystem::Init()
 	{
 	if(!Application.MusicSystem.MODInitialized &&
 	   !Application.MusicSystem.InitializeMOD())
@@ -482,8 +482,8 @@ C4SoundEffect* C4SoundSystem::AddEffect(const char *szSoundName)
   if (!( nsfx=new C4SoundEffect )) return NULL;
   // Load sound to entry
 	C4GRP_DISABLE_REWINDWARN // dynamic load; must rewind here :(
-  if (!nsfx->Load(szSoundName,SoundFile,FALSE))
-		if (!nsfx->Load(szSoundName,Game.ScenarioFile,FALSE))
+  if (!nsfx->Load(szSoundName,SoundFile,false))
+		if (!nsfx->Load(szSoundName,Game.ScenarioFile,false))
 			{ C4GRP_ENABLE_REWINDWARN delete nsfx; return NULL; }
 	C4GRP_ENABLE_REWINDWARN
   // Add sound to bank
@@ -533,10 +533,10 @@ C4SoundEffect* C4SoundSystem::GetEffect(const char *szSndName)
 C4SoundInstance *C4SoundSystem::NewEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance)
 	{
 	// Sound not active
-  if (!Config.Sound.RXSound) return FALSE;
+  if (!Config.Sound.RXSound) return false;
 	// Get sound
   C4SoundEffect *csfx;
-  if (!(csfx=GetEffect(szSndName))) return FALSE;
+  if (!(csfx=GetEffect(szSndName))) return false;
 	// Play
   return csfx->New(fLoop, iVolume, pObj, iCustomFalloffDistance);
 	}
@@ -563,7 +563,7 @@ C4SoundInstance *C4SoundSystem::FindInstance(const char *szSndName, C4Object *pO
 // command (e.g. Sound("Hello.ogg")), because all playback functions will default to wav only.
 // LoadEffects is currently used for static loading from object definitions only.
 
-int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, BOOL fStatic)
+int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, bool fStatic)
 	{
 	int32_t iNum=0;
 	char szFilename[_MAX_FNAME+1];
@@ -621,7 +621,7 @@ void C4SoundSystem::ClearPointers(C4Object *pObj)
 C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVolume, C4Object *pObj, int32_t iCustomFalloffDistance)
   {
   // Sound check
-  if (!Config.Sound.RXSound) return FALSE;
+  if (!Config.Sound.RXSound) return false;
   // Start new
   return Application.SoundSystem.NewEffect(szSndName, fLoop, iVolume, pObj, iCustomFalloffDistance);
   }
@@ -629,7 +629,7 @@ C4SoundInstance *StartSoundEffect(const char *szSndName, bool fLoop, int32_t iVo
 C4SoundInstance *StartSoundEffectAt(const char *szSndName, int32_t iX, int32_t iY, bool fLoop, int32_t iVolume)
   {
   // Sound check
-  if (!Config.Sound.RXSound) return FALSE;
+  if (!Config.Sound.RXSound) return false;
   // Create
   C4SoundInstance *pInst = StartSoundEffect(szSndName, fLoop, iVolume);
   // Set volume by position

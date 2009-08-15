@@ -77,7 +77,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 		if (!GfxGrp.Open(Config.AtSystemDataPath(C4CFN_Graphics)))
 			{
 			LogFatal(FormatString(LoadResStr("IDS_PRC_NOGFXFILE"),C4CFN_Graphics,GfxGrp.GetError()).getData());
-			return FALSE;
+			return false;
 			}
 		// seek for png-loaders
 		iLoaders=SeekLoaderScreens(GfxGrp, szLoaderSpecPng, iLoaders, ChosenFilename, &pChosenGrp);
@@ -97,13 +97,13 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 		if (!iLoaders)
 			{
 			LogFatal(FormatString("No loaders found for loader specification: %s/%s/%s/%s", szLoaderSpecPng, szLoaderSpecBmp, szLoaderSpecJpg, szLoaderSpecJpeg).getData());
-			return FALSE;
+			return false;
 			}
 		}
 
 	// load loader
 	fctBackground.GetFace().SetBackground();
-	if (!fctBackground.Load(*pChosenGrp,ChosenFilename, C4FCT_Full,C4FCT_Full,true)) return FALSE;
+	if (!fctBackground.Load(*pChosenGrp,ChosenFilename, C4FCT_Full,C4FCT_Full,true)) return false;
 
 	// load info
 	if (szInfo) { delete [] szInfo; szInfo=NULL; }
@@ -129,7 +129,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 	Draw(cgo);
 
 	// done, success!
-	return TRUE;
+	return true;
 	}
 
 void C4LoaderScreen::SetBlackScreen(bool fIsBlack)
@@ -141,7 +141,7 @@ void C4LoaderScreen::SetBlackScreen(bool fIsBlack)
 
 int C4LoaderScreen::SeekLoaderScreens(C4Group &rFromGrp, const char *szWildcard, int iLoaderCount, char *szDstName, C4Group **ppDestGrp)
 	{
-	BOOL fFound;
+	bool fFound;
 	int iLocalLoaders=0;
 	char Filename[_MAX_PATH+1];
 	for (fFound=rFromGrp.FindEntry(szWildcard, Filename); fFound; fFound=rFromGrp.FindNextEntry(szWildcard, Filename))

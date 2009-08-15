@@ -119,8 +119,8 @@ void C4Object::Default()
   xdir=ydir=rdir=0;
   Mobile=0;
   Select=0;
-	Unsorted=FALSE;
-	Initializing=FALSE;
+	Unsorted=false;
+	Initializing=false;
   OnFire=0;
   InLiquid=0;
   EntranceStatus=0;
@@ -149,7 +149,7 @@ void C4Object::Default()
 	LocalNamed.Reset();
 	Marker=0;
 	ColorMod=BlitMode=0;
-	CrewDisabled=FALSE;
+	CrewDisabled=false;
 	pLayer=NULL;
 	pSolidMaskData=NULL;
 	pGraphics=NULL;
@@ -159,13 +159,13 @@ void C4Object::Default()
 	iLastAttachMovementFrame=-1;
 	}
 
-BOOL C4Object::Init(C4PropList *pDef, C4Object *pCreator,
+bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 										int32_t iOwner, C4ObjectInfo *pInfo,
 										int32_t nx, int32_t ny, int32_t nr,
 										FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController)
   {
 	// currently initializing
-	Initializing=TRUE;
+	Initializing=true;
 
 	// Def & basics
   Owner=iOwner;
@@ -231,9 +231,9 @@ BOOL C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	LocalNamed.SetNameList(&Def->Script.LocalNamed);
 
 	// finished initializing
-	Initializing=FALSE;
+	Initializing=false;
 
-  return TRUE;
+  return true;
   }
 
 C4Object::~C4Object()
@@ -246,7 +246,7 @@ C4Object::~C4Object()
 #endif
   }
 
-void C4Object::AssignRemoval(BOOL fExitContents)
+void C4Object::AssignRemoval(bool fExitContents)
 	{
 	// check status
 	if (!Status) return;
@@ -484,7 +484,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
 			fx, fy, fwdt, fhgt,
 			cgo.Surface, tx, ty, twdt, thgt,
-			TRUE, NULL);
+			true, NULL);
 		}
 	// Rotated or transformed
 	else
@@ -502,7 +502,7 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 		lpDDraw->Blit(GetGraphics()->GetBitmap(Color),
 			fx, fy, fwdt, fhgt,
 			cgo.Surface, tx, ty, twdt, thgt,
-			TRUE, &rot);
+			true, &rot);
 		}
 	}
 
@@ -550,7 +550,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 		lpDDraw->Blit(Action.Facet.Surface,
 			fx, fy, fwdt, fhgt,
 			cgo.Surface, tx, ty, twdt, thgt,
-			TRUE, NULL);
+			true, NULL);
 		}
 	// Rotated or transformed
 	else
@@ -570,7 +570,7 @@ void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 		lpDDraw->Blit(Action.Facet.Surface,
 			fx, fy, fwdt, fhgt,
 			cgo.Surface, tx, ty, twdt, thgt,
-			TRUE, &rot);
+			true, &rot);
 		}
 	}
 
@@ -839,7 +839,7 @@ void C4Object::UpdateOCF()
 #endif
   }
 
-BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
+bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
   {
   // Fire Phase
   FirePhase++; if (FirePhase>=MaxFirePhase) FirePhase=0;
@@ -880,21 +880,21 @@ BOOL C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
       }
     }
 
-  return TRUE;
+  return true;
   }
 
-BOOL C4Object::BuyEnergy()
+bool C4Object::BuyEnergy()
   {
-	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return FALSE;
-	if (!GetPhysical()->Energy) return FALSE;
-  if (pPlr->Eliminated) return FALSE;
-  if (pPlr->Wealth<Game.C4S.Game.Realism.BaseRegenerateEnergyPrice) return FALSE;
+	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return false;
+	if (!GetPhysical()->Energy) return false;
+  if (pPlr->Eliminated) return false;
+  if (pPlr->Wealth<Game.C4S.Game.Realism.BaseRegenerateEnergyPrice) return false;
   pPlr->DoWealth(-Game.C4S.Game.Realism.BaseRegenerateEnergyPrice);
   DoEnergy(+100,false,C4FxCall_EngBaseRefresh,Owner);
-  return TRUE;
+  return true;
   }
 
-BOOL C4Object::ExecLife()
+bool C4Object::ExecLife()
   {
 
   // Growth
@@ -957,15 +957,15 @@ BOOL C4Object::ExecLife()
     if (Alive && !Def->NoBreath)
 			{
 			// Supply check
-			BOOL Breathe=FALSE;
+			bool Breathe=false;
 			// Forcefields are breathable.
 			if (GBackMat(GetX(), GetY()+Shape.GetY()/2)==MVehic)
-				{ Breathe=TRUE; }
+				{ Breathe=true; }
 			else if (GetPhysical()->BreatheWater)
-				{ if (GBackMat(GetX(), GetY())==MWater) Breathe=TRUE; }
+				{ if (GBackMat(GetX(), GetY())==MWater) Breathe=true; }
 			else
-				{ if (!GBackSemiSolid(GetX(), GetY()+Shape.GetY()/2)) Breathe=TRUE; }
-			if (Contained) Breathe=TRUE;
+				{ if (!GBackSemiSolid(GetX(), GetY()+Shape.GetY()/2)) Breathe=true; }
+			if (Contained) Breathe=true;
       // No supply
       if (!Breathe)
         {
@@ -1032,7 +1032,7 @@ BOOL C4Object::ExecLife()
 
 			}
 
-  return TRUE;
+  return true;
   }
 
 void C4Object::AutoSellContents()
@@ -1154,16 +1154,16 @@ void C4Object::Execute()
 	if (ViewEnergy>0) ViewEnergy--;
 	}
 
-BOOL C4Object::At(int32_t ctx, int32_t cty)
+bool C4Object::At(int32_t ctx, int32_t cty)
 	{
 	if (Status) if (!Contained) if (Def)
 		if (Inside<int32_t>(cty - (GetY() + Shape.GetY() - addtop()), 0, Shape.Hgt - 1 + addtop()))
 			if (Inside<int32_t>(ctx - (GetX() + Shape.GetX()), 0, Shape.Wdt - 1))
-				return TRUE;
-	return FALSE;
+				return true;
+	return false;
 	}
 
-BOOL C4Object::At(int32_t ctx, int32_t cty, DWORD &ocf)
+bool C4Object::At(int32_t ctx, int32_t cty, DWORD &ocf)
 	{
 	if (Status) if (!Contained) if (Def)
 		if (OCF & ocf)
@@ -1172,9 +1172,9 @@ BOOL C4Object::At(int32_t ctx, int32_t cty, DWORD &ocf)
 					{
 					// Set ocf return value
 					GetOCFForPos(ctx, cty, ocf);
-					return TRUE;
+					return true;
 					}
-	return FALSE;
+	return false;
 	}
 
 void C4Object::GetOCFForPos(int32_t ctx, int32_t cty, DWORD &ocf)
@@ -1216,7 +1216,7 @@ void C4Object::AssignDeath(bool fForced)
   ClearCommands();
 	if (Info)
 		{
-		Info->HasDied=TRUE;
+		Info->HasDied=true;
 		++Info->DeathCount;
 		Info->Retire();
 		}
@@ -1237,15 +1237,15 @@ void C4Object::AssignDeath(bool fForced)
 	SetOCF();
   }
 
-BOOL C4Object::ChangeDef(C4ID idNew)
+bool C4Object::ChangeDef(C4ID idNew)
   {
   // Get new definition
   C4Def *pDef=C4Id2Def(idNew);
-  if (!pDef) return FALSE;
+  if (!pDef) return false;
 	// Containment storage
 	C4Object *pContainer=Contained;
 	// Exit container (no Ejection/Departure)
-	if (Contained) Exit(0,0,0,Fix0,Fix0,Fix0,FALSE);
+	if (Contained) Exit(0,0,0,Fix0,Fix0,Fix0,false);
 	// Pre change resets
 	SetAction(0);
 	Action.pActionDef = 0; // Enforce ActIdle because SetAction may have failed due to NoOtherAction
@@ -1282,17 +1282,17 @@ BOOL C4Object::ChangeDef(C4ID idNew)
 	for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
 		if (pLnk->Obj->pEffects) pLnk->Obj->pEffects->OnObjectChangedDef(this);
 	// Containment (no Entrance)
-	if (pContainer) Enter(pContainer,FALSE);
+	if (pContainer) Enter(pContainer,false);
 	// Done
-  return TRUE;
+  return true;
   }
 
-BOOL C4Object::Incinerate(int32_t iCausedBy, BOOL fBlasted, C4Object *pIncineratingObject)
+bool C4Object::Incinerate(int32_t iCausedBy, bool fBlasted, C4Object *pIncineratingObject)
 	{
 	// Already on fire
-	if (OnFire) return FALSE;
+	if (OnFire) return false;
 	// Dead living don't burn
-	if ((Category & C4D_Living) && !Alive) return FALSE;
+	if ((Category & C4D_Living) && !Alive) return false;
 	// add effect
 	int32_t iEffNumber;
 	C4Value Par1 = C4VInt(iCausedBy), Par2 = C4VBool(!!fBlasted), Par3 = C4VObj(pIncineratingObject), Par4;
@@ -1300,16 +1300,16 @@ BOOL C4Object::Incinerate(int32_t iCausedBy, BOOL fBlasted, C4Object *pIncinerat
 	return !!iEffNumber;
 	}
 
-BOOL C4Object::Extinguish(int32_t iFireNumber)
+bool C4Object::Extinguish(int32_t iFireNumber)
   {
 	// any effects?
-  if (!pEffects) return FALSE;
+  if (!pEffects) return false;
 	// fire number known: extinguish that fire
 	C4Effect *pEffFire;
 	if (iFireNumber)
 		{
 		pEffFire = pEffects->Get(iFireNumber, false);
-		if (!pEffFire) return FALSE;
+		if (!pEffFire) return false;
 		pEffFire->Kill(this);
 		}
 	else
@@ -1328,10 +1328,10 @@ BOOL C4Object::Extinguish(int32_t iFireNumber)
 			pEffFire->Kill(this);
 			++iFiresKilled;
 			}
-		if (!iFiresKilled) return FALSE;
+		if (!iFiresKilled) return false;
 		}
 	// done, success
-  return TRUE;
+  return true;
   }
 
 void C4Object::DoDamage(int32_t iChange, int32_t iCausedBy, int32_t iCause)
@@ -1353,7 +1353,7 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 	// iChange 100% = Physical 100000
   if (!fExact) iChange=iChange*C4MaxPhysical/100;
 	// Was zero?
-  BOOL fWasZero=(Energy==0);
+  bool fWasZero=(Energy==0);
 	// Mark last damage causing player to trace kills
 	if (iChange < 0) UpdatLastEnergyLossCause(iCausedByPlr);
 	// Living things: ask effects for change first
@@ -1400,16 +1400,16 @@ void C4Object::Blast(int32_t iLevel, int32_t iCausedBy)
   // Incinerate
   if (Def->BlastIncinerate)
     if (Damage>=Def->BlastIncinerate)
-      Incinerate(iCausedBy,TRUE);
+      Incinerate(iCausedBy,true);
   }
 
-void C4Object::DoCon(int32_t iChange, BOOL fInitial, bool fNoComponentChange)
+void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 	{
 	int32_t iStepSize=FullCon/100;
 	int32_t lRHgt=Shape.Hgt,lRy=Shape.GetY();
 	int32_t iLastStep=Con/iStepSize;
 	FIXED strgt_con_b = fix_y + Shape.GetY() + Shape.Hgt;
-	BOOL fWasFull = (Con>=FullCon);
+	bool fWasFull = (Con>=FullCon);
 
 	// Change con
 	if (Def->Oversize)
@@ -1505,10 +1505,10 @@ void C4Object::DoExperience(int32_t change)
   // Promotion check
 	if (Info->Experience<MaxExperience)
 		if (Info->Experience>=::DefaultRanks.Experience(Info->Rank+1))
-			Promote(Info->Rank+1, FALSE, false);
+			Promote(Info->Rank+1, false, false);
   }
 
-BOOL C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, FIXED iXDir, FIXED iYDir, FIXED iRDir, BOOL fCalls)
+bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, FIXED iXDir, FIXED iYDir, FIXED iRDir, bool fCalls)
   {
 	// 1. Exit the current container.
 	// 2. Update Contents of container object and set Contained to NULL.
@@ -1517,7 +1517,7 @@ BOOL C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, FIXED iXDir, FIXED iYDir
 
 	// Not contained
 	C4Object *pContainer=Contained;
-  if (!pContainer) return FALSE;
+  if (!pContainer) return false;
   // Remove object from container
   pContainer->Contents.Remove(this);
   pContainer->UpdateMass();
@@ -1542,7 +1542,7 @@ BOOL C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, FIXED iXDir, FIXED iYDir
   return !Contained;
   }
 
-BOOL C4Object::Enter(C4Object *pTarget, BOOL fCalls, bool fCopyMotion, bool *pfRejectCollect)
+bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfRejectCollect)
 	{
 	// 0. Query entrance and collection
 	// 1. Exit if contained.
@@ -1552,25 +1552,25 @@ BOOL C4Object::Enter(C4Object *pTarget, BOOL fCalls, bool fCopyMotion, bool *pfR
 	// 5. Call entrance for object.
 
 	// No target or target is self
-	if (!pTarget || (pTarget==this)) return FALSE;
+	if (!pTarget || (pTarget==this)) return false;
 	// check if entrance is allowed
-	if (!! Call(PSF_RejectEntrance, &C4AulParSet(C4VObj(pTarget)))) return FALSE;
+	if (!! Call(PSF_RejectEntrance, &C4AulParSet(C4VObj(pTarget)))) return false;
 	// check if we end up in an endless container-recursion
 	for (C4Object *pCnt=pTarget->Contained; pCnt; pCnt=pCnt->Contained)
-		if (pCnt==this) return FALSE;
+		if (pCnt==this) return false;
 	// Check RejectCollect, if desired
 	if (pfRejectCollect)
 		{
 		if (!!pTarget->Call(PSF_RejectCollection,&C4AulParSet(C4VID(Def->id), C4VObj(this))))
 			{
 			*pfRejectCollect = true;
-			return FALSE;
+			return false;
 			}
 		*pfRejectCollect = false;
 		}
 	// Exit if contained
-	if (Contained) if (!Exit(GetX(),GetY())) return FALSE;
-	if (Contained || !Status || !pTarget->Status) return FALSE;
+	if (Contained) if (!Exit(GetX(),GetY())) return false;
+	if (Contained || !Status || !pTarget->Status) return false;
 	// Failsafe updates
 	CloseMenu(true);
 	SetOCF();
@@ -1580,7 +1580,7 @@ BOOL C4Object::Enter(C4Object *pTarget, BOOL fCalls, bool fCopyMotion, bool *pfR
 	if (!Contained->Contents.Add(this, C4ObjectList::stContents))
 		{
 		Contained=NULL;
-		return FALSE;
+		return false;
 		}
 	// Assume that the new container controls this object, if it cannot control itself (i.e.: Alive)
 	// So it can be traced back who caused the damage, if a projectile hits its target
@@ -1603,16 +1603,16 @@ BOOL C4Object::Enter(C4Object *pTarget, BOOL fCalls, bool fCopyMotion, bool *pfR
   Contained->SetOCF();
 	// Collection call
 	if (fCalls) pTarget->Call(PSF_Collection2,&C4AulParSet(C4VObj(this)));
-	if (!Contained || !Contained->Status || !pTarget->Status) return TRUE;
+	if (!Contained || !Contained->Status || !pTarget->Status) return true;
 	// Entrance call
 	if (fCalls) Call(PSF_Entrance,&C4AulParSet(C4VObj(Contained)));
-	if (!Contained || !Contained->Status || !pTarget->Status) return TRUE;
+	if (!Contained || !Contained->Status || !pTarget->Status) return true;
   // Base auto sell contents
 	if (ValidPlr(Contained->Base))
 		if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_AutoSellContents)
 			Contained->AutoSellContents();
 	// Success
-  return TRUE;
+  return true;
   }
 
 void C4Object::Fling(FIXED txdir, FIXED tydir, bool fAddSpeed)
@@ -1627,21 +1627,21 @@ void C4Object::Fling(FIXED txdir, FIXED tydir, bool fAddSpeed)
 			}
   }
 
-BOOL C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
+bool C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
   {
   // Hostile: no entrance to base
   if (Hostile(by_plr,Base) && (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RejectEntrance))
     {
     if (ValidPlr(Owner))
       GameMsgObject(FormatString(LoadResStr("IDS_OBJ_HOSTILENOENTRANCE"),::Players.Get(Owner)->GetName()).getData(),this);
-    return FALSE;
+    return false;
     }
   // Try entrance activation
   if (OCF & OCF_Entrance)
     if (!! Call(PSF_ActivateEntrance,&C4AulParSet(C4VObj(by_obj))))
-      return TRUE;
+      return true;
 	// Failure
-  return FALSE;
+  return false;
   }
 
 void C4Object::Explode(int32_t iLevel, C4ID idEffect, const char *szEffect)
@@ -1653,7 +1653,7 @@ void C4Object::Explode(int32_t iLevel, C4ID idEffect, const char *szEffect)
   Explosion(GetX(),GetY(),iLevel,pContainer,iCausedBy,this, idEffect,szEffect);
   }
 
-BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
+bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
   {
 	int32_t cnt;
 	C4ID NeededMaterial;
@@ -1661,7 +1661,7 @@ BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 	C4Object *pMaterial;
 
   // Invalid or complete: no build
-  if (!Status || !Def || (Con>=FullCon)) return FALSE;
+  if (!Status || !Def || (Con>=FullCon)) return false;
 
   // Material check (if rule set or any other than structure or castle-part)
 	bool fNeedMaterial = (Game.Rules & C4RULE_ConstructionNeedsMaterial) || !(Category & (C4D_Structure|C4D_StaticBack));
@@ -1714,12 +1714,12 @@ BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 			// Builder is a crew member...
 			if (pBuilder->OCF & OCF_CrewMember)
 				// ...tell builder to acquire the material
-				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,TRUE,C4VID(NeededMaterial),FALSE,1);
+				pBuilder->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,true,C4VID(NeededMaterial),false,1);
 			// ...game message if not overloaded
 			::Messages.New(C4GM_Target,GetNeededMatStr(pBuilder),pBuilder,pBuilder->Controller);
 			}
 		// Still in need: done/fail
-		return FALSE;
+		return false;
     }
 
 	// Do con (mass- and builder-relative)
@@ -1730,11 +1730,11 @@ BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 		if (!iBuildSpeed)
 			{
 			// shouldn't even have gotten here. Looks like the Clonk lost the ability to build recently
-			return FALSE;
+			return false;
 			}
 		if (iBuildSpeed<=1) iBuildSpeed=100;
 		}
-	DoCon(iLevel*iBuildSpeed*150/Def->Mass, FALSE, fNeedMaterial);
+	DoCon(iLevel*iBuildSpeed*150/Def->Mass, false, fNeedMaterial);
 
 	// TurnTo
 	if (Def->BuildTurnTo!=C4ID_None)
@@ -1744,25 +1744,25 @@ BOOL C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 	Damage=0;
 
 	// Done/success
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Object::Chop(C4Object *pByObject)
+bool C4Object::Chop(C4Object *pByObject)
   {
   // Valid check
   if (!Status || !Def || Contained || !(OCF & OCF_Chop))
-    return FALSE;
+    return false;
   // Chop
   if (!::Game.iTick10) DoDamage( +10, pByObject ? pByObject->Owner : NO_OWNER, C4FxCall_DmgChop);
-  return TRUE;
+  return true;
   }
 
-BOOL C4Object::Push(FIXED txdir, FIXED dforce, BOOL fStraighten)
+bool C4Object::Push(FIXED txdir, FIXED dforce, bool fStraighten)
   {
   // Valid check
-  if (!Status || !Def || Contained || !(OCF & OCF_Grab)) return FALSE;
+  if (!Status || !Def || Contained || !(OCF & OCF_Grab)) return false;
   // Grabbing okay, no pushing
-  if (Def->Grab==2) return TRUE;
+  if (Def->Grab==2) return true;
   // Mobilization check (pre-mobilization zero)
   if (!Mobile)
     { xdir=ydir=Fix0; }
@@ -1802,13 +1802,13 @@ BOOL C4Object::Push(FIXED txdir, FIXED dforce, BOOL fStraighten)
       Call(PSF_Stuck);
       }
 
-  return TRUE;
+  return true;
   }
 
-BOOL C4Object::Lift(FIXED tydir, FIXED dforce)
+bool C4Object::Lift(FIXED tydir, FIXED dforce)
   {
   // Valid check
-  if (!Status || !Def || Contained) return FALSE;
+  if (!Status || !Def || Contained) return false;
   // Mobilization check
   if (!Mobile)
     { xdir=ydir=Fix0; Mobile=1; }
@@ -1829,7 +1829,7 @@ BOOL C4Object::Lift(FIXED tydir, FIXED dforce)
 			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_STUCK"),GetName()).getData(),this);
       Call(PSF_Stuck);
       }
-  return TRUE;
+  return true;
   }
 
 C4Object* C4Object::CreateContents(C4PropList * PropList)
@@ -1840,17 +1840,17 @@ C4Object* C4Object::CreateContents(C4PropList * PropList)
   return nobj;
   }
 
-BOOL C4Object::CreateContentsByList(C4IDList &idlist)
+bool C4Object::CreateContentsByList(C4IDList &idlist)
   {
   int32_t cnt,cnt2;
   for (cnt=0; idlist.GetID(cnt); cnt++)
     for (cnt2=0; cnt2<idlist.GetCount(cnt); cnt2++)
       if (!CreateContents(C4Id2Def(idlist.GetID(cnt))))
-        return FALSE;
-  return TRUE;
+        return false;
+  return true;
   }
 
-BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
+bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 														int32_t iMenuData, int32_t iMenuPosition,
 														C4Object *pTarget)
   {
@@ -1863,7 +1863,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 	C4IDList ListItems;
 	// Close any other menu
 	//CloseMenu(true);
-	if (Menu && Menu->IsActive()) if (!Menu->TryClose(true, false)) return FALSE;
+	if (Menu && Menu->IsActive()) if (!Menu->TryClose(true, false)) return false;
 	// Create menu
 	if (!Menu) Menu = new C4ObjectMenu; else Menu->ClearItems(true);
 	// Open menu
@@ -1874,61 +1874,61 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			// No target specified: use own container as target
 			if (!pTarget) if (!(pTarget=Contained)) break;
 			// Opening contents menu blocked by RejectContents
-			if (!!pTarget->Call(PSF_RejectContents)) return FALSE;
+			if (!!pTarget->Call(PSF_RejectContents)) return false;
 			// Create symbol
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-			pTarget->Def->Draw(fctSymbol,FALSE,pTarget->Color,pTarget);
+			pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
 			sprintf(szCaption,LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName());
 			// Init
 			Menu->Init(fctSymbol,szCaption,this,C4MN_Extra_None,0,iMenu);
-			Menu->SetPermanent(TRUE);
+			Menu->SetPermanent(true);
 			Menu->SetRefillObject(pTarget);
 			// Success
-			return TRUE;
+			return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Buy:
 			// No target specified: container is base
 			if (!pTarget) if (!(pTarget=Contained)) break;
 			// Create symbol
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-			//pTarget->Def->Draw(fctSymbol,FALSE,pTarget->Color,pTarget);
+			//pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
 			DrawMenuSymbol(C4MN_Buy, fctSymbol, pTarget->Owner, pTarget);
 			// Init menu
 			Menu->Init(fctSymbol,LoadResStr("IDS_PLR_NOBUY"),this,C4MN_Extra_Value,0,iMenu);
-			Menu->SetPermanent(TRUE);
+			Menu->SetPermanent(true);
 			Menu->SetRefillObject(pTarget);
 			// Success
-			return TRUE;
+			return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Sell:
 			// No target specified: container is base
 			if (!pTarget) if (!(pTarget=Contained)) break;
 			// Create symbol & init
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-			//pTarget->Def->Draw(fctSymbol,FALSE,pTarget->Color,pTarget);
+			//pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
 			DrawMenuSymbol(C4MN_Sell, fctSymbol, pTarget->Owner, pTarget);
 			sprintf(szCaption,LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName());
 			Menu->Init(fctSymbol,szCaption,this,C4MN_Extra_Value,0,iMenu);
-			Menu->SetPermanent(TRUE);
+			Menu->SetPermanent(true);
 			Menu->SetRefillObject(pTarget);
 			// Success
-			return TRUE;
+			return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Get:
 		case C4MN_Contents:
 			// No target specified
 			if (!pTarget) break;
 			// Opening contents menu blocked by RejectContents
-			if (!!pTarget->Call(PSF_RejectContents)) return FALSE;
+			if (!!pTarget->Call(PSF_RejectContents)) return false;
 			// Create symbol & init
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-			pTarget->Def->Draw(fctSymbol,FALSE,pTarget->Color,pTarget);
+			pTarget->Def->Draw(fctSymbol,false,pTarget->Color,pTarget);
 			sprintf(szCaption,LoadResStr("IDS_OBJ_EMPTY"),pTarget->GetName());
 			Menu->Init(fctSymbol,szCaption,this,C4MN_Extra_None,0,iMenu);
-			Menu->SetPermanent(TRUE);
+			Menu->SetPermanent(true);
 			Menu->SetRefillObject(pTarget);
 			// Success
-			return TRUE;
+			return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Context:
 			{
@@ -1938,7 +1938,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			// Create symbol & init menu
 			pPlayer=::Players.Get(pTarget->Owner);
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-			pTarget->Def->Draw(fctSymbol,FALSE,pTarget->Color, pTarget);
+			pTarget->Def->Draw(fctSymbol,false,pTarget->Color, pTarget);
 			Menu->Init(fctSymbol,pTarget->GetName(),this,C4MN_Extra_None,0,iMenu,C4MN_Style_Context);
 
 			Menu->SetPermanent(iMenuData);
@@ -1949,7 +1949,7 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			Menu->SetPosition(iMenuPosition);
 			}
 			// Success
-			return TRUE;
+			return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Construction:
 			// Check valid player
@@ -1976,41 +1976,41 @@ BOOL C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			Menu->SetSelection(iMenuSelect, false, true);
 			Menu->SetPosition(iMenuPosition);
 			// Success
-			return TRUE;
+			return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Info:
 			// Target by parameter
 			if (!pTarget) break;
 			pPlayer=::Players.Get(pTarget->Owner);
 			// Create symbol & init menu
-			fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,TRUE,0,1);
+			fctSymbol.Create(C4SymbolSize, C4SymbolSize); GfxR->fctOKCancel.Draw(fctSymbol,true,0,1);
 			Menu->Init(fctSymbol, pTarget->GetName(), this, C4MN_Extra_None, 0, iMenu, C4MN_Style_Info);
-			Menu->SetPermanent(TRUE);
+			Menu->SetPermanent(true);
 			Menu->SetAlignment(C4MN_Align_Free);
 			C4Viewport *pViewport = ::GraphicsSystem.GetViewport(Controller); // Hackhackhack!!!
 			if (pViewport) Menu->SetLocation((pTarget->GetX() + pTarget->Shape.GetX() + pTarget->Shape.Wdt + 10 - pViewport->ViewX) * pViewport->Zoom,
 			                                 (pTarget->GetY() + pTarget->Shape.GetY() - pViewport->ViewY) * pViewport->Zoom);
 			// Add info item
-			fctSymbol.Create(C4PictureSize, C4PictureSize); pTarget->Def->Draw(fctSymbol, FALSE, pTarget->Color, pTarget);
+			fctSymbol.Create(C4PictureSize, C4PictureSize); pTarget->Def->Draw(fctSymbol, false, pTarget->Color, pTarget);
 			Menu->Add(pTarget->GetName(), fctSymbol, "", C4MN_Item_NoCount, NULL, pTarget->GetInfoString().getData());
 			fctSymbol.Default();
 			// Success
-			return TRUE;
+			return true;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 	// Invalid menu identification
 	CloseMenu(true);
-  return FALSE;
+  return false;
   }
 
-BOOL C4Object::CloseMenu(bool fForce)
+bool C4Object::CloseMenu(bool fForce)
   {
 	if (Menu)
 		{
-		if (Menu->IsActive()) if (!Menu->TryClose(fForce, false)) return FALSE;
+		if (Menu->IsActive()) if (!Menu->TryClose(fForce, false)) return false;
 		if (!Menu->IsCloseQuerying()) { delete Menu; Menu=NULL; } // protect menu deletion from recursive menu operation calls
 		}
-	return TRUE;
+	return true;
   }
 
 void C4Object::AutoContextMenu(int32_t iMenuSelect)
@@ -2145,9 +2145,9 @@ bool C4Object::TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy,
 	return !!i;
 	}
 
-BOOL C4Object::Promote(int32_t torank, BOOL exception, bool fForceRankName)
+bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 	{
-	if (!Info) return FALSE;
+	if (!Info) return false;
 	// get rank system
 	C4Def *pUseDef = C4Id2Def(Info->id);
 	C4RankSystem *pRankSys;
@@ -2158,10 +2158,10 @@ BOOL C4Object::Promote(int32_t torank, BOOL exception, bool fForceRankName)
 	// always promote info
 	Info->Promote(torank,*pRankSys, fForceRankName);
 	// silent update?
-	if (!pRankSys->GetRankName(torank,false)) return FALSE;
+	if (!pRankSys->GetRankName(torank,false)) return false;
 	GameMsgObject(FormatString(LoadResStr("IDS_OBJ_PROMOTION"),GetName (),Info->sRankName.getData()).getData(),this);
 	StartSoundEffect("Trumpet",0,100,this);
-	return TRUE;
+	return true;
 	}
 
 void C4Object::ClearPointers(C4Object *pObj)
@@ -2201,11 +2201,11 @@ C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPas
 	return Def->Script.Call(szFunctionCall, this, pPars, false, fPassError);
 	}
 
-BOOL C4Object::SetPhase(int32_t iPhase)
+bool C4Object::SetPhase(int32_t iPhase)
 	{
-	if (!Action.pActionDef) return FALSE;
+	if (!Action.pActionDef) return false;
 	Action.Phase=BoundBy<int32_t>(iPhase,0,Action.pActionDef->GetPropertyInt(P_Length));
-	return TRUE;
+	return true;
 	}
 
 void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
@@ -2229,10 +2229,10 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	float cox = fixtof(fix_x) + Shape.GetX() - cotx, coy = fixtof(fix_y) + Shape.GetY() - coty;
 	float offX = cgo.X + fixtof(fix_x) - cotx, offY = cgo.Y + fixtof(fix_y) - coty;
 
-	BOOL fYStretchObject=FALSE;
+	bool fYStretchObject=false;
 	if (Action.pActionDef)
 		if (Action.pActionDef->GetPropertyInt(P_FacetTargetStretch))
-			fYStretchObject=TRUE;
+			fYStretchObject=true;
 
 	// Set audibility
 	if (!eDrawMode) SetAudibilityAt(cgo, GetX(), GetY());
@@ -2375,7 +2375,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 			        offY + fr.y,
 			        fr.Wdt, fr.Hgt);
 			}
-		::GraphicsResource.fctFire.Draw(fgo,FALSE,FirePhase);
+		::GraphicsResource.fctFire.Draw(fgo,false,FirePhase);
 		}
 
 	// color modulation (including construction sign...)
@@ -2403,7 +2403,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 					cgo.Surface,
 					offX + Shape.GetX() + Action.FacetX, offY + Shape.GetY() + Action.FacetY,Action.Facet.Wdt,
 					(fixtof(Action.Target->fix_y) + Action.Target->Shape.GetY()) - (fixtof(fix_y) + Shape.GetY() + Action.FacetY),
-					TRUE);
+					true);
 			}
 		else if (Action.Facet.Surface)
 			DrawActionFace(cgo, offX, offY);
@@ -2555,7 +2555,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			fctConSign.Wdt, fctConSign.Hgt,
 			cgo.Surface,
 			cgo.X + cox, cgo.Y + coy + Shape.Hgt - fctConSign.Hgt,
-			fctConSign.Wdt, fctConSign.Hgt, TRUE);
+			fctConSign.Wdt, fctConSign.Hgt, true);
 		}
 	// FacetTopFace: Override TopFace.GetX()/GetY()
 	if (Action.pActionDef && Action.pActionDef->GetPropertyInt(P_FacetTopFace))
@@ -2577,7 +2577,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			cgo.Surface,
 			cgo.X + cox + float(Def->TopFace.tx * Con) / FullCon, cgo.Y + coy + float(Def->TopFace.ty * Con) / FullCon,
 			float(TopFace.Wdt * Con) / FullCon, float(TopFace.Hgt * Con) / FullCon,
-			TRUE, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
+			true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	else
 		// normal
 		lpDDraw->Blit(TopFace.Surface,
@@ -2586,7 +2586,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 			cgo.Surface,
 			cgo.X + cox + Def->TopFace.tx, cgo.Y + coy + Def->TopFace.ty,
 			TopFace.Wdt, TopFace.Hgt,
-			TRUE, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
+			true, pDrawTransform ? &C4DrawTransform(*pDrawTransform, offX, offY) : NULL);
 	// end of color modulation
 	if (!eDrawMode) FinishedDrawing();
   }
@@ -2783,7 +2783,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	  int32_t iTime=Action.Time;
 	  int32_t iPhase=Action.Phase;
 	  int32_t iPhaseDelay=Action.PhaseDelay;
-	  /* FIXME if (SetActionByName(Action.pActionDef->GetName(),0,0,FALSE)) 
+	  /* FIXME if (SetActionByName(Action.pActionDef->GetName(),0,0,false)) 
 		  {
 		  Action.Time=iTime;
 		  Action.Phase=iPhase; // No checking for valid phase
@@ -2799,7 +2799,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	  if (!BlitMode) BlitMode = Def->BlitMode;
 
 	  // object needs to be resorted? May happen if there's unsorted objects in savegame
-	  if (Unsorted) Game.fResortAnyObject = TRUE;
+	  if (Unsorted) Game.fResortAnyObject = true;
 
 		// initial OCF update
 		SetOCF();
@@ -2884,10 +2884,10 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 	C4Facet ccgo, ccgo2;
 	C4Object *tObj;
 	int32_t iDFA = GetProcedure();
-	BOOL fContainedDownOverride = FALSE;
-	BOOL fContainedLeftOverride = FALSE; // carlo
-	BOOL fContainedRightOverride = FALSE; // carlo
-	BOOL fContentsActivationOverride = FALSE;
+	bool fContainedDownOverride = false;
+	bool fContainedLeftOverride = false; // carlo
+	bool fContainedRightOverride = false; // carlo
+	bool fContentsActivationOverride = false;
 
 	// Active menu (does not consider owner's active player menu)
 	if (Menu && Menu->IsActive()) return;
@@ -2900,8 +2900,8 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 
 		tObj->DrawCommand(cgoBottom,C4FCT_Right,NULL,com,pRegions,Owner,
 			FormatString(LoadResStr("IDS_CON_BUILD"), tObj->GetName()).getData(),&ccgo);
-		tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-		::GraphicsResource.fctBuild.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE);
+		tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), false, tObj->Color, tObj);
+		::GraphicsResource.fctBuild.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), true);
 		}
 
 	// Grab target control (control flag)
@@ -2922,8 +2922,8 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				// Let Go
 				Action.Target->DrawCommand(cgoBottom, C4FCT_Right, NULL, ComOrder(cnt), pRegions, Owner, 
 					FormatString(LoadResStr("IDS_CON_UNGRAB"), Action.Target->GetName()).getData(), &ccgo);
-				Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Action.Target->Color, Action.Target);
-				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 6);
+				Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), false, Action.Target->Color, Action.Target);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), true, 6);
 				}
 			else if (ComOrder(cnt) == COM_Throw)
 				{
@@ -2932,16 +2932,16 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 					{
 					Action.Target->DrawCommand(cgoBottom, C4FCT_Right, NULL, COM_Throw, pRegions, Owner,
 						FormatString(LoadResStr("IDS_CON_PUT"), tObj->GetName(), Action.Target->GetName()).getData(), &ccgo);
-					tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+					tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), false, tObj->Color, tObj);
+					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), true, 0);
 					}
 				// Get
 				else if (Action.Target->Contents.ListIDCount(C4D_Get) && (Action.Target->Def->GrabPutGet & C4D_Grab_Get))
 					{
 					Action.Target->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 						FormatString(LoadResStr("IDS_CON_GET"),Action.Target->GetName()).getData(), &ccgo);
-					Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Action.Target->Color, Action.Target);
-					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
+					Action.Target->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), false, Action.Target->Color, Action.Target);
+					::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), true, 1);
 					}
 				}
 		}
@@ -2954,10 +2954,10 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				{
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,PSF_ContainedControl,ComOrder(cnt),pRegions,Owner);
 				// Contained control down overrides contained exit control
-				if (Com2Control(ComOrder(cnt))==CON_Down) fContainedDownOverride=TRUE;
+				if (Com2Control(ComOrder(cnt))==CON_Down) fContainedDownOverride=true;
 				// carlo - Contained controls left/right override contained Take, Take2 controls
-				if (Com2Control(ComOrder(cnt))==CON_Left)  fContainedLeftOverride=TRUE;
-				if (Com2Control(ComOrder(cnt))==CON_Right) fContainedRightOverride=TRUE;
+				if (Com2Control(ComOrder(cnt))==CON_Left)  fContainedLeftOverride=true;
+				if (Com2Control(ComOrder(cnt))==CON_Right) fContainedRightOverride=true;
 				}
 		// Contained exit
 		if (!fContainedDownOverride)
@@ -2994,16 +2994,16 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 				{
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Right,pRegions,Owner,
 					FormatString(LoadResStr("IDS_CON_GET"),Contained->GetName()).getData(),&ccgo);
-				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 1);
+				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), false, Contained->Color, Contained);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), true, 1);
 				}
 			// carlo: Get ("Take")
 			if (!fContainedLeftOverride)
 				{
 				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Left,pRegions,Owner,
 					FormatString(LoadResStr("IDS_CON_ACTIVATEFROM"),Contained->GetName()).getData(),&ccgo);
-				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+				Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), false, Contained->Color, Contained);
+				::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), true, 0);
 				}
 			}
 		if (tObj=Contents.GetObject())
@@ -3011,16 +3011,16 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 			// Put
 			Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 				FormatString(LoadResStr("IDS_CON_PUT"),tObj->GetName(),Contained->GetName()).getData(),&ccgo);
-			tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, tObj->Color, tObj);
-			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+			tObj->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), false, tObj->Color, tObj);
+			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), true, 0);
 			}
 		else if (nContents)
 			{
 			// Get
 			Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Throw,pRegions,Owner,
 				FormatString(LoadResStr("IDS_CON_ACTIVATEFROM"),Contained->GetName()).getData(),&ccgo);
-			Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), FALSE, Contained->Color, Contained);
-			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), TRUE, 0);
+			Contained->Def->Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Right, C4FCT_Top), false, Contained->Color, Contained);
+			::GraphicsResource.fctHand.Draw(ccgo2 = ccgo.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom), true, 0);
 			}
 		}
 
@@ -3033,7 +3033,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 					{
 					tObj->DrawCommand(cgoBottom,C4FCT_Right,PSF_Activate,COM_Dig_D,pRegions,Owner);
 					// Flag override self-activation
-					fContentsActivationOverride=TRUE;
+					fContentsActivationOverride=true;
 					}
 
 		// Self activation (activation control flag)
@@ -3054,7 +3054,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 		}
 	}
 
-void C4Object::DrawPicture(C4Facet &cgo, BOOL fSelected, C4RegionList *pRegions)
+void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4RegionList *pRegions)
 	{
 	// Draw def picture with object color
 	Def->Draw(cgo,fSelected,Color,this);
@@ -3084,7 +3084,7 @@ void C4Object::Picture2Facet(C4FacetSurface &cgo)
 	PrepareDrawing();
 
 	// draw picture itself
-	fctPicture.Draw(cgo,TRUE);
+	fctPicture.Draw(cgo,true);
 
 	// draw overlays
 	if (pGfxOverlay)
@@ -3096,7 +3096,7 @@ void C4Object::Picture2Facet(C4FacetSurface &cgo)
 	FinishedDrawing();
 	}
 
-BOOL C4Object::ValidateOwner()
+bool C4Object::ValidateOwner()
 	{
 	// Check owner and controller
 	if (!ValidPlr(Owner)) Owner=NO_OWNER;
@@ -3104,12 +3104,12 @@ BOOL C4Object::ValidateOwner()
 	if (!ValidPlr(Controller)) Controller=NO_OWNER;
 	// Color is not reset any more, because many scripts change colors to non-owner-colors these days
 	// Additionally, player colors are now guarantueed to remain the same in savegame resumes
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Object::AssignInfo()
+bool C4Object::AssignInfo()
 	{
-	if (Info || !ValidPlr(Owner)) return FALSE;
+	if (Info || !ValidPlr(Owner)) return false;
 	// In crew list?
 	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr->Crew.GetLink(this))
@@ -3117,7 +3117,7 @@ BOOL C4Object::AssignInfo()
 		// Register with player
 		if(!::Players.Get(Owner)->MakeCrewMember(this, true, false))
 			pPlr->Crew.Remove(this);
-		return TRUE;
+		return true;
 		}
 	// Info set, but not in crew list, so
 	//    a) The savegame is old-style (without crew list)
@@ -3126,26 +3126,26 @@ BOOL C4Object::AssignInfo()
 	else if (nInfo.getLength())
 		{
 		if(!::Players.Get(Owner)->MakeCrewMember(this, true, false))
-			return FALSE;
+			return false;
 		// Dead and gone (info flags, remove from crew/cursor)
 		if (!Alive)
 			{
-			Info->HasDied=TRUE;
+			Info->HasDied=true;
 			if (ValidPlr(Owner)) ::Players.Get(Owner)->ClearPointers(this, true);
 			}
-		return TRUE;
+		return true;
 		}
-	return FALSE;
+	return false;
 	}
 
-BOOL C4Object::AssignPlrViewRange()
+bool C4Object::AssignPlrViewRange()
 	{
 	// no range?
-	if (!PlrViewRange) return TRUE;
+	if (!PlrViewRange) return true;
 	// add to FoW-repellers
 	PlrFoWActualize();
 	// success
-	return TRUE;
+	return true;
 	}
 
 void C4Object::ClearInfo(C4ObjectInfo *pInfo)
@@ -3174,10 +3174,10 @@ void C4Object::Clear()
 	if (pGfxOverlay) { delete pGfxOverlay; pGfxOverlay=NULL; }
 	}
 
-BOOL C4Object::ContainedControl(BYTE byCom)
+bool C4Object::ContainedControl(BYTE byCom)
 	{
 	// Check
-  if (!Contained) return FALSE;
+  if (!Contained) return false;
 	// Check if object is about to exit; if so, return
 	// dunno, maybe I should check all the commands, not just the first one?
 	if ((byCom == COM_Left || byCom == COM_Right) && Command)
@@ -3185,7 +3185,7 @@ BOOL C4Object::ContainedControl(BYTE byCom)
 			// hack: in structures only; not in vehicles
 			// they might have a pending Exit-command due to a down-control
 			if (Contained->Category & C4D_Structure)
-				return FALSE; // or TRUE? Currently it doesn't matter.
+				return false; // or true? Currently it doesn't matter.
 	// get script function if defined
 	C4AulFunc* sf = Contained->Def->Script.GetSFunc(FormatString(PSF_ContainedControl,ComName(byCom)).getData());
 	// in old versions, do hardcoded actions first (until gwe3)
@@ -3258,10 +3258,10 @@ BOOL C4Object::ContainedControl(BYTE byCom)
 			break;
     }
 	// Success
-  return TRUE;
+  return true;
 	}
 
-BOOL C4Object::CallControl(C4Player *pPlr, BYTE byCom, C4AulParSet *pPars)
+bool C4Object::CallControl(C4Player *pPlr, BYTE byCom, C4AulParSet *pPars)
 	{
 	assert(pPlr);
 
@@ -3335,7 +3335,7 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 	// direct wheel control
 	if (byCom==COM_WheelUp || byCom==COM_WheelDown)
 		// scroll contents
-		{ ShiftContents(byCom==COM_WheelUp, TRUE); return; }
+		{ ShiftContents(byCom==COM_WheelUp, true); return; }
 
 	// The Player updates Controller before calling this, so trust Players.Get will return it
 	if (pController && pController->PrefControlStyle)
@@ -3667,10 +3667,10 @@ void C4Object::AutoStopUpdateComDir()
 	ObjectComMovement(this, NewComDir);
 	}
 
-BOOL C4Object::MenuCommand(const char *szCommand)
+bool C4Object::MenuCommand(const char *szCommand)
 	{
 	// Native script execution
-	if (!Def || !Status) return FALSE;
+	if (!Def || !Status) return false;
 	return !! Def->Script.DirectExec(this, szCommand, "MenuCommand");
 	}
 
@@ -3678,7 +3678,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	{
 	int32_t cnt,cnt2;
 	C4ID c_id;
-	BOOL fInsufficient = FALSE;
+	bool fInsufficient = false;
 	C4Object *pObj;
 	C4ID idNeeded=C4ID_None;
 	int32_t iNeeded=0;
@@ -3694,7 +3694,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 			{
 			Needs.AppendFormat("|%ix %s", NeededComponents.GetCount(cnt) - Contents.ObjectCount(c_id), C4Id2Def(c_id) ? C4Id2Def(c_id)->GetName() : C4IdText(c_id) );
 			if (!idNeeded) { idNeeded=c_id; iNeeded=NeededComponents.GetCount(cnt)-Contents.ObjectCount(c_id); }
-			fInsufficient = TRUE;
+			fInsufficient = true;
 			}
 	// Insufficient
 	if (fInsufficient)
@@ -3826,7 +3826,7 @@ bool C4Object::AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 	// Valid command safety
 	if (!Inside(iCommand,C4CMD_First,C4CMD_Last)) return false;
 	// Allocate and set new command
-  if (!(pCom=new C4Command)) return FALSE;
+  if (!(pCom=new C4Command)) return false;
 	pCom->Set(iCommand,this,pTarget,iTx,iTy,pTarget2,iData,
 						iUpdateInterval,!fInitEvaluation,iRetries,szText,iBaseMode);
 	// Append to bottom of stack
@@ -3848,7 +3848,7 @@ bool C4Object::AddCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 	}
 
 void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy,
-													C4Object *pTarget2, BOOL fControl, C4Value iData,
+													C4Object *pTarget2, bool fControl, C4Value iData,
 													int32_t iRetries, C4String *szText)
 	{
   // Decrease NoCollectDelay
@@ -3895,7 +3895,7 @@ void C4Object::SetCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int3
 				return;
 			}
 	// Add new command
-	AddCommand(iCommand,pTarget,iTx,iTy,0,pTarget2,TRUE,iData,FALSE,iRetries,szText,C4CMD_Mode_Base);
+	AddCommand(iCommand,pTarget,iTx,iTy,0,pTarget2,true,iData,false,iRetries,szText,C4CMD_Mode_Base);
 	}
 
 C4Command *C4Object::FindCommand(int32_t iCommandType)
@@ -3907,7 +3907,7 @@ C4Command *C4Object::FindCommand(int32_t iCommandType)
 	return NULL;
 	}
 
-BOOL C4Object::ExecuteCommand()
+bool C4Object::ExecuteCommand()
 	{
 	// Execute first command
 	if (Command) Command->Execute();
@@ -3917,7 +3917,7 @@ BOOL C4Object::ExecuteCommand()
 	// Clear finished commands
 	while (Command && Command->Finished) ClearCommand(Command);
 	// Done
-	return TRUE;
+	return true;
 	}
 
 void C4Object::AddMaterialContents(int32_t iMaterial, int32_t iAmount)
@@ -3928,7 +3928,7 @@ void C4Object::AddMaterialContents(int32_t iMaterial, int32_t iAmount)
 	MaterialContents->Add(iMaterial,iAmount);
 	}
 
-void C4Object::DigOutMaterialCast(BOOL fRequest)
+void C4Object::DigOutMaterialCast(bool fRequest)
 	{
 	// Check material contents for sufficient object cast amounts
 	if (!MaterialContents) return;
@@ -3953,13 +3953,13 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 	C4Def *pDescImageDef=NULL;
 	int32_t iDescImagePhase = 0;
 	C4Facet cgoLeft,cgoRight;
-	BOOL fFlash=FALSE;
+	bool fFlash=false;
 
 	// Flash
 	C4Player *pPlr;
 	if (pPlr=::Players.Get(Owner))
 		if (iCom==pPlr->FlashCom)
-			fFlash=TRUE;
+			fFlash=true;
 
 	// Get desc from def script function desc
 	if (szFunctionFormat)
@@ -3985,7 +3985,7 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 		*pfctImage = cgoRight;
 	// Specified def
 	else if (pDescImageDef)
-		pDescImageDef->Draw(cgoRight, FALSE, Color, NULL, iDescImagePhase); // ...use specified color, but not object.
+		pDescImageDef->Draw(cgoRight, false, Color, NULL, iDescImagePhase); // ...use specified color, but not object.
 	// Contents image
 	else if (idDescImage == C4ID_Contents)
 		{
@@ -4002,7 +4002,7 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 
 	// Command
 	if (!fFlash || ::Game.iTick35>15)
-		DrawCommandKey(cgoLeft,iCom,FALSE,
+		DrawCommandKey(cgoLeft,iCom,false,
 									 Config.Graphics.ShowCommandKeys ? PlrControlKeyName(iPlayer,Com2Control(iCom), true).getData() : NULL );
 
 	// Region (both symbols)
@@ -4014,12 +4014,12 @@ void C4Object::DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFuncti
 void C4Object::Resort()
 	{
 	// Flag resort
-	Unsorted=TRUE;
-	Game.fResortAnyObject = TRUE;
+	Unsorted=true;
+	Game.fResortAnyObject = true;
 	// Must not immediately resort - link change/removal would crash Game::ExecObjects
 	}
 
-BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
+bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2, int32_t iCalls, bool fForce)
 	{
 	C4PropList * LastAction = Action.pActionDef;
 	int32_t iLastPhase=Action.Phase;
@@ -4027,7 +4027,7 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 	if (LastAction)
 		if (LastAction->GetPropertyInt(P_NoOtherAction) && !fForce)
 			if (Act != LastAction)
-				return FALSE;
+				return false;
 	// Stop previous act sound
 	if (LastAction)
 		if (Act != LastAction)
@@ -4074,7 +4074,7 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				C4Def *pOldDef = Def;
 				Call(Action.pActionDef->GetPropertyStr(P_StartCall)->GetCStr());
 				// abort exeution if def changed
-				if (Def != pOldDef || !Status) return TRUE;
+				if (Def != pOldDef || !Status) return true;
 				}
 			}
 	// Execute EndCall
@@ -4086,7 +4086,7 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				C4Def *pOldDef = Def;
 				Call(LastAction->GetPropertyStr(P_EndCall)->GetCStr());
 				// abort exeution if def changed
-				if (Def != pOldDef || !Status) return TRUE;
+				if (Def != pOldDef || !Status) return true;
 				}
 			}
 	// Execute AbortCall
@@ -4098,10 +4098,10 @@ BOOL C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				C4Def *pOldDef = Def;
 				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase)));
 				// abort exeution if def changed
-				if (Def != pOldDef || !Status) return TRUE;
+				if (Def != pOldDef || !Status) return true;
 				}
 			}
-	return TRUE;
+	return true;
 	}
 
 void C4Object::UpdateActionFace()
@@ -4186,7 +4186,7 @@ void GrabLost(C4Object *cObj)
 			}
 	}
 
-void DoGravity(C4Object *cobj, BOOL fFloatFriction=TRUE);
+void DoGravity(C4Object *cobj, bool fFloatFriction=true);
 
 void C4Object::NoAttachAction()
 	{
@@ -4220,7 +4220,7 @@ void C4Object::NoAttachAction()
 		}
   }
 
-BOOL ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir);
+bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir);
 
 void C4Object::ContactAction()
 	{
@@ -4534,7 +4534,7 @@ bool DoBridge(C4Object *clk)
 	return true;
   }
 
-void DoGravity(C4Object *cobj, BOOL fFloatFriction)
+void DoGravity(C4Object *cobj, bool fFloatFriction)
   {
 	// Floatation in liquids
   if (cobj->InLiquid && cobj->Def->Float)
@@ -4562,7 +4562,7 @@ void StopActionDelayCommand(C4Object *cobj)
   cobj->AddCommand(C4CMD_Wait,NULL,0,0,50);
   }
 
-BOOL ReduceLineSegments(C4Shape &rShape, bool fAlternate)
+bool ReduceLineSegments(C4Shape &rShape, bool fAlternate)
 	{
 	// try if line could go by a path directly when skipping on evertex. If fAlternate is true, try by skipping two vertices
 	for (int32_t cnt=0; cnt+2+fAlternate<rShape.VtxNum; cnt++)
@@ -4571,9 +4571,9 @@ BOOL ReduceLineSegments(C4Shape &rShape, bool fAlternate)
 			{
 			if (fAlternate) rShape.RemoveVertex(cnt+2);
 			rShape.RemoveVertex(cnt+1);
-			return TRUE;
+			return true;
 			}
-	return FALSE;
+	return false;
 	}
 
 void C4Object::ExecAction()
@@ -4929,8 +4929,8 @@ void C4Object::ExecAction()
       // Inside target
       if (Contained==Action.Target) { StopActionDelayCommand(this); return; }
       // Target pushing force
-      BOOL fStraighten;
-      iTXDir=0; fStraighten=FALSE;
+      bool fStraighten;
+      iTXDir=0; fStraighten=false;
       lLimit=ValByPhysical(280, pPhysical->Walk);
       switch (Action.ComDir)
         {
@@ -5010,7 +5010,7 @@ void C4Object::ExecAction()
 			iTXDir = fMove + fWalk * BoundBy<int32_t>(iPullX-Action.Target->GetX(),-10,+10) / 10;
 
       // Push object
-			if (!Action.Target->Push(iTXDir,ValByPhysical(250, pPhysical->Push),FALSE))
+			if (!Action.Target->Push(iTXDir,ValByPhysical(250, pPhysical->Push),false))
 				{ StopActionDelayCommand(this); return; }
 			// Set target controller
 			Action.Target->Controller=Controller;
@@ -5198,8 +5198,8 @@ void C4Object::ExecAction()
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case DFA_CONNECT:
 
-			BOOL fBroke;
-			fBroke=FALSE;
+			bool fBroke;
+			fBroke=false;
 			int32_t iConnectX,iConnectY;
 			int32_t attachVertex0,attachVertex1;
 			attachVertex0=attachVertex1=0;
@@ -5214,8 +5214,8 @@ void C4Object::ExecAction()
 				}
 
 			// Line destruction check: Target missing or incomplete
-			if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=TRUE;
-			if (!Action.Target2	|| (Action.Target2->Con<FullCon))	fBroke=TRUE;
+			if (!Action.Target || (Action.Target->Con<FullCon)) fBroke=true;
+			if (!Action.Target2	|| (Action.Target2->Con<FullCon))	fBroke=true;
 			if (fBroke)
 				{
 				Call(PSF_LineBreak,&C4AulParSet(C4VBool(true)));
@@ -5239,7 +5239,7 @@ void C4Object::ExecAction()
 					// Regular wrapping line
 					if (Def->LineIntersect == 0)
 						if (!Shape.LineConnect(iConnectX,iConnectY,0,+1,
-							Shape.VtxX[0],Shape.VtxY[0])) fBroke=TRUE;
+							Shape.VtxX[0],Shape.VtxY[0])) fBroke=true;
 					// No-intersection line
 					if (Def->LineIntersect == 1)
 						{ Shape.VtxX[0]=iConnectX; Shape.VtxY[0]=iConnectY; }
@@ -5261,7 +5261,7 @@ void C4Object::ExecAction()
 					// Regular wrapping line
 					if (Def->LineIntersect == 0)
 						if (!Shape.LineConnect(iConnectX,iConnectY,Shape.VtxNum-1,-1,
-							Shape.VtxX[Shape.VtxNum-1],Shape.VtxY[Shape.VtxNum-1])) fBroke=TRUE;
+							Shape.VtxX[Shape.VtxNum-1],Shape.VtxY[Shape.VtxNum-1])) fBroke=true;
 					// No-intersection line
 					if (Def->LineIntersect == 1)
 						{ Shape.VtxX[Shape.VtxNum-1]=iConnectX; Shape.VtxY[Shape.VtxNum-1]=iConnectY; }
@@ -5329,11 +5329,11 @@ void C4Object::ExecAction()
 	}
 
 
-BOOL C4Object::SetOwner(int32_t iOwner)
+bool C4Object::SetOwner(int32_t iOwner)
 	{
 	C4Player *pPlr;
 	// Check valid owner
-	if (!(ValidPlr(iOwner) || iOwner == NO_OWNER)) return FALSE;
+	if (!(ValidPlr(iOwner) || iOwner == NO_OWNER)) return false;
 	// always set color, even if no owner-change is done
 	if (iOwner != NO_OWNER)
 		if (GetGraphics()->IsColorByOwner())
@@ -5342,7 +5342,7 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 			UpdateFace(false);
 			}
 	// no change?
-	if (Owner == iOwner) return TRUE;
+	if (Owner == iOwner) return true;
 	// remove old owner view
 	if (ValidPlr(Owner))
 		{
@@ -5369,18 +5369,18 @@ BOOL C4Object::SetOwner(int32_t iOwner)
 	// script callback
 	Call(PSF_OnOwnerChanged, &C4AulParSet(C4VInt(Owner), C4VInt(iOldOwner)));
 	// done
-  return TRUE;
+  return true;
 	}
 
 
-BOOL C4Object::SetPlrViewRange(int32_t iToRange)
+bool C4Object::SetPlrViewRange(int32_t iToRange)
 	{
 	// set new range
 	PlrViewRange = iToRange;
 	// resort into player's FoW-repeller-list
 	PlrFoWActualize();
 	// success
-	return TRUE;
+	return true;
 	}
 
 
@@ -5533,18 +5533,18 @@ void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 		}
 	}
 
-BOOL C4Object::Collect(C4Object *pObj)
+bool C4Object::Collect(C4Object *pObj)
 	{
 	// Special: attached Flag may not be collectable
 	if (pObj->Def->id==C4ID_Flag)
 		if (!(Game.Rules & C4RULE_FlagRemoveable))
 			if (pObj->Action.pActionDef)
 				if (SEqual(pObj->Action.pActionDef->GetName(),"FlyBase"))
-					return FALSE;       
+					return false;       
 	// Object enter container
 	bool fRejectCollect;
-	if(!pObj->Enter(this, TRUE, false, &fRejectCollect))
-		return FALSE;
+	if(!pObj->Enter(this, true, false, &fRejectCollect))
+		return false;
 	// Cancel attach (hacky)
 	ObjectComCancelAttach(pObj);
 	// Container Collection call
@@ -5556,17 +5556,17 @@ BOOL C4Object::Collect(C4Object *pObj)
 	// post-copy the motion of the new container
 	if (pObj->Contained == this) pObj->CopyMotion(this);
 	// done, success
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Object::GrabInfo(C4Object *pFrom)
+bool C4Object::GrabInfo(C4Object *pFrom)
 	{
 	// safety
-	if (!pFrom) return FALSE; if (!Status || !pFrom->Status) return FALSE;
+	if (!pFrom) return false; if (!Status || !pFrom->Status) return false;
 	// even more safety (own info: success)
-	if(pFrom == this) return TRUE;
+	if(pFrom == this) return true;
 	// only if other object has info
-	if (!pFrom->Info) return FALSE;
+	if (!pFrom->Info) return false;
 	// clear own info object
 	if (Info)
 		{
@@ -5590,20 +5590,20 @@ BOOL C4Object::GrabInfo(C4Object *pFrom)
 	C4Player *pPlr = ::Players.Get(Owner);
 	if (pPlr) pPlr->MakeCrewMember(this);
 	// done, success
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Object::ShiftContents(BOOL fShiftBack, BOOL fDoCalls)
+bool C4Object::ShiftContents(bool fShiftBack, bool fDoCalls)
 	{
 	// get current object
 	C4Object *c_obj = Contents.GetObject();
-	if (!c_obj) return FALSE;
+	if (!c_obj) return false;
 	// get next/previous
 	C4ObjectLink *pLnk = fShiftBack ? (Contents.Last) : (Contents.First->Next);
 	for(;;)
 		{
 		// end reached without success
-		if (!pLnk) return FALSE;
+		if (!pLnk) return false;
 		// check object
 		C4Object *pObj = pLnk->Obj;
 		if (pObj->Status)
@@ -5611,7 +5611,7 @@ BOOL C4Object::ShiftContents(BOOL fShiftBack, BOOL fDoCalls)
 				{
 				// object different: shift to this
 				DirectComContents(pObj, !!fDoCalls);
-				return TRUE;
+				return true;
 				}
 		// next/prev item
 		pLnk = fShiftBack ? (pLnk->Prev) : (pLnk->Next);
@@ -5670,7 +5670,7 @@ void C4Object::ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctView
 		riTy = riTy * iParY / 100;
 	}
 
-bool C4Object::DoSelect(BOOL fCursor)
+bool C4Object::DoSelect(bool fCursor)
 	{
 	// selection allowed?
 	if (CrewDisabled) return true;
@@ -5682,7 +5682,7 @@ bool C4Object::DoSelect(BOOL fCursor)
 	return true;
 	}
 
-void C4Object::UnSelect(BOOL fCursor)
+void C4Object::UnSelect(bool fCursor)
 	{
 	// unselect
 	if (!fCursor) Select=0;

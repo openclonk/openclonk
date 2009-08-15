@@ -138,7 +138,7 @@ class CStdGL : public CStdDDraw
 #endif
 
 	protected:
-		bool CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
+		bool CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);
 
 		bool CheckGLError(const char *szAtOp);
 #ifdef USE_X11

@@ -179,7 +179,7 @@ bool C4Application::DoInit()
 	ApplyResolutionConstraints();	
 
 	// activate
-	Active=TRUE;
+	Active=true;
 
 	// Init carrier window
 	if (isFullScreen)
@@ -222,7 +222,7 @@ bool C4Application::DoInit()
 			Log("WARNING: DDraw Software emulation is activated!");
 #endif
 	// Initialize D3D/OpenGL
-	DDraw = DDrawInit(this, isFullScreen, FALSE, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
+	DDraw = DDrawInit(this, isFullScreen, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
 	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
 
 #if defined(_WIN32) && !defined(USE_CONSOLE)
@@ -307,10 +307,10 @@ bool C4Application::PreInit()
 	return true;
 	}
 
-BOOL C4Application::ProcessCallback(const char *szMessage, int iProcess)
+bool C4Application::ProcessCallback(const char *szMessage, int iProcess)
 	{
 	Console.Out(szMessage);
-	return TRUE;
+	return true;
 	}
 
 void C4Application::Clear()

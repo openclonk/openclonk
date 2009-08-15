@@ -52,7 +52,7 @@ int C4RankSystem::Init(const char *szRegister,
 #ifdef _WIN32
 	int crank=0;
 	char rankname[C4MaxName+1],keyname[30];
-	BOOL Checking=TRUE;
+	bool Checking=true;
 	while (Checking)
 		{
 		sprintf(keyname,"Rank%03d",crank+1);
@@ -68,7 +68,7 @@ int C4RankSystem::Init(const char *szRegister,
 			 && SetRegistryString(Register,keyname,rankname))
 				crank++;
 			else
-				Checking=FALSE;
+				Checking=false;
 			}
 		}
 	return crank;
@@ -243,18 +243,18 @@ int C4RankSystem::RankByExperience(int iExp)
 	return iRank;
 	}
 
-BOOL C4RankSystem::Check(int iRank, const char  *szDefRankName)
+bool C4RankSystem::Check(int iRank, const char  *szDefRankName)
 	{
 #ifdef _WIN32
 	char rankname[C4MaxName+1],keyname[30];
 	sprintf(keyname,"Rank%03d",iRank);
 	if (GetRegistryString(Register,keyname,rankname,C4MaxName+1))
-		return FALSE;
+		return false;
 	if (!szDefRankName || (SLen(szDefRankName)>C4MaxName))
-		return FALSE;
+		return false;
 	return SetRegistryString(Register,keyname,szDefRankName);
 #else
-	return TRUE;
+	return true;
 #endif
 	}
 

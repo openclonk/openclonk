@@ -91,16 +91,16 @@ bool CStdD3D::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// safety
-	if (!lpDevice) return FALSE;
+	if (!lpDevice) return false;
 	// end the scene and present it
   EndScene();
 	if (lpDevice->Present(pSrcRt, pDstRt, pWindow ? pWindow->hWindow : 0, NULL) == D3DERR_DEVICELOST)
 		{
-		if (lpDevice->TestCooperativeLevel() == D3DERR_DEVICELOST) return FALSE;
-		if (!RestoreDeviceObjects()) return FALSE;
+		if (lpDevice->TestCooperativeLevel() == D3DERR_DEVICELOST) return false;
+		if (!RestoreDeviceObjects()) return false;
 		lpDevice->Present(NULL, NULL, NULL, NULL);
 		}
-  return TRUE;
+  return true;
 	}
 
 
@@ -349,13 +349,13 @@ unsigned int Format2BitDepth(D3DFORMAT format)
 		}
 	}
 
-BOOL CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo)
+bool CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo)
 	{
 	// lock
-	if (!pTexRef->Lock()) return FALSE;
+	if (!pTexRef->Lock()) return false;
 	// get bits
 	BYTE *pBits = (BYTE *) pTexRef->texLock.pBits;
-	if (!pBits) return FALSE;
+	if (!pBits) return false;
 	// get size
 	int fWdt = rtFrom.right-rtFrom.left;
 	int fHgt = rtFrom.bottom-rtFrom.top;
@@ -369,17 +369,17 @@ BOOL CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT
 	// Stretch
 	SetMapMode(hdcTarget,MM_TEXT);
 	int i = StretchDIBits(hdcTarget, rtTo.left, rtTo.top, tWdt, tHgt, rtFrom.left, rtFrom.top, fWdt, fHgt, pBits, &sfcBmpInfo, DIB_RGB_COLORS, SRCCOPY);
-	if (i == GDI_ERROR) return FALSE;
-	return TRUE;
+	if (i == GDI_ERROR) return false;
+	return true;
 	}
 
-BOOL CStdD3D::BlitSurface2Window(SURFACE sfcSource,
+bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
 																	 int fX, int fY, int fWdt, int fHgt,
 																	 HWND hWnd,
 																	 int tX, int tY, int tWdt, int tHgt)
 	{
-	BOOL fOkay = FALSE;
-	if (!sfcSource->Lock()) return FALSE;
+	bool fOkay = false;
+	if (!sfcSource->Lock()) return false;
 	HDC hdcTarget=GetDC(hWnd);
 	if (hdcTarget)
 		{
@@ -443,7 +443,7 @@ BOOL CStdD3D::BlitSurface2Window(SURFACE sfcSource,
 	return fOkay;
 	}
 
-BOOL CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor)
+bool CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor)
 	{
 	if(iColorDepth == 32)
 		return FindDisplayMode(iXRes, iYRes, D3DFMT_A8R8G8B8, iMonitor) ||
@@ -452,10 +452,10 @@ BOOL CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, unsigned i
 		return FindDisplayMode(iXRes, iYRes, D3DFMT_R5G6B5, iMonitor) ||
 		       FindDisplayMode(iXRes, iYRes, D3DFMT_A1R5G5B5, iMonitor);
 	else
-		return FALSE;
+		return false;
 	}
 
-BOOL CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, D3DFORMAT format, unsigned int iMonitor)
+bool CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, D3DFORMAT format, unsigned int iMonitor)
 	{
 	bool fFound=false;
 	D3DDISPLAYMODE dmode;
@@ -493,7 +493,7 @@ bool CStdD3D::SetOutputAdapter(unsigned int iMonitor)
 	return true;
 	}
 
-bool CStdD3D::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
+bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 	{
 	DebugLog("Init DX");
 	DebugLog("  Create Direct3D9...");
@@ -543,7 +543,7 @@ bool CStdD3D::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigne
 			SetWindowPos(hWindow, HWND_TOP, /*pApp->MonitorRect.left*/0, /*pApp->MonitorRect.top*/0,
 				iXRes,iYRes, SWP_NOOWNERZORDER | SWP_SHOWWINDOW);
 			SetWindowLong(hWindow, GWL_STYLE, (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX));
-			d3dpp.Windowed = TRUE;
+			d3dpp.Windowed = true;
 			}
 		d3dpp.BackBufferWidth = iXRes;
 		d3dpp.BackBufferHeight= iYRes;
@@ -563,7 +563,7 @@ bool CStdD3D::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigne
 		if (lpD3D->GetAdapterDisplayMode(iMonitor, &dspMode) != D3D_OK)
 			if (lpD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &dspMode) != D3D_OK)
 				return Error("Could not get current display mode");
-		d3dpp.Windowed = TRUE;
+		d3dpp.Windowed = true;
 		d3dpp.BackBufferCount = 1;
 		d3dpp.SwapEffect = D3DSWAPEFFECT_COPY;
 		d3dpp.BackBufferWidth = dspMode.Width;
@@ -608,12 +608,12 @@ bool CStdD3D::CreatePrimarySurfaces(BOOL Fullscreen, unsigned int iXRes, unsigne
 		// cleanup
 		DeleteDeviceObjects();
 		// failure
-		return FALSE;
+		return false;
 		}
 	// update monitor rect by new screen size
 	if (!SetOutputAdapter(iMonitor)) return false;
 	// success!
-	return TRUE;
+	return true;
 	}
 
 bool CStdD3D::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
@@ -657,7 +657,7 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 		SetWindowPos(hWindow, HWND_TOP, /*pApp->MonitorRect.left*/0, /*pApp->MonitorRect.top*/0,
 			iXRes, iYRes, SWP_NOOWNERZORDER | SWP_SHOWWINDOW);
 		SetWindowLong(hWindow, GWL_STYLE, (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX));
-		d3dpp.Windowed = TRUE;
+		d3dpp.Windowed = true;
 		}
 	d3dpp.BackBufferWidth = iXRes;
 	d3dpp.BackBufferHeight= iYRes;
@@ -695,9 +695,9 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	InitDeviceObjects();
 	RestoreDeviceObjects();
 	// update monitor rect by new screen size
-	if (!SetOutputAdapter(iMonitor)) return FALSE;
+	if (!SetOutputAdapter(iMonitor)) return false;
 	// success!
-	return TRUE;
+	return true;
 	}
 
 void CStdD3D::PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
@@ -825,8 +825,8 @@ void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float
 			drawSolidState[iAdditive]->Apply();
 			lpDevice->SetRenderState( D3DRS_DESTBLEND,  iAdditive ? D3DBLEND_ONE : D3DBLEND_INVSRCALPHA );
 			lpDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-			lpDevice->SetRenderState( D3DRS_ANTIALIASEDLINEENABLE, TRUE );
-			lpDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+			lpDevice->SetRenderState( D3DRS_ANTIALIASEDLINEENABLE, true );
+			lpDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, true );
 			lpDevice->SetStreamSource(0, pVBClr, 0, sizeof(C4CLRVERTEX));
 			lpDevice->SetFVF(D3DFVF_C4CLRVERTEX);
 			dwClr = InvertRGBAAlpha(dwClr);
@@ -1121,31 +1121,31 @@ bool CStdD3D::DeleteDeviceObjects()
 	return fSuccess;
 }
 
-BOOL CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent, bool fSolid, bool fBaseTex, bool fAdditive, bool fMod2)
+bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent, bool fSolid, bool fBaseTex, bool fAdditive, bool fMod2)
 	{
 	// settings
 	if (!DDrawCfg.AdditiveBlts) fAdditive=false;
 	// begin capturing
 	lpDevice->BeginStateBlock();
 	// set states
-	lpDevice->SetRenderState( D3DRS_LIGHTING, FALSE );
-	lpDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS, FALSE ); // no antialiasing
-	lpDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
+	lpDevice->SetRenderState( D3DRS_LIGHTING, false );
+	lpDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS, false ); // no antialiasing
+	lpDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, true );
 	lpDevice->SetRenderState( D3DRS_SRCBLEND,   D3DBLEND_INVSRCALPHA );
 	lpDevice->SetRenderState( D3DRS_DESTBLEND,  fAdditive ? D3DBLEND_ONE : D3DBLEND_SRCALPHA );
-	lpDevice->SetRenderState( D3DRS_ALPHATESTENABLE,  TRUE );
+	lpDevice->SetRenderState( D3DRS_ALPHATESTENABLE,  true );
 	lpDevice->SetRenderState( D3DRS_ALPHAREF,         0x00 );
 	lpDevice->SetRenderState( D3DRS_ALPHAFUNC,  D3DCMP_GREATEREQUAL );
 	lpDevice->SetRenderState( D3DRS_FILLMODE,   D3DFILL_SOLID );
 	lpDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_NONE );
-	lpDevice->SetRenderState( D3DRS_ZENABLE,          FALSE );
-	lpDevice->SetRenderState( D3DRS_STENCILENABLE,    FALSE );
-	lpDevice->SetRenderState( D3DRS_CLIPPING,         TRUE );
-	lpDevice->SetRenderState( D3DRS_ANTIALIASEDLINEENABLE,    FALSE );
-	lpDevice->SetRenderState( D3DRS_CLIPPLANEENABLE,  FALSE );
-	lpDevice->SetRenderState( D3DRS_VERTEXBLEND,      FALSE );
-	lpDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, FALSE );
-	lpDevice->SetRenderState( D3DRS_FOGENABLE,        FALSE );
+	lpDevice->SetRenderState( D3DRS_ZENABLE,          false );
+	lpDevice->SetRenderState( D3DRS_STENCILENABLE,    false );
+	lpDevice->SetRenderState( D3DRS_CLIPPING,         true );
+	lpDevice->SetRenderState( D3DRS_ANTIALIASEDLINEENABLE,    false );
+	lpDevice->SetRenderState( D3DRS_CLIPPLANEENABLE,  false );
+	lpDevice->SetRenderState( D3DRS_VERTEXBLEND,      false );
+	lpDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, false );
+	lpDevice->SetRenderState( D3DRS_FOGENABLE,        false );
 	if (!fBaseTex)
 		{
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );

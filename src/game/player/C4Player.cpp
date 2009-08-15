@@ -63,13 +63,13 @@ C4Player::~C4Player()
 	Clear();
   }
 
-BOOL C4Player::ObjectInCrew(C4Object *tobj)
+bool C4Player::ObjectInCrew(C4Object *tobj)
   {
   C4Object *cobj; C4ObjectLink *clnk;
-  if (!tobj) return FALSE;
+  if (!tobj) return false;
   for (clnk=Crew.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-    if (cobj==tobj) return TRUE;
-  return FALSE;
+    if (cobj==tobj) return true;
+  return false;
   }
 
 void C4Player::ClearPointers(C4Object *pObj, bool fDeath)
@@ -81,7 +81,7 @@ void C4Player::ClearPointers(C4Object *pObj, bool fDeath)
   // Cursor
   if (Cursor==pObj)
     {
-		// object is to be deleted; do NOT do script calls (like in Cursor->UnSelect(TRUE))
+		// object is to be deleted; do NOT do script calls (like in Cursor->UnSelect(true))
     Cursor=NULL; AdjustCursorCommand(); // also selects and eventually does a script call!
     }
   // View-Cursor
@@ -164,7 +164,7 @@ bool C4Player::ScenarioAndTeamInit(int32_t idTeam)
 	if (pPrevTeam) pPrevTeam->RemovePlayerByID(pInfo->GetID());
 	if (pTeam) pTeam->AddPlayer(*pInfo, true);
 	if (!ScenarioInit()) return false;
-	if (!FinalInit(FALSE)) return false;
+	if (!FinalInit(false)) return false;
 	return true;
 	}
 
@@ -260,15 +260,15 @@ void C4Player::Execute()
 	if (SelectFlash>0) SelectFlash--;
 	}
 
-BOOL C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName,
-										const char *szFilename, BOOL fScenarioInit, class C4PlayerInfo *pInfo)
+bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName,
+										const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo)
   {
 	// safety
 	if (!pInfo)
 		{
 		LogF("ERROR: Init player %s failed: No info!", szFilename);
 		assert(false);
-		return FALSE;
+		return false;
 		}
 	// Status init
   Status=PS_Normal;
@@ -291,7 +291,7 @@ BOOL C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 		// this will prevent portraits from being shown for "remotely controlled"-Clonks of other players
 		bool fLoadPortraits = (AtClient==C4ClientIDUnknown) || SEqualNoCase(AtClientName, Game.Clients.getLocalName());
 		// fLoadPortraits = true
-		if (!Load(Filename, !fScenarioInit, fLoadPortraits)) return FALSE;
+		if (!Load(Filename, !fScenarioInit, fLoadPortraits)) return false;
 		}
 	else
 		{
@@ -364,7 +364,7 @@ BOOL C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 			// this callback shall give scripters a chance to do stuff like starting an intro or enabling FoW, which might need to be done
 			Game.Script.GRBroadcast(PSF_PreInitializePlayer, &C4AulParSet(C4VInt(Number)));
 			// direct init
-			if (Status != PS_TeamSelection) if (!ScenarioInit()) return FALSE;
+			if (Status != PS_TeamSelection) if (!ScenarioInit()) return false;
 			}
 		}
 
@@ -386,7 +386,7 @@ BOOL C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 				Team = pInfo->GetTeam();
 				}
 			else
-				return FALSE;
+				return false;
 			}
 		// Reset values default-overriden by old runtime data load (safety?)
 		if (Number==C4P_Number_None) Number=iNumber;
@@ -417,14 +417,14 @@ BOOL C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 	// init graphs
 	if (Game.pNetworkStatistics) CreateGraphs();
 
-  return TRUE;
+  return true;
   }
 
-BOOL C4Player::Save()
+bool C4Player::Save()
   {
   C4Group hGroup;
 	// Regular player saving need not be done for script players
-	if (GetType() == C4PT_Script) return FALSE;
+	if (GetType() == C4PT_Script) return false;
 	// Log
 	LogF(LoadResStr("IDS_PRC_SAVEPLR"), Config.AtRelativePath(Filename));
 	::GraphicsSystem.MessageBoard.EnsureLastMessage();
@@ -435,13 +435,13 @@ BOOL C4Player::Save()
 	// so full hard (flgr stupid) disks won't corrupt any player files...
 	C4Group_CopyItem(Filename, szPath);
 	// Open group
-  if (!hGroup.Open(szPath,TRUE))
-    return FALSE;
+  if (!hGroup.Open(szPath,true))
+    return false;
 	// Save
 	if (!Save(hGroup, false, !LocalControl))
-    { hGroup.Close(); return FALSE; }
+    { hGroup.Close(); return false; }
 	// Close group
-  if (!hGroup.Close()) return FALSE;
+  if (!hGroup.Close()) return false;
   // resource
 	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(Filename),
 										 pDRes = NULL;
@@ -449,27 +449,27 @@ BOOL C4Player::Save()
   if(pRes) pDRes = pRes->Derive();
 	// move back
 	if (ItemExists(Filename)) EraseItem(Filename);
-  if (!C4Group_MoveItem(szPath, Filename)) return FALSE;
+  if (!C4Group_MoveItem(szPath, Filename)) return false;
   // finish update
   if(pDRes && fOfficial) pDRes->FinishDerive();
 	// Add to reload list
 	if (LocalControl) SAddModule(Config.Explorer.Reload,Filename);
 	// Success
-  return TRUE;
+  return true;
   }
 
-BOOL C4Player::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny)
+bool C4Player::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny)
   {
 	// Save core
   if (!C4PlayerInfoCore::Save(hGroup))
-    return FALSE;
+    return false;
 	// Save crew
 	C4DefList *pDefs = &::Definitions;
 	if (!CrewInfoList.Save(hGroup, fSavegame, fStoreTiny, pDefs))
-    { hGroup.Close(); return FALSE; }
+    { hGroup.Close(); return false; }
 	// Sort
 	hGroup.Sort(C4FLS_Player);
-	return TRUE;
+	return true;
   }
 
 void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase)
@@ -567,10 +567,10 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 
 C4Object *CreateLine(C4ID linetype, int32_t owner, C4Object *fobj, C4Object *tobj);
 
-BOOL CreatePowerConnection(C4Object *fbase, C4Object *tbase)
+bool CreatePowerConnection(C4Object *fbase, C4Object *tbase)
 	{
-	if (CreateLine(C4ID_PowerLine,fbase->Owner,fbase,tbase)) return TRUE;
-	return FALSE;
+	if (CreateLine(C4ID_PowerLine,fbase->Owner,fbase,tbase)) return true;
+	return false;
 	}
 
 void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
@@ -588,7 +588,7 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
         ctx=tx; cty=ty;
 				if (Game.C4S.PlrStart[PlrStartIndex].EnforcePosition
   			 || FindConSiteSpot(ctx,cty,def->Shape.Wdt,def->Shape.Hgt,def->Category,20))
-          if (cbase=Game.CreateObjectConstruction(C4Id2Def(cid),NULL,Number,ctx,cty,FullCon,TRUE))
+          if (cbase=Game.CreateObjectConstruction(C4Id2Def(cid),NULL,Number,ctx,cty,FullCon,true))
             {
 						// FirstBase
             if (!(*pFirstBase)) if (cbase->Def->CanBeBase)
@@ -664,7 +664,7 @@ DWORD RandomPlayerColor() // generate a random player color
 	return RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256));
 	}
 
-BOOL C4Player::ScenarioInit()
+bool C4Player::ScenarioInit()
 	{
   int32_t ptx,pty;
 
@@ -680,7 +680,7 @@ BOOL C4Player::ScenarioInit()
 	Color=iColor;
 
 	C4PlayerInfo *pInfo = GetInfo();
-	if (!pInfo) { assert(false); LogF("Internal error: ScenarioInit for ghost player %s!", GetName()); return FALSE; }
+	if (!pInfo) { assert(false); LogF("Internal error: ScenarioInit for ghost player %s!", GetName()); return false; }
 
 	// set color by player info class
 	// re-setting, because runtime team choice may have altered color
@@ -751,7 +751,7 @@ BOOL C4Player::ScenarioInit()
 
 	if (fFogOfWar && !fFogOfWarInitialized)
 		{
-		fFogOfWarInitialized = TRUE;
+		fFogOfWarInitialized = true;
 		// reset view objects
 		::Objects.AssignPlrViewRange();
 		}
@@ -763,12 +763,12 @@ BOOL C4Player::ScenarioInit()
 																														 C4VObj(FirstBase),
 																														 C4VInt(Team),
 																														 C4VID(GetInfo()->GetScriptPlayerExtraID())));
-	return TRUE;
+	return true;
   }
 
-BOOL C4Player::FinalInit(BOOL fInitialValue)
+bool C4Player::FinalInit(bool fInitialValue)
   {
-  if (!Status) return TRUE;
+  if (!Status) return true;
 
 	// Init player's mouse control
 	if (LocalControl)
@@ -793,12 +793,12 @@ BOOL C4Player::FinalInit(BOOL fInitialValue)
 	// Restore FoW after savegame
 	if (fFogOfWar && !fFogOfWarInitialized)
 		{
-		fFogOfWarInitialized = TRUE;
+		fFogOfWarInitialized = true;
 		// reset view objects
 		::Objects.AssignPlrViewRange();
 		}
 
-	return TRUE;
+	return true;
 	}
 
 void C4Player::SetFoW(bool fEnable)
@@ -811,55 +811,55 @@ void C4Player::SetFoW(bool fEnable)
 	}
 
 
-C4Object *C4Player::Buy(C4ID id, BOOL fShowErrors, int32_t iForPlr, C4Object *pBuyObj)
+C4Object *C4Player::Buy(C4ID id, bool fShowErrors, int32_t iForPlr, C4Object *pBuyObj)
 	{
 	int32_t iAvailable; C4Def *pDef; C4Object *pThing;
 	// Base owner eliminated
 	if (Eliminated)
 		{
-		if (!fShowErrors) return FALSE;
+		if (!fShowErrors) return false;
 		StartSoundEffect("Error",false,100,pBuyObj);
-		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),GetName()).getData(),Number); return FALSE;
+		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),GetName()).getData(),Number); return false;
 		}
 	// Get def (base owner's homebase material)
 	iAvailable = HomeBaseMaterial.GetIDCount(id);
-	if (!(pDef=C4Id2Def(id))) return FALSE;
+	if (!(pDef=C4Id2Def(id))) return false;
 	// Object not available
-	if (iAvailable<=0) return FALSE;
+	if (iAvailable<=0) return false;
 	// get value
 	int32_t iValue = pDef->GetValue(pBuyObj, Number);
 	// Not enough wealth (base owner's wealth)
 	if (iValue>Wealth)
 		{
-		if (!fShowErrors) return FALSE;
+		if (!fShowErrors) return false;
 		GameMsgPlayer(LoadResStr("IDS_PLR_NOWEALTH"),Number);
-		StartSoundEffect("Error",false,100,pBuyObj); return FALSE;
+		StartSoundEffect("Error",false,100,pBuyObj); return false;
 		}
 	// Decrease homebase material count
-	if (!HomeBaseMaterial.DecreaseIDCount(id,FALSE)) return FALSE;
+	if (!HomeBaseMaterial.DecreaseIDCount(id,false)) return false;
 	// Reduce wealth
 	DoWealth(-iValue);
 	// Create object (for player)
-	if (!(pThing=Game.CreateObject(id,pBuyObj,iForPlr))) return FALSE;
+	if (!(pThing=Game.CreateObject(id,pBuyObj,iForPlr))) return false;
 	// Make crew member
 	if (pDef->CrewMember) if (ValidPlr(iForPlr))
 		::Players.Get(iForPlr)->MakeCrewMember(pThing);
 	// success
 	C4AulParSet parset (C4VInt(Number), C4VObj(pBuyObj));
 	pThing->Call(PSF_Purchase, &parset);
-	if (!pThing->Status) return FALSE;
+	if (!pThing->Status) return false;
 	return pThing;
 	}
 
 
-BOOL C4Player::Sell2Home(C4Object *pObj)
+bool C4Player::Sell2Home(C4Object *pObj)
   {
   C4Object *cObj;
   // Valid checks
-  if (!pObj || !pObj->Status) return FALSE;
-  if (Eliminated) return FALSE;
+  if (!pObj || !pObj->Status) return false;
+  if (Eliminated) return false;
 	// No crew members
-	if (pObj->OCF & OCF_CrewMember) return FALSE;
+	if (pObj->OCF & OCF_CrewMember) return false;
   // Sell contents first
   while (cObj=pObj->Contents.GetObject())
     {
@@ -881,12 +881,12 @@ BOOL C4Player::Sell2Home(C4Object *pObj)
 	// Remove object, eject any crew members
 	if (pObj->Contained) pObj->Exit();
 	pObj->Call(PSF_Sale, &C4AulParSet(C4VInt(Number)));
-	pObj->AssignRemoval(TRUE);
+	pObj->AssignRemoval(true);
 	// Done
-  return TRUE;
+  return true;
   }
 
-BOOL C4Player::DoWealth(int32_t iChange)
+bool C4Player::DoWealth(int32_t iChange)
   {
   Wealth=BoundBy<int32_t>(Wealth+iChange,0,10000);
 	if (LocalControl)
@@ -895,7 +895,7 @@ BOOL C4Player::DoWealth(int32_t iChange)
 		if (iChange<0) StartSoundEffect("UnCash");
 		}
 	ViewWealth = C4ViewDelay;
-  return TRUE;
+  return true;
   }
 
 void C4Player::SetViewMode(int32_t iMode, C4Object *pTarget)
@@ -955,27 +955,27 @@ void C4Player::Evaluate()
 void C4Player::Surrender()
   {
 	if (Surrendered) return;
-  Surrendered=TRUE;
-  Eliminated=TRUE;
+  Surrendered=true;
+  Eliminated=true;
 	RetireDelay=C4RetireDelay;
   StartSoundEffect("Eliminated");
 	Log(FormatString(LoadResStr("IDS_PRC_PLRSURRENDERED"),GetName()).getData());
   }
 
-BOOL C4Player::SetHostility(int32_t iOpponent, int32_t iHostility, BOOL fSilent)
+bool C4Player::SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent)
   {
 	// Check opponent valid
-  if (!ValidPlr(iOpponent) || (iOpponent==Number)) return FALSE;
+  if (!ValidPlr(iOpponent) || (iOpponent==Number)) return false;
 	// Set hostility
-  Hostility.SetIDCount(iOpponent+1,iHostility,TRUE);
+  Hostility.SetIDCount(iOpponent+1,iHostility,true);
 	// no announce in first frame, or if specified
-	if (!Game.FrameCounter || fSilent) return TRUE;
+	if (!Game.FrameCounter || fSilent) return true;
 	// Announce
 	StartSoundEffect("Trumpet");
 	Log(FormatString(LoadResStr(iHostility ? "IDS_PLR_HOSTILITY" : "IDS_PLR_NOHOSTILITY"),
 					GetName(),::Players.Get(iOpponent)->GetName()).getData());
 	// Success
-  return TRUE;
+  return true;
   }
 
 C4Object* C4Player::GetHiExpActiveCrew(bool fSelectOnly)
@@ -1023,7 +1023,7 @@ void C4Player::CheckCrewExPromotion()
 		if (hirank->Info)
 			if (hirank->Info->Rank<1) // No Fähnrich -> except. promo.
 				if (hirank=GetHiExpActiveCrew(false))
-					hirank->Promote(1,TRUE,false);
+					hirank->Promote(1,true,false);
 	}
 
 void C4Player::SetTeamHostility()
@@ -1040,12 +1040,12 @@ void C4Player::SetTeamHostility()
 			}
 	}
 
-BOOL C4Player::Message(const char *szMsg)
+bool C4Player::Message(const char *szMsg)
 	{
-	if (!szMsg) return FALSE;
+	if (!szMsg) return false;
 	SCopy(szMsg,MessageBuf,256);
 	MessageStatus=SLen(szMsg)*2;
-	return TRUE;
+	return true;
 	}
 
 void C4Player::Clear()
@@ -1080,12 +1080,12 @@ void C4Player::Default()
 	Menu.Default();
 	Crew.Default();
 	CrewInfoList.Default();
-	LocalControl=FALSE;
+	LocalControl=false;
 	BigIcon.Default();
 	Next=NULL;
-	fFogOfWar=TRUE; fFogOfWarInitialized=false;
+	fFogOfWar=true; fFogOfWarInitialized=false;
 	FoWViewObjs.Default();
-	LeagueEvaluated=FALSE;
+	LeagueEvaluated=false;
 	GameJoinTime=0; // overwritten in Init
 	pstatControls = pstatActions = NULL;
 	ControlCount = ActionCount = 0;
@@ -1098,14 +1098,14 @@ void C4Player::Default()
 	Evaluated = false;
 	}
 
-BOOL C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
+bool C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
 	{
 	C4Group hGroup;
 	// Open group
-  if (!hGroup.Open(szFilename)) return FALSE;
+  if (!hGroup.Open(szFilename)) return false;
 	// Load core
   if (!C4PlayerInfoCore::Load(hGroup))
-		{ hGroup.Close(); return FALSE; }
+		{ hGroup.Close(); return false; }
 	// Load BigIcon
 	if (hGroup.FindEntry(C4CFN_BigIcon)) BigIcon.Load(hGroup, C4CFN_BigIcon);
   // Load crew info list
@@ -1113,15 +1113,15 @@ BOOL C4Player::Load(const char *szFilename, bool fSavegame, bool fLoadPortraits)
 	// Close group
 	hGroup.Close();
 	// Success
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Player::Strip(const char *szFilename, bool fAggressive)
+bool C4Player::Strip(const char *szFilename, bool fAggressive)
 	{
 	// Opem group
 	C4Group Grp;
 	if(!Grp.Open(szFilename))
-		return FALSE;
+		return false;
 	// Which type of stripping?
 	if(!fAggressive)
 		{
@@ -1140,20 +1140,20 @@ BOOL C4Player::Strip(const char *szFilename, bool fAggressive)
 		C4PlayerInfoCore PlrInfoCore;
 		C4ObjectInfoList CrewInfoList;
 		if(!PlrInfoCore.Load(Grp) || !CrewInfoList.Load(Grp, false))
-			return FALSE;
+			return false;
 		// Strip crew info list (remove object infos that are invalid for this scenario)
 		CrewInfoList.Strip(::Definitions);
 		// Create a new group that receives the bare essentials
 		Grp.Close();
 		if(!EraseItem(szFilename) ||
-			 !Grp.Open(szFilename, TRUE))
-			return FALSE;
+			 !Grp.Open(szFilename, true))
+			return false;
 		// Save info core & crew info list to newly-created file
 		if(!PlrInfoCore.Save(Grp) || !CrewInfoList.Save(Grp, true, true, &::Definitions))
-			return FALSE;
+			return false;
 		Grp.Close();
 		}
-	return TRUE;
+	return true;
 	}
 
 void C4Player::DrawHostility(C4Facet &cgo, int32_t iIndex)
@@ -1166,7 +1166,7 @@ void C4Player::DrawHostility(C4Facet &cgo, int32_t iIndex)
 			pPlr->BigIcon.Draw(cgo);
 		// Standard player image
 		else
-			::GraphicsResource.fctCrewClr.DrawClr(cgo, TRUE, pPlr->ColorDw);
+			::GraphicsResource.fctCrewClr.DrawClr(cgo, true, pPlr->ColorDw);
 		// Other player and hostile
 		if (pPlr != this)
 			if (Hostility.GetIDCount(pPlr->Number+1))
@@ -1174,10 +1174,10 @@ void C4Player::DrawHostility(C4Facet &cgo, int32_t iIndex)
 		}
 	}
 
-BOOL C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
+bool C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 	{
 	C4ObjectInfo *cInf = NULL;
-	if (!pObj || !pObj->Def->CrewMember || !pObj->Status) return FALSE;
+	if (!pObj || !pObj->Def->CrewMember || !pObj->Status) return false;
 
 	// only if info is not yet assigned
 	if (!pObj->Info && fForceInfo)
@@ -1190,7 +1190,7 @@ BOOL C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 		if (!cInf)
 			while (!( cInf = CrewInfoList.GetIdle(pObj->id,::Definitions) ))
 				if (!CrewInfoList.New(pObj->id,&::Definitions))
-					return FALSE;
+					return false;
 
 		// Set object info
 		pObj->Info = cInf;
@@ -1214,7 +1214,7 @@ BOOL C4Player::MakeCrewMember(C4Object *pObj, bool fForceInfo, bool fDoCalls)
 		pObj->Call(PSF_OnJoinCrew, &parset);
 		}
 
-	return TRUE;
+	return true;
 	}
 
 void C4Player::ExecuteControl()
@@ -1260,9 +1260,9 @@ void C4Player::AdjustCursorCommand()
 		UpdateView();
 	}
 	// UnSelect previous cursor
-	if (pPrev && pPrev != Cursor) pPrev->UnSelect(TRUE);
+	if (pPrev && pPrev != Cursor) pPrev->UnSelect(true);
 	// We have a cursor: do select it
-	if (Cursor) { /*Cursor->DoSelect(TRUE);*/ Cursor->DoSelect(); } // Hmm, why DoSelect() twice? I hope the second one is the correct one...
+	if (Cursor) { /*Cursor->DoSelect(true);*/ Cursor->DoSelect(); } // Hmm, why DoSelect() twice? I hope the second one is the correct one...
   // Updates
   CursorFlash=30;
   }
@@ -1328,10 +1328,10 @@ void C4Player::SelectSingleByCursor()
 void C4Player::SelectSingle(C4Object *tobj)
   {
 	// clear previous cursor
-	if (Cursor) Cursor->UnSelect(TRUE);
+	if (Cursor) Cursor->UnSelect(true);
   // Set cursor
   Cursor=tobj;
-	if (Cursor) Cursor->DoSelect(TRUE);
+	if (Cursor) Cursor->DoSelect(true);
   // Now use PlayerSelectSingleByCursor
   SelectSingleByCursor();
   }
@@ -1385,15 +1385,15 @@ void C4Player::UpdateSelectionToggleStatus()
   CursorToggled=0;
   }
 
-BOOL C4Player::ObjectCom(BYTE byCom, int32_t iData) // By DirectCom
+bool C4Player::ObjectCom(BYTE byCom, int32_t iData) // By DirectCom
   {
-  if (Eliminated) return FALSE;
+  if (Eliminated) return false;
 #ifdef DEBUGREC_OBJCOM
 	C4RCObjectCom rc = { byCom, iData, Number };
 	AddDbgRec(RCT_PlrCom, &rc, sizeof(C4RCObjectCom));
 #endif
   // Hide startup
-	ShowStartup=FALSE;
+	ShowStartup=false;
   // If regular com, update cursor & selection status
 	if (!(byCom & COM_Single) && !(byCom & COM_Double) && (byCom < COM_ReleaseFirst || byCom > COM_ReleaseLast))
     UpdateSelectionToggleStatus();
@@ -1406,15 +1406,15 @@ BOOL C4Player::ObjectCom(BYTE byCom, int32_t iData) // By DirectCom
 		Cursor->DirectCom(byCom,iData);
 		}
 	// Done
-  return TRUE;
+  return true;
   }
 
-BOOL C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
+bool C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
   {
 	// Eliminated
-  if (Eliminated) return FALSE;
+  if (Eliminated) return false;
   // Hide startup
-  if (ShowStartup) ShowStartup=FALSE;
+  if (ShowStartup) ShowStartup=false;
 	// Update selection & toggle status
   UpdateSelectionToggleStatus();
   // Apply to all selected crew members (in cursor range) except pTarget.
@@ -1454,15 +1454,15 @@ BOOL C4Player::ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iX, in
 			ObjectCommand2Obj(Cursor, iCommand, pTarget, iX, iY, pTarget2, iData, iMode);
 
 	// Success
-  return TRUE;
+  return true;
   }
 
 void C4Player::ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode)
 	{
 	// forward to object
-	if (iMode & C4P_Command_Append) cObj->AddCommand(iCommand,pTarget,iX,iY,0,pTarget2,TRUE,iData,TRUE,0,NULL,C4CMD_Mode_Base); // append: by Shift-click and for dragging of multiple objects (all independant; thus C4CMD_Mode_Base)
-	else if (iMode & C4P_Command_Add) cObj->AddCommand(iCommand,pTarget,iX,iY,0,pTarget2,TRUE,iData,FALSE,0,NULL,C4CMD_Mode_Base); // append: by context menu and keyboard throw command (all independant; thus C4CMD_Mode_Base)
-	else if (iMode & C4P_Command_Set) cObj->SetCommand(iCommand,pTarget,iX,iY,pTarget2,TRUE,iData);
+	if (iMode & C4P_Command_Append) cObj->AddCommand(iCommand,pTarget,iX,iY,0,pTarget2,true,iData,true,0,NULL,C4CMD_Mode_Base); // append: by Shift-click and for dragging of multiple objects (all independant; thus C4CMD_Mode_Base)
+	else if (iMode & C4P_Command_Add) cObj->AddCommand(iCommand,pTarget,iX,iY,0,pTarget2,true,iData,false,0,NULL,C4CMD_Mode_Base); // append: by context menu and keyboard throw command (all independant; thus C4CMD_Mode_Base)
+	else if (iMode & C4P_Command_Set) cObj->SetCommand(iCommand,pTarget,iX,iY,pTarget2,true,iData);
 	}
 
 void C4Player::DirectCom(BYTE byCom, int32_t iData) // By InCom or ExecuteControl
@@ -1556,8 +1556,8 @@ void C4Player::CompileFunc(StdCompiler *pComp)
 	bool bForceFogOfWar = false;
 	pComp->Value(mkNamingAdapt(bForceFogOfWar,  		"ForceFogOfWar",        false));
 	pComp->Value(mkNamingAdapt(ShowStartup,     		"ShowStartup",          false));
-	pComp->Value(mkNamingAdapt(ShowControl,     		"ShowControl",          FALSE));
-	pComp->Value(mkNamingAdapt(ShowControlPos,  		"ShowControlPos",       FALSE));
+	pComp->Value(mkNamingAdapt(ShowControl,     		"ShowControl",          false));
+	pComp->Value(mkNamingAdapt(ShowControlPos,  		"ShowControlPos",       false));
 	pComp->Value(mkNamingAdapt(Wealth,          		"Wealth",               0));
 	pComp->Value(mkNamingAdapt(Points,          		"Points",               0));
 	pComp->Value(mkNamingAdapt(Value,           		"Value",                0));
@@ -1590,24 +1590,24 @@ void C4Player::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,	"MsgBoardQueries"				));
   }
 
-BOOL C4Player::LoadRuntimeData(C4Group &hGroup)
+bool C4Player::LoadRuntimeData(C4Group &hGroup)
 	{
 	const char *pSource;
 	// Use loaded game text component
-	if (!(pSource = Game.GameText.GetData())) return FALSE;
+	if (!(pSource = Game.GameText.GetData())) return false;
 	// safety: Do nothing if playeer section is not even present (could kill initialized values)
-	if (!SSearch(pSource, FormatString("[Player%i]", ID).getData())) return FALSE;
+	if (!SSearch(pSource, FormatString("[Player%i]", ID).getData())) return false;
 	// Compile (Search player section - runtime data is stored by unique player ID)
 	assert(ID);
   if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(
 			mkNamingAdapt(*this, FormatString("Player%i", ID).getData()),
 			StdStrBuf(pSource),
 			Game.GameText.GetFilePath()))
-		return FALSE;
+		return false;
 	// Denumerate pointers
 	DenumeratePointers();
 	// Success
-	return TRUE;
+	return true;
 	}
 
 void C4Player::ExecHomeBaseProduction()
@@ -1683,7 +1683,7 @@ void C4Player::DefaultRuntimeData()
 	SCopy("Local",AtClientName);
   Color=-1;
   Control=C4P_Control_None;
-	MouseControl=FALSE;
+	MouseControl=false;
   Position=-1;
 	PlrStartIndex=0;
 	RetireDelay=0;
@@ -1691,7 +1691,7 @@ void C4Player::DefaultRuntimeData()
   ViewX=ViewY=0;
   ViewTarget=NULL;
   CursorSelection=CursorToggled=0;
-  ShowStartup=TRUE;
+  ShowStartup=true;
   CrewCnt=0;
 	ViewWealth=ViewValue=0;
 	ShowControl=ShowControlPos=0;
@@ -1791,11 +1791,11 @@ void C4Player::NotifyOwnedObjects()
 					}
 	}
 
-BOOL C4Player::DoPoints(int32_t iChange)
+bool C4Player::DoPoints(int32_t iChange)
 	{
 	Points = BoundBy<int32_t>( Points+iChange, -100000, 100000 );
 	ViewValue = C4ViewDelay;
-	return TRUE;
+	return true;
 	}
 
 void C4Player::SetCursor(C4Object *pObj, bool fSelectFlash, bool fSelectArrow)
@@ -1807,9 +1807,9 @@ void C4Player::SetCursor(C4Object *pObj, bool fSelectFlash, bool fSelectArrow)
 	// Set cursor
   Cursor=pObj;
 	// unselect previous
-	if (pPrev  && fChanged) pPrev->UnSelect(TRUE);
+	if (pPrev  && fChanged) pPrev->UnSelect(true);
 	// Select object
-  if (Cursor) { Cursor->DoSelect(TRUE); /*Cursor->DoSelect();*/ } // Sven2: why the second DoSelect()? - it breaks cursor-toggle-selection
+  if (Cursor) { Cursor->DoSelect(true); /*Cursor->DoSelect();*/ } // Sven2: why the second DoSelect()? - it breaks cursor-toggle-selection
 	// View flash
   if (fSelectArrow) CursorFlash=30;
 	if (fSelectFlash) SelectFlash=30;
@@ -1841,10 +1841,10 @@ void C4Player::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewH
 void C4Player::InitControl()
 	{
 	// Check local control
-	LocalControl = FALSE;
+	LocalControl = false;
 	if (AtClient == ::Control.ClientID())
 		if (!GetInfo() || GetInfo()->GetType() == C4PT_User)
-			LocalControl=TRUE;
+			LocalControl=true;
   // Set control
   Control=C4P_Control_None;
 	// Preferred control
@@ -1878,7 +1878,7 @@ void C4Player::InitControl()
 		if (!Game.C4S.Head.DisableMouse)
 			if (Inside<int32_t>(Control, C4P_Control_Keyboard1, C4P_Control_GamePadMax))
 				if (!::Players.MouseControlTaken())
-					MouseControl=TRUE;
+					MouseControl=true;
 	// no controls issued yet
 	ControlCount = ActionCount = 0;
 	LastControlType = PCID_None;
@@ -1981,7 +1981,7 @@ bool C4Player::FoWIsVisible(int32_t x, int32_t y)
 	return fSeen;
 	}
 
-void C4Player::SelectCrew(C4Object *pObj, BOOL fSelect)
+void C4Player::SelectCrew(C4Object *pObj, bool fSelect)
 	{
 	// Not a valid crew member
 	if (!pObj || !Crew.GetLink(pObj)) return;
@@ -2003,7 +2003,7 @@ void C4Player::CloseMenu()
 void C4Player::Eliminate()
   {
 	if (Eliminated) return;
-  Eliminated=TRUE;
+  Eliminated=true;
 	RetireDelay=C4RetireDelay;
   StartSoundEffect("Eliminated");
 	Log(FormatString(LoadResStr("IDS_PRC_PLRELIMINATED"),GetName()).getData());
@@ -2053,7 +2053,7 @@ int32_t C4Player::GetSelectedCrewCount()
 void C4Player::EvaluateLeague(bool fDisconnected, bool fWon)
 	{
 	// already evaluated?
-	if (LeagueEvaluated) return; LeagueEvaluated=TRUE;
+	if (LeagueEvaluated) return; LeagueEvaluated=true;
   // set fate
   C4PlayerInfo *pInfo = GetInfo();
   if(pInfo)
@@ -2065,10 +2065,10 @@ void C4Player::EvaluateLeague(bool fDisconnected, bool fWon)
     }
 	}
 
-BOOL C4Player::LocalSync()
+bool C4Player::LocalSync()
 	{
 	// local sync not necessary for script players
-	if (GetType() == C4PT_Script) return TRUE;
+	if (GetType() == C4PT_Script) return true;
 	// evaluate total playing time
 	TotalPlayingTime+=Game.Time-GameJoinTime;
 	GameJoinTime = Game.Time;
@@ -2081,9 +2081,9 @@ BOOL C4Player::LocalSync()
 			}
 	// save player
 	if (!Save())
-		return FALSE;
+		return false;
 	// done, success
-	return TRUE;
+	return true;
 	}
 
 C4PlayerInfo *C4Player::GetInfo()
@@ -2091,19 +2091,19 @@ C4PlayerInfo *C4Player::GetInfo()
 	return Game.PlayerInfos.GetPlayerInfoByID(ID);
 	}
 
-BOOL C4Player::SetObjectCrewStatus(C4Object *pCrew, BOOL fNewStatus)
+bool C4Player::SetObjectCrewStatus(C4Object *pCrew, bool fNewStatus)
 	{
 	// either add...
 	if (fNewStatus)
 		{
 		// is in crew already?
-		if (Crew.IsContained(pCrew)) return TRUE;
+		if (Crew.IsContained(pCrew)) return true;
 		return MakeCrewMember(pCrew, false);
 		}
 	else
 		{
 		// already outside?
-		if (!Crew.IsContained(pCrew)) return TRUE;
+		if (!Crew.IsContained(pCrew)) return true;
 		// ...or remove
 		Crew.Remove(pCrew);
 		// remove info, if assigned to this player
@@ -2117,7 +2117,7 @@ BOOL C4Player::SetObjectCrewStatus(C4Object *pCrew, BOOL fNewStatus)
 			}
 		}
 	// done, success
-	return TRUE;
+	return true;
 	}
 
 void C4Player::CreateGraphs()
@@ -2284,7 +2284,7 @@ void C4Player::ToggleMouseControl()
 	if (!MouseControl && !::Players.MouseControlTaken())
 		{
 		::MouseControl.Init(Number);
-		MouseControl=TRUE;
+		MouseControl=true;
 		}
 	// Deactivate mouse control
 	else if (MouseControl)

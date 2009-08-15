@@ -58,7 +58,7 @@ const C4ID C4ID_None       = 0x0,
 C4ID C4Id(const char *szId);
 void GetC4IdText(C4ID id, char *sBuf);
 const char *C4IdText(C4ID id);
-BOOL LooksLikeID(const char *szText);
+bool LooksLikeID(const char *szText);
 bool LooksLikeID(C4ID id);
 
 // * C4ID Adaptor

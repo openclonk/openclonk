@@ -30,14 +30,14 @@
 #include "C4Version.h"
 
 #ifdef USE_X11
-#define BOOL _BOOL
+#define bool _BOOL
 #include "c4x.xpm"
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/xf86vmode.h>
 #include <GL/glx.h>
-#undef BOOL
+#undef bool
 #endif
 
 #include <string>

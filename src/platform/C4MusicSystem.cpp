@@ -90,16 +90,16 @@ bool C4MusicSystem::InitializeMOD()
 	if (FSOUND_GetVersion() < FMOD_VERSION)
 		{
 		LogF("FMod: You are using the wrong DLL version!  You should be using %.02f", FMOD_VERSION);
-		return FALSE;
+		return false;
 		}
 	if (!FSOUND_Init(44100, 32, 0))
 		{
 		LogF("FMod: %s", FMOD_ErrorString(FSOUND_GetError()));
-		return FALSE;
+		return false;
 		}
 	// ok
-	MODInitialized = TRUE;
-	return TRUE;
+	MODInitialized = true;
+	return true;
 #endif
 #ifdef HAVE_LIBSDL_MIXER
 	SDL_version compile_version;
@@ -139,7 +139,7 @@ void C4MusicSystem::DeinitializeMOD()
 	Mix_CloseAudio();
 	SDL_Quit();
 #endif
-	MODInitialized = FALSE;
+	MODInitialized = false;
 }
 
 bool C4MusicSystem::Init(const char * PlayList)
@@ -421,7 +421,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop)
 
 	// File found?
 	if (!NewFile)
-		return FALSE;
+		return false;
 
 	// Stop old music
 	Stop();
@@ -429,7 +429,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop)
 	LogF(LoadResStr("IDS_PRC_PLAYMUSIC"), GetFilename(NewFile->FileName));
 
 	// Play new song
-	if(!NewFile->Play(fLoop)) return FALSE;
+	if(!NewFile->Play(fLoop)) return false;
 	PlayMusicFile = NewFile;
 	NewFile->LastPlayed = SCounter++;
 	Loop = fLoop;
@@ -437,7 +437,7 @@ bool C4MusicSystem::Play(const char *szSongname, bool fLoop)
 	// Set volume
 	PlayMusicFile->SetVolume(Volume);
 
-	return TRUE;
+	return true;
 	}
 
 void C4MusicSystem::NotifySuccess()
@@ -521,7 +521,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList)
 	C4MusicFile *pFile;
 	for(pFile = Songs; pFile; pFile = pFile->pNext)
 		{
-		pFile->NoPlay = TRUE;
+		pFile->NoPlay = true;
 		pFile->LastPlayed = -1;
 		}
 	ASongCount = 0;
@@ -535,7 +535,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList)
 				if(pFile->NoPlay && WildcardMatch(szFileName, GetFilename(pFile->FileName)))
 					{
 					ASongCount++;
-					pFile->NoPlay = FALSE;
+					pFile->NoPlay = false;
 					}
 		}
 	else
@@ -548,7 +548,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList)
 			   !SEqual2(GetFilename(pFile->FileName), "Frontend."))
 				{
 				ASongCount++;
-				pFile->NoPlay = FALSE;
+				pFile->NoPlay = false;
 				}
 		}
 	return ASongCount;

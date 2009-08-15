@@ -449,11 +449,11 @@ bool ContextMenu::CtxMouseInput(CMouse &rMouse, int32_t iButton, int32_t iScreen
 	return true;
 	}
 
-BOOL ContextMenu::CharIn(const char * c)
+bool ContextMenu::CharIn(const char * c)
 	{
 	// forward to submenu
 	if (pSubmenu) return pSubmenu->CharIn(c);
-	return FALSE;
+	return false;
 	}
 
 void ContextMenu::Draw(C4TargetFacet &cgo)

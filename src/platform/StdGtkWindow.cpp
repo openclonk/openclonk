@@ -59,7 +59,7 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 
 	GtkWidget* render_widget = InitGUI();
 
-	gtk_widget_set_colormap(render_widget, gdk_colormap_new(gdkx_visual_get(((XVisualInfo*)Info)->visualid), TRUE));
+	gtk_widget_set_colormap(render_widget, gdk_colormap_new(gdkx_visual_get(((XVisualInfo*)Info)->visualid), true));
 
 	gtk_widget_show_all(window);
 
@@ -166,7 +166,7 @@ gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, g
 	if(event->keyval == GDK_Alt_L || event->keyval == GDK_Alt_R) mask ^= (1 << 3);
 
 	static_cast<CStdApp*>(user_data)->KeyMask = mask;
-	return FALSE;
+	return false;
 }
 
 GtkWidget* CStdGtkWindow::InitGUI()

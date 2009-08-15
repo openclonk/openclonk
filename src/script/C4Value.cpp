@@ -327,21 +327,21 @@ const char* C4Value::GetTypeInfo()
 
 // converter functions ----------------
 
-static bool FnCnvDirectOld(C4Value *Val, C4V_Type toType, BOOL fStrict)
+static bool FnCnvDirectOld(C4Value *Val, C4V_Type toType, bool fStrict)
 	{
 	// new syntax: failure
-	if (fStrict) return FALSE;
+	if (fStrict) return false;
 	// old syntax: do nothing
-	return TRUE;
+	return true;
 	}
 
-static bool FnCnvError(C4Value *Val, C4V_Type toType, BOOL fStrict)
+static bool FnCnvError(C4Value *Val, C4V_Type toType, bool fStrict)
 	{
 	// deny convert
-	return FALSE;
+	return false;
 	}
 
-static bool FnCnvDeref(C4Value *Val, C4V_Type toType, BOOL fStrict)
+static bool FnCnvDeref(C4Value *Val, C4V_Type toType, bool fStrict)
 	{
 	// resolve reference of Value
 	Val->Deref();
@@ -349,7 +349,7 @@ static bool FnCnvDeref(C4Value *Val, C4V_Type toType, BOOL fStrict)
 	return Val->ConvertTo(toType, fStrict);
 	}
 
-bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType, BOOL fStrict)
+bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType, bool fStrict)
 	{
 	// try casting
 	if (dynamic_cast<C4Object *>(Val->Data.PropList)) return true;

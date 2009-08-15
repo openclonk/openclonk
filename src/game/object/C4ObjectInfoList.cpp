@@ -92,12 +92,12 @@ int32_t C4ObjectInfoList::Load(C4Group &hGroup, bool fLoadPortraits)
   return infn;
 	}
 
-BOOL C4ObjectInfoList::Add(C4ObjectInfo *pInfo)
+bool C4ObjectInfoList::Add(C4ObjectInfo *pInfo)
 	{
-	if (!pInfo) return FALSE;
+	if (!pInfo) return false;
 	pInfo->Next=First;
 	First=pInfo;
-	return TRUE;
+	return true;
 	}
 
 void C4ObjectInfoList::MakeValidName(char *sName)
@@ -111,13 +111,13 @@ void C4ObjectInfoList::MakeValidName(char *sName)
     }
 	}
 
-BOOL C4ObjectInfoList::NameExists(const char *szName)
+bool C4ObjectInfoList::NameExists(const char *szName)
 	{
   C4ObjectInfo *cinf;
   for (cinf=First; cinf; cinf=cinf->Next)
     if (SEqualNoCase(szName,cinf->Name))
-      return TRUE;
-  return FALSE;
+      return true;
+  return false;
 	}
 
 C4ObjectInfo* C4ObjectInfoList::GetIdle(C4ID c_id, C4DefList &rDefs)
@@ -162,7 +162,7 @@ C4ObjectInfo* C4ObjectInfoList::New(C4ID n_id, C4DefList *pDefs)
 	C4Def *pDef = NULL;
 	if (pDefs)
 		if (!(pDef = pDefs->ID2Def(n_id)))
-			{ delete pInfo; return FALSE; }
+			{ delete pInfo; return false; }
 	// Set name source
 	const char *cpNames = Game.Names.GetData();
 	if (pDef->pClonkNames) cpNames = pDef->pClonkNames->GetData();
@@ -188,7 +188,7 @@ void C4ObjectInfoList::Evaluate()
 		cinf->Evaluate();
 	}
 
-BOOL C4ObjectInfoList::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny, C4DefList *pDefs)
+bool C4ObjectInfoList::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny, C4DefList *pDefs)
 	{
 	// Save in opposite order (for identical crew order on load)
 	C4ObjectInfo *pInfo;
@@ -202,9 +202,9 @@ BOOL C4ObjectInfoList::Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny, C4
 			}
 		// save
 		if (!pInfo->Save(hGroup, fStoreTiny, pDefs))
-			return FALSE;
+			return false;
 		}
-	return TRUE;
+	return true;
 	}
 
 C4ObjectInfo* C4ObjectInfoList::GetIdle(const char *szByName)

@@ -155,7 +155,7 @@ static bool IsWindowsVista()
 	// Determine windows version
 	OSVERSIONINFO ver;
 	ver.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	BOOL fWindowsXP = FALSE;
+	bool fWindowsXP = false;
 	if (GetVersionEx((LPOSVERSIONINFO) &ver))
 		return ((ver.dwMajorVersion == 6) && (ver.dwMinorVersion == 0));
 #endif

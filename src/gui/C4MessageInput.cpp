@@ -349,7 +349,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 			{
 			// team not known; can't send!
 			Log(LoadResStr("IDS_MSG_CANTSENDTEAMMESSAGETEAMSN"));
-			return FALSE;
+			return false;
 			}
 		else
 			{
@@ -366,12 +366,12 @@ bool C4MessageInput::ProcessInput(const char *szText)
     SCopyUntil(szText + 9, szTargetPlr, ' ', C4MaxName);
     // search player
     C4Player *pToPlr = ::Players.GetByName(szTargetPlr);
-    if(!pToPlr) return FALSE;
+    if(!pToPlr) return false;
     // set
     eMsgType = C4CMT_Private;
 		iToPlayer = pToPlr->Number;
     szMsg = szText + 10 + SLen(szText);
-    if(szMsg > szText + SLen(szText)) return FALSE;
+    if(szMsg > szText + SLen(szText)) return false;
 		}
   // Starts with "/me ": Me-Message
   else if(SEqual2NoCase(szText, "/me "))
@@ -421,7 +421,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
 		while(IsWhiteSpace(*szMsg)) szMsg++;
 		if(!*szMsg)
 			{
-			if (eMsgType != C4CMT_Alert) return TRUE;
+			if (eMsgType != C4CMT_Alert) return true;
 			*szMessage = '\0';
 			}
 		else
@@ -445,7 +445,7 @@ bool C4MessageInput::ProcessInput(const char *szText)
       CDT_Private);
   }
 
-	return TRUE;
+	return true;
 	}
 
 bool C4MessageInput::ProcessCommand(const char *szCommand)
@@ -478,18 +478,18 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		LogF("/set maxplayer [4] - %s", LoadResStr("IDS_TEXT_SETANEWMAXIMUMNUMBEROFPLA"));
 		LogF("/script [script] - %s", LoadResStr("IDS_TEXT_EXECUTEASCRIPTCOMMAND"));
 		LogF("/clear - %s", LoadResStr("IDS_MSG_CLEARTHEMESSAGEBOARD"));
-		return TRUE;
+		return true;
 		}
 	// dev-scripts
 	if(SEqual(szCmdName, "script"))
 		{
-		if (!Game.IsRunning) return FALSE;
-		if (!Game.DebugMode) return FALSE;
-		if (!::Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return FALSE;
-    if (::Network.isEnabled() && !::Network.isHost()) return FALSE;
+		if (!Game.IsRunning) return false;
+		if (!Game.DebugMode) return false;
+		if (!::Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return false;
+    if (::Network.isEnabled() && !::Network.isHost()) return false;
 
     ::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
-		return TRUE;
+		return true;
 		}
 	// set runtimte properties
 	if(SEqual(szCmdName, "set"))
@@ -501,29 +501,29 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 				if(atoi(pCmdPar+10) == 0 && !SEqual(pCmdPar+10, "0"))
 					{
 					Log("Syntax: /set maxplayer count");
-					return FALSE;
+					return false;
 					}
 				::Control.DoInput(CID_Set,
 	        new C4ControlSet(C4CVT_MaxPlayer, atoi(pCmdPar+10)),
 					CDT_Decide);
-				return TRUE;
+				return true;
 				}
 		  }
 		if(SEqual2(pCmdPar, "comment ") || SEqual(pCmdPar, "comment"))
 		  {
-			if(!::Network.isEnabled() || !::Network.isHost()) return FALSE;
+			if(!::Network.isEnabled() || !::Network.isHost()) return false;
       // Set in configuration, update reference
 			Config.Network.Comment.CopyValidated(pCmdPar[7] ? (pCmdPar+8) : "");
       ::Network.InvalidateReference();
 			Log(LoadResStr("IDS_NET_COMMENTCHANGED"));
-			return TRUE;
+			return true;
 		  }
 		if(SEqual2(pCmdPar, "password ") || SEqual(pCmdPar, "password"))
 		  {
-			if(!::Network.isEnabled() || !::Network.isHost()) return FALSE;
+			if(!::Network.isEnabled() || !::Network.isHost()) return false;
 			::Network.SetPassword(pCmdPar[8] ? (pCmdPar+9) : NULL);
 			if (pLobby) pLobby->UpdatePassword();
-			return TRUE;
+			return true;
 		  }
     if(SEqual2(pCmdPar, "faircrew "))
       {
@@ -535,12 +535,12 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
       else if(isdigit((unsigned char)pCmdPar[9]))
         pSet = new C4ControlSet(C4CVT_FairCrew, atoi(pCmdPar + 9));
       else
-        return FALSE;
+        return false;
       ::Control.DoInput(CID_Set, pSet, CDT_Decide);
-      return TRUE;
+      return true;
       }
 		// unknown property
-		return FALSE;
+		return false;
 		}
 	// get szen from network folder - not in lobby; use res tab there
 	if(SEqual(szCmdName, "netgetscen"))
@@ -555,11 +555,11 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 					if (C4Group_CopyItem(pScenario->getFile(), Config.AtUserDataPath(GetFilename(Game.ScenarioFilename))))
 						{
 						LogF(LoadResStr("IDS_MSG_CMD_NETGETSCEN_SAVED"), Config.AtUserDataPath(GetFilename(Game.ScenarioFilename)));
-						return TRUE;
+						return true;
 						}
 				}
 			}
-		return FALSE;
+		return false;
 		}
 	// clear message board
 	if(SEqual(szCmdName, "clear"))
@@ -577,7 +577,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			// EM mode
 			Console.ClearLog();
 			}
-		return TRUE;
+		return true;
 		}
 	// kick client
 	if(SEqual(szCmdName, "kick"))
@@ -589,7 +589,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			if (!pClient)
 				{
 				LogF(LoadResStr("IDS_MSG_CMD_NOCLIENT"), pCmdPar);
-				return FALSE;
+				return false;
 				}
 			// league: Kick needs voting
 			if(Game.Parameters.isLeague() && ::Players.GetAtClient(pClient->getID()))
@@ -598,40 +598,40 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 				// add control
 				Game.Clients.CtrlRemove(pClient, LoadResStr("IDS_MSG_KICKFROMMSGBOARD"));
 			}
-		return TRUE;
+		return true;
 		}
 	// set fast mode
 	if(SEqual(szCmdName, "fast"))
 		{
-		if (!Game.IsRunning) return FALSE;
+		if (!Game.IsRunning) return false;
 		int32_t iFS;
-		if((iFS=atoi(pCmdPar)) == 0) return FALSE;
+		if((iFS=atoi(pCmdPar)) == 0) return false;
 		// set frameskip and fullspeed flag
 		Game.FrameSkip=BoundBy<int32_t>(iFS,1,500);
-		Game.FullSpeed=TRUE;
+		Game.FullSpeed=true;
 		// start calculation immediatly
 		Application.NextTick();
-		return TRUE;
+		return true;
 		}
 	// reset fast mode
 	if(SEqual(szCmdName, "slow"))
 		{
-		if (!Game.IsRunning) return FALSE;
-		Game.FullSpeed=FALSE;
+		if (!Game.IsRunning) return false;
+		Game.FullSpeed=false;
 		Game.FrameSkip=1;
-		return TRUE;
+		return true;
 		}
 
 	if (SEqual(szCmdName, "nodebug"))
 		{
-		if (!Game.IsRunning) return FALSE;
+		if (!Game.IsRunning) return false;
 		::Control.DoInput(CID_Set, new C4ControlSet(C4CVT_AllowDebug, false), CDT_Decide);
-		return TRUE;
+		return true;
 		}
 
 	if (SEqual(szCmdName, "msgboard"))
 		{
-		if (!Game.IsRunning) return FALSE;
+		if (!Game.IsRunning) return false;
 		// get line cnt
 		int32_t iLineCnt = BoundBy(atoi(pCmdPar), 0, 20);
 		if(iLineCnt == 0)
@@ -643,20 +643,20 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			::GraphicsSystem.MessageBoard.iLines = iLineCnt;
 			::GraphicsSystem.MessageBoard.ChangeMode(1);
 			}
-		return TRUE;
+		return true;
 		}
 
 	// kick/activate/deactivate/observer
 	if(SEqual(szCmdName, "activate") || SEqual(szCmdName, "deactivate") || SEqual(szCmdName, "observer"))
 		{
     if (!::Network.isEnabled() || !::Network.isHost())
-      { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return FALSE; }
+      { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return false; }
 		// search for client
 		C4Client *pClient = Game.Clients.getClientByName(pCmdPar);
 		if (!pClient)
 			{
 			LogF(LoadResStr("IDS_MSG_CMD_NOCLIENT"), pCmdPar);
-			return FALSE;
+			return false;
 			}
 		// what to do?
 		C4ControlClientUpdate *pCtrl = NULL;
@@ -671,16 +671,16 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			::Control.DoInput(CID_ClientUpdate, pCtrl, CDT_Sync);
 		else
 			Log(LoadResStr("IDS_LOG_COMMANDNOTALLOWEDINLEAGUE"));
-		return TRUE;
+		return true;
 		}
 
 	// control mode
 	if(SEqual(szCmdName, "centralctrl") || SEqual(szCmdName, "decentralctrl")  || SEqual(szCmdName, "asyncctrl"))
     {
     if (!::Network.isEnabled() || !::Network.isHost())
-      { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return FALSE; }
+      { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return false; }
     ::Network.SetCtrlMode(*szCmdName == 'c' ? CNM_Central : *szCmdName == 'd' ? CNM_Decentral : CNM_Async);
-		return TRUE;
+		return true;
     }
 
 	// show chart
@@ -737,13 +737,13 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		// add script
 		::Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
 		// ok
-		return TRUE;
+		return true;
 	}
 
 	// unknown command
 	StdStrBuf sErr; sErr.Format(LoadResStr("IDS_ERR_UNKNOWNCMD"), szCmdName);
 	if (pLobby) pLobby->OnError(sErr.getData()); else Log(sErr.getData());
-	return FALSE;
+	return false;
 	}
 
 void C4MessageInput::AddCommand(const char *strCommand, const char *strScript, C4MessageBoardCommand::Restriction eRestriction)

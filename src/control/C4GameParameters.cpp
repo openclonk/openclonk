@@ -359,7 +359,7 @@ void C4GameParameters::Clear()
 	Teams.Clear();
 }
 
-BOOL C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames)
+bool C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *szGameText, C4LangStringTable *pLang, const char *DefinitionFilenames)
 {
 	// Clear previous data
 	Clear();
@@ -401,7 +401,7 @@ BOOL C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 
 	// Load teams
 	if (!Teams.Load(hGroup, pScenario, pLang))
-		{ LogFatal(LoadResStr("IDS_PRC_ERRORLOADINGTEAMS")); return FALSE; }
+		{ LogFatal(LoadResStr("IDS_PRC_ERRORLOADINGTEAMS")); return false; }
 
 	// Compile data
 	StdStrBuf Buf;
@@ -411,7 +411,7 @@ BOOL C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 				mkNamingAdapt(mkParAdapt(*this, pScenario), "Parameters"),
 				Buf,
 				C4CFN_Parameters))
-			return FALSE;
+			return false;
 	}
 	else
 	{
@@ -440,7 +440,7 @@ BOOL C4GameParameters::Load(C4Group &hGroup, C4Scenario *pScenario, const char *
 	if (isLeague()) EnforceLeagueRules(pScenario);
 
 	// Done
-	return TRUE;
+	return true;
 }
 
 void C4GameParameters::EnforceLeagueRules(C4Scenario *pScenario)
@@ -460,32 +460,32 @@ void C4GameParameters::EnforceLeagueRules(C4Scenario *pScenario)
 	if (pScenario) MaxPlayers = pScenario->Head.MaxPlayerLeague;
 }
 
-BOOL C4GameParameters::Save(C4Group &hGroup, C4Scenario *pScenario)
+bool C4GameParameters::Save(C4Group &hGroup, C4Scenario *pScenario)
 {
 
 	// Write Parameters.txt
 	StdStrBuf ParData = DecompileToBuf<StdCompilerINIWrite>(
 		mkNamingAdapt(mkParAdapt(*this, pScenario), "Parameters"));
-	if(!hGroup.Add(C4CFN_Parameters, ParData, FALSE, TRUE))
-		return FALSE;
+	if(!hGroup.Add(C4CFN_Parameters, ParData, false, true))
+		return false;
 
 	// Done
-	return TRUE;
+	return true;
 }
 
-BOOL C4GameParameters::InitNetwork(C4Network2ResList *pResList)
+bool C4GameParameters::InitNetwork(C4Network2ResList *pResList)
 {
 
 	// Scenario & material resource
 	if(!Scenario.InitNetwork(pResList))
-		return FALSE;
+		return false;
 
 	// Other game resources
 	if(!GameRes.InitNetwork(pResList))
-		return FALSE;
+		return false;
 
 	// Done
-	return TRUE;
+	return true;
 }
 
 void C4GameParameters::CompileFunc(StdCompiler *pComp, C4Scenario *pScenario)

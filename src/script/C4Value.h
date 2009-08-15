@@ -65,7 +65,7 @@ union C4V_Data {
 // converter function, used in converter table
 struct C4VCnvFn
 	{
-	bool (*Function) (C4Value*, C4V_Type, BOOL); // function to be called; returns whether possible
+	bool (*Function) (C4Value*, C4V_Type, bool); // function to be called; returns whether possible
 	bool Warn;
 	};
 
@@ -185,7 +185,7 @@ public:
 
 	StdStrBuf GetDataString();
 
-	inline bool ConvertTo(C4V_Type vtToType, BOOL fStrict=TRUE) // convert to dest type
+	inline bool ConvertTo(C4V_Type vtToType, bool fStrict=true) // convert to dest type
 		{
 		C4VCnvFn Fn = C4ScriptCnvMap[Type][vtToType];
 		if (Fn.Function)
@@ -238,7 +238,7 @@ protected:
 	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray);
 
 	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
-	static bool FnCnvObject(C4Value *Val, C4V_Type toType, BOOL fStrict);
+	static bool FnCnvObject(C4Value *Val, C4V_Type toType, bool fStrict);
 
 	friend class C4PropList;
 	friend class C4AulDefFunc;

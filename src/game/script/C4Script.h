@@ -51,7 +51,7 @@ struct C4ScriptConstDef
 struct C4ScriptFnDef
   {
   const char* Identifier; // the name of the func in the script
-	BOOL Public;
+	bool Public;
 	C4V_Type RetType; // type returned. ignored when C4V
 	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
 	C4Value (*FunctionC4V)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,
@@ -127,7 +127,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
 #define PSF_RejectEntrance			"~RejectEntrance" // C4Object *pIntoObj
 #define PSF_RejectFight         "~RejectFight" // C4Object* pEnemy
 #define PSF_AttachTargetLost    "~AttachTargetLost"
-#define PSF_CrewSelection       "~CrewSelection" // BOOL fDeselect, BOOL fCursorOnly
+#define PSF_CrewSelection       "~CrewSelection" // bool fDeselect, bool fCursorOnly
 #define PSF_GetObject2Drop      "~GetObject2Drop" // C4Object *pForCollectionOfObj
 #define PSF_LeagueGetResult     "~LeagueGetResult" // int iForPlr
 #define PSF_MenuSelection       "~OnMenuSelection" // int iItemIndex, C4Object *pMenuObject
@@ -138,7 +138,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
 #define PSF_OnOwnerChanged      "~OnOwnerChanged" // iNewOwner, iOldOwner
 #define PSF_OnJoinCrew          "~Recruitment" // int Player
 #define PSF_FxStart             "Fx%sStart" // C4Object *pTarget, int iEffectNumber, int iTemp, C4Value vVar1, C4Value vVar2, C4Value vVar3, C4Value vVar4
-#define PSF_FxStop              "Fx%sStop" // C4Object *pTarget, int iEffectNumber, int iReason, BOOL fTemp
+#define PSF_FxStop              "Fx%sStop" // C4Object *pTarget, int iEffectNumber, int iReason, bool fTemp
 #define PSF_FxTimer             "Fx%sTimer" // C4Object *pTarget, int iEffectNumber, int iEffectTime
 #define PSF_FxEffect            "Fx%sEffect" // C4String *szNewEffect, C4Object *pTarget, int iEffectNumber, int iNewEffectNumber, C4Value vNewEffectVar1, C4Value vNewEffectVar2, C4Value vNewEffectVar3, C4Value vNewEffectVar4
 #define PSF_FxDamage            "Fx%sDamage" // C4Object *pTarget, int iEffectNumber, int iDamage, int iCause, int iCausePlayer

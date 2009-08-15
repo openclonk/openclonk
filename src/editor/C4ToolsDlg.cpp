@@ -91,14 +91,14 @@ namespace {
 		gchar* text;
 		gtk_tree_model_get(model, iter, 0, &text, -1);
 
-		if(SEqual(text, "------")) { g_free(text); return TRUE; }
+		if(SEqual(text, "------")) { g_free(text); return true; }
 		g_free(text);
-		return FALSE;
+		return false;
 	}
 
 	GtkWidget* CreateImageFromInlinedPixbuf(const guint8* pixbuf_data)
 	{
-		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_inline(-1, pixbuf_data, FALSE, NULL);
+		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_inline(-1, pixbuf_data, false, NULL);
 		GtkWidget* image = gtk_image_new_from_pixbuf(pixbuf);
 		gdk_pixbuf_unref(pixbuf);
 		return image;
@@ -263,16 +263,16 @@ C4ToolsDlg::~C4ToolsDlg()
 #endif
 	}
 
-BOOL C4ToolsDlg::Open()
+bool C4ToolsDlg::Open()
 	{
 	// Create dialog window
 #ifdef _WIN32
-	if (hDialog) return TRUE;
+	if (hDialog) return true;
 	hDialog = CreateDialog(Application.GetInstance(),
 												 MAKEINTRESOURCE(IDD_TOOLS),
 												 Console.hWindow,
 												 (DLGPROC) ToolsDlgProc);
-	if (!hDialog) return FALSE;
+	if (!hDialog) return false;
 	// Set text
 	SetWindowText(hDialog,LoadResStr("IDS_DLG_TOOLS"));
 	SetDlgItemText(hDialog,IDC_STATICMATERIAL,LoadResStr("IDS_CTL_MATERIAL"));
@@ -291,8 +291,8 @@ BOOL C4ToolsDlg::Open()
 #ifdef WITH_DEVELOPER_MODE
 	if(hbox == NULL)
 	{
-		hbox = gtk_hbox_new(FALSE, 12);
-		GtkWidget* vbox = gtk_vbox_new(FALSE, 6);
+		hbox = gtk_hbox_new(false, 12);
+		GtkWidget* vbox = gtk_vbox_new(false, 6);
 
 		GtkWidget* image_brush = CreateImageFromInlinedPixbuf(brush_pixbuf_data);
 		GtkWidget* image_line = CreateImageFromInlinedPixbuf(line_pixbuf_data);
@@ -315,14 +315,14 @@ BOOL C4ToolsDlg::Open()
 		gtk_container_add(GTK_CONTAINER(landscape_static), image_static);
 		gtk_container_add(GTK_CONTAINER(landscape_exact), image_exact);
 
-		gtk_box_pack_start(GTK_BOX(vbox), landscape_dynamic, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), landscape_static, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), landscape_exact, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), landscape_dynamic, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), landscape_static, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), landscape_exact, false, false, 0);
 
-		gtk_box_pack_start(GTK_BOX(hbox), vbox, FALSE, FALSE, 0);
-		vbox = gtk_vbox_new(FALSE, 12);
-		gtk_box_pack_start(GTK_BOX(hbox), vbox, TRUE, TRUE, 0);
-		GtkWidget* local_hbox = gtk_hbox_new(FALSE, 6);
+		gtk_box_pack_start(GTK_BOX(hbox), vbox, false, false, 0);
+		vbox = gtk_vbox_new(false, 12);
+		gtk_box_pack_start(GTK_BOX(hbox), vbox, true, true, 0);
+		GtkWidget* local_hbox = gtk_hbox_new(false, 6);
 
 		brush = gtk_toggle_button_new();
 		line = gtk_toggle_button_new();
@@ -336,23 +336,23 @@ BOOL C4ToolsDlg::Open()
 		gtk_container_add(GTK_CONTAINER(fill), image_fill);
 		gtk_container_add(GTK_CONTAINER(picker), image_picker);
 
-		gtk_box_pack_start(GTK_BOX(local_hbox), brush, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(local_hbox), line, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(local_hbox), rect, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(local_hbox), fill, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(local_hbox), picker, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(local_hbox), brush, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(local_hbox), line, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(local_hbox), rect, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(local_hbox), fill, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(local_hbox), picker, false, false, 0);
 
-		gtk_box_pack_start(GTK_BOX(vbox), local_hbox, FALSE, FALSE, 0);
-		local_hbox = gtk_hbox_new(FALSE, 12);
-		gtk_box_pack_start(GTK_BOX(vbox), local_hbox, TRUE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), local_hbox, false, false, 0);
+		local_hbox = gtk_hbox_new(false, 12);
+		gtk_box_pack_start(GTK_BOX(vbox), local_hbox, true, true, 0);
 
 		preview = gtk_image_new();
-		gtk_box_pack_start(GTK_BOX(local_hbox), preview, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(local_hbox), preview, false, false, 0);
 
 		scale = gtk_vscale_new(NULL);
-		gtk_box_pack_start(GTK_BOX(local_hbox), scale, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(local_hbox), scale, false, false, 0);
 
-		vbox = gtk_vbox_new(FALSE, 6);
+		vbox = gtk_vbox_new(false, 6);
 
 		ift = gtk_toggle_button_new();
 		no_ift = gtk_toggle_button_new();
@@ -360,12 +360,12 @@ BOOL C4ToolsDlg::Open()
 		gtk_container_add(GTK_CONTAINER(ift), image_ift);
 		gtk_container_add(GTK_CONTAINER(no_ift), image_no_ift);
 
-		gtk_box_pack_start(GTK_BOX(vbox), ift, FALSE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), no_ift, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), ift, false, false, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), no_ift, false, false, 0);
 
-		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, false, false, 0);
 
-		vbox = gtk_vbox_new(FALSE, 6);
+		vbox = gtk_vbox_new(false, 6);
 
 		materials = gtk_combo_box_new_text();
 		textures = gtk_combo_box_new_text();
@@ -373,10 +373,10 @@ BOOL C4ToolsDlg::Open()
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(materials), RowSeparatorFunc, NULL, NULL);
 		gtk_combo_box_set_row_separator_func(GTK_COMBO_BOX(textures), RowSeparatorFunc, NULL, NULL);
 
-		gtk_box_pack_start(GTK_BOX(vbox), materials, TRUE, FALSE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), textures, TRUE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), materials, true, false, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), textures, true, false, 0);
 
-		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, TRUE, TRUE, 0); // ???
+		gtk_box_pack_start(GTK_BOX(local_hbox), vbox, true, true, 0); // ???
 		gtk_widget_show_all(hbox);
 
 		C4DevmodeDlg::AddPage(hbox, GTK_WINDOW(Console.window), LoadResStr("IDS_DLG_TOOLS"));
@@ -411,7 +411,7 @@ BOOL C4ToolsDlg::Open()
 	UpdateIFTControls();
 	InitMaterialCtrls();
 	EnableControls();
-	return TRUE;
+	return true;
 	}
 
 void C4ToolsDlg::Default()
@@ -429,7 +429,7 @@ void C4ToolsDlg::Default()
 	Active = false;
 	Tool = SelectedTool = C4TLS_Brush;
 	Grade = C4TLS_GradeDefault;
-	ModeIFT = TRUE;
+	ModeIFT = true;
 	SCopy("Earth",Material);
 	SCopy("earth",Texture);
 	}
@@ -450,13 +450,13 @@ void C4ToolsDlg::Clear()
 	Active = false;
 	}
 
-BOOL C4ToolsDlg::SetTool(int32_t iTool, bool fTemp)
+bool C4ToolsDlg::SetTool(int32_t iTool, bool fTemp)
 	{
 	Tool=iTool;
   if (!fTemp) SelectedTool = Tool;
 	UpdateToolCtrls();
 	UpdatePreview();
-	return TRUE;
+	return true;
 	}
 
 void C4ToolsDlg::UpdateToolCtrls()
@@ -539,7 +539,7 @@ void C4ToolsDlg::UpdateTextures()
 	if (::Landscape.Mode!=C4LSC_Exact)
 		for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 			{
-			if (!::TextureMap.GetIndex(Material, szTexture, FALSE))
+			if (!::TextureMap.GetIndex(Material, szTexture, false))
 				{
 				fAnyEntry = true;
 #ifdef _WIN32
@@ -567,7 +567,7 @@ void C4ToolsDlg::UpdateTextures()
 	for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
 		{
 		// Current material-texture valid? Always valid for exact mode
-		if (::TextureMap.GetIndex(Material,szTexture,FALSE) || ::Landscape.Mode==C4LSC_Exact)
+		if (::TextureMap.GetIndex(Material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
 			{
 #ifdef _WIN32
 			SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,(LPARAM)szTexture);
@@ -620,12 +620,12 @@ void C4ToolsDlg::SetTexture(const char *szTexture)
 	UpdatePreview();
 	}
 
-BOOL C4ToolsDlg::SetIFT(BOOL fIFT)
+bool C4ToolsDlg::SetIFT(bool fIFT)
 	{
 	if (fIFT) ModeIFT = 1; else ModeIFT=0;
 	UpdateIFTControls();
 	UpdatePreview();
-	return TRUE;
+	return true;
 	}
 
 void C4ToolsDlg::SetColorPattern(const char *szMaterial, const char *szTexture)
@@ -678,7 +678,7 @@ void C4ToolsDlg::UpdatePreview()
 		{
     bCol=Mat2PixColDefault(::MaterialMap.Get(Material));
 		// Get/Create TexMap entry
-		BYTE iTex = ::TextureMap.GetIndex(Material, Texture, TRUE);
+		BYTE iTex = ::TextureMap.GetIndex(Material, Texture, true);
 		if (iTex)
 			{
 			// Define texture pattern
@@ -727,7 +727,7 @@ void C4ToolsDlg::UpdatePreview()
 #else
 #ifdef WITH_DEVELOPER_MODE
 	// TODO: Can we optimize this?
-	GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, TRUE, 8, 64, 64);
+	GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, 64, 64);
 	guchar* data = gdk_pixbuf_get_pixels(pixbuf);
 	sfcPreview->Lock();
 	for(int x = 0; x < 64; ++ x) for(int y = 0; y < 64; ++ y)
@@ -764,18 +764,18 @@ void C4ToolsDlg::InitGradeCtrl()
 	g_signal_handler_block(scale, handlerScale);
 	gtk_range_set_increments(GTK_RANGE(scale), 1, 5);
 	gtk_range_set_range(GTK_RANGE(scale), C4TLS_GradeMin, C4TLS_GradeMax);
-	gtk_scale_set_draw_value(GTK_SCALE(scale), FALSE);
+	gtk_scale_set_draw_value(GTK_SCALE(scale), false);
 	gtk_range_set_value(GTK_RANGE(scale), C4TLS_GradeMax-Grade);
 	g_signal_handler_unblock(scale, handlerScale);
 #endif
 #endif
 	}
 
-BOOL C4ToolsDlg::SetGrade(int32_t iGrade)
+bool C4ToolsDlg::SetGrade(int32_t iGrade)
 	{
 	Grade = BoundBy(iGrade,C4TLS_GradeMin,C4TLS_GradeMax);
 	UpdatePreview();
-	return TRUE;
+	return true;
 	}
 
 bool C4ToolsDlg::ChangeGrade(int32_t iChange)
@@ -881,20 +881,20 @@ void C4ToolsDlg::UpdateLandscapeModeCtrls()
 #endif
 	}
 
-BOOL C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
+bool C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
 	{
 	int32_t iLastMode=::Landscape.Mode;
 	// Exact to static: confirm data loss warning
 	if (iLastMode==C4LSC_Exact)
 		if (iMode==C4LSC_Static)
 			if (!fThroughControl)
-				if (!Console.Message(LoadResStr("IDS_CNS_EXACTTOSTATIC"),TRUE))
-					return FALSE;
+				if (!Console.Message(LoadResStr("IDS_CNS_EXACTTOSTATIC"),true))
+					return false;
 	// send as control
 	if (!fThroughControl)
 		{
 		::Control.DoInput(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_SetMode, iMode), CDT_Decide);
-		return TRUE;
+		return true;
 		}
 	// Set landscape mode
 	::Landscape.SetMode(iMode);
@@ -911,7 +911,7 @@ BOOL C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
 	EnableControls();
 	UpdateTextures();
 	// Success
-	return TRUE;
+	return true;
 	}
 
 void C4ToolsDlg::EnableControls()
@@ -989,18 +989,18 @@ void C4ToolsDlg::AssertValidTexture()
 	// Ignore if sky
 	if (SEqual(Material,C4TLS_MatSky)) return;
 	// Current material-texture valid
-	if (::TextureMap.GetIndex(Material,Texture,FALSE)) return;
+	if (::TextureMap.GetIndex(Material,Texture,false)) return;
 	// Find valid material-texture
 	const char *szTexture;
 	for (int32_t iTexture=0; szTexture=::TextureMap.GetTexture(iTexture); iTexture++)
 		{
-		if (::TextureMap.GetIndex(Material,szTexture,FALSE))
+		if (::TextureMap.GetIndex(Material,szTexture,false))
 			{ SelectTexture(szTexture); return; }
 		}
 	// No valid texture found
 	}
 
-BOOL C4ToolsDlg::SelectTexture(const char *szTexture)
+bool C4ToolsDlg::SelectTexture(const char *szTexture)
 	{
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,(LPARAM)szTexture);
@@ -1012,10 +1012,10 @@ BOOL C4ToolsDlg::SelectTexture(const char *szTexture)
 #endif
 #endif
 	SetTexture(szTexture);
-	return TRUE;
+	return true;
 	}
 
-BOOL C4ToolsDlg::SelectMaterial(const char *szMaterial)
+bool C4ToolsDlg::SelectMaterial(const char *szMaterial)
 	{
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,(LPARAM)szMaterial);
@@ -1027,7 +1027,7 @@ BOOL C4ToolsDlg::SelectMaterial(const char *szMaterial)
 #endif
 #endif
 	SetMaterial(szMaterial);
-	return TRUE;
+	return true;
 	}
 
 void C4ToolsDlg::SetAlternateTool()
@@ -1047,7 +1047,7 @@ void C4ToolsDlg::ResetAlternateTool()
 /*void C4ToolsDlg::OnDestroy(GtkWidget* widget, gpointer data)
 {
 	static_cast<C4ToolsDlg*>(data)->window = NULL;
-	static_cast<C4ToolsDlg*>(data)->Active = FALSE;
+	static_cast<C4ToolsDlg*>(data)->Active = false;
 }*/
 
 void C4ToolsDlg::OnButtonModeDynamic(GtkWidget* widget, gpointer data)
@@ -1092,12 +1092,12 @@ void C4ToolsDlg::OnButtonPicker(GtkWidget* widget, gpointer data)
 
 void C4ToolsDlg::OnButtonIft(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg*>(data)->SetIFT(TRUE);
+	static_cast<C4ToolsDlg*>(data)->SetIFT(true);
 }
 
 void C4ToolsDlg::OnButtonNoIft(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg*>(data)->SetIFT(FALSE);
+	static_cast<C4ToolsDlg*>(data)->SetIFT(false);
 }
 
 void C4ToolsDlg::OnComboMaterial(GtkWidget* widget, gpointer data)
@@ -1123,6 +1123,6 @@ void C4ToolsDlg::OnGrade(GtkWidget* widget, gpointer data)
 
 void C4ToolsDlg::OnWindowHide(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg*>(data)->Active = FALSE;
+	static_cast<C4ToolsDlg*>(data)->Active = false;
 }
 #endif

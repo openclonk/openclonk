@@ -87,28 +87,28 @@ void C4Scenario::Default()
 	Environment.Default();
   }
 
-BOOL C4Scenario::Load(C4Group &hGroup, bool fLoadSection)
+bool C4Scenario::Load(C4Group &hGroup, bool fLoadSection)
   {
 	char *pSource;
 	// Load
-	if (!hGroup.LoadEntry(C4CFN_ScenarioCore,&pSource,NULL,1)) return FALSE;
+	if (!hGroup.LoadEntry(C4CFN_ScenarioCore,&pSource,NULL,1)) return false;
 	// Compile
-	if (!Compile(pSource, fLoadSection))	{ delete [] pSource; return FALSE; }
+	if (!Compile(pSource, fLoadSection))	{ delete [] pSource; return false; }
 	delete [] pSource;
 	// Convert
 	Game.ConvertGoals(Game.Realism);
 	// Success
-	return TRUE;
+	return true;
   }
 
-BOOL C4Scenario::Save(C4Group &hGroup, bool fSaveSection)
+bool C4Scenario::Save(C4Group &hGroup, bool fSaveSection)
 	{
 	char *Buffer; int32_t BufferSize;
 	if (!Decompile(&Buffer,&BufferSize, fSaveSection))
-		return FALSE;
-	if (!hGroup.Add(C4CFN_ScenarioCore,Buffer,BufferSize,FALSE,TRUE))
-		{ StdBuf Buf; Buf.Take(Buffer, BufferSize); return FALSE; }
-	return TRUE;
+		return false;
+	if (!hGroup.Add(C4CFN_ScenarioCore,Buffer,BufferSize,false,true))
+		{ StdBuf Buf; Buf.Take(Buffer, BufferSize); return false; }
+	return true;
 	}
 
 void C4Scenario::CompileFunc(StdCompiler *pComp, bool fSection)
@@ -139,7 +139,7 @@ int32_t C4Scenario::GetMinPlayer()
 
 void C4SDefinitions::Default()
   {
-	LocalOnly=AllowUserChange=FALSE;
+	LocalOnly=AllowUserChange=false;
 	ZeroMem(Definition,sizeof (Definition));
 	SkipDefs.Default();
 	}
@@ -173,18 +173,18 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Font),     "Font",                 ""));
 		pComp->Value(mkNamingAdapt(mkArrayAdaptDM(C4XVer,0),  "Version"               ));
 		pComp->Value(mkNamingAdapt(Difficulty,								"Difficulty",						0));
-		pComp->Value(mkNamingAdapt(EnableUnregisteredAccess,  "Access",               FALSE));
+		pComp->Value(mkNamingAdapt(EnableUnregisteredAccess,  "Access",               false));
 		pComp->Value(mkNamingAdapt(MaxPlayer,                 "MaxPlayer",            C4S_MaxPlayerDefault));
 		pComp->Value(mkNamingAdapt(MaxPlayerLeague,           "MaxPlayerLeague",      MaxPlayer));
 		pComp->Value(mkNamingAdapt(MinPlayer,                 "MinPlayer",            0));
-		pComp->Value(mkNamingAdapt(SaveGame,                  "SaveGame",             FALSE));
-		pComp->Value(mkNamingAdapt(Replay,                    "Replay",               FALSE));
-		pComp->Value(mkNamingAdapt(Film,                      "Film",                 FALSE));
-		pComp->Value(mkNamingAdapt(DisableMouse,              "DisableMouse",         FALSE));
-		pComp->Value(mkNamingAdapt(IgnoreSyncChecks,          "IgnoreSyncChecks",     FALSE));
+		pComp->Value(mkNamingAdapt(SaveGame,                  "SaveGame",             false));
+		pComp->Value(mkNamingAdapt(Replay,                    "Replay",               false));
+		pComp->Value(mkNamingAdapt(Film,                      "Film",                 false));
+		pComp->Value(mkNamingAdapt(DisableMouse,              "DisableMouse",         false));
+		pComp->Value(mkNamingAdapt(IgnoreSyncChecks,          "IgnoreSyncChecks",     false));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,        "StartupPlayerCount",   0));
 		}
-  pComp->Value(mkNamingAdapt(NoInitialize,              "NoInitialize",         FALSE));
+  pComp->Value(mkNamingAdapt(NoInitialize,              "NoInitialize",         false));
   pComp->Value(mkNamingAdapt(RandomSeed,                "RandomSeed",           0));
 	if (!fSection)
 		{
@@ -225,15 +225,15 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(ClearObjects,             "ClearObjects",        C4IDList()));
 	pComp->Value(mkNamingAdapt(ClearMaterial,            "ClearMaterials",      C4NameList()));
 	pComp->Value(mkNamingAdapt(ValueGain,                "ValueGain",           0));
-	pComp->Value(mkNamingAdapt(EnableRemoveFlag,         "EnableRemoveFlag",    FALSE));
-	pComp->Value(mkNamingAdapt(Realism.ConstructionNeedsMaterial, "StructNeedMaterial",  FALSE));
-	pComp->Value(mkNamingAdapt(Realism.StructuresNeedEnergy,      "StructNeedEnergy",    TRUE));
+	pComp->Value(mkNamingAdapt(EnableRemoveFlag,         "EnableRemoveFlag",    false));
+	pComp->Value(mkNamingAdapt(Realism.ConstructionNeedsMaterial, "StructNeedMaterial",  false));
+	pComp->Value(mkNamingAdapt(Realism.StructuresNeedEnergy,      "StructNeedEnergy",    true));
 	if (!fSection)
 		{
 		pComp->Value(mkNamingAdapt(Realism.ValueOverloads,            "ValueOverloads",      C4IDList()));
 		}
-	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapePushPull),         "LandscapePushPull",   FALSE));
-	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapeInsertThrust),     "LandscapeInsertThrust",TRUE));
+	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapePushPull),         "LandscapePushPull",   false));
+	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapeInsertThrust),     "LandscapeInsertThrust",true));
 
 	const StdBitfieldEntry<int32_t> BaseFunctionalities[] = {
 		{ "BASEFUNC_AutoSellContents",								BASEFUNC_AutoSellContents		},
@@ -358,19 +358,19 @@ void C4SLandscape::GetMapSize(int32_t &rWdt, int32_t &rHgt, int32_t iPlayerNum)
 
 void C4SLandscape::CompileFunc(StdCompiler *pComp)
   {
-  pComp->Value(mkNamingAdapt(ExactLandscape,          "ExactLandscape",        FALSE));
+  pComp->Value(mkNamingAdapt(ExactLandscape,          "ExactLandscape",        false));
   pComp->Value(mkNamingAdapt(Vegetation,              "Vegetation",            C4IDList()));
   pComp->Value(mkNamingAdapt(VegLevel,                "VegetationLevel",       C4SVal(50,30,0,100), true));
   pComp->Value(mkNamingAdapt(InEarth,                 "InEarth",               C4IDList()));
   pComp->Value(mkNamingAdapt(InEarthLevel,            "InEarthLevel",          C4SVal(50,0,0,100), true));
   pComp->Value(mkNamingAdapt(mkStringAdaptMA(SkyDef), "Sky",                   ""));
   pComp->Value(mkNamingAdapt(mkArrayAdaptDM(SkyDefFade,0),"SkyFade"            ));
-  pComp->Value(mkNamingAdapt(NoSky,                   "NoSky",                 FALSE));
-  pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            FALSE));
-  pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               TRUE));
+  pComp->Value(mkNamingAdapt(NoSky,                   "NoSky",                 false));
+  pComp->Value(mkNamingAdapt(BottomOpen,              "BottomOpen",            false));
+  pComp->Value(mkNamingAdapt(TopOpen,                 "TopOpen",               true));
   pComp->Value(mkNamingAdapt(LeftOpen,                "LeftOpen",              0));
   pComp->Value(mkNamingAdapt(RightOpen,               "RightOpen",             0));
-  pComp->Value(mkNamingAdapt(AutoScanSideOpen,        "AutoScanSideOpen",      TRUE));
+  pComp->Value(mkNamingAdapt(AutoScanSideOpen,        "AutoScanSideOpen",      true));
   pComp->Value(mkNamingAdapt(MapWdt,                  "MapWidth",              C4SVal(100,0,64,250), true));
   pComp->Value(mkNamingAdapt(MapHgt,                  "MapHeight",             C4SVal(50,0,40,250), true));
 	pComp->Value(mkNamingAdapt(MapZoom,                 "MapZoom",               C4SVal(10,0,5,15), true));
@@ -384,10 +384,10 @@ void C4SLandscape::CompileFunc(StdCompiler *pComp)
   pComp->Value(mkNamingAdapt(MapPlayerExtend,         "MapPlayerExtend",       0));
   pComp->Value(mkNamingAdapt(Layers,                  "Layers",                C4NameList()));
   pComp->Value(mkNamingAdapt(Gravity,                 "Gravity",               C4SVal(100,0,10,200), true));
-  pComp->Value(mkNamingAdapt(NoScan,                  "NoScan",                FALSE));
-  pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        FALSE));
+  pComp->Value(mkNamingAdapt(NoScan,                  "NoScan",                false));
+  pComp->Value(mkNamingAdapt(KeepMapCreator,          "KeepMapCreator",        false));
   pComp->Value(mkNamingAdapt(SkyScrollMode,           "SkyScrollMode",         0));
-  pComp->Value(mkNamingAdapt(NewStyleLandscape,       "NewStyleLandscape",     FALSE));
+  pComp->Value(mkNamingAdapt(NewStyleLandscape,       "NewStyleLandscape",     false));
 	pComp->Value(mkNamingAdapt(FoWRes,                  "FoWRes",                static_cast<int32_t>(CClrModAddMap::DefResolutionX)));
   }
 
@@ -410,7 +410,7 @@ void C4SWeather::CompileFunc(StdCompiler *pComp)
   pComp->Value(mkNamingAdapt(Wind,                    "Wind",                  C4SVal(0,70,-100,+100), true));
   pComp->Value(mkNamingAdapt(Lightning,               "Lightning",             C4SVal()));
   pComp->Value(mkNamingAdapt(mkStringAdaptMA(Precipitation),"Precipitation",   "Water"));
-  pComp->Value(mkNamingAdapt(NoGamma,                 "NoGamma",               TRUE));
+  pComp->Value(mkNamingAdapt(NoGamma,                 "NoGamma",               true));
   }
 
 void C4SAnimals::Default()
@@ -460,13 +460,13 @@ void C4SDisasters::CompileFunc(StdCompiler *pComp)
   pComp->Value(mkNamingAdapt(Earthquake,              "Earthquake",            C4SVal()));
   }
 
-BOOL C4Scenario::Compile(const char *szSource, bool fLoadSection)
+bool C4Scenario::Compile(const char *szSource, bool fLoadSection)
 	{
 	if (!fLoadSection) Default();
   return CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(*this, fLoadSection), StdStrBuf(szSource), C4CFN_ScenarioCore);
 	}
 
-BOOL C4Scenario::Decompile(char **ppOutput, int32_t *ipSize, bool fSaveSection)
+bool C4Scenario::Decompile(char **ppOutput, int32_t *ipSize, bool fSaveSection)
 	{
   try
     {
@@ -477,8 +477,8 @@ BOOL C4Scenario::Decompile(char **ppOutput, int32_t *ipSize, bool fSaveSection)
     *ipSize = Buf.getSize();
     }
   catch(StdCompiler::Exception *)
-    { return FALSE; }
-  return TRUE;
+    { return false; }
+  return true;
 	}
 
 void C4Scenario::Clear()
@@ -511,7 +511,7 @@ void C4Scenario::SetExactLandscape()
 bool C4SDefinitions::GetModules(StdStrBuf *psOutModules) const
 	{
 	// Local only
-	if (LocalOnly) { psOutModules->Copy(""); return TRUE; }
+	if (LocalOnly) { psOutModules->Copy(""); return true; }
 	// Scan for any valid entries
 	bool fSpecified = false;
 	int32_t cnt=0;
@@ -529,7 +529,7 @@ bool C4SDefinitions::GetModules(StdStrBuf *psOutModules) const
 			psOutModules->Append(Definition[cnt]);
 			}
 	// Done
-	return TRUE;
+	return true;
 	}
 
 
@@ -540,13 +540,13 @@ void C4SDefinitions::SetModules(const char *szList, const char *szRelativeToPath
 	// Empty list: local only
 	if (!SModuleCount(szList))
 		{
-		LocalOnly=TRUE;
+		LocalOnly=true;
 		for (cnt=0; cnt<C4S_MaxDefinitions; cnt++) Definition[cnt][0]=0;
 		return;
 		}
 
 	// Set list
-	LocalOnly=FALSE;
+	LocalOnly=false;
 	for (cnt=0; cnt<C4S_MaxDefinitions; cnt++)
 		{
 		SGetModule(szList,cnt,Definition[cnt],_MAX_PATH);
@@ -561,13 +561,13 @@ void C4SDefinitions::SetModules(const char *szList, const char *szRelativeToPath
 
 	}
 
-BOOL C4SDefinitions::AssertModules(const char *szPath, char *sMissing)
+bool C4SDefinitions::AssertModules(const char *szPath, char *sMissing)
 	{
 	// Local only
-	if (LocalOnly) return TRUE;
+	if (LocalOnly) return true;
 
 	// Check all listed modules for availability
-	BOOL fAllAvailable=TRUE;
+	bool fAllAvailable=true;
 	char szModule[_MAX_PATH+1];
 	if (sMissing) sMissing[0]=0;
 	// Check all definition files
@@ -583,7 +583,7 @@ BOOL C4SDefinitions::AssertModules(const char *szPath, char *sMissing)
 				{
 				// Add to list
 				if (sMissing) { SNewSegment(sMissing,", "); SAppend(Definition[cnt],sMissing); }
-				fAllAvailable=FALSE;
+				fAllAvailable=false;
 				}
 			}
 
@@ -592,8 +592,8 @@ BOOL C4SDefinitions::AssertModules(const char *szPath, char *sMissing)
 
 void C4SDefinitions::CompileFunc(StdCompiler *pComp)
   {
-  pComp->Value(mkNamingAdapt(LocalOnly,               "LocalOnly",             FALSE));
-	pComp->Value(mkNamingAdapt(AllowUserChange,         "AllowUserChange",       FALSE));
+  pComp->Value(mkNamingAdapt(LocalOnly,               "LocalOnly",             false));
+	pComp->Value(mkNamingAdapt(AllowUserChange,         "AllowUserChange",       false));
   for(int32_t i = 0; i < C4S_MaxDefinitions; i++)
     pComp->Value(mkNamingAdapt(mkStringAdaptMA(Definition[i]), FormatString("Definition%i", i+1).getData(), ""));
   pComp->Value(mkNamingAdapt(SkipDefs,                "SkipDefs",              C4IDList()));
@@ -605,38 +605,38 @@ void C4SGame::ConvertGoals(C4SRealism &rRealism)
 	// Convert mode to goals
 	switch (Mode)
 		{
-		case C4S_Melee: Goals.SetIDCount(C4Id("MELE"),1,TRUE); ClearOldGoals(); break;
-		case C4S_MeleeTeamwork: Goals.SetIDCount(C4Id("MELE"),1,TRUE); ClearOldGoals(); break;
+		case C4S_Melee: Goals.SetIDCount(C4Id("MELE"),1,true); ClearOldGoals(); break;
+		case C4S_MeleeTeamwork: Goals.SetIDCount(C4Id("MELE"),1,true); ClearOldGoals(); break;
 		}
 	Mode=0;
 
 	// Convert goals (master selection)
 	switch (CooperativeGoal)
 		{
-		case C4S_Goldmine: Goals.SetIDCount(C4Id("GLDM"),1,TRUE); ClearOldGoals(); break;
-		case C4S_Monsterkill: Goals.SetIDCount(C4Id("MNTK"),1,TRUE); ClearOldGoals(); break;
-		case C4S_ValueGain: Goals.SetIDCount(C4Id("VALG"),Max(ValueGain/100,1),TRUE); ClearOldGoals(); break;
+		case C4S_Goldmine: Goals.SetIDCount(C4Id("GLDM"),1,true); ClearOldGoals(); break;
+		case C4S_Monsterkill: Goals.SetIDCount(C4Id("MNTK"),1,true); ClearOldGoals(); break;
+		case C4S_ValueGain: Goals.SetIDCount(C4Id("VALG"),Max(ValueGain/100,1),true); ClearOldGoals(); break;
 		}
 	CooperativeGoal=0;
 	// CreateObjects,ClearObjects,ClearMaterials are still valid but invisible
 
 	// Convert realism to rules
-	if (rRealism.ConstructionNeedsMaterial) Rules.SetIDCount(C4Id("CNMT"),1,TRUE); rRealism.ConstructionNeedsMaterial=0;
-	if (rRealism.StructuresNeedEnergy) Rules.SetIDCount(C4Id("ENRG"),1,TRUE); rRealism.StructuresNeedEnergy=0;
+	if (rRealism.ConstructionNeedsMaterial) Rules.SetIDCount(C4Id("CNMT"),1,true); rRealism.ConstructionNeedsMaterial=0;
+	if (rRealism.StructuresNeedEnergy) Rules.SetIDCount(C4Id("ENRG"),1,true); rRealism.StructuresNeedEnergy=0;
 
 	// Convert rules
-	if (EnableRemoveFlag) Rules.SetIDCount(C4Id("FGRV"),1,TRUE); EnableRemoveFlag=0;
+	if (EnableRemoveFlag) Rules.SetIDCount(C4Id("FGRV"),1,true); EnableRemoveFlag=0;
 
 	// Convert eliminiation to rules
 	switch (Elimination)
 		{
-		case C4S_KillTheCaptain: Rules.SetIDCount(C4Id("KILC"),1,TRUE); break;
-		case C4S_CaptureTheFlag: Rules.SetIDCount(C4Id("CTFL"),1,TRUE); break;
+		case C4S_KillTheCaptain: Rules.SetIDCount(C4Id("KILC"),1,true); break;
+		case C4S_CaptureTheFlag: Rules.SetIDCount(C4Id("CTFL"),1,true); break;
 		}
 	Elimination=1; // unconvertible default crew elimination
 
 	// CaptureTheFlag requires FlagRemoveable
-	if (Rules.GetIDCount(C4Id("CTFL"))) Rules.SetIDCount(C4Id("FGRV"),1,TRUE);
+	if (Rules.GetIDCount(C4Id("CTFL"))) Rules.SetIDCount(C4Id("FGRV"),1,true);
 
 	}
 
@@ -646,7 +646,7 @@ void C4SGame::ClearOldGoals()
 	ValueGain=0;
 	}
 
-BOOL C4SGame::IsMelee()
+bool C4SGame::IsMelee()
 	{
 	return (Goals.GetIDCount(C4Id("MELE")) || Goals.GetIDCount(C4Id("MEL2")));
 	}
@@ -735,7 +735,7 @@ bool C4ScenarioSection::EnsureTempStore(bool fExtractLandscape, bool fExtractObj
 		{
 		if (!CreatePath(szTmp)) return false;
 		C4Group hGroup;
-		if (!hGroup.Open(szTmp, TRUE)) { EraseItem(szTmp); return false; }
+		if (!hGroup.Open(szTmp, true)) { EraseItem(szTmp); return false; }
 		// extract all desired section files
 		Game.ScenarioFile.ResetSearch();
 		char fn[_MAX_FNAME+1]; *fn=0;

@@ -736,7 +736,7 @@ void C4MapCreatorS2::Clear()
 	Default();
 	}
 
-BOOL C4MapCreatorS2::ReadFile(const char *szFilename, C4Group *pGrp)
+bool C4MapCreatorS2::ReadFile(const char *szFilename, C4Group *pGrp)
 	{
 	// create parser and read file
 	try
@@ -746,13 +746,13 @@ BOOL C4MapCreatorS2::ReadFile(const char *szFilename, C4Group *pGrp)
 	catch(C4MCParserErr err)
 		{
 		err.show();
-		return FALSE;
+		return false;
 		}
 	// success
-	return TRUE;
+	return true;
 	}
 
-BOOL C4MapCreatorS2::ReadScript(const char *szScript)
+bool C4MapCreatorS2::ReadScript(const char *szScript)
 	{
 	// create parser and read
 	try
@@ -762,10 +762,10 @@ BOOL C4MapCreatorS2::ReadScript(const char *szScript)
 	catch(C4MCParserErr err)
 		{
 		err.show();
-		return FALSE;
+		return false;
 		}
 	// success
-	return TRUE;
+	return true;
 	}
 
 C4MCMap *C4MapCreatorS2::GetMap(const char *szMapName)
@@ -884,7 +884,7 @@ void C4MCParser::Clear()
 	*Filename=0;
 	}
 
-BOOL C4MCParser::AdvanceSpaces()
+bool C4MCParser::AdvanceSpaces()
 	{
 	char C, C2 = (char) 0;
 	// defaultly, not in comment
@@ -903,11 +903,11 @@ BOOL C4MCParser::AdvanceSpaces()
 						{
 						case '/': InComment = 1; break;
 						case '*': InComment = 2; break;
-						default: CPos--; return TRUE;
+						default: CPos--; return true;
 						}
 					}
 				else
-					if ((BYTE) C > 32) return TRUE;
+					if ((BYTE) C > 32) return true;
 				break;
 			case 1:
 				if (((BYTE) C == 13) || ((BYTE) C == 10)) InComment = 0;
@@ -919,14 +919,14 @@ BOOL C4MCParser::AdvanceSpaces()
 		// next char; store prev
 		CPos++; C2 = C;
 		}
-	// end of code reached; return FALSE
-	return FALSE;
+	// end of code reached; return false
+	return false;
 	}
 
-BOOL C4MCParser::GetNextToken()
+bool C4MCParser::GetNextToken()
 	{
 	// move to start of token
-	if (!AdvanceSpaces()) { CurrToken=MCT_EOF; return FALSE; }
+	if (!AdvanceSpaces()) { CurrToken=MCT_EOF; return false; }
 	// store offset
 	const char *CPos0 = CPos;
 	int32_t Len = 0;
@@ -941,7 +941,7 @@ BOOL C4MCParser::GetNextToken()
 	TokenGetState State = TGS_None;
 
 	// loop until finished
-	while (TRUE)
+	while (true)
 		{
 		// get char
 		char C = *CPos;
@@ -954,13 +954,13 @@ BOOL C4MCParser::GetNextToken()
 				if (((C >= '0') && (C <= '9') || (C == '+') || (C == '-')))
 														State = TGS_Int;															// integer by +, -, 0-9
 				else if (C == '#')	State = TGS_Dir;															// directive by "#"
-				else if (C == ';') {CPos++; CurrToken=MCT_SCOLON;		return TRUE; }	// ";"
-				else if (C == '=') {CPos++; CurrToken=MCT_EQ;				return TRUE; }	// "="
-				else if (C == '{') {CPos++; CurrToken=MCT_BLOPEN;		return TRUE; }	// "{"
-				else if (C == '}') {CPos++; CurrToken=MCT_BLCLOSE;	return TRUE; }	// "}"
-				else if (C == '&') {CPos++; CurrToken=MCT_AND;			return TRUE; }	// "&"
-				else if (C == '|') {CPos++; CurrToken=MCT_OR;				return TRUE; }	// "|"
-				else if (C == '^') {CPos++; CurrToken=MCT_XOR;			return TRUE; }	// "^"
+				else if (C == ';') {CPos++; CurrToken=MCT_SCOLON;		return true; }	// ";"
+				else if (C == '=') {CPos++; CurrToken=MCT_EQ;				return true; }	// "="
+				else if (C == '{') {CPos++; CurrToken=MCT_BLOPEN;		return true; }	// "{"
+				else if (C == '}') {CPos++; CurrToken=MCT_BLCLOSE;	return true; }	// "}"
+				else if (C == '&') {CPos++; CurrToken=MCT_AND;			return true; }	// "&"
+				else if (C == '|') {CPos++; CurrToken=MCT_OR;				return true; }	// "|"
+				else if (C == '^') {CPos++; CurrToken=MCT_XOR;			return true; }	// "^"
 				else if (C >= '@')	State = TGS_Ident;														// identifier by all non-special chars
 				else
 					{
@@ -978,7 +978,7 @@ BOOL C4MCParser::GetNextToken()
 					Len = Min<int32_t>(Len, C4MaxName);
 					SCopy(CPos0, CurrTokenIdtf, Len);
 					if (State==TGS_Ident) CurrToken=MCT_IDTF; else CurrToken=MCT_DIR;
-					return TRUE;
+					return true;
 					}
 				break;
 
@@ -1005,7 +1005,7 @@ BOOL C4MCParser::GetNextToken()
 					SCopy(CPos0, CurrTokenIdtf, Len);
 					// it's not, so return the int32_t
 					sscanf(CurrTokenIdtf, "%d", &CurrTokenVal);
-					return TRUE;
+					return true;
 					}
 				break;
 
@@ -1034,7 +1034,7 @@ static void PrintNodeTree(C4MCNode *pNode, int depth)
 void C4MCParser::ParseTo(C4MCNode *pToNode)
 	{
 	C4MCNode *pNewNode=NULL;	// new node
-	BOOL Done=FALSE;					// finished?
+	bool Done=false;					// finished?
 	C4MCNodeType LastOperand; // last first operand of operator
 	char FieldName[C4MaxName];// buffer for current field to access
 	C4MCNode *pCpyNode;				// node to copy from
@@ -1108,7 +1108,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 					case MCT_BLCLOSE:
 					case MCT_EOF:
 						// block done
-						Done=TRUE;
+						Done=true;
 						break;
 					default:
 						// we don't like that

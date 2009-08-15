@@ -18,9 +18,9 @@
 
 /* Play midis using mci */
 /*
-BOOL PlayMidi(const char *sFileName, HWND appWnd);
-BOOL PauseMidi();
-BOOL ResumeMidi(HWND appWnd);
-BOOL StopMidi();
-BOOL ReplayMidi(HWND appWnd);
+bool PlayMidi(const char *sFileName, HWND appWnd);
+bool PauseMidi();
+bool ResumeMidi(HWND appWnd);
+bool StopMidi();
+bool ReplayMidi(HWND appWnd);
 */

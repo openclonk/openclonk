@@ -62,7 +62,7 @@ bool Log(const char *msg) {
   return 1;
 }
 #define IMPLEMENT_LOGF(func) \
-	BOOL func(const char *msg, ...) { \
+	bool func(const char *msg, ...) { \
 		va_list args; va_start(args, msg); \
 		StdStrBuf Buf; \
 		Buf.FormatV(msg, args); \
@@ -90,7 +90,7 @@ bool ProcessGroup(const char *FilenamePar) {
   LogF("Group: %s", szFilename);
 
   // Open group file
-  if (hGroup.Open(szFilename, TRUE)) {
+  if (hGroup.Open(szFilename, true)) {
     // No commands: display contents
     if (iFirstCommand >= argc) {
       hGroup.SetStdOutput(true);
@@ -209,7 +209,7 @@ bool ProcessGroup(const char *FilenamePar) {
             break;
             // Make original
           case 'o':
-            hGroup.MakeOriginal(TRUE);
+            hGroup.MakeOriginal(true);
             break;
             // Pack
           case 'p':
@@ -291,7 +291,7 @@ bool ProcessGroup(const char *FilenamePar) {
           case 'y':
             Log("Applying update...");
             if (C4Group_ApplyUpdate(hGroup))
-							{ if (argv[iArg][2]=='d') fDeleteGroup = TRUE; }
+							{ if (argv[iArg][2]=='d') fDeleteGroup = true; }
 						else
               fprintf(stderr,"Update failed.\n");
             break;
@@ -331,7 +331,7 @@ bool ProcessGroup(const char *FilenamePar) {
   }
   free(szFilename);
   // Done
-  return TRUE;
+  return true;
 }
 
 int RegisterShellExtensions() {
@@ -447,7 +447,7 @@ int main(int argc, char *argv[]) {
 
   // Registration check
 /*  Config.Init();
-  Config.Load(FALSE);*/
+  Config.Load(false);*/
 
   // Init C4Group
 /*  C4Group_SetMaker(Config.General.Name);
@@ -523,7 +523,7 @@ int main(int argc, char *argv[]) {
 
 		PROCESS_INFORMATION procInfo;
 
-		CreateProcess(strExecuteAtEnd, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &startInfo, &procInfo);
+		CreateProcess(strExecuteAtEnd, NULL, NULL, NULL, false, 0, NULL, NULL, &startInfo, &procInfo);
 #else
 		switch (fork())
 		  {

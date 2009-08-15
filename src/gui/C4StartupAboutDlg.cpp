@@ -130,7 +130,7 @@ void C4StartupAboutDlg::DrawElement(C4TargetFacet &cgo)
 	// draw background - do not use bg drawing proc, because it stretches
 	// pre-clear background instead to prevent blinking borders
 	if (!IsFading()) lpDDraw->FillBG();
-	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, FALSE);
+	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, false);
 	}
 
 void C4StartupAboutDlg::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)

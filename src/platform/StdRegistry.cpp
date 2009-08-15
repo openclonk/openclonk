@@ -27,12 +27,12 @@
 
 #include <stdio.h>
 
-BOOL DeleteRegistryValue(const char *szSubKey, const char *szValueName)
+bool DeleteRegistryValue(const char *szSubKey, const char *szValueName)
 	{
 	return DeleteRegistryValue(HKEY_CURRENT_USER,szSubKey,szValueName);
 	}
 
-BOOL DeleteRegistryValue(HKEY hKey, const char *szSubKey, const char *szValueName)
+bool DeleteRegistryValue(HKEY hKey, const char *szSubKey, const char *szValueName)
 	{
   long qerr;
   HKEY ckey;
@@ -42,28 +42,28 @@ BOOL DeleteRegistryValue(HKEY hKey, const char *szSubKey, const char *szValueNam
                          0,
                          KEY_ALL_ACCESS,
                          &ckey
-                        ))!=ERROR_SUCCESS) return FALSE;
+                        ))!=ERROR_SUCCESS) return false;
 	// Delete the key
   if ((qerr=RegDeleteValue(ckey,
 													 szValueName
-													 ))!=ERROR_SUCCESS) return FALSE;
+													 ))!=ERROR_SUCCESS) return false;
   // Close the key
   RegCloseKey(ckey);
 	// Success
-	return TRUE;
+	return true;
 	}
 
-BOOL SetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD dwValue)
+bool SetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD dwValue)
 	{
 	return SetRegistryDWord(HKEY_CURRENT_USER,szSubKey,szValueName,dwValue);
 	}
 
-BOOL GetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD *lpdwValue)
+bool GetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD *lpdwValue)
 	{
 	return GetRegistryDWord(HKEY_CURRENT_USER,szSubKey,szValueName,lpdwValue);
 	}
 
-BOOL GetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, DWORD *lpdwValue)
+bool GetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, DWORD *lpdwValue)
   {
   long qerr;
   HKEY ckey;
@@ -76,7 +76,7 @@ BOOL GetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, 
                          0,
                          KEY_READ,
                          &ckey
-                        ))!=ERROR_SUCCESS) return FALSE;
+                        ))!=ERROR_SUCCESS) return false;
 
   // Get the value
   if ((qerr=RegQueryValueEx(ckey,
@@ -85,17 +85,17 @@ BOOL GetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, 
                             &valtype,
                             (BYTE*) lpdwValue,
                             &valsize
-                           ))!=ERROR_SUCCESS)  { RegCloseKey(ckey); return FALSE; }
+                           ))!=ERROR_SUCCESS)  { RegCloseKey(ckey); return false; }
 
   // Close the key
   RegCloseKey(ckey);
 
-  if (valtype!=REG_DWORD) return FALSE;
+  if (valtype!=REG_DWORD) return false;
 
-  return TRUE;
+  return true;
   }
 
-BOOL SetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, DWORD dwValue)
+bool SetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, DWORD dwValue)
   {
   long qerr;
   HKEY ckey;
@@ -110,7 +110,7 @@ BOOL SetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, 
                            NULL,
                            &ckey,
                            &disposition
-                          ))!=ERROR_SUCCESS) return FALSE;
+                          ))!=ERROR_SUCCESS) return false;
   // Set the value
   if ((qerr=RegSetValueEx(ckey,
                           szValueName,
@@ -118,15 +118,15 @@ BOOL SetRegistryDWord(HKEY hKey, const char *szSubKey, const char *szValueName, 
                           REG_DWORD,
                           (BYTE*) &dwValue,
                           sizeof(dwValue)
-                         ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return FALSE; }
+                         ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return false; }
 
   // Close the key
   RegCloseKey(ckey);
 	// Success
-	return TRUE;
+	return true;
   }
 
-BOOL GetRegistryString(const char *szSubKey,
+bool GetRegistryString(const char *szSubKey,
                        const char *szValueName,
                        char *sValue, DWORD dwValSize)
   {
@@ -140,7 +140,7 @@ BOOL GetRegistryString(const char *szSubKey,
                          0,
                          KEY_READ,
                          &ckey
-                        ))!=ERROR_SUCCESS) return FALSE;
+                        ))!=ERROR_SUCCESS) return false;
 
   // Get the value
   if ((qerr=RegQueryValueEx(ckey,
@@ -149,17 +149,17 @@ BOOL GetRegistryString(const char *szSubKey,
                             &valtype,
                             (BYTE*) sValue,
                             &dwValSize
-                           ))!=ERROR_SUCCESS)  { RegCloseKey(ckey); return FALSE; }
+                           ))!=ERROR_SUCCESS)  { RegCloseKey(ckey); return false; }
 
   // Close the key
   RegCloseKey(ckey);
 
-  if (valtype!=REG_SZ) return FALSE;
+  if (valtype!=REG_SZ) return false;
 
-  return TRUE;
+  return true;
   }
 
-BOOL SetRegistryString(const char *szSubKey,
+bool SetRegistryString(const char *szSubKey,
                        const char *szValueName,
                        const char *szValue)
   {
@@ -178,7 +178,7 @@ BOOL SetRegistryString(const char *szSubKey,
                            NULL,
                            &ckey,
                            &disposition
-                          ))!=ERROR_SUCCESS) return FALSE;
+                          ))!=ERROR_SUCCESS) return false;
 
   // Set the value
   if ((qerr=RegSetValueEx(ckey,
@@ -187,39 +187,39 @@ BOOL SetRegistryString(const char *szSubKey,
                           REG_SZ,
                           (BYTE*) szValue,
                           SLen(szValue)+1
-                         ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return FALSE; }
+                         ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return false; }
 
   // Close the key
   RegCloseKey(ckey);
 
-  return TRUE;
+  return true;
   }
 
-BOOL DeleteRegistryKey(HKEY hKey, const char *szSubKey)
+bool DeleteRegistryKey(HKEY hKey, const char *szSubKey)
 	{
   HKEY ckey;
   // Open the key
-  if (RegOpenKeyEx(hKey, szSubKey, 0, KEY_ALL_ACCESS, &ckey) != ERROR_SUCCESS) return FALSE;
+  if (RegOpenKeyEx(hKey, szSubKey, 0, KEY_ALL_ACCESS, &ckey) != ERROR_SUCCESS) return false;
 	// Delete all subkeys
 	char strChild[1024 + 1];
 	while (RegEnumKey(ckey, 0, strChild, 1024) == ERROR_SUCCESS)
 		if (!DeleteRegistryKey(ckey, strChild))
-			return FALSE;
+			return false;
   // Close the key
   RegCloseKey(ckey);
 
 	// Delete the key
-  if (RegDeleteKey(hKey, szSubKey) != ERROR_SUCCESS) return FALSE;
+  if (RegDeleteKey(hKey, szSubKey) != ERROR_SUCCESS) return false;
 	// Success
-	return TRUE;
+	return true;
 	}
 
-BOOL DeleteRegistryKey(const char *szSubKey)
+bool DeleteRegistryKey(const char *szSubKey)
 	{
 	return DeleteRegistryKey(HKEY_CURRENT_USER, szSubKey);
 	}
 
-BOOL SetRegClassesRoot(const char *szSubKey,
+bool SetRegClassesRoot(const char *szSubKey,
                        const char *szValueName,
                        const char *szStringValue)
   {
@@ -238,7 +238,7 @@ BOOL SetRegClassesRoot(const char *szSubKey,
                            NULL,
                            &ckey,
                            &disposition
-                          ))!=ERROR_SUCCESS) return FALSE;
+                          ))!=ERROR_SUCCESS) return false;
 
   // Set the value
   if ((qerr=RegSetValueEx(ckey,
@@ -247,15 +247,15 @@ BOOL SetRegClassesRoot(const char *szSubKey,
                           REG_SZ,
                           (BYTE*) szStringValue,
                           SLen(szStringValue)+1
-                         ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return FALSE; }
+                         ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return false; }
 
   // Close the key
   RegCloseKey(ckey);
 
-  return TRUE;
+  return true;
   }
 
-BOOL SetRegClassesRootString(const char *szSubKey,
+bool SetRegClassesRootString(const char *szSubKey,
 														 const char *szValueName,
 														 const char *szValue)
   {
@@ -274,7 +274,7 @@ BOOL SetRegClassesRootString(const char *szSubKey,
                            NULL,
                            &ckey,
                            &disposition
-                          ))!=ERROR_SUCCESS) return FALSE;
+                          ))!=ERROR_SUCCESS) return false;
 
   // Set the value
   if ((qerr=RegSetValueEx(ckey,
@@ -283,46 +283,46 @@ BOOL SetRegClassesRootString(const char *szSubKey,
                           REG_SZ,
                           (BYTE*) szValue,
                           SLen(szValue)+1
-                         ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return FALSE; }
+                         ))!=ERROR_SUCCESS) { RegCloseKey(ckey); return false; }
 
   // Close the key
   RegCloseKey(ckey);
 
-  return TRUE;
+  return true;
   }
 
-BOOL SetRegShell(const char *szClassName,
+bool SetRegShell(const char *szClassName,
                  const char *szShellName,
                  const char *szShellCaption,
                  const char *szCommand,
-								 BOOL fMakeDefault)
+								 bool fMakeDefault)
   {
   char szKeyName[256+1];
   // Set shell caption
   sprintf(szKeyName,"%s\\Shell\\%s",szClassName,szShellName);
-  if (!SetRegClassesRoot(szKeyName, NULL, szShellCaption)) return FALSE;
+  if (!SetRegClassesRoot(szKeyName, NULL, szShellCaption)) return false;
   // Set shell command
   sprintf(szKeyName,"%s\\Shell\\%s\\Command",szClassName,szShellName);
-  if (!SetRegClassesRoot(szKeyName, NULL, szCommand)) return FALSE;
+  if (!SetRegClassesRoot(szKeyName, NULL, szCommand)) return false;
 	// Set as default command
 	if (fMakeDefault)
 	{
 		sprintf(szKeyName, "%s\\Shell", szClassName);
-		if (!SetRegClassesRoot(szKeyName, NULL, szShellName)) return FALSE;
+		if (!SetRegClassesRoot(szKeyName, NULL, szShellName)) return false;
 	}
-  return TRUE;
+  return true;
   }
 
-BOOL RemoveRegShell(const char *szClassName,
+bool RemoveRegShell(const char *szClassName,
 										const char *szShellName)
   {
   char strKey[256+1];
   sprintf(strKey, "%s\\Shell\\%s", szClassName, szShellName);
-  if (!DeleteRegistryKey(HKEY_CLASSES_ROOT, strKey)) return FALSE;
-  return TRUE;
+  if (!DeleteRegistryKey(HKEY_CLASSES_ROOT, strKey)) return false;
+  return true;
   }
 
-BOOL SetRegFileClass(const char *szClassRoot,
+bool SetRegFileClass(const char *szClassRoot,
                      const char *szExtension,
                      const char *szClassName,
                      const char *szIconPath, int iIconNum,
@@ -331,28 +331,28 @@ BOOL SetRegFileClass(const char *szClassRoot,
   char keyname[100];
   char iconpath[512];
 	// Create root class entry
-  if (!SetRegClassesRoot(szClassRoot,NULL,szClassName)) return FALSE;
+  if (!SetRegClassesRoot(szClassRoot,NULL,szClassName)) return false;
 	// Set root class icon
   sprintf(keyname,"%s\\DefaultIcon",szClassRoot);
   sprintf(iconpath,"%s,%d",szIconPath,iIconNum);
-  if (!SetRegClassesRoot(keyname,NULL,iconpath)) return FALSE;
+  if (!SetRegClassesRoot(keyname,NULL,iconpath)) return false;
 	// Set extension map entry
   sprintf(keyname,".%s",szExtension);
-  if (!SetRegClassesRoot(keyname,NULL,szClassRoot)) return FALSE;
+  if (!SetRegClassesRoot(keyname,NULL,szClassRoot)) return false;
 	// Set extension content type
   sprintf(keyname,".%s",szExtension);
-	if (!SetRegClassesRootString(keyname,"Content Type",szContentType)) return FALSE;
+	if (!SetRegClassesRootString(keyname,"Content Type",szContentType)) return false;
 	// Success
-  return TRUE;
+  return true;
   }
 
 
 //------------------------------ Window Position ------------------------------------------
 
-BOOL StoreWindowPosition(HWND hwnd,
+bool StoreWindowPosition(HWND hwnd,
 												 const char *szWindowName,
 												 const char *szSubKey,
-												 BOOL fStoreSize)
+												 bool fStoreSize)
 	{
 	RECT winpos;
 	char regstr[100];
@@ -360,39 +360,39 @@ BOOL StoreWindowPosition(HWND hwnd,
 		return SetRegistryString(szSubKey,szWindowName,"Maximized");
 	if (IsIconic(hwnd))
 		return SetRegistryString(szSubKey,szWindowName,"Minimized");
-	if (!GetWindowRect(hwnd,&winpos)) return FALSE;
+	if (!GetWindowRect(hwnd,&winpos)) return false;
 	if (fStoreSize) sprintf(regstr,"%i,%i,%i,%i",winpos.left,winpos.top,winpos.right-winpos.left,winpos.bottom-winpos.top);
 	else sprintf(regstr,"%i,%i",winpos.left,winpos.top);
 	return SetRegistryString(szSubKey,szWindowName,regstr);
 	}
 
-BOOL RestoreWindowPosition(HWND hwnd,
+bool RestoreWindowPosition(HWND hwnd,
 													 const char *szWindowName,
 													 const char *szSubKey,
-													 BOOL fHidden)
+													 bool fHidden)
 	{
 	char regstr[100],buffer2[5];
 	int x,y,wdt,hgt;
-	BOOL fSetSize=TRUE;
+	bool fSetSize=true;
 	// No position stored: cannot restore
 	if (!GetRegistryString(szSubKey,szWindowName,regstr,100))
-		return FALSE;
+		return false;
 	if (SEqual(regstr,"Maximized"))
 		return ShowWindow(hwnd,SW_MAXIMIZE | SW_NORMAL);
 	if (SEqual(regstr,"Minimized"))
 		return ShowWindow(hwnd,SW_MINIMIZE | SW_NORMAL);
 	SCopySegment(regstr,0,buffer2,',',4); sscanf(buffer2,"%i",&x);
 	SCopySegment(regstr,1,buffer2,',',4); sscanf(buffer2,"%i",&y);
-	if (SCopySegment(regstr,2,buffer2,',',4)) sscanf(buffer2,"%i",&wdt); else fSetSize=FALSE;
-	if (SCopySegment(regstr,3,buffer2,',',4)) sscanf(buffer2,"%i",&hgt); else fSetSize=FALSE;
+	if (SCopySegment(regstr,2,buffer2,',',4)) sscanf(buffer2,"%i",&wdt); else fSetSize=false;
+	if (SCopySegment(regstr,3,buffer2,',',4)) sscanf(buffer2,"%i",&hgt); else fSetSize=false;
 	if (!fSetSize)
 		{
-		RECT winpos; if (!GetWindowRect(hwnd,&winpos)) return FALSE;
+		RECT winpos; if (!GetWindowRect(hwnd,&winpos)) return false;
 		wdt=winpos.right-winpos.left; hgt=winpos.bottom-winpos.top;
 		}
 	// Move window
-	if (!MoveWindow(hwnd,x,y,wdt,hgt,TRUE))
-		return FALSE;
+	if (!MoveWindow(hwnd,x,y,wdt,hgt,true))
+		return false;
 	// Hide window
 	if (fHidden)
 		return ShowWindow(hwnd, SW_HIDE);

@@ -70,8 +70,8 @@ class C4IDList : protected C4IDListChunk
     // Access by ID
     int32_t  GetIDCount(C4ID c_id, int32_t iZeroDefVal=0) const;
 		bool SetIDCount(C4ID c_id, int32_t iCount, bool fAddNewID=false);
-    bool IncreaseIDCount(C4ID c_id, bool fAddNewID=TRUE, int32_t IncreaseBy=1, bool fRemoveEmpty=false);
-    bool DecreaseIDCount(C4ID c_id, bool fRemoveEmptyID=TRUE)
+    bool IncreaseIDCount(C4ID c_id, bool fAddNewID=true, int32_t IncreaseBy=1, bool fRemoveEmpty=false);
+    bool DecreaseIDCount(C4ID c_id, bool fRemoveEmptyID=true)
 			{ return IncreaseIDCount(c_id, false, -1, fRemoveEmptyID); }
     int32_t  GetNumberOfIDs() const;
 		int32_t GetIndex(C4ID c_id) const;
@@ -98,7 +98,7 @@ class C4IDList : protected C4IDListChunk
 		// Graphics
 		void Draw(C4Facet &cgo, int32_t iSelection,
 							C4DefList &rDefs, DWORD dwCategory,
-							bool fCounts=TRUE, int32_t iAlign=0) const;
+							bool fCounts=true, int32_t iAlign=0) const;
     // Compiling
     void CompileFunc(StdCompiler *pComp, bool fValues = true);
   };

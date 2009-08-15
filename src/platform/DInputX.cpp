@@ -66,28 +66,28 @@ LPDIRECTINPUT g_pdi = NULL;
 LPDIRECTINPUTDEVICE g_pMouse = NULL;
 HANDLE g_hevtMouse = NULL;
 
-void DirectInputSyncAcquire(BOOL fActive);
+void DirectInputSyncAcquire(bool fActive);
 
-BOOL InitDirectInput(HINSTANCE g_hinst, HWND hwnd, int resx, int resy)
+bool InitDirectInput(HINSTANCE g_hinst, HWND hwnd, int resx, int resy)
 	{
   HRESULT hr;
   hr = DirectInputCreate(g_hinst, DIRECTINPUT_VERSION, /*(void **)*/ &g_pdi, NULL);
-  if (FAILED(hr)) { Log("DirectInputCreate failure"); return FALSE; }
+  if (FAILED(hr)) { Log("DirectInputCreate failure"); return false; }
 
   hr = g_pdi->CreateDevice(GUID_SysMouse, &g_pMouse, NULL);
-  if (FAILED(hr)) { Log("CreateDevice(SysMouse) failure"); return FALSE; }
+  if (FAILED(hr)) { Log("CreateDevice(SysMouse) failure"); return false; }
 
   hr = g_pMouse->SetDataFormat(&c_dfDIMouse);
-  if (FAILED(hr)) { Log("SetDataFormat(SysMouse, dfDIMouse) failure"); return FALSE; }
+  if (FAILED(hr)) { Log("SetDataFormat(SysMouse, dfDIMouse) failure"); return false; }
 
   hr = g_pMouse->SetCooperativeLevel(hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
-  if (FAILED(hr)) { Log("SetCooperativeLevel(SysMouse) failure"); return FALSE; }
+  if (FAILED(hr)) { Log("SetCooperativeLevel(SysMouse) failure"); return false; }
 
   g_hevtMouse = CreateEvent(0, 0, 0, 0);
-  if (g_hevtMouse == NULL) { Log("CreateEvent failure"); return FALSE; }
+  if (g_hevtMouse == NULL) { Log("CreateEvent failure"); return false; }
 
   hr = g_pMouse->SetEventNotification(g_hevtMouse);
-  if (FAILED(hr)) { Log("SetEventNotification(SysMouse)"); return FALSE; }
+  if (FAILED(hr)) { Log("SetEventNotification(SysMouse)"); return false; }
 
   DIPROPDWORD dipdw =
       {
@@ -96,15 +96,15 @@ BOOL InitDirectInput(HINSTANCE g_hinst, HWND hwnd, int resx, int resy)
       };
 
   hr = g_pMouse->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph);
-  if (FAILED(hr)) { Log("Set buffer size(SysMouse)"); return FALSE; }
+  if (FAILED(hr)) { Log("Set buffer size(SysMouse)"); return false; }
 
   SetMouseRange(0,0,resx-1,resy-1);
   CenterMouse();
   MouseB0=MouseB1=MouseB2=0;
 
-  DirectInputSyncAcquire(TRUE);
+  DirectInputSyncAcquire(true);
 
-  return TRUE;
+  return true;
 	}
 
 void DeInitDirectInput()
@@ -149,7 +149,7 @@ void CenterMouse()
   ClipMouse2Range();
   }
 
-void DirectInputSyncAcquire(BOOL fActive)
+void DirectInputSyncAcquire(bool fActive)
   {
   if (g_pMouse)
     if (fActive)
@@ -167,14 +167,14 @@ void DirectInputCritical()
   // Test for mouse input
   if (WaitForSingleObject(g_hevtMouse,0)!=WAIT_OBJECT_0) return;
   // Retrieve mouse input
-  while (TRUE)
+  while (true)
     {
     DIDEVICEOBJECTDATA od;
     DWORD dwElements = 1;
     HRESULT hr = g_pMouse->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), &od, &dwElements, 0);
     MouseStatus=hr;
     if (hr == DIERR_INPUTLOST)
-      { DirectInputSyncAcquire(TRUE); return; }
+      { DirectInputSyncAcquire(true); return; }
     // Unable to read data or no data available
     if (FAILED(hr) || dwElements == 0) return;
     switch (od.dwOfs)

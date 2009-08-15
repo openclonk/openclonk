@@ -187,7 +187,7 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 	rtSize.top = 0;
 	rtSize.right = rcBounds.Wdt;
 	rtSize.bottom = rcBounds.Hgt;
-	if (!::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, FALSE, 0)) return false;
+	if (!::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0)) return false;
 	// create it!
 	if (!Title || !*Title) Title = "???";
 	hWindow = ::CreateWindowEx	(
@@ -200,7 +200,7 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 		{
 		// update pos
 		if (szID && *szID)
-			RestoreWindowPosition(hWindow, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), FALSE);
+			RestoreWindowPosition(hWindow, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
 		// and show
 		::ShowWindow(hWindow, SW_SHOW);
 		}
@@ -236,7 +236,7 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 			{
 			const char *szID = pDlg->GetID();
 			if (szID && *szID)
-				StoreWindowPosition(hwnd, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), FALSE);
+				StoreWindowPosition(hwnd, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
 			}
 			break;
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -305,7 +305,7 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 		{
 		// update pos
 		if (szID && *szID)
-			RestorePosition(FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), FALSE);
+			RestorePosition(FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
 		else
 			SetSize(rcBounds.Wdt, rcBounds.Hgt);
 		return this;
@@ -494,7 +494,7 @@ void Dialog::UpdateSize()
 		rtSize.right = rcBounds.Wdt;
 		rtSize.bottom = rcBounds.Hgt;
 #ifdef _WIN32
-		if (::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, FALSE, 0))
+		if (::AdjustWindowRectEx(&rtSize, ConsoleDlgWindowStyle, false, 0))
 #endif // _WIN32
 			pWindow->SetSize(rtSize.right-rtSize.left,rtSize.bottom-rtSize.top);
 		}
@@ -583,10 +583,10 @@ void Dialog::DrawElement(C4TargetFacet &cgo)
 		}
 	}
 
-BOOL Dialog::CharIn(const char * c)
+bool Dialog::CharIn(const char * c)
 	{
 	// reroute to active control
-	if (pActiveCtrl && pActiveCtrl->CharIn(c)) return TRUE;
+	if (pActiveCtrl && pActiveCtrl->CharIn(c)) return true;
 	// unprocessed: Focus default control
 	// Except for space, which may have been processed as a key already
 	// (changing focus here would render buttons unusable, because they switch on KeyUp)
@@ -595,9 +595,9 @@ BOOL Dialog::CharIn(const char * c)
 		{
 		SetFocus(pDefCtrl, false);
 		if (pActiveCtrl && pActiveCtrl->CharIn(c))
-			return TRUE;
+			return true;
 		}
-	return FALSE;
+	return false;
 	}
 
 bool Dialog::KeyHotkey(C4KeyCodeEx key)

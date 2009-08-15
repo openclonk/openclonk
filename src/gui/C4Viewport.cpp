@@ -241,9 +241,9 @@ CStdWindow * C4ViewportWindow::Init(CStdApp * pApp, const char * Title, CStdWind
 	return hWindow ? this : 0;
 }
 
-BOOL C4Viewport::DropFiles(HANDLE hDrop)
+bool C4Viewport::DropFiles(HANDLE hDrop)
 	{
-	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return FALSE; }
+	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return false; }
 
 	int32_t iFileNum = DragQueryFile((HDROP)hDrop,0xFFFFFFFF,NULL,0);
 	POINT pntPoint;
@@ -255,25 +255,25 @@ BOOL C4Viewport::DropFiles(HANDLE hDrop)
 		Game.DropFile(szFilename,ViewX+float(pntPoint.x)/Zoom,ViewY+float(pntPoint.y)/Zoom);
 		}
 	DragFinish((HDROP)hDrop);
-	return TRUE;
+	return true;
 	}
 
 void UpdateWindowLayout(HWND hwnd)
 	{
-	BOOL fMinimized = IsIconic(hwnd);
-	BOOL fMaximized = IsZoomed(hwnd);
+	bool fMinimized = IsIconic(hwnd);
+	bool fMaximized = IsZoomed(hwnd);
 	RECT rect;
 	GetWindowRect(hwnd,&rect);
-	MoveWindow(hwnd,rect.left,rect.top,rect.right-rect.left-1,rect.bottom-rect.top,TRUE);
-	MoveWindow(hwnd,rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top,TRUE);
+	MoveWindow(hwnd,rect.left,rect.top,rect.right-rect.left-1,rect.bottom-rect.top,true);
+	MoveWindow(hwnd,rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top,true);
 	}
 
-BOOL C4Viewport::TogglePlayerLock()
+bool C4Viewport::TogglePlayerLock()
 	{
 	// Disable player lock
 	if (PlayerLock)
 		{
-		PlayerLock=FALSE;
+		PlayerLock=false;
 		SetWindowLong(pWindow->hWindow,GWL_STYLE,C4ViewportWindowStyle | WS_HSCROLL | WS_VSCROLL);
 		UpdateWindowLayout(pWindow->hWindow);
 		ScrollBarsByViewPosition();
@@ -281,16 +281,16 @@ BOOL C4Viewport::TogglePlayerLock()
 	// Enable player lock
 	else if (ValidPlr(Player))
 		{
-		PlayerLock=TRUE;
+		PlayerLock=true;
 		SetWindowLong(pWindow->hWindow,GWL_STYLE,C4ViewportWindowStyle);
 		UpdateWindowLayout(pWindow->hWindow);
 		}
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Viewport::ViewPositionByScrollBars()
+bool C4Viewport::ViewPositionByScrollBars()
 	{
-	if (PlayerLock) return FALSE;
+	if (PlayerLock) return false;
 	SCROLLINFO scroll;
 	scroll.cbSize=sizeof(SCROLLINFO);
 	// Vertical
@@ -301,12 +301,12 @@ BOOL C4Viewport::ViewPositionByScrollBars()
 	scroll.fMask=SIF_POS;
 	GetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll);
 	ViewX=float(scroll.nPos);
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Viewport::ScrollBarsByViewPosition()
+bool C4Viewport::ScrollBarsByViewPosition()
 	{
-	if (PlayerLock) return FALSE;
+	if (PlayerLock) return false;
 	SCROLLINFO scroll;
 	scroll.cbSize=sizeof(SCROLLINFO);
 	// Vertical
@@ -315,15 +315,15 @@ BOOL C4Viewport::ScrollBarsByViewPosition()
 	scroll.nMax=GBackHgt;
 	scroll.nPage=ViewHgt;
 	scroll.nPos=int(ViewY);
-	SetScrollInfo(pWindow->hWindow,SB_VERT,&scroll,TRUE);
+	SetScrollInfo(pWindow->hWindow,SB_VERT,&scroll,true);
 	// Horizontal
 	scroll.fMask=SIF_ALL;
 	scroll.nMin=0;
 	scroll.nMax=GBackWdt;
 	scroll.nPage=ViewWdt;
 	scroll.nPos=int(ViewX);
-	SetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll,TRUE);
-	return TRUE;
+	SetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll,true);
+	return true;
 	}
 
 #elif defined(WITH_DEVELOPER_MODE)
@@ -343,7 +343,7 @@ GtkWidget* C4ViewportWindow::InitGUI()
 	drawing_area = gtk_drawing_area_new();
 	h_scrollbar = gtk_hscrollbar_new(NULL);
 	v_scrollbar = gtk_vscrollbar_new(NULL);
-	table = gtk_table_new(2, 2, FALSE);
+	table = gtk_table_new(2, 2, false);
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(h_scrollbar));
 	adjustment->lower = 0;
@@ -393,12 +393,12 @@ GtkWidget* C4ViewportWindow::InitGUI()
 	g_signal_connect_after(G_OBJECT(drawing_area), "configure-event", G_CALLBACK(OnConfigureDareaStatic), this);
 
 	// do not draw the default background
-	gtk_widget_set_double_buffered (drawing_area, FALSE);
+	gtk_widget_set_double_buffered (drawing_area, false);
 
 	return drawing_area;
 }
 
-BOOL C4Viewport::TogglePlayerLock()
+bool C4Viewport::TogglePlayerLock()
 {
 	if(PlayerLock)
 	{
@@ -414,12 +414,12 @@ BOOL C4Viewport::TogglePlayerLock()
 		gtk_widget_hide(pWindow->v_scrollbar);
 	}
 
-	return TRUE;
+	return true;
 }
 
-BOOL C4Viewport::ScrollBarsByViewPosition()
+bool C4Viewport::ScrollBarsByViewPosition()
 {
-	if(PlayerLock) return FALSE;
+	if(PlayerLock) return false;
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
 	adjustment->page_increment = pWindow->drawing_area->allocation.width;
@@ -433,12 +433,12 @@ BOOL C4Viewport::ScrollBarsByViewPosition()
 	adjustment->value = ViewY;
 	gtk_adjustment_changed(adjustment);
 
-	return TRUE;
+	return true;
 }
 
-BOOL C4Viewport::ViewPositionByScrollBars()
+bool C4Viewport::ViewPositionByScrollBars()
 {
-	if(PlayerLock) return FALSE;
+	if(PlayerLock) return false;
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
 	ViewX = static_cast<int32_t>(adjustment->value);
@@ -446,7 +446,7 @@ BOOL C4Viewport::ViewPositionByScrollBars()
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->v_scrollbar));
 	ViewY = static_cast<int32_t>(adjustment->value);
 
-	return TRUE;
+	return true;
 }
 
 void C4ViewportWindow::OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContext* context, gint x, gint y, GtkSelectionData* data, guint info, guint time, gpointer user_data)
@@ -474,13 +474,13 @@ gboolean C4ViewportWindow::OnExposeStatic(GtkWidget* widget, GdkEventExpose* eve
 
 	// TODO: Redraw only event->area
 	cvp->Execute();
-	return TRUE;
+	return true;
 }
 
 void C4ViewportWindow::OnRealizeStatic(GtkWidget* widget, gpointer user_data)
 {
 	// Initial PlayerLock
-	if(static_cast<C4ViewportWindow*>(user_data)->cvp->PlayerLock == TRUE)
+	if(static_cast<C4ViewportWindow*>(user_data)->cvp->PlayerLock == true)
 	{
 		gtk_widget_hide(static_cast<C4ViewportWindow*>(user_data)->h_scrollbar);
 		gtk_widget_hide(static_cast<C4ViewportWindow*>(user_data)->v_scrollbar);
@@ -500,14 +500,14 @@ gboolean C4ViewportWindow::OnKeyPressStatic(GtkWidget* widget, GdkEventKey* even
 #endif
 	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
 	Game.DoKeyboardInput(key, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
-	return TRUE;
+	return true;
 }
 
 gboolean C4ViewportWindow::OnKeyReleaseStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
 	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
 	Game.DoKeyboardInput(key, KEYEV_Up, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
-	return TRUE;
+	return true;
 }
 
 gboolean C4ViewportWindow::OnScrollStatic(GtkWidget* widget, GdkEventScroll* event, gpointer user_data)
@@ -527,7 +527,7 @@ gboolean C4ViewportWindow::OnScrollStatic(GtkWidget* widget, GdkEventScroll* eve
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 gboolean C4ViewportWindow::OnButtonPressStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
@@ -568,7 +568,7 @@ gboolean C4ViewportWindow::OnButtonPressStatic(GtkWidget* widget, GdkEventButton
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 gboolean C4ViewportWindow::OnButtonReleaseStatic(GtkWidget* widget, GdkEventButton* event, gpointer user_data)
@@ -603,7 +603,7 @@ gboolean C4ViewportWindow::OnButtonReleaseStatic(GtkWidget* widget, GdkEventButt
 		}
 	}
 
-	return TRUE;
+	return true;
 }
 
 gboolean C4ViewportWindow::OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotion* event, gpointer user_data)
@@ -619,7 +619,7 @@ gboolean C4ViewportWindow::OnMotionNotifyStatic(GtkWidget* widget, GdkEventMotio
 		Console.EditCursor.Move(window->cvp->ViewX + event->x/window->cvp->Zoom, window->cvp->ViewY + event->y/window->cvp->Zoom, event->state);
 	}
 
-	return TRUE;
+	return true;
 }
 
 gboolean C4ViewportWindow::OnConfigureStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data)
@@ -630,7 +630,7 @@ gboolean C4ViewportWindow::OnConfigureStatic(GtkWidget* widget, GdkEventConfigur
 	//cvp->UpdateOutputSize();
 	cvp->ScrollBarsByViewPosition();
 
-	return FALSE;
+	return false;
 }
 
 gboolean C4ViewportWindow::OnConfigureDareaStatic(GtkWidget* widget, GdkEventConfigure* event, gpointer user_data)
@@ -640,7 +640,7 @@ gboolean C4ViewportWindow::OnConfigureDareaStatic(GtkWidget* widget, GdkEventCon
 
 	cvp->UpdateOutputSize();
 
-	return FALSE;
+	return false;
 }
 
 void C4ViewportWindow::OnVScrollStatic(GtkAdjustment* adjustment, gpointer user_data)
@@ -654,8 +654,8 @@ void C4ViewportWindow::OnHScrollStatic(GtkAdjustment* adjustment, gpointer user_
 }
 
 #else // WITH_DEVELOPER_MODE
-BOOL C4Viewport::TogglePlayerLock() { return false; }
-BOOL C4Viewport::ScrollBarsByViewPosition() { return false; }
+bool C4Viewport::TogglePlayerLock() { return false; }
+bool C4Viewport::ScrollBarsByViewPosition() { return false; }
 #if defined(USE_X11)
 void C4ViewportWindow::HandleMessage (XEvent & e)
 	{
@@ -788,9 +788,9 @@ void C4ViewportWindow::Close() {
 	::GraphicsSystem.CloseViewport(cvp);
 }
 
-BOOL C4Viewport::UpdateOutputSize()
+bool C4Viewport::UpdateOutputSize()
 	{
-	if (!pWindow) return FALSE;
+	if (!pWindow) return false;
 	// Output size
 	RECT rect;
 #ifdef WITH_DEVELOPER_MODE
@@ -800,20 +800,20 @@ BOOL C4Viewport::UpdateOutputSize()
 	rect.right = rect.left + pWindow->drawing_area->allocation.width;
 	rect.bottom = rect.top + pWindow->drawing_area->allocation.height;
 #else
-	if (!pWindow->GetSize(&rect)) return FALSE;
+	if (!pWindow->GetSize(&rect)) return false;
 #endif
 	OutX=rect.left; OutY=rect.top;
 	ViewWdt=rect.right-rect.left; ViewHgt=rect.bottom-rect.top;
 	// Scroll bars
 	ScrollBarsByViewPosition();
 	// Reset menus
-	ResetMenuPositions=TRUE;
+	ResetMenuPositions=true;
 #ifdef USE_GL
 	// update internal GL size
 	if (pCtx) pCtx->UpdateSize();
 #endif
 	// Done
-	return TRUE;
+	return true;
 	}
 
 C4Viewport::C4Viewport()
@@ -886,7 +886,7 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				{
 				int32_t iSymbolSize = C4SymbolSize * 2 / 3;
 				C4Facet ccgo; ccgo.Set(cgo.Surface,cgo.X+cgo.Wdt-iSymbolSize,cgo.Y+C4SymbolSize+2*C4SymbolBorder,iSymbolSize,iSymbolSize); ccgo.Y+=iSymbolSize;
-				DrawCommandKey(ccgo, COM_PlayerMenu, FALSE, PlrControlKeyName(Player, Com2Control(COM_PlayerMenu), true).getData());
+				DrawCommandKey(ccgo, COM_PlayerMenu, false, PlrControlKeyName(Player, Com2Control(COM_PlayerMenu), true).getData());
 				}
 			}
 	}
@@ -923,13 +923,13 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 		{
 		// Single object
 		ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+cgo.Hgt-C4SymbolBorder-C4SymbolSize,C4SymbolSize,C4SymbolSize);
-		cursor->Contents.GetObject()->DrawPicture(ccgo,FALSE,SetRegions);
+		cursor->Contents.GetObject()->DrawPicture(ccgo,false,SetRegions);
 		}
 	else
 		{
 		// Object list
 		ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+cgo.Hgt-C4SymbolBorder-C4SymbolSize,7*C4SymbolSize,C4SymbolSize);
-		cursor->Contents.DrawIDList(ccgo,-1,::Definitions,C4D_All,SetRegions,COM_Contents,FALSE);
+		cursor->Contents.DrawIDList(ccgo,-1,::Definitions,C4D_All,SetRegions,COM_Contents,false);
 		}
 
 	C4ST_STOP(ContStat)
@@ -1023,7 +1023,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 		}
 
 	// Flag done
-	ResetMenuPositions=FALSE;
+	ResetMenuPositions=false;
 
 	// restore cgo
 	cgo.X = int32_t(cgo.TargetX); cgo.Y = int32_t(cgo.TargetY);
@@ -1320,8 +1320,8 @@ void C4Viewport::Default()
 	Zoom = 1.0;
 	ZoomTarget = 1.0;
 	Next=NULL;
-	PlayerLock=TRUE;
-	ResetMenuPositions=FALSE;
+	PlayerLock=true;
+	ResetMenuPositions=false;
 	SetRegions=NULL;
 	Regions.Default();
 	ViewOffsX = ViewOffsY = 0;
@@ -1376,7 +1376,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 
 	}
 
-BOOL C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
+bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	{
 	// Fullscreen viewport initialization
 	// Set Player
@@ -1385,10 +1385,10 @@ BOOL C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	if (!fSetTempOnly) fIsNoOwnerViewport = (iPlayer == NO_OWNER);
 	// Owned viewport: clear any flash message explaining observer menu
 	if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
+bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	{
 	// Console viewport initialization
 	// Set Player
@@ -1398,7 +1398,7 @@ BOOL C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	// Create window
 	pWindow = new C4ViewportWindow(this);
 	if (!pWindow->Init(pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName(), pParent, false))
-		return FALSE;
+		return false;
 	// Position and size
 	pWindow->RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
 	//UpdateWindow(hWnd);
@@ -1411,7 +1411,7 @@ BOOL C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	// Draw
 	Execute();
 	// Success
-	return TRUE;
+	return true;
 	}
 
 StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
@@ -1478,7 +1478,7 @@ void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
 	int32_t iShowCtrl = ::Players.Get(Player)->ShowControl;
 	int32_t iLastCtrl = Com2Control(::Players.Get(Player)->LastCom);
 	int32_t scwdt=size/3,schgt=size/4;
-	BOOL showtext;
+	bool showtext;
 
 	const int32_t C4MaxShowControl = 10;
 
@@ -1487,7 +1487,7 @@ void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
 			{
 			showtext= iShowCtrl & (1<<(iCtrl+C4MaxShowControl)) ;
       if (iShowCtrl & (1<<(iCtrl+2*C4MaxShowControl)))
-				if (::Game.iTick35>18) showtext=FALSE;
+				if (::Game.iTick35>18) showtext=false;
 			C4Facet ccgo;
 			ccgo.Set(cgo.Surface,tx+scwdt*(iCtrl%3),ty+schgt*(iCtrl/3),scwdt,schgt);
 			DrawControlKey(ccgo,iCtrl,(iLastCtrl==iCtrl) ? 1 : 0,
@@ -1544,7 +1544,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	ViewWdt=iOutWdt; ViewHgt=iOutHgt;
 	UpdateViewPosition();
 	// Reset menus
-	ResetMenuPositions=TRUE;
+	ResetMenuPositions=true;
 	// player uses mouse control? then clip the cursor
 	C4Player *pPlr;
 	if (pPlr=::Players.Get(Player))
@@ -1571,18 +1571,18 @@ void C4Viewport::DrawMouseButtons(C4TargetFacet &cgo)
 	// Help
 	ccgo.Set(cgo.Surface,cgo.X+cgo.Wdt-iSymbolSize,cgo.Y+C4SymbolSize+2*C4SymbolBorder,iSymbolSize,iSymbolSize);
 	GfxR->fctKey.Draw(ccgo);
-	GfxR->fctOKCancel.Draw(ccgo,TRUE,0,1);
+	GfxR->fctOKCancel.Draw(ccgo,true,0,1);
 	if (SetRegions) {	rgn.Default(); rgn.Set(ccgo,LoadResStr("IDS_CON_HELP")); rgn.Com=COM_Help; SetRegions->Add(rgn); }
 	// Player menu
 	ccgo.Y+=iSymbolSize;
-	DrawCommandKey(ccgo, COM_PlayerMenu, FALSE, PlrControlKeyName(Player, Com2Control(COM_PlayerMenu), true).getData());
+	DrawCommandKey(ccgo, COM_PlayerMenu, false, PlrControlKeyName(Player, Com2Control(COM_PlayerMenu), true).getData());
 	if (SetRegions) {	rgn.Default(); rgn.Set(ccgo,LoadResStr("IDS_CON_PLAYERMENU")); rgn.Com=COM_PlayerMenu; SetRegions->Add(rgn); }
 	// Chat
 	if (C4ChatDlg::IsChatActive())
 		{
 		ccgo.Y+=iSymbolSize;
 		GfxR->fctKey.Draw(ccgo);
-		C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_Chat).Draw(ccgo,TRUE);
+		C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_Chat).Draw(ccgo,true);
 		if (SetRegions) {	rgn.Default(); rgn.Set(ccgo,LoadResStr("IDS_DLG_CHAT")); rgn.Com=COM_Chat; SetRegions->Add(rgn); }
 		}
 	}

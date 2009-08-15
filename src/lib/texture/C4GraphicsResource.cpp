@@ -173,7 +173,7 @@ bool C4GraphicsResource::InitFonts()
 	return true;
 	}
 
-BOOL C4GraphicsResource::Init(bool fInitGUI)
+bool C4GraphicsResource::Init(bool fInitGUI)
   {
 	// Init fonts (double init will never if groups didnt change)
 	if (!InitFonts())
@@ -181,11 +181,11 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
   // Game palette - could perhaps be eliminated...
 	int32_t idNewPalGrp;
 	C4Group *pPalGrp=Files.FindEntry("C4.pal", NULL, &idNewPalGrp);
-	if (!pPalGrp) { LogF("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), "C4.pal"); return FALSE; }
+	if (!pPalGrp) { LogF("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), "C4.pal"); return false; }
 	if (idPalGrp != idNewPalGrp)
 		{
-		if (!pPalGrp->AccessEntry("C4.pal")) { LogFatal("Pal error!"); return FALSE; }
-		if (!pPalGrp->Read(GamePalette,256*3)) { LogFatal("Pal error!"); return FALSE; }
+		if (!pPalGrp->AccessEntry("C4.pal")) { LogFatal("Pal error!"); return false; }
+		if (!pPalGrp->Read(GamePalette,256*3)) { LogFatal("Pal error!"); return false; }
 		for (int32_t cnt=0; cnt<256*3; cnt++)	GamePalette[cnt]<<=2;
 		ZeroMemory(&AlphaPalette, 256);
 		// Set default force field color
@@ -197,12 +197,12 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 		AlphaPalette[0]=255;
 		AlphaPalette[191]=127;
 		// update game pal
-		if (!::GraphicsSystem.SetPalette()) { LogFatal("Pal error (2)!"); return FALSE; }
+		if (!::GraphicsSystem.SetPalette()) { LogFatal("Pal error (2)!"); return false; }
 		idPalGrp = idNewPalGrp;
 		}
 
   // Control
-	if (!LoadFile(sfcControl, "Control", Files, idSfcControl)) return FALSE;
+	if (!LoadFile(sfcControl, "Control", Files, idSfcControl)) return false;
 	fctKeyboard.Set(&sfcControl,0,0,80,36);
 	fctCommand.Set(&sfcControl,0,36,32,32);
 	fctKey.Set(&sfcControl,0,100,64,64);
@@ -210,50 +210,50 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 	fctMouse.Set(&sfcControl,198,100,32,32);
 
   // Facet bitmap resources
-	if (!LoadFile(fctFire,				"Fire",					Files, C4FCT_Height))	return FALSE;
-	if (!LoadFile(fctBackground,	"Background",		Files))								return FALSE;
-	if (!LoadFile(fctFlag,				"Flag",					Files))								return FALSE;	// (new format)
-	if (!LoadFile(fctCrew,				"Crew",					Files))								return FALSE; // (new format)
-	if (!LoadFile(fctScore,				"Score",				Files))								return FALSE; // (new)
-	if (!LoadFile(fctWealth,			"Wealth",				Files))								return FALSE; // (new)
-	if (!LoadFile(fctPlayer,			"Player",				Files))								return FALSE; // (new format)
-	if (!LoadFile(fctRank,				"Rank",					Files, C4FCT_Height))	return FALSE;
-	if (!LoadFile(fctCaptain,			"Captain",			Files))								return FALSE;
-	if (!LoadCursorGfx())                                               return FALSE;
-	if (!LoadFile(fctSelectMark,	"SelectMark",		Files, C4FCT_Height))	return FALSE;
-	if (!LoadFile(fctMenu,				"Menu",					Files, 35,35))				return FALSE;
-	if (!LoadFile(fctLogo,				"Logo",					Files))								return FALSE;
-	if (!LoadFile(fctConstruction,"Construction",	Files))								return FALSE;	// (new)
-	if (!LoadFile(fctEnergy,			"Energy",				Files))								return FALSE;	// (new)
-	if (!LoadFile(fctMagic,				"Magic",				Files))								return FALSE;	// (new)
-	if (!LoadFile(fctOptions,			"Options",			Files, C4FCT_Height))	return FALSE;
-	if (!LoadFile(fctUpperBoard,	"UpperBoard",		Files))								return FALSE;
-	if (!LoadFile(fctArrow,				"Arrow",				Files, C4FCT_Height))	return FALSE;
-	if (!LoadFile(fctExit,				"Exit",					Files))								return FALSE;
-	if (!LoadFile(fctHand,				"Hand",					Files, C4FCT_Height)) return FALSE;
-	if (!LoadFile(fctGamepad,			"Gamepad",			Files, 80)) return FALSE;
-	if (!LoadFile(fctBuild,				"Build",				Files)) return FALSE;
-	if (!LoadFile(fctEnergyBars,	"EnergyBars",		Files)) return FALSE;
+	if (!LoadFile(fctFire,				"Fire",					Files, C4FCT_Height))	return false;
+	if (!LoadFile(fctBackground,	"Background",		Files))								return false;
+	if (!LoadFile(fctFlag,				"Flag",					Files))								return false;	// (new format)
+	if (!LoadFile(fctCrew,				"Crew",					Files))								return false; // (new format)
+	if (!LoadFile(fctScore,				"Score",				Files))								return false; // (new)
+	if (!LoadFile(fctWealth,			"Wealth",				Files))								return false; // (new)
+	if (!LoadFile(fctPlayer,			"Player",				Files))								return false; // (new format)
+	if (!LoadFile(fctRank,				"Rank",					Files, C4FCT_Height))	return false;
+	if (!LoadFile(fctCaptain,			"Captain",			Files))								return false;
+	if (!LoadCursorGfx())                                               return false;
+	if (!LoadFile(fctSelectMark,	"SelectMark",		Files, C4FCT_Height))	return false;
+	if (!LoadFile(fctMenu,				"Menu",					Files, 35,35))				return false;
+	if (!LoadFile(fctLogo,				"Logo",					Files))								return false;
+	if (!LoadFile(fctConstruction,"Construction",	Files))								return false;	// (new)
+	if (!LoadFile(fctEnergy,			"Energy",				Files))								return false;	// (new)
+	if (!LoadFile(fctMagic,				"Magic",				Files))								return false;	// (new)
+	if (!LoadFile(fctOptions,			"Options",			Files, C4FCT_Height))	return false;
+	if (!LoadFile(fctUpperBoard,	"UpperBoard",		Files))								return false;
+	if (!LoadFile(fctArrow,				"Arrow",				Files, C4FCT_Height))	return false;
+	if (!LoadFile(fctExit,				"Exit",					Files))								return false;
+	if (!LoadFile(fctHand,				"Hand",					Files, C4FCT_Height)) return false;
+	if (!LoadFile(fctGamepad,			"Gamepad",			Files, 80)) return false;
+	if (!LoadFile(fctBuild,				"Build",				Files)) return false;
+	if (!LoadFile(fctEnergyBars,	"EnergyBars",		Files)) return false;
 	// life bar facets
 	if (fctEnergyBars.Surface)
 		{
 		int32_t bar_wdt = fctEnergyBars.Surface->Wdt/6;
 		int32_t bar_hgt = fctEnergyBars.Surface->Hgt/3;
-		if (!bar_wdt || !bar_hgt) { LogFatal("EnergyBars.png invalid or too small!"); return FALSE; }
+		if (!bar_wdt || !bar_hgt) { LogFatal("EnergyBars.png invalid or too small!"); return false; }
 		fctEnergyBars.Set(fctEnergyBars.Surface, 0,0, bar_wdt, bar_hgt);
 		}
 
 	// create ColorByOwner overlay surfaces
 	if (fctCrew.idSourceGroup != fctCrewClr.idSourceGroup)
 		{
-		if (!fctCrewClr.CreateClrByOwner(fctCrew.Surface)) { LogFatal("ClrByOwner error! (1)"); return FALSE; }
+		if (!fctCrewClr.CreateClrByOwner(fctCrew.Surface)) { LogFatal("ClrByOwner error! (1)"); return false; }
 		fctCrewClr.Wdt=fctCrew.Wdt;
 		fctCrewClr.Hgt=fctCrew.Hgt;
 		fctCrewClr.idSourceGroup = fctCrew.idSourceGroup;
 		}
 	if (fctFlag.idSourceGroup != fctFlagClr.idSourceGroup)
 		{
-		if (!fctFlagClr.CreateClrByOwner(fctFlag.Surface)) { LogFatal("ClrByOwner error! (1)"); return FALSE; }
+		if (!fctFlagClr.CreateClrByOwner(fctFlag.Surface)) { LogFatal("ClrByOwner error! (1)"); return false; }
 		fctFlagClr.Wdt=fctFlag.Wdt;
 		fctFlagClr.Hgt=fctFlag.Hgt;
 		fctFlagClr.idSourceGroup = fctFlag.idSourceGroup;
@@ -267,7 +267,7 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 		}
 	if (fctPlayer.idSourceGroup != fctPlayerClr.idSourceGroup)
 		{
-		if (!fctPlayerClr.CreateClrByOwner(fctPlayer.Surface)) { LogFatal("ClrByOwner error! (1)"); return FALSE; }
+		if (!fctPlayerClr.CreateClrByOwner(fctPlayer.Surface)) { LogFatal("ClrByOwner error! (1)"); return false; }
 		fctPlayerClr.Wdt=fctPlayer.Wdt;
 		fctPlayerClr.Hgt=fctPlayer.Hgt;
 		fctPlayerClr.idSourceGroup = fctPlayer.idSourceGroup;
@@ -282,7 +282,7 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 		{
 		C4GUI::Resource *pRes = C4GUI::GetRes();
 		if (!pRes) pRes = new C4GUI::Resource(FontCaption, FontTitle, FontRegular, FontTiny, FontTooltip);
-		if (!pRes->Load(Files)) { delete pRes; return FALSE; }
+		if (!pRes->Load(Files)) { delete pRes; return false; }
 		}
 
 	// CloseFiles() must not be called now:
@@ -294,7 +294,7 @@ BOOL C4GraphicsResource::Init(bool fInitGUI)
 	// mark initialized
 	fInitialized = true;
 
-  return TRUE;
+  return true;
   }
 
 bool C4GraphicsResource::LoadCursorGfx()

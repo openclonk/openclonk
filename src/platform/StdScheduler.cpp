@@ -196,9 +196,9 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	// Wait for something to happen
 	DWORD ret; DWORD dwMsec = iTimeout < 0 ? INFINITE : iTimeout;
 	if(pMessageProc)
-		ret = MsgWaitForMultipleObjects(iEventCnt, pEventHandles, FALSE, dwMsec, QS_ALLEVENTS);
+		ret = MsgWaitForMultipleObjects(iEventCnt, pEventHandles, false, dwMsec, QS_ALLEVENTS);
 	else
-		ret = WaitForMultipleObjects(iEventCnt, pEventHandles, FALSE, dwMsec);
+		ret = WaitForMultipleObjects(iEventCnt, pEventHandles, false, dwMsec);
 
 	bool fSuccess = true;
 

@@ -275,7 +275,7 @@ bool C4DefGraphics::CopyGraphicsFrom(C4DefGraphics &rSource)
 	return true;
 	}
 
-void C4DefGraphics::DrawClr(C4Facet &cgo, BOOL fAspect, DWORD dwClr)
+void C4DefGraphics::DrawClr(C4Facet &cgo, bool fAspect, DWORD dwClr)
 	{
 	// create facet and draw it
 	C4Surface *pSfc = BitmapClr ? BitmapClr : Bitmap; if (!pSfc) return;
@@ -919,7 +919,7 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
 		}
 	// draw at given rect
-	fctBlit.DrawT(cgo, TRUE, iPhase, 0, &C4DrawTransform(Transform, cgo.X+float(cgo.Wdt)/2, cgo.Y+float(cgo.Hgt)/2));
+	fctBlit.DrawT(cgo, true, iPhase, 0, &C4DrawTransform(Transform, cgo.X+float(cgo.Wdt)/2, cgo.Y+float(cgo.Hgt)/2));
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
 		{

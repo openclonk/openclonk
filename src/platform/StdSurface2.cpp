@@ -77,7 +77,7 @@ void CSurface::Default()
 	PrimarySurfaceLockPitch=0; PrimarySurfaceLockBits=NULL;
 	ClipX=ClipY=ClipX2=ClipY2=0;
 	Locked=0;
-	Attached=FALSE;
+	Attached=false;
 	fPrimary=false;
 #ifdef USE_DIRECTX
 	pSfc=NULL;
@@ -163,12 +163,12 @@ bool CSurface::IsRenderTarget()
 	;
 	}
 
-BOOL CSurface::Box(int iX, int iY, int iX2, int iY2, int iCol)
+bool CSurface::Box(int iX, int iY, int iX2, int iY2, int iCol)
 	{
-	if (!Lock()) return FALSE;
+	if (!Lock()) return false;
 	for (int cy=iY; cy<=iY2; cy++) HLine(iX,iX2,cy,iCol);
 	Unlock();
-	return TRUE;
+	return true;
 	}
 
 void CSurface::NoClip()
@@ -182,23 +182,23 @@ void CSurface::Clip(int iX, int iY, int iX2, int iY2)
 	ClipX2=BoundBy(iX2,0,Wdt-1); ClipY2=BoundBy(iY2,0,Hgt-1);
 	}
 
-BOOL CSurface::HLine(int iX, int iX2, int iY, int iCol)
+bool CSurface::HLine(int iX, int iX2, int iY, int iCol)
 	{
-	if (!Lock()) return FALSE;
+	if (!Lock()) return false;
 	for (int cx=iX; cx<=iX2; cx++) SetPix(cx,iY,iCol);
 	Unlock();
-	return TRUE;
+	return true;
 	}
 
-BOOL CSurface::Create(int iWdt, int iHgt, bool fOwnPal, bool fIsRenderTarget, int MaxTextureSize)
+bool CSurface::Create(int iWdt, int iHgt, bool fOwnPal, bool fIsRenderTarget, int MaxTextureSize)
 	{
 	Clear(); Default();
 	// check size
-	if (!iWdt || !iHgt) return FALSE;
+	if (!iWdt || !iHgt) return false;
 	Wdt=iWdt; Hgt=iHgt;
 	// create texture: check gfx system
-	if (!lpDDraw) return FALSE;
-	if (!lpDDraw->DeviceReady()) return FALSE;
+	if (!lpDDraw) return false;
+	if (!lpDDraw->DeviceReady()) return false;
 
 	// store color format that will be used
 #ifdef USE_DIRECTX
@@ -215,11 +215,11 @@ BOOL CSurface::Create(int iWdt, int iHgt, bool fOwnPal, bool fIsRenderTarget, in
 	byBytesPP=lpDDraw->byByteCnt;
 	this->fIsRenderTarget = fIsRenderTarget;
 	// create textures
-	if (!CreateTextures(MaxTextureSize)) { Clear(); return FALSE; }
+	if (!CreateTextures(MaxTextureSize)) { Clear(); return false; }
 	// update clipping
 	NoClip();
 	// success
-	return TRUE;
+	return true;
 	}
 
 bool CSurface::CreateTextures(int MaxTextureSize)
@@ -447,21 +447,21 @@ bool CSurface::SetAsClrByOwnerOf(CSurface *pOfSurface)
 #endif
 
 #ifdef USE_DIRECTX
-BOOL CSurface::AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsigned int iYRes)
+bool CSurface::AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsigned int iYRes)
 	{
 	Clear(); Default();
 	// store surface
 	if (pD3D)
 		{
 		pSfc=sfcSurface;
-		Attached=TRUE;
+		Attached=true;
 		}
 	fPrimary=true;
 	// get size
 	if (pD3D)
 		{
 		D3DSURFACE_DESC desc;
-		if (pSfc->GetDesc(&desc) != D3D_OK) return FALSE;
+		if (pSfc->GetDesc(&desc) != D3D_OK) return false;
 		Wdt=desc.Width; Hgt=desc.Height;
 		}
 	else if (lpDDraw && lpDDraw->pApp)
@@ -472,10 +472,10 @@ BOOL CSurface::AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsi
 		}
 	// reset clipping
 	NoClip();
-	return TRUE;
+	return true;
 	}
 #else
-BOOL CSurface::AttachSfc(void *sfcSurface, unsigned int iXRes, unsigned int iYRes)
+bool CSurface::AttachSfc(void *sfcSurface, unsigned int iXRes, unsigned int iYRes)
 	{
 	Clear(); Default();
 	fPrimary=true;
@@ -487,7 +487,7 @@ BOOL CSurface::AttachSfc(void *sfcSurface, unsigned int iXRes, unsigned int iYRe
 		}
 	// reset clipping
 	NoClip();
-	return TRUE;
+	return true;
 	}
 #endif
 
@@ -518,25 +518,25 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 	int lcnt,iLineRest;
 	CBitmap256Info BitmapInfo;
 	// read bmpinfo-header
-	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return FALSE;
+	if (!hGroup.Read(&BitmapInfo,sizeof(CBitmapInfo))) return false;
 	// is it 8bpp?
 	if (BitmapInfo.Info.biBitCount == 8)
 		{
 		if (!hGroup.Read(((BYTE *) &BitmapInfo)+sizeof(CBitmapInfo),
 			Min(sizeof(BitmapInfo)-sizeof(CBitmapInfo),sizeof(BitmapInfo)-sizeof(CBitmapInfo)+BitmapInfo.FileBitsOffset())))
-			return FALSE;
-		if (!hGroup.Advance(BitmapInfo.FileBitsOffset())) return FALSE;
+			return false;
+		if (!hGroup.Advance(BitmapInfo.FileBitsOffset())) return false;
 		}
 	else
 		{
 		// read 24bpp
-		if (BitmapInfo.Info.biBitCount != 24) return FALSE;
-		if (!hGroup.Advance(((CBitmapInfo) BitmapInfo).FileBitsOffset())) return FALSE;
+		if (BitmapInfo.Info.biBitCount != 24) return false;
+		if (!hGroup.Advance(((CBitmapInfo) BitmapInfo).FileBitsOffset())) return false;
 		}
 
 	// Create and lock surface
-	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, fOwnPal)) return FALSE;
-	if (!Lock()) { Clear(); return FALSE; }
+	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, fOwnPal)) return false;
+	if (!Lock()) { Clear(); return false; }
 
 	// create line buffer
 	int iBufSize=DWordAligned(BitmapInfo.Info.biWidth*BitmapInfo.Info.biBitCount/8);
@@ -546,7 +546,7 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 	for (lcnt=Hgt-1; lcnt>=0; lcnt--)
 		{
 		if (!hGroup.Read(pBuf, iBufSize))
-			{ Clear(); delete [] pBuf; return FALSE; }
+			{ Clear(); delete [] pBuf; return false; }
 		BYTE *pPix=pBuf;
 		for (int x=0; x<BitmapInfo.Info.biWidth; ++x)
 			switch (BitmapInfo.Info.biBitCount)
@@ -572,10 +572,10 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 
 	Unlock();
 
-	return TRUE;
+	return true;
 	}
 
-/*BOOL CSurface::Save(const char *szFilename)
+/*bool CSurface::Save(const char *szFilename)
 	{
 	CBitmapInfo BitmapInfo2;
 	CBitmap256Info BitmapInfo;
@@ -591,7 +591,7 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 		BitmapInfo.Set(Wdt,Hgt,pPal->Colors);
 
 	// Lock - WARNING - maybe locking primary surface here...
-	if (!Lock()) return FALSE;
+	if (!Lock()) return false;
 
 	// Create file & write info
 	CStdFile hFile;
@@ -600,17 +600,17 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 		{
 		if ( !hFile.Create(szFilename)
 		|| !hFile.Write(&BitmapInfo2,sizeof(BitmapInfo2)) )
-			{ Unlock(); return FALSE; }
+			{ Unlock(); return false; }
 
 		// write lines
 		char bpEmpty[4]; int iEmpty = DWordAligned(Wdt*byBytesPP)-Wdt*byBytesPP;
 		for (int cnt=Hgt-1; cnt>=0; cnt--)
 			{
 			if (!hFile.Write(Bits+(Pitch*cnt),Wdt*byBytesPP))
-				{ Unlock(); return FALSE; }
+				{ Unlock(); return false; }
 			if (iEmpty)
 				if (!hFile.Write(bpEmpty,iEmpty))
-					{ Unlock(); return FALSE; }
+					{ Unlock(); return false; }
 			}
 
 		}
@@ -618,17 +618,17 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 		{
 		if ( !hFile.Create(szFilename)
 		|| !hFile.Write(&BitmapInfo,sizeof(BitmapInfo)) )
-			{ Unlock(); return FALSE; }
+			{ Unlock(); return false; }
 
 		// Write lines
 		char bpEmpty[4]; int iEmpty = DWordAligned(Wdt)-Wdt;
 		for (int cnt=Hgt-1; cnt>=0; cnt--)
 			{
 			if (!hFile.Write(Bits+(Pitch*cnt),Wdt))
-				{ Unlock(); return FALSE; }
+				{ Unlock(); return false; }
 			if (iEmpty)
 				if (!hFile.Write(bpEmpty,iEmpty))
-					{ Unlock(); return FALSE; }
+					{ Unlock(); return false; }
 			}
 		}
 
@@ -639,7 +639,7 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 	Unlock();
 
 	// Success
-  return TRUE;
+  return true;
 	}
 */
 bool CSurface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly)
@@ -689,9 +689,9 @@ bool CSurface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma
 	}
 
 
-BOOL CSurface::AttachPalette()
+bool CSurface::AttachPalette()
 	{
-	return TRUE;
+	return true;
 	}
 
 double ColorDistance(BYTE *bpRGB1, BYTE *bpRGB2)
@@ -699,11 +699,11 @@ double ColorDistance(BYTE *bpRGB1, BYTE *bpRGB2)
 	return (double) (Abs(bpRGB1[0]-bpRGB2[0]) + Abs(bpRGB1[1]-bpRGB2[1]) + Abs(bpRGB1[2]-bpRGB2[2])) / 6.0;
 	}
 
-BOOL CSurface::Wipe()
+bool CSurface::Wipe()
 	{
-	if (!ppTex) return FALSE;
+	if (!ppTex) return false;
 	// simply clear it (currently slow...)
-	if (!Lock()) return FALSE;
+	if (!Lock()) return false;
 	for (int i=0; i<Wdt*Hgt; ++i)
 		if (!fIsBackground)
 			SetPix(i%Wdt, i/Wdt, 0);
@@ -711,22 +711,22 @@ BOOL CSurface::Wipe()
 			SetPixDw(i%Wdt, i/Wdt, 0x00000000);
 	Unlock();
 	// success
-	return TRUE;
+	return true;
 	}
 
-BOOL CSurface::GetSurfaceSize(int &irX, int &irY)
+bool CSurface::GetSurfaceSize(int &irX, int &irY)
 	{
 	// simply assign stored values
 	irX=Wdt;
 	irY=Hgt;
 	// success
-	return TRUE;
+	return true;
 	}
 
-BOOL CSurface::Lock()
+bool CSurface::Lock()
 	{
 	// lock main sfc
-	if (pMainSfc) if (!pMainSfc->Lock()) return FALSE;
+	if (pMainSfc) if (!pMainSfc->Lock()) return false;
 	// not yet locked?
 	if (!Locked)
 		{
@@ -737,10 +737,10 @@ BOOL CSurface::Lock()
 				{
 				D3DLOCKED_RECT lock;
 				// locking primary
-				if (!pSfc) return FALSE;
+				if (!pSfc) return false;
 				// lock it
 				if (pSfc->LockRect(&lock, NULL, 0) != D3D_OK)
-					return FALSE;
+					return false;
 				lpDDraw->LockingPrimary();
 				// store pitch and pointer
 				PrimarySurfaceLockPitch=lock.Pitch;
@@ -753,21 +753,21 @@ BOOL CSurface::Lock()
 			}
 		else
 			{
-			if (!ppTex) return FALSE;
+			if (!ppTex) return false;
 			// lock texture
 			// textures will be locked when needed
 			}
 		}
 	// count lock
-	Locked++;	return TRUE;
+	Locked++;	return true;
 	}
 
-BOOL CSurface::Unlock()
+bool CSurface::Unlock()
 	{
 	// unlock main sfc
 	if (pMainSfc) pMainSfc->Unlock();
 	// locked?
-	if (!Locked) return FALSE;
+	if (!Locked) return false;
 	// decrease lock counter; check if zeroed
 	Locked--;
 	if (!Locked)
@@ -778,10 +778,10 @@ BOOL CSurface::Unlock()
 #ifdef USE_DIRECTX
 			if (pD3D)
 				{
-				if (!pSfc) return FALSE;
+				if (!pSfc) return false;
 				// unlocking primary?
 				if (pSfc->UnlockRect() != D3D_OK)
-					return FALSE;
+					return false;
 				lpDDraw->PrimaryUnlocked();
 				}
 			else
@@ -792,7 +792,7 @@ BOOL CSurface::Unlock()
 				// otherwise, emulated primary locks in OpenGL
 				delete PrimarySurfaceLockBits;
 				PrimarySurfaceLockBits = 0;
-				return TRUE;
+				return true;
 				}
 			}
 		else
@@ -803,7 +803,7 @@ BOOL CSurface::Unlock()
 				(*ppTx)->Unlock();
 			}
 		}
-	return TRUE;
+	return true;
 	}
 
 bool CSurface::GetTexAt(CTexRef **ppTexRef, int &rX, int &rY)

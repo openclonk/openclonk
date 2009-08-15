@@ -96,7 +96,7 @@ class C4ObjectList
 		void DrawIfCategory(C4TargetFacet &cgo, int iPlayer, uint32_t dwCat, bool fInvert); // draw all objects that match dwCat (or don't match if fInvert)
 		void Draw(C4TargetFacet &cgo, int iPlayer = -1); // draw all objects
 		void DrawList(C4Facet &cgo, int iSelection=-1, DWORD dwCategory=C4D_All);
-		void DrawIDList(C4Facet &cgo, int iSelection, C4DefList &rDefs, int32_t dwCategory, C4RegionList *pRegions=NULL, int iRegionCom=COM_None, BOOL fDrawOneCounts=TRUE);
+		void DrawIDList(C4Facet &cgo, int iSelection, C4DefList &rDefs, int32_t dwCategory, C4RegionList *pRegions=NULL, int iRegionCom=COM_None, bool fDrawOneCounts=true);
 		void DrawSelectMark(C4TargetFacet &cgo, float Zoom);
 		void CloseMenus();
 		void UpdateGraphics(bool fGraphicsChanged);
@@ -105,16 +105,16 @@ class C4ObjectList
 
 		typedef int SortProc(C4Object *, C4Object *);
 
-		BOOL Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted = NULL);
+		bool Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted = NULL);
 		bool AddSortCustom(C4Object *nObj, SortProc &pSortProc);
-		BOOL Remove(C4Object *pObj);
+		bool Remove(C4Object *pObj);
 
-		BOOL AssignInfo();
-		BOOL ValidateOwners();
+		bool AssignInfo();
+		bool ValidateOwners();
 		StdStrBuf GetNameList(C4DefList &rDefs, DWORD dwCategory=C4D_All);
-		BOOL IsClear() const;
-		BOOL DenumerateRead();
-		BOOL Write(char *szTarget);
+		bool IsClear() const;
+		bool DenumerateRead();
+		bool Write(char *szTarget);
 		void CompileFunc(StdCompiler *pComp, bool fSaveRefs = true, bool fSkipPlayerObjects = false);
 
 		bool IsContained(C4Object *pObj);
@@ -131,16 +131,16 @@ class C4ObjectList
 
 		C4ID GetListID(int32_t dwCategory, int Index);
 
-		BOOL OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
-		BOOL OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
+		bool OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
+		bool OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
 
-		BOOL ShiftContents(C4Object *pNewFirst); // cycle list so pNewFirst is at front
+		bool ShiftContents(C4Object *pNewFirst); // cycle list so pNewFirst is at front
 
 		void DeleteObjects(); // delete all objects and links
 
 		void UpdateScriptPointers(); // update pointers to C4AulScript *
 
-		BOOL CheckSort(C4ObjectList *pList); // check that all objects of this list appear in the other list in the same order
+		bool CheckSort(C4ObjectList *pList); // check that all objects of this list appear in the other list in the same order
 		void CheckCategorySort(); // assertwhether sorting by category is done right
 
 	protected:

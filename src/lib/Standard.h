@@ -136,11 +136,6 @@ typedef __int32 intptr_t;
 
 #else // _WIN32
 
-// Boolean datatype
-typedef int            BOOL;
-#define TRUE  true
-#define FALSE false
-
 // Windows integer types
 typedef uint32_t       DWORD;
 typedef uint8_t        BYTE;
@@ -170,8 +165,8 @@ inline int stricmp(const char *s1, const char *s2) {
 // These functions have to be provided by the application.
 bool Log(const char *szMessage);
 bool LogSilent(const char *szMessage);
-BOOL LogF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
-BOOL LogSilentF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
+bool LogF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
+bool LogSilentF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
 
 // Color triplets
 #define C4RGB(r, g, b) ((((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
@@ -286,7 +281,7 @@ int SLineGetCharacters(const char *szText, const char *cpPosition);
 
 // case sensitive wildcard match with some extra functionality
 // can match strings like  "*Cl?nk*vour" to "Clonk Endeavour"
-BOOL SWildcardMatchEx(const char *szString, const char *szWildcard);
+bool SWildcardMatchEx(const char *szString, const char *szWildcard);
 
 #define LineFeed "\x00D\x00A"
 #define EndOfFile "\x020"

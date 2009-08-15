@@ -98,7 +98,7 @@ class C4GraphicsResource
 		void Default();
 		void Clear();
 		bool InitFonts(); // init fonts only (early init done by loader screen)
-		BOOL Init(bool fInitGUI);
+		bool Init(bool fInitGUI);
 
 		bool IsInitialized() { return fInitialized; } // return whether any gfx are loaded (so dlgs can be shown)
 

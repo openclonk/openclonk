@@ -597,7 +597,7 @@ void ListBox::SelectEntry(Element *pNewSel, bool fByUser)
 	SelectionChanged(fByUser);
 	}
 
-BOOL ListBox::CharIn(const char * c)
+bool ListBox::CharIn(const char * c)
 	{
 	// Jump to first/next entry beginning with typed letter
 	Element *pSel = GetSelectedItem();
@@ -606,7 +606,7 @@ BOOL ListBox::CharIn(const char * c)
 	if (!pSel)
 		{
 		pSel = GetFirst();
-		if (!pSel) return FALSE;
+		if (!pSel) return false;
 		}
 	while (pSel != pStartCheck && !pSel->CheckNameHotkey(c))
 		if (!(pSel = pSel->GetNext()))
@@ -617,7 +617,7 @@ BOOL ListBox::CharIn(const char * c)
 	if (pSel)
 		{
 		SelectEntry(pSel, true);
-		return TRUE;
+		return true;
 		}
 	return Control::CharIn(c);
 	}

@@ -50,8 +50,8 @@ class CStdConfig
 		~CStdConfig();
 	protected:
 		void LoadDefault(CStdConfigValue *pCfgMap, void *vpData, const char *szOnlySection=NULL);
-		BOOL Save(CStdConfigValue *pCfgMap, void *vpData);
-		BOOL Load(CStdConfigValue *pCfgMap, void *vpData);
+		bool Save(CStdConfigValue *pCfgMap, void *vpData);
+		bool Load(CStdConfigValue *pCfgMap, void *vpData);
 	};
 
 #endif // STDCONFIG_H

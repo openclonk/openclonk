@@ -124,7 +124,7 @@ class C4MaterialCore
 	public:
 		void Clear();
 		void Default();
-		BOOL Load(C4Group &hGroup, const char *szEntryName);
+		bool Load(C4Group &hGroup, const char *szEntryName);
 		void CompileFunc(StdCompiler *pComp);
   };
 
@@ -170,8 +170,8 @@ class C4MaterialMap
     int32_t Load(C4Group &hGroup, C4Group* OverloadFile = 0);
 		bool HasMaterials(C4Group &hGroup) const;
     int32_t Get(const char *szMaterial);
-    BOOL SaveEnumeration(C4Group &hGroup);
-	  BOOL LoadEnumeration(C4Group &hGroup);
+    bool SaveEnumeration(C4Group &hGroup);
+	  bool LoadEnumeration(C4Group &hGroup);
 		C4MaterialReaction *GetReactionUnsafe(int32_t iPXSMat, int32_t iLandscapeMat)
 			{ assert(ppReactionMap); assert(Inside<int32_t>(iPXSMat,-1,Num-1)); assert(Inside<int32_t>(iLandscapeMat,-1,Num-1));
 				return ppReactionMap[(iLandscapeMat+1)*(Num+1) + iPXSMat+1]; }
@@ -180,7 +180,7 @@ class C4MaterialMap
 		bool CrossMapMaterials();
   protected:
 		void SetMatReaction(int32_t iPXSMat, int32_t iLSMat, C4MaterialReaction *pReact);
-	  BOOL SortEnumeration(int32_t iMat, const char *szMatName);
+	  bool SortEnumeration(int32_t iMat, const char *szMatName);
   };
 
 extern C4MaterialMap MaterialMap;

@@ -46,8 +46,8 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		unsigned int LastUsedMarker; // last used value for C4Object::Marker
 
-		BOOL Add(C4Object *nObj); // add object
-		BOOL Remove(C4Object *pObj); // clear pointers to object
+		bool Add(C4Object *nObj); // add object
+		bool Remove(C4Object *pObj); // clear pointers to object
 
 		C4ObjectList &ObjectsAt(int ix, int iy); // get object list for map pos
 
@@ -69,16 +69,16 @@ class C4GameObjects : public C4NotifyingObjectList
 		void RecheckSolidMasks();
 
 		int Load(C4Group &hGroup, bool fKeepInactive);
-		BOOL Save(const char *szFilename, BOOL fSaveGame, bool fSaveInactive);
-	  BOOL Save(C4Group &hGroup, BOOL fSaveGame, bool fSaveInactive);
+		bool Save(const char *szFilename, bool fSaveGame, bool fSaveInactive);
+	  bool Save(C4Group &hGroup, bool fSaveGame, bool fSaveInactive);
 
 		void UpdateScriptPointers(); // update pointers to C4AulScript *
 
 		void UpdatePos(C4Object *pObj);
 		void UpdatePosResort(C4Object *pObj);
 
-		BOOL OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
-		BOOL OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
+		bool OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
+		bool OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
 		void FixObjectOrder(); // Called after loading: Resort any objects that are out of order
 		void ResortUnsorted(); // resort any objects with unsorted-flag set into lists
 		void ExecuteResorts(); // execute custom resort procs
@@ -115,7 +115,7 @@ class C4ObjResort
 		C4AulFunc *OrderFunc;			// function determining new sort order
 		C4ObjResort *Next;				// next resort holder
 		C4Object *pSortObj, *pObjBefore;	// objects that are swapped if no OrderFunc is given
-		BOOL fSortAfter;          // if set, the sort object is sorted
+		bool fSortAfter;          // if set, the sort object is sorted
 	};
 
 #endif

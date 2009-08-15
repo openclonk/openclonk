@@ -147,19 +147,19 @@ class C4ObjectInfoCore
 		char PortraitFile[C4MaxName+2+4+1]; // used portrait
     C4PhysicalInfo Physical;
 		C4ValueMapData ExtraData;
-		BOOL NoSave; // set for _XYZ-CrewMembers
+		bool NoSave; // set for _XYZ-CrewMembers
   public:
-	  BOOL Save(C4Group &hGroup, class C4DefList *pDefs);
-	  BOOL Load(C4Group &hGroup);
+	  bool Save(C4Group &hGroup, class C4DefList *pDefs);
+	  bool Load(C4Group &hGroup);
     void Default(C4ID n_id=C4ID_None, class C4DefList *pDefs=NULL, const char *cpNames=NULL);
-    //BOOL LoadNext(C4Group &hGroup); Old c4o support disabled...
-    //BOOL Add(C4Group &hGroup);
+    //bool LoadNext(C4Group &hGroup); Old c4o support disabled...
+    //bool Add(C4Group &hGroup);
 		void Promote(int32_t iRank, C4RankSystem &rRanks, bool fForceRankName);
 		bool GetNextRankInfo(C4RankSystem &rDefaultRanks, int32_t *piNextRankExp, StdStrBuf *psNextRankName);
 		void CompileFunc(StdCompiler *pComp);
 	protected:
-		BOOL Compile(const char *szSource);
-		BOOL Decompile(char **ppOutput, size_t *ipSize);
+		bool Compile(const char *szSource);
+		bool Decompile(char **ppOutput, size_t *ipSize);
 
 		void UpdateCustomRanks(C4DefList *pDefs); // sets NextRankName and NextRankExp
   };
@@ -208,9 +208,9 @@ class C4PlayerInfoCore
 public:
     void Default(C4RankSystem *pRanks=NULL);
 		void Promote(int32_t iRank, C4RankSystem &rRanks);
-    BOOL Load(C4Group &hGroup);
-		BOOL Save(C4Group &hGroup);
-		BOOL CheckPromotion(C4RankSystem &rRanks);
+    bool Load(C4Group &hGroup);
+		bool Save(C4Group &hGroup);
+		bool CheckPromotion(C4RankSystem &rRanks);
 		static DWORD GetPrefColorValue(int32_t iPrefColor);
 		void CompileFunc(StdCompiler *pComp);
   };

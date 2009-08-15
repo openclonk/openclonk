@@ -410,11 +410,11 @@ void C4FullScreen::Execute()
 	::GraphicsSystem.Execute();
 	}
 
-BOOL C4FullScreen::ViewportCheck()
+bool C4FullScreen::ViewportCheck()
 	{
 	int iPlrNum; C4Player *pPlr;
 	// Not active
-	if (!Active) return FALSE;
+	if (!Active) return false;
 	// Determine film mode
 	bool fFilm = (Game.C4S.Head.Replay && Game.C4S.Head.Film);
 	// Check viewports
@@ -465,7 +465,7 @@ BOOL C4FullScreen::ViewportCheck()
 			pNoOwnerVp->Init(pPlr->Number, true);
 		}
 	// Done
-	return TRUE;
+	return true;
 	}
 
 bool C4FullScreen::ShowAbortDlg()

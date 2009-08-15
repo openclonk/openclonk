@@ -31,12 +31,12 @@
 
 // ResolveAppends and ResolveIncludes must be called both
 // for each script. ResolveAppends has to be called first!
-BOOL C4AulScript::ResolveAppends(C4DefList *rDefs)
+bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 	{
 	// resolve children appends
 	for (C4AulScript *s = Child0; s; s = s->Next) s->ResolveAppends(rDefs);
 	// resolve local appends
-	if (State != ASS_PREPARSED) return FALSE;
+	if (State != ASS_PREPARSED) return false;
 	for (C4AListEntry *a = Appends; a; a = a->next())
 		{
 		if((int) a->Var != -1)
@@ -67,24 +67,24 @@ BOOL C4AulScript::ResolveAppends(C4DefList *rDefs)
 			}
 		}
 		}
-	return TRUE;
+	return true;
 	}
 
-BOOL C4AulScript::ResolveIncludes(C4DefList *rDefs)
+bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 	{
 	// resolve children includes
 	for (C4AulScript *s = Child0; s; s = s->Next) s->ResolveIncludes(rDefs);
 	// Had been preparsed?
-	if(State  != ASS_PREPARSED) return FALSE;
+	if(State  != ASS_PREPARSED) return false;
 	// has already been resolved?
-	if(IncludesResolved) return TRUE;
+	if(IncludesResolved) return true;
 	// catch circular includes
 	if (Resolving)
 		{
 		C4AulParseError(this, "Circular include chain detected - ignoring all includes!").show();
 		IncludesResolved = true;
 		State = ASS_LINKED;
-		return FALSE;
+		return false;
 		}
 	Resolving=true;
 	// append all includes to local script
@@ -114,7 +114,7 @@ BOOL C4AulScript::ResolveIncludes(C4DefList *rDefs)
 	// includes/appends are resolved now (for this script)
 	Resolving=false;
 	State = ASS_LINKED;
-	return TRUE;
+	return true;
 	}
 
 void C4AulScript::AppendTo(C4AulScript &Scr, bool bHighPrio)
@@ -216,13 +216,13 @@ void C4AulScript::AfterLink()
 	for (C4AulScript *s = Child0; s; s = s->Next) s->AfterLink();
 	}
 
-BOOL C4AulScript::ReloadScript(const char *szPath)
+bool C4AulScript::ReloadScript(const char *szPath)
   {
   // call for childs
 	for (C4AulScript *s = Child0; s; s = s->Next)
     if(s->ReloadScript(szPath))
-      return TRUE;
-  return FALSE;
+      return true;
+  return false;
   }
 
 void C4AulScriptEngine::Link(C4DefList *rDefs)
@@ -317,14 +317,14 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	::MaterialMap.UpdateScriptPointers();
 	}
 
-BOOL C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs)
+bool C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs)
   {
   // reload
   if(!C4AulScript::ReloadScript(szScript))
-    return FALSE;
+    return false;
   // relink
   ReLink(pDefs);
   // ok
-  return TRUE;
+  return true;
   }
 

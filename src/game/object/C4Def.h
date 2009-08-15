@@ -224,12 +224,12 @@ class C4Def: public C4PropList
 		int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
 	public:
 		void DefaultDefCore();
-    BOOL LoadDefCore(C4Group &hGroup);
-		BOOL Save(C4Group &hGroup);
+    bool LoadDefCore(C4Group &hGroup);
+		bool Save(C4Group &hGroup);
 		void CompileFunc(StdCompiler *pComp);
 	protected:
-		BOOL Compile(const char *szSource, const char *szName);
-		BOOL Decompile(StdStrBuf *pOut, const char *szName);
+		bool Compile(const char *szSource, const char *szName);
+		bool Decompile(StdStrBuf *pOut, const char *szName);
 
 
 // Here begins the C4Def
@@ -274,14 +274,14 @@ class C4Def: public C4PropList
 
   protected:
     C4Def *Next;
-    BOOL Temporary;
+    bool Temporary;
 	public:
 		void Clear();
 		void Default();
-    BOOL Load(C4Group &hGroup,
+    bool Load(C4Group &hGroup,
               DWORD dwLoadWhat, const char *szLanguage,
 							class C4SoundSystem *pSoundSystem = NULL);
-		void Draw(C4Facet &cgo, BOOL fSelected=FALSE, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0);
+		void Draw(C4Facet &cgo, bool fSelected=false, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0);
 
 		inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
 		int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
@@ -292,7 +292,7 @@ class C4Def: public C4PropList
 		virtual C4Def* GetDef() { return this; }
   protected:
 	  bool LoadPortraits(C4Group &hGroup);
-		BOOL LoadActMap(C4Group &hGroup);
+		bool LoadActMap(C4Group &hGroup);
 		void CrossMapActMap();
 	private:
 		C4ValueArray *GetCustomComponents(C4Value *pvArrayHolder, C4Object *pBuilder, C4Object *pObjInstance=NULL);
@@ -313,7 +313,7 @@ class C4DefList
     C4DefList();
     virtual ~C4DefList();
 	public:
-		BOOL LoadFailure;
+		bool LoadFailure;
 		C4Def **Table[64]; // From space to _; some minor waste of mem
 		bool fTable;
   protected:
@@ -324,21 +324,21 @@ class C4DefList
     int32_t Load(C4Group &hGroup,
              DWORD dwLoadWhat, const char *szLanguage,
 						 C4SoundSystem *pSoundSystem = NULL,
-						 BOOL fOverload = FALSE,
-						 BOOL fSearchMessage = FALSE, int32_t iMinProgress=0, int32_t iMaxProgress=0, bool fLoadSysGroups = true);
+						 bool fOverload = false,
+						 bool fSearchMessage = false, int32_t iMinProgress=0, int32_t iMaxProgress=0, bool fLoadSysGroups = true);
     int32_t Load(const char *szSearch,
              DWORD dwLoadWhat, const char *szLanguage,
 						 C4SoundSystem *pSoundSystem = NULL,
-						 BOOL fOverload = FALSE, int32_t iMinProgress=0, int32_t iMaxProgress=0);
+						 bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
     int32_t LoadFolderLocal(const char *szPath,
              DWORD dwLoadWhat, const char *szLanguage,
 						 C4SoundSystem *pSoundSystem = NULL,
-						 BOOL fOverload = FALSE, char *szStoreName=NULL, int32_t iMinProgress=0, int32_t iMaxProgress=0);
+						 bool fOverload = false, char *szStoreName=NULL, int32_t iMinProgress=0, int32_t iMaxProgress=0);
 	  int32_t LoadForScenario(const char *szScenario,
 						 const char *szSpecified,
 						 DWORD dwLoadWhat, const char *szLanguage,
 						 C4SoundSystem *pSoundSystem = NULL,
-						 BOOL fOverload = FALSE, int32_t iMinProgress=0, int32_t iMaxProgress=0);
+						 bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
     C4Def *ID2Def(C4ID id);
     C4Def *GetDef(int32_t Index, DWORD dwCategory = C4D_All);
     C4Def *GetByPath(const char *szPath);
@@ -347,11 +347,11 @@ class C4DefList
     int32_t RemoveTemporary();
 		int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);
 		int32_t CheckRequireDef();
-		void Draw(C4ID id, C4Facet &cgo, BOOL fSelected, int32_t iColor);
+		void Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor);
     void Remove(C4Def *def);
-    BOOL Remove(C4ID id);
-	  BOOL Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem = NULL);
-    BOOL Add(C4Def *ndef, BOOL fOverload);
+    bool Remove(C4ID id);
+	  bool Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem = NULL);
+    bool Add(C4Def *ndef, bool fOverload);
 		void BuildTable(); // build quick access table
 		void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
 		void CallEveryDefinition();

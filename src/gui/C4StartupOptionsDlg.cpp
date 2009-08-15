@@ -207,7 +207,7 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 	{
 	// draw key
 	C4Facet cgoDraw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY, rcBounds.Wdt, rcBounds.Hgt);
-	::GraphicsResource.fctKey.Draw(cgoDraw, TRUE, fDown);
+	::GraphicsResource.fctKey.Draw(cgoDraw, true, fDown);
 	int32_t iKeyIndent = cgoDraw.Wdt / 5;
 	cgoDraw.X += iKeyIndent; cgoDraw.Wdt -= 2*iKeyIndent;
 	cgoDraw.Y += iKeyIndent*3/4; cgoDraw.Hgt -= 2*iKeyIndent;
@@ -221,7 +221,7 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 			ModulateClr(dwModClr, dwOldBlitModClr);
 		lpDDraw->ActivateBlitModulation(dwModClr);
 		}
-	::GraphicsResource.fctCommand.Draw(cgoDraw, TRUE, iKeyID, 0);
+	::GraphicsResource.fctCommand.Draw(cgoDraw, true, iKeyID, 0);
 	if (!fDoHightlight)
 		if (fHadBlitMod)
 			lpDDraw->ActivateBlitModulation(dwOldBlitModClr);

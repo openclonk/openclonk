@@ -128,7 +128,7 @@ C4Object* C4ObjectMenu::GetParentObject()
 void C4ObjectMenu::SetRefillObject(C4Object *pObj)
 	{
 	RefillObject=pObj;
-	NeedRefill=TRUE;
+	NeedRefill=true;
 	Refill();
 	}
 
@@ -194,7 +194,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			// Refill target
 			if (!(pTarget=RefillObject)) return false;
 			// Add base owner's homebase material
-			if (!(pPlayer = ::Players.Get(pTarget->Base))) return FALSE;
+			if (!(pPlayer = ::Players.Get(pTarget->Base))) return false;
 			C4Player *pBuyPlayer = Object ? ::Players.Get(Object->Owner) : NULL;
 			C4ID idDef;
 		  for (cnt=0; idDef=pPlayer->HomeBaseMaterial.GetID(::Definitions,C4D_All,cnt,&iCount); cnt++)
@@ -331,7 +331,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 						fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Right, C4FCT_Top);
 						Object->Contents.GetObject(0)->DrawPicture(fctTarget);
 						fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom);
-						::GraphicsResource.fctHand.Draw(fctTarget, TRUE, 0);
+						::GraphicsResource.fctHand.Draw(fctTarget, true, 0);
 						// Add menu item
 						Add(LoadResStr("IDS_CON_PUT2"), fctSymbol, szCommand, C4MN_Item_NoCount, NULL, NULL, C4ID_None, szCommand2);
 						// Preserve symbol
@@ -382,7 +382,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			if (pTarget->OCF & OCF_Construct && Object->r==0 && (Game.Rules & C4RULE_ConstructionNeedsMaterial))
 				{
 				sprintf(szCommand, "PlayerMessage(GetOwner(), Object(%d)->GetNeededMatStr(), Object(%d))", pTarget->Number, pTarget->Number);
-				fctSymbol.Create(16,16); GfxR->fctConstruction.Draw(fctSymbol,TRUE);
+				fctSymbol.Create(16,16); GfxR->fctConstruction.Draw(fctSymbol,true);
 				Add(LoadResStr("IDS_CON_BUILDINFO"),fctSymbol,szCommand);
 				fctSymbol.Default();
 				}
@@ -395,7 +395,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom);
 				pTarget->DrawPicture(fctTarget);
 				C4Facet fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Right, C4FCT_Top);
-				GfxR->fctOKCancel.Draw(fctTarget, TRUE, 0, 1);
+				GfxR->fctOKCancel.Draw(fctTarget, true, 0, 1);
 				// Command
 				sprintf(szCommand,"ShowInfo(Object(%d))",pTarget->Number);
 				// Add item
@@ -433,7 +433,7 @@ void C4ObjectMenu::Execute()
 	// Immediate refill check by RefillObject contents count check
 	if (RefillObject)
 		if (RefillObject->Contents.ObjectCount()!=RefillObjectContentsCount)
-			{ NeedRefill=TRUE; RefillObjectContentsCount=RefillObject->Contents.ObjectCount(); }
+			{ NeedRefill=true; RefillObjectContentsCount=RefillObject->Contents.ObjectCount(); }
 	// inherited
 	C4Menu::Execute();
 	}
@@ -528,7 +528,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 						if (!fCountOnly)
 							{
 							sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",this,Object(%d))",cObj->Number,pFunction->Name,pTarget->Number);
-							fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, FALSE, 0, NULL, pFunction->iImagePhase);
+							fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 							Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 							iResult++;
 							}
@@ -548,7 +548,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 							if (!fCountOnly)
 								{
 								sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",Object(%d),%d,Object(%d),%s)",pEff->pCommandTarget->Number,pFunction->Name,pTarget->Number,(int)pEff->iNumber,Object->Number,C4IdText(pFunction->idImage));
-								fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, FALSE, 0, NULL, pFunction->iImagePhase);
+								fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 								Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 								fctSymbol.Default();
 								iResult++;
@@ -568,7 +568,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 								if (!fCountOnly)
 									{
 									sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",this,Object(%d))",cObj->Number,pFunction->Name,pTarget->Number);
-									fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, FALSE, 0, NULL, pFunction->iImagePhase);
+									fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 									Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 									fctSymbol.Default();
 									iResult++;
@@ -607,7 +607,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 						sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",this)",pTarget->Number,pFunction->Name);
 						// Symbol
 						fctSymbol.Create(16,16);
-						if (pDef = C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, FALSE, 0, NULL, pFunction->iImagePhase);
+						if (pDef = C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 						else pTarget->DrawPicture(fctSymbol);
 						// Add menu item
 						Add(strDescText, fctSymbol, szCommand, C4MN_Item_NoCount, NULL, pFunction->DescLong.getData());
@@ -624,7 +624,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 						if (!fCountOnly)
 							{
 							sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",this)",pTarget->Number,pFunction->Name);
-							fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, FALSE, 0, NULL, pFunction->iImagePhase);
+							fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 							Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 							fctSymbol.Default();
 							iResult++;
@@ -653,7 +653,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 					if (!fCountOnly)
 						{
 						sprintf(szCommand, "SetCommand(this,\"Context\",0,0,0,this)&&ExecuteCommand()");
-						fctSymbol.Create(16,16); Object->Def->Draw(fctSymbol, FALSE, Object->Color);
+						fctSymbol.Create(16,16); Object->Def->Draw(fctSymbol, false, Object->Color);
 						Add(Object->Def->GetName(), fctSymbol, szCommand, C4MN_Item_NoCount, NULL, LoadResStr("IDS_MENU_CONTEXTSUBCLONKDESC"));
 						fctSymbol.Default();
 						iResult++;

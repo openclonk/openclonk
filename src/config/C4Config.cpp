@@ -160,7 +160,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RenderInactiveEM,			"RenderInactiveEM",			1							));
 	pComp->Value(mkNamingAdapt(DisableGamma,					"DisableGamma",					0							,false, true));
 	pComp->Value(mkNamingAdapt(Monitor,								"Monitor",							0							)); // 0 = D3DADAPTER_DEFAULT
-	pComp->Value(mkNamingAdapt(FireParticles,					"FireParticles",				TRUE					));
+	pComp->Value(mkNamingAdapt(FireParticles,					"FireParticles",				true					));
 	pComp->Value(mkNamingAdapt(MaxRefreshDelay,				"MaxRefreshDelay",			30						));
 	pComp->Value(mkNamingAdapt(EnableShaders,				  "Shader",								0							,false, true));
 	}
@@ -408,7 +408,7 @@ void C4Config::Default()
 	fConfigLoaded=false;
 	}
 
-BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
+bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 	{
 	try
 		{
@@ -475,7 +475,7 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 		// Configuration file syntax error?
 		LogF("Error loading configuration: %s"/*LoadResStr("IDS_ERR_CONFREAD") - restbl not yet loaded*/, pExc->Msg.getData());
 		delete pExc;
-		return FALSE;
+		return false;
 		}
 
 	// Config postinit
@@ -519,10 +519,10 @@ BOOL C4Config::Load(BOOL forceWorkingDirectory, const char *szConfigFile)
 		Network.Nick.Copy(Network.LocalName); // assuming that LocalName will always contain some useful value*/
 	fConfigLoaded = true;
 	if (szConfigFile) ConfigFilename.Copy(szConfigFile); else ConfigFilename.Clear();
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Config::Save()
+bool C4Config::Save()
 	{
 	/* - deactivated: Graphics.Engine might not be same as last initialized engine, because it might be changed by C4StartupOptionsDlg
 #ifdef USE_DIRECTX
@@ -582,12 +582,12 @@ BOOL C4Config::Save()
 		{
 		LogF(LoadResStr("IDS_ERR_CONFSAVE"), pExc->Msg.getData());
 		delete pExc;
-		return FALSE;
+		return false;
 		}
-	return TRUE;
+	return true;
 	}
 
-void C4ConfigGeneral::DeterminePaths(BOOL forceWorkingDirectory)
+void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 	{
 #ifdef _WIN32
 	// Exe path
@@ -758,11 +758,11 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 	}
 
 
-BOOL C4ConfigGeneral::CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle)
+bool C4ConfigGeneral::CreateSaveFolder(const char *strDirectory, const char *strLanguageTitle)
 	{
 	// Create directory if needed
 	if (!CreatePath(strDirectory))
-		return FALSE;
+		return false;
 	// Create title component if needed
 	char lang[3]; SCopy(Config.General.Language, lang, 2);
 	StdStrBuf strTitleFile; strTitleFile.Format("%s%c%s", strDirectory, DirectorySeparator, C4CFN_WriteTitle);
@@ -770,9 +770,9 @@ BOOL C4ConfigGeneral::CreateSaveFolder(const char *strDirectory, const char *str
 	CStdFile hFile;
 	if (!FileExists(strTitleFile.getData()))
 		if (!hFile.Create(strTitleFile.getData()) || !hFile.WriteString(strTitleData.getData()) || !hFile.Close())
-			return FALSE;
+			return false;
 	// Save folder seems okay
-	return TRUE;
+	return true;
 	}
 
 
@@ -915,15 +915,15 @@ void C4ConfigGeneral::DefaultLanguage()
 		GetLanguageSequence(Language, LanguageEx);
 	}
 
-BOOL C4Config::Registered()
+bool C4Config::Registered()
 	{
 	// Dummy function: to be overloaded in C4Config
-	return TRUE;
+	return true;
 	}
 
-BOOL C4Config::Init()
+bool C4Config::Init()
 	{
-	return TRUE;
+	return true;
 	}
 
 const char* C4Config::GetSubkeyPath(const char *strSubkey)

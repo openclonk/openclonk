@@ -92,11 +92,11 @@ bool CStdGL::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// safety
-	if (!pCurrCtx) return FALSE;
+	if (!pCurrCtx) return false;
 	// end the scene and present it
-	if (!pCurrCtx->PageFlip()) return FALSE;
+	if (!pCurrCtx->PageFlip()) return false;
 	// success!
-  return TRUE;
+  return true;
 	}
 
 void CStdGL::FillBG(DWORD dwClr)
@@ -554,7 +554,7 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
 	}
 #endif
 
-bool CStdGL::CreatePrimarySurfaces(BOOL Playermode, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
+bool CStdGL::CreatePrimarySurfaces(bool Playermode, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
 	{
 	//remember fullscreen setting
 	fFullscreen = Playermode && !DDrawCfg.Windowed;

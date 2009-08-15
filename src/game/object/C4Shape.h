@@ -70,13 +70,13 @@ class C4Shape: public C4Rect
 	  int32_t GetVertexX(int32_t iVertex);
 		int32_t GetX() { return x; }
 		int32_t GetY() { return y; }
-	  BOOL AddVertex(int32_t iX, int32_t iY);
-		BOOL CheckContact(int32_t cx, int32_t cy);
-		BOOL ContactCheck(int32_t cx, int32_t cy);
-		BOOL Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos);
-		BOOL LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int32_t oldx, int32_t oldy);
-		BOOL InsertVertex(int32_t iPos, int32_t tx, int32_t ty);
-		BOOL RemoveVertex(int32_t iPos);
+	  bool AddVertex(int32_t iX, int32_t iY);
+		bool CheckContact(int32_t cx, int32_t cy);
+		bool ContactCheck(int32_t cx, int32_t cy);
+		bool Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos);
+		bool LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int32_t oldx, int32_t oldy);
+		bool InsertVertex(int32_t iPos, int32_t tx, int32_t ty);
+		bool RemoveVertex(int32_t iPos);
 		void CopyFrom(C4Shape rFrom, bool bCpyVertices, bool fCopyVerticesFromSelf);
 		int32_t GetBottomVertex();
 		int32_t GetVertexContact(int32_t iVtx, DWORD dwCheckMask, int32_t tx, int32_t ty, const C4DensityProvider &rDensityProvider = DefaultDensityProvider); // get CNAT-mask for given vertex - does not check range for iVtx!

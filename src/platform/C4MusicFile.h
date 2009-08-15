@@ -37,17 +37,17 @@ class C4MusicFile
 {
 public:
 
-	C4MusicFile() : LastPlayed(-1), NoPlay(FALSE), SongExtracted(FALSE) { }
+	C4MusicFile() : LastPlayed(-1), NoPlay(false), SongExtracted(false) { }
 	virtual ~C4MusicFile() { }
 
 	// data
 	char FileName[_MAX_FNAME +1];
 	C4MusicFile *pNext;
 	int LastPlayed;
-	BOOL NoPlay;
+	bool NoPlay;
 
-	virtual BOOL Init(const char *strFile);
-	virtual BOOL Play(BOOL loop = FALSE) = 0;
+	virtual bool Init(const char *strFile);
+	virtual bool Play(bool loop = false) = 0;
 	virtual void Stop(int fadeout_ms = 0) = 0;
 	virtual void CheckIfPlaying() = 0;
 	virtual void SetVolume(int) = 0;
@@ -55,18 +55,18 @@ public:
 protected:
 
 	// helper: copy data to a (temp) file
-	BOOL ExtractFile();
-	BOOL RemTempFile(); // remove the temp file
+	bool ExtractFile();
+	bool RemTempFile(); // remove the temp file
 
-	BOOL SongExtracted;
+	bool SongExtracted;
 
 };
 #if defined(USE_FMOD) || defined(USE_WINDOWS_MIDI)
 class C4MusicFileMID : public C4MusicFile
 	{
 	public:
-	  BOOL Play(BOOL loop = FALSE);
-		BOOL Extract();
+	  bool Play(bool loop = false);
+		bool Extract();
 		void Stop(int fadeout_ms = 0);
 		void CheckIfPlaying();
 		//C4MusicFileMID();
@@ -86,7 +86,7 @@ class C4MusicFileMOD : public C4MusicFile
 public:
 	C4MusicFileMOD();
 	~C4MusicFileMOD();
-  BOOL Play(BOOL loop = FALSE);
+  bool Play(bool loop = false);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
@@ -102,7 +102,7 @@ class C4MusicFileMP3 : public C4MusicFile
 public:
 	C4MusicFileMP3();
 	~C4MusicFileMP3();
-  BOOL Play(BOOL loop = FALSE);
+  bool Play(bool loop = false);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
@@ -119,7 +119,7 @@ class C4MusicFileOgg : public C4MusicFile
 public:
 	C4MusicFileOgg();
 	~C4MusicFileOgg();
-  BOOL Play(BOOL loop = FALSE);
+  bool Play(bool loop = false);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);
@@ -130,7 +130,7 @@ protected:
 	char *Data;
 	int Channel;
 
-  BOOL Playing;
+  bool Playing;
 };
 #endif
 
@@ -141,7 +141,7 @@ class C4MusicFileSDL : public C4MusicFile
 public:
 	C4MusicFileSDL();
 	~C4MusicFileSDL();
-  BOOL Play(BOOL loop = FALSE);
+  bool Play(bool loop = false);
 	void Stop(int fadeout_ms = 0);
 	void CheckIfPlaying();
 	void SetVolume(int);

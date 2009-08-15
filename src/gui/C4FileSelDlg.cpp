@@ -575,9 +575,9 @@ C4PortraitSelDlg::C4PortraitSelDlg(C4FileSel_BaseCB *pSelCallback, bool fSetPict
 	strLocation.Format("%s %s", C4ENGINECAPTION, LoadResStr("IDS_TEXT_PROGRAMDIRECTORY"));
 	AddCheckedLocation(strLocation.getData(), Config.General.ExePath);
 #ifdef _WIN32
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, FALSE)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), path);
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_MYPICTURES, FALSE)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYPICTURES"), path);
-	if (SHGetSpecialFolderPath(NULL, path, CSIDL_DESKTOPDIRECTORY, FALSE)) AddCheckedLocation(LoadResStr("IDS_TEXT_DESKTOP"), path);
+	if (SHGetSpecialFolderPath(NULL, path, CSIDL_PERSONAL, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYDOCUMENTS"), path);
+	if (SHGetSpecialFolderPath(NULL, path, CSIDL_MYPICTURES, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_MYPICTURES"), path);
+	if (SHGetSpecialFolderPath(NULL, path, CSIDL_DESKTOPDIRECTORY, false)) AddCheckedLocation(LoadResStr("IDS_TEXT_DESKTOP"), path);
 #endif
 #ifdef __APPLE__
 	AddCheckedLocation(LoadResStr("IDS_TEXT_HOME"), getenv("HOME"));

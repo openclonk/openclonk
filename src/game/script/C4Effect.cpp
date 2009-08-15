@@ -564,7 +564,7 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	if (!(pEffect = pEffect->Get(iNumber, true))) return -1;
 	// structures must eject contents now, because DoCon is not guaranteed to be executed!
 	// In extinguishing material
-	BOOL fFireCaused=TRUE;
+	bool fFireCaused=true;
 	int32_t iMat;
   if (MatValid(iMat=GBackMat(pObj->GetX(),pObj->GetY())))
     if (::MaterialMap.Map[iMat].Extinguisher)
@@ -572,7 +572,7 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 			// blasts should changedef in water, too!
 			if (fBlasted) if (pObj->Def->BurnTurnTo!=C4ID_None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
 			// no fire caused
-			fFireCaused = FALSE;
+			fFireCaused = false;
 			}
   // BurnTurnTo
   if (fFireCaused) if (pObj->Def->BurnTurnTo!=C4ID_None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
@@ -764,16 +764,16 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 int32_t FnFxFireStop(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iReason, bool fTemp)
 	{
 	// safety
-	if (!pObj) return FALSE;
+	if (!pObj) return false;
 	// only if real removal is done
 	if (fTemp)
 		{
-		return TRUE;
+		return true;
 		}
 	// stop sound
 	if (pObj->Def->Mass>=100) StopSoundEffect("Fire",pObj);
 	// done, success
-	return TRUE;
+	return true;
 	}
 
 C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber)

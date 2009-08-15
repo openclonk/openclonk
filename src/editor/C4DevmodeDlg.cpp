@@ -38,7 +38,7 @@ namespace
 	{
 		// Just hide the window, don't destroy it
 		C4DevmodeDlg::SwitchPage(NULL);
-		return TRUE;
+		return true;
 	}
 }
 
@@ -54,14 +54,14 @@ void C4DevmodeDlg::AddPage(GtkWidget* widget, GtkWindow* parent, const char* tit
 	if(window == NULL)
 	{
 		notebook = gtk_notebook_new();
-		gtk_notebook_set_show_tabs(GTK_NOTEBOOK(notebook), FALSE);
-		gtk_notebook_set_show_border(GTK_NOTEBOOK(notebook), FALSE);
+		gtk_notebook_set_show_tabs(GTK_NOTEBOOK(notebook), false);
+		gtk_notebook_set_show_border(GTK_NOTEBOOK(notebook), false);
 		gtk_widget_show(GTK_WIDGET(notebook));
 
 		window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 		gtk_container_add(GTK_CONTAINER(window), notebook);
 
-		gtk_window_set_resizable(GTK_WINDOW(window), TRUE);
+		gtk_window_set_resizable(GTK_WINDOW(window), true);
 		gtk_window_set_type_hint(GTK_WINDOW(window), GDK_WINDOW_TYPE_HINT_UTILITY);
 		gtk_window_set_role(GTK_WINDOW(window), "toolbox");
 

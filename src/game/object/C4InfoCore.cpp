@@ -73,7 +73,7 @@ DWORD C4PlayerInfoCore::GetPrefColorValue(int32_t iPrefColor)
 	return 0xAAAAAA;
 	}
 
-BOOL C4PlayerInfoCore::Load(C4Group &hGroup)
+bool C4PlayerInfoCore::Load(C4Group &hGroup)
   {
 	// New version
 	StdStrBuf Source;
@@ -82,7 +82,7 @@ BOOL C4PlayerInfoCore::Load(C4Group &hGroup)
 		// Compile
 		StdStrBuf GrpName = hGroup.GetFullName(); GrpName.Append(DirSep C4CFN_PlayerInfoCore);
 		if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Source, GrpName.getData()))
-			return FALSE;
+			return false;
 		// Pref for AutoContextMenus is still undecided: default by player's control style
 		if (PrefAutoContextMenu == -1)
 			PrefAutoContextMenu = PrefControlStyle;
@@ -95,22 +95,22 @@ BOOL C4PlayerInfoCore::Load(C4Group &hGroup)
 		// Validate name
 		CMarkup::StripMarkup(PrefName);
 		// Success
-		return TRUE;
+		return true;
 		}
 
 	// Old version no longer supported - sorry
-  return FALSE;
+  return false;
   }
 
-BOOL C4PlayerInfoCore::Save(C4Group &hGroup)
+bool C4PlayerInfoCore::Save(C4Group &hGroup)
   {
 	StdStrBuf Source, Name = hGroup.GetFullName(); Name.Append(DirSep C4CFN_PlayerInfoCore);
 	if(!DecompileToBuf_Log<StdCompilerINIWrite>(*this, &Source, Name.getData()))
-		return FALSE;
-	if (!hGroup.Add(C4CFN_PlayerInfoCore,Source,FALSE,TRUE))
-		return FALSE;
+		return false;
+	if (!hGroup.Add(C4CFN_PlayerInfoCore,Source,false,true))
+		return false;
 	hGroup.Delete("C4Player.c4b");
-	return TRUE;
+	return true;
 	}
 
 void C4PlayerInfoCore::Promote(int32_t iRank, C4RankSystem &rRanks)
@@ -119,14 +119,14 @@ void C4PlayerInfoCore::Promote(int32_t iRank, C4RankSystem &rRanks)
 	SCopy(rRanks.GetRankName(Rank,true).getData(),RankName,C4MaxName);
 	}
 
-BOOL C4PlayerInfoCore::CheckPromotion(C4RankSystem &rRanks)
+bool C4PlayerInfoCore::CheckPromotion(C4RankSystem &rRanks)
 	{
 	if (Score>=rRanks.Experience(Rank+1))
 		{
 		Promote(Rank+1,rRanks);
-		return TRUE;
+		return true;
 		}
-	return FALSE;
+	return false;
 	}
 
 void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
@@ -470,23 +470,23 @@ bool C4ObjectInfoCore::GetNextRankInfo(C4RankSystem &rDefaultRanks, int32_t *piN
 	return iNextRankExp != C4RankSystem::EXP_NoPromotion;
 	}
 
-BOOL C4ObjectInfoCore::Load(C4Group &hGroup)
+bool C4ObjectInfoCore::Load(C4Group &hGroup)
 	{
 	StdStrBuf Source;
 	return hGroup.LoadEntryString(C4CFN_ObjectInfoCore, Source) &&
 				 Compile(Source.getData());
 	}
 
-BOOL C4ObjectInfoCore::Save(C4Group &hGroup, C4DefList *pDefs)
+bool C4ObjectInfoCore::Save(C4Group &hGroup, C4DefList *pDefs)
 	{
 	// rank overload by def: Update any NextRank-stuff
 	if (pDefs) UpdateCustomRanks(pDefs);
 	char *Buffer; size_t BufferSize;
 	if (!Decompile(&Buffer,&BufferSize))
-		return FALSE;
-	if (!hGroup.Add(C4CFN_ObjectInfoCore,Buffer,BufferSize,FALSE,TRUE) )
-		{ delete [] Buffer; return FALSE; }
-	return TRUE;
+		return false;
+	if (!hGroup.Add(C4CFN_ObjectInfoCore,Buffer,BufferSize,false,true) )
+		{ delete [] Buffer; return false; }
+	return true;
 	}
 
 void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
@@ -513,7 +513,7 @@ void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(Physical);
 	}
 
-BOOL C4ObjectInfoCore::Compile(const char *szSource)
+bool C4ObjectInfoCore::Compile(const char *szSource)
 	{
 	bool ret = CompileFromBuf_LogWarn<StdCompilerINIRead>(
 								mkNamingAdapt(*this, "ObjectInfo"),
@@ -526,7 +526,7 @@ BOOL C4ObjectInfoCore::Compile(const char *szSource)
 	return ret;
 	}
 
-BOOL C4ObjectInfoCore::Decompile(char **ppOutput, size_t *ipSize)
+bool C4ObjectInfoCore::Decompile(char **ppOutput, size_t *ipSize)
 	{
 	StdStrBuf Buf;
 	if(!DecompileToBuf_Log<StdCompilerINIWrite>(
@@ -536,11 +536,11 @@ BOOL C4ObjectInfoCore::Decompile(char **ppOutput, size_t *ipSize)
 		{
 		if(ppOutput) *ppOutput = NULL;
 		if(ipSize) *ipSize = 0;
-		return FALSE;
+		return false;
 		}
 	if(ppOutput) *ppOutput = Buf.GrabPointer();
 	if(ipSize) *ipSize = Buf.getSize();
-	return TRUE;
+	return true;
 	}
 
 

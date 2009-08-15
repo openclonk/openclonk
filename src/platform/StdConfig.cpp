@@ -34,10 +34,10 @@ CStdConfig::~CStdConfig()
 
 	}
 
-BOOL CStdConfig::Load(CStdConfigValue *pCfgMap, void *vpData)
+bool CStdConfig::Load(CStdConfigValue *pCfgMap, void *vpData)
 	{
 #ifdef _WIN32
-	if (!pCfgMap || !vpData) return FALSE;
+	if (!pCfgMap || !vpData) return false;
 
 	char szCompany[100+1]="Company";
 	char szProduct[100+1]="Product";
@@ -67,13 +67,13 @@ BOOL CStdConfig::Load(CStdConfigValue *pCfgMap, void *vpData)
 				break;
 			}
 #endif
-	return TRUE;
+	return true;
 	}
 
-BOOL CStdConfig::Save(CStdConfigValue *pCfgMap, void *vpData)
+bool CStdConfig::Save(CStdConfigValue *pCfgMap, void *vpData)
 	{
 #ifdef _WIN32
-	if (!pCfgMap || !vpData) return FALSE;
+	if (!pCfgMap || !vpData) return false;
 
 	char szCompany[100+1]="Company";
 	char szProduct[100+1]="Product";
@@ -109,7 +109,7 @@ BOOL CStdConfig::Save(CStdConfigValue *pCfgMap, void *vpData)
 				break;
 			}
 #endif
-	return TRUE;
+	return true;
 	}
 
 void CStdConfig::LoadDefault(CStdConfigValue *pCfgMap, void *vpData, const char *szOnlySection)

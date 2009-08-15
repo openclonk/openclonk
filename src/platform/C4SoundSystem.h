@@ -52,7 +52,7 @@ public:
   char Name[C4MaxSoundName+1];
   int32_t UsageTime, Instances;
   int32_t SampleRate, Length;
-	BOOL Static;
+	bool Static;
 #ifdef C4SOUND_USE_FMOD
 	FSOUND_SAMPLE *pSample;
 #endif
@@ -63,8 +63,8 @@ public:
   C4SoundEffect *Next;
 public:
   void Clear();
-  BOOL Load(const char *szFileName, C4Group &hGroup, BOOL fStatic);
-	BOOL Load(BYTE *pData, size_t iDataLen, BOOL fStatic, bool fRaw=false); // load directly from memory
+  bool Load(const char *szFileName, C4Group &hGroup, bool fStatic);
+	bool Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw=false); // load directly from memory
   void Execute();
   C4SoundInstance *New(bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0);
   C4SoundInstance *GetInstance(C4Object *pObj);
@@ -96,11 +96,11 @@ public:
   C4Object *getObj() const { return pObj; }
   bool isStarted() const { return iChannel != -1; }
   void Clear();
-  BOOL Create(C4SoundEffect *pEffect, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iNearInstanceMax = 0, int32_t iFalloffDistance = 0);
-  BOOL CheckStart();
-  BOOL Start();
-  BOOL Stop();
-  BOOL Playing();
+  bool Create(C4SoundEffect *pEffect, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iNearInstanceMax = 0, int32_t iFalloffDistance = 0);
+  bool CheckStart();
+  bool Start();
+  bool Stop();
+  bool Playing();
   void Execute();
   void SetVolume(int32_t inVolume) { iVolume = inVolume; }
   void SetPan(int32_t inPan) { iPan = inPan; }
@@ -119,10 +119,10 @@ class C4SoundSystem
 		~C4SoundSystem();
 		void Clear();
 		void Execute();
-		int32_t LoadEffects(C4Group &hGroup, BOOL fStatic = TRUE);
+		int32_t LoadEffects(C4Group &hGroup, bool fStatic = true);
 		C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0);
 		C4SoundInstance *FindInstance(const char *szSound, C4Object *pObj);
-		BOOL Init();
+		bool Init();
     void ClearPointers(C4Object *pObj);
 	protected:
 		C4Group SoundFile;

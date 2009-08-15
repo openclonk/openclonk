@@ -44,7 +44,7 @@ class C4MusicSystem
 		void NotifySuccess();
 		bool Init(const char * PlayList = NULL);
 		bool InitForScenario(C4Group & hGroup);
-		bool Play(const char *szSongname = NULL, bool fLoop = FALSE);
+		bool Play(const char *szSongname = NULL, bool fLoop = false);
 		bool Stop();
 		void FadeOut(int fadeout_ms);
 

@@ -99,7 +99,7 @@ bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 			{
 			if (pAudioTrack) delete pAudioTrack;
 			pAudioTrack = new C4SoundEffect();
-			if (pAudioTrack->Load(pAudioData, iAudioDataSize, FALSE, false))
+			if (pAudioTrack->Load(pAudioData, iAudioDataSize, false, false))
 				{
 				C4SoundInstance *pSoundInst = pAudioTrack->New();
 				if (pSoundInst) pSoundInst->Start();
@@ -201,7 +201,7 @@ void C4VideoShowDialog::DrawElement(C4TargetFacet &cgo)
 		AVIFile.GrabFrame(iGetFrame, &(fctBuffer.GetFace()));
 		}
 	// draw the found frame
-	fctBuffer.Draw(cgo, FALSE);
+	fctBuffer.Draw(cgo, false);
 #else
 #ifdef HAVE_LIBSMPEG
 	// FIXME
@@ -210,7 +210,7 @@ void C4VideoShowDialog::DrawElement(C4TargetFacet &cgo)
 	sfc->Lock();
 	sfc->CopyBytes((BYTE*)surface->pixels);
 	sfc->Unlock();
-	fctBuffer.Draw(cgo, FALSE);
+	fctBuffer.Draw(cgo, false);
 	if (SMPEG_status(mpeg) != SMPEG_PLAYING)
 		VideoDone();
 #endif // HAVE_LIBSMPEG

@@ -45,7 +45,7 @@ class C4MouseControl
 		C4MouseControl();
 		~C4MouseControl();
 	protected:
-		BOOL Active;
+		bool Active;
 		bool fMouseOwned;
 		int32_t Player;
 		C4Player *pPlayer; // valid during Move()
@@ -95,7 +95,7 @@ class C4MouseControl
 		void HideCursor();
 		void ShowCursor();
 		void Draw(C4TargetFacet &cgo, const ZoomData &GameZoom);
-		void Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFlags, BOOL fCenter = FALSE);
+		void Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFlags, bool fCenter = false);
 		bool IsViewport(C4Viewport *pViewport);
 		void ClearPointers(C4Object *pObj);
 		void UpdateClip();	// update clipping region for mouse cursor
@@ -128,11 +128,11 @@ class C4MouseControl
 		int32_t UpdateObjectSelection();
 		int32_t UpdateCrewSelection();
 		int32_t UpdateSingleSelection();
-		BOOL SendControl(int32_t iCom, int32_t iData=0);
-		BOOL IsValidMenu(C4Menu *pMenu);
-		BOOL UpdatePutTarget(BOOL fVehicle);
+		bool SendControl(int32_t iCom, int32_t iData=0);
+		bool IsValidMenu(C4Menu *pMenu);
+		bool UpdatePutTarget(bool fVehicle);
 		C4Object *GetTargetObject(float iX, float iY, DWORD &dwOCF, C4Object *pExclude=NULL);
-		BOOL IsPassive(); // return whether mouse is only used to look around
+		bool IsPassive(); // return whether mouse is only used to look around
 		void ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt);
 
 	public:

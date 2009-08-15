@@ -301,16 +301,16 @@ C4AulScriptFunc *C4AulScript::GetSFuncWarn(const char *pIdtf, C4AulAccess AccNee
 	// no identifier
 	if (!pIdtf || !pIdtf[0]) return NULL;
 	// get func?
-	C4AulScriptFunc *pFn = GetSFunc(pIdtf, AccNeeded, TRUE);
+	C4AulScriptFunc *pFn = GetSFunc(pIdtf, AccNeeded, true);
 	if (!pFn)
 		Warn(FormatString("Error getting %s function '%s'", WarnStr, pIdtf).getData(), NULL);
 	return pFn;
 	}
 
-C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf, C4AulAccess AccNeeded, BOOL fFailsafe)
+C4AulScriptFunc *C4AulScript::GetSFunc(const char *pIdtf, C4AulAccess AccNeeded, bool fFailsafe)
 	{
 	// failsafe call
-	if (*pIdtf=='~') { fFailsafe=TRUE; pIdtf++; }
+	if (*pIdtf=='~') { fFailsafe=true; pIdtf++; }
 
 	// get function reference from table
 	C4AulScriptFunc *pFn = GetSFunc(pIdtf);
@@ -481,11 +481,11 @@ bool C4AulScriptEngine::GetGlobalConstant(const char *szName, C4Value *pTargetVa
 	return true;
 	}
 
-BOOL C4AulScriptEngine::DenumerateVariablePointers()
+bool C4AulScriptEngine::DenumerateVariablePointers()
 	{
 	GlobalNamed.DenumeratePointers();
 	// runtime data only: don't denumerate consts
-	return TRUE;
+	return true;
 	}
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
   {

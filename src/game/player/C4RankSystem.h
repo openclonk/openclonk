@@ -49,7 +49,7 @@ class C4RankSystem
     int Experience(int iRank);
 		int RankByExperience(int iExp);  // get rank by experience
     StdStrBuf GetRankName(int iRank, bool fReturnLastIfOver);
-		BOOL Check(int iRank, const char  *szDefRankName);
+		bool Check(int iRank, const char  *szDefRankName);
 		int32_t GetExtendedRankNum() const { return iRankExtNum; }
 		//void Reset(const char *szDefRanks);
 		static bool DrawRankSymbol(C4FacetSurface *fctSymbol, int32_t iRank, C4Facet *pfctRankSymbols, int32_t iRankSymbolCount, bool fOwnSurface, int32_t iXOff=0, C4Facet *cgoDrawDirect=NULL); // create facet from rank symbol for definition - use custom rank facets if present
