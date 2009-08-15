@@ -213,6 +213,14 @@ protected:
 	// data type
 	C4V_Type Type:8;
 	bool HasBaseArray:8;
+	// All referenzes to a C4Value form a linked list, so that they can be updated if the C4Value
+	// has to move, (array is resized), or goes out of scope (func & f() { var r; return r; })
+	// If the reference is in an array, the last c4value in the list has HasBaseArray set, and
+	// BaseArray points to the array. This is used to count the references to elements that an
+	// array has, and maintain the invariant that an array can only have multiple references to
+	// the array OR its elements, but not both. For example, a[0] = a; has to copy the entire
+	// old array into its first element. But a[0]=42; GetLength(a); should not copy the array,
+	// so the element reference count has to be reset after a[0] is removed from the stack.
 
 	C4Value * GetNextRef() { if (HasBaseArray) return 0; else return NextRef; }
 	C4ValueArray * GetBaseArray() { if (HasBaseArray) return BaseArray; else return 0; }
