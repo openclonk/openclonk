@@ -20,7 +20,6 @@
 
 #include <StdGtkWindow.h>
 
-#include "c4x.xpm"
 #include <X11/Xlib.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkkeysyms.h>
@@ -72,9 +71,8 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 //	printf("%p\n", gtk_widget_get_visual(render_widget));
 //	Info = gdk_x11_visual_get_xvisual(gtk_widget_get_visual(render_widget));
 
-	GdkPixbuf* icon = gdk_pixbuf_new_from_xpm_data(c4x_xpm);
-	gtk_window_set_icon(GTK_WINDOW(window), icon);
-	gdk_pixbuf_unref(icon);
+	// Default icon has been set right after gtk_init(),
+	// so we don't need to take care about setting the icon here.
 
 	gtk_window_set_title(GTK_WINDOW(window), Title);
 

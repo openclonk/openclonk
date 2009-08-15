@@ -146,6 +146,7 @@ int main()
 #endif
 
 #ifdef WITH_DEVELOPER_MODE
+# include "c4x.xpm"
 # include <gtk/gtkmain.h>
 #endif
 
@@ -226,6 +227,10 @@ int main (int argc, char * argv[])
 	// FIXME: This should only be done in developer mode.
 #ifdef WITH_DEVELOPER_MODE
 	gtk_init(&argc, &argv);
+
+	GdkPixbuf* icon = gdk_pixbuf_new_from_xpm_data(c4x_xpm);
+	gtk_window_set_default_icon(icon);
+	g_object_unref(icon);
 #endif
 
 	// Init application
