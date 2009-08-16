@@ -600,23 +600,23 @@ macro(FINDLIB lib)
 	mark_as_advanced(${lib})
 endmacro(FINDLIB)
 # isilkor 09-05-29: Don't use FindOpenSSL, because that wants to link to ssleay
-FINDLIB(OPENSSL NAMES crypto libeay32)
+FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
 
 # Optional libraries
 if(USE_GL)
 	include(FindOpenGL)
-	FINDLIB(GLEW NAMES GLEW glew32 glew32s)
+	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
 	target_link_libraries(clonk
-		${GLEW}
+		${GLEW_LIBRARIES}
 		${OPENGL_LIBRARIES}
 	)
 endif()
 if(USE_DIRECTX)
-	FINDLIB(DIRECT3D d3d9)
-	FINDLIB(DIRECT3DX d3dx9)
+	FINDLIB(DIRECT3D_LIBRARIES d3d9)
+	FINDLIB(DIRECT3DX_LIBRARIES d3dx9)
 	target_link_libraries(clonk
-		${DIRECT3D}
-		${DIRECT3DX}
+		${DIRECT3D_LIBRARIES}
+		${DIRECT3DX_LIBRARIES}
 	)
 endif()
 if(USE_GTK)
@@ -635,39 +635,39 @@ if(USE_GTK)
 	endif()
 endif()
 if(USE_X11)
-	FINDLIB(X11 X11)
-	FINDLIB(XPM Xpm)
-	FINDLIB(XXF86VM Xxf86vm)
-	FINDLIB(XRANDR Xrandr)
+	FINDLIB(X11_LIBRARIES X11)
+	FINDLIB(XPM_LIBRARIES Xpm)
+	FINDLIB(XXF86VM_LIBRARIES Xxf86vm)
+	FINDLIB(XRANDR_LIBRARIES Xrandr)
 	target_link_libraries(clonk
-		${X11}
-		${XPM}
-		${XXF86VM}
-		${XRANDR}
+		${X11_LIBRARIES}
+		${XPM_LIBRARIES}
+		${XXF86VM_LIBRARIES}
+		${XRANDR_LIBRARIES}
 	)
 endif()
 if (WIN32)
-	FINDLIB(VFW vfw32)
-	FINDLIB(WS2 ws2_32)
-	FINDLIB(WINMM winmm)
+	FINDLIB(VFW_LIBRARIES vfw32)
+	FINDLIB(WS2_LIBRARIES ws2_32)
+	FINDLIB(WINMM_LIBRARIES winmm)
 	target_link_libraries(clonk
-		${VFW}
-		${WS2}
-		${WINMM}
+		${VFW_LIBRARIES}
+		${WS2_LIBRARIES}
+		${WINMM_LIBRARIES}
 	)
 	target_link_libraries(c4group
-		${WS2}
+		${WS2_LIBRARIES}
 	)
 endif()
 include(FindSDL)
 SET(HAVE_SDL ${SDL_FOUND})
 if(SDL_FOUND)
 	include_directories(${SDL_INCLUDE_DIR})
-	FINDLIB(SDLMIXER SDL_mixer)
+	FINDLIB(SDLMIXER_LIBRARIES SDL_mixer)
 	SET(HAVE_LIBSDL_MIXER ${SDLMIXER})
 	target_link_libraries(clonk
 		${SDL_LIBRARY}
-		${SDLMIXER}
+		${SDLMIXER_LIBRARIES}
 	)
 endif()
 
@@ -676,11 +676,11 @@ target_link_libraries(clonk
 	${ZLIB_LIBRARIES}
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
-	${OPENSSL}
+	${OPENSSL_LIBRARIES}
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
-	${OPENSSL}
+	${OPENSSL_LIBRARIES}
 )
 
 include(CheckCXXCompilerFlag)
