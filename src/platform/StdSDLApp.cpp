@@ -38,9 +38,7 @@
 /* CStdApp */
 
 CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
-	Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false),
-	// 36 FPS
-	Delay(27777)
+	Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
 {
 }
 

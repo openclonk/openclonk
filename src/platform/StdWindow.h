@@ -468,8 +468,6 @@ protected:
 	class CStdAppPrivate * Priv;
 	void HandleXMessage();
 
-	unsigned int Delay;
-	timeval LastExecute;
 	unsigned int KeyMask;
 #endif
 	const char *szCmdLine;

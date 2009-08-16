@@ -100,9 +100,7 @@ CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), dpy(0), Priv(new CSt
 #ifdef HAVE_PTHREAD
 	MainThread (pthread_self()),
 #endif
-	fDspModeSet(false),
-	// 36 FPS
-	Delay(27777)
+	fDspModeSet(false)
 {
 	Add(&Priv->X11Proc);
 #ifdef WITH_GLIB

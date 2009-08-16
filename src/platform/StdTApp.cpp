@@ -62,9 +62,7 @@ CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), Priv(new CStdAppPriv
 #ifdef HAVE_PTHREAD
 	MainThread (pthread_self()),
 #endif
-	fDspModeSet(false),
-	// 36 FPS
-	Delay(27777)
+	fDspModeSet(false)
 {
 }
 
