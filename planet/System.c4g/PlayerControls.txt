@@ -1,0 +1,222 @@
+[ControlDefs]
+
+  [ControlDef]
+  Identifier=None
+
+  [ControlDef]
+  Identifier=Left
+  GUIName=Left
+  GUIDesc=Move left
+  Hold=1
+
+  [ControlDef]
+  Identifier=Right
+  GUIName=Right
+  GUIDesc=Move right
+  Hold=1
+  
+  [ControlDef]
+  Identifier=Up
+  GUIName=Up
+  GUIDesc=Move up or jump
+  Hold=1
+
+  [ControlDef]
+  Identifier=Down
+  GUIName=Down
+  GUIDesc=Move down
+  Hold=1
+
+  [ControlDef]
+  Identifier=Throw
+  GUIName=Throw
+  GUIDesc=Get rid of your selected inventory
+  Hold=1
+  RepeatDelay=5
+  InitialRepeatDelay=35
+
+  [ControlDef]
+  Identifier=Dig
+  GUIName=Dig
+  GUIDesc=Delve through the earth
+  
+  [ControlDef]
+  Identifier=DolphinJump
+  GUIName=Dolphin Jump
+  GUIDesc=Jump out of the water while swimming
+
+  [ControlDef]
+  Identifier=Context
+  GUIName=Context menu
+  GUIDesc=Open context menu of current interaction target
+
+ 
+  
+[ControlSets]
+
+  [ControlSet]
+  Name=Keyboard2
+
+    [Assignment]
+    Key=A
+    Control=Left
+
+    [Assignment]
+    Key=D
+    Control=Right
+
+    [Assignment]
+    Key=S
+    Control=Down
+
+    [Assignment]
+    Key=W
+    Control=Up
+    TriggerMode=Hold
+
+  [ControlSet]
+  Name=Keyboard2Classic
+  
+    [Assignment]
+    Key=A
+    Control=Left
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=CON_Left
+    Control=Right
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=CON_Left
+    Control=Up
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=CON_Left
+    Control=Down
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=D
+    Control=Right
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=CON_Right
+    Control=Left
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=CON_Right
+    Control=Up
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=CON_Right
+    Control=Down
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=S
+    Control=Down
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=CON_Down
+    Control=Up
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=CON_Down
+    Control=Left
+    TriggerMode=Release
+    Priority=-5
+
+    [Assignment]
+    Key=CON_Down
+    Control=Right
+    TriggerMode=Release
+    Priority=-5
+
+    [Assignment]
+    Key=CON_Down
+    Control=Down
+    TriggerMode=Release
+    Priority=-10
+
+    [Assignment]
+    Key=W
+    Control=Up
+    TriggerMode=Hold
+
+    [Assignment]
+    Key=CON_Up
+    Control=Down
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=CON_Up
+    Control=Left
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=CON_Up
+    Control=Right
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=-5
+
+    [Assignment]
+    Key=CON_Dig
+    Control=Down
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=CON_Dig
+    Control=Left
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=CON_Dig
+    Control=Right
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+    [Assignment]
+    Key=CON_Dig
+    Control=Up
+    TriggerMode=Release | AlwaysUnhandled
+    Priority=5
+
+
+  [ControlSet]
+  Name=Keyboard2*
+  
+    [Assignment]
+    Key=Q
+    Control=Throw
+
+    [Assignment]
+    Key=E
+    Control=Dig
+
+    [Assignment]
+    Key=Up,Up
+    ComboIsSequence=1
+    Control=DolphinJump
+    Priority=10
+
+    [Assignment]
+    Key=F
+    Control=Context

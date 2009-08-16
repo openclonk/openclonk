@@ -561,7 +561,7 @@ C4ApplicationGameTimer::C4ApplicationGameTimer()
 void C4ApplicationGameTimer::SetGameTickDelay(uint32_t iDelay)
 	{
 	// Smaller than minimum refresh delay?
-	if (iDelay < Config.Graphics.MaxRefreshDelay)
+	if (iDelay < uint32_t(Config.Graphics.MaxRefreshDelay))
 		{
 		// Set critical timer
 		SetDelay(iDelay);
@@ -584,7 +584,7 @@ bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
 	{
 	// Check timer and reset
 	if (!CheckAndReset()) return true;
-	int Now = timeGetTime();
+	unsigned int Now = timeGetTime();
 	// Execute
 	if(Now >= iLastGameTick + iGameTickDelay || Game.GameGo)
 		{

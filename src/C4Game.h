@@ -37,9 +37,10 @@
 #include "C4Scoreboard.h"
 #include <C4VideoPlayback.h>
 #include <C4ScriptHost.h>
+#include <C4PlayerControl.h>
 
 class C4Game
-  {
+	{
 	private:
 		// used as StdCompiler-parameter
 		struct CompileSettings
@@ -60,8 +61,8 @@ class C4Game
 			C4KeySetCtrl(int32_t iKeySet, int32_t iCtrl) : iKeySet(iKeySet), iCtrl(iCtrl) {}
 			};
 
-  public:
-    C4Game();
+	public:
+		C4Game();
 		~C4Game();
 	public:
 		C4ClientList			 &Clients; // Shortcut
@@ -70,7 +71,7 @@ class C4Game
 		C4PlayerInfoList	 &PlayerInfos; // Shortcut
 		C4PlayerInfoList	 &RestorePlayerInfos; // Shortcut
 		C4RoundResults      RoundResults;
-    C4Scenario					C4S;
+		C4Scenario					C4S;
 		C4ComponentHost			Info;
 		C4ComponentHost			Title;
 		C4ComponentHost			Names;
@@ -82,12 +83,14 @@ class C4Game
 
 		C4PathFinder				PathFinder;
 		C4TransferZones			TransferZones;
-    C4Group							ScenarioFile;
+		C4Group							ScenarioFile;
 		C4GroupSet					GroupSet;
 		C4Group             *pParentGroup;
 		C4Extra							Extra;
 		C4ScenarioSection   *pScenarioSections, *pCurrentScenarioSection;
 		C4Effect            *pGlobalEffects;
+		C4PlayerControlDefs PlayerControlDefs;
+		C4PlayerControlAssignmentSets PlayerControlAssignmentSets;
 #ifndef USE_CONSOLE
 		// We don't need fonts when we don't have graphics
 		C4FontLoader        FontLoader;
@@ -99,8 +102,8 @@ class C4Game
 		class C4FileMonitor *pFileMonitor;
 		class C4GameSec1Timer *pSec1Timer;
 
-		char                CurrentScenarioSection[C4MaxName+1];
-    char ScenarioFilename[_MAX_PATH+1];
+		char CurrentScenarioSection[C4MaxName+1];
+		char ScenarioFilename[_MAX_PATH+1];
 		StdCopyStrBuf ScenarioTitle;
 		char PlayerFilenames[20*_MAX_PATH+1];
 		char DefinitionFilenames[20*_MAX_PATH+1];
@@ -109,13 +112,13 @@ class C4Game
 		int32_t StartupPlayerCount;
 		int32_t FPS,cFPS;
 		int32_t HaltCount;
-    bool GameOver;
-	  bool Evaluated;
+		bool GameOver;
+		bool Evaluated;
 		bool GameOverDlgShown;
 		bool fScriptCreatedObjects;
 		bool fLobby;
 		int32_t iLobbyTimeout;
-    bool fObserve;
+		bool fObserve;
 		bool fReferenceDefinitionOverride;
 		bool NetworkActive;
 		bool Record;
@@ -149,24 +152,21 @@ class C4Game
 		// next mission to be played after this one
 		StdCopyStrBuf NextMission, NextMissionText, NextMissionDesc;
 
-  public:
-    // Init and execution
+	public:
+		// Init and execution
 		void Default();
 		void Clear();
 		void Abort(bool fApproved = false); // hard-quit on Esc+Y (/J/O)
-	  void Evaluate();
+		void Evaluate();
 		void ShowGameOverDlg();
 		bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false);
 		void DrawCursors(C4TargetFacet &cgo, int32_t iPlayer);
-		bool LocalControlKey(C4KeyCodeEx key, C4KeySetCtrl Ctrl);
-		bool LocalControlKeyUp(C4KeyCodeEx key, C4KeySetCtrl Ctrl);
-	  void LocalPlayerControl(int32_t iPlayer, int32_t iCom);
-	  void FixRandom(int32_t iSeed);
+		void FixRandom(int32_t iSeed);
 		bool Init();
 		bool PreInit();
-	  void ParseCommandLine(const char *szCmdLine);
+		void ParseCommandLine(const char *szCmdLine);
     bool Execute();
-	  class C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
+		class C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
 	  bool DoGameOver();
 		bool CanQuickSave();
 	  bool QuickSave(const char *strFilename, const char *strTitle, bool fForceSave=false);
@@ -181,10 +181,10 @@ class C4Game
 		bool IsPaused();
 		// Network
 	  void Synchronize(bool fSavePlayerFiles);
-	  void SyncClearance();
+		void SyncClearance();
 		bool ReSync();
 		void SyncCheckFiles(); // check if files are in sync
-    // Editing
+		// Editing
 		bool DropFile(const char *szFilename, float iX, float iY);
 		bool CreateViewport(int32_t iPlayer, bool fSilent=false);
 	  bool DropDef(C4ID id, float iX, float iY);
@@ -192,49 +192,49 @@ class C4Game
 	  bool ReloadFile(const char *szPath);
 	  bool ReloadDef(C4ID id);
 		bool ReloadParticle(const char *szName);
-    // Object functions
+		// Object functions
     void ClearPointers(C4PropList *cobj);
     C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
                            int32_t x=50, int32_t y=50, int32_t r=0,
                            FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
-    C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
-                           int32_t x=50, int32_t y=50, int32_t r=0,
-                           FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
+		C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
+				int32_t x=50, int32_t y=50, int32_t r=0,
+				FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
     C4Object *CreateObjectConstruction(C4PropList * type,
-		                                   C4Object *pCreator,
-                                       int32_t owner,
-                                       int32_t ctx=0, int32_t bty=0,
+				C4Object *pCreator,
+				int32_t owner,
+				int32_t ctx=0, int32_t bty=0,
                                        int32_t con=1, bool terrain=false);
-    C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
-                               int32_t tx=50, int32_t ty=50);
-    void BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj);
+				C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
+				int32_t tx=50, int32_t ty=50);
+		void BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj);
 		void ShakeObjects(int32_t tx, int32_t ry, int32_t range);
-    C4Object *OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt,
-                            int32_t category);
-    C4Object *FindObject(C4ID id,
-												 int32_t iX=0, int32_t iY=0, int32_t iWdt=0, int32_t iHgt=0,
-												 DWORD ocf=OCF_All,
-												 const char *szAction=NULL, C4Object *pActionTarget=NULL,
-												 C4Object *pExclude=NULL,
-												 C4Object *pContainer=NULL,
-												 int32_t iOwner=ANY_OWNER,
-												 C4Object *pFindNext=NULL);
+		C4Object *OverlapObject(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt,
+				int32_t category);
+		C4Object *FindObject(C4ID id,
+				int32_t iX=0, int32_t iY=0, int32_t iWdt=0, int32_t iHgt=0,
+				DWORD ocf=OCF_All,
+				const char *szAction=NULL, C4Object *pActionTarget=NULL,
+				C4Object *pExclude=NULL,
+				C4Object *pContainer=NULL,
+				int32_t iOwner=ANY_OWNER,
+				C4Object *pFindNext=NULL);
 		C4Object *FindVisObject( // find object in view at pos, regarding parallaxity and visibility (but not distance)
-		                     float tx, float ty, int32_t iPlr, const C4Facet &fctViewport,
-		                     float iX=0, float iY=0, float iWdt=0, float iHgt=0,
-												 DWORD ocf=OCF_All,
-												 C4Object *pExclude=NULL,
-												 int32_t iOwner=ANY_OWNER,
-												 C4Object *pFindNext=NULL);
-    int32_t ObjectCount(C4ID id,
-										int32_t x=0, int32_t y=0, int32_t wdt=0, int32_t hgt=0,
-										DWORD ocf=OCF_All,
-										const char *szAction=NULL, C4Object *pActionTarget=NULL,
-										C4Object *pExclude=NULL,
-										C4Object *pContainer=NULL,
-										int32_t iOwner=ANY_OWNER);
-	  C4Object *FindBase(int32_t iPlayer, int32_t iIndex);
-	  C4Object *FindFriendlyBase(int32_t iPlayer, int32_t iIndex);
+				float tx, float ty, int32_t iPlr, const C4Facet &fctViewport,
+				float iX=0, float iY=0, float iWdt=0, float iHgt=0,
+				DWORD ocf=OCF_All,
+				C4Object *pExclude=NULL,
+				int32_t iOwner=ANY_OWNER,
+				C4Object *pFindNext=NULL);
+		int32_t ObjectCount(C4ID id,
+				int32_t x=0, int32_t y=0, int32_t wdt=0, int32_t hgt=0,
+				DWORD ocf=OCF_All,
+				const char *szAction=NULL, C4Object *pActionTarget=NULL,
+				C4Object *pExclude=NULL,
+				C4Object *pContainer=NULL,
+				int32_t iOwner=ANY_OWNER);
+		C4Object *FindBase(int32_t iPlayer, int32_t iIndex);
+		C4Object *FindFriendlyBase(int32_t iPlayer, int32_t iIndex);
 		C4Object *FindObjectByCommand(int32_t iCommand, C4Object *pTarget=NULL, C4Value iTx=C4VNull, int32_t iTy=0, C4Object *pTarget2=NULL, C4Object *pFindNext=NULL);
 		void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER);
 		void BlastCastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t tx, int32_t ty, int32_t iController=NO_OWNER);
@@ -248,8 +248,10 @@ class C4Game
 		bool SpeedUp();
 		bool SlowDown();
 		bool InitKeyboard(); // register main keyboard input functions
+		void UpdateLanguage();
+		bool InitPlayerControlSettings();
 
-  protected:
+	protected:
 		bool InitSystem();
 		void InitInEarth();
 		void InitVegetation();

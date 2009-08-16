@@ -371,26 +371,44 @@ void C4ControlPlayerSelect::CompileFunc(StdCompiler *pComp)
   C4ControlPacket::CompileFunc(pComp);
 }
 
+
 // *** C4ControlPlayerControl
 
 void C4ControlPlayerControl::Execute() const
 {
-	C4Player *pPlr=::Players.Get(iPlr);
-	if(pPlr)
+	C4PlayerControl *pTargetCtrl = NULL;
+	if (iPlr == -1)
+	{
+		// neutral control packet: Execute in global control
+	}
+	else
+	{
+		// player-based control: Execute on control owned by player
+		C4Player *pPlr=::Players.Get(iPlr);
+		if (pPlr)
 		{
-		if (!Inside<int>(iCom, COM_ReleaseFirst, COM_ReleaseLast))
-			pPlr->CountControl(C4Player::PCID_DirectCom, iCom*10000+iData);
-		pPlr->InCom(iCom, iData);
+			pTargetCtrl = &(pPlr->Control);
 		}
+	}
+	if (pTargetCtrl) pTargetCtrl->ExecuteControlPacket(this);
+}
+
+void C4ControlPlayerControl::ControlItem::CompileFunc(StdCompiler *pComp)
+{
+	pComp->Value(iControl);
+	pComp->Seperator();
+	pComp->Value(iTriggerMode);
 }
 
 void C4ControlPlayerControl::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCom), "Com", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iData), "Data", 0));
-  C4ControlPacket::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
+	pComp->Value(mkNamingAdapt(fRelease, "Release", false));
+	pComp->Value(mkNamingAdapt(ExtraData, "ExtraData", C4KeyEventData()));
+	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(ControlItems), "Controls", ControlItemVec()));
+	C4ControlPacket::CompileFunc(pComp);
 }
+
 
 // *** C4ControlPlayerCommand
 

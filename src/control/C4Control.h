@@ -27,6 +27,7 @@
 #include "C4PacketBase.h"
 #include "C4PlayerInfo.h"
 #include "C4Client.h"
+#include "C4KeyboardInput.h"
 
 // *** control base classes
 
@@ -166,14 +167,34 @@ public:
 class C4ControlPlayerControl : public C4ControlPacket // sync
 {
 public:
-  C4ControlPlayerControl()
-    : iPlr(-1), iCom(-1), iData(-1) { }
-	C4ControlPlayerControl(int32_t iPlr, int32_t iCom, int32_t iData)
-		: iPlr(iPlr), iCom(iCom), iData(iData) { }
+	C4ControlPlayerControl() : iPlr(-1), fRelease(false) {}
+	C4ControlPlayerControl(int32_t iPlr, bool fRelease, const C4KeyEventData &rExtraData)
+		: iPlr(iPlr), fRelease(fRelease), ExtraData(rExtraData) { }
+	C4ControlPlayerControl(int32_t iPlr, int32_t iControl, int32_t iExtraData) // old-style menu com emulation
+		: iPlr(iPlr), fRelease(false), ExtraData(iExtraData,0,0) { AddControl(iControl,0); }
+
+	struct ControlItem
+	{
+		int32_t iControl;
+		int32_t iTriggerMode;
+		ControlItem() : iControl(-1), iTriggerMode(0) {}
+		ControlItem(int32_t iControl, int32_t iTriggerMode) : iControl(iControl), iTriggerMode(iTriggerMode) {}
+		void CompileFunc(StdCompiler *pComp);
+		bool operator ==(const struct ControlItem &cmp) const { return iControl==cmp.iControl && iTriggerMode == cmp.iTriggerMode; }
+	};
+	typedef std::vector<ControlItem> ControlItemVec;
 protected:
-	int32_t iPlr, iCom, iData;
+	int32_t iPlr;
+	bool fRelease;
+	C4KeyEventData ExtraData;
+	ControlItemVec ControlItems;
 public:
 	DECLARE_C4CONTROL_VIRTUALS
+	void AddControl(int32_t iControl, int32_t iTriggerMode)
+		{ ControlItems.push_back(ControlItem(iControl, iTriggerMode)); }
+	const ControlItemVec &GetControlItems() const { return ControlItems; }
+	bool IsReleaseControl() const { return fRelease; }
+	const C4KeyEventData &GetExtraData() const { return ExtraData; }
 };
 
 class C4ControlPlayerCommand : public C4ControlPacket // sync

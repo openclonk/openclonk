@@ -186,7 +186,7 @@ bool C4ChatInputDialog::KeyHistoryUpDown(bool fUp)
 	return true;
 	}
 
-bool C4ChatInputDialog::KeyPlrControl(C4KeyCodeEx key)
+bool C4ChatInputDialog::KeyPlrControl(const C4KeyCodeEx &key)
 	{
 	// Control pressed while doing this key: Reroute this key as a player-control
 	Game.DoKeyboardInput(WORD(key.Key), KEYEV_Down, !!(key.dwShift & KEYS_Alt), false, !!(key.dwShift & KEYS_Shift), key.IsRepeated(), NULL, true);
@@ -194,7 +194,7 @@ bool C4ChatInputDialog::KeyPlrControl(C4KeyCodeEx key)
 	return true;
 	}
 
-bool C4ChatInputDialog::KeyGamepadControlDown(C4KeyCodeEx key)
+bool C4ChatInputDialog::KeyGamepadControlDown(const C4KeyCodeEx &key)
 	{
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;
@@ -203,7 +203,7 @@ bool C4ChatInputDialog::KeyGamepadControlDown(C4KeyCodeEx key)
 	return true;
 	}
 
-bool C4ChatInputDialog::KeyGamepadControlUp(C4KeyCodeEx key)
+bool C4ChatInputDialog::KeyGamepadControlUp(const C4KeyCodeEx &key)
 	{
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;
@@ -212,7 +212,7 @@ bool C4ChatInputDialog::KeyGamepadControlUp(C4KeyCodeEx key)
 	return true;
 	}
 
-bool C4ChatInputDialog::KeyGamepadControlPressed(C4KeyCodeEx key)
+bool C4ChatInputDialog::KeyGamepadControlPressed(const C4KeyCodeEx &key)
 	{
 	// filter gamepad control
 	if (!Key_IsGamepad(key.Key)) return false;

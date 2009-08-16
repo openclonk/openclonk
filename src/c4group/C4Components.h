@@ -120,6 +120,7 @@
 #define C4CFN_Teams           "Teams.txt"
 #define C4CFN_Parameters      "Parameters.txt"
 #define C4CFN_RoundResults    "RoundResults.txt"
+#define C4CFN_PlayerControls  "PlayerControls.txt"
 
 #define C4CFN_MapFolderData   "FolderMap.txt"
 #define C4CFN_MapFolderBG     "FolderMap"

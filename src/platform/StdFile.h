@@ -80,6 +80,7 @@ void TruncateBackslash(char *szFilename);
 void MakeTempFilename(char *szFileName);
 void MakeTempFilename(class StdStrBuf *sFileName);
 bool WildcardListMatch(const char *szWildcardList, const char *szString); // match string in list like *.png|*.bmp
+bool IsWildcardString(const char *szString); // does szString contain wildcard characters?
 bool WildcardMatch(const char *szFName1, const char *szFName2);
 bool TruncatePath(char *szPath);
 // szBuffer has to be of at least _MAX_PATH length.

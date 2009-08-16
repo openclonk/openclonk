@@ -26,6 +26,7 @@
 #include <C4ObjectInfoList.h>
 #include <C4InfoCore.h>
 #include <C4ObjectList.h>
+#include <C4PlayerControl.h>
 
 const int32_t C4PVM_Cursor		= 0,
 					C4PVM_Target		= 1,
@@ -72,7 +73,7 @@ class C4Player: public C4PlayerInfoCore
 		int32_t Team; // team ID - may be 0 for no teams
     int32_t Color; // OldGfx color index
 		uint32_t ColorDw; // color as DWord for newgfx
-    int32_t Control;
+	int32_t ControlSet;
 		int32_t MouseControl;
     int32_t Position;
 		int32_t PlrStartIndex;
@@ -114,13 +115,10 @@ class C4Player: public C4PlayerInfoCore
     C4IDList Knowledge;
 		C4IDList Magic;
 		// Control
+		C4PlayerControl Control;
 		C4Object *Cursor, *ViewCursor;
 		int32_t SelectCount;
 		int32_t SelectFlash,CursorFlash;
-		int32_t LastCom;
-		int32_t LastComDelay;
-		int32_t LastComDownDouble;
-		int32_t PressedComs;
 		int32_t CursorSelection,CursorToggled;
 		class C4GamePadOpener *pGamepad;
 		// Message
@@ -171,9 +169,6 @@ class C4Player: public C4PlayerInfoCore
 		void CursorToggle();
 		void SelectAllCrew();
 		void UpdateSelectionToggleStatus();
-		void DirectCom(BYTE byCom, int32_t iData);
-		void InCom(BYTE byCom, int32_t iData);
-		bool ObjectCom(BYTE byCom, int32_t iData);
 		bool ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, C4Value iData=C4VNull, int32_t iAddMode=C4P_Command_Set);
 		void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode);
 	  bool DoPoints(int32_t iChange);
@@ -192,7 +187,7 @@ class C4Player: public C4PlayerInfoCore
     bool Sell2Home(C4Object *tobj);
     bool DoWealth(int32_t change);
     bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
-		void CompileFunc(StdCompiler *pComp);
+		void CompileFunc(StdCompiler *pComp, bool fExact);
 		bool LoadRuntimeData(C4Group &hGroup);
 		bool ActivateMenuMain();
 		bool ActivateMenuTeamSelection(bool fFromMain);

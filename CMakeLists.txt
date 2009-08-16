@@ -53,6 +53,8 @@ set(OC_CLONK_SOURCES
 	src/control/C4GameParameters.h
 	src/control/C4GameSave.cpp
 	src/control/C4GameSave.h
+	src/control/C4PlayerControl.cpp
+	src/control/C4PlayerControl.h
 	src/control/C4PlayerInfoConflicts.cpp
 	src/control/C4PlayerInfo.cpp
 	src/control/C4PlayerInfo.h

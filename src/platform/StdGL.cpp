@@ -386,7 +386,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 		glActiveTexture(GL_TEXTURE0);
 		}
 	DWORD dwModMask = 0;
-	SetupTextureEnv(false, mattextures);
+	SetupTextureEnv(false, !!mattextures);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	glMatrixMode(GL_TEXTURE);

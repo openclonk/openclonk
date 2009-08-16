@@ -440,20 +440,20 @@ void C4ObjectMenu::Execute()
 
 void C4ObjectMenu::OnUserSelectItem(int32_t Player, int32_t iIndex)
 	{
-	// queue....
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,COM_MenuSelect,iIndex | C4MN_AdjustPosition));
+	// queue.... 2do
+	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,Game.PlayerControlDefs.InternalCons.CON_MenuSelect,iIndex | C4MN_AdjustPosition));
 	}
 
 void C4ObjectMenu::OnUserEnter(int32_t Player, int32_t iIndex, bool fRight)
 	{
-	// object menu: Through queue
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,fRight ? COM_MenuEnterAll : COM_MenuEnter,iIndex));
+	// object menu: Through queue 2do
+	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,fRight ? Game.PlayerControlDefs.InternalCons.CON_MenuEnterAll : Game.PlayerControlDefs.InternalCons.CON_MenuEnter,iIndex)); 
 	}
 
 void C4ObjectMenu::OnUserClose()
 	{
-	// Queue
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(::MouseControl.GetPlayer(),COM_MenuClose,0));
+	// Queue 2do
+	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(::MouseControl.GetPlayer(),Game.PlayerControlDefs.InternalCons.CON_MenuClose,0));
 	}
 
 bool C4ObjectMenu::IsReadOnly()
