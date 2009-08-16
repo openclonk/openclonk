@@ -384,7 +384,6 @@ mark_as_advanced(OC_SYSTEM_SOURCES)
 
 if(WIN32)
 	list(APPEND OC_CLONK_SOURCES
-		src/platform/C4FileClasses.cpp
 		src/res/engine.rc
 		src/res/resource.h
 	)
@@ -396,7 +395,7 @@ if(WIN32)
 		src/res/engine.rc
 		src/res/resource.h
 	)
-elseif(USE_SDL)
+elseif(USE_SDL_MAINLOOP)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/StdSDLApp.cpp
 		src/platform/StdSDLWindow.cpp
@@ -531,11 +530,11 @@ CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 # User selectable options
 option(USE_GL "Enable OpenGL support" ON)
 if(APPLE)
-	SET(INITIAL_USE_SDL_VALUE ON)
+	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)
 else()
-	SET(INITIAL_USE_SDL_VALUE OFF)
+	SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
 endif()
-option(USE_SDL "Use SDL to create windows etc." ${INITIAL_USE_SDL_VALUE})
+option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
 if(WIN32)
 	option(USE_DIRECTX "Enable DirectX support" ON)
 	if(EXISTS $ENV{DXSDK_DIR})
@@ -655,18 +654,16 @@ if (WIN32)
 		${WS2}
 	)
 endif()
-if (UNIX)
-	include(FindSDL)
-	SET(HAVE_SDL ${SDL_FOUND})
-	if(SDL_FOUND)
-		include_directories(${SDL_INCLUDE_DIR})
-		FINDLIB(SDLMIXER SDL_mixer)
-		SET(HAVE_LIBSDL_MIXER ${SDLMIXER})
-		target_link_libraries(clonk
-			${SDL_LIBRARY}
-			${SDLMIXER}
-		)
-	endif()
+include(FindSDL)
+SET(HAVE_SDL ${SDL_FOUND})
+if(SDL_FOUND)
+	include_directories(${SDL_INCLUDE_DIR})
+	FINDLIB(SDLMIXER SDL_mixer)
+	SET(HAVE_LIBSDL_MIXER ${SDLMIXER})
+	target_link_libraries(clonk
+		${SDL_LIBRARY}
+		${SDLMIXER}
+	)
 endif()
 
 target_link_libraries(clonk
@@ -706,7 +703,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY
 add_definitions(-DHAVE_CONFIG_H)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
 
-list(REMOVE_DUPLICATES OC_CXX_FLAGS)
+if(OC_CXX_FLAGS)
+	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
+endif()
 set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ compiler flags" FORCE)
 foreach(FLAG ${OC_CXX_FLAGS})
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" CACHE STRING "C++ compiler flags" FORCE)
