@@ -47,11 +47,6 @@
 #include <time.h>
 #include <errno.h>
 
-#ifdef WITH_GLIB
-# include <glib/gmain.h>
-# include <glib/giochannel.h>
-#endif
-
 #include "StdXPrivate.h"
 
 /* CStdWindow */

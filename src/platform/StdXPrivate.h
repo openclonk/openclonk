@@ -19,6 +19,10 @@
 #ifndef INC_STD_X_PRIVATE_H
 #define INC_STD_X_PRIVATE_H
 
+#ifdef WITH_GLIB
+# include <glib.h>
+#endif
+
 class CX11Proc: public StdSchedulerProc {
 
 public:
@@ -51,6 +55,7 @@ public:
 	int timeout;
 	int max_priority;
 
+private:
 	void query(int Now)
 	{
 		// If Execute() has not yet been called, then finish the current iteration first.
@@ -70,6 +75,33 @@ public:
 		fds.resize(fd_count);
 		query_time = Now;
 	}
+
+public:
+	// Iterate the Glib main loop until all pending events have been
+	// processed. Don't use g_main_context_pending() directly as the
+	// CGLibProc might have initiated a loop iteration already.
+	void IteratePendingEvents()
+	{
+		// TODO: I think we can also iterate the context manually,
+		// without g_main_context_iteration. This might be less hacky.
+
+		// Finish current iteration first
+		int old_query_time = query_time;
+		if(query_time >= 0)
+		{
+			g_main_context_check(context, max_priority, (GPollFD*) &fds[0], fds.size());
+			query_time = -1;
+		}
+
+		// Run the loop
+	        while (g_main_context_pending(context))
+		                g_main_context_iteration(context, false);
+
+		// Return to original state
+		if(old_query_time >= 0)
+			query(old_query_time);
+	}
+
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & rfds)
 	{

@@ -440,6 +440,11 @@ protected:
 	int xf86vmode_major_version, xf86vmode_minor_version;
 	int xrandr_major_version, xrandr_minor_version;
 #endif
+
+#ifdef WITH_GLIB
+	void IterateGLibMainLoop();
+#endif // WITH_GLIB
+
 #if defined(USE_SDL_MAINLOOP)
 	void HandleSDLEvent(SDL_Event& event);
 #endif

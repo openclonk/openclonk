@@ -69,8 +69,10 @@ static CStdApp * readline_callback_use_this_app = 0;
 /* CStdApp */
 
 #ifdef WITH_GLIB
-# include <glib/gmain.h>
-# include <glib/giochannel.h>
+# include <glib.h>
+#endif
+
+#ifdef WITH_DEVELOPER_MODE
 # include <gtk/gtk.h>
 #endif
 
@@ -211,13 +213,6 @@ bool CStdApp::FlushMessages() {
 
 	return Priv->X11Proc.Execute(0);
 }
-
-#ifdef WITH_GLIB
-namespace {
-	// Just indicate that the timeout elapsed
-	gboolean HandleMessageTimeout(gpointer data) { *static_cast<bool*>(data) = true; return false; }
-}
-#endif
 
 void CStdApp::HandleXMessage() {
 	XEvent event;
@@ -602,6 +597,13 @@ static void readline_callback (char * line) {
 	}
 #endif
 	free(line);
+}
+#endif
+
+#ifdef WITH_GLIB
+void CStdApp::IterateGLibMainLoop()
+{
+	Priv->GLibProc.IteratePendingEvents();
 }
 #endif
 
