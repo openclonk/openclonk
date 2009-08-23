@@ -187,15 +187,15 @@ bool C4GraphicsResource::Init(bool fInitGUI)
 		if (!pPalGrp->AccessEntry("C4.pal")) { LogFatal("Pal error!"); return false; }
 		if (!pPalGrp->Read(GamePalette,256*3)) { LogFatal("Pal error!"); return false; }
 		for (int32_t cnt=0; cnt<256*3; cnt++)	GamePalette[cnt]<<=2;
-		ZeroMemory(&AlphaPalette, 256);
+		for (int32_t cnt=0; cnt<256; cnt++)     AlphaPalette[cnt]=0xff;
 		// Set default force field color
 		GamePalette[191*3+0]=0;
 		GamePalette[191*3+1]=0;
 		GamePalette[191*3+2]=255;
+		AlphaPalette[191]=127;
 		// color 0 is transparent
 		GamePalette[0]=GamePalette[1]=GamePalette[2]=0;
-		AlphaPalette[0]=255;
-		AlphaPalette[191]=127;
+		AlphaPalette[0]=0;
 		// update game pal
 		if (!::GraphicsSystem.SetPalette()) { LogFatal("Pal error (2)!"); return false; }
 		idPalGrp = idNewPalGrp;

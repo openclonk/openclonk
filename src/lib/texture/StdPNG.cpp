@@ -59,8 +59,6 @@ bool CPNGFile::DoLoad()
 	if (setjmp(png_ptr->jmpbuf)) return false;
 	// set file-reading proc
 	png_set_read_fn(png_ptr, png_get_io_ptr(png_ptr), &CPNGReadFn);
-	// invert alpha
-	png_set_invert_alpha(png_ptr);
 	// read info
 	png_read_info(png_ptr, info_ptr);
 	// assign local vars
@@ -186,7 +184,7 @@ DWORD CPNGFile::GetPix(int iX, int iY)
 	switch (iClrType)
 		{
 		case PNG_COLOR_TYPE_RGB:
-			return RGB(pPix[0], pPix[1], pPix[2]);
+			return 0xff << 24 | RGB(pPix[0], pPix[1], pPix[2]);
 		case PNG_COLOR_TYPE_RGB_ALPHA:
             return pPix[3] << 24 | RGB(pPix[0], pPix[1], pPix[2]);
 		}
@@ -272,8 +270,6 @@ bool CPNGFile::Save(const char *szFilename)
 		// this won't go well, so better abort
 		Clear(); return false;
 		}
-	// write inverted alpha channel
-	png_set_invert_alpha(png_ptr);
 	// write png header
 	png_write_info(png_ptr, info_ptr);
 	// image data is given as bgr...

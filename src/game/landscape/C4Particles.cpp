@@ -568,7 +568,7 @@ bool fxSmokeInit(C4Particle *pPrt, C4Object *pTarget)
 	// set kind - ydir is unused anyway; set last kind reeeaaally seldom
 	pPrt->ydir=(float) SafeRandom(15)+SafeRandom(300)/299;
 	// set color
-	if (!pPrt->b) pPrt->b=0xff4b4b4b; else pPrt->b|=0xff000000;
+	if (!pPrt->b) pPrt->b=0x004b4b4b; else pPrt->b&=~0xff000000;
 	// always OK
 	return true;
 	}
@@ -584,14 +584,14 @@ bool fxSmokeExec(C4Particle *pPrt, C4Object *pTarget)
 		// decrease init-time
 		pPrt->life-=0x010000;
 		// increase color value
-		pPrt->b-=0x10000000;
+		pPrt->b+=0x10000000;
 		// if full-grown, adjust to lifetime
 		if (!(pPrt->life&0x7fff0000))
-			pPrt->b=(pPrt->b&0xffffff)|((255-pPrt->life)<<24);
+			pPrt->b=(pPrt->b&0xffffff)|((pPrt->life)<<24);
 		}
 	// color change
 	DWORD dwClr = pPrt->b;
-	pPrt->b = (LightenClrBy(dwClr, 1)&0xffffff) | Min<int32_t>((dwClr>>24)+1, 255)<<24;
+	pPrt->b = (LightenClrBy(dwClr, 1)&0xffffff) | Min<int32_t>((dwClr>>24)-1, 255)<<24;
 	// wind to float
 	if (!(pPrt->b%12) || fBuilding)
 		{
@@ -645,7 +645,7 @@ bool fxStdInit(C4Particle *pPrt, C4Object *pTarget)
 		// init lifetime as phase
 		pPrt->life=SafeRandom(pPrt->pDef->Length);
 	// default color
-	if (!pPrt->b) pPrt->b=0xffffff;
+	if (!pPrt->b) pPrt->b=0xffffffff;
 	// always OK
 	return true;
 	}
@@ -709,8 +709,8 @@ bool fxStdExec(C4Particle *pPrt, C4Object *pTarget)
 		{
 			DWORD dwClr=pPrt->b;
 			int32_t iAlpha=dwClr>>24;
-			iAlpha+=pPrt->pDef->AlphaFade;
-			if (iAlpha>=0xff) return false;
+			iAlpha-=pPrt->pDef->AlphaFade;
+			if (iAlpha<=0x00) return false;
 			pPrt->b=(dwClr&0xffffff) | (iAlpha<<24);
 		}
 		}

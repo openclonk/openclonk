@@ -87,7 +87,6 @@ bool CMarkup::Read(const char **ppText, bool fSkip)
 				}
 			// adjust alpha if not given
 			if (iParLen<=6) dwClr|=0xff000000;
-			dwClr = InvertRGBAAlpha(dwClr);
 			// create color tag
 			pNewTag=new CMarkupTagColor(dwClr);
 			}

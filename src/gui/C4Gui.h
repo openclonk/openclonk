@@ -69,31 +69,31 @@ class C4GroupSet;
 #define C4GUI_GfxTabCaptInactiveClr 0xff000000
 
 // other colors
-#define C4GUI_ImportantBGColor   0xcf00007f
-#define C4GUI_ProgressBarColor   0xafffffff
-#define C4GUI_ListBoxSelColor    0xafaf0000
-#define C4GUI_ListBoxInactSelColor  0xaf7f7f7f
-#define C4GUI_ContextSelColor    0xafaf0000
-#define C4GUI_ContextBGColor     0x4f3f1a00
-#define C4GUI_StandardBGColor    0x5f000000
+#define C4GUI_ImportantBGColor   0x2f00007f
+#define C4GUI_ProgressBarColor   0x4fffffff
+#define C4GUI_ListBoxSelColor    0x4faf0000
+#define C4GUI_ListBoxInactSelColor  0x4f7f7f7f
+#define C4GUI_ContextSelColor    0x4faf0000
+#define C4GUI_ContextBGColor     0xaf3f1a00
+#define C4GUI_StandardBGColor    0x9f000000
 #define C4GUI_ActiveTabBGColor   C4GUI_StandardBGColor
 #define C4GUI_ListBoxBarColor    0x7f772200
 #define C4GUI_EditBGColor        0x7f000000
 #define C4GUI_EditFontColor      0xffffffff
 
-#define C4GUI_ToolTipBGColor     0x00F1EA78
+#define C4GUI_ToolTipBGColor     0xFFF1EA78
 #define C4GUI_ToolTipFrameColor  0x7f000000
 #define C4GUI_ToolTipColor       0xFF483222
 
 // winner/loser color marking
 #define C4GUI_WinningTextColor        0xffffdf00
-#define C4GUI_WinningBackgroundColor  0x4faf7a00
+#define C4GUI_WinningBackgroundColor  0xafaf7a00
 #define C4GUI_LosingTextColor         0xffffffff
 #define C4GUI_LosingBackgroundColor   0x7fafafaf
 
 
 // border colors for 3D-frames
-#define C4GUI_BorderAlpha        0xaf
+#define C4GUI_BorderAlpha        0x4f
 #define C4GUI_BorderColor1       0x772200
 #define C4GUI_BorderColor2       0x331100
 #define C4GUI_BorderColor3       0xaa4400

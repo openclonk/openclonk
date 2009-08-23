@@ -205,7 +205,7 @@ void CGammaControl::Set(DWORD dwClr1, DWORD dwClr2, DWORD dwClr3)
 
 DWORD CGammaControl::ApplyTo(DWORD dwClr)
 	{
-	// apply to reg, green and blue color component
+	// apply to red, green and blue color component
 	return RGBA(ramp.red[GetBValue(dwClr)]>>8, ramp.green[GetGValue(dwClr)]>>8, ramp.blue[GetRValue(dwClr)]>>8, dwClr>>24);
 	}
 
@@ -333,14 +333,15 @@ uint32_t CClrModAddMap::GetModAt(int x, int y) const
 	int tx2 = Min(tx + 1, Wdt-1);
 	int ty2 = Min(ty + 1, Hgt-1);
 
+	// TODO: Alphafixed. Correct?
 	unsigned char Vis = pMap[ty*Wdt+tx];
-	uint32_t c1 = FadeTransparent ? 0xffffff | ((255u - Vis) << 24) : RGB(Vis, Vis, Vis);
+	uint32_t c1 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
 	Vis = pMap[ty*Wdt+tx2];
-	uint32_t c2 = FadeTransparent ? 0xffffff | ((255u - Vis) << 24) : RGB(Vis, Vis, Vis);
+	uint32_t c2 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
 	Vis = pMap[ty2*Wdt+tx];
-	uint32_t c3 = FadeTransparent ? 0xffffff | ((255u  -Vis) << 24) : RGB(Vis, Vis, Vis);
+	uint32_t c3 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
 	Vis = pMap[ty2*Wdt+tx2];
-	uint32_t c4 = FadeTransparent ? 0xffffff | ((255u - Vis) << 24) : RGB(Vis, Vis, Vis);
+	uint32_t c4 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
 	CColorFadeMatrix clrs(tx*ResolutionX, ty*ResolutionY, ResolutionX, ResolutionY, c1, c2, c3, c4);
 	return clrs.GetColorAt(x, y);
 #endif
@@ -1011,7 +1012,7 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 				pBaseTex = *(sfcSource->pMainSfc->ppTex + iY * sfcSource->iTexX + iX);
 				}
 			// base blit
-			PerformBlt(BltData, pBaseTex, BlitModulated ? BlitModulateClr : 0xffffff, !!(dwBlitMode & C4GFXBLIT_MOD2), fExact);
+			PerformBlt(BltData, pBaseTex, BlitModulated ? BlitModulateClr : 0xffffffff, !!(dwBlitMode & C4GFXBLIT_MOD2), fExact);
 			// overlay
 			if (fBaseSfc)
 				{

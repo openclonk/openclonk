@@ -222,12 +222,12 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 	for (int y=0; y<size.cy; ++y) for (int x=0; x<size.cx; ++x)
 		{
 		// get value; determine shadow value by pos moved 1px to upper left
-		BYTE bAlpha = 255 - (BYTE)(pBitmapBits[iBitmapSize*y + x] & 0xff);
+		BYTE bAlpha = (BYTE)(pBitmapBits[iBitmapSize*y + x] & 0xff);
 		BYTE bAlphaShadow;
 		if (x&&y && fDoShadow)
-			bAlphaShadow = 255 - (BYTE)((pBitmapBits[iBitmapSize*(y-1) + x-1] & 0xff)*1/1);
+			bAlphaShadow = (BYTE)((pBitmapBits[iBitmapSize*(y-1) + x-1] & 0xff)*1/1);
 		else
-			bAlphaShadow = 255;
+			bAlphaShadow = 0;
 		// calc pixel value: white char on black shadow (if shadow is desired)
 		DWORD dwPixVal = bAlphaShadow << 24;
 		BltAlpha(dwPixVal, bAlpha << 24 | 0xffffff);
@@ -282,12 +282,12 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 			{
 			unsigned char bAlpha, bAlphaShadow;
 			if (x < slot->bitmap.width && y < slot->bitmap.rows)
-				bAlpha = 255 - (unsigned char)(slot->bitmap.buffer[slot->bitmap.width * y + x]);
+				bAlpha = (unsigned char)(slot->bitmap.buffer[slot->bitmap.width * y + x]);
 			else
-				bAlpha = 255;
+				bAlpha = 0;
 			// Make a shadow from the upper-left pixel, and blur with the eight neighbors
 			DWORD dwPixVal = 0u;
-			bAlphaShadow = 255;
+			bAlphaShadow = 0;
 			if ((x || y) && fDoShadow)
 				{
 				int iShadow = 0;
@@ -300,10 +300,10 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 				if (x < slot->bitmap.width && y > 0                ) iShadow += slot->bitmap.buffer[(x - 0) + slot->bitmap.width * (y - 1)];
 				if (x > 1                  && y > 0                ) iShadow += slot->bitmap.buffer[(x - 2) + slot->bitmap.width * (y - 1)];
 				if (x > 0                  && y > 0                ) iShadow += slot->bitmap.buffer[(x - 1) + slot->bitmap.width * (y - 1)]*8;
-				bAlphaShadow -= iShadow / 16;
+				bAlphaShadow += iShadow / 16;
 				// because blitting on a black pixel reduces luminosity as compared to shadowless font,
 				// assume luminosity as if blitting shadowless font on a 50% gray background
-				unsigned char cBack = (255-bAlpha);
+				unsigned char cBack = bAlpha;
 				dwPixVal = RGB(cBack/2, cBack/2, cBack/2);
 				}
 			dwPixVal += bAlphaShadow << 24;
@@ -1027,12 +1027,12 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 	{
 	CBltTransform bt, *pbt=NULL;
 	// set blit color
-	dwColor = InvertRGBAAlpha(dwColor);
 	DWORD dwOldModClr;
 	bool fWasModulated = lpDDraw->GetBlitModulation(dwOldModClr);
 	if (fWasModulated) ModulateClr(dwColor, dwOldModClr);
 	// get alpha fade percentage
-	DWORD dwAlphaMod = BoundBy<int>((((int)(dwColor>>0x18)-0x50)*0xff)/0xaf, 0, 255)<<0x18 | 0xffffff;
+	DWORD dwAlphaMod = Min<uint32_t>(((dwColor>>0x18)*0xff)/0xaf, 255)<<0x18 | 0xffffff;
+
 /*	char TEXT[8192];
 	sprintf(TEXT, "%s(%x-%x-%x)", szText, dwAlphaMod>>0x18, dwColor>>0x15, (((int)(dwColor>>0x15)-0x50)*0xff)/0xaf); szText=TEXT;*/
 	// adjust text starting position (horizontal only)
@@ -1104,7 +1104,7 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 				continue;
 				}
 			//normal: not modulated, unless done by transform or alpha fadeout
-			if ((dwColor>>0x18) <= 0x50)
+			if ((dwColor>>0x18) >= 0xaf)
 				lpDDraw->DeactivateBlitModulation();
 			else
 				lpDDraw->ActivateBlitModulation((dwColor&0xff000000) | 0xffffff);

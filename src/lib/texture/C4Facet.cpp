@@ -150,8 +150,8 @@ void C4Facet::DrawFullScreen(C4Facet &cgo)
 	// stretched fullscreen blit: make sure right and lower side are cleared, because this may be missed due to stretching
 	if (cgo.Wdt > Wdt+2 || cgo.Hgt > Wdt+2)
 		{
-		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y+cgo.Hgt-1, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0x00000000);
-		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X+cgo.Wdt-1, cgo.Y, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0x00000000);
+		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y+cgo.Hgt-1, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
+		lpDDraw->DrawBoxDw(cgo.Surface, cgo.X+cgo.Wdt-1, cgo.Y, cgo.X+cgo.Wdt+2, cgo.Y+cgo.Hgt+2, 0xff000000);
 		}
 	// normal blit OK
 	Draw(cgo, false);

@@ -213,10 +213,10 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 	cgoDraw.Y += iKeyIndent*3/4; cgoDraw.Hgt -= 2*iKeyIndent;
 	if (fDown) cgoDraw.Y += iKeyIndent/2;
 	bool fDoHightlight = fHighlight || HasDrawFocus() || (fMouseOver && IsInActiveDlg(false));
-	bool fHadBlitMod=false; DWORD dwOldBlitModClr=0xffffff;
+	bool fHadBlitMod=false; DWORD dwOldBlitModClr=0xffffffff;
 	if (!fDoHightlight)
 		{
-		DWORD dwModClr = 0x7f7f7f;
+		DWORD dwModClr = 0xff7f7f7f;
 		if (fHadBlitMod = lpDDraw->GetBlitModulation(dwOldBlitModClr))
 			ModulateClr(dwModClr, dwOldBlitModClr);
 		lpDDraw->ActivateBlitModulation(dwModClr);
