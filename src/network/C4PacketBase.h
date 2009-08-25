@@ -214,7 +214,7 @@ const char *PacketNameByID(C4PacketType eID);
 class C4PktBuf : public C4PacketBase
 	{
 	protected:
-		StdBuf Data;
+		StdCopyBuf Data;
 	public:
 		C4PktBuf();
 		C4PktBuf(const C4PktBuf &rCopy);
