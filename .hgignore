@@ -6,6 +6,7 @@ autom4te.cache
 .deps
 *.o
 clonk
+c4group
 .dirstamp
 *.a
 *.c4p
@@ -20,6 +21,10 @@ Makefile.in
 aclocal.m4
 autotools/config.guess
 autotools/config.sub
+autotools/compile
+autotools/depcomp
+autotools/install-sh
+autotools/missing
 configure
 intermediate
 
