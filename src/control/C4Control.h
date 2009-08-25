@@ -27,6 +27,7 @@
 #include "C4PacketBase.h"
 #include "C4PlayerInfo.h"
 #include "C4Client.h"
+#include "C4ObjectList.h"
 
 // *** control base classes
 

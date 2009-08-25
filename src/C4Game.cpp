@@ -1045,7 +1045,7 @@ C4Object* C4Game::NewObject( C4PropList *pDef, C4Object *pCreator,
   if (!pDef) return NULL;
 #ifdef DEBUGREC
 	C4RCCreateObj rc;
-	rc.id=pDef->id;
+	rc.id=pDef->Number;
 	rc.oei=ObjectEnumerationIndex+1;
 	rc.x=iX; rc.y=iY; rc.ownr=iOwner;
 	AddDbgRec(RCT_CrObj, &rc, sizeof(rc));

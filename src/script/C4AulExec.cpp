@@ -28,6 +28,7 @@
 #include <C4GameMessage.h>
 #include <C4Game.h>
 #include <C4Log.h>
+#include <C4Record.h>
 #endif
 
 C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
@@ -1131,7 +1132,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 					else
 						{
 						sCallText.Append("\"");
-						sCallText.Append(s->Data);
+						sCallText.Append(s->GetData());
 						sCallText.Append("\"");
 						}
 					}
