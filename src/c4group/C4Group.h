@@ -122,7 +122,7 @@ class C4GroupEntryCore
 		C4GroupEntryCore();
   public:
     char FileName[260];
-    bool Packed,ChildGroup;
+    int32_t Packed,ChildGroup;
     int32_t Size, __Unused, Offset;
     uint32_t Time;
 		char HasCRC; unsigned int CRC;
