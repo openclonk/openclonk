@@ -2491,7 +2491,12 @@ bool C4Landscape::ApplyLighting(C4Rect To)
 	// everything clipped?
 	if (To.Wdt<=0 || To.Hgt<=0) return true;
 	if (!Surface32->Lock()) return false;
-	Surface32->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt); // TODO: Why do we clear here when we set new pixel values for all pixels in that region anyway?
+
+	// We clear the affected region here because ClearBoxDw allocates the
+	// main memory buffer for the box, so that only that box needs to be
+	// sent to the gpu, and not the whole texture, or every pixel
+	// separately. It's an important optimization.
+	Surface32->ClearBoxDw(To.x, To.y, To.Wdt, To.Hgt);
 
 	if(lpDDraw->IsShaderific() && Config.Graphics.HighResLandscape)
 		{
