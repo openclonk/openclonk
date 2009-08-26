@@ -28,7 +28,6 @@
 
 #include <C4Include.h>
 #include <C4Object.h>
-#include <C4Version.h>
 
 #ifndef BIG_C4INCLUDE
 #include <C4ObjectInfo.h>
@@ -46,7 +45,6 @@
 #include <C4Player.h>
 #include <C4ObjectMenu.h>
 #include <C4RankSystem.h>
-#include <C4GameVersion.h>
 #include <C4GameMessage.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
@@ -3188,26 +3186,21 @@ bool C4Object::ContainedControl(BYTE byCom)
 				return false; // or true? Currently it doesn't matter.
 	// get script function if defined
 	C4AulFunc* sf = Contained->Def->Script.GetSFunc(FormatString(PSF_ContainedControl,ComName(byCom)).getData());
-	// in old versions, do hardcoded actions first (until gwe3)
-	// new objects may overload them
+	// objects may overload hardcoded actions 
 	C4Def *pCDef = Contained->Def;
-	bool fCallSfEarly = CompareVersion(pCDef->rC4XVer[0],pCDef->rC4XVer[1],pCDef->rC4XVer[2],pCDef->rC4XVer[3],4,9,1,3) >= 0;
 	bool result = false;
 	C4Player * pPlr = ::Players.Get(Controller);
-	if(fCallSfEarly)
+	if (sf && !!sf->Exec(Contained, &C4AulParSet(C4VObj(this)))) result = true;
+	// AutoStopControl: Also notify container about controlupdate
+	// Note Contained may be nulled now due to ContainedControl call
+	if(Contained && !(byCom & (COM_Single | COM_Double)) && pPlr->PrefControlStyle)
 		{
-		if (sf && !!sf->Exec(Contained, &C4AulParSet(C4VObj(this)))) result = true;
-		// AutoStopControl: Also notify container about controlupdate
-		// Note Contained may be nulled now due to ContainedControl call
-		if(Contained && !(byCom & (COM_Single | COM_Double)) && pPlr->PrefControlStyle)
-			{
-			int32_t PressedComs = pPlr->PressedComs;
-			C4AulParSet set(C4VObj(this),
-				C4VInt(Coms2ComDir(PressedComs)),
-				C4VBool(!!(PressedComs & (1 << COM_Dig))),
-				C4VBool(!!(PressedComs & (1 << COM_Throw))));
-			Contained->Call(PSF_ContainedControlUpdate, &set);
-			}
+		int32_t PressedComs = pPlr->PressedComs;
+		C4AulParSet set(C4VObj(this),
+			C4VInt(Coms2ComDir(PressedComs)),
+			C4VBool(!!(PressedComs & (1 << COM_Dig))),
+			C4VBool(!!(PressedComs & (1 << COM_Throw))));
+		Contained->Call(PSF_ContainedControlUpdate, &set);
 		}
 	if(result) return true;
 
@@ -3225,40 +3218,22 @@ bool C4Object::ContainedControl(BYTE byCom)
 				if (!Hostile(Owner,Contained->Base))
 					if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Buy)
 						ActivateMenu(C4MN_Buy);
-	    break;
+			break;
 		case COM_Dig:
 			if (ValidPlr(Contained->Base))
 				if (!Hostile(Owner,Contained->Base))
 					if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell)
 						ActivateMenu(C4MN_Sell);
 			break;
-		}
-  // Call container script if defined for old versions
-	if (!fCallSfEarly)
-		{
-		if(sf) sf->Exec(Contained, &C4AulParSet(C4VObj(this)));
-		if(Contained && !(byCom & (COM_Single | COM_Double)) && pPlr->PrefControlStyle)
-			{
-			int32_t PressedComs = pPlr->PressedComs;
-			C4AulParSet set(C4VObj(this),
-				C4VInt(Coms2ComDir(PressedComs)),
-				C4VBool(!!(PressedComs & (1 << COM_Dig))),
-				C4VBool(!!(PressedComs & (1 << COM_Throw))));
-			Contained->Call(PSF_ContainedControlUpdate, &set);
-			}
-		}
-	// Take/Take2
-	if(!sf || fCallSfEarly) switch (byCom)
-		{
 		case COM_Left:
 			PlayerObjectCommand(Owner,C4CMD_Take);
 			break;
 		case COM_Right:
 			PlayerObjectCommand(Owner,C4CMD_Take2);
 			break;
-    }
+		}
 	// Success
-  return true;
+	return true;
 	}
 
 bool C4Object::CallControl(C4Player *pPlr, BYTE byCom, C4AulParSet *pPars)
@@ -3448,20 +3423,10 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case DFA_PUSH:
 			{
-			bool fGrabControlOverload = false;
-			if(Action.Target)
-				{
-				// New grab-control model: objects version 4.95 or higher (CE)
-				// may overload control of grabbing clonks
-				C4Def *pTDef = Action.Target->Def;
-				if(CompareVersion(pTDef->rC4XVer[0],pTDef->rC4XVer[1],pTDef->rC4XVer[2],pTDef->rC4XVer[3],4,9,5,0) >= 0)
-					fGrabControlOverload = true;
-				}
 			// Call object control first in case it overloads
-			if (fGrabControlOverload)
-				if (Action.Target)
-					if (Action.Target->CallControl(pController, byCom, &C4AulParSet(C4VObj(this))))
-						return;
+			if (Action.Target)
+				if (Action.Target->CallControl(pController, byCom, &C4AulParSet(C4VObj(this))))
+					return;
 			// Clonk direct control
 			switch (byCom)
 				{
@@ -3479,10 +3444,6 @@ void C4Object::DirectCom(BYTE byCom, int32_t iData) // By player ObjectCom
 				case COM_Down_D: ObjectComUnGrab(this); break;
 				case COM_Throw: PlayerObjectCommand(Owner,C4CMD_Throw); break;
 				}
-			// Action target call control late for old objects
-			if (!fGrabControlOverload)
-				if (Action.Target)
-					Action.Target->CallControl(pController, byCom, &C4AulParSet(C4VObj(this)));
 			break;
 			}
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -3600,56 +3561,28 @@ void C4Object::AutoStopDirectCom(BYTE byCom, int32_t iData) // By DirecCom
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case DFA_PUSH:
 			{
-			bool fGrabControlOverload = false;
+			// Call object control first in case it overloads
 			if(Action.Target)
-				{
-				// New grab-control model: objects version 4.95 or higher (CE)
-				// may overload control of grabbing clonks
-				C4Def *pTDef = Action.Target->Def;
-				if(CompareVersion(pTDef->rC4XVer[0],pTDef->rC4XVer[1],pTDef->rC4XVer[2],pTDef->rC4XVer[3],4,9,5,0) >= 0)
-					fGrabControlOverload = true;
-				// Call object control first in case it overloads
-				if (fGrabControlOverload)
-					{
-					if (Action.Target->CallControl(pPlayer, byCom, &C4AulParSet(C4VObj(this))))
-						{
-						return;
-						}
-					}
-				}
+				if (Action.Target->CallControl(pPlayer, byCom, &C4AulParSet(C4VObj(this))))
+					return;
 			// Clonk direct control
 			switch (byCom)
 				{
+				case COM_Down: case COM_Down_D: ObjectComUnGrab(this); break;
+				case COM_Throw:  PlayerObjectCommand(Owner,C4CMD_Drop); break;
 				case COM_Up:
 					// Target -> enter
 					if (ObjectComEnter(Action.Target))
-						ObjectComMovement(this,COMD_Stop);
-					// Else, comdir up for target straightening
-					else
-						AutoStopUpdateComDir();
-					break;
-				case COM_Down:
-					// FIXME: replace constants
-					// ComOrder(3) is COM_Down, ComOrder(11) is COM_Down_S and ComOrder(19) is COM_Down_D
-					if(Action.Target
-						&& !DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 3)
-						&& !DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 11)
-						&& !DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 19))
 						{
-						ObjectComUnGrab(this);
+						ObjectComMovement(this,COMD_Stop);
+						break;
 						}
-					break;
-				case COM_Down_D:  ObjectComUnGrab(this); break;
-				case COM_Throw:   PlayerObjectCommand(Owner,C4CMD_Drop); break;
+					// Else, comdir up for target straightening
 				default:
 					AutoStopUpdateComDir();
 				}
-			// Action target call control late for old objects
-			if (!fGrabControlOverload && Action.Target)
-				Action.Target->CallControl(pPlayer, byCom, &C4AulParSet(C4VObj(this)));
 			break;
 			}
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 	}
 
