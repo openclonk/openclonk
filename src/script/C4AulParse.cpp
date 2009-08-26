@@ -1650,6 +1650,7 @@ void C4AulParseState::Parse_Block()
 			}
 		}
 	}
+
 void C4AulParseState::Parse_Statement()
 	{
 	switch (TokenType)
@@ -1700,42 +1701,14 @@ void C4AulParseState::Parse_Statement()
 				Shift();
 				Parse_Static();
 				}
-			// check for parameter
-			else if(Fn->ParNamed.GetItemNr(Idtf) != -1)
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			// check for variable (var)
-			else if(Fn->VarNamed.GetItemNr(Idtf) != -1)
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			// check for objectlocal variable (local)
-			else if(a->LocalNamed.GetItemNr(Idtf) != -1)
-				{
-				// global func?
-				if(Fn->Owner == &::ScriptEngine)
-					throw new C4AulParseError(this, "using local variable in global function!");
-				// insert variable by id
-				Parse_Expression();
-				AddBCC(AB_STACK, -1);
-				}
-			// check for global variable (static)
-			else if(a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-				{
-				Parse_Expression();
-				AddBCC(AB_STACK, -1);
-				}
 			// check new-form func begin
-			else if(SEqual(Idtf, C4AUL_Func))
+			else if(SEqual(Idtf, C4AUL_Func) ||
+				SEqual(Idtf, C4AUL_Private) ||
+				SEqual(Idtf, C4AUL_Protected) ||
+				SEqual(Idtf, C4AUL_Public) ||
+				SEqual(Idtf, C4AUL_Global))
 				{
-				// break parsing: start of next func
-				Done = true;
-				break;
+				throw new C4AulParseError(this, "unexpected end of function");
 				}
 			// get function by identifier: first check special functions
 			else if (SEqual(Idtf, C4AUL_If)) // if
@@ -1800,12 +1773,6 @@ void C4AulParseState::Parse_Statement()
 					SetNoRef();
 				AddBCC(AB_RETURN);
 				}
-			else if (SEqual(Idtf, C4AUL_this)) // this on top level
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
 			else if (SEqual(Idtf, C4AUL_Break)) // break
 				{
 				Shift();
@@ -1846,87 +1813,9 @@ void C4AulParseState::Parse_Statement()
 						}
 					}
 				}
-			else if (SEqual(Idtf, C4AUL_Var)) // Var
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			else if (SEqual(Idtf, C4AUL_Par)) // Par
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			else if (SEqual(Idtf, C4AUL_Inherited) || SEqual(Idtf, C4AUL_SafeInherited))
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			// now this may be the end of the function: first of all check for access directives
-			else if (SEqual(Idtf, C4AUL_Private) ||
-						 SEqual(Idtf, C4AUL_Protected) ||
-						 SEqual(Idtf, C4AUL_Public) ||
-						 SEqual(Idtf, C4AUL_Global))
-				{
-				Shift();
-				// check if it's followed by a function declaration
-				// 'func' idtf?
-				if(TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_Func))
-					{
-					// ok, break here
-					Done = true;
-					}
-				else
-					{
-					// expect function name and colon
-					Match(ATT_IDTF);
-					Match(ATT_COLON);
-					// break here
-					Done = true;
-					}
-				break;
-				}
 			else
 				{
-				// none of these? then it's a function
-				// if it's a label, it will be missinterpreted here, which will be corrected later
-				C4AulFunc *FoundFn;
-				// get regular function
-				if(Fn->Owner == &::ScriptEngine)
-					FoundFn = a->Owner->GetFuncRecursive(Idtf);
-				else
-					FoundFn = a->GetFuncRecursive(Idtf);
-				// ignore func-not-found errors in the preparser, because the function tables are not built yet
-				if (!FoundFn && Type == PARSER)
-					{
-					// the function could not be found
-					// this *could* be because it's a label to the next function, which, however, is not visible in the current
-					// context (e.g., global functions) [Soeren]
-					// parsing would have to be aborted anyway, so have a short look at the next token
-					if (GetNextToken(Idtf, &cInt, Discard, true) == ATT_COLON)
-						{
-						// OK, next function found. abort
-						Done = true;
-						break;
-						}
-					// -> func not found
-					throw new C4AulParseError(this, "unknown identifier: ", Idtf);
-					}
-				Shift();
-				// check if it's a label - labels like OCF_Living are OK (ugh...)
-				if (TokenType == ATT_COLON)
-					{
-					// break here
-					Done = true;
-					return;
-					}
-				// The preparser assumes the syntax is correct
-				if (TokenType == ATT_BOPEN || Type == PARSER)
-					Parse_Params(FoundFn ? FoundFn->GetParCount() : 10, FoundFn ? FoundFn->Name : Idtf, FoundFn);
-				AddBCC(AB_FUNC, (long) FoundFn);
-				Parse_Expression2();
+				Parse_Expression();
 				SetNoRef();
 				AddBCC(AB_STACK, -1);
 				}
@@ -2405,6 +2294,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 				}
 			else
 				{
+				// none of these? then it's a function
 				C4AulFunc *FoundFn;
 				// get regular function
 				if(Fn->Owner == &::ScriptEngine)
