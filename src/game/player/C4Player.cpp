@@ -1447,8 +1447,8 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	bool bForceFogOfWar = false;
 	pComp->Value(mkNamingAdapt(bForceFogOfWar,  		"ForceFogOfWar",        false));
 	pComp->Value(mkNamingAdapt(ShowStartup,     		"ShowStartup",          false));
-	pComp->Value(mkNamingAdapt(ShowControl,     		"ShowControl",          false));
-	pComp->Value(mkNamingAdapt(ShowControlPos,  		"ShowControlPos",       false));
+	pComp->Value(mkNamingAdapt(ShowControl,     		"ShowControl",          0));
+	pComp->Value(mkNamingAdapt(ShowControlPos,  		"ShowControlPos",       0));
 	pComp->Value(mkNamingAdapt(Wealth,          		"Wealth",               0));
 	pComp->Value(mkNamingAdapt(Points,          		"Points",               0));
 	pComp->Value(mkNamingAdapt(Value,           		"Value",                0));

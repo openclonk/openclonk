@@ -234,7 +234,10 @@ bool C4LSectors::CheckSort()
 
 void C4LSectors::ClearObjects()
 	{
-	for (int cnt=0; cnt<Size; cnt++) Sectors[cnt].ClearObjects();
+	if (Sectors)
+		{
+		for (int cnt=0; cnt<Size; cnt++) Sectors[cnt].ClearObjects();
+		}
 	SectorOut.ClearObjects();
 	}
 
