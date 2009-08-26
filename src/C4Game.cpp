@@ -1096,7 +1096,7 @@ C4Object* C4Game::CreateObject(C4ID id, C4Object *pCreator, int32_t iOwner,
 
 C4Object* C4Game::CreateObject(C4PropList * PropList, C4Object *pCreator, int32_t iOwner,
                                int32_t x, int32_t y, int32_t r,
-                               FIXED xdir, FIXED ydir, FIXED rdir, int32_t iController)                  
+                               FIXED xdir, FIXED ydir, FIXED rdir, int32_t iController)
   {
   C4Def *pDef;
   // Get pDef
@@ -1109,7 +1109,7 @@ C4Object* C4Game::CreateObject(C4PropList * PropList, C4Object *pCreator, int32_
                    FullCon, iController);
   }
 
-C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner, 
+C4Object* C4Game::CreateInfoObject(C4ObjectInfo *cinf, int32_t iOwner,
                                    int32_t tx, int32_t ty)
   {
   C4Def *def;
@@ -2334,9 +2334,16 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 	SetInitProgress(93);
 
 	// Load round results
-	if (!fLoadSection) if (hGroup.FindEntry(C4CFN_RoundResults))
-		if (!RoundResults.Load(hGroup, C4CFN_RoundResults))
-			{ LogFatal(LoadResStr("IDS_ERR_ERRORLOADINGROUNDRESULTS")); return false; }
+	if (!fLoadSection)
+		if (hGroup.FindEntry(C4CFN_RoundResults))
+		{
+			if (!RoundResults.Load(hGroup, C4CFN_RoundResults))
+				{ LogFatal(LoadResStr("IDS_ERR_ERRORLOADINGROUNDRESULTS")); return FALSE; }
+		}
+		else
+		{
+			RoundResults.Init();
+		}
 
 	// Environment
 	if (!C4S.Head.NoInitialize && fLandscapeLoaded)

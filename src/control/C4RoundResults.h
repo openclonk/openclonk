@@ -142,6 +142,7 @@ class C4RoundResults
 		C4IDList FulfilledGoals; // only those goals that are fulfilled
 		uint32_t iPlayingTime; // game time in seconds
 		int32_t iLeaguePerformance; // settlement league performance points
+		bool fHideSettlementScore; // to hide the score in the evaluation dialogue (for melees)
 
 		// league/network result
 		StdCopyStrBuf sNetResult;
@@ -155,6 +156,7 @@ class C4RoundResults
 		~C4RoundResults() { Clear(); }
 
 		void Clear();
+		void Init();
 
 		void CompileFunc(StdCompiler *pComp);
 
@@ -179,6 +181,10 @@ class C4RoundResults
 		// Set custom string to be shown in game over dialog
 		// idPlayer==0 for global strings
 		void AddCustomEvaluationString(const char *szCustomString, int32_t idPlayer);
+
+		// to hide the settlement score in melees
+		void HideSettlementScore(bool fHide=true);
+		bool SettlementScoreIsHidden();
 
 		// Set league performance
 		// Used for settlement league scenarios that use a measure different from the elapsed game time

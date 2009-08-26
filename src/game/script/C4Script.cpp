@@ -368,7 +368,7 @@ static C4Void FnDeathAnnounce(C4AulObjectContext *cthr)
 	}
 	if (!Game.C4S.Head.Film)
 		GameMsgObject(pscOSTR,cthr->Obj);
-	
+
 	return C4VNull;
 }
 
@@ -1953,7 +1953,7 @@ static bool FnMakeCrewMember(C4AulObjectContext *cthr, long iPlayer)
 {
 	if (!ValidPlr(iPlayer)) return false;
 	return !!::Players.Get(iPlayer)->MakeCrewMember(cthr->Obj);
-} 
+}
 
 static C4Value FnObjectCount(C4AulContext *cthr, C4Value *pPars)
 	{
@@ -5302,6 +5302,12 @@ static bool FnAddEvaluationData(C4AulContext *cthr, C4String *pText, long idPlay
 	return true;
 	}
 
+static bool FnHideSettlementScoreInEvaluation(C4AulContext *cthr, bool fHide)
+{
+	Game.RoundResults.HideSettlementScore(fHide);
+	return true;
+}
+
 static long FnGetUnusedOverlayID(C4AulObjectContext *ctx, long iBaseIndex)
 	{
 	// safety
@@ -5912,6 +5918,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DoScoreboardShow", FnDoScoreboardShow, false);
 	AddFunc(pEngine, "SortScoreboard", FnSortScoreboard, false);
 	AddFunc(pEngine, "AddEvaluationData", FnAddEvaluationData, false);
+	AddFunc(pEngine, "HideSettlementScoreInEvaluation", FnHideSettlementScoreInEvaluation, false);
 	AddFunc(pEngine, "GetUnusedOverlayID", FnGetUnusedOverlayID, false);
 	AddFunc(pEngine, "FatalError", FnFatalError, false);
 	AddFunc(pEngine, "ExtractMaterialAmount", FnExtractMaterialAmount);

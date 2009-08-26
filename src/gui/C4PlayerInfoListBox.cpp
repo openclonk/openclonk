@@ -362,8 +362,17 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateScoreLabel(C4PlayerInfo *pInfo)
 		int32_t iScoreRightPos = ((pRankIcon && pList->IsEvaluation()) ? pRankIcon->GetBounds().x : GetBounds().Wdt) - IconLabelSpacing;
 		int32_t iScoreYPos = IconLabelSpacing;
 		// if evaluation and team lists, move score label into second line - TODO: some hack only, still needs to be done right
+		C4RoundResultsPlayer *pEvaluationPlayer = Game.RoundResults.GetPlayers().GetByID(pInfo->GetID());;
+		bool fPlayerHasEvaluationData=false;
+		if (pEvaluationPlayer)
+			{
+				const char *szCustomEval = pEvaluationPlayer->GetCustomEvaluationStrings();
+				if (szCustomEval && *szCustomEval)
+					fPlayerHasEvaluationData=true;
+			}
 		if (pList->IsEvaluation() && pList->IsTeamFilter())
-			iScoreYPos = GetBounds().Hgt - C4GUI::ComboBox::GetDefaultHeight() - IconLabelSpacing;
+			iScoreYPos = GetBounds().Hgt - (C4GUI::ComboBox::GetDefaultHeight()*(1+(int32_t)fPlayerHasEvaluationData)) - IconLabelSpacing;
+
 		// score label visible
 		if (!pScoreLabel)
 			{
@@ -401,12 +410,12 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateScoreLabel(C4PlayerInfo *pInfo)
 					sText.Format("{{Ico:League}}<c afafaf>(%d)</c> %s", (int)pInfo->getLeagueScore(), LoadResStr("IDS_TEXT_SCORE"));
 					}
 				}
-			else if (pRoundResultsPlr && pRoundResultsPlr->IsScoreNewValid())
+			else if (pRoundResultsPlr && pRoundResultsPlr->IsScoreNewValid() && !Game.RoundResults.SettlementScoreIsHidden())
 				{
 				// new score known
 				sText.Format("{{Ico:Settlement}}<c afafaf>%d (%+d)</c> %d %s", (int)pRoundResultsPlr->GetScoreOld(), (int)(pRoundResultsPlr->GetScoreNew()-pRoundResultsPlr->GetScoreOld()), (int)pRoundResultsPlr->GetScoreNew(), LoadResStr("IDS_TEXT_SCORE"));
 				}
-			else if (pRoundResultsPlr && pRoundResultsPlr->IsScoreNewValid())
+			else if (pRoundResultsPlr && !pRoundResultsPlr->IsScoreNewValid() && !Game.RoundResults.SettlementScoreIsHidden())
 				{
 				// only old score known (e.g., player disconnected)
 				sText.Format("{{Ico:Settlement}}<c afafaf>(%d)</c> %s", (int)pRoundResultsPlr->GetScoreOld(), LoadResStr("IDS_TEXT_SCORE"));

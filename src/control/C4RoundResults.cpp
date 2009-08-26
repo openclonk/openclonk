@@ -246,6 +246,14 @@ void C4RoundResults::Clear()
 	iLeaguePerformance = 0;
 	sNetResult.Clear();
 	eNetResult = NR_None;
+	fHideSettlementScore=false;
+	}
+
+void C4RoundResults::Init()
+	{
+	if(Game.C4S.Game.IsMelee())
+		fHideSettlementScore=true;
+	else fHideSettlementScore=false;
 	}
 
 void C4RoundResults::CompileFunc(StdCompiler *pComp)
@@ -254,6 +262,7 @@ void C4RoundResults::CompileFunc(StdCompiler *pComp)
   if(fCompiler) Clear();
   pComp->Value(mkNamingAdapt(Goals, "Goals", C4IDList()));
 	pComp->Value(mkNamingAdapt(iPlayingTime, "PlayingTime", 0u));
+	pComp->Value(mkNamingAdapt(fHideSettlementScore, "HideSettlementScore", Game.C4S.Game.IsMelee()));
 	pComp->Value(mkNamingAdapt(sCustomEvaluationStrings, "CustomEvaluationStrings", StdCopyStrBuf()));
 	pComp->Value(mkNamingAdapt(iLeaguePerformance, "LeaguePerformance", 0));
 	pComp->Value(mkNamingAdapt(Players, "PlayerInfos", C4RoundResultsPlayers()));
@@ -350,6 +359,16 @@ void C4RoundResults::AddCustomEvaluationString(const char *szCustomString, int32
 		pOwnPlr->AddCustomEvaluationString(szCustomString);
 		}
 	}
+
+void C4RoundResults::HideSettlementScore(bool fHide)
+{
+	fHideSettlementScore=fHide;
+}
+
+bool C4RoundResults::SettlementScoreIsHidden()
+{
+	return fHideSettlementScore;
+}
 
 void C4RoundResults::SetLeaguePerformance(int32_t iNewPerf)
 	{
