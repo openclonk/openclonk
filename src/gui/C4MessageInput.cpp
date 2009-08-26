@@ -691,14 +691,28 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	C4MessageBoardCommand *pCmd;
 	if (Game.IsRunning) if(pCmd = GetCommand(szCmdName))
 	{
-		StdStrBuf Script;
+		StdStrBuf Script, CmdScript;
+		// replace %player% by calling player number
+		if (SSearch(pCmd->Script, "%player%"))
+		{
+			int32_t iLocalPlr = NO_OWNER;
+			C4Player *pLocalPlr = ::Players.GetLocalByIndex(0);
+			if (pLocalPlr) iLocalPlr = pLocalPlr->Number;
+			StdStrBuf sLocalPlr; sLocalPlr.Format("%d", iLocalPlr);
+			CmdScript.Copy(pCmd->Script);
+			CmdScript.Replace("%player%", sLocalPlr.getData());
+		}
+		else
+		{
+			CmdScript.Ref(pCmd->Script);
+		}
 		// insert parameters
-		if (SSearch(pCmd->Script, "%d"))
+		if (SSearch(CmdScript.getData(), "%d"))
 			{
 			// make sure it's a number by converting
-			Script.Format(pCmd->Script, (int) atoi(pCmdPar));
+			Script.Format(CmdScript.getData(), (int) atoi(pCmdPar));
 			}
-		else if (SSearch(pCmd->Script, "%s"))
+		else if (SSearch(CmdScript.getData(), "%s"))
 			{
 			// Unrestricted parameters?
 			// That's kind of a security risk as it will allow anyone to execute code
@@ -711,13 +725,13 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 					Par.Copy(pCmdPar);
 					Par.EscapeString();
 					// compose script
-					Script.Format(pCmd->Script, Par.getData());
+					Script.Format(CmdScript.getData(), Par.getData());
 					}
 					break;
 
 				case C4MessageBoardCommand::C4MSGCMDR_Plain:
 					// unescaped
-					Script.Format(pCmd->Script, pCmdPar);
+					Script.Format(CmdScript.getData(), pCmdPar);
 					break;
 
 				case C4MessageBoardCommand::C4MSGCMDR_Identifier:
@@ -727,13 +741,13 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 					while(IsIdentifier(*pCmdPar) || isspace((unsigned char)*pCmdPar))
 						Par.AppendChar(*pCmdPar++);
 					// compose script
-					Script.Format(pCmd->Script, Par.getData());
+					Script.Format(CmdScript.getData(), Par.getData());
 					}
 					break;
 				}
 			}
 		else
-			Script = pCmd->Script;
+			Script = CmdScript.getData();
 		// add script
 		::Control.DoInput(CID_Script, new C4ControlScript(Script.getData()), CDT_Decide);
 		// ok
