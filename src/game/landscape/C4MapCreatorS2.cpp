@@ -27,6 +27,7 @@
 #include <C4Aul.h>
 #include <C4Material.h>
 #include <C4Texture.h>
+#include <C4Record.h>
 
 /* --- C4MCCallbackArray --- */
 

@@ -28,6 +28,7 @@
 #include <C4Physics.h>
 #include <C4Material.h>
 #include <C4Landscape.h>
+#include <C4Record.h>
 #endif
 
 bool C4Shape::AddVertex(int32_t iX, int32_t iY)

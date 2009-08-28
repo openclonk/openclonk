@@ -210,7 +210,7 @@ void C4Object::VerticalBounds(int32_t &ctcoy)
 void C4Object::DoMovement()
 	{
 	int32_t ctcox,ctcoy,ctcor/*,ctx,cty*/,iContact=0;
-	bool fAnyContact=false, iContacts = 0;
+	bool fAnyContact=false; int iContacts = 0;
 	BYTE fTurned=0,fRedirectYR=0,fNoAttach=0;
 	// Restrictions
 	if (Def->NoHorizontalMove) xdir=0;

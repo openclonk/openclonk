@@ -85,11 +85,13 @@ AC_ARG_ENABLE([sound],
   [AC_HELP_STRING([--enable-sound],[compile with sound support [default=yes]])],
   , [if test $enable_console = yes; then enable_sound=no; else if test $win32 = true; then enable_sound=no; else enable_sound=yes; fi; fi])
 
+# GTK+
+GTK_REQUIRED="glib-2.0 >= 2.4 gtk+-2.0 >= 2.4"
 AC_ARG_WITH([gtk],
-  [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=no]])],
-  , [with_gtk=no])
+  [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=auto]])],
+  , [PKG_CHECK_EXISTS([$GTK_REQUIRED], [with_gtk=yes], [with_gtk=no])])
 AS_IF([test $with_gtk = yes],[
-  PKG_CHECK_MODULES(GTK, glib-2.0 >= 2.4 gtk+-2.0 >= 2.4)
+  PKG_CHECK_MODULES(GTK, [$GTK_REQUIRED])
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
   DEVELOPER_MODE=true

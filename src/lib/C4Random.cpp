@@ -19,7 +19,9 @@
 /* Buffered fast and network-safe random */
 
 #include <Standard.h>
+#include "C4Prototypes.h"
 #include <C4Random.h>
+#include <C4Record.h>
 
 int RandomCount = 0;
 unsigned int RandomHold = 0;
@@ -45,3 +47,24 @@ int Rnd3()
 #endif
   return FRndBuf3[FRndPtr3];
   }
+
+#ifdef DEBUGREC
+int Random(int iRange)
+  {
+	// next pseudorandom value
+	RandomCount++;
+	C4RCRandom rc;
+	rc.Cnt=RandomCount;
+	rc.Range=iRange;
+	if (iRange==0)
+		rc.Val=0;
+	else
+		{
+		RandomHold = RandomHold * 214013L + 2531011L;
+		rc.Val=(RandomHold >> 16) % iRange;
+		}
+	AddDbgRec(RCT_Random, &rc, sizeof(rc));
+	return rc.Val;
+  }
+#endif
+

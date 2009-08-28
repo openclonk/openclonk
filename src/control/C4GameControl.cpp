@@ -415,10 +415,13 @@ void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4Con
 void C4GameControl::DbgRec(C4RecordChunkType eType, const uint8_t *pData, size_t iSize)
 {
 #ifdef DEBUGREC
-  if (DoNoDebugRec>0) return;
-  // record data
-  if(pRecord)
-    pRecord->Rec(Game.FrameCounter, C4PktDebugRec(eType, StdBuf(pData, iSize)), eType);
+	if (DoNoDebugRec>0) return;
+	// record data
+	if(pRecord)
+	{
+		//C4PktDebugRec dr(eType, );
+		pRecord->Rec(Game.FrameCounter, StdBuf(pData, iSize), eType);
+	}
 	// check against playback
 	if (pPlayback)
 		pPlayback->Check(eType, pData, iSize);

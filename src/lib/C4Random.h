@@ -24,9 +24,6 @@
 #ifndef INC_C4Random
 #define INC_C4Random
 
-#ifdef DEBUGREC
-#include <C4Record.h>
-#endif
 #include <ctime>
 
 extern int RandomCount;
@@ -40,29 +37,16 @@ inline void FixedRandom(DWORD dwSeed)
 	RandomCount=0;
   }
 
-inline int Random(int iRange)
-  {
-	// next pseudorandom value
-	RandomCount++;
 #ifdef DEBUGREC
-	C4RCRandom rc;
-	rc.Cnt=RandomCount;
-	rc.Range=iRange;
-	if (iRange==0)
-		rc.Val=0;
-	else
-		{
-		RandomHold = RandomHold * 214013L + 2531011L;
-		rc.Val=(RandomHold >> 16) % iRange;
-		}
-	AddDbgRec(RCT_Random, &rc, sizeof(rc));
-	return rc.Val;
+int Random(int iRange);
 #else
-  if (iRange==0) return 0;
+inline int Random(int iRange)
+	{
+	if (iRange==0) return 0;
 	RandomHold = RandomHold * 214013L + 2531011L;
 	return (RandomHold >> 16) % iRange;
+	}
 #endif
-  }
 
 inline unsigned int SeededRandom(unsigned int iSeed, unsigned int iRange)
 	{
