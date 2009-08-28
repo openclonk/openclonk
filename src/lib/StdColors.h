@@ -36,23 +36,23 @@ extern const BYTE FColors [];
 inline void BltAlpha(DWORD &dwDst, DWORD dwSrc)
 	{
 	// blit one color value w/alpha on another
-	if (dwDst>>24 == 0xff) { dwDst=dwSrc; return; }
-	BYTE byAlphaDst=BYTE(dwSrc>>24); BYTE byAlphaSrc=255-byAlphaDst;
+	if (dwDst>>24 == 0x00) { dwDst=dwSrc; return; }
+	BYTE byAlphaSrc=BYTE(dwSrc>>24); BYTE byAlphaDst=255-byAlphaSrc;
 	dwDst = Min<uint32_t>((int(dwDst    & 0xff ) * byAlphaDst + int(dwSrc & 0xff    ) * byAlphaSrc) >>8,            0xff)      | // blue
 	        Min<uint32_t>((int(dwDst   & 0xff00) * byAlphaDst + int(dwSrc & 0xff00  ) * byAlphaSrc) >>8 & 0xff00,   0xff00)    | // green
 					Min<uint32_t>((int(dwDst & 0xff0000) * byAlphaDst + int(dwSrc & 0xff0000) * byAlphaSrc) >>8 & 0xff0000, 0xff0000)  | // red
-				  uint32_t(Max((int) (dwDst >> 24) - byAlphaSrc, 0)) << 24; // alpha
+				  Min<uint32_t>( (dwDst >> 24) + byAlphaSrc, 255) << 24; // alpha
 	}
 
 inline void BltAlphaAdd(DWORD &dwDst, DWORD dwSrc)
 	{
 	// blit one color value w/alpha on another in additive mode
-	if (dwDst>>24 == 0xff) { dwDst=dwSrc; return; }
-	BYTE byAlphaSrc=255-BYTE(dwSrc>>24);
+	if (dwDst>>24 == 0x00) { dwDst=dwSrc; return; }
+	BYTE byAlphaSrc=BYTE(dwSrc>>24);
 	dwDst = Min<uint32_t>((dwDst    & 0xff ) + ((int(dwSrc    & 0xff  ) * byAlphaSrc) >>8)       , 0xff)      | // blue
 	        Min<uint32_t>((dwDst   & 0xff00) + (int(dwSrc>>8 & 0xff  ) * byAlphaSrc) & 0x00ffff00, 0xff00)    | // green
 					Min<uint32_t>((dwDst & 0xff0000) + (int(dwSrc>>8 & 0xff00) * byAlphaSrc) & 0xffff0000, 0xff0000)  | // red
-				  uint32_t(Max((int) (dwDst >> 24) - byAlphaSrc, 0)) << 24; // alpha
+				  Min<uint32_t>( (dwDst >> 24) + byAlphaSrc, 255) << 24; // alpha
 	}
 
 inline void ModulateClr(DWORD &dwDst, DWORD dwMod) // modulate two color values
@@ -61,46 +61,77 @@ inline void ModulateClr(DWORD &dwDst, DWORD dwMod) // modulate two color values
 	// get alpha
 	int iA1=dwDst>>24, iA2=dwMod>>24;
 	// modulate color values; mod alpha upwards
+#if 0
 	dwDst = ((dwDst     & 0xff) * (dwMod    &   0xff))    >>  8   | // blue
 	        ((dwDst>> 8 & 0xff) * (dwMod>>8 &   0xff)) &   0xff00 | // green
-				  ((dwDst>>16 & 0xff) * (dwMod>>8 & 0xff00)) & 0xff0000 | // red
-				  uint32_t(Min(iA1+iA2 - ((iA1*iA2)>>8), 255))  << 24   ; // alpha (=255-(255*iA1)(255*iA2)/255)
+	        ((dwDst>>16 & 0xff) * (dwMod>>8 & 0xff00)) & 0xff0000 | // red
+	        Min(iA1*iA2>>8, 255) << 24; // alpha (TODO: We don't need Min() here, do we?)
+#else
+	// More exact calculation, but might be slightly slower:
+	dwDst = ((dwDst     & 0xff) * (dwMod     & 0xff) / 0xff)      | // blue
+	        ((dwDst>> 8 & 0xff) * (dwMod>> 8 & 0xff) / 0xff) << 8 | // green
+	        ((dwDst>>16 & 0xff) * (dwMod>>16 & 0xff) / 0xff) << 16| // red
+	        Min(iA1*iA2/0xff, 255)                           << 24; // alpha (TODO: We don't need Min() here, do we?)
+#endif
 	}
 
 inline void ModulateClrA(DWORD &dwDst, DWORD dwMod) // modulate two color values and add alpha value
 	{
 	// modulate two color values and add alpha value
+#if 0
 	dwDst = (((dwDst&0xff)*(dwMod&0xff))>>8) |  // B
-		      (((dwDst>>8&0xff)*(dwMod>>8&0xff))&0xff00) | // G
-					(((dwDst>>16&0xff)*(dwMod>>8&0xff00))&0xff0000) | // R
-					Min<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff)<<24;
+	        (((dwDst>>8&0xff)*(dwMod>>8&0xff))&0xff00) | // G
+	        (((dwDst>>16&0xff)*(dwMod>>8&0xff00))&0xff0000) | // R
+	        (Max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
+#else
+	// More exact calculation, but might be slightly slower:
+	dwDst = ((dwDst     & 0xff) * (dwMod     & 0xff) / 0xff)      | // B
+	        ((dwDst>> 8 & 0xff) * (dwMod>> 8 & 0xff) / 0xff) << 8 | // G
+	        ((dwDst>>16 & 0xff) * (dwMod>>16 & 0xff) / 0xff) << 16| // R
+	        (Max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
+#endif
 	}
-
 inline void ModulateClrMOD2(DWORD &dwDst, DWORD dwMod) // clr1+clr2-0.5
 	{
 	// signed color addition
 	dwDst = (BoundBy<int>(((int)(dwDst&0xff)+(dwMod&0xff)-0x7f)<<1,0,0xff)&0xff) |  // B
-		      (BoundBy<int>(((int)(dwDst&0xff00)+(dwMod&0xff00)-0x7f00)<<1,0,0xff00)&0xff00) | // G
-					(BoundBy<int>(((int)(dwDst&0xff0000)+(dwMod&0xff0000)-0x7f0000)<<1,0,0xff0000)&0xff0000) | // R
-					Min<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff)<<24;
+	        (BoundBy<int>(((int)(dwDst&0xff00)+(dwMod&0xff00)-0x7f00)<<1,0,0xff00)&0xff00) | // G
+	        (BoundBy<int>(((int)(dwDst&0xff0000)+(dwMod&0xff0000)-0x7f0000)<<1,0,0xff0000)&0xff0000) | // R
+	        (Max<uint32_t>((dwDst>>24)+(dwMod>>24), 0xff) - 0xff)<<24;
 	}
 
 inline void ModulateClrMono(DWORD &dwDst, BYTE byMod)
 	{
 	// darken a color value by constant modulation
+#if 0
 	dwDst = ((dwDst     & 0xff) * byMod)    >>  8   | // blue
 	        ((dwDst>> 8 & 0xff) * byMod) &   0xff00 | // green
 				  ((dwDst>> 8 & 0xff00) * byMod) & 0xff0000 | // red
 				  (dwDst & 0xff000000);                     // alpha
+#else
+	// More exact calculation, but might be slightly slower:
+	dwDst = ((dwDst     & 0xff) * byMod / 0xff)      | // blue
+	        ((dwDst>> 8 & 0xff) * byMod / 0xff) << 8 | // green
+	        ((dwDst>>16 & 0xff) * byMod / 0xff) << 16| // red
+	        (dwDst & 0xff000000);                     // alpha
+#endif
 	}
 
 inline void ModulateClrMonoA(DWORD &dwDst, BYTE byMod, BYTE byA)
 	{
 	// darken a color value by constant modulation and add an alpha value
+#if 0
 	dwDst = ((dwDst     & 0xff) * byMod)    >>  8   | // blue
 	        ((dwDst>> 8 & 0xff) * byMod) &   0xff00 | // green
 				  ((dwDst>> 8 & 0xff00) * byMod) & 0xff0000 | // red
-				  Min<uint32_t>((dwDst>>24) + byA, 255) << 24;        // alpha
+				  (Max<uint32_t>((dwDst>>24) + byA, 0xff) - 0xff) << 24; // alpha
+#else
+	// More exact calculation, but might be slightly slower:
+	dwDst = ((dwDst     & 0xff) * byMod / 0xff)      | // blue
+	        ((dwDst>> 8 & 0xff) * byMod / 0xff) << 8 | // green
+	        ((dwDst>>16 & 0xff) * byMod / 0xff) << 16| // red
+	        (Max<uint32_t>((dwDst>>24) + byA, 0xff) - 0xff) << 24; // alpha
+#endif
 	}
 
 
@@ -179,10 +210,10 @@ inline DWORD GetClrModulation(DWORD dwSrcClr, DWORD dwDstClr, DWORD &dwBack)
 		int bR=sR+(cR*255)/diffN;
 		int bG=sG+(cG*255)/diffN;
 		int bB=sB+(cB*255)/diffN;
-		dwBack=RGBA(bR, bG, bB, 0);
+		dwBack=RGBA(bR, bG, bB, 255);
 		}
 	if (!sR) sR=1; if (!sG) sG=1; if (!sB) sB=1;
-	return RGBA(Min((int)dR*256/sR, 255), Min((int)dG*256/sG, 255), Min((int)dB*256/sB, 255), diffN);
+	return RGBA(Min((int)dR*256/sR, 255), Min((int)dG*256/sG, 255), Min((int)dB*256/sB, 255), 255-diffN);
 	}
 
 inline DWORD NormalizeColors(DWORD &dwClr1, DWORD &dwClr2, DWORD &dwClr3, DWORD &dwClr4)
@@ -196,11 +227,6 @@ inline DWORD NormalizeColors(DWORD &dwClr1, DWORD &dwClr2, DWORD &dwClr3, DWORD 
 	ModulateClr(dwClr1, dwClr3); LightenClr(dwClr1);
 	// set other colors, return combined color
 	return dwClr2=dwClr3=dwClr4=dwClr1;
-	}
-
-inline DWORD InvertRGBAAlpha(DWORD dwFromClr)
-	{
-	return (dwFromClr&0xffffff) | (255-(dwFromClr>>24))<<24;
 	}
 
 inline WORD ClrDw2W(DWORD dwClr)
@@ -270,14 +296,14 @@ inline bool RGB2rgb(int R, int G, int B, double *pr, double *pg, double *pb, dou
 struct CStdPalette
 	{
 	BYTE Colors[3*256];
-	BYTE Alpha[3*256];
+	BYTE Alpha[3*256]; // TODO: alphapal: Why 3*? Isn't Alpha[256] enough?
 
 	DWORD GetClr(BYTE byCol)
 		{ return RGB(Colors[byCol*3+2], Colors[byCol*3+1], Colors[byCol*3])+(Alpha[byCol]<<24); }
 
 	void EnforceC0Transparency()
 		{
-		Colors[0]=Colors[1]=Colors[2]=0; Alpha[0]=255;
+		Colors[0]=Colors[1]=Colors[2]=0; Alpha[0]=0;
 		}
 	};
 

@@ -146,7 +146,7 @@ bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
 				pPal->Colors[cnt*3+0]=BitmapInfo.Colors[cnt].rgbRed;
 				pPal->Colors[cnt*3+1]=BitmapInfo.Colors[cnt].rgbGreen;
 				pPal->Colors[cnt*3+2]=BitmapInfo.Colors[cnt].rgbBlue;
-				pPal->Alpha[cnt]=0;
+				pPal->Alpha[cnt]=0xff;
 				}
 			}
 		}

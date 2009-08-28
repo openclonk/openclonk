@@ -1002,7 +1002,7 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 		if (::MouseControl.IsDragging() && ::MouseControl.IsViewport(this))
 			{
 			fDragging = true;
-			lpDDraw->ActivateBlitModulation(0xafffffff);
+			lpDDraw->ActivateBlitModulation(0x4fffffff);
 			}
 		// draw menu
 		pPlr->Cursor->Menu->Draw(cgo);

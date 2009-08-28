@@ -48,7 +48,7 @@ void C4PlayerInfo::Clear()
 	pRes = NULL;
 	ResCore.Clear();
 	// default fields
-	dwColor = dwOriginalColor = 0xffffff;
+	dwColor = dwOriginalColor = 0xffffffff;
 	dwAlternateColor = 0;
 	dwFlags = 0;
 	iID = idSavegamePlayer = idTeam = 0;
@@ -91,8 +91,8 @@ bool C4PlayerInfo::LoadFromLocalFile(const char *szFilename)
 	eType = C4PT_User;
 	sName = C4P.PrefName;
 	this->szFilename = szFilename;
-	dwColor = dwOriginalColor = C4P.PrefColorDw & 0xffffff; // ignore alpha
-	dwAlternateColor = C4P.PrefColor2Dw & 0xffffff; // ignore alpha
+	dwColor = dwOriginalColor = 0xff000000 | (C4P.PrefColorDw & 0xffffff); // ignore alpha
+	dwAlternateColor = 0xff000000 | (C4P.PrefColor2Dw & 0xffffff); // ignore alpha
 	// network: ressource (not for replays, because everyone has the player files there...)
 	if (::Network.isEnabled() && !Game.C4S.Head.Replay)
 		{
@@ -118,7 +118,7 @@ bool C4PlayerInfo::SetAsScriptPlayer(const char *szName, uint32_t dwColor, uint3
 	Clear();
 	// set parameters
 	eType = C4PT_Script;
-	dwColor = dwOriginalColor = dwColor & 0xffffff; // ignore alpha
+	dwColor = dwOriginalColor = 0xff000000 | (dwColor & 0xffffff); // ignore alpha
 	dwAlternateColor = 0;
 	this->sName.CopyValidated(szName);
 	idExtraData = idExtra;

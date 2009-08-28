@@ -545,11 +545,11 @@ void Dialog::Draw(C4TargetFacet &cgo)
 	if (iFade < 100)
 		{
 		if (iFade <= 0) return;
-		lpDDraw->ActivateBlitModulation(((100-iFade)*255/100)<<24 | 0xffffff);
+		lpDDraw->ActivateBlitModulation((iFade*255/100)<<24 | 0xffffff);
 		}
 	// seperate window: Clear background
 	if (pWindow)
-		lpDDraw->DrawBoxDw(cgo.Surface, rcBounds.x, rcBounds.y, rcBounds.Wdt-1, rcBounds.Hgt-1, C4GUI_StandardBGColor & 0xffffff);
+		lpDDraw->DrawBoxDw(cgo.Surface, rcBounds.x, rcBounds.y, rcBounds.Wdt-1, rcBounds.Hgt-1, (0xff << 24) | (C4GUI_StandardBGColor & 0xffffff) );
 	// draw window + contents (evaluates IsVisible)
 	Window::Draw(cgo);
 	// reset blit modulation

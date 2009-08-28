@@ -399,7 +399,7 @@ bool CSurface::CreateColorByOwner(CSurface *pBySurface)
 			// set in this surface
 			SetPixDw(iX, iY, dwPix);
 			// clear in the other
-			pMainSfc->SetPixDw(iX, iY, 0xffffffff);
+			pMainSfc->SetPixDw(iX, iY, 0x00ffffff);
 			}
 	// unlock
 	Unlock();
@@ -708,7 +708,7 @@ bool CSurface::Wipe()
 		if (!fIsBackground)
 			SetPix(i%Wdt, i/Wdt, 0);
 		else
-			SetPixDw(i%Wdt, i/Wdt, 0x00000000);
+			SetPixDw(i%Wdt, i/Wdt, 0xff000000);
 	Unlock();
 	// success
 	return true;
@@ -944,7 +944,7 @@ DWORD CSurface::GetPixDw(int iX, int iY, bool fApplyModulation)
 		{
 		BYTE byAlpha=BYTE(dwPix>>24);
 		// pix is fully transparent?
-		if (byAlpha==0xff)
+		if (byAlpha==0x00)
 			// then get the main surfaces's pixel
 			dwPix = pMainSfc->GetPixDw(iX2, iY2, fApplyModulation);
 		else
@@ -1056,7 +1056,7 @@ bool CSurface::SetPixDw(int iX, int iY, DWORD dwClr)
 	// get+lock affected texture
 	if (!ppTex) return false;
 	// if color is fully transparent, ensure it's black
-	if (dwClr>>24 == 0xff) dwClr=0xff000000;
+	if (dwClr>>24 == 0x00) dwClr=0x00000000;
 	CTexRef *pTexRef;
 #ifdef USE_GL
 	// openGL: use glTexSubImage2D
@@ -1296,7 +1296,7 @@ CTexRef::CTexRef(int iSize, bool fSingle)
 			}
 		// empty texture
 		if (!Lock()) return;
-		FillMemory(texLock.pBits, texLock.Pitch*iSize, 0xff);
+		FillMemory(texLock.pBits, texLock.Pitch*iSize, 0x00);
 		Unlock();
 		}
 	else
@@ -1308,7 +1308,7 @@ CTexRef::CTexRef(int iSize, bool fSingle)
 		// create mem array for texture creation
 		texLock.pBits = new unsigned char[iSize*iSize*pGL->byByteCnt];
 		texLock.Pitch = iSize*pGL->byByteCnt;
-		memset(texLock.pBits, 0xff, texLock.Pitch*iSize);
+		memset(texLock.pBits, 0x00, texLock.Pitch*iSize);
 		// turn mem array into texture
 		Unlock();
 		}
@@ -1317,7 +1317,7 @@ CTexRef::CTexRef(int iSize, bool fSingle)
 	if (lpDDraw) {
 		texLock.pBits = new unsigned char[iSize*iSize*lpDDraw->byByteCnt];
 		texLock.Pitch = iSize*lpDDraw->byByteCnt;
-		memset(texLock.pBits, 0xff, texLock.Pitch*iSize);
+		memset(texLock.pBits, 0x00, texLock.Pitch*iSize);
 		// Always locked
 		LockSize.left = LockSize.top = 0;
 		LockSize.right = LockSize.bottom = iSize;
@@ -1497,14 +1497,14 @@ bool CTexRef::ClearRect(RECT &rtClear)
 			for (y=rtClear.top; y<rtClear.bottom; ++y)
 				{
 				for (int x = rtClear.left; x < rtClear.right; ++x)
-					SetPix2(x, y, 0xf000);
+					SetPix2(x, y, 0x0000);
 				}
 			break;
 		case 4:
 			for (y=rtClear.top; y<rtClear.bottom; ++y)
 				{
 				for (int x = rtClear.left; x < rtClear.right; ++x)
-					SetPix4(x, y, 0xff000000);
+					SetPix4(x, y, 0x00000000);
 				}
 			break;
 		}
@@ -1517,7 +1517,24 @@ bool CTexRef::FillBlack()
 	// ensure locked
 	if (!Lock()) return false;
 	// clear pixels
-	ZeroMemory(texLock.pBits, lpDDraw->byByteCnt*iSize*iSize);
+	int y;
+	switch (lpDDraw->byByteCnt)
+		{
+		case 2:
+			for (y=0; y<iSize; ++y)
+				{
+				for (int x = 0; x < iSize; ++x)
+					SetPix2(x, y, 0xf000);
+				}
+			break;
+		case 4:
+			for (y=0; y<iSize; ++y)
+				{
+				for (int x = 0; x < iSize; ++x)
+					SetPix4(x, y, 0xff000000);
+				}
+			break;
+		}
 	// success
 	return true;
 	}

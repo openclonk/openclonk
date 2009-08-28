@@ -362,7 +362,7 @@ void C4MapFolderData::CreateGUIElements(C4StartupScenSelDlg *pMainDlg, C4GUI::Wi
 			if (pScen->sTitle.getLength()>0)
 				{
 				pBtn->SetText(pScen->sTitle.getData());
-				pBtn->SetTextColors(InvertRGBAAlpha(pScen->dwTitleInactClr), InvertRGBAAlpha(pScen->dwTitleActClr));
+				pBtn->SetTextColors(pScen->dwTitleInactClr, pScen->dwTitleActClr);
 				pBtn->SetTextPos(pScen->iTitleOffX, pScen->iTitleOffY, pScen->byTitleAlign);
 				CStdFont *pUseFont; float fFontZoom=1.0f;
 				if (pScen->fTitleBookFont)
@@ -500,7 +500,7 @@ bool C4ScenarioListLoader::Entry::Load(C4Group *pFromGrp, const StdStrBuf *psFil
 						if (Inside<uint8_t>(dwPix & 0xff, 0xb8, 0xff))
 							if (Inside<uint8_t>((dwPix>>0x08) & 0xff, 0x00, 0x0f))
 								if (Inside<uint8_t>((dwPix>>0x10) & 0xff, 0xb8, 0xff))
-									fctTemp.Surface->SetPixDw(x,y,0xffffffff);
+									fctTemp.Surface->SetPixDw(x,y,0x00ffffff);
 						}
 				fctTemp.Surface->Unlock();
 				int iIconSize = C4Startup::Get()->Graphics.fctScenSelIcons.Hgt;

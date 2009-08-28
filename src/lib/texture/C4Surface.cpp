@@ -191,7 +191,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup)
 				DWORD *pPix=(DWORD *) (((char *) pTexRef->texLock.pBits) + iY * pTexRef->texLock.Pitch);
 				memcpy (pPix, png.GetRow(rY) + tX * iTexSize, maxX * 4);
 				int iX = maxX;
-				while (iX--) { if (((BYTE *)pPix)[3] == 0xff) *pPix = 0xff000000; ++pPix; }
+				while (iX--) { if (((BYTE *)pPix)[3] == 0x00) *pPix = 0x00000000; ++pPix; }
 				}
 			else
 #endif
@@ -201,7 +201,7 @@ bool C4Surface::ReadPNG(CStdStream &hGroup)
 					{
 					uint32_t dwCol = png.GetPix(iX + tX * iTexSize, rY);
 					// if color is fully transparent, ensure it's black
-					if (dwCol>>24 == 0xff) dwCol=0xff000000;
+					if (dwCol>>24 == 0x00) dwCol=0x00000000;
 					// set pix in surface
 					if (byBytesPP == 4)
 						{

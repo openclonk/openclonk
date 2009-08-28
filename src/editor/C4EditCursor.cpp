@@ -413,7 +413,7 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 			{
 			uint32_t dwOldMod = cobj->ColorMod;
 			uint32_t dwOldBlitMode = cobj->BlitMode;
-			cobj->ColorMod = 0xffffff;
+			cobj->ColorMod = 0xffffffff;
 			cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
 			cobj->Draw(cgo,-1);
 			cobj->DrawTopFace(cgo, -1);
@@ -441,21 +441,21 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 
 	if (!cgo.Surface) return;
 
-	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.top,0xFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.left+1,frame.top,0xFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.top+1,0xFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.top,0xFFFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.left+1,frame.top,0xFFFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.top+1,0xFFFFFFFF);
 
-	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-1,0xFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.left+1,frame.bottom-1,0xFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-2,0xFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-1,0xFFFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.left+1,frame.bottom-1,0xFFFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.left,frame.bottom-2,0xFFFFFFFF);
 
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.top,0xFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-2,frame.top,0xFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.top+1,0xFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.top,0xFFFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.right-2,frame.top,0xFFFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.top+1,0xFFFFFFFF);
 
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-1,0xFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-2,frame.bottom-1,0xFFFFFF);
-	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-2,0xFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-1,0xFFFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.right-2,frame.bottom-1,0xFFFFFFFF);
+	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-2,0xFFFFFFFF);
 	}
 
 

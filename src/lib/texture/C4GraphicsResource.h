@@ -47,7 +47,7 @@ class C4GraphicsResource
 	public:
 		C4GroupSet Files;
 		BYTE GamePalette[256*3];
-		BYTE AlphaPalette[256*3];
+		BYTE AlphaPalette[256*3]; // TODO: alphapal: Why *3?
 		C4FacetID fctPlayer;
 		C4FacetID fctFlag;
 		C4FacetID fctCrew;
