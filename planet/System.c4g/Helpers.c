@@ -10,8 +10,8 @@ global func MessageWindow(string pMsg, int iForPlr, id idIcon, string pCaption)
   if (!pCaption) pCaption=GetName();
   // create msg window (menu)
   var pCursor = GetCursor(iForPlr);
-  if (!CreateMenu(idIcon, pCursor, pCursor, 0, pCaption, 0, 2)) return;
-  AddMenuItem(pCaption, "", TIM1, pCursor,0,0,pMsg);
+  if (!pCursor->CreateMenu(idIcon, pCursor, 0, pCaption, 0, 2)) return;
+  pCursor->AddMenuItem(pCaption, "", TIM1, 0,0,pMsg);
   return 1;
   }
 
@@ -22,7 +22,7 @@ global func RemoveAll()
 	{
 		if(obj) 
 		{
-			RemoveObject(obj);
+			obj->RemoveObject();
 			cnt++;
 		}
 	}
@@ -85,7 +85,7 @@ global func GetAvailableObjectCheck(int plr)
   // Object is not connected to a pipe (for line construction kits)
   if (FindObject (Find_ActionTarget(this), Find_Or(Find_ID(SPIP), Find_ID(DPIP)), Find_Action("Connect"))) return false;
   // Not chosen by another friendly clonk
-  if (GetEffect("IntNotAvailable",this) && !Hostile(plr,GetOwner(EffectVar(0,this,GetEffect("IntNotAvailable",this))))) return false;
+  if (GetEffect("IntNotAvailable",this) && !Hostile(plr,EffectVar(0,this,GetEffect("IntNotAvailable",this))->GetOwner())) return false;
   return true;
 }
 

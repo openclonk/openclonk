@@ -9,18 +9,17 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>object</type><name>pObject</name><desc>Objekt, dessen Kontaktstatus ermittelt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 				<param><type>int</type><name>iVertex</name><desc>Index des abzufragenden Vertex. -1 prüft alle Vertices, und gibt das Ergebnis als eine mit binärem Oder kombinierte Bitmaske zurück.</desc></param>
 				<param><type>int</type><name>dwCNAT</name><desc>Bitmaske von CNAT-Werten, die angeben, welche Richtungen geprüft werden sollen. Bei 0 werden alle Richtungen geprüft.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Ermittelt, in welche Richtungen einzelne oder alle Vertices eines Objekts feste Landschaft berühren. Die Richtungen werden als Bitmaske von <emlink href="definition/cnat.html">CNAT-Werten</emlink> übergeben bzw. von der Funktion zurückgegeben.</desc>
+		<desc>Ermittelt, in welche Richtungen einzelne oder alle Vertices des aufrufenden Objekts feste Landschaft berühren. Die Richtungen werden als Bitmaske von <emlink href="definition/cnat.html">CNAT-Werten</emlink> übergeben bzw. von der Funktion zurückgegeben.</desc>
 		<examples>
 			<example>
 <code>protected func Activate(object pCaller)
   {
   [Hopp!]
-  if (GetContact(pCaller, -1) &amp; CNAT_Bottom) <funclink>return</funclink>(pCaller-><funclink>Jump</funclink>());
+  if (pCaller->GetContact(-1) &amp; CNAT_Bottom) <funclink>return</funclink>(pCaller-><funclink>Jump</funclink>());
   <funclink>return</funclink>(false);
   }</code>
 				<text>Script für eine Hüpfpille: Wenn man sie mit Doppelgraben aktiviert, hüpft der Clonk, falls er auf dem Boden steht.</text>

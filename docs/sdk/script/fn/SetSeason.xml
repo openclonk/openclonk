@@ -7,7 +7,7 @@
 		<category>Umwelt</category><subcat>Wetter</subcat>
 		<version>4.6.5.0 CP</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iSeason</name><desc>Jahreszeit von 0 (Frühling) bis 100 (Winter).</desc></param>
 			</params>

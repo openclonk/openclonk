@@ -8,11 +8,8 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Das Objekt, dessen Zauberenergiewert gesucht wird.</desc></param>
-			</params>
 		</syntax>
-		<desc>Liefert den aktuellen Zauberenergiewert eines Objekts. pObj Null bei lokalem Aufruf.</desc>
+		<desc>Liefert den aktuellen Zauberenergiewert des aufrufenden Objekts.</desc>
 		<related>
 			<funclink>GetPhysical</funclink>
 		</related>

@@ -10,14 +10,13 @@
 			<rtype>bool</rtype>
 			<params>
 				<param><type>int</type><name>iNewOwner</name><desc>Spielernummer des neuen Besitzers. -1 für keinen Besitzer.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Besitzer geändert wird. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Ändert den Besitzer eines Objekts.</desc>
+		<desc>Ändert den Besitzer des aufrufenden Objekts.</desc>
 		<remark>Dieser Aufruf ändert auch den Controller des Objektes auf den neuen Besitzer</remark>
 		<examples>
 			<example>
-				<code>protected func Entrance(pContainer) { SetOwner(<funclink>GetOwner</funclink>(pContainer)); <funclink>return</funclink>(); }</code>
+				<code>protected func Entrance(pContainer) { SetOwner(pContainer-><funclink>GetOwner</funclink>()); <funclink>return</funclink>(); }</code>
 				<text>Das Objekt ändert seinen Besitzer, wenn es eingesammelt wird.</text>
 			</example>
 		</examples>

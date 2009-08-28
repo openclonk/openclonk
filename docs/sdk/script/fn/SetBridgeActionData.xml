@@ -13,10 +13,9 @@
 				<param><type>bool</type><name>fMoveClonk</name><desc>Ob sich der Clonk mit der Brücke mitbewegen soll.</desc></param>
 				<param><type>bool</type><name>fWall</name><desc>Sollte <code>true</code> sein, wenn der Clonk keine Brücke, sondern eine Wand (d.h. über seinem Kopf) baut.</desc></param>
 				<param><type>int</type><name>iBridgeMaterial</name><desc>Materialnummer des Materials aus dem die Brücke bestehen soll.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt dessen Aktionsdaten geändert werden sollen. Kann bei lokalen Aufrufen 0 sein.</desc></param>
 			</params>
 		</syntax>
-		<desc>Setzt Zusatzparameter für eine aktuell ausgeführte BRIDGE-Prozedur.</desc>
+		<desc>Setzt Zusatzparameter für eine aktuell ausgeführte BRIDGE-Prozedur des aufrufenden Objekts.</desc>
 		<related>
 			<funclink>SetAction</funclink>
 			<funclink>SetActionData</funclink>

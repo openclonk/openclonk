@@ -7,7 +7,7 @@
 		<category>Umwelt</category><subcat>Wetter</subcat>
 		<version>4.6.5.0 CP</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iWind</name><desc>Windstärke von -100 bis 100.</desc></param>
 			</params>

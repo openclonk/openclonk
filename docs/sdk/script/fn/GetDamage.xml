@@ -9,11 +9,8 @@
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>int</rtype>
-      <params>
-        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Schadenswert abgefragt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
-      </params>
     </syntax>
-    <desc>Fragt den Schadenswert eines Objekts ab.</desc>
+    <desc>Fragt den Schadenswert des aufrufenden Objekts ab.</desc>
     <examples>
       <example>
         <code><funclink>if</funclink>(GetDamage() > 100) <funclink>Split2Components</funclink>();</code>

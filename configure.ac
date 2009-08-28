@@ -16,7 +16,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.59)
 AC_INIT(clonk, m4_format([[[%s.%s.%s.%s]]], m4_include(version)))
 AC_COPYRIGHT([©2005-2009 Günther Brammer])
-AC_CONFIG_SRCDIR([engine/src/C4Map.cpp])
+AC_CONFIG_SRCDIR([/src/C4Game.cpp])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
@@ -85,11 +85,13 @@ AC_ARG_ENABLE([sound],
   [AC_HELP_STRING([--enable-sound],[compile with sound support [default=yes]])],
   , [if test $enable_console = yes; then enable_sound=no; else if test $win32 = true; then enable_sound=no; else enable_sound=yes; fi; fi])
 
+# GTK+
+GTK_REQUIRED="glib-2.0 >= 2.4 gtk+-2.0 >= 2.4"
 AC_ARG_WITH([gtk],
-  [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=no]])],
-  , [with_gtk=no])
+  [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=auto]])],
+  , [PKG_CHECK_EXISTS([$GTK_REQUIRED], [with_gtk=yes], [with_gtk=no])])
 AS_IF([test $with_gtk = yes],[
-  PKG_CHECK_MODULES(GTK, glib-2.0 >= 2.4 gtk+-2.0 >= 2.4)
+  PKG_CHECK_MODULES(GTK, [$GTK_REQUIRED])
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
   DEVELOPER_MODE=true
@@ -166,7 +168,7 @@ AC_CHECK_LIB(png, png_read_image, [
 
 # Check for libz
 AC_CHECK_LIB(z, deflate, [
-  CLONK_LIBS="-lz $CLONK_LIBS"
+  Z_LIBS="-lz $Z_LIBS"
 ], [
   AC_MSG_ERROR([libz not found.])
 ])
@@ -276,6 +278,7 @@ else
 fi
 
 AC_SUBST(CLONK_LIBS)
+AC_SUBST(Z_LIBS)
 AC_SUBST(OPENSSL_LIBS)
 
 # precompiled headers and -Wextra

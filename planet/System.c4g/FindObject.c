@@ -116,7 +116,7 @@ global func Find_PathFree(object toobj) {
 }
 
 global func Find_PathFreeCheck(object toobj) {
-  return PathFree(GetX(), GetY(), GetX(toobj), GetY(toobj));
+  return PathFree(GetX(), GetY(), toobj->GetX(), toobj->GetY());
 }
   
 

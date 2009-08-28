@@ -8,11 +8,8 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Das Objekt, dessen Atemwert gesucht wird.</desc></param>
-			</params>
 		</syntax>
-		<desc>Liefert den aktuellen Atemwert eines Objekts in Prozent. 100% stellen hierbei den maximalen Physical-Wert von 100000 dar. Siehe auch DefCore.txt Sektion [Physical]. pObj Null bei lokalem Aufruf.</desc>
+		<desc>Liefert den aktuellen Atemwert des aufrufenden Objekts in Prozent. 100% stellen hierbei den maximalen Physical-Wert von 100000 dar. Siehe auch DefCore.txt Sektion [Physical].</desc>
 		<related>
 			<funclink>GetPhysical</funclink>
 		</related>

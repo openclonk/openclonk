@@ -8,13 +8,12 @@
 		<subcat>Kategorie</subcat>
 		<version>4.6.5.0 CP</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iCategory</name><desc>Objektkategorie. Sollte ein gültiger C4D_x()-Wert sein.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Zu veränderndes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int</type><name>iCategory</name><desc>Objektkategorie. Sollte ein gültiger C4D_x-Wert sein.</desc></param>
 			</params>
 		</syntax>
-		<desc>Ändert die Kategorie eines Objekts.</desc>
+		<desc>Ändert die Kategorie des aufrufenden Objekts.</desc>
 		<remark>Siehe auch <emlink href="definition/category.html">Objektkategorien</emlink></remark>
 		<related>
 			<funclink>GetCategory</funclink>

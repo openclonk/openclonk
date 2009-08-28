@@ -12,7 +12,6 @@
 				<param><type>string</type><name>szCaption</name><desc>Text des neuen Menüeintrags</desc></param>
 				<param><type>string</type><name>szCommand</name><desc>Kommando, das bei Auswahl des Menüeintrags ausgeführt werden soll. Kann entweder ein Funktionsname oder ein Statement sein. Wenn ein Funktionsname angegeben wird, dann wird die Funktion in dem Objekt aufgerufen, welches bei <funclink>CreateMenu</funclink> als pCommandObject übergeben wurde.</desc></param>
 				<param><type>id</type><name>idItem</name><desc>Die ID wird als Bild für den Menüeintrag verwendet. Der Name der Definition kann mit %s in szCaption verwendet werden. Außerdem wird die ID als erster Parameter an den Aufruf von szCommand übergeben, sofern dieser nur ein Funktionsname ist.</desc></param>
-				<param><type>object</type><name>pMenuObject</name><desc>Objekt, dessen Menü der Eintrag hinzugefügt werden soll. Kann bei lokalen Aufrufen 0 sein.</desc></param>
 				<param><type>int</type><name>iCount</name><desc>Gewünschte Zahl, die neben dem Menüeintrag angezeigt werden soll (ähnlich der Mengenanzeige im Aktivieren-Menü)</desc></param>
 				<param><type>int</type><name>iParameter</name><desc>Wird als 2. Parameter an die in szCommand angegebene Funktion übergeben (siehe Anmerkung)</desc></param>
 				<param><type>string</type><name>szInfoCaption</name><desc>Beschreibungstext des neuen Menüeintrags</desc></param>
@@ -58,7 +57,7 @@ func SayHello()
 func DoMagic()
 {
 	Sound("Magic*");
-	ObjectCall(CreateObject(MLGT,0,0),"Activate",this());
+	CreateObject(MLGT,0,0)->~Activate(this);
 }
 
 func CreateItem(id item)
@@ -67,16 +66,6 @@ func CreateItem(id item)
 	CreateContents(item);
 }</code>
 				<text>Menü für einen Spezialclonk.</text>
-			</example>
-			<example>
-				<code>func Activate(object clonk)
-{
-	// Menü im Clonk mit lokalen Kommandos erzeugen
-	CreateMenu(GetID(), clonk, this());
-	// Menüeinträge erzeugen
-	AddMenuItem(Format("%s Schrumpfen", GetName(clonk)), Format("DoCon(-10,Object(%d))", ObjectNumber(%d)), 0, this(), 0, 0, "Eine Art Jungbrunnen.", 4, clonk);
-}</code>
-				<text>Menü für ein Schrumpfobjekt.</text>
 			</example>
 		</examples>
 								<related>

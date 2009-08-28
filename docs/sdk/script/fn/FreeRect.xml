@@ -7,7 +7,7 @@
     <category>Landschaft</category>
     <version>4.6.5.0 CP<extversion>4.9.5.0 CE</extversion></version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>void</rtype>
       <params>
         <param><type>int</type><name>iX</name><desc>Linke Kante des Rechtecks</desc></param>
         <param><type>int</type><name>iY</name><desc>Obere Kante des Rechtecks</desc></param>

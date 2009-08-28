@@ -10,13 +10,12 @@
 			<rtype>bool</rtype>
 			<params>
 				<param><type>object</type><name>pTarget</name><desc>Objekt, in das hineinversetzt wird</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, das in pTarget hineinversetzt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Versetzt ein Objekt in ein anderes hinein. Bei diesem Vorgang wird weder RejectCollect, noch Collection oder ActivateEntrance im Zielobjekt aufgerufen. Dafür aber RejectEntrance und Entrance im Objekt, das hineinversetzt werden soll.</desc>
+		<desc>Versetzt das aufrufende Objekt in ein anderes hinein. Bei diesem Vorgang wird weder RejectCollect, noch Collection oder ActivateEntrance im Zielobjekt aufgerufen. Dafür aber RejectEntrance und Entrance im Objekt, das hineinversetzt werden soll.</desc>
 		<examples>
 			<example>
-				<code>Enter(<funclink>FindObject</funclink>(HUT1), <funclink>GetCursor</funclink>(0));</code>
+				<code><funclink>GetCursor</funclink>(0)->Enter(<funclink>FindObject</funclink>(HUT1));</code>
 				<text>Der ausgewählte Clonk des ersten Spielers wird in die erstbeste Hütte versetzt.</text>
 			</example>
 		</examples>

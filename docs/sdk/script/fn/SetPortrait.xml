@@ -19,20 +19,19 @@
             </table>
 	        </desc>
         </param>
-        <param><type>object</type><name>pTarget</name><desc>Objekt, dessen Portrait geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
         <param><type>id</type><name>idSrcDef</name><desc>Definition, von der das Portrait entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird.</desc><optional /></param>
         <param><type>bool</type><name>fPermanent</name><desc>Wenn TRUE wird das neue Portrait in der Spielerdatei vermerkt und bei weiteren Runden ebenfalls verwendet. Andernfalls verfällt das Portrait nach dem Ende der Runde.</desc><optional /></param>
         <param><type>bool</type><name>fCopyGfx</name><desc>Kopiert die Grafik des neuen Portraits in die Spielerdatei des Spielers und setzt das Portrait auf "custom". Dies bewirkt, dass das Portrait auch dann noch erhalten bleibt, wenn die Definition, aus der das Objekt kommt, nicht mehr vorhanden ist. Allerdings lässt sich dann nicht mehr zurückverfolgen, woher das Portrait stammt oder wie es heißt.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Ändert das Portrait eines Crew-Mitglieds während des Spiels.</desc>
+    <desc>Ändert das Portrait des aufrufenden Crew-Mitglieds während des Spiels.</desc>
     <examples>
       <example>
-        <code>SetPortrait("random", <funclink>FindObject</funclink>(0, 0,0,0,0, <funclink>OCF_CrewMember</funclink>) );</code>
-        <text>Weißt einem Clonk ein zufälliges Portrait zu.</text>
+        <code><funclink>FindObject</funclink>(0, 0,0,0,0, <funclink>OCF_CrewMember</funclink>)->SetPortrait("random");</code>
+        <text>Weist einem Clonk ein zufälliges Portrait zu.</text>
       </example>
       <example>
-        <code>SetPortrait(<funclink>GetPortrait</funclink>(0, 0, 1), 0, <funclink>GetPortrait</funclink>(0, 1, 1) );</code>
+        <code>SetPortrait(<funclink>GetPortrait</funclink>(0, 0, 1), <funclink>GetPortrait</funclink>(0, 1, 1) );</code>
         <text>Stellt das Standardportrait eines Clonkes wieder her, falls es zwischenzeitlich durch andere SetPortrait-Aufrufe geändert wurde.</text>
       </example>
     </examples>

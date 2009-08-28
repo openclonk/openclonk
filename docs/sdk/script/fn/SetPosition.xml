@@ -7,15 +7,14 @@
                 <category>Objekte</category><subcat>Position</subcat>
                 <version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
                 <syntax>
-                        <rtype>int</rtype>
+                        <rtype>void</rtype>
                         <params>
                                 <param><type>int</type><name>iX</name><desc>Neue X-Position für das Objekt</desc></param>
                                 <param><type>int</type><name>iY</name><desc>Neue Y-Position für das Objekt</desc></param>
-                                <param><type>object</type><name>pObj</name><desc>Objekt dessen Position geändert werden soll. Null bei lokalem Aufruf.</desc><optional /></param>
                                 <param><type>bool</type><name>fCheckBounds</name><desc>Nur wirksam für Objekte mit angegebenem BorderBound. Stellt sicher, dass die Position immer innerhalb der dem Objekt auferlegten Grenzen ist. (Ab CR)</desc><optional /></param>
                         </params>
                 </syntax>
-                <desc>Verschiebt ein Objekt an die angegebene Position. Dabei wird das Objekt an die exakte Pixelposition gesetzt, und eventuelle, interne Verschiebungen um Pixelbruchteile werden verworfen.</desc>
+                <desc>Verschiebt das aufrufende Objekt an die angegebene Position. Dabei wird das Objekt an die exakte Pixelposition gesetzt, und eventuelle, interne Verschiebungen um Pixelbruchteile werden verworfen.</desc>
                 <related>
                         <funclink>GetX</funclink>
                         <funclink>GetY</funclink>

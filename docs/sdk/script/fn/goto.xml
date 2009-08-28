@@ -5,32 +5,28 @@
   <func>
     <title>goto</title>
     <category>Script</category>
-    <version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
+    <version>4.6.5.0 CP</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>void</rtype>
       <params>
         <param><type>int</type><name>iCounter</name><desc>Neue Position des Skriptzählers. Der nächste ScriptXXX-Aufruf wird bei diesem Zählerwert getätigt.</desc></param>
       </params>
     </syntax>
     <desc>Setzt den Skriptzähler in Szenarioskripten auf den gewünschten Wert. Der Scriptzähler sorgt dafür, dass die ScriptXXX-Funktionen im Szenrienscript aufgerufen werden. Dies funktioniert nicht in Objektscripten, stattdessen sollten TimerCalls oder ActMaps mit StartCall/PhaseCall/EndCall verwendet werden.</desc>
-    <remark>In älteren Versionen implizierte goto() ein <funclink>return</funclink>(). Dieses Verhalten wird bei Nicht-Angabe von <emlink href="script/Strict.html">#strict</emlink> emuliert.</remark>
     <examples>
       <example>
-<code>#strict
-
+<code>
 protected func Initialize()
   {
   // Scriptcounter starten
   <funclink>ScriptGo</funclink>(1);
-  // Fertig
-  <funclink>return</funclink>(1);
   }
 
 protected func Script100()
   {
   // Flints erzeugen
   <funclink>CastObjects</funclink>(FLNT,10,200, <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), 20);
-  <funclink>return</funclink>(goto(90));
+  goto(90);
   }</code>
         <text>Script eines Szenarios: Ein Flintregen. Es werden alle 100 Frames 10 Flints erzeugt.</text>
       </example>

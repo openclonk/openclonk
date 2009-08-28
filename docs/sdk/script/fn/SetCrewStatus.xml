@@ -12,16 +12,15 @@
    <params>
     <param><type>int</type><name>iPlr</name><desc>Spielernummer des Spielers, dessen Crew verändert werden soll.</desc></param>
      <param><type>bool</type><name>fInCrew</name><desc><code>true</code> wenn der Clonk der Crew hinzugefügt und <code>false</code> wenn er aus dieser entfernt werden soll.</desc></param>
-     <param><type>object</type><name>pCrew</name><desc>CrewMember-Objekt welches hinzugefügt oder entfernt werden soll.</desc></param>
    </params>
   </syntax>
 
-  <desc>Fügt ein Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu oder entfernt dieses aus der Crew. Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben.</desc>
+  <desc>Fügt das aufrufende Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu oder entfernt dieses aus der Crew. Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben.</desc>
 
   <examples>
    <example>
     <code>var nclnk = <funclink>CreateObject</funclink>(CLNK, 0, 0, <funclink>GetOwner</funclink>());
-SetCrewStatus(<funclink>GetOwner</funclink>(), true, nclnk);</code>
+nclnk->SetCrewStatus(<funclink>GetOwner</funclink>(), true);</code>
     <text>Dieser kurze Objektscript erstellt einen neuen Clonk und fügt ihn der Crew seines Besitzers hinzu.</text>
    </example>
   </examples>

@@ -10,7 +10,6 @@
 			<rtype>object</rtype>
 			<params>
 				<param><type>id</type><name>idType</name><desc>Objekttyp, von dem das Inhaltsobjekt sein soll</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Durchsuchter Behälter. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Liefert das erste in einem Behälter enthaltene Objekt vom Typ idType.</desc>
@@ -18,7 +17,7 @@
 			<example>
 
 <code>var hut;
-<funclink>if</funclink> (hut=<funclink>FindObject</funclink>(HUT2)) <funclink>Exit</funclink>(FindContents(CLNK, hut), <funclink>GetX</funclink>(hut), <funclink>GetY</funclink>(hut));</code>
+<funclink>if</funclink> (hut=<funclink>FindObject</funclink>(HUT2)) hut->FindContents(CLNK)-><funclink>Exit</funclink>(hut-><funclink>GetX</funclink>(), hut-><funclink>GetY</funclink>());</code>
 				<text>Befördert einen Clonk aus einer Hütte heraus.</text>
 			</example>
 		</examples>

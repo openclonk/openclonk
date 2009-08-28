@@ -11,10 +11,9 @@
 			<params>
 				<param><type>id</type><name>idComponent</name><desc>Hinzuzufügende Komponente</desc></param>
 				<param><type>int</type><name>iCount</name><desc>Zu setzende Anzahl der Komponenten mit der ID idComponent</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Zu veränderndes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Setzt die Anzahl einer Komponente eines Objekts.</desc>
+		<desc>Setzt die Anzahl einer Komponente des aufrufenden Objekts.</desc>
 		<remark>Siehe auch <emlink href="definition/defcore.html">DefCore</emlink></remark>
 		<related>
 			<funclink>GetComponent</funclink>

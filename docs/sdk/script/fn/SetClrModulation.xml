@@ -10,14 +10,13 @@
 			<rtype>bool</rtype>
 			<params>
 				<param><type>int</type><name>dwClr</name><desc>Neue Farbe, mit der moduliert wird. Wenn 0 angegeben wird, wird die Modulation deaktiviert. Für eine völlige Schwarzfärbung sollte also ein knapp darüber liegender Wert wie <funclink>RGB</funclink>(0,0,1); verwendet werden.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Färbung verändert werden soll. 0 bei lokalem Aufruf.</desc></param>
 				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Ändert die Farbmodulation eines Objekts. Diese ist ein Farbwert, der multiplikativ aufgerechnet wird. Bei <funclink>RGB</funclink>(255,0,0) würden also nur die Rotanteile der Grafik gezeichnet werden. <funclink>RGBa</funclink>(255,255,255,128) würde die Grafik halbtransparent machen (sofern Alphaaddition nicht in den Grafikoptionen deaktiviert ist).</desc>
+		<desc>Ändert die Farbmodulation des aufrufenden Objekts. Diese ist ein Farbwert, der multiplikativ aufgerechnet wird. Bei <funclink>RGB</funclink>(255,0,0) würden also nur die Rotanteile der Grafik gezeichnet werden. <funclink>RGBa</funclink>(255,255,255,128) würde die Grafik halbtransparent machen (sofern Alphaaddition nicht in den Grafikoptionen deaktiviert ist).</desc>
 		<examples>
 			<example>
-				<code>SetClrModulation(<funclink>RGBa</funclink>(128,128,255,128), <funclink>GetCursor</funclink>());</code>
+				<code><funclink>GetCursor</funclink>()->SetClrModulation(<funclink>RGBa</funclink>(128,128,255,128));</code>
 				<text>Färbt den ausgewählten Clonk des ersten Spielers leicht bläulich ein und macht ihn halbtransparent.</text>
 			</example>
 		</examples>
@@ -27,7 +26,7 @@
 			<funclink>SetGamma</funclink>
 			<funclink>GetClrModulation</funclink>
 			<funclink>SetObjectBlitMode</funclink>
-			<funclink>SetColorDw</funclink>
+			<funclink>SetColor</funclink>
 		</related>
 	</func>
 	<author>Sven2</author><date>April 2002</date>

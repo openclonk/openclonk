@@ -8,13 +8,12 @@
 		<subcat>Sicht</subcat>
 		<version>4.9.1.0 GWE</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iRange</name><desc>Sichtweite in Pixel.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Sichtweite gesetzt wird. 0 bei lokalem Aufruf.</desc></param>
 			</params>
 		</syntax>
-		<desc>Setzt die Sichtweite eines Objekts.</desc>
+		<desc>Setzt die Sichtweite des aufrufenden Objekts.</desc>
 		<remark>Aufgrund der Ungenauigkeit des Kriegsnebels wird die Sichtweite nur ungenaue Auswirkungen haben.</remark>
 		<examples>
 			<example>
@@ -22,7 +21,7 @@
 protected func Activate(pClonk)
 {
 	// Den Clonk blenden
-	SetPlrViewRange(0, pClonk);
+	pClonk->SetPlrViewRange(0);
 	// Schmerzensschrei 
 	<funclink>Sound</funclink>("Scream", pClonk);
 	return(1);

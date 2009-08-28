@@ -7,19 +7,18 @@
 		<category>Objekte</category><subcat>Aktivität</subcat>
 		<version>4.9.1.0 GWE</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>object</type><name>pTarget1</name><desc>Erstes Zielobjekt</desc></param>
 				<param><type>object</type><name>pTarget2</name><desc>Zweites Zielobjekt</desc><optional /></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Zielobjekte gesetzt werden sollen. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Setzt die aktuellen Aktivitätszielobjekte eines Objekts. Die Auswirkung der Zielobjekte richtet sich nach der <emlink href="definition/procedures.html">Prozedur</emlink> der aktuell gesetzten Aktivität.</desc>
+		<desc>Setzt die aktuellen Aktivitätszielobjekte des aufrufenden Objekts. Die Auswirkung der Zielobjekte richtet sich nach der <emlink href="definition/procedures.html">Prozedur</emlink> der aktuell gesetzten Aktivität.</desc>
 		<examples>
 			<example>
 				<code>protected func Entrance(pIntoObj)
   {
-  <funclink>return</funclink>(SetActionTargets(pIntoObj));
+  SetActionTargets(pIntoObj);
   }</code>
 				<text>Scriptteil für einen Schildzauber, der gerade eine ATTACH-Aktivität ausführt: Wenn der tragende Clonk ein Gebäude betritt, klebt er sich an dieses Gebäude. Das Script sorgt allerdings nicht dafür, dass sich der Zauber wieder an den Clonk klebt, wenn dieser das Gebäude verlässt.</text>
 			</example>

@@ -8,11 +8,8 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, von dem der Besitzer ermittelt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
 		</syntax>
-		<desc>Ermittelt den Besitzer eines Objekts.</desc>
+		<desc>Ermittelt den Besitzer des aufrufenden Objekts.</desc>
 		<examples>
 			<example>
 				<code><funclink>Message</funclink>("Ich gehöre %s!", <funclink>this</funclink>(), <funclink>GetPlayerName</funclink>(GetOwner()))</code>

@@ -10,10 +10,9 @@
 			<rtype>int</rtype>
 			<params>
 				<param><type>int</type><name>iDir</name><desc>Aktionsrichtung. Vordefinierte Werte: <funclink>DIR_Right</funclink>() / <funclink>DIR_Left</funclink>()</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Richtung gesetzt werden soll. 0 bei lokalem Aufruf.</desc><optional/></param>
 			</params>
 		</syntax>
-		<desc>Setzt die Richtung eines Objekts.</desc>
+		<desc>Setzt die Richtung des aufrufenden Objekts.</desc>
 		<remark>SetDir beeinflusst nur die grafische Darstellung das Objekts; für Veränderung der Bewegungsrichtung ist <funclink>SetComDir</funclink> zuständig!</remark>
 		<remark>Wenn bei der Aktion mehr als zwei Richtungen angegeben werden (siehe <emlink href="definition/actmap.html">ActMap.txt</emlink>), dürfen auch andere Werte als <funclink>DIR_Right</funclink>()
 						und <funclink>DIR_Left</funclink>() übergeben werden.</remark>

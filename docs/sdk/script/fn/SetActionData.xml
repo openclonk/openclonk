@@ -10,7 +10,6 @@
 			<rtype>bool</rtype>
 			<params>
 				<param><type>int</type><name>iData</name><desc>Zusatzparameter für die Aktivität.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, für das die Aktivitätsdaten geändert werden sollen. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Setzt den Zusatzparameter für die aktuell ausgeführte Aktivitäts-Prozedur. Die Auswirkung dieses Parameters hängt von der gesetzten Prozedur ab. Siehe dazu auch <emlink href="definition/procedures.html">ActMap-Prozeduren</emlink>.</desc>
@@ -25,7 +24,7 @@
 				<text>Scriptfunktion für einen Spezialclonk: Auf Spezial 2 baut er eine senkrechte Goldbrücke.</text>
 			</example>
 			<example>
-				<code>SetActionData(256*3 + 2, <funclink>FindObject</funclink>(WWNG))</code>
+				<code><funclink>FindObject</funclink>(WWNG)->SetActionData(256*3 + 2)</code>
 				<text>Verschiebt den Aufhängepunkt eines Windrades so, dass der dritte Vertex vom Windrad am zweiten Vertex des Gerüstes klebt.</text>
 			</example>
 		</examples>

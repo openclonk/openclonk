@@ -21,12 +21,6 @@
           <optional/>
         </param>
         <param>
-          <type>object</type>
-          <name>pObj</name>
-          <desc>Objekt, von dem der Eintrag abgefragt werden soll. Null bei lokalen Aufrufen.</desc>
-          <optional/>
-        </param>
-        <param>
           <type>int</type>
           <name>iEntryNr</name>
           <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
@@ -43,11 +37,11 @@
 
     <examples>
       <example>
-        <code>var exp = GetObjCoreExperience(obj);</code>
+        <code>var exp = obj->GetObjCoreExperience();</code>
         <text>Ermittelt die Erfahrung eines Objekts (Objekt muss Crewmember sein!). GetObjCoreExperience
               ist dabei eine globale Funktion aus GetXVal.c (siehe Anmerkung).<br/>
               Obiger Code entspricht:</text>
-        <code>var exp = GetObjectInfoCoreVal("Experience", "ObjectInfo", obj);</code>
+        <code>var exp = obj->GetObjectInfoCoreVal("Experience", "ObjectInfo");</code>
       </example>
     </examples>
 

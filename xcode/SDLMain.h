@@ -7,8 +7,18 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SDLMain : NSObject
+@interface SDLMain: NSObject
 {
+	NSString* clonkDirectory;
+	NSMutableArray* gatheredArguments;
+	NSString* addonSupplied;
+	BOOL doNotLaunch;
+	BOOL hasFinished;
+	BOOL terminateRequested;
 }
-- (void)terminate:(id)sender;
+- (NSString*) clonkDirectory;
+- (BOOL) argsLookLikeItShouldBeInstallation:(char**)argv argc:(int)argc;
+- (void)makeFakeArgs:(char***)argv argc:(int*)argc;
+- (BOOL)installAddOn;
+- (void)terminate:(NSApplication*)sender;
 @end

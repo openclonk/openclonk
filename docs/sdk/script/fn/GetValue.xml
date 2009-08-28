@@ -9,19 +9,17 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, von dem der aktuelle Wert abgefragt werden soll. 0 bei lokalem Aufruf oder angegebenem idDef.</desc><optional /></param>
-				<param><type>id</type><name>idDef</name><desc>Wenn angegeben: Definition, von der der Standardwert abgefragt werden soll. Ansonsten wird pObj ausgewertet.</desc><optional /></param>
 				<param><type>object</type><name>pBase</name><desc>Basis, in der gekauft wird. Falls pObj einen CalcValue-Aufruf zur Verfügung stellt, wird dieser Parameter an den Aufruf weitergegeben.</desc><optional /></param>
 				<param><type>int</type><name>iForPlayer</name><desc>Spieler, für den der Wert gilt. Falls pObj einen CalcValue-Aufruf zur Verfügung stellt, wird auch dieser Parameter an den Aufruf weitergegeben.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Gibt einen Objekt- oder Definitionswert zurück. Bei angegebenem idDef wird der Definitionswert zurückgegeben, ansonsten der Objektwert von pObj oder dem aufrufenden Objekt bei pObj=0.<br />Ein Objektwert berechnet sich folgendermaßen: Bei angegebenem pObj wird zunächst geprüft, ob eine CalcValue-Funktion im Script des Objekttyps von pObj vorhanden ist, und gegebenenfalls ausgewertet. Ansonsten wird der Definitionswert (siehe nächster Absatz) verwendet. Unabhängig davon wird der Wert des Objekts immer der Fertigstellung (GetCon()/100) multipliziert. Tote Lebewesen (GetCategory()&amp;OCF_Living() &amp;&amp; !GetAlive()) haben immer den Wert 0.<br />Der Definitionswert wird folgendermaßen ermittelt: Ist eine CalcDefValue-Funktion im Script vorhanden, wird diese ausgewertet. Ansonsten wird eine Wertüberladung aus der Scenario.txt verwendet. Ist diese ebenfalls nicht vorhanden, wird der in der DefCore angegebene Wert benutzt.<br /></desc>
+		<desc>Gibt einen Objekt- oder Definitionswert zurück.<br />Ein Objektwert berechnet sich folgendermaßen: Zunächst geprüft, ob eine CalcValue-Funktion im Script des Objekttyps vorhanden ist, und gegebenenfalls ausgewertet. Ansonsten wird der Definitionswert (siehe nächster Absatz) verwendet. Unabhängig davon wird der Wert des Objekts immer mit der Fertigstellung (<funclink>GetCon</funclink>()/100) multipliziert. Tote Lebewesen (<funclink>GetCategory</funclink>()&amp;<funclink>OCF_Living</funclink> &amp;&amp; !<funclink>GetAlive</funclink>()) haben immer den Wert 0.<br />Der Definitionswert wird folgendermaßen ermittelt: Ist eine CalcDefValue-Funktion im Script vorhanden, wird diese ausgewertet. Ansonsten wird eine Wertüberladung aus der Scenario.txt verwendet. Ist diese ebenfalls nicht vorhanden, wird der in der DefCore angegebene Wert benutzt.<br /></desc>
 		<remark>Die beiden Parameter pBase und iForPlayer sind für szenarienspezifische Handelsmodelle gedacht, und werden nur in CalcValue/CalcDefValue-Aufrufen verwendet.</remark>
 		<examples>
 			<example>
 <code>var iValue=GetValue();
 <funclink>while</funclink> (iValue-->0) <funclink>CreateContents</funclink>(ROCK);
-<funclink>RemoveObject</funclink>(0, 1);</code>
+<funclink>RemoveObject</funclink>(true);</code>
 				<text>Objektscript: Das Objekt erzeugt so viele Steine, wie es wert ist, und vernichtet sich dann selber (wobei es die Steine auswirft).</text>
 			</example>
 		</examples>

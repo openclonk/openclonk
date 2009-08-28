@@ -7,7 +7,7 @@
 		<category>Objekte</category>
 		<version>4.6.5.0 CP</version>
 		<syntax>
-			<rtype>int</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iStatus</name><desc>0 = Geschlossen; 1 = Offen</desc></param>
 			</params>

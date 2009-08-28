@@ -8,19 +8,16 @@
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>int</rtype>
-      <params>
-        <param><type>object</type><name>pObj</name><desc>Objektpointer, von dem die Nummer abgefragt wird.</desc></param>
-      </params>
     </syntax>
-    <desc>Bestimmt die Nummer eines Objekts. Diese Nummer ist eindeutig und kann mittels der Funktion <funclink>Object</funclink> in einen Objektpointer zurückverwandelt werden.</desc>
+    <desc>Bestimmt die Nummer des aufrufenden Objekts. Diese Nummer ist eindeutig und kann mittels der Funktion <funclink>Object</funclink> in einen Objektpointer zurückverwandelt werden.</desc>
     <examples>
       <example>
         <code>func Activate(pCaller)
 {
-  <funclink>CreateMenu</funclink>(<funclink>GetID</funclink>(), pCaller, pCaller, 0, "Kein geeignetes Objekte in Reichweite!");
+  pCaller-><funclink>CreateMenu</funclink>(<funclink>GetID</funclink>(), pCaller, 0, "Kein geeignetes Objekt in Reichweite!");
   var obj;
   <funclink>while</funclink>(obj = <funclink>FindObject</funclink>(0, -50, -50, 100, 100, <funclink>OCF_Chop</funclink>(), 0, 0, <funclink>NoContainer</funclink>(), obj))
-    <funclink>AddMenuItem</funclink>("%s fällen", <funclink>Format</funclink>("SetCommand(this(), \"Chop\", Object(%d))", ObjectNumber(obj)), <funclink>GetID</funclink>(obj), pCaller);
+    pCaller-><funclink>AddMenuItem</funclink>("%s fällen", <funclink>Format</funclink>("SetCommand(this(), \"Chop\", Object(%d))", obj->ObjectNumber()), obj-><funclink>GetID</funclink>());
 }</code>
         <text>Wird die Funktion aufgerufen, so wird im aufrufenden Objekt (pCaller) ein Menu erzeugt, das alle fällbaren (<funclink>OCF_Chop</funclink>()) Objekte in einem bestimmten Bereich um das Objekt enthält.
               Das Auswählen eines der Menüeinträge bewirkt dann, dass über <funclink>SetCommand</funclink> das Kommando "Chop" gesetzt wird. Da dabei der Objektpointer des Objekts zwischengespeichert werden muss,

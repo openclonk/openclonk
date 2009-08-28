@@ -7,28 +7,27 @@
 		<category>Objekte</category><subcat>Status</subcat>
 		<version>4.9.1.0 GWE</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iNewMass</name><desc>Neue Eigenmasse</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Eigenmasse geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Ändert die Eigenmasse eines Objekts. Die Eigenmasse entspricht dem in der <emlink href="definition/DefCore.html">DefCore.txt</emlink> angegebenen Wert unter [DefCore], Mass. Die tatsächliche Objektmasse ergibt sich durch Hinzurechnen der Masse aller enthaltenen Objekte.</desc>
+		<desc>Ändert die Eigenmasse des aufrufenden Objekts. Die Eigenmasse entspricht dem in der <emlink href="definition/DefCore.html">DefCore.txt</emlink> angegebenen Wert unter [DefCore], Mass. Die tatsächliche Objektmasse ergibt sich durch Hinzurechnen der Masse aller enthaltenen Objekte.</desc>
 		<examples>
 			<example>
 
 <code>private func GetOwnMass(pClonk)
   {
-  var iMass=<funclink>GetMass</funclink>(pClonk), i, pObj;
-  <funclink>while</funclink>(pObj = <funclink>Contents</funclink>(i++, pClonk)) iMass -= <funclink>GetMass</funclink>(pObj);
+  var iMass=pClonk-><funclink>GetMass</funclink>(), i, pObj;
+  <funclink>while</funclink>(pObj = pClonk-><funclink>Contents</funclink>(i++)) iMass -= pObj-><funclink>GetMass</funclink>();
   <funclink>return</funclink>(iMass);
   }
 
 protected func Activate(pByClonk)
   {
   [Essen]
-  SetMass(GetOwnMass(pByClonk) + 100, pByClonk);
-  <funclink>Sound</funclink>("ClonkMunch", 0, pByClonk);
+  pByClonk->SetMass(GetOwnMass(pByClonk) + 100);
+  pByClonk-><funclink>Sound</funclink>("ClonkMunch");
   <funclink>return</funclink>(<funclink>RemoveObject</funclink>());
   }</code>
 

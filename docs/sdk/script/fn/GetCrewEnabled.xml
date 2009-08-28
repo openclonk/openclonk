@@ -9,14 +9,11 @@
 		<version>4.9.1.0 GWE</version>
 		<syntax>
 			<rtype>bool</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Status abgefragt werden soll. 0 bei lokalem Aufruf.</desc></param>
-			</params>
 		</syntax>
 		<desc>Fragt ab, ob ein Mannschaftsmitglied gegenwärtig angewählt werden kann.</desc>
 		<examples>
 			<example>
-				<code><funclink>if</funclink> (!GetCrewEnabled(<funclink>GetHiRank</funclink>())) <funclink>SetCrewEnabled</funclink>(1, <funclink>GetCursor</funclink>());</code>
+				<code><funclink>if</funclink> (!<funclink>GetHiRank</funclink>()->GetCrewEnabled()) <funclink>GetHiRank</funclink>()-><funclink>SetCrewEnabled</funclink>(true);</code>
 				<text>Aktiviert den höchstrangigen Clonk des ersten Spielers, falls er noch nicht aktiviert ist.</text>
 			</example>
 		</examples>

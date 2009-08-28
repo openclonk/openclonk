@@ -7,26 +7,25 @@
     <category>Objekte</category><subcat>Status</subcat>
     <version>4.6.5.0 CP</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>void</rtype>
       <params>
         <param><type>int</type><name>iChange</name><desc>Veränderung der Fertigstellung in Prozentpunkten; positiv oder negativ.</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Fertigstellung geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
       </params>
     </syntax>
     <desc>
-      Verändert die Fertigstellung eines Objekts. Die meisten Lebewesen und Bäume können dadurch vergrößert oder verkleinert werden. Gebäude können zu Baustellen zurückgesetzt und Baustellen vorwärts oder rückwärts gebaut werden.<br />
+      Verändert die Fertigstellung des aufrufenden Objekts. Die meisten Lebewesen und Bäume können dadurch vergrößert oder verkleinert werden. Gebäude können zu Baustellen zurückgesetzt und Baustellen vorwärts oder rückwärts gebaut werden.<br />
       Sinkt die Fertigstellung eines Objekts auf oder unter 0, wird dieses gelöscht.
     </desc>
     <examples>
       <example>
 
 <code>var obj;
-<funclink>while</funclink> (obj=<funclink>FindObject</funclink>(0,0,0,0,0,<funclink>OCF_Construct</funclink>(),0,0,<funclink>NoContainer</funclink>(),obj)) DoCon(100,obj);</code>
+<funclink>while</funclink> (obj=<funclink>FindObject</funclink>(0,0,0,0,0,<funclink>OCF_Construct</funclink>(),0,0,<funclink>NoContainer</funclink>(),obj)) obj->DoCon(100);</code>
 
         <text>Baut alle Baustellen fertig.</text>
       </example>
       <example>
-<code>DoCon(-50, <funclink>GetCursor</funclink>(plr));</code>
+        <code><funclink>GetCursor</funclink>(plr)->DoCon(-50);</code>
         <text>Raubt dem angewähltem Mannschaftsmitglied von Spieler plr die Hälfte seiner normalen Größe. Wenn es vorher ausgewachsen war, hat es danach halbe normale Größe, wenn es halbe normale Größe hatte ist es danach weg.</text>
       </example>
       

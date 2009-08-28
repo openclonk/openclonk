@@ -57,9 +57,6 @@ cd to this directory, and execute:
 
     ./autogen.sh && ./configure && make
 
-To use g++ version 4.3 or newer, you need to pass CXX='g++ -std=gnu++0x'
-to configure. g++ version 4.2 is not able to compile Clonk.
-
 To compile a debugbuild, pass --enable-debug to configure. Other options are
 listed by ./configure --help.
 
