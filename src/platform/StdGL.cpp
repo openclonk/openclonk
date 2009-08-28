@@ -892,16 +892,19 @@ bool CStdGL::InvalidateDeviceObjects()
 void CStdGL::SetTexture()
 	{
 	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, (dwBlitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_SRC_ALPHA);
-	if (shaders[0] && fUseClrModMap)
+	if (shaders[0])
 		{
 		glEnable(GL_FRAGMENT_PROGRAM_ARB);
-		glActiveTexture(GL_TEXTURE3);
-		glEnable(GL_TEXTURE_2D);
-		glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		if (fUseClrModMap)
+			{
+			glActiveTexture(GL_TEXTURE3);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glActiveTexture(GL_TEXTURE0);
+			}
 		}
-	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
 	}
 
