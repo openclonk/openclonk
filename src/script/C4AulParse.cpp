@@ -46,6 +46,7 @@
 
 #define C4AUL_If						"if"
 #define C4AUL_Else					"else"
+#define C4AUL_Do					"do"
 #define C4AUL_While					"while"
 #define C4AUL_For						"for"
 #define C4AUL_In						"in"
@@ -149,6 +150,7 @@ class C4AulParseState
 	int Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc = 0);
 	void Parse_Array();
 	void Parse_PropList();
+	void Parse_DoWhile();
 	void Parse_While();
 	void Parse_If();
 	void Parse_For();
@@ -187,7 +189,7 @@ class C4AulParseState
 		void SetJumpHere(int iJumpOp); // Use the next inserted instruction as jump target for the given jump operation
 		void SetJump(int iJumpOp, int iWhere);
 		void AddJump(C4AulBCCType eType, int iWhere);
-
+		
 		// Keep track of loops and break/continue usages
 		struct Loop {
 			struct Control {
@@ -879,6 +881,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_JUMPAND: return "JUMPAND";
 	case AB_JUMPOR: return "JUMPOR";
 	case AB_CONDN: return "CONDN";		// conditional jump (negated, pops stack)
+	case AB_COND: return "COND";		// conditional jump (pops stack)
 	case AB_FOREACH_NEXT: return "FOREACH_NEXT"; // foreach: next element
 	case AB_RETURN: return "RETURN";	// return statement
 	case AB_ERR: return "ERR";			// parse error at this position
@@ -1030,6 +1033,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_ARRAYA_R:
 		case AB_ARRAYA_V:
 		case AB_CONDN:
+		case AB_COND:
 		case AB_IVARN:
 		case AB_RETURN:
 		// JUMPAND/JUMPOR are special: They either jump over instructions adding one to the stack
@@ -1138,12 +1142,17 @@ int C4AulParseState::JumpHere()
 	return a->GetCodePos();
 	}
 
+static bool IsJump(C4AulBCCType t)
+	{
+	return t == AB_JUMP || t == AB_JUMPAND || t == AB_JUMPOR || t == AB_CONDN || t == AB_COND;
+	}
+
 void C4AulParseState::SetJumpHere(int iJumpOp)
 	{
 	if (Type != PARSER) return;
 	// Set target
 	C4AulBCC *pBCC = a->GetCodeByPos(iJumpOp);
-	assert(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN);
+	assert(IsJump(pBCC->bccType));
 	pBCC->Par.i = a->GetCodePos() - iJumpOp;
 	// Set flag so the next generated code chunk won't get joined
 	fJump = true;
@@ -1154,7 +1163,7 @@ void C4AulParseState::SetJump(int iJumpOp, int iWhere)
 	if (Type != PARSER) return;
 	// Set target
 	C4AulBCC *pBCC = a->GetCodeByPos(iJumpOp);
-	assert(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN);
+	assert(IsJump(pBCC->bccType));
 	pBCC->Par.i = iWhere - iJumpOp;
 	}
 
@@ -1721,6 +1730,12 @@ void C4AulParseState::Parse_Statement()
 				{
 				throw new C4AulParseError(this, "misplaced 'else'");
 				}
+			else if (SEqual(Idtf, C4AUL_Do)) // while
+				{
+				Shift();
+				Parse_DoWhile();
+				break;
+				}
 			else if (SEqual(Idtf, C4AUL_While)) // while
 				{
 				Shift();
@@ -2017,6 +2032,36 @@ void C4AulParseState::Parse_PropList()
 		else if (TokenType != ATT_BLCLOSE)
 			UnexpectedToken("'}' or ','");
 		}
+	}
+
+void C4AulParseState::Parse_DoWhile()
+	{
+	// Save position for later jump back
+	int iStart = JumpHere();
+	// We got a loop
+	PushLoop();
+	// Execute body
+	Parse_Statement();
+	// Execute condition
+	if (TokenType != ATT_IDTF || !SEqual(Idtf, C4AUL_While))
+		UnexpectedToken("'while'");
+	Shift();
+	Match(ATT_BOPEN);
+	Parse_Expression();
+	Match(ATT_BCLOSE);
+	SetNoRef();
+	// Check condition
+	int iCond = a->GetCodePos();
+	// Jump back
+	AddJump(AB_COND, iStart);
+	if (Type != PARSER) return;
+	// Set targets for break/continue
+	for(Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
+		if(pCtrl->Break)
+			SetJumpHere(pCtrl->Pos);
+		else
+			SetJump(pCtrl->Pos, iStart);
+	PopLoop();
 	}
 
 void C4AulParseState::Parse_While()
@@ -2842,7 +2887,7 @@ bool C4AulScript::Parse()
 				for(intptr_t i = reinterpret_cast<intptr_t>(Fn->Code); i < CPos - Code; i++)
 					{
 					C4AulBCC *pBCC = Code + i;
-					if(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN)
+					if(IsJump(pBCC->bccType))
 						if(!pBCC->Par.i)
 							pBCC->Par.i = CPos - Code - i;
 					}
