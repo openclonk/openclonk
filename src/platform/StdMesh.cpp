@@ -485,237 +485,251 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 		}
 	}
 
-	// Read skeleton
-	TiXmlElement* skeletonlink_elem = mesh.RequireFirstChild(mesh_elem, "skeletonlink");
-	const char* name = mesh.RequireStrAttribute(skeletonlink_elem, "name");
-	StdCopyStrBuf xml_filename(name); xml_filename.Append(".xml");
-
-	StdStrBuf skeleton_xml_data = skel_loader.LoadSkeleton(xml_filename.getData());
-	if(skeleton_xml_data.isNull()) mesh.Error(FormatString("Failed to load '%s'", xml_filename.getData()), skeletonlink_elem);
-
-	StdMeshXML skeleton(xml_filename.getData(), skeleton_xml_data.getData());
-	TiXmlElement* skeleton_elem = skeleton.RequireFirstChild(NULL, "skeleton");
-	TiXmlElement* bones_elem = skeleton.RequireFirstChild(skeleton_elem, "bones");
-
-	// Read bones. Don't insert into Master bone table yet, as the master bone
-	// table is sorted hierarchically, and we will read the hierarchy only
-	// afterwards.
-	std::vector<StdMeshBone*> bones;
-	for(TiXmlElement* bone_elem = bones_elem->FirstChildElement("bone"); bone_elem != NULL; bone_elem = bone_elem->NextSiblingElement("bone"))
+	// Read skeleton, if any
+	TiXmlElement* skeletonlink_elem = mesh_elem->FirstChildElement("skeletonlink");
+	if(skeletonlink_elem)
 	{
-		StdMeshBone* bone = new StdMeshBone;
-		bones.push_back(bone);
+		const char* name = mesh.RequireStrAttribute(skeletonlink_elem, "name");
+		StdCopyStrBuf xml_filename(name); xml_filename.Append(".xml");
 
-		bone->ID = skeleton.RequireIntAttribute(bone_elem, "id");
-		bone->Name = skeleton.RequireStrAttribute(bone_elem, "name");
+		StdStrBuf skeleton_xml_data = skel_loader.LoadSkeleton(xml_filename.getData());
+		if(skeleton_xml_data.isNull()) mesh.Error(FormatString("Failed to load '%s'", xml_filename.getData()), skeletonlink_elem);
 
-		// TODO: Make sure ID and name are unique
+		StdMeshXML skeleton(xml_filename.getData(), skeleton_xml_data.getData());
+		TiXmlElement* skeleton_elem = skeleton.RequireFirstChild(NULL, "skeleton");
+		TiXmlElement* bones_elem = skeleton.RequireFirstChild(skeleton_elem, "bones");
 
-		TiXmlElement* position_elem = skeleton.RequireFirstChild(bone_elem, "position");
-		TiXmlElement* rotation_elem = skeleton.RequireFirstChild(bone_elem, "rotation");
-		TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotation_elem, "axis");
-
-		float dx = skeleton.RequireFloatAttribute(position_elem, "x");
-		float dy = skeleton.RequireFloatAttribute(position_elem, "y");
-		float dz = skeleton.RequireFloatAttribute(position_elem, "z");
-		float angle = skeleton.RequireFloatAttribute(rotation_elem, "angle");
-		float rx = skeleton.RequireFloatAttribute(axis_elem, "x");
-		float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
-		float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
-
-		StdMeshMatrix helper;
-		helper.SetTranslate(dx, dy, dz);
-		bone->Trans.SetRotate(angle, rx, ry, rz);
-		bone->Trans.Transform(helper);
-
-		// Transform to Clonk coordinate system
-		bone->Trans.Mul(CoordCorrectionInverse);
-		bone->Trans.Transform(CoordCorrection);
-
-		helper.SetRotate(-angle, rx, ry, rz);
-		bone->InverseTrans.SetTranslate(-dx, -dy, -dz);
-		bone->InverseTrans.Transform(helper);
-
-		// Transform to Clonk coordinate system
-		bone->InverseTrans.Mul(CoordCorrectionInverse);
-		bone->InverseTrans.Transform(CoordCorrection);
-
-		bone->Parent = NULL;
-
-		// Index of bone will be set when building Master Bone Table later
-	}
-
-	// Bone hierarchy
-	TiXmlElement* bonehierarchy_elem = skeleton.RequireFirstChild(skeleton_elem, "bonehierarchy");
-	for(TiXmlElement* boneparent_elem = bonehierarchy_elem->FirstChildElement("boneparent"); boneparent_elem != NULL; boneparent_elem = boneparent_elem->NextSiblingElement("boneparent"))
-	{
-		const char* child_name = skeleton.RequireStrAttribute(boneparent_elem, "bone");
-		const char* parent_name = skeleton.RequireStrAttribute(boneparent_elem, "parent");
-
-		// Lookup the two bones
-		StdMeshBone* child = NULL;
-		StdMeshBone* parent = NULL;
-		for(unsigned int i = 0; i < bones.size() && (!child || !parent); ++i)
+		// Read bones. Don't insert into Master bone table yet, as the master bone
+		// table is sorted hierarchically, and we will read the hierarchy only
+		// afterwards.
+		std::vector<StdMeshBone*> bones;
+		for(TiXmlElement* bone_elem = bones_elem->FirstChildElement("bone"); bone_elem != NULL; bone_elem = bone_elem->NextSiblingElement("bone"))
 		{
-			if(!child && bones[i]->Name == child_name)
-				child = bones[i];
-			if(!parent && bones[i]->Name == parent_name)
-				parent = bones[i];
+			StdMeshBone* bone = new StdMeshBone;
+			bones.push_back(bone);
+
+			bone->ID = skeleton.RequireIntAttribute(bone_elem, "id");
+			bone->Name = skeleton.RequireStrAttribute(bone_elem, "name");
+
+			// TODO: Make sure ID and name are unique
+
+			TiXmlElement* position_elem = skeleton.RequireFirstChild(bone_elem, "position");
+			TiXmlElement* rotation_elem = skeleton.RequireFirstChild(bone_elem, "rotation");
+			TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotation_elem, "axis");
+
+			float dx = skeleton.RequireFloatAttribute(position_elem, "x");
+			float dy = skeleton.RequireFloatAttribute(position_elem, "y");
+			float dz = skeleton.RequireFloatAttribute(position_elem, "z");
+			float angle = skeleton.RequireFloatAttribute(rotation_elem, "angle");
+			float rx = skeleton.RequireFloatAttribute(axis_elem, "x");
+			float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
+			float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
+
+			StdMeshMatrix helper;
+			helper.SetTranslate(dx, dy, dz);
+			bone->Trans.SetRotate(angle, rx, ry, rz);
+			bone->Trans.Transform(helper);
+
+			// Transform to Clonk coordinate system
+			bone->Trans.Mul(CoordCorrectionInverse);
+			bone->Trans.Transform(CoordCorrection);
+
+			helper.SetRotate(-angle, rx, ry, rz);
+			bone->InverseTrans.SetTranslate(-dx, -dy, -dz);
+			bone->InverseTrans.Transform(helper);
+
+			// Transform to Clonk coordinate system
+			bone->InverseTrans.Mul(CoordCorrectionInverse);
+			bone->InverseTrans.Transform(CoordCorrection);
+
+			bone->Parent = NULL;
+
+			// Index of bone will be set when building Master Bone Table later
 		}
 
-		if(!child) skeleton.Error(FormatString("There is no such bone with name '%s'", child_name), boneparent_elem);
-		if(!parent) skeleton.Error(FormatString("There is no such bone with name '%s'", parent_name), boneparent_elem);
+		// Bone hierarchy
+		TiXmlElement* bonehierarchy_elem = skeleton.RequireFirstChild(skeleton_elem, "bonehierarchy");
+		for(TiXmlElement* boneparent_elem = bonehierarchy_elem->FirstChildElement("boneparent"); boneparent_elem != NULL; boneparent_elem = boneparent_elem->NextSiblingElement("boneparent"))
+		{
+			const char* child_name = skeleton.RequireStrAttribute(boneparent_elem, "bone");
+			const char* parent_name = skeleton.RequireStrAttribute(boneparent_elem, "parent");
 
-		child->Parent = parent;
-		parent->Children.push_back(child);
+			// Lookup the two bones
+			StdMeshBone* child = NULL;
+			StdMeshBone* parent = NULL;
+			for(unsigned int i = 0; i < bones.size() && (!child || !parent); ++i)
+			{
+				if(!child && bones[i]->Name == child_name)
+					child = bones[i];
+				if(!parent && bones[i]->Name == parent_name)
+					parent = bones[i];
+			}
 
-		// Apply parent transformation
-		child->Trans.Transform(parent->Trans);
-		child->InverseTrans.Mul(parent->InverseTrans);
-	}
+			if(!child) skeleton.Error(FormatString("There is no such bone with name '%s'", child_name), boneparent_elem);
+			if(!parent) skeleton.Error(FormatString("There is no such bone with name '%s'", parent_name), boneparent_elem);
 
-	// Fill master bone table in hierarchical order:
-	for(unsigned int i = 0; i < bones.size(); ++i)
-		if(bones[i]->Parent == NULL)
-			AddMasterBone(bones[i]);
+			child->Parent = parent;
+			parent->Children.push_back(child);
 
-	// Vertex<->Bone assignments
-	TiXmlElement* boneassignments_elem = mesh.RequireFirstChild(submesh_elem, "boneassignments");
-	for(TiXmlElement* vertexboneassignment_elem = boneassignments_elem->FirstChildElement("vertexboneassignment"); vertexboneassignment_elem != NULL; vertexboneassignment_elem = vertexboneassignment_elem->NextSiblingElement("vertexboneassignment"))
-	{
-		int BoneID = mesh.RequireIntAttribute(vertexboneassignment_elem, "boneindex");
-		int VertexIndex = mesh.RequireIntAttribute(vertexboneassignment_elem, "vertexindex");
-		float weight = mesh.RequireFloatAttribute(vertexboneassignment_elem, "weight");
+			// Apply parent transformation
+			child->Trans.Transform(parent->Trans);
+			child->InverseTrans.Mul(parent->InverseTrans);
+		}
 
-		if(VertexIndex < 0 || static_cast<unsigned int>(VertexIndex) >= Vertices.size())
-			mesh.Error(FormatString("Vertex index in bone assignment (%d) is out of range", VertexIndex), vertexboneassignment_elem);
+		// Fill master bone table in hierarchical order:
+		for(unsigned int i = 0; i < bones.size(); ++i)
+			if(bones[i]->Parent == NULL)
+				AddMasterBone(bones[i]);
 
-		StdMeshBone* bone = NULL;
-		for(unsigned int i = 0; !bone && i < bones.size(); ++i)
-			if(bones[i]->ID == BoneID)
-				bone = bones[i];
+		// Vertex<->Bone assignments
+		TiXmlElement* boneassignments_elem = mesh.RequireFirstChild(submesh_elem, "boneassignments");
+		for(TiXmlElement* vertexboneassignment_elem = boneassignments_elem->FirstChildElement("vertexboneassignment"); vertexboneassignment_elem != NULL; vertexboneassignment_elem = vertexboneassignment_elem->NextSiblingElement("vertexboneassignment"))
+		{
+			int BoneID = mesh.RequireIntAttribute(vertexboneassignment_elem, "boneindex");
+			int VertexIndex = mesh.RequireIntAttribute(vertexboneassignment_elem, "vertexindex");
+			float weight = mesh.RequireFloatAttribute(vertexboneassignment_elem, "weight");
 
-		if(!bone) mesh.Error(FormatString("There is no such bone with index %d", BoneID), vertexboneassignment_elem);
+			if(VertexIndex < 0 || static_cast<unsigned int>(VertexIndex) >= Vertices.size())
+				mesh.Error(FormatString("Vertex index in bone assignment (%d) is out of range", VertexIndex), vertexboneassignment_elem);
 
-		Vertex& vertex = Vertices[VertexIndex];
-		vertex.BoneAssignments.push_back(StdMeshVertexBoneAssignment());
-		StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments.back();
-		assignment.BoneIndex = bone->Index;
-		assignment.Weight = weight;
-	}
+			StdMeshBone* bone = NULL;
+			for(unsigned int i = 0; !bone && i < bones.size(); ++i)
+				if(bones[i]->ID == BoneID)
+					bone = bones[i];
 
-	// Normalize vertex bone assignment weights (this is not guaranteed in the
-	// Ogre file format).
-	for(unsigned int i = 0; i < Vertices.size(); ++i)
-	{
-		Vertex& vertex = Vertices[i];
-		float sum = 0.0f;
-		for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
-			sum += vertex.BoneAssignments[j].Weight;
-		for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
-			vertex.BoneAssignments[j].Weight /= sum;
-	}
+			if(!bone) mesh.Error(FormatString("There is no such bone with index %d", BoneID), vertexboneassignment_elem);
 
-	// Load Animations
-	TiXmlElement* animations_elem = skeleton.RequireFirstChild(skeleton_elem, "animations");
-	for(TiXmlElement* animation_elem = animations_elem->FirstChildElement("animation"); animation_elem != NULL; animation_elem = animation_elem->NextSiblingElement("animation"))
-	{
-		StdCopyStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
-		//StdStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
-		if(Animations.find(name) != Animations.end())
+			Vertex& vertex = Vertices[VertexIndex];
+			vertex.BoneAssignments.push_back(StdMeshVertexBoneAssignment());
+			StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments.back();
+			assignment.BoneIndex = bone->Index;
+			assignment.Weight = weight;
+		}
+
+		// Normalize vertex bone assignment weights (this is not guaranteed in the
+		// Ogre file format).
+		for(unsigned int i = 0; i < Vertices.size(); ++i)
+		{
+			Vertex& vertex = Vertices[i];
+			float sum = 0.0f;
+			for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+				sum += vertex.BoneAssignments[j].Weight;
+			for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+				vertex.BoneAssignments[j].Weight /= sum;
+		}
+
+		// Load Animations
+		TiXmlElement* animations_elem = skeleton.RequireFirstChild(skeleton_elem, "animations");
+		for(TiXmlElement* animation_elem = animations_elem->FirstChildElement("animation"); animation_elem != NULL; animation_elem = animation_elem->NextSiblingElement("animation"))
+		{
+			StdCopyStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
+			//StdStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
+			if(Animations.find(name) != Animations.end())
 			skeleton.Error(FormatString("There is already an animation with name '%s'", name.getData()), animation_elem);
 
-		StdMeshAnimation& animation = Animations.insert(std::make_pair(name, StdMeshAnimation())).first->second;
-		animation.Name = name;
-		animation.Length = skeleton.RequireFloatAttribute(animation_elem, "length");
-		animation.Tracks.resize(Bones.size());
+			StdMeshAnimation& animation = Animations.insert(std::make_pair(name, StdMeshAnimation())).first->second;
+			animation.Name = name;
+			animation.Length = skeleton.RequireFloatAttribute(animation_elem, "length");
+			animation.Tracks.resize(Bones.size());
 
-		TiXmlElement* tracks_elem = skeleton.RequireFirstChild(animation_elem, "tracks");
-		for(TiXmlElement* track_elem = tracks_elem->FirstChildElement("track"); track_elem != NULL; track_elem = track_elem->NextSiblingElement("track"))
-		{
-			const char* bone_name = skeleton.RequireStrAttribute(track_elem, "bone");
-			StdMeshBone* bone = NULL;
-			for(unsigned int i = 0; !bone && i < Bones.size(); ++i)
-				if(Bones[i]->Name == bone_name)
-					bone = Bones[i];
-			if(!bone) skeleton.Error(FormatString("There is no such bone with name '%s'", bone_name), track_elem);
-
-			if(animation.Tracks[bone->Index] != NULL) skeleton.Error(FormatString("There is already a track for bone '%s' in animation '%s'", bone_name, animation.Name.getData()), track_elem);
-
-			StdMeshTrack* track = new StdMeshTrack;
-			animation.Tracks[bone->Index] = track;
-
-			TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
-			for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
+			TiXmlElement* tracks_elem = skeleton.RequireFirstChild(animation_elem, "tracks");
+			for(TiXmlElement* track_elem = tracks_elem->FirstChildElement("track"); track_elem != NULL; track_elem = track_elem->NextSiblingElement("track"))
 			{
-				float time = skeleton.RequireFloatAttribute(keyframe_elem, "time");
-				StdMeshKeyFrame& frame = track->Frames[time];
+				const char* bone_name = skeleton.RequireStrAttribute(track_elem, "bone");
+				StdMeshBone* bone = NULL;
+				for(unsigned int i = 0; !bone && i < Bones.size(); ++i)
+					if(Bones[i]->Name == bone_name)
+						bone = Bones[i];
+				if(!bone) skeleton.Error(FormatString("There is no such bone with name '%s'", bone_name), track_elem);
 
-				TiXmlElement* translate_elem = skeleton.RequireFirstChild(keyframe_elem, "translate");
-				TiXmlElement* rotate_elem = skeleton.RequireFirstChild(keyframe_elem, "rotate");
-				TiXmlElement* scale_elem = skeleton.RequireFirstChild(keyframe_elem, "scale");
-				TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotate_elem, "axis");
+				if(animation.Tracks[bone->Index] != NULL) skeleton.Error(FormatString("There is already a track for bone '%s' in animation '%s'", bone_name, animation.Name.getData()), track_elem);
 
-				float dx = skeleton.RequireFloatAttribute(translate_elem, "x");
-				float dy = skeleton.RequireFloatAttribute(translate_elem, "y");
-				float dz = skeleton.RequireFloatAttribute(translate_elem, "z");
-				float sx = skeleton.RequireFloatAttribute(scale_elem, "x");
-				float sy = skeleton.RequireFloatAttribute(scale_elem, "y");
-				float sz = skeleton.RequireFloatAttribute(scale_elem, "z");
-				float angle = skeleton.RequireFloatAttribute(rotate_elem, "angle");
-				float rx = skeleton.RequireFloatAttribute(axis_elem, "x");
-				float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
-				float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
+				StdMeshTrack* track = new StdMeshTrack;
+				animation.Tracks[bone->Index] = track;
 
-				// TODO: Make sure the order is correct here - I am not sure about scale
-				StdMeshMatrix helper;
-				frame.Trans.SetRotate(angle, rx, ry, rz);
-				helper.SetScale(sx, sy, sz);
-				frame.Trans.Transform(helper);
-				helper.SetTranslate(-dx, -dy, -dz);
-				frame.Trans.Transform(helper);
-
-				// Transform into Clonk coordinate system
-				frame.Trans.Transform(CoordCorrection);
-				frame.Trans.Mul(CoordCorrectionInverse);
-			}
-		}
-
-		// Apply bone transformation on animation frames. We need to do this
-		// after the actual loading because we need to walk the bone list
-		// hierarchically.
-		for(unsigned int i = 0; i < Bones.size(); ++i)
-		{
-			if(animation.Tracks[i])
-			{
-				StdMeshTrack& track = *animation.Tracks[i];
-
-				// Get next parent track
-				StdMeshTrack* parent_track = NULL;
-				StdMeshBone* parent_bone = Bones[i]->Parent;
-				while(parent_bone && !(parent_track = animation.Tracks[parent_bone->Index]))
-					parent_bone = parent_bone->Parent;
-				assert(!parent_bone || parent_track);
-
-				for(std::map<float, StdMeshKeyFrame>::iterator iter = track.Frames.begin(); iter != track.Frames.end(); ++iter)
+				TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
+				for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
 				{
-					// TODO: If this bone's track is not as smooth as the parent animation
-					// (which means if there is more than one keyframe in the parent
-					// animation for each keyframe pair in the this bone's animation),
-					// then we need to insert additional child keyframes, so that the
-					// transformation for the child does not skip parent keyframes.
-					StdMeshKeyFrame& frame = iter->second;
+					float time = skeleton.RequireFloatAttribute(keyframe_elem, "time");
+					StdMeshKeyFrame& frame = track->Frames[time];
 
-					// Apply transformation of parent tracks (for which we computed
-					// already the bone transformations, as we walk the bone list
-					// hierarchically) in bone's coordinate system.
-					frame.Trans.Mul(Bones[i]->InverseTrans);
-					frame.Trans.Transform(Bones[i]->Trans);
+					TiXmlElement* translate_elem = skeleton.RequireFirstChild(keyframe_elem, "translate");
+					TiXmlElement* rotate_elem = skeleton.RequireFirstChild(keyframe_elem, "rotate");
+					TiXmlElement* scale_elem = skeleton.RequireFirstChild(keyframe_elem, "scale");
+					TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotate_elem, "axis");
 
-					if(parent_bone)
-						frame.Trans.Transform(parent_track->GetTransformAt(iter->first));
+					float dx = skeleton.RequireFloatAttribute(translate_elem, "x");
+					float dy = skeleton.RequireFloatAttribute(translate_elem, "y");
+					float dz = skeleton.RequireFloatAttribute(translate_elem, "z");
+					float sx = skeleton.RequireFloatAttribute(scale_elem, "x");
+					float sy = skeleton.RequireFloatAttribute(scale_elem, "y");
+					float sz = skeleton.RequireFloatAttribute(scale_elem, "z");
+					float angle = skeleton.RequireFloatAttribute(rotate_elem, "angle");
+					float rx = skeleton.RequireFloatAttribute(axis_elem, "x");
+					float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
+					float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
+
+					// TODO: Make sure the order is correct here - I am not sure about scale
+					StdMeshMatrix helper;
+					frame.Trans.SetRotate(angle, rx, ry, rz);
+					helper.SetScale(sx, sy, sz);
+					frame.Trans.Transform(helper);
+					helper.SetTranslate(-dx, -dy, -dz);
+					frame.Trans.Transform(helper);
+
+					// Transform into Clonk coordinate system
+					frame.Trans.Transform(CoordCorrection);
+					frame.Trans.Mul(CoordCorrectionInverse);
 				}
 			}
+
+			// Apply bone transformation on animation frames. We need to do this
+			// after the actual loading because we need to walk the bone list
+			// hierarchically.
+			for(unsigned int i = 0; i < Bones.size(); ++i)
+			{
+				if(animation.Tracks[i])
+				{
+					StdMeshTrack& track = *animation.Tracks[i];
+
+					// Get next parent track
+					StdMeshTrack* parent_track = NULL;
+					StdMeshBone* parent_bone = Bones[i]->Parent;
+					while(parent_bone && !(parent_track = animation.Tracks[parent_bone->Index]))
+						parent_bone = parent_bone->Parent;
+					assert(!parent_bone || parent_track);
+
+					for(std::map<float, StdMeshKeyFrame>::iterator iter = track.Frames.begin(); iter != track.Frames.end(); ++iter)
+					{
+						// TODO: If this bone's track is not as smooth as the parent animation
+						// (which means if there is more than one keyframe in the parent
+						// animation for each keyframe pair in the this bone's animation),
+						// then we need to insert additional child keyframes, so that the
+						// transformation for the child does not skip parent keyframes.
+						StdMeshKeyFrame& frame = iter->second;
+
+						// Apply transformation of parent tracks (for which we computed
+						// already the bone transformations, as we walk the bone list
+						// hierarchically) in bone's coordinate system.
+						frame.Trans.Mul(Bones[i]->InverseTrans);
+						frame.Trans.Transform(Bones[i]->Trans);
+
+						if(parent_bone)
+							frame.Trans.Transform(parent_track->GetTransformAt(iter->first));
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		// Mesh has no skeleton
+		TiXmlElement* boneassignments_elem = submesh_elem->FirstChildElement("boneassignments");
+		if(boneassignments_elem)
+		{
+			// Bone assignements do not make sense then, as the
+			// actual bones are defined in the skeleton file.
+			mesh.Error(StdStrBuf("Mesh has bone assignments, but no skeleton"), boneassignments_elem);
 		}
 	}
 }
@@ -846,5 +860,3 @@ void StdMeshInstance::ReorderFaces()
 	StdMeshInstanceFaceOrderingCmpPred pred(*this);
 	std::sort(Faces.begin(), Faces.end(), pred);
 }
-
-// vim: et ts=2 sw=2

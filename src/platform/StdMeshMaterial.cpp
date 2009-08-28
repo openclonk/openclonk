@@ -451,5 +451,3 @@ const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name)
 	if(iter == Materials.end()) return NULL;
 	return &iter->second;
 }
-
-// vim: et ts=2 sw=2
