@@ -22,11 +22,18 @@ must not be misrepresented as being the original software.
 distribution.
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif // HAVE_CONFIG_H
+
 #include <ctype.h>
 #include "tinyxml.h"
 
 #ifdef TIXML_USE_STL
 #include <sstream>
+#endif
+#ifdef WITH_GLIB
+#include <glib.h>
 #endif
 
 
@@ -1236,8 +1243,16 @@ int TiXmlAttribute::QueryIntValue( int* ival ) const
 
 int TiXmlAttribute::QueryDoubleValue( double* dval ) const
 {
+
+#ifdef WITH_GLIB
+	char * end;
+	*dval  = g_ascii_strtod (value.c_str(), &end);
+	if (end != value.c_str())
+		return TIXML_SUCCESS;
+#else
 	if ( sscanf( value.c_str(), "%lf", dval ) == 1 )
 		return TIXML_SUCCESS;
+#endif
 	return TIXML_WRONG_TYPE;
 }
 

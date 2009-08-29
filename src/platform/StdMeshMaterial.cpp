@@ -19,6 +19,9 @@
 #include <StdMeshMaterial.h>
 
 #include <cctype>
+#ifdef WITH_GLIB
+#include <glib.h>
+#endif
 
 StdMeshMaterialError::StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line)
 {
@@ -149,7 +152,12 @@ float StdMeshMaterialParserCtx::AdvanceFloat()
 	StdStrBuf buf;
 	AdvanceRequired(buf, TOKEN_IDTF);
 	char* end;
+#ifdef WITH_GLIB
+	float f = g_ascii_strtod(buf.getData(), &end);
+#else
+	// FIXME: locale-dependent
 	float f = strtof(buf.getData(), &end);
+#endif
 	if(*end != '\0') Error(StdStrBuf("Floating point value expected"));
 	return f;
 }
