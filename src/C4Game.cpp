@@ -57,6 +57,7 @@
 #include <C4ObjectMenu.h>
 #include <C4GameLobby.h>
 #include <C4ChatDlg.h>
+#include <C4PlayerControl.h>
 #include <C4MouseControl.h>
 #include <C4PXS.h>
 #include <C4MessageInput.h>
@@ -594,6 +595,8 @@ void C4Game::Clear()
 	KeyboardInput.Clear();
 	SetMusicLevel(100);
 	PlayList.Clear();
+	PlayerControlAssignmentSets.Clear();
+	PlayerControlDefs.Clear();
 
 	// global fullscreen class is not cleared, because it holds the carrier window
 	// but the menu must be cleared (maybe move Fullscreen.Menu somewhere else?)
@@ -1830,7 +1833,7 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 	{
 	if (!comp.fScenarioSection && comp.fExact)
 		{
-    pComp->Name("Game");
+		pComp->Name("Game");
 		pComp->Value(mkNamingAdapt(Time,                  "Time",                  0));
 		pComp->Value(mkNamingAdapt(FrameCounter,          "Frame",                 0));
 //		pComp->Value(mkNamingAdapt(Control.ControlRate,   "ControlRate",           0));
@@ -1861,24 +1864,30 @@ void C4Game::CompileFunc(StdCompiler *pComp, CompileSettings comp)
 	if (comp.fExact)
 		{
 		pComp->Value(mkNamingAdapt(Weather, "Weather"));
-	  pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
-	  pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
+		pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
+		pComp->Value(mkNamingAdapt(Landscape.Sky, "Sky"));
 		}
 
 	pComp->Value(mkNamingAdapt(mkNamingPtrAdapt(pGlobalEffects, "GlobalEffects"), "Effects"));
 
-	// scoreboard compiles into main level [Scoreboard]
-  if (!comp.fScenarioSection && comp.fExact)
-    pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
+	if (!comp.fScenarioSection && comp.fExact)
+		{
+		// scoreboard compiles into main level [Scoreboard]
+		pComp->Value(mkNamingAdapt(Scoreboard, "Scoreboard"));
+		// Keyboard status of global keys synchronized for exact (runtime join) only; not for savegames,
+		// as keys might be released between a savegame save and its resume
+		//pComp->Value(GlobalPlayerControl);
+		}
+
 	if (comp.fPlayers)
 		{
-    assert(pComp->isDecompiler());
+		assert(pComp->isDecompiler());
 		// player parsing: Parse all players
 		// This doesn't create any players, but just parses existing by their ID
 		// Primary player ininitialization (also setting ID) is done by player info list
 		// Won't work this way for binary mode!
 		for (C4Player *pPlr=Players.First; pPlr; pPlr=pPlr->Next)
-			pComp->Value(mkNamingAdapt(*pPlr, FormatString("Player%d", pPlr->ID).getData()));
+			pComp->Value(mkNamingAdapt(mkParAdapt(*pPlr, comp.fExact), FormatString("Player%d", pPlr->ID).getData()));
 		}
 	}
 
@@ -2274,6 +2283,9 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 			{ LogFatal(LoadResStr("IDS_PRC_FAIL")); return false; }
 		SetInitProgress(57);
 
+		// Final init for loaded player commands. Before linking scripts, so CON_* constants are registered
+		PlayerControlDefs.FinalInit();
+
 		// Link scripts
 		if (!LinkScriptEngine()) return false;
 		SetInitProgress(58);
@@ -2442,9 +2454,6 @@ bool C4Game::InitScriptEngine()
 	if (!Application.OpenSystemGroup())
 		{ LogFatal(LoadResStr("IDS_ERR_INVALIDSYSGRP")); return false; }
 	C4Group &File = Application.SystemGroup;
-
-	// Load string table
-	MainSysLangStringTable.LoadEx("StringTbl", File, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
 
 	// get scripts
 	char fn[_MAX_FNAME+1] = { 0 };
@@ -3161,37 +3170,6 @@ bool C4Game::InitKeyboard()
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "NetAllowJoinToggle",     KEYSCOPE_Generic,    new C4KeyCB  <C4Network2>      (Network, &C4Network2::ToggleAllowJoin)));
 	KeyboardInput.RegisterKey(new C4CustomKey(C4KeyCodeEx(KEY_Default         ), "NetStatsToggle",         KEYSCOPE_Generic,    new C4KeyCB  <C4GraphicsSystem>(GraphicsSystem, &C4GraphicsSystem::ToggleShowNetStatus)));
 
-	// Map player keyboard controls
-	int32_t iKdbSet,iCtrl;
-	StdStrBuf sPlrCtrlName;
-  for (iKdbSet=C4P_Control_Keyboard1; iKdbSet<=C4P_Control_Keyboard4; iKdbSet++)
-	  for (iCtrl=0; iCtrl<C4MaxKey; iCtrl++)
-			{
-			sPlrCtrlName.Format("Kbd%dKey%d", iKdbSet-C4P_Control_Keyboard1+1, iCtrl+1);
-			KeyboardInput.RegisterKey(new C4CustomKey(
-				C4KeyCodeEx(Config.Controls.Keyboard[iKdbSet][iCtrl]),
-				sPlrCtrlName.getData(), KEYSCOPE_Control,
-				new C4KeyCBExPassKey<C4Game, C4KeySetCtrl>(*this, C4KeySetCtrl(iKdbSet, iCtrl), &C4Game::LocalControlKey, &C4Game::LocalControlKeyUp),
-				C4CustomKey::PRIO_PlrControl));
-			}
-
-	// Map player gamepad controls
-	int32_t iGamepad;
-	for (iGamepad=C4P_Control_GamePad1; iGamepad<=C4P_Control_GamePad1+C4ConfigMaxGamepads; iGamepad++)
-		{
-		C4ConfigGamepad &cfg = Config.Gamepads[iGamepad-C4P_Control_GamePad1];
-	  for (iCtrl=0; iCtrl<C4MaxKey; iCtrl++)
-			{
-			if (cfg.Button[iCtrl] == -1) continue;
-			sPlrCtrlName.Format("Joy%dBtn%d", iGamepad-C4P_Control_GamePad1+1, iCtrl+1);
-			KeyboardInput.RegisterKey(new C4CustomKey(
-				C4KeyCodeEx(cfg.Button[iCtrl]),
-				sPlrCtrlName.getData(), KEYSCOPE_Control,
-				new C4KeyCBExPassKey<C4Game, C4KeySetCtrl>(*this, C4KeySetCtrl(iGamepad, iCtrl), &C4Game::LocalControlKey, &C4Game::LocalControlKeyUp),
-				C4CustomKey::PRIO_PlrControl));
-			}
-		}
-
 	// load any custom keysboard overloads
 	KeyboardInput.LoadCustomConfig();
 
@@ -3238,9 +3216,32 @@ bool C4Game::InitSystem()
 	// init keyboard input (default keys, plus overloads)
 	if (!InitKeyboard())
 		{ LogFatal(LoadResStr("IDS_ERR_NOKEYBOARD")); return false; }
+	// Load string table
+	UpdateLanguage();
+	// Player keyboard input: Key definitions and default sets
+	if (!InitPlayerControlSettings()) return false;
 	// Rank system
 	::DefaultRanks.Init(Config.GetSubkeyPath("ClonkRanks"), LoadResStr("IDS_GAME_DEFRANKS"), 1000);
 	// done, success
+	return true;
+	}
+
+void C4Game::UpdateLanguage()
+	{
+	// Reload System.c4g string table
+	MainSysLangStringTable.LoadEx("StringTbl", Application.SystemGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+	}
+
+bool C4Game::InitPlayerControlSettings()
+	{
+	C4PlayerControlFile PlayerControlFile;
+	if (!PlayerControlFile.Load(Application.SystemGroup, C4CFN_PlayerControls, &MainSysLangStringTable)) { LogFatal("[!]Error loading player controls"); return false; }
+	PlayerControlDefs = PlayerControlFile.GetControlDefs();
+	PlayerControlAssignmentSets.Clear();
+	PlayerControlAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), false);
+	PlayerControlAssignmentSets.ResolveRefs(&PlayerControlDefs);
+	// And overwrites from config
+	//PlayerControlAssignmentSets.MergeFrom(Config.Controls.Assignments);
 	return true;
 	}
 
@@ -3273,71 +3274,6 @@ void C4Game::FixRandom(int32_t iSeed)
 	//sprintf(OSTR,"Fixing random to %i",iSeed); Log(OSTR);
 	FixedRandom(iSeed);
 	Randomize3();
-	}
-
-bool C4Game::LocalControlKey(C4KeyCodeEx key, C4KeySetCtrl Ctrl)
-	{
-	// keyboard callback: Perform local player control
-	C4Player *pPlr;
-	if (pPlr = Players.GetLocalByKbdSet(Ctrl.iKeySet))
-		{
-		// Swallow a event generated from Keyrepeat for AutoStopControl
-		if (pPlr->PrefControlStyle)
-			{
-			if (key.IsRepeated())
-				return true;
-			}
-		LocalPlayerControl(pPlr->Number,Control2Com(Ctrl.iCtrl, false));
-		return true;
-		}
-	// not processed - must return false here, so unused keyboard control sets do not block used ones
-	return false;
-	}
-
-bool C4Game::LocalControlKeyUp(C4KeyCodeEx key, C4KeySetCtrl Ctrl)
-	{
-	// Direct callback for released key in AutoStopControl-mode (ignore repeated)
-	if (key.IsRepeated())
-		return true;
-	C4Player *pPlr;
-	if ((pPlr = Players.GetLocalByKbdSet(Ctrl.iKeySet)) && pPlr->PrefControlStyle)
-		{
-		int iCom = Control2Com(Ctrl.iCtrl, true);
-		if (iCom != COM_None) LocalPlayerControl(pPlr->Number, iCom);
-			return true;
-		}
-	// not processed - must return false here, so unused keyboard control sets do not block used ones
-	return false;
-	}
-
-void C4Game::LocalPlayerControl(int32_t iPlayer, int32_t iCom)
-	{
-	C4Player *pPlr = Players.Get(iPlayer); if (!pPlr) return;
-	int32_t iData=0;
-	// Menu button com
-	if (iCom==COM_PlayerMenu)
-		{
-		// Player menu open: close
-		if (pPlr->Menu.IsActive())
-			pPlr->Menu.Close(false);
-		// Menu closed: open main menu
-		else
-			pPlr->ActivateMenuMain();
-		return;
-		}
-	// Local player menu active: convert menu com and control local
-	if (pPlr->Menu.ConvertCom(iCom,iData,true))
-		{
-		pPlr->Menu.Control(iCom,iData);
-		return;
-		}
-	// Pre-queue asynchronous menu conversions
-	if (pPlr->Cursor && pPlr->Cursor->Menu)
-		pPlr->Cursor->Menu->ConvertCom(iCom,iData,true);
-	// Not for eliminated (checked again in DirectCom, but make sure no control is generated for eliminated players!)
-	if (pPlr->Eliminated) return;
-	// Player control: add to control queue
-	Input.Add(CID_PlrControl, new C4ControlPlayerControl(iPlayer,iCom,iData));
 	}
 
 bool C4Game::DefinitionFilenamesFromSaveGame()

@@ -525,7 +525,7 @@ void C4GraphicsSystem::SortViewportsByPlayerControl()
 			pPlr1 = ::Players.Get(pView->Player);
 			pPlr2 = ::Players.Get(pNext->Player);
 			// Swap order
-			if (pPlr1 && pPlr2 && ( LayoutOrder(pPlr1->Control) > LayoutOrder(pPlr2->Control) ))
+			if (pPlr1 && pPlr2 && ( LayoutOrder(pPlr1->ControlSet) > LayoutOrder(pPlr2->ControlSet) ))
 				{
 				if (pPrev) pPrev->Next = pNext; else FirstViewport = pNext;
 				pView->Next = pNext->Next;

@@ -22,6 +22,8 @@
 #define INC_C4KeyboardInput
 
 #include <cctype>
+#include <vector>
+#include <map>
 
 // key context classifications
 enum C4KeyScope
@@ -166,12 +168,23 @@ struct C4KeyCodeEx
 		return Key == v2.Key && dwShift == v2.dwShift;
 		}
 
-	void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined=NULL);
 
 	C4KeyCodeEx(C4KeyCode Key = KEY_Default, C4KeyShiftState Shift = KEYS_None, bool fIsRepeated = false)
 		: Key(Key), dwShift(Shift), fRepeated(fIsRepeated) {}
 
-	bool IsRepeated() { return fRepeated; }
+	bool IsRepeated() const { return fRepeated; }
+	};
+
+// extra data associated with a key event
+struct C4KeyEventData
+	{
+	int32_t iStrength; // pressure between 0 and 100 (100 for nomal keypress)
+	int32_t x,y;       // position for mouse event
+	C4KeyEventData() : iStrength(0), x(0), y(0) {}
+	C4KeyEventData(int32_t iStrength, int32_t x, int32_t y) : iStrength(iStrength), x(x), y(y) {}
+	void CompileFunc(StdCompiler *pComp);
+	bool operator ==(const struct C4KeyEventData &cmp) const;
 	};
 
 // callback interface
@@ -183,7 +196,7 @@ class C4KeyboardCallbackInterface
 		class C4CustomKey *pOriginalKey;
 
 	public:
-		virtual bool OnKeyEvent(C4KeyCodeEx key, C4KeyEventType eEv) = 0; // return true if processed
+		virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv) = 0; // return true if processed
 
 		friend class C4KeyboardMapping;
 
@@ -208,7 +221,7 @@ template <class TargetClass> class C4KeyCB : public C4KeyboardCallbackInterface
 		CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
 
 	protected:
-		virtual bool OnKeyEvent(C4KeyCodeEx key, C4KeyEventType eEv)
+		virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
 			{
 			if (!CheckCondition()) return false;
 			switch (eEv)
@@ -231,14 +244,14 @@ template <class TargetClass> class C4KeyCB : public C4KeyboardCallbackInterface
 template <class TargetClass> class C4KeyCBPassKey : public C4KeyboardCallbackInterface
 	{
 	public:
-		typedef bool(TargetClass::*CallbackFunc)(C4KeyCodeEx key);
+		typedef bool(TargetClass::*CallbackFunc)(const C4KeyCodeEx &key);
 
 	protected:
 		TargetClass &rTarget;
 		CallbackFunc pFuncDown, pFuncUp, pFuncPressed;
 
 	protected:
-		virtual bool OnKeyEvent(C4KeyCodeEx key, C4KeyEventType eEv)
+		virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
 			{
 			if (!CheckCondition()) return false;
 			switch (eEv)
@@ -269,7 +282,7 @@ template <class TargetClass, class ParameterType> class C4KeyCBEx : public C4Key
 		ParameterType par;
 
 	protected:
-		virtual bool OnKeyEvent(C4KeyCodeEx key, C4KeyEventType eEv)
+		virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
 			{
 			if (!CheckCondition()) return false;
 			switch (eEv)
@@ -291,7 +304,7 @@ template <class TargetClass, class ParameterType> class C4KeyCBEx : public C4Key
 template <class TargetClass, class ParameterType> class C4KeyCBExPassKey : public C4KeyboardCallbackInterface
 	{
 	public:
-		typedef bool(TargetClass::*CallbackFunc)(C4KeyCodeEx key, ParameterType par);
+		typedef bool(TargetClass::*CallbackFunc)(const C4KeyCodeEx &key, ParameterType par);
 
 	protected:
 		TargetClass &rTarget;
@@ -299,7 +312,7 @@ template <class TargetClass, class ParameterType> class C4KeyCBExPassKey : publi
 		ParameterType par;
 
 	protected:
-		virtual bool OnKeyEvent(C4KeyCodeEx key, C4KeyEventType eEv)
+		virtual bool OnKeyEvent(const C4KeyCodeEx &key, C4KeyEventType eEv)
 			{
 			if (!CheckCondition()) return false;
 			switch (eEv)
@@ -350,9 +363,9 @@ class C4CustomKey
 		int iRef;
 
 	public:
-		C4CustomKey(C4KeyCodeEx DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority = PRIO_Base); // ctor for default key
+		C4CustomKey(const C4KeyCodeEx &DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority = PRIO_Base); // ctor for default key
 		C4CustomKey(const CodeList &rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority = PRIO_Base); // ctor for default key with multiple possible keys assigned
-		C4CustomKey(C4KeyCodeEx Code, const StdStrBuf &rName); // ctor for single custom key override
+		C4CustomKey(const C4KeyCodeEx &Code, const StdStrBuf &rName); // ctor for single custom key override
 		C4CustomKey(const C4CustomKey &rCpy, bool fCopyCallbacks);
 		virtual ~C4CustomKey(); // dtor
 
@@ -376,7 +389,7 @@ class C4CustomKey
 class C4KeyBinding : protected C4CustomKey
 	{
 	public:
-		C4KeyBinding(C4KeyCodeEx DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority = PRIO_Base); // ctor for default key
+		C4KeyBinding(const C4KeyCodeEx &DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority = PRIO_Base); // ctor for default key
 		C4KeyBinding(const CodeList &rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority = PRIO_Base); // ctor for default key
 		~C4KeyBinding();
 	};
@@ -396,6 +409,7 @@ class C4KeyboardInput
 		// mapping of all keys by code and name
 		KeyCodeMap KeysByCode;
 		KeyNameMap KeysByName;
+		C4KeyEventData LastKeyExtraData;
 
 	public:
 		static bool IsValid; // global var to fix any deinitialization orders of key map and static keys
@@ -421,6 +435,7 @@ class C4KeyboardInput
 
 		C4CustomKey *GetKeyByName(const char *szKeyName);
 		StdStrBuf GetKeyCodeNameByKeyName(const char *szKeyName, bool fShort = false, int32_t iIndex = 0);
+		const C4KeyEventData &GetLastKeyExtraData() const { return LastKeyExtraData; }
 	};
 
 // keyboardinput-initializer-helper

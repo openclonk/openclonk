@@ -53,6 +53,8 @@ set(OC_CLONK_SOURCES
 	src/control/C4GameParameters.h
 	src/control/C4GameSave.cpp
 	src/control/C4GameSave.h
+	src/control/C4PlayerControl.cpp
+	src/control/C4PlayerControl.h
 	src/control/C4PlayerInfoConflicts.cpp
 	src/control/C4PlayerInfo.cpp
 	src/control/C4PlayerInfo.h
@@ -442,21 +444,23 @@ add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
 )
 
-source_group("Unsorted" .*)
-source_group("Library\\Platform abstraction" src/platform/.*)
-source_group("Library\\Utility" src/lib/.*)
-source_group("Library\\C4Group" src/c4group/.*)
-source_group("Library\\Graphics" src/lib/texture/.*)
-source_group("GUI" src/gui/.*)
-source_group("Network" src/network/.*)
-source_group("Game\\Objects" src/game/object/.*)
-source_group("Game\\Scenario" src/game/landscape/.*)
-source_group("Game\\Player" src/game/player/.*)
-source_group("Game\\Script" src/game/script/.*)
-source_group("Scripting" src/script/.*)
-source_group("Config" src/config/.*)
-source_group("Control" src/control/.*)
-source_group("Editing" src/editor/.*)
+if(PROJECT_FOLDERS)
+  source_group("Unsorted" .*)
+  source_group("Library\\Platform abstraction" src/platform/.*)
+  source_group("Library\\Utility" src/lib/.*)
+  source_group("Library\\C4Group" src/c4group/.*)
+  source_group("Library\\Graphics" src/lib/texture/.*)
+  source_group("GUI" src/gui/.*)
+  source_group("Network" src/network/.*)
+  source_group("Game\\Objects" src/game/object/.*)
+  source_group("Game\\Scenario" src/game/landscape/.*)
+  source_group("Game\\Player" src/game/player/.*)
+  source_group("Game\\Script" src/game/script/.*)
+  source_group("Scripting" src/script/.*)
+  source_group("Config" src/config/.*)
+  source_group("Control" src/control/.*)
+  source_group("Editing" src/editor/.*)
+endif()
 
 add_executable(c4group
 	src/c4group/c4group_ng.cpp
@@ -528,6 +532,7 @@ include(CheckFunctionExists)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 
 # User selectable options
+option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
 option(USE_GL "Enable OpenGL support" ON)
 if(APPLE)
 	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)

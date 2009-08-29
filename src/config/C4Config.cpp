@@ -160,7 +160,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(RenderInactiveEM,			"RenderInactiveEM",			1							));
 	pComp->Value(mkNamingAdapt(DisableGamma,					"DisableGamma",					0							,false, true));
 	pComp->Value(mkNamingAdapt(Monitor,								"Monitor",							0							)); // 0 = D3DADAPTER_DEFAULT
-	pComp->Value(mkNamingAdapt(FireParticles,					"FireParticles",				true					));
+	pComp->Value(mkNamingAdapt(FireParticles,					"FireParticles",				1					));
 	pComp->Value(mkNamingAdapt(MaxRefreshDelay,				"MaxRefreshDelay",			30						));
 	pComp->Value(mkNamingAdapt(EnableShaders,				  "Shader",								0							,false, true));
 	}

@@ -33,12 +33,14 @@ global func ShowNeededMaterial(object pOfObject)
   MessageWindow(GetNeededMatStr(pOfObject), GetOwner(),CXCN,pOfObject->GetName());
   return 1;
 }
-
 // Fasskonfiguration
 // Kann z.B. durch eine Spielregel überladen werden (Shamino)
 // Bit 0 (1): Wasserfässer sind auch im Verkauf 8 Clunker wert
 // Bit 1 (2): Fässer werden beim Verkaufen nicht entleert (sind wieder voll kaufbar)
 // Bit 2 (4): Nur Wasserfässer werden beim Verkaufen nicht entleert (sind wieder voll kaufbar)
+global func GetBarrelType() {}
+func BarrelDoFill() {}
+func BarrelIsFull() {}
 global func BarrelConfiguration() { return 5; }
 
 /// Removes a material pixel from the specified location, if the material is flammable.
@@ -52,6 +54,7 @@ global func FlameConsumeMaterial(int x, int y)
 	if (!GetMaterialVal("Inflammable", "Material", mat)) return false;
 	return !!ExtractMaterialAmount(x, y, mat, 1);
 }
+
 
 /// Removes a material pixel from the specified location, if the material is a liquid.
 /// \par x X coordinate. Offset if called in object context.

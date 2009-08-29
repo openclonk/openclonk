@@ -217,7 +217,6 @@ class C4Object: public C4PropList
 		C4Object *ComposeContents(C4ID id);
 		bool MenuCommand(const char *szCommand);
 
-		bool CallControl(C4Player *pPlr, BYTE byCom, C4AulParSet *pPars = 0);
 		C4Value Call(const char *szFunctionCall, C4AulParSet *pPars = 0, bool fPassError = false);
 
 
@@ -335,9 +334,6 @@ class C4Object: public C4PropList
 		bool TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
 		void SetName (const char *NewName = 0);
 		int32_t GetValue(C4Object *pInBase, int32_t iForPlayer);
-		void DirectCom(BYTE byCom, int32_t iData);
-		void AutoStopDirectCom(BYTE byCom, int32_t iData);
-		void AutoStopUpdateComDir();
 		bool BuyEnergy();
 		void AutoSellContents();
 		bool SetOwner(int32_t iOwner);

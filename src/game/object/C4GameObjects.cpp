@@ -353,6 +353,7 @@ void C4GameObjects::PutSolidMasks()
 
 void C4GameObjects::DeleteObjects(bool fDeleteInactive)
 	{
+	Sectors.ClearObjects();
 	C4ObjectList::DeleteObjects();
 	BackObjects.Clear();
 	ForeObjects.Clear();

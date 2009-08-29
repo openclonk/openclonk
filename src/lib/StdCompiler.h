@@ -110,6 +110,7 @@ public:
   // ending the naming, too.
   enum Sep
   {
+    SEP_NONE=0, // No seperator ("")
     SEP_SEP, // Array seperation (",")
     SEP_SEP2, // Array seperation 2 (";")
     SEP_SET, // Map pair seperation ("=")

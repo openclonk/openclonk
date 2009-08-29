@@ -1075,8 +1075,9 @@ void C4MouseControl::Wheel(DWORD dwFlags)
 	// Ctrl + Wheel: pass to player control (might be used for inventory or such)
 	else
 		{
-		if(iDelta > 0) Game.LocalPlayerControl(Player, COM_WheelUp);
-		if(iDelta < 0) Game.LocalPlayerControl(Player, COM_WheelDown);
+		// 2do
+		//if(iDelta > 0) Game.LocalPlayerControl(Player, COM_WheelUp);
+		//if(iDelta < 0) Game.LocalPlayerControl(Player, COM_WheelDown);
 		}
 	}
 
