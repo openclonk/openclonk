@@ -1428,7 +1428,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 	return NULL;
 
 	}
-
+/*
 int32_t C4Game::ObjectCount(C4ID id,
    											 int32_t x, int32_t y, int32_t wdt, int32_t hgt,
 												 DWORD ocf,
@@ -1484,6 +1484,26 @@ int32_t C4Game::ObjectCount(C4ID id,
 				{ iResult++; continue; }
 			}
 
+	return iResult;
+	}
+*/
+
+int32_t C4Game::ObjectCount(C4ID id)
+	{
+	C4Def *pDef;
+	// check the easy cases first
+	if (id != C4ID_None)
+		{
+		if (!(pDef=C4Id2Def(id))) return 0; // no valid def
+		return pDef->Count;
+		}
+	C4Object *cObj;
+	C4ObjectLink *clnk;
+	int32_t iResult = 0;
+	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
+		// Status
+		if (cObj->Status)
+			++iResult;
 	return iResult;
 	}
 
@@ -3440,38 +3460,6 @@ void C4Game::Synchronize(bool fSavePlayerFiles)
 	// TransferZone synchronization: Must do this after dynamic creation to avoid synchronization loss
 	// if UpdateTransferZone-callbacks do sync-relevant changes
 	TransferZones.Synchronize();
-	}
-
-C4Object* C4Game::FindBase(int32_t iPlayer, int32_t iIndex)
-	{
-  C4Object *cObj; C4ObjectLink *clnk;
-	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-		// Status
-		if (cObj->Status)
-		// Base
-		if (cObj->Base == iPlayer)
-		// Index
-		if (iIndex == 0) return cObj;
-		else iIndex--;
-	// Not found
-	return NULL;
-	}
-
-C4Object* C4Game::FindFriendlyBase(int32_t iPlayer, int32_t iIndex)
-	{
-  C4Object *cObj; C4ObjectLink *clnk;
-	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-		// Status
-		if (cObj->Status)
-		// Base
-		if (ValidPlr (cObj->Base))
-		// friendly Base
-		if (!Hostile (cObj->Base, iPlayer))
-		// Index
-		if (iIndex == 0) return cObj;
-		else iIndex--;
-	// Not found
-	return NULL;
 	}
 
 C4Object* C4Game::FindObjectByCommand(int32_t iCommand, C4Object *pTarget, C4Value iTx, int32_t iTy, C4Object *pTarget2, C4Object *pFindNext)

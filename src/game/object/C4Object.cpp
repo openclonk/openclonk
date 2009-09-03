@@ -100,7 +100,6 @@ void C4Object::Default()
 	LastEnergyLossCausePlayer=NO_OWNER;
 	Category=0;
 	NoCollectDelay=0;
-	Base=NO_OWNER;
 	Con=0;
 	Mass=OwnMass=0;
 	Damage=0;
@@ -841,12 +840,6 @@ bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
   {
   // Fire Phase
   FirePhase++; if (FirePhase>=MaxFirePhase) FirePhase=0;
-  // Extinguish in base
-  if (!::Game.iTick5)
-		if (Category & C4D_Living)
-			if (Contained && ValidPlr(Contained->Base))
-				if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Extinguish)
-					Extinguish(iFireNumber);
   // Decay
 	if (!Def->NoBurnDecay)
 		DoCon(-100);
@@ -881,17 +874,6 @@ bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
   return true;
   }
 
-bool C4Object::BuyEnergy()
-  {
-	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return false;
-	if (!GetPhysical()->Energy) return false;
-  if (pPlr->Eliminated) return false;
-  if (pPlr->Wealth<Game.C4S.Game.Realism.BaseRegenerateEnergyPrice) return false;
-  pPlr->DoWealth(-Game.C4S.Game.Realism.BaseRegenerateEnergyPrice);
-  DoEnergy(+100,false,C4FxCall_EngBaseRefresh,Owner);
-  return true;
-  }
-
 bool C4Object::ExecLife()
   {
 
@@ -909,24 +891,8 @@ bool C4Object::ExecLife()
 							// Grow
 							DoCon(Def->Growth*100);
 
-  // Energy reload in base
-  int32_t transfer;
-  if (!::Game.iTick3) if (Alive)
-    if (Contained && ValidPlr(Contained->Base))
-      if (!Hostile(Owner,Contained->Base))
-        if (Energy<GetPhysical()->Energy)
-					if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RegenerateEnergy)
-						{
-						if (Contained->Energy<=0) Contained->BuyEnergy();
-						transfer=Min<int32_t>(Min<int32_t>(2*C4MaxPhysical/100,Contained->Energy),GetPhysical()->Energy-Energy);
-						if (transfer)
-							{
-							Contained->DoEnergy(-transfer, true, C4FxCall_EngBaseRefresh, Contained->Owner);
-							DoEnergy(transfer, true, C4FxCall_EngBaseRefresh, Contained->Owner);
-							}
-						}
-
   // Magic reload
+  int32_t transfer;
   if (!::Game.iTick3) if (Alive)
     if (Contained)
       if (!Hostile(Owner,Contained->Owner))
@@ -1004,10 +970,9 @@ bool C4Object::ExecLife()
   // Nonlife normal energy loss
 	if (!::Game.iTick10) if (Energy)
 		if (!(Category & C4D_Living))
-			if (!ValidPlr(Base) || (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RegenerateEnergy))
-				// don't loose if assigned as Energy-holder
-				if (!(Def->LineConnect & C4D_EnergyHolder))
-					DoEnergy(-1,false,C4FxCall_EngStruct, NO_OWNER);
+			// don't loose if assigned as Energy-holder
+			if (!(Def->LineConnect & C4D_EnergyHolder))
+				DoEnergy(-1,false,C4FxCall_EngStruct, NO_OWNER);
 
 	// birthday
 	if (!::Game.iTick255)
@@ -1033,57 +998,8 @@ bool C4Object::ExecLife()
   return true;
   }
 
-void C4Object::AutoSellContents()
-  {
-  C4ObjectLink *clnk; C4Object *cobj1,*cobj2;
-	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return;
-
-  // Content's gold contents
-  for (clnk=Contents.First; clnk && (cobj1=clnk->Obj); clnk=clnk->Next)
-		if (cobj1->Status)
-			while (cobj2=cobj1->Contents.Find(C4ID_Gold))
-				{ cobj2->Exit(); pPlr->Sell2Home(cobj2); }
-
-  // Gold contents
-  while (cobj1=Contents.Find(C4ID_Gold))
-    { cobj1->Exit(); pPlr->Sell2Home(cobj1); }
-
-  }
-
 void C4Object::ExecBase()
   {
-  C4Object *flag;;
-
-  // New base assignment by flag (no old base removal)
-  if (!::Game.iTick10)
-    if (Def->CanBeBase) if (!ValidPlr(Base))
-      if (flag=Contents.Find(C4ID_Flag))
-        if (ValidPlr(flag->Owner) && (flag->Owner!=Base))
-          {
-          // Attach new flag
-          flag->Exit();
-          flag->SetActionByName("FlyBase",this);
-          // Assign new base
-          Base=flag->Owner;
-					Contents.CloseMenus();
-		      StartSoundEffect("Trumpet",false,100,this);
-					SetOwner(flag->Owner);
-          }
-
-  // Base execution
-  if (!::Game.iTick35)
-    if (ValidPlr(Base))
-      {
-			// Auto sell contents
-			if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_AutoSellContents) AutoSellContents();
-      // Lost flag?
-      if (!Game.FindObject(C4ID_Flag,0,0,0,0,OCF_All,"FlyBase",this))
-        {
-        Base=NO_OWNER;
-        Contents.CloseMenus();
-        }
-      }
-
   // Environmental action
   if (!::Game.iTick35)
     {
@@ -1605,10 +1521,6 @@ bool C4Object::Enter(C4Object *pTarget, bool fCalls, bool fCopyMotion, bool *pfR
 	// Entrance call
 	if (fCalls) Call(PSF_Entrance,&C4AulParSet(C4VObj(Contained)));
 	if (!Contained || !Contained->Status || !pTarget->Status) return true;
-  // Base auto sell contents
-	if (ValidPlr(Contained->Base))
-		if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_AutoSellContents)
-			Contained->AutoSellContents();
 	// Success
   return true;
   }
@@ -1627,13 +1539,6 @@ void C4Object::Fling(FIXED txdir, FIXED tydir, bool fAddSpeed)
 
 bool C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
   {
-  // Hostile: no entrance to base
-  if (Hostile(by_plr,Base) && (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_RejectEntrance))
-    {
-    if (ValidPlr(Owner))
-      GameMsgObject(FormatString(LoadResStr("IDS_OBJ_HOSTILENOENTRANCE"),::Players.Get(Owner)->GetName()).getData(),this);
-    return false;
-    }
   // Try entrance activation
   if (OCF & OCF_Entrance)
     if (!! Call(PSF_ActivateEntrance,&C4AulParSet(C4VObj(by_obj))))
@@ -2686,7 +2591,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 
 	pComp->Value(mkNamingAdapt( iLastAttachMovementFrame,					"LastSolidAtchFrame",	-1								));
 	pComp->Value(mkNamingAdapt( NoCollectDelay,										"NoCollectDelay",			0 								));
-	pComp->Value(mkNamingAdapt( Base,															"Base",								NO_OWNER					));
 	pComp->Value(mkNamingAdapt( Con,															"Size",								0									));
 	pComp->Value(mkNamingAdapt( OwnMass,											    "OwnMass",						0									));
 	pComp->Value(mkNamingAdapt( Mass,															"Mass",								0									));
@@ -2964,24 +2868,6 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 								LoadResStr("IDS_CON_EXIT"),&ccgo);
 			::GraphicsResource.fctExit.Draw(ccgo);
 			}
-		// Contained base commands
-		if (ValidPlr(Contained->Base))
-			{
-			// Sell
-			if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell)
-				{
-				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Dig,pRegions,Owner,
-					LoadResStr("IDS_CON_SELL"),&ccgo);
-				DrawMenuSymbol(C4MN_Sell,ccgo,Contained->Base,Contained);
-				}
-			// Buy
-			if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Buy)
-				{
-				Contained->DrawCommand(cgoBottom,C4FCT_Right,NULL,COM_Up,pRegions,Owner,
-					LoadResStr("IDS_CON_BUY"),&ccgo);
-				DrawMenuSymbol(C4MN_Buy,ccgo,Contained->Base,Contained);
-				}
-			}
 		// Contained put & activate
 		// carlo
 		int32_t nContents = Contained->Contents.ListIDCount(C4D_Get);
@@ -3098,7 +2984,6 @@ bool C4Object::ValidateOwner()
 	{
 	// Check owner and controller
 	if (!ValidPlr(Owner)) Owner=NO_OWNER;
-	if (!ValidPlr(Base)) Base=NO_OWNER;
 	if (!ValidPlr(Controller)) Controller=NO_OWNER;
 	// Color is not reset any more, because many scripts change colors to non-owner-colors these days
 	// Additionally, player colors are now guarantueed to remain the same in savegame resumes
@@ -3212,18 +3097,6 @@ bool C4Object::ContainedControl(BYTE byCom)
 			break;
 		case COM_Throw:
 			PlayerObjectCommand(Owner,C4CMD_Throw);
-			break;
-		case COM_Up:
-			if (ValidPlr(Contained->Base))
-				if (!Hostile(Owner,Contained->Base))
-					if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Buy)
-						ActivateMenu(C4MN_Buy);
-			break;
-		case COM_Dig:
-			if (ValidPlr(Contained->Base))
-				if (!Hostile(Owner,Contained->Base))
-					if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell)
-						ActivateMenu(C4MN_Sell);
 			break;
 		case COM_Left:
 			PlayerObjectCommand(Owner,C4CMD_Take);
@@ -5293,12 +5166,6 @@ bool C4Object::SetOwner(int32_t iOwner)
 		PlrFoWActualize();
 	// this automatically updates controller
 	Controller = Owner;
-	// if this is a flag flying on a base, the base must be updated
-	if (id == C4ID_Flag) if (SEqual(Action.pActionDef->GetName(), "FlyBase")) if (Action.Target && Action.Target->Status)
-		if (Action.Target->Base == iOldOwner)
-			{
-			Action.Target->Base = Owner;
-			}
 	// script callback
 	Call(PSF_OnOwnerChanged, &C4AulParSet(C4VInt(Owner), C4VInt(iOldOwner)));
 	// done

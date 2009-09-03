@@ -121,7 +121,6 @@ class C4Object: public C4PropList
 		int32_t old_x, old_y; C4LArea Area; // position as currently seen by Game.Objecets.Sectors. UpdatePos to sync.
 		int32_t r;
 		int32_t NoCollectDelay;
-		int32_t Base;
 		int32_t Mass, OwnMass;
 		int32_t Damage;
 		int32_t Energy;
@@ -338,8 +337,6 @@ class C4Object: public C4PropList
 		void DirectCom(BYTE byCom, int32_t iData);
 		void AutoStopDirectCom(BYTE byCom, int32_t iData);
 		void AutoStopUpdateComDir();
-		bool BuyEnergy();
-		void AutoSellContents();
 		bool SetOwner(int32_t iOwner);
 		bool SetPlrViewRange(int32_t iToRange);
 		void SetOnFire(bool OnFire) { this->OnFire = OnFire; SetOCF(); }

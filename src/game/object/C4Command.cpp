@@ -1884,83 +1884,12 @@ void C4Command::Attack()
 
 void C4Command::Buy()
 	{
-	// Base buying disabled? Fail.
-	if (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Buy) { Finish(); return; }
-	// No target (base) object specified: find closest base
-	int32_t cnt; C4Object *pBase;
-	if (!Target)
-		for (cnt=0; pBase=Game.FindFriendlyBase(cObj->Owner,cnt); cnt++)
-			if (!Target || Distance(cObj->GetX(),cObj->GetY(),pBase->GetX(),pBase->GetY())<Distance(cObj->GetX(),cObj->GetY(),Target->GetX(),Target->GetY()))
-				Target=pBase;
-	// No target (base) object: fail
-	if (!Target) { Finish(); return; }
-	// No type to buy specified: open buy menu for base
-	if (!Data)
-		{
-		cObj->ActivateMenu(C4MN_Buy,0,0,0,Target);
-		Finish(true); return;
-		}
-	// Target object is no base or hostile: fail
-	if (!ValidPlr(Target->Base) || Hostile(Target->Base,cObj->Owner))
-		{ Finish(); return; }
-	// Target material undefined: fail
-	C4Def *pDef = C4Id2Def(Data.getC4ID());
-	if (!pDef) { Finish(); return; }
-	// Material not available for purchase at base: fail
-	if (!::Players.Get(Target->Base)->HomeBaseMaterial.GetIDCount(Data.getC4ID()))
-		{
-		Finish(false, FormatString(LoadResStr("IDS_PLR_NOTAVAIL"),pDef->GetName()).getData());
-		return;
-		}
-	// Base owner has not enough funds: fail
-	if (::Players.Get(Target->Base)->Wealth < pDef->GetValue(Target, cObj->Owner))
-		{ Finish(false, LoadResStr("IDS_PLR_NOWEALTH")); return; }
-	// Not within target object: enter
-	if (cObj->Contained!=Target)
-		{ cObj->AddCommand(C4CMD_Enter,Target,0,0,50); return; }
-	// Buy object(s)
-	for (Tx.SetInt(Max<int32_t>(Tx._getInt(),1)); Tx._getInt(); Tx--)
-		if (!Buy2Base(cObj->Owner,Target,Data.getC4ID()))
-			// Failed (with ugly message)
-			{ Finish(); return; }
-	// Done: success
-	Finish(true);
+	Finish();
 	}
 
 void C4Command::Sell()
 	{
-	// Base sale disabled? Fail.
-	if (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell) { Finish(); return; }
-	// No target (base) object specified: find closest base
-	int32_t cnt; C4Object *pBase;
-	if (!Target)
-		for (cnt=0; pBase=Game.FindBase(cObj->Owner,cnt); cnt++)
-			if (!Target || Distance(cObj->GetX(),cObj->GetY(),pBase->GetX(),pBase->GetY())<Distance(cObj->GetX(),cObj->GetY(),Target->GetX(),Target->GetY()))
-				Target=pBase;
-	// No target (base) object: fail
-	if (!Target) { Finish(); return; }
-	// No type to sell specified: open sell menu for base
-	if (!Data)
-		{
-		cObj->ActivateMenu(C4MN_Sell,0,0,0,Target);
-		Finish(true); return;
-		}
-	// Target object is no base or hostile: fail
-	if (!ValidPlr(Target->Base) || Hostile(Target->Base,cObj->Owner))
-		{ Finish(); return; }
-	// Not within target object: enter
-	if (cObj->Contained!=Target)
-		{ cObj->AddCommand(C4CMD_Enter,Target,0,0,50); return; }
-	// Sell object(s)
-	for (Tx.SetInt(Max<int32_t>(Tx._getInt(),1)); Tx._getInt(); Tx--)
-		if (!SellFromBase(cObj->Owner,Target,Data.getC4ID(),Target2))
-			// Failed
-			{ Finish(); return; }
-		else
-			// preferred sell object can be sold once only :)
-			Target2=NULL;
-	// Done
-	Finish(true);
+	Finish();
 	}
 
 void C4Command::Acquire()
@@ -2190,19 +2119,7 @@ void C4Command::Retry()
 
 void C4Command::Home()
 	{
-	// At home base: done
-	if (cObj->Contained && (cObj->Contained->Base==cObj->Owner))
-		{ Finish(true); return; }
-	// No target (base) object specified: find closest base
-	int32_t cnt; C4Object *pBase;
-	if (!Target)
-		for (cnt=0; pBase=Game.FindBase(cObj->Owner,cnt); cnt++)
-			if (!Target || Distance(cObj->GetX(),cObj->GetY(),pBase->GetX(),pBase->GetY())<Distance(cObj->GetX(),cObj->GetY(),Target->GetX(),Target->GetY()))
-				Target=pBase;
-	// No base: fail
-	if (!Target) { Finish(); return; }
-	// Enter base
-	cObj->AddCommand(C4CMD_Enter,Target);
+	Finish();
 	}
 
 void C4Command::Set(int32_t iCommand, C4Object *pObj, C4Object *pTarget, C4Value nTx, int32_t iTy,

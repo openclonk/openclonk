@@ -155,7 +155,6 @@ class C4Def: public C4PropList
     C4ID BurnTurnTo;
     C4ID BuildTurnTo;
     int32_t GrowthType;
-    int32_t CanBeBase;
     int32_t CrewMember;
 		int32_t NativeCrew;
     int32_t Mass;

@@ -235,18 +235,6 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
 	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapePushPull),         "LandscapePushPull",   false));
 	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.LandscapeInsertThrust),     "LandscapeInsertThrust",true));
 
-	const StdBitfieldEntry<int32_t> BaseFunctionalities[] = {
-		{ "BASEFUNC_AutoSellContents",								BASEFUNC_AutoSellContents		},
-		{ "BASEFUNC_RegenerateEnergy",								BASEFUNC_RegenerateEnergy		},
-		{ "BASEFUNC_Buy",															BASEFUNC_Buy								},
-		{ "BASEFUNC_Sell",														BASEFUNC_Sell								},
-		{ "BASEFUNC_RejectEntrance",									BASEFUNC_RejectEntrance			},
-		{ "BASEFUNC_Extinguish",											BASEFUNC_Extinguish					},
-		{ "BASEFUNC_Default",													BASEFUNC_Default						},
-		{ NULL, 0 } };
-
-	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(mkBitfieldAdapt<int32_t>(Realism.BaseFunctionality, BaseFunctionalities)), "BaseFunctionality",   BASEFUNC_Default));
-	pComp->Value(mkNamingAdapt(mkRuntimeValueAdapt(Realism.BaseRegenerateEnergyPrice), "BaseRegenerateEnergyPrice",BASE_RegenerateEnergyPrice));
   pComp->Value(mkNamingAdapt(Goals,                    "Goals",               C4IDList()));
   pComp->Value(mkNamingAdapt(Rules,                    "Rules",               C4IDList()));
   pComp->Value(mkNamingAdapt(FoWColor,                 "FoWColor",            0u));
@@ -442,8 +430,6 @@ void C4SRealism::Default()
 	LandscapePushPull=0;
 	LandscapeInsertThrust=0;
 	ValueOverloads.Default();
-	BaseFunctionality = BASEFUNC_Default;
-	BaseRegenerateEnergyPrice = BASE_RegenerateEnergyPrice;
   }
 
 void C4SDisasters::Default()
