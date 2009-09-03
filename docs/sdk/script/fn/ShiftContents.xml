@@ -34,7 +34,7 @@
   {
   if (!ShiftContents(false, idTarget)) <funclink>return</funclink> 1;
   <funclink>Sound</funclink>("Ding");
-  <funclonk>return</funclink> 1;
+  <funclink>return</funclink> 1;
   }</code>
         <text>Durch dieses Objektscript verursacht das Auswählen eines anderen Gegenstandes im Inventar einen Ding-Sound.</text>
       </example>

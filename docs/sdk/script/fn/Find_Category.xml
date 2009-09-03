@@ -23,7 +23,7 @@
 					<code><funclink>FindObjects</funclink>(Find_Category(<funclink>C4D_Rule</funclink> | <funclink>C4D_Goal</funclink>))</code>
 					<text>
 						Liefert alle aktiven Spielregeln und Spielziele zurück. Man beachte, dass sich die Kategorien mit "|" kombinieren lassen.
-						In diesem Fall trifft das Kriterium auf alle Objekte zu, bei denen <i>mindestens eine</i> gesetzte Kategorie übereinstimmt.
+						In diesem Fall trifft das Kriterium auf alle Objekte zu, bei denen <em>mindestens eine</em> gesetzte Kategorie übereinstimmt.
 					</text>
 			</example>
 		</examples>

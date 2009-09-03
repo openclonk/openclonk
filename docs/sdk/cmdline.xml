@@ -7,7 +7,7 @@
 
 <text>Das Installationsverzeichnis von Clonk enthält die unten beschriebenen Programmdateien. Durch einen Start per Doppelklick oder Startmenü werden Programme ohne zusätzliche Parameter ausgeführt. Innerhalb einer Konsole (Eingabeaufforderung) oder Script-Datei (Batch-Datei) lassen sich die Programme jedoch mit zusätzlichen Kommandozeilenparametern starten, die hier ausführlich erklärt werden.</text>
 <part>
-<h id="Clonk">Clonk.exe <tt>(Windows)</tt> clonk (Linux) Clonk (Mac)</h>
+<h id="Clonk">Clonk.exe (Windows) clonk (Linux) Clonk (Mac)</h>
 <text>Die Engine. Das eigentliche Hauptprogramm des Spiels. Ohne Parameter startet das Spiel im Vollbildmodus (Spielermodus) und zeigt das Startmenü an. Folgende Parameter sind zusätzlich möglich:</text>
 <dl>
 <dt id="console">/console</dt>
