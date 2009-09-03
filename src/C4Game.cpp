@@ -1143,7 +1143,7 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
   dwdt=pDef->Shape.Wdt; dhgt=pDef->Shape.Hgt;
   dx=iX-dwdt/2; dy=iBY-dhgt;
 
-  // Terrain & Basement
+  // Terrain
   if (fTerrain)
     {
     // Clear site background (ignored for ultra-large structures)
@@ -1151,20 +1151,6 @@ C4Object* C4Game::CreateObjectConstruction(C4PropList * PropList,
 			Landscape.DigFreeRect(dx,dy,dwdt,dhgt);
     // Raise Terrain
     Landscape.RaiseTerrain(dx,dy+dhgt,dwdt);
-    // Basement
-    if (pDef->Basement)
-      {
-      const int32_t BasementStrength=8;
-			// Border basement
-      if (pDef->Basement>1)
-        {
-        Landscape.DrawMaterialRect(MGranite,dx,dy+dhgt,Min<int32_t>(pDef->Basement,dwdt),BasementStrength);
-        Landscape.DrawMaterialRect(MGranite,dx+dwdt-Min<int32_t>(pDef->Basement,dwdt),dy+dhgt,Min<int32_t>(pDef->Basement,dwdt),BasementStrength);
-        }
-			// Normal basement
-      else
-        Landscape.DrawMaterialRect(MGranite,dx,dy+dhgt,dwdt,BasementStrength);
-      }
     }
 
   // Create object
