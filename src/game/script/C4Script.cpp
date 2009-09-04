@@ -5273,10 +5273,10 @@ static bool FnAddEvaluationData(C4AulContext *cthr, C4String *pText, long idPlay
 	return true;
 	}
 
-static bool FnHideSettlementScoreInEvaluation(C4AulContext *cthr, bool fHide)
+static C4Void FnHideSettlementScoreInEvaluation(C4AulContext *cthr, bool fHide)
 {
 	Game.RoundResults.HideSettlementScore(fHide);
-	return true;
+	return C4VNull;
 }
 
 static long FnGetUnusedOverlayID(C4AulObjectContext *ctx, long iBaseIndex)
