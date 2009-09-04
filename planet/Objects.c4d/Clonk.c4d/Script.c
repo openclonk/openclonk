@@ -2,24 +2,29 @@
 
 #strict 2
 
-// Zauberei - benötigt, wenn der Clonk Zielzauber z.B. aus dem Zauberturm zaubert
-// Auch benötigt für den König
-local pAimer;			// Aktive Zielsteuerung; wird abgrbrochen, wenn der Zauberer gestört wird (Nur Fantasypack)
+// Zauberei - benï¿½tigt, wenn der Clonk Zielzauber z.B. aus dem Zauberturm zaubert
+// Auch benï¿½tigt fï¿½r den Kï¿½nig
+local pAimer;			// Aktive Zielsteuerung; wird abgrbrochen, wenn der Zauberer gestï¿½rt wird (Nur Fantasypack)
 local pAimedSpell;		// Zauber, der gezielt wird  (Nur Fantasypack)
 local pAimedSpellOrigin;        // Objekt, das einen Zielzauber initiiert hat. An dieses werden SpellFailed/SpellSucceeded-Nachrichten weitergeleitet
 
+local pInventory;
 
 /* Initialisierung */
 
 protected func Initialize()
 {
+  // Create Inventoryobject
+  pInventory = CreateObject(INVT, 0, 0, GetOwner());
+  CreateContents(EMPT);
+  CreateContents(SHVL);
   // Clonks mit Magiephysikal aus fehlerhaften Szenarien korrigieren
   if (GetID () == CLNK)
     if (GetPhysical ("Magic", 1))
       SetPhysical ("Magic", 0, 1);
   SetAction("Walk");
   SetDir(Random(2));
-  // Broadcast für Spielregeln
+  // Broadcast fï¿½r Spielregeln
   GameCallEx("OnClonkCreation", this);
   return 1;
 }
@@ -36,10 +41,10 @@ protected func Swimming2()
     SetAction("Swim");
 }
 
-/* Bei Hinzufügen zu der Crew eines Spielers */
+/* Bei Hinzufï¿½gen zu der Crew eines Spielers */
 
 protected func Recruitment(int iPlr) {
-  // Broadcast für Crew
+  // Broadcast fï¿½r Crew
   GameCallEx("OnClonkRecruitment", this, iPlr);
 }
 
@@ -76,7 +81,7 @@ protected func ControlLeft()
   if (Control2Effect("ControlLeft")) return 1;
   // Steuerung an Pferd weiterleiten
   if (IsRiding()) return GetActionTarget()->~ControlLeft(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -96,7 +101,7 @@ protected func ControlLeftReleased()
 {
   // Steuerung an Pferd weiterleiten
   if (IsRiding()) return GetActionTarget()->~ControlLeftReleased(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -106,7 +111,7 @@ protected func ControlRight()
   if (Control2Effect("ControlRight")) return 1;
   // Steuerung an Pferd weiterleiten
   if (IsRiding())  return GetActionTarget()->~ControlRight(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -114,7 +119,7 @@ protected func ControlRightReleased()
 {
   // Steuerung an Pferd weiterleiten
   if (IsRiding()) return GetActionTarget()->~ControlRightReleased(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -127,7 +132,7 @@ protected func ControlUp()
   // Bei JnR Delfinsprung
   if(GetPlrCoreJumpAndRunControl(GetController()))
     DolphinJump();
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -135,7 +140,7 @@ protected func ControlUpReleased()
 {
   // Steuerung an Pferd weiterleiten
   if (IsRiding()) return GetActionTarget()->~ControlUpReleased(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -148,7 +153,7 @@ protected func ControlUpDouble()
 
 private func DolphinJump()
 {
-  // nur wenn an Meeresoberfläche
+  // nur wenn an Meeresoberflï¿½che
   if(!InLiquid()) return 0;
   if(GBackSemiSolid(0,-1)) return 0;
   // Nicht wenn deaktiviert (z.B. Ohnmacht)
@@ -170,7 +175,7 @@ protected func ControlDown()
   if (Control2Effect("ControlDown")) return 1;
   // Steuerung an Pferd weiterleiten
   if (IsRiding())  return GetActionTarget()->~ControlDown(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -178,7 +183,7 @@ protected func ControlDownReleased()
 {
   // Steuerung an Pferd weiterleiten
   if (IsRiding()) return GetActionTarget()->~ControlDownReleased(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -188,7 +193,7 @@ protected func ControlDownSingle()
   if (Control2Effect("ControlDownSingle")) return 1;
   // Steuerung an Pferd weiterleiten
   if (IsRiding())  return GetActionTarget()->~ControlDownSingle(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -198,7 +203,7 @@ protected func ControlDownDouble()
   if (Control2Effect("ControlDownDouble")) return 1;
   // Steuerung an Pferd weiterleiten
   if (IsRiding())  return GetActionTarget()->~ControlDownDouble(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -208,7 +213,7 @@ protected func ControlDig()
   if (Control2Effect("ControlDig")) return 1;
   // Steuerung an Pferd weiterleiten
   if (IsRiding())  return GetActionTarget()->~ControlDig(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -216,7 +221,7 @@ protected func ControlDigReleased()
 {
   // Steuerung an Pferd weiterleiten
   if (IsRiding()) return GetActionTarget()->~ControlDigReleased(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -224,7 +229,7 @@ protected func ControlDigSingle()
 {
   // Steuerung an Pferd weiterleiten
   if (IsRiding())  return GetActionTarget()->~ControlDigSingle(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -234,7 +239,7 @@ protected func ControlDigDouble()
   if (Control2Effect("ControlDigDouble")) return 1;
   // Steuerung an Pferd weiterleiten
   if (IsRiding())  return GetActionTarget()->~ControlDigDouble(this);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -251,7 +256,7 @@ protected func ControlThrow()
       SetAction("RideThrow");
       return 1;
     }
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -259,7 +264,7 @@ protected func ControlUpdate(object self, int comdir, bool dig, bool throw)
 {
   // Steuerung an Pferd weiterleiten
   if(IsRiding()) return GetActionTarget()->~ControlUpdate(self, comdir, dig, throw);
-  // Keine überladene Steuerung
+  // Keine ï¿½berladene Steuerung
   return 0;
 }
 
@@ -283,7 +288,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
       return 1;
     }
   }
-  // Kein überladenes Kommando
+  // Kein ï¿½berladenes Kommando
   return 0;
 }
 
@@ -297,7 +302,7 @@ private func RedefinePhysical(szPhys, idTo)
       physCurr    = GetPhysical(szPhys);
   // Neuen Wert berechnen
   var physNew; if (physDefTo) physNew=BoundBy(physDefTo-physDefFrom+physCurr, 0, 100000);
-  // Neuen Wert für den Reset immer temporär setzen, selbst wenn keine Änderung besteht, damit der Reset richtig funktioniert
+  // Neuen Wert fï¿½r den Reset immer temporï¿½r setzen, selbst wenn keine ï¿½nderung besteht, damit der Reset richtig funktioniert
   SetPhysical(szPhys, physNew, PHYS_StackTemporary);
   // Fertig
   return 1;
@@ -328,14 +333,14 @@ protected func FxIntRedefineStart(object trg, int num, int tmp, id idTo)
   RedefinePhysical("Magic", idTo);
   RedefinePhysical("Float", idTo);
   /*if (GetRank()<4) RedefinePhysical("CanScale", idTo);
-  if (GetRank()<6) RedefinePhysical("CanHangle", idTo);*/ // z.Z. können es alle
+  if (GetRank()<6) RedefinePhysical("CanHangle", idTo);*/ // z.Z. kï¿½nnen es alle
   RedefinePhysical("CanDig", idTo);
   RedefinePhysical("CanConstruct", idTo);
   RedefinePhysical("CanChop", idTo);
   RedefinePhysical("CanSwimDig", idTo);
   RedefinePhysical("CorrosionResist", idTo);
   RedefinePhysical("BreatheWater", idTo);
-  // Damit Aufwertungen zu nicht-Magiern keine Zauberenergie übrig lassen
+  // Damit Aufwertungen zu nicht-Magiern keine Zauberenergie ï¿½brig lassen
   if (GetPhysical("Magic")/1000 < GetMagicEnergy()) DoMagicEnergy(GetPhysical("Magic")/1000-GetMagicEnergy());
   // Echtes Redefine nur bei echten Aufrufen (hat zu viele Nebenwirkungen)
   if (tmp) return FX_OK;
@@ -366,9 +371,9 @@ protected func FxIntRedefineStop(object trg, int num, int iReason, bool tmp)
   ResetPhysical("Walk");
   ResetPhysical("Breath");
   ResetPhysical("Energy");
-  // Keine Rückänderung bei temporären Aufrufen oder beim Tod/Löschen
+  // Keine Rï¿½ckï¿½nderung bei temporï¿½ren Aufrufen oder beim Tod/Lï¿½schen
   if (tmp || iReason) return;
-  // Damit Aufwertungen von nicht-Magiern keine Zauberenergie übrig lassen
+  // Damit Aufwertungen von nicht-Magiern keine Zauberenergie ï¿½brig lassen
   if (GetPhysical("Magic")/1000 < GetMagicEnergy()) DoMagicEnergy(GetPhysical("Magic")/1000-GetMagicEnergy());
   // OK; alte Definition wiederherstellen
   Redefine(EffectVar(1, trg, num));
@@ -384,11 +389,11 @@ public func Redefine2(idTo)
 
 public func Redefine(idTo)
 {
-  // Aktivitätsdaten sichern
+  // Aktivitï¿½tsdaten sichern
   var phs=GetPhase(),act=GetAction();
   // Umwandeln
   ChangeDef(idTo);
-  // Aktivität wiederherstellen
+  // Aktivitï¿½t wiederherstellen
   var chg=SetAction(act);
   if (!chg) SetAction("Walk");
   if (chg) SetPhase(phs);
@@ -532,10 +537,10 @@ protected func Put()
 
 protected func Death(int iKilledBy)
 {
-  // Info-Broadcasts für sterbende Clonks
+  // Info-Broadcasts fï¿½r sterbende Clonks
   GameCallEx("OnClonkDeath", this, iKilledBy);
   
-  // Der Broadcast könnte seltsame Dinge gemacht haben: Clonk ist noch tot?
+  // Der Broadcast kï¿½nnte seltsame Dinge gemacht haben: Clonk ist noch tot?
   if (GetAlive()) return;
   
   // den Beutel fallenlassen
@@ -573,7 +578,7 @@ protected func DeepBreath()
   
 protected func CheckStuck()
 {                   
-  // Verhindert Festhängen am Mittelvertex
+  // Verhindert Festhï¿½ngen am Mittelvertex
   if(!GetXDir()) if(Abs(GetYDir()) < 5)
     if(GBackSolid(0, 3))
       SetPosition(GetX(), GetY() + 1);
@@ -644,7 +649,7 @@ public func ContextHome(pCaller)
 
 public func ContainedCall(string strFunction, object pTarget)
 {
-  // Erst das betreffende Gebäude betreten, dann die Zielfunktion aufrufen 
+  // Erst das betreffende Gebï¿½ude betreten, dann die Zielfunktion aufrufen 
   SetCommand(this, "Call", pTarget, this, 0, 0, strFunction);
   AddCommand(this, "Enter", pTarget);
 }
@@ -654,26 +659,26 @@ public func ContainedCall(string strFunction, object pTarget)
 protected func ControlSpecial2()
 {
   [$CtrlMenuDesc$|Image=CXTX]
-  // In einem Gebäude oder Fahrzeug: das Kontextmenü des Gebäudes öffnen
+  // In einem Gebï¿½ude oder Fahrzeug: das Kontextmenï¿½ des Gebï¿½udes ï¿½ffnen
   if (Contained())
     if ((Contained()->GetCategory() & C4D_Structure) || (Contained()->GetCategory() & C4D_Vehicle))
     {
       SetCommand(this,"Context",0,0,0,Contained());
       return ExecuteCommand();
     }
-  // Fasst ein Objekt an: Kontextmenü des angefassten Objekts öffnen
+  // Fasst ein Objekt an: Kontextmenï¿½ des angefassten Objekts ï¿½ffnen
   if (GetAction() == "Push")
   {
     SetCommand(this,"Context",0,0,0,GetActionTarget());
     return ExecuteCommand();
   }
-  // Trägt ein Objekt: Kontextmenü des ersten getragenen Objekts öffnen
+  // Trï¿½gt ein Objekt: Kontextmenï¿½ des ersten getragenen Objekts ï¿½ffnen
   if (Contents(0))
   {
     SetCommand(this,"Context",0,0,0,Contents(0));
     return ExecuteCommand();
   }
-  // Ansonsten das Kontextmenü des Clonks öffnen
+  // Ansonsten das Kontextmenï¿½ des Clonks ï¿½ffnen
   SetCommand(this,"Context",0,0,0,this);
   return ExecuteCommand();
 }
@@ -699,7 +704,7 @@ public func ControlCommandAcquire(target, x, y, target2, def)
     AddCommand ("Get", obj, 0, 0, 0, 40);
     return 1;
   }
-  // Gebäude suchen worin man's herstellen kann  
+  // Gebï¿½ude suchen worin man's herstellen kann  
   if (obj = GetProducerOf (def)) {
     AddCommand ("Call", this, 0, 0, 0, 0, "AutoProduction", 0, 1);
     obj -> ~HowToProduce (this, def);
@@ -755,7 +760,58 @@ public func Drink(object pDrink)
   if (GetActMapVal("Name", "Drink"))
     SetAction("Drink");
   // Vorsicht: erstmal nichts mit pDrink machen,
-  // die Potions löschen sich meist selber...
+  // die Potions lï¿½schen sich meist selber...
+}
+
+/* New collection behavior */
+public func Collection2(object pObj)
+{
+  if(pObj->GetID() != EMPT)
+    pInventory->AddItem(pObj);
+  // HACK: only to hide the engine inventory
+  pObj->SetClrModulation(RGBa(Random(255),Random(255),Random(255),255));
+  UpdateInventorySelection();
+}
+
+public func Ejection(object pObj)
+{
+  if(pObj->GetID() != EMPT)
+  {
+    pInventory->RemItem(pObj);
+    // Try to get next item
+    var i;
+    do
+    {
+      pInventory->SelectNext();
+      i++;
+    }
+    while(!pInventory->GetSelectedObj() && i<4)
+  }
+  // HACK: only to hide the engine inventory
+  pObj->SetClrModulation(RGB(255,255,255));
+  UpdateInventorySelection();
+}
+
+/* Inventorychange */
+
+protected func CrewSelection(bool fDeselect, bool fCursorOnly)
+{
+  pInventory->Show(GetCursor(GetOwner()) != this);
+}
+
+protected func ControlSpecial()
+{
+  pInventory->SelectNext();
+  UpdateInventorySelection();
+}
+
+private func UpdateInventorySelection()
+{
+  var pObj = pInventory->GetSelectedObj();
+  if(!pObj) pObj = FindContents(EMPT);
+  var iSave;
+  while(ScrollContents() != pObj && iSave < 10) iSave++;
+//  if(iSave == 10) Log("ERROR: Inventory doesn't match");
 }
 
 /* Einsammeln */
@@ -763,7 +819,7 @@ public func Drink(object pDrink)
 public func RejectCollect(id idObject, object pObject)
 {
   // Objekt kann gepackt werden
-  // automatisches Packen aber nur wenn die Paktteile nicht extra gezählt werden
+  // automatisches Packen aber nur wenn die Paktteile nicht extra gezï¿½hlt werden
   if(!IsSpecialItem(pObject)) if(pObject->~JoinPack(this)) return 1;
     
   // Objektaufnahme mit Limit verhindern, wenn bereits genug getragen
@@ -773,7 +829,7 @@ public func RejectCollect(id idObject, object pObject)
   var i, iCount;
   if(i = IsSpecialItem(pObject))
   {
-    // Noch genug Platz für das ganze Packet?
+    // Noch genug Platz fï¿½r das ganze Packet?
     if(GetSpecialCount(GetMaxSpecialCount(i-1))+Max(pObject->~PackCount(),1)<=GetMaxSpecialCount(i-1, 1)) return 0;
     iCount = GetMaxSpecialCount(i-1, 1)-GetSpecialCount(GetMaxSpecialCount(i-1));
     // Ansonten so viel wie geht rein
@@ -781,15 +837,15 @@ public func RejectCollect(id idObject, object pObject)
     else return 1;
   }
   
-  return GetNonSpecialCount()>=MaxContentsCount();
+  return !pInventory->FreeSpace(pObject);//GetNonSpecialCount()>=MaxContentsCount();
 }
 
 /* Itemlimit */
-public func MaxContentsCount() { return 1; }
+public func MaxContentsCount() { return 3; }
 
 public func GetMaxSpecialCount(iIndex, fAmount)
 {
-  // Hier könnten Spezialbehandlungen von Itemgruppen definiert werden
+  // Hier kï¿½nnten Spezialbehandlungen von Itemgruppen definiert werden
   // wie z.B. zu dem Inventar noch 30 Pfeile aufnehmen (siehe auch Ritter)
   //  if(iIndex == 0) { if(fAmount) return(30); return("IsArrow"); }
 }
@@ -799,13 +855,13 @@ private func GetObjectCount(idObj)
   { 
   var idUnpackedObj; 
   if (idUnpackedObj = idObj->~UnpackTo()) 
-    // Auch verschachtelte Pakete mitzählen 
+    // Auch verschachtelte Pakete mitzï¿½hlen 
     return GetObjectCount(idUnpackedObj) * (idObj->~PackCount()||1);
   // Ansonsten ist es nur ein Objekt 
   return 1; 
   }
 
-/* Spezialgegenstände im Inventar zählen */ 
+/* Spezialgegenstï¿½nde im Inventar zï¿½hlen */ 
 private func GetSpecialCount(szTest) 
   { 
   var iCnt, pObj; 
@@ -818,7 +874,7 @@ private func GetSpecialCount(szTest)
     if(pObj->~UnpackTo())
       if(DefinitionCall(pObj->~UnpackTo(), szTest))
         iCnt += GetObjectCount(pObj); 
-  // Wert zurückgeben 
+  // Wert zurï¿½ckgeben 
   return iCnt; 
   }
   
@@ -844,13 +900,13 @@ private func IsSpecialItem(pObj)
 private func GetNonSpecialCount() 
   { 
   var iCnt, pObj; 
-  // Inventar einzeln auf nicht-Spezial überprüfen 
+  // Inventar einzeln auf nicht-Spezial ï¿½berprï¿½fen 
   for(var i = 0; pObj = Contents(i); i++)
-    // Spezialitems nicht zählen
+    // Spezialitems nicht zï¿½hlen
     if(!IsSpecialItem(pObj))
         iCnt++;
    
-  // Wert zurückgeben 
+  // Wert zurï¿½ckgeben 
   return iCnt; 
   } 
 
@@ -866,14 +922,14 @@ public func DescendVehicle()
 {
   var pOldVehicle = GetActionTarget();
   SetAction("Walk");
-  // Feststecken nach Absteigen? Dann besser direkt beim Gefährt absteigen.
+  // Feststecken nach Absteigen? Dann besser direkt beim Gefï¿½hrt absteigen.
   if (Stuck()) if (pOldVehicle)
   {
     var x=GetX(), y=GetY();
     SetPosition(pOldVehicle->GetX(), pOldVehicle->GetY());
     if (Stuck())
     {
-      // Das Gefährt steckt auch? Dann hilft es alles nichts. Zurück zum Ursprungsort.
+      // Das Gefï¿½hrt steckt auch? Dann hilft es alles nichts. Zurï¿½ck zum Ursprungsort.
       SetPosition(x,y);
     }
   }  
@@ -884,7 +940,7 @@ public func DescendVehicle()
 
 private func Control2Effect(string szControl)
   {
-  // Von Effektzahl abwärts zählen
+  // Von Effektzahl abwï¿½rts zï¿½hlen
   var i = GetEffectCount(nil, this), iEffect;
   var res;
   while (i--)
@@ -962,14 +1018,14 @@ public func GetComboArrow()
   return 0;
   } 
 
-/* Pfeile im Inventar zählen */ 
+/* Pfeile im Inventar zï¿½hlen */ 
 private func GetArrowCount() 
   {
    return GetSpecialCount("IsArrow");
   }
 
 
-/* Zauberei - benötigt, wenn der Clonk Zielzauber z.B. aus dem Zauberturm zaubert */
+/* Zauberei - benï¿½tigt, wenn der Clonk Zielzauber z.B. aus dem Zauberturm zaubert */
 
 public func SpellFailed(id idSpell, object pByCaller)
 {
@@ -977,12 +1033,12 @@ public func SpellFailed(id idSpell, object pByCaller)
   var pSpellOrigin = pAimedSpellOrigin;
   pAimedSpellOrigin = 0;
   if (pSpellOrigin && pSpellOrigin != this)
-    // Auch bei nicht erfolgreicher Umleitung abbrechen: Das zaubernde Objekt hat im Normalfall die Zutaten/Zauberenergie für den
-    // Zauber bereit gestellt, und diese sollten nicht an den Clonk zurück gegeben werden
+    // Auch bei nicht erfolgreicher Umleitung abbrechen: Das zaubernde Objekt hat im Normalfall die Zutaten/Zauberenergie fï¿½r den
+    // Zauber bereit gestellt, und diese sollten nicht an den Clonk zurï¿½ck gegeben werden
     return (pSpellOrigin->~SpellFailed(idSpell, this));
-  // Magieenergie zurückgeben
+  // Magieenergie zurï¿½ckgeben
   DoMagicEnergy(idSpell->GetDefValue(), true);
-  // Alchemische Zutaten zurückgeben
+  // Alchemische Zutaten zurï¿½ckgeben
   if(ObjectCount(ALCO)) IncreaseAlchem(idSpell);
 }
 
@@ -994,11 +1050,11 @@ public func SpellSucceeded(id idSpell, object pByCaller)
   if (pSpellOrigin && pSpellOrigin != this)
     // Auch bei nicht erfolgreicher Umleitung abbrechen: Das zaubernde Objekt hat im Normalfall das Magietraining schon erledigt
     return (pSpellOrigin->~SpellSucceeded(idSpell, this));
-  // Globaler Aufruf für Zauber
+  // Globaler Aufruf fï¿½r Zauber
   OnClonkSucceededSpell(idSpell);
 }
 
-// Der Clonk kann von sich aus nicht zaubern und hat keine Aktivitäten dafür
+// Der Clonk kann von sich aus nicht zaubern und hat keine Aktivitï¿½ten dafï¿½r
 private func SetMagicAction(id idForSpell) {}
 private func SetCastAction() {}
 private func EndMagicAction() {}
