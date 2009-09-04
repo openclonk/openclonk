@@ -25,6 +25,9 @@ public func CanExtinguish() { return true; }
 // Gives an array of the id's that the base shall sell automatically
 public func GetAutoSell() { return [GOLD]; }
 
+// Does the base block enemies?
+public func CanBlockEnemies() { return true; }
+
 // ---------------------------------------------------------
 
 // ---------- Settings for the trading of objects ----------
@@ -118,7 +121,7 @@ func FxIntBaseTimer(pThis, iEffect, iTime)
     }
   // Can this base extinguish? Then look for something on fire
   if(CanExtinguish())
-    for(pObj in FindObjects(Find_Container(this), Find_OCF(OCF_OnFire)))
+    for(pObj in FindObjects(Find_Container(this), Find_OCF(OCF_OnFire), Find_Allied(GetOwner())))
       pObj->Extinguish();
   // Are there autosell ids?
   var aList = GetAutoSell();

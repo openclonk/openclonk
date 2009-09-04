@@ -1,0 +1,2 @@
+Name=Door control
+TxtNoEntryEnemy=%s hostile.|No entrance!
