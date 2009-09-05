@@ -51,9 +51,9 @@ protected func Recruitment(int iPlr) {
 /* Kontext */
 
 public func HasConstructMenu() { return HasKnowledge() && GetPhysical("CanConstruct"); }
-public func HasKnowledge() { return GetPlrKnowledge(GetOwner(),0,0,C4D_Structure); }
+public func HasKnowledge() { return GetPlrKnowledge(GetOwner(),nil,0,C4D_Structure); }
 public func HasBase()      { return FindBase(GetOwner()) && Contained()->GetBase() != GetOwner(); }
-public func ReleaseAllowed() { return ObjectCount(REAC); }
+public func ReleaseAllowed() { return ObjectCount(Find_ID(REAC)); }
 public func AtConstructionSite() { return !Contained() && FindConstructionSite() && ObjectCount(CNMT); }
 public func AtEnergySite() { return !Contained() && FindEnergySite(); }
 public func AtTreeToChop() { return !Contained() && FindTree() && GetPhysical("CanChop"); }
@@ -608,7 +608,7 @@ public func ContextEnergy(pCaller)
   [$TxtEnergysupply$|Image=CXEC|Condition=AtEnergySite]
   var pSite; 
   if (pSite = FindEnergySite())
-    SetCommand(this, "Energy", pSite);
+    SetCommand("Energy", pSite);
   return 1;
 }
 
@@ -626,14 +626,14 @@ public func ContextChop(pCaller)
   [$CtxChop$|Image=CXCP|Condition=AtTreeToChop]
   var pTree; 
   if (pTree = FindTree())
-    SetCommand(this, "Chop", pTree);
+    SetCommand("Chop", pTree);
   return 1;
 }
 
 public func ContextConstruction(pCaller)
 {
   [$CtxConstructionDesc$|Image=CXCN|Condition=HasConstructMenu]
-  SetCommand(this, "Construct");
+  SetCommand("Construct");
   ExecuteCommand();
   return 1;
 }
@@ -641,7 +641,7 @@ public func ContextConstruction(pCaller)
 public func ContextHome(pCaller)
 {
   [$CtxHomeDesc$|Image=CXHM|Condition=HasBase]
-  SetCommand(this, "Home");
+  SetCommand("Home");
   return 1;
 }
 
@@ -650,7 +650,7 @@ public func ContextHome(pCaller)
 public func ContainedCall(string strFunction, object pTarget)
 {
   // Erst das betreffende Geb�ude betreten, dann die Zielfunktion aufrufen 
-  SetCommand(this, "Call", pTarget, this, 0, 0, strFunction);
+  SetCommand("Call", pTarget, this, 0, nil, strFunction);
   AddCommand(this, "Enter", pTarget);
 }
 
@@ -663,23 +663,23 @@ protected func ControlSpecial2()
   if (Contained())
     if ((Contained()->GetCategory() & C4D_Structure) || (Contained()->GetCategory() & C4D_Vehicle))
     {
-      SetCommand(this,"Context",0,0,0,Contained());
+      SetCommand("Context",nil,0,0,Contained());
       return ExecuteCommand();
     }
   // Fasst ein Objekt an: Kontextmen� des angefassten Objekts �ffnen
   if (GetAction() == "Push")
   {
-    SetCommand(this,"Context",0,0,0,GetActionTarget());
+    SetCommand("Context",nil,0,0,GetActionTarget());
     return ExecuteCommand();
   }
   // Tr�gt ein Objekt: Kontextmen� des ersten getragenen Objekts �ffnen
   if (Contents(0))
   {
-    SetCommand(this,"Context",0,0,0,Contents(0));
+    SetCommand("Context",nil,0,0,Contents(0));
     return ExecuteCommand();
   }
   // Ansonsten das Kontextmen� des Clonks �ffnen
-  SetCommand(this,"Context",0,0,0,this);
+  SetCommand("Context",nil,0,0,this);
   return ExecuteCommand();
 }
 

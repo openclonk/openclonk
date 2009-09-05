@@ -1966,7 +1966,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 				// Picture
 				fctSymbol.Set(pDef->Graphics.GetBitmap(),pDef->PictureRect.x,pDef->PictureRect.y,pDef->PictureRect.Wdt,pDef->PictureRect.Hgt);
 				// Command
-				sprintf(szCommand,"SetCommand(this,\"Construct\",0,0,0,0,%s)",C4IdText(pDef->id));
+				sprintf(szCommand,"SetCommand(\"Construct\",nil,0,0,nil,%s)",C4IdText(pDef->id));
 				// Add menu item
 				Menu->AddRefSym(szCaption,fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pDef->GetDesc(),pDef->id);
 				}

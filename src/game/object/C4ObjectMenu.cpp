@@ -175,8 +175,8 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctSymbol.Set(fctSymbol.Surface, 0,0,C4SymbolSize,C4SymbolSize);
 				pObj->Picture2Facet(fctSymbol);
 				// Commands
-				sprintf(szCommand,"SetCommand(this,\"Activate\",Object(%d))&&ExecuteCommand()",pObj->Number);
-				sprintf(szCommand2,"SetCommand(this,\"Activate\",0,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,C4IdText(pDef->id));
+				sprintf(szCommand,"SetCommand(\"Activate\",Object(%d))&&ExecuteCommand()",pObj->Number);
+				sprintf(szCommand2,"SetCommand(\"Activate\",nil,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,C4IdText(pDef->id));
 				// Add menu item
 				Add(szCaption,fctSymbol,szCommand,iCount,pObj,pDef->GetDesc(),pDef->id,szCommand2,true,pObj->GetValue(pTarget, NO_OWNER));
 				// facet taken over (arrg!)
@@ -292,11 +292,11 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctSymbol.Set(fctSymbol.Surface, 0, 0, C4SymbolSize, C4SymbolSize);
 				pObj->Picture2Facet(fctSymbol);
 				// Primary command: get/activate single object
-				sprintf(szCommand, "SetCommand(this, \"%s\", Object(%d)) && ExecuteCommand()", fGet ? "Get" : "Activate", pObj->Number);
+				sprintf(szCommand, "SetCommand(\"%s\", Object(%d)) && ExecuteCommand()", fGet ? "Get" : "Activate", pObj->Number);
 				// Secondary command: get/activate all objects of the chosen type
 				szCommand2[0] = 0; int32_t iAllCount;
 				if ((iAllCount = pTarget->Contents.ObjectCount(pDef->id)) > 1)
-					sprintf(szCommand2, "SetCommand(this, \"%s\", 0, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, C4IdText(pDef->id));
+					sprintf(szCommand2, "SetCommand(\"%s\", nil, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, C4IdText(pDef->id));
 				// Add menu item (with object)
 				Add(szCaption, fctSymbol, szCommand, iCount, pObj, pDef->GetDesc(), pDef->id, szCommand2);
 				fctSymbol.Default();
@@ -347,7 +347,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				// ...or if the container is owned by us or a friendly player - this is for remote mouse-button-clicks
 				|| (ValidPlr(pTarget->Owner) && !Hostile(pTarget->Owner,Object->Owner)))
 					{
-					sprintf(szCommand,"SetCommand(this,\"Get\",Object(%d),0,0,0,2)&&ExecuteCommand()",pTarget->Number);
+					sprintf(szCommand,"SetCommand(\"Get\",Object(%d),0,0,nil,2)&&ExecuteCommand()",pTarget->Number);
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize); pTarget->DrawPicture(fctSymbol);
 					Add(LoadResStr("IDS_CON_CONTENTS"),fctSymbol,szCommand);
 					fctSymbol.Default();
@@ -360,7 +360,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				// Buy
 				if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Buy)
 					{
-					sprintf(szCommand,"SetCommand(this,\"Buy\",Object(%d))&&ExecuteCommand()",pTarget->Number);
+					sprintf(szCommand,"SetCommand(\"Buy\",Object(%d))&&ExecuteCommand()",pTarget->Number);
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize); DrawMenuSymbol(C4MN_Buy,fctSymbol,pTarget->Base,pTarget);
 					Add(LoadResStr("IDS_CON_BUY"),fctSymbol,szCommand);
 					fctSymbol.Default();
@@ -368,7 +368,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				// Sell
 				if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell)
 					{
-					sprintf(szCommand,"SetCommand(this,\"Sell\",Object(%d))&&ExecuteCommand()",pTarget->Number);
+					sprintf(szCommand,"SetCommand(\"Sell\",Object(%d))&&ExecuteCommand()",pTarget->Number);
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize); DrawMenuSymbol(C4MN_Sell,fctSymbol,pTarget->Base,pTarget);
 					Add(LoadResStr("IDS_CON_SELL"),fctSymbol,szCommand);
 					fctSymbol.Default();
@@ -652,7 +652,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 				else
 					if (!fCountOnly)
 						{
-						sprintf(szCommand, "SetCommand(this,\"Context\",0,0,0,this)&&ExecuteCommand()");
+						sprintf(szCommand, "SetCommand(\"Context\",nil,0,0,this)&&ExecuteCommand()");
 						fctSymbol.Create(16,16); Object->Def->Draw(fctSymbol, false, Object->Color);
 						Add(Object->Def->GetName(), fctSymbol, szCommand, C4MN_Item_NoCount, NULL, LoadResStr("IDS_MENU_CONTEXTSUBCLONKDESC"));
 						fctSymbol.Default();
