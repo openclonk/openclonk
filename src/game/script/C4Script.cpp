@@ -3815,6 +3815,14 @@ static long FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
 	return (unsigned char) *szText;
 	}
 
+static bool FnCanConcatPictureWith(C4AulContext *pCtx, C4Object *pObj)
+{
+	// safety
+	if (!pCtx->Obj->Status || !pObj) return false;
+	// Call the function in the object
+	return pCtx->Obj->CanConcatPictureWith(pObj);
+}
+
 static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4ID idSrcGfx, long iOverlayID, long iOverlayMode, C4String *pAction, long dwBlitMode, C4Object *pOverlayObject)
 {
 	// safety
@@ -5828,6 +5836,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetProcedure", FnGetProcedure);
 	AddFunc(pEngine, "GetChar", FnGetChar);
 	AddFunc(pEngine, "ActivateGameGoalMenu", FnActivateGameGoalMenu);
+	AddFunc(pEngine, "CanConcatPictureWith", FnCanConcatPictureWith);
 	AddFunc(pEngine, "SetGraphics", FnSetGraphics);
 	AddFunc(pEngine, "Object", FnObject);
 	AddFunc(pEngine, "ObjectNumber", FnObjectNumber);

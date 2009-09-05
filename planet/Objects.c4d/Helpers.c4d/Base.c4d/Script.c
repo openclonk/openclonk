@@ -10,7 +10,8 @@ func Definition(def) {
   SetProperty("Name", "$Name$", def);
 }
 
-// ---------- Settings for base funcionallity --------------
+// ---------------- Settings for base funcionallity --------------------
+// --- these functions can be overloaded for vendors or special bases ---
 
 // Determines if the base can heal allied clonks
 public func CanHeal() { return true; }
@@ -22,15 +23,21 @@ public func GetHealCost() { return 5;}
 // Determines if the base can extinguish allied clonks
 public func CanExtinguish() { return true; }
 
-// Gives an array of the id's that the base shall sell automatically
-public func GetAutoSell() { return [GOLD]; }
+// The autosell function
+public func ExecAutoSell()
+{
+  // Search all objects for objects that want to be sold automatically
+  for(pObj in FindObjects(Find_Container(this), Find_Func("AutoSell")))
+    Sell(pObj);
+}
 
 // Does the base block enemies?
 public func CanBlockEnemies() { return true; }
 
 // ---------------------------------------------------------
 
-// ---------- Settings for the trading of objects ----------
+// ----------------- Settings for the trading of objects ----------------
+// --- these functions can be overloaded for vendors or special bases ---
 
 // returns an array with the definition, the amount
 func GetBuyObject(int iIndex)
@@ -123,12 +130,8 @@ func FxIntBaseTimer(pThis, iEffect, iTime)
   if(CanExtinguish())
     for(pObj in FindObjects(Find_Container(this), Find_OCF(OCF_OnFire), Find_Allied(GetOwner())))
       pObj->Extinguish();
-  // Are there autosell ids?
-  var aList = GetAutoSell();
-  if(aList)
-    for(var idDef in aList)
-      for(pObj in FindObjects(Find_Container(this), Find_ID(idDef)))
-	Sell(pObj);
+  // Sell objects
+  ExecAutoSell();
   // Update the sell menu of clonks (if someone knows a way to directly get info if the contents of the base change this coult be imporved)
   if(aClonkSellList)
   {
@@ -289,23 +292,12 @@ func UpdateSellList()
   for(pObj in GetSellableContents())
   {
     // Are we allowed to sell the object?
-    if(GetDefCoreVal("NoSell", "DefCore", pObj->GetID())) continue;
-    iIndex = 0;
-    // Have a look in the list if you could stack this item
-    for(aArray in aSellList)
-    {      
-      if(CanStack(aArray[2], pObj))
-      {
-          // Ok, the objects are similar? than stack them
-	  aSellList[iIndex][1]++;
-          iIndex = -1;
-          break;
-      }
-      iIndex++;       
-    }
-    if(iIndex != -1)
-      // They are different? Than create a new entry
-      aSellList[GetLength(aSellList)] = [pObj->GetID(), 1, pObj];
+    if(GetID()->GetDefCoreVal("NoSell", "DefCore")) continue;
+    // Only check the last item to stack, the engine normally sorts the objects so this should be enought to check
+    if(iIndex && CanStack(aSellList[iIndex-1][2], pObj))
+      aSellList[iIndex-1][1]++;
+    else
+      aSellList[iIndex++] = [pObj->GetID(), 1, pObj];
   }
   UpdateClonkSellMenus();
 }
@@ -351,9 +343,9 @@ func OpenSellMenu(object pClonk, int iSelection, bool fNoListUpdate)
   AddClonkSellList(pClonk);
   pClonk->CreateMenu (BASM, this, C4MN_Extra_Value, "$TxtNothingToSell$", 0, C4MN_Style_Normal, 1);
   var iIndex;
-  for(aArray in aSellList)
+  for(aArray in aSellList) // aArray contains [idDef, iCount, pObj]
   {
-    pClonk->AddMenuItem("$TxtSell$", "SellDummy", aArray[0], aArray[1], pClonk, nil, 128, 0, GetSellValue(aArray[2]));
+    pClonk->AddMenuItem(Format("$TxtSell$", GetName(aArray[2])), "SellDummy", aArray[0], aArray[1], pClonk, nil, 128+4, aArray[2], GetSellValue(aArray[2]));
     iIndex++;
   }
   if(iSelection == iIndex) iSelection--;
@@ -363,17 +355,8 @@ func OpenSellMenu(object pClonk, int iSelection, bool fNoListUpdate)
 func CanStack(object pFirst, object pSecond)
 {
   // Test if these Objects differ from each other
-  if(pFirst->GetID() != pSecond->GetID()) return false;
+  if(!pFirst->CanConcatPictureWith(pSecond)) return false;
   if(GetSellValue(pFirst) != GetSellValue(pSecond)) return false;
-  
-  // Test if different color matters
-//  if(!(GetDefCoreVal("AllowPictureStack", "DefCore", pFirst->GetID()) & APS_Color)) TODO Find out why the engine doesn't like APS_Color
-  if(1)
-  {
-    if(pFirst->GetColor() != pSecond->GetColor()) return false;
-    if(pFirst->GetClrModulation() != pSecond->GetClrModulation()) return false;
-  }
-  // TODO: Check differen overlays
   
   // ok they can be stacked
   return true;
@@ -390,7 +373,7 @@ func SellDummy(id idDef, object pClonk, bool bRight)
 func DoSell(object pObj, int iPlr, bool bRight)
 {
   // Test the object
-  if(GetDefCoreVal("NoSell", "DefCore", pObj->GetID()) || pObj->GetOCF() & OCF_CrewMember)
+  if(pObj->GetID()->GetDefCoreVal("NoSell", "DefCore") || pObj->GetOCF() & OCF_CrewMember)
   {
     // Enter base (needed for NoSell objects in other objects which are sold)
     if(pObj->Contained() != this)
