@@ -3815,7 +3815,7 @@ static long FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
 	return (unsigned char) *szText;
 	}
 
-static bool FnCanConcatPictureWith(C4AulContext *pCtx, C4Object *pObj)
+static bool FnCanConcatPictureWith(C4AulObjectContext *pCtx, C4Object *pObj)
 {
 	// safety
 	if (!pCtx->Obj->Status || !pObj) return false;
