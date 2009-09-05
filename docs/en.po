@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-03 22:29+0200\n"
-"PO-Revision-Date: 2009-09-03 22:25+0200\n"
+"POT-Creation-Date: 2009-09-05 17:53+0200\n"
+"PO-Revision-Date: 2009-09-05 17:49+0200\n"
 "Last-Translator: Günther <gbrammer@gmx.de>\n"
 "Language-Team: English\n"
 "MIME-Version: 1.0\n"
@@ -191,7 +191,7 @@ msgstr "no effect (compatibility for terms such as \"+5\")"
 #: sdk/script/fn/GBackLiquid.xml:21(emlink)
 #: sdk/script/fn/CastObjects.xml:24(emlink)
 #: sdk/script/fn/CastObjects.xml:25(emlink)
-#: sdk/script/Typechecks.xml:47(col)
+#: sdk/script/Typechecks.xml:46(col)
 msgid "-"
 msgstr "-"
 
@@ -4740,7 +4740,7 @@ msgstr "Call"
 #: sdk/script/fn/SetCommand.xml:74(col)
 #: sdk/script/fn/SetCommand.xml:99(col)
 #: sdk/script/fn/SetCommand.xml:102(col)
-#: sdk/script/Typechecks.xml:57(col)
+#: sdk/script/Typechecks.xml:56(col)
 msgid "Objekt"
 msgstr "Object"
 
@@ -8456,7 +8456,7 @@ msgid "s"
 msgstr "s"
 
 #: sdk/script/fn/Format.xml:26(col)
-#: sdk/script/Typechecks.xml:39(col)
+#: sdk/script/Typechecks.xml:38(col)
 msgid "Zeichenkette"
 msgstr "String"
 
@@ -10843,31 +10843,31 @@ msgid "Gibt die Fluggeschwindigkeit eines Luftschiffes aus."
 msgstr "Prints the absolute velocity of a blimp."
 
 #: sdk/script/Typechecks.xml:5(title)
-#: sdk/script/Typechecks.xml:7(h)
+#: sdk/script/Typechecks.xml:6(h)
 msgid "Datentypen"
 msgstr "Data Types"
 
-#: sdk/script/Typechecks.xml:10(text)
+#: sdk/script/Typechecks.xml:9(text)
 msgid "C4Script unterstützt die folgenden Datentypen für Variablen, Parameter und Rückgabewerte:"
 msgstr "C4Script supports the following data types for variables, parameters, and return values:"
 
-#: sdk/script/Typechecks.xml:14(col)
+#: sdk/script/Typechecks.xml:13(col)
 msgid "Typname"
 msgstr "Type Name"
 
-#: sdk/script/Typechecks.xml:15(col)
+#: sdk/script/Typechecks.xml:14(col)
 msgid "Voller Name"
 msgstr "Full Name"
 
-#: sdk/script/Typechecks.xml:16(col)
+#: sdk/script/Typechecks.xml:15(col)
 msgid "Variableninhalt"
 msgstr "Contents of Variable"
 
-#: sdk/script/Typechecks.xml:17(col)
+#: sdk/script/Typechecks.xml:16(col)
 msgid "Beispiel"
 msgstr "Example"
 
-#: sdk/script/Typechecks.xml:21(col)
+#: sdk/script/Typechecks.xml:20(col)
 #: sdk/scenario/scenario.xml:27(col)
 #: sdk/scenario/scenario.xml:42(col)
 #: sdk/scenario/scenario.xml:47(col)
@@ -11071,11 +11071,11 @@ msgstr "Example"
 msgid "Integer"
 msgstr "Integer"
 
-#: sdk/script/Typechecks.xml:22(col)
+#: sdk/script/Typechecks.xml:21(col)
 msgid "Eine ganze Zahl im Bereich von -2.147.483.648 bis +2.147.483.647."
 msgstr "A whole number from -2.147.483.648 to +2.147.483.647."
 
-#: sdk/script/Typechecks.xml:27(col)
+#: sdk/script/Typechecks.xml:26(col)
 #: sdk/scenario/MapCreatorS2.xml:84(col)
 #: sdk/scenario/MapCreatorS2.xml:94(col)
 #: sdk/scenario/MapCreatorS2.xml:99(col)
@@ -11088,183 +11088,167 @@ msgstr "A whole number from -2.147.483.648 to +2.147.483.647."
 msgid "Boolean"
 msgstr "Boolean"
 
-#: sdk/script/Typechecks.xml:28(col)
+#: sdk/script/Typechecks.xml:27(col)
 msgid "\"wahr\" (Wert <code>true</code>) oder \"falsch\" (Wert <code>false</code>). Wird von vielen Kontrollstrukturen wie <placeholder-1/> und <placeholder-2/> als Parameter erwartet."
 msgstr "\"true\" (value <code>true</code>) or \"false\" (value <code>false</code>). Expected as parameter by many structures such as <placeholder-1/> and <placeholder-2/>."
 
-#: sdk/script/Typechecks.xml:33(col)
+#: sdk/script/Typechecks.xml:32(col)
 #: sdk/material/c4m.xml:60(col)
 #: sdk/material/c4m.xml:65(col)
 #: sdk/definition/defcore.xml:20(col)
 msgid "Definitions-ID"
 msgstr "definition id"
 
-#: sdk/script/Typechecks.xml:34(col)
-msgid "ID einer Objektdefinition (siehe <emlink href=\"definition/index.html#ObjektundEntwicklerIdentifikation\">Objektdefinitionen</emlink>)"
+#: sdk/script/Typechecks.xml:33(col)
+#, fuzzy
+msgid "ID einer Objektdefinition (siehe <emlink href=\"definition/index.html#ObjektundEntwicklerIdentifikation\">Objektdefinitionen</emlink>). Wird sofort in eine Proplist umgewandelt."
 msgstr "ID of an object definition (see <emlink href=\"definition/index.html#ObjektundEntwicklerIdentifikation\">Object Definitions</emlink>)"
 
-#: sdk/script/Typechecks.xml:40(col)
+#: sdk/script/Typechecks.xml:39(col)
 msgid "Ein beliebiger Text."
 msgstr "Any text."
 
-#: sdk/script/Typechecks.xml:45(col)
+#: sdk/script/Typechecks.xml:44(col)
 msgid "Objektzeiger"
 msgstr "Object pointer"
 
-#: sdk/script/Typechecks.xml:46(col)
+#: sdk/script/Typechecks.xml:45(col)
 msgid "Verweis auf ein im Spiel existierendes Objekt. Hat keine direkte Darstellung. Siehe z.B. <placeholder-1/>()"
 msgstr "Reference to an existing object at runtime. No direct representation. See <placeholder-1/>()"
 
-#: sdk/script/Typechecks.xml:51(col)
+#: sdk/script/Typechecks.xml:50(col)
 #, fuzzy
 msgid "Array"
 msgstr "Arrays"
 
-#: sdk/script/Typechecks.xml:52(col)
+#: sdk/script/Typechecks.xml:51(col)
 msgid "Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <placeholder-1/> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können. Ab CR."
 msgstr "A type containing multiple variables, whose number can be enquired with <placeholder-1/>, and which can be recalled with <code><em>array</em>[<em>index</em>]</code>. Since CR."
 
-#: sdk/script/Typechecks.xml:58(col)
+#: sdk/script/Typechecks.xml:57(col)
 msgid "Ein allgemeiner Objekttyp. Mit <placeholder-1/> und <placeholder-2/> können Eigenschaften abgefragt bzw. gesetzt werden. Wenn die Eigenschaft <code>\"Prototype\"</code> gesetzt ist und eine nicht gesetzte Eigenschaft abgefragt wird, wird im Prototyp nachgeguckt."
-msgstr ""
+msgstr "A general purpose object type. <placeholder-1/> and <placeholder-2/> can get respectively set properties. If the property <code>\"Prototype\"</code> is set, and a property that is not set is gotten, the prototype is asked."
 
-#: sdk/script/Typechecks.xml:64(text)
+#: sdk/script/Typechecks.xml:63(text)
 msgid "Außerdem gibt es noch zwei spezielle Typen:"
 msgstr "Additionally, there are two special types:"
 
-#: sdk/script/Typechecks.xml:67(li)
+#: sdk/script/Typechecks.xml:66(li)
 msgid "<code>any</code>: Der Typ ist nicht bekannt oder egal. \"0\" hat immer diesen Typ."
 msgstr "<code>any</code>: The type is unknown or does not make a difference. \"0\" always has this type."
 
-#: sdk/script/Typechecks.xml:68(li)
+#: sdk/script/Typechecks.xml:67(li)
 msgid "<code>&amp;</code>: Der Wert ist eine Referenz - z.B. auf eine Variable. Er verhält sich genau wie der Zielwert, kann aber gesetzt werden (z.B. mit dem Operator \"<code>=</code>\"). Siehe auch <emlink href=\"script/Funcs.html#referenzen\">Referenzparameter</emlink>."
 msgstr "<code>&amp;</code>: The value is a reference, for example to a variable. It behaves exactly as the target value, but can be changed (for example with the operator \"<code>=</code>\"). See also <emlink href=\"script/Funcs.html#referenzen\">Reference parameters</emlink>."
 
-#: sdk/script/Typechecks.xml:71(h)
+#: sdk/script/Typechecks.xml:70(h)
 msgid "Arrays"
 msgstr "Arrays"
 
-#: sdk/script/Typechecks.xml:73(text)
+#: sdk/script/Typechecks.xml:72(text)
 msgid "Arrays können entweder direkt durch <code>[<em>Ausdruck 1</em>, <em>Ausdruck 2</em>, ...]</code> oder <placeholder-1/>() erstellt werden. Sie werden bei Zugriff auf ein Element gegebenenfalls automatisch verlängert, jedoch ist es schneller, das Array gleich mit der benötigten Länge zu erstellen. Wird ein Array einer Variablen zugewiesen oder einer Funktion übergeben, bekommt diese Variable eine eigene Kopie des Arrays. Das eigentliche Kopieren wird aber erst ausgeführt, wenn es nötig ist. Wenn das Array einer Funktion zum Ändern übergeben werden soll, muss ein Referenzparameter verwendet werden."
 msgstr "Arrays can be created directly with <code>[<em>expression 1</em>, <em>expression 2</em>, ...]</code> or indirectly with <placeholder-1/>(). They are automatically enlarged if necessary on element access, but it's faster to create them with the needed length from the start. If an array is stored in a variable or used as a parameter to a function, the new variable has it's own copy of the array. The actual copy is deferred if possible, though. If an array is passed to a function for modification, a reference has to be used."
 
-#: sdk/script/Typechecks.xml:75(text)
+#: sdk/script/Typechecks.xml:74(text)
 msgid "Zugriff auf ein Element <code>i</code> eines Arrays <code>a</code> erfolgt über <code>a[i]</code>. Dabei entspricht <code>i=0</code> dem ersten Element."
 msgstr "Access to element <code>i</code> of array <code>a</code> is achieved through <code>a[i]</code>. <code>i=0</code> is the first element."
 
-#: sdk/script/Typechecks.xml:76(h)
+#: sdk/script/Typechecks.xml:75(h)
 msgid "Beispiel 1"
 msgstr "Example 1"
 
-#: sdk/script/Typechecks.xml:87(text)
+#: sdk/script/Typechecks.xml:86(text)
 msgid "Diese Funktion summiert alle Elemente eines Arrays."
 msgstr "This function adds up all elements of an array."
 
-#: sdk/script/Typechecks.xml:88(h)
+#: sdk/script/Typechecks.xml:87(h)
 msgid "Beispiel 2"
 msgstr "Example 2"
 
-#: sdk/script/Typechecks.xml:94(text)
+#: sdk/script/Typechecks.xml:93(text)
 msgid "Diese Funktion wählt zufällig aus einer der vier ids aus und gibt diese zurück."
 msgstr "This function randomly chooses one out of four ids and returns it."
 
-#: sdk/script/Typechecks.xml:97(h)
+#: sdk/script/Typechecks.xml:96(h)
 msgid "Konvertierung"
 msgstr "Conversion"
 
-#: sdk/script/Typechecks.xml:99(text)
+#: sdk/script/Typechecks.xml:98(text)
 msgid "Aus folgender Tabelle kann entnommen werden, welche Typen automatisch konvertiert werden und wo ein Fehler ausgelöst wird:"
 msgstr "Consult the following table to determine which types can be converted and which conversions might cause errors:"
 
-#: sdk/script/Typechecks.xml:103(col)
+#: sdk/script/Typechecks.xml:102(col)
 msgid "nach -&gt;"
 msgstr "to -&gt;"
 
-#: sdk/script/Typechecks.xml:114(col)
-#: sdk/script/Typechecks.xml:115(col)
-#: sdk/script/Typechecks.xml:124(col)
-#: sdk/script/Typechecks.xml:125(col)
+#: sdk/script/Typechecks.xml:112(col)
+#: sdk/script/Typechecks.xml:113(col)
+#: sdk/script/Typechecks.xml:121(col)
+#: sdk/script/Typechecks.xml:122(col)
+#: sdk/script/Typechecks.xml:131(col)
+#: sdk/script/Typechecks.xml:132(col)
 #: sdk/script/Typechecks.xml:135(col)
-#: sdk/script/Typechecks.xml:136(col)
-#: sdk/script/Typechecks.xml:145(col)
-#: sdk/script/Typechecks.xml:147(col)
-#: sdk/script/Typechecks.xml:150(col)
-#: sdk/script/Typechecks.xml:155(col)
+#: sdk/script/Typechecks.xml:140(col)
+#: sdk/script/Typechecks.xml:142(col)
+#: sdk/script/Typechecks.xml:149(col)
+#: sdk/script/Typechecks.xml:152(col)
 #: sdk/script/Typechecks.xml:158(col)
-#: sdk/script/Typechecks.xml:165(col)
-#: sdk/script/Typechecks.xml:169(col)
-#: sdk/script/Typechecks.xml:175(col)
-#: sdk/script/Typechecks.xml:179(col)
+#: sdk/script/Typechecks.xml:162(col)
 msgid "OK"
 msgstr "OK"
 
+#: sdk/script/Typechecks.xml:114(col)
+#: sdk/script/Typechecks.xml:115(col)
 #: sdk/script/Typechecks.xml:116(col)
-msgid "if &lt;= 9999"
-msgstr "if &lt;= 9999"
-
 #: sdk/script/Typechecks.xml:117(col)
-#: sdk/script/Typechecks.xml:118(col)
-#: sdk/script/Typechecks.xml:119(col)
-#: sdk/script/Typechecks.xml:120(col)
+msgid "wenn 0"
+msgstr "if 0"
+
+#: sdk/script/Typechecks.xml:123(col)
+#: sdk/script/Typechecks.xml:124(col)
+#: sdk/script/Typechecks.xml:125(col)
 #: sdk/script/Typechecks.xml:126(col)
-#: sdk/script/Typechecks.xml:127(col)
-#: sdk/script/Typechecks.xml:128(col)
-#: sdk/script/Typechecks.xml:129(col)
 #: sdk/script/Typechecks.xml:130(col)
-#: sdk/script/Typechecks.xml:137(col)
-#: sdk/script/Typechecks.xml:138(col)
+#: sdk/script/Typechecks.xml:133(col)
+#: sdk/script/Typechecks.xml:134(col)
 #: sdk/script/Typechecks.xml:139(col)
-#: sdk/script/Typechecks.xml:140(col)
-#: sdk/script/Typechecks.xml:146(col)
+#: sdk/script/Typechecks.xml:141(col)
+#: sdk/script/Typechecks.xml:143(col)
+#: sdk/script/Typechecks.xml:144(col)
 #: sdk/script/Typechecks.xml:148(col)
-#: sdk/script/Typechecks.xml:149(col)
-#: sdk/script/Typechecks.xml:156(col)
+#: sdk/script/Typechecks.xml:150(col)
+#: sdk/script/Typechecks.xml:151(col)
+#: sdk/script/Typechecks.xml:153(col)
 #: sdk/script/Typechecks.xml:157(col)
-#: sdk/script/Typechecks.xml:159(col)
 #: sdk/script/Typechecks.xml:160(col)
-#: sdk/script/Typechecks.xml:164(col)
-#: sdk/script/Typechecks.xml:166(col)
-#: sdk/script/Typechecks.xml:167(col)
-#: sdk/script/Typechecks.xml:168(col)
-#: sdk/script/Typechecks.xml:170(col)
-#: sdk/script/Typechecks.xml:174(col)
-#: sdk/script/Typechecks.xml:176(col)
-#: sdk/script/Typechecks.xml:177(col)
-#: sdk/script/Typechecks.xml:178(col)
+#: sdk/script/Typechecks.xml:161(col)
 msgid "Error"
 msgstr "Error"
 
-#: sdk/script/Typechecks.xml:134(col)
-#: sdk/script/Typechecks.xml:144(col)
-#: sdk/script/Typechecks.xml:154(col)
+#: sdk/script/Typechecks.xml:159(col)
+msgid "maybe"
+msgstr ""
+
+#: sdk/script/Typechecks.xml:166(h)
+msgid "Erklärung der Tabelle:"
+msgstr "Additional information:"
+
+#: sdk/script/Typechecks.xml:168(li)
+msgid "Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>."
+msgstr "Conversion to bool is generally allowed. All values except 0 are <code>true</code>."
+
+#: sdk/script/Typechecks.xml:169(li)
+msgid "Wenn ein Objekt in eine Proplist konvertiert wurde, kann es wieder in ein Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte konvertiert werden."
+msgstr ""
+
+#: sdk/script/Typechecks.xml:170(li)
+msgid "Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code>"
+msgstr ""
+
 #: sdk/script/Strict.xml:5(title)
 #: sdk/script/Strict.xml:6(h)
 msgid "#strict"
 msgstr "#strict"
-
-#: sdk/script/Typechecks.xml:180(col)
-msgid "maybe"
-msgstr ""
-
-#: sdk/script/Typechecks.xml:184(h)
-msgid "Erklärung der Tabelle:"
-msgstr "Additional information:"
-
-#: sdk/script/Typechecks.xml:186(li)
-msgid "Wo #strict steht, wird nur ein Fehler ausgelöst wenn der Script <emlink href=\"script/Strict.html\">#strict</emlink> ist. Hierbei handelt es sich um \"ungefährliche\" aber sinnlose Konvertierungen, die nur in einigen \"trickreichen\" Scripts zur Anwendung kamen."
-msgstr "Conversions marked #strict will only throw an error if the script is <emlink href=\"script/Strict.html\">#strict</emlink>. This only concerns harmless but nonsense conversions which might have appeared in older scripts."
-
-#: sdk/script/Typechecks.xml:187(li)
-msgid "Die Konvertierung int zu id ist nur erlaubt, wenn die Zahl größer gleich 0 und kleiner gleich 9999 ist. Auf diese Weise werden auch IDs, die nur aus Zahlen bestehen, unterstützt (z.B. 0001)"
-msgstr "Conversion to id is valid only if the number is greater than or equal to 0 and less that or equal to 9999. This procedure also supports IDs that contain digits only."
-
-#: sdk/script/Typechecks.xml:188(li)
-msgid "Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>."
-msgstr "Conversion to bool is generally allowed. All values except 0 are <code>true</code>."
-
-#: sdk/script/Typechecks.xml:189(li)
-msgid "Wenn ein Objekt in eine Proplist konvertiert wurde, kann es wieder in ein Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte konvertiert werden."
-msgstr ""
 
 #: sdk/script/Strict.xml:8(text)
 msgid "Neu geschriebene Scripte sollten #strict sein. Dabei werden einige Altlasten der Engine ignoriert und es können unter anderem strengere Typüberprüfungen angesetzt werden. Scripte ohne #strict werden nur aus Gründen der Abwärtskompatibilität akzeptiert."
@@ -19178,6 +19162,15 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 #: sdk/cmdline.xml:73(text)
 msgid "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 msgstr "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
+
+#~ msgid "if &lt;= 9999"
+#~ msgstr "if &lt;= 9999"
+
+#~ msgid "Wo #strict steht, wird nur ein Fehler ausgelöst wenn der Script <emlink href=\"script/Strict.html\">#strict</emlink> ist. Hierbei handelt es sich um \"ungefährliche\" aber sinnlose Konvertierungen, die nur in einigen \"trickreichen\" Scripts zur Anwendung kamen."
+#~ msgstr "Conversions marked #strict will only throw an error if the script is <emlink href=\"script/Strict.html\">#strict</emlink>. This only concerns harmless but nonsense conversions which might have appeared in older scripts."
+
+#~ msgid "Die Konvertierung int zu id ist nur erlaubt, wenn die Zahl größer gleich 0 und kleiner gleich 9999 ist. Auf diese Weise werden auch IDs, die nur aus Zahlen bestehen, unterstützt (z.B. 0001)"
+#~ msgstr "Conversion to id is valid only if the number is greater than or equal to 0 and less that or equal to 9999. This procedure also supports IDs that contain digits only."
 
 #~ msgid "In älteren Versionen implizierte goto() ein <placeholder-1/>(). Dieses Verhalten wird bei Nicht-Angabe von <emlink href=\"script/Strict.html\">#strict</emlink> emuliert."
 #~ msgstr "In older script versions goto() would also cause an immediate <placeholder-1/>(). This behaviour has changed with the <emlink href=\"script/Strict.html\">#strict</emlink> standard. Now you have to write your <placeholder-1/>() separately."
