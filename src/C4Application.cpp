@@ -70,7 +70,7 @@ C4Application::~C4Application()
 		STARTUPINFO StartupInfo; ZeroMemory(&StartupInfo, sizeof StartupInfo);
 		StartupInfo.cb = sizeof StartupInfo;
 		PROCESS_INFORMATION ProcessInfo; ZeroMemory(&ProcessInfo, sizeof ProcessInfo);
-		CreateProcess(NULL, strCommandLine, NULL, NULL, TRUE, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
+		CreateProcess(NULL, strCommandLine, NULL, NULL, true, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
 #endif
 		}
 	}
@@ -176,7 +176,7 @@ bool C4Application::DoInit()
 	}
 
 	// Fixup resolution
-	ApplyResolutionConstraints();	
+	ApplyResolutionConstraints();
 
 	// activate
 	Active=true;
@@ -240,7 +240,7 @@ bool C4Application::DoInit()
 	return true;
 	}
 
-	
+
 void C4Application::ApplyResolutionConstraints()
 {
 	// Enumerate display modes
@@ -522,10 +522,10 @@ void C4Application::Activate()
   DWORD nAppThread = GetCurrentThreadId();
 	if (nForeThread != nAppThread)
 		{
-    AttachThreadInput(nForeThread, nAppThread, TRUE);
+    AttachThreadInput(nForeThread, nAppThread, true);
     BringWindowToTop(FullScreen.hWindow);
     ShowWindow(FullScreen.hWindow, SW_SHOW);
-    AttachThreadInput(nForeThread, nAppThread, FALSE);
+    AttachThreadInput(nForeThread, nAppThread, false);
 		}
   else
 		{

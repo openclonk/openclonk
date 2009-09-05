@@ -2338,7 +2338,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		if (hGroup.FindEntry(C4CFN_RoundResults))
 		{
 			if (!RoundResults.Load(hGroup, C4CFN_RoundResults))
-				{ LogFatal(LoadResStr("IDS_ERR_ERRORLOADINGROUNDRESULTS")); return FALSE; }
+				{ LogFatal(LoadResStr("IDS_ERR_ERRORLOADINGROUNDRESULTS")); return false; }
 		}
 		else
 		{

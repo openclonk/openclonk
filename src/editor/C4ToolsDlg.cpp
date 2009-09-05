@@ -119,19 +119,19 @@ BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			break;
 		//----------------------------------------------------------------------------------------------
 		case WM_DESTROY:
-			StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), FALSE);
+			StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), false);
 			break;
 		//----------------------------------------------------------------------------------------------
 		case WM_INITDIALOG:
-			return TRUE;
+			return true;
 		//----------------------------------------------------------------------------------------------
 		case WM_PAINT:
 			PostMessage(hDlg,WM_USER,0,0); // For user paint
-			return FALSE;
+			return false;
 		//----------------------------------------------------------------------------------------------
 		case WM_USER:
 			Console.ToolsDlg.UpdatePreview();
-			return TRUE;
+			return true;
 		//----------------------------------------------------------------------------------------------
 		case WM_VSCROLL:
 			switch (LOWORD(wParam))
@@ -146,7 +146,7 @@ BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 					Console.ToolsDlg.SetGrade(C4TLS_GradeMax-iValue);
 					break;
 				}
-			return TRUE;
+			return true;
 		//----------------------------------------------------------------------------------------------
 		case WM_COMMAND:
 			// Evaluate command
@@ -154,47 +154,47 @@ BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 				{
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDOK:
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONMODEDYNAMIC:
 					Console.ToolsDlg.SetLandscapeMode(C4LSC_Dynamic);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONMODESTATIC:
 					Console.ToolsDlg.SetLandscapeMode(C4LSC_Static);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONMODEEXACT:
 					Console.ToolsDlg.SetLandscapeMode(C4LSC_Exact);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONBRUSH:
 					Console.ToolsDlg.SetTool(C4TLS_Brush, false);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONLINE:
 					Console.ToolsDlg.SetTool(C4TLS_Line, false);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONRECT:
 					Console.ToolsDlg.SetTool(C4TLS_Rect, false);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONFILL:
 					Console.ToolsDlg.SetTool(C4TLS_Fill, false);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONPICKER:
 					Console.ToolsDlg.SetTool(C4TLS_Picker, false);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONIFT:
-					Console.ToolsDlg.SetIFT(TRUE);
-					return TRUE;
+					Console.ToolsDlg.SetIFT(true);
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONNOIFT:
-					Console.ToolsDlg.SetIFT(FALSE);
-					return TRUE;
+					Console.ToolsDlg.SetIFT(false);
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_COMBOMATERIAL:
 					switch (HIWORD(wParam))
@@ -208,7 +208,7 @@ BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 							break;
 							}
 						}
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_COMBOTEXTURE:
 					switch (HIWORD(wParam))
@@ -222,13 +222,13 @@ BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 							break;
 							}
 						}
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				}
-			return FALSE;
+			return false;
 		//----------------------------------------------------------------------------------------
 		}
-	return FALSE;
+	return false;
 	}
 #endif
 C4ToolsDlg::C4ToolsDlg()
@@ -754,9 +754,9 @@ void C4ToolsDlg::InitGradeCtrl()
 	HWND hwndTrack = GetDlgItem(hDialog,IDC_SLIDERGRADE);
   SendMessage(hwndTrack,TBM_SETPAGESIZE,0,(LPARAM)5);
   SendMessage(hwndTrack,TBM_SETLINESIZE,0,(LPARAM)1);
-  SendMessage(hwndTrack,TBM_SETRANGE,(WPARAM)FALSE,
+  SendMessage(hwndTrack,TBM_SETRANGE,(WPARAM)false,
       (LPARAM) MAKELONG(C4TLS_GradeMin,C4TLS_GradeMax));
-  SendMessage(hwndTrack,TBM_SETPOS,(WPARAM)TRUE,(LPARAM)C4TLS_GradeMax-Grade);
+  SendMessage(hwndTrack,TBM_SETPOS,(WPARAM)true,(LPARAM)C4TLS_GradeMax-Grade);
 	UpdateWindow(hwndTrack);
 #else
 #ifdef WITH_DEVELOPER_MODE
@@ -791,7 +791,7 @@ bool C4ToolsDlg::PopMaterial()
 #ifdef _WIN32
 	if (!hDialog) return false;
 	SetFocus(GetDlgItem(hDialog,IDC_COMBOMATERIAL));
-	SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_SHOWDROPDOWN,TRUE,0);
+	SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_SHOWDROPDOWN,true,0);
 #else
 #ifdef WITH_DEVELOPER_MODE
 	if(!hbox) return false;
@@ -807,7 +807,7 @@ bool C4ToolsDlg::PopTextures()
 #ifdef _WIN32
 	if (!hDialog) return false;
 	SetFocus(GetDlgItem(hDialog,IDC_COMBOTEXTURE));
-	SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_SHOWDROPDOWN,TRUE,0);
+	SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_SHOWDROPDOWN,true,0);
 #else
 #ifdef WITH_DEVELOPER_MODE
 	if(!hbox) return false;

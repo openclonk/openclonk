@@ -33,7 +33,7 @@ C4ComponentHost *pCmpHost=NULL;
 
 BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 	{
-	if (!pCmpHost) return FALSE;
+	if (!pCmpHost) return false;
 
 	switch (Msg)
 		{
@@ -43,13 +43,13 @@ BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam
 			break;
 		//-------------------------------------------------------------------------------------------------
 		case WM_DESTROY:
-			StoreWindowPosition(hDlg, "Component", Config.GetSubkeyPath("Console"), FALSE);
+			StoreWindowPosition(hDlg, "Component", Config.GetSubkeyPath("Console"), false);
 			break;
 		//-------------------------------------------------------------------------------------------------
 		case WM_INITDIALOG:
 			pCmpHost->InitDialog(hDlg);
 			RestoreWindowPosition(hDlg, "Component", Config.GetSubkeyPath("Console"));
-			return TRUE;
+			return true;
 		//-------------------------------------------------------------------------------------------------
 		case WM_COMMAND:
 			// Evaluate command
@@ -58,22 +58,22 @@ BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDCANCEL:
 					pCmpHost->Close();
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDOK:
 					// IDC_EDITDATA to Data
 					char buffer[65000];
 					GetDlgItemText(hDlg,IDC_EDITDATA,buffer,65000);
-					pCmpHost->Modified=TRUE;
+					pCmpHost->Modified=true;
 					pCmpHost->Data.Copy(buffer);
 					pCmpHost->Close();
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				}
-			return FALSE;
+			return false;
 		//-----------------------------------------------------------------------------------------------------------------------------------
 		}
-	return FALSE;
+	return false;
 	}
 
 void C4ComponentHost::InitDialog(HWND hDlg)
