@@ -34,6 +34,10 @@
 #include <math.h>
 #include <limits.h>
 
+// TODO: Are the GL constants guaranteed to be continuous, so we can just
+// use GL_TEXTURE0 + i instead of TEXNUMS[i]?
+static const int TEXNUMS[] = { GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8, GL_TEXTURE9, GL_TEXTURE10, GL_TEXTURE11, GL_TEXTURE12, GL_TEXTURE13, GL_TEXTURE14, GL_TEXTURE15, GL_TEXTURE16, GL_TEXTURE17, GL_TEXTURE18, GL_TEXTURE19, GL_TEXTURE20, GL_TEXTURE21, GL_TEXTURE22, GL_TEXTURE23, GL_TEXTURE24, GL_TEXTURE25, GL_TEXTURE26, GL_TEXTURE27, GL_TEXTURE28, GL_TEXTURE29, GL_TEXTURE30, GL_TEXTURE31 };
+
 static void glColorDw(DWORD dwClr)
 	{
 	glColor4ub(GLubyte(dwClr>>16), GLubyte(dwClr>>8), GLubyte(dwClr), GLubyte(dwClr>>24));
@@ -125,7 +129,11 @@ bool CStdGL::UpdateClipper()
 	glViewport(iX, RenderTarget->Hgt-iY-iHgt, iWdt, iHgt);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
+
+	// Set clipping plane to -1000 and 1000 so that large meshes are not
+	// clipped away.
+	glOrtho((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY, -1000.0f, 1000.0f);
+	//gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
 	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
 	}
@@ -379,14 +387,35 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	const float dy = ty + ry*thgt;
 	const float scx = twdt/(box.x2 - box.x1);
 	const float scy = thgt/(box.y2 - box.y1);
+
+#if 0
+	// Scale so that Z coordinate is between -1 and 1, otherwise parts of
+	// the mesh could be clipped away by the near or far clipping plane.
+	// This technique might also enable us not to clear the depth buffer
+	// after every mesh rendering - we could simply scale the first mesh
+	// of the scene so that it's Z coordinate is between 0 and 1, scale
+	// the second mesh that it is between 1 and 2, and so on.
+	// This of course requires an orthogonal projection so that the
+	// meshes don't look distorted - if we should every decide to use
+	// a perspective projection we need to think of something different.
+
+	// TODO: This is currently commented out because it gets the lighting
+	// wrong (objects are too dark). Instead we changed the clipping plane
+	// to be large enough. I think this is still a got idea, though,
+	// when we fix the lighting. Maybe we need to adapt the normals
+	// somehow...
+	const float scz = 1.0/(box.z2 - box.z1);
+#else
+	const float scz = 1.0;
+#endif
 	// Keep aspect ratio:
 	//if(scx < scy) scy = scx;
 	//else scx = scy;
 	glTranslatef(dx, dy, 0.0f);
-	glScalef(scx, scy, 1.0f);
+	glScalef(scx, scy, scz);
 
 	// Put a light source in front of the object
-	const GLfloat light_position[] = { 0.0f, 0.0f, 15.0f*Zoom, 1.0f };
+	const GLfloat light_position[] = { 0.0f, 0.0f, box.z2 + 15.0f*Zoom, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
 
@@ -416,6 +445,13 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	{
 		const StdMeshMaterialPass& pass = technique.Passes[i];
 
+		// TODO: Test this when the material is loaded, and mark the
+		// technique as non-working if it has passes with more
+		// textures than this number.
+		GLint max_texture_units;
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
+		assert(pass.TextureUnits.size() <= max_texture_units);
+
 		// Set up material
 #if 0
 		glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
@@ -425,7 +461,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
 		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
 
-		// TODO: Set up texture units
+		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+		{
+			glActiveTexture(TEXNUMS[j]);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, pass.TextureUnits[j].GetTexture().texName);
+		}
 
 		// Render mesh
 		// TODO: Use glInterleavedArrays? Hm, might be impossible as
@@ -448,6 +489,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 			RenderMeshVertex(vtx3, pass, &Transform, ClrModMap, dwModClr);
 		}
 		glEnd(); // GL_TRIANGLES
+
+		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+		{
+			glActiveTexture(TEXNUMS[j]);
+			glDisable(GL_TEXTURE_2D);
+		}
 	}
 
 	glDisable(GL_LIGHT0);
