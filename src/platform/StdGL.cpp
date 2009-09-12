@@ -34,10 +34,6 @@
 #include <math.h>
 #include <limits.h>
 
-// TODO: Are the GL constants guaranteed to be continuous, so we can just
-// use GL_TEXTURE0 + i instead of TEXNUMS[i]?
-static const int TEXNUMS[] = { GL_TEXTURE0, GL_TEXTURE1, GL_TEXTURE2, GL_TEXTURE3, GL_TEXTURE4, GL_TEXTURE5, GL_TEXTURE6, GL_TEXTURE7, GL_TEXTURE8, GL_TEXTURE9, GL_TEXTURE10, GL_TEXTURE11, GL_TEXTURE12, GL_TEXTURE13, GL_TEXTURE14, GL_TEXTURE15, GL_TEXTURE16, GL_TEXTURE17, GL_TEXTURE18, GL_TEXTURE19, GL_TEXTURE20, GL_TEXTURE21, GL_TEXTURE22, GL_TEXTURE23, GL_TEXTURE24, GL_TEXTURE25, GL_TEXTURE26, GL_TEXTURE27, GL_TEXTURE28, GL_TEXTURE29, GL_TEXTURE30, GL_TEXTURE31 };
-
 static void glColorDw(DWORD dwClr)
 	{
 	glColor4ub(GLubyte(dwClr>>16), GLubyte(dwClr>>8), GLubyte(dwClr), GLubyte(dwClr>>24));
@@ -450,7 +446,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// textures than this number.
 		GLint max_texture_units;
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
-		assert(pass.TextureUnits.size() <= max_texture_units);
+		assert(pass.TextureUnits.size() <= max_texture_units-1); // One texture is reserved for FoW/ClrModMap
 
 		// Set up material
 #if 0
@@ -463,7 +459,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 		{
-			glActiveTexture(TEXNUMS[j]);
+			// Note that it is guaranteed that the GL_TEXTUREn
+			// constants are continuous.
+			// GL_TEXTURE3 is reserved for FoW/ClrModMap
+			if(j < 3) glActiveTexture(GL_TEXTURE0+j);
+			else glActiveTexture(GL_TEXTURE4+j-3);
+
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, pass.TextureUnits[j].GetTexture().texName);
 		}
@@ -492,7 +493,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 		{
-			glActiveTexture(TEXNUMS[j]);
+			if(j < 3) glActiveTexture(GL_TEXTURE0+j);
+			else glActiveTexture(GL_TEXTURE4+j-3);
 			glDisable(GL_TEXTURE_2D);
 		}
 	}
