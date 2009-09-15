@@ -15,7 +15,8 @@
 					<row><col>PHYS_Current</col><col>0</col><col>Im Objektkontext: Die Eigenschaften werden im gerade aktiven Modus (temporär oder permanent) des Objektes abgefragt. Dieser Modus funktioniert als einziger auch bei Objekten ohne Objektinfo. Im Definitionskontext: Die Standardwerte der Definition werden abgefragt.</col></row>
 					<row><col>PHYS_Permanent</col><col>1</col><col>Die permanenten Eigenschaften aus der Spielerdatei werden abgefragt. Dies ist nur bei Spielercrew-Mitgliedern möglich.</col></row>
 					<row><col>PHYS_Temporary</col><col>2</col><col>Die temporären Eigenschaften werden abgefragt, wenn sie existieren.</col></row>
-				</param>
+					</table>
+				</desc></param>
 		        </params>
                 </syntax>
                 <desc>Liefert die physischen Eigenschaften des Objekts oder der Definition im Aufrufkontext.</desc>

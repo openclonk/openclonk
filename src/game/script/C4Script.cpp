@@ -1338,11 +1338,6 @@ static C4ID FnGetID(C4AulObjectContext *cthr)
 	return cthr->Obj->Def->id;
 }
 
-static long FnGetBase(C4AulObjectContext *cthr)
-{
-	return cthr->Obj->Base;
-}
-
 static Nillable<C4ID> FnGetMenu(C4AulObjectContext *cthr)
 {
 	if (cthr->Obj->Menu && cthr->Obj->Menu->IsActive())
@@ -1894,12 +1889,6 @@ static bool FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, C4
   V1 = C4VInt(v1); V2 = C4VInt(v2);
   return result;
   }
-
-static C4Object *FnFindBase(C4AulContext *cthr, long iOwner, long iIndex)
-	{
-	if (!ValidPlr(iOwner)) return NULL;
-	return Game.FindBase(iOwner,iIndex);
-	}
 
 C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs)
 	{
@@ -3340,35 +3329,6 @@ static C4String *FnGetProcedure(C4AulObjectContext *cthr)
 	if (iProc <= DFA_NONE) return NULL;
 	// return procedure name
 	return String(ProcedureName[iProc]);
-}
-
-static C4Object *FnBuy(C4AulContext *cthr, C4ID idBuyObj, long iForPlr, long iPayPlr, C4Object *pToBase, bool fShowErrors)
-	{
-	// safety
-	if (!ValidPlr(iForPlr) || !ValidPlr(iPayPlr)) return NULL;
-	// buy
-	C4Object *pThing;
-	if (!(pThing=::Players.Get(iPayPlr)->Buy(idBuyObj, fShowErrors, iForPlr, pToBase ? pToBase : cthr->Obj))) return NULL;
-	// enter object, if supplied
-	if (pToBase)
-		{
-		pThing->Enter(pToBase, true);
-		}
-	else
-		{
-		// no target object? get local pos
-		if (cthr->Obj) pThing->ForcePosition(cthr->Obj->GetX(), cthr->Obj->GetY());
-		}
-	// done
-	return pThing;
-	}
-
-static bool FnSell(C4AulObjectContext *cthr, long iToPlr)
-{
-	// safety
-	if (!ValidPlr(iToPlr)) return false;
-	// sell
-	return !!::Players.Get(iToPlr)->Sell2Home(cthr->Obj);
 }
 
 static C4Value FnIsRef(C4AulContext *cthr, C4Value* Value)
@@ -5657,7 +5617,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetBreath", FnGetBreath);
 	AddFunc(pEngine, "GetX", FnGetX);
 	AddFunc(pEngine, "GetY", FnGetY);
-	AddFunc(pEngine, "GetBase", FnGetBase);
 	AddFunc(pEngine, "GetMenu", FnGetMenu);
 	AddFunc(pEngine, "GetVertexNum", FnGetVertexNum);
 	AddFunc(pEngine, "GetVertex", FnGetVertex);
@@ -5720,7 +5679,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FindContents", FnFindContents);
 	AddFunc(pEngine, "FindConstructionSite", FnFindConstructionSite);
 	AddFunc(pEngine, "FindOtherContents", FnFindOtherContents);
-	AddFunc(pEngine, "FindBase", FnFindBase);
 	AddFunc(pEngine, "Sound", FnSound);
 	AddFunc(pEngine, "Music", FnMusic);
 	AddFunc(pEngine, "MusicLevel", FnMusicLevel);
@@ -5831,8 +5789,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlrViewRange", FnSetPlrViewRange);
 	AddFunc(pEngine, "SetMaxPlayer", FnSetMaxPlayer);
 	AddFunc(pEngine, "SetPicture", FnSetPicture);
-	AddFunc(pEngine, "Buy", FnBuy);
-	AddFunc(pEngine, "Sell", FnSell);
 	AddFunc(pEngine, "GetProcedure", FnGetProcedure);
 	AddFunc(pEngine, "GetChar", FnGetChar);
 	AddFunc(pEngine, "ActivateGameGoalMenu", FnActivateGameGoalMenu);
@@ -6212,14 +6168,6 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "C4MSGCMDR_Escaped"         ,C4V_Int,      C4MessageBoardCommand::C4MSGCMDR_Escaped },
 	{ "C4MSGCMDR_Plain"           ,C4V_Int,      C4MessageBoardCommand::C4MSGCMDR_Plain },
 	{ "C4MSGCMDR_Identifier"      ,C4V_Int,      C4MessageBoardCommand::C4MSGCMDR_Identifier },
-
-	{ "BASEFUNC_Default"          ,C4V_Int,			BASEFUNC_Default						},
-	{ "BASEFUNC_AutoSellContents" ,C4V_Int,			BASEFUNC_AutoSellContents		},
-	{ "BASEFUNC_RegenerateEnergy" ,C4V_Int,			BASEFUNC_RegenerateEnergy		},
-	{ "BASEFUNC_Buy"              ,C4V_Int,			BASEFUNC_Buy								},
-	{ "BASEFUNC_Sell"             ,C4V_Int,			BASEFUNC_Sell								},
-	{ "BASEFUNC_RejectEntrance"   ,C4V_Int,			BASEFUNC_RejectEntrance			},
-	{ "BASEFUNC_Extinguish"       ,C4V_Int,			BASEFUNC_Extinguish					},
 
 	{ "C4FO_Not"                  ,C4V_Int,			C4FO_Not						},
 	{ "C4FO_And"                  ,C4V_Int,			C4FO_And						},

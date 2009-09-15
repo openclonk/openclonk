@@ -87,10 +87,4 @@ bool ObjectComCancelAttach(C4Object *cObj);
 void ObjectComDigDouble(C4Object *cObj);
 void ObjectComStopDig(C4Object *cObj);
 
-C4Object *Buy(int32_t iPlr, C4ID id, C4Object *pBase, bool fShowErrors=true);
-bool Sell(int32_t iPlr, C4Object *pObj, bool fShowErrors=true);
-bool Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, bool fShowErrors=true);
-bool SellFromBase(int32_t iPlr, C4Object *pBase, C4ID id, C4Object *pSellObj);
-
-
 #endif

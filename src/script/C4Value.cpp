@@ -327,29 +327,27 @@ const char* C4Value::GetTypeInfo()
 
 // converter functions ----------------
 
-static bool FnCnvDirectOld(C4Value *Val, C4V_Type toType, bool fStrict)
-	{
-	// new syntax: failure
-	if (fStrict) return false;
-	// old syntax: do nothing
-	return true;
-	}
-
-static bool FnCnvError(C4Value *Val, C4V_Type toType, bool fStrict)
+static bool FnCnvError(C4Value *Val, C4V_Type toType)
 	{
 	// deny convert
 	return false;
 	}
 
-static bool FnCnvDeref(C4Value *Val, C4V_Type toType, bool fStrict)
+static bool FnCnvDeref(C4Value *Val, C4V_Type toType)
 	{
 	// resolve reference of Value
 	Val->Deref();
 	// retry to check convert
-	return Val->ConvertTo(toType, fStrict);
+	return Val->ConvertTo(toType);
 	}
 
-bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType, bool fStrict)
+static bool FnOk0(C4Value *Val, C4V_Type toType)
+	{
+	// 0 can be treated as nil, but every other integer can't
+	return !*Val;
+	}
+
+bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType)
 	{
 	// try casting
 	if (dynamic_cast<C4Object *>(Val->Data.PropList)) return true;
@@ -357,92 +355,92 @@ bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType, bool fStrict)
 	}
 
 // Type conversion table
-#define CnvOK        0, false								// allow conversion by same value
+#define CnvOK        0, false           // allow conversion by same value
+#define CnvOK0       FnOk0, true
 #define CnvError     FnCnvError, true
-#define CnvDirectOld FnCnvDirectOld, true
 #define CnvDeref     FnCnvDeref, false
 #define CnvObject    FnCnvObject, false
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 	{ // C4V_Any - is always 0, convertible to everything
-		{ CnvOK			}, // any        same
-		{ CnvOK			}, // int
-		{ CnvOK			}, // Bool
-		{ CnvOK			}, // PropList
-		{ CnvOK			}, // C4Object
-		{ CnvOK			}, // String
-		{ CnvOK			}, // Array
-		{ CnvError		}, // pC4Value
+		{ CnvOK		}, // any        same
+		{ CnvOK		}, // int
+		{ CnvOK		}, // Bool
+		{ CnvOK		}, // PropList
+		{ CnvOK		}, // C4Object
+		{ CnvOK		}, // String
+		{ CnvOK		}, // Array
+		{ CnvError	}, // pC4Value
 	},
 	{ // C4V_Int
-		{ CnvOK			}, // any
-		{ CnvOK			}, // int        same
-		{ CnvOK			}, // Bool
-		{ CnvError		}, // PropList   NEVER!
-		{ CnvError		}, // C4Object   NEVER!
-		{ CnvError		}, // String     NEVER!
-		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // pC4Value
+		{ CnvOK		}, // any
+		{ CnvOK		}, // int        same
+		{ CnvOK		}, // Bool
+		{ CnvOK0	}, // PropList   only if 0
+		{ CnvOK0	}, // C4Object   only if 0
+		{ CnvOK0	}, // String     only if 0
+		{ CnvOK0	}, // Array      only if 0
+		{ CnvError	}, // pC4Value
 	},
 	{ // C4V_Bool
-		{ CnvOK			}, // any
-		{ CnvOK			}, // int        might be used
-		{ CnvOK			}, // Bool       same
-		{ CnvError		}, // PropList   NEVER!
-		{ CnvError		}, // C4Object   NEVER!
-		{ CnvError		}, // String     NEVER!
-		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // pC4Value
+		{ CnvOK		}, // any
+		{ CnvOK		}, // int        might be used
+		{ CnvOK		}, // Bool       same
+		{ CnvError	}, // PropList   NEVER!
+		{ CnvError	}, // C4Object   NEVER!
+		{ CnvError	}, // String     NEVER!
+		{ CnvError	}, // Array      NEVER!
+		{ CnvError	}, // pC4Value
 	},
 	{ // C4V_PropList
-		{ CnvOK			}, // any
-		{ CnvError		}, // int        NEVER!
-		{ CnvOK			}, // Bool
-		{ CnvOK			}, // PropList   same
-		{ CnvObject		}, // C4Object
-		{ CnvError		}, // String     NEVER!
-		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // pC4Value   NEVER!
+		{ CnvOK		}, // any
+		{ CnvError	}, // int        NEVER!
+		{ CnvOK		}, // Bool
+		{ CnvOK		}, // PropList   same
+		{ CnvObject	}, // C4Object
+		{ CnvError	}, // String     NEVER!
+		{ CnvError	}, // Array      NEVER!
+		{ CnvError	}, // pC4Value   NEVER!
 	},
 	{ // C4V_Object
-		{ CnvOK			}, // any
-		{ CnvDirectOld	}, // int        #strict forbid
-		{ CnvOK			}, // Bool
-		{ CnvOK			}, // PropList
-		{ CnvOK			}, // C4Object   same
-		{ CnvError		}, // String     NEVER!
-		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // pC4Value
+		{ CnvOK		}, // any
+		{ CnvError	}, // int        NEVER!
+		{ CnvOK		}, // Bool
+		{ CnvOK		}, // PropList
+		{ CnvOK		}, // C4Object   same
+		{ CnvError	}, // String     NEVER!
+		{ CnvError	}, // Array      NEVER!
+		{ CnvError	}, // pC4Value   NEVER!
 	},
 	{ // C4V_String
-		{ CnvOK			}, // any
-		{ CnvDirectOld	}, // int        #strict forbid
-		{ CnvOK			}, // Bool
-		{ CnvError		}, // PropList   NEVER!
-		{ CnvError		}, // C4Object   NEVER!
-		{ CnvOK			}, // String     same
-		{ CnvError		}, // Array      NEVER!
-		{ CnvError		}, // pC4Value
+		{ CnvOK		}, // any
+		{ CnvError	}, // int        NEVER!
+		{ CnvOK		}, // Bool
+		{ CnvError	}, // PropList   NEVER!
+		{ CnvError	}, // C4Object   NEVER!
+		{ CnvOK		}, // String     same
+		{ CnvError	}, // Array      NEVER!
+		{ CnvError	}, // pC4Value   NEVER!
 	},
 	{ // C4V_Array
-		{ CnvOK			}, // any
-		{ CnvError		}, // int        NEVER!
-		{ CnvOK			}, // Bool
-		{ CnvError		}, // PropList   NEVER!
-		{ CnvError		}, // C4Object   NEVER!
-		{ CnvError		}, // String     NEVER!
-		{ CnvOK			}, // Array      same
-		{ CnvError		}, // pC4Value   NEVER!
+		{ CnvOK		}, // any
+		{ CnvError	}, // int        NEVER!
+		{ CnvOK		}, // Bool
+		{ CnvError	}, // PropList   NEVER!
+		{ CnvError	}, // C4Object   NEVER!
+		{ CnvError	}, // String     NEVER!
+		{ CnvOK		}, // Array      same
+		{ CnvError	}, // pC4Value   NEVER!
 	},
 	{ // C4V_pC4Value - resolve reference and retry type check
-		{ CnvDeref		}, // any
-		{ CnvDeref		}, // int
-		{ CnvDeref		}, // Bool
-		{ CnvDeref		}, // PropList
-		{ CnvDeref		}, // C4Object
-		{ CnvDeref		}, // String
-		{ CnvDeref		}, // Array
-		{ CnvOK			}, // pC4Value   same
+		{ CnvDeref	}, // any
+		{ CnvDeref	}, // int
+		{ CnvDeref	}, // Bool
+		{ CnvDeref	}, // PropList
+		{ CnvDeref	}, // C4Object
+		{ CnvDeref	}, // String
+		{ CnvDeref	}, // Array
+		{ CnvOK		}, // pC4Value   same
 	},
 };
 

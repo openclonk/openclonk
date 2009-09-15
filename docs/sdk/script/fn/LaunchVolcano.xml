@@ -9,12 +9,10 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param>
-          <type>int</type><name>iX</name><desc>X-Zielposition</desc>
-          <type>int</type><name>iY</name><desc>Y-Zielposition. Default: am unteren Ende der Landschaft</desc><optional/>
-          <type>int</type><name>iStrength</name><desc>Stärke. Default: relativ zur Höhe der Landschaft</desc><optional/>
-          <type>string</type><name>szMaterial</name><desc>Name des Materials. Default ist "Lava"</desc><optional/>
-        </param>
+        <param><type>int</type><name>iX</name><desc>X-Zielposition</desc></param>
+        <param><type>int</type><name>iY</name><desc>Y-Zielposition. Default: am unteren Ende der Landschaft</desc><optional/></param>
+        <param><type>int</type><name>iStrength</name><desc>Stärke. Default: relativ zur Höhe der Landschaft</desc><optional/></param>
+        <param><type>string</type><name>szMaterial</name><desc>Name des Materials. Default ist "Lava"</desc><optional/></param>
       </params>
     </syntax>
     <desc>Erzeugt einen Vulkan an angegebener Position</desc>
