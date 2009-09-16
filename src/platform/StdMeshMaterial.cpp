@@ -19,6 +19,8 @@
 #include <StdMeshMaterial.h>
 
 #include <cctype>
+#include <memory>
+
 #ifdef WITH_GLIB
 #include <glib.h>
 #endif
@@ -196,14 +198,16 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 	Error(StdCopyStrBuf("Unexpected identifier: '") + identifier + "'");
 }
 
-StdMeshMaterialTextureUnit::TexRef::TexRef(unsigned int size):
-	RefCount(1), Tex(size, false)
+StdMeshMaterialTextureUnit::TexRef::TexRef(C4Surface* Surface):
+	RefCount(1), Surf(Surface), Tex(*Surface->ppTex[0])
 {
+	assert(Surface->ppTex != NULL);
 }
 
 StdMeshMaterialTextureUnit::TexRef::~TexRef()
 {
 	assert(RefCount == 0);
+	delete Surf;
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
@@ -243,20 +247,16 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 		{
 			ctx.AdvanceRequired(token_name, TOKEN_IDTF);
 
-			CPNGFile png;
-			if(!ctx.TextureLoader.LoadTexture(token_name.getData(), png))
+			std::auto_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(token_name.getData())); // be exception-safe
+			if(!surface.get())
 				ctx.Error(StdCopyStrBuf("Could not load texture '") + token_name + "'");
 
-			if(png.iWdt != png.iHgt)
+			if(surface->Wdt != surface->Hgt)
 				ctx.Error(StdCopyStrBuf("Texture '") + token_name + "' is not quadratic");
+			if(surface->iTexX > 1 || surface->iTexY > 1)
+				ctx.Error(StdCopyStrBuf("Texture '") + token_name + "' is too large");
 
-			Texture = new TexRef(png.iWdt);
-
-			Texture->Tex.Lock();
-			for(unsigned int y = 0; y < png.iHgt; ++y)
-				for(unsigned int x = 0; x < png.iWdt; ++x)
-					Texture->Tex.SetPix4(x, y, png.GetPix(x, y));
-			Texture->Tex.Unlock();
+			Texture = new TexRef(surface.release());
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);

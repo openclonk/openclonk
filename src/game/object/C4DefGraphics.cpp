@@ -50,14 +50,14 @@ class AdditionalRessourcesLoader:
 public:
 	AdditionalRessourcesLoader(C4Group& hGroup): Group(hGroup) {}
 
-	virtual bool LoadTexture(const char* filename, CPNGFile& dest)
+	virtual C4Surface* LoadTexture(const char* filename)
 	{
-		char* buf;
-		size_t size;
-		if(!Group.LoadEntry(filename, &buf, &size, 1)) return false;
-		bool ret = dest.Load(reinterpret_cast<BYTE*>(buf), size);
-		delete[] buf;
-		return ret;
+		C4Surface* surface = new C4Surface;
+		// Suppress error message here, StdMeshMaterial loader
+		// will show one.
+		if(!surface->LoadAny(Group, filename, false, true))
+			{ delete surface; surface = NULL; }
+		return surface;
 	}
 
 	virtual StdStrBuf LoadSkeleton(const char* filename)

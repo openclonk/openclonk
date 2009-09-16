@@ -21,8 +21,8 @@
 
 #include <Standard.h>
 #include <StdBuf.h>
-#include <StdPNG.h>
 #include <StdSurface2.h>
+#include <C4Surface.h>
 
 #include <vector>
 #include <map>
@@ -50,7 +50,7 @@ protected:
 class StdMeshMaterialTextureLoader
 {
 public:
-	virtual bool LoadTexture(const char* filename, CPNGFile& dest) = 0;
+	virtual C4Surface* LoadTexture(const char* filename) = 0;
 };
 
 class StdMeshMaterialTextureUnit
@@ -61,11 +61,21 @@ public:
 	class TexRef
 	{
 	public:
-		TexRef(unsigned int size);
+		TexRef(C4Surface* Surface); // Takes ownership
 		~TexRef();
 
 		unsigned int RefCount;
-		CTexRef Tex;
+
+		// TODO: Note this cannot be CSurface here, because CSurface
+		// does not have a virtual destructor, so we couldn't delete it
+		// properly in that case. I am a bit annoyed that this
+		// currently requires a cross-ref to lib/texture. I think
+		// C4Surface should go away and the file loading/saving
+		// should be free functions instead. I also think the file
+		// loading/saving should be decoupled from the surfaces, so we
+		// can skip the surface here and simply use a CTexRef. armin.
+		C4Surface* Surf;
+		CTexRef& Tex;
 	};
 
 	StdMeshMaterialTextureUnit();
