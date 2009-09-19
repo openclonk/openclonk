@@ -812,13 +812,13 @@ bool CStdGL::RestoreDeviceObjects()
 		"TEMP tmp;\n"
 		// sample the texture
 		"TXP tmp, fragment.texcoord[0], texture, 2D;\n";
-		const char * alpha_add =
+		const char * alpha_mod =
 		// perform the modulation
-		"MUL tmp.rgb, tmp, fragment.color.primary;\n"
-		"ADD_SAT tmp.a, tmp, fragment.color.primary;\n";
+		"MUL tmp.rgba, tmp, fragment.color.primary;\n";
 		const char * funny_add =
 		// perform the modulation
-		"ADD tmp, tmp, fragment.color.primary;\n"
+		"ADD tmp.rgb, tmp, fragment.color.primary;\n"
+		"MUL tmp.a, tmp, fragment.color.primary;\n"
 		"MAD_SAT tmp, tmp, { 2.0, 2.0, 2.0, 1.0 }, { -1.0, -1.0, -1.0, 0.0 };\n";
 		const char * grey =
 		"TEMP grey;\n"
@@ -837,8 +837,7 @@ bool CStdGL::RestoreDeviceObjects()
 		"MOV coo, fragment.texcoord;\n"
 		"MUL coo.xy, coo, 3.0;\n"
 		"TXP tmp, coo, texture[1], 2D;\n"
-		"MUL tmp.a, col.y, col.z;\n"
-		"SUB tmp.a, 1.0, tmp.a;\n";
+		"MUL tmp.a, col.y, col.z;\n";
 		const char * fow =
 		"TEMP fow;\n"
 		// sample the texture
@@ -847,18 +846,18 @@ bool CStdGL::RestoreDeviceObjects()
 		const char * end =
 		"MOV result.color, tmp;\n"
 		"END\n";
-		DefineShaderARB(FormatString("%s%s%s",       preface,            alpha_add,            end).getData(), shaders[0]);
+		DefineShaderARB(FormatString("%s%s%s",       preface,            alpha_mod,            end).getData(), shaders[0]);
 		DefineShaderARB(FormatString("%s%s%s",       preface,            funny_add,            end).getData(), shaders[1]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface, landscape, alpha_add,            end).getData(), shaders[2]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_add, grey,      end).getData(), shaders[3]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface, landscape, alpha_mod,            end).getData(), shaders[2]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_mod, grey,      end).getData(), shaders[3]);
 		DefineShaderARB(FormatString("%s%s%s%s",     preface,            funny_add, grey,      end).getData(), shaders[4]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_add, grey,      end).getData(), shaders[5]);
-		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_add,       fow, end).getData(), shaders[6]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_mod, grey,      end).getData(), shaders[5]);
+		DefineShaderARB(FormatString("%s%s%s%s",     preface,            alpha_mod,       fow, end).getData(), shaders[6]);
 		DefineShaderARB(FormatString("%s%s%s%s",     preface,            funny_add,       fow, end).getData(), shaders[7]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_add,       fow, end).getData(), shaders[8]);
-		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            alpha_add, grey, fow, end).getData(), shaders[9]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface, landscape, alpha_mod,       fow, end).getData(), shaders[8]);
+		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            alpha_mod, grey, fow, end).getData(), shaders[9]);
 		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            funny_add, grey, fow, end).getData(), shaders[10]);
-		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, landscape, alpha_add, grey, fow, end).getData(), shaders[11]);
+		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, landscape, alpha_mod, grey, fow, end).getData(), shaders[11]);
 		}
 	// done
 	return Active;
