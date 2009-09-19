@@ -102,7 +102,7 @@ bool CStdGL::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
 void CStdGL::FillBG(DWORD dwClr)
 	{
 	if (!pCurrCtx) if (!MainCtx.Select()) return;
-	glClearColor((float)GetBValue(dwClr)/255.0f, (float)GetGValue(dwClr)/255.0f, (float)GetRValue(dwClr)/255.0f, 1.0f);
+	glClearColor((float)GetBValue(dwClr)/255.0f, (float)GetGValue(dwClr)/255.0f, (float)GetRValue(dwClr)/255.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -184,7 +184,7 @@ void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, fMod2 ? GL_ADD_SIGNED : GL_MODULATE);
 		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, fMod2 ? 2.0f : 1.0f);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_ADD);
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE); // TODO: This was GL_ADD. Is GL_MODULATE correct for inverted alpha? Others seem to break things... - ModulateClrA was changed to do a+b-1, but there is no GL_-constant for this...
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
@@ -204,8 +204,8 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	if (DDrawCfg.ClipManually && rBltData.pTransform) ClipPoly(rBltData);
 	// global modulation map
 	int i;
-	bool fAnyModNotBlack = !!dwModClr;
-	if (!shaders[0] && fUseClrModMap && dwModClr)
+	bool fAnyModNotBlack = (dwModClr != 0xff000000);
+	if (!shaders[0] && fUseClrModMap && dwModClr != 0xff000000)
 		{
 		fAnyModNotBlack = false;
 		for (i=0; i<rBltData.byNumVertices; ++i)
@@ -218,7 +218,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 				}
 			DWORD c = pClrModMap->GetModAt(int(x), int(y));
 			ModulateClr(c, dwModClr);
-			if (c) fAnyModNotBlack = true;
+			if (c != 0xff000000) fAnyModNotBlack = true;
 			DwTo4UB(c, rBltData.vtVtx[i].color);
 			}
 		}
@@ -396,7 +396,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 		for (int iX=iTexX; iX<iTexX2; ++iX)
 			{
 			// blit
-			DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffff;
+			DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
 			glActiveTexture(GL_TEXTURE0);
 			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
@@ -606,7 +606,7 @@ bool CStdGL::CreatePrimarySurfaces(bool Playermode, unsigned int iXRes, unsigned
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	const char * linedata = byByteCnt == 2 ? "\xff\xff\xff\xf0" : "\xff\xff\xff\xff\xff\xff\xff\x00";
+	const char * linedata = byByteCnt == 2 ? "\xff\xf0\xff\xff" : "\xff\xff\xff\x00\xff\xff\xff\xff";
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
 	return RestoreDeviceObjects();
 	}
@@ -638,7 +638,7 @@ void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwC
 		glShadeModel((dwClr1 == dwClr2 && dwClr1 == dwClr3 && dwClr1 == dwClr4) ? GL_FLAT : GL_SMOOTH);
 	// set blitting state
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
-	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, iAdditive ? GL_ONE : GL_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 	// draw two triangles
 	glInterleavedArrays(GL_V2F, sizeof(float)*2, ipVtx);
 	GLubyte colors[4][4];
@@ -751,7 +751,7 @@ void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
 		glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 		// convert the alpha value for that blendfunc
 		glBegin(GL_POINTS);
-		glColorDw(InvertRGBAAlpha(dwClr));
+		glColorDw(dwClr);
 		glVertex2f(tx + 0.5f, ty + 0.5f);
 		glEnd();
 		}
@@ -891,7 +891,7 @@ bool CStdGL::InvalidateDeviceObjects()
 
 void CStdGL::SetTexture()
 	{
-	glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, (dwBlitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_SRC_ALPHA);
+	glBlendFunc(GL_SRC_ALPHA, (dwBlitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 	if (shaders[0])
 		{
 		glEnable(GL_FRAGMENT_PROGRAM_ARB);

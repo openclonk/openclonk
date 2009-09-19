@@ -185,7 +185,7 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 		Application.DDraw->TextOutDw(szInfo, cgo.Surface, cgo.Wdt/2, cgo.Hgt/2+20);*/
 	//
 	// draw progress bar
-	Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0x4f000000);
+	Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt, cgo.Wdt-iHIndent, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin, 0xb0000000);
 	int iProgressBarWdt=cgo.Wdt-iHIndent*2-2;
 	if (C4GUI::IsGUIValid())
 		{
@@ -193,7 +193,7 @@ void C4LoaderScreen::Draw(C4Facet &cgo, int iProgress, C4LogBuffer *pLog, int Pr
 		}
 	else
 		{
-		Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0x4fff0000);
+		Application.DDraw->DrawBoxDw(cgo.Surface, iHIndent+1, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-iProgressBarHgt+1, iHIndent+1+iProgressBarWdt*iProgress/100, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-1, 0xb0ff0000);
 		}
 	Application.DDraw->StringOut(FormatString("%i%%", iProgress).getData(), rProgressBarFont, 1.0f, cgo.Surface,
 		cgo.Wdt/2, cgo.Hgt-iVIndent-iLogBoxHgt-iVMargin-rProgressBarFont.iLineHgt/2-iProgressBarHgt/2, 0xffffffff,

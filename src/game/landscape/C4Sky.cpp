@@ -123,7 +123,7 @@ bool C4Sky::Init(bool fSavegame)
 			FadeClr2=Surface->pPal->GetClr(19);
 			}
 		else*/
-			FadeClr1=FadeClr2=0xffffff;
+			FadeClr1=FadeClr2=0xffffffff;
 		// enlarge surface to avoid slow 1*1-px-skies
 		if (!SurfaceEnsureSize(&Surface, 128, 128)) return false;
 
@@ -175,7 +175,7 @@ void C4Sky::Default()
 	Width=Height=0;
 	Surface=NULL;
 	x=y=xdir=ydir=0;
-	Modulation=0x00ffffff;
+	Modulation=0xffffffff;
 	ParX=ParY=10;
 	ParallaxMode=C4SkyPM_Fixed;
 	BackClr=0;
@@ -190,7 +190,7 @@ C4Sky::~C4Sky()
 void C4Sky::Clear()
 	{
 	delete Surface; Surface=NULL;
-	Modulation=0x00ffffff;
+	Modulation=0xffffffff;
 	}
 
 bool C4Sky::Save(C4Group &hGroup)
@@ -227,7 +227,7 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 	// background color?
 	if (BackClrEnabled) Application.DDraw->DrawBoxDw(cgo.Surface, cgo.X, cgo.Y, cgo.X+cgo.Wdt, cgo.Y+cgo.Hgt, BackClr);
 	// sky surface?
-	if (Modulation != 0xffffff) Application.DDraw->ActivateBlitModulation(Modulation);
+	if (Modulation != 0xffffffff) Application.DDraw->ActivateBlitModulation(Modulation);
 	if (Surface)
 		{
 		// blit parallax sky
@@ -242,7 +242,7 @@ void C4Sky::Draw(C4TargetFacet &cgo)
 		DWORD dwClr2=GetSkyFadeClr(cgo.TargetY+cgo.Hgt);
 		Application.DDraw->DrawBoxFade(cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, dwClr1, dwClr1, dwClr2, dwClr2, cgo.TargetX, cgo.TargetY);
 		}
-	if (Modulation != 0xffffff) Application.DDraw->DeactivateBlitModulation();
+	if (Modulation != 0xffffffff) Application.DDraw->DeactivateBlitModulation();
 	// done
 	}
 
@@ -258,7 +258,7 @@ bool C4Sky::SetModulation(DWORD dwWithClr, DWORD dwBackClr)
 	{
 	Modulation=dwWithClr;
 	BackClr=dwBackClr;
-	BackClrEnabled=(Modulation>>24) ? true : false;
+	BackClrEnabled=(Modulation>>24 != 0xff) ? true : false;
 	return true;
 	}
 
@@ -268,7 +268,7 @@ void C4Sky::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkCastIntAdapt(y),   "Y",                     Fix0));
 	pComp->Value(mkNamingAdapt(mkCastIntAdapt(xdir),"XDir",                  Fix0));
 	pComp->Value(mkNamingAdapt(mkCastIntAdapt(ydir),"YDir",                  Fix0));
-	pComp->Value(mkNamingAdapt(Modulation,      "Modulation",            0x00ffffffU));
+	pComp->Value(mkNamingAdapt(Modulation,      "Modulation",            0xffffffffU));
 	pComp->Value(mkNamingAdapt(ParX,            "ParX",                  10));
 	pComp->Value(mkNamingAdapt(ParY,            "ParY",                  10));
 	pComp->Value(mkNamingAdapt(ParallaxMode,    "ParMode",               C4SkyPM_Fixed));

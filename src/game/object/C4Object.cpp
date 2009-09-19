@@ -145,7 +145,8 @@ void C4Object::Default()
 	MaterialContents=NULL;
 	LocalNamed.Reset();
 	Marker=0;
-	ColorMod=BlitMode=0;
+	ColorMod=0xffffffff;
+	BlitMode=0;
 	CrewDisabled=false;
 	pLayer=NULL;
 	pSolidMaskData=NULL;
@@ -2282,7 +2283,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		}
 
 	// color modulation (including construction sign...)
-	if (ColorMod || BlitMode) if (!eDrawMode) PrepareDrawing();
+	if (ColorMod != 0xffffffff || BlitMode) if (!eDrawMode) PrepareDrawing();
 
 	// Not active or rotated: BaseFace only
 	if (!Action.pActionDef)
@@ -2313,7 +2314,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 		}
 
 	// end of color modulation
-	if (ColorMod || BlitMode) if (!eDrawMode) FinishedDrawing();
+	if (ColorMod != 0xffffffff || BlitMode) if (!eDrawMode) FinishedDrawing();
 
 	// draw overlays - after blit mode changes, because overlay gfx set their own
 	if (pGfxOverlay) if (eDrawMode!=ODM_BaseOnly)
@@ -2504,7 +2505,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	// Draw line segments
 	C4Value colorsV; GetProperty(Strings.P[P_LineColors], colorsV);
 	C4ValueArray *colors = colorsV.getArray();
-	int32_t color0 = 0x00FF00FF, color1 = 0x00FF00FF;	// use bright colors so author notices
+	int32_t color0 = 0xFFFF00FF, color1 = 0xFFFF00FF;	// use bright colors so author notices
 	if (colors)
 		{
 		color0 = colors->GetItem(0).getInt(); color1 = colors->GetItem(1).getInt();
@@ -2629,7 +2630,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Contents,													"Contents"															));
 	pComp->Value(mkNamingAdapt( PlrViewRange,											"PlrViewRange",				0									));
 	pComp->Value(mkNamingAdapt( LocalNamed,												"LocalNamed"														));
-	pComp->Value(mkNamingAdapt( ColorMod,													"ColorMod",						0u								));
+	pComp->Value(mkNamingAdapt( ColorMod,													"ColorMod",						0xffffffffu								));
 	pComp->Value(mkNamingAdapt( BlitMode,													"BlitMode",						0u								));
 	pComp->Value(mkNamingAdapt( CrewDisabled,											"CrewDisabled",				false							));
 	pComp->Value(mkNamingAdapt( nLayer,         					        "Layer",          		0									));
@@ -2955,7 +2956,7 @@ void C4Object::Picture2Facet(C4FacetSurface &cgo)
 	fctPicture.Set(GetGraphics()->GetBitmap(Color),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
 
 	// use direct facet w/o own data if possible
-	if (!ColorMod && BlitMode == C4GFXBLIT_NORMAL && !pGfxOverlay)
+	if (ColorMod == 0xffffffff && BlitMode == C4GFXBLIT_NORMAL && !pGfxOverlay)
 		{
 		cgo.Set(fctPicture);
 		return;
@@ -5281,7 +5282,7 @@ void C4Object::SetRotation(int32_t nr)
 void C4Object::PrepareDrawing()
 	{
 	// color modulation
-	if (ColorMod || (BlitMode & (C4GFXBLIT_MOD2 | C4GFXBLIT_CLRSFC_MOD2))) Application.DDraw->ActivateBlitModulation(ColorMod);
+	if (ColorMod != 0xffffffff || (BlitMode & (C4GFXBLIT_MOD2 | C4GFXBLIT_CLRSFC_MOD2))) Application.DDraw->ActivateBlitModulation(ColorMod);
 	// other blit modes
 	Application.DDraw->SetBlitMode(BlitMode);
 	}

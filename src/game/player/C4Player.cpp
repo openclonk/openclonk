@@ -661,7 +661,7 @@ void C4Player::PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object
 
 DWORD RandomPlayerColor() // generate a random player color
 	{
-	return RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256));
+	return 0xff<<24 | RGB(Min(SafeRandom(302), 256), Min(SafeRandom(302), 256), Min(SafeRandom(302), 256));
 	}
 
 bool C4Player::ScenarioInit()
@@ -1896,7 +1896,7 @@ bool C4Player::FoWIsVisible(int32_t x, int32_t y)
 			if (Distance(cobj->GetX(), cobj->GetY(), x, y) < Abs(iRange))
 				if (iRange < 0)
           {
-          if (!(cobj->ColorMod & 0xff000000)) // faded generators generate darkness only; no FoW blocking
+          if ((cobj->ColorMod & 0xff000000) != 0xff000000) // faded generators generate darkness only; no FoW blocking
 					  return false; // shadowed by FoW-generator
           }
 				else

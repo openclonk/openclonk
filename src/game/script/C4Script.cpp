@@ -5358,8 +5358,7 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, l
 		throw new C4AulExecError(ctx->Obj, "CustomMessage: Only one vertical positioning flag allowed!");
 		}
 	// message color
-	if (!dwClr) dwClr = 0xffffff;
-	dwClr = InvertRGBAAlpha(dwClr);
+	if (!dwClr) dwClr = 0xffffffff;
 	// message type
 	int32_t iType;
 	if (pObj)
