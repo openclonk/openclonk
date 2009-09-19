@@ -105,11 +105,11 @@ typedef ptrdiff_t ssize_t;
 // Allow checks for correct printf-usage
 #define GNUC_FORMAT_ATTRIBUTE __attribute__ ((format (printf, 1, 2)))
 #define GNUC_FORMAT_ATTRIBUTE_O __attribute__ ((format (printf, 2, 3)))
-#define GNUC_ALWAYS_INLINE inline __attribute__ ((always_inline))
+#define ALWAYS_INLINE inline __attribute__ ((always_inline))
 #else
 #define GNUC_FORMAT_ATTRIBUTE
 #define GNUC_FORMAT_ATTRIBUTE_O
-#define GNUC_ALWAYS_INLINE inline
+#define ALWAYS_INLINE __forceinline
 #endif
 
 // Temporary-To-Reference-Fix

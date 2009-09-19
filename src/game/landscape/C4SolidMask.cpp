@@ -130,22 +130,24 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 			MaskPutRect.Hgt = Min<int32_t>(ystart + MatBuffPitch, GBackHgt) - MaskPutRect.y;
 			}
 		// go through clipping rect
-		FIXED yfoo = itofix(pClipRect->ty - MatBuffPitch/2);
+		const FIXED y0 = itofix(pClipRect->ty - MatBuffPitch/2);
+		const FIXED x0 = itofix(pClipRect->tx - MatBuffPitch/2);
 		iTy=pClipRect->y;
 		int w = pForObject->SolidMask.Wdt;
 		int h = pForObject->SolidMask.Hgt;
+		FIXED ya = y0 * Ma2;
+		FIXED yb = y0 * Mb2;
 		for(ycnt = 0; ycnt < pClipRect->Hgt; ycnt++)
 			{
-			FIXED yfooa = yfoo * Ma2;
-			FIXED yfoob = yfoo * Mb2;
-			C4Fixed xfoo = itofix(pClipRect->tx - MatBuffPitch/2);
 			iTx=pClipRect->x;
 			int i = (ycnt + pClipRect->ty) * MatBuffPitch + pClipRect->tx;
+			FIXED xa = x0 * Ma1;
+			FIXED xb = x0 * Mb1;
 			for(xcnt = 0; xcnt < pClipRect->Wdt; xcnt++)
 				{
 				// calc position in solidmask buffer
-				int iMx = fixtoi(xfoo * Ma1 + yfooa) + w / 2;
-				int iMy = fixtoi(xfoo * Mb1 + yfoob) + h / 2;
+				int iMx = fixtoi(xa + ya) + w / 2;
+				int iMy = fixtoi(xb + yb) + h / 2;
 				// in bounds? and solidmask?
 				if(iMx >= 0 && iMy >= 0 && iMx < w && iMy < h && pSolidMask[iMy*iPitch+iMx])
 					{
@@ -165,10 +167,10 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 				else if (!MaskPut)
 					// mark pix as unused in buf
 					pSolidMaskMatBuff[i+xcnt] = MCVehic;
-				xfoo += 1;
+				xa += Ma1; xb += Mb1;
 				++iTx;
 				}
-			yfoo += 1;
+			ya += Ma2; yb += Mb2;
 			++iTy;
 			}
 		}
