@@ -18,7 +18,7 @@
 		<desc>Setzt einen 32Bit-Farbwert aus den drei Parametern und einem Durchsichtigkeitswert zusammen. 0-255 für alle Parameter.</desc>
 		<examples>
 			<example>
-				<code><funclink>SetClrModulation</funclink>(HSLa(0,0,255,64),<funclink>FindObject</funclink>(TRE1));</code>
+				<code><funclink>SetClrModulation</funclink>(HSLa(0,0,255,192),<funclink>FindObject</funclink>(TRE1));</code>
 				<text>Färbt einen zufälligen Baum absolut weiß und ein wenig durchsichtig.</text>
 			</example>
 		</examples>

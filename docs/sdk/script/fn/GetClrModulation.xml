@@ -13,7 +13,7 @@
 			</params>
 		</syntax>
 		<desc>Fragt die Farbmodulation des aufrufenden Objekts ab. Diese ist ein Farbwert, der multiplikativ (oder auch additiv, bei entsprechend aktiviertem  BlitMode in der DefCore) aufgerechnet wird. Für weitere Hinweise siehe auch <funclink>SetClrModulation</funclink>().</desc>
-		<remark>Ist der Rückgabewert dieser Funktion 0, so wurde keine Farbmodulation durchgeführt (analog zu <funclink>RGBa</funclink>(255,255,255,0)).</remark>
+		<remark>Wurde keine Modulation durchgeführt, so ist der Rückgabewert dieser Funktion -1 (analog zu <funclink>RGBa</funclink>(255,255,255,255)).</remark>
 		<examples>
 			<example>
 <code>global func SetObjAlpha(byAlpha, pObj)
