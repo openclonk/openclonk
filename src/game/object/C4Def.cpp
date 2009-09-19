@@ -86,8 +86,6 @@ void C4Def::DefaultDefCore()
 	STimerCall[0]=0;
 	Timer=35;
 	GrowthType=0;
-	Basement=0;
-	CanBeBase=0;
 	CrewMember=0;
 	NativeCrew=0;
 	Mass=0;
@@ -278,7 +276,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ContactIncinerate,							"ContactIncinerate",	0									));
 	pComp->Value(mkNamingAdapt(BlastIncinerate,								"BlastIncinerate",		0									));
 	pComp->Value(mkNamingAdapt(mkC4IDAdapt(BurnTurnTo),				"BurnTo",							C4ID_None					));
-	pComp->Value(mkNamingAdapt(CanBeBase,											"Base",								0									));
 
 	const StdBitfieldEntry<int32_t> LineTypes[] = {
 
@@ -349,7 +346,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(LiftTop,												"LiftTop",						0									));
 	pComp->Value(mkNamingAdapt(UprightAttach,									"UprightAttach",			0									));
 	pComp->Value(mkNamingAdapt(GrowthType,										"StretchGrowth",			0									));
-	pComp->Value(mkNamingAdapt(Basement,											"Basement",						0									));
 	pComp->Value(mkNamingAdapt(NoBurnDecay,										"NoBurnDecay",				0									));
 	pComp->Value(mkNamingAdapt(IncompleteActivity,						"IncompleteActivity", 0									));
 	pComp->Value(mkNamingAdapt(AttractLightning,							"AttractLightning",		0									));

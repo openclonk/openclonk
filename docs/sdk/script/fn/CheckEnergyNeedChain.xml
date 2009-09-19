@@ -9,7 +9,6 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>bool</rtype>
-			</params>
 		</syntax>
 		<desc>Überprüft, ob ein an das aufrufende Objekt angeschlossener Verbraucher Energie benötigt. Dabei werden auch indirekt (also über mehrere Leitungen über einen weiteren Verbraucher) angeschlossene Verbraucher überprüft.</desc>
 		<remark>Es wird nur in die Richtung geprüft, in der auch Energie durch Energieleitungen fließen kann. Also vom Versorger zum Verbraucher.</remark>

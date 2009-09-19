@@ -69,7 +69,7 @@ int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 	MINIDUMP_EXCEPTION_INFORMATION ExpParam;
   ExpParam.ThreadId = GetCurrentThreadId();
   ExpParam.ExceptionPointers = pExceptionPointers;
-  ExpParam.ClientPointers = TRUE;
+  ExpParam.ClientPointers = true;
 	MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
 		file, MiniDumpNormal, &ExpParam, NULL, NULL);
 

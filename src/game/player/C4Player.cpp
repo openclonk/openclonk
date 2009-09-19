@@ -591,7 +591,7 @@ void C4Player::PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase)
           if (cbase=Game.CreateObjectConstruction(C4Id2Def(cid),NULL,Number,ctx,cty,FullCon,true))
             {
 						// FirstBase
-            if (!(*pFirstBase)) if (cbase->Def->CanBeBase)
+            if (!(*pFirstBase)) if ((cbase->Def->Entrance.Wdt>0) && (cbase->Def->Entrance.Hgt>0))
               { *pFirstBase=cbase; tx=(*pFirstBase)->GetX(); ty=(*pFirstBase)->GetY(); }
 						// First power plant
 						if (cbase->Def->LineConnect & C4D_Power_Generator)
@@ -809,82 +809,6 @@ void C4Player::SetFoW(bool fEnable)
 	// set flag
 	fFogOfWar = fFogOfWarInitialized = fEnable;
 	}
-
-
-C4Object *C4Player::Buy(C4ID id, bool fShowErrors, int32_t iForPlr, C4Object *pBuyObj)
-	{
-	int32_t iAvailable; C4Def *pDef; C4Object *pThing;
-	// Base owner eliminated
-	if (Eliminated)
-		{
-		if (!fShowErrors) return false;
-		StartSoundEffect("Error",false,100,pBuyObj);
-		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),GetName()).getData(),Number); return false;
-		}
-	// Get def (base owner's homebase material)
-	iAvailable = HomeBaseMaterial.GetIDCount(id);
-	if (!(pDef=C4Id2Def(id))) return false;
-	// Object not available
-	if (iAvailable<=0) return false;
-	// get value
-	int32_t iValue = pDef->GetValue(pBuyObj, Number);
-	// Not enough wealth (base owner's wealth)
-	if (iValue>Wealth)
-		{
-		if (!fShowErrors) return false;
-		GameMsgPlayer(LoadResStr("IDS_PLR_NOWEALTH"),Number);
-		StartSoundEffect("Error",false,100,pBuyObj); return false;
-		}
-	// Decrease homebase material count
-	if (!HomeBaseMaterial.DecreaseIDCount(id,false)) return false;
-	// Reduce wealth
-	DoWealth(-iValue);
-	// Create object (for player)
-	if (!(pThing=Game.CreateObject(id,pBuyObj,iForPlr))) return false;
-	// Make crew member
-	if (pDef->CrewMember) if (ValidPlr(iForPlr))
-		::Players.Get(iForPlr)->MakeCrewMember(pThing);
-	// success
-	C4AulParSet parset (C4VInt(Number), C4VObj(pBuyObj));
-	pThing->Call(PSF_Purchase, &parset);
-	if (!pThing->Status) return false;
-	return pThing;
-	}
-
-
-bool C4Player::Sell2Home(C4Object *pObj)
-  {
-  C4Object *cObj;
-  // Valid checks
-  if (!pObj || !pObj->Status) return false;
-  if (Eliminated) return false;
-	// No crew members
-	if (pObj->OCF & OCF_CrewMember) return false;
-  // Sell contents first
-  while (cObj=pObj->Contents.GetObject())
-    {
-		if (pObj->Contained) cObj->Enter(pObj->Contained); else cObj->Exit(cObj->GetX(),cObj->GetY());
-    Sell2Home(cObj);
-    }
-  // Do transaction
-  DoWealth(+pObj->GetValue(pObj->Contained, Number));
-	// script handling of SellTo
-	C4ID id = pObj->Def->id;
-	C4Def *pSellDef = pObj->Def;
-	if (C4AulScriptFunc *f = pObj->Def->Script.SFn_SellTo)
-		{
-		id = f->Exec(pObj, &C4AulParSet(C4VInt(Number))).getC4ID();
-		pSellDef = C4Id2Def(id);
-		}
-	// Add to homebase material
-  if (pSellDef) HomeBaseMaterial.IncreaseIDCount(id,!!pSellDef->Rebuyable);
-	// Remove object, eject any crew members
-	if (pObj->Contained) pObj->Exit();
-	pObj->Call(PSF_Sale, &C4AulParSet(C4VInt(Number)));
-	pObj->AssignRemoval(true);
-	// Done
-  return true;
-  }
 
 bool C4Player::DoWealth(int32_t iChange)
   {

@@ -8,6 +8,7 @@
 		<subcat>Definition</subcat>
 		<version>4.10.0.0</version>
 		<syntax>
+                        <rtype>any</rtype>
 			<params>
 				<param><type>proplist</type><name>def</name><desc>Definition, die initialisiert wird.</desc></param>
 			</params>

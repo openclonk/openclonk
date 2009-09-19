@@ -46,6 +46,7 @@
 
 #define C4AUL_If						"if"
 #define C4AUL_Else					"else"
+#define C4AUL_Do					"do"
 #define C4AUL_While					"while"
 #define C4AUL_For						"for"
 #define C4AUL_In						"in"
@@ -149,6 +150,7 @@ class C4AulParseState
 	int Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * pFunc = 0);
 	void Parse_Array();
 	void Parse_PropList();
+	void Parse_DoWhile();
 	void Parse_While();
 	void Parse_If();
 	void Parse_For();
@@ -187,7 +189,7 @@ class C4AulParseState
 		void SetJumpHere(int iJumpOp); // Use the next inserted instruction as jump target for the given jump operation
 		void SetJump(int iJumpOp, int iWhere);
 		void AddJump(C4AulBCCType eType, int iWhere);
-
+		
 		// Keep track of loops and break/continue usages
 		struct Loop {
 			struct Control {
@@ -879,6 +881,7 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_JUMPAND: return "JUMPAND";
 	case AB_JUMPOR: return "JUMPOR";
 	case AB_CONDN: return "CONDN";		// conditional jump (negated, pops stack)
+	case AB_COND: return "COND";		// conditional jump (pops stack)
 	case AB_FOREACH_NEXT: return "FOREACH_NEXT"; // foreach: next element
 	case AB_RETURN: return "RETURN";	// return statement
 	case AB_ERR: return "ERR";			// parse error at this position
@@ -1030,6 +1033,7 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_ARRAYA_R:
 		case AB_ARRAYA_V:
 		case AB_CONDN:
+		case AB_COND:
 		case AB_IVARN:
 		case AB_RETURN:
 		// JUMPAND/JUMPOR are special: They either jump over instructions adding one to the stack
@@ -1138,12 +1142,17 @@ int C4AulParseState::JumpHere()
 	return a->GetCodePos();
 	}
 
+static bool IsJump(C4AulBCCType t)
+	{
+	return t == AB_JUMP || t == AB_JUMPAND || t == AB_JUMPOR || t == AB_CONDN || t == AB_COND;
+	}
+
 void C4AulParseState::SetJumpHere(int iJumpOp)
 	{
 	if (Type != PARSER) return;
 	// Set target
 	C4AulBCC *pBCC = a->GetCodeByPos(iJumpOp);
-	assert(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN);
+	assert(IsJump(pBCC->bccType));
 	pBCC->Par.i = a->GetCodePos() - iJumpOp;
 	// Set flag so the next generated code chunk won't get joined
 	fJump = true;
@@ -1154,7 +1163,7 @@ void C4AulParseState::SetJump(int iJumpOp, int iWhere)
 	if (Type != PARSER) return;
 	// Set target
 	C4AulBCC *pBCC = a->GetCodeByPos(iJumpOp);
-	assert(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN);
+	assert(IsJump(pBCC->bccType));
 	pBCC->Par.i = iWhere - iJumpOp;
 	}
 
@@ -1650,6 +1659,7 @@ void C4AulParseState::Parse_Block()
 			}
 		}
 	}
+
 void C4AulParseState::Parse_Statement()
 	{
 	switch (TokenType)
@@ -1700,42 +1710,14 @@ void C4AulParseState::Parse_Statement()
 				Shift();
 				Parse_Static();
 				}
-			// check for parameter
-			else if(Fn->ParNamed.GetItemNr(Idtf) != -1)
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			// check for variable (var)
-			else if(Fn->VarNamed.GetItemNr(Idtf) != -1)
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			// check for objectlocal variable (local)
-			else if(a->LocalNamed.GetItemNr(Idtf) != -1)
-				{
-				// global func?
-				if(Fn->Owner == &::ScriptEngine)
-					throw new C4AulParseError(this, "using local variable in global function!");
-				// insert variable by id
-				Parse_Expression();
-				AddBCC(AB_STACK, -1);
-				}
-			// check for global variable (static)
-			else if(a->Engine->GlobalNamedNames.GetItemNr(Idtf) != -1)
-				{
-				Parse_Expression();
-				AddBCC(AB_STACK, -1);
-				}
 			// check new-form func begin
-			else if(SEqual(Idtf, C4AUL_Func))
+			else if(SEqual(Idtf, C4AUL_Func) ||
+				SEqual(Idtf, C4AUL_Private) ||
+				SEqual(Idtf, C4AUL_Protected) ||
+				SEqual(Idtf, C4AUL_Public) ||
+				SEqual(Idtf, C4AUL_Global))
 				{
-				// break parsing: start of next func
-				Done = true;
-				break;
+				throw new C4AulParseError(this, "unexpected end of function");
 				}
 			// get function by identifier: first check special functions
 			else if (SEqual(Idtf, C4AUL_If)) // if
@@ -1747,6 +1729,12 @@ void C4AulParseState::Parse_Statement()
 			else if (SEqual(Idtf, C4AUL_Else)) // else
 				{
 				throw new C4AulParseError(this, "misplaced 'else'");
+				}
+			else if (SEqual(Idtf, C4AUL_Do)) // while
+				{
+				Shift();
+				Parse_DoWhile();
+				break;
 				}
 			else if (SEqual(Idtf, C4AUL_While)) // while
 				{
@@ -1800,12 +1788,6 @@ void C4AulParseState::Parse_Statement()
 					SetNoRef();
 				AddBCC(AB_RETURN);
 				}
-			else if (SEqual(Idtf, C4AUL_this)) // this on top level
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
 			else if (SEqual(Idtf, C4AUL_Break)) // break
 				{
 				Shift();
@@ -1846,87 +1828,9 @@ void C4AulParseState::Parse_Statement()
 						}
 					}
 				}
-			else if (SEqual(Idtf, C4AUL_Var)) // Var
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			else if (SEqual(Idtf, C4AUL_Par)) // Par
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			else if (SEqual(Idtf, C4AUL_Inherited) || SEqual(Idtf, C4AUL_SafeInherited))
-				{
-				Parse_Expression();
-				SetNoRef();
-				AddBCC(AB_STACK, -1);
-				}
-			// now this may be the end of the function: first of all check for access directives
-			else if (SEqual(Idtf, C4AUL_Private) ||
-						 SEqual(Idtf, C4AUL_Protected) ||
-						 SEqual(Idtf, C4AUL_Public) ||
-						 SEqual(Idtf, C4AUL_Global))
-				{
-				Shift();
-				// check if it's followed by a function declaration
-				// 'func' idtf?
-				if(TokenType == ATT_IDTF && SEqual(Idtf, C4AUL_Func))
-					{
-					// ok, break here
-					Done = true;
-					}
-				else
-					{
-					// expect function name and colon
-					Match(ATT_IDTF);
-					Match(ATT_COLON);
-					// break here
-					Done = true;
-					}
-				break;
-				}
 			else
 				{
-				// none of these? then it's a function
-				// if it's a label, it will be missinterpreted here, which will be corrected later
-				C4AulFunc *FoundFn;
-				// get regular function
-				if(Fn->Owner == &::ScriptEngine)
-					FoundFn = a->Owner->GetFuncRecursive(Idtf);
-				else
-					FoundFn = a->GetFuncRecursive(Idtf);
-				// ignore func-not-found errors in the preparser, because the function tables are not built yet
-				if (!FoundFn && Type == PARSER)
-					{
-					// the function could not be found
-					// this *could* be because it's a label to the next function, which, however, is not visible in the current
-					// context (e.g., global functions) [Soeren]
-					// parsing would have to be aborted anyway, so have a short look at the next token
-					if (GetNextToken(Idtf, &cInt, Discard, true) == ATT_COLON)
-						{
-						// OK, next function found. abort
-						Done = true;
-						break;
-						}
-					// -> func not found
-					throw new C4AulParseError(this, "unknown identifier: ", Idtf);
-					}
-				Shift();
-				// check if it's a label - labels like OCF_Living are OK (ugh...)
-				if (TokenType == ATT_COLON)
-					{
-					// break here
-					Done = true;
-					return;
-					}
-				// The preparser assumes the syntax is correct
-				if (TokenType == ATT_BOPEN || Type == PARSER)
-					Parse_Params(FoundFn ? FoundFn->GetParCount() : 10, FoundFn ? FoundFn->Name : Idtf, FoundFn);
-				AddBCC(AB_FUNC, (long) FoundFn);
-				Parse_Expression2();
+				Parse_Expression();
 				SetNoRef();
 				AddBCC(AB_STACK, -1);
 				}
@@ -2128,6 +2032,36 @@ void C4AulParseState::Parse_PropList()
 		else if (TokenType != ATT_BLCLOSE)
 			UnexpectedToken("'}' or ','");
 		}
+	}
+
+void C4AulParseState::Parse_DoWhile()
+	{
+	// Save position for later jump back
+	int iStart = JumpHere();
+	// We got a loop
+	PushLoop();
+	// Execute body
+	Parse_Statement();
+	// Execute condition
+	if (TokenType != ATT_IDTF || !SEqual(Idtf, C4AUL_While))
+		UnexpectedToken("'while'");
+	Shift();
+	Match(ATT_BOPEN);
+	Parse_Expression();
+	Match(ATT_BCLOSE);
+	SetNoRef();
+	// Check condition
+	int iCond = a->GetCodePos();
+	// Jump back
+	AddJump(AB_COND, iStart);
+	if (Type != PARSER) return;
+	// Set targets for break/continue
+	for(Loop::Control *pCtrl = pLoopStack->Controls; pCtrl; pCtrl = pCtrl->Next)
+		if(pCtrl->Break)
+			SetJumpHere(pCtrl->Pos);
+		else
+			SetJump(pCtrl->Pos, iStart);
+	PopLoop();
 	}
 
 void C4AulParseState::Parse_While()
@@ -2405,6 +2339,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 				}
 			else
 				{
+				// none of these? then it's a function
 				C4AulFunc *FoundFn;
 				// get regular function
 				if(Fn->Owner == &::ScriptEngine)
@@ -2952,7 +2887,7 @@ bool C4AulScript::Parse()
 				for(intptr_t i = reinterpret_cast<intptr_t>(Fn->Code); i < CPos - Code; i++)
 					{
 					C4AulBCC *pBCC = Code + i;
-					if(pBCC->bccType == AB_JUMP || pBCC->bccType == AB_JUMPAND || pBCC->bccType == AB_JUMPOR || pBCC->bccType == AB_CONDN)
+					if(IsJump(pBCC->bccType))
 						if(!pBCC->Par.i)
 							pBCC->Par.i = CPos - Code - i;
 					}

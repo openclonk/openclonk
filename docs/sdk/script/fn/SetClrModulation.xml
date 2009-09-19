@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>dwClr</name><desc>Neue Farbe, mit der moduliert wird. Wenn 0 angegeben wird, wird die Modulation deaktiviert. Für eine völlige Schwarzfärbung sollte also ein knapp darüber liegender Wert wie <funclink>RGB</funclink>(0,0,1); verwendet werden.</desc></param>
+				<param><type>int</type><name>dwClr</name><desc>Neue Farbe, mit der moduliert wird.</desc></param>
 				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>

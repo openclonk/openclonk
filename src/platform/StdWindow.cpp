@@ -93,7 +93,7 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp) {
 	// Show & focus
 	ShowWindow(hWindow,SW_SHOWNORMAL);
 	SetFocus(hWindow);
-	ShowCursor(FALSE);
+	ShowCursor(false);
 #endif
 
 	return this;
@@ -274,12 +274,12 @@ int GLMonitorInfoEnumCount;
 BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
 	{
 	// get to indexed monitor
-	if (GLMonitorInfoEnumCount--) return TRUE;
+	if (GLMonitorInfoEnumCount--) return true;
 	// store it
 	CStdApp *pApp = (CStdApp *) dwData;
 	pApp->hMon = hMonitor;
 	pApp->MonitorRect = *lprcMonitor;
-	return TRUE;
+	return true;
 	}
 
 bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)

@@ -60,12 +60,12 @@ BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			break;
 		//------------------------------------------------------------------------------------------------
 		case WM_DESTROY:
-			StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), FALSE);
+			StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), false);
 			break;
 		//------------------------------------------------------------------------------------------------
 		case WM_INITDIALOG:
       SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
-			return TRUE;
+			return true;
 		//------------------------------------------------------------------------------------------------
 		case WM_COMMAND:
 			// Evaluate command
@@ -78,17 +78,17 @@ BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 					GetDlgItemText(hDlg,IDC_COMBOINPUT,buffer,16000);
 					if (buffer[0])
 						Console.EditCursor.In(buffer);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONRELOADDEF:
 					Game.ReloadDef( Console.PropertyDlg.idSelectedDef );
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				}
-			return FALSE;
+			return false;
     //-----------------------------------------------------------------------------------------------
 		}
-	return FALSE;
+	return false;
 	}
 #endif
 C4PropertyDlg::C4PropertyDlg()

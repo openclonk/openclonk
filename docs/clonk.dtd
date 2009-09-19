@@ -49,10 +49,10 @@
   <!ELEMENT bitmask (#PCDATA)>
 
 <!ELEMENT ul    (#PCDATA | li)*>
-  <!ELEMENT li    (#PCDATA | %text;)*>
+  <!ELEMENT li    (#PCDATA | br | %text;)*>
 
 <!ELEMENT dl    (#PCDATA | dd | dt)*>
-  <!ELEMENT dt    (#PCDATA | emlink | funclink | img)*>
+  <!ELEMENT dt    (#PCDATA | br | %text;)*>
     <!ATTLIST dt
       id ID #IMPLIED>
   <!ELEMENT dd    (#PCDATA | text | code)*>

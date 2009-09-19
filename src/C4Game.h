@@ -227,15 +227,14 @@ class C4Game
 												 C4Object *pExclude=NULL,
 												 int32_t iOwner=ANY_OWNER,
 												 C4Object *pFindNext=NULL);
-    int32_t ObjectCount(C4ID id,
+   /* int32_t ObjectCount(C4ID id,
 										int32_t x=0, int32_t y=0, int32_t wdt=0, int32_t hgt=0,
 										DWORD ocf=OCF_All,
 										const char *szAction=NULL, C4Object *pActionTarget=NULL,
 										C4Object *pExclude=NULL,
 										C4Object *pContainer=NULL,
-										int32_t iOwner=ANY_OWNER);
-	  C4Object *FindBase(int32_t iPlayer, int32_t iIndex);
-	  C4Object *FindFriendlyBase(int32_t iPlayer, int32_t iIndex);
+										int32_t iOwner=ANY_OWNER);*/
+		int32_t ObjectCount(C4ID id);
 		C4Object *FindObjectByCommand(int32_t iCommand, C4Object *pTarget=NULL, C4Value iTx=C4VNull, int32_t iTy=0, C4Object *pTarget2=NULL, C4Object *pFindNext=NULL);
 		void CastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t level, int32_t tx, int32_t ty, int32_t iOwner=NO_OWNER, int32_t iController=NO_OWNER);
 		void BlastCastObjects(C4ID id, C4Object *pCreator, int32_t num, int32_t tx, int32_t ty, int32_t iController=NO_OWNER);

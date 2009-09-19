@@ -75,7 +75,7 @@ BOOL C4GraphicsSystem::RegisterViewportClass(HINSTANCE hInst)
   WndClass.lpszClassName = C4ViewportClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_C4S) );
   WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_C4S) );
-	if (!RegisterClassEx(&WndClass)) return FALSE;
+	if (!RegisterClassEx(&WndClass)) return false;
 	// register GUI dialog class
 	return C4GUI::Dialog::RegisterWindowClass(hInst);
 	}

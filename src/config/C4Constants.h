@@ -251,17 +251,6 @@ const int NO_OWNER				 = -1,
 					BY_OWNER				 = 10000,
 					BY_HOSTILE_OWNER = 20000;
 
-//=================================== Base functionalities =================================
-
-const int BASE_RegenerateEnergyPrice = 5,
-					BASEFUNC_Default          = 0xffff,
-					BASEFUNC_AutoSellContents = 1<<0,
-					BASEFUNC_RegenerateEnergy = 1<<1,
-					BASEFUNC_Buy              = 1<<2,
-					BASEFUNC_Sell             = 1<<3,
-					BASEFUNC_RejectEntrance   = 1<<4,
-					BASEFUNC_Extinguish       = 1<<5;
-
 //=================================== League (escape those damn circular includes =========
 
 enum C4LeagueDisconnectReason

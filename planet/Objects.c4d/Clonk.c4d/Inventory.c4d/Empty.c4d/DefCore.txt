@@ -1,0 +1,10 @@
+[DefCore]
+id=EMPT
+Version=4,9,8,8
+Category=C4D_Object
+Width=64
+Height=64
+Offset=-32,-32
+Picture=0,0,64,64
+Vertices=1
+Collectible=1

@@ -127,8 +127,6 @@ class C4SRealism
 		C4IDList ValueOverloads;
 		int32_t LandscapePushPull; // Use new experimental push-pull-algorithms
 		int32_t LandscapeInsertThrust; // Inserted material may thrust material of lower density aside
-		int32_t BaseFunctionality;         // functions a base can fulfill (BASEFUNC_*-constants)
-		int32_t BaseRegenerateEnergyPrice; // price for 100 points of energy
 
   public:
     void Default();

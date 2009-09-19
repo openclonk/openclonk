@@ -68,7 +68,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 				::GraphicsSystem.Execute();
 			// update cursor clip
 			::MouseControl.UpdateClip();
-			return FALSE;
+			return false;
 		case WM_PAINT:
 			// Redraw after task switch
 			if (Application.Active)
@@ -83,7 +83,7 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		case MM_MCINOTIFY:
 			if (wParam == MCI_NOTIFY_SUCCESSFUL)
 				Application.MusicSystem.NotifySuccess();
-			return TRUE;
+			return true;
 		case WM_KEYUP:
 			if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, NULL))
 				return 0;
@@ -106,14 +106,14 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 			if (::pGUI)
 				if (::pGUI->CharIn(c))
 					return 0;
-			return FALSE;
+			return false;
 			}
 		case WM_USER_LOG:
 			if (SEqual2((const char *)lParam, "IDS_"))
 				Log(LoadResStr((const char *)lParam));
 			else
 				Log((const char *)lParam);
-			return FALSE;
+			return false;
 		case WM_LBUTTONDOWN:
 			::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
 			break;

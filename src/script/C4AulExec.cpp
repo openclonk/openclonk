@@ -833,6 +833,15 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					PopValue();
 					break;
 
+				case AB_COND:
+					if(pCurVal[0])
+						{
+						fJump = true;
+						pCPos += pCPos->Par.i;
+						}
+					PopValue();
+					break;
+
 				case AB_RETURN:
 					{
 					// Resolve reference

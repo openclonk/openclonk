@@ -159,26 +159,26 @@ BOOL CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
     //------------------------------------------------------------------------------------------------------------
     case WM_ACTIVATEAPP:
       Application.Active = wParam != 0;
-      return TRUE;
+      return true;
     //------------------------------------------------------------------------------------------------------------
     case WM_DESTROY:
-			StoreWindowPosition(hDlg, "Main", Config.GetSubkeyPath("Console"), FALSE);
+			StoreWindowPosition(hDlg, "Main", Config.GetSubkeyPath("Console"), false);
 			Application.Quit();
-			return TRUE;
+			return true;
     //------------------------------------------------------------------------------------------------------------
 		case WM_CLOSE:
 			Console.Close();
-			return TRUE;
+			return true;
     //------------------------------------------------------------------------------------------------------------
 		case MM_MCINOTIFY:
 			if (wParam == MCI_NOTIFY_SUCCESSFUL)
 				Application.MusicSystem.NotifySuccess();
-			return TRUE;
+			return true;
     //------------------------------------------------------------------------------------------------------------
 		case WM_INITDIALOG:
       SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
 			Console.UpdateMenuText(GetMenu(hDlg));
-      return TRUE;
+      return true;
     //------------------------------------------------------------------------------------------------------------
 		case WM_COMMAND:
 			// Evaluate command
@@ -191,86 +191,86 @@ BOOL CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 					GetDlgItemText(hDlg,IDC_COMBOINPUT,buffer,16000);
 					if (buffer[0])
 						Console.In(buffer);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONHALT:
 					Console.DoHalt();
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONPLAY:
 					Console.DoPlay();
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONMODEPLAY:
 					Console.EditCursor.SetMode(C4CNS_ModePlay);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONMODEEDIT:
 					Console.EditCursor.SetMode(C4CNS_ModeEdit);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				case IDC_BUTTONMODEDRAW:
 					Console.EditCursor.SetMode(C4CNS_ModeDraw);
-					return TRUE;
+					return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_QUIT:	Console.FileQuit();	return TRUE;
+				case IDM_FILE_QUIT:	Console.FileQuit();	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_SAVEAS:	Console.FileSaveAs(FALSE);	return TRUE;
+				case IDM_FILE_SAVEAS:	Console.FileSaveAs(false);	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_SAVE:	Console.FileSave(FALSE);	return TRUE;
+				case IDM_FILE_SAVE:	Console.FileSave(false);	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_SAVEGAMEAS:	Console.FileSaveAs(TRUE);	return TRUE;
+				case IDM_FILE_SAVEGAMEAS:	Console.FileSaveAs(true);	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_SAVEGAME:	Console.FileSave(TRUE);	return TRUE;
+				case IDM_FILE_SAVEGAME:	Console.FileSave(true);	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_OPEN:	Console.FileOpen();	return TRUE;
+				case IDM_FILE_OPEN:	Console.FileOpen();	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_RECORD:	Console.FileRecord();	return TRUE;
+				case IDM_FILE_RECORD:	Console.FileRecord();	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_OPENWPLRS:	Console.FileOpenWPlrs(); return TRUE;
+				case IDM_FILE_OPENWPLRS:	Console.FileOpenWPlrs(); return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_CLOSE: Console.FileClose();	return TRUE;
+				case IDM_FILE_CLOSE: Console.FileClose();	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_HELP_ABOUT: Console.HelpAbout();	return TRUE;
+				case IDM_HELP_ABOUT: Console.HelpAbout();	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_PLAYER_JOIN: Console.PlayerJoin();	return TRUE;
+				case IDM_PLAYER_JOIN: Console.PlayerJoin();	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_VIEWPORT_NEW: Console.ViewportNew();	return TRUE;
+				case IDM_VIEWPORT_NEW: Console.ViewportNew();	return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_COMPONENTS_TITLE: Console.EditTitle(); return TRUE;
+				case IDM_COMPONENTS_TITLE: Console.EditTitle(); return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_COMPONENTS_INFO: Console.EditInfo(); return TRUE;
+				case IDM_COMPONENTS_INFO: Console.EditInfo(); return true;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_COMPONENTS_SCRIPT: Console.EditScript(); return TRUE;
+				case IDM_COMPONENTS_SCRIPT: Console.EditScript(); return true;
 				}
 			// New player viewport
 			if (Inside((int) LOWORD(wParam),IDM_VIEWPORT_NEW1,IDM_VIEWPORT_NEW2))
 				{
 				Game.CreateViewport(LOWORD(wParam)-IDM_VIEWPORT_NEW1);
-				return TRUE;
+				return true;
 				}
 			// Remove player
 			if (Inside((int) LOWORD(wParam),IDM_PLAYER_QUIT1,IDM_PLAYER_QUIT2))
 				{
 				::Control.Input.Add(CID_Script, new C4ControlScript(
 					FormatString("EliminatePlayer(%d)", LOWORD(wParam)-IDM_PLAYER_QUIT1).getData()));
-				return TRUE;
+				return true;
 				}
 			// Remove client
 			if (Inside((int) LOWORD(wParam),IDM_NET_CLIENT1,IDM_NET_CLIENT2))
 				{
-				if(!::Control.isCtrlHost()) return FALSE;
+				if(!::Control.isCtrlHost()) return false;
 				Game.Clients.CtrlRemove(Game.Clients.getClientByID(LOWORD(wParam)-IDM_NET_CLIENT1), LoadResStr("IDS_MSG_KICKBYMENU"));
-				return TRUE;
+				return true;
 				}
-			return FALSE;
+			return false;
     //------------------------------------------------------------------------------------------------------------
 		case WM_USER_LOG:
 			if (SEqual2((const char *)lParam, "IDS_"))
 				Log(LoadResStr((const char *)lParam));
 			else
 				Log((const char *)lParam);
-			return FALSE;
+			return false;
     //------------------------------------------------------------------------------------------------------------
 		case WM_COPYDATA:
       COPYDATASTRUCT* pcds = reinterpret_cast<COPYDATASTRUCT *>(lParam);
@@ -282,10 +282,10 @@ BOOL CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
         // reload
         Game.ReloadFile(szPath);
       }
-      return FALSE;
+      return false;
 		}
 
-	return FALSE;
+	return false;
 	}
 #elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 void C4Console::HandleMessage (XEvent & e)
@@ -357,7 +357,7 @@ CStdWindow * C4Console::Init(CStdApp * pApp)
 	ShowWindow(hWindow,SW_SHOWNORMAL);
 	UpdateWindow(hWindow);
 	SetFocus(hWindow);
-	ShowCursor(TRUE);
+	ShowCursor(true);
 	// Success
 	return this;
 #elif defined(WITH_DEVELOPER_MODE)
@@ -1287,7 +1287,7 @@ bool C4Console::AddMenuItem(HMENU hMenu, DWORD dwID, const char *szString, bool 
 	minfo.dwTypeData = (char*) szString;
 	minfo.cch = SLen(szString);
 	if (!fEnabled) minfo.fState|=MFS_GRAYED;
-	return InsertMenuItem(hMenu,0,FALSE,&minfo);
+	return InsertMenuItem(hMenu,0,false,&minfo);
 	}
 
 #endif // _WIN32

@@ -10,8 +10,9 @@
 			<rtype>array</rtype>
 			<params>
 				<param><type>array</type><name>iSort</name><desc>Sortierfunktion</desc><optional /></param>
+			</params>
 		</syntax>
-		<desc>Sortiermodifier: Kehrt die Sortierung der angegebenen Sortierfunktion um.</desc>
+		<desc>Sortiermodifikator: Kehrt die Sortierung der angegebenen Sortierfunktion um.</desc>
 		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
 		<related>
 			<funclink>FindObjects</funclink>

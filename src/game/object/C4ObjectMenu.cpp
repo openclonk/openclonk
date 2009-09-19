@@ -175,85 +175,14 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctSymbol.Set(fctSymbol.Surface, 0,0,C4SymbolSize,C4SymbolSize);
 				pObj->Picture2Facet(fctSymbol);
 				// Commands
-				sprintf(szCommand,"SetCommand(this,\"Activate\",Object(%d))&&ExecuteCommand()",pObj->Number);
-				sprintf(szCommand2,"SetCommand(this,\"Activate\",0,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,C4IdText(pDef->id));
+				sprintf(szCommand,"SetCommand(\"Activate\",Object(%d))&&ExecuteCommand()",pObj->Number);
+				sprintf(szCommand2,"SetCommand(\"Activate\",nil,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,C4IdText(pDef->id));
 				// Add menu item
 				Add(szCaption,fctSymbol,szCommand,iCount,pObj,pDef->GetDesc(),pDef->id,szCommand2,true,pObj->GetValue(pTarget, NO_OWNER));
 				// facet taken over (arrg!)
 				fctSymbol.Default();
 				}
 			}
-			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MN_Buy:
-			{
-			// Clear items
-			ClearItems();
-			// Base buying disabled? Fail.
-			if (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Buy) return false;
-			// Refill target
-			if (!(pTarget=RefillObject)) return false;
-			// Add base owner's homebase material
-			if (!(pPlayer = ::Players.Get(pTarget->Base))) return false;
-			C4Player *pBuyPlayer = Object ? ::Players.Get(Object->Owner) : NULL;
-			C4ID idDef;
-		  for (cnt=0; idDef=pPlayer->HomeBaseMaterial.GetID(::Definitions,C4D_All,cnt,&iCount); cnt++)
-				{
-				pDef=C4Id2Def(idDef);
-				if (!pDef) continue; // skip invalid defs
-				// Caption
-				sprintf(szCaption,LoadResStr("IDS_MENU_BUY"),pDef->GetName());
-				// Picture
-				fctSymbol.Set(pDef->Graphics.GetBitmap(pBuyPlayer ? pBuyPlayer->ColorDw : 0),pDef->PictureRect.x,pDef->PictureRect.y,pDef->PictureRect.Wdt,pDef->PictureRect.Hgt);
-				// Command
-				sprintf(szCommand,"AppendCommand(this,\"Buy\",Object(%d),%d,0,0,0,%s)&&ExecuteCommand()",pTarget->Number,1,C4IdText(pDef->id));
-				sprintf(szCommand2,"AppendCommand(this,\"Buy\",Object(%d),%d,0,0,0,%s)&&ExecuteCommand()",pTarget->Number,iCount,C4IdText(pDef->id));
-				// Buying value
-				int32_t iBuyValue = pDef->GetValue(pTarget, pPlayer->Number);
-				// Add menu item
-				Add(szCaption,fctSymbol,szCommand,iCount,NULL,pDef->GetDesc(),pDef->id,szCommand2, true, iBuyValue);
-				}
-			break;
-			}
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MN_Sell:
-			// Clear items
-			ClearItems();
-			// Base sale disabled? Fail.
-			if (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell) return false;
-			// Refill target
-			if (!(pTarget=RefillObject)) return false;
-			{
-			// Add target contents items
-			C4ObjectListIterator iter(pTarget->Contents);
-			while (pObj = iter.GetNext(&iCount, C4D_Sell))
-				{
-				pDef = pObj->Def;
-				if (pDef->NoSell) continue;
-				// Prefer fully constructed objects
-				if (~pObj->OCF & OCF_FullCon)
-					{
-					// easy way: only if first concat check matches
-					// this doesn't catch all possibilities, but that will rarely matter
-					C4Object *pObj2=pTarget->Contents.Find(pDef->id, ANY_OWNER, OCF_FullCon);
-					if (pObj2) if (pObj2->CanConcatPictureWith(pObj)) pObj = pObj2;
-					}
-				// Caption
-				sprintf(szCaption,LoadResStr("IDS_MENU_SELL"),(const char*) pObj->GetName());
-				// Picture
-				fctSymbol.Set(fctSymbol.Surface, 0,0,C4SymbolSize,C4SymbolSize);
-				pObj->Picture2Facet(fctSymbol);
-				// Commands
-				sprintf(szCommand,"AppendCommand(this,\"Sell\",Object(%d),%d,0,Object(%d),0,%s)&&ExecuteCommand()",pTarget->Number,1,pObj->Number,C4IdText(pDef->id));
-				sprintf(szCommand2,"AppendCommand(this,\"Sell\",Object(%d),%d,0,0,0,%s)&&ExecuteCommand()",pTarget->Number,pTarget->Contents.ObjectCount(pDef->id),C4IdText(pDef->id));
-				// Selling value
-				int32_t iSellValue = pObj->GetValue(pTarget, Object ? Object->Owner : NO_OWNER);
-				// Add menu item
-				Add(szCaption,fctSymbol,szCommand,iCount,NULL,pDef->GetDesc(),pDef->id,szCommand2,true,iSellValue);
-				fctSymbol.Default();
-				}
-			}
-			// Success
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MN_Get:
@@ -292,11 +221,11 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				fctSymbol.Set(fctSymbol.Surface, 0, 0, C4SymbolSize, C4SymbolSize);
 				pObj->Picture2Facet(fctSymbol);
 				// Primary command: get/activate single object
-				sprintf(szCommand, "SetCommand(this, \"%s\", Object(%d)) && ExecuteCommand()", fGet ? "Get" : "Activate", pObj->Number);
+				sprintf(szCommand, "SetCommand(\"%s\", Object(%d)) && ExecuteCommand()", fGet ? "Get" : "Activate", pObj->Number);
 				// Secondary command: get/activate all objects of the chosen type
 				szCommand2[0] = 0; int32_t iAllCount;
 				if ((iAllCount = pTarget->Contents.ObjectCount(pDef->id)) > 1)
-					sprintf(szCommand2, "SetCommand(this, \"%s\", 0, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, C4IdText(pDef->id));
+					sprintf(szCommand2, "SetCommand(\"%s\", nil, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, C4IdText(pDef->id));
 				// Add menu item (with object)
 				Add(szCaption, fctSymbol, szCommand, iCount, pObj, pDef->GetDesc(), pDef->id, szCommand2);
 				fctSymbol.Default();
@@ -347,33 +276,11 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				// ...or if the container is owned by us or a friendly player - this is for remote mouse-button-clicks
 				|| (ValidPlr(pTarget->Owner) && !Hostile(pTarget->Owner,Object->Owner)))
 					{
-					sprintf(szCommand,"SetCommand(this,\"Get\",Object(%d),0,0,0,2)&&ExecuteCommand()",pTarget->Number);
+					sprintf(szCommand,"SetCommand(\"Get\",Object(%d),0,0,nil,2)&&ExecuteCommand()",pTarget->Number);
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize); pTarget->DrawPicture(fctSymbol);
 					Add(LoadResStr("IDS_CON_CONTENTS"),fctSymbol,szCommand);
 					fctSymbol.Default();
 					}
-
-			// These ought to be moved into a flag/homebase script...
-			// Homebase buy/sell (if friendly base)
-			if (ValidPlr(pTarget->Base) && !Hostile(pTarget->Base,Object->Owner))
-				{
-				// Buy
-				if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Buy)
-					{
-					sprintf(szCommand,"SetCommand(this,\"Buy\",Object(%d))&&ExecuteCommand()",pTarget->Number);
-					fctSymbol.Create(C4SymbolSize,C4SymbolSize); DrawMenuSymbol(C4MN_Buy,fctSymbol,pTarget->Base,pTarget);
-					Add(LoadResStr("IDS_CON_BUY"),fctSymbol,szCommand);
-					fctSymbol.Default();
-					}
-				// Sell
-				if (Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell)
-					{
-					sprintf(szCommand,"SetCommand(this,\"Sell\",Object(%d))&&ExecuteCommand()",pTarget->Number);
-					fctSymbol.Create(C4SymbolSize,C4SymbolSize); DrawMenuSymbol(C4MN_Sell,fctSymbol,pTarget->Base,pTarget);
-					Add(LoadResStr("IDS_CON_SELL"),fctSymbol,szCommand);
-					fctSymbol.Default();
-					}
-				}
 
 			// Scripted context functions
 			AddContextFunctions(pTarget);
@@ -652,7 +559,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 				else
 					if (!fCountOnly)
 						{
-						sprintf(szCommand, "SetCommand(this,\"Context\",0,0,0,this)&&ExecuteCommand()");
+						sprintf(szCommand, "SetCommand(\"Context\",nil,0,0,this)&&ExecuteCommand()");
 						fctSymbol.Create(16,16); Object->Def->Draw(fctSymbol, false, Object->Color);
 						Add(Object->Def->GetName(), fctSymbol, szCommand, C4MN_Item_NoCount, NULL, LoadResStr("IDS_MENU_CONTEXTSUBCLONKDESC"));
 						fctSymbol.Default();

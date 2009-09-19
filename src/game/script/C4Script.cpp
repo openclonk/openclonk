@@ -1338,11 +1338,6 @@ static C4ID FnGetID(C4AulObjectContext *cthr)
 	return cthr->Obj->Def->id;
 }
 
-static long FnGetBase(C4AulObjectContext *cthr)
-{
-	return cthr->Obj->Base;
-}
-
 static Nillable<C4ID> FnGetMenu(C4AulObjectContext *cthr)
 {
 	if (cthr->Obj->Menu && cthr->Obj->Menu->IsActive())
@@ -1894,12 +1889,6 @@ static bool FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, C4
   V1 = C4VInt(v1); V2 = C4VInt(v2);
   return result;
   }
-
-static C4Object *FnFindBase(C4AulContext *cthr, long iOwner, long iIndex)
-	{
-	if (!ValidPlr(iOwner)) return NULL;
-	return Game.FindBase(iOwner,iIndex);
-	}
 
 C4FindObject *CreateCriterionsFromPars(C4Value *pPars, C4FindObject **pFOs, C4SortObject **pSOs)
 	{
@@ -3342,35 +3331,6 @@ static C4String *FnGetProcedure(C4AulObjectContext *cthr)
 	return String(ProcedureName[iProc]);
 }
 
-static C4Object *FnBuy(C4AulContext *cthr, C4ID idBuyObj, long iForPlr, long iPayPlr, C4Object *pToBase, bool fShowErrors)
-	{
-	// safety
-	if (!ValidPlr(iForPlr) || !ValidPlr(iPayPlr)) return NULL;
-	// buy
-	C4Object *pThing;
-	if (!(pThing=::Players.Get(iPayPlr)->Buy(idBuyObj, fShowErrors, iForPlr, pToBase ? pToBase : cthr->Obj))) return NULL;
-	// enter object, if supplied
-	if (pToBase)
-		{
-		pThing->Enter(pToBase, true);
-		}
-	else
-		{
-		// no target object? get local pos
-		if (cthr->Obj) pThing->ForcePosition(cthr->Obj->GetX(), cthr->Obj->GetY());
-		}
-	// done
-	return pThing;
-	}
-
-static bool FnSell(C4AulObjectContext *cthr, long iToPlr)
-{
-	// safety
-	if (!ValidPlr(iToPlr)) return false;
-	// sell
-	return !!::Players.Get(iToPlr)->Sell2Home(cthr->Obj);
-}
-
 static C4Value FnIsRef(C4AulContext *cthr, C4Value* Value)
 {
 	return C4VBool(Value->IsRef());
@@ -3814,6 +3774,14 @@ static long FnGetChar(C4AulContext* cthr, C4String *pString, long iIndex)
 	// return indiced character value
 	return (unsigned char) *szText;
 	}
+
+static bool FnCanConcatPictureWith(C4AulObjectContext *pCtx, C4Object *pObj)
+{
+	// safety
+	if (!pCtx->Obj->Status || !pObj) return false;
+	// Call the function in the object
+	return pCtx->Obj->CanConcatPictureWith(pObj);
+}
 
 static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4ID idSrcGfx, long iOverlayID, long iOverlayMode, C4String *pAction, long dwBlitMode, C4Object *pOverlayObject)
 {
@@ -5648,7 +5616,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetBreath", FnGetBreath);
 	AddFunc(pEngine, "GetX", FnGetX);
 	AddFunc(pEngine, "GetY", FnGetY);
-	AddFunc(pEngine, "GetBase", FnGetBase);
 	AddFunc(pEngine, "GetMenu", FnGetMenu);
 	AddFunc(pEngine, "GetVertexNum", FnGetVertexNum);
 	AddFunc(pEngine, "GetVertex", FnGetVertex);
@@ -5711,7 +5678,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FindContents", FnFindContents);
 	AddFunc(pEngine, "FindConstructionSite", FnFindConstructionSite);
 	AddFunc(pEngine, "FindOtherContents", FnFindOtherContents);
-	AddFunc(pEngine, "FindBase", FnFindBase);
 	AddFunc(pEngine, "Sound", FnSound);
 	AddFunc(pEngine, "Music", FnMusic);
 	AddFunc(pEngine, "MusicLevel", FnMusicLevel);
@@ -5822,11 +5788,10 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlrViewRange", FnSetPlrViewRange);
 	AddFunc(pEngine, "SetMaxPlayer", FnSetMaxPlayer);
 	AddFunc(pEngine, "SetPicture", FnSetPicture);
-	AddFunc(pEngine, "Buy", FnBuy);
-	AddFunc(pEngine, "Sell", FnSell);
 	AddFunc(pEngine, "GetProcedure", FnGetProcedure);
 	AddFunc(pEngine, "GetChar", FnGetChar);
 	AddFunc(pEngine, "ActivateGameGoalMenu", FnActivateGameGoalMenu);
+	AddFunc(pEngine, "CanConcatPictureWith", FnCanConcatPictureWith);
 	AddFunc(pEngine, "SetGraphics", FnSetGraphics);
 	AddFunc(pEngine, "Object", FnObject);
 	AddFunc(pEngine, "ObjectNumber", FnObjectNumber);
@@ -6203,14 +6168,6 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "C4MSGCMDR_Plain"           ,C4V_Int,      C4MessageBoardCommand::C4MSGCMDR_Plain },
 	{ "C4MSGCMDR_Identifier"      ,C4V_Int,      C4MessageBoardCommand::C4MSGCMDR_Identifier },
 
-	{ "BASEFUNC_Default"          ,C4V_Int,			BASEFUNC_Default						},
-	{ "BASEFUNC_AutoSellContents" ,C4V_Int,			BASEFUNC_AutoSellContents		},
-	{ "BASEFUNC_RegenerateEnergy" ,C4V_Int,			BASEFUNC_RegenerateEnergy		},
-	{ "BASEFUNC_Buy"              ,C4V_Int,			BASEFUNC_Buy								},
-	{ "BASEFUNC_Sell"             ,C4V_Int,			BASEFUNC_Sell								},
-	{ "BASEFUNC_RejectEntrance"   ,C4V_Int,			BASEFUNC_RejectEntrance			},
-	{ "BASEFUNC_Extinguish"       ,C4V_Int,			BASEFUNC_Extinguish					},
-
 	{ "C4FO_Not"                  ,C4V_Int,			C4FO_Not						},
 	{ "C4FO_And"                  ,C4V_Int,			C4FO_And						},
 	{ "C4FO_Or"                   ,C4V_Int,			C4FO_Or							},
@@ -6329,7 +6286,7 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
   { "SetLength",            1  ,C4V_Bool     ,{ C4V_pC4Value,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnSetLength },
 
-  { "GetDefCoreVal",        1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_PropList,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetDefCoreVal,             0 },
+  { "GetDefCoreVal",        1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetDefCoreVal,             0 },
   { "GetObjectVal",         1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetObjectVal,              0 },
   { "GetObjectInfoCoreVal", 1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetObjectInfoCoreVal,      0 },
   { "GetScenarioVal",       1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetScenarioVal,            0 },

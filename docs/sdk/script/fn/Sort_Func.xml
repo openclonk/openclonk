@@ -14,7 +14,7 @@
 			</params>
 		</syntax>
 		<desc>Sortierkriterium: Sortiert die gefundenen Objekte anhand des int-Rückgabewertes der angegebenen Funktion. Je kleiner der Wert, desto weiter vorne steht das Objekt im Array.</desc>
-		<remark><strong>Achtung:</strong> Niemals mit einer Funktion verwenden, die Seiteneffekte hat. Wenn nicht sichergestellt ist, dass die Funktion harmlos ist, muss auf Sort_Func verzichtet werden. Stattdessen kann die Funktion mit einer Schleife über die gefundenen Objekte aufgerufen werden.</remark>
+		<remark><strong>Achtung:</strong> Niemals mit einer Funktion verwenden, die Seiteneffekte hat. Wenn nicht sichergestellt ist, dass die Funktion harmlos ist, muss auf Sort_Func verzichtet oder eine neue Funktion ohne Seiteneffekte erstellt werden.</remark>
 		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
 		<examples>
 			<example>

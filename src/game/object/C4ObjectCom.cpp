@@ -954,62 +954,6 @@ void DrawControlKey(C4Facet &cgo, int32_t iControl, bool fPressed, const char *s
 		Application.DDraw->TextOut(szText, rFont, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt-rFont.iLineHgt-2,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
 	}
 
-bool SellFromBase(int32_t iPlr, C4Object *pBaseObj, C4ID id, C4Object *pSellObj)
-  {
-  C4Object *pThing;
-  // Valid checks
-  if (!ValidPlr(iPlr)) return false;
-  if (!pBaseObj || !ValidPlr(pBaseObj->Base)) return false;
-	if (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Sell) return false;
-  // Base owner eliminated
-  if (::Players.Get(pBaseObj->Base)->Eliminated)
-    {
-    StartSoundEffect("Error",false,100,pBaseObj);
-    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_ELIMINATED"),::Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
-		return false;
-    }
-  // Base owner hostile
-  if (Hostile(iPlr,pBaseObj->Base))
-    {
-    StartSoundEffect("Error",false,100,pBaseObj);
-    GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),::Players.Get(pBaseObj->Base)->GetName()).getData(),iPlr);
-		return false;
-    }
-	// check validity of sell object, if specified
-	if (pThing = pSellObj)
-		if (!pThing->Status || pThing->Contained != pBaseObj)
-			pThing = NULL;
-  // Get object from home pBaseObj via selected id, if no or an anvalid thing has been specified
-	if (!pThing)
-		if (!(pThing=pBaseObj->Contents.Find(id))) return false;
-	// check definition NoSell
-	if (pThing->Def->NoSell) return false;
-  // Sell object (pBaseObj owner gets the money)
-  return ::Players.Get(pBaseObj->Base)->Sell2Home(pThing);
-  }
-
-bool Buy2Base(int32_t iPlr, C4Object *pBase, C4ID id, bool fShowErrors)
-	{
-	C4Object *pThing;
-	// Validity
-	if (!ValidPlr(iPlr)) return false;
-	if (!pBase || !ValidPlr(pBase->Base)) return false;
-	if (~Game.C4S.Game.Realism.BaseFunctionality & BASEFUNC_Buy) return false;
-	// Base owner hostile
-	if (Hostile(iPlr,pBase->Base))
-		{
-		if (!fShowErrors) return false;
-		StartSoundEffect("Error",false,100,pBase);
-		GameMsgPlayer(FormatString(LoadResStr("IDS_PLR_HOSTILE"),::Players.Get(pBase->Base)->GetName()).getData(),iPlr); return false;
-		}
-	// buy
-	if (!(pThing=::Players.Get(pBase->Base)->Buy(id, fShowErrors, iPlr, pBase))) return false;
-	// Object enter target object
-	pThing->Enter(pBase);
-	// Success
-	return true;
-	}
-
 bool PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t tx, int32_t ty)
 	{
 	C4Player *pPlr=::Players.Get(plr);

@@ -197,6 +197,7 @@ enum C4AulBCCType
 	AB_JUMPAND,		// jump if zero, else pop the stack
 	AB_JUMPOR,		// jump if not zero, else pop the stack
 	AB_CONDN,		// conditional jump (negated, pops stack)
+	AB_COND,		// conditional jump (pops stack)
 	AB_FOREACH_NEXT, // foreach: next element
 	AB_RETURN,	// return statement
 	AB_ERR,			// parse error at this position
