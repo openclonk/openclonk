@@ -3397,8 +3397,11 @@ static C4Value FnSetLength(C4AulContext *cthr, C4Value *pPars)
 	return C4VBool(true);
 }
 
-static bool FnSetClrModulation(C4AulObjectContext *cthr, long dwClr, long iOverlayID)
+static bool FnSetClrModulation(C4AulObjectContext *cthr, Nillable<long> dwClr, long iOverlayID)
 {
+	uint32_t clr = 0xffffffff;
+	if(!dwClr.IsNil()) clr = dwClr;
+
 	// overlay?
 	if (iOverlayID)
 	{
@@ -3408,12 +3411,12 @@ static bool FnSetClrModulation(C4AulObjectContext *cthr, long dwClr, long iOverl
 			DebugLogF("SetClrModulation: Overlay %d not defined for object %d (%s)", (int) iOverlayID, (int) cthr->Obj->Number, cthr->Obj->GetName());
 			return false;
 		}
-		pOverlay->SetClrModulation(dwClr);
+		pOverlay->SetClrModulation(clr);
 	}
 	else
 	{
 		// set it
-		cthr->Obj->ColorMod=dwClr;
+		cthr->Obj->ColorMod=clr;
 	}
 	// success
 	return true;
