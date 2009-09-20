@@ -438,8 +438,8 @@ if(USE_GTK)
 endif()
 
 add_executable(clonk WIN32 MACOSX_BUNDLE
-	${OC_CLONK_SOURCES}
 	${OC_SYSTEM_SOURCES}
+	${OC_CLONK_SOURCES}
 )
 
 source_group("Unsorted" .*)
@@ -514,10 +514,15 @@ CHECK_INCLUDE_FILE_CXX(langinfo.h HAVE_LANGINFO_H)
 CHECK_INCLUDE_FILE_CXX(poll.h HAVE_POLL_H)
 CHECK_INCLUDE_FILE_CXX(sys/inotify.h HAVE_SYS_INOTIFY_H)
 CHECK_INCLUDE_FILE_CXX(sys/socket.h HAVE_SYS_SOCKET_H)
-CHECK_INCLUDE_FILE_CXX(X11/extensions/xf86vmode.h HAVE_X11_EXTENSIONS_XF86VMODE_H)
-CHECK_INCLUDE_FILE_CXX(X11/extensions/Xrandr.h HAVE_X11_EXTENSIONS_XRANDR_H)
-CHECK_INCLUDE_FILE_CXX(X11/keysym.h HAVE_X11_KEYSYM_H)
-CHECK_INCLUDE_FILE_CXX(X11/xpm.h HAVE_X11_XPM_H)
+
+# ck 09-09-20: The following headers require Xlib.h for things such as
+# 'Bool' and 'Window' to be defined. Unfortunately, this doesn't exist
+# as a CXX version (yet?).
+include(CheckIncludeFiles)
+CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/xf86vmode.h HAVE_X11_EXTENSIONS_XF86VMODE_H)
+CHECK_INCLUDE_FILES(X11/Xlib.h X11/extensions/Xrandr.h HAVE_X11_EXTENSIONS_XRANDR_H)
+CHECK_INCLUDE_FILES(X11/Xlib.h X11/keysym.h HAVE_X11_KEYSYM_H)
+CHECK_INCLUDE_FILES(X11/Xlib.h X11/xpm.h HAVE_X11_XPM_H)
 CHECK_INCLUDE_FILE_CXX(iconv.h HAVE_ICONV)
 
 if(HAVE_ICONV)
@@ -685,8 +690,13 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
 	endif()
 endif()
+
+# ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
 include(CheckCXXSourceCompiles)
-set(CMAKE_REQUIRED_FLAGS ${OC_CXX_FLAGS})
+foreach(FLAG ${OC_CXX_FLAGS})
+	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
+endforeach()
+set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
 
 if(MSVC_VERSION GREATER 1499)
