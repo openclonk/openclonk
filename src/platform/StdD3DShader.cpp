@@ -62,8 +62,8 @@ static const char *szShaderCode =
 	"\n" "	/* Black FoW: Just darken */"
 	"\n" "	Out.Color.rgb *= fow_tex_color.a;"
 	"\n" "#endif"
-	"\n" "	/* Alpha values of modulation color always added */"
-	"\n" "	Out.Color.a = min(In.Color.a + in_tex_color.a, 1.0);"
+	"\n" "	/* Alpha values modulated */"
+	"\n" "	Out.Color.a = In.Color.a * in_tex_color.a;"
 	"\n" "	return Out;"
 	"\n" "}";
 

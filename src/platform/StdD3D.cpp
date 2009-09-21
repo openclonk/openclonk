@@ -202,96 +202,31 @@ bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 	}
 
 void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
-	{
+{
 	if (!lpDevice || !pVB) return;
-	// additive?
-	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
-	bool fAnyModNotDark = false;
-	// clipping?
 	if (DDrawCfg.ClipManually && rBltData.pTransform)
 		if (!ClipPoly(rBltData)) return;
-	void *pVertexPtr; int iVtxSize;
+
 	// globally modulated blit
-	bool fAnyMod = fMod2 || (fUseClrModMap && HasShaders());
-	if (dwModClr != 0xffffff || fUseClrModMap)
-		{
-		// prepare color in vertex buffer
-		// set vertex buffer for color-tex-modulation
-		for (int i=0; i<rBltData.byNumVertices; ++i)
-			{
-			bltClrVertices[i].x = rBltData.vtVtx[i].ftx;
-			bltClrVertices[i].y = rBltData.vtVtx[i].fty;
-			if (rBltData.pTransform)
-				rBltData.pTransform->TransformPoint(bltClrVertices[i].x, bltClrVertices[i].y);
-			bltClrVertices[i].tu = rBltData.vtVtx[i].ftx;
-			bltClrVertices[i].tv = rBltData.vtVtx[i].fty;
-			rBltData.TexPos.TransformPoint(bltClrVertices[i].tu, bltClrVertices[i].tv);
-			bltClrVertices[i].color=dwModClr;
-			// apply global color mod map
-			if (fUseClrModMap && !HasShaders()) ModulateClr(bltClrVertices[i].color, pClrModMap->GetModAt(int(bltClrVertices[i].x), int(bltClrVertices[i].y)));
-			if (bltClrVertices[i].color != 0xffffff) fAnyMod = true;
-			if (bltClrVertices[i].color) fAnyModNotDark = true;
-			if (DDrawCfg.NoAlphaAdd) bltClrVertices[i].color|=0xff000000;
-			}
-		// no mod at all? Then copy stuff to normal vertices
-		if (!fAnyMod)
-			for (int i=0; i<rBltData.byNumVertices; ++i)
-				{
-				bltVertices[i].x = bltClrVertices[i].x;
-				bltVertices[i].y = bltClrVertices[i].y;
-				bltVertices[i].tu = bltClrVertices[i].tu;
-				bltVertices[i].tv = bltClrVertices[i].tv;
-				}
-		else
-			// revert MOD2 to normal mod for black, so complete black can be displayed in FoW
-			if (fMod2 && !fAnyModNotDark) fMod2 = false;
-		}
-	else
-		{
-		// unmodulated blit
-		// set vertex buffer data
-		for (int i=0; i<rBltData.byNumVertices; ++i)
-			{
-			bltVertices[i].x = rBltData.vtVtx[i].ftx;
-			bltVertices[i].y = rBltData.vtVtx[i].fty;
-			if (rBltData.pTransform)
-				rBltData.pTransform->TransformPoint(bltVertices[i].x, bltVertices[i].y);
-			bltVertices[i].tu = rBltData.vtVtx[i].ftx;
-			bltVertices[i].tv = rBltData.vtVtx[i].fty;
-			rBltData.TexPos.TransformPoint(bltVertices[i].tu, bltVertices[i].tv);
-			}
-		}
+	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 
-	if (fAnyMod)
-		{
-		// set user ptr
-		pVertexPtr = (void *)&bltClrVertices;
-		iVtxSize = sizeof(bltClrVertices[0]);
-		// update rendering state
-		bltBaseState[iAdditive + (fMod2 ? C4GFXBLIT_MOD2 : 0)]->Apply();
-		lpDevice->SetFVF(D3DFVF_C4CTVERTEX);
-		}
-	else
-		{
+	assert(rBltData.byNumVertices < sizeof(bltClrVertices)/sizeof(*bltClrVertices));
+	// write to vertex buffer
+	for (int i = 0; i < rBltData.byNumVertices; ++i)
+	{
+		bltClrVertices[i].x = rBltData.vtVtx[i].ftx;
+		bltClrVertices[i].y = rBltData.vtVtx[i].fty;
+		if (rBltData.pTransform)
+			rBltData.pTransform->TransformPoint(bltClrVertices[i].x, bltClrVertices[i].y);
+		bltClrVertices[i].tu = rBltData.vtVtx[i].ftx;
+		bltClrVertices[i].tv = rBltData.vtVtx[i].fty;
+		rBltData.TexPos.TransformPoint(bltClrVertices[i].tu, bltClrVertices[i].tv);
+		bltClrVertices[i].color = dwModClr;
+	}
 
-		// store in buffer
-		/*void *pVertices=NULL;
-		pVB->Lock( 0, 0, (BYTE**)&pVertices, D3DLOCK_DISCARD );
-		if (pVertices)
-			{
-			memcpy(pVertices, bltVertices, sizeof(bltVertices[0]) * rBltData.byNumVertices);
-			pVB->Unlock();
-			}*/
-		// set user ptr
-		pVertexPtr = (void *)&bltVertices;
-		iVtxSize = sizeof(bltVertices[0]);
-		// update rendering state if there's a base texture
-		bltState[iAdditive ? 2 : 1]->Apply();
-		//lpDevice->SetStreamSource(0, pVB, sizeof);
-		lpDevice->SetFVF(D3DFVF_C4VERTEX);
-		lpDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
-		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
-		}
+	bltBaseState[iAdditive + (fMod2 ? C4GFXBLIT_MOD2 : 0)]->Apply();
+	lpDevice->SetFVF(D3DFVF_C4CTVERTEX);
+
 	// color mod map by pixel shader?
 	CStdD3DShader *pShader = NULL;
 	if (fUseClrModMap && HasShaders())
@@ -320,7 +255,7 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 		lpDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
 		}
 	// draw!
-	lpDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, rBltData.byNumVertices-2, pVertexPtr, iVtxSize );
+	lpDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, rBltData.byNumVertices-2, bltClrVertices, sizeof(bltClrVertices[0]) );
 	// done, cleanup
 	if (pShader)
 		{
@@ -829,7 +764,6 @@ void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float
 			lpDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, true );
 			lpDevice->SetStreamSource(0, pVBClr, 0, sizeof(C4CLRVERTEX));
 			lpDevice->SetFVF(D3DFVF_C4CLRVERTEX);
-			dwClr = InvertRGBAAlpha(dwClr);
 			// set vertex buffer data
 			float fX1 = (float) x1;// - 0.5f;
 			float fY1 = (float) y1;// - 0.5f;
@@ -873,8 +807,8 @@ void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float
 				uint32_t g = ((uint32_t(Abs(iY2 - iY1)) << 16) / uint32_t(iX2 - iX1)) << 16;
 				// alpha divisor
 				uint32_t alpha = dwClr >> 24;
-				if (alpha >= 254) return; // invisible line
-				uint32_t div = (uint32_t(1 << 24) / (255 - alpha)) << 8;
+				if (alpha == 0) return; // invisible line
+				uint32_t div = (uint32_t(1 << 24) / alpha) << 8;
 				DWORD dwClrBase = dwClr & 0x00FFFFFF;
 				// current position
 				uint32_t sp = 0;
@@ -929,8 +863,8 @@ void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float
 				if(!iDY) { DrawPixPrimary(sfcTarget, iX1, iY1, dwClr); return; }
 				// alpha divisor
 				uint32_t alpha = dwClr >> 24;
-				if (alpha >= 254) return; // invisible line
-				uint32_t div = (uint32_t(1 << 24) / (255 - alpha)) << 8;
+				if (alpha == 0) return; // invisible line
+				uint32_t div = (uint32_t(1 << 24) / alpha) << 8;
 				DWORD dwClrBase = dwClr & 0x00FFFFFF;
 				// current position
 				uint32_t sp = 0;
@@ -999,6 +933,7 @@ bool CStdD3D::InitShaders()
 	{
 	// safety?
 	if (!lpDevice) return false;
+	return false;
 	// create all desired shaders. Fail and delete them all if any one fails.
 	for (int i=0; i<SHIDX_Size; ++i) pShaders[i] = new CStdD3DShader();
 	bool fOK = true;
@@ -1131,11 +1066,13 @@ bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent,
 	lpDevice->SetRenderState( D3DRS_LIGHTING, false );
 	lpDevice->SetRenderState( D3DRS_MULTISAMPLEANTIALIAS, false ); // no antialiasing
 	lpDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, true );
-	lpDevice->SetRenderState( D3DRS_SRCBLEND,   D3DBLEND_INVSRCALPHA );
-	lpDevice->SetRenderState( D3DRS_DESTBLEND,  fAdditive ? D3DBLEND_ONE : D3DBLEND_SRCALPHA );
+	lpDevice->SetRenderState( D3DRS_SRCBLEND,   D3DBLEND_SRCALPHA );
+	lpDevice->SetRenderState( D3DRS_DESTBLEND,  fAdditive ? D3DBLEND_ONE : D3DBLEND_INVSRCALPHA );
+/*	// This isn't necessary, as a>=0 is equal to no alpha testing anyway
 	lpDevice->SetRenderState( D3DRS_ALPHATESTENABLE,  true );
 	lpDevice->SetRenderState( D3DRS_ALPHAREF,         0x00 );
 	lpDevice->SetRenderState( D3DRS_ALPHAFUNC,  D3DCMP_GREATEREQUAL );
+*/
 	lpDevice->SetRenderState( D3DRS_FILLMODE,   D3DFILL_SOLID );
 	lpDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_NONE );
 	lpDevice->SetRenderState( D3DRS_ZENABLE,          false );
@@ -1156,7 +1093,7 @@ bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent,
 	else
 		{
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   fMod2 ? D3DTOP_ADDSIGNED2X : D3DTOP_MODULATE );
-		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   DDrawCfg.NoAlphaAdd ? D3DTOP_MODULATE : D3DTOP_ADD);
+		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
