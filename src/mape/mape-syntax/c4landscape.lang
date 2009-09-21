@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<language id="c4landscape" _name="C4Landscape" version="2.0" _section="Markup">
+    <metadata>
+      <property name="mimetypes">text/plain</property>
+      <property name="globs">Landscape.txt</property>
+      <property name="line-comment-start">//</property>
+      <property name="block-comment-start">/*</property>
+      <property name="block-comment-end">*/</property>
+    </metadata>
+
+    <styles>
+        <style id="comment"           _name="Comment"   />
+        <style id="number"            _name="Number"    />
+        <style id="object"            _name="Object"    />
+        <style id="operator"          _name="Operator"  />
+        <style id="attribute"         _name="Attribute" />
+        <style id="algorithm"         _name="Algorithm" />
+    </styles>
+
+    <definitions>
+        <context id="c4landscape">
+            <include>
+                <context id="comment" style-ref="comment" end-at-line-end="true">
+                    <start>//</start>
+                    <end>^</end>
+                </context>
+
+                <context id="comment-multiline" style-ref="comment">
+                    <start>/\*</start>
+                    <end>\*/</end>
+                </context>
+
+                <context id="number" style-ref="number">
+		<!-- TODO: Ranges -->
+                      <match extended="true">
+                          (?&lt;![\w\.]) ([-+]?[0-9]+\s*(%|px)?) (?![\w\.])
+                      </match>
+                </context>
+
+                <context id="operators" style-ref="operator">
+                    <match extended="true">
+                        [&amp;^|]
+                    </match>
+                </context>
+
+                <context id="objects" style-ref="object">
+                    <keyword>map</keyword>
+                    <keyword>overlay</keyword>
+                    <keyword>point</keyword>
+                </context>
+
+                <context id="attributes" style-ref="attribute">
+                    <keyword>mat</keyword>
+                    <keyword>tex</keyword>
+                    <keyword>x</keyword>
+                    <keyword>y</keyword>
+                    <keyword>wdt</keyword>
+                    <keyword>hgt</keyword>
+                    <keyword>algo</keyword>
+                    <keyword>zoomX</keyword>
+                    <keyword>zoomY</keyword>
+                    <keyword>ox</keyword>
+                    <keyword>oy</keyword>
+                    <keyword>a</keyword>
+                    <keyword>b</keyword>
+                    <keyword>turbulence</keyword>
+                    <keyword>rotate</keyword>
+                    <keyword>invert</keyword>
+                    <keyword>seed</keyword>
+                    <keyword>loosebounds</keyword>
+                    <keyword>mask</keyword>
+                    <keyword>grp</keyword>
+                    <keyword>sub</keyword>
+                    <keyword>lambda</keyword>
+                </context>
+
+                <context id="algorithms" style-ref="algorithm">
+                    <keyword>solid</keyword>
+                    <keyword>random</keyword>
+                    <keyword>checker</keyword>
+                    <keyword>bozo</keyword>
+                    <keyword>sin</keyword>
+                    <keyword>boxes</keyword>
+                    <keyword>rndchecker</keyword>
+                    <keyword>lines</keyword>
+                    <keyword>border</keyword>
+                    <keyword>mandel</keyword>
+                    <keyword>rndall</keyword>
+                    <keyword>script</keyword>
+                </context>
+
+            </include>
+        </context>
+    </definitions>
+</language>

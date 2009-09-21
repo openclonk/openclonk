@@ -37,7 +37,6 @@ set(OC_CLONK_SOURCES
 	src/C4Include.h
 	src/C4Prototypes.h
 	src/C4Version.h
-	src/C4WinMain.cpp
 	src/config/C4Config.cpp
 	src/config/C4Config.h
 	src/config/C4ConfigShareware.cpp
@@ -379,8 +378,56 @@ set(OC_CLONK_SOURCES
 	src/zlib/gzio.c
 	src/zlib/zutil.h
 )
+
+set(MAPE_SOURCES
+	src/mape/configfile.c
+	src/mape/configfile.h
+	src/mape/diskview.c
+	src/mape/diskview.h
+	src/mape/editview.c
+	src/mape/editview.h
+	src/mape/fileicon.c
+	src/mape/fileicon.h
+	src/mape/forward.h
+	src/mape/group.cpp
+	src/mape/group.h
+	src/mape/header.c
+	src/mape/header.h
+	src/mape/iconview.c
+	src/mape/iconview.h
+	src/mape/mape.c
+	src/mape/mapgen.cpp
+	src/mape/mapgen.h
+	src/mape/material.cpp
+	src/mape/material.h
+	src/mape/mattexview.c
+	src/mape/mattexview.h
+	src/mape/preferences.c
+	src/mape/preferences.h
+	src/mape/preferencesdialog.c
+	src/mape/preferencesdialog.h
+	src/mape/preview.c
+	src/mape/preview.h
+	src/mape/random.cpp
+	src/mape/random.h
+	src/mape/statusbar.c
+	src/mape/statusbar.h
+	src/mape/texture.cpp
+	src/mape/texture.h
+	src/mape/window.c
+	src/mape/window.h
+	src/mape/icon/c4d.c
+	src/mape/icon/c4f.c
+	src/mape/icon/c4g.c
+	src/mape/icon/c4m.c
+	src/mape/icon/c4s.c
+	src/mape/icon/tex.c
+	src/mape/icon/icons.h
+)
+
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
+mark_as_advanced(MAPE_SOURCES)
 
 if(WIN32)
 	list(APPEND OC_CLONK_SOURCES
@@ -437,10 +484,16 @@ if(USE_GTK)
 	)
 endif()
 
-add_executable(clonk WIN32 MACOSX_BUNDLE
+add_library(libclonk STATIC
 	${OC_SYSTEM_SOURCES}
 	${OC_CLONK_SOURCES}
 )
+
+add_executable(clonk WIN32 MACOSX_BUNDLE
+	src/C4WinMain.cpp
+)
+target_link_libraries(clonk)
+set(OC_CLONK_LIBRARIES libclonk)
 
 source_group("Unsorted" .*)
 source_group("Library\\Platform abstraction" src/platform/.*)
@@ -457,6 +510,7 @@ source_group("Scripting" src/script/.*)
 source_group("Config" src/config/.*)
 source_group("Control" src/control/.*)
 source_group("Editing" src/editor/.*)
+source_group("Mape" src/mape/.*)
 
 add_executable(c4group
 	src/c4group/c4group_ng.cpp
@@ -497,7 +551,7 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/script
 )
 
-set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS C4ENGINE GLEW_STATIC)
+set_property(TARGET libclonk APPEND PROPERTY COMPILE_DEFINITIONS C4ENGINE GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX(direct.h HAVE_DIRECT_H)
@@ -533,6 +587,7 @@ include(CheckFunctionExists)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 
 # User selectable options
+option(USE_MAPE "Build Mape" ON)
 option(USE_GL "Enable OpenGL support" ON)
 if(APPLE)
 	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)
@@ -606,18 +661,12 @@ FINDLIB(OPENSSL NAMES crypto libeay32)
 if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW NAMES GLEW glew32 glew32s)
-	target_link_libraries(clonk
-		${GLEW}
-		${OPENGL_LIBRARIES}
-	)
+	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${GLEW} ${OPENGL_LIBRARIES})
 endif()
 if(USE_DIRECTX)
 	FINDLIB(DIRECT3D d3d9)
 	FINDLIB(DIRECT3DX d3dx9)
-	target_link_libraries(clonk
-		${DIRECT3D}
-		${DIRECT3DX}
-	)
+	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${DIRECT3D} ${DIRECT3DX})
 endif()
 if(USE_GTK)
 	include(FindPkgConfig)
@@ -629,9 +678,19 @@ if(USE_GTK)
 		link_directories(${GTK_LIBRARY_DIRS})
 		SET(WITH_DEVELOPER_MODE ${GTK_FOUND})
 		SET(WITH_GLIB ${GTK_FOUND})
-		target_link_libraries(clonk
-			${GTK_LIBRARIES}
-		)
+		set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${GTK_LIBRARIES})
+	endif()
+endif()
+if(USE_MAPE)
+	include(FindPkgConfig)
+	if (PKG_CONFIG_FOUND)
+		pkg_check_modules(MAPE_GTK glib-2.0>=2.14 gthread-2.0 gtk+-2.0>=2.12 gtksourceview-2.0)
+	endif()
+	if(MAPE_GTK_FOUND)
+		# hrm, cmake doesn't have target_include_directories...
+		include_directories(${MAPE_GTK_INCLUDE_DIRS} src/mape src/mape/icon)
+		link_directories(${MAPE_GTK_LIBRARY_DIRS})
+		set(MAPE_LIBRARIES ${MAPE_LIBRARIES} ${MAPE_GTK_LIBRARIES})
 	endif()
 endif()
 if(USE_X11)
@@ -639,22 +698,13 @@ if(USE_X11)
 	FINDLIB(XPM Xpm)
 	FINDLIB(XXF86VM Xxf86vm)
 	FINDLIB(XRANDR Xrandr)
-	target_link_libraries(clonk
-		${X11}
-		${XPM}
-		${XXF86VM}
-		${XRANDR}
-	)
+	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${X11} ${XPM} ${XXF86VM} ${XRANDR})
 endif()
 if (WIN32)
 	FINDLIB(VFW vfw32)
 	FINDLIB(WS2 ws2_32)
 	FINDLIB(WINMM winmm)
-	target_link_libraries(clonk
-		${VFW}
-		${WS2}
-		${WINMM}
-	)
+	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${VFW} ${WS2} ${WINMM})
 	target_link_libraries(c4group
 		${WS2}
 	)
@@ -665,13 +715,11 @@ if(SDL_FOUND)
 	include_directories(${SDL_INCLUDE_DIR})
 	FINDLIB(SDLMIXER SDL_mixer)
 	SET(HAVE_LIBSDL_MIXER ${SDLMIXER})
-	target_link_libraries(clonk
-		${SDL_LIBRARY}
-		${SDLMIXER}
-	)
+	set(OC_CLONK_LIBRARIES ${OC_CLONK_LIBRARIES} ${SDL_LIBRARY} ${SDLMIXER})
 endif()
 
 target_link_libraries(clonk
+	${OC_CLONK_LIBRARIES}
 	${FREETYPE_LIBRARIES}
 	${ZLIB_LIBRARIES}
 	${PNG_LIBRARIES}
@@ -682,6 +730,21 @@ target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 	${OPENSSL}
 )
+
+if(USE_MAPE)
+	add_executable(mape ${MAPE_SOURCES})
+	# TODO: Remove duplicates in MAPE_LIBRARIES and OC_CLONK_LIBRARIES...
+	# GTK+ might be in both.
+	target_link_libraries(mape
+		${MAPE_LIBRARIES}
+		${OC_CLONK_LIBRARIES}
+		${FREETYPE_LIBRARIES}
+		${ZLIB_LIBRARIES}
+		${PNG_LIBRARIES}
+		${JPEG_LIBRARIES}
+		${OPENSSL}
+	)
+endif()
 
 include(CheckCXXCompilerFlag)
 if(CMAKE_COMPILER_IS_GNUCXX)
