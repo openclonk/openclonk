@@ -64,13 +64,13 @@ void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 
 DWORD C4PlayerInfoCore::GetPrefColorValue(int32_t iPrefColor)
 	{
-	DWORD valRGB[12] = { 0x0000E8, 0xF40000, 0x00C800, 0xFCF41C,
-											 0xC48444, 0x784830, 0xA04400, 0xF08050,
-											 0x848484, 0xFFFFFF, 0x0094F8, 0xBC00C0 };
+	DWORD valRGB[12] = { 0xFF0000E8, 0xFFF40000, 0xFF00C800, 0xFFFCF41C,
+	                     0xFFC48444, 0xFF784830, 0xFFA04400, 0xFFF08050,
+	                     0xFF848484, 0xFFFFFFFF, 0xFF0094F8, 0xFFBC00C0 };
 	if (Inside<int32_t>(iPrefColor, 0, 11))
 		return valRGB[iPrefColor];
 		//return RGB(valRGB[iPrefColor] >> 16, valRGB[iPrefColor] >> 8, valRGB[iPrefColor] >> 0);
-	return 0xAAAAAA;
+	return 0xFFAAAAAA;
 	}
 
 bool C4PlayerInfoCore::Load(C4Group &hGroup)
