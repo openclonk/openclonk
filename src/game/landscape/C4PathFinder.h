@@ -25,6 +25,8 @@
 
 #include <C4TransferZone.h>
 
+class C4PathFinder;
+
 class C4PathFinderRay
 	{
 	friend class C4PathFinder;

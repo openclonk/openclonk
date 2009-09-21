@@ -31,6 +31,7 @@
 #define ConsoleDlgClassName "C4GUIdlg"
 #define ConsoleDlgWindowStyle (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX)
 
+#include "C4Rect.h"
 #include "C4Shape.h"
 #include "C4FacetEx.h"
 #include "C4LogBuf.h"
@@ -40,9 +41,12 @@
 #include "C4Application.h"
 #endif
 
+#include <StdResStr2.h>
 #include <StdWindow.h>
 
 class C4GroupSet;
+class C4GamePadOpener;
+class C4Viewport;
 
 // consts (load those from a def file some time)
 // font colors - alpha is font alpha, which is inversed opaque
@@ -2056,7 +2060,7 @@ namespace C4GUI {
 			virtual bool IsMouseControlled() { return true; }
 
 			// For dialogs associated to a viewport: Return viewport (for placement)
-			virtual class C4Viewport *GetViewport() { return NULL; }
+			virtual C4Viewport *GetViewport() { return NULL; }
 			bool IsViewportDialog() { return fViewportDlg; }
 
 			// for custom placement procedures; should call SetPos

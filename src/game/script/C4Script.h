@@ -25,6 +25,8 @@
 
 #include <C4Value.h>
 
+class C4AulScriptEngine;
+
 const int C4SCR_Access_Public			= 0,
 					C4SCR_Access_Protected	= 1,
 					C4SCR_Access_Private		= 2;

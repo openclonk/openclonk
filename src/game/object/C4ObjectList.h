@@ -28,7 +28,10 @@
 #include <C4Def.h>
 
 class C4Object;
+class C4ObjectList;
+class C4ObjectInfo;
 class C4TargetFacet;
+class C4RegionList;
 
 class C4ObjectLink
 	{

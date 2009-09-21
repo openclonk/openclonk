@@ -40,6 +40,8 @@
 #include "C4Constants.h"
 #include "C4InputValidation.h"
 
+class C4FacetSurface;
+
 // class predefs
 class C4PlayerInfo;
 class C4ClientPlayerInfos;

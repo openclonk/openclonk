@@ -23,10 +23,13 @@
 #ifndef INC_C4Material
 #define INC_C4Material
 
+#include <Fixed.h>
 #include <C4Id.h>
 #include <C4Shape.h>
 #include <C4Facet.h>
 #include <vector>
+
+class C4AulFunc;
 
 #define C4MatOv_Default			0
 #define C4MatOv_Exact				1

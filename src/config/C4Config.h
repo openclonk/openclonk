@@ -25,6 +25,7 @@
 #ifndef INC_C4Config
 #define INC_C4Config
 
+#include "StdConfig.h"
 #include "C4Constants.h"
 #include "C4InputValidation.h"
 #include <list>

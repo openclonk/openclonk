@@ -40,6 +40,7 @@ const int32_t C4MaxSoundName=100,
           C4NearSoundRadius=50,
 					C4AudibilityRadius=700;
 
+class C4Object;
 class C4SoundInstance;
 
 class C4SoundEffect

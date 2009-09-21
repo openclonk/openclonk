@@ -26,6 +26,8 @@
 #include <C4NameList.h>
 #include <C4IDList.h>
 
+class C4Group;
+
 class C4SVal
   {
   public:

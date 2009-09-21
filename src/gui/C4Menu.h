@@ -29,6 +29,8 @@
 #include "C4Gui.h"
 #include "C4IDList.h"
 
+class C4Viewport;
+
 enum {
 	C4MN_SymbolSize		= 16,
 	C4MN_FrameWidth		= 2
@@ -241,7 +243,7 @@ class C4Menu : public C4GUI::Dialog
 
 	protected:
 		// C4GUI
-		virtual class C4Viewport *GetViewport();              // return associated viewport
+		virtual C4Viewport *GetViewport();              // return associated viewport
 		virtual bool IsExternalDrawDialog() { return true; } // drawn by viewport drawing proc
 		virtual bool IsMouseControlled() { return false; }
 		virtual void UpdateOwnPos();

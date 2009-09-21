@@ -33,6 +33,8 @@
 #include "C4FacetEx.h"
 #endif
 
+class C4Player;
+
 // Contains additional data not present in C4PlayerInfo
 class C4RoundResultsPlayer
 	{

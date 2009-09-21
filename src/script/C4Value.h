@@ -25,6 +25,7 @@
 // class declarations
 class C4Value;
 class C4Object;
+class C4PropList;
 class C4String;
 class C4ValueArray;
 

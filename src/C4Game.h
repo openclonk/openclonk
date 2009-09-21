@@ -38,6 +38,8 @@
 #include <C4VideoPlayback.h>
 #include <C4ScriptHost.h>
 
+class C4ObjectInfo;
+
 class C4Game
   {
 	private:

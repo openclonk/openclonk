@@ -25,6 +25,7 @@
 
 #include <C4Surface.h>
 #include <C4Constants.h>
+#include <C4Material.h>
 
 class C4Texture
   {
