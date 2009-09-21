@@ -268,7 +268,7 @@ void C4MaterialMap::Clear()
 	delete [] ppReactionMap; ppReactionMap = NULL;
   }
 
-int32_t C4MaterialMap::Load(C4Group &hGroup, C4Group* OverloadFile)
+int32_t C4MaterialMap::Load(C4Group &hGroup)
   {
 	char entryname[256+1];
 

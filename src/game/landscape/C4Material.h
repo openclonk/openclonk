@@ -167,7 +167,7 @@ class C4MaterialMap
   public:
 	  void Default();
     void Clear();
-    int32_t Load(C4Group &hGroup, C4Group* OverloadFile = 0);
+    int32_t Load(C4Group &hGroup);
 		bool HasMaterials(C4Group &hGroup) const;
     int32_t Get(const char *szMaterial);
     bool SaveEnumeration(C4Group &hGroup);
