@@ -707,7 +707,7 @@ void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dw
 	// set blitting state
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 	drawSolidState[iAdditive]->Apply();
-	lpDevice->SetRenderState( D3DRS_DESTBLEND,  iAdditive ? D3DBLEND_ONE : D3DBLEND_SRCALPHA );
+	lpDevice->SetRenderState( D3DRS_DESTBLEND,  iAdditive ? D3DBLEND_ONE : D3DBLEND_INVSRCALPHA );
 	lpDevice->SetStreamSource(0, pVBClr, 0, sizeof(C4CLRVERTEX));
 	lpDevice->SetFVF(D3DFVF_C4CLRVERTEX);
 	// 2do: manual clipping?
