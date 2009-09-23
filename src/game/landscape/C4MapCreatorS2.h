@@ -405,6 +405,7 @@ class C4MCParser
 
 		void ParseFile(const char *szFilename, C4Group *pGrp); // load and parse file
 		void Parse(const char *szScript); // load and parse from mem
+		void ParseMemFile(const char *szScript, const char *szFilename); // parse file previosuly loaded into mem
 
 	friend class C4MCParserErr;
 	};

@@ -92,7 +92,10 @@ GdkPixbuf* mape_mapgen_generate(const gchar* source,
 			1
 		);
 
-		mapgen.ReadScript(source);
+		C4MCParser parser(&mapgen);
+
+		// TODO: Pass correct filename
+		parser.ParseMemFile(source, "Landscape.txt");
 
 		arry = mapgen.RenderBuf(NULL, width, height);
 		if(arry == NULL)
@@ -167,7 +170,7 @@ GdkPixbuf* mape_mapgen_generate(const gchar* source,
 		delete[] arry;
 		return pixbuf;
 	}
-	catch(C4MCParserErr& err)
+	catch(const C4MCParserErr& err)
 	{
 		g_set_error(
 			error,

@@ -1429,6 +1429,19 @@ void C4MCParser::Parse(const char *szScript)
 
 	}
 
+void C4MCParser::ParseMemFile(const char *szScript, const char *szFilename)
+{
+	// clear any old data
+	Clear();
+	// store filename
+	SCopy(szFilename, Filename, C4MaxName);
+	// parse it
+	CPos=szScript;
+	ParseTo(MapCreator);
+	// on errors, this will be done be destructor
+	Clear();
+}
+
 
 // algorithms ---------------------
 
