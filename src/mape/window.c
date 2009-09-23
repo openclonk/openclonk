@@ -1,19 +1,18 @@
-/* mape - C4 Landscape.txt editor
- * Copyright (C) 2005 Armin Burgmeier
+/*
+ * mape - C4 Landscape.txt editor
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * Copyright (c) 2005-2009 Armin Burgmeier
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
+ * Portions might be copyrighted by other authors who have contributed
+ * to OpenClonk.
  *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * See isc_license.txt for full license and disclaimer.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender.
+ * See clonk_trademark_license.txt for full license.
  */
 
 #include <stdlib.h>
@@ -468,6 +467,7 @@ static void mape_window_cb_help_about(GtkAction* action,
 		"Mape"
 	);
 
+	/* TODO: Get from C4Version.h */
 	gtk_about_dialog_set_version(
 		GTK_ABOUT_DIALOG(about_dialog),
 		"1.3.3"
@@ -492,6 +492,8 @@ static void mape_window_cb_help_about(GtkAction* action,
 		GTK_ABOUT_DIALOG(about_dialog),
 		artists
 	);
+
+	/* TODO: License in dialog */
 
 	gtk_dialog_run(GTK_DIALOG(about_dialog) );
 	gtk_widget_destroy(about_dialog);
