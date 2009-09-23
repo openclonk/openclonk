@@ -618,15 +618,19 @@ bool CreatePath(const std::string &path)
 
 bool DirectoryExists(const char *szFilename)
 	{
-	// Ignore trailing slash or backslash
+	// Ignore trailing slash or backslash, except when we are probing the
+	// root directory '/'.
 	char bufFilename[_MAX_PATH + 1];
 	if (szFilename && szFilename[0])
-		if ((szFilename[SLen(szFilename) - 1] == '\\') || (szFilename[SLen(szFilename) - 1] == '/'))
+	{
+		unsigned int len = SLen(szFilename);
+		if (len > 1 && ((szFilename[len - 1] == '\\') || (szFilename[len - 1] == '/')))
 		{
 			SCopy(szFilename, bufFilename, _MAX_PATH);
 			bufFilename[SLen(bufFilename) - 1] = 0;
 			szFilename = bufFilename;
 		}
+	}
 	// Check file attributes
 #ifdef _WIN32
 	struct _finddata_t fdt; int shnd;

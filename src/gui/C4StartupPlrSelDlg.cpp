@@ -1287,17 +1287,17 @@ void C4StartupPlrPropertiesDlg::DrawElement(C4TargetFacet &cgo)
 bool IsColorConflict(DWORD dwClr1, DWORD dwClr2);
 
 void C4StartupPlrPropertiesDlg::UpdatePlayerColor(bool fUpdateSliders)
-	{
-	if (!C4P.PrefColorDw) C4P.PrefColorDw=1; // no black! Would turn to blue in some instances
+{
+	C4P.PrefColorDw = C4P.PrefColorDw | 0xFF000000; // Ensure full opacity
 	pClrPreview->SetDrawColor(C4P.PrefColorDw);
 	pPictureBtn->SetColor(C4P.PrefColorDw);
 	if (fUpdateSliders)
-		{
+	{
 		pClrSliderR->SetScrollPos((C4P.PrefColorDw >> 16) & 0xff);
 		pClrSliderG->SetScrollPos((C4P.PrefColorDw >>  8) & 0xff);
 		pClrSliderB->SetScrollPos( C4P.PrefColorDw        & 0xff);
-		}
 	}
+}
 
 void C4StartupPlrPropertiesDlg::OnClrChangeLeft(C4GUI::Control *pBtn)
 	{
@@ -1318,21 +1318,21 @@ void C4StartupPlrPropertiesDlg::OnClrChangeRight(C4GUI::Control *pBtn)
 void C4StartupPlrPropertiesDlg::OnClrSliderRChange(int32_t iNewVal)
 	{
 	// update red component of color
-	C4P.PrefColorDw = (C4P.PrefColorDw & 0xffff) + (iNewVal<<16);
+	C4P.PrefColorDw = (C4P.PrefColorDw & 0xff00ffff) + (iNewVal<<16);
 	UpdatePlayerColor(false);
 	}
 
 void C4StartupPlrPropertiesDlg::OnClrSliderGChange(int32_t iNewVal)
 	{
 	// update green component of color
-	C4P.PrefColorDw = (C4P.PrefColorDw & 0xff00ff) + (iNewVal<<8);
+	C4P.PrefColorDw = (C4P.PrefColorDw & 0xffff00ff) + (iNewVal<<8);
 	UpdatePlayerColor(false);
 	}
 
 void C4StartupPlrPropertiesDlg::OnClrSliderBChange(int32_t iNewVal)
 	{
 	// update blue component of color
-	C4P.PrefColorDw = (C4P.PrefColorDw & 0xffff00) + iNewVal;
+	C4P.PrefColorDw = (C4P.PrefColorDw & 0xffffff00) + iNewVal;
 	UpdatePlayerColor(false);
 	}
 
