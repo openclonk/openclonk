@@ -93,8 +93,7 @@ class C4TextureMap
     C4Texture * GetTexture(const char *szTexture);
 		bool CheckTexture(const char *szTexture); // return whether texture exists
 		bool AddEntry(BYTE byIndex, const char *szMaterial, const char *szTexture);
-  protected:
-    bool AddTexture(const char *szTexture, CSurface * sfcSurface);
+		bool AddTexture(const char *szTexture, CSurface * sfcSurface); // add texture, takes ownership of surface
   };
 
 extern C4TextureMap TextureMap;

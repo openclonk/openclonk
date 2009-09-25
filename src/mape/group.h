@@ -30,6 +30,7 @@ extern "C" {
 
 typedef enum MapeGroupError_ {
 	MAPE_GROUP_ERROR_OPEN,
+	MAPE_GROUP_ERROR_READ,
 	MAPE_GROUP_ERROR_FAILED
 } MapeGroupError;
 	
@@ -40,25 +41,29 @@ struct MapeGroup_ {
 #endif
 };
 
-MapeGroup* mape_group_new(const char* path,
+MapeGroup* mape_group_new(const gchar* path,
                           GError** error);
 MapeGroup* mape_group_new_from_parent(MapeGroup* parent,
-                                      const char* entry,
+                                      const gchar* entry,
                                       GError** error);
 void mape_group_destroy(MapeGroup* group);
 
-const char* mape_group_get_name(MapeGroup* group);
-const char* mape_group_get_full_name(MapeGroup* group);
+const gchar* mape_group_get_name(MapeGroup* group);
+const gchar* mape_group_get_full_name(MapeGroup* group);
 
 gboolean mape_group_has_entry(MapeGroup* group,
-                              const char* entry);
+                              const gchar* entry);
 
 void mape_group_rewind(MapeGroup* group);
-char* mape_group_get_next_entry(MapeGroup* group);
+gchar* mape_group_get_next_entry(MapeGroup* group);
+
+guchar* mape_group_load_entry(MapeGroup* group,
+                              gsize* size,
+                              GError** error);
 
 gboolean mape_group_is_folder(MapeGroup* group);
 gboolean mape_group_is_child_folder(MapeGroup* group,
-                                    const char* child);
+                                    const gchar* child);
 
 #ifdef MAPE_COMPILING_CPP
 } /* extern "C" */

@@ -29,7 +29,7 @@ extern "C" {
 /* On Windows, / is interpreted as a directory containing the local drives
    (C:\, D:\, etc.). group_handle will be NULL in this case. */
 
-MapeGroup* mape_group_new(const char* path,
+MapeGroup* mape_group_new(const gchar* path,
                           GError** error)
 {
 	MapeGroup* group;
@@ -68,7 +68,7 @@ MapeGroup* mape_group_new(const char* path,
 }
 
 MapeGroup* mape_group_new_from_parent(MapeGroup* parent,
-                                      const char* entry,
+                                      const gchar* entry,
                                       GError** error)
 {
 	MapeGroup* group;
@@ -120,13 +120,13 @@ void mape_group_destroy(MapeGroup* group)
 	free(group);
 }
 
-const char* mape_group_get_name(MapeGroup* group)
+const gchar* mape_group_get_name(MapeGroup* group)
 {
 	g_assert(group->group_handle != NULL);
 	return CPPGROUP(group)->GetName();
 }
 
-const char* mape_group_get_full_name(MapeGroup* group)
+const gchar* mape_group_get_full_name(MapeGroup* group)
 {
 	g_assert(group->group_handle != NULL);
 	// TODO: Might this corrupt memory? Should we return a copy?
@@ -134,7 +134,7 @@ const char* mape_group_get_full_name(MapeGroup* group)
 }
 
 gboolean mape_group_has_entry(MapeGroup* group,
-                              const char* entry)
+                              const gchar* entry)
 {
 #ifdef G_OS_WIN32
 	DWORD chk_drv;
@@ -168,9 +168,9 @@ void mape_group_rewind(MapeGroup* group)
 	CPPGROUP(group)->ResetSearch();
 }
 
-char* mape_group_get_next_entry(MapeGroup* group)
+gchar* mape_group_get_next_entry(MapeGroup* group)
 {
-	char* buf;
+	gchar* buf;
 	bool result;
 
 #ifdef G_OS_WIN32
@@ -196,13 +196,40 @@ char* mape_group_get_next_entry(MapeGroup* group)
 		return buf;
 	}
 #endif
-	buf = (char*)malloc(_MAX_PATH);
-	result = CPPGROUP(group)->FindNextEntry("*", buf);
+	buf = (char*)g_malloc(_MAX_PATH);
+	result = CPPGROUP(group)->AccessNextEntry("*", NULL, buf, NULL);
 
 	if(result == false)
-		free(buf);
+		g_free(buf);
 
 	return result ? buf : NULL;
+}
+
+guchar* mape_group_load_entry(MapeGroup* group,
+                              gsize* size,
+                              GError** error)
+{
+	gsize s;
+	guchar* res;
+
+	s = CPPGROUP(group)->AccessedEntrySize();
+	res = (guchar*)g_malloc(s);
+	if(!CPPGROUP(group)->Read((char*)res, s))
+	{
+		g_set_error(
+			error,
+			g_quark_from_static_string("MAPE_GROUP_ERROR"),
+			MAPE_GROUP_ERROR_READ,
+			"%s",
+			CPPGROUP(group)->GetError()
+		);
+	
+		g_free(res);
+		return NULL;
+	}
+
+	if(size != NULL) *size = s;
+	return res;
 }
 
 gboolean mape_group_is_folder(MapeGroup* group)
@@ -214,7 +241,7 @@ gboolean mape_group_is_folder(MapeGroup* group)
 }
 
 gboolean mape_group_is_child_folder(MapeGroup* group,
-                                    const char* child)
+                                    const gchar* child)
 {
 	gchar* filename;
 	const gchar* ext;

@@ -18,7 +18,8 @@
 #ifndef INC_MAPE_TEXTURE_H
 #define INC_MAPE_TEXTURE_H
 
-#include <glib/gerror.h>
+#include <glib.h>
+#include <gdk-pixbuf/gdk-pixbuf.h>
 #include "forward.h"
 
 /* Simple C-based interface to C4TextureMap */
@@ -33,7 +34,7 @@ typedef enum MapeTextureError_ {
 
 struct MapeTextureMap_ {
 	void* handle;
-	unsigned int count;
+	GHashTable* textures;
 };
 
 MapeTextureMap* mape_texture_map_new(MapeGroup* base,
@@ -41,9 +42,11 @@ MapeTextureMap* mape_texture_map_new(MapeGroup* base,
                                      GError** error);
 void mape_texture_map_destroy(MapeTextureMap* map);
 
-unsigned int mape_texture_map_get_texture_count(MapeTextureMap* map);
-const char* mape_texture_map_get_texture(MapeTextureMap* map,
-                                         unsigned int index);
+guint mape_texture_map_get_texture_count(MapeTextureMap* map);
+const gchar* mape_texture_map_get_texture_name(MapeTextureMap* map,
+                                               guint index);
+GdkPixbuf* mape_texture_map_lookup_texture(MapeTextureMap* map,
+                                           const gchar* name);
 
 #ifdef MAPE_COMPILING_CPP
 } /* extern "C" */
