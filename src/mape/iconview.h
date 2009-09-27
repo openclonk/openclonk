@@ -18,9 +18,7 @@
 #ifndef INC_MAPE_ICONVIEW_H
 #define INC_MAPE_ICONVIEW_H
 
-#include <gtk/gtkwidget.h>
-#include <gtk/gtktreemodel.h>
-#include <gtk/gtkcellrenderer.h>
+#include <gtk/gtk.h>
 #include "forward.h"
 
 typedef enum MapeIconViewColumns_ {

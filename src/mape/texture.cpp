@@ -173,8 +173,8 @@ guint mape_texture_map_get_texture_count(MapeTextureMap* map)
 	return g_hash_table_size(map->textures);
 }
 
-const char* mape_texture_map_get_texture(MapeTextureMap* map,
-                                         unsigned int index)
+const char* mape_texture_map_get_texture_name(MapeTextureMap* map,
+                                              unsigned int index)
 {
 	// Bah, this is O(n). Better remove this function, and introduce
 	// mape_texture_map_foreach_texture().

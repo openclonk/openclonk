@@ -18,7 +18,7 @@
 #ifndef INC_MAPE_MATTEXVIEW_H
 #define INC_MAPE_MATTEXVIEW_H
 
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 
 #include "forward.h"
 #include "group.h"

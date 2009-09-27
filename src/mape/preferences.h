@@ -18,7 +18,7 @@
 #ifndef INC_MAPE_PREFERENCES_H
 #define INC_MAPE_PREFERENCES_H
 
-#include <glib/gtypes.h>
+#include <glib.h>
 #include "forward.h"
 
 struct MapePreferences_ {

@@ -15,7 +15,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-#include <glib/gtypes.h>
+#include <glib.h>
 
 extern const guint8 mape_icon_c4d[];
 extern const guint8 mape_icon_c4f[];

@@ -16,7 +16,7 @@
  */
 
 #include <stdlib.h>
-#include <gtk/gtknotebook.h>
+#include <gtk/gtk.h>
 #include "material.h"
 #include "texture.h"
 #include "fileicon.h"
@@ -145,7 +145,7 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 		mape_icon_view_add(
 			view->view_tex,
 			mape_file_icon_get(icon),
-			mape_texture_map_get_texture(new_tex_map, i)
+			mape_texture_map_get_texture_name(new_tex_map, i)
 		);
 	}
 

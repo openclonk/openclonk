@@ -18,8 +18,8 @@
 #ifndef INC_MAPE_PREVIEW_H
 #define INC_MAPE_PREVIEW_H
 
-#include <gtk/gtkwidget.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+#include <gtk/gtk.h>
 #include "forward.h"
 
 typedef enum MapePreViewError_ {

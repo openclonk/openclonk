@@ -18,7 +18,7 @@
 #ifndef INC_MAPE_WINDOW_H
 #define INC_MAPE_WINDOW_H
 
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 #include "forward.h"
 #include "preferences.h"
 

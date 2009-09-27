@@ -17,9 +17,8 @@
 
 #include <stdlib.h>
 #include <signal.h>
-#include <gtk/gtkmessagedialog.h>
 #include <glib/gthread.h>
-#include <gdk/gdk.h>
+#include <gtk/gtk.h>
 #include "editview.h"
 #include "window.h"
 

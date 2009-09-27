@@ -17,14 +17,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <gdk/gdkevents.h>
+
 #include <gdk/gdkkeysyms.h>
-#include <gtk/gtkscrolledwindow.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <gtk/gtkcellrendererpixbuf.h>
-#include <gtk/gtktreemodelsort.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtkmessagedialog.h>
+
 #include "group.h"
 #include "fileicon.h"
 #include "configfile.h"

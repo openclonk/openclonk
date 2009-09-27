@@ -17,11 +17,7 @@
 
 #include <stdlib.h>
 #include <gtksourceview/gtksourcebuffer.h>
-#include <gtk/gtkvbox.h>
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkhpaned.h>
-#include <gtk/gtktoolbar.h>
-#include <gtk/gtkwindow.h>
+
 #include "fileicon.h"
 #include "configfile.h"
 #include "preferencesdialog.h"

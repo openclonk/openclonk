@@ -18,9 +18,7 @@
 #ifndef INC_MAPE_DISKVIEW_H
 #define INC_MAPE_DISKVIEW_H
 
-#include <gtk/gtkwidget.h>
-#include <gtk/gtktreeview.h>
-#include <gtk/gtktreestore.h>
+#include <gtk/gtk.h>
 
 #include "forward.h"
 #include "group.h"

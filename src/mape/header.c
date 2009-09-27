@@ -16,7 +16,7 @@
  */
 
 #include <stdlib.h>
-#include <gtk/gtkstock.h>
+
 #include "header.h"
 
 static const GtkActionEntry mape_header_file_entries[] = {

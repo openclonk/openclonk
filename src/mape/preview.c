@@ -16,9 +16,7 @@
  */
 
 #include <stdlib.h>
-#include <gtk/gtkimage.h>
-#include <gtk/gtkframe.h>
-#include <gtk/gtkeventbox.h>
+#include <gtk/gtk.h>
 #include "preview.h"
 #include "preferences.h"
 

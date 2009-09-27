@@ -19,7 +19,8 @@
 #define INC_MAPE_FILEICON_H
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
+
 #include "forward.h"
 
 typedef enum MapeFileIconType_ {

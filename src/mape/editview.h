@@ -18,7 +18,7 @@
 #ifndef INC_MAPE_EDITVIEW_H
 #define INC_MAPE_EDITVIEW_H
 
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
 #include <gtksourceview/gtksourcestyleschememanager.h>
 #include "forward.h"

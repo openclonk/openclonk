@@ -18,7 +18,7 @@
 #ifndef INC_MAPE_STATUSBAR_H
 #define INC_MAPE_STATUSBAR_H
 
-#include <gtk/gtkwidget.h>
+#include <gtk/gtk.h>
 #include "forward.h"
 
 struct MapeStatusbar_ {

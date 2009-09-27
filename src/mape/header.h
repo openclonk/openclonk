@@ -18,10 +18,7 @@
 #ifndef INC_MAPE_HEADER_H
 #define INC_MAPE_HEADER_H
 
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkuimanager.h>
-#include <gtk/gtkactiongroup.h>
-#include <gtk/gtkaction.h>
+#include <gtk/gtk.h>
 #include "forward.h"
 
 struct MapeHeader_ {

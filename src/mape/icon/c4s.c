@@ -17,7 +17,7 @@
 
 /* GdkPixbuf RGBA C-Source image dump */
 
-#include <glib/gtypes.h>
+#include <glib.h>
 
 #ifdef __SUNPRO_C
 #pragma align 4 (mape_icon_c4s)

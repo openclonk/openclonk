@@ -16,12 +16,6 @@
  */
 
 #include <stdlib.h>
-#include <gtk/gtkliststore.h>
-#include <gtk/gtkiconview.h>
-#include <gtk/gtkcellrendererpixbuf.h>
-#include <gtk/gtkcellrenderertext.h>
-#include <gtk/gtkscrolledwindow.h>
-#include <gtk/gtkcelllayout.h>
 #include "iconview.h"
 
 MapeIconView* mape_icon_view_new(GError** error)
