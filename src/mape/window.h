@@ -19,8 +19,8 @@
 #define INC_MAPE_WINDOW_H
 
 #include <gtk/gtk.h>
-#include "forward.h"
-#include "preferences.h"
+#include "mape/forward.h"
+#include "mape/preferences.h"
 
 struct MapeWindow_ {
 	MapeFileIconSet* icon_set;

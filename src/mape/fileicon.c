@@ -18,8 +18,8 @@
 #include <stdlib.h>
 #include <gtk/gtk.h>
 
-#include "icons.h"
-#include "fileicon.h"
+#include "mape/icon/icons.h"
+#include "mape/fileicon.h"
 
 static MapeFileIcon* mape_file_icon_new(GtkWidget* widget,
                                         MapeFileIconType type)

@@ -16,16 +16,9 @@
  */
 
 #include <stdlib.h>
-#include <gtk/gtklabel.h>
-#include <gtk/gtkhbox.h>
-#include <gtk/gtkspinbutton.h>
-#include <gtk/gtktogglebutton.h>
-#include <gtk/gtkcheckbutton.h>
-#include <gtk/gtkcombobox.h>
-#include <gtk/gtkdialog.h>
-#include <gtk/gtkstock.h>
-#include "preferences.h"
-#include "preferencesdialog.h"
+
+#include "mape/preferences.h"
+#include "mape/preferencesdialog.h"
 
 static void mape_preferences_dialog_cb_fixed_seed_toggled(GtkWidget* widget,
                                                           gpointer user_data)

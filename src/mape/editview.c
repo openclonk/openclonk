@@ -18,13 +18,13 @@
 #include <stdlib.h>
 #include <gtksourceview/gtksourceview.h>
 #include <gtksourceview/gtksourcebuffer.h>
-#include "mapgen.h"
-#include "random.h"
-#include "preferences.h"
-#include "mattexview.h"
-#include "editview.h"
-#include "statusbar.h"
-#include "preview.h"
+#include "mape/mapgen.h"
+#include "mape/random.h"
+#include "mape/preferences.h"
+#include "mape/mattexview.h"
+#include "mape/editview.h"
+#include "mape/statusbar.h"
+#include "mape/preview.h"
 
 typedef struct _ThreadData ThreadData;
 struct _ThreadData {

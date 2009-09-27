@@ -19,7 +19,7 @@
 #define INC_MAPE_HEADER_H
 
 #include <gtk/gtk.h>
-#include "forward.h"
+#include "mape/forward.h"
 
 struct MapeHeader_ {
 	GtkUIManager* ui_manager;

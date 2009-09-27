@@ -21,7 +21,7 @@
 #include <gtk/gtk.h>
 #include <gtksourceview/gtksourcelanguagemanager.h>
 #include <gtksourceview/gtksourcestyleschememanager.h>
-#include "forward.h"
+#include "mape/forward.h"
 
 typedef enum MapeEditViewError_ {
 	MAPE_EDIT_VIEW_ERROR_MISSING_MAPS,

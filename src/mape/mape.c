@@ -19,8 +19,8 @@
 #include <signal.h>
 #include <glib/gthread.h>
 #include <gtk/gtk.h>
-#include "editview.h"
-#include "window.h"
+#include "mape/editview.h"
+#include "mape/window.h"
 
 static MapeWindow** _global_wnd = NULL;
 

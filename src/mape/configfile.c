@@ -18,7 +18,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
-#include "configfile.h"
+#include "mape/configfile.h"
 
 MapeConfigFile* mape_config_file_new(const gchar* filename)
 {

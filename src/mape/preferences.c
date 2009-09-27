@@ -17,8 +17,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "configfile.h"
-#include "preferences.h"
+#include "mape/configfile.h"
+#include "mape/preferences.h"
 
 static gint mape_preferences_read_int(MapeConfigFile* file,
                                       const gchar* key,

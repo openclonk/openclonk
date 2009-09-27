@@ -20,8 +20,8 @@
 
 #include <gtk/gtk.h>
 
-#include "forward.h"
-#include "group.h"
+#include "mape/forward.h"
+#include "mape/group.h"
 
 struct MapeMatTexView_ {
 	GtkWidget* notebook;

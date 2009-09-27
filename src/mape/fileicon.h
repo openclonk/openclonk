@@ -21,7 +21,7 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtk/gtk.h>
 
-#include "forward.h"
+#include "mape/forward.h"
 
 typedef enum MapeFileIconType_ {
 	MAPE_FILE_ICON_DRIVE,

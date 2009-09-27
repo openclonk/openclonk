@@ -17,11 +17,11 @@
 
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include "material.h"
-#include "texture.h"
-#include "fileicon.h"
-#include "iconview.h"
-#include "mattexview.h"
+#include "mape/material.h"
+#include "mape/texture.h"
+#include "mape/fileicon.h"
+#include "mape/iconview.h"
+#include "mape/mattexview.h"
 
 MapeMatTexView* mape_mat_tex_view_new(MapeFileIconSet* icon_set,
                                       GError** error)

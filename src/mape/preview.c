@@ -17,8 +17,8 @@
 
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include "preview.h"
-#include "preferences.h"
+#include "mape/preview.h"
+#include "mape/preferences.h"
 
 MapePreView* mape_pre_view_new(MapeMatTexView* mat_tex,
                                GError** error)

@@ -19,7 +19,7 @@
 #ifndef INC_MAPE_RANDOM_H
 #define INC_MAPE_RANDOM_H
 
-#include "forward.h"
+#include "mape/forward.h"
 
 /* Simple C-based interface to C4Random */
 

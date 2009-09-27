@@ -18,16 +18,16 @@
 #include <stdlib.h>
 #include <gtksourceview/gtksourcebuffer.h>
 
-#include "fileicon.h"
-#include "configfile.h"
-#include "preferencesdialog.h"
-#include "header.h"
-#include "statusbar.h"
-#include "diskview.h"
-#include "mattexview.h"
-#include "editview.h"
-#include "preview.h"
-#include "window.h"
+#include "mape/fileicon.h"
+#include "mape/configfile.h"
+#include "mape/preferencesdialog.h"
+#include "mape/header.h"
+#include "mape/statusbar.h"
+#include "mape/diskview.h"
+#include "mape/mattexview.h"
+#include "mape/editview.h"
+#include "mape/preview.h"
+#include "mape/window.h"
 
 static gboolean mape_window_file_load(MapeWindow* wnd,
                                       const gchar* filename)

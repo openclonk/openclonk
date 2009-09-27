@@ -17,7 +17,7 @@
 
 #include <stdlib.h>
 #include <gtk/gtk.h>
-#include "statusbar.h"
+#include "mape/statusbar.h"
 
 MapeStatusbar* mape_statusbar_new(void)
 {

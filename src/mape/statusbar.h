@@ -19,7 +19,7 @@
 #define INC_MAPE_STATUSBAR_H
 
 #include <gtk/gtk.h>
-#include "forward.h"
+#include "mape/forward.h"
 
 struct MapeStatusbar_ {
 	GtkWidget* bar;

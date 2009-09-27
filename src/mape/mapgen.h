@@ -19,8 +19,8 @@
 #define INC_MAPE_MAPGEN_H
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include "material.h"
-#include "texture.h"
+#include "mape/material.h"
+#include "mape/texture.h"
 
 #ifdef MAPE_COMPILING_CPP
 extern "C" {

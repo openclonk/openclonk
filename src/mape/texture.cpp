@@ -20,9 +20,9 @@
 #include <exception>
 #include <C4Texture.h>
 
-#include "cpp-handles/group-handle.h"
-#include "group.h"
-#include "texture.h"
+#include "mape/cpp-handles/group-handle.h"
+#include "mape/group.h"
+#include "mape/texture.h"
 
 #define CPPTEXMAP(map) ( (C4TextureMap*)map->handle)
 

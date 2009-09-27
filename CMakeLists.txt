@@ -690,7 +690,7 @@ if(USE_MAPE)
 	endif()
 	if(MAPE_GTK_FOUND)
 		# hrm, cmake doesn't have target_include_directories...
-		include_directories(${MAPE_GTK_INCLUDE_DIRS} src/mape src/mape/icon)
+		include_directories(${MAPE_GTK_INCLUDE_DIRS})
 		link_directories(${MAPE_GTK_LIBRARY_DIRS})
 		set(MAPE_LIBRARIES ${MAPE_LIBRARIES} ${MAPE_GTK_LIBRARIES})
 	endif()

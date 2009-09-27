@@ -19,7 +19,7 @@
 #define INC_MAPE_ICONVIEW_H
 
 #include <gtk/gtk.h>
-#include "forward.h"
+#include "mape/forward.h"
 
 typedef enum MapeIconViewColumns_ {
 	MAPE_ICON_VIEW_COLUMN_ICON,

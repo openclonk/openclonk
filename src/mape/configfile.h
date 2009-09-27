@@ -20,7 +20,7 @@
 #define INC_MAPE_CONFIGFILE_H
 
 #include <glib.h>
-#include "forward.h"
+#include "mape/forward.h"
 
 struct MapeConfigFileEntry_ {
 	gchar* key;

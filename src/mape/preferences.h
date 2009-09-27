@@ -19,7 +19,7 @@
 #define INC_MAPE_PREFERENCES_H
 
 #include <glib.h>
-#include "forward.h"
+#include "mape/forward.h"
 
 struct MapePreferences_ {
 	unsigned int tab_width;

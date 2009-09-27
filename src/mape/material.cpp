@@ -35,10 +35,10 @@ C4Network2    Network;
 #include <exception>
 #include <C4Material.h>
 
-#include "cpp-handles/group-handle.h"
+#include "mape/cpp-handles/group-handle.h"
 
-#include "group.h"
-#include "material.h"
+#include "mape/group.h"
+#include "mape/material.h"
 
 #define CPPMAT(mat) ( (C4Material*)mat)
 #define CPPMATMAP(map) ( (C4MaterialMap*)map->handle)

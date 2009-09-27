@@ -20,7 +20,7 @@
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gtk/gtk.h>
-#include "forward.h"
+#include "mape/forward.h"
 
 typedef enum MapePreViewError_ {
 	MAPE_PRE_VIEW_ERROR_MISSING_MAPS,

@@ -20,12 +20,12 @@
 
 #include <gdk/gdkkeysyms.h>
 
-#include "group.h"
-#include "fileicon.h"
-#include "configfile.h"
-#include "mattexview.h"
-#include "editview.h"
-#include "diskview.h"
+#include "mape/group.h"
+#include "mape/fileicon.h"
+#include "mape/configfile.h"
+#include "mape/mattexview.h"
+#include "mape/editview.h"
+#include "mape/diskview.h"
 
 static gboolean mape_disk_view_find_iter(MapeDiskView* disk_view,
                                          GtkTreeIter* child,

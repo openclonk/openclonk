@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <C4Include.h>
 #include <C4Random.h>
-#include "random.h"
+#include "mape/random.h"
 
 extern "C" {
 

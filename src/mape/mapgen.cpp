@@ -24,7 +24,7 @@
 #include <C4Material.h>
 #include <C4MapCreatorS2.h>
 
-#include "mapgen.h"
+#include "mape/mapgen.h"
 
 #define CPPTEXMAP(map) ((C4TextureMap*)map->handle)
 #define CPPMATMAP(map) ((C4MaterialMap*)map->handle)

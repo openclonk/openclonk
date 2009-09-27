@@ -18,9 +18,8 @@
 #ifndef INC_MAPE_PREFERENCESDIALOG_H
 #define INC_MAPE_PREFERENCESDIALOG_H
 
-#include <gtk/gtkwidget.h>
-#include <gtk/gtkwindow.h>
-#include "forward.h"
+#include <gtk/gtk.h>
+#include "mape/forward.h"
 
 struct MapePreferencesDialog_ {
 	GtkWidget* dialog;

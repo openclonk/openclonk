@@ -16,7 +16,7 @@
  */
 
 #include <stdlib.h>
-#include "iconview.h"
+#include "mape/iconview.h"
 
 MapeIconView* mape_icon_view_new(GError** error)
 {
