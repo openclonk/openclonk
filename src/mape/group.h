@@ -1,72 +1,130 @@
-/* mape - C4 Landscape.txt editor
- * Copyright (C) 2005 Armin Burgmeier
+/*
+ * mape - C4 Landscape.txt editor
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
+ * Copyright (c) 2005-2009 Armin Burgmeier
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
+ * Portions might be copyrighted by other authors who have contributed
+ * to OpenClonk.
  *
- * You should have received a copy of the GNU General Public
- * License along with this program; if not, write to the Free
- * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ * See isc_license.txt for full license and disclaimer.
+ *
+ * "Clonk" is a registered trademark of Matthes Bender.
+ * See clonk_trademark_license.txt for full license.
  */
 
 #ifndef INC_MAPE_GROUP_H
 #define INC_MAPE_GROUP_H
 
-#include <glib/gerror.h>
-#include "forward.h"
+#include <glib-object.h>
 
-/* Simple C-based interface to C4Group */
+G_BEGIN_DECLS
 
-#ifdef MAPE_COMPILING_CPP
-extern "C" {
-#endif
+#define MAPE_TYPE_GROUP                 (mape_group_get_type())
+#define MAPE_GROUP(obj)                 (G_TYPE_CHECK_INSTANCE_CAST((obj), MAPE_TYPE_GROUP, MapeGroup))
+#define MAPE_GROUP_CLASS(klass)         (G_TYPE_CHECK_CLASS_CAST((klass), MAPE_TYPE_GROUP, MapeGroupClass))
+#define MAPE_IS_GROUP(obj)              (G_TYPE_CHECK_INSTANCE_TYPE((obj), MAPE_TYPE_GROUP))
+#define MAPE_IS_GROUP_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE((klass), MAPE_TYPE_GROUP))
+#define MAPE_GROUP_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS((obj), MAPE_TYPE_GROUP, MapeGroupClass))
 
-typedef enum MapeGroupError_ {
-	MAPE_GROUP_ERROR_OPEN,
-	MAPE_GROUP_ERROR_READ,
-	MAPE_GROUP_ERROR_FAILED
+#define MAPE_TYPE_GROUP_STATUS          (mape_group_status_get_type())
+
+typedef struct _MapeGroup MapeGroup;
+typedef struct _MapeGroupClass MapeGroupClass;
+
+/**
+ * MapeGroupError:
+ * @MAPE_GROUP_ERROR_OPEN: An error occured when attempting to open the group.
+ * @MAPE_GROUP_ERROR_ACCESS: An error occurred when accessing a group element.
+ * @MAPE_GROUP_ERROR_READ: An error occured when reading from the group.
+ *
+ * These errors are from the MAPE_GROUP_ERROR error domain. They can occur
+ * when opening, seeking or reading from a group, respectively.
+ */
+typedef enum _MapeGroupError {
+  MAPE_GROUP_ERROR_OPEN,
+  MAPE_GROUP_ERROR_ACCESS,
+  MAPE_GROUP_ERROR_READ
 } MapeGroupError;
-	
-struct MapeGroup_ {
-	void* group_handle;
-#ifdef G_OS_WIN32
-	unsigned int drive_idtf;
-#endif
+
+/**
+ * MapeGroupClass:
+ *
+ * This structure does not contain any public fields.
+ */
+struct _MapeGroupClass {
+  /*< private >*/
+  GObjectClass parent_class;
 };
 
-MapeGroup* mape_group_new(const gchar* path,
-                          GError** error);
-MapeGroup* mape_group_new_from_parent(MapeGroup* parent,
-                                      const gchar* entry,
-                                      GError** error);
-void mape_group_destroy(MapeGroup* group);
+/**
+ * MapeGroup:
+ *
+ * #MapeGroup is an opaque data type. You should only access it via the
+ * public API functions.
+ */
+struct _MapeGroup {
+  /*< private >*/
+  GObject parent;
+};
 
-const gchar* mape_group_get_name(MapeGroup* group);
-const gchar* mape_group_get_full_name(MapeGroup* group);
+GType
+mape_group_get_type(void) G_GNUC_CONST;
 
-gboolean mape_group_has_entry(MapeGroup* group,
-                              const gchar* entry);
+MapeGroup*
+mape_group_new(void);
 
-void mape_group_rewind(MapeGroup* group);
-gchar* mape_group_get_next_entry(MapeGroup* group);
+gboolean
+mape_group_is_open(MapeGroup* group);
 
-guchar* mape_group_load_entry(MapeGroup* group,
-                              gsize* size,
-                              GError** error);
+gboolean
+mape_group_open(MapeGroup* group,
+                const gchar* path,
+                GError** error);
 
-gboolean mape_group_is_folder(MapeGroup* group);
-gboolean mape_group_is_child_folder(MapeGroup* group,
-                                    const gchar* child);
+MapeGroup*
+mape_group_open_child(MapeGroup* group,
+                      const gchar* entry,
+                      GError** error);
 
-#ifdef MAPE_COMPILING_CPP
-} /* extern "C" */
-#endif
+void
+mape_group_close(MapeGroup* group);
 
-#endif /* INC_MAPE_GORUP_H */
+const gchar*
+mape_group_get_name(MapeGroup* group);
+
+gchar*
+mape_group_get_full_name(MapeGroup* group);
+
+gboolean
+mape_group_has_entry(MapeGroup* group,
+                     const gchar* entry);
+
+void
+mape_group_rewind(MapeGroup* group);
+
+gchar*
+mape_group_get_next_entry(MapeGroup* group);
+
+guchar*
+mape_group_load_entry(MapeGroup* group,
+                      gsize* size,
+                      GError** error);
+
+gboolean
+mape_group_is_folder(MapeGroup* group);
+
+gboolean
+mape_group_is_drive_container(MapeGroup* group);
+
+gboolean
+mape_group_is_child_folder(MapeGroup* group,
+                           const gchar* child);
+
+G_END_DECLS
+
+#endif /* MAPE_GROUP_H */
+
+/* vim:set et sw=2 ts=2: */

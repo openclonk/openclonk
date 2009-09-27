@@ -173,7 +173,7 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 			parent_group = disk_view->group_top;
 		}
 		
-		group = mape_group_new_from_parent(
+		group = mape_group_open_child(
 			parent_group,
 			"Material.c4g",
 			error
@@ -225,7 +225,7 @@ static gboolean mape_disk_view_load_materials(MapeDiskView* disk_view,
 		{
 			/* TODO: Check if the group is already open!
 			   (mape_disk_view_find_iter). */
-			overloaded_group = mape_group_new_from_parent(
+			overloaded_group = mape_group_open_child(
 				overloaded_group,
 				"Material.c4g",
 				error
@@ -357,7 +357,7 @@ static gboolean mape_disk_view_load(MapeDiskView* disk_view,
 
 		g_free(utf8_file);
 
-		child_group = mape_group_new_from_parent(
+		child_group = mape_group_open_child(
 			parent_group,
 			filename,
 			error
@@ -383,8 +383,13 @@ static gboolean mape_disk_view_load(MapeDiskView* disk_view,
 		if(disk_view->group_top != NULL)
 			return TRUE;
 
-		disk_view->group_top = mape_group_new("/", error);
-		if(disk_view->group_top == NULL) return FALSE;
+		disk_view->group_top = mape_group_new();
+		if(!mape_group_open(disk_view->group_top, "/", error))
+		{
+			g_object_unref(disk_view->group_top);
+			disk_view->group_top = NULL;
+			return FALSE;
+		}
 
 		child_group = disk_view->group_top;
 	}	
@@ -456,7 +461,7 @@ static gboolean mape_disk_view_load(MapeDiskView* disk_view,
 				icon_type = MAPE_FILE_ICON_C4SCENARIO;
 		}
 
-		if(child_group->group_handle == NULL)
+		if(mape_group_is_drive_container(child_group))
 			icon_type = MAPE_FILE_ICON_DRIVE;
 
 		icon = mape_file_icon_set_lookup(
@@ -788,7 +793,7 @@ static void mape_disk_view_close_groups(MapeDiskView* disk_view,
 		mape_disk_view_close_groups(disk_view, &child);
 
 	if(group != NULL)
-		mape_group_destroy(group);
+		g_object_unref(group);
 
 	if(has_next == TRUE)
 		mape_disk_view_close_groups(disk_view, iter);
@@ -966,12 +971,12 @@ void mape_disk_view_destroy(MapeDiskView* disk_view)
 {
 	/* Close open groups */
 	GtkTreeIter iter;
-	gtk_tree_model_get_iter_first(disk_view->tree_store, &iter);
-	mape_disk_view_close_groups(disk_view, &iter);
+	if(gtk_tree_model_get_iter_first(disk_view->tree_store, &iter))
+		mape_disk_view_close_groups(disk_view, &iter);
 
 	/* TODO: unref cell renderers? */
 	/*mape_file_icon_set_destroy(disk_view->icon_set);*/
-	mape_group_destroy(disk_view->group_top);
+	g_object_unref(disk_view->group_top);
 
 	g_object_unref(G_OBJECT(disk_view->tree_store) );
 	free(disk_view);

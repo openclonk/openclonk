@@ -18,7 +18,7 @@
 #ifndef INC_MAPE_FORWARD_H
 #define INC_MAPE_FORWARD_H
 
-typedef struct MapeGroup_ MapeGroup;
+/*typedef struct MapeGroup_ MapeGroup;*/
 typedef struct MapeMaterialMap_ MapeMaterialMap;
 typedef struct MapeTextureMap_ MapeTextureMap;
 typedef struct MapeFileIcon_ MapeFileIcon;

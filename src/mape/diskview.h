@@ -21,7 +21,9 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtktreeview.h>
 #include <gtk/gtktreestore.h>
+
 #include "forward.h"
+#include "group.h"
 
 typedef enum MapeDiskViewColumns_ {
 	MAPE_DISK_VIEW_COLUMN_ICON,

@@ -16,7 +16,8 @@
  */
 
 #include <stdlib.h>
-#include <gtk/gtkstock.h>
+#include <gtk/gtk.h>
+
 #include "icons.h"
 #include "fileicon.h"
 

@@ -19,7 +19,9 @@
 #define INC_MAPE_MATTEXVIEW_H
 
 #include <gtk/gtkwidget.h>
+
 #include "forward.h"
+#include "group.h"
 
 struct MapeMatTexView_ {
 	GtkWidget* notebook;

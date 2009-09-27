@@ -29,16 +29,22 @@ C4FullScreen  FullScreen;
 C4Game        Game;
 C4Network2    Network;
 
+
 #define MAPE_COMPILING_CPP
 
 #include <exception>
 #include <C4Material.h>
+
+#include "cpp-handles/group-handle.h"
+
 #include "group.h"
 #include "material.h"
 
 #define CPPMAT(mat) ( (C4Material*)mat)
 #define CPPMATMAP(map) ( (C4MaterialMap*)map->handle)
-#define CPPGROUP(group) ((C4Group*)group->group_handle)
+
+extern "C" C4GroupHandle* _mape_group_get_handle(MapeGroup*);
+#define CPPGROUP(group) (reinterpret_cast<C4Group*>(_mape_group_get_handle(group)))
 
 extern "C" {
 
@@ -57,7 +63,7 @@ MapeMaterialMap* mape_material_map_new(MapeGroup* base,
 		if(overload_from != NULL)
 			CPPMATMAP(map)->Load(*CPPGROUP(overload_from));
 	}
-	catch(std::exception& e)
+	catch(const std::exception& e)
 	{
 		g_set_error(
 			error,

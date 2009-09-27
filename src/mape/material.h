@@ -18,9 +18,10 @@
 #ifndef INC_MAPE_MATERIAL_H
 #define INC_MAPE_MATERIAL_H
 
-#include <glib/gerror.h>
-#include <gdk/gdkcolor.h>
+#include <gtk/gtk.h>
+
 #include "forward.h"
+#include "group.h"
 
 /* Simple C-based interface to C4MaterialMap */
 

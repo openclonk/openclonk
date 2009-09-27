@@ -19,11 +19,15 @@
 
 #include <exception>
 #include <C4Texture.h>
+
+#include "cpp-handles/group-handle.h"
 #include "group.h"
 #include "texture.h"
 
 #define CPPTEXMAP(map) ( (C4TextureMap*)map->handle)
-#define CPPGROUP(group) ((C4Group*)group->group_handle)
+
+extern "C" C4GroupHandle* _mape_group_get_handle(MapeGroup*);
+#define CPPGROUP(group) (reinterpret_cast<C4Group*>(_mape_group_get_handle(group)))
 
 extern "C" {
 

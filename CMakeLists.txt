@@ -380,6 +380,8 @@ set(OC_CLONK_SOURCES
 )
 
 set(MAPE_SOURCES
+	src/mape/cpp-handles/group-handle.h
+	src/mape/cpp-handles/group-handle.cpp
 	src/mape/configfile.c
 	src/mape/configfile.h
 	src/mape/diskview.c
@@ -389,7 +391,7 @@ set(MAPE_SOURCES
 	src/mape/fileicon.c
 	src/mape/fileicon.h
 	src/mape/forward.h
-	src/mape/group.cpp
+	src/mape/group.c
 	src/mape/group.h
 	src/mape/header.c
 	src/mape/header.h

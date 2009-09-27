@@ -20,7 +20,9 @@
 
 #include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+
 #include "forward.h"
+#include "group.h"
 
 /* Simple C-based interface to C4TextureMap */
 
