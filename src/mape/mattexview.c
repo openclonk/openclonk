@@ -82,7 +82,7 @@ MapeMatTexView* mape_mat_tex_view_new(MapeFileIconSet* icon_set,
 void mape_mat_tex_view_destroy(MapeMatTexView* view)
 {
 	if(view->mat_map != NULL)
-		mape_material_map_destroy(view->mat_map);
+		g_object_unref(view->mat_map);
 	if(view->tex_map != NULL)
 		mape_texture_map_destroy(view->tex_map);
 
@@ -103,17 +103,30 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 	MapeMaterial* mat;
 	unsigned int i;
 
-	new_mat_map = mape_material_map_new(base_group, overload_from, error);
-	if(new_mat_map == NULL) return FALSE;
+	new_mat_map = mape_material_map_new();
+	if(!mape_material_map_load(new_mat_map, base_group, error))
+	{
+		g_object_unref(new_mat_map);
+		return FALSE;
+	}
+
+	if(overload_from)
+	{
+		if(!mape_material_map_load(new_mat_map, overload_from, error))
+		{
+			g_object_unref(new_mat_map);
+			return FALSE;
+		}
+	}
 
 	new_tex_map = mape_texture_map_new(base_group, overload_from, error);
 	if(new_tex_map == NULL)
 	{
-		mape_material_map_destroy(new_mat_map);
+		g_object_unref(new_mat_map);
 		return FALSE;
 	}
 
-	if(view->mat_map != NULL) mape_material_map_destroy(view->mat_map);
+	if(view->mat_map != NULL) g_object_unref(view->mat_map);
 	if(view->tex_map != NULL) mape_texture_map_destroy(view->tex_map);
 	view->mat_map = new_mat_map; view->tex_map = new_tex_map;
 
@@ -132,6 +145,8 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 			mape_file_icon_get(icon),
 			mape_material_get_name(mat)
 		);
+
+		mape_material_free(mat);
 	}
 
 	mape_icon_view_clear(view->view_tex);

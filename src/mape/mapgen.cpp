@@ -23,10 +23,15 @@
 #include <C4Material.h>
 #include <C4MapCreatorS2.h>
 
+#include <gdk/gdk.h>
+
+#include "mape/cpp-handles/material-handle.h"
 #include "mape/mapgen.h"
 
+extern "C" C4MaterialHandle* _mape_material_map_get_handle(MapeMaterialMap*);
+
 #define CPPTEXMAP(map) ((C4TextureMap*)map->handle)
-#define CPPMATMAP(map) ((C4MaterialMap*)map->handle)
+#define CPPMATMAP(map) (reinterpret_cast<C4MaterialMap*>(_mape_material_map_get_handle(map)))
 
 extern "C"
 {
@@ -46,8 +51,19 @@ static void mape_mapgen_read_color(guint8* dest,
 	}
 	else
 	{
+		/* TODO: matnum is actually texmap entry, so find matnum from
+		 * it. Actually we don't need to know the material
+		 * actually, just get color from texture + render... */
 		mat = mape_material_map_get_material(material_map, matnum - 1);
-		color = mape_material_get_color(mat);
+
+		/* TODO: Read color from texture, needs TexMap lookup */
+		color.red = 0xffff;
+		color.green = 0xffff;
+		color.blue = 0xffff;
+
+		/* TODO: Make this matmap-owned,
+		 * we can't realloc mat for each pixel! */
+		mape_material_free(mat);
 	
 		dest[matnum * 4 + 1] = color.red * 0xff / 0xffff;
 		dest[matnum * 4 + 2] = color.green * 0xff / 0xffff;

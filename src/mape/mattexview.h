@@ -22,6 +22,7 @@
 
 #include "mape/forward.h"
 #include "mape/group.h"
+#include "mape/material.h"
 
 struct MapeMatTexView_ {
 	GtkWidget* notebook;

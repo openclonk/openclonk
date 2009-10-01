@@ -15,46 +15,102 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-#ifndef INC_MAPE_MATERIAL_H
-#define INC_MAPE_MATERIAL_H
+#ifndef INC_MAPE_MATERIAL_MAP_H
+#define INC_MAPE_MATERIAL_MAP_H
 
-#include <gtk/gtk.h>
+#include <glib-object.h>
 
-#include "mape/forward.h"
 #include "mape/group.h"
 
-/* Simple C-based interface to C4MaterialMap */
+G_BEGIN_DECLS
 
-#ifdef MAPE_COMPILING_CPP
-extern "C" {
-#endif
+#define MAPE_TYPE_MATERIAL_MAP                 (mape_material_map_get_type())
+#define MAPE_MATERIAL_MAP(obj)                 (G_TYPE_CHECK_INSTANCE_CAST((obj), MAPE_TYPE_MATERIAL_MAP, MapeMaterialMap))
+#define MAPE_MATERIAL_MAP_CLASS(klass)         (G_TYPE_CHECK_CLASS_CAST((klass), MAPE_TYPE_MATERIAL_MAP, MapeMaterialMapClass))
+#define MAPE_IS_MATERIAL_MAP(obj)              (G_TYPE_CHECK_INSTANCE_TYPE((obj), MAPE_TYPE_MATERIAL_MAP))
+#define MAPE_IS_MATERIAL_MAP_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE((klass), MAPE_TYPE_MATERIAL_MAP))
+#define MAPE_MATERIAL_MAP_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS((obj), MAPE_TYPE_MATERIAL_MAP, MapeMaterialMapClass))
 
-typedef enum MapeMaterialError_ {
-	MAPE_MATERIAL_ERROR_FAILED
-} MapeMaterialError;
+#define MAPE_TYPE_MATERIAL                     (mape_material_get_type())
 
-typedef void MapeMaterial;
+typedef struct _MapeMaterial MapeMaterial;
 
-struct MapeMaterialMap_ {
-	void* handle;
+typedef struct _MapeMaterialMap MapeMaterialMap;
+typedef struct _MapeMaterialMapClass MapeMaterialMapClass;
+
+/**
+ * MapeMaterialMapError:
+ * @MAPE_MATERIAL_MAP_ERROR_LOAD: An error occured when loading a material map.
+ *
+ * These errors are from the MAPE_MATERIAL_MAP_ERROR error domain. They can
+ * occur when operating on material maps.
+ */
+typedef enum _MapeMaterialMapError {
+  MAPE_MATERIAL_MAP_ERROR_LOAD
+} MapeMaterialMapError;
+
+/**
+ * MapeMaterialMapClass:
+ *
+ * This structure does not contain any public fields.
+ */
+struct _MapeMaterialMapClass {
+  /*< private >*/
+  GObjectClass parent_class;
 };
 
-MapeMaterialMap* mape_material_map_new(MapeGroup* base,
-                                       MapeGroup* overload_from,
-                                       GError** error);
-void mape_material_map_destroy(MapeMaterialMap* map);
+/**
+ * MapeMaterialMap:
+ *
+ * #MapeMaterialMap is an opaque data type. You should only access it via the
+ * public API functions.
+ */
+struct _MapeMaterialMap {
+  /*< private >*/
+  GObject parent;
+};
 
-unsigned int mape_material_map_get_material_count(MapeMaterialMap* map);
-MapeMaterial* mape_material_map_get_material(MapeMaterialMap* map,
-                                             unsigned int index);
-MapeMaterial* mape_material_map_get_material_by_string(MapeMaterialMap* map,
-                                                       const char* mat_name);
+GType
+mape_material_get_type(void) G_GNUC_CONST;
 
-const char* mape_material_get_name(MapeMaterial* material);
-GdkColor mape_material_get_color(MapeMaterial* material);
+GType
+mape_material_map_get_type(void) G_GNUC_CONST;
 
-#ifdef MAPE_COMPILING_CPP
-} /* extern "C" */
+MapeMaterialMap*
+mape_material_map_new(void);
+
+gboolean
+mape_material_map_load(MapeMaterialMap* map,
+                       MapeGroup* from,
+                       GError** error);
+
+guint
+mape_material_map_get_material_count(MapeMaterialMap* map);
+
+MapeMaterial*
+mape_material_map_get_material(MapeMaterialMap* map,
+                               guint index);
+
+#if 0
+MapeMaterial*
+mape_material_map_get_material_by_name(MapeMaterialMap* map,
+                                       const gchar* name);
 #endif
 
-#endif /* INC_MAPE_MATERIAL_H */
+MapeMaterial*
+mape_material_copy(const MapeMaterial* material);
+
+void
+mape_material_free(MapeMaterial* material);
+
+const gchar*
+mape_material_get_name(const MapeMaterial* material);
+
+const gchar*
+mape_material_get_texture_overlay(const MapeMaterial* material);
+
+G_END_DECLS
+
+#endif /* INC_MAPE_MATERIAL_MAP_H */
+
+/* vim:set et sw=2 ts=2: */
