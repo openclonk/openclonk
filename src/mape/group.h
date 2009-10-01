@@ -29,8 +29,6 @@ G_BEGIN_DECLS
 #define MAPE_IS_GROUP_CLASS(klass)      (G_TYPE_CHECK_CLASS_TYPE((klass), MAPE_TYPE_GROUP))
 #define MAPE_GROUP_GET_CLASS(obj)       (G_TYPE_INSTANCE_GET_CLASS((obj), MAPE_TYPE_GROUP, MapeGroupClass))
 
-#define MAPE_TYPE_GROUP_STATUS          (mape_group_status_get_type())
-
 typedef struct _MapeGroup MapeGroup;
 typedef struct _MapeGroupClass MapeGroupClass;
 
@@ -125,6 +123,6 @@ mape_group_is_child_folder(MapeGroup* group,
 
 G_END_DECLS
 
-#endif /* MAPE_GROUP_H */
+#endif /* INC_MAPE_GROUP_H */
 
 /* vim:set et sw=2 ts=2: */
