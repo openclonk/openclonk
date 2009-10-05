@@ -1,0 +1,4 @@
+TxtControl=Control
+TxtLorryisfull=Lorry is full!
+TxtLoadUp=Load up
+Name=Lorry

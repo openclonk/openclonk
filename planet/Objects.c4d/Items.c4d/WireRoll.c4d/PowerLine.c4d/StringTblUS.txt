@@ -1,0 +1,2 @@
+TxtLinebroke=Line broke
+Name=Power line

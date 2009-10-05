@@ -17,6 +17,8 @@ public func ControlUse(object pByClonk, int iX, int iY)
 
 public func IsTool() { return 1; }
 
+public func IsToolProduct() { return 1; }
+
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);

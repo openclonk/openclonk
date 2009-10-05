@@ -1,0 +1,2 @@
+TxtLinebroke=Leitung gerissen
+Name=Energieleitung

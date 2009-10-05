@@ -45,6 +45,8 @@ protected func CreateConstructionSite(idType)
 
 public func IsTool() { return 1; }
 
+public func IsToolProduct() { return 1; }
+
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);

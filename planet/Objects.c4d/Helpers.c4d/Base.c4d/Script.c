@@ -345,7 +345,7 @@ func OpenSellMenu(object pClonk, int iSelection, bool fNoListUpdate)
   var iIndex;
   for(aArray in aSellList) // aArray contains [idDef, iCount, pObj]
   {
-    pClonk->AddMenuItem(Format("$TxtSell$", GetName(aArray[2])), "SellDummy", aArray[0], aArray[1], pClonk, nil, 128+4, aArray[2], GetSellValue(aArray[2]));
+    pClonk->AddMenuItem(Format("$TxtSell$", aArray[2]->GetName()), "SellDummy", aArray[0], aArray[1], pClonk, nil, 128+4, aArray[2], GetSellValue(aArray[2]));
     iIndex++;
   }
   if(iSelection == iIndex) iSelection--;
