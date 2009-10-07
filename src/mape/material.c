@@ -16,14 +16,14 @@
  */
 
 /**
- * SECTION:mape-material-mape
+ * SECTION:mape-material-map
  * @title: MapeMaterialMap
  * @short_description: C4MaterialMap interface
  * @include: mape/material.h
  * @stability: Unstable
  *
  * #MapeMaterialMap is a simple GObject-based interface to C4MaterialMap.
- * It supports loading a material map from a Material.c4g material_map file. It can
+ * It supports loading a material map from a Material.c4g group file. It can
  * load multiple files, with newer entries overloading previous ones in case
  * of name clashes to support material overloading.
  **/
@@ -35,17 +35,17 @@
 C4GroupHandle*
 _mape_group_get_handle(MapeGroup* group);
 
-C4MaterialHandle*
+C4MaterialMapHandle*
 _mape_material_map_get_handle(MapeMaterialMap* map);
 
-struct _MapeMaterial {
+/*struct _MapeMaterial {
   MapeMaterialMap* map;
   unsigned int mat_index;
-};
+};*/
 
 typedef struct _MapeMaterialMapPrivate MapeMaterialMapPrivate;
 struct _MapeMaterialMapPrivate {
-  C4MaterialHandle* handle;
+  C4MaterialMapHandle* handle;
 };
 
 enum {
@@ -69,14 +69,22 @@ static MapeMaterial*
 mape_material_new(MapeMaterialMap* map,
                   guint mat_index)
 {
-  MapeMaterial* material;
+  MapeMaterialMapPrivate* priv;
+  priv = MAPE_MATERIAL_MAP_PRIVATE(map);
 
-  material = g_slice_new(MapeMaterial);
-  material->map = map;
-  material->mat_index = mat_index;
+  return (MapeMaterial*)c4_material_map_handle_get_material(priv->handle,
+                                                            mat_index);
+}
 
-  g_object_ref(map);
-  return material;
+static MapeMaterial*
+mape_material_copy(const MapeMaterial* material)
+{
+  return (MapeMaterial*)material;
+}
+
+static void
+mape_material_free(MapeMaterial* material)
+{
 }
 
 /*
@@ -89,7 +97,7 @@ mape_material_map_init(MapeMaterialMap* material_map)
   MapeMaterialMapPrivate* priv;
   priv = MAPE_MATERIAL_MAP_PRIVATE(material_map);
 
-  priv->handle = c4_material_handle_new();
+  priv->handle = c4_material_map_handle_new();
 }
 
 static void
@@ -101,7 +109,7 @@ mape_material_map_finalize(GObject* object)
   material_map = MAPE_MATERIAL_MAP(object);
   priv = MAPE_MATERIAL_MAP_PRIVATE(material_map);
 
-  c4_material_handle_free(priv->handle);
+  c4_material_map_handle_free(priv->handle);
   G_OBJECT_CLASS(mape_material_map_parent_class)->finalize(object);
 }
 
@@ -141,7 +149,7 @@ mape_material_map_get_property(GObject* object,
   switch(prop_id)
   {
   case PROP_N_MATERIALS:
-    g_value_set_uint(value, c4_material_handle_get_num(priv->handle));
+    g_value_set_uint(value, c4_material_map_handle_get_num(priv->handle));
     break;
   default:
     G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -249,7 +257,7 @@ mape_material_map_load(MapeMaterialMap* map,
 
   priv = MAPE_MATERIAL_MAP_PRIVATE(map);
 
-  new_count = c4_material_handle_load(
+  new_count = c4_material_map_handle_load(
     priv->handle, _mape_group_get_handle(from));
 
   if(new_count > 0)
@@ -270,20 +278,21 @@ guint
 mape_material_map_get_material_count(MapeMaterialMap* map)
 {
   g_return_val_if_fail(MAPE_IS_MATERIAL_MAP(map), 0);
-  return c4_material_handle_get_num(MAPE_MATERIAL_MAP_PRIVATE(map)->handle);
+  return c4_material_map_handle_get_num(
+    MAPE_MATERIAL_MAP_PRIVATE(map)->handle);
 }
 
 /**
  * mape_material_map_get_material:
- * @material: A #MapeMaterialMap.
+ * @map: A #MapeMaterialMap.
  * @index: A material index.
  *
  * Returns the entry with the given index in the map.
  *
- * Returns: A new #MapeMaterial to be freed with mape_material_free() when
- * no longer needed.
+ * Returns: A #MapeMaterial representing the indexed material. It is owned
+ * by #map and must not be used anymore after the map is finalized.
  **/
-MapeMaterial*
+const MapeMaterial*
 mape_material_map_get_material(MapeMaterialMap* map,
                                guint index)
 {
@@ -292,7 +301,8 @@ mape_material_map_get_material(MapeMaterialMap* map,
   g_return_val_if_fail(MAPE_IS_MATERIAL_MAP(map), NULL);
 
   priv = MAPE_MATERIAL_MAP_PRIVATE(map);
-  g_return_val_if_fail(index < c4_material_handle_get_num(priv->handle), NULL);
+  g_return_val_if_fail(index < c4_material_map_handle_get_num(priv->handle),
+                       NULL);
 
   return mape_material_new(map, index);
 }
@@ -334,37 +344,6 @@ mape_material_map_get_material_by_name(MapeMaterialMap* map,
 #endif
 
 /**
- * mape_material_copy:
- * @material: A #MapeMaterial.
- *
- * Creates a copy of @material.
- *
- * Returns: A new #MapeMaterial to be freed with mape_material_free() when
- * no longer needed.
- */
-MapeMaterial*
-mape_material_copy(const MapeMaterial* material)
-{
-  g_return_val_if_fail(material != NULL, NULL);
-  return mape_material_new(material->map, material->mat_index);
-}
-
-/**
- * mape_material_free:
- * @material: A #MapeMaterial.
- *
- * Releases all ressources taken up by @material.
- */
-void
-mape_material_free(MapeMaterial* material)
-{
-  g_return_if_fail(material != NULL);
-
-  g_object_unref(material->map);
-  g_slice_free(MapeMaterial, material);
-}
-
-/**
  * mape_material_get_name:
  * @material: A #MapeMaterial.
  *
@@ -376,12 +355,8 @@ mape_material_free(MapeMaterial* material)
 const gchar*
 mape_material_get_name(const MapeMaterial* material)
 {
-  MapeMaterialMapPrivate* priv;
-
   g_return_val_if_fail(material != NULL, NULL);
-  priv = MAPE_MATERIAL_MAP_PRIVATE(material->map);
-
-  return c4_material_handle_get_name(priv->handle, material->mat_index);
+  return c4_material_handle_get_name((C4MaterialHandle*)material);
 }
 
 /**
@@ -397,17 +372,12 @@ mape_material_get_name(const MapeMaterial* material)
 const gchar*
 mape_material_get_texture_overlay(const MapeMaterial* material)
 {
-  MapeMaterialMapPrivate* priv;
-
   g_return_val_if_fail(material != NULL, NULL);
-  priv = MAPE_MATERIAL_MAP_PRIVATE(material->map);
-
-  return c4_material_handle_get_texture_overlay(
-    priv->handle, material->mat_index);
+  return c4_material_handle_get_texture_overlay((C4MaterialHandle*)material);
 }
 
 /* This function is for internal use only */
-C4MaterialHandle*
+C4MaterialMapHandle*
 _mape_material_map_get_handle(MapeMaterialMap* map)
 {
   g_return_val_if_fail(MAPE_IS_MATERIAL_MAP(map), NULL);

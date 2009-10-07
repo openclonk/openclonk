@@ -40,7 +40,7 @@ static void mape_mapgen_read_color(guint8* dest,
                                    MapeMaterialMap* material_map,
                                    unsigned int matnum)
 {
-	MapeMaterial* mat;
+	const MapeMaterial* mat;
 	GdkColor color;
 	
 	if(matnum == 0)
@@ -61,10 +61,6 @@ static void mape_mapgen_read_color(guint8* dest,
 		color.green = 0xffff;
 		color.blue = 0xffff;
 
-		/* TODO: Make this matmap-owned,
-		 * we can't realloc mat for each pixel! */
-		mape_material_free(mat);
-	
 		dest[matnum * 4 + 1] = color.red * 0xff / 0xffff;
 		dest[matnum * 4 + 2] = color.green * 0xff / 0xffff;
 		dest[matnum * 4 + 3] = color.blue * 0xff / 0xffff;

@@ -87,7 +87,7 @@ mape_material_map_load(MapeMaterialMap* map,
 guint
 mape_material_map_get_material_count(MapeMaterialMap* map);
 
-MapeMaterial*
+const MapeMaterial*
 mape_material_map_get_material(MapeMaterialMap* map,
                                guint index);
 
@@ -96,12 +96,6 @@ MapeMaterial*
 mape_material_map_get_material_by_name(MapeMaterialMap* map,
                                        const gchar* name);
 #endif
-
-MapeMaterial*
-mape_material_copy(const MapeMaterial* material);
-
-void
-mape_material_free(MapeMaterial* material);
 
 const gchar*
 mape_material_get_name(const MapeMaterial* material);

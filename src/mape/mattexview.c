@@ -100,7 +100,7 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 	MapeMaterialMap* new_mat_map;
 	MapeTextureMap* new_tex_map;
 	MapeFileIcon* icon;
-	MapeMaterial* mat;
+	const MapeMaterial* mat;
 	unsigned int i;
 
 	new_mat_map = mape_material_map_new();
@@ -145,8 +145,6 @@ gboolean mape_mat_tex_view_reload(MapeMatTexView* view,
 			mape_file_icon_get(icon),
 			mape_material_get_name(mat)
 		);
-
-		mape_material_free(mat);
 	}
 
 	mape_icon_view_clear(view->view_tex);
