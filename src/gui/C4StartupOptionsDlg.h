@@ -172,7 +172,7 @@ class C4StartupOptionsDlg : public C4StartupDlg
 				int32_t iCtrlSet;
 
 			protected:
-				bool KeyDown(C4KeyCodeEx key);
+				bool KeyDown(const C4KeyCodeEx &key);
 			public:
 				KeySelDialog(int32_t iKeyID, int32_t iCtrlSet, bool fGamepad);
 				virtual ~KeySelDialog();

@@ -379,6 +379,14 @@ bool WildcardListMatch(const char *szWildcardList, const char *szString)
 	return false;
   }
 
+bool IsWildcardString(const char *szString)
+	{
+	// safety
+	if(!szString) return false;	
+	// known wildcard characters: *?
+	return (SCharCount('?', szString)>0) || (SCharCount('*', szString)>0);
+	}
+
 bool WildcardMatch(const char *szWildcard, const char *szString)
   {
 	// safety

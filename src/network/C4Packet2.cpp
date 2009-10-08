@@ -119,7 +119,7 @@ const C4PktHandlingData PktHandlingData[] =
 	{ CID_JoinPlr,	  	PC_Control, "Join Player",								false,	true,		0,	                      PKT_UNPACK(C4ControlJoinPlayer)	},
 	{ CID_RemovePlr,		PC_Control, "Remove Player",							false,	true,		0,	                      PKT_UNPACK(C4ControlRemovePlr)	},
 	{ CID_PlrSelect,		PC_Control, "Player Select",							false,	true,		0,	                      PKT_UNPACK(C4ControlPlayerSelect)},
-  { CID_PlrControl,		PC_Control, "Player Control",							false,	true,		0,	                      PKT_UNPACK(C4ControlPlayerControl)},
+	{ CID_PlrControl,		PC_Control, "Player Control",							false,	true,		0,	                      PKT_UNPACK(C4ControlPlayerControl)},
 	{ CID_PlrCommand,		PC_Control, "Player Command",							false,	true,		0,	                      PKT_UNPACK(C4ControlPlayerCommand)},
 	{ CID_Message,	    PC_Control, "Message",	      						false,	true,		0,	                      PKT_UNPACK(C4ControlMessage)	  },
 	{ CID_EMMoveObj,	  PC_Control, "EM Move Obj",	   						false,	true,		0,	                      PKT_UNPACK(C4ControlEMMoveObject)},

@@ -275,7 +275,15 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		Action->SetProperty(Strings.P[P_Directions], C4VInt(1));
 		Action->SetProperty(Strings.P[P_Step], C4VInt(1));
 		Action->SetProperty(Strings.P[P_Procedure], C4VInt(DFA_NONE));
-		GlobalNamed.GetItem("Action")->SetPropList(Action);
+		C4Value *pActionValDef = GlobalNamed.GetItem("Action");
+		if (!pActionValDef)
+			{
+			Log("WARNING: static Action not defined. Wrong System.c4g?");
+			}
+		else
+			{
+			pActionValDef->SetPropList(Action);
+			}
 
 		rDefs->CallEveryDefinition();
 		// display state
