@@ -22,6 +22,8 @@
 #define INC_C4KeyboardInput
 
 #include <cctype>
+#include <vector>
+#include <map>
 
 // key context classifications
 enum C4KeyScope
