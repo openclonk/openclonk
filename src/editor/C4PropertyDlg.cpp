@@ -127,7 +127,7 @@ bool C4PropertyDlg::Open()
 	EnableWindow( GetDlgItem(hDialog,IDC_BUTTONRELOADDEF), Console.Editing );
 	// Show window
 	RestoreWindowPosition(hDialog, "Property", Config.GetSubkeyPath("Console"));
-	SetWindowPos(hDialog,HWND_TOPMOST,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
+	SetWindowPos(hDialog,Console.hWindow,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
 	ShowWindow(hDialog,SW_SHOWNOACTIVATE);
 #else // _WIN32
 #ifdef WITH_DEVELOPER_MODE

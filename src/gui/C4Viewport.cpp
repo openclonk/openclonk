@@ -171,6 +171,29 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			cvp->ScrollBarsByViewPosition();
 			return 0;
     //----------------------------------------------------------------------------------------------------------------------------------
+		case WM_ACTIVATE:
+			// Keep editing dialogs on top of the current viewport, but don't make them
+			// float on other windows (i.e., no HWND_TOPMOST).
+			// Also, don't use SetParent, since that activates the window, which in turn
+			// posts a new WM_ACTIVATE to us, and so on, ultimately leading to a hang.
+			if (LOWORD(wParam) == WA_INACTIVE)
+			{
+				if (Console.PropertyDlg.hDialog)
+					SetWindowLong(Console.PropertyDlg.hDialog, GWL_HWNDPARENT, reinterpret_cast<LONG>(Console.hWindow));
+				if (Console.ToolsDlg.hDialog)
+					SetWindowLong(Console.PropertyDlg.hDialog, GWL_HWNDPARENT, reinterpret_cast<LONG>(Console.hWindow));
+			} else {
+				// FALLTHROUGH
+		case WM_MOUSEACTIVATE:
+				// WM_MOUSEACTIVATE is emitted when the user hovers over a window and pushes a mouse button.
+				// Setting the window owner here avoids z-order flickering.
+				if (Console.PropertyDlg.hDialog)
+					SetWindowLong(Console.PropertyDlg.hDialog, GWL_HWNDPARENT, reinterpret_cast<LONG>(hwnd));
+				if (Console.ToolsDlg.hDialog)
+					SetWindowLong(Console.ToolsDlg.hDialog, GWL_HWNDPARENT, reinterpret_cast<LONG>(hwnd));
+			}
+			break;
+    //----------------------------------------------------------------------------------------------------------------------------------
     }
 
 	// Viewport mouse control

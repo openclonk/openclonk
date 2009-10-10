@@ -285,7 +285,7 @@ bool C4ToolsDlg::Open()
 #endif
 	// Show window
 	RestoreWindowPosition(hDialog, "Property", Config.GetSubkeyPath("Console"));
-	SetWindowPos(hDialog,HWND_TOPMOST,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
+	SetWindowPos(hDialog,Console.hWindow,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
 	ShowWindow(hDialog,SW_SHOWNOACTIVATE);
 #else
 #ifdef WITH_DEVELOPER_MODE
