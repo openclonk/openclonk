@@ -128,7 +128,7 @@ bool C4PropertyDlg::Open()
 	// Show window
 	RestoreWindowPosition(hDialog, "Property", Config.GetSubkeyPath("Console"));
 	SetWindowPos(hDialog,HWND_TOPMOST,0,0,0,0,SWP_NOSIZE | SWP_NOMOVE);
-	ShowWindow(hDialog,SW_SHOWNORMAL | SW_SHOWNA);
+	ShowWindow(hDialog,SW_SHOWNOACTIVATE);
 #else // _WIN32
 #ifdef WITH_DEVELOPER_MODE
 	if(vbox == NULL)
