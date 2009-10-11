@@ -875,6 +875,17 @@ bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
   return true;
   }
 
+bool C4Object::BuyEnergy()
+  {
+	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return false;
+	if (!GetPhysical()->Energy) return false;
+  if (pPlr->Eliminated) return false;
+  if (pPlr->Wealth<Game.C4S.Game.Realism.BaseRegenerateEnergyPrice) return false;
+  pPlr->DoWealth(-Game.C4S.Game.Realism.BaseRegenerateEnergyPrice);
+  DoEnergy(+100,false,C4FxCall_EngBaseRefresh,Owner);
+  return true;
+  }
+
 bool C4Object::ExecLife()
   {
 
@@ -1540,6 +1551,7 @@ void C4Object::Fling(FIXED txdir, FIXED tydir, bool fAddSpeed)
 
 bool C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
   {
+
   // Try entrance activation
   if (OCF & OCF_Entrance)
     if (!! Call(PSF_ActivateEntrance,&C4AulParSet(C4VObj(by_obj))))

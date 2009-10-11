@@ -378,9 +378,9 @@ bool RestoreWindowPosition(HWND hwnd,
 	if (!GetRegistryString(szSubKey,szWindowName,regstr,100))
 		return false;
 	if (SEqual(regstr,"Maximized"))
-		return ShowWindow(hwnd,SW_MAXIMIZE | SW_NORMAL);
+		return !!ShowWindow(hwnd,SW_MAXIMIZE | SW_NORMAL);
 	if (SEqual(regstr,"Minimized"))
-		return ShowWindow(hwnd,SW_MINIMIZE | SW_NORMAL);
+		return !!ShowWindow(hwnd,SW_MINIMIZE | SW_NORMAL);
 	SCopySegment(regstr,0,buffer2,',',4); sscanf(buffer2,"%i",&x);
 	SCopySegment(regstr,1,buffer2,',',4); sscanf(buffer2,"%i",&y);
 	if (SCopySegment(regstr,2,buffer2,',',4)) sscanf(buffer2,"%i",&wdt); else fSetSize=false;
@@ -395,9 +395,9 @@ bool RestoreWindowPosition(HWND hwnd,
 		return false;
 	// Hide window
 	if (fHidden)
-		return ShowWindow(hwnd, SW_HIDE);
+		return !!ShowWindow(hwnd, SW_HIDE);
 	// Show window
-	return ShowWindow(hwnd, SW_NORMAL);
+	return !!ShowWindow(hwnd, SW_NORMAL);
 	}
 
 //------------------------------ Registry compiler ------------------------------------------

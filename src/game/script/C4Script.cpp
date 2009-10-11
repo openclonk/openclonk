@@ -763,6 +763,7 @@ static bool FnSetActionData(C4AulObjectContext *cthr, long iData)
 
 static C4Void FnSetComDir(C4AulObjectContext *cthr, long ncomdir)
 
+static C4Void FnSetComDir(C4AulObjectContext *cthr, long ncomdir)
 {
 	cthr->Obj->Action.ComDir=ncomdir;
 	return C4VNull;

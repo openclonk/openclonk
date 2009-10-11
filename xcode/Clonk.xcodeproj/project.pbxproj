@@ -1736,6 +1736,7 @@
 				5862E1281032E57A002CAE9E /* C4WinMain.cpp in Sources */,
 				5862E1291032E57A002CAE9E /* C4Config.cpp in Sources */,
 				5862E12A1032E57A002CAE9E /* C4ConfigShareware.cpp in Sources */,
+				D0AD7B7F0FCD7C1C00EAC39A /* C4PlayerControl.cpp in Sources */,
 				5862E12B1032E57A002CAE9E /* C4SecurityCertificates.cpp in Sources */,
 				D0AD7B7F0FCD7C1C00EAC39A /* C4PlayerControl.cpp in Sources */,
 				5862E12C1032E57A002CAE9E /* C4Control.cpp in Sources */,
