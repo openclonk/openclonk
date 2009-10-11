@@ -92,7 +92,7 @@
 	GUIName=Use
 	GUIDesc=Use selected or controlled item
 	Hold=1
-	RepeatDelay=1
+	RepeatDelay=5
 	
 	[ControlDef]
 	Identifier=Grab
@@ -310,13 +310,13 @@
 	# MenuUp, Up, Jump		x			W
 	# MenuDown, Down		x			S
 	#
-	# NextItem				x			Scrollwheel-Up		(now: Down)
-	# PreviousItem			x			Scrollwheel-Down	(now: Up)
+	# NextItem				x			Scrollwheel-Up		(now: Up)
+	# PreviousItem			x			Scrollwheel-Down	(now: Unassigned)
 	# Hotkey0-9				x			(0-9)
 	#
 	# Use, Throw			x			Left mouse button		(now: Left)
-	# Throw					x			Shift+Left mouse button (now: X+Left)
-	# Drop					x			S+Left mouse button		(now: S+Left)
+	# Throw					x			Shift+Left mouse button (now: Right)
+	# Drop					x			S+Left mouse button		(now: Down)
 	#
 	# PushEnter, GrabNext, Ungrab,
 	# Grab, Exit, Enter		x			Space
@@ -511,12 +511,12 @@
 		Key=End
 		Control=PlayerMenu
 		
-		[Assignment]
-		Key=Up
-		Control=PreviousItem
+		#[Assignment]
+		#Key=Up
+		#Control=PreviousItem
 		
 		[Assignment]
-		Key=Down
+		Key=Up
 		Control=NextItem
 		
 		[Assignment]
@@ -530,9 +530,9 @@
 		Control=Throw
 		
 		[Assignment]
-		Key=X,Left
+		Key=Right
 		Control=Throw
 		
 		[Assignment]
-		Key=S,Left
+		Key=Down
 		Control=Drop

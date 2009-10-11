@@ -1,4 +1,3 @@
-#strict 2
 
 // Functions to handle player controls (i.e., input keys)
 
@@ -8,7 +7,7 @@
 // Return whether handled
 global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int strength, bool repeat, bool release)
 {
-	Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, release);
+	//Log("%d, %s, %i, %d, %d, %d, %v, %v", plr, GetPlayerControlName(ctrl), spec_id, x,y,strength, repeat, release);
 	// Control handled by definition? Forward
 	if (spec_id) return spec_id->PlayerControl(plr, ctrl, x, y, strength, repeat, release);
 
@@ -113,44 +112,6 @@ global func Control2Effect(int ctrl, int x, int y, int strength, bool repeat, bo
 	return false;
 }
 
-// Control redirected to script
-global func Control2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
-{
-	// for the use command
-	if (ctrl == CON_Use)
-	{
-		var handled = false;
-		
-		if(!release && !repeat)
-			handled = obj->Call(Format("~%sUse",control),this,x,y);
-		else if(release)
-			handled = obj->Call(Format("~%sUseStop",control),this,x,y);
-		else
-			handled = obj->Call(Format("~%sUseHolding",control),this,x,y);
-			
-		return handled;
-	}
-	// overloads of movement commandos
-	else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up)
-	{
-		if (release)
-		{
-			// if any movement key has been released, ControlStop is called
-			if (obj->Call(Format("~%sStop",control),this))  return true;
-		}
-		else
-		{
-			// Control*
-			if (ctrl == CON_Left)  if (obj->Call(Format("~%sLeft",control),this))  return true;
-			if (ctrl == CON_Right) if (obj->Call(Format("~%sRight",control),this)) return true;
-			if (ctrl == CON_Up)    if (obj->Call(Format("~%sUp",control),this))    return true;
-			if (ctrl == CON_Down)  if (obj->Call(Format("~%sDown",control),this))  return true;
-		}
-	}
-	
-	return false;
-}
-
 // ObjectControl
 // Called from PlayerControl when a control is issued to the cursor
 // Return whether handled
@@ -161,198 +122,38 @@ global func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// Any control resets a previously given command
 	SetCommand("None");
-
-	// hotkeys (inventory, vehicle and structure control)
-	var hot = 0;
-	if (ctrl == CON_Hotkey0) hot = 10;
-	if (ctrl == CON_Hotkey1) hot = 1;
-	if (ctrl == CON_Hotkey2) hot = 2;
-	if (ctrl == CON_Hotkey3) hot = 3;
-	if (ctrl == CON_Hotkey4) hot = 4;
-	if (ctrl == CON_Hotkey5) hot = 5;
-	if (ctrl == CON_Hotkey6) hot = 6;
-	if (ctrl == CON_Hotkey7) hot = 7;
-	if (ctrl == CON_Hotkey8) hot = 8;
-	if (ctrl == CON_Hotkey9) hot = 9;
-	
-	if (hot > 0) return this->~ControlHotkey(hot-1);
-	
-	var proc = GetProcedure();
-	
-	// building, vehicle, contents control
-	var house = Contained();
-	var vehicle = GetActionTarget();
-	var contents = nil;
-	// TODO
-	
-	if (house)
-	{
-		if (Control2Script(ctrl, x, y, strength, repeat, release, "Contained", house))
-			return true;
-	}
-	else if (vehicle)
-	{
-		// control to grabbed vehicle or riding etc.
-		if (proc == "PUSH" || proc == "ATTACH")
-			if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
-				return true;
-	}
-	else if (contents)
-	{
-		// out of convencience we call Control2Script, even though it can handle
-		// left, right, up and down, too. We don't want that, so this is why we
-		// check that ctrl is Use.
-		if (ctrl == CON_Use)
-			if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
-				return true;
-	}
-	// clonk control
-	else
-	{
-		// for standard controls
-		if(Control2Script(ctrl, x, y, strength, repeat, release, "Control", this)) return true;
-		// and a few more...
-		if(ctrl == CON_Throw) if(this->~ControlThrow(this,x,y)) return true;
-		if(ctrl == CON_Jump)  if(this->~ControlJump(this)) return true;
-	}
-	
-	// everything down from here:
-	// standard controls that are called if not overloaded via script
 	
 	// Movement controls
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
 		return ObjectControlMovement(plr, ctrl, strength, release);
 	
-	// Push controls
-	if (ctrl == CON_Grab || ctrl == CON_Ungrab || ctrl == CON_PushEnter || ctrl == CON_GrabPrevious || ctrl == CON_GrabNext)
-		return ObjectControlPush(plr, ctrl);
-	
-	// Entrance controls
-	if (ctrl == CON_Enter || CON_Exit)
-		return ObjectControlEntrance(plr,ctrl);
-	
-	// Inventory control
-	if (ctrl == CON_NextItem)
-	{
-		ShiftContents(false);
-		return true;
-	}
-	if (ctrl == CON_PreviousItem)
-	{
-		ShiftContents(true);
-		return true;
-	}
-
-	// only if not in house, not grabbing a vehicle and an item selected
-	if(!house && !vehicle && contents)
-	{
-		// throw
-		if (ctrl == CON_Throw)
-		{
-		    if (proc == "SCALE" || proc == "HANGLE")
-		      return PlayerObjectCommand(plr, false, "Drop");
-		    else
-		      return PlayerObjectCommand(plr, false, "Throw");
-		}
-		// drop
-		if (ctrl == CON_Drop)
-		{
-			return PlayerObjectCommand(plr, false, "Drop");
-		}
-	}
-	
 	// Unhandled control
 	return false;
 }
 
-// ObjectControlEntrance
-// Handles enter and exit
-global func ObjectControlEntrance(int plr, int ctrl)
+// Find an object with an entrance in front of this object whose entrance is at
+// the right position
+global func GetEntranceObject()
 {
-	var proc = GetProcedure();
+	if (!this) return nil;
 
-	// enter
-	if (ctrl == CON_Enter)
-	{
-		// enter only if... one can
-		if (proc != "WALK" && proc != "SWIM" && proc != "SCALE" &&
-			proc != "HANGLE" && proc != "FLOAT" && proc != "FLIGHT") return false;
+	// object with an entrance on target position
+	var obj = FindObject(Find_OCF(OCF_Entrance), Find_AtPoint(0,0), Find_Exclude(this));
+	if (!obj) return nil;
 
-		// a building with an entrance at right position is there?
-		var obj = GetEntranceObject();
-		if (!obj) return false;
+	var x = obj->GetDefCoreVal("Entrance","DefCore",0) + obj->GetX();
+	var y = obj->GetDefCoreVal("Entrance","DefCore",1) + obj->GetY();
+	var wdt = obj->GetDefCoreVal("Entrance","DefCore",2);
+	var hgt = obj->GetDefCoreVal("Entrance","DefCore",3);
 		
-		PlayerObjectCommand(plr, false, "Enter", obj);
-		return true;
-	}
+	// entrance is on the vehicle?
+	if (!Inside(GetX(), x, x+wdt)) return nil;
+	if (!Inside(GetY(), y, y+hgt)) return nil;
 	
-	// exit
-	if (ctrl == CON_Exit)
-	{
-		if (!Contained()) return false;
-		
-		PlayerObjectCommand(plr, false, "Exit");
-		return true;
-	}
-	
-	return false;
+	return obj;
 }
 
-// ObjectControlPush
-// Handles push controls
-global func ObjectControlPush(int plr, int ctrl)
-{
-	if (!this) return false;
-	
-	var proc = GetProcedure();
-	
-	// grabbing
-	if (ctrl == CON_Grab)
-	{
-		// grab only if he walks
-		if (proc != "WALK") return false;
 
-		// only if there is someting to grab
-		var obj = FindObject(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this));
-		if (!obj) return false;
-
-		// grab
-		PlayerObjectCommand(plr, false, "Grab", obj);
-		return true;
-	}
-	
-	// grab next/previous
-	if (ctrl == CON_GrabNext)
-		return ShiftVehicle(plr, false);
-	if (ctrl == CON_GrabPrevious)
-		return ShiftVehicle(plr, true);
-	
-	// ungrabbing
-	if (ctrl == CON_Ungrab)
-	{
-		// ungrab only if he pushes
-		if (proc != "PUSH") return false;
-
-		PlayerObjectCommand(plr, false, "Ungrab");
-		return true;
-	}
-	
-	// push into building
-	if (ctrl == CON_PushEnter)
-	{
-		if (proc != "PUSH") return false;
-		
-		// a building with an entrance at right position is there?
-		var obj = GetActionTarget()->GetEntranceObject();
-		if (!obj) return false;
-
-		PlayerObjectCommand(plr, false, "PushTo", obj);
-		return true;
-	}
-	
-}
-
-// ObjectControlMovement
 // Called when CON_Left/Right/Up/Down controls are issued/released
 // Return whether handled
 global func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
@@ -389,7 +190,6 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 	return ObjectControlUpdateComdir(plr);
 }
 
-// ObjectControlUpdateComdir
 // Updates ComDir of object based on current Con_*-directional controls
 // Return whether actual, effective direction of movement changed
 global func ObjectControlUpdateComdir(int plr)
@@ -439,7 +239,6 @@ global func ObjectControlUpdateComdir(int plr)
 	}
 }
 
-// ShiftCursor
 // selects the next/previous crew member (that is not disabled)
 global func ShiftCursor(int plr, bool back)
 {
@@ -481,72 +280,7 @@ global func ShiftCursor(int plr, bool back)
 	return SetCursor(plr, GetCrew(plr,index));
 }
 
-// ShiftVehicle
-// grabs the next/previous vehicle (if there is any)
-global func ShiftVehicle(int plr, bool back)
-{
-	if (!this) return false;
-	
-	if (GetProcedure() != "PUSH") return false;
-
-	var lorry = GetActionTarget();
-	// get all grabbable objects
-	var objs = FindObjects(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this));
-		
-	// nothing to switch to (there is no other grabbable object)
-	if (GetLength(objs) <= 1) return false;
-		
-	// find out at what index of the array objs the vehicle is located
-	var index = 0;
-	for(var obj in objs)
-	{
-		if (obj == lorry) break;
-		index++;
-	}
-		
-	// get the next/previous vehicle
-	if (back)
-	{
-		--index;
-		if (index < 0) index = GetLength(objs)-1;
-	}
-	else
-	{
-		++index;
-		if (index >= GetLength(objs)) index = 0;
-	}
-	
-	PlayerObjectCommand(plr, false, "Grab", objs[index]);
-	
-	return true;
-} 
-
-// GetEntranceObject
-// Find an object with an entrance in front of this object whose entrance is at
-// the right position
-global func GetEntranceObject()
-{
-	if (!this) return nil;
-
-	// object with an entrance on target position
-	var obj = FindObject(Find_OCF(OCF_Entrance), Find_AtPoint(0,0), Find_Exclude(this));
-	if (!obj) return nil;
-
-	var x = obj->GetDefCoreVal("Entrance","DefCore",0) + obj->GetX();
-	var y = obj->GetDefCoreVal("Entrance","DefCore",1) + obj->GetY();
-	var wdt = obj->GetDefCoreVal("Entrance","DefCore",2);
-	var hgt = obj->GetDefCoreVal("Entrance","DefCore",3);
-		
-	// entrance is on the vehicle?
-	if (!Inside(GetX(), x, x+wdt)) return nil;
-	if (!Inside(GetY(), y, y+hgt)) return nil;
-	
-	return obj;
-}
-
-
 // Temporarily used for Debugging!
-// GetPlayerControlName
 // Helper function to turn CON_*-constants into strings
 global func GetPlayerControlName(int ctrl)
 {
@@ -601,7 +335,6 @@ global func GetPlayerControlName(int ctrl)
 	return Format("Unknown(%d)", ctrl);
 }
 
-// GetPlayerConDir
 // Return COMD_*-constant corresponding to current state of passed directional controls
 global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, int con_down)
 {
@@ -616,7 +349,6 @@ global func GetPlayerConDir(int plr, int con_left, int con_up, int con_right, in
 	return dir_coms[y*3+x+4];
 }
 
-// ComDir2XY
 // Returns coordinate directions associated with a COMD_Constant
 global func ComDir2XY(int comd, &x, &y)
 {
@@ -627,7 +359,6 @@ global func ComDir2XY(int comd, &x, &y)
 	return true;
 }
 
-// PlayerObjectCommand
 // Give a command to all selected Clonks of a player
 global func PlayerObjectCommand(int plr, bool exclude_cursor, string command, object target, int tx, int ty, object target2)
 {
@@ -642,18 +373,6 @@ global func PlayerObjectCommand(int plr, bool exclude_cursor, string command, ob
 	return true;
 }
 
-// ObjectComStop
-// Stop action and ComDir
-global func ObjectComStop()
-{
-	SetComDir();
-	SetAction("Idle");
-	if (!SetAction("Walk")) return false;
-	SetXDir(); SetYDir();
-	return true;
-}
-
-// ObjectComLetGo
 // Let go from scaling or hangling
 global func ObjectComLetGo(int vx, int vy)
 {

@@ -1,22 +1,25 @@
 /*-- Der Clonk --*/
 
-#strict 2
+// selectable by HUD
 #include HUDS
+// standard controls
+#include L_CO
 
+// un-comment them as soon as the new controls work with context menus etc.
 // Context menu
-#include L_CM;
+//#include L_CM
 // Auto production
-#include L_AP;
+//#include L_AP
 
 local pInventory;
 
-/* Initialisierung */
+/* Initialization */
 
 protected func Initialize()
 {
-  // Create Inventoryobject
-  pInventory = CreateObject(INVT, 0, 0, GetOwner());
-  CreateContents(EMPT);
+  // Create Inventory object
+/*  pInventory = CreateObject(INVT, 0, 0, GetOwner());
+  CreateContents(EMPT);*/
   CreateContents(SHVL);
   // Clonks mit Magiephysikal aus fehlerhaften Szenarien korrigieren
   if (GetID () == CLNK)
@@ -26,20 +29,10 @@ protected func Initialize()
   SetDir(Random(2));
   // Broadcast für Spielregeln
   GameCallEx("OnClonkCreation", this);
-  return 1;
+  _inherited();
 }
 
-protected func Swimming()
-{
-  if(GBackSemiSolid(0, -4))
-    SetAction("Swim2");
-}
 
-protected func Swimming2()
-{
-  if(!GBackSemiSolid(0, -4))
-    SetAction("Swim");
-}
 
 /* Bei Hinzuf�gen zu der Crew eines Spielers */
 
@@ -53,6 +46,10 @@ protected func Recruitment(int iPlr) {
 
 /* Steuerung */
 
+public func ControlJump()
+{
+	return DolphinJump();
+}
 
 private func DolphinJump()
 {
@@ -74,6 +71,7 @@ private func DolphinJump()
   return true;
 }
 
+/*
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
   // Kommando MoveTo an Pferd weiterleiten
@@ -97,9 +95,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
   // Kein �berladenes Kommando
   return 0;
 }
-
-public func ControlDownDouble() {} // dummy
-
+*/
 
 /* Verwandlung */
 
@@ -211,33 +207,46 @@ public func Redefine(idTo)
 }
 
 
-/* Essen */  
+/* Food and drinks :-) */  
 
-public func Feed(iLevel)
+public func Drink(object pDrink)
 {
-  DoEnergy(iLevel);
-  Sound("ClonkMunch");
-    return 1;
+  // Trinkaktion setzen, wenn vorhanden
+  if (GetActMapVal("Name", "Drink"))
+    SetAction("Drink");
+  // Attention: don't do anything with the potion
+  // normally it deletes itself.
 }
 
-
-/* Aktionen */
+/* Actions */
 
 private func Riding()
 {
-  // Richtung an die des Pferdes anpassen
+  // change dir of horse
   SetDir(GetActionTarget()->GetDir());
-  // Pferd steht still: Clonk soll auch still sitzen
+  // horse is still, the clonk too please!
   if (GetActionTarget()->~IsStill())
   {
     if (GetAction() != "RideStill")
       SetAction("RideStill");
   }
-  // Pferd steht nicht still: Clonk soll auch nicht still sitzen
+  // the horse is not still... the clonk too please!
   else
     if (GetAction() != "Ride")
       SetAction("Ride");
   return 1;
+}
+
+protected func Swimming()
+{
+  if(GBackSemiSolid(0, -4))
+    SetAction("Swim2");
+}
+
+protected func Swimming2()
+{
+  if(!GBackSemiSolid(0, -4))
+    SetAction("Swim");
 }
 
 private func Throwing()
@@ -260,49 +269,42 @@ private func Throwing()
   }
   // Werfen!
   pObj->Exit(iX, iY, iR, iXDir, iYDir, iRDir);  
-  // Fertig
-  return 1;  
 }
 
 private func Fighting()
 {
   if (!Random(2)) SetAction("Punch");
-  return 1;
 }
 
 private func Punching()
 {
   if (!Random(3)) Sound("Kime*");
   if (!Random(5)) Sound("Punch*");
-  if (!Random(2)) return 1;
+  if (!Random(2)) return;
   GetActionTarget()->Punch();
-  return 1;
+  return;
 }
   
 private func Chopping()
 {
-  if (!GetActTime()) return; // Erster Schlag kein Sound. Clonk holt noch aus.
+  if (!GetActTime()) return;
   Sound("Chop*");
   CastParticles("Dust",Random(3)+1,6,-8+16*GetDir(),1,10,12);
-  return 1;
 }
   
 private func Building()
 {
   if (!Random(2)) Sound("Build*");
-  return 1;
 }
 
 private func Processing()
 {
   Sound("Build1");
-  return 1;
 }
 
 private func Digging()
 {
   Sound("Dig*");
-  return 1;
 }
 
 protected func Scaling()
@@ -310,7 +312,6 @@ protected func Scaling()
   var szDesiredAction;
   if (GetYDir()>0) szDesiredAction = "ScaleDown"; else szDesiredAction = "Scale";
   if (GetAction() != szDesiredAction) SetAction(szDesiredAction);
-  return 1;   
 }
 
 
@@ -318,33 +319,28 @@ protected func Scaling()
   
 protected func CatchBlow()
 {
-  if (GetAction() == "Dead") return 0;
+  if (GetAction() == "Dead") return;
   if (!Random(5)) Hurt();
-  return 1;
 }
   
 protected func Hurt()
 {
   Sound("Hurt*");
-  return 1;
 }
   
 protected func Grab(object pTarget, bool fGrab)
 {
   Sound("Grab");
-  return 1;
 }
 
 protected func Get()
 {
   Sound("Grab");
-  return 1;
 }
 
 protected func Put()
 {
   Sound("Grab");
-  return 1;
 }
 
 protected func Death(int iKilledBy)
@@ -360,7 +356,7 @@ protected func Death(int iKilledBy)
   // Letztes Mannschaftsmitglied tot: Script benachrichtigen
   if (!GetCrew(GetOwner()))
     GameCallEx("RelaunchPlayer",GetOwner());
-  return 1;
+  return;
 }
 
 protected func Destruction()
@@ -376,13 +372,12 @@ protected func Destruction()
         {
         GameCallEx("RelaunchPlayer",GetOwner());
         }
-  return 1;
+  return;
 }
 
 protected func DeepBreath()
 {
   Sound("Breath");
-  return 1; 
 }
   
 protected func CheckStuck()
@@ -393,36 +388,16 @@ protected func CheckStuck()
       SetPosition(GetX(), GetY() + 1);
 }
 
-
 /* Status */
 
-public func IsClonk() { return 1; }
-
-
-
-/* Hilfsfunktion */
-
-public func ContainedCall(string strFunction, object pTarget)
-{
-  // Erst das betreffende Geb�ude betreten, dann die Zielfunktion aufrufen 
-  SetCommand("Call", pTarget, this, 0, nil, strFunction);
-  AddCommand(this, "Enter", pTarget);
-}
-
-
+public func IsClonk() { return true; }
 
 /* Trinken */
 
-public func Drink(object pDrink)
-{
-  // Trinkaktion setzen, wenn vorhanden
-  if (GetActMapVal("Name", "Drink"))
-    SetAction("Drink");
-  // Vorsicht: erstmal nichts mit pDrink machen,
-  // die Potions l�schen sich meist selber...
-}
+
 
 /* New collection behavior */
+/*
 public func Collection2(object pObj)
 {
   if(pObj->GetID() != EMPT)
@@ -450,9 +425,9 @@ public func Ejection(object pObj)
   pObj->SetClrModulation(RGB(255,255,255));
   UpdateInventorySelection();
 }
-
+*/
 /* Inventorychange */
-
+/*
 protected func CrewSelection(bool fDeselect, bool fCursorOnly)
 {
   pInventory->Show(GetCursor(GetOwner()) != this);
@@ -472,656 +447,486 @@ private func UpdateInventorySelection()
   while(ScrollContents() != pObj && iSave < 10) iSave++;
 //  if(iSave == 10) Log("ERROR: Inventory doesn't match");
 }
+*/
 
+/* Act Map */
 
-/* Einsammeln */
-
-public func RejectCollect(id idObject, object pObject)
-{
-  // Objekt kann gepackt werden
-  // automatisches Packen aber nur wenn die Paktteile nicht extra gez�hlt werden
-  if(!IsSpecialItem(pObject)) if(pObject->~JoinPack(this)) return 1;
-    
-  // Objektaufnahme mit Limit verhindern, wenn bereits genug getragen
-  if(pObject->~CarryLimit() && ContentsCount(idObject) >= pObject->~CarryLimit() ) return 1;
-    
-  // Spezialitem?
-  var i, iCount;
-  if(i = IsSpecialItem(pObject))
-  {
-    // Noch genug Platz f�r das ganze Packet?
-    if(GetSpecialCount(GetMaxSpecialCount(i-1))+Max(pObject->~PackCount(),1)<=GetMaxSpecialCount(i-1, 1)) return 0;
-    iCount = GetMaxSpecialCount(i-1, 1)-GetSpecialCount(GetMaxSpecialCount(i-1));
-    // Ansonten so viel wie geht rein
-    if(pObject->~SplitPack(pObject->~PackCount()-iCount)) return 0;
-    else return 1;
-  }
-  
-  return !pInventory->FreeSpace(pObject);//GetNonSpecialCount()>=MaxContentsCount();
-}
-
-
-/* Itemlimit */
-public func MaxContentsCount() { return 3; }
-
-public func GetMaxSpecialCount(iIndex, fAmount)
-{
-  // Hier k�nnten Spezialbehandlungen von Itemgruppen definiert werden
-  // wie z.B. zu dem Inventar noch 30 Pfeile aufnehmen (siehe auch Ritter)
-  //  if(iIndex == 0) { if(fAmount) return(30); return("IsArrow"); }
-}
-
-/* Liefert die Gesamtzahl eines Objekt(paket)typs */ 
-private func GetObjectCount(idObj) 
-  { 
-  var idUnpackedObj; 
-  if (idUnpackedObj = idObj->~UnpackTo()) 
-    // Auch verschachtelte Pakete mitz�hlen 
-    return GetObjectCount(idUnpackedObj) * (idObj->~PackCount()||1);
-  // Ansonsten ist es nur ein Objekt 
-  return 1; 
-  }
-
-/* Spezialgegenst�nde im Inventar z�hlen */ 
-private func GetSpecialCount(szTest) 
-  { 
-  var iCnt, pObj; 
-  // Einzelne Pfeile... 
-  for(var i = 0; pObj = Contents(i); i++) 
-    if(pObj->Call(szTest)) 
-      iCnt++; 
-  // Pakete... 
-  for(var i = 0; pObj = Contents(i); i++) 
-    if(pObj->~UnpackTo())
-      if(DefinitionCall(pObj->~UnpackTo(), szTest))
-        iCnt += GetObjectCount(pObj); 
-  // Wert zur�ckgeben 
-  return iCnt; 
-  }
-  
-/* Testen eines Objektes */
-private func IsSpecialItem(pObj)
-{
-  // Spezialitem?
-  var j=-1;
-  while(GetMaxSpecialCount(++j, 1))
-    if(pObj->GetMaxSpecialCount(j))
-      return j+1;
-  // Spezialitempacket?
-  if(pObj->~UnpackTo())
-  {
-    j=-1;
-    while(GetMaxSpecialCount(++j, 1))
-      if(DefinitionCall(pObj->~UnpackTo(), GetMaxSpecialCount(j)))
-        return j+1;
-  }
-}
-
-/* Anzahl an normalen Objekten */
-private func GetNonSpecialCount() 
-  { 
-  var iCnt, pObj; 
-  // Inventar einzeln auf nicht-Spezial �berpr�fen 
-  for(var i = 0; pObj = Contents(i); i++)
-    // Spezialitems nicht z�hlen
-    if(!IsSpecialItem(pObj))
-        iCnt++;
-   
-  // Wert zur�ckgeben 
-  return iCnt; 
-  } 
-
-
-/* Pfeile */
-
-// Pfeilpaket aufteilen 
-public func SplitPack2Components(pPack) 
-  { 
-  // Aufteilen 
-  if(!pPack->~Unpack(this) ) Split2Components(pPack); 
-  // Fertig, Erfolg 
-  return 1; 
-  }
- 
-/* Pfeil aus dem Inventar nehmen */ 
-public func GetArrow() 
-  { 
-  // Einzelne Pfeile suchen 
-  var pObj, pArrow; 
-  for(var i = 0; pObj = Contents(i); i++) 
-    if(pObj->~IsArrow()) 
-      return pObj; 
-  // Bei Bedarf Pakete aufteilen 
-  for(var i = 0; pObj = Contents(i); i++) 
-    if(pObj->~IsArrowPack())
-    {
-      // Pfeil aus Paket verwenden
-      if(pArrow = pObj->~GetItem()) return pArrow;
-      // oder bei alten Pfeilen Paket aufteilen
-      if (SplitPack2Components(pObj))
-        return FindSingleArrow();
-    }
-  // Keine Pfeile gefunden 
-  return 0; 
-  } 
-
-public func FindSingleArrow() 
-  { 
-  // Einzelne Pfeile suchen 
-  var pObj; 
-  for(var i = 0; pObj = Contents(i); i++) 
-    if(pObj->~IsArrow()) 
-      return pObj; 
-  // Keiner gefunden 
-  return 0; 
-  } 
-  
-public func GetComboArrow() 
-  { 
-  // Pfeile als Komboobjekt: Nur wenn das erste Inventarobjekt ein Pfeil ist
-  var pObj = Contents(0), pArrow;
-  if (!pObj) return;
-  if(pObj->~IsArrow()) return pObj; 
-  // Bei Bedarf Pakete aufteilen 
-  if(pObj->~IsArrowPack())
-    {
-    // Pfeil aus Paket verwenden
-    if(pArrow = pObj->~GetItem()) return pArrow;
-    // oder bei alten Pfeilen Paket aufteilen
-    if (SplitPack2Components(pObj))
-      return FindSingleArrow();
-    }
-  // Keine Pfeile gefunden 
-  return 0;
-  } 
-
-/* Pfeile im Inventar z�hlen */ 
-private func GetArrowCount() 
-  {
-   return GetSpecialCount("IsArrow");
-  }
-
-
-/* Dummies, damit die Engine die Namen kennt... */
-
-func Activate() {}
-func HowToProduce() {}
-func PackCount() {}
 func Definition(def) {
   SetProperty("ActMap", {
+  
 Walk = {
-Prototype = Action,
-Name = "Walk",
-Procedure = DFA_WALK,
-Directions = 2,
-FlipDir = 1,
-Length = 16,
-Delay = 15,
-X = 0,
-Y = 0,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Walk",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Walk",
+	Procedure = DFA_WALK,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 16,
+	Delay = 15,
+	X = 0,
+	Y = 0,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Walk",
+	InLiquidAction = "Swim",
 },
 StillTrans1 = {
-Prototype = Action,
-Name = "StillTrans1",
-Procedure = DFA_THROW,
-Directions = 2,
-FlipDir = 1,
-Length = 4,
-Delay = 2,
-X = 0,
-Y = 280,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Still",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "StillTrans1",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 4,
+	Delay = 2,
+	X = 0,
+	Y = 280,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Still",
+	InLiquidAction = "Swim",
 },
 Still = {
-Prototype = Action,
-Name = "Still",
-Procedure = DFA_THROW,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 10,
-X = 64,
-Y = 280,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Still",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Still",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 10,
+	X = 64,
+	Y = 280,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Still",
+	InLiquidAction = "Swim",
 },
 StillTrans2 = {
-Prototype = Action,
-Name = "StillTrans2",
-Procedure = DFA_THROW,
-Directions = 2,
-Reverse = 1,
-FlipDir = 1,
-Length = 4,
-Delay = 2,
-X = 192,
-Y = 280,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Still",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "StillTrans2",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	Reverse = 1,
+	FlipDir = 1,
+	Length = 4,
+	Delay = 2,
+	X = 192,
+	Y = 280,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Still",
+	InLiquidAction = "Swim",
 },
 Scale = {
-Prototype = Action,
-Name = "Scale",
-Procedure = DFA_SCALE,
-Directions = 2,
-FlipDir = 1,
-Length = 16,
-Delay = 15,
-X = 0,
-Y = 20,
-Wdt = 16,
-Hgt = 20,
-OffX = 2,
-OffY = 0,
-NextAction = "Scale",
-StartCall = "Scaling",
+	Prototype = Action,
+	Name = "Scale",
+	Procedure = DFA_SCALE,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 16,
+	Delay = 15,
+	X = 0,
+	Y = 20,
+	Wdt = 16,
+	Hgt = 20,
+	OffX = 2,
+	OffY = 0,
+	NextAction = "Scale",
+	StartCall = "Scaling",
 },
 ScaleDown = {
-Prototype = Action,
-Name = "ScaleDown",
-Procedure = DFA_SCALE,
-Directions = 2,
-FlipDir = 1,
-Length = 16,
-Delay = 15,
-X = 0,
-Y = 20,
-Wdt = 16,
-Hgt = 20,
-OffX = 2,
-OffY = 0,
-Reverse = 1,
-NextAction = "ScaleDown",
-StartCall = "Scaling",
+	Prototype = Action,
+	Name = "ScaleDown",
+	Procedure = DFA_SCALE,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 16,
+	Delay = 15,
+	X = 0,
+	Y = 20,
+	Wdt = 16,
+	Hgt = 20,
+	OffX = 2,
+	OffY = 0,
+	Reverse = 1,
+	NextAction = "ScaleDown",
+	StartCall = "Scaling",
 },
 Tumble = {
-Prototype = Action,
-Name = "Tumble",
-Procedure = DFA_FLIGHT,
-Directions = 2,
-FlipDir = 1,
-Length = 16,
-Delay = 1,
-X = 0,
-Y = 40,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Tumble",
-ObjectDisabled = 1,
-InLiquidAction = "Swim",
-EndCall = "CheckStuck",
+	Prototype = Action,
+	Name = "Tumble",
+	Procedure = DFA_FLIGHT,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 16,
+	Delay = 1,
+	X = 0,
+	Y = 40,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Tumble",
+	ObjectDisabled = 1,
+	InLiquidAction = "Swim",
+	EndCall = "CheckStuck",
 },
 Dig = {
-Prototype = Action,
-Name = "Dig",
-Procedure = DFA_DIG,
-Directions = 2,
-FlipDir = 1,
-Length = 16,
-Delay = 15,
-X = 0,
-Y = 60,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Dig",
-StartCall = "Digging",
-DigFree = 11,
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Dig",
+	Procedure = DFA_DIG,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 16,
+	Delay = 15,
+	X = 0,
+	Y = 60,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Dig",
+	StartCall = "Digging",
+	DigFree = 11,
+	InLiquidAction = "Swim",
 },
 Bridge = {
-Prototype = Action,
-Name = "Bridge",
-Procedure = DFA_BRIDGE,
-Directions = 2,
-FlipDir = 1,
-Length = 16,
-Delay = 1,
-X = 0,
-Y = 60,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Bridge",
-StartCall = "Digging",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Bridge",
+	Procedure = DFA_BRIDGE,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 16,
+	Delay = 1,
+	X = 0,
+	Y = 60,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Bridge",
+	StartCall = "Digging",
+	InLiquidAction = "Swim",
 },
 Swim = {
-Prototype = Action,
-Name = "Swim",
-Procedure = DFA_SWIM,
-Directions = 2,
-FlipDir = 1,
-Length = 12,
-Delay = 15,
-X = 0,
-Y = 80,
-Wdt = 20,
-Hgt = 20,
-OffX = 0,
-OffY = 1,
-NextAction = "Swim",
-StartCall = "Swimming",
+	Prototype = Action,
+	Name = "Swim",
+	Procedure = DFA_SWIM,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 12,
+	Delay = 15,
+	X = 0,
+	Y = 80,
+	Wdt = 20,
+	Hgt = 20,
+	OffX = 0,
+	OffY = 1,
+	NextAction = "Swim",
+	StartCall = "Swimming",
 },
 Swim2 = {
-Prototype = Action,
-Name = "Swim2",
-Procedure = DFA_SWIM,
-Directions = 2,
-FlipDir = 1,
-Length = 12,
-Delay = 15,
-X = 0,
-Y = 300,
-Wdt = 20,
-Hgt = 20,
-OffX = 0,
-OffY = 1,
-NextAction = "Swim2",
-StartCall = "Swimming2",
+	Prototype = Action,
+	Name = "Swim2",
+	Procedure = DFA_SWIM,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 12,
+	Delay = 15,
+	X = 0,
+	Y = 300,
+	Wdt = 20,
+	Hgt = 20,
+	OffX = 0,
+	OffY = 1,
+	NextAction = "Swim2",
+	StartCall = "Swimming2",
 },
 Hangle = {
-Prototype = Action,
-Name = "Hangle",
-Procedure = DFA_HANGLE,
-Directions = 2,
-FlipDir = 1,
-Length = 11,
-Delay = 16,
-X = 0,
-Y = 100,
-Wdt = 16,
-Hgt = 20,
-OffX = 0,
-OffY = 3,
-NextAction = "Hangle",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Hangle",
+	Procedure = DFA_HANGLE,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 11,
+	Delay = 16,
+	X = 0,
+	Y = 100,
+	Wdt = 16,
+	Hgt = 20,
+	OffX = 0,
+	OffY = 3,
+	NextAction = "Hangle",
+	InLiquidAction = "Swim",
 },
 Jump = {
-Prototype = Action,
-Name = "Jump",
-Procedure = DFA_FLIGHT,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 3,
-X = 0,
-Y = 120,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Hold",
-InLiquidAction = "Swim",
-PhaseCall = "CheckStuck",
+	Prototype = Action,
+	Name = "Jump",
+	Procedure = DFA_FLIGHT,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 3,
+	X = 0,
+	Y = 120,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Hold",
+	InLiquidAction = "Swim",
+	PhaseCall = "CheckStuck",
 },
 KneelDown = {
-Prototype = Action,
-Name = "KneelDown",
-Procedure = DFA_KNEEL,
-Directions = 2,
-FlipDir = 1,
-Length = 4,
-Delay = 1,
-X = 0,
-Y = 140,
-Wdt = 16,
-Hgt = 20,
-NextAction = "KneelUp",
+	Prototype = Action,
+	Name = "KneelDown",
+	Procedure = DFA_KNEEL,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 4,
+	Delay = 1,
+	X = 0,
+	Y = 140,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "KneelUp",
 },
 KneelUp = {
-Prototype = Action,
-Name = "KneelUp",
-Procedure = DFA_KNEEL,
-Directions = 2,
-FlipDir = 1,
-Length = 4,
-Delay = 1,
-X = 64,
-Y = 140,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Walk",
+	Prototype = Action,
+	Name = "KneelUp",
+	Procedure = DFA_KNEEL,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 4,
+	Delay = 1,
+	X = 64,
+	Y = 140,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Walk",
 },
 Dive = {
-Prototype = Action,
-Name = "Dive",
-Procedure = DFA_FLIGHT,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 4,
-X = 0,
-Y = 160,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Hold",
-ObjectDisabled = 1,
-InLiquidAction = "Swim",
-PhaseCall = "CheckStuck",
+	Prototype = Action,
+	Name = "Dive",
+	Procedure = DFA_FLIGHT,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 4,
+	X = 0,
+	Y = 160,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Hold",
+	ObjectDisabled = 1,
+	InLiquidAction = "Swim",
+	PhaseCall = "CheckStuck",
 },
 FlatUp = {
-Prototype = Action,
-Name = "FlatUp",
-Procedure = DFA_KNEEL,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 1,
-X = 0,
-Y = 180,
-Wdt = 16,
-Hgt = 20,
-NextAction = "KneelUp",
-ObjectDisabled = 1,
+	Prototype = Action,
+	Name = "FlatUp",
+	Procedure = DFA_KNEEL,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 1,
+	X = 0,
+	Y = 180,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "KneelUp",
+	ObjectDisabled = 1,
 },
 Throw = {
-Prototype = Action,
-Name = "Throw",
-Procedure = DFA_THROW,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 1,
-X = 0,
-Y = 200,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Walk",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Throw",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 1,
+	X = 0,
+	Y = 200,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Walk",
+	InLiquidAction = "Swim",
 },
 Punch = {
-Prototype = Action,
-Name = "Punch",
-Procedure = DFA_FIGHT,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 2,
-X = 0,
-Y = 220,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Fight",
-EndCall = "Punching",
-ObjectDisabled = 1,
+	Prototype = Action,
+	Name = "Punch",
+	Procedure = DFA_FIGHT,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 2,
+	X = 0,
+	Y = 220,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Fight",
+	EndCall = "Punching",
+	ObjectDisabled = 1,
 },
 Dead = {
-Prototype = Action,
-Name = "Dead",
-Directions = 2,
-FlipDir = 1,
-X = 0,
-Y = 240,
-Wdt = 16,
-Hgt = 20,
-Length = 6,
-Delay = 3,
-NextAction = "Hold",
-NoOtherAction = 1,
-ObjectDisabled = 1,
+	Prototype = Action,
+	Name = "Dead",
+	Directions = 2,
+	FlipDir = 1,
+	X = 0,
+	Y = 240,
+	Wdt = 16,
+	Hgt = 20,
+	Length = 6,
+	Delay = 3,
+	NextAction = "Hold",
+	NoOtherAction = 1,
+	ObjectDisabled = 1,
 },
 Ride = {
-Prototype = Action,
-Name = "Ride",
-Procedure = DFA_ATTACH,
-Directions = 2,
-FlipDir = 1,
-Length = 4,
-Delay = 3,
-X = 128,
-Y = 120,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Ride",
-StartCall = "Riding",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Ride",
+	Procedure = DFA_ATTACH,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 4,
+	Delay = 3,
+	X = 128,
+	Y = 120,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Ride",
+	StartCall = "Riding",
+	InLiquidAction = "Swim",
 },
 RideStill = {
-Prototype = Action,
-Name = "RideStill",
-Procedure = DFA_ATTACH,
-Directions = 2,
-FlipDir = 1,
-Length = 1,
-Delay = 10,
-X = 128,
-Y = 120,
-Wdt = 16,
-Hgt = 20,
-NextAction = "RideStill",
-StartCall = "Riding",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "RideStill",
+	Procedure = DFA_ATTACH,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 1,
+	Delay = 10,
+	X = 128,
+	Y = 120,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "RideStill",
+	StartCall = "Riding",
+	InLiquidAction = "Swim",
 },
 Push = {
-Prototype = Action,
-Name = "Push",
-Procedure = DFA_PUSH,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 15,
-X = 128,
-Y = 140,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Push",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Push",
+	Procedure = DFA_PUSH,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 15,
+	X = 128,
+	Y = 140,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Push",
+	InLiquidAction = "Swim",
 },
 Chop = {
-Prototype = Action,
-Name = "Chop",
-Procedure = DFA_CHOP,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 3,
-X = 128,
-Y = 160,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Chop",
-StartCall = "Chopping",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Chop",
+	Procedure = DFA_CHOP,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 3,
+	X = 128,
+	Y = 160,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Chop",
+	StartCall = "Chopping",
+	InLiquidAction = "Swim",
 },
 Fight = {
-Prototype = Action,
-Name = "Fight",
-Procedure = DFA_FIGHT,
-Directions = 2,
-FlipDir = 1,
-Length = 7,
-Delay = 4,
-X = 128,
-Y = 180,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Fight",
-StartCall = "Fighting",
-ObjectDisabled = 1,
+	Prototype = Action,
+	Name = "Fight",
+	Procedure = DFA_FIGHT,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 7,
+	Delay = 4,
+	X = 128,
+	Y = 180,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Fight",
+	StartCall = "Fighting",
+	ObjectDisabled = 1,
 },
 GetPunched = {
-Prototype = Action,
-Name = "GetPunched",
-Procedure = DFA_FIGHT,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 3,
-X = 128,
-Y = 200,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Fight",
-ObjectDisabled = 1,
+	Prototype = Action,
+	Name = "GetPunched",
+	Procedure = DFA_FIGHT,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 3,
+	X = 128,
+	Y = 200,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Fight",
+	ObjectDisabled = 1,
 },
 Build = {
-Prototype = Action,
-Name = "Build",
-Procedure = DFA_BUILD,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 2,
-X = 128,
-Y = 220,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Build",
-StartCall = "Building",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "Build",
+	Procedure = DFA_BUILD,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 2,
+	X = 128,
+	Y = 220,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Build",
+	StartCall = "Building",
+	InLiquidAction = "Swim",
 },
 RideThrow = {
-Prototype = Action,
-Name = "RideThrow",
-Procedure = DFA_ATTACH,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 1,
-X = 128,
-Y = 240,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Ride",
-StartCall = "Throwing",
-InLiquidAction = "Swim",
+	Prototype = Action,
+	Name = "RideThrow",
+	Procedure = DFA_ATTACH,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 1,
+	X = 128,
+	Y = 240,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Ride",
+	StartCall = "Throwing",
+	InLiquidAction = "Swim",
 },
 Process = {
-Prototype = Action,
-Name = "Process",
-Procedure = DFA_THROW,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 3,
-X = 0,
-Y = 260,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Process",
-EndCall = "Processing",
+	Prototype = Action,
+	Name = "Process",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 3,
+	X = 0,
+	Y = 260,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Process",
+	EndCall = "Processing",
 },
 Drink = {
-Prototype = Action,
-Name = "Drink",
-Procedure = DFA_THROW,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 3,
-X = 128,
-Y = 260,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Walk",
+	Prototype = Action,
+	Name = "Drink",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 3,
+	X = 128,
+	Y = 260,
+	Wdt = 16,
+	Hgt = 20,
+	NextAction = "Walk",
 },  }, def);
   SetProperty("Name", "Clonk", def);
 }
