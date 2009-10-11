@@ -2,11 +2,10 @@
 
 #strict 2
 
-// Zauberei - ben�tigt, wenn der Clonk Zielzauber z.B. aus dem Zauberturm zaubert
-// Auch ben�tigt f�r den K�nig
-local pAimer;			// Aktive Zielsteuerung; wird abgrbrochen, wenn der Zauberer gest�rt wird (Nur Fantasypack)
-local pAimedSpell;		// Zauber, der gezielt wird  (Nur Fantasypack)
-local pAimedSpellOrigin;        // Objekt, das einen Zielzauber initiiert hat. An dieses werden SpellFailed/SpellSucceeded-Nachrichten weitergeleitet
+// Context menu
+#include L_CM;
+// Auto production
+#include L_AP;
 
 local pInventory;
 
@@ -24,7 +23,7 @@ protected func Initialize()
       SetPhysical ("Magic", 0, 1);
   SetAction("Walk");
   SetDir(Random(2));
-  // Broadcast f�r Spielregeln
+  // Broadcast für Spielregeln
   GameCallEx("OnClonkCreation", this);
   return 1;
 }
@@ -46,31 +45,6 @@ protected func Swimming2()
 protected func Recruitment(int iPlr) {
   // Broadcast f�r Crew
   GameCallEx("OnClonkRecruitment", this, iPlr);
-}
-
-/* Kontext */
-
-public func HasConstructMenu() { return HasKnowledge() && GetPhysical("CanConstruct"); }
-public func HasKnowledge() { return GetPlrKnowledge(GetOwner(),nil,0,C4D_Structure); }
-public func HasBase()      { return FindBase(GetOwner()) && Contained()->GetBase() != GetOwner(); }
-public func ReleaseAllowed() { return ObjectCount(Find_ID(REAC)); }
-public func AtConstructionSite() { return !Contained() && FindConstructionSite() && ObjectCount(CNMT); }
-public func AtEnergySite() { return !Contained() && FindEnergySite(); }
-public func AtTreeToChop() { return !Contained() && FindTree() && GetPhysical("CanChop"); }
-
-public func FindConstructionSite()
-{
-  return FindObject(Find_AtRect(-1,-16,2,32), Find_OCF(OCF_Construct), Find_Layer(GetObjectLayer()));
-}
-
-public func FindEnergySite()
-{
-  return FindObject(Find_AtPoint(), Find_OCF(OCF_PowerConsumer), Find_NoContainer(), Find_Layer(GetObjectLayer()), Find_Func("NeedsEnergy"));
-}
-
-public func FindTree()
-{
-  return FindObject(Find_AtPoint(), Find_OCF(OCF_Chop), Find_Layer(GetObjectLayer()));
 }
 
 /* Steuerung */
@@ -265,30 +239,6 @@ protected func ControlUpdate(object self, int comdir, bool dig, bool throw)
   // Steuerung an Pferd weiterleiten
   if(IsRiding()) return GetActionTarget()->~ControlUpdate(self, comdir, dig, throw);
   // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
-{
-  // Kommando MoveTo an Pferd weiterleiten
-  if (szCommand == "MoveTo")
-    if (IsRiding())
-      return GetActionTarget()->~ControlCommand(szCommand, pTarget, iTx, iTy);
-  // Anderes Kommando beim Reiten: absteigen (Ausnahme: Context)
-  if (IsRiding() && szCommand != "Context")
-  {
-    GetActionTarget()->SetComDir(COMD_Stop);
-    GetActionTarget()->~ControlDownDouble(this);
-  }
-  // RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
-  if(szCommand == "Construct")
-  {
-    if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
-    {
-      return 1;
-    }
-  }
-  // Kein �berladenes Kommando
   return 0;
 }
 
@@ -586,64 +536,7 @@ protected func CheckStuck()
 
 /* Status */
 
-public func IsRiding()
-{
-  // Reitet der Clonk?
-  return (WildcardMatch(GetAction(), "Ride*"));
-}
-
 public func IsClonk() { return 1; }
-
-/* Kontext */
-
-public func ContextRelease(pCaller) 
-{
-  [$CtxRelease$|Image=CXRL|Condition=ReleaseAllowed]
-  FindObject(REAC)->Activate(GetOwner());
-  return 1;
-}
-
-public func ContextEnergy(pCaller)
-{
-  [$TxtEnergysupply$|Image=CXEC|Condition=AtEnergySite]
-  var pSite; 
-  if (pSite = FindEnergySite())
-    SetCommand("Energy", pSite);
-  return 1;
-}
-
-public func ContextConstructionSite(pCaller)
-{
-  [$CtxConstructionMaterial$|Image=CXCM|Condition=AtConstructionSite]
-  var pSite; 
-  if (pSite = FindConstructionSite())
-    PlayerMessage(GetOwner(), pSite->GetNeededMatStr(), pSite);
-  return 1;
-}
-
-public func ContextChop(pCaller)
-{
-  [$CtxChop$|Image=CXCP|Condition=AtTreeToChop]
-  var pTree; 
-  if (pTree = FindTree())
-    SetCommand("Chop", pTree);
-  return 1;
-}
-
-public func ContextConstruction(pCaller)
-{
-  [$CtxConstructionDesc$|Image=CXCN|Condition=HasConstructMenu]
-  SetCommand("Construct");
-  ExecuteCommand();
-  return 1;
-}
-
-public func ContextHome(pCaller)
-{
-  [$CtxHomeDesc$|Image=CXHM|Condition=HasBase]
-  SetCommand("Home");
-  return 1;
-}
 
 /* Hilfsfunktion */
 
@@ -652,104 +545,6 @@ public func ContainedCall(string strFunction, object pTarget)
   // Erst das betreffende Geb�ude betreten, dann die Zielfunktion aufrufen 
   SetCommand("Call", pTarget, this, 0, nil, strFunction);
   AddCommand(this, "Enter", pTarget);
-}
-
-/* Steuerung */
-
-protected func ControlSpecial2()
-{
-  [$CtrlMenuDesc$|Image=CXTX]
-  // In einem Geb�ude oder Fahrzeug: das Kontextmen� des Geb�udes �ffnen
-  if (Contained())
-    if ((Contained()->GetCategory() & C4D_Structure) || (Contained()->GetCategory() & C4D_Vehicle))
-    {
-      SetCommand("Context",nil,0,0,Contained());
-      return ExecuteCommand();
-    }
-  // Fasst ein Objekt an: Kontextmen� des angefassten Objekts �ffnen
-  if (GetAction() == "Push")
-  {
-    SetCommand("Context",nil,0,0,GetActionTarget());
-    return ExecuteCommand();
-  }
-  // Tr�gt ein Objekt: Kontextmen� des ersten getragenen Objekts �ffnen
-  if (Contents(0))
-  {
-    SetCommand("Context",nil,0,0,Contents(0));
-    return ExecuteCommand();
-  }
-  // Ansonsten das Kontextmen� des Clonks �ffnen
-  SetCommand("Context",nil,0,0,this);
-  return ExecuteCommand();
-}
-
-/* Callback beim Auswahl aus dem Construct-Kontextmenu */
-
-public func ControlCommandConstruction(target, x, y, target2, def)
-{
-  // Keine Konstruktion erlaubt?
-  if(def->~RejectConstruction(x - GetX(), y - GetY(), this) )
-    // Construct-Kommando beenden
-    return FinishCommand(false, 0) ;
-}
-
-/* Automatische Produktion */
-
-public func ControlCommandAcquire(target, x, y, target2, def)
-{
-  // Falls das Teil rumliegt nur aufsammeln
-  var obj = GetAvailableObject (def, target2);
-  if (obj) {
-    AddEffect("IntNotAvailable", obj, 1, 5, this);
-    AddCommand ("Get", obj, 0, 0, 0, 40);
-    return 1;
-  }
-  // Geb�ude suchen worin man's herstellen kann  
-  if (obj = GetProducerOf (def)) {
-    AddCommand ("Call", this, 0, 0, 0, 0, "AutoProduction", 0, 1);
-    obj -> ~HowToProduce (this, def);
-    return 1;
-  }
-  AddCommand ("Buy", 0, 0, 0, 0, 100, def, 0, C4CMD_Sub);
-  return 1;
-}
-
-public func AutoProduction() { return 1; }
-
-public func AutoProductionFailed() 
-{
-  var def = GetCommand (5, 1);
-  if (!FindContents(def)) {
-    var obj = GetAvailableObject (def, GetCommand (4, 1));
-    if (obj) {
-      AddEffect("IntNotAvailable", obj, 1, 5, this);
-      AddCommand ("Get", obj,0,0,0,40);
-      return 1;
-    }
-    AddCommand ("Buy", 0, 0, 0, 0, 100, GetCommand(5, 1), 0, C4CMD_Sub);
-  }
-  return 1;
-}
-
-public func FxIntNotAvailableStart(target, number)
-{
-  EffectVar(0, target, number) = this;
-}
-
-public func FxIntNotAvailableTimer(target, number)
-{
-  var clonk = EffectVar(0, target, number);
-  // Check wether the clonk still wants to get the object
-  for (var i = 0; GetCommand(clonk,0,i); ++i)  {
-    if (GetCommand(clonk, 0, i) == "Get" && GetCommand(clonk, 1, i) == target)
-      return;
-  }
-  return FX_Execute_Kill;
-}
-
-public func GetProducerOf(def)
-{
-  return FindObject(Find_InRect(-500,-250,1000,500), Find_Func("IsProducerOf", this, def), Sort_Distance());
 }
 
 /* Trinken */
@@ -909,32 +704,6 @@ private func GetNonSpecialCount()
   // Wert zur�ckgeben 
   return iCnt; 
   } 
-
-/* Reiten */
-
-public func ContextDescend(pCaller) 
-{
-  [$TxtDescend$|Image=DSCN|Condition=IsRiding]
-  DescendVehicle();
-}
-
-public func DescendVehicle()
-{
-  var pOldVehicle = GetActionTarget();
-  SetAction("Walk");
-  // Feststecken nach Absteigen? Dann besser direkt beim Gef�hrt absteigen.
-  if (Stuck()) if (pOldVehicle)
-  {
-    var x=GetX(), y=GetY();
-    SetPosition(pOldVehicle->GetX(), pOldVehicle->GetY());
-    if (Stuck())
-    {
-      // Das Gef�hrt steckt auch? Dann hilft es alles nichts. Zur�ck zum Ursprungsort.
-      SetPosition(x,y);
-    }
-  }  
-}
-
 
 /* Effektsteuerung */
 
