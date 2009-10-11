@@ -1,6 +1,7 @@
 /*-- Der Clonk --*/
 
 #strict 2
+#include HUDS
 
 // Context menu
 #include L_CM;
@@ -45,91 +46,19 @@ protected func Swimming2()
 protected func Recruitment(int iPlr) {
   // Broadcast f�r Crew
   GameCallEx("OnClonkRecruitment", this, iPlr);
+  
+  _inherited(...);
 }
+
 
 /* Steuerung */
 
-protected func ControlLeft()
-{
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlLeft")) return 1;
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding()) return GetActionTarget()->~ControlLeft(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlLeftDouble()
-  {
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlLeftDouble")) return true;
-  }
-
-protected func ControlRightDouble()
-  {
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlRightDouble")) return true;
-  }
-
-protected func ControlLeftReleased()
-{
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding()) return GetActionTarget()->~ControlLeftReleased(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlRight()
-{
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlRight")) return 1;
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding())  return GetActionTarget()->~ControlRight(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlRightReleased()
-{
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding()) return GetActionTarget()->~ControlRightReleased(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlUp()
-{
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlUp")) return 1;
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding())  return GetActionTarget()->~ControlUp(this);
-  // Bei JnR Delfinsprung
-  if(GetPlrCoreJumpAndRunControl(GetController()))
-    DolphinJump();
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlUpReleased()
-{
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding()) return GetActionTarget()->~ControlUpReleased(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlUpDouble() 
-{
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlUpDouble")) return 1;
-  DolphinJump();
-}
 
 private func DolphinJump()
 {
   // nur wenn an Meeresoberfl�che
-  if(!InLiquid()) return 0;
-  if(GBackSemiSolid(0,-1)) return 0;
+  if(!InLiquid()) return false;
+  if(GBackSemiSolid(0,-1)) return false;
   // Nicht wenn deaktiviert (z.B. Ohnmacht)
   if (GetID()->GetActMapVal("ObjectDisabled", GetAction())) return false;
   // herausspringen
@@ -141,106 +70,36 @@ private func DolphinJump()
   if(SimFlight(iX,iY,iXDir,iYDir,25,50))
     if(GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+9-GetY()))
       SetAction("Dive");
+	  
+  return true;
 }
 
-protected func ControlDown()
+protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlDown")) return 1;
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding())  return GetActionTarget()->~ControlDown(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlDownReleased()
-{
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding()) return GetActionTarget()->~ControlDownReleased(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlDownSingle()
-{
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlDownSingle")) return 1;
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding())  return GetActionTarget()->~ControlDownSingle(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlDownDouble()
-{
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlDownDouble")) return 1;
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding())  return GetActionTarget()->~ControlDownDouble(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlDig()
-{
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlDig")) return 1;
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding())  return GetActionTarget()->~ControlDig(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlDigReleased()
-{
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding()) return GetActionTarget()->~ControlDigReleased(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlDigSingle()
-{
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding())  return GetActionTarget()->~ControlDigSingle(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlDigDouble()
-{
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlDigDouble")) return 1;
-  // Steuerung an Pferd weiterleiten
-  if (IsRiding())  return GetActionTarget()->~ControlDigDouble(this);
-  // Keine �berladene Steuerung
-  return 0;
-}
-
-protected func ControlThrow()
-{
-  // Bei vorherigem Doppel-Stop nur Ablegen
-  if (GetPlrDownDouble(GetOwner())) return 0;
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlThrow")) return 1;
-  // Reiten und Werfen
-  if (IsRiding())
-    if (Contents(0))
+  // Kommando MoveTo an Pferd weiterleiten
+  if (szCommand == "MoveTo")
+    if (IsRiding())
+      return GetActionTarget()->~ControlCommand(szCommand, pTarget, iTx, iTy);
+  // Anderes Kommando beim Reiten: absteigen (Ausnahme: Context)
+  if (IsRiding() && szCommand != "Context")
+  {
+    GetActionTarget()->SetComDir(COMD_Stop);
+    GetActionTarget()->~ControlDownDouble(this);
+  }
+  // RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
+  if(szCommand == "Construct")
+  {
+    if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
     {
-      SetAction("RideThrow");
       return 1;
     }
-  // Keine �berladene Steuerung
+  }
+  // Kein �berladenes Kommando
   return 0;
 }
 
-protected func ControlUpdate(object self, int comdir, bool dig, bool throw)
-{
-  // Steuerung an Pferd weiterleiten
-  if(IsRiding()) return GetActionTarget()->~ControlUpdate(self, comdir, dig, throw);
-  // Keine �berladene Steuerung
-  return 0;
-}
+public func ControlDownDouble() {} // dummy
+
 
 /* Verwandlung */
 
@@ -351,6 +210,7 @@ public func Redefine(idTo)
   return 1;
 }
 
+
 /* Essen */  
 
 public func Feed(iLevel)
@@ -359,6 +219,7 @@ public func Feed(iLevel)
   Sound("ClonkMunch");
     return 1;
 }
+
 
 /* Aktionen */
 
@@ -452,6 +313,7 @@ protected func Scaling()
   return 1;   
 }
 
+
 /* Ereignisse */
   
 protected func CatchBlow()
@@ -493,9 +355,6 @@ protected func Death(int iKilledBy)
   // Der Broadcast k�nnte seltsame Dinge gemacht haben: Clonk ist noch tot?
   if (GetAlive()) return;
   
-  // den Beutel fallenlassen
-  if(GetAlchemBag()) GetAlchemBag()->~Loose();
-
   Sound("Die");
   DeathAnnounce();
   // Letztes Mannschaftsmitglied tot: Script benachrichtigen
@@ -534,9 +393,12 @@ protected func CheckStuck()
       SetPosition(GetX(), GetY() + 1);
 }
 
+
 /* Status */
 
 public func IsClonk() { return 1; }
+
+
 
 /* Hilfsfunktion */
 
@@ -546,6 +408,8 @@ public func ContainedCall(string strFunction, object pTarget)
   SetCommand("Call", pTarget, this, 0, nil, strFunction);
   AddCommand(this, "Enter", pTarget);
 }
+
+
 
 /* Trinken */
 
@@ -609,6 +473,7 @@ private func UpdateInventorySelection()
 //  if(iSave == 10) Log("ERROR: Inventory doesn't match");
 }
 
+
 /* Einsammeln */
 
 public func RejectCollect(id idObject, object pObject)
@@ -634,6 +499,7 @@ public func RejectCollect(id idObject, object pObject)
   
   return !pInventory->FreeSpace(pObject);//GetNonSpecialCount()>=MaxContentsCount();
 }
+
 
 /* Itemlimit */
 public func MaxContentsCount() { return 3; }
@@ -704,24 +570,6 @@ private func GetNonSpecialCount()
   // Wert zur�ckgeben 
   return iCnt; 
   } 
-
-/* Effektsteuerung */
-
-private func Control2Effect(string szControl)
-  {
-  // Von Effektzahl abw�rts z�hlen
-  var i = GetEffectCount(nil, this), iEffect;
-  var res;
-  while (i--)
-    {
-    // Effekte mit Control im Namen benachrichtigen	  
-    iEffect = GetEffect("*Control*", this, i);
-    //  Message("%s", this, GetEffect(0, this, iEffect, 1));
-    if ( GetEffect(nil, this, iEffect, 1) )
-      res += EffectCall(this, iEffect, szControl);
-    }
-  return res;
-  }
 
 
 /* Pfeile */
@@ -794,40 +642,11 @@ private func GetArrowCount()
   }
 
 
-/* Zauberei - ben�tigt, wenn der Clonk Zielzauber z.B. aus dem Zauberturm zaubert */
+/* Dummies, damit die Engine die Namen kennt... */
 
-public func SpellFailed(id idSpell, object pByCaller)
-{
-  // Umleiten an eigentliche Zauberquelle? (Buch, Zauberturm, etc.)
-  var pSpellOrigin = pAimedSpellOrigin;
-  pAimedSpellOrigin = 0;
-  if (pSpellOrigin && pSpellOrigin != this)
-    // Auch bei nicht erfolgreicher Umleitung abbrechen: Das zaubernde Objekt hat im Normalfall die Zutaten/Zauberenergie f�r den
-    // Zauber bereit gestellt, und diese sollten nicht an den Clonk zur�ck gegeben werden
-    return (pSpellOrigin->~SpellFailed(idSpell, this));
-  // Magieenergie zur�ckgeben
-  DoMagicEnergy(idSpell->GetDefValue(), true);
-  // Alchemische Zutaten zur�ckgeben
-  if(ObjectCount(ALCO)) IncreaseAlchem(idSpell);
-}
-
-public func SpellSucceeded(id idSpell, object pByCaller)
-{
-  // Umleiten an eigentliche Zauberquelle? (Buch, Zauberturm, etc.)
-  var pSpellOrigin = pAimedSpellOrigin;
-  pAimedSpellOrigin = 0;
-  if (pSpellOrigin && pSpellOrigin != this)
-    // Auch bei nicht erfolgreicher Umleitung abbrechen: Das zaubernde Objekt hat im Normalfall das Magietraining schon erledigt
-    return (pSpellOrigin->~SpellSucceeded(idSpell, this));
-  // Globaler Aufruf f�r Zauber
-  OnClonkSucceededSpell(idSpell);
-}
-
-// Der Clonk kann von sich aus nicht zaubern und hat keine Aktivit�ten daf�r
-private func SetMagicAction(id idForSpell) {}
-private func SetCastAction() {}
-private func EndMagicAction() {}
-
+func Activate() {}
+func HowToProduce() {}
+func PackCount() {}
 func Definition(def) {
   SetProperty("ActMap", {
 Walk = {

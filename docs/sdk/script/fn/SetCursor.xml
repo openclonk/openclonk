@@ -15,7 +15,7 @@
 				<param><type>bool</type><name>fNoSelectArrow</name><desc>Wenn ungleich 0, wird bei der Anwahl kein Auswahlpfeil angezeigt. Ab CE.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Setzt die Auswahlmarkierung eines Spielers auf ein Zielobjekt und aktiviert dieses für die Steuerung.</desc>
+		<desc>Setzt die Auswahlmarkierung eines Spielers auf ein Zielobjekt und aktiviert dieses für die Steuerung. Gibt false zurück falls das Zielobjekt momentan durch <funclink>SetCrewEnabled</funclink> deaktiviert ist.</desc>
 		<related>
 			<funclink>GetCursor</funclink>
 			<funclink>SelectCrew</funclink>

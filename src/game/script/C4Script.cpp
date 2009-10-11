@@ -762,6 +762,8 @@ static bool FnSetActionData(C4AulObjectContext *cthr, long iData)
 }
 
 static C4Void FnSetComDir(C4AulObjectContext *cthr, long ncomdir)
+
+static C4Void FnSetComDir(C4AulObjectContext *cthr, long ncomdir)
 {
 	cthr->Obj->Action.ComDir=ncomdir;
 	return C4VNull;
@@ -2427,24 +2429,6 @@ static bool FnDoHomebaseProduction(C4AulContext *cthr, long iPlr, C4ID id, long 
   return ::Players.Get(iPlr)->HomeBaseProduction.SetIDCount(id,iLastcount+iChange,true);
 	}
 
-static long FnGetPlrDownDouble(C4AulContext *cthr, long iPlr)
-  {
-  if (!ValidPlr(iPlr)) return false;
-  return ::Players.Get(iPlr)->LastComDownDouble;
-  }
-
-static bool FnClearLastPlrCom(C4AulContext *cthr, long iPlr)
-	{
-	// get player
-	C4Player *pPlr = ::Players.Get(iPlr);
-	if (!pPlr) return false;
-	// reset last coms
-	pPlr->LastCom = COM_None;
-	pPlr->LastComDownDouble = 0;
-	// done, success
-	return true;
-	}
-
 static bool FnSetPlrKnowledge(C4AulContext *cthr, long iPlr, C4ID id, bool fRemove)
   {
 	C4Player *pPlr=::Players.Get(iPlr);
@@ -2758,7 +2742,7 @@ static C4Object *FnGetCaptain(C4AulContext *cthr, long iPlr)
 static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoSelectMark, bool fNoSelectArrow, bool fNoSelectCrew)
   {
 	C4Player *pPlr = ::Players.Get(iPlr);
-	if (!pPlr || (pObj && !pObj->Status)) return false;
+	if (!pPlr || (pObj && !pObj->Status) || (pObj && pObj->CrewDisabled)) return false;
 	pPlr->SetCursor(pObj, !fNoSelectMark, !fNoSelectArrow);
 	if (!fNoSelectCrew) pPlr->SelectCrew(pObj, true);
 	return true;
@@ -3668,7 +3652,7 @@ static C4Value FnGetPlayerVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value
 	C4Player* pPlayer = ::Players.Get(iPlr);
 
 	// get value
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*pPlayer, "Player"));
+	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*pPlayer, true), "Player"));
 }
 
 static C4Value FnGetPlayerInfoCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value* iPlayer_C4V, C4Value *iEntryNr_C4V)
@@ -5431,6 +5415,32 @@ static bool FnSetNextMission(C4AulContext *ctx, C4String *szNextMission, C4Strin
 	return true;
 	}
 
+static long FnGetPlayerControlState(C4AulContext *ctx, long iPlr, long iControl)
+	{
+	// get control set to check
+	C4PlayerControl *pCheckCtrl = NULL;
+	if (iPlr == NO_OWNER)
+		{
+		//pCheckCtrl = Game.GlobalPlayerControls;
+		}
+	else
+		{
+		C4Player *pPlr = ::Players.Get(iPlr);
+		if (pPlr)
+			{
+			pCheckCtrl = &(pPlr->Control);
+			}
+		}
+	// invalid player or no controls
+	if (!pCheckCtrl) return 0;
+	// query control
+	const C4PlayerControl::CSync::ControlDownState *pControlState = pCheckCtrl->GetControlDownState(iControl);
+	// no state means not down
+	if (!pControlState) return 0;
+	// otherwise take down-value
+	return pControlState->DownState.iStrength;
+	}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -5611,6 +5621,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "Bubble", FnBubble);
 	AddFunc(pEngine, "SetAction", FnSetAction);
 	AddFunc(pEngine, "SetActionData", FnSetActionData);
+
 	AddFunc(pEngine, "SetBridgeActionData", FnSetBridgeActionData);
 	AddFunc(pEngine, "GetAction", FnGetAction);
 	AddFunc(pEngine, "GetActTime", FnGetActTime);
@@ -5691,8 +5702,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlrView", FnSetPlrView);
 	AddFunc(pEngine, "SetPlrKnowledge", FnSetPlrKnowledge);
 	AddFunc(pEngine, "SetPlrMagic", FnSetPlrMagic);
-	AddFunc(pEngine, "GetPlrDownDouble", FnGetPlrDownDouble);
-	AddFunc(pEngine, "ClearLastPlrCom", FnClearLastPlrCom);
 	AddFunc(pEngine, "GetPlrViewMode", FnGetPlrViewMode);
 	AddFunc(pEngine, "GetPlrView", FnGetPlrView);
 	AddFunc(pEngine, "GetWealth", FnGetWealth);
@@ -5900,6 +5909,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "LocateFunc", FnLocateFunc);
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "SetNextMission", FnSetNextMission);
+	AddFunc(pEngine, "GetPlayerControlState", FnGetPlayerControlState);
 	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 
 	AddFunc(pEngine, "goto", Fn_goto);

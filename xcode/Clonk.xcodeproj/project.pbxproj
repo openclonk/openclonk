@@ -259,6 +259,7 @@
 		5862E21C1032E57A002CAE9E /* gzio.c in Sources */ = {isa = PBXBuildFile; fileRef = 5862E1171032E57A002CAE9E /* gzio.c */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		D0AD7B7F0FCD7C1C00EAC39A /* C4PlayerControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D0AD7B7E0FCD7C1C00EAC39A /* C4PlayerControl.cpp */; };
 		D421AB4E0B8F50C000CAF2D6 /* SDL_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D421AB4D0B8F50C000CAF2D6 /* SDL_mixer.framework */; };
 		D421AB900B8F59D500CAF2D6 /* SDL_mixer.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D421AB4D0B8F50C000CAF2D6 /* SDL_mixer.framework */; };
 		D444F04C0B3EB6F8001B60F7 /* SDLMain.nib in Resources */ = {isa = PBXBuildFile; fileRef = D444F04A0B3EB6F8001B60F7 /* SDLMain.nib */; };
@@ -763,6 +764,8 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Clonk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clonk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D40626910BB9418400815E5D /* c4group.mac */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = c4group.mac; sourceTree = BUILT_PRODUCTS_DIR; };
+		D0AD7B7D0FCD7C0C00EAC39A /* C4PlayerControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4PlayerControl.h; sourceTree = "<group>"; };
+		D0AD7B7E0FCD7C1C00EAC39A /* C4PlayerControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4PlayerControl.cpp; sourceTree = "<group>"; };
 		D421AB4D0B8F50C000CAF2D6 /* SDL_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL_mixer.framework; sourceTree = "<group>"; };
 		D439C8EF0B8CB0F6001D508B /* gzio.c */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.c; name = gzio.c; path = ../standard/zlib/gzio.c; sourceTree = SOURCE_ROOT; };
 		D439C8FE0B8CB0F6001D508B /* zutil.h */ = {isa = PBXFileReference; fileEncoding = 12; lastKnownFileType = sourcecode.c.h; name = zutil.h; path = ../standard/zlib/zutil.h; sourceTree = SOURCE_ROOT; };
@@ -1024,6 +1027,7 @@
 		5862DF801032E57A002CAE9E /* game */ = {
 			isa = PBXGroup;
 			children = (
+				D0AD7B7E0FCD7C1C00EAC39A /* C4PlayerControl.cpp */,
 				5862DF811032E57A002CAE9E /* C4Constants.h */,
 				5862DF821032E57A002CAE9E /* C4GameVersion.h */,
 				5862DF831032E57A002CAE9E /* C4Physics.h */,
@@ -1550,6 +1554,7 @@
 			name = zlib;
 			sourceTree = "<group>";
 		};
+				D0AD7B7D0FCD7C0C00EAC39A /* C4PlayerControl.h */,
 		F4ED29E70B441665003F4D0A /* planet */ = {
 			isa = PBXGroup;
 			children = (
@@ -1731,7 +1736,9 @@
 				5862E1281032E57A002CAE9E /* C4WinMain.cpp in Sources */,
 				5862E1291032E57A002CAE9E /* C4Config.cpp in Sources */,
 				5862E12A1032E57A002CAE9E /* C4ConfigShareware.cpp in Sources */,
+				D0AD7B7F0FCD7C1C00EAC39A /* C4PlayerControl.cpp in Sources */,
 				5862E12B1032E57A002CAE9E /* C4SecurityCertificates.cpp in Sources */,
+				D0AD7B7F0FCD7C1C00EAC39A /* C4PlayerControl.cpp in Sources */,
 				5862E12C1032E57A002CAE9E /* C4Control.cpp in Sources */,
 				5862E12D1032E57A002CAE9E /* C4GameControl.cpp in Sources */,
 				5862E12E1032E57A002CAE9E /* C4GameParameters.cpp in Sources */,

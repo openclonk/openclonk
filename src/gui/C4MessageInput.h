@@ -47,10 +47,10 @@ class C4ChatInputDialog : public C4GUI::InputDialog
 	private:
 		bool KeyHistoryUpDown(bool fUp);
 		bool KeyCompleteNick(); // complete nick at cursor pos of edit
-		bool KeyPlrControl(C4KeyCodeEx key);
-		bool KeyGamepadControlDown(C4KeyCodeEx key);
-		bool KeyGamepadControlUp(C4KeyCodeEx key);
-		bool KeyGamepadControlPressed(C4KeyCodeEx key);
+		bool KeyPlrControl(const C4KeyCodeEx &key);
+		bool KeyGamepadControlDown(const C4KeyCodeEx &key);
+		bool KeyGamepadControlUp(const C4KeyCodeEx &key);
+		bool KeyGamepadControlPressed(const C4KeyCodeEx &key);
 		bool KeyBackspaceClose(); // close if chat text box is empty (on backspace)
 
 	protected:

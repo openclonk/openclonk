@@ -13,6 +13,10 @@
 
 */
 
+/*
+	TODO: Graphical feedback for disabled crew members (grey?)
+*/
+
 local crew, breathbar, magicbar, hotkey;
 
 public func BarSpacing() { return -5; }
@@ -72,7 +76,8 @@ public func MouseSelection(int plr)
 {
 	if(!crew) return false;
 	if(plr != GetOwner()) return false;
-
+	if(!(crew->GetCrewEnabled())) false;
+	
 	// select this clonk
 	crew->SetCursor(plr);
 	
@@ -99,7 +104,7 @@ public func SetHotkey(int num)
 {
 	if(num < 0 || num > 9)
 	{
-		SetGraphics(nil,nil,nil,12);
+		SetGraphics(nil,nil,12);
 		hotkey = false;
 		return;
 	}
@@ -146,7 +151,7 @@ public func UpdateRank()
 	var ranky = -15000;
 	
 	SetGraphics(nil,RANK,10,GFXOV_MODE_Action,Format("Rank%d",nrank));
-	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, nil, 10);
+	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, 10);
 	
 	// extra rank (the star if the clonk is too experienced for normal ranks)
 	if(brank > 0)
@@ -246,7 +251,7 @@ private func AddBreathBar()
 	SetBarLayers(4,1);
 	SetBarOffset(0,BarOffset(1),1);
 	SetBarDimensions(GetDefWidth(),BreathBarHeight(),1);
-	SetClrModulation(RGB(0,200,200),nil,5);
+	SetClrModulation(RGB(0,200,200),5);
 	
 	breathbar = true;
 	

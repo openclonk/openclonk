@@ -299,7 +299,8 @@ bool ContextMenu::KeyConfirm()
 	DoOK();
 	return true;
 	}
-bool ContextMenu::KeyHotkey(C4KeyCodeEx key)
+
+bool ContextMenu::KeyHotkey(const C4KeyCodeEx &key)
 	{
 	// not if focus is in submenu
 	if (pSubmenu) return false;

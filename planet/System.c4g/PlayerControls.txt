@@ -1,0 +1,538 @@
+[ControlDefs]
+
+	[ControlDef]
+	Identifier=None
+
+	# Summary
+	# --------
+	# Left Right Up Down Jump
+	# Throw Drop Use
+	#
+	# NextItem PreviousItem
+	#
+	# Grab Ungrab GrabPrevious GrabNext PushEnter
+	#
+	# Enter Exit
+	#
+	# Hotkey1 Hotkey2 Hotkey3 Hotkey4 Hotkey5 Hotkey6 Hotkey7 Hotkey8 Hotkey9
+	# Hotkey0
+	#
+	# NextCrew PreviousCrew AllCrew
+	# PlayerHotkey1 PlayerHotkey2 PlayerHotkey3 PlayerHotkey4 PlayerHotkey5 PlayerHotkey6
+	# PlayerHotkey7 PlayerHotkey8 PlayerHotkey9 PlayerHotkey0
+	#
+	# MenuCancel MenuOK MenuDown MenuUp MenuLeft MenuRight
+	# PlayerMenu 
+	
+	
+	# Movement
+	
+	[ControlDef]
+	Identifier=Left
+	GUIName=Left
+	GUIDesc=Move left
+	Hold=1
+
+	[ControlDef]
+	Identifier=Right
+	GUIName=Right
+	GUIDesc=Move right
+	Hold=1
+	
+	[ControlDef]
+	Identifier=Up
+	GUIName=Up
+	GUIDesc=Move up
+	Hold=1
+
+	[ControlDef]
+	Identifier=Down
+	GUIName=Down
+	GUIDesc=Move down
+	Hold=1
+
+	[ControlDef]
+	Identifier=Jump
+	GUIName=Jump
+	GUIDesc=Do the mario!
+	
+	# Inventory
+	
+	[ControlDef]
+	Identifier=Throw
+	GUIName=Throw
+	GUIDesc=Throw selected inventory item
+	Hold=1
+	RepeatDelay=5
+	InitialRepeatDelay=35
+
+	[ControlDef]
+	Identifier=Drop
+	GUIName=Drop
+	GUIDesc=Drop selected inventory item
+	Hold=1
+	RepeatDelay=5
+	InitialRepeatDelay=35
+	
+	[ControlDef]
+	Identifier=NextItem
+	GUIName=Select next
+	GUIDesc=Select next inventory item
+	
+	[ControlDef]
+	Identifier=PreviousItem
+	GUIName=Select previous
+	GUIDesc=Select previous inventory item
+	
+	
+	# Controlling (contents, vehicles, structures)
+	
+	[ControlDef]
+	Identifier=Use
+	GUIName=Use
+	GUIDesc=Use selected or controlled item
+	Hold=1
+	RepeatDelay=1
+	
+	[ControlDef]
+	Identifier=Grab
+	GUIName=Grab
+	GUIDesc=Grab vehicle
+	
+	[ControlDef]
+	Identifier=Ungrab
+	GUIName=Let go
+	GUIDesc=Let go vehicle
+	
+	[ControlDef]
+	Identifier=GrabPrevious
+	GUIName=Grab previous
+	GUIDesc=Grab the previous vehicle on the same spot
+	
+	[ControlDef]
+	Identifier=GrabNext
+	GUIName=Grab next
+	GUIDesc=Grab the next vehicle on the same spot
+	
+	[ControlDef]
+	Identifier=PushEnter
+	GUIName=Push into building
+	GUIDesc=Push the vehicle into the building
+	
+	[ControlDef]
+	Identifier=Enter
+	GUIName=Enter
+	GUIDesc=Go into the building
+	
+	[ControlDef]
+	Identifier=Exit
+	GUIName=Exit
+	GUIDesc=Exit the building
+	
+	
+	# Hotkeys (lower bar)
+	
+	[ControlDef]
+	Identifier=Hotkey1
+	GUIName=Select first
+	GUIDesc=Select first item
+	
+	[ControlDef]
+	Identifier=Hotkey2
+	GUIName=Select second
+	GUIDesc=Select second item
+	
+	[ControlDef]
+	Identifier=Hotkey3
+	GUIName=Select third
+	GUIDesc=Select third item
+	
+	[ControlDef]
+	Identifier=Hotkey4
+	GUIName=Select fourth
+	GUIDesc=Select fourth item
+	
+	[ControlDef]
+	Identifier=Hotkey5
+	GUIName=Select fifth
+	GUIDesc=Select fifth item
+
+	[ControlDef]
+	Identifier=Hotkey6
+	GUIName=Select sixth
+	GUIDesc=Select sixth item
+	
+	[ControlDef]
+	Identifier=Hotkey7
+	GUIName=Select seventh
+	GUIDesc=Select seventh item
+	
+	[ControlDef]
+	Identifier=Hotkey8
+	GUIName=Select eighth
+	GUIDesc=Select eighth item
+	
+	[ControlDef]
+	Identifier=Hotkey9
+	GUIName=Select ninth
+	GUIDesc=Select ninth item
+	
+	[ControlDef]
+	Identifier=Hotkey0
+	GUIName=Select tenth
+	GUIDesc=Select tenth item
+ 
+	# the stuff for the second item comes later
+	
+	# Crew 
+	
+	[ControlDef]
+	Identifier=NextCrew
+	GUIName=Next crew member
+	GUIDesc=Control next crew member
+	
+	[ControlDef]
+	Identifier=PreviousCrew
+	GUIName=Previous crew member
+	GUIDesc=Control previous crew member
+
+	[ControlDef]
+	Identifier=AllCrew
+	GUIName=All the crew
+	GUIDesc=Control all crew member at the same time
+	
+	[ControlDef]
+	Identifier=PlayerHotkey1
+	GUIName=Control first
+	GUIDesc=Control first crew member
+	
+	[ControlDef]
+	Identifier=PlayerHotkey2
+	GUIName=Control second
+	GUIDesc=Control second crew member
+	
+	[ControlDef]
+	Identifier=PlayerHotkey3
+	GUIName=Control third
+	GUIDesc=Control third crew member
+	
+	[ControlDef]
+	Identifier=PlayerHotkey4
+	GUIName=Control fourth
+	GUIDesc=Control fourth crew member
+		
+	[ControlDef]
+	Identifier=PlayerHotkey5
+	GUIName=Control fifth
+	GUIDesc=Control fifth crew member
+		
+	[ControlDef]
+	Identifier=PlayerHotkey6
+	GUIName=Control sixth
+	GUIDesc=Control sixth crew member
+		
+	[ControlDef]
+	Identifier=PlayerHotkey7
+	GUIName=Control seventh
+	GUIDesc=Control seventh crew member
+	
+	[ControlDef]
+	Identifier=PlayerHotkey8
+	GUIName=Control eighth
+	GUIDesc=Control eighth crew member
+ 
+	[ControlDef]
+	Identifier=PlayerHotkey9
+	GUIName=Control ninth
+	GUIDesc=Control ninth crew member
+	
+	[ControlDef]
+	Identifier=PlayerHotkey0
+	GUIName=Control tenth
+	GUIDesc=Control tenth crew member
+	
+	
+	# Menu control
+	
+	[ControlDef]
+	Identifier=MenuOK
+	GUIName=OK
+	GUIDesc=Confirm in menus
+	Action=MenuOK
+	
+	[ControlDef]
+	Identifier=MenuCancel
+	GUIName=Cancel
+	GUIDesc=Cancel or close the menu
+	Action=MenuCancel
+	
+	[ControlDef]
+	Identifier=MenuLeft
+	GUIName=Left
+	GUIDesc=In the menu
+	Action=MenuLeft
+	
+	[ControlDef]
+	Identifier=MenuRight
+	GUIName=Right
+	GUIDesc=In the menu
+	Action=MenuRight
+	
+	[ControlDef]
+	Identifier=MenuUp
+	GUIName=Up
+	GUIDesc=In the menu
+	Action=MenuUp
+	
+	[ControlDef]
+	Identifier=MenuDown
+	GUIName=Down
+	GUIDesc=In the menu
+	Action=MenuDown
+	
+	# Extra buttons...
+	
+	[ControlDef]
+	Identifier=PlayerMenu
+	GUIName=Player menu
+	GUIDesc=Open player menu
+	Action=Menu
+
+ 
+[ControlSets]
+
+	# x = DONE
+
+	# Summary
+	# --------
+	# MenuLeft, Left		x			A
+	# MenuRight, Right		x			D
+	# MenuUp, Up, Jump		x			W
+	# MenuDown, Down		x			S
+	#
+	# NextItem				x			Scrollwheel-Up		(now: Down)
+	# PreviousItem			x			Scrollwheel-Down	(now: Up)
+	# Hotkey0-9				x			(0-9)
+	#
+	# Use, Throw			x			Left mouse button		(now: Left)
+	# Throw					x			Shift+Left mouse button (now: X+Left)
+	# Drop					x			S+Left mouse button		(now: S+Left)
+	#
+	# PushEnter, GrabNext, Ungrab,
+	# Grab, Exit, Enter		x			Space
+	#
+	# PlayerHotkey0-9		x			X+(0-9)
+	# NextCrew				x			E
+	# PreviousCrew			x			Q
+	# 
+	# MenuOK				x			Return
+	# MenuCancel			x			Backspace
+	# 
+	# PlayerMenu			x			End
+	#
+	# GrabPrevious, AllCrew	x			Unassigned
+		
+
+	[ControlSet]
+	Name=Keyboard2Classic
+
+		[Assignment]
+		Key=A
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=D
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=S
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=W
+		Priority=50
+		Control=Up
+
+		[Assignment]
+		Key=W
+		Priority=10
+		Control=Jump
+
+		[Assignment]
+		Key=A
+		Priority=100
+		Control=MenuLeft
+
+		[Assignment]
+		Key=D
+		Priority=100
+		Control=MenuRight
+
+		[Assignment]
+		Key=S
+		Priority=100
+		Control=MenuDown
+
+		[Assignment]
+		Key=W
+		Priority=100
+		Control=MenuUp
+		
+		[Assignment]
+		Key=Return
+		Control=MenuOK
+		
+		[Assignment]
+		Key=Back
+		Control=MenuCancel
+		
+		[Assignment]
+		Key=Space
+		Priority=45
+		Control=PushEnter
+		
+		[Assignment]
+		Key=Space
+		Priority=40
+		Control=GrabNext
+		
+		[Assignment]
+		Key=Space
+		Priority=35
+		Control=Ungrab
+		
+		[Assignment]
+		Key=Space
+		Priority=30
+		Control=Grab
+		
+		[Assignment]
+		Key=Space
+		Priority=25
+		Control=Exit
+		
+		[Assignment]
+		Key=Space
+		Priority=20
+		Control=Enter
+		
+		[Assignment]
+		Key=0
+		Control=Hotkey0
+		
+		[Assignment]
+		Key=1
+		Control=Hotkey1
+		
+		[Assignment]
+		Key=2
+		Control=Hotkey2
+		
+		[Assignment]
+		Key=3
+		Control=Hotkey3
+		
+		[Assignment]
+		Key=4
+		Control=Hotkey4
+		
+		[Assignment]
+		Key=5
+		Control=Hotkey5
+		
+		[Assignment]
+		Key=6
+		Control=Hotkey6
+		
+		[Assignment]
+		Key=7
+		Control=Hotkey7
+		
+		[Assignment]
+		Key=8
+		Control=Hotkey8
+		
+		[Assignment]
+		Key=9
+		Control=Hotkey9
+		
+		[Assignment]
+		Key=X,0
+		Control=Hotkey0
+		
+		[Assignment]
+		Key=X,1
+		Control=PlayerHotkey1
+		
+		[Assignment]
+		Key=X,2
+		Control=PlayerHotkey2
+		
+		[Assignment]
+		Key=X,3
+		Control=PlayerHotkey3
+		
+		[Assignment]
+		Key=X,4
+		Control=PlayerHotkey4
+		
+		[Assignment]
+		Key=X,5
+		Control=PlayerHotkey5
+		
+		[Assignment]
+		Key=X,6
+		Control=PlayerHotkey6
+		
+		[Assignment]
+		Key=X,7
+		Control=PlayerHotkey7
+		
+		[Assignment]
+		Key=X,8
+		Control=PlayerHotkey8
+		
+		[Assignment]
+		Key=X,9
+		Control=PlayerHotkey9
+		
+		[Assignment]
+		Key=Q
+		Control=PreviousCrew
+		
+		[Assignment]
+		Key=E
+		Control=NextCrew
+		
+		[Assignment]
+		Key=End
+		Control=PlayerMenu
+		
+		[Assignment]
+		Key=Up
+		Control=PreviousItem
+		
+		[Assignment]
+		Key=Down
+		Control=NextItem
+		
+		[Assignment]
+		Key=Left
+		Priority=100
+		Control=Use
+		
+		[Assignment]
+		Key=Left
+		Priority=50
+		Control=Throw
+		
+		[Assignment]
+		Key=X,Left
+		Control=Throw
+		
+		[Assignment]
+		Key=S,Left
+		Control=Drop

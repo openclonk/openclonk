@@ -43,8 +43,7 @@ void C4LSector::Init(int ix, int iy)
 void C4LSector::Clear()
 	{
 	// clear objects
-	Objects.Clear();
-	ObjectShapes.Clear();
+	ClearObjects();
 	}
 
 void C4LSector::CompileFunc(StdCompiler *pComp)
@@ -53,6 +52,13 @@ void C4LSector::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkIntAdapt(y), "y"));
 	pComp->Value(mkNamingAdapt(Objects, "Objects"));
 	pComp->Value(mkNamingAdapt(ObjectShapes, "ObjectShapes"));
+	}
+
+void C4LSector::ClearObjects()
+	{
+	// clear objects
+	Objects.Clear();
+	ObjectShapes.Clear();
 	}
 
 /* sector map */
@@ -224,6 +230,15 @@ bool C4LSectors::CheckSort()
 			return false;
 	if (!SectorOut.Objects.CheckSort(&::Objects)) return false;
 	return true;
+	}
+
+void C4LSectors::ClearObjects()
+	{
+	if (Sectors)
+		{
+		for (int cnt=0; cnt<Size; cnt++) Sectors[cnt].ClearObjects();
+		}
+	SectorOut.ClearObjects();
 	}
 
 /* landscape area */

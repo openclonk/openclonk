@@ -149,7 +149,7 @@ int C4PlayerList::CheckColorDw(DWORD dwColor, C4Player *pExclude)
 bool C4PlayerList::ControlTaken(int iControl) const
   {
   for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-    if (pPlr->Control==iControl)
+    if (pPlr->ControlSet==iControl)
 			if (pPlr->LocalControl)
 				return true;
   return false;
@@ -193,7 +193,7 @@ C4Player* C4PlayerList::GetLocalByKbdSet(int iKbdSet) const
 	{
   for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->LocalControl)
-			if (pPlr->Control==iKbdSet)
+			if (pPlr->ControlSet==iKbdSet)
 				return pPlr;
 	return NULL;
 	}
@@ -653,7 +653,7 @@ void C4PlayerList::DenumeratePointers()
 int C4PlayerList::ControlTakenBy(int iControl) const
 	{
   for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-    if (pPlr->Control==iControl)
+    if (pPlr->ControlSet==iControl)
 			if (pPlr->LocalControl)
 				return pPlr->Number;
   return NO_OWNER;

@@ -2777,7 +2777,7 @@ bool C4Landscape::Mat2Pal()
 		for (rgb=0; rgb<3; rgb++)
 			Surface8->pPal->Colors[MatTex2PixCol(tex)*3+rgb]
 				= Surface8->pPal->Colors[(MatTex2PixCol(tex)+IFT)*3+rgb]
-				= dwPix >> ((2-rgb) * 8);
+				= uint8_t(dwPix >> ((2-rgb) * 8));
 		// alpha
 		Surface8->pPal->Alpha[MatTex2PixCol(tex)] = 0xff;
 		Surface8->pPal->Alpha[MatTex2PixCol(tex)+IFT] = 0xff;

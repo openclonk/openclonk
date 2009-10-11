@@ -1444,10 +1444,10 @@ StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 	// player control
 	if (pPlr)
 		{
-		if (Inside<int32_t>(pPlr->Control,C4P_Control_Keyboard1,C4P_Control_Keyboard4))
-			return C4KeyCodeEx::KeyCode2String(Config.Controls.Keyboard[pPlr->Control][iControl], true, fShort);
-		if (Inside<int32_t>(pPlr->Control,C4P_Control_GamePad1,C4P_Control_GamePadMax))
-			return C4KeyCodeEx::KeyCode2String(Config.Gamepads[pPlr->Control-C4P_Control_GamePad1].Button[iControl], true, fShort);
+		if (Inside<int32_t>(pPlr->ControlSet,C4P_Control_Keyboard1,C4P_Control_Keyboard4))
+			return C4KeyCodeEx::KeyCode2String(Config.Controls.Keyboard[pPlr->ControlSet][iControl], true, fShort);
+		if (Inside<int32_t>(pPlr->ControlSet,C4P_Control_GamePad1,C4P_Control_GamePadMax))
+			return C4KeyCodeEx::KeyCode2String(Config.Gamepads[pPlr->ControlSet-C4P_Control_GamePad1].Button[iControl], true, fShort);
 		}
 	// global control
 	else
@@ -1498,24 +1498,8 @@ void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
 			ty = cgo.Y+15;
 			break;
 		}
-	int32_t iShowCtrl = ::Players.Get(Player)->ShowControl;
-	int32_t iLastCtrl = Com2Control(::Players.Get(Player)->LastCom);
-	int32_t scwdt=size/3,schgt=size/4;
-	bool showtext;
 
-	const int32_t C4MaxShowControl = 10;
-
-	for (int32_t iCtrl=0; iCtrl<C4MaxShowControl; iCtrl++)
-		if (iShowCtrl & (1<<iCtrl))
-			{
-			showtext= iShowCtrl & (1<<(iCtrl+C4MaxShowControl)) ;
-      if (iShowCtrl & (1<<(iCtrl+2*C4MaxShowControl)))
-				if (::Game.iTick35>18) showtext=false;
-			C4Facet ccgo;
-			ccgo.Set(cgo.Surface,tx+scwdt*(iCtrl%3),ty+schgt*(iCtrl/3),scwdt,schgt);
-			DrawControlKey(ccgo,iCtrl,(iLastCtrl==iCtrl) ? 1 : 0,
-				showtext ? PlrControlKeyName(Player,iCtrl,true).getData() : NULL);
-			}
+	// TODO
 	}
 
 extern int32_t DrawMessageOffset;
@@ -1533,20 +1517,20 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 												cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2+55,
 												cgo.Y+cgo.Hgt * 2/3 - 10 + DrawMessageOffset,
 												0,0);
-	if (Inside<int32_t>(pPlr->Control,C4P_Control_Keyboard1,C4P_Control_Keyboard4))
+	if (Inside<int32_t>(pPlr->ControlSet,C4P_Control_Keyboard1,C4P_Control_Keyboard4))
 		{
 		GfxR->fctKeyboard.Draw(cgo.Surface,
 													 cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2,
 													 cgo.Y+cgo.Hgt * 2/3 + DrawMessageOffset,
-													 pPlr->Control-C4P_Control_Keyboard1,0);
+													 pPlr->ControlSet-C4P_Control_Keyboard1,0);
 		iNameHgtOff=GfxR->fctKeyboard.Hgt;
 		}
-	else if (Inside<int32_t>(pPlr->Control,C4P_Control_GamePad1,C4P_Control_GamePad4))
+	else if (Inside<int32_t>(pPlr->ControlSet,C4P_Control_GamePad1,C4P_Control_GamePad4))
 		{
 		GfxR->fctGamepad.Draw(cgo.Surface,
 													 cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2,
 													 cgo.Y+cgo.Hgt * 2/3 + DrawMessageOffset,
-													 pPlr->Control-C4P_Control_GamePad1,0);
+													 pPlr->ControlSet-C4P_Control_GamePad1,0);
 		iNameHgtOff=GfxR->fctGamepad.Hgt;
 		}
 

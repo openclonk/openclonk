@@ -14,7 +14,7 @@
 				<param><type>int</type><name>iIndex</name><desc>Index des Clonks in der Crew</desc></param>
 			</params>
 		</syntax>
-		<desc>Gibt ein Mannschaftsmitglied eines Spielers zurück.</desc>
+		<desc>Gibt ein Mannschaftsmitglied eines Spielers zurück. Wird ein ungültiger Index angegeben, gibt die Funktion nil zurück.</desc>
 		<examples>
 			<example>
 				<code>var i=<funclink>GetCrewCount</funclink>(0); <funclink>while</funclink> (i--) <funclink>Kill</funclink>(GetCrew(0, i));</code>
