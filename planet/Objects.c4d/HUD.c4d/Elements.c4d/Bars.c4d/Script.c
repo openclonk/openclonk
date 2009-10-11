@@ -29,8 +29,8 @@ public func SetBarOffset(int x, int y, int num)
 public func RemoveBarLayers(int la)
 {
 	// remove layers
-	SetGraphics(nil,nil,nil,la);
-	SetGraphics(nil,nil,nil,la+1);
+	SetGraphics(nil,nil,la);
+	SetGraphics(nil,nil,la+1);
 }
 
 public func SetBarLayers(int la, int num)

@@ -2741,7 +2741,7 @@ static C4Object *FnGetCaptain(C4AulContext *cthr, long iPlr)
 static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoSelectMark, bool fNoSelectArrow, bool fNoSelectCrew)
   {
 	C4Player *pPlr = ::Players.Get(iPlr);
-	if (!pPlr || (pObj && !pObj->Status)) return false;
+	if (!pPlr || (pObj && !pObj->Status) || (pObj && pObj->CrewDisabled)) return false;
 	pPlr->SetCursor(pObj, !fNoSelectMark, !fNoSelectArrow);
 	if (!fNoSelectCrew) pPlr->SelectCrew(pObj, true);
 	return true;

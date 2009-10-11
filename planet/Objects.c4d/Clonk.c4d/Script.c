@@ -1,6 +1,7 @@
 /*-- Der Clonk --*/
 
 #strict 2
+#include HUDS
 
 // Zauberei - ben�tigt, wenn der Clonk Zielzauber z.B. aus dem Zauberturm zaubert
 // Auch ben�tigt f�r den K�nig
@@ -43,6 +44,8 @@ protected func Swimming2()
 protected func Recruitment(int iPlr) {
   // Broadcast f�r Crew
   GameCallEx("OnClonkRecruitment", this, iPlr);
+  
+  _inherited(...);
 }
 
 /* Kontext */
@@ -73,82 +76,12 @@ public func FindTree()
 
 /* Steuerung */
 
-public func GetInteractionTarget()
-{
-  // Contained interaction target
-  var container = Contained();
-  if (container)
-  {
-    if (container->GetCategory() & (C4D_Structure | C4D_Vehicle)) return container;
-  }
-  // Procedure interaction target
-  // (Except for FIGHT, of course. You can't control your enemy ;))
-  var proc = GetProcedure();
-  if (proc == "PUSH" || proc == "PULL" || proc == "BUILD") return GetActionTarget();
-  // First contents object interaction target
-  return Contents(0);
-}
-
-public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
-{
-  // Generic movement
-  if (inherited(plr, ctrl, x, y, strength, repeat, release)) return true;
-  var proc = GetProcedure();
-  // Handled by InteractionTarget?
-  var interaction_target = GetInteractionTarget();
-  if (interaction_target)
-  {
-    if (interaction_target->ObjectControl(plr, ctrl, x,y, strength, repeat, release)) return true;
-  }
-  // Dolphin jump
-  if (ctrl == CON_DolphinJump) return DolphinJump();
-  // Context menu
-  else if (ctrl == CON_Context)
-  {
-    // Context menu of interaction target (fallback to this if no interaction target)
-    if (!interaction_target) interaction_target = this;
-    SetCommand(this,"Context",0,0,0,interaction_target);
-    return ExecuteCommand();
-  }
-  // Throw
-  else if (ctrl == CON_Throw)
-  {
-    // During Scale+Hangle, this means "Drop". During dig, this means object dig out request. Otherwise, throw.
-    if (proc == "DIG")
-      return SetActionData(!GetActionData());
-    else if (proc == "SCALE" || proc == "HANGLE")
-      return PlayerObjectCommand(plr, false, "Drop");
-    else
-      return PlayerObjectCommand(plr, false, "Throw");
-  }
-  // Dig
-  else if (ctrl == CON_Dig)
-  {
-    if (proc == "DIG")
-    {
-      // Currently, another press on dig ends digging. Maybe changed once we have the shovel system?
-      SetAction("Walk");
-      return true;
-    }
-    else if (proc == "WALK")
-    {
-      if (!GetPhysical("Dig")) return false;
-      if (!SetAction("Dig")) return false;
-      SetActionData(0);
-      return true;
-    }
-    // Can't dig now
-    return false;
-  }
-  // Unhandled
-  return false;
-}
 
 private func DolphinJump()
 {
   // nur wenn an Meeresoberfl�che
-  if(!InLiquid()) return 0;
-  if(GBackSemiSolid(0,-1)) return 0;
+  if(!InLiquid()) return false;
+  if(GBackSemiSolid(0,-1)) return false;
   // Nicht wenn deaktiviert (z.B. Ohnmacht)
   if (GetID()->GetActMapVal("ObjectDisabled", GetAction())) return false;
   // herausspringen
@@ -160,6 +93,8 @@ private func DolphinJump()
   if(SimFlight(iX,iY,iXDir,iYDir,25,50))
     if(GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+9-GetY()))
       SetAction("Dive");
+	  
+  return true;
 }
 
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)

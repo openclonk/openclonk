@@ -18,9 +18,9 @@ Rules=CNMT=1
 
 [Player1]
 Wealth=50,0,0,250
-Crew=CLNK=1
-Buildings=HUT2=1
-Material=FLAG=1
+Crew=CLNK=2
+Buildings=TWKS=1
+Material=ROCK=3;LORY=2
 Knowledge=HUT2=0;HUT3=0;ELEV=0;SAWM=0;CST1=0
 HomeBaseMaterial=CNKT=5;LOAM=5;WOOD=10;METL=5;FLNT=5;TFLN=5;LORY=1;CATA=1;BALN=1;CLNK=2
 HomeBaseProduction=CNKT=5;LOAM=5;WOOD=10;METL=5;FLNT=5;TFLN=5;LORY=1;CATA=1

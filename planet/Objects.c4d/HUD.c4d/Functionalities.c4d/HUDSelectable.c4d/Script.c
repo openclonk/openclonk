@@ -1,5 +1,3 @@
-#strict 2
-#appendto CLNK
 
 local selector;
 
@@ -23,6 +21,5 @@ protected func Recruitment(int iPlr)
 {
 	if(!FindObject(Find_ID(HUDC),Find_Owner(iPlr)))
 		CreateObject(HUDC,10,10,iPlr);
-		
-	return _inherited(...);
+
 }
