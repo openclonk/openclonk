@@ -273,6 +273,9 @@ private func ObjectControlPush(int plr, int ctrl)
 	{
 		if (proc != "PUSH") return false;
 		
+		// respect no push enter
+		if (GetActionTarget()->GetDefCoreVal("NoPushEnter","DefCore")) return false;
+		
 		// a building with an entrance at right position is there?
 		var obj = GetActionTarget()->GetEntranceObject();
 		if (!obj) return false;
