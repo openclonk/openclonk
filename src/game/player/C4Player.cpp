@@ -74,8 +74,6 @@ bool C4Player::ObjectInCrew(C4Object *tobj)
 
 void C4Player::ClearPointers(C4Object *pObj, bool fDeath)
   {
-	// Game
-	if (Captain==pObj) Captain=NULL;
 	// Crew
 	while (Crew.Remove(pObj)) {}
   // Cursor
@@ -782,10 +780,6 @@ bool C4Player::FinalInit(bool fInitialValue)
 	// Cursor
 	if (!Cursor) AdjustCursorCommand();
 
-	// Assign Captain
-	if (::Objects.Find(C4Id("KILC")))
-		if (!Captain) Captain=GetHiRankActiveCrew(false);
-
 	// Update counts, pointers, views, value
 	UpdateValue();
   Execute();
@@ -1387,7 +1381,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(CursorFlash,     		"CursorFlash",          0));
 	pComp->Value(mkNamingAdapt((int32_t&)Cursor,    "Cursor",               0));
 	pComp->Value(mkNamingAdapt((int32_t&)ViewCursor,"ViewCursor",           0));
-	pComp->Value(mkNamingAdapt((int32_t&)Captain,   "Captain",              0));
 	pComp->Value(mkNamingAdapt(CursorSelection, 		"CursorSelection",      0));
 	pComp->Value(mkNamingAdapt(CursorToggled,   		"CursorToggled",        0));
 	pComp->Value(mkNamingAdapt(MessageStatus,   		"MessageStatus",        0));
@@ -1514,7 +1507,6 @@ void C4Player::DefaultRuntimeData()
 	Points=0;
   Value=InitialValue=ValueGain=0;
   ObjectsOwned=0;
-	Captain=NULL;
 	ProductionDelay=ProductionUnit=0;
 	Cursor=ViewCursor=NULL;
 	SelectCount=0;
@@ -1556,8 +1548,6 @@ void C4Player::EnumeratePointers()
 	Cursor = ::Objects.Enumerated(Cursor);
 	// ViewCursor
 	ViewCursor = ::Objects.Enumerated(ViewCursor);
-	// Captain
-	Captain = ::Objects.Enumerated(Captain);
 	// messageboard-queries
 	for (C4MessageBoardQuery *pCheck = pMsgBoardQuery; pCheck; pCheck = pCheck->pNext)
 		pCheck->nCallbackObj = pCheck->pCallbackObj ? ::Objects.ObjectNumber(pCheck->pCallbackObj) : 0;
@@ -1571,8 +1561,6 @@ void C4Player::DenumeratePointers()
 	Cursor = ::Objects.Denumerated(Cursor);
 	// ViewCursor
 	ViewCursor = ::Objects.Denumerated(ViewCursor);
-	// Captain
-	Captain = ::Objects.Denumerated(Captain);
 	// messageboard-queries
 	for (C4MessageBoardQuery *pCheck = pMsgBoardQuery; pCheck; pCheck = pCheck->pNext)
 		pCheck->pCallbackObj = pCheck->nCallbackObj ? ::Objects.ObjectPointer(pCheck->nCallbackObj) : NULL;

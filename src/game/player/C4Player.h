@@ -101,7 +101,6 @@ class C4Player: public C4PlayerInfoCore
     int32_t Wealth,Points;
     int32_t Value,InitialValue,ValueGain;
     int32_t ObjectsOwned;
-		C4Object *Captain;
 		C4IDList Hostility;
     // Home Base
     C4IDList HomeBaseMaterial;

@@ -935,7 +935,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 			ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+C4SymbolBorder,3*C4SymbolSize,C4SymbolSize);
 			cursor->Info->Draw(	ccgo,
 													Config.Graphics.ShowPortraits, // && ::Players.Get(Player)->CursorFlash,
-													(cursor == ::Players.Get(Player)->Captain), cursor );
+													 cursor );
 			C4ST_STOP(ObjInfStat)
 			}
 
@@ -956,27 +956,6 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 		}
 
 	C4ST_STOP(ContStat)
-
-
-	// Draw energy levels
-	if (cursor->ViewEnergy || Config.Graphics.ShowPlayerInfoAlways)
-		if (cgo.Hgt>2*C4SymbolSize+2*C4SymbolBorder)
-			{
-			int32_t cx = C4SymbolBorder;
-			C4ST_STARTNEW(EnStat, "C4Viewport::DrawCursorInfo: Energy")
-			int32_t bar_wdt = ::GraphicsResource.fctEnergyBars.Wdt;
-			int32_t iYOff = Config.Graphics.ShowPortraits ? 10 : 0;
-			// Energy
-			ccgo.Set(cgo.Surface,cgo.X+cx,cgo.Y+C4SymbolSize+2*C4SymbolBorder+iYOff,bar_wdt,cgo.Hgt-3*C4SymbolBorder-2*C4SymbolSize-iYOff);
-			cursor->DrawEnergy(ccgo); ccgo.X+=bar_wdt+1;
-			// Magic energy
-			if (cursor->MagicEnergy)
-				{ cursor->DrawMagicEnergy(ccgo); ccgo.X+=bar_wdt+1; }
-			// Breath
-			if (cursor->Breath && (cursor->Breath<cursor->GetPhysical()->Breath))
-				{ cursor->DrawBreath(ccgo); ccgo.X+=bar_wdt+1; }
-			C4ST_STOP(EnStat)
-			}
 
 	// Draw commands
 	if (Config.Graphics.ShowCommands /*|| ::MouseControl.IsViewport(this)*/ ) // Now, ShowCommands is respected even for mouse control

@@ -51,7 +51,7 @@ class C4ObjectInfo: public C4ObjectInfoCore
 	  void Retire();
 	  void Recruit();
 	  void SetBirthday();
-	  void Draw(C4Facet &cgo, bool fShowPortrait, bool fShowCaptain, C4Object *pOfObj);
+	  void Draw(C4Facet &cgo, bool fShowPortrait, C4Object *pOfObj);
 	  bool Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs);
 	  bool Load(C4Group &hGroup, bool fLoadPortrait);
 	  bool Load(C4Group &hMother, const char *szEntryname, bool fLoadPortrait);

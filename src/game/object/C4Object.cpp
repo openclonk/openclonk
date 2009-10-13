@@ -2567,25 +2567,6 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	FinishedDrawing();
 	}
 
-void C4Object::DrawEnergy(C4Facet &cgo)
-	{
-	//cgo.DrawEnergyLevel(Energy,GetPhysical()->Energy);
-	cgo.DrawEnergyLevelEx(Energy,GetPhysical()->Energy, ::GraphicsResource.fctEnergyBars, 0);
-	}
-
-void C4Object::DrawMagicEnergy(C4Facet &cgo)
-	{
-	// draw in units of MagicPhysicalFactor, so you can get a full magic energy bar by script even if partial magic energy training is not fulfilled
-	//cgo.DrawEnergyLevel(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor,39);
-	cgo.DrawEnergyLevelEx(MagicEnergy/MagicPhysicalFactor,GetPhysical()->Magic/MagicPhysicalFactor, ::GraphicsResource.fctEnergyBars, 1);
-	}
-
-void C4Object::DrawBreath(C4Facet &cgo)
-	{
-	//cgo.DrawEnergyLevel(Breath,GetPhysical()->Breath,99);
-	cgo.DrawEnergyLevelEx(Breath,GetPhysical()->Breath, ::GraphicsResource.fctEnergyBars, 2);
-	}
-
 void C4Object::CompileFunc(StdCompiler *pComp)
 	{
   bool fCompiler = pComp->isCompiler();

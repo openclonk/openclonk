@@ -298,7 +298,7 @@ void C4ObjectInfo::Clear()
 	pDef=NULL;
 	}
 
-void C4ObjectInfo::Draw(C4Facet &cgo, bool fShowPortrait, bool fCaptain, C4Object *pOfObj)
+void C4ObjectInfo::Draw(C4Facet &cgo, bool fShowPortrait, C4Object *pOfObj)
 	{
 
 	int iX=0;
@@ -317,13 +317,6 @@ void C4ObjectInfo::Draw(C4Facet &cgo, bool fShowPortrait, bool fCaptain, C4Objec
 			pPortraitGfx->DrawClr(ccgo, true, dwColor);
 			iX+=4*cgo.Hgt/3;
 			}
-		}
-
-	// Captain symbol
-	if (fCaptain)
-		{
-		::GraphicsResource.fctCaptain.Draw(cgo.Surface,cgo.X+iX,cgo.Y,0,0);
-		iX+=::GraphicsResource.fctCaptain.Wdt;
 		}
 
 	// Rank symbol

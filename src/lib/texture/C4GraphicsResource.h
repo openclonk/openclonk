@@ -73,7 +73,6 @@ class C4GraphicsResource
 		C4FacetID fctHand;
 		C4FacetID fctGamepad;
 		C4FacetID fctBuild;
-		C4FacetID fctEnergyBars;
 		C4Facet fctCursor;
 		C4Facet fctDropTarget;
 		C4Facet fctInsideSymbol;

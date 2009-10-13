@@ -2753,12 +2753,6 @@ static C4Object *FnGetViewCursor(C4AulContext *cthr, long iPlr)
 	return pPlr ? pPlr->ViewCursor : NULL;
 	}
 
-static C4Object *FnGetCaptain(C4AulContext *cthr, long iPlr)
-  {
-  if (!ValidPlr(iPlr)) return false;
-  return ::Players.Get(iPlr)->Captain;
-  }
-
 static bool FnSetCursor(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fNoSelectMark, bool fNoSelectArrow, bool fNoSelectCrew)
   {
 	C4Player *pPlr = ::Players.Get(iPlr);
@@ -2790,7 +2784,7 @@ static bool FnSelectCrew(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fSe
 	return true;
   }
 
-static bool FnGetCrewSelected(C4AulContext *cthr)
+static bool FnGetCrewSelected(C4AulObjectContext *cthr)
 	{
 	return !!cthr->Obj->Select;
 	}
@@ -5767,7 +5761,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "CreateScriptPlayer", FnCreateScriptPlayer);
 	AddFunc(pEngine, "GetCursor", FnGetCursor);
 	AddFunc(pEngine, "GetViewCursor", FnGetViewCursor);
-	AddFunc(pEngine, "GetCaptain", FnGetCaptain);
 	AddFunc(pEngine, "SetCursor", FnSetCursor);
 	AddFunc(pEngine, "SetViewCursor", FnSetViewCursor);
 	AddFunc(pEngine, "SelectCrew", FnSelectCrew);

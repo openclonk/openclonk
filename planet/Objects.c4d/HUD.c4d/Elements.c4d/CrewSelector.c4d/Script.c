@@ -158,7 +158,11 @@ public func UpdateRank()
 	var rankx = -1000 * GetDefWidth()/2 + 10000;
 	var ranky = -15000;
 	
-	SetGraphics(nil,RANK,10,GFXOV_MODE_Action,Format("Rank%d",nrank));
+	// different rank symbols for different clonks possible
+	var idRank = crew->~RankSymbolsID();
+	if(!idRank) idRank = RANK;
+	
+	SetGraphics(nil,idRank,10,GFXOV_MODE_Action,Format("Rank%d",nrank));
 	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, 10);
 	
 	// extra rank (the star if the clonk is too experienced for normal ranks)
