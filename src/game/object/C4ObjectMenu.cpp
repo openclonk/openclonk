@@ -138,9 +138,8 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 	C4FacetSurface fctSymbol;
 	C4Object *pObj;
 	char szCaption[256+1],szCommand[256+1],szCommand2[256+1];
-	int32_t cnt,iCount;
+	int32_t iCount;
 	C4Def *pDef;
-	C4Player *pPlayer;
 	C4IDList ListItems;
 	C4Object *pTarget;
 	C4Facet fctTarget;

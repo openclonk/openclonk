@@ -194,7 +194,6 @@ void C4DefScriptHost::AfterLink()
 	{
 	C4AulScript::AfterLink();
 	// Search cached functions
-	char WhereStr[C4MaxName+18];
 	SFn_CalcValue       = GetSFunc(PSF_CalcValue      , AA_PROTECTED);
 	SFn_SellTo          = GetSFunc(PSF_SellTo         , AA_PROTECTED);
 	SFn_ControlTransfer = GetSFunc(PSF_ControlTransfer, AA_PROTECTED);

@@ -237,11 +237,11 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			case WM_LBUTTONDOWN:
 				// movement update needed before, so target is always up-to-date
 				Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam);
-				Console.EditCursor.LeftButtonDown(wParam & MK_CONTROL); break;
+				Console.EditCursor.LeftButtonDown(!!(wParam & MK_CONTROL)); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 			case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp();	break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONDOWN: Console.EditCursor.RightButtonDown(wParam & MK_CONTROL);	break;
+			case WM_RBUTTONDOWN: Console.EditCursor.RightButtonDown(!!(wParam & MK_CONTROL));	break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 			case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
@@ -283,8 +283,8 @@ bool C4Viewport::DropFiles(HANDLE hDrop)
 
 void UpdateWindowLayout(HWND hwnd)
 	{
-	bool fMinimized = IsIconic(hwnd);
-	bool fMaximized = IsZoomed(hwnd);
+	bool fMinimized = !!IsIconic(hwnd);
+	bool fMaximized = !!IsZoomed(hwnd);
 	RECT rect;
 	GetWindowRect(hwnd,&rect);
 	MoveWindow(hwnd,rect.left,rect.top,rect.right-rect.left-1,rect.bottom-rect.top,true);
@@ -934,7 +934,7 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 			C4ST_STARTNEW(ObjInfStat, "C4Viewport::DrawCursorInfo: Object info")
 			ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+C4SymbolBorder,3*C4SymbolSize,C4SymbolSize);
 			cursor->Info->Draw(	ccgo,
-													Config.Graphics.ShowPortraits, // && ::Players.Get(Player)->CursorFlash,
+													!!Config.Graphics.ShowPortraits, // && ::Players.Get(Player)->CursorFlash,
 													 cursor );
 			C4ST_STOP(ObjInfStat)
 			}

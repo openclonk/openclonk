@@ -1014,9 +1014,9 @@ bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 	bool fResult;
 	const char *wd = GetWorkingDirectory();
 	if (fSave)
-		fResult = GetSaveFileName(&ofn);
+		fResult = !!GetSaveFileName(&ofn);
 	else
-		fResult = GetOpenFileName(&ofn);
+		fResult = !!GetOpenFileName(&ofn);
 
 	// Reset working directory to exe path as Windows file dialog might have changed it
 	SetCurrentDirectory(wd);
@@ -1287,7 +1287,7 @@ bool C4Console::AddMenuItem(HMENU hMenu, DWORD dwID, const char *szString, bool 
 	minfo.dwTypeData = (char*) szString;
 	minfo.cch = SLen(szString);
 	if (!fEnabled) minfo.fState|=MFS_GRAYED;
-	return InsertMenuItem(hMenu,0,false,&minfo);
+	return !!InsertMenuItem(hMenu,0,false,&minfo);
 	}
 
 #endif // _WIN32

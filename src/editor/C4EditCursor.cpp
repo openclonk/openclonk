@@ -334,7 +334,7 @@ bool C4EditCursor::LeftButtonUp()
 #ifdef _WIN32
 bool SetMenuItemEnable(HMENU hMenu, WORD id, bool fEnable)
 	{
-	return EnableMenuItem(hMenu,id,MF_BYCOMMAND | MF_ENABLED | ( fEnable ? 0 : MF_GRAYED));
+	return !!EnableMenuItem(hMenu,id,MF_BYCOMMAND | MF_ENABLED | ( fEnable ? 0 : MF_GRAYED));
 	}
 
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
@@ -347,7 +347,7 @@ bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
 	minfo.wID = id;
 	minfo.dwTypeData = (char*) szText;
 	minfo.cch = SLen(szText);
-	return SetMenuItemInfo(hMenu,id,false,&minfo);
+	return !!SetMenuItemInfo(hMenu,id,false,&minfo);
 	}
 #endif
 
