@@ -1639,24 +1639,24 @@ void C4Player::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewH
 	}
 
 void C4Player::InitControl()
-	{
+{
 	// Check local control
 	LocalControl = false;
 	if (AtClient == ::Control.ClientID())
 		if (!GetInfo() || GetInfo()->GetType() == C4PT_User)
 			LocalControl=true;
-  // Set control
-  ControlSet=C4P_Control_None;
+	// Set control
+	ControlSet=C4P_Control_None;
 	// Preferred control
-  int32_t iControl = PrefControl;
+	int32_t iControl = PrefControl;
 	// gamepad control safety
 	if (Inside<int32_t>(iControl, C4P_Control_GamePad1, C4P_Control_GamePadMax) && !Config.General.GamepadEnabled)
-		{
+	{
 		iControl = C4P_Control_Keyboard1;
-		}
+	}
 	// Choose next while control taken
 	if (::Players.ControlTaken(iControl))
-		{
+	{
 		// Preferred control taken, search for available keyboard control
 		for (iControl=C4P_Control_Keyboard1; iControl<=C4P_Control_Keyboard2; iControl++)
 			if (!::Players.ControlTaken(iControl)) // Available control found
@@ -1664,15 +1664,15 @@ void C4Player::InitControl()
 		// No available control found
 		if (iControl>C4P_Control_Keyboard2)
 			iControl=C4P_Control_None;
-		}
+	}
 	// Set control
 	ControlSet=iControl;
 	// init gamepad
 	if (pGamepad) { delete pGamepad; pGamepad=NULL; }
 	if (Inside<int32_t>(ControlSet, C4P_Control_GamePad1, C4P_Control_GamePadMax))
-		{
+	{
 		pGamepad = new C4GamePadOpener(ControlSet - C4P_Control_GamePad1);
-		}
+	}
 	// Mouse
 	if (PrefMouse && !::Control.isReplay())
 		if (!Game.C4S.Head.DisableMouse)
@@ -1686,8 +1686,26 @@ void C4Player::InitControl()
 	// init control callbacks
 	StdStrBuf sKeysetName;
 	sKeysetName.Format("Keyboard%d%s", ControlSet, PrefControlStyle ? "" : "Classic");
-	Control.RegisterKeyset(Number, Game.PlayerControlAssignmentSets.GetSetByName(sKeysetName.getData()));
+	C4PlayerControlAssignmentSet *keyset = Game.PlayerControlAssignmentSets.GetSetByName(sKeysetName.getData());
+	if (!keyset)
+	{
+		// the correct keyset could not be found. fallback to something useful...
+		if (!PrefControlStyle)
+		{
+			keyset = Game.PlayerControlAssignmentSets.GetSetByName("Keyboard*Classic");
+		}
+		if (!keyset)
+		{
+			keyset = Game.PlayerControlAssignmentSets.GetSetByName("Keyboard*");
+		}
+		if (!keyset)
+		{
+			// now we're really desperate...
+			keyset = Game.PlayerControlAssignmentSets.GetSetByName("*");
+		}
 	}
+	Control.RegisterKeyset(Number, keyset);
+}
 
 int igOffX, igOffY;
 

@@ -465,12 +465,12 @@ bool C4PlayerControlAssignmentSets::ResolveRefs(C4PlayerControlDefs *pDefs)
 	}
 
 C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByName(const char *szName)
-	{
+{
 	for (AssignmentSetList::iterator i = Sets.begin(); i != Sets.end(); ++i)
-		if (SEqual((*i).GetName(), szName))
+		if (WildcardMatch(szName, (*i).GetName()))
 			return &*i;
 	return NULL;
-	}
+}
 
 
 /* C4PlayerControlFile */

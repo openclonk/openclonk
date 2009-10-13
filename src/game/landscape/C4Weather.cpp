@@ -293,7 +293,7 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(VolcanoLevel,     "VolcanoLevel",          0));
 	pComp->Value(mkNamingAdapt(EarthquakeLevel,  "EarthquakeLevel",       0));
 	pComp->Value(mkNamingAdapt(LightningLevel,   "LightningLevel",        0));
-	pComp->Value(mkNamingAdapt(NoGamma,          "NoGamma",               true));
+	pComp->Value(mkNamingAdapt(NoGamma,          "NoGamma",               0));
 	uint32_t dwGammaDefaults[C4MaxGammaRamps*3];
 	for (int32_t i=0; i<C4MaxGammaRamps; ++i)
 		{
