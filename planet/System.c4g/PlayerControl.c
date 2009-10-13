@@ -62,7 +62,7 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 		
 		// set cursor if not disabled etc.
 		UnselectCrew(plr);
-		return SetCursor(plr,crew);
+		return SelectCrew(plr,crew, true);
 	}
 	
 	// select the complete crew
@@ -275,9 +275,9 @@ global func ShiftCursor(int plr, bool back)
 	} while (!(GetCrew(plr,index)->GetCrewEnabled()) && cycle < maxcycle);
 
 	StopSelected();
-	
+
 	UnselectCrew(plr);
-	return SetCursor(plr, GetCrew(plr,index));
+	return SelectCrew(plr, GetCrew(plr,index), true);
 }
 
 // Temporarily used for Debugging!

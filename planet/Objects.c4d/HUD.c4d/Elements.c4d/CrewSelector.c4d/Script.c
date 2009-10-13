@@ -78,10 +78,12 @@ public func MouseSelection(int plr)
 	if(plr != GetOwner()) return false;
 	if(!(crew->GetCrewEnabled())) false;
 	
-	// select this clonk
-	crew->SetCursor(plr);
-	
-	return true;
+	// stop previously selected crew
+	StopSelected();
+		
+	// set cursor if not disabled etc.
+	UnselectCrew(plr);
+	return SelectCrew(plr,crew, true);
 }
 
 public func SetCrew(object c)
@@ -133,10 +135,16 @@ public func UpdateSelectionStatus()
 	if(!crew) return;
 	if(!hotkey) return;
 
-	if(crew == GetCursor(GetOwner()))
+	if(crew->GetCrewSelected())
+	{
 		SetClrModulation(HSL(0,0,250),12);
+		SetObjDrawTransform(500,0,16000,0,500,-30000, 12);
+	}
 	else
+	{
 		SetClrModulation(HSL(0,0,180),12);
+		SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
+	}
 }
 
 public func UpdateRank()
@@ -169,9 +177,9 @@ public func UpdateTitleGraphic()
 {
 	if(!crew) return;
 	
-	SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_Object,nil,nil,crew);
+	//SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_Object,nil,nil,crew);
 	
-	//SetGraphics(nil,nil,crew->GetID(),1,GFXOV_MODE_IngamePicture);
+	SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_IngamePicture);
 	
 	// doesn't work:
 	//SetColorDw(crew->GetColorDw());

@@ -22,7 +22,7 @@ public func Select(int selection)
 	// DEBUG
 	var bla = "nothing";
 	if(item) bla = item->~GetName();
-	Log("selected %s (position %d)", bla, selected);
+	Message("selected %s (position %d)", this, bla, selected);
 	
 	if (!item) return;
 	if (item->~Selection(this)) return;

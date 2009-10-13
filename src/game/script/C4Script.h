@@ -108,7 +108,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
 #define PSF_Contact							"~Contact%s"
 #define PSF_ControlCommand			"~ControlCommand" // szCommand, pTarget, iTx, iTy
 #define PSF_ControlCommandFinished "~ControlCommandFinished" // szCommand, pTarget, iTx, iTy, pTarget2, iData
-#define PSF_DeepBreath					"~DeepBreath"
 #define PSF_CatchBlow						"~CatchBlow" // iLevel, pByObject
 #define PSF_QueryCatchBlow			"~QueryCatchBlow" // pByObject
 #define PSF_Stuck								"~Stuck"
@@ -157,6 +156,12 @@ void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
 #define PSF_OnOwnerRemoved       "~OnOwnerRemoved"
 #define PSF_PlayerControl        "PlayerControl" // int iPlr, int iControl, C4ID idControlExtraData, int x, int y, int iStrength, bool fRepeated, bool fReleased
 #define PSF_Definition           "~Definition" // proplist definition
+
+#define PSF_EnergyChange             "~OnEnergyChange" // int iChange, int iCause, int iCausedByPlayer
+#define PSF_BreathChange             "~OnBreathChange" // int iChange
+#define PSF_MagicEnergyChange        "~OnMagicEnergyChange" // int iChange
+#define PSF_Promotion                "~OnPromotion"
+#define PSF_PhysicalChange           "~OnPhysicalChange" // C4String *Physical, int iChange, int iMode
 
 // Fx%s is automatically prefixed
 #define PSFS_FxAdd              "Add" // C4Object *pTarget, int iEffectNumber, C4String *szNewEffect, int iNewTimer, C4Value vNewEffectVar1, C4Value vNewEffectVar2, C4Value vNewEffectVar3, C4Value vNewEffectVar4

@@ -510,7 +510,7 @@ static bool FnDoMagicEnergy(C4AulObjectContext *cthr, long iChange, bool fAllowP
 	iChange *= MagicPhysicalFactor;
 	// Maximum load
 	if (iChange>0)
-		if (cthr->Obj->MagicEnergy+iChange>cthr->Obj->GetPhysical()->Magic)
+		if (cthr->Obj->MagicEnergy + iChange > cthr->Obj->GetPhysical()->Magic)
 		{
 			if (!fAllowPartial) return false;
 			iChange = cthr->Obj->GetPhysical()->Magic - cthr->Obj->MagicEnergy;
@@ -527,7 +527,11 @@ static bool FnDoMagicEnergy(C4AulObjectContext *cthr, long iChange, bool fAllowP
 			// partial change to zero allowed
 		}
 	// Change energy level
-	cthr->Obj->MagicEnergy=BoundBy<long>(cthr->Obj->MagicEnergy+iChange,0,cthr->Obj->GetPhysical()->Magic);
+	iChange = BoundBy<long>(iChange, -cthr->Obj->MagicEnergy, cthr->Obj->GetPhysical()->Magic - cthr->Obj->MagicEnergy);
+	cthr->Obj->MagicEnergy += iChange;
+	// call to object
+	cthr->Obj->Call(PSF_MagicEnergyChange,&C4AulParSet(C4VInt(iChange)));
+
 	cthr->Obj->ViewEnergy = C4ViewDelay;
 	return true;
 }
@@ -550,6 +554,7 @@ static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long i
 	// Get physical offset
 	C4PhysicalInfo::Offset off;
 	if (!C4PhysicalInfo::GetOffsetByName(FnStringPar(szPhysical), &off)) return false;
+	long iChange = 0;
 	// Set by mode
 	switch (static_cast<PhysicalMode>(iMode)) // Cast so compiler may warn when new modes are added but not handled
 	{
@@ -558,7 +563,10 @@ static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long i
 		// Info objects or temporary mode only
 		if (!cthr->Obj->PhysicalTemporary) if (!cthr->Obj->Info || Game.Parameters.UseFairCrew) return false;
 		// Set physical
+		iChange = iValue - cthr->Obj->GetPhysical()->*off;
 		cthr->Obj->GetPhysical()->*off = iValue;
+		// call to object
+		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange), C4VInt(iMode)));
 		return true;
 	// Permanent physical
 	case PHYS_Permanent:
@@ -568,7 +576,10 @@ static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long i
 		// Otherwise, stuff like SetPhysical(..., GetPhysical(...)+1, ...) would screw up the crew in fair crew mode
 		if (Game.Parameters.UseFairCrew) return false;
 		// Set physical
+		iChange = iValue - cthr->Obj->Info->Physical.*off;
 		cthr->Obj->Info->Physical.*off = iValue;
+		// call to object
+		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange), C4VInt(iMode)));
 		return true;
 	// Temporary physical
 	case PHYS_Temporary:
@@ -583,7 +594,10 @@ static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long i
 		if (iMode == PHYS_StackTemporary)
 			cthr->Obj->TemporaryPhysical.RegisterChange(off);
 		// Set physical
+		iChange = iValue - cthr->Obj->TemporaryPhysical.*off;
 		cthr->Obj->TemporaryPhysical.*off = iValue;
+		// call to object
+		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VInt(iChange), C4VInt(iMode)));
 		return true;
 	}
 	// Invalid mode
@@ -602,6 +616,7 @@ static bool FnTrainPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long
 static bool FnResetPhysical(C4AulObjectContext *cthr, C4String *sPhysical)
 {
 	const char *szPhysical = FnStringPar(sPhysical);
+	bool called = false;
 
 	// Reset to permanent physical
 	if (!cthr->Obj->PhysicalTemporary) return false;
@@ -612,6 +627,11 @@ static bool FnResetPhysical(C4AulObjectContext *cthr, C4String *sPhysical)
 		C4PhysicalInfo::Offset off;
 		if (!C4PhysicalInfo::GetOffsetByName(szPhysical, &off)) return false;
 		if (!cthr->Obj->TemporaryPhysical.ResetPhysical(off)) return false;
+
+		// call to object
+		cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VString(szPhysical), C4VNull, C4VInt(PHYS_Permanent)));
+		called = true;
+
 		// if other physical changes remain, do not reset complete physicals
 		if (cthr->Obj->TemporaryPhysical.HasChanges(cthr->Obj->GetPhysical(true))) return true;
 	}
@@ -619,6 +639,8 @@ static bool FnResetPhysical(C4AulObjectContext *cthr, C4String *sPhysical)
 	// actual reset of temp physicals
 	cthr->Obj->PhysicalTemporary = false;
 	cthr->Obj->TemporaryPhysical.Default();
+	// call to object
+	if (!called) cthr->Obj->Call(PSF_PhysicalChange,&C4AulParSet(C4VNull, C4VNull, C4VInt(PHYS_Permanent)));
 
 	return true;
 }
@@ -760,8 +782,6 @@ static bool FnSetActionData(C4AulObjectContext *cthr, long iData)
 	cthr->Obj->Action.Data = iData;
 	return true;
 }
-
-static C4Void FnSetComDir(C4AulObjectContext *cthr, long ncomdir)
 
 static C4Void FnSetComDir(C4AulObjectContext *cthr, long ncomdir)
 {
@@ -2769,6 +2789,11 @@ static bool FnSelectCrew(C4AulContext *cthr, long iPlr, C4Object *pObj, bool fSe
 		pPlr->SelectCrew(pObj,fSelect);
 	return true;
   }
+
+static bool FnGetCrewSelected(C4AulContext *cthr)
+	{
+	return !!cthr->Obj->Select;
+	}
 
 static long FnGetSelectCount(C4AulContext *cthr, long iPlr)
   {
@@ -5746,6 +5771,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetCursor", FnSetCursor);
 	AddFunc(pEngine, "SetViewCursor", FnSetViewCursor);
 	AddFunc(pEngine, "SelectCrew", FnSelectCrew);
+	AddFunc(pEngine, "GetCrewSelected", FnGetCrewSelected);
 	AddFunc(pEngine, "GetSelectCount", FnGetSelectCount);
 	AddFunc(pEngine, "SetCrewStatus", FnSetCrewStatus, false);
 	AddFunc(pEngine, "SetPosition", FnSetPosition);

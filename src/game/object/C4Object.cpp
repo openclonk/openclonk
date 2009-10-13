@@ -875,17 +875,6 @@ bool C4Object::ExecFire(int32_t iFireNumber, int32_t iCausedByPlr)
   return true;
   }
 
-bool C4Object::BuyEnergy()
-  {
-	C4Player *pPlr = ::Players.Get(Base); if (!pPlr) return false;
-	if (!GetPhysical()->Energy) return false;
-  if (pPlr->Eliminated) return false;
-  if (pPlr->Wealth<Game.C4S.Game.Realism.BaseRegenerateEnergyPrice) return false;
-  pPlr->DoWealth(-Game.C4S.Game.Realism.BaseRegenerateEnergyPrice);
-  DoEnergy(+100,false,C4FxCall_EngBaseRefresh,Owner);
-  return true;
-  }
-
 bool C4Object::ExecLife()
   {
 
@@ -946,7 +935,7 @@ bool C4Object::ExecLife()
       if (!Breathe)
         {
 				// Reduce breath, then energy, bubble
-        if (Breath>0) Breath=Max(Breath-2*C4MaxPhysical/100,0);
+        if (Breath > 0) DoBreath(-2);
         else DoEnergy(-1,false,C4FxCall_EngAsphyxiation, NO_OWNER);
         BubbleOut(GetX() + Random(5) - 2, GetY() + Shape.GetY() / 2);
 				ViewEnergy = C4ViewDelay;
@@ -958,9 +947,7 @@ bool C4Object::ExecLife()
         {
 				// Take breath
         int32_t takebreath=GetPhysical()->Breath-Breath;
-        if (takebreath>GetPhysical()->Breath/2)
-          Call(PSF_DeepBreath);
-        Breath+=takebreath;
+				if(takebreath > 0) DoBreath(takebreath);
         }
 			}
 
@@ -1289,7 +1276,10 @@ void C4Object::DoEnergy(int32_t iChange, bool fExact, int32_t iCause, int32_t iC
 		if (!iChange) return;
 		}
 	// Do change
-  Energy=BoundBy<int32_t>(Energy+iChange,0,GetPhysical()->Energy);
+	iChange = BoundBy<int32_t>(iChange, -Energy, GetPhysical()->Energy - Energy);
+  Energy += iChange;
+	// call to object
+	Call(PSF_EnergyChange,&C4AulParSet(C4VInt(iChange), C4VInt(iCause), C4VInt(iCausedByPlr)));
 	// Alive and energy reduced to zero: death
   if (Alive) if (Energy==0) if (!fWasZero) AssignDeath(false);
 	// View change
@@ -1312,7 +1302,10 @@ void C4Object::DoBreath(int32_t iChange)
 	// iChange 100% = Physical 100000
   iChange=iChange*C4MaxPhysical/100;
 	// Do change
-  Breath=BoundBy<int32_t>(Breath+iChange,0,GetPhysical()->Breath);
+	iChange = BoundBy<int32_t>(iChange, -Breath, GetPhysical()->Breath - Breath);
+  Breath += iChange;
+	// call to object
+	Call(PSF_BreathChange,&C4AulParSet(C4VInt(iChange)));
 	// View change
 	ViewEnergy = C4ViewDelay;
   }
@@ -2052,11 +2045,40 @@ C4PhysicalInfo* C4Object::GetPhysical(bool fPermanent)
 bool C4Object::TrainPhysical(C4PhysicalInfo::Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain)
 	{
 	int i=0;
+	long iMode = 0;
+	int32_t iPhysValue = 0;
+
 	// Train temp
-	if (PhysicalTemporary) { TemporaryPhysical.Train(mpiOffset, iTrainBy, iMaxTrain); ++i; }
+	if (PhysicalTemporary)
+	{
+		TemporaryPhysical.Train(mpiOffset, iTrainBy, iMaxTrain);
+		iPhysValue = TemporaryPhysical.*mpiOffset;
+		iMode = 2; // 2 = PHYS_Permanent
+		++i;
+	}
 	// train permanent, if existant
 	// this also trains if fair crew is used!
-	if (Info) { Info->Physical.Train(mpiOffset, iTrainBy, iMaxTrain); ++i; }
+	if (Info)
+	{
+		Info->Physical.Train(mpiOffset, iTrainBy, iMaxTrain);
+		iPhysValue = Info->Physical.*mpiOffset;
+		iMode = 1; // 1 = PHYS_Permanent
+		++i;
+	}
+
+	// call to object
+	if(!!i)
+	{
+		// a bit adventurous to get all the information together... 
+		const char* physname = C4PhysicalInfo::GetNameByOffset(mpiOffset);
+		long iChange = BoundBy<long>(iTrainBy, 0, iMaxTrain - iPhysValue);
+		if (iChange > 0)
+		{
+			C4AulParSet wabbel = C4AulParSet(C4VString(physname), C4VInt(iChange), C4VInt(iMode));
+			Call(PSF_PhysicalChange,&wabbel);
+		}
+	}
+
 	// return whether anything was trained
 	return !!i;
 	}
@@ -2073,9 +2095,14 @@ bool C4Object::Promote(int32_t torank, bool exception, bool fForceRankName)
 		pRankSys = &::DefaultRanks;
 	// always promote info
 	Info->Promote(torank,*pRankSys, fForceRankName);
+	Call(PSF_PhysicalChange,&C4AulParSet(C4VNull, C4VNull, C4VInt(1)));
 	// silent update?
 	if (!pRankSys->GetRankName(torank,false)) return false;
 	GameMsgObject(FormatString(LoadResStr("IDS_OBJ_PROMOTION"),GetName (),Info->sRankName.getData()).getData(),this);
+
+	// call to object
+	Call(PSF_Promotion);
+
 	StartSoundEffect("Trumpet",0,100,this);
 	return true;
 	}
@@ -5073,6 +5100,8 @@ bool C4Object::DoSelect(bool fCursor)
 	{
 	// selection allowed?
 	if (CrewDisabled) return true;
+	// was already selected
+	if (Select) return true;
 	// select
 	if (!fCursor) Select=1;
 	// do callback
@@ -5083,6 +5112,8 @@ bool C4Object::DoSelect(bool fCursor)
 
 void C4Object::UnSelect(bool fCursor)
 	{
+	// was not selected
+	if (!Select) return;
 	// unselect
 	if (!fCursor) Select=0;
 	// do callback

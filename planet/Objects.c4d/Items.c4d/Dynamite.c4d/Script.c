@@ -1,13 +1,7 @@
 #strict 2
 
 // The dynamite is not a weapon but a mining tool
-
-protected func Activate(object clonk)
-{
-	return Use(clonk);
-}
-
-public func Use(object clonk)
+public func ControlUse(object clonk)
 {
 	// if already activated, nothing (so, throw)
 	if(GetAction() == "Fuse")
