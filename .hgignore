@@ -11,6 +11,7 @@ c4group
 *.a
 *.c4p
 *.lib
+*.vcproj
 stamp-h1
 config.h
 config.log
@@ -27,6 +28,19 @@ autotools/install-sh
 autotools/missing
 configure
 intermediate
+
+# Visual studio files
+deps/
+planet/Release
+planet/Debug
+planet/CMakeFiles
+planet/clonk.dir
+planet/c4group.dir
+planet/ZERO_CHECK.dir
+planet/libeay32.dll
+planet/cmake_install.cmake
+planet/clonk.sln
+planet/CMakeCache.txt
 
 # Temporary files created by Microsoft Visual Studio
 *.ncb
@@ -48,4 +62,5 @@ xcode/build
 
 # Binaries
 planet/Clonk.app
+planet/clonk.exe
 
