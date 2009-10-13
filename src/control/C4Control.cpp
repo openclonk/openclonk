@@ -703,10 +703,35 @@ C4ControlJoinPlayer::C4ControlJoinPlayer(const char *szFilename, int32_t iAtClie
 {
 	// load from file if filename is given - which may not be the case for script players
 	if (szFilename)
+	{
+		StdStrBuf filename_buf;
+		const char *filename = Config.AtDataReadPath(szFilename);
+		bool file_is_temp = false;
+		if (DirectoryExists(filename))
 		{
-		bool fSuccess = PlrData.LoadFromFile(Config.AtDataReadPath(szFilename));
-		assert(fSuccess);
+			// the player file is unpacked - temp pack and read
+			filename_buf.Copy(Config.AtTempPath(GetFilenameOnly(filename)));
+			MakeTempFilename(&filename_buf);
+			if (C4Group_PackDirectoryTo(filename, filename_buf.getData()))
+			{
+				filename = filename_buf.getData();
+				file_is_temp = true;
+			}
+			else
+			{
+				// pack failed
+				LogF("[!]Error packing player file %s to %s for join: Pack failed.", filename, filename_buf.getData());
+				assert(false);
+			}
 		}
+		bool fSuccess = PlrData.LoadFromFile(filename);
+		if (!fSuccess)
+		{
+			assert(false);
+			LogF("[!]Error loading player file from %s.", filename);
+		}
+		if (file_is_temp) EraseFile(filename);
+	}
 }
 
 void C4ControlJoinPlayer::Execute() const

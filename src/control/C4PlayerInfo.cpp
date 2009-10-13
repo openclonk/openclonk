@@ -1358,8 +1358,8 @@ bool C4PlayerInfoList::LocalJoinUnjoinedPlayersInQueue()
 				LogF(LoadResStr("IDS_ERR_JOINQUEUEPLRS"), szPlrName);
 				continue;
 				}
-      Game.Input.Add(CID_JoinPlr,
-        new C4ControlJoinPlayer(szFilename, ::Control.ClientID(), pInfo->GetID()));
+			Game.Input.Add(CID_JoinPlr,
+				new C4ControlJoinPlayer(szFilename, ::Control.ClientID(), pInfo->GetID()));
 			}
 	// done, success
 	return true;
