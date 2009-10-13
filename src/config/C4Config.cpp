@@ -129,8 +129,8 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(SplitscreenDividers, 	"SplitscreenDividers",	1							));
 	pComp->Value(mkNamingAdapt(ShowPlayerInfoAlways,	"ShowPlayerInfoAlways",	1							,false, true));
 	pComp->Value(mkNamingAdapt(ShowPortraits, 				"ShowPortraits",				1							,false, true));
-	pComp->Value(mkNamingAdapt(AddNewCrewPortraits, 	"AddNewCrewPortraits",	1							,false, true));
-	pComp->Value(mkNamingAdapt(SaveDefaultPortraits, 	"SaveDefaultPortraits",	1							,false, true));
+	pComp->Value(mkNamingAdapt(AddNewCrewPortraits, 	"AddNewCrewPortraits",	0							,false, true));
+	pComp->Value(mkNamingAdapt(SaveDefaultPortraits, 	"SaveDefaultPortraits",	0							,false, true));
 	pComp->Value(mkNamingAdapt(ShowCommands,					"ShowCommands",					1							,false, true));
 	pComp->Value(mkNamingAdapt(ShowCommandKeys,				"ShowCommandKeys",			1							,false, true));
 	pComp->Value(mkNamingAdapt(ShowStartupMessages,		"ShowStartupMessages",	1							,false, true));
