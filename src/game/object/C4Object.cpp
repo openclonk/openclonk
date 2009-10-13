@@ -3950,7 +3950,7 @@ bool C4Object::SetActionByName(const char * szActName,
 	{
 	C4String * ActName = Strings.RegString(szActName);
 	ActName->IncRef();
-	bool r = SetActionByName(ActName);
+	bool r = SetActionByName(ActName, pTarget, pTarget2, iCalls, fForce);
 	ActName->DecRef();
 	return r;
 	}
