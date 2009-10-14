@@ -347,11 +347,20 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 		if (SEqualNoCase(sName.getData(), pCheck->szName)) break; else ++pCheck;
 	return pCheck->wCode;
 #elif defined(USE_X11)
-	return XStringToKeysym(sName.getData());
+	KeySym result = XStringToKeysym(sName.getData());
+	if (result == NoSymbol)
+	{
+		StdStrBuf sNameLower; sNameLower.Copy(sName);
+		sNameLower.ToLowerCase();
+		result = XStringToKeysym(sNameLower.getData());
+	}
+	return result;
 #elif defined(USE_SDL_MAINLOOP)
-  for (C4KeyCode k = 0; k < SDLK_LAST; ++k)
-		if (getKeyName(k) == sName.getData())
+	for (C4KeyCode k = 0; k < SDLK_LAST; ++k)
+	{
+		if (SEqualNoCase(sName.getData(), getKeyName(k).c_str()))
 			return k;
+	}
 	return KEY_Default;
 #else
 	return KEY_Default;
