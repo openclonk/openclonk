@@ -352,9 +352,9 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	{
 		StdStrBuf sNameLower; sNameLower.Copy(sName);
 		sNameLower.ToLowerCase();
-		result = XStringToKeysym(sNameLower.getData());
+		if (!(sNameLower == sName)) result = XStringToKeysym(sNameLower.getData());
 	}
-	return result;
+	return result;J
 #elif defined(USE_SDL_MAINLOOP)
 	for (C4KeyCode k = 0; k < SDLK_LAST; ++k)
 	{

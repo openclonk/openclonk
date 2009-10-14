@@ -190,9 +190,12 @@ class C4PlayerControlAssignmentSet
 	private:
 		StdCopyStrBuf sName;
 		C4PlayerControlAssignmentVec Assignments;
+		bool has_keyboard;
+		bool has_mouse;
+		bool has_gamepad;
 
 	public:
-		C4PlayerControlAssignmentSet() {}
+		C4PlayerControlAssignmentSet() : has_keyboard(true), has_mouse(true), has_gamepad(false) {}
 		~C4PlayerControlAssignmentSet() {}
 
 		void CompileFunc(StdCompiler *pComp);
@@ -212,9 +215,9 @@ class C4PlayerControlAssignmentSet
 
 		C4Facet GetPicture() const; // get image to be drawn to represent this control set
 		// todo
-		bool HasKeyboard() const { return true; }
-		bool HasMouse() const { return true; }
-		bool HasGamepad() const { return false; }
+		bool HasKeyboard() const { return has_keyboard; }
+		bool HasMouse() const { return has_mouse; }
+		bool HasGamepad() const { return has_gamepad; }
 		int32_t GetLayoutOrder() const { return 0; } // returns position on keyboard (increasing from left to right) for viewport sorting
 		int32_t GetGamepadIndex() const { return 0; }
 	};

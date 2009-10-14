@@ -334,7 +334,10 @@
 		
 
 	[ControlSet]
-	Name=Keyboard2Classic
+	Name=WASD_Mouse
+	Keyboard=1
+	Mouse=1
+	Gamepad=0
 
 		[Assignment]
 		Key=A
@@ -536,3 +539,133 @@
 		[Assignment]
 		Key=Down
 		Control=Drop
+
+
+
+	[ControlSet]
+	Name=Gamepad1
+	Keyboard=0
+	Mouse=0
+	Gamepad=1
+	
+		[Assignment]
+		Key=Joy1Left
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=50
+		Control=Up
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=10
+		Control=Jump
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=100
+		Control=MenuLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=100
+		Control=MenuRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=100
+		Control=MenuDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=100
+		Control=MenuUp
+		
+		[Assignment]
+		Key=Joy1A
+		Control=MenuOK
+		
+		[Assignment]
+		Key=Joy1B
+		Control=MenuCancel
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=45
+		Control=PushEnter
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=40
+		Control=GrabNext
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=35
+		Control=Ungrab
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=30
+		Control=Grab
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=25
+		Control=Exit
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=20
+		Control=Enter
+		
+		[Assignment]
+		Key=Joy1C
+		Control=PreviousCrew
+		
+		[Assignment]
+		Key=Joy1D
+		Control=NextCrew
+		
+		[Assignment]
+		Key=Joy1E
+		Control=PlayerMenu
+		
+		#[Assignment]
+		#Key=Up
+		#Control=PreviousItem
+		
+		[Assignment]
+		Key=Joy1F
+		Control=NextItem
+		
+		[Assignment]
+		Key=Joy1G
+		Priority=100
+		Control=Use
+		
+		[Assignment]
+		Key=Joy1H
+		Priority=50
+		Control=Throw
+		
+		[Assignment]
+		Key=Joy1H
+		Control=Throw
+		
+		[Assignment]
+		Key=Joy1I
+		Control=Drop
+		

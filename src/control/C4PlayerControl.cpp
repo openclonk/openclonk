@@ -299,6 +299,9 @@ void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 	{
 	if (!pComp->Name("ControlSet")) { pComp->NameEnd(); pComp->excNotFound("ControlSet"); }
 	pComp->Value(mkNamingAdapt(mkParAdapt(sName, StdCompiler::RCT_All), "Name", "None")); // can't do RCT_Idtf because of wildcards
+	pComp->Value(mkNamingAdapt(has_keyboard, "Keyboard", true));
+	pComp->Value(mkNamingAdapt(has_mouse, "Mouse", true));
+	pComp->Value(mkNamingAdapt(has_gamepad, "Gamepad", false));
 	pComp->Value(mkSTLContainerAdapt(Assignments, StdCompiler::SEP_NONE));
 	pComp->NameEnd();
 	}
