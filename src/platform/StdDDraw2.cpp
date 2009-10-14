@@ -1030,6 +1030,22 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	return true;
 	}
 
+bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform)
+{
+	// TODO: Emulate rendering
+	if (!sfcTarget->IsRenderTarget()) return false;
+
+	// TODO: Clip
+
+	// prepare rendering to surface
+	if (!PrepareRendering(sfcTarget)) return false;
+
+	PerformMesh(instance, tx, ty, twdt, thgt, pTransform);
+
+	// success
+	return true;
+}
+
 bool CStdDDraw::Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt,
 										 SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
 										 bool fSrcColKey, CBltTransform *pTransform)

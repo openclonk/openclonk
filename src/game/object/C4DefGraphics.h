@@ -45,16 +45,31 @@ class C4DefGraphics
 
 		C4DefGraphics *GetLast(); // get last graphics in list
 	public:
-		C4Surface *Bitmap, *BitmapClr;
+		enum GraphicsType {
+			TYPE_Bitmap,
+			TYPE_Mesh
+		};
+
+		GraphicsType Type;
+
+		union {
+			struct {
+				C4Surface *Bitmap, *BitmapClr;
+			};
+			StdMesh *Mesh;
+		};
+
 		bool fColorBitmapAutoCreated;  // if set, the color-by-owner-bitmap has been created automatically by all blue shades of the bitmap
 
-		inline C4Surface *GetBitmap(DWORD dwClr=0) { if (BitmapClr) { BitmapClr->SetClr(dwClr); return BitmapClr; } else return Bitmap; }
+		inline C4Surface *GetBitmap(DWORD dwClr=0) { if(Type != TYPE_Bitmap) return NULL; if (BitmapClr) { BitmapClr->SetClr(dwClr); return BitmapClr; } else return Bitmap; }
 
 		C4DefGraphics(C4Def *pOwnDef=NULL);  // ctor
 		virtual ~C4DefGraphics() { Clear(); }; // dtor
 
 		bool LoadBitmap(C4Group &hGroup, const char *szFilename, const char *szFilenamePNG, const char *szOverlayPNG, bool fColorByOwner); // load specified graphics from group
 		bool LoadBitmaps(C4Group &hGroup, bool fColorByOwner); // load graphics from group
+		bool LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader);
+		bool Load(C4Group &hGroup, bool fColorByOwner); // load graphics from group
 		C4DefGraphics *Get(const char *szGrpName); // get graphics by name
 		void Clear(); // clear fields; delete additional graphics
 		bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created

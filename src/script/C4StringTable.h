@@ -201,6 +201,7 @@ P_InLiquidAction,
 P_TurnAction,
 P_Reverse,
 P_Step,
+P_Animation,
 P_LAST };
 
 // There is only one Stringtable in Game.ScriptEngine

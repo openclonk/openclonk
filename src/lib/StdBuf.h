@@ -539,7 +539,7 @@ public:
   operator const void *() const { return getData(); }
 
 	// less-than operation for map
-	inline bool operator <(const StdStrBuf &v2)
+	inline bool operator <(const StdStrBuf &v2) const
 	{
 		int iLen = getLength(), iLen2 = v2.getLength();
 		if (iLen == iLen2)
@@ -675,6 +675,16 @@ public:
   StdCopyStrBuf &operator = (const char *szString) { Copy(szString); return *this; }
 
 };
+
+#if 0
+// const char* + StdStrBuf
+inline StdStrBuf operator + (const char* szString, const StdStrBuf& Buf2)
+{
+  StdStrBuf Buf(szString);
+  Buf.Append(Buf2);
+  return Buf;
+}
+#endif
 
 // Wrappers
 extern StdStrBuf FormatString(const char *szFmt, ...) GNUC_FORMAT_ATTRIBUTE;

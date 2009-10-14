@@ -172,6 +172,7 @@ class C4Object: public C4PropList
 		C4NotifyingObjectList Contents;
 		C4MaterialList *MaterialContents; // SyncClearance-NoSave //
 		C4DefGraphics *pGraphics; // currently set object graphics
+		StdMeshInstance* pMeshInstance; // Instance for mesh-type objects
 		C4Effect *pEffects; // linked list of effects
 		C4ParticleList FrontParticles, BackParticles; // lists of object local particles
 
@@ -252,6 +253,7 @@ class C4Object: public C4PropList
 		void DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal);
 		void DrawActionFace(C4TargetFacet &cgo, float offX, float offY);
 		void DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPhaseX=0, int32_t iPhaseY=0);
+		void DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy, float fwdt, float fhgt, float tx, float ty, float twdt, float thgt, C4DrawTransform* transform);
 		void Execute();
 		void ClearPointers(C4Object *ptr);
 		bool ExecMovement();

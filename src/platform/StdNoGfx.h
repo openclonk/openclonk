@@ -40,6 +40,7 @@ public:
 	virtual bool PrepareRendering(SURFACE) { return true; }
 	virtual void FillBG(DWORD dwClr=0) { }
 	virtual void PerformBlt(CBltData &, CTexRef *, DWORD, bool, bool) { }
+	virtual void PerformMesh(StdMeshInstance &, float, float, float, float, CBltTransform* pTransform) { }
 	virtual void PerformLine(SURFACE, float, float, float, float, DWORD) { }
 	virtual void DrawQuadDw(SURFACE, float *, DWORD, DWORD, DWORD, DWORD) { }
 	virtual void PerformPix(SURFACE, float, float, DWORD) { }

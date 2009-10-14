@@ -423,6 +423,10 @@ src/platform/StdFont.h \
 src/platform/StdGL.cpp \
 src/platform/StdGLCtx.cpp \
 src/platform/StdGL.h \
+src/platform/StdMesh.cpp \
+src/platform/StdMesh.h \
+src/platform/StdMeshMaterial.cpp \
+src/platform/StdMeshMaterial.h \
 src/platform/StdNoGfx.cpp \
 src/platform/StdNoGfx.h \
 src/platform/StdRegistry.cpp \
@@ -471,6 +475,12 @@ src/script/C4ValueList.cpp \
 src/script/C4ValueList.h \
 src/script/C4ValueMap.cpp \
 src/script/C4ValueMap.h \
+src/tinyxml/tinystr.cpp \
+src/tinyxml/tinystr.h \
+src/tinyxml/tinyxml.cpp \
+src/tinyxml/tinyxml.h \
+src/tinyxml/tinyxmlerror.cpp \
+src/tinyxml/tinyxmlparser.cpp \
 src/zlib/gzio.c \
 src/zlib/zutil.h
 

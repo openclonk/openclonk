@@ -125,7 +125,11 @@ bool CStdGL::UpdateClipper()
 	glViewport(iX, RenderTarget->Hgt-iY-iHgt, iWdt, iHgt);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
+
+	// Set clipping plane to -1000 and 1000 so that large meshes are not
+	// clipped away.
+	glOrtho((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY, -1000.0f, 1000.0f);
+	//gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
 	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
 	}
@@ -307,6 +311,203 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		}
 	}
+
+namespace
+{
+	void RenderMeshVertex(const StdMeshVertex& vtx, const StdMeshMaterialPass& pass, CBltTransform* pTransform, CClrModAddMap* pClrModMap, DWORD dwModClr)
+	{
+		// TODO: We might also want to modulate emissive
+		float Ambient[4];
+		float Diffuse[4];
+		float Specular[4];
+
+		float x = vtx.x;
+		float y = vtx.y;
+		pTransform->TransformPoint(x, y);
+		DWORD dwClr = pClrModMap ? pClrModMap->GetModAt(x, y) : 0xffffff;
+		ModulateClr(dwClr, dwModClr);
+
+		Ambient[0] = pass.Ambient[0] * ((dwClr >> 16) & 0xff) / 255.0f;
+		Ambient[1] = pass.Ambient[1] * ((dwClr >>  8) & 0xff) / 255.0f;
+		Ambient[2] = pass.Ambient[2] * ((dwClr      ) & 0xff) / 255.0f;
+		Ambient[3] = 1 - ((1-pass.Ambient[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
+
+		Diffuse[0] = pass.Diffuse[0] * ((dwClr >> 16) & 0xff) / 255.0f;
+		Diffuse[1] = pass.Diffuse[1] * ((dwClr >>  8) & 0xff) / 255.0f;
+		Diffuse[2] = pass.Diffuse[2] * ((dwClr      ) & 0xff) / 255.0f;
+		Diffuse[3] = 1 - ((1-pass.Diffuse[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
+
+		Specular[0] = pass.Specular[0] * ((dwClr >> 16) & 0xff) / 255.0f;
+		Specular[1] = pass.Specular[1] * ((dwClr >>  8) & 0xff) / 255.0f;
+		Specular[2] = pass.Specular[2] * ((dwClr      ) & 0xff) / 255.0f;
+		Specular[3] = 1 - ((1-pass.Specular[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
+
+		glTexCoord2f(vtx.u, vtx.v);
+		glNormal3f(vtx.nx, vtx.ny, vtx.nz);
+		glVertex3f(vtx.x, vtx.y, vtx.z);
+	}
+}
+
+void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform)
+{
+	const StdMesh& mesh = instance.Mesh;
+	const StdMeshBox& box = mesh.GetBoundingBox();
+
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	// Apply zoom
+	glTranslatef(ZoomX, ZoomY, 0.0f);
+	glScalef(Zoom, Zoom, 1.0f);
+	glTranslatef(-ZoomX, -ZoomY, 0.0f);
+
+	if(pTransform)
+	{
+		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
+		glMultMatrixf(transform);
+	}
+
+	// Scale so that the mesh fits in (tx,ty,twdt,thgt)
+	const float rx = -box.x1 / (box.x2 - box.x1);
+	const float ry = -box.y1 / (box.y2 - box.y1);
+	const float dx = tx + rx*twdt;
+	const float dy = ty + ry*thgt;
+	const float scx = twdt/(box.x2 - box.x1);
+	const float scy = thgt/(box.y2 - box.y1);
+
+#if 0
+	// Scale so that Z coordinate is between -1 and 1, otherwise parts of
+	// the mesh could be clipped away by the near or far clipping plane.
+	// This technique might also enable us not to clear the depth buffer
+	// after every mesh rendering - we could simply scale the first mesh
+	// of the scene so that it's Z coordinate is between 0 and 1, scale
+	// the second mesh that it is between 1 and 2, and so on.
+	// This of course requires an orthogonal projection so that the
+	// meshes don't look distorted - if we should every decide to use
+	// a perspective projection we need to think of something different.
+
+	// TODO: This is currently commented out because it gets the lighting
+	// wrong (objects are too dark). Instead we changed the clipping plane
+	// to be large enough. I think this is still a got idea, though,
+	// when we fix the lighting. Maybe we need to adapt the normals
+	// somehow...
+	const float scz = 1.0/(box.z2 - box.z1);
+#else
+	const float scz = 1.0;
+#endif
+	// Keep aspect ratio:
+	//if(scx < scy) scy = scx;
+	//else scx = scy;
+	glTranslatef(dx, dy, 0.0f);
+	glScalef(scx, scy, scz);
+
+	// Put a light source in front of the object
+	const GLfloat light_position[] = { 0.0f, 0.0f, box.z2 + 15.0f*Zoom, 1.0f };
+	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+	glEnable(GL_LIGHT0);
+
+	// TODO: Find a working technique, we currently always use the
+	// first one:
+	const StdMeshMaterial& material = mesh.GetMaterial();
+	const StdMeshMaterialTechnique& technique = material.Techniques[0];
+
+	// Create a transformation which transfers a vertex from mesh
+	// coordinates to screen coordinates. This is basically the same
+	// as the current GL modelview matrix, but we need it to access the
+	// ClrModMap for each vertex with the correct coordinates.
+	CBltTransform Transform;
+	Transform.SetMoveScale(dx, dy, scx, scy);
+	if(pTransform) Transform *= *pTransform;
+
+	// TODO: Is the following correct?
+	Transform.MoveScale(-ZoomX, -ZoomY, 1.0f, 1.0f);
+	Transform.MoveScale(0.0f, 0.0f, Zoom, Zoom);
+	Transform.MoveScale(ZoomX, ZoomY, 1.0f, 1.0f);
+
+	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
+	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffff;
+
+	// Render each pass
+	for(unsigned int i = 0; i < technique.Passes.size(); ++i)
+	{
+		const StdMeshMaterialPass& pass = technique.Passes[i];
+
+		// TODO: Test this when the material is loaded, and mark the
+		// technique as non-working if it has passes with more
+		// textures than this number.
+		GLint max_texture_units;
+		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
+		assert(pass.TextureUnits.size() <= max_texture_units-1); // One texture is reserved for FoW/ClrModMap
+
+		// Set up material
+#if 0
+		glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, pass.Diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, pass.Specular);
+#endif
+		glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
+		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+
+		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+		{
+			// Note that it is guaranteed that the GL_TEXTUREn
+			// constants are continuous.
+			// GL_TEXTURE3 is reserved for FoW/ClrModMap
+			if(j < 3) glActiveTexture(GL_TEXTURE0+j);
+			else glActiveTexture(GL_TEXTURE4+j-3);
+
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, pass.TextureUnits[j].GetTexture().texName);
+		}
+
+		// Render mesh
+		// TODO: Use glInterleavedArrays? Hm, might be impossible as
+		// we need to set material for each vertex. Can't use
+		// glMaterialColor either, because we set all diffuse, ambient
+		// and specular material...
+		// TODO: We might not want to calculate the material for each
+		// vertex separately. This looks odd when the mesh is moving
+		// at FoW borders anyway.
+		glBegin(GL_TRIANGLES);
+		for(unsigned int j = 0; j < instance.GetNumFaces(); ++j)
+		{
+			const StdMeshFace& face = instance.GetFace(j);
+			const StdMeshVertex& vtx1 = instance.GetVertex(face.Vertices[0]);
+			const StdMeshVertex& vtx2 = instance.GetVertex(face.Vertices[1]);
+			const StdMeshVertex& vtx3 = instance.GetVertex(face.Vertices[2]);
+
+			RenderMeshVertex(vtx1, pass, &Transform, ClrModMap, dwModClr);
+			RenderMeshVertex(vtx2, pass, &Transform, ClrModMap, dwModClr);
+			RenderMeshVertex(vtx3, pass, &Transform, ClrModMap, dwModClr);
+		}
+		glEnd(); // GL_TRIANGLES
+
+		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+		{
+			if(j < 3) glActiveTexture(GL_TEXTURE0+j);
+			else glActiveTexture(GL_TEXTURE4+j-3);
+			glDisable(GL_TEXTURE_2D);
+		}
+	}
+
+	glDisable(GL_LIGHT0);
+	glDisable(GL_LIGHTING);
+	glDisable(GL_DEPTH_TEST);
+	glShadeModel(GL_FLAT);
+	glPopMatrix();
+
+	// TODO: glScissor, so that we only clear the area the mesh covered.
+	glClear(GL_DEPTH_BUFFER_BIT);
+}
 
 void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
                            SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
