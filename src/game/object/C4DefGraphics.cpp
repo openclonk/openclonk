@@ -616,20 +616,31 @@ void C4GraphicsOverlay::UpdateFacet()
 			break;
 
 		case MODE_Action: // graphics of specified action
-/*FIXME			{
-			// Find act in ActMap of object
-			int32_t cnt;
-			for (cnt=0; cnt<pDef->ActNum; cnt++)
-				if (SEqual(Action, pDef->ActMap[cnt].Name))
-					break;
-			if (cnt == pDef->ActNum) { fctBlit.Default(); break; }
-			// assign base gfx of action
-			// doesn't catch any special action parameters (FacetBase, etc.)...
-			C4ActionDef *pAct = pDef->ActMap+cnt;
-			fctBlit.Set(pSourceGfx->GetBitmap(), pAct->Facet.x, pAct->Facet.y, pAct->Facet.Wdt, pAct->Facet.Hgt);
-			}*/
-			break;
+			{
+				// Clear old facet
+				fctBlit.Default();
 
+				// Ensure there is actually an action set
+				if (!Action[0])
+					return;
+
+				C4Value v;
+				pDef->GetProperty(::Strings.P[P_ActMap], v);
+				C4PropList *actmap = v.getPropList();
+				if (!actmap)
+					return;
+
+				actmap->GetProperty(::Strings.RegString(Action), v);
+				C4PropList *action = v.getPropList();
+				if (!action)
+					return;
+
+				fctBlit.Set(pSourceGfx->GetBitmap(),
+					action->GetPropertyInt(P_X), action->GetPropertyInt(P_Y),
+					action->GetPropertyInt(P_Wdt), action->GetPropertyInt(P_Hgt));
+				
+				break;
+			}
 		case MODE_IngamePicture:
 		case MODE_Picture: // def picture
 			fZoomToShape = true;
