@@ -35,7 +35,7 @@ Y = 0,
 Wdt = 70,
 Hgt = 90,
 NextAction = "Turn",
-//Animation = "Turn",
+Animation = "Turn",
 },  }, def);
   SetProperty("Name", "$Name$", def);
 }
