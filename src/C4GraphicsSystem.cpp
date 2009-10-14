@@ -496,19 +496,6 @@ C4Viewport* C4GraphicsSystem::GetViewport(int32_t iPlayer)
 	return NULL;
 	}
 
-int32_t LayoutOrder(int32_t iControl)
-	{
-	// Convert keyboard control index to keyboard layout order
-	switch (iControl)
-		{
-		case C4P_Control_Keyboard1: return 0;
-		case C4P_Control_Keyboard2: return 3;
-		case C4P_Control_Keyboard3: return 1;
-		case C4P_Control_Keyboard4: return 2;
-		}
-	return iControl;
-	}
-
 void C4GraphicsSystem::SortViewportsByPlayerControl()
 	{
 
@@ -525,7 +512,7 @@ void C4GraphicsSystem::SortViewportsByPlayerControl()
 			pPlr1 = ::Players.Get(pView->Player);
 			pPlr2 = ::Players.Get(pNext->Player);
 			// Swap order
-			if (pPlr1 && pPlr2 && ( LayoutOrder(pPlr1->ControlSet) > LayoutOrder(pPlr2->ControlSet) ))
+			if (pPlr1 && pPlr2 && pPlr1->ControlSet && pPlr2->ControlSet && ( pPlr1->ControlSet->GetLayoutOrder() > pPlr2->ControlSet->GetLayoutOrder() ))
 				{
 				if (pPrev) pPrev->Next = pNext; else FirstViewport = pNext;
 				pView->Next = pNext->Next;

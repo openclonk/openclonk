@@ -990,8 +990,7 @@ void C4Player::Clear()
 void C4Player::Default()
 	{
 	Filename[0]=0;
-	Status=0;
-  Number=C4P_Number_None;
+	Number=C4P_Number_None;
 	ID=0;
 	Team = 0;
 	DefaultRuntimeData();
@@ -1343,55 +1342,53 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	{
 	assert(ID);
 
-	pComp->Value(mkNamingAdapt(Status,          		"Status",               0));
-	pComp->Value(mkNamingAdapt(AtClient,        		"AtClient",             C4ClientIDUnknown));
-	pComp->Value(mkNamingAdapt(toC4CStr(AtClientName),"AtClientName",				"Local"));
-	pComp->Value(mkNamingAdapt(Number,          		"Index",                C4P_Number_None));
-	pComp->Value(mkNamingAdapt(ID,              		"ID",                   0));
-	pComp->Value(mkNamingAdapt(Eliminated,      		"Eliminated",           0));
-	pComp->Value(mkNamingAdapt(Surrendered,     		"Surrendered",          0));
-	pComp->Value(mkNamingAdapt(Evaluated,		    		"Evaluated",						false));
-	pComp->Value(mkNamingAdapt(Color,           		"Color",                -1));
-	pComp->Value(mkNamingAdapt(ColorDw,         		"ColorDw",              0u));
-	pComp->Value(mkNamingAdapt(ControlSet,         		"Control",              0));
-	pComp->Value(mkNamingAdapt(MouseControl,    		"MouseControl",         0));
-	pComp->Value(mkNamingAdapt(Position,        		"Position",             0));
-	pComp->Value(mkNamingAdapt(ViewMode,        		"ViewMode",             C4PVM_Cursor));
-	pComp->Value(mkNamingAdapt(ViewX,           		"ViewX",                0));
-	pComp->Value(mkNamingAdapt(ViewY,           		"ViewY",                0));
-	pComp->Value(mkNamingAdapt(ViewWealth,      		"ViewWealth",           0));
-	pComp->Value(mkNamingAdapt(ViewValue,       		"ViewValue",            0));
-	pComp->Value(mkNamingAdapt(fFogOfWar,       		"FogOfWar",             false));
+	pComp->Value(mkNamingAdapt(Status,              "Status",               0));
+	pComp->Value(mkNamingAdapt(AtClient,            "AtClient",             C4ClientIDUnknown));
+	pComp->Value(mkNamingAdapt(toC4CStr(AtClientName),"AtClientName",        "Local"));
+	pComp->Value(mkNamingAdapt(Number,              "Index",                C4P_Number_None));
+	pComp->Value(mkNamingAdapt(ID,                  "ID",                   0));
+	pComp->Value(mkNamingAdapt(Eliminated,          "Eliminated",           0));
+	pComp->Value(mkNamingAdapt(Surrendered,         "Surrendered",          0));
+	pComp->Value(mkNamingAdapt(Evaluated,            "Evaluated",            false));
+	pComp->Value(mkNamingAdapt(Color,               "Color",                -1));
+	pComp->Value(mkNamingAdapt(ColorDw,             "ColorDw",              0u));
+	pComp->Value(mkNamingAdapt(Position,            "Position",             0));
+	pComp->Value(mkNamingAdapt(ViewMode,            "ViewMode",             C4PVM_Cursor));
+	pComp->Value(mkNamingAdapt(ViewX,               "ViewX",                0));
+	pComp->Value(mkNamingAdapt(ViewY,               "ViewY",                0));
+	pComp->Value(mkNamingAdapt(ViewWealth,          "ViewWealth",           0));
+	pComp->Value(mkNamingAdapt(ViewValue,           "ViewValue",            0));
+	pComp->Value(mkNamingAdapt(fFogOfWar,           "FogOfWar",             false));
 	bool bForceFogOfWar = false;
-	pComp->Value(mkNamingAdapt(bForceFogOfWar,  		"ForceFogOfWar",        false));
-	pComp->Value(mkNamingAdapt(ShowStartup,     		"ShowStartup",          false));
-	pComp->Value(mkNamingAdapt(ShowControl,     		"ShowControl",          0));
-	pComp->Value(mkNamingAdapt(ShowControlPos,  		"ShowControlPos",       0));
-	pComp->Value(mkNamingAdapt(Wealth,          		"Wealth",               0));
-	pComp->Value(mkNamingAdapt(Points,          		"Points",               0));
-	pComp->Value(mkNamingAdapt(Value,           		"Value",                0));
-	pComp->Value(mkNamingAdapt(InitialValue,    		"InitialValue",         0));
-	pComp->Value(mkNamingAdapt(ValueGain,       		"ValueGain",            0));
-	pComp->Value(mkNamingAdapt(ObjectsOwned,    		"ObjectsOwned",         0));
-	pComp->Value(mkNamingAdapt(Hostility,      	  	"Hostile"               ));
-	pComp->Value(mkNamingAdapt(ProductionDelay, 		"ProductionDelay",      0));
-	pComp->Value(mkNamingAdapt(ProductionUnit,  		"ProductionUnit",       0));
-	pComp->Value(mkNamingAdapt(SelectCount,     		"SelectCount",          0));
-	pComp->Value(mkNamingAdapt(SelectFlash,     		"SelectFlash",          0));
-	pComp->Value(mkNamingAdapt(CursorFlash,     		"CursorFlash",          0));
+	pComp->Value(mkNamingAdapt(bForceFogOfWar,      "ForceFogOfWar",        false));
+	pComp->Value(mkNamingAdapt(ShowStartup,         "ShowStartup",          false));
+	pComp->Value(mkNamingAdapt(ShowControl,         "ShowControl",          0));
+	pComp->Value(mkNamingAdapt(ShowControlPos,      "ShowControlPos",       0));
+	pComp->Value(mkNamingAdapt(Wealth,              "Wealth",               0));
+	pComp->Value(mkNamingAdapt(Points,              "Points",               0));
+	pComp->Value(mkNamingAdapt(Value,               "Value",                0));
+	pComp->Value(mkNamingAdapt(InitialValue,        "InitialValue",         0));
+	pComp->Value(mkNamingAdapt(ValueGain,           "ValueGain",            0));
+	pComp->Value(mkNamingAdapt(ObjectsOwned,        "ObjectsOwned",         0));
+	pComp->Value(mkNamingAdapt(Hostility,           "Hostile"               ));
+	pComp->Value(mkNamingAdapt(ProductionDelay,     "ProductionDelay",      0));
+	pComp->Value(mkNamingAdapt(ProductionUnit,      "ProductionUnit",       0));
+	pComp->Value(mkNamingAdapt(SelectCount,         "SelectCount",          0));
+	pComp->Value(mkNamingAdapt(SelectFlash,         "SelectFlash",          0));
+	pComp->Value(mkNamingAdapt(CursorFlash,         "CursorFlash",          0));
 	pComp->Value(mkNamingAdapt((int32_t&)Cursor,    "Cursor",               0));
 	pComp->Value(mkNamingAdapt((int32_t&)ViewCursor,"ViewCursor",           0));
-	pComp->Value(mkNamingAdapt(CursorSelection, 		"CursorSelection",      0));
-	pComp->Value(mkNamingAdapt(CursorToggled,   		"CursorToggled",        0));
-	pComp->Value(mkNamingAdapt(MessageStatus,   		"MessageStatus",        0));
-	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",						""));
-	pComp->Value(mkNamingAdapt(HomeBaseMaterial,		"HomeBaseMaterial"			));
-	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"		));
-	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"							));
-	pComp->Value(mkNamingAdapt(Magic,               "Magic"									));
-	pComp->Value(mkNamingAdapt(Crew,								"Crew"									));
+	pComp->Value(mkNamingAdapt(CursorSelection,     "CursorSelection",      0));
+	pComp->Value(mkNamingAdapt(CursorToggled,       "CursorToggled",        0));
+	pComp->Value(mkNamingAdapt(MessageStatus,       "MessageStatus",        0));
+	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",            ""));
+	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
+	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"    ));
+	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
+	pComp->Value(mkNamingAdapt(Magic,               "Magic"                 ));
+	pComp->Value(mkNamingAdapt(Crew,                "Crew"                  ));
 	pComp->Value(mkNamingAdapt(CrewInfoList.iNumCreated, "CrewCreated",     0));
-	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,	"MsgBoardQueries"				));
+	pComp->Value(mkNamingPtrAdapt( pMsgBoardQuery,  "MsgBoardQueries"        ));
 
 	// Keys held down
 	pComp->Value(Control);
@@ -1485,39 +1482,40 @@ void C4Player::UpdateView()
 void C4Player::DefaultRuntimeData()
 	{
 	Status=0;
-  Eliminated=0;
-  Surrendered=0;
+	Eliminated=0;
+	Surrendered=0;
 	AtClient=C4ClientIDUnknown;
 	SCopy("Local",AtClientName);
-  Color=-1;
-  ControlSet=C4P_Control_None;
+	Color=-1;
+	ControlSet = NULL;
+	ControlSetName.Clear();
 	MouseControl=false;
-  Position=-1;
+	Position=-1;
 	PlrStartIndex=0;
 	RetireDelay=0;
-  ViewMode=C4PVM_Cursor;
-  ViewX=ViewY=0;
-  ViewTarget=NULL;
-  CursorSelection=CursorToggled=0;
-  ShowStartup=true;
-  CrewCnt=0;
+	ViewMode=C4PVM_Cursor;
+	ViewX=ViewY=0;
+	ViewTarget=NULL;
+	CursorSelection=CursorToggled=0;
+	ShowStartup=true;
+	CrewCnt=0;
 	ViewWealth=ViewValue=0;
 	ShowControl=ShowControlPos=0;
 	Wealth=0;
 	Points=0;
-  Value=InitialValue=ValueGain=0;
-  ObjectsOwned=0;
+	Value=InitialValue=ValueGain=0;
+	ObjectsOwned=0;
 	ProductionDelay=ProductionUnit=0;
 	Cursor=ViewCursor=NULL;
 	SelectCount=0;
-  SelectFlash=CursorFlash=30;
+	SelectFlash=CursorFlash=30;
 	CursorSelection=CursorToggled=0;
 	MessageStatus=0;
 	MessageBuf[0]=0;
 	Hostility.Default();
 	HomeBaseMaterial.Default();
-  HomeBaseProduction.Default();
-  Knowledge.Default();
+	HomeBaseProduction.Default();
+	Knowledge.Default();
 	Magic.Default();
 	FlashCom=0;
 	}
@@ -1644,67 +1642,45 @@ void C4Player::InitControl()
 	LocalControl = false;
 	if (AtClient == ::Control.ClientID())
 		if (!GetInfo() || GetInfo()->GetType() == C4PT_User)
-			LocalControl=true;
-	// Set control
-	ControlSet=C4P_Control_None;
-	// Preferred control
-	int32_t iControl = PrefControl;
-	// gamepad control safety
-	if (Inside<int32_t>(iControl, C4P_Control_GamePad1, C4P_Control_GamePadMax) && !Config.General.GamepadEnabled)
-	{
-		iControl = C4P_Control_Keyboard1;
-	}
-	// Choose next while control taken
-	if (::Players.ControlTaken(iControl))
-	{
-		// Preferred control taken, search for available keyboard control
-		for (iControl=C4P_Control_Keyboard1; iControl<=C4P_Control_Keyboard2; iControl++)
-			if (!::Players.ControlTaken(iControl)) // Available control found
-				break;
-		// No available control found
-		if (iControl>C4P_Control_Keyboard2)
-			iControl=C4P_Control_None;
-	}
-	// Set control
-	ControlSet=iControl;
-	// init gamepad
+			if (!::Control.isReplay())
+				LocalControl=true;
+	// Reset control
+	ControlSetName.Clear();
+	ControlSet=NULL;
 	if (pGamepad) { delete pGamepad; pGamepad=NULL; }
-	if (Inside<int32_t>(ControlSet, C4P_Control_GamePad1, C4P_Control_GamePadMax))
-	{
-		pGamepad = new C4GamePadOpener(ControlSet - C4P_Control_GamePad1);
-	}
-	// Mouse
-	if (PrefMouse && !::Control.isReplay())
-		if (!Game.C4S.Head.DisableMouse)
-			if (Inside<int32_t>(ControlSet, C4P_Control_Keyboard1, C4P_Control_GamePadMax))
-				if (!::Players.MouseControlTaken())
-					MouseControl=true;
+	MouseControl = false;
 	// no controls issued yet
 	ControlCount = ActionCount = 0;
 	LastControlType = PCID_None;
 	LastControlID = 0;
-	// init control callbacks
-	StdStrBuf sKeysetName;
-	sKeysetName.Format("Keyboard%d%s", ControlSet, PrefControlStyle ? "" : "Classic");
-	C4PlayerControlAssignmentSet *keyset = Game.PlayerControlAssignmentSets.GetSetByName(sKeysetName.getData());
-	if (!keyset)
+	// needs to init control for local players only
+	if (LocalControl)
 	{
-		// the correct keyset could not be found. fallback to something useful...
-		if (!PrefControlStyle)
+		// Preferred control
+		ControlSetName = PrefControl;
+		ControlSet = Game.PlayerControlAssignmentSets.GetSetByName(ControlSetName.getData());
+		// control set unassigned/not known? fallback to some default then (=first defined control set)
+		if (!ControlSet) ControlSet = Game.PlayerControlAssignmentSets.GetDefaultSet();
+		// gamepad control safety (assuming the default control set is not using gamepad)
+		if (ControlSet && ControlSet->HasGamepad() && !Config.General.GamepadEnabled)
 		{
-			keyset = Game.PlayerControlAssignmentSets.GetSetByName("Keyboard*Classic");
+			ControlSet = Game.PlayerControlAssignmentSets.GetDefaultSet();
 		}
-		if (!keyset)
+		// Choose next while control taken
+		// TODO
+		// init gamepad
+		if (ControlSet && ControlSet->HasGamepad())
 		{
-			keyset = Game.PlayerControlAssignmentSets.GetSetByName("Keyboard*");
+			pGamepad = new C4GamePadOpener(ControlSet->GetGamepadIndex());
 		}
-		if (!keyset)
-		{
-			// now we're really desperate...
-			keyset = Game.PlayerControlAssignmentSets.GetSetByName("*");
-		}
+		// Mouse
+		if (ControlSet && ControlSet->HasMouse() && PrefMouse)
+			if (!Game.C4S.Head.DisableMouse)
+				if (!::Players.MouseControlTaken())
+					MouseControl=true;
 	}
-	Control.RegisterKeyset(Number, keyset);
+	// clear old control method and register new
+	Control.RegisterKeyset(Number, ControlSet);
 }
 
 int igOffX, igOffY;

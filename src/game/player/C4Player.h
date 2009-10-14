@@ -38,7 +38,7 @@ const int32_t C4MaxPlayer = 5000; // ought to be enough for everybody (used to c
 const int32_t C4MaxClient = 5000; // ought to be enough for everybody (used to catch invalid client counts)
 
 class C4Player: public C4PlayerInfoCore
-  {
+{
 	public:
 		// possible player controls used for statistics
 		enum ControlType
@@ -57,25 +57,26 @@ class C4Player: public C4PlayerInfoCore
 			PS_TeamSelection = 2, // team selection
 			PS_TeamSelectionPending = 3, // waiting for team selection packet to come through
 			};
-	friend class C4PlayerList;
-  public:
-    C4Player();
-    ~C4Player();
+		friend class C4PlayerList;
+	public:
+		C4Player();
+		~C4Player();
 	public:
 		char Filename[_MAX_PATH+1];
 		StdStrBuf Name;
-    int32_t Status;
-    int32_t Eliminated;
-    int32_t Surrendered;
+		int32_t Status;
+		int32_t Eliminated;
+		int32_t Surrendered;
 		bool Evaluated;
 		int32_t Number;
 		int32_t ID; // unique player ID
 		int32_t Team; // team ID - may be 0 for no teams
-    int32_t Color; // OldGfx color index
+		int32_t Color; // OldGfx color index
 		uint32_t ColorDw; // color as DWord for newgfx
-	int32_t ControlSet;
+		class C4PlayerControlAssignmentSet *ControlSet;
+		StdCopyStrBuf ControlSetName;
 		int32_t MouseControl;
-    int32_t Position;
+		int32_t Position;
 		int32_t PlrStartIndex;
 		int32_t RetireDelay;
 		int32_t GameJoinTime; // Local-NoSave - set in Init; reset in LocalSync

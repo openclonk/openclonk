@@ -46,13 +46,11 @@ class C4PlayerList
 		int GetCount(C4PlayerType eType) const;
 		int GetIndex(C4Player *pPlr) const;
 		int GetCountNotEliminated() const;
-		int ControlTakenBy(int iControl) const;
 		int AverageValueGain() const;
 		C4Player *Get(int iPlayer) const;
 		C4Player *GetByIndex(int iIndex) const;
 		C4Player *GetByIndex(int iIndex, C4PlayerType eType) const;
 		C4Player *GetByName(const char *szName, int iExcluding=NO_OWNER) const;
-		C4Player *GetLocalByKbdSet(int iKbdSet) const;
 		C4Player *GetLocalByIndex(int iIndex) const;
 		C4Player *GetAtClient(int iClient, int iIndex=0) const;
 		C4Player *GetAtClient(const char *szName, int iIndex=0) const;
@@ -83,7 +81,6 @@ class C4PlayerList
 		bool PositionTaken(int iPosition) const;
 		bool ColorTaken(int iColor) const;
 		int CheckColorDw(DWORD dwColor, C4Player *pExclude); // return minimum difference to the other player's colors
-		bool ControlTaken(int iControl) const;
 		bool SynchronizeLocalFiles(); // syncrhonize all local player files; resetting InGame times
 		protected:
 			int GetFreeNumber() const;

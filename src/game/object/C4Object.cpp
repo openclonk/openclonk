@@ -1850,7 +1850,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			pTarget->Def->Draw(fctSymbol,false,pTarget->Color, pTarget);
 			Menu->Init(fctSymbol,pTarget->GetName(),this,C4MN_Extra_None,0,iMenu,C4MN_Style_Context);
 
-			Menu->SetPermanent(iMenuData);
+			Menu->SetPermanent(!!iMenuData);
 			Menu->SetRefillObject(pTarget);
 
 			// Preselect
@@ -2795,8 +2795,8 @@ bool DrawCommandQuery(int32_t controller, C4ScriptHost& scripthost, int32_t* mas
     {
     case C4AUL_ControlMethod_All: return true;
     case C4AUL_ControlMethod_None: return false;
-    case C4AUL_ControlMethod_Classic: return !player->PrefControlStyle;
-    case C4AUL_ControlMethod_JumpAndRun: return !!player->PrefControlStyle;
+    case C4AUL_ControlMethod_Classic: return !player->OldPrefControlStyle;
+    case C4AUL_ControlMethod_JumpAndRun: return !!player->OldPrefControlStyle;
 		default: return false;
     }
   }
@@ -2819,7 +2819,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 	if(Action.ComDir == COMD_Stop && iDFA == DFA_WALK && (tObj = ::Objects.AtObject(GetX(), GetY(), ocf, this)))
 		{
 		int32_t com = COM_Down_D;
-		if(::Players.Get(Controller)->PrefControlStyle) com = COM_Down;
+		if(::Players.Get(Controller)->OldPrefControlStyle) com = COM_Down;
 
 		tObj->DrawCommand(cgoBottom,C4FCT_Right,NULL,com,pRegions,Owner,
 			FormatString(LoadResStr("IDS_CON_BUILD"), tObj->GetName()).getData(),&ccgo);
@@ -2830,7 +2830,7 @@ void C4Object::DrawCommands(C4Facet &cgoBottom, C4Facet &cgoSide, C4RegionList *
 	// Grab target control (control flag)
 	if (iDFA==DFA_PUSH && Action.Target)
 		{
-		bool letgobydouble = !::Players.Get(Controller)->PrefControlStyle
+		bool letgobydouble = !::Players.Get(Controller)->OldPrefControlStyle
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 3)
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 11)
 			|| DrawCommandQuery(Controller, Action.Target->Def->Script, Action.Target->Def->Script.ControlMethod, 19);

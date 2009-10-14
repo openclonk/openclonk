@@ -1136,9 +1136,9 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 		SCopy(LoadResStr("IDS_PLR_NEWCOMMENT"), C4P.Comment, C4MaxComment);
 		C4P.PrefColor = SafeRandom(8);
 		C4P.PrefColorDw = C4P.GetPrefColorValue(C4P.PrefColor);
-		C4P.PrefControlStyle = 1;
-		C4P.PrefAutoContextMenu = 1;
-		C4P.PrefControl = C4P_Control_Keyboard1;
+		C4P.OldPrefControlStyle = 1;
+		C4P.OldPrefAutoContextMenu = 1;
+		C4P.OldPrefControl = C4P_Control_Keyboard1;
 		}
 	const int32_t BetweenElementDist = 2;
 	// use black fonts here
@@ -1227,7 +1227,7 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	caControl.ExpandLeft(-10);
 	AddElement(pMouseBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_MouseOff, caControl.GetFromLeft(caControl.GetHeight()), 'M' /* 2do */, &C4StartupPlrPropertiesDlg::OnCtrlChangeMouse));
 	pMouseBtn->SetToolTip(LoadResStr("IDS_DLGTIP_PLAYERCONTROLMOUSE"));
-	C4P.PrefControl = BoundBy<int32_t>(C4P.PrefControl, 0, C4MaxControlSet-1);
+	C4P.OldPrefControl = BoundBy<int32_t>(C4P.OldPrefControl, 0, C4MaxControlSet-1);
 	UpdatePlayerControl();
 	// place picture button
 	AddElement(pPictureBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_Player, caPictureArea.GetAll(), 'P' /* 2do */, &C4StartupPlrPropertiesDlg::OnPictureBtn));
@@ -1337,28 +1337,40 @@ void C4StartupPlrPropertiesDlg::OnClrSliderBChange(int32_t iNewVal)
 	}
 
 void C4StartupPlrPropertiesDlg::UpdatePlayerControl()
-	{
+{
+	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
+	if (!control_set) control_set = Game.PlayerControlAssignmentSets.GetDefaultSet();
 	// update keyboard image of selected control
-	C4Facet &rfctCtrlPic = (C4P.PrefControl < C4P_Control_GamePad1) ? ::GraphicsResource.fctKeyboard : ::GraphicsResource.fctGamepad;
-	pCtrlImg->SetFacet(rfctCtrlPic);
-	pCtrlImg->GetMFacet().X += rfctCtrlPic.Wdt * (C4P.PrefControl - ((C4P.PrefControl < C4P_Control_GamePad1) ? 0 : C4P_Control_GamePad1));
+	C4Facet fctCtrlPic;
+	if (control_set) fctCtrlPic = control_set->GetPicture();
+	pCtrlImg->SetFacet(fctCtrlPic);
 	// update mouse image
-	pMouseBtn->SetIcon(C4P.PrefMouse ? C4GUI::Ico_MouseOn : C4GUI::Ico_MouseOff);
-	}
+	// button only available if selected control set offers mouse control
+	pMouseBtn->SetVisibility(control_set && control_set->HasMouse());
+	pMouseBtn->SetIcon((C4P.PrefMouse) ? C4GUI::Ico_MouseOn : C4GUI::Ico_MouseOff);
+}
 
 void C4StartupPlrPropertiesDlg::OnCtrlChangeLeft(C4GUI::Control *pBtn)
-	{
+{
 	// previous control set in list
-	C4P.PrefControl = C4P.PrefControl ? C4P.PrefControl-1 : C4MaxControlSet-1;
+	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
+	int32_t index = Game.PlayerControlAssignmentSets.GetSetIndex(control_set);
+	if (!index--) index = Game.PlayerControlAssignmentSets.GetSetCount() - 1;
+	control_set = Game.PlayerControlAssignmentSets.GetSetByIndex(index);
+	if (control_set) C4P.PrefControl = control_set->GetName();
 	UpdatePlayerControl();
-	}
+}
 
 void C4StartupPlrPropertiesDlg::OnCtrlChangeRight(C4GUI::Control *pBtn)
-	{
+{
 	// next control set in list
-	C4P.PrefControl = (C4P.PrefControl + 1) % C4MaxControlSet;
+	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
+	int32_t index = Game.PlayerControlAssignmentSets.GetSetIndex(control_set);
+	if (++index >= Game.PlayerControlAssignmentSets.GetSetCount()) index = 0;
+	control_set = Game.PlayerControlAssignmentSets.GetSetByIndex(index);
+	if (control_set) C4P.PrefControl = control_set->GetName();
 	UpdatePlayerControl();
-	}
+}
 
 void C4StartupPlrPropertiesDlg::OnCtrlChangeMouse(C4GUI::Control *pBtn)
 	{
@@ -1369,17 +1381,17 @@ void C4StartupPlrPropertiesDlg::OnCtrlChangeMouse(C4GUI::Control *pBtn)
 
 void C4StartupPlrPropertiesDlg::UpdatePlayerMovement()
 	{
-	// hightlight to control tyope that is selected
-	pJumpNRunBtn->SetFacet(C4Startup::Get()->Graphics.fctPlrCtrlType.GetPhase(C4P.PrefControlStyle ? 1 : 0, 1));
-	pClassicBtn->SetFacet(C4Startup::Get()->Graphics.fctPlrCtrlType.GetPhase(C4P.PrefControlStyle ? 0 : 1, 0));
+	// hightlight to control type that is selected
+	pJumpNRunBtn->SetFacet(C4Startup::Get()->Graphics.fctPlrCtrlType.GetPhase(C4P.OldPrefControlStyle ? 1 : 0, 1));
+	pClassicBtn->SetFacet(C4Startup::Get()->Graphics.fctPlrCtrlType.GetPhase(C4P.OldPrefControlStyle ? 0 : 1, 0));
 	}
 
 void C4StartupPlrPropertiesDlg::OnMovementBtn(C4GUI::Control *pBtn)
 	{
 	// Set new control style
-	C4P.PrefControlStyle = (pBtn == pJumpNRunBtn);
+	C4P.OldPrefControlStyle = (pBtn == pJumpNRunBtn);
 	// Adjust pref for AutoContextMenus along with control style
-	C4P.PrefAutoContextMenu = C4P.PrefControlStyle;
+	C4P.OldPrefAutoContextMenu = C4P.OldPrefControlStyle;
 	// Update dialog
 	UpdatePlayerMovement();
 	}

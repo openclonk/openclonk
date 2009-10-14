@@ -26,6 +26,7 @@
 #include <C4Control.h>
 #include <C4Game.h>
 #include <C4Log.h>
+#include <C4GraphicsResource.h>
 #endif
 
 /* C4PlayerControlDef */
@@ -336,14 +337,25 @@ bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
 	}
 
 C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControlName(const char *szControlName)
-	{
+{
 	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
 		if (SEqual((*i).GetControlName(), szControlName))
 			// We don't like release keys... (2do)
 			if (!((*i).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
 				return &*i;
 	return NULL;
-	}
+}
+
+C4PlayerControlAssignment *C4PlayerControlAssignmentSet::GetAssignmentByControl(int control)
+{
+	// TODO: Might want to stuff this into a vector indexed by control for faster lookup
+	for (C4PlayerControlAssignmentVec::iterator i = Assignments.begin(); i != Assignments.end(); ++i)
+		if ((*i).GetControl() == control)
+			// We don't like release keys... (2do)
+			if (!((*i).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release))
+				return &*i;
+	return NULL;
+}
 
 bool C4PlayerControlAssignmentSet::operator ==(const C4PlayerControlAssignmentSet &cmp) const
 	{
@@ -408,6 +420,16 @@ void C4PlayerControlAssignmentSet::GetTriggerKeys(const C4PlayerControlDefs &rDe
 		}
 	}
 
+C4Facet C4PlayerControlAssignmentSet::GetPicture() const
+{
+	// get image to be drawn to represent this control set
+	// picture per set not implemented yet. So just default to out standard images
+	if (HasGamepad()) return ::GraphicsResource.fctGamepad.GetPhase(GetGamepadIndex());
+	if (HasKeyboard()) return ::GraphicsResource.fctKeyboard.GetPhase(0 /* todo*/);
+	if (HasMouse()) return ::GraphicsResource.fctMouse; // mouse only???
+	return C4Facet();
+}
+
 
 /* C4PlayerControlAssignmentSets */
 
@@ -470,6 +492,33 @@ C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByName(const 
 		if (WildcardMatch(szName, (*i).GetName()))
 			return &*i;
 	return NULL;
+}
+
+C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetDefaultSet()
+{
+	// default set is first defined control set
+	if (Sets.empty()) return NULL; // nothing defined :(
+	return &Sets.front();
+}
+
+int32_t C4PlayerControlAssignmentSets::GetSetIndex(const C4PlayerControlAssignmentSet *set) const
+{
+	// find set in list; return index
+	int32_t index = 0;
+	for (AssignmentSetList::const_iterator i = Sets.begin(); i != Sets.end(); ++i,++index)
+		if (&*i == set)
+			return index;
+	return -1; // not found
+}
+
+C4PlayerControlAssignmentSet *C4PlayerControlAssignmentSets::GetSetByIndex(int32_t index)
+{
+	// bounds check
+	if (index < 0 || index >= (int32_t)Sets.size()) return NULL;
+	// return indexed set
+	AssignmentSetList::iterator i = Sets.begin();
+	while (index--) ++i;
+	return &*i;
 }
 
 

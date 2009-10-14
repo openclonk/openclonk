@@ -79,6 +79,7 @@ class C4GamePadOpener {
 	C4GamePadOpener(int iGamePad);
 	~C4GamePadOpener();
 	void SetGamePad(int iNewGamePad);
+	int GetGamePadIndex() const { return iGamePad; }
 #ifdef HAVE_SDL
 	SDL_Joystick *Joy;
 #endif

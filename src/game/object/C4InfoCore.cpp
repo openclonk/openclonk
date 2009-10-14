@@ -54,11 +54,13 @@ void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 	PrefColor=0;
 	PrefColorDw=0xff;
 	PrefColor2Dw=0;
-	PrefControl=C4P_Control_Keyboard1;
+	OldPrefControl=C4P_Control_Keyboard1;
 	PrefPosition=0;
 	PrefMouse=1;
-	PrefControlStyle = 0;
+	OldPrefControlStyle = 0;
 	PrefAutoContextMenu = 0;
+	OldPrefAutoContextMenu = 0;
+	PrefControl.Clear();
 	ExtraData.Reset();
 	}
 
@@ -84,8 +86,8 @@ bool C4PlayerInfoCore::Load(C4Group &hGroup)
 		if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Source, GrpName.getData()))
 			return false;
 		// Pref for AutoContextMenus is still undecided: default by player's control style
-		if (PrefAutoContextMenu == -1)
-			PrefAutoContextMenu = PrefControlStyle;
+		if (OldPrefAutoContextMenu == -1)
+			OldPrefAutoContextMenu = OldPrefControlStyle;
 		// Determine true color from indexed pref color
 		if (!PrefColorDw)
 			PrefColorDw = GetPrefColorValue(PrefColor);
@@ -147,17 +149,19 @@ void C4PlayerInfoCore::CompileFunc(StdCompiler *pComp)
 	pComp->NameEnd();
 
 	pComp->Name("Preferences");
-	pComp->Value(mkNamingAdapt(PrefColor,						"Color",							0));
-	pComp->Value(mkNamingAdapt(PrefColorDw,					"ColorDw",						0xffu));
-	pComp->Value(mkNamingAdapt(PrefColor2Dw,				"AlternateColorDw",		0u));
-	pComp->Value(mkNamingAdapt(PrefControl,					"Control",						C4P_Control_Keyboard2));
-	pComp->Value(mkNamingAdapt(PrefControlStyle,		"AutoStopControl",		0));
-	pComp->Value(mkNamingAdapt(PrefAutoContextMenu,	"AutoContextMenu",		-1)); // compiling default is -1  (if this is detected, AutoContextMenus will be defaulted by control style)
-	pComp->Value(mkNamingAdapt(PrefPosition,				"Position",						0));
-	pComp->Value(mkNamingAdapt(PrefMouse,						"Mouse",							1));
+	pComp->Value(mkNamingAdapt(PrefColor,                "Color",            0));
+	pComp->Value(mkNamingAdapt(PrefColorDw,              "ColorDw",          0xffu));
+	pComp->Value(mkNamingAdapt(PrefColor2Dw,             "AlternateColorDw", 0u));
+	pComp->Value(mkNamingAdapt(PrefPosition,             "Position",         0));
+	pComp->Value(mkNamingAdapt(PrefAutoContextMenu,      "AutoContextMenu2", 0)); // temp solution - to be removed
+	pComp->Value(mkNamingAdapt(PrefMouse,                "Mouse",            1));
+	pComp->Value(mkNamingAdapt(OldPrefControl,           "Control",          C4P_Control_Keyboard2));
+	pComp->Value(mkNamingAdapt(OldPrefControlStyle,      "AutoStopControl",  0));
+	pComp->Value(mkNamingAdapt(OldPrefAutoContextMenu,   "AutoContextMenu",  -1)); // compiling default is -1  (if this is detected, AutoContextMenus will be defaulted by control style)
+	pComp->Value(mkNamingAdapt(PrefControl,              "ControlSet",       StdStrBuf()));
 	pComp->NameEnd();
 
-	pComp->Value(mkNamingAdapt(LastRound,						"LastRound"						));
+	pComp->Value(mkNamingAdapt(LastRound,                "LastRound"));
 
 	}
 

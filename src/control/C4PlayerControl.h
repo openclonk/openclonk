@@ -204,10 +204,19 @@ class C4PlayerControlAssignmentSet
 		bool IsWildcardName() const { return IsWildcardString(sName.getData()); }
 
 		C4PlayerControlAssignment *GetAssignmentByControlName(const char *szControlName);
+		C4PlayerControlAssignment *GetAssignmentByControl(int control);
 		void GetAssignmentsByKey(const C4PlayerControlDefs &rDefs, const C4KeyCodeEx &key, bool fHoldKeysOnly, C4PlayerControlAssignmentPVec *pOutVec, const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const; // match only by TriggerKey (last key of Combo) if fHoldKeysOnly
 		void GetTriggerKeys(const C4PlayerControlDefs &rDefs, C4KeyCodeExVec *pRegularKeys, C4KeyCodeExVec *pHoldKeys) const; // put all trigger keys of keyset into output vectors
 
 		bool operator ==(const C4PlayerControlAssignmentSet &cmp) const;
+
+		C4Facet GetPicture() const; // get image to be drawn to represent this control set
+		// todo
+		bool HasKeyboard() const { return true; }
+		bool HasMouse() const { return true; }
+		bool HasGamepad() const { return false; }
+		int32_t GetLayoutOrder() const { return 0; } // returns position on keyboard (increasing from left to right) for viewport sorting
+		int32_t GetGamepadIndex() const { return 0; }
 	};
 
 // list of C4PlayerControlAssignmentSet
@@ -228,6 +237,10 @@ class C4PlayerControlAssignmentSets
 		void MergeFrom(const C4PlayerControlAssignmentSets &Src, bool fLowPrio); // take over all assignments in known sets and new sets defined in Src
 
 		C4PlayerControlAssignmentSet *GetSetByName(const char *szName);
+		C4PlayerControlAssignmentSet *GetDefaultSet();
+		int32_t GetSetIndex(const C4PlayerControlAssignmentSet *set) const;
+		C4PlayerControlAssignmentSet *GetSetByIndex(int32_t index);
+		int32_t GetSetCount() const { return Sets.size(); }
 	};
 
 // contents of one PlayerControls.txt file

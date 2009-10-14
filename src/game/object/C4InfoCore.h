@@ -182,38 +182,42 @@ class C4RoundResult
   };
 
 class C4PlayerInfoCore
-  {
-  public:
-    C4PlayerInfoCore();
-  public:
-    // Player Info
-    char PrefName[C4MaxName+1];
-    char Comment[C4MaxComment+1];
-    int32_t  Rank;
-    char RankName[C4MaxName+1];
-    int32_t  Score;
-    int32_t  Rounds,RoundsWon,RoundsLost;
-    int32_t  TotalPlayingTime;
-		int32_t  PrefMouse;
-    C4RoundResult LastRound;
+{
+	public:
+		C4PlayerInfoCore();
+	public:
+		// Player Info
+		char PrefName[C4MaxName+1];
+		char Comment[C4MaxComment+1];
+		int32_t  Rank;
+		char RankName[C4MaxName+1];
+		int32_t  Score;
+		int32_t  Rounds,RoundsWon,RoundsLost;
+		int32_t  TotalPlayingTime;
+		C4RoundResult LastRound;
 		C4ValueMapData ExtraData;
 		char LeagueName[C4MaxName+1];
-    // Preferences
-    int32_t PrefColor;
+		// Preferences
+		StdCopyStrBuf PrefControl; // name of control set from definition file
+		int32_t PrefMouse;
+		int32_t PrefColor;
 		uint32_t PrefColorDw, PrefColor2Dw;
-    int32_t PrefControl;
-    int32_t PrefPosition;
-    int32_t PrefControlStyle;
-  	int32_t PrefAutoContextMenu; // enable automatically opened context menus in structures
-public:
-    void Default(C4RankSystem *pRanks=NULL);
+		int32_t PrefPosition;
+		int32_t PrefAutoContextMenu; // enable automatically opened context menus in structures
+		// Old control method - loaded for backwards compatilibity if PrefControl is unassigned
+		// and stored back so you can use the same player file for CR and OC
+		int32_t OldPrefControl;
+		int32_t OldPrefControlStyle;
+		int32_t OldPrefAutoContextMenu;
+	public:
+		void Default(C4RankSystem *pRanks=NULL);
 		void Promote(int32_t iRank, C4RankSystem &rRanks);
-    bool Load(C4Group &hGroup);
+		bool Load(C4Group &hGroup);
 		bool Save(C4Group &hGroup);
 		bool CheckPromotion(C4RankSystem &rRanks);
 		static DWORD GetPrefColorValue(int32_t iPrefColor);
 		void CompileFunc(StdCompiler *pComp);
-  };
+ };
 
 inline FIXED ValByPhysical(int32_t iPercent, int32_t iPhysical) // get percentage of max physical value
 	{

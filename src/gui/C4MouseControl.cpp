@@ -807,7 +807,7 @@ void C4MouseControl::LeftDown()
 		// Send Com on mouse button down when using AutoStopControl to send
 		// corresponding release event in LeftUpDragNone. Only do this for normal
 		// coms, single and double coms are handled in LeftUpDragNone.
-		if(!Help && pPlayer && pPlayer->PrefControlStyle && (DownRegion.Com & (COM_Double | COM_Single)) == 0)
+		if(!Help && pPlayer && pPlayer->OldPrefControlStyle && (DownRegion.Com & (COM_Double | COM_Single)) == 0)
 			SendControl(DownRegion.Com, DownRegion.Data);
 		}
 	}
@@ -1153,7 +1153,7 @@ void C4MouseControl::LeftUpDragNone()
 	// Player pressed down a region button and uses AutoStopControl. Send now
 	// a corresponding release event, not caring about where the cursor may have
 	// been moved.
-	if(DownCursor == C4MC_Cursor_Region && !Help && pPlayer && pPlayer->PrefControlStyle && (DownRegion.Com & (COM_Double | COM_Single)) == 0)
+	if(DownCursor == C4MC_Cursor_Region && !Help && pPlayer && pPlayer->OldPrefControlStyle && (DownRegion.Com & (COM_Double | COM_Single)) == 0)
 	{
 		// + 16 for release, there is no COM_Release to be |ed...
 	  SendControl(DownRegion.Com + 16, DownRegion.Data);

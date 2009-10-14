@@ -50,6 +50,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4Network2.h>
+#include <C4GamePadCon.h>
 #endif
 
 #include <StdGL.h>
@@ -1417,35 +1418,39 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	}
 
 StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
-	{
+{
 	// determine player
 	C4Player *pPlr = ::Players.Get(iPlayer);
 	// player control
 	if (pPlr)
+	{
+		if (pPlr && pPlr->ControlSet)
 		{
-		if (Inside<int32_t>(pPlr->ControlSet,C4P_Control_Keyboard1,C4P_Control_Keyboard4))
-			return C4KeyCodeEx::KeyCode2String(Config.Controls.Keyboard[pPlr->ControlSet][iControl], true, fShort);
-		if (Inside<int32_t>(pPlr->ControlSet,C4P_Control_GamePad1,C4P_Control_GamePadMax))
-			return C4KeyCodeEx::KeyCode2String(Config.Gamepads[pPlr->ControlSet-C4P_Control_GamePad1].Button[iControl], true, fShort);
+			C4PlayerControlAssignment *ass = pPlr->ControlSet->GetAssignmentByControl(iControl);
+			if (ass)
+			{
+				return C4KeyCodeEx::KeyCode2String(ass->GetTriggerKey().Key, true, fShort);
+			}
 		}
+	}
 	// global control
 	else
-		{
+	{
 		// look up iControl for a matching mapping in global key map
 		// and then display the key name - should at least work for
 		// stuff in KEYSCOPE_FullSMenu...
 		const char *szKeyID;
 		switch (iControl)
-			{
+		{
 			case CON_Throw: szKeyID = "FullscreenMenuOK"; break;
 			case CON_Dig:   szKeyID = "FullscreenMenuCancel"; break;
 			default: szKeyID = NULL; break;
-			}
-		if (szKeyID) return Game.KeyboardInput.GetKeyCodeNameByKeyName(szKeyID, fShort);
 		}
+		if (szKeyID) return Game.KeyboardInput.GetKeyCodeNameByKeyName(szKeyID, fShort);
+	}
 	// undefined control
 	return StdStrBuf();
-	}
+}
 
 void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
 	{
@@ -1496,21 +1501,14 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 												cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2+55,
 												cgo.Y+cgo.Hgt * 2/3 - 10 + DrawMessageOffset,
 												0,0);
-	if (Inside<int32_t>(pPlr->ControlSet,C4P_Control_Keyboard1,C4P_Control_Keyboard4))
+	if (pPlr && pPlr->ControlSet)
 		{
-		GfxR->fctKeyboard.Draw(cgo.Surface,
-													 cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2,
+		C4Facet controlset_facet = pPlr->ControlSet->GetPicture();
+		if (controlset_facet.Wdt) controlset_facet.Draw(cgo.Surface,
+													 cgo.X+(cgo.Wdt-controlset_facet.Wdt)/2,
 													 cgo.Y+cgo.Hgt * 2/3 + DrawMessageOffset,
-													 pPlr->ControlSet-C4P_Control_Keyboard1,0);
+													 0,0);
 		iNameHgtOff=GfxR->fctKeyboard.Hgt;
-		}
-	else if (Inside<int32_t>(pPlr->ControlSet,C4P_Control_GamePad1,C4P_Control_GamePad4))
-		{
-		GfxR->fctGamepad.Draw(cgo.Surface,
-													 cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2,
-													 cgo.Y+cgo.Hgt * 2/3 + DrawMessageOffset,
-													 pPlr->ControlSet-C4P_Control_GamePad1,0);
-		iNameHgtOff=GfxR->fctGamepad.Hgt;
 		}
 
 	// Name
