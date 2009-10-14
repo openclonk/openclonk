@@ -542,6 +542,7 @@ endif()
 option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
 if(WIN32)
 	option(USE_DIRECTX "Enable DirectX support" ON)
+	option(USE_FMOD "Enable FMOD support" ON)
 	if(EXISTS $ENV{DXSDK_DIR})
 		include_directories(SYSTEM $ENV{DXSDK_DIR}/Include)
 		if(${FIND_LIBRARY_USE_LIB64_PATHS})
@@ -552,6 +553,7 @@ if(WIN32)
 	endif()
 else()
 	SET(USE_DIRECTX OFF)
+	SET(USE_FMOD OFF)
 endif()
 if(UNIX)
 	option(USE_X11 "Use X11 to create windows etc." ON)
@@ -617,6 +619,12 @@ if(USE_DIRECTX)
 	target_link_libraries(clonk
 		${DIRECT3D_LIBRARIES}
 		${DIRECT3DX_LIBRARIES}
+	)
+endif()
+if(USE_FMOD)
+	FINDLIB(FMOD_LIBRARIES fmodvc)
+	target_link_libraries(clonk
+		${FMOD_LIBRARIES}
 	)
 endif()
 if(USE_GTK)
