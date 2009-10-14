@@ -253,6 +253,7 @@ class C4StartupPlrPropertiesDlg: public C4GUI::Dialog
 		C4GUI::ScrollBar *pClrSliderR, *pClrSliderG, *pClrSliderB;
 		C4GUI::Picture *pCtrlImg;
 		C4GUI::IconButton *pMouseBtn, *pJumpNRunBtn, *pClassicBtn, *pPictureBtn;
+		C4GUI::Label *ctrl_name_lbl;
 		C4PlayerInfoCore C4P; // player info core copy currently being edited
 		C4FacetSurface fctOldBigIcon;
 		C4FacetSurface fctNewPicture, fctNewBigIcon; // if assigned, save new picture/bigicon
