@@ -87,32 +87,32 @@ class C4Player: public C4PlayerInfoCore
 		bool NoEliminationCheck; // Local-NoSave. Always set in init and restore by info //
 		// Menu
 		C4MainMenu Menu; // Local-NoSave //
-    // View
-    int32_t ViewMode;
-    int32_t ViewX,ViewY;
-    C4Object *ViewTarget; // NoSave //
+		// View
+		int32_t ViewMode;
+		int32_t ViewX,ViewY;
+		C4Object *ViewTarget; // NoSave //
 		int32_t ViewWealth,ViewValue;
-    bool ShowStartup;
+		bool ShowStartup;
 		int32_t ShowControl,ShowControlPos;
 		int32_t FlashCom; // NoSave //
 		bool fFogOfWar;
 		bool fFogOfWarInitialized; // No Save //
 		C4ObjectList FoWViewObjs; // No Save //
-    // Game
-    int32_t Wealth,Points;
-    int32_t Value,InitialValue,ValueGain;
-    int32_t ObjectsOwned;
+		// Game
+		int32_t Wealth,Points;
+		int32_t Value,InitialValue,ValueGain;
+		int32_t ObjectsOwned;
 		C4IDList Hostility;
-    // Home Base
-    C4IDList HomeBaseMaterial;
-    C4IDList HomeBaseProduction;
-    int32_t ProductionDelay,ProductionUnit;
-    // Crew
-    C4ObjectInfoList CrewInfoList; // No Save //
-    C4ObjectList Crew; // Save new in 4.95.2 (for sync reasons)
-    int32_t CrewCnt; // No Save //
-    // Knowledge
-    C4IDList Knowledge;
+		// Home Base
+		C4IDList HomeBaseMaterial;
+		C4IDList HomeBaseProduction;
+		int32_t ProductionDelay,ProductionUnit;
+		// Crew
+		C4ObjectInfoList CrewInfoList; // No Save //
+		C4ObjectList Crew; // Save new in 4.95.2 (for sync reasons)
+		int32_t CrewCnt; // No Save //
+		// Knowledge
+		C4IDList Knowledge;
 		C4IDList Magic;
 		// Control
 		C4PlayerControl Control;
@@ -123,7 +123,7 @@ class C4Player: public C4PlayerInfoCore
 		class C4GamePadOpener *pGamepad;
 		// Message
 		int32_t MessageStatus;
-	  char MessageBuf[256+1];
+		char MessageBuf[256+1];
 		class C4MessageBoardQuery *pMsgBoardQuery;
 		// BigIcon
 		C4FacetSurface BigIcon;
@@ -140,26 +140,26 @@ class C4Player: public C4PlayerInfoCore
 		const char *GetName() const { return Name.getData(); }
 		C4PlayerType GetType() const;
 
-  public:
-	  void Eliminate();
-	  void SelectCrew(C4Object *pObj, bool fSelect);
-	  void Default();
-	  void Clear();
-    void ClearPointers(C4Object *tptr, bool fDeath);
-    void Execute();
-    void ExecuteControl();
-    void UpdateValue();
-    void SetViewMode(int32_t iMode, C4Object *pTarget=NULL);
+	public:
+		void Eliminate();
+		void SelectCrew(C4Object *pObj, bool fSelect);
+		void Default();
+		void Clear();
+		void ClearPointers(C4Object *tptr, bool fDeath);
+		void Execute();
+		void ExecuteControl();
+		void UpdateValue();
+		void SetViewMode(int32_t iMode, C4Object *pTarget=NULL);
 		void ResetCursorView(); // reset view to cursor if any cursor exists
 		void Evaluate();
-    void Surrender();
-	  void ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt);
-	  void SelectCrew(C4ObjectList &rList);
-	  void SetCursor(C4Object *pObj, bool fSelectFlash, bool fSelectArrow);
-	  void RemoveCrewObjects();
+		void Surrender();
+		void ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt);
+		void SelectCrew(C4ObjectList &rList);
+		void SetCursor(C4Object *pObj, bool fSelectFlash, bool fSelectArrow);
+		void RemoveCrewObjects();
 		void NotifyOwnedObjects();
-	  void DefaultRuntimeData();
-	  void DrawHostility(C4Facet &cgo, int32_t iIndex);
+		void DefaultRuntimeData();
+		void DrawHostility(C4Facet &cgo, int32_t iIndex);
 		void AdjustCursorCommand();
 		void CursorRight();
 		void CursorLeft();
@@ -172,20 +172,20 @@ class C4Player: public C4PlayerInfoCore
 
 		bool ObjectCommand(int32_t iCommand, C4Object *pTarget, int32_t iTx, int32_t iTy, C4Object *pTarget2=NULL, C4Value iData=C4VNull, int32_t iAddMode=C4P_Command_Set);
 		void ObjectCommand2Obj(C4Object *cObj, int32_t iCommand, C4Object *pTarget, int32_t iX, int32_t iY, C4Object *pTarget2, C4Value iData, int32_t iMode);
-	  bool DoPoints(int32_t iChange);
-    bool Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName, const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo);
+		bool DoPoints(int32_t iChange);
+		bool Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientName, const char *szFilename, bool fScenarioInit, class C4PlayerInfo *pInfo);
 		bool ScenarioAndTeamInit(int32_t idTeam);
-    bool ScenarioInit();
-    bool FinalInit(bool fInitialValue);
-    bool Save();
-    bool Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny);
-	  bool MakeCrewMember(C4Object *pObj, bool fForceInfo=true, bool fDoCalls=true);
-	  bool Load(const char *szFilename, bool fSavegame, bool fLoadPortraits);
-	  static bool Strip(const char *szFilename, bool fAggressive);
-	  bool Message(const char *szMsg);
-    bool ObjectInCrew(C4Object *tobj);
-    bool DoWealth(int32_t change);
-    bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
+		bool ScenarioInit();
+		bool FinalInit(bool fInitialValue);
+		bool Save();
+		bool Save(C4Group &hGroup, bool fSavegame, bool fStoreTiny);
+		bool MakeCrewMember(C4Object *pObj, bool fForceInfo=true, bool fDoCalls=true);
+		bool Load(const char *szFilename, bool fSavegame, bool fLoadPortraits);
+		static bool Strip(const char *szFilename, bool fAggressive);
+		bool Message(const char *szMsg);
+		bool ObjectInCrew(C4Object *tobj);
+		bool DoWealth(int32_t change);
+		bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
 		void CompileFunc(StdCompiler *pComp, bool fExact);
 		bool LoadRuntimeData(C4Group &hGroup);
 		bool ActivateMenuMain();
@@ -201,6 +201,7 @@ class C4Player: public C4PlayerInfoCore
 		bool IsChosingTeam() const { return Status==PS_TeamSelection || Status==PS_TeamSelectionPending; }
 		bool IsInvisible() const;
 	protected:
+		void ClearControl();
 		void InitControl();
 		void DenumeratePointers();
 		void EnumeratePointers();
@@ -208,10 +209,10 @@ class C4Player: public C4PlayerInfoCore
 		void CheckElimination();
 		void UpdateCounts();
 		void ExecHomeBaseProduction();
-    void PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase);
-    void PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
-    void PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
-    void PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
+		void PlaceReadyBase(int32_t &tx, int32_t &ty, C4Object **pFirstBase);
+		void PlaceReadyVehic(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
+		void PlaceReadyMaterial(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
+		void PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *FirstBase);
 		void CheckCrewExPromotion();
 
 	public:
@@ -248,6 +249,6 @@ class C4Player: public C4PlayerInfoCore
 
 		// when the player changes team, his color changes. Relfect this in player objects
 		void SetPlayerColor(uint32_t dwNewClr);
-  };
+};
 
 #endif

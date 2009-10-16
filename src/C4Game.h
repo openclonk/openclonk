@@ -221,12 +221,10 @@ class C4Game
 				int32_t iOwner=ANY_OWNER,
 				C4Object *pFindNext=NULL);
 		C4Object *FindVisObject( // find object in view at pos, regarding parallaxity and visibility (but not distance)
-				float tx, float ty, int32_t iPlr, const C4Facet &fctViewport,
-				float iX=0, float iY=0, float iWdt=0, float iHgt=0,
-				DWORD ocf=OCF_All,
-				C4Object *pExclude=NULL,
-				int32_t iOwner=ANY_OWNER,
-				C4Object *pFindNext=NULL);
+				float tx, float ty, int32_t iPlr, const C4Facet &fctViewportGame, const C4Facet &fctViewportGUI,
+				float iX, float iY,
+				DWORD category,
+				float gui_x, float gui_y);
    /* int32_t ObjectCount(C4ID id,
 				int32_t x=0, int32_t y=0, int32_t wdt=0, int32_t hgt=0,
 				DWORD ocf=OCF_All,

@@ -985,6 +985,7 @@ void C4Player::Clear()
 	if (pGamepad) delete pGamepad;
 	pGamepad = NULL;
 	Status = 0;
+	ClearControl();
 	}
 
 void C4Player::Default()
@@ -1636,15 +1637,12 @@ void C4Player::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewH
 	ViewY = BoundBy<int32_t>( ViewY+iY, ViewHgt/2-ViewportScrollBorder, GBackHgt+ViewportScrollBorder-ViewHgt/2 );
 	}
 
-void C4Player::InitControl()
+void C4Player::ClearControl()
 {
-	// Check local control
-	LocalControl = false;
-	if (AtClient == ::Control.ClientID())
-		if (!GetInfo() || GetInfo()->GetType() == C4PT_User)
-			if (!::Control.isReplay())
-				LocalControl=true;
+	// Mark any control set as unused
+	Control.Clear();
 	// Reset control
+	LocalControl = false;
 	ControlSetName.Clear();
 	ControlSet=NULL;
 	if (pGamepad) { delete pGamepad; pGamepad=NULL; }
@@ -1653,6 +1651,17 @@ void C4Player::InitControl()
 	ControlCount = ActionCount = 0;
 	LastControlType = PCID_None;
 	LastControlID = 0;
+}
+
+void C4Player::InitControl()
+{
+	// clear any previous
+	ClearControl();
+	// Check local control
+	if (AtClient == ::Control.ClientID())
+		if (!GetInfo() || GetInfo()->GetType() == C4PT_User)
+			if (!::Control.isReplay())
+				LocalControl=true;
 	// needs to init control for local players only
 	if (LocalControl)
 	{

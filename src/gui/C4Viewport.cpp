@@ -957,24 +957,6 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 		}
 
 	C4ST_STOP(ContStat)
-
-	// Draw commands
-	if (Config.Graphics.ShowCommands /*|| ::MouseControl.IsViewport(this)*/ ) // Now, ShowCommands is respected even for mouse control
-		if (realcursor)
-			if (cgo.Hgt>C4SymbolSize)
-				{
-				C4ST_STARTNEW(CmdStat, "C4Viewport::DrawCursorInfo: Commands")
-				int32_t iSize = 2*C4SymbolSize/3;
-				int32_t iSize2 = 2 * iSize;
-				// Primary area (bottom)
-				ccgo.Set(cgo.Surface,cgo.X,cgo.Y+cgo.Hgt-iSize,cgo.Wdt,iSize);
-				// Secondary area (side)
-				ccgo2.Set(cgo.Surface,cgo.X+cgo.Wdt-iSize2,cgo.Y,iSize2,cgo.Hgt-iSize-5);
-				// Draw commands
-				realcursor->DrawCommands(ccgo,ccgo2,SetRegions);
-				C4ST_STOP(CmdStat)
-				}
-
 	}
 
 void C4Viewport::DrawMenu(C4TargetFacet &cgo)
@@ -1063,6 +1045,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		lpDDraw->SetZoom(GameZoom);
 		Application.DDraw->SetPrimaryClipper(cgo.X,cgo.Y,cgo.X+(ViewWdt-1-BorderRight-BorderLeft)/Zoom,cgo.Y+(ViewHgt-1-BorderBottom-BorderTop)/Zoom);
 		}
+	last_game_draw_cgo = cgo;
 
 	// landscape mod by FoW
 	C4Player *pPlr=::Players.Get(Player);
@@ -1101,9 +1084,6 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 	::Particles.GlobalParticles.Draw(cgo,NULL);
 	C4ST_STOP(PartStat)
 
-	// draw foreground objects
-	::Objects.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, true);
-
 	// Draw PathFinder
 	if (::GraphicsSystem.ShowPathfinder) Game.PathFinder.Draw(cgo);
 
@@ -1122,8 +1102,10 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		Application.DDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1)/fGUIZoom,DrawY+(ViewHgt-1)/fGUIZoom);
 		cgo.Set(Application.DDraw->lpBack,DrawX,DrawY,int(float(ViewWdt)/fGUIZoom),int(float(ViewHgt)/fGUIZoom),ViewX,ViewY);
 
+		last_gui_draw_cgo = cgo;
+
 		// draw custom GUI objects
-		::Objects.ForeObjects.DrawIfCategory(cgo, Player, C4D_Parallax, false);
+		::Objects.ForeObjects.DrawIfCategory(cgo, Player, C4D_Foreground, false);
 
 		// Draw overlay
 		C4ST_STARTNEW(OvrStat, "C4Viewport::Draw: Overlay")
@@ -1329,6 +1311,8 @@ void C4Viewport::Default()
 	Regions.Default();
 	ViewOffsX = ViewOffsY = 0;
 	fIsNoOwnerViewport = false;
+	last_game_draw_cgo.Default();
+	last_gui_draw_cgo.Default();
 	}
 
 void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)

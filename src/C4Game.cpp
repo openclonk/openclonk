@@ -1354,142 +1354,71 @@ C4Object* C4Game::FindObject(C4ID id,
 
 	}
 
-C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet &fctViewport,
-		                    float iX, float iY, float iWdt, float iHgt,
-												DWORD ocf,
-												C4Object *pExclude,
-												int32_t iOwner,
-												C4Object *pFindNext)
-	{
+C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet &fctViewportGame, const C4Facet &fctViewportGUI,
+		                    float game_x, float game_y, DWORD category, float gui_x, float gui_y)
+{
 	// FIXME: Use C4FindObject here for optimization
-  C4Object *cObj; C4ObjectLink *cLnk; C4ObjectList *pLst = &::Objects.ForeObjects;
-
+	// -- can't really do that, since sectors ignore parallaxity, etc.
+	// determine layer to search in
+	C4Object *layer_object = NULL;
+	C4Player *plr = ::Players.Get(iPlr);
+	if (plr && plr->Cursor) layer_object = plr->Cursor->pLayer;
 	// scan all object lists seperately
+	C4ObjectList *pLst = &::Objects.ForeObjects;
 	while (pLst)
-		{
+	{
 		// Scan all objects in list
+		C4ObjectLink *cLnk; C4Object *cObj;
 		for (cLnk=Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
-			{
-
-			// Not skipping to find next
-			if (!pFindNext)
+		{
 			// Status
 			if (cObj->Status == C4OS_NORMAL)
 			// exclude fore/back-objects from main list
 			if ((pLst != &Objects) || (!(cObj->Category & C4D_BackgroundOrForeground)))
 			// exclude MouseIgnore-objects
 			if (~cObj->Category & C4D_MouseIgnore)
-			// OCF (match any specified)
-			if (cObj->OCF & ocf)
-			// Exclude
-			if (cObj!=pExclude)
+			// Category (match any specified)
+			if (cObj->Category & category)
 			// Container
 			if (!cObj->Contained)
-			// Owner
-			if ((iOwner==ANY_OWNER) || (cObj->Owner==iOwner))
 			// Visibility
 			if (cObj->IsVisible(iPlr, false))
-			// Area
-				{
-				// Layer check: Layered objects are invisible to players whose cursor is in another layer
-				if (cObj->pLayer && ValidPlr(iPlr))
-					{
-					C4Object *pCursor = ::Players.Get(iPlr)->Cursor;
-					if (!pCursor || (pCursor->pLayer != cObj->pLayer)) continue;
-					}
-				// Full range
-				if ((iX==0) && (iY==0) && (iWdt==0) && (iHgt==0))
-					return cObj;
+			// Layer check: Layered objects are invisible to players whose cursor is in another layer
+			// except for GUI: GUI always visible
+			{
+				if (cObj->pLayer != layer_object)
+					if (pLst != &::Objects.ForeObjects)
+						continue;
+				// Area
 				// get object position
-				float iObjX, iObjY; cObj->GetViewPos(iObjX, iObjY, tx, ty, fctViewport);
-				// Point search
-				if ((iWdt==0) && (iHgt==0))
-					{
-					if (Inside<float>(iX-(iObjX+cObj->Shape.x),0,float(cObj->Shape.Wdt)-1))
-						if (Inside<float>(iY-(iObjY+cObj->Shape.y-cObj->addtop()),0,float(cObj->Shape.Hgt+cObj->addtop()-1)))
-							return cObj;
-					continue;
-					}
-				// Range
-				if (Inside<int32_t>(iObjX-iX,0,iWdt-1) && Inside<int32_t>(iObjY-iY,0,iHgt-1))
-					{
-					return cObj;
-					}
+				float iObjX, iObjY, check_x, check_y;
+				if (pLst == &::Objects.ForeObjects)
+				{
+					// object position for HUD object
+					check_x = game_x; check_y = game_y;
+					cObj->GetViewPos(iObjX, iObjY, tx, ty, fctViewportGUI);
 				}
-
-			// Find next mark reached
-			if (cObj == pFindNext) pFindNext = NULL;
-
+				else
+				{
+					// object position for game object
+					check_x = gui_x; check_y = gui_y;
+					cObj->GetViewPos(iObjX, iObjY, tx, ty, fctViewportGame);
+				}
+				// Point search
+				if (Inside<float>(check_x-(iObjX+cObj->Shape.x),0,float(cObj->Shape.Wdt)-1))
+					if (Inside<float>(check_y-(iObjY+cObj->Shape.y-cObj->addtop()),0,float(cObj->Shape.Hgt+cObj->addtop()-1)))
+						return cObj;
 			}
+		}
 		// next list
 		if (pLst == &::Objects.ForeObjects) pLst = &Objects;
 		else if (pLst == &Objects) pLst = &::Objects.BackObjects;
 		else pLst = NULL;
-		}
+	}
 
 	// none found
 	return NULL;
-
-	}
-/*
-int32_t C4Game::ObjectCount(C4ID id,
-   											 int32_t x, int32_t y, int32_t wdt, int32_t hgt,
-												 DWORD ocf,
-												 const char *szAction, C4Object *pActionTarget,
-												 C4Object *pExclude,
-												 C4Object *pContainer,
-												 int32_t iOwner)
-	{
-	int32_t iResult = 0; C4Def *pDef;
-	// check the easy cases first
-	if (id!=C4ID_None)
-		{
-		if (!(pDef=C4Id2Def(id))) return 0; // no valid def
-		if (!pDef->Count) return 0; // no instances at all
-		if (!x && !y && !wdt && !hgt && ocf==OCF_All && !szAction && !pActionTarget && !pExclude && !pContainer && (iOwner==ANY_OWNER))
-			// plain id-search: return known count
-			return pDef->Count;
-		}
-	C4Object *cObj; C4ObjectLink *clnk;
-	bool bFindActIdle = SEqual(szAction, "Idle") || SEqual(szAction, "ActIdle");
-	for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-		// Status
-		if (cObj->Status)
-		// ID
-		if ((id==C4ID_None) || (cObj->Def->id==id))
-		// OCF
-		if (cObj->OCF & ocf)
-		// Exclude
-		if (cObj!=pExclude)
-		// Action
-		if (!szAction || !szAction[0]  || (bFindActIdle && !cObj->Action.pActionDef) || (cObj->Action.pActionDef && SEqual(szAction,cObj->Action.pActionDef->GetName())) )
-		// ActionTarget
-		if(!pActionTarget || (cObj->Action.pActionDef && ((cObj->Action.Target==pActionTarget) || (cObj->Action.Target2==pActionTarget)) ))
-		// Container
-		if ( !pContainer || (cObj->Contained == pContainer) || ((reinterpret_cast<long>(pContainer)==NO_CONTAINER) && !cObj->Contained) || ((reinterpret_cast<long>(pContainer)==ANY_CONTAINER) && cObj->Contained) )
-		// Owner
-		if ((iOwner==ANY_OWNER) || (cObj->Owner==iOwner))
-		// Area
-			{
-			// Full range
-			if ((x==0) && (y==0) && (wdt==0) && (hgt==0))
-				{ iResult++; continue; }
-			// Point
-			if ((wdt==0) && (hgt==0))
-				{
-				if (Inside<int32_t>(x-(cObj->GetX()+cObj->Shape.x),0,cObj->Shape.Wdt-1))
-					if (Inside<int32_t>(y-(cObj->GetY()+cObj->Shape.y),0,cObj->Shape.Hgt-1))
-						{ iResult++; continue; }
-				continue;
-				}
-			// Range
-			if (Inside<int32_t>(cObj->GetX()-x,0,wdt-1) && Inside<int32_t>(cObj->GetY()-y,0,hgt-1))
-				{ iResult++; continue; }
-			}
-
-	return iResult;
-	}
-*/
+}
 
 int32_t C4Game::ObjectCount(C4ID id)
 	{

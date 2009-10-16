@@ -59,7 +59,7 @@ class C4MouseControl
 		float ViewX,ViewY; // Game coordinate scrolling offset of viewport
 		float GameX,GameY; // Game coordinates of mouse pos
 		float GuiX,GuiY; // GUI coorindates of mouse pos
-		C4Facet fctViewport;
+		C4Facet fctViewport, fctViewportGame, fctViewportGUI;
 		float DownX,DownY; // Game coordinates of mouse-down-pos while dragging
 		float DownOffsetX,DownOffsetY; // GUI coordinate offset from target region while dragging
 		int32_t ShowPointX,ShowPointY; // Game coordinates of throw point
@@ -131,7 +131,7 @@ class C4MouseControl
 		bool SendControl(int32_t iCom, int32_t iData=0);
 		bool IsValidMenu(C4Menu *pMenu);
 		bool UpdatePutTarget(bool fVehicle);
-		C4Object *GetTargetObject(float iX, float iY, DWORD &dwOCF, C4Object *pExclude=NULL);
+		C4Object *GetTargetObject(); // get MouseSelection object at position
 		bool IsPassive(); // return whether mouse is only used to look around
 		void ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt);
 

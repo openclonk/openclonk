@@ -237,10 +237,6 @@ class C4Object: public C4PropList
 							FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController);
 		void CompileFunc(StdCompiler *pComp);
 		void DrawLine(C4TargetFacet &cgo);
-		void DrawCommands(C4Facet &cgo, C4Facet &cgo2, C4RegionList *pRegions);
-		void DrawCommand(C4Facet &cgoBar, int32_t iAlign, const char *szFunctionFormat,
-				int32_t iCom, C4RegionList *pRegions, int32_t iPlayer, const char *szDesc=NULL,
-				C4Facet *pfctImage=NULL);
 		bool SetPhase(int32_t iPhase);
 		void AssignRemoval(bool fExitContents=false);
 		enum DrawMode { ODM_Normal=0, ODM_Overlay=1, ODM_BaseOnly=2, };
