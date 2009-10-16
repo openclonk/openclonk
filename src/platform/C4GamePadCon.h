@@ -74,12 +74,12 @@ class C4GamePadControl {
 class C4GamePadOpener {
 #ifdef _WIN32
 	int iGamePad;
+	int GetGamePadIndex() const { return iGamePad; }
 #endif
 	public:
 	C4GamePadOpener(int iGamePad);
 	~C4GamePadOpener();
 	void SetGamePad(int iNewGamePad);
-	int GetGamePadIndex() const { return iGamePad; }
 #ifdef HAVE_SDL
 	SDL_Joystick *Joy;
 #endif
