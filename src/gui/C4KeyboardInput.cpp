@@ -317,10 +317,10 @@ const C4KeyCodeMapEntry KeyCodeMap [] = {
 #endif
 
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
-	{
+{
 	// direct key code?
 	if (sName.getLength() > 2)
-		{
+	{
 		DWORD dwRVal;
 		if (sscanf(sName.getData(), "\\x%x", &dwRVal) == 1) return dwRVal;
 		// direct gamepad code
@@ -329,17 +329,44 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 #else
 		if (!strncasecmp(sName.getData(), "Joy", 3))
 #endif
+		{
+			int iGamepad;
+			if (sscanf(sName.getData(), "Joy%d",  &iGamepad) == 1)
 			{
-			int iGamepad; char cGamepadButton; int iAxis;
-			if (sscanf(sName.getData(), "Joy%dLeft",  &iGamepad) == 1) return KEY_Gamepad(iGamepad-1, KEY_JOY_Left);
-			if (sscanf(sName.getData(), "Joy%dUp",    &iGamepad) == 1) return KEY_Gamepad(iGamepad-1, KEY_JOY_Up);
-			if (sscanf(sName.getData(), "Joy%dDown",  &iGamepad) == 1) return KEY_Gamepad(iGamepad-1, KEY_JOY_Down);
-			if (sscanf(sName.getData(), "Joy%dRight", &iGamepad) == 1) return KEY_Gamepad(iGamepad-1, KEY_JOY_Right);
-			if (sscanf(sName.getData(), "Joy%d%c", &iGamepad, &cGamepadButton) == 2) return KEY_Gamepad(iGamepad-1, cGamepadButton-'A');
-			if (sscanf(sName.getData(), "Joy%dAxis%dMin", &iGamepad, &iAxis) == 1) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, false));
-			if (sscanf(sName.getData(), "Joy%dAxis%dMax", &iGamepad, &iAxis) == 1) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, true));
+				// skip Joy[number]
+				const char *key_str = sName.getData()+4;
+				while (isdigit(*key_str)) ++key_str;
+				// check for button (single, uppercase letter) (e.g. Joy1A)
+				if (*key_str && !key_str[1])
+				{
+					char cGamepadButton = toupper(*key_str);
+					if (Inside(cGamepadButton, 'A', 'Z'))
+					{
+						cGamepadButton = cGamepadButton - 'A';
+						return KEY_Gamepad(iGamepad-1, KEY_JOY_Button(cGamepadButton));
+					}
+				}
+				else
+				{
+					// check for standard axis (e.g. Joy1Left)
+					if (!stricmp(key_str, "Left")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Left);
+					if (!stricmp(key_str, "Up")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Up);
+					if (!stricmp(key_str, "Down")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Down);
+					if (!stricmp(key_str, "Right")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Right);
+					// check for specific axis (e.g. Joy1Axis1Min)
+					int iAxis;
+					if (sscanf(key_str, "Axis%d", &iAxis) == 1 && iAxis>0)
+					{
+						--iAxis; // axis is 0-based internally but written 1-based in config
+						key_str += 5;
+						while (isdigit(*key_str)) ++key_str;
+						if (!stricmp(key_str, "Min")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, false));
+						if (!stricmp(key_str, "Max")) return KEY_Gamepad(iGamepad-1, KEY_JOY_Axis(iAxis, true));
+					}
+				}
 			}
 		}
+	}
 #ifdef _WIN32
 	// query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
@@ -365,7 +392,7 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 #else
 	return KEY_Default;
 #endif
-	}
+}
 
 StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool fShort)
 	{
@@ -387,7 +414,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 						// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
 						return FormatString("[%d] %s", int(1 + Key_GetGamepadAxisIndex(wCode)), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
 					else
-						return FormatString("Joy%dAxis%d%s", iGamepad+1, static_cast<char>(Key_GetGamepadAxisIndex(wCode)), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
+						return FormatString("Joy%dAxis%d%s", iGamepad+1, static_cast<int>(Key_GetGamepadAxisIndex(wCode)+1), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
 					}
 				else
 					{

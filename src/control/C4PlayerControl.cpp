@@ -260,7 +260,7 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 			if (tKeyLast - tKeyRecent > C4PlayerControl::MaxSequenceKeyDelay) return false;
 			// key doesn't match?
 			const KeyComboItem &k = *i;
-			if (!(rk.Key == k.Key)) return false;
+			if (!(rk.matched_key == k.Key)) return false;
 			// key OK
 			}
 		}
@@ -274,7 +274,7 @@ bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyLis
 			for (C4PlayerControlRecentKeyList::const_iterator di = DownKeys.begin(); di!=DownKeys.end(); ++di)
 				{
 				const C4PlayerControlRecentKey &dk = *di;
-				if (dk.Key == k.Key) { fFound = true; break; }
+				if (dk.matched_key == k.Key) { fFound = true; break; }
 				}
 			if (!fFound) return false;
 			}
@@ -643,12 +643,12 @@ void C4PlayerControl::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Sync, "PlayerControl", CSync()));
 	}
 
-bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &key, bool fUp, const C4KeyEventData &rKeyExtraData)
+bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData)
 	{
 	// collect all matching keys
 	C4PlayerControlAssignmentPVec Matches;
 	assert(pControlSet); // shouldn't get this callback for players without control set
-	pControlSet->GetAssignmentsByKey(ControlDefs, key, fUp, &Matches, DownKeys, RecentKeys);
+	pControlSet->GetAssignmentsByKey(ControlDefs, matched_key, fUp, &Matches, DownKeys, RecentKeys);
 	// process async controls
 	C4ControlPlayerControl *pControlPacket = NULL;
 	for (C4PlayerControlAssignmentPVec::const_iterator i = Matches.begin(); i != Matches.end(); ++i)
@@ -661,14 +661,14 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &key, bool fUp, const C4
 			{
 			if (pControlDef->IsAsync() && !pControlPacket)
 				{
-				if (ExecuteControl(iControlIndex, fUp, rKeyExtraData, pAssignment->GetTriggerMode(), key.IsRepeated()))
+				if (ExecuteControl(iControlIndex, fUp, rKeyExtraData, pAssignment->GetTriggerMode(), pressed_key.IsRepeated()))
 					return true;
 				}
 			else
 				{
 				// sync control
 				// ignore key repeats, because we do our own key repeat for sync controls
-				if (key.IsRepeated()) return false;
+				if (pressed_key.IsRepeated()) return false;
 				// sync control has higher priority - no more async execution then
 				// build a control packet and add control data instead. even for async controls later in chain, as they may be blocked by a sync handler
 				if (!pControlPacket) pControlPacket = new C4ControlPlayerControl(iPlr, fUp, rKeyExtraData);
@@ -686,25 +686,25 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &key, bool fUp, const C4
 	return false;
 	}
 
-bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &key)
+bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key)
 	{
 	// add key to local "down" list if it's not already in there
-	C4PlayerControlRecentKey RKey(key,timeGetTime());
-	if (std::find(DownKeys.begin(), DownKeys.end(), C4PlayerControlRecentKey(key,0)) == DownKeys.end()) DownKeys.push_back(RKey);
+	C4PlayerControlRecentKey RKey(pressed_key,matched_key,timeGetTime());
+	if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
 	// process!
-	bool fResult = ProcessKeyEvent(key, false, Game.KeyboardInput.GetLastKeyExtraData());
+	bool fResult = ProcessKeyEvent(pressed_key, matched_key, false, Game.KeyboardInput.GetLastKeyExtraData());
 	// add to recent list unless repeated
-	if (!key.IsRepeated()) RecentKeys.push_back(RKey);
+	if (!pressed_key.IsRepeated()) RecentKeys.push_back(RKey);
 	return fResult;
 	}
 
-bool C4PlayerControl::ProcessKeyUp(const C4KeyCodeEx &key)
+bool C4PlayerControl::ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key)
 	{
 	// remove key from "down" list
-	C4PlayerControlRecentKeyList::iterator i = find(DownKeys.begin(), DownKeys.end(), C4PlayerControlRecentKey(key,0));
+	C4PlayerControlRecentKeyList::iterator i = find(DownKeys.begin(), DownKeys.end(), pressed_key);
 	if (i != DownKeys.end()) DownKeys.erase(i);
 	// process!
-	return ProcessKeyEvent(key, true, Game.KeyboardInput.GetLastKeyExtraData());
+	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData());
 	}
 
 void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *pCtrl)
@@ -792,6 +792,9 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 		}
 	// perform action for this control
 	bool fHandled = ExecuteControlAction(iControl, eAction, pControlDef->GetExtraData(), fUp, KeyExtraData, fRepeated);
+	// handled controls hide control display
+	C4Player *pPlr;
+	if (pPlr = ::Players.Get(iPlr)) if (pPlr->ShowStartup) pPlr->ShowStartup = false;
 	// return if handled, unless control is defined as always unhandled
 	return fHandled && !(iTriggerMode & C4PlayerControlAssignment::CTM_AlwaysUnhandled);
 	}
@@ -923,6 +926,6 @@ void C4PlayerControl::AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32
 	{
 	KeyBindings.push_back(new C4KeyBinding(
 				key, FormatString("PlrKey%02d", idx).getData(), KEYSCOPE_Control,
-				new C4KeyCBPassKey<C4PlayerControl>(*this, &C4PlayerControl::ProcessKeyDown, fHoldKey ? &C4PlayerControl::ProcessKeyUp : NULL),
+				new C4KeyCBExPassKey<C4PlayerControl, C4KeyCodeEx>(*this, key, &C4PlayerControl::ProcessKeyDown, fHoldKey ? &C4PlayerControl::ProcessKeyUp : NULL),
 				C4CustomKey::PRIO_PlrControl));
 	}

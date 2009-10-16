@@ -1171,7 +1171,7 @@ namespace C4GUI {
 		private:
 			enum CursorOperation { COP_BACK, COP_DELETE, COP_LEFT, COP_RIGHT, COP_HOME, COP_END, };
 
-			bool KeyCursorOp(const C4KeyCodeEx &key, CursorOperation op);
+			bool KeyCursorOp(const C4KeyCodeEx &key, const CursorOperation &op);
 			bool KeyEnter();
 			bool KeyCopy() { Copy(); return true; }
 			bool KeyPaste() { Paste(); return true; }
@@ -2374,7 +2374,7 @@ namespace C4GUI {
 		{
 		private:
 			typedef C4KeyCBExPassKey<TargetClass, ParameterType> Base;
-			typedef bool(TargetClass::*CallbackFunc)(const C4KeyCodeEx &key, ParameterType par);
+			typedef bool(TargetClass::*CallbackFunc)(const C4KeyCodeEx &key, const ParameterType &par);
 		public:
 			ControlKeyCBExPassKey(TargetClass &rTarget, const ParameterType &rPar, CallbackFunc pFuncDown, CallbackFunc pFuncUp=NULL, CallbackFunc pFuncPressed=NULL)
 			: Base(rTarget, rPar, pFuncDown, pFuncUp, pFuncPressed) {}

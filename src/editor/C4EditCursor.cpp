@@ -734,7 +734,7 @@ void C4EditCursor::ApplyToolPicker()
 			if (MatValid(iMaterial=GBackMat(X,Y)))
 				{
 				Console.ToolsDlg.SelectMaterial(::MaterialMap.Map[iMaterial].Name);
-				Console.ToolsDlg.SetIFT(GBackIFT(X,Y));
+				Console.ToolsDlg.SetIFT(!!GBackIFT(X,Y));
 				}
 			else
 				Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);

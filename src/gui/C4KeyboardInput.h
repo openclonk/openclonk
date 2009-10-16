@@ -304,7 +304,7 @@ template <class TargetClass, class ParameterType> class C4KeyCBEx : public C4Key
 template <class TargetClass, class ParameterType> class C4KeyCBExPassKey : public C4KeyboardCallbackInterface
 	{
 	public:
-		typedef bool(TargetClass::*CallbackFunc)(const C4KeyCodeEx &key, ParameterType par);
+		typedef bool(TargetClass::*CallbackFunc)(const C4KeyCodeEx &key, const ParameterType &par);
 
 	protected:
 		TargetClass &rTarget;

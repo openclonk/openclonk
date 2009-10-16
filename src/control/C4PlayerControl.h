@@ -111,10 +111,10 @@ class C4PlayerControlDefs
 
 struct C4PlayerControlRecentKey
 	{
-	C4KeyCodeEx Key;
+	C4KeyCodeEx pressed_key, matched_key;
 	DWORD tTime;
-	C4PlayerControlRecentKey(const C4KeyCodeEx &Key, DWORD tTime) : Key(Key), tTime(tTime) {}
-	bool operator ==(const C4PlayerControlRecentKey &cmp) { return Key==cmp.Key; } // comparison op for finding items in lists: Search for the key only
+	C4PlayerControlRecentKey(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, DWORD tTime) : pressed_key(pressed_key), matched_key(matched_key), tTime(tTime) {}
+	bool operator ==(const C4KeyCodeEx &cmp) { return pressed_key==cmp; } // comparison op for finding items in lists: Search for the pressed key only
 	};
 
 typedef std::list<C4PlayerControlRecentKey> C4PlayerControlRecentKeyList;
@@ -318,9 +318,9 @@ class C4PlayerControl
 		CSync Sync;
 
 		// callbacks from Game.KeyboardInput
-		bool ProcessKeyEvent(const C4KeyCodeEx &key, bool fUp, const C4KeyEventData &rKeyExtraData);
-		bool ProcessKeyDown(const C4KeyCodeEx &key);
-		bool ProcessKeyUp(const C4KeyCodeEx &key);
+		bool ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData);
+		bool ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
+		bool ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key);
 
 		// execute single control. return if handled.
 		bool ExecuteControl(int32_t iControl, bool fUp, const C4KeyEventData &rKeyExtraData, int32_t iTriggerMode, bool fRepeated);
