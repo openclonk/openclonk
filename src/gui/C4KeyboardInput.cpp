@@ -366,6 +366,56 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 				}
 			}
 		}
+		bool is_mouse_key, is_gamemouse_key;
+#ifdef _WIN32
+		is_mouse_key = !strnicmp(sName.getData(), "Mouse", 5);
+		is_gamemouse_key = !strnicmp(sName.getData(), "GameMouse", 9);
+#else
+		is_mouse_key = !strncasecmp(sName.getData(), "Mouse", 5);
+		is_gamemouse_key = !strncasecmp(sName.getData(), "GameMouse", 9);
+#endif
+		if (is_mouse_key || is_gamemouse_key)
+		{
+			// skip Mouse/GameMouse
+			const char *key_str = sName.getData()+5;
+			if (is_gamemouse_key) key_str += 4;
+			int mouse_id;
+			if (sscanf(key_str, "%d",  &mouse_id) == 1)
+			{
+				// skip number
+				while (isdigit(*key_str)) ++key_str;
+				// check for known mouse events (e.g. Mouse1Move or GameMouse1Wheel)
+				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move, is_gamemouse_key);
+				if (!stricmp(key_str, "Wheel1")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1, is_gamemouse_key);
+				if (!strnicmp(key_str, "Button", 6)) // e.g. Mouse1ButtonLeft or GameMouse1ButtonRightDouble
+				{
+					// check for known mouse button events
+					uint8_t mouseevent_id = 0;
+					key_str += 6;
+					     if (!strnicmp(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
+					else if (!strnicmp(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
+					else if (!strnicmp(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
+					else if (isdigit(*key_str))
+					{
+						// indexed mouse button (e.g. Mouse1Button4 or Mouse1Button4Double)
+						int button_index;
+						if (sscanf(key_str, "%d",  &button_index) == 1)
+						{
+							mouseevent_id=static_cast<uint8_t>(KEY_MOUSE_Button1+button_index-1);
+							while (isdigit(*key_str)) ++key_str;
+						}
+					}
+					if (mouseevent_id)
+					{
+						// valid event if finished or followed by "Double"
+						if (!*key_str) return KEY_Mouse(mouse_id-1, mouseevent_id, is_gamemouse_key);
+						if (!stricmp(key_str, "Double")) return KEY_Mouse(mouse_id-1, mouseevent_id+(KEY_MOUSE_Button1Double-KEY_MOUSE_Button1), is_gamemouse_key);
+						// invalid mouse key...
+					}
+				}
+			}
+		}
+
 	}
 #ifdef _WIN32
 	// query map
@@ -395,38 +445,67 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 }
 
 StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool fShort)
-	{
+{
 	// Gamepad keys
 	if (Key_IsGamepad(wCode))
-		{
+	{
 		int iGamepad = Key_GetGamepad(wCode);
-		int iGamepadButton = Key_GetGamepadButton(wCode);
-		switch (iGamepadButton)
-			{
+		int gamepad_event = Key_GetGamepadEvent(wCode);
+		switch (gamepad_event)
+		{
 			case KEY_JOY_Left:  return FormatString("Joy%dLeft", iGamepad+1);
 			case KEY_JOY_Up:    return FormatString("Joy%dUp", iGamepad+1);
 			case KEY_JOY_Down:  return FormatString("Joy%dDown", iGamepad+1);
 			case KEY_JOY_Right: return FormatString("Joy%dRight", iGamepad+1);
 			default:
 				if (Key_IsGamepadAxis(wCode))
-					{
+				{
 					if (fHumanReadable)
 						// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
 						return FormatString("[%d] %s", int(1 + Key_GetGamepadAxisIndex(wCode)), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
 					else
 						return FormatString("Joy%dAxis%d%s", iGamepad+1, static_cast<int>(Key_GetGamepadAxisIndex(wCode)+1), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-					}
+				}
 				else
-					{
+				{
 					// button
 					if (fHumanReadable)
 						// If there should be gamepads around with A B C D... on the buttons, we might create a display option to show letters instead...
 						return FormatString("< %d >", int(1 + Key_GetGamepadButtonIndex(wCode)));
 					else
 						return FormatString("Joy%d%c", iGamepad+1, static_cast<char>(Key_GetGamepadButtonIndex(wCode) + 'A'));
-					}
-			}
+				}
 		}
+	}
+	// Mouse keys
+	if (Key_IsMouse(wCode))
+	{
+		int mouse_id = Key_GetMouse(wCode);
+		int mouse_event = Key_GetMouseEvent(wCode);
+		bool mouse_is_game = Key_GetMouseIsGameCoordinate(wCode);
+		const char *mouse_is_game_str = mouse_is_game ? "GameMouse" : "Mouse";
+		switch (mouse_event)
+		{
+			case KEY_MOUSE_Move:              return FormatString("%s%dMove", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_Wheel1:            return FormatString("%s%dWheel1", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_is_game_str, mouse_id);
+			default:
+				// extended mouse button
+				{
+					uint8_t btn = Key_GetMouseEvent(wCode);
+					if (btn >= KEY_MOUSE_Button1Double)
+						return FormatString("%s%dButton%dDouble", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1Double));
+					else
+						return FormatString("%s%dButton%d", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1));
+				}
+		}
+	}
+
 #ifdef _WIN32
 
 //	TODO: Works?
@@ -452,7 +531,7 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 #else
 	return StdStrBuf("unknown");
 #endif
-	}
+}
 
 StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
 	{

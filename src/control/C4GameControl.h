@@ -165,6 +165,9 @@ protected:
 	C4ControlSyncCheck *GetSyncCheck(int32_t iTick);
 	void RemoveOldSyncChecks();
 
+	// add per-controlframe input
+	void PrepareInput();
+
 };
 extern C4GameControl Control;
 

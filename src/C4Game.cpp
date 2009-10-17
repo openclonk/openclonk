@@ -1369,7 +1369,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 	{
 		// Scan all objects in list
 		C4ObjectLink *cLnk; C4Object *cObj;
-		for (cLnk=Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
+		for (cLnk=pLst->First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 		{
 			// Status
 			if (cObj->Status == C4OS_NORMAL)

@@ -343,6 +343,30 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 		//------------------------------------------------------------------------------------------
 		case C4MC_Button_Wheel: Wheel(dwKeyFlags); break;
 	}
+
+	// script handling of mouse control for everything but regular movement (which is sent at control frame intervals only)
+	if (iButton != C4MC_Button_None)
+		// not if blocked by selection object
+		if (!TargetRegion && !TargetObject)
+			// safety (can't really happen in !IsPassive, but w/e
+			if (pPlayer && pPlayer->ControlSet)
+			{
+				if (pPlayer->ControlSet->IsMouseControlAssigned(iButton))
+				{
+					pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, Application.IsAltDown());
+				}
+			}
+}
+
+void C4MouseControl::DoMoveInput()
+{
+	// current mouse move to input queue
+	// do sanity checks
+	if (!Active || !fMouseOwned) return;
+	if (!(pPlayer=::Players.Get(Player))) return;
+	if (!pPlayer->ControlSet) return;
+	if (!pPlayer->ControlSet->IsMouseControlAssigned(C4MC_Button_None)) return;
+	pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, C4MC_Button_None, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, Application.IsAltDown());
 }
 
 void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
@@ -914,10 +938,9 @@ void C4MouseControl::LeftUpDragNone()
 		// Nothing
 		case C4MC_Cursor_Nothing:
 			break;
-		// Movement
+		// Movement?
 		default:
-			// MoveTo command to control queue
-			SendCommand(C4CMD_MoveTo,int32_t(GameX),int32_t(GameY),NULL);
+			// done in script
 			break;
 		}
 	// Clear selection

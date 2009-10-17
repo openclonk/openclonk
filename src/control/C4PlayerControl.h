@@ -220,6 +220,7 @@ class C4PlayerControlAssignmentSet
 		bool HasGamepad() const { return has_gamepad; }
 		int32_t GetLayoutOrder() const { return 0; } // returns position on keyboard (increasing from left to right) for viewport sorting
 		int32_t GetGamepadIndex() const { return 0; }
+		bool IsMouseControlAssigned(int32_t mouseevent) const;
 	};
 
 // list of C4PlayerControlAssignmentSet
@@ -348,6 +349,9 @@ class C4PlayerControl
 
 		// sync execution: Do keyrepeat, etc.
 		void Execute();
+
+		// mouse input
+		bool DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, bool is_ctrl_down, bool is_shift_down, bool is_alt_down);
 	};
 
 

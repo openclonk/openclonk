@@ -27,6 +27,7 @@
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
+#include <C4MouseControl.h>
 #endif
 
 /* C4PlayerControlDef */
@@ -433,6 +434,12 @@ C4Facet C4PlayerControlAssignmentSet::GetPicture() const
 	return C4Facet();
 }
 
+bool C4PlayerControlAssignmentSet::IsMouseControlAssigned(int32_t mouseevent) const
+{
+	// TODO
+	return true;
+}
+
 
 /* C4PlayerControlAssignmentSets */
 
@@ -687,25 +694,33 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 	}
 
 bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key)
-	{
+{
 	// add key to local "down" list if it's not already in there
+	// except for some mouse events for which a down state does not make sense
 	C4PlayerControlRecentKey RKey(pressed_key,matched_key,timeGetTime());
-	if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
+	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key), KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
+	{
+		if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
+	}
 	// process!
 	bool fResult = ProcessKeyEvent(pressed_key, matched_key, false, Game.KeyboardInput.GetLastKeyExtraData());
 	// add to recent list unless repeated
 	if (!pressed_key.IsRepeated()) RecentKeys.push_back(RKey);
 	return fResult;
-	}
+}
 
 bool C4PlayerControl::ProcessKeyUp(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key)
-	{
+{
 	// remove key from "down" list
-	C4PlayerControlRecentKeyList::iterator i = find(DownKeys.begin(), DownKeys.end(), pressed_key);
-	if (i != DownKeys.end()) DownKeys.erase(i);
+	// except for some mouse events for which a down state does not make sense
+	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key), KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
+	{
+		C4PlayerControlRecentKeyList::iterator i = find(DownKeys.begin(), DownKeys.end(), pressed_key);
+		if (i != DownKeys.end()) DownKeys.erase(i);
+	}
 	// process!
 	return ProcessKeyEvent(pressed_key, matched_key, true, Game.KeyboardInput.GetLastKeyExtraData());
-	}
+}
 
 void C4PlayerControl::ExecuteControlPacket(const class C4ControlPlayerControl *pCtrl)
 	{
@@ -853,48 +868,48 @@ bool C4PlayerControl::ExecuteControlScript(int32_t iControl, C4ID idControlExtra
 
 
 void C4PlayerControl::Execute()
-	{
+{
 	// sync execution: Do keyrepeat
 	for (int32_t i=0; i<ControlDefs.GetCount(); ++i)
-		{
+	{
 		const CSync::ControlDownState *pControlDownState = Sync.GetControlDownState(i);
 		if (pControlDownState && pControlDownState->IsDown())
-			{
+		{
 			const C4PlayerControlDef *pCtrlDef = ControlDefs.GetControlByIndex(i);
 			assert(pCtrlDef);
 			int32_t iCtrlRepeatDelay = pCtrlDef->GetRepeatDelay();
 			if (iCtrlRepeatDelay)
-				{
+			{
 				int32_t iFrameDiff = Game.FrameCounter - pControlDownState->iDownFrame;
 				int32_t iCtrlInitialRepeatDelay = pCtrlDef->GetInitialRepeatDelay();
 				if (iFrameDiff && iFrameDiff >= iCtrlInitialRepeatDelay)
-					{
+				{
 					if (!((iFrameDiff-iCtrlInitialRepeatDelay) % iCtrlRepeatDelay))
-						{
+					{
 						// it's RepeatTime for this key!
 						ExecuteControlAction(i, pCtrlDef->GetAction(), pCtrlDef->GetExtraData(), false, pControlDownState->DownState, true);
-						}
 					}
 				}
 			}
 		}
+	}
 	// cleanup old recent keys
 	C4PlayerControlRecentKeyList::iterator irk;
 	DWORD tNow = timeGetTime();
 	for (irk = RecentKeys.begin(); irk != RecentKeys.end(); ++irk)
-		{
+	{
 		C4PlayerControlRecentKey &rk = *irk;
 		if (rk.tTime + MaxRecentKeyLookback > tNow) break;
-		}
-	if (irk != RecentKeys.begin()) RecentKeys.erase(RecentKeys.begin(), irk);
 	}
+	if (irk != RecentKeys.begin()) RecentKeys.erase(RecentKeys.begin(), irk);
+}
 
 C4PlayerControl::C4PlayerControl() : ControlDefs(Game.PlayerControlDefs), iPlr(-1), pControlSet(NULL)
-	{
-	}
+{
+}
 
 void C4PlayerControl::Clear()
-	{
+{
 	iPlr = NO_OWNER;
 	pControlSet = NULL;
 	for (KeyBindingList::iterator i = KeyBindings.begin(); i != KeyBindings.end(); ++i) delete *i;
@@ -902,10 +917,10 @@ void C4PlayerControl::Clear()
 	RecentKeys.clear();
 	DownKeys.clear();
 	Sync.Clear();
-	}
+}
 
 void C4PlayerControl::RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet *pKeyset)
-	{
+{
 	// clear any previous settings
 	Clear();
 	// setup
@@ -913,19 +928,73 @@ void C4PlayerControl::RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet 
 	this->iPlr = iPlr;
 	// register all keys into Game.KeyboardInput creating KeyBindings
 	if (pControlSet)
-		{
+	{
 		C4KeyCodeExVec RegularKeys, HoldKeys;
 		pControlSet->GetTriggerKeys(ControlDefs, &RegularKeys, &HoldKeys);
 		int32_t idx=0;
 		for (C4KeyCodeExVec::const_iterator i = RegularKeys.begin(); i != RegularKeys.end(); ++i) AddKeyBinding(*i, false, idx++);
 		for (C4KeyCodeExVec::const_iterator i = HoldKeys.begin(); i != HoldKeys.end(); ++i) AddKeyBinding(*i, true, idx++);
-		}
 	}
+}
 
 void C4PlayerControl::AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32_t idx)
-	{
+{
 	KeyBindings.push_back(new C4KeyBinding(
 				key, FormatString("PlrKey%02d", idx).getData(), KEYSCOPE_Control,
 				new C4KeyCBExPassKey<C4PlayerControl, C4KeyCodeEx>(*this, key, &C4PlayerControl::ProcessKeyDown, fHoldKey ? &C4PlayerControl::ProcessKeyUp : NULL),
 				C4CustomKey::PRIO_PlrControl));
+}
+
+bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, bool is_ctrl_down, bool is_shift_down, bool is_alt_down)
+{
+	// convert moueevent to key code
+	uint8_t mouseevent_code;
+	C4KeyCodeEx mouseevent_keycode;
+	bool is_down = false;
+	switch (mouseevent)
+	{
+		case C4MC_Button_None: mouseevent_code = KEY_MOUSE_Move; break;
+		case C4MC_Button_LeftDown: is_down = true; // nobreak
+		case C4MC_Button_LeftUp: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
+		case C4MC_Button_RightDown: is_down = true; // nobreak
+		case C4MC_Button_RightUp: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
+		case C4MC_Button_LeftDouble: mouseevent_code = KEY_MOUSE_ButtonLeftDouble; break;
+		case C4MC_Button_RightDouble: mouseevent_code = KEY_MOUSE_ButtonRightDouble; break;
+		case C4MC_Button_Wheel: mouseevent_code = KEY_MOUSE_ButtonMiddleDouble; break;
+		case C4MC_Button_MiddleDown: is_down = true; // nobreak
+		case C4MC_Button_MiddleUp: mouseevent_code = KEY_MOUSE_ButtonMiddle; break;
+		default: assert(false); return false;
 	}
+	// compose keycode
+	if (is_ctrl_down) mouseevent_keycode.dwShift |= KEYS_Control;
+	if (is_shift_down) mouseevent_keycode.dwShift |= KEYS_Shift;
+	if (is_alt_down) mouseevent_keycode.dwShift |= KEYS_Alt;
+	mouseevent_keycode.Key = KEY_Mouse(mouse_id, mouseevent_code, false);
+	// first, try processing it as GUI mouse event. if not assigned, process as Game mous event
+	// TODO: May route this through Game.DoKeyboardInput instead - would allow assignment of mouse events in CustomConfig
+	//  and would get rid of the Game.KeyboardInput.SetLastKeyExtraData-hack
+	C4KeyEventData mouseevent_data;
+	mouseevent_data.iStrength = 100; // TODO: May get pressure from tablet here
+	mouseevent_data.x = uint32_t(gui_x);
+	mouseevent_data.y = uint32_t(gui_y);
+	Game.KeyboardInput.SetLastKeyExtraData(mouseevent_data); // ProcessKeyDown/Up queries it from there...
+	bool result;
+	if (is_down)
+		result = ProcessKeyDown(mouseevent_keycode, mouseevent_keycode);
+	else
+		result = ProcessKeyUp(mouseevent_keycode, mouseevent_keycode);
+	if (result)
+	{
+		// mouse event processed in GUI coordinates
+		return true;
+	}
+	// try processing in Game coordinates instead
+	mouseevent_data.x = uint32_t(game_x);
+	mouseevent_data.y = uint32_t(game_y);
+	mouseevent_keycode.Key |= KEY_MOUSE_GameMask;
+	if (is_down)
+		result = ProcessKeyDown(mouseevent_keycode, mouseevent_keycode);
+	else
+		result = ProcessKeyUp(mouseevent_keycode, mouseevent_keycode);
+	return result;
+}

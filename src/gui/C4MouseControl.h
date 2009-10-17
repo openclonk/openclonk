@@ -96,6 +96,7 @@ class C4MouseControl
 		void ShowCursor();
 		void Draw(C4TargetFacet &cgo, const ZoomData &GameZoom);
 		void Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFlags, bool fCenter = false);
+		void DoMoveInput();
 		bool IsViewport(C4Viewport *pViewport);
 		void ClearPointers(C4Object *pObj);
 		void UpdateClip();	// update clipping region for mouse cursor

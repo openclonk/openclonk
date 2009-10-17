@@ -29,6 +29,7 @@
 #include <C4Record.h>
 #include <C4Log.h>
 #include <C4Network2Stats.h>
+#include <C4MouseControl.h>
 #endif
 
 #ifdef _MSC_VER
@@ -235,6 +236,7 @@ bool C4GameControl::Prepare()
   assert(fInitComplete);
 
 	// Prepare control, return true if everything is ready for GameGo.
+	bool is_input_prepared = false;
 
 	switch(eMode)
 	{
@@ -246,13 +248,19 @@ bool C4GameControl::Prepare()
 
 		Network.Execute();
 
-    // deactivated and got control: request activate
-    if(Input.firstPkt() && !Game.Clients.getLocal()->isActivated())
-      ::Network.RequestActivate();
+		// deactivated and got control: request activate
+		if(Input.firstPkt() && !Game.Clients.getLocal()->isActivated())
+			::Network.RequestActivate();
 
 		// needs input?
 		while(Network.CtrlNeeded(Game.FrameCounter))
 		{
+			if (!is_input_prepared && Game.Clients.getLocal()->isActivated())
+			{
+				// add per-controlframe input
+				PrepareInput();
+				is_input_prepared = true;
+			}
 			Network.DoInput(Input);
 			Input.Clear();
 		}
@@ -283,6 +291,7 @@ void C4GameControl::Execute()
 	if(eMode == CM_Local)
 	{
 		// control = input
+		PrepareInput(); // add per-controlframe input
 		Control.Take(Input);
 	}
 	if(eMode == CM_Network)
@@ -517,6 +526,12 @@ void C4GameControl::RemoveOldSyncChecks()
 		if(pCheck->getFrame() < Game.FrameCounter - C4SyncCheckMaxKeep)
 			SyncChecks.Delete(pPkt);
 	}
+}
+
+void C4GameControl::PrepareInput()
+{
+	// add per-controlframe input
+	::MouseControl.DoMoveInput();
 }
 
 C4GameControl Control;

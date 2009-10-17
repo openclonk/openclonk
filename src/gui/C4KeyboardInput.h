@@ -52,36 +52,55 @@ enum C4KeyEventType
 // keyboard code
 typedef unsigned long C4KeyCode;
 
+// Gamepad codes (KEY_JOY_*): Masked as 0x420000; bit 8-15 used for gamepad index
+const C4KeyCode KEY_JOY_Mask = 0x420000;
+
+// Mouse codes (KEY_MOUSE_*): Masked as 0x430000; bit 8-15 used for mouse index
+const C4KeyCode KEY_MOUSE_Mask = 0x430000;
+
 const C4KeyCode KEY_Default = 0,  // no key
                 KEY_Any     = ~0, // used for default key processing
                 KEY_Undefined = (~0)^1, // used to indicate an unknown key
-								KEY_JOY_Left   = 1, // joypad axis control: Any x axis min
+                KEY_JOY_Left   = 1, // joypad axis control: Any x axis min
                 KEY_JOY_Up     = 2, // joypad axis control: Any y axis min
-								KEY_JOY_Right  = 3, // joypad axis control: Any x axis max
+                KEY_JOY_Right  = 3, // joypad axis control: Any x axis max
                 KEY_JOY_Down   = 4, // joypad axis control: Any y axis max
-								KEY_JOY_Button1       = 10,   // key index of joypad buttons + button index for more buttons
-								KEY_JOY_ButtonMax     = KEY_JOY_Button1+31, // maximum number of supported buttons on a gamepad
-								KEY_JOY_Axis1Min       = 0x30,
-								KEY_JOY_Axis1Max       = 0x31,
-								KEY_JOY_AxisMax        = KEY_JOY_Axis1Min + 0x20,
-								KEY_JOY_AnyButton     = 0xff, // any joypad button (not axis)
-								KEY_JOY_AnyOddButton  = 0xfe, // joypad buttons 1, 3, 5, etc.
-								KEY_JOY_AnyEvenButton = 0xfd, // joypad buttons 2, 4, 6, etc.
-								KEY_JOY_AnyLowButton	= 0xfc, // joypad buttons 1 - 4
-								KEY_JOY_AnyHighButton	= 0xfb; // joypad buttons > 4
+                KEY_JOY_Button1       = 0x10,   // key index of joypad buttons + button index for more buttons
+                KEY_JOY_ButtonMax     = KEY_JOY_Button1+0x1f, // maximum number of supported buttons on a gamepad
+                KEY_JOY_Axis1Min      = 0x30,
+                KEY_JOY_Axis1Max      = 0x31,
+                KEY_JOY_AxisMax       = KEY_JOY_Axis1Min + 0x20,
+                KEY_JOY_AnyButton     = 0xff, // any joypad button (not axis)
+                KEY_JOY_AnyOddButton  = 0xfe, // joypad buttons 1, 3, 5, etc.
+                KEY_JOY_AnyEvenButton = 0xfd, // joypad buttons 2, 4, 6, etc.
+                KEY_JOY_AnyLowButton  = 0xfc, // joypad buttons 1 - 4
+                KEY_JOY_AnyHighButton = 0xfb, // joypad buttons > 4
+                KEY_MOUSE_Move        = 1,    // mouse control: mouse movement
+                KEY_MOUSE_Button1     = 0x10, // key index of mouse buttons + button index for more buttons
+                KEY_MOUSE_ButtonLeft  = KEY_MOUSE_Button1 + 0,
+                KEY_MOUSE_ButtonRight = KEY_MOUSE_Button1 + 1,
+                KEY_MOUSE_ButtonMiddle= KEY_MOUSE_Button1 + 2,
+                KEY_MOUSE_ButtonMax   = KEY_MOUSE_Button1 + 0x1f, // max number of supported mouse buttons
+                KEY_MOUSE_Button1Double     = 0x30, // double clicks have special events because double click speed is issued by OS
+                KEY_MOUSE_ButtonLeftDouble  = KEY_MOUSE_Button1Double + 0,
+                KEY_MOUSE_ButtonRightDouble = KEY_MOUSE_Button1Double + 1,
+                KEY_MOUSE_ButtonMiddleDouble= KEY_MOUSE_Button1Double + 2,
+                KEY_MOUSE_ButtonMaxDouble   = KEY_MOUSE_Button1Double + 0x1f, // max number of supported mouse buttons
+                KEY_MOUSE_Wheel1            = 0x40,    // mouse control: wheel up/down
+                KEY_MOUSE_GameMask          = 0x80;    // if set, contorl is sent in game coordinates
 
 inline uint8_t KEY_JOY_Button(uint8_t idx) { return KEY_JOY_Button1+idx; }
 inline uint8_t KEY_JOY_Axis(uint8_t idx, bool fMax) { return KEY_JOY_Axis1Min+2*idx+fMax; }
 
 inline C4KeyCode KEY_Gamepad(uint8_t idGamepad, uint8_t idButton) // convert gamepad key to Clonk-gamepad-keycode
-	{
+{
 	// mask key as 0x0042ggbb, where gg is gamepad ID and bb is button ID.
-	return 0x00420000 + (idGamepad<<8) + idButton;
-	}
+	return KEY_JOY_Mask + (idGamepad<<8) + idButton;
+}
 
 inline bool Key_IsGamepad(C4KeyCode key)
 	{
-	return (0xff0000 & key) == 0x420000;
+	return (0xff0000 & key) == KEY_JOY_Mask;
 	}
 
 inline uint8_t Key_GetGamepad(C4KeyCode key)
@@ -89,7 +108,7 @@ inline uint8_t Key_GetGamepad(C4KeyCode key)
 	return ((uint32_t)key >> 8) & 0xff;
 	}
 
-inline uint8_t Key_GetGamepadButton(C4KeyCode key)
+inline uint8_t Key_GetGamepadEvent(C4KeyCode key)
 	{
 	return ((uint32_t)key) & 0xff;
 	}
@@ -97,31 +116,58 @@ inline uint8_t Key_GetGamepadButton(C4KeyCode key)
 inline bool Key_IsGamepadButton(C4KeyCode key)
 	{
 	// whether this is a unique button event (AnyButton not included)
-	return Key_IsGamepad(key) && Inside<uint8_t>(Key_GetGamepadButton(key), KEY_JOY_Button1, KEY_JOY_ButtonMax);
+	return Key_IsGamepad(key) && Inside<uint8_t>(Key_GetGamepadEvent(key), KEY_JOY_Button1, KEY_JOY_ButtonMax);
 	}
 
 inline bool Key_IsGamepadAxis(C4KeyCode key)
 	{
 	// whether this is a unique button event (AnyButton not included)
-	return Key_IsGamepad(key) && Inside<uint8_t>(Key_GetGamepadButton(key), KEY_JOY_Axis1Min, KEY_JOY_AxisMax);
+	return Key_IsGamepad(key) && Inside<uint8_t>(Key_GetGamepadEvent(key), KEY_JOY_Axis1Min, KEY_JOY_AxisMax);
 	}
 
 inline uint8_t Key_GetGamepadButtonIndex(C4KeyCode key)
 	{
 	// get zero-based button index
-	return Key_GetGamepadButton(key) - KEY_JOY_Button1;
+	return Key_GetGamepadEvent(key) - KEY_JOY_Button1;
 	}
 
 inline uint8_t Key_GetGamepadAxisIndex(C4KeyCode key)
 	{
 	// get zero-based axis index
-	return (Key_GetGamepadButton(key) - KEY_JOY_Axis1Min) / 2;
+	return (Key_GetGamepadEvent(key) - KEY_JOY_Axis1Min) / 2;
 	}
 
 inline bool Key_IsGamepadAxisHigh(C4KeyCode key)
 	{
 	return !!(key & 1);
 	}
+
+inline C4KeyCode KEY_Mouse(uint8_t mouse_id, uint8_t mouseevent, bool is_game_coordinates)
+{
+	// mask key as 0x0043ggbb, where mm is mouse ID and bb is mouse event ID.
+	return KEY_MOUSE_Mask + (mouse_id<<8) + mouseevent + is_game_coordinates*KEY_MOUSE_GameMask;
+}
+
+inline bool Key_IsMouse(C4KeyCode key)
+{
+	return (0xff0000 & key) == KEY_MOUSE_Mask;
+}
+
+inline uint8_t Key_GetMouse(C4KeyCode key)
+{
+	return ((uint32_t)key >> 8) & 0xff;
+}
+
+inline uint8_t Key_GetMouseEvent(C4KeyCode key)
+{
+	return ((uint32_t)key) & uint8_t(0xff | ~KEY_MOUSE_GameMask);
+}
+
+inline bool Key_GetMouseIsGameCoordinate(C4KeyCode key)
+{
+	return !!(key & KEY_MOUSE_GameMask);
+}
+
 
 #ifdef _WIN32
 #define TOUPPERIFX11(key) (key)
@@ -436,6 +482,7 @@ class C4KeyboardInput
 		C4CustomKey *GetKeyByName(const char *szKeyName);
 		StdStrBuf GetKeyCodeNameByKeyName(const char *szKeyName, bool fShort = false, int32_t iIndex = 0);
 		const C4KeyEventData &GetLastKeyExtraData() const { return LastKeyExtraData; }
+		void SetLastKeyExtraData(const C4KeyEventData &data) { LastKeyExtraData=data; }
 	};
 
 // keyboardinput-initializer-helper
