@@ -528,7 +528,7 @@
 		Control=Use
 		
 		[Assignment]
-		Key=Left
+		Key=Mouse1ButtonLeft
 		Priority=50
 		Control=Throw
 		

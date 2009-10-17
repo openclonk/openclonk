@@ -950,19 +950,19 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 	// convert moueevent to key code
 	uint8_t mouseevent_code;
 	C4KeyCodeEx mouseevent_keycode;
-	bool is_down = false;
+	bool is_down = true;
 	switch (mouseevent)
 	{
 		case C4MC_Button_None: mouseevent_code = KEY_MOUSE_Move; break;
-		case C4MC_Button_LeftDown: is_down = true; // nobreak
-		case C4MC_Button_LeftUp: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
-		case C4MC_Button_RightDown: is_down = true; // nobreak
-		case C4MC_Button_RightUp: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
+		case C4MC_Button_LeftUp: is_down = false; // nobreak
+		case C4MC_Button_LeftDown: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
+		case C4MC_Button_RightUp: is_down = false; // nobreak
+		case C4MC_Button_RightDown: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
 		case C4MC_Button_LeftDouble: mouseevent_code = KEY_MOUSE_ButtonLeftDouble; break;
 		case C4MC_Button_RightDouble: mouseevent_code = KEY_MOUSE_ButtonRightDouble; break;
 		case C4MC_Button_Wheel: mouseevent_code = KEY_MOUSE_ButtonMiddleDouble; break;
-		case C4MC_Button_MiddleDown: is_down = true; // nobreak
-		case C4MC_Button_MiddleUp: mouseevent_code = KEY_MOUSE_ButtonMiddle; break;
+		case C4MC_Button_MiddleUp: is_down = false; // nobreak
+		case C4MC_Button_MiddleDown: mouseevent_code = KEY_MOUSE_ButtonMiddle; break;
 		default: assert(false); return false;
 	}
 	// compose keycode
@@ -974,7 +974,7 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 	// TODO: May route this through Game.DoKeyboardInput instead - would allow assignment of mouse events in CustomConfig
 	//  and would get rid of the Game.KeyboardInput.SetLastKeyExtraData-hack
 	C4KeyEventData mouseevent_data;
-	mouseevent_data.iStrength = 100; // TODO: May get pressure from tablet here
+	mouseevent_data.iStrength = 100*is_down; // TODO: May get pressure from tablet here
 	mouseevent_data.x = uint32_t(gui_x);
 	mouseevent_data.y = uint32_t(gui_y);
 	Game.KeyboardInput.SetLastKeyExtraData(mouseevent_data); // ProcessKeyDown/Up queries it from there...
