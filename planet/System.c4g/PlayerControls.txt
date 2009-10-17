@@ -297,6 +297,12 @@
 	GUIName=Player menu
 	GUIDesc=Open player menu
 	Action=Menu
+	
+	
+	[ControlDef]
+	Identifier=Test
+	GUIName=Test
+	GUIDesc=Test
 
  
 [ControlSets]
@@ -539,6 +545,11 @@
 		[Assignment]
 		Key=Down
 		Control=Drop
+
+		[Assignment]
+		Key=GameMouse1Move
+		Priority=50
+		Control=Test
 
 
 

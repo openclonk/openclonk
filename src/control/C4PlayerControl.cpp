@@ -991,6 +991,7 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 	// try processing in Game coordinates instead
 	mouseevent_data.x = uint32_t(game_x);
 	mouseevent_data.y = uint32_t(game_y);
+	Game.KeyboardInput.SetLastKeyExtraData(mouseevent_data); // ProcessKeyDown/Up queries it from there...
 	mouseevent_keycode.Key |= KEY_MOUSE_GameMask;
 	if (is_down)
 		result = ProcessKeyDown(mouseevent_keycode, mouseevent_keycode);
