@@ -387,14 +387,14 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 				// check for known mouse events (e.g. Mouse1Move or GameMouse1Wheel)
 				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move, is_gamemouse_key);
 				if (!stricmp(key_str, "Wheel1")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1, is_gamemouse_key);
-				if (!strnicmp(key_str, "Button", 6)) // e.g. Mouse1ButtonLeft or GameMouse1ButtonRightDouble
+				if (SEqualNoCase(key_str, "Button", 6)) // e.g. Mouse1ButtonLeft or GameMouse1ButtonRightDouble
 				{
 					// check for known mouse button events
 					uint8_t mouseevent_id = 0;
 					key_str += 6;
-					     if (!strnicmp(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
-					else if (!strnicmp(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
-					else if (!strnicmp(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
+					     if (SEqualNoCase(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
+					else if (SEqualNoCase(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
+					else if (SEqualNoCase(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
 					else if (isdigit(*key_str))
 					{
 						// indexed mouse button (e.g. Mouse1Button4 or Mouse1Button4Double)
