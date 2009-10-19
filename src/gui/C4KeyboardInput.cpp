@@ -30,6 +30,7 @@
 
 #ifndef _WIN32
 #include <X11/Xlib.h>
+#include <X11/Xutil.h> // XConvertCase
 #endif
 
 #ifdef USE_SDL_MAINLOOP
@@ -425,13 +426,11 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	return pCheck->wCode;
 #elif defined(USE_X11)
 	KeySym result = XStringToKeysym(sName.getData());
-	if (result == NoSymbol)
-	{
-		StdStrBuf sNameLower; sNameLower.Copy(sName);
-		sNameLower.ToLowerCase();
-		if (!(sNameLower == sName)) result = XStringToKeysym(sNameLower.getData());
-	}
-	return result;
+	// Use the lowercase keysym in case there is a differnce because this
+	// is what's reported for actual key presses.
+	KeySym lower, upper;
+	XConvertCase(result, &lower, &upper);
+	return lower;
 #elif defined(USE_SDL_MAINLOOP)
 	for (C4KeyCode k = 0; k < SDLK_LAST; ++k)
 	{
