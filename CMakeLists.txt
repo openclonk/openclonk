@@ -320,10 +320,6 @@ set(OC_CLONK_SOURCES
 	src/platform/C4Video.h
 	src/platform/C4VideoPlayback.cpp
 	src/platform/C4VideoPlayback.h
-	src/platform/DInputX.cpp
-	src/platform/DInputX.h
-	src/platform/DSoundX.cpp
-	src/platform/DSoundX.h
 	src/platform/Midi.cpp
 	src/platform/Midi.h
 	src/platform/OpenURL.cpp
