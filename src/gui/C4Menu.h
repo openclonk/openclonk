@@ -28,6 +28,7 @@
 #include "C4Shape.h"
 #include "C4Gui.h"
 #include "C4IDList.h"
+#include "C4Region.h"
 
 class C4Viewport;
 

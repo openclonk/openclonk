@@ -20,6 +20,7 @@
  */
 
 /* NewGfx interfaces */
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdFacet.h>
 #include <StdDDraw2.h>

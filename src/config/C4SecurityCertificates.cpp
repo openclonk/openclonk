@@ -18,6 +18,8 @@
 
 /* Certificate used to verify registration keys. */
 
+#include "C4Include.h"
+
 const char* Cert_Reg_XOR_Base64 =
 "R0deRkkuNHZ/fEgwLjxnfjUicitmdx9eR0deYSklOHJcWCswKghQdDI6ZB12Y2s5IQUpIgwaEn93\n"
 "Yy02KT9yQBQyWhJxSHM5KA09PSYtKGV3WTo1Jj8LQDc6aC44ZGMiIy8EMScPHGdCaD9HEypJdj0p\n"

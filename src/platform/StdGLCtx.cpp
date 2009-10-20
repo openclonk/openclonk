@@ -20,6 +20,7 @@
 
 /* OpenGL implementation of NewGfx, the context */
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdGL.h>
 #include <StdSurface2.h>

@@ -20,6 +20,7 @@
 
 /* Simple joystick handling with DirectInput 1 */
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdJoystick.h>
 

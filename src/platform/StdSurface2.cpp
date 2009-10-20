@@ -21,6 +21,7 @@
  */
 // a wrapper class to DirectDraw surfaces
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdFile.h>
 #include <CStdFile.h>

@@ -17,6 +17,7 @@
  */
 // markup tags for fonts
 
+#include "C4Include.h"
 #include <StdMarkup.h>
 #include <StdDDraw2.h>
 

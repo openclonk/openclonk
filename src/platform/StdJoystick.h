@@ -19,6 +19,10 @@
 
 /* Simple joystick handling with DirectInput 1 */
 
+#ifndef INC_StdJoystick
+#define INC_StdJoystick
+
+#include "C4Include.h"
 #include <Standard.h>
 #include <windows.h>
 #include <mmsystem.h>
@@ -52,3 +56,5 @@ class CStdGamePad
 		uint32_t GetButtons(); // returns bitmask of pressed buttons for last retrieved info
 		AxisPos GetAxisPos(int idAxis); // return axis extension - mid for error or center position
 	};
+
+#endif

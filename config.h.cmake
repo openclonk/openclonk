@@ -182,3 +182,6 @@
 /* Define to 1 if rvalue references are supported */
 #cmakedefine HAVE_RVALUE_REF 1
 
+/* Define to 1 if you have support for precompiled headers */
+#cmakedefine HAVE_PRECOMPILED_HEADERS 1
+

@@ -18,6 +18,7 @@
  */
 // a wrapper class to DirectDraw surfaces
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdSurface8.h>
 #include <Bitmap256.h>

@@ -8,6 +8,13 @@ separate_arguments(OC_CXX_FLAGS)
 set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 separate_arguments(OC_CXX_FLAGS_DEBUG)
 
+############################################################################
+# List target source files. Don't directly create a target since we condi-
+# tionally add more sources depending on configuration options later.
+############################################################################
+# OC_CLONK_SOURCES: Sources for OpenClonk that are needed by every build.
+# OC_SYSTEM_SOURCES: Sources for OpenClonk that are only needed by specific
+# 	configurations.
 set(OC_CLONK_SOURCES
 	src/C4Application.cpp
 	src/C4Application.h
@@ -379,10 +386,6 @@ mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
 
 if(WIN32)
-	list(APPEND OC_CLONK_SOURCES
-		src/res/engine.rc
-		src/res/resource.h
-	)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/StdWindow.cpp
 		src/platform/StdJoystick.cpp
@@ -433,11 +436,6 @@ if(USE_GTK)
 	)
 endif()
 
-add_executable(clonk WIN32 MACOSX_BUNDLE
-	${OC_SYSTEM_SOURCES}
-	${OC_CLONK_SOURCES}
-)
-
 source_group("Unsorted" .*)
 source_group("Library\\Platform abstraction" src/platform/.*)
 source_group("Library\\Utility" src/lib/.*)
@@ -453,24 +451,6 @@ source_group("Scripting" src/script/.*)
 source_group("Config" src/config/.*)
 source_group("Control" src/control/.*)
 source_group("Editing" src/editor/.*)
-
-add_executable(c4group
-	src/c4group/c4group_ng.cpp
-	src/c4group/C4Group.cpp
-	src/lib/C4InputValidation.cpp
-	src/config/C4SecurityCertificates.cpp
-	src/c4group/C4Update.cpp
-	src/lib/Standard.cpp
-	src/c4group/CStdFile.cpp
-	src/lib/StdMarkup.cpp
-	src/lib/StdBuf.cpp
-	src/lib/StdCompiler.cpp
-	src/platform/StdFile.cpp
-	src/platform/StdRegistry.cpp
-	src/lib/StdResStr2.cpp
-	src/platform/StdConfig.cpp
-	src/zlib/gzio.c
-)
 
 include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
@@ -493,8 +473,9 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/src/script
 )
 
-set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS C4ENGINE GLEW_STATIC)
-set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+############################################################################
+# Check for required system headers
+############################################################################
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX(direct.h HAVE_DIRECT_H)
 CHECK_INCLUDE_FILE_CXX(io.h HAVE_IO_H)
@@ -528,41 +509,9 @@ endif()
 include(CheckFunctionExists)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 
-# User selectable options
-option(USE_GL "Enable OpenGL support" ON)
-if(APPLE)
-	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)
-else()
-	SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
-endif()
-option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
-if(WIN32)
-	option(USE_DIRECTX "Enable DirectX support" ON)
-	option(USE_FMOD "Enable FMOD support" ON)
-	if(EXISTS $ENV{DXSDK_DIR})
-		include_directories(SYSTEM $ENV{DXSDK_DIR}/Include)
-		if(${FIND_LIBRARY_USE_LIB64_PATHS})
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
-		else()
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
-		endif()
-	endif()
-else()
-	SET(USE_DIRECTX OFF)
-	SET(USE_FMOD OFF)
-endif()
-if(UNIX)
-	option(USE_X11 "Use X11 to create windows etc." ON)
-	option(USE_GTK "Use GTK for the developer mode" ON)
-else()
-	SET(USE_X11 OFF)
-	SET(USE_GTK OFF)
-endif()
-if(NOT USE_GL AND NOT USE_DIRECTX)
-	message(STATUS "No graphics display enabled; building dedicated server")
-	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
-endif()
-
+############################################################################
+# Locate necessary libraries
+############################################################################
 # Find win32 SDK, since a lot of users don't have the include path in their environment
 if(WIN32)
 	get_filename_component(WINSDK_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" ABSOLUTE CACHE)
@@ -600,7 +549,147 @@ endmacro(FINDLIB)
 # isilkor 09-05-29: Don't use FindOpenSSL, because that wants to link to ssleay
 FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
 
-# Optional libraries
+############################################################################
+# User selectable options
+############################################################################
+option(USE_GL "Enable OpenGL support" ON)
+if(APPLE)
+	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)
+else()
+	SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
+endif()
+option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
+if(WIN32)
+	option(USE_DIRECTX "Enable DirectX support" ON)
+	option(USE_FMOD "Enable FMOD support" ON)
+	if(EXISTS $ENV{DXSDK_DIR})
+		include_directories(SYSTEM $ENV{DXSDK_DIR}/Include)
+		if(${FIND_LIBRARY_USE_LIB64_PATHS})
+			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
+		else()
+			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
+		endif()
+	endif()
+else()
+	SET(USE_DIRECTX OFF)
+	SET(USE_FMOD OFF)
+endif()
+if(UNIX)
+	option(USE_X11 "Use X11 to create windows etc." ON)
+	option(USE_GTK "Use GTK for the developer mode" ON)
+else()
+	SET(USE_X11 OFF)
+	SET(USE_GTK OFF)
+endif()
+if(NOT USE_GL AND NOT USE_DIRECTX)
+	message(STATUS "No graphics display enabled; building dedicated server")
+	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
+endif()
+
+############################################################################
+# Check for compiler quirks and features
+############################################################################
+include(CheckCXXCompilerFlag)
+if(CMAKE_COMPILER_IS_GNUCXX)
+	CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
+	if(USE_GCC_STD_0X)
+		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
+	endif()
+endif()
+
+# ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
+include(CheckCXXSourceCompiles)
+foreach(FLAG ${OC_CXX_FLAGS})
+	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
+endforeach()
+set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
+CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
+
+if(MSVC_VERSION GREATER 1499)
+	# Activate minimal rebuild
+	list(APPEND OC_CXX_FLAGS_DEBUG /Gm)
+	if (NOT FIND_LIBRARY_USE_LIB64_PATHS)
+		# Activate edit-and-continue
+		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
+		list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
+	endif()
+endif()
+if(MSVC_VERSION)
+	# Suppress warnings about "non-secure" functions
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
+endif()
+
+############################################################################
+# Precompiled header support, part 1 (pre-target)
+############################################################################
+if(HAVE_PRECOMPILED_HEADERS)
+endif()
+
+############################################################################
+# Generate output files
+############################################################################
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+add_definitions(-DHAVE_CONFIG_H)
+add_executable(clonk WIN32 MACOSX_BUNDLE
+	${OC_SYSTEM_SOURCES}
+	${OC_CLONK_SOURCES}
+)
+add_executable(c4group
+	src/c4group/c4group_ng.cpp
+	src/c4group/C4Group.cpp
+	src/lib/C4InputValidation.cpp
+	src/config/C4SecurityCertificates.cpp
+	src/c4group/C4Update.cpp
+	src/lib/Standard.cpp
+	src/c4group/CStdFile.cpp
+	src/lib/StdMarkup.cpp
+	src/lib/StdBuf.cpp
+	src/lib/StdCompiler.cpp
+	src/platform/StdFile.cpp
+	src/platform/StdRegistry.cpp
+	src/lib/StdResStr2.cpp
+	src/platform/StdConfig.cpp
+	src/zlib/gzio.c
+)
+target_link_libraries(clonk
+	${FREETYPE_LIBRARIES}
+	${ZLIB_LIBRARIES}
+	${PNG_LIBRARIES}
+	${JPEG_LIBRARIES}
+	${OPENSSL_LIBRARIES}
+)
+target_link_libraries(c4group
+	${ZLIB_LIBRARIES}
+	${OPENSSL_LIBRARIES}
+)
+set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS C4ENGINE GLEW_STATIC)
+set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+
+############################################################################
+# Precompiled header support, part 2 (post-target)
+############################################################################
+if(HAVE_PRECOMPILED_HEADERS)
+endif()
+
+############################################################################
+# Assemble compiler flags
+############################################################################
+if(OC_CXX_FLAGS)
+	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
+endif()
+set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ compiler flags" FORCE)
+foreach(FLAG ${OC_CXX_FLAGS})
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" CACHE STRING "C++ compiler flags" FORCE)
+endforeach()
+list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
+set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
+endforeach()
+
+############################################################################
+# Locate optional libraries (if so desired)
+############################################################################
 if(USE_GL)
 	include(FindOpenGL)
 	FINDLIB(GLEW_LIBRARIES NAMES GLEW glew32 glew32s)
@@ -675,57 +764,3 @@ if(SDL_FOUND)
 	)
 endif()
 
-target_link_libraries(clonk
-	${FREETYPE_LIBRARIES}
-	${ZLIB_LIBRARIES}
-	${PNG_LIBRARIES}
-	${JPEG_LIBRARIES}
-	${OPENSSL_LIBRARIES}
-)
-target_link_libraries(c4group
-	${ZLIB_LIBRARIES}
-	${OPENSSL_LIBRARIES}
-)
-
-include(CheckCXXCompilerFlag)
-if(CMAKE_COMPILER_IS_GNUCXX)
-	CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
-	if(USE_GCC_STD_0X)
-		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
-	endif()
-endif()
-
-# ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
-include(CheckCXXSourceCompiles)
-foreach(FLAG ${OC_CXX_FLAGS})
-	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
-endforeach()
-set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
-CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
-
-if(MSVC_VERSION GREATER 1499)
-	# Activate minimal rebuild
-	list(APPEND OC_CXX_FLAGS_DEBUG /Gm)
-	if (NOT FIND_LIBRARY_USE_LIB64_PATHS)
-		# Activate edit-and-continue
-		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
-		list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
-	endif()
-endif()
-
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
-add_definitions(-DHAVE_CONFIG_H)
-add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
-
-if(OC_CXX_FLAGS)
-	list(REMOVE_DUPLICATES OC_CXX_FLAGS)
-endif()
-set(CMAKE_CXX_FLAGS "" CACHE STRING "C++ compiler flags" FORCE)
-foreach(FLAG ${OC_CXX_FLAGS})
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${FLAG}" CACHE STRING "C++ compiler flags" FORCE)
-endforeach()
-list(REMOVE_DUPLICATES OC_CXX_FLAGS_DEBUG)
-set(CMAKE_CXX_FLAGS_DEBUG "" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-foreach(FLAG ${OC_CXX_FLAGS_DEBUG})
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${FLAG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE)
-endforeach()

@@ -18,6 +18,7 @@
 
 /* Play midis using mci */
 
+#include "C4Include.h"
 #include <Standard.h>
 
 #ifdef HAVE_MIDI_H

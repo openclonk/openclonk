@@ -18,6 +18,7 @@
  */
 // png file reading functionality
 
+#include "C4Include.h"
 #include <StdPNG.h>
 
 CPNGFile *pCurrPng=NULL; // global crap for file-reading callback

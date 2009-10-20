@@ -17,6 +17,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdBuf.h>
 #include <StdCompiler.h>

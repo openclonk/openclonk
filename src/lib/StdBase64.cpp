@@ -17,6 +17,7 @@
  */
 /* Base64 encoding / decoding */
 
+#include "C4Include.h"
 #include "Standard.h"
 #include "StdBase64.h"
 

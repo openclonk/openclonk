@@ -47,6 +47,7 @@
 class C4GroupSet;
 class C4GamePadOpener;
 class C4Viewport;
+class C4Def;
 
 // consts (load those from a def file some time)
 // font colors - alpha is font alpha, which is inversed opaque
@@ -1939,7 +1940,7 @@ namespace C4GUI {
 		private:
 			int iRefCount;
 
-			bool SetFacetByAction(class C4Def *pOfDef, class C4TargetFacet &rfctTarget, const char *szFacetName);
+			bool SetFacetByAction(C4Def *pOfDef, class C4TargetFacet &rfctTarget, const char *szFacetName);
 
 		public:
 			C4ID idSourceDef;

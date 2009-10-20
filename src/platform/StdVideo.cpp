@@ -20,6 +20,7 @@
 
 /* Some functions to help with saving AVI files using Video for Windows */
 
+#include "C4Include.h"
 #ifdef _WIN32
 
 #include <Standard.h>

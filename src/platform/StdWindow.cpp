@@ -21,6 +21,7 @@
 
 /* A wrapper class to OS dependent event and window interfaces, WIN32 version */
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdRegistry.h>
 #ifdef USE_GL
@@ -241,7 +242,7 @@ CStdApp::~CStdApp()
 	{
 	}
 
-char *LoadResStr(const char *id);
+const char *LoadResStr(const char *id);
 
 bool CStdApp::Init(HINSTANCE hInst, int nCmdShow, char *szCmdLine) {
 	// Set instance vars
