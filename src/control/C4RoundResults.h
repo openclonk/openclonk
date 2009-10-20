@@ -25,13 +25,11 @@
 #ifndef INC_C4RoundResults
 #define INC_C4RoundResults
 
-#ifndef BIG_C4INCLUDE
 #include "C4Constants.h"
 #include "C4Components.h"
 #include "C4IDList.h"
 #include "C4PacketBase.h"
 #include "C4FacetEx.h"
-#endif
 
 class C4Player;
 

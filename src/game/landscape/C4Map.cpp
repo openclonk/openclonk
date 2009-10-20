@@ -23,11 +23,9 @@
 #include <C4Include.h>
 #include <C4Map.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Random.h>
 #include <C4Texture.h>
 #include <C4Group.h>
-#endif
 
 #include <Bitmap256.h>
 

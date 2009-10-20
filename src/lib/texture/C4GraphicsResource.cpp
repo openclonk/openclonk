@@ -25,13 +25,11 @@
 #include <C4Include.h>
 #include <C4GraphicsResource.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Gui.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
 #include <C4Def.h>
-#endif
 
 #include <StdGL.h>
 

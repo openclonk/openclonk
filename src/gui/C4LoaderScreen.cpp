@@ -22,14 +22,12 @@
 #include <C4Include.h>
 #include <C4LoaderScreen.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4LogBuf.h>
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4Random.h>
 #include <C4GroupSet.h>
 #include <C4Game.h>
-#endif
 
 C4LoaderScreen::C4LoaderScreen() : TitleFont(::GraphicsResource.FontTitle), LogFont(::GraphicsResource.FontTiny)
 	{

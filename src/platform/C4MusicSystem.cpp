@@ -27,14 +27,12 @@
 #include <C4Include.h>
 #include <C4MusicSystem.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4MusicFile.h>
 #include <C4Application.h>
 #include <C4Random.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
-#endif
 
 #include <Midi.h>
 #ifdef USE_FMOD

@@ -24,9 +24,7 @@
 #include <C4GraphicsSystem.h>
 #include <C4Game.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Random.h>
-#endif
 
 // number of times trying new player colors
 const int32_t C4MaxPlayerColorChangeTries = 100;

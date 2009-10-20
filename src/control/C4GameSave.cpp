@@ -25,7 +25,6 @@
 #include <C4GameSave.h>
 #include <C4Version.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Components.h>
 #include <C4Game.h>
 #include <C4League.h>
@@ -38,7 +37,6 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4Record.h>
-#endif
 
 // *** C4GameSave main class
 

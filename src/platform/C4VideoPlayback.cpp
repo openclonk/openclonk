@@ -21,11 +21,9 @@
 #include <C4Include.h>
 #include <C4VideoPlayback.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4FullScreen.h>
 #include <C4Game.h>
 #include <C4Log.h>
-#endif
 
 #ifdef HAVE_LIBSMPEG
 #include <smpeg/smpeg.h>

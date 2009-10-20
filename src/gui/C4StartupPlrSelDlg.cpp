@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4StartupPlrSelDlg.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4StartupMainDlg.h>
 #include <C4Random.h>
 #include <C4Game.h>
@@ -34,7 +33,6 @@
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4RankSystem.h>
-#endif
 #include <cctype>
 
 // font clrs

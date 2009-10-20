@@ -21,13 +21,11 @@
 #include "C4Include.h"
 #include "C4GameParameters.h"
 
-#ifndef BIG_C4INCLUDE
 #include "C4Log.h"
 #include "C4Components.h"
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4Network2.h>
-#endif
 
 // *** C4GameRes
 

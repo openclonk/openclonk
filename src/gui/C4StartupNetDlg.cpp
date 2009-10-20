@@ -27,13 +27,11 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4StartupNetDlg.h>
 #include <C4UpdateDlg.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4StartupScenSelDlg.h>
 #include <C4StartupMainDlg.h>
 #include <C4Game.h>
 #include <C4Log.h>
 #include "C4ChatDlg.h"
-#endif
 
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>

@@ -23,12 +23,10 @@
 #include <C4Include.h>
 #include <C4SolidMask.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
-#endif
 
 
 void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRestoreAttachment)

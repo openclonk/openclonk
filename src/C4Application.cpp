@@ -30,7 +30,6 @@
 #include <C4UpdateDlg.h>
 #endif
 
-#ifndef BIG_C4INCLUDE
 #include "C4Game.h"
 #include "C4GraphicsSystem.h"
 #include "C4GraphicsResource.h"
@@ -43,7 +42,6 @@
 #include <C4Log.h>
 #include <C4GamePadCon.h>
 #include <C4GameLobby.h>
-#endif
 
 #include <StdRegistry.h> // For DDraw emulation warning
 

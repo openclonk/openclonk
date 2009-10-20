@@ -25,13 +25,11 @@
 #include <C4Include.h>
 #include <C4ScriptHost.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Console.h>
 #include <C4ObjectCom.h>
 #include <C4Object.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
-#endif
 
 /*--- C4ScriptHost ---*/
 

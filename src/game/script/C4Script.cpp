@@ -28,7 +28,6 @@
 #include <C4Script.h>
 #include <C4Version.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Application.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
@@ -53,7 +52,6 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#endif
 
 //========================== Some Support Functions =======================================
 

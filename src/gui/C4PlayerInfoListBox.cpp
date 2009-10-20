@@ -22,7 +22,6 @@
 #include <C4Include.h>
 #include <C4PlayerInfoListBox.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4PlayerInfo.h>
 #include <C4Network2Dialogs.h>
 #include <C4GameDialogs.h>
@@ -33,7 +32,6 @@
 #include <C4MouseControl.h>
 #include <C4Network2.h>
 #include <C4GameControl.h>
-#endif
 
 DWORD GenerateRandomPlayerColor(int32_t iTry); // in C4PlayerInfoConflicts.cpp
 

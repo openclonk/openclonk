@@ -24,7 +24,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4Include.h>
 #include <C4GameOverDlg.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4FullScreen.h>
 #include <C4Player.h>
@@ -33,7 +32,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#endif
 
 
 // ---------------------------------------------------

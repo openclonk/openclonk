@@ -23,7 +23,6 @@
 #include <C4Include.h>
 #include <C4Particles.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Physics.h>
 #include <C4Object.h>
 #include <C4Random.h>
@@ -32,7 +31,6 @@
 #include <C4Log.h>
 #include <C4Weather.h>
 #include <C4GameObjects.h>
-#endif
 
 void C4ParticleDefCore::CompileFunc(StdCompiler * pComp)
 	{

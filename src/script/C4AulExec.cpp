@@ -22,14 +22,12 @@
 #include <C4Include.h>
 #include <C4Aul.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Config.h>
 #include <C4GameMessage.h>
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4Record.h>
-#endif
 
 C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
 	{

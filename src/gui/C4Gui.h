@@ -37,9 +37,7 @@
 #include "C4LogBuf.h"
 #include "C4KeyboardInput.h"
 
-#ifndef BIG_C4INCLUDE
 #include "C4Application.h"
-#endif
 
 #include <StdResStr2.h>
 #include <StdWindow.h>

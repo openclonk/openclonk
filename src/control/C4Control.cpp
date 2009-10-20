@@ -27,7 +27,6 @@
 #include <C4Include.h>
 #include <C4Control.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4GameSave.h>
 #include <C4GameLobby.h>
@@ -45,7 +44,6 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#endif
 
 // *** C4ControlPacket
 C4ControlPacket::C4ControlPacket()

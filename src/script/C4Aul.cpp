@@ -23,12 +23,10 @@
 #include <C4Include.h>
 #include <C4Aul.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Config.h>
 #include <C4Def.h>
 #include <C4Log.h>
 #include <C4Components.h>
-#endif
 
 
 C4AulError::C4AulError() {}

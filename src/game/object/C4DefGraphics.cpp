@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4DefGraphics.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4SurfaceFile.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
@@ -40,7 +39,6 @@
 #include <C4Material.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
-#endif
 
 //-------------------------------- C4DefGraphics -----------------------------------------------
 

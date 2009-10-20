@@ -29,12 +29,10 @@
 #include <C4Include.h>
 #include <C4Language.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Components.h>
 #include <C4Log.h>
 #include <C4Config.h>
 #include <C4Game.h>
-#endif
 
 #ifdef HAVE_ICONV
 #ifdef HAVE_LANGINFO_H

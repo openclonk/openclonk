@@ -24,11 +24,9 @@
 #include <C4Include.h>
 #include <C4IDList.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Def.h>
 #include <C4Application.h>
 #include <C4GraphicsResource.h>
-#endif
 
 C4IDListChunk::C4IDListChunk()
 	{

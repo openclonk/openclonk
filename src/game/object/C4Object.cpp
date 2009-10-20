@@ -29,7 +29,6 @@
 #include <C4Include.h>
 #include <C4Object.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4ObjectInfo.h>
 #include <C4Physics.h>
 #include <C4ObjectCom.h>
@@ -52,7 +51,6 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4Record.h>
-#endif
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
   {

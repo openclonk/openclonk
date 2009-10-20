@@ -24,14 +24,12 @@
 #include <C4Include.h>
 #include <C4SoundSystem.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Random.h>
 #include <C4Object.h>
 #include <C4Game.h>
 #include <C4Config.h>
 #include <C4Application.h>
 #include <C4GraphicsSystem.h>
-#endif
 
 C4SoundEffect::C4SoundEffect():
 	UsageTime (0),

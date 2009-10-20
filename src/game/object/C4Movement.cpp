@@ -24,12 +24,10 @@
 #include <C4Include.h>
 #include <C4Object.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Physics.h>
 #include <C4SolidMask.h>
 #include <C4Landscape.h>
 #include <C4Game.h>
-#endif
 
 /* Some physical constants */
 

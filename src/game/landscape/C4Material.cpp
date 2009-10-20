@@ -25,8 +25,6 @@
 #include <C4Material.h>
 #include <C4Components.h>
 
-#ifndef BIG_C4INCLUDE
-
 #include <C4Group.h>
 #include <C4PXS.h>
 #include <C4Random.h>
@@ -39,8 +37,6 @@
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4Physics.h> // For GravAccel
-
-#endif
 
 
 int32_t MVehic=MNone,MTunnel=MNone,MWater=MNone,MSnow=MNone,MEarth=MNone,MGranite=MNone,MFlyAshes=MNone;

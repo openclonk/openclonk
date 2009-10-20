@@ -24,7 +24,6 @@
 #include <C4Include.h>
 #include <C4Video.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Viewport.h>
 #include <C4Config.h>
 #include <C4Application.h>
@@ -33,7 +32,6 @@
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
-#endif
 
 #ifdef _WIN32
 #include <vfw.h>

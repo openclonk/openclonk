@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4StartupOptionsDlg.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4StartupMainDlg.h>
 #include <C4Language.h>
 #include <C4GamePadCon.h>
@@ -33,7 +32,6 @@
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4Network2.h>
-#endif
 
 #include <StdGL.h>
 

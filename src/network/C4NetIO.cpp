@@ -21,10 +21,8 @@
 #include "C4Include.h"
 #include "C4NetIO.h"
 
-#ifndef BIG_C4INCLUDE
 #include "C4Constants.h"
 #include "C4Config.h"
-#endif
 
 #include <assert.h>
 #include <errno.h>

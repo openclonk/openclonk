@@ -22,9 +22,7 @@
 #include "C4Include.h"
 #include "C4DownloadDlg.h"
 
-#ifndef BIG_C4INCLUDE
 #include "C4Log.h"
-#endif
 
 C4Network2HTTPClient HTTPClient;
 

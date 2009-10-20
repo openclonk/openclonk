@@ -24,7 +24,6 @@
 
 #include <C4Include.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Random.h>
 #include <C4Log.h>
@@ -33,7 +32,6 @@
 #include <C4PXS.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
-#endif
 
 void C4Effect::AssignCallbackFunctions()
 	{

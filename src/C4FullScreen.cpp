@@ -24,7 +24,6 @@
 #include <C4Include.h>
 #include <C4FullScreen.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4Application.h>
 #include <C4UserMessages.h>
@@ -40,7 +39,6 @@
 #include <C4GraphicsSystem.h>
 #include <C4MouseControl.h>
 #include <C4PlayerList.h>
-#endif
 
 #ifdef _WIN32
 

@@ -26,7 +26,6 @@
 #include <C4SolidMask.h>
 #include <C4Game.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Map.h>
 #include <C4MapCreatorS2.h>
 #include <C4SolidMask.h>
@@ -50,7 +49,6 @@
 #include <C4GraphicsSystem.h>
 #include <C4Texture.h>
 #include <C4Record.h>
-#endif
 
 #include <StdPNG.h>
 

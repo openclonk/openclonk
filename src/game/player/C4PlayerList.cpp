@@ -24,7 +24,6 @@
 #include <C4Include.h>
 #include <C4PlayerList.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Components.h>
 #include <C4FullScreen.h>
 #include <C4Console.h>
@@ -36,7 +35,6 @@
 #include <C4GraphicsSystem.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#endif
 
 C4PlayerList::C4PlayerList()
 	{

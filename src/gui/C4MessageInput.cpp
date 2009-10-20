@@ -24,7 +24,6 @@
 #include <C4Include.h>
 #include <C4MessageInput.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4Object.h>
 #include <C4Script.h>
@@ -38,7 +37,6 @@
 #include <C4GraphicsSystem.h>
 #include <C4PlayerList.h>
 #include <C4GameControl.h>
-#endif
 #include <cctype>
 
 // --------------------------------------------------

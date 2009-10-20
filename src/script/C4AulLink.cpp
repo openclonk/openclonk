@@ -22,12 +22,10 @@
 #include <C4Include.h>
 #include <C4Aul.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Def.h>
 #include <C4Material.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
-#endif
 
 // ResolveAppends and ResolveIncludes must be called both
 // for each script. ResolveAppends has to be called first!

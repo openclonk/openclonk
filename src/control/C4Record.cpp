@@ -23,7 +23,6 @@
 #include <C4Include.h>
 #include <C4Record.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Console.h>
 #include <C4PlayerInfo.h>
 #include <C4GameSave.h>
@@ -31,7 +30,6 @@
 #include <C4Player.h>
 #include <C4Game.h>
 #include <C4GameControl.h>
-#endif
 
 #include <StdFile.h>
 

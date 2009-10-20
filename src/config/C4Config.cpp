@@ -30,12 +30,10 @@
 #include <C4Config.h>
 #include <C4Version.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Log.h>
 #include <C4Components.h>
 #include <C4Network2.h>
 #include <C4Language.h>
-#endif
 
 #include <StdFile.h>
 #include <StdWindow.h>

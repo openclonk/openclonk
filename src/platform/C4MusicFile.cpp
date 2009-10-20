@@ -24,10 +24,8 @@
 #include <C4Include.h>
 #include <C4MusicFile.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Application.h>
 #include <C4Log.h>
-#endif
 
 #ifdef USE_FMOD
 #include <fmod_errors.h>

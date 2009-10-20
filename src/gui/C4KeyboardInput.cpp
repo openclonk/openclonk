@@ -24,9 +24,7 @@
 #include <C4Include.h>
 #include <C4KeyboardInput.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
-#endif
 
 #ifndef _WIN32
 #include <X11/Xlib.h>

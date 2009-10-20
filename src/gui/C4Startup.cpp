@@ -22,7 +22,6 @@
 #include <C4Include.h>
 #include <C4Startup.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4StartupMainDlg.h>
 #include <C4StartupScenSelDlg.h>
 #include <C4StartupNetDlg.h>
@@ -34,7 +33,6 @@
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
-#endif
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
 	{

@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4ObjectInfo.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Random.h>
 #include <C4Components.h>
 #include <C4Game.h>
@@ -36,7 +35,6 @@
 #include <C4Player.h>
 #include <C4GraphicsResource.h>
 #include <C4PlayerList.h>
-#endif
 
 #ifdef _MSC_VER
 #define snprintf _snprintf

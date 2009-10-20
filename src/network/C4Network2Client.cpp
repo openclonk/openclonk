@@ -20,7 +20,6 @@
 #include <C4Include.h>
 #include <C4Network2Client.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Log.h>
 #include <C4Console.h>
 #include <C4Network2.h>
@@ -29,7 +28,6 @@
 #include <C4GameLobby.h> // fullscreen network lobby
 #include <C4Game.h>
 #include <C4PlayerList.h>
-#endif
 
 #ifndef _WIN32
 #include <arpa/inet.h>

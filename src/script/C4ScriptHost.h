@@ -26,9 +26,7 @@
 
 #include <C4ComponentHost.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Aul.h>
-#endif
 
 const int32_t C4SCR_MaxIDLen = 100,
 							C4SCR_MaxDesc	 = 256;

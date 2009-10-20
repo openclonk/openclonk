@@ -24,7 +24,6 @@
 #include <C4Include.h>
 #include <C4GraphicsSystem.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Viewport.h>
 #include <C4Application.h>
 #include <C4Console.h>
@@ -42,7 +41,6 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
-#endif
 
 #include <StdPNG.h>
 

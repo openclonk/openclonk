@@ -23,9 +23,7 @@
 #include "C4UpdateDlg.h"
 #include "C4DownloadDlg.h"
 
-#ifndef BIG_C4INCLUDE
 #include <C4Log.h>
-#endif
 
 #ifdef _WIN32
 #include <shellapi.h>

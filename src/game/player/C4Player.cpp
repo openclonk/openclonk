@@ -26,7 +26,6 @@
 #include <C4Include.h>
 #include <C4Player.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Application.h>
 #include <C4Object.h>
 #include <C4ObjectInfo.h>
@@ -49,7 +48,6 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#endif
 
 #define C4FOW_Def_View_RangeX 500
 

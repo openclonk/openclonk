@@ -49,11 +49,9 @@
 #include <C4Include.h>
 #include <C4PathFinder.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4FacetEx.h>
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
-#endif
 
 const int32_t C4PF_MaxDepth				 = 35,
 					C4PF_MaxCrawl				 = 800,

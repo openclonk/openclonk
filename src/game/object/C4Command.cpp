@@ -26,7 +26,6 @@
 #include <C4Include.h>
 #include <C4Command.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4ObjectCom.h>
 #include <C4ObjectInfo.h>
@@ -38,7 +37,6 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
-#endif
 
 const int32_t MoveToRange=5,LetGoRange1=7,LetGoRange2=30,DigRange=1;
 const int32_t FollowRange=6,PushToRange=10,DigOutPositionRange=15;
