@@ -613,6 +613,7 @@ if(MSVC_VERSION GREATER 1499)
 		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
 		list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
 	endif()
+	set(HAVE_PRECOMPILED_HEADERS ON CACHE INTERNAL "Compiler supports precompiled headers")
 endif()
 if(MSVC_VERSION)
 	# Suppress warnings about "non-secure" functions
@@ -623,6 +624,9 @@ endif()
 # Precompiled header support, part 1 (pre-target)
 ############################################################################
 if(HAVE_PRECOMPILED_HEADERS)
+	if(MSVC_VERSION)
+		list(INSERT OC_SYSTEM_SOURCES 0 src/C4Include.cpp)
+	endif()
 endif()
 
 ############################################################################
@@ -669,6 +673,18 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 # Precompiled header support, part 2 (post-target)
 ############################################################################
 if(HAVE_PRECOMPILED_HEADERS)
+	if(MSVC_VERSION)
+		get_property(OC_SOURCES TARGET clonk PROPERTY SOURCES)
+		foreach(FILE ${OC_SOURCES})
+			get_filename_component(FILE_EXT ${FILE} EXT)
+			if(FILE_EXT STREQUAL ".cpp")
+				# This check is necessary since gzio.c gets compiled as C
+				# code, which can't use C++ PCH.
+				set_property(SOURCE ${FILE} PROPERTY COMPILE_FLAGS /YuC4Include.h)
+			endif()
+		endforeach()
+		set_property(SOURCE src/C4Include.cpp PROPERTY COMPILE_FLAGS /YcC4Include.h)
+	endif()
 endif()
 
 ############################################################################
