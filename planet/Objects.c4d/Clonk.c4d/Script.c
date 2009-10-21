@@ -13,6 +13,8 @@
 
 local pInventory;
 
+local throwAngle;
+
 /* Initialization */
 
 protected func Initialize()
@@ -249,26 +251,50 @@ protected func Swimming2()
     SetAction("Swim");
 }
 
+// temporary overload for testing...
+public func ControlThrow(object thatsme, int x, int y)
+{
+	if(!Contents(selected)) return false;
+	throwAngle = Angle(0,0,x,y);
+	SetAction("Throw");
+	if(throwAngle < 180) SetDir(1);
+	else SetDir(0);
+	Throwing();
+	return true;
+}
+
 private func Throwing()
 {
-  // Erstes Inhaltsobjekt werfen
-  var pObj = Contents(0);
-  // Wurfparameter berechnen
+  // throw selected inventory
+  var obj = Contents(selected);
+  if(!obj) return;
+  
+  // parameters...
   var iX, iY, iR, iXDir, iYDir, iRDir;
-  iX = 0; if (!GetDir()) iX = -iX;
-  iY = -10;
+  iX = 8; if (!GetDir()) iX = -iX;
+  iY = Cos(throwAngle,-8);
   iR = Random(360);
-  iXDir = GetPhysical("Throw") / 25000; if(!GetDir()) iXDir = -iXDir;
-  iYDir = -GetPhysical("Throw") / 25000;
-  iRDir = Random(40) - 20;
-  // Reitet? Eigengeschwindigkeit addieren
+  iRDir = RandomX(-10,10);
+
+  var speed = GetPhysical("Throw");
+
+  iXDir = speed * Sin(throwAngle,1000) / 17000;
+  iYDir = speed * Cos(throwAngle,-1000) / 17000;
+  // throw boost
+  if(iYDir < 0) iYDir = iYDir * 13/10;
+  if(iYDir > 0) iYDir = iYDir * 8/10;
+  
+  Message("angle %d - velocity %d,%d",this,throwAngle,iXDir, iYDir);
+  // is riding? add it's velocity
   if (GetActionTarget())
   {
     iXDir += GetActionTarget()->GetXDir() / 10;
     iYDir += GetActionTarget()->GetYDir() / 10;
   }
-  // Werfen!
-  pObj->Exit(iX, iY, iR, iXDir, iYDir, iRDir);  
+  // throw
+  obj->Exit(iX, iY, iR, 0, 0, iRDir);  
+  obj->SetXDir(iXDir,1000);
+  obj->SetYDir(iYDir,1000);
 }
 
 private func Fighting()

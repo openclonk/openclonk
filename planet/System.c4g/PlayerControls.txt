@@ -316,13 +316,13 @@
 	# MenuUp, Up, Jump		x			W
 	# MenuDown, Down		x			S
 	#
-	# NextItem				x			Scrollwheel-Up		(now: Up)
-	# PreviousItem			x			Scrollwheel-Down	(now: Unassigned)
+	# NextItem				x			Scrollwheel-Up (now: Up)
+	# PreviousItem			x			Scrollwheel-Down (now: unassigned)
 	# Hotkey0-9				x			(0-9)
 	#
-	# Use, Throw			x			Left mouse button		(now: Left)
-	# Throw					x			Shift+Left mouse button (now: Right)
-	# Drop					x			S+Left mouse button		(now: Down)
+	# Use, Throw			x			Left mouse button
+	# Throw					x			Shift+Left mouse button
+	# Drop					x			S+Left mouse button
 	#
 	# PushEnter, GrabNext, Ungrab,
 	# Grab, Exit, Enter		x			Space
@@ -521,7 +521,7 @@
 		Control=PlayerMenu
 		
 		#[Assignment]
-		#Key=Up
+		#Key=Mouse1Wheel1Down
 		#Control=PreviousItem
 		
 		[Assignment]
@@ -529,7 +529,7 @@
 		Control=NextItem
 		
 		[Assignment]
-		Key=Left
+		Key=Mouse1ButtonLeft
 		Priority=100
 		Control=Use
 		
@@ -539,11 +539,11 @@
 		Control=Throw
 		
 		[Assignment]
-		Key=Right
+		Key=Shift+Mouse1ButtonLeft
 		Control=Throw
 		
 		[Assignment]
-		Key=Down
+		Key=S,Mouse1ButtonLeft
 		Control=Drop
 
 		[Assignment]

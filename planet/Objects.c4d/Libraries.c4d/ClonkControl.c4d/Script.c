@@ -96,11 +96,15 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	{
 		// for standard controls
 		if(Control2Script(ctrl, x, y, strength, repeat, release, "Control", this)) return true;
+	}
+	
+	if(!vehicle && !house)
+	{
 		// and a few more...
 		if(ctrl == CON_Throw) if(this->~ControlThrow(this,x,y)) return true;
 		if(ctrl == CON_Jump)  if(this->~ControlJump(this)) return true;
 	}
-
+	
 	// everything down from here:
 	// standard controls that are called if not overloaded via script
 	

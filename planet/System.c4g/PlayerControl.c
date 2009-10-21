@@ -20,10 +20,19 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 	{
 		// Object controlled by plr
 		cursor->SetController(plr);
+		
+		// local coordinates
+		var cursorX = x, cursorY = y;
+		if(cursorX || cursorY)
+		{
+			cursorX -= cursor->GetX();
+			cursorY -= cursor->GetY();
+		}
+		
 		// Overload by effect?
-		if (cursor->Control2Effect(plr, ctrl, x, y, strength, repeat, release)) return true;
+		if (cursor->Control2Effect(plr, ctrl, cursorX, cursorY, strength, repeat, release)) return true;
 
-		return cursor->ObjectControl(plr, ctrl, x,y, strength, repeat, release);
+		return cursor->ObjectControl(plr, ctrl, cursorX, cursorY, strength, repeat, release);
 	}
 	// No cursor? Nothing to handle control then
 	return false;
@@ -75,13 +84,13 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 		}
 		StopSelected(plr);
 	}
-	
+	/*
 	if (ctrl == CON_Test)
 	{
 	  Message(Format("%d %d (%d %d) %d [%d %d]", plr, ctrl, x, y, strength, repeat, release));
 	  return true;
 	}
-	
+	*/
 	return false;
 }
 
@@ -102,6 +111,7 @@ global func StopSelected(int plr)
 // Call control function in all effects that have "Control" in their name
 global func Control2Effect(int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
+	// x and y are local coordinates
 	if (!this) return false;
 	
 	// Count down from EffectCount, in case effects get deleted
