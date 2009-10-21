@@ -52,7 +52,6 @@ struct C4AulContext;
 struct C4AulBCC;
 
 // consts
-#define C4AUL_MAX_String			1024// max string length
 #define C4AUL_MAX_Identifier	100	// max length of function identifiers
 #define C4AUL_MAX_Par					10	// max number of parameters
 #define C4AUL_MAX_Var					10	// max number of func local vars
