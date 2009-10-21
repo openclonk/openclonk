@@ -772,11 +772,52 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 				}
 				else
 				{
-					if(C == '\\') // escape
+					if (C == '\\') // escape
 						switch(*(SPos + 1))
 						{
 						case '"':  SPos ++; strbuf.push_back('"');  break;
 						case '\\': SPos ++; strbuf.push_back('\\'); break;
+						case 'n': SPos ++; strbuf.push_back('\n'); break;
+						case 'x':
+							{
+								++SPos;
+								// hexadecimal escape: \xAD.
+								// First char must be a hexdigit
+								if (!std::isxdigit(SPos[1]))
+								{
+									Warn("\\x used with no following hex digits");
+									strbuf.push_back('\\'); strbuf.push_back('x');
+								}
+								else
+								{
+									char ch = 0;
+									while (std::isxdigit(SPos[1]))
+									{
+										++SPos;
+										ch *= 16;
+										if (*SPos >= '0' && *SPos <= '9')
+											ch += *SPos - '0';
+										else if (*SPos >= 'a' && *SPos <= 'f')
+											ch += *SPos - 'a' + 10;
+										else if (*SPos >= 'A' && *SPos <= 'F')
+											ch += *SPos - 'A' + 10;
+									};
+									strbuf.push_back(ch);
+								}
+								break;
+							}
+						case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+							{
+								// Octal escape: \142
+								char ch = 0;
+								while (SPos[1] >= '0' && SPos[1] <= '7')
+								{
+									ch *= 8;
+									ch += *++SPos -'0';
+								}
+								strbuf.push_back(ch);
+							}
+							break;
 						default:
 							{
 								// just insert "\"
