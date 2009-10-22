@@ -126,8 +126,6 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
-
 #elif defined(USE_X11)
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -371,16 +369,7 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 
 #endif // _WIN32, USE_X11, USE_SDL_MAINLOOP
 
-#ifndef _WIN32
-void C4FullScreen::CharIn(const char *c)
-	{
-	if (::pGUI)
-		{
-		StdStrBuf c2; c2.Take(Languages.IconvClonk(c));
-		::pGUI->CharIn(c2.getData());
-		}
-	}
-#endif
+void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 
 C4FullScreen::C4FullScreen()
 	{
