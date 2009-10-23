@@ -44,6 +44,10 @@
 
 #include <StdPNG.h>
 
+#ifdef _WIN32
+#include "resource.h"
+#endif
+
 C4GraphicsSystem::C4GraphicsSystem()
 	{
 	fViewportClassRegistered=false;
@@ -60,19 +64,19 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 BOOL C4GraphicsSystem::RegisterViewportClass(HINSTANCE hInst)
 	{
 	// register landscape viewport class
-  WNDCLASSEX WndClass;
+	WNDCLASSEX WndClass;
 	WndClass.cbSize=sizeof(WNDCLASSEX);
-  WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
-  WndClass.lpfnWndProc   = ViewportWinProc;
-  WndClass.cbClsExtra    = 0;
-  WndClass.cbWndExtra    = 0;
-  WndClass.hInstance     = hInst;
-  WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW);
-  WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-  WndClass.lpszMenuName  = NULL;
-  WndClass.lpszClassName = C4ViewportClassName;
+	WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
+	WndClass.lpfnWndProc   = ViewportWinProc;
+	WndClass.cbClsExtra    = 0;
+	WndClass.cbWndExtra    = 0;
+	WndClass.hInstance     = hInst;
+	WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW);
+	WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+	WndClass.lpszMenuName  = NULL;
+	WndClass.lpszClassName = C4ViewportClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_C4S) );
-  WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_C4S) );
+	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_01_C4S) );
 	if (!RegisterClassEx(&WndClass)) return false;
 	// register GUI dialog class
 	return C4GUI::Dialog::RegisterWindowClass(hInst);

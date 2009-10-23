@@ -38,6 +38,10 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 
+#ifdef _WIN32
+#include "resource.h"
+#endif
+
 #ifdef WITH_DEVELOPER_MODE
 # include <C4Language.h>
 

@@ -22,8 +22,9 @@
 #define INC_C4Network2Stats
 
 #include "C4Application.h"
+#include "StdBuf.h"
 
-#include <StdBuf.h>
+#include <algorithm>
 
 // (int) value by time function
 class C4Graph

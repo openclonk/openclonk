@@ -48,6 +48,8 @@
 #endif
 
 #ifdef _WIN32
+#include "resource.h"
+
 BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 	{
 	switch (Msg)

@@ -30,6 +30,7 @@
 C4ComponentHost *pCmpHost=NULL;
 
 #if defined(C4ENGINE) && defined(_WIN32)
+#include "resource.h"
 
 BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 	{
