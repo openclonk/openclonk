@@ -654,6 +654,7 @@ add_executable(c4group
 	src/lib/StdResStr2.cpp
 	src/platform/StdConfig.cpp
 	src/zlib/gzio.c
+	src/C4Include.cpp
 )
 target_link_libraries(clonk
 	${FREETYPE_LIBRARIES}
