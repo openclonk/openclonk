@@ -159,7 +159,6 @@ class CStdAppPrivate {
 	int xrandr_event;
 	bool tasked_out; int wdt; int hgt;
 	bool pending_desktop;
-	static const int PENDING_DESKTOP_DELAY = 3;
 	XIM xim;
 	XIC xic;
 	Bool detectable_autorepeat_supported;

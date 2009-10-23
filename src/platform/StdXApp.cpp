@@ -618,14 +618,17 @@ void CStdApp::OnXInput()
 		Priv->tasked_out = true;
 		Priv->pending_desktop = false;
 	}
+	// At least the _NET_WM_PING reply needs to be flushed,
+	// and having received events is a good heuristic for
+	// having issued X11 commands, even if most events
+	// are mouse moves that don't generate X11 commands.
+	XFlush(dpy);
 }
 
 void CStdApp::OnStdInInput()
 {
 	if(!ReadStdInCommand())
 	{
-		// TODO: This should only cause HandleMessage to return
-		// HR_Failure...
 		Quit();
 	}
 }
