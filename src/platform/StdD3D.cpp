@@ -454,17 +454,15 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 		{
 		// fullscreen mode
 		// pick a display mode
-#ifndef _DEBUG
 		if (DDrawCfg.Windowed)
-#else
-		if (true)
-#endif
-			{
+		{
 			// "Windowed fullscreen"
 			if (lpD3D->GetAdapterDisplayMode(iMonitor, &dspMode) != D3D_OK)
 				if (lpD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &dspMode) != D3D_OK)
 					return Error("Could not get current display mode");
-			}
+			SetWindowPos(hWindow, HWND_TOP, 0, 0, iXRes,iYRes, SWP_NOOWNERZORDER | SWP_SHOWWINDOW | SWP_NOMOVE);
+			d3dpp.Windowed = true;
+		}
 		else
 			{
 			// true fullscreen
@@ -472,22 +470,12 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 				return Error("Display mode not supported");
 			}
 		// fill present structure
-#ifndef _DEBUG
-		if (DDrawCfg.Windowed)
-#endif
-			{
-			SetWindowPos(hWindow, HWND_TOP, /*pApp->MonitorRect.left*/0, /*pApp->MonitorRect.top*/0,
-				iXRes,iYRes, SWP_NOOWNERZORDER | SWP_SHOWWINDOW);
-			SetWindowLong(hWindow, GWL_STYLE, (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX));
-			d3dpp.Windowed = true;
-			}
 		d3dpp.BackBufferWidth = iXRes;
 		d3dpp.BackBufferHeight= iYRes;
 		d3dpp.BackBufferFormat= dspMode.Format;
 		d3dpp.BackBufferCount = 0;
-		d3dpp.SwapEffect			= D3DSWAPEFFECT_FLIP;
-		d3dpp.Flags						= D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
-		// create primary surface
+		d3dpp.SwapEffect      = D3DSWAPEFFECT_FLIP;
+		d3dpp.Flags           = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 		hr = lpD3D->CreateDevice(iMonitor, fSoftware ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL, hWindow,
                         D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
                         &d3dpp, &lpDevice);
@@ -517,14 +505,15 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
                         &d3dpp, &lpDevice);
 		}
 	switch (hr)
-		{
-		case D3DERR_INVALIDCALL: return Error("CreateDevice: D3DERR_INVALIDCALL");
-		case D3DERR_NOTAVAILABLE: return Error("CreateDevice: D3DERR_NOTAVAILABLE");
-		case D3DERR_OUTOFVIDEOMEMORY: return Error("CreateDevice: D3DERR_OUTOFVIDEOMEMORY");
-		case D3DERR_DRIVERINTERNALERROR: return Error("CreateDevice: D3DERR_DRIVERINTERNALERROR");
-		case D3D_OK: break;
-		default: return Error("CreateDevice: unknown error");
-		}
+	{
+	case D3DERR_INVALIDCALL: return Error("CreateDevice: D3DERR_INVALIDCALL");
+	case D3DERR_NOTAVAILABLE: return Error("CreateDevice: D3DERR_NOTAVAILABLE");
+	case D3DERR_OUTOFVIDEOMEMORY: return Error("CreateDevice: D3DERR_OUTOFVIDEOMEMORY");
+	case D3DERR_DRIVERINTERNALERROR: return Error("CreateDevice: D3DERR_DRIVERINTERNALERROR");
+	case D3D_OK: break;
+	default: return Error("CreateDevice: unknown error");
+	}
+	
 	// device successfully created?
 	if (!lpDevice) return Error("CreateDevice: unreported error");
 	// store color depth
@@ -553,9 +542,21 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 	}
 
 bool CStdD3D::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
-	{
-	return true;
-	}
+{
+	assert(lpDevice);
+	// If fullscreen: SetVideoMode will have handled this.
+	if (fFullscreen && !DDrawCfg.Windowed) return true;
+
+	// NOTE: This should be replaced by using a desktop-size video buffer and
+	// just clipping to the current resolution to improve performance
+	d3dpp.BackBufferWidth = iXRes;
+	d3dpp.BackBufferHeight = iYRes;
+	DeleteDeviceObjects();
+	HRESULT hr = lpDevice->Reset(&d3dpp);
+	InitDeviceObjects();
+	RestoreDeviceObjects();
+	return hr == D3D_OK;
+}
 
 bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepthFIXME, unsigned int iMonitor, bool fFullScreen)
 	{
@@ -568,16 +569,14 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	HRESULT hr;
 	HWND hWindow = pApp->pWindow->hWindow;
 	// pick a display mode
-#ifndef _DEBUG
 	if (DDrawCfg.Windowed)
-#else
-	if (true)
-#endif
 		{
 		// "Windowed fullscreen"
 		if (lpD3D->GetAdapterDisplayMode(iMonitor, &dspMode) != D3D_OK)
 			if (lpD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &dspMode) != D3D_OK)
 				return Error("Could not get current display mode");
+		SetWindowPos(hWindow, HWND_TOP, 0, 0, iXRes, iYRes, SWP_NOOWNERZORDER | SWP_SHOWWINDOW | SWP_NOMOVE);
+		d3dpp.Windowed = true;
 		}
 	else
 		{
@@ -586,15 +585,6 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 			return Error("Display mode not supported");
 		}
 	// fill present structure
-#ifndef _DEBUG
-	if (DDrawCfg.Windowed)
-#endif
-		{
-		SetWindowPos(hWindow, HWND_TOP, /*pApp->MonitorRect.left*/0, /*pApp->MonitorRect.top*/0,
-			iXRes, iYRes, SWP_NOOWNERZORDER | SWP_SHOWWINDOW);
-		SetWindowLong(hWindow, GWL_STYLE, (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX));
-		d3dpp.Windowed = true;
-		}
 	d3dpp.BackBufferWidth = iXRes;
 	d3dpp.BackBufferHeight= iYRes;
 	d3dpp.BackBufferFormat= dspMode.Format;

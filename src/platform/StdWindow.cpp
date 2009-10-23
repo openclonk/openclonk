@@ -5,6 +5,7 @@
  * Copyright (c) 2005, 2007, 2009  Peter Wortmann
  * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
  * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -59,17 +60,13 @@ CStdWindow::~CStdWindow () {
 }
 
 BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst) {
-  WNDCLASSEX WndClass;
-	WndClass.cbSize=sizeof(WNDCLASSEX);
-  WndClass.style         = CS_DBLCLKS;
-  WndClass.lpfnWndProc   = FullScreenWinProc;
-  WndClass.cbClsExtra    = 0;
-  WndClass.cbWndExtra    = 0;
-  WndClass.hInstance     = hInst;
-  WndClass.hCursor       = NULL;
-  WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-  WndClass.lpszMenuName  = NULL;
-  WndClass.lpszClassName = C4FullScreenClassName;
+	WNDCLASSEX WndClass = {0};
+	WndClass.cbSize        = sizeof(WNDCLASSEX);
+	WndClass.style         = CS_DBLCLKS;
+	WndClass.lpfnWndProc   = FullScreenWinProc;
+	WndClass.hInstance     = hInst;
+	WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+	WndClass.lpszClassName = C4FullScreenClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
   WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
 	return RegisterClassEx(&WndClass);
@@ -86,7 +83,7 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp) {
 							0,
 							C4FullScreenClassName,
 							C4ENGINENAME,
-							WS_POPUP,
+							WS_OVERLAPPEDWINDOW,
 							CW_USEDEFAULT,CW_USEDEFAULT,0,0,
 							NULL,NULL,pApp->hInstance,NULL);
 
@@ -94,7 +91,6 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp) {
 	// Show & focus
 	ShowWindow(hWindow,SW_SHOWNORMAL);
 	SetFocus(hWindow);
-	ShowCursor(false);
 #endif
 
 	return this;
@@ -126,8 +122,16 @@ bool CStdWindow::GetSize(RECT * pRect) {
 }
 
 void CStdWindow::SetSize(unsigned int cx, unsigned int cy) {
-	// resize
 	if (hWindow) {
+		// If bordered, add border size
+		if (GetWindowLong(hWindow, GWL_STYLE) & WS_THICKFRAME)
+		{
+			NONCLIENTMETRICS ncm = {0};
+			ncm.cbSize = sizeof(ncm);
+			SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0);
+			cx += ncm.iBorderWidth * 2;
+			cy += ncm.iBorderWidth * 2 + ncm.iCaptionHeight;
+		}
 		::SetWindowPos(hWindow, NULL, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 	}
 }
@@ -358,7 +362,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	// change mode
 	if (fFullScreen == fDspModeSet) return true;
 #ifdef _DEBUG
-	SetWindowPos(pWindow->hWindow, HWND_TOP, MonitorRect.left, MonitorRect.top, dspMode.dmPelsWidth, dspMode.dmPelsHeight, SWP_NOOWNERZORDER | SWP_SHOWWINDOW);
+	pWindow->SetSize(iXRes, iYRes);
 	OnResolutionChanged(iXRes, iYRes);
 	return true;
 #else

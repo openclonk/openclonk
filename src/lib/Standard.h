@@ -131,8 +131,6 @@ typedef __int32 intptr_t;
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
-#undef FALSE
-#undef TRUE
 #include <mmsystem.h>
 #endif
 
