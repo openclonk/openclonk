@@ -6186,6 +6186,7 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "C4FO_Container"            ,C4V_Int,     C4FO_Container			},
 	{ "C4FO_AnyContainer"         ,C4V_Int,     C4FO_AnyContainer 	},
 	{ "C4FO_Owner"                ,C4V_Int,     C4FO_Owner					},
+	{ "C4FO_Controller"           ,C4V_Int,     C4FO_Controller					},
 	{ "C4FO_Func"                 ,C4V_Int,     C4FO_Func						},
 	{ "C4FO_Layer"                ,C4V_Int,     C4FO_Layer					},
 

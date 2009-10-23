@@ -136,7 +136,12 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 		}
 
 	case C4FO_ActionTarget:
-		return new C4FindObjectActionTarget(Data[1].getObj());
+		{
+			int index = 0;
+			if (Data.GetSize() >= 3)
+				index = BoundBy(Data[2].getInt(), 0, 1);
+			return new C4FindObjectActionTarget(Data[1].getObj(), index);
+		}
 
 	case C4FO_Container:
 		return new C4FindObjectContainer(Data[1].getObj());
@@ -146,6 +151,9 @@ C4FindObject *C4FindObject::CreateByValue(const C4Value &DataVal, C4SortObject *
 
 	case C4FO_Owner:
 		return new C4FindObjectOwner(Data[1].getInt());
+
+	case C4FO_Controller:
+		return new C4FindObjectController(Data[1].getInt());
 
 	case C4FO_Layer:
 		return new C4FindObjectLayer(Data[1].getObj());
@@ -609,7 +617,13 @@ bool C4FindObjectAction::Check(C4Object *pObj)
 
 bool C4FindObjectActionTarget::Check(C4Object *pObj)
 {
-	return pObj->Action.Target == pActionTarget;
+	assert(index >= 0 && index <= 1);
+	if (index == 0)
+		return pObj->Action.Target == pActionTarget;
+	else if (index == 1)
+		return pObj->Action.Target2 == pActionTarget;
+	else
+		return false;
 }
 
 bool C4FindObjectContainer::Check(C4Object *pObj)
@@ -630,6 +644,16 @@ bool C4FindObjectOwner::Check(C4Object *pObj)
 bool C4FindObjectOwner::IsImpossible()
 {
 	return iOwner != NO_OWNER && !ValidPlr(iOwner);
+}
+
+bool C4FindObjectController::Check(C4Object *pObj)
+{
+	return pObj->Controller == controller;
+}
+
+bool C4FindObjectController::IsImpossible()
+{
+	return controller != NO_OWNER && !ValidPlr(controller);
 }
 
 // *** C4FindObjectFunc

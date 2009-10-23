@@ -67,7 +67,11 @@ global func Find_Action(string act) {
 }
 
 global func Find_ActionTarget(object target) {
-	return [C4FO_ActionTarget, target];
+	return [C4FO_ActionTarget, target, 0];
+}
+
+global func Find_ActionTarget2(object target) {
+	return [C4FO_ActionTarget, target, 1];
 }
 
 global func Find_Container(object container) {
@@ -84,6 +88,10 @@ global func Find_AnyContainer() {
 
 global func Find_Owner(int owner) {
 	return [C4FO_Owner, owner];
+}
+
+global func Find_Controller(int controller) {
+	return [C4FO_Controller, controller];
 }
 
 global func Find_Hostile(int plr) {

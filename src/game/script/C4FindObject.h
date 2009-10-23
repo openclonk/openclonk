@@ -28,25 +28,26 @@
 // Condition map
 enum C4FindObjectCondID
 {
-	C4FO_Not					= 1,
-	C4FO_And					= 2,
-	C4FO_Or						= 3,
-	C4FO_Exclude			= 5,
-	C4FO_InRect				= 10,
-	C4FO_AtPoint 			= 11,
-	C4FO_AtRect 			= 12,
-	C4FO_OnLine				= 13,
-	C4FO_Distance			= 14,
-	C4FO_ID						= 20,
-	C4FO_OCF					= 21,
-	C4FO_Category			= 22,
-	C4FO_Action				= 30,
-	C4FO_ActionTarget = 31,
-	C4FO_Container		= 40,
-	C4FO_AnyContainer = 41,
-	C4FO_Owner				= 50,
-	C4FO_Func					= 60,
-	C4FO_Layer        = 70,
+	C4FO_Not           = 1,
+	C4FO_And           = 2,
+	C4FO_Or            = 3,
+	C4FO_Exclude       = 5,
+	C4FO_InRect        = 10,
+	C4FO_AtPoint       = 11,
+	C4FO_AtRect        = 12,
+	C4FO_OnLine        = 13,
+	C4FO_Distance      = 14,
+	C4FO_ID            = 20,
+	C4FO_OCF           = 21,
+	C4FO_Category      = 22,
+	C4FO_Action        = 30,
+	C4FO_ActionTarget  = 31,
+	C4FO_Container     = 40,
+	C4FO_AnyContainer  = 41,
+	C4FO_Owner         = 50,
+	C4FO_Controller    = 51,
+	C4FO_Func          = 60,
+	C4FO_Layer         = 70,
 };
 
 // Sort map - using same values as C4FindObjectCondID!
@@ -277,10 +278,11 @@ protected:
 class C4FindObjectActionTarget : public C4FindObject
 {
 public:
-	C4FindObjectActionTarget(C4Object *pActionTarget)
-		: pActionTarget(pActionTarget) { }
+	C4FindObjectActionTarget(C4Object *pActionTarget, int index)
+		: pActionTarget(pActionTarget), index(index) { }
 private:
 	C4Object *pActionTarget;
+	int index;
 protected:
 	virtual bool Check(C4Object *pObj);
 };
@@ -311,6 +313,18 @@ public:
 		: iOwner(iOwner) { }
 private:
 	int32_t iOwner;
+protected:
+	virtual bool Check(C4Object *pObj);
+	virtual bool IsImpossible();
+};
+
+class C4FindObjectController : public C4FindObject
+{
+public:
+	C4FindObjectController(int32_t controller)
+		: controller(controller) { }
+private:
+	int32_t controller;
 protected:
 	virtual bool Check(C4Object *pObj);
 	virtual bool IsImpossible();
