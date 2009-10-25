@@ -28,6 +28,8 @@
 
 #ifdef USE_DIRECTX
 #include <d3d9.h>
+#else
+typedef void* IDirect3DSurface9;
 #endif
 
 #ifdef USE_GL
@@ -235,11 +237,7 @@ class CSurface
 		bool CreatePrimaryGLTextures();									// create primary textures from back buffer
 #endif
 		bool Attach(CSurface *sfcSurface);
-#ifdef USE_DIRECTX
 		bool AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsigned int iYRes); // wdt and hgt not assigned in DirectX
-#else
-		bool AttachSfc(void *sfcSurface, unsigned int iXRes, unsigned int iYRes);
-#endif
 		void Clear();
 		void Default();
 		void Clip(int iX, int iY, int iX2, int iY2);

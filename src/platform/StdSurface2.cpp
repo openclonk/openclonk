@@ -447,25 +447,23 @@ bool CSurface::SetAsClrByOwnerOf(CSurface *pOfSurface)
 	}*/
 #endif
 
-#ifdef USE_DIRECTX
 bool CSurface::AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsigned int iYRes)
 	{
 	Clear(); Default();
-	// store surface
+	fPrimary=true;
+#ifdef USE_DIRECTX	
 	if (pD3D)
 		{
+		// store surface
 		pSfc=sfcSurface;
 		Attached=true;
-		}
-	fPrimary=true;
-	// get size
-	if (pD3D)
-		{
+		// get size
 		D3DSURFACE_DESC desc;
 		if (pSfc->GetDesc(&desc) != D3D_OK) return false;
 		Wdt=desc.Width; Hgt=desc.Height;
 		}
-	else if (lpDDraw && lpDDraw->pApp)
+	else
+#endif
 		{
 		// primary surface: use application size
 		Wdt = iXRes;
@@ -475,22 +473,6 @@ bool CSurface::AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsi
 	NoClip();
 	return true;
 	}
-#else
-bool CSurface::AttachSfc(void *sfcSurface, unsigned int iXRes, unsigned int iYRes)
-	{
-	Clear(); Default();
-	fPrimary=true;
-	if (lpDDraw && lpDDraw->pApp)
-		{
-		// use application size
-		Wdt = iXRes;
-		Hgt = iYRes;
-		}
-	// reset clipping
-	NoClip();
-	return true;
-	}
-#endif
 
 #ifdef USE_DIRECTX
 IDirect3DSurface9 *CSurface::GetSurface()

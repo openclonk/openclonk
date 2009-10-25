@@ -589,7 +589,6 @@ bool CStdGL::CreatePrimarySurfaces(bool Playermode, unsigned int iXRes, unsigned
 
 	// create lpPrimary and lpBack (used in first context selection)
 	lpPrimary=lpBack=new CSurface();
-	lpPrimary->fPrimary=true;
 	lpPrimary->AttachSfc(NULL, iXRes, iYRes);
 	lpPrimary->byBytesPP=byByteCnt;
 
@@ -791,8 +790,6 @@ bool CStdGL::RestoreDeviceObjects()
 	InvalidateDeviceObjects();
 	// restore primary/back
 	RenderTarget=lpPrimary;
-	//lpPrimary->AttachSfc(NULL);
-	lpPrimary->byBytesPP=byByteCnt;
 
 	// set states
 	Active = pCurrCtx ? (pCurrCtx->Select()) : MainCtx.Select();
@@ -954,8 +951,6 @@ void CStdGL::TaskOut()
 	// deactivate
 	// backup textures
 	if (pTexMgr && fFullscreen) pTexMgr->IntLock();
-	// shutdown gl
-	InvalidateDeviceObjects();
 	if (pCurrCtx) pCurrCtx->Deselect();
 	}
 
@@ -965,14 +960,12 @@ void CStdGL::TaskIn()
 	//if (!DeviceReady()) MainCtx.Init(pWindow, pApp);
 	// restore textures
 	if (pTexMgr && fFullscreen) pTexMgr->IntUnlock();
-	// restore device stuff
-	RestoreDeviceObjects();
 	}
 
 bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	{
-	InvalidateDeviceObjects();
-	RestoreDeviceObjects();
+	lpPrimary->AttachSfc(NULL, iXRes, iYRes);
+	lpPrimary->byBytesPP=byByteCnt;
 	// Re-create primary clipper to adapt to new size.
 	CreatePrimaryClipper(iXRes, iYRes);
 	return true;
