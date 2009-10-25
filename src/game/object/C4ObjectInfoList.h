@@ -24,6 +24,10 @@
 
 #include <C4Id.h>
 
+class C4Group;
+class C4DefList;
+class C4ObjectInfo;
+
 class C4ObjectInfoList
 	{
 	public:

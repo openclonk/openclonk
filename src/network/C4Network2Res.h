@@ -21,7 +21,9 @@
 #ifndef INC_C4Network2Res
 #define INC_C4Network2Res
 
+#include <StdAdaptors.h>
 #include <StdSync.h>
+#include <C4Group.h>
 
 #include <openssl/sha.h>
 

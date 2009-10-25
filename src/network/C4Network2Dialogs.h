@@ -27,6 +27,8 @@
 #include "C4Scenario.h"
 #include "C4Network2Res.h"
 
+class C4Graph;
+
 // dialog showing info about a connected client
 class C4Network2ClientDlg : public C4GUI::InfoDialog
 	{

@@ -39,6 +39,8 @@
 
 #include "C4Application.h"
 
+#include <C4Id.h>
+
 #include <StdResStr2.h>
 #include <StdWindow.h>
 

@@ -65,6 +65,8 @@ enum C4SortObjectCondID
 	C4SO_Last         = 200, // no sort condition larger than this
 	};
 
+class C4LSectors;
+class C4ObjectList;
 
 // Base class
 class C4FindObject

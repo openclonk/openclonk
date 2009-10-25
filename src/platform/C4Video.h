@@ -28,6 +28,8 @@
 struct IAVIFile;
 struct IAVIStream;
 
+class C4TargetFacet;
+
 class C4Video
 	{
 	public:

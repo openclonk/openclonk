@@ -21,6 +21,8 @@
 #ifndef INC_C4AList
 #define INC_C4AList
 
+#include <C4Id.h>
+
 #define C4AListChunkSize 128 // number of table entries for each chunk
 
 // table entry

@@ -30,6 +30,8 @@
 
 #include <C4Shape.h>
 
+class C4Viewport;
+
 #ifdef WITH_DEVELOPER_MODE
 #include <StdGtkWindow.h>
 typedef CStdGtkWindow C4ViewportBase;

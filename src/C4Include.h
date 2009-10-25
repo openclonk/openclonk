@@ -24,6 +24,12 @@
 #ifndef INC_C4Include
 #define INC_C4Include
 
+#include <Standard.h>
+#include <StdBuf.h>
+#include <StdFile.h>
+#include <StdResStr2.h>
+#include <C4Prototypes.h>
+
 #ifdef _MSC_VER
 #pragma warning(disable: 4786)
 #pragma warning(disable: 4706)

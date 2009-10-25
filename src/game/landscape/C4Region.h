@@ -25,6 +25,9 @@
 #include <C4Id.h>
 #include <C4Constants.h>
 
+class C4Object;
+class C4Facet;
+
 const int C4RGN_MaxCaption=256;
 
 class C4Region

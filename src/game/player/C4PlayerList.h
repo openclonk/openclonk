@@ -26,6 +26,7 @@
 #include "C4PlayerInfo.h"
 
 class C4Player;
+class C4Object;
 class C4PlayerInfoList;
 
 class C4PlayerList

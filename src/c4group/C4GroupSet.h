@@ -54,6 +54,7 @@
 #define C4GSCnt_All				 ~0
 
 // class predefs
+class C4Group;
 class C4GroupSet;
 class C4GroupSetNode;
 

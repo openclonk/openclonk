@@ -39,6 +39,7 @@
 #include "C4Network2Res.h"
 #include "C4Constants.h"
 #include "C4InputValidation.h"
+#include "C4Id.h"
 
 class C4FacetSurface;
 

@@ -24,6 +24,7 @@
 #include <C4SurfaceFile.h>
 
 #include <C4Surface.h>
+#include <StdSurface8.h>
 #include <C4Group.h>
 
 C4Surface *GroupReadSurface(CStdStream &hGroup, BYTE *bpPalette)

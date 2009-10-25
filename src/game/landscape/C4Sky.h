@@ -23,8 +23,13 @@
 #ifndef INC_C4Sky
 #define INC_C4Sky
 
+#include <Fixed.h>
+
 #define C4SkyPM_Fixed			0		// sky parallax mode: fixed
 #define C4SkyPM_Wind			1		// sky parallax mode: blown by the wind
+
+class C4Group;
+class C4TargetFacet;
 
 class C4Sky
 	{

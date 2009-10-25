@@ -24,6 +24,7 @@
 
 const int32_t C4MassMoverChunk = 10000;
 
+class C4Group;
 class C4MassMoverSet;
 
 class C4MassMover

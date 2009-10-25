@@ -34,11 +34,15 @@
 #include <C4Id.h>
 #include <C4Script.h>
 #include <C4StringTable.h>
+#include <vector>
 
 // debug mode?
 #ifdef _DEBUG
 #define C4AUL_DEBUG
 #endif
+
+class C4Def;
+class C4DefList;
 
 // class predefs
 class C4AulError;
