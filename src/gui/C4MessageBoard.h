@@ -28,6 +28,8 @@ const int C4MSGB_MaxMsgFading		= 6;
 #include <C4Facet.h>
 #include <C4LogBuf.h>
 
+class C4Player;
+
 class C4MessageBoard
 	{
 	public:

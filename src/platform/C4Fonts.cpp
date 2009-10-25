@@ -27,6 +27,7 @@
 #include <C4Log.h>
 #include <C4Surface.h>
 
+#include <StdFont.h>
 #include <stdexcept>
 
 void C4FontDef::CompileFunc(StdCompiler * pComp)

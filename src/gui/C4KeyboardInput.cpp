@@ -30,6 +30,8 @@
 #include <X11/Xlib.h>
 #endif
 
+#include <algorithm>
+
 #ifdef USE_SDL_MAINLOOP
 #include <SDL/SDL.h>
 #include <string>

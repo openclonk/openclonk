@@ -34,6 +34,7 @@
 #include <C4GraphicsResource.h>
 #include <C4RankSystem.h>
 #include <cctype>
+#include <algorithm>
 
 // font clrs
 const uint32_t ClrPlayerItem   = 0xff000000;

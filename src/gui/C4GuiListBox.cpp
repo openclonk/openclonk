@@ -18,6 +18,7 @@
 // generic user interface
 // container for a dynamic number of vertically stacked controls
 
+#include <algorithm>
 #include <C4Include.h>
 #include <C4Gui.h>
 #include <C4FullScreen.h>

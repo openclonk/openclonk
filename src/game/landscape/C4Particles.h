@@ -35,6 +35,7 @@
 #include <C4Group.h>
 #include <C4Shape.h>
 
+class C4Object;
 
 // class predefs
 class C4ParticleDefCore;

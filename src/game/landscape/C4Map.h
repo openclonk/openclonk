@@ -24,6 +24,9 @@
 
 #include <C4Scenario.h>
 
+class CSurface8;
+class C4TextureMap;
+
 class C4MapCreator
   {
   public:

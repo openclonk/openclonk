@@ -24,6 +24,10 @@
 
 #include "C4InputValidation.h"
 
+class C4Group;
+class C4Facet;
+class C4FacetSurface;
+
 class C4RankSystem
   {
   public:

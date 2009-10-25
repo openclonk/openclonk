@@ -22,7 +22,11 @@
 #ifndef INC_C4ObjectCom
 #define INC_C4ObjectCom
 
+#include <Fixed.h>
 #include <C4Id.h>
+
+class C4Facet;
+class C4Object;
 
 void DrawCommandKey(C4Facet &cgo, int32_t iCom,
 										bool fPressed = false,

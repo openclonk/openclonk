@@ -28,6 +28,7 @@
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4Record.h>
+#include <algorithm>
 
 C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
 	{

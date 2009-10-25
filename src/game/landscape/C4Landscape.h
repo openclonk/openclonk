@@ -47,6 +47,8 @@ const int32_t C4LSC_Undefined = 0,
 const int32_t C4LS_MaxRelights = 50;
 
 class C4MapCreatorS2;
+class C4Object;
+class C4PropList;
 
 class C4Landscape
   {
