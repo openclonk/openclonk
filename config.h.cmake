@@ -31,6 +31,9 @@
 /* Define to 1 if you have SDL_mixer. */
 #cmakedefine HAVE_LIBSDL_MIXER 1
 
+/* Define to 1 if FMOD is available */
+#cmakedefine HAVE_FMOD 1
+
 /* Define to 1 if you have the <locale.h> header file. */
 #cmakedefine HAVE_LOCALE_H 1
 
@@ -151,9 +154,6 @@
 
 /* DirectX graphics */
 #cmakedefine USE_DIRECTX 1
-
-/* Wether FMOD shall be used */
-#cmakedefine USE_FMOD 1
 
 /* OpenGL graphics */
 #cmakedefine USE_GL 1

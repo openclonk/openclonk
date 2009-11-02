@@ -34,7 +34,7 @@
 C4SoundEffect::C4SoundEffect():
 	UsageTime (0),
 	Instances (0),
-#if defined C4SOUND_USE_FMOD || defined HAVE_LIBSDL_MIXER
+#if defined HAVE_FMOD || defined HAVE_LIBSDL_MIXER
 	pSample (NULL),
 #endif
 	Static (false),
@@ -52,13 +52,13 @@ C4SoundEffect::~C4SoundEffect()
 void C4SoundEffect::Clear()
 	{
 	while(FirstInst) RemoveInst(FirstInst);
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
 	if (pSample) FSOUND_Sample_Free(pSample);
 #endif
 #ifdef HAVE_LIBSDL_MIXER
 	if (pSample) Mix_FreeChunk(pSample);
 #endif
-#if defined C4SOUND_USE_FMOD || defined HAVE_LIBSDL_MIXER
+#if defined HAVE_FMOD || defined HAVE_LIBSDL_MIXER
 	pSample = NULL;
 #endif
 	}
@@ -82,7 +82,7 @@ bool C4SoundEffect::Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw)
   // Sound check
   if (!Config.Sound.RXSound) return false;
 	// load directly from memory
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
 	int32_t iOptions = FSOUND_NORMAL | FSOUND_2D | FSOUND_LOADMEMORY;
 	if (fRaw) iOptions |= FSOUND_LOADRAW;
 	if(!(pSample = FSOUND_Sample_Load(FSOUND_UNMANAGED,	(const char *)pData,
@@ -253,7 +253,7 @@ bool C4SoundInstance::CheckStart()
 
 bool C4SoundInstance::Start()
 {
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
   // Start
 	if((iChannel = FSOUND_PlaySound(FSOUND_FREE, pEffect->pSample)) == -1)
     return false;
@@ -283,7 +283,7 @@ bool C4SoundInstance::Stop()
 	if(!pEffect) return false;
 	// Stop sound
 	bool fRet = true;
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
 	if(Playing())
 		fRet = !! FSOUND_StopSound(iChannel);
 #endif
@@ -301,7 +301,7 @@ bool C4SoundInstance::Stop()
 bool C4SoundInstance::Playing()
   {
   if(!pEffect) return false;
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
   if(fLooping) return true;
   return isStarted() ? FSOUND_GetCurrentSample(iChannel) == pEffect->pSample
                      : timeGetTime() < iStarted + pEffect->Length;
@@ -336,7 +336,7 @@ void C4SoundInstance::Execute()
 		// stop, if started
 		if(isStarted())
 			{
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
 			FSOUND_StopSound(iChannel);
 #endif
 #ifdef HAVE_LIBSDL_MIXER
@@ -352,7 +352,7 @@ void C4SoundInstance::Execute()
 			if(!CheckStart())
 				return;
 		// set volume & panning
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
 		FSOUND_SetVolume(iChannel, BoundBy(iVol / 100, 0, 255));
 		FSOUND_SetPan(iChannel, BoundBy(256*(iPan+100)/200,0,255));
 #endif

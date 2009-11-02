@@ -327,8 +327,6 @@ set(OC_CLONK_SOURCES
 	src/platform/C4Video.h
 	src/platform/C4VideoPlayback.cpp
 	src/platform/C4VideoPlayback.h
-	src/platform/Midi.cpp
-	src/platform/Midi.h
 	src/platform/OpenURL.cpp
 	src/platform/StdConfig.cpp
 	src/platform/StdConfig.h
@@ -561,7 +559,6 @@ endif()
 option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
 if(WIN32)
 	option(USE_DIRECTX "Enable DirectX support" ON)
-	option(USE_FMOD "Enable FMOD support" ON)
 	if(EXISTS $ENV{DXSDK_DIR})
 		include_directories(SYSTEM $ENV{DXSDK_DIR}/Include)
 		if(${FIND_LIBRARY_USE_LIB64_PATHS})
@@ -572,7 +569,7 @@ if(WIN32)
 	endif()
 else()
 	SET(USE_DIRECTX OFF)
-	SET(USE_FMOD OFF)
+	SET(HAVE_FMOD OFF)
 endif()
 if(UNIX)
 	option(USE_X11 "Use X11 to create windows etc." ON)
@@ -632,7 +629,6 @@ endif()
 ############################################################################
 # Generate output files
 ############################################################################
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 add_definitions(-DHAVE_CONFIG_H)
 add_executable(clonk WIN32 MACOSX_BUNDLE
 	${OC_SYSTEM_SOURCES}
@@ -723,12 +719,6 @@ if(USE_DIRECTX)
 		${DIRECT3DX_LIBRARIES}
 	)
 endif()
-if(USE_FMOD)
-	FINDLIB(FMOD_LIBRARIES fmodvc)
-	target_link_libraries(clonk
-		${FMOD_LIBRARIES}
-	)
-endif()
 if(USE_GTK)
 	include(FindPkgConfig)
 	if (PKG_CONFIG_FOUND)
@@ -768,16 +758,35 @@ if (WIN32)
 	target_link_libraries(c4group
 		${WS2_LIBRARIES}
 	)
+
+	if(MSVC_VERSION)
+		FINDLIB(FMOD_LIBRARIES fmodvc)
+	elseif(CMAKE_COMPILER_IS_GNUCXX)
+		FINDLIB(FMOD_LIBRARIES fmod)
+	endif()
+	if(FMOD_LIBRARIES)
+		set(HAVE_FMOD TRUE)
+		target_link_libraries(clonk
+			${FMOD_LIBRARIES}
+		)
+	else()
+		set(HAVE_FMOD FALSE)
+	endif()
 endif()
-include(FindSDL)
-SET(HAVE_SDL ${SDL_FOUND})
-if(SDL_FOUND)
-	include_directories(${SDL_INCLUDE_DIR})
-	FINDLIB(SDLMIXER_LIBRARIES SDL_mixer)
-	SET(HAVE_LIBSDL_MIXER ${SDLMIXER})
-	target_link_libraries(clonk
-		${SDL_LIBRARY}
-		${SDLMIXER_LIBRARIES}
-	)
+if(NOT HAVE_FMOD)
+	include(FindSDL)
+	SET(HAVE_SDL ${SDL_FOUND})
+	if(SDL_FOUND)
+		include_directories(${SDL_INCLUDE_DIR})
+		FINDLIB(SDLMIXER_LIBRARIES SDL_mixer)
+		if(SDLMIXER_LIBRARIES)
+			SET(HAVE_LIBSDL_MIXER ON)
+		endif()
+		target_link_libraries(clonk
+			${SDL_LIBRARY}
+			${SDLMIXER_LIBRARIES}
+		)
+	endif()
 endif()
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config.h)

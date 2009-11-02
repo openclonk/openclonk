@@ -17,6 +17,9 @@
 
 // Include all headers for precompilation.
 // Keep C4Include.h the last include.
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 #include "C4Application.h"
 #include "C4FullScreen.h"
 #include "C4Game.h"
@@ -161,7 +164,6 @@
 #include "platform/C4SoundSystem.h"
 #include "platform/C4Video.h"
 #include "platform/C4VideoPlayback.h"
-#include "platform/Midi.h"
 #include "platform/StdConfig.h"
 #include "platform/StdD3D.h"
 #include "platform/StdD3DShader.h"

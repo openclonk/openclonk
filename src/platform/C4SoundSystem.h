@@ -26,7 +26,7 @@
 
 #include <C4Group.h>
 
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
 #include <fmod.h>
 #endif
 #ifdef HAVE_LIBSDL_MIXER
@@ -54,7 +54,7 @@ public:
   int32_t UsageTime, Instances;
   int32_t SampleRate, Length;
 	bool Static;
-#ifdef C4SOUND_USE_FMOD
+#ifdef HAVE_FMOD
 	FSOUND_SAMPLE *pSample;
 #endif
 #ifdef HAVE_LIBSDL_MIXER

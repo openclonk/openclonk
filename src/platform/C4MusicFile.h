@@ -23,10 +23,9 @@
 #ifndef INC_C4MusicFile
 #define INC_C4MusicFile
 
-#ifdef USE_FMOD
+#if defined HAVE_FMOD
 #include <fmod.h>
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif defined HAVE_LIBSDL_MIXER
 #define USE_RWOPS
 #include <SDL_mixer.h>
 #undef USE_RWOPS
@@ -61,7 +60,7 @@ protected:
 	bool SongExtracted;
 
 };
-#if defined(USE_FMOD) || defined(USE_WINDOWS_MIDI)
+#if defined HAVE_FMOD
 class C4MusicFileMID : public C4MusicFile
 	{
 	public:
@@ -71,14 +70,10 @@ class C4MusicFileMID : public C4MusicFile
 		void CheckIfPlaying();
 		//C4MusicFileMID();
 		void SetVolume(int);
-#ifdef USE_FMOD
 	protected:
 		FMUSIC_MODULE *mod;
-#endif
 	};
-#endif
 
-#ifdef USE_FMOD
 /* MOD class */
 
 class C4MusicFileMOD : public C4MusicFile
@@ -132,9 +127,8 @@ protected:
 
   bool Playing;
 };
-#endif
 
-#ifdef HAVE_LIBSDL_MIXER
+#elif defined HAVE_LIBSDL_MIXER
 typedef struct _Mix_Music Mix_Music;
 class C4MusicFileSDL : public C4MusicFile
 {

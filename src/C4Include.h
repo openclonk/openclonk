@@ -64,11 +64,6 @@
 // solidmask debugging
 //#define SOLIDMASK_DEBUG
 
-// fmod
-#if defined USE_FMOD && !defined HAVE_SDL_MIXER
-#define C4SOUND_USE_FMOD
-#endif
-
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX

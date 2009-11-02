@@ -27,10 +27,9 @@
 #include <C4Application.h>
 #include <C4Log.h>
 
-#ifdef USE_FMOD
+#ifdef HAVE_FMOD
 #include <fmod_errors.h>
 #endif
-#include <Midi.h>
 
 /* helpers */
 
@@ -60,45 +59,7 @@ bool C4MusicFile::Init(const char *szFile)
 	return true;
 	}
 
-/* midi */
-
-#ifdef USE_WINDOWS_MIDI
-bool C4MusicFileMID::Play(bool loop)
-	{
-
-	// check existance
-	if(!FileExists(FileName))
-		// try extracting it
-		if(!ExtractFile())
-			// doesn't exist - or file is corrupt
-			return false;
-
-	// Play Song
-	PlayMidi(SongExtracted ? Config.AtTempPath(C4CFN_TempMusic2) : FileName, Application.hWindow);
-
-	return true;
-	}
-
-void C4MusicFileMID::Stop(int fadeout_ms)
-	{
-	// stop song
-	StopMidi();
-	// delete temp file
-	RemTempFile();
-	}
-
-void C4MusicFileMID::CheckIfPlaying()
-	{
-	// windows will send the message
-	}
-
-void C4MusicFileMID::SetVolume(int iLevel)
-	{
-	// FIXME
-	}
-#endif
-
-#ifdef USE_FMOD
+#if defined HAVE_FMOD
 bool C4MusicFileMID::Play(bool loop)
 	{
 	// check existance
@@ -336,9 +297,8 @@ void C4MusicFileOgg::SetVolume(int iLevel)
 	{
 		FSOUND_SetVolume(Channel, (int) ((iLevel * 255) / 100));
 	}
-#endif
 
-#ifdef HAVE_LIBSDL_MIXER
+#elif defined HAVE_LIBSDL_MIXER
 C4MusicFileSDL::C4MusicFileSDL():
 	Data(NULL),
 	Music(NULL)
