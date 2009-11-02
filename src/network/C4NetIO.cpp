@@ -415,7 +415,7 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 		// error
 		if(ret < 0)
 		{
-			SetError("select failed");
+			SetError("poll failed");
 			return false;
 		}
 		// nothing happened
