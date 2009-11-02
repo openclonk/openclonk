@@ -124,15 +124,9 @@ bool CStdWindow::GetSize(RECT * pRect) {
 void CStdWindow::SetSize(unsigned int cx, unsigned int cy) {
 	if (hWindow) {
 		// If bordered, add border size
-		if (GetWindowLong(hWindow, GWL_STYLE) & WS_THICKFRAME)
-		{
-			NONCLIENTMETRICS ncm = {0};
-			ncm.cbSize = sizeof(ncm);
-			SystemParametersInfo(SPI_GETNONCLIENTMETRICS, ncm.cbSize, &ncm, 0);
-			cx += ncm.iBorderWidth * 2;
-			cy += ncm.iBorderWidth * 2 + ncm.iCaptionHeight;
-		}
-		::SetWindowPos(hWindow, NULL, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+		RECT rect = {0, 0, cx, cy};
+		::AdjustWindowRectEx(&rect, GetWindowLong(hWindow, GWL_STYLE), FALSE, GetWindowLong(hWindow, GWL_EXSTYLE));
+		::SetWindowPos(hWindow, NULL, 0, 0, rect.right, rect.bottom, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 	}
 }
 
@@ -319,6 +313,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 		return true;
 		}
 #endif
+#ifdef USE_GL
 	bool fFound=false;
 	DEVMODE dmode;
 	// if a monitor is given, search on that instead
@@ -360,41 +355,32 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 			}
 
 	// change mode
-	if (fFullScreen == fDspModeSet) return true;
-#ifdef _DEBUG
-	pWindow->SetSize(iXRes, iYRes);
-	OnResolutionChanged(iXRes, iYRes);
-	return true;
-#else
 	if (!fFullScreen)
-		{
+	{
 		ChangeDisplaySettings(NULL, CDS_RESET);
-		fDspModeSet = false;
-		OnResolutionChanged(iXRes, iYRes);
-		return true;
-		}
+	}
 	// save original display mode
-	fDspModeSet=true;
 	// if a monitor is given, use that
-	if (iMonitor)
-		{
+	else if (iMonitor)
+	{
 		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 		if (ChangeDisplaySettingsEx(Mon.getData(), &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
-			{
-			fDspModeSet = false;
-			}
-		}
-	else
 		{
-		if (ChangeDisplaySettings(&dspMode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
-			{
-			fDspModeSet = false;
-			}
+			return false;
 		}
-	SetWindowPos(pWindow->hWindow, 0, MonitorRect.left, MonitorRect.top, dspMode.dmPelsWidth, dspMode.dmPelsHeight, 0);
-	if (fDspModeSet)
-		OnResolutionChanged(iXRes, iYRes);
-	return fDspModeSet;
+	}
+	else
+	{
+		if (ChangeDisplaySettings(&dspMode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+		{
+			return false;
+		}
+	}
+
+	::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW);
+	pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
+	OnResolutionChanged(iXRes, iYRes);
+	return true;
 #endif
 }
 
