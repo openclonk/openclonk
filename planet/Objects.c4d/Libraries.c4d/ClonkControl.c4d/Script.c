@@ -1,7 +1,9 @@
 /*-- Standard controls --*/
 
-// currently 
+// currently selected
 local selected;
+
+local throwAngle;
 
 /* Item limit */
 
@@ -91,17 +93,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 				return true;
 	}
-	// clonk control
-	else
-	{
-		// for standard controls
-		if(Control2Script(ctrl, x, y, strength, repeat, release, "Control", this)) return true;
-	}
 	
 	if(!vehicle && !house)
 	{
-		// and a few more...
-		if(ctrl == CON_Throw) if(this->~ControlThrow(this,x,y)) return true;
 		if(ctrl == CON_Jump)  if(this->~ControlJump(this)) return true;
 	}
 	
@@ -151,7 +145,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		    if (proc == "SCALE" || proc == "HANGLE")
 		      return PlayerObjectCommand(plr, false, "Drop", contents);
 		    else
-		      return PlayerObjectCommand(plr, false, "Throw", contents);
+		      return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
 		}
 		// drop
 		if (ctrl == CON_Drop)
@@ -162,6 +156,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// Unhandled control
 	return false;
+}
+
+public func ObjectCommand(string command, object target, int tx, int ty)
+{
+	// special control for throw and jump
+	// but only with controls, not with general commands
+	if (command == "Throw") ControlThrow(this,tx,ty);
+	else if (command == "Jump") ControlJump(this);
+	// else standard command
+	else SetCommand(command,target,tx,ty);
 }
 
 // Control redirected to script
@@ -329,3 +333,68 @@ private func ShiftVehicle(int plr, bool back)
 	return true;
 } 
 
+// Throwing
+private func Throwing()
+{
+  // throw selected inventory
+  var obj = Contents(selected);
+  if(!obj) return;
+  
+  // parameters...
+  var iX, iY, iR, iXDir, iYDir, iRDir;
+  iX = 8; if (!GetDir()) iX = -iX;
+  iY = Cos(throwAngle,-8);
+  iR = Random(360);
+  iRDir = RandomX(-10,10);
+
+  var speed = GetPhysical("Throw");
+
+  iXDir = speed * Sin(throwAngle,1000) / 17000;
+  iYDir = speed * Cos(throwAngle,-1000) / 17000;
+  // throw boost (throws stronger upwards than downwards)
+  if(iYDir < 0) iYDir = iYDir * 13/10;
+  if(iYDir > 0) iYDir = iYDir * 8/10;
+  
+  // is riding? add it's velocity
+  if (GetActionTarget())
+  {
+    iXDir += GetActionTarget()->GetXDir() / 10;
+    iYDir += GetActionTarget()->GetYDir() / 10;
+  }
+  // throw
+  obj->Exit(iX, iY, iR, 0, 0, iRDir);  
+  obj->SetXDir(iXDir,1000);
+  obj->SetYDir(iYDir,1000);
+}
+
+// custom throw
+public func ControlThrow(object me, int x, int y)
+{
+	// standard throw after all
+	if(!x && !y) return false;
+	
+	if(!Contents(selected)) return false;
+	
+	throwAngle = Angle(0,0,x,y);
+	
+	// walking (later with animation: flight, scale, hangle?)
+	if(GetProcedure() == "WALK")
+	{
+		if(throwAngle < 180) SetDir(DIR_Right);
+		else SetDir(DIR_Left);
+		SetAction("Throw");
+		return true;
+	}
+	// riding
+	if(GetAction() == "Ride" || GetAction() == "RideStill")
+	{
+		SetAction("RideThrow");
+		return true;
+	}
+	return false;
+}
+
+public func ControlJump(object me)
+{
+
+}

@@ -529,21 +529,21 @@
 		Control=NextItem
 		
 		[Assignment]
-		Key=Mouse1ButtonLeft
+		Key=GameMouse1ButtonLeft
 		Priority=100
 		Control=Use
 		
 		[Assignment]
-		Key=Mouse1ButtonLeft
+		Key=GameMouse1ButtonLeft
 		Priority=50
 		Control=Throw
 		
 		[Assignment]
-		Key=Shift+Mouse1ButtonLeft
+		Key=Shift+GameMouse1ButtonLeft
 		Control=Throw
 		
 		[Assignment]
-		Key=S,Mouse1ButtonLeft
+		Key=S,GameMouse1ButtonLeft
 		Control=Drop
 
 		[Assignment]

@@ -383,10 +383,16 @@ global func PlayerObjectCommand(int plr, bool exclude_cursor, string command, ob
 		var follow_clonk = GetCursor(plr, i);
 		if (follow_clonk)
 		{
-			follow_clonk->SetCommand(command,target,tx,ty);
+			this->ObjectCommand(command,target,tx,ty);
 		}
 	}
 	return true;
+}
+
+global func ObjectCommand(string command, object target, int tx, int ty)
+{
+	if(!this) return;
+	this->SetCommand(command,target,tx,ty);
 }
 
 // Let go from scaling or hangling
