@@ -1051,14 +1051,6 @@ static C4String *FnGetPlayerName(C4AulContext *cthr, long iPlayer)
 	return String(::Players.Get(iPlayer)->GetName());
 }
 
-static C4String *FnGetTaggedPlayerName(C4AulContext *cthr, long iPlayer)
-{
-	C4Player *pPlr = ::Players.Get(iPlayer);
-	if (!pPlr) return NULL;
-	DWORD dwClr = pPlr->ColorDw; C4GUI::MakeColorReadableOnBlack(dwClr);
-	return String(FormatString("<c %x>%s</c>", dwClr&0xffffff, pPlr->GetName()).getData());
-}
-
 static long FnGetPlayerType(C4AulContext *cthr, long iPlayer)
 {
 	C4Player *pPlr = ::Players.Get(iPlayer);
@@ -5647,7 +5639,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetName", FnSetName);
 	AddFunc(pEngine, "GetDesc", FnGetDesc);
 	AddFunc(pEngine, "GetPlayerName", FnGetPlayerName);
-	AddFunc(pEngine, "GetTaggedPlayerName", FnGetTaggedPlayerName);
 	AddFunc(pEngine, "GetPlayerType", FnGetPlayerType);
 	AddFunc(pEngine, "SetXDir", FnSetXDir);
 	AddFunc(pEngine, "SetYDir", FnSetYDir);
