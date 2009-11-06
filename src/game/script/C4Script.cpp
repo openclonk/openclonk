@@ -3263,16 +3263,6 @@ static long FnGetColor(C4AulObjectContext *cthr)
 	return cthr->Obj->Color;
 }
 
-static Nillable<long> FnGetPlrColor(C4AulContext *cthr, long iPlr)
-  {
-	// get player
-	C4Player *pPlr = ::Players.Get(iPlr);
-	// safety
-	if (!pPlr) return C4VNull;
-	// return player color
-	return pPlr->ColorDw;
-  }
-
 static C4Void FnSetColor(C4AulObjectContext *cthr, long iValue)
 {
 	cthr->Obj->Color=iValue;
@@ -5833,7 +5823,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "FrameCounter", FnFrameCounter);
 	AddFunc(pEngine, "SetLandscapePixel", FnSetLandscapePixel);
 	AddFunc(pEngine, "SetObjectOrder", FnSetObjectOrder);
-	AddFunc(pEngine, "GetPlrColor", FnGetPlrColor);
 	AddFunc(pEngine, "DrawMaterialQuad", FnDrawMaterialQuad);
 	AddFunc(pEngine, "FightWith", FnFightWith);
 	AddFunc(pEngine, "SetFilmView", FnSetFilmView);

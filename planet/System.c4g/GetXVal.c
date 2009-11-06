@@ -94,7 +94,7 @@ global func GetObjPlrViewRange() { return GetObjectVal("PlrViewRange", 0); }
 
 global func GetPlrClientNr(int plr)   { return GetPlayerVal("AtClient", 0, plr); }
 global func GetPlrClientName(int plr) { return GetPlayerVal("AtClientName", 0, plr); }
-global func GetPlrColor(int plr)      { return GetPlayerVal("Color", 0, plr); }
+global func GetPlrColor(int plr)      { return GetPlayerVal("ColorDw", 0, plr); }
 global func GetPlrViewX(int plr)      { return GetPlayerVal("ViewX", 0, plr); } /*(!)*/
 global func GetPlrViewY(int plr)      { return GetPlayerVal("ViewY", 0, plr); } /*(!)*/
 global func GetPlrFogOfWar(int plr)   { return GetPlayerVal("FogOfWar", 0, plr); } /*(!)*/
