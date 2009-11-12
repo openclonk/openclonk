@@ -31,7 +31,6 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4786) // long symbol names
-#pragma warning(disable : 4996) // POSIX name usage
 #endif
 
 // debug memory management
