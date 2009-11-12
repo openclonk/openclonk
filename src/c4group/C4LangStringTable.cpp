@@ -24,14 +24,74 @@
 #include "C4LangStringTable.h"
 #include "C4InputValidation.h"
 
-struct C4StringTableEntry
+C4LangStringTable::C4LangStringTable() {}
+
+bool C4LangStringTable::HasTranslation(const std::string &text) const
+{
+	if (strings.empty())
+		PopulateStringTable();
+	return strings.find(text) != strings.end();
+}
+
+std::string C4LangStringTable::Translate(const std::string &text) const
+{
+	if (strings.empty())
+		PopulateStringTable();
+	Table::const_iterator it = strings.find(text);
+	if (it == strings.end())
 	{
-	const char *pName, *pEntry;
+		throw NoSuchTranslation(text);
+	}
+	return it->second;
+}
 
-	C4StringTableEntry(const char *pName, const char *pEntry)
-		: pName(pName), pEntry(pEntry) {}
-	};
+void C4LangStringTable::PopulateStringTable() const
+{
+	assert(strings.empty());
+	
+	strings.clear();
+	std::string key, value;
 
+	// read table
+	const char *data = GetData();
+	if (!data || !*data)
+		return;
+
+	enum { PSTS_Key, PSTS_Val } state = PSTS_Key;
+	do
+	{
+		if (state == PSTS_Key)
+		{
+			if (*data == '=')
+			{
+				state = PSTS_Val;
+			}
+			else if (*data == '\0' || *data == '\n' || *data == '\r')
+			{
+				if (!key.empty())
+					LogF("%s: string table entry without a value: \"%s\"", GetFilePath()[0] ? GetFilePath() : "<unknown>", key.c_str());
+				key.clear();
+			}
+			else
+			{
+				key.push_back(*data);
+			}
+		}
+		else
+		{
+			if (*data == '\0' || *data == '\n' || *data == '\r')
+			{
+				strings.insert(std::make_pair(key, value));
+				key.clear(); value.clear();
+				state = PSTS_Key;
+			}
+			else
+			{
+				value.push_back(*data);
+			}
+		}
+	} while (*data++);
+}
 
 void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget, const char *szParentFilePath)
 	{
@@ -42,38 +102,9 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 	// grab char ptr from buf
 	const char *Data = rBuf.getData();
 
-	// string table
-	std::vector<C4StringTableEntry> Entries;
-
-	// read string table
-	char *pStrTblBuf = NULL;
-	if(GetData())
-	{
-		// copy data
-		pStrTblBuf = new char [GetDataSize() + 1];
-		SCopy(GetData(), pStrTblBuf, GetDataSize());
-		// find entries
-		const char *pLine = pStrTblBuf;
-		bool found_eq = false;
-		for(char *pPos = pStrTblBuf; *pPos; pPos++)
-			if(*pPos == '\n' || *pPos == '\r')
-			{
-				found_eq = false;
-				*pPos = '\0'; pLine = pPos + 1;
-			}
-			else if(*pPos == '=' && !found_eq)
-			{
-				*pPos = '\0';
-				// We found an '=' sign, so parse everything to end of line from now on, ignoring more '=' signs. Bug #2327.
-				found_eq = true;
-				// add entry
-				Entries.push_back(C4StringTableEntry(pLine, pPos + 1));
-			}
-	}
-
 	// Find Replace Positions
 	int iScriptLen = SLen(Data);
-	struct RP { const char *Pos, *String; unsigned int Len; RP *Next; } *pRPList = NULL, *pRPListEnd = NULL;
+	struct RP { const char *Pos; std::string String; unsigned int Len; RP *Next; } *pRPList = NULL, *pRPListEnd = NULL;
 	for(const char *pPos = SSearch(Data, "$"); pPos; pPos = SSearch(pPos, "$"))
 	{
 		// Get name
@@ -90,25 +121,24 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 				break;
 		if(*pPos2) continue;
 		// check termination
-		// search in string table
-		const char *pStrTblEntry = NULL;
-		for(unsigned int i = 0; i < Entries.size(); i++)
-			if(SEqual(szStringName, Entries[i].pName))
-			{
-				pStrTblEntry = Entries[i].pEntry; break;
-			}
-		// found?
-		if(!pStrTblEntry)
-			{ LogF("%s: string table entry not found: \"%s\"", FilePath[0] ? FilePath : (szParentFilePath ? szParentFilePath : "Unknown"), szStringName); continue; }
-		// add new replace-position entry
-		RP *pnRP = new RP;
-		pnRP->Pos = pPos - SLen(szStringName) - 2;
-		pnRP->String = pStrTblEntry;
-		pnRP->Len = SLen(szStringName) + 2;
-		pnRP->Next = NULL;
-		pRPListEnd = (pRPListEnd ? pRPListEnd->Next : pRPList) = pnRP;
-		// calculate new script length
-		iScriptLen += SLen(pStrTblEntry) - pnRP->Len;
+		try
+		{
+			// search in string table
+			std::string pStrTblEntry = Translate(szStringName);
+			// add new replace-position entry
+			RP *pnRP = new RP;
+			pnRP->Pos = pPos - SLen(szStringName) - 2;
+			pnRP->String = pStrTblEntry;
+			pnRP->Len = SLen(szStringName) + 2;
+			pnRP->Next = NULL;
+			pRPListEnd = (pRPListEnd ? pRPListEnd->Next : pRPList) = pnRP;
+			// calculate new script length
+			iScriptLen += pStrTblEntry.size() - pnRP->Len;
+		}
+		catch (NoSuchTranslation &)
+		{
+			LogF("%s: string table entry not found: \"%s\"", GetFilePath()[0] ? GetFilePath() : "<unknown>", szStringName);
+		}
 	}
 	// Alloc new Buffer
 	char *pNewBuf;
@@ -123,7 +153,7 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 		SCopy(pRPos, pWPos, pRPPos->Pos - pRPos);
 		pWPos += pRPPos->Pos - pRPos;
 		// copy string
-		SCopyUntil(pRPPos->String, pWPos, '\n');
+		SCopyUntil(pRPPos->String.c_str(), pWPos, '\n');
 		SReplaceChar(pWPos, '\r', '\0');
 		// advance
 		pRPos = pRPPos->Pos + pRPPos->Len;
@@ -137,9 +167,6 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 		pRPList = pRP->Next;
 		delete pRP;
 	}
-
-	// free buffer
-	if(pStrTblBuf) delete [] pStrTblBuf;
 
 	// assign this buf
 	rTarget.Clear();

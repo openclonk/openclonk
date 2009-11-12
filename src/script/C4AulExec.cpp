@@ -1324,6 +1324,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	pScript->Strict = Strict;
 	pScript->Temporary = true;
 	pScript->State = ASS_LINKED;
+	pScript->stringTable = stringTable;
 	if (pObj)
 		{
 		pScript->Def = pObj->Def;

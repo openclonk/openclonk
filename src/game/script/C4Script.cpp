@@ -5362,6 +5362,33 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, l
 	return ::Messages.New(iType,sMsg,pObj,iOwner,iOffX,iOffY,(uint32_t)dwClr, idDeco, sPortrait ? sPortrait->GetCStr() : NULL, dwFlags, iHSize);
 	}
 
+static C4String *FnTranslate(C4AulContext *ctx, C4String *text)
+{
+	assert(!ctx->Obj || ctx->Def == ctx->Obj->Def);
+	if (!text || text->GetData().isNull()) return NULL;
+	// Find correct script: containing script unless -> operator used
+	C4AulScript *script = NULL;
+	if (ctx->Obj == ctx->Caller->Obj && ctx->Def == ctx->Caller->Def)
+		script = ctx->Caller->Func->pOrgScript;
+	else
+		script = &ctx->Def->Script;
+	assert(script);
+	try
+	{
+		return ::Strings.RegString(script->Translate(text->GetCStr()).c_str());
+	}
+	catch (C4LangStringTable::NoSuchTranslation &)
+	{
+		DebugLogF("WARNING: Translate: no translation for string \"%s\"", text->GetCStr());
+		// Trace
+		for (C4AulScriptContext *cursor = ctx->Caller; cursor; cursor = cursor->Caller)
+		{
+			cursor->dump(StdStrBuf(" by: "));
+		}
+		return text;
+	}
+}
+
 /*static long FnSetSaturation(C4AulContext *ctx, long s)
 	{
 	return lpDDraw->SetSaturation(BoundBy(s,0l,255l));
@@ -5899,6 +5926,8 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetGravity", FnGetGravity);
 	AddFunc(pEngine, "Exit", FnExit);
 	AddFunc(pEngine, "Collect", FnCollect);
+
+	AddFunc(pEngine, "Translate", FnTranslate);
 }
 
 C4ScriptConstDef C4ScriptConstMap[]={

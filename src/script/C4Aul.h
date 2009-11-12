@@ -34,6 +34,7 @@
 #include <C4Id.h>
 #include <C4Script.h>
 #include <C4StringTable.h>
+#include <string>
 #include <vector>
 
 // debug mode?
@@ -51,6 +52,7 @@ class C4AulScriptFunc;
 class C4AulDefFunc;
 class C4AulScript;
 class C4AulScriptEngine;
+class C4LangStringTable;
 
 struct C4AulContext;
 struct C4AulBCC;
@@ -518,6 +520,12 @@ class C4AulScript
 		friend class C4AulScriptFunc;
 		friend class C4AulScriptEngine;
 		friend class C4AulParseState;
+
+		// Translate a string using the script's lang table
+		std::string Translate(const std::string &text) const;
+
+	protected:
+		C4LangStringTable *stringTable;
 	};
 
 
