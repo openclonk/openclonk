@@ -3,9 +3,9 @@
 #strict 2
 
 // Context menu
-#include L_CM;
+#include L_CM
 // Auto production
-#include L_AP;
+#include L_AP
 
 local pInventory;
 
