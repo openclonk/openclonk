@@ -146,7 +146,7 @@ public func UpdateRank()
 	var ranky = -15000;
 	
 	SetGraphics(nil,RANK,10,GFXOV_MODE_Action,Format("Rank%d",nrank));
-	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, nil, 10);
+	SetObjDrawTransform(1000,0,rankx,0,1000,ranky,10);
 	
 	// extra rank (the star if the clonk is too experienced for normal ranks)
 	if(brank > 0)
@@ -246,7 +246,7 @@ private func AddBreathBar()
 	SetBarLayers(4,1);
 	SetBarOffset(0,BarOffset(1),1);
 	SetBarDimensions(GetDefWidth(),BreathBarHeight(),1);
-	SetClrModulation(RGB(0,200,200),nil,5);
+	SetClrModulation(RGBa(0,200,200),5);
 	
 	breathbar = true;
 	

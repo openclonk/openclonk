@@ -39,6 +39,13 @@ func ContentsCheck()
     SetAction("Work");
     return 1;
   }
+
+  //Ejects non fuel items immediately
+  if(pFuel = FindObject(Find_Container(this), !Find_Func("IsFuel"))) {
+	pFuel->Exit(-53,21, -20, -1, -1, -30);
+	Sound("Chuff"); //I think a 'chuff' or 'metal clonk' sound could be good here -Ringwaul
+  }
+
   return 0;
 }
 
