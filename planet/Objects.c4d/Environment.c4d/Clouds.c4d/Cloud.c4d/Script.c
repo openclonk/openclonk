@@ -25,7 +25,12 @@ protected func Initialize()
 	if(iGraphics == 3) SetGraphics("2");
 	DoCon(iGrowth);
 	SetAction("Fly");
-	while(MaterialDepthCheck(GetX(),GetY(),"Sky",180)!=true) SetPosition(GetX(),GetY()-1);
+
+	//Push low flying clouds up to proper height
+	while(MaterialDepthCheck(GetX(),GetY(),"Sky",180)!=true) 
+	{
+		SetPosition(GetX(),GetY()-1);
+	}
 }
 
 public func Precipitation()

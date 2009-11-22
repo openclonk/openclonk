@@ -16,13 +16,13 @@ Width=128
 
 Height=64
 
-Offset=-64,-32
+Offset=-110,-55
 
-Vertices=2
+Vertices=3
 
-VertexX=-40,40
+VertexX=-40,40,0
 
-VertexY=0,0
+VertexY=0,0,40
 
 Mass=1
 
