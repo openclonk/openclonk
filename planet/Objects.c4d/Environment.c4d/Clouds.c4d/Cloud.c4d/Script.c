@@ -91,11 +91,11 @@ protected func Evaporation() //Creates a search line every x-amount(currently fi
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid") && GetMaterial(0, iSearchY) != Material("Sky")) return(iSearchY=0);
 	if(GetMaterial(0, iSearchY) == Material("Water")) 
 	{
-		ExtractLiquid(0, iSearchY) &&
-		(iSize = ++iSize);
+		ExtractMaterialAmount(0, iSearchY,Material("Water"), 3) &&
+		(iSize = iSize+3);
 	}
-	if(ObjectCount(Find_ID(ACDR))>=1 && GetMaterial(0, iSearchY) == Material("Acid")) ExtractLiquid(0, iSearchY) &&
-		(iAcidity = ++iAcidity);
+	if(ObjectCount(Find_ID(ACDR))>=1 && GetMaterial(0, iSearchY) == Material("Acid")) ExtractMaterialAmount(0, iSearchY,Material("Acid"), 3) &&
+		(iAcidity = iAcidity+3);
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid"))
 		iSearchY = iSearchY + iPrecision;
 	if(iSearchY >= LandscapeHeight()-GetY()) (iSearchY = 0);
@@ -109,9 +109,9 @@ private func CloudShade()
 	var iShade3 = (iAcidity*255/100)/2;
 
 	if(iSize <= 600) SetObjAlpha(iShade);
-	if(iSize > 600) SetObjAlpha();
-	if(iSize > 600 && szMat=="Water") SetClrModulation(RGBa(255-iShade2,255-iShade2,255-iShade2));
-	if(iAcidity >= 1) SetClrModulation(RGBa(255-iShade3,255,255-iShade3, iShade));
+	if(iSize > 600) SetObjAlpha(255);
+	if(iSize > 600 && szMat=="Water") SetClrModulation(RGBa(255-iShade2,255-iShade2,255-iShade2, 255));
+	if(iAcidity >= 1) SetClrModulation(RGBa(255-iShade3,255,255-iShade3, 255-iShade));
 }
 
 public func RainDrop()
@@ -146,8 +146,8 @@ private func WindDirection()
 {
 	var iWind = GetWind();
 
-	if(iWind >= 7) SetXDir(355,1000);
-	if(iWind <= -7) SetXDir(-355,1000);
+	if(iWind >= 7) SetXDir(Random(355),1000);
+	if(iWind <= -7) SetXDir(Random(-355),1000);
 	if(iWind < 6 && iWind > -6) SetXDir();
 }
 
