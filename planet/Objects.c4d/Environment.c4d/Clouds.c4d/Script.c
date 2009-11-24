@@ -32,6 +32,7 @@ protected func Initialize()
 		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()) && 
 			MaterialDepthCheck(iX,iY,"Sky",200)==true) CreateObject(CLOD, iX, iY, NO_OWNER) && (iCount=--iCount);
 	}
+	AdjustLightningFrequency(GetScenarioVal("Lightning"));
 }
 
 global func MaterialDepthCheck(int iX,int iY,string szMaterial,int iDepth)

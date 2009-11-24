@@ -9,7 +9,7 @@ Offset=-3,-3
 Vertices=3
 VertexX=0,1,-1
 VertexY=1,-1,-1
-VertexFriction=100
+VertexFriction=40,40,40
 Value=25
 Mass=12
 Components=GOLD=1

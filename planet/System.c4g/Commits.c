@@ -144,9 +144,9 @@ global func CastObjects(iddef,am,lev,x,y,angs,angw) {
 }
 
 global func CastPXS(string mat,int am,int lev,int x,int y,int angs,int angw) {
-	if(!angw) angw = 180;
+	if(!angw) angw = 360;
   for(var i=0;i<am;i++) {
-		var ang = angs + RandomX(-angw/2,angw/2);
+		var ang = angs-90 + RandomX(-angw/2,angw/2);
     InsertMaterial(Material(mat),x,y,Cos(ang,lev)+RandomX(-3,3),Sin(ang,lev)+RandomX(-3,3));
   }
 }

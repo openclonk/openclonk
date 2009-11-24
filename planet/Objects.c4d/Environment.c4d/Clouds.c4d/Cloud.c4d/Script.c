@@ -31,6 +31,8 @@ protected func Initialize()
 	{
 		SetPosition(GetX(),GetY()-1);
 	}
+
+	if(Stuck()) RemoveObject();
 }
 
 public func Precipitation()
@@ -147,7 +149,7 @@ private func WindDirection()
 	var iWind = GetWind();
 
 	if(iWind >= 7) SetXDir(Random(355),1000);
-	if(iWind <= -7) SetXDir(Random(-355),1000);
+	if(iWind <= -7) SetXDir(-Random(355),1000);
 	if(iWind < 6 && iWind > -6) SetXDir();
 }
 
