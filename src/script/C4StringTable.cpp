@@ -48,7 +48,7 @@ C4String::C4String(StdStrBuf strString)
 	: iRefCnt(0)
 	{
 	// take string
-	Data.Take(strString);
+	Data.Take(std::move(strString));
 	Hash = C4Set<C4String*>::Hash(Data.getData());
 	// reg
 	Strings.Set.Add(this);

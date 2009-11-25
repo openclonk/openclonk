@@ -79,6 +79,11 @@ typedef __int32 intptr_t;
 #else
 #error Could not find integer datatypes!
 #endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#else
+typedef ptrdiff_t ssize_t;
+#endif
 
 #if defined(__GNUC__)
 // Allow checks for correct printf-usage
@@ -102,6 +107,7 @@ typedef __int32 intptr_t;
 #	define RREF &&
 #else
 #	define RREF &
+	namespace std { template<typename T> inline T &move (T &t) { return t; } }
 #endif
 
 #if defined(_DEBUG) && defined(_MSC_VER)

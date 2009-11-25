@@ -259,7 +259,7 @@ int StdStrBuf::Replace(const char *szOld, const char *szNew, size_t iStartSearch
 			szRPos = szRNextPos;
 			}
 		strcpy(szWrite, szRPos);
-		Take(sResult);
+		Take(std::move(sResult));
 		}
 	else
 		{
@@ -418,7 +418,7 @@ void StdStrBuf::EnsureUnicode()
 			j += strlen(extra_chars[c - 0x80]);
 			}
 		buf.SetLength(j);
-		Take(buf);
+		Take(std::move(buf));
 		}
 	}
 

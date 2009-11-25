@@ -4,6 +4,7 @@ autom4te.cache
 *~
 *.bak
 .deps
+deps
 *.o
 clonk
 c4group

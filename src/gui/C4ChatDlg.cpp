@@ -20,6 +20,8 @@
  */
 // IRC client dialog
 
+#include <utility>
+
 #include "C4Include.h"
 #include "C4ChatDlg.h"
 
@@ -802,7 +804,7 @@ void C4ChatControl::UpdateTitle()
 	// call update proc only if title changed
 	if (sTitle != sNewTitle)
 		{
-		sTitle.Take(sNewTitle);
+		sTitle.Take(std::move(sNewTitle));
 		if (pTitleChangeBC) pTitleChangeBC->OnOK(sTitle);
 		}
 	}

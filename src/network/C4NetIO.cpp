@@ -24,6 +24,7 @@
 #include "C4Constants.h"
 #include "C4Config.h"
 
+#include <utility>
 #include <assert.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -2820,7 +2821,7 @@ bool C4NetIOUDP::Peer::SendDirect(C4NetIOPacket RREF rPacket) // (mt-safe)
   // count outgoing
   { CStdLock StatLock(&StatCSec); iORate += rPacket.getSize() + iUDPHeaderSize; }
 	// forward call
-	return pParent->SendDirect(rPacket);
+  	return pParent->SendDirect(std::move(rPacket));
 }
 
 void C4NetIOUDP::Peer::OnConn()

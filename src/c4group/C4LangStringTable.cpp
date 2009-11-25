@@ -19,6 +19,7 @@
  */
 // Loads StringTbl* and replaces $..$-strings by localized versions
 
+#include <utility>
 #include <vector>
 #include "C4Include.h"
 #include "C4LangStringTable.h"
@@ -170,7 +171,7 @@ void C4LangStringTable::ReplaceStrings(const StdStrBuf &rBuf, StdStrBuf &rTarget
 
 	// assign this buf
 	rTarget.Clear();
-	rTarget.Take(sNewBuf);
+	rTarget.Take(std::move(sNewBuf));
 	}
 
 void C4LangStringTable::ReplaceStrings(StdStrBuf &rBuf)

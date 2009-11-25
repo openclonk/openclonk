@@ -22,6 +22,7 @@
 #ifndef INC_C4StartupPlrSelDlg
 #define INC_C4StartupPlrSelDlg
 
+#include <utility>
 #include "C4Startup.h"
 #include "C4InfoCore.h"
 
@@ -89,7 +90,7 @@ class C4StartupPlrSelDlg : public C4StartupDlg
 				class LoadError : public StdStrBuf
 					{
 					public:
-						LoadError(StdStrBuf RREF rTakeFrom) { Take(rTakeFrom); }
+						LoadError(StdStrBuf RREF rTakeFrom) { Take(std::move(rTakeFrom)); }
 					}; // class thrown off load function if load failed
 			};
 

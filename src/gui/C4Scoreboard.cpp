@@ -19,6 +19,8 @@
  */
 // script-controlled InGame dialog to show player infos
 
+#include <utility>
+
 #include "C4Include.h"
 #include "C4Scoreboard.h"
 #include "C4Gui.h"
@@ -31,9 +33,9 @@
 
 void C4Scoreboard::Entry::SwapWith(Entry *pSwap)
 	{
-	Entry swp; swp.Text.Take(Text); swp.iVal = iVal;
-	Text.Take(pSwap->Text); iVal = pSwap->iVal;
-	pSwap->Text.Take(swp.Text); pSwap->iVal = swp.iVal;
+	Entry swp; swp.Text.Take(std::move(Text)); swp.iVal = iVal;
+	Text.Take(std::move(pSwap->Text)); iVal = pSwap->iVal;
+	pSwap->Text.Take(std::move(swp.Text)); pSwap->iVal = swp.iVal;
 	}
 
 void C4Scoreboard::Clear()

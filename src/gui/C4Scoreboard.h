@@ -20,6 +20,7 @@
 #ifndef INC_C4Scoreboard
 #define INC_C4Scoreboard
 
+#include <utility>
 #include "C4Gui.h"
 #include "C4StringTable.h"
 
@@ -36,7 +37,7 @@ class C4Scoreboard
 
 			Entry() : Text(), iVal(0) { }
 			void GrabFrom(Entry *pFrom) // grab data w/o copy
-				{ Text.Take(pFrom->Text); iVal = pFrom->iVal; }
+			{ Text.Take(std::move(pFrom->Text)); iVal = pFrom->iVal; }
 			void SwapWith(Entry *pSwap);
 			};
 	private:

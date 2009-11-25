@@ -21,6 +21,8 @@
  */
 // parses scripts
 
+#include <utility>
+
 #include <C4Include.h>
 #include <C4Aul.h>
 
@@ -353,7 +355,7 @@ void C4AulScriptFunc::ParseDesc()
 			// Long Description
 			else if(SEqual2(DPos0, C4AUL_Desc))
 				{
-				DescLong.Take(Val);
+				DescLong.Take(std::move(Val));
 				}
 			// unrecognized? never mind
 			}

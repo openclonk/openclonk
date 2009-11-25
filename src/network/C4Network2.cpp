@@ -20,6 +20,8 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
+#include <utility>
+
 #include <C4Include.h>
 #include <C4Network2.h>
 #include <C4Version.h>
@@ -2388,7 +2390,7 @@ bool C4Network2::LeaguePlrAuth(C4PlayerInfo *pInfo)
 
 		// Try given account name as default next time
 		if(AccountMaster.getLength())
-			Account.Take(AccountMaster);
+			Account.Take(std::move(AccountMaster));
 
 		// safety (modal dlg may have deleted network)
 		if (!pLeagueClient) return false;
