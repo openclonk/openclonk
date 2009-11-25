@@ -26,18 +26,10 @@
 #include <C4Include.h>
 #include <C4Application.h>
 
-#include <C4Console.h>
-#include <C4FullScreen.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4Version.h>
 #include "C4Network2.h"
-
-C4Application Application;
-C4Console			Console;
-C4FullScreen	FullScreen;
-C4Game				Game;
-C4Network2		Network;
 
 #include "MacUtility.h"
 
@@ -148,6 +140,7 @@ int main()
 #ifdef WITH_DEVELOPER_MODE
 # include "c4x.xpm"
 # include <gtk/gtkmain.h>
+# include <gtk/gtkwindow.h>
 #endif
 
 #ifdef HAVE_EXECINFO_H

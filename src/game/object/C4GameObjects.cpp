@@ -1002,5 +1002,3 @@ void C4GameObjects::SetOCF()
 		if (cLnk->Obj->Status)
 			cLnk->Obj->SetOCF();
 	}
-
-C4GameObjects Objects;

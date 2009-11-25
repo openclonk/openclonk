@@ -22,6 +22,7 @@ set(OC_CLONK_SOURCES
 	src/C4FullScreen.h
 	src/C4Game.cpp
 	src/C4Game.h
+	src/C4Globals.cpp
 	src/C4GraphicsSystem.cpp
 	src/C4GraphicsSystem.h
 	src/c4group/C4Components.h
@@ -615,6 +616,8 @@ endif()
 if(MSVC_VERSION)
 	# Suppress warnings about "non-secure" functions
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
+	# Disable warning C4244: 'conversion' conversion from 'type1' to 'type2', possible loss of data
+	list(APPEND OC_CXX_FLAGS "/wd4244")
 endif()
 
 ############################################################################

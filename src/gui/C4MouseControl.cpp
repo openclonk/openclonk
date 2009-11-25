@@ -1409,5 +1409,3 @@ void C4MouseControl::StartConstructionDrag(C4ID id)
 	CreateDragImage(DragID);
 	Selection.Clear();
 	}
-
-C4MouseControl MouseControl;

@@ -24,6 +24,7 @@
 
 #include <map>
 #include <string>
+#include <stdexcept>
 
 class C4LangStringTable : public C4ComponentHost
 {
