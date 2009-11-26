@@ -27,12 +27,14 @@ protected func Initialize()
 	SetAction("Fly");
 
 	//Push low flying clouds up to proper height
-	while(MaterialDepthCheck(GetX(),GetY(),"Sky",180)!=true) 
+	while(MaterialDepthCheck(GetX(),GetY(),"Sky",150)!=true) 
 	{
 		SetPosition(GetX(),GetY()-1);
 	}
 
-	if(Stuck()) RemoveObject();
+	//Failsafe for stupid grounded clouds
+	if(GetMaterial(0,30)!=Material("Sky")) SetPosition(GetX(), GetY()-180);
+
 }
 
 public func Precipitation()
@@ -76,6 +78,8 @@ public func TimedEvents()
 	if(GetX() <= 10) SetPosition(LandscapeWidth()-12, GetY());
 	if(GetY() <= 5) SetPosition(0,6);
 	if(GetYDir()!=0) SetYDir(0);
+
+	while(Stuck()) SetPosition(GetX(),GetY()-5);
 }
 
 protected func Evaporation() //Creates a search line every x-amount(currently five) of pixels to check for water beneath the cloud
