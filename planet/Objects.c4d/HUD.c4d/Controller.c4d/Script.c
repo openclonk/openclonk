@@ -42,6 +42,9 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	
 	if(!(clonk->HUDAdapter())) return;
 	
+	// not enabled
+	if(!clonk->GetCrewEnabled()) return;
+	
 	// if the clonk already has a hud, it means that he belonged to another
 	// crew. So we need another handling here in this case.
 	var sel;
@@ -70,10 +73,19 @@ protected func OnClonkDeath(object clonk, int killer)
 	
 	if(!(clonk->HUDAdapter())) return;
 	
-	// notify the hud
+	OnCrewDisabled(clonk);
+}
+
+public func OnCrewDisabled(object clonk)
+{
+	// notify the hud and reorder
 	clonk->GetSelector()->CrewGone();
-	
-	// and reorder
+	ReorderCrewSelectors();
+}
+
+public func OnCrewEnabled(object clonk)
+{
+	CreateSelectorFor(clonk);
 	ReorderCrewSelectors();
 }
 
@@ -121,9 +133,18 @@ public func OnCrewSelection(object obj, bool deselect)
 // call from HUDAdapter (Clonk)
 public func OnSelectionChanged(int old, int new)
 {
+	//Log("selection changed from %d to %d", old, new);
 	// update both old and new
 	actionbar[old]->UpdateSelectionStatus();
 	actionbar[new]->UpdateSelectionStatus();
+}
+
+// call from HUDAdapter (Clonk)
+public func OnSlotObjectChanged(int slot)
+{
+	//Log("slot %d changed", slot);
+	var obj = GetCursor(GetOwner())->GetItem(slot);
+	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
 }
 
 private func ActionButton(object forClonk, int i)

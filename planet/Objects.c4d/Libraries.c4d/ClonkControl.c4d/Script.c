@@ -88,9 +88,9 @@ public func SelectItem(selection)
 	item = inventory[selected];
 	
 	// DEBUG
-	var bla = "nothing";
-	if(item) bla = item->~GetName();
-	Message("selected %s (position %d)", this, bla, selected);
+	//var bla = "nothing";
+	//if(item) bla = item->~GetName();
+	//Message("selected %s (position %d)", this, bla, selected);
 	
 	if(item)
 		if(!item->~Selection(this))
@@ -116,6 +116,18 @@ public func GetItem(int i)
 	return inventory[i];
 }
 
+// disable ShiftContents for objects with ClonkControl.c4d
+
+global func ShiftContents(bool fShiftBack, id idTarget, bool fDoCalls)
+{
+	if(this)
+		if(this->~GetSelected() != nil)
+			return false;
+	return _inherited(...);
+}
+
+/* ################################################# */
+
 protected func Construction(object by)
 {
 	selected = 0;
@@ -125,17 +137,20 @@ protected func Construction(object by)
 
 protected func Collection2(object obj)
 {
+	var sel;
+
 	// into selected area if empty
 	if(!inventory[selected])
 	{
 		inventory[selected] = obj;
+		sel = selected;
 	}
 	// otherwise, next if empty
 	else
 	{
 		for(var i = 1; i < MaxContentsCount(); ++i)
 		{
-			var sel = (selected+i) % MaxContentsCount();
+			sel = (selected+i) % MaxContentsCount();
 			if(!inventory[sel])
 			{
 				inventory[sel] = obj;
@@ -143,18 +158,22 @@ protected func Collection2(object obj)
 			}
 		}
 	}
+	this->~OnSlotFull(sel);
 
 	return _inherited(...);
 }
 
 protected func Ejection(object obj)
 {
+	var i;
 	// find obj in array and delete
-	for(var i = 0; i < MaxContentsCount(); ++i)
+	for(i = 0; i < MaxContentsCount(); ++i)
 	{
 		if(inventory[i] == obj)
 			{ inventory[i] = nil; break; }
 	}
+	
+	this->~OnSlotEmpty(i);
 	
 	_inherited(...);
 }

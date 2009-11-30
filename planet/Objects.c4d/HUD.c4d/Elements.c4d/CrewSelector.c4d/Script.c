@@ -15,15 +15,15 @@
 */
 
 /*
-	TODO: Graphical feedback for disabled crew members (grey?)
+	TODO:	Callback when the name is changed
 */
 
-local crew, breathbar, magicbar, hotkey;
+local crew, breathbar, magicbar, hotkey, cleared;
 
-public func BarSpacing() { return -5; }
-public func HealthBarHeight() { return 12; }
-public func BreathBarHeight() { return 7; }
-public func MagicBarHeight() { return 7; }
+public func BarSpacing() { return -4; }
+public func HealthBarHeight() { return 14; }
+public func BreathBarHeight() { return 8; }
+public func MagicBarHeight() { return 14; }
 
 /*
 	usage of layers:
@@ -59,6 +59,7 @@ protected func Construction()
 	breathbar = false;
 	magicbar = false;
 	hotkey = false;
+	cleared = false;
 	
 	// parallaxity
 	this["Parallaxity"] = [0,0];
@@ -97,6 +98,7 @@ public func SetCrew(object c)
 	UpdateRank();
 	UpdateController();
 	UpdateSelectionStatus();
+	UpdateName();
 	
 	this["Visibility"] = VIS_Owner;
 }
@@ -115,6 +117,13 @@ public func SetHotkey(int num)
 	SetGraphics(name,NUMB,12,GFXOV_MODE_IngamePicture);
 	SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
 	SetClrModulation(HSL(0,0,180),12);
+}
+
+private func ClearMessage()
+{
+	if(cleared) return;
+	CustomMessage("",this,crew->GetOwner());
+	cleared = true;
 }
 
 public func CrewGone()
@@ -190,15 +199,24 @@ public func UpdateTitleGraphic()
 	//SetColorDw(crew->GetColorDw());
 }
 
-public func UpdateHealthBar()
+public func UpdateHealthBar(bool nocall)
 {
 	if(!crew) return;
 	var phys = crew->GetPhysical("Energy");
 	var promille;
 	if(phys == 0) promille = 0;
 	else promille = 1000 * crew->GetEnergy() / (phys / 1000);
-	
-	SetBarProgress(promille,0);
+
+	// if this function has not been called by UpdateMagicBar
+	if(!nocall)
+	{
+		ClearMessage();
+		UpdateMagicBar(true);
+		SetBarProgress(promille,0);
+		UpdateName();
+	}
+	if(promille > 0)
+		CustomMessage(Format("@<c dddd00>%d</c>",crew->GetEnergy()), this, crew->GetOwner(), -32*(1000-promille)/1000, 45 + BarOffset(0), nil, nil, nil, MSG_Multiple);
 }
 
 public func UpdateBreathBar()
@@ -226,13 +244,21 @@ public func UpdateBreathBar()
 
 }
 
-public func UpdateMagicBar()
+public func UpdateMagicBar(bool nocall)
 {
 	if(!crew) return;
 	var phys = crew->GetPhysical("Magic");
 	var promille = 0;
 	if(phys != 0) promille = 1000 * crew->GetMagicEnergy() / (phys / 1000);
 
+	// if this function has not been called by UpdateHealthBar
+	if(!nocall)
+	{
+		ClearMessage();
+		UpdateHealthBar(true);
+		UpdateName();
+	}
+		
 	// remove magic bar if no physical magic!
 	if(phys == 0)
 	{
@@ -245,32 +271,40 @@ public func UpdateMagicBar()
 		if(!magicbar)
 			AddMagicBar();
 		
-		SetBarProgress(promille,2);
-	}
+		if(promille > 0)
+			CustomMessage(Format("@<c 1188cc>%d</c>",crew->GetMagicEnergy()), this, crew->GetOwner(), -32*(1000-promille)/1000, 45 + BarOffset(1), nil, nil, nil, MSG_Multiple);
 
+		if(!nocall)
+			SetBarProgress(promille,2);
+	}
+}
+
+private func UpdateName()
+{
+	CustomMessage(Format("@%s",crew->GetName()), this, crew->GetOwner(), 0, 64, nil, nil, nil, MSG_Multiple);
+	cleared = false;
 }
 
 private func BarOffset(int num)
 {
-	var offset = GetDefWidth()/2 + HealthBarHeight()/2 + num * BarSpacing() + num;
+	var offset = GetDefWidth()/2 + HealthBarHeight()/2 + num * BarSpacing();
 	if(num > 0) offset += HealthBarHeight();
-	if(num > 1) offset += BreathBarHeight();
+	if(num > 1) offset += MagicBarHeight();
 	return offset;
 }
 
 private func AddBreathBar()
 {
+	var num = 1;
+	if(magicbar) num = 2;
+
 	// breath bar
 	SetBarLayers(4,1);
-	SetBarOffset(0,BarOffset(1),1);
+	SetBarOffset(0,BarOffset(num),1);
 	SetBarDimensions(GetDefWidth(),BreathBarHeight(),1);
 	SetClrModulation(RGB(0,200,200),5);
 	
 	breathbar = true;
-	
-	// update position of magic bar (if any)
-	if(magicbar)
-		SetBarOffset(0,BarOffset(2),2);
 }
 
 private func RemoveBreathBar()
@@ -286,15 +320,16 @@ private func RemoveBreathBar()
 
 private func AddMagicBar()
 {
-	var num = 1;
-	if(breathbar) num = 2;
-
 	SetBarLayers(6,2);
-	SetBarOffset(0,BarOffset(num),2);
+	SetBarOffset(0,BarOffset(1),2);
 	SetBarDimensions(GetDefWidth(),MagicBarHeight(),2);
 	SetClrModulation(RGB(0,0,200),7);
 	
 	magicbar = true;
+	
+	// update position of breath bar (if any)
+	if(breathbar)
+		SetBarOffset(0,BarOffset(2),1);
 }
 
 private func RemoveMagicBar()

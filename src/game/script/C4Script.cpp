@@ -4164,6 +4164,8 @@ static bool FnGetCrewEnabled(C4AulObjectContext *cctx)
 
 static C4Void FnSetCrewEnabled(C4AulObjectContext *cctx, bool fEnabled)
 {
+	bool change = (cctx->Obj->CrewDisabled == fEnabled) ? true : false;
+	
 	// set status
 	cctx->Obj->CrewDisabled=!fEnabled;
 	// deselect
@@ -4181,6 +4183,16 @@ static C4Void FnSetCrewEnabled(C4AulObjectContext *cctx, bool fEnabled)
 				pOwner->SetViewMode(C4PVM_Target, cctx->Obj);
 			}
 		}
+
+	// call to crew
+	if(change)
+	{
+		if(fEnabled)
+			cctx->Obj->Call(PSF_CrewEnabled);
+		else
+			cctx->Obj->Call(PSF_CrewDisabled);
+	}
+
 	// success
 	return C4VNull;
 }

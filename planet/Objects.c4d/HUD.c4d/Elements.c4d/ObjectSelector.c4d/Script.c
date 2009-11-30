@@ -28,18 +28,6 @@
 
 */
 
-// needs to be notified when:
-
-// inventory changes:
-// clonk collects something, clonk drops/throws/looses(removeobject) something,
-// clonk changes order of something
-
-// vehicles etc:
-// moves by vehicles or structures...
-
-// general:
-// something gets selected/unselected
-
 local isSelected, crew, hotkey, myobject, inventory_pos, actiontype;
 
 static const ACTIONTYPE_INVENTORY = 0;
@@ -115,13 +103,13 @@ public func MouseSelection(int plr)
 	// TODO: more script choices... Selection-Callbacks for  all objects
 }
 
-// TODO: update von select nach deselect...
-
 public func SetObject(object obj, int type, int inv_pos)
 {
 	actiontype = type;
 	myobject = obj;
 	inventory_pos = inv_pos;
+	
+	RemoveEffect("IntRemoveGuard",myobject);
 	
 	if(!myobject) 
 	{	
@@ -139,7 +127,17 @@ public func SetObject(object obj, int type, int inv_pos)
 		}
 		
 		SetName(myobject->GetName());
+		
+		// create an effect which monitors whether the object is removed
+		AddEffect("IntRemoveGuard",myobject,1,0,this);
 	}
+}
+
+public func FxIntRemoveGuardStop(object target, int num, int reason, bool temp)
+{
+	if(reason == 3)
+		if(target == myobject)
+			SetObject(nil,0,inventory_pos);
 }
 
 public func SetCrew(object c)

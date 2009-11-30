@@ -67,7 +67,7 @@ protected func CrewSelection(bool unselect)
 }
 
 // call from ClonkControl.c4d (self)
-public func OnSelectionChanged(int old, int new)
+protected func OnSelectionChanged(int old, int new)
 {
 	// update selection status in hud
 	if(HUDcontroller) HUDcontroller->OnSelectionChanged(old, new);
@@ -76,12 +76,27 @@ public func OnSelectionChanged(int old, int new)
 
 // calls to controller
 
-protected func Collection2(object obj)
+protected func OnCrewEnabled()
 {
-
+	if(HUDcontroller) HUDcontroller->OnCrewEnabled(this);
+	return _inherited(...);
 }
 
-protected func Ejection(object obj)
+protected func OnCrewDisabled()
 {
+	if(HUDcontroller) HUDcontroller->OnCrewDisabled(this);
+	return _inherited(...);
+}
 
+// from ClonkControl.c4d
+protected func OnSlotFull(int slot)
+{
+	if(HUDcontroller) HUDcontroller->OnSlotObjectChanged(slot);
+	return _inherited(...);
+}
+
+protected func OnSlotEmpty(int slot)
+{
+	if(HUDcontroller) HUDcontroller->OnSlotObjectChanged(slot);
+	return _inherited(...);
 }
