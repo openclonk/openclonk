@@ -31,7 +31,7 @@ const int CornerRange=AttachRange+2;
 
 extern const FIXED FloatAccel;
 extern const FIXED HitSpeed1,HitSpeed2,HitSpeed3,HitSpeed4;
-extern const FIXED WalkAccel,SwimAccel;
+extern const FIXED WalkAccel,WalkBreak,ScaleAccel,SwimAccel;
 extern const FIXED FloatFriction;
 extern const FIXED RotateAccel;
 

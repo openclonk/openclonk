@@ -3,6 +3,7 @@
 
 /*
 	Crew selector HUD
+	Author: Newton
 	
 	For each crew member, one of these HUD elements exist in the top bar.
 	It shows the rank, health, breath and magic bars as well as the title
@@ -98,8 +99,6 @@ public func SetCrew(object c)
 	UpdateSelectionStatus();
 	
 	this["Visibility"] = VIS_Owner;
-	
-	//ScheduleCall(0,"SetCrew",1,0,c);
 }
 
 public func SetHotkey(int num)
@@ -128,6 +127,8 @@ public func UpdateController()
 	if(!crew) return;
 	// visibility
 	SetOwner(crew->GetController());
+	// name
+	SetName(crew->GetName());
 }
 
 public func UpdateSelectionStatus()

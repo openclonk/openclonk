@@ -232,9 +232,9 @@ global func ObjectControlUpdateComdir(int plr)
 		ComDir2XY(new_comdir, new_cx, new_cy);
 		var is_handled;
 		var proc = GetProcedure();
-		if (proc == "WALK" || proc == "HANGLE" || proc == "PUSH" || proc == "PULL")
+		if (proc == "WALK" || proc == "HANGLE" || proc == "PUSH" || proc == "PULL" || proc == "FLIGHT")
 			// Only horizontal movement changed actual direction
-			// Also, enfore clear Left/Right commands without leftover Up/Down
+			// Also, enforce clear Left/Right commands without leftover Up/Down
 			// CON_Down is never handled this way, thus forcing a CON_Stop
 			is_handled = (old_cx != new_cx) && !new_cy;
 		else if (proc == "SCALE")

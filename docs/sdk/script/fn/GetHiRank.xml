@@ -19,9 +19,6 @@
 				<text>Tötet den höchstrangigen Clonk des dritten Spielers. (Die Zählung beginnt mit 0)</text>
 			</example>
 		</examples>
-		<related>
-			<funclink>GetCaptain</funclink>
-		</related>
 	</func>
 	<author>jwk</author><date>April 2002</date>
 </funcs>

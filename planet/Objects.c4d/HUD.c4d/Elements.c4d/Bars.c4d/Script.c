@@ -2,11 +2,13 @@
 
 /*
 	Progress-Bar element
+	Author: Newton
 	
 	This object can show an unlimited amount of progress bars in different
 	locations, sizes and colors. Using this basic funcionality, one could create
 	floating health bars attached to clonks or include the bars as layers into
 	(HUD) objects.
+	This object is used by the crew selector.
 */
 
 local offsx, offsy, layer, width, height;

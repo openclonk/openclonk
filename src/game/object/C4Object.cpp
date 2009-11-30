@@ -3825,18 +3825,25 @@ void C4Object::ExecAction()
 
 	// Handle Default Action Procedure: evaluates Procedure and Action.ComDir
 	// Update xdir,ydir,Action.Dir,attachment,iPhaseAdvance
+	int32_t dir = Action.Dir;
+	FIXED accel = WalkAccel;
+
 	switch (pAction->GetPropertyInt(P_Procedure))
 		{
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_WALK:
       lLimit=ValByPhysical(280, pPhysical->Walk);
+
       switch (Action.ComDir)
         {
         case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-          xdir-=WalkAccel; if (xdir<-lLimit) xdir=-lLimit;
+					// breaaak!!!
+					if (dir == DIR_Right) accel = WalkBreak;
+          xdir-=accel; if (xdir<-lLimit) xdir=-lLimit;
           break;
         case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-          xdir+=WalkAccel; if (xdir>+lLimit) xdir=+lLimit;
+					if (dir == DIR_Left) accel = WalkBreak;
+          xdir+=accel; if (xdir>+lLimit) xdir=+lLimit;
           break;
         case COMD_Stop: case COMD_Up: case COMD_Down:
           if (xdir<0) xdir+=WalkAccel;
@@ -3845,8 +3852,17 @@ void C4Object::ExecAction()
           break;
         }
       iPhaseAdvance=0;
-      if (xdir<0) { iPhaseAdvance=-fixtoi(xdir*10); SetDir(DIR_Left);  }
-      if (xdir>0) { iPhaseAdvance=+fixtoi(xdir*10); SetDir(DIR_Right); }
+      if (xdir<0)
+				{
+				if(dir != DIR_Left) { SetDir(DIR_Left); xdir = -1; }
+				iPhaseAdvance=-fixtoi(xdir*10);
+				}
+      if (xdir>0)
+				{
+				if(dir != DIR_Right) { SetDir(DIR_Right); xdir = 1; }
+				iPhaseAdvance=+fixtoi(xdir*10);
+				}
+
       Action.t_attach|=CNAT_Bottom;
       Mobile=1;
 			// object is rotateable? adjust to ground, if in horizontal movement or not attached to the center vertex
@@ -3878,13 +3894,13 @@ void C4Object::ExecAction()
 			switch (ComDir)
 				{
 				case COMD_Up: case COMD_UpRight:  case COMD_UpLeft:
-					ydir-=WalkAccel; if (ydir<-lLimit) ydir=-lLimit; break;
+					ydir-=ScaleAccel; if (ydir<-lLimit) ydir=-lLimit; break;
 				case COMD_Down: case COMD_DownRight: case COMD_DownLeft:
-					ydir+=WalkAccel; if (ydir>+lLimit) ydir=+lLimit; break;
+					ydir+=ScaleAccel; if (ydir>+lLimit) ydir=+lLimit; break;
 				case COMD_Left: case COMD_Right: case COMD_Stop:
-					if (ydir<0) ydir+=WalkAccel;
-					if (ydir>0) ydir-=WalkAccel;
-					if ((ydir>-WalkAccel) && (ydir<+WalkAccel)) ydir=0;
+					if (ydir<0) ydir+=ScaleAccel;
+					if (ydir>0) ydir-=ScaleAccel;
+					if ((ydir>-ScaleAccel) && (ydir<+ScaleAccel)) ydir=0;
 					break;
 				}
 			iPhaseAdvance=0;
@@ -3909,20 +3925,20 @@ void C4Object::ExecAction()
 			switch (Action.ComDir)
 				{
 				case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-					xdir-=WalkAccel; if (xdir<-lLimit) xdir=-lLimit;
+					xdir-=ScaleAccel; if (xdir<-lLimit) xdir=-lLimit;
 					break;
 				case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-					xdir+=WalkAccel; if (xdir>+lLimit) xdir=+lLimit;
+					xdir+=ScaleAccel; if (xdir>+lLimit) xdir=+lLimit;
 					break;
 				case COMD_Up:
-					xdir += (Action.Dir == DIR_Left) ? -WalkAccel : WalkAccel;
+					xdir += (Action.Dir == DIR_Left) ? -ScaleAccel : ScaleAccel;
 					if (xdir<-lLimit) xdir=-lLimit;
 					if (xdir>+lLimit) xdir=+lLimit;
 					break;
 				case COMD_Stop: case COMD_Down:
-					if (xdir<0) xdir+=WalkAccel;
-					if (xdir>0) xdir-=WalkAccel;
-					if ((xdir>-WalkAccel) && (xdir<+WalkAccel)) xdir=0;
+					if (xdir<0) xdir+=ScaleAccel;
+					if (xdir>0) xdir-=ScaleAccel;
+					if ((xdir>-ScaleAccel) && (xdir<+ScaleAccel)) xdir=0;
 					break;
 				}
 			iPhaseAdvance=0;
@@ -3941,6 +3957,18 @@ void C4Object::ExecAction()
 					StopActionDelayCommand(this);
 					SetCommand(C4CMD_Exit);
 					}
+
+			lLimit = itofix(2);
+			switch (Action.ComDir)
+				{
+				case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
+					xdir-=FloatAccel; if (xdir<-lLimit) xdir=-lLimit;
+					break;
+				case COMD_Right: case COMD_UpRight: case COMD_DownRight:
+					xdir+=FloatAccel; if (xdir>+lLimit) xdir=+lLimit;
+					break;
+			  }
+
 			// Gravity/mobile
       DoGravity(this);
       Mobile=1;

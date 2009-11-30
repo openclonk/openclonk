@@ -874,9 +874,10 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		DrawPlayerFogOfWar(cgo);
 		C4ST_STOP(FoWStat)
 		// Player info
-		C4ST_STARTNEW(CInfoStat, "C4Viewport::DrawOverlay: Cursor Info")
-		DrawCursorInfo(cgo);
-		C4ST_STOP(CInfoStat)
+		// TODO: remove all the functions for drawing portraits, ranks, bla bla etc.
+		//C4ST_STARTNEW(CInfoStat, "C4Viewport::DrawOverlay: Cursor Info")
+		//DrawCursorInfo(cgo);
+		//C4ST_STOP(CInfoStat)
 		C4ST_STARTNEW(PInfoStat, "C4Viewport::DrawOverlay: Player Info")
 		DrawPlayerInfo(cgo);
 		C4ST_STOP(PInfoStat)
