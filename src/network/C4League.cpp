@@ -24,10 +24,8 @@
 #include <C4Include.h>
 #include <C4League.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4RoundResults.h>
-#endif
 
 // *** C4LeagueRequestHead
 

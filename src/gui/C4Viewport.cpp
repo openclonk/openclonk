@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4Viewport.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Console.h>
 #include <C4UserMessages.h>
 #include <C4Object.h>
@@ -51,7 +50,6 @@
 #include <C4GameObjects.h>
 #include <C4Network2.h>
 #include <C4GamePadCon.h>
-#endif
 
 #include <StdGL.h>
 #include <StdRegistry.h>

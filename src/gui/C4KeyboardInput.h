@@ -21,6 +21,8 @@
 #ifndef INC_C4KeyboardInput
 #define INC_C4KeyboardInput
 
+#include <vector>
+#include <map>
 #include <cctype>
 #include <vector>
 #include <map>

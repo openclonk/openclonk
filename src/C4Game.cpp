@@ -31,7 +31,6 @@
 #include <C4Network2Reference.h>
 #include <C4FileMonitor.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4GameSave.h>
 #include <C4Record.h>
 #include <C4Application.h>
@@ -73,7 +72,6 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
-#endif
 
 #include <StdFile.h>
 

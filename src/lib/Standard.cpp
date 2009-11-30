@@ -21,6 +21,7 @@
 
 /* All kinds of valuable helpers */
 
+#include "C4Include.h"
 #include <Standard.h>
 #if defined(HAVE_PTHREAD) && defined(C4ENGINE)
 // c4group is single-threaded

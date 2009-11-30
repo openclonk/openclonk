@@ -21,7 +21,6 @@
 
 #include "C4Include.h"
 
-#ifndef BIG_C4INCLUDE
 #include <C4Application.h>
 #include <C4Game.h>
 #include <C4GameControl.h>
@@ -30,7 +29,6 @@
 #include <C4Log.h>
 #include <C4Network2Stats.h>
 #include <C4MouseControl.h>
-#endif
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4355)

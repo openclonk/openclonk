@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <stdarg.h>
+#include <utility>
 
 // debug memory management
 #if defined(_DEBUG) && defined(_MSC_VER)
@@ -53,7 +54,7 @@ public:
     if(fCopy)
       Copy(Buf2);
     else if(!Buf2.isRef())
-      Take(Buf2);
+		Take(std::move(Buf2));
     else
       Ref(Buf2);
   }
@@ -315,7 +316,7 @@ public:
   // Set (as constructor: take if possible)
   StdBuf &operator = (StdBuf RREF Buf2)
 	{
-    if(Buf2.isRef()) Ref(Buf2); else Take(Buf2);
+		if(Buf2.isRef()) Ref(Buf2); else Take(std::move(Buf2));
     return *this;
   }
 
@@ -443,7 +444,7 @@ public:
 
   void Ref(const StdStrBuf &Buf2) { StdBuf::Ref(Buf2.getData(), Buf2.getSize()); }
 	StdStrBuf getRef() const { return StdStrBuf(getData(), getLength()); }
-  void Take(StdStrBuf RREF Buf2) { StdBuf::Take(Buf2); }
+	void Take(StdStrBuf RREF Buf2) { StdBuf::Take(std::move(Buf2)); }
 
   void Clear() { StdBuf::Clear(); }
   void Copy() { StdBuf::Copy(); }

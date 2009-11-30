@@ -27,20 +27,16 @@
 #include <C4Include.h>
 #include <C4MusicSystem.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4MusicFile.h>
 #include <C4Application.h>
 #include <C4Random.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GraphicsSystem.h>
-#endif
 
-#include <Midi.h>
-#ifdef USE_FMOD
+#if defined HAVE_FMOD
 #include <fmod_errors.h>
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif defined HAVE_LIBSDL_MIXER
 #include <SDL.h>
 #endif
 
@@ -68,7 +64,7 @@ C4MusicSystem::~C4MusicSystem()
 
 bool C4MusicSystem::InitializeMOD()
 {
-#ifdef USE_FMOD
+#if defined HAVE_FMOD
 #ifdef _WIN32
 	// Debug code
 	switch(Config.Sound.FMMode)
@@ -100,8 +96,7 @@ bool C4MusicSystem::InitializeMOD()
 	// ok
 	MODInitialized = true;
 	return true;
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif defined HAVE_LIBSDL_MIXER
 	SDL_version compile_version;
 	const SDL_version * link_version;
 	MIX_VERSION(&compile_version);
@@ -128,14 +123,13 @@ bool C4MusicSystem::InitializeMOD()
 
 void C4MusicSystem::DeinitializeMOD()
 {
-#ifdef USE_FMOD
+#if defined HAVE_FMOD
 	FSOUND_StopSound(FSOUND_ALL); /* to prevent some hangs in FMOD */
 #ifdef DEBUG
 	Sleep(0);
 #endif
 	FSOUND_Close();
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif defined HAVE_LIBSDL_MIXER
 	Mix_CloseAudio();
 	SDL_Quit();
 #endif
@@ -212,7 +206,7 @@ void C4MusicSystem::Load(const char *szFile)
 	if (!szFile || !*szFile) return;
 	C4MusicFile *NewSong=NULL;
 	// get extension
-#ifdef USE_FMOD
+#if defined HAVE_FMOD
 	const char *szExt = GetExtension(szFile);
 	// get type
 	switch (GetMusicFileTypeByExtension(GetExtension(szFile)))
@@ -232,8 +226,7 @@ void C4MusicSystem::Load(const char *szFile)
         NewSong = new C4MusicFileMID;
 			break;
 		}
-#endif
-#ifdef HAVE_LIBSDL_MIXER
+#elif defined HAVE_LIBSDL_MIXER
 	if (GetMusicFileTypeByExtension(GetExtension(szFile)) == MUSICTYPE_UNKNOWN) return;
 	NewSong = new C4MusicFileSDL;
 #endif
@@ -486,7 +479,7 @@ MusicType GetMusicFileTypeByExtension(const char* ext)
 	{
 	if (SEqualNoCase(ext, "mid"))
 		return MUSICTYPE_MID;
-#if defined USE_FMOD || defined HAVE_LIBSDL_MIXER
+#if defined HAVE_FMOD || defined HAVE_LIBSDL_MIXER
 	else if (SEqualNoCase(ext, "xm") || SEqualNoCase(ext, "it") || SEqualNoCase(ext, "s3m") || SEqualNoCase(ext, "mod"))
 		return MUSICTYPE_MOD;
 #ifdef USE_MP3

@@ -22,9 +22,7 @@
 #include <C4StartupAboutDlg.h>
 #include <C4UpdateDlg.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4StartupMainDlg.h>
-#endif
 
 // ------------------------------------------------
 // --- C4StartupAboutDlg

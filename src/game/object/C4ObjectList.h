@@ -89,8 +89,8 @@ class C4ObjectList
 		iterator begin();
 		const iterator end();
 
-		void Default();
-		void Clear();
+		virtual void Default();
+		virtual void Clear();
 		void Sort();
 		void Enumerate();
 		void Denumerate();
@@ -108,12 +108,12 @@ class C4ObjectList
 
 		typedef int SortProc(C4Object *, C4Object *);
 
-		bool Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted = NULL);
+		virtual bool Add(C4Object *nObj, SortType eSort, C4ObjectList *pLstSorted = NULL);
 		bool AddSortCustom(C4Object *nObj, SortProc &pSortProc);
-		bool Remove(C4Object *pObj);
+		virtual bool Remove(C4Object *pObj);
 
-		bool AssignInfo();
-		bool ValidateOwners();
+		virtual bool AssignInfo();
+		virtual bool ValidateOwners();
 		StdStrBuf GetNameList(C4DefList &rDefs, DWORD dwCategory=C4D_All);
 		bool IsClear() const;
 		bool DenumerateRead();
@@ -134,8 +134,8 @@ class C4ObjectList
 
 		C4ID GetListID(int32_t dwCategory, int Index);
 
-		bool OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
-		bool OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
+		virtual bool OrderObjectBefore(C4Object *pObj1, C4Object *pObj2); // order pObj1 before pObj2
+		virtual bool OrderObjectAfter(C4Object *pObj1, C4Object *pObj2); // order pObj1 after pObj2
 
 		bool ShiftContents(C4Object *pNewFirst); // cycle list so pNewFirst is at front
 

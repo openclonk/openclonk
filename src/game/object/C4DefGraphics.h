@@ -25,10 +25,14 @@
 #include "C4FacetEx.h"
 #include "C4Surface.h"
 #include "C4InputValidation.h"
+#include "C4Id.h"
 
 #define C4Portrait_None   "none"
 #define C4Portrait_Random "random"
 #define C4Portrait_Custom "custom"
+
+class C4Def;
+class C4Object;
 
 // defintion graphics
 class C4AdditionalDefGraphics;

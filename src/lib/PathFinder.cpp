@@ -18,6 +18,7 @@
 
 /* Finds the shortest free path through any pixel environment */
 
+#include "C4Include.h"
 #include <Standard.h>
 
 #include <PathFinder.h>

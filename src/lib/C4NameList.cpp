@@ -20,6 +20,7 @@
 
 /* A static list of strings and integer values, i.e. for material amounts */
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <C4NameList.h>
 

@@ -21,14 +21,13 @@
 #include <C4Include.h>
 #include <C4Fonts.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Language.h>
 #include <C4Config.h>
 #include <C4Components.h>
 #include <C4Log.h>
 #include <C4Surface.h>
-#endif
 
+#include <StdFont.h>
 #include <stdexcept>
 
 void C4FontDef::CompileFunc(StdCompiler * pComp)

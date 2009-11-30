@@ -26,6 +26,9 @@
 #include <C4Surface.h>
 
 class C4AulFunc;
+class C4TextureMap;
+class C4MaterialMap;
+class CSurface8;
 
 #define C4MC_SizeRes				100					// positions in percent
 #define C4MC_ZoomRes				100					// zoom resolution (-100 to +99)

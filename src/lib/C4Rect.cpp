@@ -21,6 +21,7 @@
 
 /* Basic classes for rectangles and vertex outlines */
 
+#include "C4Include.h"
 #include "Standard.h"
 #include "C4Rect.h"
 #include "C4FacetEx.h"

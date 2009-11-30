@@ -28,6 +28,8 @@
 
 #include <vector>
 
+class StdCompiler;
+
 struct FLOAT_RECT { float left,right,top,bottom; };
 class C4TargetFacet;
 

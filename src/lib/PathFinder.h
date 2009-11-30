@@ -21,6 +21,9 @@
 /* I am rather proud of this class. If you are going to use it,
    please give me the credits. */
 
+#ifndef INC_PathFinder
+#define INC_PathFinder
+
 class CPathFinder;
 
 class CPathFinderRay
@@ -84,5 +87,4 @@ class CPathFinder
 		void Run();
 	};
 
-
-
+#endif

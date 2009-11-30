@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4Texture.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4SurfaceFile.h>
 #include <C4Group.h>
 #include <C4Game.h>
@@ -35,7 +34,6 @@
 #include <C4Material.h>
 #include <C4Landscape.h>
 #include <C4Log.h>
-#endif
 
 C4Texture::C4Texture()
   {

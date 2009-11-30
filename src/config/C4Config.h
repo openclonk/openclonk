@@ -347,9 +347,7 @@ class C4Config: protected CStdConfig
 		const char *AtDataReadPathCore(const char *szFilename, bool fPreferWorkdir = false);
 	};
 
-#ifndef BIG_C4INCLUDE
 #include <C4ConfigShareware.h>
-#endif
 
 extern C4Config *pConfig; // Some cheap temporary hack to get to config in Engine + Frontend...
 // This is so good - we can use it everywear!!!!

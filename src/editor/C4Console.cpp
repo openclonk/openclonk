@@ -44,6 +44,7 @@
 
 #ifdef _WIN32
 #include <commdlg.h>
+#include "resource.h"
 
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText);
 #else

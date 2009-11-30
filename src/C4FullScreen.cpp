@@ -5,6 +5,7 @@
  * Copyright (c) 2001-2003, 2005, 2008  Sven Eberhardt
  * Copyright (c) 2005-2007  Günther Brammer
  * Copyright (c) 2006-2007  Julian Raschke
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -24,7 +25,6 @@
 #include <C4Include.h>
 #include <C4FullScreen.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4Application.h>
 #include <C4UserMessages.h>
@@ -40,12 +40,12 @@
 #include <C4GraphicsSystem.h>
 #include <C4MouseControl.h>
 #include <C4PlayerList.h>
-#endif
 
 #ifdef _WIN32
 
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
+{
+	static bool NativeCursorShown = true;
 	// Process message
 	switch (uMsg)
 		{
@@ -122,13 +122,37 @@ LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
 		case WM_RBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
 		case WM_LBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
 		case WM_RBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
-		case WM_MOUSEMOVE: ::GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
 		case WM_MOUSEWHEEL: ::GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, NULL); break;
+		case WM_MOUSEMOVE:
+			::GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, NULL);
+			// Hide cursor in client area
+			if (NativeCursorShown)
+			{
+				NativeCursorShown = false;
+				ShowCursor(FALSE);
+			}
+			break;
+		case WM_NCMOUSEMOVE:
+			// Show cursor on window frame
+			if (!NativeCursorShown)
+			{
+				NativeCursorShown = true;
+				ShowCursor(TRUE);
+			}
+			break;
+		case WM_SIZE:
+			// Notify app about render window size change
+			switch (wParam)
+			{
+			case SIZE_RESTORED:
+			case SIZE_MAXIMIZED:
+				::Application.OnResolutionChanged(LOWORD(lParam), HIWORD(lParam));
+				break;
+			}
+			break;
 		}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
-
-void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 
 #elif defined(USE_X11)
 #include <X11/Xlib.h>
@@ -373,16 +397,7 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 
 #endif // _WIN32, USE_X11, USE_SDL_MAINLOOP
 
-#ifndef _WIN32
-void C4FullScreen::CharIn(const char *c)
-	{
-	if (::pGUI)
-		{
-		StdStrBuf c2; c2.Take(Languages.IconvClonk(c));
-		::pGUI->CharIn(c2.getData());
-		}
-	}
-#endif
+void C4FullScreen::CharIn(const char * c) { ::pGUI->CharIn(c); }
 
 C4FullScreen::C4FullScreen()
 	{

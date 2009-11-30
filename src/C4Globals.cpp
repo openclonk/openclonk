@@ -1,7 +1,6 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 1998-2000  Matthes Bender
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -16,15 +15,21 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* A wrapper to DirectSound - derived from DXSDK samples */
+/* Global interdependent objects */
 
-struct CSoundObject;
+#include "C4Include.h"
+#include "C4Application.h"
+#include "C4Console.h"
+#include "C4FullScreen.h"
+#include "C4MouseControl.h"
+#include "C4GameObjects.h"
+#include "C4Game.h"
+#include "C4Network2.h"
 
-CSoundObject *DSndObjCreate(BYTE *bpWaveBuf, int iConcurrent = 1);
-bool DSndObjPlay(CSoundObject *hSO, DWORD dwPlayFlags);
-bool DSndObjStop(CSoundObject *hSO);
-bool DSndObjPlaying(CSoundObject *hSO);
-void DSndObjDestroy(CSoundObject *hSO);
-bool DSndObjSetVolume(CSoundObject *pSO, long lVolume);
-
-#define DSBPLAY_LOOPING 0x00000001
+C4Application  Application;
+C4Console      Console;
+C4FullScreen   FullScreen;
+C4MouseControl MouseControl;
+C4GameObjects  Objects;
+C4Game         Game;
+C4Network2     Network;

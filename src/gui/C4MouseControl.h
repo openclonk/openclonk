@@ -38,6 +38,10 @@ const int32_t C4MC_Button_None				= 0,
 
 const int32_t C4MC_DragSensitivity = 5;
 
+class C4Viewport;
+class C4Menu;
+class C4Player;
+
 class C4MouseControl
 	{
 	friend class C4Viewport;

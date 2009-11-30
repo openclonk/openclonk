@@ -24,10 +24,10 @@
 
 #include "C4Gui.h"
 
-#ifndef BIG_C4INCLUDE
 #include "C4Scenario.h"
 #include "C4Network2Res.h"
-#endif
+
+class C4Graph;
 
 // dialog showing info about a connected client
 class C4Network2ClientDlg : public C4GUI::InfoDialog

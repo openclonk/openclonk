@@ -22,7 +22,6 @@
 #include <C4Include.h>
 #include <C4MainMenu.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4FullScreen.h>
 #include <C4Viewport.h>
 #include <C4Player.h>
@@ -35,7 +34,6 @@
 #include <C4GameObjects.h>
 #include <C4Network2.h>
 #include <C4GameControl.h>
-#endif
 
 // -----------------------------------------------------------
 // C4MainMenu

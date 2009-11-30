@@ -57,7 +57,7 @@ private func DolphinJump()
   if(!InLiquid()) return false;
   if(GBackSemiSolid(0,-1)) return false;
   // Nicht wenn deaktiviert (z.B. Ohnmacht)
-  if (GetID()->GetActMapVal("ObjectDisabled", GetAction())) return false;
+  if (GetActMapVal("ObjectDisabled", GetAction())) return false;
   // herausspringen
   SetPosition(GetX(),GetY()-1);
   SetAction("Jump");

@@ -21,9 +21,7 @@
 #ifndef INC_C4VideoPlayback
 #define INC_C4VideoPlayback
 
-#ifndef BIG_C4INCLUDE
 #include "C4Gui.h"
-#endif
 #include <StdVideo.h>
 
 typedef struct _SMPEG SMPEG;

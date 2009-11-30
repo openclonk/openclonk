@@ -37,6 +37,10 @@
 #include <StdGL.h>
 #endif
 
+#ifdef _WIN32
+#include "resource.h"
+#endif
+
 #ifdef WITH_DEVELOPER_MODE
 # include <C4Language.h>
 # include <C4DevmodeDlg.h>

@@ -25,13 +25,11 @@
 #include <C4Include.h>
 #include <C4ScriptHost.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Console.h>
 #include <C4ObjectCom.h>
 #include <C4Object.h>
 #include <C4Game.h>
 #include <C4GameObjects.h>
-#endif
 
 /*--- C4ScriptHost ---*/
 
@@ -42,14 +40,12 @@ void C4ScriptHost::Default()
 	{
 	C4AulScript::Default();
 	C4ComponentHost::Default();
-	pStringTable = NULL;
 	}
 
 void C4ScriptHost::Clear()
 	{
 	C4AulScript::Clear();
 	C4ComponentHost::Clear();
-	pStringTable = NULL;
 	}
 
 bool C4ScriptHost::Load(const char *szName, C4Group &hGroup, const char *szFilename,
@@ -60,10 +56,10 @@ bool C4ScriptHost::Load(const char *szName, C4Group &hGroup, const char *szFilen
 	// Base load
 	bool fSuccess = C4ComponentHost::LoadAppend(szName,hGroup,szFilename,szLanguage);
 	// String Table
-	pStringTable = pLocalTable;
+	stringTable = pLocalTable;
 	// load it if specified
-	if (pStringTable && fLoadTable)
-		pStringTable->LoadEx("StringTbl", hGroup, C4CFN_ScriptStringTbl, szLanguage);
+	if (stringTable && fLoadTable)
+		stringTable->LoadEx("StringTbl", hGroup, C4CFN_ScriptStringTbl, szLanguage);
 	// set name
 	ScriptName.Format("%s" DirSep "%s", hGroup.GetFullName().getData(), Filename);
 	// preparse script
@@ -79,9 +75,9 @@ void C4ScriptHost::MakeScript()
 	Script.Clear();
 
 	// create script
-	if (pStringTable)
+	if (stringTable)
 	{
-		pStringTable->ReplaceStrings(Data, Script, FilePath);
+		stringTable->ReplaceStrings(Data, Script, FilePath);
 	}
 	else
 	{
@@ -143,13 +139,13 @@ C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *
 bool C4ScriptHost::ReloadScript(const char *szPath)
   {
   // this?
-  if(SEqualNoCase(szPath, FilePath) || (pStringTable && SEqualNoCase(szPath, pStringTable->GetFilePath())))
+  if(SEqualNoCase(szPath, FilePath) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
   {
     // try reload
     char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
     if(GetParentPath(szPath, szParentPath))
       if(ParentGrp.Open(szParentPath))
-        if(Load(Name, ParentGrp, Filename, Config.General.Language, NULL, pStringTable))
+        if(Load(Name, ParentGrp, Filename, Config.General.Language, NULL, stringTable))
           return true;
   }
   // call for childs

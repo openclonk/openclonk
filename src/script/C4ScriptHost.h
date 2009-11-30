@@ -26,9 +26,7 @@
 
 #include <C4ComponentHost.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Aul.h>
-#endif
 
 const int32_t C4SCR_MaxIDLen = 100,
 							C4SCR_MaxDesc	 = 256;
@@ -52,7 +50,6 @@ class C4ScriptHost : public C4AulScript, public C4ComponentHost
 		int32_t GetControlMethod(int32_t com, int32_t first, int32_t second);
 		C4Value Call(const char *szFunction, C4Object *pObj=0, C4AulParSet *pPars=0, bool fPrivateCall=false, bool fPassError=false);
 	protected:
-		class C4LangStringTable *pStringTable;
 		void SetError(const char *szMessage);
 		void MakeScript();
     bool ReloadScript(const char *szPath);

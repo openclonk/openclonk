@@ -22,14 +22,12 @@
 #include <C4Network2IO.h>
 #include <C4Network2Reference.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Network2Discover.h>
 #include <C4Application.h>
 #include <C4UserMessages.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GameControl.h>
-#endif
 
 #ifndef HAVE_WINSOCK
 #include <sys/socket.h>

@@ -28,7 +28,7 @@
 
 class C4ID
 	{
-	uint32_t v;
+	union { uint32_t v; char s[4]; };
 	public:
 	C4ID() {}
 	C4ID(unsigned int i): v(i) {}

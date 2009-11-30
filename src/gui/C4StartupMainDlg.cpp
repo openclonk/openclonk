@@ -25,7 +25,6 @@
 #include <C4UpdateDlg.h>
 #include <C4Version.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4StartupNetDlg.h>
 #include <C4StartupScenSelDlg.h>
 #include <C4StartupOptionsDlg.h>
@@ -36,7 +35,6 @@
 #include <C4Log.h>
 #include <C4Language.h>
 #include <C4GraphicsResource.h>
-#endif
 
 
 C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; it is drawn in custom draw proc

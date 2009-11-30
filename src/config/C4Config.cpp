@@ -30,13 +30,12 @@
 #include <C4Config.h>
 #include <C4Version.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Log.h>
 #include <C4Components.h>
 #include <C4Network2.h>
 #include <C4Language.h>
-#endif
 
+#include <utility>
 #include <StdFile.h>
 #include <StdWindow.h>
 #include <StdRegistry.h>
@@ -883,7 +882,7 @@ void C4Config::ForceRelativePath(StdStrBuf *sFilename)
 		{
 		// return relative path
 		StdStrBuf sTemp; sTemp.Copy(szRelative);
-		sFilename->Take(sTemp);
+		sFilename->Take(std::move(sTemp));
 		}
 	else
 		{
@@ -892,7 +891,7 @@ void C4Config::ForceRelativePath(StdStrBuf *sFilename)
 			{
 			// then shorten it (e.g. C:\Temp\Missions.c4f\Goldmine.c4s to Missions.c4f\Goldmine.c4s)
 			StdStrBuf sTemp; sTemp.Copy(GetC4Filename(sFilename->getData()));
-			sFilename->Take(sTemp);
+			sFilename->Take(std::move(sTemp));
 			}
 		}
 	}

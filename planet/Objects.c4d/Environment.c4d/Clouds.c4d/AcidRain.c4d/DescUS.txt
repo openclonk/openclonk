@@ -1,0 +1,1 @@
+Enables acid rain. Acid rain will only ever occur if there is already acid in the scenario.

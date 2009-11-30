@@ -21,9 +21,7 @@
 #include "C4Application.h"
 #include "C4Log.h"
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
-#endif
 
 // *** C4InteractiveThread
 

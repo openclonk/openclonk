@@ -18,6 +18,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
+#include "C4Include.h"
 #include "StdScheduler.h"
 #include <stdio.h>
 
@@ -196,7 +197,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	// Wait for something to happen
 	DWORD ret; DWORD dwMsec = iTimeout < 0 ? INFINITE : iTimeout;
 	if(pMessageProc)
-		ret = MsgWaitForMultipleObjects(iEventCnt, pEventHandles, false, dwMsec, QS_ALLEVENTS);
+		ret = MsgWaitForMultipleObjects(iEventCnt, pEventHandles, false, dwMsec, QS_ALLINPUT);
 	else
 		ret = WaitForMultipleObjects(iEventCnt, pEventHandles, false, dwMsec);
 

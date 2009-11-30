@@ -18,6 +18,7 @@
  * "Clonk" is a registered trademark of Matthes Bender.
  * See clonk_trademark_license.txt for full license.
  */
+#include "C4Include.h"
 #include "StdCompiler.h"
 
 #include <stdio.h>
@@ -712,7 +713,7 @@ void StdCompilerINIRead::CreateNameTree()
             (pName->LastChild ? pName->LastChild->NextChild : pName->FirstChild) =
               new NameNode(pName);
 				pName->PrevChild = pPrev;
-        pName->Name.Take(Name);
+				pName->Name.Take(std::move(Name));
         pName->Pos = pPos;
         pName->Indent = iIndent;
         pName->Section = fSection;

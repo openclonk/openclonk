@@ -22,7 +22,10 @@
 
 #define C4STRINGTABLE_H
 
+#include <vector>
+
 class C4StringTable;
+class C4Group;
 
 class C4String
 	{

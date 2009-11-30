@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4StartupOptionsDlg.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4StartupMainDlg.h>
 #include <C4Language.h>
 #include <C4GamePadCon.h>
@@ -33,7 +32,6 @@
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4Network2.h>
-#endif
 
 #include <StdGL.h>
 
@@ -829,9 +827,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheck->SetOnChecked(new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnFullscreenChange));
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_FULLSCREEN_DESC"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-#ifdef _WIN32
-	pCheck->SetEnabled(false);
-#endif
 	pGroupResolution->AddElement(pCheck);
 	// --subgroup troubleshooting
 	pGroupTrouble = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(0,1,1,3));

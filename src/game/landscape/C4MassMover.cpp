@@ -24,13 +24,11 @@
 #include <C4Include.h>
 #include <C4MassMover.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Random.h>
 #include <C4Material.h>
 #include <C4Game.h>
 #include <C4Landscape.h>
 #include <C4Record.h>
-#endif
 
 // Note: creation optimized using advancing CreatePtr, so sequential
 // creation does not keep rescanning the complete set for a free

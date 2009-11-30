@@ -22,10 +22,8 @@
 #include <C4ValueList.h>
 #include <algorithm>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Aul.h>
 #include <C4FindObject.h>
-#endif
 
 C4ValueList::C4ValueList()
 : iSize(0), pData(NULL)

@@ -21,14 +21,14 @@
  */
 // parses scripts
 
+#include <utility>
+
 #include <C4Include.h>
 #include <C4Aul.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Def.h>
 #include <C4Game.h>
 #include <C4Log.h>
-#endif
 
 #define DEBUG_BYTECODE_DUMP 0
 
@@ -355,7 +355,7 @@ void C4AulScriptFunc::ParseDesc()
 			// Long Description
 			else if(SEqual2(DPos0, C4AUL_Desc))
 				{
-				DescLong.Take(Val);
+				DescLong.Take(std::move(Val));
 				}
 			// unrecognized? never mind
 			}
@@ -561,8 +561,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 		};
 	TokenGetState State = TGS_None;
 
-	static char StrBuff[C4AUL_MAX_String + 1];
-	char *pStrPos = StrBuff;
+	std::string strbuf;
 
 	// loop until finished
 	while (true)
@@ -577,7 +576,11 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 				// get token type by first char (+/- are operators)
 				if (((C >= '0') && (C <= '9')))
 														State = TGS_Int;						// integer by 0-9
-				else if (C == '"')	State = TGS_String;					// string by "
+				else if (C == '"')
+				{
+					State = TGS_String;  // string by "
+					strbuf.reserve(512); // assume most strings to be smaller than this
+				}
 				else if (C == '#')	State = TGS_Dir;						// directive by "#"
 				else if (C == ',') {SPos++; return ATT_COMMA;	}	// ","
 				else if (C == ';') {SPos++; return ATT_SCOLON;}	// ";"
@@ -759,31 +762,68 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 				// string end
 				if(C == '"')
 				{
-					*pStrPos = 0;
 					SPos++;
 					// no string expected?
 					if(HoldStrings == Discard) return ATT_STRING;
 					// reg string (if not already done so)
 					C4String *pString;
-					pString = Strings.RegString(StdStrBuf(StrBuff,static_cast<long>(pStrPos - StrBuff)));
+					pString = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
 					// return pointer on string object
 					*pInt = (long) pString;
 					return ATT_STRING;
 				}
-				// check: enough buffer space?
-				if(pStrPos - StrBuff >= C4AUL_MAX_String)
-					Warn("string too long", NULL);
 				else
 				{
-					if(C == '\\') // escape
+					if (C == '\\') // escape
 						switch(*(SPos + 1))
 						{
-						case '"':  SPos ++; *(pStrPos++) = '"';  break;
-						case '\\': SPos ++; *(pStrPos++) = '\\'; break;
+						case '"':  SPos ++; strbuf.push_back('"');  break;
+						case '\\': SPos ++; strbuf.push_back('\\'); break;
+						case 'n': SPos ++; strbuf.push_back('\n'); break;
+						case 'x':
+							{
+								++SPos;
+								// hexadecimal escape: \xAD.
+								// First char must be a hexdigit
+								if (!std::isxdigit(SPos[1]))
+								{
+									Warn("\\x used with no following hex digits");
+									strbuf.push_back('\\'); strbuf.push_back('x');
+								}
+								else
+								{
+									char ch = 0;
+									while (std::isxdigit(SPos[1]))
+									{
+										++SPos;
+										ch *= 16;
+										if (*SPos >= '0' && *SPos <= '9')
+											ch += *SPos - '0';
+										else if (*SPos >= 'a' && *SPos <= 'f')
+											ch += *SPos - 'a' + 10;
+										else if (*SPos >= 'A' && *SPos <= 'F')
+											ch += *SPos - 'A' + 10;
+									};
+									strbuf.push_back(ch);
+								}
+								break;
+							}
+						case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7':
+							{
+								// Octal escape: \142
+								char ch = 0;
+								while (SPos[1] >= '0' && SPos[1] <= '7')
+								{
+									ch *= 8;
+									ch += *++SPos -'0';
+								}
+								strbuf.push_back(ch);
+							}
+							break;
 						default:
 							{
 								// just insert "\"
-								*(pStrPos++) = '\\';
+								strbuf.push_back('\\');
 								// show warning
 								char strEscape[2] = { *(SPos + 1), 0 };
 								Warn("unknown escape: ", strEscape);
@@ -794,7 +834,7 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 
 					else
 						// copy character
-						*(pStrPos++) = C;
+						strbuf.push_back(C);
 				}
 				break;
 

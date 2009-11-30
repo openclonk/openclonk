@@ -31,7 +31,6 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4786) // long symbol names
-#pragma warning(disable : 4996) // POSIX name usage
 #endif
 
 // debug memory management
@@ -80,6 +79,11 @@ typedef __int32 intptr_t;
 #else
 #error Could not find integer datatypes!
 #endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#else
+typedef ptrdiff_t ssize_t;
+#endif
 
 #if defined(__GNUC__)
 // Allow checks for correct printf-usage
@@ -103,6 +107,7 @@ typedef __int32 intptr_t;
 #	define RREF &&
 #else
 #	define RREF &
+	namespace std { template<typename T> inline T &move (T &t) { return t; } }
 #endif
 
 #if defined(_DEBUG) && defined(_MSC_VER)
@@ -131,8 +136,6 @@ typedef __int32 intptr_t;
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <windows.h>
-#undef FALSE
-#undef TRUE
 #include <mmsystem.h>
 #endif
 

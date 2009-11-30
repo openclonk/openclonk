@@ -35,7 +35,8 @@ class C4GameObjects : public C4NotifyingObjectList
 		~C4GameObjects(); // destructor
 		void Default();
 		void Init(int32_t iWidth, int32_t iHeight);
-		void Clear(bool fClearInactive = true); // clear objects
+		void Clear(bool fClearInactive); // clear objects
+		void Clear() { Clear(true); } // don't use default parameters so we get a correct vtbl entry
 
 	public:
 		C4LSectors Sectors; // section object lists

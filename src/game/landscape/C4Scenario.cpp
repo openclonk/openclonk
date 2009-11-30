@@ -25,12 +25,10 @@
 #include <C4Scenario.h>
 #include <C4InputValidation.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Random.h>
 #include <C4Group.h>
 #include <C4Components.h>
 #include <C4Game.h>
-#endif
 
 //==================================== C4SVal ==============================================
 

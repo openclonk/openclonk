@@ -22,6 +22,7 @@
 
 /* OpenGL implementation of NewGfx */
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdGL.h>
 #include <StdSurface2.h>
@@ -559,10 +560,18 @@ bool CStdGL::CreatePrimarySurfaces(bool Playermode, unsigned int iXRes, unsigned
 	//remember fullscreen setting
 	fFullscreen = Playermode && !DDrawCfg.Windowed;
 
+
 	DebugLog("  gl: SetVideoMode...");
 	// Set window size only in playermode
 	if (Playermode)
 		{
+#ifdef _WIN32
+		// HACK: Disable window border
+		SetWindowLong(pApp->pWindow->hWindow, GWL_STYLE,
+			GetWindowLong(pApp->pWindow->hWindow, GWL_STYLE) & ~(WS_CAPTION|WS_THICKFRAME|WS_BORDER));
+		SetWindowLong(pApp->pWindow->hWindow, GWL_EXSTYLE,
+			GetWindowLong(pApp->pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
+#endif
 		// Always search for display mode, in case the user decides to activate fullscreen later
 		if (!pApp->SetVideoMode(iXRes, iYRes, iColorDepth, iMonitor, fFullscreen))
 			{

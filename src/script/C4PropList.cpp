@@ -67,8 +67,14 @@ C4PropList::C4PropList(C4PropList * prototype):
 
 C4PropList::~C4PropList()
 	{
-	assert(!FirstRef);
-	while (FirstRef) FirstRef->Set0();
+	while (FirstRef)
+	{
+		// Manually kill references so DelRef doesn't destroy us again
+		FirstRef->Data = 0; FirstRef->Type = C4V_Any;
+		C4Value *ref = FirstRef;
+		FirstRef = FirstRef->NextRef;
+		ref->NextRef = NULL;
+	}
 	::Objects.PropLists.Remove(this);
 	assert(!::Objects.ObjectNumber(this));
 	}

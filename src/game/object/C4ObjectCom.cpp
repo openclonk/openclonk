@@ -27,7 +27,6 @@
 #include <C4Include.h>
 #include <C4ObjectCom.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Physics.h>
 #include <C4Command.h>
@@ -40,7 +39,6 @@
 #include <C4Game.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
-#endif
 
 bool SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir);
 bool CreateConstructionSite(int32_t ctx, int32_t bty, C4ID strid, int32_t owner, C4Object *pByObj);

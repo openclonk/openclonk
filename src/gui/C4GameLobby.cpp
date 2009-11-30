@@ -24,7 +24,6 @@
 #include <C4Include.h>
 #include <C4GameLobby.h>
 
-#ifndef BIG_C4INCLUDE
 #include "C4FullScreen.h"
 #include "C4Network2Dialogs.h"
 #include "C4GameOptions.h"
@@ -35,7 +34,6 @@
 #include <C4MessageInput.h>
 #include <C4Game.h>
 #include <C4Network2.h>
-#endif
 
 namespace C4GameLobby {
 

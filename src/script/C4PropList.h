@@ -24,6 +24,8 @@
 #include "C4Value.h"
 #include "C4StringTable.h"
 
+class C4Def;
+
 class C4Property {
 	public:
 	C4Property() : Key(0) {}

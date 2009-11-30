@@ -23,7 +23,6 @@
 #include <C4Include.h>
 #include <C4GameObjects.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4ObjectCom.h>
 #include <C4Random.h>
@@ -33,7 +32,6 @@
 #include <C4Log.h>
 #include <C4PlayerList.h>
 #include <C4Record.h>
-#endif
 
 C4GameObjects::C4GameObjects()
 	{
@@ -1005,5 +1003,3 @@ void C4GameObjects::SetOCF()
 		if (cLnk->Obj->Status)
 			cLnk->Obj->SetOCF();
 	}
-
-C4GameObjects Objects;

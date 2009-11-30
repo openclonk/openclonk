@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Translate</title>
+    <category>Script</category><subcat>Strings</subcat>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param><type>string</type><name>text</name><desc>Zeichenkette, die übersetzt werden soll</desc></param>
+      </params>
+    </syntax>
+    <desc>
+      Schlägt einen Text in der <emlink href="lang.html">StringTbl??.txt</emlink> des aufrufenden Skripts nach, und gibt die Übersetzung zurück.
+    </desc>
+    <examples>
+      <example>
+        <code><funclink>Message</funclink>(Translate("I need a better example"));</code>
+        <text>Gibt "Ich benötige ein besseres Beispiel" auf dem Bildschirm aus.</text>
+      </example>
+    </examples>
+  </func>
+  <author>Isilkor</author><date>November 2009</date>
+</funcs>

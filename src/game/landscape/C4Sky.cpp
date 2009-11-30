@@ -25,14 +25,12 @@
 #include <C4Include.h>
 #include <C4Sky.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4Random.h>
 #include <C4SurfaceFile.h>
 #include <C4Components.h>
 #include <C4Weather.h>
 #include <C4GraphicsResource.h>
-#endif
 
 static bool SurfaceEnsureSize(C4Surface **ppSfc, int iMinWdt, int iMinHgt)
 	{

@@ -22,10 +22,11 @@
 // Startup screen for non-parameterized engine start: Player selection dialog
 // Also contains player creation, editing and crew management
 
+#include <utility>
+
 #include <C4Include.h>
 #include <C4StartupPlrSelDlg.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4StartupMainDlg.h>
 #include <C4Random.h>
 #include <C4Game.h>
@@ -34,8 +35,8 @@
 #include <C4Log.h>
 #include <C4GraphicsResource.h>
 #include <C4RankSystem.h>
-#endif
 #include <cctype>
+#include <algorithm>
 
 // font clrs
 const uint32_t ClrPlayerItem   = 0xff000000;
@@ -931,7 +932,7 @@ bool C4StartupPlrSelDlg::CheckPlayerName(const StdStrBuf &Playername, StdStrBuf 
 								Playername.getData()).getData(), "", C4GUI::Ico_Error);
 		return false;
 		}
-	Filename.Take(Path);
+	Filename.Take(std::move(Path));
 	return true;
 	}
 

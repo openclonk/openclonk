@@ -23,13 +23,11 @@
 #include <C4Include.h>
 #include <C4Aul.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Config.h>
 #include <C4Def.h>
 #include <C4Log.h>
 #include <C4Components.h>
-#endif
-
+#include "C4LangStringTable.h"
 
 C4AulError::C4AulError() {}
 
@@ -185,6 +183,8 @@ void C4AulScript::Default()
 	// prepare include list
 	Includes = NULL;
 	Appends = NULL;
+
+	stringTable = 0;
 	}
 
 
@@ -375,6 +375,26 @@ C4AulScriptFunc *C4AulScript::GetSFunc(int iIndex, const char *szPattern)
 	return NULL;
 
 	}
+
+std::string C4AulScript::Translate(const std::string &text) const
+{
+	const C4AulScript *cursor = this;
+	while (cursor)
+	{
+		try
+		{
+			if (cursor->stringTable)
+				return cursor->stringTable->Translate(text);
+		}
+		catch (C4LangStringTable::NoSuchTranslation &e)
+		{
+			// Ignore, soldier on
+		}
+		// Walk tree structure upwards
+		cursor = cursor->Owner;
+	}
+	throw C4LangStringTable::NoSuchTranslation(text);
+}
 
 void C4AulScriptFunc::CopyBody(C4AulScriptFunc &FromFunc)
 	{

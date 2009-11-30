@@ -5,6 +5,7 @@
  * Copyright (c) 2005, 2007, 2009  Peter Wortmann
  * Copyright (c) 2005-2006, 2008-2009  Günther Brammer
  * Copyright (c) 2006  Armin Burgmeier
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -21,6 +22,7 @@
 
 /* A wrapper class to OS dependent event and window interfaces, WIN32 version */
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdRegistry.h>
 #ifdef USE_GL
@@ -58,17 +60,13 @@ CStdWindow::~CStdWindow () {
 }
 
 BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst) {
-  WNDCLASSEX WndClass;
-	WndClass.cbSize=sizeof(WNDCLASSEX);
-  WndClass.style         = CS_DBLCLKS;
-  WndClass.lpfnWndProc   = FullScreenWinProc;
-  WndClass.cbClsExtra    = 0;
-  WndClass.cbWndExtra    = 0;
-  WndClass.hInstance     = hInst;
-  WndClass.hCursor       = NULL;
-  WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-  WndClass.lpszMenuName  = NULL;
-  WndClass.lpszClassName = C4FullScreenClassName;
+	WNDCLASSEX WndClass = {0};
+	WndClass.cbSize        = sizeof(WNDCLASSEX);
+	WndClass.style         = CS_DBLCLKS;
+	WndClass.lpfnWndProc   = FullScreenWinProc;
+	WndClass.hInstance     = hInst;
+	WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+	WndClass.lpszClassName = C4FullScreenClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
   WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
 	return RegisterClassEx(&WndClass);
@@ -85,7 +83,7 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp) {
 							0,
 							C4FullScreenClassName,
 							C4ENGINENAME,
-							WS_POPUP,
+							WS_OVERLAPPEDWINDOW,
 							CW_USEDEFAULT,CW_USEDEFAULT,0,0,
 							NULL,NULL,pApp->hInstance,NULL);
 
@@ -93,7 +91,6 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp) {
 	// Show & focus
 	ShowWindow(hWindow,SW_SHOWNORMAL);
 	SetFocus(hWindow);
-	ShowCursor(false);
 #endif
 
 	return this;
@@ -125,9 +122,11 @@ bool CStdWindow::GetSize(RECT * pRect) {
 }
 
 void CStdWindow::SetSize(unsigned int cx, unsigned int cy) {
-	// resize
 	if (hWindow) {
-		::SetWindowPos(hWindow, NULL, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
+		// If bordered, add border size
+		RECT rect = {0, 0, cx, cy};
+		::AdjustWindowRectEx(&rect, GetWindowLong(hWindow, GWL_STYLE), FALSE, GetWindowLong(hWindow, GWL_EXSTYLE));
+		::SetWindowPos(hWindow, NULL, 0, 0, rect.right, rect.bottom, SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOCOPYBITS | SWP_NOREDRAW | SWP_NOZORDER);
 	}
 }
 
@@ -241,7 +240,7 @@ CStdApp::~CStdApp()
 	{
 	}
 
-char *LoadResStr(const char *id);
+const char *LoadResStr(const char *id);
 
 bool CStdApp::Init(HINSTANCE hInst, int nCmdShow, char *szCmdLine) {
 	// Set instance vars
@@ -314,6 +313,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 		return true;
 		}
 #endif
+#ifdef USE_GL
 	bool fFound=false;
 	DEVMODE dmode;
 	// if a monitor is given, search on that instead
@@ -355,41 +355,32 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 			}
 
 	// change mode
-	if (fFullScreen == fDspModeSet) return true;
-#ifdef _DEBUG
-	SetWindowPos(pWindow->hWindow, HWND_TOP, MonitorRect.left, MonitorRect.top, dspMode.dmPelsWidth, dspMode.dmPelsHeight, SWP_NOOWNERZORDER | SWP_SHOWWINDOW);
-	SetWindowLong(pWindow->hWindow, GWL_STYLE, (WS_VISIBLE | WS_POPUP | WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_SIZEBOX));
-	return true;
-#else
 	if (!fFullScreen)
-		{
+	{
 		ChangeDisplaySettings(NULL, CDS_RESET);
-		fDspModeSet = false;
-		OnResolutionChanged(iXRes, iYRes);
-		return true;
-		}
+	}
 	// save original display mode
-	fDspModeSet=true;
 	// if a monitor is given, use that
-	if (iMonitor)
-		{
+	else if (iMonitor)
+	{
 		dspMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 		if (ChangeDisplaySettingsEx(Mon.getData(), &dspMode, NULL, CDS_FULLSCREEN, NULL) != DISP_CHANGE_SUCCESSFUL)
-			{
-			fDspModeSet = false;
-			}
-		}
-	else
 		{
-		if (ChangeDisplaySettings(&dspMode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
-			{
-			fDspModeSet = false;
-			}
+			return false;
 		}
-	SetWindowPos(pWindow->hWindow, 0, MonitorRect.left, MonitorRect.top, dspMode.dmPelsWidth, dspMode.dmPelsHeight, 0);
-	if (fDspModeSet)
-		OnResolutionChanged(iXRes, iYRes);
-	return fDspModeSet;
+	}
+	else
+	{
+		if (ChangeDisplaySettings(&dspMode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL)
+		{
+			return false;
+		}
+	}
+
+	::SetWindowPos(pWindow->hWindow, NULL, 0, 0, 0, 0, SWP_NOSIZE|SWP_NOZORDER|SWP_NOACTIVATE|SWP_NOREDRAW);
+	pWindow->SetSize(dspMode.dmPelsWidth, dspMode.dmPelsHeight);
+	OnResolutionChanged(iXRes, iYRes);
+	return true;
 #endif
 }
 

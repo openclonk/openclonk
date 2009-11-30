@@ -22,6 +22,7 @@
 #include "C4Version.h"
 #include "C4Network2Reference.h"
 
+#include <utility>
 #include <fcntl.h>
 #include <zlib.h>
 
@@ -374,7 +375,7 @@ bool C4Network2HTTPClient::Decompress(StdBuf *pData)
 	}
 	// Return the buffer
 	Out.SetSize(zstrm.total_out);
-	pData->Take(Out);
+	pData->Take(std::move(Out));
 	// Okay
 	inflateEnd(&zstrm);
 	return true;

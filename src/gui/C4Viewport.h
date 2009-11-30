@@ -28,9 +28,9 @@
 
 #include <StdWindow.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Shape.h>
-#endif
+
+class C4Viewport;
 
 #ifdef WITH_DEVELOPER_MODE
 #include <StdGtkWindow.h>

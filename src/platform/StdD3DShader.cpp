@@ -16,6 +16,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 /* Direct3D shader used for FoW-modulated blitting */
 
+#include "C4Include.h"
 #include <Standard.h>
 
 #ifdef USE_DIRECTX

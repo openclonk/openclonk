@@ -19,6 +19,7 @@
 
 /* A structure for handling 256-color bitmap files */
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <Bitmap256.h>
 

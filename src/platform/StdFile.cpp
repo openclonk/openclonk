@@ -22,6 +22,7 @@
 
 /* Lots of file helpers */
 
+#include "C4Include.h"
 #include <Standard.h>
 #include <StdFile.h>
 #include <StdBuf.h>

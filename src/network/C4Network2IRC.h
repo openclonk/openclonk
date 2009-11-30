@@ -20,6 +20,7 @@
 #define C4NETWORK2IRC_H
 
 #include "C4NetIO.h"
+#include <time.h>
 
 enum C4Network2IRCMessageType
 	{

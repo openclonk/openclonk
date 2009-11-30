@@ -23,14 +23,12 @@
 #include <C4Include.h>
 #include <C4GameMessage.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Application.h>
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
 #include <C4Player.h>
 #include <C4PlayerList.h>
-#endif
 
 const int32_t TextMsgDelayFactor = 2; // frames per char message display time
 

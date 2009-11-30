@@ -23,7 +23,6 @@
 #include <C4Include.h>
 #include <C4Gui.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4FullScreen.h>
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
@@ -33,7 +32,6 @@
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 #include <C4GraphicsSystem.h>
-#endif
 
 namespace C4GUI {
 

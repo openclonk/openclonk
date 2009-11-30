@@ -130,6 +130,8 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 			XNClientWindow, wnd,
 			XNFocusWindow, wnd,
 			XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+			XNResourceName, C4ENGINENAME,
+			XNResourceClass, C4ENGINENAME,
 			NULL);
 		if (!pApp->Priv->xic) {
 			Log("Failed to create input context.");
@@ -140,6 +142,7 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 			if (XGetICValues(pApp->Priv->xic, XNFilterEvents, &ic_event_mask, NULL) == NULL)
 				attr.event_mask |= ic_event_mask;
 			XSelectInput(dpy, wnd, attr.event_mask);
+			XSetICFocus(pApp->Priv->xic);
 		}
 	}
 	// We want notification of closerequests and be killed if we hang
@@ -153,7 +156,8 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 	if (PID != None) XChangeProperty(pApp->dpy, wnd, PID, XA_CARDINAL, 32, PropModeReplace, reinterpret_cast<const unsigned char*>(&pid), 1);
 	// State and Icon
 	XWMHints * wm_hint = XAllocWMHints();
-	wm_hint->flags = StateHint | IconPixmapHint | IconMaskHint;
+	wm_hint->input = 1;
+	wm_hint->flags = StateHint | InputHint | IconPixmapHint | IconMaskHint;
 	wm_hint->initial_state = NormalState;
 	// Trust XpmCreatePixmapFromData to not modify the xpm...
 	XpmCreatePixmapFromData (dpy, wnd, const_cast<char **>(c4x_xpm), &wm_hint->icon_pixmap, &wm_hint->icon_mask, 0);

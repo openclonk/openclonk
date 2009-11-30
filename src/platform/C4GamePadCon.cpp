@@ -26,11 +26,9 @@
 #include <C4Include.h>
 #include <C4GamePadCon.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4ObjectCom.h>
 #include <C4Log.h>
 #include <C4Game.h>
-#endif
 
 #ifdef _WIN32
 //#include <StdJoystick.h>

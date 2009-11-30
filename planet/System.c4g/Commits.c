@@ -2,52 +2,51 @@
 
 /*-- flgr --*/
 
-// Liefert das Offset zur gewünschten Landscape-X-Position zurück
+// Returns the offset to x.
 global func AbsX(int x) { return x - GetX(); }
 
-// Liefert das Offset zur gewünschten Landscape-Y-Position zurück
+// Returns the offset to y.
 global func AbsY(int y) { return y - GetY(); }
 
-// Unterstützt negative Werte und kann Zufallszahlen zwischen 2 Werten liefern
-
+// Supports negative values, and can deliver random values between two bounds.
 global func RandomX(int iStart, int iEnd) {
   var iSwap;
-  // Werte vertauscht: trotzdem richtig rechnen
+  // Values swapped: reswap them.
   if(iStart > iEnd) { iSwap=iStart; iStart=iEnd; iEnd=iSwap; }
-  // Zufälligen Faktor bestimmen (Differenz plus die null) und iStart aufrechnen
+  // Return random factor.
   return Random(iEnd-iStart+1)+iStart;
 }
 
-// Setzt die Fertigstellung von this auf iNewCon
+// Sets the completion of this to iNewCon. 
 global func SetCon(int new_con) {
   return DoCon(new_con - GetCon());
 }
 
-// Setzt X- und Y-Dir eines Objektes
+// Does not set the speed of an object. But you can set two components of the velocity vector with this function.
 global func SetSpeed(int x_dir, int y_dir, int prec) {
   SetXDir(x_dir, prec);
   SetYDir(y_dir, prec);
 }
 
-// Setzt X- und Y-Koordinate eines Vertices zugleich
+// Sets both the X and Y-coordinate of one vertex.
 global func SetVertexXY(int index, int x, int y) {
-  // Vertices setzen
+  // Set vertices
   SetVertex(index, VTX_X, x);
   SetVertex(index, VTX_Y, y);
 }
 
-// Liefert die Anzahl aller feststeckenden Vertices von this zurück
+// Returns the number of stuck vertices. (of this) 
 global func VerticesStuck() {
   var vertices;
   var x_offset;
   var y_offset;
 
-  // Vertices durchgehen
+  // Loop through vertices
   for (var i = -1; i < GetVertexNum(); i++) {
-    // solid?
+    // Solid?
     if (GBackSolid(x_offset + GetVertex(i, VTX_X),
                    y_offset + GetVertex(i, VTX_Y)))
-      // hochzählen
+      // Count vertices
       vertices++;
   }
   return vertices;
@@ -55,7 +54,7 @@ global func VerticesStuck() {
 
 /*-- Joern --*/
 
-//Fügt zum Konto des genannten Spielers iValue Gold hinzu
+// Adds iValue to the account of iPlayer.
 global func DoWealth(int iPlayer, int iValue)
 {
   return SetWealth(iPlayer, iValue + GetWealth(iPlayer));
@@ -64,12 +63,13 @@ global func DoWealth(int iPlayer, int iValue)
 /*-- Tyron --*/
 
 
-// Prüft ob die angegebene Definition vorhanden ist
+// Checks whether the indicated definition is available.
 global func FindDefinition(id idDef) {
  if(GetDefCoreVal("id","DefCore",idDef)) return true;
 }
 
-// Erzeugt amount viele Objekte des Typs id im angegebenen Zielrechteck (optional) im angegeben Material. Gibt die Anzahl der Iterationen zurück, oder -1 wenn die Erzeugung fehlschlägt
+// Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material. 
+// Returns the number of iterations needed, or -1 when the placement failed.
 global func PlaceObjects(id id,int amount,string strmat,int x,int y,int wdt,int hgt,bool onsf,bool nostuck) {
   var i,j;
   var rndx,rndy,obj;
@@ -144,9 +144,9 @@ global func CastObjects(iddef,am,lev,x,y,angs,angw) {
 }
 
 global func CastPXS(string mat,int am,int lev,int x,int y,int angs,int angw) {
-	if(!angw) angw = 180;
+	if(!angw) angw = 360;
   for(var i=0;i<am;i++) {
-		var ang = angs + RandomX(-angw/2,angw/2);
+		var ang = angs-90 + RandomX(-angw/2,angw/2);
     InsertMaterial(Material(mat),x,y,Cos(ang,lev)+RandomX(-3,3),Sin(ang,lev)+RandomX(-3,3));
   }
 }
@@ -163,18 +163,18 @@ global func CheckVisibility(int iPlr)
   var iVisible = this["Visibility"];
   if (GetType(iVisible) == C4V_Array) iVisible = iVisible[0];
 
-  // garnicht sichtbar
+  // Not visible at all
   if(iVisible == VIS_None) return false;
-  // für jeden sichtbar
+  // Visible for all
   if(iVisible == VIS_All) return true;
 
-  // Objekt gehört dem anggb. Spieler
+  // Object is owned by the indicated player
   if(GetOwner() == iPlr)
     { if(iVisible & VIS_Owner) return true; }
-  // Objekt gehört einem Spieler, der iPlr feindlich gesonnen ist
+  // Object belongs to a player, hostile to iPlr
   else if(Hostile(GetOwner(),iPlr))
     { if(iVisible & VIS_Enemies) return true; }
-  // Objekt gehört einem Spieler, der iPlr freundlich gesonnen ist
+  // Object belongs to a player, friendly to iPlr
   else
     { if(iVisible & VIS_Allies) return true; }
 
@@ -185,18 +185,3 @@ global func CheckVisibility(int iPlr)
   return false;
 }
 
-/*-- timi --*/
-
-global func GetPlayerByName(string strPlrName)
-{
-  // Alle Spieler durchgehen
-  var i = GetPlayerCount();
-  while (i--)
-    // Passt der Spielername mit dem gesuchten überein?
-    if (WildcardMatch(GetPlayerName(GetPlayerByIndex(i)), strPlrName))
-      // Wenn ja, Spielernummer zurückgeben!
-      return GetPlayerByIndex(i);
-    
-  // Es gibt keinen Spieler, der so heißt!
-  return -1;
-}

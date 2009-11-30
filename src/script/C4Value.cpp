@@ -24,12 +24,10 @@
 #include <C4StringTable.h>
 #include <C4ValueList.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4Object.h>
 #include <C4Log.h>
-#endif
 
 const C4NullValue C4VNull = C4NullValue();
 const C4Value C4VTrue = C4VBool(true);

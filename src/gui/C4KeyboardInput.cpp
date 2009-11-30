@@ -24,14 +24,14 @@
 #include <C4Include.h>
 #include <C4KeyboardInput.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
-#endif
 
 #ifndef _WIN32
 #include <X11/Xlib.h>
 #include <X11/Xutil.h> // XConvertCase
 #endif
+
+#include <algorithm>
 
 #ifdef USE_SDL_MAINLOOP
 #include <SDL/SDL.h>

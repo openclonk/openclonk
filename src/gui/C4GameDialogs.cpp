@@ -23,13 +23,11 @@
 #include <C4Include.h>
 #include <C4GameDialogs.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Viewport.h>
 #include <C4Network2Dialogs.h>
 #include <C4Game.h>
 #include <C4Player.h>
 #include <C4Network2.h>
-#endif
 
 bool C4AbortGameDialog::is_shown = false;
 

@@ -20,12 +20,10 @@
 #include <C4Include.h>
 #include <C4UpperBoard.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Game.h>
 #include <C4Config.h>
 #include <C4Application.h>
 #include <C4GraphicsResource.h>
-#endif
 
 C4UpperBoard::C4UpperBoard()
 	{

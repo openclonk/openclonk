@@ -25,7 +25,6 @@
 #include <C4Include.h>
 #include <C4Gui.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4FullScreen.h>
 #include <C4LoaderScreen.h>
 #include <C4Application.h>
@@ -35,10 +34,13 @@
 #include <C4MouseControl.h>
 #include <C4GraphicsResource.h>
 #include <C4Game.h>
-#endif
 
 #include <StdGL.h>
 #include <StdRegistry.h>
+
+#ifdef _WIN32
+#include "resource.h"
+#endif
 
 namespace C4GUI {
 
@@ -283,19 +285,19 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 bool Dialog::RegisterWindowClass(HINSTANCE hInst)
 	{
 	// register landscape viewport class
-  WNDCLASSEX WndClass;
+	WNDCLASSEX WndClass;
 	WndClass.cbSize=sizeof(WNDCLASSEX);
-  WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
-  WndClass.lpfnWndProc   = DialogWinProc;
-  WndClass.cbClsExtra    = 0;
-  WndClass.cbWndExtra    = 0;
-  WndClass.hInstance     = hInst;
-  WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW); // - always use normal hw cursor
-  WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
-  WndClass.lpszMenuName  = NULL;
-  WndClass.lpszClassName = ConsoleDlgClassName;
+	WndClass.style         = CS_DBLCLKS | CS_BYTEALIGNCLIENT;
+	WndClass.lpfnWndProc   = DialogWinProc;
+	WndClass.cbClsExtra    = 0;
+	WndClass.cbWndExtra    = 0;
+	WndClass.hInstance     = hInst;
+	WndClass.hCursor       = LoadCursor (NULL, IDC_ARROW); // - always use normal hw cursor
+	WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
+	WndClass.lpszMenuName  = NULL;
+	WndClass.lpszClassName = ConsoleDlgClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-  WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
+	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
 	return !!RegisterClassEx(&WndClass);
 	}
 #else

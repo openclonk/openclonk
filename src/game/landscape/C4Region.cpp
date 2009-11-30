@@ -23,9 +23,7 @@
 #include <C4Include.h>
 #include <C4Region.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Facet.h>
-#endif
 
 C4Region::C4Region()
 	{

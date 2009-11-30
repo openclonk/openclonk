@@ -26,7 +26,6 @@
 #include <C4Include.h>
 #include <C4EditCursor.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Console.h>
 #include <C4Object.h>
 #include <C4Application.h>
@@ -38,6 +37,9 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+
+#ifdef _WIN32
+#include "resource.h"
 #endif
 
 #ifdef WITH_DEVELOPER_MODE

@@ -17,6 +17,7 @@
  */
 // a buffer holding a log history
 
+#include "C4Include.h"
 #include "Standard.h"
 #include "C4LogBuf.h"
 

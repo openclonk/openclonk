@@ -22,14 +22,13 @@
 #include <C4Include.h>
 #include <C4Aul.h>
 
-#ifndef BIG_C4INCLUDE
 #include <C4Object.h>
 #include <C4Config.h>
 #include <C4GameMessage.h>
 #include <C4Game.h>
 #include <C4Log.h>
 #include <C4Record.h>
-#endif
+#include <algorithm>
 
 C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
 	{
@@ -1325,6 +1324,7 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	pScript->Strict = Strict;
 	pScript->Temporary = true;
 	pScript->State = ASS_LINKED;
+	pScript->stringTable = stringTable;
 	if (pObj)
 		{
 		pScript->Def = pObj->Def;

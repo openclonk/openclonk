@@ -33,8 +33,8 @@ class C4ComponentHost
 		void Default();
 		void Clear();
 		void Open();
-		const char *GetData() { return Data.getData(); }
-		size_t GetDataSize() { return Data.getLength(); }
+		const char *GetData() const { return Data.getData(); }
+		size_t GetDataSize() const { return Data.getLength(); }
 		virtual void Close();
 		bool Load(const char *szName, C4Group &hGroup, const char *szFilename, const char *szLanguage=NULL);
 		bool Load(const char *szName, C4GroupSet &hGroupSet, const char *szFilename, const char *szLanguage=NULL);

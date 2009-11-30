@@ -217,15 +217,20 @@ bool CStdApp::FlushMessages() {
 void CStdApp::HandleXMessage() {
 	XEvent event;
 	XNextEvent(dpy, &event);
-	// Needed for input methods
-	if (XFilterEvent(&event, event.xany.window)) return;
+	bool filtered = XFilterEvent(&event, event.xany.window);
 	switch (event.type) {
-		case KeyPress: {
+		case EnterNotify:
+		KeyMask = event.xcrossing.state;
+		break;
+		case KeyPress:
+		// Needed for input methods
+		if (!filtered) {
 			char c[10] = "";
-			Status blub;
 			if (Priv->xic) {
-				XSetICFocus(Priv->xic);
-				XmbLookupString(Priv->xic, &event.xkey, c, 10, 0, &blub);
+				Status lsret;
+				Xutf8LookupString(Priv->xic, &event.xkey, c, 10, 0, &lsret);
+				if (lsret == XLookupKeySym) fprintf(stderr, "FIXME: XmbLookupString returned XLookupKeySym\n");
+				if (lsret == XBufferOverflow) fprintf(stderr, "FIXME: XmbLookupString returned XBufferOverflow\n");
 			} else {
 				static XComposeStatus state;
 				XLookupString(&event.xkey, c, 10, 0, &state);
@@ -305,6 +310,7 @@ void CStdApp::HandleXMessage() {
 			break;
 		}
 		case FocusIn:
+		if (Priv->xic) XSetICFocus(Priv->xic);
 		if (Priv->pending_desktop)
 			Priv->pending_desktop = false;
 		if (pWindow && event.xany.window == pWindow->wnd && Priv->tasked_out) {
@@ -312,7 +318,10 @@ void CStdApp::HandleXMessage() {
 			Priv->tasked_out = false;
 		}
 		break;
-		case FocusOut: case UnmapNotify:
+		case FocusOut:
+		if (Priv->xic) XUnsetICFocus(Priv->xic);
+		// fallthrough
+		case UnmapNotify:
 		if (pWindow && event.xany.window == pWindow->wnd && fDspModeSet) {
 			Priv->pending_desktop = true;
 		}
@@ -618,14 +627,17 @@ void CStdApp::OnXInput()
 		Priv->tasked_out = true;
 		Priv->pending_desktop = false;
 	}
+	// At least the _NET_WM_PING reply needs to be flushed,
+	// and having received events is a good heuristic for
+	// having issued X11 commands, even if most events
+	// are mouse moves that don't generate X11 commands.
+	XFlush(dpy);
 }
 
 void CStdApp::OnStdInInput()
 {
 	if(!ReadStdInCommand())
 	{
-		// TODO: This should only cause HandleMessage to return
-		// HR_Failure...
 		Quit();
 	}
 }
