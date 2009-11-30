@@ -495,6 +495,19 @@ private func Throwing()
   obj->SetYDir(iYDir,1000);
 }
 
+// hotkey control
+public func ControlHotkey(int hotindex)
+{
+	// inventory selection
+	if(hotindex < MaxContentsCount())
+	{
+		SelectItem(hotindex);
+		return true;
+	}
+
+	return _inherited(...);
+}
+
 // custom throw
 public func ControlThrow(object me, int x, int y)
 {
