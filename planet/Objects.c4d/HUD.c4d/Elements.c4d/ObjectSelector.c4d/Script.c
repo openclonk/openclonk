@@ -23,16 +23,20 @@
 	layer 0 - unused
 	layer 1 - title
 	layer 2 - actionicon
+	layer 3,4 - hands
 	
 	layer 12 - hotkey
 
 */
 
-local isSelected, crew, hotkey, myobject, actiontype;
+local isSelected, crew, hotkey, myobject, actiontype, hand;
 
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
 static const ACTIONTYPE_STRUCTURE = 2;
+
+private func HandSize() { return 400; }
+private func IconSize() { return 500; }
 
 protected func Construction()
 {
@@ -41,6 +45,7 @@ protected func Construction()
 	isSelected = false;
 	hotkey = 0;
 	myobject = nil;
+	hand = 0;
 	
 	// parallaxity
 	this["Parallaxity"] = [0,0];
@@ -58,6 +63,7 @@ public func MouseSelection(int plr)
 	// object is in inventory
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
+		hand = 0;
 		crew->SelectItem(hotkey-1);
 		return true;
 	}
@@ -113,10 +119,11 @@ public func Clear()
 
 public func SetObject(object obj, int type, int pos)
 {
-	if(obj == myobject)
-		if(type == actiontype)
-			if(pos+1 == hotkey)
-				return;
+	if(actiontype != ACTIONTYPE_INVENTORY)
+		if(obj == myobject)
+			if(type == actiontype)
+				if(pos+1 == hotkey)
+					return;
 
 	this["Visibility"] = VIS_Owner;
 				
@@ -180,7 +187,7 @@ public func ShowHotkey()
 		if(hotkey == 10) num = 0;
 		var name = Format("%d",num);
 		SetGraphics(name,NUMB,12,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
+		SetObjDrawTransform(300,0,16000,0,300,-34000, 12);
 		SetClrModulation(RGB(160,0,0),12);
 	}
 }
@@ -204,13 +211,11 @@ public func UpdateSelectionStatus()
 			isSelected = true;
 
 	// and set the icon...
-	
-			
 	if(isSelected)
 	{
 		SetClrModulation(RGB(220,0,0),12);
-		SetObjDrawTransform(500,0,16000,0,500,-30000, 12);
-
+		SetObjDrawTransform(500,0,16000,0,500,-34000, 12);
+		
 		if(actiontype == ACTIONTYPE_VEHICLE)
 			SetGraphics("LetGo",GetID(),2,GFXOV_MODE_Base);
 			
@@ -220,7 +225,7 @@ public func UpdateSelectionStatus()
 	else
 	{
 		SetClrModulation(RGB(160,0,0),12);
-		SetObjDrawTransform(300,0,16000,0,300,-30000, 12);			
+		SetObjDrawTransform(300,0,16000,0,300,-34000, 12);
 		
 		if(actiontype == ACTIONTYPE_VEHICLE)
 			SetGraphics("Grab",GetID(),2,GFXOV_MODE_Base);
@@ -228,6 +233,33 @@ public func UpdateSelectionStatus()
 		if(actiontype == ACTIONTYPE_STRUCTURE)
 			SetGraphics("Enter",GetID(),2,GFXOV_MODE_Base);
 	}
-
-	SetObjDrawTransform(600,0,-16000,0,600,16000, 2);
+	SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);
+	
+	// the hands...
+	var hands = isSelected;
+	// .. are not displayed for inventory if the clonk is inside
+	// a building or is pushing something because the controls
+	// are redirected to those objects
+	if(actiontype == ACTIONTYPE_INVENTORY)
+		if(crew->Contained() || crew->GetProcedure() == "PUSH")
+			hands = false;
+			
+	if(hands)
+	{
+		if(hand == 0 || actiontype != ACTIONTYPE_INVENTORY)
+		{
+			SetGraphics("One",GetID(),3,GFXOV_MODE_Base);
+			SetObjDrawTransform(HandSize(),0,-16000,0,HandSize(),-12000, 3);
+		}
+		if(hand == 1 || actiontype != ACTIONTYPE_INVENTORY)
+		{
+			SetGraphics("Two",GetID(),4,GFXOV_MODE_Base);
+			SetObjDrawTransform(HandSize(),0,8000,0,HandSize(),-12000, 4);
+		}
+	}
+	else
+	{
+		SetGraphics(nil,nil,3);
+		SetGraphics(nil,nil,4);
+	}
 }
