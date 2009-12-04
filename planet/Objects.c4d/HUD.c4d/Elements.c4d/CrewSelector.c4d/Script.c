@@ -161,22 +161,22 @@ public func UpdateRank()
 {
 	if(!crew) return;
 	
+	// different rank symbols for different clonks possible
+	var idRank = crew->~RanksID();
+	if(!idRank) idRank = RANK;
+	
 	var rank = crew->GetRank();
-	var nrank = rank % 25;
-	var brank = rank / 25;
+	var nrank = rank % DefinitionCall(idRank,"RegularRankCount");
+	var brank = rank / DefinitionCall(idRank,"RegularRankCount");
 	
 	var rankx = -1000 * GetDefWidth()/2 + 10000;
 	var ranky = -15000;
-	
-	// different rank symbols for different clonks possible
-	var idRank = crew->~RankSymbolsID();
-	if(!idRank) idRank = RANK;
 	
 	SetGraphics(nil,idRank,10,GFXOV_MODE_Action,Format("Rank%d",nrank));
 	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, 10);
 	
 	// extra rank (the star if the clonk is too experienced for normal ranks)
-	if(brank > 0)
+	if(brank % DefinitionCall(idRank,"ExtraRankCount"))
 	{
 		SetGraphics(nil,RANK,11,GFXOV_MODE_Action,Format("RankExtra%d",brank));
 		SetObjDrawTransform(1000,0,rankx-6000,0,1000,ranky-4000, 11);
@@ -185,6 +185,7 @@ public func UpdateRank()
 	{
 		SetGraphics(nil,nil,11);
 	}
+
 }
 
 public func UpdateTitleGraphic()
@@ -281,7 +282,7 @@ public func UpdateMagicBar(bool nocall)
 
 private func UpdateName()
 {
-	CustomMessage(Format("@%s",crew->GetName()), this, crew->GetOwner(), 0, 64, nil, nil, nil, MSG_Multiple);
+	CustomMessage(Format("@%s",crew->GetName()), this, crew->GetOwner(), 0, 65, nil, nil, nil, MSG_Multiple);
 	cleared = false;
 }
 

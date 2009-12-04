@@ -938,24 +938,6 @@ void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
 													 cursor );
 			C4ST_STOP(ObjInfStat)
 			}
-
-	C4ST_STARTNEW(ContStat, "C4Viewport::DrawCursorInfo: Contents")
-
-	// Draw contents
-	if (cursor->Contents.ObjectCount()==1)
-		{
-		// Single object
-		ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+cgo.Hgt-C4SymbolBorder-C4SymbolSize,C4SymbolSize,C4SymbolSize);
-		cursor->Contents.GetObject()->DrawPicture(ccgo,false,SetRegions);
-		}
-	else
-		{
-		// Object list
-		ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+cgo.Hgt-C4SymbolBorder-C4SymbolSize,7*C4SymbolSize,C4SymbolSize);
-		cursor->Contents.DrawIDList(ccgo,-1,::Definitions,C4D_All,SetRegions,COM_Contents,false);
-		}
-
-	C4ST_STOP(ContStat)
 	}
 
 void C4Viewport::DrawMenu(C4TargetFacet &cgo)

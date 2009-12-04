@@ -22,13 +22,13 @@
 	-----------------
 	layer 0 - unused
 	layer 1 - title
-	layer 2 - select-marker
+	layer 2 - actionicon
 	
 	layer 12 - hotkey
 
 */
 
-local isSelected, crew, hotkey, myobject, inventory_pos, actiontype;
+local isSelected, crew, hotkey, myobject, actiontype;
 
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
@@ -39,7 +39,7 @@ protected func Construction()
 	_inherited();
 	
 	isSelected = false;
-	hotkey = false;
+	hotkey = 0;
 	myobject = nil;
 	
 	// parallaxity
@@ -58,7 +58,7 @@ public func MouseSelection(int plr)
 	// object is in inventory
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
-		crew->SelectItem(inventory_pos);
+		crew->SelectItem(hotkey-1);
 		return true;
 	}
 
@@ -103,18 +103,33 @@ public func MouseSelection(int plr)
 	// TODO: more script choices... Selection-Callbacks for  all objects
 }
 
-public func SetObject(object obj, int type, int inv_pos)
+public func Clear()
 {
+	myobject = nil;
+	actiontype = -1;
+	hotkey = 0;
+	this["Visibility"] = VIS_None;
+}
+
+public func SetObject(object obj, int type, int pos)
+{
+	if(obj == myobject)
+		if(type == actiontype)
+			if(pos+1 == hotkey)
+				return;
+
+	this["Visibility"] = VIS_Owner;
+				
 	actiontype = type;
 	myobject = obj;
-	inventory_pos = inv_pos;
+	hotkey = pos+1;
 	
 	RemoveEffect("IntRemoveGuard",myobject);
 	
 	if(!myobject) 
 	{	
 		SetGraphics(nil,nil,1);
-		SetName(Format("$LabelSlot$ %d",inventory_pos));
+		SetName(Format("$LabelSlot$ %d",hotkey-1));
 	}
 	else
 	{
@@ -131,41 +146,48 @@ public func SetObject(object obj, int type, int inv_pos)
 		// create an effect which monitors whether the object is removed
 		AddEffect("IntRemoveGuard",myobject,1,0,this);
 	}
+
+	ShowHotkey();
+	UpdateSelectionStatus();
 }
 
 public func FxIntRemoveGuardStop(object target, int num, int reason, bool temp)
 {
 	if(reason == 3)
 		if(target == myobject)
-			SetObject(nil,0,inventory_pos);
+			SetObject(nil,0,hotkey-1);
 }
 
 public func SetCrew(object c)
 {
+	if(crew == c) return;
+	
 	crew = c;
 	SetOwner(c->GetOwner());
 	
 	this["Visibility"] = VIS_Owner;
 }
 
-public func SetHotkey(int num)
+public func ShowHotkey()
 {
-	if(num < 0 || num > 9)
+	if(hotkey > 10 || hotkey <= 0)
 	{
 		SetGraphics(nil,nil,12);
-		hotkey = false;
-		return;
 	}
-	
-	hotkey = true;
-	var name = Format("%d",num);
-	SetGraphics(name,NUMB,12,GFXOV_MODE_IngamePicture);
-	SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
-	SetClrModulation(RGB(160,0,0),12);
+	else
+	{
+		var num = hotkey;
+		if(hotkey == 10) num = 0;
+		var name = Format("%d",num);
+		SetGraphics(name,NUMB,12,GFXOV_MODE_IngamePicture);
+		SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
+		SetClrModulation(RGB(160,0,0),12);
+	}
 }
 
 public func UpdateSelectionStatus()
 {
+
 	// determine...
 	isSelected = false;
 	
@@ -178,19 +200,34 @@ public func UpdateSelectionStatus()
 			isSelected = true;
 
 	if(actiontype == ACTIONTYPE_INVENTORY)
-		if(crew->GetSelected() == inventory_pos)
+		if(crew->GetSelected() == hotkey-1)
 			isSelected = true;
-	
-	if(!hotkey) return;
 
+	// and set the icon...
+	
+			
 	if(isSelected)
 	{
 		SetClrModulation(RGB(220,0,0),12);
 		SetObjDrawTransform(500,0,16000,0,500,-30000, 12);
+
+		if(actiontype == ACTIONTYPE_VEHICLE)
+			SetGraphics("LetGo",GetID(),2,GFXOV_MODE_Base);
+			
+		if(actiontype == ACTIONTYPE_STRUCTURE)
+			SetGraphics("Exit",GetID(),2,GFXOV_MODE_Base);
 	}
 	else
 	{
 		SetClrModulation(RGB(160,0,0),12);
-		SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
+		SetObjDrawTransform(300,0,16000,0,300,-30000, 12);			
+		
+		if(actiontype == ACTIONTYPE_VEHICLE)
+			SetGraphics("Grab",GetID(),2,GFXOV_MODE_Base);
+			
+		if(actiontype == ACTIONTYPE_STRUCTURE)
+			SetGraphics("Enter",GetID(),2,GFXOV_MODE_Base);
 	}
+
+	SetObjDrawTransform(600,0,-16000,0,600,16000, 2);
 }

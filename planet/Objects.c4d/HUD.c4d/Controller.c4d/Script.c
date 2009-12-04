@@ -90,44 +90,84 @@ public func OnCrewEnabled(object clonk)
 }
 
 // call from HUDAdapter (Clonk)
-public func OnCrewSelection(object obj, bool deselect)
+public func OnCrewSelection(object clonk, bool deselect)
 {
 
 	// selected
 	if(!deselect)
 	{
-		// if several clonks were selected:
-		// only the cursor is of interest
-		var cursor = GetCursor(GetOwner());
-		//Log("cursor: %s",cursor->GetName());
-		//if(obj != cursor) return;
 		// TODO: what if two clonks are selected? Which clonk gets the actionbar?
 		
 		// fill actionbar
+		var max = 10;
 		
 		// inventory
 		var i;
-		for(i = 0; i < obj->MaxContentsCount(); ++i)
+		for(i = 0; i < clonk->MaxContentsCount(); ++i)
 		{
-			ActionButton(obj,i);
-			actionbar[i]->SetObject(obj->GetItem(i),ACTIONTYPE_INVENTORY,i);
-			actionbar[i]->UpdateSelectionStatus();
-		}
-		// make rest invisible
-		for(; i < GetLength(actionbar); ++i)
-		{
-			// we don't have to remove them all the time, no?
-			if(actionbar[i])
-				actionbar[i]["Visibility"] = VIS_None;
-		}
+			ActionButton(clonk,i,clonk->GetItem(i),ACTIONTYPE_INVENTORY);
+		}		
+		ClearButtons(i);
 		
 		// and start effect to monitor vehicles and structures...
-		// TODO
+		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,i,max);
 	}
 	else
 	{
-		// TODO
+		// remove effect
+		RemoveEffect("IntSearchInteractionObjects",clonk,0);
+		ClearButtons();
 	}
+}
+
+
+public func FxIntSearchInteractionObjectsStart(object target, int num, int temp, startAt, max)
+{
+	if(temp != 0) return;
+	EffectVar(0,target,num) = startAt;
+	EffectVar(1,target,num) = max;
+	EffectCall(target,num,"Timer",target,num,0);
+}
+
+public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
+{
+
+	// find vehicles & structures
+	var startAt = EffectVar(0,target,num);
+	var i = startAt;
+	var max = EffectVar(1,target,num);
+	
+	// target->FindObjects(Find_AtPoint(0,0),Find_OCF(OCF_Grab),Find_NoContainer());
+	// doesnt work!! -> BUG!
+	
+	var vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer());
+	// don't forget the vehicle that the clonk is pushing (might not be found
+	// by the findobjects because it is not at that point)
+	var pushed = nil;
+	if(target->GetProcedure() == "PUSH" && (pushed = target->GetActionTarget()))
+	{
+		ActionButton(target,i++,pushed,ACTIONTYPE_VEHICLE);
+		if(max) if(i >= max) return ClearButtons(i);
+	}
+	
+	for(var vehicle in vehicles)
+	{
+		// ...and exclude the pushed one here...
+		if(vehicle == pushed) continue;
+		ActionButton(target,i++,vehicle,ACTIONTYPE_VEHICLE);
+		if(max) if(i >= max) return ClearButtons(i);
+	}
+
+	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer());
+	for(var structure in structures)
+	{
+		ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE);
+		if(max) if(i >= max) return ClearButtons(i);
+	}
+
+	//Message("found %d vehicles and %d structures",target,GetLength(vehicles),GetLength(structures));
+	
+	return ClearButtons(i);
 }
 
 // call from HUDAdapter (Clonk)
@@ -147,30 +187,41 @@ public func OnSlotObjectChanged(int slot)
 	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
 }
 
-private func ActionButton(object forClonk, int i)
+private func ActionButton(object forClonk, int pos, object interaction, int actiontype)
 {
 	var size = ACBT->GetDefWidth();
 	var spacing = 12 + size;
 
 	// don't forget the spacings between inventory - vehicle,structure
 	var extra = 0;
-	if(forClonk->MaxContentsCount() <= i) extra = 80;
+	if(forClonk->MaxContentsCount() <= pos) extra = 80;
 	
-	var bt = actionbar[i];
+	var bt = actionbar[pos];
 	// no object yet... create it
 	if(!bt)
 	{
 		bt = CreateObject(ACBT,0,0,GetOwner());
 	}
 	
-	bt->SetPosition(64 + i * spacing + extra, -16 - size/2);
-	
-	if(i+1 == 10) bt->SetHotkey(0);
-	else if(i+1 < 10) bt->SetHotkey(i+1);
+	bt->SetPosition(64 + pos * spacing + extra, -16 - size/2);
 	
 	bt->SetCrew(forClonk);
+	bt->SetObject(interaction,actiontype,pos);
 	
-	actionbar[i] = bt;
+	actionbar[pos] = bt;
+	return bt;
+}
+
+private func ClearButtons(int start)
+{
+
+	// make rest invisible
+	for(var j = start; j < GetLength(actionbar); ++j)
+	{
+		// we don't have to remove them all the time, no?
+		if(actionbar[j])
+			actionbar[j]->Clear();
+	}
 }
 
 private func CreateSelectorFor(object clonk)
