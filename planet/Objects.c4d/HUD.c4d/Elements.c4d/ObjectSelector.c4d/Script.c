@@ -151,7 +151,8 @@ public func SetObject(object obj, int type, int pos)
 		SetName(myobject->GetName());
 		
 		// create an effect which monitors whether the object is removed
-		AddEffect("IntRemoveGuard",myobject,1,0,this);
+		if(actiontype == ACTIONTYPE_INVENTORY)
+			AddEffect("IntRemoveGuard",myobject,1,0,this);
 	}
 
 	ShowHotkey();

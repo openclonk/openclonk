@@ -167,7 +167,9 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 
 	//Message("found %d vehicles and %d structures",target,GetLength(vehicles),GetLength(structures));
 	
-	return ClearButtons(i);
+	ClearButtons(i);
+	
+	return;
 }
 
 // call from HUDAdapter (Clonk)
@@ -222,6 +224,16 @@ private func ClearButtons(int start)
 		if(actionbar[j])
 			actionbar[j]->Clear();
 	}
+}
+
+// hotkey control
+public func ControlHotkey(int hotindex)
+{
+	if(GetLength(actionbar) <= hotindex) return false;
+	
+	actionbar[hotindex]->~MouseSelection(GetOwner());
+	
+	return true;
 }
 
 private func CreateSelectorFor(object clonk)

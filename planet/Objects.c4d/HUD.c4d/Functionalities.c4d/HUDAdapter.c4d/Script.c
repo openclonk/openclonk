@@ -20,6 +20,12 @@ public func HUDAdapter()
 	return true;
 }
 
+// hotkey control
+public func ControlHotkey(int hotindex)
+{
+	if(HUDcontroller) return HUDcontroller->ControlHotkey(hotindex);
+}
+
 /* Engine callbacks */
 
 // bootstrap the hud
@@ -28,7 +34,7 @@ protected func Recruitment(int iPlr)
 	HUDcontroller = FindObject(Find_ID(HUDC),Find_Owner(iPlr));
 	if(!HUDcontroller)
 		HUDcontroller = CreateObject(HUDC,10,10,iPlr);
-	return _inherited(...); 
+	return _inherited(iPlr,...); 
 }
 
 // calls to the crew selector hud
@@ -54,7 +60,7 @@ protected func OnPhysicalChange(string physical, int change, int mode)
 		else if(physical == "Breath") HUDselector->UpdateBreathBar();
 		else if(physical == "Magic") HUDselector->UpdateMagicBar();
 	}
-	return _inherited(...); 
+	return _inherited(physical,change,mode,...); 
 }
 
 // calls to both crew selector and controller
@@ -63,7 +69,7 @@ protected func CrewSelection(bool unselect)
 {
 	if(HUDselector) HUDselector->UpdateSelectionStatus();
 	if(HUDcontroller) HUDcontroller->OnCrewSelection(this,unselect);
-	return _inherited(...); 
+	return _inherited(unselect,...); 
 }
 
 // call from ClonkControl.c4d (self)
@@ -71,7 +77,7 @@ protected func OnSelectionChanged(int old, int new)
 {
 	// update selection status in hud
 	if(HUDcontroller) HUDcontroller->OnSelectionChanged(old, new);
-	return _inherited(...); 
+	return _inherited(old,new,...); 
 }
 
 // calls to controller
@@ -92,11 +98,11 @@ protected func OnCrewDisabled()
 protected func OnSlotFull(int slot)
 {
 	if(HUDcontroller) HUDcontroller->OnSlotObjectChanged(slot);
-	return _inherited(...);
+	return _inherited(slot,...);
 }
 
 protected func OnSlotEmpty(int slot)
 {
 	if(HUDcontroller) HUDcontroller->OnSlotObjectChanged(slot);
-	return _inherited(...);
+	return _inherited(slot,...);
 }

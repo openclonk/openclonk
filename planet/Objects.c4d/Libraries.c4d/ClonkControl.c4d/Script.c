@@ -14,7 +14,8 @@
 	
 	Objects that inherit this object need to return _inherited() in the
 	following callbacks (if defined):
-		Construction, Collection2, Ejection, RejectCollect
+		Construction, Collection2, Ejection, RejectCollect, Departure,
+		Entrance, AttachTargetLost, GrabLost, CrewSelection
  
 	The following callbacks are made to other objects:
 		*Stop
@@ -122,7 +123,7 @@ public func GetItem(int i)
 
 // disable ShiftContents for objects with ClonkControl.c4d
 
-global func ShiftContents(bool fShiftBack, id idTarget, bool fDoCalls)
+global func ShiftContents()
 {
 	if(this)
 		if(this->~GetSelected() != nil)
@@ -132,11 +133,11 @@ global func ShiftContents(bool fShiftBack, id idTarget, bool fDoCalls)
 
 /* ################################################# */
 
-protected func Construction(object by)
+protected func Construction()
 {
 	selected = 0;
 	inventory = CreateArray();
-	return _inherited(by);
+	return _inherited(...);
 }
 
 protected func Collection2(object obj)
@@ -164,7 +165,7 @@ protected func Collection2(object obj)
 	}
 	this->~OnSlotFull(sel);
 
-	return _inherited(...);
+	return _inherited(obj,...);
 }
 
 protected func Ejection(object obj)
@@ -179,14 +180,14 @@ protected func Ejection(object obj)
 	
 	this->~OnSlotEmpty(i);
 	
-	_inherited(...);
+	_inherited(obj,...);
 }
 
 protected func RejectCollect(id objid, object obj)
 {
 	// check max contents
 	if(ContentsCount() >= MaxContentsCount()) return true;
-	return _inherited(...);
+	return _inherited(objid,obj,...);
 }
 
 /* ################################################# */
@@ -221,9 +222,8 @@ protected func GrabLost()         { CancelUse(); return _inherited(...); }
 // ...aaand the same for when the clonk is deselected
 protected func CrewSelection(bool unselect)
 {
-	if(unselect)
-		CancelUse();
-	return _inherited(...);
+	if(unselect) CancelUse();
+	return _inherited(unselect,...);
 }
 
 /* Main control function */
@@ -574,20 +574,6 @@ private func Throwing()
   obj->Exit(iX, iY, iR, 0, 0, iRDir);  
   obj->SetXDir(iXDir,1000);
   obj->SetYDir(iYDir,1000);
-}
-
-// hotkey control
-public func ControlHotkey(int hotindex)
-{
-	// inventory selection
-	if(hotindex < MaxContentsCount())
-	{
-	// TODO: its more than that!
-		SelectItem(hotindex);
-		return true;
-	}
-
-	return _inherited(...);
 }
 
 // custom throw
