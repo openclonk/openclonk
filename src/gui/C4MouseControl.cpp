@@ -748,11 +748,13 @@ void C4MouseControl::DragNone()
 		if (FogOfWar && DownCursor != C4MC_Cursor_Region) return;
 		switch (DownCursor)
 			{
+				/*
 			// Drag start selecting in landscape
 			case C4MC_Cursor_Crosshair:
 				Selection.Clear();
 				Drag=C4MC_Drag_Selecting; DragSelecting=C4MC_Selecting_Unknown;
 				break;
+				*/
 			// Help: no dragging
 			case C4MC_Cursor_Help:
 				break;

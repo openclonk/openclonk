@@ -3977,26 +3977,8 @@ void C4Object::ExecAction()
 			if (!Shape.Attach(smpx,smpy,CNAT_Bottom))
 				{ ObjectComStopDig(this); return; }
 			lLimit=ValByPhysical(125, pPhysical->Dig);
-			iPhaseAdvance=fixtoi(lLimit*40);
-			switch (Action.ComDir)
-				{
-				case COMD_Up:
-					ydir=-lLimit/2;
-					if (Action.Dir==DIR_Left) xdir=-lLimit;
-					else xdir=+lLimit;
-					break;
-				case COMD_UpLeft: xdir=-lLimit; ydir=-lLimit/2;		break;
-				case COMD_Left:  xdir=-lLimit; ydir=0;						break;
-				case COMD_DownLeft: xdir=-lLimit; ydir=+lLimit;   break;
-				case COMD_Down:  xdir=0; ydir=+lLimit;						break;
-				case COMD_DownRight: xdir=+lLimit; ydir=+lLimit;  break;
-				case COMD_Right: xdir=+lLimit; ydir=0;						break;
-				case COMD_UpRight: xdir=+lLimit; ydir=-lLimit/2;	break;
-				case COMD_Stop:
-					xdir=0; ydir=0;
-					iPhaseAdvance=0;
-					break;
-				}
+			iPhaseAdvance=40*lLimit;
+
 			if (xdir < 0) SetDir(DIR_Left); else if (xdir > 0) SetDir(DIR_Right);
 			Action.t_attach=CNAT_None;
 			Mobile=1;

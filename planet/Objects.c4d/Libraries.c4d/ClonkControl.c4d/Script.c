@@ -38,6 +38,7 @@
 local selected;
 local inventory;
 local throwAngle;
+local using, mlastx, mlasty;
 
 /* ++++++++ Item controls ++++++++++ */
 
@@ -81,6 +82,9 @@ public func SelectItem(selection)
 		if(!found) return;
 	}
 	*/
+	
+	// cancel the use of another item
+	if(using == item) { using->~ControlUseStop(this,mlastx,mlasty); using = nil; }
 	
 	// de-select previous (if any)
 	if(item) item->~Deselection(this);
@@ -185,6 +189,42 @@ protected func RejectCollect(id objid, object obj)
 	return _inherited(...);
 }
 
+/* ################################################# */
+
+private func CancelUse()
+{
+	if(!using) return;
+	var control = "Control";
+	if(Contained() == using) control = "Contained";
+	using->~Call(Format("~%sUseStop",control),this,mlastx,mlasty);
+	using = nil;
+}
+
+// The using-command hast to be canceled if the clonk is entered into
+// or exited from a building.
+
+protected func Entrance()         { CancelUse(); return _inherited(...); }
+protected func Departure()        { CancelUse(); return _inherited(...); }
+
+// The same for vehicles
+protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
+protected func GrabLost()         { CancelUse(); return _inherited(...); }
+// TODO: what is missing here is a callback for when the clonk STARTs a attach or push
+// action.
+// So if a clonk e.g. uses a tool and still while using it (holding down the mouse button)
+// hits SPACE (grab vehicle), ControlUseStop is not called to the tool. 
+// the workaround for now is that the controls do not allow to grab a vehicle while still
+// holding down the mouse button. But this does not cover the (seldom?) case that the clonk
+// is put into a grabbing/attached action via Script.
+
+
+// ...aaand the same for when the clonk is deselected
+protected func CrewSelection(bool unselect)
+{
+	if(unselect)
+		CancelUse();
+	return _inherited(...);
+}
 
 /* Main control function */
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
@@ -230,7 +270,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	}
 	else if (contents)
 	{
-		// out of convencience we call Control2Script, even though it can handle
+		// out of convencience we call Control2Script, even though it handles
 		// left, right, up and down, too. We don't want that, so this is why we
 		// check that ctrl is Use.
 		if (ctrl == CON_Use)
@@ -316,11 +356,30 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		var handled = false;
 		
 		if(!release && !repeat)
+		{
 			handled = obj->Call(Format("~%sUse",control),this,x,y);
-		else if(release)
+			using = obj;
+		}
+		else if(release && using == obj)
+		{
 			handled = obj->Call(Format("~%sUseStop",control),this,x,y);
-		else
+			using = nil;
+		}
+		else if(using == obj)
+		{
 			handled = obj->Call(Format("~%sUseHolding",control),this,x,y);
+			// if that function returns -1, the control is stopped (*UseStop)
+			// and no more *UseHolding-calls are made.
+			if(handled == -1)
+			{
+				obj->Call(Format("~%sUseStop",control),this,x,y);
+				using = nil;
+				handled = true;
+			}
+		}
+		
+		mlastx = x;
+		mlasty = y;
 		
 		return handled;
 	}
@@ -397,6 +456,9 @@ private func ObjectControlPush(int plr, int ctrl)
 	{
 		// grab only if he walks
 		if (proc != "WALK") return false;
+		
+		// disallow if the clonk is still using something
+		if (using) return false;
 
 		// only if there is someting to grab
 		var obj = FindObject(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this));
@@ -520,6 +582,7 @@ public func ControlHotkey(int hotindex)
 	// inventory selection
 	if(hotindex < MaxContentsCount())
 	{
+	// TODO: its more than that!
 		SelectItem(hotindex);
 		return true;
 	}
