@@ -23,7 +23,7 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		
 		// local coordinates
 		var cursorX = x, cursorY = y;
-		if(cursorX || cursorY)
+		if(x != nil || y != nil)
 		{
 			cursorX -= cursor->GetX();
 			cursorY -= cursor->GetY();

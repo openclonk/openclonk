@@ -138,16 +138,24 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	var max = EffectVar(1,target,num);
 	
 	// target->FindObjects(Find_AtPoint(0,0),Find_OCF(OCF_Grab),Find_NoContainer());
-	// doesnt work!! -> BUG!
+	// doesnt work!! -> BUG! (TODO)
 	
-	var vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer());
-	// don't forget the vehicle that the clonk is pushing (might not be found
-	// by the findobjects because it is not at that point)
+	var vehicles = CreateArray();
 	var pushed = nil;
-	if(target->GetProcedure() == "PUSH" && (pushed = target->GetActionTarget()))
+	
+	// if contained, don't search for vehicles...
+	// TODO: change to: list vehicles inside buildings to push out?
+	if((!target->Contained()))
 	{
-		ActionButton(target,i++,pushed,ACTIONTYPE_VEHICLE);
-		if(max) if(i >= max) return ClearButtons(i);
+		vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer());
+		
+		// don't forget the vehicle that the clonk is pushing (might not be found
+		// by the findobjects because it is not at that point)
+		if(target->GetProcedure() == "PUSH" && (pushed = target->GetActionTarget()))
+		{
+			ActionButton(target,i++,pushed,ACTIONTYPE_VEHICLE);
+			if(max) if(i >= max) return ClearButtons(i);
+		}
 	}
 	
 	for(var vehicle in vehicles)

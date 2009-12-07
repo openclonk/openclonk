@@ -9,6 +9,7 @@ public func ControlUse(object clonk, int x, int y)
 {
 	if(clonk->GetAction() == "Walk")
 	{
+
 		clonk->SetAction("Dig");
 		clonk->SetComDir(COMD_None);
 		clonk->SetXDir(0);
@@ -21,6 +22,7 @@ public func ControlUse(object clonk, int x, int y)
 
 public func ControlUseHolding(object clonk, int x, int y)
 {
+
 	// something happened - don't try to dig anymore
 	if(clonk->GetAction() != "Dig") return -1;
 	
@@ -40,6 +42,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 public func ControlUseStop(object clonk, int x, int y)
 {
+
 	RemoveEffect("ShovelDust",clonk,0);
 	if(clonk->GetAction() != "Dig") return true;
 	

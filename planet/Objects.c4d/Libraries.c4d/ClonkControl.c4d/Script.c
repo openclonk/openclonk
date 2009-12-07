@@ -85,7 +85,7 @@ public func SelectItem(selection)
 	*/
 	
 	// cancel the use of another item
-	if(using == item) { using->~ControlUseStop(this,mlastx,mlasty); using = nil; }
+	if(item) if(using == item) { using->~ControlUseStop(this,mlastx,mlasty); using = nil; }
 	
 	// de-select previous (if any)
 	if(item) item->~Deselection(this);
@@ -231,6 +231,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 {
 	if (!this) return false;
 	
+	
+	//Log(Format("%d, %d, %d, %v, %v",  x,y,ctrl, repeat, release));
+	
 	// Any control resets a previously given command
 	SetCommand("None");
 
@@ -353,6 +356,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	// for the use command
 	if (ctrl == CON_Use)
 	{
+	
 		var handled = false;
 		
 		if(!release && !repeat)

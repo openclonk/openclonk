@@ -546,10 +546,10 @@
 		Key=S,GameMouse1ButtonLeft
 		Control=Drop
 
-		[Assignment]
-		Key=GameMouse1Move
-		Priority=50
-		Control=Test
+		#[Assignment]
+		#Key=GameMouse1Move
+		#Priority=50
+		#Control=Test
 
 
 
