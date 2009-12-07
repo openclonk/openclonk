@@ -56,10 +56,13 @@ protected func Construction()
 
 public func MouseSelection(int plr)
 {
+
 	if(!crew) return false;
+	if(plr != GetOwner()) {
+		return false;
+	}
 	// invisible...
 	if(this["Visibility"] != VIS_Owner) return false;
-	
 	// object is in inventory
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
@@ -76,10 +79,21 @@ public func MouseSelection(int plr)
 	{
 		var proc = crew->GetProcedure();
 		
-		// crew is currently pushing my vehicle -> let go
-		if(proc == "PUSH" && crew->GetActionTarget() == myobject)
+		// object is inside building -> activate
+		if(crew->Contained() && myobject->Contained() == crew->Contained())
 		{
-			PlayerObjectCommand(plr, false, "Ungrab");
+			crew->SetCommand("Activate",myobject);
+			return true;
+		}
+		// crew is currently pushing vehicle
+		else if(proc == "PUSH")
+		{
+			// which is mine -> let go
+			if(crew->GetActionTarget() == myobject)
+				PlayerObjectCommand(plr, false, "UnGrab");
+			else
+				PlayerObjectCommand(plr, false, "Grab", myobject);
+				
 			return true;
 		}
 		// grab
@@ -123,10 +137,10 @@ public func SetObject(object obj, int type, int pos)
 		if(obj == myobject)
 			if(type == actiontype)
 				if(pos+1 == hotkey)
-					return;
+					return UpdateSelectionStatus();
 
 	this["Visibility"] = VIS_Owner;
-				
+
 	actiontype = type;
 	myobject = obj;
 	hotkey = pos+1;
@@ -193,24 +207,31 @@ public func ShowHotkey()
 	}
 }
 
+public func IsSelected()
+{
+	return isSelected;
+}
+
 public func UpdateSelectionStatus()
 {
 
 	// determine...
-	isSelected = false;
+	var sel = false;
 	
 	if(actiontype == ACTIONTYPE_VEHICLE)
 		if(crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == myobject)
-			isSelected = true;
+			sel = true;
 			
 	if(actiontype == ACTIONTYPE_STRUCTURE)
 		if(crew->Contained() == myobject)
-			isSelected = true;
+			sel = true;
 
 	if(actiontype == ACTIONTYPE_INVENTORY)
 		if(crew->GetSelected() == hotkey-1)
-			isSelected = true;
-
+			sel = true;
+			
+	isSelected = sel;
+	
 	// and set the icon...
 	if(isSelected)
 	{
@@ -236,6 +257,11 @@ public func UpdateSelectionStatus()
 	}
 	SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);
 	
+	UpdateHands();
+}
+
+public func UpdateHands()
+{
 	// the hands...
 	var hands = isSelected;
 	// .. are not displayed for inventory if the clonk is inside

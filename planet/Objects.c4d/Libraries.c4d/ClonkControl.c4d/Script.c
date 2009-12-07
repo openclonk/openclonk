@@ -52,7 +52,7 @@ public func MaxContentsCount() { return 3; }
 public func SelectItem(selection)
 {
 	var item, old;
-
+	
 	// selection is given as integer
 	/*if(GetType(selection) == C4V_Int)
 	{
@@ -264,12 +264,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Contained", house))
 			return true;
 	}
-	else if (vehicle)
+	else if (vehicle && (proc == "PUSH" || proc == "ATTACH"))
 	{
 		// control to grabbed vehicle or riding etc.
-		if (proc == "PUSH" || proc == "ATTACH")
-			if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
-				return true;
+		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
+			return true;
 	}
 	else if (contents)
 	{
@@ -356,7 +355,6 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	// for the use command
 	if (ctrl == CON_Use)
 	{
-	
 		var handled = false;
 		
 		if(!release && !repeat)
@@ -413,7 +411,8 @@ public func CanEnter()
 {
 	var proc = GetProcedure();
 	if (proc != "WALK" && proc != "SWIM" && proc != "SCALE" &&
-		proc != "HANGLE" && proc != "FLOAT" && proc != "FLIGHT") return false;
+		proc != "HANGLE" && proc != "FLOAT" && proc != "FLIGHT" &&
+		proc != "PUSH") return false;
 	return true;
 }
 
@@ -425,6 +424,8 @@ private func ObjectControlEntrance(int plr, int ctrl)
 	// enter
 	if (ctrl == CON_Enter)
 	{
+		// contained
+		if(Contained()) return false;
 		// enter only if... one can
 		if (!CanEnter()) return false;
 
@@ -485,7 +486,7 @@ private func ObjectControlPush(int plr, int ctrl)
 		// ungrab only if he pushes
 		if (proc != "PUSH") return false;
 
-		PlayerObjectCommand(plr, false, "Ungrab");
+		PlayerObjectCommand(plr, false, "UnGrab");
 		return true;
 	}
 	

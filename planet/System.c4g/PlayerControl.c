@@ -383,7 +383,7 @@ global func PlayerObjectCommand(int plr, bool exclude_cursor, string command, ob
 		var follow_clonk = GetCursor(plr, i);
 		if (follow_clonk)
 		{
-			this->ObjectCommand(command,target,tx,ty);
+			follow_clonk->ObjectCommand(command,target,tx,ty);
 		}
 	}
 	return true;

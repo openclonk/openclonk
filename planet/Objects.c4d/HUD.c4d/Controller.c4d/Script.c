@@ -11,7 +11,6 @@
 
 // TODO - 
 // following callbacks missing:
-// OnClonkUnRecruitment - clonk gets de-recruited from a crew
 // ...? - entire player is eliminated
 
 local actionbar;
@@ -99,8 +98,6 @@ public func OnCrewSelection(object clonk, bool deselect)
 		// TODO: what if two clonks are selected? Which clonk gets the actionbar?
 		
 		// fill actionbar
-		var max = 10;
-		
 		// inventory
 		var i;
 		for(i = 0; i < clonk->MaxContentsCount(); ++i)
@@ -110,7 +107,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 		ClearButtons(i);
 		
 		// and start effect to monitor vehicles and structures...
-		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,i,max);
+		AddEffect("IntSearchInteractionObjects",clonk,1,10,this,nil,i);
 	}
 	else
 	{
@@ -121,11 +118,10 @@ public func OnCrewSelection(object clonk, bool deselect)
 }
 
 
-public func FxIntSearchInteractionObjectsStart(object target, int num, int temp, startAt, max)
+public func FxIntSearchInteractionObjectsStart(object target, int num, int temp, startAt)
 {
 	if(temp != 0) return;
 	EffectVar(0,target,num) = startAt;
-	EffectVar(1,target,num) = max;
 	EffectCall(target,num,"Timer",target,num,0);
 }
 
@@ -135,47 +131,66 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	// find vehicles & structures
 	var startAt = EffectVar(0,target,num);
 	var i = startAt;
-	var max = EffectVar(1,target,num);
-	
-	// target->FindObjects(Find_AtPoint(0,0),Find_OCF(OCF_Grab),Find_NoContainer());
-	// doesnt work!! -> BUG! (TODO)
 	
 	var vehicles = CreateArray();
 	var pushed = nil;
 	
-	// if contained, don't search for vehicles...
-	// TODO: change to: list vehicles inside buildings to push out?
+	var exclusive = false;
+	
+	// if contained, search for vehicles that are inside the buildings to push out
 	if((!target->Contained()))
 	{
+		// target->FindObjects(Find_AtPoint(0,0),Find_OCF(OCF_Grab),Find_NoContainer());
+		// doesnt work!! -> BUG! (TODO)
+	
 		vehicles = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Grab),Find_NoContainer());
 		
 		// don't forget the vehicle that the clonk is pushing (might not be found
 		// by the findobjects because it is not at that point)
 		if(target->GetProcedure() == "PUSH" && (pushed = target->GetActionTarget()))
 		{
-			ActionButton(target,i++,pushed,ACTIONTYPE_VEHICLE);
-			if(max) if(i >= max) return ClearButtons(i);
+			// if the pushed vehicle has been found, we can just continue
+			var inside = false;
+			for(var vehicle in vehicles)
+				if(vehicle == pushed)
+					inside = true;
+			
+			// otherwise we must add it before the rest
+			if(!inside)
+			{
+				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE);
+				if(actionbar[i]->IsSelected()) exclusive = true;
+				++i;
+			}
 		}
+	}
+	else
+	{
+		vehicles = FindObjects(Find_OCF(OCF_Grab),Find_Container(target->Contained()));
 	}
 	
 	for(var vehicle in vehicles)
 	{
-		// ...and exclude the pushed one here...
-		if(vehicle == pushed) continue;
-		ActionButton(target,i++,vehicle,ACTIONTYPE_VEHICLE);
-		if(max) if(i >= max) return ClearButtons(i);
+		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE);
+		if(actionbar[i]->IsSelected()) exclusive = true;
+		++i;
 	}
 
 	var structures = FindObjects(Find_AtPoint(target->GetX()-GetX(),target->GetY()-GetY()),Find_OCF(OCF_Entrance),Find_NoContainer());
 	for(var structure in structures)
 	{
-		ActionButton(target,i++,structure,ACTIONTYPE_STRUCTURE);
-		if(max) if(i >= max) return ClearButtons(i);
+		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE);
+		if(actionbar[i]->IsSelected()) exclusive = true;
+		++i;
 	}
 
 	//Message("found %d vehicles and %d structures",target,GetLength(vehicles),GetLength(structures));
 	
 	ClearButtons(i);
+	
+	// if a vehicle or structure is selected, the hands need to be removed
+	// from the inventory
+	actionbar[target->GetSelected()]->UpdateHands();
 	
 	return;
 }
