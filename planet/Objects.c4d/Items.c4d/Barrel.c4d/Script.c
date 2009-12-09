@@ -66,12 +66,14 @@ public func ControlUse(object pByClonk, int iX, int iY)
 {
 	if(Closed==true) Closed=false && Sound(" "); //Wood scrape sound
 
-	var AimAngle=Angle(GetX(),GetY(), iX, iY);
-	EmptyBarrel(AimAngle,50);
-
-	if(Contained()->GetX() > iX) Contained()->SetDir(0);
-	if(Contained()->GetX() < iX) Contained()->SetDir(1);
-	return 1;
+	var AimAngle=Angle(0,0, iX, iY);
+	if(iVolume>=1)
+	{
+		EmptyBarrel(AimAngle,50);
+		if( iX > 1) Contained()->SetDir(1);
+		if( iX < -1 ) Contained()->SetDir(0);
+		return 1;
+	}
 }
 
 public func IsTool() { return 0; }
