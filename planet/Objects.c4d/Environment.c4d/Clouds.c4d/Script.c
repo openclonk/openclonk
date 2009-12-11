@@ -1,6 +1,6 @@
 /*-- Cloud Placer --*/
 
-#strict
+#strict 2
 
 //Great thanks to Maikel for the following function provided 
 protected func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
@@ -29,29 +29,11 @@ protected func Initialize()
 
 	while(iCount!=0)
 	{
-		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()) && 
-			MaterialDepthCheck(iX,iY,"Sky",200)==true) CreateObject(CLOD, iX, iY, NO_OWNER) && (iCount=--iCount);
+		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()) && MaterialDepthCheck(iX,iY,"Sky",200)==true) CreateObject(CLOD, iX, iY, NO_OWNER) && (iCount=--iCount);
 	}
 	AdjustLightningFrequency(GetScenarioVal("Lightning"));
 }
 
-global func MaterialDepthCheck(int iX,int iY,string szMaterial,int iDepth)
-{
-	var iTravelled;
-	var iXval = iX;
-	var iYval = iY;
-
-	//If iDepth is equal to zero, the function will always measure the depth of the material.
-	//If iDepth is not equal to zero, the function will return true if the material is as deep or deeper than iDepth (in pixels).
-	if(iDepth==0) iDepth=LandscapeHeight();
-
-	while(iTravelled!=iDepth) 
-	{
-		if(GetMaterial(iXval,iYval)==Material(szMaterial)) (iTravelled=++iTravelled) && (iYval=++iYval);
-		if(GetMaterial(iXval,iYval)!=Material(szMaterial)) return(iTravelled);//returns depth of material
-	}
-	if(iTravelled==iDepth) return(true);
-}
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
 }

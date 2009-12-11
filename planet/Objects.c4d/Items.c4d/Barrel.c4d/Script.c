@@ -13,27 +13,28 @@ protected func Initialize()
 {
 	iVolume=0;
 	Closed=false;
-	iDrain=3; //Vertical offset of liquid intake from barrel center
+	iDrain=3+RandomX(0,2); //Vertical offset of liquid intake from barrel center
 
-	debug=1;
+	debug=0;
 }
 
 private func Hit()
 {
-  Sound("WoodHit");
-  if(iVolume>=1 && Closed==false) 
-  {
-	if(GBackLiquid(0,iDrain) && GetMaterial(0,iDrain)!=szLiquid) return 0;
-	EmptyBarrel(GetR());
-	Sound(" "); //water splash sound should be added when available -Ringwaul
-  }
+Sound("WoodHit");
+if(iVolume>=1 && Closed==false) {
+		if(GBackLiquid(0,iDrain) && GetMaterial(0,iDrain)!=szLiquid) return 0;
+		EmptyBarrel(GetR());
+		Sound(" "); //water splash sound should be added when available -Ringwaul
+	}
 }
 
 private func Check()
 {
 	//Fills Barrel with specified liquid from if submerged
-	if(GetMaterial(0,iDrain)== Material("Water") && Closed==false) FillBarrel("Water");
-	if(GetMaterial(0,iDrain)== Material("Acid") && Closed==false) FillBarrel("Acid");
+	var iSource=iDrain+RandomX(0,4);
+
+	if(GetMaterial(0,iSource)== Material("Water") && Closed==false) FillBarrel("Water");
+	//if(GetMaterial(0,iSource)== Material("Oil") && Closed==false) FillBarrel("Oil"); //No oil material in current build -Ringwaul/Dec10
 
 	if(iVolume==0) SetGraphics() && szLiquid=nil;
 

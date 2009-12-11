@@ -1,6 +1,6 @@
 /*--- Cloud ---*/
 
-#strict
+#strict 2
 
 local szMat, iSize, iCondensing;
 local iSearchY;

@@ -185,3 +185,26 @@ global func CheckVisibility(int iPlr)
   return false;
 }
 
+/*-- Ringwaul --*/
+
+global func MaterialDepthCheck(int iX,int iY,string szMaterial,int iDepth)
+{
+	var iTravelled;
+	var iXval = iX;
+	var iYval = iY;
+
+	//If iDepth is equal to zero, the function will always measure the depth of the material.
+	//If iDepth is not equal to zero, the function will return true if the material is as deep or deeper than iDepth (in pixels).
+	if(iDepth==nil) iDepth=LandscapeHeight();
+
+	while(iTravelled!=iDepth) 
+	{
+		if(GetMaterial(iXval,iYval)==Material(szMaterial)) 
+			{
+				(iTravelled=++iTravelled);
+				(iYval=++iYval); 
+			}
+		if(GetMaterial(iXval,iYval)!=Material(szMaterial)) return(iTravelled);//returns depth of material
+	}
+	if(iTravelled==iDepth) return(true);
+}

@@ -1,5 +1,5 @@
 [DefCore]
-id=BARL
+id=MBRL
 Version=4,10,0,0
 Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
 MaxUserSelect=5
@@ -13,9 +13,7 @@ Vertices=4
 VertexX=-2,2,-2,2
 VertexY=-7,-7,7,7
 VertexFriction=60,60,60,60
-Components=WOOD=1;METL=1;
+Components=METL=2;
 Rebuy=1
 Collectible=1
-ContactIncinerate=2
 Rotate=1
-Float=1
