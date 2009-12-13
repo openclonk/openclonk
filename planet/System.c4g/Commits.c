@@ -208,3 +208,27 @@ global func MaterialDepthCheck(int iX,int iY,string szMaterial,int iDepth)
 	}
 	if(iTravelled==iDepth) return(true);
 }
+
+global func SetVelocity(int iAngle, int iSpeed)
+{
+	// Sets an object's velocity
+	var iX= Sin(180-iAngle,iSpeed);
+	var iY= Cos(180-iAngle,iSpeed);
+
+	SetXDir(iX);
+	SetYDir(iY);
+}
+
+global func SetLinearPos(int iAngle, int iDistance, int iX, int iY, bool iRelativeX)
+{
+	// iDistance: Distance object travels on angle. Offset from calling object.
+	// iX: X offset from container's cente
+	// iY: Y offset from container's center
+	// iRelativeX: if true, makes the X offset relative to container direction. (iX=+30 will become iX=-30 when Clonk turns left. This way offset always stays in front of a Clonk.)
+
+	var iXOffset=Sin(180-iAngle, iDistance);
+	var iYOffset=Cos(180-iAngle, iDistance);
+
+	if(Contained()!=nil && iRelativeX==true) { if(Contained()->GetDir()==0) iX=-(iX); }
+	SetPosition(GetX()+iXOffset+iX,GetY()+iYOffset+iY) && SetR(iAngle);
+}
