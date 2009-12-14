@@ -1910,6 +1910,8 @@ bool C4Player::SetObjectCrewStatus(C4Object *pCrew, bool fNewStatus)
 		if (!Crew.IsContained(pCrew)) return true;
 		// ...or remove
 		Crew.Remove(pCrew);
+		C4AulParSet parset(C4VInt(Number));
+		pCrew->Call(PSF_OnRemoveCrew, &parset);
 		// remove info, if assigned to this player
 		// theoretically, info objects could remain when the player is deleted
 		// but then they would be reassigned to the player crew when loaded in a savegame

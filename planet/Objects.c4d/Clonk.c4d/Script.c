@@ -43,6 +43,13 @@ protected func Recruitment(int iPlr) {
   _inherited(...);
 }
 
+protected func DeRecruitment(int iPlr) {
+  // Broadcast f�r Crew
+  GameCallEx("OnClonkDeRecruitment", this, iPlr);
+  
+  _inherited(...);
+}
+
 
 /* Steuerung */
 

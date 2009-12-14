@@ -66,10 +66,18 @@ protected func OnClonkRecruitment(object clonk, int plr)
 	ReorderCrewSelectors();
 }
 
+protected func OnClonkDeRecruitment(object clonk, int plr)
+{
+	// not my business
+	if(plr != GetOwner()) return;
+	if(!(clonk->HUDAdapter())) return;
+	
+	OnCrewDisabled(clonk);
+}
+
 protected func OnClonkDeath(object clonk, int killer)
 {
 	if(clonk->GetController() != GetOwner()) return;
-	
 	if(!(clonk->HUDAdapter())) return;
 	
 	OnCrewDisabled(clonk);

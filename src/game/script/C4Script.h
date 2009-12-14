@@ -138,6 +138,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
 #define PSF_MouseSelection      "~MouseSelection" // int iByPlr
 #define PSF_OnOwnerChanged      "~OnOwnerChanged" // iNewOwner, iOldOwner
 #define PSF_OnJoinCrew          "~Recruitment" // int Player
+#define PSF_OnRemoveCrew        "~DeRecruitment" // int Player
 #define PSF_FxStart             "Fx%sStart" // C4Object *pTarget, int iEffectNumber, int iTemp, C4Value vVar1, C4Value vVar2, C4Value vVar3, C4Value vVar4
 #define PSF_FxStop              "Fx%sStop" // C4Object *pTarget, int iEffectNumber, int iReason, bool fTemp
 #define PSF_FxTimer             "Fx%sTimer" // C4Object *pTarget, int iEffectNumber, int iEffectTime
