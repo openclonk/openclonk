@@ -93,8 +93,6 @@ bool C4Scenario::Load(C4Group &hGroup, bool fLoadSection)
 	// Compile
 	if (!Compile(pSource, fLoadSection))	{ delete [] pSource; return false; }
 	delete [] pSource;
-	// Convert
-	Game.ConvertGoals(Game.Realism);
 	// Success
 	return true;
   }
@@ -201,14 +199,6 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 
 void C4SGame::Default()
   {
-  Elimination=C4S_EliminateCrew;
-  ValueGain=0;
-	CreateObjects.Clear();
-	ClearObjects.Clear();
-	ClearMaterial.Clear();
-  Mode=C4S_Cooperative;
-	CooperativeGoal=C4S_NoGoal;
-  EnableRemoveFlag=0;
 	Goals.Clear();
 	Rules.Clear();
 	FoWColor=0;
@@ -216,16 +206,6 @@ void C4SGame::Default()
 
 void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
   {
-	pComp->Value(mkNamingAdapt(Mode,                     "Mode",                C4S_Cooperative));
-	pComp->Value(mkNamingAdapt(Elimination,              "Elimination",         C4S_EliminateCrew));
-	pComp->Value(mkNamingAdapt(CooperativeGoal,          "CooperativeGoal",     C4S_NoGoal));
-	pComp->Value(mkNamingAdapt(CreateObjects,            "CreateObjects",       C4IDList()));
-	pComp->Value(mkNamingAdapt(ClearObjects,             "ClearObjects",        C4IDList()));
-	pComp->Value(mkNamingAdapt(ClearMaterial,            "ClearMaterials",      C4NameList()));
-	pComp->Value(mkNamingAdapt(ValueGain,                "ValueGain",           0));
-	pComp->Value(mkNamingAdapt(EnableRemoveFlag,         "EnableRemoveFlag",    false));
-	pComp->Value(mkNamingAdapt(Realism.ConstructionNeedsMaterial, "StructNeedMaterial",  false));
-	pComp->Value(mkNamingAdapt(Realism.StructuresNeedEnergy,      "StructNeedEnergy",    true));
 	if (!fSection)
 		{
 		pComp->Value(mkNamingAdapt(Realism.ValueOverloads,            "ValueOverloads",      C4IDList()));
@@ -237,14 +217,6 @@ void C4SGame::CompileFunc(StdCompiler *pComp, bool fSection)
   pComp->Value(mkNamingAdapt(Rules,                    "Rules",               C4IDList()));
   pComp->Value(mkNamingAdapt(FoWColor,                 "FoWColor",            0u));
   }
-
-void C4SGame::ClearCooperativeGoals()
-	{
-	ValueGain=0;
-	CreateObjects.Clear();
-	ClearObjects.Clear();
-	ClearMaterial.Clear();
-	}
 
 void C4SPlrStart::Default()
   {
@@ -423,8 +395,6 @@ void C4SEnvironment::CompileFunc(StdCompiler *pComp)
 
 void C4SRealism::Default()
   {
-  ConstructionNeedsMaterial=0;
-  StructuresNeedEnergy=1;
 	LandscapePushPull=0;
 	LandscapeInsertThrust=0;
 	ValueOverloads.Default();
@@ -583,60 +553,10 @@ void C4SDefinitions::CompileFunc(StdCompiler *pComp)
   pComp->Value(mkNamingAdapt(SkipDefs,                "SkipDefs",              C4IDList()));
   }
 
-void C4SGame::ConvertGoals(C4SRealism &rRealism)
-	{
-
-	// Convert mode to goals
-	switch (Mode)
-		{
-		case C4S_Melee: Goals.SetIDCount(C4Id("MELE"),1,true); ClearOldGoals(); break;
-		case C4S_MeleeTeamwork: Goals.SetIDCount(C4Id("MELE"),1,true); ClearOldGoals(); break;
-		}
-	Mode=0;
-
-	// Convert goals (master selection)
-	switch (CooperativeGoal)
-		{
-		case C4S_Goldmine: Goals.SetIDCount(C4Id("GLDM"),1,true); ClearOldGoals(); break;
-		case C4S_Monsterkill: Goals.SetIDCount(C4Id("MNTK"),1,true); ClearOldGoals(); break;
-		case C4S_ValueGain: Goals.SetIDCount(C4Id("VALG"),Max(ValueGain/100,1),true); ClearOldGoals(); break;
-		}
-	CooperativeGoal=0;
-	// CreateObjects,ClearObjects,ClearMaterials are still valid but invisible
-
-	// Convert realism to rules
-	if (rRealism.ConstructionNeedsMaterial) Rules.SetIDCount(C4Id("CNMT"),1,true); rRealism.ConstructionNeedsMaterial=0;
-	if (rRealism.StructuresNeedEnergy) Rules.SetIDCount(C4Id("ENRG"),1,true); rRealism.StructuresNeedEnergy=0;
-
-	// Convert rules
-	if (EnableRemoveFlag) Rules.SetIDCount(C4Id("FGRV"),1,true); EnableRemoveFlag=0;
-
-	// Convert eliminiation to rules
-	switch (Elimination)
-		{
-		case C4S_KillTheCaptain: Rules.SetIDCount(C4Id("KILC"),1,true); break;
-		case C4S_CaptureTheFlag: Rules.SetIDCount(C4Id("CTFL"),1,true); break;
-		}
-	Elimination=1; // unconvertible default crew elimination
-
-	// CaptureTheFlag requires FlagRemoveable
-	if (Rules.GetIDCount(C4Id("CTFL"))) Rules.SetIDCount(C4Id("FGRV"),1,true);
-
-	}
-
-void C4SGame::ClearOldGoals()
-	{
-	CreateObjects.Clear(); ClearObjects.Clear(); ClearMaterial.Clear();
-	ValueGain=0;
-	}
-
 bool C4SGame::IsMelee()
 	{
 	return (Goals.GetIDCount(C4Id("MELE")) || Goals.GetIDCount(C4Id("MEL2")));
 	}
-
-
-
 
 // scenario sections
 

@@ -124,8 +124,6 @@ class C4SDefinitions
 class C4SRealism
   {
   public:
-    int32_t ConstructionNeedsMaterial;
-    int32_t StructuresNeedEnergy;
 		C4IDList ValueOverloads;
 		int32_t LandscapePushPull; // Use new experimental push-pull-algorithms
 		int32_t LandscapeInsertThrust; // Inserted material may thrust material of lower density aside
@@ -138,18 +136,6 @@ class C4SRealism
 class C4SGame
   {
   public:
-		int32_t Mode;
-    int32_t Elimination;
-    int32_t EnableRemoveFlag;
-
-    // Player winning - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    int32_t ValueGain; // If nonzero and value gain is equal or higher
-    // Cooperative game over - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		C4IDList CreateObjects; // If all these objects exist
-    C4IDList ClearObjects; // If fewer than these objects exist
-    C4NameList ClearMaterial; // If less than these materials exist
-		int32_t CooperativeGoal; // Master selection for Frontend
-
 		C4IDList Goals;
 		C4IDList Rules;
 
@@ -159,34 +145,9 @@ class C4SGame
 
   public:
 	  bool IsMelee();
-	  void ConvertGoals(C4SRealism &rRealism);
     void Default();
-		void ClearCooperativeGoals();
     void CompileFunc(StdCompiler *pComp, bool fSection);
-  protected:
-	  void ClearOldGoals();
 	};
-
-// Game mode
-
-const int32_t C4S_Cooperative		= 0,
-							C4S_Melee					= 1,
-							C4S_MeleeTeamwork	= 2;
-
-// Player elimination
-
-const int32_t C4S_KillTheCaptain = 0,
-							C4S_EliminateCrew  = 1,
-							C4S_CaptureTheFlag = 2;
-
-// Cooperative goals
-
-const int32_t C4S_NoGoal			= 0,
-							C4S_Goldmine		= 1,
-							C4S_Monsterkill = 2,
-							C4S_ValueGain		= 3,
-							C4S_Extended    = 4;
-
 
 // Maximum map player extend factor
 

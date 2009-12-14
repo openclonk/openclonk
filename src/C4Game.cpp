@@ -620,7 +620,6 @@ void C4Game::Clear()
 
 bool C4Game::GameOverCheck()
 	{
-	int32_t cnt;
 	bool fDoGameOver = false;
 
 #ifdef _DEBUG
@@ -636,71 +635,6 @@ bool C4Game::GameOverCheck()
 	// All players eliminated: game over
 	if (!Players.GetCountNotEliminated())
 		fDoGameOver=true;
-
-	// Cooperative game over (obsolete with new game goal objects, kept for
-	// downward compatibility with CreateObjects,ClearObjects,ClearMaterial settings)
-	C4ID c_id;
-	int32_t count,mat;
-	bool condition_valid,condition_true;
-	bool game_over_valid=false, game_over=true;
-	// CreateObjects
-	condition_valid=false;
-	condition_true=true;
-	for (cnt=0; (c_id=C4S.Game.CreateObjects.GetID(cnt,&count)); cnt++)
-		if (count>0)
-			{
-			condition_valid=true;
-			// Count objects, fullsize only
-			C4ObjectLink *cLnk;
-			int32_t iCount=0;
-			for (cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
-				if (cLnk->Obj->Status)
-					if (cLnk->Obj->Def->id==c_id)
-						if (cLnk->Obj->GetCon()>=FullCon)
-							iCount++;
-			if (iCount<count) condition_true=false;
-			}
-	if (condition_valid)
-		{ game_over_valid	=true; if (!condition_true) game_over=false; }
-	// ClearObjects
-	condition_valid=false;
-	condition_true=true;
-	for (cnt=0; (c_id=C4S.Game.ClearObjects.GetID(cnt,&count)); cnt++)
-		{
-		condition_valid=true;
-		// Count objects, if category living, live only
-		C4ObjectLink *cLnk;
-		C4Def *cdef=C4Id2Def(c_id);
-		bool alive_only=false;
-		if (cdef && (cdef->Category & C4D_Living)) alive_only=true;
-		int32_t iCount=0;
-		for (cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
-			if (cLnk->Obj->Status)
-				if (cLnk->Obj->Def->id==c_id)
-					if (!alive_only || cLnk->Obj->GetAlive())
-						iCount++;
-		if (iCount>count) condition_true=false;
-		}
-	if (condition_valid)
-		{ game_over_valid=true; if (!condition_true) game_over=false; }
-	// ClearMaterial
-	condition_valid=false;
-	condition_true=true;
-	for (cnt=0; cnt<C4MaxNameList; cnt++)
-		if (C4S.Game.ClearMaterial.Name[cnt][0])
-			if (MatValid(mat=::MaterialMap.Get(C4S.Game.ClearMaterial.Name[cnt])))
-				{
-				condition_valid=true;
-        if (::Landscape.EffectiveMatCount[mat]>(DWORD)C4S.Game.ClearMaterial.Count[cnt])
-          condition_true = false;
-				}
-	if (condition_valid)
-		{ game_over_valid=true; if (!condition_true) game_over=false; }
-
-	// Evaluate game over
-	if (game_over_valid)
-		if (game_over)
-			fDoGameOver=true;
 
 	// Message
 	if (fDoGameOver) DoGameOver();

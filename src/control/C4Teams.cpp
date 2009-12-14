@@ -614,8 +614,7 @@ bool C4TeamList::Load(C4Group &hGroup, class C4Scenario *pInitDefault, class C4L
 		// default: FFA for anything that looks like melee
 		if ( pInitDefault->Game.Goals.GetIDCount(C4ID_Melee, 1)
 			|| pInitDefault->Game.Rules.GetIDCount(C4ID_Rivalry, 1)
-			|| pInitDefault->Game.Goals.GetIDCount(C4ID_TeamworkMelee, 1)
-			|| Game.C4S.Game.Mode == C4S_Melee || Game.C4S.Game.Mode == C4S_MeleeTeamwork)
+			|| pInitDefault->Game.Goals.GetIDCount(C4ID_TeamworkMelee, 1))
 			{
 			fAllowHostilityChange = true;
 			fActive = true;

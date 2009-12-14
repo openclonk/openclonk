@@ -1314,8 +1314,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 		}
 
 	// Value gain
-	if ( (Game.C4S.Game.ValueGain && ::Players.Get(Player)->ViewValue)
-		|| Config.Graphics.ShowPlayerInfoAlways)
+	if (Config.Graphics.ShowPlayerInfoAlways)
 			{
 			int32_t wdt = C4SymbolSize;
 			int32_t hgt = C4SymbolSize/2;
