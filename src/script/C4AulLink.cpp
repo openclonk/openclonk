@@ -268,12 +268,15 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		::MaterialMap.UpdateScriptPointers();
 
 		// FIXME: move this to script
-		C4PropList * Action = new C4PropList;
-		Action->SetProperty(Strings.P[P_Length], C4VInt(1));
-		Action->SetProperty(Strings.P[P_Directions], C4VInt(1));
-		Action->SetProperty(Strings.P[P_Step], C4VInt(1));
-		Action->SetProperty(Strings.P[P_Procedure], C4VInt(DFA_NONE));
-		GlobalNamed.GetItem("Action")->SetPropList(Action);
+		if (GlobalNamed.GetItem("Action"))
+		{
+			C4PropList * Action = new C4PropList;
+			Action->SetProperty(Strings.P[P_Length], C4VInt(1));
+			Action->SetProperty(Strings.P[P_Directions], C4VInt(1));
+			Action->SetProperty(Strings.P[P_Step], C4VInt(1));
+			Action->SetProperty(Strings.P[P_Procedure], C4VInt(DFA_NONE));
+			GlobalNamed.GetItem("Action")->SetPropList(Action);
+		}
 
 		rDefs->CallEveryDefinition();
 		// display state
