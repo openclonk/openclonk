@@ -11,5 +11,5 @@ public func Update()
 {
 	var val = GetWealth(GetOwner());
 	
-	CustomMessage(Format("@%d",val), this, GetOwner(), 0, 80);
+	CustomMessage(Format("@%d",val), this, GetOwner(), 0, 75);
 }

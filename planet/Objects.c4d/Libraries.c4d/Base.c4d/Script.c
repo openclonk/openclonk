@@ -1,7 +1,5 @@
 /*--- The Base ---*/
 
-#strict 2
-
 // Determines it the Building is acutally a base
 local fIsBase;
 local iEnergy;
@@ -111,6 +109,8 @@ public func MakeBase(bool fRemoveBase)
   {
     fIsBase = 1;
     AddEffect("IntBase", this, 1, 10, this);
+	if(!FindObject(Find_ID(BASM), Find_Owner(GetOwner())))
+		CreateObject(BASM,AbsX(10),AbsY(10),GetOwner());
   }
 }
 
@@ -430,10 +430,11 @@ global func Sell (int iPlr, object pObj, object pToBase)
 
 global func FindBase (int iPlr, int iIndex)
 {
-  return FindObjects(Find_Owner(iPlr), Find_Category(C4D_Structure), Find_Func("IsBase"))[iIndex];
+  return FindObjects(Find_Owner(iPlr), Find_Func("IsBase"))[iIndex];
 }
 
-global func GetBase (object pObj)
+global func GetBase ()
 {
+  if(!(this->~IsBase())) return NO_OWNER;
   return GetOwner();
 }

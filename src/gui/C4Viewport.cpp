@@ -1301,41 +1301,6 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 	C4Facet ccgo;
 	if (!ValidPlr(Player)) return;
 
-	// Wealth
-	if (::Players.Get(Player)->ViewWealth || Config.Graphics.ShowPlayerInfoAlways)
-		{
-		int32_t wdt = C4SymbolSize;
-		int32_t hgt = C4SymbolSize/2;
-		ccgo.Set(cgo.Surface,
-						 cgo.X+cgo.Wdt-wdt-C4SymbolBorder,
-						 cgo.Y+C4SymbolBorder,
-						 wdt,hgt);
-		::GraphicsResource.fctWealth.DrawValue(ccgo,::Players.Get(Player)->Wealth, 0, Config.Graphics.Currency);
-		}
-
-	// Value gain
-	if (Config.Graphics.ShowPlayerInfoAlways)
-			{
-			int32_t wdt = C4SymbolSize;
-			int32_t hgt = C4SymbolSize/2;
-			ccgo.Set(cgo.Surface,
-							 cgo.X+cgo.Wdt-2*wdt-2*C4SymbolBorder,
-							 cgo.Y+C4SymbolBorder,
-							 wdt,hgt);
-			::GraphicsResource.fctScore.DrawValue(ccgo,::Players.Get(Player)->ValueGain);
-			}
-
-	// Crew
-	if (Config.Graphics.ShowPlayerInfoAlways)
-		{
-		int32_t wdt = C4SymbolSize;
-		int32_t hgt = C4SymbolSize/2;
-		ccgo.Set(cgo.Surface,
-						 cgo.X+cgo.Wdt-3*wdt-3*C4SymbolBorder,
-						 cgo.Y+C4SymbolBorder,
-						 wdt,hgt);
-		::GraphicsResource.fctCrewClr.DrawValue2Clr(ccgo,::Players.Get(Player)->SelectCount,::Players.Get(Player)->ActiveCrewCount(),::Players.Get(Player)->ColorDw);
-		}
 
 	// Controls
 	DrawPlayerControls(cgo);

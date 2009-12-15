@@ -63,7 +63,7 @@ InEarth=ROCK=1;GOLD=1;DYNA=10;LOAM=1
 InEarthLevel=65,0,0,100
 Sky=Clouds2
 MapWidth=200,0,64,250
-MapHeight=200,0,40,250
+MapHeight=100,0,40,250
 Amplitude=10,10,0,100
 Phase=50,50,0,100
 Period=10,10,0,100

@@ -36,7 +36,7 @@ protected func Construction()
 	
 	// wealth display
 	wealth = CreateObject(WEAL,0,0,GetOwner());
-	wealth->SetPosition(-16-WEAL->GetDefHeight()/2,16+WEAL->GetDefHeight()/2);
+	wealth->SetPosition(-16-WEAL->GetDefHeight()/2,8+WEAL->GetDefHeight()/2);
 	wealth->Update();
 }
 
