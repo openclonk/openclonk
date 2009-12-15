@@ -804,13 +804,25 @@ void C4Player::SetFoW(bool fEnable)
 
 bool C4Player::DoWealth(int32_t iChange)
   {
-  Wealth=BoundBy<int32_t>(Wealth+iChange,0,10000);
 	if (LocalControl)
 		{
 		if (iChange>0) StartSoundEffect("Cash");
 		if (iChange<0) StartSoundEffect("UnCash");
 		}
+	SetWealth(Wealth+iChange);
+
+  return true;
+  }
+
+bool C4Player::SetWealth(int32_t iVal)
+  {
+	if(iVal == Wealth) return true;
+
+  Wealth=BoundBy<int32_t>(iVal,0,10000);
 	ViewWealth = C4ViewDelay;
+
+	Game.Script.GRBroadcast(PSF_OnWealthChanged,&C4AulParSet(C4VInt(Number)));
+
   return true;
   }
 

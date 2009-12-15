@@ -14,6 +14,7 @@
 // ...? - entire player is eliminated
 
 local actionbar;
+local wealth;
 
 protected func Construction()
 {
@@ -32,6 +33,17 @@ protected func Construction()
 	
 	// reorder the crew selectors
 	ReorderCrewSelectors();
+	
+	// wealth display
+	wealth = CreateObject(WEAL,0,0,GetOwner());
+	wealth->SetPosition(-16-WEAL->GetDefHeight()/2,16+WEAL->GetDefHeight()/2);
+	wealth->Update();
+}
+
+protected func OnWealthChanged(int plr)
+{
+	if(plr != GetOwner()) return;
+	if(wealth) wealth->Update();
 }
 
 protected func OnClonkRecruitment(object clonk, int plr)

@@ -185,6 +185,7 @@ class C4Player: public C4PlayerInfoCore
 		bool Message(const char *szMsg);
 		bool ObjectInCrew(C4Object *tobj);
 		bool DoWealth(int32_t change);
+		bool SetWealth(int32_t val);
 		bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
 		void CompileFunc(StdCompiler *pComp, bool fExact);
 		bool LoadRuntimeData(C4Group &hGroup);

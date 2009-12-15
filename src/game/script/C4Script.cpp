@@ -2582,7 +2582,7 @@ static long FnGetWealth(C4AulContext *cthr, long iPlr)
 static bool FnSetWealth(C4AulContext *cthr, long iPlr, long iValue)
   {
   if (!ValidPlr(iPlr)) return false;
-  ::Players.Get(iPlr)->Wealth = BoundBy<long>(iValue,0,100000);
+  ::Players.Get(iPlr)->SetWealth(iValue);
 	return true;
   }
 
