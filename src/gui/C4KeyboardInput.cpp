@@ -586,7 +586,7 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 				if (pOutBufIfUndefined)
 					{
 					// unknown key, but an output buffer for unknown keys was provided. Use it.
-					pOutBufIfUndefined->Take(sCode);
+					pOutBufIfUndefined->Take(std::move(sCode));
 					eCode = KEY_Default;
 					}
 				else

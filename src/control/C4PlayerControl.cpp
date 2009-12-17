@@ -16,19 +16,19 @@
  */
 // Input to player control mapping
 
-#include <C4Include.h>
-#include <C4PlayerControl.h>
+#include "C4Include.h"
+#include "C4PlayerControl.h"
 
-#ifndef BIG_C4INCLUDE
-#include <C4LangStringTable.h>
-#include <C4Player.h>
-#include <C4PlayerList.h>
-#include <C4Control.h>
-#include <C4Game.h>
-#include <C4Log.h>
-#include <C4GraphicsResource.h>
-#include <C4MouseControl.h>
-#endif
+#include "C4LangStringTable.h"
+#include "C4Player.h"
+#include "C4PlayerList.h"
+#include "C4Control.h"
+#include "C4Game.h"
+#include "C4Log.h"
+#include "C4GraphicsResource.h"
+#include "C4MouseControl.h"
+
+#include <algorithm>
 
 /* C4PlayerControlDef */
 

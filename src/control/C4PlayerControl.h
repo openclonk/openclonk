@@ -19,10 +19,11 @@
 #ifndef INC_C4PlayerControl
 #define INC_C4PlayerControl
 
-#ifndef BIG_C4INCLUDE
-#include <C4KeyboardInput.h>
-#include <C4LangStringTable.h>
-#endif
+#include "C4KeyboardInput.h"
+#include "C4LangStringTable.h"
+#include "C4Id.h"
+
+#include <list>
 
 // one control definition, e.g. "Left", "Throw", etc.
 class C4PlayerControlDef
