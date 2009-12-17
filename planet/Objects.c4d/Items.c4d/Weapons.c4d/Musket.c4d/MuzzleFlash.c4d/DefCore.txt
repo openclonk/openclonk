@@ -1,0 +1,10 @@
+[DefCore]
+id=FLSH
+Version=4,9,10,10
+Width=16
+Height=16
+Offset=-8,-8
+Vertices=1
+VertexY=1
+Mass=1
+Rotate=1

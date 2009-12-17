@@ -219,10 +219,10 @@ global func SetVelocity(int iAngle, int iSpeed)
 	SetYDir(iY);
 }
 
-global func SetLinearPos(int iAngle, int iDistance, int iX, int iY, bool iRelativeX)
+global func LaunchProjectile(int iAngle, int iDistance, iSpeed, int iX, int iY, bool iRelativeX)
 {
 	// iDistance: Distance object travels on angle. Offset from calling object.
-	// iX: X offset from container's cente
+	// iX: X offset from container's center
 	// iY: Y offset from container's center
 	// iRelativeX: if true, makes the X offset relative to container direction. (iX=+30 will become iX=-30 when Clonk turns left. This way offset always stays in front of a Clonk.)
 
@@ -230,5 +230,6 @@ global func SetLinearPos(int iAngle, int iDistance, int iX, int iY, bool iRelati
 	var iYOffset=Cos(180-iAngle, iDistance);
 
 	if(Contained()!=nil && iRelativeX==true) { if(Contained()->GetDir()==0) iX=-(iX); }
-	SetPosition(GetX()+iXOffset+iX,GetY()+iYOffset+iY) && SetR(iAngle);
+	if(Contained()!=nil) Exit(iXOffset+iX,iYOffset+iY, iAngle) && SetVelocity(iAngle, iSpeed);
+	else SetPosition(GetX()+iXOffset+iX,GetY()+iYOffset+iY) && SetR(iAngle) && SetVelocity(iAngle, iSpeed);
 }
