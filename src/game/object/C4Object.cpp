@@ -3292,19 +3292,20 @@ void C4Object::UpdateActionFace()
 		}
 	}
 
-bool C4Object::SetActionByName(C4String * ActName,
-															 C4Object *pTarget, C4Object *pTarget2,
-															 int32_t iCalls, bool fForce)
-	{
-	// Check for ActIdle passed by name
-	if (ActName == Strings.P[P_Idle])
+bool C4Object::SetActionByName(C4String *ActName,
+	C4Object *pTarget, C4Object *pTarget2,
+	int32_t iCalls, bool fForce)
+{
+	assert(ActName);
+	// If we get the null string or ActIdle by name, set ActIdle
+	if (!ActName || ActName == Strings.P[P_Idle])
 		return SetAction(0,0,0,iCalls,fForce);
 	C4Value ActMap; GetProperty(Strings.P[P_ActMap], ActMap);
 	if (!ActMap.getPropList()) return false;
 	C4Value Action; ActMap.getPropList()->GetProperty(ActName, Action);
 	if (!Action.getPropList()) return false;
 	return SetAction(Action.getPropList(),pTarget,pTarget2,iCalls,fForce);      
-	}
+}
 
 bool C4Object::SetActionByName(const char * szActName, 
 															 C4Object *pTarget, C4Object *pTarget2, 
@@ -4493,13 +4494,17 @@ void C4Object::ExecAction()
 			// Phase end
 			if (Action.Phase>=pAction->GetPropertyInt(P_Length)) 
 				{
+				C4String *next_action = pAction->GetPropertyStr(P_NextAction);
+				// Keep current action if there is no NextAction
+				if (!next_action)
+					Action.Phase = 0;
 				// set new action if it's not Hold
-				if (pAction->GetPropertyStr(P_NextAction) == Strings.P[P_Hold])
+				else if (next_action == Strings.P[P_Hold])
 					Action.Phase = pAction->GetPropertyInt(P_Length)-1;
 				else
 					{
 					// Set new action
-					SetActionByName(pAction->GetPropertyStr(P_NextAction), NULL, NULL, SAC_StartCall | SAC_EndCall);
+					SetActionByName(next_action, NULL, NULL, SAC_StartCall | SAC_EndCall);
 					}
 				}
 			}  
