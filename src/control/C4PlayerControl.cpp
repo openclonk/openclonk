@@ -957,7 +957,7 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 		case C4MC_Button_LeftUp: is_down = false; // nobreak
 		case C4MC_Button_LeftDown: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
 		case C4MC_Button_RightUp: is_down = false; // nobreak
-		case C4MC_Button_RightDown: mouseevent_code = KEY_MOUSE_ButtonLeft; break;
+		case C4MC_Button_RightDown: mouseevent_code = KEY_MOUSE_ButtonRight; break;
 		case C4MC_Button_LeftDouble: mouseevent_code = KEY_MOUSE_ButtonLeftDouble; break;
 		case C4MC_Button_RightDouble: mouseevent_code = KEY_MOUSE_ButtonRightDouble; break;
 		case C4MC_Button_Wheel: mouseevent_code = KEY_MOUSE_ButtonMiddleDouble; break;
