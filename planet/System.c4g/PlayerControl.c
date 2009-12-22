@@ -64,7 +64,7 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	if (hotkey > 0)
 	{
 		// valid crew number?
-		var crew = GetCrew(plr,hotkey-1);
+		var crew = GetCrew(plr,GetCrewCount()-hotkey);
 		if (!crew) return false;
 		// stop previously selected crew
 		StopSelected();
@@ -388,16 +388,16 @@ global func PlayerObjectCommand(int plr, bool exclude_cursor, string command, ob
 		var follow_clonk = GetCursor(plr, i);
 		if (follow_clonk)
 		{
-			follow_clonk->ObjectCommand(command,target,tx,ty);
+			follow_clonk->ObjectCommand(command,target,tx,ty,target2);
 		}
 	}
 	return true;
 }
 
-global func ObjectCommand(string command, object target, int tx, int ty)
+global func ObjectCommand(string command, object target, int tx, int ty, object target2)
 {
 	if(!this) return;
-	this->SetCommand(command,target,tx,ty);
+	this->SetCommand(command,target,tx,ty, target2);
 }
 
 // Let go from scaling or hangling

@@ -511,39 +511,39 @@
 		Control=Hotkey0
 		
 		[Assignment]
-		Key=X,1
+		Key=Shift+1
 		Control=PlayerHotkey1
 		
 		[Assignment]
-		Key=X,2
+		Key=Shift+2
 		Control=PlayerHotkey2
 		
 		[Assignment]
-		Key=X,3
+		Key=Shift+3
 		Control=PlayerHotkey3
 		
 		[Assignment]
-		Key=X,4
+		Key=Shift+4
 		Control=PlayerHotkey4
 		
 		[Assignment]
-		Key=X,5
+		Key=Shift+5
 		Control=PlayerHotkey5
 		
 		[Assignment]
-		Key=X,6
+		Key=Shift+6
 		Control=PlayerHotkey6
 		
 		[Assignment]
-		Key=X,7
+		Key=Shift+7
 		Control=PlayerHotkey7
 		
 		[Assignment]
-		Key=X,8
+		Key=Shift+8
 		Control=PlayerHotkey8
 		
 		[Assignment]
-		Key=X,9
+		Key=Shift+9
 		Control=PlayerHotkey9
 		
 		[Assignment]

@@ -327,7 +327,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (inv_control) return true;
 
 	// only if not in house, not grabbing a vehicle and an item selected
-	if (!house && !vehicle)
+	if (!house && (!vehicle || (proc != "PUSH" && proc != "ATTACH")))
 	{
 		if (contents)
 		{
@@ -368,14 +368,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	return false;
 }
 
-public func ObjectCommand(string command, object target, int tx, int ty)
+public func ObjectCommand(string command, object target, int tx, int ty, object target2)
 {
 	// special control for throw and jump
 	// but only with controls, not with general commands
 	if (command == "Throw") ControlThrow(target,tx,ty);
 	else if (command == "Jump") ControlJump();
 	// else standard command
-	else SetCommand(command,target,tx,ty);
+	else SetCommand(command,target,tx,ty,target2);
 }
 
 // Control redirected to script
@@ -386,26 +386,32 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	{
 		var handled = false;
 		
+		var estr = "";
+		// not an inventory object
+		if(ctrl == CON_UseAlt)
+			if(!(obj->Contained()))
+				estr = "Alt";
+		
 		if (!release && !repeat)
 		{
-			handled = obj->Call(Format("~%sUse",control),this,x,y);
+			handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
 			if (ctrl == CON_Use) using = obj;
 			else using2 = obj;
 		}
 		else if (release && (using == obj || using2 == obj))
 		{
-			handled = obj->Call(Format("~%sUseStop",control),this,x,y);
+			handled = obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
 			if (ctrl == CON_Use) using = nil;
 			else using2 = nil;
 		}
 		else if (using == obj || using2 == obj)
 		{
-			handled = obj->Call(Format("~%sUseHolding",control),this,x,y);
+			handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
 			// if that function returns -1, the control is stopped (*UseStop)
 			// and no more *UseHolding-calls are made.
 			if (handled == -1)
 			{
-				obj->Call(Format("~%sUseStop",control),this,x,y);
+				obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
 				if (ctrl == CON_Use) using = nil;
 				else using2 = nil;
 				handled = true;
@@ -534,7 +540,7 @@ private func ObjectControlPush(int plr, int ctrl)
 		var obj = GetActionTarget()->GetEntranceObject();
 		if (!obj) return false;
 
-		PlayerObjectCommand(plr, false, "PushTo", obj);
+		PlayerObjectCommand(plr, false, "PushTo", GetActionTarget(), 0, 0, obj);
 		return true;
 	}
 	
@@ -598,7 +604,8 @@ private func DoThrow(object obj, int angle)
   if (iYDir > 0) iYDir = iYDir * 8/10;
   
   // is riding? add it's velocity
-  if (GetActionTarget())
+  var proc = GetProcedure();
+  if (GetActionTarget() && (proc == "PUSH" || proc == "ATTACH"))
   {
     iXDir += GetActionTarget()->GetXDir() / 10;
     iYDir += GetActionTarget()->GetYDir() / 10;
