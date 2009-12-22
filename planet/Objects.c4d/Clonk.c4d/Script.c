@@ -50,34 +50,6 @@ protected func DeRecruitment(int iPlr) {
   _inherited(...);
 }
 
-
-/* Steuerung */
-
-public func ControlJump()
-{
-	return DolphinJump();
-}
-
-private func DolphinJump()
-{
-  // nur wenn an Meeresoberfl�che
-  if(!InLiquid()) return false;
-  if(GBackSemiSolid(0,-1)) return false;
-  // Nicht wenn deaktiviert (z.B. Ohnmacht)
-  if (GetActMapVal("ObjectDisabled", GetAction())) return false;
-  // herausspringen
-  SetPosition(GetX(),GetY()-1);
-  SetAction("Jump");
-  SetSpeed(GetXDir(),-BoundBy(GetPhysical("Swim")/2500,24,38));
-  var iX=GetX(),iY=GetY(),iXDir=GetXDir(),iYDir=GetYDir();
-  // Wenn Sprung im Wasser endet und das Wasser tief genug ist, Kopfsprung machen
-  if(SimFlight(iX,iY,iXDir,iYDir,25,50))
-    if(GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+9-GetY()))
-      SetAction("Dive");
-	  
-  return true;
-}
-
 /*
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
@@ -724,7 +696,6 @@ Throw = {
 	Y = 200,
 	Wdt = 16,
 	Hgt = 20,
-	StartCall = "Throwing",
 	NextAction = "Walk",
 	InLiquidAction = "Swim",
 },
@@ -882,7 +853,6 @@ RideThrow = {
 	Wdt = 16,
 	Hgt = 20,
 	NextAction = "Ride",
-	StartCall = "Throwing",
 	InLiquidAction = "Swim",
 },
 Process = {

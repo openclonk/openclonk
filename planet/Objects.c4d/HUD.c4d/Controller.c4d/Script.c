@@ -179,7 +179,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 			if(!inside)
 			{
 				ActionButton(target,i,pushed,ACTIONTYPE_VEHICLE);
-				if(actionbar[i]->IsSelected()) exclusive = true;
+				if(actionbar[i]->Selected()) exclusive = true;
 				++i;
 			}
 		}
@@ -192,7 +192,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	for(var vehicle in vehicles)
 	{
 		ActionButton(target,i,vehicle,ACTIONTYPE_VEHICLE);
-		if(actionbar[i]->IsSelected()) exclusive = true;
+		if(actionbar[i]->Selected()) exclusive = true;
 		++i;
 	}
 
@@ -200,7 +200,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	for(var structure in structures)
 	{
 		ActionButton(target,i,structure,ACTIONTYPE_STRUCTURE);
-		if(actionbar[i]->IsSelected()) exclusive = true;
+		if(actionbar[i]->Selected()) exclusive = true;
 		++i;
 	}
 

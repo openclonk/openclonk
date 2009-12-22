@@ -181,7 +181,7 @@ global func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 	if (!release)
 	{
 		// Jump control
-		if (ctrl == CON_Jump && proc == "WALK")
+		if (ctrl == CON_Jump)
 		{
 			return PlayerObjectCommand(plr, false, "Jump");
 		}
@@ -305,6 +305,7 @@ global func GetPlayerControlName(int ctrl)
 	if (ctrl == CON_Up)			return "Up";
 	if (ctrl == CON_Down)		return "Down";
 	if (ctrl == CON_Throw)		return "Throw";
+	if (ctrl == CON_ThrowAlt)		return "ThrowAlt";
 	if (ctrl == CON_Jump)		return "Jump";
 	if (ctrl == CON_MenuLeft)	return "MenuLeft";
 	if (ctrl == CON_MenuRight)	return "MenuRight";
@@ -313,8 +314,12 @@ global func GetPlayerControlName(int ctrl)
 	if (ctrl == CON_MenuDown)	return "MenuDown";
 	if (ctrl == CON_NextItem)	return "NextItem";
 	if (ctrl == CON_PreviousItem) return "PreviousItem";
+	if (ctrl == CON_NextAltItem)	return "NextAltItem";
+	if (ctrl == CON_PreviousAltItem) return "PreviousAltItem";
 	if (ctrl == CON_Use)		return "Use";
 	if (ctrl == CON_Drop)		return "Drop";
+	if (ctrl == CON_UseAlt)		return "UseAlt";
+	if (ctrl == CON_DropAlt)		return "DropAlt";
 	if (ctrl == CON_NextCrew)	return "NextCrew";
 	if (ctrl == CON_PreviousCrew) return "PreviousCrew";
 	if (ctrl == CON_MenuCancel)	return "MenuCancel";

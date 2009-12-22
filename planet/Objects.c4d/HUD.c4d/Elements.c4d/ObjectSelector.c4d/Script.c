@@ -29,7 +29,7 @@
 
 */
 
-local isSelected, crew, hotkey, myobject, actiontype, hand;
+local selected, crew, hotkey, myobject, actiontype;
 
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
@@ -42,10 +42,9 @@ protected func Construction()
 {
 	_inherited();
 	
-	isSelected = false;
+	selected = 0;
 	hotkey = 0;
 	myobject = nil;
-	hand = 0;
 	
 	// parallaxity
 	this["Parallaxity"] = [0,0];
@@ -66,7 +65,6 @@ public func MouseSelection(int plr)
 	// object is in inventory
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
-		hand = 0;
 		crew->SelectItem(hotkey-1);
 		return true;
 	}
@@ -207,33 +205,37 @@ public func ShowHotkey()
 	}
 }
 
-public func IsSelected()
+public func Selected()
 {
-	return isSelected;
+	return selected;
 }
 
 public func UpdateSelectionStatus()
 {
 
 	// determine...
-	var sel = false;
+	var sel = 0;
 	
 	if(actiontype == ACTIONTYPE_VEHICLE)
 		if(crew->GetProcedure() == "PUSH" && crew->GetActionTarget() == myobject)
-			sel = true;
+			sel = 1;
 			
 	if(actiontype == ACTIONTYPE_STRUCTURE)
 		if(crew->Contained() == myobject)
-			sel = true;
+			sel = 1;
 
 	if(actiontype == ACTIONTYPE_INVENTORY)
+	{
 		if(crew->GetSelected() == hotkey-1)
-			sel = true;
+			sel = 1;
+		if(crew->GetSelected(true) == hotkey-1)
+			sel = 2;
+	}
 			
-	isSelected = sel;
+	selected = sel;
 	
 	// and set the icon...
-	if(isSelected)
+	if(selected)
 	{
 		SetClrModulation(RGB(220,0,0),12);
 		SetObjDrawTransform(500,0,16000,0,500,-34000, 12);
@@ -263,26 +265,28 @@ public func UpdateSelectionStatus()
 public func UpdateHands()
 {
 	// the hands...
-	var hands = isSelected;
+	var hands = selected;
 	// .. are not displayed for inventory if the clonk is inside
 	// a building or is pushing something because the controls
 	// are redirected to those objects
 	if(actiontype == ACTIONTYPE_INVENTORY)
 		if(crew->Contained() || crew->GetProcedure() == "PUSH")
-			hands = false;
+			hands = 0;
 			
 	if(hands)
 	{
-		if(hand == 0 || actiontype != ACTIONTYPE_INVENTORY)
+		if(hands == 1 || actiontype != ACTIONTYPE_INVENTORY)
 		{
 			SetGraphics("One",GetID(),3,GFXOV_MODE_Base);
 			SetObjDrawTransform(HandSize(),0,-16000,0,HandSize(),-12000, 3);
 		}
-		if(hand == 1 || actiontype != ACTIONTYPE_INVENTORY)
+		else SetGraphics(nil,nil,3);
+		if(hands == 2 || actiontype != ACTIONTYPE_INVENTORY)
 		{
 			SetGraphics("Two",GetID(),4,GFXOV_MODE_Base);
 			SetObjDrawTransform(HandSize(),0,8000,0,HandSize(),-12000, 4);
 		}
+		else SetGraphics(nil,nil,4);
 	}
 	else
 	{

@@ -7,8 +7,10 @@
 	# --------
 	# Left Right Up Down Jump
 	# Throw Drop Use
+	# ThrowAlt DropAlt UseAlt
 	#
 	# NextItem PreviousItem
+	# NextAltItem PreviousAltItem
 	#
 	# Grab Ungrab GrabPrevious GrabNext PushEnter
 	#
@@ -75,6 +77,22 @@
 	InitialRepeatDelay=35
 	
 	[ControlDef]
+	Identifier=ThrowAlt
+	GUIName=Throw 2
+	GUIDesc=Throw secondary selected inventory item
+	Hold=1
+	RepeatDelay=5
+	InitialRepeatDelay=35
+
+	[ControlDef]
+	Identifier=DropAlt
+	GUIName=Drop 2
+	GUIDesc=Drop secondary selected inventory item
+	Hold=1
+	RepeatDelay=5
+	InitialRepeatDelay=35
+	
+	[ControlDef]
 	Identifier=NextItem
 	GUIName=Select next
 	GUIDesc=Select next inventory item
@@ -84,6 +102,16 @@
 	GUIName=Select previous
 	GUIDesc=Select previous inventory item
 	
+	[ControlDef]
+	Identifier=NextAltItem
+	GUIName=Select next 2
+	GUIDesc=Select next as secondary inventory item
+	
+	[ControlDef]
+	Identifier=PreviousAltItem
+	GUIName=Select previous 2
+	GUIDesc=Select previous as secondary inventory item
+	
 	
 	# Controlling (contents, vehicles, structures)
 	
@@ -91,6 +119,13 @@
 	Identifier=Use
 	GUIName=Use
 	GUIDesc=Use selected or controlled item
+	Hold=1
+	RepeatDelay=5
+	
+	[ControlDef]
+	Identifier=UseAlt
+	GUIName=Use 2
+	GUIDesc=Use secondary selected or controlled item
 	Hold=1
 	RepeatDelay=5
 	
@@ -307,36 +342,39 @@
  
 [ControlSets]
 
-	# x = DONE
-
 	# Summary
 	# --------
-	# MenuLeft, Left		x			A
-	# MenuRight, Right		x			D
-	# MenuUp, Up, Jump		x			W
-	# MenuDown, Down		x			S
+	# MenuLeft, Left					A
+	# MenuRight, Right					D
+	# MenuUp, Up, Jump					W
+	# MenuDown, Down					S
 	#
-	# NextItem				x			Scrollwheel-Up (now: Up)
-	# PreviousItem			x			Scrollwheel-Down (now: unassigned)
-	# Hotkey0-9				x			(0-9)
+	# NextItem							Scrollwheel-Up (now: Up)
+	# PreviousItem						Scrollwheel-Down (now: unassigned)
+	# Hotkey0-9							(0-9)
 	#
-	# Use, Throw			x			Left mouse button
-	# Throw					x			Shift+Left mouse button
-	# Drop					x			S+Left mouse button
+	# Use, Throw						Left mouse button
+	# Throw								Shift+Left mouse button
+	# Drop								S+Left mouse button
+	#
+	# UseAlt, ThrowAlt					Right mouse button
+	# ThrowAlt							Shift+Right mouse button
+	# DropAlt							S+Right mouse button
 	#
 	# PushEnter, GrabNext, Ungrab,
-	# Grab, Exit, Enter		x			Space
+	# Grab, Exit, Enter					Space
 	#
-	# PlayerHotkey0-9		x			X+(0-9)
-	# NextCrew				x			E
-	# PreviousCrew			x			Q
+	# PlayerHotkey0-9					X+(0-9)
+	# NextCrew							E
+	# PreviousCrew						Q
 	# 
-	# MenuOK				x			Return
-	# MenuCancel			x			Backspace
+	# MenuOK							Return
+	# MenuCancel						Backspace
 	# 
-	# PlayerMenu			x			End
+	# PlayerMenu						End
 	#
-	# GrabPrevious, AllCrew	x			Unassigned
+	# GrabPrevious, AllCrew,
+	# NextAltItem, NextPreviousItem		Unassigned
 		
 
 	[ControlSet]
@@ -520,10 +558,6 @@
 		Key=End
 		Control=PlayerMenu
 		
-		#[Assignment]
-		#Key=Mouse1Wheel1Down
-		#Control=PreviousItem
-		
 		[Assignment]
 		Key=Up
 		Control=NextItem
@@ -546,12 +580,23 @@
 		Key=S,GameMouse1ButtonLeft
 		Control=Drop
 
-		#[Assignment]
-		#Key=GameMouse1Move
-		#Priority=50
-		#Control=Test
-
-
+		[Assignment]
+		Key=GameMouse1ButtonRight
+		Priority=100
+		Control=UseAlt
+		
+		[Assignment]
+		Key=GameMouse1ButtonRight
+		Priority=50
+		Control=ThrowAlt
+		
+		[Assignment]
+		Key=Shift+GameMouse1ButtonRight
+		Control=ThrowAlt
+		
+		[Assignment]
+		Key=S,GameMouse1ButtonRight
+		Control=DropAlt
 
 	[ControlSet]
 	Name=Gamepad1

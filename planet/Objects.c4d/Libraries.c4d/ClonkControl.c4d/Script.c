@@ -36,10 +36,10 @@
 	or directly)
 */
 
-local selected;
+local selected, selected2;
+local using, using2;
 local inventory;
-local throwAngle;
-local using, mlastx, mlasty;
+local mlastx, mlasty;
 
 /* ++++++++ Item controls ++++++++++ */
 
@@ -49,71 +49,81 @@ public func MaxContentsCount() { return 3; }
 
 /* Item select access*/
 
-public func SelectItem(selection)
+public func SelectItem(selection, bool second)
 {
-	var item, old;
+	var oldnum = GetSelected(second);
+	var item = inventory[oldnum];
 	
-	// selection is given as integer
-	/*if(GetType(selection) == C4V_Int)
-	{
-	*/
-		// selection didnt change
-		if(selected == selection) return;
-
-		old = selected;
-		item = inventory[selected];
-		selected = selection;
-	/*
-	}
+	// selection didnt change
+	if (oldnum == selection) return;
 	
-	// ...as object
-	else if(GetType(selection) == C4V_C4Object)
-	{
-		// selection didnt change
-		if(inventory[selected] == selection) return false;
-	
-		item = selection;
-		if(item == nil) return;
-	
-		// find object
-		var found = false;
-		for(var i=0; i<MaxContentsCount(); ++i)
-			if(inventory[i] == selection)
-				{ selected = i; found = true; break; }
-		if(!found) return;
-	}
-	*/
+	// set new selected
+	if (!second) selected = selection;
+	else selected2 = selection;
 	
 	// cancel the use of another item
-	if(item) if(using == item) { using->~ControlUseStop(this,mlastx,mlasty); using = nil; }
+	if (item)
+	{
+		if (!second) if (using == item) { item->~ControlUseStop(this,mlastx,mlasty); using = nil; }
+		if (second) if (using2 == item) { item->~ControlUseStop(this,mlastx,mlasty); using2 = nil; }
+	}
 	
 	// de-select previous (if any)
-	if(item) item->~Deselection(this);
+	if (item) item->~Deselection(this);
+	
 	// select new (if any)
-	item = inventory[selected];
+	if (!second) item = inventory[selected];
+	else item = inventory[selected2];
 	
 	// DEBUG
 	//var bla = "nothing";
-	//if(item) bla = item->~GetName();
+	//if (item) bla = item->~GetName();
 	//Message("selected %s (position %d)", this, bla, selected);
 	
-	if(item)
-		if(!item->~Selection(this))
+	if (item)
+		if (!item->~Selection(this))
 			Sound("Grab");
 			
 	// callback to clonk (self):
 	// OnSelectionChanged(oldslotnumber, newslotnumber)
-	this->~OnSelectionChanged(old, selected);
+	this->~OnSelectionChanged(oldnum, GetSelected(second));
+	
+	// the first and secondary selection may not be on the same spot
+	if (selected2 == selected)
+	{
+		if(second) SelectItem(oldnum,false);
+		else SelectItem(oldnum,true);
+	}
 }
 
-public func GetSelected()
+public func ShiftItem(int dir, bool second)
 {
-	return selected;
+	var sel = selected;
+	if (second) sel = selected2;
+
+	if (dir < 0)
+	{
+		sel--;
+		if (sel <= 0) sel = MaxContentsCount()-1;
+		
+		SelectItem(sel,second);
+	}
+	else if (dir > 0)
+	{
+		SelectItem((sel+1) % MaxContentsCount(),second);
+	}
 }
 
-public func GetSelectedItem()
+public func GetSelected(bool second)
 {
-	return inventory[selected];
+	if (!second) return selected;
+	return selected2;
+}
+
+public func GetSelectedItem(bool second)
+{
+	if (!second) return inventory[selected];
+	return inventory[selected2];
 }
 
 public func GetItem(int i)
@@ -125,8 +135,8 @@ public func GetItem(int i)
 
 global func ShiftContents()
 {
-	if(this)
-		if(this->~GetSelected() != nil)
+	if (this)
+		if (this->~GetSelected() != nil)
 			return false;
 	return _inherited(...);
 }
@@ -136,6 +146,7 @@ global func ShiftContents()
 protected func Construction()
 {
 	selected = 0;
+	selected2 = 2;
 	inventory = CreateArray();
 	return _inherited(...);
 }
@@ -145,7 +156,7 @@ protected func Collection2(object obj)
 	var sel;
 
 	// into selected area if empty
-	if(!inventory[selected])
+	if (!inventory[selected])
 	{
 		inventory[selected] = obj;
 		sel = selected;
@@ -156,7 +167,7 @@ protected func Collection2(object obj)
 		for(var i = 1; i < MaxContentsCount(); ++i)
 		{
 			sel = (selected+i) % MaxContentsCount();
-			if(!inventory[sel])
+			if (!inventory[sel])
 			{
 				inventory[sel] = obj;
 				break;
@@ -174,7 +185,7 @@ protected func Ejection(object obj)
 	// find obj in array and delete
 	for(i = 0; i < MaxContentsCount(); ++i)
 	{
-		if(inventory[i] == obj)
+		if (inventory[i] == obj)
 			{ inventory[i] = nil; break; }
 	}
 	
@@ -186,7 +197,7 @@ protected func Ejection(object obj)
 protected func RejectCollect(id objid, object obj)
 {
 	// check max contents
-	if(ContentsCount() >= MaxContentsCount()) return true;
+	if (ContentsCount() >= MaxContentsCount()) return true;
 	return _inherited(objid,obj,...);
 }
 
@@ -194,9 +205,9 @@ protected func RejectCollect(id objid, object obj)
 
 private func CancelUse()
 {
-	if(!using) return;
+	if (!using) return;
 	var control = "Control";
-	if(Contained() == using) control = "Contained";
+	if (Contained() == using) control = "Contained";
 	using->~Call(Format("~%sUseStop",control),this,mlastx,mlasty);
 	using = nil;
 }
@@ -222,7 +233,7 @@ protected func GrabLost()         { CancelUse(); return _inherited(...); }
 // ...aaand the same for when the clonk is deselected
 protected func CrewSelection(bool unselect)
 {
-	if(unselect) CancelUse();
+	if (unselect) CancelUse();
 	return _inherited(unselect,...);
 }
 
@@ -258,6 +269,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	var house = Contained();
 	var vehicle = GetActionTarget();
 	var contents = GetSelectedItem();
+	var contents2 = GetSelectedItem(true);
 
 	if (house)
 	{
@@ -270,19 +282,23 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
 			return true;
 	}
-	else if (contents)
+	// out of convencience we call Control2Script, even though it handles
+	// left, right, up and down, too. We don't want that, so this is why we
+	// check that ctrl is Use.
+	else if (contents && ctrl == CON_Use)
 	{
-		// out of convencience we call Control2Script, even though it handles
-		// left, right, up and down, too. We don't want that, so this is why we
-		// check that ctrl is Use.
-		if (ctrl == CON_Use)
-			if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
-				return true;
+		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
+			return true;
+	}
+	else if (contents2 && ctrl == CON_UseAlt)
+	{
+		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
+			return true;
 	}
 	/*
-	if(!vehicle && !house)
+	if (!vehicle && !house)
 	{
-		if(ctrl == CON_Jump) if(this->~ControlJump(this)) return true;
+		if (ctrl == CON_Jump) if (this->~ControlJump(this)) return true;
 	}*/
 	
 	// everything down from here:
@@ -301,37 +317,50 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return ObjectControlEntrance(plr,ctrl);
 
 	// Inventory control
-	if (ctrl == CON_NextItem)
-	{
-		SelectItem((selected+1) % MaxContentsCount());
-		
-		return true;
-	}
-	if (ctrl == CON_PreviousItem)
-	{
-		var sel = selected-1;
-		if (sel <= 0) sel = MaxContentsCount()-1;
-		
-		SelectItem(sel);
-		
-		return true;
-	}
+	var inv_control = true;
+	if (ctrl == CON_NextItem)              { ShiftItem(+1); }
+	else if (ctrl == CON_PreviousItem)     { ShiftItem(-1); }
+	else if (ctrl == CON_NextAltItem)      { ShiftItem(+1,true); }
+	else if (ctrl == CON_PreviousAltItem)  { ShiftItem(-1,true); }
+	else { inv_control = false; }
+	
+	if (inv_control) return true;
 
 	// only if not in house, not grabbing a vehicle and an item selected
-	if(!house && !vehicle && contents)
+	if (!house && !vehicle)
 	{
-		// throw
-		if (ctrl == CON_Throw)
+		if (contents)
 		{
-		    if (proc == "SCALE" || proc == "HANGLE")
-		      return PlayerObjectCommand(plr, false, "Drop", contents);
-		    else
-		      return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
+			// throw
+			if (ctrl == CON_Throw)
+			{
+			    if (proc == "SCALE" || proc == "HANGLE")
+			      return PlayerObjectCommand(plr, false, "Drop", contents);
+			    else
+			      return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
+			}
+			// drop
+			if (ctrl == CON_Drop)
+			{
+				return PlayerObjectCommand(plr, false, "Drop", contents);
+			}
 		}
-		// drop
-		if (ctrl == CON_Drop)
+		// same for contents2 (copypasta)
+		if (contents2)
 		{
-			return PlayerObjectCommand(plr, false, "Drop", contents);
+			// throw
+			if (ctrl == CON_ThrowAlt)
+			{
+			    if (proc == "SCALE" || proc == "HANGLE")
+			      return PlayerObjectCommand(plr, false, "Drop", contents2);
+			    else
+			      return PlayerObjectCommand(plr, false, "Throw", contents2, x, y);
+			}
+			// drop
+			if (ctrl == CON_DropAlt)
+			{
+				return PlayerObjectCommand(plr, false, "Drop", contents2);
+			}
 		}
 	}
 	
@@ -343,8 +372,8 @@ public func ObjectCommand(string command, object target, int tx, int ty)
 {
 	// special control for throw and jump
 	// but only with controls, not with general commands
-	if (command == "Throw") ControlThrow(this,tx,ty);
-	else if (command == "Jump") ControlJump(this);
+	if (command == "Throw") ControlThrow(target,tx,ty);
+	else if (command == "Jump") ControlJump();
 	// else standard command
 	else SetCommand(command,target,tx,ty);
 }
@@ -353,29 +382,32 @@ public func ObjectCommand(string command, object target, int tx, int ty)
 private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
 {
 	// for the use command
-	if (ctrl == CON_Use)
+	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
 		var handled = false;
 		
-		if(!release && !repeat)
+		if (!release && !repeat)
 		{
 			handled = obj->Call(Format("~%sUse",control),this,x,y);
-			using = obj;
+			if (ctrl == CON_Use) using = obj;
+			else using2 = obj;
 		}
-		else if(release && using == obj)
+		else if (release && (using == obj || using2 == obj))
 		{
 			handled = obj->Call(Format("~%sUseStop",control),this,x,y);
-			using = nil;
+			if (ctrl == CON_Use) using = nil;
+			else using2 = nil;
 		}
-		else if(using == obj)
+		else if (using == obj || using2 == obj)
 		{
 			handled = obj->Call(Format("~%sUseHolding",control),this,x,y);
 			// if that function returns -1, the control is stopped (*UseStop)
 			// and no more *UseHolding-calls are made.
-			if(handled == -1)
+			if (handled == -1)
 			{
 				obj->Call(Format("~%sUseStop",control),this,x,y);
-				using = nil;
+				if (ctrl == CON_Use) using = nil;
+				else using2 = nil;
 				handled = true;
 			}
 		}
@@ -425,7 +457,7 @@ private func ObjectControlEntrance(int plr, int ctrl)
 	if (ctrl == CON_Enter)
 	{
 		// contained
-		if(Contained()) return false;
+		if (Contained()) return false;
 		// enter only if... one can
 		if (!CanEnter()) return false;
 
@@ -548,26 +580,22 @@ private func ShiftVehicle(int plr, bool back)
 } 
 
 // Throwing
-private func Throwing()
+private func DoThrow(object obj, int angle)
 {
-  // throw selected inventory
-  var obj = inventory[selected];
-  if(!obj) return;
-  
   // parameters...
   var iX, iY, iR, iXDir, iYDir, iRDir;
   iX = 8; if (!GetDir()) iX = -iX;
-  iY = Cos(throwAngle,-8);
+  iY = Cos(angle,-8);
   iR = Random(360);
   iRDir = RandomX(-10,10);
 
   var speed = GetPhysical("Throw");
 
-  iXDir = speed * Sin(throwAngle,1000) / 17000;
-  iYDir = speed * Cos(throwAngle,-1000) / 17000;
+  iXDir = speed * Sin(angle,1000) / 17000;
+  iYDir = speed * Cos(angle,-1000) / 17000;
   // throw boost (throws stronger upwards than downwards)
-  if(iYDir < 0) iYDir = iYDir * 13/10;
-  if(iYDir > 0) iYDir = iYDir * 8/10;
+  if (iYDir < 0) iYDir = iYDir * 13/10;
+  if (iYDir > 0) iYDir = iYDir * 8/10;
   
   // is riding? add it's velocity
   if (GetActionTarget())
@@ -579,36 +607,62 @@ private func Throwing()
   obj->Exit(iX, iY, iR, 0, 0, iRDir);  
   obj->SetXDir(iXDir,1000);
   obj->SetYDir(iYDir,1000);
+  
+  return true;
 }
 
 // custom throw
-public func ControlThrow(object me, int x, int y)
+public func ControlThrow(object target, int x, int y)
 {
 	// standard throw after all
-	if(!x && !y) return false;
+	if (!x && !y) return false;
+	if (!target) return false;
 	
-	if(!inventory[selected]) return false;
-	
-	throwAngle = Angle(0,0,x,y);
+	var throwAngle = Angle(0,0,x,y);
 	
 	// walking (later with animation: flight, scale, hangle?)
-	if(GetProcedure() == "WALK")
+	if (GetProcedure() == "WALK")
 	{
-		if(throwAngle < 180) SetDir(DIR_Right);
+		if (throwAngle < 180) SetDir(DIR_Right);
 		else SetDir(DIR_Left);
 		SetAction("Throw");
-		return true;
+		return DoThrow(target,throwAngle);
 	}
 	// riding
-	if(GetAction() == "Ride" || GetAction() == "RideStill")
+	if (GetAction() == "Ride" || GetAction() == "RideStill")
 	{
 		SetAction("RideThrow");
-		return true;
+		return DoThrow(target,throwAngle);
 	}
 	return false;
 }
 
-public func ControlJump(object me)
+public func ControlJump()
 {
-
+	var ydir = 0;
+	
+	if(GetProcedure() == "WALK")
+	{
+		ydir = GetPhysical("Jump")*GetCon()/1000/100;
+	}
+	else if(InLiquid())
+	{
+		if(!GBackSemiSolid(0,-1))
+			ydir = BoundBy(GetPhysical("Swim")/2500,24,38)*GetCon()/100;
+	}		
+	
+	if(ydir)
+	{
+		SetPosition(GetX(),GetY()-1);
+		SetAction("Jump");
+		SetSpeed(GetXDir(),-ydir);
+		
+		var iX=GetX(),iY=GetY(),iXDir=GetXDir(),iYDir=GetYDir();
+		if(SimFlight(iX,iY,iXDir,iYDir,25))
+			if(GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
+				SetAction("Dive");
+				
+		return true;
+	}
+	return false;
 }
