@@ -11,3 +11,6 @@ protected func Hit()
   func Definition(def) {
   SetProperty("Name", "$Name$", def);
 }
+func Definition(def) {
+  SetProperty("Collectible", 1, def);
+}

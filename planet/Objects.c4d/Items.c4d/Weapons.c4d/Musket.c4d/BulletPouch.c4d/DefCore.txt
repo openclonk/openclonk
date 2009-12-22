@@ -12,9 +12,9 @@ VertexY=4,4,-4
 VertexCNAT=9,10,4
 VertexFriction=40,40,50
 Picture=6,0,21,21
-Value=10
+Value=25
 Mass=10
 Collectible=1
-Components=METL=1;
+Components=METL=1;BPDR=1;
 Rebuy=1
 Rotate=1

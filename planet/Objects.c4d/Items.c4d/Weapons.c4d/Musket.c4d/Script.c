@@ -21,6 +21,8 @@ protected func ControlUse(object clonk, ix, iy)
 
 protected func ControlUseStop(object pClonk, ix, iy)
 {
+	if(CheckCanUse(pClonk)==1) {
+
 	// Reload from Empty
 	if(MagazineType() && Ammo==0) {
 	while(MagazineType()->AmmoCount()!=0 && Ammo<MagazineSize()) 
@@ -37,20 +39,27 @@ protected func ControlUseStop(object pClonk, ix, iy)
 
 	// Fire
 	if(Ammo>=1) {
-	FindContents(ProjectileType())->LaunchProjectile(Angle(0,0,ix,iy)+RandomX(-(Accuracy()), Accuracy()), BarrelLength(), MuzzleVelocity());
-//	MuzzleFlash(pClonk,ix,iy); //Disabled due to action bug. Re-enable when working.
-	Sound("Blast3"); 
-	Message("Bang!", pClonk);
+	FireWeapon(pClonk, ix, iy);
 	Ammo=Ammo-1;
 	if(Ammo==0) IsLoaded=0;
-	return 1;
+	return 1; }
 	}
 return 1;
 }
 
-private func MuzzleFlash(object pClonk, int iX, int iY)
+public func CheckCanUse(object pClonk)
 {
-	pClonk->CreateContents(FLSH)->LaunchProjectile(Angle(0,0,iX,iY), BarrelLength());
+	if(pClonk->GetOCF() & OCF_NotContained) return 1;
+}
+
+private func FireWeapon(object pClonk, int iX, int iY)
+{
+	FindContents(ProjectileType())->LaunchProjectile(Angle(0,0,iX,iY)+RandomX(-(Accuracy()), Accuracy()), BarrelLength(), MuzzleVelocity());
+	Sound("Blast3");
+	Message("Bang!", pClonk);
+
+	//Muzzle Flash
+	pClonk->CreateContents(FLSH)->LaunchProjectile(Angle(0,0,iX,iY), BarrelLength(),0,0,13);
 }
 
 public func IsToolProduct() { return 1; }

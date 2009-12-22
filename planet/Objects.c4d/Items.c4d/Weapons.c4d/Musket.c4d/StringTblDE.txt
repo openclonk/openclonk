@@ -1,1 +1,1 @@
-Name=Musket
+Name=Muskete

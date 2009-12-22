@@ -6,7 +6,7 @@ local iAmmo;
 
 protected func Initialize()
 {
-	iAmmo=5;
+	iAmmo=8;
 }
 
 public func TakeAmmo()

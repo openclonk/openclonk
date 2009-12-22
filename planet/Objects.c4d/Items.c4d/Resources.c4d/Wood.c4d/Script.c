@@ -17,5 +17,6 @@ public func IsFuel() { return 1; }
 public func GetFuelAmount() { return 30; }
 
 func Definition(def) {
+  SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
 }
