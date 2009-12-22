@@ -211,6 +211,7 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	// if a vehicle or structure is selected, the hands need to be removed
 	// from the inventory
 	actionbar[target->GetSelected()]->UpdateHands();
+	actionbar[target->GetSelected(true)]->UpdateHands();
 	
 	return;
 }
