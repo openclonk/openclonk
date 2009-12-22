@@ -380,9 +380,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	// Draw selection
 	if (!IsPassive())
 	{
-		lpDDraw->SetZoom(GameZoom);
 		Selection.DrawSelectMark(cgo, 1.0f);
-		lpDDraw->SetZoom(GuiZoom);
 	}
 
 	// Draw control
@@ -1038,7 +1036,7 @@ C4Object *C4MouseControl::GetTargetObject()
 {
 	// find object
 	// gui object position currently wrong...will fall apart once GUIZoom is activated
-	C4Object *pObj = Game.FindVisObject(ViewX, ViewY, Player, fctViewportGame, fctViewportGUI, GameX,GameY, C4D_MouseSelect, GuiX-fctViewportGUI.X, GuiY-fctViewportGUI.Y);
+	C4Object *pObj = Game.FindVisObject(ViewX, ViewY, Player, fctViewportGame, fctViewportGUI, GameX,GameY, Help ? C4D_All : C4D_MouseSelect, GuiX-fctViewportGUI.X, GuiY-fctViewportGUI.Y);
 	if (!pObj) return NULL;
 	return pObj;
 }

@@ -1327,13 +1327,13 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 				if (pLst == &::Objects.ForeObjects)
 				{
 					// object position for HUD object
-					check_x = game_x; check_y = game_y;
-					cObj->GetViewPos(iObjX, iObjY, tx, ty, fctViewportGUI);
+					check_x = gui_x; check_y = gui_y;
+					cObj->GetViewPos(iObjX, iObjY, -fctViewportGUI.X, -fctViewportGUI.Y, fctViewportGUI);
 				}
 				else
 				{
 					// object position for game object
-					check_x = gui_x; check_y = gui_y;
+					check_x = game_x; check_y = game_y;
 					cObj->GetViewPos(iObjX, iObjY, tx, ty, fctViewportGame);
 				}
 				// Point search
