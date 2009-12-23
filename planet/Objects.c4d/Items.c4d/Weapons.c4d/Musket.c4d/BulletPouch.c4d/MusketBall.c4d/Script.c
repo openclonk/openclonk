@@ -17,10 +17,10 @@ private func Check()
 {
 	var pVictim = FindObject(Find_OCF(OCF_Alive),Find_InRect(-15,-15,30,30),Find_NoContainer());
 	// If bullet is flying, hurt victim
-	if(GetOCF() & OCF_HitSpeed4) { if(pVictim) Wound(pVictim); }
+	if(GetOCF() & OCF_HitSpeed4 && GetOCF() & OCF_NotContained) { if(pVictim) BulletWound(pVictim); }
 }
 
-private func Wound(object pObj)
+private func BulletWound(object pObj)
 {
 	Message("Hit!|%d", pObj, pObj->GetEnergy()); //Remove when sound works
 

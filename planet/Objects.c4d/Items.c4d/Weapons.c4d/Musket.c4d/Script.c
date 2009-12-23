@@ -10,7 +10,7 @@ public func MuzzleVelocity() { return 300; }		//Speed of projectile on launch
 public func MagazineType() { return Contained()->FindContents(POCH); }		 //Collects bullets from this object... ie:Quiver
 public func MagazineSize() { return 1; } 			//Amount of ammo this gun can hold
 public func ProjectileType() { return MBLL; } 		//Object which fires from gun
-public func Accuracy() { return 4; }		//Spread of fired shots 0=Perfect Accuracy; 10=Horrible Accuracy;
+public func Accuracy() { return 3; }		//Spread of fired shots 0=Perfect Accuracy; 10=Horrible Accuracy;
 
 protected func Initialize() { Ammo=0; }
 
