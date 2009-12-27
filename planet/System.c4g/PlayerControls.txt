@@ -27,7 +27,8 @@
 	# PlayerMenu 
 	
 	[ControlDef]
-	Identifier=MouseMove
+	Identifier=Aim
+	DefaultDisabled=1
 	GUIName=Move
 	GUIDesc=Move
 	
@@ -379,7 +380,7 @@
 
 		[Assignment]
 		Key=GameMouse1Move
-		Control=MouseMove
+		Control=Aim
 	
 		[Assignment]
 		Key=A

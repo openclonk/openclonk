@@ -279,12 +279,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// out of convencience we call Control2Script, even though it handles
 	// left, right, up and down, too. We don't want that, so this is why we
 	// check that ctrl is Use.
-	else if (contents && (ctrl == CON_Use || ( ctrl == CON_MouseMove && !alt )))
+	else if (contents && (ctrl == CON_Use || ( ctrl == CON_Aim && !alt )))
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if (contents2 && (ctrl == CON_UseAlt || ( ctrl == CON_MouseMove && alt )))
+	else if (contents2 && (ctrl == CON_UseAlt || ( ctrl == CON_Aim && alt )))
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
@@ -377,19 +377,47 @@ private func CancelUse()
 	if (!using) return;
 	
 	var control = "Control";
-	if (using)
-		if (Contained() == using)
-			control = "Contained";
+	if (Contained() == using)
+		control = "Contained";
+	
+	StopUseControl(control, mlastx, mlasty, using);
+}
+
+private func StartUseControl(int ctrl, control, int x, int y, object obj)
+{
+	if (ctrl == CON_Use) alt = false;
+	else alt = true;
+	
+	var estr = "";
+	if (alt && !(obj->Contained())) estr = "Alt";
+	
+	var handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
+	using = obj;
 			
-	using->~Call(Format("~%sUse%sStop",control),this,mlastx,mlasty);
+	if(obj->Call("~HoldingEnabled"))
+		SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
+		
+	return handled;
+}
+
+private func StopUseControl(int control, int x, int y, object obj)
+{
+	var estr = "";
+	if (alt && !(obj->Contained())) estr = "Alt";
+		
+	var handled = obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
 	using = nil;
+	alt = false;
+			
+	if(obj->Call("~HoldingEnabled"))
+		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+		
+	return handled;
 }
 
 // Control redirected to script
 private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
 {
-	var handled = false;
-	var estr = "";
 	
 	// do not use secondary when using primary and the other way round
 	if (using)
@@ -403,39 +431,26 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	{
 		if (!release && !repeat)
 		{
-			if (ctrl == CON_Use) alt = false;
-			else alt = true;
-		
-			if (alt && !(obj->Contained())) estr = "Alt";
-	
-			handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
-			using = obj;
+			return StartUseControl(ctrl, control, x, y, obj);
 		}
 		else if (release && using == obj)
 		{
-			if (alt && !(obj->Contained())) estr = "Alt";
-		
-			handled = obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
-			using = nil;
-			alt = false;
+			return StopUseControl(control, x, y, obj);
 		}
-		return handled;
 	}
 	// for repeated key presses, the x and y are not updated.
 	// we get our x and y from the MouseMove event.
-	else if(ctrl == CON_MouseMove && using == obj)
+	else if(ctrl == CON_Aim && using == obj)
 	{
+		var estr = "";
 		if (alt && !(obj->Contained())) estr = "Alt";
 	
-		handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
+		var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
 		// if that function returns -1, the control is stopped (*UseStop)
 		// and no more *UseHolding-calls are made.
 		if (handled == -1)
 		{
-			obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
-			using = nil;
-			alt = false;
-			handled = true;
+			handled = StopUseControl(control, x, y, obj);
 		}
 		return handled;
 	}
