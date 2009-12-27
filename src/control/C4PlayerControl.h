@@ -309,7 +309,7 @@ class C4PlayerControl
 			int32_t GetControlDisabled(int32_t iControl) const;
 			bool IsControlDisabled(int32_t iControl) const { return GetControlDisabled(iControl)>0; }
 			void SetControlDownState(int32_t iControl, const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser);
-			void SetControlDisabled(int32_t iControl, int32_t iVal);
+			bool SetControlDisabled(int32_t iControl, int32_t iVal);
 
 			void Clear();
 			void CompileFunc(StdCompiler *pComp);
@@ -353,6 +353,11 @@ class C4PlayerControl
 
 		// mouse input
 		bool DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, bool is_ctrl_down, bool is_shift_down, bool is_alt_down);
+
+		// control enable/disable
+		bool SetControlDisabled(int ctrl, bool is_disabled) { return Sync.SetControlDisabled(ctrl, is_disabled); }
+		bool IsControlDisabled(int ctrl) const { return Sync.IsControlDisabled(ctrl); }
+
 	};
 
 

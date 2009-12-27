@@ -610,10 +610,10 @@ void C4PlayerControl::CSync::SetControlDownState(int32_t iControl, const C4KeyEv
 	rState.fDownByUser = fDownByUser;
 	}
 
-void C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
+bool  C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
 	{
 	// disable control
-	if (iControl < 0) return;
+	if (iControl < 0) return false;
 	if (iControl >= int32_t(ControlDisableStates.size())) ControlDisableStates.resize(iControl+1);
 	ControlDisableStates[iControl] = iVal;
 	// if a control is disabled, its down-state is reset silently
@@ -624,6 +624,7 @@ void C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
 		KeyDownState.iStrength = 0;
 		SetControlDownState(iControl, KeyDownState, 0, false);
 		}
+	return true;
 	}
 
 void C4PlayerControl::CSync::Clear()

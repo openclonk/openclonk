@@ -5479,6 +5479,51 @@ static long FnGetPlayerControlState(C4AulContext *ctx, long iPlr, long iControl)
 	return pControlState->DownState.iStrength;
 	}
 
+static bool FnSetPlayerControlEnabled(C4AulContext *ctx, long iplr, long ctrl, bool is_enabled)
+{
+	// get control set to check
+	C4PlayerControl *plrctrl = NULL;
+	if (iplr == NO_OWNER)
+		{
+		//plrctrl = Game.GlobalPlayerControls;
+		}
+	else
+		{
+		C4Player *plr = ::Players.Get(iplr);
+		if (plr)
+			{
+			plrctrl = &(plr->Control);
+			}
+		}
+	// invalid player or no controls
+	if (!plrctrl) return false;
+	// invalid control
+	if (ctrl >= Game.PlayerControlDefs.GetCount()) return false;
+	// query
+	return plrctrl->SetControlDisabled(ctrl, !is_enabled);
+	}
+
+static bool FnGetPlayerControlEnabled(C4AulContext *ctx, long iplr, long ctrl)
+{
+	// get control set to check
+	C4PlayerControl *plrctrl = NULL;
+	if (iplr == NO_OWNER)
+		{
+		//plrctrl = Game.GlobalPlayerControls;
+		}
+	else
+		{
+		C4Player *plr = ::Players.Get(iplr);
+		if (plr)
+			{
+			plrctrl = &(plr->Control);
+			}
+		}
+	// invalid player or no controls
+	if (!plrctrl) return false;
+	return !plrctrl->IsControlDisabled(ctrl);
+	}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -5946,6 +5991,8 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "PathFree", FnPathFree);
 	AddFunc(pEngine, "SetNextMission", FnSetNextMission);
 	AddFunc(pEngine, "GetPlayerControlState", FnGetPlayerControlState);
+	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
+	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
 	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 
 	AddFunc(pEngine, "goto", Fn_goto);
