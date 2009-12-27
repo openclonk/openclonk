@@ -285,12 +285,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// out of convencience we call Control2Script, even though it handles
 	// left, right, up and down, too. We don't want that, so this is why we
 	// check that ctrl is Use.
-	else if (contents && ctrl == CON_Use)
+	else if (contents && ctrl == CON_Use && !using2)
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if (contents2 && ctrl == CON_UseAlt)
+	else if (contents2 && ctrl == CON_UseAlt && !using)
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
