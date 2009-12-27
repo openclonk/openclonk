@@ -37,7 +37,8 @@
 */
 
 local selected, selected2;
-local using, using2;
+local using;
+local alt;
 local inventory;
 local mlastx, mlasty;
 
@@ -63,10 +64,8 @@ public func SelectItem(selection, bool second)
 	
 	// cancel the use of another item
 	if (item)
-	{
-		if (!second) if (using == item) { item->~ControlUseStop(this,mlastx,mlasty); using = nil; }
-		if (second) if (using2 == item) { item->~ControlUseStop(this,mlastx,mlasty); using2 = nil; }
-	}
+		if (using == item)
+			CancelUse();
 	
 	// de-select previous (if any)
 	if (item) item->~Deselection(this);
@@ -147,6 +146,8 @@ protected func Construction()
 {
 	selected = 0;
 	selected2 = 2;
+	alt = false;
+	using = nil;
 	inventory = CreateArray();
 	return _inherited(...);
 }
@@ -203,15 +204,6 @@ protected func RejectCollect(id objid, object obj)
 
 /* ################################################# */
 
-private func CancelUse()
-{
-	if (!using) return;
-	var control = "Control";
-	if (Contained() == using) control = "Contained";
-	using->~Call(Format("~%sUseStop",control),this,mlastx,mlasty);
-	using = nil;
-}
-
 // The using-command hast to be canceled if the clonk is entered into
 // or exited from a building.
 
@@ -242,12 +234,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 {
 	if (!this) return false;
 	
+	mlastx = x;
+	mlasty = y;
 	
 	//Log(Format("%d, %d, %d, %v, %v",  x,y,ctrl, repeat, release));
 	
 	// Any control resets a previously given command
 	SetCommand("None");
-
+	
 	// hotkeys (inventory, vehicle and structure control)
 	var hot = 0;
 	if (ctrl == CON_Hotkey0) hot = 10;
@@ -285,12 +279,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// out of convencience we call Control2Script, even though it handles
 	// left, right, up and down, too. We don't want that, so this is why we
 	// check that ctrl is Use.
-	else if (contents && ctrl == CON_Use && !using2)
+	else if (contents && (ctrl == CON_Use || ( ctrl == CON_MouseMove && !alt )))
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if (contents2 && ctrl == CON_UseAlt && !using)
+	else if (contents2 && (ctrl == CON_UseAlt || ( ctrl == CON_MouseMove && alt )))
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
@@ -378,51 +372,74 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 	else SetCommand(command,target,tx,ty,target2);
 }
 
+private func CancelUse()
+{
+	if (!using) return;
+	
+	var control = "Control";
+	if (using)
+		if (Contained() == using)
+			control = "Contained";
+			
+	using->~Call(Format("~%sUse%sStop",control),this,mlastx,mlasty);
+	using = nil;
+}
+
 // Control redirected to script
 private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
 {
+	var handled = false;
+	var estr = "";
+	
+	// do not use secondary when using primary and the other way round
+	if (using)
+	{
+		if (ctrl == CON_Use && alt) return true;
+		if (ctrl == CON_UseAlt && !alt) return true;
+	}
+
 	// for the use command
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
-		var handled = false;
-		
-		var estr = "";
-		// not an inventory object
-		if(ctrl == CON_UseAlt)
-			if(!(obj->Contained()))
-				estr = "Alt";
-		
 		if (!release && !repeat)
 		{
+			if (ctrl == CON_Use) alt = false;
+			else alt = true;
+		
+			if (alt && !(obj->Contained())) estr = "Alt";
+	
 			handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
-			if (ctrl == CON_Use) using = obj;
-			else using2 = obj;
+			using = obj;
 		}
-		else if (release && (using == obj || using2 == obj))
+		else if (release && using == obj)
 		{
+			if (alt && !(obj->Contained())) estr = "Alt";
+		
 			handled = obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
-			if (ctrl == CON_Use) using = nil;
-			else using2 = nil;
+			using = nil;
+			alt = false;
 		}
-		else if (using == obj || using2 == obj)
-		{
-			handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
-			// if that function returns -1, the control is stopped (*UseStop)
-			// and no more *UseHolding-calls are made.
-			if (handled == -1)
-			{
-				obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
-				if (ctrl == CON_Use) using = nil;
-				else using2 = nil;
-				handled = true;
-			}
-		}
-		
-		mlastx = x;
-		mlasty = y;
-		
 		return handled;
 	}
+	// for repeated key presses, the x and y are not updated.
+	// we get our x and y from the MouseMove event.
+	else if(ctrl == CON_MouseMove && using == obj)
+	{
+		if (alt && !(obj->Contained())) estr = "Alt";
+	
+		handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
+		// if that function returns -1, the control is stopped (*UseStop)
+		// and no more *UseHolding-calls are made.
+		if (handled == -1)
+		{
+			obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
+			using = nil;
+			alt = false;
+			handled = true;
+		}
+		return handled;
+	}
+
 	// overloads of movement commandos
 	else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up)
 	{

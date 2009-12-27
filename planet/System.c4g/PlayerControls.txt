@@ -26,6 +26,10 @@
 	# MenuCancel MenuOK MenuDown MenuUp MenuLeft MenuRight
 	# PlayerMenu 
 	
+	[ControlDef]
+	Identifier=MouseMove
+	GUIName=Move
+	GUIDesc=Move
 	
 	# Movement
 	
@@ -65,32 +69,24 @@
 	GUIName=Throw
 	GUIDesc=Throw selected inventory item
 	Hold=1
-	RepeatDelay=5
-	InitialRepeatDelay=35
 
 	[ControlDef]
 	Identifier=Drop
 	GUIName=Drop
 	GUIDesc=Drop selected inventory item
 	Hold=1
-	RepeatDelay=5
-	InitialRepeatDelay=35
 	
 	[ControlDef]
 	Identifier=ThrowAlt
 	GUIName=Throw 2
 	GUIDesc=Throw secondary selected inventory item
 	Hold=1
-	RepeatDelay=5
-	InitialRepeatDelay=35
 
 	[ControlDef]
 	Identifier=DropAlt
 	GUIName=Drop 2
 	GUIDesc=Drop secondary selected inventory item
 	Hold=1
-	RepeatDelay=5
-	InitialRepeatDelay=35
 	
 	[ControlDef]
 	Identifier=NextItem
@@ -120,14 +116,12 @@
 	GUIName=Use
 	GUIDesc=Use selected or controlled item
 	Hold=1
-	RepeatDelay=5
 	
 	[ControlDef]
 	Identifier=UseAlt
 	GUIName=Use 2
 	GUIDesc=Use secondary selected or controlled item
 	Hold=1
-	RepeatDelay=5
 	
 	[ControlDef]
 	Identifier=Grab
@@ -383,6 +377,10 @@
 	Mouse=1
 	Gamepad=0
 
+		[Assignment]
+		Key=GameMouse1Move
+		Control=MouseMove
+	
 		[Assignment]
 		Key=A
 		Priority=50
