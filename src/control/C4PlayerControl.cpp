@@ -699,7 +699,7 @@ bool C4PlayerControl::ProcessKeyDown(const C4KeyCodeEx &pressed_key, const C4Key
 	// add key to local "down" list if it's not already in there
 	// except for some mouse events for which a down state does not make sense
 	C4PlayerControlRecentKey RKey(pressed_key,matched_key,timeGetTime());
-	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key), KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
+	if (!Key_IsMouse(pressed_key.Key) || Inside<uint8_t>(Key_GetMouseEvent(pressed_key.Key) & ~KEY_MOUSE_GameMask, KEY_MOUSE_Button1, KEY_MOUSE_ButtonMax))
 	{
 		if (std::find(DownKeys.begin(), DownKeys.end(), pressed_key) == DownKeys.end()) DownKeys.push_back(RKey);
 	}

@@ -2931,6 +2931,24 @@ bool C4Game::LoadScenarioScripts()
 	if (SysGroup.OpenAsChild(&ScenarioFile, C4CFN_System))
 		{
 		ScenarioSysLangStringTable.LoadEx("StringTbl", SysGroup, C4CFN_ScriptStringTbl, Config.General.LanguageEx);
+		// load custom scenario control definitions
+		if (SysGroup.FindEntry(C4CFN_PlayerControls))
+		{
+			Log("[!]Loading local scenario player control definitions...");
+			C4PlayerControlFile PlayerControlFile;
+			if (!PlayerControlFile.Load(SysGroup, C4CFN_PlayerControls, &ScenarioSysLangStringTable))
+			{
+				// non-fatal error here
+				Log("[!]Error loading scenario defined player controls");
+			}
+			else
+			{
+				// local definitions loaded successfully - merge into global definitions
+				PlayerControlDefs.MergeFrom(PlayerControlFile.GetControlDefs());
+				PlayerControlAssignmentSets.MergeFrom(PlayerControlFile.GetAssignmentSets(), true);
+				PlayerControlAssignmentSets.ResolveRefs(&PlayerControlDefs);
+			}
+		}
 		// load all scripts in there
 		SysGroup.ResetSearch();
 		while (SysGroup.FindNextEntry(C4CFN_ScriptFiles, (char *) &fn, NULL, NULL, !!fn[0]))
