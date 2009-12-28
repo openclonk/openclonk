@@ -300,6 +300,7 @@ global func ShiftCursor(int plr, bool back)
 // Helper function to turn CON_*-constants into strings
 global func GetPlayerControlName(int ctrl)
 {
+	if (ctrl == CON_Aim)		return "Aim";
 	if (ctrl == CON_Left)		return "Left";
 	if (ctrl == CON_Right)		return "Right";
 	if (ctrl == CON_Up)			return "Up";

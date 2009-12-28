@@ -148,7 +148,7 @@ public func SetObject(object obj, int type, int pos)
 	if(!myobject) 
 	{	
 		SetGraphics(nil,nil,1);
-		SetName(Format("$LabelSlot$ %d",hotkey-1));
+		SetName(Format("$TxtLabel$",hotkey-1));
 	}
 	else
 	{
@@ -160,7 +160,7 @@ public func SetObject(object obj, int type, int pos)
 			else if(myobject->GetDefCoreVal("Entrance","DefCore",2) != nil) actiontype = ACTIONTYPE_STRUCTURE;
 		}
 		
-		SetName(myobject->GetName());
+		SetName(Format("$TxtSelect$",myobject->GetName()));
 		
 		// create an effect which monitors whether the object is removed
 		if(actiontype == ACTIONTYPE_INVENTORY)
@@ -241,10 +241,16 @@ public func UpdateSelectionStatus()
 		SetObjDrawTransform(500,0,16000,0,500,-34000, 12);
 		
 		if(actiontype == ACTIONTYPE_VEHICLE)
+		{
 			SetGraphics("LetGo",GetID(),2,GFXOV_MODE_Base);
+			SetName(Format("$TxtUnGrab$",myobject->GetName()));
+		}
 			
 		if(actiontype == ACTIONTYPE_STRUCTURE)
+		{
 			SetGraphics("Exit",GetID(),2,GFXOV_MODE_Base);
+			SetName(Format("$TxtExit$",myobject->GetName()));
+		}
 	}
 	else
 	{
@@ -252,10 +258,23 @@ public func UpdateSelectionStatus()
 		SetObjDrawTransform(300,0,16000,0,300,-34000, 12);
 		
 		if(actiontype == ACTIONTYPE_VEHICLE)
-			SetGraphics("Grab",GetID(),2,GFXOV_MODE_Base);
-			
+		{
+			if(!(myobject->Contained()))
+			{
+				SetGraphics("Grab",GetID(),2,GFXOV_MODE_Base);
+				SetName(Format("$TxtGrab$",myobject->GetName()));
+			}
+			else
+			{
+				SetGraphics("Exit",GetID(),2,GFXOV_MODE_Base);
+				SetName(Format("$TxtPushOut$",myobject->GetName()));
+			}
+		}
 		if(actiontype == ACTIONTYPE_STRUCTURE)
+		{
 			SetGraphics("Enter",GetID(),2,GFXOV_MODE_Base);
+			SetName(Format("$TxtEnter$",myobject->GetName()));
+		}
 	}
 	SetObjDrawTransform(IconSize(),0,-16000,0,IconSize(),20000, 2);
 	

@@ -506,7 +506,7 @@
 		Control=Hotkey9
 		
 		[Assignment]
-		Key=X,0
+		Key=0
 		Control=Hotkey0
 		
 		[Assignment]
@@ -577,6 +577,7 @@
 		
 		[Assignment]
 		Key=S,GameMouse1ButtonLeft
+		Priority=150
 		Control=Drop
 
 		[Assignment]
@@ -595,6 +596,7 @@
 		
 		[Assignment]
 		Key=S,GameMouse1ButtonRight
+		Priority=150
 		Control=DropAlt
 
 	[ControlSet]

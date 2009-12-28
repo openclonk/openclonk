@@ -20,6 +20,8 @@ public func ControlUse(object clonk, int x, int y)
 	return true;
 }
 
+public func HoldingEnabled() { return true; }
+
 public func ControlUseHolding(object clonk, int x, int y)
 {
 

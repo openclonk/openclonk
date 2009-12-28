@@ -239,8 +239,20 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	//Log(Format("%d, %d, %d, %v, %v",  x,y,ctrl, repeat, release));
 	
+	// aiming
+	if (ctrl == CON_Aim)
+	{
+		if (using)
+		{
+			if (alt) ctrl = CON_UseAlt;
+			else     ctrl = CON_Use;
+			
+			repeat = true;
+			release = false;
+		}
+	}
 	// Any control resets a previously given command
-	SetCommand("None");
+	else SetCommand("None");
 	
 	// hotkeys (inventory, vehicle and structure control)
 	var hot = 0;
@@ -279,12 +291,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// out of convencience we call Control2Script, even though it handles
 	// left, right, up and down, too. We don't want that, so this is why we
 	// check that ctrl is Use.
-	else if (contents && (ctrl == CON_Use || ( ctrl == CON_Aim && !alt )))
+	else if (contents && ctrl == CON_Use)
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if (contents2 && (ctrl == CON_UseAlt || ( ctrl == CON_Aim && alt )))
+	else if (contents2 && ctrl == CON_UseAlt)
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
@@ -337,6 +349,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			if (ctrl == CON_Drop)
 			{
 				return PlayerObjectCommand(plr, false, "Drop", contents);
+				
 			}
 		}
 		// same for contents2 (copypasta)
@@ -400,7 +413,7 @@ private func StartUseControl(int ctrl, control, int x, int y, object obj)
 	return handled;
 }
 
-private func StopUseControl(int control, int x, int y, object obj)
+private func StopUseControl(control, int x, int y, object obj)
 {
 	var estr = "";
 	if (alt && !(obj->Contained())) estr = "Alt";
@@ -422,8 +435,8 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	// do not use secondary when using primary and the other way round
 	if (using)
 	{
-		if (ctrl == CON_Use && alt) return true;
-		if (ctrl == CON_UseAlt && !alt) return true;
+		if (ctrl == CON_Use && alt) return false;
+		if (ctrl == CON_UseAlt && !alt) return false;
 	}
 
 	// for the use command
@@ -437,24 +450,22 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		{
 			return StopUseControl(control, x, y, obj);
 		}
-	}
-	// for repeated key presses, the x and y are not updated.
-	// we get our x and y from the MouseMove event.
-	else if(ctrl == CON_Aim && using == obj)
-	{
-		var estr = "";
-		if (alt && !(obj->Contained())) estr = "Alt";
-	
-		var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
-		// if that function returns -1, the control is stopped (*UseStop)
-		// and no more *UseHolding-calls are made.
-		if (handled == -1)
+		else if (repeat && using == obj)
 		{
-			handled = StopUseControl(control, x, y, obj);
+			var estr = "";
+			if (alt && !(obj->Contained())) estr = "Alt";
+	
+			var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
+			
+			// if that function returns -1, the control is stopped (*UseStop)
+			// and no more *UseHolding-calls are made.
+			if (handled == -1)
+			{
+				handled = StopUseControl(control, x, y, obj);
+			}
+			return handled;
 		}
-		return handled;
 	}
-
 	// overloads of movement commandos
 	else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up)
 	{
@@ -534,11 +545,11 @@ private func ObjectControlPush(int plr, int ctrl)
 		
 		// disallow if the clonk is still using something
 		if (using) return false;
-
+		
 		// only if there is someting to grab
 		var obj = FindObject(Find_OCF(OCF_Grab), Find_AtPoint(0,0), Find_Exclude(this));
 		if (!obj) return false;
-
+		
 		// grab
 		PlayerObjectCommand(plr, false, "Grab", obj);
 		return true;
