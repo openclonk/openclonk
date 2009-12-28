@@ -148,7 +148,7 @@ public func SetObject(object obj, int type, int pos)
 	if(!myobject) 
 	{	
 		SetGraphics(nil,nil,1);
-		SetName(Format("$TxtLabel$",hotkey-1));
+		SetName(Format("$TxtSlot$",hotkey));
 	}
 	else
 	{
