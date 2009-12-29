@@ -919,7 +919,7 @@ void C4MouseControl::LeftUpDragNone()
 		// Selection
 		case C4MC_Cursor_Select:
 			// Object selection to control queue
-			if (!IsPassive()) Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection));
+			if (!IsPassive()) Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,false));
 			break;
 		// Help
 		case C4MC_Cursor_Help:
@@ -990,6 +990,10 @@ void C4MouseControl::RightUpDragNone()
 	// Region: send control
 	if (Cursor==C4MC_Cursor_Region)
 		{ SendControl(DownRegion.RightCom); return; }
+
+	// Alternative object selection
+	if (Cursor==C4MC_Cursor_Select && !IsPassive())
+		{ Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,true)); }
 
 	// Help: end
 	if (Help)

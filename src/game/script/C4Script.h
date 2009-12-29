@@ -136,6 +136,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
 #define PSF_CalcBuyValue        "~CalcBuyValue" // C4ID idItem, int iDefValue
 #define PSF_CalcSellValue       "~CalcSellValue" // C4Object *pObj, int iObjValue
 #define PSF_MouseSelection      "~MouseSelection" // int iByPlr
+#define PSF_MouseSelectionAlt   "~MouseSelectionAlt" // int iByPlr
 #define PSF_OnOwnerChanged      "~OnOwnerChanged" // iNewOwner, iOldOwner
 #define PSF_OnJoinCrew          "~Recruitment" // int Player
 #define PSF_OnRemoveCrew        "~DeRecruitment" // int Player

@@ -318,8 +318,8 @@ void C4ControlScript::CompileFunc(StdCompiler *pComp)
 
 // *** C4ControlPlayerSelect
 
-C4ControlPlayerSelect::C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs)
-	: iPlr(iPlr), iObjCnt(Objs.ObjectCount())
+C4ControlPlayerSelect::C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt)
+	: iPlr(iPlr), iObjCnt(Objs.ObjectCount()), fIsAlt(fIsAlt)
 {
 	pObjNrs = new int32_t[iObjCnt];
 	int32_t i = 0;
@@ -344,22 +344,26 @@ void C4ControlPlayerSelect::Execute() const
 			iControlChecksum += pObj->Number * (iControlChecksum+4787821);
 			// user defined object selection: callback to object
 			if (pObj->Category & C4D_MouseSelect)
-				pObj->Call(PSF_MouseSelection, &C4AulParSet(C4VInt(iPlr)));
+				if (fIsAlt)
+					pObj->Call(PSF_MouseSelectionAlt, &C4AulParSet(C4VInt(iPlr)));
+				else
+					pObj->Call(PSF_MouseSelection, &C4AulParSet(C4VInt(iPlr)));
 			// player crew selection (recheck status of pObj)
-			if (pObj->Status && pPlr->ObjectInCrew(pObj))
+			if (pObj->Status && pPlr->ObjectInCrew(pObj) && !fIsAlt)
 				SelectObjs.Add(pObj, C4ObjectList::stNone);
 		}
 	// count
 	pPlr->CountControl(C4Player::PCID_Command, iControlChecksum);
 
 	// any crew to be selected (or complete crew deselection)?
-	if (!SelectObjs.IsClear() || !iObjCnt)
+	if (!fIsAlt) if (!SelectObjs.IsClear() || !iObjCnt)
 		pPlr->SelectCrew(SelectObjs);
 }
 
 void C4ControlPlayerSelect::CompileFunc(StdCompiler *pComp)
 {
   pComp->Value(mkNamingAdapt(iPlr, "Player", -1));
+  pComp->Value(mkNamingAdapt(fIsAlt, "IsAlt", false));
   pComp->Value(mkNamingAdapt(iObjCnt, "ObjCnt", 0));
   // Compile array
   if(pComp->isCompiler())

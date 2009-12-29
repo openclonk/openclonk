@@ -156,11 +156,12 @@ class C4ControlPlayerSelect : public C4ControlPacket // sync
 {
 public:
   C4ControlPlayerSelect()
-    : iPlr(-1), iObjCnt(0), pObjNrs(NULL) { }
-	C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs);
+    : iPlr(-1), iObjCnt(0), pObjNrs(NULL), fIsAlt(false) { }
+	C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt);
 	~C4ControlPlayerSelect() { delete[] pObjNrs; }
 protected:
 	int32_t iPlr;
+	bool fIsAlt;
 	int32_t iObjCnt;
 	int32_t *pObjNrs;
 public:
