@@ -53,15 +53,24 @@ protected func Construction()
 	this["Visibility"] = VIS_None;
 }
 
+public func MouseSelectionAlt(int plr)
+{
+	if(!crew) return false;
+	if(plr != GetOwner()) return false;
+
+	// object is in inventory
+	if(actiontype == ACTIONTYPE_INVENTORY)
+	{
+		crew->SelectItem(hotkey-1,true);
+		return true;
+	}
+}
+
 public func MouseSelection(int plr)
 {
-
 	if(!crew) return false;
-	if(plr != GetOwner()) {
-		return false;
-	}
-	// invisible...
-	if(this["Visibility"] != VIS_Owner) return false;
+	if(plr != GetOwner()) return false;
+	
 	// object is in inventory
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
