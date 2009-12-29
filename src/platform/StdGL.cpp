@@ -457,6 +457,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
 		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
 
+		glMatrixMode(GL_TEXTURE);
 		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 		{
 			// Note that it is guaranteed that the GL_TEXTUREn
@@ -467,7 +468,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, pass.TextureUnits[j].GetTexture().texName);
+			glLoadIdentity();
 		}
+		glMatrixMode(GL_MODELVIEW);
 
 		// Render mesh
 		// TODO: Use glInterleavedArrays? Hm, might be impossible as
