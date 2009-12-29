@@ -1,4 +1,4 @@
-material OverlayColor
+material Body
 {
 	receive_shadows on
 	technique
@@ -6,9 +6,15 @@ material OverlayColor
 		pass
 		{
 			ambient 0.500000 0.500000 0.500000 1.000000
-			diffuse 0.000000 0.000000 0.830000 1.000000
-			specular 0.104248 0.104248 0.104248 1.000000 10.500000
+			diffuse 0.800000 0.800000 0.800000 1.000000
+			specular 0.000000 0.000000 0.000000 1.000000 3.000000
 			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture Clonk.png
+				tex_address_mode wrap
+				filtering trilinear
+			}
 		}
 	}
 }
