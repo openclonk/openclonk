@@ -134,7 +134,7 @@ public func MouseDragDone(obj, object target)
 {
 	// not on landscape
 	if(target) return;
-	if(obj->GetType() != C4V_C4Object) return;
+	if(GetType(obj) != C4V_C4Object) return;
 	if(!crew) return false;
 	
 	var container;
@@ -165,8 +165,7 @@ public func MouseDrag(int plr)
 public func MouseDrop(int plr, obj)
 {
 	if(plr != GetOwner()) return false;
-	if(obj->GetType() != C4V_C4Object) return false;
-	if(!myobject) return false;
+	if(GetType(obj) != C4V_C4Object) return false;
 	if(!crew) return false;
 	
 	// a collectible object
@@ -174,27 +173,26 @@ public func MouseDrop(int plr, obj)
 	{
 		if(actiontype == ACTIONTYPE_INVENTORY)
 		{
+			var objcontainer = obj->Contained();
+			
+			// object container is the clonk too? Just switch
+			if(objcontainer == crew)
+			{
+				crew->Switch2Items(hotkey-1, crew->GetItemPos(obj));
+				return true;
+			}
+		
 			// slot is already full: switch places with other object
 			if(myobject != nil)
 			{
-				var objcontainer = obj->Contained();
-				// object container is the clonk too? Just switch
-				if(objcontainer == crew)
-				{
-					crew->Switch2Items(hotkey-1, crew->GetItemPos(obj));
-					return true;
-				}
-				else
-				{
-					var myoldobject = myobject;
+				var myoldobject = myobject;
 					
-					// 1. exit my old object
-					myoldobject->Exit();
-					// 2. enter the other object in my slot (myobject is now nil)
-					obj->Collect(crew,hotkey-1);
-					// 3. enter my old object into other object
-					objcontainer->Collect(myoldobject);
-				}
+				// 1. exit my old object
+				myoldobject->Exit();
+				// 2. enter the other object in my slot (myobject is now nil)
+				obj->Collect(crew,hotkey-1);
+				// 3. enter my old object into other object
+				objcontainer->Collect(myoldobject);
 			}
 			// otherwise, just collect
 			else
@@ -204,8 +202,9 @@ public func MouseDrop(int plr, obj)
 		}
 		else if(actiontype == ACTIONTYPE_VEHICLE)
 		{
+			if(!myobject) return false;
 			// collect if possible
-			if(myobject->Collect(item)) return true;
+			if(myobject->Collect(obj)) return true;
 			// otherwise (lorry is full?): fail
 			return false;
 		}
