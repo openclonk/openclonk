@@ -80,6 +80,7 @@ class C4MouseControl
 		bool Help;
 		bool FogOfWar;
 		bool Visible;
+		C4Object *DragObject;
 		C4ID DragID;
 		C4ObjectList Selection;
 		C4Facet DragImage;
@@ -112,10 +113,12 @@ class C4MouseControl
 		void UpdateFogOfWar();
 		void RightUpDragNone();
 		void ButtonUpDragConstruct();
+		void ButtonUpDragScript();
 		void ButtonUpDragMoving();
 		void ButtonUpDragSelecting();
 		void LeftUpDragNone();
 		void DragConstruct();
+		void DragScript();
 		void Wheel(DWORD dwFlags);
 		void RightUp();
 		void RightDown();
@@ -127,7 +130,7 @@ class C4MouseControl
 		void LeftDown();
 		void UpdateTargetRegion();
 		void UpdateScrolling();
-		void CreateDragImage(C4ID id);
+		void CreateDragImage(C4ID id, C4Object *obj);
 		void UpdateCursorTarget();
 		void SendCommand(int32_t iCommand, int32_t iX=0, int32_t iY=0, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iData=0, int32_t iAddMode=C4P_Command_Set);
 		int32_t UpdateObjectSelection();

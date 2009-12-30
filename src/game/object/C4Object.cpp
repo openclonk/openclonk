@@ -4832,6 +4832,21 @@ void C4Object::GetParallaxity(int32_t *parX, int32_t *parY)
 	*parY = par->GetItem(1).getInt();
 }
 
+bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id)
+{
+	// drag is possible if MouseDragImage is assigned
+	C4Value parV; GetProperty(Strings.P[P_MouseDragImage], parV);
+	if (!parV) return false;
+	// determine drag object/id
+	C4Object *obj=NULL; C4ID id=0;
+	if (parV.GetType() == C4V_C4Object) obj = parV.getObj();
+	else if (parV.GetType() == C4V_PropList) id = parV.getC4ID();
+	if (drag_object) *drag_object = obj;
+	if (drag_id) *drag_id = id;
+	// drag possible, even w./o image
+	return true;
+}
+
 void C4Object::ApplyParallaxity(float &riTx, float &riTy, const C4Facet &fctViewport)
 	{
 	// parallaxity by locals

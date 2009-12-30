@@ -352,6 +352,7 @@ class C4Object: public C4PropList
 		bool IsInLiquidCheck();                        // returns whether the Clonk is within liquid material
 		void UpdateInLiquid(); // makes splash when a liquid is entered
 		void GrabContents(C4Object *pFrom); // grab all contents that don't reject it
+		bool GetDragImage(C4Object **drag_object, C4ID *drag_id); // return true if object is draggable; assign drag_object/drag_id to gfx to be used for dragging
 
 	protected:
 		void SideBounds(int32_t &ctcox);       // apply bounds at side; regarding bourder bound and pLayer

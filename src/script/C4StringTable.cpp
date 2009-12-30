@@ -116,6 +116,7 @@ C4StringTable::C4StringTable()
 	P[P_Parallaxity] = RegString("Parallaxity");
 	P[P_LineColors] = RegString("LineColors");
 	P[P_LineAttach] = RegString("LineAttach");
+	P[P_MouseDragImage] = RegString("MouseDragImage");
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
 	}
 

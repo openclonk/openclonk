@@ -47,6 +47,7 @@ const int32_t C4MC_Drag_None					= 0,
 					//C4MC_Drag_Menu					= 3,
 					//C4MC_Drag_MenuScroll		= 4,
 					C4MC_Drag_Construct			= 5,
+					C4MC_Drag_Script            = 6,
 
 					C4MC_Selecting_Unknown	= 0;
 
@@ -77,6 +78,7 @@ const int32_t C4MC_Cursor_Region			= 0,
 					C4MC_Cursor_Vehicle			= 24,
 					C4MC_Cursor_VehiclePut	= 25,
 					C4MC_Cursor_ThrowLeft		= 26,
+					C4MC_Cursor_DragDrop		= 26,
 					C4MC_Cursor_Point				= 27,
 					C4MC_Cursor_DigObject		= 28,
 					C4MC_Cursor_Help				= 29,
@@ -121,6 +123,7 @@ void C4MouseControl::Default()
 	Help=false;
 	FogOfWar=false;
 	DragID=C4ID_None;
+	DragObject=NULL;
 	KeepCaption=0;
 	Drag=C4MC_Drag_None; DragSelecting=C4MC_Selecting_Unknown;
 	Selection.Default();
@@ -175,6 +178,12 @@ void C4MouseControl::ClearPointers(C4Object *pObj)
 	{
 	if (TargetObject==pObj) TargetObject=NULL;
 	if (DownTarget==pObj) DownTarget=NULL;
+	if (DragObject==pObj)
+	{
+		DragObject=NULL;
+		Drag=C4MC_Drag_None;
+		DragImage.Default();
+	}
 	Selection.ClearPointers(pObj);
 	}
 
@@ -326,6 +335,7 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 				case C4MC_Drag_Selecting: DragSelect(); break;
 				case C4MC_Drag_Moving: DragMoving(); break;
 				case C4MC_Drag_Construct: DragConstruct(); break;
+				case C4MC_Drag_Script: DragScript(); break;
 			}
 			break;
 		//------------------------------------------------------------------------------------------
@@ -387,7 +397,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	switch (Drag)
 	{
 		//------------------------------------------------------------------------------------------
-		case C4MC_Drag_None: case C4MC_Drag_Moving: case C4MC_Drag_Construct:
+		case C4MC_Drag_None: case C4MC_Drag_Moving: case C4MC_Drag_Construct: case C4MC_Drag_Script:
 			// Hotspot offset: Usually, hotspot is in center
 			iOffsetX = GfxR->fctMouseCursor.Wdt/2;
 			iOffsetY = GfxR->fctMouseCursor.Hgt/2;
@@ -403,6 +413,7 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 						iOffsetX=0; iOffsetY=GfxR->fctMouseCursor.Hgt;
 						break;
 					case C4MC_Cursor_Construct:
+					case C4MC_Cursor_DragDrop:
 						// calculated when dragimage is drawn
 						break;
 				}
@@ -432,9 +443,23 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			// Drag image
 			if (DragImage.Surface)
 			{
+				// zoom mode: Drag in GUI or Game depending on source object
+				bool fIsGameZoom = true;
+				if (Drag == C4MC_Drag_Script && DragObject && (DragObject->Category & C4D_Foreground))
+					fIsGameZoom = false;
 				// drag image in game zoom
-				// draw rounded to game pixels, because construction site will be placed at rounded game pixel positions
-				lpDDraw->SetZoom(GameZoom);
+				float XDraw, YDraw;
+				if (fIsGameZoom)
+				{
+					lpDDraw->SetZoom(GameZoom);
+					XDraw = GameX; YDraw = GameY;
+					// for drag construct: draw rounded to game pixels, because construction site will be placed at rounded game pixel positions
+					if (Drag == C4MC_Drag_Construct) { XDraw=floor(XDraw); YDraw=floor(YDraw); }				
+				}
+				else
+				{
+					XDraw = GuiX; YDraw = GuiY;
+				}
 				// draw in special modulation mode
 				lpDDraw->SetBlitMode(C4GFXBLIT_MOD2);
 				// draw DragImage in red or green, according to the phase to be used
@@ -443,11 +468,11 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				lpDDraw->Blit(DragImage.Surface,
 				              float(DragImage.X), float(DragImage.Y), float(DragImage.Wdt), float(DragImage.Hgt),
 				              cgo.Surface,
-				              floor(GameX) + cgo.X - iOffsetX, floor(GameY) + cgo.Y - iOffsetY, float(DragImage.Wdt), float(DragImage.Hgt),true);
+				              XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(DragImage.Wdt), float(DragImage.Hgt),true);
 				// reset color
 				lpDDraw->DeactivateBlitModulation();
 				lpDDraw->SetBlitMode(0);
-				lpDDraw->SetZoom(GuiZoom);
+				if (fIsGameZoom) lpDDraw->SetZoom(GuiZoom);
 			}
 			// Cursor
 			else
@@ -709,11 +734,13 @@ void C4MouseControl::LeftUp()
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MC_Drag_Construct: ButtonUpDragConstruct(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case C4MC_Drag_Script: ButtonUpDragScript(); break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 }
 
 void C4MouseControl::DragMoving()
-	{
+{
 	ShowPointX=ShowPointY=-1;
 
 	// do not drag objects into FoW
@@ -722,30 +749,35 @@ void C4MouseControl::DragMoving()
 }
 
 void C4MouseControl::DragNone()
-	{
-
+{
 	// Holding left down
 	if (LeftButtonDown)
-		{
+	{
 		switch (Cursor)
-			{
+		{
 			// Hold down on region
 			case C4MC_Cursor_Region:
 				if (!::Game.iTick5)
 					if (DownRegion.HoldCom)
 						SendControl(DownRegion.HoldCom);
 				break;
-			}
 		}
+	}
+
+	// Cursor movement
+	UpdateCursorTarget();
+	// Update selection
+	UpdateSingleSelection();
 
 	// Button down: begin drag
 	if ( (LeftButtonDown || RightButtonDown)
 		&& ((Abs(GameX-DownX)>C4MC_DragSensitivity) || (Abs(GameY-DownY)>C4MC_DragSensitivity)) )
-		{
+	{
 		// don't begin dragging from FoW; unless it's a menu
 		if (FogOfWar && DownCursor != C4MC_Cursor_Region) return;
+		bool fAllowDrag = true;
 		switch (DownCursor)
-			{
+		{
 				/*
 			// Drag start selecting in landscape
 			case C4MC_Cursor_Crosshair:
@@ -755,16 +787,23 @@ void C4MouseControl::DragNone()
 				*/
 			// Help: no dragging
 			case C4MC_Cursor_Help:
+				fAllowDrag = false;
 				break;
+		}
+		// check if target object allows scripted dragging
+		if (TargetObject)
+		{
+			C4Object *drag_image_obj; C4ID drag_image_id;
+			if (TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
+			{
+				Drag=C4MC_Drag_Script;
+				CreateDragImage(drag_image_id, drag_image_obj);
+				DragObject = TargetObject;
+				DragImagePhase=0;
 			}
 		}
-
-	// Cursor movement
-	UpdateCursorTarget();
-	// Update selection
-	UpdateSingleSelection();
-
 	}
+}
 
 void C4MouseControl::LeftDouble()
 	{
@@ -815,6 +854,8 @@ void C4MouseControl::RightUp()
 		case C4MC_Drag_Moving: ButtonUpDragMoving(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4MC_Drag_Construct: ButtonUpDragConstruct(); break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case C4MC_Drag_Script: ButtonUpDragScript(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
 	}
@@ -885,8 +926,10 @@ bool C4MouseControl::SendControl(int32_t iCom, int32_t iData)
 	return true;
 	}
 
-void C4MouseControl::CreateDragImage(C4ID id)
+void C4MouseControl::CreateDragImage(C4ID id, C4Object *obj)
 	{
+	// todo: real object drawing
+	if (obj) id = obj->id;
 	// Get definition
 	C4Def *pDef=C4Id2Def(id); if (!pDef) return;
 	// in newgfx, it's just the base image, drawn differently...
@@ -903,6 +946,18 @@ void C4MouseControl::DragConstruct()
 	DragImagePhase=1;
 	if (!FogOfWar && ConstructionCheck(C4Id2Def(DragID),int32_t(GameX),int32_t(GameY))) DragImagePhase=0;
 	}
+
+void C4MouseControl::DragScript()
+{
+	// script drag should update target and selection so selection highlight on drop target is visible
+	// Cursor movement
+	UpdateCursorTarget();
+	// Update selection
+	UpdateSingleSelection();
+	Cursor=C4MC_Cursor_DragDrop;
+	// todo: Phase to 1 if drag is not possible. Interface to determine valid drag/drop does not exist yet
+	DragImagePhase=0;
+}
 
 void C4MouseControl::LeftUpDragNone()
 	{
@@ -970,6 +1025,32 @@ void C4MouseControl::ButtonUpDragConstruct()
 	// Clear selection (necessary?)
 	Selection.Clear();
 	}
+
+void C4MouseControl::ButtonUpDragScript()
+{
+	// Finish drag
+	Drag=C4MC_Drag_None;
+	DragImage.Default();
+	DragID=C4ID_None;
+	// Determine drag+drop targets
+	UpdateCursorTarget();
+	C4Object *DragObject = this->DragObject;
+	this->DragObject = NULL;
+	C4Object *DropObject = TargetObject;
+	// drag object must exist; drop object is optional
+	if (!DragObject) return;
+	// no commands if player is eliminated or doesn't exist any more
+	C4Player *pPlr = ::Players.Get(Player);
+	if (!pPlr || pPlr->Eliminated) return;
+	// todo: Perform drag/drop validity check
+	// now drag/drop is handled by script
+	if (DropObject)
+		Game.Input.Add(CID_Script, new C4ControlScript(
+		  FormatString("%s(%d,Object(%d),Object(%d))", PSF_MouseDragDrop, (int)Player, (int)(DragObject->Number), (int)(DropObject->Number)).getData()));
+	else
+		Game.Input.Add(CID_Script, new C4ControlScript(
+		  FormatString("%s(%d,Object(%d),nil)", PSF_MouseDragDrop, (int)Player, (int)(DragObject->Number)).getData()));
+}
 
 void C4MouseControl::SendCommand(int32_t iCommand, int32_t iX, int32_t iY, C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode)
 	{
@@ -1075,6 +1156,6 @@ void C4MouseControl::StartConstructionDrag(C4ID id)
 	{
 	Drag=C4MC_Drag_Construct;
 	DragID=id;
-	CreateDragImage(DragID);
+	CreateDragImage(DragID,NULL);
 	Selection.Clear();
 	}
