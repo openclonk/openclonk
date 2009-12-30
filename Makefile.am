@@ -96,7 +96,7 @@ src/lib/C4Random.h \
 src/lib/C4Rect.cpp \
 src/lib/C4Rect.h \
 src/lib/C4RTF.cpp \
-src/lib/C4RTF.H \
+src/lib/C4RTF.h \
 src/lib/C4Stat.cpp \
 src/lib/C4Stat.h \
 src/lib/Fixed.cpp \
