@@ -687,7 +687,7 @@ bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4Ke
 	// push sync control to input
 	if (pControlPacket)
 		{
-		Game.Input.Add(CID_PlrControl2, pControlPacket);
+		Game.Input.Add(CID_PlrControl, pControlPacket);
 		// assume processed (although we can't really know that yet)
 		return true;
 		}
