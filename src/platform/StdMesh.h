@@ -220,6 +220,9 @@ private:
 
 class StdMeshInstance
 {
+protected:
+	struct Animation;
+
 public:
 	StdMeshInstance(const StdMesh& mesh);
 
@@ -232,14 +235,38 @@ public:
 	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 	void SetFaceOrdering(FaceOrdering ordering);
 
-	bool SetAnimationByName(const StdStrBuf& animation_name);
-	void SetAnimation(const StdMeshAnimation& animation);
-	void UnsetAnimation();
+	// Public API to modify animation. Updates bone transforms on
+	// destruction, so make sure to let this go out of scope before
+	// relying on the values set.
+	struct AnimationRef
+	{
+		AnimationRef(StdMeshInstance* instance, const StdStrBuf& animation_name);
+		AnimationRef(StdMeshInstance* instance, const StdMeshAnimation& animation);
 
-	const StdMeshAnimation* GetAnimation() const { return Animation; }
+		~AnimationRef()
+		{
+			if(Changed) Instance->UpdateBoneTransforms();
+		}
+		
+		operator void*() const { return Anim; } // for use in boolean expressions
 
-	void SetPosition(float position);
-	float GetPosition() const { return Position; }
+		const StdMeshAnimation& GetAnimation() const;
+
+		void SetPosition(float position);
+		void SetWeight(float weight);
+	private:
+		AnimationRef(const AnimationRef&); // noncopyable
+		AnimationRef& operator=(const AnimationRef&); // noncopyable
+
+		StdMeshInstance* Instance;
+		Animation* Anim;
+		bool Changed;
+	};
+
+	bool PlayAnimation(const StdStrBuf& animation_name, float weight);
+	bool PlayAnimation(const StdMeshAnimation& animation, float weight);
+	bool StopAnimation(const StdStrBuf& animation_name);
+	bool StopAnimation(const StdMeshAnimation& animation);
 
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
@@ -255,13 +282,22 @@ public:
 	const StdMesh& Mesh;
 
 protected:
+	void UpdateBoneTransforms();
 	void ReorderFaces();
 
 	FaceOrdering CurrentFaceOrdering;
-	const StdMeshAnimation* Animation;
-	float Position;
+
+	struct Animation
+	{
+		const StdMeshAnimation* Animation;
+		float Position;
+		float Weight;
+	};
+	
+	std::vector<Animation> Animations;
 
 	std::vector<StdMeshMatrix> BoneTransforms;
+
 	std::vector<StdMeshVertex> Vertices;
 	std::vector<const StdMeshFace*> Faces;
 };

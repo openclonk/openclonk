@@ -2151,7 +2151,7 @@ C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPas
 	}
 
 bool C4Object::SetPhase(int32_t iPhase)
-	{
+{
 	if (!Action.pActionDef) return false;
 
 	const int32_t length = Action.pActionDef->GetPropertyInt(P_Length);
@@ -2161,15 +2161,23 @@ bool C4Object::SetPhase(int32_t iPhase)
 	Action.PhaseDelay = 0;
 
 	if(pMeshInstance)
+	{
+		C4String* AnimationName = Action.pActionDef->GetPropertyStr(P_Animation);
+		if(AnimationName)
 		{
-		if(delay)
-			pMeshInstance->SetPosition(static_cast<float>(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * pMeshInstance->GetAnimation()->Length);
-		else
-			pMeshInstance->SetPosition(static_cast<float>(Action.Phase) / length * pMeshInstance->GetAnimation()->Length);
+			StdMeshInstance::AnimationRef ref(pMeshInstance, AnimationName->GetData());
+			if(ref)
+			{
+				if(delay)
+					ref.SetPosition(static_cast<float>(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * ref.GetAnimation().Length);
+				else
+					ref.SetPosition(static_cast<float>(Action.Phase) / length * ref.GetAnimation().Length);
+			}
 		}
+	}
 
 	return true;
-	}
+}
 
 void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	{
@@ -3904,10 +3912,22 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 	if(pMeshInstance)
 		{
 		C4String* Animation = Act ? Act->GetPropertyStr(P_Animation) : NULL;
-		if(!Animation || Animation->GetData() == "")
-			pMeshInstance->UnsetAnimation();
-		else if(!pMeshInstance->SetAnimationByName(Animation->GetData()))
-			return false;
+		C4String* OldAnimation = LastAction ? LastAction->GetPropertyStr(P_Animation) : NULL;
+		if(OldAnimation)
+			pMeshInstance->StopAnimation(OldAnimation->GetData());
+
+		if(Animation)
+			{
+			// overwrite existing animation, if any (maybe launched by script)
+			StdMeshInstance::AnimationRef ref(pMeshInstance, Animation->GetData());
+			if(ref)
+				{
+				ref.SetPosition(0.0f);
+				ref.SetWeight(1.0f);
+				}
+			else
+				pMeshInstance->PlayAnimation(Animation->GetData(), 1.0f);
+			}
 		}
 	// Stop previous act sound
 	if (LastAction)
@@ -5212,9 +5232,21 @@ void C4Object::ExecAction()
 			}
 
 		// Update animation on mesh instance. If a new action was set,
-		// then will already have happened for the new action.
-		if(pMeshInstance && pMeshInstance->GetAnimation() && !set_new_action)
-			pMeshInstance->SetPosition(static_cast<float>(Action.Phase * pAction->GetPropertyInt(P_Delay) + Action.PhaseDelay) / (pAction->GetPropertyInt(P_Delay) * pAction->GetPropertyInt(P_Length)) * pMeshInstance->GetAnimation()->Length);
+		// then this will already have happened for the new action.
+		if(pMeshInstance && !set_new_action)
+			{
+			C4String* AnimationName = pAction->GetPropertyStr(P_Animation);
+			if(AnimationName)
+				{
+				StdMeshInstance::AnimationRef ref(pMeshInstance, AnimationName->GetData());
+				if(ref)
+					{
+					float delay = pAction->GetPropertyInt(P_Delay);
+					float length = pAction->GetPropertyInt(P_Length);
+					ref.SetPosition(static_cast<float>(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * ref.GetAnimation().Length);
+					}
+				}
+			}
 		}
 
 	return;

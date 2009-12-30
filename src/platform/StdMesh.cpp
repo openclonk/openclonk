@@ -753,8 +753,46 @@ const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 	return &iter->second;
 }
 
+StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const StdStrBuf& animation_name):
+	Instance(instance), Anim(NULL), Changed(false)
+{
+	const StdMeshAnimation* animation = instance->Mesh.GetAnimationByName(animation_name);
+	if(animation)
+	{
+		for(unsigned int i = 0; i < instance->Animations.size(); ++i)
+			if(instance->Animations[i].Animation == animation)
+				{ Anim = &instance->Animations[i]; break; }
+	}
+}
+
+StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const StdMeshAnimation& animation):
+	Instance(instance), Anim(NULL), Changed(false)
+{
+	for(unsigned int i = 0; i < instance->Animations.size(); ++i)
+		if(instance->Animations[i].Animation == &animation)
+			{ Anim = &instance->Animations[i]; break; }
+}
+
+const StdMeshAnimation& StdMeshInstance::AnimationRef::GetAnimation() const
+{
+	return *Anim->Animation;
+}
+
+void StdMeshInstance::AnimationRef::SetPosition(float position)
+{
+	assert(position <= Anim->Animation.Length);
+	Anim->Position = position;
+	Changed = true;
+}
+
+void StdMeshInstance::AnimationRef::SetWeight(float weight)
+{
+	Anim->Weight = weight;
+	Changed = true;
+}
+
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
-	Mesh(mesh), CurrentFaceOrdering(FO_Fixed), Animation(NULL), Position(0.0f),
+	Mesh(mesh), CurrentFaceOrdering(FO_Fixed),
 	BoneTransforms(Mesh.GetNumBones()), Vertices(Mesh.GetNumVertices()),
 	Faces(Mesh.GetNumFaces())
 {
@@ -772,71 +810,83 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 	ReorderFaces();
 }
 
-bool StdMeshInstance::SetAnimationByName(const StdStrBuf& animation_name)
+bool StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, float weight)
 {
 	const StdMeshAnimation* animation = Mesh.GetAnimationByName(animation_name);
 	if(!animation) return false;
-	SetAnimation(*animation);
+	return PlayAnimation(*animation, weight);
+}
+
+bool StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, float weight)
+{
+	for(unsigned int i = 0; i < Animations.size(); ++i)
+		if(Animations[i].Animation == &animation)
+			return false;
+
+	Animation anim;
+	anim.Animation = &animation;
+	anim.Position = 0.0f;
+	anim.Weight = weight;
+	Animations.push_back(anim);
+	UpdateBoneTransforms();
 	return true;
 }
 
-void StdMeshInstance::SetAnimation(const StdMeshAnimation& animation)
+bool StdMeshInstance::StopAnimation(const StdStrBuf& animation_name)
 {
-	// TODO: Make sure the animation belongs to this mesh
-	Animation = &animation;
-	SetPosition(0.0f);
+	const StdMeshAnimation* animation = Mesh.GetAnimationByName(animation_name);
+	if(!animation) return false;
+	return StopAnimation(*animation);
 }
 
-void StdMeshInstance::UnsetAnimation()
+bool StdMeshInstance::StopAnimation(const StdMeshAnimation& animation)
 {
-	Animation = NULL;
+	for(std::vector<Animation>::iterator iter = Animations.begin();
+	    iter != Animations.end(); ++iter)
+	{
+		if(iter->Animation == &animation)
+		{
+			Animations.erase(iter);
+			UpdateBoneTransforms();
+			return true;
+		}
+	}
 
-	// Reset instance vertices
-	for(unsigned int i = 0; i < Mesh.GetNumVertices(); ++i)
-		Vertices[i] = Mesh.GetVertex(i);
+	return false;
 }
 
-void StdMeshInstance::SetPosition(float position)
+void StdMeshInstance::UpdateBoneTransforms()
 {
-	assert(Animation);
-	Position = position;
-
 	// Compute transformation matrix for each bone.
 	for(unsigned int i = 0; i < BoneTransforms.size(); ++i)
 	{
-		StdMeshTrack* track = Animation->Tracks[i];
-		if(track)
+		float accum_weight = 0.0f;
+		BoneTransforms[i].SetScale(0,0,0); // zero matrix
+
+		for(unsigned int j = 0; j < Animations.size(); ++j)
 		{
-			BoneTransforms[i] = track->GetTransformAt(position);
+			StdMeshTrack* track = Animations[j].Animation->Tracks[i];
+			if(track)
+			{
+				accum_weight += Animations[j].Weight;
+				StdMeshMatrix matr(track->GetTransformAt(Animations[j].Position));
+				matr.Mul(Animations[j].Weight);
+				BoneTransforms[i].Add(matr);
+			}
 		}
+		
+		if(!accum_weight)
+			BoneTransforms[i].SetIdentity();
 		else
-		{
-#if 0
-			// No track for this bone, so use parent transformation
-			const StdMeshBone* parent = Mesh.GetBone(i).GetParent();
-			if(parent)
-			{
-				// Parent should already have been processed, because the bone indices
-				// are supposed to be hierarchically ordered.
-				assert(parent->Index < i);
-				BoneTransforms[i] = BoneTransforms[parent->Index];
-			}
-			else
-			{
-#endif
-				BoneTransforms[i].SetIdentity();
-#if 0
-			}
-#endif
-		}
+			BoneTransforms[i].Mul(1.0f/accum_weight);
 
 		const StdMeshBone* bone = Mesh.Bones[i];
-		assert(bone->Index < i);
 		
 		BoneTransforms[i].Mul(bone->InverseTrans);
 		BoneTransforms[i].Transform(bone->Trans);
 
 		const StdMeshBone* parent = bone->GetParent();
+		assert(!parent || parent->Index < i);
 		if(parent)
 			BoneTransforms[i].Transform(BoneTransforms[parent->Index]);
 	}
