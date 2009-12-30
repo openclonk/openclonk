@@ -130,6 +130,99 @@ public func MouseSelection(int plr)
 	// TODO: more script choices... Selection-Callbacks for  all objects
 }
 
+public func MouseDragDone(obj, object target)
+{
+	// not on landscape
+	if(target) return;
+	if(obj->GetType() != C4V_C4Object) return;
+	if(!crew) return false;
+	
+	var container;
+	if(container = obj->Contained())
+	{
+		if(obj->GetOCF() & OCF_Collectible)
+		{
+			container->SetCommand("Drop",obj);
+		}
+		else if(obj->GetOCF() & OCF_Grab)
+		{
+			if(crew->Contained() == container)
+				crew->SetCommand("Activate",obj);
+		}
+	}
+}
+
+public func MouseDrag(int plr)
+{
+	if(plr != GetOwner()) return false;
+	
+	if(actiontype == ACTIONTYPE_INVENTORY || actiontype == ACTIONTYPE_VEHICLE)
+		return myobject;
+		
+	return false;
+}
+
+public func MouseDrop(int plr, obj)
+{
+	if(plr != GetOwner()) return false;
+	if(obj->GetType() != C4V_C4Object) return false;
+	if(!myobject) return false;
+	if(!crew) return false;
+	
+	// a collectible object
+	if(obj->GetOCF() & OCF_Collectible)
+	{
+		if(actiontype == ACTIONTYPE_INVENTORY)
+		{
+			// slot is already full: switch places with other object
+			if(myobject != nil)
+			{
+				var objcontainer = obj->Contained();
+				// object container is the clonk too? Just switch
+				if(objcontainer == crew)
+				{
+					crew->Switch2Items(hotkey-1, crew->GetItemPos(obj));
+					return true;
+				}
+				else
+				{
+					var myoldobject = myobject;
+					
+					// 1. exit my old object
+					myoldobject->Exit();
+					// 2. enter the other object in my slot (myobject is now nil)
+					obj->Collect(crew,hotkey-1);
+					// 3. enter my old object into other object
+					objcontainer->Collect(myoldobject);
+				}
+			}
+			// otherwise, just collect
+			else
+			{
+				obj->Collect(crew,hotkey-1);
+			}
+		}
+		else if(actiontype == ACTIONTYPE_VEHICLE)
+		{
+			// collect if possible
+			if(myobject->Collect(item)) return true;
+			// otherwise (lorry is full?): fail
+			return false;
+		}
+	}
+	else if(obj->GetOCF() & OCF_Grab)
+	{
+		if(actiontype == ACTIONTYPE_STRUCTURE)
+		{
+			// respect no push enter
+			if (obj->GetDefCoreVal("NoPushEnter","DefCore")) return false;
+			// enter vehicle into structure
+			PlayerObjectCommand(plr, false, "PushTo", obj, 0, 0, myobject);
+			return true;
+		}
+	}
+}
+
 public func Clear()
 {
 	myobject = nil;
@@ -158,10 +251,12 @@ public func SetObject(object obj, int type, int pos)
 	{	
 		SetGraphics(nil,nil,1);
 		SetName(Format("$TxtSlot$",hotkey));
+		this["MouseDragImage"] = nil;
 	}
 	else
 	{
 		SetGraphics(nil,myobject->GetID(),1,GFXOV_MODE_IngamePicture);
+		this["MouseDragImage"] = myobject;
 		if(actiontype == nil)
 		{
 			if(myobject->Contained() == crew) actiontype = ACTIONTYPE_INVENTORY;

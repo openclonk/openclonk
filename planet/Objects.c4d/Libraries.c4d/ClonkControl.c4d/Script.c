@@ -41,6 +41,7 @@ local using;
 local alt;
 local inventory;
 local mlastx, mlasty;
+local disableautosort;
 
 /* ++++++++ Item controls ++++++++++ */
 
@@ -95,7 +96,7 @@ public func SelectItem(selection, bool second)
 	}
 }
 
-public func ShiftItem(int dir, bool second)
+public func ShiftSelectedItem(int dir, bool second)
 {
 	var sel = selected;
 	if (second) sel = selected2;
@@ -130,6 +131,60 @@ public func GetItem(int i)
 	return inventory[i];
 }
 
+public func GetItemPos(object item)
+{
+	if(item)
+		if(item->Contained() == this)
+		{
+			var i = 0;
+			for(var obj in inventory)
+			{
+				if(obj == item) return i;
+				++i;
+			}
+		}
+	return nil;
+}
+
+public func Switch2Items(int one, int two)
+{
+	var temp = inventory[one];
+	inventory[one] = inventory[two];
+	inventory[two] = temp;
+	
+	if(inventory[one])
+		this->~OnSlotFull(one);
+	else
+		this->~OnSlotEmpty(one);
+		
+	if(inventory[two])
+		this->~OnSlotFull(two);
+	else
+		this->~OnSlotEmpty(two);
+}
+
+public func Collect(object item, int pos)
+{
+	if(pos == nil) return _inherited(item);
+	// fail if the specified slot is full
+	if(GetItem(pos) != nil) return false;
+	if(!item) return false;
+	
+	pos = BoundBy(pos,0,MaxContentsCount()-1);
+	
+	disableautosort = true;
+	// collect but do not sort in
+	var success = _inherited(item);
+	disableautosort = false;
+	if(success)
+	{
+		inventory[pos] = item;
+		this->~OnSlotFull(pos);
+	}
+		
+	return success;
+}
+
 // disable ShiftContents for objects with ClonkControl.c4d
 
 global func ShiftContents()
@@ -156,6 +211,8 @@ protected func Collection2(object obj)
 {
 	var sel;
 
+	if(disableautosort) return _inherited(obj,...);
+	
 	// into selected area if empty
 	if (!inventory[selected])
 	{
@@ -324,10 +381,10 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 
 	// Inventory control
 	var inv_control = true;
-	if (ctrl == CON_NextItem)              { ShiftItem(+1); }
-	else if (ctrl == CON_PreviousItem)     { ShiftItem(-1); }
-	else if (ctrl == CON_NextAltItem)      { ShiftItem(+1,true); }
-	else if (ctrl == CON_PreviousAltItem)  { ShiftItem(-1,true); }
+	if (ctrl == CON_NextItem)              { ShiftSelectedItem(+1); }
+	else if (ctrl == CON_PreviousItem)     { ShiftSelectedItem(-1); }
+	else if (ctrl == CON_NextAltItem)      { ShiftSelectedItem(+1,true); }
+	else if (ctrl == CON_PreviousAltItem)  { ShiftSelectedItem(-1,true); }
 	else { inv_control = false; }
 	
 	if (inv_control) return true;
