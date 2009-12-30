@@ -780,7 +780,7 @@ const StdMeshAnimation& StdMeshInstance::AnimationRef::GetAnimation() const
 
 void StdMeshInstance::AnimationRef::SetPosition(float position)
 {
-	assert(position <= Anim->Animation.Length);
+	assert(position <= Anim->Animation->Length);
 	Anim->Position = position;
 	Changed = true;
 }
