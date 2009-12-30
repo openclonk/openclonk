@@ -311,7 +311,8 @@ void StdMeshVertex::Mul(float f)
 
 	// We also multiplicate normals because we expect this to happen in
 	// an expression such as a*v1 + (1-a)*v2 which would ensure normalization
-	// of the normals again.
+	// of the normals again. (TODO: It doesn't. We should just always
+	// keep them normalized).
 	nx *= f;
 	ny *= f;
 	nz *= f;
@@ -683,6 +684,7 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 				}
 			}
 
+#if 0
 			// Apply bone transformation on animation frames. We need to do this
 			// after the actual loading because we need to walk the bone list
 			// hierarchically.
@@ -719,6 +721,7 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 					}
 				}
 			}
+#endif
 		}
 	}
 	else
@@ -808,6 +811,7 @@ void StdMeshInstance::SetPosition(float position)
 		}
 		else
 		{
+#if 0
 			// No track for this bone, so use parent transformation
 			const StdMeshBone* parent = Mesh.GetBone(i).GetParent();
 			if(parent)
@@ -819,9 +823,22 @@ void StdMeshInstance::SetPosition(float position)
 			}
 			else
 			{
+#endif
 				BoneTransforms[i].SetIdentity();
+#if 0
 			}
+#endif
 		}
+
+		const StdMeshBone* bone = Mesh.Bones[i];
+		assert(bone->Index < i);
+		
+		BoneTransforms[i].Mul(bone->InverseTrans);
+		BoneTransforms[i].Transform(bone->Trans);
+
+		const StdMeshBone* parent = bone->GetParent();
+		if(parent)
+			BoneTransforms[i].Transform(BoneTransforms[parent->Index]);
 	}
 
 	// Compute transformation for each vertex. We could later think about
