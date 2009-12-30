@@ -555,6 +555,7 @@ FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
 ############################################################################
 # User selectable options
 ############################################################################
+option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
 option(USE_GL "Enable OpenGL support" ON)
 if(APPLE)
 	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)
