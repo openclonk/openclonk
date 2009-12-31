@@ -448,34 +448,43 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				if (Drag == C4MC_Drag_Script && DragObject && (DragObject->Category & C4D_Foreground))
 					fIsGameZoom = false;
 				// drag image in game zoom
-				float XDraw, YDraw;
+				float XDraw, YDraw, ZoomDraw;
 				if (fIsGameZoom)
 				{
 					lpDDraw->SetZoom(GameZoom);
 					XDraw = GameX; YDraw = GameY;
+					ZoomDraw = 1.0f;
 					// for drag construct: draw rounded to game pixels, because construction site will be placed at rounded game pixel positions
-					if (Drag == C4MC_Drag_Construct) { XDraw=floor(XDraw); YDraw=floor(YDraw); }				
+					if (Drag == C4MC_Drag_Construct) { XDraw=floor(XDraw); YDraw=floor(YDraw); }
 				}
 				else
 				{
+					ZoomDraw = 64.0f / DragImage.Wdt;
 					XDraw = GuiX; YDraw = GuiY;
 				}
 				// draw in special modulation mode
 				lpDDraw->SetBlitMode(C4GFXBLIT_MOD2);
 				// draw DragImage in red or green, according to the phase to be used
-				iOffsetX=DragImage.Wdt/2; iOffsetY=DragImage.Hgt;
-				lpDDraw->ActivateBlitModulation(DragImagePhase ? 0x8f7f0000 : 0x1f007f00);
+				iOffsetX=int(ZoomDraw*DragImage.Wdt/2);
+				if (Drag == C4MC_Drag_Construct)
+					iOffsetY=int(ZoomDraw*DragImage.Hgt);
+				else
+					iOffsetY=int(ZoomDraw*DragImage.Hgt/2);
+				lpDDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (DragImagePhase ? 0x8f7f0000 : 0x1f007f00));
 				lpDDraw->Blit(DragImage.Surface,
 				              float(DragImage.X), float(DragImage.Y), float(DragImage.Wdt), float(DragImage.Hgt),
 				              cgo.Surface,
-				              XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(DragImage.Wdt), float(DragImage.Hgt),true);
+				              XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(DragImage.Wdt)*ZoomDraw, float(DragImage.Hgt)*ZoomDraw,true);
 				// reset color
 				lpDDraw->DeactivateBlitModulation();
 				lpDDraw->SetBlitMode(0);
 				if (fIsGameZoom) lpDDraw->SetZoom(GuiZoom);
+				// reset cursor hotspot offset for script drawing
+				iOffsetX = GfxR->fctMouseCursor.Wdt/2;
+				iOffsetY = GfxR->fctMouseCursor.Hgt/2;
 			}
 			// Cursor
-			else
+			if (!DragImage.Surface || (Drag == C4MC_Drag_Script))
 				GfxR->fctMouseCursor.Draw(cgo.Surface,cgo.X+GuiX-iOffsetX,cgo.Y+GuiY-iOffsetY,Cursor);
 			// Point
 			if ((ShowPointX!=-1) && (ShowPointY!=-1))
@@ -797,7 +806,7 @@ void C4MouseControl::DragNone()
 			if (TargetObject->GetDragImage(&drag_image_obj, &drag_image_id))
 			{
 				Drag=C4MC_Drag_Script;
-				CreateDragImage(drag_image_id, drag_image_obj);
+				CreateDragImage(drag_image_id, drag_image_obj, true);
 				DragObject = TargetObject;
 				DragImagePhase=0;
 			}
@@ -926,14 +935,14 @@ bool C4MouseControl::SendControl(int32_t iCom, int32_t iData)
 	return true;
 	}
 
-void C4MouseControl::CreateDragImage(C4ID id, C4Object *obj)
+void C4MouseControl::CreateDragImage(C4ID id, C4Object *obj, bool fPicture)
 	{
 	// todo: real object drawing
 	if (obj) id = obj->id;
 	// Get definition
 	C4Def *pDef=C4Id2Def(id); if (!pDef) return;
 	// in newgfx, it's just the base image, drawn differently...
-	if (pDef->DragImagePicture)
+	if (pDef->DragImagePicture || fPicture)
 		DragImage.Set(pDef->Graphics.GetBitmap(),pDef->PictureRect.x,pDef->PictureRect.y,pDef->PictureRect.Wdt,pDef->PictureRect.Hgt);
 	else
 		DragImage=pDef->GetMainFace(&pDef->Graphics);
@@ -1156,6 +1165,6 @@ void C4MouseControl::StartConstructionDrag(C4ID id)
 	{
 	Drag=C4MC_Drag_Construct;
 	DragID=id;
-	CreateDragImage(DragID,NULL);
+	CreateDragImage(DragID,NULL,false);
 	Selection.Clear();
 	}

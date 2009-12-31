@@ -130,7 +130,7 @@ class C4MouseControl
 		void LeftDown();
 		void UpdateTargetRegion();
 		void UpdateScrolling();
-		void CreateDragImage(C4ID id, C4Object *obj);
+		void CreateDragImage(C4ID id, C4Object *obj, bool fPicture);
 		void UpdateCursorTarget();
 		void SendCommand(int32_t iCommand, int32_t iX=0, int32_t iY=0, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iData=0, int32_t iAddMode=C4P_Command_Set);
 		int32_t UpdateObjectSelection();

@@ -414,7 +414,7 @@ global func ObjectComLetGo(int vx, int vy)
 
 global func MouseDragDrop(int plr, object source, object target)
 {
-  Log("MouseDragDrop(%d, %v, %v)", plr, source, target);
+  //Log("MouseDragDrop(%d, %v, %v)", plr, source, target);
   var src_drag = source->MouseDrag(plr);
   if (!src_drag) return false;
   if (target)
