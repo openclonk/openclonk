@@ -45,6 +45,7 @@ class C4PlayerControlDef
 			CDA_Script,          // default: Script callback
 			CDA_Menu,            // open player menu (async)
 			CDA_MenuOK, CDA_MenuCancel, CDA_MenuLeft, CDA_MenuUp, CDA_MenuRight, CDA_MenuDown, // player menu controls (async)
+			CDA_ZoomIn, CDA_ZoomOut, // player viewport control (async)
 			};
 	private:
 		Actions eAction;
@@ -352,7 +353,7 @@ class C4PlayerControl
 		void Execute();
 
 		// mouse input
-		bool DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, bool is_ctrl_down, bool is_shift_down, bool is_alt_down);
+		bool DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, bool is_ctrl_down, bool is_shift_down, bool is_alt_down, int wheel_dir);
 
 		// control enable/disable
 		bool SetControlDisabled(int ctrl, bool is_disabled) { return Sync.SetControlDisabled(ctrl, is_disabled); }

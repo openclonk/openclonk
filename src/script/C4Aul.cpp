@@ -386,7 +386,7 @@ std::string C4AulScript::Translate(const std::string &text) const
 			if (cursor->stringTable)
 				return cursor->stringTable->Translate(text);
 		}
-		catch (C4LangStringTable::NoSuchTranslation &e)
+		catch (C4LangStringTable::NoSuchTranslation &)
 		{
 			// Ignore, soldier on
 		}

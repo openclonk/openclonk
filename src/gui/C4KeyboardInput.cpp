@@ -387,7 +387,8 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 				while (isdigit(*key_str)) ++key_str;
 				// check for known mouse events (e.g. Mouse1Move or GameMouse1Wheel)
 				if (!stricmp(key_str, "Move")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Move, is_gamemouse_key);
-				if (!stricmp(key_str, "Wheel1")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1, is_gamemouse_key);
+				if (!stricmp(key_str, "Wheel1Up")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Up, is_gamemouse_key);
+				if (!stricmp(key_str, "Wheel1Down")) return KEY_Mouse(mouse_id-1, KEY_MOUSE_Wheel1Down, is_gamemouse_key);
 				if (SEqualNoCase(key_str, "Button", 6)) // e.g. Mouse1ButtonLeft or GameMouse1ButtonRightDouble
 				{
 					// check for known mouse button events
@@ -486,7 +487,8 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		switch (mouse_event)
 		{
 			case KEY_MOUSE_Move:              return FormatString("%s%dMove", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_Wheel1:            return FormatString("%s%dWheel1", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_Wheel1Up:          return FormatString("%s%dWheel1Up", mouse_is_game_str, mouse_id);
+			case KEY_MOUSE_Wheel1Down:        return FormatString("%s%dWheel1Down", mouse_is_game_str, mouse_id);
 			case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_is_game_str, mouse_id);
 			case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_is_game_str, mouse_id);
 			case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_is_game_str, mouse_id);

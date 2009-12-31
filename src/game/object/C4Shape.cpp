@@ -421,7 +421,7 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 	    }
 
 
-  return ContactCount;
+  return !!ContactCount;
   }
 
 int32_t C4Shape::GetVertexX(int32_t iVertex)

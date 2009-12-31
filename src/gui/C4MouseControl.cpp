@@ -361,7 +361,9 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 			{
 				if (pPlayer->ControlSet->IsMouseControlAssigned(iButton))
 				{
-					pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, Application.IsAltDown());
+					int wheel_dir = 0;
+					if (iButton == C4MC_Button_Wheel) wheel_dir = (short)(dwKeyFlags >> 16);
+					pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, iButton, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, Application.IsAltDown(), wheel_dir);
 				}
 			}
 }
@@ -374,7 +376,7 @@ void C4MouseControl::DoMoveInput()
 	if (!(pPlayer=::Players.Get(Player))) return;
 	if (!pPlayer->ControlSet) return;
 	if (!pPlayer->ControlSet->IsMouseControlAssigned(C4MC_Button_None)) return;
-	pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, C4MC_Button_None, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, Application.IsAltDown());
+	pPlayer->Control.DoMouseInput(0 /* only 1 mouse supported so far */, C4MC_Button_None, GameX, GameY, GuiX, GuiY, ControlDown, ShiftDown, Application.IsAltDown(), 0);
 }
 
 void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
@@ -876,8 +878,8 @@ void C4MouseControl::Wheel(DWORD dwFlags)
 	// Normal wheel: control zoom
 	if(!ControlDown)
 		{
-		if(iDelta > 0) Viewport->ChangeZoom(C4GFX_ZoomStep);
-		if(iDelta < 0) Viewport->ChangeZoom(1.0f/C4GFX_ZoomStep);
+		//if(iDelta > 0) Viewport->ChangeZoom(C4GFX_ZoomStep);
+		//if(iDelta < 0) Viewport->ChangeZoom(1.0f/C4GFX_ZoomStep);
 		}
 	// Ctrl + Wheel: pass to player control (might be used for inventory or such)
 	else

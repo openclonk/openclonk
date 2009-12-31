@@ -54,6 +54,8 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 		{ "MenuUp",      CDA_MenuUp      },
 		{ "MenuRight",   CDA_MenuRight   },
 		{ "MenuDown",    CDA_MenuDown    },
+		{ "ZoomIn",      CDA_ZoomIn      },
+		{ "ZoomOut",     CDA_ZoomOut     },
 		{ NULL, CDA_None } };
 	pComp->Value(mkNamingAdapt(mkEnumAdapt<Actions, int32_t>(eAction, ActionNames), "Action", CDA_Script));
 	pComp->NameEnd();
@@ -819,6 +821,7 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	{
 	// get affected player
 	C4Player *pPlr = NULL;
+	C4Viewport *pVP;
 	if (iPlr > -1)
 		{
 		pPlr = ::Players.Get(iPlr);
@@ -839,6 +842,9 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 		case C4PlayerControlDef::CDA_MenuUp:     if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuUp   ,0); return true; // navigate
 		case C4PlayerControlDef::CDA_MenuRight:  if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuRight,0); return true; // navigate
 		case C4PlayerControlDef::CDA_MenuDown:   if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuDown ,0); return true; // navigate
+		
+		case C4PlayerControlDef::CDA_ZoomIn:   if (!pPlr || !(pVP = GraphicsSystem.GetViewport(iPlr))) return false; pVP->ChangeZoom(C4GFX_ZoomStep); return true; // viewport zoom
+		case C4PlayerControlDef::CDA_ZoomOut:  if (!pPlr || !(pVP = GraphicsSystem.GetViewport(iPlr))) return false; pVP->ChangeZoom(1.0f/C4GFX_ZoomStep); return true; // viewport zoom
 
 		//unknown action
 		default: return false;
@@ -946,7 +952,7 @@ void C4PlayerControl::AddKeyBinding(const C4KeyCodeEx &key, bool fHoldKey, int32
 				C4CustomKey::PRIO_PlrControl));
 }
 
-bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, bool is_ctrl_down, bool is_shift_down, bool is_alt_down)
+bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float game_x, float game_y, float gui_x, float gui_y, bool is_ctrl_down, bool is_shift_down, bool is_alt_down, int wheel_dir)
 {
 	// convert moueevent to key code
 	uint8_t mouseevent_code;
@@ -961,9 +967,11 @@ bool C4PlayerControl::DoMouseInput(uint8_t mouse_id, int32_t mouseevent, float g
 		case C4MC_Button_RightDown: mouseevent_code = KEY_MOUSE_ButtonRight; break;
 		case C4MC_Button_LeftDouble: mouseevent_code = KEY_MOUSE_ButtonLeftDouble; break;
 		case C4MC_Button_RightDouble: mouseevent_code = KEY_MOUSE_ButtonRightDouble; break;
-		case C4MC_Button_Wheel: mouseevent_code = KEY_MOUSE_ButtonMiddleDouble; break;
 		case C4MC_Button_MiddleUp: is_down = false; // nobreak
 		case C4MC_Button_MiddleDown: mouseevent_code = KEY_MOUSE_ButtonMiddle; break;
+		case C4MC_Button_Wheel:
+			if (!wheel_dir) return false;
+			mouseevent_code = (wheel_dir > 0) ? KEY_MOUSE_Wheel1Up : KEY_MOUSE_Wheel1Down; break;
 		default: assert(false); return false;
 	}
 	// compose keycode

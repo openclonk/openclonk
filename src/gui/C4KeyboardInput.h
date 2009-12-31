@@ -88,7 +88,8 @@ const C4KeyCode KEY_Default = 0,  // no key
                 KEY_MOUSE_ButtonRightDouble = KEY_MOUSE_Button1Double + 1,
                 KEY_MOUSE_ButtonMiddleDouble= KEY_MOUSE_Button1Double + 2,
                 KEY_MOUSE_ButtonMaxDouble   = KEY_MOUSE_Button1Double + 0x1f, // max number of supported mouse buttons
-                KEY_MOUSE_Wheel1            = 0x40,    // mouse control: wheel up/down
+                KEY_MOUSE_Wheel1Up          = 0x40,    // mouse control: wheel up
+                KEY_MOUSE_Wheel1Down        = 0x41,    // mouse control: wheel down
                 KEY_MOUSE_GameMask          = 0x80;    // if set, contorl is sent in game coordinates
 
 inline uint8_t KEY_JOY_Button(uint8_t idx) { return KEY_JOY_Button1+idx; }
