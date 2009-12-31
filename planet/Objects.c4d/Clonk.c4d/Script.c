@@ -256,8 +256,39 @@ protected func ControlThrow()
       SetAction("RideThrow");
       return 1;
     }
+  if(!GetEffect("IntDoThrow", this))
+  {
+    AddEffect("IntDoThrow", this, 1, 1);
+    AnimationPlay("ThrowArms", 0);
+  }
   // Keine �berladene Steuerung
-  return 0;
+  return 1;
+}
+
+global func FxIntDoThrowTimer(object target, int number, int time)
+{
+  var walk_pos = (time % 50) * 2400 / 50; // Walk animation ranges to 2400
+  // Animation lasts 20 frames
+  if(time <= 15*2)
+  {
+    var off = time;
+    var weight = 2000*off;
+    var jump_pos = off * 1500 / (15*2); // Throw animation ranges to 1500
+    target->AnimationSetState("ThrowArms", jump_pos, weight);
+    if(time == 9*2)
+      target->Throwing();
+  }
+  else
+  {
+    var weight = 2000-2000*(time-15*2)/5;
+    target->AnimationSetState("ThrowArms", 1500, weight);
+    // Hold until 50 frames
+    if(time > 35)
+    {
+      target->AnimationStop("ThrowArms");
+      return -1;
+    }
+  }
 }
 
 protected func ControlUpdate(object self, int comdir, bool dig, bool throw)
@@ -436,7 +467,7 @@ private func Throwing()
   // Wurfparameter berechnen
   var iX, iY, iR, iXDir, iYDir, iRDir;
   iX = 0; if (!GetDir()) iX = -iX;
-  iY = -10;
+  iY = -2;
   iR = Random(360);
   iXDir = GetPhysical("Throw") / 25000; if(!GetDir()) iXDir = -iXDir;
   iYDir = -GetPhysical("Throw") / 25000;
