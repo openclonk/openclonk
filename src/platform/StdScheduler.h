@@ -176,7 +176,7 @@ private:
 #endif
 
 public:
-	int getProcCnt() const { return iProcCnt; }
+	int getProcCnt() const { return iProcCnt-1; } // ignore internal NoopNotifyProc
 	int getProc(StdSchedulerProc *pProc);
 	bool hasProc(StdSchedulerProc *pProc) { return getProc(pProc) >= 0; }
 
