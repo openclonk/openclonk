@@ -61,8 +61,7 @@ namespace
 	};
 
 	// Generate matrix to convert the mesh from Ogre coordinate system to Clonk
-	// coordinate system. When making changes here, don't forget to make
-	// corresponding changes for the inverse matrix below.
+	// coordinate system.
 	StdMeshMatrix CoordCorrectionMatrix()
 	{
 		StdMeshMatrix matrix;
@@ -83,19 +82,8 @@ namespace
 
 	StdMeshMatrix CoordCorrectionMatrixInverse()
 	{
-		StdMeshMatrix matrix;
-		StdMeshMatrix helper;
-
-		matrix.SetRotate(-M_PI/2.0f, 0.0f, 0.0f, 1.0f);
-
-		//helper.SetRotate(-M_PI/2.0f, 1.0f, 0.0f, 0.0f);
-		helper.SetRotate(-M_PI/2.0f, 1.0f, 0.0f, 0.0f);
-		matrix.Mul(helper);
-
-		//helper.SetIdentity();
-		helper.SetScale(-1.0f, 1.0f, 1.0f);
-		matrix.Mul(helper);
-
+		StdMeshMatrix matrix = CoordCorrectionMatrix();
+		matrix.SetInverse();
 		return matrix;
 	}
 
@@ -188,6 +176,47 @@ void StdMeshMatrix::SetIdentity()
 	a[0][0] = 1.0f; a[0][1] = 0.0f; a[0][2] = 0.0f; a[0][3] = 0.0f;
 	a[1][0] = 0.0f; a[1][1] = 1.0f; a[1][2] = 0.0f; a[1][3] = 0.0f;
 	a[2][0] = 0.0f; a[2][1] = 0.0f; a[2][2] = 1.0f; a[2][3] = 0.0f;
+}
+
+void StdMeshMatrix::SetInverse()
+{
+	const float det = a[0][0]*a[1][1]*a[2][2] + a[0][1]*a[1][2]*a[2][0] + a[0][2]*a[1][0]*a[2][1]
+	                - a[0][0]*a[1][2]*a[2][1] - a[0][1]*a[1][0]*a[2][2] - a[0][2]*a[1][1]*a[2][0];
+	assert(det != 0.0f);
+	StdMeshMatrix old(*this);
+
+	a[0][0] = (old.a[1][1]*old.a[2][2] - old.a[1][2]*old.a[2][1]) / det;
+	a[1][0] = (old.a[1][2]*old.a[2][0] - old.a[1][0]*old.a[2][2]) / det;
+	a[2][0] = (old.a[1][0]*old.a[2][1] - old.a[1][1]*old.a[2][0]) / det;
+
+	a[0][1] = (old.a[0][2]*old.a[2][1] - old.a[0][1]*old.a[2][2]) / det;
+	a[1][1] = (old.a[0][0]*old.a[2][2] - old.a[0][2]*old.a[2][0]) / det;
+	a[2][1] = (old.a[0][1]*old.a[2][0] - old.a[0][0]*old.a[2][1]) / det;
+
+	a[0][2] = (old.a[0][1]*old.a[1][2] - old.a[0][2]*old.a[1][1]) / det;
+	a[1][2] = (old.a[0][2]*old.a[1][0] - old.a[0][0]*old.a[1][2]) / det;
+	a[2][2] = (old.a[0][0]*old.a[1][1] - old.a[0][1]*old.a[1][0]) / det;
+
+	a[0][3] = (old.a[0][1]*old.a[1][3]*old.a[2][2]
+	        +  old.a[0][2]*old.a[1][1]*old.a[2][3]
+	        +  old.a[0][3]*old.a[1][2]*old.a[2][1]
+	        -  old.a[0][1]*old.a[1][2]*old.a[2][3]
+	        -  old.a[0][2]*old.a[1][3]*old.a[2][1]
+	        -  old.a[0][3]*old.a[1][1]*old.a[2][2]) / det;
+
+	a[1][3] = (old.a[0][0]*old.a[1][2]*old.a[2][3]
+	        +  old.a[0][2]*old.a[1][3]*old.a[2][0]
+	        +  old.a[0][3]*old.a[1][0]*old.a[2][2]
+	        -  old.a[0][0]*old.a[1][3]*old.a[2][2]
+	        -  old.a[0][2]*old.a[1][0]*old.a[2][3]
+	        -  old.a[0][3]*old.a[1][2]*old.a[2][0]) / det;
+
+	a[2][3] = (old.a[0][0]*old.a[1][3]*old.a[2][1]
+	        +  old.a[0][1]*old.a[1][0]*old.a[2][3]
+	        +  old.a[0][3]*old.a[1][1]*old.a[2][0]
+	        -  old.a[0][0]*old.a[1][1]*old.a[2][3]
+	        -  old.a[0][1]*old.a[1][3]*old.a[2][0]
+	        -  old.a[0][3]*old.a[1][0]*old.a[2][1]) / det;
 }
 
 void StdMeshMatrix::SetTranslate(float dx, float dy, float dz)
@@ -535,6 +564,7 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 			bone->Trans.Mul(CoordCorrectionInverse);
 			bone->Trans.Transform(CoordCorrection);
 
+#if 1
 			helper.SetRotate(-angle, rx, ry, rz);
 			bone->InverseTrans.SetTranslate(-dx, -dy, -dz);
 			bone->InverseTrans.Transform(helper);
@@ -542,6 +572,10 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 			// Transform to Clonk coordinate system
 			bone->InverseTrans.Mul(CoordCorrectionInverse);
 			bone->InverseTrans.Transform(CoordCorrection);
+#else
+			bone->InverseTrans = bone->Trans;
+			bone->InverseTrans.SetInverse();
+#endif
 
 			bone->Parent = NULL;
 

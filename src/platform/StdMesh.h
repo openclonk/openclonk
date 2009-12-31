@@ -49,6 +49,7 @@ class StdMeshMatrix
 {
 public:
 	void SetIdentity();
+	void SetInverse();
 	void SetTranslate(float dx, float dy, float dz);
 	void SetScale(float sx, float sy, float sz);
 	void SetRotate(float angle, float rx, float ry, float rz);
