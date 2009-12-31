@@ -250,7 +250,7 @@ AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
 
 if test $win32 = false; then
   # pthread
-  ACX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
+  AX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
   AC_SUBST(PTHREAD_LIBS)
   AC_SUBST(PTHREAD_CFLAGS)
 
