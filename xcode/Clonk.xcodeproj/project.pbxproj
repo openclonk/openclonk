@@ -529,7 +529,7 @@
 		5862E0271032E57A002CAE9E /* C4Random.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4Random.cpp; sourceTree = "<group>"; };
 		5862E0281032E57A002CAE9E /* C4Random.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4Random.h; sourceTree = "<group>"; };
 		5862E0291032E57A002CAE9E /* C4RTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4RTF.cpp; sourceTree = "<group>"; };
-		5862E02A1032E57A002CAE9E /* C4RTF.H */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = C4RTF.H; sourceTree = "<group>"; };
+		5862E02A1032E57A002CAE9E /* C4RTF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = C4RTF.h; sourceTree = "<group>"; };
 		5862E02B1032E57A002CAE9E /* C4Stat.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4Stat.cpp; sourceTree = "<group>"; };
 		5862E02C1032E57A002CAE9E /* C4Stat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4Stat.h; sourceTree = "<group>"; };
 		5862E02D1032E57A002CAE9E /* Fixed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Fixed.cpp; sourceTree = "<group>"; };
@@ -1237,7 +1237,7 @@
 				5862E0271032E57A002CAE9E /* C4Random.cpp */,
 				5862E0281032E57A002CAE9E /* C4Random.h */,
 				5862E0291032E57A002CAE9E /* C4RTF.cpp */,
-				5862E02A1032E57A002CAE9E /* C4RTF.H */,
+				5862E02A1032E57A002CAE9E /* C4RTF.h */,
 				5862E02B1032E57A002CAE9E /* C4Stat.cpp */,
 				5862E02C1032E57A002CAE9E /* C4Stat.h */,
 				5862E02D1032E57A002CAE9E /* Fixed.cpp */,

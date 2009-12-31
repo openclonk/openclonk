@@ -21,7 +21,7 @@
 
 #include "C4Include.h"
 #include "Standard.h"
-#include "C4RTF.H"
+#include "C4RTF.h"
 
 #include <cctype>
 

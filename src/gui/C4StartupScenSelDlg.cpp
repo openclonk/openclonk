@@ -30,7 +30,7 @@
 #include <C4StartupNetDlg.h>
 #include <C4ComponentHost.h>
 #include <C4Components.h>
-#include <C4RTF.H>
+#include <C4RTF.h>
 #include <C4Log.h>
 #include <C4Game.h>
 #include <C4GameDialogs.h>

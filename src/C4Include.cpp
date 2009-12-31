@@ -119,7 +119,7 @@
 #include "lib/C4NameList.h"
 #include "lib/C4Random.h"
 #include "lib/C4Rect.h"
-#include "lib/C4RTF.H"
+#include "lib/C4RTF.h"
 #include "lib/C4Stat.h"
 #include "lib/Fixed.h"
 #include "lib/PathFinder.h"
