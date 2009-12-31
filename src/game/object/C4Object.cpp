@@ -483,7 +483,7 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 			lpDDraw->Blit(sfc,
 				fx, fy, fwdt, fhgt,
 				cgo.Surface, tx, ty, twdt, thgt,
-				TRUE, transform);
+				true, transform);
 			break;
 		case C4DefGraphics::TYPE_Mesh:
 			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, tx, ty, twdt, thgt, transform);

@@ -289,7 +289,7 @@ protected:
 
 	struct Animation
 	{
-		const StdMeshAnimation* Animation;
+		const StdMeshAnimation* MeshAnimation;
 		float Position;
 		float Weight;
 	};

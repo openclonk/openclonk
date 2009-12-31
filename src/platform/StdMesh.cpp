@@ -760,7 +760,7 @@ StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const Std
 	if(animation)
 	{
 		for(unsigned int i = 0; i < instance->Animations.size(); ++i)
-			if(instance->Animations[i].Animation == animation)
+			if(instance->Animations[i].MeshAnimation == animation)
 				{ Anim = &instance->Animations[i]; break; }
 	}
 }
@@ -769,13 +769,13 @@ StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const Std
 	Instance(instance), Anim(NULL), Changed(false)
 {
 	for(unsigned int i = 0; i < instance->Animations.size(); ++i)
-		if(instance->Animations[i].Animation == &animation)
+		if(instance->Animations[i].MeshAnimation == &animation)
 			{ Anim = &instance->Animations[i]; break; }
 }
 
 const StdMeshAnimation& StdMeshInstance::AnimationRef::GetAnimation() const
 {
-	return *Anim->Animation;
+	return *Anim->MeshAnimation;
 }
 
 void StdMeshInstance::AnimationRef::SetPosition(float position)
@@ -820,11 +820,11 @@ bool StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, float weigh
 bool StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, float weight)
 {
 	for(unsigned int i = 0; i < Animations.size(); ++i)
-		if(Animations[i].Animation == &animation)
+		if(Animations[i].MeshAnimation == &animation)
 			return false;
 
 	Animation anim;
-	anim.Animation = &animation;
+	anim.MeshAnimation = &animation;
 	anim.Position = 0.0f;
 	anim.Weight = weight;
 	Animations.push_back(anim);
@@ -844,7 +844,7 @@ bool StdMeshInstance::StopAnimation(const StdMeshAnimation& animation)
 	for(std::vector<Animation>::iterator iter = Animations.begin();
 	    iter != Animations.end(); ++iter)
 	{
-		if(iter->Animation == &animation)
+		if(iter->MeshAnimation == &animation)
 		{
 			Animations.erase(iter);
 			UpdateBoneTransforms();
@@ -865,7 +865,7 @@ void StdMeshInstance::UpdateBoneTransforms()
 
 		for(unsigned int j = 0; j < Animations.size(); ++j)
 		{
-			StdMeshTrack* track = Animations[j].Animation->Tracks[i];
+			StdMeshTrack* track = Animations[j].MeshAnimation->Tracks[i];
 			if(track)
 			{
 				accum_weight += Animations[j].Weight;
