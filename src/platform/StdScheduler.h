@@ -165,7 +165,7 @@ private:
 	// Unblocker
 	class NoopNotifyProc : public CStdNotifyProc
 		{
-		public: virtual bool Execute(int, pollfd * readyfds) { return true; }
+		public: virtual bool Execute(int, pollfd * readyfds) { CheckAndReset(); return true; }
 		};
 	NoopNotifyProc Unblocker;
 

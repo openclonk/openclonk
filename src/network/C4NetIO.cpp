@@ -2073,7 +2073,7 @@ bool C4NetIOUDP::SetBroadcast(const addr_t &addr, bool fSet) // (mt-safe)
 int C4NetIOUDP::GetNextTick(int Now) // (mt-safe)
 {
 	// maximum time: check interval
-	int iTiming = iNextCheck;
+	int iTiming = Max<int>(Now, iNextCheck);
 	// client timeouts (e.g. connection timeout)
 	CStdShareLock PeerListLock(&PeerListCSec);
 	for(Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
