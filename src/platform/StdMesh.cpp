@@ -648,6 +648,12 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 				StdMeshTrack* track = new StdMeshTrack;
 				animation.Tracks[bone->Index] = track;
 
+				// Get inverse bone transformation matrix in OGRE coordiante system; we need it to apply
+				// the translation part of the bone transformation.
+				StdMeshMatrix bone_inverse_trans(bone->InverseTrans);
+				bone_inverse_trans.Mul(CoordCorrection);
+				bone_inverse_trans.Transform(CoordCorrectionInverse);
+
 				TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
 				for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
 				{
@@ -670,12 +676,16 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 					float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
 					float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
 
-					// TODO: Make sure the order is correct here - I am not sure about scale
 					StdMeshMatrix helper;
 					frame.Trans.SetRotate(angle, rx, ry, rz);
 					helper.SetScale(sx, sy, sz);
 					frame.Trans.Transform(helper);
-					helper.SetTranslate(-dx, -dy, -dz);
+
+					// Apply bone transformation to translation part
+					float dxp = bone_inverse_trans(0,0)*dx + bone_inverse_trans(0,1)*dy + bone_inverse_trans(0,2)*dz;
+					float dyp = bone_inverse_trans(1,0)*dx + bone_inverse_trans(1,1)*dy + bone_inverse_trans(1,2)*dz;
+					float dzp = bone_inverse_trans(2,0)*dx + bone_inverse_trans(2,1)*dy + bone_inverse_trans(2,2)*dz;
+					helper.SetTranslate(dxp, dyp, dzp);
 					frame.Trans.Transform(helper);
 
 					// Transform into Clonk coordinate system
@@ -780,7 +790,7 @@ const StdMeshAnimation& StdMeshInstance::AnimationRef::GetAnimation() const
 
 void StdMeshInstance::AnimationRef::SetPosition(float position)
 {
-	assert(position <= Anim->Animation->Length);
+	assert(position <= Anim->MeshAnimation->Length);
 	Anim->Position = position;
 	Changed = true;
 }
