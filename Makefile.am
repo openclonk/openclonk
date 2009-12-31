@@ -474,10 +474,16 @@ src/zlib/zutil.h
 if WIN32
 clonk_SOURCES += src/platform/C4FileClasses.cpp
 clonk_SOURCES += src/res/engine.rc src/res/resource.h
-clonk_SOURCES += src/platform/StdWindow.cpp src/platform/StdJoystick.cpp src/platform/StdJoystick.h
-else
+clonk_SOURCES += src/platform/StdJoystick.cpp src/platform/StdJoystick.h
+endif
+if MACOSX
+clonk_SOURCES += src/platform/MacUtility.h src/platform/MacUtility.mm src/platform/StdMacApp.mm
+endif
 if SDL_MAIN_LOOP
 clonk_SOURCES += src/platform/StdSDLApp.cpp src/platform/StdSDLWindow.cpp
+else
+if WIN32
+clonk_SOURCES += src/platform/StdWindow.cpp
 else
 clonk_SOURCES += src/platform/StdXApp.cpp src/platform/StdXWindow.cpp src/platform/StdXPrivate.h src/platform/StdTApp.cpp
 endif

@@ -36,12 +36,13 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
 
-# The wonders of code stolen from docs.
 case $host in
   *-*-mingw32* | *-*-cygwin* | *-*-windows*)
     win32=true; osx=false;;
   *-*-darwin*)
-    win32=false; osx=true;;
+    win32=false; osx=true;
+    AC_PROG_OBJCXX
+    ;;
   *)
     win32=false; osx=false;;
 esac
@@ -50,6 +51,7 @@ esac
 AC_CHECK_HEADER([windows.h], [win32=true], [], [[ ]])
 
 AM_CONDITIONAL(WIN32, [test $win32 = true])
+AM_CONDITIONAL(MACOSX, [test $osx = true])
 
 # various used headers
 dnl the whitespace is there to prevent AC_INCLUDES_DEFAULT
@@ -211,6 +213,8 @@ AC_ARG_WITH([gl],
 if test $with_gl = yes; then
   if test $osx = true; then
     CLONK_LIBS="-framework OpenGL $CLONK_LIBS"
+    AC_CHECK_LIB(GLEW, glewInit, [CLONK_LIBS="-lGLEW $CLONK_LIBS"],
+      [AC_MSG_ERROR([glew not found.])])
   elif test $win32 = true; then
     AC_CHECK_LIB(opengl32, main, [CLONK_LIBS="-lopengl32 $CLONK_LIBS"],
       [AC_MSG_ERROR([opengl32 not found.])])
