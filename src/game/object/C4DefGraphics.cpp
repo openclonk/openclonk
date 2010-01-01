@@ -648,6 +648,10 @@ void C4GraphicsOverlay::UpdateFacet()
 		case MODE_ExtraGraphics: // like ColorByOwner-sfc
 			// calculated at runtime
 			break;
+
+		case MODE_Rank:
+			// drawn at runtime
+			break;
 		}
 	}
 
@@ -669,10 +673,10 @@ void C4GraphicsOverlay::Set(Mode aMode, C4DefGraphics *pGfx, const char *szActio
 bool C4GraphicsOverlay::IsValid(const C4Object *pForObj) const
 	{
 	assert(pForObj);
-	if (eMode == MODE_Object)
+	if (eMode == MODE_Object || eMode == MODE_Rank)
 		{
 		if (!pOverlayObj || !pOverlayObj->Status) return false;
-		return !pOverlayObj->HasGraphicsOverlayRecursion(pForObj);
+		return (eMode == MODE_Rank) || !pOverlayObj->HasGraphicsOverlayRecursion(pForObj);
 		}
 	else if (eMode == MODE_ExtraGraphics)
 		{
@@ -847,8 +851,14 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		Application.DDraw->SetBlitMode(dwBlitMode);
 		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
 		}
+	if (eMode == MODE_Rank)
+		{
+		C4TargetFacet ccgo;
+		ccgo.Set(cgo.Surface, iTx+pForObj->Shape.x,iTy+pForObj->Shape.y,pForObj->Shape.Wdt,pForObj->Shape.Hgt, cgo.TargetX, cgo.TargetY);
+		DrawRankSymbol(ccgo, pOverlayObj);
+		}
 	// drawing specific object?
-	if (pOverlayObj)
+	else if (pOverlayObj)
 		{
 		// Draw specified object at target pos of this object; offset by transform.
 		// This ignores any other transform than offset, and it doesn't work with parallax overlay objects yet
@@ -911,6 +921,27 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		Application.DDraw->DeactivateBlitModulation();
 		}
 	}
+
+void C4GraphicsOverlay::DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj)
+{
+	// Determine source gfx for rank
+	if (!rank_obj || !rank_obj->Info) return;
+	C4RankSystem *pRankSys = &::DefaultRanks;
+	C4Facet *pRankRes=&::GraphicsResource.fctRank;
+	int iRankCnt=::GraphicsResource.iNumRanks;
+	C4Def *rank_def=rank_obj->Def;
+	if (rank_def->pRankSymbols)
+	{
+		pRankRes=rank_def->pRankSymbols;
+		iRankCnt=rank_def->iNumRankSymbols;
+	}
+	if (rank_def->pRankNames)
+	{
+		pRankSys = rank_def->pRankNames;
+		iRankCnt = rank_def->pRankNames->GetBaseRankNum();
+	}
+	pRankSys->DrawRankSymbol(NULL, rank_obj->Info->Rank, pRankRes, iRankCnt, false, 0, &cgo);
+}
 
 void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 	{

@@ -170,6 +170,7 @@ class C4GraphicsOverlay
 			MODE_IngamePicture=4, // draw picture of source def
 			MODE_Object=5,        // draw another object gfx
 			MODE_ExtraGraphics=6,       // draw like this were a ClrByOwner-surface
+			MODE_Rank=7,                // draw rank symbol
 			};
 	protected:
 		Mode eMode;                // overlay mode
@@ -218,6 +219,8 @@ class C4GraphicsOverlay
 			{ Set(MODE_Object, NULL, NULL, dwBMode, pOverlayObj); }
 		void SetAsExtraGraphics(C4DefGraphics *pGfx, DWORD dwBMode)
 			{ Set(MODE_ExtraGraphics, pGfx, NULL, dwBMode, NULL); }
+		void SetAsRank(DWORD dwBMode, C4Object *rank_obj)
+			{ Set(MODE_Rank, NULL, NULL, dwBMode, rank_obj); }
 
 		bool IsValid(const C4Object *pForObj) const;
 
@@ -233,6 +236,7 @@ class C4GraphicsOverlay
 
 		void Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByPlayer);
 		void DrawPicture(C4Facet &cgo, C4Object *pForObj);
+		void DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj);
 
 		bool operator == (const C4GraphicsOverlay &rCmp) const; // comparison operator
 

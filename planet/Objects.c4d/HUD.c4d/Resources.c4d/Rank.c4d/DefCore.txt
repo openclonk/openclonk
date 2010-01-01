@@ -1,8 +1,0 @@
-[DefCore]
-id=RANK
-Version=4,9,5
-Category=C4D_StaticBack
-Picture=0,0,16,16
-Width=16
-Height=16
-Offset=-8,-8

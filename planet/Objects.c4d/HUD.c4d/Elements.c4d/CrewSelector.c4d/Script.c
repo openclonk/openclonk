@@ -34,7 +34,7 @@ public func MagicBarHeight() { return 14; }
 	layer 4,5 - breath bar
 	layer 6,7 - magic bar
 	
-	layer 10,11 - rank
+	layer 10 - rank
 	layer 12 - hotkey
 */
 
@@ -161,31 +161,11 @@ public func UpdateRank()
 {
 	if(!crew) return;
 	
-	// different rank symbols for different clonks possible
-	var idRank = crew->~RanksID();
-	if(!idRank) idRank = RANK;
-	
-	var rank = crew->GetRank();
-	var nrank = rank % DefinitionCall(idRank,"RegularRankCount");
-	var brank = rank / DefinitionCall(idRank,"RegularRankCount");
-	
 	var rankx = -1000 * GetDefWidth()/2 + 10000;
 	var ranky = -15000;
 	
-	SetGraphics(nil,idRank,10,GFXOV_MODE_Action,Format("Rank%d",nrank));
+	SetGraphics(nil,0,10,GFXOV_MODE_Rank,0,0,crew);
 	SetObjDrawTransform(1000,0,rankx,0,1000,ranky, 10);
-	
-	// extra rank (the star if the clonk is too experienced for normal ranks)
-	if(brank % DefinitionCall(idRank,"ExtraRankCount"))
-	{
-		SetGraphics(nil,RANK,11,GFXOV_MODE_Action,Format("RankExtra%d",brank));
-		SetObjDrawTransform(1000,0,rankx-6000,0,1000,ranky-4000, 11);
-	}
-	else
-	{
-		SetGraphics(nil,nil,11);
-	}
-
 }
 
 public func UpdateTitleGraphic()

@@ -3783,7 +3783,7 @@ static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4ID idS
 		if (iOverlayID<0) { Log("SetGraphics: Background overlays not implemented!"); return false; }
 		// deleting overlay?
 		C4DefGraphics *pGrp;
-		if (iOverlayMode == C4GraphicsOverlay::MODE_Object)
+		if (iOverlayMode == C4GraphicsOverlay::MODE_Object || iOverlayMode == C4GraphicsOverlay::MODE_Rank)
 		{
 			if (!pOverlayObject) return pCtx->Obj->RemoveGraphicsOverlay(iOverlayID);
 		}
@@ -3820,6 +3820,11 @@ static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4ID idS
 
 		case C4GraphicsOverlay::MODE_ExtraGraphics:
 			pOverlay->SetAsExtraGraphics(pGrp, dwBlitMode);
+			break;
+
+		case C4GraphicsOverlay::MODE_Rank:
+			if (pOverlayObject && !pOverlayObject->Status) pOverlayObject = NULL;
+			pOverlay->SetAsRank(dwBlitMode, pOverlayObject);
 			break;
 
 		default:
@@ -6204,6 +6209,7 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "GFXOV_MODE_IngamePicture"  ,C4V_Int,      C4GraphicsOverlay::MODE_IngamePicture }, //
 	{ "GFXOV_MODE_Object"         ,C4V_Int,      C4GraphicsOverlay::MODE_Object }, //
 	{ "GFXOV_MODE_ExtraGraphics"  ,C4V_Int,      C4GraphicsOverlay::MODE_ExtraGraphics }, //
+	{ "GFXOV_MODE_Rank"           ,C4V_Int,      C4GraphicsOverlay::MODE_Rank}, //
 	{ "GFX_Overlay"               ,C4V_Int,      1},                                // default overlay index
 	{ "GFXOV_Clothing"            ,C4V_Int,      1000},                             // overlay indices for clothes on Clonks, etc.
 	{ "GFXOV_Tools"               ,C4V_Int,      2000},                             // overlay indices for tools, weapons, etc.

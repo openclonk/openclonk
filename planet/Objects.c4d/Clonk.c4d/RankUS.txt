@@ -26,4 +26,3 @@ Premier
 *%s Second Degree
 *%s Without Equal
 *Sublime %s
-*Exalted %s

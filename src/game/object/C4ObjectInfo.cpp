@@ -341,7 +341,6 @@ void C4ObjectInfo::Draw(C4Facet &cgo, bool fShowPortrait, C4Object *pOfObj)
 	if (Rank>0)	name.Format("%s|%s",sRankName.getData(),pOfObj->GetName ());
 	else name.Format("%s",pOfObj->GetName ());
 	Application.DDraw->TextOut(name.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
-
 	}
 
 void C4ObjectInfo::Recruit()

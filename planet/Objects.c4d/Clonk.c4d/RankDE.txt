@@ -26,4 +26,3 @@ Ministerpräsident
 *%s Zweiten Grades
 *%s ohne Gleichen
 *Erhabener %s
-*%s der Spitzenklasse
