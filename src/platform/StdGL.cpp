@@ -321,6 +321,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
+	glEnable(GL_CULL_FACE);
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -331,11 +332,27 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glScalef(Zoom, Zoom, 1.0f);
 	glTranslatef(-ZoomX, -ZoomY, 0.0f);
 
+	bool parity = true;
 	if(pTransform)
 	{
 		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
 		glMultMatrixf(transform);
+		
+		// Compute parity of the transformation matrix - if parity is swapped then
+		// we need to cull front faces instead of back faces.
+		const float det = transform[0]*transform[5]*transform[15]
+		                + transform[4]*transform[13]*transform[3]
+		                + transform[12]*transform[1]*transform[7]
+		                - transform[0]*transform[13]*transform[7]
+		                - transform[4]*transform[1]*transform[15]
+		                - transform[12]*transform[5]*transform[3];
+		if(det < 0) parity = false;
 	}
+
+	if(parity)
+		glCullFace(GL_BACK);
+	else
+		glCullFace(GL_FRONT);
 
 	// Scale so that the mesh fits in (tx,ty,twdt,thgt)
 	const float rx = -box.x1 / (box.x2 - box.x1);
@@ -466,6 +483,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_LIGHT0);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 	//glDisable(GL_BLEND);
 	glShadeModel(GL_FLAT);
 	glPopMatrix();
