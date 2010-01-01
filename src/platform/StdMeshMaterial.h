@@ -56,6 +56,20 @@ public:
 class StdMeshMaterialTextureUnit
 {
 public:
+	enum TexAddressModeType {
+		AM_Wrap,
+		AM_Clamp,
+		AM_Mirror,
+		AM_Border
+	};
+	
+	enum FilteringType {
+	  F_None,
+	  F_Point,
+	  F_Linear,
+	  F_Anisotropic
+	};
+
 	// Ref-counted texture. When a meterial inherits from one which contains
 	// a TextureUnit, then they will share the same CTexRef.
 	class TexRef
@@ -87,6 +101,10 @@ public:
 	void Load(StdMeshMaterialParserCtx& ctx);
 
 	const CTexRef& GetTexture() const { return Texture->Tex; }
+
+	TexAddressModeType TexAddressMode;
+	float TexBorderColor[4];
+	FilteringType Filtering[3]; // min, max, mipmap
 
 private:
 	TexRef* Texture;

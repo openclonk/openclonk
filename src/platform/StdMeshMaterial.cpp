@@ -25,6 +25,49 @@
 #include <glib.h>
 #endif
 
+namespace
+{
+	// String <-> Enum assocation
+	template<typename EnumType>
+	struct Enumerator
+	{
+		const char* Name;
+		EnumType Value;
+	};
+
+	// Define a name for a sequence of enums
+	template<int Num, typename EnumType>
+	struct EnumeratorShortcut
+	{
+		const char* Name;
+		EnumType Values[Num];
+	};
+
+	const Enumerator<StdMeshMaterialTextureUnit::TexAddressModeType> TexAddressModeEnumerators[] = {
+		{ "wrap", StdMeshMaterialTextureUnit::AM_Wrap },
+		{ "clamp", StdMeshMaterialTextureUnit::AM_Clamp },
+		{ "mirror", StdMeshMaterialTextureUnit::AM_Mirror },
+		{ "border", StdMeshMaterialTextureUnit::AM_Border },
+		{ NULL }
+	};
+
+	const Enumerator<StdMeshMaterialTextureUnit::FilteringType> FilteringEnumerators[] = {
+		{ "none", StdMeshMaterialTextureUnit::F_None },
+		{ "point", StdMeshMaterialTextureUnit::F_Point },
+		{ "linear", StdMeshMaterialTextureUnit::F_Linear },
+		{ "anisotropic", StdMeshMaterialTextureUnit::F_Anisotropic },
+		{ NULL }
+	};
+
+	const EnumeratorShortcut<3, StdMeshMaterialTextureUnit::FilteringType> FilteringShortcuts[] = {
+		{ "none", { StdMeshMaterialTextureUnit::F_Point, StdMeshMaterialTextureUnit::F_Point, StdMeshMaterialTextureUnit::F_None } },
+		{ "bilinear", { StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Point } },
+		{ "trilinear", { StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear } },
+		{ "anisotropic", { StdMeshMaterialTextureUnit::F_Anisotropic, StdMeshMaterialTextureUnit::F_Anisotropic, StdMeshMaterialTextureUnit::F_Linear } },
+		{ NULL }
+	};
+}
+
 StdMeshMaterialError::StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line)
 {
 	Buf.Format("%s:%u: %s", file, line, message.getData());
@@ -52,7 +95,11 @@ public:
 	Token AdvanceRequired(StdStrBuf& name, Token expect1, Token expect2);
 	float AdvanceFloat();
 	bool AdvanceFloatOptional(float& value);
+	void AdvanceColor(float Color[4]);
 	bool AdvanceBoolean();
+	template<typename EnumType> EnumType AdvanceEnum(const Enumerator<EnumType>* enumerators);
+	template<int Num, typename EnumType> void AdvanceEnums(const Enumerator<EnumType>* enumerators, EnumType enums[Num]);
+	template<int Num, typename EnumType> void AdvanceEnums(const Enumerator<EnumType>* enumerators, const EnumeratorShortcut<Num, EnumType>* shortcuts, EnumType enums[Num]);
 	void Error(const StdStrBuf& message);
 	void ErrorUnexpectedIdentifier(const StdStrBuf& identifier);
 
@@ -178,6 +225,14 @@ bool StdMeshMaterialParserCtx::AdvanceFloatOptional(float& value)
 	return false;
 }
 
+void StdMeshMaterialParserCtx::AdvanceColor(float Color[4])
+{
+	Color[0] = AdvanceFloat();
+	Color[1] = AdvanceFloat();
+	Color[2] = AdvanceFloat();
+	AdvanceFloatOptional(Color[3]);
+}
+
 bool StdMeshMaterialParserCtx::AdvanceBoolean()
 {
 	StdCopyStrBuf buf;
@@ -186,6 +241,86 @@ bool StdMeshMaterialParserCtx::AdvanceBoolean()
 	if(buf == "off") return false;
 	Error(StdCopyStrBuf("Expected either 'on' or 'off', but not '") + buf + "'");
 	return false; // Never reached
+}
+
+template<typename EnumType>
+EnumType StdMeshMaterialParserCtx::AdvanceEnum(const Enumerator<EnumType>* enumerators)
+{
+	StdCopyStrBuf buf;
+	AdvanceRequired(buf, TOKEN_IDTF);
+
+	for(const Enumerator<EnumType>* cur = enumerators; cur->Name; ++cur)
+		if(buf == cur->Name)
+			return cur->Value;
+
+	ErrorUnexpectedIdentifier(buf);
+	return EnumType(); // avoid compiler warning
+}
+
+template<int Num, typename EnumType>
+void StdMeshMaterialParserCtx::AdvanceEnums(const Enumerator<EnumType>* enumerators, EnumType enums[Num])
+{
+	for(int i = 0; i < Num; ++i)
+		enums[i] = AdvanceEnum(enumerators);
+}
+
+template<int Num, typename EnumType>
+void StdMeshMaterialParserCtx::AdvanceEnums(const Enumerator<EnumType>* enumerators, const EnumeratorShortcut<Num, EnumType>* shortcuts, EnumType enums[Num])
+{
+	StdCopyStrBuf buf;
+	AdvanceRequired(buf, TOKEN_IDTF);
+
+	const Enumerator<EnumType>* cenum;
+	const EnumeratorShortcut<Num, EnumType>* cshort;
+
+	for(cenum = enumerators; cenum->Name; ++cenum)
+		if(buf == cenum->Name)
+			break;
+	for(cshort = shortcuts; cshort->Name; ++cshort)
+		if(buf == cshort->Name)
+			break;
+
+	if(!cenum->Name && !cshort->Name)
+	{
+		ErrorUnexpectedIdentifier(buf);
+	}
+	else if(!cenum->Name && cshort->Name)
+	{
+		for(int i = 0; i < Num; ++i)
+			enums[i] = cshort->Values[i];
+	}
+	else if(cenum->Name && (!cshort->Name || Num == 1))
+	{
+		enums[0] = cenum->Value;
+		for(int i = 1; i < Num; ++i)
+			enums[i] = AdvanceEnum(enumerators);
+	}
+	else
+	{
+		// Both enumerator and shortcut are possible, determine by look-ahead
+		const Enumerator<EnumType>* cenum2 = NULL;
+		Token tok = Peek(buf);
+		if(tok == TOKEN_IDTF)
+		{
+			for(cenum2 = enumerators; cenum2->Name; ++cenum2)
+				if(buf == cenum2->Name)
+					break;
+		}
+
+		if(cenum2 && cenum2->Name)
+		{
+			// The next item is an enumerator, so load as enumerators
+			enums[0] = cenum->Value;
+			for(int i = 1; i < Num; ++i)
+				enums[i] = AdvanceEnum(enumerators);
+		}
+		else
+		{
+			// The next item is something else, so load the shortcut
+			for(int i = 0; i < Num; ++i)
+				enums[i] = cshort->Values[i];
+		}
+	}
 }
 
 void StdMeshMaterialParserCtx::Error(const StdStrBuf& message)
@@ -258,6 +393,22 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 
 			Texture = new TexRef(surface.release());
 		}
+		else if(token_name == "tex_address_mode")
+		{
+			TexAddressMode = ctx.AdvanceEnum(TexAddressModeEnumerators);
+		}
+		else if(token_name == "tex_border_colour")
+		{
+			ctx.AdvanceColor(TexBorderColor);
+		}
+		else if(token_name == "filtering")
+		{
+			ctx.AdvanceEnums(FilteringEnumerators, FilteringShortcuts, Filtering);
+			if(Filtering[0] == F_None || Filtering[1] == F_None)
+				ctx.Error(StdCopyStrBuf("'none' is only valid for the mip filter"));
+			if(Filtering[2] == F_Anisotropic)
+				ctx.Error(StdCopyStrBuf("'anisotropic' is not a valid mip filter"));
+		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
 	}
@@ -290,19 +441,11 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		}
 		else if(token_name == "ambient")
 		{
-			Ambient[0] = ctx.AdvanceFloat();
-			Ambient[1] = ctx.AdvanceFloat();
-			Ambient[2] = ctx.AdvanceFloat();
-			if(ctx.AdvanceFloatOptional(Ambient[3]))
-				Ambient[3] = Ambient[3];
+			ctx.AdvanceColor(Ambient);
 		}
 		else if(token_name == "diffuse")
 		{
-			Diffuse[0] = ctx.AdvanceFloat();
-			Diffuse[1] = ctx.AdvanceFloat();
-			Diffuse[2] = ctx.AdvanceFloat();
-			if(ctx.AdvanceFloatOptional(Diffuse[3]))
-				Diffuse[3] = Diffuse[3];
+			ctx.AdvanceColor(Diffuse);
 		}
 		else if(token_name == "specular")
 		{
@@ -326,11 +469,7 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		}
 		else if(token_name == "emissive")
 		{
-			Emissive[0] = ctx.AdvanceFloat();
-			Emissive[1] = ctx.AdvanceFloat();
-			Emissive[2] = ctx.AdvanceFloat();
-			if(ctx.AdvanceFloatOptional(Emissive[3]))
-				Emissive[3] = Emissive[3];
+			ctx.AdvanceColor(Emissive);
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
