@@ -108,9 +108,10 @@ public:
 class StdMeshVertex
 {
 public:
-	float x, y, z;
-	float nx, ny, nz;
+	// Match GL_T2F_N3F_V3F
 	float u, v;
+	float nx, ny, nz;
+	float x, y, z;
 
 	// *this = trans * *this
 	void Transform(const StdMeshMatrix& trans);
@@ -272,12 +273,14 @@ public:
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
 	const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
+	const StdMeshVertex* GetVertices() const { return &Vertices[0]; }
 	unsigned int GetNumVertices() const { return Vertices.size(); }
 
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
 	// current FaceOrdering. See also SetFaceOrdering.
-	const StdMeshFace& GetFace(unsigned int i) const { return *Faces[i]; }
+	const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
+	const StdMeshFace* GetFaces() const { return &Faces[0]; }
 	unsigned int GetNumFaces() const { return Faces.size(); }
 
 	const StdMesh& Mesh;
@@ -300,7 +303,7 @@ protected:
 	std::vector<StdMeshMatrix> BoneTransforms;
 
 	std::vector<StdMeshVertex> Vertices;
-	std::vector<const StdMeshFace*> Faces;
+	std::vector<StdMeshFace> Faces;
 };
 
 #endif

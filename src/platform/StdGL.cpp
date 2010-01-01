@@ -312,46 +312,6 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	}
 
-namespace
-{
-	void RenderMeshVertex(const StdMeshVertex& vtx, const StdMeshMaterialPass& pass, CBltTransform* pTransform, CClrModAddMap* pClrModMap, DWORD dwModClr)
-	{
-		// TODO: We might also want to modulate emissive
-		float Ambient[4];
-		float Diffuse[4];
-		float Specular[4];
-
-		float x = vtx.x;
-		float y = vtx.y;
-		pTransform->TransformPoint(x, y);
-		DWORD dwClr = pClrModMap ? pClrModMap->GetModAt(x, y) : 0xffffff;
-		ModulateClr(dwClr, dwModClr);
-
-		Ambient[0] = pass.Ambient[0] * ((dwClr >> 16) & 0xff) / 255.0f;
-		Ambient[1] = pass.Ambient[1] * ((dwClr >>  8) & 0xff) / 255.0f;
-		Ambient[2] = pass.Ambient[2] * ((dwClr      ) & 0xff) / 255.0f;
-		Ambient[3] = 1 - ((1-pass.Ambient[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
-
-		Diffuse[0] = pass.Diffuse[0] * ((dwClr >> 16) & 0xff) / 255.0f;
-		Diffuse[1] = pass.Diffuse[1] * ((dwClr >>  8) & 0xff) / 255.0f;
-		Diffuse[2] = pass.Diffuse[2] * ((dwClr      ) & 0xff) / 255.0f;
-		Diffuse[3] = 1 - ((1-pass.Diffuse[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
-
-		Specular[0] = pass.Specular[0] * ((dwClr >> 16) & 0xff) / 255.0f;
-		Specular[1] = pass.Specular[1] * ((dwClr >>  8) & 0xff) / 255.0f;
-		Specular[2] = pass.Specular[2] * ((dwClr      ) & 0xff) / 255.0f;
-		Specular[3] = 1 - ((1-pass.Specular[3]) * (1-((dwClr >> 24) & 0xff) / 255.0f));
-
-		glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
-		glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
-
-		glTexCoord2f(vtx.u, vtx.v);
-		glNormal3f(vtx.nx, vtx.ny, vtx.nz);
-		glVertex3f(vtx.x, vtx.y, vtx.z);
-	}
-}
-
 void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform)
 {
 	const StdMesh& mesh = instance.Mesh;
@@ -360,6 +320,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
+	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -434,7 +395,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	Transform.MoveScale(ZoomX, ZoomY, 1.0f, 1.0f);
 
 	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
-	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffff;
+	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
 	// Render each pass
 	for(unsigned int i = 0; i < technique.Passes.size(); ++i)
@@ -448,12 +409,30 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
 		assert(pass.TextureUnits.size() <= max_texture_units-1); // One texture is reserved for FoW/ClrModMap
 
-		// Set up material
-#if 0
-		glMaterialfv(GL_FRONT, GL_AMBIENT, pass.Ambient);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, pass.Diffuse);
-		glMaterialfv(GL_FRONT, GL_SPECULAR, pass.Specular);
-#endif
+		// Apply ClrMod to material
+		// TODO: ClrModMap is not taken into account by this; can maybe be done
+		// by a vertex shader if required.
+		float Ambient[4], Diffuse[4], Specular[4];
+		// TODO: We might also want to modulate emissive
+
+		Ambient[0] = pass.Ambient[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
+		Ambient[1] = pass.Ambient[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
+		Ambient[2] = pass.Ambient[2] * ((dwModClr      ) & 0xff) / 255.0f;
+		Ambient[3] = pass.Ambient[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+
+		Diffuse[0] = pass.Diffuse[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
+		Diffuse[1] = pass.Diffuse[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
+		Diffuse[2] = pass.Diffuse[2] * ((dwModClr      ) & 0xff) / 255.0f;
+		Diffuse[3] = pass.Diffuse[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+
+		Specular[0] = pass.Specular[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
+		Specular[1] = pass.Specular[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
+		Specular[2] = pass.Specular[2] * ((dwModClr      ) & 0xff) / 255.0f;
+		Specular[3] = pass.Specular[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+
+		glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
+		glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
+		glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
 		glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
 		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
 
@@ -461,7 +440,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 		{
 			// Note that it is guaranteed that the GL_TEXTUREn
-			// constants are continuous.
+			// constants are contiguous.
 			// GL_TEXTURE3 is reserved for FoW/ClrModMap
 			if(j < 3) glActiveTexture(GL_TEXTURE0+j);
 			else glActiveTexture(GL_TEXTURE4+j-3);
@@ -472,27 +451,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		}
 		glMatrixMode(GL_MODELVIEW);
 
-		// Render mesh
-		// TODO: Use glInterleavedArrays? Hm, might be impossible as
-		// we need to set material for each vertex. Can't use
-		// glMaterialColor either, because we set all diffuse, ambient
-		// and specular material...
-		// TODO: We might not want to calculate the material for each
-		// vertex separately. This looks odd when the mesh is moving
-		// at FoW borders anyway.
-		glBegin(GL_TRIANGLES);
-		for(unsigned int j = 0; j < instance.GetNumFaces(); ++j)
-		{
-			const StdMeshFace& face = instance.GetFace(j);
-			const StdMeshVertex& vtx1 = instance.GetVertex(face.Vertices[0]);
-			const StdMeshVertex& vtx2 = instance.GetVertex(face.Vertices[1]);
-			const StdMeshVertex& vtx3 = instance.GetVertex(face.Vertices[2]);
-
-			RenderMeshVertex(vtx1, pass, &Transform, ClrModMap, dwModClr);
-			RenderMeshVertex(vtx2, pass, &Transform, ClrModMap, dwModClr);
-			RenderMeshVertex(vtx3, pass, &Transform, ClrModMap, dwModClr);
-		}
-		glEnd(); // GL_TRIANGLES
+		// TODO: Use vbo if available.
+		glInterleavedArrays(GL_T2F_N3F_V3F, sizeof(StdMeshVertex), instance.GetVertices());
+		glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
 		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 		{
@@ -505,6 +466,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_LIGHT0);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);
+	//glDisable(GL_BLEND);
 	glShadeModel(GL_FLAT);
 	glPopMatrix();
 
