@@ -52,10 +52,11 @@ public:
 
 	virtual C4Surface* LoadTexture(const char* filename)
 	{
+		if(!Group.AccessEntry(filename)) return NULL;
 		C4Surface* surface = new C4Surface;
 		// Suppress error message here, StdMeshMaterial loader
 		// will show one.
-		if(!surface->LoadAny(Group, filename, false, true))
+		if(!surface->Read(Group, GetExtension(filename), false))
 			{ delete surface; surface = NULL; }
 		return surface;
 	}
