@@ -39,6 +39,8 @@
 #include <C4Material.h>
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
+#include <C4RankSystem.h>
+#include <C4GraphicsResource.h>
 
 //-------------------------------- C4DefGraphics -----------------------------------------------
 
