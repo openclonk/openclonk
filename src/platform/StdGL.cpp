@@ -134,6 +134,137 @@ bool CStdGL::UpdateClipper()
 	return true;
 	}
 
+bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
+{
+	// select context, if not already done
+	if (!pCurrCtx) if (!MainCtx.Select()) return false;
+
+	for(unsigned int i = 0; i < mat.Techniques.size(); ++i)
+	{
+		StdMeshMaterialTechnique& technique = mat.Techniques[i];
+		technique.Available = true;
+		for(unsigned int j = 0; j < technique.Passes.size(); ++j)
+		{
+			StdMeshMaterialPass& pass = technique.Passes[j];
+			for(unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
+			{
+				StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[k];
+				glBindTexture(GL_TEXTURE_2D, texunit.GetTexture().texName);
+				switch(texunit.TexAddressMode)
+				{
+				case StdMeshMaterialTextureUnit::AM_Wrap:
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+					break;
+				case StdMeshMaterialTextureUnit::AM_Border:
+				  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, texunit.TexBorderColor);
+					// fallthrough
+				case StdMeshMaterialTextureUnit::AM_Clamp:
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+					break;
+				case StdMeshMaterialTextureUnit::AM_Mirror:
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+					break;
+				}
+
+				if(texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Point ||
+				   texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Linear)
+				{
+					// If mipmapping is enabled, then autogenerate mipmap data.
+					// In OGRE this is deactivated for several OS/graphics card
+					// combinations because of known bugs...
+
+					// This does work for me, but requires re-upload of texture data...
+					// so the proper way would be to set this prior to the initial
+					// upload, which would be the same place where we could also use
+					// gluBuild2DMipmaps. GL_GENERATE_MIPMAP is probably still more
+					// efficient though.
+					
+					// Disabled for now, until we find a better place for this (CTexRef?)
+#if 0
+					if(GLEW_VERSION_1_4)
+{						glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<CTexRef*>(&texunit.GetTexture())->Lock(); const_cast<CTexRef*>(&texunit.GetTexture())->Unlock(); }
+					else
+						technique.Available = false;
+#else
+					// Disable mipmap for now as a workaround.
+					texunit.Filtering[2] = StdMeshMaterialTextureUnit::F_None;
+#endif
+				}
+
+				switch(texunit.Filtering[0]) // min
+				{
+				case StdMeshMaterialTextureUnit::F_None:
+					technique.Available = false;
+					break;
+				case StdMeshMaterialTextureUnit::F_Point:
+					switch(texunit.Filtering[2]) // mip
+					{
+					case StdMeshMaterialTextureUnit::F_None:
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+						break;
+					case StdMeshMaterialTextureUnit::F_Point:
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+						break;
+					case StdMeshMaterialTextureUnit::F_Linear:
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+						break;
+					case StdMeshMaterialTextureUnit::F_Anisotropic:
+						technique.Available = false; // invalid
+						break;
+					}
+					break;
+				case StdMeshMaterialTextureUnit::F_Linear:
+					switch(texunit.Filtering[2]) // mip
+					{
+					case StdMeshMaterialTextureUnit::F_None:
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+						break;
+					case StdMeshMaterialTextureUnit::F_Point:
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+						break;
+					case StdMeshMaterialTextureUnit::F_Linear:
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+						break;
+					case StdMeshMaterialTextureUnit::F_Anisotropic:
+						technique.Available = false; // invalid
+						break;
+					}
+					break;
+				case StdMeshMaterialTextureUnit::F_Anisotropic:
+					// unsupported
+					technique.Available = false;
+					break;
+				}
+
+				switch(texunit.Filtering[1]) // max
+				{
+				case StdMeshMaterialTextureUnit::F_None:
+					technique.Available = false; // invalid
+					break;
+				case StdMeshMaterialTextureUnit::F_Point:
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+					break;
+				case StdMeshMaterialTextureUnit::F_Linear:
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+					break;
+				case StdMeshMaterialTextureUnit::F_Anisotropic:
+					// unsupported
+					technique.Available = false;
+					break;
+				}
+			}
+		}
+
+		if(technique.Available && mat.BestTechniqueIndex == -1)
+			mat.BestTechniqueIndex = i;
+	}
+
+	return mat.BestTechniqueIndex != -1;
+}
+
 bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
 {
 	// call from gfx thread only!
@@ -188,7 +319,7 @@ void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, fMod2 ? GL_ADD_SIGNED : GL_MODULATE);
 		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, fMod2 ? 2.0f : 1.0f);
-		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE); // TODO: This was GL_ADD. Is GL_MODULATE correct for inverted alpha? Others seem to break things... - ModulateClrA was changed to do a+b-1, but there is no GL_-constant for this...
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_ALPHA, GL_MODULATE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB, GL_TEXTURE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB, GL_PRIMARY_COLOR);
 		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_ALPHA, GL_TEXTURE);
@@ -393,10 +524,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
 
-	// TODO: Find a working technique, we currently always use the
-	// first one:
 	const StdMeshMaterial& material = mesh.GetMaterial();
-	const StdMeshMaterialTechnique& technique = material.Techniques[0];
+	assert(material.BestTechniqueIndex != -1);
+	const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
 
 	// Create a transformation which transfers a vertex from mesh
 	// coordinates to screen coordinates. This is basically the same
@@ -406,7 +536,6 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	Transform.SetMoveScale(dx, dy, scx, scy);
 	if(pTransform) Transform *= *pTransform;
 
-	// TODO: Is the following correct?
 	Transform.MoveScale(-ZoomX, -ZoomY, 1.0f, 1.0f);
 	Transform.MoveScale(0.0f, 0.0f, Zoom, Zoom);
 	Transform.MoveScale(ZoomX, ZoomY, 1.0f, 1.0f);

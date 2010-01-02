@@ -17,6 +17,7 @@
  */
 
 #include <StdMeshMaterial.h>
+#include <StdDDraw2.h>
 
 #include <cctype>
 #include <memory>
@@ -346,15 +347,22 @@ StdMeshMaterialTextureUnit::TexRef::~TexRef()
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
-	Texture(NULL)
+	Texture(NULL), TexAddressMode(AM_Wrap)
 {
+	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0; TexBorderColor[3] = 1.0;
+	Filtering[0] = Filtering[1] = F_Linear; Filtering[2] = F_Point;
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
-	Texture(other.Texture)
+	Texture(other.Texture), TexAddressMode(other.TexAddressMode)
 {
 	if(Texture)
 		++Texture->RefCount;
+
+	for(unsigned int i = 0; i < 4; ++i)
+		TexBorderColor[i] = other.TexBorderColor[i];
+	for(unsigned int i = 0; i < 3; ++i)
+		Filtering[i] = other.Filtering[i];
 }
 
 StdMeshMaterialTextureUnit::~StdMeshMaterialTextureUnit()
@@ -369,6 +377,11 @@ StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshM
 	if(Texture) if(!--Texture->RefCount) delete Texture;
 	Texture = other.Texture;
 	if(Texture) ++Texture->RefCount;
+	TexAddressMode = other.TexAddressMode;
+	for(unsigned int i = 0; i < 4; ++i)
+		TexBorderColor[i] = other.TexBorderColor[i];
+	for(unsigned int i = 0; i < 3; ++i)
+		Filtering[i] = other.Filtering[i];	
 	return *this;
 }
 
@@ -479,6 +492,11 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
+StdMeshMaterialTechnique::StdMeshMaterialTechnique():
+	Available(false)
+{
+}
+
 void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
@@ -501,7 +519,7 @@ void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 }
 
 StdMeshMaterial::StdMeshMaterial():
-	Line(0), ReceiveShadows(true)
+	Line(0), ReceiveShadows(true), BestTechniqueIndex(-1)
 {
 }
 
@@ -576,13 +594,19 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 
 			// Copy properties from parent if one is given, otherwise
 			// default-construct the material.
-			StdMeshMaterial& mat = Materials.insert(std::make_pair(material_name, parent ? StdMeshMaterial(*parent) : StdMeshMaterial())).first->second;
+			StdMeshMaterial mat = parent ? StdMeshMaterial(*parent) : StdMeshMaterial();
 			// Set/Overwrite source and name
 			mat.Name = material_name;
 			mat.FileName = ctx.FileName;
 			mat.Line = ctx.Line;
 
 			mat.Load(ctx);
+			
+			// To Gfxspecific setup of the material; choose working techniques
+			if(lpDDraw->PrepareMaterial(mat) && mat.BestTechniqueIndex != -1)
+				Materials[material_name] = mat;
+			else
+				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);

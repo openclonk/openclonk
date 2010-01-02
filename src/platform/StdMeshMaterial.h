@@ -128,9 +128,15 @@ public:
 class StdMeshMaterialTechnique
 {
 public:
+	StdMeshMaterialTechnique();
+
 	void Load(StdMeshMaterialParserCtx& ctx);
 
 	std::vector<StdMeshMaterialPass> Passes;
+	
+	// Filled in by gfx implementation: Whether this technique is available on
+	// the hardware and gfx engine (DX/GL) we are running on
+	bool Available;
 };
 
 class StdMeshMaterial
@@ -152,6 +158,9 @@ public:
 
 	// Available techniques
 	std::vector<StdMeshMaterialTechnique> Techniques;
+	
+	// Filled in by gfx implementation: Best technique to use
+	int BestTechniqueIndex; // Don't use a pointer into the Technique vector to save us from implementing a copyctor
 };
 
 class StdMeshMatManager

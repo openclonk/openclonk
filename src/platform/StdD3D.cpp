@@ -164,6 +164,13 @@ bool CStdD3D::UpdateClipper()
 	return true;
 	}
 
+
+bool CStdD3D::PrepareMaterial(StdMeshMaterial &mat)
+{
+	// TODO
+	return false;
+}
+
 bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 	{
 	// call from gfx thread only!

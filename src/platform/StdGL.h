@@ -104,6 +104,7 @@ class CStdGL : public CStdDDraw
 		virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 		// Clipper
 		bool UpdateClipper(); // set current clipper to render target
+		bool PrepareMaterial(StdMeshMaterial& mat);
 		// Surface
 		bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
 		CStdGLCtx &GetMainCtx() { return MainCtx; }
