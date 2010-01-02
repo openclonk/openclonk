@@ -27,6 +27,8 @@
 #include "C4Log.h"
 #include "C4GraphicsResource.h"
 #include "C4MouseControl.h"
+#include "C4GraphicsSystem.h"
+#include "C4Viewport.h"
 
 #include <algorithm>
 
