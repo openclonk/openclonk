@@ -23,10 +23,6 @@
 #ifndef INC_C4SurfaceFile
 #define INC_C4SurfaceFile
 
-class CStdStream;
-class C4Surface;
-class CSurface8;
-
 C4Surface *GroupReadSurface(CStdStream &hGroup, BYTE *bpPalette=NULL);
 CSurface8 *GroupReadSurface8(CStdStream &hGroup);
 C4Surface *GroupReadSurfaceOwnPal(CStdStream &hGroup);

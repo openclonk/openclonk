@@ -23,11 +23,6 @@
 
 #include <vector>
 
-class C4Group;
-class C4GroupSet;
-class C4Config;
-class CStdFont;
-class CStdVectorFont;
 
 // font definition to be read
 class C4FontDef

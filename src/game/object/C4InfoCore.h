@@ -22,14 +22,10 @@
 #ifndef INC_C4InfoCore
 #define INC_C4InfoCore
 
-#include <vector>
 #include <C4Id.h>
 #include <C4ValueMap.h>
 #include <Fixed.h>
 #include "C4InputValidation.h"
-
-class C4Group;
-class C4RankSystem;
 
 const int32_t C4MaxPhysical = 100000,
 			C4MaxDeathMsg = 75;

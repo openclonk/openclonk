@@ -26,6 +26,7 @@
 #include <C4Components.h>
 #include <C4Log.h>
 #include <C4Surface.h>
+#include <StdFont.h>
 
 #include <StdFont.h>
 #include <stdexcept>

@@ -41,13 +41,6 @@
 #include "C4InputValidation.h"
 #include "C4Id.h"
 
-class C4FacetSurface;
-
-// class predefs
-class C4PlayerInfo;
-class C4ClientPlayerInfos;
-class C4PlayerInfoList;
-
 // information about one player at a client
 class C4PlayerInfo
 	{

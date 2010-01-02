@@ -23,7 +23,6 @@
 
 #include <StdAdaptors.h>
 #include <StdSync.h>
-#include <C4Group.h>
 
 #include <openssl/sha.h>
 
