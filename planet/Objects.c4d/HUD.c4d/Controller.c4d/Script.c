@@ -90,7 +90,7 @@ protected func OnClonkDeRecruitment(object clonk, int plr)
 protected func OnClonkDeath(object clonk, int killer)
 {
 	if(clonk->GetController() != GetOwner()) return;
-	if(!(clonk->HUDAdapter())) return;
+	if(!(clonk->~HUDAdapter())) return;
 	
 	OnCrewDisabled(clonk);
 }
@@ -99,7 +99,7 @@ public func OnCrewDisabled(object clonk)
 {
 	// notify the hud and reorder
 	clonk->GetSelector()->CrewGone();
-	ReorderCrewSelectors();
+	ReorderCrewSelectors(clonk);
 }
 
 public func OnCrewEnabled(object clonk)
@@ -288,7 +288,7 @@ private func CreateSelectorFor(object clonk)
 		return selector;
 }
 
-public func ReorderCrewSelectors()
+public func ReorderCrewSelectors(object leaveout)
 {
 	// somehow new crew gets sorted at the beginning
 	// because we dont want that, the for loop starts from the end
@@ -297,6 +297,7 @@ public func ReorderCrewSelectors()
 	{
 		var spacing = 12;
 		var crew = GetCrew(GetOwner(),i);
+		if(crew == leaveout) continue;
 		var sel = crew->GetSelector();
 		if(sel)
 		{
