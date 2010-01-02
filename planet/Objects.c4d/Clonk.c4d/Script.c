@@ -1090,6 +1090,21 @@ private func SetMagicAction(id idForSpell) {}
 private func SetCastAction() {}
 private func EndMagicAction() {}
 
+// Test to synchronize the walkanimation with the movement
+local OldPos;
+
+func WalkTest()
+{
+	if (OldPos)
+	{
+		var Dist = Distance(GetX(), GetY(), OldPos[0], OldPos[1]);
+		OldPos = [GetX(), GetY()];
+		if(Dist)
+			SetPhase( (GetPhase()+Dist*250/16) % 250);
+	}
+	OldPos = [GetX(), GetY()];
+}
+
 func Definition(def) {
   SetProperty("ActMap", {
 Walk = {
@@ -1098,8 +1113,8 @@ Name = "Walk",
 Procedure = DFA_WALK,
 Directions = 2,
 FlipDir = 1,
-Length = 24,
-Delay = 5,
+Length = 250,
+Delay = 1,
 X = 0,
 Y = 0,
 Wdt = 8,
@@ -1107,6 +1122,7 @@ OffX = 4,
 Hgt = 20,
 NextAction = "Walk",               
 Animation = "Walk",
+PhaseCall = "WalkTest",							 
 InLiquidAction = "Swim",
 },
 WalkTest = {
