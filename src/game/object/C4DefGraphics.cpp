@@ -176,7 +176,7 @@ bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 	}
 	catch(const StdMeshError& ex)
 	{
-		DebugLogF("Failed to load mesh: %s\n", ex.what());
+		DebugLogF("Failed to load mesh: %s", ex.what());
 		result = false;
 	}
 
@@ -211,7 +211,7 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 			}
 			catch(const StdMeshMaterialError& ex)
 			{
-				DebugLogF("Failed to read material script: %s\n", ex.what());
+				DebugLogF("Failed to read material script: %s", ex.what());
 			}
 		}
 	}
