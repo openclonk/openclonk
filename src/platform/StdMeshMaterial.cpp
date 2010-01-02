@@ -416,7 +416,7 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 		}
 		else if(token_name == "filtering")
 		{
-			ctx.AdvanceEnums(FilteringEnumerators, FilteringShortcuts, Filtering);
+			ctx.AdvanceEnums<3, StdMeshMaterialTextureUnit::FilteringType>(FilteringEnumerators, FilteringShortcuts, Filtering);
 			if(Filtering[0] == F_None || Filtering[1] == F_None)
 				ctx.Error(StdCopyStrBuf("'none' is only valid for the mip filter"));
 			if(Filtering[2] == F_Anisotropic)
