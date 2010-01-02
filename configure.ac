@@ -41,7 +41,7 @@ case $host in
     win32=true; osx=false;;
   *-*-darwin*)
     win32=false; osx=true;
-    AC_PROG_OBJCXX
+    m4_ifdef([AC_PROG_OBJCXX], [AC_PROG_OBJCXX], [AC_MSG_ERROR([this configure script was created with an autoconf version older than 2.65 and does not support macosx.])])
     ;;
   *)
     win32=false; osx=false;;
