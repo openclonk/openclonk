@@ -31,6 +31,8 @@
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4786) // long symbol names
+#pragma warning(disable: 4706)
+#pragma warning(disable: 4239)
 #endif
 
 // debug memory management
@@ -79,10 +81,9 @@ typedef __int32 intptr_t;
 #else
 #error Could not find integer datatypes!
 #endif
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#else
-typedef ptrdiff_t ssize_t;
 #endif
 
 #if defined(__GNUC__)
@@ -166,6 +167,18 @@ inline int stricmp(const char *s1, const char *s2) {
 #define RGB(r,g,b) ((DWORD)((BYTE)(r)|((BYTE)(g) << 8)|((BYTE)(b) << 16)))
 #define ZeroMemory(d,l) memset((d), 0, (l))
 #endif //_WIN32
+
+
+#ifdef _WIN32
+	#define C4_OS "win32"
+#elif defined(__linux__)
+	#define C4_OS "linux"
+#elif defined(__APPLE__)
+	#define C4_OS "mac"
+#else
+	#define C4_OS "unknown";
+#endif
+
 
 // These functions have to be provided by the application.
 bool Log(const char *szMessage);
@@ -336,11 +349,6 @@ template <typename T>
 // open a weblink in an external browser
 bool OpenURL(const char *szURL);
 
-class StdCompiler;
-
-#include <cstdlib>
-#include <cassert>
-#include <cmath>
 
 #endif // INC_STANDARD
 

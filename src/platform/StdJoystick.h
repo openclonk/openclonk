@@ -22,7 +22,6 @@
 #ifndef INC_StdJoystick
 #define INC_StdJoystick
 
-#include "C4Include.h"
 #include <Standard.h>
 #include <windows.h>
 #include <mmsystem.h>

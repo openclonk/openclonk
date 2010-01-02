@@ -24,31 +24,14 @@
 #ifndef INC_C4Include
 #define INC_C4Include
 
-#include <Standard.h>
-#include <StdBuf.h>
-#include <StdFile.h>
-#include <StdResStr2.h>
-#include <C4Prototypes.h>
+#include "Standard.h"
+#include "Fixed.h"
+#include "StdBuf.h"
+#include "StdFile.h"
+#include "StdResStr2.h"
+#include "C4Prototypes.h"
 
-#ifdef _MSC_VER
-#pragma warning(disable: 4786)
-#pragma warning(disable: 4706)
-#pragma warning(disable: 4239)
-#endif
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif //HAVE_CONFIG_H
-
-#ifdef _WIN32
-	#define C4_OS "win32"
-#elif defined(__linux__)
-	#define C4_OS "linux"
-#elif defined(__APPLE__)
-	#define C4_OS "mac"
-#else
-	#define C4_OS "unknown";
-#endif
+#include "C4PlayerControl.h"
 
 #ifdef DEBUGREC
 #define DEBUGREC_SCRIPT
@@ -64,16 +47,28 @@
 // solidmask debugging
 //#define SOLIDMASK_DEBUG
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#define NOMINMAX
-#include <windows.h>
-#include <mmsystem.h>
-#endif
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#include <assert.h>
-#include "C4PlayerControl.h"
+#include <algorithm>
+#include <cassert>
+#include <cctype>
+#include <cerrno>
+#include <climits>
+#include <cmath>
+#include <cstdarg>
+#include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <iostream>
+#include <list>
+#include <map>
+#include <memory>
+#include <new>
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
 
 #endif // INC_C4Include
