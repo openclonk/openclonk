@@ -2160,23 +2160,17 @@ static bool FnSound(C4AulContext *cthr, C4String *szSound, bool fGlobal, Nillabl
 
 static bool FnMusic(C4AulContext *cthr, C4String *szSongname, bool fLoop)
 	{
-	// FIXME: Script should not influence the user's configuration
+	bool success;
 	if (!szSongname)
 		{
-		Config.Sound.RXMusic=false;
-		Application.MusicSystem.Stop();
+		success = Application.MusicSystem.Stop();
 		}
 	else
 		{
-		Config.Sound.RXMusic=true;
-		Application.MusicSystem.Stop();
-		if (!Application.MusicSystem.Play(FnStringPar(szSongname), !!fLoop))
-			{
-			Config.Sound.RXMusic=false;
-			return true;
-			}
+		success = Application.MusicSystem.Play(FnStringPar(szSongname), !!fLoop);
 		}
-	return true;
+	if(::Control.SyncMode()) return true;
+	return success;
   }
 
 static long FnMusicLevel(C4AulContext *cthr, long iLevel)

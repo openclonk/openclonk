@@ -365,15 +365,17 @@ void C4MusicSystem::Execute()
 #ifndef HAVE_LIBSDL_MIXER
 	if (!::Game.iTick35)
 #endif
-		if (Game.IsRunning ? Config.Sound.RXMusic : Config.Sound.FEMusic)
-			if (!PlayMusicFile)
-				Play();
-			else
-				PlayMusicFile->CheckIfPlaying();
+		if (!PlayMusicFile)
+			Play();
+		else
+			PlayMusicFile->CheckIfPlaying();
 	}
 
 bool C4MusicSystem::Play(const char *szSongname, bool fLoop)
 	{
+	if (Game.IsRunning ? !Config.Sound.RXMusic : !Config.Sound.FEMusic)
+		return false;
+
 	C4MusicFile* NewFile = NULL;
 
 	// Specified song name
@@ -508,8 +510,6 @@ bool C4MusicSystem::GrpContainsMusic(C4Group &rGrp)
 
 int C4MusicSystem::SetPlayList(const char *szPlayList)
 	{
-	// copy
-	if(!szPlayList) szPlayList = "";
 	// reset
 	C4MusicFile *pFile;
 	for(pFile = Songs; pFile; pFile = pFile->pNext)
@@ -519,7 +519,7 @@ int C4MusicSystem::SetPlayList(const char *szPlayList)
 		}
 	ASongCount = 0;
 	SCounter = 0;
-	if(*szPlayList)
+	if(szPlayList && *szPlayList)
 		{
 		// match
 		char szFileName[_MAX_FNAME + 1];

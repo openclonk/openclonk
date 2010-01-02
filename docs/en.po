@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-05 17:53+0200\n"
-"PO-Revision-Date: 2009-09-05 17:49+0200\n"
+"POT-Creation-Date: 2010-01-02 17:24+0100\n"
+"PO-Revision-Date: 2010-01-02 17:23+0100\n"
 "Last-Translator: Günther <gbrammer@gmx.de>\n"
 "Language-Team: English\n"
 "MIME-Version: 1.0\n"
@@ -63,17 +63,22 @@ msgstr "Operator"
 #: sdk/script/fn/AddCommand.xml:66(col)
 #: sdk/scenario/scenario.xml:23(col)
 #: sdk/scenario/scenario.xml:82(col)
-#: sdk/scenario/scenario.xml:151(col)
-#: sdk/scenario/scenario.xml:210(col)
-#: sdk/scenario/scenario.xml:364(col)
-#: sdk/scenario/scenario.xml:383(col)
-#: sdk/scenario/scenario.xml:432(col)
-#: sdk/scenario/scenario.xml:456(col)
-#: sdk/scenario/scenario.xml:470(col)
+#: sdk/scenario/scenario.xml:121(col)
+#: sdk/scenario/scenario.xml:180(col)
+#: sdk/scenario/scenario.xml:334(col)
+#: sdk/scenario/scenario.xml:353(col)
+#: sdk/scenario/scenario.xml:402(col)
+#: sdk/scenario/scenario.xml:426(col)
+#: sdk/scenario/scenario.xml:440(col)
 #: sdk/scenario/basefunc.xml:10(col)
 #: sdk/scenario/Teams.xml:15(col)
 #: sdk/scenario/Teams.xml:73(col)
 #: sdk/scenario/MapCreatorS2.xml:35(col)
+#: sdk/playercontrols.xml:21(col)
+#: sdk/playercontrols.xml:75(col)
+#: sdk/playercontrols.xml:111(col)
+#: sdk/playercontrols.xml:124(col)
+#: sdk/playercontrols.xml:153(col)
 #: sdk/particle/index.xml:32(col)
 #: sdk/material/c4m.xml:16(col)
 #: sdk/material/c4m.xml:231(col)
@@ -970,6 +975,7 @@ msgstr "Using these operators you can put together masks (1 &lt;&lt; bit-no.) an
 #: sdk/script/fn/eval.xml:7(category)
 #: sdk/script/fn/_inherited.xml:7(category)
 #: sdk/script/fn/WildcardMatch.xml:7(category)
+#: sdk/script/fn/Translate.xml:7(category)
 #: sdk/script/fn/SetLength.xml:7(category)
 #: sdk/script/fn/ScriptGo.xml:7(category)
 #: sdk/script/fn/ScriptCounter.xml:7(category)
@@ -986,7 +992,7 @@ msgstr "Using these operators you can put together masks (1 &lt;&lt; bit-no.) an
 #: sdk/script/fn/DefinitionCall.xml:7(category)
 #: sdk/script/fn/CreateArray.xml:7(category)
 #: sdk/script/fn/ClearScheduleCall.xml:7(category)
-#: sdk/script/fn/Call.xml:8(category)
+#: sdk/script/fn/Call.xml:7(category)
 #: sdk/script/fn/C4Id.xml:7(category)
 #: sdk/material/c4m.xml:294(col)
 msgid "Script"
@@ -1360,7 +1366,6 @@ msgstr "Removes all objects."
 #: sdk/script/fn/GetColor.xml:7(category)
 #: sdk/script/fn/GetClrModulation.xml:7(category)
 #: sdk/script/fn/GetCategory.xml:7(category)
-#: sdk/script/fn/GetCaptain.xml:7(category)
 #: sdk/script/fn/GetBreath.xml:7(category)
 #: sdk/script/fn/GetAlive.xml:7(category)
 #: sdk/script/fn/GetActionTarget.xml:7(category)
@@ -1425,6 +1430,7 @@ msgstr "Removes all objects."
 #: sdk/script/fn/CheckEnergyNeedChain.xml:7(category)
 #: sdk/script/fn/ChangeDef.xml:7(category)
 #: sdk/script/fn/CastObjects.xml:7(category)
+#: sdk/script/fn/CanConcatPictureWith.xml:7(category)
 #: sdk/script/fn/COMD_UpRight.xml:7(category)
 #: sdk/script/fn/COMD_UpLeft.xml:7(category)
 #: sdk/script/fn/COMD_Up.xml:7(category)
@@ -1552,6 +1558,7 @@ msgid "Gibt jedem Clonk zu Beginn einen Feuerstein."
 msgstr "Gives a flintstone to each clonk."
 
 #: sdk/script/fn/WildcardMatch.xml:7(subcat)
+#: sdk/script/fn/Translate.xml:7(subcat)
 #: sdk/script/fn/SetLength.xml:7(subcat)
 #: sdk/script/fn/GetLength.xml:7(subcat)
 #: sdk/script/fn/GetChar.xml:7(subcat)
@@ -1832,7 +1839,6 @@ msgstr "Makes all objects visible."
 #: sdk/script/fn/GetCrewCount.xml:8(subcat)
 #: sdk/script/fn/GetCrew.xml:8(subcat)
 #: sdk/script/fn/GetController.xml:8(subcat)
-#: sdk/script/fn/GetCaptain.xml:7(subcat)
 #: sdk/script/fn/DoCrewExp.xml:8(subcat)
 msgid "Mannschaft"
 msgstr "Crew"
@@ -1848,6 +1854,19 @@ msgstr "Deselects the complete crew of a player. After this command you should r
 #: sdk/script/fn/UnselectCrew.xml:21(text)
 msgid "Wählt nur den höchstrangigen Clonk des ersten Spielers an. Siehe dazu auch <placeholder-1/>."
 msgstr "Selects only the highest ranking clonk of the first player. See also <placeholder-1/>."
+
+#: sdk/script/fn/Translate.xml:12(desc)
+#, fuzzy
+msgid "Zeichenkette, die übersetzt werden soll"
+msgstr "String into which to insert values."
+
+#: sdk/script/fn/Translate.xml:15(desc)
+msgid "Schlägt einen Text in der <emlink href=\"lang.html\">StringTbl??.txt</emlink> des aufrufenden Skripts nach, und gibt die Übersetzung zurück."
+msgstr ""
+
+#: sdk/script/fn/Translate.xml:21(text)
+msgid "Gibt \"Ich benötige ein besseres Beispiel\" auf dem Bildschirm aus."
+msgstr ""
 
 #: sdk/script/fn/TrainPhysical.xml:7(subcat)
 #: sdk/script/fn/Stuck.xml:7(subcat)
@@ -2644,7 +2663,6 @@ msgstr "Blowing clonk"
 #: sdk/script/fn/GetHomebaseMaterial.xml:7(category)
 #: sdk/script/fn/GetHiRank.xml:12(desc)
 #: sdk/script/fn/GetCrewExtraData.xml:7(category)
-#: sdk/script/fn/GetCaptain.xml:12(desc)
 #: sdk/script/fn/GetBase.xml:7(category)
 #: sdk/script/fn/EliminatePlayer.xml:7(category)
 #: sdk/script/fn/DoWealth.xml:7(category)
@@ -2763,16 +2781,21 @@ msgstr "Index of the vertex to be changed."
 #: sdk/script/fn/CreateMenu.xml:28(col)
 #: sdk/scenario/scenario.xml:21(col)
 #: sdk/scenario/scenario.xml:80(col)
-#: sdk/scenario/scenario.xml:149(col)
-#: sdk/scenario/scenario.xml:208(col)
-#: sdk/scenario/scenario.xml:362(col)
-#: sdk/scenario/scenario.xml:381(col)
-#: sdk/scenario/scenario.xml:430(col)
-#: sdk/scenario/scenario.xml:454(col)
-#: sdk/scenario/scenario.xml:468(col)
+#: sdk/scenario/scenario.xml:119(col)
+#: sdk/scenario/scenario.xml:178(col)
+#: sdk/scenario/scenario.xml:332(col)
+#: sdk/scenario/scenario.xml:351(col)
+#: sdk/scenario/scenario.xml:400(col)
+#: sdk/scenario/scenario.xml:424(col)
+#: sdk/scenario/scenario.xml:438(col)
 #: sdk/scenario/basefunc.xml:10(col)
 #: sdk/scenario/Teams.xml:13(col)
 #: sdk/scenario/Teams.xml:71(col)
+#: sdk/playercontrols.xml:19(col)
+#: sdk/playercontrols.xml:74(col)
+#: sdk/playercontrols.xml:109(col)
+#: sdk/playercontrols.xml:122(col)
+#: sdk/playercontrols.xml:152(col)
 #: sdk/particle/index.xml:32(col)
 #: sdk/material/c4m.xml:14(col)
 #: sdk/material/c4m.xml:229(col)
@@ -3235,7 +3258,7 @@ msgstr "Sets the property <code>key</code> of <code>object</code> to <code>value
 #: sdk/script/fn/Enter.xml:7(subcat)
 #: sdk/script/fn/AbsY.xml:8(subcat)
 #: sdk/script/fn/AbsX.xml:8(subcat)
-#: sdk/scenario/scenario.xml:159(col)
+#: sdk/scenario/scenario.xml:129(col)
 msgid "Position"
 msgstr "Position"
 
@@ -4132,6 +4155,7 @@ msgstr "Makes the first two players enemies without causing a message."
 #: sdk/script/fn/GetGravity.xml:7(category)
 #: sdk/script/fn/GameOver.xml:7(category)
 #: sdk/script/fn/FrameCounter.xml:7(category)
+#: sdk/playercontrols.xml:39(col)
 msgid "Global"
 msgstr "Global"
 
@@ -4412,7 +4436,8 @@ msgid "Wenn ungleich 0, wird bei der Anwahl kein Auswahlpfeil angezeigt. Ab CE."
 msgstr "If not 0, no cursor arrow is drawn when the object is selected."
 
 #: sdk/script/fn/SetCursor.xml:18(desc)
-msgid "Setzt die Auswahlmarkierung eines Spielers auf ein Zielobjekt und aktiviert dieses für die Steuerung."
+#, fuzzy
+msgid "Setzt die Auswahlmarkierung eines Spielers auf ein Zielobjekt und aktiviert dieses für die Steuerung. Gibt false zurück falls das Zielobjekt momentan durch <placeholder-1/> deaktiviert ist."
 msgstr "Sets the control cursor of a player to the specified object and selects this object for player control."
 
 #: sdk/script/fn/SetCrewStatus.xml:13(desc)
@@ -4947,6 +4972,7 @@ msgid "Zur Zielposition bewegen. iData true um die Koordinaten nicht an die Land
 msgstr "Move to the target position. Set iData to true to avoid automatic adjustment of the target coordinates to landscape surface."
 
 #: sdk/script/fn/SetCommand.xml:97(col)
+#: sdk/playercontrols.xml:78(col)
 msgid "None"
 msgstr "None"
 
@@ -5097,8 +5123,9 @@ msgid "Färbt die nach dem Besitzer gefärbten Flächen des ausgewählten Clonk 
 msgstr "Colors the owner areas of the currently selected clonk of the first player white and half transparent."
 
 #: sdk/script/fn/SetClrModulation.xml:12(desc)
-msgid "Neue Farbe, mit der moduliert wird. Wenn 0 angegeben wird, wird die Modulation deaktiviert. Für eine völlige Schwarzfärbung sollte also ein knapp darüber liegender Wert wie <placeholder-1/>(0,0,1); verwendet werden."
-msgstr "New color which is used for color modulation. If 0, modulation is deactivated. To create a 'black' color, use a value slightly higher than 0 such as <placeholder-1/>(0,0,1)."
+#, fuzzy
+msgid "Neue Farbe, mit der moduliert wird."
+msgstr "Color value to be added."
 
 #: sdk/script/fn/SetClrModulation.xml:13(desc)
 msgid "Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <placeholder-1/> erstellt worden sein. Ab CR."
@@ -5739,7 +5766,7 @@ msgstr "Punches the target object."
 #: sdk/script/fn/ObjectCall.xml:8(subcat)
 #: sdk/script/fn/GameCall.xml:7(subcat)
 #: sdk/script/fn/DefinitionCall.xml:7(subcat)
-#: sdk/script/fn/Call.xml:8(subcat)
+#: sdk/script/fn/Call.xml:7(subcat)
 msgid "Funktionsaufruf"
 msgstr "Function call"
 
@@ -5752,14 +5779,14 @@ msgstr "Object in which to call the function."
 #: sdk/script/fn/ProtectedCall.xml:13(desc)
 #: sdk/script/fn/PrivateCall.xml:13(desc)
 #: sdk/script/fn/ObjectCall.xml:14(desc)
-#: sdk/script/fn/Call.xml:13(desc)
+#: sdk/script/fn/Call.xml:12(desc)
 msgid "Funktion, die aufgerufen werden soll."
 msgstr "Function to be called."
 
 #: sdk/script/fn/ProtectedCall.xml:14(desc)
 #: sdk/script/fn/PrivateCall.xml:14(desc)
 #: sdk/script/fn/ObjectCall.xml:15(desc)
-#: sdk/script/fn/Call.xml:14(desc)
+#: sdk/script/fn/Call.xml:13(desc)
 msgid "Parameter der Funktion."
 msgstr "Parameters of the function."
 
@@ -6362,16 +6389,16 @@ msgid "Script eines Musik-Fadeout-Objekts. Die Musiklautstärke wird in der Funk
 msgstr "Script for an object which will fade out background music: the \"Timer\" function will decrease the volume step by step until it is 0. Then the music will be turned off and the helper object deleted."
 
 #: sdk/script/fn/Music.xml:14(desc)
-msgid "Dateiame des Musikstückes. Die Endung muss mit angegeben werden. Wird der Parameter weggelassen oder 0 übergeben, so wird die Musikwiedergabe deaktiviert (auch wenn sie in den Optionen aktiviert wurde)"
-msgstr "Filename of the music track. The file extension must be specified. If unspecified or 0, music playback will be deactivated (even it was activated in the options)."
+msgid "Dateiame des Musikstückes. Die Endung muss mit angegeben werden. Wird der Parameter weggelassen oder 0 übergeben, so wird die Musikwiedergabe unterbrochen."
+msgstr "Filename of the music track. The file extension must be specified. If unspecified or 0, music playback will be interrupted."
 
 #: sdk/script/fn/Music.xml:15(desc)
 msgid "Wenn 1, wird das angegebene Musikstück andauernd abgespielt."
 msgstr "If 1, the specified track will be looped forever."
 
 #: sdk/script/fn/Music.xml:18(desc)
-msgid "Spielt ein Musikstück ab. Die entsprechende Datei muss in einer der aktiven Musikdateien vorhanden sein. Sind im ausgewählten Szenario Musikdateien vorhanden, gilt die Szenariodatei als aktive Musikdatei, andernfalls wird die globale Musikdatei Music.c4g genutzt. Bei erfolgreichem Aufruf dieser Funktion wird die Musikwiedergabe aktiviert, auch wenn sie in den Optionen des Menüsystems deaktiviert wurde."
-msgstr "Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.c4g will be used. A successful call to this function will activate music playback, even if it was turned off in the options."
+msgid "Spielt ein Musikstück ab. Die entsprechende Datei muss in einer der aktiven Musikdateien vorhanden sein. Sind im ausgewählten Szenario Musikdateien vorhanden, gilt die Szenariodatei als aktive Musikdatei, andernfalls wird die globale Musikdatei Music.c4g genutzt."
+msgstr "Plays a music track. The corresponding music file must be available in the active music group. If the loaded scenario contains music files, the scenario file will be the music group. Otherwise, the global file Music.c4g will be used."
 
 #: sdk/script/fn/Min.xml:15(desc)
 #: sdk/script/fn/Max.xml:15(desc)
@@ -6426,8 +6453,8 @@ msgstr "Returns the greater of two values."
 #: sdk/script/fn/GBackLiquid.xml:8(subcat)
 #: sdk/script/fn/ExtractMaterialAmount.xml:8(subcat)
 #: sdk/script/fn/ExtractLiquid.xml:8(subcat)
-#: sdk/scenario/scenario.xml:179(col)
-#: sdk/scenario/scenario.xml:303(col)
+#: sdk/scenario/scenario.xml:149(col)
+#: sdk/scenario/scenario.xml:273(col)
 #: sdk/scenario/MapCreatorS2.xml:39(col)
 msgid "Material"
 msgstr "Material"
@@ -7861,6 +7888,7 @@ msgstr "Effect number"
 #: sdk/script/fn/GetEffect.xml:51(col)
 #: sdk/script/fn/AddCommand.xml:66(col)
 #: sdk/scenario/Teams.xml:83(col)
+#: sdk/playercontrols.xml:114(col)
 #: sdk/particle/index.xml:35(col)
 #: sdk/material/c4m.xml:19(col)
 #: sdk/material/c4m.xml:286(col)
@@ -8035,7 +8063,8 @@ msgid "Index des Clonks in der Crew"
 msgstr "Crew index of the clonk."
 
 #: sdk/script/fn/GetCrew.xml:17(desc)
-msgid "Gibt ein Mannschaftsmitglied eines Spielers zurück."
+#, fuzzy
+msgid "Gibt ein Mannschaftsmitglied eines Spielers zurück. Wird ein ungültiger Index angegeben, gibt die Funktion nil zurück."
 msgstr "Returns the indicated crew member of a player."
 
 #: sdk/script/fn/GetCrew.xml:21(text)
@@ -8155,7 +8184,8 @@ msgid "Fragt die Farbmodulation des aufrufenden Objekts ab. Diese ist ein Farbwe
 msgstr "Determines the color modulation of an object. This is a color value which is multiplied (or added, according to BlitMode) with the object graphics. For more information see <placeholder-1/>()."
 
 #: sdk/script/fn/GetClrModulation.xml:16(remark)
-msgid "Ist der Rückgabewert dieser Funktion 0, so wurde keine Farbmodulation durchgeführt (analog zu <placeholder-1/>(255,255,255,0))."
+#, fuzzy
+msgid "Wurde keine Modulation durchgeführt, so ist der Rückgabewert dieser Funktion -1 (analog zu <placeholder-1/>(255,255,255,255))."
 msgstr "A return value of 0 means that no color modulation is done. This corresponds to <placeholder-1/>(255,255,255,0)."
 
 #: sdk/script/fn/GetClrModulation.xml:25(text)
@@ -8199,14 +8229,6 @@ msgstr "Determines the category of an object. The category is usually specified 
 #: sdk/script/fn/GetCategory.xml:16(text)
 msgid "Zündet obj an, wenn es ein Gebäude ist."
 msgstr "Incinerates the object if it is a building."
-
-#: sdk/script/fn/GetCaptain.xml:15(desc)
-msgid "Liefert den Captain von iPlayer. Nur bei der Spielregel \"Verlust Captain\"."
-msgstr "Returns the captain of the specified player. Only with game rule \"Kill the Captain\"."
-
-#: sdk/script/fn/GetCaptain.xml:19(text)
-msgid "Tötet den Captain des dritten Spielers. (Die Zählung beginnt mit 0)"
-msgstr "Kills the captain of the third player."
 
 #: sdk/script/fn/GetBreath.xml:12(desc)
 #, fuzzy
@@ -9954,15 +9976,11 @@ msgstr "Checks whether an object is composed of only one specified component typ
 msgid "Objekt, das aufgesammelt werden soll"
 msgstr "Object to be collected."
 
-#: sdk/script/fn/Collect.xml:13(desc)
-msgid "Objekt, das pItem aufsammeln soll. 0 bei lokalem Aufruf."
-msgstr "Object which is to collect. Can be 0 in local calls."
-
-#: sdk/script/fn/Collect.xml:16(desc)
+#: sdk/script/fn/Collect.xml:15(desc)
 msgid "Sammelt ein Objekt auf. Der Befehl führt dieselben Funktionen aus, als wäre das Objekt durch den normalen Collection-Bereich des Objekts eingesammelt worden (z.B. RejectCollect, Prüfung auf Flagge/Flagge abnehmbar, Hit-Aufruf bei OCF_HitSpeed2, usw.). Die einzigen Unterschiede sind, dass keine Prüfung der Position von pItem auf den Entrance-Bereich von pTarget/this() gemacht wird, und dass pItem nicht auf OCF_Carryable geprüft wird.<br/>Mit diesem Befehl lässt sich beispielsweise das Aufnehmen von Objekten aus Containern heraus realisieren. Wenn die Aufnahme fehlschlug (Beispielsweise durch den RejectCollect-Aufruf oder weil der Container voll war), gibt die Funktion 0 zurück. Ansonsten 1."
 msgstr "Collects an object. This function performs the same events as they occur if the object is collected in the game through the Collection area (there will be a RejectCollect call, flag collection checks, hit calls, etc.) The only difference is that there will be no comparison of collection position and the collected item is not checked for the OCF_Carryable flag.<br/>Using this function you can for example collect objects directly from a container. If the function fails (e.g. through a RejectCollect or a full target container) the function returns 0, otherwise 1."
 
-#: sdk/script/fn/Collect.xml:26(text)
+#: sdk/script/fn/Collect.xml:25(text)
 msgid "Auf Graben wird das erste Inhaltsobjekt an den ausgewählten Clonk übergeben."
 msgstr "With keyboard command Dig the first inventory object is passed to the selected clonk."
 
@@ -10214,9 +10232,18 @@ msgstr "Casts the specified amount of objects at the specified position at the g
 msgid "Erzeugt am letzten Vertex einer Linie einen Funken. Bei mehrmaligem Aufruf erzielt man damit den gleichen Effekt wie bei einem Blitzeinschlag."
 msgstr "Creates a spark at the last vertex of a line. With multiple calls this will create the same effect as a lightning strike."
 
-#: sdk/script/fn/Call.xml:17(desc)
-msgid "Ruft die lokale Funktion szFunction auf. Stattdessen sollte dieselbe Syntax wie bei engineinternen Funktionen genutzt werden."
-msgstr "Calls the local function 'szFunction'. You should use direct calling as with engine functions instead."
+#: sdk/script/fn/CanConcatPictureWith.xml:12(desc)
+#, fuzzy
+msgid "Das Object mit dem verglichen werden soll."
+msgstr "Velocity at which to cast the particles."
+
+#: sdk/script/fn/CanConcatPictureWith.xml:15(desc)
+msgid "Tested ob die Bilder zweier Objekte gleich sind und sie somit in Inhaltsanzeigen gestapelt werden können."
+msgstr ""
+
+#: sdk/script/fn/Call.xml:16(desc)
+msgid "Ruft die lokale Funktion szFunction auf. Wird \"~\" vor den Funktionsnamen gesetzt, wird der Aufruf failsafe durchgeführt."
+msgstr ""
 
 #: sdk/script/fn/COMD_UpRight.xml:12(desc)
 msgid "Bewegungsrichtung: Schräg nach oben rechts. Für weitere Hinweise siehe <placeholder-1/>."
@@ -10877,21 +10904,18 @@ msgstr "Example"
 #: sdk/scenario/scenario.xml:72(col)
 #: sdk/scenario/scenario.xml:106(col)
 #: sdk/scenario/scenario.xml:111(col)
-#: sdk/scenario/scenario.xml:116(col)
-#: sdk/scenario/scenario.xml:136(col)
-#: sdk/scenario/scenario.xml:141(col)
-#: sdk/scenario/scenario.xml:244(col)
-#: sdk/scenario/scenario.xml:249(col)
-#: sdk/scenario/scenario.xml:254(col)
-#: sdk/scenario/scenario.xml:259(col)
-#: sdk/scenario/scenario.xml:264(col)
+#: sdk/scenario/scenario.xml:214(col)
+#: sdk/scenario/scenario.xml:219(col)
+#: sdk/scenario/scenario.xml:224(col)
+#: sdk/scenario/scenario.xml:229(col)
+#: sdk/scenario/scenario.xml:234(col)
+#: sdk/scenario/scenario.xml:289(col)
+#: sdk/scenario/scenario.xml:309(col)
+#: sdk/scenario/scenario.xml:314(col)
 #: sdk/scenario/scenario.xml:319(col)
-#: sdk/scenario/scenario.xml:339(col)
-#: sdk/scenario/scenario.xml:344(col)
-#: sdk/scenario/scenario.xml:349(col)
-#: sdk/scenario/scenario.xml:354(col)
-#: sdk/scenario/scenario.xml:422(col)
-#: sdk/scenario/scenario.xml:474(col)
+#: sdk/scenario/scenario.xml:324(col)
+#: sdk/scenario/scenario.xml:392(col)
+#: sdk/scenario/scenario.xml:444(col)
 #: sdk/scenario/Teams.xml:20(col)
 #: sdk/scenario/Teams.xml:26(col)
 #: sdk/scenario/Teams.xml:32(col)
@@ -10910,6 +10934,9 @@ msgstr "Example"
 #: sdk/scenario/MapCreatorS2.xml:79(col)
 #: sdk/scenario/MapCreatorS2.xml:89(col)
 #: sdk/scenario/MapCreatorS2.xml:114(col)
+#: sdk/playercontrols.xml:50(col)
+#: sdk/playercontrols.xml:55(col)
+#: sdk/playercontrols.xml:143(col)
 #: sdk/particle/index.xml:40(col)
 #: sdk/particle/index.xml:45(col)
 #: sdk/particle/index.xml:50(col)
@@ -11080,6 +11107,10 @@ msgstr "A whole number from -2.147.483.648 to +2.147.483.647."
 #: sdk/scenario/MapCreatorS2.xml:94(col)
 #: sdk/scenario/MapCreatorS2.xml:99(col)
 #: sdk/scenario/MapCreatorS2.xml:109(col)
+#: sdk/playercontrols.xml:40(col)
+#: sdk/playercontrols.xml:45(col)
+#: sdk/playercontrols.xml:60(col)
+#: sdk/playercontrols.xml:133(col)
 #: sdk/material/c4m.xml:255(col)
 #: sdk/material/c4m.xml:260(col)
 #: sdk/material/c4m.xml:265(col)
@@ -12642,15 +12673,18 @@ msgstr "Section [Head]"
 
 #: sdk/scenario/scenario.xml:22(col)
 #: sdk/scenario/scenario.xml:81(col)
-#: sdk/scenario/scenario.xml:150(col)
-#: sdk/scenario/scenario.xml:209(col)
-#: sdk/scenario/scenario.xml:363(col)
-#: sdk/scenario/scenario.xml:382(col)
-#: sdk/scenario/scenario.xml:431(col)
-#: sdk/scenario/scenario.xml:455(col)
-#: sdk/scenario/scenario.xml:469(col)
+#: sdk/scenario/scenario.xml:120(col)
+#: sdk/scenario/scenario.xml:179(col)
+#: sdk/scenario/scenario.xml:333(col)
+#: sdk/scenario/scenario.xml:352(col)
+#: sdk/scenario/scenario.xml:401(col)
+#: sdk/scenario/scenario.xml:425(col)
+#: sdk/scenario/scenario.xml:439(col)
 #: sdk/scenario/Teams.xml:14(col)
 #: sdk/scenario/Teams.xml:72(col)
+#: sdk/playercontrols.xml:20(col)
+#: sdk/playercontrols.xml:110(col)
+#: sdk/playercontrols.xml:123(col)
 #: sdk/particle/index.xml:32(col)
 #: sdk/material/c4m.xml:15(col)
 #: sdk/material/c4m.xml:230(col)
@@ -12691,27 +12725,27 @@ msgid "Version"
 msgstr "Version"
 
 #: sdk/scenario/scenario.xml:37(col)
-#: sdk/scenario/scenario.xml:155(col)
-#: sdk/scenario/scenario.xml:219(col)
-#: sdk/scenario/scenario.xml:229(col)
+#: sdk/scenario/scenario.xml:125(col)
+#: sdk/scenario/scenario.xml:189(col)
+#: sdk/scenario/scenario.xml:199(col)
+#: sdk/scenario/scenario.xml:239(col)
+#: sdk/scenario/scenario.xml:244(col)
+#: sdk/scenario/scenario.xml:249(col)
+#: sdk/scenario/scenario.xml:254(col)
+#: sdk/scenario/scenario.xml:259(col)
+#: sdk/scenario/scenario.xml:264(col)
 #: sdk/scenario/scenario.xml:269(col)
-#: sdk/scenario/scenario.xml:274(col)
-#: sdk/scenario/scenario.xml:279(col)
 #: sdk/scenario/scenario.xml:284(col)
-#: sdk/scenario/scenario.xml:289(col)
-#: sdk/scenario/scenario.xml:294(col)
-#: sdk/scenario/scenario.xml:299(col)
-#: sdk/scenario/scenario.xml:314(col)
-#: sdk/scenario/scenario.xml:334(col)
-#: sdk/scenario/scenario.xml:387(col)
-#: sdk/scenario/scenario.xml:392(col)
-#: sdk/scenario/scenario.xml:397(col)
-#: sdk/scenario/scenario.xml:402(col)
-#: sdk/scenario/scenario.xml:407(col)
-#: sdk/scenario/scenario.xml:412(col)
-#: sdk/scenario/scenario.xml:436(col)
-#: sdk/scenario/scenario.xml:441(col)
-#: sdk/scenario/scenario.xml:446(col)
+#: sdk/scenario/scenario.xml:304(col)
+#: sdk/scenario/scenario.xml:357(col)
+#: sdk/scenario/scenario.xml:362(col)
+#: sdk/scenario/scenario.xml:367(col)
+#: sdk/scenario/scenario.xml:372(col)
+#: sdk/scenario/scenario.xml:377(col)
+#: sdk/scenario/scenario.xml:382(col)
+#: sdk/scenario/scenario.xml:406(col)
+#: sdk/scenario/scenario.xml:411(col)
+#: sdk/scenario/scenario.xml:416(col)
 #: sdk/material/c4m.xml:220(col)
 #: sdk/folder/foldermap.xml:20(col)
 #: sdk/folder/foldermap.xml:58(col)
@@ -12756,10 +12790,16 @@ msgid "MissionAccess"
 msgstr "MissionAccess"
 
 #: sdk/scenario/scenario.xml:57(col)
-#: sdk/scenario/scenario.xml:234(col)
-#: sdk/scenario/scenario.xml:304(col)
-#: sdk/scenario/scenario.xml:309(col)
-#: sdk/scenario/scenario.xml:417(col)
+#: sdk/scenario/scenario.xml:204(col)
+#: sdk/scenario/scenario.xml:274(col)
+#: sdk/scenario/scenario.xml:279(col)
+#: sdk/scenario/scenario.xml:387(col)
+#: sdk/playercontrols.xml:30(col)
+#: sdk/playercontrols.xml:35(col)
+#: sdk/playercontrols.xml:70(col)
+#: sdk/playercontrols.xml:115(col)
+#: sdk/playercontrols.xml:128(col)
+#: sdk/playercontrols.xml:138(col)
 #: sdk/material/c4m.xml:235(col)
 #: sdk/material/c4m.xml:240(col)
 #: sdk/material/c4m.xml:245(col)
@@ -12811,22 +12851,20 @@ msgstr "Rules"
 #: sdk/scenario/scenario.xml:86(col)
 #: sdk/scenario/scenario.xml:91(col)
 #: sdk/scenario/scenario.xml:96(col)
-#: sdk/scenario/scenario.xml:121(col)
-#: sdk/scenario/scenario.xml:126(col)
+#: sdk/scenario/scenario.xml:135(col)
+#: sdk/scenario/scenario.xml:140(col)
+#: sdk/scenario/scenario.xml:145(col)
+#: sdk/scenario/scenario.xml:150(col)
+#: sdk/scenario/scenario.xml:155(col)
+#: sdk/scenario/scenario.xml:160(col)
 #: sdk/scenario/scenario.xml:165(col)
 #: sdk/scenario/scenario.xml:170(col)
-#: sdk/scenario/scenario.xml:175(col)
-#: sdk/scenario/scenario.xml:180(col)
-#: sdk/scenario/scenario.xml:185(col)
-#: sdk/scenario/scenario.xml:190(col)
-#: sdk/scenario/scenario.xml:195(col)
-#: sdk/scenario/scenario.xml:200(col)
-#: sdk/scenario/scenario.xml:214(col)
-#: sdk/scenario/scenario.xml:224(col)
-#: sdk/scenario/scenario.xml:368(col)
-#: sdk/scenario/scenario.xml:373(col)
-#: sdk/scenario/scenario.xml:460(col)
-#: sdk/scenario/scenario.xml:484(col)
+#: sdk/scenario/scenario.xml:184(col)
+#: sdk/scenario/scenario.xml:194(col)
+#: sdk/scenario/scenario.xml:338(col)
+#: sdk/scenario/scenario.xml:343(col)
+#: sdk/scenario/scenario.xml:430(col)
+#: sdk/scenario/scenario.xml:454(col)
 #: sdk/definition/defcore.xml:48(col)
 msgid "ID-Liste"
 msgstr "ID list"
@@ -12864,208 +12902,155 @@ msgid "Farbe des Fog of War."
 msgstr "Color of the fog of war"
 
 #: sdk/scenario/scenario.xml:105(col)
-msgid "Mode"
-msgstr "Mode"
-
-#: sdk/scenario/scenario.xml:107(col)
-msgid "Veraltet. 0 Kooperativ, 1 Melee, 2 Teamwork-Melee."
-msgstr "Obsolete. 0 Cooperative, 1 Melee, 2 Teamwork-Melee."
-
-#: sdk/scenario/scenario.xml:110(col)
-msgid "Elimination"
-msgstr "Elimination"
-
-#: sdk/scenario/scenario.xml:112(col)
-msgid "Veraltet. Spielereliminierung durch 0 Verlust Captain, 1 Verlust Crew, 2 Verlust Flagge."
-msgstr "Obsolete. Player elimination by: 0 Loss of captain, 1 Loss of crew, 2 Loss of flag."
-
-#: sdk/scenario/scenario.xml:115(col)
-msgid "CooperativeGoal"
-msgstr "CooperativeGoal"
-
-#: sdk/scenario/scenario.xml:117(col)
-msgid "Veraltet. Wert der Auswahl Spielziel im Menüsystem (0-4)."
-msgstr "Obsolete. Value for goal in the menu system (0-4)"
-
-#: sdk/scenario/scenario.xml:120(col)
-msgid "CreateObjects"
-msgstr "CreateObjects"
-
-#: sdk/scenario/scenario.xml:122(col)
-msgid "Veraltet. Spielziel: Diese Objekte müssen mindestens vorhanden sein."
-msgstr "Obsolete. Game goal: These objects must be created."
-
-#: sdk/scenario/scenario.xml:125(col)
-msgid "ClearObjects"
-msgstr "ClearObjects"
-
-#: sdk/scenario/scenario.xml:127(col)
-msgid "Veraltet. Spielziel: Diese Objekte müssen auf x reduziert werden."
-msgstr "Obsolete. Game goal: The object counts must be reduced to x."
-
-#: sdk/scenario/scenario.xml:130(col)
-msgid "ClearMaterials"
-msgstr "ClearMaterials"
-
-#: sdk/scenario/scenario.xml:131(col)
-#: sdk/scenario/scenario.xml:324(col)
-msgid "Material-Liste"
-msgstr "Material list"
-
-#: sdk/scenario/scenario.xml:132(col)
-msgid "Veraltet. Spielziel: Diese Materialien müssen auf x reduziert werden."
-msgstr "Obsolete. Game goal: The material count must be reduced to x."
-
-#: sdk/scenario/scenario.xml:135(col)
 #: sdk/scenario/basefunc.xml:10(col)
 msgid "BaseFunctionality"
 msgstr "BaseFunctionality"
 
-#: sdk/scenario/scenario.xml:137(col)
+#: sdk/scenario/scenario.xml:107(col)
 msgid "Bitmaske, die angibt, welche Funktionen eine Basis erfüllt. Siehe <emlink href=\"scenario/basefunc.html\">Basisfunktionalitäten</emlink>. Ab CR."
 msgstr "A bit mask that defines which functionality a home base object will offer. See <emlink href=\"scenario/basefunc.html\">Homebase Functionality</emlink>. From CR."
 
-#: sdk/scenario/scenario.xml:140(col)
+#: sdk/scenario/scenario.xml:110(col)
 msgid "BaseRegenerateEnergyPrice"
 msgstr "BaseRegenerateEnergyPrice"
 
-#: sdk/scenario/scenario.xml:142(col)
+#: sdk/scenario/scenario.xml:112(col)
 msgid "Kosten, die aufgewendet werden, um einen Clonk in einer Basis um 100 Energiepunkte zu heilen. Standard ist 5; bei 0 ist die Heilung kostenlos. Ab CR."
 msgstr "The cost of recharging a clonk to 100% life energy in the home base. Default is 5. Value 0 will yield free recharging. From CR."
 
-#: sdk/scenario/scenario.xml:147(caption)
+#: sdk/scenario/scenario.xml:117(caption)
 msgid "Sektionen [Player1] [Player2] [Player3] [Player4]"
 msgstr "Sections [Player1] [Player2] [Player3] [Player4]"
 
-#: sdk/scenario/scenario.xml:154(col)
+#: sdk/scenario/scenario.xml:124(col)
 msgid "Wealth"
 msgstr "Wealth"
 
-#: sdk/scenario/scenario.xml:156(col)
+#: sdk/scenario/scenario.xml:126(col)
 msgid "Startkapital."
 msgstr "Seed capital."
 
-#: sdk/scenario/scenario.xml:160(col)
+#: sdk/scenario/scenario.xml:130(col)
 #: sdk/particle/index.xml:149(col)
 #: sdk/definition/defcore.xml:42(col)
 msgid "2 Integer"
 msgstr "2 Integer"
 
-#: sdk/scenario/scenario.xml:161(col)
+#: sdk/scenario/scenario.xml:131(col)
 msgid "Startposition in Koordinaten der ungezoomten Landkarte. Beide -1 für Zufall."
 msgstr "Start position as coordinates for the un-zoomed landscape. Both -1: Random position."
 
-#: sdk/scenario/scenario.xml:164(col)
+#: sdk/scenario/scenario.xml:134(col)
 msgid "Crew"
 msgstr "Crew"
 
-#: sdk/scenario/scenario.xml:166(col)
+#: sdk/scenario/scenario.xml:136(col)
 msgid "Art und Anzahl der Mannschaftsmitglieder."
 msgstr "Type and count of initial crew members."
 
-#: sdk/scenario/scenario.xml:169(col)
+#: sdk/scenario/scenario.xml:139(col)
 msgid "Buildings"
 msgstr "Buildings"
 
-#: sdk/scenario/scenario.xml:171(col)
+#: sdk/scenario/scenario.xml:141(col)
 msgid "Zu Spielbeginn vorhandene Gebäude."
 msgstr "Buildings available at game start."
 
-#: sdk/scenario/scenario.xml:174(col)
+#: sdk/scenario/scenario.xml:144(col)
 msgid "Vehicles"
 msgstr "Vehicles"
 
-#: sdk/scenario/scenario.xml:176(col)
+#: sdk/scenario/scenario.xml:146(col)
 msgid "Zu Spielbeginn vorhandene Fahrzeuge."
 msgstr "Vehicles available at game start."
 
-#: sdk/scenario/scenario.xml:181(col)
+#: sdk/scenario/scenario.xml:151(col)
 msgid "Zu Spielbeginn vorhandenes Material."
 msgstr "Materials available at game start"
 
-#: sdk/scenario/scenario.xml:184(col)
+#: sdk/scenario/scenario.xml:154(col)
 msgid "Knowledge"
 msgstr "Knowledge"
 
-#: sdk/scenario/scenario.xml:186(col)
+#: sdk/scenario/scenario.xml:156(col)
 msgid "Vom Spieler erzeugbare Objekte."
 msgstr "Objects the player should initially be able to create."
 
-#: sdk/scenario/scenario.xml:189(col)
+#: sdk/scenario/scenario.xml:159(col)
 msgid "HomeBaseMaterial"
 msgstr "HomeBaseMaterial"
 
-#: sdk/scenario/scenario.xml:191(col)
+#: sdk/scenario/scenario.xml:161(col)
 msgid "Zu Spielbeginn in der Heimatbasis kaufbares Material."
 msgstr "Materials available to buy at game start."
 
-#: sdk/scenario/scenario.xml:194(col)
+#: sdk/scenario/scenario.xml:164(col)
 msgid "HomeBaseProduction"
 msgstr "HomeBaseProduction"
 
-#: sdk/scenario/scenario.xml:196(col)
+#: sdk/scenario/scenario.xml:166(col)
 msgid "Nachproduktion von Material für die Heimatbasis."
 msgstr "Additional supply of materials to buy."
 
-#: sdk/scenario/scenario.xml:199(col)
+#: sdk/scenario/scenario.xml:169(col)
 #: sdk/definition/defcore.xml:229(col)
 msgid "Magic"
 msgstr "Magic"
 
-#: sdk/scenario/scenario.xml:201(col)
+#: sdk/scenario/scenario.xml:171(col)
 msgid "Zur Verfügung stehende Zauber. Sind keine Zauber angegeben, werden alle verfügbaren Zauber geladen (Abwärtskompatibilität zu älteren Szenarien)."
 msgstr "Available spells. If the list is empty, all spells are available (backwards compatibility)."
 
-#: sdk/scenario/scenario.xml:206(caption)
+#: sdk/scenario/scenario.xml:176(caption)
 msgid "Sektion [Landscape]"
 msgstr "Section [Landscape]"
 
-#: sdk/scenario/scenario.xml:213(col)
+#: sdk/scenario/scenario.xml:183(col)
 msgid "Vegetation"
 msgstr "Vegetation"
 
-#: sdk/scenario/scenario.xml:215(col)
+#: sdk/scenario/scenario.xml:185(col)
 msgid "Vegetationstypen und relative Anteile."
 msgstr "Vegetation types and ratio."
 
-#: sdk/scenario/scenario.xml:218(col)
+#: sdk/scenario/scenario.xml:188(col)
 msgid "VegetationLevel"
 msgstr "VegetationLevel"
 
-#: sdk/scenario/scenario.xml:220(col)
+#: sdk/scenario/scenario.xml:190(col)
 msgid "0-100. Menge Vegetation."
 msgstr "0-100. Vegetation amount."
 
-#: sdk/scenario/scenario.xml:223(col)
+#: sdk/scenario/scenario.xml:193(col)
 msgid "InEarth"
 msgstr "InEarth"
 
-#: sdk/scenario/scenario.xml:225(col)
+#: sdk/scenario/scenario.xml:195(col)
 msgid "Typen und relative Anteile der Objekte im Erdreich."
 msgstr "Types and proportionate shares of buried objects."
 
-#: sdk/scenario/scenario.xml:228(col)
+#: sdk/scenario/scenario.xml:198(col)
 msgid "InEarthLevel"
 msgstr "InEarthLevel"
 
-#: sdk/scenario/scenario.xml:230(col)
+#: sdk/scenario/scenario.xml:200(col)
 msgid "0-100. Menge Erdreich-Objekte."
 msgstr "0-100. Amount of buried objects."
 
-#: sdk/scenario/scenario.xml:233(col)
+#: sdk/scenario/scenario.xml:203(col)
 #: sdk/material/c4m.xml:310(col)
 msgid "Sky"
 msgstr "Sky"
 
-#: sdk/scenario/scenario.xml:235(col)
+#: sdk/scenario/scenario.xml:205(col)
 msgid "Himmeltextur wie in der Graphics.c4g vorhanden (ohne Dateierweiterung)."
 msgstr "Sky texture from Graphics.c4g (without filename extension)"
 
-#: sdk/scenario/scenario.xml:238(col)
+#: sdk/scenario/scenario.xml:208(col)
 msgid "SkyFade"
 msgstr "SkyFade"
 
-#: sdk/scenario/scenario.xml:239(col)
+#: sdk/scenario/scenario.xml:209(col)
 #: sdk/particle/index.xml:75(col)
 #: sdk/material/c4m.xml:195(col)
 #: sdk/definition/defcore.xml:51(col)
@@ -13074,351 +13059,355 @@ msgstr "SkyFade"
 msgid "6 Integer"
 msgstr "6 integers"
 
-#: sdk/scenario/scenario.xml:240(col)
+#: sdk/scenario/scenario.xml:210(col)
 msgid "Himmelfarbverlauf von RGB nach RGB. Werte von 0-255. Sind alle Werte 0, wird das Vorgabe-Blau der Clonk-Farbpalette verwendet."
 msgstr "Sky color gradient (RGB to RGB). Values 0-255. With all values 0, the default blue background will be used."
 
-#: sdk/scenario/scenario.xml:243(col)
+#: sdk/scenario/scenario.xml:213(col)
 msgid "BottomOpen"
 msgstr "BottomOpen"
 
-#: sdk/scenario/scenario.xml:245(col)
+#: sdk/scenario/scenario.xml:215(col)
 msgid "0 oder 1. Legt fest, ob die Spielwelt unten offen ist."
 msgstr "0 or 1. Determines wether the bottom of the game world should be open."
 
-#: sdk/scenario/scenario.xml:248(col)
+#: sdk/scenario/scenario.xml:218(col)
 msgid "TopOpen"
 msgstr "TopOpen"
 
-#: sdk/scenario/scenario.xml:250(col)
+#: sdk/scenario/scenario.xml:220(col)
 msgid "0 oder 1. Legt fest, ob die Spielwelt oben offen ist."
 msgstr "0 or 1. Determines wether the top of the game world should be open."
 
-#: sdk/scenario/scenario.xml:253(col)
+#: sdk/scenario/scenario.xml:223(col)
 msgid "LeftOpen"
 msgstr "LeftOpen"
 
-#: sdk/scenario/scenario.xml:255(col)
+#: sdk/scenario/scenario.xml:225(col)
 msgid "Öffnung des linken Randes bis zum Abstand in Pixel von der Oberkante."
 msgstr "Height until which the left side of the game world is open."
 
-#: sdk/scenario/scenario.xml:258(col)
+#: sdk/scenario/scenario.xml:228(col)
 msgid "RightOpen"
 msgstr "RightOpen"
 
-#: sdk/scenario/scenario.xml:260(col)
+#: sdk/scenario/scenario.xml:230(col)
 msgid "Öffnung des rechten Randes bis zum Abstand in Pixel von der Oberkante."
 msgstr "Height until which the right side of the game world is open."
 
-#: sdk/scenario/scenario.xml:263(col)
+#: sdk/scenario/scenario.xml:233(col)
 msgid "AutoScanSideOpen"
 msgstr "AutoScanSideOpen"
 
-#: sdk/scenario/scenario.xml:265(col)
+#: sdk/scenario/scenario.xml:235(col)
 msgid "0 oder 1. Bei 1 werden LeftOpen und RightOpen automatisch angepasst."
 msgstr "0 or 1. If 1, LeftOpen and RightOpen will be set automatically depending on the landscape at game start."
 
-#: sdk/scenario/scenario.xml:268(col)
+#: sdk/scenario/scenario.xml:238(col)
 msgid "MapWidth"
 msgstr "MapWidth"
 
-#: sdk/scenario/scenario.xml:270(col)
+#: sdk/scenario/scenario.xml:240(col)
 msgid "Ausgangsbreite der dynamischen Karte."
 msgstr "Base width of the dynamic map."
 
-#: sdk/scenario/scenario.xml:273(col)
+#: sdk/scenario/scenario.xml:243(col)
 msgid "MapHeight"
 msgstr "MapHeight"
 
-#: sdk/scenario/scenario.xml:275(col)
+#: sdk/scenario/scenario.xml:245(col)
 msgid "Ausgangshöhe der dynamischen Karte."
 msgstr "Base height of the dynamic map."
 
-#: sdk/scenario/scenario.xml:278(col)
+#: sdk/scenario/scenario.xml:248(col)
 msgid "MapZoom"
 msgstr "MapZoom"
 
-#: sdk/scenario/scenario.xml:280(col)
+#: sdk/scenario/scenario.xml:250(col)
 msgid "Vergrößerungsfaktor der Karte auf die tatsächliche Spiellandschaft. Wert 10."
 msgstr "Factor for zooming the map to the real game world. Default is 10."
 
-#: sdk/scenario/scenario.xml:283(col)
+#: sdk/scenario/scenario.xml:253(col)
 msgid "Amplitude"
 msgstr "Amplitude"
 
-#: sdk/scenario/scenario.xml:285(col)
+#: sdk/scenario/scenario.xml:255(col)
 msgid "0-100 und Abweichung. Hügelhöhe bei dynamischen Karten."
 msgstr "0-100 with tolerance. Hill height for dynamic maps."
 
-#: sdk/scenario/scenario.xml:288(col)
+#: sdk/scenario/scenario.xml:258(col)
 msgid "Phase"
 msgstr "Phase"
 
-#: sdk/scenario/scenario.xml:290(col)
+#: sdk/scenario/scenario.xml:260(col)
 msgid "0-100 und Abweichung. Hügelverschiebung bei dynamischen Karten."
 msgstr "0-100 with tolerance. Hill offset for dynamic maps."
 
-#: sdk/scenario/scenario.xml:293(col)
+#: sdk/scenario/scenario.xml:263(col)
 msgid "Period"
 msgstr "Period"
 
-#: sdk/scenario/scenario.xml:295(col)
+#: sdk/scenario/scenario.xml:265(col)
 msgid "0-100 und Abweichung. Hügelabstand bei dynamischen Karten."
 msgstr "0-100 with tolerance. Hill interval for dynamic maps."
 
-#: sdk/scenario/scenario.xml:298(col)
+#: sdk/scenario/scenario.xml:268(col)
 msgid "Random"
 msgstr "Random"
 
-#: sdk/scenario/scenario.xml:300(col)
+#: sdk/scenario/scenario.xml:270(col)
 msgid "0-100 und Abweichung. Zufallsabweichung bei dynamischen Karten."
 msgstr "0-100 with tolerance. Random deviance for dynamic maps."
 
-#: sdk/scenario/scenario.xml:305(col)
+#: sdk/scenario/scenario.xml:275(col)
 msgid "Material-Textur-Definition des Basismaterials (Erdreich) bei dynamischen Karten."
 msgstr "Material-texture definition of the base material for dynamic maps."
 
-#: sdk/scenario/scenario.xml:308(col)
+#: sdk/scenario/scenario.xml:278(col)
 msgid "Liquid"
 msgstr "Liquid"
 
-#: sdk/scenario/scenario.xml:310(col)
+#: sdk/scenario/scenario.xml:280(col)
 msgid "Material-Textur-Definition der Flüssigkeit in dynamischen Karten."
 msgstr "Material-texture definition of the liquid material for dynamic maps."
 
-#: sdk/scenario/scenario.xml:313(col)
+#: sdk/scenario/scenario.xml:283(col)
 msgid "LiquidLevel"
 msgstr "LiquidLevel"
 
-#: sdk/scenario/scenario.xml:315(col)
+#: sdk/scenario/scenario.xml:285(col)
 msgid "0-100 und Abweichung. Flüssigkeitsstand in dynamischen Karten."
 msgstr "0-100 with tolerance. Liquid level for dynamic maps."
 
-#: sdk/scenario/scenario.xml:318(col)
+#: sdk/scenario/scenario.xml:288(col)
 msgid "MapPlayerExtend"
 msgstr "MapPlayerExtend"
 
-#: sdk/scenario/scenario.xml:320(col)
+#: sdk/scenario/scenario.xml:290(col)
 msgid "0 oder 1. Legt fest, ob die dynamische Karte in der Breite angepasst wird."
 msgstr "0 or 1. Determines wether the dynamic map will be extended for every player activated at game start."
 
-#: sdk/scenario/scenario.xml:323(col)
+#: sdk/scenario/scenario.xml:293(col)
 msgid "Layers"
 msgstr "Layers"
 
-#: sdk/scenario/scenario.xml:325(col)
+#: sdk/scenario/scenario.xml:294(col)
+msgid "Material-Liste"
+msgstr "Material list"
+
+#: sdk/scenario/scenario.xml:295(col)
 msgid "Materialschichten im Erdreich bei dynamischen Karten."
 msgstr "Additional material layers in earth for dynamic maps."
 
-#: sdk/scenario/scenario.xml:328(col)
+#: sdk/scenario/scenario.xml:298(col)
 msgid "ExactLandscape"
 msgstr "ExactLandscape"
 
-#: sdk/scenario/scenario.xml:329(col)
+#: sdk/scenario/scenario.xml:299(col)
 msgid "1 Integer"
 msgstr "1 Integer"
 
-#: sdk/scenario/scenario.xml:330(col)
+#: sdk/scenario/scenario.xml:300(col)
 msgid "0 oder 1. Gibt an, ob Landscape.bmp eine tatsächliche Spiellandschaft ist."
 msgstr "0 or 1. Specifies wether the Landscape.bmp is an actual game landscape."
 
-#: sdk/scenario/scenario.xml:333(col)
+#: sdk/scenario/scenario.xml:303(col)
 msgid "Gravity"
 msgstr "Gravity"
 
-#: sdk/scenario/scenario.xml:335(col)
+#: sdk/scenario/scenario.xml:305(col)
 msgid "10-200: Gravitation. 100 ist Standard."
 msgstr "10-200: Gravity. Default 100."
 
-#: sdk/scenario/scenario.xml:338(col)
+#: sdk/scenario/scenario.xml:308(col)
 msgid "NoScan"
 msgstr "NoScan"
 
-#: sdk/scenario/scenario.xml:340(col)
+#: sdk/scenario/scenario.xml:310(col)
 msgid "0 oder 1. Bei 1 werden keine Überprüfungen innerhalb der Landschaft durchgeführt, wie beispielsweise Schneeschmelze oder Festwerden von Lava in Vulkanen."
 msgstr "0 or 1. If 1, some ingame landscape checks will be turned of, such as freezing, melting or material counting."
 
-#: sdk/scenario/scenario.xml:343(col)
+#: sdk/scenario/scenario.xml:313(col)
 msgid "KeepMapCreator"
 msgstr "KeepMapCreator"
 
-#: sdk/scenario/scenario.xml:345(col)
+#: sdk/scenario/scenario.xml:315(col)
 msgid "0 oder 1. Bei 1 wird der interne MapCreator nicht nach dem Start entladen, so dass Befehle wie <placeholder-1/> zur Verfügung stehen."
 msgstr "0 or 1. If 1, the internal MapCreater won't unload after game start, so functions like <placeholder-1/> still work."
 
-#: sdk/scenario/scenario.xml:348(col)
+#: sdk/scenario/scenario.xml:318(col)
 msgid "SkyScrollMode"
 msgstr "SkyScrollMode"
 
-#: sdk/scenario/scenario.xml:350(col)
+#: sdk/scenario/scenario.xml:320(col)
 msgid "0 bis 2. Bei 1 bewegt sich der Himmel mit dem Wind, bei 2 ist er halbparallax."
 msgstr "0 to 2. 0: Static sky, 1: The sky moves with the wind, 2: The sky is drawn half-parallax."
 
-#: sdk/scenario/scenario.xml:353(col)
+#: sdk/scenario/scenario.xml:323(col)
 msgid "FoWRes"
 msgstr "FoWRes"
 
-#: sdk/scenario/scenario.xml:355(col)
+#: sdk/scenario/scenario.xml:325(col)
 msgid "Größe der Blöcke, in denen der Kriegsnebel (Fog of War) berechnet wird. Standardwert 64. Achtung: Kleinere Werte verbessern zwar die Darstellung des Kriegsnebels, erhöhen aber auch die benötigte Rechenleistung bei hohen Bildschirmauflösungen. Ab CR."
 msgstr "Granularity of the Fog of War. Default: 64. Warning: smaller values will improve the looks of the FoW but will also severely increase processing times."
 
-#: sdk/scenario/scenario.xml:360(caption)
+#: sdk/scenario/scenario.xml:330(caption)
 msgid "Sektion [Animals]"
 msgstr "Section [Animals]"
 
-#: sdk/scenario/scenario.xml:367(col)
+#: sdk/scenario/scenario.xml:337(col)
 msgid "Animals"
 msgstr "Animals"
 
-#: sdk/scenario/scenario.xml:369(col)
+#: sdk/scenario/scenario.xml:339(col)
 msgid "Freilaufende Lebewesen."
 msgstr "Freewheeling creatures."
 
-#: sdk/scenario/scenario.xml:372(col)
+#: sdk/scenario/scenario.xml:342(col)
 msgid "Nest"
 msgstr "Nest"
 
-#: sdk/scenario/scenario.xml:374(col)
+#: sdk/scenario/scenario.xml:344(col)
 msgid "Nester im Erdreich."
 msgstr "Buried nests."
 
-#: sdk/scenario/scenario.xml:379(caption)
+#: sdk/scenario/scenario.xml:349(caption)
 msgid "Sektion [Weather]"
 msgstr "Section [Weather]"
 
-#: sdk/scenario/scenario.xml:386(col)
+#: sdk/scenario/scenario.xml:356(col)
 msgid "Climate"
 msgstr "Climate"
 
-#: sdk/scenario/scenario.xml:388(col)
+#: sdk/scenario/scenario.xml:358(col)
 msgid "0-100 und Abweichung. Durchschnittstemperatur. 0 warm, 100 kalt."
 msgstr "0-100 with tolerance. Average temperature. 0 warm, 100 cold."
 
-#: sdk/scenario/scenario.xml:391(col)
+#: sdk/scenario/scenario.xml:361(col)
 msgid "StartSeason"
 msgstr "StartSeason"
 
-#: sdk/scenario/scenario.xml:393(col)
+#: sdk/scenario/scenario.xml:363(col)
 msgid "0-100 und Abweichung. Startjahreszeit."
 msgstr "0-100 with tolerance. Season at game start."
 
-#: sdk/scenario/scenario.xml:396(col)
+#: sdk/scenario/scenario.xml:366(col)
 msgid "YearSpeed"
 msgstr "YearSpeed"
 
-#: sdk/scenario/scenario.xml:398(col)
+#: sdk/scenario/scenario.xml:368(col)
 msgid "0-100 und Abweichung. Geschwindigkeit des Jahreszeitenwechsels."
 msgstr "0-100 with tolerance. Speed of season change."
 
-#: sdk/scenario/scenario.xml:401(col)
+#: sdk/scenario/scenario.xml:371(col)
 msgid "Rain"
 msgstr "Rain"
 
-#: sdk/scenario/scenario.xml:403(col)
+#: sdk/scenario/scenario.xml:373(col)
 msgid "0-100 und Abweichung. Regenwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Precipitation amount."
 
-#: sdk/scenario/scenario.xml:406(col)
+#: sdk/scenario/scenario.xml:376(col)
 msgid "Wind"
 msgstr "Wind"
 
-#: sdk/scenario/scenario.xml:408(col)
+#: sdk/scenario/scenario.xml:378(col)
 msgid "-100-100 und Abweichung. Windrichtung und -stärke."
 msgstr "-100-100 with tolerance. Wind direction and strength."
 
-#: sdk/scenario/scenario.xml:411(col)
+#: sdk/scenario/scenario.xml:381(col)
 msgid "Lightning"
 msgstr "Lightning"
 
-#: sdk/scenario/scenario.xml:413(col)
+#: sdk/scenario/scenario.xml:383(col)
 msgid "0-100 und Abweichung. Blitzwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Probability for lightnings."
 
-#: sdk/scenario/scenario.xml:416(col)
+#: sdk/scenario/scenario.xml:386(col)
 msgid "Precipitation"
 msgstr "Precipitation"
 
-#: sdk/scenario/scenario.xml:418(col)
+#: sdk/scenario/scenario.xml:388(col)
 msgid "Einfache Materialdefinition Niederschlag."
 msgstr "Simple material definition precipitation."
 
-#: sdk/scenario/scenario.xml:421(col)
+#: sdk/scenario/scenario.xml:391(col)
 msgid "NoGamma"
 msgstr "NoGamma"
 
-#: sdk/scenario/scenario.xml:423(col)
+#: sdk/scenario/scenario.xml:393(col)
 msgid "0 oder 1. Bei 1 wirken sich die Jahreszeiten nicht auf die Bildschirmfärbung aus."
 msgstr "0 or 1. If 1, the current season won't cause a small global color change."
 
-#: sdk/scenario/scenario.xml:428(caption)
+#: sdk/scenario/scenario.xml:398(caption)
 msgid "Sektion [Disasters]"
 msgstr "Section [Disasters]"
 
-#: sdk/scenario/scenario.xml:435(col)
+#: sdk/scenario/scenario.xml:405(col)
 msgid "Meteorite"
 msgstr "Meteorite"
 
-#: sdk/scenario/scenario.xml:437(col)
+#: sdk/scenario/scenario.xml:407(col)
 msgid "0-100 und Abweichung. Meteoritenwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Probability for meteorites."
 
-#: sdk/scenario/scenario.xml:440(col)
+#: sdk/scenario/scenario.xml:410(col)
 msgid "Volcano"
 msgstr "Volcano"
 
-#: sdk/scenario/scenario.xml:442(col)
+#: sdk/scenario/scenario.xml:412(col)
 msgid "0-100 und Abweichung. Vulkanwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Probability for volcanos."
 
-#: sdk/scenario/scenario.xml:445(col)
+#: sdk/scenario/scenario.xml:415(col)
 msgid "Earthquake"
 msgstr "Earthquake"
 
-#: sdk/scenario/scenario.xml:447(col)
+#: sdk/scenario/scenario.xml:417(col)
 msgid "0-100 und Abweichung. Erdbebenwahrscheinlichkeit."
 msgstr "0-100 with tolerance. Probability for earthquakes."
 
-#: sdk/scenario/scenario.xml:452(caption)
+#: sdk/scenario/scenario.xml:422(caption)
 msgid "Sektion [Environment]"
 msgstr "Section [Environment]"
 
-#: sdk/scenario/scenario.xml:459(col)
+#: sdk/scenario/scenario.xml:429(col)
 msgid "Objects"
 msgstr "Objects"
 
-#: sdk/scenario/scenario.xml:461(col)
+#: sdk/scenario/scenario.xml:431(col)
 msgid "Umweltsteuerungsobjekte, die am Anfang der Runde platziert werden."
 msgstr "Environment control objects that are placed at game start."
 
-#: sdk/scenario/scenario.xml:466(caption)
+#: sdk/scenario/scenario.xml:436(caption)
 msgid "Sektion [Definitions]"
 msgstr "Section [Definitions]"
 
-#: sdk/scenario/scenario.xml:473(col)
+#: sdk/scenario/scenario.xml:443(col)
 msgid "LocalOnly"
 msgstr "LocalOnly"
 
-#: sdk/scenario/scenario.xml:475(col)
+#: sdk/scenario/scenario.xml:445(col)
 msgid "Wenn LocalOnly den Wert 1 hat, werden alle angegebenen Objektdefinitions-pakete ignoriert und nur lokale Objektdefinitionen geladen."
 msgstr "If LocalOnly is 1, only definitions local to the scenario file will be load."
 
-#: sdk/scenario/scenario.xml:478(col)
+#: sdk/scenario/scenario.xml:448(col)
 msgid "Definition1 (bis 9)"
 msgstr "Definition1 to 9"
 
-#: sdk/scenario/scenario.xml:479(col)
+#: sdk/scenario/scenario.xml:449(col)
 msgid "Zeichenfolge(n)"
 msgstr "String(s)"
 
-#: sdk/scenario/scenario.xml:480(col)
+#: sdk/scenario/scenario.xml:450(col)
 msgid "Über Definition<em>x</em>-Einträge kann vorgegeben werden, welche Objektdefinitionspakete (c4d) das Szenario benutzen soll. Die Pakete müssen im Clonk-Verzeichnis vorhanden sein. Sind Pakete im Szenario angegeben, wird die vom Menüsystem bestimmte Auswahl ignoriert."
 msgstr "With Definition<em>x</em> entries you can specify which object definition packs (c4d) are to be loaded with this scenario. The specified files must be available in the Clonk directory. If files are specified here, manual pack selection in the menu system is disabled."
 
-#: sdk/scenario/scenario.xml:483(col)
+#: sdk/scenario/scenario.xml:453(col)
 msgid "SkipDefs"
 msgstr "SkipDefs"
 
-#: sdk/scenario/scenario.xml:485(col)
+#: sdk/scenario/scenario.xml:455(col)
 msgid "Liste der Definitionen, die im Spiel nicht geladen werden sollen. So lässt sich beispielsweise die Erforschung bestimmter Objekte verhindern."
 msgstr "List of object definitions (C4IDs) which are not to be loaded with this scenario. This can be used to prevent researching certain object types in the game."
 
@@ -14481,6 +14470,7 @@ msgid "Mit Hauptmenü gibt es jetzt folgende Schaltflächen: <placeholder-1/> Da
 msgstr ""
 
 #: sdk/renderclonk.xml:42(h)
+#: sdk/playercontrols.xml:69(col)
 msgid "Action"
 msgstr "Action"
 
@@ -14594,6 +14584,410 @@ msgstr ""
 
 #: sdk/renderclonk.xml:84(text)
 msgid "Dabei sollte Objectname und Meshname identisch sein. Danach kann das selektierte Mesh mit einem Klick auf <strong>'Import Mesh'</strong> importiert werden. Im Untermenü Clonk können dann die Actions für den Clonk angepasst werden und der Clonk gespeichert werden. Jetzt kann man ihn genauso wie die anderen Clonks verwenden."
+msgstr ""
+
+#: sdk/playercontrols.xml:5(title)
+#: sdk/playercontrols.xml:6(h)
+#, fuzzy
+msgid "Spielersteuerung"
+msgstr "Player number"
+
+#: sdk/playercontrols.xml:8(text)
+msgid "Ab OC erlaubt die Engine, Steuerungskommandos fuer Spieler komplett frei zu definieren. Eigene Tastaturkommandos koennen hinzugefuegt oder veraendert werden. Alle unterstuetzten Eingabegeraete wie Maus, Tastatur und Gamepads koennen frei belegt werden und Kommandos koennen aus beliebigen Tastenkombinationen oder Sequenzen bestehen."
+msgstr ""
+
+#: sdk/playercontrols.xml:9(h)
+#, fuzzy
+msgid "PlayerControls.txt"
+msgstr "Player.txt"
+
+#: sdk/playercontrols.xml:10(text)
+msgid "Alle Steuerungsbefehle, die ein Spieler an das Spiel geben kann, werden in der Datei PlayerControls.txt definiert. Die Standardtasten sowie deren Standardbelegung fuer verschiedene Eingabegeraete befinden sich in der globalen Definitionsdatei in der System.c4g. Objektdefinitionen und Szenarien koennen weitere Tasten in ihrer lokalen System.c4g hinzufuegen oder die Parameter vorhandener Steuerkommandos ueberladen**."
+msgstr ""
+
+#: sdk/playercontrols.xml:11(text)
+msgid "Zusaetzliche Dateien PlayerControls.txt koennen in Sprachpaketen abgelegt werden, um die Standardbelegungen der Tasten bei verschiedenen, geladenen Sprachen an die Tastaturen des jeweiligen Landes anzupassen**."
+msgstr ""
+
+#: sdk/playercontrols.xml:14(h)
+#, fuzzy
+msgid "Sektion [ControlDefs]"
+msgstr "Section [DefCore]"
+
+#: sdk/playercontrols.xml:17(caption)
+#, fuzzy
+msgid "Beliebig viele Sektionen [ControlDef]"
+msgstr "Any number of sections [Scenario]"
+
+#: sdk/playercontrols.xml:24(col)
+#, fuzzy
+msgid "Identifier"
+msgstr "Identifier"
+
+#: sdk/playercontrols.xml:25(col)
+#, fuzzy
+msgid "Zeichenfolge (Max. 96 Zeichen)"
+msgstr "String (max. 30 chars)"
+
+#: sdk/playercontrols.xml:26(col)
+msgid "Intern benutzter Name zur Identifikation des Kommandos. Das Kommando wird unter diesem Namen in Standardbelegungen referenziert und im Script als CON_Name-Konstante vordefiniert. Der Name sollte folglich im Script gueltig sein, d.h. nur aus Buchstaben, Zahlen sowie _ bestehen. Insbesondere sollten keine Leerzeichen oder deutsche Umlaute verwendet werden. Zur Vermeidung von Konflikten gelten in szenarienlokalen sowie Objektpaketlokalen Definitionen dieselben Benennungsregeln wie zur Vergabe von Objekt-IDs."
+msgstr ""
+
+#: sdk/playercontrols.xml:29(col)
+#, fuzzy
+msgid "GUIName"
+msgstr "Name"
+
+#: sdk/playercontrols.xml:31(col)
+msgid "Name, der dem Spieler im Steuerungskonfigurationsdialog sowie in den Steuerungstooltips angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
+msgstr ""
+
+#: sdk/playercontrols.xml:34(col)
+msgid "GUIDesc"
+msgstr ""
+
+#: sdk/playercontrols.xml:36(col)
+msgid "Erlaeuternde Beschreibung, die dem Spieler im Steuerungskonfigurationsdialog angezeigt wird. Lokalisierte Zeichenketten koennen aus dem zugehoerigen StringTable refeenziert werden ($Name$)."
+msgstr ""
+
+#: sdk/playercontrols.xml:41(col)
+msgid "Wenn wahr, ist dies eine globale, d.h. keinem Spieler zugeordnete Definition. Siehe <emlink href=\"playercontrols.xml#Globals\">Globale Definitionen</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:44(col)
+#: sdk/playercontrols.xml:160(col)
+#, fuzzy
+msgid "Hold"
+msgstr "solid"
+
+#: sdk/playercontrols.xml:46(col)
+msgid "Wenn wahr, wird das Kommando als ein gehaltenes Kommando interpretiert. Ein solches Kommando speichert, ob die Steuerungstaste gedrueckt ist und generiert beim Loslassen ein zusaetzliches Scriptereignis. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:49(col)
+#, fuzzy
+msgid "RepeatDelay"
+msgstr "Replay"
+
+#: sdk/playercontrols.xml:51(col)
+msgid "Nur gueltig wenn <em>Hold</em> wahr. Wenn groesser 0, generiert die Taste im gehaltenen Zustand im angegebenen Abstand (in Frames) weitere Scriptereignisse. Siehe <emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:54(col)
+#, fuzzy
+msgid "InitialRepeatDelay"
+msgstr "InitializePlayer"
+
+#: sdk/playercontrols.xml:56(col)
+msgid "Wenn angegeben, kann die Wartezeit fuer das erste Tastenwiederholungsereignis geaendert werden. Siehe <emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:59(col)
+#, fuzzy
+msgid "DefaultDisabled"
+msgstr "ObjectDisabled"
+
+#: sdk/playercontrols.xml:61(col)
+msgid "Wenn wahr, ist das Kommando im Normalfall deaktiviert und muss erst per Script aktiviert werden. Nuetzlich fuer Kommandos, die nur in sehr speziellen Situationen benoetigt werden. Siehe <emlink href=\"playercontrols.xml#Deactivate\">Deaktivierte Kommandos</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:64(col)
+#: sdk/playercontrols.xml:221(h)
+msgid "ExtraData"
+msgstr ""
+
+#: sdk/playercontrols.xml:65(col)
+#: sdk/definition/defcore.xml:85(col)
+#: sdk/definition/defcore.xml:107(col)
+msgid "C4ID"
+msgstr "C4ID"
+
+#: sdk/playercontrols.xml:66(col)
+msgid "Optionale ID, die an die Scriptfunktion uebergeben wird. Siehe <emlink href=\"playercontrols.xml#ExtraData\">ExtraData</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:79(col)
+#, fuzzy
+msgid "Keine Aktion."
+msgstr "New animation phase."
+
+#: sdk/playercontrols.xml:82(col)
+#, fuzzy
+msgid "Script (Standardwert)"
+msgstr "Default value"
+
+#: sdk/playercontrols.xml:83(col)
+msgid "Ausfuehrung des Scriptbefehls <em>PlayerControl</em>. Siehe <emlink href=\"playercontrols.xml#Script\">Script-Callbacks</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:86(col)
+#, fuzzy
+msgid "Menu"
+msgstr "Menu"
+
+#: sdk/playercontrols.xml:87(col)
+msgid "Oeffnen des Spielermenues (asynchrones Kommando)."
+msgstr ""
+
+#: sdk/playercontrols.xml:90(col)
+msgid "MenuOK"
+msgstr ""
+
+#: sdk/playercontrols.xml:91(col)
+msgid "Bestaetigen des ausgewaehlten Elementes im Spielermenue (asynchrones Kommando)."
+msgstr ""
+
+#: sdk/playercontrols.xml:94(col)
+#, fuzzy
+msgid "MenuCancel"
+msgstr "MenuQueryCancel"
+
+#: sdk/playercontrols.xml:95(col)
+msgid "Schliessen des Spielermenues (asynchrones Kommando)."
+msgstr ""
+
+#: sdk/playercontrols.xml:98(col)
+msgid "MenuLeft / MenuUp / MenuRight / MenuDown"
+msgstr ""
+
+#: sdk/playercontrols.xml:99(col)
+msgid "Navigation im Spielermenu (asynchrones Kommando)."
+msgstr ""
+
+#: sdk/playercontrols.xml:71(col)
+#, fuzzy
+msgid "Auszufuehrende Aktion bei diesem Kommando. Moegliche Werte: <placeholder-1/>"
+msgstr "Bit mask composed of the following values: <placeholder-1/>"
+
+#: sdk/playercontrols.xml:15(text)
+msgid "Definition der moeglichen Spielerkommandos. Nicht gueltig in Sprachpaketen. Dieser Sektion untergeordnet: <placeholder-1/>"
+msgstr ""
+
+#: sdk/playercontrols.xml:104(h)
+#, fuzzy
+msgid "Sektion [ControlSets]"
+msgstr "Section [DefCore]"
+
+#: sdk/playercontrols.xml:107(caption)
+#, fuzzy
+msgid "Beliebig viele Sektionen [ControlSet]"
+msgstr "Any number of sections [Scenario]"
+
+#: sdk/playercontrols.xml:116(col)
+msgid "Interner Name zur Identifikation gleicher Steuerungsbelegungen. Die Namen der Standardbelegungen sind <em>Keyboard1</em>, <em>Keyboard1Classic</em>, <em>Keyboard2</em>, <em>Keyboard2Classic</em>, <em>Gamepad</em>. Ueber Platzhalter (*) koennen Tasten direkt in mehreren Belegungen definiert werden**."
+msgstr ""
+
+#: sdk/playercontrols.xml:120(caption)
+#, fuzzy
+msgid "Beliebig viele Sektionen [Assignment]"
+msgstr "Any number of sections [Action]"
+
+#: sdk/playercontrols.xml:127(col)
+msgid "Key"
+msgstr ""
+
+#: sdk/playercontrols.xml:129(col)
+msgid "Taste(n) dieser Belegung oder Referenz auf eine andere Belegung. Siehe <emlink href=\"playercontrols.xml#Keys\">Tastenbelegungen</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:132(col)
+msgid "ComboIsSequence"
+msgstr ""
+
+#: sdk/playercontrols.xml:134(col)
+msgid "Wenn wahr, werden mehrfache Tasten als Sequenz interpretiert. Das heisst, sie muessen nacheinander statt gleichzeitig gedrueckt werden. Siehe <emlink href=\"playercontrols.xml#Keys\">Tastenbelegungen</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:137(col)
+#, fuzzy
+msgid "Control"
+msgstr "Control_"
+
+#: sdk/playercontrols.xml:139(col)
+msgid "Kommando, das mit dieser Belegung verknuepft wird. Der Name sollte dem <em>Identifier</em> eines in einer <emlink href=\"playercontrols.xml#ControlDef\">[ControlDef]</emlink> definierten Kommandos entsprechen."
+msgstr ""
+
+#: sdk/playercontrols.xml:142(col)
+#, fuzzy
+msgid "Priority"
+msgstr "Priority"
+
+#: sdk/playercontrols.xml:144(col)
+msgid "Prioritaet der Belegung. Nutzen mehrere Belegungen die gleichen Tasten, so wird zunaechst die Taste mit der hoeheren Prioritaet ausgefuehrt, bis ein Kommando als behandelt gilt."
+msgstr ""
+
+#: sdk/playercontrols.xml:147(col)
+#, fuzzy
+msgid "TriggerMode"
+msgstr "iBaseMode"
+
+#: sdk/playercontrols.xml:148(col)
+#, fuzzy
+msgid "Bitmaske"
+msgstr "mask"
+
+#: sdk/playercontrols.xml:156(col)
+#, fuzzy
+msgid "Default (Standardwert)"
+msgstr "Default value"
+
+#: sdk/playercontrols.xml:157(col)
+msgid "Keine besondere Aktion."
+msgstr ""
+
+#: sdk/playercontrols.xml:161(col)
+msgid "Die Taste versetzt das verlinkte Kommando in den gedrueckten Zustand, selbst wenn die Taste selbst nur angeschlagen wird. Nur gueltig, wenn das Kommando das <em>Hold</em>-Attribut gesetzt hat. Dieser Zustand bleibt erhalten, bis eine entsprechende Belegung mit Ausloesemodus <em>Release</em> gedrueckt wird. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:164(col)
+#, fuzzy
+msgid "Release"
+msgstr "Repeats"
+
+#: sdk/playercontrols.xml:165(col)
+msgid "Die Taste entfernt den gedrueckten Zustand. Eine Taste kann auch sowohl Hold als auch Release setzen, um zwischen den Zustaenden hin und her zu schalten. Siehe <emlink href=\"playercontrols.xml#Hold\">Gehaltene Tasten</emlink>."
+msgstr ""
+
+#: sdk/playercontrols.xml:168(col)
+msgid "AlwaysUnhandled"
+msgstr ""
+
+#: sdk/playercontrols.xml:169(col)
+msgid "Der Tastendruck wird immer an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, unabhaengig davon, ob das vorherige Kommando erfolgreich ausgefuehrt wurde."
+msgstr ""
+
+#: sdk/playercontrols.xml:172(col)
+msgid "ToggleUnhandled"
+msgstr ""
+
+#: sdk/playercontrols.xml:173(col)
+msgid "Der Tastendruck wird genau dann an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, wenn das vorherige Kommando erfolgreich ausgefuehrt wurde. Hiermit lassen sich Makros definieren. **"
+msgstr ""
+
+#: sdk/playercontrols.xml:149(col)
+#, fuzzy
+msgid "Ausloesmodus dieser Belegung. Bitmaske aus folgenden Werten: <placeholder-1/>"
+msgstr "Bit mask composed of the following values: <placeholder-1/>"
+
+#: sdk/playercontrols.xml:105(text)
+msgid "Definition von Standard-Steuerungsbelegungen. <placeholder-1/>"
+msgstr ""
+
+#: sdk/playercontrols.xml:181(h)
+#, fuzzy
+msgid "Script-Callbacks"
+msgstr "Callbacks"
+
+#: sdk/playercontrols.xml:182(text)
+msgid "Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im Spielermenue), rufen eine globale Scriptfunktion auf:"
+msgstr ""
+
+#: sdk/playercontrols.xml:184(text)
+msgid "Fuer eine Erlaeuterung der Parameter siehe <placeholder-1/>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in iPlr, sowie das ausgefuehrte Kommando in iControl."
+msgstr ""
+
+#: sdk/playercontrols.xml:185(text)
+msgid "Fuer ein einfaches Beispiel sei in der globalen <em>PlayerControls.txt</em> folgendes Kommando definiert:"
+msgstr ""
+
+#: sdk/playercontrols.xml:202(text)
+msgid "Dies definiert eine Sprungtaste und die zugehoerige Standardbelegung auf der Tastatur fuer den ersten Spieler. Dazu folgendes Script zur Behandlung:"
+msgstr ""
+
+#: sdk/playercontrols.xml:222(text)
+msgid "Da nicht jede Objektdefinition die globale PlayerControl-Funktion ueberladen kann, gibt es das ExtraData-Feld zum Verteilen von Kommandos. Zum Beispiel fuer folgende Definition:"
+msgstr ""
+
+#: sdk/playercontrols.xml:229(text)
+msgid "Dabei sei SHVL die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:"
+msgstr ""
+
+#: sdk/playercontrols.xml:239(text)
+msgid "Und im Script der Schaufel:"
+msgstr ""
+
+#: sdk/playercontrols.xml:257(h)
+msgid "Gehaltene Tasten"
+msgstr ""
+
+#: sdk/playercontrols.xml:258(text)
+msgid "Wird fuer ein Kommando das <em>Hold</em>-Flag gesetzt, so speichert die Engine den gegenwaertigen Tastenzustand fuer diese Taste. Solche Tasten haben einige Besonderheiten:"
+msgstr ""
+
+#: sdk/playercontrols.xml:260(li)
+msgid "Sie generieren auch beim Loslassen <placeholder-1/>-Aufrufe mit gesetztem <em>Release</em>-Flag im Script."
+msgstr ""
+
+#: sdk/playercontrols.xml:261(li)
+msgid "Belegungen koennen mit den <em>Hold</em>/<em>Release</em>-Flags dauerhafte Tastendruecke emulieren."
+msgstr ""
+
+#: sdk/playercontrols.xml:262(li)
+msgid "<emlink href=\"playercontrols.xml#Repeat\">Tastenwiederholungen</emlink> werden erzeugt."
+msgstr ""
+
+#: sdk/playercontrols.xml:263(li)
+msgid "Der Haltezustand der Taste kann mit <placeholder-1/> im Script abgefragt werden."
+msgstr ""
+
+#: sdk/playercontrols.xml:265(text)
+msgid "Bestes Beispiel hierfuer ist ein Richtungskommando:"
+msgstr ""
+
+#: sdk/playercontrols.xml:271(text)
+msgid "Im Script wird die Richtung dann auf den Clonk uebertragen:"
+msgstr ""
+
+#: sdk/playercontrols.xml:294(text)
+msgid "Um klassisches Steuerungsverhalten zu erreichen, kann eine Tastenbelegung den <em>Hold</em>-Zustand emulieren:"
+msgstr ""
+
+#: sdk/playercontrols.xml:305(h)
+#, fuzzy
+msgid "Globale Definitionen"
+msgstr "Global Functions"
+
+#: sdk/playercontrols.xml:306(text)
+#: sdk/playercontrols.xml:319(text)
+#: sdk/playercontrols.xml:321(text)
+#: sdk/playercontrols.xml:323(text)
+msgid "..."
+msgstr ""
+
+#: sdk/playercontrols.xml:307(h)
+#, fuzzy
+msgid "Tastenwiederholungen"
+msgstr "Number of retries"
+
+#: sdk/playercontrols.xml:308(text)
+msgid "Hat ein Kommando ein <em>RepeatDelay</em> definiert, so werden wiederholte Kommandos beim Halten der Taste erzeugt. Zum Beispiel fuer ein Wurkommando:"
+msgstr ""
+
+#: sdk/playercontrols.xml:316(text)
+msgid "Im Beispiel koennte man die Wurftaste nach einmal Druecken auch halten. Das Wurfkommando wuerde dann nach 35 Frames (ca. eine Sekunde) halten alle 5 Frames automatisch wiederholt."
+msgstr ""
+
+#: sdk/playercontrols.xml:317(text)
+msgid "Wiederholungen werden nur erzeugt, wenn das Kommando ebenfalls das <em>Hold</em>-Flag gesetzt hat."
+msgstr ""
+
+#: sdk/playercontrols.xml:318(h)
+#, fuzzy
+msgid "Deaktivierte Kommandos**"
+msgstr "Deactivates all gamma ramps."
+
+#: sdk/playercontrols.xml:320(h)
+#, fuzzy
+msgid "Tastenbelegungen"
+msgstr "Keyboard shortcuts:"
+
+#: sdk/playercontrols.xml:322(h)
+#, fuzzy
+msgid "Prioritaeten"
+msgstr "Priorities"
+
+#: sdk/playercontrols.xml:325(em)
+msgid "** - noch nicht implementiert"
 msgstr ""
 
 #: sdk/particle/index.xml:9(text)
@@ -17730,11 +18124,6 @@ msgid "BurnTo"
 msgstr "BurnTo"
 
 #: sdk/definition/defcore.xml:85(col)
-#: sdk/definition/defcore.xml:107(col)
-msgid "C4ID"
-msgstr "C4ID"
-
-#: sdk/definition/defcore.xml:85(col)
 msgid "Definitionswechsel bei Entzündung."
 msgstr "Definition change upon incineration."
 
@@ -19163,6 +19552,57 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 msgid "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 msgstr "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 
+#~ msgid "Neue Farbe, mit der moduliert wird. Wenn 0 angegeben wird, wird die Modulation deaktiviert. Für eine völlige Schwarzfärbung sollte also ein knapp darüber liegender Wert wie <placeholder-1/>(0,0,1); verwendet werden."
+#~ msgstr "New color which is used for color modulation. If 0, modulation is deactivated. To create a 'black' color, use a value slightly higher than 0 such as <placeholder-1/>(0,0,1)."
+
+#~ msgid "Liefert den Captain von iPlayer. Nur bei der Spielregel \"Verlust Captain\"."
+#~ msgstr "Returns the captain of the specified player. Only with game rule \"Kill the Captain\"."
+
+#~ msgid "Tötet den Captain des dritten Spielers. (Die Zählung beginnt mit 0)"
+#~ msgstr "Kills the captain of the third player."
+
+#~ msgid "Objekt, das pItem aufsammeln soll. 0 bei lokalem Aufruf."
+#~ msgstr "Object which is to collect. Can be 0 in local calls."
+
+#~ msgid "Ruft die lokale Funktion szFunction auf. Stattdessen sollte dieselbe Syntax wie bei engineinternen Funktionen genutzt werden."
+#~ msgstr "Calls the local function 'szFunction'. You should use direct calling as with engine functions instead."
+
+#~ msgid "Mode"
+#~ msgstr "Mode"
+
+#~ msgid "Veraltet. 0 Kooperativ, 1 Melee, 2 Teamwork-Melee."
+#~ msgstr "Obsolete. 0 Cooperative, 1 Melee, 2 Teamwork-Melee."
+
+#~ msgid "Elimination"
+#~ msgstr "Elimination"
+
+#~ msgid "Veraltet. Spielereliminierung durch 0 Verlust Captain, 1 Verlust Crew, 2 Verlust Flagge."
+#~ msgstr "Obsolete. Player elimination by: 0 Loss of captain, 1 Loss of crew, 2 Loss of flag."
+
+#~ msgid "CooperativeGoal"
+#~ msgstr "CooperativeGoal"
+
+#~ msgid "Veraltet. Wert der Auswahl Spielziel im Menüsystem (0-4)."
+#~ msgstr "Obsolete. Value for goal in the menu system (0-4)"
+
+#~ msgid "CreateObjects"
+#~ msgstr "CreateObjects"
+
+#~ msgid "Veraltet. Spielziel: Diese Objekte müssen mindestens vorhanden sein."
+#~ msgstr "Obsolete. Game goal: These objects must be created."
+
+#~ msgid "ClearObjects"
+#~ msgstr "ClearObjects"
+
+#~ msgid "Veraltet. Spielziel: Diese Objekte müssen auf x reduziert werden."
+#~ msgstr "Obsolete. Game goal: The object counts must be reduced to x."
+
+#~ msgid "ClearMaterials"
+#~ msgstr "ClearMaterials"
+
+#~ msgid "Veraltet. Spielziel: Diese Materialien müssen auf x reduziert werden."
+#~ msgstr "Obsolete. Game goal: The material count must be reduced to x."
+
 #~ msgid "if &lt;= 9999"
 #~ msgstr "if &lt;= 9999"
 
@@ -19345,9 +19785,6 @@ msgstr "This command line program is used for processing group files. A list of 
 
 #~ msgid "Objekttyp"
 #~ msgstr "Object type"
-
-#~ msgid "Anzahl Wiederholungen"
-#~ msgstr "Number of retries"
 
 #~ msgid "Erzeugt ein Objekt des gewünschten Typs irgendwo in der Landscape im gewünschten Material und liefert es zurück."
 #~ msgstr "Creates an object of the specified type somewhere in the landscape and returns a pointer to the created object."
