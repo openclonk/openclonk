@@ -5523,6 +5523,12 @@ static bool FnGetPlayerControlEnabled(C4AulContext *ctx, long iplr, long ctrl)
 	return !plrctrl->IsControlDisabled(ctrl);
 	}
 
+static C4Void FnDoNoCollectDelay(C4AulObjectContext *ctx, int change)
+{
+	ctx->Obj->NoCollectDelay = Max<int32_t>(ctx->Obj->NoCollectDelay + change, 0);
+	return C4VNull;
+}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -6013,6 +6019,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetGravity", FnGetGravity);
 	AddFunc(pEngine, "Exit", FnExit);
 	AddFunc(pEngine, "Collect", FnCollect);
+	AddFunc(pEngine, "DoNoCollectDelay", FnDoNoCollectDelay);
 
 	AddFunc(pEngine, "Translate", FnTranslate);
 }
