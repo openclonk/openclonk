@@ -35,15 +35,26 @@ func RecheckGoalTimer()
   {
     var timer_interval = 35;
     if(GetLeague()) timer_interval = 2; // league has more frequent checks
-    AddEffect("IntGoalCheck", 0, 1, timer_interval, 0);
+    var num = AddEffect("IntGoalCheck", 0, 1, timer_interval, 0);
+	FxIntGoalCheckTimer(nil, num);
   }
+}
+
+public func NotifyHUD()
+{
   // create hud objects for all players
   for(var i = 0; i < GetPlayerCount(); ++i)
   {
 	var plr = GetPlayerByIndex(i);
-	var HUD = FindObject(Find_ID(HUDC),FindOwner(plr));
-	if(HUD) HUD->UpdateGoal();
+	var HUD = FindObject(Find_ID(HUDC),Find_Owner(plr));
+	if(HUD) HUD->OnGoalUpdate(this);
   }
+}
+
+protected func InitializePlayer(int plr)
+{
+	var HUD = FindObject(Find_ID(HUDC),Find_Owner(plr));
+	if(HUD) HUD->OnGoalUpdate(this);
 }
 
 global func FxIntGoalCheckTimer(object trg, int num, int time)
@@ -51,8 +62,11 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
   var curr_goal = EffectVar(0, trg, num);
   // Check current goal object
   if (curr_goal && (curr_goal->GetCategory() & C4D_Goal))
+  {
+    curr_goal->NotifyHUD();
     if (!curr_goal->~IsFulfilled()) 
       return true;
+  }
   // Current goal is fulfilled/destroyed - check all others
   var goal_count = 0;
   for (curr_goal in FindObjects(Find_Category(C4D_Goal))) if (curr_goal)
@@ -61,6 +75,7 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
     if (!curr_goal->~IsFulfilled())
     {
       EffectVar(0, trg, num) = curr_goal;
+	  curr_goal->NotifyHUD();
       return true;
     }
   }

@@ -93,6 +93,21 @@ protected func OnClonkDeath(object clonk, int killer)
 	OnCrewDisabled(clonk);
 }
 
+public func OnGoalUpdate(object goal)
+{
+	var HUDgoal = FindObject(Find_ID(HGOL),Find_Owner(GetOwner()));
+	if(!goal)
+	{
+		if(HUDgoal) HUDgoal->RemoveObject();
+	}
+	else
+	{
+		if(!HUDgoal) HUDgoal = CreateObject(HGOL,0,0,GetOwner());
+		HUDgoal->SetPosition(-64-16-HGOL->GetDefHeight()/2,8+HGOL->GetDefHeight()/2);
+		HUDgoal->SetGoal(goal);
+	}
+}
+
 public func OnCrewDisabled(object clonk)
 {
 	// notify the hud and reorder

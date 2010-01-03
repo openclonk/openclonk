@@ -297,6 +297,54 @@ func Activate (iPlr) {
   return (MessageWindow (GetFulfillText (iPlr), iPlr));
 }
 
+func GetShortDescription(int iPlr)
+{	
+	var best;
+	var me;
+	var second = 0;
+	var iambest = false;
+
+	if(iTeamCount)
+	{
+		var best = GetTeamWayPercent(iLeader);
+		var me = GetTeamWayPercent(GetPlayerTeam(iPlr));
+		iambest = (iLeader == GetPlayerTeam(iPlr));
+		
+		for(var i = 0; i < GetTeamCount(); i++)
+		{
+			var team = GetTeamByIndex(i);
+			if(iLeader == team) continue;
+			
+			var newse = GetTeamWayPercent(team);
+			if(newse > second) second = newse;
+		}
+	}
+	else
+	{
+		if (!GetPlayerName(iLeader) || !GetCursor(iLeader)) return("");
+	
+		var best = GetWayPercent(iLeader);
+		var me = GetWayPercent(iPlr);
+		iambest = (iLeader == iPlr);
+		
+		for(var i = 0; i < GetPlayerCount(); i++)
+		{
+			var player = GetPlayerByIndex(i);
+			if(iLeader == player) continue;
+			
+			var newse = GetWayPercent(player);
+			if(newse > second) second = newse;
+		}
+	}
+	
+	if(second == best)
+		return Format("%d%%",me);
+	else if(iambest)
+		return Format("%d%% (+%d%%)",me,me-second);
+	else
+		return Format("%d%% (-%d%%)",me,best-me);
+}
+
 func GetFulfillText (int iPlayer) {
   if(iTeamCount)
   {

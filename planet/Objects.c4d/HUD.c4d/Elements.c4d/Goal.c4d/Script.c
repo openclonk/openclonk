@@ -19,7 +19,7 @@ public func Update()
 	if(!goal) return;
 	
 	// short desc
-	var hudinfo = goal->~GetShortDescription();
+	var hudinfo = goal->~GetShortDescription(GetOwner());
 	if(hudinfo)
 		CustomMessage(Format("@%s",hudinfo), this, GetOwner(), 0, 75);
 	else 
@@ -28,7 +28,7 @@ public func Update()
 	SetGraphics(nil,goal->GetID(),1,GFXOV_MODE_IngamePicture);
 }
 
-public func MouseSelect(int plr)
+public func MouseSelection(int plr)
 {
 	if(plr != GetOwner()) return;
 	if(!goal) return;
