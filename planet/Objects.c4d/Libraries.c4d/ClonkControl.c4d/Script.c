@@ -348,12 +348,13 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// out of convencience we call Control2Script, even though it handles
 	// left, right, up and down, too. We don't want that, so this is why we
 	// check that ctrl is Use.
-	else if (contents && ctrl == CON_Use)
+	// Release commands are always forwarded even if contents is 0, in case we need to cancel use of an object that left inventory
+	else if ((contents || (release && using)) && ctrl == CON_Use)
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if (contents2 && ctrl == CON_UseAlt)
+	else if ((contents2 || (release && using)) && ctrl == CON_UseAlt)
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
@@ -462,6 +463,8 @@ private func StartUseControl(int ctrl, control, int x, int y, object obj)
 	if (alt && !(obj->Contained())) estr = "Alt";
 	
 	var handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
+	if (!handled) return false;
+	
 	using = obj;
 			
 	if(obj->Call("~HoldingEnabled"))
@@ -508,6 +511,11 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		else if (release && using == obj)
 		{
 			return StopUseControl(control, x, y, obj);
+		}
+		else if (release && using)
+		{
+		  // leftover use release
+		  return CancelUse();
 		}
 		else if (repeat && using == obj)
 		{
