@@ -40,14 +40,14 @@ protected func Recruitment(int iPlr) {
   // Broadcast f�r Crew
   GameCallEx("OnClonkRecruitment", this, iPlr);
   
-  _inherited(...);
+  return _inherited(iPlr,...);
 }
 
 protected func DeRecruitment(int iPlr) {
   // Broadcast f�r Crew
   GameCallEx("OnClonkDeRecruitment", this, iPlr);
   
-  _inherited(...);
+  return _inherited(iPlr,...);
 }
 
 /*
