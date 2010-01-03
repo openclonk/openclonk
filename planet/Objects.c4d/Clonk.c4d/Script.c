@@ -1093,7 +1093,8 @@ private func EndMagicAction() {}
 // Test to synchronize the walkanimation with the movement
 local OldPos;
 
-static CLNK_WalkStates; // TODO: Well wasn't there once  a patch, allowing arrys to be assigned to global static?
+static CLNK_WalkStates; // TODO: Well wasn't there once a patch, allowing arrys to be assigned to global static?
+static CLNK_HangleStates;
 
 func StartWalk()
 {
@@ -1101,6 +1102,11 @@ func StartWalk()
 		CLNK_WalkStates = ["Stand", "Walk", "Run"];
 	if(!GetEffect("IntWalk", this))
 		AddEffect("IntWalk", this, 1, 1, this);
+}
+
+func StopWalk()
+{
+	if(GetAction() != "Walk") RemoveEffect("IntWalk", this);
 }
 
 func FxIntWalkStart(pTarget, iNumber)
@@ -1124,7 +1130,7 @@ func FxIntWalkStop(pTarget, iNumber)
 
 func FxIntWalkTimer(pTarget, iNumber, iTime)
 {
-	if(GetAction() != "Walk") return -1;
+//	if(GetAction() != "Walk") return -1;
 	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
   var iState = 0;
 
@@ -1174,6 +1180,104 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 	EffectVar(4, pTarget, iNumber) = iState;
 }
 
+func StartHangle()
+{
+	if(CLNK_HangleStates == nil)
+		CLNK_HangleStates = ["HangleStand", "Hangle"];
+	if(!GetEffect("IntHangle", this))
+		AddEffect("IntHangle", this, 1, 1, this);
+}
+
+func FxIntHangleStart(pTarget, iNumber)
+{
+	AnimationPlay("Hangle", 0);
+	AnimationPlay("HangleStand", 1000);
+	EffectVar(0, pTarget, iNumber) = 0; // Phase
+	EffectVar(1, pTarget, iNumber) = 1000; // HangleStand weight
+	EffectVar(2, pTarget, iNumber) = 0; // Hangle weight
+	EffectVar(4, pTarget, iNumber) = 0; // Oldstate
+	EffectVar(5, pTarget, iNumber) = 0; // Remember if the last frame had COMD_Stop (so a single COMD_Stop frame doesn't stop the movement)
+	EffectVar(6, pTarget, iNumber) = 1; // Scedule Stop
+	EffectVar(7, pTarget, iNumber) = 0; // Hanging Pose (Front to player or Back)
+}
+
+func FxIntHangleStop(pTarget, iNumber)
+{
+	AnimationStop("Hangle");
+}
+
+func FxIntHangleTimer(pTarget, iNumber, iTime)
+{
+	if(GetAction() != "Hangle") return -1;
+
+  // Make a cosine movment speed (the clonk only moves whem he makes a "stroke")
+  var iSpeed = 50-Cos(EffectVar(0, pTarget, iNumber)*360*2/1000, 50);
+	SetPhysical("Hangle", 600*iSpeed, 2);
+	var iState = 0;
+
+  // Continue movement, if the clonk still has momentum
+	if(GetComDir() == COMD_Stop && iSpeed>10)
+	{
+		EffectVar(6, pTarget, iNumber) = 1;
+		if(GetDir())
+			SetComDir(COMD_Right);
+		else
+  	  SetComDir(COMD_Left);
+	}
+	// Stop movement if clonk has lost his momentum
+	else if(EffectVar(6, pTarget, iNumber))
+	{
+    EffectVar(6, pTarget, iNumber) = 0;
+		SetComDir(COMD_Stop);
+		// and remeber the pose (front or back)
+		if(EffectVar(0, pTarget, iNumber) > 250 && EffectVar(0, pTarget, iNumber) < 750)
+			EffectVar(7, pTarget, iNumber) = 1;
+		else
+			EffectVar(7, pTarget, iNumber) = 0;
+	}
+	
+	// Play stand animation when not moving
+	if(GetComDir() == COMD_Stop && EffectVar(5, pTarget, iNumber))
+	{
+		AnimationSetState("HangleStand", ((iTime/5)%21)*100+4000*EffectVar(7, pTarget, iNumber), nil);
+		iState = 1;
+	}
+	// When moving
+	else
+	{
+		var iSpeed = 5;
+		if(EffectVar(4, pTarget, iNumber) !=  2)
+			EffectVar(0, pTarget, iNumber) = 100+500*EffectVar(7, pTarget, iNumber); // start with frame 100 or from the back hanging pose frame 600
+		else EffectVar(0, pTarget, iNumber) +=  iSpeed*100/(14*2);
+		if(EffectVar(0, pTarget, iNumber) > 1000) EffectVar(0, pTarget, iNumber) -= 1000;
+
+		AnimationSetState("Hangle", EffectVar(0, pTarget, iNumber)*10, nil);
+		iState = 2;
+	}
+
+  // Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
+  if(GetComDir() == COMD_Stop) EffectVar(5, pTarget, iNumber) = 1;
+	else EffectVar(5, pTarget, iNumber) = 0;
+
+	// Blend between the animations: The actuall animations gains weight till it reaches 1000
+	// the other animations lose weight until they are at 0
+	for(var i = 1; i <= 2; i++)
+	{
+		if(i == iState)
+		{
+			if(EffectVar(i, pTarget, iNumber) < 1000)
+				EffectVar(i, pTarget, iNumber) += 200;
+		}
+		else
+		{
+			if(EffectVar(i, pTarget, iNumber) > 0)
+				EffectVar(i, pTarget, iNumber) -= 200;
+		}
+		AnimationSetState(CLNK_HangleStates[i-1], nil, EffectVar(i, pTarget, iNumber));
+	}
+	EffectVar(4, pTarget, iNumber) = iState;
+}
+
 func Definition(def) {
   SetProperty("ActMap", {
 Walk = {
@@ -1182,14 +1286,15 @@ Name = "Walk",
 Procedure = DFA_WALK,
 Directions = 2,
 FlipDir = 1,
-Length = 250,
-Delay = 1,
+Length = 1,
+Delay = 0,
 X = 0,
 Y = 0,
 Wdt = 8,
 Hgt = 20,
 NextAction = "Walk",               
 StartCall = "StartWalk",
+AbortCall = "StopWalk", 
 InLiquidAction = "Swim",
 },
 Scale = {
@@ -1329,7 +1434,8 @@ Hgt = 20,
 OffX = 0,
 OffY = 3,
 NextAction = "Hangle",
-Animation = "Hangle",
+//Animation = "Hangle",
+StartCall = "StartHangle",
 InLiquidAction = "Swim",
 },
 Jump = {
