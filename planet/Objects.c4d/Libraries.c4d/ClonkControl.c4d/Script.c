@@ -474,12 +474,14 @@ private func StopUseControl(control, int x, int y, object obj)
 {
 	var estr = "";
 	if (alt && !(obj->Contained())) estr = "Alt";
+	
+	var holding_enabled = obj->Call("~HoldingEnabled");
 		
 	var handled = obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
 	using = nil;
 	alt = false;
 			
-	if(obj->Call("~HoldingEnabled"))
+	if(holding_enabled)
 		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
 		
 	return handled;
