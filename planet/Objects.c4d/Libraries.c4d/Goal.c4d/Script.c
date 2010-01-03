@@ -1,41 +1,40 @@
-/*-- Spielzielsteuerung --*/
+/*-- Goal control --*/
 
-// Bei allen C4D_Goal-Objekten zu importieren
-// Überladbare Funktionen:
-// int IsFullfilled(); - Ist das Ziel erfüllt?
-// Statt Initialize InitGoal benutzen
+// Include this to all C4D_Goal objects
+// Functions to be overloaded:
+//   bool IsFullfilled(); - is the goal fulfilled
 
-local missionPassword; // Missionspasswort, das beim Erfüllen des Spielziels gesetzt wird
+local missionPassword; // mission password to be gained when the goal is fulfilled
 
-// Initialisierung
+// Initialization
 func Initialize()
 {
-  // GOAL selber sollte nicht erzeugt werden
+  // Do not create GOAL itself
   if (GetID()==GOAL)
   {
     Log("WARNING: Abstract GOAL object should not be created; object removed.");
     return RemoveObject();
   }
-  // Timer erstellen, wenn er noch nicht existiert
+  // Create timer if it doesn't exist yet
   RecheckGoalTimer();
-  // Fertig
+  // Done
   return _inherited(...);
 }
 
 func UpdateTransferZone()
 {
-  // Timer erstellen, wenn er noch nicht existiert
+  // Create timer if it doesn't exist yet
   RecheckGoalTimer();
   return _inherited(...);
 }
 
 func RecheckGoalTimer()
 {
-  // Timer erstellen, wenn er noch nicht existiert
+  // Create timer if it doesn't exist yet
   if (!GetEffect("IntGoalCheck", 0))
   {
     var timer_interval = 35;
-    if(GetLeague()) timer_interval = 2; // Liga check das Ziel haeufiger
+    if(GetLeague()) timer_interval = 2; // league has more frequent checks
     AddEffect("IntGoalCheck", 0, 1, timer_interval, 0);
   }
 }
@@ -43,11 +42,11 @@ func RecheckGoalTimer()
 global func FxIntGoalCheckTimer(object trg, int num, int time)
 {
   var curr_goal = EffectVar(0, trg, num);
-  // Momentanes Zielobjekt prüfen
+  // Check current goal object
   if (curr_goal && (curr_goal->GetCategory() & C4D_Goal))
     if (!curr_goal->~IsFulfilled()) 
       return true;
-  // Jetzt in der Schleife suchen
+  // Current goal is fulfilled/destroyed - check all others
   var goal_count = 0;
   for (curr_goal in FindObjects(Find_Category(C4D_Goal))) if (curr_goal)
   {
@@ -58,22 +57,22 @@ global func FxIntGoalCheckTimer(object trg, int num, int time)
       return true;
     }
   }
-  // Kein Zielobjekt? Wir sind überflüssig :(
+  // No goal object? Kill timer
   if (!goal_count) return FX_Execute_Kill;
-  // Spiel zuende
+  // Game over :(
   AllGoalsFulfilled();
   return FX_Execute_Kill;
 }
 
 global func AllGoalsFulfilled()
 {
-  // Spielziele erfüllt: Missionspasswort setzen
+  // Goals fulfilled: Set mission password(s)
   for (var goal in FindObjects(Find_Category(C4D_Goal)))
     if (goal->LocalN("missionPassword"))
       GainMissionAccess(goal->LocalN("missionPassword"));
-  // Ziel erfüllt: Vom Szenario abgefangen?
+  // Custom scenario goal evaluation?
   if (GameCall("OnGoalsFulfilled")) return true;
-  // Tja, jetzt ist das Spiel vorbei. Erstmal die Belohnung
+  // We're done. Play some sound and schedule game over call
   Sound("Fanfare", true);
   AddEffect("IntGoalDone", 0, 1, 30, 0);
 }
@@ -87,17 +86,15 @@ global func FxIntGoalDoneStop()
 
 
 
-// Setzt das Missionspasswort, welches von diesem Spielziel bei Erfüllung beim Spieler eingetragen wird.
-
+// Set mission password to be gained when all goals are fulfilled
 public func SetMissionAccess(string strPassword)
 {
   missionPassword = strPassword;  
 }
 
-// Basis-Implementationen - diese sollten in abgeleiteten Spielziel-Objekten überladen werden
+// Base implementations to be overloaded by goal objects
 
 public func IsFulfilled() { return true; }
-
 
 protected func Activate(iPlr)
 {
