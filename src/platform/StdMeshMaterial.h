@@ -69,6 +69,41 @@ public:
 	  F_Linear,
 	  F_Anisotropic
 	};
+	
+	enum BlendOpType {
+		BO_Replace,
+		BO_Add,
+		BO_Modulate,
+		BO_AlphaBlend,
+		BO_Extended
+	};
+
+	enum BlendOpExType {
+		BOX_Source1,
+		BOX_Source2,
+		BOX_Modulate,
+		BOX_ModulateX2,
+		BOX_ModulateX4,
+		BOX_Add,
+		BOX_AddSigned,
+		BOX_AddSmooth,
+		BOX_Subtract,
+		BOX_BlendDiffuseAlpha,
+		BOX_BlendTextureAlpha,
+		BOX_BlendCurrentAlpha,
+		BOX_BlendManual,
+		BOX_Dotproduct,
+		BOX_BlendDiffuseColor
+	};
+
+	enum BlendOpSourceType {
+		BOS_Current,
+		BOS_Texture,
+		BOS_Diffuse,
+		BOS_Specular,
+		BOS_PlayerColor, // not specified in ogre, added in OpenClonk
+		BOS_Manual
+	};
 
 	// Ref-counted texture. When a meterial inherits from one which contains
 	// a TextureUnit, then they will share the same CTexRef.
@@ -100,11 +135,25 @@ public:
 
 	void Load(StdMeshMaterialParserCtx& ctx);
 
+	bool HasTexture() const { return !!Texture; }
 	const CTexRef& GetTexture() const { return Texture->Tex; }
 
 	TexAddressModeType TexAddressMode;
 	float TexBorderColor[4];
 	FilteringType Filtering[3]; // min, max, mipmap
+	
+	BlendOpType ColorOp;
+	BlendOpExType ColorOpEx; // only used if ColorOp==CO_Extended
+	BlendOpSourceType ColorOpSources[2]; // only used if ColorOp==CO_Extended
+	float ColorOpManualFactor; // only used if ColorOp==CO_Extended
+	float ColorOpManualColor1[3]; // only used if ColorOp==CO_Extended
+	float ColorOpManualColor2[3]; // only used if ColorOp==CO_Extended
+	
+	BlendOpExType AlphaOpEx; // only used if ColorOp==CO_Extended
+	BlendOpSourceType AlphaOpSources[2]; // only used if ColorOp==CO_Extended
+	float AlphaOpManualFactor; // only used if ColorOp==CO_Extended
+	float AlphaOpManualAlpha1; // only used if ColorOp==CO_Extended
+	float AlphaOpManualAlpha2; // only used if ColorOp==CO_Extended
 
 private:
 	TexRef* Texture;

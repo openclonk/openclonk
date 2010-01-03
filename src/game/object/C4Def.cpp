@@ -723,7 +723,7 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 				StdMeshInstance dummy(*graphics->Mesh);
 				dummy.SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
 				// TODO: Keep aspect ratio of mesh dimensions
-				lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, NULL);
+				lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, 0xff0000ff /* blue */, NULL);
 			}
 			break;
 		}

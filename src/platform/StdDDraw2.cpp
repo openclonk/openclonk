@@ -1030,7 +1030,7 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	return true;
 	}
 
-bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, CBltTransform* pTransform)
+bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
 {
 	// TODO: Emulate rendering
 	if (!sfcTarget->IsRenderTarget()) return false;
@@ -1040,7 +1040,7 @@ bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float t
 	// prepare rendering to surface
 	if (!PrepareRendering(sfcTarget)) return false;
 
-	PerformMesh(instance, tx, ty, twdt, thgt, pTransform);
+	PerformMesh(instance, tx, ty, twdt, thgt, dwPlayerColor, pTransform);
 
 	// success
 	return true;

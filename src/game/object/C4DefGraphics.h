@@ -73,7 +73,7 @@ class C4DefGraphics
 		C4DefGraphics *Get(const char *szGrpName); // get graphics by name
 		void Clear(); // clear fields; delete additional graphics
 		bool IsColorByOwner() // returns whether ColorByOwner-surfaces have been created
-			{ return !!BitmapClr; }
+			{ return Type == TYPE_Mesh || !!BitmapClr; } // Mesh can always apply PlayerColor (if used in its material)
 		bool CopyGraphicsFrom(C4DefGraphics &rSource); // copy bitmaps from source graphics
 
 		virtual const char *GetName() { return NULL; } // return name to be stored in safe game files

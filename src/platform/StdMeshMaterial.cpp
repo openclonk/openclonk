@@ -67,6 +67,44 @@ namespace
 		{ "anisotropic", { StdMeshMaterialTextureUnit::F_Anisotropic, StdMeshMaterialTextureUnit::F_Anisotropic, StdMeshMaterialTextureUnit::F_Linear } },
 		{ NULL }
 	};
+	
+	// Don't include CO_Extended, since this is set automatically when colour_op_ex is specified
+	const Enumerator<StdMeshMaterialTextureUnit::BlendOpType> BlendOpEnumerators[] = {
+		{ "replace", StdMeshMaterialTextureUnit::BO_Replace },
+		{ "add", StdMeshMaterialTextureUnit::BO_Add },
+		{ "modulate", StdMeshMaterialTextureUnit::BO_Modulate },
+		{ "alpha_blend", StdMeshMaterialTextureUnit::BO_AlphaBlend },
+		{ NULL }
+	};
+
+	const Enumerator<StdMeshMaterialTextureUnit::BlendOpExType> BlendOpExEnumerators[] = {
+		{ "source1", StdMeshMaterialTextureUnit::BOX_Source1 }, 
+		{ "source2", StdMeshMaterialTextureUnit::BOX_Source2 },
+		{ "modulate", StdMeshMaterialTextureUnit::BOX_Modulate },
+		{ "modulate_x2", StdMeshMaterialTextureUnit::BOX_ModulateX2 },
+		{ "modulate_x4", StdMeshMaterialTextureUnit::BOX_ModulateX4 },
+		{ "add", StdMeshMaterialTextureUnit::BOX_Add },
+		{ "add_signed", StdMeshMaterialTextureUnit::BOX_AddSigned },
+		{ "add_smooth", StdMeshMaterialTextureUnit::BOX_AddSmooth },
+		{ "subtract", StdMeshMaterialTextureUnit::BOX_Subtract },
+		{ "blend_diffuse_alpha", StdMeshMaterialTextureUnit::BOX_BlendDiffuseAlpha },
+		{ "blend_texture_alpha", StdMeshMaterialTextureUnit::BOX_BlendTextureAlpha },
+		{ "blend_current_alpha", StdMeshMaterialTextureUnit::BOX_BlendCurrentAlpha },
+		{ "blend_manual", StdMeshMaterialTextureUnit::BOX_BlendManual },
+		{ "dotproduct", StdMeshMaterialTextureUnit::BOX_Dotproduct },
+		{ "blend_diffuse_colour", StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor },
+		{ NULL }
+	};
+	
+	const Enumerator<StdMeshMaterialTextureUnit::BlendOpSourceType> BlendOpSourceEnumerators[] = {
+		{ "src_current", StdMeshMaterialTextureUnit::BOS_Current },
+		{ "src_texture", StdMeshMaterialTextureUnit::BOS_Texture },
+		{ "src_diffuse", StdMeshMaterialTextureUnit::BOS_Diffuse },
+		{ "src_specular", StdMeshMaterialTextureUnit::BOS_Specular },
+		{ "src_player_colour", StdMeshMaterialTextureUnit::BOS_PlayerColor },
+		{ "src_manual", StdMeshMaterialTextureUnit::BOS_Manual },
+		{ NULL }
+	};
 }
 
 StdMeshMaterialError::StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line)
@@ -96,7 +134,7 @@ public:
 	Token AdvanceRequired(StdStrBuf& name, Token expect1, Token expect2);
 	float AdvanceFloat();
 	bool AdvanceFloatOptional(float& value);
-	void AdvanceColor(float Color[4]);
+	void AdvanceColor(bool with_alpha, float Color[4]);
 	bool AdvanceBoolean();
 	template<typename EnumType> EnumType AdvanceEnum(const Enumerator<EnumType>* enumerators);
 	template<int Num, typename EnumType> void AdvanceEnums(const Enumerator<EnumType>* enumerators, EnumType enums[Num]);
@@ -249,12 +287,12 @@ bool StdMeshMaterialParserCtx::AdvanceFloatOptional(float& value)
 	return false;
 }
 
-void StdMeshMaterialParserCtx::AdvanceColor(float Color[4])
+void StdMeshMaterialParserCtx::AdvanceColor(bool with_alpha, float Color[4])
 {
 	Color[0] = AdvanceFloat();
 	Color[1] = AdvanceFloat();
 	Color[2] = AdvanceFloat();
-	AdvanceFloatOptional(Color[3]);
+	if(with_alpha) AdvanceFloatOptional(Color[3]);
 }
 
 bool StdMeshMaterialParserCtx::AdvanceBoolean()
@@ -370,22 +408,43 @@ StdMeshMaterialTextureUnit::TexRef::~TexRef()
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
-	Texture(NULL), TexAddressMode(AM_Wrap)
+	Texture(NULL), TexAddressMode(AM_Wrap), ColorOp(BO_Modulate), ColorOpEx(BOX_Modulate),
+	ColorOpManualFactor(0.0f), AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f)
 {
-	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0; TexBorderColor[3] = 1.0;
+	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0f; TexBorderColor[3] = 1.0f;
 	Filtering[0] = Filtering[1] = F_Linear; Filtering[2] = F_Point;
+	ColorOpSources[0] = BOS_Current; ColorOpSources[1] = BOS_Texture;
+	AlphaOpSources[0] = BOS_Current; AlphaOpSources[1] = BOS_Texture;
+	ColorOpManualColor1[0] = ColorOpManualColor1[1] = ColorOpManualColor1[2] = AlphaOpManualAlpha1 = 0.0f;
+	ColorOpManualColor2[0] = ColorOpManualColor2[1] = ColorOpManualColor2[2] = AlphaOpManualAlpha2 = 0.0f;
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
-	Texture(other.Texture), TexAddressMode(other.TexAddressMode)
+	Texture(other.Texture), TexAddressMode(other.TexAddressMode), ColorOp(other.ColorOp),
+	ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
+	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor)
 {
 	if(Texture)
 		++Texture->RefCount;
 
 	for(unsigned int i = 0; i < 4; ++i)
 		TexBorderColor[i] = other.TexBorderColor[i];
+
 	for(unsigned int i = 0; i < 3; ++i)
 		Filtering[i] = other.Filtering[i];
+
+	ColorOpSources[0] = other.ColorOpSources[0];
+	ColorOpSources[1] = other.ColorOpSources[1];
+	for(unsigned int i = 0; i < 3; ++i)
+	{
+		ColorOpManualColor1[i] = other.ColorOpManualColor1[i];
+		ColorOpManualColor2[i] = other.ColorOpManualColor2[i];
+	}
+	
+	AlphaOpSources[0] = other.AlphaOpSources[0];
+	AlphaOpSources[1] = other.AlphaOpSources[1];
+	AlphaOpManualAlpha1 = other.AlphaOpManualAlpha1;
+	AlphaOpManualAlpha2 = other.AlphaOpManualAlpha2;
 }
 
 StdMeshMaterialTextureUnit::~StdMeshMaterialTextureUnit()
@@ -404,7 +463,25 @@ StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshM
 	for(unsigned int i = 0; i < 4; ++i)
 		TexBorderColor[i] = other.TexBorderColor[i];
 	for(unsigned int i = 0; i < 3; ++i)
-		Filtering[i] = other.Filtering[i];	
+		Filtering[i] = other.Filtering[i];
+	ColorOp = other.ColorOp;
+	ColorOpEx = other.ColorOpEx;
+	ColorOpSources[0] = other.ColorOpSources[0];
+	ColorOpSources[1] = other.ColorOpSources[1];
+	ColorOpManualFactor = other.ColorOpManualFactor;
+	for(unsigned int i = 0; i < 3; ++i)
+	{
+		ColorOpManualColor1[i] = other.ColorOpManualColor1[i];
+		ColorOpManualColor2[i] = other.ColorOpManualColor2[i];
+	}
+
+	AlphaOpEx = other.AlphaOpEx;
+	AlphaOpSources[0] = other.AlphaOpSources[0];
+	AlphaOpSources[1] = other.AlphaOpSources[1];
+	AlphaOpManualFactor = other.AlphaOpManualFactor;
+	AlphaOpManualAlpha1 = other.AlphaOpManualAlpha1;
+	AlphaOpManualAlpha2 = other.AlphaOpManualAlpha1;
+
 	return *this;
 }
 
@@ -435,7 +512,7 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 		}
 		else if(token_name == "tex_border_colour")
 		{
-			ctx.AdvanceColor(TexBorderColor);
+			ctx.AdvanceColor(true, TexBorderColor);
 		}
 		else if(token_name == "filtering")
 		{
@@ -444,6 +521,30 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 				ctx.Error(StdCopyStrBuf("'none' is only valid for the mip filter"));
 			if(Filtering[2] == F_Anisotropic)
 				ctx.Error(StdCopyStrBuf("'anisotropic' is not a valid mip filter"));
+		}
+		else if(token_name == "colour_op")
+		{
+			ColorOp = ctx.AdvanceEnum(BlendOpEnumerators);
+		}
+		else if(token_name == "colour_op_ex")
+		{
+			ColorOp = BO_Extended;
+			ColorOpEx = ctx.AdvanceEnum(BlendOpExEnumerators);
+			ColorOpSources[0] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
+			ColorOpSources[1] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
+			if(ColorOpEx == BOX_BlendManual) ColorOpManualFactor = ctx.AdvanceFloat();
+			if(ColorOpSources[0] == BOS_Manual) ctx.AdvanceColor(false, ColorOpManualColor1);
+			if(ColorOpSources[1] == BOS_Manual) ctx.AdvanceColor(false, ColorOpManualColor2);
+		}
+		else if(token_name == "alpha_op_ex")
+		{
+			ColorOp = BO_Extended;
+			AlphaOpEx = ctx.AdvanceEnum(BlendOpExEnumerators);
+			AlphaOpSources[0] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
+			AlphaOpSources[1] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
+			if(AlphaOpEx == BOX_BlendManual) AlphaOpManualFactor = ctx.AdvanceFloat();
+			if(AlphaOpSources[0] == BOS_Manual) AlphaOpManualAlpha1 = ctx.AdvanceFloat();
+			if(AlphaOpSources[1] == BOS_Manual) AlphaOpManualAlpha2 = ctx.AdvanceFloat();
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
@@ -477,11 +578,11 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		}
 		else if(token_name == "ambient")
 		{
-			ctx.AdvanceColor(Ambient);
+			ctx.AdvanceColor(true, Ambient);
 		}
 		else if(token_name == "diffuse")
 		{
-			ctx.AdvanceColor(Diffuse);
+			ctx.AdvanceColor(true, Diffuse);
 		}
 		else if(token_name == "specular")
 		{
@@ -505,7 +606,7 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		}
 		else if(token_name == "emissive")
 		{
-			ctx.AdvanceColor(Emissive);
+			ctx.AdvanceColor(true, Emissive);
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
