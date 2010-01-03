@@ -713,13 +713,10 @@ private func DoThrow(object obj, int angle)
   if (iYDir < 0) iYDir = iYDir * 13/10;
   if (iYDir > 0) iYDir = iYDir * 8/10;
   
-  // is riding? add it's velocity
-  var proc = GetProcedure();
-  if (GetActionTarget() && (proc == "PUSH" || proc == "ATTACH"))
-  {
-    iXDir += GetActionTarget()->GetXDir() / 10;
-    iYDir += GetActionTarget()->GetYDir() / 10;
-  }
+  // add own velocity
+  iXDir += GetXDir(1000);
+  iYDir += GetYDir(1000)/2;
+
   // throw
   obj->Exit(iX, iY, iR, 0, 0, iRDir);  
   obj->SetXDir(iXDir,1000);
@@ -738,7 +735,7 @@ public func ControlThrow(object target, int x, int y)
 	var throwAngle = Angle(0,0,x,y);
 	
 	// walking (later with animation: flight, scale, hangle?)
-	if (GetProcedure() == "WALK")
+	if (GetProcedure() == "WALK" || GetAction() == "Jump" || GetAction() == "Dive")
 	{
 		if (throwAngle < 180) SetDir(DIR_Right);
 		else SetDir(DIR_Left);

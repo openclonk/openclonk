@@ -145,7 +145,7 @@ bool ObjectActionThrow(C4Object *cObj, C4Object *pThing)
 	pThing->Exit(cObj->GetX(),
               cObj->GetY()+cObj->Shape.y-1,
               Random(360),
-              pthrow*iDir,-pthrow,pthrow*iDir);
+              pthrow*iDir+cObj->xdir,-pthrow+cObj->ydir,pthrow*iDir);
 	// Success
   return true;
   }

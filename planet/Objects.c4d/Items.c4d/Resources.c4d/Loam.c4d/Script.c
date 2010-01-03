@@ -28,6 +28,8 @@ func ControlUse(object clonk, int x, int y)
 	clonk->SetYDir(0);
 	last_x = BoundBy(x,-0,0)+GetX(); last_y = clonk->GetDefBottom()+3;
 	last_frame = begin_frame = FrameCounter();
+	
+	return true;
 }
 
 func HoldingEnabled() { return true; }
