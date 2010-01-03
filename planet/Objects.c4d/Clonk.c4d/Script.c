@@ -1093,16 +1093,85 @@ private func EndMagicAction() {}
 // Test to synchronize the walkanimation with the movement
 local OldPos;
 
-func WalkTest()
+static CLNK_WalkStates; // TODO: Well wasn't there once  a patch, allowing arrys to be assigned to global static?
+
+func StartWalk()
 {
-	if (OldPos)
+	if(CLNK_WalkStates == nil)
+		CLNK_WalkStates = ["Stand", "Walk", "Run"];
+	if(!GetEffect("IntWalk", this))
+		AddEffect("IntWalk", this, 1, 1, this);
+}
+
+func FxIntWalkStart(pTarget, iNumber)
+{
+	AnimationPlay("Stand", 0);
+	AnimationPlay("Walk", 0);
+	AnimationPlay("Run", 0);
+	EffectVar(0, pTarget, iNumber) = 0; // Phase
+	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
+	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
+	EffectVar(3, pTarget, iNumber) = 0; // Run weight
+	EffectVar(4, pTarget, iNumber) = 0; // Oldstate
+}
+
+func FxIntWalkStop(pTarget, iNumber)
+{
+	AnimationStop("Stand");
+	AnimationStop("Walk");
+	AnimationStop("Run");
+}
+
+func FxIntWalkTimer(pTarget, iNumber, iTime)
+{
+	if(GetAction() != "Walk") return -1;
+	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
+  var iState = 0;
+
+	// Play stand animation when not moving
+	if(iSpeed < 1)
 	{
-		var Dist = Distance(GetX(), GetY(), OldPos[0], OldPos[1]);
-		OldPos = [GetX(), GetY()];
-		if(Dist)
-			SetPhase( (GetPhase()+Dist*250/16) % 250);
+		AnimationSetState("Stand", ((iTime/5)%11)*100, nil);
+		iState = 1;
 	}
-	OldPos = [GetX(), GetY()];
+	// When moving slowly play synchronized with movement walk
+	else if(iSpeed < 10)
+	{
+		EffectVar(0, pTarget, iNumber) +=  iSpeed*25/(16*1);
+		if(EffectVar(0, pTarget, iNumber) > 250) EffectVar(0, pTarget, iNumber) -= 250;
+
+		AnimationSetState("Walk", EffectVar(0, pTarget, iNumber)*10, nil);
+		iState = 2;
+	}
+	// When moving fast play run
+	else
+	{
+		if(EffectVar(4, pTarget, iNumber) != 3)
+			EffectVar(0, pTarget, iNumber) = 190; // start with frame 190 (feet on the floor)
+		else
+  		EffectVar(0, pTarget, iNumber) += iSpeed*25/(16*3);
+		if(EffectVar(0, pTarget, iNumber) > 250) EffectVar(0, pTarget, iNumber) -= 250;
+
+		AnimationSetState("Run", EffectVar(0, pTarget, iNumber)*10, nil);
+		iState = 3;
+	}
+	// Blend between the animations: The actuall animations gains weight till it reaches 1000
+	// the other animations lose weight until they are at 0
+	for(var i = 1; i <= 3; i++)
+	{
+		if(i == iState)
+		{
+			if(EffectVar(i, pTarget, iNumber) < 1000)
+				EffectVar(i, pTarget, iNumber) += 200;
+		}
+		else
+		{
+			if(EffectVar(i, pTarget, iNumber) > 0)
+				EffectVar(i, pTarget, iNumber) -= 200;
+		}
+		AnimationSetState(CLNK_WalkStates[i-1], nil, EffectVar(i, pTarget, iNumber));
+	}
+	EffectVar(4, pTarget, iNumber) = iState;
 }
 
 func Definition(def) {
@@ -1118,74 +1187,9 @@ Delay = 1,
 X = 0,
 Y = 0,
 Wdt = 8,
-OffX = 4,
 Hgt = 20,
 NextAction = "Walk",               
-Animation = "Walk",
-PhaseCall = "WalkTest",							 
-InLiquidAction = "Swim",
-},
-WalkTest = {
-Prototype = Action,
-Name = "WalkTest",
-Procedure = DFA_NONE,
-Directions = 2,
-FlipDir = 1,
-Length = 24,
-Delay = 3,
-X = 0,
-Y = 0,
-Wdt = 8,
-OffX = 4,
-Hgt = 20,
-NextAction = "WalkTest",
-Animation = "Walk",
-InLiquidAction = "Swim",
-},
-StillTrans1 = {
-Prototype = Action,
-Name = "StillTrans1",
-Procedure = DFA_THROW,
-Directions = 2,
-FlipDir = 1,
-Length = 4,
-Delay = 2,
-X = 0,
-Y = 280,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Still",
-InLiquidAction = "Swim",
-},
-Still = {
-Prototype = Action,
-Name = "Still",
-Procedure = DFA_THROW,
-Directions = 2,
-FlipDir = 1,
-Length = 8,
-Delay = 10,
-X = 64,
-Y = 280,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Still",
-InLiquidAction = "Swim",
-},
-StillTrans2 = {
-Prototype = Action,
-Name = "StillTrans2",
-Procedure = DFA_THROW,
-Directions = 2,
-Reverse = 1,
-FlipDir = 1,
-Length = 4,
-Delay = 2,
-X = 192,
-Y = 280,
-Wdt = 16,
-Hgt = 20,
-NextAction = "Still",
+StartCall = "StartWalk",
 InLiquidAction = "Swim",
 },
 Scale = {
@@ -1198,7 +1202,7 @@ Length = 16,
 Delay = 15,
 X = 0,
 Y = 20,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 OffX = 2,
 OffY = 0,
@@ -1216,7 +1220,7 @@ Length = 16,
 Delay = 15,
 X = 0,
 Y = 20,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 OffX = 2,
 OffY = 0,
@@ -1235,7 +1239,7 @@ Length = 16,
 Delay = 1,
 X = 0,
 Y = 40,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Tumble",
 ObjectDisabled = 1,
@@ -1252,7 +1256,7 @@ Length = 16,
 Delay = 15,
 X = 0,
 Y = 60,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Dig",
 StartCall = "Digging",
@@ -1269,7 +1273,7 @@ Length = 16,
 Delay = 1,
 X = 0,
 Y = 60,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Bridge",
 StartCall = "Digging",
@@ -1320,7 +1324,7 @@ Length = 11,
 Delay = 16,
 X = 0,
 Y = 100,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 OffX = 0,
 OffY = 3,
@@ -1339,7 +1343,6 @@ Delay = 2,
 X = 0,
 Y = 120,
 Wdt = 8,
-OffX = 4,
 Hgt = 20,
 NextAction = "Hold",
 InLiquidAction = "Swim",
@@ -1356,7 +1359,7 @@ Length = 4,
 Delay = 1,
 X = 0,
 Y = 140,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "KneelUp",
 },
@@ -1370,7 +1373,7 @@ Length = 4,
 Delay = 1,
 X = 64,
 Y = 140,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Walk",
 },
@@ -1384,7 +1387,7 @@ Length = 8,
 Delay = 4,
 X = 0,
 Y = 160,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Hold",
 ObjectDisabled = 1,
@@ -1401,7 +1404,7 @@ Length = 8,
 Delay = 1,
 X = 0,
 Y = 180,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "KneelUp",
 ObjectDisabled = 1,
@@ -1416,7 +1419,7 @@ Length = 8,
 Delay = 1,
 X = 0,
 Y = 200,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Walk",
 Animation = "Throw",
@@ -1432,7 +1435,7 @@ Length = 8,
 Delay = 2,
 X = 0,
 Y = 220,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Fight",
 EndCall = "Punching",
@@ -1445,7 +1448,7 @@ Directions = 2,
 FlipDir = 1,
 X = 0,
 Y = 240,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 Length = 6,
 Delay = 3,
@@ -1464,7 +1467,7 @@ Length = 4,
 Delay = 3,
 X = 128,
 Y = 120,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Ride",
 StartCall = "Riding",
@@ -1480,7 +1483,7 @@ Length = 1,
 Delay = 10,
 X = 128,
 Y = 120,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "RideStill",
 StartCall = "Riding",
@@ -1496,7 +1499,7 @@ Length = 8,
 Delay = 15,
 X = 128,
 Y = 140,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Push",
 InLiquidAction = "Swim",
@@ -1511,7 +1514,7 @@ Length = 8,
 Delay = 3,
 X = 128,
 Y = 160,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Chop",
 StartCall = "Chopping",
@@ -1527,7 +1530,7 @@ Length = 7,
 Delay = 4,
 X = 128,
 Y = 180,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Fight",
 StartCall = "Fighting",
@@ -1543,7 +1546,7 @@ Length = 8,
 Delay = 3,
 X = 128,
 Y = 200,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Fight",
 ObjectDisabled = 1,
@@ -1558,7 +1561,7 @@ Length = 8,
 Delay = 2,
 X = 128,
 Y = 220,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Build",
 StartCall = "Building",
@@ -1574,7 +1577,7 @@ Length = 8,
 Delay = 1,
 X = 128,
 Y = 240,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Ride",
 StartCall = "Throwing",
@@ -1590,7 +1593,7 @@ Length = 8,
 Delay = 3,
 X = 0,
 Y = 260,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Process",
 EndCall = "Processing",
@@ -1605,7 +1608,7 @@ Length = 8,
 Delay = 3,
 X = 128,
 Y = 260,
-Wdt = 16,
+Wdt = 8,
 Hgt = 20,
 NextAction = "Walk",
 },  }, def);
