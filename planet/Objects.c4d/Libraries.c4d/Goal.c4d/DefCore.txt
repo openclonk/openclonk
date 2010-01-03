@@ -1,0 +1,8 @@
+[DefCore]
+id=GOAL
+Version=4,10,0,0
+Category=C4D_StaticBack
+MaxUserSelect=1
+Width=1
+Height=1
+Value=0

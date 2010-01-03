@@ -10,4 +10,4 @@ Benboncan		- Blast3
 kwandalist		- RockHit1, RockHit2
 thecheeseman	- Hurt1, Hurt2, Die 
 shall555		- Dig1, Dig2, Dig3, Dig4, Dig5
-
+tobyk       - Fanfare

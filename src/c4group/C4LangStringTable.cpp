@@ -69,7 +69,7 @@ void C4LangStringTable::PopulateStringTable() const
 			}
 			else if (*data == '\0' || *data == '\n' || *data == '\r')
 			{
-				if (!key.empty())
+				if (!key.empty() && key[0]!='#')
 					LogF("%s: string table entry without a value: \"%s\"", GetFilePath()[0] ? GetFilePath() : "<unknown>", key.c_str());
 				key.clear();
 			}

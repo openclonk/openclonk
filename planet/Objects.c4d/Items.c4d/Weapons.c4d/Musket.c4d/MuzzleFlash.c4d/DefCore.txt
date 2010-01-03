@@ -1,6 +1,7 @@
 [DefCore]
 id=FLSH
 Version=4,9,10,10
+Category=C4D_Object
 Width=16
 Height=16
 Offset=-8,-16

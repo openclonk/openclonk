@@ -2255,10 +2255,6 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 	// Okay; everything in denumerated state from now on
 	PointersDenumerated = true;
 
-	// goal objects exist, but no GOAL? create it
-	if (Objects.ObjectsInt().ObjectCount(C4ID_None, C4D_Goal))
-		if (!Objects.FindInternal(C4Id("GOAL")))
-			CreateObject(C4Id("GOAL"),NULL);
 	SetInitProgress(96);
 
 	// close any gfx groups, because they are no longer needed (after sky is initialized)
