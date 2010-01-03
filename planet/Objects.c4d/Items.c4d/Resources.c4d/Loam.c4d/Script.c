@@ -19,17 +19,15 @@ func Hit()
 func ControlUse(object clonk, int x, int y)
 {
   // Clonk must stand on ground
-	if(clonk->GetAction() == "Walk")
-	{
-	  // Gfx
-		clonk->SetAction("Bridge");
-		clonk->SetComDir(COMD_None);
-		clonk->SetXDir(0);
-		clonk->SetYDir(0);
-		last_x = BoundBy(x,-0,0)+GetX(); last_y = clonk->GetDefBottom()+3;
-		last_frame = begin_frame = FrameCounter();
-	}
-	return true;
+	if(clonk->GetAction() != "Walk") return false;
+
+  // Gfx
+	clonk->SetAction("Bridge");
+	clonk->SetComDir(COMD_None);
+	clonk->SetXDir(0);
+	clonk->SetYDir(0);
+	last_x = BoundBy(x,-0,0)+GetX(); last_y = clonk->GetDefBottom()+3;
+	last_frame = begin_frame = FrameCounter();
 }
 
 func HoldingEnabled() { return true; }

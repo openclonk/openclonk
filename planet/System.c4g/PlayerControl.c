@@ -32,7 +32,11 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 		// Overload by effect?
 		if (cursor->Control2Effect(plr, ctrl, cursorX, cursorY, strength, repeat, release)) return true;
 
-		return cursor->ObjectControl(plr, ctrl, cursorX, cursorY, strength, repeat, release);
+		if (cursor->ObjectControl(plr, ctrl, cursorX, cursorY, strength, repeat, release))
+		{
+			if (cursor && !release && !repeat) cursor->DoNoCollectDelay(-1);
+			return true;
+		}
 	}
 	// No cursor? Nothing to handle control then
 	return false;
