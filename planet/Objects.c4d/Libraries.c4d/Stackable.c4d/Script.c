@@ -18,15 +18,15 @@ public func UpdatePicture()
 	if(hun > 0)
 	{
 		SetGraphics(Format("%d",hun),NUMB,1,GFXOV_MODE_Picture);
-		SetObjDrawTransform(250,0,0,0,250,0,0,1);
+		SetObjDrawTransform(250,0,0,0,250,0,1);
 	}
 	if(ten > 0)
 	{
 		SetGraphics(Format("%d",ten),NUMB,2,GFXOV_MODE_Picture);
-		SetObjDrawTransform(250,0,0,0,250,0,0,2);
+		SetObjDrawTransform(250,0,0,0,250,0,2);
 	}
 	SetGraphics(Format("%d",hun),NUMB,3,GFXOV_MODE_Picture);
-	SetObjDrawTransform(250,0,0,0,250,0,0,3);
+	SetObjDrawTransform(250,0,0,0,250,0,3);
 	
 }
 

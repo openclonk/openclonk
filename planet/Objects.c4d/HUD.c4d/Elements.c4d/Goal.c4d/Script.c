@@ -31,6 +31,6 @@ public func Update()
 public func MouseSelect(int plr)
 {
 	if(plr != GetOwner()) return;
-	
-	Activate(plr);
+	if(!goal) return;
+	goal->Activate(plr);
 }
