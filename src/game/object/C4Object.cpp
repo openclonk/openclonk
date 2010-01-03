@@ -4038,7 +4038,7 @@ void C4Object::ExecAction()
       break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_THROW:
-      ydir=0; xdir=0;
+      //ydir=0; xdir=0;
       Action.t_attach|=CNAT_Bottom;
       Mobile=1;
       break;

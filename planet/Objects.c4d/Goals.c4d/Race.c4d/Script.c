@@ -303,12 +303,14 @@ func GetShortDescription(int iPlr)
 	var me;
 	var second = 0;
 	var iambest = false;
+	var alone = false;
 
 	if(iTeamCount)
 	{
 		var best = GetTeamWayPercent(iLeader);
 		var me = GetTeamWayPercent(GetPlayerTeam(iPlr));
 		iambest = (iLeader == GetPlayerTeam(iPlr));
+		alone = GetTeamCount() <= 1;
 		
 		for(var i = 0; i < GetTeamCount(); i++)
 		{
@@ -326,6 +328,7 @@ func GetShortDescription(int iPlr)
 		var best = GetWayPercent(iLeader);
 		var me = GetWayPercent(iPlr);
 		iambest = (iLeader == iPlr);
+		alone = GetPlayerCount() <= 1;
 		
 		for(var i = 0; i < GetPlayerCount(); i++)
 		{
@@ -337,7 +340,7 @@ func GetShortDescription(int iPlr)
 		}
 	}
 	
-	if(second == best)
+	if(second == best || alone)
 		return Format("%d%%",me);
 	else if(iambest)
 		return Format("%d%% (+%d%%)",me,me-second);
