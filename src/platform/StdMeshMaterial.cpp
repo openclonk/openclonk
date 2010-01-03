@@ -124,6 +124,29 @@ void StdMeshMaterialParserCtx::SkipWhitespace()
 		if(*Script == '\n') ++Line;
 		++Script;
 	}
+	
+	if(*Script == '/')
+	{
+		if(*(Script+1) == '/')
+		{
+			Script += 2;
+			while(*Script != '\n' && *Script != '\0')
+				++Script;
+			SkipWhitespace();
+		}
+		else if(*Script == '*')
+		{
+			for(Script += 2; *Script != '\0'; ++Script)
+				if(*Script == '*' && *(Script+1) == '/')
+					break;
+
+			if(*Script == '*')
+			{
+				Script += 2;
+				SkipWhitespace();
+			}
+		}
+	}
 }
 
 Token StdMeshMaterialParserCtx::Peek(StdStrBuf& name)
