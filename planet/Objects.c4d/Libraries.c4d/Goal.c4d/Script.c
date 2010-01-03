@@ -37,6 +37,13 @@ func RecheckGoalTimer()
     if(GetLeague()) timer_interval = 2; // league has more frequent checks
     AddEffect("IntGoalCheck", 0, 1, timer_interval, 0);
   }
+  // create hud objects for all players
+  for(var i = 0; i < GetPlayerCount(); ++i)
+  {
+	var plr = GetPlayerByIndex(i);
+	var HUD = FindObject(Find_ID(HUDC),FindOwner(plr));
+	if(HUD) HUD->UpdateGoal();
+  }
 }
 
 global func FxIntGoalCheckTimer(object trg, int num, int time)

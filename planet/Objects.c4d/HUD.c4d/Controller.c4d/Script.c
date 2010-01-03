@@ -1,5 +1,3 @@
-#strict 2
-
 /*
 	Per-Player Controller (HUD)
 	Author: Newton
