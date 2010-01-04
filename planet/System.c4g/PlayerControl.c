@@ -34,9 +34,15 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 
 		if (cursor->ObjectControl(plr, ctrl, cursorX, cursorY, strength, repeat, release))
 		{
-			if (cursor && !release && !repeat) cursor->DoNoCollectDelay(-1);
+			if (cursor && !release && !repeat)
+			{
+				cursor->DoNoCollectDelay(-1);
+				// non-mouse controls reset view
+				if (!x && !y) ResetCursorView(plr);
+			}
 			return true;
 		}
+
 	}
 	// No cursor? Nothing to handle control then
 	return false;
