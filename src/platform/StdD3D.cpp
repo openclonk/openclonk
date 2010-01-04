@@ -165,6 +165,13 @@ bool CStdD3D::UpdateClipper()
 	return true;
 	}
 
+
+bool CStdD3D::PrepareMaterial(StdMeshMaterial &mat)
+{
+	// TODO
+	return false;
+}
+
 bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 	{
 	// call from gfx thread only!
@@ -265,6 +272,15 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 		lpDevice->SetTexture(pShader->iFoWTexIndex, NULL);
 		}
 	}
+
+void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform *pTransform)
+{
+	// TODO: Implement this
+	for (int x = 0; x < twdt; x += 10)
+		for (int y = 0; y < thgt; y += 10)
+			this->DrawBoxDw(lpPrimary, tx+x, ty+y, tx+Min(twdt, x+10.0f), ty+Min(thgt, y+10.0f),
+			(((x+y)/10)&1)?0xff00ff:0x00ff00);
+}
 
 // get bit depth from surface format
 unsigned int Format2BitDepth(D3DFORMAT format)

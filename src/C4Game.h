@@ -24,7 +24,7 @@
 #ifndef INC_C4Game
 #define INC_C4Game
 
-
+#include <StdMeshMaterial.h>
 #include <C4GameParameters.h>
 #include <C4PlayerInfo.h>
 #include <C4RoundResults.h>
@@ -98,6 +98,7 @@ class C4Game
 #endif
 		C4Scoreboard        Scoreboard;
 		C4VideoPlayer       VideoPlayer;
+		StdMeshMatManager		MaterialManager;
 		class C4Network2Stats *pNetworkStatistics; // may be NULL if no statistics are recorded
 		class C4KeyboardInput &KeyboardInput;
 		class C4FileMonitor *pFileMonitor;
