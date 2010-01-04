@@ -87,3 +87,4 @@ NextAction = "Work",
 EndCall = "ConsumeFuel",
 },  }, def);
   SetProperty("Name", "$Name$", def);
+}

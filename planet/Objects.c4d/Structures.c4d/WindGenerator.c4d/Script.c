@@ -38,3 +38,4 @@ NextAction = "Turn",
 //Animation = "Turn",
 },  }, def);
   SetProperty("Name", "$Name$", def);
+}

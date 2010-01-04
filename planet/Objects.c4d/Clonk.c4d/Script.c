@@ -784,6 +784,7 @@ Jump = {
 	NextAction = "Hold",
 	InLiquidAction = "Swim",
 	PhaseCall = "CheckStuck",
+	Animation = "Jump",
 },
 KneelDown = {
 	Prototype = Action,
