@@ -68,7 +68,6 @@ typedef unsigned __int8 uint8_t;
 typedef unsigned __int16 uint16_t;
 typedef unsigned __int32 uint32_t;
 typedef unsigned __int64 uint64_t;
-typedef signed int ssize_t;
 // Copied from newer stddef.h
 #ifndef _INTPTR_T_DEFINED
 #ifdef  _WIN64
@@ -84,6 +83,8 @@ typedef __int32 intptr_t;
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#else
+typedef ptrdiff_t ssize_t;
 #endif
 
 #if defined(__GNUC__)
