@@ -74,8 +74,7 @@ public:
 		BO_Replace,
 		BO_Add,
 		BO_Modulate,
-		BO_AlphaBlend,
-		BO_Extended
+		BO_AlphaBlend
 	};
 
 	enum BlendOpExType {
@@ -142,18 +141,17 @@ public:
 	float TexBorderColor[4];
 	FilteringType Filtering[3]; // min, max, mipmap
 	
-	BlendOpType ColorOp;
-	BlendOpExType ColorOpEx; // only used if ColorOp==CO_Extended
-	BlendOpSourceType ColorOpSources[2]; // only used if ColorOp==CO_Extended
-	float ColorOpManualFactor; // only used if ColorOp==CO_Extended
-	float ColorOpManualColor1[3]; // only used if ColorOp==CO_Extended
-	float ColorOpManualColor2[3]; // only used if ColorOp==CO_Extended
+	BlendOpExType ColorOpEx;
+	BlendOpSourceType ColorOpSources[2];
+	float ColorOpManualFactor;
+	float ColorOpManualColor1[3];
+	float ColorOpManualColor2[3];
 	
-	BlendOpExType AlphaOpEx; // only used if ColorOp==CO_Extended
-	BlendOpSourceType AlphaOpSources[2]; // only used if ColorOp==CO_Extended
-	float AlphaOpManualFactor; // only used if ColorOp==CO_Extended
-	float AlphaOpManualAlpha1; // only used if ColorOp==CO_Extended
-	float AlphaOpManualAlpha2; // only used if ColorOp==CO_Extended
+	BlendOpExType AlphaOpEx;
+	BlendOpSourceType AlphaOpSources[2];
+	float AlphaOpManualFactor;
+	float AlphaOpManualAlpha1;
+	float AlphaOpManualAlpha2;
 
 private:
 	TexRef* Texture;

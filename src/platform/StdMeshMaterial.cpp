@@ -408,7 +408,7 @@ StdMeshMaterialTextureUnit::TexRef::~TexRef()
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
-	Texture(NULL), TexAddressMode(AM_Wrap), ColorOp(BO_Modulate), ColorOpEx(BOX_Modulate),
+	Texture(NULL), TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate),
 	ColorOpManualFactor(0.0f), AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f)
 {
 	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0f; TexBorderColor[3] = 1.0f;
@@ -420,7 +420,7 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
-	Texture(other.Texture), TexAddressMode(other.TexAddressMode), ColorOp(other.ColorOp),
+	Texture(other.Texture), TexAddressMode(other.TexAddressMode),
 	ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
 	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor)
 {
@@ -464,7 +464,6 @@ StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshM
 		TexBorderColor[i] = other.TexBorderColor[i];
 	for(unsigned int i = 0; i < 3; ++i)
 		Filtering[i] = other.Filtering[i];
-	ColorOp = other.ColorOp;
 	ColorOpEx = other.ColorOpEx;
 	ColorOpSources[0] = other.ColorOpSources[0];
 	ColorOpSources[1] = other.ColorOpSources[1];
@@ -524,11 +523,28 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 		}
 		else if(token_name == "colour_op")
 		{
-			ColorOp = ctx.AdvanceEnum(BlendOpEnumerators);
+			BlendOpType ColorOp = ctx.AdvanceEnum(BlendOpEnumerators);
+			switch(ColorOp)
+			{
+			case BO_Replace:
+				ColorOpEx = BOX_Source1;
+				break;
+			case BO_Add:
+				ColorOpEx = BOX_Add;
+				break;
+			case BO_Modulate:
+				ColorOpEx = BOX_Modulate;
+				break;
+			case BO_AlphaBlend:
+				ColorOpEx = BOX_BlendTextureAlpha;
+				break;
+			}
+
+			ColorOpSources[0] = BOS_Texture;
+			ColorOpSources[1] = BOS_Current;
 		}
 		else if(token_name == "colour_op_ex")
 		{
-			ColorOp = BO_Extended;
 			ColorOpEx = ctx.AdvanceEnum(BlendOpExEnumerators);
 			ColorOpSources[0] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
 			ColorOpSources[1] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
@@ -538,7 +554,6 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 		}
 		else if(token_name == "alpha_op_ex")
 		{
-			ColorOp = BO_Extended;
 			AlphaOpEx = ctx.AdvanceEnum(BlendOpExEnumerators);
 			AlphaOpSources[0] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
 			AlphaOpSources[1] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
