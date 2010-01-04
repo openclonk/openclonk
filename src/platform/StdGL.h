@@ -104,6 +104,7 @@ class CStdGL : public CStdDDraw
 		virtual bool OnResolutionChanged(unsigned int iXRes, unsigned int iYRes); // reinit clipper for new resolution
 		// Clipper
 		bool UpdateClipper(); // set current clipper to render target
+		bool PrepareMaterial(StdMeshMaterial& mat);
 		// Surface
 		bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
 		CStdGLCtx &GetMainCtx() { return MainCtx; }
@@ -113,7 +114,8 @@ class CStdGL : public CStdDDraw
 #endif
 		// Blit
 		void SetupTextureEnv(bool fMod2, bool landscape);
-		void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
+		virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact);
+		virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform);
 		virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
 		                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[]);
 		void FillBG(DWORD dwClr=0);

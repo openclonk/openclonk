@@ -5529,6 +5529,43 @@ static C4Void FnDoNoCollectDelay(C4AulObjectContext *ctx, int change)
 	return C4VNull;
 }
 
+static bool FnAnimationPlay(C4AulContext *ctx, C4String *szAnimation, Nillable<long> weight)
+	{
+	if(!ctx->Obj) return false;
+	if(!ctx->Obj->pMeshInstance) return false;
+
+	float w = 1.0f;
+	if(!weight.IsNil()) w = weight / 1000.0f;
+
+	return ctx->Obj->pMeshInstance->PlayAnimation(szAnimation->GetData(), w);
+	}
+
+static bool FnAnimationStop(C4AulContext *ctx, C4String *szAnimation)
+	{
+	if(!ctx->Obj) return false;
+	if(!ctx->Obj->pMeshInstance) return false;
+	return ctx->Obj->pMeshInstance->StopAnimation(szAnimation->GetData());
+	}
+
+static bool FnAnimationSetState(C4AulContext *ctx, C4String *szAnimation, Nillable<long> position, Nillable<long> weight)
+	{
+	if(!ctx->Obj) return false;
+	if(!ctx->Obj->pMeshInstance) return false;
+	StdMeshInstance::AnimationRef ref(ctx->Obj->pMeshInstance, szAnimation->GetData());
+	if(!ref) return false;
+
+	if(!position.IsNil())
+		{
+		float pos = position / 1000.0f;
+		if(pos > ref.GetAnimation().Length) return false;
+		ref.SetPosition(pos);
+		}
+
+	if(!weight.IsNil())
+		ref.SetWeight(weight / 1000.0f);
+	return true;
+	}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -5999,6 +6036,10 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlayerControlEnabled", FnSetPlayerControlEnabled);
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
 	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
+
+	AddFunc(pEngine, "AnimationPlay", FnAnimationPlay);
+	AddFunc(pEngine, "AnimationStop", FnAnimationStop);
+	AddFunc(pEngine, "AnimationSetState", FnAnimationSetState);
 
 	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "this", Fn_this);

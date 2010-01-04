@@ -404,7 +404,167 @@ private func UpdateInventorySelection()
   while(ScrollContents() != pObj && iSave < 10) iSave++;
 //  if(iSave == 10) Log("ERROR: Inventory doesn't match");
 }
+
+
+protected func ControlThrow()
+{
+  // Bei vorherigem Doppel-Stop nur Ablegen
+  if (GetPlrDownDouble(GetOwner())) return 0;
+  // Steuerung an Effekt weitergeben 
+  if (Control2Effect("ControlThrow")) return 1;
+  // Reiten und Werfen
+  if (IsRiding())
+    if (Contents(0))
+    {
+      SetAction("RideThrow");
+      return 1;
+    }
+  if(!GetEffect("IntDoThrow", this))
+  {
+    AddEffect("IntDoThrow", this, 1, 1);
+    AnimationPlay("ThrowArms", 0);
+  }
+  // Keine �berladene Steuerung
+  return 1;
+}
+
+global func FxIntDoThrowTimer(object target, int number, int time)
+{
+  var walk_pos = (time % 50) * 2400 / 50; // Walk animation ranges to 2400
+  // Animation lasts 20 frames
+  if(time <= 15*2)
+  {
+    var off = time;
+    var weight = 2000*off;
+    var jump_pos = off * 1500 / (15*2); // Throw animation ranges to 1500
+    target->AnimationSetState("ThrowArms", jump_pos, weight);
+    if(time == 9*2)
+      target->Throwing();
+  }
+  else
+  {
+    var weight = 2000-2000*(time-15*2)/5;
+    target->AnimationSetState("ThrowArms", 1500, weight);
+    // Hold until 50 frames
+    if(time > 35)
+    {
+      target->AnimationStop("ThrowArms");
+      return -1;
+    }
+  }
+}
+
+private func Throwing()
+{
+  // Erstes Inhaltsobjekt werfen
+  var pObj = Contents(0);
+  // Wurfparameter berechnen
+  var iX, iY, iR, iXDir, iYDir, iRDir;
+  iX = 0; if (!GetDir()) iX = -iX;
+  iY = -2;
+  iR = Random(360);
+  iXDir = GetPhysical("Throw") / 25000; if(!GetDir()) iXDir = -iXDir;
+  iYDir = -GetPhysical("Throw") / 25000;
+  iRDir = Random(40) - 20;
+  // Reitet? Eigengeschwindigkeit addieren
+  if (GetActionTarget())
+  {
+    iXDir += GetActionTarget()->GetXDir() / 10;
+    iYDir += GetActionTarget()->GetYDir() / 10;
+  }
+  // Werfen!
+  pObj->Exit(iX, iY, iR, iXDir, iYDir, iRDir);  
+  // Fertig
+  return 1;  
+}
 */
+
+
+// Test to synchronize the walkanimation with the movement
+local OldPos;
+
+static CLNK_WalkStates; // TODO: Well wasn't there once  a patch, allowing arrys to be assigned to global static?
+
+func StartWalk()
+{
+	if(CLNK_WalkStates == nil)
+		CLNK_WalkStates = ["Stand", "Walk", "Run"];
+	if(!GetEffect("IntWalk", this))
+		AddEffect("IntWalk", this, 1, 1, this);
+}
+
+func FxIntWalkStart(pTarget, iNumber)
+{
+	AnimationPlay("Stand", 0);
+	AnimationPlay("Walk", 0);
+	AnimationPlay("Run", 0);
+	EffectVar(0, pTarget, iNumber) = 0; // Phase
+	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
+	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
+	EffectVar(3, pTarget, iNumber) = 0; // Run weight
+	EffectVar(4, pTarget, iNumber) = 0; // Oldstate
+}
+
+func FxIntWalkStop(pTarget, iNumber)
+{
+	AnimationStop("Stand");
+	AnimationStop("Walk");
+	AnimationStop("Run");
+}
+
+func FxIntWalkTimer(pTarget, iNumber, iTime)
+{
+	if(GetAction() != "Walk") return -1;
+	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
+  var iState = 0;
+
+	// Play stand animation when not moving
+	if(iSpeed < 1)
+	{
+		AnimationSetState("Stand", ((iTime/5)%11)*100, nil);
+		iState = 1;
+	}
+	// When moving slowly play synchronized with movement walk
+	else if(iSpeed < 10)
+	{
+		EffectVar(0, pTarget, iNumber) +=  iSpeed*25/(16*1);
+		if(EffectVar(0, pTarget, iNumber) > 250) EffectVar(0, pTarget, iNumber) -= 250;
+
+		AnimationSetState("Walk", EffectVar(0, pTarget, iNumber)*10, nil);
+		iState = 2;
+	}
+	// When moving fast play run
+	else
+	{
+		if(EffectVar(4, pTarget, iNumber) != 3)
+			EffectVar(0, pTarget, iNumber) = 190; // start with frame 190 (feet on the floor)
+		else
+  		EffectVar(0, pTarget, iNumber) += iSpeed*25/(16*3);
+		if(EffectVar(0, pTarget, iNumber) > 250) EffectVar(0, pTarget, iNumber) -= 250;
+
+		AnimationSetState("Run", EffectVar(0, pTarget, iNumber)*10, nil);
+		iState = 3;
+	}
+	// Blend between the animations: The actuall animations gains weight till it reaches 1000
+	// the other animations lose weight until they are at 0
+	for(var i = 1; i <= 3; i++)
+	{
+		if(i == iState)
+		{
+			if(EffectVar(i, pTarget, iNumber) < 1000)
+				EffectVar(i, pTarget, iNumber) += 200;
+		}
+		else
+		{
+			if(EffectVar(i, pTarget, iNumber) > 0)
+				EffectVar(i, pTarget, iNumber) -= 200;
+		}
+		AnimationSetState(CLNK_WalkStates[i-1], nil, EffectVar(i, pTarget, iNumber));
+	}
+	EffectVar(4, pTarget, iNumber) = iState;
+}
+
+
 
 /* Act Map */
 
@@ -421,9 +581,10 @@ Walk = {
 	Delay = 15,
 	X = 0,
 	Y = 0,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Walk",
+	StartCall = "StartWalk",
 	InLiquidAction = "Swim",
 },
 StillTrans1 = {
@@ -436,7 +597,7 @@ StillTrans1 = {
 	Delay = 2,
 	X = 0,
 	Y = 280,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Still",
 	InLiquidAction = "Swim",
@@ -451,7 +612,7 @@ Still = {
 	Delay = 10,
 	X = 64,
 	Y = 280,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Still",
 	InLiquidAction = "Swim",
@@ -467,7 +628,7 @@ StillTrans2 = {
 	Delay = 2,
 	X = 192,
 	Y = 280,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Still",
 	InLiquidAction = "Swim",
@@ -482,7 +643,7 @@ Scale = {
 	Delay = 15,
 	X = 0,
 	Y = 20,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	OffX = 2,
 	OffY = 0,
@@ -499,7 +660,7 @@ ScaleDown = {
 	Delay = 15,
 	X = 0,
 	Y = 20,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	OffX = 2,
 	OffY = 0,
@@ -517,7 +678,7 @@ Tumble = {
 	Delay = 1,
 	X = 0,
 	Y = 40,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Tumble",
 	ObjectDisabled = 1,
@@ -534,7 +695,7 @@ Dig = {
 	Delay = 15,
 	X = 0,
 	Y = 60,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Dig",
 	StartCall = "Digging",
@@ -551,7 +712,7 @@ Bridge = {
 	Delay = 1,
 	X = 0,
 	Y = 60,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Bridge",
 	StartCall = "Digging",
@@ -567,7 +728,7 @@ Swim = {
 	Delay = 15,
 	X = 0,
 	Y = 80,
-	Wdt = 20,
+	Wdt = 8,
 	Hgt = 20,
 	OffX = 0,
 	OffY = 1,
@@ -584,7 +745,7 @@ Swim2 = {
 	Delay = 15,
 	X = 0,
 	Y = 300,
-	Wdt = 20,
+	Wdt = 8,
 	Hgt = 20,
 	OffX = 0,
 	OffY = 1,
@@ -601,7 +762,7 @@ Hangle = {
 	Delay = 16,
 	X = 0,
 	Y = 100,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	OffX = 0,
 	OffY = 3,
@@ -618,7 +779,7 @@ Jump = {
 	Delay = 3,
 	X = 0,
 	Y = 120,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Hold",
 	InLiquidAction = "Swim",
@@ -634,7 +795,7 @@ KneelDown = {
 	Delay = 1,
 	X = 0,
 	Y = 140,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "KneelUp",
 },
@@ -648,7 +809,7 @@ KneelUp = {
 	Delay = 1,
 	X = 64,
 	Y = 140,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Walk",
 },
@@ -662,7 +823,7 @@ Dive = {
 	Delay = 4,
 	X = 0,
 	Y = 160,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Hold",
 	ObjectDisabled = 1,
@@ -679,7 +840,7 @@ FlatUp = {
 	Delay = 1,
 	X = 0,
 	Y = 180,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "KneelUp",
 	ObjectDisabled = 1,
@@ -694,7 +855,7 @@ Throw = {
 	Delay = 1,
 	X = 0,
 	Y = 200,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Walk",
 	InLiquidAction = "Swim",
@@ -709,7 +870,7 @@ Punch = {
 	Delay = 2,
 	X = 0,
 	Y = 220,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Fight",
 	EndCall = "Punching",
@@ -722,7 +883,7 @@ Dead = {
 	FlipDir = 1,
 	X = 0,
 	Y = 240,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	Length = 6,
 	Delay = 3,
@@ -740,7 +901,7 @@ Ride = {
 	Delay = 3,
 	X = 128,
 	Y = 120,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Ride",
 	StartCall = "Riding",
@@ -756,7 +917,7 @@ RideStill = {
 	Delay = 10,
 	X = 128,
 	Y = 120,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "RideStill",
 	StartCall = "Riding",
@@ -772,7 +933,7 @@ Push = {
 	Delay = 15,
 	X = 128,
 	Y = 140,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Push",
 	InLiquidAction = "Swim",
@@ -787,7 +948,7 @@ Chop = {
 	Delay = 3,
 	X = 128,
 	Y = 160,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Chop",
 	StartCall = "Chopping",
@@ -803,7 +964,7 @@ Fight = {
 	Delay = 4,
 	X = 128,
 	Y = 180,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Fight",
 	StartCall = "Fighting",
@@ -819,7 +980,7 @@ GetPunched = {
 	Delay = 3,
 	X = 128,
 	Y = 200,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Fight",
 	ObjectDisabled = 1,
@@ -834,7 +995,7 @@ Build = {
 	Delay = 2,
 	X = 128,
 	Y = 220,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Build",
 	StartCall = "Building",
@@ -850,7 +1011,7 @@ RideThrow = {
 	Delay = 1,
 	X = 128,
 	Y = 240,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Ride",
 	InLiquidAction = "Swim",
@@ -865,7 +1026,7 @@ Process = {
 	Delay = 3,
 	X = 0,
 	Y = 260,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Process",
 	EndCall = "Processing",
@@ -880,9 +1041,10 @@ Drink = {
 	Delay = 3,
 	X = 128,
 	Y = 260,
-	Wdt = 16,
+	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Walk",
 },  }, def);
   SetProperty("Name", "Clonk", def);
 }
+

@@ -27,6 +27,7 @@
 #include <StdSurface8.h>
 #include <StdFont.h>
 #include <StdBuf.h>
+#include <StdMesh.h>
 
 // texref-predef
 class CStdDDraw;
@@ -276,6 +277,7 @@ class CStdDDraw
 		void Grayscale(SURFACE sfcSfc, int32_t iOffset = 0);
 		void LockingPrimary() { PrimaryLocked=true; }
 		void PrimaryUnlocked() { PrimaryLocked=false; }
+		virtual bool PrepareMaterial(StdMeshMaterial &mat) = 0; // Find best technique, fail if there is none
 		virtual bool PrepareRendering(SURFACE sfcToSurface) = 0; // check if/make rendering possible to given surface
 		// Blit
 		virtual void BlitLandscape(SURFACE sfcSource, float fx, float fy,
@@ -285,7 +287,9 @@ class CStdDDraw
 		bool Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fhgt,
 							SURFACE sfcTarget, float tx, float ty, float twdt, float thgt,
 							bool fSrcColKey=false, CBltTransform *pTransform=NULL);
+		bool RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform); // Call PrepareMaterial with Mesh's material before
 		virtual void PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact) = 0;
+		virtual void PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform) = 0;
 		bool Blit8(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt, // force 8bit-blit (inline)
 							SURFACE sfcTarget, int tx, int ty, int twdt, int thgt,
 							bool fSrcColKey=false, CBltTransform *pTransform=NULL);
