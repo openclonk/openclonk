@@ -287,8 +287,10 @@ private func ClearButtons(int start)
 public func ControlHotkey(int hotindex)
 {
 	if(GetLength(actionbar) <= hotindex) return false;
-	
-	actionbar[hotindex]->~MouseSelection(GetOwner());
+	// only if it is not already used
+	if(GetCursor(GetOwner())->GetSelected() != hotindex)
+		if(GetCursor(GetOwner())->GetSelected(true) != hotindex)
+			actionbar[hotindex]->~MouseSelection(GetOwner());
 	
 	return true;
 }
