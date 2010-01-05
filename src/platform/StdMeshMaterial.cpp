@@ -67,8 +67,7 @@ namespace
 		{ "anisotropic", { StdMeshMaterialTextureUnit::F_Anisotropic, StdMeshMaterialTextureUnit::F_Anisotropic, StdMeshMaterialTextureUnit::F_Linear } },
 		{ NULL }
 	};
-	
-	// Don't include CO_Extended, since this is set automatically when colour_op_ex is specified
+
 	const Enumerator<StdMeshMaterialTextureUnit::BlendOpType> BlendOpEnumerators[] = {
 		{ "replace", StdMeshMaterialTextureUnit::BO_Replace },
 		{ "add", StdMeshMaterialTextureUnit::BO_Add },
