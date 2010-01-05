@@ -8,6 +8,14 @@ public func IsLorry() { return 1; }
 
 public func IsToolProduct() { return 1; }
 
+protected func Initialize()
+{
+	AnimationPlay("Drive");
+	AnimationPlay("Tremble");
+	iRotWheels = 0;
+	iTremble = 0;
+}
+
 /* Steuerung */
 
 protected func ContactLeft()
@@ -118,6 +126,24 @@ protected func ContextLoadUp(object pClonk)
   // Der Clonk soll seine getragenen Objekte auch einladen (ansonsten legt er sie nur irgendwo ab)
   for (var i = 0; i < Min(pClonk->ContentsCount(), iMaxLoad); i++)
     pClonk->AddCommand("Put", this, 0,0, pClonk->Contents(i));
+}
+
+local iRotWheels;
+local iTremble;
+
+func TurnWheels()
+{
+	iRotWheels += GetXDir()*2000/100; // Einmal rum (20 frames mal 10fps) nach 10 m
+	while(iRotWheels < 0) iRotWheels += 2000;
+	while(iRotWheels > 2000) iRotWheels -= 2000;
+	AnimationSetState("Drive", iRotWheels);
+	if(Random(100) < Abs(GetXDir()))
+	{
+		iTremble += 100;
+		if(iTremble < 0) iTremble += 2000;
+  	if(iTremble > 2000) iTremble -= 2000;
+		AnimationSetState("Tremble", iTremble);
+	}
 }
 
 func Definition(def) {
