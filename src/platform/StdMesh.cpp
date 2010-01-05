@@ -60,35 +60,9 @@ namespace
 		}
 	};
 
-	// Generate matrix to convert the mesh from Ogre coordinate system to Clonk
-	// coordinate system.
-	StdMeshMatrix CoordCorrectionMatrix()
-	{
-		StdMeshMatrix matrix;
-		StdMeshMatrix helper;
-
-		//matrix.SetIdentity();
-		matrix.SetScale(-1.0f, 1.0f, 1.0f);
-
-		//helper.SetRotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f);
-		helper.SetRotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f);
-		matrix.Mul(helper);
-
-		helper.SetRotate(M_PI/2.0f, 0.0f, 0.0f, 1.0f);
-		matrix.Mul(helper);
-
-		return matrix;
-	}
-
-	StdMeshMatrix CoordCorrectionMatrixInverse()
-	{
-		StdMeshMatrix matrix = CoordCorrectionMatrix();
-		matrix.SetInverse();
-		return matrix;
-	}
-
-	StdMeshMatrix CoordCorrection = CoordCorrectionMatrix();
-	StdMeshMatrix CoordCorrectionInverse = CoordCorrectionMatrixInverse();
+	// Generate matrix to convert the mesh from Ogre coordinate system to Clonk coordinate system.
+	StdMeshMatrix CoordCorrection = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 0.0f, 0.0f, 1.0f);
+	StdMeshMatrix CoordCorrectionInverse = StdMeshMatrix::Inverse(CoordCorrection);
 }
 
 StdMeshError::StdMeshError(const StdStrBuf& message, const char* file, unsigned int line)
@@ -171,192 +145,425 @@ void StdMeshXML::Error(const StdStrBuf& message, TiXmlElement* element) const
 	throw StdMeshError(message, FileName.getData(), element->Row());
 }
 
-void StdMeshMatrix::SetIdentity()
+/* Boring Math stuff begins here */
+
+StdMeshVector StdMeshVector::Cross(const StdMeshVector& lhs, const StdMeshVector& rhs)
 {
-	a[0][0] = 1.0f; a[0][1] = 0.0f; a[0][2] = 0.0f; a[0][3] = 0.0f;
-	a[1][0] = 0.0f; a[1][1] = 1.0f; a[1][2] = 0.0f; a[1][3] = 0.0f;
-	a[2][0] = 0.0f; a[2][1] = 0.0f; a[2][2] = 1.0f; a[2][3] = 0.0f;
+	StdMeshVector v;
+	v.x = lhs.y*rhs.z - lhs.z*rhs.y;
+	v.y = lhs.z*rhs.x - lhs.x*rhs.z;
+	v.z = lhs.x*rhs.y - lhs.y*rhs.x;
+	return v;
 }
 
-void StdMeshMatrix::SetInverse()
+StdMeshMatrix StdMeshMatrix::Zero()
 {
-	const float det = a[0][0]*a[1][1]*a[2][2] + a[0][1]*a[1][2]*a[2][0] + a[0][2]*a[1][0]*a[2][1]
-	                - a[0][0]*a[1][2]*a[2][1] - a[0][1]*a[1][0]*a[2][2] - a[0][2]*a[1][1]*a[2][0];
+	StdMeshMatrix m;
+	m.a[0][0] = 0.0f; m.a[0][1] = 0.0f; m.a[0][2] = 0.0f; m.a[0][3] = 0.0f;
+	m.a[1][0] = 0.0f; m.a[1][1] = 0.0f; m.a[1][2] = 0.0f; m.a[1][3] = 0.0f;
+	m.a[2][0] = 0.0f; m.a[2][1] = 0.0f; m.a[2][2] = 0.0f; m.a[2][3] = 0.0f;
+	return m;
+}
+
+StdMeshMatrix StdMeshMatrix::Identity()
+{
+	StdMeshMatrix m;
+	m.a[0][0] = 1.0f; m.a[0][1] = 0.0f; m.a[0][2] = 0.0f; m.a[0][3] = 0.0f;
+	m.a[1][0] = 0.0f; m.a[1][1] = 1.0f; m.a[1][2] = 0.0f; m.a[1][3] = 0.0f;
+	m.a[2][0] = 0.0f; m.a[2][1] = 0.0f; m.a[2][2] = 1.0f; m.a[2][3] = 0.0f;
+	return m;
+}
+
+StdMeshMatrix StdMeshMatrix::Inverse(const StdMeshMatrix& mat)
+{
+	StdMeshMatrix m;
+
+	const float det = mat.a[0][0]*mat.a[1][1]*mat.a[2][2] + mat.a[0][1]*mat.a[1][2]*mat.a[2][0] + mat.a[0][2]*mat.a[1][0]*mat.a[2][1]
+	                - mat.a[0][0]*mat.a[1][2]*mat.a[2][1] - mat.a[0][1]*mat.a[1][0]*mat.a[2][2] - mat.a[0][2]*mat.a[1][1]*mat.a[2][0];
 	assert(det != 0.0f);
-	StdMeshMatrix old(*this);
 
-	a[0][0] = (old.a[1][1]*old.a[2][2] - old.a[1][2]*old.a[2][1]) / det;
-	a[1][0] = (old.a[1][2]*old.a[2][0] - old.a[1][0]*old.a[2][2]) / det;
-	a[2][0] = (old.a[1][0]*old.a[2][1] - old.a[1][1]*old.a[2][0]) / det;
+	m.a[0][0] = (mat.a[1][1]*mat.a[2][2] - mat.a[1][2]*mat.a[2][1]) / det;
+	m.a[1][0] = (mat.a[1][2]*mat.a[2][0] - mat.a[1][0]*mat.a[2][2]) / det;
+	m.a[2][0] = (mat.a[1][0]*mat.a[2][1] - mat.a[1][1]*mat.a[2][0]) / det;
 
-	a[0][1] = (old.a[0][2]*old.a[2][1] - old.a[0][1]*old.a[2][2]) / det;
-	a[1][1] = (old.a[0][0]*old.a[2][2] - old.a[0][2]*old.a[2][0]) / det;
-	a[2][1] = (old.a[0][1]*old.a[2][0] - old.a[0][0]*old.a[2][1]) / det;
+	m.a[0][1] = (mat.a[0][2]*mat.a[2][1] - mat.a[0][1]*mat.a[2][2]) / det;
+	m.a[1][1] = (mat.a[0][0]*mat.a[2][2] - mat.a[0][2]*mat.a[2][0]) / det;
+	m.a[2][1] = (mat.a[0][1]*mat.a[2][0] - mat.a[0][0]*mat.a[2][1]) / det;
 
-	a[0][2] = (old.a[0][1]*old.a[1][2] - old.a[0][2]*old.a[1][1]) / det;
-	a[1][2] = (old.a[0][2]*old.a[1][0] - old.a[0][0]*old.a[1][2]) / det;
-	a[2][2] = (old.a[0][0]*old.a[1][1] - old.a[0][1]*old.a[1][0]) / det;
+	m.a[0][2] = (mat.a[0][1]*mat.a[1][2] - mat.a[0][2]*mat.a[1][1]) / det;
+	m.a[1][2] = (mat.a[0][2]*mat.a[1][0] - mat.a[0][0]*mat.a[1][2]) / det;
+	m.a[2][2] = (mat.a[0][0]*mat.a[1][1] - mat.a[0][1]*mat.a[1][0]) / det;
 
-	a[0][3] = (old.a[0][1]*old.a[1][3]*old.a[2][2]
-	        +  old.a[0][2]*old.a[1][1]*old.a[2][3]
-	        +  old.a[0][3]*old.a[1][2]*old.a[2][1]
-	        -  old.a[0][1]*old.a[1][2]*old.a[2][3]
-	        -  old.a[0][2]*old.a[1][3]*old.a[2][1]
-	        -  old.a[0][3]*old.a[1][1]*old.a[2][2]) / det;
+	m.a[0][3] = (mat.a[0][1]*mat.a[1][3]*mat.a[2][2]
+	          +  mat.a[0][2]*mat.a[1][1]*mat.a[2][3]
+	          +  mat.a[0][3]*mat.a[1][2]*mat.a[2][1]
+	          -  mat.a[0][1]*mat.a[1][2]*mat.a[2][3]
+	          -  mat.a[0][2]*mat.a[1][3]*mat.a[2][1]
+	          -  mat.a[0][3]*mat.a[1][1]*mat.a[2][2]) / det;
 
-	a[1][3] = (old.a[0][0]*old.a[1][2]*old.a[2][3]
-	        +  old.a[0][2]*old.a[1][3]*old.a[2][0]
-	        +  old.a[0][3]*old.a[1][0]*old.a[2][2]
-	        -  old.a[0][0]*old.a[1][3]*old.a[2][2]
-	        -  old.a[0][2]*old.a[1][0]*old.a[2][3]
-	        -  old.a[0][3]*old.a[1][2]*old.a[2][0]) / det;
+	m.a[1][3] = (mat.a[0][0]*mat.a[1][2]*mat.a[2][3]
+	          +  mat.a[0][2]*mat.a[1][3]*mat.a[2][0]
+	          +  mat.a[0][3]*mat.a[1][0]*mat.a[2][2]
+	          -  mat.a[0][0]*mat.a[1][3]*mat.a[2][2]
+	          -  mat.a[0][2]*mat.a[1][0]*mat.a[2][3]
+	          -  mat.a[0][3]*mat.a[1][2]*mat.a[2][0]) / det;
 
-	a[2][3] = (old.a[0][0]*old.a[1][3]*old.a[2][1]
-	        +  old.a[0][1]*old.a[1][0]*old.a[2][3]
-	        +  old.a[0][3]*old.a[1][1]*old.a[2][0]
-	        -  old.a[0][0]*old.a[1][1]*old.a[2][3]
-	        -  old.a[0][1]*old.a[1][3]*old.a[2][0]
-	        -  old.a[0][3]*old.a[1][0]*old.a[2][1]) / det;
+	m.a[2][3] = (mat.a[0][0]*mat.a[1][3]*mat.a[2][1]
+	          +  mat.a[0][1]*mat.a[1][0]*mat.a[2][3]
+	          +  mat.a[0][3]*mat.a[1][1]*mat.a[2][0]
+	          -  mat.a[0][0]*mat.a[1][1]*mat.a[2][3]
+	          -  mat.a[0][1]*mat.a[1][3]*mat.a[2][0]
+	          -  mat.a[0][3]*mat.a[1][0]*mat.a[2][1]) / det;
+
+	return m;
 }
 
-void StdMeshMatrix::SetTranslate(float dx, float dy, float dz)
+StdMeshMatrix StdMeshMatrix::Translate(float dx, float dy, float dz)
 {
-	a[0][0] = 1.0f; a[0][1] = 0.0f; a[0][2] = 0.0f; a[0][3] = dx;
-	a[1][0] = 0.0f; a[1][1] = 1.0f; a[1][2] = 0.0f; a[1][3] = dy;
-	a[2][0] = 0.0f; a[2][1] = 0.0f; a[2][2] = 1.0f; a[2][3] = dz;
+	StdMeshMatrix m;
+	m.a[0][0] = 1.0f; m.a[0][1] = 0.0f; m.a[0][2] = 0.0f; m.a[0][3] = dx;
+	m.a[1][0] = 0.0f; m.a[1][1] = 1.0f; m.a[1][2] = 0.0f; m.a[1][3] = dy;
+	m.a[2][0] = 0.0f; m.a[2][1] = 0.0f; m.a[2][2] = 1.0f; m.a[2][3] = dz;
+	return m;
 }
 
-void StdMeshMatrix::SetScale(float sx, float sy, float sz)
+StdMeshMatrix StdMeshMatrix::Scale(float sx, float sy, float sz)
 {
-	a[0][0] = sx;	 a[0][1] = 0.0f; a[0][2] = 0.0f; a[0][3] = 0.0f;
-	a[1][0] = 0.0f; a[1][1] = sy;	 a[1][2] = 0.0f; a[1][3] = 0.0f;
-	a[2][0] = 0.0f; a[2][1] = 0.0f; a[2][2] = sz;	 a[2][3] = 0.0f;
+	StdMeshMatrix m;
+	m.a[0][0] = sx;   m.a[0][1] = 0.0f; m.a[0][2] = 0.0f; m.a[0][3] = 0.0f;
+	m.a[1][0] = 0.0f; m.a[1][1] = sy;   m.a[1][2] = 0.0f; m.a[1][3] = 0.0f;
+	m.a[2][0] = 0.0f; m.a[2][1] = 0.0f; m.a[2][2] = sz;   m.a[2][3] = 0.0f;
+	return m;
 }
 
-void StdMeshMatrix::SetRotate(float angle, float rx, float ry, float rz)
+StdMeshMatrix StdMeshMatrix::Rotate(float angle, float rx, float ry, float rz)
 {
+	StdMeshMatrix m;
+
 	// We do normalize the rx,ry,rz vector here: This is only required for
 	// precalculations anyway, thus not time-critical.
 	float abs = sqrt(rx*rx+ry*ry+rz*rz);
 	rx/=abs; ry/=abs; rz/=abs;
 	float c = cos(angle), s = sin(angle);
 
-	a[0][0] = rx*rx*(1-c)+c;		a[0][1] = rx*ry*(1-c)-rz*s; a[0][2] = rx*rz*(1-c)+ry*s; a[0][3] = 0.0f;
-	a[1][0] = ry*rx*(1-c)+rz*s; a[1][1] = ry*ry*(1-c)+c;		a[1][2] = ry*rz*(1-c)-rx*s; a[1][3] = 0.0f;
-	a[2][0] = rz*rx*(1-c)-ry*s; a[2][1] = ry*rz*(1-c)+rx*s; a[2][2] = rz*rz*(1-c)+c;		a[2][3] = 0.0f;
+	m.a[0][0] = rx*rx*(1-c)+c;		m.a[0][1] = rx*ry*(1-c)-rz*s; m.a[0][2] = rx*rz*(1-c)+ry*s; m.a[0][3] = 0.0f;
+	m.a[1][0] = ry*rx*(1-c)+rz*s; m.a[1][1] = ry*ry*(1-c)+c;		m.a[1][2] = ry*rz*(1-c)-rx*s; m.a[1][3] = 0.0f;
+	m.a[2][0] = rz*rx*(1-c)-ry*s; m.a[2][1] = ry*rz*(1-c)+rx*s; m.a[2][2] = rz*rz*(1-c)+c;		m.a[2][3] = 0.0f;
+	return m;
 }
 
-void StdMeshMatrix::Mul(const StdMeshMatrix& other)
+StdMeshMatrix StdMeshMatrix::Transform(const StdMeshTransformation& transform)
 {
-	StdMeshMatrix old(*this);
+	StdMeshMatrix m;
 
-	a[0][0] = old.a[0][0]*other.a[0][0] + old.a[0][1]*other.a[1][0] + old.a[0][2]*other.a[2][0];
-	a[1][0] = old.a[1][0]*other.a[0][0] + old.a[1][1]*other.a[1][0] + old.a[1][2]*other.a[2][0];
-	a[2][0] = old.a[2][0]*other.a[0][0] + old.a[2][1]*other.a[1][0] + old.a[2][2]*other.a[2][0];
-
-	a[0][1] = old.a[0][0]*other.a[0][1] + old.a[0][1]*other.a[1][1] + old.a[0][2]*other.a[2][1];
-	a[1][1] = old.a[1][0]*other.a[0][1] + old.a[1][1]*other.a[1][1] + old.a[1][2]*other.a[2][1];
-	a[2][1] = old.a[2][0]*other.a[0][1] + old.a[2][1]*other.a[1][1] + old.a[2][2]*other.a[2][1];
-
-	a[0][2] = old.a[0][0]*other.a[0][2] + old.a[0][1]*other.a[1][2] + old.a[0][2]*other.a[2][2];
-	a[1][2] = old.a[1][0]*other.a[0][2] + old.a[1][1]*other.a[1][2] + old.a[1][2]*other.a[2][2];
-	a[2][2] = old.a[2][0]*other.a[0][2] + old.a[2][1]*other.a[1][2] + old.a[2][2]*other.a[2][2];
-
-	a[0][3] = old.a[0][0]*other.a[0][3] + old.a[0][1]*other.a[1][3] + old.a[0][2]*other.a[2][3] + old.a[0][3];
-	a[1][3] = old.a[1][0]*other.a[0][3] + old.a[1][1]*other.a[1][3] + old.a[1][2]*other.a[2][3] + old.a[1][3];
-	a[2][3] = old.a[2][0]*other.a[0][3] + old.a[2][1]*other.a[1][3] + old.a[2][2]*other.a[2][3] + old.a[2][3];
+	float tx = 2*transform.rotate.x;
+	float ty = 2*transform.rotate.y;
+	float tz = 2*transform.rotate.z;
+	float twx = tx*transform.rotate.w;
+	float twy = ty*transform.rotate.w;
+	float twz = tz*transform.rotate.w;
+	float txx = tx*transform.rotate.x;
+	float txy = ty*transform.rotate.x;
+	float txz = tz*transform.rotate.x;
+	float tyy = ty*transform.rotate.y;
+	float tyz = tz*transform.rotate.y;
+	float tzz = tz*transform.rotate.z;
+	
+	m.a[0][0] = (1.0f - (tyy + tzz) ) * transform.scale.x;
+	m.a[0][1] = (txy - twz)           * transform.scale.y;
+	m.a[0][2] = (txz + twy)           * transform.scale.z;
+	m.a[1][0] = (txy + twz)           * transform.scale.x;
+	m.a[1][1] = (1.0f - (txx + tzz) ) * transform.scale.y;
+	m.a[1][2] = (tyz - twx)           * transform.scale.z;
+	m.a[2][0] = (txz - twy)           * transform.scale.x;
+	m.a[2][1] = (tyz + twx)           * transform.scale.y;
+	m.a[2][2] = (1.0f - (txx + tyy) ) * transform.scale.z;
+	
+	m.a[0][3] = transform.translate.x;
+	m.a[1][3] = transform.translate.y;
+	m.a[2][3] = transform.translate.z;
+	
+	return m;
 }
 
-void StdMeshMatrix::Mul(float f)
+StdMeshMatrix StdMeshMatrix::TransformInverse(const StdMeshTransformation& transform)
 {
-	a[0][0] *= f;
-	a[0][1] *= f;
-	a[0][2] *= f;
-	a[0][3] *= f;
-	a[1][0] *= f;
-	a[1][1] *= f;
-	a[1][2] *= f;
-	a[1][3] *= f;
-	a[2][0] *= f;
-	a[2][1] *= f;
-	a[2][2] *= f;
-	a[2][3] *= f;
+	StdMeshMatrix m;
+
+	float tx = 2*transform.rotate.x;
+	float ty = 2*transform.rotate.y;
+	float tz = 2*transform.rotate.z;
+	float twx = -tx*transform.rotate.w;
+	float twy = -ty*transform.rotate.w;
+	float twz = -tz*transform.rotate.w;
+	float txx = tx*transform.rotate.x;
+	float txy = ty*transform.rotate.x;
+	float txz = tz*transform.rotate.x;
+	float tyy = ty*transform.rotate.y;
+	float tyz = tz*transform.rotate.y;
+	float tzz = tz*transform.rotate.z;
+
+	m.a[0][0] = (1.0f - (tyy + tzz) ) / transform.scale.x;
+	m.a[0][1] = (txy - twz)           / transform.scale.x;
+	m.a[0][2] = (txz + twy)           / transform.scale.x;
+	m.a[1][0] = (txy + twz)           / transform.scale.y;
+	m.a[1][1] = (1.0f - (txx + tzz) ) / transform.scale.y;
+	m.a[1][2] = (tyz - twx)           / transform.scale.y;
+	m.a[2][0] = (txz - twy)           / transform.scale.z;
+	m.a[2][1] = (tyz + twx)           / transform.scale.z;
+	m.a[2][2] = (1.0f - (txx + tyy) ) / transform.scale.z;
+
+	// Signs do not cancel!
+	StdMeshVector invtranslate = (-transform.rotate) * (-transform.translate/transform.scale);
+
+	m.a[0][3] = invtranslate.x;
+	m.a[1][3] = invtranslate.y;
+	m.a[2][3] = invtranslate.z;
+	
+	return m;
 }
 
-void StdMeshMatrix::Add(const StdMeshMatrix& other)
+StdMeshMatrix operator*(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs)
 {
-	a[0][0] += other.a[0][0];
-	a[0][1] += other.a[0][1];
-	a[0][2] += other.a[0][2];
-	a[0][3] += other.a[0][3];
-	a[1][0] += other.a[1][0];
-	a[1][1] += other.a[1][1];
-	a[1][2] += other.a[1][2];
-	a[1][3] += other.a[1][3];
-	a[2][0] += other.a[2][0];
-	a[2][1] += other.a[2][1];
-	a[2][2] += other.a[2][2];
-	a[2][3] += other.a[2][3];
+	StdMeshMatrix m;
+
+	m(0,0) = lhs(0,0)*rhs(0,0) + lhs(0,1)*rhs(1,0) + lhs(0,2)*rhs(2,0);
+	m(1,0) = lhs(1,0)*rhs(0,0) + lhs(1,1)*rhs(1,0) + lhs(1,2)*rhs(2,0);
+	m(2,0) = lhs(2,0)*rhs(0,0) + lhs(2,1)*rhs(1,0) + lhs(2,2)*rhs(2,0);
+
+	m(0,1) = lhs(0,0)*rhs(0,1) + lhs(0,1)*rhs(1,1) + lhs(0,2)*rhs(2,1);
+	m(1,1) = lhs(1,0)*rhs(0,1) + lhs(1,1)*rhs(1,1) + lhs(1,2)*rhs(2,1);
+	m(2,1) = lhs(2,0)*rhs(0,1) + lhs(2,1)*rhs(1,1) + lhs(2,2)*rhs(2,1);
+
+	m(0,2) = lhs(0,0)*rhs(0,2) + lhs(0,1)*rhs(1,2) + lhs(0,2)*rhs(2,2);
+	m(1,2) = lhs(1,0)*rhs(0,2) + lhs(1,1)*rhs(1,2) + lhs(1,2)*rhs(2,2);
+	m(2,2) = lhs(2,0)*rhs(0,2) + lhs(2,1)*rhs(1,2) + lhs(2,2)*rhs(2,2);
+
+	m(0,3) = lhs(0,0)*rhs(0,3) + lhs(0,1)*rhs(1,3) + lhs(0,2)*rhs(2,3) + lhs(0,3);
+	m(1,3) = lhs(1,0)*rhs(0,3) + lhs(1,1)*rhs(1,3) + lhs(1,2)*rhs(2,3) + lhs(1,3);
+	m(2,3) = lhs(2,0)*rhs(0,3) + lhs(2,1)*rhs(1,3) + lhs(2,2)*rhs(2,3) + lhs(2,3);
+
+	return m;
 }
 
-void StdMeshMatrix::Transform(const StdMeshMatrix& other)
+StdMeshMatrix operator*(float lhs, const StdMeshMatrix& rhs)
 {
-	StdMeshMatrix old(*this);
-
-	a[0][0] = other.a[0][0]*old.a[0][0] + other.a[0][1]*old.a[1][0] + other.a[0][2]*old.a[2][0];
-	a[1][0] = other.a[1][0]*old.a[0][0] + other.a[1][1]*old.a[1][0] + other.a[1][2]*old.a[2][0];
-	a[2][0] = other.a[2][0]*old.a[0][0] + other.a[2][1]*old.a[1][0] + other.a[2][2]*old.a[2][0];
-
-	a[0][1] = other.a[0][0]*old.a[0][1] + other.a[0][1]*old.a[1][1] + other.a[0][2]*old.a[2][1];
-	a[1][1] = other.a[1][0]*old.a[0][1] + other.a[1][1]*old.a[1][1] + other.a[1][2]*old.a[2][1];
-	a[2][1] = other.a[2][0]*old.a[0][1] + other.a[2][1]*old.a[1][1] + other.a[2][2]*old.a[2][1];
-
-	a[0][2] = other.a[0][0]*old.a[0][2] + other.a[0][1]*old.a[1][2] + other.a[0][2]*old.a[2][2];
-	a[1][2] = other.a[1][0]*old.a[0][2] + other.a[1][1]*old.a[1][2] + other.a[1][2]*old.a[2][2];
-	a[2][2] = other.a[2][0]*old.a[0][2] + other.a[2][1]*old.a[1][2] + other.a[2][2]*old.a[2][2];
-
-	a[0][3] = other.a[0][0]*old.a[0][3] + other.a[0][1]*old.a[1][3] + other.a[0][2]*old.a[2][3] + other.a[0][3];
-	a[1][3] = other.a[1][0]*old.a[0][3] + other.a[1][1]*old.a[1][3] + other.a[1][2]*old.a[2][3] + other.a[1][3];
-	a[2][3] = other.a[2][0]*old.a[0][3] + other.a[2][1]*old.a[1][3] + other.a[2][2]*old.a[2][3] + other.a[2][3];
+	StdMeshMatrix m;
+	m(0,0) = lhs * rhs(0,0);
+	m(1,0) = lhs * rhs(1,0);
+	m(2,0) = lhs * rhs(2,0);
+	m(0,1) = lhs * rhs(0,1);
+	m(1,1) = lhs * rhs(1,1);
+	m(2,1) = lhs * rhs(2,1);
+	m(0,2) = lhs * rhs(0,2);
+	m(1,2) = lhs * rhs(1,2);
+	m(2,2) = lhs * rhs(2,2);
+	m(0,3) = lhs * rhs(0,3);
+	m(1,3) = lhs * rhs(1,3);
+	m(2,3) = lhs * rhs(2,3);
+	return m;
 }
 
-void StdMeshVertex::Transform(const StdMeshMatrix& trans)
+StdMeshMatrix operator*(const StdMeshMatrix& lhs, float rhs)
 {
-	StdMeshVertex old(*this);
-
-	x = trans(0,0)*old.x + trans(0,1)*old.y + trans(0,2)*old.z + trans(0,3);
-	y = trans(1,0)*old.x + trans(1,1)*old.y + trans(1,2)*old.z + trans(1,3);
-	z = trans(2,0)*old.x + trans(2,1)*old.y + trans(2,2)*old.z + trans(2,3);
-	nx = trans(0,0)*old.nx + trans(0,1)*old.ny + trans(0,2)*old.nz;
-	ny = trans(1,0)*old.nx + trans(1,1)*old.ny + trans(0,2)*old.nz;
-	nz = trans(2,0)*old.nx + trans(2,1)*old.ny + trans(2,2)*old.nz;
+	return rhs * lhs;
 }
 
-void StdMeshVertex::Mul(float f)
+StdMeshMatrix operator+(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs)
 {
-	x *= f;
-	y *= f;
-	z *= f;
-
-	// We also multiplicate normals because we expect this to happen in
-	// an expression such as a*v1 + (1-a)*v2 which would ensure normalization
-	// of the normals again. (TODO: It doesn't. We should just always
-	// keep them normalized).
-	nx *= f;
-	ny *= f;
-	nz *= f;
+	StdMeshMatrix m;
+	m(0,0) = lhs(0,0) + rhs(0,0);
+	m(1,0) = lhs(1,0) + rhs(1,0);
+	m(2,0) = lhs(2,0) + rhs(2,0);
+	m(0,1) = lhs(0,1) + rhs(0,1);
+	m(1,1) = lhs(1,1) + rhs(1,1);
+	m(2,1) = lhs(2,1) + rhs(2,1);
+	m(0,2) = lhs(0,2) + rhs(0,2);
+	m(1,2) = lhs(1,2) + rhs(1,2);
+	m(2,2) = lhs(2,2) + rhs(2,2);
+	m(0,3) = lhs(0,3) + rhs(0,3);
+	m(1,3) = lhs(1,3) + rhs(1,3);
+	m(2,3) = lhs(2,3) + rhs(2,3);
+	return m;
 }
 
-void StdMeshVertex::Add(const StdMeshVertex& other)
+StdMeshQuaternion operator-(const StdMeshQuaternion& rhs)
 {
-	x += other.x;
-	y += other.y;
-	z += other.z;
-
-	nx += other.nx;
-	ny += other.ny;
-	nz += other.nz;
+	StdMeshQuaternion q;
+	q.w = rhs.w;
+	q.x = -rhs.x;
+	q.y = -rhs.y;
+	q.z = -rhs.z;
+	return q;
 }
+
+StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs)
+{
+	StdMeshQuaternion q;
+	q.w = lhs.w*rhs.w - lhs.x*rhs.x - lhs.y*rhs.y - lhs.z*rhs.z;
+	q.x = lhs.w*rhs.x + lhs.x*rhs.w + lhs.y*rhs.z - lhs.z*rhs.y;
+	q.y = lhs.w*rhs.y + lhs.y*rhs.w + lhs.z*rhs.x - lhs.x*rhs.z;
+	q.z = lhs.w*rhs.z + lhs.z*rhs.w + lhs.x*rhs.y - lhs.y*rhs.x;
+	return q;
+}
+
+StdMeshQuaternion operator*(float lhs, const StdMeshQuaternion& rhs)
+{
+	StdMeshQuaternion q;
+	q.w = lhs*rhs.w;
+	q.x = lhs*rhs.x;
+	q.y = lhs*rhs.y;
+	q.z = lhs*rhs.z;
+	return q;
+}
+
+StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, float rhs)
+{
+	return rhs * lhs;
+}
+
+StdMeshQuaternion operator+(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs)
+{
+	StdMeshQuaternion q;
+	q.w = lhs.w+rhs.w;
+	q.x = lhs.x+rhs.x;
+	q.y = lhs.y+rhs.y;
+	q.z = lhs.z+rhs.z;
+	return q;
+}
+
+StdMeshTransformation operator*(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs)
+{
+	StdMeshTransformation t;
+	t.rotate = lhs.rotate * rhs.rotate;
+	t.scale = lhs.scale * rhs.scale;
+	t.translate = lhs.translate + lhs.rotate * (lhs.scale * rhs.translate);
+	return t;
+}
+
+StdMeshVector operator-(const StdMeshVector& rhs)
+{
+	StdMeshVector v;
+	v.x = -rhs.x;
+	v.y = -rhs.y;
+	v.z = -rhs.z;
+	return v;
+}
+
+StdMeshVector operator+(const StdMeshVector& lhs, const StdMeshVector& rhs)
+{
+	StdMeshVector v;
+	v.x = lhs.x + rhs.x;
+	v.y = lhs.y + rhs.y;
+	v.z = lhs.z + rhs.z;
+	return v;
+}
+
+StdMeshVector operator*(const StdMeshVector& lhs, const StdMeshVector& rhs)
+{
+	StdMeshVector v;
+	v.x = lhs.x * rhs.x;
+	v.y = lhs.y * rhs.y;
+	v.z = lhs.z * rhs.z;
+	return v;
+}
+
+StdMeshVector operator*(float lhs, const StdMeshVector& rhs)
+{
+	StdMeshVector v;
+	v.x = lhs*rhs.x;
+	v.y = lhs*rhs.y;
+	v.z = lhs*rhs.z;
+	return v;
+}
+
+StdMeshVector operator*(const StdMeshVector& lhs, float rhs)
+{
+	return rhs * lhs;
+}
+
+StdMeshVector operator/(const StdMeshVector& lhs, const StdMeshVector& rhs)
+{
+	StdMeshVector v;
+	v.x = lhs.x/rhs.x;
+	v.y = lhs.y/rhs.y;
+	v.z = lhs.z/rhs.z;
+	return v;	
+}
+
+StdMeshVector operator/(float lhs, const StdMeshVector& rhs)
+{
+	StdMeshVector v;
+	v.x = lhs/rhs.x;
+	v.y = lhs/rhs.y;
+	v.z = lhs/rhs.z;
+	return v;
+}
+
+StdMeshVector operator/(const StdMeshVector& lhs, float rhs)
+{
+	StdMeshVector v;
+	v.x = lhs.x/rhs;
+	v.y = lhs.y/rhs;
+	v.z = lhs.z/rhs;
+	return v;
+}
+
+StdMeshVector operator*(const StdMeshQuaternion& lhs, const StdMeshVector& rhs)
+{
+	StdMeshVector uv = 2.0f * StdMeshVector::Cross(lhs.v, rhs);
+	StdMeshVector uuv = StdMeshVector::Cross(lhs.v, uv);
+	return rhs + lhs.w * uv + uuv;
+}
+
+StdMeshVertex& operator+=(StdMeshVertex& lhs, const StdMeshVertex& rhs)
+{
+	lhs.nx += rhs.nx;
+	lhs.ny += rhs.ny;
+	lhs.nz += rhs.nz;
+	lhs.x += rhs.x;
+	lhs.y += rhs.y;
+	lhs.z += rhs.z;
+	return lhs;
+}
+
+StdMeshVertex operator+(const StdMeshVertex& lhs, const StdMeshVertex& rhs)
+{
+	StdMeshVertex vtx(lhs);
+	vtx += rhs;
+	return vtx;
+}
+
+StdMeshVertex operator*(float lhs, const StdMeshVertex& rhs)
+{
+	StdMeshVertex vtx;
+	vtx.nx = lhs*rhs.nx;
+	vtx.ny = lhs*rhs.ny;
+	vtx.nz = lhs*rhs.nz;
+	vtx.x = lhs*rhs.x;
+	vtx.y = lhs*rhs.y;
+	vtx.z = lhs*rhs.z;
+	return vtx;
+}
+
+StdMeshVertex operator*(const StdMeshVertex& lhs, float rhs)
+{
+	return rhs * lhs;
+}
+
+StdMeshVertex operator*(const StdMeshMatrix& lhs, const StdMeshVertex& rhs)
+{
+	StdMeshVertex vtx;
+	vtx.nx = lhs(0,0)*rhs.nx + lhs(0,1)*rhs.ny + lhs(0,2)*rhs.nz;
+	vtx.ny = lhs(1,0)*rhs.nx + lhs(1,1)*rhs.ny + lhs(0,2)*rhs.nz;
+	vtx.nz = lhs(2,0)*rhs.nx + lhs(2,1)*rhs.ny + lhs(2,2)*rhs.nz;
+	vtx.x  = lhs(0,0)*rhs.x + lhs(0,1)*rhs.y + lhs(0,2)*rhs.z + lhs(0,3);
+	vtx.y  = lhs(1,0)*rhs.x + lhs(1,1)*rhs.y + lhs(1,2)*rhs.z + lhs(1,3);
+	vtx.z  = lhs(2,0)*rhs.x + lhs(2,1)*rhs.y + lhs(2,2)*rhs.z + lhs(2,3);
+	return vtx;
+}
+
+/* Boring math stuff ends here */
 
 StdMeshMatrix StdMeshTrack::GetTransformAt(float time) const
 {
@@ -381,13 +588,7 @@ StdMeshMatrix StdMeshTrack::GetTransformAt(float time) const
 	assert(weight1 >= 0 && weight2 >= 0 && weight1 <= 1 && weight2 <= 1);
 	assert(fabs(weight1 + weight2 - 1) < 1e-6);
 
-	StdMeshMatrix trans1 = iter->second.Trans;
-	StdMeshMatrix trans2 = prev_iter->second.Trans;
-	trans1.Mul(weight1);
-	trans2.Mul(weight2);
-
-	trans1.Add(trans2);
-	return trans1;
+	return weight1 * iter->second.Trans + weight2 * prev_iter->second.Trans;
 }
 
 StdMeshAnimation::StdMeshAnimation(const StdMeshAnimation& other):
@@ -473,8 +674,10 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 		Vertices[i].u = mesh.RequireFloatAttribute(texcoord_elem, "u");
 		Vertices[i].v = mesh.RequireFloatAttribute(texcoord_elem, "v");
 
-		// Convert to Clonk coordinate system
-		Vertices[i].Transform(CoordCorrection);
+		// Convert to Clonk coordinate system (type does not match, StdMeshVertex vs. StdMesh::Vertex)
+		StdMeshVertex Transformed = CoordCorrection * Vertices[i];
+		Vertices[i].nx = Transformed.nx; Vertices[i].ny = Transformed.ny; Vertices[i].nz = Transformed.nz;
+		Vertices[i].x  = Transformed.x;  Vertices[i].y  = Transformed.y;  Vertices[i].z  = Transformed.z;
 
 		// Construct BoundingBox
 		if(i == 0)
@@ -555,26 +758,12 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 			float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
 			float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
 
-			StdMeshMatrix helper;
-			helper.SetTranslate(dx, dy, dz);
-			bone->Trans.SetRotate(angle, rx, ry, rz);
-			bone->Trans.Transform(helper);
-
-			// Transform to Clonk coordinate system
-			bone->Trans.Mul(CoordCorrectionInverse);
-			bone->Trans.Transform(CoordCorrection);
+			bone->Trans = CoordCorrection * StdMeshMatrix::Translate(dx, dy, dz) * StdMeshMatrix::Rotate(angle, rx, ry, rz) * CoordCorrectionInverse;
 
 #if 1
-			helper.SetRotate(-angle, rx, ry, rz);
-			bone->InverseTrans.SetTranslate(-dx, -dy, -dz);
-			bone->InverseTrans.Transform(helper);
-
-			// Transform to Clonk coordinate system
-			bone->InverseTrans.Mul(CoordCorrectionInverse);
-			bone->InverseTrans.Transform(CoordCorrection);
+			bone->InverseTrans = CoordCorrection * StdMeshMatrix::Rotate(-angle, rx, ry, rz) * StdMeshMatrix::Translate(-dx, -dy, -dz) * CoordCorrectionInverse;
 #else
-			bone->InverseTrans = bone->Trans;
-			bone->InverseTrans.SetInverse();
+			bone->InverseTrans = StdMeshMatrix::Inverse(bone->Trans);
 #endif
 
 			bone->Parent = NULL;
@@ -607,8 +796,8 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 			parent->Children.push_back(child);
 
 			// Apply parent transformation
-			child->Trans.Transform(parent->Trans);
-			child->InverseTrans.Mul(parent->InverseTrans);
+			child->Trans = parent->Trans * child->Trans;
+			child->InverseTrans = child->InverseTrans * parent->InverseTrans;
 		}
 
 		// Fill master bone table in hierarchical order:
@@ -684,9 +873,7 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 
 				// Get inverse bone transformation matrix in OGRE coordiante system; we need it to apply
 				// the translation part of the bone transformation.
-				StdMeshMatrix bone_inverse_trans(bone->InverseTrans);
-				bone_inverse_trans.Mul(CoordCorrection);
-				bone_inverse_trans.Transform(CoordCorrectionInverse);
+				StdMeshMatrix bone_inverse_trans = CoordCorrectionInverse * bone->InverseTrans * CoordCorrection;
 
 				TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
 				for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
@@ -710,21 +897,12 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 					float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
 					float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
 
-					StdMeshMatrix helper;
-					frame.Trans.SetRotate(angle, rx, ry, rz);
-					helper.SetScale(sx, sy, sz);
-					frame.Trans.Transform(helper);
 
-					// Apply bone transformation to translation part
 					float dxp = bone_inverse_trans(0,0)*dx + bone_inverse_trans(0,1)*dy + bone_inverse_trans(0,2)*dz;
 					float dyp = bone_inverse_trans(1,0)*dx + bone_inverse_trans(1,1)*dy + bone_inverse_trans(1,2)*dz;
 					float dzp = bone_inverse_trans(2,0)*dx + bone_inverse_trans(2,1)*dy + bone_inverse_trans(2,2)*dz;
-					helper.SetTranslate(dxp, dyp, dzp);
-					frame.Trans.Transform(helper);
 
-					// Transform into Clonk coordinate system
-					frame.Trans.Transform(CoordCorrection);
-					frame.Trans.Mul(CoordCorrectionInverse);
+					frame.Trans = CoordCorrection * StdMeshMatrix::Translate(dxp, dyp, dzp) * StdMeshMatrix::Scale(sx, sy, sz) * StdMeshMatrix::Rotate(angle, rx, ry, rz) * CoordCorrectionInverse;
 				}
 			}
 
@@ -904,7 +1082,7 @@ void StdMeshInstance::UpdateBoneTransforms()
 	for(unsigned int i = 0; i < BoneTransforms.size(); ++i)
 	{
 		float accum_weight = 0.0f;
-		BoneTransforms[i].SetScale(0,0,0); // zero matrix
+		BoneTransforms[i] = StdMeshMatrix::Zero();
 
 		for(unsigned int j = 0; j < Animations.size(); ++j)
 		{
@@ -913,25 +1091,24 @@ void StdMeshInstance::UpdateBoneTransforms()
 			{
 				accum_weight += Animations[j].Weight;
 				StdMeshMatrix matr(track->GetTransformAt(Animations[j].Position));
-				matr.Mul(Animations[j].Weight);
-				BoneTransforms[i].Add(matr);
+				matr = Animations[j].Weight * matr;
+				BoneTransforms[i] = BoneTransforms[i] + matr;
 			}
 		}
 		
 		if(!accum_weight)
-			BoneTransforms[i].SetIdentity();
+			BoneTransforms[i] = StdMeshMatrix::Identity();
 		else
-			BoneTransforms[i].Mul(1.0f/accum_weight);
+			BoneTransforms[i] = BoneTransforms[i] * (1.0f/accum_weight);
 
 		const StdMeshBone* bone = Mesh.Bones[i];
-		
-		BoneTransforms[i].Mul(bone->InverseTrans);
-		BoneTransforms[i].Transform(bone->Trans);
+
+		BoneTransforms[i] = bone->Trans * BoneTransforms[i] * bone->InverseTrans;
 
 		const StdMeshBone* parent = bone->GetParent();
 		assert(!parent || parent->Index < i);
 		if(parent)
-			BoneTransforms[i].Transform(BoneTransforms[parent->Index]);
+			BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
 	}
 
 	// Compute transformation for each vertex. We could later think about
@@ -949,10 +1126,8 @@ void StdMeshInstance::UpdateBoneTransforms()
 			for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
 			{
 				const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[j];
-				StdMeshVertex vtx = vertex;
-				vtx.Transform(BoneTransforms[assignment.BoneIndex]);
-				vtx.Mul(assignment.Weight);
-				Vertices[i].Add(vtx);
+				
+				Vertices[i] += assignment.Weight * (BoneTransforms[assignment.BoneIndex] * vertex);
 			}
 		}
 		else

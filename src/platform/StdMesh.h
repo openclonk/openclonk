@@ -45,30 +45,95 @@ public:
 	virtual StdStrBuf LoadSkeleton(const char* filename) = 0;
 };
 
+struct StdMeshVector
+{
+	float x, y, z;
+	
+	static StdMeshVector Cross(const StdMeshVector& lhs, const StdMeshVector& rhs);
+};
+
+struct StdMeshVertex
+{
+	// Match GL_T2F_N3F_V3F
+	float u, v;
+	float nx, ny, nz;
+	float x, y, z;
+
+	//float Normalize();
+};
+
+struct StdMeshQuaternion
+{
+	float w;
+	union
+	{
+	  struct { float x, y, z; };
+	  StdMeshVector v;
+	};
+
+	float LenSqr() const { return w*w+x*x+y*y+z*z; }
+	//float Normalize();
+
+	//static StdMeshQuaternion Slerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float t);
+};
+
+struct StdMeshTransformation
+{
+	StdMeshVector scale;
+	StdMeshQuaternion rotate;
+	StdMeshVector translate;
+
+	static StdMeshTransformation Zero();
+	static StdMeshTransformation Identity();
+};
+
 class StdMeshMatrix
 {
 public:
-	void SetIdentity();
-	void SetInverse();
-	void SetTranslate(float dx, float dy, float dz);
-	void SetScale(float sx, float sy, float sz);
-	void SetRotate(float angle, float rx, float ry, float rz);
+	static StdMeshMatrix Zero();
+	static StdMeshMatrix Identity();
+	static StdMeshMatrix Inverse(const StdMeshMatrix& mat);
+	static StdMeshMatrix Translate(float dx, float dy, float dz);
+	static StdMeshMatrix Scale(float sx, float sy, float sz);
+	static StdMeshMatrix Rotate(float angle, float rx, float ry, float rz);
+	static StdMeshMatrix Transform(const StdMeshTransformation& transform);
+	static StdMeshMatrix TransformInverse(const StdMeshTransformation& transform);
 
 	float& operator()(int i, int j) { return a[i][j]; }
 	float operator()(int i, int j) const { return a[i][j]; }
 
-	// *this *= other
-	void Mul(const StdMeshMatrix& other);
-	void Mul(float f);
-	// *this += other
-	void Add(const StdMeshMatrix& other);
-
-	// *this = other * *this
-	void Transform(const StdMeshMatrix& other);
 private:
 	// 3x3 orthogonal + translation in last column
 	float a[3][4];
 };
+
+StdMeshMatrix operator*(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
+StdMeshMatrix operator*(float lhs, const StdMeshMatrix& rhs);
+StdMeshMatrix operator*(const StdMeshMatrix& lhs, float rhs);
+StdMeshMatrix operator+(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
+StdMeshQuaternion operator-(const StdMeshQuaternion& rhs);
+StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
+StdMeshQuaternion operator*(float lhs, const StdMeshQuaternion& rhs);
+StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, float rhs);
+StdMeshQuaternion operator+(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
+StdMeshTransformation operator*(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs);
+
+StdMeshVector operator-(const StdMeshVector& rhs);
+StdMeshVector operator+(const StdMeshVector& lhs, const StdMeshVector& rhs);
+StdMeshVector operator*(const StdMeshVector& lhs, const StdMeshVector& rhs);
+StdMeshVector operator*(float lhs, const StdMeshVector& rhs);
+StdMeshVector operator*(const StdMeshVector& lhs, float rhs);
+StdMeshVector operator/(const StdMeshVector& lhs, const StdMeshVector& rhs);
+StdMeshVector operator/(float lhs, const StdMeshVector& rhs);
+StdMeshVector operator/(const StdMeshVector& lhs, float rhs);
+
+StdMeshVector operator*(const StdMeshQuaternion& lhs, const StdMeshVector& rhs);
+
+StdMeshVertex& operator+=(StdMeshVertex& lhs, const StdMeshVertex& rhs);
+StdMeshVertex operator+(const StdMeshVertex& lhs, const StdMeshVertex& rhs);
+StdMeshVertex operator*(float lhs, const StdMeshVertex& rhs);
+StdMeshVertex operator*(const StdMeshVertex& lhs, float rhs);
+StdMeshVertex operator*(const StdMeshMatrix& lhs, const StdMeshVertex& rhs);
 
 class StdMeshBone
 {
@@ -103,23 +168,6 @@ class StdMeshVertexBoneAssignment
 public:
 	unsigned int BoneIndex;
 	float Weight;
-};
-
-class StdMeshVertex
-{
-public:
-	// Match GL_T2F_N3F_V3F
-	float u, v;
-	float nx, ny, nz;
-	float x, y, z;
-
-	// *this = trans * *this
-	void Transform(const StdMeshMatrix& trans);
-
-	// *this *= f;
-	void Mul(float f);
-	// *this += other;
-	void Add(const StdMeshVertex& other);
 };
 
 class StdMeshFace
