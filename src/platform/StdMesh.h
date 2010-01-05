@@ -48,7 +48,10 @@ public:
 struct StdMeshVector
 {
 	float x, y, z;
-	
+
+	static StdMeshVector Zero();
+	static StdMeshVector UnitScale();
+	static StdMeshVector Translate(float dx, float dy, float dz);
 	static StdMeshVector Cross(const StdMeshVector& lhs, const StdMeshVector& rhs);
 };
 
@@ -59,7 +62,7 @@ struct StdMeshVertex
 	float nx, ny, nz;
 	float x, y, z;
 
-	//float Normalize();
+	//void Normalize();
 };
 
 struct StdMeshQuaternion
@@ -71,8 +74,11 @@ struct StdMeshQuaternion
 	  StdMeshVector v;
 	};
 
+	static StdMeshQuaternion Zero();
+	static StdMeshQuaternion AngleAxis(float theta, const StdMeshVector& axis);
+
 	float LenSqr() const { return w*w+x*x+y*y+z*z; }
-	//float Normalize();
+	void Normalize();
 
 	//static StdMeshQuaternion Slerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float t);
 };
@@ -85,6 +91,10 @@ struct StdMeshTransformation
 
 	static StdMeshTransformation Zero();
 	static StdMeshTransformation Identity();
+	static StdMeshTransformation Inverse(const StdMeshTransformation& transform);
+	static StdMeshTransformation Translate(float dx, float dy, float dz);
+	static StdMeshTransformation Scale(float sx, float sy, float sz);
+	static StdMeshTransformation Rotate(float angle, float rx, float ry, float rz);
 };
 
 class StdMeshMatrix
@@ -113,20 +123,25 @@ StdMeshMatrix operator*(const StdMeshMatrix& lhs, float rhs);
 StdMeshMatrix operator+(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs);
 StdMeshQuaternion operator-(const StdMeshQuaternion& rhs);
 StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
-StdMeshQuaternion operator*(float lhs, const StdMeshQuaternion& rhs);
+StdMeshQuaternion& operator*=(StdMeshQuaternion& lhs, float rhs);
 StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, float rhs);
+StdMeshQuaternion operator*(float lhs, const StdMeshQuaternion& rhs);
+StdMeshQuaternion& operator+=(StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
 StdMeshQuaternion operator+(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
 StdMeshTransformation operator*(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs);
 
 StdMeshVector operator-(const StdMeshVector& rhs);
+StdMeshVector& operator+=(StdMeshVector& lhs, const StdMeshVector& rhs);
 StdMeshVector operator+(const StdMeshVector& lhs, const StdMeshVector& rhs);
 StdMeshVector operator*(const StdMeshVector& lhs, const StdMeshVector& rhs);
-StdMeshVector operator*(float lhs, const StdMeshVector& rhs);
+StdMeshVector& operator*=(StdMeshVector& lhs, float rhs);
 StdMeshVector operator*(const StdMeshVector& lhs, float rhs);
+StdMeshVector operator*(float lhs, const StdMeshVector& rhs);
 StdMeshVector operator/(const StdMeshVector& lhs, const StdMeshVector& rhs);
 StdMeshVector operator/(float lhs, const StdMeshVector& rhs);
 StdMeshVector operator/(const StdMeshVector& lhs, float rhs);
 
+StdMeshVector operator*(const StdMeshMatrix& lhs, const StdMeshVector& rhs); // does not apply translation part
 StdMeshVector operator*(const StdMeshQuaternion& lhs, const StdMeshVector& rhs);
 
 StdMeshVertex& operator+=(StdMeshVertex& lhs, const StdMeshVertex& rhs);
@@ -146,9 +161,9 @@ public:
 	StdStrBuf Name; // Bone name
 
 	// Bone transformation
-	StdMeshMatrix Trans;
+	StdMeshTransformation Transformation;
 	// Inverse transformation
-	StdMeshMatrix InverseTrans;
+	StdMeshTransformation InverseTransformation;
 
 	const StdMeshBone* GetParent() const { return Parent; }
 
@@ -180,7 +195,7 @@ public:
 class StdMeshKeyFrame
 {
 public:
-	StdMeshMatrix Trans;
+	StdMeshTransformation Transformation;
 };
 
 // Animation track, specifies transformation for one bone for each keyframe
@@ -188,7 +203,7 @@ class StdMeshTrack
 {
 	friend class StdMesh;
 public:
-	StdMeshMatrix GetTransformAt(float time) const;
+	StdMeshTransformation GetTransformAt(float time) const;
 
 private:
 	std::map<float, StdMeshKeyFrame> Frames;

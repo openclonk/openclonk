@@ -116,7 +116,7 @@ float StdMeshXML::RequireFloatAttribute(TiXmlElement* element, const char* attri
 {
 	float retval;
 	if(element->QueryFloatAttribute(attribute, &retval) != TIXML_SUCCESS)
-		Error(FormatString("Element '%s' does not have integer attribute '%s'", element->Value(), attribute), element);
+		Error(FormatString("Element '%s' does not have floating point attribute '%s'", element->Value(), attribute), element);
 	return retval;
 }
 
@@ -147,6 +147,33 @@ void StdMeshXML::Error(const StdStrBuf& message, TiXmlElement* element) const
 
 /* Boring Math stuff begins here */
 
+StdMeshVector StdMeshVector::Zero()
+{
+	StdMeshVector v;
+	v.x = 0.0f;
+	v.y = 0.0f;
+	v.z = 0.0f;
+	return v;
+}
+
+StdMeshVector StdMeshVector::UnitScale()
+{
+	StdMeshVector v;
+	v.x = 1.0f;
+	v.y = 1.0f;
+	v.z = 1.0f;
+	return v;
+}
+
+StdMeshVector StdMeshVector::Translate(float dx, float dy, float dz)
+{
+	StdMeshVector v;
+	v.x = dx;
+	v.y = dy;
+	v.z = dz;
+	return v;
+}
+
 StdMeshVector StdMeshVector::Cross(const StdMeshVector& lhs, const StdMeshVector& rhs)
 {
 	StdMeshVector v;
@@ -154,6 +181,94 @@ StdMeshVector StdMeshVector::Cross(const StdMeshVector& lhs, const StdMeshVector
 	v.y = lhs.z*rhs.x - lhs.x*rhs.z;
 	v.z = lhs.x*rhs.y - lhs.y*rhs.x;
 	return v;
+}
+
+StdMeshQuaternion StdMeshQuaternion::Zero()
+{
+	StdMeshQuaternion q;
+	q.w = 0.0f;
+	q.x = 0.0f;
+	q.y = 0.0f;
+	q.z = 0.0f;
+	return q;
+}
+
+StdMeshQuaternion StdMeshQuaternion::AngleAxis(float theta, const StdMeshVector& axis)
+{
+	StdMeshQuaternion q;
+	const float theta2 = theta/2.0f;
+	const float s = sin(theta2);
+	q.w = cos(theta2);
+	q.x = s*axis.x;
+	q.y = s*axis.y;
+	q.z = s*axis.z;
+	return q;
+}
+
+void StdMeshQuaternion::Normalize()
+{
+	float length = sqrt(LenSqr());
+	w /= length;
+	x /= length;
+	y /= length;
+	z /= length;
+}
+
+StdMeshTransformation StdMeshTransformation::Zero()
+{
+	StdMeshTransformation t;
+	t.scale = StdMeshVector::Zero();
+	t.rotate = StdMeshQuaternion::Zero();
+	t.translate = StdMeshVector::Zero(); 
+	return t;
+}
+
+StdMeshTransformation StdMeshTransformation::Identity()
+{
+	StdMeshTransformation t;
+	t.scale = StdMeshVector::UnitScale();
+	t.rotate.w = 1.0f;
+	t.rotate.x = t.rotate.y = t.rotate.z = 0.0f;
+	t.translate = StdMeshVector::Zero(); 
+	return t;
+}
+
+StdMeshTransformation StdMeshTransformation::Inverse(const StdMeshTransformation& transform)
+{
+	StdMeshTransformation inv;
+	inv.scale = 1.0f/transform.scale;
+	inv.rotate = -transform.rotate;
+	inv.translate = inv.rotate * (inv.scale * -transform.translate);
+	return inv;
+}
+
+StdMeshTransformation StdMeshTransformation::Translate(float dx, float dy, float dz)
+{
+	StdMeshTransformation t;
+	t.scale = StdMeshVector::UnitScale();
+	t.rotate.w = 1.0f;
+	t.rotate.x = t.rotate.y = t.rotate.z = 0.0f;
+	t.translate = StdMeshVector::Translate(dx, dy, dz); 
+	return t;
+}
+
+StdMeshTransformation StdMeshTransformation::Scale(float sx, float sy, float sz)
+{
+	StdMeshTransformation t;
+	t.scale = StdMeshVector::Translate(sx, sy, sz);
+	t.rotate.w = 1.0f;
+	t.rotate.x = t.rotate.y = t.rotate.z = 0.0f;
+	t.translate = StdMeshVector::Zero(); 
+	return t;
+}
+
+StdMeshTransformation StdMeshTransformation::Rotate(float angle, float rx, float ry, float rz)
+{
+	StdMeshTransformation t;
+	t.scale = StdMeshVector::UnitScale();
+	t.rotate = StdMeshQuaternion::AngleAxis(angle, StdMeshVector::Translate(rx, ry, rz));
+	t.translate = StdMeshVector::Zero(); 
+	return t;
 }
 
 StdMeshMatrix StdMeshMatrix::Zero()
@@ -407,28 +522,40 @@ StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, const StdMeshQuaternio
 	return q;
 }
 
-StdMeshQuaternion operator*(float lhs, const StdMeshQuaternion& rhs)
+StdMeshQuaternion& operator*=(StdMeshQuaternion& lhs, float rhs)
 {
-	StdMeshQuaternion q;
-	q.w = lhs*rhs.w;
-	q.x = lhs*rhs.x;
-	q.y = lhs*rhs.y;
-	q.z = lhs*rhs.z;
-	return q;
+	lhs.w *= rhs;
+	lhs.x *= rhs;
+	lhs.y *= rhs;
+	lhs.z *= rhs;
+	return lhs;
 }
 
 StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, float rhs)
 {
-	return rhs * lhs;
+	StdMeshQuaternion q(lhs);
+	q *= rhs;
+	return q;
+}
+
+StdMeshQuaternion operator*(float lhs, const StdMeshQuaternion& rhs)
+{
+  return rhs * lhs;
+}
+
+StdMeshQuaternion& operator+=(StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs)
+{
+	lhs.w += rhs.w;
+	lhs.x += rhs.x;
+	lhs.y += rhs.y;
+	lhs.z += rhs.z;
+	return lhs;
 }
 
 StdMeshQuaternion operator+(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs)
 {
-	StdMeshQuaternion q;
-	q.w = lhs.w+rhs.w;
-	q.x = lhs.x+rhs.x;
-	q.y = lhs.y+rhs.y;
-	q.z = lhs.z+rhs.z;
+	StdMeshQuaternion q(lhs);
+	q += rhs;
 	return q;
 }
 
@@ -450,12 +577,18 @@ StdMeshVector operator-(const StdMeshVector& rhs)
 	return v;
 }
 
+StdMeshVector& operator+=(StdMeshVector& lhs, const StdMeshVector& rhs)
+{
+	lhs.x += rhs.x;
+	lhs.y += rhs.y;
+	lhs.z += rhs.z;
+	return lhs;
+}
+
 StdMeshVector operator+(const StdMeshVector& lhs, const StdMeshVector& rhs)
 {
-	StdMeshVector v;
-	v.x = lhs.x + rhs.x;
-	v.y = lhs.y + rhs.y;
-	v.z = lhs.z + rhs.z;
+	StdMeshVector v(lhs);
+	v += rhs;
 	return v;
 }
 
@@ -468,16 +601,22 @@ StdMeshVector operator*(const StdMeshVector& lhs, const StdMeshVector& rhs)
 	return v;
 }
 
-StdMeshVector operator*(float lhs, const StdMeshVector& rhs)
+StdMeshVector& operator*=(StdMeshVector& lhs, float rhs)
 {
-	StdMeshVector v;
-	v.x = lhs*rhs.x;
-	v.y = lhs*rhs.y;
-	v.z = lhs*rhs.z;
-	return v;
+	lhs.x *= rhs;
+	lhs.y *= rhs;
+	lhs.z *= rhs;
+	return lhs;
 }
 
 StdMeshVector operator*(const StdMeshVector& lhs, float rhs)
+{
+	StdMeshVector v(lhs);
+	v *= rhs;
+	return v;
+}
+
+StdMeshVector operator*(float lhs, const StdMeshVector& rhs)
 {
 	return rhs * lhs;
 }
@@ -506,6 +645,15 @@ StdMeshVector operator/(const StdMeshVector& lhs, float rhs)
 	v.x = lhs.x/rhs;
 	v.y = lhs.y/rhs;
 	v.z = lhs.z/rhs;
+	return v;
+}
+
+StdMeshVector operator*(const StdMeshMatrix& lhs, const StdMeshVector& rhs) // does not apply translation part
+{
+	StdMeshVector v;
+	v.x = lhs(0,0)*rhs.x + lhs(0,1)*rhs.y + lhs(0,2)*rhs.z;
+	v.y = lhs(1,0)*rhs.x + lhs(1,1)*rhs.y + lhs(1,2)*rhs.z;
+	v.z = lhs(2,0)*rhs.x + lhs(2,1)*rhs.y + lhs(2,2)*rhs.z;
 	return v;
 }
 
@@ -560,12 +708,13 @@ StdMeshVertex operator*(const StdMeshMatrix& lhs, const StdMeshVertex& rhs)
 	vtx.x  = lhs(0,0)*rhs.x + lhs(0,1)*rhs.y + lhs(0,2)*rhs.z + lhs(0,3);
 	vtx.y  = lhs(1,0)*rhs.x + lhs(1,1)*rhs.y + lhs(1,2)*rhs.z + lhs(1,3);
 	vtx.z  = lhs(2,0)*rhs.x + lhs(2,1)*rhs.y + lhs(2,2)*rhs.z + lhs(2,3);
+	vtx.u = rhs.u; vtx.v = rhs.v;
 	return vtx;
 }
 
 /* Boring math stuff ends here */
 
-StdMeshMatrix StdMeshTrack::GetTransformAt(float time) const
+StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
 {
 	std::map<float, StdMeshKeyFrame>::const_iterator iter = Frames.lower_bound(time);
 
@@ -576,7 +725,7 @@ StdMeshMatrix StdMeshTrack::GetTransformAt(float time) const
 	assert(iter != Frames.end());
 
 	if(iter == Frames.begin())
-		return iter->second.Trans;
+		return iter->second.Transformation;
 
 	std::map<float, StdMeshKeyFrame>::const_iterator prev_iter = iter;
 	-- prev_iter;
@@ -588,7 +737,11 @@ StdMeshMatrix StdMeshTrack::GetTransformAt(float time) const
 	assert(weight1 >= 0 && weight2 >= 0 && weight1 <= 1 && weight2 <= 1);
 	assert(fabs(weight1 + weight2 - 1) < 1e-6);
 
-	return weight1 * iter->second.Trans + weight2 * prev_iter->second.Trans;
+	StdMeshTransformation transformation;
+	transformation.scale = weight1 * iter->second.Transformation.scale + weight2 * prev_iter->second.Transformation.scale;
+	transformation.rotate = weight1 * iter->second.Transformation.rotate + weight2 * prev_iter->second.Transformation.rotate; // TODO: slerp or renormalize
+	transformation.translate = weight1 * iter->second.Transformation.translate + weight2 * prev_iter->second.Transformation.translate;
+	return transformation;
 }
 
 StdMeshAnimation::StdMeshAnimation(const StdMeshAnimation& other):
@@ -743,32 +896,32 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 
 			bone->ID = skeleton.RequireIntAttribute(bone_elem, "id");
 			bone->Name = skeleton.RequireStrAttribute(bone_elem, "name");
-
 			// TODO: Make sure ID and name are unique
+
+			bone->Parent = NULL;
+			// Index of bone will be set when building Master Bone Table later
 
 			TiXmlElement* position_elem = skeleton.RequireFirstChild(bone_elem, "position");
 			TiXmlElement* rotation_elem = skeleton.RequireFirstChild(bone_elem, "rotation");
 			TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotation_elem, "axis");
 
-			float dx = skeleton.RequireFloatAttribute(position_elem, "x");
-			float dy = skeleton.RequireFloatAttribute(position_elem, "y");
-			float dz = skeleton.RequireFloatAttribute(position_elem, "z");
+			StdMeshVector d, r;
+			d.x = skeleton.RequireFloatAttribute(position_elem, "x");
+			d.y = skeleton.RequireFloatAttribute(position_elem, "y");
+			d.z = skeleton.RequireFloatAttribute(position_elem, "z");
 			float angle = skeleton.RequireFloatAttribute(rotation_elem, "angle");
-			float rx = skeleton.RequireFloatAttribute(axis_elem, "x");
-			float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
-			float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
+			r.x = skeleton.RequireFloatAttribute(axis_elem, "x");
+			r.y = skeleton.RequireFloatAttribute(axis_elem, "y");
+			r.z = skeleton.RequireFloatAttribute(axis_elem, "z");
 
-			bone->Trans = CoordCorrection * StdMeshMatrix::Translate(dx, dy, dz) * StdMeshMatrix::Rotate(angle, rx, ry, rz) * CoordCorrectionInverse;
+			// TODO: The CoordCorrection transformation breaks here if it includes a scale part (|det| != 1)
+			// Probably not trivial to fix, since transformation scale behaves different than matrix scale when transforming
+			bone->Transformation.scale = StdMeshVector::UnitScale();
+			bone->Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, -(CoordCorrection*r)); // negative sign because r is a pseudovector, and coordcorrection has negative determinant
+			bone->Transformation.translate = CoordCorrection * d; // TODO: I think this should also apply translation part of coord correction matrix
 
-#if 1
-			bone->InverseTrans = CoordCorrection * StdMeshMatrix::Rotate(-angle, rx, ry, rz) * StdMeshMatrix::Translate(-dx, -dy, -dz) * CoordCorrectionInverse;
-#else
-			bone->InverseTrans = StdMeshMatrix::Inverse(bone->Trans);
-#endif
-
-			bone->Parent = NULL;
-
-			// Index of bone will be set when building Master Bone Table later
+			// We need this later for applying animations, therefore cache it here
+			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
 		}
 
 		// Bone hierarchy
@@ -795,9 +948,10 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 			child->Parent = parent;
 			parent->Children.push_back(child);
 
-			// Apply parent transformation
-			child->Trans = parent->Trans * child->Trans;
-			child->InverseTrans = child->InverseTrans * parent->InverseTrans;
+			// Apply parent transformation			
+			child->Transformation = parent->Transformation * child->Transformation;
+			// Update inverse
+			child->InverseTransformation = StdMeshTransformation::Inverse(child->Transformation);
 		}
 
 		// Fill master bone table in hierarchical order:
@@ -847,7 +1001,6 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 		for(TiXmlElement* animation_elem = animations_elem->FirstChildElement("animation"); animation_elem != NULL; animation_elem = animation_elem->NextSiblingElement("animation"))
 		{
 			StdCopyStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
-			//StdStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
 			if(Animations.find(name) != Animations.end())
 			skeleton.Error(FormatString("There is already an animation with name '%s'", name.getData()), animation_elem);
 
@@ -882,63 +1035,30 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 					TiXmlElement* scale_elem = skeleton.RequireFirstChild(keyframe_elem, "scale");
 					TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotate_elem, "axis");
 
-					float dx = skeleton.RequireFloatAttribute(translate_elem, "x");
-					float dy = skeleton.RequireFloatAttribute(translate_elem, "y");
-					float dz = skeleton.RequireFloatAttribute(translate_elem, "z");
-					float sx = skeleton.RequireFloatAttribute(scale_elem, "x");
-					float sy = skeleton.RequireFloatAttribute(scale_elem, "y");
-					float sz = skeleton.RequireFloatAttribute(scale_elem, "z");
+					StdMeshVector d, s, r;
+					d.x = skeleton.RequireFloatAttribute(translate_elem, "x");
+					d.y = skeleton.RequireFloatAttribute(translate_elem, "y");
+					d.z = skeleton.RequireFloatAttribute(translate_elem, "z");
+					s.x = skeleton.RequireFloatAttribute(scale_elem, "x");
+					s.y = skeleton.RequireFloatAttribute(scale_elem, "y");
+					s.z = skeleton.RequireFloatAttribute(scale_elem, "z");
 					float angle = skeleton.RequireFloatAttribute(rotate_elem, "angle");
-					float rx = skeleton.RequireFloatAttribute(axis_elem, "x");
-					float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
-					float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
+					r.x = skeleton.RequireFloatAttribute(axis_elem, "x");
+					r.y = skeleton.RequireFloatAttribute(axis_elem, "y");
+					r.z = skeleton.RequireFloatAttribute(axis_elem, "z");
 
-					float dxp = bone->InverseTrans(0,0)*dx + bone->InverseTrans(0,1)*dy + bone->InverseTrans(0,2)*dz;
-					float dyp = bone->InverseTrans(1,0)*dx + bone->InverseTrans(1,1)*dy + bone->InverseTrans(1,2)*dz;
-					float dzp = bone->InverseTrans(2,0)*dx + bone->InverseTrans(2,1)*dy + bone->InverseTrans(2,2)*dz;
+					// Apply inverse bone scale and rotation to translation part of transformation
+					StdMeshVector scl = 1.0f/bone->Transformation.scale;
+					StdMeshQuaternion quat = -bone->Transformation.rotate;
+					StdMeshVector ddp = quat * (scl * d);
 
-					frame.Trans = StdMeshMatrix::Translate(dxp, dyp, dzp) * CoordCorrection * StdMeshMatrix::Scale(sx, sy, sz) * StdMeshMatrix::Rotate(angle, rx, ry, rz) * CoordCorrectionInverse;
+					// TODO: The CoordCorrection transformation breaks here if it includes a scale part (|det| != 1)
+					// Probably not trivial to fix, since transformation scale behaves different than matrix scale when transforming.
+					frame.Transformation.scale = StdMeshVector::UnitScale();
+					frame.Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, -(CoordCorrection*r)); // negative sign because r is a pseudovector, and coordcorrection has negative determinant
+					frame.Transformation.translate = ddp; // No CoordCorrection here, since it is applied already in ddp
 				}
 			}
-
-#if 0
-			// Apply bone transformation on animation frames. We need to do this
-			// after the actual loading because we need to walk the bone list
-			// hierarchically.
-			for(unsigned int i = 0; i < Bones.size(); ++i)
-			{
-				if(animation.Tracks[i])
-				{
-					StdMeshTrack& track = *animation.Tracks[i];
-
-					// Get next parent track
-					StdMeshTrack* parent_track = NULL;
-					StdMeshBone* parent_bone = Bones[i]->Parent;
-					while(parent_bone && !(parent_track = animation.Tracks[parent_bone->Index]))
-						parent_bone = parent_bone->Parent;
-					assert(!parent_bone || parent_track);
-
-					for(std::map<float, StdMeshKeyFrame>::iterator iter = track.Frames.begin(); iter != track.Frames.end(); ++iter)
-					{
-						// TODO: If this bone's track is not as smooth as the parent animation
-						// (which means if there is more than one keyframe in the parent
-						// animation for each keyframe pair in the this bone's animation),
-						// then we need to insert additional child keyframes, so that the
-						// transformation for the child does not skip parent keyframes.
-						StdMeshKeyFrame& frame = iter->second;
-
-						// Apply transformation of parent tracks (for which we computed
-						// already the bone transformations, as we walk the bone list
-						// hierarchically) in bone's coordinate system.
-						frame.Trans.Mul(Bones[i]->InverseTrans);
-						frame.Trans.Transform(Bones[i]->Trans);
-
-						if(parent_bone)
-							frame.Trans.Transform(parent_track->GetTransformAt(iter->first));
-					}
-				}
-			}
-#endif
 		}
 	}
 	else
@@ -1077,7 +1197,7 @@ void StdMeshInstance::UpdateBoneTransforms()
 	for(unsigned int i = 0; i < BoneTransforms.size(); ++i)
 	{
 		float accum_weight = 0.0f;
-		BoneTransforms[i] = StdMeshMatrix::Zero();
+		StdMeshTransformation Transformation = StdMeshTransformation::Zero();
 
 		for(unsigned int j = 0; j < Animations.size(); ++j)
 		{
@@ -1085,25 +1205,36 @@ void StdMeshInstance::UpdateBoneTransforms()
 			if(track)
 			{
 				accum_weight += Animations[j].Weight;
-				StdMeshMatrix matr(track->GetTransformAt(Animations[j].Position));
-				matr = Animations[j].Weight * matr;
-				BoneTransforms[i] = BoneTransforms[i] + matr;
+				StdMeshTransformation Track = track->GetTransformAt(Animations[j].Position);
+				
+				Transformation.scale += Animations[j].Weight * Track.scale;
+				Transformation.rotate += Animations[j].Weight * Track.rotate; // TODO: introduce animation stack, then slerp
+				Transformation.translate += Animations[j].Weight * Track.translate;
 			}
 		}
-		
-		if(!accum_weight)
-			BoneTransforms[i] = StdMeshMatrix::Identity();
-		else
-			BoneTransforms[i] = BoneTransforms[i] * (1.0f/accum_weight);
 
 		const StdMeshBone* bone = Mesh.Bones[i];
-
-		BoneTransforms[i] = bone->Trans * BoneTransforms[i] * bone->InverseTrans;
-
 		const StdMeshBone* parent = bone->GetParent();
 		assert(!parent || parent->Index < i);
-		if(parent)
-			BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
+
+		if(!accum_weight)
+		{
+			if(parent)
+				BoneTransforms[i] = BoneTransforms[parent->Index];
+			else
+				BoneTransforms[i] = StdMeshMatrix::Identity();
+		}
+		else
+		{
+			Transformation.scale *= 1.0f/accum_weight;
+			Transformation.rotate.Normalize(); // renormalize. We can skip this if we decide to use slerp
+			Transformation.translate *= 1.0f/accum_weight;
+
+			BoneTransforms[i] = StdMeshMatrix::Transform(bone->Transformation * Transformation * bone->InverseTransformation);
+
+			if(parent)
+				BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
+		}
 	}
 
 	// Compute transformation for each vertex. We could later think about
