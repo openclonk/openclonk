@@ -871,10 +871,6 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 				StdMeshTrack* track = new StdMeshTrack;
 				animation.Tracks[bone->Index] = track;
 
-				// Get inverse bone transformation matrix in OGRE coordiante system; we need it to apply
-				// the translation part of the bone transformation.
-				StdMeshMatrix bone_inverse_trans = CoordCorrectionInverse * bone->InverseTrans * CoordCorrection;
-
 				TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
 				for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
 				{
@@ -897,12 +893,11 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 					float ry = skeleton.RequireFloatAttribute(axis_elem, "y");
 					float rz = skeleton.RequireFloatAttribute(axis_elem, "z");
 
+					float dxp = bone->InverseTrans(0,0)*dx + bone->InverseTrans(0,1)*dy + bone->InverseTrans(0,2)*dz;
+					float dyp = bone->InverseTrans(1,0)*dx + bone->InverseTrans(1,1)*dy + bone->InverseTrans(1,2)*dz;
+					float dzp = bone->InverseTrans(2,0)*dx + bone->InverseTrans(2,1)*dy + bone->InverseTrans(2,2)*dz;
 
-					float dxp = bone_inverse_trans(0,0)*dx + bone_inverse_trans(0,1)*dy + bone_inverse_trans(0,2)*dz;
-					float dyp = bone_inverse_trans(1,0)*dx + bone_inverse_trans(1,1)*dy + bone_inverse_trans(1,2)*dz;
-					float dzp = bone_inverse_trans(2,0)*dx + bone_inverse_trans(2,1)*dy + bone_inverse_trans(2,2)*dz;
-
-					frame.Trans = CoordCorrection * StdMeshMatrix::Translate(dxp, dyp, dzp) * StdMeshMatrix::Scale(sx, sy, sz) * StdMeshMatrix::Rotate(angle, rx, ry, rz) * CoordCorrectionInverse;
+					frame.Trans = StdMeshMatrix::Translate(dxp, dyp, dzp) * CoordCorrection * StdMeshMatrix::Scale(sx, sy, sz) * StdMeshMatrix::Rotate(angle, rx, ry, rz) * CoordCorrectionInverse;
 				}
 			}
 
