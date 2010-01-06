@@ -719,9 +719,10 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 			{
 				// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
 				StdMeshInstance dummy(*graphics->Mesh);
-				dummy.SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+				if(pObj && ((pObj->ColorMod >> 24) & 0xff) != 0xff)
+					dummy.SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
 				// TODO: Keep aspect ratio of mesh dimensions
-				lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, 0xff0000ff /* blue */, NULL);
+				lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : 0xff0000ff /* blue */, NULL);
 			}
 			break;
 		}

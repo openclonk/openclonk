@@ -3389,11 +3389,20 @@ static bool FnSetClrModulation(C4AulObjectContext *cthr, Nillable<long> dwClr, l
 			return false;
 		}
 		pOverlay->SetClrModulation(clr);
+		// C4GraphicsOverlay Does not have an StdMeshInstance (yet), no need to
+		// update faceordering
 	}
 	else
 	{
 		// set it
 		cthr->Obj->ColorMod=clr;
+		if(cthr->Obj->pMeshInstance)
+		{
+			if( ((clr >> 24) & 0xff) != 0xff)
+				cthr->Obj->pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+			else
+				cthr->Obj->pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_Fixed);
+		}
 	}
 	// success
 	return true;

@@ -1139,9 +1139,14 @@ StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 
 void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 {
-	CurrentFaceOrdering = ordering;
-	if(ordering == FO_Fixed)
-		Faces = Mesh.Faces;
+	if(CurrentFaceOrdering != ordering)
+	{
+		CurrentFaceOrdering = ordering;
+		if(ordering == FO_Fixed)
+			Faces = Mesh.Faces;
+
+		BoneTransformsDirty = true;
+	}
 }
 
 bool StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, float weight)

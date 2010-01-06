@@ -182,7 +182,8 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 		{
 		pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
-		pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+		if( ((ColorMod >> 24) & 0xff) != 0xff) // Sort faces if the object is transparent
+			pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
 		}
 	else
 		{
@@ -422,7 +423,8 @@ void C4Object::UpdateGraphics(bool fGraphicsChanged, bool fTemp)
 		if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
 			{
 			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
-			pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+			if( ((ColorMod >> 24) & 0xff) != 0xff) // Sort faces if the object is transparent
+				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
 			}
 		else
 			{
