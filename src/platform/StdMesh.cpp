@@ -1091,7 +1091,7 @@ const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 }
 
 StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const StdStrBuf& animation_name):
-	Instance(instance), Anim(NULL), Changed(false)
+	Instance(instance), Anim(NULL)
 {
 	const StdMeshAnimation* animation = instance->Mesh.GetAnimationByName(animation_name);
 	if(animation)
@@ -1103,7 +1103,7 @@ StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const Std
 }
 
 StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const StdMeshAnimation& animation):
-	Instance(instance), Anim(NULL), Changed(false)
+	Instance(instance), Anim(NULL)
 {
 	for(unsigned int i = 0; i < instance->Animations.size(); ++i)
 		if(instance->Animations[i].MeshAnimation == &animation)
@@ -1119,19 +1119,19 @@ void StdMeshInstance::AnimationRef::SetPosition(float position)
 {
 	assert(position <= Anim->MeshAnimation->Length);
 	Anim->Position = position;
-	Changed = true;
+	Instance->BoneTransformsDirty = true;
 }
 
 void StdMeshInstance::AnimationRef::SetWeight(float weight)
 {
 	Anim->Weight = weight;
-	Changed = true;
+	Instance->BoneTransformsDirty = true;
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 	Mesh(mesh), CurrentFaceOrdering(FO_Fixed),
 	BoneTransforms(Mesh.GetNumBones()), Vertices(Mesh.GetNumVertices()),
-	Faces(Mesh.Faces)
+	Faces(Mesh.Faces), BoneTransformsDirty(false)
 {
 	for(unsigned int i = 0; i < Mesh.GetNumVertices(); ++i)
 		Vertices[i] = Mesh.GetVertex(i);
@@ -1140,9 +1140,7 @@ StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 {
 	CurrentFaceOrdering = ordering;
-	if(ordering != FO_Fixed)
-		ReorderFaces();
-	else
+	if(ordering == FO_Fixed)
 		Faces = Mesh.Faces;
 }
 
@@ -1164,7 +1162,8 @@ bool StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, float wei
 	anim.Position = 0.0f;
 	anim.Weight = weight;
 	Animations.push_back(anim);
-	UpdateBoneTransforms();
+
+	BoneTransformsDirty = true;
 	return true;
 }
 
@@ -1183,7 +1182,7 @@ bool StdMeshInstance::StopAnimation(const StdMeshAnimation& animation)
 		if(iter->MeshAnimation == &animation)
 		{
 			Animations.erase(iter);
-			UpdateBoneTransforms();
+			BoneTransformsDirty = true;
 			return true;
 		}
 	}
@@ -1193,6 +1192,9 @@ bool StdMeshInstance::StopAnimation(const StdMeshAnimation& animation)
 
 void StdMeshInstance::UpdateBoneTransforms()
 {
+	// Nothing changed since last time
+	if(!BoneTransformsDirty) return;
+
 	// Compute transformation matrix for each bone.
 	for(unsigned int i = 0; i < BoneTransforms.size(); ++i)
 	{
@@ -1240,6 +1242,7 @@ void StdMeshInstance::UpdateBoneTransforms()
 	// Compute transformation for each vertex. We could later think about
 	// doing this on the GPU using a vertex shader. This would then probably
 	// need to go to CStdGL::PerformMesh and CStdD3D::PerformMesh.
+	// (can only work for fixed face ordering though)
 	for(unsigned int i = 0; i < Vertices.size(); ++i)
 	{
 		const StdMesh::Vertex& vertex = Mesh.Vertices[i];
@@ -1264,6 +1267,8 @@ void StdMeshInstance::UpdateBoneTransforms()
 
 	if(CurrentFaceOrdering != FO_Fixed)
 		ReorderFaces();
+
+	BoneTransformsDirty = false;
 }
 
 void StdMeshInstance::ReorderFaces()

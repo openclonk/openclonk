@@ -307,11 +307,6 @@ public:
 	{
 		AnimationRef(StdMeshInstance* instance, const StdStrBuf& animation_name);
 		AnimationRef(StdMeshInstance* instance, const StdMeshAnimation& animation);
-
-		~AnimationRef()
-		{
-			if(Changed) Instance->UpdateBoneTransforms();
-		}
 		
 		operator void*() const { return Anim; } // for use in boolean expressions
 
@@ -325,7 +320,6 @@ public:
 
 		StdMeshInstance* Instance;
 		Animation* Anim;
-		bool Changed;
 	};
 
 	bool PlayAnimation(const StdStrBuf& animation_name, float weight);
@@ -348,8 +342,11 @@ public:
 
 	const StdMesh& Mesh;
 
-protected:
+	// Update bone transformation matrices, and vertex positions. Call this
+	// before rendering.
 	void UpdateBoneTransforms();
+
+protected:
 	void ReorderFaces();
 
 	FaceOrdering CurrentFaceOrdering;
@@ -367,6 +364,8 @@ protected:
 
 	std::vector<StdMeshVertex> Vertices;
 	std::vector<StdMeshFace> Faces;
+
+	bool BoneTransformsDirty;
 };
 
 #endif
