@@ -137,7 +137,8 @@ public func UpdateController()
 	// visibility
 	SetOwner(crew->GetController());
 	// name
-	SetName(Format("$TxtSelect$",crew->GetName()));
+	var fullname = Format("%s %s",crew->GetObjCoreRankName(),crew->GetName());
+	SetName(Format("$TxtSelect$",fullname));
 }
 
 public func UpdateSelectionStatus()

@@ -16,6 +16,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
+#include "C4Include.h"
 #include <StdMeshMaterial.h>
 #include <StdDDraw2.h>
 

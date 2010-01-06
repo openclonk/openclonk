@@ -5,7 +5,7 @@
 // standard controls
 #include L_CO
 
-// un-comment them as soon as the new controls work with context menus etc.
+// un-comment them as soon as the new controls work with context menus etc.^
 // Context menu
 //#include L_CM
 // Auto production
@@ -15,12 +15,12 @@ local pInventory;
 
 /* Initialization */
 
-protected func Initialize()
+protected func Construction()
 {
-  // Create Inventory object
-/*  pInventory = CreateObject(INVT, 0, 0, GetOwner());
-  CreateContents(EMPT);*/
-  CreateContents(SHVL);
+  _inherited(...);
+  // shovel...
+  var shov = CreateObject(SHVL,0,0,GetOwner());
+  Collect(shov,2);
   // Clonks mit Magiephysikal aus fehlerhaften Szenarien korrigieren
   if (GetID () == CLNK)
     if (GetPhysical ("Magic", 1))
@@ -29,7 +29,6 @@ protected func Initialize()
   SetDir(Random(2));
   // Broadcast für Spielregeln
   GameCallEx("OnClonkCreation", this);
-  _inherited();
 }
 
 
@@ -348,136 +347,6 @@ protected func CheckStuck()
 /* Status */
 
 public func IsClonk() { return true; }
-
-/* Trinken */
-
-
-
-/* New collection behavior */
-/*
-public func Collection2(object pObj)
-{
-  if(pObj->GetID() != EMPT)
-    pInventory->AddItem(pObj);
-  // HACK: only to hide the engine inventory
-  pObj->SetClrModulation(RGBa(Random(255),Random(255),Random(255),255));
-  UpdateInventorySelection();
-}
-
-public func Ejection(object pObj)
-{
-  if(pObj->GetID() != EMPT)
-  {
-    pInventory->RemItem(pObj);
-    // Try to get next item
-    var i;
-    do
-    {
-      pInventory->SelectNext();
-      i++;
-    }
-    while(!pInventory->GetSelectedObj() && i<4)
-  }
-  // HACK: only to hide the engine inventory
-  pObj->SetClrModulation(RGB(255,255,255));
-  UpdateInventorySelection();
-}
-*/
-/* Inventorychange */
-/*
-protected func CrewSelection(bool fDeselect, bool fCursorOnly)
-{
-  pInventory->Show(GetCursor(GetOwner()) != this);
-}
-
-protected func ControlSpecial()
-{
-  pInventory->SelectNext();
-  UpdateInventorySelection();
-}
-
-private func UpdateInventorySelection()
-{
-  var pObj = pInventory->GetSelectedObj();
-  if(!pObj) pObj = FindContents(EMPT);
-  var iSave;
-  while(ScrollContents() != pObj && iSave < 10) iSave++;
-//  if(iSave == 10) Log("ERROR: Inventory doesn't match");
-}
-
-
-protected func ControlThrow()
-{
-  // Bei vorherigem Doppel-Stop nur Ablegen
-  if (GetPlrDownDouble(GetOwner())) return 0;
-  // Steuerung an Effekt weitergeben 
-  if (Control2Effect("ControlThrow")) return 1;
-  // Reiten und Werfen
-  if (IsRiding())
-    if (Contents(0))
-    {
-      SetAction("RideThrow");
-      return 1;
-    }
-  if(!GetEffect("IntDoThrow", this))
-  {
-    AddEffect("IntDoThrow", this, 1, 1);
-    AnimationPlay("ThrowArms", 0);
-  }
-  // Keine �berladene Steuerung
-  return 1;
-}
-
-global func FxIntDoThrowTimer(object target, int number, int time)
-{
-  var walk_pos = (time % 50) * 2400 / 50; // Walk animation ranges to 2400
-  // Animation lasts 20 frames
-  if(time <= 15*2)
-  {
-    var off = time;
-    var weight = 2000*off;
-    var jump_pos = off * 1500 / (15*2); // Throw animation ranges to 1500
-    target->AnimationSetState("ThrowArms", jump_pos, weight);
-    if(time == 9*2)
-      target->Throwing();
-  }
-  else
-  {
-    var weight = 2000-2000*(time-15*2)/5;
-    target->AnimationSetState("ThrowArms", 1500, weight);
-    // Hold until 50 frames
-    if(time > 35)
-    {
-      target->AnimationStop("ThrowArms");
-      return -1;
-    }
-  }
-}
-
-private func Throwing()
-{
-  // Erstes Inhaltsobjekt werfen
-  var pObj = Contents(0);
-  // Wurfparameter berechnen
-  var iX, iY, iR, iXDir, iYDir, iRDir;
-  iX = 0; if (!GetDir()) iX = -iX;
-  iY = -2;
-  iR = Random(360);
-  iXDir = GetPhysical("Throw") / 25000; if(!GetDir()) iXDir = -iXDir;
-  iYDir = -GetPhysical("Throw") / 25000;
-  iRDir = Random(40) - 20;
-  // Reitet? Eigengeschwindigkeit addieren
-  if (GetActionTarget())
-  {
-    iXDir += GetActionTarget()->GetXDir() / 10;
-    iYDir += GetActionTarget()->GetYDir() / 10;
-  }
-  // Werfen!
-  pObj->Exit(iX, iY, iR, iXDir, iYDir, iRDir);  
-  // Fertig
-  return 1;  
-}
-*/
 
 
 // Test to synchronize the walkanimation with the movement

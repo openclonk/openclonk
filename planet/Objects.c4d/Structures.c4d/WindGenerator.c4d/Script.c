@@ -11,31 +11,23 @@ public func GetGeneratorPriority() { return 256; }
 
 protected func Initialize()
 {
-  SetAction("Turn");
+  AnimationPlay("Turn");
+	iRot = 0;
   return _inherited(...);
 }
 
+local iRot;
+
 func Wind2Turn()
 {
-  DoPower(Abs(GetWind()/4));
-  if(Abs(GetWind()) < 10) this["ActMap"]["Turn"]["Delay"] = 0;
-  else this["ActMap"]["Turn"]["Delay"] = BoundBy(5-Abs(GetWind())/10, 1, 5);
+	if(!Random(10))
+    DoPower(Abs(GetWind()/4));
+	iRot += GetWind()/2;
+	if(iRot < 0) iRot += 3600;
+	if(iRot >= 3600) iRot -= 3600;
+  AnimationSetState("Turn", iRot*12000/3600);
 }
 
 func Definition(def) {
-  SetProperty("ActMap", {
-Turn = {
-Prototype = Action,
-Name = "Turn",
-Procedure = DFA_NONE,
-Length = 40,
-Delay = 1,
-X = 0,
-Y = 0,
-Wdt = 70,
-Hgt = 90,
-NextAction = "Turn",
-//Animation = "Turn",
-},  }, def);
   SetProperty("Name", "$Name$", def);
 }

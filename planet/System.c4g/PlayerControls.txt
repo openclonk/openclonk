@@ -358,8 +358,6 @@
 	# MenuUp, Up, Jump					W
 	# MenuDown, Down					S
 	#
-	# NextItem							Scrollwheel-Up (now: Up)
-	# PreviousItem						Scrollwheel-Down (now: unassigned)
 	# Hotkey0-9							(0-9)
 	#
 	# Use, Throw						Left mouse button
@@ -383,7 +381,8 @@
 	# PlayerMenu						End
 	#
 	# GrabPrevious, AllCrew,
-	# NextAltItem, NextPreviousItem		Unassigned
+	# NextAltItem, NextPreviousItem,
+	# NextItem, PreviousItem			Unassigned
 		
 
 	[ControlSet]
@@ -570,10 +569,6 @@
 		[Assignment]
 		Key=End
 		Control=PlayerMenu
-		
-		[Assignment]
-		Key=Up
-		Control=NextItem
 		
 		[Assignment]
 		Key=GameMouse1ButtonLeft

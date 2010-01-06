@@ -692,7 +692,8 @@ if(HAVE_PRECOMPILED_HEADERS)
 		get_property(OC_SOURCES TARGET clonk PROPERTY SOURCES)
 		foreach(FILE ${OC_SOURCES})
 			get_filename_component(FILE_EXT ${FILE} EXT)
-			if(FILE_EXT STREQUAL ".cpp")
+			get_filename_component(FILE_NAME_WE ${FILE} NAME_WE)
+			if(FILE_EXT STREQUAL ".cpp" AND NOT FILE_NAME_WE MATCHES "tiny.*")
 				# This check is necessary since gzio.c gets compiled as C
 				# code, which can't use C++ PCH.
 				set_property(SOURCE ${FILE} PROPERTY COMPILE_FLAGS /YuC4Include.h)

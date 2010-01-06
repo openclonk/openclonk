@@ -7392,5 +7392,5 @@
 			</boneassignments>
 		</submesh>
 	</submeshes>
-	<skeletonlink name="WindMill_MaterialWind.skeleton"/>
+	<skeletonlink name="WindMill.skeleton"/>
 </mesh>

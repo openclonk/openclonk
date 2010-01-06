@@ -2404,6 +2404,13 @@ static long FnGetPlrViewMode(C4AulContext *cthr, long iPlr)
   return ::Players.Get(iPlr)->ViewMode;
   }
 
+static C4Void FnResetCursorView(C4AulContext *cthr, long plr)
+{
+	C4Player *pplr = ::Players.Get(plr);
+	if (pplr) pplr->ResetCursorView();
+	return C4VNull;
+}
+
 static C4Object *FnGetPlrView(C4AulContext *cthr, long iPlr)
   {
 	C4Player *pPlr = ::Players.Get(iPlr);
@@ -5836,6 +5843,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetPlrKnowledge", FnSetPlrKnowledge);
 	AddFunc(pEngine, "SetPlrMagic", FnSetPlrMagic);
 	AddFunc(pEngine, "GetPlrViewMode", FnGetPlrViewMode);
+	AddFunc(pEngine, "ResetCursorView", FnResetCursorView);
 	AddFunc(pEngine, "GetPlrView", FnGetPlrView);
 	AddFunc(pEngine, "GetWealth", FnGetWealth);
 	AddFunc(pEngine, "SetWealth", FnSetWealth);
