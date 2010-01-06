@@ -8,9 +8,7 @@ protected func Hit()
   return 1;
 }
 
-  func Definition(def) {
-  SetProperty("Name", "$Name$", def);
-}
 func Definition(def) {
+  SetProperty("Name", "$Name$", def);
   SetProperty("Collectible", 1, def);
 }
