@@ -215,18 +215,6 @@ private func Riding()
   return 1;
 }
 
-protected func Swimming()
-{
-  if(GBackSemiSolid(0, -4))
-    SetAction("Swim2");
-}
-
-protected func Swimming2()
-{
-  if(!GBackSemiSolid(0, -4))
-    SetAction("Swim");
-}
-
 private func Fighting()
 {
   if (!Random(2)) SetAction("Punch");
@@ -354,6 +342,7 @@ local OldPos;
 
 static CLNK_WalkStates; // TODO: Well wasn't there once a patch, allowing arrys to be assigned to global static?
 static CLNK_HangleStates;
+static CLNK_SwimStates;
 
 func StartWalk()
 {
@@ -378,6 +367,7 @@ func FxIntWalkStart(pTarget, iNumber)
 	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
 	EffectVar(3, pTarget, iNumber) = 0; // Run weight
 	EffectVar(4, pTarget, iNumber) = 0; // Oldstate
+	EffectVar(5, pTarget, iNumber) = 0; // Save wether the last frame was COMD_Stop
 }
 
 func FxIntWalkStop(pTarget, iNumber)
@@ -394,7 +384,7 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
   var iState = 0;
 
 	// Play stand animation when not moving
-	if(iSpeed < 1)
+	if(iSpeed < 1 && EffectVar(5, pTarget, iNumber))
 	{
 		AnimationSetState("Stand", ((iTime/5)%11)*100, nil);
 		iState = 1;
@@ -420,6 +410,11 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 		AnimationSetState("Run", EffectVar(0, pTarget, iNumber)*10, nil);
 		iState = 3;
 	}
+
+  // Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
+  if(GetComDir() == COMD_Stop) EffectVar(5, pTarget, iNumber) = 1;
+	else EffectVar(5, pTarget, iNumber) = 0;
+	
 	// Blend between the animations: The actuall animations gains weight till it reaches 1000
 	// the other animations lose weight until they are at 0
 	for(var i = 1; i <= 3; i++)
@@ -447,6 +442,11 @@ func StartHangle()
 		AddEffect("IntHangle", this, 1, 1, this);
 }
 
+func StopHangle()
+{
+	if(GetAction() != "Hangle") RemoveEffect("IntHangle", this);
+}
+
 func FxIntHangleStart(pTarget, iNumber)
 {
 	AnimationPlay("Hangle", 0);
@@ -463,12 +463,11 @@ func FxIntHangleStart(pTarget, iNumber)
 func FxIntHangleStop(pTarget, iNumber)
 {
 	AnimationStop("Hangle");
+	AnimationStop("HangleStand");
 }
 
 func FxIntHangleTimer(pTarget, iNumber, iTime)
 {
-	if(GetAction() != "Hangle") return -1;
-
   // Make a cosine movment speed (the clonk only moves whem he makes a "stroke")
   var iSpeed = 50-Cos(EffectVar(0, pTarget, iNumber)*360*2/1000, 50);
 	SetPhysical("Hangle", 600*iSpeed, 2);
@@ -537,7 +536,107 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 	EffectVar(4, pTarget, iNumber) = iState;
 }
 
+func StartSwim()
+{
+	if(CLNK_SwimStates == nil)
+		CLNK_SwimStates = ["SwimStand", "Swim", "SwimDiveUp", "SwinDiveDown"];
+	if(!GetEffect("IntSwim", this))
+		AddEffect("IntSwim", this, 1, 1, this);
+}
 
+func StopSwim()
+{
+	if(GetAction() != "Swim") RemoveEffect("IntSwim", this);
+}
+
+func FxIntSwimStart(pTarget, iNumber)
+{
+	AnimationPlay("SwimStand", 1000);
+	AnimationPlay("Swim", 0);
+	AnimationPlay("SwimDiveUp", 0);
+	AnimationPlay("SwimDiveDown", 0);
+	EffectVar(0, pTarget, iNumber) = 0; // Phase
+	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
+	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
+	EffectVar(3, pTarget, iNumber) = 0; // Run weight
+	EffectVar(4, pTarget, iNumber) = 0; // Oldstate
+	EffectVar(5, pTarget, iNumber) = 0; // Save wether the last frame was COMD_Stop
+	EffectVar(6, pTarget, iNumber) = 0; // OldRot
+}
+
+func FxIntSwimStop(pTarget, iNumber)
+{
+	AnimationStop("SwimStand");
+	AnimationStop("Swim");
+	AnimationStop("SwimDiveUp");
+	AnimationStop("SwimDiveDown");
+}
+
+func FxIntSwimTimer(pTarget, iNumber, iTime)
+{
+	DoEnergy(1); //TODO Remove this! Endless Energy while diving is only for the testers
+
+	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
+  var iState = 0;
+
+	// Play stand animation when not moving
+	if(iSpeed < 1 && EffectVar(5, pTarget, iNumber) && !GBackSemiSolid(0, -4))
+	{
+		AnimationSetState("SwimStand", ((iTime/5)%20)*100, nil);
+		iState = 1;
+	}
+	// When moving slowly play synchronized with movement walk
+	else if(!GBackSemiSolid(0, -4))
+	{
+		EffectVar(0, pTarget, iNumber) +=  iSpeed*40/(16*2);
+		if(EffectVar(0, pTarget, iNumber) > 400) EffectVar(0, pTarget, iNumber) -= 400;
+
+		AnimationSetState("Swim",     EffectVar(0, pTarget, iNumber)*10, nil);
+		iState = 2;
+	}
+	// Diving
+	else
+	{
+		EffectVar(0, pTarget, iNumber) +=  iSpeed*40/(16*2);
+		if(EffectVar(0, pTarget, iNumber) > 400) EffectVar(0, pTarget, iNumber) -= 400;
+
+		AnimationSetState("SwimDiveUp",   ((iTime/2)%20)*100, nil);
+		AnimationSetState("SwimDiveDown", ((iTime/2)%20)*100, nil);
+		iState = 3;
+	}
+
+  // Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
+  if(GetComDir() == COMD_Stop) EffectVar(5, pTarget, iNumber) = 1;
+	else EffectVar(5, pTarget, iNumber) = 0;
+
+	// Blend between the animations: The actuall animations gains weight till it reaches 1000
+	// the other animations lose weight until they are at 0
+	for(var i = 1; i <= 3; i++)
+	{
+		if(i == iState)
+		{
+			if(EffectVar(i, pTarget, iNumber) < 1000)
+				EffectVar(i, pTarget, iNumber) += 100;
+		}
+		else
+		{
+			if(EffectVar(i, pTarget, iNumber) > 0)
+				EffectVar(i, pTarget, iNumber) -= 100;
+		}
+		AnimationSetState(CLNK_SwimStates[i-1], nil, EffectVar(i, pTarget, iNumber));
+	}
+	// Adjust Swim direction
+	if(iSpeed > 1)
+	{
+	  var iRot = Angle(-Abs(GetXDir()), GetYDir());
+		EffectVar(6, pTarget, iNumber) += BoundBy(iRot-EffectVar(6, pTarget, iNumber), -4, 4);
+	}
+	iRot = EffectVar(6, pTarget, iNumber);
+	AnimationSetState("SwimDiveUp",     nil, EffectVar(3, pTarget, iNumber)*iRot/180);
+	AnimationSetState("SwimDiveDown", nil, EffectVar(3, pTarget, iNumber)-EffectVar(3, pTarget, iNumber)*iRot/180);
+			
+	EffectVar(4, pTarget, iNumber) = iState;
+}
 
 /* Act Map */
 
@@ -652,33 +751,16 @@ Swim = {
 	Procedure = DFA_SWIM,
 	Directions = 2,
 	FlipDir = 1,
-	Length = 12,
-	Delay = 15,
+	Length = 1,
+	Delay = 0,
 	X = 0,
 	Y = 80,
 	Wdt = 8,
 	Hgt = 20,
 	OffX = 0,
-	OffY = 1,
-	NextAction = "Swim",
-	StartCall = "Swimming",
-},
-Swim2 = {
-	Prototype = Action,
-	Name = "Swim2",
-	Procedure = DFA_SWIM,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 12,
-	Delay = 15,
-	X = 0,
-	Y = 300,
-	Wdt = 8,
-	Hgt = 20,
-	OffX = 0,
-	OffY = 1,
-	NextAction = "Swim2",
-	StartCall = "Swimming2",
+	OffY = 3,
+	StartCall = "StartSwim",
+	AbortCall = "StopSwim",
 },
 Hangle = {
 	Prototype = Action,
@@ -686,8 +768,8 @@ Hangle = {
 	Procedure = DFA_HANGLE,
 	Directions = 2,
 	FlipDir = 1,
-	Length = 11,
-	Delay = 16,
+	Length = 1,
+	Delay = 0,
 	X = 0,
 	Y = 100,
 	Wdt = 8,
@@ -695,8 +777,8 @@ Hangle = {
 	OffX = 0,
 	OffY = 3,
 	NextAction = "Hangle",
-	//Animation = "Hangle",
 	StartCall = "StartHangle",
+	AbortCall = "StopHangle",
 	InLiquidAction = "Swim",
 },
 Jump = {
