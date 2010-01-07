@@ -618,7 +618,7 @@ endif()
 # Locate necessary libraries
 ############################################################################
 # Find win32 SDK, since a lot of users don't have the include path in their environment
-if(WIN32)
+if(MSVC)
 	get_filename_component(WINSDK_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" ABSOLUTE CACHE)
 	mark_as_advanced(WINSDK_ROOT)
 	include_directories(SYSTEM ${WINSDK_ROOT}/Include)
@@ -803,17 +803,10 @@ if(USE_X11)
 	)
 endif()
 if (WIN32)
-	FINDLIB(VFW_LIBRARIES vfw32)
-	FINDLIB(WS2_LIBRARIES ws2_32)
-	FINDLIB(WINMM_LIBRARIES winmm)
-	target_link_libraries(clonk
-		${VFW_LIBRARIES}
-		${WS2_LIBRARIES}
-		${WINMM_LIBRARIES}
-	)
-	target_link_libraries(c4group
-		${WS2_LIBRARIES}
-	)
+	# CMake is too incompetent to check whether these libraries can be linked to
+	# So just pretend that everything is fine
+	target_link_libraries(clonk vfw32 ws2_32 winmm)
+	target_link_libraries(c4group ws2_32)
 
 	if(MSVC_VERSION)
 		FINDLIB(FMOD_LIBRARIES fmodvc)
