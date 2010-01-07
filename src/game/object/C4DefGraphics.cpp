@@ -684,6 +684,8 @@ const char *C4Portrait::EvaluatePortraitString(const char *szPortrait, C4ID &rID
 
 C4GraphicsOverlay::~C4GraphicsOverlay()
 	{
+	// Free mesh instance
+	delete pMeshInstance; pMeshInstance = NULL;
 	// free any additional overlays
 	C4GraphicsOverlay *pNextOther = pNext, *pOther;
 	while (pOther = pNextOther)
@@ -701,10 +703,11 @@ void C4GraphicsOverlay::UpdateFacet()
 	if (eMode == MODE_Object) return;
 	// otherwise, source graphics must be specified
 	if (!pSourceGfx) return;
-	if (pSourceGfx->Type != C4DefGraphics::TYPE_Bitmap) return;
 	C4Def *pDef = pSourceGfx->pDef;
 	assert(pDef);
 	fZoomToShape = false;
+	// Clear old mesh instance, if any
+	delete pMeshInstance; pMeshInstance = NULL;
 	// update by mode
 	switch (eMode)
 		{
@@ -712,7 +715,10 @@ void C4GraphicsOverlay::UpdateFacet()
 			break;
 
 		case MODE_Base: // def base graphics
-			fctBlit.Set(pSourceGfx->GetBitmap(), 0, 0, pDef->Shape.Wdt, pDef->Shape.Hgt, pDef->Shape.x+pDef->Shape.Wdt/2, pDef->Shape.y+pDef->Shape.Hgt/2);
+			if(pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
+				fctBlit.Set(pSourceGfx->GetBitmap(), 0, 0, pDef->Shape.Wdt, pDef->Shape.Hgt, pDef->Shape.x+pDef->Shape.Wdt/2, pDef->Shape.y+pDef->Shape.Hgt/2);
+			else
+				pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
 			break;
 
 		case MODE_Action: // graphics of specified action
@@ -735,16 +741,32 @@ void C4GraphicsOverlay::UpdateFacet()
 				if (!action)
 					return;
 
-				fctBlit.Set(pSourceGfx->GetBitmap(),
-					action->GetPropertyInt(P_X), action->GetPropertyInt(P_Y),
-					action->GetPropertyInt(P_Wdt), action->GetPropertyInt(P_Hgt));
+				if(pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
+				{
+					fctBlit.Set(pSourceGfx->GetBitmap(),
+						action->GetPropertyInt(P_X), action->GetPropertyInt(P_Y),
+						action->GetPropertyInt(P_Wdt), action->GetPropertyInt(P_Hgt));
+				}
+				else
+				{
+					C4String* Animation = action->GetPropertyStr(P_Animation);
+					if(!Animation) return;
+
+					pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
+					pMeshInstance->PlayAnimation(Animation->GetData(), 1.0f);
+					StdMeshInstance::AnimationRef ref(pMeshInstance, Animation->GetData());
+					ref.SetPosition(iPhase * ref.GetAnimation().Length / action->GetPropertyInt(P_Length));
+				}
 				
 				break;
 			}
 		case MODE_IngamePicture:
 		case MODE_Picture: // def picture
 			fZoomToShape = true;
-			fctBlit.Set(pSourceGfx->GetBitmap(), pDef->PictureRect.x, pDef->PictureRect.y, pDef->PictureRect.Wdt, pDef->PictureRect.Hgt);
+			if(pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
+				fctBlit.Set(pSourceGfx->GetBitmap(), pDef->PictureRect.x, pDef->PictureRect.y, pDef->PictureRect.Wdt, pDef->PictureRect.Hgt);
+			else
+				pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
 			break;
 
 		case MODE_ExtraGraphics: // like ColorByOwner-sfc
@@ -773,20 +795,29 @@ void C4GraphicsOverlay::Set(Mode aMode, C4DefGraphics *pGfx, const char *szActio
 	}
 
 bool C4GraphicsOverlay::IsValid(const C4Object *pForObj) const
-	{
+{
 	assert(pForObj);
 	if (eMode == MODE_Object || eMode == MODE_Rank)
-		{
+	{
 		if (!pOverlayObj || !pOverlayObj->Status) return false;
 		return (eMode == MODE_Rank) || !pOverlayObj->HasGraphicsOverlayRecursion(pForObj);
-		}
-	else if (eMode == MODE_ExtraGraphics)
-		{
-		return !!pSourceGfx;
-		}
-	else
-		return pSourceGfx && fctBlit.Surface;
 	}
+	else if (eMode == MODE_ExtraGraphics)
+	{
+		return !!pSourceGfx;
+	}
+	else if (pSourceGfx)
+	{
+			if (pSourceGfx->Type == C4DefGraphics::TYPE_Bitmap)
+				return !!fctBlit.Surface;
+			else
+				return !!pMeshInstance;
+	}
+	else
+	{
+		return false;
+	}
+}
 
 void C4GraphicsOverlay::Read(const char **ppInput)
 	{
@@ -938,7 +969,7 @@ void C4GraphicsOverlay::DenumeratePointers()
 	}
 
 void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByPlayer)
-	{
+{
 	assert(!IsPicture());
 	assert(pForObj);
 	// get target pos
@@ -949,19 +980,25 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	if (dwBlitMode == C4GFXBLIT_PARENT)
 		(pOverlayObj ? pOverlayObj : pForObj)->PrepareDrawing();
 	else
-		{
+	{
 		Application.DDraw->SetBlitMode(dwBlitMode);
 		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
-		}
+		
+		if(pMeshInstance)
+			if( ((dwClrModulation >> 24) & 0xff) != 0xff)
+				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+			else
+				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_Fixed);
+	}
 	if (eMode == MODE_Rank)
-		{
+	{
 		C4TargetFacet ccgo;
 		ccgo.Set(cgo.Surface, iTx+pForObj->Shape.x,iTy+pForObj->Shape.y,pForObj->Shape.Wdt,pForObj->Shape.Hgt, cgo.TargetX, cgo.TargetY);
 		DrawRankSymbol(ccgo, pOverlayObj);
-		}
+	}
 	// drawing specific object?
 	else if (pOverlayObj)
-		{
+	{
 		// Draw specified object at target pos of this object; offset by transform.
 		// This ignores any other transform than offset, and it doesn't work with parallax overlay objects yet
 		// (But any parallaxity of pForObj is regarded in calculation of cotx/y!)
@@ -972,57 +1009,84 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		pOverlayObj->DrawTopFace(cgo, iByPlayer, C4Object::ODM_Overlay);
 		cgo.TargetX = oldTx;
 		cgo.TargetY = oldTy;
-		}
+	}
 	else if (eMode == MODE_ExtraGraphics)
-		{
+	{
 		// draw self with specified gfx
 		if (pSourceGfx)
-			{
+		{
 			C4DefGraphics *pPrevGfx = pForObj->GetGraphics();
 			C4DrawTransform *pPrevTrf = pForObj->pDrawTransform;
 			C4DrawTransform trf;
 			if (pPrevTrf)
-				{
+			{
 				trf = *pPrevTrf;
 				trf *= Transform;
-				}
+			}
 			else
-				{
+			{
 				trf = Transform;
-				}
+			}
 			pForObj->SetGraphics(pSourceGfx, true);
 			pForObj->pDrawTransform = &trf;
 			pForObj->Draw(cgo, iByPlayer, C4Object::ODM_BaseOnly);
 			pForObj->DrawTopFace(cgo, iByPlayer, C4Object::ODM_BaseOnly);
 			pForObj->SetGraphics(pPrevGfx, true);
 			pForObj->pDrawTransform = pPrevTrf;
-			}
 		}
+	}
 	else
-		{
+	{
 		// no object specified: Draw from fctBlit
 		// update by object color
 		if (fctBlit.Surface) fctBlit.Surface->SetClr(pForObj->Color);
 
-		// draw there
-		C4DrawTransform trf(Transform, float(iTx), float(iTy));
-		if (fZoomToShape)
+		if(!pMeshInstance)
+		{
+			// draw there
+			C4DrawTransform trf(Transform, float(iTx), float(iTy));
+			if (fZoomToShape)
 			{
-			float fZoom = Min<float>((float) pForObj->Shape.Wdt / Max<int>(fctBlit.Wdt,1), (float) pForObj->Shape.Hgt / Max<int>(fctBlit.Hgt,1));
-			trf.ScaleAt(fZoom, fZoom,  float(iTx), float(iTy));
+				float fZoom = Min<float>((float) pForObj->Shape.Wdt / Max<int>(fctBlit.Wdt,1), (float) pForObj->Shape.Hgt / Max<int>(fctBlit.Hgt,1));
+				trf.ScaleAt(fZoom, fZoom,  float(iTx), float(iTy));
 			}
-		fctBlit.DrawT(cgo.Surface, iTx - fctBlit.Wdt/2 + fctBlit.TargetX, iTy - fctBlit.Hgt/2 + fctBlit.TargetY, iPhase, 0, &trf);
+			fctBlit.DrawT(cgo.Surface, iTx - fctBlit.Wdt/2 + fctBlit.TargetX, iTy - fctBlit.Hgt/2 + fctBlit.TargetY, iPhase, 0, &trf);
 		}
+		else
+		{
+			float twdt, thgt;
+			if(fZoomToShape)
+			{
+				twdt = pForObj->Shape.Wdt;
+				thgt = pForObj->Shape.Hgt;
+
+				// Keep aspect ratio
+				C4Def *pDef = pSourceGfx->pDef;
+				if(twdt*pDef->Shape.Hgt < pDef->Shape.Wdt*thgt)
+					thgt = twdt*pDef->Shape.Hgt/pDef->Shape.Wdt;
+				else
+					twdt = thgt*pDef->Shape.Wdt/pDef->Shape.Hgt;
+			}
+			else
+			{
+				C4Def *pDef = pSourceGfx->pDef;
+				twdt = pDef->Shape.Wdt;
+				thgt = pDef->Shape.Hgt;
+			}
+
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &Transform);
+		}
+	}
 
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
 		(pOverlayObj ? pOverlayObj : pForObj)->FinishedDrawing();
 	else
-		{
+	{
 		Application.DDraw->ResetBlitMode();
 		Application.DDraw->DeactivateBlitModulation();
-		}
 	}
+}
 
 void C4GraphicsOverlay::DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj)
 {
@@ -1046,33 +1110,46 @@ void C4GraphicsOverlay::DrawRankSymbol(C4Facet &cgo, C4Object *rank_obj)
 }
 
 void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
-	{
+{
 	assert(IsPicture());
 	// update object color
 	if (pForObj && fctBlit.Surface) fctBlit.Surface->SetClr(pForObj->Color);
 	// special blit mode
 	if (dwBlitMode == C4GFXBLIT_PARENT)
-		{
+	{
 		if (pForObj) pForObj->PrepareDrawing();
-		}
+	}
 	else
-		{
+	{
 		Application.DDraw->SetBlitMode(dwBlitMode);
 		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
-		}
+
+		if(pMeshInstance)
+			if( ((dwClrModulation >> 24) & 0xff) != 0xff)
+				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+			else
+				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_Fixed);
+	}
 	// draw at given rect
-	fctBlit.DrawT(cgo, true, iPhase, 0, &C4DrawTransform(Transform, cgo.X+float(cgo.Wdt)/2, cgo.Y+float(cgo.Hgt)/2));
+	if(!pMeshInstance)
+	{
+		fctBlit.DrawT(cgo, true, iPhase, 0, &C4DrawTransform(Transform, cgo.X+float(cgo.Wdt)/2, cgo.Y+float(cgo.Hgt)/2));
+	}
+	else
+	{
+		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &Transform);
+	}
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
-		{
+	{
 		if (pForObj) pForObj->FinishedDrawing();
-		}
+	}
 	else
-		{
+	{
 		Application.DDraw->ResetBlitMode();
 		Application.DDraw->DeactivateBlitModulation();
-		}
 	}
+}
 
 
 bool C4GraphicsOverlay::operator == (const C4GraphicsOverlay &rCmp) const

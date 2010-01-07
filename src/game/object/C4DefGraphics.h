@@ -192,7 +192,8 @@ class C4GraphicsOverlay
 
 		C4DefGraphics *pSourceGfx; // source graphics - used for savegame saving and comparisons in ReloadDef
 		char Action[C4MaxName+1];  // action used as overlay in source gfx
-		C4TargetFacet fctBlit;         // current blit data
+		C4TargetFacet fctBlit; // current blit data for bitmap graphics
+		StdMeshInstance* pMeshInstance; // current blit data for mesh graphics
 		uint32_t dwBlitMode;          // extra parameters for additive blits, etc.
 		uint32_t dwClrModulation;        // colormod for this overlay
 		C4Object *pOverlayObj; // object to be drawn as overlay in MODE_Object
@@ -209,7 +210,7 @@ class C4GraphicsOverlay
 		void Set(Mode aMode, C4DefGraphics *pGfx, const char *szAction, DWORD dwBMode, C4Object *pOvrlObj);
 
 	public:
-		C4GraphicsOverlay() : eMode(MODE_None), pSourceGfx(NULL), fctBlit(), dwBlitMode(0), dwClrModulation(0xffffff),
+		C4GraphicsOverlay() : eMode(MODE_None), pSourceGfx(NULL), fctBlit(), pMeshInstance(NULL), dwBlitMode(0), dwClrModulation(0xffffff),
 			pOverlayObj(NULL), nOverlayObj(0), Transform(+1),
 			iPhase(0), fZoomToShape(false), iID(0), pNext(NULL) { *Action=0; } // std ctor
 		~C4GraphicsOverlay(); // dtor
@@ -243,7 +244,7 @@ class C4GraphicsOverlay
 		C4Object *GetOverlayObject() const { return pOverlayObj; }
 		int32_t GetID() const { return iID; }
 		void SetID(int32_t aID) { iID = aID; }
-		void SetPhase(int32_t iToPhase);
+		void SetPhase(int32_t iToPhase); // TODO: This is not implemented(?) - Remember to set mesh animation position when it is
 		C4GraphicsOverlay *GetNext() const { return pNext; }
 		void SetNext(C4GraphicsOverlay *paNext) { pNext = paNext; }
 		bool IsPicture() { return eMode == MODE_Picture; }
