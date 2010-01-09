@@ -347,7 +347,7 @@ static CLNK_SwimStates;
 func StartWalk()
 {
 	if(CLNK_WalkStates == nil)
-		CLNK_WalkStates = ["Stand", "Walk", "Run"];
+		CLNK_WalkStates = ["Stand", "Walk", "Run", "StandTurn", "RunTurn"];
 	if(!GetEffect("IntWalk", this))
 		AddEffect("IntWalk", this, 1, 1, this);
 }
@@ -357,34 +357,84 @@ func StopWalk()
 	if(GetAction() != "Walk") RemoveEffect("IntWalk", this);
 }
 
-func FxIntWalkStart(pTarget, iNumber)
+func FxIntWalkStart(pTarget, iNumber, fTmp)
 {
-	AnimationPlay("Stand", 0);
-	AnimationPlay("Walk", 0);
-	AnimationPlay("Run", 0);
+	if(fTmp) return;
+	for(var i = 0; i < GetLength(CLNK_WalkStates); i++)
+		AnimationPlay(CLNK_WalkStates[i], 0);
 	EffectVar(0, pTarget, iNumber) = 0; // Phase
 	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
 	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
 	EffectVar(3, pTarget, iNumber) = 0; // Run weight
-	EffectVar(4, pTarget, iNumber) = 0; // Oldstate
-	EffectVar(5, pTarget, iNumber) = 0; // Save wether the last frame was COMD_Stop
+	EffectVar(4, pTarget, iNumber) = 0;
+	EffectVar(5, pTarget, iNumber) = 0;
+	EffectVar(14, pTarget, iNumber) = 0; // Oldstate
+	EffectVar(15, pTarget, iNumber) = 0; // Save wether the last frame was COMD_Stop
+
+	EffectVar(17, pTarget, iNumber) = GetComDir(); // OldDir
+	if(GetComDir() == COMD_Stop)
+	{
+		if(GetDir()) EffectVar(17, pTarget, iNumber) = COMD_Right;
+		else EffectVar(17, pTarget, iNumber) = COMD_Left;
+	}
+	EffectVar(18, pTarget, iNumber) = 0; // Turn Phase
+	EffectVar(19, pTarget, iNumber) = 0; // Wether to use Run turn or not
 }
 
-func FxIntWalkStop(pTarget, iNumber)
+func FxIntWalkStop(pTarget, iNumber, iReason, fTmp)
 {
-	AnimationStop("Stand");
-	AnimationStop("Walk");
-	AnimationStop("Run");
+	if(fTmp) return;
+	for(var i = 0; i < GetLength(CLNK_WalkStates); i++)
+		AnimationStop(CLNK_WalkStates[i]);
 }
 
 func FxIntWalkTimer(pTarget, iNumber, iTime)
 {
-//	if(GetAction() != "Walk") return -1;
 	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
   var iState = 0;
 
+	// Check wether the clonk wants to turn
+  if(EffectVar(17, pTarget, iNumber) != GetComDir())
+	{
+		// Not when he wants to stop
+		if(GetComDir()!= COMD_Stop)
+		{
+			// Save new ComDir and start turn
+			EffectVar(17, pTarget, iNumber) = GetComDir();
+			EffectVar(18, pTarget, iNumber) = 1;
+			// The weight of run and stand goes to their turning actions
+			EffectVar(5, pTarget, iNumber) = EffectVar(3, pTarget, iNumber);
+			EffectVar(3, pTarget, iNumber) = 0;
+			EffectVar(4, pTarget, iNumber) = EffectVar(1, pTarget, iNumber);
+			EffectVar(1, pTarget, iNumber) = 0;
+			// Decide wether to use StandTurn or RunTurn
+			if(iSpeed < 10)
+				EffectVar(19, pTarget, iNumber) = 0;
+			else
+				EffectVar(19, pTarget, iNumber) = 1;
+		}
+	}
+	// Turning
+	if(EffectVar(18, pTarget, iNumber))
+	{
+		// Play animations
+		AnimationSetState("StandTurn", EffectVar(18, pTarget, iNumber)*100, nil);
+		AnimationSetState("RunTurn", EffectVar(18, pTarget, iNumber)*100, nil);
+		// 
+		if( ( EffectVar(17, pTarget, iNumber) == COMD_Left && GetDir() )
+			|| ( EffectVar(17, pTarget, iNumber) == COMD_Right && !GetDir() ) )
+			{
+				SetObjDrawTransform(-1000, 0, 0, 0, 1000);
+				//AnimationSetState("RunTurn", EffectVar(18, pTarget, iNumber)*100+2400, nil);
+			}
+			else SetObjDrawTransform(1000, 0, 0, 0, 1000);
+		EffectVar(18, pTarget, iNumber) += 2;
+		if(EffectVar(18, pTarget, iNumber) >= 24)
+			EffectVar(18, pTarget, iNumber) = 0;
+		iState = 4 + EffectVar(19, pTarget, iNumber);
+	}
 	// Play stand animation when not moving
-	if(iSpeed < 1 && EffectVar(5, pTarget, iNumber))
+	else if(iSpeed < 1 && EffectVar(15, pTarget, iNumber))
 	{
 		AnimationSetState("Stand", ((iTime/5)%11)*100, nil);
 		iState = 1;
@@ -401,8 +451,13 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 	// When moving fast play run
 	else
 	{
-		if(EffectVar(4, pTarget, iNumber) != 3)
-			EffectVar(0, pTarget, iNumber) = 190; // start with frame 190 (feet on the floor)
+		if(EffectVar(14, pTarget, iNumber) != 3)
+		{
+			if(EffectVar(14, pTarget, iNumber) == 5)
+				EffectVar(0, pTarget, iNumber) = 60; // start with frame 190 (feet on the floor)
+			else
+  			EffectVar(0, pTarget, iNumber) = 190; // start with frame 190 (feet on the floor)
+		}
 		else
   		EffectVar(0, pTarget, iNumber) += iSpeed*25/(16*3);
 		if(EffectVar(0, pTarget, iNumber) > 250) EffectVar(0, pTarget, iNumber) -= 250;
@@ -412,12 +467,12 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 	}
 
   // Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
-  if(GetComDir() == COMD_Stop) EffectVar(5, pTarget, iNumber) = 1;
-	else EffectVar(5, pTarget, iNumber) = 0;
+  if(GetComDir() == COMD_Stop) EffectVar(15, pTarget, iNumber) = 1;
+	else EffectVar(15, pTarget, iNumber) = 0;
 	
 	// Blend between the animations: The actuall animations gains weight till it reaches 1000
 	// the other animations lose weight until they are at 0
-	for(var i = 1; i <= 3; i++)
+	for(var i = 1; i <= 5; i++)
 	{
 		if(i == iState)
 		{
@@ -431,7 +486,7 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 		}
 		AnimationSetState(CLNK_WalkStates[i-1], nil, EffectVar(i, pTarget, iNumber));
 	}
-	EffectVar(4, pTarget, iNumber) = iState;
+	EffectVar(14, pTarget, iNumber) = iState;
 }
 
 func StartHangle()
@@ -447,8 +502,10 @@ func StopHangle()
 	if(GetAction() != "Hangle") RemoveEffect("IntHangle", this);
 }
 
-func FxIntHangleStart(pTarget, iNumber)
+func FxIntHangleStart(pTarget, iNumber, fTmp)
 {
+	EffectVar(10, pTarget, iNumber) = GetPhysical("Hangle");
+	if(fTmp) return;
 	AnimationPlay("Hangle", 0);
 	AnimationPlay("HangleStand", 1000);
 	EffectVar(0, pTarget, iNumber) = 0; // Phase
@@ -460,8 +517,10 @@ func FxIntHangleStart(pTarget, iNumber)
 	EffectVar(7, pTarget, iNumber) = 0; // Hanging Pose (Front to player or Back)
 }
 
-func FxIntHangleStop(pTarget, iNumber)
+func FxIntHangleStop(pTarget, iNumber, iReasonm, fTmp)
 {
+	SetPhysical("Hangle", EffectVar(10, pTarget, iNumber), 2);
+	if(fTmp) return;
 	AnimationStop("Hangle");
 	AnimationStop("HangleStand");
 }
@@ -470,7 +529,7 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 {
   // Make a cosine movment speed (the clonk only moves whem he makes a "stroke")
   var iSpeed = 50-Cos(EffectVar(0, pTarget, iNumber)*360*2/1000, 50);
-	SetPhysical("Hangle", 600*iSpeed, 2);
+	SetPhysical("Hangle", EffectVar(10, pTarget, iNumber)/50*iSpeed, 2);
 	var iState = 0;
 
   // Continue movement, if the clonk still has momentum
@@ -503,7 +562,7 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 	// When moving
 	else
 	{
-		var iSpeed = 5;
+		var iSpeed = EffectVar(10, pTarget, iNumber)/6000;
 		if(EffectVar(4, pTarget, iNumber) !=  2)
 			EffectVar(0, pTarget, iNumber) = 100+500*EffectVar(7, pTarget, iNumber); // start with frame 100 or from the back hanging pose frame 600
 		else EffectVar(0, pTarget, iNumber) +=  iSpeed*100/(14*2);
@@ -539,7 +598,7 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 func StartSwim()
 {
 	if(CLNK_SwimStates == nil)
-		CLNK_SwimStates = ["SwimStand", "Swim", "SwimDiveUp", "SwinDiveDown"];
+		CLNK_SwimStates = ["SwimStand", "Swim", "SwimDive", "SwimTurn", "SwimDiveTurn", "SwimDiveUp", "SwimDiveDown"];
 	if(!GetEffect("IntSwim", this))
 		AddEffect("IntSwim", this, 1, 1, this);
 }
@@ -549,12 +608,11 @@ func StopSwim()
 	if(GetAction() != "Swim") RemoveEffect("IntSwim", this);
 }
 
-func FxIntSwimStart(pTarget, iNumber)
+func FxIntSwimStart(pTarget, iNumber, fTmp)
 {
-	AnimationPlay("SwimStand", 1000);
-	AnimationPlay("Swim", 0);
-	AnimationPlay("SwimDiveUp", 0);
-	AnimationPlay("SwimDiveDown", 0);
+	if(fTmp) return;
+	for(var i = 0; i < GetLength(CLNK_SwimStates); i++)
+  	AnimationPlay(CLNK_SwimStates[i], 0);
 	EffectVar(0, pTarget, iNumber) = 0; // Phase
 	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
 	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
@@ -562,37 +620,61 @@ func FxIntSwimStart(pTarget, iNumber)
 	EffectVar(4, pTarget, iNumber) = 0; // Oldstate
 	EffectVar(5, pTarget, iNumber) = 0; // Save wether the last frame was COMD_Stop
 	EffectVar(6, pTarget, iNumber) = 0; // OldRot
+
+	EffectVar(7, pTarget, iNumber) = GetDir(); // OldDir
+	EffectVar(8, pTarget, iNumber) = 0; // Turn Phase
 }
 
-func FxIntSwimStop(pTarget, iNumber)
+func FxIntSwimStop(pTarget, iNumber, iReason, fTmp)
 {
-	AnimationStop("SwimStand");
-	AnimationStop("Swim");
-	AnimationStop("SwimDiveUp");
-	AnimationStop("SwimDiveDown");
+	if(fTmp) return;
+  for(var i = 0; i < GetLength(CLNK_SwimStates); i++)
+  	AnimationStop(CLNK_SwimStates[i]);
 }
 
 func FxIntSwimTimer(pTarget, iNumber, iTime)
 {
 	DoEnergy(1); //TODO Remove this! Endless Energy while diving is only for the testers
 
+  if(EffectVar(7, pTarget, iNumber) != GetDir() && 0)
+	{
+		EffectVar(7, pTarget, iNumber) = GetDir();
+		EffectVar(8, pTarget, iNumber) = 1;
+	}
+	
 	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
   var iState = 0;
 
 	// Play stand animation when not moving
-	if(iSpeed < 1 && EffectVar(5, pTarget, iNumber) && !GBackSemiSolid(0, -4))
+	if(Abs(GetXDir()) < 1 && EffectVar(5, pTarget, iNumber) && !GBackSemiSolid(0, -4))
 	{
-		AnimationSetState("SwimStand", ((iTime/5)%20)*100, nil);
+		AnimationSetState("SwimStand", ((iTime/1)%20)*100, nil);
 		iState = 1;
 	}
-	// When moving slowly play synchronized with movement walk
+	// Swimming
 	else if(!GBackSemiSolid(0, -4))
 	{
-		EffectVar(0, pTarget, iNumber) +=  iSpeed*40/(16*2);
-		if(EffectVar(0, pTarget, iNumber) > 400) EffectVar(0, pTarget, iNumber) -= 400;
+		if(EffectVar(8, pTarget, iNumber))
+		{
+		  AnimationSetState("SwimTurn", EffectVar(8, pTarget, iNumber)*100, nil);
+			EffectVar(8, pTarget, iNumber) += 2;
+		  if(EffectVar(8, pTarget, iNumber) >= 40)
+			{
+				EffectVar(8, pTarget, iNumber) = 0;
+				SetDir(EffectVar(7, pTarget, iNumber));
+			}
+			else
+				SetDir(!EffectVar(7, pTarget, iNumber));
+		  iState = 4;
+		}
+		else
+		{
+		  EffectVar(0, pTarget, iNumber) +=  Abs(GetXDir())*40/(16*2);
+		  if(EffectVar(0, pTarget, iNumber) > 400) EffectVar(0, pTarget, iNumber) -= 400;
 
-		AnimationSetState("Swim",     EffectVar(0, pTarget, iNumber)*10, nil);
-		iState = 2;
+		  AnimationSetState("Swim",     EffectVar(0, pTarget, iNumber)*10, nil);
+		  iState = 2;
+		}
 	}
 	// Diving
 	else
@@ -600,6 +682,7 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 		EffectVar(0, pTarget, iNumber) +=  iSpeed*40/(16*2);
 		if(EffectVar(0, pTarget, iNumber) > 400) EffectVar(0, pTarget, iNumber) -= 400;
 
+		AnimationSetState("SwimDive",     ((iTime/2)%20)*100, nil);
 		AnimationSetState("SwimDiveUp",   ((iTime/2)%20)*100, nil);
 		AnimationSetState("SwimDiveDown", ((iTime/2)%20)*100, nil);
 		iState = 3;
@@ -632,9 +715,95 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 		EffectVar(6, pTarget, iNumber) += BoundBy(iRot-EffectVar(6, pTarget, iNumber), -4, 4);
 	}
 	iRot = EffectVar(6, pTarget, iNumber);
-	AnimationSetState("SwimDiveUp",     nil, EffectVar(3, pTarget, iNumber)*iRot/180);
-	AnimationSetState("SwimDiveDown", nil, EffectVar(3, pTarget, iNumber)-EffectVar(3, pTarget, iNumber)*iRot/180);
+	Message("%d", this, iRot);
+	if(iRot < 90)
+	{
+	  AnimationSetState("SwimDiveUp",   nil, 0);
+	  AnimationSetState("SwimDive",     nil, EffectVar(3, pTarget, iNumber)*iRot/90);
+	  AnimationSetState("SwimDiveDown", nil, EffectVar(3, pTarget, iNumber)-EffectVar(3, pTarget, iNumber)*iRot/90);
+	}
+	else
+	{
+	  AnimationSetState("SwimDiveUp",   nil, EffectVar(3, pTarget, iNumber)*(iRot-90)/90);
+	  AnimationSetState("SwimDive",     nil, EffectVar(3, pTarget, iNumber)-EffectVar(3, pTarget, iNumber)*(iRot-90)/90);
+	  AnimationSetState("SwimDiveDown", nil, 0);
+	}
 			
+	EffectVar(4, pTarget, iNumber) = iState;
+}
+
+func StartScale()
+{
+	if(!GetEffect("IntScale", this))
+		AddEffect("IntScale", this, 1, 1, this);
+}
+
+func StopScale()
+{
+	if(GetAction() != "Scale") RemoveEffect("IntScale", this);
+}
+
+func FxIntScaleStart(pTarget, iNumber, fTmp)
+{
+	if(fTmp) return;
+	AnimationPlay("Scale", 1000);
+	EffectVar(0, pTarget, iNumber) = 0; // Phase
+	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
+	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
+	EffectVar(3, pTarget, iNumber) = 0; // Run weight
+	EffectVar(4, pTarget, iNumber) = 0; // Oldstate
+	EffectVar(5, pTarget, iNumber) = 0; // Save wether the last frame was COMD_Stop
+}
+
+func FxIntScaleStop(pTarget, iNumber, iReason, fTmp)
+{
+	if(fTmp) return;
+	AnimationStop("Scale");
+}
+
+func FxIntScaleTimer(pTarget, iNumber, iTime)
+{
+//	if(GetAction() != "Walk") return -1;
+	var iSpeed = -GetYDir();
+  var iState = 0;
+
+	// Play stand animation when not moving
+	if(iSpeed < 1 && EffectVar(5, pTarget, iNumber))
+	{
+//		AnimationSetState("Stand", ((iTime/5)%11)*100, nil);
+		iState = 2;
+	}
+	// When moving slowly play synchronized with movement walk
+	else
+	{
+		EffectVar(0, pTarget, iNumber) +=  iSpeed*20/(16*1);
+		if(EffectVar(0, pTarget, iNumber) < 0) EffectVar(0, pTarget, iNumber) += 200;
+		if(EffectVar(0, pTarget, iNumber) > 200) EffectVar(0, pTarget, iNumber) -= 200;
+
+		AnimationSetState("Scale", EffectVar(0, pTarget, iNumber)*10, nil);
+		iState = 2;
+	}
+
+  // Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
+  if(GetComDir() == COMD_Stop) EffectVar(5, pTarget, iNumber) = 1;
+	else EffectVar(5, pTarget, iNumber) = 0;
+
+	// Blend between the animations: The actuall animations gains weight till it reaches 1000
+	// the other animations lose weight until they are at 0
+	for(var i = 1; i <= 1; i++)
+	{
+		if(i == iState)
+		{
+			if(EffectVar(i, pTarget, iNumber) < 1000)
+				EffectVar(i, pTarget, iNumber) += 200;
+		}
+		else
+		{
+			if(EffectVar(i, pTarget, iNumber) > 0)
+				EffectVar(i, pTarget, iNumber) -= 200;
+		}
+//		AnimationSetState(CLNK_WalkStates[i-1], nil, EffectVar(i, pTarget, iNumber));
+	}
 	EffectVar(4, pTarget, iNumber) = iState;
 }
 
@@ -664,36 +833,19 @@ Scale = {
 	Prototype = Action,
 	Name = "Scale",
 	Procedure = DFA_SCALE,
+  Attach = CNAT_MultiAttach,
 	Directions = 2,
 	FlipDir = 1,
-	Length = 16,
-	Delay = 15,
+	Length = 1,
+	Delay = 0,
 	X = 0,
 	Y = 20,
 	Wdt = 8,
 	Hgt = 20,
-	OffX = 2,
+	OffX = 0,
 	OffY = 0,
-	NextAction = "Scale",
-	StartCall = "Scaling",
-},
-ScaleDown = {
-	Prototype = Action,
-	Name = "ScaleDown",
-	Procedure = DFA_SCALE,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 16,
-	Delay = 15,
-	X = 0,
-	Y = 20,
-	Wdt = 8,
-	Hgt = 20,
-	OffX = 2,
-	OffY = 0,
-	Reverse = 1,
-	NextAction = "ScaleDown",
-	StartCall = "Scaling",
+	StartCall = "StartScale",
+	AbortCall = "StopScale",
 },
 Tumble = {
 	Prototype = Action,
