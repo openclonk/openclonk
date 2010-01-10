@@ -1040,7 +1040,7 @@ bool CStdDDraw::RenderMesh(StdMeshInstance &instance, SURFACE sfcTarget, float t
 
 	// prepare rendering to surface
 	if (!PrepareRendering(sfcTarget)) return false;
-	// Update bone matrices and vertex data
+	// Update bone matrices and vertex data (note this also updates attach transforms and child transforms)
 	instance.UpdateBoneTransforms();
 	// Render mesh
 	PerformMesh(instance, tx, ty, twdt, thgt, dwPlayerColor, pTransform);

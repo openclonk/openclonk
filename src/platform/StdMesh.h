@@ -158,7 +158,7 @@ public:
 
 	unsigned int Index; // Index in master bone table
 	int ID; // Bone ID
-	StdStrBuf Name; // Bone name
+	StdCopyStrBuf Name; // Bone name
 
 	// Bone transformation
 	StdMeshTransformation Transformation;
@@ -290,6 +290,7 @@ protected:
 
 public:
 	StdMeshInstance(const StdMesh& mesh);
+	~StdMeshInstance();
 
 	enum FaceOrdering {
 		FO_Fixed, // don't reorder, keep faces as in mesh
@@ -327,6 +328,33 @@ public:
 	bool StopAnimation(const StdStrBuf& animation_name);
 	bool StopAnimation(const StdMeshAnimation& animation);
 
+	struct AttachedMesh
+	{
+		unsigned int Number;
+		StdMeshInstance* Parent;
+		StdMeshInstance* Child;
+		float Scale;
+		unsigned int ParentBone;
+		unsigned int ChildBone;
+		// Cache attach transformation, updated in UpdateBoneTransforms()
+		StdMeshMatrix AttachTrans;
+	};
+	
+	typedef std::list<AttachedMesh> AttachedMeshList;
+	typedef AttachedMeshList::const_iterator AttachedMeshIter;
+
+	// Returns number of added attachment, or 0 on failure
+	const AttachedMesh* AttachMesh(const StdMesh& mesh, const StdStrBuf& own_bone, const StdStrBuf& other_bone, float scale = 1.0f);
+	// Removes attachment with given number
+	bool DetachMesh(unsigned int number);
+	// Returns attached mesh with given number
+	const AttachedMesh* GetAttachedMeshByNumber(unsigned int number) const;
+
+	// To iterate through attachments
+	AttachedMeshIter AttachedMeshesBegin() const { return AttachChildren.begin(); }
+	AttachedMeshIter AttachedMeshesEnd() const { return AttachChildren.end(); }
+	const AttachedMesh* GetAttachParent() const { return AttachParent; }
+
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
 	const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
@@ -340,11 +368,15 @@ public:
 	const StdMeshFace* GetFaces() const { return &Faces[0]; }
 	unsigned int GetNumFaces() const { return Faces.size(); }
 
-	const StdMesh& Mesh;
+	const StdMeshMatrix& GetBoneTransform(unsigned int i) const { return BoneTransforms[i]; }
 
 	// Update bone transformation matrices, and vertex positions. Call this
-	// before rendering.
+	// before rendering. This is called recursively for attached children. Do not
+	// call this on attached children only, since it will not update the
+	// attachment transform otherwise.
 	void UpdateBoneTransforms();
+
+	const StdMesh& Mesh;
 
 protected:
 	void ReorderFaces();
@@ -357,7 +389,7 @@ protected:
 		float Position;
 		float Weight;
 	};
-	
+
 	std::vector<Animation> Animations;
 
 	std::vector<StdMeshMatrix> BoneTransforms;
@@ -365,7 +397,16 @@ protected:
 	std::vector<StdMeshVertex> Vertices;
 	std::vector<StdMeshFace> Faces;
 
+	// Not asymptotically efficient, but we do not expect many attached meshes anyway.
+	// In theory map would fit better, but it's probably not worth the extra overhead.
+	// Don't use vector though so that pointers to AttachedMesh (AttachParent) stay valid.
+	std::list<AttachedMesh> AttachChildren;
+	AttachedMesh* AttachParent;
+
 	bool BoneTransformsDirty;
+private:
+	StdMeshInstance(const StdMeshInstance& other); // noncopyable
+	StdMeshInstance& operator=(const StdMeshInstance& other); // noncopyable
 };
 
 #endif

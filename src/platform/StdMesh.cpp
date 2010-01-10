@@ -39,6 +39,7 @@ namespace
 
 		bool operator()(const StdMeshFace& face1, const StdMeshFace& face2) const
 		{
+			// TODO: Need to apply attach matrix in case of attached meshes
 			switch(m_inst.GetFaceOrdering())
 			{
 			case StdMeshInstance::FO_Fixed:
@@ -1080,9 +1081,6 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 					r.y = skeleton.RequireFloatAttribute(axis_elem, "y");
 					r.z = skeleton.RequireFloatAttribute(axis_elem, "z");
 
-					// Apply inverse bone scale and rotation to translation part of transformation
-					StdMeshVector ddp = BoneInverseTrans.rotate * (BoneInverseTrans.scale * d);
-
 					frame.Transformation.scale = StdMeshVector::UnitScale();
 					frame.Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, r);
 					frame.Transformation.translate = BoneInverseTrans.rotate * (BoneInverseTrans.scale * d);
@@ -1161,11 +1159,18 @@ void StdMeshInstance::AnimationRef::SetWeight(float weight)
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 	Mesh(mesh), CurrentFaceOrdering(FO_Fixed),
-	BoneTransforms(Mesh.GetNumBones()), Vertices(Mesh.GetNumVertices()),
-	Faces(Mesh.Faces), BoneTransformsDirty(false)
+	BoneTransforms(Mesh.GetNumBones(), StdMeshMatrix::Identity()),
+	Vertices(Mesh.GetNumVertices()), Faces(Mesh.Faces),
+	BoneTransformsDirty(false), AttachParent(NULL)
 {
 	for(unsigned int i = 0; i < Mesh.GetNumVertices(); ++i)
 		Vertices[i] = Mesh.GetVertex(i);
+}
+
+StdMeshInstance::~StdMeshInstance()
+{
+	for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
+		delete iter->Child;
 }
 
 void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
@@ -1177,6 +1182,10 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 			Faces = Mesh.Faces;
 
 		BoneTransformsDirty = true;
+
+		// Update attachments
+		for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
+			iter->Child->SetFaceOrdering(ordering);
 	}
 }
 
@@ -1224,6 +1233,63 @@ bool StdMeshInstance::StopAnimation(const StdMeshAnimation& animation)
 	}
 
 	return false;
+}
+
+const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, float scale)
+{
+	AttachedMesh attach;
+	unsigned int i;
+
+	// Find free index.
+	attach.Number = 1;
+	for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
+		if(iter->Number >= attach.Number)
+			attach.Number = iter->Number + 1;
+
+	// Lookup parent bone
+	for(i = 0; i < Mesh.Bones.size(); ++i)
+		if(Mesh.Bones[i]->Name == parent_bone)
+			{ attach.ParentBone = i; break; }
+	if(i == Mesh.Bones.size()) return NULL;
+
+	// Lookup child bone
+	for(i = 0; i < mesh.Bones.size(); ++i)
+		if(mesh.Bones[i]->Name == child_bone)
+			{ attach.ChildBone = i; break; }
+	if(i == mesh.Bones.size()) return NULL;
+
+	attach.Scale = scale;
+	attach.Parent = this;
+	attach.Child = new StdMeshInstance(mesh);
+	attach.Child->SetFaceOrdering(CurrentFaceOrdering);
+
+	AttachChildren.push_back(attach);
+	attach.Child->AttachParent = &AttachChildren.back();
+	BoneTransformsDirty = true; // so that attach transformation is computed before rendering
+	return &AttachChildren.back();
+}
+
+bool StdMeshInstance::DetachMesh(unsigned int number)
+{
+	for(AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
+	{
+		if(iter->Number == number)
+		{
+			delete iter->Child;
+			AttachChildren.erase(iter);
+			return true;
+		}
+	}
+
+	return false;
+}
+
+const StdMeshInstance::AttachedMesh* StdMeshInstance::GetAttachedMeshByNumber(unsigned int number) const
+{
+	for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
+		if(iter->Number == number)
+			return &*iter;
+	return NULL;
 }
 
 void StdMeshInstance::UpdateBoneTransforms()
@@ -1299,6 +1365,23 @@ void StdMeshInstance::UpdateBoneTransforms()
 		{
 			Vertices[i] = vertex;
 		}
+	}
+
+	// Update attachment's inverse bone transformations. Note this needs not to be done recursively.
+	for(AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
+	{
+		iter->Child->UpdateBoneTransforms();
+
+		// Compute matrix to change the coordinate system to the one of the attached bone:
+		// The idea is that a vertex at the child bone's position transforms to the parent bone's position.
+		// Therefore (read from right to left) we first apply the inverse of the child bone transformation,
+		// then an optional scaling matrix, and finally the parent bone transformation
+		
+		iter->AttachTrans = BoneTransforms[iter->ParentBone]
+		                  * StdMeshMatrix::Transform(Mesh.GetBone(iter->ParentBone).Transformation)
+		                  * StdMeshMatrix::Scale(iter->Scale, iter->Scale, iter->Scale)
+		                  * StdMeshMatrix::Transform(iter->Child->Mesh.GetBone(iter->ChildBone).InverseTransformation)
+		                  * StdMeshMatrix::Inverse(iter->Child->BoneTransforms[iter->ChildBone]);
 	}
 
 	if(CurrentFaceOrdering != FO_Fixed)

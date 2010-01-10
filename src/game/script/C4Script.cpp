@@ -5582,6 +5582,26 @@ static bool FnAnimationSetState(C4AulContext *ctx, C4String *szAnimation, Nillab
 	return true;
 	}
 
+static Nillable<long> FnAttachMesh(C4AulContext *ctx, C4ID idMesh, C4String* szParentBone, C4String* szChildBone, Nillable<long> scale)
+	{
+	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return C4VNull;
+	C4Def* pDef = C4Id2Def(idMesh);
+	if(!pDef || pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4VNull;
+
+	float scalef = 1.0f;
+	if(!scale.IsNil()) scalef = scale / 1000.0f;
+
+	const StdMeshInstance::AttachedMesh* attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, szParentBone->GetData(), szChildBone->GetData(), scalef);
+	if(!attach) return C4VNull;
+	return attach->Number;
+	}
+
+static bool FnDetachMesh(C4AulContext *ctx, long iAttachNumber)
+	{
+	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return false;
+	return ctx->Obj->pMeshInstance->DetachMesh(iAttachNumber);
+	}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -6057,6 +6077,8 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "AnimationPlay", FnAnimationPlay);
 	AddFunc(pEngine, "AnimationStop", FnAnimationStop);
 	AddFunc(pEngine, "AnimationSetState", FnAnimationSetState);
+	AddFunc(pEngine, "AttachMesh", FnAttachMesh);
+	AddFunc(pEngine, "DetachMesh", FnDetachMesh);
 
 	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "this", Fn_this);

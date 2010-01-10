@@ -669,6 +669,232 @@ namespace
 
 		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color);
 	}
+	
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwPlayerColor)
+	{
+		const StdMesh& mesh = instance.Mesh;
+		const StdMeshMaterial& material = mesh.GetMaterial();
+		assert(material.BestTechniqueIndex != -1);
+		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
+
+		// Render each pass
+		for(unsigned int i = 0; i < technique.Passes.size(); ++i)
+		{
+			const StdMeshMaterialPass& pass = technique.Passes[i];
+
+			// Apply ClrMod to material
+			// TODO: ClrModMap is not taken into account by this; can maybe be done
+			// by a vertex shader if required.
+			float Ambient[4], Diffuse[4], Specular[4];
+			// TODO: We might also want to modulate emissive
+
+			Ambient[0] = pass.Ambient[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
+			Ambient[1] = pass.Ambient[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
+			Ambient[2] = pass.Ambient[2] * ((dwModClr      ) & 0xff) / 255.0f;
+			Ambient[3] = pass.Ambient[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+
+			Diffuse[0] = pass.Diffuse[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
+			Diffuse[1] = pass.Diffuse[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
+			Diffuse[2] = pass.Diffuse[2] * ((dwModClr      ) & 0xff) / 255.0f;
+			Diffuse[3] = pass.Diffuse[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+
+			Specular[0] = pass.Specular[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
+			Specular[1] = pass.Specular[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
+			Specular[2] = pass.Specular[2] * ((dwModClr      ) & 0xff) / 255.0f;
+			Specular[3] = pass.Specular[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
+
+			glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
+			glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
+			glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
+			glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
+			glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+
+			// TODO: Use vbo if available.
+			// Note that we need to do this before we do glTexCoordPointer for the
+			// texture units below, otherwise the texcoordpointer is reset by this
+			// call (or at least by my radeon driver), even though the documentation
+			// states that "The texture coordinate state for other client texture units 
+			// is not updated, regardless of whether the client texture unit is enabled
+			// or not."
+			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices()[0].nx);
+
+			glMatrixMode(GL_TEXTURE);
+			GLuint have_texture = 0;
+			for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+			{
+				// Note that it is guaranteed that the GL_TEXTUREn
+				// constants are contiguous.
+				// GL_TEXTURE3 is reserved for FoW/ClrModMap
+				if(j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
+				else { glActiveTexture(GL_TEXTURE4+j-3); glClientActiveTexture(GL_TEXTURE4+j-3); }
+			
+				const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
+
+				glEnable(GL_TEXTURE_2D);
+				if(texunit.HasTexture())
+				{
+					have_texture = texunit.GetTexture().texName;
+					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture().texName);
+				}
+				else
+				{
+					// We need to bind a valid texture here, even if the texture unit
+					// does not access the texture. TODO: Use a dummy texture. OGRE uses
+					// a "warning" texture containing black and yellow stripes.
+					glBindTexture(GL_TEXTURE_2D, have_texture);
+				}
+				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices()[0].u);
+				glLoadIdentity();
+
+				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
+
+				// Combine
+				SetTexCombine(GL_COMBINE_RGB, texunit.ColorOpEx);
+				SetTexCombine(GL_COMBINE_ALPHA, texunit.AlphaOpEx);
+
+				// Scale
+				SetTexScale(GL_RGB_SCALE, texunit.ColorOpEx);
+				SetTexScale(GL_ALPHA_SCALE, texunit.AlphaOpEx);
+
+				if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
+				{
+					SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[1]);
+					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+				}
+				else
+				{
+					if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
+					{
+						// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
+						SetTexSource2(GL_SOURCE0_RGB, texunit.ColorOpEx);
+						SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[0]);
+						SetTexSource(GL_SOURCE2_RGB, texunit.ColorOpSources[1]);
+
+						SetTexOperand2(GL_OPERAND0_RGB, texunit.ColorOpEx);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_COLOR);
+					}
+					else
+					{
+						SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[0]);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
+
+						if(texunit.ColorOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
+						{
+							SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[1]);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
+						}
+
+						SetTexSource2(GL_SOURCE2_RGB, texunit.ColorOpEx);
+						SetTexOperand2(GL_OPERAND2_RGB, texunit.ColorOpEx);
+					}
+				}
+
+				if(texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
+				{
+					SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[1]);
+					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+				}
+				else
+				{
+					if(texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
+					{
+						// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
+						SetTexSource2(GL_SOURCE0_ALPHA, texunit.AlphaOpEx);
+						SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[0]);
+						SetTexSource(GL_SOURCE2_ALPHA, texunit.AlphaOpSources[1]);
+
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
+					}
+					else
+					{
+						SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[0]);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
+
+						if(texunit.AlphaOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
+						{
+							SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[1]);
+							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
+						}
+
+						SetTexSource2(GL_SOURCE2_ALPHA, texunit.AlphaOpEx);
+						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
+					}
+				}
+
+				SetTexColor(texunit, dwPlayerColor);
+			}
+			glMatrixMode(GL_MODELVIEW);
+
+			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
+
+			for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+			{
+				if(j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
+				else { glActiveTexture(GL_TEXTURE4+j-3); glClientActiveTexture(GL_TEXTURE4+j-3); }
+				glDisable(GL_TEXTURE_2D);
+			}
+		}
+
+#if 0
+		// Draw attached bone
+		if(instance.GetAttachParent())
+		{
+			const StdMeshInstance::AttachedMesh* attached = instance.GetAttachParent();
+			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attached->ChildBone) * StdMeshMatrix::Transform(instance.Mesh.GetBone(attached->ChildBone).Transformation);
+
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_LIGHTING);
+			glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+			GLUquadric* quad = gluNewQuadric();
+			glPushMatrix();
+			glTranslatef(own_trans(0,3), own_trans(1,3), own_trans(2,3));
+			gluSphere(quad, 1.0f, 4, 4);
+			glPopMatrix();
+			gluDeleteQuadric(quad);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_LIGHTING);
+		}
+#endif
+
+		// Render attached meshes
+		for(StdMeshInstance::AttachedMeshIter iter = instance.AttachedMeshesBegin(); iter != instance.AttachedMeshesEnd(); ++iter)
+		{
+			// Convert matrix to column-major order, add fourth row
+			const float attach_trans_gl[16] = {
+				iter->AttachTrans(0,0), iter->AttachTrans(1,0), iter->AttachTrans(2,0), 0,
+				iter->AttachTrans(0,1), iter->AttachTrans(1,1), iter->AttachTrans(2,1), 0,
+				iter->AttachTrans(0,2), iter->AttachTrans(1,2), iter->AttachTrans(2,2), 0,
+				iter->AttachTrans(0,3), iter->AttachTrans(1,3), iter->AttachTrans(2,3), 1
+			};
+
+			glPushMatrix();
+			glMultMatrixf(attach_trans_gl);
+			RenderMeshImpl(*iter->Child, dwModClr, dwPlayerColor);
+			glPopMatrix();
+
+#if 0
+			const StdMeshMatrix& own_trans = instance.GetBoneTransform(iter->ParentBone)
+		                                 * StdMeshMatrix::Transform(instance.Mesh.GetBone(iter->ParentBone).Transformation);
+
+			// Draw attached bone
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_LIGHTING);
+			glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+			GLUquadric* quad = gluNewQuadric();
+			glPushMatrix();
+			glTranslatef(own_trans(0,3), own_trans(1,3), own_trans(2,3));
+			gluSphere(quad, 1.0f, 4, 4);
+			glPopMatrix();
+			gluDeleteQuadric(quad);
+			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_LIGHTING);
+#endif
+		}
+	}
 }
 
 void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
@@ -752,10 +978,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
 
-	const StdMeshMaterial& material = mesh.GetMaterial();
-	assert(material.BestTechniqueIndex != -1);
-	const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
+	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
+#if 0
 	// Create a transformation which transfers a vertex from mesh
 	// coordinates to screen coordinates. This is basically the same
 	// as the current GL modelview matrix, but we need it to access the
@@ -769,175 +994,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	Transform.MoveScale(ZoomX, ZoomY, 1.0f, 1.0f);
 
 	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
-	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
+#endif
 
-	// Render each pass
-	for(unsigned int i = 0; i < technique.Passes.size(); ++i)
-	{
-		const StdMeshMaterialPass& pass = technique.Passes[i];
-
-		// Apply ClrMod to material
-		// TODO: ClrModMap is not taken into account by this; can maybe be done
-		// by a vertex shader if required.
-		float Ambient[4], Diffuse[4], Specular[4];
-		// TODO: We might also want to modulate emissive
-
-		Ambient[0] = pass.Ambient[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
-		Ambient[1] = pass.Ambient[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
-		Ambient[2] = pass.Ambient[2] * ((dwModClr      ) & 0xff) / 255.0f;
-		Ambient[3] = pass.Ambient[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
-
-		Diffuse[0] = pass.Diffuse[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
-		Diffuse[1] = pass.Diffuse[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
-		Diffuse[2] = pass.Diffuse[2] * ((dwModClr      ) & 0xff) / 255.0f;
-		Diffuse[3] = pass.Diffuse[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
-
-		Specular[0] = pass.Specular[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
-		Specular[1] = pass.Specular[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
-		Specular[2] = pass.Specular[2] * ((dwModClr      ) & 0xff) / 255.0f;
-		Specular[3] = pass.Specular[3] * ((dwModClr >> 24) & 0xff) / 255.0f;
-
-		glMaterialfv(GL_FRONT, GL_AMBIENT, Ambient);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, Diffuse);
-		glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
-		glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
-		glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
-
-		// TODO: Use vbo if available.
-		// Note that we need to do this before we do glTexCoordPointer for the
-		// texture units below, otherwise the texcoordpointer is reset by this
-		// call (or at least by my radeon driver), even though the documentation
-		// states that "The texture coordinate state for other client texture units 
-		// is not updated, regardless of whether the client texture unit is enabled
-		// or not."
-		glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices()[0].nx);
-
-		glMatrixMode(GL_TEXTURE);
-		GLuint have_texture = 0;
-		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
-		{
-			// Note that it is guaranteed that the GL_TEXTUREn
-			// constants are contiguous.
-			// GL_TEXTURE3 is reserved for FoW/ClrModMap
-			if(j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
-			else { glActiveTexture(GL_TEXTURE4+j-3); glClientActiveTexture(GL_TEXTURE4+j-3); }
-			
-			const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
-
-			glEnable(GL_TEXTURE_2D);
-			if(texunit.HasTexture())
-			{
-				have_texture = texunit.GetTexture().texName;
-				glBindTexture(GL_TEXTURE_2D, texunit.GetTexture().texName);
-			}
-			else
-			{
-				// We need to bind a valid texture here, even if the texture unit
-				// does not access the texture. TODO: Use a dummy texture. OGRE uses
-				// a "warning" texture containing black and yellow stripes.
-				glBindTexture(GL_TEXTURE_2D, have_texture);
-			}
-			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-			glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices()[0].u);
-			glLoadIdentity();
-
-			glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
-
-			// Combine
-			SetTexCombine(GL_COMBINE_RGB, texunit.ColorOpEx);
-			SetTexCombine(GL_COMBINE_ALPHA, texunit.AlphaOpEx);
-
-			// Scale
-			SetTexScale(GL_RGB_SCALE, texunit.ColorOpEx);
-			SetTexScale(GL_ALPHA_SCALE, texunit.AlphaOpEx);
-
-			if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
-			{
-				SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[1]);
-				glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-
-/*					SetTexSource2(GL_SOURCE2_RGB, texunit.ColorOpEx);
-				SetTexOperand2(GL_OPERAND2_RGB, texunit.ColorOpEx);*/
-			}
-			else
-			{
-				if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
-				{
-					// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
-					SetTexSource2(GL_SOURCE0_RGB, texunit.ColorOpEx);
-					SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[0]);
-					SetTexSource(GL_SOURCE2_RGB, texunit.ColorOpSources[1]);
-
-					SetTexOperand2(GL_OPERAND0_RGB, texunit.ColorOpEx);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_RGB, GL_SRC_COLOR);
-				}
-				else
-				{
-					SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[0]);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
-
-					if(texunit.ColorOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
-					{
-						SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[1]);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
-					}
-
-					SetTexSource2(GL_SOURCE2_RGB, texunit.ColorOpEx);
-					SetTexOperand2(GL_OPERAND2_RGB, texunit.ColorOpEx);
-				}
-			}
-
-			if(texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
-			{
-				SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[1]);
-				glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-
-/*					SetTexSource2(GL_SOURCE2_ALPHA, texunit.AlphaOpEx);
-				glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);*/
-			}
-			else
-			{
-				if(texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
-				{
-					// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
-					SetTexSource2(GL_SOURCE0_ALPHA, texunit.AlphaOpEx);
-					SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[0]);
-					SetTexSource(GL_SOURCE2_ALPHA, texunit.AlphaOpSources[1]);
-
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
-				}
-				else
-				{
-					SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[0]);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
-
-					if(texunit.AlphaOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
-					{
-						SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[1]);
-						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-					}
-
-					SetTexSource2(GL_SOURCE2_ALPHA, texunit.AlphaOpEx);
-					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND2_ALPHA, GL_SRC_ALPHA);
-				}
-			}
-
-			SetTexColor(texunit, dwPlayerColor);
-		}
-		glMatrixMode(GL_MODELVIEW);
-
-		glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
-
-		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
-		{
-			if(j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
-			else { glActiveTexture(GL_TEXTURE4+j-3); glClientActiveTexture(GL_TEXTURE4+j-3); }
-			glDisable(GL_TEXTURE_2D);
-		}
-	}
+	RenderMeshImpl(instance, dwModClr, dwPlayerColor);
 
 	glActiveTexture(GL_TEXTURE0); // switch back to default
 	glClientActiveTexture(GL_TEXTURE0); // switch back to default
