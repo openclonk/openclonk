@@ -716,13 +716,16 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 	}
 	iRot = EffectVar(6, pTarget, iNumber);
 	Message("%d", this, iRot);
-	if(iRot < 90)
+	AnimationSetState("SwimDiveUp",   nil, EffectVar(3, pTarget, iNumber)*iRot/180);
+	AnimationSetState("SwimDive",     nil, 0);
+	AnimationSetState("SwimDiveDown", nil, EffectVar(3, pTarget, iNumber)-EffectVar(3, pTarget, iNumber)*iRot/180);
+	if(iRot < 90 && 0)
 	{
 	  AnimationSetState("SwimDiveUp",   nil, 0);
 	  AnimationSetState("SwimDive",     nil, EffectVar(3, pTarget, iNumber)*iRot/90);
 	  AnimationSetState("SwimDiveDown", nil, EffectVar(3, pTarget, iNumber)-EffectVar(3, pTarget, iNumber)*iRot/90);
 	}
-	else
+	else if(0)
 	{
 	  AnimationSetState("SwimDiveUp",   nil, EffectVar(3, pTarget, iNumber)*(iRot-90)/90);
 	  AnimationSetState("SwimDive",     nil, EffectVar(3, pTarget, iNumber)-EffectVar(3, pTarget, iNumber)*(iRot-90)/90);
@@ -910,7 +913,7 @@ Swim = {
 	Wdt = 8,
 	Hgt = 20,
 	OffX = 0,
-	OffY = 3,
+	OffY = 2,
 	StartCall = "StartSwim",
 	AbortCall = "StopSwim",
 },
