@@ -669,11 +669,11 @@ namespace
 
 		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color);
 	}
-	
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwPlayerColor)
+
+	void RenderSubMeshImpl(StdMeshInstance& instance, unsigned int submesh_index, DWORD dwModClr, DWORD dwPlayerColor)
 	{
-		const StdMesh& mesh = instance.Mesh;
-		const StdMeshMaterial& material = mesh.GetMaterial();
+		const StdSubMesh& submesh = instance.Mesh.GetSubMesh(submesh_index);
+		const StdMeshMaterial& material = submesh.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
 
@@ -688,6 +688,7 @@ namespace
 			float Ambient[4], Diffuse[4], Specular[4];
 			// TODO: We might also want to modulate emissive
 
+			// TODO: Pass pass.Ambient, pass.Diffuse, pass.Specular directly to the GL if dwModClr==0xffffffff
 			Ambient[0] = pass.Ambient[0] * ((dwModClr >> 16) & 0xff) / 255.0f;
 			Ambient[1] = pass.Ambient[1] * ((dwModClr >>  8) & 0xff) / 255.0f;
 			Ambient[2] = pass.Ambient[2] * ((dwModClr      ) & 0xff) / 255.0f;
@@ -716,7 +717,7 @@ namespace
 			// states that "The texture coordinate state for other client texture units 
 			// is not updated, regardless of whether the client texture unit is enabled
 			// or not."
-			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices()[0].nx);
+			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices(submesh_index)[0].nx);
 
 			glMatrixMode(GL_TEXTURE);
 			GLuint have_texture = 0;
@@ -744,7 +745,7 @@ namespace
 					glBindTexture(GL_TEXTURE_2D, have_texture);
 				}
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices()[0].u);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices(submesh_index)[0].u);
 				glLoadIdentity();
 
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
@@ -829,7 +830,7 @@ namespace
 			}
 			glMatrixMode(GL_MODELVIEW);
 
-			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
+			glDrawElements(GL_TRIANGLES, instance.GetNumFaces(submesh_index)*3, GL_UNSIGNED_INT, instance.GetFaces(submesh_index));
 
 			for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
@@ -838,6 +839,15 @@ namespace
 				glDisable(GL_TEXTURE_2D);
 			}
 		}
+	}
+
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwPlayerColor)
+	{
+		const StdMesh& mesh = instance.Mesh;
+
+		// Render each submesh
+		for(unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
+			RenderSubMeshImpl(instance, i, dwModClr, dwPlayerColor);
 
 #if 0
 		// Draw attached bone

@@ -34,8 +34,10 @@ namespace
 	struct StdMeshInstanceFaceOrderingCmpPred
 	{
 		const StdMeshInstance& m_inst;
-		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& inst):
-			m_inst(inst) {}
+		const StdMeshVertex* m_vertices;
+
+		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& inst, unsigned int submesh):
+			m_inst(inst), m_vertices(m_inst.GetVertices(submesh)) {}
 
 		bool operator()(const StdMeshFace& face1, const StdMeshFace& face2) const
 		{
@@ -48,8 +50,8 @@ namespace
 			case StdMeshInstance::FO_FarthestToNearest:
 			case StdMeshInstance::FO_NearestToFarthest:
 				{
-					float z1 = m_inst.GetVertex(face1.Vertices[0]).z + m_inst.GetVertex(face1.Vertices[1]).z + m_inst.GetVertex(face1.Vertices[2]).z;
-					float z2 = m_inst.GetVertex(face2.Vertices[0]).z + m_inst.GetVertex(face2.Vertices[1]).z + m_inst.GetVertex(face2.Vertices[2]).z;
+					float z1 = m_vertices[face1.Vertices[0]].z + m_vertices[face1.Vertices[1]].z + m_vertices[face1.Vertices[2]].z;
+					float z2 = m_vertices[face2.Vertices[0]].z + m_vertices[face2.Vertices[1]].z + m_vertices[face2.Vertices[2]].z;
 					if(m_inst.GetFaceOrdering() == StdMeshInstance::FO_FarthestToNearest)
 						return z1 < z2;
 					else
@@ -808,8 +810,12 @@ StdMeshAnimation& StdMeshAnimation::operator=(const StdMeshAnimation& other)
 	return *this;
 }
 
-StdMesh::StdMesh():
+StdSubMesh::StdSubMesh():
 	Material(NULL)
+{
+}
+
+StdMesh::StdMesh()
 {
 	BoundingBox.x1 = BoundingBox.y1 = BoundingBox.z1 = 0.0f;
 	BoundingBox.x2 = BoundingBox.y2 = BoundingBox.z2 = 0.0f;
@@ -827,77 +833,84 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 
 	TiXmlElement* mesh_elem = mesh.RequireFirstChild(NULL, "mesh");
 	TiXmlElement* submeshes_elem = mesh.RequireFirstChild(mesh_elem, "submeshes");
-	// Load first submesh only for now
-	TiXmlElement* submesh_elem = mesh.RequireFirstChild(submeshes_elem, "submesh");
-	TiXmlElement* geometry_elem = mesh.RequireFirstChild(submesh_elem, "geometry");
 
-	const char* material = mesh.RequireStrAttribute(submesh_elem, "material");
-	Material = manager.GetMaterial(material);
-	if(!Material)
-		mesh.Error(FormatString("There is no such material named '%s'", material), submesh_elem);
-
-	int VertexCount = mesh.RequireIntAttribute(geometry_elem, "vertexcount");
-	Vertices.resize(VertexCount);
-
-	TiXmlElement* buffer_elem = mesh.RequireFirstChild(geometry_elem, "vertexbuffer");
-
-	unsigned int i = 0;
-	for(TiXmlElement* vertex_elem = buffer_elem->FirstChildElement("vertex"); vertex_elem != NULL && i < Vertices.size(); vertex_elem = vertex_elem->NextSiblingElement("vertex"), ++i)
+	TiXmlElement* submesh_elem_base = mesh.RequireFirstChild(submeshes_elem, "submesh");
+	for(TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"))
 	{
-		TiXmlElement* position_elem = mesh.RequireFirstChild(vertex_elem, "position");
-		TiXmlElement* normal_elem = mesh.RequireFirstChild(vertex_elem, "normal");
-		TiXmlElement* texcoord_elem = mesh.RequireFirstChild(vertex_elem, "texcoord");
+		TiXmlElement* geometry_elem = mesh.RequireFirstChild(submesh_elem, "geometry");
+		
+		SubMeshes.push_back(StdSubMesh());
+		StdSubMesh& submesh = SubMeshes.back();
 
-		Vertices[i].x = mesh.RequireFloatAttribute(position_elem, "x");
-		Vertices[i].y = mesh.RequireFloatAttribute(position_elem, "y");
-		Vertices[i].z = mesh.RequireFloatAttribute(position_elem, "z");
-		Vertices[i].nx = mesh.RequireFloatAttribute(normal_elem, "x");
-		Vertices[i].ny = mesh.RequireFloatAttribute(normal_elem, "y");
-		Vertices[i].nz = mesh.RequireFloatAttribute(normal_elem, "z");
-		Vertices[i].u = mesh.RequireFloatAttribute(texcoord_elem, "u");
-		Vertices[i].v = mesh.RequireFloatAttribute(texcoord_elem, "v");
+		const char* material = mesh.RequireStrAttribute(submesh_elem, "material");
+		submesh.Material = manager.GetMaterial(material);
+		if(!submesh.Material)
+			mesh.Error(FormatString("There is no such material named '%s'", material), submesh_elem);
 
-		// Convert to Clonk coordinate system (type does not match, StdMeshVertex vs. StdMesh::Vertex)
-		StdMeshVertex Transformed = CoordCorrection * Vertices[i];
-		Vertices[i].nx = Transformed.nx; Vertices[i].ny = Transformed.ny; Vertices[i].nz = Transformed.nz;
-		Vertices[i].x  = Transformed.x;  Vertices[i].y  = Transformed.y;  Vertices[i].z  = Transformed.z;
+		int VertexCount = mesh.RequireIntAttribute(geometry_elem, "vertexcount");
+		submesh.Vertices.resize(VertexCount);
 
-		// Construct BoundingBox
-		if(i == 0)
+		TiXmlElement* buffer_elem = mesh.RequireFirstChild(geometry_elem, "vertexbuffer");
+
+		unsigned int i = 0;
+		for(TiXmlElement* vertex_elem = buffer_elem->FirstChildElement("vertex"); vertex_elem != NULL && i < submesh.Vertices.size(); vertex_elem = vertex_elem->NextSiblingElement("vertex"), ++i)
 		{
-			BoundingBox.x1 = BoundingBox.x2 = Vertices[i].x;
-			BoundingBox.y1 = BoundingBox.y2 = Vertices[i].y;
-			BoundingBox.z1 = BoundingBox.z2 = Vertices[i].z;
+			TiXmlElement* position_elem = mesh.RequireFirstChild(vertex_elem, "position");
+			TiXmlElement* normal_elem = mesh.RequireFirstChild(vertex_elem, "normal");
+			TiXmlElement* texcoord_elem = mesh.RequireFirstChild(vertex_elem, "texcoord");
+
+			submesh.Vertices[i].x = mesh.RequireFloatAttribute(position_elem, "x");
+			submesh.Vertices[i].y = mesh.RequireFloatAttribute(position_elem, "y");
+			submesh.Vertices[i].z = mesh.RequireFloatAttribute(position_elem, "z");
+			submesh.Vertices[i].nx = mesh.RequireFloatAttribute(normal_elem, "x");
+			submesh.Vertices[i].ny = mesh.RequireFloatAttribute(normal_elem, "y");
+			submesh.Vertices[i].nz = mesh.RequireFloatAttribute(normal_elem, "z");
+			submesh.Vertices[i].u = mesh.RequireFloatAttribute(texcoord_elem, "u");
+			submesh.Vertices[i].v = mesh.RequireFloatAttribute(texcoord_elem, "v");
+
+			// Convert to Clonk coordinate system (type does not match, StdMeshVertex vs. StdMesh::Vertex)
+			StdMeshVertex Transformed = CoordCorrection * submesh.Vertices[i];
+			submesh.Vertices[i].nx = Transformed.nx; submesh.Vertices[i].ny = Transformed.ny; submesh.Vertices[i].nz = Transformed.nz;
+			submesh.Vertices[i].x  = Transformed.x;  submesh.Vertices[i].y  = Transformed.y;  submesh.Vertices[i].z  = Transformed.z;
+
+			// Construct BoundingBox
+			if(i == 0 && SubMeshes.size() == 1)
+			{
+				// First vertex
+				BoundingBox.x1 = BoundingBox.x2 = submesh.Vertices[i].x;
+				BoundingBox.y1 = BoundingBox.y2 = submesh.Vertices[i].y;
+				BoundingBox.z1 = BoundingBox.z2 = submesh.Vertices[i].z;
+			}
+			else
+			{
+				BoundingBox.x1 = Min(submesh.Vertices[i].x, BoundingBox.x1);
+				BoundingBox.x2 = Max(submesh.Vertices[i].x, BoundingBox.x2);
+				BoundingBox.y1 = Min(submesh.Vertices[i].y, BoundingBox.y1);
+				BoundingBox.y2 = Max(submesh.Vertices[i].y, BoundingBox.y2);
+				BoundingBox.z1 = Min(submesh.Vertices[i].z, BoundingBox.z1);
+				BoundingBox.z2 = Max(submesh.Vertices[i].z, BoundingBox.z2);
+			}
 		}
-		else
+
+		TiXmlElement* faces_elem = mesh.RequireFirstChild(submesh_elem, "faces");
+		int FaceCount = mesh.RequireIntAttribute(faces_elem, "count");
+		submesh.Faces.resize(FaceCount);
+
+		i = 0;
+		for(TiXmlElement* face_elem = faces_elem->FirstChildElement("face"); face_elem != NULL && i < submesh.Faces.size(); face_elem = face_elem->NextSiblingElement("face"), ++i)
 		{
-			BoundingBox.x1 = Min(Vertices[i].x, BoundingBox.x1);
-			BoundingBox.x2 = Max(Vertices[i].x, BoundingBox.x2);
-			BoundingBox.y1 = Min(Vertices[i].y, BoundingBox.y1);
-			BoundingBox.y2 = Max(Vertices[i].y, BoundingBox.y2);
-			BoundingBox.z1 = Min(Vertices[i].z, BoundingBox.z1);
-			BoundingBox.z2 = Max(Vertices[i].z, BoundingBox.z2);
-		}
-	}
+			int v[3];
 
-	TiXmlElement* faces_elem = mesh.RequireFirstChild(submesh_elem, "faces");
-	int FaceCount = mesh.RequireIntAttribute(faces_elem, "count");
-	Faces.resize(FaceCount);
+			v[0] = mesh.RequireIntAttribute(face_elem, "v1");
+			v[1] = mesh.RequireIntAttribute(face_elem, "v2");
+			v[2] = mesh.RequireIntAttribute(face_elem, "v3");
 
-	i = 0;
-	for(TiXmlElement* face_elem = faces_elem->FirstChildElement("face"); face_elem != NULL && i < Faces.size(); face_elem = face_elem->NextSiblingElement("face"), ++i)
-	{
-		int v[3];
-
-		v[0] = mesh.RequireIntAttribute(face_elem, "v1");
-		v[1] = mesh.RequireIntAttribute(face_elem, "v2");
-		v[2] = mesh.RequireIntAttribute(face_elem, "v3");
-
-		for(unsigned int j = 0; j < 3; ++j)
-		{
-			if(v[j] < 0 || static_cast<unsigned int>(v[j]) >= Vertices.size())
-				mesh.Error(FormatString("Vertex index v%u (%d) is out of range", j+1, v[j]), face_elem);
-			Faces[i].Vertices[j] = v[j];
+			for(unsigned int j = 0; j < 3; ++j)
+			{
+				if(v[j] < 0 || static_cast<unsigned int>(v[j]) >= submesh.Vertices.size())
+					mesh.Error(FormatString("Vertex index v%u (%d) is out of range", j+1, v[j]), face_elem);
+				submesh.Faces[i].Vertices[j] = v[j];
+			}
 		}
 	}
 
@@ -989,41 +1002,47 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 			if(bones[i]->Parent == NULL)
 				AddMasterBone(bones[i]);
 
-		// Vertex<->Bone assignments
-		TiXmlElement* boneassignments_elem = mesh.RequireFirstChild(submesh_elem, "boneassignments");
-		for(TiXmlElement* vertexboneassignment_elem = boneassignments_elem->FirstChildElement("vertexboneassignment"); vertexboneassignment_elem != NULL; vertexboneassignment_elem = vertexboneassignment_elem->NextSiblingElement("vertexboneassignment"))
+		// Vertex<->Bone assignments for all vertices (need to go through SubMeshes again...)
+		unsigned int submesh_index = 0;
+		for(TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"), ++submesh_index)
 		{
-			int BoneID = mesh.RequireIntAttribute(vertexboneassignment_elem, "boneindex");
-			int VertexIndex = mesh.RequireIntAttribute(vertexboneassignment_elem, "vertexindex");
-			float weight = mesh.RequireFloatAttribute(vertexboneassignment_elem, "weight");
+			StdSubMesh& submesh = SubMeshes[submesh_index];
 
-			if(VertexIndex < 0 || static_cast<unsigned int>(VertexIndex) >= Vertices.size())
-				mesh.Error(FormatString("Vertex index in bone assignment (%d) is out of range", VertexIndex), vertexboneassignment_elem);
+			TiXmlElement* boneassignments_elem = mesh.RequireFirstChild(submesh_elem, "boneassignments");
+			for(TiXmlElement* vertexboneassignment_elem = boneassignments_elem->FirstChildElement("vertexboneassignment"); vertexboneassignment_elem != NULL; vertexboneassignment_elem = vertexboneassignment_elem->NextSiblingElement("vertexboneassignment"))
+			{
+				int BoneID = mesh.RequireIntAttribute(vertexboneassignment_elem, "boneindex");
+				int VertexIndex = mesh.RequireIntAttribute(vertexboneassignment_elem, "vertexindex");
+				float weight = mesh.RequireFloatAttribute(vertexboneassignment_elem, "weight");
 
-			StdMeshBone* bone = NULL;
-			for(unsigned int i = 0; !bone && i < bones.size(); ++i)
-				if(bones[i]->ID == BoneID)
-					bone = bones[i];
+				if(VertexIndex < 0 || static_cast<unsigned int>(VertexIndex) >= submesh.Vertices.size())
+					mesh.Error(FormatString("Vertex index in bone assignment (%d) is out of range", VertexIndex), vertexboneassignment_elem);
 
-			if(!bone) mesh.Error(FormatString("There is no such bone with index %d", BoneID), vertexboneassignment_elem);
+				StdMeshBone* bone = NULL;
+				for(unsigned int i = 0; !bone && i < bones.size(); ++i)
+					if(bones[i]->ID == BoneID)
+						bone = bones[i];
 
-			Vertex& vertex = Vertices[VertexIndex];
-			vertex.BoneAssignments.push_back(StdMeshVertexBoneAssignment());
-			StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments.back();
-			assignment.BoneIndex = bone->Index;
-			assignment.Weight = weight;
-		}
+				if(!bone) mesh.Error(FormatString("There is no such bone with index %d", BoneID), vertexboneassignment_elem);
 
-		// Normalize vertex bone assignment weights (this is not guaranteed in the
-		// Ogre file format).
-		for(unsigned int i = 0; i < Vertices.size(); ++i)
-		{
-			Vertex& vertex = Vertices[i];
-			float sum = 0.0f;
-			for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
-				sum += vertex.BoneAssignments[j].Weight;
-			for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
-				vertex.BoneAssignments[j].Weight /= sum;
+				StdSubMesh::Vertex& vertex = submesh.Vertices[VertexIndex];
+				vertex.BoneAssignments.push_back(StdMeshVertexBoneAssignment());
+				StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments.back();
+				assignment.BoneIndex = bone->Index;
+				assignment.Weight = weight;
+			}
+
+			// Normalize vertex bone assignment weights (this is not guaranteed in the
+			// Ogre file format).
+			for(unsigned int i = 0; i < submesh.Vertices.size(); ++i)
+			{
+				StdSubMesh::Vertex& vertex = submesh.Vertices[i];
+				float sum = 0.0f;
+				for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+					sum += vertex.BoneAssignments[j].Weight;
+				for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+					vertex.BoneAssignments[j].Weight /= sum;
+			}
 		}
 
 		// Load Animations
@@ -1093,12 +1112,15 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 	else
 	{
 		// Mesh has no skeleton
-		TiXmlElement* boneassignments_elem = submesh_elem->FirstChildElement("boneassignments");
-		if(boneassignments_elem)
+		for(TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"))
 		{
-			// Bone assignements do not make sense then, as the
-			// actual bones are defined in the skeleton file.
-			mesh.Error(StdStrBuf("Mesh has bone assignments, but no skeleton"), boneassignments_elem);
+			TiXmlElement* boneassignments_elem = submesh_elem->FirstChildElement("boneassignments");
+			if(boneassignments_elem)
+			{
+				// Bone assignements do not make sense then, as the
+				// actual bones are defined in the skeleton file.
+				mesh.Error(StdStrBuf("Mesh has bone assignments, but no skeleton"), boneassignments_elem);
+			}
 		}
 	}
 }
@@ -1160,11 +1182,20 @@ void StdMeshInstance::AnimationRef::SetWeight(float weight)
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 	Mesh(mesh), CurrentFaceOrdering(FO_Fixed),
 	BoneTransforms(Mesh.GetNumBones(), StdMeshMatrix::Identity()),
-	Vertices(Mesh.GetNumVertices()), Faces(Mesh.Faces),
-	BoneTransformsDirty(false), AttachParent(NULL)
+	Vertices(Mesh.GetNumSubMeshes()), Faces(Mesh.GetNumSubMeshes()),
+	AttachParent(NULL), BoneTransformsDirty(false)
 {
-	for(unsigned int i = 0; i < Mesh.GetNumVertices(); ++i)
-		Vertices[i] = Mesh.GetVertex(i);
+	for(unsigned int i = 0; i < Mesh.GetNumSubMeshes(); ++i)
+	{
+		const StdSubMesh& submesh = Mesh.GetSubMesh(i);
+		Vertices[i].resize(submesh.GetNumVertices());
+		Faces[i].resize(submesh.GetNumFaces());
+
+		for(unsigned int j = 0; j < submesh.GetNumVertices(); ++j)
+			Vertices[i][j] = submesh.GetVertex(j);
+		for(unsigned int j = 0; j < submesh.GetNumFaces(); ++j)
+			Faces[i][j] = submesh.GetFace(j);
+	}
 }
 
 StdMeshInstance::~StdMeshInstance()
@@ -1179,7 +1210,15 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 	{
 		CurrentFaceOrdering = ordering;
 		if(ordering == FO_Fixed)
-			Faces = Mesh.Faces;
+		{
+			// Copy original face ordering from StdMesh
+			for(unsigned int i = 0; i < Mesh.GetNumSubMeshes(); ++i)
+			{
+				const StdSubMesh& submesh = Mesh.GetSubMesh(i);
+				for(unsigned int j = 0; j < submesh.GetNumFaces(); ++j)
+					Faces[i][j] = submesh.GetFace(j);
+			}
+		}
 
 		BoneTransformsDirty = true;
 
@@ -1247,16 +1286,16 @@ const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& 
 			attach.Number = iter->Number + 1;
 
 	// Lookup parent bone
-	for(i = 0; i < Mesh.Bones.size(); ++i)
-		if(Mesh.Bones[i]->Name == parent_bone)
+	for(i = 0; i < Mesh.GetNumBones(); ++i)
+		if(Mesh.GetBone(i).Name == parent_bone)
 			{ attach.ParentBone = i; break; }
-	if(i == Mesh.Bones.size()) return NULL;
+	if(i == Mesh.GetNumBones()) return NULL;
 
 	// Lookup child bone
-	for(i = 0; i < mesh.Bones.size(); ++i)
-		if(mesh.Bones[i]->Name == child_bone)
+	for(i = 0; i < mesh.GetNumBones(); ++i)
+		if(mesh.GetBone(i).Name == child_bone)
 			{ attach.ChildBone = i; break; }
-	if(i == mesh.Bones.size()) return NULL;
+	if(i == mesh.GetNumBones()) return NULL;
 
 	attach.Scale = scale;
 	attach.Parent = this;
@@ -1317,8 +1356,8 @@ void StdMeshInstance::UpdateBoneTransforms()
 			}
 		}
 
-		const StdMeshBone* bone = Mesh.Bones[i];
-		const StdMeshBone* parent = bone->GetParent();
+		const StdMeshBone& bone = Mesh.GetBone(i);
+		const StdMeshBone* parent = bone.GetParent();
 		assert(!parent || parent->Index < i);
 
 		if(!accum_weight)
@@ -1334,7 +1373,7 @@ void StdMeshInstance::UpdateBoneTransforms()
 			Transformation.rotate.Normalize(); // renormalize. We can skip this if we decide to use slerp
 			Transformation.translate *= 1.0f/accum_weight;
 
-			BoneTransforms[i] = StdMeshMatrix::Transform(bone->Transformation * Transformation * bone->InverseTransformation);
+			BoneTransforms[i] = StdMeshMatrix::Transform(bone.Transformation * Transformation * bone.InverseTransformation);
 
 			if(parent)
 				BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
@@ -1347,23 +1386,30 @@ void StdMeshInstance::UpdateBoneTransforms()
 	// (can only work for fixed face ordering though)
 	for(unsigned int i = 0; i < Vertices.size(); ++i)
 	{
-		const StdMesh::Vertex& vertex = Mesh.Vertices[i];
-		if(!vertex.BoneAssignments.empty())
+		const StdSubMesh& submesh = Mesh.GetSubMesh(i);
+		std::vector<StdMeshVertex>& instance_vertices = Vertices[i];
+		assert(submesh.GetNumVertices() == instance_vertices.size());
+		for(unsigned int j = 0; j < instance_vertices.size(); ++j)
 		{
-			Vertices[i].x = Vertices[i].y = Vertices[i].z = 0.0f;
-			Vertices[i].nx = Vertices[i].ny = Vertices[i].nz = 0.0f;
-			Vertices[i].u = vertex.u; Vertices[i].v = vertex.v;
-
-			for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+			const StdSubMesh::Vertex& vertex = submesh.GetVertex(j);
+			StdMeshVertex& instance_vertex = instance_vertices[j];
+			if(!vertex.BoneAssignments.empty())
 			{
-				const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[j];
-				
-				Vertices[i] += assignment.Weight * (BoneTransforms[assignment.BoneIndex] * vertex);
+				instance_vertex.x = instance_vertex.y = instance_vertex.z = 0.0f;
+				instance_vertex.nx = instance_vertex.ny = instance_vertex.nz = 0.0f;
+				instance_vertex.u = vertex.u; instance_vertex.v = vertex.v;
+
+				for(unsigned int k = 0; k < vertex.BoneAssignments.size(); ++k)
+				{
+					const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[k];
+
+					instance_vertex += assignment.Weight * (BoneTransforms[assignment.BoneIndex] * vertex);
+				}
 			}
-		}
-		else
-		{
-			Vertices[i] = vertex;
+			else
+			{
+				instance_vertex = vertex;
+			}
 		}
 	}
 
@@ -1376,7 +1422,11 @@ void StdMeshInstance::UpdateBoneTransforms()
 		// The idea is that a vertex at the child bone's position transforms to the parent bone's position.
 		// Therefore (read from right to left) we first apply the inverse of the child bone transformation,
 		// then an optional scaling matrix, and finally the parent bone transformation
-		
+
+		// TODO: we can cache the three matrices in the middle since they don't change over time,
+		// reducing this to two matrix multiplications instead of four each frame.
+		// Might even be worth to compute the complete transformation directly when rendering then
+		// (saves per-instance memory, but requires recomputation if the animation does not change).
 		iter->AttachTrans = BoneTransforms[iter->ParentBone]
 		                  * StdMeshMatrix::Transform(Mesh.GetBone(iter->ParentBone).Transformation)
 		                  * StdMeshMatrix::Scale(iter->Scale, iter->Scale, iter->Scale)
@@ -1392,6 +1442,14 @@ void StdMeshInstance::UpdateBoneTransforms()
 
 void StdMeshInstance::ReorderFaces()
 {
-	StdMeshInstanceFaceOrderingCmpPred pred(*this);
-	std::sort(Faces.begin(), Faces.end(), pred);
+	for(unsigned int i = 0; i < Faces.size(); ++i)
+	{
+		StdMeshInstanceFaceOrderingCmpPred pred(*this, i);
+		std::sort(Faces[i].begin(), Faces[i].end(), pred);
+	}
+	
+	// TODO: Also reorder submeshes and attached meshes... maybe this face ordering
+	// is not a good idea after all. Another possibility to obtain the effect would be
+	// to first render to an offscreen texture, then render to screen (only for meshes
+	// with halftransparent clrmod applied)
 }

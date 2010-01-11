@@ -234,9 +234,37 @@ struct StdMeshBox
 	float x2, y2, z2;
 };
 
+class StdSubMesh
+{
+	friend class StdMesh;
+public:
+	// Remember bone assignments for vertices
+	class Vertex: public StdMeshVertex
+	{
+	public:
+		std::vector<StdMeshVertexBoneAssignment> BoneAssignments;
+	};
+
+	const Vertex& GetVertex(unsigned int i) const { return Vertices[i]; }
+	unsigned int GetNumVertices() const { return Vertices.size(); }
+
+	const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
+	unsigned int GetNumFaces() const { return Faces.size(); }
+
+	const StdMeshMaterial& GetMaterial() const { return *Material; }
+
+private:
+	StdSubMesh();
+
+	std::vector<Vertex> Vertices;
+	std::vector<StdMeshFace> Faces;
+
+	const StdMeshMaterial* Material;
+};
+
 class StdMesh
 {
-	friend class StdMeshInstance;
+	//friend class StdMeshInstance;
 public:
 	StdMesh();
 	~StdMesh();
@@ -246,17 +274,13 @@ public:
 	// Throws StdMeshError.
 	void InitXML(const char* filename, const char* xml_data, StdMeshSkeletonLoader& skel_loader, const StdMeshMatManager& manager);
 
-	const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
-	unsigned int GetNumVertices() const { return Vertices.size(); }
-
-	const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
-	unsigned int GetNumFaces() const { return Faces.size(); }
+	const StdSubMesh& GetSubMesh(unsigned int i) const { return SubMeshes[i]; }
+	unsigned int GetNumSubMeshes() const { return SubMeshes.size(); }
 
 	const StdMeshBone& GetBone(unsigned int i) const { return *Bones[i]; }
 	unsigned int GetNumBones() const { return Bones.size(); }
 
 	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
-	const StdMeshMaterial& GetMaterial() const { return *Material; }
 
 	const StdMeshBox& GetBoundingBox() const { return BoundingBox; }
 
@@ -266,21 +290,12 @@ private:
 	StdMesh(const StdMesh& other); // non-copyable
 	StdMesh& operator=(const StdMesh& other); // non-assignable
 
-	// Remember bone assignments for vertices
-	class Vertex: public StdMeshVertex
-	{
-	public:
-		std::vector<StdMeshVertexBoneAssignment> BoneAssignments;
-	};
-
-	std::vector<Vertex> Vertices;
-	std::vector<StdMeshFace> Faces;
+	std::vector<StdSubMesh> SubMeshes;
 	std::vector<StdMeshBone*> Bones; // Master Bone Table
 
 	std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
 
 	StdMeshBox BoundingBox;
-	const StdMeshMaterial* Material;
 };
 
 class StdMeshInstance
@@ -357,16 +372,16 @@ public:
 
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
-	const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
-	const StdMeshVertex* GetVertices() const { return &Vertices[0]; }
-	unsigned int GetNumVertices() const { return Vertices.size(); }
+	//const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
+	const StdMeshVertex* GetVertices(unsigned int submesh) const { return &Vertices[submesh][0]; }
+	unsigned int GetNumVertices(unsigned int submesh) const { return Vertices[submesh].size(); }
 
 	// Get face of instance. The instance faces are the same as the mesh faces,
 	// with the exception that they are differently ordered, depending on the
 	// current FaceOrdering. See also SetFaceOrdering.
-	const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
-	const StdMeshFace* GetFaces() const { return &Faces[0]; }
-	unsigned int GetNumFaces() const { return Faces.size(); }
+	//const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
+	const StdMeshFace* GetFaces(unsigned int submesh) const { return &Faces[submesh][0]; }
+	unsigned int GetNumFaces(unsigned int submesh) const { return Faces[submesh].size(); }
 
 	const StdMeshMatrix& GetBoneTransform(unsigned int i) const { return BoneTransforms[i]; }
 
@@ -394,8 +409,13 @@ protected:
 
 	std::vector<StdMeshMatrix> BoneTransforms;
 
-	std::vector<StdMeshVertex> Vertices;
-	std::vector<StdMeshFace> Faces;
+	// Vertices transformed according to current animation, for each submesh
+	// Faces sorted according to current face ordering, for each submesh
+	// TODO: We can skip these if we decide to either
+	// a) recompute Vertex positions each frame or
+	// b) compute them on the GPU
+	std::vector<std::vector<StdMeshVertex> > Vertices;
+	std::vector<std::vector<StdMeshFace> > Faces;
 
 	// Not asymptotically efficient, but we do not expect many attached meshes anyway.
 	// In theory map would fit better, but it's probably not worth the extra overhead.
