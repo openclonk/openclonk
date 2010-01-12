@@ -3,32 +3,79 @@
 //parameters: $_GET('func')
 
 //search?
-if(isset($_GET['func']) && strlen($_GET['func']) > 0) 
+if(isset($_GET['search'])) 
 {
-	$path = "sdk/script/fn/";
-	$search = strtolower($_GET['func']);
-	$funcs = array();
-	
-	
-	$dir = opendir($path);
-	//search
-	while (($item = readdir($dir)) !== FALSE) 
-	{
-		$name = substr($item,0,strpos($item,'.'));
-		if ("." != $item && ".." != $item
-			&& (strpos(strtolower($name), $search) !== FALSE)
-			&& !is_dir($path.$item))
-		{
-			// exact match -> redirect
-			if ($search == strtolower($name))
+	if(strlen($_GET['search']) < 3) {
+		$less = true;
+	}
+	else {
+		if(isset($_GET['func'])) {
+			$path = "sdk/script/fn/";
+			$search = strtolower($_GET['search']);
+			$result = array();
+			
+			
+			$dir = opendir($path);
+			//search
+			while (($item = readdir($dir)) !== FALSE) 
 			{
-				header("Location: $path$item");
-				exit;
+				$name = substr($item,0,strpos($item,'.'));
+				if ("." != $item && ".." != $item
+					&& (strpos(strtolower($name), $search) !== FALSE)
+					&& !is_dir($path.$item))
+				{
+					// exact match -> redirect
+					if ($search == strtolower($name))
+					{
+						header("Location: $path$item");
+						exit;
+					}
+						
+					array_push($result,array($path,$item));
+				}
 			}
-				
-			array_push($funcs,$item);
+			$showresults = 1;
+		}
+		elseif(isset($_GET['fulltext'])) {
+			$result = SearchDir('sdk/');
+			$showresults = 2;
 		}
 	}
+}
+
+function SearchDir($path) {
+	if(!$dir = opendir($path))
+		return;
+	
+	$result = array();
+	
+	while (false !== ($file = readdir($dir))) {
+		if ($file != "." && $file != "..") {
+			if(is_dir($path.$file))
+				$result = array_merge($result, SearchDir($path.$file.'/'));
+			else {
+				// HTML-Dokument auslesen
+				$doc = new DOMDocument();
+				$doc->loadHTMLFile($path.$file);
+				$divs = $doc->getElementsByTagName('div');
+				foreach($divs as $div) {
+					if(strpos($div->getAttribute('class'), 'text') !== false) {
+						if(preg_match("/\b" . htmlspecialchars($_GET['search']) . "\b/i", strip_tags($div->nodeValue))) {
+							$dirname = basename(rtrim($path, '/'));
+							if(!isset($result[$dirname]))
+								$result[$dirname] = array();
+							
+							$name = $doc->getElementsByTagName('h1')->item(0)->nodeValue;
+							array_push($result[$dirname], array($path.$file,$name));
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+	closedir($dir);
+	return $result;
 }
 ?>
 
@@ -91,31 +138,57 @@ HEADER;
 <form action="search.php" method="get">
 <?php
 echo $lang == 'de' ? '<b>Suchbegriff:</b>' : '<b>Search term:</b>';
-echo '&nbsp;<input type="text" name="func"';
-if (isset($_GET['func'])) echo ' value="' . htmlspecialchars($_GET['func']) . '"';
+echo '&nbsp;<input type="text" name="search"';
+if (isset($_GET['search'])) echo ' value="' . htmlspecialchars($_GET['search']) . '"';
 echo '> ';
-echo '<input type="submit" value="' . ($lang == 'de' ? 'Suchen' : 'Search') . '">';
+echo '<input type="submit" name="func" value="' . ($lang == 'de' ? 'Funktionssuche' : 'Search for function') . '">';
+echo '<input type="submit" name="fulltext" value="' . ($lang == 'de' ? 'Volltextsuche' : 'Fulltext') . '">';
 ?>
 </form>
 <?php
-	if(isset($_GET['func']) && strlen($_GET['func']) > 0)
-	{
+	if($less) {
+		echo $lang == 'de' ? 'Mindestens 3 Zeichen.' : '3 characters minimum.';
+	}
+	
+	$dirtrans = array('de' => array('sdk' => 'Dokumentation', 'script' => 'Script', 'fn' => 'Funktionen', 'scenario' => 'Szenario', 'particle' => 'Partikel', 'material' => 'Material', 'folder' => 'Rundenordner', 'definition' => 'Objektdefinition'),
+	                  'en' => array('sdk' => 'Documentation', 'script' => 'Script', 'fn' => 'Functions', 'scenario' => 'Scenario', 'particle' => 'Particle', 'material' => 'Material', 'folder' => 'Folder', 'definition' => 'Definition'));
 	//nothing found
-		if (count($funcs) == 0)
+	if($showresults == 1) {
+		if (count($result) == 0)
 		{
 			echo $lang == 'de' ? 'Es wurde keine Funktion gefunden.' : 'No function found.';
 		}
-		// something found
-		else
-		{
+		else {
 			echo "<ul>\n";
-			for($i = 0; $i < count($funcs); ++$i)
+			for($i = 0; $i < count($result); ++$i)
 			{
-				$item = $funcs[$i];
-				$name = substr($item,0,strpos($item,'.'));
+				$item = $result[$i][1];
+				if(!$name = $result[$i][2])
+					$name = substr($item,0,strpos($item,'.'));
+				$path = $result[$i][0];
 				echo "<li><a href=\"$path$item\">$name</a></li>\n";
 			}
 			echo "</ul>\n";
+		}
+	}
+	elseif($showresults == 2) {
+		if (count($result) == 0)
+		{
+			echo $lang == 'de' ? 'Nichts gefunden.' : 'Nothing found.';
+		}
+		else {
+			foreach($result as $dirname => $values) {
+				$dirname = $dirtrans[$lang][$dirname];
+				echo "<b>$dirname</b>\n";
+				echo "<ul>\n";
+				foreach($values as $val)
+				{
+					$item = $val[0];
+					$name = $val[1];
+					echo "<li><a href=\"$item\">$name</a></li>\n";
+				}
+				echo "</ul>\n";
+			}
 		}
 	}
 ?>
