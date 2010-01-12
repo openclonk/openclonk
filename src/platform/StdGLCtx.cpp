@@ -118,7 +118,7 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
 	if (GLEW_OK != err)
 		{
 		// Problem: glewInit failed, something is seriously wrong.
-		pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 		}
 	// success
 	return true;
@@ -243,7 +243,7 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	if (GLEW_OK != err)
 		{
 		// Problem: glewInit failed, something is seriously wrong.
-		pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 		}
 	return true;
 	}
@@ -374,7 +374,7 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	if (GLEW_OK != err)
 		{
 		// Problem: glewInit failed, something is seriously wrong.
-		pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
+		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
 		}
 	return true;
 }
