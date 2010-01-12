@@ -159,6 +159,12 @@ bool CStdFont::AddSurface()
 	CSurface *sfcNew = psfcFontData[iNumFontSfcs] = new CSurface();
 	++iNumFontSfcs;
 	if (iSfcSizes) if (!sfcNew->Create(iSfcSizes, iSfcSizes)) return false;
+	// If old surface was locked, unlock it and lock the new one in its stead
+	if (sfcCurrent && sfcCurrent->IsLocked())
+	{
+		sfcCurrent->Unlock();
+		sfcNew->Lock();
+	}
 	sfcCurrent = sfcNew;
 	iCurrentSfcX = iCurrentSfcY = 0;
 	return true;
@@ -462,14 +468,17 @@ void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWei
 	// now render all characters!
 
 	int cMax = 127;
+	sfcCurrent->Lock();
 	for (int c=' '; c <= cMax; ++c)
 		{
 		if (!AddRenderedChar(c, &(fctAsciiTexCoords[c-' '])))
 			{
+			sfcCurrent->Unlock();
 			Clear();
 			throw std::runtime_error(std::string("Cannot render characters for Font (") + szFontName + ")");
 			}
 		}
+	sfcCurrent->Unlock();
 	// adjust line height
 	iLineHgt /= iFontZoom;
 	// font successfully created; set name
