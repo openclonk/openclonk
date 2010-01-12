@@ -1,8 +1,51 @@
+/*
+	Stackable
+	Author: Newton
+	
+	Including this object means, the object is stackable. Other objects of
+	the same type will be added automatically to the object. This functionality
+	is similar to the Pack-functionality of the arrows in old clonk titles only
+	more general. 
+	The count of how many objects are stacked together (into a single one, this
+	one) is shown in the picture of the object and can be queried and set via
+	GetStackCount()/SetStackCount().
+	To take one object of the stack, call TakeObject(). As long
+	as the object exists, one can always take an object, even if it is the last
+	one (self). This object is always outside.
+	
+	On entrance (or to be more precise: on RejectEntrance), it will be checked
+	if the entering stackable object can be distributed over the other objects
+	of the same ID. If yes, this object is deleted and the other object(s) will
+	have a higher stack-count.
+	
+	Example 1:
+	'15x Arrow' is about to enter a clonk which has '5x Arrow'. 15 will be added
+	to the stack-count of the clonks '5x Arrow'-object (making it '20x Arrow'),
+	the entering object will be deleted.
+	
+	Example 2:
+	'17x Arrow' is about to enter a clonk which has '15x Arrow' and a bow with
+	'10x Arrow' in it's ammunition slot. 10 will be added to the stack-count
+	of the arrows in the bow, 5 to the stack-count of the arrows in the clonk
+	(assuming MaxStackCount() is 20) and the original arrows-object will have
+	2 arrows left. If there is an inventory slot left, the '2x Arrow" object
+	will enter the clonk.
+	
+	Most objects which can be stacked might want to set different pictures
+	and ingame graphics for different counts of objects. This can be done
+	by overloading UpdatePicture(), but remember to write _inherited() then.
+*/
+
 local count;
 
 public func IsStackable() { return true; }
 public func GetStackCount() { return Max(1,count); }
 public func MaxStackCount() { return 20; }
+
+protected func Construction()
+{
+	count = MaxStackCount();
+}
 
 public func Stack(object obj)
 {
@@ -31,7 +74,9 @@ public func TakeObject()
 	else if(count > 1)
 	{
 		SetStackCount(count-1);
-		return CreateObject(GetID(),0,0,GetOwner());
+		var take = CreateObject(GetID(),0,0,GetOwner());
+		take->SetStackCount(1);
+		return take;
 	}
 }
 
@@ -54,11 +99,12 @@ public func UpdatePicture()
 	SetGraphics(Format("%d",hun),NUMB,3,GFXOV_MODE_Picture);
 	SetObjDrawTransform(400,0,-5000,0,400,+10000, 3);
 	
+	SetName(Format("%dx %s",GetStackCount(),GetID()->GetName()));
 }
 
 public func UpdateMass()
 {
-	SetMass(GetID()->GetMass()*Max(GetStackCount(),1));
+	SetMass(GetID()->GetMass()*Max(GetStackCount(),1)/MaxStackCount());
 }
 
 protected func RejectEntrance(object into)
@@ -71,7 +117,7 @@ protected func RejectEntrance(object into)
 public func CalcValue(object pInBase, int iForPlayer)
 {
   // Je nach Anzahl
-  return(GetID()->GetValue()*Max(GetStackCount(),1));
+  return(GetID()->GetValue()*Max(GetStackCount(),1)/MaxStackCount());
 }
 
 private func TryPutInto( object into )

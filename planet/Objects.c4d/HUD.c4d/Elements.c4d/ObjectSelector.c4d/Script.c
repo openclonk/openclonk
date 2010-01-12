@@ -1,5 +1,3 @@
-#strict 2
-
 /*
 	Object selector HUD
 	Author: Newton
@@ -188,18 +186,18 @@ public func MouseDrop(int plr, obj)
 			{
 				var myoldobject = myobject;
 					
-				// 1. exit my old object
 				myoldobject->Exit();
-				// 2. enter the other object in my slot (myobject is now nil)
-				crew->Collect(obj,hotkey-1);
-				// 3. enter my old object into other object
-				objcontainer->Collect(myoldobject);
+				if(crew->Collect(obj,hotkey-1))
+					objcontainer->Collect(myoldobject);
+				else
+					crew->Collect(myoldobject,hotkey-1);
 			}
 			// otherwise, just collect
 			else
 			{
-				obj->Collect(crew,hotkey-1);
+				crew->Collect(obj,hotkey-1);
 			}
+			return true;
 		}
 		else if(actiontype == ACTIONTYPE_VEHICLE)
 		{
@@ -253,10 +251,7 @@ public func SetObject(object obj, int type, int pos)
 		SetName(Format("$TxtSlot$",hotkey));
 		this["MouseDragImage"] = nil;
 		if(subselector)
-		{
 			subselector->RemoveObject();
-			SetName("$TxtEmpty$");
-		}
 	}
 	else
 	{
@@ -279,9 +274,13 @@ public func SetObject(object obj, int type, int pos)
 			// if object has extra slot, show it
 			if(myobject->~HasExtraSlot())
 			{
-				subselector = CreateObject(GetID(),0,0,GetOwner());
-				subselector->DoCon(-50);
-				SetObject(myobject->Contents(0), ACTIONTYPE_INVENTORY, -1);
+				subselector = CreateObject(ACB2,0,0,GetOwner());
+				subselector->SetPosition(GetX()+16,GetY()+16);
+				subselector->SetContainer(myobject);
+			}
+			else if(subselector)
+			{
+				subselector->RemoveObject();
 			}
 		}
 	}

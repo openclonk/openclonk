@@ -5,4 +5,3 @@ TxtUnGrab=Let go %s
 TxtEnter=Enter %s
 TxtExit=Exit %s
 TxtPushOut=Push %s out
-TxtEmpty=Empty
