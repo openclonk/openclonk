@@ -682,6 +682,8 @@ namespace
 		{
 			const StdMeshMaterialPass& pass = technique.Passes[i];
 
+			glDepthMask(pass.DepthWrite ? GL_TRUE : GL_FALSE);
+
 			// Apply ClrMod to material
 			// TODO: ClrModMap is not taken into account by this; can maybe be done
 			// by a vertex shader if required.
@@ -1010,6 +1012,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	glActiveTexture(GL_TEXTURE0); // switch back to default
 	glClientActiveTexture(GL_TEXTURE0); // switch back to default
+	glDepthMask(GL_TRUE);
 
 	glDisable(GL_LIGHT0);
 	glDisable(GL_LIGHTING);

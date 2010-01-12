@@ -170,6 +170,8 @@ public:
 	float Specular[4];
 	float Emissive[4];
 	float Shininess;
+
+	bool DepthWrite;
 };
 
 class StdMeshMaterialTechnique
