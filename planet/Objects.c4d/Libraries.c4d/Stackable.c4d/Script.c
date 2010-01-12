@@ -1,38 +1,77 @@
+local count;
 
 public func IsStackable() { return true; }
+public func GetStackCount() { return Max(1,count); }
+public func MaxStackCount() { return 20; }
 
-public func StackCount() { return 1; }
+public func Stack(object obj)
+{
+	if(obj->GetID() != GetID())	return 0;
+	
+	var howmany = Min(obj->GetStackCount(),MaxStackCount()-GetStackCount());
+	
+	SetStackCount(count+howmany);
+	return howmany;
+}
 
-public func Stack(object obj) { }
+public func SetStackCount(int amount)
+{
+	count = amount;
+	UpdatePicture();
+	UpdateMass();
+}
 
-public func TakeObject() { return this; }
-
-// TODO: notify hud
+public func TakeObject()
+{
+	if(count == 1)
+	{
+		Exit();
+		return this;
+	}
+	else if(count > 1)
+	{
+		SetStackCount(count-1);
+		return CreateObject(GetID(),0,0,GetOwner());
+	}
+}
 
 public func UpdatePicture()
 {
-	var one = StackCount()%10;
-	var ten = (StackCount()/10)%10;
-	var hun = (StackCount()/100)%10;
+	var one = GetStackCount()%10;
+	var ten = (GetStackCount()/10)%10;
+	var hun = (GetStackCount()/100)%10;
 	
 	if(hun > 0)
 	{
 		SetGraphics(Format("%d",hun),NUMB,1,GFXOV_MODE_Picture);
-		SetObjDrawTransform(250,0,0,0,250,0,1);
+		SetObjDrawTransform(400,0,-19000,0,400,+10000, 1);
 	}
 	if(ten > 0)
 	{
 		SetGraphics(Format("%d",ten),NUMB,2,GFXOV_MODE_Picture);
-		SetObjDrawTransform(250,0,0,0,250,0,2);
+		SetObjDrawTransform(400,0,-12000,0,400,+10000, 2);
 	}
 	SetGraphics(Format("%d",hun),NUMB,3,GFXOV_MODE_Picture);
-	SetObjDrawTransform(250,0,0,0,250,0,3);
+	SetObjDrawTransform(400,0,-5000,0,400,+10000, 3);
 	
+}
+
+public func UpdateMass()
+{
+	SetMass(GetID()->GetMass()*Max(GetStackCount(),1));
 }
 
 protected func RejectEntrance(object into)
 {
 	return TryPutInto(into);
+}
+
+/* Value */
+
+public func CalcValue(object pInBase, int iForPlayer)
+{
+  // Je nach Anzahl
+  return(GetID()->GetValue()*Max(GetStackCount(),1));
 }
 
 private func TryPutInto( object into )
@@ -50,14 +89,23 @@ private func TryPutInto( object into )
 	// then check this object
 	for(var content in contents)
 	{
+		var howmany = 0;
 		if(!content) continue;
 		if(content->~IsStackable())
-			if(content->~GetID() == GetID())
-				if(content->Stack(this))
+			if(content->GetID() == GetID())
+				if(howmany = content->Stack(this))
 				{
-					RemoveObject();
-					return true;
+					count -= howmany;
+					if(count <= 0)
+					{
+						RemoveObject();
+						return true;
+					}
 				}
 	}
+	
+	UpdatePicture();
+	UpdateMass();
+	
 	return false;
 }

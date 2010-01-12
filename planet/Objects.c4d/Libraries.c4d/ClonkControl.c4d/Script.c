@@ -152,6 +152,19 @@ public func Switch2Items(int one, int two)
 	inventory[one] = inventory[two];
 	inventory[two] = temp;
 	
+	if(one == selected  && two != selected2
+	|| one == selected2 && two != selected)
+	{
+		inventory[one]->~Selection(this);
+		inventory[two]->~Deselection(this);
+	}
+	else if(one != selected  && two == selected2
+	     || one != selected2 && two == selected)
+	{
+		inventory[two]->~Selection(this);
+		inventory[one]->~Deselection(this);
+	}
+	
 	if(inventory[one])
 		this->~OnSlotFull(one);
 	else
