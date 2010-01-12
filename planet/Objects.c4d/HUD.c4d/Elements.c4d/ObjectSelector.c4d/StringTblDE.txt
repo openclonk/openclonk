@@ -5,3 +5,4 @@ TxtUnGrab=%s loslassen
 TxtEnter=%s betreten
 TxtExit=%s verlassen
 TxtPushOut=%s hinausschieben
+TxtEmpty=Leer

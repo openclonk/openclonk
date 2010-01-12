@@ -69,7 +69,7 @@ public func SelectItem(selection, bool second)
 			CancelUse();
 	
 	// de-select previous (if any)
-	if (item) item->~Deselection(this);
+	if (item) item->~Deselection(this,second);
 	
 	// select new (if any)
 	if (!second) item = inventory[selected];
@@ -81,12 +81,12 @@ public func SelectItem(selection, bool second)
 	//Message("selected %s (position %d)", this, bla, selected);
 	
 	if (item)
-		if (!item->~Selection(this))
+		if (!item->~Selection(this,second))
 			Sound("Grab");
 			
 	// callback to clonk (self):
 	// OnSelectionChanged(oldslotnumber, newslotnumber)
-	this->~OnSelectionChanged(oldnum, GetSelected(second));
+	this->~OnSelectionChanged(oldnum, GetSelected(second),second);
 	
 	// the first and secondary selection may not be on the same spot
 	if (selected2 == selected)
@@ -152,18 +152,15 @@ public func Switch2Items(int one, int two)
 	inventory[one] = inventory[two];
 	inventory[two] = temp;
 	
-	if(one == selected  && two != selected2
-	|| one == selected2 && two != selected)
-	{
-		inventory[one]->~Selection(this);
-		inventory[two]->~Deselection(this);
-	}
-	else if(one != selected  && two == selected2
-	     || one != selected2 && two == selected)
-	{
-		inventory[two]->~Selection(this);
-		inventory[one]->~Deselection(this);
-	}
+	if(one == selected)       inventory[two]->~Deselection(this,false);
+	else if(one == selected2) inventory[two]->~Deselection(this,true);
+	if(two == selected)       inventory[one]->~Deselection(this,false);
+	else if(two == selected2) inventory[one]->~Deselection(this,true);
+
+	if(one == selected)       inventory[one]->~Selection(this,false);
+	else if(one == selected2) inventory[one]->~Selection(this,true);
+	if(two == selected)       inventory[two]->~Selection(this,false);
+	else if(two == selected2) inventory[two]->~Selection(this,true);
 	
 	if(inventory[one])
 		this->~OnSlotFull(one);
@@ -246,6 +243,9 @@ protected func Collection2(object obj)
 		}
 	}
 	this->~OnSlotFull(sel);
+	
+	if(sel == selected || sel == selected2)
+		obj->~Selection(this,sel == selected2);
 
 	return _inherited(obj,...);
 }
@@ -261,6 +261,9 @@ protected func Ejection(object obj)
 	}
 	
 	this->~OnSlotEmpty(i);
+	
+	if(i == selected || i == selected2)
+		obj->~Deselection(this,i == selected2);
 	
 	_inherited(obj,...);
 }

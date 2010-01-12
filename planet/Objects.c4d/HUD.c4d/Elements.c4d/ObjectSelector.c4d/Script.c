@@ -29,7 +29,7 @@
 
 */
 
-local selected, crew, hotkey, myobject, actiontype;
+local selected, crew, hotkey, myobject, actiontype, subselector;
 
 static const ACTIONTYPE_INVENTORY = 0;
 static const ACTIONTYPE_VEHICLE = 1;
@@ -45,6 +45,7 @@ protected func Construction()
 	selected = 0;
 	hotkey = 0;
 	myobject = nil;
+	subselector = nil;
 	
 	// parallaxity
 	this["Parallaxity"] = [0,0];
@@ -190,7 +191,7 @@ public func MouseDrop(int plr, obj)
 				// 1. exit my old object
 				myoldobject->Exit();
 				// 2. enter the other object in my slot (myobject is now nil)
-				obj->Collect(crew,hotkey-1);
+				crew->Collect(obj,hotkey-1);
 				// 3. enter my old object into other object
 				objcontainer->Collect(myoldobject);
 			}
@@ -251,6 +252,11 @@ public func SetObject(object obj, int type, int pos)
 		SetGraphics(nil,nil,1);
 		SetName(Format("$TxtSlot$",hotkey));
 		this["MouseDragImage"] = nil;
+		if(subselector)
+		{
+			subselector->RemoveObject();
+			SetName("$TxtEmpty$");
+		}
 	}
 	else
 	{
@@ -265,9 +271,19 @@ public func SetObject(object obj, int type, int pos)
 		
 		SetName(Format("$TxtSelect$",myobject->GetName()));
 		
-		// create an effect which monitors whether the object is removed
 		if(actiontype == ACTIONTYPE_INVENTORY)
+		{
+			// create an effect which monitors whether the object is removed
 			AddEffect("IntRemoveGuard",myobject,1,0,this);
+			
+			// if object has extra slot, show it
+			if(myobject->~HasExtraSlot())
+			{
+				subselector = CreateObject(GetID(),0,0,GetOwner());
+				subselector->DoCon(-50);
+				SetObject(myobject->Contents(0), ACTIONTYPE_INVENTORY, -1);
+			}
+		}
 	}
 
 	ShowHotkey();
@@ -315,6 +331,7 @@ public func Selected()
 
 public func UpdateSelectionStatus()
 {
+	if(!crew) return;
 
 	// determine...
 	var sel = 0;
@@ -386,6 +403,8 @@ public func UpdateSelectionStatus()
 
 public func UpdateHands()
 {
+	if(!crew) return;
+
 	// the hands...
 	var hands = selected;
 	// .. are not displayed for inventory if the clonk is inside

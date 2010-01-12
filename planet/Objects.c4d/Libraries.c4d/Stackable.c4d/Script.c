@@ -86,6 +86,7 @@ private func TryPutInto( object into )
 			if(TryPutInto(content))
 				return true;
 	}
+
 	// then check this object
 	for(var content in contents)
 	{
