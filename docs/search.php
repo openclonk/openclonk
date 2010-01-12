@@ -1,4 +1,38 @@
 <?php
+
+//parameters: $_GET('func')
+
+//search?
+if(isset($_GET['func']) && strlen($_GET['func']) > 0) 
+{
+	$path = "sdk/script/fn/";
+	$search = strtolower($_GET['func']);
+	$funcs = array();
+	
+	
+	$dir = opendir($path);
+	//search
+	while (($item = readdir($dir)) !== FALSE) 
+	{
+		$name = substr($item,0,strpos($item,'.'));
+		if ("." != $item && ".." != $item
+			&& (strpos(strtolower($name), $search) !== FALSE)
+			&& !is_dir($path.$item))
+		{
+			// exact match -> redirect
+			if ($search == strtolower($name))
+			{
+				header("Location: $path$item");
+				exit;
+			}
+				
+			array_push($funcs,$item);
+		}
+	}
+}
+?>
+
+<?php
 $lang = basename(dirname(__FILE__));
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -63,41 +97,24 @@ echo '> ';
 echo '<input type="submit" value="' . ($lang == 'de' ? 'Suchen' : 'Search') . '">';
 ?>
 </form>
-<?
-
-//parameters: $_GET('func')
-
-//search?
-if(isset($_GET['func']) && strlen($_GET['func']) > 0) 
-{
-	$path = "sdk/script/fn/";
-	$search = strtolower($_GET['func']);
-	$found = false;
-	
-	echo "<ul>\n";
-	
-	$dir = opendir($path);
-	//search
-	while (($item = readdir($dir)) !== FALSE) 
-	{
-		$name = substr($item,0,strpos($item,'.'));
-		if ("." != $item && ".." != $item
-			&& (strpos(strtolower($name), $search) !== FALSE)
-			&& !is_dir($path.$item))
-		{
-			echo "<li><a href=\"$path$item\">$name</a></li>\n";
-			$found = true;
-		}
-	}
-	
-	echo "</ul>\n";
-	
+<?php
 	//nothing found
-	if (!$found)
+	if (count($funcs) == 0)
 	{
 		echo $lang == 'de' ? 'Es wurde keine Funktion gefunden.' : 'No function found.';
 	}
-}
+	// something found
+	else
+	{
+		echo "<ul>\n";
+		for($i = 0; $i < count($funcs); ++$i)
+		{
+			$item = $funcs[$i];
+			$name = substr($item,0,strpos($item,'.'));
+			echo "<li><a href=\"$path$item\">$name</a></li>\n";
+		}
+		echo "</ul>\n";
+	}
 ?>
 </div>
 
