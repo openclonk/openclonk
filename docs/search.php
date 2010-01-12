@@ -98,22 +98,25 @@ echo '<input type="submit" value="' . ($lang == 'de' ? 'Suchen' : 'Search') . '"
 ?>
 </form>
 <?php
+	if(isset($_GET['func']) && strlen($_GET['func']) > 0)
+	{
 	//nothing found
-	if (count($funcs) == 0)
-	{
-		echo $lang == 'de' ? 'Es wurde keine Funktion gefunden.' : 'No function found.';
-	}
-	// something found
-	else
-	{
-		echo "<ul>\n";
-		for($i = 0; $i < count($funcs); ++$i)
+		if (count($funcs) == 0)
 		{
-			$item = $funcs[$i];
-			$name = substr($item,0,strpos($item,'.'));
-			echo "<li><a href=\"$path$item\">$name</a></li>\n";
+			echo $lang == 'de' ? 'Es wurde keine Funktion gefunden.' : 'No function found.';
 		}
-		echo "</ul>\n";
+		// something found
+		else
+		{
+			echo "<ul>\n";
+			for($i = 0; $i < count($funcs); ++$i)
+			{
+				$item = $funcs[$i];
+				$name = substr($item,0,strpos($item,'.'));
+				echo "<li><a href=\"$path$item\">$name</a></li>\n";
+			}
+			echo "</ul>\n";
+		}
 	}
 ?>
 </div>
