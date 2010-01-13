@@ -13,7 +13,7 @@
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
 		<examples>
 			<example>
-				<code><funclink>SetComDir</funclink>(COMD_Right, <funclink>FindObject2</funclink>(Find_ID(BLMP)));</code>
+				<code><funclink>SetComDir</funclink>(COMD_Right, <funclink>FindObject</funclink>(Find_ID(BLMP)));</code>
 				<text>Ändert die Flugrichtung eines Luftschiffes.</text>
 			</example>
 		</examples>

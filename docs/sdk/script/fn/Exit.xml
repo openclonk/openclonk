@@ -9,19 +9,18 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Nach draußen zu bewegendes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>int</type><name>iX</name><desc>X-Austrittsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>int</type><name>iY</name><desc>Y-Austrittsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int</type><name>iX</name><desc>Offset der X-Austrittsposition.</desc><optional /></param>
+				<param><type>int</type><name>iY</name><desc>Offset der Y-Austrittsposition.</desc><optional /></param>
 				<param><type>int</type><name>iR</name><desc>Rotation des Austrittsobjekts in Grad.</desc><optional /></param>
 				<param><type>int</type><name>iXDir</name><desc>X-Geschwindigkeit des Austrittsobjekts. Es gilt der übergebene Wert ohne Genauigkeitsteilung (Precision 1).</desc><optional /></param>
 				<param><type>int</type><name>iYDir</name><desc>Y-Geschwindigkeit des Austrittsobjekts. Es gilt der übergebene Wert ohne Genauigkeitsteilung (Precision 1).</desc><optional /></param>
 				<param><type>int</type><name>iRDir</name><desc>Rotationsgeschwindigkeit des Austrittsobjekts.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Versetzt ein Objekt aus seinem Behälter heraus, und setzt optional seine Geschwindigkeit.</desc>
+		<desc>Versetzt das aufrufende Objekt aus seinem Behälter heraus, und setzt optional seine Geschwindigkeit.</desc>
 		<examples>
 			<example>
-				<code>Exit(<funclink>Contents</funclink>(), 0,-20, <funclink>Random</funclink>(360), 0,-15, <funclink>Random</funclink>(11)-5);</code>
+				<code><funclink>Contents</funclink>()->Exit(0,-20, <funclink>Random</funclink>(360), 0,-15, <funclink>Random</funclink>(11)-5);</code>
 				<text>Bewegt das erste Inhaltsobjekt oberhalb aus dem aufrufenden Objekt heraus, dreht es zufällig und schleudert es nach oben.</text>
 			</example>
 		</examples>

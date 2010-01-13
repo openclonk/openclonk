@@ -8,21 +8,17 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>string</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Abzufragendes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
 		</syntax>
 		<desc>Liefert den Namen der momentanen Aktivität eines Objekts zurück, "Idle", wenn das Objekt keine Aktivität ausführt.</desc>
 		<examples>
 			<example>
-				<code><funclink>if</funclink>(GetAction(<funclink>FindObject</funclink>(CLNK)) <emlink href="script/operatoren.html">eq</emlink> "Swim") <funclink>Message</funclink>("Toll, irgendein Clonk schwimmt");</code>
+				<code><funclink>if</funclink>(<funclink>FindObject</funclink>(Find_ID(CLNK))->GetAction() == "Swim") <funclink>Message</funclink>("Toll, irgendein Clonk schwimmt");</code>
 			</example>
 		</examples>
 		<related>
 			<funclink>GetActionTarget</funclink>
 			<funclink>GetActTime</funclink>
 			<funclink>GetPhase</funclink>
-			<funclink>ObjectSetAction</funclink>
 			<funclink>SetAction</funclink>
 			<funclink>SetActionTargets</funclink>
 			<funclink>SetPhase</funclink>

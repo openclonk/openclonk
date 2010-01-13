@@ -8,14 +8,11 @@
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>bool</rtype>
-      <params>
-        <param><type>object</type><name>pObj</name><desc>Zu überprüfendes Objekt</desc><optional /></param>
-      </params>
     </syntax>
-    <desc>Prüft, ob das Objekt eine Aktivität ausführt. Bei lokalem Aufruf kann pObj == 0 sein.</desc>
+    <desc>Prüft, ob das aufrufende Objekt eine Aktivität ausführt.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink>(ActIdle(i = <funclink>FindObject</funclink>(HUT1)) <funclink>Explode</funclink>(15, i);</code>
+	      <code><funclink>if</funclink>((i = <funclink>FindObject</funclink>(HUT1))->ActIdle()) i-><funclink>Explode</funclink>(15);</code>
         <text>Lässt die Bambushütte explodieren, wenn die Tür geschlossen ist</text>
       </example>
     </examples>

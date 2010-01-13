@@ -11,11 +11,6 @@
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>object</type>
-          <name>pObj</name>
-          <desc>Objekt, dem das Kommando gegeben wird.</desc>
-        </param>
-        <param>
           <type>string</type>
           <name>szCommand</name>
           <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
@@ -71,15 +66,15 @@
       </params>
     </syntax>
 
-    <desc>Fügt ein Kommando der Kommandoliste eines Objekts am Ende hinzu. Das Objekt wird also das zuerst gegebene Kommando ausführen und sich danach automatisch dem mit AppendCommand hinzugefügten widmen.<br />
+    <desc>Fügt ein Kommando der Kommandoliste des aufrufenden Objekts am Ende hinzu. Das Objekt wird also das zuerst gegebene Kommando ausführen und sich danach automatisch dem mit AppendCommand hinzugefügten widmen.<br />
           Für Kommando-Beschreibungen siehe <funclink>SetCommand</funclink><br/>
           Bemerkung: Mit AppendCommand hinzugefügte Befehle werden nicht an gesteuerte Fahrzeuge weitergeleitet (siehe VehicleControl)</desc>
 
     <examples>
       <example>
         <code>var base = <funclink>FindBase</funclink>();
-<funclink>SetCommand</funclink>(<funclink>this</funclink>(), "MoveTo", base);
-AppendCommand(<funclink>this</funclink>(), "Throw", 0, <funclink>GetX</funclink>(base), <funclink>GetY</funclink>(base));</code>
+<funclink>SetCommand</funclink>("MoveTo", base);
+AppendCommand("Throw", nil, base-><funclink>GetX</funclink>(), base-><funclink>GetY</funclink>());</code>
         <text>
 Gibt dem Clonk den Befehl, zuerst zu der ersten (gefundenen) Basis zu laufen, und dann das erste Objekt, das er trägt, auf diese zu werfen.<br />
         </text>

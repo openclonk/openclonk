@@ -8,20 +8,17 @@
 		<version>4.6.5.0 CP</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen OCF abgefragt wird. 0 bei lokalem Aufruf.</desc></param>
-			</params>
 		</syntax>
-		<desc>Liefert das Object-Character-Flag eines Objekts. Dieser Wert beschreibt den aktuellen Zustand des Objekts. Der Rückgabewert ist eine Bitmaske und kann mit BitAnd() mit einem OCF_x()-Wert verglichen werden.</desc>
+		<desc>Liefert das Object-Character-Flag des aufrufenden Objekts. Dieser Wert beschreibt den aktuellen Zustand des Objekts. Der Rückgabewert ist eine Bitmaske und kann mit &amp; mit einem OCF_x-Wert verglichen werden.</desc>
 		<examples>
 			<example>
 				<code>/* Wird bei Schäden aufgerufen */
 protected func Damage()
 {
 	// Brennt?
-	if(GetOCF() &amp; <funclink>OCF_OnFire</funclink>())
+	if(GetOCF() &amp; <funclink>OCF_OnFire</funclink>)
 		// Freuen
-		<funclink>Message</funclink>("Juhu! Ich brenne!", <funclink>this</funclink>());
+		<funclink>Message</funclink>("Juhu! Ich brenne!", <funclink>this</funclink>);
 <funclink>return</funclink>(1);
 }		
 				</code>

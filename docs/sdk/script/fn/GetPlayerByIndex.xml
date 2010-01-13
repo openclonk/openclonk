@@ -28,6 +28,7 @@
 
                 </examples>
                 <related>
+                        <funclink>GetPlayerByName</funclink>
                         <funclink>GetPlayerName</funclink>
                         <funclink>GetPlayerCount</funclink>
                         <funclink>GetPlayerType</funclink>

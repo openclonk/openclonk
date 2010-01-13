@@ -10,15 +10,14 @@
 			<rtype>&amp;</rtype>
 			<params>
 				<param><type>string</type><name>szName</name><desc>Name der Variablen, zu der eine Referenz zurückgegeben werden soll</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Variable abgefragt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Gibt eine Referenz auf eine Objektlokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden.</desc>
 		<examples>
 			<example>
 				<code><emlink href="script/NamedVar.html">var</emlink> obj;
-if (obj <emlink href="script/operatoren.html">=</emlink> LocalN ("basement", <funclink>FindObject</funclink> (WTWR))) <funclink>Explode</funclink> (20, obj);</code>
-				<text>Lässt ein Fundament eines Zauberturms explodieren. Funktioniert nur bei einem Zauberturm, alle anderen Objekte benutzen <funclink>Local</funclink> (9) zum Speichern des Fundamentobjektes.</text>
+if (obj <emlink href="script/operatoren.html">=</emlink> <funclink>FindObject</funclink>(WTWR)->LocalN("basement")) obj-><funclink>Explode</funclink>(20);</code>
+				<text>Lässt ein Fundament eines Zauberturms explodieren.</text>
 			</example>
 			<example>
 				<code>func <emlink href="definition/script.html#ObjektCallsderEngine">Initialize</emlink> () {
@@ -26,7 +25,7 @@ if (obj <emlink href="script/operatoren.html">=</emlink> LocalN ("basement", <fu
 }
 //Mit Timer=1 in der <emlink href="definition/defcore.html">DefCore.txt</emlink> jeden Frame aufgerufen
 func TimerCall () {
-  <funclink>SetPosition</funclink> (<funclink>GetX</funclink> (), <funclink>GetY</funclink> (), LocalN("Baum"));
+  LocalN("Baum")-><funclink>SetPosition</funclink> (<funclink>GetX</funclink> (), <funclink>GetY</funclink> (), );
 }
 </code>
 				<text>Das Objekt trägt einen Baum mit sich herum.</text>

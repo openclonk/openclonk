@@ -22,6 +22,7 @@
     </examples>
     <related>
       <funclink>GetWealth</funclink>
+      <funclink>DoWealth</funclink>
     </related>
   </func>
   <author>jwk</author><date>August 2002</date>

@@ -1,0 +1,2 @@
+DE:Windrad
+US:Windmill

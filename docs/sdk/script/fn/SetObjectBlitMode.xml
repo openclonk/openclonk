@@ -10,11 +10,10 @@
 			<rtype>int</rtype>
 			<params>
 				<param><type>int</type><name>dwNewBlitMod</name><desc>Neuer Zeichenmodus (mögliche Werte siehe unten) - bei 0 wird das Objekt auf seinen Definitions-Blitmodus zurückgesetzt. Ansonsten wird Bit 8 (benutzerdefinierter Farbwert) implizit gesetzt.</desc><optional /></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Zeichenstil geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Ändert den Zeichenmodus für eine Objekts. Die möglichen Werte entsprechen denen des DefCore-Flags BlitMode (siehe Anmerkung). Die Funktion gibt jeweils den vorher gesetzten Blitmodus zurück.</desc>
+		<desc>Ändert den Zeichenmodus für das aufrufende Objekt. Die möglichen Werte entsprechen denen des DefCore-Flags BlitMode (siehe Anmerkung). Die Funktion gibt jeweils den vorher gesetzten Blitmodus zurück.</desc>
 		<remark>Der Blitmodus beeinflusst keine zusätzlichen Overlay-Grafiken. Die Blitmodi dieser müssen jeweils in <funclink>SetGraphics</funclink> gesetzt werden.</remark>
 		<remark><table><rowh><col>Konstante</col><col>Wert</col><col>Bedeutung</col></rowh>
 		<row><col>GFX_BLIT_Additive</col><col>1</col><col>Additiv (Immer Basissurface und Overlay)</col></row>
@@ -35,11 +34,11 @@ protected func Script100()
   // Ausgewählten Clonk des ersten Spielers ermitteln
   g_pCursor = <funclink>GetCursor</funclink>();
   // Vorherige Werte speichern
-  g_dwPrevBlitMode = <funclink>GetObjectBlitMode</funclink>(g_pCursor);
-  g_dwPrevMod = <funclink>GetClrModulation</funclink>(g_pCursor);
+  g_dwPrevBlitMode = g_pCursor-><funclink>GetObjectBlitMode</funclink>();
+  g_dwPrevMod = g_pCursor-><funclink>GetClrModulation</funclink>();
   // Nicht-ColorByOwner-Teile des Clonks leuchtend grün färben
-  SetObjectBlitMode(6, g_pCursor);
-  <funclink>SetClrModulation</funclink>(<funclink>RGB</funclink>(100, 255, 110), g_pCursor);
+  g_pCursor->SetObjectBlitMode(6);
+  g_pCursor-><funclink>SetClrModulation</funclink>(<funclink>RGB</funclink>(100, 255, 110));
   // Nachricht
   <funclink>Message</funclink>("Schau her, ich kann leuchten!", g_pCursor);
   return(1);
@@ -48,10 +47,10 @@ protected func Script100()
 protected func Script200()
   {
   // Farbe zurücksetzen
-  SetObjectBlitMode(g_dwPrevBlitMode, g_pCursor);
-  <funclink>SetClrModulation</funclink>(g_dwPrevMod, g_pCursor);
+  g_pCursor->SetObjectBlitMode(g_dwPrevBlitMode);
+  g_pCursor-><funclink>SetClrModulation</funclink>(g_dwPrevMod);
   // Nachricht
-  <funclink>Message</funclink>("Schon vorbei :\", g_pCursor);
+  <funclink>Message</funclink>("Schon vorbei :/", g_pCursor);
   <funclink>return</funclink>(1);
   }</code>
 				<text>Teil eines Szenarioscripts: Färbt den ausgewählten Clonk des ersten Spielers für eine Weile teilweise leuchtend grün.<br />

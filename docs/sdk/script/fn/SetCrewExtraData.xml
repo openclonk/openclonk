@@ -10,11 +10,6 @@
    <rtype>any</rtype>
    <params>
     <param>
-     <type>object</type>
-     <name>pCrew</name>
-     <desc>Crewobjekt, für dessen Infosektion zusätzliche Daten gespeichert werden sollen. 0 für lokalen Aufruf.</desc>
-    </param>
-    <param>
      <type>string</type>
      <name>strDataName</name>
      <desc>Name, der den Daten zugeordnet werden soll</desc>
@@ -44,7 +39,7 @@ local fInvisible;
 protected func Recruitment(a,b,c,d,e,f,g,h,i,j)
   {
   var rVal = <funclink>_inherited</funclink>(a,b,c,d,e,f,g,h,i,j);
-  if (<funclink>GetCrewExtraData</funclink>(0, "C4ID_Invisible")) <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
+  if (<funclink>GetCrewExtraData</funclink>("C4ID_Invisible")) <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
   <funclink>return</funclink>(rVal);
   }
     
@@ -54,7 +49,7 @@ protected func ControlSpecial()
     <funclink>SetVisibility</funclink>();
   else
     <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
-  SetCrewExtraData(0, "C4ID_Invisible", fInvisible);
+  SetCrewExtraData("C4ID_Invisible", fInvisible);
   }</code>
     <text>Script für einen Spezialclonk: Der Clonk kann sich auf Taste Spezial unsichtbar und wieder sichtbar machen. Diese Unsichtbarkeit bleibt auch erhalten, wenn man das Szenario beendet und ein anderes Szenario mit diesem Clonk startet.</text>
    </example>

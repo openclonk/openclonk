@@ -1,6 +1,5 @@
 [Material]
 Name=Tunnel
-Color=128,128,128,128,128,128,128,128,128
 Shape=2
 Placement=5
 TextureOverlay=tunnel

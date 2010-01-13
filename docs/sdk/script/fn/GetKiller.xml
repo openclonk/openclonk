@@ -8,11 +8,8 @@
 		<version>4.9.6.0 CR</version>
 		<syntax>
 			<rtype>int</rtype>
-			<params>
-				<param><type>object</type><name>pObj</name><desc>Abzufragendes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
-			</params>
 		</syntax>
-		<desc>Liefert den Spieler, der zuletzt Energieabzug an einem Objekt verursacht hat.</desc>
+		<desc>Liefert den Spieler, der zuletzt Energieabzug am aufrufenden Objekt verursacht hat.</desc>
 		<remark>Aufgrund der Komplexität der Spielwelt von Clonk ist es nicht immer möglich, den tatsächlichen Schadensverursacher in Kettenreaktionen korrekt ausfindig zu machen.
 			Zur Schadensverfolgung speichert jedes Objekt einen steuernden Spieler, der die Spielernummer des Spielers angibt, der ein Objekt zuletzt kontrolliert bzw. geworfen, geschoben, abgeschossen, etc. hat (für Details siehe <funclink>GetController</funclink>). Dieses Feld wird benutzt, um den Schaden erzeugenden Spieler zu ermitteln:<br />
 			<ul><li>Bei Objekttreffern der steuernde Spieler des geworfenen Objektes. Dieser wird für Gegenstände automatisch beim Einsammeln gesetzt.</li>

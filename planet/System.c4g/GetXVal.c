@@ -11,90 +11,90 @@
 
 // GetDefCoreVal
 
-global func GetDefCategory(id def)    { return GetDefCoreVal("Category", "DefCore", def); }
-global func GetDefMaxUserSelect(id def) { return GetDefCoreVal("MaxUserSelect", "DefCore", def); }
-global func GetDefWidth(id def)       { return GetDefCoreVal("Width", "DefCore", def); }
-global func GetDefHeight(id def)      { return GetDefCoreVal("Height", "DefCore", def); }
-global func GetDefOffset(id def,nr)   { return GetDefCoreVal("Offset", "DefCore", def, nr); }
-global func GetDefValue(id def)       { return GetDefCoreVal("Value", "DefCore", def); }
-global func GetDefMass(id def)        { return GetDefCoreVal("Mass", "DefCore", def); }
-global func GetDefComponents(id def, nr) { return GetDefCoreVal("Components", "DefCore", def, nr); }
-global func GetDefCollection(id def, nr) { return GetDefCoreVal("Collection", "DefCore", def, nr); }
-global func GetDefFireTop(id def)     { return GetDefCoreVal("FireTop", "DefCore", def); }
-global func GetDefPlacement(id def)   { return GetDefCoreVal("Placement", "DefCore", def); }
-global func GetDefContactIncinerate(id def) { return GetDefCoreVal("ContactIncinerate", "DefCore", def); }
-global func GetDefBlastIncinerate(id def) { return GetDefCoreVal("BlastIncinerate", "DefCore", def); }
-global func GetDefBurnTo(id def)      { return GetDefCoreVal("BurnTo", "DefCore", def); }
-global func GetDefBase(id def)        { return GetDefCoreVal("Base", "DefCore", def); }
-global func GetDefLine(id def)        { return GetDefCoreVal("Line", "DefCore", def); }
-global func GetDefLineConnect(id def) { return GetDefCoreVal("Exclusive", "DefCore", def); }
-global func GetDefPrey(id def)        { return GetDefCoreVal("Prey", "DefCore", def); }
-global func GetDefEdible(id def)      { return GetDefCoreVal("Edible", "DefCore", def); }
-global func GetDefCrewMember(id def)  { return GetDefCoreVal("Prey", "DefCore", def); }
-global func GetDefGrowth(id def)      { return GetDefCoreVal("Growth", "DefCore", def); }
-global func GetDefRebuy(id def)       { return GetDefCoreVal("Rebuy", "DefCore", def); }
-global func GetDefConstruction(id def){ return GetDefCoreVal("Construction", "DefCore", def); }
-global func GetDefConstructTo(id def) { return GetDefCoreVal("ConstructTo", "DefCore", def); }
-global func GetDefGrab(id def)        { return GetDefCoreVal("Grab", "DefCore", def); }
-global func GetDefGrabPutGet(id def)  { return GetDefCoreVal("GrabPutGet", "DefCore", def); }
-global func GetDefCollectible(id def) { return GetDefCoreVal("Collectible", "DefCore", def); }
-global func GetDefRotate(id def)      { return GetDefCoreVal("Rotate", "DefCore", def); }
-global func GetDefChop(id def)        { return GetDefCoreVal("Chop", "DefCore", def); }
-global func GetDefFloat(id def)       { return GetDefCoreVal("Float", "DefCore", def); }
-global func GetDefContainBlast(id def){ return GetDefCoreVal("ContainBlast", "DefCore", def); }
-global func GetDefHorizontalFix(id def) { return GetDefCoreVal("HorizontalFix", "DefCore", def); }
-global func GetDefBorderBound(id def) { return GetDefCoreVal("BorderBound", "DefCore", def); }
-global func GetDefLiftTop(id def)     { return GetDefCoreVal("LiftTop", "DefCore", def); }
-global func GetDefUprightAttach(id def) { return GetDefCoreVal("UprightAttach", "DefCore", def); }
-global func GetDefStretchGrowth(id def) { return GetDefCoreVal("StretchGrowth", "DefCore", def); }
-global func GetDefBasement(id def)    { return GetDefCoreVal("Basement", "DefCore", def); }
-global func GetDefNoBurnDecay(id def) { return GetDefCoreVal("NoBurnDecay", "DefCore", def); }
-global func GetDefIncompleteActivity(id def)  { return GetDefCoreVal("IncompleteActivity", "DefCore", def); }
-global func GetDefAttractLightning(id def)  { return GetDefCoreVal("AttractLightning", "DefCore", def); }
-global func GetDefOversize(id def)    { return GetDefCoreVal("Oversize", "DefCore", def); }
-global func GetDefFragile(id def)     { return GetDefCoreVal("Fragile", "DefCore", def); }
-global func GetDefExplosive(id def)   { return GetDefCoreVal("Explosive", "DefCore", def); }
-global func GetDefProjectile(id def)  { return GetDefCoreVal("Projectile", "DefCore", def); }
-global func GetDefNoPushEnter(id def) { return GetDefCoreVal("NoPushEnter", "DefCore", def); }
-global func GetDefVehicleControl(id def)  { return GetDefCoreVal("VehicleControl", "DefCore", def); }
-global func GetDefNoComponentMass(id def) { return GetDefCoreVal("NoComponentMass", "DefCore", def); }
-global func GetDefClosedContainer(id def) { return GetDefCoreVal("ClosedContainer", "DefCore", def); }
-global func GetDefSilentCommands(id def) { return GetDefCoreVal("SilentCommands", "DefCore", def); }
-global func GetDefNoComponentMass(id def) { return GetDefCoreVal("NoComponentMass", "DefCore", def); }
-global func GetDefNoBurnDamage(id def){ return GetDefCoreVal("NoBurnDamage", "DefCore", def); }
-global func GetDefTemporaryCrew(id def) { return GetDefCoreVal("TemporaryCrew", "DefCore", def); }
-global func GetDefSmokeRate(id def)   { return GetDefCoreVal("SmokeRate", "DefCore", def); }
-global func GetDefNoBreath(id def)    { return GetDefCoreVal("NoBreath", "DefCore", def); }
-global func GetDefConSizeOff(id def)  { return GetDefCoreVal("ConSizeOff", "DefCore", def); }
-global func GetDefNoSell(id def)      { return GetDefCoreVal("NoSell", "DefCore", def); }
-global func GetDefNoFight(id def)     { return GetDefCoreVal("NoFight", "DefCore", def); }
+global func GetDefCategory()    { return GetDefCoreVal("Category", "DefCore"); }
+global func GetDefMaxUserSelect() { return GetDefCoreVal("MaxUserSelect", "DefCore"); }
+global func GetDefWidth()       { return GetDefCoreVal("Width", "DefCore"); }
+global func GetDefHeight()      { return GetDefCoreVal("Height", "DefCore"); }
+global func GetDefOffset(nr)   { return GetDefCoreVal("Offset", "DefCore", nr); }
+global func GetDefValue()       { return GetDefCoreVal("Value", "DefCore"); }
+global func GetDefMass()        { return GetDefCoreVal("Mass", "DefCore"); }
+global func GetDefComponents(nr) { return GetDefCoreVal("Components", "DefCore", nr); }
+global func GetDefCollection(nr) { return GetDefCoreVal("Collection", "DefCore", nr); }
+global func GetDefFireTop()     { return GetDefCoreVal("FireTop", "DefCore"); }
+global func GetDefPlacement()   { return GetDefCoreVal("Placement", "DefCore"); }
+global func GetDefContactIncinerate() { return GetDefCoreVal("ContactIncinerate", "DefCore"); }
+global func GetDefBlastIncinerate() { return GetDefCoreVal("BlastIncinerate", "DefCore"); }
+global func GetDefBurnTo()      { return GetDefCoreVal("BurnTo", "DefCore"); }
+global func GetDefBase()        { return GetDefCoreVal("Base", "DefCore"); }
+global func GetDefLine()        { return GetDefCoreVal("Line", "DefCore"); }
+global func GetDefLineConnect() { return GetDefCoreVal("Exclusive", "DefCore"); }
+global func GetDefPrey()        { return GetDefCoreVal("Prey", "DefCore"); }
+global func GetDefEdible()      { return GetDefCoreVal("Edible", "DefCore"); }
+global func GetDefCrewMember()  { return GetDefCoreVal("Prey", "DefCore"); }
+global func GetDefGrowth()      { return GetDefCoreVal("Growth", "DefCore"); }
+global func GetDefRebuy()       { return GetDefCoreVal("Rebuy", "DefCore"); }
+global func GetDefConstruction(){ return GetDefCoreVal("Construction", "DefCore"); }
+global func GetDefConstructTo() { return GetDefCoreVal("ConstructTo", "DefCore"); }
+global func GetDefGrab()        { return GetDefCoreVal("Grab", "DefCore"); }
+global func GetDefGrabPutGet()  { return GetDefCoreVal("GrabPutGet", "DefCore"); }
+global func GetDefCollectible() { return GetDefCoreVal("Collectible", "DefCore"); }
+global func GetDefRotate()      { return GetDefCoreVal("Rotate", "DefCore"); }
+global func GetDefChop()        { return GetDefCoreVal("Chop", "DefCore"); }
+global func GetDefFloat()       { return GetDefCoreVal("Float", "DefCore"); }
+global func GetDefContainBlast(){ return GetDefCoreVal("ContainBlast", "DefCore"); }
+global func GetDefHorizontalFix() { return GetDefCoreVal("HorizontalFix", "DefCore"); }
+global func GetDefBorderBound() { return GetDefCoreVal("BorderBound", "DefCore"); }
+global func GetDefLiftTop()     { return GetDefCoreVal("LiftTop", "DefCore"); }
+global func GetDefUprightAttach() { return GetDefCoreVal("UprightAttach", "DefCore"); }
+global func GetDefStretchGrowth() { return GetDefCoreVal("StretchGrowth", "DefCore"); }
+global func GetDefBasement()    { return GetDefCoreVal("Basement", "DefCore"); }
+global func GetDefNoBurnDecay() { return GetDefCoreVal("NoBurnDecay", "DefCore"); }
+global func GetDefIncompleteActivity()  { return GetDefCoreVal("IncompleteActivity", "DefCore"); }
+global func GetDefAttractLightning()  { return GetDefCoreVal("AttractLightning", "DefCore"); }
+global func GetDefOversize()    { return GetDefCoreVal("Oversize", "DefCore"); }
+global func GetDefFragile()     { return GetDefCoreVal("Fragile", "DefCore"); }
+global func GetDefExplosive()   { return GetDefCoreVal("Explosive", "DefCore"); }
+global func GetDefProjectile()  { return GetDefCoreVal("Projectile", "DefCore"); }
+global func GetDefNoPushEnter() { return GetDefCoreVal("NoPushEnter", "DefCore"); }
+global func GetDefVehicleControl()  { return GetDefCoreVal("VehicleControl", "DefCore"); }
+global func GetDefNoComponentMass() { return GetDefCoreVal("NoComponentMass", "DefCore"); }
+global func GetDefClosedContainer() { return GetDefCoreVal("ClosedContainer", "DefCore"); }
+global func GetDefSilentCommands() { return GetDefCoreVal("SilentCommands", "DefCore"); }
+global func GetDefNoComponentMass() { return GetDefCoreVal("NoComponentMass", "DefCore"); }
+global func GetDefNoBurnDamage(){ return GetDefCoreVal("NoBurnDamage", "DefCore"); }
+global func GetDefTemporaryCrew() { return GetDefCoreVal("TemporaryCrew", "DefCore"); }
+global func GetDefSmokeRate()   { return GetDefCoreVal("SmokeRate", "DefCore"); }
+global func GetDefNoBreath()    { return GetDefCoreVal("NoBreath", "DefCore"); }
+global func GetDefConSizeOff()  { return GetDefCoreVal("ConSizeOff", "DefCore"); }
+global func GetDefNoSell()      { return GetDefCoreVal("NoSell", "DefCore"); }
+global func GetDefNoFight()     { return GetDefCoreVal("NoFight", "DefCore"); }
 
 // GetObjectVal
 
-global func GetObjOwnMass(object obj)    { return GetObjectVal("OwnMass", 0, obj); }
-global func GetObjFixX(object obj)       { return GetObjectVal("FixX", 0, obj); }
-global func GetObjFixY(object obj)       { return GetObjectVal("FixY", 0, obj); }
-global func GetObjWidth(object obj)		   { return GetObjectVal("Width", 0, obj); }
-global func GetObjHeight(object obj)     { return GetObjectVal("Height", 0, obj); }
-global func GetObjFireTop(object obj)    { return GetObjectVal("FireTop", 0, obj); }
-global func GetObjMobile(object obj)     { return GetObjectVal("Mobile", 0, obj); }
-global func GetObjOnFire(object obj)     { return GetObjectVal("OnFire", 0, obj); }
-global func GetObjInLiquid(object obj)   { return GetObjectVal("InLiquid", 0, obj); }
-global func GetObjEntranceStatus(object obj) { return GetObjectVal("EntranceStatus", 0, obj); }
-global func GetObjPhysicalTemporary(object obj) { return GetObjectVal("PhysicalTemporary", 0, obj); }
-global func GetObjNeedEnergy(object obj) { return GetObjectVal("NeedEnergy", 0, obj); }
-global func GetObjActionTime(object obj) { return GetObjectVal("ActionTime", 0, obj); }
-global func GetObjActionData(object obj) { return GetObjectVal("ActionData", 0, obj); }
-global func GetObjPhaseDelay(object obj) { return GetObjectVal("PhaseDelay", 0, obj); }
-global func GetObjActionTarget1(object obj) { return GetObjectVal("ActionTarget1", 0, obj); }
-global func GetObjActionTarget2(object obj) { return GetObjectVal("ActionTarget2", 0, obj); }
-global func GetObjPlrViewRange(object obj) { return GetObjectVal("PlrViewRange", 0, obj); }
+global func GetObjOwnMass()    { return GetObjectVal("OwnMass", 0); }
+global func GetObjFixX()       { return GetObjectVal("FixX", 0); }
+global func GetObjFixY()       { return GetObjectVal("FixY", 0); }
+global func GetObjWidth()		   { return GetObjectVal("Width", 0); }
+global func GetObjHeight()     { return GetObjectVal("Height", 0); }
+global func GetObjFireTop()    { return GetObjectVal("FireTop", 0); }
+global func GetObjMobile()     { return GetObjectVal("Mobile", 0); }
+global func GetObjOnFire()     { return GetObjectVal("OnFire", 0); }
+global func GetObjInLiquid()   { return GetObjectVal("InLiquid", 0); }
+global func GetObjEntranceStatus() { return GetObjectVal("EntranceStatus", 0); }
+global func GetObjPhysicalTemporary() { return GetObjectVal("PhysicalTemporary", 0); }
+global func GetObjNeedEnergy() { return GetObjectVal("NeedEnergy", 0); }
+global func GetObjActionTime() { return GetObjectVal("ActionTime", 0); }
+global func GetObjActionData() { return GetObjectVal("ActionData", 0); }
+global func GetObjPhaseDelay() { return GetObjectVal("PhaseDelay", 0); }
+global func GetObjActionTarget1() { return GetObjectVal("ActionTarget1", 0); }
+global func GetObjActionTarget2() { return GetObjectVal("ActionTarget2", 0); }
+global func GetObjPlrViewRange() { return GetObjectVal("PlrViewRange", 0); }
 
 // GetPlayerVal
 
 global func GetPlrClientNr(int plr)   { return GetPlayerVal("AtClient", 0, plr); }
 global func GetPlrClientName(int plr) { return GetPlayerVal("AtClientName", 0, plr); }
-global func GetPlrColor(int plr)      { return GetPlayerVal("Color", 0, plr); }
+global func GetPlrColor(int plr)      { return GetPlayerVal("ColorDw", 0, plr); }
 global func GetPlrViewX(int plr)      { return GetPlayerVal("ViewX", 0, plr); } /*(!)*/
 global func GetPlrViewY(int plr)      { return GetPlayerVal("ViewY", 0, plr); } /*(!)*/
 global func GetPlrFogOfWar(int plr)   { return GetPlayerVal("FogOfWar", 0, plr); } /*(!)*/
@@ -136,19 +136,19 @@ global func GetScenEarthquake() { return GetScenarioVal("Earthquake", "Weather")
 
 // GetObjectInfoCoreVal
 
-global func GetObjCoreName(object obj)      { return GetObjectInfoCoreVal("Name", "ObjectInfo", obj); }
-global func GetObjCoreDeathMessage(object obj) { return GetObjectInfoCoreVal("DeathMessage", "ObjectInfo", obj); }
-global func GetObjCoreRank(object obj)      { return GetObjectInfoCoreVal("Rank", "ObjectInfo", obj); }
-global func GetObjCoreRankName(object obj)  { return GetObjectInfoCoreVal("RankName", "ObjectInfo", obj); }
-global func GetObjCoreTypeName(object obj)  { return GetObjectInfoCoreVal("TypeName", "ObjectInfo", obj); }
-global func GetObjCoreParticipation(object obj) { return GetObjectInfoCoreVal("Participation", "ObjectInfo", obj); }
-global func GetObjCoreExperience(object obj) { return GetObjectInfoCoreVal("Experience", "ObjectInfo", obj); }
-global func GetObjCoreRounds(object obj)    { return GetObjectInfoCoreVal("Rounds", "ObjectInfo", obj); }
-global func GetObjCoreDeathCount(object obj) { return GetObjectInfoCoreVal("DeathCount", "ObjectInfo", obj); }
-global func GetObjCoreBirthday(object obj)  { return GetObjectInfoCoreVal("Birthday", "ObjectInfo", obj); }
-global func GetObjCoreTotalPlayingTime(object obj) { return GetObjectInfoCoreVal("TotalPlayingTime", "ObjectInfo", obj); }
-global func GetObjCoreRounds(object obj)    { return GetObjectInfoCoreVal("Rounds", "ObjectInfo", obj); }
-global func GetAge(object obj)              { return GetObjectInfoCoreVal("Age", "ObjectInfo", obj); }
+global func GetObjCoreName()      { return GetObjectInfoCoreVal("Name", "ObjectInfo"); }
+global func GetObjCoreDeathMessage() { return GetObjectInfoCoreVal("DeathMessage", "ObjectInfo"); }
+global func GetObjCoreRank()      { return GetObjectInfoCoreVal("Rank", "ObjectInfo"); }
+global func GetObjCoreRankName()  { return GetObjectInfoCoreVal("RankName", "ObjectInfo"); }
+global func GetObjCoreTypeName()  { return GetObjectInfoCoreVal("TypeName", "ObjectInfo"); }
+global func GetObjCoreParticipation() { return GetObjectInfoCoreVal("Participation", "ObjectInfo"); }
+global func GetObjCoreExperience() { return GetObjectInfoCoreVal("Experience", "ObjectInfo"); }
+global func GetObjCoreRounds()    { return GetObjectInfoCoreVal("Rounds", "ObjectInfo"); }
+global func GetObjCoreDeathCount() { return GetObjectInfoCoreVal("DeathCount", "ObjectInfo"); }
+global func GetObjCoreBirthday()  { return GetObjectInfoCoreVal("Birthday", "ObjectInfo"); }
+global func GetObjCoreTotalPlayingTime() { return GetObjectInfoCoreVal("TotalPlayingTime", "ObjectInfo"); }
+global func GetObjCoreRounds()    { return GetObjectInfoCoreVal("Rounds", "ObjectInfo"); }
+global func GetAge()              { return GetObjectInfoCoreVal("Age", "ObjectInfo"); }
 
 // GetPlayerInfoCoreVal
 

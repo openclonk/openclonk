@@ -7,20 +7,19 @@
 		<category>Objekte</category><subcat>Existenz</subcat>
 		<version>4.6.5.0 CP<extversion>4.9.1.0 GWE</extversion></version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, das entfernt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 				<param><type>bool</type><name>fEjectContents</name><desc>Wenn wahr, wird der Inhalt des Objekts vor der Vernichtung ausgeleert. Ansonsten wird er mit vernichtet.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Entfernt ein Objekt.</desc>
+		<desc>Entfernt das aufrufende Objekt.</desc>
 		<remark>
 			Beim Löschen eines Objekts werden viele interne Zeiger gelöscht, und das Objekt selber wird ungültig. Darum sollte der Zeiger auf dieses Objekt (z.B. innerhalb von threadlokalen Variablen) anschließend nicht mehr benutzt werden. Wenn sich ein Objekt selber entfernt, sollte die Funktion sofort mit return() beendet werden.<br />
 			Wenn sich das Objekt zu diesem Zeitpunkt in einer Crew befindet, wird das assoziierte Infoobjekt in der Crew nicht als getötet markiert. Das heißt, ein darauffolgender <funclink>MakeCrewMember</funclink>()-Aufruf kann wieder in demselben Mannschaftsmitglied resultieren. Um dies zu verhindern, sollte das Objekt zuvor mit <funclink>Kill</funclink>() getötet werden.
 		</remark>
 		<examples>
 			<example>
-				<code>public func Activate(pClonk) { return(RemoveObject(pClonk)); }</code>
+				<code>public func Activate(pClonk) { pClonk->RemoveObject(); }</code>
 				<text>Wenn ein Clonk dieses Objekt aktiviert, wird er entfernt.</text>
 			</example>
 		</examples>

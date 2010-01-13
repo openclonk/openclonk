@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>ToggleBit</title>
+		<category>Arithmetik</category>
+		<version>4.10.0.0 OC</version>
+		<syntax>
+			<rtype>int</rtype>
+			<params>
+				<param><type>int</type><name>iOldVal</name><desc>Alter Wert der Bitmaske</desc></param>
+				<param><type>int</type><name>iBitNumber</name><desc>Das umzudrehende Bit</desc></param>
+			</params>
+		</syntax>
+		<desc>Gibt die neue Bitmaske mit dem an der angegebenen Stelle umgedrehten Bit zurück</desc>
+		<related>
+			<funclink>SetBit</funclink>
+			<funclink>GetBit</funclink>
+		</related>
+	</func>
+	<author>Newton</author><date>Juli 2009</date>
+</funcs>
+

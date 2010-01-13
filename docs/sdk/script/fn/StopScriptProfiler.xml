@@ -16,7 +16,7 @@
 				<text>Zunächst wird der Profiler gestartet, indem man irgendwo <funclink>StartScriptProfiler</funclink> ausführt - zum Beispiel im Konsolenfenster, wenn die Engine im Entwicklermodus gestartet wird. Nach einer Weile Spiel führt man dann <funclink>StopScriptProfiler</funclink> aus, und erhält zum Beispiel folgende Ausgabe im Log:</text>
 				<code>Profiler statistics:
 ==============================
-00037ms	globa<b></b>l Explode
+00037ms	global Explode
 00035ms	SFLN::Hit
 00020ms	TRB1::Damage
 00020ms	TRB1::ChopDown

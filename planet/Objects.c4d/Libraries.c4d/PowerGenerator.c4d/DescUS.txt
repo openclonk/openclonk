@@ -1,0 +1,2 @@
+This object should be included by all power generators.
+

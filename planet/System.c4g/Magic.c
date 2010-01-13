@@ -7,11 +7,11 @@ static const MCLK_UnlimitedCast = 100; // Endloszauberei
 
 global func CheckMana(idMagic,pCaster)
   {
-  var iMagicReq = Value(idMagic);
+  var iMagicReq = idMagic->GetDefValue();
   // Keine Zauberenergie benötigt: Kann immer zaubern
   if (!iMagicReq || ObjectCount(NMGE)) return MCLK_UnlimitedCast;
   // Ansonsten zurückgeben, wie oft gezaubert werden kann
-  return (GetMagicEnergy(pCaster) / iMagicReq);
+  return (pCaster->GetMagicEnergy() / iMagicReq);
   }
 
 // Globaler Aufruf, wenn ein Zauber erfolgreich war: Magie trainieren
@@ -23,12 +23,12 @@ global func OnClonkSucceededSpell(id idSpell, object pClonk)
     {
     var iMaxTrain, idInfo;
     // Maximales Training bei Infoobjekten: Nach Ursprungsdefinition richten
-    if (idInfo = GetObjectInfoCoreVal("id", "ObjectInfo", pClonk)) iMaxTrain = idInfo->~MaxMagicPhysical();
+    if (idInfo = pClonk->GetObjectInfoCoreVal("id", "ObjectInfo")) iMaxTrain = idInfo->~MaxMagicPhysical();
     // Infodefinition hat kein MaxMagicPhysical (d.h., kein Zauberclonk) oder kein Infoobjekt vorhanden:
     // Training wird eh nicht permanent gesichert; nach aktueller Definition richten
     if (!iMaxTrain) iMaxTrain = pClonk->~MaxMagicPhysical();
     // Trainieren
-    TrainPhysical("Magic", Value(idSpell)/MCLK_ManaTrainRate, iMaxTrain, pClonk);
+    pClonk->TrainPhysical("Magic", idSpell->GetDefValue()/MCLK_ManaTrainRate, iMaxTrain);
     }
   // Gegebenenfalls weitere Hooks erlauben
   return (_inherited(idSpell, pClonk));
@@ -43,7 +43,7 @@ global func OpenSpellMenu(object clonk, object command_target, string itemtext, 
   var idMagic, i = 0;
   while (idMagic = GetPlrMagic(player, 0, i++)) 
     {
-    AddMenuItem(itemtext, cbfunc, idMagic, clonk,0,clonk);
+    clonk->AddMenuItem(itemtext, cbfunc, idMagic, 0,clonk);
     if(select_spell == idMagic) SelectMenuItem(i-1);
     }
   return true;
@@ -56,7 +56,7 @@ global func OpenEmptySpellMenu(id symbol, object clonk, object command_target, o
   var extra;
   if(ObjectCount(ALCO)) { if(ObjectCount(NMGE)) extra=C4MN_Extra_Components; else extra=C4MN_Extra_ComponentsLiveMagic; }
   else                  { if(ObjectCount(NMGE)) extra=C4MN_Extra_None; else extra=C4MN_Extra_LiveMagicValue; }
-  return CreateMenu(symbol, clonk, command_target, extra, emptytext, ObjectNumber(magic_source));
+  return clonk->CreateMenu(symbol, command_target, extra, emptytext, magic_source->ObjectNumber());
   }
 
 
@@ -119,7 +119,7 @@ global func GetNeededAlcStr(id idMagic) { // Par(1)-Par(x): Zaubernde, [Zaubertu
 	    // erstes Mal keinen Seperator
 	    if(szString != "") szSplit = ",|";
 	    else szSplit = "";
-	    szString = Format("%s%s%dx{{%i}}%s",szString,szSplit,iDesire,idAlchem,GetName(0,idAlchem));
+	    szString = Format("%s%s%dx{{%i}}%s",szString,szSplit,iDesire,idAlchem,idAlchem->GetName());
 	  }
 
 	}
@@ -188,7 +188,7 @@ global func IncreaseAlchem(id idMagic, object pTarget) {
 global func AlchemContainerCount(object pContainer) {			// Anzahl der Alchemiebehälter im Objekt
 
   var pAlchem,j;
-  for(var i;pAlchem=Contents(i,pContainer);++i)
+  for(var i;pAlchem=pContainer->Contents(i);++i)
     if(pAlchem->~IsAlchemContainer())
       ++j;
   return j;
@@ -200,7 +200,7 @@ global func AlchemContainer(int iIndex, object pContainer) {		// iIndex'ter Alch
   // für dumme Entwickler
   iIndex = Max(iIndex,0);
   var pAlchem;
-  for(var i;pAlchem=Contents(i,pContainer);++i)
+  for(var i;pAlchem=pContainer->Contents(i);++i)
     if(pAlchem->~IsAlchemContainer()) {
       if(!iIndex) return pAlchem;
       --iIndex;
@@ -259,7 +259,7 @@ global func GetAlchem(id idType, int iIndex, object pContainer) {	// idType angg
 global func DoAlchem(id idType, int iNumber, object pContainer) {	// Ändert die Anzahl von idType um iNumber
 
   if(!AlchemBag(pContainer,true)) return false;
-  SetComponent(idType,Max(0,GetComponent(idType,0,pContainer)+iNumber),pContainer);
+  pContainer->SetComponent(idType,Max(0,GetComponent(idType,0,pContainer)+iNumber));
   // wenn Beutel und leer: löschen
   if(!AlchemCount(pContainer)) {
     if(!(pContainer->~Exhaustion()))
@@ -310,7 +310,7 @@ global func GetAlchemBag(object pObject) {			// Alchemiebeutel
 global func CreateAlchemBag(object pObject) {			// Alchemiebeutel erzeugen
   if(!pObject) pObject = this;
   var pBag;
-  pBag = CreateObject(ALC_,AbsX(GetX(pObject)),AbsY(GetY(pObject)),-1);
+  pBag = CreateObject(ALC_,AbsX(pObject->GetX()),AbsY(pObject->GetY()),-1);
   if(!pBag) return pObject;
   pBag->~BelongTo(pObject);
   return pBag;

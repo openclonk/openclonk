@@ -15,7 +15,7 @@
 		</syntax>
 		<desc>Erstellt eine Liste von Objekten, auf die alle angegeben Suchkriterien zutreffen. Die Suchkriterien werden mittels speziellen Kriteriums-Funktionen der Form "Find_*" angegeben.</desc>
 		<remark>Anders als bei <funclink>FindObject</funclink> findet sich bei objektlokalen Aufrufen von FindObjects das aufrufende Objekt selbst. Dies kann durch <funclink>Find_Exclude</funclink>() verhindert werden.</remark>
-		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObject2</funclink> und <funclink>ObjectCount2</funclink>.</remark>
+		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObject</funclink> und <funclink>ObjectCount</funclink>.</remark>
 		<examples>
 			<example>
 <code><funclink>for</funclink>(var pVehicle in FindObjects (<funclink>Find_Owner</funclink>(1), <funclink>Find_Category</funclink>(<funclink>C4D_Vehicle</funclink>)))
@@ -57,10 +57,16 @@
 			<funclink>Find_OCF</funclink>
 			<funclink>Find_Or</funclink>
 			<funclink>Find_Owner</funclink>
-			<funclink>FindObject2</funclink>
-			<funclink>ObjectCount2</funclink>
+			<funclink>Sort_Random</funclink>
+			<funclink>Sort_Reverse</funclink>
+			<funclink>Sort_Multiple</funclink>
+			<funclink>Sort_Value</funclink>
+			<funclink>Sort_Speed</funclink>
+			<funclink>Sort_Mass</funclink>
+			<funclink>Sort_Distance</funclink>
+			<funclink>Sort_Func</funclink>
 			<funclink>FindObject</funclink>
-			<funclink>FindObjectOwner</funclink>			
+			<funclink>ObjectCount</funclink>	
 		</related>
 	</func>
 	<author>Clonkonaut</author><date>Juli 2006</date>

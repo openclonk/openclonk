@@ -3,13 +3,14 @@
 <?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
 <funcs>
 	<func>
-		<title>GetVisibility</title>
+		<title>CheckVisibility</title>
 		<category>Objekte</category><subcat>Sichtbarkeit</subcat>
-		<version>4.9.1.0 GWE</version>
+		<version>4.9.5.0 CE</version>
 		<syntax>
-			<rtype>int</rtype>
+			<rtype>bool</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, von dem die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int</type><name>iPlayer</name><desc>Spieler für den die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>object</type><name>pObject</name><desc>Objekt, von dem die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Fragt die Sichtbarkeit eines Objekts ab. Siehe dazu auch <funclink>SetVisibility</funclink>.</desc>
@@ -24,6 +25,7 @@ if (vis &amp;&amp; ~vis &amp; <funclink>VIS_Owner</funclink>()) <funclink>SetVis
 		</examples>
 		<related>
 			<funclink>SetVisibility</funclink>
+			<funclink>CheckVisibility</funclink>
 			<funclink>VIS_All</funclink>
 			<funclink>VIS_None</funclink>
 			<funclink>VIS_Owner</funclink>

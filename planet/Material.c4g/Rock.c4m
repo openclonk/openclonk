@@ -1,6 +1,5 @@
 [Material]
 Name=Rock
-Color=128,128,128,128,128,128,128,128,128
 Shape=3
 Density=50
 Friction=100

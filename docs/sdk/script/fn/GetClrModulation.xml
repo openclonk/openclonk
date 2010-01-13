@@ -9,19 +9,18 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Färbung abgefragt werden soll. 0 bei lokalen Aufruf.</desc></param>
 				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Fragt die Farbmodulation eines Objekts ab. Diese ist ein Farbwert, der multiplikativ (oder auch additiv, bei entsprechend aktiviertem  BlitMode in der DefCore) aufgerechnet wird. Für weitere Hinweise siehe auch <funclink>SetClrModulation</funclink>().</desc>
-		<remark>Ist der Rückgabewert dieser Funktion 0, so wurde keine Farbmodulation durchgeführt (analog zu <funclink>RGBa</funclink>(255,255,255,0)).</remark>
+		<desc>Fragt die Farbmodulation des aufrufenden Objekts ab. Diese ist ein Farbwert, der multiplikativ (oder auch additiv, bei entsprechend aktiviertem  BlitMode in der DefCore) aufgerechnet wird. Für weitere Hinweise siehe auch <funclink>SetClrModulation</funclink>().</desc>
+		<remark>Wurde keine Modulation durchgeführt, so ist der Rückgabewert dieser Funktion -1 (analog zu <funclink>RGBa</funclink>(255,255,255,255)).</remark>
 		<examples>
 			<example>
-<code>global func SetObjAlpha(var byAlpha, pObj)
+<code>global func SetObjAlpha(byAlpha, pObj)
   {
-  var dwClrMod=GetClrModulation(pObj);
+  var dwClrMod=pObj->GetClrModulation();
   <funclink>if</funclink> (!dwClrMod) dwClrMod = byAlpha&lt;&lt;24; else dwClrMod = dwClrMod &amp; 16777215 | byAlpha&lt;&lt;24;
-  <funclink>return</funclink>(<funclink>SetClrModulation</funclink>(dwClrMod, pObj));
+  <funclink>return</funclink>(pObj-><funclink>SetClrModulation</funclink>(dwClrMod));
   }</code>
 				<text>Globale Funktion: Setzt nur den Alphawert der Farbmodulation eines Objekts.</text>
 			</example>
@@ -31,7 +30,7 @@
 			<funclink>RGBa</funclink>
 			<funclink>SetGamma</funclink>
 			<funclink>SetClrModulation</funclink>
-			<funclink>GetColorDw</funclink>
+			<funclink>GetColor</funclink>
 		</related>
 	</func>
 	<author>Sven2</author><date>Fabruar 2004</date>

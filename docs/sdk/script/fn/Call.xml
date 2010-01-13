@@ -4,7 +4,6 @@
 <funcs>
 	<func>
 		<title>Call</title>
-		<deprecated />
 		<category>Script</category><subcat>Funktionsaufruf</subcat>
 		<version>4.6.5.0 CP</version>
 		<syntax>
@@ -14,7 +13,7 @@
 				<param><type>any</type><name>...</name><desc>Parameter der Funktion.</desc></param>
 			</params>
 		</syntax>
-		<desc>Ruft die lokale Funktion szFunction auf. Stattdessen sollte dieselbe Syntax wie bei engineinternen Funktionen genutzt werden.</desc>
+		<desc>Ruft die lokale Funktion szFunction auf. Wird "~" vor den Funktionsnamen gesetzt, wird der Aufruf failsafe durchgeführt.</desc>
 		<related>
 			<funclink>ProtectedCall</funclink>
 			<funclink>PrivateCall</funclink>

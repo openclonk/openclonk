@@ -14,8 +14,7 @@
 		<examples>
 			<example>
 
-<code>var obj;
-while (obj=FindObject(WIPF,0,0,0,0,0,0,0,0,obj)) SetVisibility(VIS_None(), obj);</code>
+<code>for(var obj in FindObjects(Find_ID(WIPF))) SetVisibility(VIS_None(), obj);</code>
 
 				<text>Macht alle Wipfe unsichtbar.</text>
 			</example>

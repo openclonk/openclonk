@@ -5,30 +5,54 @@
 	<func>
 		<title>ObjectCount</title>
 		<category>Objekte</category><subcat>Suche</subcat>
-		<version>4.6.5.0 CP</version>
+		<version>4.10.0.0 CR</version>
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>id</type><name>idDef</name><desc>Objekttyp</desc><optional /></param>
-				<param><type>int</type><name>iX</name><desc>Linke Kante der Position. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-				<param><type>int</type><name>iY</name><desc>Obere Kante der Position. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-				<param><type>int</type><name>iWdt</name><desc>Suchrechteck Breite</desc><optional /></param>
-				<param><type>int</type><name>iHgt</name><desc>Suchrechteck Höhe</desc><optional /></param>
-				<param><type>int</type><name>dwOCF</name><desc>Objektattribute. Es werden nur Objekte gefunden, die alle angegebenen Objektattribute besitzen. 0 findet alle Objekte.</desc><optional /></param>
-				<param><type>string</type><name>szAction</name><desc>Aktivität des zu findenden Objekts</desc><optional /></param>
-				<param><type>object</type><name>pActionTarget</name><desc>Aktivitätsziel, das das Objekt besitzen muss. Siehe dazu auch <funclink>SetAction</funclink>, <funclink>GetActionTarget</funclink></desc><optional /></param>
-				<param><type>any</type><name>pContainer</name><desc>Containerobjekt. Wenn angegeben, wird nur dieser Behälter durchsucht. Möglich sind auch <funclink>NoContainer</funclink> (Objekt befindet sich im Freien), und <funclink>AnyContainer</funclink> (Objekt ist in einem beliebigen Behälter enthalten).</desc><optional /></param>
-				<param><type>int</type><name>iOwner</name><desc>Besitzer, den die gefundenen Objekte haben sollen.</desc><optional /></param>
+				<param><type>array</type><name>Criteria</name><desc>Suchkriterium in Form einer Find_*-Funktion</desc></param>
+				<param><type></type><name>...</name><desc>Weitere Suchkriterium in Form einer Find_*-Funktion</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Sucht Objekte, und gibt deren Anzahl zurück. Sind iWdt und iHgt beide -1, so wird das nächstliegende Objekt gefunden. Sind sie beide 0, wird nur am Punkt iX/iY gesucht. Sind iX, iY, iWdt und iHgt alle 0, gilt als Suchrechteck die gesamte Karte (auch bei lokalen Aufrufen). Es müssen stets die Bedingungen aller Parameter erfüllt sein, die angegeben und nicht 0 sind.</desc>
+		<desc>Gibt die Anzahl der Objekte zurück, die das angegebenen Suchkriterien erfüllen. Die Suchkriterien werden mittels speziellen Kriteriums-Funktionen der Form "Find_*" angegeben.</desc>
+		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObjects</funclink> und <funclink>FindObject</funclink>. Siehe <funclink>FindObjects</funclink> für weitere Kriterium-Beispiele.</remark>
+		<examples>
+			<example>
+			<code><funclink>Message</funclink>( "Noch %d feindliche Clonks!", ObjectCount(<funclink>Find_OCF</funclink>(<funclink>OCF_CrewMember</funclink>), <funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>()) );</code>
+			<text>Informiert über die Stärke der Feinde.</text>
+			</example>
+		</examples>
 		<related>
+			<funclink>Find_Action</funclink>
+			<funclink>Find_ActionTarget</funclink>
+			<funclink>Find_Allied</funclink>
+			<funclink>Find_And</funclink>
+			<funclink>Find_AnyContainer</funclink>
+			<funclink>Find_AtPoint</funclink>
+			<funclink>Find_Category</funclink>
+			<funclink>Find_Container</funclink>
+			<funclink>Find_Distance</funclink>
+			<funclink>Find_Exclude</funclink>
+			<funclink>Find_Func</funclink>
+			<funclink>Find_Hostile</funclink>
+			<funclink>Find_ID</funclink>
+			<funclink>Find_InRect</funclink>
+			<funclink>Find_NoContainer</funclink>
+			<funclink>Find_Not</funclink>
+			<funclink>Find_OCF</funclink>
+			<funclink>Find_Or</funclink>
+			<funclink>Find_Owner</funclink>
+			<funclink>Sort_Random</funclink>
+			<funclink>Sort_Reverse</funclink>
+			<funclink>Sort_Multiple</funclink>
+			<funclink>Sort_Value</funclink>
+			<funclink>Sort_Speed</funclink>
+			<funclink>Sort_Mass</funclink>
+			<funclink>Sort_Distance</funclink>
+			<funclink>Sort_Func</funclink>
 			<funclink>FindObject</funclink>
-			<funclink>NoContainer</funclink>
-			<funclink>AnyContainer</funclink>
-			<funclink>FindObjectOwner</funclink>
-			<funclink>ObjectCount2</funclink>
+			<funclink>FindObjects</funclink>
+			<funclink>ObjectCount</funclink>
 		</related>
 	</func>
-	<author>jwk</author><date>August 2002</date>
+	<author>Clonkonaut</author><date>Juli 2006</date>
 </funcs>

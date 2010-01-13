@@ -8,15 +8,8 @@
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>bool</rtype>
-      <params>
-        <param>
-          <type>object</type>
-          <name>pObj</name>
-          <desc>Zielobjekt. 0 bei lokalem Aufruf.</desc>
-        </param>
-      </params>
     </syntax>
-    <desc>Gibt TRUE zurück, wenn sich das Objekt in einer Flüssigkeit befindet.</desc>
+    <desc>Gibt TRUE zurück, wenn sich das aufrufende Objekt in einer Flüssigkeit befindet.</desc>
     <related>
       <funclink>OCF_InLiquid</funclink>
       <funclink>GBackLiquid</funclink>

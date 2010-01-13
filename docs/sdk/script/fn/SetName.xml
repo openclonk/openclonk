@@ -15,19 +15,7 @@
     <param>
      <type>string</type>
      <name>szNewName</name>
-     <desc>Neuer Name. Wenn 0 (nicht ""!), wird der Name des Objekts auf den Namen seiner Definition beziehungsweise den Namen in der Spielerdatei zurückgesetzt.</desc>
-    </param>
-    <param>
-     <type>object</type>
-     <name>pObj</name>
-     <desc>Objekt, dessen Name geändert werden soll. 0 bei lokalem Aufruf.</desc>
-     <optional />
-    </param>
-    <param>
-     <type>id</type>
-     <name>idDef</name>
-     <desc>Wenn angegeben, wird pObj ignoriert, und stattdessen der Name der Definition geändert.</desc>
-     <optional />
+     <desc>Neuer Name. Wenn nil, wird der Name des Objekts auf den Namen seiner Definition beziehungsweise den Namen in der Spielerdatei zurückgesetzt.</desc>
     </param>
     <param>
      <type>bool</type>
@@ -53,10 +41,17 @@
    <example>
 <code>protected func InitializePlayer(iPlr)
   {
-  SetName("Strunzmuffel", <funclink>GetHiRank</funclink>(iPlr));
+  <funclink>GetHiRank</funclink>(iPlr)->SetName("Strunzmuffel");
   <funclink>return</funclink>(1);
   }</code>
     <text>Szenarioscript: Die höchstrangigen Clonks neu beitretender Spieler heißen in dieser Runde anders. <!--werden umgetauft (Und bleiben es auch nach Beenden der Runde!).--></text>
+   </example>
+   <example>
+	   <code>protected func Initialize()
+{
+  WOOD->SetName("Baumstamm");
+  }</code>
+	   <text>Szenarioscript: Holz wird in dieser Runde Baumstamm genannt.</text>
    </example>
   </examples>
   <related>
@@ -65,4 +60,5 @@
   </related>
  </func>
  <author>Sven2</author><date>Juni 2003</date>
+ <author>Isilkor</author><date>2009-08-12</date>
 </funcs>

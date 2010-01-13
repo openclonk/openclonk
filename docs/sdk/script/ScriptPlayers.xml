@@ -43,7 +43,7 @@ protected func InitializePlayer(int iPlr)
 protected func FxInt_EAITimer(object pCrew, int iEffNum, int iEffTime)
   {
   // Nächsten Gegner angreifen
-  var pEnemy = <funclink>FindObject2</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(pCrew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
+  var pEnemy = <funclink>FindObject</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(pCrew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
   <funclink>if</funclink> (pEnemy) <funclink>SetCommand</funclink>(pCrew, "Attack", pEnemy);
   <funclink>return</funclink> FX_OK;
   }
@@ -108,7 +108,7 @@ protected func InitializeScriptPlayer(int iPlr, int idTeam)
 protected func FxInt_EAITimer(object pCrew, int iEffNum, int iEffTime)
   {
   // Nächsten Gegner angreifen
-  var pEnemy = <funclink>FindObject2</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(pCrew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
+  var pEnemy = <funclink>FindObject</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(pCrew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
   <funclink>if</funclink> (pEnemy) <funclink>SetCommand</funclink>(pCrew, "Attack", pEnemy);
   <funclink>return</funclink> FX_OK;
   }

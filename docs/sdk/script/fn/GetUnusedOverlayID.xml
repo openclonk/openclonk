@@ -10,7 +10,6 @@
       <rtype>int</rtype>
       <params>
         <param><type>int</type><name>iBaseIndex</name><desc>ID des Overlays hinter dem die Suche beginnen soll.</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Overlays durchsucht werden sollen. Kann bei lokalen Aufrufen 0 sein.</desc></param>
         </params>
     </syntax>
     <desc>Gibt eine ungenutzte Overlay-ID zurück. Es wird der erste freie Overlay nach iBaseIndex zurückgegeben.</desc>

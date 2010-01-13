@@ -4,12 +4,15 @@ autom4te.cache
 *~
 *.bak
 .deps
+deps
 *.o
 clonk
+c4group
 .dirstamp
 *.a
 *.c4p
 *.lib
+*.vcproj
 stamp-h1
 config.h
 config.log
@@ -20,8 +23,25 @@ Makefile.in
 aclocal.m4
 autotools/config.guess
 autotools/config.sub
+autotools/compile
+autotools/depcomp
+autotools/install-sh
+autotools/missing
 configure
 intermediate
+
+# Visual studio files
+deps/
+planet/Release
+planet/Debug
+planet/CMakeFiles
+planet/clonk.dir
+planet/c4group.dir
+planet/ZERO_CHECK.dir
+planet/libeay32.dll
+planet/cmake_install.cmake
+planet/clonk.sln
+planet/CMakeCache.txt
 
 # Temporary files created by Microsoft Visual Studio
 *.ncb
@@ -43,4 +63,5 @@ xcode/build
 
 # Binaries
 planet/Clonk.app
+planet/clonk.exe
 

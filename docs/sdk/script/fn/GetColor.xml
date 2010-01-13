@@ -8,23 +8,20 @@
     <version>4.9.1.0 GWE</version>
     <syntax>
       <rtype>int</rtype>
-      <params>
-        <param><type>object</type><name>pObj</name><desc>Abgefragtes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
-      </params>
     </syntax>
-    <desc>Fragt den indizierten Farbwert eines Objekts ab, nach dem die ColorByOwner-Flächern eingefärbt sind. Dieser konnte beispielsweise durch <funclink>SetOwner</funclink> oder <funclink>SetColor</funclink> gesetzt worden sein.</desc>
-    <remark>Die Funktion ist nur noch für das 8 Bit-Grafiksystem relevant. Normalerweise sollte der Farbwert eines Objekts mit <funclink>GetColorDw</funclink> abgefragt werden.</remark>
+    <desc>Fragt den RGB-Farbwert der Färbung der ColorByOwner-Flächen des aufrufenden Objekts ab. Diese werden beispielsweise durch <funclink>SetOwner</funclink> oder <funclink>SetColor</funclink> gesetzt.</desc>
     <examples>
       <example>
 
-<code><funclink>SetColor</funclink>((GetColor()+1)%12);</code>
+	      <code>caller-><funclink>SetColor</funclink>(GetColor());</code>
 
-        <text>Färbt das aufrufende Objekt auf die nächste Spielerfarbe um.</text>
+        <text>Färbt caller so ein wie das aktuelle Objekt.</text>
       </example>
     </examples>
     <related>
-      <funclink>GetColorDw</funclink>
+      <funclink>GetPlrColor</funclink>
       <funclink>SetColor</funclink>
+      <funclink>GetClrModulation</funclink>
     </related>
   </func>
   <author>Sven2</author><date>Mai 2002</date>

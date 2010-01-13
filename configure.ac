@@ -16,7 +16,7 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.59)
 AC_INIT(clonk, m4_format([[[%s.%s.%s.%s]]], m4_include(version)))
 AC_COPYRIGHT([©2005-2009 Günther Brammer])
-AC_CONFIG_SRCDIR([engine/src/C4Map.cpp])
+AC_CONFIG_SRCDIR([/src/C4Game.cpp])
 AC_CONFIG_AUX_DIR([autotools])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([Makefile])
@@ -24,22 +24,26 @@ AC_CANONICAL_HOST
 dnl foreign to tell automake to shut up,
 dnl and subdir-objects because it makes the Makefile smaller.
 dnl no-define because PACKAGE and VERSION are not used
-AM_INIT_AUTOMAKE([foreign subdir-objects nostdinc no-define 1.10])
+AM_INIT_AUTOMAKE([foreign nostdinc no-define 1.10])
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 AC_PROG_CXX
 AC_LANG([C++])
 AX_CHECK_COMPILER_FLAGS([-std=gnu++0x], [CXX="${CXX} -std=gnu++0x"])
-AX_PROG_CXX_REFTOTEMP
+AC_COMPILE_IFELSE([
+void f(struct D&&); int main() { return 0; }
+], [AC_DEFINE([HAVE_RVALUE_REF], [], [C++ Compiler has rvalue references, a C++0x feature.])], [AX_PROG_CXX_REFTOTEMP])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_RANLIB
 
-# The wonders of code stolen from docs.
 case $host in
   *-*-mingw32* | *-*-cygwin* | *-*-windows*)
     win32=true; osx=false;;
   *-*-darwin*)
-    win32=false; osx=true;;
+    win32=false; osx=true;
+    m4_ifdef([AC_PROG_OBJCXX], [AC_PROG_OBJCXX], [AC_MSG_ERROR([this configure script was created with an autoconf version older than 2.65 and does not support macosx.])])
+    ;;
   *)
     win32=false; osx=false;;
 esac
@@ -48,6 +52,7 @@ esac
 AC_CHECK_HEADER([windows.h], [win32=true], [], [[ ]])
 
 AM_CONDITIONAL(WIN32, [test $win32 = true])
+AM_CONDITIONAL(MACOSX, [test $osx = true])
 
 # various used headers
 dnl the whitespace is there to prevent AC_INCLUDES_DEFAULT
@@ -83,11 +88,13 @@ AC_ARG_ENABLE([sound],
   [AC_HELP_STRING([--enable-sound],[compile with sound support [default=yes]])],
   , [if test $enable_console = yes; then enable_sound=no; else if test $win32 = true; then enable_sound=no; else enable_sound=yes; fi; fi])
 
+# GTK+
+GTK_REQUIRED="glib-2.0 >= 2.4 gtk+-2.0 >= 2.4"
 AC_ARG_WITH([gtk],
-  [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=no]])],
-  , [with_gtk=no])
+  [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=auto]])],
+  , [PKG_CHECK_EXISTS([$GTK_REQUIRED], [with_gtk=yes], [with_gtk=no])])
 AS_IF([test $with_gtk = yes],[
-  PKG_CHECK_MODULES(GTK, glib-2.0 >= 2.4 gtk+-2.0 >= 2.4)
+  PKG_CHECK_MODULES(GTK, [$GTK_REQUIRED])
   AC_DEFINE([WITH_GLIB], 1, [Glib])
   AC_DEFINE([WITH_DEVELOPER_MODE], 1, [Developer mode])
   DEVELOPER_MODE=true
@@ -164,7 +171,7 @@ AC_CHECK_LIB(png, png_read_image, [
 
 # Check for libz
 AC_CHECK_LIB(z, deflate, [
-  CLONK_LIBS="-lz $CLONK_LIBS"
+  Z_LIBS="-lz $Z_LIBS"
 ], [
   AC_MSG_ERROR([libz not found.])
 ])
@@ -207,6 +214,8 @@ AC_ARG_WITH([gl],
 if test $with_gl = yes; then
   if test $osx = true; then
     CLONK_LIBS="-framework OpenGL $CLONK_LIBS"
+    AC_CHECK_LIB(GLEW, glewInit, [CLONK_LIBS="-lGLEW $CLONK_LIBS"],
+      [AC_MSG_ERROR([glew not found.])])
   elif test $win32 = true; then
     AC_CHECK_LIB(opengl32, main, [CLONK_LIBS="-lopengl32 $CLONK_LIBS"],
       [AC_MSG_ERROR([opengl32 not found.])])
@@ -242,7 +251,7 @@ AC_CHECK_LIB(crypto, BIO_new, [OPENSSL_LIBS="-lcrypto"],
 
 if test $win32 = false; then
   # pthread
-  ACX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
+  AX_PTHREAD( , [AC_MSG_ERROR([No pthread support.])])
   AC_SUBST(PTHREAD_LIBS)
   AC_SUBST(PTHREAD_CFLAGS)
 
@@ -274,6 +283,7 @@ else
 fi
 
 AC_SUBST(CLONK_LIBS)
+AC_SUBST(Z_LIBS)
 AC_SUBST(OPENSSL_LIBS)
 
 # precompiled headers and -Wextra

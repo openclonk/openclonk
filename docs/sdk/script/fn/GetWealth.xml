@@ -15,6 +15,7 @@
                 <desc>Liefert das Vermögen von iOwner.</desc>
                 <related>
                         <funclink>SetWealth</funclink>
+     					<funclink>DoWealth</funclink>
                 </related>
         </func>
         <author>Cucaracha</author><date>Mai 2002</date>

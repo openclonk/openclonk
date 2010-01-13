@@ -11,13 +11,12 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>object</type><name>pObj</name><desc>Objekt, dessen Inhaltsobjekte rotiert werden sollen. 0 bei lokalem Aufruf.</desc><optional /></param>
         <param><type>bool</type><name>fShiftBack</name><desc>Wenn wahr, wird rückwärts durchsortiert.</desc><optional /></param>
         <param><type>id</type><name>idTarget</name><desc>ID des Objekttyps, der als nächstes ausgewählt sein soll. Wenn dieser Parameter angegeben ist, wird kein ControlContents-Aufruf mehr getätigt, sondern es wird direkt und ohne das Abspielen eines Sounds durchgeschaltet. Damit lässt sich beispielsweise das Durchschalten des Inventars in ControlConents überladen, und mit eigenen Sounds oder Zusatzaktivitäten versehen.</desc><optional /></param>
         <param><type>bool</type><name>fDoCalls</name><desc>Wenn wahr, werden ControlContents- und Selection-Aufrufe getätigt.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Sortiert die Inhaltsobjekte so um, dass das nächste Objekt mit anderer ID vorne liegt. Die häufigste Anwendung für diesen Befehl ist ein Inventarwechsel.</desc>
+    <desc>Sortiert die Inhaltsobjekte des aufrufenden Objekts so um, dass das nächste Objekt mit anderer ID vorne liegt. Die häufigste Anwendung für diesen Befehl ist ein Inventarwechsel.</desc>
     <remark>Der Befehl ruft im Behälter ControlContents auf, womit die Umsortierung überladen werden kann. Gibt diese Funktion 0 zurück oder existiert nicht, wird für das neue selektierte Objekt "Selection" aufgerufen. Existiert diese Funktion nicht oder gibt 0 zurück, wird der Sound "Grab" beim Containerobjekt abgespielt. Siehe dazu auch <emlink href="definition/script.html">Objektscripte</emlink>.</remark>
     <remark>Achtung: Durch das neue ControlContents-System, das ein variableres Interface für die Inventarauswahl bilden soll, ruft wie beschrieben auch ShiftContents den Auswahlsound hervor. Um Dopplungen zu vermeiden, sollten Objektscripte entsprechend angepasst werden, und beim Inventarwechsel keinen eigenen Sound mehr abspielen, bzw. diesen wie im Beispiel weiter unten nach ControlContents verlagern.</remark>
     <examples>
@@ -26,15 +25,16 @@
   {
   [Inventarwechsel]
   ShiftContents();
-  <funclink>return</funclink>(1);
+  <funclink>return</funclink> 1;
   }</code>
         <text>Teil eines Objektscripts. Verschiebt die Inhaltsobjekte eines Objekts auf Spezialtaste 1.</text>
       </example>
       <example>
 <code>protected func ControlContents(idTarget)
   {
-  if (!ShiftContents(0, 0, idTarget)) <funclink>return</funclink>(1);
-  <funclink>return</funclink>(1, <funclink>Sound</funclink>("Ding"));
+  if (!ShiftContents(false, idTarget)) <funclink>return</funclink> 1;
+  <funclink>Sound</funclink>("Ding");
+  <funclink>return</funclink> 1;
   }</code>
         <text>Durch dieses Objektscript verursacht das Auswählen eines anderen Gegenstandes im Inventar einen Ding-Sound.</text>
       </example>

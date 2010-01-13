@@ -8,18 +8,17 @@
 		<subcat>Mannschaft</subcat>
 		<version>4.9.1.0 GWE</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iChange</name><desc>Veränderung des Erfahrungswertes</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Crewobjekt, dem Erfahrung gegeben werden soll</desc></param>
 			</params>
 		</syntax>
-		<desc>Gibt einem Clonk Erfahrungspunkte.</desc>
+		<desc>Gibt dem aufrufenden Clonk Erfahrungspunkte.</desc>
 		<remark>Der Clonk muss eine Infosektion haben, das heißt er muss ein CrewMember sein und einem Spieler gehören.</remark>
 		<examples>
 			<example>
-<code>DoCrewExp(100, <funclink>GetCursor</funclink>());
-<funclink>Sound</funclink>("Applause", 1); <funclink>GameOver</funclink>();</code>
+<code><funclink>GetCursor</funclink>()->DoCrewExp(100);
+<funclink>Sound</funclink>("Applause", true); <funclink>GameOver</funclink>();</code>
 				<text>Gibt dem ausgewählten Clonk des ersten Spielers 100 Punkte Erfahrung, spielt einen Applaus ab und beendet die Runde.</text>
 			</example>
 		</examples>

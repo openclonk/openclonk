@@ -3,7 +3,6 @@
 <?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
 <doc>
 <title>Datentypen</title>
-
 <h>Datentypen</h>
 <part>
 
@@ -31,7 +30,7 @@
 		<row>
 		  <col><code>id</code></col>
 		  <col>Definitions-ID</col>
-		  <col>ID einer Objektdefinition (siehe <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">Objektdefinitionen</emlink>)</col>
+		  <col>ID einer Objektdefinition (siehe <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">Objektdefinitionen</emlink>). Wird sofort in eine Proplist umgewandelt.</col>
 		  <col><code>CLNK </code></col>
 		</row>
 		<row>
@@ -48,8 +47,15 @@
 		</row>
 		<row>
 		  <col><code>array</code></col>
-		  <col>Feld</col>
+		  <col>Array</col>
 		  <col>Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <funclink>GetLength</funclink> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können. Ab CR.</col>
+		  <col><code>[0,42,CLNK] </code></col>
+		</row>
+		<row>
+		  <col><code>proplist</code></col>
+		  <col>Objekt</col>
+		  <col>Ein allgemeiner Objekttyp. Mit <funclink>GetProperty</funclink> und <funclink>SetProperty</funclink> können Eigenschaften abgefragt bzw. gesetzt werden.
+		  Wenn die Eigenschaft <code>"Prototype"</code> gesetzt ist und eine nicht gesetzte Eigenschaft abgefragt wird, wird im Prototyp nachgeguckt.</col>
 		  <col><code>[0,42,CLNK] </code></col>
 		</row>
 	</table></text>
@@ -96,19 +102,19 @@
 		 <col>nach -&gt;</col>
 		 <col><code>int</code></col>
 		 <col><code>bool</code></col>
-		 <col><code>id</code></col>
 		 <col><code>object</code></col>
 		 <col><code>string</code></col>
 		 <col><code>array</code></col>
+		 <col><code>proplist</code></col>
 		</rowh>
 		<row>
 		 <col><code>int</code></col>
 		 <col>OK</col>
 		 <col>OK</col>
-		 <col>if &lt;= 9999</col>
-		 <col>Error</col>
-		 <col>Error</col>
-		 <col>Error</col>
+		 <col>wenn 0</col>
+		 <col>wenn 0</col>
+		 <col>wenn 0</col>
+		 <col>wenn 0</col>
 		</row>
 		<row>
 		 <col><code>bool</code></col>
@@ -120,30 +126,21 @@
 		 <col>Error</col>
 		</row>
 		<row>
-		 <col><code>id</code></col>
-		 <col>#strict</col>
-		 <col>OK</col>
-		 <col>OK</col>
-		 <col>Error</col>
-		 <col>Error</col>
-		 <col>Error</col>
-		</row>
-		<row>
 		 <col><code>object</code></col>
-		 <col>#strict</col>
-		 <col>OK</col>
 		 <col>Error</col>
 		 <col>OK</col>
+		 <col>OK</col>
 		 <col>Error</col>
 		 <col>Error</col>
+		 <col>OK</col>
 		</row>
 		<row>
 		 <col><code>string</code></col>
-		 <col>#strict</col>
-		 <col>OK</col>
-		 <col>Error</col>
 		 <col>Error</col>
 		 <col>OK</col>
+		 <col>Error</col>
+		 <col>OK</col>
+		 <col>Error</col>
 		 <col>Error</col>
 		</row>
 		<row>
@@ -152,6 +149,15 @@
 		 <col>OK</col>
 		 <col>Error</col>
 		 <col>Error</col>
+		 <col>OK</col>
+		 <col>Error</col>
+		</row>
+		<row>
+		 <col><code>proplist</code></col>
+		 <col>Error</col>
+		 <col>OK</col>
+		 <col>maybe</col>
+		 <col>Error</col>
 		 <col>Error</col>
 		 <col>OK</col>
 		</row>
@@ -159,9 +165,9 @@
 
 	<h>Erklärung der Tabelle:</h>
 	<text><ul>
-		<li>Wo #strict steht, wird nur ein Fehler ausgelöst wenn der Script <emlink href="script/Strict.html">#strict</emlink> ist. Hierbei handelt es sich um "ungefährliche" aber sinnlose Konvertierungen, die nur in einigen "trickreichen" Scripts zur Anwendung kamen.</li>
-		<li>Die Konvertierung int zu id ist nur erlaubt, wenn die Zahl größer gleich 0 und kleiner gleich 9999 ist. Auf diese Weise werden auch IDs, die nur aus Zahlen bestehen, unterstützt (z.B. 0001)</li>
 		<li>Konvertierung nach bool ist generell erlaubt. Sie ergibt für jeden Wert außer 0 <code>true</code>.</li>
+		<li>Wenn ein Objekt in eine Proplist konvertiert wurde, kann es wieder in ein Objekt konvertiert werden. Ansonsten können Proplists nicht in Objekte konvertiert werden.</li>
+		<li>Eine <code>0</code> kann in alles andere konvertiert werden. Sie verhält sich dann wie <code>any</code></li>
 	</ul></text>
 	
 </part>

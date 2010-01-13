@@ -1,0 +1,2 @@
+DE:Spielziel
+US:Goal

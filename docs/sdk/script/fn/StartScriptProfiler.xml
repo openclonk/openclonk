@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>id</type><name>idDefScript</name><desc>Wenn angegeben, werden nur Scriptfunktionen einer bestimmten Objektdefinition gemessen.</desc><otional /></param>
+				<param><type>id</type><name>idDefScript</name><desc>Wenn angegeben, werden nur Scriptfunktionen einer bestimmten Objektdefinition gemessen.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Startet den Scriptprofiler.</desc>

@@ -60,6 +60,9 @@
 /* Define to 1 if you have the <readline/readline.h> header file. */
 #undef HAVE_READLINE_READLINE_H
 
+/* C++ Compiler has rvalue references, a C++0x feature. */
+#undef HAVE_RVALUE_REF
+
 /* Define to 1 if you have SDL. */
 #undef HAVE_SDL
 
@@ -137,6 +140,9 @@
 
 /* Define to the one symbol short name of this package. */
 #undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION

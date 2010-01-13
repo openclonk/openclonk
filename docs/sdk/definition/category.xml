@@ -4,120 +4,91 @@
 <doc>
 <title>Objektkategorien</title>
 <h id="Objektkategorien">Objektkategorien</h>
-<text>Die Kategorie eines Objekts ist eine DWord-Bitmaske,
-die sich aus den folgenden Werten zusammen setzt. Die ersten 5 Kategorien erlauben keine Kombination,
-von den Bits 0-4 darf und muss immer genau eines zur Zeit gesetzt sein.</text>
+<part>
+<text>Die Kategorie eines Objekts legt Teile seines Verhaltens fest. Sie wird für eine Definition durch den Eintrag Category in der DefCore.txt festgelegt. Dabei können verschiedene Kategorien mit einem binären oder-Operator kombiniert werden.</text>
 <text>
 <table>
-<rowh><col>Bit</col><col>Wert</col><col>Kategorie</col><col>Beschreibung</col></rowh>
+<rowh><col>Kategorie</col><col>Beschreibung</col></rowh>
 <row>
-  <col>0</col> <col>1</col> <col>C4D_StaticBack</col>
+  <col>C4D_StaticBack</col>
   <col>Unbewegliches Hintergrundobjekt.</col>
 </row>
 <row>
-  <col>1</col> <col>2</col> <col>C4D_Structure</col>
+  <col>C4D_Structure</col>
   <col>Gebäude.</col>
 </row>
 <row>
-  <col>2</col> <col>4</col> <col>C4D_Vehicle</col>
+  <col>C4D_Vehicle</col>
   <col>Fahrzeug.</col>
 </row>
 <row>
-  <col>3</col> <col>8</col> <col>C4D_Living</col>
+  <col>C4D_Living</col>
   <col>Lebewesen.</col>
 </row>
 <row>
-  <col>4</col> <col>16</col> <col>C4D_Object</col>
+   <col>C4D_Object</col>
   <col>Gegenstand.</col>
 </row>
 <row>
-  <col>5</col> <col>32</col> <col>C4D_Goal</col>
+   <col>C4D_Goal</col>
   <col>Spielziel.</col>
 </row>
 <row>
-  <col>6</col> <col>64</col> <col>C4D_Environment</col>
+  <col>C4D_Environment</col>
   <col>Umweltsteuerungsobjekt.</col>
 </row>
 <row>
-  <col>7</col> <col>128</col> <col>C4D_SelectBuilding</col>
-  <col>Menüsystem Auswahl Gebäude.</col>
-</row>
-<row>
-  <col>8</col> <col>256</col> <col>C4D_SelectVehicle</col>
-  <col>Menüsystem Auswahl Fahrzeuge.</col>
-</row>
-<row>
-  <col>9</col> <col>512</col> <col>C4D_SelectMaterial</col>
-  <col>Menüsystem Auswahl Material.</col>
-</row>
-<row>
-  <col>10</col> <col>1024</col> <col>C4D_SelectKnowledge</col>
-  <col>Menüsystem Auswahl herstellbare Objekte.</col>
-</row>
-<row>
-  <col>11</col> <col>2048</col> <col>C4D_SelectHomebase</col>
-  <col>Menüsystem Auswahl Heimatbasismaterial.</col>
-</row>
-<row>
-  <col>12</col> <col>4096</col> <col>C4D_SelectAnimal</col>
-  <col>Menüsystem Auswahl Tiere.</col>
-</row>
-<row>
-  <col>13</col> <col>8192</col> <col>C4D_SelectNest</col>
-  <col>Menüsystem Auswahl Nester.</col>
-</row>
-<row>
-  <col>14</col> <col>16384</col> <col>C4D_SelectInEarth</col>
-  <col>Menüsystem Auswahl Erdreich-Objekte.</col>
-</row>
-<row>
-  <col>15</col> <col>32768</col> <col>C4D_SelectVegetation</col>
-  <col>Menüsystem Auswahl Vegetation.</col>
-</row>
-<row>
-  <col>16</col> <col>65536</col> <col>C4D_TradeLiving</col>
+  <col>C4D_TradeLiving</col>
   <col>Verkaufbares Lebewesen.</col>
 </row>
 <row>
-  <col>17</col> <col>131072</col> <col>C4D_Magic</col>
+  <col>C4D_Magic</col>
   <col>Zauber.</col>
 </row>
 <row>
-  <col>18</col> <col>262144</col> <col></col>
+  <col></col>
   <col>Reserviert; wird intern benutzt.</col>
 </row>
 <row>
-  <col>19</col> <col>524288</col> <col>C4D_Rule</col>
+  <col>C4D_Rule</col>
   <col>Spielregel.</col>
 </row>
 <row>
-  <col>20</col> <col>1048576</col> <col>C4D_Background</col>
+  <col>C4D_Background</col>
   <col>Objekt ist hinter der Landschaft.</col>
 </row>
 <row>
-  <col>21</col> <col>2097152</col> <col>C4D_Parallax</col>
+  <col>C4D_Parallax</col>
   <col>Objekt bewegt sich parallax nach Local 0 und 1. Für mehr Informationen siehe <funclink>C4D_Parallax</funclink>.</col>
 </row>
 <row>
-  <col>22</col> <col>4194304</col> <col>C4D_MouseSelect</col>
+  <col>C4D_MouseSelect</col>
   <col>Objekt mit der Maus anwählbar, MouseSelection(int iPlr)-Callback im Objekt.</col>
 </row>
 <row>
-  <col>23</col> <col>8388608</col> <col>C4D_Foreground</col>
+  <col>C4D_Foreground</col>
   <col>Objekt ist im Vordergrund, also vor globalen Partikeln.</col>
 </row>
 <row>
-  <col>24</col> <col>16777216</col> <col>C4D_MouseIgnore</col>
+  <col>C4D_MouseIgnore</col>
   <col>Objekt ist nicht mit der Maus anwählbar.</col>
 </row>
 <row>
-  <col>25</col> <col>33554432</col> <col>C4D_IgnoreFoW</col>
+  <col>C4D_IgnoreFoW</col>
   <col>Objekt wird auch dann gezeichnet, wenn es eigentlich vom Kriegsnebel bedeckt ist. Nützlich beispielsweise für Statusanzeigen und Kontrollelemente. Ab CR.</col>
 </row>
-<bitmask>Kategorie</bitmask>
 </table>
-
 </text>
+<h id="Beispiel">Beispiel</h>
+<text>
+  <examples>
+    <example>
+      <code>Category=C4D_StaticBack|C4D_Rule</code>
+	  <text>Kategorie für eine Regel.</text>
+    </example>
+  </examples>
+</text>
+</part>
 
 <author>Sven2</author><date>Mai 2006</date>
 <author>Newton &amp; Günther</author><date>Januar 2005</date>

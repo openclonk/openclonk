@@ -11,11 +11,6 @@
       <rtype>bool</rtype>
       <params>
         <param>
-          <type>object</type>
-          <name>pObj</name>
-          <desc>Objekt, dem das Kommando gegeben wird.</desc>
-        </param>
-        <param>
           <type>string</type>
           <name>szCommand</name>
           <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
@@ -60,7 +55,7 @@
     </syntax>
 
     <desc>
-      Gibt einem Objekt ein Kommando, welches dieses selbstständig (ggf. durch automatische Wegfindung) auszuführen versucht.
+      Gibt dem aufrufenden Objekt ein Kommando, welches dieses selbstständig (ggf. durch automatische Wegfindung) auszuführen versucht.
     </desc>
 
     <remark>
@@ -120,7 +115,7 @@
 
     <examples>
       <example>
-        <code>SetCommand(<funclink>this</funclink>(), "Attack", <funclink>FindObjectOwner</funclink>(CLNK, 1, 0, 0, -1, -1), 0, 0, 0, 0, 10);</code>
+        <code>SetCommand("Attack", <funclink>FindObject</funclink>(Find_ID(CLNK),Sort_Distance(0,0)), 0, 0, 0, 0, 10);</code>
         <text>
 Dieser Script gibt dem ausführenden Clonk den Befehl, den nächstgelegenen Clonk von Spieler 1 zu attackieren. Dabei soll er nicht so schnell aufgeben und (wenn er z.B.
 daran scheitert, den Weg zum Feind zu finden) es 10 Mal zu versuchen, bis er sein Ziel erreicht hat oder abbricht.

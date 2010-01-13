@@ -10,13 +10,12 @@
 			<rtype>object</rtype>
 			<params>
 				<param><type>int</type><name>iTargetIndex</name><desc>0 für pTarget oder 1 für pTarget2</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Liefert die aktuellen Aktivitätszielobjekte eines Objekts.</desc>
+		<desc>Liefert die aktuellen Aktivitätszielobjekte des aufrufenden Objekts.</desc>
 		<examples>
 			<example>
-				<code><funclink>ObjectCall</funclink>( GetActionTarget( ), "ChopDown");</code>
+				<code>GetActionTarget()->~ChopDown();</code>
 				<text>Im StartCall der Fällen-Aktivität eines Clonks ausgeführt, fällt es die meisten Bäume sofort.</text>
 			</example>
 		</examples>
@@ -24,7 +23,6 @@
 			<funclink>GetAction</funclink>
 			<funclink>GetActTime</funclink>
 			<funclink>GetPhase</funclink>
-			<funclink>ObjectSetAction</funclink>
 			<funclink>SetAction</funclink>
 			<funclink>SetActionTargets</funclink>
 			<funclink>SetPhase</funclink>

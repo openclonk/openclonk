@@ -10,13 +10,12 @@
       <rtype>bool</rtype>
       <params>
         <param><type>int</type><name>iDensity</name><desc>Dichte des Materials, mit dem das Objekt kollidieren soll.</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Zielobjekt. 0 bei lokalem Aufruf.</desc><optional /></param>
       </params>
     </syntax>
     <desc>Legt fest, welche Dichte ein Material haben muss, damit das Objekt mit diesem kollidiert. Standardmäßig liegt dieser Wert bei 50 (dichtes Material).</desc>
     <examples>
       <example>
-<code>SetContactDensity(25, GetCursor());</code>
+	      <code><funclink>GetCursor</funclink>()->SetContactDensity(25);</code>
         <text>Ändert die Kontaktdichte des ausgewähten Clonks des ersten Spielers so, dass dieser auch auf Flüssigkeiten laufen kann.</text>
       </example>
     </examples>

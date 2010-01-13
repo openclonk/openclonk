@@ -16,7 +16,6 @@
 		</syntax>
 		<desc>Setzt die Aktivität des aufrufenden Objekts. Siehe auch <emlink href="definition/actmap.html">ActMap.txt</emlink>.</desc>
 		<remark>Wird pTarget1 bzw. pTarget2 nicht angegeben bzw. 0 übergeben, so bleibt das jeweiligen Action Target der vorigen Aktion erhalten. Um die Action Targets zu löschen sollte <funclink>SetActionTargets</funclink> benutzt werden.</remark>
-		<remark>Um die Aktivität eines Fremdobjektes zu setzen, sollte <funclink>ObjectSetAction</funclink> oder fremdobjekt-&gt;SetAction() benutzt werden.</remark>
 		<remark>Der StartCall der Aktivität wird während der Ausführung von SetAction aufgerufen. Wenn dieser also zum Beispiel das Objekt löscht, darf die aufrufende Funktion danach nichts mehr mit dem Objekt machen!</remark>
 		<examples>
 			<example>
@@ -25,7 +24,6 @@
 			</example>
 		</examples>
 		<related>
-			<funclink>ObjectSetAction</funclink>
 			<funclink>GetAction</funclink>
 			<funclink>GetActionTarget</funclink>
 			<funclink>SetPhase</funclink>

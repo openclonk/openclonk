@@ -1,0 +1,8 @@
+[DefCore]
+id=PWRC
+Version=4,9,0,0
+Category=C4D_StaticBack
+Width=13
+Height=19
+Offset=-6,-19
+Picture=0,0,64,64

@@ -22,12 +22,12 @@
 		</remark>
 		<examples>
 			<example>
-				<code>#strict
+				<code>#strict 2
 #appendto CLNK
 
 func Initialize() {
   <funclink>AddEffect</funclink>("VariateHue",<funclink>this</funclink>(),200,1,<funclink>this</funclink>());
-  <funclink>return</funclink>(<funclink>_inherited</funclink>());
+  <funclink>return</funclink> <funclink>_inherited</funclink>();
 }
 
 func FxVariateHueTimer() {

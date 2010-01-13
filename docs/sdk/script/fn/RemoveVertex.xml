@@ -10,10 +10,9 @@
 			<rtype>int</rtype>
 			<params>
 				<param><type>int</type><name>iX</name><desc>Index des Vertex, das entfernt werden soll.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, von dem ein Vertex entfernt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Entfernt einen Vertex von einem Objekt.</desc>
+		<desc>Entfernt einen Vertex vom aufrufenden Objekt.</desc>
 		<remark>Achtung: Bei jeder Vertexaktualisierung (also beispielsweise dann, wenn sich Fertigstellungswert oder Rotation eines Objekts ändern) werden alle Vertices wieder auf die Definitionswerte zurückgesetzt.</remark>
 		<examples>
 			<example>

@@ -10,14 +10,13 @@
 			<rtype>object</rtype>
 			<params>
 				<param><type>id</type><name>id</name><desc>Typ des zu erstellenden Objekts</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Hierin wird das Objekt erstellt</desc></param>
-				<param><type>int</type><name>iCount</name><desc>Anzahl zu erstellender Objekte. Ab 4.9.6.0 CR</desc></param>
+				<param><type>int</type><name>iCount</name><desc>Anzahl zu erstellender Objekte. Wenn nicht angegeben, wird 1 angenommen.</desc></param>
 			</params>
 		</syntax>
-		<desc>Erzeugt ein Objekt vom Typ id als Inhalt von pObj.</desc>
+		<desc>Erzeugt ein Objekt vom Typ id als Inhalt des aufrufenden Objekts.</desc>
 		<examples>
 			<example>
-				<code>CreateContents(ROCK,<funclink>GetHiRank</funclink>(0));</code>
+				<code><funclink>GetHiRank</funclink>(0)->CreateContents(ROCK);</code>
 				<text>Der höchstrangige Clonk des Spielers erhält einen Stein.</text>
 			</example>
 		</examples>

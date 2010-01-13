@@ -7,17 +7,16 @@
 		<category>Objekte</category><subcat>Bewegung</subcat>
 		<version>4.6.5.0 CP</version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, das weggeschleudert wird. Muss angegeben werden.</desc></param>
 				<param><type>int</type><name>iXDir</name><desc>X-Schleudergeschwindigkeit</desc></param>
 				<param><type>int</type><name>iYDir</name><desc>Y-Schleudergeschwindigkeit</desc></param>
 			</params>
 		</syntax>
-		<desc>Verschleudert pObj in die angegebene Richtung. Diese Funktion ist für Lebewesen konzipiert, da sie die entsprechenden Aktivitäten setzt.</desc>
+		<desc>Verschleudert das aufrufende Objekt in die angegebene Richtung. Diese Funktion ist für Lebewesen konzipiert, da sie die entsprechenden Aktivitäten setzt.</desc>
 		<examples>
 			<example>
-				<code>Fling(<funclink>GetCursor</funclink>(0), 10, -15);</code>
+				<code><funclink>GetCursor</funclink>(0)->Fling(10, -15);</code>
 				<text>Verschleudert den ausgewählten Clonk nach oben rechts.</text>
 			</example>
 		</examples>

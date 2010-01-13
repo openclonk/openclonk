@@ -10,16 +10,15 @@
 			<rtype>bool</rtype>
 			<params>
 				<param><type>string</type><name>szResortFunc</name><desc>Name der Funktion, die für die Einsortierung aufgerufen wird.</desc></param>
-				<param><type>object</type><name>pResortObj</name><desc>Neu einzusortierendes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Sortiert ein Objekt neu in die Objektliste ein. Die Platzierung ergibt sich nach einer Platzierungsfunktion, die die Objektposition relativ zu jedem anderen Objekt in der Objektliste definieren sollte. Wenn das erste Objekt vor dem zweiten stehen sollte, muss die Funktion einen Wert kleiner Null zurückgeben. Ansonsten einen Wert größer oder gleich Null.</desc>
+		<desc>Sortiert das aufrufende Objekt neu in die Objektliste ein. Die Platzierung ergibt sich nach einer Platzierungsfunktion, die die Objektposition relativ zu jedem anderen Objekt in der Objektliste definieren sollte. Wenn das erste Objekt vor dem zweiten stehen sollte, muss die Funktion einen Wert kleiner Null zurückgeben. Ansonsten einen Wert größer oder gleich Null.</desc>
 		<remark>Die Sortierung findet intern erst am Ende des Frames statt.</remark>
 		<examples>
 			<example>
 
 <code>protected func Collection2() { <funclink>return</funclink>(ResortObject("ResortProc"); };
-protected func ResortProc(pObj1, pObj2) { return(<funclink>GetMass</funclink>(pObj1)-<funclink>GetMass</funclink>(pObj2));</code>
+protected func ResortProc(pObj1, pObj2) { return(pObj1-><funclink>GetMass</funclink>()-pObj2-><funclink>GetMass</funclink>());</code>
 				<text>Objektscript: Das Objekt sortiert sich selbst bei Objektaufnahme nach seiner Masse in die Objektliste ein (leichte Objekte nach vorne).</text>
 			</example>
 		</examples>

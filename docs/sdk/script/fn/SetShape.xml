@@ -7,20 +7,19 @@
     <category>Objekte</category>
     <version>4.9.1.0 GWE</version>
     <syntax>
-      <rtype>bool</rtype>
+      <rtype>void</rtype>
       <params>
         <param><type>int</type><name>iX</name><desc>X-Offset des neuen Shapes</desc></param>
         <param><type>int</type><name>iY</name><desc>Y-Offset des neuen Shapes</desc></param>
         <param><type>int</type><name>iWdt</name><desc>Breite des neuen Shapes</desc></param>
         <param><type>int</type><name>iHgt</name><desc>Höhe des neuen Shapes</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Zielobjekt. 0 bei lokalem Aufruf.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Ändert das interne Objektrechteck eines Objekts. Das Objektrechteck wird beispielsweise für Kollisionsabfragen verwendet. Dies hat keine Auswirkung auf die Darstellung des Objekts.</desc>
+    <desc>Ändert das interne Objektrechteck des aufrufenden Objekts. Das Objektrechteck wird beispielsweise für Kollisionsabfragen verwendet. Dies hat keine Auswirkung auf die Darstellung des Objekts.</desc>
     <remark>Die Engine aktualisiert in diversen Fällen das Objektrechteck, wobei es die Definitionswerte zurückkopiert (und damit eventuelle, durch SetShape gesetzte Objektrechtecke verwirft). Die ist beispielsweise beim Ändern der Objektrotation, aber auch beim Neuladen der Spielstände der Fall. Die Funktion sollte also besser nur bei statischen, relativ unveränderten Objekten verwendet werden, und das Shape muss jeweils in einem Synchronisationsaufruf wie UpdateTransferZone neu gesetzt werden.</remark>
     <examples>
       <example>
-        <code>SetShape(-200,-300,400,600, <funclink>FindObject</funclink>(TRE1));</code>
+        <code><funclink>FindObject</funclink>(TRE1)->SetShape(-200,-300,400,600);</code>
         <text>Sorgt dafür, dass man einen Baum aus der Landschaft auch aus größerer Distanz fällen kann.</text>
       </example>
     </examples>

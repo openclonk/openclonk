@@ -7,19 +7,18 @@
 		<category>Objekte</category><subcat>Status</subcat>
 		<version>4.6.5.0 CP<extversion>4.9.6.0 CR</extversion></version>
 		<syntax>
-			<rtype>bool</rtype>
+			<rtype>void</rtype>
 			<params>
 				<param><type>int</type><name>iChange</name><desc>Veränderung des Energiewertes; positiv oder negativ in Prozent zum Maximalwert. 100% entsprechen hierbei dem maximalen Physical-Wert von 100000.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Energiewert verändert wird. 0 bei lokalem Aufruf.</desc><optional /></param>
 				<param><type>bool</type><name>fExakt</name><desc>Wenn WAHR, wird iChange auf den exakten Energiewert angewendet (0 bis Wert von Physical "Energy").</desc><optional /></param>
 				<param><type>int</type><name>iEngType</name><desc>Schadensursache, die an Fx*Damage-Callbacks von Effekten übergeben wird (siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>). Standard ist FX_Call_EngScript.</desc><optional /></param>
-				<param><type>int</type><name>iCausedBy</name><desc>Spielernummer des Spielers, der den Schaden verursacht hat, plus eins.</desc><optional /></param>
+				<param><type>int</type><name>iCausedBy</name><desc>Spielernummer des Spielers, der den Schaden verursacht hat.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Verändert die Energie eines Objekts. Die Energie entspricht bei Gebäuden der elektrischen Energie, und bei Lebewesen der Lebensenergie.</desc>
+		<desc>Verändert die Energie des aufrufenden Objekts. Die Energie entspricht bei Gebäuden der elektrischen Energie, und bei Lebewesen der Lebensenergie.</desc>
 		<examples>
 			<example>
-				<code>DoEnergy(<funclink>GetPhysical</funclink>("Energy", 0, <funclink>GetCursor</funclink>(0))*50/100000, <funclink>GetCursor</funclink>(0));</code>
+				<code><funclink>GetCursor</funclink>(0)->DoEnergy(<funclink>GetCursor</funclink>(0)-><funclink>GetPhysical</funclink>("Energy")*50/100000);</code>
 				<text>Gibt den ausgewählten Clonk des ersten Spielers 50% mehr Energie.</text>
 			</example>
 		</examples>

@@ -10,10 +10,9 @@
       <rtype>bool</rtype>
       <params>
         <param><type>int</type><name>iPhase</name><desc>Neue Aktionsphase.</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Zielobjekt. 0 bei lokalem Aufruf.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Setzt die Aktivitätsphase eines Objekts.</desc>
+    <desc>Setzt die Aktivitätsphase des aufrufenden Objekts.</desc>
     <related>
       <funclink>SetAction</funclink>
       <funclink>GetPhase</funclink>

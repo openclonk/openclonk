@@ -17,6 +17,7 @@
 		<desc>Liefert cos(iAngle) * iRadius.</desc>
 		<related>
 			<funclink>Sin</funclink>
+			<funclink>Tan</funclink>
 			<funclink>Angle</funclink>
 		</related>
 	</func>

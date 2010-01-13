@@ -15,11 +15,10 @@
 				<param><type>int</type><name>iYSkew</name><desc>Vertikale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der vertikalen Kante um 45° nach unten (links hoch, rechts runter). Negative Werte bedeuten eine Verschiebung nach oben.</desc></param>
 				<param><type>int</type><name>iHeight</name><desc>Höhe der Grafik. 1000 ist die Standardhöhe, negative Angaben bedeuten eine vertikale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
 				<param><type>int</type><name>iYAdjust</name><desc>Vertikale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach unten verschoben, bei negativen Angaben wird die Grafik nach oben verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Das Objekt dessen Grafik transformiert dargestellt werden soll. 0 bei lokalem Aufruf.</desc></param>
 				<param><type>int</type><name>iOverlayID</name><desc>ID des Overlays, dessen Transformation angepasst werden soll. Bei 0 (default) wird die Hauptgrafik transformiert.</desc></param>
 			</params>
 		</syntax>
-		<desc>Transformiert die Grafik des angegebenen Objektes.</desc>
+		<desc>Transformiert die Grafik des aufrufenden Objektes.</desc>
 		<remark>Sämtliche Angaben der Parameter werden in Promille (1000 = 100%) getätigt, weil es in Clonk keine Floating Point-Werte gibt.</remark>
 		<examples>
 			<example>
@@ -30,16 +29,15 @@
 				<code>global func SetDTRotation (int r, int xoff, int yoff, object obj) {
   var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
   // set matrix values
-  SetObjDrawTransform (
+  obj->SetObjDrawTransform (
     +fcos, +fsin, (1000-fcos)*xoff - fsin*yoff,
     -fsin, +fcos, (1000-fcos)*yoff + fsin*xoff,
-    obj
   );
 }</code>
 				<text>Rotiert das Objekt ohne es tatsächlich zu rotieren (Vertices usw. bleiben da wo sie sind).</text>
 			</example>
 			<example>
-				<code>SetObjDrawTransform(1000,0,0,0,-1000,0,<funclink>GetHiRank</funclink>(0));</code>
+				<code><funclink>GetHiRank</funclink>(0)->SetObjDrawTransform(1000,0,0,0,-1000,0);</code>
 				<text>Dreht den höchstrangigsten Clonk des ersten Spielers um, so dass er auf dem Kopf steht.</text>
 			</example>
 			<example>

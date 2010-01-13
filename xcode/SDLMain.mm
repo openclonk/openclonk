@@ -1,122 +1,156 @@
 // Roughly adapted from the original SDLMain.m; haxxed to death by teh Gurkendoktor.
 // Look at main() to get an idea for what happens here.
 
-#import <Carbon/Carbon.h>
 #import "SDLMain.h"
-#import "SDL.h"
+#import "SDL/SDL.h"
 
-#import <sys/param.h> /* for MAXPATHLEN */
-#import <unistd.h>
-#include <vector>
-#include <string>
-#include <cstring>
-using namespace std;
+/* The main class of the application, the appl¤ication's delegate */
+@implementation SDLMain
 
-// Including Std* leads to linker trouble. FUN!
-bool GetParentPath(const char *szFilename, char *szBuffer);
-const char* GetFilename(const char *fname);
-const char *GetExtension(const char *fname);
-bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
-bool SEqualNoCase(const char *szStr1, const char *szStr2, int iLen=-1);
-void SAppendChar(char cChar, char *szTarget);
-void SAppend(const char *szSource, char *szTarget, int iMaxL=-1);
-
-namespace {
-    const string& getClonkDir() {
-        static string result;
-        if (result.empty()) {
-            // Where is the .app bundle?
-            char path[PATH_MAX];
-            char pathTmp[PATH_MAX];
-            NSBundle* bundle = [NSBundle mainBundle];
-            if (bundle &&
-                GetParentPath([[bundle resourcePath] UTF8String], path) &&
-                GetParentPath(path, pathTmp) &&
-                GetParentPath(pathTmp, path))
-                result = path;
-        }
-        return result;
-    }
-
-    vector<char*> soy_argv; // faked argv collected during openFile calls
-    BOOL gDoNotLaunch = NO;
-    BOOL gHasFinished = NO;
+- (id) init {
+	if (self = [super init]) {
+		// first argument is path to executable (for authenticity)
+		gatheredArguments = [NSMutableArray arrayWithCapacity:10];
+		[gatheredArguments addObject:[[NSBundle mainBundle] executablePath]];
+	}
+	return self;
 }
 
-/* The main class of the application, the application's delegate */
-@implementation SDLMain
+- (void) release {
+	if (terminateRequested)
+		[NSApp replyToApplicationShouldTerminate:YES];
+	[super release];
+}
 
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
-    const char* szFilename = [filename UTF8String];
-    const char* szExt = GetExtension(szFilename);
-
-    if (SEqualNoCase(szExt, "c4k") || SEqualNoCase(szExt, "c4u"))
-    {
-        // Key/Update files: Just pass to engine, will install
-        soy_argv.push_back(strdup(szFilename));
-        fflush(0);
-        return YES;
-    }
-
-    if (SEqualNoCase(szExt, "c4d") || SEqualNoCase(szExt, "c4s") || SEqualNoCase(szExt, "c4f") ||
-        SEqualNoCase(szExt, "c4g") || SEqualNoCase(szExt, "c4s"))
-    {
-        gDoNotLaunch = YES;
-
-        // Build destination path.
-        char destPath[PATH_MAX] = { 0 };
-        SAppend(getClonkDir().c_str(), destPath);
-        SAppendChar('/', destPath);
-        SAppend(GetFilename(szFilename), destPath);
-
-        NSString* formatString;
-
-        // Already installed?
-        if (SEqualNoCase(szFilename, destPath))
-        {
-            formatString = NSLocalizedString(@"AddOnIsAlreadyInstalled", nil);
-            NSRunInformationalAlertPanel(NSLocalizedString(@"AddOnInstallationTitle", nil),
-                [NSString stringWithFormat: formatString, GetFilename(szFilename)],
-                @"OK", nil, nil);
-            return NO;
-        }
-
-        // Success?
-        if(CopyFile(szFilename, destPath, false))
-            formatString = NSLocalizedString(@"AddOnInstallationSuccess", nil);
-        else
-            formatString = NSLocalizedString(@"AddOnInstallationFailure", nil);
-
-        NSRunInformationalAlertPanel(NSLocalizedString(@"AddOnInstallationTitle", nil),
-            [NSString stringWithFormat: formatString, GetFilename(szFilename)],
-            @"OK", nil, nil);
-        return YES;
-    }
-
-    return NO;
+	NSString* pathExtension = [[filename pathExtension] lowercaseString];
+    
+	NSArray* clonkFileNameExtensions = [NSArray arrayWithObjects:@"c4d", @"c4s", @"c4f", @"c4g", @"c4s", nil];
+	if ([clonkFileNameExtensions containsObject:pathExtension])
+	 {
+		 // later decide whether to install or run
+		 addonSupplied = filename;
+		 if (hasFinished) {
+			 // if application is already running install immediately
+			 [self installAddOn];
+			 return YES;
+		 }
+		 // still add to gatheredArguments
+		 // return YES;
+	 }
+	
+	// Key/Update files or simply arguments: Just pass to engine, will install
+	[gatheredArguments addObject:filename];
+	fflush(0);
+	return YES;
 }
 
 - (void)getUrl:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
 {
 	NSString *url = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
-    soy_argv.push_back(strdup([url cString]));
+	[gatheredArguments addObject:url];
 }
 
 /* Called when the internal event loop has just started running */
 - (void) applicationDidFinishLaunching: (NSNotification *) note
 {
-    gHasFinished = YES;
-    fflush(0);
+/*	NSDictionary* args = [[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain];
+	for (NSString* key in args) {
+		[gatheredArguments addObject:[NSString stringWithFormat:@"/%@:%@", key, [args valueForKey:key]]];
+	}*/
+	hasFinished = YES;
 }
 
-- (void)terminate:(id)sender
+- (NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)application {
+	[self terminate:application];
+	return NSTerminateCancel; // cancels logoff but it's the only way that does not interrupt the lifecycle of the application
+}
+
+- (void)terminate:(NSApplication*)sender
 {
     // Post an SDL_QUIT event
-    SDL_Event event;
-    event.type = SDL_QUIT;
-    SDL_PushEvent(&event);
+	SDL_Event event;
+	event.type = SDL_QUIT;
+	SDL_PushEvent(&event);
 }
+
+- (BOOL)hasFinished {
+	return hasFinished;
+}
+
+// arguments that should be converted to a c char* array and then passed on to SDL_main
+- (NSMutableArray*)gatheredArguments {
+	return gatheredArguments;
+}
+
+// return the directory where Clonk.app lives
+- (NSString*)clonkDirectory
+{
+	if (!clonkDirectory) {
+		clonkDirectory = [[[NSBundle mainBundle] bundlePath] stringByDeletingLastPathComponent];
+	}
+	return clonkDirectory;
+}
+
+// Look for -psn argument which generally is a clue that the application should open a file (double-clicking, calling /usr/bin/open and such)
+- (BOOL) argsLookLikeItShouldBeInstallation:(char**)argv argc:(int)argc {
+	// not having this check leads to deletion of Clonk foler -.-
+	if (!addonSupplied)
+		return NO;
+	for (int i = 0; i < argc; i++) {
+		if ([[NSString stringWithCString:argv[i]] hasPrefix:@"-psn"])
+			return YES;
+	}
+	return NO;
+}
+
+// Copies the add-on to the clonk directory
+- (BOOL) installAddOn {
+	
+	if (!addonSupplied)
+		return NO;
+	
+	// Build destination path.
+	NSString* justFileName = [addonSupplied lastPathComponent];
+	NSString* destPath = [[self clonkDirectory] stringByAppendingPathComponent:justFileName];
+	
+	NSString* formatString;
+	
+	// Already installed?
+	if ([destPath isEqualToString:addonSupplied])
+	{
+		[gatheredArguments addObject:@"/fullscreen"];
+		return NO; // run scenarios when they are already in the clonk directory
+	}
+	
+	NSFileManager* fileManager = [NSFileManager defaultManager];
+	if ([fileManager fileExistsAtPath:destPath])
+		// better to throw it into the trash. everything else seems so dangerously destructive
+		[[NSWorkspace sharedWorkspace] performFileOperation:NSWorkspaceRecycleOperation source:[self clonkDirectory] destination:@"" files:[NSArray arrayWithObject:justFileName] tag:0];
+	if ([fileManager copyPath:addonSupplied toPath:destPath handler:nil])
+		formatString = NSLocalizedString(@"AddOnInstallationSuccess", nil);
+	else
+		formatString = NSLocalizedString(@"AddOnInstallationFailure", nil);
+	
+	NSRunInformationalAlertPanel(NSLocalizedString(@"AddOnInstallationTitle", nil),
+								 [NSString stringWithFormat: formatString, [justFileName cStringUsingEncoding:NSASCIIStringEncoding]],
+								 @"OK", nil, nil);
+								 
+	return YES; // only return NO when the scenario should be run rather than installed
+}
+
+// convert gatheredArguments to c array
+- (void)makeFakeArgs:(char***)argv argc:(int*)argc {
+	int argCount = [gatheredArguments count];
+	char** args = (char**)malloc(sizeof(char*) * argCount);
+	for (int i = 0; i < argCount; i++) {
+		args[i] = strdup([[gatheredArguments objectAtIndex:i] cStringUsingEncoding:NSASCIIStringEncoding]);
+	}
+	*argv = args;
+	*argc = argCount;
+}
+
 @end
 
 #ifdef main
@@ -128,51 +162,52 @@ int main (int argc, char **argv)
 {
     // Catches whatever would be leaked otherwise.
     // Gets rid of warnings from hax0red SDL framework.
-    NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
-    chdir(getClonkDir().c_str());
-
-    // Global, temporary ARGV. Will be appended to by openFile.
-    for (int i = 0; i < argc; ++i)
-        soy_argv.push_back(argv[i]);
-
-    // This is passed if we are launched by double-clicking
-    // Get rid of it.
-    if ( argc >= 2 && strncmp (argv[1], "-psn", 4) == 0 )
-        soy_argv.erase(soy_argv.begin() + 1);
-
+    [[NSAutoreleasePool alloc] init];
+	
+	SDLMain* sdlMain = [[SDLMain alloc] init];
+	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[sdlMain clonkDirectory]];
+	
     // Set up application & delegate.
     [NSApplication sharedApplication];
-    SDLMain *sdlMain = [[SDLMain alloc] init];
     [NSApp setDelegate:sdlMain];
 	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:sdlMain
-        andSelector:@selector(getUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
+													   andSelector:@selector(getUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
     [NSBundle loadNibNamed:@"SDLMain" owner:NSApp];
     [NSApp finishLaunching];
-
+	
+	[NSApp activateIgnoringOtherApps:YES];
+    
     // Now there's openFile calls and all that waiting for us in the event queue.
     // Fetch events until applicationHasFinishedLaunching was called.
-    while (!gHasFinished) {
+    while (![sdlMain hasFinished]) {
         NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask
-                                untilDate:nil
-                                inMode:NSDefaultRunLoopMode
-                                dequeue:YES ];
+											untilDate:nil
+											   inMode:NSDefaultRunLoopMode
+											  dequeue:YES ];
         if ( event == nil ) {
             break;
         }
         [NSApp sendEvent:event];
     }
-
-    // Should we run the Clonk engine?
-    // Some file types may set this to false, ie. when installing add-ons.
-    if (gDoNotLaunch)
-        return 0;
-
+	
+	if ([sdlMain argsLookLikeItShouldBeInstallation:argv argc:argc]) {
+		if ([sdlMain installAddOn])
+			return 0;
+	}
+		
     // Hand off to Clonk code
-    vector<char*> argv_copy(soy_argv.begin(), soy_argv.end());
-    argv_copy.push_back(0);
-    fflush(0);
-    int status = SDL_main(argv_copy.size() - 1, &argv_copy[0]);
-
+	char** newArgv;
+	int newArgc;
+	[sdlMain makeFakeArgs:&newArgv argc:&newArgc];
+	int status = SDL_main(newArgc, newArgv);
+	
+	// I don't think this is even necessary since the OS will just wipe it all out when the process ends
+	for (int i = newArgc-1; i >= 0; i--) {
+		free (newArgv[i]);
+	}
+	free(newArgv);
+	
+	[sdlMain release];
+	
     return status;
 }

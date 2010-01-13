@@ -1,6 +1,5 @@
 [Material]
 Name=DuroLava
-Color=245,200,15,251,240,15,248,220,18
 ColorAnimation=1
 Density=25
 Instable=1

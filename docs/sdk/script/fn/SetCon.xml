@@ -11,14 +11,13 @@
       <rtype>bool</rtype>
       <params>
         <param><type>int</type><name>iCon</name><desc>Fertigstellung/Wachstum in Prozent</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Zielobjekt (bei lokalen Aufrufen Null)</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Setzt die Fertigstellung eines Objekts auf den angegebenen Wert.</desc>
+    <desc>Setzt die Fertigstellung des aufrufenden Objekts auf den angegebenen Wert.</desc>
     <examples>
       <example>
 
-<code>SetCon(50, <funclink>GetCrew</funclink>(0,0));</code>
+	      <code><funclink>GetCrew</funclink>(0,0)->SetCon(50);</code>
 
         <text>Schrumpft den ersten Clonk des ersten Spielers auf halbe Größe.</text>
       </example>

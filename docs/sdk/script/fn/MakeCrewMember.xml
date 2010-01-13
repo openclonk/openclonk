@@ -11,11 +11,6 @@
    <rtype>bool</rtype>
    <params>
     <param>
-     <type>object</type>
-     <name>pObj</name>
-     <desc>Objekt (Clonk), das der Crew hinzugefügt werden soll</desc>
-    </param>
-    <param>
      <type>int</type>
      <name>iPlayer</name>
      <desc>Spieler, dessen Crew das Objekt hinzugefügt werden soll.</desc>
@@ -23,13 +18,13 @@
    </params>
   </syntax>
 
-  <desc>Fügt ein Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu. Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben.<br/>
-        Gibt 1 zurück, wenn das Objekt erfolgreich der Crew hinzugefügt wurde.</desc>
+  <desc>Fügt das aufrufende Objekt (z.B. einen Clonk) der Crew eines Spielers hinzu. Das Objekt muss die CrewMember-Eigenschaft in der DefCore gesetzt haben.<br/>
+        Gibt true zurück, wenn das Objekt erfolgreich der Crew hinzugefügt wurde.</desc>
 
   <examples>
    <example>
     <code>var nclnk = <funclink>CreateObject</funclink>(CLNK, 0, 0, <funclink>GetOwner</funclink>());
-MakeCrewMember(nclnk, <funclink>GetOwner</funclink>());
+nclnk->MakeCrewMember(<funclink>GetOwner</funclink>());
     </code>
     <text>Dieser kurze Objektscript erstellt einen neuen Clonk und fügt ihn der Crew seines Besitzers hinzu.</text>
    </example>

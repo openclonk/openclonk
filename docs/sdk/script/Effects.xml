@@ -392,8 +392,7 @@ public func CastlePartDestruction()
 protected func FxIntCPW2CastleChangeStop()
 {
   // Alle BurgTeile benachrichtigen
-  var pObj;
-  while(pObj = FindObject(0, 0, 0, 0, 0, OCF_Fullcon(), 0,0, NoContainer(), pObj))
+  for(var pObj in FindObjects(Find_OCF(OCF_Fullcon), Find_NoContainer())
     pObj->~CastleChange();
   // Fertig
   return(1);
@@ -410,8 +409,7 @@ protected func FxIntCPW2CastleChangeStop()
 protected func Initialize()
 {
   // Alle Wipfe manipulieren
-  var obj;
-  while (obj = FindObject(WIPF, 0,0,0,0, OCF_Alive(), 0,0, 0, obj))
+  for(var obj in FindObjects(Find_ID(WIPF), Find_OCF(OCF_Alive)))
     AddEffect("ExplodeOnDeathCurse", obj, 20);
 }
 

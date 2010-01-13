@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+	<func>
+		<title>SetSpeed</title>
+		<category>Objekte</category><subcat>Bewegung</subcat>
+		<version>4.9.1.0 GWE<extversion>4.10.0.0 OC</extversion></version>
+		<syntax>
+			<rtype>bool</rtype>
+			<params>
+				<param><type>int</type><name>iXDir</name><desc>Horizontale Gechwindigkeit geteilt durch iPrecision.</desc></param>
+				<param><type>int</type><name>iYDir</name><desc>Vertikale Gechwindigkeit geteilt durch iPrecision.</desc></param>
+				<param><type>object</type><name>pObj</name><desc>Zielobjekt. Bei lokalem Aufruf Null.</desc><optional /></param>
+				<param><type>int</type><name>iPrecision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
+			</params>
+		</syntax>
+		<desc>Setzt die Geschwindigkeit eines Objekts.</desc>
+		<related>
+			<funclink>GetXDir</funclink>
+			<funclink>GetYDir</funclink>
+			<funclink>SetXDir</funclink>
+			<funclink>SetYDir</funclink>
+			<funclink>SetRDir</funclink>
+			<funclink>SetR</funclink>
+		</related>
+	</func>
+	<author>Newton</author><date>Juli 2009</date>
+</funcs>

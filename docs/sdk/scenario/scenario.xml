@@ -102,36 +102,6 @@ bestimmt.</text>
 		<col>Farbe des Fog of War.</col>
 	</row>
 	<row>
-		<col>Mode</col>
-		<col>Integer</col>
-		<col> Veraltet. 0 Kooperativ, 1 Melee, 2 Teamwork-Melee.</col>
-	</row>
-	<row>
-		<col>Elimination</col>
-		<col>Integer</col>
-		<col>Veraltet. Spielereliminierung durch 0 Verlust Captain, 1 Verlust Crew, 2 Verlust Flagge.</col>
-	</row>
-	<row>
-		<col>CooperativeGoal</col>
-		<col>Integer</col>
-		<col>Veraltet. Wert der Auswahl Spielziel im Menüsystem (0-4).</col>
-	</row>
-	<row>
-		<col>CreateObjects</col>
-		<col>ID-Liste</col>
-		<col>Veraltet. Spielziel: Diese Objekte müssen mindestens vorhanden sein.</col>
-	</row>
-	<row>
-		<col>ClearObjects</col>
-		<col>ID-Liste</col>
-		<col>Veraltet. Spielziel: Diese Objekte müssen auf x reduziert werden.</col>
-	</row>
-	<row>
-		<col>ClearMaterials</col>
-		<col>Material-Liste</col>
-		<col>Veraltet. Spielziel: Diese Materialien müssen auf x reduziert werden.</col>
-	</row>
-	<row>
 		<col>BaseFunctionality</col>
 		<col>Integer</col>
 		<col>Bitmaske, die angibt, welche Funktionen eine Basis erfüllt. Siehe <emlink href="scenario/basefunc.html">Basisfunktionalitäten</emlink>. Ab CR.</col>
