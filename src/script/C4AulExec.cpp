@@ -21,6 +21,7 @@
 
 #include <C4Include.h>
 #include <C4Aul.h>
+#include <C4AulDebug.h>
 
 #include <C4Object.h>
 #include <C4Config.h>
@@ -51,8 +52,10 @@ void C4AulExecError::show()
 const int MAX_CONTEXT_STACK = 512;
 const int MAX_VALUE_STACK = 1024;
 
-void C4AulScriptContext::dump(StdStrBuf Dump)
+StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 	{
+	if (!Func)
+		return StdStrBuf("");
 	bool fDirectExec = !*Func->Name;
 	if(!fDirectExec)
 		{
@@ -93,8 +96,13 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 			Func->pOrgScript->ScriptName.getData(),
 			SGetLine(Func->pOrgScript->GetScript(), CPos ? CPos->SPos : Func->Script));
 	// Log it
-	DebugLog(Dump.getData());
+	return Dump;
 	}
+
+void C4AulScriptContext::dump(StdStrBuf Dump)
+{
+	dump(ReturnDump(Dump));
+}
 
 class C4AulExec
 	{
@@ -319,6 +327,10 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 
 C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	{
+
+	// Debugger pointer
+	C4AulDebug * const pDebug = ::ScriptEngine.GetDebugger();
+	pDebug->DebugStepIn(pCPos);
 
 	// Save start context
 	C4AulScriptContext *pOldCtx = pCurCtx;
@@ -844,7 +856,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				case AB_RETURN:
 					{
 					// Resolve reference
-					if(!pCurCtx->Func->SFunc()->bReturnRef)
+					C4AulFunc *pFunc = pCurCtx->Func;
+					if(!pFunc->SFunc()->bReturnRef)
 						pCurVal->Deref();
 
 					// Trace
@@ -855,8 +868,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 						LogF("%s%s returned %s", Buf.getData(), pCurCtx->Func->Name, pCurVal->GetDataString().getData());
 						}
 
-					// External call?
+					// Notify debugger
 					C4Value *pReturn = pCurCtx->Return;
+					if(pDebug)
+						pDebug->DebugStepOut(pReturn ? (pCurCtx-1)->CPos + 1 : NULL, pCurCtx, pCurVal);
+
+					// External call?
 					if(!pReturn)
 						{
 						// Get return value and stop executing.
@@ -1024,6 +1041,10 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 					}
 
+				case AB_DEBUG:
+					if(pDebug) pDebug->DebugStep(pCPos);
+					break;
+
 				default:
 					assert(false);
 				}
@@ -1107,6 +1128,10 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		ctx.CPos = NULL;
 		PushContext(ctx);
 
+		// Notify debugger
+		if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+			pDebug->DebugStepIn(pSFunc->Code);
+
 		// Jump to code
 		return pSFunc->Code;
 		}
@@ -1118,7 +1143,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		CallCtx.Obj = pObj;
 		CallCtx.Def = pDef;
 		CallCtx.Caller = pCurCtx;
-
 
 #ifdef DEBUGREC_SCRIPT
 		if (Game.FrameCounter >= DEBUGREC_START_FRAME)
@@ -1152,20 +1176,43 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			AddDbgRec(RCT_AulFunc, sCallText.getData(), sCallText.getLength()+1);
 			}
 #endif
+
 		// Execute
 #ifdef _DEBUG
 		C4AulScriptContext *pCtx = pCurCtx;
-#endif
-		if(pReturn > pCurVal)
-			PushValue(pFunc->Exec(&CallCtx, pPars, true));
-		else
-			pReturn->Set(pFunc->Exec(&CallCtx, pPars, true));
+#endif		
+		C4Value RVal(pFunc->Exec(&CallCtx, pPars, true));
 #ifdef _DEBUG
 		assert(pCtx == pCurCtx);
 #endif
 
-		// Remove parameters from stack
-		PopValuesUntil(pReturn);
+		// Notify debugger
+		if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+			{
+			// Make dummy context
+			C4AulScriptContext ctx;
+			ctx.Obj = pObj;
+			ctx.Def = pDef;
+			ctx.Caller = pCurCtx;
+			ctx.Return = pReturn;
+			ctx.Pars = pPars;
+			ctx.Vars = pPars + pFunc->GetParCount();
+			ctx.Func = pSFunc;
+			ctx.TemporaryScript = false;
+			ctx.CPos = NULL;
+			pDebug->DebugStepOut(pCurCtx->CPos + 1, &ctx, &RVal);
+			}
+
+		// Save return value onto stack
+		if(pReturn > pCurVal)
+			PushValue(pFunc->Exec(&CallCtx, pPars, true));
+		else
+			{
+			pReturn->Set(pFunc->Exec(&CallCtx, pPars, true));
+
+			// Remove parameters from stack
+			PopValuesUntil(pReturn);
+			}
 
 		// Continue
 		return NULL;

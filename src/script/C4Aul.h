@@ -52,6 +52,7 @@ class C4AulScriptFunc;
 class C4AulDefFunc;
 class C4AulScript;
 class C4AulScriptEngine;
+class C4AulDebug;
 class C4LangStringTable;
 
 struct C4AulContext;
@@ -206,6 +207,7 @@ enum C4AulBCCType
 	AB_FOREACH_NEXT, // foreach: next element
 	AB_RETURN,	// return statement
 	AB_ERR,			// parse error at this position
+	AB_DEBUG,		// debug break
 	AB_EOFN,		// end of function
 	AB_EOF,			// end of file
 	};
@@ -263,6 +265,7 @@ struct C4AulScriptContext : public C4AulContext
 
 	int ParCnt() const { return Vars - Pars; }
 	void dump(StdStrBuf Dump = StdStrBuf(""));
+	StdStrBuf ReturnDump(StdStrBuf Dump = StdStrBuf(""));
 	};
 
 // base function class
@@ -356,7 +359,6 @@ class C4AulScriptFunc : public C4AulFunc
 
 		friend class C4AulScript;
 	};
-
 
 // defined function class
 class C4AulDefFunc : C4AulFunc
@@ -528,7 +530,6 @@ class C4AulScript
 		C4LangStringTable *stringTable;
 	};
 
-
 // holds all C4AulScripts
 class C4AulScriptEngine : public C4AulScript
 	{
@@ -536,6 +537,7 @@ class C4AulScriptEngine : public C4AulScript
 		C4AList itbl; // include table
 		C4AList atbl; // append table
 		C4AulFuncMap FuncLookUp;
+		C4AulDebug *pDebug;
 
 	public:
 		int warnCnt, errCnt; // number of warnings/errors
@@ -575,6 +577,10 @@ class C4AulScriptEngine : public C4AulScript
 
 		bool DenumerateVariablePointers();
 		void UnLink(); // called when a script is being reloaded (clears string table)
+
+		bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
+		C4AulDebug *GetDebugger() const { return pDebug; }
+
 		// Compile scenario script data (without strings and constants)
 		void CompileFunc(StdCompiler *pComp);
 
