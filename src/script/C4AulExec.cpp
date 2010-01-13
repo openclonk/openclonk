@@ -54,6 +54,8 @@ const int MAX_VALUE_STACK = 1024;
 
 StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 	{
+	if (!Func)
+		return StdStrBuf("");
 	bool fDirectExec = !*Func->Name;
 	if(!fDirectExec)
 		{

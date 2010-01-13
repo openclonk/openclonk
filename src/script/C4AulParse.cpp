@@ -1678,6 +1678,7 @@ void C4AulParseState::Parse_Function()
 				Fn = 0;
 				return; */
 
+				AddBCC(AB_DEBUG);
 				AddBCC(AB_NIL);
 				AddBCC(AB_RETURN);
 				}
