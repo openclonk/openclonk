@@ -9,6 +9,79 @@ set(OC_CXX_FLAGS_DEBUG ${CMAKE_CXX_FLAGS_DEBUG})
 separate_arguments(OC_CXX_FLAGS_DEBUG)
 
 ############################################################################
+# User selectable options
+############################################################################
+option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
+option(USE_GL "Enable OpenGL support" ON)
+if(APPLE)
+	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)
+else()
+	SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
+endif()
+option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
+if(WIN32)
+	option(USE_DIRECTX "Enable DirectX support" ON)
+	if(EXISTS $ENV{DXSDK_DIR})
+		include_directories(SYSTEM $ENV{DXSDK_DIR}/Include)
+		if(${FIND_LIBRARY_USE_LIB64_PATHS})
+			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
+		else()
+			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
+		endif()
+	endif()
+else()
+	SET(USE_DIRECTX OFF)
+	SET(HAVE_FMOD OFF)
+endif()
+if(UNIX)
+	option(USE_X11 "Use X11 to create windows etc." ON)
+	option(USE_GTK "Use GTK for the developer mode" ON)
+else()
+	SET(USE_X11 OFF)
+	SET(USE_GTK OFF)
+endif()
+if(NOT USE_GL AND NOT USE_DIRECTX)
+	message(STATUS "No graphics display enabled; building dedicated server")
+	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
+endif()
+
+############################################################################
+# Check for compiler quirks and features
+############################################################################
+include(CheckCXXCompilerFlag)
+if(CMAKE_COMPILER_IS_GNUCXX)
+	CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
+	if(USE_GCC_STD_0X)
+		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
+	endif()
+endif()
+
+# ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
+include(CheckCXXSourceCompiles)
+foreach(FLAG ${OC_CXX_FLAGS})
+	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
+endforeach()
+set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
+CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
+
+if(MSVC_VERSION GREATER 1499)
+	# Activate minimal rebuild
+	list(APPEND OC_CXX_FLAGS_DEBUG /Gm)
+	if (NOT FIND_LIBRARY_USE_LIB64_PATHS)
+		# Activate edit-and-continue
+		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
+		list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
+	endif()
+	set(HAVE_PRECOMPILED_HEADERS ON CACHE INTERNAL "Compiler supports precompiled headers")
+endif()
+if(MSVC_VERSION)
+	# Suppress warnings about "non-secure" functions
+	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
+	# Disable warning C4244: 'conversion' conversion from 'type1' to 'type2', possible loss of data
+	list(APPEND OC_CXX_FLAGS "/wd4244")
+endif()
+
+############################################################################
 # List target source files. Don't directly create a target since we condi-
 # tionally add more sources depending on configuration options later.
 ############################################################################
@@ -561,79 +634,6 @@ macro(FINDLIB lib)
 endmacro(FINDLIB)
 # isilkor 09-05-29: Don't use FindOpenSSL, because that wants to link to ssleay
 FINDLIB(OPENSSL_LIBRARIES NAMES crypto libeay32)
-
-############################################################################
-# User selectable options
-############################################################################
-option(PROJECT_FOLDERS "Put source files into subfolders in project file" ON)
-option(USE_GL "Enable OpenGL support" ON)
-if(APPLE)
-	SET(INITIAL_USE_SDL_MAINLOOP_VALUE ON)
-else()
-	SET(INITIAL_USE_SDL_MAINLOOP_VALUE OFF)
-endif()
-option(USE_SDL_MAINLOOP "Use SDL to create windows etc." ${INITIAL_USE_SDL_MAINLOOP_VALUE})
-if(WIN32)
-	option(USE_DIRECTX "Enable DirectX support" ON)
-	if(EXISTS $ENV{DXSDK_DIR})
-		include_directories(SYSTEM $ENV{DXSDK_DIR}/Include)
-		if(${FIND_LIBRARY_USE_LIB64_PATHS})
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x64)
-		else()
-			list(APPEND CMAKE_LIBRARY_PATH $ENV{DXSDK_DIR}/Lib/x86)
-		endif()
-	endif()
-else()
-	SET(USE_DIRECTX OFF)
-	SET(HAVE_FMOD OFF)
-endif()
-if(UNIX)
-	option(USE_X11 "Use X11 to create windows etc." ON)
-	option(USE_GTK "Use GTK for the developer mode" ON)
-else()
-	SET(USE_X11 OFF)
-	SET(USE_GTK OFF)
-endif()
-if(NOT USE_GL AND NOT USE_DIRECTX)
-	message(STATUS "No graphics display enabled; building dedicated server")
-	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
-endif()
-
-############################################################################
-# Check for compiler quirks and features
-############################################################################
-include(CheckCXXCompilerFlag)
-if(CMAKE_COMPILER_IS_GNUCXX)
-	CHECK_CXX_COMPILER_FLAG("-std=gnu++0x" USE_GCC_STD_0X)
-	if(USE_GCC_STD_0X)
-		list(APPEND OC_CXX_FLAGS "-std=gnu++0x")
-	endif()
-endif()
-
-# ck 09-09-20: CMAKE_REQUIRED_FLAGS requires a string, not a list.
-include(CheckCXXSourceCompiles)
-foreach(FLAG ${OC_CXX_FLAGS})
-	set(OC_REQUIRED_FLAGS "${OC_REQUIRED_FLAGS} ${FLAG}")
-endforeach()
-set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
-CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
-
-if(MSVC_VERSION GREATER 1499)
-	# Activate minimal rebuild
-	list(APPEND OC_CXX_FLAGS_DEBUG /Gm)
-	if (NOT FIND_LIBRARY_USE_LIB64_PATHS)
-		# Activate edit-and-continue
-		list(REMOVE_ITEM OC_CXX_FLAGS_DEBUG /Zi)
-		list(APPEND OC_CXX_FLAGS_DEBUG /ZI /Gy)
-	endif()
-	set(HAVE_PRECOMPILED_HEADERS ON CACHE INTERNAL "Compiler supports precompiled headers")
-endif()
-if(MSVC_VERSION)
-	# Suppress warnings about "non-secure" functions
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -D_SCL_SECURE_NO_WARNINGS -D_CRT_NONSTDC_NO_WARNINGS)
-	# Disable warning C4244: 'conversion' conversion from 'type1' to 'type2', possible loss of data
-	list(APPEND OC_CXX_FLAGS "/wd4244")
-endif()
 
 ############################################################################
 # Precompiled header support, part 1 (pre-target)

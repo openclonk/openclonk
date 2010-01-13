@@ -569,7 +569,8 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
-StdMeshMaterialPass::StdMeshMaterialPass()
+StdMeshMaterialPass::StdMeshMaterialPass():
+	DepthWrite(true)
 {
 	Ambient[0]	= Ambient[1]	= Ambient[2]	= 1.0f; Ambient[3]	= 1.0f;
 	Diffuse[0]	= Diffuse[1]	= Diffuse[2]	= 1.0f; Diffuse[3]	= 1.0f;
@@ -622,6 +623,10 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		else if(token_name == "emissive")
 		{
 			ctx.AdvanceColor(true, Emissive);
+		}
+		else if(token_name == "depth_write")
+		{
+			DepthWrite = ctx.AdvanceBoolean();
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
