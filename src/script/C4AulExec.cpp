@@ -95,13 +95,14 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 		Dump.AppendFormat(" (%s:%d)",
 			Func->pOrgScript->ScriptName.getData(),
 			SGetLine(Func->pOrgScript->GetScript(), CPos ? CPos->SPos : Func->Script));
-	// Log it
+	// Return it
 	return Dump;
 	}
 
 void C4AulScriptContext::dump(StdStrBuf Dump)
 {
-	dump(ReturnDump(Dump));
+	// Log it
+	DebugLog(ReturnDump(Dump).getData());
 }
 
 class C4AulExec
