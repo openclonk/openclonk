@@ -1,0 +1,120 @@
+/*
+	Object selector HUD for ExtraSlot
+	
+	Little spin-off of the big Object selector
+	Is shown for ExtraSlots for weapons with munition etc.
+*/
+
+local container, myobject;
+
+protected func Construction()
+{
+	myobject = nil;
+	container = nil;
+	
+	// parallaxity
+	this["Parallaxity"] = [0,0];
+	
+	// visibility
+	this["Visibility"] = VIS_None;
+}
+
+public func MouseDragDone(obj, object target)
+{
+	// not on landscape
+	if(target) return;
+	
+	if(obj == myobject)
+		obj->Exit();
+}
+
+public func MouseDrag(int plr)
+{
+	if(plr != GetOwner()) return nil;
+	
+	return myobject;
+}
+
+public func MouseDrop(int plr, obj)
+{
+	if(plr != GetOwner()) return false;
+	if(GetType(obj) != C4V_C4Object) return false;
+	
+	// a collectible object
+	if(obj->GetOCF() & OCF_Collectible)
+	{
+		var objcontainer = obj->Contained();
+		
+		// already full: switch places with other object
+		if(myobject != nil)
+		{
+			var myoldobject = myobject;
+					
+			myoldobject->Exit();
+			if(container->Collect(obj))
+				objcontainer->Collect(myoldobject);
+			else
+				container->Collect(myoldobject);
+		}
+		// otherwise, just collect
+		else
+		{
+			container->Collect(obj);
+		}
+	}
+	return true;
+}
+
+public func SetObject(object obj)
+{
+
+	this["Visibility"] = VIS_Owner;
+
+	myobject = obj;
+	
+	RemoveEffect("IntRemoveGuard",myobject);
+	
+	if(!myobject) 
+	{	
+		SetGraphics(nil,nil,1);
+		SetName("$TxtEmpty$");
+		this["MouseDragImage"] = nil;
+	}
+	else
+	{
+		SetGraphics(nil,myobject->GetID(),1,GFXOV_MODE_IngamePicture);
+		this["MouseDragImage"] = myobject;
+		
+		SetName(myobject->GetName());
+		
+		// create an effect which monitors whether the object is removed
+		AddEffect("IntRemoveGuard",myobject,1,0,this);
+	}
+
+}
+
+public func FxIntRemoveGuardStop(object target, int num, int reason, bool temp)
+{
+	if(reason == 3)
+		if(target == myobject)
+			SetObject(nil,0);
+}
+
+public func Update()
+{
+	SetObject(container->Contents());
+}
+
+public func SetContainer(object c)
+{
+	if(container == c) return;
+	
+	container = c;
+	var clonk = container->Contained();
+	SetOwner(clonk->GetOwner());
+	container->~SetHUDObject(this);
+	
+	Update();
+	
+	this["Visibility"] = VIS_Owner;
+}
