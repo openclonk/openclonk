@@ -766,27 +766,36 @@ public func ControlThrow(object target, int x, int y)
 	}
 	return false;
 }
+static jumpx;
 
 public func ControlJump()
 {
 	var ydir = 0;
+	var xdir = 0;
 	
 	if(GetProcedure() == "WALK")
 	{
-		ydir = GetPhysical("Jump")*GetCon()/1000/100;
+		ydir = GetPhysical("Jump")/1000;
+		// forward jump
+		if(Abs(GetXDir()) >= 20)
+		{
+			xdir = jumpx;
+			//ydir = ydir*3/4;
+		}
 	}
 	else if(InLiquid())
 	{
 		if(!GBackSemiSolid(0,-1))
-			ydir = BoundBy(GetPhysical("Swim")/2500,24,38)*GetCon()/100;
+			ydir = BoundBy(GetPhysical("Swim")/2500,24,38);
 	}		
 	
 	if(ydir)
 	{
 		SetPosition(GetX(),GetY()-1);
 		SetAction("Jump");
-		SetSpeed(GetXDir(),-ydir);
-		
+		SetXDir(GetXDir()+(GetDir()*2-1)*xdir*GetCon()/100);
+		SetYDir(-ydir*GetCon()/100);
+		if(jumpx) Message("%d",this,GetXDir());
 		var iX=GetX(),iY=GetY(),iXDir=GetXDir(),iYDir=GetYDir();
 		if(SimFlight(iX,iY,iXDir,iYDir,25))
 			if(GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
