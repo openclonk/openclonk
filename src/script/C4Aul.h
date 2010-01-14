@@ -579,7 +579,7 @@ class C4AulScriptEngine : public C4AulScript
 		void UnLink(); // called when a script is being reloaded (clears string table)
 
 		bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
-		C4AulDebug *GetDebugger() const { return pDebug; }
+		inline C4AulDebug *GetDebugger() const { return pDebug; }
 
 		// Compile scenario script data (without strings and constants)
 		void CompileFunc(StdCompiler *pComp);

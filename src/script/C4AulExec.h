@@ -35,31 +35,74 @@ class C4AulExec
 		void AbortProfiling() { fProfiling=false; }
 		inline void StartDirectExec() { if (fProfiling) tDirectExecStart = timeGetTime(); }
 		inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += timeGetTime() - tDirectExecStart; }
-
+		
 		int GetContextDepth() const { return pCurCtx - Contexts + 1; }
 		C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }
 
 	private:
 
-		void PushContext(const C4AulScriptContext &rContext);
-		void PopContext();
+		void PushContext(const C4AulScriptContext &rContext)
+		{
+			if(pCurCtx >= Contexts + MAX_CONTEXT_STACK - 1)
+				throw new C4AulExecError(pCurCtx->Obj, "context stack overflow!");
+			*++pCurCtx = rContext;
+			// Trace?
+			if(iTraceStart >= 0)
+				{
+				StdStrBuf Buf("T");
+				Buf.AppendChars('>', ContextStackSize() - iTraceStart);
+				pCurCtx->dump(Buf);
+				}
+			// Profiler: Safe time to measure difference afterwards
+			if (fProfiling) pCurCtx->tTime = timeGetTime();
+		}
+
+		void PopContext()
+		{
+			if(pCurCtx < Contexts)
+				throw new C4AulExecError(pCurCtx->Obj, "context stack underflow!");
+			// Profiler adding up times
+			if (fProfiling)
+				{
+				time_t dt = timeGetTime() - pCurCtx->tTime;
+				if (dt && pCurCtx->Func)
+					pCurCtx->Func->tProfileTime += dt;
+				}
+			// Trace done?
+			if(iTraceStart >= 0)
+				{
+				if(ContextStackSize() <= iTraceStart)
+					{
+					iTraceStart = -1;
+					}
+				}
+			if(pCurCtx->TemporaryScript)
+				delete pCurCtx->Func->Owner;
+			pCurCtx--;
+		}
 
 		void CheckOverflow(int iCnt)
 		{
 			if(ValueStackSize() + iCnt > MAX_VALUE_STACK)
 				throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack overflow!");
 		}
-		
+
 		void PushString(C4String * Str)
 		{
 			CheckOverflow(1);
 			(++pCurVal)->SetString(Str);
 		}
-		
+
 		void PushArray(C4ValueArray * Array)
 		{
 			CheckOverflow(1);
 			(++pCurVal)->SetArray(Array);
+		}
+		
+		void PushPropList(C4PropList * PropList)
+		{
+			CheckOverflow(1);
+			(++pCurVal)->SetPropList(PropList);
 		}
 
 		void PushValue(const C4Value &rVal)
@@ -117,7 +160,7 @@ class C4AulExec
 		int LocalValueStackSize() const
 		{
 			return ContextStackSize()
-				? pCurVal - pCurCtx->Vars - pCurCtx->Func->SFunc()->VarNamed.iSize + 1
+				? pCurVal - pCurCtx->Vars - pCurCtx->Func->VarNamed.iSize + 1
 				: pCurVal - Values + 1;
 		}
 
@@ -128,11 +171,11 @@ class C4AulExec
 
 			// Typecheck parameters
 			if(!pPar1->ConvertTo(C4ScriptOpMap[iOpID].Type1))
-				throw new C4AulExecError(pCurCtx->Obj, 
+				throw new C4AulExecError(pCurCtx->Obj,
 					FormatString("operator \"%s\" left side: got \"%s\", but expected \"%s\"!",
 						C4ScriptOpMap[iOpID].Identifier, pPar1->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
 			if(!pPar2->ConvertTo(C4ScriptOpMap[iOpID].Type2))
-				throw new C4AulExecError(pCurCtx->Obj, 
+				throw new C4AulExecError(pCurCtx->Obj,
 					FormatString("operator \"%s\" right side: got \"%s\", but expected \"%s\"!",
 						C4ScriptOpMap[iOpID].Identifier, pPar2->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type2)).getData());
 		}
@@ -140,7 +183,7 @@ class C4AulExec
 		{
 			// Typecheck parameter
 			if(!pCurVal->ConvertTo(C4ScriptOpMap[iOpID].Type1))
-				throw new C4AulExecError(pCurCtx->Obj, 
+				throw new C4AulExecError(pCurCtx->Obj,
 					FormatString("operator \"%s\": got \"%s\", but expected \"%s\"!",
 						C4ScriptOpMap[iOpID].Identifier, pCurVal->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
 		}
