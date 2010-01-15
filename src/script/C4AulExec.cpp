@@ -1020,7 +1020,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			ctx.Func = pSFunc;
 			ctx.TemporaryScript = false;
 			ctx.CPos = NULL;
-			pDebug->DebugStepOut(pCurCtx->CPos + 1, &ctx, pReturn);
+			pDebug->DebugStepOut(pCurCtx->CPos + 1, pCurCtx, pReturn);
 			}
 
 		// Remove parameters from stack

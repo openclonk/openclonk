@@ -18,8 +18,10 @@ C4AulDebug::C4AulDebug()
 	}
 
 C4AulDebug::~C4AulDebug()
-	{
-	}
+{
+	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
+		{delete *it;}
+}
 
 void C4AulDebug::PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutBuf)
 	{
@@ -182,7 +184,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	else if (SEqualNoCase(szCmd, "LST"))
 	{
 		for (C4AulScript* script = ScriptEngine.Child0; script; script = script->Next) {
-			DebugLog(Config.AtRelativePath(script->ScriptName.getData()));
+			SendLine(Config.AtRelativePath(script->ScriptName.getData()));
 		}
 	}
 	
@@ -244,6 +246,15 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		}
 
 		
+	}
+	else if (SEqualNoCase(szCmd, "SST"))
+	{
+		std::list<StdStrBuf*>::iterator it = StackTrace.begin();
+		for (it++; it != StackTrace.end(); it++)
+		{
+			SendLine("AT", (*it)->getData());
+		}
+		SendLine("EST");
 	}
 	else
 		{
@@ -371,7 +382,8 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value
 		SendLine("STP", "Stepped");
 
 	// Position
-	SendLine("POS", FormatCodePos(pCtx, pCPos).getData());
+	ObtainStackTrace(pCtx, pCPos);
+	SendLine("POS", StackTrace.front()->getData());
 
 	// Suspend until we get some command
 	while(eState == DS_Stop)
@@ -384,6 +396,23 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value
 	// Do whatever we've been told.
 	Game.HaltCount--;
 	}
+
+void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
+{
+	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
+		{delete *it;}
+	StackTrace.clear();
+	for (int ctxNum = pExec->GetContextDepth()-1; ctxNum >= 0; ctxNum--)
+	{
+		C4AulScriptContext* c = pExec->GetContext(ctxNum);
+		C4AulBCC* _cpos = c == pCtx ? pCPos : c->CPos;
+		if (_cpos)
+		{
+			StdStrBuf* format = new StdStrBuf(FormatCodePos(c, _cpos));
+			StackTrace.push_back(format);
+		}
+	}
+}
 
 StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 	{

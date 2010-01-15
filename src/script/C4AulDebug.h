@@ -28,6 +28,11 @@ class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass
 			};
 		DebugState eState;
 		int iStepCallDepth;
+		
+		// temporary stuff
+		std::list<StdStrBuf*> StackTrace;
+		
+		void ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos);
 
 	private:
 
