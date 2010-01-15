@@ -1,16 +1,18 @@
 /*-- Musket Ball --*/
 
 #strict 2
+#include L_ST
 
 public func IsAmmo() { return 1; }
 public func BaseDamage() { return 20; }
 public func MaxDamage() { return 30; }
 
+public func MaxStackCount() { return 8; }
+
 protected func Hit()
 {
 	//Stops bullets from driving over the terrain. Should be removed as soon as ricochets are in physics.
 	SetVelocity(Random(359), 5);
-	Explode(5);
 }
 
 private func Check()
@@ -26,7 +28,6 @@ private func BulletWound(object pObj)
 
 	Sound("FleshHit*"); //Bullet-wound sound
 	Punch(pObj,RandomX(BaseDamage(),(MaxDamage()-BaseDamage())));
-//	pObj->CreateObject(MBLL); //shoddy ammo-saving script
 	RemoveObject();
 }
 
