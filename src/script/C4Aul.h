@@ -439,6 +439,7 @@ class C4AulScript
 #ifdef _MSC_VER
 	friend class C4AulScript;
 #endif
+	friend class C4AulDebug;
 	public:
 		C4AulScript(); // constructor
 		virtual ~C4AulScript(); // destructor
@@ -533,6 +534,7 @@ class C4AulScript
 // holds all C4AulScripts
 class C4AulScriptEngine : public C4AulScript
 	{
+	
 	protected:
 		C4AList itbl; // include table
 		C4AList atbl; // append table
@@ -586,6 +588,7 @@ class C4AulScriptEngine : public C4AulScript
 
 		friend class C4AulFunc;
 		friend class C4AulParseState;
+		friend class C4AulDebug;
 	};
 
 extern C4AulScriptEngine ScriptEngine;

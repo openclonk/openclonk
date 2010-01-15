@@ -4,6 +4,7 @@
 #include <C4GameControl.h>
 #include <C4Game.h>
 #include <C4MessageInput.h>
+#include <C4Log.h>
 
 #include "C4AulDebug.h"
 #include "C4AulExec.h"
@@ -178,6 +179,72 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 			Game.Pause();
 			szAnswer = "Game paused.";
 			}
+	else if (SEqualNoCase(szCmd, "LST"))
+	{
+		for (C4AulScript* script = ScriptEngine.Child0; script; script = script->Next) {
+			DebugLog(Config.AtRelativePath(script->ScriptName.getData()));
+		}
+	}
+	
+	// toggle breakpoint
+	else if (SEqualNoCase(szCmd, "TBR"))
+	{
+		StdStrBuf scriptPath;
+		scriptPath.CopyUntil(szData, ':');
+		const char* lineStart = szData+1+scriptPath.getLength();
+		int line = strtol(szData+1+scriptPath.getLength(), const_cast<char**>(&lineStart), 10);
+		
+		C4AulScript* script;
+		for (script = ScriptEngine.Child0; script; script = script->Next)
+		{
+			if (SEqualNoCase(Config.AtRelativePath(script->ScriptName.getData()), scriptPath.getData()))
+				break;
+		}
+		
+		if (script)
+		{
+			C4AulBCC* foundDebugChunk = NULL;
+			const char* scriptText = script->GetScript();
+			for (C4AulBCC* chunk = script->Code; chunk; chunk++)
+			{
+				switch (chunk->bccType) {
+					case AB_DEBUG:
+						int lineOfThisOne;
+						if ((lineOfThisOne = SGetLine(scriptText, chunk->SPos)) == line)
+						{
+							foundDebugChunk = chunk;
+							goto Done;
+						}
+						/*else {
+							DebugLogF("Debug chunk at %d", lineOfThisOne);
+						}*/
+
+						break;
+					case AB_EOF:
+						goto Done;
+					default:
+						break;
+				}
+			}
+			Done:
+			if (foundDebugChunk)
+			{
+				foundDebugChunk->Par.i = !foundDebugChunk->Par.i; // activate breakpoint
+			}
+			else
+			{
+				szAnswer = "Can't set breakpoint (wrong line?)";
+				fOkay = false;
+			}
+		}
+		else
+		{
+			fOkay = false;
+			szAnswer = "Can't find script";
+		}
+
+		
+	}
 	else
 		{
 		fOkay = false;
