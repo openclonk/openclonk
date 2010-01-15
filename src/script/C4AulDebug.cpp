@@ -313,7 +313,7 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value
 	Execute(0);
 	
 	// Get current script context
-	int iCallDepth = pExec->GetContextDepth();	
+	int iCallDepth = pExec->GetContextDepth();
 	C4AulScriptContext *pCtx = pExec->GetContext(iCallDepth-1);
 
 	// When we're stepping out of a script function, the context of the returning
@@ -420,5 +420,5 @@ StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 	const char *szScript = pCtx->Func->pOrgScript->GetScript();
 	int iLine = SGetLine(szScript, pCPos->SPos);
 	// Format
-	return FormatString("%s:%d", Config.AtRelativePath(pCtx->Func->Owner->ScriptName.getData()), iLine);
+	return FormatString("%s:%d", Config.AtRelativePath(pCtx->Func->pOrgScript->ScriptName.getData()), iLine);
 	}

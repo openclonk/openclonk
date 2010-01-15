@@ -148,7 +148,8 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 	// Debugger pointer
 	C4AulDebug * const pDebug = ::ScriptEngine.GetDebugger();
-	pDebug->DebugStepIn(pCPos);
+	if (pDebug)
+		pDebug->DebugStepIn(pCPos);
 
 	// Save start context
 	C4AulScriptContext *pOldCtx = pCurCtx;
