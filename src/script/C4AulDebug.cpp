@@ -403,8 +403,10 @@ const char* C4AulDebug::RelativePath(StdStrBuf &path)
 	const char* result = Config.AtRelativePath(p);
 	if (p != result)
 		return result;
-	// try scenario-relative path
-	return GetRelativePathS(p, ::Game.ScenarioFile.GetName());
+	// try path relative to scenario container
+	StdStrBuf scenarioContainerPath;
+	GetParentPath(::Game.ScenarioFile.GetName(), &scenarioContainerPath);
+	return GetRelativePathS(p, scenarioContainerPath.getData());
 }
 
 void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
