@@ -184,7 +184,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 	else if (SEqualNoCase(szCmd, "LST"))
 	{
 		for (C4AulScript* script = ScriptEngine.Child0; script; script = script->Next) {
-			SendLine(Config.AtRelativePath(script->ScriptName.getData()));
+			SendLine(RelativePath(script->ScriptName));
 		}
 	}
 	
@@ -199,7 +199,7 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		C4AulScript* script;
 		for (script = ScriptEngine.Child0; script; script = script->Next)
 		{
-			if (SEqualNoCase(Config.AtRelativePath(script->ScriptName.getData()), scriptPath.getData()))
+			if (SEqualNoCase(RelativePath(script->ScriptName), scriptPath.getData()))
 				break;
 		}
 		
@@ -397,6 +397,16 @@ void C4AulDebug::StepPoint(C4AulBCC *pCPos, C4AulScriptContext *pRetCtx, C4Value
 	Game.HaltCount--;
 	}
 
+const char* C4AulDebug::RelativePath(StdStrBuf &path)
+{
+	const char* p = path.getData();
+	const char* result = Config.AtRelativePath(p);
+	if (p != result)
+		return result;
+	// try scenario-relative path
+	return GetRelativePathS(p, ::Game.ScenarioFile.GetName());
+}
+
 void C4AulDebug::ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos)
 {
 	for (std::list<StdStrBuf*>::iterator it = StackTrace.begin(); it != StackTrace.end(); it++)
@@ -420,5 +430,5 @@ StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 	const char *szScript = pCtx->Func->pOrgScript->GetScript();
 	int iLine = SGetLine(szScript, pCPos->SPos);
 	// Format
-	return FormatString("%s:%d", Config.AtRelativePath(pCtx->Func->pOrgScript->ScriptName.getData()), iLine);
+	return FormatString("%s:%d", RelativePath(pCtx->Func->pOrgScript->ScriptName), iLine);
 	}

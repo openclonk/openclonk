@@ -33,6 +33,7 @@ class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass
 		std::list<StdStrBuf*> StackTrace;
 		
 		void ObtainStackTrace(C4AulScriptContext* pCtx, C4AulBCC* pCPos);
+		const char* RelativePath(StdStrBuf &path);
 
 	private:
 
