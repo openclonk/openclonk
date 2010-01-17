@@ -520,8 +520,8 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	// do not use secondary when using primary and the other way round
 	if (using)
 	{
-		if (ctrl == CON_Use && alt) return false;
-		if (ctrl == CON_UseAlt && !alt) return false;
+		if (ctrl == CON_Use && alt) return true;
+		if (ctrl == CON_UseAlt && !alt) return true;
 	}
 
 	// for the use command

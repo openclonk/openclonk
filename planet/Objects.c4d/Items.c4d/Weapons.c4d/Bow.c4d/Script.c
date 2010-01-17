@@ -27,7 +27,7 @@ protected func ControlUse(object clonk, int x, int y)
 	}
 	aimtime = 40;
 	
-	if(!Contents(0)) return false;
+	if(!Contents(0)) return true;
 	
 	return true;
 }
