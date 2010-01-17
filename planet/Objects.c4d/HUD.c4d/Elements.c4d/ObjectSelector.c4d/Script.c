@@ -166,7 +166,7 @@ public func MouseDrop(int plr, obj)
 	if(plr != GetOwner()) return false;
 	if(GetType(obj) != C4V_C4Object) return false;
 	if(!crew) return false;
-	
+
 	// a collectible object
 	if(obj->GetOCF() & OCF_Collectible)
 	{
@@ -185,17 +185,25 @@ public func MouseDrop(int plr, obj)
 			if(myobject != nil)
 			{
 				var myoldobject = myobject;
-					
+				
+				// 1. exit my object
 				myoldobject->Exit();
-				if(crew->Collect(obj,hotkey-1))
-					objcontainer->Collect(myoldobject);
+				// 2. try to enter the other object
+				if(crew->Collect(obj,false,hotkey-1))
+				{
+					// 3. try to enter my object into other container
+					if(!(objcontainer->Collect(myoldobject,true)))
+						// -> otherwise, recollect my object
+						crew->Collect(myoldobject,false,hotkey-1);
+				}
+				// -> otherwise, recollect my object
 				else
-					crew->Collect(myoldobject,hotkey-1);
+					crew->Collect(myoldobject,false,hotkey-1);
 			}
 			// otherwise, just collect
 			else
 			{
-				crew->Collect(obj,hotkey-1);
+				crew->Collect(obj,false,hotkey-1);
 			}
 			return true;
 		}

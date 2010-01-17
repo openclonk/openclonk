@@ -20,7 +20,7 @@ protected func Construction()
   _inherited(...);
   // shovel...
   var shov = CreateObject(SHVL,0,0,GetOwner());
-  Collect(shov,2);
+  Collect(shov,false,2);
   // Clonks mit Magiephysikal aus fehlerhaften Szenarien korrigieren
   if (GetID () == CLNK)
     if (GetPhysical ("Magic", 1))

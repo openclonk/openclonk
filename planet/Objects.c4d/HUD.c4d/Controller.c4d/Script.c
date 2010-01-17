@@ -242,7 +242,9 @@ public func OnSelectionChanged(int old, int new)
 public func OnSlotObjectChanged(int slot)
 {
 	//Log("slot %d changed", slot);
-	var obj = GetCursor(GetOwner())->GetItem(slot);
+	var cursor = GetCursor(GetOwner());
+	if(!cursor) return;
+	var obj = cursor->GetItem(slot);
 	actionbar[slot]->SetObject(obj, ACTIONTYPE_INVENTORY, slot);
 }
 

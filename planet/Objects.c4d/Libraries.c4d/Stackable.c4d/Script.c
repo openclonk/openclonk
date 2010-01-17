@@ -60,8 +60,7 @@ public func Stack(object obj)
 public func SetStackCount(int amount)
 {
 	count = amount;
-	UpdatePicture();
-	UpdateMass();
+	Update();
 }
 
 public func TakeObject()
@@ -76,11 +75,32 @@ public func TakeObject()
 		SetStackCount(count-1);
 		var take = CreateObject(GetID(),0,0,GetOwner());
 		take->SetStackCount(1);
+		Update();
 		return take;
 	}
 }
 
-public func UpdatePicture()
+public func Update()
+{
+	UpdatePicture();
+	UpdateMass();
+	UpdateName();
+	// notify hud
+	if(Contained())
+	{
+		// has an extra slot
+		if(Contained()->~HasExtraSlot())
+			Contained()->~NotifyHUD();
+		// is a clonk with new inventory system
+		else if(Contained()->~GetSelected())
+		{
+			var pos = Contained()->GetItemPos(this);
+			Contained()->~OnSlotFull(pos);
+		}
+	}
+}
+
+private func UpdatePicture()
 {
 	var one = GetStackCount()%10;
 	var ten = (GetStackCount()/10)%10;
@@ -98,18 +118,22 @@ public func UpdatePicture()
 	}
 	SetGraphics(Format("%d",hun),NUMB,3,GFXOV_MODE_Picture);
 	SetObjDrawTransform(400,0,-5000,0,400,+10000, 3);
-	
+}
+
+private func UpdateName()
+{
 	SetName(Format("%dx %s",GetStackCount(),GetID()->GetName()));
 }
 
-public func UpdateMass()
+private func UpdateMass()
 {
 	SetMass(GetID()->GetMass()*Max(GetStackCount(),1)/MaxStackCount());
 }
 
 protected func RejectEntrance(object into)
 {
-	return TryPutInto(into);
+	if(TryPutInto(into)) return true;
+	return _inherited(into,...);
 }
 
 /* Value */
@@ -117,7 +141,7 @@ protected func RejectEntrance(object into)
 public func CalcValue(object pInBase, int iForPlayer)
 {
   // Je nach Anzahl
-  return(GetID()->GetValue()*Max(GetStackCount(),1)/MaxStackCount());
+  return GetID()->GetValue()*Max(GetStackCount(),1)/MaxStackCount();
 }
 
 private func TryPutInto( object into )
@@ -151,8 +175,7 @@ private func TryPutInto( object into )
 				}
 	}
 	
-	UpdatePicture();
-	UpdateMass();
+	Update();
 	
 	return false;
 }

@@ -4832,13 +4832,7 @@ void C4Object::UpdateSolidMask(bool fRestoreAttachedObjects)
 	}
 
 bool C4Object::Collect(C4Object *pObj)
-	{
-	// Special: attached Flag may not be collectable
-	if (pObj->Def->id==C4ID_Flag)
-		if (!(Game.Rules & C4RULE_FlagRemoveable))
-			if (pObj->Action.pActionDef)
-				if (SEqual(pObj->Action.pActionDef->GetName(),"FlyBase"))
-					return false;       
+	{ 
 	// Object enter container
 	bool fRejectCollect;
 	if(!pObj->Enter(this, true, false, &fRejectCollect))

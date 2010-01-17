@@ -16,6 +16,8 @@ private func JoinPlayer(int plr)
   var obj=GetCrew(plr);
   obj->DoEnergy(100000);
   obj->SetPosition(10+Random(50), LandscapeHeight()/2-30);
+  obj->CreateContents(BOW1);
+  obj->CreateContents(ARRW);
   return true;
 }
 

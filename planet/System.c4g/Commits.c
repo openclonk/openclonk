@@ -185,6 +185,16 @@ global func CheckVisibility(int iPlr)
   return false;
 }
 
+global func Normalize(int iAngle, int iStart, int iPrecision) {
+  if(!iPrecision) iPrecision = 1;
+  var iEnd = iPrecision*360+iStart;
+  
+  while(iAngle<iStart) iAngle += iPrecision*360;
+  while(iAngle>=iEnd) iAngle -= iPrecision*360;
+
+  return iAngle;
+}
+
 /*-- Ringwaul --*/
 
 global func MaterialDepthCheck(int iX,int iY,string szMaterial,int iDepth)

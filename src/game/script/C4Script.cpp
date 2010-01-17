@@ -428,12 +428,12 @@ static bool FnExit(C4AulObjectContext *cthr, long tx, long ty, long tr, long txd
 		itofix(trdir) / 10);
 }
 
-static bool FnCollect(C4AulObjectContext *cthr, C4Object *pItem)
+static bool FnCollect(C4AulObjectContext *cthr, C4Object *pItem, bool ignoreOCF)
 {
 	// local call / safety
 	if (!pItem) return false;
 	// check OCF of collector (MaxCarry)
-	if (cthr->Obj->OCF & OCF_Collection)
+	if ((cthr->Obj->OCF & OCF_Collection) || ignoreOCF)
 		// collect
 		return !!cthr->Obj->Collect(pItem);
 	// failure

@@ -173,9 +173,9 @@ public func Switch2Items(int one, int two)
 		this->~OnSlotEmpty(two);
 }
 
-public func Collect(object item, int pos)
+public func Collect(object item, bool ignoreOCF, int pos)
 {
-	if(pos == nil) return _inherited(item);
+	if(pos == nil) return _inherited(item,ignoreOCF);
 	// fail if the specified slot is full
 	if(GetItem(pos) != nil) return false;
 	if(!item) return false;
@@ -270,6 +270,13 @@ protected func Ejection(object obj)
 
 protected func RejectCollect(id objid, object obj)
 {
+	for(var i=0; Contents(i); ++i)
+	{
+		if(Contents(i)->~HasExtraSlot())
+			if(Contents(i)->Collect(obj,true))
+				return true;
+	}
+
 	// check max contents
 	if (ContentsCount() >= MaxContentsCount()) return true;
 	return _inherited(objid,obj,...);
