@@ -108,15 +108,15 @@ private func UpdatePicture()
 	
 	if(hun > 0)
 	{
-		SetGraphics(Format("%d",hun),NUMB,1,GFXOV_MODE_Picture);
+		SetGraphics(Format("%d",hun),NUMB,10,GFXOV_MODE_Picture);
 		SetObjDrawTransform(400,0,-19000,0,400,+10000, 1);
 	}
 	if(ten > 0)
 	{
-		SetGraphics(Format("%d",ten),NUMB,2,GFXOV_MODE_Picture);
+		SetGraphics(Format("%d",ten),NUMB,11,GFXOV_MODE_Picture);
 		SetObjDrawTransform(400,0,-12000,0,400,+10000, 2);
 	}
-	SetGraphics(Format("%d",hun),NUMB,3,GFXOV_MODE_Picture);
+	SetGraphics(Format("%d",hun),NUMB,12,GFXOV_MODE_Picture);
 	SetObjDrawTransform(400,0,-5000,0,400,+10000, 3);
 }
 

@@ -25,7 +25,7 @@ protected func ControlUse(object clonk, int x, int y)
 			obj->Enter(this);
 		}
 	}
-	aimtime = 40;
+	aimtime = 30;
 	
 	if(!Contents(0)) return true;
 	
@@ -35,11 +35,10 @@ protected func ControlUse(object clonk, int x, int y)
 public func ControlUseHolding(object clonk, int x, int y)
 {
 	// check procedure
-	var p = clonk->GetProcedure();
-	if(p != "WALK" && p != "ATTACH" && p != "FLIGHT")	return -1;
+	if(!ClonkCanAim(clonk)) return -1;
 
 	// angle
-	var angle = Normalize(Angle(0,0,x,y),-180);
+	var angle = Angle(0,0,x,y);
 	// adapt aiming animation
 	// ...
 	if(aimtime > 0) aimtime--;
@@ -50,7 +49,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 	if(aimtime > 0)
 		Message("Reload arrow%s",clonk,points);
-	else if(Abs(angle) > 160 || clonk->GetDir() == 1 && angle < 0 || clonk->GetDir() == 0 && angle > 0)
+	else if(!ClonkAimLimit(clonk,angle))
 		Message("Cannot aim there",clonk);
 	else
 		Message("Aiming",clonk);
@@ -61,12 +60,10 @@ protected func ControlUseStop(object clonk, int x, int y)
 	Message("",clonk);
 	// "canceled"
 	if(aimtime > 0) return true;
+	if(!ClonkCanAim(clonk)) return true;
 	
-	var p = clonk->GetProcedure();
-	if(p != "WALK" && p != "ATTACH" && p != "FLIGHT") return true;
-
-	var angle = Normalize(Angle(0,0,x,y),-180);
-	if(Abs(angle) > 160 || clonk->GetDir() == 1 && angle < 0 || clonk->GetDir() == 0 && angle > 0) return true;
+	var angle = Angle(0,0,x,y);
+	if(!ClonkAimLimit(clonk,angle)) return true;
 	
 	if(Contents(0))
 	{
@@ -79,6 +76,21 @@ protected func ControlUseStop(object clonk, int x, int y)
 	return true;
 }
 
+private func ClonkAimLimit(object clonk, int angle)
+{
+	angle = Normalize(angle,-180);
+	if(Abs(angle) > 160) return false;
+	if(clonk->GetDir() == 1 && angle < 0) return false;
+	if(clonk->GetDir() == 0 && angle > 0) return false;
+	return true;
+}
+
+private func ClonkCanAim(object clonk)
+{
+	var p = clonk->GetProcedure();
+	if(p != "WALK" && p != "ATTACH" && p != "FLIGHT") return false;
+	return true;
+}
 
 func RejectCollect(id arrowid, object arrows)
 {

@@ -1,4 +1,12 @@
-/* Effect for hit check */
+/*
+	Effect for hit check
+	Authors: Newton, Boni
+	
+	Facilitates any hit check of a projectile. The Projectile hits anything
+	which is either alive or returns for IsProjectileTarget(object projectile,
+	object shooter) true. If the projectile hits something, it calls
+	HitObject(object target) in the projectile.
+*/
 
 // EffectVars:
 // 0 - old X-Position
@@ -19,7 +27,36 @@ global func FxHitCheckStart(object target, int effect, int temp, object byObj, b
 	EffectVar(2, target, effect) = byObj;
 	EffectVar(4, target, effect) = false;
 	EffectVar(5, target, effect) = neverShooter;
+	
+	// c4d_object has a hitcheck too -> change to vehicle to supress that
+	if(target->GetCategory() & C4D_Object)
+		target->SetCategory((target->GetCategory() - C4D_Object) | C4D_Vehicle);
 }	
+
+global func FxHitCheckStop(object target, int effect, int reason, bool temp)
+{
+	if(temp) return;
+	
+	target->SetCategory(target->GetID()->GetCategory());
+}
+
+global func FxHitCheckEffect(string newname)
+{
+	if(newname == "HitCheck") return -2;
+}
+
+global func FxHitCheckAdd(object target, int effect, string neweffectname, int newtimer, byObj, neverShooter)
+{
+	EffectVar(0, target, effect) = target->GetX();
+	EffectVar(1, target, effect) = target->GetY();
+	if(!byObj)
+		byObj = target;
+	if(byObj->Contained())
+		byObj = (byObj->Contained());
+	EffectVar(2, target, effect) = byObj;
+	EffectVar(4, target, effect) = false;
+	EffectVar(5, target, effect) = neverShooter;
+}
 
 global func FxHitCheckTimer(object target, int effect, int time)
 {
@@ -54,7 +91,7 @@ global func FxHitCheckTimer(object target, int effect, int time)
 			//if(!CheckEnemy(obj,target)) continue;
 
 			// IsBulletTarget or Alive will be hit
-			if(obj->~IsProjectileTarget(target->GetID(),target,shooter) || obj->GetOCF() & OCF_Alive)
+			if(obj->~IsProjectileTarget(target,shooter) || obj->GetOCF() & OCF_Alive)
 			{
 				//Log("%s IsBulletTarget: %i, %s, %s","HitCheck",GetName(obj),GetID(target),GetName(target),GetName(EffectVar(2, target, effect)));
 				return(target->~HitObject(obj));

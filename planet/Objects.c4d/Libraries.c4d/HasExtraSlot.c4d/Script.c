@@ -14,9 +14,10 @@ local ExtraHUD;
 func HasExtraSlot() { return true; }
 func SetHUDObject(object extraslot) { ExtraHUD = extraslot; }
 
-func NotifyHUD() { ExtraHUD->Update(); }
+func NotifyHUD() { if(ExtraHUD) ExtraHUD->Update(); }
 func Collection2() { NotifyHUD(); return _inherited(...); }
 func Ejection() { NotifyHUD(); return _inherited(...); }
+func Departure() { if(Contents(0)) Contents(0)->Exit(); }
 
 func Definition(def) {
   SetProperty("Name", "ExtraSlot", def);

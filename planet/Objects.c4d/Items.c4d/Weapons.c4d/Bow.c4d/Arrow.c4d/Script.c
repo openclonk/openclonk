@@ -12,8 +12,14 @@
 #include L_ST
 
 public func IsArrow() { return true; }
-public func MaxStackCount() { return 20; }
-public func ArrowStrength() { return(10); }
+public func MaxStackCount() { return 15; }
+public func ArrowStrength() { return 10; }
+
+protected func Construction()
+{
+	SetR(90);
+	return _inherited(...);
+}
 
 public func Launch(int angle, int str, object shooter)
 {
@@ -22,9 +28,8 @@ public func Launch(int angle, int str, object shooter)
 	SetXDir(xdir);
 	SetYDir(ydir);
 	SetR(angle);
-	SetCategory(C4D_Vehicle);
 	
-	AddEffect("HitCheck", this, 1,1, 0,0,shooter);
+	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 	AddEffect("InFlight", this, 1,1, this);
 }
 
@@ -41,14 +46,15 @@ private func Stick()
 	
 		var x=Sin(GetR(),+12);
 		var y=Cos(GetR(),-12);
-		if(GBackSolid(x,y))
+		var mat = GetMaterial(x,y);
+		if(mat != -1)
 		{
+			if(GetMaterialVal("DigFree","Material",mat))
+			{
 			// stick in landscape
 			SetVertex(2,VTX_Y,-15,1);
+			}
 		}
-
-		if(!(GetCategory() & C4D_Object))
-			SetCategory(C4D_Object);
 	}
 }
 
@@ -95,7 +101,6 @@ public func FxInFlightStart(object target, int effect, int temp)
 }
 public func FxInFlightTimer(object target, int effect, int time)
 {
-	// rotate arrow according to speed
 	var oldx = EffectVar(0,target,effect);
 	var oldy = EffectVar(1,target,effect);
 	var newx = GetX();
@@ -112,12 +117,21 @@ public func FxInFlightTimer(object target, int effect, int time)
 	}
 	else
 		EffectVar(2,target,effect) = 0;
-	
+
+	// rotate arrow according to speed
 	var anglediff = Normalize(Angle(oldx,oldy,newx,newy)-GetR(),-180);
 	SetRDir(anglediff/2);
 	EffectVar(0,target,effect) = newx;
 	EffectVar(1,target,effect) = newy;
 
+}
+
+func UpdatePicture()
+{
+	var count = GetStackCount();
+	if(count >= 9) SetGraphics(nil);
+	else SetGraphics(Format("%d",count));
+	_inherited(...);
 }
 
 func Entrance()

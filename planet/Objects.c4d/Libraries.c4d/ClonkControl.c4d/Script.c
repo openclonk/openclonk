@@ -273,8 +273,9 @@ protected func RejectCollect(id objid, object obj)
 	for(var i=0; Contents(i); ++i)
 	{
 		if(Contents(i)->~HasExtraSlot())
-			if(Contents(i)->Collect(obj,true))
-				return true;
+			if(!(Contents(i)->Contents(0)))
+				if(Contents(i)->Collect(obj,true))
+					return true;
 	}
 
 	// check max contents
