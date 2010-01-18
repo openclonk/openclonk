@@ -3,31 +3,28 @@
 #strict 2
 #include L_ST
 
-public func IsAmmo() { return 1; }
-public func BaseDamage() { return 20; }
-public func MaxDamage() { return 30; }
-
 public func MaxStackCount() { return 8; }
+
+public func IsMusketAmmo() { return 1; }
+
 
 protected func Hit()
 {
 	//Stops bullets from driving over the terrain. Should be removed as soon as ricochets are in physics.
 	SetVelocity(Random(359), 5);
+	RemoveEffect("HitCheck",this);
 }
 
-private func Check()
+public func EffectShot(object shooter)
 {
-	var pVictim = FindObject(Find_OCF(OCF_Alive),Find_InRect(-15,-15,30,30),Find_NoContainer());
-	// If bullet is flying, hurt victim
-	if(GetOCF() & OCF_HitSpeed4 && GetOCF() & OCF_NotContained) { if(pVictim) BulletWound(pVictim); }
+	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 }
 
-private func BulletWound(object pObj)
+private func HitObject(object pVictim)
 {
-	Message("Hit!|%d", pObj, pObj->GetEnergy()); //Remove when sound works
+	Message("Hit!|%d", pVictim, pVictim->GetEnergy()); //Remove when sound works
 
-	Sound("FleshHit*"); //Bullet-wound sound
-	Punch(pObj,RandomX(BaseDamage(),(MaxDamage()-BaseDamage())));
+	Punch(pVictim,RandomX(20,30));
 	RemoveObject();
 }
 
