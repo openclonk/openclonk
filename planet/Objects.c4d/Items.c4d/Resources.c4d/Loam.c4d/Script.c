@@ -19,7 +19,7 @@ func Hit()
 func ControlUse(object clonk, int x, int y)
 {
   // Clonk must stand on ground
-	if(clonk->GetAction() != "Walk") return false;
+	if(clonk->GetProcedure() != "WALK") return true;
 
   // Gfx
 	clonk->SetAction("Bridge");
@@ -87,4 +87,3 @@ public func ControlUseStop(object clonk, int x, int y)
 	return true;
 }
 
-public func IsTool() { return 1; }
