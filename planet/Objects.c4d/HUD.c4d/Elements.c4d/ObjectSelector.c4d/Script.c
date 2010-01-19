@@ -52,6 +52,12 @@ protected func Construction()
 	this["Visibility"] = VIS_None;
 }
 
+protected func Destruction()
+{
+	if(subselector)
+		subselector->RemoveObject();
+}
+
 public func MouseSelectionAlt(int plr)
 {
 	if(!crew) return false;
@@ -229,12 +235,16 @@ public func MouseDrop(int plr, obj)
 	}
 }
 
+
+
 public func Clear()
 {
 	myobject = nil;
 	actiontype = -1;
 	hotkey = 0;
 	this["Visibility"] = VIS_None;
+	if(subselector)
+		subselector->RemoveObject();
 }
 
 public func SetObject(object obj, int type, int pos)
@@ -282,8 +292,11 @@ public func SetObject(object obj, int type, int pos)
 			// if object has extra slot, show it
 			if(myobject->~HasExtraSlot())
 			{
-				subselector = CreateObject(ACB2,0,0,GetOwner());
-				subselector->SetPosition(GetX()+16,GetY()+16);
+				if(!subselector)
+				{
+					subselector = CreateObject(ACB2,0,0,GetOwner());
+					subselector->SetPosition(GetX()+16,GetY()+16);
+				}
 				subselector->SetContainer(myobject);
 			}
 			else if(subselector)

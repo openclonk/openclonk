@@ -19,7 +19,7 @@ func Hit()
 func ControlUse(object clonk, int x, int y)
 {
   // Clonk must stand on ground
-	if(clonk->GetProcedure() != "WALK") return true;
+	if(clonk->GetProcedure() != "WALK") return false;
 
   // Gfx
 	clonk->SetAction("Bridge");
