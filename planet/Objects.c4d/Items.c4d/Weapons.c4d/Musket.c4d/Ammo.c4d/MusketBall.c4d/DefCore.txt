@@ -13,5 +13,5 @@ Picture=0,0,4,4
 Value=2
 Mass=2
 Collectible=1
-Components=METL=1;
+Components=METL=1;BPDR=1;
 Rebuy=1

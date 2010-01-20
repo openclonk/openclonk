@@ -131,10 +131,10 @@ global func PlaceObjects(id id,int amount,string strmat,int x,int y,int wdt,int 
 }
 
 global func CastObjects(iddef,am,lev,x,y,angs,angw) {
-	if(!angw) angw = 180;
+	if(!angw) angw = 360;
   for(var i=0; i<am; i++) {
 		var obj = CreateObject(iddef,x,y,NO_OWNER);
-		var ang = angs + RandomX(-angw/2,angw/2);
+		var ang = angs-90 + RandomX(-angw/2,angw/2);
 		var xdir = xdir=Cos(ang,lev) + RandomX(-3,3);
     obj->SetR(Random(360));
     obj->SetXDir(xdir);
@@ -239,7 +239,23 @@ global func LaunchProjectile(int iAngle, int iDistance, iSpeed, int iX, int iY, 
 	var iXOffset=Sin(180-iAngle, iDistance);
 	var iYOffset=Cos(180-iAngle, iDistance);
 
-	if(Contained()!=nil && iRelativeX==true) { if(Contained()->GetDir()==0) iX=-(iX); }
-	if(Contained()!=nil) Exit(iXOffset+iX,iYOffset+iY, iAngle) && SetVelocity(iAngle, iSpeed);
-	else SetPosition(GetX()+iXOffset+iX,GetY()+iYOffset+iY) && SetR(iAngle) && SetVelocity(iAngle, iSpeed);
+	if(Contained()!=nil && iRelativeX==true) 
+	{
+		if(Contained()->GetDir()==0) iX=-(iX);
+	}
+
+	if(Contained()!=nil)
+	{
+		Exit(iXOffset+iX,iYOffset+iY, iAngle);
+		SetVelocity(iAngle, iSpeed);
+		return 1;
+	}
+
+	if(Contained()==nil) 
+	{
+		SetPosition(GetX()+iXOffset+iX,GetY()+iYOffset+iY);
+		SetR(iAngle);
+		SetVelocity(iAngle, iSpeed);
+		return 1;
+	}
 }

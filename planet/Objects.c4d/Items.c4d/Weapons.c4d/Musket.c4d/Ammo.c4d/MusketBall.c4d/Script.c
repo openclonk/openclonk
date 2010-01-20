@@ -10,25 +10,22 @@ public func IsMusketAmmo() { return 1; }
 
 protected func Hit()
 {
-	//Stops bullets from driving over the terrain. Should be removed as soon as ricochets are in physics.
-	SetVelocity(Random(359), 5);
 	RemoveEffect("HitCheck",this);
+	SetVelocity(Random(359)); //stops object for careening over the terrain, ricochets would be better :p
 }
 
-public func EffectShot(object shooter)
+public func AffectShot(object shooter,int ix,int iy)
 {
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 }
 
 private func HitObject(object pVictim)
 {
-	Message("Hit!|%d", pVictim, pVictim->GetEnergy()); //Remove when sound works
+	Message("Ouch!", pVictim); //Remove when sound works; for debug
 
 	Punch(pVictim,RandomX(20,30));
 	RemoveObject();
 }
-
-public func IsToolProduct() { return 1; }
 
 func Definition(def) {
   SetProperty("Name", "$Name$", def);

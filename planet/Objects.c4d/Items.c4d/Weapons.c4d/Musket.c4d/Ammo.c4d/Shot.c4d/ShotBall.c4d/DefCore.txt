@@ -1,0 +1,15 @@
+[DefCore]
+id=STBL
+Version=4,9,10,10
+Category=C4D_Object
+MaxUserSelect=50
+Width=4
+Height=4
+Offset=-2,-2
+Vertices=1
+VertexY=0
+VertexFriction=100
+Value=0
+Mass=1
+Collectible=0
+Components=STBL;

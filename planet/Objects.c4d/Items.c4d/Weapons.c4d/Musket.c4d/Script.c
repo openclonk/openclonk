@@ -7,14 +7,20 @@
 --*/
 
 #strict 2
+
+//Uses the extra slot library
 #include L_ES
 
 local ReloadTimer;
-local ReadyToFire;
+local Loaded;
+
+local yOffset;
+local iBarrel;
 
 protected func Initialize()
 {
-	ReloadTimer=100;
+	//Tweaking options
+	iBarrel=25;
 }
 
 protected func HoldingEnabled() { return true; }
@@ -28,35 +34,34 @@ protected func ControlUse(object pClonk, ix, iy)
 public func ControlUseHolding(object pClonk, ix, iy)
 {
 	//Angle Finder
-	var IX=Sin(180-Angle(0,0,ix,iy),25);
-	var IY=Cos(180-Angle(0,0,ix,iy),25);
+	var IX=Sin(180-Angle(0,0,ix,iy),iBarrel);
+	var IY=Cos(180-Angle(0,0,ix,iy),iBarrel);
 	//Create debug dot to show muzzle-point
 	CastParticles("DebugReticle",1,0,IX,IY,30,30,RGB(255,0,0),RGB(255,0,0));
-
-	
-	// Reload if empty
-	if(Contents(0)==nil && CheckCanUse(pClonk)==1)
-	{
-		ReloadWeapon(pClonk);
-	}
-
+	//DrawParticleLine("DebugReticle",0,0,IX,IY,2,20,RGB(30,30,30),RGB(100,100,100)); //Debug: Enable to see firing angle of musket
 }
 
 protected func ControlUseStop(object pClonk, ix, iy)
 {
-	//Stops bow-like auto-firing
-	if(ReadyToFire!=1 && ReloadTimer==100)
+	// Reload if empty
+	if(Contents(0)==nil && FindObject(Find_Container(pClonk), Find_Func("IsMusketAmmo"))==nil) return 1;
+	if(Contents(0)==nil && Loaded==1) Loaded=0;
+	if(!GetEffect("Reloading",this) && IsReloading()==true) ResumeReloading();
+	if(CheckCanUse(pClonk)==true && IsReloading()==false && Loaded!=true)
 	{
-		ReadyToFire=1;
-		return 1;
+		if(Contents(0)==nil || Loaded==false)
+		{
+			ReloadWeapon(50);
+			return 1;
+		}
 	}
 
 	// Fire
-	var IX=Sin(180-Angle(0,0,ix,iy),25);
-	var IY=Cos(180-Angle(0,0,ix,iy),25);
+	var IX=Sin(180-Angle(0,0,ix,iy),iBarrel);
+	var IY=Cos(180-Angle(0,0,ix,iy),iBarrel);
 	if(Contents(0)!=nil && PathFree(pClonk->GetX(),pClonk->GetY(),GetX()+IX,GetY()+IY)) //Stops musket from firing into ground or through walls.
 	{
-		if(Contents(0)->IsMusketAmmo()==1)
+		if(Contents(0)->IsMusketAmmo()==1 && Loaded==true && CheckCanUse(pClonk)==true)
 		{
 		FireWeapon(pClonk, ix, iy);
 		return 1;
@@ -65,40 +70,13 @@ protected func ControlUseStop(object pClonk, ix, iy)
 return 1;
 }
 
-public func CheckCanUse(object pClonk)
+private func FireWeapon(object pClonk,iX,iY)
 {
-	if(pClonk->GetOCF() & OCF_NotContained)
-	return 1;
-}
-
-private func ReloadWeapon(object pClonk)
-{
-	var Ammo;
-	if(Ammo=FindObject(Find_Container(pClonk), Find_Func("IsMusketAmmo"))) 
-	{
-		if(ReloadTimer>0) 
-		{
-			ReloadTimer=ReloadTimer-1;
-			Message("%d", Contained(), ReloadTimer);
-			return 1;
-		}
-
-		if(ReloadTimer<=0)
-		{
-			Ammo->TakeObject()->Enter(this());
-			Message("Click!", pClonk); //Remove all these messages when sound is working
-			ReloadTimer=100;
-			ReadyToFire=0;
-			return 1;
-		}
-	}
-}
-
-private func FireWeapon(object pClonk, int iX, int iY)
-{
-	var shot=Contents(0);
-	shot->EffectShot(pClonk);
-	shot->LaunchProjectile(Angle(0,0,iX,iY)+RandomX(-3, 3), 25, 300);
+	var shot=Contents(0)->TakeObject();
+	shot->LaunchProjectile(Angle(0,0,iX,iY)+RandomX(-3, 3), iBarrel, 300);
+	var iAngle=Angle(0,0,iX,iY);
+	shot->AffectShot(pClonk,iY,iX,iAngle);
+	Loaded=false;
 
 	Sound("Blast3");
 	Message("Bang!", pClonk); //For debug.
@@ -107,12 +85,82 @@ private func FireWeapon(object pClonk, int iX, int iY)
 	var flash = pClonk->CreateObject(FLSH);
 	flash->SetAction("Flash",pClonk);
 	flash->SetR(Angle(0,0,iX,iY));
-	//puff smoke from barrel
 	//Gun Smoke
-	var IX=Sin(180-Angle(0,0,iX,iY),25);
-	var IY=Cos(180-Angle(0,0,iX,iY),25);
+	var IX=Sin(180-Angle(0,0,iX,iY),iBarrel);
+	var IY=Cos(180-Angle(0,0,iX,iY),iBarrel);
 	CastParticles("GunSmoke",10,3,IX,IY,20,50,RGBa(110,110,110,128),RGB(150,150,150,128));
 	
+}
+
+private func ReloadWeapon(int iReloadTime)
+{
+	//Put ammo into gun's extra slot
+	var Ammo;
+	if(Ammo=FindObject(Find_Container(Contained()), Find_Func("IsMusketAmmo")))
+	{
+		Ammo->Enter(this());
+	}
+
+	ReloadTimer=iReloadTime;
+	AddEffect("Reloading",this,300,1,this,this);
+}
+
+protected func FxReloadingTimer(pTarget,iEffectNumber,iEffectTime)
+{
+	//If Clonk messes up reload, he must restart. :(
+	if(Contained()==nil || CheckCanUse(Contained())==false)
+	{
+		PauseReloading();
+		ReloadTimer=50;
+	}
+
+	if(ReloadTimer<=0) 
+	{
+		Loaded=true;
+		return -1;
+	}
+	if(ReloadTimer>0) ReloadTimer=--ReloadTimer;
+	Message("%d", Contained(), ReloadTimer);
+}
+
+protected func FxReloadingStop(pTarget,iEffectNumber,iReason,fTemp)
+{
+	Message("Pashunk!", Contained()); //This whole function is just for debug, unless there will be a sound for finishing a reload.
+}
+
+public func IsReloading()
+{
+	if(ReloadTimer>0) return true;
+	return false;
+}
+
+public func PauseReloading()
+{
+	if(GetEffect("Reloading",this))
+	{
+		RemoveEffect("Reloading",this,0,1);
+		return true;
+	}
+	return false;
+}
+
+public func ResumeReloading()
+{
+	if(ReloadTimer>0 && !GetEffect("Reloading",this))
+	{
+		AddEffect("Reloading",this,300,1,this,this);
+		return true;
+	}
+	return false;
+}
+
+private func CheckCanUse(object pClonk)
+{
+	if(pClonk->GetOCF() & OCF_NotContained) 
+	{
+	if(pClonk->GetAction() == "Walk" || pClonk->GetAction() == "Jump") return true;
+	}
+	return false;
 }
 
 func RejectCollect(id shotid, object shot)
@@ -120,8 +168,6 @@ func RejectCollect(id shotid, object shot)
 	//Only collect musket-balls
 	if(!(shot->~IsMusketBall())) return true;
 }
-
-public func IsToolProduct() { return 1; }
 
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
