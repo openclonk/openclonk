@@ -82,12 +82,17 @@ private func FireWeapon(object pClonk,iX,iY)
 	Message("Bang!", pClonk); //For debug.
 
 	//Muzzle Flash
-	var flash = pClonk->CreateObject(FLSH);
+	/*var flash = pClonk->CreateObject(FLSH);
 	flash->SetAction("Flash",pClonk);
 	flash->SetR(Angle(0,0,iX,iY));
-	//Gun Smoke
+	*/
+
+	//Muzzle Flash
+	var iAngle=Angle(0,0,iX,iY);;
 	var IX=Sin(180-Angle(0,0,iX,iY),iBarrel);
 	var IY=Cos(180-Angle(0,0,iX,iY),iBarrel);
+	CreateParticle("MuzzleFlash",IX,IY,+Sin(iAngle,500),-Cos(iAngle,500),300,RGB(255,255,255),pClonk);
+	//Gun Smoke
 	CastParticles("GunSmoke",10,3,IX,IY,20,50,RGBa(110,110,110,128),RGB(150,150,150,128));
 	
 }
@@ -98,7 +103,7 @@ private func ReloadWeapon(int iReloadTime)
 	var Ammo;
 	if(Ammo=FindObject(Find_Container(Contained()), Find_Func("IsMusketAmmo")))
 	{
-		Ammo->Enter(this());
+		if(Contents(0)==nil) Ammo->Enter(this()); //Only put new more ammo in gun if gun is empty
 	}
 
 	ReloadTimer=iReloadTime;

@@ -11,12 +11,16 @@ public func IsMusketAmmo() { return 1; }
 protected func Hit()
 {
 	RemoveEffect("HitCheck",this);
-	SetVelocity(Random(359)); //stops object for careening over the terrain, ricochets would be better :p
+	SetVelocity(Random(359)); //stops object from careening over the terrain, ricochets would be better :p
 }
 
 public func AffectShot(object shooter,int ix,int iy)
 {
-	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
+	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);	
+	//Smush vertexes into one point
+	SetVertexXY(1,0,0);
+	SetVertexXY(2,0,0);
+
 }
 
 private func HitObject(object pVictim)
@@ -25,6 +29,14 @@ private func HitObject(object pVictim)
 
 	Punch(pVictim,RandomX(20,30));
 	RemoveObject();
+}
+
+func UpdatePicture()
+{
+	var Shots=GetStackCount();
+	if(Shots>=MaxStackCount()) SetGraphics(nil);
+	if(Shots<MaxStackCount()) SetGraphics(Format("%d",Shots));
+	_inherited(...);
 }
 
 func Definition(def) {

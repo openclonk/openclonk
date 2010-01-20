@@ -3,7 +3,7 @@
 #strict 2
 #include L_ST
 
-public func MaxStackCount() { return 6; }
+public func MaxStackCount() { return 8; }
 public func IsMusketAmmo() { return 1; }
 
 local Shots;
