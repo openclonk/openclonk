@@ -222,4 +222,3 @@ Picture=0,0,0,0
 OCF=203423809
 LocalNamed=1;goal=O148
 GfxOverlay=1,RACE::,4,,0,0,(1,0,0,0,1,0,1),16777215,0
-

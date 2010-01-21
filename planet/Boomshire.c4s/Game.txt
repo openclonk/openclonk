@@ -1,5 +1,4 @@
 [Script]
 GlobalNamed=5;Action=p99,CLNK_WalkStates=a[5;s"Stand",s"Walk",s"Run",s"StandTurn",s"RunTurn"],CLNK_HangleStates=a[2;s"HangleStand",s"Hangle"],CLNK_SwimStates=A,jumpx=A
-
 [Effects]
 GlobalEffects=IntGoalCheck(1,1,97045,35,0,NONE)[1;O148]
