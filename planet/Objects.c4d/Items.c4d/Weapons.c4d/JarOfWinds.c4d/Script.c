@@ -116,8 +116,10 @@ private func FireWeapon(object pClonk,iX,iY)
 		var x=pClonk->GetXDir();
 		var y=pClonk->GetYDir();
 	//Sound(" :-( ");
+	}
 return 1;
 }
+
 
 private func FireWeapon(object pClonk,iX,iY)
 {
@@ -168,13 +170,7 @@ private func FireWeapon(object pClonk,iX,iY)
 					     )
 	   )
 	   
-	{
-		if(obj!=pClonk && PathFree(pClonk->GetX(),pClonk->GetY(),obj->GetX(),obj->GetY()))
-	    {
-		  var x=obj->GetXDir();
-		  var y=obj->GetYDir();
-					     )
-	   )
+	
 	   
 	{
 		if(obj!=pClonk && PathFree(pClonk->GetX(),pClonk->GetY(),obj->GetX(),obj->GetY()))
@@ -205,9 +201,6 @@ func Definition(def) {
   SetProperty("Name", "$Name$", def);
 }
 		  									//enemys are pushed back	
-	    }	
-	}
-}
 
 
 
