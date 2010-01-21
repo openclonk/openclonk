@@ -18,7 +18,7 @@ local iBarrel;
 
 protected func Initialize()
 {
-	MaxCap=60; //Changes duration and power of the Jar
+	MaxCap=50; //Changes duration and power of the Jar
 }
 
 protected func HoldingEnabled() { return true; }
@@ -76,7 +76,7 @@ protected func ControlUseStop(object pClonk, ix, iy)
 		FireWeapon(pClonk, ix, iy);
 		return 1;	 
 	}
-	else Message("Not Enough...",pClonk);	
+	else Message("Not.",pClonk);	
 	//Sound(" :-( ");
 return 1;
 }
@@ -115,8 +115,46 @@ private func FireWeapon(object pClonk,iX,iY)
 	{									//Makes the clonk be pushed backwards a bit
 		var x=pClonk->GetXDir();
 		var y=pClonk->GetYDir();
-		pClonk->SetXDir((x)-(sinspeed/4)+6);
-		pClonk->SetYDir((y)-(cosspeed/4)+6); 
+	//Sound(" :-( ");
+return 1;
+}
+
+private func FireWeapon(object pClonk,iX,iY)
+{
+	
+	var iAngle=Angle(0,0,iX,iY);
+
+	Message("Bang!", pClonk); //For debug.
+
+	//Find Victims to push
+	for(var i=10; i<32; i++)
+	{
+		
+		var R=RandomX(-20,20);
+		var SX=Sin(180-Angle(0,0,iX,iY)+R,i);
+		var SY=Cos(180-Angle(0,0,iX,iY)+R,i);
+		
+	 if(!GBackSolid(SX,SY))
+	 {
+	 CreateParticle("Air",
+					SX,SY,
+					Sin(180-Angle(0,0,iX,iY)+(R),(Amount/2)+25),
+					Cos(180-Angle(0,0,iX,iY)+(R),(Amount/2)+25),
+					Max(i,60),
+					);	
+		
+	 }
+	}	
+	
+	var sinspeed=Sin(180-Angle(0,0,iX,iY)+(R/2),(Amount)+15);
+	var cosspeed=Cos(180-Angle(0,0,iX,iY)+(R/2),(Amount)+15);
+	
+	if(pClonk->GetAction() != "Walk")
+	{									//Makes the clonk be pushed backwards a bit
+		var x=pClonk->GetXDir();
+		var y=pClonk->GetYDir();
+		pClonk->SetXDir((x)-(sinspeed/3));
+		pClonk->SetYDir((y)-(cosspeed/3)); 
 	}
 	
 	
@@ -125,7 +163,8 @@ private func FireWeapon(object pClonk,iX,iY)
 						Find_Distance(10,Sin(180-Angle(0,0,iX,iY),20),Cos(180-Angle(0,0,iX,iY),20)),
 						Find_Distance(18,Sin(180-Angle(0,0,iX,iY),40),Cos(180-Angle(0,0,iX,iY),40)),
 						Find_Distance(25,Sin(180-Angle(0,0,iX,iY),70),Cos(180-Angle(0,0,iX,iY),70))
-						   )					
+						   )
+										
 					     )
 	   )
 	   
@@ -134,8 +173,37 @@ private func FireWeapon(object pClonk,iX,iY)
 	    {
 		  var x=obj->GetXDir();
 		  var y=obj->GetYDir();
-		  obj->SetXDir((x/30)+sinspeed);
-		  obj->SetYDir((y/30)+cosspeed); 
+					     )
+	   )
+	   
+	{
+		if(obj!=pClonk && PathFree(pClonk->GetX(),pClonk->GetY(),obj->GetX(),obj->GetY()))
+	    {
+		  var x=obj->GetXDir();
+		  var y=obj->GetYDir();
+		  obj->SetXDir((x)+sinspeed);
+		  obj->SetYDir((y)+cosspeed); 
+		  									//enemys are pushed back	
+	    }	
+	}
+}
+
+
+
+private func CheckCanUse(object pClonk)
+{
+	if(pClonk->GetOCF() & OCF_NotContained) 
+	{
+	if(pClonk->GetAction() == "Walk" || pClonk->GetAction() == "Jump") return true;
+	}
+	return false;
+}
+
+
+
+func Definition(def) {
+  SetProperty("Name", "$Name$", def);
+}
 		  									//enemys are pushed back	
 	    }	
 	}

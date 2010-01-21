@@ -2,7 +2,11 @@
 
 func Initialize()
 {
+ CreateObject(DYNA,1050,1150,-1);
+ CreateObject(DYNA,1050,1150,-1);
  
+ CreateObject(DYNA,500,900,-1);
+ CreateObject(DYNA,500,900,-1);
 }
 
 func InitializePlayer(int plr)
@@ -14,7 +18,7 @@ private func JoinPlayer(int plr)
 {
   var obj=GetCrew(plr);
   obj->DoEnergy(100000);
-  obj->SetPosition(10+Random(50), LandscapeHeight()/2-30);
+  obj->SetPosition(20+Random(10),1000);
   obj->CreateContents(MJOW);
   return true;
 }
