@@ -1,13 +1,26 @@
 /* Sky race */
 
 func Initialize()
-{
+{/*
  CreateObject(DYNA,1050,1150,-1);
  CreateObject(DYNA,1050,1150,-1);
  
  CreateObject(DYNA,500,900,-1);
  CreateObject(DYNA,500,900,-1);
-}
+ 
+ 
+ CreateObject(DYNA,1336,1116,-1);
+ CreateObject(DYNA,1675,1075,-1);
+ CreateObject(BPDR,1130,1007,-1);
+ 
+ DrawMaterialQuad("Tunnel",1378,1327-5,1860,1327-5,1860,1330,1387,1330);
+ for(var i = 1380; i<=1800; i+=30)
+ {
+ 	CreateObject(BPDR,i,1328,-1);
+ 
+ }*/
+ }
+ 
 
 func InitializePlayer(int plr)
 {
