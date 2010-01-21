@@ -256,6 +256,25 @@ void C4AulDebug::ProcessLine(const StdStrBuf &Line)
 		}
 		SendLine("EST");
 	}
+	else if (SEqualNoCase(szCmd, "VAR"))
+	{
+		C4Value *val = NULL;
+		int varIndex;
+		C4AulScriptContext* pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
+		if (pCtx)
+		{
+			if ((varIndex = pCtx->Func->ParNamed.GetItemNr(szData)) != -1)
+			{
+				val = &pCtx->Pars[varIndex];
+			}
+			else if ((varIndex = pCtx->Func->VarNamed.GetItemNr(szData)) != 1)
+			{
+				val = &pCtx->Vars[varIndex];
+			}
+		}
+		StdStrBuf output = FormatString("%s=%s", szData, val ? val->GetDataString().getData() : "Unknown");
+		SendLine("VAR", output.getData());
+	}
 	else
 		{
 		fOkay = false;
