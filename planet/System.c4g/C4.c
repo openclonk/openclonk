@@ -73,7 +73,7 @@ global func ExtractLiquid(int x, int y)
 global func LaunchEffect(id type, int x, int y /*, ... */)
 {
 	var fx = CreateObject(type, AbsX(x), AbsY(y));
-	return fx && fx->Activate(AbsX(x), AbsY(y), ...);
+	return fx && fx->Activate(x, y, ...);
 }
 
 /// Splits the calling object into its components.
