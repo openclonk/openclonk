@@ -3331,19 +3331,7 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 	// Reset OCF
 	SetOCF();
 	// issue calls
-	// Execute StartCall
-	if (iCalls & SAC_StartCall)
-		if (Action.pActionDef)
-			{
-			if (Action.pActionDef->GetPropertyStr(P_StartCall))
-				{
-				C4Def *pOldDef = Def;
-				Call(Action.pActionDef->GetPropertyStr(P_StartCall)->GetCStr());
-				// abort exeution if def changed
-				if (Def != pOldDef || !Status) return true;
-				}
-			}
-	// Execute EndCall
+	// Execute EndCall for last action
 	if (iCalls & SAC_EndCall && !fForce)
 		if (LastAction)
 			{
@@ -3355,7 +3343,7 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				if (Def != pOldDef || !Status) return true;
 				}
 			}
-	// Execute AbortCall
+	// Execute AbortCall for last action
 	if (iCalls & SAC_AbortCall && !fForce)
 		if (LastAction)
 			{
@@ -3363,6 +3351,18 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 				{
 				C4Def *pOldDef = Def;
 				Call(LastAction->GetPropertyStr(P_AbortCall)->GetCStr(), &C4AulParSet(C4VInt(iLastPhase)));
+				// abort exeution if def changed
+				if (Def != pOldDef || !Status) return true;
+				}
+			}
+	// Execute StartCall for new action
+	if (iCalls & SAC_StartCall)
+		if (Action.pActionDef)
+			{
+			if (Action.pActionDef->GetPropertyStr(P_StartCall))
+				{
+				C4Def *pOldDef = Def;
+				Call(Action.pActionDef->GetPropertyStr(P_StartCall)->GetCStr());
 				// abort exeution if def changed
 				if (Def != pOldDef || !Status) return true;
 				}
