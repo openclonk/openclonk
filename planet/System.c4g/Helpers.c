@@ -82,8 +82,8 @@ global func GetAvailableObject (def, xobj)
 }
 global func GetAvailableObjectCheck(int plr)
 {
-  // Object is not connected to a pipe (for line construction kits)
-  if (FindObject (Find_ActionTarget(this), Find_Or(Find_ID(SPIP), Find_ID(DPIP)), Find_Action("Connect"))) return false;
+  // Object is not connected to anything (for line construction kits)
+  if (FindObject (Find_ActionTarget(this), Find_Procedure(DFA_CONNECT))) return false;
   // Not chosen by another friendly clonk
   if (GetEffect("IntNotAvailable",this) && !Hostile(plr,EffectVar(0,this,GetEffect("IntNotAvailable",this))->GetOwner())) return false;
   return true;
