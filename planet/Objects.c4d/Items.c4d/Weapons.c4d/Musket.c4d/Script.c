@@ -73,7 +73,7 @@ return 1;
 private func FireWeapon(object pClonk,iX,iY)
 {
 	var shot=Contents(0)->TakeObject();
-	shot->LaunchProjectile(Angle(0,0,iX,iY)+RandomX(-3, 3), iBarrel, 300);
+	shot->LaunchProjectile(Angle(0,0,iX,iY)+RandomX(-2, 2), iBarrel, 300);
 	var iAngle=Angle(0,0,iX,iY);
 	shot->AffectShot(pClonk,iY,iX,iAngle);
 	Loaded=false;
