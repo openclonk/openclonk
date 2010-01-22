@@ -76,53 +76,6 @@ global func LaunchEffect(id type, int x, int y /*, ... */)
 	return fx && fx->Activate(AbsX(x), AbsY(y), ...);
 }
 
-/// Creates an earthquake at the specified location.
-/// \par x X coordinate. Always global.
-/// \par y Y coordinate. Always global.
-/// \returns \c true if the earthquake could be launched, \c false otherwise.
-global func LaunchEarthquake(int x, int y)
-{
-	return LaunchEffect(FXQ1, x, y);
-}
-
-/// Creates a lightning bolt at the specified location.
-/// \par x X coordinate. Always global.
-/// \par y Y coordinate. Always global.
-/// \par xdir Average horizontal speed of the bolt.
-/// \par xrange Maximum deviation from the average horizontal speed.
-/// \par ydir Average vertical speed of the bolt.
-/// \par yrange Maximum deviation from the average vertical speed.
-/// \par fDoGamma If \c true, the lightning bolt will flash the screen.
-/// \returns \c true if the lightning could be launched, \c false otherwise.
-global func LaunchLightning(int x, int y, int xdir, int xrange, int ydir, int yrange, bool fDoGamma)
-{
-	return LaunchEffect(FXL1, x, y, xdir, xrange, ydir, yrange, fDoGamma);
-}
-
-/// Creates a cloud at the specified location.
-/// \par x X coordinate. Always global.
-/// \par mat Number of the material to rain.
-/// \par wdt Width of the precipitation region.
-/// \par lev Strength of rain. (?)
-/// \returns \c true if the rain started, \c false otherwise.
-global func LaunchRain(int x, int mat, int wdt, int lev)
-{
-	return LaunchEffect(FXP1, x, 0, mat, lev);
-}
-
-/// Creates a volcano at the specified location.
-/// \par x X coordinate. Always global.
-/// \par y Y coordinate. Always global.
-/// \par strength Width of the eruption.
-/// \par mat Number of the material to use.
-global func LaunchVolcano(int x, int y, int strength, int mat)
-{
-	if (!y) y=LandscapeHeight()-1;
-	if (!strength) strength=BoundBy(15*LandscapeHeight()/500+Random(10),10,60);
-	if (!mat) mat=Material("Lava");
-	return LaunchEffect(FXV1, x, y, strength, mat);
-}
-
 /// Splits the calling object into its components.
 global func Split2Components()
 {
