@@ -152,6 +152,10 @@ public func Switch2Items(int one, int two)
 	inventory[one] = inventory[two];
 	inventory[two] = temp;
 	
+	// callbacks
+	if(using == inventory[one] || using == inventory[two])
+		CancelUse();
+	
 	if(one == selected)       inventory[two]->~Deselection(this,false);
 	else if(one == selected2) inventory[two]->~Deselection(this,true);
 	if(two == selected)       inventory[one]->~Deselection(this,false);
@@ -253,12 +257,16 @@ protected func Collection2(object obj)
 protected func Ejection(object obj)
 {
 	var i;
-	// find obj in array and delete
+	// find obj in array and delete (cancel using too)
 	for(i = 0; i < MaxContentsCount(); ++i)
 	{
 		if (inventory[i] == obj)
-			{ inventory[i] = nil; break; }
+		{
+			inventory[i] = nil;
+			break;
+		}
 	}
+	if(using == obj) CancelUse();
 	
 	this->~OnSlotEmpty(i);
 	
@@ -475,36 +483,55 @@ private func CancelUse()
 	if (Contained() == using)
 		control = "Contained";
 	
-	StopUseControl(control, mlastx, mlasty, using);
+	CancelUseControl(control, mlastx, mlasty, using);
 }
 
 private func StartUseControl(int ctrl, control, int x, int y, object obj)
 {
+	using = obj;
+	var hold_enabled = obj->Call("~HoldingEnabled");
+	
+	if(hold_enabled)
+		SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
+		
 	if (ctrl == CON_Use) alt = false;
 	else alt = true;
 	
 	var estr = "";
 	if (alt && !(obj->Contained())) estr = "Alt";
 	
-	var handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
-	if (!handled) return false;
-	
-	using = obj;
-			
-	if(obj->Call("~HoldingEnabled"))
-		SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
+	// first call UseStart. If unhandled, call Use (mousecontrol)
+	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,x,y);
+	if (!handled)
+		handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
+	if (!handled)
+	{
+		using = nil;
+		if(hold_enabled)
+			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+		return false;
+	}
 		
 	return handled;
 }
 
-private func StopUseControl(control, int x, int y, object obj)
+private func CancelUseControl(control, int x, int y, object obj)
+{
+	return StopUseControl(control, x, y, obj, true);
+}
+
+private func StopUseControl(control, int x, int y, object obj, bool cancel)
 {
 	var estr = "";
 	if (alt && !(obj->Contained())) estr = "Alt";
 	
 	var holding_enabled = obj->Call("~HoldingEnabled");
-		
-	var handled = obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
+	
+	var stop = "Stop";
+	if(cancel) stop = "Cancel";
+	
+	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, ContainedUseCancel, etc...
+	var handled = obj->Call(Format("~%sUse%s%s",control,estr,stop),this,x,y);
 	using = nil;
 	alt = false;
 			
@@ -518,11 +545,14 @@ private func StopUseControl(control, int x, int y, object obj)
 private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
 {
 	
-	// do not use secondary when using primary and the other way round
+	// click on secondary cancels primary and the other way round
 	if (using)
 	{
-		if (ctrl == CON_Use && alt) return true;
-		if (ctrl == CON_UseAlt && !alt) return true;
+		if (ctrl == CON_Use && alt || ctrl == CON_UseAlt && !alt)
+		{
+			CancelUseControl(control, x, y, using);
+			return true;
+		}
 	}
 
 	// for the use command
@@ -539,7 +569,8 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		else if (release && using)
 		{
 		  // leftover use release
-		  return CancelUse();
+		  CancelUse();
+		  return true;
 		}
 		else if (repeat && using == obj)
 		{
@@ -548,12 +579,6 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	
 			var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
 			
-			// if that function returns -1, the control is stopped (*UseStop)
-			// and no more *UseHolding-calls are made.
-			if (handled == -1)
-			{
-				handled = StopUseControl(control, x, y, obj);
-			}
 			return handled;
 		}
 	}

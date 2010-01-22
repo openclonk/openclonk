@@ -13,7 +13,7 @@ local aimtime;
 
 public func HoldingEnabled() { return true; }
 
-protected func ControlUse(object clonk, int x, int y)
+protected func ControlUseStart(object clonk, int x, int y)
 {
 	// check for ammo
 	if(!Contents(0))
@@ -27,7 +27,11 @@ protected func ControlUse(object clonk, int x, int y)
 	}
 	aimtime = 30;
 	
-	if(!Contents(0)) return true;
+	if(!Contents(0))
+	{
+		// + sound or message that he doesnt have arrows anymore
+		clonk->CancelUse();
+	}
 	
 	return true;
 }
@@ -35,7 +39,11 @@ protected func ControlUse(object clonk, int x, int y)
 public func ControlUseHolding(object clonk, int x, int y)
 {
 	// check procedure
-	if(!ClonkCanAim(clonk)) return -1;
+	if(!ClonkCanAim(clonk))
+	{
+		clonk->CancelUse();
+		return true;
+	}
 
 	// angle
 	var angle = Angle(0,0,x,y);
@@ -53,14 +61,16 @@ public func ControlUseHolding(object clonk, int x, int y)
 		Message("Cannot aim there",clonk);
 	else
 		Message("Aiming",clonk);
+		
+	return true;
 }
 
 protected func ControlUseStop(object clonk, int x, int y)
 {
 	Message("",clonk);
+	
 	// "canceled"
 	if(aimtime > 0) return true;
-	if(!ClonkCanAim(clonk)) return true;
 	
 	var angle = Angle(0,0,x,y);
 	if(!ClonkAimLimit(clonk,angle)) return true;

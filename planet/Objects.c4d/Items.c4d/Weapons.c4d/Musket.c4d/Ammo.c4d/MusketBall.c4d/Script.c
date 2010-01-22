@@ -25,7 +25,7 @@ private func HitObject(object pVictim)
 {
 	Message("Ouch!", pVictim); //Remove when sound works; for debug
 
-	Punch(pVictim,RandomX(20,30));
+	pVictim->DoEnergy(-RandomX(10,15));
 	RemoveObject();
 }
 

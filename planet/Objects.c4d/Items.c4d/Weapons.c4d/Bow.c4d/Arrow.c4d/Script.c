@@ -35,14 +35,14 @@ public func Launch(int angle, int str, object shooter)
 
 private func Stick()
 {
-	SetXDir(0);
-	SetYDir(0);
-	SetRDir(0);
-	
 	if(GetEffect("InFlight",this))
 	{
 		RemoveEffect("HitCheck",this);
 		RemoveEffect("InFlight",this);
+	
+		SetXDir(0);
+		SetYDir(0);
+		SetRDir(0);
 	
 		var x=Sin(GetR(),+12);
 		var y=Cos(GetR(),-12);
@@ -69,7 +69,7 @@ public func HitObject(object obj)
 	obj->~OnArrowHit(this);
 	if(!this) return;
 	// ouch!
-	var dmg = ArrowStrength()*speed/50;
+	var dmg = ArrowStrength()*speed/100;
 	if(obj->GetAlive())
 	{
 		obj->DoEnergy(-dmg);
