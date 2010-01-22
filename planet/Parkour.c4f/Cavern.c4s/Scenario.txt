@@ -1,18 +1,13 @@
 [Head]
 Icon=26
-Title=S2SkyRace
-Version=4,10
-Difficulty=10
-Access=1
+Title=TheSummit
+Version=4,10,0,0
 MaxPlayer=8
-NoInitialize=0
-ForcedGfxMode=1
 
 [Definitions]
 Definition1=Objects.c4d
 
 [Game]
-Goals=RACE=1
 Rules=RSTR=1
 
 [Player1]
@@ -34,19 +29,12 @@ Crew=CLNK=1
 [Landscape]
 Vegetation=TRE1=1;TRE2=2;TRE3=1;TRE4=1
 VegetationLevel=100,0,0,100
-InEarth=ROCK=1;GOLD=1;DYNA=1;LOAM=1
-InEarthLevel=65,0,0,100
+InEarth=ROCK=1;GOLD=1;DYNA=3;LOAM=3
+InEarthLevel=80,0,0,100
 Sky=Clouds2
 BottomOpen=1
-MapWidth=500,0,64,10000
-MapHeight=100,0,40,10000
-Amplitude=10,10,0,100
-Phase=50,50,0,100
-Period=10,10,0,100
-Random=20,20,0,100
-Liquid=Water-Smooth
-LiquidLevel=20,30,0,100
-Layers=Rock=7;Rock=7;Gold=7;Granite=4;Water=5;Earth-earth=50;Earth-earth_dry=50
+MapWidth=100,0,64,10000
+MapHeight=250,0,40,10000
 SkyScrollMode=2
 NewStyleLandscape=2
 
@@ -55,5 +43,6 @@ Climate=0,0,0,100
 YearSpeed=20,10,0,100
 Wind=1,100,-100,100
 
-[Environment]
-Objects=EGLN=1;EGRS=1
+[Animals]
+Nest=LOAM=50;DYNA=40
+

@@ -1,0 +1,24 @@
+Name=Race
+
+#Single
+MsgWinner=%s wins the race!
+MsgYouWon=You have won the race!
+MsgOtherWon=%s has won the race!
+MsgTie=It's a tie!
+MsgYouAhead=You're ahead at %d%!
+MsgOtherAhead=%s (%s) is ahead at %d% of the way. You're behind at %d%.
+
+#Team
+MsgTeamWinner=Team %s (%s) wins the race!
+MsgYourTeamWon=Your team has won the race!
+MsgOtherTeamWon=Team %s has won the race!
+MsgYourTeamAhead=Your team is ahead at %d%!
+MsgOtherTeamAhead=Team %s is ahead at %d% of the way. Your team is behind at %d%.
+
+MsgRace=This is race over %d checkpoints, check the scoreboard for the nr of completed checkpoints per team/player.
+
+#Relaunch
+MsgRelaunch0=%s tries it again.
+MsgRelaunch1=%s is dead.
+MsgRelaunch2=Haha, %s!
+MsgRelaunch3=We're mourning %s.
