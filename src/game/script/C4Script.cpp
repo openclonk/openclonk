@@ -6367,6 +6367,7 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "C4FO_Category"             ,C4V_Int,     C4FO_Category				},
 	{ "C4FO_Action"               ,C4V_Int,     C4FO_Action					},
 	{ "C4FO_ActionTarget"         ,C4V_Int,     C4FO_ActionTarget 	},
+	{ "C4FO_Procedure"            ,C4V_Int,     C4FO_Procedure					},
 	{ "C4FO_Container"            ,C4V_Int,     C4FO_Container			},
 	{ "C4FO_AnyContainer"         ,C4V_Int,     C4FO_AnyContainer 	},
 	{ "C4FO_Owner"                ,C4V_Int,     C4FO_Owner					},

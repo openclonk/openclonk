@@ -42,6 +42,7 @@ enum C4FindObjectCondID
 	C4FO_Category      = 22,
 	C4FO_Action        = 30,
 	C4FO_ActionTarget  = 31,
+	C4FO_Procedure     = 32,
 	C4FO_Container     = 40,
 	C4FO_AnyContainer  = 41,
 	C4FO_Owner         = 50,
@@ -287,6 +288,18 @@ private:
 	int index;
 protected:
 	virtual bool Check(C4Object *pObj);
+};
+
+class C4FindObjectProcedure : public C4FindObject
+{
+public:
+	C4FindObjectProcedure(int32_t procedure)
+		: procedure(procedure) { }
+private:
+	int32_t procedure;
+protected:
+	virtual bool Check(C4Object *pObj);
+	virtual bool IsImpossible();
 };
 
 class C4FindObjectContainer : public C4FindObject

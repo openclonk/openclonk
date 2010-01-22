@@ -74,6 +74,10 @@ global func Find_ActionTarget2(object target) {
 	return [C4FO_ActionTarget, target, 1];
 }
 
+global func Find_Procedure(int procedure) {
+	return [C4FO_Procedure, procedure];
+}
+
 global func Find_Container(object container) {
 	return [C4FO_Container, container];
 }
