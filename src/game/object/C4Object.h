@@ -100,6 +100,7 @@ class C4Action
     C4Object *Target,*Target2;
     C4Facet Facet; // NoSave //
     int32_t FacetX,FacetY; // NoSave //
+    StdMeshInstance::AnimationNode* Animation; // NoSave //
   public:
 	  void Default();
 		void CompileFunc(StdCompiler *pComp);

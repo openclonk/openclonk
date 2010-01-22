@@ -244,7 +244,7 @@ class C4GraphicsOverlay
 		C4Object *GetOverlayObject() const { return pOverlayObj; }
 		int32_t GetID() const { return iID; }
 		void SetID(int32_t aID) { iID = aID; }
-		void SetPhase(int32_t iToPhase); // TODO: This is not implemented(?) - Remember to set mesh animation position when it is
+		void SetPhase(int32_t iToPhase);
 		C4GraphicsOverlay *GetNext() const { return pNext; }
 		void SetNext(C4GraphicsOverlay *paNext) { pNext = paNext; }
 		bool IsPicture() { return eMode == MODE_Picture; }

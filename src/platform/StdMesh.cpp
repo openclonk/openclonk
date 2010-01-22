@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009-2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -63,6 +63,18 @@ namespace
 			}
 		}
 	};
+
+	// Reset all animation list entries corresponding to node or its children
+	void ClearAnimationListRecursively(std::vector<StdMeshInstance::AnimationNode*>& list, StdMeshInstance::AnimationNode* node)
+	{
+		list[node->GetNumber()] = NULL;
+
+		if(node->GetType() == StdMeshInstance::AnimationNode::LinearInterpolationNode)
+		{
+			ClearAnimationListRecursively(list, node->GetLeftChild());
+			ClearAnimationListRecursively(list, node->GetRightChild());
+		}
+	}
 
 	// Generate matrix to convert the mesh from Ogre coordinate system to Clonk coordinate system.
 	StdMeshMatrix CoordCorrection = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 0.0f, 0.0f, 1.0f);
@@ -246,6 +258,18 @@ void StdMeshQuaternion::Normalize()
 	z /= length;
 }
 
+StdMeshQuaternion StdMeshQuaternion::Nlerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float w)
+{
+	StdMeshQuaternion q;
+	float c = lhs.w * rhs.w + lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+	if(c < 0.0f)
+		q = lhs + w * (-rhs - lhs);
+	else
+		q = lhs + w * ( rhs - lhs);
+	q.Normalize();
+	return q;
+}
+
 StdMeshTransformation StdMeshTransformation::Zero()
 {
 	StdMeshTransformation t;
@@ -267,11 +291,11 @@ StdMeshTransformation StdMeshTransformation::Identity()
 
 StdMeshTransformation StdMeshTransformation::Inverse(const StdMeshTransformation& transform)
 {
-	StdMeshTransformation inv;
-	inv.scale = 1.0f/transform.scale;
-	inv.rotate = -transform.rotate;
-	inv.translate = inv.rotate * (inv.scale * -transform.translate);
-	return inv;
+	StdMeshTransformation t;
+	t.scale = 1.0f/transform.scale;
+	t.rotate = -transform.rotate;
+	t.translate = t.rotate * (t.scale * -transform.translate);
+	return t;
 }
 
 StdMeshTransformation StdMeshTransformation::Translate(float dx, float dy, float dz)
@@ -300,6 +324,15 @@ StdMeshTransformation StdMeshTransformation::Rotate(float angle, float rx, float
 	t.scale = StdMeshVector::UnitScale();
 	t.rotate = StdMeshQuaternion::AngleAxis(angle, StdMeshVector::Translate(rx, ry, rz));
 	t.translate = StdMeshVector::Zero(); 
+	return t;
+}
+
+StdMeshTransformation StdMeshTransformation::Nlerp(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs, float w)
+{
+	StdMeshTransformation t;
+	t.translate = (1 - w) * lhs.translate + w * rhs.translate;
+	t.rotate = StdMeshQuaternion::Nlerp(lhs.rotate, rhs.rotate, w);
+	t.scale = (1 - w) * lhs.scale + w * rhs.scale;
 	return t;
 }
 
@@ -591,6 +624,16 @@ StdMeshQuaternion operator+(const StdMeshQuaternion& lhs, const StdMeshQuaternio
 	return q;
 }
 
+StdMeshQuaternion operator-(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs)
+{
+	StdMeshQuaternion q;
+	q.w = lhs.w - rhs.w;
+	q.x = lhs.x - rhs.x;
+	q.y = lhs.y - rhs.y;
+	q.z = lhs.z - rhs.z;
+	return q;
+}
+
 StdMeshTransformation operator*(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs)
 {
 	StdMeshTransformation t;
@@ -754,6 +797,12 @@ StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
 	// a) time > animation length
 	// b) The track does not include a frame for the very end of the animation
 	// Both is considered an error
+	if(iter == Frames.end())
+	{
+		std::map<float, StdMeshKeyFrame>::const_iterator citer = iter; --citer;
+		printf("Time: %f (%f-%f)\n", time, Frames.begin()->first, citer->first);
+		if(time<=0.0) iter = Frames.begin();
+	}
 	assert(iter != Frames.end());
 
 	if(iter == Frames.begin())
@@ -774,6 +823,7 @@ StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
 	transformation.rotate = weight1 * iter->second.Transformation.rotate + weight2 * prev_iter->second.Transformation.rotate; // TODO: slerp or renormalize
 	transformation.translate = weight1 * iter->second.Transformation.translate + weight2 * prev_iter->second.Transformation.translate;
 	return transformation;
+	//return StdMeshTransformation::Nlerp(prev_iter->second.Transformation, iter->second.Transformation, weight1);
 }
 
 StdMeshAnimation::StdMeshAnimation(const StdMeshAnimation& other):
@@ -1141,42 +1191,61 @@ const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 	return &iter->second;
 }
 
-StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const StdStrBuf& animation_name):
-	Instance(instance), Anim(NULL)
+StdMeshInstance::AnimationNode::AnimationNode(const StdMeshAnimation* animation, ValueProvider* position):
+	Type(LeafNode), Parent(NULL)
 {
-	const StdMeshAnimation* animation = instance->Mesh.GetAnimationByName(animation_name);
-	if(animation)
+	Leaf.Animation = animation;
+	Leaf.Position = position;
+}
+
+StdMeshInstance::AnimationNode::AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight):
+	Type(LinearInterpolationNode), Parent(NULL)
+{
+	LinearInterpolation.ChildLeft = child_left;
+	LinearInterpolation.ChildRight = child_right;
+	LinearInterpolation.Weight = weight;
+}
+
+StdMeshInstance::AnimationNode::~AnimationNode()
+{
+	switch(Type)
 	{
-		for(unsigned int i = 0; i < instance->Animations.size(); ++i)
-			if(instance->Animations[i].MeshAnimation == animation)
-				{ Anim = &instance->Animations[i]; break; }
+	case LeafNode:
+		delete Leaf.Position;
+		break;
+	case LinearInterpolationNode:
+		delete LinearInterpolation.ChildLeft;
+		delete LinearInterpolation.ChildRight;
+		delete LinearInterpolation.Weight;
+		break;
 	}
 }
 
-StdMeshInstance::AnimationRef::AnimationRef(StdMeshInstance* instance, const StdMeshAnimation& animation):
-	Instance(instance), Anim(NULL)
+bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMeshTransformation& transformation)
 {
-	for(unsigned int i = 0; i < instance->Animations.size(); ++i)
-		if(instance->Animations[i].MeshAnimation == &animation)
-			{ Anim = &instance->Animations[i]; break; }
-}
+	StdMeshTransformation combine_with;
+	StdMeshTrack* track;
 
-const StdMeshAnimation& StdMeshInstance::AnimationRef::GetAnimation() const
-{
-	return *Anim->MeshAnimation;
-}
+	switch(Type)
+	{
+	case LeafNode:
+		//if(!Leaf.Animation) return false;
+		track = Leaf.Animation->Tracks[bone];
+		if(!track) return false;
+		transformation = track->GetTransformAt(Leaf.Position->Value);
+		return true;
+	case LinearInterpolationNode:
+		if(!LinearInterpolation.ChildLeft->GetBoneTransform(bone, transformation))
+			return LinearInterpolation.ChildRight->GetBoneTransform(bone, transformation);
+		if(!LinearInterpolation.ChildRight->GetBoneTransform(bone, combine_with))
+			return true; // First Child affects bone
 
-void StdMeshInstance::AnimationRef::SetPosition(float position)
-{
-	assert(position <= Anim->MeshAnimation->Length);
-	Anim->Position = position;
-	Instance->BoneTransformsDirty = true;
-}
-
-void StdMeshInstance::AnimationRef::SetWeight(float weight)
-{
-	Anim->Weight = weight;
-	Instance->BoneTransformsDirty = true;
+		transformation = StdMeshTransformation::Nlerp(transformation, combine_with, LinearInterpolation.Weight->Value);
+		return true;
+	default:
+		assert(false);
+		return false;
+	}
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
@@ -1202,6 +1271,9 @@ StdMeshInstance::~StdMeshInstance()
 {
 	for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
 		delete iter->Child;
+	while(!AnimationStack.empty())
+		StopAnimation(AnimationStack.front());
+	assert(AnimationNodes.empty());
 }
 
 void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
@@ -1228,50 +1300,172 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 	}
 }
 
-bool StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, float weight)
+StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
 {
 	const StdMeshAnimation* animation = Mesh.GetAnimationByName(animation_name);
-	if(!animation) return false;
-	return PlayAnimation(*animation, weight);
+	if(!animation) { delete position; delete weight; return NULL; }
+
+	return PlayAnimation(*animation, slot, sibling, position, weight);
 }
 
-bool StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, float weight)
+StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight)
 {
-	for(unsigned int i = 0; i < Animations.size(); ++i)
-		if(Animations[i].MeshAnimation == &animation)
-			return false;
+	// Default
+	if(!sibling) sibling = GetRootAnimationForSlot(slot);
+	assert(!sibling || sibling->Slot == slot);
 
-	Animation anim;
-	anim.MeshAnimation = &animation;
-	anim.Position = 0.0f;
-	anim.Weight = weight;
-	Animations.push_back(anim);
+	// Find two subsequent numbers in case we need to create two nodes, so
+	// script can deduce the second node.
+	unsigned int Number1, Number2;
+	for(Number1 = 0; Number1 < AnimationNodes.size(); ++Number1)
+		if(AnimationNodes[Number1] == NULL && (!sibling || Number1+1 == AnimationNodes.size() || AnimationNodes[Number1+1] == NULL))
+			break;
+/*	for(Number2 = Number1+1; Number2 < AnimationNodes.size(); ++Number2)
+		if(AnimationNodes[Number2] == NULL)
+			break;*/
+	Number2 = Number1 + 1;
 
-	BoneTransformsDirty = true;
-	return true;
-}
+	if(Number1 == AnimationNodes.size()) AnimationNodes.push_back(NULL);
+	if(sibling && Number2 == AnimationNodes.size()) AnimationNodes.push_back(NULL);
 
-bool StdMeshInstance::StopAnimation(const StdStrBuf& animation_name)
-{
-	const StdMeshAnimation* animation = Mesh.GetAnimationByName(animation_name);
-	if(!animation) return false;
-	return StopAnimation(*animation);
-}
+	AnimationNode* child = new AnimationNode(&animation, position);
+	AnimationNodes[Number1] = child;
+	child->Number = Number1;
+	child->Slot = slot;
 
-bool StdMeshInstance::StopAnimation(const StdMeshAnimation& animation)
-{
-	for(std::vector<Animation>::iterator iter = Animations.begin();
-	    iter != Animations.end(); ++iter)
+	if(sibling)
 	{
-		if(iter->MeshAnimation == &animation)
+		AnimationNode* parent = new AnimationNode(child, sibling, weight);
+		AnimationNodes[Number2] = parent;
+		parent->Number = Number2;
+		parent->Slot = slot;
+
+		child->Parent = parent;
+		parent->Parent = sibling->Parent;
+		parent->LinearInterpolation.ChildLeft = sibling;
+		parent->LinearInterpolation.ChildRight = child;
+		if(sibling->Parent)
 		{
-			Animations.erase(iter);
-			BoneTransformsDirty = true;
-			return true;
+			if(sibling->Parent->LinearInterpolation.ChildLeft == sibling)
+				sibling->Parent->LinearInterpolation.ChildLeft = parent;
+			else
+				sibling->Parent->LinearInterpolation.ChildRight = parent;
+		}	
+		else
+		{
+			// set new parent
+			AnimationNodeList::iterator iter = GetStackIterForSlot(slot, false);
+			// slot must not be empty, since sibling uses same slot
+			assert(iter != AnimationStack.end() && *iter != NULL);
+			*iter = parent;
 		}
+
+		sibling->Parent = parent;
+	}
+	else
+	{
+		delete weight;
+		AnimationNodeList::iterator iter = GetStackIterForSlot(slot, true);
+		assert(!*iter); // we have a sibling if slot is not empty
+		*iter = child;
+	}
+	
+	BoneTransformsDirty = true;
+	return child;
+}
+
+void StdMeshInstance::StopAnimation(AnimationNode* node)
+{
+	ClearAnimationListRecursively(AnimationNodes, node);
+
+	AnimationNode* parent = node->Parent;
+	if(parent == NULL)
+	{
+		AnimationNodeList::iterator iter = GetStackIterForSlot(node->Slot, false);
+		assert(iter != AnimationStack.end() && *iter == node);
+		AnimationStack.erase(iter);
+		delete node;
+	}
+	else
+	{
+		assert(parent->Type == AnimationNode::LinearInterpolationNode);
+
+		// Remove parent interpolation node and re-link
+		AnimationNode* other_child;
+		if(parent->LinearInterpolation.ChildLeft == node)
+		{
+			other_child = parent->LinearInterpolation.ChildRight;
+			parent->LinearInterpolation.ChildRight = NULL;
+		}
+		else
+		{
+			other_child = parent->LinearInterpolation.ChildLeft;
+			parent->LinearInterpolation.ChildLeft = NULL;
+		}
+
+		if(parent->Parent)
+		{
+			assert(parent->Parent->Type == AnimationNode::LinearInterpolationNode);
+			if(parent->Parent->LinearInterpolation.ChildLeft == parent)
+				parent->Parent->LinearInterpolation.ChildLeft = other_child;
+			else
+				parent->Parent->LinearInterpolation.ChildRight = other_child;
+			other_child->Parent = parent->Parent;
+		}
+		else
+		{
+			AnimationNodeList::iterator iter = GetStackIterForSlot(node->Slot, false);
+			assert(iter != AnimationStack.end() && *iter == parent);
+			*iter = other_child;
+
+			other_child->Parent = NULL;
+		}
+
+		AnimationNodes[parent->Number] = NULL;
+		// Recursively deletes parent and its descendants
+		delete parent;
 	}
 
-	return false;
+	while(AnimationNodes.back() == NULL)
+		AnimationNodes.erase(AnimationNodes.end()-1);
+	BoneTransformsDirty = true;
+}
+
+StdMeshInstance::AnimationNode* StdMeshInstance::GetAnimationNodeByNumber(unsigned int number)
+{
+	if(number >= AnimationNodes.size()) return NULL;
+	return AnimationNodes[number];
+}
+
+StdMeshInstance::AnimationNode* StdMeshInstance::GetRootAnimationForSlot(int slot)
+{
+	AnimationNodeList::iterator iter = GetStackIterForSlot(slot, false);
+	if(iter == AnimationStack.end()) return NULL;
+	return *iter;
+}
+
+void StdMeshInstance::SetAnimationPosition(AnimationNode* node, ValueProvider* position)
+{
+	assert(node->GetType() == AnimationNode::LeafNode);
+	delete node->Leaf.Position;
+	node->Leaf.Position = position;
+
+	BoneTransformsDirty = true;
+}
+
+void StdMeshInstance::SetAnimationWeight(AnimationNode* node, ValueProvider* weight)
+{
+	assert(node->GetType() == AnimationNode::LinearInterpolationNode);
+	delete node->LinearInterpolation.Weight; node->LinearInterpolation.Weight = weight;
+
+	BoneTransformsDirty = true;
+}
+
+void StdMeshInstance::ExecuteAnimation()
+{
+	// Iterate from the back since slots might get removed
+	for(unsigned int i = AnimationStack.size(); i > 0; --i)
+		ExecuteAnimationNode(AnimationStack[i-1]);
 }
 
 const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, float scale)
@@ -1339,28 +1533,28 @@ void StdMeshInstance::UpdateBoneTransforms()
 	// Compute transformation matrix for each bone.
 	for(unsigned int i = 0; i < BoneTransforms.size(); ++i)
 	{
-		float accum_weight = 0.0f;
-		StdMeshTransformation Transformation = StdMeshTransformation::Zero();
-
-		for(unsigned int j = 0; j < Animations.size(); ++j)
-		{
-			StdMeshTrack* track = Animations[j].MeshAnimation->Tracks[i];
-			if(track)
-			{
-				accum_weight += Animations[j].Weight;
-				StdMeshTransformation Track = track->GetTransformAt(Animations[j].Position);
-				
-				Transformation.scale += Animations[j].Weight * Track.scale;
-				Transformation.rotate += Animations[j].Weight * Track.rotate; // TODO: introduce animation stack, then slerp
-				Transformation.translate += Animations[j].Weight * Track.translate;
-			}
-		}
+		StdMeshTransformation Transformation;
 
 		const StdMeshBone& bone = Mesh.GetBone(i);
 		const StdMeshBone* parent = bone.GetParent();
 		assert(!parent || parent->Index < i);
 
-		if(!accum_weight)
+		bool have_transform = false;
+		for(unsigned int j = 0; j < AnimationStack.size(); ++j)
+		{
+			if(have_transform)
+			{
+				StdMeshTransformation other;
+				if(AnimationStack[j]->GetBoneTransform(i, other))
+					Transformation = StdMeshTransformation::Nlerp(Transformation, other, 1.0f); // TODO: Allow custom weighing for slot combination
+			}
+			else
+			{
+				have_transform = AnimationStack[j]->GetBoneTransform(i, Transformation);
+			}
+		}
+
+		if(!have_transform)
 		{
 			if(parent)
 				BoneTransforms[i] = BoneTransforms[parent->Index];
@@ -1369,14 +1563,8 @@ void StdMeshInstance::UpdateBoneTransforms()
 		}
 		else
 		{
-			Transformation.scale *= 1.0f/accum_weight;
-			Transformation.rotate.Normalize(); // renormalize. We can skip this if we decide to use slerp
-			Transformation.translate *= 1.0f/accum_weight;
-
 			BoneTransforms[i] = StdMeshMatrix::Transform(bone.Transformation * Transformation * bone.InverseTransformation);
-
-			if(parent)
-				BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
+			if(parent) BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
 		}
 	}
 
@@ -1413,7 +1601,7 @@ void StdMeshInstance::UpdateBoneTransforms()
 		}
 	}
 
-	// Update attachment's inverse bone transformations. Note this needs not to be done recursively.
+	// Update attachment's attach transformations. Note this is done recursively.
 	for(AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
 	{
 		iter->Child->UpdateBoneTransforms();
@@ -1438,6 +1626,90 @@ void StdMeshInstance::UpdateBoneTransforms()
 		ReorderFaces();
 
 	BoneTransformsDirty = false;
+}
+
+StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlot(int slot, bool create)
+{
+	// TODO: bsearch
+	for(AnimationNodeList::iterator iter = AnimationStack.begin(); iter != AnimationStack.end(); ++iter)
+	{
+		if((*iter)->Slot == slot)
+		{
+			return iter;
+		}
+		else if((*iter)->Slot < slot)
+		{
+			if(!create)
+				return AnimationStack.end();
+			else
+				return AnimationStack.insert(iter, NULL);
+		}
+	}
+	
+	if(!create)
+		return AnimationStack.end();
+	else
+		return AnimationStack.insert(AnimationStack.end(), NULL);
+}
+
+bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
+{
+	ValueProvider* provider = NULL;
+	switch(node->GetType())
+	{
+	case AnimationNode::LeafNode:
+		provider = node->GetPositionProvider();
+		break;
+	case AnimationNode::LinearInterpolationNode:
+		provider = node->GetWeightProvider();
+		break;
+	}
+
+	const float old_value = provider->Value;
+	if(!provider->Execute())
+	{
+		if(node->GetType() == AnimationNode::LeafNode) return false;
+
+		// Remove the child with less weight (normally weight reaches 0.0 or 1.0)
+		if(node->GetWeight() > 0.5)
+		{
+			// Remove both children (by parent) if other wants to be deleted as well
+			if(!ExecuteAnimationNode(node->GetRightChild())) return false;
+			// Remove left child as it has less weight
+			StopAnimation(node->LinearInterpolation.ChildLeft);
+		}
+		else
+		{
+			// Remove both children (by parent) if other wants to be deleted as well
+			if(!ExecuteAnimationNode(node->GetLeftChild())) return false;
+			// Remove right child as it has less weight
+			StopAnimation(node->LinearInterpolation.ChildRight);
+		}
+
+		
+	}
+	else
+	{
+		if(provider->Value != old_value) BoneTransformsDirty = true;
+
+		if(node->GetType() == AnimationNode::LinearInterpolationNode)
+		{
+			const bool left_result = ExecuteAnimationNode(node->GetLeftChild());
+			const bool right_result = ExecuteAnimationNode(node->GetRightChild());
+
+			// Remove this node completely
+			if(!left_result && !right_result)
+				return false;
+
+			// Note that either of this also removes node
+			if(!left_result)
+				StopAnimation(node->GetLeftChild());
+			if(!right_result)
+				StopAnimation(node->GetRightChild());
+		}
+	}
+
+	return true;
 }
 
 void StdMeshInstance::ReorderFaces()

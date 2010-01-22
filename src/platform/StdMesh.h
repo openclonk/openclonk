@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009 Armin Burgmeier
+ * Copyright (c) 2009-2010 Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -80,7 +80,8 @@ struct StdMeshQuaternion
 	float LenSqr() const { return w*w+x*x+y*y+z*z; }
 	void Normalize();
 
-	//static StdMeshQuaternion Slerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float t);
+	static StdMeshQuaternion Nlerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float w);
+	//static StdMeshQuaternion Slerp(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs, float w);
 };
 
 struct StdMeshTransformation
@@ -95,6 +96,10 @@ struct StdMeshTransformation
 	static StdMeshTransformation Translate(float dx, float dy, float dz);
 	static StdMeshTransformation Scale(float sx, float sy, float sz);
 	static StdMeshTransformation Rotate(float angle, float rx, float ry, float rz);
+
+	// TODO: Might add path parameter if necessary
+	static StdMeshTransformation Nlerp(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs, float w);
+	//static  StdMeshQuaternion Slerp(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs, float w);
 };
 
 class StdMeshMatrix
@@ -128,6 +133,7 @@ StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, float rhs);
 StdMeshQuaternion operator*(float lhs, const StdMeshQuaternion& rhs);
 StdMeshQuaternion& operator+=(StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
 StdMeshQuaternion operator+(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
+StdMeshQuaternion operator-(const StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs);
 StdMeshTransformation operator*(const StdMeshTransformation& lhs, const StdMeshTransformation& rhs);
 
 StdMeshVector operator-(const StdMeshVector& rhs);
@@ -300,9 +306,6 @@ private:
 
 class StdMeshInstance
 {
-protected:
-	struct Animation;
-
 public:
 	StdMeshInstance(const StdMesh& mesh);
 	~StdMeshInstance();
@@ -316,32 +319,85 @@ public:
 	FaceOrdering GetFaceOrdering() const { return CurrentFaceOrdering; }
 	void SetFaceOrdering(FaceOrdering ordering);
 
-	// Public API to modify animation. Updates bone transforms on
-	// destruction, so make sure to let this go out of scope before
-	// relying on the values set.
-	struct AnimationRef
+	// Provider for animation position or weight.
+	class ValueProvider
 	{
-		AnimationRef(StdMeshInstance* instance, const StdStrBuf& animation_name);
-		AnimationRef(StdMeshInstance* instance, const StdMeshAnimation& animation);
-		
-		operator void*() const { return Anim; } // for use in boolean expressions
+	public:
+		ValueProvider(): Value(0.0f) {}
+		virtual ~ValueProvider() {}
 
-		const StdMeshAnimation& GetAnimation() const;
+		// Return false if the corresponding node is to be removed or true
+		// otherwise.
+		virtual bool Execute() = 0;
 
-		void SetPosition(float position);
-		void SetWeight(float weight);
-	private:
-		AnimationRef(const AnimationRef&); // noncopyable
-		AnimationRef& operator=(const AnimationRef&); // noncopyable
-
-		StdMeshInstance* Instance;
-		Animation* Anim;
+		float Value; // Current provider value
 	};
 
-	bool PlayAnimation(const StdStrBuf& animation_name, float weight);
-	bool PlayAnimation(const StdMeshAnimation& animation, float weight);
-	bool StopAnimation(const StdStrBuf& animation_name);
-	bool StopAnimation(const StdMeshAnimation& animation);
+	// A node in the animation tree
+	// Can be either a leaf node, or interpolation between two other nodes
+	class AnimationNode
+	{
+		friend class StdMeshInstance;
+	public:
+		enum NodeType { LeafNode, LinearInterpolationNode };
+
+		AnimationNode(const StdMeshAnimation* animation, ValueProvider* position);
+		AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight);
+		~AnimationNode();
+
+		bool GetBoneTransform(unsigned int bone, StdMeshTransformation& transformation);
+
+		int GetSlot() const { return Slot; }
+		unsigned int GetNumber() const { return Number; }
+		NodeType GetType() const { return Type; }
+		AnimationNode* GetParent() { return Parent; }
+
+		const StdMeshAnimation* GetAnimation() const { assert(Type == LeafNode); return Leaf.Animation; }
+		ValueProvider* GetPositionProvider() { assert(Type == LeafNode); return Leaf.Position; }
+		float GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
+
+		AnimationNode* GetLeftChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildLeft; }
+		AnimationNode* GetRightChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildRight; }
+		ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
+		float GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
+
+	protected:
+		int Slot;
+		unsigned int Number;
+		NodeType Type;
+		AnimationNode* Parent;
+
+		union
+		{
+			struct
+			{
+				const StdMeshAnimation* Animation;
+				ValueProvider* Position;
+			} Leaf;
+
+			struct
+			{
+				AnimationNode* ChildLeft;
+				AnimationNode* ChildRight;
+				ValueProvider* Weight;
+			} LinearInterpolation;
+		};
+	};
+
+	AnimationNode* PlayAnimation(const StdStrBuf& animation_name, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
+	AnimationNode* PlayAnimation(const StdMeshAnimation& animation, int slot, AnimationNode* sibling, ValueProvider* position, ValueProvider* weight);
+	void StopAnimation(AnimationNode* node);
+
+	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
+	AnimationNode* GetRootAnimationForSlot(int slot);
+
+	// Set new value providers for a node's position or weight - cannot be in
+	// class AnimationNode since we need to mark BoneTransforms dirty.
+	void SetAnimationPosition(AnimationNode* node, ValueProvider* position);
+	void SetAnimationWeight(AnimationNode* node, ValueProvider* weight);
+
+	// Update animations' value providers; call once a frame
+	void ExecuteAnimation();
 
 	struct AttachedMesh
 	{
@@ -354,7 +410,7 @@ public:
 		// Cache attach transformation, updated in UpdateBoneTransforms()
 		StdMeshMatrix AttachTrans;
 	};
-	
+
 	typedef std::list<AttachedMesh> AttachedMeshList;
 	typedef AttachedMeshList::const_iterator AttachedMeshIter;
 
@@ -394,19 +450,16 @@ public:
 	const StdMesh& Mesh;
 
 protected:
+	typedef std::vector<AnimationNode*> AnimationNodeList;
+
+	AnimationNodeList::iterator GetStackIterForSlot(int slot, bool create);
+	bool ExecuteAnimationNode(AnimationNode* node);
 	void ReorderFaces();
 
 	FaceOrdering CurrentFaceOrdering;
 
-	struct Animation
-	{
-		const StdMeshAnimation* MeshAnimation;
-		float Position;
-		float Weight;
-	};
-
-	std::vector<Animation> Animations;
-
+	AnimationNodeList AnimationNodes; // for simple lookup of animation nodes by their unique number
+	AnimationNodeList AnimationStack; // contains top level nodes only, ordered by slot number
 	std::vector<StdMeshMatrix> BoneTransforms;
 
 	// Vertices transformed according to current animation, for each submesh

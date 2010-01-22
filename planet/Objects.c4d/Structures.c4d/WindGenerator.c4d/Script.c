@@ -9,23 +9,46 @@ public func GetGeneratorPriority() { return 256; }
 
 /* Initialisierung */
 
+local wind_anim;
+
 protected func Initialize()
 {
-  AnimationPlay("Turn");
-	iRot = 0;
+  wind_anim = PlayAnimation("Turn", 5, Anim_Const(0), Anim_Const(1000));
+  // Set initial position
+  Wind2Turn();
   return _inherited(...);
 }
 
-local iRot;
-
+local b;
 func Wind2Turn()
 {
-	if(!Random(10))
-    DoPower(Abs(GetWind()/4));
-	iRot += GetWind()/2;
-	if(iRot < 0) iRot += 3600;
-	if(iRot >= 3600) iRot -= 3600;
-  AnimationSetState("Turn", iRot*12000/3600);
+	DoPower(Abs(GetWind()/3));
+
+	// Fade linearly in time until next timer call
+	var start = 0;
+	var end = GetAnimationLength("Turn");
+	if(GetWind() < 0)
+	{
+		start = end;
+		end = 0;
+	}
+
+	// Number of frames for one revolution: the more wind the more
+	// revolutions per frame.
+	var l = 7200/Abs(GetWind());
+
+	// Note ending is irrelevant since this is called again after 35 frames
+	if(!b)
+	if(l > 0)
+	{
+		b=1;
+		SetAnimationPosition(wind_anim, Anim_Linear(GetAnimationPosition(wind_anim), start, end, l, ANIM_Loop));
+	}
+	else
+	{
+		b = 1;
+		SetAnimationPosition(wind_anim, Anim_Const(GetAnimationPosition(wind_anim)));
+	}
 }
 
 func Definition(def) {

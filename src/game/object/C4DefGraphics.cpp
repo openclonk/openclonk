@@ -41,6 +41,7 @@
 #include <C4GameObjects.h>
 #include <C4RankSystem.h>
 #include <C4GraphicsResource.h>
+#include <C4MeshAnimation.h>
 
 // Helper class to load additional ressources required for meshes from
 // a C4Group.
@@ -749,13 +750,14 @@ void C4GraphicsOverlay::UpdateFacet()
 				}
 				else
 				{
-					C4String* Animation = action->GetPropertyStr(P_Animation);
+					C4String* AnimationName = action->GetPropertyStr(P_Animation);
+					if(!AnimationName) return;
+					
+					pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
+					const StdMeshAnimation* Animation = pSourceGfx->Mesh->GetAnimationByName(AnimationName->GetData());
 					if(!Animation) return;
 
-					pMeshInstance = new StdMeshInstance(*pSourceGfx->Mesh);
-					pMeshInstance->PlayAnimation(Animation->GetData(), 1.0f);
-					StdMeshInstance::AnimationRef ref(pMeshInstance, Animation->GetData());
-					ref.SetPosition(iPhase * ref.GetAnimation().Length / action->GetPropertyInt(P_Length));
+					pMeshInstance->PlayAnimation(*Animation, 0, NULL, new C4ValueProviderRef<int32_t>(iPhase, Animation->Length / action->GetPropertyInt(P_Length)), new C4ValueProviderConst(1.0f));
 				}
 				
 				break;

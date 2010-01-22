@@ -251,6 +251,8 @@ src/game/object/C4IDList.cpp \
 src/game/object/C4IDList.h \
 src/game/object/C4InfoCore.cpp \
 src/game/object/C4InfoCore.h \
+src/game/object/C4MeshAnimation.cpp \
+src/game/object/C4MeshAnimation.h \
 src/game/object/C4Movement.cpp \
 src/game/object/C4ObjectCom.cpp \
 src/game/object/C4ObjectCom.h \

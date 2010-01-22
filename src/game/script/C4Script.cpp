@@ -52,6 +52,7 @@
 #include <C4Game.h>
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
+#include <C4MeshAnimation.h>
 
 //========================== Some Support Functions =======================================
 
@@ -5545,42 +5546,108 @@ static C4Void FnDoNoCollectDelay(C4AulObjectContext *ctx, int change)
 	return C4VNull;
 }
 
-static bool FnAnimationPlay(C4AulContext *ctx, C4String *szAnimation, Nillable<long> weight)
+static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimation, int iSlot, C4ValueArray* PositionProvider, C4ValueArray* WeightProvider, Nillable<int> iSibling)
+{
+	if(!ctx->Obj) return C4VNull;
+	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	if(iSlot == 0) return C4VNull; // Reserved for ActMap animations
+	if(!PositionProvider) return C4VNull;
+	if(!WeightProvider) return C4VNull;
+
+	StdMeshInstance::AnimationNode* s_node = NULL;
+	if(!iSibling.IsNil())
 	{
-	if(!ctx->Obj) return false;
-	if(!ctx->Obj->pMeshInstance) return false;
-
-	float w = 1.0f;
-	if(!weight.IsNil()) w = weight / 1000.0f;
-
-	return ctx->Obj->pMeshInstance->PlayAnimation(szAnimation->GetData(), w);
+		s_node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iSibling);
+		if(!s_node || s_node->GetSlot() != iSlot) return C4VNull;
 	}
 
-static bool FnAnimationStop(C4AulContext *ctx, C4String *szAnimation)
+	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(ctx->Obj, *PositionProvider);
+	StdMeshInstance::ValueProvider* w_provider = CreateValueProviderFromArray(ctx->Obj, *WeightProvider);
+	if(!p_provider || !w_provider)
 	{
-	if(!ctx->Obj) return false;
-	if(!ctx->Obj->pMeshInstance) return false;
-	return ctx->Obj->pMeshInstance->StopAnimation(szAnimation->GetData());
+		delete p_provider;
+		delete w_provider;
+		return C4VNull;
 	}
 
-static bool FnAnimationSetState(C4AulContext *ctx, C4String *szAnimation, Nillable<long> position, Nillable<long> weight)
-	{
+	StdMeshInstance::AnimationNode* n_node = ctx->Obj->pMeshInstance->PlayAnimation(szAnimation->GetData(), iSlot, s_node, p_provider, w_provider);
+	if(!n_node) return C4VNull;
+
+	return n_node->GetNumber();
+}
+
+static bool FnStopAnimation(C4AulObjectContext *ctx, int iAnimationNumber)
+{
 	if(!ctx->Obj) return false;
 	if(!ctx->Obj->pMeshInstance) return false;
-	StdMeshInstance::AnimationRef ref(ctx->Obj->pMeshInstance, szAnimation->GetData());
-	if(!ref) return false;
-
-	if(!position.IsNil())
-		{
-		float pos = position / 1000.0f;
-		if(pos > ref.GetAnimation().Length) return false;
-		ref.SetPosition(pos);
-		}
-
-	if(!weight.IsNil())
-		ref.SetWeight(weight / 1000.0f);
+	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+	// slot 0 is reserved for ActMap animations
+	if(!node || node->GetSlot() == 0) return false;
+	ctx->Obj->pMeshInstance->StopAnimation(node);
 	return true;
-	}
+}
+
+static Nillable<int> FnGetRootAnimation(C4AulObjectContext *ctx, int iSlot)
+{
+	if(!ctx->Obj) return C4VNull;
+	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetRootAnimationForSlot(iSlot);
+	if(!node) return C4VNull;
+	return node->GetNumber();
+}
+
+static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szAnimation)
+{
+	if(!ctx->Obj) return C4VNull;
+	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	const StdMeshAnimation* animation = ctx->Obj->pMeshInstance->Mesh.GetAnimationByName(szAnimation->GetData());
+	if(!animation) return C4VNull;
+	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical?
+}
+
+static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber)
+{
+	if(!ctx->Obj) return C4VNull;
+	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+	if(!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4VNull;
+	return static_cast<int>(node->GetPosition() * 1000.0f); // TODO: sync critical?
+}
+
+static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber)
+{
+	if(!ctx->Obj) return C4VNull;
+	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+	if(!node || node->GetType() != StdMeshInstance::AnimationNode::LinearInterpolationNode) return C4VNull;
+	return static_cast<int>(node->GetWeight() * 1000.0f); // TODO: sync critical?
+}
+
+static bool FnSetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* PositionProvider)
+{
+	if(!ctx->Obj) return false;
+	if(!ctx->Obj->pMeshInstance) return false;
+	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+	// slot 0 is reserved for ActMap animations
+	if(!node || node->GetSlot() == 0 || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return false;
+	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(ctx->Obj, *PositionProvider);
+	if(!p_provider) return false;
+	ctx->Obj->pMeshInstance->SetAnimationPosition(node, p_provider);
+	return true;
+}
+
+static bool FnSetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* WeightProvider)
+{
+	if(!ctx->Obj) return false;
+	if(!ctx->Obj->pMeshInstance) return false;
+	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+	// slot 0 is reserved for ActMap animations
+	if(!node || node->GetSlot() == 0 || node->GetType() != StdMeshInstance::AnimationNode::LinearInterpolationNode) return false;
+	StdMeshInstance::ValueProvider* w_provider = CreateValueProviderFromArray(ctx->Obj, *WeightProvider);
+	if(!w_provider) return false;
+	ctx->Obj->pMeshInstance->SetAnimationWeight(node, w_provider);
+	return true;
+}
 
 static Nillable<long> FnAttachMesh(C4AulContext *ctx, C4ID idMesh, C4String* szParentBone, C4String* szChildBone, Nillable<long> scale)
 	{
@@ -6074,9 +6141,14 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetPlayerControlEnabled", FnGetPlayerControlEnabled);
 	//FIXME new C4AulDefCastFunc(pEngine, "ScoreboardCol", C4V_C4ID, C4V_Int);
 
-	AddFunc(pEngine, "AnimationPlay", FnAnimationPlay);
-	AddFunc(pEngine, "AnimationStop", FnAnimationStop);
-	AddFunc(pEngine, "AnimationSetState", FnAnimationSetState);
+	AddFunc(pEngine, "PlayAnimation", FnPlayAnimation);
+	AddFunc(pEngine, "StopAnimation", FnStopAnimation);
+	AddFunc(pEngine, "GetRootAnimation", FnGetRootAnimation);
+	AddFunc(pEngine, "GetAnimationLength", FnGetAnimationLength);
+	AddFunc(pEngine, "GetAnimationPosition", FnGetAnimationPosition);
+	AddFunc(pEngine, "GetAnimationWeight", FnGetAnimationWeight);
+	AddFunc(pEngine, "SetAnimationPosition", FnSetAnimationPosition);
+	AddFunc(pEngine, "SetAnimationWeight", FnSetAnimationWeight);	
 	AddFunc(pEngine, "AttachMesh", FnAttachMesh);
 	AddFunc(pEngine, "DetachMesh", FnDetachMesh);
 
@@ -6424,6 +6496,25 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "CSPF_NoScenarioInit"       ,C4V_Int,      CSPF_NoScenarioInit },
 	{ "CSPF_NoEliminationCheck"   ,C4V_Int,      CSPF_NoEliminationCheck },
 	{ "CSPF_Invisible"            ,C4V_Int,      CSPF_Invisible },
+
+	{ "C4AVP_Const"               ,C4V_Int,      C4AVP_Const },
+	{ "C4AVP_Linear"              ,C4V_Int,      C4AVP_Linear },
+	{ "C4AVP_X"                   ,C4V_Int,      C4AVP_X },
+	{ "C4AVP_Y"                   ,C4V_Int,      C4AVP_Y },
+	{ "C4AVP_AbsX"                ,C4V_Int,      C4AVP_AbsX },
+	{ "C4AVP_AbsY"                ,C4V_Int,      C4AVP_AbsY },
+	{ "C4AVP_XDir"                ,C4V_Int,      C4AVP_XDir },
+	{ "C4AVP_YDir"                ,C4V_Int,      C4AVP_YDir },
+	{ "C4AVP_RDir"                ,C4V_Int,      C4AVP_RDir },
+	{ "C4AVP_CosR"                ,C4V_Int,      C4AVP_CosR },
+	{ "C4AVP_SinR"                ,C4V_Int,      C4AVP_SinR },
+	{ "C4AVP_CosV"                ,C4V_Int,      C4AVP_CosV },
+	{ "C4AVP_SinV"                ,C4V_Int,      C4AVP_SinV },
+	{ "C4AVP_Action"              ,C4V_Int,      C4AVP_Action },
+
+	{ "ANIM_Loop"                 ,C4V_Int,      ANIM_Loop },
+	{ "ANIM_Hold"                 ,C4V_Int,      ANIM_Hold },
+	{ "ANIM_Remove"               ,C4V_Int,      ANIM_Remove },
 
 	{ NULL, C4V_Any, 0} };
 

@@ -51,6 +51,7 @@
 #include <C4PlayerList.h>
 #include <C4GameObjects.h>
 #include <C4Record.h>
+#include <C4MeshAnimation.h>
 
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
   {
@@ -1098,6 +1099,8 @@ void C4Object::Execute()
 	ExecLife();
 	// Base
 	ExecBase();
+	// Animation
+	if(pMeshInstance) pMeshInstance->ExecuteAnimation();
 	// Timer
 	Timer++;
 	if (Timer>=Def->Timer)
@@ -2192,29 +2195,9 @@ C4Value C4Object::Call(const char *szFunctionCall, C4AulParSet *pPars, bool fPas
 bool C4Object::SetPhase(int32_t iPhase)
 {
 	if (!Action.pActionDef) return false;
-
 	const int32_t length = Action.pActionDef->GetPropertyInt(P_Length);
-	const int32_t delay = Action.pActionDef->GetPropertyInt(P_Delay);
-
 	Action.Phase=BoundBy<int32_t>(iPhase,0,length);
 	Action.PhaseDelay = 0;
-
-	if(pMeshInstance)
-	{
-		C4String* AnimationName = Action.pActionDef->GetPropertyStr(P_Animation);
-		if(AnimationName)
-		{
-			StdMeshInstance::AnimationRef ref(pMeshInstance, AnimationName->GetData());
-			if(ref)
-			{
-				if(delay)
-					ref.SetPosition(static_cast<float>(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * ref.GetAnimation().Length);
-				else
-					ref.SetPosition(static_cast<float>(Action.Phase) / length * ref.GetAnimation().Length);
-			}
-		}
-	}
-
 	return true;
 }
 
@@ -2733,9 +2716,10 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 		pComp->Value(TemporaryPhysical);
 		}
 
+	// TODO: Animations / attached meshes
 
-  // Commands
-  if(pComp->FollowName("Commands"))
+	// Commands
+	if(pComp->FollowName("Commands"))
 		if(fCompiler)
 			{
 			C4Command *pCmd = NULL;
@@ -2761,41 +2745,45 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 				}
 			}
 
-  // Compiling? Do initialization.
-  if(fCompiler)
-    {
-	  // add to def count
-	  Def->Count++;
+	// Compiling? Do initialization.
+	if(fCompiler)
+		{
+		// add to def count
+		Def->Count++;
 
-	  // set local variable names
-	  LocalNamed.SetNameList(&Def->Script.LocalNamed);
+		// set local variable names
+		LocalNamed.SetNameList(&Def->Script.LocalNamed);
 
-	  // Set action (override running data)
-	  int32_t iTime=Action.Time;
-	  int32_t iPhase=Action.Phase;
-	  int32_t iPhaseDelay=Action.PhaseDelay;
-	  /* FIXME if (SetActionByName(Action.pActionDef->GetName(),0,0,false)) 
-		  {
-		  Action.Time=iTime;
-		  Action.Phase=iPhase; // No checking for valid phase
-		  Action.PhaseDelay=iPhaseDelay;
-		  }*/
+		// Set action (override running data)
+		int32_t iTime=Action.Time;
+		int32_t iPhase=Action.Phase;
+		int32_t iPhaseDelay=Action.PhaseDelay;
+		/* FIXME if (SetActionByName(Action.pActionDef->GetName(),0,0,false)) 
+			{
+			Action.Time=iTime;
+			Action.Phase=iPhase; // No checking for valid phase
+			Action.PhaseDelay=iPhaseDelay;
+			}*/
 
-	  // if on fire but no effect is present (old-style savegames), re-incinerate
-	  int32_t iFireNumber;
-	  C4Value Par1, Par2, Par3, Par4;
-	  if (OnFire && !pEffects) new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, 0, Par1, Par2, Par3, Par4, false, iFireNumber);
+		// Set Action animation by slot 0
+		if(pMeshInstance)
+			Action.Animation = pMeshInstance->GetRootAnimationForSlot(0);
 
-	  // blit mode not assigned? use definition default then
-	  if (!BlitMode) BlitMode = Def->BlitMode;
+		// if on fire but no effect is present (old-style savegames), re-incinerate
+		int32_t iFireNumber;
+		C4Value Par1, Par2, Par3, Par4;
+		if (OnFire && !pEffects) new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, 0, Par1, Par2, Par3, Par4, false, iFireNumber);
 
-	  // object needs to be resorted? May happen if there's unsorted objects in savegame
-	  if (Unsorted) Game.fResortAnyObject = true;
+		// blit mode not assigned? use definition default then
+		if (!BlitMode) BlitMode = Def->BlitMode;
+
+		// object needs to be resorted? May happen if there's unsorted objects in savegame
+		if (Unsorted) Game.fResortAnyObject = true;
 
 		// initial OCF update
 		SetOCF();
 
-    }
+		}
 
 	}
 
@@ -3276,22 +3264,14 @@ bool C4Object::SetAction(C4PropList * Act, C4Object *pTarget, C4Object *pTarget2
 	// such an animation.
 	if(pMeshInstance)
 		{
-		C4String* Animation = Act ? Act->GetPropertyStr(P_Animation) : NULL;
-		C4String* OldAnimation = LastAction ? LastAction->GetPropertyStr(P_Animation) : NULL;
-		if(OldAnimation)
-			pMeshInstance->StopAnimation(OldAnimation->GetData());
+		if(Action.Animation) pMeshInstance->StopAnimation(Action.Animation);
+		Action.Animation = NULL;
 
+		C4String* Animation = Act ? Act->GetPropertyStr(P_Animation) : NULL;
 		if(Animation)
 			{
-			// overwrite existing animation, if any (maybe launched by script)
-			StdMeshInstance::AnimationRef ref(pMeshInstance, Animation->GetData());
-			if(ref)
-				{
-				ref.SetPosition(0.0f);
-				ref.SetWeight(1.0f);
-				}
-			else
-				pMeshInstance->PlayAnimation(Animation->GetData(), 1.0f);
+			// note that weight is ignored
+			Action.Animation = pMeshInstance->PlayAnimation(Animation->GetData(), 0, NULL, new C4ValueProviderAction(this), new C4ValueProviderConst(1.0f));
 			}
 		}
 	// Stop previous act sound
@@ -4577,7 +4557,6 @@ void C4Object::ExecAction()
 	if (pAction->GetPropertyInt(P_Delay))
 		{  
 		Action.PhaseDelay+=iPhaseAdvance;
-		bool set_new_action = false;
 		if (Action.PhaseDelay >= pAction->GetPropertyInt(P_Delay))
 			{
 			// Advance Phase
@@ -4605,12 +4584,11 @@ void C4Object::ExecAction()
 					{
 					// Set new action
 					SetActionByName(next_action, NULL, NULL, SAC_StartCall | SAC_EndCall);
-					set_new_action = true;
-					SetActionByName(next_action, NULL, NULL, SAC_StartCall | SAC_EndCall);
 					}
 				}
 			}
 
+#if 0
 		// Update animation on mesh instance. If a new action was set,
 		// then this will already have happened for the new action.
 		if(pMeshInstance && !set_new_action)
@@ -4627,6 +4605,7 @@ void C4Object::ExecAction()
 					}
 				}
 			}
+#endif
 		}
 
 	return;

@@ -45,6 +45,7 @@ void C4Action::Default()
 	Facet.Default();
   FacetX=FacetY=0;
   t_attach=CNAT_None;
+  Animation = NULL;
 	}
 
 void C4Action::CompileFunc(StdCompiler *pComp)

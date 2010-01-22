@@ -8,10 +8,14 @@ public func IsLorry() { return 1; }
 
 public func IsToolProduct() { return 1; }
 
+local drive_anim;
+local tremble_anim;
+
 protected func Initialize()
 {
-	AnimationPlay("Drive");
-	AnimationPlay("Tremble");
+	drive_anim = PlayAnimation("Drive", 5, Anim_Const(0), Anim_Const(500) /* ignored anyway */);
+	tremble_anim = PlayAnimation("Tremble", 5, Anim_Const(0), Anim_Const(500));
+
 	iRotWheels = 0;
 	iTremble = 0;
 }
@@ -133,16 +137,18 @@ local iTremble;
 
 func TurnWheels()
 {
+	// TODO: Use Anim_X(Dir), keep from timer=1
+	// TODO: Could also use GetAnimationPosition() instead of these local variables...
 	iRotWheels += GetXDir()*2000/100; // Einmal rum (20 frames mal 10fps) nach 10 m
 	while(iRotWheels < 0) iRotWheels += 2000;
 	while(iRotWheels > 2000) iRotWheels -= 2000;
-	AnimationSetState("Drive", iRotWheels);
+	SetAnimationPosition(drive_anim, Anim_Const(iRotWheels));
 	if(Random(100) < Abs(GetXDir()))
 	{
 		iTremble += 100;
 		if(iTremble < 0) iTremble += 2000;
   	if(iTremble > 2000) iTremble -= 2000;
-		AnimationSetState("Tremble", iTremble);
+		SetAnimationPosition(tremble_anim, Anim_Const(iTremble));
 	}
 }
 
