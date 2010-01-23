@@ -1636,14 +1636,14 @@ StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlo
 			if(!create)
 				return AnimationStack.end();
 			else
-				return AnimationStack.insert(iter, NULL);
+				return AnimationStack.insert(iter, static_cast<AnimationNode*>(NULL));
 		}
 	}
 
 	if(!create)
 		return AnimationStack.end();
 	else
-		return AnimationStack.insert(AnimationStack.end(), NULL);
+		return AnimationStack.insert(AnimationStack.end(), static_cast<AnimationNode*>(NULL));
 }
 
 bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
