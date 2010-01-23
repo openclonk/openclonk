@@ -1319,8 +1319,8 @@ StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshAnim
 			break;*/
 	Number2 = Number1 + 1;
 
-	if(Number1 == AnimationNodes.size()) AnimationNodes.push_back(NULL);
-	if(sibling && Number2 == AnimationNodes.size()) AnimationNodes.push_back(NULL);
+	if(Number1 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
+	if(sibling && Number2 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
 
 	AnimationNode* child = new AnimationNode(&animation, position);
 	AnimationNodes[Number1] = child;
