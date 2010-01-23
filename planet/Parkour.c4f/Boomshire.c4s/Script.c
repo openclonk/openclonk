@@ -1,7 +1,8 @@
 /* Sky race */
 
 func Initialize()
-{/*
+{
+
  CreateObject(DYNA,1050,1150,-1);
  CreateObject(DYNA,1050,1150,-1);
  
@@ -18,38 +19,48 @@ func Initialize()
  {
  	CreateObject(BPDR,i,1328,-1);
  
- }*/
+ }
+ 
+ CreateObject(BPDR,2553,918,-1);
+ 
+ CreateObject(DYNA,3208,1188,-1);
+ 
+ CreateObject(DYNA,3361,749,-1);
+ CreateObject(DYNA,3243,557,-1);
+ 
+ for(var i=0; i<=6; i++)
+ CreateObject(DYNA,3090-(3*i),564,-1);
+ 
+ // Create the race goal.
+	var pGoal = CreateObject(PARK, 0, 0, NO_OWNER);
+	pGoal->SetStartpoint(20, 1000);
+	pGoal->AddCheckpoint(760,950,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(400,660,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(870,460,RACE_CP_Respawn);
+	pGoal->AddCheckpoint(1200,1020,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(1665,1070,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(1120,1010,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(1485,800,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(1735,1410,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(2110,1180, RACE_CP_Respawn);
+	pGoal->AddCheckpoint(3350,1240,RACE_CP_Ordered);	
+	pGoal->AddCheckpoint(3040,720, RACE_CP_Respawn);
+	pGoal->AddCheckpoint(2530,520,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(2150,510,RACE_CP_Ordered);
+	pGoal->AddCheckpoint(2740,350,RACE_CP_Ordered);
+	pGoal->SetFinishpoint(3490,100);
+ 
+ 
+
+ return 1;
  }
  
 
-func InitializePlayer(int plr)
+protected func RACE_GiveContents()
 {
-  return JoinPlayer(plr);
-}
-
-private func JoinPlayer(int plr)
-{
-  var obj=GetCrew(plr);
-  obj->DoEnergy(100000);
-  obj->SetPosition(20+Random(10),1000);
-  obj->CreateContents(MJOW);
-  return true;
+	return [MJOW];
 }
 
 
 /* Relaunch */
 
-public func RelaunchPlayer(int plr)
-{
-  var clnk=CreateObject(CLNK,0,0,plr);
-  clnk->MakeCrewMember(plr);
-  SetCursor(plr,clnk);
-  SelectCrew(plr, clnk, 1);
-  Log(RndRelaunchMsg(), GetPlayerName(plr));
-  return JoinPlayer(plr);
-}
-
-private func RndRelaunchMsg()
-{
-  return Translate(Format("RelaunchMsg%d", Random(4)));
-}
