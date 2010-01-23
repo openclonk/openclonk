@@ -1426,7 +1426,7 @@ void StdMeshInstance::StopAnimation(AnimationNode* node)
 		delete parent;
 	}
 
-	while(AnimationNodes.back() == NULL)
+	while(!AnimationNodes.empty() && AnimationNodes.back() == NULL)
 		AnimationNodes.erase(AnimationNodes.end()-1);
 	BoneTransformsDirty = true;
 }
