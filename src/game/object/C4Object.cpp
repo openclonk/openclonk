@@ -3903,6 +3903,13 @@ void C4Object::ExecAction()
 	int32_t dir = Action.Dir;
 	FIXED accel = WalkAccel;
 
+	FIXED xlFloatAccel;
+	FIXED xrFloatAccel;
+	FIXED yuFloatAccel;
+	FIXED ydFloatAccel;
+	FIXED lFloatAccel;
+	FIXED rFloatAccel;
+
 	switch (pAction->GetPropertyInt(P_Procedure))
 		{
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -4034,13 +4041,16 @@ void C4Object::ExecAction()
 					}
 
 			lLimit = itofix(2);
+			lFloatAccel = Max(Min(lLimit+xdir,FloatAccel),itofix(0));
+			rFloatAccel = Max(Min(lLimit-xdir,FloatAccel),itofix(0));
+
 			switch (Action.ComDir)
 				{
 				case COMD_Left: case COMD_UpLeft: case COMD_DownLeft:
-					xdir-=FloatAccel; if (xdir<-lLimit) xdir=-lLimit;
+					xdir-=lFloatAccel;
 					break;
 				case COMD_Right: case COMD_UpRight: case COMD_DownRight:
-					xdir+=FloatAccel; if (xdir>+lLimit) xdir=+lLimit;
+					xdir+=rFloatAccel;
 					break;
 			  }
 
@@ -4396,21 +4406,23 @@ void C4Object::ExecAction()
     case DFA_FLOAT:
       // Float speed
       lLimit=FIXED100(pPhysical->Float);
+			xlFloatAccel = Max(Min(lLimit+xdir,FloatAccel),itofix(0));
+			xrFloatAccel = Max(Min(lLimit-xdir,FloatAccel),itofix(0));
+			yuFloatAccel = Max(Min(lLimit+ydir,FloatAccel),itofix(0));
+			ydFloatAccel = Max(Min(lLimit-ydir,FloatAccel),itofix(0));
+
       // ComDir changes xdir/ydir
       switch (Action.ComDir)
         {
-        case COMD_Up:    ydir-=FloatAccel; break;
-        case COMD_Down:  ydir+=FloatAccel; break;
-        case COMD_Right: xdir+=FloatAccel; break;
-        case COMD_Left:  xdir-=FloatAccel; break;
-        case COMD_UpRight: ydir-=FloatAccel; xdir+=FloatAccel; break;
-        case COMD_DownRight: ydir+=FloatAccel; xdir+=FloatAccel; break;
-        case COMD_DownLeft: ydir+=FloatAccel; xdir-=FloatAccel; break;
-        case COMD_UpLeft: ydir-=FloatAccel; xdir-=FloatAccel; break;
+        case COMD_Up:    ydir-=yuFloatAccel; break;
+        case COMD_Down:  ydir+=ydFloatAccel; break;
+        case COMD_Right: xdir+=xrFloatAccel; break;
+        case COMD_Left:  xdir-=xlFloatAccel; break;
+        case COMD_UpRight: ydir-=yuFloatAccel; xdir+=xrFloatAccel; break;
+        case COMD_DownRight: ydir+=ydFloatAccel; xdir+=xrFloatAccel; break;
+        case COMD_DownLeft: ydir+=ydFloatAccel; xdir-=xlFloatAccel; break;
+        case COMD_UpLeft: ydir-=yuFloatAccel; xdir-=xlFloatAccel; break;
         }
-      // xdir/ydir bounds
-      if (ydir<-lLimit) ydir=-lLimit; if (ydir>+lLimit) ydir=+lLimit;
-      if (xdir>+lLimit) xdir=+lLimit; if (xdir<-lLimit) xdir=-lLimit;
       Mobile=1;
       break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
