@@ -623,7 +623,6 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 		position += (EffectVar(10, pTarget, iNumber)/6000*1000/(14*2));
 
 		SetAnimationPosition(EffectVar(1, pTarget, iNumber), Anim_Const(position % GetAnimationLength("Hangle")));
-		Log("Moving, speed %d, new pos %d/%d", iSpeed, position, GetAnimationPosition(EffectVar(1, pTarget, iNumber)));
 
 		// Continue movement, if the clonk still has momentum
 		if(GetComDir() == COMD_Stop && iSpeed>10)
@@ -660,7 +659,6 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 		// We are currently not moving
 		if(GetComDir() != COMD_Stop)
 		{
-			Log("Switch to move");
 			// Switch to move
 			EffectVar(0, pTarget, iNumber) = 1;
 			// start with frame 100 or from the back hanging pose frame 600
