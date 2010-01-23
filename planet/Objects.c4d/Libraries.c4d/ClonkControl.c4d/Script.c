@@ -161,10 +161,10 @@ public func Switch2Items(int one, int two)
 	if(two == selected)       inventory[one]->~Deselection(this,false);
 	else if(two == selected2) inventory[one]->~Deselection(this,true);
 
-	if(one == selected)       inventory[one]->~Selection(this,false);
-	else if(one == selected2) inventory[one]->~Selection(this,true);
-	if(two == selected)       inventory[two]->~Selection(this,false);
-	else if(two == selected2) inventory[two]->~Selection(this,true);
+	if(one == selected)       if(inventory[one]) inventory[one]->~Selection(this,false);
+	else if(one == selected2) if(inventory[one]) inventory[one]->~Selection(this,true);
+	if(two == selected)       if(inventory[two]) inventory[two]->~Selection(this,false);
+	else if(two == selected2) if(inventory[two]) inventory[two]->~Selection(this,true);
 	
 	if(inventory[one])
 		this->~OnSlotFull(one);

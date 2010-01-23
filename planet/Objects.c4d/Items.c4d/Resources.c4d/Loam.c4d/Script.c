@@ -2,7 +2,7 @@
 
 local last_x, last_y, last_frame, begin_frame;
 
-static const LOAM_Bridge_Time = 70; // frames
+static const LOAM_Bridge_Time = 50; // frames
 
 func Definition(def) {
   SetProperty("Collectible", 1, def);
@@ -16,12 +16,16 @@ func Hit()
 }
 
 // Item activation
-func ControlUse(object clonk, int x, int y)
+func ControlUseStart(object clonk, int x, int y)
 {
-  // Clonk must stand on ground
-	if(clonk->GetProcedure() != "WALK") return false;
+	// Clonk must stand on ground
+	if(clonk->GetProcedure() != "WALK")
+	{
+		clonk->CancelUse();
+		return true;
+	}
 
-  // Gfx
+	// Gfx
 	clonk->SetAction("Bridge");
 	clonk->SetComDir(COMD_None);
 	clonk->SetXDir(0);
@@ -37,7 +41,11 @@ func HoldingEnabled() { return true; }
 func ControlUseHolding(object clonk, int x, int y)
 {
 	// something happened - don't try to dig anymore
-	if(clonk->GetAction() != "Bridge") return -1;
+	if(clonk->GetAction() != "Bridge")
+	{
+		clonk->CancelUse();
+		return true;
+	}
 	
 	// clonk faces bridge direction
 	var tdir = 0;
@@ -45,45 +53,60 @@ func ControlUseHolding(object clonk, int x, int y)
 	clonk->SetDir(tdir);
 	
 	// bridge speed: Build in smaller steps when briding upwards so Clonk moves up with bridge
-  var min_dt = 3;
-  if (y < -20 && !Abs(x*5/y)) min_dt=1;
+	var min_dt = 3;
+	if (y < -20 && !Abs(x*5/y)) min_dt=1;
   
-  // get global drawing coordinates
+	// get global drawing coordinates
 	x += GetX(); y += GetY();
 	
 	// bridge speed by dig physical
 	var speed = clonk->GetPhysical("Dig")/3500;
 	
 	// build bridge in chunks (for better angle precision)
-  var dt = FrameCounter() - last_frame;
-  if (dt < min_dt) return true;
-  last_frame += dt;
-  
-  // draw loam (earth) line
-  var line_wdt = 4;
-  var line_len = speed * dt;
-  var dx = x-last_x, dy=y-last_y, d=Distance(dx, dy);
-  var ox = dy * line_wdt / d, oy = -dx * line_wdt / d;
-  dx = dx * line_len / (d*10);
-  dy = dy * line_len / (d*10);
-  DrawMaterialQuad("Earth-earth", last_x-ox,last_y-oy, last_x+dx-ox,last_y+dy-oy, last_x+dx+ox,last_y+dy+oy, last_x+ox,last_y+oy);
-  last_x += dx;
-  last_y += dy;
-  
-  // bridge time is up?
-  if (last_frame - begin_frame >= LOAM_Bridge_Time) return -1;
-  
-  return true;
+	var dt = FrameCounter() - last_frame;
+	if (dt < min_dt) return true;
+	last_frame += dt;
+	
+	// draw loam (earth) line
+	var line_wdt = 4;
+	var line_len = speed * dt;
+	var dx = x-last_x, dy=y-last_y, d=Distance(dx, dy);
+	var ox = dy * line_wdt / d, oy = -dx * line_wdt / d;
+	dx = dx * line_len / (d*10);
+	dy = dy * line_len / (d*10);
+	DrawMaterialQuad("Earth-earth", last_x-ox,last_y-oy, last_x+dx-ox,last_y+dy-oy, last_x+dx+ox,last_y+dy+oy, last_x+ox,last_y+oy);
+	last_x += dx;
+	last_y += dy;
+	
+	// bridge time is up?
+	if (last_frame - begin_frame >= LOAM_Bridge_Time)
+	{
+		clonk->CancelUse();
+	}
+	
+	return true;
 }
 
 public func ControlUseStop(object clonk, int x, int y)
 {
-  RemoveObject();
-  
-	if(clonk->GetAction() != "Bridge") return true;
-	clonk->SetAction("Walk");
-	clonk->SetComDir(COMD_Stop);
-
+	LoamDone(clonk);
 	return true;
 }
 
+public func ControlUseCancel(object clonk, int x, int y)
+{
+	LoamDone(clonk);
+	return true;
+}
+
+private func LoamDone(object clonk)
+{ 
+	if(last_frame != begin_frame)
+	{
+		if(clonk->GetAction() != "Bridge") return true;
+		clonk->SetAction("Walk");
+		clonk->SetComDir(COMD_Stop);
+		
+		RemoveObject();
+	}
+}
