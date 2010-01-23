@@ -10,8 +10,22 @@
 #include L_ES
 
 local aimtime;
+local iMesh;
+local iAnimLoad;
 
 public func HoldingEnabled() { return true; }
+
+public func Selection(pTarget, fSecond)
+{
+	if(fSecond) return;
+  iMesh = pTarget->AttachMesh(BOW1, "pos_hand2", "Handle", 1300);
+}
+
+public func Deselection(pTarget, fSecond)
+{
+	if(fSecond) return;
+	pTarget->DetachMesh(iMesh);
+}
 
 protected func ControlUseStart(object clonk, int x, int y)
 {
@@ -32,7 +46,8 @@ protected func ControlUseStart(object clonk, int x, int y)
 		// + sound or message that he doesnt have arrows anymore
 		clonk->CancelUse();
 	}
-	
+	iAnimLoad = clonk->PlayAnimation("BowAimArms", 10, Anim_Const(0), Anim_Const(1000));
+	Log("iAnimLoad %d", iAnimLoad);
 	return true;
 }
 
@@ -60,15 +75,20 @@ public func ControlUseHolding(object clonk, int x, int y)
 	else if(!ClonkAimLimit(clonk,angle))
 		Message("Cannot aim there",clonk);
 	else
-		Message("Aiming",clonk);
-		
+	{
+		if(angle > 180) angle -= 360;
+		clonk->SetAnimationPosition(iAnimLoad, Anim_Const(2000*Abs(angle)/180));
+		Message("Aiming|%d!!!!!",clonk,angle);
+	}
+
 	return true;
 }
 
 protected func ControlUseStop(object clonk, int x, int y)
 {
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	Message("",clonk);
-	
+
 	// "canceled"
 	if(aimtime > 0) return true;
 	

@@ -736,7 +736,7 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 		{
 			EffectVar(0, pTarget, iNumber) = "Swim";
 			// TODO: Determine starting position from previous animation
-			PlayAnimation("Swim", 5, Anim_X(0, 0, GetAnimationLength("Swim"), 25), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
+			PlayAnimation("Swim", 5, Anim_AbsX(0, 0, GetAnimationLength("Swim"), 25), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
 		}
 	}
 	// Diving
