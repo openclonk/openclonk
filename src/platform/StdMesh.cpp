@@ -797,12 +797,6 @@ StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
 	// a) time > animation length
 	// b) The track does not include a frame for the very end of the animation
 	// Both is considered an error
-	if(iter == Frames.end())
-	{
-		std::map<float, StdMeshKeyFrame>::const_iterator citer = iter; --citer;
-		printf("Time: %f (%f-%f)\n", time, Frames.begin()->first, citer->first);
-		if(time<=0.0) iter = Frames.begin();
-	}
 	assert(iter != Frames.end());
 
 	if(iter == Frames.begin())
@@ -1637,7 +1631,7 @@ StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlo
 		{
 			return iter;
 		}
-		else if((*iter)->Slot < slot)
+		else if((*iter)->Slot > slot)
 		{
 			if(!create)
 				return AnimationStack.end();
@@ -1645,7 +1639,7 @@ StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlo
 				return AnimationStack.insert(iter, NULL);
 		}
 	}
-	
+
 	if(!create)
 		return AnimationStack.end();
 	else
