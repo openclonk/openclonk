@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetAnimationLength</title>
+    <category>Animationen</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>szAnimation</name>
+          <desc>Name der Animation deren Länge abgefragt werden soll.</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Gibt die Länge der Animation mit dem angegebenen Namen zurück, oder nil wenn keine solche Animation existiert. Gültige Positionen (für <funclink>PlayAnimation</funclink> und <funclink>SetAnimationPosition</funclink>) liegen zwischen 0 und der Länge der Animation. Die zurückgegebene Zahl entspricht der Animationslänge (wie sie im Modellierungstool eingestellt wurde) in Millisekunden.</desc>
+
+    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
+
+    <examples>
+      <example>
+        <code><funclink>PlayAnimation</funclink>("Turn", 5, <funclink>Anim_Linear</funclink>(0, 0, <funclink>GetAnimationLength</funclink>("Turn"), 50, ANIM_Loop), <funclink>Anim_Const</funclink>(1000));</code>
+	<text>Spielt eine neue Animation namens "Turn" in Slot 5 ab, die eventuell andere Animationen in Slot 5 überlagert. Ein Animationsdurchgang dauert 50 Frames. Danach fängt die Animation wieder von vorne an.</text>
+      </example>
+    </examples>
+
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>Januar 2010</date>
+</funcs>

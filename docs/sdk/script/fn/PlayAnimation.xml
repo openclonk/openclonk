@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>PlayAnimation</title>
+    <category>Animationen</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>string</type>
+          <name>szAnimationName</name>
+          <desc>Name der abzuspielenden Animation.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iSlot</name>
+	  <desc>Slot im Animation Stack in den die Animation eingefügt werden soll. Siehe <emlink href="definition/animations.html">Animationen</emlink>.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>Position</name>
+          <desc>Bestimmt, wie die aktuelle Position der Animation berechnet wird. Diese wird mittels Animationsfunktionen der Form "Anim_" angegeben.</desc>
+        </param>
+        <param>
+          <type>array</type>
+          <name>Weight</name>
+          <desc>Bestimmt, wie die aktuelle Gewichtung der Animation berechnet wird, falls die Animation mit einer anderen Animation im gegebenen Slot kombiniert wird. Diese wird mittels Animationsfunktionen der Form "Anim_" angegeben.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iSibling</name>
+	  <desc>Falls die Animation mit einer anderen Animation kombiniert wird, dann gibt dies den Knoten an, mit dem die neue Animation kombiniert wird. Falls nicht angegeben oder nil wird die Animation mit der obersten Animation des Slots verknüpft wie sie von <funclink>GetRootAnimation</funclink> zurückgeliefert wird.</desc>
+	  <optional />
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Spielt eine neue neue Animation ab. Der Rückgabewert der Funktion ist die Animationsnummer des eingefügten Animationsknotens, mit der die Animation später manipuliert oder wieder entfernt werden kann. Falls im angegebenen Slot bereits Animationen vorhanden sind, so wird auch ein Kombinationsknoten erstellt. Dieser erhält die zurückgegebene Nummer plus 1.</desc>
+
+    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
+
+    <examples>
+      <example>
+	      <code><funclink>PlayAnimation</funclink>("Scale", 5, <funclink>Anim_Y</funclink>(0, <funclink>GetAnimationLength</funclink>("Scale"), 0, 15), <funclink>Anim_Const</funclink>(1000));</code>
+	<text>Spielt die Animation "Scale" ab und überschreibt dabei eventuell bereits existierende Animationen in Slot 5 ohne sie zu entfernen. Die Animationsposition wird nach der Y-Position des Objekts gewählt, so dass die Animation mit der Fortbewegung des Clonks während des Kletterns synchronisiert ist.</text>
+      </example>
+      <example>
+	      <code>var swim_up = <funclink>PlayAnimation</funclink>("SwimDiveUp", 5, <funclink>Anim_Linear</funclink>(0, 0, <funclink>GetAnimationLength</funclink>("SwimDiveUp"), 40, ANIM_Loop), <funclink>Anim_Linear</funclink>(0, 0, 1000, 15, ANIM_Remove));
+var swim_down = <funclink>PlayAnimation</funclink>("SwimDiveDown", 5, <funclink>Anim_Linear</funclink>(0, 0, <funclink>GetAnimationLength</funclink>("SwimDiveDown"), 40, ANIM_Loop), <funclink>Anim_Const</funclink>(500), swim_up);
+var swim_comb = swim_down + 1;</code>
+	<text>Überlagert eine SwimDiveUp- mit einer SwimDiveDown-Animation so, dass beide Animationen gleich viel Gewicht haben. Das Ergebnis ist, dass der Clonk waagerecht im Wasser liegt. Falls zuvor eine andere Animation in Slot 5 abgespielt wurde, so wird ein 15 Frames dauernder Übergang gemacht an dessen Ende die vorherige Animation entfernt wird. Mithilfe der Variablen swim_comb kann das Gewicht zwischen den beiden Animationen in weiteren Code der Schwimmrichtung angepasst werden.</text>
+      </example>
+    </examples>
+
+    <related>
+      <funclink>StopAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Const</funclink>
+      <funclink>Anim_Linear</funclink>
+      <funclink>Anim_X</funclink>
+      <funclink>Anim_Y</funclink>
+      <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+      <funclink>Anim_Action</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>Januar 2010</date>
+</funcs>

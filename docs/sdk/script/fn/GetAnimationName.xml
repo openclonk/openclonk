@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetAnimationName</title>
+    <category>Animationen</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>string</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>iAnimationNumber</name>
+          <desc>Animationsnummer der Animation deren Name abgefragt werden soll.</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Gibt den Namen der Animation mit der angegebenen Nummer zurück. Falls keine Animation mit der angegebenen Nummer existiert, oder falls es sich dabei um einen Kombinationsknoten handelt gibt die Funktion nil zurück.</desc>
+
+    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
+
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(<funclink>GetAnimationName</funclink>(<funclink>GetRootAnimation</funclink>(5)) == "Walk") <funclink>StopAnimation</funclink>(<funclink>GetRootAnimation</funclink>(5));</code>
+	<text>Falls in Slot 5 derzeit nur eine Animation gespielt wird, und falls diese "Walk" ist, dann wird sie gestoppt.</text>
+      </example>
+    </examples>
+
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>StopAnimation</funclink>
+      <funclink>GetRootAnimation</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>Januar 2010</date>
+</funcs>

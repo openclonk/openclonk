@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>GetAnimationWeight</title>
+    <category>Animationen</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>int</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>iAnimationNumber</name>
+          <desc>Animationsnummer der Animation deren Gewichtung abgefragt werden soll.</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Gibt die Gewichtung eines Kombinationsknotens zurück. Die Gewichtung bestimmt, zu welchem Anteil die beiden kombinierten Animationen in die Gesamtanimation einfließen. Die Zahl liegt immer zwischen 0 (erste Animation geht voll ein) und 1000 (zweite Animation geht voll ein). Gibt nil zurück falls es keine Animation mit der angegebenen Nummer gibt, oder falls es sich dabei um einen Animationsknoten handelt.</desc>
+
+    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
+
+    <examples>
+      <example>
+        <code><funclink>if</funclink>(<funclink>GetAnimationWeight</funclink>(iAnimationNumber) == 1000) <funclink>StopAnimation</funclink>(iAnimationNumber);</code>
+	<text>Entfernt den Kombinationsknoten "iAnimationNumber" wenn seine Gewichtung 1000 erreicht hat.</text>
+      </example>
+    </examples>
+
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>GetAnimationPosition</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>Januar 2010</date>
+</funcs>

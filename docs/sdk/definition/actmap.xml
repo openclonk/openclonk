@@ -144,6 +144,11 @@ oben gezählt (siehe Banner im Ritterpack).</col>
     <col>Integer</col>
     <col>Nötige Energie für diese Aktion. Maschinen 500.</col>
   </row>
+  <row>
+    <col>Animation</col>
+    <col>Zeichenfolge</col>
+    <col>Ab OC. Bestimmt die auszuführende Animation im Mesh des Objekts. Funktioniert nur wenn ein solches vorhanden ist. Wenn gegeben werden Facet, FacetBase, FacetTopFace und FacetTargetStretch ignoriert. Die Length mal Delay verschiedenen Animationsphasen werden linear auf die Länge der Animation abgebildet. Wenn Delay 0 ist wird nur Length verwendet und die Animation spielt nicht automatisch. Siehe <emlink href="definition/animations.html">Animationen</emlink> für weitergehende Dokumentation zu Animationen.</col>
+  </row>
 </table>
 </text>
 <author>Sven2</author><date>April 2002</date>

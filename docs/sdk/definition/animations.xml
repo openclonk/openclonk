@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE doc SYSTEM "../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../clonk.xsl"?>
+<doc>
+<title>Animationen</title>
+<!-- TODO: Explain how to use a mesh for an object in general -->
+<h id="Controls">Animationen</h>
+<part>
+	<text>Ab OC ist es möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekte zu verwenden. Eine der neuen Möglichkeiten die diese Funktionalität bietet ist es, einzelne Animationen miteinander zu kombinieren. So kann zum Beispiel der Clonk leicht während des Laufens oder Springens einen Gegenstand werfen oder flüssig Übergänge zwischen einzelnen Animationen darstellen.</text>
+	<text>Jedes Objekt hat dazu einen sogenannten "Animation-Stack". Dieser besteht aus beliebig vielen Einträgen mit eindeutiger Priorität, die im folgenden Slots genannt werden. Slots mit höherer Priorität überschreiben Slots mit niedriger Priorität, dies gilt jedoch nur für Bones die von der Animation des höheren Slots überhaupt betroffen sind. Um obiges Beispiel aufzugreifen kann somit also die Werf-Animation eine höhere Priorität als der Lauf- oder Spring-Animation eingeräumt werden, so dass die Armbewegung der Werfanimation die der anderen Animation überschreibt. Da die Werfanimation aber keine Beinbewegung beschreibt wird diese vom Laufen oder Springen übernommen.</text>
+	<text>Bleibt noch zu klären, wie die Animationen in den einzelnen Slots zustande kommen. Ein Slot kann entweder eine einzelne Animation sein, oder eine Interpolation zwischen zwei anderen Animationen (von denen eine oder beide wieder Interpolationen zweier anderer Animationen sein können). Wird eine solche Interpolation verwendet, so kann zusätzlich eine Gewichtung angegeben werden, das heißt wie sehr die jeweils beiden Animationen zur Gesamtanimation beitragen. Eine Gewichtung von 0 bedeutet, dass nur die erste Animation beiträgt (als ob die zweite gar nicht vorhaden wäre), und eine Gewichtung von 1000 bedeutet, dass nur die zweite Animation beiträgt. Werte dazwischen bewirken einen Übergang zwischen den Animationen. Um erneut auf das Beispiel von oben zurückzukommen: Wenn der Clonk zum Zeitpunkt des Werfens steht, dann aber beginnt loszulaufen bevor die Wurfanimation fertig ist, so liegt es nahe, zu der Stehen-Animation noch eine Laufen-Animation hinzuzufügen, die mit der Zeit immer mehr gewichtet wird bis die Gewichtung 1000 erreicht und der Übergang zum Laufen somit beendet ist. Da die Wurf-Animation in einem anderen Slot stattfindet ist sie von dem Übergang nicht betroffen und wird ganz normal abgespielt.</text>
+	<text>Folgende Grafik veranschaulicht das Konzept anhand des gewählten Beispiels:</text>
+	<text><img src="../../images/AnimationStack.png" width="600" height="188"/></text>
+	<text>Zuerst werden die Animationen "Walk" und "Stand" kombiniert. Das Ergebnis dieser Kombination wird als Animation für Slot 5 verwendet, die einzelne Animation "Throw" hingegen für Slot 10. Da 10 größer als 5 ist überschreibt Throw das Ergebnis der Kombination in Slot 5 (für von "Throw" betroffene Bones). Das Ergebnis davon wird dann schlussendlich auf dem Bildschirm angezeigt.</text>
+
+<h id="Play">Abspielen von Animationen</h>
+
+<text>Der Animation Stack kann durch Scriptfunktionen beeinflusst, das heißt Animationen hinzugefügt oder gelöscht werden. Dazu wird jedem Beitrag (im folgenden Knoten genannt) zu einer Animation - das heißt jede Animation selbst, aber auch jede Kombination von zwei anderen Animationen - eine eindeutige Nummer, die Animationsnummer, zugeordnet. Beim Einfügen einer Animation entstehen nun ein oder zwei neue Knoten (ein Animationsknoten wenn der betreffende Slot leer ist, oder ein Animations- und ein Kombinationsknoten wenn der betroffende Slot bereits Knoten enthält).</text>
+<text>Beide Knotentypen haben unterschiedliche Eigenschaften, für Animationsknoten spielt die aktuelle Animationsposition eine Rolle und für Kombinationsknoten die aktuelle Gewichtung. Beide Werte müssen je nach Art der Animation mehr oder weniger oft geändert werden. Hierbei gibt es mehrere Möglichkeiten: Simple Animationen sollen einfach mit der Zeit fortlaufen, andere (zum Beispiel die Laufanimation des Clonks) hängen von der Geschwindigkeit oder der Richtung eines Objekts ab, von der Mausposition (Zielanimationen) oder von der Windgeschwindigkeit (Windrad).</text>
+<text>Um sowohl einfache Animationen ohne viel Scriptaufwand abspielen zu können, zum anderen aber auch komplexe Kombinationen zu ermöglichen gibt es sogenannte Animations-Wertquellen (AVPs, von engl. Animation Value Provider). Sie legen fest, wie die gerade zu verwendende Animationsposition oder das Interpolationsgewicht zu bestimmen sind. An die Scriptfunktion <funclink>PlayAnimation</funclink>, die eine neue Animation startet, werden zwei solcher AVPs für Position und Gewicht übergeben. Mit <funclink>SetAnimationPosition</funclink> und <funclink>SetAnimationWeight</funclink> können die beiden im Nachhinein geändert werden.</text>
+<text>Folgende AVPs stehen zur Auswahl:</text>
+<text><table>
+	<caption id="AVP">Verfügbare Wertquellen</caption>
+	<rowh>
+		<col>Funktion</col>
+		<col>Kurzbeschreibung</col>
+	</rowh>
+	<row>
+		<col><funclink>Anim_Const</funclink></col>
+		<col>Ein vorher festgelegter konstanter Wert wird verwendet. Dies ist nützlich wenn sich der Wert nicht ändern soll, oder sich keiner der anderen AVPs eignet, wenn jeden Frame ein neuer AVP diesen Typs mit einem anderen Wert gesetzt wird.</col>
+	</row>
+	<row>
+		<col><funclink>Anim_Linear</funclink></col>
+		<col>Linear mit der Zeit zu- oder abnehmend. Auch dieser AVP kann verwedet werden wenn sich sonst keiner anbietet, aber es zu aufwendig ist die neue Position jeden Frame auszurechnen. In dem Fall kann die Animation bis zur nächsten genauen Positionsbestimmung fortlaufen.</col>
+	</row>
+	<row>
+		<col><funclink>Anim_X</funclink></col>
+		<col>Linear mit der X-Position. Bewegung des Objekts nach Links spielt die Animation in die entgegengesetzte Richtung ab. Kann verwendet werden falls die Animation eines Objekts synchron zu seiner horizontalen Bewegung stattfinden soll.</col>
+	</row>
+	<row>
+		<col><funclink>Anim_Y</funclink></col>
+		<col>Linear mit der Y-Position. Bewegung des Objekts nach Oben spielt die Animation in die entgegengesetzte Richtung ab. Kann verwendet werden falls die Animation eines Objekts synchron zu seiner vertikalen Bewegung stattfinden soll.</col>
+	</row>
+	<row>
+		<col><funclink>Anim_AbsX</funclink></col>
+		<col>Linear mit der X-Position, allerdings spielt die Animation immer in die gleiche Richtung, egal ob sich das Objekt nach rechts oder nach links bewegt.</col>
+	</row>
+	<row>
+		<col><funclink>Anim_AbsY</funclink></col>
+		<col>Linear mit der Y-Position, allerdings spielt die Animation immer in die gleiche Richtung, egal ob sich das Objekt nach oben oder nach unten bewegt.</col>
+	</row>
+	<row>
+		<col><funclink>Anim_XDir</funclink></col>
+		<col>Proportional zur X-Geschwindigkeit eines Objekts.</col>
+	</row>
+	<row>
+		<col><funclink>Anim_YDir</funclink></col>
+		<col>Proportional zur Y-Geschwindigkeit eines Objekts.</col>
+	</row>
+	<row>
+		<col><funclink>Anim_Action</funclink></col>
+		<col>Proportional zur Phase der aktuell ausgeführten Action.</col>
+	</row>
+	<!-- TODO: There are some more, but I am not convinced they are actually useful -->
+</table></text>
+<text>Für Beispiele zu den einzelnen AVPs siehe die Dokumentation zu den entsprechenden Scriptfunktion.</text>
+
+<h id="ActMap">Animationen der ActMap</h>
+<text>Einzelnen Actions in der <emlink href="definition/actmap.html">ActMap</emlink> kann eine Animation zugeordnet werden. Diese Animationen werden immer in Slot 0 abgespielt. Das bedeutet unter anderem, dass in Slot 0 höchstens eine Animation abgespielt wird, es gibt keine Kombinationen. Es ist auch nicht möglich, diese durch Scriptfunktionen wie <funclink>StopAnimation</funclink> oder <funclink>SetAnimationPosition</funclink> zu beeinflussen. Es ist jedoch sehr wohl möglich, Eigenschaften von ActMap-Animationen abzufragen, zum Beispiel mit <funclink>GetAnimationPosition</funclink>. Es existieren auch negative Slotnummern, sodass man eigene Animationen eine geringere Priorität als ActMap-Animationen zuweisen kann.</text>
+
+</part>
+<author>Clonk-Karl</author><date>Januar 2010</date>
+</doc>

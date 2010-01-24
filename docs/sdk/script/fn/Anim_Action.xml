@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Anim_Action</title>
+    <category>Animationen</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+      </params>
+    </syntax>
+
+    <desc>Der Wert hängt von der Phase der aktuellen Action ab. Die Phase wird linear auf die von der Action zur Zeit abgespielte Animation abgebildet (siehe <emlink href="definition/actmap.html">ActMap</emlink>). Dies kann verwendet werden um Animationen synchron zur ActMap-Animation zu spielen.</desc>
+
+    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
+
+    <examples>
+      <example>
+        <code><funclink>PlayAnimation</funclink>("Walk", 10, <funclink>Anim_Action</funclink>(), <funclink>Anim_Const</funclink>(1000));</code>
+	<text>Spielt die Animation "Walk" in Slot 10 synchron zur aktuellen Action ab.</text>
+      </example>
+    </examples>
+
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Const</funclink>
+      <funclink>Anim_Linear</funclink>
+      <funclink>Anim_X</funclink>
+      <funclink>Anim_Y</funclink>
+      <funclink>Anim_AbsX</funclink>
+      <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>Januar 2010</date>
+</funcs>

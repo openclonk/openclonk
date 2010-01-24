@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>Anim_AbsX</title>
+    <category>Animationen</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>array</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>iPosition</name>
+          <desc>Startwert. Sollte innerhalb des von iBegin und iEnd aufgespannten Intervalls liegen.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iBegin</name>
+          <desc>Beginn des Intervalls.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iEnd</name>
+          <desc>Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so nimmt der Wert mit der Bewegung des Objekts zu, andernfalls nimmt er ab.</desc>
+        </param>
+        <param>
+          <type>int</type>
+          <name>iLength</name>
+          <desc>Anzahl Pixel die in X-Richtung zurückgelegt werden müssen um die Animation von iBegin bis nach iEnd durchzuspielen.</desc>
+	</param>
+      </params>
+    </syntax>
+
+    <desc>Der Wert hängt von der Bewegung des Objekts in X-Richtung ab. Jeder Pixel den sich das Objekt in X-Richtung bewegt erhöht den Wert etwas. Wenn iEnd erreicht wurde wird der Wert wieder auf iBegin zurückgesetzt. Im Gegensatz zu <funclink>Anim_X</funclink> bewegt sich der Wert immer auf iEnd zu, egal in welche Richtung sich das Objekt bewegt.</desc>
+
+    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
+
+    <examples>
+      <example>
+	      <code><funclink>PlayAnimation</funclink>("Walk", 5, <funclink>Anim_AbsX</funclink>(0, 0, <funclink>GetAnimationLength</funclink>("Walk"), 20), <funclink>Anim_Const</funclink>(1000));</code>
+	<text>Spielt die Animation "Walk" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in X-Richtung bewegt. Nachdem es 20 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an.</text>
+      </example>
+    </examples>
+
+    <related>
+      <funclink>PlayAnimation</funclink>
+      <funclink>SetAnimationPosition</funclink>
+      <funclink>SetAnimationWeight</funclink>
+      <funclink>Anim_Const</funclink>
+      <funclink>Anim_Linear</funclink>
+      <funclink>Anim_X</funclink>
+      <funclink>Anim_Y</funclink>
+      <funclink>Anim_AbsY</funclink>
+      <funclink>Anim_XDir</funclink>
+      <funclink>Anim_YDir</funclink>
+      <funclink>Anim_Action</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>Januar 2010</date>
+</funcs>

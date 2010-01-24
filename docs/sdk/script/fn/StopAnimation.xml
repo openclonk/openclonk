@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
+<!DOCTYPE funcs SYSTEM "../../../clonk.dtd">
+<?xml-stylesheet type="text/xsl" href="../../../clonk.xsl"?>
+<funcs>
+  <func>
+    <title>StopAnimation</title>
+    <category>Animationen</category>
+    <version>4.10.0.0 OC</version>
+    <syntax>
+      <rtype>bool</rtype>
+      <params>
+        <param>
+          <type>int</type>
+          <name>iAnimationNumber</name>
+          <desc>Nummer der zu stoppenden Animation.</desc>
+        </param>
+      </params>
+    </syntax>
+
+    <desc>Stoppt die Animation mit der angegeben Nummer (wie sie von <funclink>PlayAnimation</funclink> zurückgegeben wird) und entfernt die Animation aus dem zugehörigen Slot im Animations-Stack. Gehört ein Kombinationsknoten zur Nummer, so werden beide Animationen entfernt die kombiniert werden; wenn eine oder beide davon wieder Kombinationen sind werden auch deren Animationen entfernt, und so weiter. Wird die gestoppte Animation mit einer anderen kombiniert, so wird auch der zugehörige Kombinationsknoten entfernt, da es nun nichts mehr zu kombinieren gibt. Gibt true zurück wenn die Animation entfernt wurde, oder 0 wenn dies nicht möglich war (zum Beispiel wenn es keine Animation zur gegebenen Nummer gibt, oder die Animation zu Slot 0 gehört).</desc>
+
+    <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
+
+    <examples>
+      <example>
+        <code><funclink>StopAnimation</funclink>(<funclink>GetRootAnimation</funclink>(5));</code>
+	<text>Entfernt alle Animationen aus Slot 5 sodass dieser im Anschluss keine Animationen mehr enthält.</text>
+      </example>
+    </examples>
+
+    <related>
+      <funclink>PlayAnimation</funclink>
+    </related>
+  </func>
+  <author>Clonk-Karl</author><date>Januar 2010</date>
+</funcs>
