@@ -1,7 +1,7 @@
 
 #strict 2
 
-// Wrappers for conventient calls to PlayAnimation
+// Wrappers for convenient calls to PlayAnimation
 
 global func Anim_Const(int Value)
 {
@@ -73,4 +73,9 @@ global func Anim_SinV(int Begin, int End, int Offset, int Prec)
 {
 	if(Prec == nil) Prec = 1;
 	return [C4AVP_SinV, Begin, End, Offset, Prec];
+}
+
+global func Anim_Action()
+{
+	return [C4AVP_Action];
 }
