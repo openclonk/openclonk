@@ -19,7 +19,6 @@ protected func Initialize()
   return _inherited(...);
 }
 
-local b;
 func Wind2Turn()
 {
 	DoPower(Abs(GetWind()/3));
@@ -38,15 +37,12 @@ func Wind2Turn()
 	var l = 7200/Abs(GetWind());
 
 	// Note ending is irrelevant since this is called again after 35 frames
-	if(!b)
 	if(l > 0)
 	{
-		b=1;
 		SetAnimationPosition(wind_anim, Anim_Linear(GetAnimationPosition(wind_anim), start, end, l, ANIM_Loop));
 	}
 	else
 	{
-		b = 1;
 		SetAnimationPosition(wind_anim, Anim_Const(GetAnimationPosition(wind_anim)));
 	}
 }
