@@ -1090,65 +1090,68 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 		}
 
 		// Load Animations
-		TiXmlElement* animations_elem = skeleton.RequireFirstChild(skeleton_elem, "animations");
-		for(TiXmlElement* animation_elem = animations_elem->FirstChildElement("animation"); animation_elem != NULL; animation_elem = animation_elem->NextSiblingElement("animation"))
+		TiXmlElement* animations_elem = skeleton_elem->FirstChildElement("animations");
+		if (animations_elem)
 		{
-			StdCopyStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
-			if(Animations.find(name) != Animations.end())
-			skeleton.Error(FormatString("There is already an animation with name '%s'", name.getData()), animation_elem);
-
-			StdMeshAnimation& animation = Animations.insert(std::make_pair(name, StdMeshAnimation())).first->second;
-			animation.Name = name;
-			animation.Length = skeleton.RequireFloatAttribute(animation_elem, "length");
-			animation.Tracks.resize(Bones.size());
-
-			TiXmlElement* tracks_elem = skeleton.RequireFirstChild(animation_elem, "tracks");
-			for(TiXmlElement* track_elem = tracks_elem->FirstChildElement("track"); track_elem != NULL; track_elem = track_elem->NextSiblingElement("track"))
+			for(TiXmlElement* animation_elem = animations_elem->FirstChildElement("animation"); animation_elem != NULL; animation_elem = animation_elem->NextSiblingElement("animation"))
 			{
-				const char* bone_name = skeleton.RequireStrAttribute(track_elem, "bone");
-				StdMeshBone* bone = NULL;
-				for(unsigned int i = 0; !bone && i < Bones.size(); ++i)
-					if(Bones[i]->Name == bone_name)
-						bone = Bones[i];
-				if(!bone) skeleton.Error(FormatString("There is no such bone with name '%s'", bone_name), track_elem);
+				StdCopyStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
+				if(Animations.find(name) != Animations.end())
+				skeleton.Error(FormatString("There is already an animation with name '%s'", name.getData()), animation_elem);
 
-				if(animation.Tracks[bone->Index] != NULL) skeleton.Error(FormatString("There is already a track for bone '%s' in animation '%s'", bone_name, animation.Name.getData()), track_elem);
+				StdMeshAnimation& animation = Animations.insert(std::make_pair(name, StdMeshAnimation())).first->second;
+				animation.Name = name;
+				animation.Length = skeleton.RequireFloatAttribute(animation_elem, "length");
+				animation.Tracks.resize(Bones.size());
 
-				StdMeshTrack* track = new StdMeshTrack;
-				animation.Tracks[bone->Index] = track;
-
-				// Get inverse bone transformation in OGRE coordiante system; we need it to apply
-				// the translation part of the bone transformation.
-				StdMeshTransformation BoneInverseTrans = InverseCoordCorrectedTransformation(bone->InverseTransformation);
-
-				TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
-				for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
+				TiXmlElement* tracks_elem = skeleton.RequireFirstChild(animation_elem, "tracks");
+				for(TiXmlElement* track_elem = tracks_elem->FirstChildElement("track"); track_elem != NULL; track_elem = track_elem->NextSiblingElement("track"))
 				{
-					float time = skeleton.RequireFloatAttribute(keyframe_elem, "time");
-					StdMeshKeyFrame& frame = track->Frames[time];
+					const char* bone_name = skeleton.RequireStrAttribute(track_elem, "bone");
+					StdMeshBone* bone = NULL;
+					for(unsigned int i = 0; !bone && i < Bones.size(); ++i)
+						if(Bones[i]->Name == bone_name)
+							bone = Bones[i];
+					if(!bone) skeleton.Error(FormatString("There is no such bone with name '%s'", bone_name), track_elem);
 
-					TiXmlElement* translate_elem = skeleton.RequireFirstChild(keyframe_elem, "translate");
-					TiXmlElement* rotate_elem = skeleton.RequireFirstChild(keyframe_elem, "rotate");
-					TiXmlElement* scale_elem = skeleton.RequireFirstChild(keyframe_elem, "scale");
-					TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotate_elem, "axis");
+					if(animation.Tracks[bone->Index] != NULL) skeleton.Error(FormatString("There is already a track for bone '%s' in animation '%s'", bone_name, animation.Name.getData()), track_elem);
 
-					StdMeshVector d, s, r;
-					d.x = skeleton.RequireFloatAttribute(translate_elem, "x");
-					d.y = skeleton.RequireFloatAttribute(translate_elem, "y");
-					d.z = skeleton.RequireFloatAttribute(translate_elem, "z");
-					s.x = skeleton.RequireFloatAttribute(scale_elem, "x");
-					s.y = skeleton.RequireFloatAttribute(scale_elem, "y");
-					s.z = skeleton.RequireFloatAttribute(scale_elem, "z");
-					float angle = skeleton.RequireFloatAttribute(rotate_elem, "angle");
-					r.x = skeleton.RequireFloatAttribute(axis_elem, "x");
-					r.y = skeleton.RequireFloatAttribute(axis_elem, "y");
-					r.z = skeleton.RequireFloatAttribute(axis_elem, "z");
+					StdMeshTrack* track = new StdMeshTrack;
+					animation.Tracks[bone->Index] = track;
 
-					frame.Transformation.scale = StdMeshVector::UnitScale();
-					frame.Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, r);
-					frame.Transformation.translate = BoneInverseTrans.rotate * (BoneInverseTrans.scale * d);
+					// Get inverse bone transformation in OGRE coordiante system; we need it to apply
+					// the translation part of the bone transformation.
+					StdMeshTransformation BoneInverseTrans = InverseCoordCorrectedTransformation(bone->InverseTransformation);
 
-					frame.Transformation = CoordCorrectedTransformation(frame.Transformation);
+					TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
+					for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
+					{
+						float time = skeleton.RequireFloatAttribute(keyframe_elem, "time");
+						StdMeshKeyFrame& frame = track->Frames[time];
+
+						TiXmlElement* translate_elem = skeleton.RequireFirstChild(keyframe_elem, "translate");
+						TiXmlElement* rotate_elem = skeleton.RequireFirstChild(keyframe_elem, "rotate");
+						TiXmlElement* scale_elem = skeleton.RequireFirstChild(keyframe_elem, "scale");
+						TiXmlElement* axis_elem = skeleton.RequireFirstChild(rotate_elem, "axis");
+
+						StdMeshVector d, s, r;
+						d.x = skeleton.RequireFloatAttribute(translate_elem, "x");
+						d.y = skeleton.RequireFloatAttribute(translate_elem, "y");
+						d.z = skeleton.RequireFloatAttribute(translate_elem, "z");
+						s.x = skeleton.RequireFloatAttribute(scale_elem, "x");
+						s.y = skeleton.RequireFloatAttribute(scale_elem, "y");
+						s.z = skeleton.RequireFloatAttribute(scale_elem, "z");
+						float angle = skeleton.RequireFloatAttribute(rotate_elem, "angle");
+						r.x = skeleton.RequireFloatAttribute(axis_elem, "x");
+						r.y = skeleton.RequireFloatAttribute(axis_elem, "y");
+						r.z = skeleton.RequireFloatAttribute(axis_elem, "z");
+
+						frame.Transformation.scale = StdMeshVector::UnitScale();
+						frame.Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, r);
+						frame.Transformation.translate = BoneInverseTrans.rotate * (BoneInverseTrans.scale * d);
+
+						frame.Transformation = CoordCorrectedTransformation(frame.Transformation);
+					}
 				}
 			}
 		}
