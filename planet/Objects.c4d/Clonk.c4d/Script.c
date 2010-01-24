@@ -832,6 +832,22 @@ func FxIntScaleTimer(pTarget, iNumber, iTime)
 	EffectVar(4, pTarget, iNumber) = iState;
 }*/
 
+local iShovelMesh;
+
+func StartDigging()
+{
+	Digging();
+	if(!iShovelMesh)
+		iShovelMesh = AttachMesh(SHVL, "pos_hand1", "main", 2000);
+}
+
+func StopDigging()
+{
+	if(iShovelMesh)
+		DetachMesh(iShovelMesh);
+	iShovelMesh = 0;
+}
+
 /* Act Map */
 
 func Definition(def) {
@@ -896,13 +912,15 @@ Dig = {
 	Directions = 2,
 	FlipDir = 1,
 	Length = 16,
-	Delay = 15,
+	Delay = 15*3,
 	X = 0,
 	Y = 60,
 	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Dig",
-	StartCall = "Digging",
+	StartCall = "StartDigging",
+	AbortCall = "StopDigging",
+	Animation = "Dig",
 	DigFree = 11,
 	InLiquidAction = "Swim",
 },
