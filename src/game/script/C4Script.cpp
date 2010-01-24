@@ -5605,6 +5605,15 @@ static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szA
 	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical?
 }
 
+static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, int iAnimationNumber)
+{
+	if(!ctx->Obj) return C4VNull;
+	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+	if(!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4VNull;
+	return String(node->GetAnimation()->Name.getData());
+}
+
 static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber)
 {
 	if(!ctx->Obj) return C4VNull;
@@ -6145,6 +6154,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "StopAnimation", FnStopAnimation);
 	AddFunc(pEngine, "GetRootAnimation", FnGetRootAnimation);
 	AddFunc(pEngine, "GetAnimationLength", FnGetAnimationLength);
+	AddFunc(pEngine, "GetAnimationName", FnGetAnimationName);
 	AddFunc(pEngine, "GetAnimationPosition", FnGetAnimationPosition);
 	AddFunc(pEngine, "GetAnimationWeight", FnGetAnimationWeight);
 	AddFunc(pEngine, "SetAnimationPosition", FnSetAnimationPosition);
