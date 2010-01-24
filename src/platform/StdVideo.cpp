@@ -236,7 +236,7 @@ bool CStdAVIFile::OpenFile(const char *szFilename, HWND hWnd, int32_t iOutBitDep
 	if (!hDC) return false;
 	hDD = DrawDibOpen();
 	if (!hDD) return false;
-	hBitmap = CreateDIBSection(hDC, pbmi, DIB_RGB_COLORS, (void**)(&pFrameData), NULL, NULL);
+	hBitmap = CreateDIBSection(hDC, pbmi, DIB_RGB_COLORS, (void**)(&pFrameData), NULL, 0);
 	if (!hBitmap) return false;
 	SelectObject(hDC, hBitmap);
 	// create a GetFrame-object

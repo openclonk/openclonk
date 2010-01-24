@@ -55,11 +55,17 @@ inline void operator delete(void *p, const char *, long)
 #endif
 #endif
 
+// C++0x nullptr
+#if defined(HAVE_NULLPTR) && !defined(NULL_IS_NULLPTR_T)
+#undef NULL
+#define NULL nullptr
+#endif
+
 // Integer dataypes
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #elif defined(_MSC_VER)
-#include <stddef.h>
+#include <cstddef>
 typedef signed __int8 int8_t;
 typedef signed __int16 int16_t;
 typedef signed __int32 int32_t;

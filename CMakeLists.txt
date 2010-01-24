@@ -63,6 +63,11 @@ foreach(FLAG ${OC_CXX_FLAGS})
 endforeach()
 set(CMAKE_REQUIRED_FLAGS ${OC_REQUIRED_FLAGS})
 CHECK_CXX_SOURCE_COMPILES("void f(struct D&&); int main() { return 0; }" HAVE_RVALUE_REF)
+CHECK_CXX_SOURCE_COMPILES("int main() { void *d = nullptr; }" HAVE_NULLPTR)
+if(HAVE_NULLPTR)
+	CHECK_CXX_SOURCE_COMPILES("#include <cstddef>
+	template<class T> void f(T &&); template<> void f(std::nullptr_t &&) {} int main() { f(NULL); }" NULL_IS_NULLPTR_T)
+endif()
 
 if(MSVC_VERSION GREATER 1499)
 	# Activate minimal rebuild
