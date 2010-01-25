@@ -5,6 +5,11 @@ private func Hit()
   Sound("WoodHit");
 }
 
+public func GetCarryMode() { return CARRY_Back; }
+public func GetCarryScale() { return 2000; }
+
+public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "pos_hand1"; }
+
 public func ControlUse(object clonk, int x, int y)
 {
 	if(clonk->GetAction() == "Walk")

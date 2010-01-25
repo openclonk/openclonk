@@ -5,6 +5,10 @@ private func Hit()
   Sound("WoodHit"); //TODO Some metal sond
 }
 
+public func GetCarryMode() { return CARRY_HandBack; }
+public func GetCarryScale() { return 130; }
+public func GetCarryBone() { return "Main"; }
+
 local fDrawn;
 local fAttack;
 local iAnimStrike;
@@ -55,8 +59,6 @@ public func DrawSword(fUndraw)
 func FxIntSwordStart(pTarget, iNumber, fTmp)
 {
 	if(fTmp) return;
-	if(itemmesh > 0) pTarget->DetachMesh(itemmesh);
-	itemmesh = pTarget->AttachMesh(GetID(), "pos_hand1", "Main", 130);
 //	pTarget->SetPhysical("Walk", 20000, 2);
 	fDrawn = 1;
 	fAttack = 0;
@@ -70,8 +72,6 @@ func FxIntSwordTimer(pTarget, iNumber, iTime)
 func FxIntSwordStop(pTarget, iNumber, iReason, fTmp)
 {
 	if(fTmp) return;
-	if(itemmesh > 0) pTarget->DetachMesh(itemmesh);
-	itemmesh = pTarget->AttachMesh(GetID(), "pos_back", "Main", 130);
 	if(fAttack) StrikeEnd(pTarget);
   fDrawn = 0;
 }
@@ -81,13 +81,11 @@ local itemmesh;
 public func Entrance(pTarget)
 {
 	fDrawn = 0;
-	itemmesh = pTarget->AttachMesh(GetID(), "pos_back", "Main", 130);
 }
 
 public func Departure()
 {
 	// if the item had a holdmode detach mesh
-	if(itemmesh > 0) DetachMesh(itemmesh);
 }
 
 public func Selection(pTarget, fSecond)

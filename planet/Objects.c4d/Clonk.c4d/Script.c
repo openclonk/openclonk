@@ -7,7 +7,7 @@
 
 // un-comment them as soon as the new controls work with context menus etc.^
 // Context menu
-//#include L_CM
+//#include L_CMAniF
 // Auto production
 //#include L_AP
 
@@ -338,6 +338,114 @@ protected func CheckStuck()
 // adaptions
 public func IsClonk() { return true; }
 
+/* Carry items on the clonk */
+
+local iHandMesh;
+// GetSelected
+
+func OnSelectionChanged(int oldslot, int newslot, bool secondaryslot)
+{
+	AttachHandItem(secondaryslot);
+	return _inherited(oldslot, newslot, secondaryslot);
+}
+func OnSlotEmpty(int slot)
+{
+	if(GetSelected(0) == slot) AttachHandItem(0);
+	if(GetSelected(1) == slot) AttachHandItem(1);
+	return _inherited(slot);
+}
+func OnSlotFull(int slot)
+{
+	if(GetSelected(0) == slot) AttachHandItem(0);
+	if(GetSelected(1) == slot) AttachHandItem(1);
+	return _inherited(slot);
+}
+
+func DetachHandItem(bool secondary)
+{
+	if(iHandMesh[secondary])
+		DetachMesh(iHandMesh[secondary]);
+	iHandMesh[secondary] = 0;
+}
+
+func AttachHandItem(bool secondary)
+{
+	if(!iHandMesh) iHandMesh = [0,0];
+	DetachHandItem(secondary);
+	UpdateAttach();	
+}
+
+func UpdateAttach()
+{
+	DoUpdateAttach(0);
+	DoUpdateAttach(1);
+}
+
+func DoUpdateAttach(bool sec)
+{
+	var obj = GetSelectedItem(sec);
+	if(!obj) return;
+	var iAttachMode = obj->~GetCarryMode();
+	if(iAttachMode == CARRY_None) return;
+
+	if(iHandMesh[sec])
+	{
+  	DetachMesh(iHandMesh[sec]);
+		iHandMesh[sec] = 0;
+	}
+
+	var bone = "main";
+	if(obj->~GetCarryBone()) bone = obj->~GetCarryBone();
+	var scale = 1000;
+	if(obj->~GetCarryScale()) scale = obj->~GetCarryScale();
+
+	var pos_hand = "pos_hand2";
+	if(sec) pos_hand = "pos_hand1";
+	var pos_back = "pos_back2";
+	if(sec) pos_back = "pos_back1";
+
+  var special = obj->~GetCarrySpecial(this);
+  if(special)
+	{
+		iHandMesh[sec] = AttachMesh(obj->GetID(), special, bone, scale);
+		iAttachMode = 0;
+	}
+
+	if(iAttachMode == CARRY_Hand)
+	{
+		if(HasHandAction())
+  		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, scale);
+		else
+			; // Don't display
+	}
+	else if(iAttachMode == CARRY_HandBack)
+	{
+		if(HasHandAction())
+  		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, scale);
+		else
+			iHandMesh[sec] = AttachMesh(obj->GetID(), pos_back, bone, scale);
+	}
+	else if(iAttachMode == CARRY_HandAlways)
+	{
+		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, scale);
+	}
+	else if(iAttachMode == CARRY_Back)
+	{
+		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_back, bone, scale);
+	}
+}
+
+static const CARRY_None = 0;
+static const CARRY_Hand         = 1;
+static const CARRY_HandBack     = 2;
+static const CARRY_HandAlways   = 3;
+static const CARRY_Back         = 4;
+
+func HasHandAction()
+{
+	return (GetAction() == "Walk") || (GetAction() == "Jump");
+}
+
 /*
 // Test to synchronize the walkanimation with the movement
 local OldPos;
@@ -400,6 +508,8 @@ func FxIntWalkStart(pTarget, iNumber, fTmp)
 	var anim = "Stand";  //GetCurrentWalkAnimation();
 	EffectVar(0, pTarget, iNumber) = anim;
 	EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Const(1000));
+	// Update carried items
+	UpdateAttach();
 }
 
 func FxIntWalkStop(pTarget, iNumber, fTmp)
@@ -408,6 +518,9 @@ func FxIntWalkStop(pTarget, iNumber, fTmp)
 
 	// Remove all
 	StopAnimation(GetRootAnimation(5));
+
+	// Update carried items
+	UpdateAttach();
 }
 
 func FxIntWalkTimer(pTarget, iNumber)
@@ -832,20 +945,27 @@ func FxIntScaleTimer(pTarget, iNumber, iTime)
 	EffectVar(4, pTarget, iNumber) = iState;
 }*/
 
-local iShovelMesh;
-
 func StartDigging()
 {
 	Digging();
-	if(!iShovelMesh)
-		iShovelMesh = AttachMesh(SHVL, "pos_hand1", "main", 2000);
+	UpdateAttach();
 }
 
 func StopDigging()
 {
-	if(iShovelMesh)
-		DetachMesh(iShovelMesh);
-	iShovelMesh = 0;
+	UpdateAttach();
+}
+
+func StartJump()
+{
+	// Update carried items
+	UpdateAttach();
+}
+
+func EndJump()
+{
+	// Update carried items
+	UpdateAttach();
 }
 
 /* Act Map */
@@ -903,6 +1023,7 @@ Tumble = {
 	NextAction = "Tumble",
 	ObjectDisabled = 1,
 	InLiquidAction = "Swim",
+	Animation = "Tumble",
 	EndCall = "CheckStuck",
 },
 Dig = {
@@ -992,6 +1113,8 @@ Jump = {
 	InLiquidAction = "Swim",
 	PhaseCall = "CheckStuck",
 	Animation = "Jump",
+	StartCall = "StartJump",
+	AbortCall = "EndJump",
 },
 KneelDown = {
 	Prototype = Action,
@@ -1006,6 +1129,7 @@ KneelDown = {
 	Wdt = 8,
 	Hgt = 20,
 	NextAction = "KneelUp",
+	Animation = "KneelDown",
 },
 KneelUp = {
 	Prototype = Action,
@@ -1020,6 +1144,7 @@ KneelUp = {
 	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Walk",
+	Animation = "KneelDown",
 },
 Dive = {
 	Prototype = Action,
@@ -1093,9 +1218,10 @@ Dead = {
 	Y = 240,
 	Wdt = 8,
 	Hgt = 20,
-	Length = 6,
-	Delay = 3,
+	Length = 20,
+	Delay = 1,
 	NextAction = "Hold",
+	Animation = "Dead",
 	NoOtherAction = 1,
 	ObjectDisabled = 1,
 },

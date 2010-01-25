@@ -13,22 +13,19 @@ local aimtime;
 local iMesh;
 local iAnimLoad;
 
+local fAiming;
+
+public func GetCarryMode() { return CARRY_HandBack; }
+public func GetCarryScale() { return 1300; }
+public func GetCarryBone() { return "Handle"; }
+
+public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
+
 public func HoldingEnabled() { return true; }
-
-public func Selection(pTarget, fSecond)
-{
-	if(fSecond) return;
-  iMesh = pTarget->AttachMesh(BOW1, "pos_hand2", "Handle", 1300);
-}
-
-public func Deselection(pTarget, fSecond)
-{
-	if(fSecond) return;
-	pTarget->DetachMesh(iMesh);
-}
 
 protected func ControlUseStart(object clonk, int x, int y)
 {
+	fAiming = 1;
 	// check for ammo
 	if(!Contents(0))
 	{
@@ -47,7 +44,7 @@ protected func ControlUseStart(object clonk, int x, int y)
 		clonk->CancelUse();
 	}
 	iAnimLoad = clonk->PlayAnimation("BowAimArms", 10, Anim_Const(0), Anim_Const(1000));
-	Log("iAnimLoad %d", iAnimLoad);
+  clonk->UpdateAttach();
 	return true;
 }
 
@@ -86,7 +83,9 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 protected func ControlUseStop(object clonk, int x, int y)
 {
+	fAiming = 0;
 	clonk->StopAnimation(clonk->GetRootAnimation(10));
+	clonk->UpdateAttach();
 	Message("",clonk);
 
 	// "canceled"
