@@ -172,8 +172,8 @@ bool Tabular::Sheet::IsActiveSheet()
 // Tabular
 
 Tabular::Tabular(C4Rect &rtBounds, TabPosition eTabPos) : Control(rtBounds), pActiveSheet(NULL), eTabPos(eTabPos), iMaxTabWidth(0),
-	pfctBack(NULL), pfctClip(NULL), pfctIcons(NULL), pSheetCaptionFont(NULL), iSheetMargin(4), fDrawSelf(true),
-	iCaptionLengthTotal(0), iCaptionScrollPos(0), fScrollingLeft(false), fScrollingRight(false), fScrollingLeftDown(false), fScrollingRightDown(false)
+	iCaptionLengthTotal(0), iCaptionScrollPos(0), fScrollingLeft(false), fScrollingRight(false), fScrollingLeftDown(false),
+	fScrollingRightDown(false), iSheetMargin(4), fDrawSelf(true), pfctBack(NULL), pfctClip(NULL), pfctIcons(NULL), pSheetCaptionFont(NULL)
 	{
 	// calc client rect
 	UpdateOwnPos();
@@ -237,7 +237,11 @@ bool Tabular::KeySelDown()
 	{
 	// keyboard callback: Select next sheet
 	int32_t iNewSel = GetActiveSheetIndex() + 1, iSheetCount = GetSheetCount();
-	if (iNewSel >= iSheetCount) if (!iSheetCount) return false; else iNewSel = 0;
+	if (iNewSel >= iSheetCount)
+		{
+		if (!iSheetCount) return false;
+		else iNewSel = 0;
+		}
 	SelectSheet(iNewSel, true);
 	return true;
 	}
@@ -615,7 +619,7 @@ void Tabular::ClearSheets()
 	{
 	// del all sheets
 	Sheet *pSheet;
-	while (pSheet = GetSheet(0)) delete pSheet;
+	while ((pSheet = GetSheet(0))) delete pSheet;
 	SheetsChanged();
 	}
 
@@ -635,7 +639,7 @@ int32_t Tabular::GetActiveSheetIndex()
 	{
 	int32_t i=-1;
 	Sheet *pSheet;
-	while (pSheet = GetSheet(++i)) if (pSheet == pActiveSheet) return i;
+	while ((pSheet = GetSheet(++i))) if (pSheet == pActiveSheet) return i;
 	return -1;
 	}
 
@@ -681,5 +685,5 @@ void Tabular::UpdateSize()
 	}
 
 
-}; // end of namespace
+} // end of namespace
 

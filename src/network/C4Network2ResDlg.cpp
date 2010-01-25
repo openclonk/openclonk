@@ -110,8 +110,8 @@ void C4Network2ResDlg::ListItem::LocalSaveResource(bool fDoOverwrite)
 		return;
 		}
 	const char *szFilename = GetFilename(pRes->getCore().getFileName());
-	const char *szSpecialPath = "";
-/*	if (WildcardMatch(C4CFN_PlayerFiles, szFilename))
+/*	const char *szSpecialPath = "";
+	if (WildcardMatch(C4CFN_PlayerFiles, szFilename))
 		// write players to player path
 		szSpecialPath = Config.General.PlayerPath;
 */
@@ -189,7 +189,7 @@ void C4Network2ResDlg::Update()
 	// check through own resources and current res list
 	ListItem *pItem = static_cast<ListItem *>(pClientWindow->GetFirst()), *pNext;
 	C4Network2Res *pRes; int iResID=-1;
-	while (pRes = ::Network.ResList.getRefNextRes(++iResID))
+	while ((pRes = ::Network.ResList.getRefNextRes(++iResID)))
 		{
 		iResID = pRes->getResID();
 		// resource checking: deleted ressource(s) present?

@@ -383,8 +383,8 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 		SURFACE sfcTexture;
 		C4Texture * Texture;
 		if (Map[cnt].sPXSGfx.getLength())
-			if (Texture=::TextureMap.GetTexture(Map[cnt].sPXSGfx.getData()))
-				if (sfcTexture=Texture->Surface32)
+			if ((Texture=::TextureMap.GetTexture(Map[cnt].sPXSGfx.getData())))
+				if ((sfcTexture=Texture->Surface32))
 					Map[cnt].PXSFace.Set(sfcTexture, Map[cnt].PXSGfxRt.x, Map[cnt].PXSGfxRt.y, Map[cnt].PXSGfxRt.Wdt, Map[cnt].PXSGfxRt.Hgt);
 		// evaluate reactions for that material
 		for (unsigned int iRCnt = 0; iRCnt < pMat->CustomReactionList.size(); ++iRCnt)

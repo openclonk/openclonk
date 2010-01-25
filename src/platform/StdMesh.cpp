@@ -92,7 +92,11 @@ namespace
 		StdMeshTransformation new_transformation;
 		new_transformation.scale = Transformation.scale;
 		new_transformation.rotate.w = Transformation.rotate.w;
-		new_transformation.rotate.v = -(basis*Transformation.rotate.v); // negative sign because v is a pseudovector, and basis has negative determinant (TODO: Determine determinant at run-time)
+		StdMeshVector v = { Transformation.rotate.x, Transformation.rotate.y, Transformation.rotate.z };
+		v = -(basis*v); // negative sign because v is a pseudovector, and basis has negative determinant (TODO: Determine determinant at run-time)
+		new_transformation.rotate.x = v.x;
+		new_transformation.rotate.y = v.y;
+		new_transformation.rotate.z = v.z;
 		new_transformation.translate = basis * Transformation.translate; // TODO: I think this should also apply translation part of change-of-basis matrix
 		return new_transformation;
 	}
@@ -158,7 +162,7 @@ int StdMeshXML::RequireIntAttribute(TiXmlElement* element, const char* attribute
 
 float StdMeshXML::RequireFloatAttribute(TiXmlElement* element, const char* attribute) const
 {
-	float retval;
+	float retval = 0;
 	if(element->QueryFloatAttribute(attribute, &retval) != TIXML_SUCCESS)
 		Error(FormatString("Element '%s' does not have floating point attribute '%s'", element->Value(), attribute), element);
 	return retval;
@@ -734,8 +738,9 @@ StdMeshVector operator*(const StdMeshMatrix& lhs, const StdMeshVector& rhs) // d
 
 StdMeshVector operator*(const StdMeshQuaternion& lhs, const StdMeshVector& rhs)
 {
-	StdMeshVector uv = 2.0f * StdMeshVector::Cross(lhs.v, rhs);
-	StdMeshVector uuv = StdMeshVector::Cross(lhs.v, uv);
+	StdMeshVector v = { lhs.x, lhs.y, lhs.z };
+	StdMeshVector uv = 2.0f * StdMeshVector::Cross(v, rhs);
+	StdMeshVector uuv = StdMeshVector::Cross(v, uv);
 	return rhs + lhs.w * uv + uuv;
 }
 
@@ -1467,7 +1472,7 @@ void StdMeshInstance::ExecuteAnimation()
 
 const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, float scale)
 {
-	AttachedMesh attach;
+	AttachedMesh attach = { 0 };
 	unsigned int i;
 
 	// Find free index.

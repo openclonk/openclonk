@@ -511,7 +511,12 @@ bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
 		return false;
 		}
 	char buffer[1024]; ssize_t l;
-	while ((l = read(fds, buffer, sizeof(buffer))) > 0) write(fdt, buffer, l);
+	while ((l = read(fds, buffer, sizeof(buffer))) > 0)
+		if (write(fdt, buffer, l) < l)
+			{
+				l = -1;
+				break;
+			}
 	close (fds);
 	close (fdt);
 	// On error, return false

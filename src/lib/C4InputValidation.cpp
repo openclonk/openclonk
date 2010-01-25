@@ -175,4 +175,4 @@ namespace C4InVal
 		else if (riVal > iMaxVal) { riVal = iMaxVal; return false; }
 		else return true;
 		}
-	};
+	}

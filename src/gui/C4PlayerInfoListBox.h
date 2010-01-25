@@ -41,7 +41,7 @@ class C4PlayerInfoListBox : public C4GUI::ListBox
 			PlayerListBoxIndent  = 3, // indent of player list box items
 			NoneLabelSpacing     = 20, // indent of "- none -"-label in list box
 
-			SoundIconShowTime    = 1, // seconds. min time a sound icon is shown
+			SoundIconShowTime    = 1  // seconds. min time a sound icon is shown
 			};
 
 		// list box mode
@@ -50,7 +50,7 @@ class C4PlayerInfoListBox : public C4GUI::ListBox
 			PILBM_LobbyClientSort,
 			PILBM_LobbyTeamSort,
 			PILBM_Evaluation,
-			PILBM_EvaluationNoWinners,
+			PILBM_EvaluationNoWinners
 			};
 
 	private:
@@ -72,7 +72,7 @@ class C4PlayerInfoListBox : public C4GUI::ListBox
 					PLI_PLAYER,       // player
 					PLI_CLIENT,       // client label
 					PLI_TEAM,         // team label
-					PLI_REPLAY,       // replay player (ID>0), or caption (ID=0)
+					PLI_REPLAY        // replay player (ID>0), or caption (ID=0)
 					} idType;
 
 				int32_t id; // player file ID or team ID or client ID
@@ -96,7 +96,7 @@ class C4PlayerInfoListBox : public C4GUI::ListBox
 			bool CanLocalChooseTeams(int32_t idPlayer=0) const; // whether the local client can change any teams
 
 		public:
-			ListItem(C4PlayerInfoListBox *pList) : pList(pList), dwBackground(0), C4GUI::Window() {}
+			ListItem(C4PlayerInfoListBox *pList) : C4GUI::Window(), pList(pList), dwBackground(0) {}
 		};
 
 	// lobby information and display of joined players
@@ -313,7 +313,7 @@ class C4PlayerInfoListBox : public C4GUI::ListBox
 		{
 			AM_Winners,
 			AM_Losers,
-			AM_All,
+			AM_All
 		};
 
 		void UpdateSavegamePlayers(ListItem **ppCurrInList);

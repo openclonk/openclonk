@@ -46,7 +46,7 @@ enum C4Network2ResType
 	NRT_Player,
 	NRT_Definitions,
 	NRT_System,
-	NRT_Material,
+	NRT_Material
 };
 
 const StdEnumEntry<C4Network2ResType> C4Network2ResType_EnumMap[] =

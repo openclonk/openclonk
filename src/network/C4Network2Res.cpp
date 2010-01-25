@@ -85,8 +85,8 @@ C4Network2ResCore::C4Network2ResCore()
 		iID(-1), iDerID(-1),
 		fLoadable(false),
 		iFileSize(~0u), iFileCRC(~0u), iContentsCRC(~0u),
-		iChunkSize(C4NetResChunkSize),
-		fHasFileSHA(false)
+		fHasFileSHA(false),
+		iChunkSize(C4NetResChunkSize)
 {
 }
 
@@ -145,7 +145,7 @@ void C4Network2ResCore::CompileFunc(StdCompiler *pComp)
 // *** C4Network2ResLoad
 
 C4Network2ResLoad::C4Network2ResLoad(int32_t inChunk, int32_t inByClient)
-	: iChunk(inChunk), iByClient(inByClient), Timestamp(time(NULL)), pNext(NULL)
+	: iChunk(inChunk), Timestamp(time(NULL)), iByClient(inByClient), pNext(NULL)
 {
 
 }
@@ -918,7 +918,7 @@ void C4Network2Res::OnChunk(const C4Network2ResChunk &rChunk)
 		for(C4Network2ResLoad *pLoad = pLoads, *pNext, *pPrev = NULL; pLoad; pPrev = pLoad, pLoad = pNext)
 		{
 			pNext = pLoad->Next();
-			if(pLoad->getChunk() == rChunk.getChunkNr())
+			if(static_cast<uint32_t>(pLoad->getChunk()) == rChunk.getChunkNr())
 				RemoveLoad(pLoad);
 		}
 	}
@@ -1234,7 +1234,7 @@ bool C4Network2ResChunk::AddTo(C4Network2Res *pRes, C4Network2IO *pIO) const
 	if(iResID != pRes->getResID())
 		{
 #ifdef C4NET2RES_DEBUG_LOG
-		Application.InteractiveThread.ThreadLogS(FormatString("C4Network2ResChunk(%d)::AddTo(%s [%d]): Ressource ID mismatch!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID()).getData());
+		Application.InteractiveThread.ThreadLogS("C4Network2ResChunk(%d)::AddTo(%s [%d]): Ressource ID mismatch!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID());
 #endif
 		return false;
 		}
@@ -1243,7 +1243,7 @@ bool C4Network2ResChunk::AddTo(C4Network2Res *pRes, C4Network2IO *pIO) const
 	if(iOffset + Data.getSize() > Core.getFileSize())
 		{
 #ifdef C4NET2RES_DEBUG_LOG
-		Application.InteractiveThread.ThreadLogS(FormatString("C4Network2ResChunk(%d)::AddTo(%s [%d]): Adding %d bytes at offset %d exceeds expected file size of %d!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID(), (int) Data.getSize(), (int) iOffset, (int) Core.getFileSize()).getData());
+		Application.InteractiveThread.ThreadLogS("C4Network2ResChunk(%d)::AddTo(%s [%d]): Adding %d bytes at offset %d exceeds expected file size of %d!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID(), (int) Data.getSize(), (int) iOffset, (int) Core.getFileSize());
 #endif
 		return false;
 		}
@@ -1252,7 +1252,7 @@ bool C4Network2ResChunk::AddTo(C4Network2Res *pRes, C4Network2IO *pIO) const
 	if(f == -1)
 		{
 #ifdef C4NET2RES_DEBUG_LOG
-		Application.InteractiveThread.ThreadLogS(FormatString("C4Network2ResChunk(%d)::AddTo(%s [%d]): Open write file error: %s!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID(), strerror(errno)).getData());
+		Application.InteractiveThread.ThreadLogS("C4Network2ResChunk(%d)::AddTo(%s [%d]): Open write file error: %s!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID(), strerror(errno));
 #endif
 		return false;
 		}
@@ -1261,7 +1261,7 @@ bool C4Network2ResChunk::AddTo(C4Network2Res *pRes, C4Network2IO *pIO) const
 		if(lseek(f, iOffset, SEEK_SET) != iOffset)
 			{
 #ifdef C4NET2RES_DEBUG_LOG
-			Application.InteractiveThread.ThreadLogS(FormatString("C4Network2ResChunk(%d)::AddTo(%s [%d]): lseek file error: %s!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID(), strerror(errno)).getData());
+			Application.InteractiveThread.ThreadLogS("C4Network2ResChunk(%d)::AddTo(%s [%d]): lseek file error: %s!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID(), strerror(errno));
 #endif
 			close(f);
 			return false;
@@ -1270,7 +1270,7 @@ bool C4Network2ResChunk::AddTo(C4Network2Res *pRes, C4Network2IO *pIO) const
 	if(write(f, Data.getData(), Data.getSize()) != int32_t(Data.getSize()))
 		{
 #ifdef C4NET2RES_DEBUG_LOG
-		Application.InteractiveThread.ThreadLogS(FormatString("C4Network2ResChunk(%d)::AddTo(%s [%d]): write error: %s!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID(), strerror(errno)).getData());
+		Application.InteractiveThread.ThreadLogS("C4Network2ResChunk(%d)::AddTo(%s [%d]): write error: %s!", (int) iResID, (const char *) Core.getFileName(), (int) pRes->getResID(), strerror(errno));
 #endif
 		close(f);
 		return false;
@@ -1293,10 +1293,10 @@ void C4Network2ResChunk::CompileFunc(StdCompiler *pComp)
 // *** C4Network2ResList
 
 C4Network2ResList::C4Network2ResList()
-	: iClientID(-1),
-		iNextResID((-1) << 16),
-		pFirst(NULL),
+	: pFirst(NULL),
 		ResListCSec(this),
+		iClientID(-1),
+		iNextResID((-1) << 16),
 		iLastDiscover(0), iLastStatus(0),
 		pIO(NULL)
 {

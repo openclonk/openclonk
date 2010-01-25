@@ -114,7 +114,7 @@ bool C4Language::Init()
 
 	// Now create a pack group for each language pack (these pack groups are child groups
 	// that browse along each pack to access requested data)
-	for (int iPack = 0; pPack = Packs.GetGroup(iPack); iPack++)
+	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
 		PackGroups.RegisterGroup(*(new C4Group), true, C4GSPrio_Base, C4GSCnt_Language);
 
 	// Load language infos by scanning string tables (the engine doesn't really need this at the moment)
@@ -345,7 +345,7 @@ void C4Language::InitInfos()
 	}
 	// Now look through the registered packs
 	C4Group *pPack;
-	for (int iPack = 0; pPack = Packs.GetGroup(iPack); iPack++)
+	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
 		// Does it contain a System.c4g child group?
 		if (hGroup.OpenAsChild(pPack, C4CFN_System))
 		{
@@ -443,7 +443,7 @@ bool C4Language::InitStringTable(const char *strCode)
 	}
 	// Now look through the registered packs
 	C4Group *pPack;
-	for (int iPack = 0; pPack = Packs.GetGroup(iPack); iPack++)
+	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
 		// Does it contain a System.c4g child group?
 		if (hGroup.OpenAsChild(pPack, C4CFN_System))
 		{
@@ -496,7 +496,7 @@ bool C4Language::CloseGroup(const char *strPath)
 {
 	// Check all open language packs
 	C4Group *pPack;
-	for (int iPack = 0; pPack = Packs.GetGroup(iPack); iPack++)
+	for (int iPack = 0; (pPack = Packs.GetGroup(iPack)); iPack++)
 		if (ItemIdentical(strPath, pPack->GetFullName().getData()))
 		{
 			Packs.UnregisterGroup(iPack);

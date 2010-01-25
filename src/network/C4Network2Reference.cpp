@@ -56,8 +56,8 @@ void C4Network2Reference::InitLocal()
 	// Discard player resources (we don't want these infos in the reference)
 	C4ClientPlayerInfos *pClientInfos; C4PlayerInfo *pPlayerInfo;
 	int32_t i, j;
-	for(i = 0; pClientInfos = Parameters.PlayerInfos.GetIndexedInfo(i); i++)
-		for(j = 0; pPlayerInfo = pClientInfos->GetPlayerInfo(j); j++)
+	for(i = 0; (pClientInfos = Parameters.PlayerInfos.GetIndexedInfo(i)); i++)
+		for(j = 0; (pPlayerInfo = pClientInfos->GetPlayerInfo(j)); j++)
 			pPlayerInfo->DiscardResource();
 
 	// Special additional information in reference
@@ -209,11 +209,11 @@ void C4Network2RefServer::RespondReference(const C4NetIO::addr_t &addr)
 	// Create header
 	StdStrBuf Header = FormatString(
 		  "HTTP/1.1 200 Found\r\n"
-      "Content-Length: %d\r\n"
+      "Content-Length: %lu\r\n"
       "Content-Type: text/plain; charset=UTF-8\r\n"
       "Server: " C4ENGINENAME "/" C4VERSION "\r\n"
       "\r\n",
-		PacketData.getLength());
+		static_cast<unsigned long>(PacketData.getLength()));
 	// Send back
 	Send(C4NetIOPacket(Header, Header.getLength(), false, addr));
 	Send(C4NetIOPacket(PacketData, PacketData.getLength(), false, addr));
@@ -224,7 +224,7 @@ void C4Network2RefServer::RespondReference(const C4NetIO::addr_t &addr)
 // *** C4Network2HTTPClient
 
 C4Network2HTTPClient::C4Network2HTTPClient()
-	: fBusy(false), fSuccess(false), fConnected(false), iDownloadedSize(0), iTotalSize(0), fBinary(false), iDataOffset(0),
+	: fBinary(false), fBusy(false), fSuccess(false), fConnected(false), iDataOffset(0), iDownloadedSize(0), iTotalSize(0),
     pNotify(NULL)
 {
 	C4NetIOTCP::SetCallback(this);
@@ -453,7 +453,7 @@ bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
         "POST %s HTTP/1.0\r\n"
         "Host: %s\r\n"
         "Connection: Close\r\n"
-        "Content-Length: %d\r\n"
+        "Content-Length: %lu\r\n"
         "Content-Type: text/plain; encoding=%s\r\n"
         "Accept-Charset: %s\r\n"
         "Accept-Encoding: gzip\r\n"
@@ -462,7 +462,7 @@ bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
         "\r\n",
       RequestPath.getData(),
       Server.getData(),
-      Data.getSize(),
+      static_cast<unsigned long>(Data.getSize()),
       szCharset,
       szCharset,
       Config.General.LanguageEx);
@@ -523,7 +523,7 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 {
 	// Split address
 	const char *pRequestPath;
-	if(pRequestPath = strchr(szServerAddress, '/'))
+	if((pRequestPath = strchr(szServerAddress, '/')))
 	{
 		Server.CopyUntil(szServerAddress, '/');
 		RequestPath = pRequestPath;

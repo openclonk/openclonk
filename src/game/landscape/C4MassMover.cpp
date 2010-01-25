@@ -159,7 +159,7 @@ bool C4MassMover::Execute()
 		}*/
 
 	// Save back material that is about to be overwritten.
-	int omat;
+	int omat = 0;
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust)
 		omat = GBackMat(tx, ty);
 

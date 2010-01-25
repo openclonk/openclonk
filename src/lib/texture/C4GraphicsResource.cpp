@@ -395,7 +395,7 @@ C4Group *FindSuitableFile(const char *szName, C4GroupSet &rGfxSet, char *szFileN
 
 bool C4GraphicsResource::LoadFile(C4FacetID &fct, const char *szName, C4GroupSet &rGfxSet, int32_t iWdt, int32_t iHgt, bool fNoWarnIfNotFound)
 	{
-	char FileName[_MAX_FNAME]; int32_t ID;
+	char FileName[_MAX_FNAME]; int32_t ID = 0;
 	C4Group *pGrp = FindSuitableFile(szName, rGfxSet, FileName, ID);
 	if (!pGrp)
 		{
@@ -423,7 +423,7 @@ bool C4GraphicsResource::LoadFile(C4FacetID &fct, const char *szName, C4GroupSet
 bool C4GraphicsResource::LoadFile(C4Surface& sfc, const char *szName, C4GroupSet &rGfxSet, int32_t &ridCurrSfc)
 	{
 	// find
-	char FileName[_MAX_FNAME]; int32_t ID;
+	char FileName[_MAX_FNAME]; int32_t ID = 0;
 	C4Group *pGrp = FindSuitableFile(szName, rGfxSet, FileName, ID);
 	if (!pGrp)
 		{
@@ -453,10 +453,12 @@ int32_t C4GraphicsResource::GetColorIndex(int32_t iColor, bool fLast)
 
 	// Last index for this color
 	if (fLast)
+		{
 		// Colors with 8 shades
 		if (iColor<10) return GetColorIndex(iColor,false)+7;
 		// Colors with 4 shades
 		else return GetColorIndex(iColor,false)+3;
+		}
 
 	// First index for this color
 	switch (iColor)

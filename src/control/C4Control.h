@@ -110,7 +110,7 @@ enum C4CtrlValueType
 	C4CVT_MaxPlayer = 2,
 	C4CVT_TeamDistribution = 3,
 	C4CVT_TeamColors = 4,
-  C4CVT_FairCrew = 5,
+  C4CVT_FairCrew = 5
 };
 
 class C4ControlSet : public C4ControlPacket // sync, lobby
@@ -135,7 +135,7 @@ public:
 class C4ControlScript : public C4ControlPacket // sync
 {
 public:
-	enum { SCOPE_Console=-2, SCOPE_Global=-1, }; // special scopes to be passed as target objects
+	enum { SCOPE_Console=-2, SCOPE_Global=-1 }; // special scopes to be passed as target objects
 
   C4ControlScript()
     : iTargetObj(-1), fInternal(true)
@@ -156,7 +156,7 @@ class C4ControlPlayerSelect : public C4ControlPacket // sync
 {
 public:
   C4ControlPlayerSelect()
-    : iPlr(-1), iObjCnt(0), pObjNrs(NULL), fIsAlt(false) { }
+    : iPlr(-1), fIsAlt(false), iObjCnt(0), pObjNrs(NULL) { }
 	C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt);
 	~C4ControlPlayerSelect() { delete[] pObjNrs; }
 protected:
@@ -265,7 +265,7 @@ public:
 
 enum C4ControlClientUpdType
 {
-	CUT_None = -1, CUT_Activate = 0, CUT_SetObserver = 1,
+	CUT_None = -1, CUT_Activate = 0, CUT_SetObserver = 1
 };
 
 class C4ControlClientUpdate : public C4ControlPacket // sync, lobby
@@ -314,7 +314,7 @@ public:
 	const C4ClientPlayerInfos &GetInfo() const { return PlrInfo; }
   virtual bool Sync() const { return false; }
   virtual bool Lobby() const { return true; }
-  DECLARE_C4CONTROL_VIRTUALS;
+  DECLARE_C4CONTROL_VIRTUALS
 };
 
 struct C4ControlJoinPlayer : public C4ControlPacket // sync
@@ -331,7 +331,7 @@ protected:
 	StdBuf PlrData;				   			// for fByRes == false
 	C4Network2ResCore ResCore;		// for fByRes == true
 public:
-	DECLARE_C4CONTROL_VIRTUALS;
+	DECLARE_C4CONTROL_VIRTUALS
 	virtual bool PreExecute() const;
 	virtual void PreRec(C4Record *pRecord);
 	void Strip();
@@ -344,7 +344,7 @@ enum C4ControlEMObjectAction
 	EMMO_Duplicate,	// duplicate objects at same position; reset EditCursor
 	EMMO_Script,		// execute Script
 	EMMO_Remove,		// remove objects
-	EMMO_Exit,			// exit objects
+	EMMO_Exit		// exit objects
 	};
 
 class C4ControlEMMoveObject : public C4ControlPacket // sync
@@ -371,7 +371,7 @@ enum C4ControlEMDrawAction
 	EMDT_Brush,				// drawing tool
 	EMDT_Fill,				// drawing tool
 	EMDT_Line,				// drawing tool
-	EMDT_Rect,				// drawing tool
+	EMDT_Rect				// drawing tool
 	};
 
 class C4ControlEMDrawTool : public C4ControlPacket // sync
@@ -401,7 +401,7 @@ enum C4ControlMessageType
 	C4CMT_Private		= 4,
 	C4CMT_Sound			= 5, // "message" is played as a sound instead
 	C4CMT_Alert     = 6, // no message. just flash taskbar for inactive clients.
-	C4CMT_System		= 10,
+	C4CMT_System		= 10
 };
 
 class C4ControlMessage : public C4ControlPacket // not sync, lobby

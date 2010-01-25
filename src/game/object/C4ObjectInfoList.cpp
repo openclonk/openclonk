@@ -67,9 +67,11 @@ int32_t C4ObjectInfoList::Load(C4Group &hGroup, bool fLoadPortraits)
   // Search all c4i files
 	hGroup.ResetSearch();
   while (hGroup.FindNextEntry(C4CFN_ObjectInfoFiles,entryname))
-		if (ninf=new C4ObjectInfo)
+		if ((ninf=new C4ObjectInfo))
+			{
 			if (ninf->Load(hGroup,entryname,fLoadPortraits))	{ Add(ninf); infn++; }
 			else delete ninf;
+			}
 
   // Search all c4o files
 	/*hGroup.ResetSearch();
@@ -127,7 +129,7 @@ C4ObjectInfo* C4ObjectInfoList::GetIdle(C4ID c_id, C4DefList &rDefs)
 	// Search list
 	for (pInfo=First; pInfo; pInfo=pInfo->Next)
 		// Valid only
-		if (pDef = rDefs.ID2Def(pInfo->id))
+		if ((pDef = rDefs.ID2Def(pInfo->id)))
 			// Use standard crew or matching id
 			if ( (!c_id && !pDef->NativeCrew) || (pInfo->id==c_id) )
 				// Participating and not in action

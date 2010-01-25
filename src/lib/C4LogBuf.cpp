@@ -94,10 +94,12 @@ void C4LogBuffer::AppendSingleLine(const char *szLine, int iLineLength, const ch
 	if (!szLine || !iLineLength || !*szLine) return;
 	// discard first line or grow buffer if data buffer is full
 	if (iLineCount == iMaxLineCount)
+		{
 		if (fDynamicGrow)
 			GrowLineCountBuffer(4 + iMaxLineCount/2);
 		else
 			DiscardFirstLine();
+		}
 	// include trailing zero-character
 	++iLineLength;
 	// include indent
@@ -185,12 +187,12 @@ void C4LogBuffer::AppendLines(const char *szLine, CStdFont *pFont, DWORD dwClr, 
 		char *szBuf = new char[strlen(szLine)+1];
 		char *szBufPos, *szPos2 = szBuf, *szBufFind;
 		strcpy(szBuf, szLine);
-		while (szBufPos = szPos2)
+		while ((szBufPos = szPos2))
 			{
 			// find first occurance of any line break char
 			szPos2 = NULL;
 			for (int i = 0; i < iLineBreakCharCount; ++i)
-				if (szBufFind = strchr(szBufPos, LineBreakChars[i]))
+				if ((szBufFind = strchr(szBufPos, LineBreakChars[i])))
 					if (!szPos2 || szBufFind < szPos2)
 						szPos2 = szBufFind;
 			// split string at linebreak char

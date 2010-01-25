@@ -676,10 +676,12 @@ void C4Network2IRCClient::OnNumericCommand(const char *szSender, int iCommand, c
 			pMsg = SSearch(pMsg, " ");
 		// Show it
 		if(pMsg && *pMsg)
+			{
 			if(!pChannel)
 				PushMessage(MSG_Server, szSender, Nick.getData(), pMsg + 1);
 			else
 				PushMessage(MSG_Status, szSender, pChannel->getName(), pMsg + 1);
+			}
 		}
 	}
 

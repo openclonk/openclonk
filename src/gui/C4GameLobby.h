@@ -91,7 +91,7 @@ namespace C4GameLobby
 			int32_t iBackBufferIndex;   // chat message history index
 			C4KeyBinding *pKeyHistoryUp, *pKeyHistoryDown; // keys used to scroll through chat history
 
-			enum { SheetIdx_PlayerList = 0, SheetIdx_Res = 1, SheetIdx_Options = 2, SheetIdx_Scenario = 3, };
+			enum { SheetIdx_PlayerList = 0, SheetIdx_Res = 1, SheetIdx_Options = 2, SheetIdx_Scenario = 3 };
 			C4PlayerInfoListBox *pPlayerList;
 			C4Network2ResDlg *pResList;
 			C4GameOptionButtons *pGameOptionButtons;
@@ -180,6 +180,6 @@ namespace C4GameLobby
 			void Abort();
 		};
 
-	};
+	}
 
 #endif

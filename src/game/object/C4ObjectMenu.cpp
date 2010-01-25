@@ -154,7 +154,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			{
 			// Add target contents items
 			C4ObjectListIterator iter(pTarget->Contents);
-			while (pObj = iter.GetNext(&iCount, C4D_Activate))
+			while ((pObj = iter.GetNext(&iCount, C4D_Activate)))
 				{
 				pDef = pObj->Def;
 				if (pDef->NoGet) continue;
@@ -191,7 +191,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 			{
 			// Add target contents items
 			C4ObjectListIterator iter(pTarget->Contents);
-			while (pObj = iter.GetNext(&iCount, C4D_Get))
+			while ((pObj = iter.GetNext(&iCount, C4D_Get)))
 				{
 				pDef = pObj->Def;
 				if (pDef->NoGet) continue;
@@ -404,6 +404,10 @@ bool C4ObjectMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 			// Object menu with scenario script callback
 			Game.Script.DirectExec(NULL, szCommand, "MenuCommand");
 			break;
+
+		case CB_None:
+			// TODO
+			break;
 		}
 
 	if ((!l_Permanent || fIsCloseCommand) && l_Object) l_Object->AutoContextMenu(l_LastSelection);
@@ -425,19 +429,21 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 
 	// ActionContext functions of target's action target (for first target only, because otherwise strange stuff can happen with outdated Target2s...)
 	if (pTarget->Action.pActionDef)
-		if (cObj = pTarget->Action.Target)
-			for (iFunction=0; pFunction=cObj->Def->Script.GetSFunc(iFunction, "ActionContext"); iFunction++)
+		if ((cObj = pTarget->Action.Target))
+			for (iFunction=0; (pFunction=cObj->Def->Script.GetSFunc(iFunction, "ActionContext")); iFunction++)
 				if (!pFunction->OverloadedBy)
 					if (!pFunction->Condition || !!pFunction->Condition->Exec(cObj, &C4AulParSet(C4VObj(Object), C4VID(pFunction->idImage), C4VObj(pTarget))))
+						{
 						if (!fCountOnly)
 							{
 							sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",this,Object(%d))",cObj->Number,pFunction->Name,pTarget->Number);
-							fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
+							fctSymbol.Create(16,16); if ((pDef=C4Id2Def(pFunction->idImage))) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 							Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 							iResult++;
 							}
 						else
 							iResult++;
+						}
 
 	// Effect context functions of target's effects
 	for (C4Effect *pEff = pTarget->pEffects; pEff; pEff = pEff->pNext)
@@ -446,19 +452,21 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 			C4AulScript *pEffScript = pEff->GetCallbackScript();
 			StdStrBuf sPattern; sPattern.Format(PSF_FxCustom, pEff->Name, "Context");
 			if (pEffScript)
-				for (iFunction=0; pFunction=pEffScript->GetSFunc(iFunction, sPattern.getData()); iFunction++)
+				for (iFunction=0; (pFunction=pEffScript->GetSFunc(iFunction, sPattern.getData())); iFunction++)
 					if (!pFunction->OverloadedBy)
 						if (!pFunction->Condition || !!pFunction->Condition->Exec(pEff->pCommandTarget, &C4AulParSet(C4VObj(pTarget), C4VInt(pEff->iNumber), C4VObj(Object), C4VID(pFunction->idImage))))
+							{
 							if (!fCountOnly)
 								{
 								sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",Object(%d),%d,Object(%d),%s)",pEff->pCommandTarget->Number,pFunction->Name,pTarget->Number,(int)pEff->iNumber,Object->Number,pFunction->idImage.ToString());
-								fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
+								fctSymbol.Create(16,16); if ((pDef=C4Id2Def(pFunction->idImage))) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 								Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 								fctSymbol.Default();
 								iResult++;
 								}
 							else
 								iResult++;
+							}
 			}
 
 	// Script context functions of any objects attached to target (search global list, because attachment objects might be moved just about anywhere...)
@@ -466,27 +474,29 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 		if (cObj->Status && cObj->Action.Target == pTarget)
 			if (cObj->Action.pActionDef)
 				if (cObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)
-					for (iFunction=0; pFunction=cObj->Def->Script.GetSFunc(iFunction, "AttachContext"); iFunction++)
+					for (iFunction=0; (pFunction=cObj->Def->Script.GetSFunc(iFunction, "AttachContext")); iFunction++)
 						if (!pFunction->OverloadedBy)
 							if (!pFunction->Condition || !! pFunction->Condition->Exec(cObj, &C4AulParSet(C4VObj(Object), C4VID(pFunction->idImage), C4VObj(pTarget))))
+								{
 								if (!fCountOnly)
 									{
 									sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",this,Object(%d))",cObj->Number,pFunction->Name,pTarget->Number);
-									fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
+									fctSymbol.Create(16,16); if ((pDef=C4Id2Def(pFunction->idImage))) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 									Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 									fctSymbol.Default();
 									iResult++;
 									}
 								else
 									iResult++;
+								}
 
 	// 'Activate' and 'ControlDigDouble' script functions of target
 	const char *func, *funcs[] = { "Activate", "ControlDigDouble", 0 };
-	for (int i = 0; func = funcs[i]; i++)
+	for (int i = 0; (func = funcs[i]); i++)
 		// 'Activate' function only if in clonk's inventory; 'ControlDigDouble' function only if pushed by clonk
 		if ((SEqual(func, "Activate") && (pTarget->Contained == Object)) || (SEqual(func, "ControlDigDouble") && (Object->GetProcedure() == DFA_PUSH) && (Object->Action.Target == pTarget)))
 			// Find function
-			if (pFunction = pTarget->Def->Script.GetSFunc(func))
+			if ((pFunction = pTarget->Def->Script.GetSFunc(func)))
 				// Find function not overloaded
 				if (!pFunction->OverloadedBy)
 					// Function condition valid
@@ -496,7 +506,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 						strDescText = pFunction->DescText.getData() ? pFunction->DescText.getData() : pTarget->GetName();
 						// Check if there is a scripted context function doing exactly the same
 						bool fDouble = false;
-						for (iFunction = 0; pFunction2 = pTarget->Def->Script.GetSFunc(iFunction, "Context"); iFunction++)
+						for (iFunction = 0; (pFunction2 = pTarget->Def->Script.GetSFunc(iFunction, "Context")); iFunction++)
 							if (!pFunction2->OverloadedBy)
 								if (!pFunction2->Condition || !!pFunction2->Condition->Exec(pTarget, &C4AulParSet(C4VObj(Object), C4VID(pFunction2->idImage))))
 									if (SEqual(strDescText, pFunction2->DescText.getData()))
@@ -511,7 +521,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 						sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",this)",pTarget->Number,pFunction->Name);
 						// Symbol
 						fctSymbol.Create(16,16);
-						if (pDef = C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
+						if ((pDef = C4Id2Def(pFunction->idImage))) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 						else pTarget->DrawPicture(fctSymbol);
 						// Add menu item
 						Add(strDescText, fctSymbol, szCommand, C4MN_Item_NoCount, NULL, pFunction->DescLong.getData());
@@ -522,19 +532,21 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 	// Script context functions of target
 	if (!(pTarget->OCF & OCF_CrewMember) || (pTarget->Owner==Object->Owner)) // Crew member: only allow if owned by ourself
 		if (!(pTarget->Category & C4D_Living) || pTarget->GetAlive()) // No dead livings
-			for (iFunction=0; pFunction=pTarget->Def->Script.GetSFunc(iFunction, "Context"); iFunction++)
+			for (iFunction=0; (pFunction=pTarget->Def->Script.GetSFunc(iFunction, "Context")); iFunction++)
 				if (!pFunction->OverloadedBy)
 					if (!pFunction->Condition || !! pFunction->Condition->Exec(pTarget, &C4AulParSet(C4VObj(Object), C4VID(pFunction->idImage))))
+						{
 						if (!fCountOnly)
 							{
 							sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",this)",pTarget->Number,pFunction->Name);
-							fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
+							fctSymbol.Create(16,16); if ((pDef=C4Id2Def(pFunction->idImage))) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 							Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 							fctSymbol.Default();
 							iResult++;
 							}
 						else
 							iResult++;
+						}
 
 	// Context functions of the menu clonk itself (if not same as target)
 	if (Object != pTarget)

@@ -312,6 +312,7 @@ void C4MapFolderData::CreateGUIElements(C4StartupScenSelDlg *pMainDlg, C4GUI::Wi
 	// convert all coordinates to match the container sizes
 	// do this only once; assume container won't change between loads
 	if (!fCoordinatesAdjusted)
+		{
 		if (!fUseFullscreenMap)
 			ConvertFacet2ScreenCoord(rContainer.GetClientRect(), true);
 		else
@@ -320,6 +321,7 @@ void C4MapFolderData::CreateGUIElements(C4StartupScenSelDlg *pMainDlg, C4GUI::Wi
 			rContainer.ClientPos2ScreenPos(rcMapRect.x, rcMapRect.y);
 			ConvertFacet2ScreenCoord(rcMapRect, false);
 			}
+		}
 	// empty any previous stuff in container
 	while (rContainer.GetFirst()) delete rContainer.GetFirst();
 	// create background image
@@ -562,7 +564,7 @@ bool DirContainsScenarios(const char *szDir)
 	// create iterator on free store to avoid stack overflow with deeply recursed folders
 	DirectoryIterator *pIter = new DirectoryIterator(szDir);
 	const char *szChildFilename;
-	for (; szChildFilename = **pIter; ++*pIter)
+	for (; (szChildFilename = **pIter); ++*pIter)
 		{
 		// Ignore directory navigation entries and CVS folders
 		if (!*szChildFilename || *GetFilename(szChildFilename)=='.') continue;
@@ -823,8 +825,8 @@ EntrySortFunc(const void *pEl1, const void *pEl2)
 	{
 	C4ScenarioListLoader::Entry *pEntry1 = *(C4ScenarioListLoader::Entry * const *) pEl1, *pEntry2 = *(C4ScenarioListLoader::Entry * const *) pEl2;
 	// sort folders before scenarios
-	bool fS1, fS2;
-	if (!(fS1=!pEntry1->GetIsFolder()) != !true != !(fS2=!pEntry2->GetIsFolder())) return fS1-fS2;
+	bool fS1 = !pEntry1->GetIsFolder(), fS2 = !pEntry2->GetIsFolder();
+	if (fS1 != fS2) return fS1-fS2;
 	// sort by folder index (undefined index 0 goes to the end)
 	if (!Config.Startup.AlphabeticalSorting) if (pEntry1->GetFolderIndex() || pEntry2->GetFolderIndex())
 	{
@@ -880,8 +882,8 @@ void C4ScenarioListLoader::Folder::ClearChildren()
 		{
 		// delete all children as long as they are not folders
 		Entry *pChild;
-		while (pChild = pDelFolder->pFirst)
-			if (pCheckFolder = pChild->GetIsFolder())
+		while ((pChild = pDelFolder->pFirst))
+			if ((pCheckFolder = pChild->GetIsFolder()))
 				// child entry if folder: Continue delete in there
 				pDelFolder = pCheckFolder;
 			else
@@ -1070,7 +1072,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 		if (!DirectoryExists(it->c_str())) continue;
 		DirectoryIterator DirIter(it->c_str());
 		const char *szChildFilename;
-		for (; szChildFilename = *DirIter; ++DirIter)
+		for (; (szChildFilename = *DirIter); ++DirIter)
 			{
 			if (!*szChildFilename || *GetFilename(szChildFilename)=='.') continue;
 			++iCountTotal;
@@ -1084,7 +1086,7 @@ bool C4ScenarioListLoader::RegularFolder::DoLoadContents(C4ScenarioListLoader *p
 	const char *szChildFilename;
 	for (it = contents.begin(); it != contents.end(); ++it)
 		{
-		for (DirectoryIterator DirIter(it->c_str()); szChildFilename = *DirIter; ++DirIter)
+		for (DirectoryIterator DirIter(it->c_str()); (szChildFilename = *DirIter); ++DirIter)
 			{
 			StdStrBuf sChildFilename(szChildFilename);
 			szChildFilename = GetFilename(szChildFilename);
@@ -1187,7 +1189,7 @@ bool C4ScenarioListLoader::Load(const StdStrBuf &sRootFolder)
 	bool fSuccess = pRootFolder->LoadContents(this, NULL, &sRootFolder, false, false);
 	EndActivity();
 	return fSuccess;
-	};
+	}
 
 bool C4ScenarioListLoader::Load(Folder *pSpecifiedFolder, bool fReload)
 	{
@@ -1338,7 +1340,7 @@ C4GUI::RenameEdit::RenameResult C4StartupScenSelDlg::ScenListItem::DoRenaming(Re
 // ------------------------------------------------
 // --- C4StartupScenSelDlg
 
-C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResStrNoAmp(fNetwork ? "IDS_DLG_NETSTART" : "IDS_DLG_STARTGAME")), pScenLoader(NULL), fIsInitialLoading(false), fStartNetworkGame(fNetwork), pMapData(NULL), pRenameEdit(NULL), pfctBackground(NULL)
+C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResStrNoAmp(fNetwork ? "IDS_DLG_NETSTART" : "IDS_DLG_STARTGAME")), pScenLoader(NULL), pMapData(NULL), pfctBackground(NULL), fIsInitialLoading(false), fStartNetworkGame(fNetwork), pRenameEdit(NULL)
 	{
 	// ctor
 	// assign singleton
@@ -1369,7 +1371,7 @@ C4StartupScenSelDlg::C4StartupScenSelDlg(bool fNetwork) : C4StartupDlg(LoadResSt
 	pScenSelStyleTabular->SetDrawDecoration(false);
 	AddElement(pScenSelStyleTabular);
 	C4GUI::Tabular::Sheet *pSheetBook = pScenSelStyleTabular->AddSheet(NULL);
-	C4GUI::Tabular::Sheet *pSheetMap = pScenSelStyleTabular->AddSheet(NULL);
+	/* C4GUI::Tabular::Sheet *pSheetMap = */ pScenSelStyleTabular->AddSheet(NULL);
 
 	// scenario selection list
 	CStdFont &rScenSelCaptionFont = C4Startup::Get()->Graphics.BookFontTitle;
@@ -1504,7 +1506,7 @@ void C4StartupScenSelDlg::UpdateList()
 	// remember old selection
 	C4ScenarioListLoader::Entry *pOldSelection = GetSelectedEntry();
 	C4GUI::Element *pEl;
-	while (pEl = pScenSelList->GetFirst()) delete pEl;
+	while ((pEl = pScenSelList->GetFirst())) delete pEl;
 	pScenSelCaption->SetText("");
 	// scen loader still busy: Nothing to add
 	if (!pScenLoader) return;
@@ -1519,7 +1521,7 @@ void C4StartupScenSelDlg::UpdateList()
 	pScenSelProgressLabel->SetVisibility(false);
 	// is this a map folder? Then show the map instead
 	C4ScenarioListLoader::Folder *pFolder = static_cast<C4ScenarioListLoader::Folder *>(pScenLoader->GetCurrFolder());
-	if (pMapData = pFolder->GetMapData())
+	if ((pMapData = pFolder->GetMapData()))
 		{
 		pMapData->ResetSelection();
 		pMapData->CreateGUIElements(this, *pScenSelStyleTabular->GetSheet(ShowStyle_Map));

@@ -143,6 +143,7 @@ void C4InteractiveThread::ProcessEvents() // by main thread
             LogSilent(pLog.getData()); break;
 				  case Ev_LogFatal:
             LogFatal(pLog.getData()); break;
+				  default: assert(eEventType == Ev_Log || eEventType == Ev_LogSilent || eEventType == Ev_LogFatal); // obviously will not happen, but someone tell gcc
 				  }
 
         }

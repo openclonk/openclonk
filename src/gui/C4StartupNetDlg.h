@@ -46,17 +46,17 @@ class C4StartupNetListEntry : public C4GUI::Window
 			NRQT_Unknown,        // unknown source
 			NRQT_GameDiscovery,  // by UDP broadcast in local network
 			NRQT_Masterserver,   // by internet masterserver
-			NRQT_DirectJoin,     // by user-entered address
+			NRQT_DirectJoin      // by user-entered address
 			};
 
 		enum TimeoutType
 			{
 			TT_RefReqWait, // C4NetMasterServerQueryInterval for masterserver; C4NetErrorRefTimeout for other ref clients
 			TT_Reference,  // C4NetReferenceTimeout
-			TT_Masterserver, // C4NetMasterServerQueryInterval
+			TT_Masterserver // C4NetMasterServerQueryInterval
 			};
 
-		enum { InfoLabelCount=5, MaxInfoIconCount=10, };
+		enum { InfoLabelCount=5, MaxInfoIconCount=10 };
 
 	private:
 		C4StartupNetDlg *pNetDlg;

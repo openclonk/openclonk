@@ -408,8 +408,8 @@ StdMeshMaterialTextureUnit::TexRef::~TexRef()
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
-	Texture(NULL), TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate),
-	ColorOpManualFactor(0.0f), AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f)
+	TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate), ColorOpManualFactor(0.0f),
+	AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f), Texture(NULL)
 {
 	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0f; TexBorderColor[3] = 1.0f;
 	Filtering[0] = Filtering[1] = F_Linear; Filtering[2] = F_Point;
@@ -420,9 +420,9 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
-	Texture(other.Texture), TexAddressMode(other.TexAddressMode),
+	TexAddressMode(other.TexAddressMode),
 	ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
-	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor)
+	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor), Texture(other.Texture)
 {
 	if(Texture)
 		++Texture->RefCount;

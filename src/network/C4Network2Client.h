@@ -41,7 +41,7 @@ enum C4Network2ClientStatus
 	NCS_Chasing,		// client is behind (status not acknowledged, isn't waited for)
 	NCS_NotReady,		// client is behind (status not acknowledged)
 	NCS_Ready,			// client acknowledged network status
-	NCS_Remove,			// client is to be removed
+	NCS_Remove			// client is to be removed
 };
 
 class C4Network2Address

@@ -234,7 +234,7 @@ bool C4GameResList::Load(const char *szDefinitionFilenames)
 	CreateByFile(NRT_System, C4CFN_System);
 	// add all instances of Material.c4g, except those inside the scenario file
 	C4Group *pMatParentGrp = NULL;
-	while(pMatParentGrp = Game.GroupSet.FindGroup(C4GSCnt_Material, pMatParentGrp))
+	while((pMatParentGrp = Game.GroupSet.FindGroup(C4GSCnt_Material, pMatParentGrp)))
 		if(pMatParentGrp != &Game.ScenarioFile)
 		{
 			StdStrBuf MaterialPath = pMatParentGrp->GetFullName() + DirSep C4CFN_Material;
@@ -524,7 +524,7 @@ StdStrBuf C4GameParameters::GetGameGoalString()
 	StdStrBuf sResult;
 	C4ID idGoal;
 	for (int32_t i=0; i<Goals.GetNumberOfIDs(); ++i)
-		if (idGoal = Goals.GetID(i)) if (idGoal != C4ID::None)
+		if ((idGoal = Goals.GetID(i))) if (idGoal != C4ID::None)
 			{
 			if (Game.IsRunning)
 				{

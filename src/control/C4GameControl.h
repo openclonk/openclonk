@@ -30,7 +30,7 @@ enum C4ControlMode
 	CM_None,
 	CM_Local,					// control = input
 	CM_Network,				// control = input + network input
-	CM_Replay,				// control = replay
+	CM_Replay				// control = replay
 };
 
 enum C4ControlDeliveryType
@@ -40,7 +40,7 @@ enum C4ControlDeliveryType
   CDT_Direct	= 2,	// Send directly to all clients (not sync)
   CDT_Private	= 3,  // Send only to some clients (not sync, obviously)
 
-  CDT_Decide,				// Use whatever sync mode seems fastest atm (sync)
+  CDT_Decide				// Use whatever sync mode seems fastest atm (sync)
 };
 
 // Additional notes / requirements:

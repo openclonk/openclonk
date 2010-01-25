@@ -136,10 +136,12 @@ bool CStdFile::Close(StdBuf **ppMemory)
   if (hgzFile) if (gzclose(hgzFile)!=Z_OK) rval=false;
 	if (hFile) if (fclose(hFile)!=0) rval=false;
 	if (pMemory)
+		{
 		if(ppMemory)
 			{ *ppMemory = pMemory; pMemory = NULL; }
 		else
 			delete pMemory;
+		}
 	MemoryPtr=0;
 	hgzFile=NULL; hFile=NULL;
 	return !!rval;

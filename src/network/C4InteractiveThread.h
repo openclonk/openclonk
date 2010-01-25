@@ -41,7 +41,7 @@ enum C4InteractiveEventType
 	Ev_Net_Disconn,
 	Ev_Net_Packet,
 
-  Ev_Last = Ev_Net_Packet,
+  Ev_Last = Ev_Net_Packet
 	};
 
 class C4InteractiveThreadNotifyProc : public CStdNotifyProc

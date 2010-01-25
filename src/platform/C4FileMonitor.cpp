@@ -109,7 +109,7 @@ int inotify_rm_watch (int __fd, uint32_t __wd)
 #if defined(HAVE_SYS_INOTIFY_H) || defined(HAVE_SYSCALL_INOTIFY)
 #include <errno.h>
 
-C4FileMonitor::C4FileMonitor(ChangeNotify pCallback): pCallback(pCallback), fStarted(false)
+C4FileMonitor::C4FileMonitor(ChangeNotify pCallback): fStarted(false), pCallback(pCallback)
 {
 	fd = inotify_init();
 	if (fd == -1) LogF("inotify_init %s", strerror(errno));
@@ -146,13 +146,14 @@ void C4FileMonitor::AddDirectory(const char * file)
 
 bool C4FileMonitor::Execute(int iTimeout, pollfd * pfd) // some other thread
 {
-	if ((pfd->revents & pfd->events != POLLIN) || pfd->fd != fd)
+	if ((pfd->revents & pfd->events) != POLLIN || pfd->fd != fd)
 		LogF("C4FileMonitor::Execute unexpectedly called %d %d %hd %hd", fd, pfd->fd, pfd->events, pfd->revents);
 	char buf[sizeof(inotify_event) + _MAX_FNAME + 1];
+	inotify_event* event = new (buf) inotify_event;
 	if (read(fd, buf, sizeof(buf)) > 0)
 	{
-		const char * file = watch_descriptors[(*(inotify_event*)buf).wd];
-		uint32_t mask = (*(inotify_event*)buf).mask;
+		const char * file = watch_descriptors[event->wd];
+		uint32_t mask = event->mask;
 		C4InteractiveThread &Thread = Application.InteractiveThread;
 		if (mask & IN_CREATE)
 			Thread.PushEvent(Ev_FileChange, (void*)file);

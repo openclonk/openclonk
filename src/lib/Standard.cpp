@@ -232,8 +232,10 @@ int SCharPos(char cTarget, const char *szInStr, int iIndex)
   if (!szInStr) return -1;
   for (cpos=szInStr,ccpos=0; *cpos; cpos++,ccpos++)
     if (*cpos==cTarget)
+			{
 			if (iIndex==0) return ccpos;
 			else iIndex--;
+			}
   return -1;
   }
 
@@ -389,8 +391,10 @@ const char *SSearchIdentifier(const char *szString, const char *szIndex)
 					return cscr+1;
     // Currently no match, check for frontok
 		if (match==0)
+			{
 			if (IsIdentifier(*cscr)) frontok=false;
 			else frontok=true;
+			}
 		}
   return NULL;
 	}
@@ -759,7 +763,7 @@ const char* SGetParameter(const char *strCommandLine, int iParameter, char *strT
 	while (c && *c)
 	{
 		// Quoted parameter
-		if (fQuoted = (*c == '"'))
+		if ((fQuoted = (*c == '"')))
 		{
 			SCopyUntil(++c, strParameter, '"', 2048);
 			c += SLen(strParameter);

@@ -814,7 +814,7 @@ bool C4PlayerControl::ExecuteControl(int32_t iControl, bool fUp, const C4KeyEven
 	bool fHandled = ExecuteControlAction(iControl, eAction, pControlDef->GetExtraData(), fUp, KeyExtraData, fRepeated);
 	// handled controls hide control display
 	C4Player *pPlr;
-	if (pPlr = ::Players.Get(iPlr)) if (pPlr->ShowStartup) pPlr->ShowStartup = false;
+	if ((pPlr = ::Players.Get(iPlr))) if (pPlr->ShowStartup) pPlr->ShowStartup = false;
 	// return if handled, unless control is defined as always unhandled
 	return fHandled && !(iTriggerMode & C4PlayerControlAssignment::CTM_AlwaysUnhandled);
 	}

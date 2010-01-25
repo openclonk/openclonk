@@ -449,7 +449,7 @@ void C4IDList::Load(C4DefList &rDefs, int32_t dwCategory)
 	Clear();
 	// add all IDs of def list
 	C4IDListChunk *pChunk=this;
-	while (cdef=rDefs.GetDef(cnt++,dwCategory))
+	while ((cdef=rDefs.GetDef(cnt++,dwCategory)))
 		{
 		// add new chunk if necessary
 		if (cntl==C4IDListChunkSize)

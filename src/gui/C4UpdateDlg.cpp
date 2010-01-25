@@ -212,7 +212,7 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 				}
 	UpdateGroup.Close();
 	// Execute update program
-	LogF(LoadResStr("IDS_PRC_LAUNCHINGUPDATE"));
+	Log(LoadResStr("IDS_PRC_LAUNCHINGUPDATE"));
 	succeeded = true;
 #ifdef _WIN32
 	// Close editor if open
@@ -340,10 +340,12 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 		// Prompt user, then apply update
 		StdStrBuf strMsg; strMsg.Format(LoadResStr("IDS_MSG_ANUPDATETOVERSIONISAVAILA"), UpdateVersion.GetString().getData());
 		if (pScreen->ShowMessageModal(strMsg.getData(), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
+			{
 			if (!DoUpdate(UpdateVersion, pScreen))
 				pScreen->ShowMessage(LoadResStr("IDS_MSG_UPDATEFAILED"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 			else
 				return true;
+			}
 	}
 	// No applicable update available
 	else

@@ -40,7 +40,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 // ----------- C4StartupNetListEntry -----------------------------------------------------------------------
 
 C4StartupNetListEntry::C4StartupNetListEntry(C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBefore, C4StartupNetDlg *pNetDlg)
-: pList(pForListBox), pRefClient(NULL), pRef(NULL), iTimeout(0), eQueryType(NRQT_Unknown), fError(false), fIsCollapsed(false), pNetDlg(pNetDlg), fIsSmall(false), fIsEnabled(true), iInfoIconCount(0), fIsImportant(false), iSortOrder(0)
+: pNetDlg(pNetDlg), pList(pForListBox), pRefClient(NULL), pRef(NULL), fError(false), eQueryType(NRQT_Unknown), iTimeout(0), iInfoIconCount(0), iSortOrder(0), fIsSmall(false), fIsCollapsed(false), fIsEnabled(true), fIsImportant(false)
 	{
 	// calc height
 	int32_t iLineHgt = C4GUI::GetRes()->TextFont.GetLineHeight(), iHeight = iLineHgt * 2 + 4;
@@ -131,8 +131,8 @@ const char *C4StartupNetListEntry::GetQueryTypeName(QueryType eQueryType)
 		case NRQT_GameDiscovery: return LoadResStr("IDS_NET_QUERY_LOCALNET");
 		case NRQT_Masterserver:  return LoadResStr("IDS_NET_QUERY_MASTERSRV");
 		case NRQT_DirectJoin:    return LoadResStr("IDS_NET_QUERY_DIRECTJOIN");
+		default: return "";
 		};
-	return "";
 	}
 
 void C4StartupNetListEntry::SetRefQuery(const char *szAddress, enum QueryType eQueryType)
@@ -573,8 +573,7 @@ C4Network2Reference *C4StartupNetListEntry::GrabReference()
 
 // ----------- C4StartupNetDlg ---------------------------------------------------------------------------------
 
-
-C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")), iGameDiscoverInterval(0), pMasterserverClient(NULL), fIsCollapsed(false), fUpdatingList(false), tLastRefresh(0), pChatTitleLabel(NULL)
+C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")), pChatTitleLabel(NULL), pMasterserverClient(NULL), fIsCollapsed(false), fUpdatingList(false), iGameDiscoverInterval(0), tLastRefresh(0)
 	{
 	// ctor
 	// key bindings
@@ -784,6 +783,7 @@ void C4StartupNetDlg::OnBtnChat(C4GUI::Control *btn)
 	{
 	// toggle chat / game list
 	if (pChatCtrl)
+		{
 		if (pMainTabular->GetActiveSheetIndex() == SNDM_GameList)
 			{
 			pMainTabular->SelectSheet(SNDM_Chat, true);
@@ -795,6 +795,7 @@ void C4StartupNetDlg::OnBtnChat(C4GUI::Control *btn)
 			pMainTabular->SelectSheet(SNDM_GameList, true);
 			UpdateDlgMode();
 			}
+		}
 	}
 
 void C4StartupNetDlg::OnBtnInternet(C4GUI::Control *btn)
@@ -847,7 +848,7 @@ void C4StartupNetDlg::UpdateList(bool fGotReference)
 	// Update all child entries
 	bool fAnyRemoval = false;
 	C4GUI::Element *pElem, *pNextElem = pGameSelList->GetFirst();
-	while (pElem=pNextElem)
+	while ((pElem=pNextElem))
 		{
 		pNextElem = pElem->GetNext(); // determine next exec element now - execution
 		C4StartupNetListEntry *pEntry = static_cast<C4StartupNetListEntry *>(pElem);
@@ -976,7 +977,7 @@ bool C4StartupNetDlg::DoOK()
 		}
 	C4StartupNetListEntry *pRefEntry = static_cast<C4StartupNetListEntry *>(pSelection);
 	const char *szError;
-	if (szError = pRefEntry->GetError())
+	if ((szError = pRefEntry->GetError()))
 		{
 		// erroneous ref selected: Oh noes!
 		::pGUI->ShowMessageModal(

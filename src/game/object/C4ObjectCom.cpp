@@ -446,7 +446,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	// - - - - - - - - - -  - - - - - Active construction - - - - - - - - - - - - - - - - -
 
 	// Active line construction
-	if (cline=Game.FindObject(C4ID::None,0,0,0,0,OCF_All,"Connect",linekit))
+	if ((cline=Game.FindObject(C4ID::None,0,0,0,0,OCF_All,"Connect",linekit)))
 		{
 
 		// Check for structure connection
@@ -457,7 +457,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 			{
 			// No connect
 			StartSoundEffect("Error",false,100,cObj);
-			GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCONNECT")).getData(),cObj);	return false;
+			GameMsgObject(LoadResStr("IDS_OBJ_NOCONNECT"),cObj);	return false;
 			}
 
 		// Check short circuit -> removal
@@ -511,7 +511,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	if (!tstruct || !(ocf & OCF_LineConstruct))
 		{
 		StartSoundEffect("Error",false,100,cObj);
-		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NONEWLINE")).getData(),cObj);	return false;
+		GameMsgObject(LoadResStr("IDS_OBJ_NONEWLINE"),cObj);	return false;
 		}
 
 	// Determine new line type
@@ -534,7 +534,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	if (linetype==C4ID::None)
 		{
 		StartSoundEffect("Error",false,100,cObj);
-		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NONEWLINE")).getData(),cObj);	return false;
+		GameMsgObject(LoadResStr("IDS_OBJ_NONEWLINE"),cObj);	return false;
 		}
 
 	// Create new line

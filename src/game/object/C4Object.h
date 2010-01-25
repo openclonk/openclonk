@@ -243,7 +243,7 @@ class C4Object: public C4PropList
 		void DrawLine(C4TargetFacet &cgo);
 		bool SetPhase(int32_t iPhase);
 		void AssignRemoval(bool fExitContents=false);
-		enum DrawMode { ODM_Normal=0, ODM_Overlay=1, ODM_BaseOnly=2, };
+		enum DrawMode { ODM_Normal=0, ODM_Overlay=1, ODM_BaseOnly=2 };
 		void Draw(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal);
 		void DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer = -1, DrawMode eDrawMode=ODM_Normal);
 		void DrawActionFace(C4TargetFacet &cgo, float offX, float offY);
@@ -283,7 +283,7 @@ class C4Object: public C4PropList
 		int32_t ContactCheck(int32_t atx, int32_t aty);
 		bool Contact(int32_t cnat);
 		void TargetBounds(int32_t &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
-		enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4, };
+		enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
 		bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 		bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 		bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);

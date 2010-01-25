@@ -27,9 +27,9 @@
 
 //============================= Main =====================================================
 
+const size_t C4MaxTitle   = 512;
 const int
           C4MaxDefString  = 100,
-          C4MaxTitle      = 512,
 					C4MaxMessage		= 256,
 
 					C4ViewDelay			= 100,
@@ -259,7 +259,7 @@ enum C4LeagueDisconnectReason
 {
   C4LDR_Unknown,
   C4LDR_ConnectionFailed,
-  C4LDR_Desync,
+  C4LDR_Desync
 };
 
 //=================================== Player (included by C4PlayerInfo and C4Player)
@@ -268,7 +268,7 @@ enum C4PlayerType
 {
 	C4PT_None=0,
   C4PT_User=1,     // Normal player
-	C4PT_Script=2,   // AI players, etc.
+	C4PT_Script=2    // AI players, etc.
 };
 
 //=================================== AllowPictureStack (DefCore value)
@@ -278,7 +278,7 @@ enum C4AllowPictureStack
 	APS_Color=   1<<0,
 	APS_Graphics=1<<1,
 	APS_Name=    1<<2,
-	APS_Overlay= 1<<3,
+	APS_Overlay= 1<<3
 };
 
 // Object size

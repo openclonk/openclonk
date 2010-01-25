@@ -93,7 +93,7 @@ enum C4RecordChunkType // record file chunk type
 
 	RCT_Custom  = 0xc0, // varies
 
-	RCT_Undefined = 0xff,
+	RCT_Undefined = 0xff
 	};
 
 #ifdef DEBUGREC
@@ -246,7 +246,7 @@ class C4PktDebugRec : public C4PktBuf
 		C4RecordChunkType getType() const { return eType; }
 
 	virtual void CompileFunc(StdCompiler *pComp);
-	ALLOW_TEMP_TO_REF(C4PktDebugRec);
+	ALLOW_TEMP_TO_REF(C4PktDebugRec)
 	};
 
 class C4Record // demo recording

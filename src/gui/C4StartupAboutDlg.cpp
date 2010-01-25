@@ -55,7 +55,7 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 		sNick.Copy(Config.GetRegistrationData("Nick"));
 		sRegName.Format("%s %s (%s)", sFirstName.getData(), sLastName.getData(), sNick.getData());
 		sRegStr.Format(LoadResStr("IDS_PRC_REG"), sRegName.getData());
-		sKeyFile.Format(LoadResStr("IDS_CTL_KEYFILE")); sKeyFile+=" "; sKeyFile+=Config.GetKeyFilename();
+		sKeyFile.Format("%s %s", LoadResStr("IDS_CTL_KEYFILE"), Config.GetKeyFilename());
 		C4GUI::Label *pLbl;
 		AddElement(pLbl = new C4GUI::Label(sRegStr.getData(), caInfo.GetGridCell(0,1,1,4), ARight));
 		pLbl->SetToolTip(sKeyFile.getData());

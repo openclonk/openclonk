@@ -37,7 +37,7 @@ enum C4GameControlNetworkMode
 {
 	CNM_Decentral = 0, // 0 is the standard mode set in config
 	CNM_Central   = 1,
-	CNM_Async			= 2,
+	CNM_Async			= 2
 };
 
 // declarations

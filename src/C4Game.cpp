@@ -84,12 +84,16 @@ class C4GameSec1Timer : public C4ApplicationSec1Timer
 	};
 
 C4Game::C4Game()
-: Input(Control.Input), KeyboardInput(C4KeyboardInput_Init()), 	StartupLogPos(0), QuitLogPos(0), fQuitWithError(false), fPreinited(false),
+: Clients(Parameters.Clients),
 	Teams(Parameters.Teams),
 	PlayerInfos(Parameters.PlayerInfos),
 	RestorePlayerInfos(Parameters.RestorePlayerInfos),
-	Clients(Parameters.Clients), pFileMonitor(NULL),
-	pSec1Timer(new C4GameSec1Timer())
+	Input(Control.Input),
+	KeyboardInput(C4KeyboardInput_Init()),
+	pFileMonitor(NULL),
+	pSec1Timer(new C4GameSec1Timer()),
+	fPreinited(false), StartupLogPos(0), QuitLogPos(0),
+	fQuitWithError(false)
   {
 	Default();
   }
@@ -1457,7 +1461,7 @@ bool C4Game::DropFile(const char *szFilename, float iX, float iY)
 	if (SEqualNoCase(GetExtension(szFilename),"c4d"))
 		{
 		// Get id from file
-		if (c_id=DefFileGetID(szFilename))
+		if ((c_id=DefFileGetID(szFilename)))
 			// Get loaded def or try to load def from file
 			if ( (cdef=C4Id2Def(c_id))
 				|| (::Definitions.Load(szFilename,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem) && (cdef=C4Id2Def(c_id))) )
@@ -1475,7 +1479,7 @@ bool C4Game::DropDef(C4ID id, float X, float Y)
 	{
 	// Get def
 	C4Def *pDef;
-	if (pDef=C4Id2Def(id))
+	if ((pDef=C4Id2Def(id)))
 		{
 		StdStrBuf str;
 		if (pDef->Category & C4D_Structure)
@@ -2014,7 +2018,7 @@ bool C4Game::ReloadFile(const char *szFile)
   const char *szRelativePath = Config.AtRelativePath(szFile);
   // a definition? or part of a definition?
   C4Def *pDef;
-  if(pDef = ::Definitions.GetByPath(szRelativePath))
+  if((pDef = ::Definitions.GetByPath(szRelativePath)))
     return ReloadDef(pDef->id);
   // script?
   if(ScriptEngine.ReloadScript(szRelativePath, &::Definitions))
@@ -2215,6 +2219,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 
 	// Load round results
 	if (!fLoadSection)
+	{
 		if (hGroup.FindEntry(C4CFN_RoundResults))
 		{
 			if (!RoundResults.Load(hGroup, C4CFN_RoundResults))
@@ -2224,6 +2229,7 @@ bool C4Game::InitGame(C4Group &hGroup, bool fLoadSection, bool fLoadSky)
 		{
 			RoundResults.Init();
 		}
+	}
 
 	// Environment
 	if (!C4S.Head.NoInitialize && fLandscapeLoaded)
@@ -2901,7 +2907,7 @@ bool C4Game::LoadScenarioComponents()
 		int32_t iWildcardPos = SCharPos('*', C4CFN_ScenarioSections);
 		SCopy(fn + iWildcardPos, SctName, _MAX_FNAME);
 		RemoveExtension(SctName);
-		if (SLen(SctName)>C4MaxName || !*SctName)
+		if (std::strlen(SctName)>C4MaxName || !*SctName)
 			{
 			DebugLog("invalid section name");
 			LogFatal(FormatString(LoadResStr("IDS_ERR_SCENSECTION"), fn).getData()); return false;
@@ -3172,12 +3178,12 @@ bool C4Game::DefinitionFilenamesFromSaveGame()
 	szDefinitionFilenames[0]=0;
 
 	// Use loaded game text component
-	if (pSource = GameText.GetData())
+	if ((pSource = GameText.GetData()))
 		{
 		const char *szPos;
 		char szLinebuf[30+_MAX_PATH+1];
 		// Search def file name section
-		if (szPos = SSearch((const char*)pSource,"[DefinitionFiles]"))
+		if ((szPos = SSearch((const char*)pSource,"[DefinitionFiles]")))
 			// Scan lines
 			while (true)
 				{
@@ -3481,7 +3487,7 @@ const char* C4Game::FoldersWithLocalsDefs(const char *szPath)
 				// do not, however, add them to the group set:
 				//   parent folders are added by OpenScenario already!
 				int32_t iContents;
-				if (iContents = GroupSet.CheckGroupContents(hGroup, C4GSCnt_Definitions))
+				if ((iContents = GroupSet.CheckGroupContents(hGroup, C4GSCnt_Definitions)))
 					{
 					// Add folder to list
 					SNewSegment(szDefs); SAppend(szFoldername,szDefs);
@@ -3498,8 +3504,8 @@ void C4Game::InitValueOverloads()
 	{
 	C4ID idOvrl; C4Def *pDef;
 	// set new values
-	for (int32_t cnt=0; idOvrl=C4S.Game.Realism.ValueOverloads.GetID(cnt); cnt++)
-		if (pDef=::Definitions.ID2Def(idOvrl))
+	for (int32_t cnt=0; (idOvrl=C4S.Game.Realism.ValueOverloads.GetID(cnt)); cnt++)
+		if ((pDef=::Definitions.ID2Def(idOvrl)))
 			pDef->Value=C4S.Game.Realism.ValueOverloads.GetIDCount(idOvrl);
 	}
 

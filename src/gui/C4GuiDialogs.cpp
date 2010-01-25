@@ -126,7 +126,7 @@ void FrameDecoration::Draw(C4TargetFacet &cgo, C4Rect &rcBounds)
 	// draw borders
 	int x,y,Q;
 	// top
-	if (Q=fctTop.Wdt)
+	if ((Q=fctTop.Wdt))
 		{
 		for (x = iBorderLeft; x < rcBounds.Wdt-iBorderRight; x += fctTop.Wdt)
 			{
@@ -137,7 +137,7 @@ void FrameDecoration::Draw(C4TargetFacet &cgo, C4Rect &rcBounds)
 		fctTop.Wdt = Q;
 		}
 	// left
-	if (Q=fctLeft.Hgt)
+	if ((Q=fctLeft.Hgt))
 		{
 		for (y = iBorderTop; y < rcBounds.Hgt-iBorderBottom; y += fctLeft.Hgt)
 			{
@@ -148,7 +148,7 @@ void FrameDecoration::Draw(C4TargetFacet &cgo, C4Rect &rcBounds)
 		fctLeft.Hgt = Q;
 		}
 	// right
-	if (Q=fctRight.Hgt)
+	if ((Q=fctRight.Hgt))
 		{
 		for (y = iBorderTop; y < rcBounds.Hgt-iBorderBottom; y += fctRight.Hgt)
 			{
@@ -159,7 +159,7 @@ void FrameDecoration::Draw(C4TargetFacet &cgo, C4Rect &rcBounds)
 		fctRight.Hgt = Q;
 		}
 	// bottom
-	if (Q=fctBottom.Wdt)
+	if ((Q=fctBottom.Wdt))
 		{
 		for (x = iBorderLeft; x < rcBounds.Wdt-iBorderRight; x += fctBottom.Wdt)
 			{
@@ -525,7 +525,7 @@ void Dialog::Draw(C4TargetFacet &cgo)
 			// fade in
 			if ((iFade+=10) >= 100)
 				{
-				if (pScreen = GetScreen())
+				if ((pScreen = GetScreen()))
 					{
 					if (pScreen->GetTopDialog() == this)
 						pScreen->ActivateDialog(this);
@@ -538,7 +538,7 @@ void Dialog::Draw(C4TargetFacet &cgo)
 			if ((iFade-=10) <= 0)
 				{
 				fVisible = fShow = false;
-				if (pScreen = GetScreen())
+				if ((pScreen = GetScreen()))
 					pScreen->RecheckActiveDialog();
 				eFade = eFadeNone;
 				}
@@ -641,7 +641,7 @@ void Dialog::SetFocus(Control *pCtrl, bool fByMouse)
 		if (pActiveCtrl) return;
 		}
 	// set new
-	if (pActiveCtrl = pCtrl) pCtrl->OnGetFocus(fByMouse);
+	if ((pActiveCtrl = pCtrl)) pCtrl->OnGetFocus(fByMouse);
 	}
 
 void Dialog::AdvanceFocus(bool fBackwards)
@@ -911,7 +911,7 @@ void FullscreenDialog::UpdateOwnPos()
 	Dialog::UpdateOwnPos();
 	// reposition help button
 	UpdateHelpButtonPos();
-	};
+	}
 
 void FullscreenDialog::UpdateHelpButtonPos()
 	{
@@ -1042,7 +1042,7 @@ MessageDialog::MessageDialog(const char *szMessage, const char *szCaption, DWORD
 ConfirmationDialog::ConfirmationDialog(const char *szMessage, const char *szCaption, BaseCallbackHandler *pCB, DWORD dwButtons, bool fSmall, Icons icoIcon)
 : MessageDialog(szMessage, szCaption, dwButtons, icoIcon, fSmall ? MessageDialog::dsSmall : MessageDialog::dsRegular)
 	{
-	if (this->pCB=pCB) pCB->Ref();
+	if ((this->pCB=pCB)) pCB->Ref();
 	// always log confirmation messages
 	LogSilentF("[Cnf] %s: %s", szCaption, szMessage);
 	// confirmations always get deleted on close
@@ -1179,7 +1179,7 @@ InputDialog::InputDialog(const char *szMessage, const char *szCaption, Icons ico
 	fChatLayout ? C4GUI::Edit::GetDefaultEditHeight() + 2 :
 		Max(GetRes()->TextFont.BreakMessage(szMessage, C4GUI_InputDlgWdt - 3 * C4GUI_DefDlgIndent - C4GUI_IconWdt, 0, 0, true),
 			C4GUI_IconHgt) + C4GUI_InputDlgVRoom, szCaption, false),
-pEdit(NULL), pChatLbl(NULL), pCB(pCB), fChatLayout(fChatLayout)
+pEdit(NULL), pCB(pCB), fChatLayout(fChatLayout), pChatLbl(NULL)
 	{
 	if (fChatLayout)
 		{
@@ -1322,7 +1322,7 @@ void InfoDialog::BeginUpdateText()
 	iScroll = pTextWin->GetScrollPos();
 	// clear text window, so new text can be added
 	pTextWin->ClearText(false);
-	};
+	}
 
 void InfoDialog::EndUpdateText()
 	{
@@ -1340,5 +1340,5 @@ void InfoDialog::OnSec1Timer()
 	UpdateText();
 	}
 
-}; // end of namespace
+} // end of namespace
 

@@ -459,17 +459,19 @@ int main(int argc, char *argv[]) {
   globalArgV = argv;
 
   // Register shell
-  if (fRegisterShell)
+  if (fRegisterShell) {
     if (RegisterShellExtensions())
       printf("Shell extensions registered.\n");
     else
       printf("Error registering shell extensions.\n");
+  }
   // Unregister shell
-  if (fUnregisterShell)
+  if (fUnregisterShell) {
     if (UnregisterShellExtensions())
       printf("Shell extensions removed.\n");
     else
       printf("Error removing shell extensions.\n");
+  }
 
   // At least one parameter (filename, not option or command): process file(s)
   if (iFirstGroup) {

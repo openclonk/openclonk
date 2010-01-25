@@ -66,6 +66,7 @@ class C4Console: public C4ConsoleBase
 		void Default();
 		virtual void Clear();
 		virtual void Close();
+		using C4ConsoleBase::Init;
 		virtual CStdWindow * Init(CStdApp * app);
 		void Execute();
 		void ClearPointers(C4Object *pObj);

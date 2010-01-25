@@ -207,7 +207,7 @@ enum C4AulBCCType
 	AB_RETURN,	// return statement
 	AB_ERR,			// parse error at this position
 	AB_EOFN,		// end of function
-	AB_EOF,			// end of file
+	AB_EOF			// end of file
 	};
 
 
@@ -332,7 +332,7 @@ class C4AulScriptFunc : public C4AulFunc
 		C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 		C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
-			idImage (C4ID::None), iImagePhase(0), Condition(NULL), ControlMethod(C4AUL_ControlMethod_All), OwnerOverloaded(NULL),
+			OwnerOverloaded(NULL), idImage (C4ID::None), iImagePhase(0), Condition(NULL), ControlMethod(C4AUL_ControlMethod_All),
 			bReturnRef(false), tProfileTime(0)
 		{
 			for(int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;
@@ -371,6 +371,7 @@ class C4AulDefFunc : C4AulFunc
 		virtual C4V_Type* GetParType() { return Def->ParType; }
 		virtual C4V_Type GetRetType() { return Def->RetType; }
 
+		using C4AulFunc::Exec;
 		virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call)
 	};
 
@@ -557,6 +558,7 @@ class C4AulScriptEngine : public C4AulScript
 		void Clear(); // clear data
 		void Link(C4DefList *rDefs); // link and parse all scripts
 		void ReLink(C4DefList *rDefs); // unlink + relink and parse all scripts
+		using C4AulScript::ReloadScript;
 		bool ReloadScript(const char *szScript, C4DefList *pDefs); // search script and reload + relink, if found
 		C4AulFunc * GetFirstFunc(const char * Name)
 			{ return FuncLookUp.GetFirstFunc(Name); }

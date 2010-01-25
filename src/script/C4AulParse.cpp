@@ -373,7 +373,7 @@ bool C4AulParseState::AdvanceSpaces()
 		// defaultly, not in comment
 		int InComment = 0; // 0/1/2 = no comment/line comment/multi line comment
 		// don't go past end
-		while (C = *SPos)
+		while ((C = *SPos))
 			{
 			// loop until out of comment and non-whitespace is found
 			switch (InComment)
@@ -931,6 +931,10 @@ void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 		{
 		case AB_STRING: case AB_CALL: case AB_CALLFS:
 			CPos->Par.s->IncRef();
+			break;
+		default:
+			// TODO
+			break;
 		}
 	CPos++; CodeSize++;
 	}
@@ -943,6 +947,10 @@ void C4AulScript::ClearCode()
 			{
 			case AB_STRING: case AB_CALL: case AB_CALLFS:
 				Code[i].Par.s->DecRef();
+				break;
+			default:
+				// TODO
+				break;
 			}
 		}
 	delete[] Code;
@@ -1147,6 +1155,9 @@ void C4AulParseState::SetNoRef()
 		case AB_VARN_R: CPos->bccType = AB_VARN_V; break;
 		case AB_LOCALN_R: CPos->bccType = AB_LOCALN_V; break;
 		case AB_GLOBALN_R: CPos->bccType = AB_GLOBALN_V; break;
+		default:
+			// TODO
+			break;
 		}
 	}
 
@@ -1280,7 +1291,7 @@ void C4AulScript::ParseFn(C4AulScriptFunc *Fn, bool fExprOnly)
 	{
 	// check if fn overloads other fn (all func tables are built now)
 	// *MUST* check Fn->Owner-list, because it may be the engine (due to linked globals)
-	if (Fn->OwnerOverloaded = Fn->Owner->GetOverloadedFunc(Fn))
+	if ((Fn->OwnerOverloaded = Fn->Owner->GetOverloadedFunc(Fn)))
 		if(Fn->Owner == Fn->OwnerOverloaded->Owner)
 			Fn->OwnerOverloaded->OverloadedBy=Fn;
 	// store byte code pos
@@ -1915,7 +1926,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				// pFunc either was the return value from a GetFuncFast-Call or
 				// pFunc is the only function that could be called, so this loop is superflous
 				C4AulFunc * pFunc2 = pFunc;
-				while (pFunc2 = a->Engine->GetNextSNFunc(pFunc2))
+				while ((pFunc2 = a->Engine->GetNextSNFunc(pFunc2)))
 					if (pFunc2->GetParType()[size] == C4V_pC4Value) anyfunctakesref = true;
 				// Change the bytecode to the equivalent that does not produce a reference.
 				if (!anyfunctakesref)
@@ -2065,8 +2076,6 @@ void C4AulParseState::Parse_DoWhile()
 	Parse_Expression();
 	Match(ATT_BCLOSE);
 	SetNoRef();
-	// Check condition
-	int iCond = a->GetCodePos();
 	// Jump back
 	AddJump(AB_COND, iStart);
 	if (Type != PARSER) return;
@@ -2958,7 +2967,7 @@ C4AulScript *C4AulScript::FindFirstNonStrictScript()
 	// search children
 	C4AulScript *pNonStrScr;
 	for (C4AulScript *pScr=Child0; pScr; pScr=pScr->Next)
-		if (pNonStrScr=pScr->FindFirstNonStrictScript())
+		if ((pNonStrScr=pScr->FindFirstNonStrictScript()))
 			return pNonStrScr;
 	// nothing found
 	return NULL;

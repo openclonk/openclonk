@@ -334,7 +334,7 @@ void ContextMenu::UpdateElementPositions()
 	int32_t iMinWdt = Max<int32_t>(20, pCurr->GetBounds().Wdt);;
 	int32_t iOverallHgt = pCurr->GetBounds().Hgt;
 	// others stacked under it
-	while (pCurr = pCurr->GetNext())
+	while ((pCurr = pCurr->GetNext()))
 		{
 		iMinWdt = Max(iMinWdt, pCurr->GetBounds().Wdt);
 		int32_t iYSpace = pCurr->GetListItemTopSpacing();
@@ -436,7 +436,7 @@ Screen *ContextMenu::GetScreen()
 	{
 	// context menus don't have a parent; get screen by static var
 	return Screen::GetScreenS();
-	};
+	}
 
 bool ContextMenu::CtxMouseInput(CMouse &rMouse, int32_t iButton, int32_t iScreenX, int32_t iScreenY, DWORD dwKeyParam)
 	{
@@ -570,7 +570,7 @@ ContextButton::ContextButton(Element *pForEl, bool fAdd, int32_t iHIndent, int32
 	SetContextHandler(pForEl->GetContextHandler());
 	// add if desired
 	Container *pCont;
-	if (fAdd) if (pCont = pForEl->GetContainer())
+	if (fAdd) if ((pCont = pForEl->GetContainer()))
 		pCont->AddElement(this);
 	RegisterContextKey();
 	}
@@ -657,5 +657,5 @@ void ContextButton::MouseLeave(CMouse &rMouse)
 
 
 
-}; // end of namespace
+} // end of namespace
 

@@ -879,7 +879,7 @@ public:
 			pComp->String(szData, 2, StdCompiler::RCT_Idtf);
 			if(fCompiler)
 			{
-				int b;
+				unsigned int b;
 				if(sscanf(szData, "%02x", &b) != 1)
 					pComp->excNotFound(i ? "hexadecimal data: bytes missing!" : "hexadecimal data missing!");
 				*pByte = b;

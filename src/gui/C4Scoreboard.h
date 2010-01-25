@@ -27,7 +27,7 @@
 class C4Scoreboard
 	{
 	public:
-		enum { TitleKey = -1, }; // value used to index the title bars
+		enum { TitleKey = -1 }; // value used to index the title bars
 
 	private:
 		struct Entry
@@ -100,7 +100,7 @@ class C4ScoreboardDlg : public C4GUI::Dialog
 		int32_t *piColWidths;
 		C4Scoreboard *pBrd;
 
-		enum { XIndent = 4, YIndent = 4, XMargin = 3, YMargin = 3, };
+		enum { XIndent = 4, YIndent = 4, XMargin = 3, YMargin = 3 };
 
 	public:
 		C4ScoreboardDlg(C4Scoreboard *pForScoreboard);

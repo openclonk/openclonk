@@ -181,7 +181,7 @@ void C4PlayerInfoListAttributeConflictResolver::ReaddInfoForCheck(C4ClientPlayer
 	// readd it - must have been in there before, so array is large enough
 	// and it must have been at the head of the list
 	ppCheckInfos[iCheckInfoCount++] = pCheckAdd;
-	};
+	}
 
 int32_t C4PlayerInfoListAttributeConflictResolver::GetAttributePriorityDifference(const C4PlayerInfo *pInfo1, const C4ClientPlayerInfos *pPck1, const C4PlayerInfo *pInfo2, const C4ClientPlayerInfos *pPck2)
 	{
@@ -227,8 +227,8 @@ bool C4PlayerInfoListAttributeConflictResolver::IsAttributeConflict(const C4Play
 			{
 			case C4PlayerInfo::PLRAL_Current: szName2 = pInfo2->GetName(); break;
 			case C4PlayerInfo::PLRAL_Original: szName2 = pInfo2->GetOriginalName(); break;
+			default: return SEqualNoCase(szName1, szName2);
 			}
-		return SEqualNoCase(szName1, szName2);
 		}
 	return false;
 	}
@@ -237,7 +237,7 @@ void C4PlayerInfoListAttributeConflictResolver::MarkConflicts(C4ClientPlayerInfo
 	{
 	C4PlayerInfo *pCheckAgainstInfo;
 	// check current and original attribute against all player infos
-	for (int32_t j=0; pCheckAgainstInfo = rCheckPacket.GetPlayerInfo(j); ++j)
+	for (int32_t j=0; (pCheckAgainstInfo = rCheckPacket.GetPlayerInfo(j)); ++j)
 		{
 		if (pCheckAgainstInfo->IsUsingAttribute(eAttr)) if (!pResolveInfo->GetID() || pResolveInfo->GetID() != pCheckAgainstInfo->GetID()) if (pResolveInfo != pCheckAgainstInfo)
 			{
@@ -250,6 +250,7 @@ void C4PlayerInfoListAttributeConflictResolver::MarkConflicts(C4ClientPlayerInfo
 			if (fTestOriginal)
 				{
 				if (IsAttributeConflict(pCheckAgainstInfo, pResolveInfo, C4PlayerInfo::PLRAL_Original))
+					{
 					if (fHasHigherPrio && !fOriginalConflict && !pLowPrioOriginalConflictPacket)
 						{
 						// original attribute is taken by a low prio packet - do not mark an original conflict, but remember the packet
@@ -263,11 +264,14 @@ void C4PlayerInfoListAttributeConflictResolver::MarkConflicts(C4ClientPlayerInfo
 						pLowPrioOriginalConflictPacket = NULL;
 						fOriginalConflict = true;
 						}
+					}
 				if (IsAttributeConflict(pCheckAgainstInfo, pResolveInfo, C4PlayerInfo::PLRAL_Alternate))
+					{
 					if (fHasHigherPrio && !fAlternateConflict && !pLowPrioAlternateConflictPacket)
 						pLowPrioAlternateConflictPacket = &rCheckPacket;
 					else
 						fAlternateConflict = true;
+					}
 				}
 			}
 		}
@@ -305,6 +309,7 @@ void C4PlayerInfoListAttributeConflictResolver::ResolveInInfo()
 			if (!iTries)
 				{
 				if (pResolveInfo->GetColor() != pResolveInfo->GetOriginalColor())
+					{
 					if (!fOriginalConflict)
 						{
 						// revert to original color!
@@ -325,6 +330,7 @@ void C4PlayerInfoListAttributeConflictResolver::ResolveInInfo()
 						// done with this player (breaking the trial-loop)
 						break;
 						}
+					}
 				}
 			// conflict found?
 			if (!fCurrentConflict)
@@ -372,7 +378,7 @@ void C4PlayerInfoListAttributeConflictResolver::ResolveInPacket()
 	// check all player infos
 	fAnyChange = false;
 	int32_t iCheck = 0;
-	while (pResolveInfo = pResolvePacket->GetPlayerInfo(iCheck++))
+	while ((pResolveInfo = pResolvePacket->GetPlayerInfo(iCheck++)))
 		{
 		// not already joined? Joined player must not change their attributes!
 		if (pResolveInfo->HasJoined()) continue;

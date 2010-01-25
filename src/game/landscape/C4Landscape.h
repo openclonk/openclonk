@@ -143,17 +143,25 @@ class C4Landscape
 			extern BYTE MCVehic;
 			// Border checks
 			if (x<0)
+				{
 				if (y<LeftOpen) return 0;
 				else return MCVehic;
+				}
 			if (x>=Width)
+				{
 				if (y<RightOpen) return 0;
 				else return MCVehic;
+				}
 			if (y<0)
+				{
 				if (TopOpen) return 0;
 				else return MCVehic;
+				}
 			if (y>=Height)
+				{
 				if (BottomOpen) return 0;
 				else return MCVehic;
+				}
 			return Surface8->_GetPix(x,y);
 			}
 		inline int32_t _GetMat(int32_t x, int32_t y) // get landscape material (bounds not checked)

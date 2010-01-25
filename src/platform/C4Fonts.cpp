@@ -165,7 +165,7 @@ void C4FontLoader::Clear()
 	FontDefs.clear();
 	// delete loaded vector fonts
 	C4VectorFont *pVecFont, *pNextVecFont = pVectorFonts;
-	while (pVecFont = pNextVecFont)
+	while ((pVecFont = pNextVecFont))
 		{
 		pNextVecFont = pVecFont->pNext;
 		delete pVecFont;
@@ -427,7 +427,11 @@ bool C4FontLoader::InitFont(CStdFont &rFont, const char *szFontName, FontType eT
 			sscanf(FontParam, "%i", &iDefFontSize);
 		// font weight given?
 		if (SCopySegment(szFontString, 2, FontParam, ',', C4MaxName))
-			sscanf(FontParam, "%i", &dwDefWeight);
+			{
+			int iDefWeight;
+			sscanf(FontParam, "%i", &iDefWeight);
+			dwDefWeight = iDefWeight;
+			}
 		// check if it's already loaded from that group with that parameters
 		if (!rFont.IsSameAs(FontFaceName, iDefFontSize, dwDefWeight))
 			{

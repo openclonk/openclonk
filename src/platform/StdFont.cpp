@@ -56,7 +56,7 @@ class CStdVectorFont
 			throw std::runtime_error("Cannot init Freetype");
 		// Load the font
 		FT_Error e;
-		if (e=FT_New_Face(library, filepathname, 0, &face))
+		if ((e=FT_New_Face(library, filepathname, 0, &face)))
 			throw std::runtime_error(std::string("Cannot load ") + filepathname + ": " + FormatString("%d",e).getData());
 	}
 	CStdVectorFont(const StdBuf & Data) {
@@ -65,7 +65,7 @@ class CStdVectorFont
 			throw std::runtime_error("Cannot init Freetype");
 		// Load the font
 		FT_Error e;
-		if (e=FT_New_Memory_Face(library, static_cast<const FT_Byte *>(Data.getData()), Data.getSize(), 0, &face))
+		if ((e=FT_New_Memory_Face(library, static_cast<const FT_Byte *>(Data.getData()), Data.getSize(), 0, &face)))
 			throw std::runtime_error(std::string("Cannot load font: ") + FormatString("%d",e).getData());
 	}
 	~CStdVectorFont() {
@@ -693,15 +693,16 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 		return 0;
 		}
 
+	// TODO: might szLastBreakOut, szLastEmergencyBreakPos, szLastEmergencyBreakOut, iXEmergencyBreak not be properly initialised before use?
 	uint32_t c;
 	const char *szPos=szMsg,   // current parse position in the text
 		*szLastBreakPos = szMsg, // points to the char after at (whitespace) or after ('-') which text can be broken
-		*szLastEmergenyBreakPos, // same, but at last char in case no suitable linebreak could be found
+		*szLastEmergenyBreakPos = NULL, // same, but at last char in case no suitable linebreak could be found
 		*szLastPos;              // last position until which buffer has been transferred to output
-	char *szLastBreakOut, *szLastEmergencyBreakOut; // position of output pointer at break positions
+	char *szLastBreakOut = NULL, *szLastEmergencyBreakOut = NULL; // position of output pointer at break positions
 	int iX=0,      // current text width at parse pos
 		  iXBreak=0, // text width as it was at last break pos
-			iXEmergencyBreak, // same, but at last char in case no suitable linebreak could be found
+			iXEmergencyBreak = 0, // same, but at last char in case no suitable linebreak could be found
 		  iHgt=iLineHgt; // total height of output text
 	bool fIsFirstLineChar = true;
 	// ignore any markup
@@ -832,7 +833,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 		}
 	// transfer final data to buffer - markup and terminator
 	if (szOut)
-		while (*szOut++ = *szLastPos++)
+		while ((*szOut++ = *szLastPos++))
 			if (!--iMaxOutLen)
 				{
 				// buffer end: cut and terminate
@@ -848,15 +849,16 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 	// safety
 	if (!szMsg || !pOut) return 0;
 	pOut->Clear();
+	// TODO: might szLastEmergenyBreakPos, iLastBreakOutLen or iXEmergencyBreak not be properly initialised before use?
 	uint32_t c;
 	const char *szPos=szMsg,   // current parse position in the text
 		*szLastBreakPos = szMsg, // points to the char after at (whitespace) or after ('-') which text can be broken
-		*szLastEmergenyBreakPos, // same, but at last char in case no suitable linebreak could be found
+		*szLastEmergenyBreakPos = NULL, // same, but at last char in case no suitable linebreak could be found
 		*szLastPos;              // last position until which buffer has been transferred to output
-	int iLastBreakOutLen, iLastEmergencyBreakOutLen; // size of output string at break positions
+	int iLastBreakOutLen = 0, iLastEmergencyBreakOutLen = 0; // size of output string at break positions
 	int iX=0,      // current text width at parse pos
 		  iXBreak=0, // text width as it was at last break pos
-			iXEmergencyBreak, // same, but at last char in case no suitable linebreak could be found
+			iXEmergencyBreak = 0, // same, but at last char in case no suitable linebreak could be found
 		  iHgt=iLineHgt; // total height of output text
 	bool fIsFirstLineChar = true;
 	// ignore any markup
@@ -988,7 +990,7 @@ int CStdFont::GetMessageBreak(const char *szMsg, const char **ppNewPos, int iBre
 	const char *szPos = szMsg; unsigned char c;
 	int iWdt = 0; int iPos = 0;
 	// check all message until it's too wide
-	while (c = *szPos++)
+	while ((c = *szPos++))
 		{
 		++iPos;
 		// get char width
@@ -1069,7 +1071,7 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 	// output text
 	uint32_t c;
 	CFacet fctFromBlt; // source facet
-	while (c = GetNextCharacter(&szText))
+	while ((c = GetNextCharacter(&szText)))
 		{
 		// ignore system characters
 		if (c < ' ') continue;

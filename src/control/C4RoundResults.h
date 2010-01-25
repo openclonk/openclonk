@@ -130,7 +130,7 @@ class C4RoundResults
 			NR_None=0,      // undefined
 			NR_LeagueOK,    // league evaluated
 			NR_LeagueError, // league evaluation error
-			NR_NetError,    // network disconnect
+			NR_NetError     // network disconnect
 			};
 
 	private:

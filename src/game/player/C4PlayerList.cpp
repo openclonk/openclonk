@@ -54,7 +54,7 @@ void C4PlayerList::Default()
 void C4PlayerList::Clear()
 	{
 	C4Player *pPlr;
-	while (pPlr = First)
+	while ((pPlr = First))
 		{	First = pPlr->Next;	delete pPlr; }
 	First = NULL;
 	}
@@ -498,7 +498,7 @@ bool C4PlayerList::RemoveAtClient(int iClient, bool fDisconnect)
 	{
 	C4Player *pPlr;
 	// Get players
-	while (pPlr = GetAtClient(iClient))
+	while ((pPlr = GetAtClient(iClient)))
 		{
 		// Log
 		Log(FormatString(LoadResStr("IDS_PRC_REMOVEPLR"),pPlr->GetName()).getData());
@@ -512,7 +512,7 @@ bool C4PlayerList::RemoveAtClient(const char *szName, bool fDisconnect)
 	{
 	C4Player *pPlr;
 	// Get players
-	while (pPlr = GetAtClient(szName))
+	while ((pPlr = GetAtClient(szName)))
 		{
 		// Log
 		Log(FormatString(LoadResStr("IDS_PRC_REMOVEPLR"),pPlr->GetName()).getData());
@@ -577,7 +577,7 @@ bool C4PlayerList::RemoveAtRemoteClient(bool fDisconnect, bool fNoCalls)
 	{
 	C4Player *pPlr;
 	// Get players
-	while (pPlr = GetAtRemoteClient())
+	while ((pPlr = GetAtRemoteClient()))
 		{
 		// Log
 		Log(FormatString(LoadResStr("IDS_PRC_REMOVEPLR"),pPlr->GetName()).getData());

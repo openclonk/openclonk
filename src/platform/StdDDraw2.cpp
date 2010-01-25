@@ -1404,23 +1404,29 @@ void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, floa
 			else
 				{ y1+=(y2-y1)*((float)iClipX1-x1)/(x2-x1); x1=(float)iClipX1; } // clip left
 		else if (x2 > iClipX2)
+			{
 			if (x1 > iClipX2)
 				return; // right out
 			else
 				{ y2-=(y2-y1)*(x2-(float)iClipX2)/(x2-x1); x2=(float)iClipX2; } // clip right
+			}
 		// sort top/bottom
 		if (y1>y2) { i=x1; x1=x2; x2=i; i=y1; y1=y2; y2=i; }
 		// clip vertically
 		if (y1 < iClipY1)
+			{
 			if (y2 < iClipY1)
 				return; // top out
 			else
 				{ x1+=(x2-x1)*((float)iClipY1-y1)/(y2-y1); y1=(float)iClipY1; } // clip top
+			}
 		else if (y2 > iClipY2)
+			{
 			if (y1 > iClipY2)
 				return; // bottom out
 			else
 				{ x2-=(x2-x1)*(y2-(float)iClipY2)/(y2-y1); y2=(float)iClipY2; } // clip bottom
+			}
 		}
 	// apply color modulation
 	ClrByCurrentBlitMod(dwClr);

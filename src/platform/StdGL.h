@@ -64,7 +64,7 @@ class CStdGLCtx
 #elif defined(USE_X11)
 		/*GLXContext*/void * ctx;
 #endif
-		int cx,cy;									// context window size
+		unsigned int cx,cy;									// context window size
 
 	friend class CStdGL;
 	friend class CSurface;

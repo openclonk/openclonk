@@ -82,7 +82,7 @@ static bool GetPortrait(char **ppBytes, size_t *ipSize)
 // ------------------------------------------------
 // --- C4StartupPlrSelDlg::ListItem
 C4StartupPlrSelDlg::ListItem::ListItem(C4StartupPlrSelDlg *pForDlg, C4GUI::ListBox *pForListBox, C4GUI::Element *pInsertBeforeElement, bool fActivated)
-: Control(C4Rect(0,0,0,0)), pCheck(NULL), pIcon(NULL), pNameLabel(NULL), pPlrSelDlg(pForDlg)
+: Control(C4Rect(0,0,0,0)), pCheck(NULL), pNameLabel(NULL), pPlrSelDlg(pForDlg), pIcon(NULL)
 	{
 	CStdFont &rUseFont = C4Startup::Get()->Graphics.BookFont;
 	// calc height
@@ -708,7 +708,7 @@ void C4StartupPlrSelDlg::UpdatePlayerList()
 	// refill pPlrListBox with players in player folder or crew
 	// clear old items
 	C4GUI::Element *pEl;
-	while (pEl = pPlrListBox->GetFirst()) delete pEl;
+	while ((pEl = pPlrListBox->GetFirst())) delete pEl;
 	// update command buttons
 	UpdateBottomButtons();
 	// create new
@@ -721,7 +721,7 @@ void C4StartupPlrSelDlg::UpdatePlayerList()
 			const char *szFn;
 			StdStrBuf sSearchPath(Config.General.UserDataPath);
 			PlayerListItem *pFirstActivatedPlrItem=NULL, *pFirstDeactivatedPlrItem=NULL, *pPlrItem=NULL;
-			for (DirectoryIterator i(sSearchPath.getData()); szFn=*i; i++)
+			for (DirectoryIterator i(sSearchPath.getData()); (szFn=*i); i++)
 				{
 				szFn = Config.AtRelativePath(szFn);
 				if (*GetFilename(szFn) == '.') continue; // ignore ".", ".." and private files (".*")
@@ -853,7 +853,7 @@ void C4StartupPlrSelDlg::UpdateActivatedPlayers()
 		if (pPlrItem->IsActivated())
 			{
 			const char *szAddFilename = pPlrItem->GetFilename().getData();
-			if (SLen(Config.General.Participants) + 1 + SLen(szAddFilename) < sizeof(Config.General.Participants))
+			if (std::strlen(Config.General.Participants) + 1 + std::strlen(szAddFilename) < sizeof(Config.General.Participants))
 				SAddModule(Config.General.Participants, szAddFilename);
 			else
 				{
@@ -1120,7 +1120,7 @@ void C4StartupPlrSelDlg::ResortCrew()
 /* ---- Player property dlg ---- */
 
 C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerListItem * pForPlayer, C4StartupPlrSelDlg *pParentDlg)
-: Dialog(C4Startup::Get()->Graphics.fctPlrPropBG.Wdt, C4Startup::Get()->Graphics.fctPlrPropBG.Hgt, "", false), pForPlayer(pForPlayer), pMainDlg(pParentDlg),
+: Dialog(C4Startup::Get()->Graphics.fctPlrPropBG.Wdt, C4Startup::Get()->Graphics.fctPlrPropBG.Hgt, "", false), pMainDlg(pParentDlg), pForPlayer(pForPlayer),
 	fClearPicture(false), fClearBigIcon(false)
 	{
 	if (pForPlayer)

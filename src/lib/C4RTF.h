@@ -50,9 +50,9 @@ class C4RTFFile
 			{
 			};
 
-		enum DestState { dsNormal, dsSkip, };
-		enum ParserState { psNormal, psBinary, psHex, };
-		enum SpecialKeyword { specBin, specHex, specSkipDest, specAnsicpg, };
+		enum DestState { dsNormal, dsSkip };
+		enum ParserState { psNormal, psBinary, psHex };
+		enum SpecialKeyword { specBin, specHex, specSkipDest, specAnsicpg };
 
 		// RTF parser state; states may be nested in definition blocks
 		struct PropertyState

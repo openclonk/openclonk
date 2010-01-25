@@ -1388,7 +1388,7 @@ void C4Console::UpdateInputCtrl()
 	if (pRef=Game.Script.GetSFunc(0))
 		SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------");
 #endif
-	for (cnt=0; pRef=Game.Script.GetSFunc(cnt); cnt++)
+	for (cnt=0; (pRef=Game.Script.GetSFunc(cnt)); cnt++)
 		{
 #ifdef _WIN32
 		SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)pRef->Name);
@@ -1487,10 +1487,12 @@ void C4Console::PlayerJoin()
 	char szPlayerFilename[_MAX_PATH+1];
 	for (int iPar=0; SCopySegment(c4plist,iPar,szPlayerFilename,';',_MAX_PATH); iPar++)
 		if (szPlayerFilename[0])
+			{
 			if (::Network.isEnabled())
 				::Network.Players.JoinLocalPlayer(szPlayerFilename, true);
 			else
 				::Players.CtrlJoinLocalNoNetwork(szPlayerFilename, Game.Clients.getLocalID(), Game.Clients.getLocalName());
+			}
 
 	}
 

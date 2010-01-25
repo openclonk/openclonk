@@ -416,7 +416,7 @@ protected:
 private:
 
 	// socket wait (check for readability)
-	enum WaitResult { WR_Timeout, WR_Readable, WR_Cancelled, WR_Error = -1, };
+	enum WaitResult { WR_Timeout, WR_Readable, WR_Cancelled, WR_Error = -1 };
 	WaitResult WaitForSocket(int iTimeout);
 
 	// *** callbacks
@@ -474,7 +474,7 @@ protected:
 		IPID_AddAddr = 7,
 		IPID_Data = 4,
 		IPID_Check = 5,
-		IPID_Close = 6,
+		IPID_Close = 6
 	};
 
 	// packet structures
@@ -733,7 +733,7 @@ protected:
   CStdCSec StatCSec;
 
 	// callback proxy
-	NETIO_CREATE_CALLBACK_PROXY(C4NetIOUDP, CBProxy);
+	NETIO_CREATE_CALLBACK_PROXY(C4NetIOUDP, CBProxy)
 
 	// * helpers
 

@@ -58,7 +58,7 @@ bool IsSmallInputQuery(const char *szInputQuery)
 
 C4ChatInputDialog::C4ChatInputDialog(bool fObjInput, C4Object *pScriptTarget, bool fUppercase, bool fTeam, int32_t iPlr, const StdStrBuf &rsInputQuery)
 : C4GUI::InputDialog(fObjInput ? rsInputQuery.getData() : LoadResStrNoAmp("IDS_CTL_CHAT"), NULL, C4GUI::Ico_None, NULL, !fObjInput || IsSmallInputQuery(rsInputQuery.getData())),
-	fObjInput(fObjInput), fUppercase(fUppercase), pTarget(pScriptTarget), BackIndex(-1), iPlr(iPlr), fProcessed(false)
+	fObjInput(fObjInput), fUppercase(fUppercase), pTarget(pScriptTarget), iPlr(iPlr), BackIndex(-1), fProcessed(false)
 	{
 	// singleton-var
 	pInstance = this;
@@ -133,7 +133,7 @@ C4GUI::Edit::InputResult C4ChatInputDialog::OnChatInput(C4GUI::Edit *edt, bool f
 	if (Config.IsConfidentialData(szInputText))
 		{
 		::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));
-		szInputText = "";
+		szInputText = const_cast<char *>("");
 		}
 	// script queried input?
 	if (fObjInput)
@@ -276,7 +276,7 @@ void C4MessageInput::Clear()
 	CloseTypeIn();
 	// free messageboard-commands
 	C4MessageBoardCommand *pCmd;
-	while(pCmd = pCommands)
+	while((pCmd = pCommands))
 		{
 		pCommands = pCmd->Next;
 		delete pCmd;
@@ -459,7 +459,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// dev-scripts
 	if(SEqual(szCmdName, "help"))
 		{
-		LogF(LoadResStr("IDS_TEXT_COMMANDSAVAILABLEDURINGGA"));
+		Log(LoadResStr("IDS_TEXT_COMMANDSAVAILABLEDURINGGA"));
 		LogF("/private [player] [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOTHES"));
 		LogF("/team [message] - %s", LoadResStr("IDS_MSG_SENDAPRIVATEMESSAGETOYOUR"));
 		LogF("/me [action] - %s", LoadResStr("IDS_TEXT_PERFORMANACTIONINYOURNAME"));
@@ -687,7 +687,7 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 
 	// custom command
 	C4MessageBoardCommand *pCmd;
-	if (Game.IsRunning) if(pCmd = GetCommand(szCmdName))
+	if (Game.IsRunning) if((pCmd = GetCommand(szCmdName)))
 	{
 		StdStrBuf Script, CmdScript;
 		// replace %player% by calling player number

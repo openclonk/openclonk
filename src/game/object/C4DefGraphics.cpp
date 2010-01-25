@@ -81,7 +81,7 @@ C4DefGraphics::C4DefGraphics(C4Def *pOwnDef)
 	pDef = pOwnDef;
 	// zero fields
 	Type = TYPE_Bitmap;
-	Bitmap = BitmapClr = NULL;
+	Bmp.Bitmap = Bmp.BitmapClr = NULL;
 	pNext = NULL;
 	fColorBitmapAutoCreated = false;
 	}
@@ -99,8 +99,8 @@ void C4DefGraphics::Clear()
 	switch (Type)
 	{
 	case TYPE_Bitmap:
-		if (BitmapClr) { delete BitmapClr; BitmapClr=NULL; }
-		if (Bitmap) { delete Bitmap; Bitmap=NULL; }
+		if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; }
+		if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
 		break;
 	case TYPE_Mesh:
 		if (Mesh) { delete Mesh; Mesh = NULL; }
@@ -109,7 +109,7 @@ void C4DefGraphics::Clear()
 
 	// delete additonal graphics
 	C4AdditionalDefGraphics *pGrp2N = pNext, *pGrp2;
-	while (pGrp2=pGrp2N) { pGrp2N = pGrp2->pNext; pGrp2->pNext = NULL; delete pGrp2; }
+	while ((pGrp2=pGrp2N)) { pGrp2N = pGrp2->pNext; pGrp2->pNext = NULL; delete pGrp2; }
 	pNext = NULL; fColorBitmapAutoCreated = false;
 	}
 
@@ -120,41 +120,41 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 	SCopy("*.", GetExtension(strScaledMaskPNG)); SAppend(GetExtension(szFilenamePNG), strScaledMaskPNG);
 	if (szFilenamePNG && (hGroup.FindEntry(szFilenamePNG) || hGroup.FindEntry(strScaledMaskPNG)))
 		{
-		Bitmap = new C4Surface();
-		if (!Bitmap->Load(hGroup, szFilenamePNG)) return false;
+		Bmp.Bitmap = new C4Surface();
+		if (!Bmp.Bitmap->Load(hGroup, szFilenamePNG)) return false;
 		}
 	else
 		{
 		if (szFilename)
 			if ( !hGroup.AccessEntry(szFilename)
-				|| !(Bitmap=GroupReadSurface(hGroup)) )
+				|| !(Bmp.Bitmap=GroupReadSurface(hGroup)) )
 					return false;
 		}
 	// Create owner color bitmaps
 	if (fColorByOwner)
 		{
 		// Create additionmal bitmap
-		BitmapClr=new C4Surface();
+		Bmp.BitmapClr=new C4Surface();
 		// if overlay-surface is present, load from that
 		if (szOverlayPNG && hGroup.AccessEntry(szOverlayPNG))
 			{
-			if (!BitmapClr->ReadPNG(hGroup))
+			if (!Bmp.BitmapClr->ReadPNG(hGroup))
 				return false;
 			// set as Clr-surface, also checking size
-			if (!BitmapClr->SetAsClrByOwnerOf(Bitmap))
+			if (!Bmp.BitmapClr->SetAsClrByOwnerOf(Bmp.Bitmap))
 				{
 				const char *szFn = szFilenamePNG ? szFilenamePNG : szFilename;
 				if (!szFn) szFn = "???";
 				DebugLogF("    Gfx loading error in %s: %s (%d x %d) doesn't match overlay %s (%d x %d) - invalid file or size mismatch",
-					hGroup.GetFullName().getData(), szFn, Bitmap ? Bitmap->Wdt : -1, Bitmap ? Bitmap->Hgt : -1,
-					szOverlayPNG, BitmapClr->Wdt, BitmapClr->Hgt);
-				delete BitmapClr; BitmapClr = NULL;
+					hGroup.GetFullName().getData(), szFn, Bmp.Bitmap ? Bmp.Bitmap->Wdt : -1, Bmp.Bitmap ? Bmp.Bitmap->Hgt : -1,
+					szOverlayPNG, Bmp.BitmapClr->Wdt, Bmp.BitmapClr->Hgt);
+				delete Bmp.BitmapClr; Bmp.BitmapClr = NULL;
 				return false;
 				}
 			}
 		else
 			// otherwise, create by all blue shades
-			if (!BitmapClr->CreateColorByOwner(Bitmap)) return false;
+			if (!Bmp.BitmapClr->CreateColorByOwner(Bmp.Bitmap)) return false;
 			fColorBitmapAutoCreated = true;
 		}
 	Type = TYPE_Bitmap;
@@ -351,24 +351,24 @@ bool C4DefGraphics::CopyGraphicsFrom(C4DefGraphics &rSource)
 	{
 	if (Type != TYPE_Bitmap) return false; // TODO!
 	// clear previous
-	if (BitmapClr) { delete BitmapClr; BitmapClr=NULL; }
-	if (Bitmap) { delete Bitmap; Bitmap=NULL; }
+	if (Bmp.BitmapClr) { delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; }
+	if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
 	// copy from source
-	if (rSource.Bitmap)
+	if (rSource.Bmp.Bitmap)
 		{
-		Bitmap = new C4Surface();
-		if (!Bitmap->Copy(*rSource.Bitmap))
-			{ delete Bitmap; Bitmap=NULL; return false; }
+		Bmp.Bitmap = new C4Surface();
+		if (!Bmp.Bitmap->Copy(*rSource.Bmp.Bitmap))
+			{ delete Bmp.Bitmap; Bmp.Bitmap=NULL; return false; }
 		}
-	if (rSource.BitmapClr)
+	if (rSource.Bmp.BitmapClr)
 		{
-		BitmapClr = new C4Surface();
-		if (!BitmapClr->Copy(*rSource.BitmapClr))
+		Bmp.BitmapClr = new C4Surface();
+		if (!Bmp.BitmapClr->Copy(*rSource.Bmp.BitmapClr))
 			{
-			if (Bitmap) { delete Bitmap; Bitmap=NULL; }
-			delete BitmapClr; BitmapClr=NULL; return false;
+			if (Bmp.Bitmap) { delete Bmp.Bitmap; Bmp.Bitmap=NULL; }
+			delete Bmp.BitmapClr; Bmp.BitmapClr=NULL; return false;
 			}
-		if (Bitmap) BitmapClr->SetAsClrByOwnerOf(Bitmap);
+		if (Bmp.Bitmap) Bmp.BitmapClr->SetAsClrByOwnerOf(Bmp.Bitmap);
 		}
 	// done, success
 	return true;
@@ -378,7 +378,7 @@ void C4DefGraphics::DrawClr(C4Facet &cgo, bool fAspect, DWORD dwClr)
 	{
 	if(Type != TYPE_Bitmap) return; // TODO
 	// create facet and draw it
-	C4Surface *pSfc = BitmapClr ? BitmapClr : Bitmap; if (!pSfc) return;
+	C4Surface *pSfc = Bmp.BitmapClr ? Bmp.BitmapClr : Bmp.Bitmap; if (!pSfc) return;
 	C4Facet fct(pSfc, 0,0,pSfc->Wdt, pSfc->Hgt);
 	fct.DrawClr(cgo, fAspect, dwClr);
 	}
@@ -461,7 +461,7 @@ void C4DefGraphicsPtrBackup::AssignUpdate(C4DefGraphics *pNewGraphics)
 		// check all objects
 		C4Object *pObj;
 		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-			if (pObj=pLnk->Obj) if (pObj->Status)
+			if ((pObj=pLnk->Obj)) if (pObj->Status)
 				{
 				if (pObj->pGraphics == pGraphicsPtr)
 					{
@@ -527,7 +527,7 @@ void C4DefGraphicsPtrBackup::AssignRemoval()
 		// check all objects
 		C4Object *pObj;
 		for (C4ObjectLink *pLnk = ::Objects.First; pLnk; pLnk=pLnk->Next)
-			if (pObj=pLnk->Obj) if (pObj->Status)
+			if ((pObj=pLnk->Obj)) if (pObj->Status)
 				{
 				if (pObj->pGraphics == pGraphicsPtr)
 					// same graphics found: reset them
@@ -593,7 +593,7 @@ bool C4Portrait::Link(C4DefGraphics *pGfxPortrait)
 bool C4Portrait::SavePNG(C4Group &rGroup, const char *szFilename, const char *szOverlayFN)
 	{
 	// safety
-	if (!pGfxPortrait || !szFilename || pGfxPortrait->Type != C4DefGraphics::TYPE_Bitmap || !pGfxPortrait->Bitmap) return false;
+	if (!pGfxPortrait || !szFilename || pGfxPortrait->Type != C4DefGraphics::TYPE_Bitmap || !pGfxPortrait->Bmp.Bitmap) return false;
 	// save files
 	if (pGfxPortrait->fColorBitmapAutoCreated)
 		{
@@ -603,10 +603,10 @@ bool C4Portrait::SavePNG(C4Group &rGroup, const char *szFilename, const char *sz
 	else
 		{
 		// save regular baseface
-		if (!pGfxPortrait->Bitmap->SavePNG(rGroup, szFilename)) return false;
+		if (!pGfxPortrait->Bmp.Bitmap->SavePNG(rGroup, szFilename)) return false;
 		// save Overlay
-		if (pGfxPortrait->BitmapClr && szOverlayFN)
-			if (!pGfxPortrait->BitmapClr->SavePNG(rGroup, szOverlayFN, true, false, true)) return false;
+		if (pGfxPortrait->Bmp.BitmapClr && szOverlayFN)
+			if (!pGfxPortrait->Bmp.BitmapClr->SavePNG(rGroup, szOverlayFN, true, false, true)) return false;
 		}
 	// done, success
 	return true;
@@ -630,7 +630,7 @@ bool C4Portrait::CopyFrom(C4Portrait &rCopy)
 	{
 	// clear previous
 	Clear();
-	if (fGraphicsOwned=rCopy.fGraphicsOwned)
+	if ((fGraphicsOwned=rCopy.fGraphicsOwned))
 		{
 		// gfx copy
 		pGfxPortrait = new C4DefGraphics();
@@ -692,7 +692,7 @@ C4GraphicsOverlay::~C4GraphicsOverlay()
 	delete pMeshInstance; pMeshInstance = NULL;
 	// free any additional overlays
 	C4GraphicsOverlay *pNextOther = pNext, *pOther;
-	while (pOther = pNextOther)
+	while ((pOther = pNextOther))
 		{
 		pNextOther = pOther->pNext;
 		pOther->pNext = NULL;
@@ -780,6 +780,10 @@ void C4GraphicsOverlay::UpdateFacet()
 
 		case MODE_Rank:
 			// drawn at runtime
+			break;
+
+		case MODE_Object:
+			// TODO
 			break;
 		}
 	}
@@ -990,10 +994,12 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
 		
 		if(pMeshInstance)
+			{
 			if( ((dwClrModulation >> 24) & 0xff) != 0xff)
 				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
 			else
 				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_Fixed);
+			}
 	}
 	if (eMode == MODE_Rank)
 	{
@@ -1130,10 +1136,12 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 		if (dwClrModulation != 0xffffff) Application.DDraw->ActivateBlitModulation(dwClrModulation);
 
 		if(pMeshInstance)
+			{
 			if( ((dwClrModulation >> 24) & 0xff) != 0xff)
 				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
 			else
 				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_Fixed);
+			}
 	}
 	// draw at given rect
 	if(!pMeshInstance)
@@ -1221,10 +1229,12 @@ void C4GraphicsOverlayListAdapt::CompileFunc(StdCompiler *pComp)
 			{
 			// seperate
 			if(pPos != pOverlay)
+				{
 				if(fNaming)
 					pComp->Seperator(StdCompiler::SEP_SEP2);
 				else
 					pComp->Value(fContinue);
+				}
 			// write
 			pComp->Value(*pPos);
 			}

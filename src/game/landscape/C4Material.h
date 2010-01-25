@@ -40,7 +40,7 @@ enum MaterialInteractionEvent
 	{
 	meePXSPos=0,  // PXS check before movement
 	meePXSMove=1, // PXS movement
-	meeMassMove=2, // MassMover-movement
+	meeMassMove=2 // MassMover-movement
 	};
 
 typedef bool (*C4MaterialReactionFunc)(struct C4MaterialReaction *pReaction, int32_t &iX, int32_t &iY, int32_t iLSPosX, int32_t iLSPosY, FIXED &fXDir, FIXED &fYDir, int32_t &iPxsMat, int32_t iLsMat, MaterialInteractionEvent evEvent, bool *pfPosChanged);

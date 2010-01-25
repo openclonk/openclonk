@@ -29,7 +29,7 @@ enum
 	C4MN_Main					= 2, // identification for all other menus
 	C4MN_TeamSelection= 3,
 	C4MN_TeamSwitch   = 4,
-	C4MN_Observer     = 5,
+	C4MN_Observer     = 5
 	};
 
 class C4MainMenu : public C4Menu

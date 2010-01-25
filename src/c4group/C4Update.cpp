@@ -154,7 +154,7 @@ public:
 	void SetHead(C4Group &rByGrp)
 	{
 		// Cheat away the protection
-		C4GroupHeader *pHdr = &static_cast<C4GroupEx &>(rByGrp).Head;
+		C4GroupHeader *pHdr = &static_cast<C4GroupEx&>(rByGrp).Head;
 		// save Entries
 		int Entries = Head.Entries;
 		// copy
@@ -165,8 +165,10 @@ public:
 
 	bool HeadIdentical(C4Group &rByGrp, bool fLax)
 	{
-		// Cheat away the protection
-		C4GroupHeader *pHdr = &static_cast<C4GroupEx &>(rByGrp).Head;
+		// Cheat away the protection while avoiding
+		// gcc strict aliasing violation warnings.
+		intptr_t iGroup = (intptr_t) &rByGrp;
+		C4GroupHeader *pHdr = &((C4GroupEx*) iGroup)->Head;
 		// overwrite entries field
 		int Entries = Head.Entries;
 		Head.Entries = pHdr->Entries;
@@ -213,7 +215,6 @@ public:
 	{
 		if(fHeaderUpdate) return C4Group::Close(); else { bool fSuccess = Save(false); Clear(); return fSuccess; }
 	}
-
 };
 
 // *** C4UpdatePackageCore
@@ -304,11 +305,12 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 	C4GroupEx TargetGrp;
 	char strTarget[_MAX_PATH]; SCopy(DestPath, strTarget, _MAX_PATH);
 	char *p = strTarget, *lp = strTarget;
-	while(p = strchr(p + 1, '\\'))
+	while((p = strchr(p + 1, '\\')))
 	{
 		*p = 0;
 		if(!*(p + 1)) break;
 		if(!SEqual(lp, ".."))
+		{
 			if(TargetGrp.Open(strTarget))
 			{
 				// packed?
@@ -330,6 +332,7 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 				// create dir
 				CreatePath(strTarget);
 			}
+		}
 		*p = '\\'; lp = p + 1;
 	}
 
@@ -542,7 +545,7 @@ bool C4UpdatePackage::DoGrpUpdate(C4Group *pUpdateData, C4GroupEx *pGrpTo)
 		while(pGrpTo->FindNextEntry("*", strItemName))
 		{
 			bool fGotIt = false;
-			for(int i = 0; fGotIt = SCopySegment(pData, i, strItemName2, '|', _MAX_FNAME); i++)
+			for(int i = 0; (fGotIt = SCopySegment(pData, i, strItemName2, '|', _MAX_FNAME)); i++)
       {
         // remove seperator
         char *pSep = strchr(strItemName2, '=');

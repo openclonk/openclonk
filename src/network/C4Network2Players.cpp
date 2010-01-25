@@ -143,8 +143,8 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 			{
 			int iCnt=OwnInfoPacket.GetPlayerCount(); C4PlayerInfo *pPlrInfo;
 			C4Network2Res *pRes;
-			while (iCnt--) if (pPlrInfo=OwnInfoPacket.GetPlayerInfo(iCnt))
-				if (!pPlrInfo->GetID()) if (pRes = pPlrInfo->GetRes())
+			while (iCnt--) if ((pPlrInfo=OwnInfoPacket.GetPlayerInfo(iCnt)))
+				if (!pPlrInfo->GetID()) if ((pRes = pPlrInfo->GetRes()))
 					if (pExistingClientInfo->GetPlayerInfoByRes(pRes->getResID()))
 						{
 						// double join: simply deny without message
@@ -181,7 +181,7 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
   rInfoList.ResetLeagueProjectedGain(true);
   int32_t iPlrInfo = 0;
   C4PlayerInfo *pPlrInfo;
-  while (pPlrInfo = OwnInfoPacket.GetPlayerInfo(iPlrInfo++)) pPlrInfo->ResetLeagueProjectedGain();
+  while ((pPlrInfo = OwnInfoPacket.GetPlayerInfo(iPlrInfo++))) pPlrInfo->ResetLeagueProjectedGain();
 	if (Game.Parameters.isLeague())
 		{
 		// lobby only
@@ -252,7 +252,7 @@ void C4Network2Players::SendUpdatedPlayers()
 	{
 	// check all clients for update
 	C4ClientPlayerInfos *pUpdInfo; int i=0;
-	while (pUpdInfo = rInfoList.GetIndexedInfo(i++))
+	while ((pUpdInfo = rInfoList.GetIndexedInfo(i++)))
 		if (pUpdInfo->IsUpdated())
 			{
 			C4ControlPlayerInfo *pkSend = new C4ControlPlayerInfo(*pUpdInfo);
@@ -268,8 +268,8 @@ void C4Network2Players::UpdateSavegameAssignments(C4ClientPlayerInfos *pNewInfo)
 	if (!pNewInfo) return;
 	// check all joins of new info; backwards so they can be deleted
 	C4PlayerInfo *pInfo, *pInfo2, *pSaveInfo; int i=pNewInfo->GetPlayerCount(), j, id;
-	while (i--) if (pInfo = pNewInfo->GetPlayerInfo(i))
-		if (id=pInfo->GetAssociatedSavegamePlayerID())
+	while (i--) if ((pInfo = pNewInfo->GetPlayerInfo(i)))
+		if ((id=pInfo->GetAssociatedSavegamePlayerID()))
 			{
 			// check for non-existant savegame players
 			if (!(pSaveInfo=Game.RestorePlayerInfos.GetPlayerInfoByID(id)))
@@ -281,7 +281,7 @@ void C4Network2Players::UpdateSavegameAssignments(C4ClientPlayerInfos *pNewInfo)
 			if (id)
 				{
 				j=i;
-				while (pInfo2 = pNewInfo->GetPlayerInfo(++j))
+				while ((pInfo2 = pNewInfo->GetPlayerInfo(++j)))
 					if (pInfo2->GetAssociatedSavegamePlayerID() == id)
 						{
 						// fix it by resetting the savegame info
@@ -298,7 +298,7 @@ void C4Network2Players::UpdateSavegameAssignments(C4ClientPlayerInfos *pNewInfo)
 					continue;
 				// check against all players
 				j=0;
-				while (pInfo2 = pkClientInfo->GetPlayerInfo(j++))
+				while ((pInfo2 = pkClientInfo->GetPlayerInfo(j++)))
 					if (pInfo2->GetAssociatedSavegamePlayerID() == id)
 						{
 						// fix it by resetting the savegame info
@@ -317,7 +317,7 @@ void C4Network2Players::ResetUpdatedPlayers()
 	{
 	// mark all client packets as up-to-date
 	C4ClientPlayerInfos *pUpdInfo; int i=0;
-	while (pUpdInfo = rInfoList.GetIndexedInfo(i++)) pUpdInfo->ResetUpdated();
+	while ((pUpdInfo = rInfoList.GetIndexedInfo(i++))) pUpdInfo->ResetUpdated();
 	}
 
 void C4Network2Players::JoinUnjoinedPlayersInControlQueue(C4ClientPlayerInfos *pNewPacket)
@@ -326,7 +326,7 @@ void C4Network2Players::JoinUnjoinedPlayersInControlQueue(C4ClientPlayerInfos *p
 	assert(::Network.isHost());
 	// check all players
 	int i=0; C4PlayerInfo *pInfo;
-	while (pInfo = pNewPacket->GetPlayerInfo(i++))
+	while ((pInfo = pNewPacket->GetPlayerInfo(i++)))
 		// not yet joined and no savegame assignment?
 		if (!pInfo->HasJoinIssued()) if (!pInfo->GetAssociatedSavegamePlayerID())
 			{
@@ -438,7 +438,7 @@ void C4Network2Players::OnStatusGoReached()
 	if (!::Network.isHost()) return;
 	// check all player lists
 	int i=0; C4ClientPlayerInfos *pkInfo;
-	while (pkInfo = rInfoList.GetIndexedInfo(i++))
+	while ((pkInfo = rInfoList.GetIndexedInfo(i++)))
 		// any unsent player joins?
 		if (pkInfo->HasUnjoinedPlayers())
 			{
@@ -458,7 +458,7 @@ C4ClientPlayerInfos *C4Network2Players::GetLocalPlayerInfoPacket() const
 	int iLocalClientID = Game.Clients.getLocalID();
 	// check all packets for same client ID as local
 	int i=0; C4ClientPlayerInfos *pkInfo;
-	while (pkInfo = rInfoList.GetIndexedInfo(i++))
+	while ((pkInfo = rInfoList.GetIndexedInfo(i++)))
 		if (pkInfo->GetClientID() == iLocalClientID)
 			// found
 			return pkInfo;
@@ -483,10 +483,12 @@ DWORD C4Network2Players::GetClientChatColor(int idForClient, bool fLobby) const
 		C4ClientPlayerInfos *pInfoPacket = rInfoList.GetInfoByClientID(idForClient);
 		C4PlayerInfo *pPlrInfo;
 		if (pInfoPacket && (pPlrInfo = pInfoPacket->GetPlayerInfo(0, C4PT_User)))
+			{
 			if (fLobby)
 				return pPlrInfo->GetLobbyColor();
 			else
 				return pPlrInfo->GetColor();
+			}
 		}
 	// default color
 	return 0xffffff;

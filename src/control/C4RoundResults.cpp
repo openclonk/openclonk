@@ -227,7 +227,7 @@ C4RoundResultsPlayers &C4RoundResultsPlayers::operator =(const C4RoundResultsPla
 	{
 	Clear();
 	C4RoundResultsPlayer *pPlr; int32_t i=0;
-	while (pPlr = cpy.GetByIndex(i++))
+	while ((pPlr = cpy.GetByIndex(i++)))
 		Add(new C4RoundResultsPlayer(*pPlr));
 	return *this;
 	}
@@ -282,12 +282,12 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 	// Items
 	bool fRivalvry = !!Game.ObjectCount(C4ID::Rivalry);
 	int32_t cnt; C4ID idGoal;
-	for (cnt=0; idGoal=::Objects.GetListID(C4D_Goal,cnt); cnt++)
+	for (cnt=0; (idGoal=::Objects.GetListID(C4D_Goal,cnt)); cnt++)
 		{
 		// determine if the goal is fulfilled - do the calls even if the menu is not to be opened to ensure synchronization
 		bool fFulfilled = false;;
 		C4Object *pObj;
-		if (pObj = ::Objects.Find(idGoal))
+		if ((pObj = ::Objects.Find(idGoal)))
 			{
 			if (fRivalvry)
 				{
@@ -327,7 +327,7 @@ void C4RoundResults::EvaluateLeague(const char *szResultMsg, bool fSuccess, cons
 	Game.RoundResults.EvaluateNetwork(fSuccess ? C4RoundResults::NR_LeagueOK : C4RoundResults::NR_LeagueError, szResultMsg);
 	// Evaluation called by league: Sets new league scores and ranks
 	C4RoundResultsPlayer *pPlr, *pOwnPlr; int32_t i = 0;
-	while (pPlr = rLeagueInfo.GetByIndex(i++))
+	while ((pPlr = rLeagueInfo.GetByIndex(i++)))
 		{
 		pOwnPlr = Players.GetCreateByID(pPlr->GetID());
 		pOwnPlr->EvaluateLeague(pPlr);

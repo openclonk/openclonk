@@ -23,7 +23,7 @@
 
 #include <StdCompiler.h>
 
-const int CFG_MaxString	= 1024;
+const size_t CFG_MaxString	= 1024;
 
 const int CFG_String		= 1,
 					CFG_Integer		= 2,

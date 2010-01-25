@@ -635,7 +635,7 @@ bool CSurface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma
 	if (!png.Create(Wdt, Hgt, fSaveAlpha)) { Unlock(); return false; }
 
 	// reset overlay if desired
-	CSurface *pMainSfcBackup;
+	CSurface *pMainSfcBackup = NULL;
 	if (fSaveOverlayOnly) { pMainSfcBackup=pMainSfc; pMainSfc=NULL; }
 
 #ifdef USE_GL
@@ -834,7 +834,7 @@ bool CSurface::SetPix(int iX, int iY, BYTE byCol)
 
 DWORD CSurface::GetPixDw(int iX, int iY, bool fApplyModulation)
 	{
-	BYTE *pBuf; int iPitch;
+	BYTE *pBuf = NULL; int iPitch = 0; // TODO: are those initialised to something sensible?
 	// backup pos
 	int iX2=iX; int iY2=iY;
 	// primary?

@@ -530,7 +530,11 @@ void Screen::RemoveElement(Element *pChild)
 	// clear ptrs
 	if (pActiveDlg == pChild) { pActiveDlg = NULL; Mouse.ResetElements(); }
 	Mouse.RemoveElement(pChild);
-	if (pContext) if (pContext == pChild) pContext=NULL; else pContext->RemoveElement(pChild);
+	if (pContext)
+		{
+		if (pContext == pChild) pContext=NULL;
+		else pContext->RemoveElement(pChild);
+		}
 	}
 
 Screen::Screen(int32_t tx, int32_t ty, int32_t twdt, int32_t thgt) : Window(), Mouse(tx+twdt/2, ty+thgt/2), pContext(NULL), fExclusive(true), pGamePadOpener(NULL), fZoom(1.0f)
@@ -588,7 +592,7 @@ void Screen::ShowDialog(Dialog *pDlg, bool fFade)
 	// add to local component list at correct ordering
 	int32_t iNewZ = pDlg->GetZOrdering(); Element *pEl; Dialog *pOtherDlg;
 	for (pEl = GetFirst(); pEl; pEl = pEl->GetNext())
-		if (pOtherDlg = pEl->GetDlg())
+		if ((pOtherDlg = pEl->GetDlg()))
 			if (pOtherDlg->GetZOrdering() > iNewZ)
 				break;
 	InsertElement(pDlg, pEl);
@@ -654,7 +658,7 @@ Dialog *Screen::GetTopDialog()
 	// search backwards in component list
 	Dialog *pDlg;
 	for (Element *pEl = pLast; pEl; pEl = pEl->GetPrev())
-		if (pDlg = pEl->GetDlg())
+		if ((pDlg = pEl->GetDlg()))
 			if (pDlg->IsShown())
 				return pDlg;
 	// no dlg found
@@ -843,7 +847,7 @@ bool Screen::MouseInput(int32_t iButton, int32_t iPxX, int32_t iPxY, DWORD dwKey
 			// non-exclusive mode: process all dialogs; make them active on left-click
 			Dialog *pDlg;
 			for (Element *pEl = pLast; pEl; pEl = pEl->GetPrev())
-				if (pDlg = pEl->GetDlg())
+				if ((pDlg = pEl->GetDlg()))
 					if (pDlg->IsShown())
 						{
 						// if specified: process specified dlg only
@@ -944,7 +948,7 @@ int32_t Screen::GetMouseControlledDialogCount()
 	{
 	Dialog *pDlg; int32_t iResult=0;
 	for (Element *pEl = GetFirst(); pEl; pEl = pEl->GetNext())
-		if (pDlg = pEl->GetDlg())
+		if ((pDlg = pEl->GetDlg()))
 			if (pDlg->IsShown() && pDlg->IsMouseControlled())
 				++iResult;
 	return iResult;
@@ -982,7 +986,7 @@ Dialog *Screen::GetFullscreenDialog(bool fIncludeFading)
 	{
 	Dialog *pDlg;
 	for (Element *pEl = GetFirst(); pEl; pEl = pEl->GetNext())
-		if (pDlg = pEl->GetDlg())
+		if ((pDlg = pEl->GetDlg()))
 			if (pDlg->IsVisible())
 				if (pDlg->IsFullscreenDialog())
 					if (fIncludeFading || !pDlg->IsFading())
@@ -1208,6 +1212,6 @@ Resource *Resource::pRes;
 Screen *Screen::pScreen;
 
 
-}; // end of namespace
+} // end of namespace
 
 C4GUIScreen *pGUI;

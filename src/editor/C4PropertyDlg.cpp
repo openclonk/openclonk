@@ -364,9 +364,9 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 	// Object script available
 	if (pObj && pObj->Def)
 		// Scan all functions
-		for (cnt=0; pRef=pObj->Def->Script.GetSFunc(cnt); cnt++)
+		for (cnt=0; (pRef=pObj->Def->Script.GetSFunc(cnt)); cnt++)
 			// Public functions only
-			if (pRef->Access=AA_PUBLIC)
+			if ((pRef->Access=AA_PUBLIC))
 				{
 #ifdef _WIN32
 				// Insert divider if necessary

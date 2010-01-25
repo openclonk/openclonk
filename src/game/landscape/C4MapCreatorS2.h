@@ -212,7 +212,7 @@ enum C4MCValueType
 	C4MCV_Algorithm,
 	C4MCV_Boolean,
 	C4MCV_Zoom,
-	C4MCV_ScriptFunc,
+	C4MCV_ScriptFunc
 	};
 
 struct C4MCNodeAttr

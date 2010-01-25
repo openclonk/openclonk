@@ -140,7 +140,7 @@ void CheckBox::DrawElement(C4TargetFacet &cgo)
 void CheckBox::SetOnChecked(BaseCallbackHandler *pCB)
 	{
 	if (pCBHandler) pCBHandler->DeRef();
-	if (pCBHandler = pCB) pCB->Ref();
+	if ((pCBHandler = pCB)) pCB->Ref();
 	}
 
 bool CheckBox::GetStandardCheckBoxSize(int *piWdt, int *piHgt, const char *szForCaptionText, CStdFont *pUseFont)
@@ -156,4 +156,4 @@ bool CheckBox::GetStandardCheckBoxSize(int *piWdt, int *piHgt, const char *szFor
 	return true;
 	}
 
-}; // namespace C4GUI
+} // namespace C4GUI

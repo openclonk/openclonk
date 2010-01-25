@@ -60,14 +60,14 @@ enum C4SForceFairCrew
 	{
 	C4SFairCrew_Free       = 0,
 	C4SFairCrew_FairCrew   = 1,
-	C4SFairCrew_NormalCrew = 2,
+	C4SFairCrew_NormalCrew = 2
 	};
 
 enum C4SFilmMode
 	{
 	C4SFilm_None      = 0,
 	C4SFilm_Normal    = 1,
-	C4SFilm_Cinematic = 2,
+	C4SFilm_Cinematic = 2
 	};
 
 class C4SHead

@@ -645,7 +645,7 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 
 	// Screenshot path
 	SCopy(UserDataPath, ScreenshotPath, CFG_MaxString-1);
-	if (ScreenshotFolder.getLength()+SLen(ScreenshotPath)+1<=CFG_MaxString)
+	if (ScreenshotFolder.getLength()+std::strlen(ScreenshotPath)+1<=CFG_MaxString)
 		{
 		SAppend(ScreenshotFolder.getData(), ScreenshotPath);
 		AppendBackslash(ScreenshotPath);
@@ -742,7 +742,7 @@ const char *C4Config::AtScreenshotPath(const char *szFilename)
 	{
 	int len;
 	SCopy(General.ScreenshotPath,AtPathFilename,_MAX_PATH);
-	if(len = SLen(AtPathFilename))
+	if((len = SLen(AtPathFilename)))
 		if(AtPathFilename[len-1] == DirectorySeparator)
 			AtPathFilename[len-1] = '\0';
 	if (!CreatePath(AtPathFilename))
@@ -1002,7 +1002,7 @@ bool C4Config::RemoveModule(const char *szPath, char *szModules)
 	return SRemoveModule(szModules,szPath);
 	}
 
-void C4Config::ExpandEnvironmentVariables(char *strPath, int iMaxLen)
+void C4Config::ExpandEnvironmentVariables(char *strPath, size_t iMaxLen)
 {
 #ifdef _WIN32
 	char buf[_MAX_PATH + 1];
@@ -1011,7 +1011,7 @@ void C4Config::ExpandEnvironmentVariables(char *strPath, int iMaxLen)
 #else // __linux__ or __APPLE___
 	StdStrBuf home(getenv("HOME"));
 	char* rest;
-	if (home && (rest = const_cast<char *>(SSearch(strPath, "$HOME"))) && (SLen(strPath) - 5 + home.getLength() <= iMaxLen))
+	if (home && (rest = const_cast<char *>(SSearch(strPath, "$HOME"))) && (std::strlen(strPath) - 5 + home.getLength() <= iMaxLen))
 	{
 		// String replace... there might be a more elegant way to do this.
 		memmove(rest + home.getLength() - SLen("$HOME"), rest, SLen(rest) + 1);

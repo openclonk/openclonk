@@ -43,7 +43,7 @@
 // C4Network2ClientDlg
 
 C4Network2ClientDlg::C4Network2ClientDlg(int iForClientID)
-: iClientID(iForClientID), C4GUI::InfoDialog(LoadResStr("IDS_NET_CLIENT_INFO"), 10)
+: C4GUI::InfoDialog(LoadResStr("IDS_NET_CLIENT_INFO"), 10), iClientID(iForClientID)
 	{
 	// initial text update
 	UpdateText();
@@ -74,7 +74,7 @@ void C4Network2ClientDlg::UpdateText()
 			::Network.isHost() && pNetClient && !pNetClient->isReady() ? " (!ack)" : "");
 		// show addresses
 		int iCnt;
-		if (iCnt=pNetClient->getAddrCnt())
+		if ((iCnt=pNetClient->getAddrCnt()))
 			{
 			AddLine(LoadResStr("IDS_NET_CLIENT_INFO_ADDRESSES"));
 			for (int i=0; i<iCnt; ++i)
@@ -389,7 +389,7 @@ void C4Network2ClientListBox::Update()
 	// sync with client list
 	ListItem *pItem = static_cast<ListItem *>(pClientWindow->GetFirst()), *pNext;
 	const C4Client *pClient = NULL;
-	while (pClient = Game.Clients.getClient(pClient))
+	while ((pClient = Game.Clients.getClient(pClient)))
 		{
 		// skip host in startup board
 		if (IsStartup() && pClient->isHost()) continue;
@@ -528,7 +528,7 @@ C4Network2StartWaitDlg::C4Network2StartWaitDlg()
 // C4GameOptionButtons
 
 C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, bool fHost, bool fLobby)
-: C4GUI::Window(), fNetwork(fNetwork), fHost(fHost), fLobby(fLobby), eForceFairCrewState(C4SFairCrew_Free), fCountdown(false)
+: C4GUI::Window(), eForceFairCrewState(C4SFairCrew_Free), fNetwork(fNetwork), fHost(fHost), fLobby(fLobby), fCountdown(false)
 	{
 	SetBounds(rcBounds);
 	// calculate button size from area
@@ -598,7 +598,7 @@ C4GameOptionButtons::C4GameOptionButtons(const C4Rect &rcBounds, bool fNetwork, 
 void C4GameOptionButtons::OnBtnInternet(C4GUI::Control *btn)
 	{
 	if (!fNetwork || !fHost) return;
-	bool fCheck = Config.Network.MasterServerSignUp = !Config.Network.MasterServerSignUp;
+	bool fCheck = (Config.Network.MasterServerSignUp = !Config.Network.MasterServerSignUp);
 	// in lobby mode, do actual termination from masterserver
 	if (fLobby)
 		{
@@ -625,7 +625,7 @@ void C4GameOptionButtons::OnBtnInternet(C4GUI::Control *btn)
 void C4GameOptionButtons::OnBtnLeague(C4GUI::Control *btn)
 	{
 	if (!fNetwork || !fHost) return;
-	bool fCheck = Config.Network.LeagueServerSignUp = !Config.Network.LeagueServerSignUp;
+	bool fCheck = (Config.Network.LeagueServerSignUp = !Config.Network.LeagueServerSignUp);
 	btnLeague->SetIcon(fCheck ? C4GUI::Ico_Ex_LeagueOn : C4GUI::Ico_Ex_LeagueOff);
 	if(!Game.Record) OnBtnRecord(btnRecord);
 	btnRecord->SetEnabled(!fCheck);
@@ -837,7 +837,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 		{
 		int iSeries = 0; const C4Graph *pSeries;
 		int32_t iLegendWdt = 0, Q,W;
-		while (pSeries = pDisplayGraph->GetSeries(iSeries++))
+		while ((pSeries = pDisplayGraph->GetSeries(iSeries++)))
 			{
 			rFont.GetTextExtent(pSeries->GetTitle(), W, Q, true);
 			iLegendWdt = Max(iLegendWdt, W);
@@ -845,7 +845,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 		tw -= iLegendWdt+1;
 		iSeries = 0;
 		int iYLegendDraw = (th - iSeriesCount*Q)/2 + ty;
-		while (pSeries = pDisplayGraph->GetSeries(iSeries++))
+		while ((pSeries = pDisplayGraph->GetSeries(iSeries++)))
 			{
 			lpDDraw->TextOut(pSeries->GetTitle(), rFont, 1.0f, cgo.Surface, tx+tw, iYLegendDraw, pSeries->GetColorDw() | 0xff000000, ALeft, true);
 			iYLegendDraw += Q;
@@ -866,6 +866,7 @@ void C4Chart::DrawElement(C4TargetFacet &cgo)
 	int iXAxisSteps = GetAxisStepRange(dt, tw / XAxisMinStepWdt),
 		  iYAxisSteps = GetAxisStepRange(int(dv), th / YAxisMinStepHgt);
 	int iX, iY, iTime, iVal;
+	iY = 0;
 	iTime = ((iMinTime-(iMinTime>0))/iXAxisSteps+(iMinTime>0))*iXAxisSteps;
 	for (; iTime <= iMaxTime; iTime += iXAxisSteps)
 		{

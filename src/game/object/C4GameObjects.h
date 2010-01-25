@@ -47,6 +47,7 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		unsigned int LastUsedMarker; // last used value for C4Object::Marker
 
+		using C4ObjectList::Add;
 		bool Add(C4Object *nObj); // add object
 		bool Remove(C4Object *pObj); // clear pointers to object
 

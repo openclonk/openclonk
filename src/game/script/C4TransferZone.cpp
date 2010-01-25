@@ -89,7 +89,7 @@ bool C4TransferZones::Set(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, C4
 	// Empty zone: clear existing object zones
 	if (!iWdt || !iHgt) { ClearPointers(pObj); return true; }
 	// Update existing zone
-	if (pZone=Find(pObj))
+	if ((pZone=Find(pObj)))
 		{
 		pZone->X=iX; pZone->Y=iY;
 		pZone->Wdt=iWdt; pZone->Hgt=iHgt;
@@ -176,7 +176,10 @@ bool C4TransferZone::GetEntryPoint(int32_t &rX, int32_t &rY, int32_t iToX, int32
 	{
 	// Target inside zone: move outside horizontally
 	if (Inside<int32_t>(iToX-X,0,Wdt-1) && Inside<int32_t>(iToY-Y,0,Hgt-1))
-		if (iToX<X+Wdt/2) iToX=X-1; else iToX=X+Wdt;
+		{
+		if (iToX<X+Wdt/2) iToX=X-1;
+		else iToX=X+Wdt;
+		}
 	// Get closest adjacent point
 	rX=BoundBy<int32_t>(iToX,X-1,X+Wdt);
 	rY=BoundBy<int32_t>(iToY,Y-1,Y+Hgt);

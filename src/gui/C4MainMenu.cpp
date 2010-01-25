@@ -147,7 +147,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 			if (!(pPlayer = ::Players.Get(Player))) return false;
 			// Refill items
 			C4Player *pPlr; int32_t iIndex;
-			for (iIndex=0; pPlr = ::Players.GetByIndex(iIndex); iIndex++)
+			for (iIndex=0; (pPlr = ::Players.GetByIndex(iIndex)); iIndex++)
 				// Ignore player self and invisible
 				if (pPlr != pPlayer) if (!pPlr->IsInvisible())
 					{
@@ -249,7 +249,7 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 			AddRefSym(LoadResStr("IDS_MSG_FREEVIEW"), C4GUI::Icon::GetIconFacet(C4GUI::Ico_Star), "Observe:Free", C4MN_Item_NoCount, NULL, LoadResStr("IDS_MSG_FREELYSCROLLAROUNDTHEMAP"));
 			// Add players
 			C4Player *pPlr; int32_t iIndex;
-			for (iIndex=0; pPlr = ::Players.GetByIndex(iIndex); iIndex++)
+			for (iIndex=0; (pPlr = ::Players.GetByIndex(iIndex)); iIndex++)
 				{
 				// Ignore invisible
 				if (!pPlr->IsInvisible())
@@ -346,8 +346,8 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 		int32_t iNumGoals = GoalList.GetNumberOfIDs(), cnt;
 		C4ID idGoal; C4Def *pDef;
 		for (int32_t i=0; i<iNumGoals; ++i)
-			if (idGoal = GoalList.GetID(i, &cnt))
-				if (pDef = C4Id2Def(idGoal))
+			if ((idGoal = GoalList.GetID(i, &cnt)))
+				if ((pDef = C4Id2Def(idGoal)))
 					{
 					fctSymbol.Create(C4SymbolSize,C4SymbolSize);
 					// 2do: If an object instance is known, draw the object instead?
@@ -380,8 +380,8 @@ bool C4MainMenu::ActivateRules(int32_t iPlayer)
 	SetPermanent(false);
 	// Items
 	int32_t cnt; C4ID idGoal; C4Def *pDef;
-	for (cnt=0; idGoal=::Objects.ObjectsInt().GetListID(C4D_Rule,cnt); cnt++)
-		if (pDef=C4Id2Def(idGoal))
+	for (cnt=0; (idGoal=::Objects.ObjectsInt().GetListID(C4D_Rule,cnt)); cnt++)
+		if ((pDef=C4Id2Def(idGoal)))
 			{
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize); pDef->Draw(fctSymbol);
 			sprintf(Command, "Player:Rule:%s", idGoal.ToString());
@@ -403,7 +403,7 @@ bool LooksLikeInteger(const char *szInt)
 	if (!*szInt) return false;
 	// must contain only digits now
 	char c;
-	while (c = *(szInt++)) if (!Inside<char>(c, '0', '9')) return false;
+	while ((c = *(szInt++))) if (!Inside<char>(c, '0', '9')) return false;
 	// it's an int32_t
 	return true;
 	}
@@ -766,6 +766,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		{
 		int iClientID = atoi(szCommand+10);
 		if(iClientID && ::Network.isEnabled())
+			{
 			if(Game.Parameters.isLeague() && ::Players.GetAtClient(iClientID))
 				::Network.Vote(VT_Kick, true, iClientID);
 			else
@@ -774,12 +775,14 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 				if (pClient) Game.Clients.CtrlRemove(pClient, LoadResStr("IDS_MSG_KICKBYMENU"));
 				Close(true);
 				}
+			}
 		return true;
 		}
 	// Part
 	if (SEqual2(szCommand,"Part"))
 		{
 		if(::Network.isEnabled())
+			{
 			if(Game.Parameters.isLeague() && ::Players.GetLocalByIndex(0))
 				::Network.Vote(VT_Kick, true, ::Control.ClientID());
 			else
@@ -787,6 +790,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 				Game.RoundResults.EvaluateNetwork(C4RoundResults::NR_NetError, LoadResStr("IDS_ERR_GAMELEFTVIAPLAYERMENU"));
 				::Network.Clear();
 				}
+			}
 		return true;
 		}
 	// Options
@@ -854,7 +858,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		Close(true);
 		// TODO!
 		C4Object *pObj; C4ID idItem(szCommand+12);
-		if (pObj = ::Objects.FindInternal(idItem))
+		if ((pObj = ::Objects.FindInternal(idItem)))
 			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
 		else
 			return false;

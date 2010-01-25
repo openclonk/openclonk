@@ -173,7 +173,7 @@ void C4Startup::Start()
 	fAborted = false;
 	fInStartup = false;
 	fLastDlgWasBack = false;
-	};
+	}
 
 void C4Startup::Exit()
 	{
@@ -181,7 +181,7 @@ void C4Startup::Exit()
 	// flag game start
 	fAborted = true;
 	fInStartup = false;
-	};
+	}
 
 C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 	{
@@ -228,7 +228,8 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 		if (pLastDlg) delete pLastDlg;
 		}
 	// retain current dialog as last, so it can fade out and may be used later
-	if (pLastDlg = pCurrDlg)
+	if ((pLastDlg = pCurrDlg))
+		{
 		if (fFade)
 			{
 			if (!pLastDlg->IsShown()) pLastDlg->Show(::pGUI, false);
@@ -239,6 +240,7 @@ C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
 			delete pLastDlg;
 			pLastDlg = NULL;
 			}
+		}
 	// Okay; now using this dialog
 	pCurrDlg = pToDlg;
 	// fade in new dlg

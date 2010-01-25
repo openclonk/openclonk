@@ -505,7 +505,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 					StdStrBuf sPlrName;
 					sPlrName.Copy(szPar, iSepPos);
 					szPar += iSepPos+1; int32_t id=0;
-					while (pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(id))
+					while ((pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(id)))
 						{
 						id = pNfo->GetID();
 						if (WildcardMatch(sPlrName.getData(), pNfo->GetName())) break;
@@ -583,7 +583,7 @@ C4GUI::Edit::InputResult MainDlg::OnChatInput(C4GUI::Edit *edt, bool fPasting, b
 			// ------------------------------------------------------
 			else if (SEqualNoCase(Command, "/help"))
 				{
-				LogF(LoadResStr("IDS_TEXT_COMMANDSAVAILABLEDURINGLO"));
+				Log(LoadResStr("IDS_TEXT_COMMANDSAVAILABLEDURINGLO"));
 				LogF("/start [time] - %s", LoadResStr("IDS_TEXT_STARTTHEROUNDWITHSPECIFIE"));
 				LogF("/abort - %s", LoadResStr("IDS_TEXT_ABORTSTARTCOUNTDOWN"));
 				LogF("/alert - %s", LoadResStr("IDS_TEXT_ALERTTHEHOSTIFTHEHOSTISAW"));
@@ -963,6 +963,6 @@ void Countdown::Abort()
 		}
 	}
 
-}; // end of namespace
+} // end of namespace
 
 

@@ -183,10 +183,12 @@ void C4Object::SideBounds(int32_t &ctcox)
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
 		if (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+			{
 			if (Category & C4D_StaticBack)
 				TargetBounds(ctcox,pLayer->GetX()+pLayer->Shape.GetX(),pLayer->GetX()+pLayer->Shape.GetX()+pLayer->Shape.Wdt,CNAT_Left,CNAT_Right);
 			else
 				TargetBounds(ctcox,pLayer->GetX()+pLayer->Shape.GetX()-Shape.GetX(),pLayer->GetX()+pLayer->Shape.GetX()+pLayer->Shape.Wdt+Shape.GetX(),CNAT_Left,CNAT_Right);
+			}
 	// landscape bounds
   if (Def->BorderBound & C4D_Border_Sides)
 		TargetBounds(ctcox,0-Shape.GetX(),GBackWdt+Shape.GetX(),CNAT_Left,CNAT_Right);
@@ -197,10 +199,12 @@ void C4Object::VerticalBounds(int32_t &ctcoy)
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
 		if (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+			{
 			if (Category & C4D_StaticBack)
 				TargetBounds(ctcoy,pLayer->GetY()+pLayer->Shape.GetY(),pLayer->GetY()+pLayer->Shape.GetY()+pLayer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
 			else
 				TargetBounds(ctcoy,pLayer->GetY()+pLayer->Shape.GetY()-Shape.GetY(),pLayer->GetY()+pLayer->Shape.GetY()+pLayer->Shape.Hgt+Shape.GetY(),CNAT_Top,CNAT_Bottom);
+			}
 	// landscape bounds
   if (Def->BorderBound & C4D_Border_Top)
 		TargetBounds(ctcoy,0-Shape.GetY(),+1000000,CNAT_Top,CNAT_Bottom);
@@ -254,7 +258,7 @@ void C4Object::DoMovement()
 			{
 			// Next step
 			int step = Sign(ctcox - GetX());
-			if (iContact=ContactCheck(GetX() + step, GetY()))
+			if ((iContact=ContactCheck(GetX() + step, GetY())))
 				{
 				fAnyContact=true; iContacts |= t_contact;
 				// Abort horizontal movement
@@ -278,7 +282,7 @@ void C4Object::DoMovement()
 			{
 			// Next step
 			int step = Sign(ctcoy - GetY());
-			if (iContact=ContactCheck(GetX(), GetY() + step))
+			if ((iContact=ContactCheck(GetX(), GetY() + step)))
 				{
 				fAnyContact=true; iContacts |= t_contact;
 				ctcoy=GetY(); new_y = fix_y;
@@ -327,7 +331,7 @@ void C4Object::DoMovement()
 				if (ctx != GetX() + step_x) at_xovr = true;
 				}
 			// Contact check & evaluation
-			if (iContact=ContactCheck(ctx,cty))
+			if ((iContact=ContactCheck(ctx,cty)))
 				{
 				fAnyContact=true; iContacts |= t_contact;
 				// Abort movement
@@ -378,7 +382,7 @@ void C4Object::DoMovement()
 				Shape.Attach(ctx,cty,Action.t_attach);
 				}
 			// check for contact
-			if (iContact=ContactCheck(ctx,cty)) // Contact
+			if ((iContact=ContactCheck(ctx,cty))) // Contact
 				{
 				fAnyContact=true; iContacts |= t_contact;
 				// Undo step and abort movement

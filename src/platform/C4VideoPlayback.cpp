@@ -222,7 +222,7 @@ void C4VideoPlayer::Clear()
 	{
 	// delete all loaded videos
 	C4VideoFile *pDelFile;
-	while (pDelFile = pFirstVideo)
+	while ((pDelFile = pFirstVideo))
 		{
 		pFirstVideo = pDelFile->GetNext();
 		delete pDelFile;

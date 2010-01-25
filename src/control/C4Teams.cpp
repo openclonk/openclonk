@@ -63,7 +63,7 @@ void C4Team::AddPlayer(C4PlayerInfo &rInfo, bool fAdjustPlayer)
 	// add player; grow vector if necessary
 	if (iPlayerCount >= iPlayerCapacity)
 		{
-		int32_t *piNewPlayers = new int32_t[iPlayerCapacity = iPlayerCount+4&~3];
+		int32_t *piNewPlayers = new int32_t[iPlayerCapacity = (iPlayerCount+4)&~3];
 		if (iPlayerCount) memcpy(piNewPlayers, piPlayers, iPlayerCount*sizeof(int32_t));
 		delete [] piPlayers; piPlayers = piNewPlayers;
 		}
@@ -121,7 +121,7 @@ int32_t C4Team::GetFirstUnjoinedPlayerID() const
 	int32_t i=iPlayerCount, idPlr, *piPlr = piPlayers;
 	C4PlayerInfo *pInfo;
 	while (i--)
-		if (pInfo = Game.PlayerInfos.GetPlayerInfoByID(idPlr = *piPlr++))
+		if ((pInfo = Game.PlayerInfos.GetPlayerInfoByID(idPlr = *piPlr++)))
 			if (!pInfo->HasJoinIssued())
 				return idPlr;
 	// none found
@@ -148,8 +148,8 @@ void C4Team::RecheckPlayers()
 	for (int32_t i=0; i<iPlayerCount; ++i)
 		{
 		bool fIsValid = false; int32_t id; C4PlayerInfo *pInfo;
-		if (id = piPlayers[i])
-			if (pInfo = Game.PlayerInfos.GetPlayerInfoByID(id))
+		if ((id = piPlayers[i]))
+			if ((pInfo = Game.PlayerInfos.GetPlayerInfoByID(id)))
 				if (pInfo->GetTeam() == GetID())
 					if (pInfo->IsUsingTeam())
 						fIsValid = true;
@@ -158,7 +158,7 @@ void C4Team::RecheckPlayers()
 		}
 	// now check for any new players in the team
 	int32_t id = 0; C4PlayerInfo *pInfo;
-	while (pInfo = Game.PlayerInfos.GetNextPlayerInfoByID(id))
+	while ((pInfo = Game.PlayerInfos.GetNextPlayerInfoByID(id)))
 		{
 		id = pInfo->GetID();
 		if (pInfo->GetTeam() == GetID())
@@ -194,7 +194,7 @@ void C4Team::RecheckColor(C4TeamList &rForList)
 				{
 				dwClr = GenerateRandomPlayerColor(iTry);
 				int32_t iIdx=0; C4Team *pTeam; bool fOK=true;
-				while (pTeam = rForList.GetTeamByIndex(iIdx++))
+				while ((pTeam = rForList.GetTeamByIndex(iIdx++)))
 					if (pTeam != this)
 						if (IsColorConflict(pTeam->GetColor(), dwClr))
 							{
@@ -224,7 +224,7 @@ StdStrBuf C4Team::GetNameWithParticipants() const
 			{
 			int32_t iPlr = GetIndexedPlayer(j);
 			C4PlayerInfo *pPlrInfo;
-			if (iPlr) if  (pPlrInfo = Game.PlayerInfos.GetPlayerInfoByID(iPlr))
+			if (iPlr) if  ((pPlrInfo = Game.PlayerInfos.GetPlayerInfoByID(iPlr)))
 				{
 				if (iTeamPlrCount++) sTeamName.Append(", ");
 				sTeamName.Append(pPlrInfo->GetName());
@@ -242,8 +242,8 @@ bool C4Team::HasWon() const
 	for (int32_t i=0; i<iPlayerCount; ++i)
 		{
 		int32_t id; C4PlayerInfo *pInfo;
-		if (id = piPlayers[i])
-			if (pInfo = Game.PlayerInfos.GetPlayerInfoByID(id))
+		if ((id = piPlayers[i]))
+			if ((pInfo = Game.PlayerInfos.GetPlayerInfoByID(id)))
 				if (pInfo->HasWon())
 					{
 					fHasWon = true;
@@ -279,7 +279,7 @@ void C4TeamList::Clear()
 C4TeamList &C4TeamList::operator =(const C4TeamList &rCopy)
 	{
 	Clear();
-	if (iTeamCount = iTeamCapacity = rCopy.iTeamCount)
+	if ((iTeamCount = iTeamCapacity = rCopy.iTeamCount))
 		ppList = new C4Team *[iTeamCapacity];
 	for(int i = 0; i < iTeamCount; i++)
 		ppList[i] = new C4Team(*rCopy.ppList[i]);
@@ -322,7 +322,7 @@ bool C4TeamList::CanLocalChooseTeam(int32_t idPlayer) const
 	C4Team *pCurrentTeam = NULL, *pCheck;
 	if (idPlayer) pCurrentTeam = GetTeamByPlayerID(idPlayer);
 	int32_t iCheckTeam=0;
-	while (pCheck = GetTeamByIndex(iCheckTeam++))
+	while ((pCheck = GetTeamByIndex(iCheckTeam++)))
 		if (pCheck != pCurrentTeam)
 			if (!pCheck->IsFull())
 				break;
@@ -342,7 +342,7 @@ void C4TeamList::AddTeam(C4Team *pNewTeam)
 	// add team; grow vector if necessary
 	if (iTeamCount >= iTeamCapacity)
 		{
-		C4Team **ppNewTeams = new C4Team*[iTeamCapacity = iTeamCount+4&~3];
+		C4Team **ppNewTeams = new C4Team*[(iTeamCapacity = iTeamCount+4)&~3];
 		if (iTeamCount) memcpy(ppNewTeams, ppList, iTeamCount*sizeof(C4Team *));
 		delete [] ppList; ppList = ppNewTeams;
 		}
@@ -569,7 +569,7 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 		{
 		while (iOldTeamCount--) delete ppList[iOldTeamCount];
 		delete [] ppList;
-		if (iTeamCapacity = iTeamCount)
+		if ((iTeamCapacity = iTeamCount))
 			{
 			ppList = new C4Team *[iTeamCapacity];
 			ZeroMemory(ppList, sizeof(C4Team *)*iTeamCapacity);
@@ -636,7 +636,7 @@ bool C4TeamList::Load(C4Group &hGroup, class C4Scenario *pInitDefault, class C4L
 		}
 	// post-initialization: Generate default team colors
 	int32_t iTeam=0; C4Team *pTeam;
-	while (pTeam = GetTeamByIndex(iTeam++))
+	while ((pTeam = GetTeamByIndex(iTeam++)))
 		pTeam->RecheckColor(*this);
 	return true;
 	}
@@ -708,7 +708,7 @@ void C4TeamList::ReassignAllTeams()
 	if (!::Control.isCtrlHost()) return;
 	// go through all player infos; reset team in them
 	int32_t idStart = -1; C4PlayerInfo *pNfo;
-	while (pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(idStart))
+	while ((pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(idStart)))
 		{
 		idStart = pNfo->GetID();
 		if (pNfo->HasJoinIssued()) continue;
@@ -725,7 +725,7 @@ void C4TeamList::ReassignAllTeams()
 	RecheckPlayers();
 	// reassign them
 	idStart = -1;
-	while (pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(idStart))
+	while ((pNfo = Game.PlayerInfos.GetNextPlayerInfoByID(idStart)))
 		{
 		idStart = pNfo->GetID();
 		if (pNfo->HasJoinIssued()) continue;
@@ -836,7 +836,7 @@ int32_t C4TeamList::GetForcedTeamSelection(int32_t idForPlayer) const
 	C4Team *pOKTeam = NULL, *pCheck;
 	if (idForPlayer) pOKTeam = GetTeamByPlayerID(idForPlayer); // curent team is always possible, even if full
 	int32_t iCheckTeam=0;
-	while (pCheck = GetTeamByIndex(iCheckTeam++))
+	while ((pCheck = GetTeamByIndex(iCheckTeam++)))
 		if (!pCheck->IsFull())
 			{
 			// this team could be joined

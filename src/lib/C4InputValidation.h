@@ -24,9 +24,9 @@
 #include "StdFile.h"
 #include "StdAdaptors.h"
 
-const int C4MaxName = 30; // player names, etc.
-const int C4MaxLongName = 120; // scenario titles, etc. - may include markup
-const int C4MaxComment = 256; // network game and player comments
+const unsigned int C4MaxName = 30; // player names, etc.
+const unsigned int C4MaxLongName = 120; // scenario titles, etc. - may include markup
+const unsigned int C4MaxComment = 256; // network game and player comments
 
 namespace C4InVal
 	{
@@ -43,7 +43,7 @@ namespace C4InVal
 		VAL_IRCName,         // nickname for IRC. a-z, A-Z, _^{[]} only; 0-9|- inbetween
 		VAL_IRCPass,         // password for IRC
 		VAL_IRCChannel,      // IRC channel name
-		VAL_Comment,         // comment - just a length limit
+		VAL_Comment         // comment - just a length limit
 		};
 	// input validation functions: Validate input by changing it to an allowed value if possible
 	// issues warnings in log and returns true if such an action is performed
@@ -52,7 +52,7 @@ namespace C4InVal
 	bool ValidateInt(int32_t &riVal, int32_t iMinVal, int32_t iMaxVal);
 
 	inline bool ValidateFilename(char *szFilename, size_t iMaxSize=_MAX_PATH) { return ValidateString(szFilename, VAL_Filename, iMaxSize); }
-	};
+	}
 
 // Validation adapter: Call ValidateString on string after compiling it
 template <class T> struct C4StrValAdapt

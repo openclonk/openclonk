@@ -66,7 +66,13 @@ void C4EditCursor::Execute()
 	{
   // alt check
   bool fAltIsDown = Application.IsAltDown();
-  if (fAltIsDown != fAltWasDown) if (fAltWasDown = fAltIsDown) AltDown(); else AltUp();
+  if (fAltIsDown != fAltWasDown)
+	{
+		if ((fAltWasDown = fAltIsDown))
+			AltDown();
+		else
+			AltUp();
+	}
   // drawing
 	switch (Mode)
 		{
@@ -718,7 +724,7 @@ void C4EditCursor::ApplyToolPicker()
 		{
 		case C4LSC_Static:
 			// Material-texture from map
-			if (byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom))
+			if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
 				{
 				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
 				if(pTex)

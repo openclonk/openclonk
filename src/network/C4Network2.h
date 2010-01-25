@@ -61,8 +61,8 @@ const unsigned int C4NetVotingTimeout = 10; // (s)
 const unsigned int C4NetMinVotingInterval = 120; // (s)
 
 // streaming
-const int C4NetStreamingMinBlockSize = 10 * 1024;
-const int C4NetStreamingMaxBlockSize = 20 * 1024;
+const size_t C4NetStreamingMinBlockSize = 10 * 1024;
+const size_t C4NetStreamingMaxBlockSize = 20 * 1024;
 const int C4NetStreamingInterval = 30; // (s)
 
 enum C4NetGameState
@@ -71,7 +71,7 @@ enum C4NetGameState
 	GS_Init,		// connecting to host, waiting for join data
 	GS_Lobby,		// lobby mode
 	GS_Pause,		// game paused
-	GS_Go,			// game running
+	GS_Go			// game running
 };
 
 class C4Network2Status : public C4PacketBase
@@ -224,7 +224,7 @@ public:
 	// initialization result type
 	enum InitResult
 	{
-		IR_Success, IR_Error, IR_Fatal,
+		IR_Success, IR_Error, IR_Fatal
 	};
 
 	// initialization
@@ -307,6 +307,8 @@ public:
 
 protected:
 
+	using C4ApplicationSec1Timer::Execute; // to avoid "virtual ... is hidden" warning
+
 	// net i/o initialization
 	bool InitNetIO(bool fNoClientID, bool fHost);
 
@@ -356,7 +358,6 @@ protected:
 	// streaming
 	bool StreamIn(bool fFinish);
 	bool StreamOut();
-
 };
 
 extern C4Network2 Network;

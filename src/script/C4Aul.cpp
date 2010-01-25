@@ -47,7 +47,7 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
 	Owner = pOwner;
 	if(bAtEnd)
 	{
-		if (Prev = Owner->FuncL)
+		if ((Prev = Owner->FuncL))
 			{
 			Prev->Next = this;
 			Owner->FuncL = this;
@@ -61,7 +61,7 @@ C4AulFunc::C4AulFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd):
 	}
 	else
 	{
-		if (Next = Owner->Func0)
+		if ((Next = Owner->Func0))
 			{
 			Next->Prev = this;
 			Owner->Func0 = this;
@@ -228,9 +228,9 @@ void C4AulScript::Reg2List(C4AulScriptEngine *pEngine, C4AulScript *pOwner)
 	if (Owner) return;
 	// reg to list
 	Engine = pEngine;
-	if (Owner = pOwner)
+	if ((Owner = pOwner))
 		{
-		if (Prev = Owner->ChildL)
+		if ((Prev = Owner->ChildL))
 			Prev->Next = this;
 		else
 			Owner->Child0 = this;
@@ -260,7 +260,7 @@ C4AulFunc *C4AulScript::GetOverloadedFunc(C4AulFunc *ByFunc)
 	// nothing found? then search owner, if existant
 	if (!f && Owner)
 		{
-		if (f = Owner->GetFuncRecursive(ByFunc->Name))
+		if ((f = Owner->GetFuncRecursive(ByFunc->Name)))
 			// just found  the global link?
 			if (ByFunc && f->LinkedTo == ByFunc)
 				f = Owner->GetOverloadedFunc(f);
@@ -362,7 +362,7 @@ C4AulScriptFunc *C4AulScript::GetSFunc(int iIndex, const char *szPattern)
 	f = FuncL;
 	while (f)
 		{
-		if (sf = f->SFunc())
+		if ((sf = f->SFunc()))
 			if (!szPattern || SEqual2(sf->Name, szPattern))
 				{
 				if (!iIndex) return sf;
@@ -516,7 +516,7 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
 /*--- C4AulFuncMap ---*/
 static const size_t CapacityInc = 1024;
 
-C4AulFuncMap::C4AulFuncMap(): Capacity(CapacityInc), FuncCnt(0), Funcs(new C4AulFunc*[CapacityInc])
+C4AulFuncMap::C4AulFuncMap(): Funcs(new C4AulFunc*[CapacityInc]), FuncCnt(0), Capacity(CapacityInc)
 	{
 	memset(Funcs, 0, sizeof (C4AulFunc *) * Capacity);
 	}

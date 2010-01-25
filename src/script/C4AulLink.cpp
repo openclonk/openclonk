@@ -120,7 +120,7 @@ void C4AulScript::AppendTo(C4AulScript &Scr, bool bHighPrio)
 	C4AulScriptFunc *sf;
 	for (C4AulFunc *f = bHighPrio ? Func0 : FuncL; f; f = bHighPrio ? f->Next : f->Prev)
 		// script funcs only
-		if (sf = f->SFunc())
+		if ((sf = f->SFunc()))
 			// no need to append global funcs
 			if (sf->Access != AA_GLOBAL)
 				{

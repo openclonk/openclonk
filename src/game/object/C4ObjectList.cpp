@@ -367,7 +367,7 @@ void C4ObjectList::DrawIDList(C4Facet &cgo, int iSelection,
 	char szCount[10];
 	// objects are sorted in the list already, so just draw them!
 	C4ObjectListIterator iter(*this);
-	while (pFirstObj = iter.GetNext(&iCount))
+	while ((pFirstObj = iter.GetNext(&iCount)))
 		{
 		// Section
 		cgo2 = cgo.GetSection(cSec);
@@ -583,8 +583,8 @@ StdStrBuf C4ObjectList::GetNameList(C4DefList &rDefs, DWORD dwCategory)
 	C4ID c_id;
 	C4Def *cdef;
 	StdStrBuf Buf;
-  for (cpos=0; c_id=GetListID(dwCategory,cpos); cpos++)
-		if (cdef=rDefs.ID2Def(c_id))
+  for (cpos=0; (c_id=GetListID(dwCategory,cpos)); cpos++)
+		if ((cdef=rDefs.ID2Def(c_id)))
 			{
 			idcount=ObjectCount(c_id);
 			if (cpos>0) Buf.Append(", ");
@@ -776,15 +776,15 @@ bool C4ObjectList::OrderObjectBefore(C4Object *pObj1, C4Object *pObj2)
 	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return false;
 	// check if requirements are already fulfilled
 	C4ObjectLink *pLnk=pLnk1;
-	while (pLnk=pLnk->Next) if (pLnk==pLnk2) break;
+	while ((pLnk=pLnk->Next)) if (pLnk==pLnk2) break;
 	if (pLnk) return true;
 	// if not, reorder pLnk1 directly before pLnk2
 	// unlink from current position
 	// no need to check pLnk1->Prev here, because pLnk1 cannot be first in the list
 	// (at least pLnk2 must lie before it!)
-	if (pLnk1->Prev->Next=pLnk1->Next) pLnk1->Next->Prev=pLnk1->Prev; else Last=pLnk1->Prev;
+	if ((pLnk1->Prev->Next=pLnk1->Next)) pLnk1->Next->Prev=pLnk1->Prev; else Last=pLnk1->Prev;
 	// relink into new one
-	if (pLnk1->Prev=pLnk2->Prev) pLnk2->Prev->Next=pLnk1; else First=pLnk1;
+	if ((pLnk1->Prev=pLnk2->Prev)) pLnk2->Prev->Next=pLnk1; else First=pLnk1;
 	pLnk1->Next=pLnk2; pLnk2->Prev=pLnk1;
 	// done, success
 	return true;
@@ -799,15 +799,15 @@ bool C4ObjectList::OrderObjectAfter(C4Object *pObj1, C4Object *pObj2)
 	C4ObjectLink *pLnk2=GetLink(pObj2); if (!pLnk2) return false;
 	// check if requirements are already fulfilled
 	C4ObjectLink *pLnk=pLnk1;
-	while (pLnk=pLnk->Prev) if (pLnk==pLnk2) break;
+	while ((pLnk=pLnk->Prev)) if (pLnk==pLnk2) break;
 	if (pLnk) return true;
 	// if not, reorder pLnk1 directly after pLnk2
 	// unlink from current position
 	// no need to check pLnk1->Next here, because pLnk1 cannot be last in the list
 	// (at least pLnk2 must lie after it!)
-	if (pLnk1->Next->Prev=pLnk1->Prev) pLnk1->Prev->Next=pLnk1->Next; else First=pLnk1->Next;
+	if ((pLnk1->Next->Prev=pLnk1->Prev)) pLnk1->Prev->Next=pLnk1->Next; else First=pLnk1->Next;
 	// relink into new one
-	if (pLnk1->Next=pLnk2->Next) pLnk2->Next->Prev=pLnk1; else Last=pLnk1;
+	if ((pLnk1->Next=pLnk2->Next)) pLnk2->Next->Prev=pLnk1; else Last=pLnk1;
 	pLnk1->Prev=pLnk2; pLnk2->Next=pLnk1;
 	// done, success
 	return true;

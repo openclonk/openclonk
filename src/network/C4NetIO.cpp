@@ -273,14 +273,15 @@ void C4NetIOPacket::Clear()
 // construction / destruction
 
 C4NetIOTCP::C4NetIOTCP()
-	: pPeerList(NULL), fInit(false),
+	: pPeerList(NULL),
 		pConnectWaits(NULL),
-#ifdef STDSCHEDULER_USE_EVENTS
-		Event(NULL),
-#endif
 		PeerListCSec(this),
+		fInit(false),
 		iListenPort(~0), lsock(INVALID_SOCKET),
 		pCB(NULL)
+#ifdef STDSCHEDULER_USE_EVENTS
+		, Event(NULL)
+#endif
 {
 
 }
@@ -426,7 +427,8 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 		if(fdvec[cfd].events & fdvec[cfd].revents)
 			{
 			char c;
-			::read(Pipe[0], &c, 1);
+			if(::read(Pipe[0], &c, 1) == -1)
+				SetError("read failed");
 			}
 	}
 #endif
@@ -748,7 +750,8 @@ void C4NetIOTCP::UnBlock() // (mt-safe)
 	// write one character to the pipe, this will unblock everything that
 	// waits for the FD set returned by GetFDs.
 	char c = 1;
-	write(Pipe[1], &c, 1);
+	if(write(Pipe[1], &c, 1) == -1)
+		SetError("write failed");
 #endif
 }
 
@@ -1131,8 +1134,8 @@ const unsigned int C4NetIOTCP::Peer::iMinIBufSize = 8192; // (bytes)
 C4NetIOTCP::Peer::Peer(const C4NetIO::addr_t &naddr, SOCKET nsock, C4NetIOTCP *pnParent)
 	: pParent(pnParent),
 		addr(naddr), sock(nsock),
-		Next(NULL), iIBufUsage(0), iIRate(0), iORate(0),
-		fOpen(true), fDoBroadcast(false)
+		iIBufUsage(0), iIRate(0), iORate(0),
+		fOpen(true), fDoBroadcast(false), Next(NULL)
 {
 }
 
@@ -1218,7 +1221,7 @@ void C4NetIOTCP::Peer::OnRecv(int iSize) // (mt-safe)
 	iIRate += iTCPHeaderSize + iSize;
 	iIBufUsage += iSize;
 	// a prior call to GetRecvBuf should have ensured this
-	assert(iIBufUsage <= IBuf.getSize());
+	assert(static_cast<size_t>(iIBufUsage) <= IBuf.getSize());
 	// read packets
 	size_t iPos = 0, iPacketPos;
 	while((iPacketPos = iPos) < (size_t)iIBufUsage)
@@ -1241,8 +1244,8 @@ void C4NetIOTCP::Peer::OnRecv(int iSize) // (mt-safe)
 		IBuf.Move(iPacketPos, IBuf.getSize() - iPacketPos);
 		iIBufUsage -= iPacketPos;
 		// shrink buffer
-		int iIBufSize = IBuf.getSize();
-		while(iIBufUsage <= iIBufSize / 2)
+		size_t iIBufSize = IBuf.getSize();
+		while((size_t) iIBufUsage <= iIBufSize / 2)
 			iIBufSize /= 2;
 		if(iIBufSize != IBuf.getSize())
 			IBuf.Shrink(iPacketPos);
@@ -1527,6 +1530,7 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 		int iMsgSize = ::recvfrom(sock, getMBufPtr<char>(Pkt), iMaxMsgSize, 0, reinterpret_cast<sockaddr *>(&SrcAddr), &iSrcAddrLen);
 		// error?
 		if(iMsgSize == SOCKET_ERROR)
+		{
 			if(HaveConnResetError())
 			{
 				// this is actually some kind of notification: an ICMP msg (unreachable)
@@ -1540,6 +1544,7 @@ bool C4NetIOSimpleUDP::Execute(int iMaxTime, pollfd *)
 				SetError("could not receive data from socket", true);
 				return false;
 			}
+		}
 		// invalid address?
 		if(iSrcAddrLen != sizeof(SrcAddr) || SrcAddr.sin_family != AF_INET)
 		{
@@ -1629,7 +1634,8 @@ void C4NetIOSimpleUDP::UnBlock() // (mt-safe)
 	// write one character to the pipe, this will unblock everything that
 	// waits for the FD set returned by GetFDs.
 	char c = 42;
-	write(Pipe[1], &c, 1);
+	if(write(Pipe[1], &c, 1) == -1)
+		SetError("write failed");
 }
 
 void C4NetIOSimpleUDP::GetFDs(std::vector<struct pollfd> & fds)
@@ -1659,7 +1665,11 @@ enum C4NetIOSimpleUDP::WaitResult C4NetIOSimpleUDP::WaitForSocket(int iTimeout)
 		return WR_Timeout;
 	// flush pipe, if neccessary
 	if(fds[0].revents & POLLIN)
-		{ char c; ::read(Pipe[0], &c, 1); }
+	{
+		char c;
+		if(::read(Pipe[0], &c, 1) == -1)
+			SetError("read failed");
+	}
 	// socket readable?
 	return (sock != INVALID_SOCKET) && (fds[1].revents & POLLIN) ? WR_Readable : WR_Cancelled;
 }
@@ -1727,7 +1737,7 @@ struct C4NetIOUDP::ConnPacket : public PacketHdr
 
 struct C4NetIOUDP::ConnOKPacket : public PacketHdr
 {
-	enum { MCM_NoMC, MCM_MC, MCM_MCOK, } MCMode;
+	enum { MCM_NoMC, MCM_MC, MCM_MCOK } MCMode;
 	C4NetIO::addr_t Addr;
 };
 
@@ -1765,15 +1775,17 @@ struct C4NetIOUDP::TestPacket : public PacketHdr
 // construction / destruction
 
 C4NetIOUDP::C4NetIOUDP()
-	: fInit(false), fMultiCast(false), iPort(~0),
+	: PeerListCSec(this),
+		fInit(false),
+		fMultiCast(false),
+		iPort(~0),
 		pPeerList(NULL),
-		iNextCheck(0),
-		iOPacketCounter(0),
+		fSavePacket(false),
 		fDelayedLoopbackTest(false),
-		iBroadcastRate(0),
-		PeerListCSec(this),
+		iNextCheck(0),
 		OPackets(iMaxOPacketBacklog),
-		fSavePacket(false)
+		iOPacketCounter(0),
+		iBroadcastRate(0)
 {
 
 }
@@ -2337,9 +2349,9 @@ size_t C4NetIOUDP::Packet::FragmentSize(nr_t iFNr) const
 
 C4NetIOUDP::PacketList::PacketList(unsigned int inMaxPacketCnt)
 	:	pFront(NULL),
-		iMaxPacketCnt(inMaxPacketCnt),
+		pBack(NULL),
 		iPacketCnt(0),
-		pBack(NULL)
+		iMaxPacketCnt(inMaxPacketCnt)
 {
 
 }
@@ -2455,10 +2467,10 @@ C4NetIOUDP::Peer::Peer(const sockaddr_in &naddr, C4NetIOUDP *pnParent)
 	: pParent(pnParent), addr(naddr),
 		eStatus(CS_None),
 		fMultiCast(false), fDoBroadcast(false),
+		OPackets(iMaxOPacketBacklog),
 		iOPacketCounter(0),
 		iIPacketCounter(0), iRIPacketCounter(0),
 		iIMCPacketCounter(0), iRIMCPacketCounter(0),
-		OPackets(iMaxOPacketBacklog),
 		iMCAckPacketCounter(0),
 		iNextReCheck(0),
     iIRate(0), iORate(0), iLoss(0)
@@ -2864,7 +2876,7 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 
 	// check for complete incoming packets
 	Packet *pPkt;
-	while(pPkt = IPackets.GetFirstPacketComplete())
+	while((pPkt = IPackets.GetFirstPacketComplete()))
 	{
     // missing packet?
     if(pPkt->GetNr() != iIPacketCounter) break;
@@ -2878,7 +2890,7 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 		IPackets.DeletePacket(pPkt);
 		assert(!IPackets.GetPacketFrgm(iNr));
 	}
-	while(pPkt = IMCPackets.GetFirstPacketComplete())
+	while((pPkt = IMCPackets.GetFirstPacketComplete()))
 	{
     // missing packet?
     if(pPkt->GetNr() != iIMCPacketCounter) break;
@@ -2906,9 +2918,8 @@ void C4NetIOUDP::Peer::SetTimeout(int iLength, int iRetryCnt) // (mt-safe)
 void C4NetIOUDP::Peer::OnTimeout()
 {
 	// what state?
-	switch(eStatus)
+	if(eStatus == CS_Conn)
 	{
-	case CS_Conn:
 		// retries left?
 		if(iRetries)
 		{
@@ -2921,7 +2932,6 @@ void C4NetIOUDP::Peer::OnTimeout()
 		}
 		// connection timeout: close
 		Close("connection timeout");
-		break;
 	}
 	// reset timeout
 	SetTimeout(TO_INF);

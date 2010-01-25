@@ -597,6 +597,9 @@ namespace
 			// difference to BOX_Blend_Diffuse_Alpha is operand, see SetTexOperand2
 			glTexEnvi(GL_TEXTURE_ENV, source, GL_PRIMARY_COLOR);
 			break;
+		default:
+			// TODO
+			break;
 		}
 	}
 
@@ -619,6 +622,9 @@ namespace
 		case StdMeshMaterialTextureUnit::BOX_Dotproduct:
 		case StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor:
 			glTexEnvi(GL_TEXTURE_ENV, operand, GL_SRC_COLOR);
+			break;
+		default:
+			// TODO
 			break;
 		}
 	}

@@ -48,7 +48,7 @@ C4Texture::~C4Texture()
   }
 
 C4TexMapEntry::C4TexMapEntry()
-	: pMaterial(NULL), iMaterialIndex(MNone)
+	: iMaterialIndex(MNone), pMaterial(NULL)
 	{
 	}
 
@@ -333,10 +333,10 @@ int32_t C4TextureMap::GetIndexMatTex(const char *szMaterialTexture, const char *
 	// texture not given or invalid?
 	int32_t iMatTex = 0;
 	if(Texture.getData())
-		if(iMatTex = GetIndex(Material.getData(), Texture.getData(), fAddIfNotExist))
+		if((iMatTex = GetIndex(Material.getData(), Texture.getData(), fAddIfNotExist)))
 			return iMatTex;
 	if(szDefaultTexture)
-		if(iMatTex = GetIndex(Material.getData(), szDefaultTexture, fAddIfNotExist))
+		if((iMatTex = GetIndex(Material.getData(), szDefaultTexture, fAddIfNotExist)))
 			return iMatTex;
 	// search material
 	long iMaterial = ::MaterialMap.Get(szMaterialTexture);

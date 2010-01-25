@@ -269,9 +269,9 @@ bool C4GameControl::Prepare()
 
 		// check GameGo
 		return Network.CtrlReady(ControlTick);
+	default:
+		return false;
 	}
-
-	return false;
 }
 
 void C4GameControl::Execute()

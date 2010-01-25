@@ -99,7 +99,7 @@ C4ObjectList &C4GameObjects::ObjectsAt(int ix, int iy)
 
 void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 	{
-	C4Object *obj1,*obj2;
+	C4Object *obj1 = NULL,*obj2 = NULL;
 	DWORD ocf1,ocf2,focf,tocf;
 
 	// AtObject-Check: Checks for first match of obj1 at obj2
@@ -119,7 +119,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 				if (obj1->OCF & focf)
 					{
 					ocf1=obj1->OCF; ocf2=tocf;
-					if (obj2=AtObject(obj1->GetX(),obj1->GetY(),ocf2,obj1))
+					if ((obj2=AtObject(obj1->GetX(),obj1->GetY(),ocf2,obj1)))
 						{
 						// Incineration
 						if ((ocf1 & OCF_OnFire) && (ocf2 & OCF_Inflammable))
@@ -312,7 +312,7 @@ C4Object* C4GameObjects::Enumerated(C4Object *pObj)
 	{
 	uint32_t iPtrNum;
 	// If object is enumerated, convert to enumerated pointer
-	if (iPtrNum = ObjectNumber(pObj)) 
+	if ((iPtrNum = ObjectNumber(pObj)))
 		return (C4Object*) (C4EnumPointer1 + iPtrNum);
 	// Oops!
 	return (C4Object*)-1;
@@ -453,7 +453,7 @@ void C4ObjResort::SortObject()
 	C4ObjectLink *pLnkBck = pLnk;
 	C4Object *pObj2; int iResult;
 	if (!pLnk) return;
-	while(pLnk = pLnk->Next)
+	while((pLnk = pLnk->Next))
 		{
 		// get object
 		pObj2 = pLnk->Obj;
@@ -481,7 +481,7 @@ void C4ObjResort::SortObject()
 		// no movement yet: check backwards in list
 		Pars[0].Set(C4VObj(pSortObj));
 		pLnk = pLnkBck;
-		while (pLnk = pLnk->Prev)
+		while ((pLnk = pLnk->Prev))
 			{
 			// get object
 			pObj2 = pLnk->Obj;
@@ -617,7 +617,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
   // Denumerate pointers
 	// if object numbers collideded, numbers will be adjusted afterwards
 	// so fake inactive object list empty meanwhile
-	C4ObjectLink *pInFirst;
+	C4ObjectLink *pInFirst = NULL;
 	if (fObjectNumberCollision) { pInFirst = InactiveObjects.First; InactiveObjects.First = NULL; }
 	// denumerate pointers
 	Denumerate();
@@ -682,7 +682,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 			{
 			if (cLnk->Prev) cLnk->Prev->Next=cLnkNext; else First=cLnkNext;
 			if (cLnkNext) cLnkNext->Prev=cLnk->Prev; else Last=cLnk->Prev;
-			if (cLnk->Prev = InactiveObjects.Last)
+			if ((cLnk->Prev = InactiveObjects.Last))
 				InactiveObjects.Last->Next = cLnk;
 			else
 				InactiveObjects.First = cLnk;

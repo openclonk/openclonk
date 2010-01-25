@@ -202,7 +202,7 @@ enum C4Network2IOConnStatus
 	CS_HalfAccepted,			// got Conn (peer identified, client class created if neccessary)
 	CS_Accepted,					// got ConnRe (peer did accept)
 	CS_Closed,
-	CS_ConnectFail,				// got closed before HalfAccepted was reached
+	CS_ConnectFail					// got closed before HalfAccepted was reached
 };
 
 class C4Network2IOConnection // shared

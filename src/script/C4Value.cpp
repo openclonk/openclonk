@@ -68,9 +68,9 @@ void C4Value::AddDataRef()
 #ifdef _DEBUG
 		// check if the object actually exists
 		if(!::Objects.ObjectNumber(Data.PropList))
-			{ LogF("Warning: using wild object ptr %p!", Data.PropList); }
+			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.PropList)); }
 		else if(!Data.PropList->Status)
-			{ LogF("Warning: using ptr on deleted object %p (%s)!", Data.PropList, Data.PropList->GetName()); }
+			{ LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName()); }
 #endif
 		break;
 		default: break;

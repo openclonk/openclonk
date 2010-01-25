@@ -553,9 +553,6 @@ void C4MouseControl::UpdateCursorTarget()
 		return;
 	}
 
-	// Check player cursor
-	C4Object *pPlrCursor = pPlayer ? pPlayer->Cursor : NULL;
-
 	// Target object
 	TargetObject=GetTargetObject();
 	if (TargetObject && FogOfWar && !(TargetObject->Category & C4D_IgnoreFoW)) TargetObject = NULL;
@@ -873,7 +870,7 @@ void C4MouseControl::RightUp()
 
 void C4MouseControl::Wheel(DWORD dwFlags)
 	{
-	short iDelta = (short)(dwFlags >> 16);
+	//short iDelta = (short)(dwFlags >> 16);
 
 	// Normal wheel: control zoom
 	if(!ControlDown)
@@ -884,7 +881,7 @@ void C4MouseControl::Wheel(DWORD dwFlags)
 	// Ctrl + Wheel: pass to player control (might be used for inventory or such)
 	else
 		{
-		// 2do
+		// TODO
 		//if(iDelta > 0) Game.LocalPlayerControl(Player, COM_WheelUp);
 		//if(iDelta < 0) Game.LocalPlayerControl(Player, COM_WheelDown);
 		}
@@ -898,7 +895,7 @@ bool C4MouseControl::IsValidMenu(C4Menu *pMenu)
 			return true;
 	// Local control player menu
 	C4Player *pPlr;
-	for (int32_t cnt=0; pPlr=::Players.Get(cnt); cnt++)
+	for (int32_t cnt=0; (pPlr=::Players.Get(cnt)); cnt++)
 		if (pMenu == &(pPlr->Menu))
 			if (pMenu->IsActive())
 				return true;

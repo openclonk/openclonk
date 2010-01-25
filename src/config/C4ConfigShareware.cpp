@@ -25,6 +25,7 @@
 #include <C4Log.h>
 #include <C4Gui.h>
 
+#include <Standard.h>
 #include <StdFile.h>
 
 #ifdef HAVE_IO_H
@@ -70,7 +71,7 @@ EVP_PKEY* loadPublicKey(const char *memKey, bool deBase64 = false, bool deXOR = 
 		BIO* memBio = BIO_new_mem_buf(const_cast<char *>(memKey), strlen(memKey));
 		BIO* b64Bio = BIO_new(BIO_f_base64());
 		BIO* bio = BIO_push(b64Bio, memBio);
-		BIO_flush(bio);
+		(void) BIO_flush(bio);
 		keyDataLen = BIO_read(bio, keyData, maxKeyDataLen * 2);
 		BIO_free_all(bio);
 	}
@@ -132,7 +133,7 @@ int verifyData(char *data, unsigned int dataLen, EVP_PKEY* pubKey)
 	BIO* memBio = BIO_new_mem_buf(b64Sig, b64SigLen);
 	BIO* b64Bio = BIO_new(BIO_f_base64());
 	BIO* bio = BIO_push(b64Bio, memBio);
-	BIO_flush(bio);
+	(void) BIO_flush(bio);
 	const int MAXSIGLEN = 1024;
 	unsigned char sig[MAXSIGLEN] = "";
 	unsigned int sigLen = BIO_read(bio, sig, MAXSIGLEN * 2);
@@ -307,19 +308,23 @@ bool C4ConfigShareware::LoadRegistration()
 		SCopy(GetKeyPath(), searchPath);
 		for (DirectoryIterator i(searchPath); *i; ++i)
 			if (WildcardMatch("*.c4k", *i))
+				{
 				if (LoadRegistration(*i))
 					return true;
 				else
 					SCopy(*i, InvalidKeyFile, CFG_MaxString);
+				}
 		}
 
 	// Then look in ExePath
 	for (DirectoryIterator i(General.ExePath); *i; ++i)
 		if (WildcardMatch("*.c4k", *i))
+			{
 			if (LoadRegistration(*i))
 				return true;
 			else
 				SCopy(*i, InvalidKeyFile, CFG_MaxString);
+			}
 
 	// No key file found
 	return HandleError("No valid key file found.");
@@ -472,7 +477,7 @@ const char* C4ConfigShareware::GetRegistrationData(const char *strField)
 	// Advance to value
 	pKeyField += strlen(strFieldMask);
 	// Get field value
-	int iValueLen = 256;
+	size_t iValueLen = 256;
 	const char *pFieldEnd = strstr(pKeyField, "\x0d");
 	if (pFieldEnd) iValueLen = pFieldEnd - pKeyField;
 	iValueLen = Min(iValueLen, CFG_MaxString);

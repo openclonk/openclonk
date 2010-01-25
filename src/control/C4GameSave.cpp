@@ -375,10 +375,11 @@ void C4GameSave::WriteDescPlayers(StdStrBuf &sBuf, bool fByTeam, int32_t idTeam)
 	{
 	// write out all players; only if they match the given team if specified
 	C4PlayerInfo *pPlr; bool fAnyPlrWritten = false;
-	for (int i = 0; pPlr = Game.PlayerInfos.GetPlayerInfoByIndex(i); i++)
+	for (int i = 0; (pPlr = Game.PlayerInfos.GetPlayerInfoByIndex(i)); i++)
 		if (pPlr->HasJoined() && !pPlr->IsRemoved() && !pPlr->IsInvisible())
 			{
 			if (fByTeam)
+				{
 				if (idTeam)
 					{
 					// match team
@@ -389,6 +390,7 @@ void C4GameSave::WriteDescPlayers(StdStrBuf &sBuf, bool fByTeam, int32_t idTeam)
 					// must be in no known team
 					if (Game.Teams.GetTeamByID(pPlr->GetTeam())) continue;
 					}
+				}
 			if (fAnyPlrWritten)
 				sBuf.Append(", ");
 			else if (fByTeam && idTeam)
@@ -413,7 +415,7 @@ void C4GameSave::WriteDescPlayers(StdStrBuf &sBuf)
 			// Teams defined: Print players sorted by teams
 			WriteDescLineFeed(sBuf);
 			C4Team *pTeam; int32_t i=0;
-			while (pTeam = Game.Teams.GetTeamByIndex(i++))
+			while ((pTeam = Game.Teams.GetTeamByIndex(i++)))
 				{
 				WriteDescPlayers(sBuf, true, pTeam->GetID());
 				}

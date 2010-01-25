@@ -122,7 +122,7 @@ bool CMarkup::StripMarkup(char *szText)
 		mkup.SkipTags(&szRead);
 		if (szRead[0] == '{' && szRead[1] == '{' && szRead[2] != '{') // skip at {{{, because {{{id}} should be parsed as { {{id}} }.
 			{
-			if (szPos2 = SSearch(szRead+2, "}}"))
+			if ((szPos2 = SSearch(szRead+2, "}}")))
 				// valid {{blub}}-tag
 				szRead = szPos2;
 			else
@@ -133,7 +133,7 @@ bool CMarkup::StripMarkup(char *szText)
 			// invalid }}-tag
 			szRead += 2;
 		}
-	while (*szText++ = *szRead++);
+	while ((*szText++ = *szRead++));
 	return szText != szRead;
 	}
 

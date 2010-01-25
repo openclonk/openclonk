@@ -67,7 +67,7 @@ class C4PlayerInfo
 			PIF_SyncFlags = PIF_Joined | PIF_Removed | PIF_HasRes | PIF_InScenarioFile | PIF_JoinedForSavegameOnly | PIF_Disconnected | PIF_Won | PIF_VotedOut | PIF_AttributesFixed | PIF_NoScenarioInit | PIF_NoEliminationCheck | PIF_Invisible,
 
 			// flags to be copied from savegame-player for takeover
-			PIF_SavegameTakeoverFlags = PIF_Joined | PIF_Removed | PIF_JoinIssued | PIF_AttributesFixed | PIF_NoScenarioInit | PIF_NoEliminationCheck | PIF_Invisible,
+			PIF_SavegameTakeoverFlags = PIF_Joined | PIF_Removed | PIF_JoinIssued | PIF_AttributesFixed | PIF_NoScenarioInit | PIF_NoEliminationCheck | PIF_Invisible
 			};
 
 		// player attributes used in attribute conflict resolver
@@ -101,10 +101,10 @@ class C4PlayerInfo
 
 	public:
 		C4PlayerInfo()                           // construct empty
-			:  dwFlags(0), iID(0), pRes(0), szFilename(0), dwColor(0xffffffff), sLeagueAccount(""),
-			dwOriginalColor(0xffffffff), dwAlternateColor(0), idSavegamePlayer(0), idTeam(0),
-			iLeagueScore(0), iLeagueRank(0), iLeagueRankSymbol(0), iLeagueProjectedGain(-1),
-			iInGameNumber(-1), iInGameJoinFrame(-1), iInGamePartFrame(-1), eType(C4PT_User), idExtraData(C4ID::None) { }
+			:  dwFlags(0), eType(C4PT_User), iID(0), pRes(0), szFilename(0), dwColor(0xffffffff),
+			dwOriginalColor(0xffffffff), dwAlternateColor(0), idSavegamePlayer(0), idTeam(0), iInGameNumber(-1),
+			iInGameJoinFrame(-1), iInGamePartFrame(-1), idExtraData(C4ID::None), sLeagueAccount(""),
+			iLeagueScore(0), iLeagueRank(0), iLeagueRankSymbol(0), iLeagueProjectedGain(-1) { }
 
 		void Clear();                            // clear fields
 
@@ -219,7 +219,7 @@ class C4ClientPlayerInfos
 			CIF_Updated     = 1<<1, // set temporarily if changed and not transmissioned to clients (valid for host only)
 			CIF_Initial     = 1<<2, // set for first-time player info packets
 			CIF_Developer   = 1<<3, // set for developer hosts (by regkey); client side check only!
-			CIF_Removed			= 1<<4, // client was removed
+			CIF_Removed			= 1<<4 // client was removed
 			};
 		uint32_t dwFlags; // bit mask of the above flags
 

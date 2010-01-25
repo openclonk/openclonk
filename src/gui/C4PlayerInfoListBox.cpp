@@ -73,10 +73,9 @@ void C4PlayerInfoListBox::ListItem::DrawElement(C4TargetFacet &cgo)
 
 C4PlayerInfoListBox::PlayerListItem::PlayerListItem(C4PlayerInfoListBox *pForListBox, int32_t idClient,
 	int32_t idPlayer, bool fSavegamePlayer, C4GUI::Element *pInsertBeforeElement)
-: ListItem(pForListBox), pTeamCombo(NULL), fIconSet(false), fJoinedInfoSet(false), dwJoinClr(0), dwPlrClr(0),
-idClient(idClient), idPlayer(idPlayer), fFreeSavegamePlayer(fSavegamePlayer),
-pScoreLabel(NULL), pRankIcon(NULL), pTimeLabel(NULL), pTeamPic(NULL), pExtraLabel(NULL)
-
+: ListItem(pForListBox), pScoreLabel(NULL), pTimeLabel(NULL), pExtraLabel(NULL),
+pRankIcon(NULL), pTeamCombo(NULL), pTeamPic(NULL), fIconSet(false), fJoinedInfoSet(false),
+dwJoinClr(0), dwPlrClr(0), idClient(idClient), idPlayer(idPlayer), fFreeSavegamePlayer(fSavegamePlayer)
 	{
 	bool fIsEvaluation = pForListBox->IsEvaluation(), fIsLobby = pForListBox->IsLobby();
 	C4PlayerInfo *pInfo = GetPlayerInfo(); assert(pInfo);
@@ -187,7 +186,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateOwnPos()
 	if (pExtraLabel) rcExtraDataRect = caBounds.GetFromBottom(C4GUI::GetRes()->TextFont.GetLineHeight());
 	// second line (team+rank)
 	C4GUI::ComponentAligner caTeamArea(caBounds.GetFromBottom(C4GUI::ComboBox::GetDefaultHeight()), 0,0);
-	C4Rect rcRankIcon;
+	C4Rect rcRankIcon = { 0 };
 	if (pList->IsEvaluation())
 		{
 		if (pRankIcon)
@@ -256,7 +255,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 	bool fResPresent = false;
 	C4Network2Res *pRes = NULL;
 	if (pInfo)
-		if (pRes = pInfo->GetRes())
+		if ((pRes = pInfo->GetRes()))
 			fResPresent = pRes->isComplete();
 	C4RoundResultsPlayer *pEvaluationPlayer = NULL;
 	if (pList->IsEvaluation()) pEvaluationPlayer = Game.RoundResults.GetPlayers().GetByID(idPlayer);
@@ -342,8 +341,8 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateTeam()
 	if (!Game.Teams.CanLocalSeeTeam())
 		szTeamName = LoadResStr("IDS_MSG_RNDTEAM");
 	else if (pInfo)
-		if (idTeam = pInfo->GetTeam())
-			if (pTeam = Game.Teams.GetTeamByID(idTeam))
+		if ((idTeam = pInfo->GetTeam()))
+			if ((pTeam = Game.Teams.GetTeamByID(idTeam)))
 				szTeamName = pTeam->GetName();
 	pTeamCombo->SetText(szTeamName);
 	pTeamCombo->SetReadOnly(fReadOnly);
@@ -470,7 +469,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateCollapsed()
 	if (fShouldBeCollapsed == fShownCollapsed) return;
 	// so update collapsed state
 	int32_t iHeight; int32_t iNameLblX0;
-	if (fShownCollapsed = fShouldBeCollapsed)
+	if ((fShownCollapsed = fShouldBeCollapsed))
 		{
 		// calc height
 		iHeight = C4GUI::GetRes()->TextFont.GetLineHeight() + 2 * IconLabelSpacing;
@@ -550,7 +549,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContextTakeOver(C4GUI
 	if (pkInfo)
 		{
 		int32_t i=0; C4PlayerInfo *pInfo;
-		while (pInfo = pkInfo->GetPlayerInfo(i++))
+		while ((pInfo = pkInfo->GetPlayerInfo(i++)))
 			if (!pInfo->HasJoinIssued())
 				if (!pInfo->GetAssociatedSavegamePlayerID())
 					{
@@ -559,9 +558,9 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContextTakeOver(C4GUI
 						new C4GUI::CBMenuHandlerEx<PlayerListItem, int32_t>(this, &PlayerListItem::OnCtxTakeOver, pInfo->GetID()));
 					}
 		}
-	// add option to use a new one... 2do
+	// add option to use a new one... TODO
 	//pMenu->AddItem("[.!]From &File...", "Select another player file", C4GUI::Ico_Player, new C4GUI::CBMenuHandler<PlayerListItem>(this, OnCtxTest2));
-	// add option to take over from savegame player 2do
+	// add option to take over from savegame player TODO
 	//pMenu->AddItem("[.!]From &Savegame", "Use savegame player file", C4GUI::Ico_Player, new C4GUI::CBMenuHandler<PlayerListItem>(this, OnCtxTest2));
 	// open it
 	return pMenu;
@@ -619,7 +618,7 @@ void C4PlayerInfoListBox::PlayerListItem::OnTeamComboFill(C4GUI::ComboBox_FillCB
 	{
 	// add all possible teams
 	C4Team *pTeam; int32_t i=0;
-	while (pTeam = Game.Teams.GetTeamByIndex(i++))
+	while ((pTeam = Game.Teams.GetTeamByIndex(i++)))
 		if (!pTeam->IsFull() || GetPlayerInfo()->GetTeam() == pTeam->GetID())
 			pFiller->AddEntry(pTeam->GetName(), pTeam->GetID());
 	}
@@ -702,7 +701,7 @@ C4PlayerInfo *C4PlayerInfoListBox::PlayerListItem::GetJoinedInfo() const
 		return pInfo;
 	// otherwise, does it have a savegame association?
 	int32_t idSavegameInfo;
-	if (idSavegameInfo = pInfo->GetAssociatedSavegamePlayerID())
+	if ((idSavegameInfo = pInfo->GetAssociatedSavegamePlayerID()))
 		// then return the respective info from savegame recreation list
 		return Game.RestorePlayerInfos.GetPlayerInfoByID(idSavegameInfo);
 	// not joined
@@ -882,13 +881,13 @@ void C4PlayerInfoListBox::ClientListItem::UpdatePing()
 	if (pClient && !pClient->isLocal())
 		{
 		// must have a connection
-		if (pConn = pClient->getMsgConn())
+		if ((pConn = pClient->getMsgConn()))
 			// get ping of that connection
 			iPing = pConn->getLag();
 		// check data connection if msg conn gave no value
 		// what's the meaning of those two connections anyway? o_O
 		if (iPing<=0)
-			if (pConn = pClient->getDataConn())
+			if ((pConn = pClient->getDataConn()))
 				iPing = pConn->getLag();
 		}
 	// set that ping in label
@@ -1053,7 +1052,7 @@ void C4PlayerInfoListBox::TeamListItem::MoveLocalPlayersIntoTeam()
 	// now change it in its own request packet
 	C4ClientPlayerInfos LocalInfoRequest(*pChangeInfo);
 	C4PlayerInfo *pInfo; int32_t i=0;
-	while (pInfo = LocalInfoRequest.GetPlayerInfo(i++))
+	while ((pInfo = LocalInfoRequest.GetPlayerInfo(i++)))
 		if (pInfo->GetTeam() != idTeam)
 			if (pInfo->GetType() == C4PT_User)
 				{
@@ -1221,7 +1220,7 @@ C4PlayerInfoListBox::ReplayPlayersListItem::ReplayPlayersListItem(C4PlayerInfoLi
 // ------------------- C4PlayerInfoListBox ------------------------
 
 C4PlayerInfoListBox::C4PlayerInfoListBox(const C4Rect &rcBounds, Mode eMode, int32_t iTeamFilter)
-: C4GUI::ListBox(rcBounds), fIsCollapsed(false), iMaxUncollapsedPlayers(10), eMode(eMode), iTeamFilter(iTeamFilter), dwTextColor(C4GUI_MessageFontClr), pCustomFont(NULL)
+: C4GUI::ListBox(rcBounds), eMode(eMode), iMaxUncollapsedPlayers(10), fIsCollapsed(false), iTeamFilter(iTeamFilter), dwTextColor(C4GUI_MessageFontClr), pCustomFont(NULL)
 	{
 	// update if client listbox selection changes
 	SetSelectionChangeCallbackFn(new C4GUI::CallbackHandler<C4PlayerInfoListBox>(this, &C4PlayerInfoListBox::OnPlrListSelChange));
@@ -1364,7 +1363,7 @@ void C4PlayerInfoListBox::UpdateSavegamePlayers(ListItem **ppCurrInList)
 		// the players
 		bool fAnyPlayers = false;
 		C4PlayerInfo *pInfo; int32_t iInfoID=0;
-		while (pInfo = Game.RestorePlayerInfos.GetNextPlayerInfoByID(iInfoID))
+		while ((pInfo = Game.RestorePlayerInfos.GetNextPlayerInfoByID(iInfoID)))
 			{
 			iInfoID = pInfo->GetID();
 			// skip assigned
@@ -1390,7 +1389,7 @@ void C4PlayerInfoListBox::UpdateReplayPlayers(ListItem **ppCurrInList)
 	// players
 	bool fAnyPlayers = false;
 	C4PlayerInfo *pInfo; int32_t iInfoID=0;
-	while (pInfo = Game.PlayerInfos.GetNextPlayerInfoByID(iInfoID))
+	while ((pInfo = Game.PlayerInfos.GetNextPlayerInfoByID(iInfoID)))
 		{
 		if (pInfo->IsInvisible()) continue;
 		iInfoID = pInfo->GetID();
@@ -1415,10 +1414,10 @@ void C4PlayerInfoListBox::UpdateScriptPlayers(ListItem **ppCurrInList)
 			new ScriptPlayersListItem(this, *ppCurrInList);
 		// players
 		C4PlayerInfo *pInfo; int32_t iClientIdx=0; C4ClientPlayerInfos *pInfos;
-		while (pInfos = Game.PlayerInfos.GetIndexedInfo(iClientIdx++))
+		while ((pInfos = Game.PlayerInfos.GetIndexedInfo(iClientIdx++)))
 			{
 			int32_t iInfoIdx=0;
-			while (pInfo = pInfos->GetPlayerInfo(iInfoIdx++))
+			while ((pInfo = pInfos->GetPlayerInfo(iInfoIdx++)))
 				{
 				if (pInfo->GetType() != C4PT_Script) continue;
 				if (pInfo->IsRemoved()) continue;
@@ -1436,7 +1435,7 @@ void C4PlayerInfoListBox::UpdatePlayersByTeam(ListItem **ppCurrInList)
 	{
 	// sort by team
 	C4Team *pTeam; int32_t i=0;
-	while (pTeam = Game.Teams.GetTeamByIndex(i++))
+	while ((pTeam = Game.Teams.GetTeamByIndex(i++)))
 		{
 		// no empty teams that are not used
 		if (Game.Teams.IsAutoGenerateTeams() && !pTeam->GetPlayerCount()) continue;
@@ -1445,8 +1444,8 @@ void C4PlayerInfoListBox::UpdatePlayersByTeam(ListItem **ppCurrInList)
 			new TeamListItem(this, pTeam->GetID(), *ppCurrInList);
 		// players for this team
 		int32_t idPlr, j=0; int32_t idClient; C4Client *pClient; C4PlayerInfo *pPlrInfo;
-		while (idPlr = pTeam->GetIndexedPlayer(j++))
-			if (pPlrInfo = Game.PlayerInfos.GetPlayerInfoByID(idPlr, &idClient))
+		while ((idPlr = pTeam->GetIndexedPlayer(j++)))
+			if ((pPlrInfo = Game.PlayerInfos.GetPlayerInfoByID(idPlr, &idClient)))
 				if (!pPlrInfo->IsInvisible())
 					if ((pClient=Game.Clients.getClientByID(idClient)) && pClient->isActivated())
 						if (!PlrListItemUpdate(ListItem::ID::PLI_PLAYER, idPlr, ppCurrInList))
@@ -1459,7 +1458,7 @@ void C4PlayerInfoListBox::UpdatePlayersByRandomTeam(ListItem **ppCurrInList)
 	// team sort but teams set to random and invisible: Show all players within one "Random Team"-label
 	bool fTeamLabelPut = false;
 	C4Client *pClient = NULL;
-	while (pClient = Game.Clients.getClient(pClient))
+	while ((pClient = Game.Clients.getClient(pClient)))
 		{
 		// player infos for this client - not for deactivated, and never in replays
 		if (Game.C4S.Head.Replay || !pClient->isActivated()) continue;
@@ -1467,7 +1466,7 @@ void C4PlayerInfoListBox::UpdatePlayersByRandomTeam(ListItem **ppCurrInList)
 		if (pInfoPacket)
 			{
 			C4PlayerInfo *pPlrInfo; int32_t i=0;
-			while (pPlrInfo = pInfoPacket->GetPlayerInfo(i++))
+			while ((pPlrInfo = pInfoPacket->GetPlayerInfo(i++)))
 				{
 				if (pPlrInfo->IsInvisible()) continue;
 				if (!fTeamLabelPut)
@@ -1487,7 +1486,7 @@ void C4PlayerInfoListBox::UpdatePlayersByClient(ListItem **ppCurrInList)
 	{
 	// regular players
 	C4Client *pClient = NULL;
-	while (pClient = Game.Clients.getClient(pClient))
+	while ((pClient = Game.Clients.getClient(pClient)))
 		{
 		// the client label
 		if (!PlrListItemUpdate(ListItem::ID::PLI_CLIENT, pClient->getID(), ppCurrInList))
@@ -1499,7 +1498,7 @@ void C4PlayerInfoListBox::UpdatePlayersByClient(ListItem **ppCurrInList)
 		if (pInfoPacket)
 			{
 			C4PlayerInfo *pPlrInfo; int32_t i=0;
-			while (pPlrInfo = pInfoPacket->GetPlayerInfo(i++))
+			while ((pPlrInfo = pInfoPacket->GetPlayerInfo(i++)))
 				{
 				if (pPlrInfo->GetType() == C4PT_Script) continue;
 				if (pPlrInfo->IsRemoved()) continue;
@@ -1542,7 +1541,7 @@ void C4PlayerInfoListBox::UpdatePlayersByEvaluation(ListItem **ppCurrInList, boo
 			{
 			// Normal mode: Add all teams of winning status
 			C4Team *pTeam; int32_t i=0;
-			while (pTeam = Game.Teams.GetTeamByIndex(i++))
+			while ((pTeam = Game.Teams.GetTeamByIndex(i++)))
 				{
 				UpdatePlayersByEvaluation(ppCurrInList, pTeam, eAddMode);
 				}
@@ -1559,10 +1558,10 @@ void C4PlayerInfoListBox::UpdatePlayersByEvaluation(ListItem **ppCurrInList, C4T
 	// now add all matching players
 	int32_t iTeamID = pTeam ? pTeam->GetID() : 0;
 	C4ClientPlayerInfos *pInfoPacket; int32_t iClient=0;
-	while (pInfoPacket = Game.PlayerInfos.GetIndexedInfo(iClient++))
+	while ((pInfoPacket = Game.PlayerInfos.GetIndexedInfo(iClient++)))
 		{
 		C4PlayerInfo *pPlrInfo; int32_t i=0;
-		while (pPlrInfo = pInfoPacket->GetPlayerInfo(i++))
+		while ((pPlrInfo = pInfoPacket->GetPlayerInfo(i++)))
 			{
 			if (!pPlrInfo->HasJoined()) continue;
 			if (pPlrInfo->GetTeam() != iTeamID) continue;

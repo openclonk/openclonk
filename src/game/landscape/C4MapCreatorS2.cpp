@@ -38,7 +38,7 @@ C4MCCallbackArray::C4MCCallbackArray(C4AulFunc *pSFunc, C4MapCreatorS2 *pMapCrea
 	// zero fields
 	pMap=NULL; pNext=NULL;
 	// store and add in map creator
-	if (this->pMapCreator=pMapCreator)
+	if ((this->pMapCreator=pMapCreator))
 		pMapCreator->CallbackArrays.Add(this);
 	// done
 	}
@@ -114,7 +114,7 @@ void C4MCCallbackArrayList::Clear()
 	{
 	// remove all arrays
 	C4MCCallbackArray *pArray, *pNext=pFirst;
-	while (pArray=pNext)
+	while ((pArray=pNext))
 		{
 		pNext=pArray->pNext;
 		delete pArray;
@@ -168,10 +168,10 @@ void C4MCNode::Reg2Owner(C4MCNode *pOwner)
 	// init list
 	Child0=ChildL=NULL;
 	// owner?
-	if (Owner=pOwner)
+	if ((Owner=pOwner))
 		{
 		// link into it
-		if (Prev = Owner->ChildL)
+		if ((Prev = Owner->ChildL))
 			Prev->Next = this;
 		else
 			Owner->Child0 = this;
@@ -384,6 +384,9 @@ bool C4MCOverlay::SetField(C4MCParser *pParser, const char *szField, const char 
 					// add to main
 					*((C4MCCallbackArray **) pTarget) = new C4MCCallbackArray(pSFunc, MapCreator);
 					}
+				default:
+                                        // TODO
+					break;
 				}
 			// done
 			return true;
@@ -420,7 +423,7 @@ void C4MCOverlay::Evaluate()
 	if (Owner)
 		{
 		C4MCOverlay *pOwnrOvrl;
-		if (pOwnrOvrl=OwnerOverlay())
+		if ((pOwnrOvrl=OwnerOverlay()))
 			{
 			//int32_t iOwnerX=pOwnrOvrl->X; int32_t iOwnerY=pOwnrOvrl->Y;
 			int32_t iOwnerWdt=pOwnrOvrl->Wdt; int32_t iOwnerHgt=pOwnrOvrl->Hgt;
@@ -623,7 +626,7 @@ void C4MCPoint::Evaluate()
 	if (Owner)
 		{
 		C4MCOverlay *pOwnrOvrl;
-		if (pOwnrOvrl=OwnerOverlay())
+		if ((pOwnrOvrl=OwnerOverlay()))
 			{
 			X = RX.Evaluate(pOwnrOvrl->Wdt) + pOwnrOvrl->X;
 			Y = RY.Evaluate(pOwnrOvrl->Hgt) + pOwnrOvrl->Y;
@@ -776,7 +779,7 @@ C4MCMap *C4MapCreatorS2::GetMap(const char *szMapName)
 	if (szMapName && *szMapName)
 		{
 		// by name...
-		if (pNode = GetNodeByName(szMapName))
+		if ((pNode = GetNodeByName(szMapName)))
 			if (pNode->Type() == MCN_Map)
 				pMap = (C4MCMap *) pNode;
 		}
@@ -891,7 +894,7 @@ bool C4MCParser::AdvanceSpaces()
 	// defaultly, not in comment
 	int32_t InComment = 0; // 0/1/2 = no comment/line comment/multi line comment
 	// don't go past end
-	while (C = *CPos)
+	while ((C = *CPos))
 		{
 		// loop until out of comment and non-whitespace is found
 		switch (InComment)
@@ -952,7 +955,7 @@ bool C4MCParser::GetNextToken()
 			case TGS_None:
 				// get token type by first char
 				// +/- are operators
-				if (((C >= '0') && (C <= '9') || (C == '+') || (C == '-')))
+				if ((((C >= '0') && (C <= '9')) || (C == '+') || (C == '-')))
 														State = TGS_Int;															// integer by +, -, 0-9
 				else if (C == '#')	State = TGS_Dir;															// directive by "#"
 				else if (C == ';') {CPos++; CurrToken=MCT_SCOLON;		return true; }	// ";"
@@ -1036,7 +1039,7 @@ void C4MCParser::ParseTo(C4MCNode *pToNode)
 	{
 	C4MCNode *pNewNode=NULL;	// new node
 	bool Done=false;					// finished?
-	C4MCNodeType LastOperand; // last first operand of operator
+	C4MCNodeType LastOperand = C4MCNodeType(-1); // last first operand of operator
 	char FieldName[C4MaxName];// buffer for current field to access
 	C4MCNode *pCpyNode;				// node to copy from
 	// current state
@@ -1442,7 +1445,7 @@ bool PreparePeek(C4MCOverlay **ppOvrl, int32_t &iX, int32_t &iY, C4MCOverlay **p
 	if (!pOvrl2) return false;
 	// get uppermost overlay
 	C4MCOverlay *pNextOvrl;
-	for (*ppTopOvrl=pOvrl2; pNextOvrl=(*ppTopOvrl)->OwnerOverlay(); *ppTopOvrl=pNextOvrl) {}
+	for (*ppTopOvrl=pOvrl2; (pNextOvrl=(*ppTopOvrl)->OwnerOverlay()); *ppTopOvrl=pNextOvrl) {}
 	// get first of operator-chain
 	pOvrl2=pOvrl2->FirstOfChain();
 	// set new overlay
@@ -1625,7 +1628,7 @@ bool AlgoPolygon(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 				else
 					{
 					//if edge intersects line
-					if ((uY < iY == iY < cY) && (lX >= iX)) count++;
+					if ((uY < iY) == (iY < cY) && (lX >= iX)) count++;
 					ignore = false;
 					uX = cX;
 					uY = cY;
@@ -1646,7 +1649,7 @@ bool AlgoPolygon(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 				else
 					{
 					//if edge intersects line
-					if (uY < iY == iY <= cY)
+					if ((uY < iY) == (iY <= cY))
 						{
 						//and edge intersects ray, because both points are right of iX
 						if (iX < Min (uX, cX))
@@ -1700,7 +1703,7 @@ C4MCAlgorithm C4MCAlgoMap[] = {
 
 
 #ifndef offsetof
-#define offsetof(s,m)	(size_t)&(((s *)0)->m)
+#define offsetof(s,m)	((size_t)&(((s *)0)->m))
 #endif
 #define offsC4MCOvrl(x) offsetof(C4MCOverlay,x)
 

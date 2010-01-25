@@ -68,11 +68,12 @@ struct StdMeshVertex
 struct StdMeshQuaternion
 {
 	float w;
-	union
-	{
-	  struct { float x, y, z; };
-	  StdMeshVector v;
-	};
+	// union
+	// {
+	//   struct { float x, y, z; };
+	//   StdMeshVector v;
+	// };
+	float x, y, z;
 
 	static StdMeshQuaternion Zero();
 	static StdMeshQuaternion AngleAxis(float theta, const StdMeshVector& axis);

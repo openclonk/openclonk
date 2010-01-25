@@ -42,10 +42,12 @@ void C4AulExecError::show()
 	C4AulError::show();
 	// debug mode object message
 	if (Game.DebugMode)
+		{
 		if (cObj)
 			::Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
 		else
 			::Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
+		}
 	}
 
 const int MAX_CONTEXT_STACK = 512;
@@ -63,6 +65,7 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 		int iNullPars = 0;
 		for(int i = 0; i < C4AUL_MAX_Par; i++)
 			if(Pars + i < Vars)
+				{
 				if(!Pars[i])
 					iNullPars++;
 				else
@@ -78,6 +81,7 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 					// Insert parameter
 					Dump.Append(Pars[i].GetDataString());
 					}
+				}
 		Dump.AppendChar(')');
 		}
 	else
@@ -302,6 +306,7 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 
 	// Push a new context
 	C4AulScriptContext ctx;
+	ctx.tTime = 0;
 	ctx.Obj = pObj;
 	ctx.Def = pDef;
 	ctx.Return = NULL;
@@ -755,7 +760,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					C4Value &Index = pCurVal[0];
 					C4Value &Array = pCurVal[-1].GetRefVal();
 					// Typcheck
-					if(!Array.ConvertTo(C4V_Array) && !Array.ConvertTo(C4V_PropList) || Array.GetType() == C4V_Any)
+					if((!Array.ConvertTo(C4V_Array) && !Array.ConvertTo(C4V_PropList)) || Array.GetType() == C4V_Any)
 						throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: can't access %s as an array!", Array.GetTypeName()).getData());
 					else if(Array.GetType() == C4V_Array)
 						{
@@ -1366,7 +1371,7 @@ void C4AulScript::ResetProfilerTimes()
 	// zero all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
 	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
-		if (pSFunc = pFn->SFunc())
+		if ((pSFunc = pFn->SFunc()))
 			pSFunc->tProfileTime = 0;
 	// reset sub-scripts
 	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
@@ -1378,7 +1383,7 @@ void C4AulScript::CollectProfilerTimes(class C4AulProfiler &rProfiler)
 	// collect all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
 	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
-		if (pSFunc = pFn->SFunc())
+		if ((pSFunc = pFn->SFunc()))
 			rProfiler.CollectEntry(pSFunc, pSFunc->tProfileTime);
 	// collect sub-scripts
 	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)

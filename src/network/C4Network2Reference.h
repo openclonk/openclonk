@@ -180,6 +180,7 @@ public:
   void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
 
 	// Overridden
+	virtual bool Execute(int iMaxTime, pollfd * readyfds) { return Execute(iMaxTime); }
 	virtual bool Execute(int iMaxTime = TO_INF);
 	virtual int GetNextTick(int Now);
 
@@ -197,7 +198,7 @@ class C4Network2RefClient : public C4Network2HTTPClient
 protected:
 	virtual int32_t GetDefaultPort() { return C4NetStdPortRefServer; }
 public:
-	C4Network2RefClient() : fVerSet(false), C4Network2HTTPClient() {}
+	C4Network2RefClient() : C4Network2HTTPClient(), fVerSet(false) {}
 
   bool QueryReferences();
   bool GetReferences(C4Network2Reference **&rpReferences, int32_t &rRefCount);

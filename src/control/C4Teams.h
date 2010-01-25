@@ -27,7 +27,7 @@ class C4Group;
 
 // class predec
 class C4TeamList;
-namespace C4GUI { class ComboBox_FillCB; };
+namespace C4GUI { class ComboBox_FillCB; }
 
 // constant used by lobby to indicate invisible, random team
 const int32_t TEAMID_Unknown = -1;
@@ -107,7 +107,7 @@ class C4TeamList
 			TEAM_Dist                 = 4,
 			TEAM_AllowTeamSwitch      = 5,
 			TEAM_AutoGenerateTeams    = 6,
-			TEAM_TeamColors           = 7,
+			TEAM_TeamColors           = 7
 			};
 
 		// team distribution configuration
@@ -118,7 +118,7 @@ class C4TeamList
 			TEAMDIST_Host      = 1, // host decides teams
 			TEAMDIST_Random    = 2, // fixed random teams
 			TEAMDIST_RandomInv = 3, // fixed random teams invisible in lobby
-			TEAMDIST_Last      = 3,
+			TEAMDIST_Last      = 3
 			};
 
 	private:
@@ -140,7 +140,7 @@ class C4TeamList
 
 	public:
 		C4TeamList() : ppList(NULL), iTeamCount(0), iTeamCapacity(0), iLastTeamID(0), fAllowHostilityChange(true), fAllowTeamSwitch(false),
-			fActive(true), fCustom(false), eTeamDist(TEAMDIST_Free), fTeamColors(false), fAutoGenerateTeams(false), iMaxScriptPlayers(0) {}
+			fActive(true), fCustom(false), fTeamColors(false), fAutoGenerateTeams(false), eTeamDist(TEAMDIST_Free), iMaxScriptPlayers(0) {}
 		~C4TeamList() { Clear(); }
 		void Clear();
 

@@ -85,7 +85,7 @@ C4Effect::C4Effect(C4Object *pForObj, const char *szName, int32_t iPrio, int32_t
 	pPrev = *ppEffectList;
 	if (pPrev && Abs(pPrev->iPriority) < iPrio)
 		{
-		while (pCheck = pPrev->pNext)
+		while ((pCheck = pPrev->pNext))
 			if (Abs(pCheck->iPriority) >= iPrio) break; else pPrev = pCheck;
 		// insert after previous
 		pNext = pPrev->pNext;
@@ -156,7 +156,7 @@ C4Effect::~C4Effect()
 	{
 	// del following effects (not recursively)
 	C4Effect *pEffect;
-	while (pEffect = pNext)
+	while ((pEffect = pNext))
 		{
 		pNext = pEffect->pNext;
 		pEffect->pNext = NULL;
@@ -174,7 +174,7 @@ void C4Effect::EnumeratePointers()
 		pEff->nCommandTarget = ::Objects.ObjectNumber(pEff->pCommandTarget);
 		// effect var denumeration: not necessary, because this is done while saving
 		}
-	while (pEff=pEff->pNext);
+	while ((pEff=pEff->pNext));
 	}
 
 void C4Effect::DenumeratePointers()
@@ -190,7 +190,7 @@ void C4Effect::DenumeratePointers()
 		// assign any callback functions
 		pEff->AssignCallbackFunctions();
 		}
-	while (pEff=pEff->pNext);
+	while ((pEff=pEff->pNext));
 	}
 
 void C4Effect::ClearPointers(C4Object *pObj)
@@ -204,7 +204,7 @@ void C4Effect::ClearPointers(C4Object *pObj)
 			pEff->SetDead();
 			pEff->pCommandTarget=NULL;
 			}
-	while (pEff=pEff->pNext);
+	while ((pEff=pEff->pNext));
 	}
 
 C4Effect *C4Effect::Get(const char *szName, int32_t iIndex, int32_t iMaxPriority)
@@ -228,7 +228,7 @@ C4Effect *C4Effect::Get(const char *szName, int32_t iIndex, int32_t iMaxPriority
 		// effect found
 		return pEff;
 		}
-	while (pEff=pEff->pNext);
+	while ((pEff=pEff->pNext));
 	// nothing found
 	return NULL;
 	}
@@ -246,7 +246,7 @@ C4Effect *C4Effect::Get(int32_t iNumber, bool fIncludeDead, int32_t iMaxPriority
 			// effect found but denied
 			return NULL;
 			}
-	while (pEff=pEff->pNext);
+	while ((pEff=pEff->pNext));
 	// nothing found
 	return NULL;
 	}
@@ -259,7 +259,7 @@ int32_t C4Effect::GetCount(const char *szMask, int32_t iMaxPriority)
 		if (!szMask || SWildcardMatchEx(pEff->Name, szMask))
 			if (!iMaxPriority || pEff->iPriority <= iMaxPriority)
 				++iCnt;
-	while (pEff = pEff->pNext);
+	while ((pEff = pEff->pNext));
 	// return count
 	return iCnt;
 	}
@@ -336,6 +336,7 @@ void C4Effect::Execute(C4Object *pObj)
 			++pEffect->iTime;
 			// check timer execution
 			if (pEffect->iIntervall && !(pEffect->iTime % pEffect->iIntervall))
+				{
 				if (pEffect->pFnTimer)
 					{
 					if (pEffect->pFnTimer->Exec(pEffect->pCommandTarget, &C4AulParSet(C4VObj(pObj), C4VInt(pEffect->iNumber), C4VInt(pEffect->iTime))).getInt() == C4Fx_Execute_Kill)
@@ -351,6 +352,7 @@ void C4Effect::Execute(C4Object *pObj)
 				else
 					// no timer function: mark dead after time elapsed
 					pEffect->Kill(pObj);
+				}
 			// next effect
 			ppPrevEffect = &pEffect->pNext;
 			pEffect = pEffect->pNext;
@@ -518,6 +520,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 	pComp->Seperator(StdCompiler::SEP_END); // ')'
 	// read variables
 	if(pComp->isCompiler() || EffectVars.GetSize() > 0)
+		{
 		if(pComp->Seperator(StdCompiler::SEP_START2)) // '['
 			{
 			pComp->Value(EffectVars);
@@ -525,6 +528,7 @@ void C4Effect::CompileFunc(StdCompiler *pComp)
 			}
 		else
 			EffectVars.Reset();
+		}
 	// is there a next effect?
 	bool fNext = !! pNext;
 	if(pComp->hasNaming())
@@ -577,13 +581,13 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	// eject contents
 	C4Object *cobj;
 	if (!pObj->Def->IncompleteActivity && !pObj->Def->NoBurnDecay)
-		while (cobj=pObj->Contents.GetObject())
+		while ((cobj=pObj->Contents.GetObject()))
 			if (pObj->Contained) cobj->Enter(pObj->Contained);
 			else cobj->Exit(cobj->GetX(),cobj->GetY());
 	// Detach attached objects
 	cobj = 0;
 	if (!pObj->Def->IncompleteActivity && !pObj->Def->NoBurnDecay)
-		while (cobj = Game.FindObject(C4ID::None, 0, 0, 0, 0, OCF_All, 0, pObj, 0, 0, ANY_OWNER, cobj))
+		while ((cobj = Game.FindObject(C4ID::None, 0, 0, 0, 0, OCF_All, 0, pObj, 0, 0, ANY_OWNER, cobj)))
 			if (cobj->Action.pActionDef && (cobj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH))
 				cobj->SetAction(0);
 	// fire caused?
@@ -634,8 +638,8 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 
 	// get cause
 	int32_t iCausedByPlr = NO_OWNER; C4Effect *pEffect;
-	if (pEffect = pObj->pEffects)
-		if (pEffect = pEffect->Get(iNumber, true))
+	if ((pEffect = pObj->pEffects))
+		if ((pEffect = pEffect->Get(iNumber, true)))
 			{
 		  iCausedByPlr = FxFireVarCausedBy(pEffect).getInt();
 			if (!ValidPlr(iCausedByPlr)) iCausedByPlr = NO_OWNER;
@@ -844,7 +848,7 @@ void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
 	// Create smoke
 	level=BoundBy<int32_t>(level,3,32);
 	C4Object *pObj;
-	if (pObj = Game.CreateObjectConstruction(C4Id2Def(C4ID("FXS1")),NULL,NO_OWNER,tx,ty,FullCon*level/32))
+	if ((pObj = Game.CreateObjectConstruction(C4Id2Def(C4ID("FXS1")),NULL,NO_OWNER,tx,ty,FullCon*level/32)))
 		pObj->Call(PSF_Activate);
   }
 
@@ -883,7 +887,7 @@ void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t i
 				::Particles.Cast(::Particles.pFSpark, level/5+1, (float) tx, (float) ty, level, level/2+1.0f, 0x00ef0000, level+1.0f, 0xffff1010);
 			}
 		else
-			if (pBlast = Game.CreateObjectConstruction(C4Id2Def(idEffect ? idEffect : C4ID("FXB1")),pByObj,iCausedBy,tx,ty+level,FullCon*level/20))
+			if ((pBlast = Game.CreateObjectConstruction(C4Id2Def(idEffect ? idEffect : C4ID("FXB1")),pByObj,iCausedBy,tx,ty+level,FullCon*level/20)))
 				pBlast->Call(PSF_Activate);
     }
   // Blast objects

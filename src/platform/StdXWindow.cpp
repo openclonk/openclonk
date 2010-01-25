@@ -54,7 +54,7 @@
 CStdWindow::CStdWindow ():
 	Active(false)
 #ifdef USE_X11
-	,wnd(0), renderwnd(0), dpy(0), Info(0), Hints(0), HasFocus(false)
+	,wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0)
 #endif
 {
 }

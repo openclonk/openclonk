@@ -63,7 +63,7 @@ class C4ObjectList
 		int Mass;
 		std::list<int32_t> *pEnumerated;
 
-		enum SortType { stNone=0, stMain, stContents, stReverse, };
+		enum SortType { stNone=0, stMain, stContents, stReverse };
 
 		// An iterator which survives if an object is removed from the list
 		class iterator

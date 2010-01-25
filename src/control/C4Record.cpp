@@ -671,7 +671,7 @@ StdBuf C4Playback::ReWriteBinary()
 	const int OUTPUT_GROW = 16 * 1024;
 	StdBuf Output; int iPos = 0;
 	bool fFinished = false;
-	uint32_t iFrame = 0;
+	int32_t iFrame = 0;
 	for(chunks_t::const_iterator i = chunks.begin(); !fFinished && i != chunks.end(); i++)
 		{
 		// Check frame difference
@@ -783,6 +783,9 @@ void C4Playback::Strip()
 								i->pCtrl->Remove(pPkt);
 								}
 							break;
+						default:
+                                                        // TODO
+							break;
 						}
 					}
 				// Strip empty control lists (always)
@@ -812,6 +815,9 @@ void C4Playback::Strip()
 						break;
 					case CID_Message:
 						if (fStripMessages) fStripThis=true;
+						break;
+					default:
+                                                // TODO
 						break;
 					}
 				if (fStripThis)
@@ -1157,7 +1163,7 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 	// Parse
 	C4Playback Playback;
 	Playback.ReadBinary(StreamData);
-	LogF("Got %d chunks from stream", Playback.chunks.size());
+	LogF("Got %lu chunks from stream", static_cast<unsigned long>(Playback.chunks.size()));
 
 	// Get first chunk, which must contain the initial
 	chunks_t::iterator chunkIter = Playback.chunks.begin();
@@ -1166,7 +1172,6 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 
 	// Get initial chunk, go over file name
 	StdBuf InitialData = *chunkIter->pFileData;
-	const char *szInitialFilename = chunkIter->Filename.getData();
 
 	// Put to temporary file and unpack
 	char szInitial[_MAX_PATH+1] = "~initial.tmp";

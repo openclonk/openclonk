@@ -149,6 +149,7 @@ void C4ControlSet::Execute() const
 {
 	switch(eValType)
 	{
+	case C4CVT_None: break;
 
 	case C4CVT_ControlRate: // adjust control rate
 		// host only
@@ -278,7 +279,7 @@ void C4ControlScript::Execute() const
 		pScript = &Game.Script;
 	else if (iTargetObj == SCOPE_Global)
 		pScript = &::ScriptEngine;
-	else if (pObj = ::Objects.SafeObjectPointer(iTargetObj))
+	else if ((pObj = ::Objects.SafeObjectPointer(iTargetObj)))
 		pScript = &(pObj->Def->Script);
 	else
 		// default: Fallback to global context
@@ -319,7 +320,7 @@ void C4ControlScript::CompileFunc(StdCompiler *pComp)
 // *** C4ControlPlayerSelect
 
 C4ControlPlayerSelect::C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt)
-	: iPlr(iPlr), iObjCnt(Objs.ObjectCount()), fIsAlt(fIsAlt)
+	: iPlr(iPlr), fIsAlt(fIsAlt), iObjCnt(Objs.ObjectCount())
 {
 	pObjNrs = new int32_t[iObjCnt];
 	int32_t i = 0;
@@ -339,15 +340,17 @@ void C4ControlPlayerSelect::Execute() const
 	C4ObjectList SelectObjs;
 	int32_t iControlChecksum = 0;
 	for(int32_t i = 0; i < iObjCnt; i++)
-		if(pObj = ::Objects.SafeObjectPointer(pObjNrs[i]))
+		if((pObj = ::Objects.SafeObjectPointer(pObjNrs[i])))
 		{
 			iControlChecksum += pObj->Number * (iControlChecksum+4787821);
 			// user defined object selection: callback to object
 			if (pObj->Category & C4D_MouseSelect)
+				{
 				if (fIsAlt)
 					pObj->Call(PSF_MouseSelectionAlt, &C4AulParSet(C4VInt(iPlr)));
 				else
 					pObj->Call(PSF_MouseSelection, &C4AulParSet(C4VInt(iPlr)));
+				}
 			// player crew selection (recheck status of pObj)
 			if (pObj->Status && pPlr->ObjectInCrew(pObj) && !fIsAlt)
 				SelectObjs.Add(pObj, C4ObjectList::stNone);
@@ -600,6 +603,7 @@ void C4ControlClientUpdate::Execute() const
 	// do whatever specified
 	switch(eType)
 	{
+	case CUT_None: break;
 	case CUT_Activate:
 		// nothing to do?
 		if(pClient->isActivated() == !!iData) break;
@@ -915,7 +919,7 @@ void C4ControlEMMoveObject::Execute() const
 			// move all given objects
 			C4Object *pObj;
 			for (int i=0; i<iObjectNum; ++i)
-				if (pObj = ::Objects.SafeObjectPointer(pObjects[i])) if (pObj->Status)
+				if ((pObj = ::Objects.SafeObjectPointer(pObjects[i]))) if (pObj->Status)
 					{
 					pObj->ForcePosition(pObj->GetX()+tx,pObj->GetY()+ty);
 					pObj->xdir=pObj->ydir=0;
@@ -930,7 +934,7 @@ void C4ControlEMMoveObject::Execute() const
 			C4Object *pObj, *pTarget = ::Objects.SafeObjectPointer(iTargetObj);
 			if (pTarget)
 				for (int i=0; i<iObjectNum; ++i)
-					if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
+					if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 						pObj->Enter(pTarget);
 			}
 			break;
@@ -942,7 +946,7 @@ void C4ControlEMMoveObject::Execute() const
 			// perform duplication
 			C4Object *pObj;
 			for (int i=0; i<iObjectNum; ++i)
-				if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
+				if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 					{
 					pObj = Game.CreateObject(pObj->GetPrototype(), pObj, pObj->Owner, pObj->GetX(), pObj->GetY());
 					if (pObj && fLocalCall) Console.EditCursor.GetSelection().Add(pObj, C4ObjectList::stNone);
@@ -975,7 +979,7 @@ void C4ControlEMMoveObject::Execute() const
 			// remove all objects
 			C4Object *pObj;
 			for (int i=0; i<iObjectNum; ++i)
-				if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
+				if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 					pObj->AssignRemoval();
 			}
       break; // Here was fallthrough. Seemed wrong. ck.
@@ -985,7 +989,7 @@ void C4ControlEMMoveObject::Execute() const
 			// exit all objects
 			C4Object *pObj;
 			for (int i=0; i<iObjectNum; ++i)
-				if (pObj = ::Objects.SafeObjectPointer(pObjects[i]))
+				if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 					pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->r);
 			}
       break; // Same. ck.
@@ -1057,6 +1061,8 @@ void C4ControlEMDrawTool::Execute() const
 			for (int cnt=0; cnt<iGrade; cnt++)
 				::Landscape.InsertMaterial(iMat,iX+Random(iGrade)-iGrade/2,iY+Random(iGrade)-iGrade/2);
 			}
+			break;
+		default:
 			break;
 		}
 	}
@@ -1139,7 +1145,7 @@ void C4ControlMessage::Execute() const
 			{
 			// for running game mode, check actual hostility
 			C4Player *pLocalPlr;
-			for(int cnt = 0; pLocalPlr = ::Players.GetLocalByIndex(cnt); cnt++)
+			for(int cnt = 0; (pLocalPlr = ::Players.GetLocalByIndex(cnt)); cnt++)
 				if(!Hostile(pLocalPlr->Number, iPlayer))
 					break;
 			if(pLocalPlr) Log(FormatString("<c %x>{%s} %s</c>", pPlr->ColorDw, pPlr->GetName(), szMessage).getData());
@@ -1161,7 +1167,7 @@ void C4ControlMessage::Execute() const
 		if(!pPlr) break;
 		// show only if the target player is local
 		C4Player *pLocalPlr;
-		for(int cnt = 0; pLocalPlr = ::Players.GetLocalByIndex(cnt); cnt++)
+		for(int cnt = 0; (pLocalPlr = ::Players.GetLocalByIndex(cnt)); cnt++)
 			if(pLocalPlr->ID == iToPlayer)
 				break;
 		if(pLocalPlr)
@@ -1355,12 +1361,14 @@ void C4ControlVote::Execute() const
 				iVotesTeam++;
 				// Search vote of this client on the subject
 				C4IDPacket *pPkt; C4ControlVote *pVote;
-				if(pPkt = ::Network.GetVote(iClientID, eType, iData))
-					if(pVote = static_cast<C4ControlVote *>(pPkt->getPkt()))
+				if((pPkt = ::Network.GetVote(iClientID, eType, iData)))
+					if((pVote = static_cast<C4ControlVote *>(pPkt->getPkt())))
+						{
 						if(pVote->isApprove())
 							iPositiveTeam++;
 						else
 							iNegativeTeam++;
+						}
 				}
 			// Any votes available?
 			if(iVotesTeam)
@@ -1420,8 +1428,8 @@ void C4ControlVoteEnd::Execute() const
 	case VT_Cancel:
 		// Flag players
 		if(!Game.GameOver)
-			for(iClient = 0; pInfos = Game.PlayerInfos.GetIndexedInfo(iClient); iClient++)
-				for(iInfo = 0; pInfo = pInfos->GetPlayerInfo(iInfo); iInfo++)
+			for(iClient = 0; (pInfos = Game.PlayerInfos.GetIndexedInfo(iClient)); iClient++)
+				for(iInfo = 0; (pInfo = pInfos->GetPlayerInfo(iInfo)); iInfo++)
 					if(!pInfo->IsRemoved())
 						pInfo->SetVotedOut();
 		// Abort the game
@@ -1432,7 +1440,7 @@ void C4ControlVoteEnd::Execute() const
 		pInfos = Game.PlayerInfos.GetInfoByClientID(getData());
 		if(!Game.GameOver)
 			if(pInfos)
-				for(iInfo = 0; pInfo = pInfos->GetPlayerInfo(iInfo); iInfo++)
+				for(iInfo = 0; (pInfo = pInfos->GetPlayerInfo(iInfo)); iInfo++)
 					if(!pInfo->IsRemoved())
 						pInfo->SetVotedOut();
 		// Remove the client
@@ -1452,6 +1460,9 @@ void C4ControlVoteEnd::Execute() const
 			// Game over immediately, so poor player won't continue game alone
 			Game.DoGameOver();
 			}
+		break;
+	default:
+		// TODO
 		break;
 	}
 }

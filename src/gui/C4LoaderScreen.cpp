@@ -57,7 +57,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 	C4Group *pGroup=NULL,*pChosenGrp=NULL;
 	char ChosenFilename[_MAX_PATH+1];
 	// query groups of equal priority in set
-	while (pGroup=Game.GroupSet.FindGroup(C4GSCnt_Loaders, pGroup, true))
+	while ((pGroup=Game.GroupSet.FindGroup(C4GSCnt_Loaders, pGroup, true)))
 		{
 		iLoaders+=SeekLoaderScreens(*pGroup, szLoaderSpecPng, iLoaders, ChosenFilename, &pChosenGrp);
 		iLoaders+=SeekLoaderScreens(*pGroup, szLoaderSpecJpeg, iLoaders, ChosenFilename, &pChosenGrp);

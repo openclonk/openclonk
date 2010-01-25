@@ -34,12 +34,12 @@
 C4SoundEffect::C4SoundEffect():
 	UsageTime (0),
 	Instances (0),
+	Static (false),
 #if defined HAVE_FMOD || defined HAVE_LIBSDL_MIXER
 	pSample (NULL),
 #endif
-	Static (false),
-	Next (NULL),
-	FirstInst (NULL)
+	FirstInst (NULL),
+	Next (NULL)
 	{
 	Name[0]=0;
 	}
@@ -196,9 +196,9 @@ void C4SoundEffect::RemoveInst(C4SoundInstance *pInst)
 
 C4SoundInstance::C4SoundInstance():
 	pEffect (NULL),
-	pNext (NULL),
+	iVolume (0), iPan (0),
 	iChannel (-1),
-	iPan (0), iVolume (0)
+	pNext (NULL)
 {
 }
 
@@ -574,7 +574,8 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, bool fStatic)
 		hGroup.ResetSearch();
 		while (hGroup.FindNextEntry(szFileType, szFilename))
 			// Create and load effect
-			if (nsfx = new C4SoundEffect)
+			if ((nsfx = new C4SoundEffect))
+				{
 				if (nsfx->Load(szFilename,hGroup,fStatic))
 					{
 					// Overload same name effects
@@ -586,6 +587,7 @@ int32_t C4SoundSystem::LoadEffects(C4Group &hGroup, bool fStatic)
 					}
 				else
 					delete nsfx;
+				}
 	}
 	return iNum;
 	}

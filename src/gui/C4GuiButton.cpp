@@ -239,7 +239,7 @@ void IconButton::DrawElement(C4TargetFacet &cgo)
 	}
 
 IconButton::IconButton(Icons eUseIcon, const C4Rect &rtBounds, char caHotkey)
-: Button("", rtBounds), fHighlight(false), fHasClr(false), dwClr(0u)
+: Button("", rtBounds), dwClr(0u), fHasClr(false), fHighlight(false)
 	{
 	// ctor
 	cHotkey = caHotkey;
@@ -298,7 +298,7 @@ int32_t ArrowButton::GetDefaultHeight()
 // FacetButton
 
 FacetButton::FacetButton(const C4Facet &rBaseFct, const C4Facet &rHighlightFct, const FLOAT_RECT &rtfBounds, char cHotkey)
-: Button("", C4Rect(rtfBounds)), fctBase(rBaseFct), fctHighlight(rHighlightFct), rcfDrawBounds(rtfBounds), dwTextClrInact(0x7f000000), dwTextClrAct(0xff000000), pFont(NULL), fFontZoom(1.0f)
+: Button("", C4Rect(rtfBounds)), fctBase(rBaseFct), fctHighlight(rHighlightFct), dwTextClrInact(0x7f000000), dwTextClrAct(0xff000000), rcfDrawBounds(rtfBounds), pFont(NULL), fFontZoom(1.0f)
 	{
 	// ctor
 	this->cHotkey = cHotkey;
@@ -338,5 +338,5 @@ void FacetButton::DrawElement(C4TargetFacet &cgo)
 	}
 
 
-}; // end of namespace
+} // end of namespace
 

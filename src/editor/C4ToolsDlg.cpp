@@ -107,7 +107,7 @@ namespace {
 		gdk_pixbuf_unref(pixbuf);
 		return image;
 	}
-};
+}
 #endif
 
 #ifdef _WIN32
@@ -996,7 +996,7 @@ void C4ToolsDlg::AssertValidTexture()
 	if (::TextureMap.GetIndex(Material,Texture,false)) return;
 	// Find valid material-texture
 	const char *szTexture;
-	for (int32_t iTexture=0; szTexture=::TextureMap.GetTexture(iTexture); iTexture++)
+	for (int32_t iTexture=0; (szTexture=::TextureMap.GetTexture(iTexture)); iTexture++)
 		{
 		if (::TextureMap.GetIndex(Material,szTexture,false))
 			{ SelectTexture(szTexture); return; }

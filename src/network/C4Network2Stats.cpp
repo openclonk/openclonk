@@ -35,9 +35,8 @@ C4Graph::C4Graph()
 	}
 
 C4TableGraph::C4TableGraph(int iBackLogLength, int iStartTime)
-: iBackLogLength(iBackLogLength), pValues(NULL), iBackLogPos(0), fWrapped(false)
-, iTime(iStartTime), iInitialStartTime(iStartTime), pAveragedValues(NULL), iAveragedTime(iStartTime), iAvgRange(1)
-, fMultiplier(1)
+: iBackLogLength(iBackLogLength), pValues(NULL), fMultiplier(1), pAveragedValues(NULL), iBackLogPos(0), fWrapped(false)
+, iInitialStartTime(iStartTime), iTime(iStartTime), iAveragedTime(iStartTime), iAvgRange(1)
 	{
 	// create value buffer
 	assert(iBackLogLength);
@@ -291,13 +290,13 @@ void C4GraphCollection::Update() const
 
 void C4GraphCollection::SetAverageTime(int iToTime)
 	{
-	if (iCommonAvgTime = iToTime)
+	if ((iCommonAvgTime = iToTime))
 		for (iterator i = begin(); i != end(); ++i) (*i)->SetAverageTime(iToTime);
 	}
 
 void C4GraphCollection::SetMultiplier(ValueType fToVal)
 	{
-	if (fMultiplier = fToVal)
+	if ((fMultiplier = fToVal))
 		for (iterator i = begin(); i != end(); ++i) (*i)->SetMultiplier(fToVal);
 	}
 
@@ -326,14 +325,14 @@ C4Network2Stats::C4Network2Stats()
 	statActions.SetAverageTime(100);
 	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->CreateGraphs();
 	C4Network2Client *pClient = NULL;
-	while (pClient = ::Network.Clients.GetNextClient(pClient)) pClient->CreateGraphs();
+	while ((pClient = ::Network.Clients.GetNextClient(pClient))) pClient->CreateGraphs();
 	}
 
 C4Network2Stats::~C4Network2Stats()
 	{
 	for (C4Player *pPlr = ::Players.First; pPlr; pPlr = pPlr->Next) pPlr->ClearGraphs();
 	C4Network2Client *pClient = NULL;
-	while (pClient = ::Network.Clients.GetNextClient(pClient)) pClient->ClearGraphs();
+	while ((pClient = ::Network.Clients.GetNextClient(pClient))) pClient->ClearGraphs();
 	Application.Remove(this);
 	}
 
@@ -349,7 +348,7 @@ void C4Network2Stats::ExecuteSecond()
 	statNetO.RecordValue(C4Graph::ValueType(::Network.NetIO.getProtORate(P_TCP) + ::Network.NetIO.getProtORate(P_UDP)));
 	// pings for all clients
 	C4Network2Client *pClient = NULL;
-	while (pClient = ::Network.Clients.GetNextClient(pClient)) if (pClient->getStatPing())
+	while ((pClient = ::Network.Clients.GetNextClient(pClient))) if (pClient->getStatPing())
 		{
 		int iPing=0;
 		C4Network2IOConnection *pConn = pClient->getMsgConn();

@@ -166,14 +166,14 @@ enum C4PacketType
 	CID_EMMoveObj 		= CID_First | 0x30,
 	CID_EMDrawTool    = CID_First | 0x31,
 
-  CID_DebugRec      = CID_First | 0x40,
+  CID_DebugRec      = CID_First | 0x40
 };
 
 // packet classes
 enum C4PacketClass
 {
 	PC_Network,														// network packet - internal stuff
-	PC_Control,														// control packet - game data (saved in records)
+	PC_Control														// control packet - game data (saved in records)
 };
 
 // enumeration of packet handlers
@@ -185,7 +185,7 @@ enum C4PacketHandlerID
 	PH_C4Network2ClientList		= 1 << 3,		// client list class
 	PH_C4Network2Players      = 1 << 4,		// player list class
 	PH_C4Network2ResList			= 1 << 5,		// ressource list class
-	PH_C4GameControlNetwork		= 1 << 6,		// network control class
+	PH_C4GameControlNetwork		= 1 << 6			// network control class
 };
 
 

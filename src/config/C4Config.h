@@ -342,7 +342,7 @@ class C4Config: protected CStdConfig
 		bool IsModule(const char *szPath, char *szModules);
 		bool AddModule(const char *szPath, char *szModules);
 
-		static void ExpandEnvironmentVariables(char *strPath, int iMaxLen);
+		static void ExpandEnvironmentVariables(char *strPath, size_t iMaxLen);
 	private:
 		const char *AtDataReadPathCore(const char *szFilename, bool fPreferWorkdir = false);
 	};

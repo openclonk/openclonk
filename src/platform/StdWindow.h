@@ -229,7 +229,7 @@ enum C4AppHandleResult
 	HR_Timeout,
 	HR_Message,         // handled a message
 	HR_Timer,           // got timer event
-	HR_Failure,         // error, or quit message received
+	HR_Failure          // error, or quit message received
 	};
 
 class CStdApp;

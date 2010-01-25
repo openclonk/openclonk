@@ -323,13 +323,13 @@ namespace C4GUI {
 				((pCBClass)->*CBFunc)(par);
 				}
 
-			CallbackHandlerExPar(CB *pTarget, Func rFunc, ParType par) : pCBClass(pTarget), CBFunc(rFunc), par(par) {}
+			CallbackHandlerExPar(CB *pTarget, Func rFunc, ParType par) : pCBClass(pTarget), par(par), CBFunc(rFunc) {}
 		};
 
 	// callback with parameter coming from calling class
 	template <class ParType> class BaseParCallbackHandler : public BaseCallbackHandler
 		{
-		private:
+		protected:
 			virtual void DoCall(class Element *pElement) {assert(false);} // no-par: Not to be called
 		public:
 			BaseParCallbackHandler() {}
@@ -345,6 +345,11 @@ namespace C4GUI {
 		private:
 			CB *pCBClass;
 			Func CBFunc;
+
+
+		protected:
+			// not to be called, but avoid warning for hiding base class functions
+			using BaseParCallbackHandler<ParType>::DoCall;
 
 		public:
 			virtual void DoCall(ParType par) { ((pCBClass)->*CBFunc)(par); }
@@ -630,7 +635,7 @@ namespace C4GUI {
 		};
 
 	// icon indices
-	enum { Ico_Extended = 0x100, }; // icon index offset for extended icons
+	enum { Ico_Extended = 0x100 }; // icon index offset for extended icons
 	enum Icons
 		{
 		Ico_Empty          = -2, // for context menus only
@@ -708,7 +713,7 @@ namespace C4GUI {
 		Ico_Ex_Chat          = Ico_Extended + 15,
 		Ico_Ex_GameList      = Ico_Extended + 16,
 		Ico_Ex_Comment       = Ico_Extended + 17,
-		Ico_Ex_Unregistered  = Ico_Extended + 18,
+		Ico_Ex_Unregistered  = Ico_Extended + 18
 		};
 
 	// cute, litte, useless thingy
@@ -1123,13 +1128,13 @@ namespace C4GUI {
 
 		public:
 			CallbackButton(ArrowButton::ArrowFct eDir, const C4Rect &rtBounds, typename DlgCallback<CallbackDlg>::Func pFn, CallbackDlg *pCB=NULL) // ctor
-				: Base(eDir, rtBounds, 0), pCallbackFn(pFn), pCB(pCB) { }
+				: Base(eDir, rtBounds, 0), pCB(pCB), pCallbackFn(pFn) { }
 			CallbackButton(const char *szBtnText, C4Rect &rtBounds, typename DlgCallback<CallbackDlg>::Func pFn, CallbackDlg *pCB=NULL) // ctor
-				: Base(szBtnText, rtBounds), pCallbackFn(pFn), pCB(pCB) { }
+				: Base(szBtnText, rtBounds), pCB(pCB), pCallbackFn(pFn) { }
 			CallbackButton(Icons eUseIcon, const C4Rect &rtBounds, char cHotkey, typename DlgCallback<CallbackDlg>::Func pFn, CallbackDlg *pCB=NULL) // ctor
-				: Base(eUseIcon, rtBounds, cHotkey), pCallbackFn(pFn), pCB(pCB) { }
+				: Base(eUseIcon, rtBounds, cHotkey), pCB(pCB), pCallbackFn(pFn) { }
 			CallbackButton(int32_t iID, const C4Rect &rtBounds, char cHotkey, typename DlgCallback<CallbackDlg>::Func pFn, CallbackDlg *pCB=NULL) // ctor
-				: Base(iID, rtBounds, cHotkey), pCallbackFn(pFn), pCB(pCB) { }
+				: Base(iID, rtBounds, cHotkey), pCB(pCB), pCallbackFn(pFn) { }
 		};
 
 	// a button doing some callback to any class
@@ -1163,11 +1168,11 @@ namespace C4GUI {
 				IR_None=0,    // do nothing and continue pasting
 				IR_CloseDlg,  // stop any pastes and close parent dialog successfully
 				IR_CloseEdit, // stop any pastes and remove this control
-				IR_Abort,     // do nothing and stop any pastes
+				IR_Abort      // do nothing and stop any pastes
 				};
 
 		private:
-			enum CursorOperation { COP_BACK, COP_DELETE, COP_LEFT, COP_RIGHT, COP_HOME, COP_END, };
+			enum CursorOperation { COP_BACK, COP_DELETE, COP_LEFT, COP_RIGHT, COP_HOME, COP_END };
 
 			bool KeyCursorOp(const C4KeyCodeEx &key, const CursorOperation &op);
 			bool KeyEnter();
@@ -1292,7 +1297,7 @@ namespace C4GUI {
 				{
 				RR_Invalid=0, // rename not accepted; continue editing
 				RR_Accepted,  // rename accepted; delete control
-				RR_Deleted,   // control deleted - leave everything
+				RR_Deleted    // control deleted - leave everything
 				};
 
 		public:
@@ -1328,7 +1333,7 @@ namespace C4GUI {
 
 		public:
 			CallbackRenameEdit(Label *pForLabel, CallbackDlg *pDlg, const ParType &par, CBOKFunc pCBOKFunc, CBCancelFunc pCBCancelFunc) // ctor
-				: RenameEdit(pForLabel), pDlg(pDlg), par(par), pCBOKFunc(pCBOKFunc), pCBCancelFunc(pCBCancelFunc) { }
+				: RenameEdit(pForLabel), pCBCancelFunc(pCBCancelFunc), pCBOKFunc(pCBOKFunc), pDlg(pDlg), par(par) { }
 		};
 
 	// editbox below descriptive label sharing one window for common tooltip
@@ -1540,7 +1545,7 @@ namespace C4GUI {
 				{
 				tbNone=0, // no tabs
 				tbTop,	  // tabs on top
-				tbLeft, // tabs to the left
+				tbLeft  // tabs to the left
 				};
 
 		private:
@@ -1911,7 +1916,7 @@ namespace C4GUI {
 			void SetComboCB(ComboBox_FillCB *pNewFillCallback);
 			static int32_t GetDefaultHeight();
 			void SetText(const char *szToText);
-			void SetReadOnly(bool fToVal) { if (fReadOnly = fToVal) AbortDropdown(false); }
+			void SetReadOnly(bool fToVal) { if ((fReadOnly = fToVal)) AbortDropdown(false); }
 			void SetSimple(bool fToVal) { fSimple = fToVal; }
 			const StdStrBuf GetText() { return StdStrBuf(Text, false); }
 			void SetFont(CStdFont *pToFont) { pUseFont=pToFont; }
@@ -1927,6 +1932,7 @@ namespace C4GUI {
 	class DialogWindow : public CStdWindow
 		{
 		public:
+			using CStdWindow::Init;
 			CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
 			virtual void Close();
 		};
@@ -2082,7 +2088,7 @@ namespace C4GUI {
 			void SetTitle(const char *szToTitle, bool fShowCloseButton = true); // change title text; creates or removes title bar if necessary
 			void SetFrameDeco(FrameDecoration *pNewDeco) // change border decoration
 				{if (pFrameDeco) pFrameDeco->Deref();
-				if (pFrameDeco = pNewDeco) pNewDeco->Ref();
+				if ((pFrameDeco = pNewDeco)) pNewDeco->Ref();
 				UpdateOwnPos(); // margin may have changed; might need to reposition stuff
 				}
 			void ClearFrameDeco() // clear border decoration; no own pos update!
@@ -2205,7 +2211,7 @@ namespace C4GUI {
 			int32_t *piConfigDontShowAgainSetting;
 		public:
 			enum Buttons { btnOK=1, btnAbort=2, btnYes=4, btnNo=8, btnRetry=16,
-				btnOKAbort=btnOK|btnAbort, btnYesNo=btnYes|btnNo, btnRetryAbort=btnRetry|btnAbort, };
+				btnOKAbort=btnOK|btnAbort, btnYesNo=btnYes|btnNo, btnRetryAbort=btnRetry|btnAbort };
 			enum DlgSize { dsRegular=C4GUI_MessageDlgWdt, dsMedium=C4GUI_MessageDlgWdtMedium, dsSmall=C4GUI_MessageDlgWdtSmall };
 			MessageDialog(const char *szMessage, const char *szCaption, DWORD dwButtons, Icons icoIcon, DlgSize eSize=dsRegular, int32_t *piConfigDontShowAgainSetting=NULL, bool fDefaultNo=false);
 
@@ -2463,6 +2469,7 @@ namespace C4GUI {
 			const C4Rect &GetPreferredDlgRect() { return PreferredDlgRect; }
 
 		protected:
+			using Window::Draw;
 			virtual void Draw(C4TargetFacet &cgo, bool fDoBG); // draw screen contents
 
 			virtual void ElementPosChanged(Element *pOfElement); // called when a dialog is moved
@@ -2491,6 +2498,7 @@ namespace C4GUI {
 
 			bool KeyAny(); // to be called on keystrokes; resets some tooltip-times
 			virtual bool CharIn(const char * c);        // input: character key pressed - should return false for none-character-inputs
+			using Window::MouseInput;
 			bool MouseInput(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam, Dialog *pDlg, class C4Viewport *pVP); // input: mouse movement or buttons; sends MouseEnter/Leave; return whether inside dialog
 			bool RecheckMouseInput();                                       // do mouse movement iusing last input flags
 
@@ -2731,7 +2739,7 @@ namespace C4GUI {
 	// Zoom
 	inline float GetZoom() { Screen *s=Screen::GetScreenS(); return s ? s->GetZoom() : 1.0f; }
 
-	}; // end of namespace
+	} // end of namespace
 
 typedef C4GUI::Screen C4GUIScreen;
 extern C4GUIScreen *pGUI;

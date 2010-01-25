@@ -55,7 +55,7 @@ class C4Player: public C4PlayerInfoCore
 			PCID_Message,   // chat
 			PCID_Special,   // goalruleinfo, etc.
 			PCID_Command,   // mouse control
-			PCID_DirectCom, // menu or keyboard control
+			PCID_DirectCom  // menu or keyboard control
 			};
 		// possible status
 		enum StatusTypes
@@ -63,7 +63,7 @@ class C4Player: public C4PlayerInfoCore
 			PS_None=0,            // player disabled
 			PS_Normal=1,          // normal playing
 			PS_TeamSelection = 2, // team selection
-			PS_TeamSelectionPending = 3, // waiting for team selection packet to come through
+			PS_TeamSelectionPending = 3 // waiting for team selection packet to come through
 			};
 		friend class C4PlayerList;
 	public:

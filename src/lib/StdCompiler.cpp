@@ -55,8 +55,8 @@ char StdCompiler::SeperatorToChar(Sep eSep)
 	case SEP_END2: return ']';
 	case SEP_VLINE: return '|';
   case SEP_DOLLAR: return '$';
+  default: assert(!"Unhandled Seperator value");
 	}
-	assert(false);
 	return ' ';
 }
 
@@ -135,7 +135,7 @@ void StdCompilerBinRead::String(char *szString, size_t iMaxLength, RawCompileTyp
 		{ excEOF(); return; }
 	// Copy until no data left
 	char *pPos = szString;
-	while(*pPos++ = *getBufPtr<char>(Buf, iPos++))
+	while((*pPos++ = *getBufPtr<char>(Buf, iPos++)))
 		if(iPos >= Buf.getSize())
 			{ excEOF(); return; }
 		else if(pPos > szString + iMaxLength)

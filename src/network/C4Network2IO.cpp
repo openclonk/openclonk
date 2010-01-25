@@ -53,9 +53,9 @@ C4Network2IO::C4Network2IO()
 		pConnList(NULL),
 		iNextConnID(0),
 		fAllowConnect(false),
-		fExclusiveConn(false),
     pAutoAcceptList(NULL),
-		iLastPing(0), iLastExecute(0), iLastStatistic(0),
+		fExclusiveConn(false),
+		iLastExecute(0), iLastPing(0), iLastStatistic(0),
     iTCPIRate(0), iTCPORate(0), iTCPBCRate(0),
     iUDPIRate(0), iUDPORate(0), iUDPBCRate(0)
 {
@@ -448,6 +448,7 @@ bool C4Network2IO::BroadcastMsg(const C4NetIOPacket &rPkt) // by both
 	CStdLock ConnListLock(&ConnListCSec);
 	for(C4Network2IOConnection *pConn = pConnList; pConn; pConn = pConn->pNext)
 		if(pConn->isAccepted())
+		{
 			if(pConn->getProtocol() == P_UDP)
 				pConn->SetBroadcastTarget(true);
 			else if(pConn->getProtocol() == P_TCP)
@@ -457,6 +458,7 @@ bool C4Network2IO::BroadcastMsg(const C4NetIOPacket &rPkt) // by both
 					pConn->SetBroadcastTarget(true);
 				pConn2->DelRef();
 			}
+		}
 	// send
 	bool fSuccess = Broadcast(rPkt);
 	// end broadcast
@@ -674,6 +676,9 @@ void C4Network2IO::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData
 	}
 	break;
 
+	default:
+	// TODO
+	break;
 	}
 }
 
@@ -683,8 +688,8 @@ C4NetIO *C4Network2IO::getNetIO(C4Network2IOProtocol eProt) // by both
 	{
 	case P_UDP: return pNetIO_UDP;
 	case P_TCP: return pNetIO_TCP;
+	default: return NULL;
 	}
-	return NULL;
 }
 
 const char *C4Network2IO::getNetIOName(C4NetIO *pNetIO)
@@ -823,10 +828,10 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 	{
 		unsigned int iTime = timeGetTime();
 		// StdStrBuf PacketDump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdaptrPacket);
-		StdStrBuf PacketHeader = FormatString("HandlePacket: %d:%02d:%02d:%03d by %s:%d (%d bytes, counter %d)",
+		StdStrBuf PacketHeader = FormatString("HandlePacket: %d:%02d:%02d:%03d by %s:%d (%lu bytes, counter %d)",
 			(iTime / 1000 / 60 / 60), (iTime / 1000 / 60) % 60, (iTime / 1000) % 60, iTime % 1000,
 			inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port),
-			rPacket.getSize(), pConn->getInPacketCounter());
+			static_cast<unsigned long>(rPacket.getSize()), pConn->getInPacketCounter());
     StdStrBuf Dump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(Pkt, PacketHeader.getData()));
     // Put it directly. The standard functions behind StdBuf.Format seem to choke when you pass them too much data.
     Application.InteractiveThread.PushEvent(Ev_LogSilent, Dump.GrabPointer());
@@ -837,6 +842,7 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 	bool fSendToMainThread = false, fHandled = false;
 	for(const C4PktHandlingData *pHData = PktHandlingData; pHData->ID != PID_None; pHData++)
 		if(pHData->ID == rPacket.getStatus())
+		{
 			// correct thread?
 			if(!pHData->ProcByThread == !fThread)
 			{
@@ -864,6 +870,7 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 				fHandled = true;
 				fSendToMainThread = true;
 			}
+		}
 
 	// send to main thread?
 	if(fSendToMainThread)
@@ -1079,7 +1086,7 @@ void C4Network2IO::HandleFwdReq(const C4PacketFwd &rFwd, C4Network2IOConnection 
 	{
 		C4NetIOPacket Pkt(rFwd.getData(), C4NetIO::addr_t());
 		for(int i = 0; i < nFwd.getClientCnt(); i++)
-			if(pConn = GetMsgConnection(nFwd.getClient(i)))
+			if((pConn = GetMsgConnection(nFwd.getClient(i))))
 				{
 				pConn->Send(Pkt);
 				pConn->DelRef();
@@ -1097,7 +1104,7 @@ void C4Network2IO::HandleFwdReq(const C4PacketFwd &rFwd, C4Network2IOConnection 
 		// add all clients
 		CStdLock ConnListLock(&ConnListCSec);
 		for(int i = 0; i < nFwd.getClientCnt(); i++)
-			if(pConn = GetMsgConnection(nFwd.getClient(i)))
+			if((pConn = GetMsgConnection(nFwd.getClient(i))))
 				{
 				pConn->SetBroadcastTarget(true);
 				pConn->DelRef();
@@ -1276,13 +1283,13 @@ C4Network2IOConnection::C4Network2IOConnection()
 		fBroadcastTarget(false),
 		iTimestamp(0),
 		iPingTime(-1),
-		iLastPing(~0), iLastPong(~0),
+		iLastPing(ULONG_MAX), iLastPong(ULONG_MAX),
+		fConnSent(false),
+		fPostMortemSent(false),
 		iOutPacketCounter(0), iInPacketCounter(0),
 		pPacketLog(NULL),
 		pNext(NULL),
-		iRefCnt(0),
-		fConnSent(false),
-		fPostMortemSent(false)
+		iRefCnt(0)
 {
 }
 
@@ -1298,7 +1305,7 @@ C4Network2IOConnection::~C4Network2IOConnection()
 int	C4Network2IOConnection::getLag() const
 {
 	// Last ping not answered yet?
-	if(iPingTime != -1 && iLastPing != ~0 && (iLastPong == ~0 || iLastPing > iLastPong))
+	if(iPingTime != -1 && iLastPing != ULONG_MAX && (iLastPong == ~0u || iLastPing > iLastPong))
 		{
 		int iPingLag = timeGetTime() - iLastPing;
 		// Use it for lag measurement once it's larger then the last ping time

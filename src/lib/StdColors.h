@@ -50,8 +50,8 @@ inline void BltAlphaAdd(DWORD &dwDst, DWORD dwSrc)
 	if (dwDst>>24 == 0x00) { dwDst=dwSrc; return; }
 	BYTE byAlphaSrc=BYTE(dwSrc>>24);
 	dwDst = Min<uint32_t>((dwDst    & 0xff ) + ((int(dwSrc    & 0xff  ) * byAlphaSrc) >>8)       , 0xff)      | // blue
-	        Min<uint32_t>((dwDst   & 0xff00) + (int(dwSrc>>8 & 0xff  ) * byAlphaSrc) & 0x00ffff00, 0xff00)    | // green
-					Min<uint32_t>((dwDst & 0xff0000) + (int(dwSrc>>8 & 0xff00) * byAlphaSrc) & 0xffff0000, 0xff0000)  | // red
+	        Min<uint32_t>(((dwDst   & 0xff00) + (int(dwSrc>>8 & 0xff  ) * byAlphaSrc)) & 0x00ffff00, 0xff00)    | // green
+					Min<uint32_t>(((dwDst & 0xff0000) + (int(dwSrc>>8 & 0xff00) * byAlphaSrc)) & 0xffff0000, 0xff0000)  | // red
 				  Min<uint32_t>( (dwDst >> 24) + byAlphaSrc, 255) << 24; // alpha
 	}
 
@@ -322,7 +322,7 @@ class CClrModAddMap
 		enum { DefResolutionX = 64, DefResolutionY = 64 };
 
 		CClrModAddMap() : pSurface(0), pMap(NULL), MapSize(0), Wdt(0), Hgt(0),
-		OffX(0), OffY(0), FadeTransparent(false), ResolutionX(DefResolutionX), ResolutionY(DefResolutionY), dwBackClr(0) { }
+		FadeTransparent(false), ResolutionX(DefResolutionX), ResolutionY(DefResolutionY), dwBackClr(0), OffX(0), OffY(0) { }
 		~CClrModAddMap();
 
 		// reset all of map to given values; uses transparent mode and clears rect if a back color is given

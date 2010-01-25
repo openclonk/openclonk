@@ -47,10 +47,14 @@
 
 
 C4Application::C4Application():
-	isFullScreen(true), UseStartupDialog(true), launchEditor(false), restartAtEnd(false),
-	DDraw(NULL), AppState(C4AS_None),
+	isFullScreen(true),
+	UseStartupDialog(true),
+	CheckForUpdates(false),
+	NoSplash(false),
+	launchEditor(false),
+	restartAtEnd(false),
 	pGamePadControl(NULL),
-	CheckForUpdates(false), NoSplash(false)
+	DDraw(NULL), AppState(C4AS_None)
 	{
 	}
 
@@ -129,7 +133,7 @@ bool C4Application::DoInit()
 
 	// Language override by parameter
 	const char *pLanguage;
-	if (pLanguage = SSearchNoCase(GetCommandLine(), "/Language:"))
+	if ((pLanguage = SSearchNoCase(GetCommandLine(), "/Language:")))
 		SCopyUntil(pLanguage, Config.General.LanguageEx, ' ', CFG_MaxString);
 
 	// Init external language packs
@@ -402,9 +406,11 @@ void C4Application::QuitGame()
 void C4Application::GameTick()
 	{
 	// Exec depending on game state
-	assert(AppState != C4AS_None);
 	switch (AppState)
 		{
+		case C4AS_None:
+			assert(AppState != C4AS_None);
+			break;
 		case C4AS_Quit:
 			// Do nothing, HandleMessage will return HR_Failure soon
 			break;
@@ -551,8 +557,8 @@ void C4Application::NextTick()
 // *** C4ApplicationGameTimer
 
 C4ApplicationGameTimer::C4ApplicationGameTimer()
-	: iLastGameTick(0), iGameTickDelay(0),
-		CStdMultimediaTimerProc(26)
+	: CStdMultimediaTimerProc(26),
+		iLastGameTick(0), iGameTickDelay(0)
 	{
 	}
 

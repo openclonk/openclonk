@@ -83,7 +83,7 @@ class C4Application: public CStdApp
 		bool SetGameFont(const char *szFontFace, int32_t iFontSize);
 		void NextTick();
 	protected:
-		enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_Quit, } AppState;
+		enum State { C4AS_None, C4AS_PreInit, C4AS_Startup, C4AS_StartGame, C4AS_Game, C4AS_Quit } AppState;
 		C4ApplicationGameTimer *pGameTimer;
 
 	protected:
@@ -122,7 +122,7 @@ class C4ApplicationSec1Timer : protected CStdTimerProc
 	public:
 		C4ApplicationSec1Timer() : CStdTimerProc(1000) { }
 		virtual void OnSec1Timer() = 0;
-	private:
+	protected:
 		virtual bool Execute(int, pollfd *)
 			{
 			if(CheckAndReset())

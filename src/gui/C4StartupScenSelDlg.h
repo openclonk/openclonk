@@ -321,7 +321,7 @@ class C4MapFolderData
 		class C4StartupScenSelDlg *pMainDlg;
 
 	public:
-		C4MapFolderData() : fCoordinatesAdjusted(false), iScenCount(0), ppScenList(NULL), iAccessGfxCount(0), ppAccessGfxList(NULL), pMainDlg(NULL) {}
+		C4MapFolderData() : fCoordinatesAdjusted(false), ppScenList(NULL), iScenCount(0), ppAccessGfxList(NULL), iAccessGfxCount(0), pMainDlg(NULL) {}
 		~C4MapFolderData() { Clear(); }
 
 	private:
@@ -392,7 +392,7 @@ class C4StartupScenSelDlg : public C4StartupDlg
 		~C4StartupScenSelDlg(); // dtor
 
 	private:
-		enum { ShowStyle_Book=0, ShowStyle_Map=1, };
+		enum { ShowStyle_Book=0, ShowStyle_Map=1 };
 		enum { IconLabelSpacing = 2 }; // space between an icon and its text
 
 		// book style scenario selection

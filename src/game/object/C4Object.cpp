@@ -320,7 +320,7 @@ void C4Object::AssignRemoval(bool fExitContents)
     }
 	// remove from container *after* contents have been removed!
 	C4Object *pCont;
-	if (pCont=Contained)
+	if ((pCont=Contained))
 		{
 		pCont->Contents.Remove(this);
 		pCont->UpdateMass();
@@ -354,10 +354,12 @@ void C4Object::UpdateShape(bool bUpdateVertices)
 
   // Construction zoom
   if (Con!=FullCon)
+    {
     if (Def->GrowthType)
       Shape.Stretch(Con, bUpdateVertices);
     else
       Shape.Jolt(Con, bUpdateVertices);
+    }
 
   // Rotation
   if (Def->Rotateable)
@@ -443,7 +445,7 @@ void C4Object::UpdateFlipDir()
 	// We're active
 	if (Action.pActionDef)
 		// Get flipdir value from action
-		if (iFlipDir = Action.pActionDef->GetPropertyInt(P_FlipDir))
+		if ((iFlipDir = Action.pActionDef->GetPropertyInt(P_FlipDir)))
 			// Action dir is in flipdir range
 			if (Action.Dir >= iFlipDir)
 				{
@@ -656,9 +658,9 @@ void C4Object::SetOCF()
   FIXED cspeed=GetSpeed();
 #ifdef _DEBUG
 	if(Contained && !::Objects.ObjectNumber(Contained))
-		{ LogF("Warning: contained in wild object %p!", Contained); }
+		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
 	else if(Contained && !Contained->Status)
-		{ LogF("Warning: contained in deleted object %p (%s)!", Contained, Contained->GetName()); }
+		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
 	if(Contained)
 		InMat = Contained->Def->ClosedContainer ? MNone : Contained->InMat;
@@ -795,9 +797,9 @@ void C4Object::UpdateOCF()
   FIXED cspeed=GetSpeed();
 #ifdef _DEBUG
 	if(Contained && !::Objects.ObjectNumber(Contained))
-		{ LogF("Warning: contained in wild object %p!", Contained); }
+		{ LogF("Warning: contained in wild object %p!", static_cast<void*>(Contained)); }
 	else if(Contained && !Contained->Status)
-		{ LogF("Warning: contained in deleted object %p (%s)!", Contained, Contained->GetName()); }
+		{ LogF("Warning: contained in deleted object %p (%s)!", static_cast<void*>(Contained), Contained->GetName()); }
 #endif
 	if(Contained)
 		InMat = Contained->Def->ClosedContainer ? MNone : Contained->InMat;
@@ -1182,7 +1184,7 @@ void C4Object::AssignDeath(bool fForced)
 		Info->Retire();
 		}
   // Lose contents
-  while (thing=Contents.GetObject()) thing->Exit(thing->GetX(),thing->GetY());
+  while ((thing=Contents.GetObject())) thing->Exit(thing->GetX(),thing->GetY());
   // Remove from crew/cursor/view
 	C4Player *pPlr = ::Players.Get(Owner);
   if (pPlr) pPlr->ClearPointers(this, true);
@@ -1415,7 +1417,7 @@ void C4Object::DoCon(int32_t iChange, bool fInitial, bool fNoComponentChange)
 			if (!Def->IncompleteActivity)
 				{
 				C4Object *cobj;
-				while (cobj=Contents.GetObject())
+				while ((cobj=Contents.GetObject()))
 					if (Contained) cobj->Enter(Contained);
 					else cobj->Exit(cobj->GetX(),cobj->GetY());
 				}
@@ -1630,7 +1632,7 @@ bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 
     // Grab any needed components from builder
 		C4ID idMat;
-    for (cnt=0; idMat=NeededComponents.GetID(cnt); cnt++)
+    for (cnt=0; (idMat=NeededComponents.GetID(cnt)); cnt++)
       if (Component.GetIDCount(idMat)<NeededComponents.GetCount(cnt))
         if ((pMaterial=pBuilder->Contents.Find(idMat)))
           if (!pMaterial->OnFire) if (pMaterial->OCF & OCF_FullCon)
@@ -1641,7 +1643,7 @@ bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
             }
 		// Grab any needed components from container
 		if (Contained)
-			for (cnt=0; idMat=NeededComponents.GetID(cnt); cnt++)
+			for (cnt=0; (idMat=NeededComponents.GetID(cnt)); cnt++)
 	      if (Component.GetIDCount(idMat)<NeededComponents.GetCount(cnt))
 					 if ((pMaterial=Contained->Contents.Find(idMat)))
 						 if (!pMaterial->OnFire) if (pMaterial->OCF & OCF_FullCon)
@@ -1651,7 +1653,7 @@ bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 							 pMaterial->AssignRemoval();
 							 }
     // Check for needed components at current con
-		for (cnt=0; idMat=NeededComponents.GetID(cnt); cnt++)
+		for (cnt=0; (idMat=NeededComponents.GetID(cnt)); cnt++)
 			if (NeededComponents.GetCount(cnt)!=0)
 				if ( (100*Component.GetIDCount(idMat)/NeededComponents.GetCount(cnt)) < (100*Con/FullCon) )
 					{
@@ -1681,7 +1683,7 @@ bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 
 	// Do con (mass- and builder-relative)
 	int32_t iBuildSpeed=100; C4PhysicalInfo *pPhys;
-	if (pBuilder) if (pPhys=pBuilder->GetPhysical())
+	if (pBuilder) if ((pPhys=pBuilder->GetPhysical()))
 		{
 		iBuildSpeed=pPhys->CanConstruct;
 		if (!iBuildSpeed)
@@ -1738,6 +1740,7 @@ bool C4Object::Push(FIXED txdir, FIXED dforce, bool fStraighten)
     }
   // Straighten
   if (fStraighten)
+    {
     if (Inside<int32_t>(r,-StableRange,+StableRange))
       {
       rdir=0; // cheap way out
@@ -1747,6 +1750,7 @@ bool C4Object::Push(FIXED txdir, FIXED dforce, bool fStraighten)
       if (r>0) { if (rdir>-RotateAccel) rdir-=dforce; }
       else { if (rdir<+RotateAccel) rdir+=dforce; }
       }
+    }
 
   // Mobilization check
   if (!!xdir || !!ydir || !!rdir) Mobile=1;
@@ -1918,7 +1922,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 			Menu->Init(fctSymbol,FormatString(LoadResStr("IDS_PLR_NOBKNOW"),pPlayer->GetName()).getData(),
 				this,C4MN_Extra_Components,0,iMenu);
 			// Add player's structure build knowledge
-		  for (cnt=0; pDef=C4Id2Def(pPlayer->Knowledge.GetID(::Definitions,C4D_Structure,cnt,&iCount)); cnt++)
+		  for (cnt=0; (pDef=C4Id2Def(pPlayer->Knowledge.GetID(::Definitions,C4D_Structure,cnt,&iCount))); cnt++)
 				{
 				// Caption
 				sprintf(szCaption,LoadResStr("IDS_MENU_CONSTRUCT"),pDef->GetName());
@@ -2065,7 +2069,7 @@ int32_t C4Object::GetValue(C4Object *pInBase, int32_t iForPlayer)
 	if (pInBase)
 		{
 		C4AulFunc *pFn;
-		if (pFn = pInBase->Def->Script.GetSFunc(PSF_CalcSellValue, AA_PROTECTED))
+		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcSellValue, AA_PROTECTED)))
 			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VObj(this), C4VInt(iValue))).getInt();
 		}
 	// Return value
@@ -2078,6 +2082,7 @@ C4PhysicalInfo* C4Object::GetPhysical(bool fPermanent)
 	if (PhysicalTemporary && !fPermanent) return &TemporaryPhysical;
 	// Info physical: Available only if there's an info and it should be used
   if (Info)
+	{
 		if (!Game.Parameters.UseFairCrew)
 			return &(Info->Physical);
 		else if (Info->pDef)
@@ -2086,6 +2091,7 @@ C4PhysicalInfo* C4Object::GetPhysical(bool fPermanent)
 			// shouldn't really happen, but who knows.
 			// Maybe some time it will be possible to have crew infos that aren't tied to a specific definition
 			return Def->GetFairCrewPhysicals();
+	}
 	// Definition physical
   return &(Def->Physical);
   }
@@ -2175,7 +2181,7 @@ void C4Object::ClearPointers(C4Object *pObj)
 	if (pGfxOverlay)
 		{
 		C4GraphicsOverlay *pNextGfxOvrl = pGfxOverlay, *pGfxOvrl;
-		while (pGfxOvrl = pNextGfxOvrl)
+		while ((pGfxOvrl = pNextGfxOvrl))
 			{
 			pNextGfxOvrl = pGfxOvrl->GetNext();
 			if (pGfxOvrl->GetOverlayObject() == pObj)
@@ -2232,6 +2238,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 
   // Output boundary
 	if (!fYStretchObject && !eDrawMode)
+		{
 		if (Action.pActionDef && !r && !Action.pActionDef->GetPropertyInt(P_FacetBase) && Con<=FullCon)
 			{
 			// active
@@ -2244,10 +2251,11 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 			if ( !Inside<float>(cox,1-Shape.Wdt,cgo.Wdt)
 				|| (!Inside<float>(coy,1-Shape.Hgt,cgo.Hgt)) )
 				{ if (FrontParticles && !Contained) FrontParticles.Draw(cgo,this); return; }
+		}
 
 	// ensure correct color is set
 	if (GetGraphics()->Type == C4DefGraphics::TYPE_Bitmap)
-		if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
+		if (GetGraphics()->Bmp.BitmapClr) GetGraphics()->Bmp.BitmapClr->SetClr(Color);
 
   // Debug Display //////////////////////////////////////////////////////////////////////
   if (::GraphicsSystem.ShowCommand && !eDrawMode)
@@ -2560,7 +2568,7 @@ void C4Object::DrawTopFace(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDraw
 		TopFace.Y = Action.pActionDef->GetPropertyInt(P_Y) + Def->TopFace.y + Action.pActionDef->GetPropertyInt(P_Hgt) * Action.DrawDir;
 		}
 	// ensure correct color is set
-	if (GetGraphics()->BitmapClr) GetGraphics()->BitmapClr->SetClr(Color);
+	if (GetGraphics()->Bmp.BitmapClr) GetGraphics()->Bmp.BitmapClr->SetClr(Color);
 	// color modulation
 	if (!eDrawMode) PrepareDrawing();
 	// Draw top face bitmap
@@ -2720,6 +2728,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 
 	// Commands
 	if(pComp->FollowName("Commands"))
+		{
 		if(fCompiler)
 			{
 			C4Command *pCmd = NULL;
@@ -2744,6 +2753,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 				pComp->Value(mkNamingAdapt(*pCmd, Naming.getData()));
 				}
 			}
+		}
 
 	// Compiling? Do initialization.
 	if(fCompiler)
@@ -2755,10 +2765,11 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 		LocalNamed.SetNameList(&Def->Script.LocalNamed);
 
 		// Set action (override running data)
+		/* FIXME 
 		int32_t iTime=Action.Time;
 		int32_t iPhase=Action.Phase;
 		int32_t iPhaseDelay=Action.PhaseDelay;
-		/* FIXME if (SetActionByName(Action.pActionDef->GetName(),0,0,false)) 
+		if (SetActionByName(Action.pActionDef->GetName(),0,0,false)) 
 			{
 			Action.Time=iTime;
 			Action.Phase=iPhase; // No checking for valid phase
@@ -2985,7 +2996,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	pDef->GetComponents(&NeededComponents, NULL, this);
 	// Check for sufficient components
   StdStrBuf Needs; Needs.Format(LoadResStr("IDS_CON_BUILDMATNEED"),pDef->GetName());
-	for (cnt=0; c_id=NeededComponents.GetID(cnt); cnt++)
+	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
 		if (NeededComponents.GetCount(cnt) > Contents.ObjectCount(c_id))
 			{
 			Needs.AppendFormat("|%ix %s", NeededComponents.GetCount(cnt) - Contents.ObjectCount(c_id), C4Id2Def(c_id) ? C4Id2Def(c_id)->GetName() : c_id.ToString() );
@@ -3003,7 +3014,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 		return NULL;
 		}
 	// Remove components
-	for (cnt=0; c_id=NeededComponents.GetID(cnt); cnt++)
+	for (cnt=0; (c_id=NeededComponents.GetID(cnt)); cnt++)
 		for (cnt2=0; cnt2<NeededComponents.GetCount(cnt); cnt2++)
 			if (!( pObj = Contents.Find(c_id) ))
 				return NULL;
@@ -3449,10 +3460,12 @@ void C4Object::NoAttachAction()
 			if (ObjectActionCornerScale(this)) return;
 		// Scaling and stopped: fall off to side (avoid zuppel)
 		if ((iProcedure == DFA_SCALE) && (Action.ComDir == COMD_Stop))
+			{
 			if (Action.Dir == DIR_Left)
 				{ if (ObjectActionJump(this,itofix(1),Fix0,false)) return; }
 			else
 				{ if (ObjectActionJump(this,itofix(-1),Fix0,false)) return; }
+			}
 		// Pushing: grab loss
 		if (iProcedure==DFA_PUSH) GrabLost(this);
 		// Else jump
@@ -3864,6 +3877,7 @@ void C4Object::ExecAction()
 	// Energy usage
 	if (Game.Rules & C4RULE_StructuresNeedEnergy)
 		if (pAction->GetPropertyInt(P_EnergyUsage))
+			{
 			if (pAction->GetPropertyInt(P_EnergyUsage) <= Energy ) 
 				{
 				Energy -= pAction->GetPropertyInt(P_EnergyUsage); 
@@ -3877,6 +3891,7 @@ void C4Object::ExecAction()
 				if (Mobile) DoGravity(this);
 				return;
 				}
+			}
 
 	// Action time advance
 	Action.Time++;
@@ -4449,10 +4464,12 @@ void C4Object::ExecAction()
 
       // Force containment
       if (Action.Target->Contained!=Contained)
+        {
         if (Action.Target->Contained)
           Enter(Action.Target->Contained);
         else
           Exit(GetX(),GetY(),r);
+        }
 
       // Force position
       ForcePosition(Action.Target->GetX()+Action.Target->Shape.VtxX[Action.Data&255]
@@ -5016,7 +5033,7 @@ bool C4Object::PutAwayUnusedObject(C4Object *pToMakeRoomForObject)
 	// get unused object
 	C4Object *pUnusedObject;
 	C4AulFunc *pFnObj2Drop;
-	if (pFnObj2Drop = Def->Script.GetSFunc(PSF_GetObject2Drop))
+	if ((pFnObj2Drop = Def->Script.GetSFunc(PSF_GetObject2Drop)))
 		pUnusedObject = pFnObj2Drop->Exec(this, pToMakeRoomForObject ? &C4AulParSet(C4VObj(pToMakeRoomForObject)) : NULL).getObj();
 	else
 	{
@@ -5122,7 +5139,7 @@ bool C4Object::HasGraphicsOverlayRecursion(const C4Object *pCheckObj) const
 	C4Object *pGfxOvrlObj;
 	if (pGfxOverlay)
 		for (C4GraphicsOverlay *pGfxOvrl = pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
-			if (pGfxOvrlObj = pGfxOvrl->GetOverlayObject())
+			if ((pGfxOvrlObj = pGfxOvrl->GetOverlayObject()))
 				{
 				if (pGfxOvrlObj == pCheckObj) return true;
 				if (pGfxOvrlObj->HasGraphicsOverlayRecursion(pCheckObj)) return true;
@@ -5376,7 +5393,7 @@ StdStrBuf C4Object::GetNeededMatStr(C4Object *pBuilder)
 
 	C4ID idComponent;
 
-	for(cnt = 0; idComponent=NeededComponents.GetID(cnt); cnt ++)
+	for(cnt = 0; (idComponent=NeededComponents.GetID(cnt)); cnt ++)
 		{
 		if(NeededComponents.GetCount(cnt)!=0)
 			{

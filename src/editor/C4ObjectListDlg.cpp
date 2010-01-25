@@ -48,7 +48,7 @@
 enum
 {
 	C4_LIST_COL_OBJECT,
-	C4_LIST_N_COLUMNS,
+	C4_LIST_N_COLUMNS
 };
 
 typedef struct _C4List       C4List;
@@ -676,10 +676,10 @@ void C4ObjectListDlg::Update(C4ObjectList &rSelection)
 }
 
 C4ObjectListDlg::C4ObjectListDlg():
-	updating_selection(false),
 	window(0),
 	treeview(0),
-	model(0)
+	model(0),
+	updating_selection(false)
 {
 }
 
@@ -715,8 +715,8 @@ static void icon_cell_data_func(GtkTreeViewColumn* column, GtkCellRenderer* rend
 	if(pixbuf == NULL)
 	{
 		/* Not yet cached, create from Graphics */
-		CSurface* surface = object->Def->Graphics.Bitmap;
-		if(object->Def->Graphics.BitmapClr) surface = object->Def->Graphics.BitmapClr;
+		CSurface* surface = object->Def->Graphics.Bmp.Bitmap;
+		if(object->Def->Graphics.Bmp.BitmapClr) surface = object->Def->Graphics.Bmp.BitmapClr;
 
 		const C4Rect& picture = object->Def->PictureRect;
 		pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, picture.Wdt, picture.Hgt);

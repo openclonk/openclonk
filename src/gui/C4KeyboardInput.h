@@ -39,7 +39,7 @@ enum C4KeyScope
 	KEYSCOPE_FullSMenu  = 32, // fullscreen menu control. If fullscreen menu is active, this disables viewport controls (e.g. Return to close player join menu)
 	KEYSCOPE_FilmView   = 64, // ownerless viewport scrolling in film mode, player switching, etc. (e.g. Enter to switch to next player)
 	KEYSCOPE_FreeView   = 128, // ownerless viewport scrolling, player switching, etc. (e.g. arrow left to scroll left in view)
-	KEYSCOPE_FullSView  = 256, // player fullscreen viewport
+	KEYSCOPE_FullSView  = 256 // player fullscreen viewport
 	};
 
 // what can happen to keys
@@ -48,7 +48,7 @@ enum C4KeyEventType
 	KEYEV_None    =  0, // no event
 	KEYEV_Down    =  1, // in response to WM_KEYDOWN or joypad button pressed
 	KEYEV_Up      =  2, // in response to WM_KEYUP or joypad button released
-	KEYEV_Pressed =  3, // in response to WM_KEYPRESSED
+	KEYEV_Pressed =  3 // in response to WM_KEYPRESSED
 	};
 
 // keyboard code
@@ -186,7 +186,7 @@ enum C4KeyShiftState
 	KEYS_Control =  2,
 	KEYS_Shift   =  4,
 	KEYS_Max     = KEYS_Shift,
-	KEYS_Undefined = 0xffff,
+	KEYS_Undefined = 0xffff
 	};
 
 // extended key information containing shift state
@@ -278,8 +278,8 @@ template <class TargetClass> class C4KeyCB : public C4KeyboardCallbackInterface
 				case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)() : false;
 				case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)() : false;
 				case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)() : false;
+				default: return false;
 				}
-			return false;
 			}
 
 		virtual bool CheckCondition() { return true; }
@@ -308,8 +308,8 @@ template <class TargetClass> class C4KeyCBPassKey : public C4KeyboardCallbackInt
 				case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(key) : false;
 				case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(key) : false;
 				case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(key) : false;
+				default: return false;
 				}
-			return false;
 			}
 
 		virtual bool CheckCondition() { return true; }
@@ -339,8 +339,8 @@ template <class TargetClass, class ParameterType> class C4KeyCBEx : public C4Key
 				case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(par) : false;
 				case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(par) : false;
 				case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(par) : false;
+                                default: return false;
 				}
-			return false;
 			}
 
 		virtual bool CheckCondition() { return true; }
@@ -369,8 +369,8 @@ template <class TargetClass, class ParameterType> class C4KeyCBExPassKey : publi
 				case KEYEV_Down: return pFuncDown ? (rTarget.*pFuncDown)(key, par) : false;
 				case KEYEV_Up: return pFuncUp ? (rTarget.*pFuncUp)(key, par) : false;
 				case KEYEV_Pressed: return pFuncPressed ? (rTarget.*pFuncPressed)(key, par) : false;
+				default: return false;
 				}
-			return false;
 			}
 
 		virtual bool CheckCondition() { return true; }
@@ -405,7 +405,7 @@ class C4CustomKey
 			PRIO_FocusCtrl = 5u,  // controls override special dialog handling keys (e.g., RenameEdit)
 			PRIO_Context = 6u, // context menus above controls
 			PRIO_PlrControl = 7u, // player controls overwrite any other controls
-			PRIO_MoreThanMax  = 100u, // must be larger than otherwise largest used priority
+			PRIO_MoreThanMax  = 100u // must be larger than otherwise largest used priority
 			};
 
 	protected:

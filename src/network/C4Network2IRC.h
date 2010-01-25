@@ -28,7 +28,7 @@ enum C4Network2IRCMessageType
 	MSG_Status,
 	MSG_Message,
 	MSG_Notice,
-	MSG_Action,
+	MSG_Action
 	};
 
 const int C4NetIRCMaxLogLength = 300000; // Maximum total length of log - if log gets longer, it will be cleared even if messages have never been read
@@ -39,8 +39,7 @@ class C4Network2IRCMessage
 		friend class C4Network2IRCClient;
 	public:
 		C4Network2IRCMessage(C4Network2IRCMessageType enType, const char *szSource, const char *szTarget, const char *szData)
-			: eType(enType), Source(szSource), Target(szTarget), Data(szData),
-				iTimestamp(time(NULL)), Next(0)
+			: iTimestamp(time(NULL)), eType(enType), Source(szSource), Target(szTarget), Data(szData), Next(0)
 		{ }
 
 	private:
@@ -179,9 +178,12 @@ class C4Network2IRCClient : public C4NetIOTCP, private C4NetIO::CBClass
 		void MarkMessageLogRead();
 		const char *getUserName() const { return Nick.getData(); }
 
+		using C4NetIOTCP::Connect;
 		// Simple network communication
 		bool Connect(const char *szServer, const char *szNick, const char *szRealName, const char *szPassword = NULL, const char *szChannel = NULL);
+		using C4NetIOTCP::Close;
 		bool Close();
+		using C4NetIOTCP::Send;
 		bool Send(const char *szCommand, const char *szParameters = NULL);
 
     // Notfiy interface

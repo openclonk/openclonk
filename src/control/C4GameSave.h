@@ -54,7 +54,7 @@ class C4GameSave
 			SyncNONE = 0,
 			SyncScenario = 1, // save (eventually static) landscape and objects only to play as a seperate scenario later
 			SyncSavegame = 2, // save all runtime data, so the scenario can be continued at a future date
-			SyncSynchronized = 3, // save exact runtime data to be network- or replay-save
+			SyncSynchronized = 3 // save exact runtime data to be network- or replay-save
 			} Sync; // sync is set by ctor
 
 		// query functions

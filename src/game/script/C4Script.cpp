@@ -600,7 +600,7 @@ static bool FnSetPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long i
 		return true;
 	}
 	// Invalid mode
-	throw new C4AulExecError(cthr->Obj, FormatString("SetPhysical: invalid physical mode %i", iMode).getData());
+	throw new C4AulExecError(cthr->Obj, FormatString("SetPhysical: invalid physical mode %ld", iMode).getData());
 }
 
 static bool FnTrainPhysical(C4AulObjectContext *cthr, C4String *szPhysical, long iTrainBy, long iMaxTrain)
@@ -676,10 +676,12 @@ static Nillable<long> FnGetPhysical(C4AulContext *cthr, C4String *szPhysical, lo
 		if (!cthr->Obj->Info) return C4VNull;
 		// In fair crew mode, scripts may not read permanent physical values - fallback to fair def physical instead!
 		if (Game.Parameters.UseFairCrew)
+			{
 			if (cthr->Obj->Info->pDef)
 				return cthr->Obj->Info->pDef->GetFairCrewPhysicals()->*off;
 			else
 				return cthr->Obj->Def->GetFairCrewPhysicals()->*off;
+			}
 		// Get physical
 		return cthr->Obj->Info->Physical.*off;
 	// Temporary physical
@@ -690,9 +692,12 @@ static Nillable<long> FnGetPhysical(C4AulContext *cthr, C4String *szPhysical, lo
 		if (!cthr->Obj->PhysicalTemporary) return C4VNull;
 		// Get physical
 		return cthr->Obj->TemporaryPhysical.*off;
+	case PHYS_StackTemporary:
+		// TODO
+		break;
 	}
 	// Invalid mode
-	throw new C4AulExecError(cthr->Obj, FormatString("GetPhysical: invalid physical mode %i", iMode).getData());
+	throw new C4AulExecError(cthr->Obj, FormatString("GetPhysical: invalid physical mode %ld", iMode).getData());
 }
 
 static C4Void FnSetEntrance(C4AulObjectContext *cthr, bool e_status)
@@ -1029,7 +1034,7 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 			// empty names are bad; e.g., could cause problems in savegames
 			if (!szName || !*szName) return false;
 			// name must not be too long
-			if (SLen(szName) > C4MaxName) return false;
+			if (std::strlen(szName) > C4MaxName) return false;
 			// any change at all?
 			if (SEqual(szName, pInfo->Name)) return true;
 			// make sure names in info list aren't duplicated
@@ -1371,7 +1376,7 @@ static bool FnCreateMenu(C4AulObjectContext *cthr, C4ID iSymbol, C4Object *pComm
 	C4Def *pDef;
 	C4FacetSurface fctSymbol;
 	fctSymbol.Create(C4SymbolSize,C4SymbolSize);
-	if (pDef = C4Id2Def(iSymbol))	pDef->Draw(fctSymbol);
+	if ((pDef = C4Id2Def(iSymbol)))	pDef->Draw(fctSymbol);
 
 	// Clear any old menu, init new menu
 	if (!cthr->Obj->CloseMenu(false)) return false;
@@ -1709,7 +1714,7 @@ static C4Object *FnContents(C4AulObjectContext *cthr, long index)
 	// Special: objects attaching to another object
 	//          cannot be accessed by FnContents
 	C4Object *cobj;
-	while	(cobj=cthr->Obj->Contents.GetObject(index++))
+	while	((cobj=cthr->Obj->Contents.GetObject(index++)))
 		if (cobj->GetProcedure()!=DFA_ATTACH) return cobj;
 
 	return NULL;
@@ -1820,10 +1825,12 @@ static C4Object *FnCreateObject(C4AulContext *cthr,
 
 	long iOwner = owner;
 	if (owner.IsNil())
+		{
 		if (cthr->Obj)
 			iOwner = cthr->Obj->Controller;
 		else
 			iOwner = NO_OWNER;
+		}
 
   C4Object *pNewObj = Game.CreateObject(PropList,cthr->Obj,iOwner,iXOffset,iYOffset);
 
@@ -1851,10 +1858,12 @@ static C4Object *FnCreateConstruction(C4AulContext *cthr,
 
 	long iOwner = owner;
 	if (owner.IsNil())
+		{
 		if (cthr->Obj)
 			iOwner = cthr->Obj->Controller;
 		else
 			iOwner = NO_OWNER;
+		}
 
 	// Create site object
 	C4Object *pNewObj = Game.CreateObjectConstruction(PropList,cthr->Obj,iOwner,iXOffset,iYOffset,iCompletion*FullCon/100,fTerrain);
@@ -2197,7 +2206,7 @@ static bool FnGameOver(C4AulContext *cthr, long iGameOverValue /* provided for f
 
 static bool FnGainMissionAccess(C4AulContext *cthr, C4String *szPassword)
 	{
-	if (SLen(Config.General.MissionAccess)+SLen(FnStringPar(szPassword))+3>CFG_MaxString) return false;
+	if (std::strlen(Config.General.MissionAccess)+std::strlen(FnStringPar(szPassword))+3>CFG_MaxString) return false;
 	SAddModule(Config.General.MissionAccess,FnStringPar(szPassword));
 	return true;
 	}
@@ -2240,8 +2249,10 @@ static C4Value FnPlayerMessage_C4V(C4AulContext *cthr, C4Value * iPlayer, C4Valu
 	// Text
 	if (!fSpoken)
 		if (SCopySegment(FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6).getData(),0,buf,'$'))
+			{
 			if (pObj)	GameMsgObjectPlayer(buf,pObj,iPlayer->getInt());
 			else GameMsgPlayer(buf, iPlayer->getInt());
+			}
 
 	return C4VBool(true);
 	}
@@ -2262,8 +2273,10 @@ static C4Value FnMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value *c
 	C4Object * pObj = c4vObj->getObj();
 	if (!fSpoken)
 		if (SCopySegment(FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),0,buf,'$'))
+			{
 			if (pObj)	GameMsgObject(buf,pObj);
 			else GameMsgGlobal(buf);
+			}
 
 	return C4VBool(true);
 	}
@@ -2295,8 +2308,10 @@ static C4Value FnPlrMessage_C4V(C4AulContext *cthr, C4Value *c4vMessage, C4Value
 	// Text
 	if (!fSpoken)
 		if (SCopySegment(FnStringFormat(cthr,FnStringPar(szMessage),iPar0,iPar1,iPar2,iPar3,iPar4,iPar5,iPar6,iPar7).getData(),0,buf,'$'))
+			{
 			if (ValidPlr(iPlr->getInt())) GameMsgPlayer(buf,iPlr->getInt());
 			else GameMsgGlobal(buf);
+			}
 
 	return C4VBool(true);
 	}
@@ -2725,7 +2740,7 @@ static C4Object *FnGetCursor(C4AulContext *cthr, long iPlr, long iIndex)
 	C4Object *pCrew;
 	for (C4ObjectLink *pLnk=pPlr->Crew.First; pLnk; pLnk=pLnk->Next)
 		// get crew object
-		if (pCrew = pLnk->Obj)
+		if ((pCrew = pLnk->Obj))
 			// is it selected?
 			if (pCrew->Select)
 				// is it not the cursor? (which is always first)
@@ -2955,8 +2970,16 @@ static long FnAngle(C4AulContext *cthr, long iX1, long iY1, long iX2, long iY2, 
 	if(!iPrec) iPrec = 1;
 
 	long dx=iX2-iX1,dy=iY2-iY1;
-	if (!dx) if (dy>0) return 180 * iPrec; else return 0;
-	if (!dy) if (dx>0) return 90 * iPrec; else return 270 * iPrec;
+	if (!dx)
+		{
+		if (dy>0) return 180 * iPrec;
+		else return 0;
+		}
+	if (!dy)
+		{
+		if (dx>0) return 90 * iPrec;
+		else return 270 * iPrec;
+		}
 
 	iAngle = static_cast<long>(180.0 * iPrec * atan2(static_cast<double>(Abs(dy)), static_cast<double>(Abs(dx))) / pi);
 
@@ -3794,7 +3817,7 @@ static bool FnSetGraphics(C4AulObjectContext *pCtx, C4String *pGfxName, C4ID idS
 		// any overlays must be positive for now
 		if (iOverlayID<0) { Log("SetGraphics: Background overlays not implemented!"); return false; }
 		// deleting overlay?
-		C4DefGraphics *pGrp;
+		C4DefGraphics *pGrp = NULL;
 		if (iOverlayMode == C4GraphicsOverlay::MODE_Object || iOverlayMode == C4GraphicsOverlay::MODE_Rank)
 		{
 			if (!pOverlayObject) return pCtx->Obj->RemoveGraphicsOverlay(iOverlayID);
@@ -4190,7 +4213,7 @@ static C4Void FnSetCrewEnabled(C4AulObjectContext *cctx, bool fEnabled)
 		{
 		cctx->Obj->Select=false;
 		C4Player *pOwner;
-		if (pOwner=::Players.Get(cctx->Obj->Owner))
+		if ((pOwner=::Players.Get(cctx->Obj->Owner)))
 			{
 			// if viewed player cursor gets deactivated and no new cursor is found, follow the old in target mode
 			bool fWasCursorMode = (pOwner->ViewMode == C4PVM_Cursor);
@@ -4720,9 +4743,10 @@ static C4Value FnGetPortrait(C4AulContext *ctx, C4Value *pvfGetID, C4Value *pvfG
 		{
 			// custom portrait?
 			if (pObj->Info->pCustomPortrait)
+				{
 				if (fGetID) return C4Value();
-			else
-				return C4VString(C4Portrait_Custom);
+				else return C4VString(C4Portrait_Custom);
+				}
 			// portrait string from info?
 			const char *szPortrait = pObj->Info->PortraitFile;
 			// no portrait string: portrait undefined ("none" would mean no portrait)
@@ -4973,10 +4997,10 @@ static long FnModulateColor(C4AulContext *cthr, long iClr1, long iClr2)
 	// get alpha
 	long iA1=dwClr1>>24, iA2=dwClr2>>24;
 	// modulate color values; mod alpha upwards
-	DWORD r = ((dwClr1     & 0xff) * (dwClr2    &   0xff))    >>  8   | // blue
-	       ((dwClr1>> 8 & 0xff) * (dwClr2>>8 &   0xff)) &   0xff00 | // green
-				 ((dwClr1>>16 & 0xff) * (dwClr2>>8 & 0xff00)) & 0xff0000 | // red
-				 Min<long>(iA1+iA2 - ((iA1*iA2)>>8), 255)              << 24   ; // alpha
+	DWORD r = (((dwClr1     & 0xff) * (dwClr2    &   0xff))    >>  8)   | // blue
+	          (((dwClr1>> 8 & 0xff) * (dwClr2>>8 &   0xff)) &   0xff00) | // green
+	          (((dwClr1>>16 & 0xff) * (dwClr2>>8 & 0xff00)) & 0xff0000) | // red
+	          (Min<long>(iA1+iA2 - ((iA1*iA2)>>8), 255)           << 24); // alpha
 	return r;
 	}
 
@@ -5208,7 +5232,7 @@ static bool FnOnOwnerRemoved(C4AulObjectContext *cthr)
 		// Do not ignore flags which might be StaticBack if being attached to castle parts
 		int32_t iNewOwner = NO_OWNER;
 		C4Team *pTeam;
-		if (pPlr->Team) if (pTeam = Game.Teams.GetTeamByID(pPlr->Team))
+		if (pPlr->Team) if ((pTeam = Game.Teams.GetTeamByID(pPlr->Team)))
 			{
 			for (int32_t i=0; i<pTeam->GetPlayerCount(); ++i)
 				{
@@ -5364,11 +5388,11 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, l
 	// only one positioning flag per direction allowed
 	uint32_t hpos = dwFlags & (C4GM_Left | C4GM_HCenter | C4GM_Right);
 	uint32_t vpos = dwFlags & (C4GM_Top | C4GM_VCenter | C4GM_Bottom);
-	if (((hpos | hpos-1) + 1)>>1 != hpos)
+	if (((hpos | (hpos-1)) + 1)>>1 != hpos)
 		{
 		throw new C4AulExecError(ctx->Obj, "CustomMessage: Only one horizontal positioning flag allowed!");
 		}
-	if (((vpos | vpos-1) + 1)>>1 != vpos)
+	if (((vpos | (vpos-1)) + 1)>>1 != vpos)
 		{
 		throw new C4AulExecError(ctx->Obj, "CustomMessage: Only one vertical positioning flag allowed!");
 		}
@@ -5747,6 +5771,8 @@ public C4AulDefFuncHelper {                   \
 /* Constructor, using the base class to create the ParType array */ \
 		C4AulDefFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
 			C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
+/* Avoid hiding base class function */        \
+		using C4AulFunc::Exec;                    \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
 		virtual C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false) \
 		{ return C4ValueConv<RType>::ToC4V(pFunc(pContext LIST(N, CONV_FROM_C4V))); } \
@@ -5765,6 +5791,8 @@ public C4AulDefFuncHelper {                   \
 /* Constructor, using the base class to create the ParType array */ \
 		C4AulDefObjectFunc##N(C4AulScript *pOwner, const char *pName, Func pFunc, bool Public): \
 			C4AulDefFuncHelper(pOwner, pName, Public LIST(N, CONV_TYPE)), pFunc(pFunc) { } \
+/* Avoid hiding base class function */        \
+		using C4AulFunc::Exec;                    \
 /* Extracts the parameters from C4Values and wraps the return value in a C4Value */ \
 		virtual C4Value Exec(C4AulContext *pContext, C4Value pPars[], bool fPassErrors=false) \
 		{ \
@@ -6179,7 +6207,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DeathAnnounce", FnDeathAnnounce);
 	AddFunc(pEngine, "SetSolidMask", FnSetSolidMask);
 	AddFunc(pEngine, "GetGravity", FnGetGravity);
-	AddFunc(pEngine, "GetGravity", FnGetGravity);
+	AddFunc(pEngine, "SetGravity", FnSetGravity);
 	AddFunc(pEngine, "Exit", FnExit);
 	AddFunc(pEngine, "Collect", FnCollect);
 	AddFunc(pEngine, "DoNoCollectDelay", FnDoNoCollectDelay);

@@ -52,7 +52,7 @@ enum {
 	C4MN_Extra_Info				= 4,
 	C4MN_Extra_ComponentsMagic= 5,
 	C4MN_Extra_LiveMagicValue = 6,
-	C4MN_Extra_ComponentsLiveMagic = 7,
+	C4MN_Extra_ComponentsLiveMagic = 7
 };
 enum {
 	C4MN_Align_Left		= 1,
@@ -65,7 +65,7 @@ enum {
 	C4MN_Item_NoCount = 12345678
 };
 enum {
-	C4MN_AdjustPosition = 1<<31,
+	C4MN_AdjustPosition = 1<<31
 };
 
 void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner, C4Object *cObj);

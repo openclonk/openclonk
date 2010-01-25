@@ -424,6 +424,7 @@ bool Edit::KeyCursorOp(const C4KeyCodeEx &key, const CursorOperation &op)
 		{
 		// evaluate move length? (not home+end)
 		if (iMoveDir)
+			{
 			if (fCtrl)
 				{
 				// move one word
@@ -448,6 +449,7 @@ bool Edit::KeyCursorOp(const C4KeyCodeEx &key, const CursorOperation &op)
 						}
 				}
 			else iMoveLength = iMoveDir;
+			}
 		// delete stuff
 		if (op == COP_BACK || op == COP_DELETE)
 			{
@@ -654,10 +656,11 @@ void Edit::DrawElement(C4TargetFacet &cgo)
 		lpDDraw->TextOut("¦", *pFont, 1.5f, cgo.Surface, rcClientRect.x + cgo.TargetX + w - wc - iXScroll, iY0 + cgo.TargetY - h/3, dwFontClr, ALeft, false);
 		}
 	// unclip
-	if (fOwnClip) if (fClip)
-		lpDDraw->SetPrimaryClipper(cx0,cy0,cx1,cy1);
-	else
-		lpDDraw->NoPrimaryClipper();
+	if (fOwnClip)
+		{
+		if (fClip) lpDDraw->SetPrimaryClipper(cx0,cy0,cx1,cy1);
+		else lpDDraw->NoPrimaryClipper();
+		}
 	}
 
 void Edit::SelectAll()
@@ -714,7 +717,7 @@ bool Edit::GetCurrentWord(char *szTargetBuf, int32_t iMaxTargetBufLen)
 // ----------------------------------------------------
 // RenameEdit
 
-RenameEdit::RenameEdit(Label *pLabel) : Edit(pLabel->GetBounds(), true), pForLabel(pLabel), fFinishing(false)
+RenameEdit::RenameEdit(Label *pLabel) : Edit(pLabel->GetBounds(), true), fFinishing(false), pForLabel(pLabel)
 	{
 	// ctor - construct for label
 	assert(pForLabel);
@@ -856,5 +859,5 @@ bool LabeledEdit::GetControlSize(int *piWdt, int *piHgt, const char *szForText, 
 	return true;
 	}
 
-}; // end of namespace
+} // end of namespace
 

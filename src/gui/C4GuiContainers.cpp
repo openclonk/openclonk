@@ -74,7 +74,7 @@ void Container::ClearChildren()
 			Element *pANext = pFirst->pNext;
 			pFirst->pPrev = pFirst->pNext = NULL;
 			pFirst->pParent = NULL;
-			if (pFirst = pANext)
+			if ((pFirst = pANext))
 				pFirst->pPrev = NULL;
 			}
 		else
@@ -144,7 +144,7 @@ void Container::InsertElement(Element *pChild, Element *pInsertBefore)
 	// remove from any previous container
 	if (pChild->pParent) pChild->pParent->RemoveElement(pChild);
 	// add before given element
-	if (pChild->pPrev = pInsertBefore->pPrev)
+	if ((pChild->pPrev = pInsertBefore->pPrev))
 		pInsertBefore->pPrev->pNext = pChild;
 	else
 		pFirst = pChild;
@@ -173,11 +173,11 @@ Element *Container::GetNextNestedElement(Element *pPrevElement, bool fBackwards)
 		if (!pPrevElement) return this;
 		// check next nested
 		Element *pEl;
-		if (pEl = pPrevElement->GetFirstContained()) return pEl;
+		if ((pEl = pPrevElement->GetFirstContained())) return pEl;
 		// check next in list, going upwards until this container is reached
 		while (pPrevElement && pPrevElement != this)
 			{
-			if (pEl = pPrevElement->pNext) return pEl;
+			if ((pEl = pPrevElement->pNext)) return pEl;
 			pPrevElement = pPrevElement->pParent;
 			}
 		// nothing found
@@ -314,7 +314,7 @@ void Window::UpdateOwnPos()
 // --------------------------------------------------
 // ScrollBar
 
-ScrollBar::ScrollBar(C4Rect &rcBounds, ScrollWindow *pWin) : fAutoHide(false), pCustomGfx(NULL), fHorizontal(false), pScrollCallback(NULL), iCBMaxRange(100)
+ScrollBar::ScrollBar(C4Rect &rcBounds, ScrollWindow *pWin) : fAutoHide(false), fHorizontal(false), iCBMaxRange(100), pScrollCallback(NULL), pCustomGfx(NULL)
 	{
 	// set bounds
 	this->rcBounds = rcBounds;
@@ -328,12 +328,12 @@ ScrollBar::ScrollBar(C4Rect &rcBounds, ScrollWindow *pWin) : fAutoHide(false), p
 	Update();
 	}
 
-ScrollBar::ScrollBar(C4Rect &rcBounds, bool fHorizontal, BaseParCallbackHandler<int32_t> *pCB, int32_t iCBMaxRange) : fAutoHide(false), pCustomGfx(NULL), fHorizontal(fHorizontal), pScrollWindow(NULL), iCBMaxRange(iCBMaxRange)
+ScrollBar::ScrollBar(C4Rect &rcBounds, bool fHorizontal, BaseParCallbackHandler<int32_t> *pCB, int32_t iCBMaxRange) : fAutoHide(false), fHorizontal(fHorizontal), iCBMaxRange(iCBMaxRange), pScrollWindow(NULL), pCustomGfx(NULL)
 	{
 	// set bounds
 	this->rcBounds = rcBounds;
 	// set initial values
-	if (pScrollCallback = pCB) pScrollCallback->Ref();
+	if ((pScrollCallback = pCB)) pScrollCallback->Ref();
 	fScrolling = true;
 	iScrollThumbSize = fHorizontal ? C4GUI_ScrollThumbWdt : C4GUI_ScrollThumbHgt;
 	iScrollPos = 0;
@@ -353,7 +353,7 @@ void ScrollBar::Update()
 		{
 		int32_t iVisHgt = pScrollWindow->GetBounds().Hgt;
 		int32_t iClientHgt = pScrollWindow->GetClientRect().Hgt;
-		if (fScrolling = (iVisHgt < iClientHgt))
+		if ((fScrolling = (iVisHgt < iClientHgt)))
 			{
 			// scrolling necessary
 			// get vertical scroll pos
@@ -470,10 +470,12 @@ void ScrollBar::DrawElement(C4TargetFacet &cgo)
 		DrawVBar(cgo, bar);
 	// draw scroll pin
 	if (fScrolling && HasPin())
+		{
 		if (fHorizontal)
 			rUseGfx.fctScrollPin.Draw(cgo.Surface, cgo.TargetX+rcBounds.x+C4GUI_ScrollArrowWdt+iScrollPos, cgo.TargetY+rcBounds.y);
 		else
 			rUseGfx.fctScrollPin.Draw(cgo.Surface, cgo.TargetX+rcBounds.x, cgo.TargetY+rcBounds.y+C4GUI_ScrollArrowHgt+iScrollPos);
+		}
 	}
 
 
@@ -746,5 +748,5 @@ void Control::DisableFocus()
 	pDlg->AdvanceFocus(true);
 	}
 
-}; // end of namespace
+} // end of namespace
 

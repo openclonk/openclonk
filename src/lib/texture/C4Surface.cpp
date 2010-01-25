@@ -51,7 +51,7 @@ bool C4Surface::LoadAny(C4Group &hGroup, const char *szName, bool fOwnPal, bool 
 		// no extension: Default to extension that is found as file in group
 		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", NULL };
 		int i = 0; const char *szExt;
-		while (szExt = extensions[i++])
+		while ((szExt = extensions[i++]))
 			{
 			EnforceExtension(szFilename, szExt);
 			if (hGroup.FindEntry(szFilename)) break;
@@ -74,7 +74,7 @@ bool C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal,
 		// no extension: Default to extension that is found as file in group
 		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", NULL };
 		int i = 0; const char *szExt;
-		while (szExt = extensions[i++])
+		while ((szExt = extensions[i++]))
 			{
 			EnforceExtension(szFilename, szExt);
 			pGroup = hGroupset.FindEntry(szFilename);

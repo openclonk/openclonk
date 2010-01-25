@@ -129,7 +129,7 @@ bool C4FileSelDlg::DefaultListItem::UserToggleCheck()
 
 C4FileSelDlg::C4FileSelDlg(const char *szRootPath, const char *szTitle, C4FileSel_BaseCB *pSelCallback, bool fInitElements)
 : C4GUI::Dialog(BoundBy(C4GUI::GetScreenWdt()*2/3+10, 300,600), BoundBy(C4GUI::GetScreenHgt()*2/3+10, 220,500), szTitle, false),
-	pFileListBox(NULL), pSelectionInfoBox(NULL), btnOK(NULL), pSelection(NULL), pSelCallback(pSelCallback), pLocations(NULL), iLocationCount(0), pLocationComboBox(NULL)
+	pLocationComboBox(NULL), pFileListBox(NULL), pSelectionInfoBox(NULL), btnOK(NULL), pLocations(NULL), iLocationCount(0), pSelection(NULL), pSelCallback(pSelCallback)
 	{
 	sTitle.Copy(szTitle);
 	// key bindings
@@ -270,7 +270,7 @@ void C4FileSelDlg::UpdateFileList()
 	BeginFileListUpdate();
 	// reload files
 	C4GUI::Element *pEl;
-	while (pEl = pFileListBox->GetFirst()) delete pEl;
+	while ((pEl = pFileListBox->GetFirst())) delete pEl;
 	// file items
 	StdStrBuf sSearch;
 	const char *szFileMask = GetFileMask();
@@ -432,7 +432,7 @@ bool C4DefinitionSelDlg::SelectDefinitions(C4GUI::Screen *pOnScreen, StdStrBuf *
 	// let the user select definitions by showing a modal selection dialog
 	C4DefinitionSelDlg *pDlg = new C4DefinitionSelDlg(NULL, pSelection->getData());
 	bool fResult;
-	if (fResult = pOnScreen->ShowModalDlg(pDlg, false))
+	if ((fResult = pOnScreen->ShowModalDlg(pDlg, false)))
 		{
 		pSelection->Copy(pDlg->GetSelection(pSelection->getData(), true));
 		}
@@ -670,7 +670,7 @@ bool C4PortraitSelDlg::SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSele
 	// let the user select a portrait by showing a modal selection dialog
 	C4PortraitSelDlg *pDlg = new C4PortraitSelDlg(NULL, *pfSetPicture, *pfSetBigIcon);
 	bool fResult;
-	if (fResult = pOnScreen->ShowModalDlg(pDlg, false))
+	if ((fResult = pOnScreen->ShowModalDlg(pDlg, false)))
 		{
 		pSelection->Take(pDlg->GetSelection(NULL, false));
 		*pfSetPicture = pDlg->IsSetPicture();

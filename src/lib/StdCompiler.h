@@ -122,7 +122,7 @@ public:
 		SEP_START2, // Start some sort of list ('[')
 		SEP_END2, // End some sort of list (']')
 		SEP_VLINE, // Vertical line seperator ('|')
-		SEP_DOLLAR, // Dollar sign ('$')
+		SEP_DOLLAR // Dollar sign ('$')
   };
   virtual bool Seperator(Sep eSep = SEP_SEP)    { return true; }
   virtual void NoSeperator()                    { }
@@ -146,7 +146,7 @@ public:
     RCT_All,      // Printable characters only, must be last element in naming.
     RCT_Idtf,     // Alphanumerical characters or '_', seperator needed.
 		RCT_IdtfAllowEmpty, // Like RCT_Idtf, but empty strings are also allowed
-    RCT_ID,       // Like RCT_Idtf (only used for special compilers that treat IDs differently)
+    RCT_ID        // Like RCT_Idtf (only used for special compilers that treat IDs differently)
   };
   // Note that string won't allow '\0' inside the buffer, even with escaped compiling!
   virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) = 0;
@@ -645,7 +645,7 @@ protected:
     const char *Pos;
     // Constructor
     NameNode(NameNode *pParent = NULL)
-      : Parent(pParent), PrevChild(NULL), FirstChild(NULL), NextChild(NULL), LastChild(NULL),
+      : Parent(pParent), FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
         Indent(-1)
     { }
   };

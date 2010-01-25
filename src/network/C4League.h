@@ -44,7 +44,7 @@ enum C4LeagueAction
   C4LA_RefQuery,  // [client] Query reference list
   C4LA_PlrAuth,		// [client] Player authentication request
 
-  C4LA_ReportDisconnect, // [both] Sent by host and client when a client is disconnected irregularly
+  C4LA_ReportDisconnect // [both] Sent by host and client when a client is disconnected irregularly
 };
 
 class C4LeagueRequestHead
@@ -78,7 +78,7 @@ class C4LeagueReportDisconnectHead : public C4LeagueRequestHead
   private:
     C4LeagueDisconnectReason eReason;
   public:
-    C4LeagueReportDisconnectHead(const char *szCSID, C4LeagueDisconnectReason eReason) : eReason(eReason), C4LeagueRequestHead(C4LA_ReportDisconnect, szCSID, NULL) {}
+    C4LeagueReportDisconnectHead(const char *szCSID, C4LeagueDisconnectReason eReason) : C4LeagueRequestHead(C4LA_ReportDisconnect, szCSID, NULL), eReason(eReason) {}
 
   public:
     void CompileFunc(StdCompiler *pComp);
@@ -210,7 +210,7 @@ class C4LeagueClient : public C4Network2RefClient
 		C4LeagueFBIDList FBIDList;
 
   public:
-		C4LeagueClient() : CSID(), eCurrAction(C4LA_None), C4Network2RefClient() { }
+		C4LeagueClient() : C4Network2RefClient(), CSID(), eCurrAction(C4LA_None) { }
     const char *getCSID() const { return CSID.getData(); }
     C4LeagueAction getCurrentAction() const { return eCurrAction; }
 		void ResetCurrentAction() { eCurrAction = C4LA_None; }

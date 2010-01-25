@@ -45,13 +45,13 @@ class C4PlayerControlDef
 			CDA_Script,          // default: Script callback
 			CDA_Menu,            // open player menu (async)
 			CDA_MenuOK, CDA_MenuCancel, CDA_MenuLeft, CDA_MenuUp, CDA_MenuRight, CDA_MenuDown, // player menu controls (async)
-			CDA_ZoomIn, CDA_ZoomOut, // player viewport control (async)
+			CDA_ZoomIn, CDA_ZoomOut // player viewport control (async)
 			};
 	private:
 		Actions eAction;
 
 	public:
-		C4PlayerControlDef() : fIsHoldKey(false), fDefaultDisabled(false), eAction(CDA_Script), fGlobal(false), idControlExtraData(C4ID::None) {} 
+		C4PlayerControlDef() : fGlobal(false), fIsHoldKey(false), fDefaultDisabled(false), idControlExtraData(C4ID::None), eAction(CDA_Script) {} 
 		~C4PlayerControlDef() {};
 
 		void CompileFunc(StdCompiler *pComp);
@@ -155,7 +155,7 @@ class C4PlayerControlAssignment
 			CTM_Default=0,              // standard behaviour: The control will be triggered
 			CTM_Hold=      1<<0,        // the control will be put into "down"-mode
 			CTM_Release=   1<<1,        // the hold mode of the control will be released
-			CTM_AlwaysUnhandled= 1<<2,  // the key will not block handling of other keys even if it got handled
+			CTM_AlwaysUnhandled= 1<<2  // the key will not block handling of other keys even if it got handled
 			};
 
 	private:
@@ -164,7 +164,7 @@ class C4PlayerControlAssignment
 		bool fRefsResolved; // set to true after sControlName and sKeyNames have been resolved to runtime values
 
 	public:
-		C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iTriggerMode(CTM_Default), iPriority(0), fRefsResolved(false) {}
+		C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), iTriggerMode(CTM_Default), fRefsResolved(false) {}
 		~C4PlayerControlAssignment() {}
 
 		void CompileFunc(StdCompiler *pComp);

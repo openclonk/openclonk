@@ -45,7 +45,7 @@ bool ComboBox_FillCB::FindEntry(const char *szText)
 	{
 	// check for entry with same name
 	ContextMenu::Entry *pEntry; int32_t idx=0;
-	while (pEntry = pDrop->GetIndexedEntry(idx++)) if (SEqual(pEntry->GetText(), szText)) return true;
+	while ((pEntry = pDrop->GetIndexedEntry(idx++))) if (SEqual(pEntry->GetText(), szText)) return true;
 	return false;
 	}
 
@@ -240,4 +240,4 @@ void ComboBox::OnCtxComboSelect(C4GUI::Element *pListItem, const ComboMenuCBStru
 	// don't do anything else, because this might be deleted
 	}
 
-}; // namespace C4GUI
+} // namespace C4GUI

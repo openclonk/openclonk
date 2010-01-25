@@ -141,7 +141,7 @@ C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContextAdd(C4GUI::Element *pBtn
 	const char *szFn;
 	StdStrBuf sSearchPath(Config.General.UserDataPath);
 //	sSearchPath.Format("%s%s", (const char *) Config.General.ExePath, (const char *) Config.General.PlayerPath);
-	for (DirectoryIterator i(sSearchPath.getData()); szFn=*i; i++)
+	for (DirectoryIterator i(sSearchPath.getData()); (szFn=*i); i++)
 		{
 		szFn = Config.AtRelativePath(szFn);
 		if (*GetFilename(szFn) == '.') continue;
@@ -341,7 +341,7 @@ void C4StartupMainDlg::OnShown()
 	StdStrBuf sSearchPath(Config.General.UserDataPath);
 	const char *szFn;
 //	sSearchPath.Format("%s%s", (const char *) Config.General.ExePath, (const char *) Config.General.PlayerPath);
-	for (DirectoryIterator i(sSearchPath.getData()); szFn=*i; i++)
+	for (DirectoryIterator i(sSearchPath.getData()); (szFn=*i); i++)
 		{
 		szFn = Config.AtRelativePath(szFn);
 		if (*GetFilename(szFn) == '.') continue; // ignore ".", ".." and private files (".*")

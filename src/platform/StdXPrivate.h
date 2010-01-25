@@ -131,14 +131,14 @@ class CStdAppPrivate {
 #endif
 
 	CStdAppPrivate(CStdApp *pApp):
+#ifdef WITH_GLIB
+		GLibProc(g_main_context_default()),
+#endif // WITH_GLIB
 #ifdef USE_X11
 		PrimarySelection(), ClipboardSelection(),
 		LastEventTime(CurrentTime), tasked_out(false), pending_desktop(false),
 		xim(0), xic(0), X11Proc(pApp),
 #endif
-#ifdef WITH_GLIB
-		GLibProc(g_main_context_default()),
-#endif // WITH_GLIB
 		argc(0), argv(0) { }
 	static CStdWindow * GetWindow(unsigned long wnd);
 	static void SetWindow(unsigned long wnd, CStdWindow * pWindow);

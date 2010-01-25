@@ -73,8 +73,8 @@ StdStrBuf C4Network2Address::toString() const
 	{
 	case P_UDP:	return FormatString("UDP:%s:%d", inet_ntoa(addr.sin_addr), htons(addr.sin_port));
 	case P_TCP:	return FormatString("TCP:%s:%d", inet_ntoa(addr.sin_addr), htons(addr.sin_port));
+	default:	return StdStrBuf("INVALID");
 	}
-	return StdStrBuf("INVALID");
 }
 
 bool C4Network2Address::operator == (const C4Network2Address &addr2) const
@@ -148,7 +148,7 @@ void C4Network2Client::CloseConns(const char *szMsg)
 {
   C4PacketConnRe Pkt(false, false, szMsg);
   C4Network2IOConnection *pConn;
-  while(pConn = pMsgConn)
+  while((pConn = pMsgConn))
   {
     // send packet, close
     if(pConn->isOpen())
@@ -252,10 +252,12 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
     hostent *ph = ::gethostbyname(szLocalHostName);
     // check type, get addr list
     if(ph)
+    {
       if(ph->h_addrtype != AF_INET)
         ph = NULL;
       else
         ppAddr = reinterpret_cast<in_addr **>(ph->h_addr_list);
+    }
   }
 
   // add address(es)
@@ -325,7 +327,7 @@ void C4Network2Client::ClearGraphs()
 // *** C4Network2ClientList
 
 C4Network2ClientList::C4Network2ClientList(C4Network2IO *pIO)
-	: pFirst(NULL), pLocal(NULL), pIO(pIO)
+	: pIO(pIO), pFirst(NULL), pLocal(NULL)
 {
 
 }

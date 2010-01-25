@@ -149,22 +149,23 @@ int main()
 static void crash_handler(int signo)
 	{
 	int logfd = STDERR_FILENO;
+	ssize_t ignore;
 	for (;;)
 		{
 		// Print out the signal
-		write(logfd, C4VERSION ": Caught signal ", sizeof (C4VERSION ": Caught signal ") - 1);
+		ignore = write(logfd, C4VERSION ": Caught signal ", sizeof (C4VERSION ": Caught signal ") - 1);
 		switch (signo)
 			{
-			case SIGBUS: write(logfd, "SIGBUS", sizeof ("SIGBUS") - 1); break;
-			case SIGILL: write(logfd, "SIGILL", sizeof ("SIGILL") - 1); break;
-			case SIGSEGV: write(logfd, "SIGSEGV", sizeof ("SIGSEGV") - 1); break;
-			case SIGABRT: write(logfd, "SIGABRT", sizeof ("SIGABRT") - 1); break;
-			case SIGINT: write(logfd, "SIGINT", sizeof ("SIGINT") - 1); break;
-			case SIGQUIT: write(logfd, "SIGQUIT", sizeof ("SIGQUIT") - 1); break;
-			case SIGFPE: write(logfd, "SIGFPE", sizeof ("SIGFPE") - 1); break;
-			case SIGTERM: write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
+			case SIGBUS:  ignore = write(logfd, "SIGBUS", sizeof ("SIGBUS") - 1); break;
+			case SIGILL:  ignore = write(logfd, "SIGILL", sizeof ("SIGILL") - 1); break;
+			case SIGSEGV: ignore = write(logfd, "SIGSEGV", sizeof ("SIGSEGV") - 1); break;
+			case SIGABRT: ignore = write(logfd, "SIGABRT", sizeof ("SIGABRT") - 1); break;
+			case SIGINT:  ignore = write(logfd, "SIGINT", sizeof ("SIGINT") - 1); break;
+			case SIGQUIT: ignore = write(logfd, "SIGQUIT", sizeof ("SIGQUIT") - 1); break;
+			case SIGFPE:  ignore = write(logfd, "SIGFPE", sizeof ("SIGFPE") - 1); break;
+			case SIGTERM: ignore = write(logfd, "SIGTERM", sizeof ("SIGTERM") - 1); break;
 			}
-		write(logfd, "\n", sizeof ("\n") - 1);
+		ignore = write(logfd, "\n", sizeof ("\n") - 1);
 		if (logfd == STDERR_FILENO) logfd = GetLogFD();
 		else break;
 		if (logfd < 0) break;

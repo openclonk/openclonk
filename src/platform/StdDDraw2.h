@@ -211,7 +211,7 @@ struct ZoomData
 class CStdDDraw
 	{
 	public:
-		CStdDDraw(): Saturation(255), MaxTexSize(0) { lpDDrawPal=&Pal; }
+		CStdDDraw(): MaxTexSize(0), Saturation(255) { lpDDrawPal=&Pal; }
 		virtual ~CStdDDraw() { lpDDraw=NULL; }
 	public:
 		CStdApp * pApp; // the application

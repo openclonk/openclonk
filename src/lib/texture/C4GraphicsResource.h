@@ -28,7 +28,7 @@
 #include <C4Surface.h>
 #include <C4FacetEx.h>
 
-namespace C4GUI { class Resource; };
+namespace C4GUI { class Resource; }
 
 class C4GraphicsResource
 	{

@@ -671,13 +671,13 @@ bool C4Def::Load(C4Group &hGroup,
 	if (Graphics.GetBitmap())
 		{
 		// check SolidMask
-		if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>Graphics.Bitmap->Wdt || SolidMask.y+SolidMask.Hgt>Graphics.Bitmap->Hgt) SolidMask.Default();
+		if (SolidMask.x<0 || SolidMask.y<0 || SolidMask.x+SolidMask.Wdt>Graphics.Bmp.Bitmap->Wdt || SolidMask.y+SolidMask.Hgt>Graphics.Bmp.Bitmap->Hgt) SolidMask.Default();
 		// Set MainFace (unassigned bitmap: will be set by GetMainFace())
 		MainFace.Set(NULL,0,0,Shape.Wdt,Shape.Hgt);
 		}
 
 	// validate TopFace
-	if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bitmap->Hgt)
+	if (TopFace.x<0 || TopFace.y<0 || TopFace.x+TopFace.Wdt>Graphics.Bmp.Bitmap->Wdt || TopFace.y+TopFace.Hgt>Graphics.Bmp.Bitmap->Hgt)
 		{
 		TopFace.Default();
 		// warn in debug mode
@@ -754,7 +754,7 @@ int32_t C4Def::GetValue(C4Object *pInBase, int32_t iBuyPlayer)
 	if (pInBase)
 		{
 		C4AulFunc *pFn;
-		if (pFn = pInBase->Def->Script.GetSFunc(PSF_CalcBuyValue, AA_PROTECTED))
+		if ((pFn = pInBase->Def->Script.GetSFunc(PSF_CalcBuyValue, AA_PROTECTED)))
 			iValue = pFn->Exec(pInBase, &C4AulParSet(C4VID(id), C4VInt(iValue))).getInt();
 		}
 	return iValue;
@@ -830,11 +830,13 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 		if (fThisSearchMessage) {	LogF("%s...",GetFilename(hGroup.GetName())); }
 
 	// Load primary definition
-	if (nDef=new C4Def)
+	if ((nDef=new C4Def))
+		{
 		if ( nDef->Load(hGroup,dwLoadWhat,szLanguage,pSoundSystem) && Add(nDef,fOverload) )
 			{ iResult++; fPrimaryDef=true; }
 		else
 			{ delete nDef; }
+		}
 
 	// Load sub definitions
 	int i = 0;
@@ -895,7 +897,7 @@ int32_t C4DefList::LoadFolderLocal( const char *szPath,
 		SCopy(szPath,szFoldername,iBackslash);
 		// Load from parent folder
 		if (SEqualNoCase(GetExtension(szFoldername),"c4f"))
-			if (iDefs=Load(szFoldername,dwLoadWhat,szLanguage,pSoundSystem,fOverload))
+			if ((iDefs=Load(szFoldername,dwLoadWhat,szLanguage,pSoundSystem,fOverload)))
 				{
 				iResult+=iDefs;
 				// Add any folder containing defs to store list
@@ -923,7 +925,7 @@ int32_t C4DefList::Load(const char *szSearch,
 
 	// Segments
 	char szSegment[_MAX_PATH+1]; int32_t iGroupCount;
-	if (iGroupCount=SCharCount(';',szSearch))
+	if ((iGroupCount=SCharCount(';',szSearch)))
 		{
 		++iGroupCount; int32_t iPrg=iMaxProgress-iMinProgress;
 		for (int32_t cseg=0; SCopySegment(szSearch,cseg,szSegment,';',_MAX_PATH); cseg++)
@@ -1110,8 +1112,9 @@ C4Def *C4DefList::GetByPath(const char *szPath)
   // search defs
   const char *szDefPath;
   for(C4Def *pDef = FirstDef; pDef; pDef = pDef->Next)
-    if(szDefPath = Config.AtRelativePath(pDef->Filename))
+    if((szDefPath = Config.AtRelativePath(pDef->Filename)))
       if(SEqual2NoCase(szPath, szDefPath))
+        {
         // the definition itself?
         if(!szPath[SLen(szDefPath)])
           return pDef;
@@ -1119,6 +1122,7 @@ C4Def *C4DefList::GetByPath(const char *szPath)
         else if(szPath[SLen(szDefPath)] == '\\')
           if(!strchr(szPath + SLen(szDefPath) + 1, '\\'))
             return pDef;
+        }
   // not found
   return NULL;
   }

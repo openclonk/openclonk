@@ -248,7 +248,7 @@ class DisconnectData
 		const C4ClientPlayerInfos &rPlayerInfos;
 
 	public:
-		ALLOW_TEMP_TO_REF(DisconnectData);
+		ALLOW_TEMP_TO_REF(DisconnectData)
 		DisconnectData(C4LeagueFBIDList &rFBIDList, const C4ClientPlayerInfos &rPlayerInfos)
 			: rFBIDList(rFBIDList), rPlayerInfos(rPlayerInfos) {}
 
@@ -265,7 +265,7 @@ class DisconnectData
 				//   Compile them even if they're not in the FBID-List, but omit
 				//   the FBID (used for host message)
 				int32_t i=0; C4PlayerInfo *pInfo;
-				while (pInfo = rPlayerInfos.GetPlayerInfo(i++))
+				while ((pInfo = rPlayerInfos.GetPlayerInfo(i++)))
 					if (pInfo->IsJoined() && !pInfo->IsRemoved())
 						{
 						pComp->Name("Player");

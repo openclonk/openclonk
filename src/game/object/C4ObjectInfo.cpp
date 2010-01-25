@@ -151,6 +151,7 @@ bool C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 	// portrait not defined or invalid (custom w/o file or invalid file)
 	// assign a new one (local players only)
 	if (!*PortraitFile && fLoadPortrait)
+		{
 		// try to load a custom portrait
 		if (!fPortraitFileChecked && Portrait.Load(hGroup, C4CFN_Portrait_Old, C4CFN_Portrait, C4CFN_PortraitOverlay))
 			// assign it as custom portrait
@@ -158,6 +159,7 @@ bool C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 		else if (Config.Graphics.AddNewCrewPortraits)
 			// assign a new random crew portrait
 			SetRandomPortrait(C4ID::None, true, false);
+		}
 	return true;
 	}
 
@@ -189,6 +191,7 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 			{
 			// Crew was renamed; file rename necessary, if the name is not blocked by another crew info
 			if (!hGroup.FindEntry(szTempGroup))
+				{
 				if (hGroup.Rename(Filename, szTempGroup))
 					SCopy(szTempGroup, Filename, _MAX_PATH);
 				else
@@ -196,6 +199,7 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 					// could not rename. Not fatal; just use old file
 					LogF("Error adjusting crew info for %s into %s: Rename error from %s to %s!", Name, hGroup.GetFullName().getData(), Filename, szTempGroup);
 					}
+				}
 			}
 		}
 	// Open group
@@ -305,7 +309,7 @@ void C4ObjectInfo::Draw(C4Facet &cgo, bool fShowPortrait, C4Object *pOfObj)
 	if (fShowPortrait)
 		{
 		C4DefGraphics *pPortraitGfx;
-		if (pPortraitGfx = Portrait.GetGfx()) if (pPortraitGfx->Bitmap->Wdt)
+		if ((pPortraitGfx = Portrait.GetGfx())) if (pPortraitGfx->Bmp.Bitmap->Wdt)
 			{
 			//C4Facet fctPortrait; fctPortrait.Set(Portrait);
 			C4Facet ccgo; ccgo.Set(cgo.Surface,cgo.X+iX,cgo.Y,4*cgo.Hgt/3+10,cgo.Hgt+10);
@@ -439,7 +443,11 @@ bool C4ObjectInfo::ClearPortrait(bool fPermanently)
 	// no portrait
 	Portrait.Clear();
 	// clear new portrait; do not delete class (because empty class means no-portrait-as-new-setting)
-	if (fPermanently) if (pNewPortrait) pNewPortrait->Clear(); else pNewPortrait = new C4Portrait();
+	if (fPermanently)
+		{
+		if (pNewPortrait) pNewPortrait->Clear();
+		else pNewPortrait = new C4Portrait();
+		}
 	// done, success
 	return true;
 	}

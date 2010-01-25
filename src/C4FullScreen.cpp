@@ -440,7 +440,7 @@ bool C4FullScreen::ViewportCheck()
 			iPlrNum = NO_OWNER;
 			// Film mode: create viewport for first player (instead of no-owner)
 			if (fFilm)
-				if (pPlr = ::Players.First)
+				if ((pPlr = ::Players.First))
 					iPlrNum = pPlr->Number;
 			// Create viewport
 			Game.CreateViewport(iPlrNum, iPlrNum==NO_OWNER);

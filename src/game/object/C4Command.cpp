@@ -790,7 +790,7 @@ void C4Command::Build()
 					C4Object *pOtherBuilder = NULL;
 					if (!cObj->Contents.Find(C4ID::Linekit))
 						{
-						while (pOtherBuilder = Game.FindObjectByCommand(C4CMD_Build,Target, C4VNull,0, NULL, pOtherBuilder))
+						while ((pOtherBuilder = Game.FindObjectByCommand(C4CMD_Build,Target, C4VNull,0, NULL, pOtherBuilder)))
 							if (pOtherBuilder->Contents.Find(C4ID::Linekit))
 								break;
 						}
@@ -1084,12 +1084,14 @@ void C4Command::Get()
 
 	// Target collected
 	if (Target->Contained == cObj)
+		{
 		// Get-count specified: decrease count and continue with next object
 		if (Tx._getInt() > 1)
 			{ Target = NULL; Tx--; return; }
 		// We're done
 		else
 			{	cObj->Action.ComDir=COMD_Stop; Finish(true); return; }
+		}
 
   // Grabbing other than target container: let go
   if (cObj->GetProcedure()==DFA_PUSH)
@@ -1316,12 +1318,14 @@ void C4Command::Put() // Notice: Put command is currently using Ty as an interna
 
 	// Thing is in target
 	if (Target2->Contained == Target)
+		{
 		// Put-count specified: decrease count and continue with next object
 		if (Tx._getInt() > 1)
 			{ Target2 = NULL; Tx--; return; }
 		// We're done
 		else
 			{	Finish(true); return; }
+		}
 
 	// Thing to put not in contents: get object
 	if (!cObj->Contents.GetLink(Target2))
@@ -1914,7 +1918,7 @@ void C4Command::Acquire()
 	// Find available material
 	C4Object *pMaterial=NULL;
 	// Next closest
-	while (pMaterial = Game.FindObject(Data.getC4ID(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,NULL,NULL,NULL,NULL,ANY_OWNER,pMaterial))
+	while ((pMaterial = Game.FindObject(Data.getC4ID(),cObj->GetX(),cObj->GetY(),-1,-1,OCF_Available,NULL,NULL,NULL,NULL,ANY_OWNER,pMaterial)))
 		// Object is not in container to be ignored
 		if (!Target2 || pMaterial->Contained!=Target2)
 			// Object is near enough
@@ -2074,7 +2078,7 @@ void C4Command::Energy()
 	if (!(pKit=cObj->Contents.Find(C4ID::Linekit)))
 		{ cObj->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,true,C4VID(C4ID::Linekit)); return; }
 	// Find line constructing kit
-	for (int32_t cnt=0; pKitWithLine=cObj->Contents.GetObject(cnt); cnt++)
+	for (int32_t cnt=0; (pKitWithLine=cObj->Contents.GetObject(cnt)); cnt++)
 		if ((pKitWithLine->id==C4ID::Linekit) && (pLine=Game.FindObject(C4ID::PowerLine,0,0,0,0,OCF_All,"Connect",pKitWithLine)))
 			break;
 	// No line constructed yet
@@ -2178,9 +2182,14 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 	// Target X/Y
 	pComp->Value(Tx); pComp->Seperator(StdCompiler::SEP_SEP);
 	pComp->Value(mkIntPackAdapt(Ty)); pComp->Seperator(StdCompiler::SEP_SEP);
+	int32_t iPtr;
 	// Target
-	pComp->Value(mkIntPackAdapt(reinterpret_cast<int32_t &>(Target))); pComp->Seperator(StdCompiler::SEP_SEP);
-	pComp->Value(mkIntPackAdapt(reinterpret_cast<int32_t &>(Target2))); pComp->Seperator(StdCompiler::SEP_SEP);
+	iPtr = reinterpret_cast<intptr_t>(Target);
+	pComp->Value(mkIntPackAdapt(iPtr)); pComp->Seperator(StdCompiler::SEP_SEP);
+	Target = reinterpret_cast<C4Object*>(iPtr);
+	iPtr = reinterpret_cast<intptr_t>(Target2);
+	pComp->Value(mkIntPackAdapt(iPtr)); pComp->Seperator(StdCompiler::SEP_SEP);
+	Target2 = reinterpret_cast<C4Object*>(iPtr);
 	// Data
 	pComp->Value(Data); pComp->Seperator(StdCompiler::SEP_SEP);
 	// Update interval

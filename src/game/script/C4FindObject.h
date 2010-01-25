@@ -48,7 +48,7 @@ enum C4FindObjectCondID
 	C4FO_Owner         = 50,
 	C4FO_Controller    = 51,
 	C4FO_Func          = 60,
-	C4FO_Layer         = 70,
+	C4FO_Layer         = 70
 };
 
 // Sort map - using same values as C4FindObjectCondID!
@@ -63,7 +63,7 @@ enum C4SortObjectCondID
 	C4SO_Mass         = 140, // lightest first
 	C4SO_Value        = 150, // cheapest first
 	C4SO_Func         = 160, // least return values first
-	C4SO_Last         = 200, // no sort condition larger than this
+	C4SO_Last         = 200  // no sort condition larger than this
 	};
 
 class C4LSectors;
@@ -430,7 +430,7 @@ class C4SortObjectMultiple : public C4SortObject // apply next sort if previous 
 	{
 	public:
 		C4SortObjectMultiple(int32_t iCnt, C4SortObject **ppSorts, bool fFreeArray = true)
-			: C4SortObject(), iCnt(iCnt), ppSorts(ppSorts), fFreeArray(fFreeArray) {}
+			: C4SortObject(), fFreeArray(fFreeArray), iCnt(iCnt), ppSorts(ppSorts) {}
 		virtual ~C4SortObjectMultiple();
 	private:
 		bool fFreeArray;

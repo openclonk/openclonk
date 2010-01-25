@@ -244,7 +244,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 			ppProcs[i]->GetFDs(test_fds);
 
 			// Check intersection
-			for (int j = prev_fds; j < test_fds.size(); ++j) if (fds[j].events & fds[j].revents)
+			for (unsigned int j = prev_fds; j < test_fds.size(); ++j) if (fds[j].events & fds[j].revents)
 			{
 				if(!ppProcs[i]->Execute(0))
 				{
@@ -495,6 +495,12 @@ bool StdThread::IsStopSignaled()
 	return fStopSignaled;
 }
 
+namespace {
+	void Fail(const char* msg) {
+		// TODO: throw std::runtime_error(msg); ?
+	}
+}
+
 #ifdef STDSCHEDULER_USE_EVENTS
 CStdNotifyProc::CStdNotifyProc() : Event(true) {}
 void CStdNotifyProc::Notify() { Event.Set(); }
@@ -508,14 +514,16 @@ bool CStdNotifyProc::CheckAndReset()
 #else // STDSCHEDULER_USE_EVENTS
 CStdNotifyProc::CStdNotifyProc()
 	{
-	pipe(fds);
+	if(pipe(fds) == -1)
+		Fail("pipe failed");
 	// Experimental castration of the pipe.
 	fcntl(fds[0], F_SETFL, fcntl(fds[0], F_GETFL) | O_NONBLOCK);
 	}
 void CStdNotifyProc::Notify()
 	{
 	char c = 42;
-	write(fds[1], &c, 1);
+	if(write(fds[1], &c, 1) == -1)
+		Fail("write failed");
 	}
 bool CStdNotifyProc::Check()
 	{

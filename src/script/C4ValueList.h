@@ -26,7 +26,7 @@
 class C4ValueList
 {
 public:
-	enum { MaxSize = 1000000, }; // ye shalt not create arrays larger than that!
+	enum { MaxSize = 1000000 }; // ye shalt not create arrays larger than that!
 
 	C4ValueList();
 	C4ValueList(int32_t inSize);

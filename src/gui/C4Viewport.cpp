@@ -350,7 +350,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 
 #elif defined(WITH_DEVELOPER_MODE)
 static GtkTargetEntry drag_drop_entries[] = {
-	{ "text/uri-list", 0, 0 }
+	{ const_cast<gchar*>("text/uri-list"), 0, 0 }
 };
 
 // GTK+ Viewport window implementation
@@ -545,6 +545,8 @@ gboolean C4ViewportWindow::OnScrollStatic(GtkWidget* widget, GdkEventScroll* eve
 			break;
 		case GDK_SCROLL_DOWN:
 			::GraphicsSystem.MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(-1) << 16), window->cvp);
+			break;
+		default:
 			break;
 		}
 	}
@@ -890,6 +892,7 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 
 	// Control overlays (if not film/replay)
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
+		{
 		// Mouse control
 		if (::MouseControl.IsViewport(this))
 			{
@@ -912,6 +915,7 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 				DrawCommandKey(ccgo, COM_PlayerMenu, false, PlrControlKeyName(Player, Com2Control(COM_PlayerMenu), true).getData());
 				}
 			}
+		}
 	}
 
 void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
@@ -1460,7 +1464,7 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	ResetMenuPositions=true;
 	// player uses mouse control? then clip the cursor
 	C4Player *pPlr;
-	if (pPlr=::Players.Get(Player))
+	if ((pPlr=::Players.Get(Player)))
 		if (pPlr->MouseControl)
 			{
 			::MouseControl.UpdateClip();

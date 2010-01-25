@@ -50,9 +50,9 @@ const char *SGetRelativePath(const char *strPath)
 
 
 C4MusicSystem::C4MusicSystem():
-	PlayMusicFile(NULL),
 	Songs(NULL),
 	SongCount(0),
+	PlayMusicFile(NULL),
 	Volume(100)
 	{
 	}
@@ -176,7 +176,7 @@ bool C4MusicSystem::InitForScenario(C4Group & hGroup)
 	}
 	// check for music folders in group set
 	C4Group *pMusicFolder = NULL;
-	while(pMusicFolder = Game.GroupSet.FindGroup(C4GSCnt_Music, pMusicFolder))
+	while((pMusicFolder = Game.GroupSet.FindGroup(C4GSCnt_Music, pMusicFolder)))
 		{
 		if (!fLocalMusic)
 			{
