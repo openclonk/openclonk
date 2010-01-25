@@ -186,7 +186,7 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateOwnPos()
 	if (pExtraLabel) rcExtraDataRect = caBounds.GetFromBottom(C4GUI::GetRes()->TextFont.GetLineHeight());
 	// second line (team+rank)
 	C4GUI::ComponentAligner caTeamArea(caBounds.GetFromBottom(C4GUI::ComboBox::GetDefaultHeight()), 0,0);
-	C4Rect rcRankIcon = { 0 };
+	C4Rect rcRankIcon;
 	if (pList->IsEvaluation())
 		{
 		if (pRankIcon)
