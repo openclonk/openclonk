@@ -29,9 +29,7 @@ distribution.
 #include <ctype.h>
 #include "tinyxml.h"
 
-#ifdef TIXML_USE_STL
 #include <sstream>
-#endif
 #ifdef WITH_GLIB
 #include <glib.h>
 #endif
@@ -1236,7 +1234,7 @@ void TiXmlAttribute::StreamOut( TIXML_OSTREAM * stream ) const
 
 int TiXmlAttribute::QueryIntValue( int* ival ) const
 {
-	if ( sscanf( value.c_str(), "%d", ival ) == 1 )
+	if (std::istringstream(value.c_str()) >> *ival)
 		return TIXML_SUCCESS;
 	return TIXML_WRONG_TYPE;
 }
@@ -1250,7 +1248,7 @@ int TiXmlAttribute::QueryDoubleValue( double* dval ) const
 	if (end != value.c_str())
 		return TIXML_SUCCESS;
 #else
-	if ( sscanf( value.c_str(), "%lf", dval ) == 1 )
+	if (std::istringstream(value.c_str()) >> *dval)
 		return TIXML_SUCCESS;
 #endif
 	return TIXML_WRONG_TYPE;

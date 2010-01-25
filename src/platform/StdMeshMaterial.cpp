@@ -25,6 +25,8 @@
 
 #ifdef WITH_GLIB
 #include <glib.h>
+#else
+#include <sstream>
 #endif
 
 namespace
@@ -262,14 +264,15 @@ float StdMeshMaterialParserCtx::AdvanceFloat()
 {
 	StdStrBuf buf;
 	AdvanceRequired(buf, TOKEN_IDTF);
-	char* end;
+	float f;
 #ifdef WITH_GLIB
-	float f = g_ascii_strtod(buf.getData(), &end);
+	char* end;
+	f = g_ascii_strtod(buf.getData(), &end);
+	if(*end != '\0')
 #else
-	// FIXME: locale-dependent
-	float f = strtof(buf.getData(), &end);
+	if (!(std::istringstream(buf.getData()) >> f))
 #endif
-	if(*end != '\0') Error(StdStrBuf("Floating point value expected"));
+		Error(StdStrBuf("Floating point value expected"));
 	return f;
 }
 
