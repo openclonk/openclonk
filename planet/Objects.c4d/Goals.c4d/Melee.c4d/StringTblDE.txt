@@ -1,0 +1,4 @@
+Name=Melee
+
+MsgGoalFulfilled=Eure Gegner sind eliminiert.
+MsgGoalUnfulfilled=Es sind noch %d Gegner im Spiel.
