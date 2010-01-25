@@ -7,6 +7,7 @@
 		*Respawn - The clonk can respawn at this CP.
 		*Check - This checkpoint must be reached in order to complete the goal.
 		*Ordered - These checkpoints must be reached in the right order.
+		*Bonus - Player receives a bonus if he cleares this CP.
 */
 
 /*-- Checkpoint modes --*/
@@ -17,6 +18,7 @@ static const RACE_CP_Finish = 2;
 static const RACE_CP_Respawn = 4;
 static const RACE_CP_Check = 8;
 static const RACE_CP_Ordered = 16;
+static const RACE_CP_Bonus = 32;
 
 public func SetCPMode(int iMode) 
 {
@@ -26,7 +28,7 @@ public func SetCPMode(int iMode)
 		iMode = RACE_CP_Finish;
 	if (iMode & RACE_CP_Ordered) // Ordered checkpoints must have RACE_CP_Check.
 	{
-		iMode | RACE_CP_Check;
+		iMode = iMode | RACE_CP_Check;
 		// Set CP number.
 		SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
 	}
@@ -36,6 +38,8 @@ public func SetCPMode(int iMode)
 }
 
 public func GetCPMode() { return CP_Mode; }
+
+public func FindCPMode(int iMode) { return CP_Mode & iMode; }
 
 /*-- Checkpoint controller --*/
 local CP_Con;
@@ -129,7 +133,7 @@ protected func FxIntCheckpointTimer()
 protected func CheckForClonks()
 {
 	// Loop through all clonks inside the checkpoint.
-	for (var pClonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(30)))
+	for (var pClonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20)))
 	{
 		var iPlr = pClonk->GetOwner();
 		var iTeam = GetPlayerTeam(iPlr);
@@ -163,10 +167,15 @@ protected func CheckForClonks()
 		if (CP_Mode & RACE_CP_Finish) 
 		{
 			aDoneByPlr[iPlr] = true;
+			if (iTeam)
+				aDoneByTeam[iTeam] = true;
 			if (CP_Con)
 				CP_Con->PlayerHasReachedFinish(iPlr); // Notify race goal.
 			UpdateColor();
 		}
+		// Check bonus.
+		if (CP_Mode & RACE_CP_Bonus)
+			GameCall("GivePlrBonus", iPlr, this);
 	}
 	return;
 }

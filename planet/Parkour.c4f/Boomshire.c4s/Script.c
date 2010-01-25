@@ -56,9 +56,12 @@ func Initialize()
  }
  
 
-protected func RACE_GiveContents()
+// Gamecall from Race-goal, on respawning.
+protected func PlrHasRespawned(int iPlr, object cp)
 {
-	return [MJOW];
+	var clonk = GetCrew(iPlr);
+	clonk->CreateContents(MJOW);
+	return;
 }
 
 

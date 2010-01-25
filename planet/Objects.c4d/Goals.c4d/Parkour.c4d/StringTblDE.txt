@@ -1,16 +1,15 @@
 NameRace=Wettrennen
 
-#Einzel
-MsgWinner=%s gebührt der Sieg!
-MsgYouWon=Du hast gewonnen!
-MsgOtherWon=%s hat das Rennen gewonnen.
-MsgTie=Unentschieden...
-MsgYouAhead=Du liegst mit %d% vorn!
-MsgOtherAhead=%s (%s) liegt vorne, und hat %d% des Weges geschafft. Du selbst hängst mit %d% hinterher.
+#Race
+MsgRace=This is race over %d checkpoints, check the scoreboard for the number of completed checkpoints per team/player.
+MsgRaceWon=Congratulations, you have won the race!
+MsgRaceWonTeam=Congratulations, your team has won the race!
+MsgRaceLost=You have lost the race.
+MsgRaceLostTeam=Your team has lost the race.
 
-#Team
-MsgTeamWinner=Team %s (%s) gebührt der Sieg!
-MsgYourTeamWon=Dein Team hat gewonnen.
-MsgOtherTeamWon=Team %s hat das Rennen gewonnen.
-MsgYourTeamAhead=Dein Team liegt mit %d% vorn!
-MsgOtherTeamAhead=Team %s liegt vorne, und hat %d% des Weges geschafft. Dein Team hängt mit %d% hinterher.
+#Respawn
+MsgRespawn0=%s tries it again.
+MsgRespawn1=%s is dead.
+MsgRespawn2=Haha, %s!
+MsgRespawn3=We're mourning %s.
+MsgNewRespawn=You'll now respawn here.

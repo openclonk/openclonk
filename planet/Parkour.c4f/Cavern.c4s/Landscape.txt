@@ -22,7 +22,13 @@ overlay MatFill {
 		rotate=45;
 		turbulence=500;
 		mat=Tunnel; tex=tunnel;
-		
+	};
+	overlay { 
+		algo=lines;
+		a=3; b=16;
+		rotate=-45;
+		turbulence=500;
+		mat=Tunnel; tex=tunnel;
 	};
 };
 

@@ -32,7 +32,6 @@ VegetationLevel=100,0,0,100
 InEarth=ROCK=1;GOLD=1;DYNA=3;LOAM=3
 InEarthLevel=80,0,0,100
 Sky=Clouds2
-BottomOpen=1
 MapWidth=100,0,64,10000
 MapHeight=250,0,40,10000
 SkyScrollMode=2

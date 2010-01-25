@@ -15,7 +15,7 @@ protected func Initialize()
 	{
 		var mode = RACE_CP_Check;
 		d += RandomX(150,300);
-		if (!FindPosInMat(x, y, "Tunnel", 0, LandscapeHeight()-d-80, LandscapeWidth(), 80, 20))
+		if (!FindPosInMat(x, y, "Tunnel", 0, LandscapeHeight()-d-80, LandscapeWidth(), 80, 20) || !Random(3))
 			FindPosInMat(x, y, "Sky", 0, LandscapeHeight()-d-80, LandscapeWidth(), 80, 20);
 		else
 			mode = mode | RACE_CP_Respawn;
@@ -29,6 +29,9 @@ protected func Initialize()
 		d += 10;
 	pGoal->SetFinishpoint(x, y);
 	// Done.
+
+	// Create Rockfall.
+	// CreateObject(RCKF, 0, 0, NO_OWNER)->SetDisaster(100);
 	return;
 }
 
@@ -52,7 +55,18 @@ protected func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int 
 	return false; // No location found.
 }
 
-protected func RACE_GiveContents()
+// Gamecall from Race-goal, on respawning.
+protected func PlrHasRespawned(int iPlr, object cp)
 {
-	return [LOAM,MJOW];
+	var clonk = GetCrew(iPlr);
+	clonk->CreateContents(LOAM);
+	clonk->CreateContents(MJOW);
+	return;
+}
+
+// Gamecall from Race-goal, on reaching a bonus cp.
+protected func GivePlrBonus(int iPlr, object cp)
+{
+	// No bonus.
+	return;
 }

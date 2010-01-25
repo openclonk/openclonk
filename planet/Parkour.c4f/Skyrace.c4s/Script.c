@@ -13,8 +13,13 @@ protected func Initialize()
 	pGoal->SetFinishpoint(4950, 475);
 }
 
-protected func RACE_GiveContents()
+// Gamecall from Race-goal, on respawning.
+protected func PlrHasRespawned(int iPlr, object cp)
 {
-	return [BOW1,ARRW];
+	var clonk = GetCrew(iPlr);
+	clonk->CreateContents(BOW1);
+	clonk->CreateContents(ARRW);
+	return;
 }
+
 
