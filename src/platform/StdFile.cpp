@@ -811,112 +811,141 @@ bool ItemIdentical(const char *szFilename1, const char *szFilename2)
 
 //------------------------- Multi File Processing --------------------------------------------------------------------------------------------------------
 
-#ifdef _WIN32
+struct DirectoryIteratorP
+{
+	DirectoryIteratorP() : ref(1) {}
+	DirectoryIterator::FileList files;
+	std::string directory;
+	int ref;
+};
 
-DirectoryIterator::DirectoryIterator (): fdthnd(0) { *filename=0; }
-DirectoryIterator::DirectoryIterator (const DirectoryIterator &): fdthnd(0) { *filename=0; }
-
-void DirectoryIterator::Reset ()  {
-	if (fdthnd) {
-		_findclose(fdthnd);
-		fdthnd = 0;
-	}
-	filename[0] = 0;
+DirectoryIterator::DirectoryIterator()
+	: p(new DirectoryIteratorP), iter(p->files.end())
+{}
+DirectoryIterator::DirectoryIterator(const DirectoryIterator &other)
+	: p(other.p), iter(p->files.begin())
+{
+	++p->ref;
+}
+DirectoryIterator::~DirectoryIterator()
+{
+	if (--p->ref == 0)
+		delete p;
 }
 
-void DirectoryIterator::Reset (const char * dirname) {
-	if (fdthnd) {
-		_findclose(fdthnd);
+void DirectoryIterator::Reset ()
+{
+	iter = p->files.begin();
+}
+
+void DirectoryIterator::Reset (const char * dirname)
+{
+	if (p->directory == dirname)
+	{
+		// Skip reinitialisation and just reset the iterator
+		iter = p->files.begin();
+		return;
 	}
-	if (!dirname[0]) dirname = ".";
-	SCopy(dirname,filename);
-	AppendBackslash(filename);
-	SAppend("*",filename,_MAX_PATH);
-	if ((fdthnd = _findfirst(filename, &fdt)) < 0) {
-		filename[0] = 0;
-	} else {
-		if (fdt.name[0] == '.' && (fdt.name[1] == '.' || fdt.name[1] == 0)) {
-			operator++(); return;
+	if (p->ref > 1)
+	{
+		// Detach from shared memory
+		--p->ref;
+		p = new DirectoryIteratorP;
+	}
+	p->files.clear();
+	iter = p->files.end();
+	Read(dirname);
+}
+
+DirectoryIterator::DirectoryIterator (const char * dirname)
+	: p(new DirectoryIteratorP), iter(p->files.end())
+{
+	Read(dirname);
+}
+
+void DirectoryIterator::Read(const char *dirname)
+{
+	assert(dirname && *dirname);
+	assert(p->files.empty());
+	std::string search_path(dirname);
+	search_path.push_back(DirectorySeparator);
+#ifdef WIN32
+	WIN32_FIND_DATA file = {0};
+	HANDLE fh = FindFirstFile((search_path + '*').c_str(), &file);
+	if (fh == INVALID_HANDLE_VALUE)
+	{
+		switch (GetLastError())
+		{
+		case ERROR_FILE_NOT_FOUND:
+			// This is okay, either the directory doesn't exist or there are no files
+			return;
+		default:
+			// Something else broke
+			throw std::runtime_error("DirectoryIterator::Read(const char*): Unable to read file system");
 		}
-		SCopy(fdt.name,GetFilename(filename));
 	}
-}
-
-DirectoryIterator::DirectoryIterator (const char * dirname) {
-	if (!dirname[0]) dirname = ".";
-	SCopy(dirname,filename);
-	AppendBackslash(filename);
-	SAppend("*",filename,_MAX_PATH);
-	if ((fdthnd = _findfirst(filename, &fdt)) < 0) {
-		filename[0] = 0;
-	} else {
-		if (fdt.name[0] == '.' && (fdt.name[1] == '.' || fdt.name[1] == 0)) {
-			operator++(); return;
-		}
-		SCopy(fdt.name,GetFilename(filename));
-	}
-}
-
-DirectoryIterator& DirectoryIterator::operator++() {
-	if (_findnext(fdthnd,&fdt)==0) {
-		if (fdt.name[0] == '.' && (fdt.name[1] == '.' || fdt.name[1] == 0))
-			return operator++();
-		SCopy(fdt.name,GetFilename(filename));
-	} else {
-		filename[0] = 0;
-	}
-	return *this;
-}
-
-DirectoryIterator::~DirectoryIterator () {
-	if (fdthnd) _findclose(fdthnd);
-}
+	// Insert files into list
+	do
+	{
+		// ...unless they're . or ..
+		if (file.cFileName[0] == '.' && (file.cFileName[1] == '\0' || (file.cFileName[1] == '.' && file.cFileName[2] == '\0')))
+			continue;
+		p->files.push_back(file.cFileName);
+	} while (FindNextFile(fh, &file));
+	FindClose(fh);
 #else
-DirectoryIterator::DirectoryIterator (): d(0) { filename[0] = 0; }
-DirectoryIterator::DirectoryIterator (const DirectoryIterator &): d(0) { filename[0] = 0; }
+	DIR *fh = opendir(dirname);
+	if (fh == NULL)
+	{
+		switch (errno)
+		{
+		case ENOENT:
+		case ENOTDIR:
+			// Okay, so there's no files here.
+			return;
+		default:
+			// Something else broke
+			throw std::runtime_error("DirectoryIterator::Read(const char*): Unable to read file system");
+		}
+	}
+	dirent *file;
+	// Insert files into list
+	while ((file = readdir(fh)) != NULL)
+	{
+		// ...unless they're . or ..
+		if (file->d_name[0] == '.' && (file->d_name[1] == '\0' || (file->d_name[1] == '.' && file->d_name[2] == '\0')))
+			continue;
+		p->files.push_back(file.cFileName);
+	}
+	closedir(fh);
+#endif
+	// Sort list
+	std::sort(p->files.begin(), p->files.end());
+	for (FileList::iterator it = p->files.begin(); it != p->files.end(); ++it)
+		it->insert(0, search_path); // prepend path to all file entries
+	iter = p->files.begin();
+	p->directory = dirname;
+}
 
-void DirectoryIterator::Reset () {
-	if (d) {
-		closedir(d);
-		d = 0;
-	}
-	filename[0] = 0;
-}
-void DirectoryIterator::Reset (const char * dirname) {
-	if (d) {
-		closedir(d);
-	}
-	if (!dirname[0]) dirname = ".";
-	SCopy(dirname,filename);
-	AppendBackslash(filename);
-	d = opendir(dirname);
-	this->operator++();
-}
-
-DirectoryIterator::DirectoryIterator (const char * dirname) {
-	if (!dirname[0]) dirname = ".";
-	SCopy(dirname,filename);
-	AppendBackslash(filename);
-	d = opendir(dirname);
-	this->operator++();
-}
-DirectoryIterator& DirectoryIterator::operator++() {
-	if (d && (ent = readdir(d))) {
-		if (ent->d_name[0] == '.' && (ent->d_name[1] == '.' || ent->d_name[1] == 0))
-			return operator++();
-		SCopy(ent->d_name,GetFilename(filename));
-	} else {
-		filename[0] = 0;
-	}
+DirectoryIterator& DirectoryIterator::operator++()
+{
+	if (iter != p->files.end()) 
+		++iter;
 	return *this;
 }
 
-DirectoryIterator::~DirectoryIterator () {
-	if (d) closedir(d);
+const char * DirectoryIterator::operator*() const
+{
+	if (iter == p->files.end())
+		return NULL;
+	return iter->c_str();
 }
-#endif
-const char * DirectoryIterator::operator*() const { return filename[0] ? filename : false; }
-void DirectoryIterator::operator++(int) { operator++(); }
+DirectoryIterator DirectoryIterator::operator++(int)
+{
+	DirectoryIterator tmp(*this);
+	++*this;
+	return tmp;
+}
 
 int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *)) {
 	if (!szDirName || !fnCallback)

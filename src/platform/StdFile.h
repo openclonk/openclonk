@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <vector>
 
 #ifdef _WIN32
 #include <io.h>
@@ -118,27 +119,27 @@ bool MoveItem(const char *szSource, const char *szTarget);
 //int ForEachFile(const char *szPath, int lAttrib, bool (*fnCallback)(const char *));
 int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *));
 
-class DirectoryIterator {
+struct DirectoryIteratorP;
+class DirectoryIterator
+{
+	// Shallow copyable, ordered directory iterator
 public:
 	DirectoryIterator(const char * dirname);
 	DirectoryIterator();
-	~DirectoryIterator();
-	// Does not actually copy anything, but does prevent misuses from crashing (I hope)
 	DirectoryIterator(const DirectoryIterator &);
+	~DirectoryIterator();
+
 	const char * operator * () const;
 	DirectoryIterator& operator ++ ();
-	void operator ++ (int);
+	DirectoryIterator operator ++ (int);
 	void Reset(const char * dirname);
 	void Reset();
-protected:
-	char filename[_MAX_PATH+1];
-#ifdef _WIN32
-	struct _finddata_t fdt; int fdthnd;
-	friend class C4GroupEntry;
-#else
-	DIR * d;
-	dirent * ent;
-#endif
+private:
+	void Read(const char *dirname);
+	friend struct DirectoryIteratorP;
+	typedef std::vector<std::string> FileList;
+	DirectoryIteratorP *p;
+	FileList::iterator iter;
 };
 
 #endif // STDFILE_INCLUDED

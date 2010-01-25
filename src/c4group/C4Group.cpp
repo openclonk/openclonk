@@ -31,12 +31,12 @@
 #include <C4InputValidation.h>
 #include <C4Config.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
 #ifdef _WIN32
 #include <sys/utime.h>
 #include <shellapi.h>
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <utime.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -570,23 +570,10 @@ C4GroupEntry::~C4GroupEntry()
 				delete [] bpMemBuf;
 			}
   }
-#ifdef _WIN32
-void C4GroupEntry::Set(const DirectoryIterator &iter, const char *szPath)
-  {
-  ZeroMem(this,sizeof(C4GroupEntry));
-  SCopy(iter.fdt.name,FileName,_MAX_FNAME);
-  Size=iter.fdt.size;
-  Time=iter.fdt.time_create;
-  //SCopy(szPath,DiskPath,_MAX_PATH-1); AppendBackslash(DiskPath); SAppend(FileName,DiskPath,_MAX_PATH);
-  SCopy(*iter, DiskPath, _MAX_PATH-1);
-  Status=C4GRES_OnDisk;
-	Packed=false;
-	ChildGroup=false; //FileGroupCheck(DiskPath);
-	// Notice folder entries are not checked for ChildGroup status.
-	// This would cause extreme performance loss and be good for
-	// use in entry list display only.
-  }
-#else
+
+#ifdef WIN32
+#define stat _stat
+#endif
 void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
 	{
 	ZeroMem(this,sizeof(C4GroupEntry));
@@ -608,7 +595,7 @@ void C4GroupEntry::Set(const DirectoryIterator &iter, const char * path)
 	// This would cause extreme performance loss and be good for
 	// use in entry list display only.
 	}
-#endif
+
 C4Group::C4Group()
   {
   Init();
