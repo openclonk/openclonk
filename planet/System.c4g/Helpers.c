@@ -3,17 +3,17 @@
 #strict 2
 
 global func MessageWindow(string pMsg, int iForPlr, id idIcon, string pCaption)
-  {
-  // get icon
-  if (!idIcon) idIcon=GetID();
-  // get caption
-  if (!pCaption) pCaption=GetName();
-  // create msg window (menu)
-  var pCursor = GetCursor(iForPlr);
-  if (!pCursor->CreateMenu(idIcon, pCursor, 0, pCaption, 0, 2)) return;
-  pCursor->AddMenuItem(pCaption, "", TIM1, 0,0,pMsg);
-  return 1;
-  }
+{
+	// get icon
+	if (!idIcon) idIcon=GetID();
+	// get caption
+	if (!pCaption) pCaption=GetName();
+	// create msg window (menu)
+	var pCursor = GetCursor(iForPlr);
+	if (!pCursor->CreateMenu(idIcon, pCursor, 0, pCaption, 0, 2)) return false;
+	pCursor->AddMenuItem(pCaption, nil, nil, 0,0,pMsg);
+	return true;
+}
 
 global func RemoveAll()
 {

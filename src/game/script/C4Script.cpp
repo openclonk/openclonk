@@ -1416,10 +1416,10 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 	if (!cthr->Obj->Menu) return C4VFalse;
 
 	char caption[256+1];
-	char parameter[256+1];
-	char dummy[256+1];
-	char command[512+1];
-	char command2[512+1];
+ 	char parameter[256+1];
+ 	char dummy[256+1];
+ 	char command[512+1];
+ 	char command2[512+1];
 	char infocaption[C4MaxTitle+1];
 
 	// get needed symbol size
@@ -1427,7 +1427,6 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 
 	// Check specified def
 	C4Def *pDef = C4Id2Def(idItem);
-	if (!pDef) pDef=cthr->Obj->Def;
 
 	// Compose caption with def name
 	if(szCaption)
@@ -1534,7 +1533,7 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 	// Info caption
 	SCopy(FnStringPar(szInfoCaption),infocaption,C4MaxTitle);
 	// Default info caption by def desc
-	if (!infocaption[0] && !(iExtra & C4MN_Add_ForceNoDesc)) SCopy(pDef->GetDesc(),infocaption,C4MaxTitle);
+	if (pDef && !infocaption[0] && !(iExtra & C4MN_Add_ForceNoDesc)) SCopy(pDef->GetDesc(),infocaption,C4MaxTitle);
 
 	// Create symbol
 	C4FacetSurface fctSymbol;
@@ -1557,7 +1556,8 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 		case C4MN_Add_ImgIndexed:
 			// draw indexed facet
 			fctSymbol.Create(iSymbolSize,iSymbolSize);
-			pDef->Draw(fctSymbol, false, 0, NULL, XPar.getInt());
+			if (pDef)
+				pDef->Draw(fctSymbol, false, 0, NULL, XPar.getInt());
 			break;
 		case C4MN_Add_ImgObjRank:
 			{
@@ -1641,12 +1641,13 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 		case C4MN_Add_ImgColor:
 			// draw colored def facet
 			fctSymbol.Create(iSymbolSize,iSymbolSize);
-			pDef->Draw(fctSymbol, false, XPar.getInt());
+			if (pDef)
+				pDef->Draw(fctSymbol, false, XPar.getInt());
 			break;
 
 		default:
 			// default: by def, if it is not specifically NONE
-			if (idItem != C4Id("NONE"))
+			if (pDef && idItem != C4ID::None)
 				{
 				fctSymbol.Create(iSymbolSize,iSymbolSize);
 				pDef->Draw(fctSymbol);
