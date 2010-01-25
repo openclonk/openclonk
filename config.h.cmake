@@ -185,3 +185,9 @@
 /* Define to 1 if you have support for precompiled headers */
 #cmakedefine HAVE_PRECOMPILED_HEADERS 1
 
+/* Define to 1 if you have support for nullptr. */
+#cmakedefine HAVE_NULLPTR 1
+
+/* Define to 1 if your NULL is an instance of std::nullptr_t. */
+#cmakedefine NULL_IS_NULLPTR_T 1
+
