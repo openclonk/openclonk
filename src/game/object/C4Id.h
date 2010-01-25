@@ -94,7 +94,12 @@ public:
 
 	void CompileFunc(StdCompiler *pComp);
 
-	inline bool operator <(const C4ID &other) const { return v < other.v; } // Other operators provided by boost
+	inline bool operator ==(const C4ID &other) const { return v == other.v; }
+	inline bool operator !=(const C4ID &other) const { return v != other.v; }
+	inline bool operator <(const C4ID &other) const { return v < other.v; }
+	inline bool operator >(const C4ID &other) const { return v > other.v; }
+	inline bool operator <=(const C4ID &other) const { return v <= other.v; }
+	inline bool operator >=(const C4ID &other) const { return v >= other.v; }
 
 	// Safe bool
 	typedef size_t C4ID::*safe_bool_type;
