@@ -915,7 +915,7 @@ void DirectoryIterator::Read(const char *dirname)
 		// ...unless they're . or ..
 		if (file->d_name[0] == '.' && (file->d_name[1] == '\0' || (file->d_name[1] == '.' && file->d_name[2] == '\0')))
 			continue;
-		p->files.push_back(file.cFileName);
+		p->files.push_back(file->d_name);
 	}
 	closedir(fh);
 #endif
