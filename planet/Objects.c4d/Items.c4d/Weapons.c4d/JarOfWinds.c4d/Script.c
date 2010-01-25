@@ -19,6 +19,7 @@ local iBarrel;
 protected func Initialize()
 {
 	MaxCap=50; //Changes duration and power of the Jar
+	SetR(-45);
 }
 
 protected func HoldingEnabled() { return true; }
