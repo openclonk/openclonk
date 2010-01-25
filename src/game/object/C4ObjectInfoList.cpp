@@ -172,7 +172,7 @@ C4ObjectInfo* C4ObjectInfoList::New(C4ID n_id, C4DefList *pDefs)
 	MakeValidName(pInfo->Name);
 	// Add new portrait (permanently w/o copying file)
 	if (Config.Graphics.AddNewCrewPortraits)
-		pInfo->SetRandomPortrait(0, true, false);
+		pInfo->SetRandomPortrait(C4ID::None, true, false);
   // Add
 	Add(pInfo);
 	++iNumCreated;

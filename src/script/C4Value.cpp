@@ -702,8 +702,8 @@ C4Value C4VID(C4ID iVal) { return C4Value(::Definitions.ID2Def(iVal)); }
 C4ID C4Value::getC4ID()
 {
 	C4PropList * p = getPropList();
-	if(!p) return 0;
+	if(!p) return C4ID::None;
 	C4Def * d = p->GetDef();
-	if (!d) return 0;
+	if (!d) return C4ID::None;
 	return d->id;
 }

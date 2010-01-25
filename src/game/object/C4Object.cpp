@@ -1925,7 +1925,7 @@ bool C4Object::ActivateMenu(int32_t iMenu, int32_t iMenuSelect,
 				// Picture
 				fctSymbol.Set(pDef->Graphics.GetBitmap(),pDef->PictureRect.x,pDef->PictureRect.y,pDef->PictureRect.Wdt,pDef->PictureRect.Hgt);
 				// Command
-				sprintf(szCommand,"SetCommand(\"Construct\",nil,0,0,nil,%s)",C4IdText(pDef->id));
+				sprintf(szCommand,"SetCommand(\"Construct\",nil,0,0,nil,%s)",pDef->id.ToString());
 				// Add menu item
 				Menu->AddRefSym(szCaption,fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pDef->GetDesc(),pDef->id);
 				}
@@ -2277,13 +2277,13 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 					//sprintf(szCommand,"%s %d/%d",CommandName(pCom->Command),pCom->Tx,pCom->Ty,iAngle);
           break;
 				case C4CMD_Put:
-					sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? C4IdText(pCom->Data.getC4ID()) : "Content",pCom->Target ? pCom->Target->GetName() : "");
+					sprintf(szCommand,"%s %s to %s",CommandName(pCom->Command),pCom->Target2 ? pCom->Target2->GetName() : pCom->Data ? pCom->Data.getC4ID().ToString() : "Content",pCom->Target ? pCom->Target->GetName() : "");
 					break;
 				case C4CMD_Buy: case C4CMD_Sell:
-					sprintf(szCommand,"%s %s at %s",CommandName(pCom->Command),C4IdText(pCom->Data.getC4ID()),pCom->Target ? pCom->Target->GetName() : "closest base");
+					sprintf(szCommand,"%s %s at %s",CommandName(pCom->Command),pCom->Data.getC4ID().ToString(),pCom->Target ? pCom->Target->GetName() : "closest base");
 					break;
 				case C4CMD_Acquire:
-					sprintf(szCommand,"%s %s",CommandName(pCom->Command),C4IdText(pCom->Data.getC4ID()));
+					sprintf(szCommand,"%s %s",CommandName(pCom->Command),pCom->Data.getC4ID().ToString());
 					break;
 				case C4CMD_Call:
 					sprintf(szCommand,"%s %s in %s",CommandName(pCom->Command),pCom->Text->GetCStr(),pCom->Target ? pCom->Target->GetName() : "(null)");
@@ -2625,13 +2625,13 @@ void C4Object::CompileFunc(StdCompiler *pComp)
     Clear();
 
 	// Compile ID, search definition
-	pComp->Value(mkNamingAdapt( mkC4IDAdapt(id),									"id",									C4ID::None					));
+	pComp->Value(mkNamingAdapt(id,									"id",									C4ID::None					));
 	if(fCompiler)
 		{
 		Def = ::Definitions.ID2Def(id);
 		prototype = Def;
 		if(!Def)
-			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),C4IdText(id)); return; }
+			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),id.ToString()); return; }
 		}
 
 	// Write the name only if the object has an individual name, use def name as default for reading.
@@ -2988,7 +2988,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	for (cnt=0; c_id=NeededComponents.GetID(cnt); cnt++)
 		if (NeededComponents.GetCount(cnt) > Contents.ObjectCount(c_id))
 			{
-			Needs.AppendFormat("|%ix %s", NeededComponents.GetCount(cnt) - Contents.ObjectCount(c_id), C4Id2Def(c_id) ? C4Id2Def(c_id)->GetName() : C4IdText(c_id) );
+			Needs.AppendFormat("|%ix %s", NeededComponents.GetCount(cnt) - Contents.ObjectCount(c_id), C4Id2Def(c_id) ? C4Id2Def(c_id)->GetName() : c_id.ToString() );
 			if (!idNeeded) { idNeeded=c_id; iNeeded=NeededComponents.GetCount(cnt)-Contents.ObjectCount(c_id); }
 			fInsufficient = true;
 			}
@@ -5388,7 +5388,7 @@ StdStrBuf C4Object::GetNeededMatStr(C4Object *pBuilder)
 				if((pComponent = C4Id2Def(idComponent)))
 					NeededMats.Append(pComponent->GetName());
 				else
-					NeededMats.Append(C4IdText(idComponent));
+					NeededMats.Append(idComponent.ToString());
 				}
 			}
 		}

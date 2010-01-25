@@ -248,7 +248,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
     iInGamePartFrame = -1;
 
 	// script player extra data
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(idExtraData), "ExtraData", C4ID::None));
+	pComp->Value(mkNamingAdapt(idExtraData, "ExtraData", C4ID::None));
 
 	// load league info
 	pComp->Value(mkNamingAdapt(sLeagueAccount, "LeagueAccount", ""));

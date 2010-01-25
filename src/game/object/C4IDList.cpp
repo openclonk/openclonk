@@ -468,55 +468,6 @@ void C4IDList::Load(C4DefList &rDefs, int32_t dwCategory)
 		}
 	}
 
-bool C4IDList::Write(char *szTarget, bool fValues) const
-	{
-  // (deprecated, use StdCompiler instead)
-  char buf[50],buf2[5];
-  if (!szTarget) return false;
-  szTarget[0]=0;
-  const C4IDListChunk *pQueryChunk=this;
-  size_t cnt=Count,cntl=0;
-  while (cnt--)
-    {
-    GetC4IdText(pQueryChunk->id[cntl],buf2);
-    if (fValues) sprintf(buf,"%s=%d;",buf2,pQueryChunk->Count[cntl]);
-    else sprintf(buf,"%s;",buf2);
-    SAppend(buf,szTarget);
-    if (++cntl==C4IDListChunkSize)
-      {
-      pQueryChunk=pQueryChunk->pNext;
-      cntl=0;
-      }
-    }
-  return true;
-	}
-
-bool C4IDList::Read(const char *szSource, int32_t iDefValue)
-	{
-  char buf[50];
-  if (!szSource) return false;
-  Clear();
-  for (int32_t cseg=0; SCopySegment(szSource,cseg,buf,';',50); cseg++)
-    {
-    SClearFrontBack(buf);
-
-    int32_t value = iDefValue;
-    if (SCharCount('=',buf))
-      {
-      value = strtol(buf + SCharPos('=',buf) + 1, NULL, 10);
-      buf[SCharPos('=',buf)]=0;
-      SClearFrontBack(buf);
-      }
-
-    if (SLen(buf)==4)
-      if (!SetIDCount(C4Id(buf),value,true))
-        return false;
-
-    }
-  return true;
-	}
-
-
 void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 										C4DefList &rDefs, DWORD dwCategory,
 										bool fCounts, int32_t iAlign) const
@@ -683,9 +634,9 @@ void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
     // Seperator (';')
     if(iNr > 0) if(!pComp->Seperator(StdCompiler::SEP_SEP2)) break;
     // ID
-    pComp->Value(mkDefaultAdapt(mkC4IDAdapt(pChunk->id[iCNr]), C4ID::None));
+    pComp->Value(mkDefaultAdapt(pChunk->id[iCNr], C4ID::None));
     // ID not valid? Note that C4ID::None is invalid.
-    if(!LooksLikeID(pChunk->id[iCNr])) break;
+	if(pChunk->id[iCNr] == C4ID::None) break;
     // Value: Skip this part if requested
     if(fValues)
     {

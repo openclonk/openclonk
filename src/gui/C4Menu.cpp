@@ -62,9 +62,9 @@ void DrawMenuSymbol(int32_t iMenu, C4Facet &cgo, int32_t iOwner, C4Object *cObj)
 		case C4MN_Construction:
 			{
 			C4Def *pDef;
-			if (pDef=C4Id2Def(C4Id("CXCN")))
+			if (pDef=C4Id2Def(C4ID("CXCN")))
 				pDef->Draw(cgo);
-			else if (pDef=C4Id2Def(C4Id("WKS1")))
+			else if (pDef=C4Id2Def(C4ID("WKS1")))
 				pDef->Draw(cgo);
 			}
 			break;

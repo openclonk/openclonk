@@ -139,7 +139,7 @@ StdStrBuf C4AulScriptFunc::GetFullName()
 		}
 	else if (Owner->Def)
 		{
-		sOwner.Format("%s::", C4IdText(Owner->Def->id));
+		sOwner.Format("%s::", Owner->Def->id.ToString());
 		}
 	else if (Owner->Engine == Owner)
 		{

@@ -147,7 +147,7 @@ void C4Weather::Clear()
 bool C4Weather::LaunchLightning(int32_t x, int32_t y, int32_t xdir, int32_t xrange, int32_t ydir, int32_t yrange, bool fDoGamma)
 	{
 	C4Object *pObj;
-	if (pObj=Game.CreateObject(C4Id("FXL1"), NULL))
+	if (pObj=Game.CreateObject(C4ID("FXL1"), NULL))
 		pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(x),
 																				 C4VInt(y),
 																				 C4VInt(xdir),
@@ -172,7 +172,7 @@ int32_t C4Weather::GetTemperature()
 bool C4Weather::LaunchVolcano(int32_t mat, int32_t x, int32_t y, int32_t size)
 	{
 	C4Object *pObj;
-	if (pObj=Game.CreateObject(C4Id("FXV1"), NULL))
+	if (pObj=Game.CreateObject(C4ID("FXV1"), NULL))
 		pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(x), C4VInt(y), C4VInt(size), C4VInt(mat)));
 	return true;
 	}
@@ -190,7 +190,7 @@ void C4Weather::Default()
 bool C4Weather::LaunchEarthquake(int32_t iX, int32_t iY)
 	{
 	C4Object *pObj;
-	if (pObj=Game.CreateObject(C4Id("FXQ1"),NULL,NO_OWNER,iX,iY))
+	if (pObj=Game.CreateObject(C4ID("FXQ1"),NULL,NO_OWNER,iX,iY))
 		if (!! pObj->Call(PSF_Activate))
 			return true;
 	return false;
@@ -200,7 +200,7 @@ bool C4Weather::LaunchCloud(int32_t iX, int32_t iY, int32_t iWidth, int32_t iStr
 	{
 	if (::MaterialMap.Get(szPrecipitation)==MNone) return false;
 	C4Object *pObj;
-	if (pObj=Game.CreateObject(C4Id("FXP1"),NULL,NO_OWNER,iX,iY))
+	if (pObj=Game.CreateObject(C4ID("FXP1"),NULL,NO_OWNER,iX,iY))
 		if (!!pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(::MaterialMap.Get(szPrecipitation)),
 																						   C4VInt(iWidth),
 																						   C4VInt(iStrength))))

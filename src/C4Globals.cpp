@@ -23,6 +23,7 @@
 #include "C4FullScreen.h"
 #include "C4MouseControl.h"
 #include "C4GameObjects.h"
+#include "C4Def.h"
 #include "C4Game.h"
 #include "C4Network2.h"
 
@@ -31,5 +32,6 @@ C4Console      Console;
 C4FullScreen   FullScreen;
 C4MouseControl MouseControl;
 C4GameObjects  Objects;
+C4DefList      Definitions;
 C4Game         Game;
 C4Network2     Network;

@@ -205,7 +205,7 @@ bool C4PropertyDlg::Update()
 			C4Object *cobj=Selection.GetObject();
 			DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*cobj, "Object"), &Output, "C4PropertyDlg::Update");
 			// Type
-			Output.AppendFormat(LoadResStr("IDS_CNS_TYPE"),cobj->GetName(),C4IdText(cobj->Def->id));
+			Output.AppendFormat(LoadResStr("IDS_CNS_TYPE"),cobj->GetName(),cobj->Def->id.ToString());
 			// Owner
 			if (ValidPlr(cobj->Owner))
 				{

@@ -38,6 +38,9 @@
 #include "C4LangStringTable.h"
 #include "C4InputValidation.h"
 
+#include <functional>
+#include <set>
+
 const int32_t C4D_None           =    0,
 							C4D_All            =		~C4D_None,
 
@@ -312,8 +315,8 @@ class C4DefList
     virtual ~C4DefList();
 	public:
 		bool LoadFailure;
-		C4Def **Table[64]; // From space to _; some minor waste of mem
-		bool fTable;
+	typedef std::map<C4ID, C4Def*> Table;
+	Table table;
   protected:
     C4Def *FirstDef;
   public:
@@ -350,16 +353,13 @@ class C4DefList
     bool Remove(C4ID id);
 	  bool Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem = NULL);
     bool Add(C4Def *ndef, bool fOverload);
-		void BuildTable(); // build quick access table
+	void BuildTable();
 		void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
 		void CallEveryDefinition();
 		void Synchronize();
 
 		// callback from font renderer: get ID image
 		virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet);
-
-	private:
-		void SortByID(); // sorts list by quick access table
   };
 
 extern C4DefList Definitions;

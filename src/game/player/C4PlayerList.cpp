@@ -91,8 +91,8 @@ bool C4PlayerList::Hostile(int iPlayer1, int iPlayer2) const
 	C4Player *pPlr2=Get(iPlayer2);
 	if (!pPlr1 || !pPlr2) return false;
 	if (pPlr1->Number==pPlr2->Number) return false;
-	if ( pPlr1->Hostility.GetIDCount(pPlr2->Number+1)
-		|| pPlr2->Hostility.GetIDCount(pPlr1->Number+1) )
+	if ( pPlr1->IsHostileTowards(pPlr2)
+		|| pPlr2->IsHostileTowards(pPlr1) )
 			return true;
 	return false;
 	}
@@ -104,7 +104,7 @@ bool C4PlayerList::HostilityDeclared(int iPlayer1, int iPlayer2) const
 	C4Player *pPlr2=Get(iPlayer2);
 	if (!pPlr1 || !pPlr2) return false;
 	if (pPlr1->Number==pPlr2->Number) return false;
-	if ( pPlr1->Hostility.GetIDCount(pPlr2->Number+1))
+	if ( pPlr1->IsHostileTowards(pPlr2))
 			return true;
 	return false;
 	}

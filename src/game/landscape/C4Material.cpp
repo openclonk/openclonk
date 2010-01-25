@@ -184,8 +184,8 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Friction,								"Friction",						0									));
 	pComp->Value(mkNamingAdapt(DigFree,									"DigFree",						0									));
 	pComp->Value(mkNamingAdapt(BlastFree,								"BlastFree",					0									));
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(Blast2Object),"Blast2Object",			C4ID::None									));
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(Dig2Object),	"Dig2Object",					C4ID::None									));
+	pComp->Value(mkNamingAdapt(Blast2Object,"Blast2Object",			C4ID::None									));
+	pComp->Value(mkNamingAdapt(Dig2Object,	"Dig2Object",					C4ID::None									));
 	pComp->Value(mkNamingAdapt(Dig2ObjectRatio,					"Dig2ObjectRatio",		0									));
 	pComp->Value(mkNamingAdapt(Dig2ObjectOnRequestOnly,	"Dig2ObjectRequest",	0									));
 	pComp->Value(mkNamingAdapt(Blast2ObjectRatio,				"Blast2ObjectRatio",	0									));

@@ -54,7 +54,7 @@ class C4AList
 		~C4AList(); // destructor
 		void Clear(); // clear the list
 
-		C4AListEntry *push(C4ID Var = 0, void *pVal = NULL); // push var/value pair to end of list
+		C4AListEntry *push(C4ID Var = C4ID::None, void *pVal = NULL); // push var/value pair to end of list
 	};
 
 #endif

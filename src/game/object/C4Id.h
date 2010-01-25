@@ -5,6 +5,7 @@
  * Copyright (c) 2001  Sven Eberhardt
  * Copyright (c) 2005  Peter Wortmann
  * Copyright (c) 2005, 2008  Günther Brammer
+ * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -19,82 +20,85 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* 32-bit value to identify object definitions */
+/* Value to identify object definitions */
 
 #ifndef INC_C4Id
 #define INC_C4Id
 
-#include <StdAdaptors.h>
+#include "StdAdaptors.h"
+#include <map>
+#include <string>
+#include <vector>
 
-class C4ID
+#include <boost/operators.hpp>
+
+class StdCompiler;
+class C4ID : boost::totally_ordered<C4ID, boost::equivalent<C4ID> >
 {
-	union { uint32_t v; char s[4]; };
 public:
-	C4ID(): v(0) {}
-	C4ID(unsigned int i): v(i) {}
-	operator unsigned int () const { return v; }
-	friend bool operator ==(C4ID a, C4ID b);
+	typedef size_t Handle;
+private:
+	Handle v;
+	typedef std::map<std::string, Handle> LookupTable;
+	typedef std::vector<std::string> NamesList;
+	static LookupTable lookup;
+	static NamesList names;
+	void assign(const std::string &s);
+public:
+	static const C4ID None;	// Invalid ID
+	static const C4ID Contents; // Not-ID for funny stuff
+	DEPRECATED(static const C4ID Energy); // Buildings need energy
+	DEPRECATED(static const C4ID CnMaterial); // Buildings need construction material
+	DEPRECATED(static const C4ID StructuresSnowIn);
+	DEPRECATED(static const C4ID Flag);
+	DEPRECATED(static const C4ID FlagRemvbl); // Flag removable
+	DEPRECATED(static const C4ID Linekit);
+	DEPRECATED(static const C4ID Conkit); // Construction kit
+	DEPRECATED(static const C4ID SourcePipe);
+	DEPRECATED(static const C4ID DrainPipe);
+	DEPRECATED(static const C4ID PowerLine);
+	DEPRECATED(static const C4ID Clonk);
+	DEPRECATED(static const C4ID Flame);
+	DEPRECATED(static const C4ID Meteor);
+	DEPRECATED(static const C4ID Blast);
+	DEPRECATED(static const C4ID Melee);
+	DEPRECATED(static const C4ID TeamworkMelee);
+	DEPRECATED(static const C4ID Rivalry);
 
-	static const C4ID
-		None,       
-		Clonk,      // CLNK
-		Flag,       // FLAG
-		Conkit,     // CNKT
-		Gold,       // GOLD
-		Lorry,      // LORY
-		Meteor,     // METO
-		Linekit,    // LNKT
-		PowerLine,  // PWRL
-		SourcePipe, // SPIP
-		DrainPipe,  // DPIP
-		Energy,     // ENRG
-		CnMaterial, // CNMT
-		FlagRemvbl, // FGRV
-		Flame,      // FLAM
-		Melee,      // MELE
-		Rivalry,    // RVLR
-		StructuresSnowIn,
-		            // STSN
-		TeamworkMelee,
-		            // MEL2
-		Contents;   // 10001
-};
+	C4ID(): v(None.v) {}
+	C4ID(const C4ID &other): v(other.v) {}
+	C4ID &operator =(const C4ID &other) { v = other.v; return *this; }
 
-inline bool operator ==(C4ID a, C4ID b) { return a.v == b.v; }
-
-C4ID C4Id(const char *szId);
-void GetC4IdText(C4ID id, char *sBuf);
-const char *C4IdText(C4ID id);
-bool LooksLikeID(const char *szText);
-bool LooksLikeID(C4ID id);
-
-// * C4ID Adaptor
-struct C4IDAdapt
-{
-	C4ID &rValue;
-	explicit C4IDAdapt(C4ID &rValue) : rValue(rValue) { }
-	inline void CompileFunc(StdCompiler *pComp) const
+	explicit C4ID(const std::string &s);
+	explicit C4ID(char *s);
+	DEPRECATED(explicit C4ID(const char *s)); // Only difference is deprecation; const char should get all inline constants, but not stuff ead into variables
+	explicit inline C4ID(Handle i): v(i)
 	{
-    char cC4ID[5];
-    if(pComp->isDecompiler())
-      GetC4IdText(rValue, cC4ID);
-
-    pComp->Value(mkStringAdapt(cC4ID, 4, StdCompiler::RCT_ID));
-
-    if(pComp->isCompiler())
-		{
-			if (strlen(cC4ID) != 4)
-				rValue = 0;
-			else
-				rValue = C4Id(cC4ID);
-		}
+		assert(v < names.size());
 	}
-	// Operators for default checking/setting
-	inline bool operator == (const C4ID &nValue) const { return rValue == nValue; }
-	inline C4IDAdapt &operator = (const C4ID &nValue) { rValue = nValue; return *this; }
-	// trick g++
-	ALLOW_TEMP_TO_REF(C4IDAdapt)
+
+	inline const char *ToString() const
+	{
+		assert(v < names.size());
+		return names[v].c_str();
+	}
+	inline operator std::string () const
+	{
+		assert(v < names.size());
+		return names[v];
+	}
+	inline Handle GetHandle() const
+	{
+		return v;
+	}
+
+	void CompileFunc(StdCompiler *pComp);
+
+	inline bool operator <(const C4ID &other) const { return v < other.v; } // Other operators provided by boost
+
+	// Safe bool
+	typedef size_t C4ID::*safe_bool_type;
+	inline operator safe_bool_type() const { return *this == None ? 0 : &C4ID::v; }
 };
-inline C4IDAdapt mkC4IDAdapt(C4ID &rValue) { return C4IDAdapt(rValue); }
 
 #endif

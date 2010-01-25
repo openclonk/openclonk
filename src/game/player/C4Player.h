@@ -23,10 +23,12 @@
 #define INC_C4Player
 
 #include "C4MainMenu.h"
-#include <C4ObjectInfoList.h>
-#include <C4InfoCore.h>
-#include <C4ObjectList.h>
-#include <C4PlayerControl.h>
+#include "C4ObjectInfoList.h"
+#include "C4InfoCore.h"
+#include "C4ObjectList.h"
+#include "C4PlayerControl.h"
+
+#include <set>
 
 const int32_t C4PVM_Cursor		= 0,
 					C4PVM_Target		= 1,
@@ -39,6 +41,12 @@ const int32_t C4MaxClient = 5000; // ought to be enough for everybody (used to c
 
 class C4Player: public C4PlayerInfoCore
 {
+	class HostilitySet : public std::set<const C4Player*>
+	{
+	public:
+		void CompileFunc(StdCompiler *pComp);
+	};
+
 	public:
 		// possible player controls used for statistics
 		enum ControlType
@@ -102,7 +110,7 @@ class C4Player: public C4PlayerInfoCore
 		int32_t Wealth,Points;
 		int32_t Value,InitialValue,ValueGain;
 		int32_t ObjectsOwned;
-		C4IDList Hostility;
+		HostilitySet Hostility;
 		// Home Base
 		C4IDList HomeBaseMaterial;
 		C4IDList HomeBaseProduction;
@@ -187,6 +195,7 @@ class C4Player: public C4PlayerInfoCore
 		bool DoWealth(int32_t change);
 		bool SetWealth(int32_t val);
 		bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
+		bool IsHostileTowards(const C4Player *opponent) const;
 		void CompileFunc(StdCompiler *pComp, bool fExact);
 		bool LoadRuntimeData(C4Group &hGroup);
 		bool ActivateMenuMain();

@@ -1479,16 +1479,16 @@ bool C4Game::DropDef(C4ID id, float X, float Y)
 		{
 		StdStrBuf str;
 		if (pDef->Category & C4D_Structure)
-			str.Format("CreateConstruction(%s,%d,%d,-1,%d,true)", C4IdText(id), int(X), int(Y), FullCon);
+			str.Format("CreateConstruction(%s,%d,%d,-1,%d,true)", id.ToString(), int(X), int(Y), FullCon);
 		else
-			str.Format("CreateObject(%s,%d,%d,-1)", C4IdText(id), int(X), int(Y));
+			str.Format("CreateObject(%s,%d,%d,-1)", id.ToString(), int(X), int(Y));
 		::Control.DoInput(CID_Script, new C4ControlScript(str.getData()), CDT_Decide);
 		return true;
 		}
 	else
 		{
 		// Failure
-		Console.Out(FormatString(LoadResStr("IDS_CNS_DROPNODEF"),C4IdText(id)).getData());
+		Console.Out(FormatString(LoadResStr("IDS_CNS_DROPNODEF"),id.ToString()).getData());
 		}
 	return false;
 	}
@@ -2037,7 +2037,7 @@ bool C4Game::ReloadDef(C4ID id)
 	C4Def *pDef = ::Definitions.ID2Def(id);
 	if (!pDef) return false;
 	// Message
-	LogF("Reloading %s from %s",C4IdText(pDef->id),GetFilename(pDef->Filename));
+	LogF("Reloading %s from %s",pDef->id.ToString(),GetFilename(pDef->Filename));
 	// Reload def
 	if (::Definitions.Reload(pDef,C4D_Load_RX,Config.General.LanguageEx,&Application.SoundSystem))
 		{
@@ -3432,7 +3432,7 @@ bool C4Game::CheckObjectEnumeration()
 		cObj = clnk->Obj;
 		if (cObj->Number<1)
 			{
-			LogFatal(FormatString("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, C4IdText(cObj->id), cObj->GetX()).getData()); return false;
+			LogFatal(FormatString("Invalid object enumeration number (%d) of object %s (x=%d)", cObj->Number, cObj->id.ToString(), cObj->GetX()).getData()); return false;
 			}
 		// Max
 		if (cObj->Number>iMax) iMax=cObj->Number;
@@ -3775,6 +3775,7 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 	{
 	// safety
 	if (!szSpec) return false;
+	/* FIXME: doesn't work for IDs >4 chars
 	// regular ID? -> Draw def
 	if (LooksLikeID(szSpec))
 		{
@@ -3817,7 +3818,8 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 		fctTarget.Set(sfcPortrait, 0, 0, sfcPortrait->Wdt, sfcPortrait->Hgt);
 		return true;
 		}
-	else if (SEqual2(szSpec, "Ico:Locked"))
+	else */
+	if (SEqual2(szSpec, "Ico:Locked"))
 		{
 		((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
 		return true;

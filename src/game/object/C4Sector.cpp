@@ -164,7 +164,7 @@ void C4LSectors::Remove(C4Object *pObj)
 	if (!pSct->Objects.Remove(pObj))
 		{
 #ifdef _DEBUG
-		LogF("WARNING: Object %d of type %s deleted but not found in pos sector list!", pObj->Number, C4IdText(pObj->id));
+		LogF("WARNING: Object %d of type %s deleted but not found in pos sector list!", pObj->Number, pObj->id.ToString());
 #endif
 		// if it was not found in owning sector, it must be somewhere else. yeah...
 		bool fFound = false;

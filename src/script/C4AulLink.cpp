@@ -37,7 +37,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 	if (State != ASS_PREPARSED) return false;
 	for (C4AListEntry *a = Appends; a; a = a->next())
 		{
-		if((int) a->Var != -1)
+		if(a->Var)
 		{
 			C4Def *Def = rDefs->ID2Def(a->Var);
 			if (Def)
@@ -47,9 +47,7 @@ bool C4AulScript::ResolveAppends(C4DefList *rDefs)
 				// save id in buffer because AulWarn will use the buffer of C4IdText
 				// to get the id of the object in which the error occurs...
 				// (stupid static buffers...)
-				char strID[5]; *strID = 0;
-				strcpy(strID, C4IdText(a->Var));
-				Warn("script to #appendto not found: ", strID);
+				Warn("script to #appendto not found: ", a->Var.ToString());
 			}
 		}
 		else
@@ -103,9 +101,7 @@ bool C4AulScript::ResolveIncludes(C4DefList *rDefs)
 			// save id in buffer because AulWarn will use the buffer of C4IdText
 			// to get the id of the object in which the error occurs...
 			// (stupid static buffers...)
-			char strID[5]; *strID = 0;
-			strcpy(strID, C4IdText(i->Var));
-			Warn("script to #include not found: ", strID);
+			Warn("script to #include not found: ", i->Var.ToString());
 		}
 		}
 	IncludesResolved = true;

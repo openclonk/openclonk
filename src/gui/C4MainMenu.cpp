@@ -156,7 +156,8 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 					pPlayer->DrawHostility(fctSymbol,iIndex);
 					// Message
 					StdStrBuf sMsg;
-					if (pPlayer->Hostility.GetIDCount(pPlr->Number+1))
+					bool isFriendly = pPlayer->Hostility.find(pPlr) == pPlayer->Hostility.end();
+					if (isFriendly)
 						sMsg.Format(LoadResStr("IDS_MENU_ATTACK"),pPlr->GetName());
 					else
 						sMsg.Format(LoadResStr("IDS_MENU_NOATTACK"),pPlr->GetName());
@@ -165,8 +166,8 @@ bool C4MainMenu::DoRefillInternal(bool &rfRefilled)
 					sprintf(szCommand,"SetHostility:%i",pPlr->Number);
 					// Info caption
 					char szInfoCaption[C4MaxTitle+1],szFriendly[50],szNot[30]="";
-					SCopy(LoadResStr(pPlr->Hostility.GetIDCount(pPlayer->Number+1) ? "IDS_MENU_ATTACKHOSTILE" : "IDS_MENU_ATTACKFRIENDLY"),szFriendly);
-					if (!pPlayer->Hostility.GetIDCount(pPlr->Number+1)) SCopy(LoadResStr("IDS_MENU_ATTACKNOT"),szNot);
+					SCopy(LoadResStr(isFriendly ? "IDS_MENU_ATTACKHOSTILE" : "IDS_MENU_ATTACKFRIENDLY"),szFriendly);
+					if (!isFriendly) SCopy(LoadResStr("IDS_MENU_ATTACKNOT"),szNot);
 					sprintf(szInfoCaption,LoadResStr("IDS_MENU_ATTACKINFO"),pPlr->GetName(),szFriendly,szNot);
 					if (iIndex==pPlayer->Number) SCopy(LoadResStr("IDS_MENU_ATTACKSELF"),szInfoCaption);
 					// Add item
@@ -359,7 +360,7 @@ bool C4MainMenu::ActivateGoals(int32_t iPlayer, bool fDoActivate)
 						fctGF.Surface=fctSymbol.Surface;
 						::GraphicsResource.fctCaptain.Draw(fctGF);
 						}
-					StdStrBuf Command; Command.Format("Player:Goal:%s", C4IdText(idGoal));
+					StdStrBuf Command; Command.Format("Player:Goal:%s", idGoal.ToString());
 					Add(pDef->GetName(),fctSymbol,Command.getData(),C4MN_Item_NoCount,NULL,pDef->GetDesc());
 					}
 		// Go back to options menu on close
@@ -383,7 +384,7 @@ bool C4MainMenu::ActivateRules(int32_t iPlayer)
 		if (pDef=C4Id2Def(idGoal))
 			{
 			fctSymbol.Create(C4SymbolSize,C4SymbolSize); pDef->Draw(fctSymbol);
-			sprintf(Command, "Player:Rule:%s", C4IdText(idGoal));
+			sprintf(Command, "Player:Rule:%s", idGoal.ToString());
 			Add(pDef->GetName(),fctSymbol,Command,C4MN_Item_NoCount,NULL,pDef->GetDesc());
 			}
 	// Go back to options menu on close
@@ -852,7 +853,7 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		if (!ValidPlr(Player)) return false; // observers may not look at goal/rule info, because it requires queue activation
 		Close(true);
 		// TODO!
-		C4Object *pObj; C4ID idItem = C4Id(szCommand+12);
+		C4Object *pObj; C4ID idItem(szCommand+12);
 		if (pObj = ::Objects.FindInternal(idItem))
 			::Control.DoInput(CID_Script, new C4ControlScript(FormatString("Activate(%d)", Player).getData(), pObj->Number), CDT_Queue);
 		else

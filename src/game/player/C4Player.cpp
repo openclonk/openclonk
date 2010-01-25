@@ -189,7 +189,7 @@ void C4Player::Execute()
 			C4MenuItem *pSelectedTeamItem;
 			if (pSelectedTeamItem = Menu.GetSelectedItem())
 				{
-				int32_t idSelectedTeam = int32_t(pSelectedTeamItem->GetC4ID());
+				int32_t idSelectedTeam = pSelectedTeamItem->GetValue();
 				if (idSelectedTeam)
 					{
 					C4Team *pSelectedTeam;
@@ -517,7 +517,8 @@ void C4Player::PlaceReadyCrew(int32_t tx1, int32_t tx2, int32_t ty, C4Object *Fi
 	else
 		{
 		// Place crew
-		int32_t id,iCount;
+		int32_t iCount;
+		C4ID id;
 		for (cnt=0; id=Game.C4S.PlrStart[PlrStartIndex].ReadyCrew.GetID(cnt,&iCount); cnt++)
 			{
 
@@ -890,21 +891,34 @@ void C4Player::Surrender()
 	Log(FormatString(LoadResStr("IDS_PRC_PLRSURRENDERED"),GetName()).getData());
   }
 
-bool C4Player::SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent)
+bool C4Player::SetHostility(int32_t iOpponent, int32_t hostile, bool fSilent)
   {
+	assert(hostile == 0 || hostile == 1);
 	// Check opponent valid
-  if (!ValidPlr(iOpponent) || (iOpponent==Number)) return false;
+	C4Player *opponent = ::Players.Get(iOpponent);
+	if (!opponent || opponent == this)
+		return false;
 	// Set hostility
-  Hostility.SetIDCount(iOpponent+1,iHostility,true);
+	if (hostile)
+		Hostility.insert(opponent);
+	else
+		Hostility.erase(opponent);
 	// no announce in first frame, or if specified
 	if (!Game.FrameCounter || fSilent) return true;
 	// Announce
 	StartSoundEffect("Trumpet");
-	Log(FormatString(LoadResStr(iHostility ? "IDS_PLR_HOSTILITY" : "IDS_PLR_NOHOSTILITY"),
-					GetName(),::Players.Get(iOpponent)->GetName()).getData());
+	Log(FormatString(LoadResStr(hostile ? "IDS_PLR_HOSTILITY" : "IDS_PLR_NOHOSTILITY"),
+		GetName(),opponent->GetName()).getData());
 	// Success
   return true;
   }
+
+bool C4Player::IsHostileTowards(const C4Player *plr) const
+{
+	assert(plr);
+	if (!plr) return false;
+	return Hostility.find(plr) != Hostility.end();
+}
 
 C4Object* C4Player::GetHiExpActiveCrew(bool fSelectOnly)
 	{
@@ -1096,7 +1110,7 @@ void C4Player::DrawHostility(C4Facet &cgo, int32_t iIndex)
 			::GraphicsResource.fctCrewClr.DrawClr(cgo, true, pPlr->ColorDw);
 		// Other player and hostile
 		if (pPlr != this)
-			if (Hostility.GetIDCount(pPlr->Number+1))
+			if (Hostility.find(pPlr) != Hostility.end())
 				::GraphicsResource.fctMenu.GetPhase(7).Draw(cgo);
 		}
 	}
@@ -1523,7 +1537,7 @@ void C4Player::DefaultRuntimeData()
 	CursorSelection=CursorToggled=0;
 	MessageStatus=0;
 	MessageBuf[0]=0;
-	Hostility.Default();
+	Hostility.clear();
 	HomeBaseMaterial.Default();
 	HomeBaseProduction.Default();
 	Knowledge.Default();
@@ -2123,3 +2137,31 @@ bool C4Player::ActivateMenuMain()
 	// Open menu
 	return !!Menu.ActivateMain(Number);
 	}
+
+void C4Player::HostilitySet::CompileFunc(StdCompiler *pComp)
+{
+	int entries = size();
+	if (pComp->isCompiler())
+	{
+		clear();
+		pComp->Value(entries);
+		while (entries--)
+		{
+			int number;
+			pComp->Value(number);
+			assert(::Players.Valid(number));
+			C4Player *plr = ::Players.Get(number);
+			if (plr)
+				insert(plr);
+		}
+	}
+	else
+	{
+		pComp->Value(entries);
+		for (const_iterator it = begin(); it != end(); ++it)
+		{
+			int32_t num = (*it)->Number;
+			pComp->Value(num); // Can't use (*it)->Number directly because StdCompiler is dumb about constness
+		}
+	}
+}

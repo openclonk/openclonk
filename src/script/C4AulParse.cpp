@@ -327,7 +327,7 @@ void C4AulScriptFunc::ParseDesc()
 					if(*colon == ':') *colon = '\0';
 					else colon = NULL;
 					// get image id
-					idImage = C4Id(Val.getData());
+					idImage = C4ID(Val.getData());
 					// get image phase
 					if(colon)
 						iImagePhase = atoi(colon + 1);
@@ -682,14 +682,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					// return ident/directive
 					Len = Min(Len, C4AUL_MAX_Identifier);
 					SCopy(SPos0, pToken, Len);
-					// check if it's a C4ID (and NOT a label)
-					if (LooksLikeID(pToken))
-						{
-						// will be parsed next time
-						State = TGS_C4ID; SPos--; Len--;
-						}
-					else
-						{
 						// directive?
 						if (State == TGS_Dir) return ATT_DIR;
 						// check reserved names
@@ -699,7 +691,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 						// everything else is an identifier
 						return ATT_IDTF;
 						}
-					}
 				break;
 
 			case TGS_Int:	// integer: parse until non-number is found
@@ -738,22 +729,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 					// it's not, so return the int
 					*pInt = StrToI32(pToken, base, 0);
 					return ATT_INT;
-					}
-				break;
-
-			case TGS_C4ID: // c4id: parse until non-ident char is found
-				if (    !Inside(C, '0', '9')
-					   && !Inside(C, 'a', 'z')
-						 && !Inside(C, 'A', 'Z'))
-					{
-					// return C4ID string
-					Len = Min(Len, C4AUL_MAX_Identifier);
-					SCopy(SPos0, pToken, Len);
-					// check if valid
-					if (!LooksLikeID(pToken)) throw new C4AulParseError(this, "erroneous Ident: ", pToken);
-					// get id of it
-					*pInt = (int) C4Id(pToken);
-					return ATT_C4ID;
 					}
 				break;
 
@@ -1353,9 +1328,9 @@ void C4AulParseState::Parse_Script()
 					{
 					Shift();
 					// get id of script to include
-					if (TokenType != ATT_C4ID)
-						UnexpectedToken("id constant");
-					C4ID Id = (C4ID) cInt;
+					if (TokenType != ATT_IDTF)
+						UnexpectedToken("identifier");
+					C4ID Id(Idtf);
 					Shift();
 					// add to include list
 					C4AListEntry *e = a->Engine->itbl.push(Id);
@@ -1370,17 +1345,17 @@ void C4AulParseState::Parse_Script()
 					C4ID Id;
 					switch (TokenType)
 						{
-						case ATT_C4ID:
-							Id = (C4ID) cInt;
+						case ATT_IDTF:
+							Id = C4ID(Idtf);
 							Shift();
 							break;
 						case ATT_STAR: // "*"
-							Id = ~0;
+							Id = C4ID::None;
 							Shift();
 							break;
 						default:
 							// -> ID expected
-							UnexpectedToken("id constant");
+							UnexpectedToken("identifier or '*'");
 						}
 					// add to append list
 					C4AListEntry *e = a->Engine->atbl.push(Id);
@@ -2420,7 +2395,7 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 							case C4V_String:
 								AddBCC(AB_STRING, reinterpret_cast<intptr_t>(val._getStr()));
 								break;
-							case C4V_PropList:   AddBCC(AB_C4ID,   C4ValueConv<C4ID>::FromC4V(val)); break;
+							case C4V_PropList:   AddBCC(AB_C4ID,   val.getC4ID().GetHandle()); break;
 							case C4V_Any:
 								// any: allow zero
 								if (!val.GetData())
@@ -2607,34 +2582,6 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 			C4AulFunc *pFunc = NULL;
 			C4String *pName = NULL;
 			C4AulBCCType eCallType = AB_CALL;
-			C4ID idNS = 0;
-			if(TokenType == ATT_C4ID)
-				{
-				Warn("->C4ID::function is broken");
-				// from now on, stupid func names must stay outside ;P
-				idNS = (C4ID) cInt;
-				Shift();
-				// expect namespace-operator now
-				Match(ATT_DCOLON);
-				// next, we need a function name
-				if (TokenType != ATT_IDTF) UnexpectedToken("function name");
-				if (Type == PARSER)
-					{
-					// get def from id
-					C4Def *pDef = C4Id2Def(idNS);
-					if(!pDef)
-						{
-						throw new C4AulParseError(this, "direct object call: def not found: ", C4IdText(idNS));
-						}
-					// search func
-					if(!(pFunc = pDef->Script.GetSFunc(Idtf)))
-						{
-						throw new C4AulParseError(this, FormatString("direct object call: function %s::%s not found", C4IdText(idNS), Idtf).getData());
-						}
-					}
-				}
-			else
-				{
 				// may it be a failsafe call?
 				if (TokenType == ATT_TILDE)
 					{
@@ -2649,9 +2596,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 					{
 					// not failsafe?
 					if(eCallType != AB_CALLFS && Type == PARSER)
-						{
 						throw new C4AulParseError(this, FormatString("direct object call: function %s not found", Idtf).getData());
-						}
 					// otherwise: nothing to call - just execute parameters and discard them
 					Shift();
 					Parse_Params(0, NULL);
@@ -2660,17 +2605,12 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 					// done
 					break;
 					}
-				}
 			if (Type == PARSER)
-				{
 				pName = ::Strings.RegString(Idtf);
-				}
 			// add call chunk
 			Shift();
 			Parse_Params(C4AUL_MAX_Par, pName ? pName->GetCStr() : Idtf, pFunc);
-			if(idNS != 0)
-				AddBCC(AB_CALLNS, idNS);
-			AddBCC(eCallType, (intptr_t) pName);
+			AddBCC(eCallType, reinterpret_cast<intptr_t>(pName));
 			break;
 			}
 		default:
@@ -2780,8 +2720,10 @@ void C4AulParseState::Parse_Static()
 			if (a->Engine->GetGlobalConstant(Idtf, NULL)) Error("constant and variable with name ", Idtf);
 			// insert variable if not defined already
 			if (a->Engine->GlobalNamedNames.GetItemNr(Idtf) == -1)
+			{
 				a->Engine->GlobalNamedNames.AddName(Idtf);
 			}
+		}
 		Match(ATT_IDTF);
 		switch(TokenType)
 			{

@@ -133,7 +133,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			break;
     //----------------------------------------------------------------------------------------------------------------------------------
 		case WM_USER_DROPDEF:
-			Game.DropDef(lParam,cvp->ViewX+float(LOWORD(wParam))/cvp->Zoom,cvp->ViewY+float(HIWORD(wParam)/cvp->Zoom));
+			Game.DropDef(C4ID(lParam),cvp->ViewX+float(LOWORD(wParam))/cvp->Zoom,cvp->ViewY+float(HIWORD(wParam)/cvp->Zoom));
 			break;
     //----------------------------------------------------------------------------------------------------------------------------------
 		case WM_SIZE:

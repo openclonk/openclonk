@@ -173,16 +173,26 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 			{
 			// special: Allow this for spells
 			if (~Category & C4D_Magic)
-				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), C4IdText(id), hGroup.GetFullName().getData());
+				DebugLogF("WARNING: Def %s (%s) at %s has invalid category!", GetName(), id.ToString(), hGroup.GetFullName().getData());
 			// assign a default category here
 			Category = (Category & ~C4D_SortLimit) | 1;
 			}
 		// Check mass
 		if (Mass < 0)
 			{
-			DebugLogF("WARNING: Def %s (%s) at %s has invalid mass!", GetName(), C4IdText(id), hGroup.GetFullName().getData());
+			DebugLogF("WARNING: Def %s (%s) at %s has invalid mass!", GetName(), id.ToString(), hGroup.GetFullName().getData());
 			Mass = 0;
 			}
+
+		// Register ID with script engine
+		::ScriptEngine.RegisterGlobalConstant(id.ToString(), C4VPropList(this));
+		/*
+		int32_t index = ::ScriptEngine.GlobalNamedNames.GetItemNr(id.ToString());
+		if (index == -1)
+		{
+			index = ::ScriptEngine.GlobalNamedNames.AddName(id.ToString());
+			::ScriptEngine.GlobalNamed.GetItem(index)->Set(C4VPropList(this));
+		}*/
 
 		return true;
 		}
@@ -192,7 +202,7 @@ bool C4Def::LoadDefCore(C4Group &hGroup)
 bool C4Def::Save(C4Group &hGroup)
 	{
 	StdStrBuf Out;
-	if (! Decompile(&Out, FormatString("%s::DefCore.txt", C4IdText(id)).getData()) )
+	if (! Decompile(&Out, FormatString("%s::DefCore.txt", id.ToString()).getData()) )
 		return false;
 	return hGroup.Add(C4CFN_DefCore,Out,false,true);
 	}
@@ -210,7 +220,7 @@ bool C4Def::Decompile(StdStrBuf *pOut, const char *szName)
 void C4Def::CompileFunc(StdCompiler *pComp)
 	{
 
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(id),								"id",									C4ID::None					));
+	pComp->Value(mkNamingAdapt(id,								"id",									C4ID::None					));
 	pComp->Value(mkNamingAdapt(toC4CArr(rC4XVer),							"Version"																));
 	//FIXME pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),					    "Name",								"Undefined"				));
 	pComp->Value(mkNamingAdapt(mkParAdapt(RequireDef, false),	"RequireDef",					C4IDList()				));
@@ -273,7 +283,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Exclusive,											"Exclusive",					0									));
 	pComp->Value(mkNamingAdapt(ContactIncinerate,							"ContactIncinerate",	0									));
 	pComp->Value(mkNamingAdapt(BlastIncinerate,								"BlastIncinerate",		0									));
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(BurnTurnTo),				"BurnTo",							C4ID::None					));
+	pComp->Value(mkNamingAdapt(BurnTurnTo,				"BurnTo",							C4ID::None					));
 
 	const StdBitfieldEntry<int32_t> LineTypes[] = {
 
@@ -318,7 +328,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Growth,												"Growth",							0									));
 	pComp->Value(mkNamingAdapt(Rebuyable,											"Rebuy",							0									));
 	pComp->Value(mkNamingAdapt(Constructable,									"Construction",				0									));
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(BuildTurnTo),			"ConstructTo",				0									));
+	pComp->Value(mkNamingAdapt(BuildTurnTo,			"ConstructTo",				C4ID::None									));
 	pComp->Value(mkNamingAdapt(Grab,											"Grab",								0									));
 
 	const StdBitfieldEntry<int32_t> GrabPutGetTypes[] = {
@@ -492,13 +502,6 @@ bool C4Def::Load(C4Group &hGroup,
 
   // Read DefCore
 	if (fSuccess) fSuccess=LoadDefCore(hGroup);
-	// check id
-	if (fSuccess) if (!LooksLikeID(id))
-		{
-		// wie geth ID?????ßßßß
-		LogF(LoadResStr("IDS_ERR_INVALIDID"), GetFilename(hGroup.GetName()));
-		fSuccess=false;
-		}
 
 	// skip def: don't even read sounds!
 	if (fSuccess && Game.C4S.Definitions.SkipDefs.GetIDCount(id, 1)) return false;
@@ -521,7 +524,7 @@ bool C4Def::Load(C4Group &hGroup,
 	if (dwLoadWhat & C4D_Load_Bitmap)
 		if (!Graphics.Load(hGroup, !!ColorByOwner)) 
 			{
-			DebugLogF("  Error loading graphics of %s (%s)", hGroup.GetFullName().getData(), C4IdText(id));
+			DebugLogF("  Error loading graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
 			return false;
 			}
 
@@ -529,7 +532,7 @@ bool C4Def::Load(C4Group &hGroup,
 	if (dwLoadWhat & C4D_Load_Bitmap)
 		if (!LoadPortraits(hGroup))
 			{
-			DebugLogF("  Error loading portrait graphics of %s (%s)", hGroup.GetFullName().getData(), C4IdText(id));
+			DebugLogF("  Error loading portrait graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
 			return false;
 			}
 
@@ -678,7 +681,7 @@ bool C4Def::Load(C4Group &hGroup,
 		{
 		TopFace.Default();
 		// warn in debug mode
-		DebugLogF("invalid TopFace in %s(%s)", GetName(), C4IdText(id));
+		DebugLogF("invalid TopFace in %s(%s)", GetName(), id.ToString());
 		}
 
 
@@ -993,7 +996,7 @@ bool C4DefList::Add(C4Def *pDef, bool fOverload)
 	if (Config.Graphics.VerboseObjectLoading>=1)
 		if (pLastDef)
 			{
-			LogF(LoadResStr("IDS_PRC_DEFOVERLOAD"),pDef->GetName(),C4IdText(pLastDef->id));
+			LogF(LoadResStr("IDS_PRC_DEFOVERLOAD"),pDef->GetName(),pLastDef->id.ToString());
 			if (Config.Graphics.VerboseObjectLoading >= 2)
 				{
 				LogF("      Old def at %s",pLastDef->Filename);
@@ -1039,47 +1042,37 @@ void C4DefList::Remove(C4Def *def)
   }
 
 void C4DefList::Clear()
-  {
-  C4Def *cdef,*next;
-  for (cdef=FirstDef; cdef; cdef=next)
-    {
-    next=cdef->Next;
-    delete cdef;
-    }
-  FirstDef=NULL;
+{
+	C4Def *cdef,*next;
+	for (cdef=FirstDef; cdef; cdef=next)
+	{
+		next=cdef->Next;
+		delete cdef;
+	}
+	FirstDef=NULL;
 	// clear quick access table
-	for (int32_t i=0; i<64; i++) if (Table[i]) { delete [] Table[i]; Table[i]=NULL; }
-	fTable=false;
-  }
+	table.clear();
+}
 
 C4Def* C4DefList::ID2Def(C4ID id)
-  {
-  if (id==C4ID::None) return NULL;
-	if (!fTable)
-		{
+{
+	if (id==C4ID::None) return NULL;
+	if (table.empty())
+	{
 		// table not yet built: search list
 		C4Def *cdef;
 		for (cdef=FirstDef; cdef; cdef=cdef->Next)
 	    if (cdef->id==id) return cdef;
-		}
-	C4Def **ppDef, ***pppDef=Table;
-	// get table entry to query
-	int32_t iTblIndex=(id>>24)-32;
-	//if(iTblIndex==43) printf("TblIndex: %d\n", iTblIndex);
-	if (Inside<int32_t>(iTblIndex, 0, 63)) pppDef+=iTblIndex;
-	//if(iTblIndex==43) printf("TblIndex: %d pppDef: %p\n", iTblIndex, pppDef);
-	// no entry matching?
-	if (!(ppDef=*pppDef)) return NULL;
-	//if(iTblIndex==43) printf("Entry-Name: %s\n", (*ppDef)->Name);
-	// search list
-	for (C4Def *pDef = *ppDef; pDef=*ppDef; ppDef++)
+	}
+	else
 	{
-		//printf("pDef: %p; Name: %s\n", pDef, pDef->Name);
-		if (pDef->id == id) return pDef;
+		Table::const_iterator it = table.find(id);
+		if (it != table.end())
+			return it->second;
 	}
 	// none found
 	return NULL;
-  }
+}
 
 int32_t C4DefList::GetIndex(C4ID id)
   {
@@ -1204,8 +1197,7 @@ void C4DefList::Default()
 	{
 	FirstDef=NULL;
 	LoadFailure=false;
-	ZeroMem(&Table, sizeof(Table));
-	fTable=false;
+	table.clear();
 	}
 
 // Load scenario specified or all selected plus scenario & folder local
@@ -1278,44 +1270,7 @@ bool C4DefList::Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4
 	return true;
 	}
 
-void C4DefList::BuildTable()
-	{
-	// clear any current table
-	int32_t i;
-	for (i=0; i<64; i++) if (Table[i]) { delete [] Table[i]; Table[i]=NULL; }
-	// build temp count list
-	int32_t Counts[64]; ZeroMem(&Counts, sizeof(Counts));
-	C4Def *pDef;
-	for (pDef=FirstDef; pDef; pDef = pDef->Next)
-		if (LooksLikeID(pDef->id))
-			if (pDef->id<10000)
-				Counts[0]++;
-			else
-				Counts[(pDef->id>>24)-32]++;
-	// get mem for table; !!! leave space for stop entry !!!
-	for (i=0; i<64; i++) if (Counts[i])
-		{
-		C4Def **ppDef=(C4Def **) new long[Counts[i]+1];
-		Table[i]=ppDef;
-		ZeroMem(ppDef, (Counts[i]+1)*sizeof(long) );
-		}
-	// build table
-	for (pDef=FirstDef; pDef; pDef = pDef->Next)
-		if (LooksLikeID(pDef->id))
-			{
-			C4Def **ppDef;
-			if (pDef->id<10000)
-				ppDef=Table[0];
-			else
-				ppDef=Table[(pDef->id>>24)-32];
-			while (*ppDef) ppDef++;
-			*ppDef=pDef;
-			}
-	// done
-	fTable=true;
-	// use table for sorting now
-	SortByID();
-	}
+
 
 bool C4Def::LoadPortraits(C4Group &hGroup)
 {
@@ -1457,68 +1412,30 @@ bool C4DefList::GetFontImage(const char *szImageTag, CFacet &rOutImgFacet)
 	return true;
 	}
 
-#ifdef _WIN32
-int __cdecl C4DefListSortFunc(const void *elem1, const void *elem2)
-#else
-int C4DefListSortFunc(const void *elem1, const void *elem2)
-#endif
-  {
-	return (*(C4Def * const *)elem1)->id - (*(C4Def * const *)elem2)->id;
-	}
-
-void C4DefList::SortByID()
-	{
-	// ID sorting will prevent some possible sync losses due to definition loading in different order
-	// (it's still possible to cause desyncs by global script function or constant overloads, overloads
-	//  within the same object pack and multiple appendtos with function overloads that depend on their
-	//  order.)
-
-	// Must be called directly after quick access table has been built.
-	assert(fTable);
-	// sort all quick access slots
-	int i = sizeof(Table) / sizeof(C4Def **);
-	FirstDef = NULL;
-	C4Def ***pppDef = Table, **ppDef, **ppDefCount, **ppCurrLastDef = &FirstDef;
-	while (i--)
-		{
-		// only used slots
-		if (ppDefCount = ppDef = *pppDef)
-			{
-			int cnt = 0; while (*ppDefCount++) ++cnt;
-			if (cnt)
-				{
-				qsort(ppDef, cnt, sizeof(C4Def *), &C4DefListSortFunc);
-				// build new linked list from sorted table
-				// note this method also terminates the list!
-				while (*ppCurrLastDef = *ppDef++) ppCurrLastDef = &((*ppCurrLastDef)->Next);
-				}
-			}
-		++pppDef;
-		}
-	}
-
 void C4DefList::Synchronize()
 	{
-	C4Def *pDef;
-	for (pDef=FirstDef; pDef; pDef=pDef->Next)
-		pDef->Synchronize();
+	for (Table::iterator it = table.begin(); it != table.end(); ++it)
+		it->second->Synchronize();
 	}
 
 void C4DefList::ResetIncludeDependencies()
 	{
-	C4Def *pDef;
-	for (pDef=FirstDef; pDef; pDef=pDef->Next)
-		pDef->ResetIncludeDependencies();
+	for (Table::iterator it = table.begin(); it != table.end(); ++it)
+		it->second->ResetIncludeDependencies();
 	}
 
 void C4DefList::CallEveryDefinition()
 	{
-	C4Def *pDef;
-	for (pDef=FirstDef; pDef; pDef=pDef->Next)
+	for (Table::iterator it = table.begin(); it != table.end(); ++it)
 		{
-		C4AulParSet Pars(C4VPropList(pDef));
-		pDef->Script.Call(PSF_Definition, 0, &Pars, true);
+		C4AulParSet Pars(C4VPropList(it->second));
+		it->second->Script.Call(PSF_Definition, 0, &Pars, true);
 		}
 	}
 
-C4DefList Definitions;
+void C4DefList::BuildTable()
+{
+	table.clear();
+	for (C4Def *def = FirstDef; def; def = def->Next)
+		table.insert(std::make_pair(def->id, def));
+}

@@ -18,18 +18,18 @@
  */
 // Menus attached to objects; script created or internal
 
-#include <C4Include.h>
-#include <C4ObjectMenu.h>
+#include "C4Include.h"
+#include "C4ObjectMenu.h"
 
-#include <C4Object.h>
-#include <C4ObjectCom.h>
-#include <C4Player.h>
-#include <C4Viewport.h>
-#include <C4MouseControl.h>
-#include <C4GraphicsResource.h>
-#include <C4Game.h>
-#include <C4PlayerList.h>
-#include <C4GameObjects.h>
+#include "C4Object.h"
+#include "C4ObjectCom.h"
+#include "C4Player.h"
+#include "C4Viewport.h"
+#include "C4MouseControl.h"
+#include "C4GraphicsResource.h"
+#include "C4Game.h"
+#include "C4PlayerList.h"
+#include "C4GameObjects.h"
 
 
 // -----------------------------------------------------------
@@ -173,7 +173,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				pObj->Picture2Facet(fctSymbol);
 				// Commands
 				sprintf(szCommand,"SetCommand(\"Activate\",Object(%d))&&ExecuteCommand()",pObj->Number);
-				sprintf(szCommand2,"SetCommand(\"Activate\",nil,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,C4IdText(pDef->id));
+				sprintf(szCommand2,"SetCommand(\"Activate\",nil,%d,0,Object(%d),%s)&&ExecuteCommand()",pTarget->Contents.ObjectCount(pDef->id),pTarget->Number,pDef->id.ToString());
 				// Add menu item
 				Add(szCaption,fctSymbol,szCommand,iCount,pObj,pDef->GetDesc(),pDef->id,szCommand2,true,pObj->GetValue(pTarget, NO_OWNER));
 				// facet taken over (arrg!)
@@ -222,7 +222,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 				// Secondary command: get/activate all objects of the chosen type
 				szCommand2[0] = 0; int32_t iAllCount;
 				if ((iAllCount = pTarget->Contents.ObjectCount(pDef->id)) > 1)
-					sprintf(szCommand2, "SetCommand(\"%s\", nil, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, C4IdText(pDef->id));
+					sprintf(szCommand2, "SetCommand(\"%s\", nil, %d,0, Object(%d), %s) && ExecuteCommand()", fGet ? "Get" : "Activate", iAllCount, pTarget->Number, pDef->id.ToString());
 				// Add menu item (with object)
 				Add(szCaption, fctSymbol, szCommand, iCount, pObj, pDef->GetDesc(), pDef->id, szCommand2);
 				fctSymbol.Default();
@@ -451,7 +451,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 						if (!pFunction->Condition || !!pFunction->Condition->Exec(pEff->pCommandTarget, &C4AulParSet(C4VObj(pTarget), C4VInt(pEff->iNumber), C4VObj(Object), C4VID(pFunction->idImage))))
 							if (!fCountOnly)
 								{
-								sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",Object(%d),%d,Object(%d),%s)",pEff->pCommandTarget->Number,pFunction->Name,pTarget->Number,(int)pEff->iNumber,Object->Number,C4IdText(pFunction->idImage));
+								sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",Object(%d),%d,Object(%d),%s)",pEff->pCommandTarget->Number,pFunction->Name,pTarget->Number,(int)pEff->iNumber,Object->Number,pFunction->idImage.ToString());
 								fctSymbol.Create(16,16); if (pDef=C4Id2Def(pFunction->idImage)) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 								Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 								fctSymbol.Default();

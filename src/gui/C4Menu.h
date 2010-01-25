@@ -119,6 +119,7 @@ class C4MenuItem : public C4GUI::Element
 
 	public:
 		C4ID GetC4ID() const { return id; }
+		int32_t GetValue() const { return iValue; }
 		C4Object *GetObject() const { return Object; }
 		const char *GetCommand() const { return Command; }
 

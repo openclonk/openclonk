@@ -95,9 +95,6 @@ class C4IDList : protected C4IDListChunk
 		// Item operation
 		bool DeleteItem(size_t iIndex);
 		bool SwapItems(size_t iIndex1, size_t iIndex2);
-		// Compilation
-		bool Read(const char *szSource, int32_t iDefValue=0);
-		bool Write(char *szTarget, bool fValues=true) const;
 		// Graphics
 		void Draw(C4Facet &cgo, int32_t iSelection,
 							C4DefList &rDefs, DWORD dwCategory,

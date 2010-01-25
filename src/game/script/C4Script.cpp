@@ -110,7 +110,7 @@ static StdStrBuf FnStringFormat(C4AulContext *cthr, const char *szFormatPar, C4V
 					{
 					if (!Par[cPar]) throw new C4AulExecError(cthr->Obj, "format placeholder without parameter");
 					C4ID id = Par[cPar++]->getC4ID();
-					StringBuf.Append(C4IdText(id));
+					StringBuf.Append(id.ToString());
 					cpFormat+=SLen(szField);
 					break;
 					}
@@ -1376,7 +1376,7 @@ static bool FnCreateMenu(C4AulObjectContext *cthr, C4ID iSymbol, C4Object *pComm
 	// Clear any old menu, init new menu
 	if (!cthr->Obj->CloseMenu(false)) return false;
 	if (!cthr->Obj->Menu) cthr->Obj->Menu = new C4ObjectMenu; else cthr->Obj->Menu->ClearItems(true);
-	cthr->Obj->Menu->Init(fctSymbol,FnStringPar(szCaption),pCommandObj,iExtra,iExtraData,idMenuID ? idMenuID : iSymbol,iStyle,true);
+	cthr->Obj->Menu->Init(fctSymbol,FnStringPar(szCaption),pCommandObj,iExtra,iExtraData,(idMenuID ? idMenuID : iSymbol).GetHandle(),iStyle,true);
 
 	// Set permanent
 	cthr->Obj->Menu->SetPermanent(fPermanent);
@@ -1513,14 +1513,14 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 			if (iExtra & C4MN_Add_PassValue)
 				{
 				// with value
-				sprintf(command,"%s(%s,%s,0,%ld)",szScriptCom,C4IdText(idItem),parameter,iValue);
-				sprintf(command2,"%s(%s,%s,1,%ld)",szScriptCom,C4IdText(idItem),parameter,iValue);
+				sprintf(command,"%s(%s,%s,0,%ld)",szScriptCom,idItem.ToString(),parameter,iValue);
+				sprintf(command2,"%s(%s,%s,1,%ld)",szScriptCom,idItem.ToString(),parameter,iValue);
 				}
 			else
 				{
 				// without value
-				sprintf(command,"%s(%s,%s)",szScriptCom,C4IdText(idItem),parameter);
-				sprintf(command2,"%s(%s,%s,1)",szScriptCom,C4IdText(idItem),parameter);
+				sprintf(command,"%s(%s,%s)",szScriptCom,idItem.ToString(),parameter);
+				sprintf(command2,"%s(%s,%s,1)",szScriptCom,idItem.ToString(),parameter);
 				}
 			}
 		else
@@ -2221,7 +2221,7 @@ static C4Value FnFormat_C4V(C4AulContext *cthr, C4Value *szFormat, C4Value * iPa
 
 static C4ID FnC4Id(C4AulContext *cthr, C4String *szID)
 	{
-	return(C4Id(FnStringPar(szID)));
+	return(C4ID(FnStringPar(szID)));
 	}
 
 static C4Value FnPlayerMessage_C4V(C4AulContext *cthr, C4Value * iPlayer, C4Value *c4vMessage, C4Value *c4vObj, C4Value * iPar0, C4Value * iPar1, C4Value * iPar2, C4Value * iPar3, C4Value * iPar4, C4Value * iPar5, C4Value * iPar6)
@@ -3568,9 +3568,9 @@ protected:
 	virtual void ProcessChar(char &rChar)  { Res = C4VString(FormatString("%c", rChar)); }
 
 	virtual void ProcessString(char *szString, size_t iMaxLength, bool fIsID)
-		{ Res = (fIsID ? C4VID(C4Id(szString)) : C4VString(szString)); }
+		{ Res = (fIsID ? C4VID(C4ID(szString)) : C4VString(szString)); }
 	virtual void ProcessString(char **pszString, bool fIsID)
-		{ Res = (fIsID ? C4VID(C4Id(*pszString)) : C4VString(*pszString)); }
+		{ Res = (fIsID ? C4VID(C4ID(*pszString)) : C4VString(*pszString)); }
 };
 
 // Use the compiler to find a named value in a structure

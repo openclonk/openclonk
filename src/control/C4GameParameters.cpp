@@ -538,7 +538,7 @@ StdStrBuf C4GameParameters::GetGameGoalString()
 			else
 				{
 				if (sResult.getLength()) sResult.Append(", ");
-				sResult.Append(C4IdText(idGoal));
+				sResult.Append(idGoal.ToString());
 				}
 			}
 	// Max length safety

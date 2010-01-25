@@ -45,7 +45,7 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iRepeatDelay, "RepeatDelay", 0));
 	pComp->Value(mkNamingAdapt(iInitialRepeatDelay, "InitialRepeatDelay", 0));
 	pComp->Value(mkNamingAdapt(fDefaultDisabled, "DefaultDisabled", false));
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(idControlExtraData), "ExtraData", C4ID::None));
+	pComp->Value(mkNamingAdapt(idControlExtraData, "ExtraData", C4ID::None));
 	const StdEnumEntry<Actions> ActionNames[] = {
 		{ "None",        CDA_None        },
 		{ "Script",      CDA_Script      },

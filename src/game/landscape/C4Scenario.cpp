@@ -257,7 +257,7 @@ bool C4SPlrStart::operator==(const C4SPlrStart& rhs)
 
 void C4SPlrStart::CompileFunc(StdCompiler *pComp)
   {
-  pComp->Value(mkNamingAdapt(mkC4IDAdapt(NativeCrew), "StandardCrew",          C4ID::None));
+  pComp->Value(mkNamingAdapt(NativeCrew, "StandardCrew",          C4ID::None));
   pComp->Value(mkNamingAdapt(Crew,                    "Clonks",                C4SVal(1, 0, 1, 10), true));
   pComp->Value(mkNamingAdapt(Wealth,                  "Wealth",                C4SVal(0, 0, 0,250), true));
   pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Position,-1), "Position"           ));

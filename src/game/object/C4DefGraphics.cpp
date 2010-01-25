@@ -390,7 +390,7 @@ void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 	if(!fCompiler && !pDefGraphics) return;
 	// definition
 	C4ID id; if(!fCompiler) id = pDefGraphics->pDef->id;
-	pComp->Value(mkC4IDAdapt(id));
+	pComp->Value(id);
 	// go over two seperators ("::"). Expect them if an id was found.
 	if(!pComp->Seperator(StdCompiler::SEP_PART2) || !pComp->Seperator(StdCompiler::SEP_PART2))
 		pComp->excCorrupt("DefGraphics: expected \"::\"");
@@ -404,7 +404,7 @@ void C4DefGraphicsAdapt::CompileFunc(StdCompiler *pComp)
 		C4Def *pDef = ::Definitions.ID2Def(id);
 		// search def-graphics
 		if(!pDef || !( pDefGraphics = pDef->Graphics.Get(Name.getData()) ))
-			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), C4IdText(id), pDef ? pDef->GetName() : "def not found");
+			pComp->excCorrupt("DefGraphics: could not find graphics \"%s\" in %s(%s)!", Name.getData(), id.ToString(), pDef ? pDef->GetName() : "def not found");
 		}
 	}
 
@@ -648,6 +648,7 @@ bool C4Portrait::CopyFrom(C4Portrait &rCopy)
 
 const char *C4Portrait::EvaluatePortraitString(const char *szPortrait, C4ID &rIDOut, C4ID idDefaultID, uint32_t *pdwClrOut)
 	{
+		/* FIXME: Doesn't work with variable length IDs
 	// examine portrait string
 	if (SLen(szPortrait)>6 && szPortrait[4]==':' && szPortrait[5]==':')
 		{
@@ -675,6 +676,8 @@ const char *C4Portrait::EvaluatePortraitString(const char *szPortrait, C4ID &rID
 		rIDOut = idDefaultID;
 		return szPortrait;
 		}
+		*/
+		return szPortrait;
 	}
 
 
@@ -897,7 +900,7 @@ void C4GraphicsOverlay::Write(char *szOutput)
 	sprintf(OSTR, "%i", iID); SCopy(OSTR, szOutput); szOutput += strlen(szOutput);
 	*szOutput = ','; ++szOutput;
 	// append C4ID::Graphicsname (or C4ID:: for def graphics)
-	SCopy(C4IdText(pDef->id), szOutput); szOutput += strlen(szOutput);
+	SCopy(pDef->id.ToString(), szOutput); szOutput += strlen(szOutput);
 	SCopy("::", szOutput); szOutput += strlen(szOutput);
 	const char *szGrpName = pSourceGfx->GetName();
 	if (szGrpName) { SCopy(szGrpName, szOutput); szOutput += strlen(szOutput); }

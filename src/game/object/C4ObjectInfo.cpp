@@ -143,7 +143,7 @@ bool C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 					{
 					// portrait not found? Either the specification has been deleted (bad), or this is some scenario with custom portraits
 					// assume the latter, and temp-assign a random portrait for the duration of this round
-					if (Config.Graphics.AddNewCrewPortraits) SetRandomPortrait(0, false, false);
+					if (Config.Graphics.AddNewCrewPortraits) SetRandomPortrait(C4ID::None, false, false);
 					}
 				}
 			}
@@ -157,7 +157,7 @@ bool C4ObjectInfo::Load(C4Group &hGroup, bool fLoadPortrait)
 			SCopy(C4Portrait_Custom, PortraitFile);
 		else if (Config.Graphics.AddNewCrewPortraits)
 			// assign a new random crew portrait
-			SetRandomPortrait(0, true, false);
+			SetRandomPortrait(C4ID::None, true, false);
 	return true;
 	}
 
@@ -228,7 +228,7 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 					else
 						{
 						// different ID (crosslinked portrait)
-						SCopy(C4IdText(pPortraitGfx->pDef->id), PortraitFile);
+						SCopy(pPortraitGfx->pDef->id.ToString(), PortraitFile);
 						SAppend("::", PortraitFile);
 						SAppend(pPortraitGfx->GetName(), PortraitFile);
 						}

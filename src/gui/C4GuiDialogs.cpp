@@ -49,7 +49,7 @@ namespace C4GUI {
 
 void FrameDecoration::Clear()
 	{
-	idSourceDef = 0;
+	idSourceDef = C4ID::None;
 	dwBackClr = C4GUI_StandardBGColor;
 	iBorderTop=iBorderLeft=iBorderRight=iBorderBottom=0;
 	fHasGfxOutsideClientArea = false;

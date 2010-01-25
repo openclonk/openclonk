@@ -167,7 +167,7 @@ const char *C4ScriptHost::GetControlDesc(const char *szFunctionFormat, int32_t i
 	// Find function reference
 	C4AulScriptFunc *pFn = GetSFunc(szFunction);
 	// Get image id
-	if (pidImage) { if (Def) *pidImage=Def->id; else *pidImage=0; if (pFn) *pidImage=pFn->idImage; }
+	if (pidImage) { if (Def) *pidImage=Def->id; else *pidImage=C4ID::None; if (pFn) *pidImage=pFn->idImage; }
 	// Get image phase
 	if(piImagePhase) { *piImagePhase = 0; if(pFn) *piImagePhase = pFn->iImagePhase; }
 	// Return function desc
