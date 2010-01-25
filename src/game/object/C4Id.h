@@ -30,10 +30,10 @@
 #include <string>
 #include <vector>
 
-#include <boost/operators.hpp>
+//#include <boost/operators.hpp>
 
 class StdCompiler;
-class C4ID : boost::totally_ordered<C4ID, boost::equivalent<C4ID> >
+class C4ID //: boost::totally_ordered<C4ID, boost::equivalent<C4ID> >
 {
 public:
 	typedef size_t Handle;
@@ -98,7 +98,7 @@ public:
 
 	// Safe bool
 	typedef size_t C4ID::*safe_bool_type;
-	inline operator safe_bool_type() const { return *this == None ? 0 : &C4ID::v; }
+	inline operator safe_bool_type() const { return v == None.v ? 0 : &C4ID::v; }
 };
 
 #endif
