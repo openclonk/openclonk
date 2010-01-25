@@ -318,7 +318,7 @@ void C4AulScriptFunc::ParseDesc()
 				{
 				// image: special contents-image?
 				if (Val == C4AUL_Contents)
-					idImage = C4ID_Contents;
+					idImage = C4ID::Contents;
 				else
 					{
 					// Find phase separator (:)

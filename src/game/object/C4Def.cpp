@@ -79,8 +79,8 @@ void C4Def::DefaultDefCore()
   SolidMask.Default();
   TopFace.Default();
   Component.Default();
-	BurnTurnTo=C4ID_None;
-	BuildTurnTo=C4ID_None;
+  BurnTurnTo=C4ID::None;
+  BuildTurnTo=C4ID::None;
 	STimerCall[0]=0;
 	Timer=35;
 	GrowthType=0;
@@ -210,7 +210,7 @@ bool C4Def::Decompile(StdStrBuf *pOut, const char *szName)
 void C4Def::CompileFunc(StdCompiler *pComp)
 	{
 
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(id),								"id",									C4ID_None					));
+	pComp->Value(mkNamingAdapt(mkC4IDAdapt(id),								"id",									C4ID::None					));
 	pComp->Value(mkNamingAdapt(toC4CArr(rC4XVer),							"Version"																));
 	//FIXME pComp->Value(mkNamingAdapt(toC4CStrBuf(Name),					    "Name",								"Undefined"				));
 	pComp->Value(mkNamingAdapt(mkParAdapt(RequireDef, false),	"RequireDef",					C4IDList()				));
@@ -273,7 +273,7 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Exclusive,											"Exclusive",					0									));
 	pComp->Value(mkNamingAdapt(ContactIncinerate,							"ContactIncinerate",	0									));
 	pComp->Value(mkNamingAdapt(BlastIncinerate,								"BlastIncinerate",		0									));
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(BurnTurnTo),				"BurnTo",							C4ID_None					));
+	pComp->Value(mkNamingAdapt(mkC4IDAdapt(BurnTurnTo),				"BurnTo",							C4ID::None					));
 
 	const StdBitfieldEntry<int32_t> LineTypes[] = {
 
@@ -1054,7 +1054,7 @@ void C4DefList::Clear()
 
 C4Def* C4DefList::ID2Def(C4ID id)
   {
-  if (id==C4ID_None) return NULL;
+  if (id==C4ID::None) return NULL;
 	if (!fTable)
 		{
 		// table not yet built: search list
@@ -1370,7 +1370,7 @@ C4ID C4Def::GetIndexedComponent(int32_t idx, C4Object *pBuilder)
 	if (pArray)
 		{
 		// assume that components are always returned ordered ([a, a, b], but not [a, b, a])
-		if (!pArray->GetSize()) return 0;
+		if (!pArray->GetSize()) return C4ID::None;
 		C4ID idLast = pArray->GetItem(0).getC4ID();
 		if (!idx) return idLast;
 		for (int32_t i=1; i<pArray->GetSize(); ++i)
@@ -1383,7 +1383,7 @@ C4ID C4Def::GetIndexedComponent(int32_t idx, C4Object *pBuilder)
 				}
 			}
 		// index out of bounds
-		return 0;
+		return C4ID::None;
 		}
 	// no valid script overload: Assume definition components
 	return Component.GetID(idx);
@@ -1400,7 +1400,7 @@ void C4Def::GetComponents(C4IDList *pOutList, C4Object *pObjInstance, C4Object *
 		{
 		// transform array into IDList
 		// assume that components are always returned ordered ([a, a, b], but not [a, b, a])
-		C4ID idLast = 0; int32_t iCount = 0;
+		C4ID idLast; int32_t iCount = 0;
 		for (int32_t i=0; i<pArray->GetSize(); ++i)
 			{
 			C4ID idCurr = pArray->GetItem(i).getC4ID();

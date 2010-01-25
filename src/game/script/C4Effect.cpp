@@ -568,12 +568,12 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
     if (::MaterialMap.Map[iMat].Extinguisher)
 			{
 			// blasts should changedef in water, too!
-			if (fBlasted) if (pObj->Def->BurnTurnTo!=C4ID_None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
+			if (fBlasted) if (pObj->Def->BurnTurnTo!=C4ID::None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
 			// no fire caused
 			fFireCaused = false;
 			}
   // BurnTurnTo
-  if (fFireCaused) if (pObj->Def->BurnTurnTo!=C4ID_None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
+  if (fFireCaused) if (pObj->Def->BurnTurnTo!=C4ID::None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
 	// eject contents
 	C4Object *cobj;
 	if (!pObj->Def->IncompleteActivity && !pObj->Def->NoBurnDecay)

@@ -259,7 +259,7 @@ bool C4ObjectMenu::DoRefillInternal(bool &rfRefilled)
 						fctTarget = fctSymbol.GetFraction(85, 85, C4FCT_Left, C4FCT_Bottom);
 						::GraphicsResource.fctHand.Draw(fctTarget, true, 0);
 						// Add menu item
-						Add(LoadResStr("IDS_CON_PUT2"), fctSymbol, szCommand, C4MN_Item_NoCount, NULL, NULL, C4ID_None, szCommand2);
+						Add(LoadResStr("IDS_CON_PUT2"), fctSymbol, szCommand, C4MN_Item_NoCount, NULL, NULL, C4ID::None, szCommand2);
 						// Preserve symbol
 						fctSymbol.Default();
 						}

@@ -161,7 +161,7 @@ bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
 				Target = ((wKeyFlags & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
 				do
 					{
-					Target = Game.FindObject(0,X,Y,0,0,OCF_NotContained, NULL, NULL, NULL, NULL, ANY_OWNER, Target);
+						Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, NULL, NULL, NULL, NULL, ANY_OWNER, Target);
 					}
 				while ((wKeyFlags & MK_SHIFT) && Target && Selection.GetLink(Target));
 				}

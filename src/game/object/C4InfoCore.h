@@ -149,7 +149,7 @@ class C4ObjectInfoCore
   public:
 	  bool Save(C4Group &hGroup, class C4DefList *pDefs);
 	  bool Load(C4Group &hGroup);
-    void Default(C4ID n_id=C4ID_None, class C4DefList *pDefs=NULL, const char *cpNames=NULL);
+    void Default(C4ID n_id=C4ID::None, class C4DefList *pDefs=NULL, const char *cpNames=NULL);
     //bool LoadNext(C4Group &hGroup); Old c4o support disabled...
     //bool Add(C4Group &hGroup);
 		void Promote(int32_t iRank, C4RankSystem &rRanks, bool fForceRankName);

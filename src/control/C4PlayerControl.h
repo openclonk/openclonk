@@ -51,7 +51,7 @@ class C4PlayerControlDef
 		Actions eAction;
 
 	public:
-		C4PlayerControlDef() : fIsHoldKey(false), fDefaultDisabled(false), eAction(CDA_Script), fGlobal(false), idControlExtraData(C4ID_None) {} 
+		C4PlayerControlDef() : fIsHoldKey(false), fDefaultDisabled(false), eAction(CDA_Script), fGlobal(false), idControlExtraData(C4ID::None) {} 
 		~C4PlayerControlDef() {};
 
 		void CompileFunc(StdCompiler *pComp);

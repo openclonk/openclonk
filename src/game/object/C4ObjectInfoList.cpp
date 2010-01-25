@@ -155,7 +155,7 @@ C4ObjectInfo* C4ObjectInfoList::New(C4ID n_id, C4DefList *pDefs)
 	// Create new info object
   if (!(pInfo = new C4ObjectInfo)) return NULL;
   // Default type clonk if none specified
-	if (n_id == C4ID_None) n_id = C4ID_Clonk;
+	if (n_id == C4ID::None) n_id = C4ID::Clonk;
 	// Check type valid and def available
 	C4Def *pDef = NULL;
 	if (pDefs)

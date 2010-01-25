@@ -409,7 +409,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	// - - - - - - - - - - - - - - - - - - Line pickup - - - - - - - - - - - - - - - - -
 
 	// Check for linekit
-	if (!(linekit=cObj->Contents.Find(C4ID_Linekit)))
+	if (!(linekit=cObj->Contents.Find(C4ID::Linekit)))
 		{
 		// Check for collection limit
 		if (cObj->Def->CollectionLimit && (cObj->Contents.ObjectCount()>=cObj->Def->CollectionLimit) ) return false;
@@ -417,16 +417,16 @@ bool ObjectComLineConstruction(C4Object *cObj)
 		ocf=OCF_LineConstruct;
 		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
 		if (!tstruct || !(ocf & OCF_LineConstruct)) return false;
-		if (!(cline=Game.FindObject(C4ID_None,0,0,0,0,OCF_All,"Connect",tstruct))) return false;
+		if (!(cline=Game.FindObject(C4ID::None,0,0,0,0,OCF_All,"Connect",tstruct))) return false;
 		// Check line connected to linekit at other end
-		if ( (cline->Action.Target && (cline->Action.Target->Def->id==C4ID_Linekit))
-			|| (cline->Action.Target2 && (cline->Action.Target2->Def->id==C4ID_Linekit)) )
+		if ( (cline->Action.Target && (cline->Action.Target->Def->id==C4ID::Linekit))
+			|| (cline->Action.Target2 && (cline->Action.Target2->Def->id==C4ID::Linekit)) )
 				{
 				StartSoundEffect("Error",false,100,cObj);
 				GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NODOUBLEKIT"),cline->GetName()).getData(),cObj);	return false;
 				}
 		// Create new linekit
-    if (!(linekit=Game.CreateObject(C4ID_Linekit,cObj,cline->Owner))) return false;
+    if (!(linekit=Game.CreateObject(C4ID::Linekit,cObj,cline->Owner))) return false;
 		// Enter linekit into clonk
 		bool fRejectCollect;
 		if (!linekit->Enter(cObj, true, true, &fRejectCollect))
@@ -446,7 +446,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	// - - - - - - - - - -  - - - - - Active construction - - - - - - - - - - - - - - - - -
 
 	// Active line construction
-	if (cline=Game.FindObject(C4ID_None,0,0,0,0,OCF_All,"Connect",linekit))
+	if (cline=Game.FindObject(C4ID::None,0,0,0,0,OCF_All,"Connect",linekit))
 		{
 
 		// Check for structure connection
@@ -515,23 +515,23 @@ bool ObjectComLineConstruction(C4Object *cObj)
 		}
 
 	// Determine new line type
-	C4ID linetype=C4ID_None;
+	C4ID linetype=C4ID::None;
 	// Check source pipe
-	if (linetype==C4ID_None)
+	if (linetype==C4ID::None)
 		if (tstruct->Def->LineConnect & C4D_Liquid_Pump)
-			if (!Game.FindObject(C4ID_SourcePipe,0,0,0,0,OCF_All,"Connect",tstruct))
-				linetype = C4ID_SourcePipe;
+			if (!Game.FindObject(C4ID::SourcePipe,0,0,0,0,OCF_All,"Connect",tstruct))
+				linetype = C4ID::SourcePipe;
 	// Check drain pipe
-	if (linetype==C4ID_None)
+	if (linetype==C4ID::None)
 		if (tstruct->Def->LineConnect & C4D_Liquid_Output)
-			if (!Game.FindObject(C4ID_DrainPipe,0,0,0,0,OCF_All,"Connect",tstruct))
-				linetype = C4ID_DrainPipe;
+			if (!Game.FindObject(C4ID::DrainPipe,0,0,0,0,OCF_All,"Connect",tstruct))
+				linetype = C4ID::DrainPipe;
 	// Check power
-	if (linetype==C4ID_None)
+	if (linetype==C4ID::None)
 		if (tstruct->Def->LineConnect & C4D_Power_Output)
-			linetype = C4ID_PowerLine;
+			linetype = C4ID::PowerLine;
 	// No good
-	if (linetype==C4ID_None)
+	if (linetype==C4ID::None)
 		{
 		StartSoundEffect("Error",false,100,cObj);
 		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NONEWLINE")).getData(),cObj);	return false;
@@ -559,7 +559,7 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
 			return;
 
 	// Linekit: Line construction (move to linekit script...)
-  if (cObj->Contents.GetObject() && (cObj->Contents.GetObject()->id==C4ID_Linekit))
+  if (cObj->Contents.GetObject() && (cObj->Contents.GetObject()->id==C4ID::Linekit))
     {
 		ObjectComLineConstruction(cObj);
 		return;

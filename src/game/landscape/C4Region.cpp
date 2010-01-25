@@ -41,7 +41,7 @@ void C4Region::Default()
 	Caption[0]=0;
 	Com=RightCom=MoveOverCom=HoldCom=COM_None;
 	Data=0;
-	id=C4ID_None;
+	id=C4ID::None;
 	Target=NULL;
 	}
 

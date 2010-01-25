@@ -111,10 +111,10 @@ void C4MaterialCore::Clear()
 	Friction = 0;
 	DigFree = 0;
 	BlastFree = 0;
-	Dig2Object = 0;
+	Dig2Object = C4ID::None;
 	Dig2ObjectRatio = 0;
 	Dig2ObjectOnRequestOnly = 0;
-	Blast2Object = 0;
+	Blast2Object = C4ID::None;
 	Blast2ObjectRatio = 0;
 	Blast2PXSRatio = 0;
 	Instable = 0;
@@ -184,8 +184,8 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Friction,								"Friction",						0									));
 	pComp->Value(mkNamingAdapt(DigFree,									"DigFree",						0									));
 	pComp->Value(mkNamingAdapt(BlastFree,								"BlastFree",					0									));
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(Blast2Object),"Blast2Object",			0									));
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(Dig2Object),	"Dig2Object",					0									));
+	pComp->Value(mkNamingAdapt(mkC4IDAdapt(Blast2Object),"Blast2Object",			C4ID::None									));
+	pComp->Value(mkNamingAdapt(mkC4IDAdapt(Dig2Object),	"Dig2Object",					C4ID::None									));
 	pComp->Value(mkNamingAdapt(Dig2ObjectRatio,					"Dig2ObjectRatio",		0									));
 	pComp->Value(mkNamingAdapt(Dig2ObjectOnRequestOnly,	"Dig2ObjectRequest",	0									));
 	pComp->Value(mkNamingAdapt(Blast2ObjectRatio,				"Blast2ObjectRatio",	0									));

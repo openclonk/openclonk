@@ -122,7 +122,7 @@ class C4ObjectList
 
 		bool IsContained(C4Object *pObj);
 		int ClearPointers(C4Object *pObj);
-		int ObjectCount(C4ID id=C4ID_None, int32_t dwCategory=C4D_All) const;
+		int ObjectCount(C4ID id=C4ID::None, int32_t dwCategory=C4D_All) const;
 		int MassCount();
 		int ListIDCount(int32_t dwCategory);
 		

@@ -122,7 +122,7 @@ void C4MouseControl::Default()
 	InitCentered=false;
 	Help=false;
 	FogOfWar=false;
-	DragID=C4ID_None;
+	DragID=C4ID::None;
 	DragObject=NULL;
 	KeepCaption=0;
 	Drag=C4MC_Drag_None; DragSelecting=C4MC_Selecting_Unknown;
@@ -1042,7 +1042,7 @@ void C4MouseControl::ButtonUpDragScript()
 	// Finish drag
 	Drag=C4MC_Drag_None;
 	DragImage.Default();
-	DragID=C4ID_None;
+	DragID=C4ID::None;
 	// Determine drag+drop targets
 	UpdateCursorTarget();
 	C4Object *DragObject = this->DragObject;

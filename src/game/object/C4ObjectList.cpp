@@ -67,7 +67,7 @@ C4ID C4ObjectList::GetListID(int32_t dwCategory, int Index)
 	C4Def *cdef;
 
 	// Create a temporary list of all id's and counts
-	for (clid=0; clid<MaxTempListID; clid++) TempListID[clid]=C4ID_None;
+	for (clid=0; clid<MaxTempListID; clid++) TempListID[clid]=C4ID::None;
   for (clnk=First; clnk && clnk->Obj; clnk=clnk->Next)
 		if (clnk->Obj->Status)
 			if ((dwCategory==C4D_All) || ( (cdef=C4Id2Def(clnk->Obj->Def->id)) && (cdef->Category & dwCategory) ))
@@ -76,13 +76,13 @@ C4ID C4ObjectList::GetListID(int32_t dwCategory, int Index)
 					// Already there
 					if (TempListID[clid]==clnk->Obj->Def->id) break;
 					// End of list, add id
-					if (TempListID[clid]==C4ID_None) { TempListID[clid]=clnk->Obj->Def->id; break; }
+					if (TempListID[clid]==C4ID::None) { TempListID[clid]=clnk->Obj->Def->id; break; }
 					}
 
 	// Returns indexed id
 	if (Inside(Index,0,MaxTempListID-1)) return TempListID[Index];
 
-	return C4ID_None;
+	return C4ID::None;
 	}
 
 int C4ObjectList::ListIDCount(int32_t dwCategory)
@@ -92,7 +92,7 @@ int C4ObjectList::ListIDCount(int32_t dwCategory)
 	C4Def *cdef;
 
 	// Create a temporary list of all id's and counts
-	for (clid=0; clid<MaxTempListID; clid++) TempListID[clid]=C4ID_None;
+	for (clid=0; clid<MaxTempListID; clid++) TempListID[clid]=C4ID::None;
   for (clnk=First; clnk && clnk->Obj; clnk=clnk->Next)
 		if (clnk->Obj->Status)
 			if ((dwCategory==C4D_All) || ( (cdef=C4Id2Def(clnk->Obj->Def->id)) && (cdef->Category & dwCategory) ))
@@ -101,12 +101,12 @@ int C4ObjectList::ListIDCount(int32_t dwCategory)
 					// Already there
 					if (TempListID[clid]==clnk->Obj->Def->id) break;
 					// End of list, add id
-					if (TempListID[clid]==C4ID_None) { TempListID[clid]=clnk->Obj->Def->id; break; }
+					if (TempListID[clid]==C4ID::None) { TempListID[clid]=clnk->Obj->Def->id; break; }
 					}
 
 	// Count different id's
   for (clid=0; clid<MaxTempListID; clid++)
-		if (TempListID[clid]==C4ID_None)
+		if (TempListID[clid]==C4ID::None)
 			return clid;
 
 	return MaxTempListID;
@@ -334,7 +334,7 @@ int C4ObjectList::ObjectCount(C4ID id, int32_t dwCategory) const
   int iCount=0;
   for (cLnk=First; cLnk; cLnk=cLnk->Next)
     if (cLnk->Obj->Status)
-      if ( (id==C4ID_None) || (cLnk->Obj->Def->id==id) )
+      if ( (id==C4ID::None) || (cLnk->Obj->Def->id==id) )
 				if ( (dwCategory==C4D_All) || (cLnk->Obj->Category & dwCategory) )
 					iCount++;
   return iCount;
@@ -625,7 +625,7 @@ void C4ObjectList::ClearInfo(C4ObjectInfo *pInfo)
 void C4ObjectList::DrawList(C4Facet &cgo, int iSelection, DWORD dwCategory)
 	{
 	int iSections = cgo.GetSectionCount();
-	int iObjects = ObjectCount(C4ID_None,dwCategory);
+	int iObjects = ObjectCount(C4ID::None,dwCategory);
 	int iFirstVisible = BoundBy(iSelection-iSections/2,0,Max(iObjects-iSections,0));
 	C4Facet cgo2;
 	int iObj=0,iSec=0;

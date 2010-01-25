@@ -565,7 +565,7 @@ C4Object *CreateLine(C4ID linetype, int32_t owner, C4Object *fobj, C4Object *tob
 
 bool CreatePowerConnection(C4Object *fbase, C4Object *tbase)
 	{
-	if (CreateLine(C4ID_PowerLine,fbase->Owner,fbase,tbase)) return true;
+	if (CreateLine(C4ID::PowerLine,fbase->Owner,fbase,tbase)) return true;
 	return false;
 	}
 

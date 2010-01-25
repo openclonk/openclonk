@@ -102,7 +102,7 @@ bool C4IDList::IsClear() const
 C4ID C4IDList::GetID(size_t index, int32_t *ipCount) const
   {
 	// outside list?
-	if (!Inside<int32_t>(index,0,Count-1)) return C4ID_None;
+	if (!Inside<int32_t>(index,0,Count-1)) return C4ID::None;
 	// get chunk to query
 	const C4IDListChunk *pQueryChunk=this;
 	while (index>=C4IDListChunkSize) { pQueryChunk=pQueryChunk->pNext; index-=C4IDListChunkSize; }
@@ -284,7 +284,7 @@ C4ID C4IDList::GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_
 			cntl=0;
 			}
 		}
-  return C4ID_None;
+  return C4ID::None;
   }
 
 int32_t C4IDList::GetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index) const
@@ -683,8 +683,8 @@ void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
     // Seperator (';')
     if(iNr > 0) if(!pComp->Seperator(StdCompiler::SEP_SEP2)) break;
     // ID
-    pComp->Value(mkDefaultAdapt(mkC4IDAdapt(pChunk->id[iCNr]), C4ID_None));
-    // ID not valid? Note that C4ID_None is invalid.
+    pComp->Value(mkDefaultAdapt(mkC4IDAdapt(pChunk->id[iCNr]), C4ID::None));
+    // ID not valid? Note that C4ID::None is invalid.
     if(!LooksLikeID(pChunk->id[iCNr])) break;
     // Value: Skip this part if requested
     if(fValues)

@@ -54,7 +54,7 @@ void C4PlayerInfo::Clear()
 	sLeagueAccount = ""; iLeagueScore=iLeagueRank=0;
 	iLeagueProjectedGain = -1;
 	eType = C4PT_User;
-	idExtraData = C4ID_None;
+	idExtraData = C4ID::None;
 	}
 
 void C4PlayerInfo::DeleteTempFile()
@@ -248,7 +248,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
     iInGamePartFrame = -1;
 
 	// script player extra data
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(idExtraData), "ExtraData", C4ID_None));
+	pComp->Value(mkNamingAdapt(mkC4IDAdapt(idExtraData), "ExtraData", C4ID::None));
 
 	// load league info
 	pComp->Value(mkNamingAdapt(sLeagueAccount, "LeagueAccount", ""));

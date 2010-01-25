@@ -1182,7 +1182,7 @@ void C4PlayerInfoListBox::ScriptPlayersListItem::OnBtnAddPlr(C4GUI::Control *btn
 	if (!::Control.isCtrlHost()) return;
 	// request a script player join
 	C4PlayerInfo *pScriptPlrInfo = new C4PlayerInfo();
-	pScriptPlrInfo->SetAsScriptPlayer(Game.Teams.GetScriptPlayerName().getData(), GenerateRandomPlayerColor(iCurrScriptPlrCount), 0, C4ID_None);
+	pScriptPlrInfo->SetAsScriptPlayer(Game.Teams.GetScriptPlayerName().getData(), GenerateRandomPlayerColor(iCurrScriptPlrCount), 0, C4ID::None);
 	C4ClientPlayerInfos JoinPkt(NULL, true, pScriptPlrInfo);
 	// add to queue!
 	Game.PlayerInfos.DoPlayerInfoUpdate(&JoinPkt);

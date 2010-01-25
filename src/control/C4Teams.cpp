@@ -608,13 +608,10 @@ bool C4TeamList::Load(C4Group &hGroup, class C4Scenario *pInitDefault, class C4L
 		// no teams: Try default init
 		if (!pInitDefault) return false;
 		// no teams defined: Activate default melee teams if a melee rule is found
-		C4ID C4ID_Melee = C4Id("MELE");
-		C4ID C4ID_TeamworkMelee = C4Id("MEL2"); // deprecated
-		C4ID C4ID_Rivalry = C4Id("RVLR");
 		// default: FFA for anything that looks like melee
-		if ( pInitDefault->Game.Goals.GetIDCount(C4ID_Melee, 1)
-			|| pInitDefault->Game.Rules.GetIDCount(C4ID_Rivalry, 1)
-			|| pInitDefault->Game.Goals.GetIDCount(C4ID_TeamworkMelee, 1))
+		if ( pInitDefault->Game.Goals.GetIDCount(C4ID::Melee, 1)
+			|| pInitDefault->Game.Rules.GetIDCount(C4ID::Rivalry, 1)
+			|| pInitDefault->Game.Goals.GetIDCount(C4ID::TeamworkMelee, 1))
 			{
 			fAllowHostilityChange = true;
 			fActive = true;

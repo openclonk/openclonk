@@ -27,33 +27,40 @@
 #include <StdAdaptors.h>
 
 class C4ID
-	{
+{
 	union { uint32_t v; char s[4]; };
-	public:
-	C4ID() {}
+public:
+	C4ID(): v(0) {}
 	C4ID(unsigned int i): v(i) {}
 	operator unsigned int () const { return v; }
 	friend bool operator ==(C4ID a, C4ID b);
-	};
+
+	static const C4ID
+		None,       
+		Clonk,      // CLNK
+		Flag,       // FLAG
+		Conkit,     // CNKT
+		Gold,       // GOLD
+		Lorry,      // LORY
+		Meteor,     // METO
+		Linekit,    // LNKT
+		PowerLine,  // PWRL
+		SourcePipe, // SPIP
+		DrainPipe,  // DPIP
+		Energy,     // ENRG
+		CnMaterial, // CNMT
+		FlagRemvbl, // FGRV
+		Flame,      // FLAM
+		Melee,      // MELE
+		Rivalry,    // RVLR
+		StructuresSnowIn,
+		            // STSN
+		TeamworkMelee,
+		            // MEL2
+		Contents;   // 10001
+};
 
 inline bool operator ==(C4ID a, C4ID b) { return a.v == b.v; }
-
-const C4ID C4ID_None       = 0x0,
-					 C4ID_Clonk      = 0x4B4E4C43, // CLNK
-					 C4ID_Flag       = 0x47414C46, // FLAG
-					 C4ID_Conkit     = 0x544B4E43, // CNKT
-					 C4ID_Gold       = 0x444C4F47, // GOLD
-					 C4ID_Lorry      = 0x59524F4C, // LORY
-					 C4ID_Meteor     = 0x4F54454D, // METO
-					 C4ID_Linekit    = 0x544B4E4C, // LNKT
-					 C4ID_PowerLine  = 0x4C525750, // PWRL
-					 C4ID_SourcePipe = 0x50495053, // SPIP
-					 C4ID_DrainPipe  = 0x50495044, // DPIP
-					 C4ID_Energy     = 0x47524E45, // ENRG
-					 C4ID_CnMaterial = 0x544D4E43, // CNMT
-					 C4ID_FlagRemvbl = 0x56524746, // FGRV
-					 C4ID_Contents   = 0x00002710; // 10001
-
 
 C4ID C4Id(const char *szId);
 void GetC4IdText(C4ID id, char *sBuf);

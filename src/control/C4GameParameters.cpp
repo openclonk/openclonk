@@ -524,7 +524,7 @@ StdStrBuf C4GameParameters::GetGameGoalString()
 	StdStrBuf sResult;
 	C4ID idGoal;
 	for (int32_t i=0; i<Goals.GetNumberOfIDs(); ++i)
-		if (idGoal = Goals.GetID(i)) if (idGoal != C4ID_None)
+		if (idGoal = Goals.GetID(i)) if (idGoal != C4ID::None)
 			{
 			if (Game.IsRunning)
 				{

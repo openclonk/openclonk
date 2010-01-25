@@ -187,11 +187,11 @@ class C4Menu : public C4GUI::Dialog
 		bool AddRefSym(const char *szCaption, const C4Facet &fctSymbol, const char *szCommand,
 						 int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
 						 const char *szInfoCaption=NULL,
-						 C4ID idID=C4ID_None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+						 C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 		bool Add(const char *szCaption, C4FacetSurface &fctSymbol, const char *szCommand,
 						 int32_t iCount=C4MN_Item_NoCount, C4Object *pObject=NULL,
 						 const char *szInfoCaption=NULL,
-						 C4ID idID=C4ID_None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
+						 C4ID idID=C4ID::None, const char *szCommand2=NULL, bool fOwnValue=false, int32_t iValue=0, bool fIsSelectable=true);
 		void ClearItems(bool fResetSelection=false);
 		void ResetLocation() { LocationSet = false; }
 		bool SetLocation(int32_t iX, int32_t iY); // set location relative to user viewport

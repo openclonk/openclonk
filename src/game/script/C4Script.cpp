@@ -171,7 +171,7 @@ bool CheckEnergyNeedChain(C4Object *pObj, C4ObjectList &rEnergyChainChecked)
 	// Check all power line connected structures
   C4Object *cline; C4ObjectLink *clnk;
   for (clnk=::Objects.First; clnk && (cline=clnk->Obj); clnk=clnk->Next)
-		if (cline->Status) if (cline->Def->id==C4ID_PowerLine)
+		if (cline->Status) if (cline->Def->id==C4ID::PowerLine)
 			if (cline->Action.Target==pObj)
 				if (CheckEnergyNeedChain(cline->Action.Target2,rEnergyChainChecked))
 					return true;
@@ -2482,7 +2482,7 @@ static C4ID FnGetDefinition(C4AulContext *cthr, long iIndex, long dwCategory)
 	// Default: all categories
 	if (!dwCategory) dwCategory=C4D_All;
 	// Get def
-	if (!(pDef = ::Definitions.GetDef(iIndex,dwCategory))) return C4ID_None;
+	if (!(pDef = ::Definitions.GetDef(iIndex,dwCategory))) return C4ID::None;
 	// Return id
 	return pDef->id;
 	}
@@ -4727,7 +4727,7 @@ static C4Value FnGetPortrait(C4AulContext *ctx, C4Value *pvfGetID, C4Value *pvfG
 			// no portrait string: portrait undefined ("none" would mean no portrait)
 			if (!*szPortrait) return C4Value();
 			// evaluate portrait string
-			C4ID idPortraitSource=0;
+			C4ID idPortraitSource;
 			szPortrait = C4Portrait::EvaluatePortraitString(szPortrait, idPortraitSource, pObj->Info->id, NULL);
 			// return desired value
 			if (fGetID)
@@ -5200,7 +5200,7 @@ static bool FnOnOwnerRemoved(C4AulObjectContext *cthr)
 		{
 		// crew members: Those are removed later (AFTER the player has been removed, for backwards compatiblity with relaunch scripting)
 		}
-	else if ((~pObj->Category & C4D_StaticBack) || (pObj->id == C4ID_Flag))
+	else if ((~pObj->Category & C4D_StaticBack) || (pObj->id == C4ID::Flag))
 		{
 		// Regular objects: Try to find a new, suitable owner from the same team
 		// Ignore StaticBack, because this would not be backwards compatible with many internal objects such as team account

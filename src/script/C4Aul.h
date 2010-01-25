@@ -332,7 +332,7 @@ class C4AulScriptFunc : public C4AulFunc
 		C4AulScript *pOrgScript; // the orginal script (!= Owner if included or appended)
 
 		C4AulScriptFunc(C4AulScript *pOwner, const char *pName, bool bAtEnd = true) : C4AulFunc(pOwner, pName, bAtEnd),
-			idImage (C4ID_None), iImagePhase(0), Condition(NULL), ControlMethod(C4AUL_ControlMethod_All), OwnerOverloaded(NULL),
+			idImage (C4ID::None), iImagePhase(0), Condition(NULL), ControlMethod(C4AUL_ControlMethod_All), OwnerOverloaded(NULL),
 			bReturnRef(false), tProfileTime(0)
 		{
 			for(int i = 0; i < C4AUL_MAX_Par; i++) ParType[i] = C4V_Any;

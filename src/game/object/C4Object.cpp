@@ -91,7 +91,7 @@ C4Object::C4Object()
 
 void C4Object::Default()
 	{
-	id=C4ID_None;
+	id=C4ID::None;
 	nInfo.Clear();
 	RemovalDelay=0;
 	Owner=NO_OWNER;
@@ -1257,7 +1257,7 @@ bool C4Object::Incinerate(int32_t iCausedBy, bool fBlasted, C4Object *pIncinerat
 	// add effect
 	int32_t iEffNumber;
 	C4Value Par1 = C4VInt(iCausedBy), Par2 = C4VBool(!!fBlasted), Par3 = C4VObj(pIncineratingObject), Par4;
-	new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, 0, Par1, Par2, Par3, Par4, true, iEffNumber);
+	new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, C4ID::None, Par1, Par2, Par3, Par4, true, iEffNumber);
 	return !!iEffNumber;
 	}
 
@@ -1694,7 +1694,7 @@ bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
 	DoCon(iLevel*iBuildSpeed*150/Def->Mass, false, fNeedMaterial);
 
 	// TurnTo
-	if (Def->BuildTurnTo!=C4ID_None)
+	if (Def->BuildTurnTo!=C4ID::None)
 		ChangeDef(Def->BuildTurnTo);
 
 	// Repair
@@ -2625,7 +2625,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
     Clear();
 
 	// Compile ID, search definition
-	pComp->Value(mkNamingAdapt( mkC4IDAdapt(id),									"id",									C4ID_None					));
+	pComp->Value(mkNamingAdapt( mkC4IDAdapt(id),									"id",									C4ID::None					));
 	if(fCompiler)
 		{
 		Def = ::Definitions.ID2Def(id);
@@ -2772,7 +2772,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 		// if on fire but no effect is present (old-style savegames), re-incinerate
 		int32_t iFireNumber;
 		C4Value Par1, Par2, Par3, Par4;
-		if (OnFire && !pEffects) new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, 0, Par1, Par2, Par3, Par4, false, iFireNumber);
+		if (OnFire && !pEffects) new C4Effect(this, C4Fx_Fire, C4Fx_FirePriority, C4Fx_FireTimer, NULL, C4ID::None, Par1, Par2, Par3, Par4, false, iFireNumber);
 
 		// blit mode not assigned? use definition default then
 		if (!BlitMode) BlitMode = Def->BlitMode;
@@ -2976,7 +2976,7 @@ C4Object *C4Object::ComposeContents(C4ID id)
 	C4ID c_id;
 	bool fInsufficient = false;
 	C4Object *pObj;
-	C4ID idNeeded=C4ID_None;
+	C4ID idNeeded=C4ID::None;
 	int32_t iNeeded=0;
 	// Get def
 	C4Def *pDef = C4Id2Def(id); if (!pDef) return NULL;
@@ -3233,7 +3233,7 @@ void C4Object::DigOutMaterialCast(bool fRequest)
 	if (!MaterialContents) return;
   for (int32_t iMaterial=0; iMaterial< ::MaterialMap.Num; iMaterial++)
     if (MaterialContents->Amount[iMaterial])
-      if (::MaterialMap.Map[iMaterial].Dig2Object!=C4ID_None)
+      if (::MaterialMap.Map[iMaterial].Dig2Object!=C4ID::None)
         if (::MaterialMap.Map[iMaterial].Dig2ObjectRatio!=0)
           if (fRequest || !::MaterialMap.Map[iMaterial].Dig2ObjectOnRequestOnly)
             if (MaterialContents->Amount[iMaterial]>=::MaterialMap.Map[iMaterial].Dig2ObjectRatio)
@@ -4943,7 +4943,7 @@ bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id)
 	C4Value parV; GetProperty(Strings.P[P_MouseDragImage], parV);
 	if (!parV) return false;
 	// determine drag object/id
-	C4Object *obj=NULL; C4ID id=0;
+	C4Object *obj=NULL; C4ID id;
 	if (parV.GetType() == C4V_C4Object) obj = parV.getObj();
 	else if (parV.GetType() == C4V_PropList) id = parV.getC4ID();
 	if (drag_object) *drag_object = obj;
@@ -5411,7 +5411,7 @@ bool C4Object::IsPlayerObject(int32_t iPlayerNumber)
 	if (fAnyPlr || Owner == iPlayerNumber)
 		{
 	  // flags are player objects
-	  if (id == C4ID_Flag) return true;
+	  if (id == C4ID::Flag) return true;
 
 		C4Player *pOwner = ::Players.Get(Owner);
 		if (pOwner)

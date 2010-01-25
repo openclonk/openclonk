@@ -857,7 +857,7 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 
 	// Get selected item id
 	C4ID idSelected; C4MenuItem *pItem;
-	if (pItem = GetSelectedItem()) idSelected = pItem->id; else idSelected = C4ID_None;
+	if (pItem = GetSelectedItem()) idSelected = pItem->id; else idSelected = C4ID::None;
 	C4Def *pDef = C4Id2Def(idSelected);
 	// Get item value
 	int32_t iValue;

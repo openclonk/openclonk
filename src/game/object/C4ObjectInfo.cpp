@@ -391,7 +391,7 @@ bool C4ObjectInfo::SetRandomPortrait(C4ID idSourceDef, bool fAssignPermanently, 
 	if (!pPortraitDef->PortraitCount)
 		{
 		// Then use CLNK portraits (2do: base on include chains in latter case)?
-		pPortraitDef = ::Definitions.ID2Def(C4ID_Clonk);
+		pPortraitDef = ::Definitions.ID2Def(C4ID::Clonk);
 		// Assign permanently, assuming it is some kind of normal clonk here...
 		fAssignPermanently=true;
 		fCopyFile=false;

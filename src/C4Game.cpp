@@ -1211,7 +1211,7 @@ C4Object* C4Game::FindObject(C4ID id,
 	C4Object *pFindNextCpy=pFindNext;
 
 	// check the easy cases first
-	if (id!=C4ID_None)
+	if (id!=C4ID::None)
 		{
 		if (!(pDef=C4Id2Def(id))) return NULL; // no valid def
 		if (!pDef->Count) return NULL; // no instances at all
@@ -1235,7 +1235,7 @@ C4Object* C4Game::FindObject(C4ID id,
 		// Status
 		if (cObj->Status)
 		// ID
-		if ((id==C4ID_None) || (cObj->Def->id==id))
+		if ((id==C4ID::None) || (cObj->Def->id==id))
 		// OCF (match any specified)
 		if (cObj->OCF & ocf)
 		// Exclude
@@ -1357,7 +1357,7 @@ int32_t C4Game::ObjectCount(C4ID id)
 	{
 	C4Def *pDef;
 	// check the easy cases first
-	if (id != C4ID_None)
+	if (id != C4ID::None)
 		{
 		if (!(pDef=C4Id2Def(id))) return 0; // no valid def
 		return pDef->Count;
@@ -1444,8 +1444,8 @@ C4ID DefFileGetID(const char *szFilename)
 	{
 	C4Group hDef;
 	C4Def DefCore;
-	if (!hDef.Open(szFilename)) return C4ID_None;
-	if (!DefCore.LoadDefCore(hDef)) { hDef.Close(); return C4ID_None; }
+	if (!hDef.Open(szFilename)) return C4ID::None;
+	if (!DefCore.LoadDefCore(hDef)) { hDef.Close(); return C4ID::None; }
 	hDef.Close();
 	return DefCore.id;
 	}
@@ -3539,10 +3539,10 @@ void C4Game::UpdateRules()
 	{
 	if (::Game.iTick255) return;
 	Rules=0;
-	if (ObjectCount(C4ID_Energy))		  Rules|=C4RULE_StructuresNeedEnergy;
-	if (ObjectCount(C4ID_CnMaterial)) Rules|=C4RULE_ConstructionNeedsMaterial;
-	if (ObjectCount(C4ID_FlagRemvbl)) Rules|=C4RULE_FlagRemoveable;
-	if (ObjectCount(C4Id("STSN")))    Rules|=C4RULE_StructuresSnowIn;
+	if (ObjectCount(C4ID::Energy))           Rules|=C4RULE_StructuresNeedEnergy;
+	if (ObjectCount(C4ID::CnMaterial))       Rules|=C4RULE_ConstructionNeedsMaterial;
+	if (ObjectCount(C4ID::FlagRemvbl))       Rules|=C4RULE_FlagRemoveable;
+	if (ObjectCount(C4ID::StructuresSnowIn)) Rules|=C4RULE_StructuresSnowIn;
 	}
 
 void C4Game::SetInitProgress(float fToProgress)
@@ -3804,8 +3804,8 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 		{
 		szSpec += 9;
 		C4ID idPortrait;
-		const char *szPortraitName = C4Portrait::EvaluatePortraitString(szSpec, idPortrait, C4ID_None, &dwClr);
-		if (idPortrait == C4ID_None) return false;
+		const char *szPortraitName = C4Portrait::EvaluatePortraitString(szSpec, idPortrait, C4ID::None, &dwClr);
+		if (idPortrait == C4ID::None) return false;
 		C4Def *pPortraitDef = ::Definitions.ID2Def(idPortrait);
 		if (!pPortraitDef || !pPortraitDef->Portraits) return false;
 		C4DefGraphics *pDefPortraitGfx = pPortraitDef->Portraits->Get(szPortraitName);

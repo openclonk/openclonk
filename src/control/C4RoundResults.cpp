@@ -280,7 +280,7 @@ void C4RoundResults::EvaluateGoals(C4IDList &GoalList, C4IDList &FulfilledGoalLi
 	// clear prev
 	GoalList.Clear(); FulfilledGoalList.Clear();
 	// Items
-	bool fRivalvry = !!Game.ObjectCount(C4Id("RVLR"));
+	bool fRivalvry = !!Game.ObjectCount(C4ID::Rivalry);
 	int32_t cnt; C4ID idGoal;
 	for (cnt=0; idGoal=::Objects.GetListID(C4D_Goal,cnt); cnt++)
 		{

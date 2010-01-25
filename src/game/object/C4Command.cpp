@@ -788,10 +788,10 @@ void C4Command::Build()
 					{
 					// if another Clonk is also building this structure and carries a linekit already, that Clonk should rather perform the energy command
 					C4Object *pOtherBuilder = NULL;
-					if (!cObj->Contents.Find(C4ID_Linekit))
+					if (!cObj->Contents.Find(C4ID::Linekit))
 						{
 						while (pOtherBuilder = Game.FindObjectByCommand(C4CMD_Build,Target, C4VNull,0, NULL, pOtherBuilder))
-							if (pOtherBuilder->Contents.Find(C4ID_Linekit))
+							if (pOtherBuilder->Contents.Find(C4ID::Linekit))
 								break;
 						}
 					if (!pOtherBuilder)
@@ -1665,8 +1665,8 @@ void C4Command::Construct()
 
 	// Has no construction kit: acquire one
 	C4Object *pKit;
-	if (!(pKit=cObj->Contents.Find(C4ID_Conkit)))
-		{ cObj->AddCommand(C4CMD_Acquire,0,0,0,50,0,true,C4VID(C4ID_Conkit),false,5,0,C4CMD_Mode_Sub); return; }
+	if (!(pKit=cObj->Contents.Find(C4ID::Conkit)))
+	{ cObj->AddCommand(C4CMD_Acquire,0,0,0,50,0,true,C4VID(C4ID::Conkit),false,5,0,C4CMD_Mode_Sub); return; }
 
 	// Move to construction site
 	if (!Inside<int32_t>(cObj->GetX() - Tx._getInt(), -iMoveToRange, +iMoveToRange)
@@ -1921,8 +1921,8 @@ void C4Command::Acquire()
 			if (Inside(cObj->GetX()-pMaterial->GetX(),-Tx._getInt(),+Tx._getInt()))
 			if (Inside(cObj->GetY()-pMaterial->GetY(),-Ty,+Ty))
 				// Object is not connected to a pipe (for line construction kits)
-				if (!Game.FindObject(C4ID_SourcePipe,0,0,0,0,OCF_All,"Connect",pMaterial))
-				if (!Game.FindObject(C4ID_DrainPipe,0,0,0,0,OCF_All,"Connect",pMaterial))
+				if (!Game.FindObject(C4ID::SourcePipe,0,0,0,0,OCF_All,"Connect",pMaterial))
+				if (!Game.FindObject(C4ID::DrainPipe,0,0,0,0,OCF_All,"Connect",pMaterial))
 					// Must be complete
 					if (pMaterial->OCF & OCF_FullCon)
 						// Doesn't burn
@@ -2059,10 +2059,10 @@ void C4Command::Energy()
 	if (!(Target->Def->LineConnect & C4D_Power_Input)) { Finish(); return; }
 	// Target supplied
 	if ( !(Game.Rules & C4RULE_StructuresNeedEnergy)
-		|| (Game.FindObject(C4ID_PowerLine,0,0,0,0,OCF_All,"Connect",Target) && !Target->NeedEnergy) )
+		|| (Game.FindObject(C4ID::PowerLine,0,0,0,0,OCF_All,"Connect",Target) && !Target->NeedEnergy) )
 			{ Finish(true); return; }
 	// No energy supply specified: find one
-	if (!Target2)	Target2=Game.FindObject(0,Target->GetX(),Target->GetY(),-1,-1,OCF_PowerSupply,NULL,NULL,Target);
+	if (!Target2)	Target2=Game.FindObject(C4ID::None,Target->GetX(),Target->GetY(),-1,-1,OCF_PowerSupply,NULL,NULL,Target);
 	// No energy supply: fail
 	if (!Target2) { Finish(); return; }
 	// Energy supply too far away: fail
@@ -2071,11 +2071,11 @@ void C4Command::Energy()
 	if (!(Target2->Def->LineConnect & C4D_Power_Output)) { Finish(); return; }
 	// No linekit: get one
 	C4Object *pKit, *pLine = NULL, *pKitWithLine;
-	if (!(pKit=cObj->Contents.Find(C4ID_Linekit)))
-		{ cObj->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,true,C4VID(C4ID_Linekit)); return; }
+	if (!(pKit=cObj->Contents.Find(C4ID::Linekit)))
+		{ cObj->AddCommand(C4CMD_Acquire,NULL,0,0,50,NULL,true,C4VID(C4ID::Linekit)); return; }
 	// Find line constructing kit
 	for (int32_t cnt=0; pKitWithLine=cObj->Contents.GetObject(cnt); cnt++)
-		if ((pKitWithLine->id==C4ID_Linekit) && (pLine=Game.FindObject(C4ID_PowerLine,0,0,0,0,OCF_All,"Connect",pKitWithLine)))
+		if ((pKitWithLine->id==C4ID::Linekit) && (pLine=Game.FindObject(C4ID::PowerLine,0,0,0,0,OCF_All,"Connect",pKitWithLine)))
 			break;
 	// No line constructed yet
 	if (!pLine)
@@ -2084,7 +2084,7 @@ void C4Command::Energy()
 		if (!Target2->At(cObj->GetX(),cObj->GetY(),ocf))
 			{ cObj->AddCommand(C4CMD_MoveTo,Target2,0,0,50); return; }
 		// At power supply: connect
-		pLine = CreateLine(C4ID_PowerLine,cObj->Owner,Target2,pKit);
+		pLine = CreateLine(C4ID::PowerLine,cObj->Owner,Target2,pKit);
 		if (!pLine) { Finish(); return; }
 		StartSoundEffect("Connect",false,100,cObj);
 		return;

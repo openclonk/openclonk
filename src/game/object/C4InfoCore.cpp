@@ -493,7 +493,7 @@ bool C4ObjectInfoCore::Save(C4Group &hGroup, C4DefList *pDefs)
 
 void C4ObjectInfoCore::CompileFunc(StdCompiler *pComp)
 	{
-	pComp->Value(mkNamingAdapt(mkC4IDAdapt(id),					"id",								C4ID_None));
+	pComp->Value(mkNamingAdapt(mkC4IDAdapt(id),					"id",								C4ID::None));
 	pComp->Value(mkNamingAdapt(toC4CStr(Name),					"Name",							"Clonk"));
 	pComp->Value(mkNamingAdapt(toC4CStr(DeathMessage),	"DeathMessage",			""));
 	pComp->Value(mkNamingAdapt(toC4CStr(PortraitFile),	"PortraitFile",			""));

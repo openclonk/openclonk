@@ -190,7 +190,7 @@ bool C4PropertyDlg::Update()
 
 	StdStrBuf Output;
 
-	idSelectedDef=C4ID_None;
+	idSelectedDef=C4ID::None;
 
 	// Compose info text by selected object(s)
 	switch (Selection.ObjectCount())
@@ -285,7 +285,7 @@ void C4PropertyDlg::Default()
 #endif
 #endif
 	Active = false;
-	idSelectedDef=C4ID_None;
+	idSelectedDef=C4ID::None;
 	Selection.Default();
 	}
 

@@ -1088,7 +1088,7 @@ void C4Landscape::BlastFree(int32_t tx, int32_t ty, int32_t rad, int32_t grade, 
     if (BlastMatCount[cnt])
       {
 
-      if (::MaterialMap.Map[cnt].Blast2Object != C4ID_None)
+      if (::MaterialMap.Map[cnt].Blast2Object != C4ID::None)
         if (::MaterialMap.Map[cnt].Blast2ObjectRatio != 0)
           Game.BlastCastObjects(::MaterialMap.Map[cnt].Blast2Object,NULL,
                            BlastMatCount[cnt]/::MaterialMap.Map[cnt].Blast2ObjectRatio,
@@ -1444,8 +1444,8 @@ bool C4Landscape::Incinerate(int32_t x, int32_t y)
 	if (MatValid(mat))
 		if (::MaterialMap.Map[mat].Inflammable)
 			// Not too much FLAMs
-			if (!Game.FindObject (C4Id ("FLAM"), x - 4, y - 1, 8, 20))
-				if (Game.CreateObject(C4Id("FLAM"),NULL,NO_OWNER,x,y))
+			if (!Game.FindObject (C4ID::Flame, x - 4, y - 1, 8, 20))
+				if (Game.CreateObject(C4ID::Flame,NULL,NO_OWNER,x,y))
 					return true;
 	return false;
 	}

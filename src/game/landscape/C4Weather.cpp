@@ -116,7 +116,7 @@ void C4Weather::Execute()
       C4Object *meto;
 			// In cave landscapes, meteors must be created a bit lower so they don't hit the ceiling
 			// (who activates meteors in cave landscapes anyway?)
-      meto=Game.CreateObject(C4ID_Meteor, NULL, NO_OWNER,
+      meto=Game.CreateObject(C4ID::Meteor, NULL, NO_OWNER,
 												Random(GBackWdt),::Landscape.TopOpen ? -20 : 5,0,
                         itofix(Random(100+1)-50)/10,
                         ::Landscape.TopOpen ? Fix0 : itofix(2), itofix(1)/5);

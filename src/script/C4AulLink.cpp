@@ -200,7 +200,7 @@ void C4AulScriptFunc::UnLink()
 	OwnerOverloaded = NULL;
 
 	// clear desc information, ParseDesc will set these later on
-	idImage = C4ID_None;
+	idImage = C4ID::None;
 	iImagePhase = 0;
 	Condition = NULL;
 	ControlMethod = C4AUL_ControlMethod_All;
