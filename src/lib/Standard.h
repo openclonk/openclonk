@@ -35,6 +35,14 @@
 #pragma warning(disable: 4239)
 #endif
 
+#ifdef _MSC_VER
+#define DEPRECATED(f) __declspec(deprecated) f
+#elif defined(__GNUC__)
+#define DEPRECATED(f) f __attribute__((deprecated))
+#else
+#define DEPRECATED(f) f
+#endif
+
 // debug memory management
 #ifndef NODEBUGMEM
 #if defined(_DEBUG) && defined(_MSC_VER)
