@@ -265,7 +265,7 @@ private func UpdateScoreboard(int iPlr)
 	var szCaption = Format("Race over %d checkpoints", nrCheckpoints + 1);
 	SetScoreboardData(SBRD_Caption,	SBRD_Caption,		szCaption, 					SBRD_Caption);
 	SetScoreboardData(SBRD_Caption,	SBRD_Checkpoints,	Format("{{%i}}", CKPT), 	SBRD_Caption);
-	SetScoreboardData(SBRD_Caption,	SBRD_Distance,		Format("->{{%i}}", CPKT),	SBRD_Caption);
+	SetScoreboardData(SBRD_Caption,	SBRD_Distance,		Format("->{{%i}}", CKPT),	SBRD_Caption);
 	SetScoreboardData(iPlr,			SBRD_Caption,		GetTaggedPlayerName(iPlr),	SBRD_Caption);
 	SetScoreboardData(iPlr,			SBRD_Checkpoints,	Format("%d", aPlrCP[iPlr]),	aPlrCP[iPlr]);
 	SetScoreboardData(iPlr,	SBRD_Distance,		Format("%d%", GetDistToCP(iPlr)), 	GetDistToCP(iPlr));

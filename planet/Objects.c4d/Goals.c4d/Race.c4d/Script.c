@@ -7,6 +7,7 @@ local iLeader;
 local iTeamCount;
 local fTeamTie;
 local player_deaths, team_deaths;
+local DEAD; // Scoreboard column id
 
 // Funktionen zum Überladen
 // 1: links->rechts
@@ -77,6 +78,7 @@ protected func Initialize()
   SetScoreboardData(SBRD_Caption, ScoreboardCol(RACE), "{{RACE}}", ScoreboardCol(RACE));
   SetScoreboardData(SBRD_Caption, ScoreboardCol(DEAD), "{{SKUL}}", ScoreboardCol(DEAD));
   Schedule("DoScoreboardShow(1)", 1);
+  DEAD = C4Id("DEAD");
   return inherited(...);
 }
 
