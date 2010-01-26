@@ -373,7 +373,7 @@ CFacet &CStdFont::GetUnicodeCharacterFacet(uint32_t c)
 	return rFacet;
 	}
 
-void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWeight, bool fDoShadow)
+void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWORD dwHeight, DWORD dwFontWeight, bool fDoShadow)
 	{
 	// clear previous
 	Clear();
@@ -388,6 +388,7 @@ void CStdFont::Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWei
 		iSfcSizes = 256;
 	else
 		iSfcSizes = 128;
+	SCopy(font_face_name, szFontName, 80);
 	dwDefFontHeight = dwHeight;
 	// create surface
 	if (!AddSurface())

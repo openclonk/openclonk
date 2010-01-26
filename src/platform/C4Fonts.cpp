@@ -292,7 +292,7 @@ bool C4FontLoader::InitFont(CStdFont &rFont, C4VectorFont * pFont, int32_t iSize
 		if (!pFont->pFont) pFont->pFont = CStdFont::CreateFont(pFont->Name.getData());
 		if (!pFont->pFont) return false; // this font can't be used
 		}
-	rFont.Init(*(pFont->pFont), iSize, dwWeight, fDoShadow); // throws exception on error
+	rFont.Init(*(pFont->pFont), pFont->GetName(), iSize, dwWeight, fDoShadow); // throws exception on error
 	return true;
 	}
 

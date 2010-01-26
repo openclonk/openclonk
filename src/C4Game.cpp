@@ -563,15 +563,15 @@ void C4Game::Clear()
 	C4S.Clear();
 	Weather.Clear();
 	GraphicsSystem.Clear();
-  DeleteObjects(true);
-  ::Definitions.Clear();
+	DeleteObjects(true);
+	::Definitions.Clear();
 	Landscape.Clear();
 	PXS.Clear();
 	if (pGlobalEffects) { delete pGlobalEffects; pGlobalEffects=NULL; }
 	Particles.Clear();
 	::MaterialMap.Clear();
-  TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
-  GraphicsResource.Clear();
+	TextureMap.Clear(); // texture map *MUST* be cleared after the materials, because of the patterns!
+	GraphicsResource.Clear();
 	::Messages.Clear();
 	MessageInput.Clear();
 	Info.Clear();

@@ -60,6 +60,8 @@ class C4VectorFont
 		bool Init(const char *szFacename, int32_t iSize, uint32_t dwWeight); // load system font specified by face name
 		void Init(const char *szName, CStdVectorFont *pFont); // init from a font that has been laoded already
 		friend class C4FontLoader;
+
+		const char *GetName() const { return Name.getData(); }
 	};
 
 // font loader

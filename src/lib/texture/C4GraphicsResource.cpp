@@ -127,6 +127,7 @@ void C4GraphicsResource::Clear()
 	fctConstruction.Clear();
 	fctEnergy.Clear();
 	fctMagic.Clear();
+	fctOptions.Clear();
 	fctArrow.Clear();
 	fctExit.Clear();
 	fctHand.Clear();
@@ -168,6 +169,15 @@ bool C4GraphicsResource::InitFonts()
 	// done, success
 	return true;
 	}
+
+void C4GraphicsResource::ClearFonts()
+{
+	FontRegular.Clear();
+	FontTitle.Clear();
+	FontCaption.Clear();
+	FontTiny.Clear();
+	FontTooltip.Clear();
+}
 
 bool C4GraphicsResource::Init(bool fInitGUI)
   {

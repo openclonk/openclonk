@@ -370,6 +370,10 @@ void C4Application::Quit()
 	//Config.General.Participants[0] = 0;
 	// Save config if there was no loading error
 	if (Config.fConfigLoaded) Config.Save();
+	// make sure startup data is unloaded
+	C4Startup::Unload();
+	// fonts are loaded at start and never unloaded
+	::GraphicsResource.ClearFonts();
 	// quit app
 	CStdApp::Quit();
 	AppState = C4AS_Quit;

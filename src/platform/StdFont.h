@@ -141,7 +141,7 @@ class CStdFont
 
 		// function throws std::runtime_error in case of failure
 		// font initialization - writes the surface data
-		void Init(CStdVectorFont & VectorFont, DWORD dwHeight, DWORD dwFontWeight=FW_NORMAL, bool fDoShadow=true);
+		void Init(CStdVectorFont & VectorFont, const char *font_face_name, DWORD dwHeight, DWORD dwFontWeight=FW_NORMAL, bool fDoShadow=true);
 
 		// font initialization - grabs the given surface data and extracts character sizes from it
 		void Init(const char *szFontName, CSurface *psfcFontSfc, int iIndent);
