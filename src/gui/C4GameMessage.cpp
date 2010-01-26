@@ -386,10 +386,17 @@ void C4GameMessageList::UpdateDef(C4ID idUpdDef)
 	}
 
 void C4GameMessageList::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
-	{
+{
 	C4GameMessage *cmsg;
 	for (cmsg=First; cmsg; cmsg=cmsg->Next)
-		cmsg->Draw(cgo,iPlayer,Zoom);
+	{
+		// determine zoom: GUI object messages need to be drawn in GUI zoom
+		float msg_zoom = Zoom;
+		if (cmsg->Target && (cmsg->Target->Category & C4D_Foreground))
+			msg_zoom = C4GUI::GetZoom();
+		// draw msg
+		cmsg->Draw(cgo,iPlayer,msg_zoom);
 	}
+}
 
 C4GameMessageList Messages;
