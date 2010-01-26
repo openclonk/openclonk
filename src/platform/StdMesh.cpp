@@ -261,7 +261,11 @@ StdMeshTransformation StdMeshTransformation::Inverse(const StdMeshTransformation
 {
 	StdMeshTransformation t;
 	t.scale = 1.0f/transform.scale;
-	t.rotate = -transform.rotate;
+	t.rotate.w = transform.rotate.w;
+	//t.rotate.v = -transform.rotate.v; // Someone set us up the union!?!??
+	t.rotate.x = -transform.rotate.x;
+	t.rotate.y = -transform.rotate.y;
+	t.rotate.z = -transform.rotate.z;
 	t.translate = t.rotate * (t.scale * -transform.translate);
 	return t;
 }
@@ -538,7 +542,7 @@ StdMeshMatrix operator+(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs)
 StdMeshQuaternion operator-(const StdMeshQuaternion& rhs)
 {
 	StdMeshQuaternion q;
-	q.w = rhs.w;
+	q.w = -rhs.w;
 	q.x = -rhs.x;
 	q.y = -rhs.y;
 	q.z = -rhs.z;
@@ -781,12 +785,12 @@ StdMeshTransformation StdMeshTrack::GetTransformAt(float time) const
 	assert(weight1 >= 0 && weight2 >= 0 && weight1 <= 1 && weight2 <= 1);
 	assert(fabs(weight1 + weight2 - 1) < 1e-6);
 
-	StdMeshTransformation transformation;
+	/*StdMeshTransformation transformation;
 	transformation.scale = weight1 * iter->second.Transformation.scale + weight2 * prev_iter->second.Transformation.scale;
 	transformation.rotate = weight1 * iter->second.Transformation.rotate + weight2 * prev_iter->second.Transformation.rotate; // TODO: slerp or renormalize
 	transformation.translate = weight1 * iter->second.Transformation.translate + weight2 * prev_iter->second.Transformation.translate;
-	return transformation;
-	//return StdMeshTransformation::Nlerp(prev_iter->second.Transformation, iter->second.Transformation, weight1);
+	return transformation;*/
+	return StdMeshTransformation::Nlerp(prev_iter->second.Transformation, iter->second.Transformation, weight1);
 }
 
 StdMeshAnimation::StdMeshAnimation(const StdMeshAnimation& other):
