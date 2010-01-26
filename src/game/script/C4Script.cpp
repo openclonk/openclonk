@@ -5571,7 +5571,7 @@ static C4Void FnDoNoCollectDelay(C4AulObjectContext *ctx, int change)
 	return C4VNull;
 }
 
-static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimation, int iSlot, C4ValueArray* PositionProvider, C4ValueArray* WeightProvider, Nillable<int> iSibling)
+static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimation, int iSlot, C4ValueArray* PositionProvider, C4ValueArray* WeightProvider, Nillable<int> iSibling, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
@@ -5579,10 +5579,18 @@ static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimat
 	if(!PositionProvider) return C4VNull;
 	if(!WeightProvider) return C4VNull;
 
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return C4VNull;
+		Instance = Attached->Child;
+	}
+
 	StdMeshInstance::AnimationNode* s_node = NULL;
 	if(!iSibling.IsNil())
 	{
-		s_node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iSibling);
+		s_node = Instance->GetAnimationNodeByNumber(iSibling);
 		if(!s_node || s_node->GetSlot() != iSlot) return C4VNull;
 	}
 
@@ -5595,91 +5603,163 @@ static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimat
 		return C4VNull;
 	}
 
-	StdMeshInstance::AnimationNode* n_node = ctx->Obj->pMeshInstance->PlayAnimation(szAnimation->GetData(), iSlot, s_node, p_provider, w_provider);
+	StdMeshInstance::AnimationNode* n_node = Instance->PlayAnimation(szAnimation->GetData(), iSlot, s_node, p_provider, w_provider);
 	if(!n_node) return C4VNull;
 
 	return n_node->GetNumber();
 }
 
-static bool FnStopAnimation(C4AulObjectContext *ctx, int iAnimationNumber)
+static bool FnStopAnimation(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return false;
 	if(!ctx->Obj->pMeshInstance) return false;
-	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return false;
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
 	// slot 0 is reserved for ActMap animations
 	if(!node || node->GetSlot() == 0) return false;
-	ctx->Obj->pMeshInstance->StopAnimation(node);
+	Instance->StopAnimation(node);
 	return true;
 }
 
-static Nillable<int> FnGetRootAnimation(C4AulObjectContext *ctx, int iSlot)
+static Nillable<int> FnGetRootAnimation(C4AulObjectContext *ctx, int iSlot, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
-	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetRootAnimationForSlot(iSlot);
+
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return C4VNull;
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* node = Instance->GetRootAnimationForSlot(iSlot);
 	if(!node) return C4VNull;
 	return node->GetNumber();
 }
 
-static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szAnimation)
+static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szAnimation, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
-	const StdMeshAnimation* animation = ctx->Obj->pMeshInstance->Mesh.GetAnimationByName(szAnimation->GetData());
+
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return C4VNull;
+		Instance = Attached->Child;
+	}
+
+	const StdMeshAnimation* animation = Instance->Mesh.GetAnimationByName(szAnimation->GetData());
 	if(!animation) return C4VNull;
 	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical?
 }
 
-static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, int iAnimationNumber)
+static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
-	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return C4VNull;
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
 	if(!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4VNull;
 	return String(node->GetAnimation()->Name.getData());
 }
 
-static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber)
+static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
-	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return C4VNull;
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
 	if(!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4VNull;
 	return static_cast<int>(node->GetPosition() * 1000.0f); // TODO: sync critical?
 }
 
-static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber)
+static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
-	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return C4VNull;
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
 	if(!node || node->GetType() != StdMeshInstance::AnimationNode::LinearInterpolationNode) return C4VNull;
 	return static_cast<int>(node->GetWeight() * 1000.0f); // TODO: sync critical?
 }
 
-static bool FnSetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* PositionProvider)
+static bool FnSetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* PositionProvider, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return false;
 	if(!ctx->Obj->pMeshInstance) return false;
-	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return false;
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
 	// slot 0 is reserved for ActMap animations
 	if(!node || node->GetSlot() == 0 || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return false;
 	StdMeshInstance::ValueProvider* p_provider = CreateValueProviderFromArray(ctx->Obj, *PositionProvider);
 	if(!p_provider) return false;
-	ctx->Obj->pMeshInstance->SetAnimationPosition(node, p_provider);
+	Instance->SetAnimationPosition(node, p_provider);
 	return true;
 }
 
-static bool FnSetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* WeightProvider)
+static bool FnSetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* WeightProvider, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return false;
 	if(!ctx->Obj->pMeshInstance) return false;
-	StdMeshInstance::AnimationNode* node = ctx->Obj->pMeshInstance->GetAnimationNodeByNumber(iAnimationNumber);
+
+	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
+	if(!iAttachNumber.IsNil())
+	{
+		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
+		if(!Instance) return false;
+		Instance = Attached->Child;
+	}
+
+	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
 	// slot 0 is reserved for ActMap animations
 	if(!node || node->GetSlot() == 0 || node->GetType() != StdMeshInstance::AnimationNode::LinearInterpolationNode) return false;
 	StdMeshInstance::ValueProvider* w_provider = CreateValueProviderFromArray(ctx->Obj, *WeightProvider);
 	if(!w_provider) return false;
-	ctx->Obj->pMeshInstance->SetAnimationWeight(node, w_provider);
+	Instance->SetAnimationWeight(node, w_provider);
 	return true;
 }
 
