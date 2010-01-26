@@ -75,42 +75,6 @@ namespace
 			ClearAnimationListRecursively(list, node->GetRightChild());
 		}
 	}
-
-	// Generate matrix to convert the mesh from Ogre coordinate system to Clonk coordinate system.
-	StdMeshMatrix CoordCorrection = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 0.0f, 0.0f, 1.0f);
-	StdMeshMatrix CoordCorrectionInverse = StdMeshMatrix::Inverse(CoordCorrection);
-
-	// Switch Transformation from one coordinate system to another, described by the given
-	// change-of-basis matrix.
-	StdMeshTransformation SwitchTransformation(const StdMeshTransformation& Transformation, const StdMeshMatrix& basis)
-	{
-		// TODO: The transformation breaks here if it includes a scale part (|det| != 1)
-		// Probably not trivial to fix, since transformation scale behaves different than matrix scale when transforming
-		// Remember also to normalize rotation axis again when fixing this
-		// Note that we only use this to transform from OGRE to Clonk coordinate system currently,
-		// which is described by an orthogonal matrix (det=-1).
-		StdMeshTransformation new_transformation;
-		new_transformation.scale = Transformation.scale;
-		new_transformation.rotate.w = Transformation.rotate.w;
-		StdMeshVector v = { Transformation.rotate.x, Transformation.rotate.y, Transformation.rotate.z };
-		v = -(basis*v); // negative sign because v is a pseudovector, and basis has negative determinant (TODO: Determine determinant at run-time)
-		new_transformation.rotate.x = v.x;
-		new_transformation.rotate.y = v.y;
-		new_transformation.rotate.z = v.z;
-		new_transformation.translate = basis * Transformation.translate; // TODO: I think this should also apply translation part of change-of-basis matrix
-		return new_transformation;
-	}
-
-	// Moves a transformation from OGRE to Clonk coordinate system	
-	StdMeshTransformation CoordCorrectedTransformation(const StdMeshTransformation& Transformation)
-	{
-		return SwitchTransformation(Transformation, CoordCorrection);
-	}
-	
-	StdMeshTransformation InverseCoordCorrectedTransformation(const StdMeshTransformation& Transformation)
-	{
-		return SwitchTransformation(Transformation, CoordCorrectionInverse);
-	}
 }
 
 StdMeshError::StdMeshError(const StdStrBuf& message, const char* file, unsigned int line)
@@ -917,11 +881,6 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 			submesh.Vertices[i].u = mesh.RequireFloatAttribute(texcoord_elem, "u");
 			submesh.Vertices[i].v = mesh.RequireFloatAttribute(texcoord_elem, "v");
 
-			// Convert to Clonk coordinate system (type does not match, StdMeshVertex vs. StdMesh::Vertex)
-			StdMeshVertex Transformed = CoordCorrection * submesh.Vertices[i];
-			submesh.Vertices[i].nx = Transformed.nx; submesh.Vertices[i].ny = Transformed.ny; submesh.Vertices[i].nz = Transformed.nz;
-			submesh.Vertices[i].x  = Transformed.x;  submesh.Vertices[i].y  = Transformed.y;  submesh.Vertices[i].z  = Transformed.z;
-
 			// Construct BoundingBox
 			if(i == 0 && SubMeshes.size() == 1)
 			{
@@ -1010,9 +969,7 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 			bone->Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, r);
 			bone->Transformation.translate = d;
 
-			// Convert into Clonk coordinate system
-			bone->Transformation = CoordCorrectedTransformation(bone->Transformation);
-			// We need this later for applying animations, therefore cache it here
+			// We need this later for applying animations, and attaching meshes, therefore cache it here
 			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
 		}
 
@@ -1124,10 +1081,6 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 					StdMeshTrack* track = new StdMeshTrack;
 					animation.Tracks[bone->Index] = track;
 
-					// Get inverse bone transformation in OGRE coordiante system; we need it to apply
-					// the translation part of the bone transformation.
-					StdMeshTransformation BoneInverseTrans = InverseCoordCorrectedTransformation(bone->InverseTransformation);
-
 					TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
 					for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
 					{
@@ -1153,9 +1106,7 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 
 						frame.Transformation.scale = StdMeshVector::UnitScale();
 						frame.Transformation.rotate = StdMeshQuaternion::AngleAxis(angle, r);
-						frame.Transformation.translate = BoneInverseTrans.rotate * (BoneInverseTrans.scale * d);
-
-						frame.Transformation = CoordCorrectedTransformation(frame.Transformation);
+						frame.Transformation.translate = bone->InverseTransformation.rotate * (bone->InverseTransformation.scale * d);
 					}
 				}
 			}

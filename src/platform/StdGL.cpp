@@ -915,10 +915,24 @@ namespace
 	}
 }
 
+namespace
+{
+	// Generate matrix to convert the mesh from Ogre coordinate system to Clonk coordinate system.
+	const StdMeshMatrix OgreToClonk = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 0.0f, 0.0f, 1.0f);
+
+	// Convert to column-major order
+	const float OgreToClonkGL[16] =
+	{
+		OgreToClonk(0,0), OgreToClonk(1,0), OgreToClonk(2,0), 0,
+		OgreToClonk(0,1), OgreToClonk(1,1), OgreToClonk(2,1), 0,
+		OgreToClonk(0,2), OgreToClonk(1,2), OgreToClonk(2,2), 0,
+		OgreToClonk(0,3), OgreToClonk(1,3), OgreToClonk(2,3), 1
+	};
+}
+
 void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
 {
 	const StdMesh& mesh = instance.Mesh;
-	const StdMeshBox& box = mesh.GetBoundingBox();
 
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
@@ -935,6 +949,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glScalef(Zoom, Zoom, 1.0f);
 	glTranslatef(-ZoomX, -ZoomY, 0.0f);
 
+	// TODO: Initialize with OgreToClonk matrix parity
 	bool parity = true;
 	if(pTransform)
 	{
@@ -957,13 +972,22 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	else
 		glCullFace(GL_FRONT);
 
+	// Convert bounding box to clonk coordinate system
+	// (TODO: We should cache this, not sure where though)
+	const StdMeshBox& box = mesh.GetBoundingBox();
+	StdMeshVector v1, v2;
+	v1.x = box.x1; v1.y = box.y1; v1.z = box.z1;
+	v2.x = box.x2; v2.y = box.y2; v2.z = box.z2;
+	v1 = OgreToClonk * v1; // TODO: Include translation
+	v2 = OgreToClonk * v2; // TODO: Include translation
+
 	// Scale so that the mesh fits in (tx,ty,twdt,thgt)
-	const float rx = -box.x1 / (box.x2 - box.x1);
-	const float ry = -box.y1 / (box.y2 - box.y1);
+	const float rx = -std::min(v1.x,v1.y) / fabs(v2.x - v1.x);
+	const float ry = -std::min(v1.y,v2.y) / fabs(v2.y - v1.y);
 	const float dx = tx + rx*twdt;
 	const float dy = ty + ry*thgt;
-	const float scx = twdt/(box.x2 - box.x1);
-	const float scy = thgt/(box.y2 - box.y1);
+	const float scx = twdt/fabs(v2.x - v1.x);
+	const float scy = thgt/fabs(v2.y - v1.y);
 
 #if 0
 	// Scale so that Z coordinate is between -1 and 1, otherwise parts of
@@ -981,7 +1005,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	// to be large enough. I think this is still a got idea, though,
 	// when we fix the lighting. Maybe we need to adapt the normals
 	// somehow...
-	const float scz = 1.0/(box.z2 - box.z1);
+	const float scz = 1.0/fabs(v2.z - v1.z);
 #else
 	const float scz = 1.0;
 #endif
@@ -992,9 +1016,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glScalef(scx, scy, scz);
 
 	// Put a light source in front of the object
-	const GLfloat light_position[] = { 0.0f, 0.0f, box.z2 + 15.0f*Zoom, 1.0f };
+	const GLfloat light_position[] = { 0.0f, 0.0f, v2.z + 15.0f*Zoom, 1.0f };
 	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 	glEnable(GL_LIGHT0);
+
+	// Convert from Ogre to Clonk coordinate system
+	glMultMatrixf(OgreToClonkGL);
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
