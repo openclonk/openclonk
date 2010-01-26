@@ -31,6 +31,11 @@
 
 #ifdef USE_GL
 
+// MSVC doesn't define M_PI in math.h unless requested
+#ifdef  _MSC_VER
+#define _USE_MATH_DEFINES
+#endif  /* _MSC_VER */
+
 #include <stdio.h>
 #include <math.h>
 #include <limits.h>
@@ -918,7 +923,7 @@ namespace
 namespace
 {
 	// Generate matrix to convert the mesh from Ogre coordinate system to Clonk coordinate system.
-	const StdMeshMatrix OgreToClonk = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(M_PI/2.0f, 0.0f, 0.0f, 1.0f);
+	const StdMeshMatrix OgreToClonk = StdMeshMatrix::Scale(-1.0f, 1.0f, 1.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 1.0f, 0.0f, 0.0f) * StdMeshMatrix::Rotate(float(M_PI)/2.0f, 0.0f, 0.0f, 1.0f);
 
 	// Convert to column-major order
 	const float OgreToClonkGL[16] =
