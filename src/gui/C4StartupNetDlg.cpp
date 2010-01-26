@@ -956,7 +956,28 @@ bool C4StartupNetDlg::DoOK()
 		const char *szDirectJoinAddress = pJoinAddressEdt->GetText();
 		if (szDirectJoinAddress && *szDirectJoinAddress)
 			{
-			AddReferenceQuery(szDirectJoinAddress, C4StartupNetListEntry::NRQT_DirectJoin);
+			// First do some acrobatics to avoid trying to resolve addresses with leading
+			// or trailing whitespace, which is easily pasted in with an IP address.
+			// We can trivially skip whitespace at the beginning, but we need a copy to
+			// omit whitespace at the end.
+			while(std::isspace(*szDirectJoinAddress))
+				// skip whitespace at the beginning
+				++szDirectJoinAddress;
+			if(!*szDirectJoinAddress)
+				// entry empty, apart from whitespace
+				return true;
+			const char *szDirectJoinAddressEnd = szDirectJoinAddress + std::strlen(szDirectJoinAddress) - 1;
+			while(std::isspace(*szDirectJoinAddressEnd))
+				// skip whitespace at the end
+				--szDirectJoinAddressEnd;
+			if(*++szDirectJoinAddressEnd)
+				{
+				// Make a temporary copy of the part that is not trailing whitespace, if any
+				std::string strDirectJoinAddressStripped(szDirectJoinAddress, szDirectJoinAddressEnd - szDirectJoinAddress);
+				AddReferenceQuery(strDirectJoinAddressStripped.c_str(), C4StartupNetListEntry::NRQT_DirectJoin);
+				}
+			else
+				AddReferenceQuery(szDirectJoinAddress, C4StartupNetListEntry::NRQT_DirectJoin);
 			// Switch focus to list so another OK joins the specified address
 			SetFocus(pGameSelList, true);
 			return true;
