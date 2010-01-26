@@ -888,10 +888,10 @@ namespace
 		{
 			// Convert matrix to column-major order, add fourth row
 			const float attach_trans_gl[16] = {
-				iter->AttachTrans(0,0), iter->AttachTrans(1,0), iter->AttachTrans(2,0), 0,
-				iter->AttachTrans(0,1), iter->AttachTrans(1,1), iter->AttachTrans(2,1), 0,
-				iter->AttachTrans(0,2), iter->AttachTrans(1,2), iter->AttachTrans(2,2), 0,
-				iter->AttachTrans(0,3), iter->AttachTrans(1,3), iter->AttachTrans(2,3), 1
+				iter->FinalTrans(0,0), iter->FinalTrans(1,0), iter->FinalTrans(2,0), 0,
+				iter->FinalTrans(0,1), iter->FinalTrans(1,1), iter->FinalTrans(2,1), 0,
+				iter->FinalTrans(0,2), iter->FinalTrans(1,2), iter->FinalTrans(2,2), 0,
+				iter->FinalTrans(0,3), iter->FinalTrans(1,3), iter->FinalTrans(2,3), 1
 			};
 
 			glPushMatrix();

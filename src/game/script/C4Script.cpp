@@ -5683,16 +5683,34 @@ static bool FnSetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, 
 	return true;
 }
 
-static Nillable<long> FnAttachMesh(C4AulContext *ctx, C4ID idMesh, C4String* szParentBone, C4String* szChildBone, Nillable<long> scale)
+static Nillable<long> FnAttachMesh(C4AulContext *ctx, C4ID idMesh, C4String* szParentBone, C4String* szChildBone, C4ValueArray* Transformation)
 	{
 	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return C4VNull;
 	C4Def* pDef = C4Id2Def(idMesh);
 	if(!pDef || pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4VNull;
 
-	float scalef = 1.0f;
-	if(!scale.IsNil()) scalef = scale / 1000.0f;
+	StdMeshMatrix trans = StdMeshMatrix::Identity();
+	if(Transformation)
+	{
+		if(Transformation->GetSize() != 12)
+			throw new C4AulExecError(ctx->Obj, "AttachMesh: Transformation is not a valid 3x4 matrix");
 
-	const StdMeshInstance::AttachedMesh* attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, szParentBone->GetData(), szChildBone->GetData(), scalef);
+		const C4ValueArray& arr = *Transformation;
+		trans(0,0) = arr[0].getInt()/1000.0f;
+		trans(0,1) = arr[1].getInt()/1000.0f;
+		trans(0,2) = arr[2].getInt()/1000.0f;
+		trans(0,3) = arr[3].getInt()/1000.0f;
+		trans(1,0) = arr[4].getInt()/1000.0f;
+		trans(1,1) = arr[5].getInt()/1000.0f;
+		trans(1,2) = arr[6].getInt()/1000.0f;
+		trans(1,3) = arr[7].getInt()/1000.0f;
+		trans(2,0) = arr[8].getInt()/1000.0f;
+		trans(2,1) = arr[9].getInt()/1000.0f;
+		trans(2,2) = arr[10].getInt()/1000.0f;
+		trans(2,3) = arr[11].getInt()/1000.0f;
+	}
+
+	const StdMeshInstance::AttachedMesh* attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, szParentBone->GetData(), szChildBone->GetData(), trans);
 	if(!attach) return C4VNull;
 	return attach->Number;
 	}

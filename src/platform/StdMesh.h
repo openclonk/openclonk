@@ -405,18 +405,18 @@ public:
 		unsigned int Number;
 		StdMeshInstance* Parent;
 		StdMeshInstance* Child;
-		float Scale;
+		StdMeshMatrix AttachTrans;
 		unsigned int ParentBone;
 		unsigned int ChildBone;
-		// Cache attach transformation, updated in UpdateBoneTransforms()
-		StdMeshMatrix AttachTrans;
+		// Cache final transformation, updated in UpdateBoneTransforms()
+		StdMeshMatrix FinalTrans;
 	};
 
 	typedef std::list<AttachedMesh> AttachedMeshList;
 	typedef AttachedMeshList::const_iterator AttachedMeshIter;
 
 	// Returns number of added attachment, or 0 on failure
-	const AttachedMesh* AttachMesh(const StdMesh& mesh, const StdStrBuf& own_bone, const StdStrBuf& other_bone, float scale = 1.0f);
+	const AttachedMesh* AttachMesh(const StdMesh& mesh, const StdStrBuf& own_bone, const StdStrBuf& other_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity());
 	// Removes attachment with given number
 	bool DetachMesh(unsigned int number);
 	// Returns attached mesh with given number

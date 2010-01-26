@@ -398,14 +398,15 @@ func DoUpdateAttach(bool sec)
 	if(obj->~GetCarryBone()) bone = obj->~GetCarryBone();
 	var scale = 1000;
 	if(obj->~GetCarryScale()) scale = obj->~GetCarryScale();
+	scale = Trans_Scale(scale);
 
 	var pos_hand = "pos_hand2";
 	if(sec) pos_hand = "pos_hand1";
 	var pos_back = "pos_back2";
 	if(sec) pos_back = "pos_back1";
 
-  var special = obj->~GetCarrySpecial(this);
-  if(special)
+	var special = obj->~GetCarrySpecial(this);
+	if(special)
 	{
 		iHandMesh[sec] = AttachMesh(obj->GetID(), special, bone, scale);
 		iAttachMode = 0;

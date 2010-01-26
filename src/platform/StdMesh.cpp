@@ -1425,7 +1425,7 @@ void StdMeshInstance::ExecuteAnimation()
 		ExecuteAnimationNode(AnimationStack[i-1]);
 }
 
-const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, float scale)
+const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation)
 {
 	AttachedMesh attach = { 0 };
 	unsigned int i;
@@ -1448,14 +1448,14 @@ const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& 
 			{ attach.ChildBone = i; break; }
 	if(i == mesh.GetNumBones()) return NULL;
 
-	attach.Scale = scale;
+	attach.AttachTrans = transformation;
 	attach.Parent = this;
 	attach.Child = new StdMeshInstance(mesh);
 	attach.Child->SetFaceOrdering(CurrentFaceOrdering);
 
 	AttachChildren.push_back(attach);
 	attach.Child->AttachParent = &AttachChildren.back();
-	BoneTransformsDirty = true; // so that attach transformation is computed before rendering
+	BoneTransformsDirty = true; // so that FinalTrans is computed before rendering
 	return &AttachChildren.back();
 }
 
@@ -1572,11 +1572,11 @@ void StdMeshInstance::UpdateBoneTransforms()
 		// reducing this to two matrix multiplications instead of four each frame.
 		// Might even be worth to compute the complete transformation directly when rendering then
 		// (saves per-instance memory, but requires recomputation if the animation does not change).
-		iter->AttachTrans = BoneTransforms[iter->ParentBone]
-		                  * StdMeshMatrix::Transform(Mesh.GetBone(iter->ParentBone).Transformation)
-		                  * StdMeshMatrix::Scale(iter->Scale, iter->Scale, iter->Scale)
-		                  * StdMeshMatrix::Transform(iter->Child->Mesh.GetBone(iter->ChildBone).InverseTransformation)
-		                  * StdMeshMatrix::Inverse(iter->Child->BoneTransforms[iter->ChildBone]);
+		iter->FinalTrans = BoneTransforms[iter->ParentBone]
+		                 * StdMeshMatrix::Transform(Mesh.GetBone(iter->ParentBone).Transformation)
+		                 * iter->AttachTrans
+		                 * StdMeshMatrix::Transform(iter->Child->Mesh.GetBone(iter->ChildBone).InverseTransformation)
+		                 * StdMeshMatrix::Inverse(iter->Child->BoneTransforms[iter->ChildBone]);
 	}
 
 	if(CurrentFaceOrdering != FO_Fixed)
