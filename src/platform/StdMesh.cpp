@@ -1423,6 +1423,10 @@ void StdMeshInstance::ExecuteAnimation()
 	// Iterate from the back since slots might get removed
 	for(unsigned int i = AnimationStack.size(); i > 0; --i)
 		ExecuteAnimationNode(AnimationStack[i-1]);
+
+	// Update animation for attached meshes
+	for(AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
+		iter->Child->ExecuteAnimation();
 }
 
 const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation)
