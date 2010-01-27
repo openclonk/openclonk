@@ -31,6 +31,7 @@
 #include <StdFont.h>
 #include <StdWindow.h>
 #include "C4Rect.h"
+#include "StdMesh.h"
 
 #include <stdio.h>
 #include <math.h>

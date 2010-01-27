@@ -105,6 +105,11 @@ class CStdStream;
 class CStdVectorFont;
 class CSurface8;
 class StdCompiler;
+class StdMesh;
+class StdMeshBone;
+class StdMeshInstance;
+class StdMeshMaterial;
+class StdMeshSkeletonLoader;
 
 namespace C4GUI { class Screen; }
 typedef C4GUI::Screen C4GUIScreen;

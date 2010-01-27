@@ -27,7 +27,6 @@
 #include <StdSurface8.h>
 #include <StdFont.h>
 #include <StdBuf.h>
-#include <StdMesh.h>
 
 // texref-predef
 class CStdDDraw;

@@ -32,6 +32,7 @@
 #include "C4Effects.h"
 #include "C4Particles.h"
 #include "C4PropList.h"
+#include "StdMesh.h"
 
 /* Object status */
 
