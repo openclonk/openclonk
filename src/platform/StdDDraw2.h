@@ -37,6 +37,9 @@ class CStdGLCtx;
 class CStdApp;
 class CStdWindow;
 
+class StdMeshMaterial;
+class StdMeshInstance;
+
 // engines
 #define GFXENGN_DIRECTX  0
 #define GFXENGN_OPENGL   1
