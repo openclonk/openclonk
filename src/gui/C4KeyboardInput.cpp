@@ -185,6 +185,9 @@ const C4KeyCodeMapEntry KeyCodeMap [] = {
 	{ 'X'               , "X"         , NULL },
 	{ 'Y'               , "Y"         , NULL },
 	{ 'Z'               , "Z"         , NULL },
+	{ VK_COMMA          , "Comma"     , "," },
+	{ VK_PERIOD         , "Period"    , "." },
+	{ VK_APOSTROPHE     , "Apostrophe", "'" },
 
 	{ VK_LWIN           , "WinLeft"      , NULL },
 	{ VK_RWIN           , "WinRight"     , NULL },
@@ -427,7 +430,15 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	return pCheck->wCode;
 #elif defined(USE_X11)
 	KeySym result = XStringToKeysym(sName.getData());
-	// Use the lowercase keysym in case there is a differnce because this
+	// Some keysysm strings start with a lowercase letter, so also check that.
+	if(!result)
+	{
+		StdCopyStrBuf sName2(sName);
+		sName2.ToLowerCase();
+		result = XStringToKeysym(sName2.getData());
+	}
+
+	// Use the lowercase keysym in case there is a difference because this
 	// is what's reported for actual key presses.
 	KeySym lower, upper;
 	XConvertCase(result, &lower, &upper);
