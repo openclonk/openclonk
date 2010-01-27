@@ -5583,7 +5583,7 @@ static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimat
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return C4VNull;
+		if(!Attached) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5618,7 +5618,7 @@ static bool FnStopAnimation(C4AulObjectContext *ctx, int iAnimationNumber, Nilla
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return false;
+		if(!Attached) return false;
 		Instance = Attached->Child;
 	}
 
@@ -5638,7 +5638,7 @@ static Nillable<int> FnGetRootAnimation(C4AulObjectContext *ctx, int iSlot, Nill
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return C4VNull;
+		if(!Attached) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5656,7 +5656,7 @@ static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szA
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return C4VNull;
+		if(!Attached) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5674,7 +5674,7 @@ static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, int iAnim
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return C4VNull;
+		if(!Attached) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5692,7 +5692,7 @@ static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimat
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return C4VNull;
+		if(!Attached) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5710,7 +5710,7 @@ static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimatio
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return C4VNull;
+		if(!Attached) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5728,7 +5728,7 @@ static bool FnSetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return false;
+		if(!Attached) return false;
 		Instance = Attached->Child;
 	}
 
@@ -5750,7 +5750,7 @@ static bool FnSetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, 
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Instance) return false;
+		if(!Attached) return false;
 		Instance = Attached->Child;
 	}
 

@@ -1616,13 +1616,20 @@ StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlo
 bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 {
 	ValueProvider* provider = NULL;
+	float min;
+	float max;
+
 	switch(node->GetType())
 	{
 	case AnimationNode::LeafNode:
 		provider = node->GetPositionProvider();
+		min = 0.0f;
+		max = node->GetAnimation()->Length;
 		break;
 	case AnimationNode::LinearInterpolationNode:
 		provider = node->GetWeightProvider();
+		min = 0.0f;
+		max = 1.0f;
 		break;
 	}
 
@@ -1651,7 +1658,11 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 	}
 	else
 	{
-		if(provider->Value != old_value) BoneTransformsDirty = true;
+		if(provider->Value != old_value)
+		{
+			provider->Value = BoundBy(provider->Value, min, max);
+			BoneTransformsDirty = true;
+		}
 
 		if(node->GetType() == AnimationNode::LinearInterpolationNode)
 		{
