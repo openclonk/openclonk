@@ -16,7 +16,7 @@ local iAnimLoad;
 local fAiming;
 
 public func GetCarryMode() { return CARRY_HandBack; }
-public func GetCarryScale() { return 1300; }
+public func GetCarryTransform() { return Trans_Mul(Trans_Mul(Trans_Mul(Trans_Rotate(90,0,10,0), Trans_Rotate(90,10,0,0)),Trans_Scale(1300)), Trans_Translate(0, -600, 0)); }
 public func GetCarryBone() { return "Handle"; }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
@@ -43,8 +43,10 @@ protected func ControlUseStart(object clonk, int x, int y)
 		// + sound or message that he doesnt have arrows anymore
 		clonk->CancelUse();
 	}
-	iAnimLoad = clonk->PlayAnimation("BowAimArms", 10, Anim_Const(0), Anim_Const(1000));
   clonk->UpdateAttach();
+	iAnimLoad = clonk->PlayAnimation("BowAimArms", 10, Anim_Const(0), Anim_Const(1000));
+	var test = clonk->PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), 35, ANIM_Loop), Anim_Const(1000), nil, clonk->GetHandMesh(this));
+	Log("%d", test);
 	return true;
 }
 

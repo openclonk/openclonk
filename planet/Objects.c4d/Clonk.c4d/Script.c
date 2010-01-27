@@ -396,9 +396,7 @@ func DoUpdateAttach(bool sec)
 
 	var bone = "main";
 	if(obj->~GetCarryBone()) bone = obj->~GetCarryBone();
-	var scale = 1000;
-	if(obj->~GetCarryScale()) scale = obj->~GetCarryScale();
-	scale = Trans_Scale(scale);
+	var trans = obj->~GetCarryTransform();
 
 	var pos_hand = "pos_hand2";
 	if(sec) pos_hand = "pos_hand1";
@@ -408,32 +406,40 @@ func DoUpdateAttach(bool sec)
 	var special = obj->~GetCarrySpecial(this);
 	if(special)
 	{
-		iHandMesh[sec] = AttachMesh(obj->GetID(), special, bone, scale);
+		iHandMesh[sec] = AttachMesh(obj->GetID(), special, bone, trans);
 		iAttachMode = 0;
 	}
 
 	if(iAttachMode == CARRY_Hand)
 	{
 		if(HasHandAction())
-  		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, scale);
+  		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, trans);
 		else
 			; // Don't display
 	}
 	else if(iAttachMode == CARRY_HandBack)
 	{
 		if(HasHandAction())
-  		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, scale);
+  		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, trans);
 		else
-			iHandMesh[sec] = AttachMesh(obj->GetID(), pos_back, bone, scale);
+			iHandMesh[sec] = AttachMesh(obj->GetID(), pos_back, bone, trans);
 	}
 	else if(iAttachMode == CARRY_HandAlways)
 	{
-		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, scale);
+		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, trans);
 	}
 	else if(iAttachMode == CARRY_Back)
 	{
-		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_back, bone, scale);
+		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_back, bone, trans);
 	}
+}
+
+public func GetHandMesh(object obj)
+{
+	if(GetSelectedItem() == obj)
+	  return iHandMesh[0];
+	if(GetSelectedItem(1) == obj)
+	  return iHandMesh[1];
 }
 
 static const CARRY_None = 0;

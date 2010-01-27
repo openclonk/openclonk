@@ -6,7 +6,7 @@ private func Hit()
 }
 
 public func GetCarryMode() { return CARRY_Back; }
-public func GetCarryScale() { return 2000; }
+public func GetCarryTransform() { return Trans_Scale(2000); }
 
 public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "pos_hand1"; }
 

@@ -6,7 +6,7 @@ private func Hit()
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }
-public func GetCarryScale() { return 130; }
+public func GetCarryTransform() { return Trans_Scale(130); }
 public func GetCarryBone() { return "Main"; }
 
 local fDrawn;
