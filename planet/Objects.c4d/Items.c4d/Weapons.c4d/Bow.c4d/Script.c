@@ -12,12 +12,15 @@
 local aimtime;
 local iMesh;
 local iAnimLoad;
+local iArrowMesh;
 
 local fAiming;
 
+local iDrawAnim;
+
 public func GetCarryMode() { return CARRY_HandBack; }
-public func GetCarryTransform() { return Trans_Mul(Trans_Mul(Trans_Mul(Trans_Rotate(90,0,10,0), Trans_Rotate(90,10,0,0)),Trans_Scale(1300)), Trans_Translate(0, -600, 0)); }
-public func GetCarryBone() { return "Handle"; }
+//public func GetCarryTransform() { return Trans_Mul(Trans_Mul(Trans_Mul(Trans_Rotate(90,0,10,0), Trans_Rotate(90,10,0,0)),Trans_Scale(1300)), Trans_Translate(0, -600, 0)); }
+//public func GetCarryBone() { return "Handle"; }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
 
@@ -25,7 +28,6 @@ public func HoldingEnabled() { return true; }
 
 protected func ControlUseStart(object clonk, int x, int y)
 {
-	fAiming = 1;
 	// check for ammo
 	if(!Contents(0))
 	{
@@ -42,12 +44,21 @@ protected func ControlUseStart(object clonk, int x, int y)
 	{
 		// + sound or message that he doesnt have arrows anymore
 		clonk->CancelUse();
+		return true;
 	}
+	
+	fAiming = 1;
   clonk->UpdateAttach();
-	iAnimLoad = clonk->PlayAnimation("BowAimArms", 10, Anim_Const(0), Anim_Const(1000));
-	var test = clonk->PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), 35, ANIM_Loop), Anim_Const(1000), nil, clonk->GetHandMesh(this));
-	Log("%d", test);
+	ScheduleCall(this, "AddArrow", 5*aimtime/20, 1, clonk);
+	iAnimLoad = clonk->PlayAnimation("BowLoadArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BowLoadArms"), aimtime, ANIM_Remove), Anim_Const(1000));
+  iDrawAnim = clonk->PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), aimtime, ANIM_Hold), Anim_Const(1000), nil, clonk->GetHandMesh(this));
 	return true;
+}
+
+public func AddArrow(clonk)
+{
+	if(!fAiming) return;
+	iArrowMesh = clonk->AttachMesh(HARW, "pos_hand1", "main", Trans_Scale(2000, 1000, 2000));
 }
 
 public func ControlUseHolding(object clonk, int x, int y)
@@ -65,19 +76,25 @@ public func ControlUseHolding(object clonk, int x, int y)
 	// ...
 	if(aimtime > 0) aimtime--;
 
-	// debug....
-	var points = "";
-	for(var i=2; i>=0; --i) { if(i<(aimtime/5)%4) points = Format(".%s",points); else points = Format("%s ",points); }
 
 	if(aimtime > 0)
-		Message("Reload arrow%s",clonk,points);
+	{
+		if(aimtime == 1)
+		{
+			clonk->StopAnimation(iDrawAnim, clonk->GetHandMesh(this));
+			iAnimLoad = clonk->PlayAnimation("BowAimArms", 10, Anim_Const(0), Anim_Const(1000));
+      iDrawAnim = clonk->PlayAnimation("Draw", 6, Anim_Const(GetAnimationLength("Draw")), Anim_Const(1000), nil, clonk->GetHandMesh(this));
+			clonk->SetAnimationPosition(iAnimLoad, Anim_Const(2000*Abs(90)/180));
+		}
+	}
 	else if(!ClonkAimLimit(clonk,angle))
-		Message("Cannot aim there",clonk);
+		;
 	else
 	{
 		if(angle > 180) angle -= 360;
-		clonk->SetAnimationPosition(iAnimLoad, Anim_Const(2000*Abs(angle)/180));
-		Message("Aiming|%d!!!!!",clonk,angle);
+		var pos = clonk->GetAnimationPosition(iAnimLoad);
+		pos += BoundBy(2000*Abs(angle)/180-pos, -100, 100);
+		clonk->SetAnimationPosition(iAnimLoad, Anim_Const(pos));
 	}
 
 	return true;
@@ -86,15 +103,17 @@ public func ControlUseHolding(object clonk, int x, int y)
 protected func ControlUseStop(object clonk, int x, int y)
 {
 	fAiming = 0;
-	clonk->StopAnimation(clonk->GetRootAnimation(10));
-	clonk->UpdateAttach();
-	Message("",clonk);
+	clonk->StopAnimation(iDrawAnim, clonk->GetHandMesh(this));
+	clonk->DetachMesh(iArrowMesh);
 
-	// "canceled"
-	if(aimtime > 0) return true;
-	
+	// "canceled"	
 	var angle = Angle(0,0,x,y);
-	if(!ClonkAimLimit(clonk,angle)) return true;
+	if(aimtime > 0 || !ClonkAimLimit(clonk,angle))
+	{
+		clonk->StopAnimation(clonk->GetRootAnimation(10));
+  	clonk->UpdateAttach();
+		return true;
+	}
 	
 	if(Contents(0))
 	{
@@ -104,7 +123,30 @@ protected func ControlUseStop(object clonk, int x, int y)
 			arrow->Launch(angle,100,clonk);
 		}
 	}
+	var iShootTime = 35/2;
+	iDrawAnim = clonk->PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), iShootTime, ANIM_Hold), Anim_Const(1000), nil, clonk->GetHandMesh(this));
+	ScheduleCall(this, "Shoot", iShootTime, 0, clonk);
 	return true;
+}
+
+public func Shoot(object clonk, int x, int y)
+{
+	// Already aiming angain? Don't remove Actions
+	if(fAiming) return;
+  clonk->StopAnimation(clonk->GetRootAnimation(10));
+	clonk->StopAnimation(iDrawAnim, clonk->GetHandMesh(this));
+	clonk->UpdateAttach();
+}
+
+
+
+protected func ControlUseCancel(object clonk, int x, int y)
+{
+  fAiming = 0;
+  clonk->DetachMesh(iArrowMesh);
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
+	clonk->UpdateAttach();
+	Message("",clonk);
 }
 
 private func ClonkAimLimit(object clonk, int angle)

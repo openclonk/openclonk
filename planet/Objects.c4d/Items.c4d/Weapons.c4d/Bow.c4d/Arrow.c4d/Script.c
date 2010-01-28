@@ -23,6 +23,7 @@ protected func Construction()
 
 public func Launch(int angle, int str, object shooter)
 {
+	SetGraphics(0, HARW);
 	var xdir = Sin(angle,str);
 	var ydir = Cos(angle,-str);
 	SetXDir(xdir);
