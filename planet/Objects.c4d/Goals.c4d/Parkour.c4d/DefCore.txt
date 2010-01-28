@@ -1,9 +1,8 @@
 [DefCore]
-id=PARK
-Version=4,9,8
+id=Core_Goal_Parkour
+Version=4,10,0,0
 Category=C4D_StaticBack|C4D_Goal
 MaxUserSelect=1
 Width=1
 Height=1
-Value=100
 Picture=0,0,64,64

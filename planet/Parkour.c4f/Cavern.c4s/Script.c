@@ -3,7 +3,7 @@
 protected func Initialize()
 {
 	// Create the race goal.
-	var pGoal = CreateObject(PARK, 0, 0, NO_OWNER);
+	var pGoal = CreateObject(Core_Goal_Parkour, 0, 0, NO_OWNER);
 	// Set start point.
 	var x, y;
 	var d = 100;

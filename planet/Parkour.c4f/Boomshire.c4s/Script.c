@@ -32,7 +32,7 @@ func Initialize()
  CreateObject(DYNA,3090-(3*i),564,-1);
  
  // Create the race goal.
-	var pGoal = CreateObject(PARK, 0, 0, NO_OWNER);
+	var pGoal = CreateObject(Core_Goal_Parkour, 0, 0, NO_OWNER);
 	pGoal->SetStartpoint(20, 1000);
 	pGoal->AddCheckpoint(760,950,RACE_CP_Ordered);
 	pGoal->AddCheckpoint(400,660,RACE_CP_Ordered);

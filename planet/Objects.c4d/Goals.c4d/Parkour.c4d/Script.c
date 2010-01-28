@@ -1,8 +1,8 @@
-/*-- Race --*/
+/*-- Parkour --*/
 
 /*
 	The goal is to be the first to reach the finish, the team or player to do so wins the round.
-	Checkpoints can be added to make the path more interesting and complex.
+	Checkpoints can be added to make the path more interesting and more complex.
 	Checkpoints can have different functionalities:
 		* Respawn: On/Off - The clonk respawns at the last passed checkpoint.
 		* Check: On/Off - The clonk must pass through these checkpoints before being able to finish.
@@ -28,6 +28,10 @@ protected func Initialize()
 	aRespawnCP = [];
 	aPlrCP = [];
 	aTeamCP = [];
+	// Activate restart rule, if there isn't any.
+	if (!FindObject(Find_ID(Core_Rule_Restart)))
+		CreateObject(Core_Rule_Restart, 0, 0, NO_OWNER);
+
 	// Scoreboard distance display.
 	AddEffect("IntSBDistance", this, 100, 35, this);
 	return _inherited(...);
@@ -37,7 +41,7 @@ protected func Initialize()
 
 public func SetStartpoint(int iX, int iY)
 {
-	var cp = CreateObject(CKPT, iX, iY, NO_OWNER);
+	var cp = CreateObject(Core_Goal_Checkpoint, iX, iY, NO_OWNER);
 	cp->SetPosition(iX, iY);
 	cp->SetCPMode(RACE_CP_Start);
 	cp->SetCPController(this);
@@ -47,7 +51,7 @@ public func SetStartpoint(int iX, int iY)
 
 public func SetFinishpoint(int iX, int iY)
 {
-	var cp = CreateObject(CKPT, iX, iY, NO_OWNER);
+	var cp = CreateObject(Core_Goal_Checkpoint, iX, iY, NO_OWNER);
 	cp->SetPosition(iX, iY);
 	cp->SetCPMode(RACE_CP_Finish);
 	cp->SetCPController(this);
@@ -57,7 +61,7 @@ public func SetFinishpoint(int iX, int iY)
 
 public func AddCheckpoint(int iX, int iY, int iMode)
 {
-	var cp = CreateObject(CKPT, iX, iY, NO_OWNER);
+	var cp = CreateObject(Core_Goal_Checkpoint, iX, iY, NO_OWNER);
 	cp->SetPosition(iX, iY);
 	cp->SetCPMode(iMode);
 	cp->SetCPController(this);
@@ -159,7 +163,7 @@ public func Activate(int iPlr)
 private func IsWinner(int iPlr)
 {
 	var iTeam = GetPlayerTeam(iPlr);
-	var finish = FindObject(Find_ID(CKPT), Find_Func("FindCPMode", RACE_CP_Finish));
+	var finish = FindObject(Find_ID(Core_Goal_Checkpoint), Find_Func("FindCPMode", RACE_CP_Finish));
 	if (!finish)
 		return false;
 	if (iTeam)
@@ -203,11 +207,27 @@ protected func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTea
 	return;
 }
 
+protected func OnClonkDeath(object clonk)
+{
+	var iPlr = clonk->GetOwner();
+	var nclonk = CreateObject(CLNK, 0, 0, iPlr);
+	nclonk->MakeCrewMember(iPlr);
+	nclonk->GrabObjectInfo(clonk);
+	SetCursor(iPlr, nclonk);
+	SelectCrew(iPlr, nclonk, true);
+	JoinPlayer(iPlr);
+	// Scenario script callback.
+	GameCall("PlrHasRespawned", iPlr, aRespawnCP[iPlr]);
+	// Log message.
+	Log(RndRespawnMsg(), GetPlayerName(iPlr));
+}
+
+/*
 protected func RelaunchPlayer(int iPlr)
 {
 	var clonk = CreateObject(CLNK, 0, 0, iPlr);
 	clonk->MakeCrewMember(iPlr);
-	SetCursor(iPlr,clonk);
+	SetCursor(iPlr, clonk);
 	SelectCrew(iPlr, clonk, true);
 	JoinPlayer(iPlr);
 	// Scenario script callback.
@@ -216,6 +236,7 @@ protected func RelaunchPlayer(int iPlr)
 	Log(RndRespawnMsg(), GetPlayerName(iPlr));
 	return;
 }
+*/
 
 private func RndRespawnMsg()
 {
@@ -264,8 +285,8 @@ private func UpdateScoreboard(int iPlr)
 	// TODO
 	var szCaption = Format("Race over %d checkpoints", nrCheckpoints + 1);
 	SetScoreboardData(SBRD_Caption,	SBRD_Caption,		szCaption, 					SBRD_Caption);
-	SetScoreboardData(SBRD_Caption,	SBRD_Checkpoints,	Format("{{%i}}", CKPT), 	SBRD_Caption);
-	SetScoreboardData(SBRD_Caption,	SBRD_Distance,		Format("->{{%i}}", CKPT),	SBRD_Caption);
+	SetScoreboardData(SBRD_Caption,	SBRD_Checkpoints,	Format("{{%i}}", Core_Goal_Checkpoint), 	SBRD_Caption);
+	SetScoreboardData(SBRD_Caption,	SBRD_Distance,		Format("->{{%i}}", Core_Goal_Checkpoint),	SBRD_Caption);
 	SetScoreboardData(iPlr,			SBRD_Caption,		GetTaggedPlayerName(iPlr),	SBRD_Caption);
 	SetScoreboardData(iPlr,			SBRD_Checkpoints,	Format("%d", aPlrCP[iPlr]),	aPlrCP[iPlr]);
 	SetScoreboardData(iPlr,	SBRD_Distance,		Format("%d%", GetDistToCP(iPlr)), 	GetDistToCP(iPlr));
@@ -287,20 +308,20 @@ private func GetDistToCP(int iPlr)
 {
 	// Get last finished ordered CP.
 	var lastcp;
-	for (var cp in FindObjects(Find_ID(CKPT), Find_Func("FindCPMode", RACE_CP_Ordered), Find_Func("ClearedByPlr", iPlr)))
+	for (var cp in FindObjects(Find_ID(Core_Goal_Checkpoint), Find_Func("FindCPMode", RACE_CP_Ordered), Find_Func("ClearedByPlr", iPlr)))
 		if (!lastcp || lastcp->~GetCPNumber() < cp->~GetCPNumber())
 			lastcp = cp;
 	if (!lastcp)
-		lastcp = FindObject(Find_ID(CKPT), Find_Func("FindCPMode", RACE_CP_Start));
+		lastcp = FindObject(Find_ID(Core_Goal_Checkpoint), Find_Func("FindCPMode", RACE_CP_Start));
 	if (!lastcp)
 		return 0;
 	// Get next ordered CP.
 	var nextcp;
-	for (var cp in FindObjects(Find_ID(CKPT), Find_Func("FindCPMode", RACE_CP_Ordered)))
+	for (var cp in FindObjects(Find_ID(Core_Goal_Checkpoint), Find_Func("FindCPMode", RACE_CP_Ordered)))
 		if (cp->GetCPNumber() == lastcp->GetCPNumber() + 1)
 			nextcp = cp;
 	if (!nextcp)
-		nextcp = FindObject(Find_ID(CKPT), Find_Func("FindCPMode", RACE_CP_Finish));
+		nextcp = FindObject(Find_ID(Core_Goal_Checkpoint), Find_Func("FindCPMode", RACE_CP_Finish));
 	if (!nextcp)
 		return 0;
 	var dist = ObjectDistance(GetCrew(iPlr), nextcp); 
@@ -316,7 +337,7 @@ protected func FxIntDirNextCPTimer(object pTarget, int iEffectNumber, int iEffec
 	var plr = pTarget->GetOwner();
 	// Find nearest CP.
 	var nextcp;
-	for (var cp in FindObjects(Find_ID(CKPT), Find_Func("FindCPMode", RACE_CP_Check | RACE_CP_Finish), Sort_Distance(pTarget->GetX()-GetX(), pTarget->GetY()-GetY())))
+	for (var cp in FindObjects(Find_ID(Core_Goal_Checkpoint), Find_Func("FindCPMode", RACE_CP_Check | RACE_CP_Finish), Sort_Distance(pTarget->GetX()-GetX(), pTarget->GetY()-GetY())))
 		if (!cp->ClearedByPlr(plr) && (cp->IsActiveForPlr(plr) || cp->IsActiveForPlr(GetPlayerTeam(plr))))
 		{
 			nextcp = cp;

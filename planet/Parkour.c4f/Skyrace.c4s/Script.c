@@ -5,7 +5,7 @@ protected func Initialize()
 	for (var i=0; i<20; ++i) CreateObject(LOAM, 1560+Random(11)-5, 200+Random(11)-5, NO_OWNER);
 	for (var i=0; i<20; ++i) CreateObject(DYNA, 2730+Random(11)-5, 660+Random(11)-5, NO_OWNER);
 	// Create the race goal.
-	var pGoal = CreateObject(PARK, 0, 0, NO_OWNER);
+	var pGoal = CreateObject(Core_Goal_Parkour, 0, 0, NO_OWNER);
 	pGoal->SetStartpoint(50, 475);
 	pGoal->AddCheckpoint(930, 510, RACE_CP_Respawn);
 	pGoal->AddCheckpoint(1700, 300, RACE_CP_Respawn);

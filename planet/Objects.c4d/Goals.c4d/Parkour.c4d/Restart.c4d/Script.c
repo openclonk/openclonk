@@ -1,12 +1,14 @@
-/*-- Neustart --*/
+/*-- Restart --*/
 
-func Activate(iPlr)
+func Activate(int plr)
 {
-  // Szenario benachrichtigen
-  if(GameCall("OnRestart", iPlr)) return;
-  // Den Clonk des Spielers löschen
-  var pClonk = GetCrew(iPlr);
-  if (pClonk) pClonk->RemoveObject(true);
+  // Notify scenario.
+  if (GameCall("OnRestart", plr)) 
+	  return;
+  // Remove the player's clonk, including contents.
+  var clonk = GetCrew(plr);
+  if (clonk) 
+	  clonk->RemoveObject();
 }
 
 func Definition(def) {

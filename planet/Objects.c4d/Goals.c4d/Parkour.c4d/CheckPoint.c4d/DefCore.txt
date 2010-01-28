@@ -1,5 +1,5 @@
 [DefCore]
-id=CKPT
+id=Core_Goal_Checkpoint
 Version=4,10,0,0
 Category=C4D_StaticBack
 MaxUserSelect=1

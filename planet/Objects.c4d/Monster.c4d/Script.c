@@ -91,7 +91,7 @@ protected func Death()
 {
   Sound("DeathGrowl");
   SetDir(DIR_Left);
-  ChangeDef(DMNS);
+  //ChangeDef(DMNS);
   SetAction("Dead");
   return 1;
 }

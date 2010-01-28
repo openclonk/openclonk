@@ -1,1 +1,0 @@
-Der Spieler, der als erstes das Ziel erreicht, gewinnt.

@@ -1,14 +1,11 @@
 [Head]
 Icon=26
-Title=TheSummit
+Title=TheCavern
 Version=4,10,0,0
-MaxPlayer=8
+MaxPlayer=12
 
 [Definitions]
 Definition1=Objects.c4d
-
-[Game]
-Rules=RSTR=1
 
 [Player1]
 Wealth=50,0,0,250
@@ -27,8 +24,6 @@ Wealth=50,0,0,250
 Crew=CLNK=1
 
 [Landscape]
-Vegetation=TRE1=1;TRE2=2;TRE3=1;TRE4=1
-VegetationLevel=100,0,0,100
 InEarth=ROCK=1;GOLD=1;DYNA=3;LOAM=3
 InEarthLevel=80,0,0,100
 Sky=Clouds2

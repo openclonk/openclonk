@@ -124,7 +124,7 @@ public func IsActiveForTeam(int iTeam)
 
 /*-- Checkpoint activity --*/
 
-protected func FxIntCheckpointTimer()
+protected func FxIntCheckpointTimer(object pTarget, int iEffectNumber, int iEffectTime)
 {	
 	CheckForClonks();
 	return FX_OK;
@@ -152,6 +152,7 @@ protected func CheckForClonks()
 		if (CP_Mode & RACE_CP_Check)
 		{
 			aDoneByPlr[iPlr] = true;
+			Sound("Cleared", false, nil, iPlr);
 			if (!iTeam)
 				if (CP_Con)
 					CP_Con->AddPlrClearedCP(iPlr); // Notify race goal.
@@ -166,6 +167,7 @@ protected func CheckForClonks()
 		// Check finish status.
 		if (CP_Mode & RACE_CP_Finish) 
 		{
+			Sound("Cleared", false, nil, iPlr);
 			aDoneByPlr[iPlr] = true;
 			if (iTeam)
 				aDoneByTeam[iTeam] = true;

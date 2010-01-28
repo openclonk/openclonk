@@ -62,7 +62,7 @@ private func Sort_GeneratorPriority()
 private func FxEnergyNeedStart(object pTarget, int iEffectNumber, int iTemp)
 {
 	// Start showing energy need symbol.
-	pTarget->SetGraphics(0, ENSY, GFX_Overlay, GFXOV_MODE_Base);
+	pTarget->SetGraphics(nil, PWRC, GFX_Overlay, GFXOV_MODE_Base);
 	pTarget->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500*GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
 	EffectVar(0, pTarget, iEffectNumber) = true; // Effect is showing symbol.
 	return 1;
@@ -71,7 +71,7 @@ private func FxEnergyNeedStart(object pTarget, int iEffectNumber, int iTemp)
 private func FxEnergyNeedStop(object pTarget, int iEffectNumber, int iReason, bool fTemp)
 {
 	// Stop showing energy need symbol.
-	pTarget->SetGraphics(0, 0, GFX_Overlay, GFXOV_MODE_Base);
+	pTarget->SetGraphics(nil, nil, GFX_Overlay, GFXOV_MODE_Base);
 	return 1;
 }
 
