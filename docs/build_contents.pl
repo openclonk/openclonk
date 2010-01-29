@@ -3,7 +3,7 @@
 use strict;
 
 # A quick and dirty script to turn Microsofts hhc-format to strict html in Clonkstyle
-# usage: build_contents.pl infile.hhc > outfile.html
+# usage: build_contents.pl infile.hhc > outfile.php
 
 #print header
 
@@ -19,6 +19,7 @@ print <<HEADER;
 	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 	<title>$title</title>
 	<link rel=stylesheet type="text/css" href="doku.css">
+	<link rel=stylesheet type="text/css" href="http://www.openclonk.org/header/header.css">
 	<style type="text/css">
 	ul {
 		list-style:none;
@@ -106,15 +107,16 @@ HEADER
 
 if ($lang eq 'de') {
 	print <<HEADER;
+<?php readfile("http://www.openclonk.org/header/header.php?p=docsde"); ?>
+<div id="content">
 <ul class="nav">
-<li class="fineprint">Clonk Entwicklermodus Dokumentation</li>
-<li><a href="sdk/index.html">Einleitung</a></li>
-<li><a href="content.html">Inhalt</a></li>
+<li><a href="sdk/index.php">Einleitung</a></li>
+<li><a href="content.php">Inhalt</a></li>
 <li><a href="search.php">Suche</a></li>
-<li><a href="sdk/console.html">Engine</a></li>
-<li><a href="sdk/cmdline.html">Kommandozeile</a></li>
-<li><a href="sdk/files.html">Spieldaten</a></li>
-<li><a href="sdk/script/index.html">Script</a></li>
+<li><a href="sdk/console.php">Engine</a></li>
+<li><a href="sdk/cmdline.php">Kommandozeile</a></li>
+<li><a href="sdk/files.php">Spieldaten</a></li>
+<li><a href="sdk/script/index.php">Script</a></li>
 </ul>
 <h1>Inhalt</h1>
 <div class="text">
@@ -122,14 +124,16 @@ if ($lang eq 'de') {
 HEADER
 } else {
 	print <<HEADER;
-<ul class="nav"><li class="fineprint">Clonk Developer Mode Documentation</li>
-<li><a href="sdk/index.html">Introduction</a></li>
-<li><a href="content.html">Contents</a></li>
+<?php readfile("http://www.openclonk.org/header/header.php?p=docs"); ?>
+<div id="content">
+<ul class="nav">
+<li><a href="sdk/index.php">Introduction</a></li>
+<li><a href="content.php">Contents</a></li>
 <li><a href="search.php">Search</a></li>
-<li><a href="sdk/console.html">Engine</a></li>
-<li><a href="sdk/cmdline.html">Command Line</a></li>
-<li><a href="sdk/files.html">Game Data</a></li>
-<li><a href="sdk/script/index.html">Script</a></li>
+<li><a href="sdk/console.php">Engine</a></li>
+<li><a href="sdk/cmdline.php">Command Line</a></li>
+<li><a href="sdk/files.php">Game Data</a></li>
+<li><a href="sdk/script/index.php">Script</a></li>
 </ul>
 <h1>Contents</h1>
 <div class="text">
@@ -206,7 +210,7 @@ while (<>) { # assigns each line in turn to $_
 # some additional text at the bottom, too
 print <<FOOTER;
 </div>
-
+</div>
 </body>
 </html>
 FOOTER

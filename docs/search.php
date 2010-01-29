@@ -87,6 +87,7 @@ $lang = basename(dirname(__FILE__));
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <link rel="stylesheet" type="text/css" href="doku.css">
+<link rel="stylesheet" type="text/css" href="http://www.openclonk.org/header/header.css">
 <title><?php echo $lang == 'de' ? 'Entwicklermodus' : 'Developer Mode' ?></title>
 <style>
 ul {
@@ -106,29 +107,32 @@ text-decoration: none;
 <body>
 <?php
 if ($lang == 'de') {
+	getprint("http://www.openclonk.org/header/header.php?p=docsde");
 	echo <<<HEADER
+<div id="content">
 <ul class="nav">
-<li class="fineprint">Clonk Entwicklermodus Dokumentation</li>
-<li><a href="sdk/index.html">Einleitung</a></li>
-<li><a href="content.html">Inhalt</a></li>
+<li><a href="sdk/index.php">Einleitung</a></li>
+<li><a href="content.php">Inhalt</a></li>
 <li><a href="search.php">Suche</a></li>
-<li><a href="sdk/console.html">Engine</a></li>
-<li><a href="sdk/cmdline.html">Kommandozeile</a></li>
-<li><a href="sdk/files.html">Spieldaten</a></li>
-<li><a href="sdk/script/index.html">Script</a></li>
+<li><a href="sdk/console.php">Engine</a></li>
+<li><a href="sdk/cmdline.php">Kommandozeile</a></li>
+<li><a href="sdk/files.php">Spieldaten</a></li>
+<li><a href="sdk/script/index.php">Script</a></li>
 </ul>
 <h1>Suche nach Scriptfunktionen</h1>
 HEADER;
 } else {
+	getprint("http://www.openclonk.org/header/header.php?p=docs");
 	echo <<<HEADER
-<ul class="nav"><li class="fineprint">Clonk Developer Mode Documentation</li>
-<li><a href="sdk/index.html">Introduction</a></li>
-<li><a href="content.html">Contents</a></li>
+<div id="content">
+<ul class="nav">
+<li><a href="sdk/index.php">Introduction</a></li>
+<li><a href="content.php">Contents</a></li>
 <li><a href="search.php">Search</a></li>
-<li><a href="sdk/console.html">Engine</a></li>
-<li><a href="sdk/cmdline.html">Command Line</a></li>
-<li><a href="sdk/files.html">Game Data</a></li>
-<li><a href="sdk/script/index.html">Script</a></li>
+<li><a href="sdk/console.php">Engine</a></li>
+<li><a href="sdk/cmdline.php">Command Line</a></li>
+<li><a href="sdk/files.php">Game Data</a></li>
+<li><a href="sdk/script/index.php">Script</a></li>
 </ul>
 <h1>Search for Script Functions</h1>
 HEADER;
@@ -141,7 +145,7 @@ echo $lang == 'de' ? '<b>Suchbegriff:</b>' : '<b>Search term:</b>';
 echo '&nbsp;<input type="text" name="search"';
 if (isset($_GET['search'])) echo ' value="' . htmlspecialchars($_GET['search']) . '"';
 echo '> ';
-echo '<input type="submit" name="func" value="' . ($lang == 'de' ? 'Funktionssuche' : 'Search for function') . '">';
+echo '<input type="submit" name="func" value="' . ($lang == 'de' ? 'Funktionssuche' : 'Search for function') . '"> ';
 echo '<input type="submit" name="fulltext" value="' . ($lang == 'de' ? 'Volltextsuche' : 'Fulltext') . '">';
 ?>
 </form>
@@ -193,5 +197,5 @@ echo '<input type="submit" name="fulltext" value="' . ($lang == 'de' ? 'Volltext
 	}
 ?>
 </div>
-
+</div>
 </body></html>

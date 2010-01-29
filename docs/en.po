@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Clonk Doku\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-02 17:24+0100\n"
+"POT-Creation-Date: 2010-01-29 00:59+0100\n"
 "PO-Revision-Date: 2010-01-02 17:23+0100\n"
 "Last-Translator: Günther <gbrammer@gmx.de>\n"
 "Language-Team: English\n"
@@ -60,6 +60,7 @@ msgstr "Operator"
 #: sdk/script/fn/GetPlayerType.xml:16(col)
 #: sdk/script/fn/CustomMessage.xml:21(col)
 #: sdk/script/fn/CreateScriptPlayer.xml:16(col)
+#: sdk/script/fn/Anim_Linear.xml:37(col)
 #: sdk/script/fn/AddCommand.xml:66(col)
 #: sdk/scenario/scenario.xml:23(col)
 #: sdk/scenario/scenario.xml:82(col)
@@ -92,7 +93,7 @@ msgstr "Operator"
 #: sdk/definition/defcore.xml:19(col)
 #: sdk/definition/defcore.xml:206(col)
 #: sdk/definition/cnat.xml:16(col)
-#: sdk/definition/category.xml:12(col)
+#: sdk/definition/category.xml:11(col)
 #: sdk/definition/actmap.xml:23(col)
 msgid "Beschreibung"
 msgstr "Description"
@@ -114,7 +115,6 @@ msgstr "Type (resulting, expected)"
 #: sdk/script/operatoren.xml:58(col)
 #: sdk/script/operatoren.xml:65(col)
 #: sdk/script/operatoren.xml:72(col)
-#: sdk/definition/category.xml:74(col)
 msgid "15"
 msgstr "15"
 
@@ -797,6 +797,7 @@ msgstr "With the AND operator, the resulting bit will only be 1 if both incoming
 #: sdk/script/fn/CreateScriptPlayer.xml:17(col)
 #: sdk/script/fn/CreateMenu.xml:17(col)
 #: sdk/script/fn/CreateMenu.xml:29(col)
+#: sdk/script/fn/Anim_Linear.xml:38(col)
 #: sdk/script/fn/AddCommand.xml:68(col)
 #: sdk/script/Effects.xml:490(col)
 #: sdk/script/Effects.xml:527(col)
@@ -810,7 +811,6 @@ msgstr "With the AND operator, the resulting bit will only be 1 if both incoming
 #: sdk/material/c4m.xml:287(col)
 #: sdk/definition/lineconnect.xml:13(col)
 #: sdk/definition/cnat.xml:17(col)
-#: sdk/definition/category.xml:14(col)
 msgid "0"
 msgstr "0"
 
@@ -843,6 +843,7 @@ msgstr "0"
 #: sdk/script/fn/CreateScriptPlayer.xml:18(col)
 #: sdk/script/fn/CreateMenu.xml:18(col)
 #: sdk/script/fn/CreateMenu.xml:30(col)
+#: sdk/script/fn/Anim_Linear.xml:39(col)
 #: sdk/script/fn/AddCommand.xml:74(col)
 #: sdk/script/Effects.xml:184(col)
 #: sdk/script/Effects.xml:491(col)
@@ -855,8 +856,6 @@ msgstr "0"
 #: sdk/definition/lineconnect.xml:15(col)
 #: sdk/definition/cnat.xml:17(col)
 #: sdk/definition/cnat.xml:19(col)
-#: sdk/definition/category.xml:14(col)
-#: sdk/definition/category.xml:18(col)
 msgid "1"
 msgstr "1"
 
@@ -984,7 +983,6 @@ msgstr "Using these operators you can put together masks (1 &lt;&lt; bit-no.) an
 #: sdk/script/fn/ProtectedCall.xml:7(category)
 #: sdk/script/fn/PrivateCall.xml:7(category)
 #: sdk/script/fn/Par.xml:7(category)
-#: sdk/script/fn/ObjectCall.xml:8(category)
 #: sdk/script/fn/GetLength.xml:7(category)
 #: sdk/script/fn/GetChar.xml:7(category)
 #: sdk/script/fn/GameCall.xml:7(category)
@@ -2040,6 +2038,65 @@ msgstr "\"game DeployPlayer\" is a call in the scenario script. \"Direct exec\" 
 msgid "Es ist zu beachten, dass rechenintensive Scripte nicht die einzigen Bremsen im Spiel sind. Wenn ein Objekt zum Beispiel sehr viele Partikel erzeugt, kann dies das Spiel bremsen, ohne in der Scriptengine aufzutauchen. Ein anderes Beispiel wäre das Erzeugen von sehr vielen Objekten."
 msgstr "Notice that scripting functions may not be the only parts causing program execution to slow down. If an object creates large numbers of particles, this can also slow down the game without causing extra scripting execution time. Large numbers of objects would cause similar delays."
 
+#. TODO: Explain how to use a mesh for an object in general
+#: sdk/script/fn/StopAnimation.xml:7(category)
+#: sdk/script/fn/SetAnimationWeight.xml:7(category)
+#: sdk/script/fn/SetAnimationPosition.xml:7(category)
+#: sdk/script/fn/PlayAnimation.xml:7(category)
+#: sdk/script/fn/GetRootAnimation.xml:7(category)
+#: sdk/script/fn/GetAnimationWeight.xml:7(category)
+#: sdk/script/fn/GetAnimationPosition.xml:7(category)
+#: sdk/script/fn/GetAnimationName.xml:7(category)
+#: sdk/script/fn/GetAnimationLength.xml:7(category)
+#: sdk/script/fn/Anim_YDir.xml:7(category)
+#: sdk/script/fn/Anim_Y.xml:7(category)
+#: sdk/script/fn/Anim_XDir.xml:7(category)
+#: sdk/script/fn/Anim_X.xml:7(category)
+#: sdk/script/fn/Anim_Linear.xml:7(category)
+#: sdk/script/fn/Anim_Const.xml:7(category)
+#: sdk/script/fn/Anim_Action.xml:7(category)
+#: sdk/script/fn/Anim_AbsY.xml:7(category)
+#: sdk/script/fn/Anim_AbsX.xml:7(category)
+#: sdk/definition/animations.xml:5(title)
+#: sdk/definition/animations.xml:7(h)
+#, fuzzy
+msgid "Animationen"
+msgstr "ColorAnimation"
+
+#: sdk/script/fn/StopAnimation.xml:15(desc)
+msgid "Nummer der zu stoppenden Animation."
+msgstr ""
+
+#: sdk/script/fn/StopAnimation.xml:20(desc)
+msgid "Stoppt die Animation mit der angegeben Nummer (wie sie von <placeholder-1/> zurückgegeben wird) und entfernt die Animation aus dem zugehörigen Slot im Animations-Stack. Gehört ein Kombinationsknoten zur Nummer, so werden beide Animationen entfernt die kombiniert werden; wenn eine oder beide davon wieder Kombinationen sind werden auch deren Animationen entfernt, und so weiter. Wird die gestoppte Animation mit einer anderen kombiniert, so wird auch der zugehörige Kombinationsknoten entfernt, da es nun nichts mehr zu kombinieren gibt. Gibt true zurück wenn die Animation entfernt wurde, oder 0 wenn dies nicht möglich war (zum Beispiel wenn es keine Animation zur gegebenen Nummer gibt, oder die Animation zu Slot 0 gehört)."
+msgstr ""
+
+#: sdk/script/fn/StopAnimation.xml:22(remark)
+#: sdk/script/fn/SetAnimationWeight.xml:27(remark)
+#: sdk/script/fn/SetAnimationPosition.xml:27(remark)
+#: sdk/script/fn/PlayAnimation.xml:43(remark)
+#: sdk/script/fn/GetRootAnimation.xml:22(remark)
+#: sdk/script/fn/GetAnimationWeight.xml:22(remark)
+#: sdk/script/fn/GetAnimationPosition.xml:22(remark)
+#: sdk/script/fn/GetAnimationName.xml:22(remark)
+#: sdk/script/fn/GetAnimationLength.xml:22(remark)
+#: sdk/script/fn/Anim_YDir.xml:32(remark)
+#: sdk/script/fn/Anim_Y.xml:37(remark)
+#: sdk/script/fn/Anim_XDir.xml:32(remark)
+#: sdk/script/fn/Anim_X.xml:37(remark)
+#: sdk/script/fn/Anim_Linear.xml:49(remark)
+#: sdk/script/fn/Anim_Const.xml:22(remark)
+#: sdk/script/fn/Anim_Action.xml:17(remark)
+#: sdk/script/fn/Anim_AbsY.xml:37(remark)
+#: sdk/script/fn/Anim_AbsX.xml:37(remark)
+msgid "Siehe die <emlink href=\"definition/animations.html\">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems."
+msgstr ""
+
+#: sdk/script/fn/StopAnimation.xml:27(text)
+#: sdk/script/fn/GetRootAnimation.xml:27(text)
+msgid "Entfernt alle Animationen aus Slot 5 sodass dieser im Anschluss keine Animationen mehr enthält."
+msgstr ""
+
 #: sdk/script/fn/StartScriptProfiler.xml:12(desc)
 msgid "Wenn angegeben, werden nur Scriptfunktionen einer bestimmten Objektdefinition gemessen."
 msgstr "If specified, only script functions of the given object definition are measured."
@@ -2779,6 +2836,7 @@ msgstr "Index of the vertex to be changed."
 #: sdk/script/fn/CreateMenu.xml:16(col)
 #: sdk/script/fn/CreateMenu.xml:19(col)
 #: sdk/script/fn/CreateMenu.xml:28(col)
+#: sdk/script/fn/Anim_Linear.xml:37(col)
 #: sdk/scenario/scenario.xml:21(col)
 #: sdk/scenario/scenario.xml:80(col)
 #: sdk/scenario/scenario.xml:119(col)
@@ -2807,7 +2865,6 @@ msgstr "Index of the vertex to be changed."
 #: sdk/definition/defcore.xml:19(col)
 #: sdk/definition/defcore.xml:206(col)
 #: sdk/definition/cnat.xml:16(col)
-#: sdk/definition/category.xml:12(col)
 #: sdk/definition/actmap.xml:21(col)
 msgid "Wert"
 msgstr "Value"
@@ -3155,6 +3212,7 @@ msgstr "Red value"
 #: sdk/script/fn/CreateScriptPlayer.xml:19(col)
 #: sdk/script/fn/CreateMenu.xml:19(col)
 #: sdk/script/fn/CreateMenu.xml:31(col)
+#: sdk/script/fn/Anim_Linear.xml:40(col)
 #: sdk/script/fn/AddCommand.xml:72(col)
 #: sdk/script/Effects.xml:492(col)
 #: sdk/script/Effects.xml:529(col)
@@ -3165,8 +3223,6 @@ msgstr "Red value"
 #: sdk/definition/lineconnect.xml:17(col)
 #: sdk/definition/cnat.xml:19(col)
 #: sdk/definition/cnat.xml:21(col)
-#: sdk/definition/category.xml:18(col)
-#: sdk/definition/category.xml:22(col)
 msgid "2"
 msgstr "2"
 
@@ -3195,7 +3251,6 @@ msgstr "Green value"
 #: sdk/scenario/basefunc.xml:18(col)
 #: sdk/definition/lineconnect.xml:19(col)
 #: sdk/definition/cnat.xml:23(col)
-#: sdk/definition/category.xml:26(col)
 msgid "3"
 msgstr "3"
 
@@ -3436,8 +3491,6 @@ msgstr "Throw"
 #: sdk/definition/lineconnect.xml:21(col)
 #: sdk/definition/cnat.xml:21(col)
 #: sdk/definition/cnat.xml:25(col)
-#: sdk/definition/category.xml:22(col)
-#: sdk/definition/category.xml:30(col)
 msgid "4"
 msgstr "4"
 
@@ -3456,7 +3509,6 @@ msgstr "Jump"
 #: sdk/scenario/basefunc.xml:22(col)
 #: sdk/definition/lineconnect.xml:23(col)
 #: sdk/definition/cnat.xml:27(col)
-#: sdk/definition/category.xml:34(col)
 msgid "5"
 msgstr "5"
 
@@ -3474,7 +3526,6 @@ msgstr "Dig"
 #: sdk/script/fn/GetEffect.xml:56(col)
 #: sdk/definition/lineconnect.xml:25(col)
 #: sdk/definition/cnat.xml:30(col)
-#: sdk/definition/category.xml:38(col)
 msgid "6"
 msgstr "6"
 
@@ -3489,7 +3540,6 @@ msgstr "Left"
 #: sdk/script/fn/GetSystemTime.xml:27(col)
 #: sdk/material/c4m.xml:323(col)
 #: sdk/definition/lineconnect.xml:27(col)
-#: sdk/definition/category.xml:42(col)
 msgid "7"
 msgstr "7"
 
@@ -3506,8 +3556,6 @@ msgstr "Stop"
 #: sdk/definition/lineconnect.xml:19(col)
 #: sdk/definition/lineconnect.xml:29(col)
 #: sdk/definition/cnat.xml:23(col)
-#: sdk/definition/category.xml:26(col)
-#: sdk/definition/category.xml:46(col)
 msgid "8"
 msgstr "8"
 
@@ -3518,7 +3566,6 @@ msgstr "Right"
 
 #: sdk/script/fn/SetPlrShowControl.xml:29(col)
 #: sdk/material/c4m.xml:325(col)
-#: sdk/definition/category.xml:50(col)
 msgid "9"
 msgstr "9"
 
@@ -3750,6 +3797,7 @@ msgstr "0-100000: new value for the property"
 #: sdk/script/fn/CreateScriptPlayer.xml:16(col)
 #: sdk/script/fn/CreateMenu.xml:16(col)
 #: sdk/script/fn/CreateMenu.xml:28(col)
+#: sdk/script/fn/Anim_Linear.xml:37(col)
 msgid "Konstante"
 msgstr "Constant"
 
@@ -3937,7 +3985,6 @@ msgstr "GFX_BLIT_Custom"
 #: sdk/script/fn/SetObjectBlitMode.xml:24(col)
 #: sdk/script/fn/CreateMenu.xml:33(col)
 #: sdk/definition/lineconnect.xml:27(col)
-#: sdk/definition/category.xml:42(col)
 msgid "128"
 msgstr "128"
 
@@ -3951,7 +3998,6 @@ msgstr "GFX_BLIT_Parent"
 
 #: sdk/script/fn/SetObjectBlitMode.xml:25(col)
 #: sdk/definition/lineconnect.xml:29(col)
-#: sdk/definition/category.xml:46(col)
 msgid "256"
 msgstr "256"
 
@@ -4317,6 +4363,7 @@ msgstr "iRampIndex"
 #: sdk/script/NamedVar.xml:22(col)
 #: sdk/script/GetXXVal.xml:24(col)
 #: sdk/definition/script.xml:67(col)
+#: sdk/definition/animations.xml:25(col)
 msgid "Funktion"
 msgstr "Function"
 
@@ -5161,8 +5208,7 @@ msgstr "Sets the climate (median temperature)."
 #: sdk/script/fn/C4D_Goal.xml:7(subcat)
 #: sdk/script/fn/C4D_Background.xml:7(subcat)
 #: sdk/script/fn/C4D_All.xml:7(subcat)
-#: sdk/definition/category.xml:12(col)
-#: sdk/definition/category.xml:117(bitmask)
+#: sdk/definition/category.xml:11(col)
 msgid "Kategorie"
 msgstr "Category"
 
@@ -5211,6 +5257,39 @@ msgstr ""
 
 #: sdk/script/fn/SetBit.xml:17(desc)
 msgid "Gibt die neue Bitmaske mit dem an iBitNumber durch fBit ersetzten Bit zurück."
+msgstr ""
+
+#: sdk/script/fn/SetAnimationWeight.xml:15(desc)
+#: sdk/script/fn/SetAnimationPosition.xml:15(desc)
+#, fuzzy
+msgid "Animationsnummer der Animation deren Position gesetzt werden soll."
+msgstr "Player whose view distance to want to set."
+
+#: sdk/script/fn/SetAnimationWeight.xml:20(desc)
+#: sdk/script/fn/PlayAnimation.xml:30(desc)
+msgid "Bestimmt, wie die aktuelle Gewichtung der Animation berechnet wird, falls die Animation mit einer anderen Animation im gegebenen Slot kombiniert wird. Diese wird mittels Animationsfunktionen der Form \"Anim_\" angegeben."
+msgstr ""
+
+#: sdk/script/fn/SetAnimationWeight.xml:25(desc)
+msgid "Setzt die Gewichtung der angegebenen Animation neu. Rückgabewert true falls der neue AVP gesetzt wurde oder false wenn es keine Animation mit der angegebenen Nummer gibt oder es sich bei ihr um einen Animationsknoten handelt."
+msgstr ""
+
+#: sdk/script/fn/SetAnimationWeight.xml:34(text)
+msgid "Ist in swim_comb die Animationsnummer eines Animationsknoten gespeichert, welcher eine Nach-Oben-Schwimmen- und eine Nach-Unten-Schwimmen-Animation kombiniert (siehe Beispiel zu <placeholder-1/>), so wird hier das Gewicht kosinusförmig abhängig von der aktuellen Schwimmrichtung gesetzt."
+msgstr ""
+
+#: sdk/script/fn/SetAnimationPosition.xml:20(desc)
+#: sdk/script/fn/PlayAnimation.xml:25(desc)
+msgid "Bestimmt, wie die aktuelle Position der Animation berechnet wird. Diese wird mittels Animationsfunktionen der Form \"Anim_\" angegeben."
+msgstr ""
+
+#: sdk/script/fn/SetAnimationPosition.xml:25(desc)
+msgid "Setzt die Position der angegebenen Animation neu. Rückgabewert true falls der neue AVP gesetzt wurde oder false wenn es keine Animation mit der angegebenen Nummer gibt oder es sich bei ihr um einen Kombinationsknoten handelt."
+msgstr ""
+
+#: sdk/script/fn/SetAnimationPosition.xml:32(text)
+#: sdk/script/fn/GetAnimationPosition.xml:27(text)
+msgid "Script für einen Timer: Bei jeder Durchführung wird die Animation um 100 Millisekunden weitergespielt. Falls der Timer im gleichen Abstand aufgerufen wird kann stattdessen auch <placeholder-1/> verwendet werden."
 msgstr ""
 
 #: sdk/script/fn/SetAlive.xml:7(subcat)
@@ -5763,7 +5842,6 @@ msgstr "Punches the target object."
 
 #: sdk/script/fn/ProtectedCall.xml:7(subcat)
 #: sdk/script/fn/PrivateCall.xml:7(subcat)
-#: sdk/script/fn/ObjectCall.xml:8(subcat)
 #: sdk/script/fn/GameCall.xml:7(subcat)
 #: sdk/script/fn/DefinitionCall.xml:7(subcat)
 #: sdk/script/fn/Call.xml:7(subcat)
@@ -5772,20 +5850,17 @@ msgstr "Function call"
 
 #: sdk/script/fn/ProtectedCall.xml:12(desc)
 #: sdk/script/fn/PrivateCall.xml:12(desc)
-#: sdk/script/fn/ObjectCall.xml:13(desc)
 msgid "Objekt, in dem die Funktion aufgerufen werden soll."
 msgstr "Object in which to call the function."
 
 #: sdk/script/fn/ProtectedCall.xml:13(desc)
 #: sdk/script/fn/PrivateCall.xml:13(desc)
-#: sdk/script/fn/ObjectCall.xml:14(desc)
 #: sdk/script/fn/Call.xml:12(desc)
 msgid "Funktion, die aufgerufen werden soll."
 msgstr "Function to be called."
 
 #: sdk/script/fn/ProtectedCall.xml:14(desc)
 #: sdk/script/fn/PrivateCall.xml:14(desc)
-#: sdk/script/fn/ObjectCall.xml:15(desc)
 #: sdk/script/fn/Call.xml:13(desc)
 msgid "Parameter der Funktion."
 msgstr "Parameters of the function."
@@ -5848,6 +5923,32 @@ msgstr "Additional message formatting parameters. Also see <placeholder-1/>."
 #: sdk/script/fn/PlayerMessage.xml:22(text)
 msgid "Lässt den ausgewählten Clonk des ersten Spielers nur selbigen den Namen verraten."
 msgstr "Tells the name of the selected clonk to the owner of the clonk only."
+
+#: sdk/script/fn/PlayAnimation.xml:15(desc)
+#, fuzzy
+msgid "Name der abzuspielenden Animation."
+msgstr "Name of the entry to be retrieved."
+
+#: sdk/script/fn/PlayAnimation.xml:20(desc)
+#, fuzzy
+msgid "Slot im Animation Stack in den die Animation eingefügt werden soll. Siehe <emlink href=\"definition/animations.html\">Animationen</emlink>."
+msgstr "Sets the activity of the specified object. Also see <emlink href=\"definition/actmap.html\">ActMap.txt</emlink>."
+
+#: sdk/script/fn/PlayAnimation.xml:35(desc)
+msgid "Falls die Animation mit einer anderen Animation kombiniert wird, dann gibt dies den Knoten an, mit dem die neue Animation kombiniert wird. Falls nicht angegeben oder nil wird die Animation mit der obersten Animation des Slots verknüpft wie sie von <placeholder-1/> zurückgeliefert wird."
+msgstr ""
+
+#: sdk/script/fn/PlayAnimation.xml:41(desc)
+msgid "Spielt eine neue neue Animation ab. Der Rückgabewert der Funktion ist die Animationsnummer des eingefügten Animationsknotens, mit der die Animation später manipuliert oder wieder entfernt werden kann. Falls im angegebenen Slot bereits Animationen vorhanden sind, so wird auch ein Kombinationsknoten erstellt. Dieser erhält die zurückgegebene Nummer plus 1."
+msgstr ""
+
+#: sdk/script/fn/PlayAnimation.xml:48(text)
+msgid "Spielt die Animation \"Scale\" ab und überschreibt dabei eventuell bereits existierende Animationen in Slot 5 ohne sie zu entfernen. Die Animationsposition wird nach der Y-Position des Objekts gewählt, so dass die Animation mit der Fortbewegung des Clonks während des Kletterns synchronisiert ist."
+msgstr ""
+
+#: sdk/script/fn/PlayAnimation.xml:54(text)
+msgid "Überlagert eine SwimDiveUp- mit einer SwimDiveDown-Animation so, dass beide Animationen gleich viel Gewicht haben. Das Ergebnis ist, dass der Clonk waagerecht im Wasser liegt. Falls zuvor eine andere Animation in Slot 5 abgespielt wurde, so wird ein 15 Frames dauernder Übergang gemacht an dessen Ende die vorherige Animation entfernt wird. Mithilfe der Variablen swim_comb kann das Gewicht zwischen den beiden Animationen in weiteren Code der Schwimmrichtung angepasst werden."
+msgstr ""
 
 #: sdk/script/fn/PlaceVegetation.xml:12(desc)
 msgid "ID des zu erstellenden Objekts."
@@ -6078,10 +6179,6 @@ msgstr "Search criteria are specified as in <placeholder-1/> and <placeholder-2/
 #: sdk/script/fn/ObjectCount.xml:21(text)
 msgid "Informiert über die Stärke der Feinde."
 msgstr "Prints info about the strength of the enemy."
-
-#: sdk/script/fn/ObjectCall.xml:18(desc)
-msgid "Ruft die öffentliche Funktion szFunction in pObj auf. Stattdessen sollte die neue Syntax [pObj]-&gt;[szFunction]() oder [pObj]-&gt;[idObj]::[szFunction]() genutzt werden."
-msgstr "Calls a public function in the target object, You should use the new syntax [pObj]-&gt;[szFunction]() or [pObj]-&gt;[idObj]::[szFunction]() instead."
 
 #: sdk/script/fn/Object.xml:12(desc)
 msgid "Eindeutige Objektnummer."
@@ -7150,6 +7247,15 @@ msgstr "Most useful applications for strEntry are already implemented in System.
 #: sdk/script/fn/GetScenarioVal.xml:43(text)
 msgid "Gibt eine Meldung mit dem Szenariotitel aus."
 msgstr "Displays the scenario title."
+
+#: sdk/script/fn/GetRootAnimation.xml:15(desc)
+#, fuzzy
+msgid "Slot dessen oberste Animation zurückgegeben werden soll."
+msgstr "Number of the player whose score you want to determine."
+
+#: sdk/script/fn/GetRootAnimation.xml:20(desc)
+msgid "Gibt die Nummer der obersten Animation im angegebenen Slot zurück. Diese Animation wird mit der Animation der nächstkleineren Slotnummer kombiniert um dann mit der obersten Animation der nächsthöheren Slotnummer kombiniert zu werden, oder, falls es keinen nächsthöheren Slot gibt, auf dem Bildschirm angezeigt zu werden. Enthält der Slot mehr als eine Animation, so ist die oberste Animation immer ein Kombinationsknoten, der die Einzelanimationen oder Kombinationen derselben zu dem Gesamtergebnis des Slots kombiniert. Gibt nil zurück wenn der angegebene Slot gar keine Animation enthält."
+msgstr ""
 
 #: sdk/script/fn/GetRank.xml:12(desc)
 #, fuzzy
@@ -8249,6 +8355,54 @@ msgstr "Returns the data type of a passed value."
 #, fuzzy
 msgid "Liefert die Nummer des Spielers, dessen Heimatbasis das aufrufende Objekt ist. Rückgabewert <placeholder-1/> wenn es keine Heimatbasis ist."
 msgstr "Returns the player whose home base the specified object is. Return value -1 if the object is not a home base."
+
+#: sdk/script/fn/GetAnimationWeight.xml:15(desc)
+#, fuzzy
+msgid "Animationsnummer der Animation deren Gewichtung abgefragt werden soll."
+msgstr "Name of the activity of which to get an entry."
+
+#: sdk/script/fn/GetAnimationWeight.xml:20(desc)
+msgid "Gibt die Gewichtung eines Kombinationsknotens zurück. Die Gewichtung bestimmt, zu welchem Anteil die beiden kombinierten Animationen in die Gesamtanimation einfließen. Die Zahl liegt immer zwischen 0 (erste Animation geht voll ein) und 1000 (zweite Animation geht voll ein). Gibt nil zurück falls es keine Animation mit der angegebenen Nummer gibt, oder falls es sich dabei um einen Animationsknoten handelt."
+msgstr ""
+
+#: sdk/script/fn/GetAnimationWeight.xml:27(text)
+msgid "Entfernt den Kombinationsknoten \"iAnimationNumber\" wenn seine Gewichtung 1000 erreicht hat."
+msgstr ""
+
+#: sdk/script/fn/GetAnimationPosition.xml:15(desc)
+#, fuzzy
+msgid "Animationsnummer der Animation deren Position abgefragt werden soll."
+msgstr "Name of the activity of which to get an entry."
+
+#: sdk/script/fn/GetAnimationPosition.xml:20(desc)
+msgid "Gibt die Stelle zurück an der die Animation mit der angegebenen Nummer gerade ist. Die Zahl liegt zwischen 0 und <placeholder-1/>(<placeholder-2/>(iAnimationNumber)). Falls es keine Animation mit der angegebenen Nummer gibt oder es sich dabei um einen Kombinationsknoten handelt gibt die Funktion nil zurück."
+msgstr ""
+
+#: sdk/script/fn/GetAnimationName.xml:15(desc)
+#, fuzzy
+msgid "Animationsnummer der Animation deren Name abgefragt werden soll."
+msgstr "Number of the team whose name to get."
+
+#: sdk/script/fn/GetAnimationName.xml:20(desc)
+msgid "Gibt den Namen der Animation mit der angegebenen Nummer zurück. Falls keine Animation mit der angegebenen Nummer existiert, oder falls es sich dabei um einen Kombinationsknoten handelt gibt die Funktion nil zurück."
+msgstr ""
+
+#: sdk/script/fn/GetAnimationName.xml:27(text)
+msgid "Falls in Slot 5 derzeit nur eine Animation gespielt wird, und falls diese \"Walk\" ist, dann wird sie gestoppt."
+msgstr ""
+
+#: sdk/script/fn/GetAnimationLength.xml:15(desc)
+#, fuzzy
+msgid "Name der Animation deren Länge abgefragt werden soll."
+msgstr "Name of the activity of which to get an entry."
+
+#: sdk/script/fn/GetAnimationLength.xml:20(desc)
+msgid "Gibt die Länge der Animation mit dem angegebenen Namen zurück, oder nil wenn keine solche Animation existiert. Gültige Positionen (für <placeholder-1/> und <placeholder-2/>) liegen zwischen 0 und der Länge der Animation. Die zurückgegebene Zahl entspricht der Animationslänge (wie sie im Modellierungstool eingestellt wurde) in Millisekunden."
+msgstr ""
+
+#: sdk/script/fn/GetAnimationLength.xml:27(text)
+msgid "Spielt eine neue Animation namens \"Turn\" in Slot 5 ab, die eventuell andere Animationen in Slot 5 überlagert. Ein Animationsdurchgang dauert 50 Frames. Danach fängt die Animation wieder von vorne an."
+msgstr ""
 
 #: sdk/script/fn/GetAlive.xml:12(desc)
 #, fuzzy
@@ -9559,7 +9713,6 @@ msgstr ""
 #: sdk/scenario/basefunc.xml:10(col)
 #: sdk/definition/lineconnect.xml:11(col)
 #: sdk/definition/cnat.xml:16(col)
-#: sdk/definition/category.xml:12(col)
 msgid "Bit"
 msgstr "Bit"
 
@@ -10586,6 +10739,174 @@ msgstr "Passed to <placeholder-1/>/<placeholder-2/> so only contained objects ar
 msgid "Schlägt einen sich versteckenden Wipf."
 msgstr "Hits a hiding wipf."
 
+#: sdk/script/fn/Anim_YDir.xml:15(desc)
+#: sdk/script/fn/Anim_Y.xml:20(desc)
+#: sdk/script/fn/Anim_XDir.xml:15(desc)
+#: sdk/script/fn/Anim_X.xml:20(desc)
+#: sdk/script/fn/Anim_Linear.xml:20(desc)
+#: sdk/script/fn/Anim_AbsY.xml:20(desc)
+#: sdk/script/fn/Anim_AbsX.xml:20(desc)
+#, fuzzy
+msgid "Beginn des Intervalls."
+msgstr "Name of material."
+
+#: sdk/script/fn/Anim_YDir.xml:20(desc)
+#: sdk/script/fn/Anim_XDir.xml:20(desc)
+msgid "Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so nimmt der Wert mit größerer XDir zu, sonst nimmt er ab."
+msgstr ""
+
+#: sdk/script/fn/Anim_YDir.xml:25(desc)
+msgid "Größter Wert der YDir der abgebildet soll. Noch größere Geschwindigkeiten führen zum gleichen Animationswert (iEnd)."
+msgstr ""
+
+#: sdk/script/fn/Anim_YDir.xml:30(desc)
+msgid "Der Wert ist proportional zur Y-Geschwindigkeit des Objekts. Die Geschwindigkeiten 0 bis iMaxYDir werden linear auf den Wertebereich von iBegin bis iEnd abgebildet."
+msgstr ""
+
+#: sdk/script/fn/Anim_YDir.xml:37(text)
+msgid "Spielt die Animation \"ShowSpeed\" in Slot 10 ab. Diese könnte eine Geschwindigkeitsanzeige in einem Aufzug darstellen."
+msgstr ""
+
+#: sdk/script/fn/Anim_Y.xml:15(desc)
+#: sdk/script/fn/Anim_X.xml:15(desc)
+#: sdk/script/fn/Anim_Linear.xml:15(desc)
+#: sdk/script/fn/Anim_AbsY.xml:15(desc)
+#: sdk/script/fn/Anim_AbsX.xml:15(desc)
+msgid "Startwert. Sollte innerhalb des von iBegin und iEnd aufgespannten Intervalls liegen."
+msgstr ""
+
+#: sdk/script/fn/Anim_Y.xml:25(desc)
+msgid "Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so nimmt der Wert mit Bewegung des Objekts in positiver Y-Richtung zu, andernfalls nimmt er ab."
+msgstr ""
+
+#: sdk/script/fn/Anim_Y.xml:30(desc)
+#: sdk/script/fn/Anim_AbsY.xml:30(desc)
+msgid "Anzahl Pixel die in Y-Richtung zurückgelegt werden müssen um die Animation von iBegin bis nach iEnd durchzuspielen."
+msgstr ""
+
+#: sdk/script/fn/Anim_Y.xml:35(desc)
+msgid "Der Wert hängt von der Bewegung des Objekts in Y-Richtung ab. Jeder Pixel den sich das Objekt in positiver Y-Richtung bewegt erhöht den Wert etwas, und jeder Pixel in negative Y-Richtung verringert ihn etwas. Wenn iEnd erreicht wurde wird der Wert wieder auf iBegin zurückgesetzt, und wenn iBegin erreicht wurde wird er auf iEnd gesetzt."
+msgstr ""
+
+#: sdk/script/fn/Anim_Y.xml:42(text)
+msgid "Spielt die Animation \"Scale\" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in Y-Richtung bewegt. Nachdem es 15 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an. Hier wird <placeholder-1/> anstelle von <placeholder-2/> verwendet, da beim Runterklettern die Animation in die andere Richtung abgespielt werden soll wie beim Raufklettern. iBegin wurde größer als iEnd gewählt, da die Animation in bei Bewegung in negative Y-Richtung (Raufklettern) vorwärts und bei Bewegung in positive Y-Richtung (Herabklettern) rückwärts abgespielt werden soll."
+msgstr ""
+
+#: sdk/script/fn/Anim_XDir.xml:25(desc)
+msgid "Größter Wert der XDir der abgebildet soll. Noch größere Geschwindigkeiten führen zum gleichen Animationswert (iEnd)."
+msgstr ""
+
+#: sdk/script/fn/Anim_XDir.xml:30(desc)
+msgid "Der Wert ist proportional zur X-Geschwindigkeit des Objekts. Die Geschwindigkeiten 0 bis iMaxXDir werden linear auf den Wertebereich von iBegin bis iEnd abgebildet."
+msgstr ""
+
+#: sdk/script/fn/Anim_XDir.xml:37(text)
+msgid "Spielt die Animation \"ShowSpeed\" in Slot 10 ab. Diese könnte eine Geschwindigkeitsanzeige in einem Fahrzeug darstellen."
+msgstr ""
+
+#: sdk/script/fn/Anim_X.xml:25(desc)
+msgid "Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so nimmt der Wert mit der Bewegung des Objekts in positiver X-Richtung zu, andernfalls nimmt er ab."
+msgstr ""
+
+#: sdk/script/fn/Anim_X.xml:30(desc)
+#: sdk/script/fn/Anim_AbsX.xml:30(desc)
+msgid "Anzahl Pixel die in X-Richtung zurückgelegt werden müssen um die Animation von iBegin bis nach iEnd durchzuspielen."
+msgstr ""
+
+#: sdk/script/fn/Anim_X.xml:35(desc)
+msgid "Der Wert hängt von der Bewegung des Objekts in X-Richtung ab. Jeder Pixel den sich das Objekt in positiver X-Richtung bewegt erhöht den Wert etwas, und jeder Pixel in negative X-Richtung verringert ihn etwas. Wenn iEnd erreicht wurde wird der Wert wieder auf iBegin zurückgesetzt, und wenn iBegin erreicht wurde wird er auf iEnd gesetzt."
+msgstr ""
+
+#: sdk/script/fn/Anim_X.xml:42(text)
+msgid "Spielt die Animation \"Drive\" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in X-Richtung bewegt. Nachdem es 15 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an. Hier wird <placeholder-1/> anstelle von <placeholder-2/> verwendet, da sich die Räder eines Fahrzeugs beim Rückwärtsfahren auch rückwärts drehen sollen."
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:25(desc)
+msgid "Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so steigt der Wert mit der Zeit an, andernfalls nimmt er ab."
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:30(desc)
+msgid "Anzahl Frames die ein Durchspielen von iBegin bis iEnd dauert."
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:38(col)
+msgid "ANIM_Loop"
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:38(col)
+msgid "Der Wert wird nach dem Erreichen von iEnd wieder auf iBegin gesetzt und der Durchgang beginnt von neuem."
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:39(col)
+#, fuzzy
+msgid "ANIM_Hold"
+msgstr "solid"
+
+#: sdk/script/fn/Anim_Linear.xml:39(col)
+msgid "Nach Erreichen von iEnd bleibt der Wert konstant auf iEnd."
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:40(col)
+msgid "ANIM_Remove"
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:40(col)
+msgid "Nach Erreichen von iEnd wird die zugehörige Animation entfernt wie wenn zum entsprechenden Zeitpunkt <placeholder-1/> aufgerufen würde. Bei Kombinationsknoten wird der Kindknoten mit der kleineren Gewichtung entfernt."
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:35(desc)
+msgid "Bestimmt, was nach dem Erreichen von iEnd geschieht. Folgende Möglichkeiten existieren: <placeholder-1/>"
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:47(desc)
+msgid "Der Wert nimmt linear mit der Zeit (in Frames) zu oder ab (je nachdem ob iEnd größer oder kleiner als iBegin ist). Anfangs beträgt der Wert iPosition und läuft dann Richtung iEnd. Ein Durchgang von iBegin bis nach iEnd dauert iLength Frames. Wenn iPosition von iBegin abweicht dann wird iEnd bereits früher erreicht sein. iEnding bestimmt, was passiert, wenn das Ende erreicht ist."
+msgstr ""
+
+#: sdk/script/fn/Anim_Linear.xml:65(text)
+msgid "Setzt die Geschwindigkeit mit der die Animation im Slot 5 abgespielt wird abhängig von der Windgeschwindigkeit. Weht der Wind nach links so wird die Animation rückwärts abgespielt. Es wäre auch möglich die Position jeden Frame mit <placeholder-1/> zu setzen, bei der Lösung mit <placeholder-2/> reicht es aber aus wenn die Funktion nur alle paar Frames aufgerufen wird, da sich das Windrad in der Zwischenzeit mit konstanter Geschwindigkeit weiter dreht (es wird also die Näherung gemacht, dass die Windgeschwindigkeit für kleine Zeitintervalle konstant ist)."
+msgstr ""
+
+#: sdk/script/fn/Anim_Const.xml:15(desc)
+msgid "Zu verwendender Wert."
+msgstr ""
+
+#: sdk/script/fn/Anim_Const.xml:20(desc)
+msgid "Wertangabe für <placeholder-1/>, <placeholder-2/> oder <placeholder-3/>: Über die komplette Zeitdauer der Animation wird der gegebene konstante Wert verwendet."
+msgstr ""
+
+#: sdk/script/fn/Anim_Const.xml:27(text)
+msgid "Spielt die Animation \"HangleStand\" ab und verwendet dabei kontant den Wert 1000 als Gewicht (volles Gewicht). Die Position der Animation ist nicht konstant sondern verändert sich (linear) mit der Zeit, siehe <placeholder-1/>."
+msgstr ""
+
+#: sdk/script/fn/Anim_Action.xml:15(desc)
+msgid "Der Wert hängt von der Phase der aktuellen Action ab. Die Phase wird linear auf die von der Action zur Zeit abgespielte Animation abgebildet (siehe <emlink href=\"definition/actmap.html\">ActMap</emlink>). Dies kann verwendet werden um Animationen synchron zur ActMap-Animation zu spielen."
+msgstr ""
+
+#: sdk/script/fn/Anim_Action.xml:22(text)
+msgid "Spielt die Animation \"Walk\" in Slot 10 synchron zur aktuellen Action ab."
+msgstr ""
+
+#: sdk/script/fn/Anim_AbsY.xml:25(desc)
+#: sdk/script/fn/Anim_AbsX.xml:25(desc)
+msgid "Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so nimmt der Wert mit der Bewegung des Objekts zu, andernfalls nimmt er ab."
+msgstr ""
+
+#: sdk/script/fn/Anim_AbsY.xml:35(desc)
+msgid "Der Wert hängt von der Bewegung des Objekts in Y-Richtung ab. Jeder Pixel den sich das Objekt in Y-Richtung bewegt erhöht den Wert etwas. Wenn iEnd erreicht wurde wird der Wert wieder auf iBegin zurückgesetzt. Im Gegensatz zu <placeholder-1/> bewegt sich der Wert immer auf iEnd zu, egal in welche Richtung sich das Objekt bewegt."
+msgstr ""
+
+#: sdk/script/fn/Anim_AbsY.xml:42(text)
+msgid "Spielt die Animation \"Lift\" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in Y-Richtung bewegt. Nachdem es 25 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an."
+msgstr ""
+
+#: sdk/script/fn/Anim_AbsX.xml:35(desc)
+msgid "Der Wert hängt von der Bewegung des Objekts in X-Richtung ab. Jeder Pixel den sich das Objekt in X-Richtung bewegt erhöht den Wert etwas. Wenn iEnd erreicht wurde wird der Wert wieder auf iBegin zurückgesetzt. Im Gegensatz zu <placeholder-1/> bewegt sich der Wert immer auf iEnd zu, egal in welche Richtung sich das Objekt bewegt."
+msgstr ""
+
+#: sdk/script/fn/Anim_AbsX.xml:42(text)
+msgid "Spielt die Animation \"Walk\" in Slot 5 ab und überlagert dabei eventuelle andere Animationen in Slot 5. Die Animation wird dabei umso schneller abgespielt je schneller sich das Objekt in X-Richtung bewegt. Nachdem es 20 Pixel zurückgelegt hat ist die Animation einmal von vorne bis hinten durchgespielt worden und fängt wieder von vorne an."
+msgstr ""
+
 #: sdk/script/fn/Angle.xml:12(desc)
 msgid "X-Koordinate des ersten Punktes"
 msgstr "X coordinate of the first point"
@@ -10891,6 +11212,7 @@ msgid "Variableninhalt"
 msgstr "Contents of Variable"
 
 #: sdk/script/Typechecks.xml:16(col)
+#: sdk/definition/category.xml:82(h)
 msgid "Beispiel"
 msgstr "Example"
 
@@ -12415,7 +12737,6 @@ msgstr "FX_Call_EngScript"
 #: sdk/scenario/basefunc.xml:22(col)
 #: sdk/definition/lineconnect.xml:23(col)
 #: sdk/definition/cnat.xml:27(col)
-#: sdk/definition/category.xml:34(col)
 msgid "32"
 msgstr "32"
 
@@ -12809,6 +13130,7 @@ msgstr "MissionAccess"
 #: sdk/folder/foldermap.xml:76(col)
 #: sdk/folder/foldermap.xml:81(col)
 #: sdk/folder/foldermap.xml:91(col)
+#: sdk/definition/actmap.xml:149(col)
 msgid "Zeichenfolge"
 msgstr "String"
 
@@ -13702,8 +14024,6 @@ msgstr "Objects can be sold at the base."
 #: sdk/scenario/basefunc.xml:20(col)
 #: sdk/definition/lineconnect.xml:21(col)
 #: sdk/definition/cnat.xml:25(col)
-#: sdk/definition/category.xml:30(col)
-#: sdk/definition/category.xml:78(col)
 msgid "16"
 msgstr "16"
 
@@ -13728,7 +14048,6 @@ msgid "1-16"
 msgstr "1-16"
 
 #: sdk/scenario/basefunc.xml:24(col)
-#: sdk/definition/category.xml:78(col)
 msgid "65536"
 msgstr "65536"
 
@@ -16230,44 +16549,25 @@ msgid "Der Clonk Entwicklermodus gibt vollen Zugriff auf alle Spieldaten von Clo
 msgstr "The Clonk developer mode grants full access to all game content in Clonk: scenarios, object definitions, player files, and additional group files. Existing data can be modified and new elements can be created."
 
 #: sdk/index.xml:10(text)
-msgid "Der Entwicklermodus ist über den Editor erreichbar."
-msgstr "The Editor (Windows only) represents the easiest way to use the developer mode."
-
-#: sdk/index.xml:11(text)
-msgid "Im Editor können per Drag &amp; Drop alle Einzelkomponenten der Spieldaten bearbeitet werden. In der Engine können Objekte per Mausklick in der Landschaft platziert und Landkarten pixelgenau bearbeitet und abgespeichert werden."
-msgstr "The editor can be used to modify the components of all game objects or scenarios. When the engine is in developer mode, objects within a running scenario can be created and moved around by mouse, and landscapes can be edited and saved."
-
-#: sdk/index.xml:12(text)
 msgid "Selbsterstellte Spielelemente können veröffentlicht und somit anderen Clonk-Spielern zugänglich gemacht werden. Sie sollten jedoch vorher unbedingt ausgiebig getestet werden und keine Fehler enthalten."
 msgstr "Self created game content can be publicly released and made available to other players. However, all content should be thoroughly tested and free of bugs before publishing."
 
-#: sdk/index.xml:14(h)
-msgid "Nutzungsbedingungen"
-msgstr "Terms of Use"
+#: sdk/index.xml:12(h)
+#, fuzzy
+msgid "Hinweise"
+msgstr "Note:"
 
-#: sdk/index.xml:16(text)
+#: sdk/index.xml:14(text)
 msgid "Die Benutzung der erweiterten Funktionen von Clonk geschieht grundsätzlich auf eigene Gefahr und Verantwortung. Es gibt keinerlei Support. Der Entwicklermodus ist nur registrierten Spielern zugänglich."
 msgstr "Use the developer mode at your own risk. No support can be given by RedWolf Design. The developer mode is available to registered players only."
 
-#: sdk/index.xml:17(text)
+#: sdk/index.xml:15(text)
 msgid "Durch unsachgemäße Anwendung kann nicht nur der Spielspaß zunichte, sondern das komplette Spiel unspielbar gemacht werden. Für den erfolgreichen Einsatz des Entwicklermodus sind grundlegende Programmierkenntnisse, Fähigkeiten bei der Bearbeitung von Grafiken und allgemeiner Sachverstand absolute Voraussetzung. Wer sich dessen nicht sicher ist, sollte die Finger davon lassen."
 msgstr "Through improper use you can not only destroy all the fun in the game, but also make the whole game unplayable. In order to successfully use the developer mode, basic programming and graphics skills as well as general computer expertise are required. Those who are unsure should leave their hands off it!"
 
-#: sdk/index.xml:18(text)
+#: sdk/index.xml:16(text)
 msgid "Jeder, der die in dieser Dokumentation enthaltenen Informationen nutzt, sollte verantwortungsvoll mit den gegebenen Möglichkeiten umgehen und eigenverantwortlich das Ziel anstreben, sinnvoll spielbare Erweiterungen zum Gesamtspiel zu erstellen, die der Gemeinschaft nützen."
 msgstr "Anybody using the advanced editing features should do so with great care and responsibility and try to produce useful extensions to the game, thus serving the whole community."
-
-#: sdk/index.xml:19(text)
-msgid "Von Spielern erstelltes Material für Clonk darf in keinem Fall kommerziell genutzt werden. Für Szenarien, Objekte oder andere Spieldaten darf kein Entgelt verlangt werden."
-msgstr "Game content created by players using the developer mode may not be used commercially."
-
-#: sdk/index.xml:20(text)
-msgid "Im Rahmen des Entwicklermodus zur Bearbeitung freigegebene Daten dürfen bei der Entwicklung neuer Spielerweiterungen für Clonk (und ausschließlich zu diesem Zweck) verwendet werden. Alle Rechte an den verwendeten Daten verbleiben jedoch beim Hersteller."
-msgstr "Game content of the original package may be modified and used to create free game extensions and for this purpose only. All rights of the original game content remain with RedWolf Design."
-
-#: sdk/index.xml:21(text)
-msgid "Das Passwort für die Aktivierung des Entwicklermodus lautet: Siedlerclonk"
-msgstr "The password for the activation of the developer mode is: Siedlerclonk"
 
 #: sdk/folder/index.xml:5(title)
 #: sdk/folder/index.xml:7(h)
@@ -17751,7 +18051,6 @@ msgstr "The object is an energy consumer."
 
 #: sdk/definition/lineconnect.xml:25(col)
 #: sdk/definition/cnat.xml:30(col)
-#: sdk/definition/category.xml:38(col)
 msgid "64"
 msgstr "64"
 
@@ -18710,333 +19009,244 @@ msgstr "Extra flag: non-colliding vertex (from version 4.95.4)"
 msgid "Objektkategorien"
 msgstr "Object Categories"
 
-#: sdk/definition/category.xml:7(text)
-msgid "Die Kategorie eines Objekts ist eine DWord-Bitmaske, die sich aus den folgenden Werten zusammen setzt. Die ersten 5 Kategorien erlauben keine Kombination, von den Bits 0-4 darf und muss immer genau eines zur Zeit gesetzt sein."
-msgstr "The category of an object is a DWord bit mask composed of the following values. The first 5 categories must not be combined - of the bits 0-4 only one may be set at a time."
+#: sdk/definition/category.xml:8(text)
+msgid "Die Kategorie eines Objekts legt Teile seines Verhaltens fest. Sie wird für eine Definition durch den Eintrag Category in der DefCore.txt festgelegt. Dabei können verschiedene Kategorien mit einem binären oder-Operator kombiniert werden."
+msgstr ""
 
-#: sdk/definition/category.xml:14(col)
+#: sdk/definition/category.xml:13(col)
 msgid "C4D_StaticBack"
 msgstr "C4D_StaticBack"
 
-#: sdk/definition/category.xml:15(col)
+#: sdk/definition/category.xml:14(col)
 msgid "Unbewegliches Hintergrundobjekt."
 msgstr "Immovable background object."
 
-#: sdk/definition/category.xml:18(col)
+#: sdk/definition/category.xml:17(col)
 msgid "C4D_Structure"
 msgstr "C4D_Structure"
 
-#: sdk/definition/category.xml:19(col)
+#: sdk/definition/category.xml:18(col)
 msgid "Gebäude."
 msgstr "Building."
 
-#: sdk/definition/category.xml:22(col)
+#: sdk/definition/category.xml:21(col)
 msgid "C4D_Vehicle"
 msgstr "C4D_Vehicle"
 
-#: sdk/definition/category.xml:23(col)
+#: sdk/definition/category.xml:22(col)
 msgid "Fahrzeug."
 msgstr "Vehicle."
 
-#: sdk/definition/category.xml:26(col)
+#: sdk/definition/category.xml:25(col)
 msgid "C4D_Living"
 msgstr "C4D_Living"
 
-#: sdk/definition/category.xml:27(col)
+#: sdk/definition/category.xml:26(col)
 msgid "Lebewesen."
 msgstr "A living being."
 
-#: sdk/definition/category.xml:30(col)
+#: sdk/definition/category.xml:29(col)
 msgid "C4D_Object"
 msgstr "C4D_Object"
 
-#: sdk/definition/category.xml:31(col)
+#: sdk/definition/category.xml:30(col)
 msgid "Gegenstand."
 msgstr "A smaller item."
 
-#: sdk/definition/category.xml:34(col)
+#: sdk/definition/category.xml:33(col)
 msgid "C4D_Goal"
 msgstr "C4D_Goal"
 
-#: sdk/definition/category.xml:35(col)
+#: sdk/definition/category.xml:34(col)
 msgid "Spielziel."
 msgstr "Game goal."
 
-#: sdk/definition/category.xml:38(col)
+#: sdk/definition/category.xml:37(col)
 msgid "C4D_Environment"
 msgstr "C4D_Environment"
 
-#: sdk/definition/category.xml:39(col)
+#: sdk/definition/category.xml:38(col)
 msgid "Umweltsteuerungsobjekt."
 msgstr "Environmental control object."
 
-#: sdk/definition/category.xml:42(col)
-msgid "C4D_SelectBuilding"
-msgstr "C4D_SelectBuilding"
-
-#: sdk/definition/category.xml:43(col)
-msgid "Menüsystem Auswahl Gebäude."
-msgstr "Scenario options: Object can be selected as a player-owned building at startup."
-
-#: sdk/definition/category.xml:46(col)
-msgid "C4D_SelectVehicle"
-msgstr "C4D_SelectVehicle"
-
-#: sdk/definition/category.xml:47(col)
-msgid "Menüsystem Auswahl Fahrzeuge."
-msgstr "Scenario options: Object can be selected as a player-owned vehicle at startup."
-
-#: sdk/definition/category.xml:50(col)
-msgid "512"
-msgstr "512"
-
-#: sdk/definition/category.xml:50(col)
-msgid "C4D_SelectMaterial"
-msgstr "C4D_SelectMaterial"
-
-#: sdk/definition/category.xml:51(col)
-msgid "Menüsystem Auswahl Material."
-msgstr "Scenario options: Object can be selected as a player-owned material at startup."
-
-#: sdk/definition/category.xml:54(col)
-msgid "10"
-msgstr "10"
-
-#: sdk/definition/category.xml:54(col)
-msgid "1024"
-msgstr "1024"
-
-#: sdk/definition/category.xml:54(col)
-msgid "C4D_SelectKnowledge"
-msgstr "C4D_SelectKnowledge"
-
-#: sdk/definition/category.xml:55(col)
-msgid "Menüsystem Auswahl herstellbare Objekte."
-msgstr "Scenario options: Object can be selected as an available construction plan."
-
-#: sdk/definition/category.xml:58(col)
-msgid "11"
-msgstr "11"
-
-#: sdk/definition/category.xml:58(col)
-msgid "2048"
-msgstr "2048"
-
-#: sdk/definition/category.xml:58(col)
-msgid "C4D_SelectHomebase"
-msgstr "C4D_SelectHomebase"
-
-#: sdk/definition/category.xml:59(col)
-msgid "Menüsystem Auswahl Heimatbasismaterial."
-msgstr "Scenario options: Object can be selected as home base material."
-
-#: sdk/definition/category.xml:62(col)
-msgid "12"
-msgstr "12"
-
-#: sdk/definition/category.xml:62(col)
-msgid "4096"
-msgstr "4096"
-
-#: sdk/definition/category.xml:62(col)
-msgid "C4D_SelectAnimal"
-msgstr "C4D_SelectAnimal"
-
-#: sdk/definition/category.xml:63(col)
-msgid "Menüsystem Auswahl Tiere."
-msgstr "Scenario options: Object can be selected as placed animal."
-
-#: sdk/definition/category.xml:66(col)
-msgid "13"
-msgstr "13"
-
-#: sdk/definition/category.xml:66(col)
-msgid "8192"
-msgstr "8192"
-
-#: sdk/definition/category.xml:66(col)
-msgid "C4D_SelectNest"
-msgstr "C4D_SelectNest"
-
-#: sdk/definition/category.xml:67(col)
-msgid "Menüsystem Auswahl Nester."
-msgstr "Scenario options: Object can be selected as a nest."
-
-#: sdk/definition/category.xml:70(col)
-msgid "14"
-msgstr "14"
-
-#: sdk/definition/category.xml:70(col)
-msgid "16384"
-msgstr "16384"
-
-#: sdk/definition/category.xml:70(col)
-msgid "C4D_SelectInEarth"
-msgstr "C4D_SelectInEarth"
-
-#: sdk/definition/category.xml:71(col)
-msgid "Menüsystem Auswahl Erdreich-Objekte."
-msgstr "Scenario options: Object can be selected for underground placement."
-
-#: sdk/definition/category.xml:74(col)
-msgid "32768"
-msgstr "32768"
-
-#: sdk/definition/category.xml:74(col)
-msgid "C4D_SelectVegetation"
-msgstr "C4D_SelectVegetation"
-
-#: sdk/definition/category.xml:75(col)
-msgid "Menüsystem Auswahl Vegetation."
-msgstr "Scenario options: Object can be selected as vegetation."
-
-#: sdk/definition/category.xml:78(col)
+#: sdk/definition/category.xml:41(col)
 msgid "C4D_TradeLiving"
 msgstr "C4D_TradeLiving"
 
-#: sdk/definition/category.xml:79(col)
+#: sdk/definition/category.xml:42(col)
 msgid "Verkaufbares Lebewesen."
 msgstr "A living being that can be sold at the home base."
 
-#: sdk/definition/category.xml:82(col)
-msgid "17"
-msgstr "17"
-
-#: sdk/definition/category.xml:82(col)
-msgid "131072"
-msgstr "131072"
-
-#: sdk/definition/category.xml:82(col)
+#: sdk/definition/category.xml:45(col)
 msgid "C4D_Magic"
 msgstr "C4D_Magic"
 
-#: sdk/definition/category.xml:83(col)
+#: sdk/definition/category.xml:46(col)
 msgid "Zauber."
 msgstr "A magic spell."
 
-#: sdk/definition/category.xml:86(col)
-msgid "18"
-msgstr "18"
-
-#: sdk/definition/category.xml:86(col)
-msgid "262144"
-msgstr "262144"
-
-#: sdk/definition/category.xml:87(col)
+#: sdk/definition/category.xml:50(col)
 msgid "Reserviert; wird intern benutzt."
 msgstr "Reserved, used internally."
 
-#: sdk/definition/category.xml:90(col)
-msgid "19"
-msgstr "19"
-
-#: sdk/definition/category.xml:90(col)
-msgid "524288"
-msgstr "524288"
-
-#: sdk/definition/category.xml:90(col)
+#: sdk/definition/category.xml:53(col)
 msgid "C4D_Rule"
 msgstr "C4D_Rule"
 
-#: sdk/definition/category.xml:91(col)
+#: sdk/definition/category.xml:54(col)
 msgid "Spielregel."
 msgstr "Rule control object."
 
-#: sdk/definition/category.xml:94(col)
-msgid "20"
-msgstr "20"
-
-#: sdk/definition/category.xml:94(col)
-msgid "1048576"
-msgstr "1048576"
-
-#: sdk/definition/category.xml:94(col)
+#: sdk/definition/category.xml:57(col)
 msgid "C4D_Background"
 msgstr "C4D_Background"
 
-#: sdk/definition/category.xml:95(col)
+#: sdk/definition/category.xml:58(col)
 msgid "Objekt ist hinter der Landschaft."
 msgstr "Object is behind the landscape."
 
-#: sdk/definition/category.xml:98(col)
-msgid "21"
-msgstr "21"
-
-#: sdk/definition/category.xml:98(col)
-msgid "2097152"
-msgstr "2097152"
-
-#: sdk/definition/category.xml:98(col)
+#: sdk/definition/category.xml:61(col)
 msgid "C4D_Parallax"
 msgstr "C4D_Parallax"
 
-#: sdk/definition/category.xml:99(col)
+#: sdk/definition/category.xml:62(col)
 msgid "Objekt bewegt sich parallax nach Local 0 und 1. Für mehr Informationen siehe <placeholder-1/>."
 msgstr "Object moves parallax according to Local 0 and 1. For more information see <placeholder-1/>."
 
-#: sdk/definition/category.xml:102(col)
-msgid "22"
-msgstr "22"
-
-#: sdk/definition/category.xml:102(col)
-msgid "4194304"
-msgstr "4194304"
-
-#: sdk/definition/category.xml:102(col)
+#: sdk/definition/category.xml:65(col)
 msgid "C4D_MouseSelect"
 msgstr "C4D_MouseSelect"
 
-#: sdk/definition/category.xml:103(col)
+#: sdk/definition/category.xml:66(col)
 msgid "Objekt mit der Maus anwählbar, MouseSelection(int iPlr)-Callback im Objekt."
 msgstr "Object can be clicked with the mouse, causing a MouseSelection(int iPlr) callback in the object."
 
-#: sdk/definition/category.xml:106(col)
-msgid "23"
-msgstr "23"
-
-#: sdk/definition/category.xml:106(col)
-msgid "8388608"
-msgstr "8388608"
-
-#: sdk/definition/category.xml:106(col)
+#: sdk/definition/category.xml:69(col)
 msgid "C4D_Foreground"
 msgstr "C4D_Foreground"
 
-#: sdk/definition/category.xml:107(col)
+#: sdk/definition/category.xml:70(col)
 msgid "Objekt ist im Vordergrund, also vor globalen Partikeln."
 msgstr "Object is always in the foreground, even before global particles."
 
-#: sdk/definition/category.xml:110(col)
-msgid "24"
-msgstr "24"
-
-#: sdk/definition/category.xml:110(col)
-msgid "16777216"
-msgstr "16777216"
-
-#: sdk/definition/category.xml:110(col)
+#: sdk/definition/category.xml:73(col)
 msgid "C4D_MouseIgnore"
 msgstr "C4D_MouseIgnore"
 
-#: sdk/definition/category.xml:111(col)
+#: sdk/definition/category.xml:74(col)
 msgid "Objekt ist nicht mit der Maus anwählbar."
 msgstr "Object cannot be selected with the mouse."
 
-#: sdk/definition/category.xml:114(col)
-msgid "25"
-msgstr "25"
-
-#: sdk/definition/category.xml:114(col)
-msgid "33554432"
-msgstr "33554432"
-
-#: sdk/definition/category.xml:114(col)
+#: sdk/definition/category.xml:77(col)
 msgid "C4D_IgnoreFoW"
 msgstr "C4D_IgnoreFoW"
 
-#: sdk/definition/category.xml:115(col)
+#: sdk/definition/category.xml:78(col)
 msgid "Objekt wird auch dann gezeichnet, wenn es eigentlich vom Kriegsnebel bedeckt ist. Nützlich beispielsweise für Statusanzeigen und Kontrollelemente. Ab CR."
 msgstr "Object is drawn above fog of war. Useful for creating status displays or gui elements using objects. From CR."
+
+#: sdk/definition/category.xml:87(text)
+msgid "Kategorie für eine Regel."
+msgstr ""
+
+#: sdk/definition/animations.xml:9(text)
+msgid "Ab OC ist es möglich, direkt 3D-Modelle (Meshes) als Grafik für Objekte zu verwenden. Eine der neuen Möglichkeiten die diese Funktionalität bietet ist es, einzelne Animationen miteinander zu kombinieren. So kann zum Beispiel der Clonk leicht während des Laufens oder Springens einen Gegenstand werfen oder flüssig Übergänge zwischen einzelnen Animationen darstellen."
+msgstr ""
+
+#: sdk/definition/animations.xml:10(text)
+msgid "Jedes Objekt hat dazu einen sogenannten \"Animation-Stack\". Dieser besteht aus beliebig vielen Einträgen mit eindeutiger Priorität, die im folgenden Slots genannt werden. Slots mit höherer Priorität überschreiben Slots mit niedriger Priorität, dies gilt jedoch nur für Bones die von der Animation des höheren Slots überhaupt betroffen sind. Um obiges Beispiel aufzugreifen kann somit also die Werf-Animation eine höhere Priorität als der Lauf- oder Spring-Animation eingeräumt werden, so dass die Armbewegung der Werfanimation die der anderen Animation überschreibt. Da die Werfanimation aber keine Beinbewegung beschreibt wird diese vom Laufen oder Springen übernommen."
+msgstr ""
+
+#: sdk/definition/animations.xml:11(text)
+msgid "Bleibt noch zu klären, wie die Animationen in den einzelnen Slots zustande kommen. Ein Slot kann entweder eine einzelne Animation sein, oder eine Interpolation zwischen zwei anderen Animationen (von denen eine oder beide wieder Interpolationen zweier anderer Animationen sein können). Wird eine solche Interpolation verwendet, so kann zusätzlich eine Gewichtung angegeben werden, das heißt wie sehr die jeweils beiden Animationen zur Gesamtanimation beitragen. Eine Gewichtung von 0 bedeutet, dass nur die erste Animation beiträgt (als ob die zweite gar nicht vorhaden wäre), und eine Gewichtung von 1000 bedeutet, dass nur die zweite Animation beiträgt. Werte dazwischen bewirken einen Übergang zwischen den Animationen. Um erneut auf das Beispiel von oben zurückzukommen: Wenn der Clonk zum Zeitpunkt des Werfens steht, dann aber beginnt loszulaufen bevor die Wurfanimation fertig ist, so liegt es nahe, zu der Stehen-Animation noch eine Laufen-Animation hinzuzufügen, die mit der Zeit immer mehr gewichtet wird bis die Gewichtung 1000 erreicht und der Übergang zum Laufen somit beendet ist. Da die Wurf-Animation in einem anderen Slot stattfindet ist sie von dem Übergang nicht betroffen und wird ganz normal abgespielt."
+msgstr ""
+
+#: sdk/definition/animations.xml:12(text)
+msgid "Folgende Grafik veranschaulicht das Konzept anhand des gewählten Beispiels:"
+msgstr ""
+
+#: sdk/definition/animations.xml:14(text)
+msgid "Zuerst werden die Animationen \"Walk\" und \"Stand\" kombiniert. Das Ergebnis dieser Kombination wird als Animation für Slot 5 verwendet, die einzelne Animation \"Throw\" hingegen für Slot 10. Da 10 größer als 5 ist überschreibt Throw das Ergebnis der Kombination in Slot 5 (für von \"Throw\" betroffene Bones). Das Ergebnis davon wird dann schlussendlich auf dem Bildschirm angezeigt."
+msgstr ""
+
+#: sdk/definition/animations.xml:16(h)
+msgid "Abspielen von Animationen"
+msgstr ""
+
+#: sdk/definition/animations.xml:18(text)
+msgid "Der Animation Stack kann durch Scriptfunktionen beeinflusst, das heißt Animationen hinzugefügt oder gelöscht werden. Dazu wird jedem Beitrag (im folgenden Knoten genannt) zu einer Animation - das heißt jede Animation selbst, aber auch jede Kombination von zwei anderen Animationen - eine eindeutige Nummer, die Animationsnummer, zugeordnet. Beim Einfügen einer Animation entstehen nun ein oder zwei neue Knoten (ein Animationsknoten wenn der betreffende Slot leer ist, oder ein Animations- und ein Kombinationsknoten wenn der betroffende Slot bereits Knoten enthält)."
+msgstr ""
+
+#: sdk/definition/animations.xml:19(text)
+msgid "Beide Knotentypen haben unterschiedliche Eigenschaften, für Animationsknoten spielt die aktuelle Animationsposition eine Rolle und für Kombinationsknoten die aktuelle Gewichtung. Beide Werte müssen je nach Art der Animation mehr oder weniger oft geändert werden. Hierbei gibt es mehrere Möglichkeiten: Simple Animationen sollen einfach mit der Zeit fortlaufen, andere (zum Beispiel die Laufanimation des Clonks) hängen von der Geschwindigkeit oder der Richtung eines Objekts ab, von der Mausposition (Zielanimationen) oder von der Windgeschwindigkeit (Windrad)."
+msgstr ""
+
+#: sdk/definition/animations.xml:20(text)
+msgid "Um sowohl einfache Animationen ohne viel Scriptaufwand abspielen zu können, zum anderen aber auch komplexe Kombinationen zu ermöglichen gibt es sogenannte Animations-Wertquellen (AVPs, von engl. Animation Value Provider). Sie legen fest, wie die gerade zu verwendende Animationsposition oder das Interpolationsgewicht zu bestimmen sind. An die Scriptfunktion <placeholder-1/>, die eine neue Animation startet, werden zwei solcher AVPs für Position und Gewicht übergeben. Mit <placeholder-2/> und <placeholder-3/> können die beiden im Nachhinein geändert werden."
+msgstr ""
+
+#: sdk/definition/animations.xml:21(text)
+msgid "Folgende AVPs stehen zur Auswahl:"
+msgstr ""
+
+#: sdk/definition/animations.xml:23(caption)
+msgid "Verfügbare Wertquellen"
+msgstr ""
+
+#: sdk/definition/animations.xml:26(col)
+#, fuzzy
+msgid "Kurzbeschreibung"
+msgstr "Description"
+
+#: sdk/definition/animations.xml:30(col)
+msgid "Ein vorher festgelegter konstanter Wert wird verwendet. Dies ist nützlich wenn sich der Wert nicht ändern soll, oder sich keiner der anderen AVPs eignet, wenn jeden Frame ein neuer AVP diesen Typs mit einem anderen Wert gesetzt wird."
+msgstr ""
+
+#: sdk/definition/animations.xml:34(col)
+msgid "Linear mit der Zeit zu- oder abnehmend. Auch dieser AVP kann verwedet werden wenn sich sonst keiner anbietet, aber es zu aufwendig ist die neue Position jeden Frame auszurechnen. In dem Fall kann die Animation bis zur nächsten genauen Positionsbestimmung fortlaufen."
+msgstr ""
+
+#: sdk/definition/animations.xml:38(col)
+msgid "Linear mit der X-Position. Bewegung des Objekts nach Links spielt die Animation in die entgegengesetzte Richtung ab. Kann verwendet werden falls die Animation eines Objekts synchron zu seiner horizontalen Bewegung stattfinden soll."
+msgstr ""
+
+#: sdk/definition/animations.xml:42(col)
+msgid "Linear mit der Y-Position. Bewegung des Objekts nach Oben spielt die Animation in die entgegengesetzte Richtung ab. Kann verwendet werden falls die Animation eines Objekts synchron zu seiner vertikalen Bewegung stattfinden soll."
+msgstr ""
+
+#: sdk/definition/animations.xml:46(col)
+msgid "Linear mit der X-Position, allerdings spielt die Animation immer in die gleiche Richtung, egal ob sich das Objekt nach rechts oder nach links bewegt."
+msgstr ""
+
+#: sdk/definition/animations.xml:50(col)
+msgid "Linear mit der Y-Position, allerdings spielt die Animation immer in die gleiche Richtung, egal ob sich das Objekt nach oben oder nach unten bewegt."
+msgstr ""
+
+#: sdk/definition/animations.xml:54(col)
+#, fuzzy
+msgid "Proportional zur X-Geschwindigkeit eines Objekts."
+msgstr "Sets the vertical speed of the object."
+
+#: sdk/definition/animations.xml:58(col)
+#, fuzzy
+msgid "Proportional zur Y-Geschwindigkeit eines Objekts."
+msgstr "Sets the vertical speed of the object."
+
+#: sdk/definition/animations.xml:62(col)
+msgid "Proportional zur Phase der aktuell ausgeführten Action."
+msgstr ""
+
+#: sdk/definition/animations.xml:66(text)
+msgid "Für Beispiele zu den einzelnen AVPs siehe die Dokumentation zu den entsprechenden Scriptfunktion."
+msgstr ""
+
+#: sdk/definition/animations.xml:68(h)
+msgid "Animationen der ActMap"
+msgstr ""
+
+#: sdk/definition/animations.xml:69(text)
+msgid "Einzelnen Actions in der <emlink href=\"definition/actmap.html\">ActMap</emlink> kann eine Animation zugeordnet werden. Diese Animationen werden immer in Slot 0 abgespielt. Das bedeutet unter anderem, dass in Slot 0 höchstens eine Animation abgespielt wird, es gibt keine Kombinationen. Es ist auch nicht möglich, diese durch Scriptfunktionen wie <placeholder-1/> oder <placeholder-2/> zu beeinflussen. Es ist jedoch sehr wohl möglich, Eigenschaften von ActMap-Animationen abzufragen, zum Beispiel mit <placeholder-3/>. Es existieren auch negative Slotnummern, sodass man eigene Animationen eine geringere Priorität als ActMap-Animationen zuweisen kann."
+msgstr ""
 
 #: sdk/definition/actmap.xml:6(h)
 msgid "ActMap"
@@ -19213,6 +19423,15 @@ msgstr "EnergyUsage"
 #: sdk/definition/actmap.xml:145(col)
 msgid "Nötige Energie für diese Aktion. Maschinen 500."
 msgstr "Energy required for this action. Normal machines should use about 500."
+
+#: sdk/definition/actmap.xml:148(col)
+#, fuzzy
+msgid "Animation"
+msgstr "ColorAnimation"
+
+#: sdk/definition/actmap.xml:150(col)
+msgid "Ab OC. Bestimmt die auszuführende Animation im Mesh des Objekts. Funktioniert nur wenn ein solches vorhanden ist. Wenn gegeben werden Facet, FacetBase, FacetTopFace und FacetTargetStretch ignoriert. Die Length mal Delay verschiedenen Animationsphasen werden linear auf die Länge der Animation abgebildet. Wenn Delay 0 ist wird nur Length verwendet und die Animation spielt nicht automatisch. Siehe <emlink href=\"definition/animations.html\">Animationen</emlink> für weitergehende Dokumentation zu Animationen."
+msgstr ""
 
 #: sdk/console.xml:5(title)
 msgid "Die Engine im Entwicklermodus"
@@ -19552,6 +19771,174 @@ msgstr "c4group.exe (Windows) c4group (Linux) c4group (Mac)"
 msgid "Dieses Kommandozeilen-Programm dient zum Bearbeiten von Gruppendateien. Es kann nicht per Doppelklick, sondern nur per Kommandozeile (Eingabeaufforderung) gestartet werden. Auskunft über alle verfügbaren Kommandozeilenparameter erhält man, indem man das Programm ohne weitere Parameter über die Kommandozeile startet."
 msgstr "This command line program is used for processing group files. A list of command line options is available by starting the program without parameters via command line (<i>not</i> by double clicking)."
 
+#~ msgid "Ruft die öffentliche Funktion szFunction in pObj auf. Stattdessen sollte die neue Syntax [pObj]-&gt;[szFunction]() oder [pObj]-&gt;[idObj]::[szFunction]() genutzt werden."
+#~ msgstr "Calls a public function in the target object, You should use the new syntax [pObj]-&gt;[szFunction]() or [pObj]-&gt;[idObj]::[szFunction]() instead."
+
+#~ msgid "Der Entwicklermodus ist über den Editor erreichbar."
+#~ msgstr "The Editor (Windows only) represents the easiest way to use the developer mode."
+
+#~ msgid "Im Editor können per Drag &amp; Drop alle Einzelkomponenten der Spieldaten bearbeitet werden. In der Engine können Objekte per Mausklick in der Landschaft platziert und Landkarten pixelgenau bearbeitet und abgespeichert werden."
+#~ msgstr "The editor can be used to modify the components of all game objects or scenarios. When the engine is in developer mode, objects within a running scenario can be created and moved around by mouse, and landscapes can be edited and saved."
+
+#~ msgid "Nutzungsbedingungen"
+#~ msgstr "Terms of Use"
+
+#~ msgid "Von Spielern erstelltes Material für Clonk darf in keinem Fall kommerziell genutzt werden. Für Szenarien, Objekte oder andere Spieldaten darf kein Entgelt verlangt werden."
+#~ msgstr "Game content created by players using the developer mode may not be used commercially."
+
+#~ msgid "Im Rahmen des Entwicklermodus zur Bearbeitung freigegebene Daten dürfen bei der Entwicklung neuer Spielerweiterungen für Clonk (und ausschließlich zu diesem Zweck) verwendet werden. Alle Rechte an den verwendeten Daten verbleiben jedoch beim Hersteller."
+#~ msgstr "Game content of the original package may be modified and used to create free game extensions and for this purpose only. All rights of the original game content remain with RedWolf Design."
+
+#~ msgid "Das Passwort für die Aktivierung des Entwicklermodus lautet: Siedlerclonk"
+#~ msgstr "The password for the activation of the developer mode is: Siedlerclonk"
+
+#~ msgid "Die Kategorie eines Objekts ist eine DWord-Bitmaske, die sich aus den folgenden Werten zusammen setzt. Die ersten 5 Kategorien erlauben keine Kombination, von den Bits 0-4 darf und muss immer genau eines zur Zeit gesetzt sein."
+#~ msgstr "The category of an object is a DWord bit mask composed of the following values. The first 5 categories must not be combined - of the bits 0-4 only one may be set at a time."
+
+#~ msgid "C4D_SelectBuilding"
+#~ msgstr "C4D_SelectBuilding"
+
+#~ msgid "Menüsystem Auswahl Gebäude."
+#~ msgstr "Scenario options: Object can be selected as a player-owned building at startup."
+
+#~ msgid "C4D_SelectVehicle"
+#~ msgstr "C4D_SelectVehicle"
+
+#~ msgid "Menüsystem Auswahl Fahrzeuge."
+#~ msgstr "Scenario options: Object can be selected as a player-owned vehicle at startup."
+
+#~ msgid "512"
+#~ msgstr "512"
+
+#~ msgid "C4D_SelectMaterial"
+#~ msgstr "C4D_SelectMaterial"
+
+#~ msgid "Menüsystem Auswahl Material."
+#~ msgstr "Scenario options: Object can be selected as a player-owned material at startup."
+
+#~ msgid "10"
+#~ msgstr "10"
+
+#~ msgid "1024"
+#~ msgstr "1024"
+
+#~ msgid "C4D_SelectKnowledge"
+#~ msgstr "C4D_SelectKnowledge"
+
+#~ msgid "Menüsystem Auswahl herstellbare Objekte."
+#~ msgstr "Scenario options: Object can be selected as an available construction plan."
+
+#~ msgid "11"
+#~ msgstr "11"
+
+#~ msgid "2048"
+#~ msgstr "2048"
+
+#~ msgid "C4D_SelectHomebase"
+#~ msgstr "C4D_SelectHomebase"
+
+#~ msgid "Menüsystem Auswahl Heimatbasismaterial."
+#~ msgstr "Scenario options: Object can be selected as home base material."
+
+#~ msgid "12"
+#~ msgstr "12"
+
+#~ msgid "4096"
+#~ msgstr "4096"
+
+#~ msgid "C4D_SelectAnimal"
+#~ msgstr "C4D_SelectAnimal"
+
+#~ msgid "Menüsystem Auswahl Tiere."
+#~ msgstr "Scenario options: Object can be selected as placed animal."
+
+#~ msgid "13"
+#~ msgstr "13"
+
+#~ msgid "8192"
+#~ msgstr "8192"
+
+#~ msgid "C4D_SelectNest"
+#~ msgstr "C4D_SelectNest"
+
+#~ msgid "Menüsystem Auswahl Nester."
+#~ msgstr "Scenario options: Object can be selected as a nest."
+
+#~ msgid "14"
+#~ msgstr "14"
+
+#~ msgid "16384"
+#~ msgstr "16384"
+
+#~ msgid "C4D_SelectInEarth"
+#~ msgstr "C4D_SelectInEarth"
+
+#~ msgid "Menüsystem Auswahl Erdreich-Objekte."
+#~ msgstr "Scenario options: Object can be selected for underground placement."
+
+#~ msgid "32768"
+#~ msgstr "32768"
+
+#~ msgid "C4D_SelectVegetation"
+#~ msgstr "C4D_SelectVegetation"
+
+#~ msgid "Menüsystem Auswahl Vegetation."
+#~ msgstr "Scenario options: Object can be selected as vegetation."
+
+#~ msgid "17"
+#~ msgstr "17"
+
+#~ msgid "131072"
+#~ msgstr "131072"
+
+#~ msgid "18"
+#~ msgstr "18"
+
+#~ msgid "262144"
+#~ msgstr "262144"
+
+#~ msgid "19"
+#~ msgstr "19"
+
+#~ msgid "524288"
+#~ msgstr "524288"
+
+#~ msgid "20"
+#~ msgstr "20"
+
+#~ msgid "1048576"
+#~ msgstr "1048576"
+
+#~ msgid "21"
+#~ msgstr "21"
+
+#~ msgid "2097152"
+#~ msgstr "2097152"
+
+#~ msgid "22"
+#~ msgstr "22"
+
+#~ msgid "4194304"
+#~ msgstr "4194304"
+
+#~ msgid "23"
+#~ msgstr "23"
+
+#~ msgid "8388608"
+#~ msgstr "8388608"
+
+#~ msgid "24"
+#~ msgstr "24"
+
+#~ msgid "16777216"
+#~ msgstr "16777216"
+
+#~ msgid "25"
+#~ msgstr "25"
+
+#~ msgid "33554432"
+#~ msgstr "33554432"
+
 #~ msgid "Neue Farbe, mit der moduliert wird. Wenn 0 angegeben wird, wird die Modulation deaktiviert. Für eine völlige Schwarzfärbung sollte also ein knapp darüber liegender Wert wie <placeholder-1/>(0,0,1); verwendet werden."
 #~ msgstr "New color which is used for color modulation. If 0, modulation is deactivated. To create a 'black' color, use a value slightly higher than 0 such as <placeholder-1/>(0,0,1)."
 
@@ -19803,9 +20190,6 @@ msgstr "This command line program is used for processing group files. A list of 
 
 #~ msgid "Wenn gesetzt, wird die Aktivität direkt, ohne Start/AbortCalls und unter Umgehung des NoOtherAction-Flags gesetzt. Ab CE."
 #~ msgstr "If set, the activity is set directly, bypassing any Start- or AbortCalls and overriding the NoOtherAction flag."
-
-#~ msgid "Setzt die Aktivität des angegebenen Objekts. Siehe auch <emlink href=\"definition/actmap.html\">ActMap.txt</emlink>."
-#~ msgstr "Sets the activity of the specified object. Also see <emlink href=\"definition/actmap.html\">ActMap.txt</emlink>."
 
 #~ msgid "Wird pTarget1 bzw. pTarget2 nicht angegeben bzw. 0 übergeben, so bleibt das jeweiligen Action Target der vorigen Aktion erhalten. Um die Action Targets zu löschen sollte <placeholder-1/> benutzt werden. Ist fDirect ungleich 0, werden die angegebenen Actiontargets allerdings auch dann gesetzt, wenn sie 0 sind."
 #~ msgstr "If pTarget1 or pTarget2 is not specified or 0, the previous value of these action targets will be kept. To actually clear action targets use <placeholder-1/>. Exception: if fDirect is set, the action targets are set even if the parameter was 0."

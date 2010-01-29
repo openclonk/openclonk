@@ -7,17 +7,11 @@
 <!--<img src="../images/cpem.gif" align="left" width="52" height="52" hspace="5" vspace="2" />-->
 <img src="../images/cpem.gif" id="cpem" width="52" height="52" />
 <text>Der Clonk Entwicklermodus gibt vollen Zugriff auf alle Spieldaten von Clonk: Szenarien, Objektdefinitionen, Spielerdateien und zusätzliche Gruppendateien. Bestehende Daten können modifiziert werden, um so neue Spielelemente zu schaffen.</text>
-<text>Der Entwicklermodus ist über den Editor erreichbar.</text>
-<text>Im Editor können per Drag &amp; Drop alle Einzelkomponenten der Spieldaten bearbeitet werden. In der Engine können Objekte per Mausklick in der Landschaft platziert und Landkarten pixelgenau bearbeitet und abgespeichert werden.</text>
 <text>Selbsterstellte Spielelemente können veröffentlicht und somit anderen Clonk-Spielern zugänglich gemacht werden. Sie sollten jedoch vorher unbedingt ausgiebig getestet werden und keine Fehler enthalten.</text>
 
-<h id="Nutzungsbedingungen">Nutzungsbedingungen</h>
+<h id="Nutzungsbedingungen">Hinweise</h>
 
 <text>Die Benutzung der erweiterten Funktionen von Clonk geschieht grundsätzlich auf eigene Gefahr und Verantwortung. Es gibt keinerlei Support. Der Entwicklermodus ist nur registrierten Spielern zugänglich.</text>
 <text>Durch unsachgemäße Anwendung kann nicht nur der Spielspaß zunichte, sondern das komplette Spiel unspielbar gemacht werden. Für den erfolgreichen Einsatz des Entwicklermodus sind grundlegende Programmierkenntnisse, Fähigkeiten bei der Bearbeitung von Grafiken und allgemeiner Sachverstand absolute Voraussetzung. Wer sich dessen nicht sicher ist, sollte die Finger davon lassen.</text>
 <text>Jeder, der die in dieser Dokumentation enthaltenen Informationen nutzt, sollte verantwortungsvoll mit den gegebenen Möglichkeiten umgehen und eigenverantwortlich das Ziel anstreben, sinnvoll spielbare Erweiterungen zum Gesamtspiel zu erstellen, die der Gemeinschaft nützen.</text>
-<text>Von Spielern erstelltes Material für Clonk darf in keinem Fall kommerziell genutzt werden. Für Szenarien, Objekte oder andere Spieldaten darf kein Entgelt verlangt werden.</text>
-<text>Im Rahmen des Entwicklermodus zur Bearbeitung freigegebene Daten dürfen bei der Entwicklung neuer Spielerweiterungen für Clonk (und ausschließlich zu diesem Zweck) verwendet werden. Alle Rechte an den verwendeten Daten verbleiben jedoch beim Hersteller.</text>
-<text>Das Passwort für die Aktivierung des Entwicklermodus lautet: Siedlerclonk</text>
-<author>matthes</author><date>2000 - 2007</date>
 </doc>

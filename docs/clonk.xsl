@@ -13,8 +13,11 @@
       <link rel="stylesheet" type="text/css">
         <xsl:attribute name="href"><xsl:value-of select="$relpath" />doku.css</xsl:attribute>
       </link>
+      <link rel="stylesheet" type="text/css">
+        <xsl:attribute name="href">http://www.openclonk.org/header/header.css</xsl:attribute>
+      </link>
       <title>
-        <xsl:value-of select="descendant::title" /><xsl:apply-templates select="../deprecated" />
+        OpenClonk <xsl:choose><xsl:when test='lang("en")'>Reference - </xsl:when><xsl:otherwise>Referenz - </xsl:otherwise></xsl:choose><xsl:value-of select="descendant::title" /><xsl:apply-templates select="../deprecated" />
       </title>
       <xsl:if test="descendant::table[bitmask]">
         <script type="text/javascript">
@@ -25,12 +28,15 @@
   var PREFIX = "bit";		// Prefix für die numerierten IDs
 </script>
       </xsl:if>
+<!--
       <xsl:if test="$webnotes">
 <xsl:processing-instruction name="php">
   $g_page_language = '<xsl:choose><xsl:when test='lang("en")'>english</xsl:when><xsl:otherwise>german</xsl:otherwise></xsl:choose>';
   require_once('<xsl:value-of select="$relpath" />../webnotes/core/api.php');
   pwn_head();
 ?</xsl:processing-instruction>
+      </xsl:if> -->
+      <xsl:if test="$webnotes">
 <script type="text/javascript">
   function switchLanguage() {
     var loc = window.location.href;
@@ -53,17 +59,24 @@
     <html>
       <xsl:call-template name="head" />
       <body>
+<xsl:choose><xsl:when test='lang("en")'><xsl:processing-instruction name="php">
+   readfile("http://www.openclonk.org/header/header.php?p=docs");
+?</xsl:processing-instruction></xsl:when><xsl:otherwise><xsl:processing-instruction name="php">
+   readfile("http://www.openclonk.org/header/header.php?p=docsde");
+?</xsl:processing-instruction></xsl:otherwise></xsl:choose>
+      <div id="content">
         <xsl:call-template name="nav" />
         <xsl:for-each select="func">
           <xsl:apply-templates select="." />
         </xsl:for-each>
         <xsl:apply-templates select="author" />
-        <xsl:if test="$webnotes">
+<!--        <xsl:if test="$webnotes">
 <xsl:processing-instruction name="php">
   pwn_body(basename (dirname(__FILE__)) . basename(__FILE__,".html"), $_SERVER['SCRIPT_NAME']);
 ?</xsl:processing-instruction>
-        </xsl:if>
+        </xsl:if>-->
         <xsl:call-template name="nav" />
+      </div>
       </body>
     </html>
   </xsl:template>
@@ -72,14 +85,21 @@
     <html>
       <xsl:call-template name="head" />
       <body>
+<xsl:choose><xsl:when test='lang("en")'><xsl:processing-instruction name="php">
+   readfile("http://www.openclonk.org/header/header.php?page=docs");
+?</xsl:processing-instruction></xsl:when><xsl:otherwise><xsl:processing-instruction name="php">
+   readfile("http://www.openclonk.org/header/header.php?page=docsde");
+?</xsl:processing-instruction></xsl:otherwise></xsl:choose>
+      <div id="content">
         <xsl:call-template name="nav" />
         <xsl:apply-templates />
-        <xsl:if test="$webnotes">
+<!--        <xsl:if test="$webnotes">
 <xsl:processing-instruction name="php">
   pwn_body(basename (dirname(__FILE__)) . basename(__FILE__,".html"), $_SERVER['SCRIPT_NAME']);
 ?</xsl:processing-instruction>
-        </xsl:if>
+        </xsl:if>-->
         <xsl:call-template name="nav" />
+      </div>
       </body>
     </html>
   </xsl:template>
@@ -258,9 +278,9 @@
     <a>
       <xsl:attribute name="href">
         <xsl:value-of select="$relpath" />sdk/<xsl:choose>
-          <!-- replace the .html extension with .xml (or whatever) -->
-          <xsl:when test="substring-before($href,'.html')">
-            <xsl:value-of select="concat(substring-before($href,'.html'), $fileext, substring-after($href,'.html'))" />
+          <!-- replace the .php extension with .xml (or whatever) -->
+          <xsl:when test="substring-before($href,'.php')">
+            <xsl:value-of select="concat(substring-before($href,'.php'), $fileext, substring-after($href,'.php'))" />
           </xsl:when>
           <xsl:otherwise>
             <xsl:value-of select="$href" />
@@ -349,23 +369,15 @@
 
   <xsl:template name="nav"><xsl:if test="$webnotes">
     <ul class="nav">
-      <li class="fineprint"><xsl:choose>
-        <xsl:when test='lang("en")'>Clonk Developer Mode Documentation</xsl:when>
-        <xsl:otherwise>Clonk Entwicklermodus Dokumentation</xsl:otherwise>
-      </xsl:choose></li>
-      <li class="switchlang"><xsl:choose>
-        <xsl:when test='lang("en")'><a href='javascript:switchLanguage()'><img src='/deco/dco_de_sml.gif' alt='German' border='0'/></a></xsl:when>
-        <xsl:otherwise><a href='javascript:switchLanguage()'><img src='/deco/dco_en_sml.gif' alt='English' border='0'/></a></xsl:otherwise>
-      </xsl:choose></li>
       <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'index.html'" />
+        <xsl:with-param name="href" select="'index.php'" />
         <xsl:with-param name="text"><xsl:choose>
           <xsl:when test='lang("en")'>Introduction</xsl:when>
           <xsl:otherwise>Einleitung</xsl:otherwise>
         </xsl:choose></xsl:with-param>
       </xsl:call-template></li>
       <li><a>
-        <xsl:attribute name="href"><xsl:value-of select="$relpath" />content.html</xsl:attribute>
+        <xsl:attribute name="href"><xsl:value-of select="$relpath" />content.php</xsl:attribute>
         <xsl:choose>
           <xsl:when test='lang("en")'>Contents</xsl:when>
           <xsl:otherwise>Inhalt</xsl:otherwise>
@@ -379,27 +391,31 @@
         </xsl:choose>
       </a></li>
       <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'console.html'" />
+        <xsl:with-param name="href" select="'console.php'" />
         <xsl:with-param name="text" select="'Engine'" />
       </xsl:call-template></li>
       <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'cmdline.html'" />
+        <xsl:with-param name="href" select="'cmdline.php'" />
         <xsl:with-param name="text"><xsl:choose>
           <xsl:when test='lang("en")'>Command Line</xsl:when>
           <xsl:otherwise>Kommandozeile</xsl:otherwise>
         </xsl:choose></xsl:with-param>
       </xsl:call-template></li>
       <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'files.html'" />
+        <xsl:with-param name="href" select="'files.php'" />
         <xsl:with-param name="text"><xsl:choose>
           <xsl:when test='lang("en")'>Game Data</xsl:when>
           <xsl:otherwise>Spieldaten</xsl:otherwise>
         </xsl:choose></xsl:with-param>
       </xsl:call-template></li>
       <li><xsl:call-template name="link">
-        <xsl:with-param name="href" select="'script/index.html'" />
+        <xsl:with-param name="href" select="'script/index.php'" />
         <xsl:with-param name="text" select="'Script'" />
       </xsl:call-template></li>
+      <li class="switchlang"><xsl:choose>
+        <xsl:when test='lang("en")'><a href='javascript:switchLanguage()'><img src='/deco/dco_de_sml.gif' alt='German' border='0'/></a></xsl:when>
+        <xsl:otherwise><a href='javascript:switchLanguage()'><img src='/deco/dco_en_sml.gif' alt='English' border='0'/></a></xsl:otherwise>
+      </xsl:choose></li>
       <!--<li><a><xsl:attribute name="href">index.xml</xsl:attribute>.</a></li>
       <xsl:if test="starts-with($relpath, '../..')">
         <li><a><xsl:attribute name="href">../index.xml</xsl:attribute>..</a></li>
