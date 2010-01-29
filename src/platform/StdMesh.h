@@ -118,6 +118,8 @@ public:
 	float& operator()(int i, int j) { return a[i][j]; }
 	float operator()(int i, int j) const { return a[i][j]; }
 
+	float Determinant() const;
+
 private:
 	// 3x3 orthogonal + translation in last column
 	float a[3][4];

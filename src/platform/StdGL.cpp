@@ -682,7 +682,7 @@ namespace
 		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color);
 	}
 
-	void RenderSubMeshImpl(StdMeshInstance& instance, unsigned int submesh_index, DWORD dwModClr, DWORD dwPlayerColor)
+	void RenderSubMeshImpl(StdMeshInstance& instance, unsigned int submesh_index, DWORD dwModClr, DWORD dwPlayerColor, bool parity)
 	{
 		const StdSubMesh& submesh = instance.Mesh.GetSubMesh(submesh_index);
 		const StdMeshMaterial& material = submesh.GetMaterial();
@@ -723,6 +723,21 @@ namespace
 			glMaterialfv(GL_FRONT, GL_SPECULAR, Specular);
 			glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
 			glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
+
+			switch(pass.CullHardware)
+			{
+			case StdMeshMaterialPass::CH_Clockwise:
+				glEnable(GL_CULL_FACE);
+				glCullFace(parity ? GL_FRONT : GL_BACK);
+				break;
+			case StdMeshMaterialPass::CH_CounterClockwise:
+				glEnable(GL_CULL_FACE);
+				glCullFace(parity ? GL_BACK : GL_FRONT);
+				break;
+			case StdMeshMaterialPass::CH_None:
+				glDisable(GL_CULL_FACE);
+				break;
+			}
 
 			// TODO: Use vbo if available.
 			// Note that we need to do this before we do glTexCoordPointer for the
@@ -855,13 +870,13 @@ namespace
 		}
 	}
 
-	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwPlayerColor)
+	void RenderMeshImpl(StdMeshInstance& instance, DWORD dwModClr, DWORD dwPlayerColor, bool parity)
 	{
 		const StdMesh& mesh = instance.Mesh;
 
 		// Render each submesh
 		for(unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance, i, dwModClr, dwPlayerColor);
+			RenderSubMeshImpl(instance, i, dwModClr, dwPlayerColor, parity);
 
 #if 0
 		// Draw attached bone
@@ -895,9 +910,10 @@ namespace
 				iter->FinalTrans(0,3), iter->FinalTrans(1,3), iter->FinalTrans(2,3), 1
 			};
 
+			// TODO: Take attach transform's parity into account
 			glPushMatrix();
 			glMultMatrixf(attach_trans_gl);
-			RenderMeshImpl(*iter->Child, dwModClr, dwPlayerColor);
+			RenderMeshImpl(*iter->Child, dwModClr, dwPlayerColor, parity);
 			glPopMatrix();
 
 #if 0
@@ -934,6 +950,8 @@ namespace
 		OgreToClonk(0,2), OgreToClonk(1,2), OgreToClonk(2,2), 0,
 		OgreToClonk(0,3), OgreToClonk(1,3), OgreToClonk(2,3), 1
 	};
+
+	const bool OgreToClonkParity = OgreToClonk.Determinant() > 0.0f;
 }
 
 void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
@@ -944,7 +962,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
 	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
@@ -956,7 +974,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glTranslatef(-ZoomX, -ZoomY, 0.0f);
 
 	// TODO: Initialize with OgreToClonk matrix parity
-	bool parity = true;
+	bool parity = OgreToClonkParity;
 	if(pTransform)
 	{
 		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
@@ -970,13 +988,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		                - transform[0]*transform[13]*transform[7]
 		                - transform[4]*transform[1]*transform[15]
 		                - transform[12]*transform[5]*transform[3];
-		if(det < 0) parity = false;
+		if(det < 0) parity = !parity;
 	}
-
-	if(parity)
-		glCullFace(GL_BACK);
-	else
-		glCullFace(GL_FRONT);
 
 	// Convert bounding box to clonk coordinate system
 	// (TODO: We should cache this, not sure where though)
@@ -1047,7 +1060,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	CClrModAddMap* ClrModMap = fUseClrModMap ? pClrModMap : NULL;
 #endif
 
-	RenderMeshImpl(instance, dwModClr, dwPlayerColor);
+	RenderMeshImpl(instance, dwModClr, dwPlayerColor, parity);
 
 	glActiveTexture(GL_TEXTURE0); // switch back to default
 	glClientActiveTexture(GL_TEXTURE0); // switch back to default

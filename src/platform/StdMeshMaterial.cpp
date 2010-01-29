@@ -107,6 +107,12 @@ namespace
 		{ "src_manual", StdMeshMaterialTextureUnit::BOS_Manual },
 		{ NULL }
 	};
+
+	const Enumerator<StdMeshMaterialPass::CullHardwareType> CullHardwareEnumerators[] = {
+		{ "clockwise", StdMeshMaterialPass::CH_Clockwise },
+		{ "anticlockwise", StdMeshMaterialPass::CH_CounterClockwise },
+		{ "none", StdMeshMaterialPass::CH_None }
+	};
 }
 
 StdMeshMaterialError::StdMeshMaterialError(const StdStrBuf& message, const char* file, unsigned int line)
@@ -573,7 +579,7 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 }
 
 StdMeshMaterialPass::StdMeshMaterialPass():
-	DepthWrite(true)
+	DepthWrite(true), CullHardware(CH_Clockwise)
 {
 	Ambient[0]	= Ambient[1]	= Ambient[2]	= 1.0f; Ambient[3]	= 1.0f;
 	Diffuse[0]	= Diffuse[1]	= Diffuse[2]	= 1.0f; Diffuse[3]	= 1.0f;
@@ -630,6 +636,10 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 		else if(token_name == "depth_write")
 		{
 			DepthWrite = ctx.AdvanceBoolean();
+		}
+		else if(token_name == "cull_hardware")
+		{
+			CullHardware = ctx.AdvanceEnum(CullHardwareEnumerators);
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);

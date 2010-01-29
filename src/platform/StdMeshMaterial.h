@@ -64,10 +64,10 @@ public:
 	};
 	
 	enum FilteringType {
-	  F_None,
-	  F_Point,
-	  F_Linear,
-	  F_Anisotropic
+		F_None,
+		F_Point,
+		F_Linear,
+		F_Anisotropic
 	};
 	
 	enum BlendOpType {
@@ -160,6 +160,12 @@ private:
 class StdMeshMaterialPass
 {
 public:
+	enum CullHardwareType {
+		CH_Clockwise,
+		CH_CounterClockwise,
+		CH_None
+	};
+
 	StdMeshMaterialPass();
 	void Load(StdMeshMaterialParserCtx& ctx);
 
@@ -172,6 +178,7 @@ public:
 	float Shininess;
 
 	bool DepthWrite;
+	CullHardwareType CullHardware;
 };
 
 class StdMeshMaterialTechnique

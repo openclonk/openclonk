@@ -330,8 +330,7 @@ StdMeshMatrix StdMeshMatrix::Inverse(const StdMeshMatrix& mat)
 {
 	StdMeshMatrix m;
 
-	const float det = mat.a[0][0]*mat.a[1][1]*mat.a[2][2] + mat.a[0][1]*mat.a[1][2]*mat.a[2][0] + mat.a[0][2]*mat.a[1][0]*mat.a[2][1]
-	                - mat.a[0][0]*mat.a[1][2]*mat.a[2][1] - mat.a[0][1]*mat.a[1][0]*mat.a[2][2] - mat.a[0][2]*mat.a[1][1]*mat.a[2][0];
+	const float det = mat.Determinant();
 	assert(det != 0.0f);
 
 	m.a[0][0] = (mat.a[1][1]*mat.a[2][2] - mat.a[1][2]*mat.a[2][1]) / det;
@@ -473,6 +472,12 @@ StdMeshMatrix StdMeshMatrix::TransformInverse(const StdMeshTransformation& trans
 	m.a[2][3] = invtranslate.z;
 	
 	return m;
+}
+
+float StdMeshMatrix::Determinant() const
+{
+	return a[0][0]*a[1][1]*a[2][2] + a[0][1]*a[1][2]*a[2][0] + a[0][2]*a[1][0]*a[2][1]
+	     - a[0][0]*a[1][2]*a[2][1] - a[0][1]*a[1][0]*a[2][2] - a[0][2]*a[1][1]*a[2][0];
 }
 
 StdMeshMatrix operator*(const StdMeshMatrix& lhs, const StdMeshMatrix& rhs)
