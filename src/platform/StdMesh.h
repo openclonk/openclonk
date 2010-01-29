@@ -288,6 +288,7 @@ public:
 
 	const StdMeshBone& GetBone(unsigned int i) const { return *Bones[i]; }
 	unsigned int GetNumBones() const { return Bones.size(); }
+	const StdMeshBone* GetBoneByName(const StdStrBuf& name) const;
 
 	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
 
@@ -402,32 +403,50 @@ public:
 	// Update animations' value providers; call once a frame
 	void ExecuteAnimation();
 
-	struct AttachedMesh
+	class AttachedMesh
 	{
-		unsigned int Number;
-		StdMeshInstance* Parent;
-		StdMeshInstance* Child;
-		StdMeshMatrix AttachTrans;
+		friend class StdMeshInstance;
+	public:
+		AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child,
+		             unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform);
+		~AttachedMesh();
+
+		const unsigned int Number;
+		StdMeshInstance* const Parent;
+		StdMeshInstance* const Child;
+		const bool OwnChild; // Whether to delete child on destruction
+
+		bool SetParentBone(const StdStrBuf& bone);
+		bool SetChildBone(const StdStrBuf& bone);
+		void SetAttachTransformation(const StdMeshMatrix& transformation);
+		const StdMeshMatrix& GetFinalTransformation() const { return FinalTrans; }
+
+	private:
 		unsigned int ParentBone;
 		unsigned int ChildBone;
-		// Cache final transformation, updated in UpdateBoneTransforms()
+		StdMeshMatrix AttachTrans;
+
+		// Cache final attach transformation, updated in UpdateBoneTransform
 		StdMeshMatrix FinalTrans;
+		bool FinalTransformDirty; // Whether FinalTrans is up to date or not
 	};
 
-	typedef std::list<AttachedMesh> AttachedMeshList;
+	typedef std::vector<AttachedMesh*> AttachedMeshList;
 	typedef AttachedMeshList::const_iterator AttachedMeshIter;
 
-	// Returns number of added attachment, or 0 on failure
-	const AttachedMesh* AttachMesh(const StdMesh& mesh, const StdStrBuf& own_bone, const StdStrBuf& other_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity());
+	// Create a new instance and attach it to this mesh.
+	AttachedMesh* AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity());
+	// Attach an instance to this instance. If own_child is true then take ownership of instance, deleting it when the mesh is detached.
+	AttachedMesh* AttachMesh(StdMeshInstance& instance, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity(), bool own_child = false);
 	// Removes attachment with given number
 	bool DetachMesh(unsigned int number);
 	// Returns attached mesh with given number
-	const AttachedMesh* GetAttachedMeshByNumber(unsigned int number) const;
+	AttachedMesh* GetAttachedMeshByNumber(unsigned int number) const;
 
 	// To iterate through attachments
 	AttachedMeshIter AttachedMeshesBegin() const { return AttachChildren.begin(); }
 	AttachedMeshIter AttachedMeshesEnd() const { return AttachChildren.end(); }
-	const AttachedMesh* GetAttachParent() const { return AttachParent; }
+	AttachedMesh* GetAttachParent() const { return AttachParent; }
 
 	// Get vertex of instance, with current animation applied. This needs to
 	// go elsewhere if/when we want to calculate this on the hardware.
@@ -444,10 +463,9 @@ public:
 
 	const StdMeshMatrix& GetBoneTransform(unsigned int i) const { return BoneTransforms[i]; }
 
-	// Update bone transformation matrices, and vertex positions. Call this
-	// before rendering. This is called recursively for attached children. Do not
-	// call this on attached children only, since it will not update the
-	// attachment transform otherwise.
+	// Update bone transformation matrices, vertex positions and final attach transformations of attached children.
+	// This is called recursively for attached children, so there is no need to call it on attached children only
+	// which would also not update its attach transformation. Call this once before rendering.
 	void UpdateBoneTransforms();
 
 	const StdMesh& Mesh;
@@ -475,8 +493,7 @@ protected:
 
 	// Not asymptotically efficient, but we do not expect many attached meshes anyway.
 	// In theory map would fit better, but it's probably not worth the extra overhead.
-	// Don't use vector though so that pointers to AttachedMesh (AttachParent) stay valid.
-	std::list<AttachedMesh> AttachChildren;
+	std::vector<AttachedMesh*> AttachChildren;
 	AttachedMesh* AttachParent;
 
 	bool BoneTransformsDirty;

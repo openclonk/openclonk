@@ -5583,7 +5583,8 @@ static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimat
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return C4VNull;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5618,7 +5619,8 @@ static bool FnStopAnimation(C4AulObjectContext *ctx, int iAnimationNumber, Nilla
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return false;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return false;
 		Instance = Attached->Child;
 	}
 
@@ -5638,7 +5640,8 @@ static Nillable<int> FnGetRootAnimation(C4AulObjectContext *ctx, int iSlot, Nill
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return C4VNull;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5656,7 +5659,8 @@ static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szA
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return C4VNull;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5674,7 +5678,8 @@ static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, int iAnim
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return C4VNull;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5692,7 +5697,8 @@ static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimat
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return C4VNull;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5710,7 +5716,8 @@ static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimatio
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return C4VNull;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return C4VNull;
 		Instance = Attached->Child;
 	}
 
@@ -5728,7 +5735,8 @@ static bool FnSetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return false;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return false;
 		Instance = Attached->Child;
 	}
 
@@ -5750,7 +5758,8 @@ static bool FnSetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, 
 	if(!iAttachNumber.IsNil())
 	{
 		const StdMeshInstance::AttachedMesh* Attached = Instance->GetAttachedMeshByNumber(iAttachNumber);
-		if(!Attached) return false;
+		// OwnChild is set if an object's instance is attached. In that case the animation should be set directly on that object.
+		if(!Attached || !Attached->OwnChild) return false;
 		Instance = Attached->Child;
 	}
 
@@ -5763,11 +5772,15 @@ static bool FnSetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, 
 	return true;
 }
 
-static Nillable<long> FnAttachMesh(C4AulContext *ctx, C4ID idMesh, C4String* szParentBone, C4String* szChildBone, C4ValueArray* Transformation)
-	{
+static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
+{
 	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return C4VNull;
-	C4Def* pDef = C4Id2Def(idMesh);
-	if(!pDef || pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4VNull;
+	//if(!Mesh) return C4VNull;
+
+	PAR(any, Mesh);
+	PAR(string, szParentBone);
+	PAR(string, szChildBone);
+	PAR(array, Transformation);
 
 	StdMeshMatrix trans = StdMeshMatrix::Identity();
 	if(Transformation)
@@ -5790,16 +5803,82 @@ static Nillable<long> FnAttachMesh(C4AulContext *ctx, C4ID idMesh, C4String* szP
 		trans(2,3) = arr[11].getInt()/1000.0f;
 	}
 
-	const StdMeshInstance::AttachedMesh* attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, szParentBone->GetData(), szChildBone->GetData(), trans);
-	if(!attach) return C4VNull;
-	return attach->Number;
+	StdMeshInstance::AttachedMesh* attach;
+	C4Object* pObj = Mesh.getObj();
+	if(pObj)
+	{
+		if(!pObj->pMeshInstance) return C4VNull;
+		attach = ctx->Obj->pMeshInstance->AttachMesh(*pObj->pMeshInstance, szParentBone->GetData(), szChildBone->GetData(), trans);
+	}
+	else
+	{
+		C4ID id = Mesh.getC4ID();
+		if(id == C4ID::None) return C4VNull;
+
+		C4Def* pDef = C4Id2Def(id);
+		if(pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4VNull;
+		attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, szParentBone->GetData(), szChildBone->GetData(), trans);
 	}
 
-static bool FnDetachMesh(C4AulContext *ctx, long iAttachNumber)
-	{
+	if(!attach) return C4VNull;
+	return C4VInt(attach->Number);
+}
+
+static bool FnDetachMesh(C4AulObjectContext *ctx, long iAttachNumber)
+{
 	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return false;
 	return ctx->Obj->pMeshInstance->DetachMesh(iAttachNumber);
+}
+
+static bool FnSetAttachBones(C4AulObjectContext* ctx, long iAttachNumber, Nillable<C4String*> szParentBone, Nillable<C4String*> szChildBone)
+{
+	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return false;
+	StdMeshInstance::AttachedMesh* attach = ctx->Obj->pMeshInstance->GetAttachedMeshByNumber(iAttachNumber);
+	if(!attach) return false;
+
+	if(!szParentBone.IsNil())
+	{
+		C4String* ParentBone = szParentBone;
+		if(!attach->SetParentBone(ParentBone->GetData())) return false;
 	}
+
+	if(!szChildBone.IsNil())
+	{
+		C4String* ChildBone = szChildBone;
+		if(!attach->SetChildBone(ChildBone->GetData())) return false;
+	}
+
+	return true;
+}
+
+static bool FnSetAttachTransform(C4AulObjectContext* ctx, long iAttachNumber, C4ValueArray* Transformation)
+{
+	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return false;
+	if(!Transformation) return false;
+	StdMeshInstance::AttachedMesh* attach = ctx->Obj->pMeshInstance->GetAttachedMeshByNumber(iAttachNumber);
+	if(!attach) return false;
+
+	if(Transformation->GetSize() != 12)
+		throw new C4AulExecError(ctx->Obj, "AttachMesh: Transformation is not a valid 3x4 matrix");
+
+	StdMeshMatrix trans;
+	const C4ValueArray& arr = *Transformation;
+	trans(0,0) = arr[0].getInt()/1000.0f;
+	trans(0,1) = arr[1].getInt()/1000.0f;
+	trans(0,2) = arr[2].getInt()/1000.0f;
+	trans(0,3) = arr[3].getInt()/1000.0f;
+	trans(1,0) = arr[4].getInt()/1000.0f;
+	trans(1,1) = arr[5].getInt()/1000.0f;
+	trans(1,2) = arr[6].getInt()/1000.0f;
+	trans(1,3) = arr[7].getInt()/1000.0f;
+	trans(2,0) = arr[8].getInt()/1000.0f;
+	trans(2,1) = arr[9].getInt()/1000.0f;
+	trans(2,2) = arr[10].getInt()/1000.0f;
+	trans(2,3) = arr[11].getInt()/1000.0f;
+
+	attach->SetAttachTransformation(trans);
+	return true;
+}
 
 //=========================== C4Script Function Map ===================================
 
@@ -6286,8 +6365,10 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetAnimationWeight", FnGetAnimationWeight);
 	AddFunc(pEngine, "SetAnimationPosition", FnSetAnimationPosition);
 	AddFunc(pEngine, "SetAnimationWeight", FnSetAnimationWeight);	
-	AddFunc(pEngine, "AttachMesh", FnAttachMesh);
+	//AddFunc(pEngine, "AttachMesh", FnAttachMesh); defined in C4ScriptFnMap
 	AddFunc(pEngine, "DetachMesh", FnDetachMesh);
+	AddFunc(pEngine, "SetAttachBones", FnSetAttachBones);
+	AddFunc(pEngine, "SetAttachTransform", FnSetAttachTransform);
 
 	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "this", Fn_this);
@@ -6720,6 +6801,8 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "CheckEffect",          1  ,C4V_Int      ,{ C4V_String  ,C4V_C4Object,C4V_Int     ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnCheckEffect_C4V,           0 },
   { "EffectCall",           1  ,C4V_Any      ,{ C4V_C4Object,C4V_Int     ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectCall_C4V,            0 },
   { "EffectVar",            1  ,C4V_pC4Value ,{ C4V_Int     ,C4V_C4Object,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEffectVar_C4V,             0 },
+
+  { "AttachMesh",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_String  ,C4V_String  ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}  ,0 ,                                   FnAttachMesh },
 
   { "eval",                 1  ,C4V_Any      ,{ C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnEval,                      0 },
 

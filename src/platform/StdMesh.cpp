@@ -1145,6 +1145,16 @@ void StdMesh::AddMasterBone(StdMeshBone* bone)
 		AddMasterBone(bone->Children[i]);
 }
 
+const StdMeshBone* StdMesh::GetBoneByName(const StdStrBuf& name) const
+{
+	// Lookup parent bone
+	for(unsigned int i = 0; i < Bones.size(); ++i)
+		if(Bones[i]->Name == name)
+			return Bones[i];
+
+	return NULL;
+}
+
 const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 {
 	StdCopyStrBuf name2(name);
@@ -1210,6 +1220,46 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 	}
 }
 
+StdMeshInstance::AttachedMesh::AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child,
+                                            unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform):
+	Number(number), Parent(parent), Child(child), OwnChild(own_child),
+	ParentBone(parent_bone), ChildBone(child_bone), AttachTrans(transform),
+	FinalTransformDirty(true)
+{
+}
+
+StdMeshInstance::AttachedMesh::~AttachedMesh()
+{
+	if(OwnChild)
+		delete Child;
+}
+
+bool StdMeshInstance::AttachedMesh::SetParentBone(const StdStrBuf& bone)
+{
+	const StdMeshBone* bone_obj = Parent->Mesh.GetBoneByName(bone);
+	if(!bone_obj) return false;
+	ParentBone = bone_obj->Index;
+
+	FinalTransformDirty = true;
+	return true;
+}
+
+bool StdMeshInstance::AttachedMesh::SetChildBone(const StdStrBuf& bone)
+{
+	const StdMeshBone* bone_obj = Child->Mesh.GetBoneByName(bone);
+	if(!bone_obj) return false;
+	ChildBone = bone_obj->Index;
+
+	FinalTransformDirty = true;
+	return true;
+}
+
+void StdMeshInstance::AttachedMesh::SetAttachTransformation(const StdMeshMatrix& transformation)
+{
+	AttachTrans = transformation;
+	FinalTransformDirty = true;
+}
+
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 	Mesh(mesh), CurrentFaceOrdering(FO_Fixed),
 	BoneTransforms(Mesh.GetNumBones(), StdMeshMatrix::Identity()),
@@ -1231,8 +1281,14 @@ StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 
 StdMeshInstance::~StdMeshInstance()
 {
-	for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
-		delete iter->Child;
+	// If we are attached then detach from parent
+	if(AttachParent)
+		AttachParent->Parent->DetachMesh(AttachParent->Number);
+
+	// Remove all attach children
+	while(!AttachChildren.empty())
+		DetachMesh(AttachChildren.back()->Number);
+
 	while(!AnimationStack.empty())
 		StopAnimation(AnimationStack.front());
 	assert(AnimationNodes.empty());
@@ -1256,9 +1312,11 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 
 		BoneTransformsDirty = true;
 
-		// Update attachments
+		// Update attachments (only own meshes for now... others might be displayed both attached and non-attached...)
+		// still not optimal.
 		for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
-			iter->Child->SetFaceOrdering(ordering);
+			if((*iter)->OwnChild)
+				(*iter)->Child->SetFaceOrdering(ordering);
 	}
 }
 
@@ -1286,6 +1344,9 @@ StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshAnim
 		if(AnimationNodes[Number2] == NULL)
 			break;*/
 	Number2 = Number1 + 1;
+
+	position->Value = BoundBy(position->Value, 0.0f, animation.Length);
+	weight->Value = BoundBy(weight->Value, 0.0f, 1.0f);
 
 	if(Number1 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
 	if(sibling && Number2 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
@@ -1431,50 +1492,59 @@ void StdMeshInstance::ExecuteAnimation()
 
 	// Update animation for attached meshes
 	for(AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
-		iter->Child->ExecuteAnimation();
+		(*iter)->Child->ExecuteAnimation();
 }
 
-const StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation)
+StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation)
 {
-	AttachedMesh attach = { 0 };
-	unsigned int i;
+	StdMeshInstance* instance = new StdMeshInstance(mesh);
+	instance->SetFaceOrdering(CurrentFaceOrdering);
+	AttachedMesh* attach = AttachMesh(*instance, parent_bone, child_bone, transformation, true);
+	if(!attach) { delete instance; return NULL; }
+	return attach;
+}
+
+StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& instance, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, bool own_child)
+{
+	// We don't allow an instance to be attached to multiple parent instances for now
+	if(instance.AttachParent) return NULL;
+
+	// Make sure there are no cyclic attachments
+	for(StdMeshInstance* Parent = this; Parent->AttachParent != NULL; Parent = Parent->AttachParent->Parent)
+		if(Parent == &instance)
+			return NULL;
+
+	AttachedMesh* attach = NULL;
+	unsigned int number = 1;
 
 	// Find free index.
-	attach.Number = 1;
 	for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
-		if(iter->Number >= attach.Number)
-			attach.Number = iter->Number + 1;
+		if((*iter)->Number >= number)
+			number = (*iter)->Number + 1;
 
-	// Lookup parent bone
-	for(i = 0; i < Mesh.GetNumBones(); ++i)
-		if(Mesh.GetBone(i).Name == parent_bone)
-			{ attach.ParentBone = i; break; }
-	if(i == Mesh.GetNumBones()) return NULL;
+	const StdMeshBone* parent_bone_obj = Mesh.GetBoneByName(parent_bone);
+	const StdMeshBone* child_bone_obj = instance.Mesh.GetBoneByName(child_bone);
+	if(!parent_bone_obj || !child_bone_obj) return NULL;
 
-	// Lookup child bone
-	for(i = 0; i < mesh.GetNumBones(); ++i)
-		if(mesh.GetBone(i).Name == child_bone)
-			{ attach.ChildBone = i; break; }
-	if(i == mesh.GetNumBones()) return NULL;
-
-	attach.AttachTrans = transformation;
-	attach.Parent = this;
-	attach.Child = new StdMeshInstance(mesh);
-	attach.Child->SetFaceOrdering(CurrentFaceOrdering);
-
+	// TODO: Face Ordering is not lined up... can't do that properly here
+	attach = new AttachedMesh(number, this, &instance, own_child, parent_bone_obj->Index, child_bone_obj->Index, transformation);
+	instance.AttachParent = attach;
 	AttachChildren.push_back(attach);
-	attach.Child->AttachParent = &AttachChildren.back();
-	BoneTransformsDirty = true; // so that FinalTrans is computed before rendering
-	return &AttachChildren.back();
+
+	return attach;
 }
 
 bool StdMeshInstance::DetachMesh(unsigned int number)
 {
 	for(AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
 	{
-		if(iter->Number == number)
+		if((*iter)->Number == number)
 		{
-			delete iter->Child;
+			// Reset attach parent of child so it does not try
+			// to detach itself on destruction.
+			(*iter)->Child->AttachParent = NULL;
+
+			delete *iter;
 			AttachChildren.erase(iter);
 			return true;
 		}
@@ -1483,113 +1553,123 @@ bool StdMeshInstance::DetachMesh(unsigned int number)
 	return false;
 }
 
-const StdMeshInstance::AttachedMesh* StdMeshInstance::GetAttachedMeshByNumber(unsigned int number) const
+StdMeshInstance::AttachedMesh* StdMeshInstance::GetAttachedMeshByNumber(unsigned int number) const
 {
 	for(AttachedMeshIter iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
-		if(iter->Number == number)
-			return &*iter;
+		if((*iter)->Number == number)
+			return *iter;
 	return NULL;
 }
 
 void StdMeshInstance::UpdateBoneTransforms()
 {
 	// Nothing changed since last time
-	if(!BoneTransformsDirty) return;
-
-	// Compute transformation matrix for each bone.
-	for(unsigned int i = 0; i < BoneTransforms.size(); ++i)
+	if(BoneTransformsDirty)
 	{
-		StdMeshTransformation Transformation;
-
-		const StdMeshBone& bone = Mesh.GetBone(i);
-		const StdMeshBone* parent = bone.GetParent();
-		assert(!parent || parent->Index < i);
-
-		bool have_transform = false;
-		for(unsigned int j = 0; j < AnimationStack.size(); ++j)
+		// Compute transformation matrix for each bone.
+		for(unsigned int i = 0; i < BoneTransforms.size(); ++i)
 		{
-			if(have_transform)
+			StdMeshTransformation Transformation;
+
+			const StdMeshBone& bone = Mesh.GetBone(i);
+			const StdMeshBone* parent = bone.GetParent();
+			assert(!parent || parent->Index < i);
+
+			bool have_transform = false;
+			for(unsigned int j = 0; j < AnimationStack.size(); ++j)
 			{
-				StdMeshTransformation other;
-				if(AnimationStack[j]->GetBoneTransform(i, other))
-					Transformation = StdMeshTransformation::Nlerp(Transformation, other, 1.0f); // TODO: Allow custom weighing for slot combination
-			}
-			else
-			{
-				have_transform = AnimationStack[j]->GetBoneTransform(i, Transformation);
-			}
-		}
-
-		if(!have_transform)
-		{
-			if(parent)
-				BoneTransforms[i] = BoneTransforms[parent->Index];
-			else
-				BoneTransforms[i] = StdMeshMatrix::Identity();
-		}
-		else
-		{
-			BoneTransforms[i] = StdMeshMatrix::Transform(bone.Transformation * Transformation * bone.InverseTransformation);
-			if(parent) BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
-		}
-	}
-
-	// Compute transformation for each vertex. We could later think about
-	// doing this on the GPU using a vertex shader. This would then probably
-	// need to go to CStdGL::PerformMesh and CStdD3D::PerformMesh.
-	// (can only work for fixed face ordering though)
-	for(unsigned int i = 0; i < Vertices.size(); ++i)
-	{
-		const StdSubMesh& submesh = Mesh.GetSubMesh(i);
-		std::vector<StdMeshVertex>& instance_vertices = Vertices[i];
-		assert(submesh.GetNumVertices() == instance_vertices.size());
-		for(unsigned int j = 0; j < instance_vertices.size(); ++j)
-		{
-			const StdSubMesh::Vertex& vertex = submesh.GetVertex(j);
-			StdMeshVertex& instance_vertex = instance_vertices[j];
-			if(!vertex.BoneAssignments.empty())
-			{
-				instance_vertex.x = instance_vertex.y = instance_vertex.z = 0.0f;
-				instance_vertex.nx = instance_vertex.ny = instance_vertex.nz = 0.0f;
-				instance_vertex.u = vertex.u; instance_vertex.v = vertex.v;
-
-				for(unsigned int k = 0; k < vertex.BoneAssignments.size(); ++k)
+				if(have_transform)
 				{
-					const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[k];
-
-					instance_vertex += assignment.Weight * (BoneTransforms[assignment.BoneIndex] * vertex);
+					StdMeshTransformation other;
+					if(AnimationStack[j]->GetBoneTransform(i, other))
+						Transformation = StdMeshTransformation::Nlerp(Transformation, other, 1.0f); // TODO: Allow custom weighing for slot combination
+				}
+				else
+				{
+					have_transform = AnimationStack[j]->GetBoneTransform(i, Transformation);
 				}
 			}
+
+			if(!have_transform)
+			{
+				if(parent)
+					BoneTransforms[i] = BoneTransforms[parent->Index];
+				else
+					BoneTransforms[i] = StdMeshMatrix::Identity();
+			}
 			else
 			{
-				instance_vertex = vertex;
+				BoneTransforms[i] = StdMeshMatrix::Transform(bone.Transformation * Transformation * bone.InverseTransformation);
+				if(parent) BoneTransforms[i] = BoneTransforms[parent->Index] * BoneTransforms[i];
 			}
 		}
+
+		// Compute transformation for each vertex. We could later think about
+		// doing this on the GPU using a vertex shader. This would then probably
+		// need to go to CStdGL::PerformMesh and CStdD3D::PerformMesh.
+		// (can only work for fixed face ordering though)
+		for(unsigned int i = 0; i < Vertices.size(); ++i)
+		{
+			const StdSubMesh& submesh = Mesh.GetSubMesh(i);
+			std::vector<StdMeshVertex>& instance_vertices = Vertices[i];
+			assert(submesh.GetNumVertices() == instance_vertices.size());
+			for(unsigned int j = 0; j < instance_vertices.size(); ++j)
+			{
+				const StdSubMesh::Vertex& vertex = submesh.GetVertex(j);
+				StdMeshVertex& instance_vertex = instance_vertices[j];
+				if(!vertex.BoneAssignments.empty())
+				{
+					instance_vertex.x = instance_vertex.y = instance_vertex.z = 0.0f;
+					instance_vertex.nx = instance_vertex.ny = instance_vertex.nz = 0.0f;
+					instance_vertex.u = vertex.u; instance_vertex.v = vertex.v;
+
+					for(unsigned int k = 0; k < vertex.BoneAssignments.size(); ++k)
+					{
+						const StdMeshVertexBoneAssignment& assignment = vertex.BoneAssignments[k];
+
+						instance_vertex += assignment.Weight * (BoneTransforms[assignment.BoneIndex] * vertex);
+					}
+				}
+				else
+				{
+					instance_vertex = vertex;
+				}
+			}
+		}
+
+		if(CurrentFaceOrdering != FO_Fixed)
+			ReorderFaces();
 	}
 
 	// Update attachment's attach transformations. Note this is done recursively.
 	for(AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
 	{
-		iter->Child->UpdateBoneTransforms();
+		AttachedMesh* attach = *iter;
+		const bool ChildBoneTransformsDirty = attach->Child->BoneTransformsDirty;
+		attach->Child->UpdateBoneTransforms();
 
-		// Compute matrix to change the coordinate system to the one of the attached bone:
-		// The idea is that a vertex at the child bone's position transforms to the parent bone's position.
-		// Therefore (read from right to left) we first apply the inverse of the child bone transformation,
-		// then an optional scaling matrix, and finally the parent bone transformation
+		if(BoneTransformsDirty || ChildBoneTransformsDirty || attach->FinalTransformDirty)
+		{
+			// Compute matrix to change the coordinate system to the one of the attached bone:
+			// The idea is that a vertex at the child bone's position transforms to the parent bone's position.
+			// Therefore (read from right to left) we first apply the inverse of the child bone transformation,
+			// then an optional scaling matrix, and finally the parent bone transformation
 
-		// TODO: we can cache the three matrices in the middle since they don't change over time,
-		// reducing this to two matrix multiplications instead of four each frame.
-		// Might even be worth to compute the complete transformation directly when rendering then
-		// (saves per-instance memory, but requires recomputation if the animation does not change).
-		iter->FinalTrans = BoneTransforms[iter->ParentBone]
-		                 * StdMeshMatrix::Transform(Mesh.GetBone(iter->ParentBone).Transformation)
-		                 * iter->AttachTrans
-		                 * StdMeshMatrix::Transform(iter->Child->Mesh.GetBone(iter->ChildBone).InverseTransformation)
-		                 * StdMeshMatrix::Inverse(iter->Child->BoneTransforms[iter->ChildBone]);
+			// TODO: we can cache the three matrices in the middle since they don't change over time,
+			// reducing this to two matrix multiplications instead of four each frame.
+			// Might even be worth to compute the complete transformation directly when rendering then
+			// (saves per-instance memory, but requires recomputation if the animation does not change).
+			// TODO: We might also be able to cache child inverse, and only recomupte it if
+			// child bone transforms are dirty (saves matrix inversion for unanimated attach children).
+			attach->FinalTrans = BoneTransforms[attach->ParentBone]
+				           * StdMeshMatrix::Transform(Mesh.GetBone(attach->ParentBone).Transformation)
+				           * attach->AttachTrans
+				           * StdMeshMatrix::Transform(attach->Child->Mesh.GetBone(attach->ChildBone).InverseTransformation)
+				           * StdMeshMatrix::Inverse(attach->Child->BoneTransforms[attach->ChildBone]);
+	
+			attach->FinalTransformDirty = false;
+		}
 	}
-
-	if(CurrentFaceOrdering != FO_Fixed)
-		ReorderFaces();
 
 	BoneTransformsDirty = false;
 }

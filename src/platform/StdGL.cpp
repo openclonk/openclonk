@@ -902,23 +902,26 @@ namespace
 		// Render attached meshes
 		for(StdMeshInstance::AttachedMeshIter iter = instance.AttachedMeshesBegin(); iter != instance.AttachedMeshesEnd(); ++iter)
 		{
+			const StdMeshInstance::AttachedMesh* attach = *iter;
+			const StdMeshMatrix& FinalTrans = attach->GetFinalTransformation();
+
 			// Convert matrix to column-major order, add fourth row
 			const float attach_trans_gl[16] = {
-				iter->FinalTrans(0,0), iter->FinalTrans(1,0), iter->FinalTrans(2,0), 0,
-				iter->FinalTrans(0,1), iter->FinalTrans(1,1), iter->FinalTrans(2,1), 0,
-				iter->FinalTrans(0,2), iter->FinalTrans(1,2), iter->FinalTrans(2,2), 0,
-				iter->FinalTrans(0,3), iter->FinalTrans(1,3), iter->FinalTrans(2,3), 1
+				FinalTrans(0,0), FinalTrans(1,0), FinalTrans(2,0), 0,
+				FinalTrans(0,1), FinalTrans(1,1), FinalTrans(2,1), 0,
+				FinalTrans(0,2), FinalTrans(1,2), FinalTrans(2,2), 0,
+				FinalTrans(0,3), FinalTrans(1,3), FinalTrans(2,3), 1
 			};
 
 			// TODO: Take attach transform's parity into account
 			glPushMatrix();
 			glMultMatrixf(attach_trans_gl);
-			RenderMeshImpl(*iter->Child, dwModClr, dwPlayerColor, parity);
+			RenderMeshImpl(*attach->Child, dwModClr, dwPlayerColor, parity);
 			glPopMatrix();
 
 #if 0
-			const StdMeshMatrix& own_trans = instance.GetBoneTransform(iter->ParentBone)
-		                                 * StdMeshMatrix::Transform(instance.Mesh.GetBone(iter->ParentBone).Transformation);
+			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attach->ParentBone)
+		                                 * StdMeshMatrix::Transform(instance.Mesh.GetBone(attach->ParentBone).Transformation);
 
 			// Draw attached bone
 			glDisable(GL_DEPTH_TEST);
