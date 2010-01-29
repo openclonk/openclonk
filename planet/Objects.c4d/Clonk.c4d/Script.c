@@ -341,6 +341,7 @@ public func IsClonk() { return true; }
 /* Carry items on the clonk */
 
 local iHandMesh;
+local fHandAction;
 // GetSelected
 
 func OnSelectionChanged(int oldslot, int newslot, bool secondaryslot)
@@ -377,6 +378,7 @@ func AttachHandItem(bool secondary)
 
 func UpdateAttach()
 {
+	StopAnimation(GetRootAnimation(6));
 	DoUpdateAttach(0);
 	DoUpdateAttach(1);
 }
@@ -402,35 +404,44 @@ func DoUpdateAttach(bool sec)
 	if(sec) pos_hand = "pos_hand1";
 	var pos_back = "pos_back2";
 	if(sec) pos_back = "pos_back1";
+	var closehand = "Close2Hand";
+	if(sec) closehand = "Close1Hand";
 
 	var special = obj->~GetCarrySpecial(this);
 	if(special)
 	{
-		iHandMesh[sec] = AttachMesh(obj->GetID(), special, bone, trans);
+		iHandMesh[sec] = AttachMesh(obj, special, bone, trans);
 		iAttachMode = 0;
 	}
 
 	if(iAttachMode == CARRY_Hand)
 	{
 		if(HasHandAction())
-  		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, trans);
+		{
+  		iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
+			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
+		}
 		else
 			; // Don't display
 	}
 	else if(iAttachMode == CARRY_HandBack)
 	{
 		if(HasHandAction())
-  		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, trans);
+		{
+  		iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
+			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
+		}
 		else
-			iHandMesh[sec] = AttachMesh(obj->GetID(), pos_back, bone, trans);
+			iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
 	}
 	else if(iAttachMode == CARRY_HandAlways)
 	{
-		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_hand, bone, trans);
+		iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
+		PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
 	}
 	else if(iAttachMode == CARRY_Back)
 	{
-		iHandMesh[sec] = AttachMesh(obj->GetID(), pos_back, bone, trans);
+		iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
 	}
 }
 
@@ -450,7 +461,24 @@ static const CARRY_Back         = 4;
 
 func HasHandAction()
 {
-	return (GetAction() == "Walk") || (GetAction() == "Jump");
+	if( (GetAction() == "Walk" || GetAction() == "Jump") && !fHandAction )
+		return true;
+	return false;
+}
+
+public func SetHandAction(bool fNewValue)
+{
+	if(fNewValue)
+		fHandAction = 1;
+	else
+		fHandAction = 0;
+}
+
+public func GetHandAction()
+{
+	if(fHandAction == 1)
+		return true;
+	return false;
 }
 
 /*
