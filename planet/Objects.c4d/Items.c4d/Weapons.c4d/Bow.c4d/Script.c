@@ -188,7 +188,7 @@ private func ClonkCanAim(object clonk)
 
 func FxIntWalkSlowStart(pTarget, iNumber, fTmp)
 {
-	pTarget->SetPhysical("Walk", 30000, PHYS_StackTemporary);
+//	pTarget->SetPhysical("Walk", 30000, PHYS_StackTemporary);
 }
 
 func FxIntWalkSlowStop(pTarget, iNumber)

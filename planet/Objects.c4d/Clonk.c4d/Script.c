@@ -402,8 +402,8 @@ func DoUpdateAttach(bool sec)
 
 	var pos_hand = "pos_hand2";
 	if(sec) pos_hand = "pos_hand1";
-	var pos_back = "pos_back2";
-	if(sec) pos_back = "pos_back1";
+	var pos_back = "pos_back1";
+	if(sec) pos_back = "pos_back2";
 	var closehand = "Close2Hand";
 	if(sec) closehand = "Close1Hand";
 
@@ -545,6 +545,17 @@ func FxIntWalkStart(pTarget, iNumber, fTmp)
 	EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Const(1000));
 	// Update carried items
 	UpdateAttach();
+
+	EffectVar(17, pTarget, iNumber) = GetComDir(); // OldDir
+	if(GetComDir() == COMD_Stop)
+	{
+		if(GetDir()) EffectVar(17, pTarget, iNumber) = COMD_Right;
+		else EffectVar(17, pTarget, iNumber) = COMD_Left;
+	}
+	var iTurnPos = 0;
+	if(EffectVar(17, pTarget, iNumber) = COMD_Right) iTurnPos = 1200;
+	EffectVar(3, pTarget, iNumber) = PlayAnimation("TurnRoot", 1, Anim_Const(iTurnPos), Anim_Const(1000));
+	EffectVar(4, pTarget, iNumber) = 0;
 }
 
 func FxIntWalkStop(pTarget, iNumber, fTmp)
@@ -553,6 +564,7 @@ func FxIntWalkStop(pTarget, iNumber, fTmp)
 
 	// Remove all
 	StopAnimation(GetRootAnimation(5));
+	StopAnimation(EffectVar(3, pTarget, iNumber));
 
 	// Update carried items
 	UpdateAttach();
@@ -560,11 +572,40 @@ func FxIntWalkStop(pTarget, iNumber, fTmp)
 
 func FxIntWalkTimer(pTarget, iNumber)
 {
+	if(EffectVar(4, pTarget, iNumber))
+	{
+		EffectVar(4, pTarget, iNumber)--;
+		if(EffectVar(4, pTarget, iNumber) == 0)
+			SetAnimationPosition(EffectVar(3, pTarget, iNumber), Anim_Const(1200*GetDir()));
+	}
 	var anim = GetCurrentWalkAnimation();
-	if(anim != EffectVar(0, pTarget, iNumber))
+	if(anim != EffectVar(0, pTarget, iNumber) && !EffectVar(4, pTarget, iNumber))
 	{
 		EffectVar(0, pTarget, iNumber) = anim;
 		EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	}
+	// Check wether the clonk wants to turn (Not when he wants to stop)
+  if(EffectVar(17, pTarget, iNumber) != GetComDir() && GetComDir()!= COMD_Stop)
+	{
+		var iTurnTime = 10;
+//		if(Distance(0,0,GetXDir(),GetYDir()) < 10)
+//		{
+		if(EffectVar(17, pTarget, iNumber) == COMD_Right)
+		{
+			EffectVar(0, pTarget, iNumber) = PlayAnimation("StandTurn", 5, Anim_Linear(0, 0, 2000, iTurnTime, ANIM_Hold), Anim_Linear(0, 0, 1000, 2, ANIM_Remove));
+			SetAnimationPosition(EffectVar(3, pTarget, iNumber), Anim_Linear(1200, 1200, 0, iTurnTime));
+		}
+		else
+		{
+			EffectVar(0, pTarget, iNumber) = PlayAnimation("StandTurn", 5, Anim_Linear(3000, 3000, 5000, iTurnTime, ANIM_Hold), Anim_Linear(0, 0, 1000, 2, ANIM_Remove));
+			SetAnimationPosition(EffectVar(3, pTarget, iNumber), Anim_Linear(0, 0, 1200, iTurnTime));
+		}
+//		}
+		//else
+		//	EffectVar(0, pTarget, iNumber) = PlayAnimation("RunTurn", 5, Anim_Linear(0, 0, 2400, iTurnTime, ANIM_Hold), Anim_Linear(0, 0, 1000, 2, ANIM_Remove));
+		// Save new ComDir
+		EffectVar(17, pTarget, iNumber) = GetComDir();
+		EffectVar(4, pTarget, iNumber) = iTurnTime;
 	}
 }
 
@@ -1013,7 +1054,7 @@ Walk = {
 	Name = "Walk",
 	Procedure = DFA_WALK,
 	Directions = 2,
-	FlipDir = 1,
+	FlipDir = 0,
 	Length = 1,
 	Delay = 0,
 	X = 0,
