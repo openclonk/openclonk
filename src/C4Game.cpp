@@ -3778,34 +3778,75 @@ void C4Game::Abort(bool fApproved)
 	}
 
 bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, uint32_t dwClr)
-	{
+{
 	// safety
+	assert(szSpec && *szSpec);
 	if (!szSpec) return false;
-	/* FIXME: doesn't work for IDs >4 chars
-	// regular ID? -> Draw def
-	if (LooksLikeID(szSpec))
+	// Special icon?
+	if (SEqual2(szSpec, "@Ico:"))
+	{
+		szSpec += 5;
+		if (SEqual2(szSpec, "Locked"))
 		{
-		C4Def *pDef = C4Id2Def(C4Id(szSpec));
-		if (!pDef) return false;
-		fctTarget.Set(pDef->Graphics.GetBitmap(dwClr), pDef->PictureRect.x, pDef->PictureRect.y,pDef->PictureRect.Wdt,pDef->PictureRect.Hgt);
-		return true;
+			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
+			return true;
 		}
-	// C4ID:Index?
-	if (SLen(szSpec) > 5 && szSpec[4]==':')
+		else if (SEqual2(szSpec, "League"))
 		{
-		char idbuf[5]; SCopy(szSpec, idbuf, 4);
-		if (LooksLikeID(idbuf))
+			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
+			return true;
+		}
+		else if (SEqual2(szSpec, "GameRunning"))
+		{
+			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
+			return true;
+		}
+		else if (SEqual2(szSpec, "Lobby"))
+		{
+			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
+			return true;
+		}
+		else if (SEqual2(szSpec, "RuntimeJoin"))
+		{
+			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
+			return true;
+		}
+		else if (SEqual2(szSpec, "FairCrew"))
+		{
+			((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_FairCrew);
+			return true;
+		}
+		else if (SEqual2(szSpec, "Settlement"))
+		{
+			((C4Facet &) fctTarget) = GraphicsResource.fctScore;
+			return true;
+		}
+	}
+	else
+	{
+		// regular ID? -> Draw def
+		const char *separator = std::strchr(szSpec, ':');
+		if (!separator)
+		{
+			C4Def *pDef = C4Id2Def(C4ID(szSpec));
+			if (!pDef) return false;
+			fctTarget.Set(pDef->Graphics.GetBitmap(dwClr), pDef->PictureRect.x, pDef->PictureRect.y, pDef->PictureRect.Wdt, pDef->PictureRect.Hgt);
+			return true;
+		}
+		else
+		{
+			std::string id(szSpec, separator);
+			C4Def *def = C4Id2Def(C4ID(id));
+			if (!def) return false;
+			int index = -1;
+			if (sscanf(separator + 1, "%d", &index) == 1 && index >= 0)
 			{
-			int iIndex=-1;
-			if (sscanf(szSpec+5, "%d", &iIndex) == 1) if (iIndex>=0)
-				{
-				C4Def *pDef = C4Id2Def(C4Id(idbuf));
-				if (!pDef) return false;
-				fctTarget.Set(pDef->Graphics.GetBitmap(dwClr), pDef->PictureRect.x+pDef->PictureRect.Wdt*iIndex, pDef->PictureRect.y,pDef->PictureRect.Wdt,pDef->PictureRect.Hgt);
+				fctTarget.Set(def->Graphics.GetBitmap(dwClr), def->PictureRect.x + def->PictureRect.Wdt * index, def->PictureRect.y, def->PictureRect.Wdt, def->PictureRect.Hgt);
 				return true;
-				}
 			}
 		}
+	}
+	/*
 	// portrait spec?
 	if (SEqual2(szSpec, "Portrait:"))
 		{
@@ -3824,42 +3865,7 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 		fctTarget.Set(sfcPortrait, 0, 0, sfcPortrait->Wdt, sfcPortrait->Hgt);
 		return true;
 		}
-	else */
-	if (SEqual2(szSpec, "Ico:Locked"))
-		{
-		((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_LockedFrontal);
-		return true;
-		}
-	else if (SEqual2(szSpec, "Ico:League"))
-		{
-		((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_League);
-		return true;
-		}
-	else if (SEqual2(szSpec, "Ico:GameRunning"))
-		{
-		((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_GameRunning);
-		return true;
-		}
-	else if (SEqual2(szSpec, "Ico:Lobby"))
-		{
-		((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Lobby);
-		return true;
-		}
-	else if (SEqual2(szSpec, "Ico:RuntimeJoin"))
-		{
-		((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_RuntimeJoin);
-		return true;
-		}
-	else if (SEqual2(szSpec, "Ico:FairCrew"))
-		{
-		((C4Facet &) fctTarget) = C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_FairCrew);
-		return true;
-		}
-	else if (SEqual2(szSpec, "Ico:Settlement"))
-		{
-		((C4Facet &) fctTarget) = GraphicsResource.fctScore;
-		return true;
-		}
+	*/
 	// unknown spec
 	return false;
 	}
