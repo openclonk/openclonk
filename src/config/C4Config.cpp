@@ -149,7 +149,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(MsgBoard,							"MsgBoard"	,						1							));
 	pComp->Value(mkNamingAdapt(MsgBrdFadeDelay,				"MsgBrdFadeDelay"	,			10						));
 	pComp->Value(mkNamingAdapt(PXSGfx,								"PXSGfx"	,							1							));
-	pComp->Value(mkNamingAdapt(Engine,								"Engine"	,							0							,false, true));
+	pComp->Value(mkNamingAdapt(Engine,								"Engine"	,							1							,false, true));
 	pComp->Value(mkNamingAdapt(BlitOff,								"BlitOff"	,							-50						));
 	pComp->Value(mkNamingAdapt(BlitOffGL,							"BlitOffGL"	,						0							));
 	pComp->Value(mkNamingAdapt(Gamma1,								"Gamma1"	,							0							));
