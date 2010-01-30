@@ -148,13 +148,11 @@ public func UpdateSelectionStatus()
 
 	if(crew->GetCrewSelected())
 	{
-		SetClrModulation(HSL(0,0,250),12);
-		SetObjDrawTransform(500,0,16000,0,500,-30000, 12);
+		SetObjDrawTransform(1200,0,0,0,1200,0, 1);
 	}
 	else
 	{
-		SetClrModulation(HSL(0,0,180),12);
-		SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
+		SetObjDrawTransform(900,0,0,0,900,0, 1);
 	}
 }
 

@@ -152,8 +152,8 @@ ul.nav a:hover, ul.nav a:hover {
 	background: #333 url(images/stripe-wide.gif) left repeat-x;
 }
 
-ul.nav li.switchlang {
-	margin-left: 20px;
+ul.nav li.switchlang img {
+	margin: 0;
 }
 
 

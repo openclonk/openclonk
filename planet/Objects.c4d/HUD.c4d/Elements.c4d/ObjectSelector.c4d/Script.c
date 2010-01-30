@@ -377,8 +377,11 @@ public func UpdateSelectionStatus()
 	// and set the icon...
 	if(selected)
 	{
-		SetClrModulation(RGB(220,0,0),12);
-		SetObjDrawTransform(500,0,16000,0,500,-34000, 12);
+		//SetClrModulation(RGB(220,0,0),12);
+		//SetObjDrawTransform(500,0,16000,0,500,-34000, 12);
+		if(myobject) {
+			SetObjDrawTransform(1200,0,0,0,1200,0,1);
+		}
 		
 		if(actiontype == ACTIONTYPE_VEHICLE)
 		{
@@ -394,8 +397,11 @@ public func UpdateSelectionStatus()
 	}
 	else
 	{
-		SetClrModulation(RGB(160,0,0),12);
-		SetObjDrawTransform(300,0,16000,0,300,-34000, 12);
+		//SetClrModulation(RGB(160,0,0),12);
+		//SetObjDrawTransform(300,0,16000,0,300,-34000, 12);
+		if(myobject) {
+			SetObjDrawTransform(900,0,0,0,900,0,1);
+		}
 		
 		if(actiontype == ACTIONTYPE_VEHICLE)
 		{
