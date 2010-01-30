@@ -133,7 +133,7 @@ class C4AulParseState
 		pLoopStack(NULL)
 		{ }
 	~C4AulParseState()
-		{ while(pLoopStack) PopLoop(); }
+		{ while(pLoopStack) PopLoop(); ClearToken(); }
 	C4AulScriptFunc *Fn; C4AulScript * a;
 	const char *SPos; // current position in the script
 	char Idtf[C4AUL_MAX_Identifier]; // current identifier
@@ -166,6 +166,7 @@ class C4AulParseState
 	int GetOperator(const char* pScript);
 	// Simply discard the string, put it in the Table and delete it with the script or delete it when refcount drops
 	enum HoldStringsPolicy { Discard, Hold, Ref };
+	void ClearToken(); // clear any data held with the current token
 	C4AulTokenType GetNextToken(char *pToken, long *pInt, HoldStringsPolicy HoldStrings, bool bOperator); // get next token of SPos
 
 	void Shift(HoldStringsPolicy HoldStrings = Hold, bool bOperator = true);
@@ -541,8 +542,20 @@ static int32_t StrToI32(char *s, int base, char **scan_end)
 	return result;
 	}
 
+void C4AulParseState::ClearToken()
+{
+	// if last token was a string, make sure its ref is deleted
+	if (TokenType == ATT_STRING && cInt)
+	{
+		reinterpret_cast<C4String *>(cInt)->DecRef();
+		TokenType = ATT_INVALID;
+	}
+}
+
 C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldStringsPolicy HoldStrings,  bool bOperator)
 	{
+	// clear mem of prev token
+	ClearToken();
 	// move to start of token
 	if (!AdvanceSpaces()) return ATT_EOF;
 	// store offset
@@ -739,10 +752,11 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 				{
 					SPos++;
 					// no string expected?
-					if(HoldStrings == Discard) return ATT_STRING;
+					if(HoldStrings == Discard) { pInt=0; return ATT_STRING; }
 					// reg string (if not already done so)
 					C4String *pString;
 					pString = Strings.RegString(StdStrBuf(strbuf.data(),strbuf.size()));
+					pString->IncRef();
 					// return pointer on string object
 					*pInt = (long) pString;
 					return ATT_STRING;
