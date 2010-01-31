@@ -50,7 +50,7 @@ public func IsFulfilled()
 	return true;
 }
 
-protected func Activate(int byplr)
+public func Activate(int byplr)
 {
 	// Count enemy players.
 	var hostile_count;
@@ -69,6 +69,11 @@ protected func Activate(int byplr)
 	else
 		MessageWindow(Format("$MsgGoalUnfulfilled$", hostile_count), byplr);
 	return;
+}
+
+public func GetShortDescription(int plr)
+{
+	return ""; // TODO
 }
 
 func Definition(def) {

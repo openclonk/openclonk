@@ -1,4 +1,4 @@
-/*-- The Summit --*/
+/*-- The Cavern --*/
 
 protected func Initialize()
 {
@@ -11,10 +11,10 @@ protected func Initialize()
 		d += 10;
 	pGoal->SetStartpoint(x, y);
 	// Set some checkpoints.
-	for (var i = 0; d < LandscapeHeight()-400; i++)
+	for (var i = 0; d < LandscapeHeight()-350; i++)
 	{
 		var mode = RACE_CP_Check;
-		d += RandomX(150,300);
+		d += RandomX(150,250);
 		if (!FindPosInMat(x, y, "Tunnel", 0, LandscapeHeight()-d-80, LandscapeWidth(), 80, 20) || !Random(3))
 			FindPosInMat(x, y, "Sky", 0, LandscapeHeight()-d-80, LandscapeWidth(), 80, 20);
 		else

@@ -1,6 +1,6 @@
 [Head]
 Icon=26
-Title=TheCavern
+Title=Cavern
 Version=4,10,0,0
 MaxPlayer=12
 
@@ -8,25 +8,21 @@ MaxPlayer=12
 Definition1=Objects.c4d
 
 [Player1]
-Wealth=50,0,0,250
 Crew=CLNK=1
 
 [Player2]
-Wealth=50,0,0,250
 Crew=CLNK=1
 
 [Player3]
-Wealth=50,0,0,250
 Crew=CLNK=1
 
 [Player4]
-Wealth=50,0,0,250
 Crew=CLNK=1
 
 [Landscape]
 InEarth=ROCK=1;GOLD=1;DYNA=3;LOAM=3
 InEarthLevel=80,0,0,100
-Sky=Clouds2
+Sky=Clouds1
 MapWidth=100,0,64,10000
 MapHeight=250,0,40,10000
 SkyScrollMode=2

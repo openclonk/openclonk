@@ -20,42 +20,42 @@ static const RACE_CP_Check = 8;
 static const RACE_CP_Ordered = 16;
 static const RACE_CP_Bonus = 32;
 
-public func SetCPMode(int iMode) 
+public func SetCPMode(int mode) 
 {
-	if (iMode & RACE_CP_Start) // Start always occurs alone.
-		iMode = RACE_CP_Start;
-	if (iMode & RACE_CP_Finish) // Start always occurs alone.
-		iMode = RACE_CP_Finish;
-	if (iMode & RACE_CP_Ordered) // Ordered checkpoints must have RACE_CP_Check.
+	if (mode & RACE_CP_Start) // Start always occurs alone.
+		mode = RACE_CP_Start;
+	if (mode & RACE_CP_Finish) // Start always occurs alone.
+		mode = RACE_CP_Finish;
+	if (mode & RACE_CP_Ordered) // Ordered checkpoints must have RACE_CP_Check.
 	{
-		iMode = iMode | RACE_CP_Check;
+		mode = mode | RACE_CP_Check;
 		// Set CP number.
 		SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
 	}
-	CP_Mode = iMode; 
+	CP_Mode = mode; 
 	UpdateGraphics();
 	return;
 }
 
 public func GetCPMode() { return CP_Mode; }
 
-public func FindCPMode(int iMode) { return CP_Mode & iMode; }
+public func FindCPMode(int mode) { return CP_Mode & mode; }
 
 /*-- Checkpoint controller --*/
 local CP_Con;
 
-public func SetCPController(object pCon) 
+public func SetCPController(object con) 
 { 
-	CP_Con = pCon; 
+	CP_Con = con; 
 	return; 
 }
 
 /*-- Checkpoint number --*/
 local CP_Num;
 
-public func SetCPNumber(int iNum) 
+public func SetCPNumber(int num) 
 { 
-	CP_Num = iNum; 
+	CP_Num = num; 
 	return; 
 }
 
@@ -78,23 +78,24 @@ protected func Initialize()
 
 /*-- Checkpoint status --*/
 
-public func ClearedByPlr(int iPlr)
+public func ClearedByPlr(int plr)
 {
-	return aDoneByPlr[iPlr];
+	var plrid = GetPlayerID(plr);
+	return aDoneByPlr[plrid];
 }
 
-public func ClearedByTeam(int iTeam)
+public func ClearedByTeam(int team)
 {
-	return aDoneByTeam[iTeam];
+	return aDoneByTeam[team];
 }
 
-public func IsActiveForPlr(int iPlr)
+public func IsActiveForPlr(int plr)
 {
 	if (CP_Mode & RACE_CP_Finish) // Check all checkpoints.
 	{
 		for (var cp in FindObjects(Find_ID(GetID())))
 			if (cp->GetCPMode() & RACE_CP_Check)
-				if (!cp->ClearedByPlr(iPlr))
+				if (!cp->ClearedByPlr(plr))
 					return false;
 		return true;
 	}
@@ -104,19 +105,19 @@ public func IsActiveForPlr(int iPlr)
 			return true;
 		for (var cp in FindObjects(Find_ID(GetID()), Find_Func("GetCPNumber")))
 			if (cp->GetCPNumber() + 1 == GetCPNumber())
-				if (cp->ClearedByPlr(iPlr))
+				if (cp->ClearedByPlr(plr))
 					return true;
 		return false;
 	}
 	return true;
 }
 
-public func IsActiveForTeam(int iTeam)
+public func IsActiveForTeam(int team)
 {
-	if (!iTeam)
+	if (!team)
 		return false;
 	for (var i = 0; i < GetPlayerCount(); i++)
-		if (GetPlayerTeam(GetPlayerByIndex(i)) == iTeam)
+		if (GetPlayerTeam(GetPlayerByIndex(i)) == team)
 			if (IsActiveForPlr(GetPlayerByIndex(i)))
 				return true;
 	return false;
@@ -134,50 +135,50 @@ protected func CheckForClonks()
 {
 	// Loop through all clonks inside the checkpoint.
 	for (var pClonk in FindObjects(Find_OCF(OCF_CrewMember), Find_Distance(20)))
-	{
-		var iPlr = pClonk->GetOwner();
-		var iTeam = GetPlayerTeam(iPlr);
-		// Check whether this CP is already activated for iPlr or its team.
-		if (!IsActiveForPlr(iPlr))
-			if (!IsActiveForTeam(iTeam))
-				continue;
+	{		
+		var plr = pClonk->GetOwner();
+		var team = GetPlayerTeam(plr);
+		var plrid = GetPlayerID(plr);
+		// Check whether this CP is already activated for player or its team.
+		if (!IsActiveForPlr(plr) && !IsActiveForTeam(team))
+			continue;
 		// Check respawn status.
 		if (CP_Mode & RACE_CP_Respawn) 
 			if (CP_Con)
-				CP_Con->SetPlrRespawnCP(iPlr, this); // Notify race goal.
+				CP_Con->SetPlrRespawnCP(plr, this); // Notify race goal.
 		// If already done by player -> continue.
-		if (aDoneByPlr[iPlr])
+		if (aDoneByPlr[plrid])
 			continue;
 		// Check checkpoint status.
 		if (CP_Mode & RACE_CP_Check)
 		{
-			aDoneByPlr[iPlr] = true;
-			Sound("Cleared", false, nil, iPlr);
-			if (!iTeam)
+			aDoneByPlr[plrid] = true;
+			Sound("Cleared", false, nil, plr);
+			if (!team)
 				if (CP_Con)
-					CP_Con->AddPlrClearedCP(iPlr); // Notify race goal.
-			if (iTeam && !aDoneByTeam[iTeam])
+					CP_Con->AddPlrClearedCP(plr); // Notify race goal.
+			if (team && !aDoneByTeam[team])
 			{
-				aDoneByTeam[iTeam] = true;
+				aDoneByTeam[team] = true;
 				if (CP_Con)
-					CP_Con->AddPlrClearedCP(iPlr); // Notify race goal.
+					CP_Con->AddPlrClearedCP(plr); // Notify race goal.
 			}
 			UpdateColor();
 		}
 		// Check finish status.
 		if (CP_Mode & RACE_CP_Finish) 
 		{
-			Sound("Cleared", false, nil, iPlr);
-			aDoneByPlr[iPlr] = true;
-			if (iTeam)
-				aDoneByTeam[iTeam] = true;
+			Sound("Cleared", false, nil, plr);
+			aDoneByPlr[plrid] = true;
+			if (team)
+				aDoneByTeam[team] = true;
 			if (CP_Con)
-				CP_Con->PlayerHasReachedFinish(iPlr); // Notify race goal.
+				CP_Con->PlrReachedFinishCP(plr); // Notify race goal.
 			UpdateColor();
 		}
 		// Check bonus.
 		if (CP_Mode & RACE_CP_Bonus)
-			GameCall("GivePlrBonus", iPlr, this);
+			GameCall("GivePlrBonus", plr, this);
 	}
 	return;
 }
@@ -208,11 +209,18 @@ protected func UpdateGraphics()
 		SetGraphics("Check", GetID(), 3, GFXOV_MODE_Base);
 		SetObjDrawTransform(1000, 0, 6000, 0, 1000, -3000, 3);
 	}
-	// Ordered.
+	// Ordered, display numbers up to 99.
 	if (CP_Mode & RACE_CP_Ordered)
 	{
-		SetGraphics(Format("%d", GetCPNumber()), NUMB, 4, GFXOV_MODE_Base);
-		SetObjDrawTransform(200, 0, 0, 0, 200, 9000, 4);
+		if (GetCPNumber() >= 10)
+		{
+			SetGraphics(Format("%d", GetCPNumber()/10), NUMB, 5, GFXOV_MODE_Base);
+			SetObjDrawTransform(200, 0, -2500, 0, 200, 9000, 5);
+			SetClrModulation(RGBa(255, 255, 255, 128) , 5);
+		}
+		SetGraphics(Format("%d", GetCPNumber()%10), NUMB, 4, GFXOV_MODE_Base);
+		SetObjDrawTransform(200, 0, 2500, 0, 200, 9000, 4);
+		SetClrModulation(RGBa(255, 255, 255, 128) , 4);
 	}
 	return;
 }
@@ -230,17 +238,19 @@ protected func UpdateColor()
 	for (var i = 0; i < GetLength(aDoneByPlr); i++)
 	{
 		if (aDoneByPlr[i])
-		{
-			SetGraphics("Ring8", GetID(), 5 + i, GFXOV_MODE_Base);
-			SetClrModulation(GetPlrColor(i), 5 + i);
+		{ // Does not work with TeamColors=1.
+			SetGraphics("Ring8", GetID(), 6 + i, GFXOV_MODE_Base);
+			SetClrModulation(GetPlrColor(GetPlayerByIndex(ringsec)), 6 + i); //WRONG.
 			var angle = ringsec * 45;
 			var s = Sin(angle, 1000), c = Cos(angle, 1000);
-			SetObjDrawTransform(c, s, 0, -s, c, 0, 5 + i);
+			SetObjDrawTransform(c, s, 0, -s, c, 0, 6 + i);
 			ringsec++;
 		}
 	}
 	return;
 }
+
+/*-- Proplist --*/
 
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);

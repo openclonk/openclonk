@@ -1,6 +1,6 @@
-Name=Race
+Name=Parkour
 
-#Race
+#Goal window
 MsgRace=This is race over %d checkpoints, check the scoreboard for the number of completed checkpoints per team/player.
 MsgRaceWon=Congratulations, you have won the race!
 MsgRaceWonTeam=Congratulations, your team has won the race!
@@ -8,8 +8,24 @@ MsgRaceLost=You have lost the race.
 MsgRaceLostTeam=Your team has lost the race.
 
 #Respawn
-MsgRespawn0=%s tries it again.
-MsgRespawn1=%s is dead.
+MsgRespawn0=%s tries again.
+MsgRespawn1=%s has died.
 MsgRespawn2=Haha, %s!
 MsgRespawn3=We're mourning %s.
 MsgNewRespawn=You'll now respawn here.
+
+#Description
+MsgDesc=You are in a race.
+
+#Scoreboard
+MsgCaptionX=Race over %d checkpoints.
+MsgCaptionNone=Race without checkpoints.
+
+#Best time
+MsgBestTime=%s has set a new personal best time of %s.
+
+#Evaluation data
+MsgEvalPlrWon=%s has won the parkour in %s.
+MsgEvalTeamWon=The team %s has won the parkour in %s.
+MsgEvalPlayerX=You have cleared %d checkpoints.
+MsgEvalPlayerAll=You have cleared all checkpoints.
