@@ -33,7 +33,7 @@ public func SetCPMode(int mode)
 		SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
 	}
 	CP_Mode = mode; 
-	UpdateGraphics();
+	DoGraphics();
 	return;
 }
 
@@ -125,9 +125,10 @@ public func IsActiveForTeam(int team)
 
 /*-- Checkpoint activity --*/
 
-protected func FxIntCheckpointTimer(object pTarget, int iEffectNumber, int iEffectTime)
+protected func FxIntCheckpointTimer(object target, int fxnum, int fxtime)
 {	
 	CheckForClonks();
+	UpdateGraphics(fxtime);
 	return FX_OK;
 }
 
@@ -163,7 +164,6 @@ protected func CheckForClonks()
 				if (CP_Con)
 					CP_Con->AddPlrClearedCP(plr); // Notify race goal.
 			}
-			UpdateColor();
 		}
 		// Check finish status.
 		if (CP_Mode & RACE_CP_Finish) 
@@ -174,7 +174,6 @@ protected func CheckForClonks()
 				aDoneByTeam[team] = true;
 			if (CP_Con)
 				CP_Con->PlrReachedFinishCP(plr); // Notify race goal.
-			UpdateColor();
 		}
 		// Check bonus.
 		if (CP_Mode & RACE_CP_Bonus)
@@ -186,69 +185,67 @@ protected func CheckForClonks()
 /*-- Checkpoint appearance --*/
 
 // Mode-graphics.
-protected func UpdateGraphics()
+protected func DoGraphics()
 {
 	// Clear all overlays first.
-	for (var i = 1; i <= 4; i++)
+	for (var i = 1; i <= 3; i++)
 		SetGraphics(0, 0, i);
-	// Start.
-	if (CP_Mode & RACE_CP_Start)
-		SetGraphics("Start", GetID(), 1, GFXOV_MODE_Base);
+	// Start & Finish.
+	if (CP_Mode & RACE_CP_Start || CP_Mode & RACE_CP_Finish)
+		SetGraphics("Flag", GetID(), 1, GFXOV_MODE_Base);
 	// Finish.
 	if (CP_Mode & RACE_CP_Finish)
 		SetGraphics("Finish", GetID(), 1, GFXOV_MODE_Base);
-	// Respawn.
-	if (CP_Mode & RACE_CP_Respawn)
-	{
-		SetGraphics("Respawn", GetID(), 2, GFXOV_MODE_Base);
-		SetObjDrawTransform(1000, 0, -6000, 0, 1000, -3000, 2);
-	}
-	// Check.
-	if (CP_Mode & RACE_CP_Check)
-	{
-		SetGraphics("Check", GetID(), 3, GFXOV_MODE_Base);
-		SetObjDrawTransform(1000, 0, 6000, 0, 1000, -3000, 3);
-	}
 	// Ordered, display numbers up to 99.
 	if (CP_Mode & RACE_CP_Ordered)
 	{
 		if (GetCPNumber() >= 10)
 		{
-			SetGraphics(Format("%d", GetCPNumber()/10), NUMB, 5, GFXOV_MODE_Base);
-			SetObjDrawTransform(200, 0, -2500, 0, 200, 9000, 5);
-			SetClrModulation(RGBa(255, 255, 255, 128) , 5);
+			SetGraphics(Format("%d", GetCPNumber()/10), NUMB, 3, GFXOV_MODE_Base);
+			SetObjDrawTransform(300, 0, -4500, 0, 300, 0, 3);
+			SetClrModulation(RGBa(255, 255, 255, 128) , 3);
 		}
-		SetGraphics(Format("%d", GetCPNumber()%10), NUMB, 4, GFXOV_MODE_Base);
-		SetObjDrawTransform(200, 0, 2500, 0, 200, 9000, 4);
-		SetClrModulation(RGBa(255, 255, 255, 128) , 4);
+		SetGraphics(Format("%d", GetCPNumber()%10), NUMB, 2, GFXOV_MODE_Base);
+		SetObjDrawTransform(300, 0, 4500, 0, 300, 0, 2);
+		SetClrModulation(RGBa(255, 255, 255, 128) , 2);
 	}
 	return;
 }
 
-// Player cleared-graphics.
-protected func UpdateColor()
+// Player graphics.
+protected func UpdateGraphics(int time)
 {
-	// Calculate nr of players that reached this CP.
-	var plrcnt = 0;
-	for (var i = 0; i < GetLength(aDoneByPlr); i++)
-		if (aDoneByPlr[i])
-			plrcnt++;
-	// Ring color, for players that cleared this CP.
-	var ringsec = 0;
-	for (var i = 0; i < GetLength(aDoneByPlr); i++)
-	{
-		if (aDoneByPlr[i])
-		{ // Does not work with TeamColors=1.
-			SetGraphics("Ring8", GetID(), 6 + i, GFXOV_MODE_Base);
-			SetClrModulation(GetPlrColor(GetPlayerByIndex(ringsec)), 6 + i); //WRONG.
-			var angle = ringsec * 45;
-			var s = Sin(angle, 1000), c = Cos(angle, 1000);
-			SetObjDrawTransform(c, s, 0, -s, c, 0, 6 + i);
-			ringsec++;
-		}
-	}
+	var angle = (time * 10) % 360;
+	var color = GetColorByAngle(angle);
+	CreateParticle("PSpark", Sin(angle, 20), -Cos(angle, 20), 0, 0, 32, color);
+	angle = (angle + 180) % 360;
+	var color = GetColorByAngle(angle);
+	CreateParticle("PSpark", Sin(angle, 20), -Cos(angle, 20), 0, 0, 32, color);
 	return;
 }
+
+protected func GetColorByAngle(int angle)
+{
+	// Get cleared count.
+	var cnt = 0;
+	for (var i = 0; i < GetPlayerCount(); i++)
+		if (ClearedByPlr(GetPlayerByIndex(i)) || (CP_Mode & RACE_CP_Start))
+			cnt++;
+	var prt = 360 / cnt;
+	var j = 0;
+	for (var i = 0; i < GetPlayerCount(); i++)
+	{
+		var plr = GetPlayerByIndex(i);
+		if (ClearedByPlr(plr) || (CP_Mode & RACE_CP_Start))
+		{
+			if (angle >= j * prt && angle < (j + 1) * prt)
+				return GetPlrColor(plr);
+			j++;
+		}
+	}
+	return RGBa(255,255,255,192);
+}
+
 
 /*-- Proplist --*/
 

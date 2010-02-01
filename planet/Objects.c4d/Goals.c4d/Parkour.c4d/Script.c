@@ -110,7 +110,7 @@ public func SetPlrRespawnCP(int plr, object cp)
 	if (aRespawnCP[plr] == cp)
 		return;
 	aRespawnCP[plr] = cp;
-	PlrMessage(Translate("MsgNewRespawn"), plr);
+	PlrMessage("$MsgNewRespawn$", plr);
 	return;
 }
 
@@ -159,20 +159,20 @@ public func Activate(int plr)
 		if (team)
 		{
 			if (IsWinner(plr))
-				msg = Format(Translate("MsgRaceWonTeam"));
+				msg = "$MsgRaceWonTeam$";
 			else
-				msg = Format(Translate("MsgRaceLostTeam"));
+				msg = "$MsgRaceLostTeam$";
 		}
 		else
 		{
 			if (IsWinner(plr))
-				msg = Format(Translate("MsgRaceWon"));
+				msg = "$MsgRaceWon$";
 			else
-				msg = Format(Translate("MsgRaceLost"));
+				msg = "$MsgRaceLost$";
 		}
 	}
 	else
-		msg = Format(Translate("MsgRace"), nrCheckpoints + 1);
+		msg = Format("$MsgRace$", nrCheckpoints + 1);
 	// Show goal message.
 	MessageWindow(msg, plr);
 	return;
@@ -180,7 +180,7 @@ public func Activate(int plr)
 
 public func GetShortDescription(int plr)
 {
-	return Translate("MsgDesc");
+	return "$MsgDesc$";
 }
 
 private func IsWinner(int plr)
@@ -294,9 +294,9 @@ static const SBRD_BestTime = 2;
 private func InitScoreboard()
 {
 	if (nrCheckpoints > 0)
-		var caption = Format(Translate("MsgCaptionX"), nrCheckpoints + 1);
+		var caption = Format("$MsgCaptionX$", nrCheckpoints + 1);
 	else
-		var caption = Translate("MsgCaptionNone");
+		var caption = "$MsgCaptionNone$";
 	// The above row.
 	SetScoreboardData(SBRD_Caption, SBRD_Caption, caption, SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, SBRD_Checkpoints, Format("{{%i}}", Core_Goal_Checkpoint), SBRD_Caption);
@@ -395,7 +395,7 @@ private func DoBestTime(int plr)
 	if (time != 0 && (!rectime || time < rectime))
 	{
 		SetPlrExtraData(plr, szBestTimeString, time);
-		Log(Format(Translate("MsgBestTime"), GetPlayerName(plr), TimeToString(time)));
+		Log(Format("$MsgBestTime$", GetPlayerName(plr), TimeToString(time)));
 	}
 	return;
 }
@@ -430,14 +430,14 @@ private func SetEvalData(int winner)
 	var msg;
 	// General data.
 	if (winteam)
-		msg = Format(Translate("MsgEvalTeamWon"), GetTeamName(winteam), TimeToString(time));
+		msg = Format("$MsgEvalTeamWon$", GetTeamName(winteam), TimeToString(time));
 	else
-		msg = Format(Translate("MsgEvalPlrWon"), GetPlayerName(winner), TimeToString(time));
+		msg = Format("$MsgEvalPlrWon$", GetPlayerName(winner), TimeToString(time));
 	AddEvaluationData(msg, 0);
 	// Individual data.
 	for (var i = 0; i < GetPlayerCount(); i++)
 		AddEvalData(GetPlayerByIndex(i));
-	// Obviously get rid of settlement score.*/
+	// Obviously get rid of settlement score.
 	HideSettlementScoreInEvaluation(true); 
 	return;
 }
@@ -448,9 +448,9 @@ private func AddEvalData(int plr)
 	var cps = aPlrCP[plrid];
 	var msg;
 	if (cps == nrCheckpoints)
-		msg = Translate("MsgEvalPlayerAll");
+		msg = "$MsgEvalPlayerAll$";
 	else
-		msg = Format(Translate("MsgEvalPlayerX"), cps);
+		msg = Format("$MsgEvalPlayerX$", cps);
 	AddEvaluationData(msg, plrid);
 	return;
 }

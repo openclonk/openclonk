@@ -7,5 +7,3 @@ Width=40
 Height=40
 Offset=-20,-20
 Picture=0,0,40,40
-Rotate=1
-NoStabilize=1

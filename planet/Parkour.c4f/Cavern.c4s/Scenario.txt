@@ -35,4 +35,3 @@ Wind=1,100,-100,100
 
 [Animals]
 Nest=LOAM=50;DYNA=40
-

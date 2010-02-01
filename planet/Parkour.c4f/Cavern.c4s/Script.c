@@ -30,8 +30,8 @@ protected func Initialize()
 	pGoal->SetFinishpoint(x, y);
 	// Done.
 
-	// Create Rockfall.
-	// CreateObject(RCKF, 0, 0, NO_OWNER)->SetDisaster(100);
+	// Create Disasters.
+	//CreateObject(Core_Disaster_Earthquake, 0, 0, NO_OWNER)->SetChance(100);
 	return;
 }
 

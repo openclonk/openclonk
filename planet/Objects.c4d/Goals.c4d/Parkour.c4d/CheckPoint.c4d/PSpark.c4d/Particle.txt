@@ -1,0 +1,13 @@
+[Particle]
+Name=PSpark
+MaxCount=2000
+InitFn=StdInit
+ExecFn=StdExec
+DrawFn=Std
+Face=0,0,12,12,-6,-6
+Delay=0
+Repeats=1
+GravityAcc=0
+AlphaFade=12
+Additive=0
+Attach=1
