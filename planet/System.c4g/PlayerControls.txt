@@ -16,21 +16,70 @@
 	#
 	# Enter Exit
 	#
-	# Hotkey1 Hotkey2 Hotkey3 Hotkey4 Hotkey5 Hotkey6 Hotkey7 Hotkey8 Hotkey9
-	# Hotkey0
-	#
 	# NextCrew PreviousCrew AllCrew
-	# PlayerHotkey1 PlayerHotkey2 PlayerHotkey3 PlayerHotkey4 PlayerHotkey5 PlayerHotkey6
-	# PlayerHotkey7 PlayerHotkey8 PlayerHotkey9 PlayerHotkey0
 	#
 	# MenuCancel MenuOK MenuDown MenuUp MenuLeft MenuRight
 	# PlayerMenu 
+	#
+	#
+	# with Mouse
+	# ---------------
+	# Aim
+	#
+	# Gamepad controls (w/ analog pad)
+	# -------------------------------------
+	# CancelUse ThrowDelayed ThrowAltDelayed
+	# UseDelayed UseAltDelayed
+	# AimAnalog
+	# 
+	# Gamepad controls (w\ analog pad) / keyboard only
+	# ------------------------------------------------
+	# AimUp AimDown AimLeft AimRight
+	# 
+	# with Keyboard
+	# ------------------
+	# Hotkey1 Hotkey2 Hotkey3 Hotkey4 Hotkey5 Hotkey6 Hotkey7 Hotkey8 Hotkey9
+	# Hotkey0
+	#
+	# PlayerHotkey1 PlayerHotkey2 PlayerHotkey3 PlayerHotkey4 PlayerHotkey5
+	# PlayerHotkey6 PlayerHotkey7 PlayerHotkey8 PlayerHotkey9 PlayerHotkey0
+	#
 	
 	[ControlDef]
 	Identifier=Aim
 	DefaultDisabled=1
-	GUIName=Move
-	GUIDesc=Move
+	GUIName=Aim
+	GUIDesc=Aim with mouse
+	
+	[ControlDef]
+	Identifier=AimAnalog
+	DefaultDisabled=1
+	GUIName=Aim
+	GUIDesc=Aim with analog pad
+	
+	[ControlDef]
+	Identifier=AimUp
+	GUIName=Aim up
+	GUIDesc=Aim up
+	Hold=1
+	
+	[ControlDef]
+	Identifier=AimDown
+	GUIName=Aim down
+	GUIDesc=Aim down
+	Hold=1
+	
+	[ControlDef]
+	Identifier=AimLeft
+	GUIName=Aim left
+	GUIDesc=Aim left
+	Hold=1
+	
+	[ControlDef]
+	Identifier=AimRight
+	GUIName=Aim right
+	GUIDesc=Aim right
+	Hold=1
 	
 	# Movement
 	
@@ -70,6 +119,11 @@
 	GUIName=Throw
 	GUIDesc=Throw selected inventory item
 	Hold=1
+	
+	[ControlDef]
+	Identifier=ThrowDelayed
+	GUIName=Throw
+	GUIDesc=Throw selected inventory item
 
 	[ControlDef]
 	Identifier=Drop
@@ -82,6 +136,11 @@
 	GUIName=Throw 2
 	GUIDesc=Throw secondary selected inventory item
 	Hold=1
+	
+	[ControlDef]
+	Identifier=ThrowAltDelayed
+	GUIName=Throw
+	GUIDesc=Throw selected inventory item
 
 	[ControlDef]
 	Identifier=DropAlt
@@ -119,7 +178,24 @@
 	Hold=1
 	
 	[ControlDef]
+	Identifier=UseDelayed
+	GUIName=Use
+	GUIDesc=Use selected or controlled item
+	Hold=1
+	
+	[ControlDef]
+	Identifier=CancelUse
+	GUIName=Cancel Use
+	GUIDesc=Cancel current usage
+	
+	[ControlDef]
 	Identifier=UseAlt
+	GUIName=Use 2
+	GUIDesc=Use secondary selected or controlled item
+	Hold=1
+	
+	[ControlDef]
+	Identifier=UseAltDelayed
 	GUIName=Use 2
 	GUIDesc=Use secondary selected or controlled item
 	Hold=1

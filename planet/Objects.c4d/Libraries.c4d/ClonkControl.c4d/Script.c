@@ -41,6 +41,7 @@ local using;
 local alt;
 local inventory;
 local mlastx, mlasty;
+local virtual_cursor;
 local disableautosort;
 
 /* ++++++++ Item controls ++++++++++ */
@@ -91,7 +92,7 @@ public func SelectItem(selection, bool second)
 	// the first and secondary selection may not be on the same spot
 	if (selected2 == selected)
 	{
-		if(second) SelectItem(oldnum,false);
+		if (second) SelectItem(oldnum,false);
 		else SelectItem(oldnum,true);
 	}
 }
@@ -133,13 +134,13 @@ public func GetItem(int i)
 
 public func GetItemPos(object item)
 {
-	if(item)
-		if(item->Contained() == this)
+	if (item)
+		if (item->Contained() == this)
 		{
 			var i = 0;
 			for(var obj in inventory)
 			{
-				if(obj == item) return i;
+				if (obj == item) return i;
 				++i;
 			}
 		}
@@ -153,25 +154,25 @@ public func Switch2Items(int one, int two)
 	inventory[two] = temp;
 	
 	// callbacks
-	if(using == inventory[one] || using == inventory[two])
+	if (using == inventory[one] || using == inventory[two])
 		CancelUse();
 	
-	if(one == selected)       inventory[two]->~Deselection(this,false);
-	else if(one == selected2) inventory[two]->~Deselection(this,true);
-	if(two == selected)       inventory[one]->~Deselection(this,false);
-	else if(two == selected2) inventory[one]->~Deselection(this,true);
+	if (one == selected)       if (inventory[two]) inventory[two]->~Deselection(this,false);
+	else if (one == selected2) if (inventory[two]) inventory[two]->~Deselection(this,true);
+	if (two == selected)       if (inventory[one]) inventory[one]->~Deselection(this,false);
+	else if (two == selected2) if (inventory[one]) inventory[one]->~Deselection(this,true);
 
-	if(one == selected)       if(inventory[one]) inventory[one]->~Selection(this,false);
-	else if(one == selected2) if(inventory[one]) inventory[one]->~Selection(this,true);
-	if(two == selected)       if(inventory[two]) inventory[two]->~Selection(this,false);
-	else if(two == selected2) if(inventory[two]) inventory[two]->~Selection(this,true);
+	if (one == selected)       if (inventory[one]) inventory[one]->~Selection(this,false);
+	else if (one == selected2) if (inventory[one]) inventory[one]->~Selection(this,true);
+	if (two == selected)       if (inventory[two]) inventory[two]->~Selection(this,false);
+	else if (two == selected2) if (inventory[two]) inventory[two]->~Selection(this,true);
 	
-	if(inventory[one])
+	if (inventory[one])
 		this->~OnSlotFull(one);
 	else
 		this->~OnSlotEmpty(one);
 		
-	if(inventory[two])
+	if (inventory[two])
 		this->~OnSlotFull(two);
 	else
 		this->~OnSlotEmpty(two);
@@ -179,10 +180,10 @@ public func Switch2Items(int one, int two)
 
 public func Collect(object item, bool ignoreOCF, int pos)
 {
-	if(pos == nil) return _inherited(item,ignoreOCF);
+	if (pos == nil) return _inherited(item,ignoreOCF);
 	// fail if the specified slot is full
-	if(GetItem(pos) != nil) return false;
-	if(!item) return false;
+	if (GetItem(pos) != nil) return false;
+	if (!item) return false;
 	
 	pos = BoundBy(pos,0,MaxContentsCount()-1);
 	
@@ -190,7 +191,7 @@ public func Collect(object item, bool ignoreOCF, int pos)
 	// collect but do not sort in
 	var success = _inherited(item);
 	disableautosort = false;
-	if(success)
+	if (success)
 	{
 		inventory[pos] = item;
 		this->~OnSlotFull(pos);
@@ -225,7 +226,7 @@ protected func Collection2(object obj)
 {
 	var sel;
 
-	if(disableautosort) return _inherited(obj,...);
+	if (disableautosort) return _inherited(obj,...);
 	
 	// into selected area if empty
 	if (!inventory[selected])
@@ -248,7 +249,7 @@ protected func Collection2(object obj)
 	}
 	this->~OnSlotFull(sel);
 	
-	if(sel == selected || sel == selected2)
+	if (sel == selected || sel == selected2)
 		obj->~Selection(this,sel == selected2);
 
 	return _inherited(obj,...);
@@ -266,11 +267,11 @@ protected func Ejection(object obj)
 			break;
 		}
 	}
-	if(using == obj) CancelUse();
+	if (using == obj) CancelUse();
 	
 	this->~OnSlotEmpty(i);
 	
-	if(i == selected || i == selected2)
+	if (i == selected || i == selected2)
 		obj->~Deselection(this,i == selected2);
 	
 	_inherited(obj,...);
@@ -280,9 +281,9 @@ protected func RejectCollect(id objid, object obj)
 {
 	for(var i=0; Contents(i); ++i)
 	{
-		if(Contents(i)->~HasExtraSlot())
-			if(!(Contents(i)->Contents(0)))
-				if(Contents(i)->Collect(obj,true))
+		if (Contents(i)->~HasExtraSlot())
+			if (!(Contents(i)->Contents(0)))
+				if (Contents(i)->Collect(obj,true))
 					return true;
 	}
 
@@ -323,25 +324,40 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 {
 	if (!this) return false;
 	
-	mlastx = x;
-	mlasty = y;
-	
 	//Log(Format("%d, %d, %d, %v, %v",  x,y,ctrl, repeat, release));
 	
 	// aiming
-	if (ctrl == CON_Aim)
+	if(using)
 	{
-		if (using)
+		// aiming with mouse
+		if (ctrl == CON_Aim)
 		{
 			if (alt) ctrl = CON_UseAlt;
 			else     ctrl = CON_Use;
-			
+				
 			repeat = true;
 			release = false;
 		}
+		// aiming with analog pad or keys
+		else if (ctrl == CON_AimAnalog || ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight)
+		{			
+			//VirtualCursor()->Aim(ctrl,x,y,strength,repeat,release);
+			//mlastx = GetX()-VirtualCursor()->GetX();
+			//mlasty = GetY()-VirtualCursor()->GetY();
+			
+			return true;
+		}
+		else SetCommand("None");
 	}
 	// Any control resets a previously given command
 	else SetCommand("None");
+	
+	// save last mouse position
+	if (ctrl == CON_Use || ctrl == CON_UseAlt)
+	{
+		mlastx = x;
+		mlasty = y;
+	}
 	
 	// hotkeys (inventory, vehicle and structure control)
 	var hot = 0;
@@ -360,12 +376,19 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	var proc = GetProcedure();
 
+	// cancel usage
+	if (using && ctrl == CON_CancelUse)
+	{
+		CancelUse();
+		return true;
+	}
+	
 	// building, vehicle, contents control
 	var house = Contained();
 	var vehicle = GetActionTarget();
 	var contents = GetSelectedItem();
 	var contents2 = GetSelectedItem(true);
-
+	
 	if (house)
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Contained", house))
@@ -381,12 +404,12 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// left, right, up and down, too. We don't want that, so this is why we
 	// check that ctrl is Use.
 	// Release commands are always forwarded even if contents is 0, in case we need to cancel use of an object that left inventory
-	else if ((contents || (release && using)) && ctrl == CON_Use)
+	else if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
 	}
-	else if ((contents2 || (release && using)) && ctrl == CON_UseAlt)
+	else if ((contents2 || (release && using)) && (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed))
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
@@ -435,11 +458,18 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			    else
 			      return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
 			}
+			// throw delayed
+			if (ctrl == CON_ThrowDelayed && release)
+			{
+			    if (proc == "SCALE" || proc == "HANGLE")
+			      return PlayerObjectCommand(plr, false, "Drop", contents);
+			    else
+			      return PlayerObjectCommand(plr, false, "Throw", contents, mlastx, mlasty);
+			}
 			// drop
 			if (ctrl == CON_Drop)
 			{
 				return PlayerObjectCommand(plr, false, "Drop", contents);
-				
 			}
 		}
 		// same for contents2 (copypasta)
@@ -452,6 +482,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			      return PlayerObjectCommand(plr, false, "Drop", contents2);
 			    else
 			      return PlayerObjectCommand(plr, false, "Throw", contents2, x, y);
+			}
+			// throw delayed
+			if (ctrl == CON_ThrowAltDelayed && release)
+			{
+			    if (proc == "SCALE" || proc == "HANGLE")
+			      return PlayerObjectCommand(plr, false, "Drop", contents2);
+			    else
+			      return PlayerObjectCommand(plr, false, "Throw", contents2, mlastx, mlasty);
 			}
 			// drop
 			if (ctrl == CON_DropAlt)
@@ -491,7 +529,7 @@ private func StartUseControl(int ctrl, control, int x, int y, object obj)
 	using = obj;
 	var hold_enabled = obj->Call("~HoldingEnabled");
 	
-	if(hold_enabled)
+	if (hold_enabled)
 		SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
 		
 	if (ctrl == CON_Use) alt = false;
@@ -507,11 +545,38 @@ private func StartUseControl(int ctrl, control, int x, int y, object obj)
 	if (!handled)
 	{
 		using = nil;
-		if(hold_enabled)
+		if (hold_enabled)
 			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
 		return false;
 	}
 		
+	return handled;
+}
+
+private func StartUseDelayedControl(int ctrl, control, int x, int y, object obj)
+{
+	using = obj;
+	var hold_enabled = obj->Call("~HoldingEnabled");
+			
+	if (hold_enabled)
+		SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, true);
+				
+	if (ctrl == CON_UseDelayed) alt = false;
+	else alt = true;
+			
+	var estr = "";
+	if (alt && !(obj->Contained())) estr = "Alt";
+			
+	// call UseStart
+	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,x,y);
+	if (!handled)
+	{
+		using = nil;
+		if (hold_enabled)
+			SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, false);
+		return false;
+	}
+				
 	return handled;
 }
 
@@ -528,15 +593,39 @@ private func StopUseControl(control, int x, int y, object obj, bool cancel)
 	var holding_enabled = obj->Call("~HoldingEnabled");
 	
 	var stop = "Stop";
-	if(cancel) stop = "Cancel";
+	if (cancel) stop = "Cancel";
 	
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, ContainedUseCancel, etc...
 	var handled = obj->Call(Format("~%sUse%s%s",control,estr,stop),this,x,y);
 	using = nil;
 	alt = false;
 			
-	if(holding_enabled)
+	if (holding_enabled)
+	{
 		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+		SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, false);
+	}
+		
+	return handled;
+}
+
+private func StopUseDelayedControl(control, int x, int y, object obj)
+{
+	var estr = "";
+	if (alt && !(obj->Contained())) estr = "Alt";
+	
+	var holding_enabled = obj->Call("~HoldingEnabled");
+	
+	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, etc...
+	var handled = obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
+	if (!handled)
+		handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
+
+	using = nil;
+	alt = false;
+			
+	if (holding_enabled)
+		SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, false);
 		
 	return handled;
 }
@@ -554,8 +643,8 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 			return true;
 		}
 	}
-
-	// for the use command
+	
+	// standard use
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
 		if (!release && !repeat)
@@ -566,7 +655,24 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		{
 			return StopUseControl(control, x, y, obj);
 		}
-		else if (release && using)
+	}
+	// gamepad use
+	else if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+	{
+		if (!release && !repeat)
+		{
+			return StartUseDelayedControl(ctrl, control, mlastx, mlasty, obj);
+		}
+		else if (release && using == obj)
+		{
+			return StopUseDelayedControl(control, mlastx, mlasty, obj);
+		}
+	}
+	
+	// more use (holding)
+	if (ctrl == CON_Use || ctrl == CON_UseAlt || ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+	{
+		if (release && using)
 		{
 		  // leftover use release
 		  CancelUse();
@@ -577,11 +683,20 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 			var estr = "";
 			if (alt && !(obj->Contained())) estr = "Alt";
 	
-			var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,x,y);
+			var mex = x;
+			var mey = y;
+			if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+			{
+				mex = mlastx;
+				mey = mlasty;
+			}
+	
+			var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,mex,mey);
 			
 			return handled;
 		}
 	}
+	
 	// overloads of movement commandos
 	else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up)
 	{
@@ -744,6 +859,16 @@ private func ShiftVehicle(int plr, bool back)
 	return true;
 } 
 
+private func VirtualCursor()
+{
+	if(!virtual_cursor)
+	{
+		//virtual_cursor=CreateObject(VIRT,0,0,GetOwner());
+		//virtual_cursor->Set(this);
+	}
+	return virtual_cursor;
+}
+
 // Throwing
 private func DoThrow(object obj, int angle)
 {
@@ -806,32 +931,32 @@ public func ControlJump()
 	var ydir = 0;
 	var xdir = 0;
 	
-	if(GetProcedure() == "WALK")
+	if (GetProcedure() == "WALK")
 	{
 		ydir = GetPhysical("Jump")/1000;
 		// forward jump
-		if(Abs(GetXDir()) >= 20)
+		if (Abs(GetXDir()) >= 20)
 		{
 			xdir = jumpx;
 			//ydir = ydir*3/4;
 		}
 	}
-	else if(InLiquid())
+	else if (InLiquid())
 	{
-		if(!GBackSemiSolid(0,-1))
+		if (!GBackSemiSolid(0,-1))
 			ydir = BoundBy(GetPhysical("Swim")/2500,24,38);
 	}		
 	
-	if(ydir)
+	if (ydir)
 	{
 		SetPosition(GetX(),GetY()-1);
 		SetAction("Jump");
 		SetXDir(GetXDir()+(GetDir()*2-1)*xdir*GetCon()/100);
 		SetYDir(-ydir*GetCon()/100);
-		if(jumpx) Message("%d",this,GetXDir());
+		if (jumpx) Message("%d",this,GetXDir());
 		var iX=GetX(),iY=GetY(),iXDir=GetXDir(),iYDir=GetYDir();
-		if(SimFlight(iX,iY,iXDir,iYDir,25))
-			if(GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
+		if (SimFlight(iX,iY,iXDir,iYDir,25))
+			if (GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
 				SetAction("Dive");
 				
 		return true;

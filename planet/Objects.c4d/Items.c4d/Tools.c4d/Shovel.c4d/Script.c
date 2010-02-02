@@ -47,6 +47,11 @@ public func ControlUseHolding(object clonk, int x, int y)
 	return true;
 }
 
+public func ControlUseCancel(object clonk, int x, int y)
+{
+	ControlUseStop(clonk, x, y)
+}
+
 public func ControlUseStop(object clonk, int x, int y)
 {
 
