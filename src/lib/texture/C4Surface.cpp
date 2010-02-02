@@ -89,37 +89,42 @@ bool C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal,
 	}
 
 bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool fNoErrIfNotFound)
-	{
+{
 	// Look for scaled images
 	StdStrBuf strFilename;
 	char strBasename[_MAX_FNAME + 1]; SCopy(szFilename, strBasename, _MAX_FNAME); RemoveExtension(strBasename);
+	const size_t base_length = std::strlen(strBasename);
 	char strExtension[128 + 1]; SCopy(GetExtension(szFilename), strExtension, 128);
 	int ScaleToSet = 1;
+	char scaled_name[_MAX_PATH+1];
 	if (strExtension[0])
+	{
+		std::string wildcard(strBasename);
+		wildcard += ".*.";
+		wildcard += strExtension;
+		int max_scale = -1;
+		if (hGroup.FindEntry(wildcard.c_str(), scaled_name))
 		{
-		// If fully flexible scale detection is needed, we should search for
-		// all "basename.*.extension" matches and then scan out the available values.
-		// But for now, we'll do it the easy way. Selecting the highest available scale.
-		const int MaxScale = 20;
-		for (int i = MaxScale; i >= 1; i--)
+			do
 			{
-			strFilename.Format("%s.%d.%s", strBasename, i, strExtension);
-			if (hGroup.FindEntry(strFilename.getData()))
-				{
-				// Found the highest available scaled image. Use this instead of the base image.
-				ScaleToSet = i;
-				szFilename = strFilename.getData();
-				break;
-				}
-			}
+				int scale = -1;
+				if (sscanf(scaled_name + base_length + 1, "%d", &scale) == 1)
+					max_scale = std::max(scale, max_scale);
+			} while (hGroup.FindNextEntry(wildcard.c_str(), scaled_name));
 		}
+		if (max_scale > -1)
+		{
+			ScaleToSet = max_scale;
+			szFilename = scaled_name;
+		}
+	}
 	// Access entry
 	if (!hGroup.AccessEntry(szFilename))
-		{
+	{
 		// file not found
 		if (!fNoErrIfNotFound) LogF("%s: %s%c%s", LoadResStr("IDS_PRC_FILENOTFOUND"), hGroup.GetFullName().getData(), (char) DirectorySeparator, szFilename);
 		return false;
-		}
+	}
 	bool fSuccess = Read(hGroup, GetExtension(szFilename), fOwnPal);
 	// loading error? log!
 	if (!fSuccess)
@@ -128,7 +133,7 @@ bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool
 	Scale = ScaleToSet;
 	// done, success
 	return fSuccess;
-	}
+}
 
 bool C4Surface::Read(CStdStream &hGroup, const char * extension, bool fOwnPal)
 	{
