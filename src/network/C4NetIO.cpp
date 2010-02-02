@@ -390,7 +390,7 @@ bool C4NetIOTCP::CloseBroadcast()
 	return true;
 }
 
-bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
+bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 {
 	// security
 	if(!fInit) return false;
@@ -404,8 +404,9 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 
 	WSANETWORKEVENTS wsaEvents;
 #else
-	int cfd = 0;
-	std::vector<struct pollfd> fdvec;
+	assert(fds == 0);
+	std::vector<pollfd> fdvec;
+	std::map<SOCKET, const pollfd*> fdmap;
 	if (!fds)
 	{
 		// build socket sets
@@ -423,14 +424,17 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 		if(ret == 0)
 			return true;
 		// flush pipe
-		assert(fdvec[cfd].fd == Pipe[0]);
-		if(fdvec[cfd].events & fdvec[cfd].revents)
+		assert(fdvec[0].fd == Pipe[0]);
+		if(fdvec[0].events & fdvec[0].revents)
 			{
 			char c;
 			if(::read(Pipe[0], &c, 1) == -1)
 				SetError("read failed");
 			}
 	}
+	for(std::vector<pollfd>::const_iterator i = fdvec.begin(); i != fdvec.end(); ++i)
+		fdmap[i->fd] = &*i;
+	std::map<SOCKET, const pollfd*>::const_iterator cur_fd;
 #endif
 
 	// check sockets for events
@@ -447,10 +451,9 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 		// a connection waiting for accept?
 		if(wsaEvents.lNetworkEvents & FD_ACCEPT)
 #else
-		++cfd;
-		assert(fds[cfd].fd == lsock);
+		cur_fd = fdmap.find(lsock);
 		// a connection waiting for accept?
-		if(fds[cfd].events & fds[cfd].revents)
+		if(cur_fd != fdmap.end() && (cur_fd->second->events & cur_fd->second->revents))
 #endif
 			if(!Accept())
 				return false;
@@ -481,9 +484,8 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 			if(wsaEvents.lNetworkEvents & FD_CONNECT)
 #else
 			// got connection?
-			++cfd;
-			assert(fds[cfd].fd == pWait->sock);
-			if(fds[cfd].events & fds[cfd].revents)
+			cur_fd = fdmap.find(pWait->sock);
+			if(cur_fd != fdmap.end() && (cur_fd->second->events & cur_fd->second->revents))
 #endif
 			{
 				// remove from list
@@ -536,9 +538,8 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 			if(wsaEvents.lNetworkEvents & FD_READ)
 #else
 			// something to read from socket?
-			++cfd;
-			assert(fds[cfd].fd == sock);
-			if(POLLIN & fds[cfd].revents)
+			cur_fd = fdmap.find(sock);
+			if(cur_fd != fdmap.end() && (POLLIN & cur_fd->second->revents))
 #endif
 				for(;;)
 				{
@@ -589,8 +590,7 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 #ifdef STDSCHEDULER_USE_EVENTS
 			if(wsaEvents.lNetworkEvents & FD_WRITE)
 #else
-			assert(fds[cfd].fd == sock);
-			if(POLLOUT & fds[cfd].revents)
+			if(cur_fd != fdmap.end() && (POLLOUT & cur_fd->second->revents))
 #endif
 				// send remaining data
 				pPeer->Send();
