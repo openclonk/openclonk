@@ -405,10 +405,10 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd * fds) // (mt-safe)
 	WSANETWORKEVENTS wsaEvents;
 #else
 	int cfd = 0;
+	std::vector<struct pollfd> fdvec;
 	if (!fds)
 	{
 		// build socket sets
-		std::vector<struct pollfd> fdvec;
 		GetFDs(fdvec);
 		fds = &fdvec[0];
 		// wait for something to happen
