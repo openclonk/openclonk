@@ -1204,7 +1204,7 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 		//if(!Leaf.Animation) return false;
 		track = Leaf.Animation->Tracks[bone];
 		if(!track) return false;
-		transformation = track->GetTransformAt(Leaf.Position->Value);
+		transformation = track->GetTransformAt(fixtof(Leaf.Position->Value));
 		return true;
 	case LinearInterpolationNode:
 		if(!LinearInterpolation.ChildLeft->GetBoneTransform(bone, transformation))
@@ -1212,7 +1212,7 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 		if(!LinearInterpolation.ChildRight->GetBoneTransform(bone, combine_with))
 			return true; // First Child affects bone
 
-		transformation = StdMeshTransformation::Nlerp(transformation, combine_with, LinearInterpolation.Weight->Value);
+		transformation = StdMeshTransformation::Nlerp(transformation, combine_with, fixtof(LinearInterpolation.Weight->Value));
 		return true;
 	default:
 		assert(false);
@@ -1345,8 +1345,8 @@ StdMeshInstance::AnimationNode* StdMeshInstance::PlayAnimation(const StdMeshAnim
 			break;*/
 	Number2 = Number1 + 1;
 
-	position->Value = BoundBy(position->Value, 0.0f, animation.Length);
-	weight->Value = BoundBy(weight->Value, 0.0f, 1.0f);
+	position->Value = BoundBy(position->Value, Fix0, ftofix(animation.Length));
+	weight->Value = BoundBy(weight->Value, Fix0, itofix(1));
 
 	if(Number1 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
 	if(sibling && Number2 == AnimationNodes.size()) AnimationNodes.push_back( (StdMeshInstance::AnimationNode*) NULL);
@@ -1701,30 +1701,30 @@ StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlo
 bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 {
 	ValueProvider* provider = NULL;
-	float min;
-	float max;
+	FIXED min;
+	FIXED max;
 
 	switch(node->GetType())
 	{
 	case AnimationNode::LeafNode:
 		provider = node->GetPositionProvider();
-		min = 0.0f;
-		max = node->GetAnimation()->Length;
+		min = Fix0;
+		max = ftofix(node->GetAnimation()->Length);
 		break;
 	case AnimationNode::LinearInterpolationNode:
 		provider = node->GetWeightProvider();
-		min = 0.0f;
-		max = 1.0f;
+		min = Fix0;
+		max = itofix(1);
 		break;
 	}
 
-	const float old_value = provider->Value;
+	const FIXED old_value = provider->Value;
 	if(!provider->Execute())
 	{
 		if(node->GetType() == AnimationNode::LeafNode) return false;
 
 		// Remove the child with less weight (normally weight reaches 0.0 or 1.0)
-		if(node->GetWeight() > 0.5)
+		if(node->GetWeight() > itofix(1, 2))
 		{
 			// Remove both children (by parent) if other wants to be deleted as well
 			if(!ExecuteAnimationNode(node->GetRightChild())) return false;

@@ -5666,7 +5666,7 @@ static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szA
 
 	const StdMeshAnimation* animation = Instance->Mesh.GetAnimationByName(szAnimation->GetData());
 	if(!animation) return C4VNull;
-	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical?
+	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical
 }
 
 static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
@@ -5704,7 +5704,7 @@ static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimat
 
 	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
 	if(!node || node->GetType() != StdMeshInstance::AnimationNode::LeafNode) return C4VNull;
-	return static_cast<int>(node->GetPosition() * 1000.0f); // TODO: sync critical?
+	return fixtoi(node->GetPosition(), 1000);
 }
 
 static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
@@ -5723,7 +5723,7 @@ static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimatio
 
 	StdMeshInstance::AnimationNode* node = Instance->GetAnimationNodeByNumber(iAnimationNumber);
 	if(!node || node->GetType() != StdMeshInstance::AnimationNode::LinearInterpolationNode) return C4VNull;
-	return static_cast<int>(node->GetWeight() * 1000.0f); // TODO: sync critical?
+	return fixtoi(node->GetWeight(), 1000);
 }
 
 static bool FnSetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* PositionProvider, Nillable<int> iAttachNumber)

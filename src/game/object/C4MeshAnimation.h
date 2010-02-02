@@ -56,7 +56,7 @@ enum C4AnimationEnding
 class C4ValueProviderConst: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderConst(float value);
+	C4ValueProviderConst(FIXED value);
 	virtual bool Execute();
 };
 
@@ -64,13 +64,13 @@ public:
 class C4ValueProviderLinear: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderLinear(float pos, float begin, float end, unsigned int length, C4AnimationEnding ending);
+	C4ValueProviderLinear(FIXED pos, FIXED begin, FIXED end, int32_t length, C4AnimationEnding ending);
 	virtual bool Execute();
 
 private:
-	const float Begin;
-	const float End;
-	const unsigned int Length;
+	const FIXED Begin;
+	const FIXED End;
+	const int32_t Length;
 	const C4AnimationEnding Ending;
 
 	int32_t LastTick;
@@ -79,151 +79,151 @@ private:
 class C4ValueProviderX: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderX(const C4Object* object, float pos, float begin, float end, unsigned int length);
+	C4ValueProviderX(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const unsigned int Length;
+	const FIXED Begin;
+	const FIXED End;
+	const int32_t Length;
 
-	float LastX;
+	FIXED LastX;
 };
 
 class C4ValueProviderY: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderY(const C4Object* object, float pos, float begin, float end, unsigned int length);
+	C4ValueProviderY(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const unsigned int Length;
+	const FIXED Begin;
+	const FIXED End;
+	const int32_t Length;
 
-	float LastY;
+	FIXED LastY;
 };
 
 class C4ValueProviderAbsX: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderAbsX(const C4Object* object, float pos, float begin, float end, unsigned int length);
+	C4ValueProviderAbsX(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const unsigned int Length;
+	const FIXED Begin;
+	const FIXED End;
+	const int32_t Length;
 
-	float LastX;
+	FIXED LastX;
 };
 
 class C4ValueProviderAbsY: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderAbsY(const C4Object* object, float pos, float begin, float end, unsigned int length);
+	C4ValueProviderAbsY(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
-	const unsigned int Length;
+	const FIXED Begin;
+	const FIXED End;
+	const int32_t Length;
 
-	float LastY;
+	FIXED LastY;
 };
 
 class C4ValueProviderXDir: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderXDir(const C4Object* object, float begin, float end, FIXED max_xdir);
+	C4ValueProviderXDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_xdir);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
+	const FIXED Begin;
+	const FIXED End;
 	const FIXED MaxXDir;
 };
 
 class C4ValueProviderYDir: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderYDir(const C4Object* object, float begin, float end, FIXED max_ydir);
+	C4ValueProviderYDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_ydir);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
+	const FIXED Begin;
+	const FIXED End;
 	const FIXED MaxYDir;
 };
 
 class C4ValueProviderRDir: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderRDir(const C4Object* object, float begin, float end, FIXED max_rdir);
+	C4ValueProviderRDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_rdir);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
+	const FIXED Begin;
+	const FIXED End;
 	const FIXED MaxRDir;
 };
 
 class C4ValueProviderCosR: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderCosR(const C4Object* object, float begin, float end, FIXED offset);
+	C4ValueProviderCosR(const C4Object* object, FIXED begin, FIXED end, FIXED offset);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
+	const FIXED Begin;
+	const FIXED End;
 	const FIXED Offset;
 };
 
 class C4ValueProviderSinR: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderSinR(const C4Object* object, float begin, float end, FIXED offset);
+	C4ValueProviderSinR(const C4Object* object, FIXED begin, FIXED end, FIXED offset);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
+	const FIXED Begin;
+	const FIXED End;
 	const FIXED Offset;
 };
 
 class C4ValueProviderCosV: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderCosV(const C4Object* object, float begin, float end, FIXED offset);
+	C4ValueProviderCosV(const C4Object* object, FIXED begin, FIXED end, FIXED offset);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
+	const FIXED Begin;
+	const FIXED End;
 	const FIXED Offset;
 };
 
 class C4ValueProviderSinV: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderSinV(const C4Object* object, float begin, float end, FIXED offset);
+	C4ValueProviderSinV(const C4Object* object, FIXED begin, FIXED end, FIXED offset);
 	virtual bool Execute();
 
 private:
 	const C4Object* const Object;
-	const float Begin;
-	const float End;
+	const FIXED Begin;
+	const FIXED End;
 	const FIXED Offset;
 };
 
@@ -237,23 +237,23 @@ private:
 	const C4Action& Action;
 };
 
-// Reference another value (which is convertible to float), and optionally scale it
+// Reference another value (which is convertible to FIXED), and optionally scale it
 template<typename SourceT>
 class C4ValueProviderRef: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderRef(const SourceT& ref, float scale):
+	C4ValueProviderRef(const SourceT& ref, FIXED scale):
 		Ref(ref), Scale(scale) {}
 
 	virtual bool Execute()
 	{
-		Value = static_cast<float>(Ref) * Scale;
+		Value = Scale * Ref;
 		return true;
 	}
 
 private:
 	const SourceT& Ref;
-	float Scale;
+	FIXED Scale;
 };
 
 StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, C4ValueArray& Data);

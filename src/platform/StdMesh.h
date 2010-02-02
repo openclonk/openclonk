@@ -327,14 +327,14 @@ public:
 	class ValueProvider
 	{
 	public:
-		ValueProvider(): Value(0.0f) {}
+		ValueProvider(): Value(Fix0) {}
 		virtual ~ValueProvider() {}
 
 		// Return false if the corresponding node is to be removed or true
 		// otherwise.
 		virtual bool Execute() = 0;
 
-		float Value; // Current provider value
+		FIXED Value; // Current provider value
 	};
 
 	// A node in the animation tree
@@ -358,12 +358,12 @@ public:
 
 		const StdMeshAnimation* GetAnimation() const { assert(Type == LeafNode); return Leaf.Animation; }
 		ValueProvider* GetPositionProvider() { assert(Type == LeafNode); return Leaf.Position; }
-		float GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
+		FIXED GetPosition() const { assert(Type == LeafNode); return Leaf.Position->Value; }
 
 		AnimationNode* GetLeftChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildLeft; }
 		AnimationNode* GetRightChild() { assert(Type == LinearInterpolationNode); return LinearInterpolation.ChildRight; }
 		ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
-		float GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
+		FIXED GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
 
 	protected:
 		int Slot;
