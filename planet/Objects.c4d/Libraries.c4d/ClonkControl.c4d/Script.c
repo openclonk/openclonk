@@ -528,7 +528,7 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 	else SetCommand(command,target,tx,ty,target2);
 }
 
-private func CancelUse()
+public func CancelUse()
 {
 	if (!using) return;
 	
@@ -556,7 +556,10 @@ private func StartUseControl(int ctrl, control, int x, int y, object obj)
 	// first call UseStart. If unhandled, call Use (mousecontrol)
 	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,x,y);
 	if (!handled)
+	{
 		handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
+		noholdingcallbacks = handled;
+	}
 	if (!handled)
 	{
 		using = nil;
@@ -637,7 +640,7 @@ private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
 		mey = mlasty;
 	}
 	
-	Message("%d,%d",this,mex,mey);
+	//Message("%d,%d",this,mex,mey);
 	
 	var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,mex,mey);
 			

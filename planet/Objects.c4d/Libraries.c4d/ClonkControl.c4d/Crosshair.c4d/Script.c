@@ -90,7 +90,7 @@ public func Aim(int ctrl, int x, int y, int repeat, int release)
 {
 	if (ctrl == CON_AimAnalog)
 	{
-		// TODO
+		Message("%d,%d",this,x,y);
 	}
 	// stop
 	else if (release)

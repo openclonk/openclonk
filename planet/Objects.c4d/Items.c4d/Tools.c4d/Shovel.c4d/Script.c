@@ -22,7 +22,7 @@ public func ControlUseStart(object clonk, int x, int y)
 		AddEffect("ShovelDust",clonk,1,1,this);
 	}
 	else
-		CancelUse();
+		clonk->CancelUse();
 
 	return true;
 }
@@ -35,7 +35,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 	// something happened - don't try to dig anymore
 	if(clonk->GetAction() != "Dig")
 	{
-		CancelUse();
+		clonk->CancelUse();
 		return true;
 	}
 	
