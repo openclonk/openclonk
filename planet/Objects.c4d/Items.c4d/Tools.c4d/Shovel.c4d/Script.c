@@ -10,7 +10,7 @@ public func GetCarryTransform() { return Trans_Scale(2000); }
 
 public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "pos_hand1"; }
 
-public func ControlUse(object clonk, int x, int y)
+public func ControlUseStart(object clonk, int x, int y)
 {
 	if(clonk->GetAction() == "Walk")
 	{
@@ -21,6 +21,8 @@ public func ControlUse(object clonk, int x, int y)
 		clonk->SetYDir(1);
 		AddEffect("ShovelDust",clonk,1,1,this);
 	}
+	else
+		CancelUse();
 
 	return true;
 }
@@ -31,10 +33,11 @@ public func ControlUseHolding(object clonk, int x, int y)
 {
 
 	// something happened - don't try to dig anymore
-	if(clonk->GetAction() != "Dig") return -1;
-	
-	// do the calculation only every few frames
-	if(GetActTime() % 10) return;
+	if(clonk->GetAction() != "Dig")
+	{
+		CancelUse();
+		return true;
+	}
 	
 	var angle = Angle(0,0,x,y);
 	var speed = clonk->GetPhysical("Dig")/500;
@@ -49,7 +52,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 public func ControlUseCancel(object clonk, int x, int y)
 {
-	ControlUseStop(clonk, x, y)
+	ControlUseStop(clonk, x, y);
 }
 
 public func ControlUseStop(object clonk, int x, int y)

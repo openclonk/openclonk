@@ -124,6 +124,7 @@
 	Identifier=ThrowDelayed
 	GUIName=Throw
 	GUIDesc=Throw selected inventory item
+	Hold=1
 
 	[ControlDef]
 	Identifier=Drop
@@ -141,6 +142,7 @@
 	Identifier=ThrowAltDelayed
 	GUIName=Throw
 	GUIDesc=Throw selected inventory item
+	Hold=1
 
 	[ControlDef]
 	Identifier=DropAlt
@@ -427,6 +429,8 @@
  
 [ControlSets]
 
+	# Mouse control with keyboard
+	#
 	# Summary
 	# --------
 	# MenuLeft, Left					A
@@ -455,17 +459,12 @@
 	# MenuCancel						Backspace
 	# 
 	# PlayerMenu						End
-	#
-	# GrabPrevious, AllCrew,
-	# NextAltItem, NextPreviousItem,
-	# NextItem, PreviousItem			Unassigned
-		
 
 	[ControlSet]
 	Name=WASD_Mouse
 	Keyboard=1
-	Mouse=1
-	Gamepad=0
+	Mouse=0
+	Gamepad=1
 
 		[Assignment]
 		Key=GameMouse1Move
@@ -693,6 +692,163 @@
 		Key=Mouse1Wheel1Down
 		Priority=100
 		Control=ZoomOut
+		
+		[Assignment]
+		Key=Joy1Left
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=50
+		Control=Up
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=70
+		Control=AimLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=70
+		Control=AimRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=70
+		Control=AimDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=70
+		Control=AimUp
+		
+		[Assignment]
+		Key=Joy1Up
+		Priority=10
+		Control=Jump
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=100
+		Control=MenuLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=100
+		Control=MenuRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=100
+		Control=MenuDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=100
+		Control=MenuUp
+		
+		[Assignment]
+		Key=Joy1C
+		Control=MenuOK
+		
+		[Assignment]
+		Key=Joy1B
+		Control=MenuCancel
+		
+		[Assignment]
+		Key=Joy1C
+		Priority=45
+		Control=PushEnter
+		
+		[Assignment]
+		Key=Joy1C
+		Priority=40
+		Control=GrabNext
+		
+		[Assignment]
+		Key=Joy1C
+		Priority=35
+		Control=Ungrab
+		
+		[Assignment]
+		Key=Joy1C
+		Priority=30
+		Control=Grab
+		
+		[Assignment]
+		Key=Joy1C
+		Priority=25
+		Control=Exit
+		
+		[Assignment]
+		Key=Joy1C
+		Priority=20
+		Control=Enter
+		
+		[Assignment]
+		Key=Joy1B
+		Control=NextCrew
+		
+		[Assignment]
+		Key=Joy1H
+		Control=PlayerMenu
+		
+		[Assignment]
+		Key=Joy1E
+		Control=NextItem
+		
+		[Assignment]
+		Key=Joy1F
+		Control=NextAltItem
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=100
+		Control=UseDelayed
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=50
+		Control=ThrowDelayed
+		
+		[Assignment]
+		Key=Joy1Down,Joy1A
+		Priority=150
+		Control=Drop
+		
+		[Assignment]
+		Key=Joy1C,Joy1A
+		Control=ThrowDelayed
+		
+		[Assignment]
+		Key=Joy1D
+		Priority=100
+		Control=UseAltDelayed
+		
+		[Assignment]
+		Key=Joy1D
+		Priority=50
+		Control=ThrowAltDelayed
+		
+		[Assignment]
+		Key=Joy1Down,Joy1D
+		Priority=150
+		Control=DropAlt
+		
+		[Assignment]
+		Key=Joy1C,Joy1D
+		Control=ThrowAltDelayed
 
 	# Would be cool to be able to "inherit" from WASD_Mouse and
 	# just overwrite the entries that change
@@ -929,8 +1085,37 @@
 		Priority=100
 		Control=ZoomOut
 
+	# SNES-like Gamepad (8 buttons [A-H], 1 D-Pad)
+	#
+	# Summary
+	# --------
+	# MenuLeft, AimLeft, Left			Joy1Left
+	# MenuRight, AimRight, Right		Joy1Right
+	# MenuUp, AimUp, Up, Jump			Joy1Up
+	# MenuDown, AimDown, Down			Joy1Down
+	#
+	# Use, Throw						Joy1A
+	# Throw								Joy1A+Joy1C
+	# Drop								Joy1Down+Joy1A
+	#
+	# UseAlt, ThrowAlt					Joy1D
+	# ThrowAlt							Joy1D+Joy1C
+	# DropAlt							Joy1Down+Joy1D
+	#
+	# PushEnter, GrabNext, Ungrab,
+	# Grab, Exit, Enter					Joy1C
+	#
+	# NextCrew							Joy1B
+	# NextItem							Joy1E
+	# NextAltItem						Joy1F
+	# 
+	# MenuOK							Joy1C
+	# MenuCancel						Joy1B
+	# 
+	# PlayerMenu						Joy1H
+		
 	[ControlSet]
-	Name=Gamepad1
+	Name=GamepadSNES
 	Keyboard=0
 	Mouse=0
 	Gamepad=1
@@ -955,6 +1140,26 @@
 		Priority=50
 		Control=Up
 
+		[Assignment]
+		Key=Joy1Left
+		Priority=70
+		Control=AimLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=70
+		Control=AimRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=70
+		Control=AimDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=70
+		Control=AimUp
+		
 		[Assignment]
 		Key=Joy1Up
 		Priority=10
@@ -981,7 +1186,7 @@
 		Control=MenuUp
 		
 		[Assignment]
-		Key=Joy1A
+		Key=Joy1C
 		Control=MenuOK
 		
 		[Assignment]
@@ -989,70 +1194,84 @@
 		Control=MenuCancel
 		
 		[Assignment]
-		Key=Joy1A
+		Key=Joy1C
 		Priority=45
 		Control=PushEnter
 		
 		[Assignment]
-		Key=Joy1A
+		Key=Joy1C
 		Priority=40
 		Control=GrabNext
 		
 		[Assignment]
-		Key=Joy1A
+		Key=Joy1C
 		Priority=35
 		Control=Ungrab
 		
 		[Assignment]
-		Key=Joy1A
+		Key=Joy1C
 		Priority=30
 		Control=Grab
 		
 		[Assignment]
-		Key=Joy1A
+		Key=Joy1C
 		Priority=25
 		Control=Exit
 		
 		[Assignment]
-		Key=Joy1A
+		Key=Joy1C
 		Priority=20
 		Control=Enter
 		
 		[Assignment]
-		Key=Joy1C
-		Control=PreviousCrew
-		
-		[Assignment]
-		Key=Joy1D
+		Key=Joy1B
 		Control=NextCrew
 		
 		[Assignment]
-		Key=Joy1E
+		Key=Joy1H
 		Control=PlayerMenu
 		
-		#[Assignment]
-		#Key=Up
-		#Control=PreviousItem
-		
 		[Assignment]
-		Key=Joy1F
+		Key=Joy1E
 		Control=NextItem
 		
 		[Assignment]
-		Key=Joy1G
+		Key=Joy1F
+		Control=NextAltItem
+		
+		[Assignment]
+		Key=Joy1A
 		Priority=100
 		Control=Use
 		
 		[Assignment]
-		Key=Joy1H
+		Key=Joy1A
 		Priority=50
 		Control=Throw
 		
 		[Assignment]
-		Key=Joy1H
+		Key=Joy1Down,Joy1A
+		Control=Drop
+		
+		[Assignment]
+		Key=Joy1C,Joy1A
 		Control=Throw
 		
 		[Assignment]
-		Key=Joy1I
-		Control=Drop
+		Key=Joy1D
+		Priority=100
+		Control=UseAlt
+		
+		[Assignment]
+		Key=Joy1D
+		Priority=50
+		Control=ThrowAlt
+		
+		[Assignment]
+		Key=Joy1Down,Joy1D
+		Control=DropAlt
+		
+		[Assignment]
+		Key=Joy1C,Joy1D
+		Control=ThrowAlt
 		

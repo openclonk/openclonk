@@ -1,0 +1,7 @@
+[DefCore]
+id=L_CR
+Version=4,9,8
+Category=C4D_StaticBack | C4D_IgnoreFoW
+Width=35
+Height=35
+Offset=-17,-17

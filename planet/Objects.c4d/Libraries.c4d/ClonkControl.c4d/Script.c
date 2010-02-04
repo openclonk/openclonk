@@ -43,6 +43,7 @@ local inventory;
 local mlastx, mlasty;
 local virtual_cursor;
 local disableautosort;
+local noholdingcallbacks;
 
 /* ++++++++ Item controls ++++++++++ */
 
@@ -324,33 +325,29 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 {
 	if (!this) return false;
 	
-	//Log(Format("%d, %d, %d, %v, %v",  x,y,ctrl, repeat, release));
+	//Log(Format("%d, %d, %s, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), repeat, release));
 	
-	// aiming
-	if(using)
+	// aiming with mouse
+	if(using && ctrl == CON_Aim)
 	{
-		// aiming with mouse
-		if (ctrl == CON_Aim)
-		{
-			if (alt) ctrl = CON_UseAlt;
-			else     ctrl = CON_Use;
+		if (alt) ctrl = CON_UseAlt;
+		else     ctrl = CON_Use;
 				
-			repeat = true;
-			release = false;
-		}
-		// aiming with analog pad or keys
-		else if (ctrl == CON_AimAnalog || ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight)
-		{			
-			//VirtualCursor()->Aim(ctrl,x,y,strength,repeat,release);
-			//mlastx = GetX()-VirtualCursor()->GetX();
-			//mlasty = GetY()-VirtualCursor()->GetY();
-			
-			return true;
-		}
-		else SetCommand("None");
+		repeat = true;
+		release = false;
 	}
 	// Any control resets a previously given command
 	else SetCommand("None");
+	
+	// aiming with analog pad or keys
+	if(VirtualCursorAiming())
+	{
+		if (ctrl == CON_AimAnalog || ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight)
+		{
+			VirtualCursor()->Aim(ctrl,x,y,repeat,release);
+			return true;
+		}
+	}
 	
 	// save last mouse position
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
@@ -459,12 +456,21 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			      return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
 			}
 			// throw delayed
-			if (ctrl == CON_ThrowDelayed && release)
+			if (ctrl == CON_ThrowDelayed)
 			{
-			    if (proc == "SCALE" || proc == "HANGLE")
-			      return PlayerObjectCommand(plr, false, "Drop", contents);
-			    else
-			      return PlayerObjectCommand(plr, false, "Throw", contents, mlastx, mlasty);
+				if(release)
+				{
+					VirtualCursor()->StopAim();
+				
+					if (proc == "SCALE" || proc == "HANGLE")
+					  return PlayerObjectCommand(plr, false, "Drop", contents);
+					else
+					  return PlayerObjectCommand(plr, false, "Throw", contents, mlastx, mlasty);
+				}
+				else
+				{
+					VirtualCursor()->StartAim(ctrl,this,contents);
+				}
 			}
 			// drop
 			if (ctrl == CON_Drop)
@@ -484,12 +490,21 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			      return PlayerObjectCommand(plr, false, "Throw", contents2, x, y);
 			}
 			// throw delayed
-			if (ctrl == CON_ThrowAltDelayed && release)
+			if (ctrl == CON_ThrowAltDelayed)
 			{
-			    if (proc == "SCALE" || proc == "HANGLE")
-			      return PlayerObjectCommand(plr, false, "Drop", contents2);
-			    else
-			      return PlayerObjectCommand(plr, false, "Throw", contents2, mlastx, mlasty);
+				if(release)
+				{
+					VirtualCursor()->StopAim();
+				
+					if (proc == "SCALE" || proc == "HANGLE")
+					  return PlayerObjectCommand(plr, false, "Drop", contents2);
+					else
+					  return PlayerObjectCommand(plr, false, "Throw", contents2, mlastx, mlasty);
+				}
+				else
+				{
+					VirtualCursor()->StartAim(ctrl,this,contents2);
+				}
 			}
 			// drop
 			if (ctrl == CON_DropAlt)
@@ -553,7 +568,7 @@ private func StartUseControl(int ctrl, control, int x, int y, object obj)
 	return handled;
 }
 
-private func StartUseDelayedControl(int ctrl, control, int x, int y, object obj)
+private func StartUseDelayedControl(int ctrl, control, object obj)
 {
 	using = obj;
 	var hold_enabled = obj->Call("~HoldingEnabled");
@@ -567,16 +582,13 @@ private func StartUseDelayedControl(int ctrl, control, int x, int y, object obj)
 	var estr = "";
 	if (alt && !(obj->Contained())) estr = "Alt";
 			
+	VirtualCursor()->StartAim(ctrl,this,obj);
+			
 	// call UseStart
-	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,x,y);
-	if (!handled)
-	{
-		using = nil;
-		if (hold_enabled)
-			SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, false);
-		return false;
-	}
-				
+	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,mlastx,mlasty);
+	if(!handled) noholdingcallbacks = true;
+	else noholdingcallbacks = false;
+	
 	return handled;
 }
 
@@ -599,17 +611,40 @@ private func StopUseControl(control, int x, int y, object obj, bool cancel)
 	var handled = obj->Call(Format("~%sUse%s%s",control,estr,stop),this,x,y);
 	using = nil;
 	alt = false;
+	noholdingcallbacks = false;
 			
 	if (holding_enabled)
 	{
 		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
 		SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, false);
 	}
+	if (virtual_cursor)
+		virtual_cursor->StopAim();
 		
 	return handled;
 }
 
-private func StopUseDelayedControl(control, int x, int y, object obj)
+private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
+{
+	var estr = "";
+	if (alt && !(obj->Contained())) estr = "Alt";
+	
+	var mex = x;
+	var mey = y;
+	if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
+	{
+		mex = mlastx;
+		mey = mlasty;
+	}
+	
+	Message("%d,%d",this,mex,mey);
+	
+	var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,mex,mey);
+			
+	return handled;
+}
+
+private func StopUseDelayedControl(control, object obj)
 {
 	var estr = "";
 	if (alt && !(obj->Contained())) estr = "Alt";
@@ -617,12 +652,16 @@ private func StopUseDelayedControl(control, int x, int y, object obj)
 	var holding_enabled = obj->Call("~HoldingEnabled");
 	
 	// ControlUseStop, ControlUseAltStop, ContainedUseAltStop, etc...
-	var handled = obj->Call(Format("~%sUse%sStop",control,estr),this,x,y);
+	var handled = obj->Call(Format("~%sUse%sStop",control,estr),this,mlastx,mlasty);
 	if (!handled)
-		handled = obj->Call(Format("~%sUse%s",control,estr),this,x,y);
+		handled = obj->Call(Format("~%sUse%s",control,estr),this,mlastx,mlasty);
 
+	//Log("called %sUse%sStop(this,%d,%d)",control,estr,mlastx,mlasty);
+	
+	VirtualCursor()->StopAim();
 	using = nil;
 	alt = false;
+	noholdingcallbacks = false;
 			
 	if (holding_enabled)
 		SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, false);
@@ -661,11 +700,11 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	{
 		if (!release && !repeat)
 		{
-			return StartUseDelayedControl(ctrl, control, mlastx, mlasty, obj);
+			return StartUseDelayedControl(ctrl, control,obj);
 		}
 		else if (release && using == obj)
 		{
-			return StopUseDelayedControl(control, mlastx, mlasty, obj);
+			return StopUseDelayedControl(control,obj);
 		}
 	}
 	
@@ -678,22 +717,9 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		  CancelUse();
 		  return true;
 		}
-		else if (repeat && using == obj)
+		else if (repeat && using == obj && !noholdingcallbacks)
 		{
-			var estr = "";
-			if (alt && !(obj->Contained())) estr = "Alt";
-	
-			var mex = x;
-			var mey = y;
-			if (ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
-			{
-				mex = mlastx;
-				mey = mlasty;
-			}
-	
-			var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,mex,mey);
-			
-			return handled;
+			return HoldingUseControl(ctrl, control, x, y, obj);
 		}
 	}
 	
@@ -863,10 +889,39 @@ private func VirtualCursor()
 {
 	if(!virtual_cursor)
 	{
-		//virtual_cursor=CreateObject(VIRT,0,0,GetOwner());
-		//virtual_cursor->Set(this);
+		virtual_cursor = FindObject(Find_ID(L_CR),Find_Owner(GetOwner()));
 	}
+	if(!virtual_cursor)
+	{
+		virtual_cursor=CreateObject(L_CR,0,0,GetOwner());
+	}
+	
 	return virtual_cursor;
+}
+
+private func VirtualCursorAiming()
+{
+	if(!virtual_cursor) return false;
+	return virtual_cursor->IsAiming();
+}
+
+public func UpdateVirtualCursorPos()
+{
+	mlastx = VirtualCursor()->GetX()-GetX();
+	mlasty = VirtualCursor()->GetY()-GetY();
+}
+
+public func TriggerHoldingControl()
+{
+	if (using && !noholdingcallbacks)
+	{
+		var ctrl;
+		if (alt) ctrl = CON_UseAltDelayed;
+		else     ctrl = CON_UseDelayed;
+				
+		ObjectControl(GetOwner(), ctrl, 0, 0, 0, true, false);
+	}
+
 }
 
 // Throwing

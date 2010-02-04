@@ -311,12 +311,18 @@ global func ShiftCursor(int plr, bool back)
 global func GetPlayerControlName(int ctrl)
 {
 	if (ctrl == CON_Aim)		return "Aim";
+	if (ctrl == CON_AimLeft)		return "AimLeft";
+	if (ctrl == CON_AimRight)		return "AimRight";
+	if (ctrl == CON_AimUp)		return "AimUp";
+	if (ctrl == CON_AimDown)		return "AimDown";
 	if (ctrl == CON_Left)		return "Left";
 	if (ctrl == CON_Right)		return "Right";
 	if (ctrl == CON_Up)			return "Up";
 	if (ctrl == CON_Down)		return "Down";
 	if (ctrl == CON_Throw)		return "Throw";
 	if (ctrl == CON_ThrowAlt)		return "ThrowAlt";
+	if (ctrl == CON_ThrowDelayed)		return "ThrowDelayed";
+	if (ctrl == CON_ThrowAltDelayed)		return "ThrowAltDelayed";
 	if (ctrl == CON_Jump)		return "Jump";
 	if (ctrl == CON_MenuLeft)	return "MenuLeft";
 	if (ctrl == CON_MenuRight)	return "MenuRight";
@@ -330,6 +336,8 @@ global func GetPlayerControlName(int ctrl)
 	if (ctrl == CON_Use)		return "Use";
 	if (ctrl == CON_Drop)		return "Drop";
 	if (ctrl == CON_UseAlt)		return "UseAlt";
+	if (ctrl == CON_UseAltDelayed)		return "UseAltDelayed";
+	if (ctrl == CON_UseDelayed)		return "UseDelayed";
 	if (ctrl == CON_DropAlt)		return "DropAlt";
 	if (ctrl == CON_NextCrew)	return "NextCrew";
 	if (ctrl == CON_PreviousCrew) return "PreviousCrew";
