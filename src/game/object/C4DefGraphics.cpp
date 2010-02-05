@@ -1065,27 +1065,30 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		}
 		else
 		{
+			C4Def *pDef = pSourceGfx->pDef;
 			float twdt, thgt;
+			C4DrawTransform trf(Transform, float(iTx), float(iTy));
 			if(fZoomToShape)
 			{
 				twdt = pForObj->Shape.Wdt;
 				thgt = pForObj->Shape.Hgt;
 
 				// Keep aspect ratio
-				C4Def *pDef = pSourceGfx->pDef;
 				if(twdt*pDef->Shape.Hgt < pDef->Shape.Wdt*thgt)
 					thgt = twdt*pDef->Shape.Hgt/pDef->Shape.Wdt;
 				else
 					twdt = thgt*pDef->Shape.Wdt/pDef->Shape.Hgt;
+
+				float fZoom = Min(pForObj->Shape.Wdt/twdt, pForObj->Shape.Hgt/thgt);
+				trf.ScaleAt(fZoom/*pForObj->Shape.Wdt/twdt*/, fZoom/*pForObj->Shape.Hgt/thgt*/,  float(iTx), float(iTy));
 			}
 			else
 			{
-				C4Def *pDef = pSourceGfx->pDef;
 				twdt = pDef->Shape.Wdt;
 				thgt = pDef->Shape.Hgt;
 			}
 
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &Transform);
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &trf);
 		}
 	}
 
@@ -1150,7 +1153,7 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 	}
 	else
 	{
-		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &Transform);
+		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &C4DrawTransform(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2));
 	}
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
