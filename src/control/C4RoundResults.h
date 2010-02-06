@@ -83,7 +83,7 @@ class C4RoundResultsPlayer
 		void EvaluateLeague(C4RoundResultsPlayer *pLeaguePlayer); // called from league evaluation; set league fields
 		void EvaluatePlayer(C4Player *pPlr); // called from C4Player::Evaluate; set fields by player
 
-		void SetID(int32_t idNew) { id=idNew; }
+		void SetID(int32_t idNew) { this->id=idNew; }
 		void AddCustomEvaluationString(const char *szCustomString);
 
 		bool operator ==(const C4RoundResultsPlayer &cmp);
