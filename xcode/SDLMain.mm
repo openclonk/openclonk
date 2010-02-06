@@ -99,7 +99,7 @@
 	if (!addonSupplied)
 		return NO;
 	for (int i = 0; i < argc; i++) {
-		if ([[NSString stringWithCString:argv[i]] hasPrefix:@"-psn"])
+		if ([[NSString stringWithUTF8String:argv[i]] hasPrefix:@"-psn"])
 			return YES;
 	}
 	return NO;
