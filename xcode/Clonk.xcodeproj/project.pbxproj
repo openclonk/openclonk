@@ -1925,7 +1925,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Clonk" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Clonk */;
 			projectDirPath = "";
@@ -1994,7 +1994,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "LIBS_TO_BUNDLE=\"/opt/local/lib/lib(crypto|z\\.|iconv|jpeg|png|GLEW|llvm)[^ ]+\"\n\ncd $TARGET_BUILD_DIR\nfor lib in `otool -L $EXECUTABLE_PATH | grep -Eo \"$LIBS_TO_BUNDLE\"`; do\n  base=`basename $lib`\n  bundle_path=$FRAMEWORKS_FOLDER_PATH/$base\n  id=@executable_path/../Frameworks/$base\n  \n  echo Bundling $base...\n  cp $lib $bundle_path\n  chmod u+w $bundle_path\n  install_name_tool -id $id $bundle_path\n  install_name_tool -change $lib $id $EXECUTABLE_PATH\ndone\n";
+			shellScript = "LIBS_TO_BUNDLE=\"/opt/local/lib/lib(crypto|z\\.|iconv|jpeg|png|GLEW|llvm|SDL|SDL_mixer)[^ ]+\"\n\ncd $TARGET_BUILD_DIR\nfor lib in `otool -L $EXECUTABLE_PATH | grep -Eo \"$LIBS_TO_BUNDLE\"`; do\n  base=`basename $lib`\n  bundle_path=$FRAMEWORKS_FOLDER_PATH/$base\n  id=@executable_path/../Frameworks/$base\n  \n  echo Bundling $base...\n  cp $lib $bundle_path\n  chmod u+w $bundle_path\n  install_name_tool -id $id $bundle_path\n  install_name_tool -change $lib $id $EXECUTABLE_PATH\ndone\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2635,6 +2635,7 @@
 				);
 				GCC_VERSION = 4.2;
 				HEADER_SEARCH_PATHS = (
+					/opt/local/include/SDL,
 					/usr/local/include,
 					./SDL.framework/Headers,
 					./SDL_mixer.framework/Headers,
@@ -2742,6 +2743,7 @@
 				);
 				GCC_VERSION = 4.2;
 				HEADER_SEARCH_PATHS = (
+					/opt/local/include/SDL,
 					/usr/local/include,
 					./SDL.framework/Headers,
 					./SDL_mixer.framework/Headers,
@@ -2837,6 +2839,7 @@
 				GCC_VERSION = 4.2;
 				GENERATE_PROFILING_CODE = YES;
 				HEADER_SEARCH_PATHS = (
+					/opt/local/include/SDL,
 					/usr/local/include,
 					./SDL.framework/Headers,
 					./SDL_mixer.framework/Headers,
