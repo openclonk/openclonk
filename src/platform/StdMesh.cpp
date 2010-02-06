@@ -1473,6 +1473,8 @@ void StdMeshInstance::SetAnimationPosition(AnimationNode* node, ValueProvider* p
 	delete node->Leaf.Position;
 	node->Leaf.Position = position;
 
+	position->Value = BoundBy(position->Value, Fix0, ftofix(node->Leaf.Animation->Length));
+
 	BoneTransformsDirty = true;
 }
 
@@ -1480,6 +1482,8 @@ void StdMeshInstance::SetAnimationWeight(AnimationNode* node, ValueProvider* wei
 {
 	assert(node->GetType() == AnimationNode::LinearInterpolationNode);
 	delete node->LinearInterpolation.Weight; node->LinearInterpolation.Weight = weight;
+
+	weight->Value = BoundBy(weight->Value, Fix0, itofix(1));
 
 	BoneTransformsDirty = true;
 }
