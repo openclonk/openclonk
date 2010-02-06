@@ -1456,5 +1456,10 @@ Drink = {
 	NextAction = "Walk",
 },  }, def);
   SetProperty("Name", "Clonk", def);
+
+  // Set perspective
+  SetProperty("PerspectiveR", 12000, def);
+  SetProperty("PerspectiveTheta", 20, def);
+  SetProperty("PerspectivePhi", 70, def);
 }
 

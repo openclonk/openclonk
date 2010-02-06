@@ -240,6 +240,8 @@ class CStdDDraw
 		bool fUseClrModMap;             // if set, pClrModMap will be checked for color modulations
 		unsigned char Saturation;		// if < 255, an extra filter is used to reduce the saturation
 		int ZoomX; int ZoomY;
+		float EyeR, EyeTheta, EyePhi;
+		bool fUsePerspective;
 	public:
 		float Zoom;
 		// General
@@ -348,6 +350,8 @@ class CStdDDraw
 		void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }
 		void ApplyZoom(float & X, float & Y);
 		void RemoveZoom(float & X, float & Y);
+		void SetPerspective(float Eye_R, float Eye_Theta, float Eye_Phi) { fUsePerspective = true; EyeR = Eye_R; EyeTheta = Eye_Theta; EyePhi = Eye_Phi; }
+		void UnsetPerspective() { fUsePerspective = false; }
 		virtual void SetTexture() = 0;
 		virtual void ResetTexture() = 0;
 

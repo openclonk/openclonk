@@ -135,8 +135,8 @@ bool CStdGL::UpdateClipper()
 
 	// Set clipping plane to -1000 and 1000 so that large meshes are not
 	// clipped away.
-	glOrtho((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY, -1000.0f, 1000.0f);
-	//gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
+	//glOrtho((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY, -1000.0f, 1000.0f);
+	gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
 	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
 	}
@@ -939,6 +939,35 @@ namespace
 #endif
 		}
 	}
+
+	// Apply Zoom and Transformation to the current matrix stack. Return
+	// parity of the transformation.
+	bool ApplyZoomAndTransform(float ZoomX, float ZoomY, float Zoom, CBltTransform* pTransform)
+	{
+		// Apply zoom
+		glTranslatef(ZoomX, ZoomY, 0.0f);
+		glScalef(Zoom, Zoom, 1.0f);
+		glTranslatef(-ZoomX, -ZoomY, 0.0f);
+
+		// Apply transformation
+		if(pTransform)
+		{
+			const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
+			glMultMatrixf(transform);
+		
+			// Compute parity of the transformation matrix - if parity is swapped then
+			// we need to cull front faces instead of back faces.
+			const float det = transform[0]*transform[5]*transform[15]
+				        + transform[4]*transform[13]*transform[3]
+				        + transform[12]*transform[1]*transform[7]
+				        - transform[0]*transform[13]*transform[7]
+				        - transform[4]*transform[1]*transform[15]
+				        - transform[12]*transform[5]*transform[3];
+			return det > 0;
+		}
+
+		return true;
+	}
 }
 
 namespace
@@ -962,41 +991,11 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 {
 	const StdMesh& mesh = instance.Mesh;
 
-	glShadeModel(GL_SMOOTH);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
-	//glEnable(GL_CULL_FACE);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-
-	// Apply zoom
-	glTranslatef(ZoomX, ZoomY, 0.0f);
-	glScalef(Zoom, Zoom, 1.0f);
-	glTranslatef(-ZoomX, -ZoomY, 0.0f);
-
-	// TODO: Initialize with OgreToClonk matrix parity
 	bool parity = OgreToClonkParity;
-	if(pTransform)
-	{
-		const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
-		glMultMatrixf(transform);
-		
-		// Compute parity of the transformation matrix - if parity is swapped then
-		// we need to cull front faces instead of back faces.
-		const float det = transform[0]*transform[5]*transform[15]
-		                + transform[4]*transform[13]*transform[3]
-		                + transform[12]*transform[1]*transform[7]
-		                - transform[0]*transform[13]*transform[7]
-		                - transform[4]*transform[1]*transform[15]
-		                - transform[12]*transform[5]*transform[3];
-		if(det < 0) parity = !parity;
-	}
 
 	// Convert bounding box to clonk coordinate system
 	// (TODO: We should cache this, not sure where though)
+	// TODO: Note that this does not generally work with an arbitrary transformation this way
 	const StdMeshBox& box = mesh.GetBoundingBox();
 	StdMeshVector v1, v2;
 	v1.x = box.x1; v1.y = box.y1; v1.z = box.z1;
@@ -1004,47 +1003,142 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	v1 = OgreToClonk * v1; // TODO: Include translation
 	v2 = OgreToClonk * v2; // TODO: Include translation
 
-	// Scale so that the mesh fits in (tx,ty,twdt,thgt)
-	const float rx = -std::min(v1.x,v1.y) / fabs(v2.x - v1.x);
-	const float ry = -std::min(v1.y,v2.y) / fabs(v2.y - v1.y);
-	const float dx = tx + rx*twdt;
-	const float dy = ty + ry*thgt;
-	const float scx = twdt/fabs(v2.x - v1.x);
-	const float scy = thgt/fabs(v2.y - v1.y);
+	glShadeModel(GL_SMOOTH);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_BLEND); // TODO: Shouldn't this always be enabled? - blending does not work for meshes without this though.
+	//glEnable(GL_CULL_FACE);
 
-#if 0
-	// Scale so that Z coordinate is between -1 and 1, otherwise parts of
-	// the mesh could be clipped away by the near or far clipping plane.
-	// This technique might also enable us not to clear the depth buffer
-	// after every mesh rendering - we could simply scale the first mesh
-	// of the scene so that it's Z coordinate is between 0 and 1, scale
-	// the second mesh that it is between 1 and 2, and so on.
-	// This of course requires an orthogonal projection so that the
-	// meshes don't look distorted - if we should every decide to use
-	// a perspective projection we need to think of something different.
+	// Set up projection matrix first. We do transform and Zoom with the
+	// projection matrix, so that lighting is applied to the untransformed/unzoomed
+	// mesh.
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
 
-	// TODO: This is currently commented out because it gets the lighting
-	// wrong (objects are too dark). Instead we changed the clipping plane
-	// to be large enough. I think this is still a got idea, though,
-	// when we fix the lighting. Maybe we need to adapt the normals
-	// somehow...
-	const float scz = 1.0/fabs(v2.z - v1.z);
-#else
-	const float scz = 1.0;
-#endif
-	// Keep aspect ratio:
-	//if(scx < scy) scy = scx;
-	//else scx = scy;
-	glTranslatef(dx, dy, 0.0f);
-	glScalef(scx, scy, scz);
+	if(!fUsePerspective)
+	{
+		// Orthographic projection. The orthographic projection matrix
+		// is already loaded in the GL matrix stack.
 
-	// Put a light source in front of the object
-	const GLfloat light_position[] = { 0.0f, 0.0f, v2.z + 15.0f*Zoom, 1.0f };
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glEnable(GL_LIGHT0);
+		if(!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
+			parity = !parity;
 
-	// Convert from Ogre to Clonk coordinate system
-	glMultMatrixf(OgreToClonkGL);
+		// Scale so that the mesh fits in (tx,ty,twdt,thgt)
+		const float rx = -std::min(v1.x,v1.y) / fabs(v2.x - v1.x);
+		const float ry = -std::min(v1.y,v2.y) / fabs(v2.y - v1.y);
+		const float dx = tx + rx*twdt;
+		const float dy = ty + ry*thgt;
+		const float scx = twdt/fabs(v2.x - v1.x);
+		const float scy = thgt/fabs(v2.y - v1.y);
+
+		// Scale so that Z coordinate is between -1 and 1, otherwise parts of
+		// the mesh could be clipped away by the near or far clipping plane.
+		// Note that this only works in the projection matrix, otherwise
+		// lighting is screwed up.
+
+		// This technique might also enable us not to clear the depth buffer
+		// after every mesh rendering - we could simply scale the first mesh
+		// of the scene so that it's Z coordinate is between 0 and 1, scale
+		// the second mesh that it is between 1 and 2, and so on.
+		// This of course requires an orthogonal projection so that the
+		// meshes don't look distorted - if we should ever decide to use
+		// a perspective projection we need to think of something different.
+		// Take also into account that the depth is not linear but linear
+		// in the logarithm (if I am not mistaken), so goes like 1/z
+		const float scz = 1.0/fabs(v2.z - v1.z);
+
+		// Keep aspect ratio:
+		//if(scx < scy) scy = scx;
+		//else scx = scy;
+		glTranslatef(dx, dy, 0.0f);
+		glScalef(scx, scy, scz);
+	}
+	else
+	{
+		// Perspective projection. We need current viewport size.
+		const int iWdt=Min(iClipX2, RenderTarget->Wdt-1)-iClipX1+1;
+		const int iHgt=Min(iClipY2, RenderTarget->Hgt-1)-iClipY1+1;
+
+		// Get away with orthographic projection matrix currently loaded
+		glLoadIdentity();
+
+		// Back to GL device coordinates
+		glTranslatef(-1.0f, 1.0f, 0.0f);
+		glScalef(2.0f/iWdt, -2.0f/iHgt, 1.0f);
+
+		// Compensate for 1.0f aspect (need to do this after having applied zoom and transform)
+		// which is why we can't directly set it in gluPerspective
+		glTranslatef(twdt/2,thgt/2, 0.0f);
+		glScalef((twdt>thgt)?(thgt/twdt):1.0f,(twdt>thgt)?(1.0f):(twdt/thgt), 1.0f);
+		glTranslatef(-twdt/2,-thgt/2, 0.0f);
+
+		if(!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
+			parity = !parity;
+
+		// Move to target location
+		glTranslatef(tx, ty, 0.0f);
+		glScalef(((float)twdt)/iWdt, ((float)thgt)/iHgt, 1.0f);
+
+		// Return to Clonk coordinate frame
+		glScalef(iWdt/2.0, -iHgt/2.0, 1.0f);
+		glTranslatef(1.0f, -1.0f, 0.0f);
+
+		// Apply perspective projection. After this, x and y range from
+		// -1 to 1, and this is mapped into tx/ty/twdt/thgt by the above code.
+		// aspect is 1.0f since it needs to be applied after zoom/transform,
+		// this is also done above.
+		gluPerspective(60.0f, 1.0f, 0.1f, 100.0f);
+
+	}
+
+	// Now set up modelview matrix
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	if(!fUsePerspective)
+	{
+		// Put a light source in front of the object
+		const GLfloat light_position[] = { 0.0f, 0.0f, v2.z + 15.0f, 1.0f };
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+		glEnable(GL_LIGHT0);
+
+		// Convert from Ogre to Clonk coordinate system
+		glMultMatrixf(OgreToClonkGL);
+	}
+	else
+	{
+		const float MeshX = (v1.x + v2.x)/2.0f;
+		const float MeshY = (v1.y + v2.y)/2.0f;
+		const float MeshZ = (v1.z + v2.z)/2.0f;
+
+		const float cosEyeTheta = cos(EyeTheta/180.0f*M_PI);
+		const float sinEyeTheta = sin(EyeTheta/180.0f*M_PI);
+		const float cosEyePhi = cos(EyePhi/180.0f*M_PI);
+		const float sinEyePhi = sin(EyePhi/180.0f*M_PI);
+
+		const float EyeX = MeshX + EyeR * sinEyePhi * cosEyeTheta;
+		const float EyeY = MeshY - EyeR * sinEyeTheta;
+		const float EyeZ = MeshZ + EyeR * cosEyePhi * cosEyeTheta;
+
+		// Up vector is unit vector in theta direction
+		const float UpX = -sinEyePhi * sinEyeTheta;
+		const float UpY = -cosEyeTheta;
+		const float UpZ = -cosEyePhi * sinEyeTheta;
+
+		// Apply lighting (light source at camera position)
+		const GLfloat light_position[] = { EyeX, EyeY, EyeZ, 1.0f };
+		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
+		glEnable(GL_LIGHT0);
+
+		// center on mesh's bounding box, so that the mesh is really in the center of the viewport
+		gluLookAt(EyeX, EyeY, EyeZ, MeshX, MeshY, MeshZ, UpX, UpY, UpZ);
+
+		// Fix X axis (???)
+		glScalef(-1.0f, 1.0f, 1.0f);
+		// Convert from Ogre to Clonk coordinate system
+		glMultMatrixf(OgreToClonkGL);
+	}
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
@@ -1066,6 +1160,11 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 	RenderMeshImpl(instance, dwModClr, dwPlayerColor, parity);
 
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+
 	glActiveTexture(GL_TEXTURE0); // switch back to default
 	glClientActiveTexture(GL_TEXTURE0); // switch back to default
 	glDepthMask(GL_TRUE);
@@ -1076,8 +1175,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_CULL_FACE);
 	//glDisable(GL_BLEND);
 	glShadeModel(GL_FLAT);
-	glPopMatrix();
-
+	
 	// TODO: glScissor, so that we only clear the area the mesh covered.
 	glClear(GL_DEPTH_BUFFER_BIT);
 }

@@ -484,9 +484,11 @@ void CStdDDraw::Default()
 	Gamma.Default();
 	DefRamp.Default();
 	lpPrimary=lpBack=NULL;
-	// pClrModMap = NULL; - invalid it !fUseClrModMap anyway
+	// pClrModMap = NULL; - invalid if !fUseClrModMap anyway
 	fUseClrModMap = false;
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
+	//EyeR = 1.0f; EyeTheta = EyePhi = 0.0f; invalid if !fUsePerspective anyway
+	fUsePerspective = false;
 	}
 
 void CStdDDraw::Clear()

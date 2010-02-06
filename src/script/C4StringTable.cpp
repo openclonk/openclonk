@@ -118,6 +118,9 @@ C4StringTable::C4StringTable()
 	P[P_LineColors] = RegString("LineColors");
 	P[P_LineAttach] = RegString("LineAttach");
 	P[P_MouseDragImage] = RegString("MouseDragImage");
+	P[P_PerspectiveR] = RegString("PerspectiveR");
+	P[P_PerspectiveTheta] = RegString("PerspectiveTheta");
+	P[P_PerspectivePhi] = RegString("PerspectivePhi");
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
 	}
 

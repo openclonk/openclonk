@@ -170,4 +170,7 @@ NextAction = "Drive",
 //Animation = "Drive",
 },  }, def);
   SetProperty("Name", "$Name$", def);
+  SetProperty("PerspectiveR", 4500, def);
+  SetProperty("PerspectiveTheta", 25, def);
+  SetProperty("PerspectivePhi", 30, def);
 }
