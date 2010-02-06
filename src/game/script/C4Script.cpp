@@ -5610,10 +5610,11 @@ static Nillable<int> FnPlayAnimation(C4AulObjectContext *ctx, C4String *szAnimat
 	return n_node->GetNumber();
 }
 
-static bool FnStopAnimation(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
+static bool FnStopAnimation(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return false;
 	if(!ctx->Obj->pMeshInstance) return false;
+	if(iAnimationNumber.IsNil()) return false; // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if(!iAttachNumber.IsNil())
@@ -5669,10 +5670,11 @@ static Nillable<int> FnGetAnimationLength(C4AulObjectContext *ctx, C4String *szA
 	return static_cast<int>(animation->Length * 1000.0f); // TODO: sync critical
 }
 
-static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
+static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	if(iAnimationNumber.IsNil()) return C4VNull; // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if(!iAttachNumber.IsNil())
@@ -5688,10 +5690,11 @@ static Nillable<C4String*> FnGetAnimationName(C4AulObjectContext *ctx, int iAnim
 	return String(node->GetAnimation()->Name.getData());
 }
 
-static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
+static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	if(iAnimationNumber.IsNil()) return C4VNull; // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if(!iAttachNumber.IsNil())
@@ -5707,10 +5710,11 @@ static Nillable<int> FnGetAnimationPosition(C4AulObjectContext *ctx, int iAnimat
 	return fixtoi(node->GetPosition(), 1000);
 }
 
-static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, Nillable<int> iAttachNumber)
+static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return C4VNull;
 	if(!ctx->Obj->pMeshInstance) return C4VNull;
+	if(iAnimationNumber.IsNil()) return C4VNull; // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if(!iAttachNumber.IsNil())
@@ -5726,10 +5730,11 @@ static Nillable<int> FnGetAnimationWeight(C4AulObjectContext *ctx, int iAnimatio
 	return fixtoi(node->GetWeight(), 1000);
 }
 
-static bool FnSetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* PositionProvider, Nillable<int> iAttachNumber)
+static bool FnSetAnimationPosition(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, C4ValueArray* PositionProvider, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return false;
 	if(!ctx->Obj->pMeshInstance) return false;
+	if(iAnimationNumber.IsNil()) return false; // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if(!iAttachNumber.IsNil())
@@ -5749,10 +5754,11 @@ static bool FnSetAnimationPosition(C4AulObjectContext *ctx, int iAnimationNumber
 	return true;
 }
 
-static bool FnSetAnimationWeight(C4AulObjectContext *ctx, int iAnimationNumber, C4ValueArray* WeightProvider, Nillable<int> iAttachNumber)
+static bool FnSetAnimationWeight(C4AulObjectContext *ctx, Nillable<int> iAnimationNumber, C4ValueArray* WeightProvider, Nillable<int> iAttachNumber)
 {
 	if(!ctx->Obj) return false;
 	if(!ctx->Obj->pMeshInstance) return false;
+	if(iAnimationNumber.IsNil()) return false; // distinguish nil from 0
 
 	StdMeshInstance* Instance = ctx->Obj->pMeshInstance;
 	if(!iAttachNumber.IsNil())
