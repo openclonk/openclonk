@@ -2,8 +2,3 @@
 id=Core_Goal_Checkpoint
 Version=4,10,0,0
 Category=C4D_StaticBack
-MaxUserSelect=1
-Width=40
-Height=40
-Offset=-20,-20
-Picture=0,0,40,40

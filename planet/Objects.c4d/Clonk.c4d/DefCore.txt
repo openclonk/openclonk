@@ -26,6 +26,7 @@ StretchGrowth=1
 NoBurnDecay=1
 IncompleteActivity=1
 Oversize=1
+NoFight=1
 
 [Physical]
 Energy=50000

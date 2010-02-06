@@ -1,0 +1,8 @@
+[DefCore]
+id=Core_Goal_Flag
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=64
+Height=64
+Offset=-32,-32
+Picture=0,0,64,64

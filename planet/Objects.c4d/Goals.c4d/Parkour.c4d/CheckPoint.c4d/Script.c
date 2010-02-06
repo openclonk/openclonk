@@ -1,17 +1,18 @@
 /*-- CheckPoint --*/
+
 /* 
 	A checkpoint can have different modes, indicated with a bitmask:
 		*None - Not a Checkpoint.
-		*Start - Start of the race.
-		*Finish - End of the race.
+		*Start - Start of the parkour.
+		*Finish - End of the parkour.
 		*Respawn - The clonk can respawn at this CP.
-		*Check - This checkpoint must be reached in order to complete the goal.
-		*Ordered - These checkpoints must be reached in the right order.
+		*Check - This checkpoint must be cleared in order to complete the parkour.
+		*Ordered - These checkpoints must be cleared in the right order.
 		*Bonus - Player receives a bonus if he cleares this CP.
 */
 
 /*-- Checkpoint modes --*/
-local CP_Mode;
+local cp_mode;
 static const RACE_CP_None = 0;
 static const RACE_CP_Start = 1;
 static const RACE_CP_Finish = 2;
@@ -32,34 +33,34 @@ public func SetCPMode(int mode)
 		// Set CP number.
 		SetCPNumber(ObjectCount(Find_ID(GetID()), Find_Func("GetCPNumber")) + 1);
 	}
-	CP_Mode = mode; 
+	cp_mode = mode; 
 	DoGraphics();
 	return;
 }
 
-public func GetCPMode() { return CP_Mode; }
+public func GetCPMode() { return cp_mode; }
 
-public func FindCPMode(int mode) { return CP_Mode & mode; }
+public func FindCPMode(int mode) { return cp_mode & mode; }
 
 /*-- Checkpoint controller --*/
-local CP_Con;
+local cp_con;
 
 public func SetCPController(object con) 
 { 
-	CP_Con = con; 
+	cp_con = con; 
 	return; 
 }
 
 /*-- Checkpoint number --*/
-local CP_Num;
+local cp_num;
 
 public func SetCPNumber(int num) 
 { 
-	CP_Num = num; 
+	cp_num = num; 
 	return; 
 }
 
-public func GetCPNumber() { return CP_Num; }
+public func GetCPNumber() { return cp_num; }
 
 /*-- Initialize --*/
 
@@ -70,7 +71,7 @@ protected func Initialize()
 {
 	aDoneByPlr = [];
 	aDoneByTeam = [];
-	CP_Mode = RACE_CP_Check;
+	cp_mode = RACE_CP_Check;
 	UpdateGraphics();
 	AddEffect("IntCheckpoint", this, 100, 1, this);
 	return;
@@ -91,7 +92,7 @@ public func ClearedByTeam(int team)
 
 public func IsActiveForPlr(int plr)
 {
-	if (CP_Mode & RACE_CP_Finish) // Check all checkpoints.
+	if (cp_mode & RACE_CP_Finish) // Check all checkpoints.
 	{
 		for (var cp in FindObjects(Find_ID(GetID())))
 			if (cp->GetCPMode() & RACE_CP_Check)
@@ -99,7 +100,7 @@ public func IsActiveForPlr(int plr)
 					return false;
 		return true;
 	}
-	if (CP_Mode & RACE_CP_Ordered) 
+	if (cp_mode & RACE_CP_Ordered) 
 	{
 		if (GetCPNumber() == 1) // First ordered checkpoint is always active.
 			return true;
@@ -144,39 +145,39 @@ protected func CheckForClonks()
 		if (!IsActiveForPlr(plr) && !IsActiveForTeam(team))
 			continue;
 		// Check respawn status.
-		if (CP_Mode & RACE_CP_Respawn) 
-			if (CP_Con)
-				CP_Con->SetPlrRespawnCP(plr, this); // Notify race goal.
+		if (cp_mode & RACE_CP_Respawn) 
+			if (cp_con)
+				cp_con->SetPlrRespawnCP(plr, this); // Notify race goal.
 		// If already done by player -> continue.
 		if (aDoneByPlr[plrid])
 			continue;
 		// Check checkpoint status.
-		if (CP_Mode & RACE_CP_Check)
+		if (cp_mode & RACE_CP_Check)
 		{
 			aDoneByPlr[plrid] = true;
 			Sound("Cleared", false, nil, plr);
 			if (!team)
-				if (CP_Con)
-					CP_Con->AddPlrClearedCP(plr); // Notify race goal.
+				if (cp_con)
+					cp_con->AddPlrClearedCP(plr); // Notify parkour goal.
 			if (team && !aDoneByTeam[team])
 			{
 				aDoneByTeam[team] = true;
-				if (CP_Con)
-					CP_Con->AddPlrClearedCP(plr); // Notify race goal.
+				if (cp_con)
+					cp_con->AddPlrClearedCP(plr); // Notify parkour goal.
 			}
 		}
 		// Check finish status.
-		if (CP_Mode & RACE_CP_Finish) 
+		if (cp_mode & RACE_CP_Finish) 
 		{
 			Sound("Cleared", false, nil, plr);
 			aDoneByPlr[plrid] = true;
 			if (team)
 				aDoneByTeam[team] = true;
-			if (CP_Con)
-				CP_Con->PlrReachedFinishCP(plr); // Notify race goal.
+			if (cp_con)
+				cp_con->PlrReachedFinishCP(plr); // Notify parkour goal.
 		}
 		// Check bonus.
-		if (CP_Mode & RACE_CP_Bonus)
+		if (cp_mode & RACE_CP_Bonus)
 			GameCall("GivePlrBonus", plr, this);
 	}
 	return;
@@ -184,29 +185,32 @@ protected func CheckForClonks()
 
 /*-- Checkpoint appearance --*/
 
-// Mode-graphics.
+// Mode graphics.
 protected func DoGraphics()
 {
 	// Clear all overlays first.
 	for (var i = 1; i <= 3; i++)
 		SetGraphics(0, 0, i);
 	// Start & Finish.
-	if (CP_Mode & RACE_CP_Start || CP_Mode & RACE_CP_Finish)
-		SetGraphics("Flag", GetID(), 1, GFXOV_MODE_Base);
-	// Finish.
-	if (CP_Mode & RACE_CP_Finish)
-		SetGraphics("Finish", GetID(), 1, GFXOV_MODE_Base);
-	// Ordered, display numbers up to 99.
-	if (CP_Mode & RACE_CP_Ordered)
+	if (cp_mode & RACE_CP_Start || cp_mode & RACE_CP_Finish)
 	{
+		SetGraphics("", Core_Goal_Flag, 1, GFXOV_MODE_Base);
+		SetObjDrawTransform(350, 0, 2000, 0, 350, 2000, 1);
+		SetClrModulation(RGBa(255, 255, 255, 160) , 1);
+	}
+	// Ordered, display numbers up to 99.
+	if (cp_mode & RACE_CP_Ordered)
+	{
+		var shift = 0;
 		if (GetCPNumber() >= 10)
 		{
 			SetGraphics(Format("%d", GetCPNumber()/10), NUMB, 3, GFXOV_MODE_Base);
 			SetObjDrawTransform(300, 0, -4500, 0, 300, 0, 3);
 			SetClrModulation(RGBa(255, 255, 255, 128) , 3);
+			shift = 1;
 		}
 		SetGraphics(Format("%d", GetCPNumber()%10), NUMB, 2, GFXOV_MODE_Base);
-		SetObjDrawTransform(300, 0, 4500, 0, 300, 0, 2);
+		SetObjDrawTransform(300, 0, shift * 4500, 0, 300, 0, 2);
 		SetClrModulation(RGBa(255, 255, 255, 128) , 2);
 	}
 	return;
@@ -215,6 +219,7 @@ protected func DoGraphics()
 // Player graphics.
 protected func UpdateGraphics(int time)
 {
+	// Create two sparks at opposite sides.
 	var angle = (time * 10) % 360;
 	var color = GetColorByAngle(angle);
 	CreateParticle("PSpark", Sin(angle, 20), -Cos(angle, 20), 0, 0, 32, color);
@@ -229,14 +234,15 @@ protected func GetColorByAngle(int angle)
 	// Get cleared count.
 	var cnt = 0;
 	for (var i = 0; i < GetPlayerCount(); i++)
-		if (ClearedByPlr(GetPlayerByIndex(i)) || (CP_Mode & RACE_CP_Start))
+		if (ClearedByPlr(GetPlayerByIndex(i)) || (cp_mode & RACE_CP_Start))
 			cnt++;
 	var prt = 360 / cnt;
 	var j = 0;
+	// Find the right player.
 	for (var i = 0; i < GetPlayerCount(); i++)
 	{
 		var plr = GetPlayerByIndex(i);
-		if (ClearedByPlr(plr) || (CP_Mode & RACE_CP_Start))
+		if (ClearedByPlr(plr) || (cp_mode & RACE_CP_Start))
 		{
 			if (angle >= j * prt && angle < (j + 1) * prt)
 				return GetPlrColor(plr);
@@ -245,7 +251,6 @@ protected func GetColorByAngle(int angle)
 	}
 	return RGBa(255,255,255,192);
 }
-
 
 /*-- Proplist --*/
 

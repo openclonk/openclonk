@@ -1,4 +1,4 @@
-/*-- The Summit --*/
+/*-- The Cavern --*/
 
 overlay Mats {				
 	algo=rndchecker;
@@ -9,9 +9,14 @@ overlay Mats {
 
 overlay MatFill {
 	overlay { mat=Earth; tex=earth_dry; loosebounds=1; };
-	Mats { mat=Lava; tex=lava_red; a=20; };
-	Mats { mat=Ore; tex=ore; };
-	Mats { mat=Gold; tex=gold; };
+	Mats { mat=Ore; tex=ore; a=20;};
+	Mats { mat=Snow; tex=snow1; a=20; };
+	Mats { mat=Granite; tex=granite; a=20;};
+	Mats { mat=Rock; tex=rock; a=20; };
+	Mats { mat=Ore; tex=ore; a=20;};
+	Mats { mat=Ice; tex=ice3; a=20; };
+	Mats { mat=Snow; tex=snow1; a=20; };
+	Mats { mat=Ice; tex=ice3; };
 	Mats { mat=Rock; tex=rock; };
 	Mats { mat=Tunnel; tex=tunnel; };
 	Mats { mat=Earth; tex=earth_dry; };
@@ -34,14 +39,15 @@ overlay MatFill {
 
 overlay RockFill {
 	overlay { mat=Rock; tex=rock; loosebounds=1;
+		overlay { mat=Tunnel; tex=tunnel; algo=bozo; a=5; turbulence=5000; loosebounds=1; };
 		overlay { mat=Rock; tex=rock_cracked; algo=bozo; a=6; turbulence=5000; loosebounds=1; };
 		overlay { mat=Granite; tex=granite; algo=bozo; a=14; turbulence=5000; loosebounds=1; };
-		overlay { mat=Tunnel; tex=tunnel; algo=bozo; a=5; turbulence=5000; loosebounds=1; };
+		overlay { mat=Ice; tex=ice3; algo=bozo; a=8; turbulence=5000; loosebounds=1; };
 		overlay { mat=Tunnel; tex=tunnel; algo=bozo; a=5; turbulence=5000; loosebounds=1; };
 	};
 };
 
-map Summit {
+map Cavern {
 	// Basic shape.
 	overlay {
 		y=95; hgt=20;

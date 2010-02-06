@@ -1,5 +1,5 @@
 [Head]
-Icon=26
+Icon=24
 Title=Cavern
 Version=4,10,0,0
 MaxPlayer=12
@@ -20,7 +20,7 @@ Crew=CLNK=1
 Crew=CLNK=1
 
 [Landscape]
-InEarth=ROCK=1;GOLD=1;DYNA=3;LOAM=3
+InEarth=ROCK=1;DYNA=3;LOAM=3
 InEarthLevel=80,0,0,100
 Sky=Clouds1
 MapWidth=100,0,64,10000
@@ -29,9 +29,10 @@ SkyScrollMode=2
 NewStyleLandscape=2
 
 [Weather]
-Climate=0,0,0,100
-YearSpeed=20,10,0,100
+Climate=100,0,0,100
+StartSeason=0,0,0,100
+YearSpeed=0,0,0,100
 Wind=1,100,-100,100
 
 [Animals]
-Nest=LOAM=50;DYNA=40
+Nest=LOAM=50;DYNA=20

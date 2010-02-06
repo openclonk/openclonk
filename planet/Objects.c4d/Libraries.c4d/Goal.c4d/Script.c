@@ -59,6 +59,8 @@ protected func InitializePlayer(int plr)
 
 global func FxIntGoalCheckTimer(object trg, int num, int time)
 {
+	if (!time)
+		return true;
   var curr_goal = EffectVar(0, trg, num);
   // Check current goal object
   if (curr_goal && (curr_goal->GetCategory() & C4D_Goal))
