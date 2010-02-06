@@ -24,7 +24,7 @@ protected func Initialize()
 
 protected func HoldingEnabled() { return true; }
 
-protected func ControlUse(object pClonk, ix, iy)
+protected func ControlUseStart(object pClonk, ix, iy)
 {
 	Amount=0;
 	return 1;
@@ -48,7 +48,7 @@ public func ControlUseHolding(object pClonk, ix, iy)
 	 	{
 	 	Amount+=2; 				//Air is sucked in.
 	 
-	 	Message("Loading...|%3.0d",pClonk,(Amount*100)/MaxCap);	
+	 	Message("Loading...|%3.0d",pClonk,(Amount*99)/MaxCap);	
 	 
 	 	CreateParticle("Air",
 					SX,SY,
