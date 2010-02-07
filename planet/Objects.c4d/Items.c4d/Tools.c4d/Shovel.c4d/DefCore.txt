@@ -6,11 +6,11 @@ MaxUserSelect=5
 Value=16
 Mass=20
 Width=8
-Height=16
-Offset=-4,-8
-Vertices=2
-VertexX=-4,3
-VertexY=-4,3
+Height=22
+Offset=-4,-11
+Vertices=3
+VertexX=0,0
+VertexY=-9,9
 VertexFriction=50,50
 Picture=10,10,54,54
 Components=WOOD=1;METL=1;

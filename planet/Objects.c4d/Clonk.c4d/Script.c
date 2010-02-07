@@ -1118,6 +1118,9 @@ func FxIntDigStart(pTarget, iNumber, fTmp)
 	// Update carried items
 	UpdateAttach();
 
+  // Sound
+	Digging();
+
 	EffectVar(17, pTarget, iNumber) = GetDirection();
 	var iTurnPos = 0;
 	if(EffectVar(17, pTarget, iNumber) == COMD_Right) iTurnPos = 1200;
@@ -1137,16 +1140,29 @@ func FxIntDigStop(pTarget, iNumber, fTmp)
 
 	// Update carried items
 	UpdateAttach();
-
+	
 	SetPhysical("Dig", EffectVar(10, pTarget, iNumber), 2);
 }
 
 func FxIntDigTimer(pTarget, iNumber, iTime)
 {
-	if(iTime % 36 == 0) Digging();
+	if(iTime % 36 == 0)
+	{
+		Digging();
+	}
+	if( (iTime-18) % 36 == 0)
+	{
+		var pShovel = FindObject(Find_ID(SHVL), Find_Container(this));
+		if(!pShovel || !pShovel->IsDigging())
+		{
+			SetAction("Walk");
+			SetComDir(COMD_Stop);
+			return -1;
+		}
+	}
 	// Adjust dig speed
-	var iSpeed = 50+Cos(GetAnimationPosition(EffectVar(1, pTarget, iNumber))*180/GetAnimationLength("Dig"), 50);
-	SetPhysical("Dig", EffectVar(10, pTarget, iNumber)/75*iSpeed, 2);
+//	var iSpeed = 50+Cos(GetAnimationPosition(EffectVar(1, pTarget, iNumber))*180/GetAnimationLength("Dig"), 50);
+//	SetPhysical("Dig", EffectVar(10, pTarget, iNumber)/75*iSpeed, 2);
 	// Check wether the clonk wants to turn (Not when he wants to stop)
   if(EffectVar(17, pTarget, iNumber) != GetDirection())
 	{
@@ -1166,6 +1182,11 @@ func FxIntDigTimer(pTarget, iNumber, iTime)
 		if(EffectVar(4, pTarget, iNumber) == 0)
 			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
 	}
+}
+
+func FxIntDigStopDig(pTarget, iNumber)
+{
+	EffectVar(5, pTarget, iNumber) = 1;
 }
 
 func StartDead()
