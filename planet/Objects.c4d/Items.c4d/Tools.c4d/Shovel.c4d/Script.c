@@ -5,8 +5,12 @@ private func Hit()
   Sound("WoodHit");
 }
 
-public func GetCarryMode() { return CARRY_Back; }
-public func GetCarryTransform() { return Trans_Scale(2000); }
+public func GetCarryMode(clonk) { return CARRY_Back; }
+public func GetCarryTransform(clonk)
+{
+	if(clonk->~GetAction() == "Dig") return Trans_Mul(Trans_Scale(2000), Trans_Translate(0,1000,0));
+	else return Trans_Scale(2000);
+}
 
 public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "pos_hand1"; }
 

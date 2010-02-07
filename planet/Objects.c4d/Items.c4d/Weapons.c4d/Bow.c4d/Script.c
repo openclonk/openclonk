@@ -72,13 +72,11 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 	// angle
 	var angle = Angle(0,0,x,y);
-	// adapt aiming animation
-	// ...
-	if(aimtime > 0) aimtime--;
-
+	angle = Normalize(angle,-180);
 
 	if(aimtime > 0)
 	{
+		aimtime--;
 		if(aimtime == 1)
 		{
 			// Stop loading and start aiming
@@ -88,12 +86,17 @@ public func ControlUseHolding(object clonk, int x, int y)
 			clonk->SetAnimationPosition(iAnimLoad, Anim_Const(2000*Abs(90)/180));
 		}
 	}
-	else if(!ClonkAimLimit(clonk,angle))
-		;
-	else
+	else 
 	{
+		// Turn clonk if aiming in the other direction and he isn't moving
+		if(!ClonkAimLimit(clonk,angle))
+			if(clonk->GetComDir() == COMD_Stop && !clonk->GetXDir())
+			{
+				if(clonk->GetDir() == 1 && angle < 0) clonk->SetDir(0);
+				else if(clonk->GetDir() == 0 && angle > 0) clonk->SetDir(1);
+			}
+		if(Abs(angle) > 160) angle = 160;
 		// Adjust the aiming position
-		if(angle > 180) angle -= 360;
 		var pos = clonk->GetAnimationPosition(iAnimLoad);
 		pos += BoundBy(2000*Abs(angle)/180-pos, -100, 100);
 		clonk->SetAnimationPosition(iAnimLoad, Anim_Const(pos));
@@ -109,7 +112,8 @@ protected func ControlUseStop(object clonk, int x, int y)
 	clonk->DetachMesh(iArrowMesh);
 
 	// "canceled"	
-	var angle = Angle(0,0,x,y);
+	var angle = clonk->GetAnimationPosition(iAnimLoad)*180/2000;
+	if(!clonk->GetDir()) angle = 360-angle;
 	if(aimtime > 0 || !ClonkAimLimit(clonk,angle))
 	{
 		ResetClonk(clonk);
@@ -188,7 +192,7 @@ private func ClonkCanAim(object clonk)
 
 func FxIntWalkSlowStart(pTarget, iNumber, fTmp)
 {
-//	pTarget->SetPhysical("Walk", 30000, PHYS_StackTemporary);
+	pTarget->SetPhysical("Walk", 30000, PHYS_StackTemporary);
 }
 
 func FxIntWalkSlowStop(pTarget, iNumber)

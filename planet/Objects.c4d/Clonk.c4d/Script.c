@@ -387,7 +387,7 @@ func DoUpdateAttach(bool sec)
 {
 	var obj = GetSelectedItem(sec);
 	if(!obj) return;
-	var iAttachMode = obj->~GetCarryMode();
+	var iAttachMode = obj->~GetCarryMode(this);
 	if(iAttachMode == CARRY_None) return;
 
 	if(iHandMesh[sec])
@@ -397,8 +397,8 @@ func DoUpdateAttach(bool sec)
 	}
 
 	var bone = "main";
-	if(obj->~GetCarryBone()) bone = obj->~GetCarryBone();
-	var trans = obj->~GetCarryTransform();
+	if(obj->~GetCarryBone()) bone = obj->~GetCarryBone(this);
+	var trans = obj->~GetCarryTransform(this);
 
 	var pos_hand = "pos_hand2";
 	if(sec) pos_hand = "pos_hand1";
@@ -536,25 +536,26 @@ func GetWalkAnimationPosition(string anim)
 		return Anim_AbsX(0, 0, GetAnimationLength(anim), 50);
 }
 
+local iTurnAction;
+
 func FxIntWalkStart(pTarget, iNumber, fTmp)
 {
 	if(fTmp) return;
 	// Always start in Stand for now... should maybe fade properly from previous animation instead
 	var anim = "Stand";  //GetCurrentWalkAnimation();
 	EffectVar(0, pTarget, iNumber) = anim;
-	EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Const(1000));
+	EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
 
-	EffectVar(17, pTarget, iNumber) = GetComDir(); // OldDir
-	if(GetComDir() == COMD_Stop)
-	{
-		if(GetDir()) EffectVar(17, pTarget, iNumber) = COMD_Right;
-		else EffectVar(17, pTarget, iNumber) = COMD_Left;
-	}
+	EffectVar(17, pTarget, iNumber) = GetDirection();
 	var iTurnPos = 0;
-	if(EffectVar(17, pTarget, iNumber) = COMD_Right) iTurnPos = 1200;
-	EffectVar(3, pTarget, iNumber) = PlayAnimation("TurnRoot", 1, Anim_Const(iTurnPos), Anim_Const(1000));
+	if(EffectVar(17, pTarget, iNumber) == COMD_Right) iTurnPos = 1200;
+
+	if(iTurnAction == nil || GetAnimationPosition(iTurnAction) == nil)
+		iTurnAction = PlayAnimation("TurnRoot", 1, Anim_Const(iTurnPos), Anim_Const(1000));
+	else { SetAnimationPosition(iTurnAction, Anim_Const(iTurnPos)); }
+
 	EffectVar(4, pTarget, iNumber) = 0;
 }
 
@@ -563,8 +564,7 @@ func FxIntWalkStop(pTarget, iNumber, fTmp)
 	if(fTmp) return;
 
 	// Remove all
-	StopAnimation(GetRootAnimation(5));
-	StopAnimation(EffectVar(3, pTarget, iNumber));
+//	StopAnimation(GetRootAnimation(5));
 
 	// Update carried items
 	UpdateAttach();
@@ -576,7 +576,7 @@ func FxIntWalkTimer(pTarget, iNumber)
 	{
 		EffectVar(4, pTarget, iNumber)--;
 		if(EffectVar(4, pTarget, iNumber) == 0)
-			SetAnimationPosition(EffectVar(3, pTarget, iNumber), Anim_Const(1200*GetDir()));
+			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
 	}
 	var anim = GetCurrentWalkAnimation();
 	if(anim != EffectVar(0, pTarget, iNumber) && !EffectVar(4, pTarget, iNumber))
@@ -585,27 +585,40 @@ func FxIntWalkTimer(pTarget, iNumber)
 		EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
 	// Check wether the clonk wants to turn (Not when he wants to stop)
-  if(EffectVar(17, pTarget, iNumber) != GetComDir() && GetComDir()!= COMD_Stop)
+	if(EffectVar(17, pTarget, iNumber) != GetDirection())
 	{
 		var iTurnTime = 10;
-//		if(Distance(0,0,GetXDir(),GetYDir()) < 10)
+//		if(Distance(0,0,GetXDir(),GetYDir()) < 10) //TODO Run turn animation
 //		{
 		if(EffectVar(17, pTarget, iNumber) == COMD_Right)
 		{
 			EffectVar(0, pTarget, iNumber) = PlayAnimation("StandTurn", 5, Anim_Linear(0, 0, 2000, iTurnTime, ANIM_Hold), Anim_Linear(0, 0, 1000, 2, ANIM_Remove));
-			SetAnimationPosition(EffectVar(3, pTarget, iNumber), Anim_Linear(1200, 1200, 0, iTurnTime));
+			SetAnimationPosition(iTurnAction, Anim_Linear(1200, 1200, 0, iTurnTime, ANIM_Hold));
 		}
 		else
 		{
 			EffectVar(0, pTarget, iNumber) = PlayAnimation("StandTurn", 5, Anim_Linear(3000, 3000, 5000, iTurnTime, ANIM_Hold), Anim_Linear(0, 0, 1000, 2, ANIM_Remove));
-			SetAnimationPosition(EffectVar(3, pTarget, iNumber), Anim_Linear(0, 0, 1200, iTurnTime));
+			SetAnimationPosition(iTurnAction, Anim_Linear(0, 0, 1200, iTurnTime, ANIM_Hold));
 		}
 //		}
 		//else
 		//	EffectVar(0, pTarget, iNumber) = PlayAnimation("RunTurn", 5, Anim_Linear(0, 0, 2400, iTurnTime, ANIM_Hold), Anim_Linear(0, 0, 1000, 2, ANIM_Remove));
 		// Save new ComDir
-		EffectVar(17, pTarget, iNumber) = GetComDir();
+		EffectVar(17, pTarget, iNumber) = GetDirection();
 		EffectVar(4, pTarget, iNumber) = iTurnTime;
+	}
+}
+
+func GetDirection()
+{
+	// Get direction from ComDir
+	if(ComDirLike(GetComDir(), COMD_Right)) return COMD_Right;
+	else if(ComDirLike(GetComDir(), COMD_Left)) return COMD_Left;
+	// if ComDir hasn't a direction, use GetDir
+	else
+	{
+		if(GetDir()==DIR_Right) return COMD_Right;
+		else return COMD_Left;
 	}
 }
 
@@ -749,12 +762,31 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 func StartScale()
 {
 	// TODO: Tweak animation speed
-	PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Const(1000));
+	PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	SetAnimationPosition(iTurnAction, Anim_Const(1800*GetDir()));
 }
 
 func StopScale()
 {
-	StopAnimation(GetRootAnimation(5));
+//	StopAnimation(GetRootAnimation(5));
+	SetAnimationPosition(iTurnAction, Anim_Const(1200*GetDir()));
+}
+
+/* Jump */
+
+func StartJump()
+{
+	// TODO: Tweak animation speed
+	PlayAnimation("Jump", 5, Anim_Linear(0, 0, GetAnimationLength("Jump"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	// Update carried items
+	UpdateAttach();
+}
+
+func StopJump()
+{
+//	StopAnimation(GetRootAnimation(5));
+  // Update carried items
+	UpdateAttach();
 }
 
 /* Hangle */
@@ -784,14 +816,19 @@ func FxIntHangleStart(pTarget, iNumber, fTmp)
 	// 7: Whether the HangleStand animation is shown front-facing or back-facing
 	// 10: Previous Hangle physical
 
-	EffectVar(1, pTarget, iNumber) = PlayAnimation("HangleStand", 5, Anim_Linear(0, 0, 2000, 100, ANIM_Loop), Anim_Const(1000));
+	EffectVar(1, pTarget, iNumber) = PlayAnimation("HangleStand", 5, Anim_Linear(0, 0, 2000, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+
+	EffectVar(20, pTarget, iNumber) = GetDirection();
+	EffectVar(21, pTarget, iNumber) = 0;
+	SetAnimationPosition(iTurnAction, Anim_Const(1800*(GetDirection()==COMD_Right)));
 }
 
 func FxIntHangleStop(pTarget, iNumber, iReasonm, fTmp)
 {
 	SetPhysical("Hangle", EffectVar(10, pTarget, iNumber), 2);
 	if(fTmp) return;
-	StopAnimation(GetRootAnimation(5));
+	SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
+//	StopAnimation(GetRootAnimation(5));
 }
 
 func FxIntHangleTimer(pTarget, iNumber, iTime)
@@ -855,6 +892,25 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 			EffectVar(1, pTarget, iNumber) = PlayAnimation("Hangle", 5, Anim_Const(begin), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		}
 	}
+	// Check wether the clonk wants to turn (Not when he wants to stop)
+  if(EffectVar(20, pTarget, iNumber) != GetDirection())
+	{
+		var iTurnTime = 10;
+		if(EffectVar(20, pTarget, iNumber) == COMD_Right)
+			SetAnimationPosition(iTurnAction, Anim_Linear(1800, 1800, 0, iTurnTime, ANIM_Hold));
+		else
+			SetAnimationPosition(iTurnAction, Anim_Linear(0, 0, 1800, iTurnTime, ANIM_Hold));
+		// Save new ComDir
+		EffectVar(20, pTarget, iNumber) = GetDirection();
+		EffectVar(21, pTarget, iNumber) = iTurnTime;
+	}
+	// Turning
+	if(EffectVar(21, pTarget, iNumber))
+	{
+		EffectVar(21, pTarget, iNumber)--;
+		if(EffectVar(21, pTarget, iNumber) == 0)
+			SetAnimationPosition(iTurnAction, Anim_Const(1800*(GetDirection()==COMD_Right)));
+	}
 }
 
 /* Swim */
@@ -877,7 +933,7 @@ func FxIntSwimStart(pTarget, iNumber, fTmp)
 	if(fTmp) return;
 
 	EffectVar(0, pTarget, iNumber) = "SwimStand";
-	EffectVar(1, pTarget, iNumber) = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Const(1000));
+	EffectVar(1, pTarget, iNumber) = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 /*
 	for(var i = 0; i < GetLength(CLNK_SwimStates); i++)
   	AnimationPlay(CLNK_SwimStates[i], 0);
@@ -892,12 +948,15 @@ func FxIntSwimStart(pTarget, iNumber, fTmp)
 	EffectVar(7, pTarget, iNumber) = GetDir(); // OldDir
 	EffectVar(8, pTarget, iNumber) = 0; // Turn Phase
 	AnimationSetState("SwimStand", 0, 1000);*/
+
+	EffectVar(20, pTarget, iNumber) = GetDirection();
+	EffectVar(21, pTarget, iNumber) = 0;
 }
 
 func FxIntSwimStop(pTarget, iNumber, iReason, fTmp)
 {
 	if(fTmp) return;
-	StopAnimation(GetRootAnimation(5));
+//	StopAnimation(GetRootAnimation(5));
 }
 
 func FxIntSwimTimer(pTarget, iNumber, iTime)
@@ -953,6 +1012,25 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 		// TODO: Shouldn't weight go by sin^2 or cos^2 instead of linear in angle?
 		var weight = 1000*EffectVar(4, pTarget, iNumber)/180;
 		SetAnimationWeight(EffectVar(1, pTarget, iNumber), Anim_Const(1000 - weight));
+	}
+	// Check wether the clonk wants to turn (Not when he wants to stop)
+  if(EffectVar(20, pTarget, iNumber) != GetDirection())
+	{
+		var iTurnTime = 10;
+		if(EffectVar(20, pTarget, iNumber) == COMD_Right)
+			SetAnimationPosition(iTurnAction, Anim_Linear(1200, 1200, 0, iTurnTime, ANIM_Hold));
+		else
+			SetAnimationPosition(iTurnAction, Anim_Linear(0, 0, 1200, iTurnTime, ANIM_Hold));
+		// Save new ComDir
+		EffectVar(20, pTarget, iNumber) = GetDirection();
+		EffectVar(21, pTarget, iNumber) = iTurnTime;
+	}
+	// Turning
+	if(EffectVar(21, pTarget, iNumber))
+	{
+		EffectVar(21, pTarget, iNumber)--;
+		if(EffectVar(21, pTarget, iNumber) == 0)
+			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
 	}
 }
 
@@ -1023,23 +1101,77 @@ func FxIntScaleTimer(pTarget, iNumber, iTime)
 
 func StartDigging()
 {
-	Digging();
-	UpdateAttach();
+	if(!GetEffect("IntDig", this))
+		AddEffect("IntDig", this, 1, 1, this);
 }
 
 func StopDigging()
 {
-	UpdateAttach();
+	if(GetAction() != "Dig") RemoveEffect("IntDig", this);
 }
 
-func StartJump()
+func FxIntDigStart(pTarget, iNumber, fTmp)
 {
+	if(fTmp) return;
+	EffectVar(1, pTarget, iNumber) = PlayAnimation("Dig", 5, Anim_Linear(0, 0, GetAnimationLength("Dig"), 36, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+
 	// Update carried items
 	UpdateAttach();
+
+	EffectVar(17, pTarget, iNumber) = GetDirection();
+	var iTurnPos = 0;
+	if(EffectVar(17, pTarget, iNumber) == COMD_Right) iTurnPos = 1200;
+
+	if(iTurnAction == nil || GetAnimationPosition(iTurnAction) == nil)
+		iTurnAction = PlayAnimation("TurnRoot", 1, Anim_Const(iTurnPos), Anim_Const(1000));
+	else { SetAnimationPosition(iTurnAction, Anim_Const(iTurnPos)); }
+
+	EffectVar(4, pTarget, iNumber) = 0;
+
+	EffectVar(10, pTarget, iNumber) = GetPhysical("Dig");
 }
 
-func EndJump()
+func FxIntDigStop(pTarget, iNumber, fTmp)
 {
+	if(fTmp) return;
+
+	// Update carried items
+	UpdateAttach();
+
+	SetPhysical("Dig", EffectVar(10, pTarget, iNumber), 2);
+}
+
+func FxIntDigTimer(pTarget, iNumber, iTime)
+{
+	if(iTime % 36 == 0) Digging();
+	// Adjust dig speed
+	var iSpeed = 50+Cos(GetAnimationPosition(EffectVar(1, pTarget, iNumber))*180/GetAnimationLength("Dig"), 50);
+	SetPhysical("Dig", EffectVar(10, pTarget, iNumber)/75*iSpeed, 2);
+	// Check wether the clonk wants to turn (Not when he wants to stop)
+  if(EffectVar(17, pTarget, iNumber) != GetDirection())
+	{
+		var iTurnTime = 10;
+		if(EffectVar(17, pTarget, iNumber) == COMD_Right)
+			SetAnimationPosition(iTurnAction, Anim_Linear(1200, 1200, 0, iTurnTime, ANIM_Hold));
+		else
+			SetAnimationPosition(iTurnAction, Anim_Linear(0, 0, 1200, iTurnTime, ANIM_Hold));
+		// Save new ComDir
+		EffectVar(17, pTarget, iNumber) = GetDirection();
+		EffectVar(4, pTarget, iNumber) = iTurnTime;
+	}
+	// Turning
+	if(EffectVar(4, pTarget, iNumber))
+	{
+		EffectVar(4, pTarget, iNumber)--;
+		if(EffectVar(4, pTarget, iNumber) == 0)
+			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
+	}
+}
+
+func StartDead()
+{
+	PlayAnimation("Dead", 5, Anim_Linear(0, 0, GetAnimationLength("Dead"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	SetAnimationPosition(iTurnAction, Anim_Const(1800*GetDir()));
 	// Update carried items
 	UpdateAttach();
 }
@@ -1061,7 +1193,6 @@ Walk = {
 	Y = 0,
 	Wdt = 8,
 	Hgt = 20,
-	NextAction = "Walk",
 	StartCall = "StartWalk",
 	AbortCall = "StopWalk",
 	InLiquidAction = "Swim",
@@ -1072,7 +1203,6 @@ Scale = {
 	Procedure = DFA_SCALE,
   Attach = CNAT_MultiAttach,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 1,
 	Delay = 0,
 	X = 0,
@@ -1089,7 +1219,6 @@ Tumble = {
 	Name = "Tumble",
 	Procedure = DFA_FLIGHT,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 16,
 	Delay = 1,
 	X = 0,
@@ -1107,9 +1236,8 @@ Dig = {
 	Name = "Dig",
 	Procedure = DFA_DIG,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 16,
-	Delay = 15*3,
+	Delay = 15*3*0,
 	X = 0,
 	Y = 60,
 	Wdt = 8,
@@ -1117,7 +1245,6 @@ Dig = {
 	NextAction = "Dig",
 	StartCall = "StartDigging",
 	AbortCall = "StopDigging",
-	Animation = "Dig",
 	DigFree = 11,
 	InLiquidAction = "Swim",
 },
@@ -1126,7 +1253,6 @@ Bridge = {
 	Name = "Bridge",
 	Procedure = DFA_THROW,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 16,
 	Delay = 1,
 	X = 0,
@@ -1142,7 +1268,6 @@ Swim = {
 	Name = "Swim",
 	Procedure = DFA_SWIM,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 1,
 	Delay = 0,
 	X = 0,
@@ -1159,7 +1284,6 @@ Hangle = {
 	Name = "Hangle",
 	Procedure = DFA_HANGLE,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 1,
 	Delay = 0,
 	X = 0,
@@ -1168,7 +1292,6 @@ Hangle = {
 	Hgt = 20,
 	OffX = 0,
 	OffY = 3,
-	NextAction = "Hangle",
 	StartCall = "StartHangle",
 	AbortCall = "StopHangle",
 	InLiquidAction = "Swim",
@@ -1178,56 +1301,23 @@ Jump = {
 	Name = "Jump",
 	Procedure = DFA_FLIGHT,
 	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 3,
+	Length = 1,
+	Delay = 0,
 	X = 0,
 	Y = 120,
 	Wdt = 8,
 	Hgt = 20,
-	NextAction = "Hold",
 	InLiquidAction = "Swim",
 	PhaseCall = "CheckStuck",
-	Animation = "Jump",
+//	Animation = "Jump",
 	StartCall = "StartJump",
-	AbortCall = "EndJump",
-},
-KneelDown = {
-	Prototype = Action,
-	Name = "KneelDown",
-	Procedure = DFA_KNEEL,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 4,
-	Delay = 1,
-	X = 0,
-	Y = 140,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "KneelUp",
-	Animation = "KneelDown",
-},
-KneelUp = {
-	Prototype = Action,
-	Name = "KneelUp",
-	Procedure = DFA_KNEEL,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 4,
-	Delay = 1,
-	X = 64,
-	Y = 140,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Walk",
-	Animation = "KneelDown",
+	AbortCall = "StopJump",
 },
 Dive = {
 	Prototype = Action,
 	Name = "Dive",
 	Procedure = DFA_FLIGHT,
 	Directions = 2,
-	FlipDir = 1,
 	Length = 8,
 	Delay = 4,
 	X = 0,
@@ -1239,65 +1329,18 @@ Dive = {
 	InLiquidAction = "Swim",
 	PhaseCall = "CheckStuck",
 },
-FlatUp = {
-	Prototype = Action,
-	Name = "FlatUp",
-	Procedure = DFA_KNEEL,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 1,
-	X = 0,
-	Y = 180,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "KneelUp",
-	ObjectDisabled = 1,
-},
-Throw = {
-	Prototype = Action,
-	Name = "Throw",
-	Procedure = DFA_THROW,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 1,
-	X = 0,
-	Y = 200,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Walk",
-	InLiquidAction = "Swim",
-},
-Punch = {
-	Prototype = Action,
-	Name = "Punch",
-	Procedure = DFA_FIGHT,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 2,
-	X = 0,
-	Y = 220,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Fight",
-	EndCall = "Punching",
-	ObjectDisabled = 1,
-},
 Dead = {
 	Prototype = Action,
 	Name = "Dead",
 	Directions = 2,
-	FlipDir = 1,
 	X = 0,
 	Y = 240,
 	Wdt = 8,
 	Hgt = 20,
-	Length = 20,
-	Delay = 1,
+	Length = 1,
+	Delay = 0,
 	NextAction = "Hold",
-	Animation = "Dead",
+	StartCall = "StartDead",
 	NoOtherAction = 1,
 	ObjectDisabled = 1,
 },
@@ -1348,113 +1391,7 @@ Push = {
 	NextAction = "Push",
 	InLiquidAction = "Swim",
 },
-Chop = {
-	Prototype = Action,
-	Name = "Chop",
-	Procedure = DFA_CHOP,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 3,
-	X = 128,
-	Y = 160,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Chop",
-	StartCall = "Chopping",
-	InLiquidAction = "Swim",
-},
-Fight = {
-	Prototype = Action,
-	Name = "Fight",
-	Procedure = DFA_FIGHT,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 7,
-	Delay = 4,
-	X = 128,
-	Y = 180,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Fight",
-	StartCall = "Fighting",
-	ObjectDisabled = 1,
-},
-GetPunched = {
-	Prototype = Action,
-	Name = "GetPunched",
-	Procedure = DFA_FIGHT,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 3,
-	X = 128,
-	Y = 200,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Fight",
-	ObjectDisabled = 1,
-},
-Build = {
-	Prototype = Action,
-	Name = "Build",
-	Procedure = DFA_BUILD,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 2,
-	X = 128,
-	Y = 220,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Build",
-	StartCall = "Building",
-	InLiquidAction = "Swim",
-},
-RideThrow = {
-	Prototype = Action,
-	Name = "RideThrow",
-	Procedure = DFA_ATTACH,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 1,
-	X = 128,
-	Y = 240,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Ride",
-	InLiquidAction = "Swim",
-},
-Process = {
-	Prototype = Action,
-	Name = "Process",
-	Procedure = DFA_THROW,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 3,
-	X = 0,
-	Y = 260,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Process",
-	EndCall = "Processing",
-},
-Drink = {
-	Prototype = Action,
-	Name = "Drink",
-	Procedure = DFA_THROW,
-	Directions = 2,
-	FlipDir = 1,
-	Length = 8,
-	Delay = 3,
-	X = 128,
-	Y = 260,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Walk",
-},  }, def);
+}, def);
   SetProperty("Name", "Clonk", def);
 
   // Set perspective
