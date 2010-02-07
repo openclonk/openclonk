@@ -1400,6 +1400,29 @@ void C4Def::ResetIncludeDependencies()
 	if (!fRankSymbolsOwned) { pRankSymbols = NULL; iNumRankSymbols = 0; }
 	}
 
+C4PropList *C4Def::GetActionByName(const char *actname)
+{
+	if (!actname) return NULL;
+	C4String * actname_str = Strings.RegString(actname);
+	actname_str->IncRef();
+	C4PropList *r = GetActionByName(actname_str);
+	actname_str->DecRef();
+	return r;
+}
+
+C4PropList *C4Def::GetActionByName(C4String *actname)
+{
+	assert(actname);
+	// If we get the null string or ActIdle by name, return NULL action
+	if (!actname || actname == Strings.P[P_Idle]) return NULL;
+	// otherwise, query actmap
+	C4Value ActMap; GetProperty(Strings.P[P_ActMap], ActMap);
+	if (!ActMap.getPropList()) return false;
+	C4Value Action; ActMap.getPropList()->GetProperty(actname, Action);
+	if (!Action.getPropList()) return false;
+	return Action.getPropList();
+}
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

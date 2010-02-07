@@ -305,6 +305,9 @@ class C4Def: public C4PropList
 
 		void IncludeDefinition(C4Def *pIncludeDef); // inherit components from other definition
 		void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
+
+		C4PropList *GetActionByName(const char *actname);
+		C4PropList *GetActionByName(C4String *actname);
   };
 
 class C4DefList

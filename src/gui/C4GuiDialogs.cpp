@@ -66,16 +66,20 @@ void FrameDecoration::Clear()
 bool FrameDecoration::SetFacetByAction(C4Def *pOfDef, C4TargetFacet &rfctTarget, const char *szFacetName)
 	{
 	// get action
-/*FIXME	StdStrBuf sActName;
+	StdStrBuf sActName;
 	sActName.Format("FrameDeco%s", szFacetName);
-	int cnt; C4ActionDef *pAct = pOfDef->ActMap;
-  for (cnt=pOfDef->ActNum; cnt; --cnt,++pAct)
-    if (sActName == pAct->Name)
-			break;
-	if (!cnt) return false;
+	C4PropList *act = pOfDef->GetActionByName(sActName.getData());
+	if (!act) return false;
 	// set facet by it
-	rfctTarget.Set(pOfDef->Graphics.GetBitmap(), pAct->Facet.x, pAct->Facet.y, pAct->Facet.Wdt, pAct->Facet.Hgt, pAct->Facet.tx, pAct->Facet.ty);
-*/	return true;
+	int32_t x = act->GetPropertyInt(P_X);
+	int32_t y = act->GetPropertyInt(P_Y);
+	int32_t wdt = act->GetPropertyInt(P_Wdt);
+	int32_t hgt = act->GetPropertyInt(P_Hgt);
+	int32_t tx = act->GetPropertyInt(P_OffX);
+	int32_t ty = act->GetPropertyInt(P_OffY);
+	if (!wdt || !hgt) return false;
+	rfctTarget.Set(pOfDef->Graphics.GetBitmap(), x, y, wdt, hgt, tx, ty);
+	return true;
 	}
 
 bool FrameDecoration::SetByDef(C4ID idSourceDef)
