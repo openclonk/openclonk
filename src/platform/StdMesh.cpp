@@ -1005,11 +1005,6 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 
 			child->Parent = parent;
 			parent->Children.push_back(child);
-
-			// Apply parent transformation			
-			child->Transformation = parent->Transformation * child->Transformation;
-			// Update inverse
-			child->InverseTransformation = StdMeshTransformation::Inverse(child->Transformation);
 		}
 
 		// Fill master bone table in hierarchical order:
@@ -1133,6 +1128,20 @@ void StdMesh::InitXML(const char* filename, const char* xml_data, StdMeshSkeleto
 				// actual bones are defined in the skeleton file.
 				mesh.Error(StdStrBuf("Mesh has bone assignments, but no skeleton"), boneassignments_elem);
 			}
+		}
+	}
+
+	// Apply parent transformation to each bone transformation. We need to
+	// do this late since animation keyframe computation needs the bone
+	// transformations, not bone+parent.
+	for(unsigned int i = 0; i < Bones.size(); ++i)
+	{
+		if(Bones[i]->Parent)
+		{
+			// Apply parent transformation			
+			Bones[i]->Transformation = Bones[i]->Parent->Transformation * Bones[i]->Transformation;
+			// Update inverse
+			Bones[i]->InverseTransformation = StdMeshTransformation::Inverse(Bones[i]->Transformation);
 		}
 	}
 }
