@@ -3822,6 +3822,24 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 			return true;
 		}
 	}
+	// portrait spec?
+	else if (SEqual2(szSpec, "Portrait:"))
+	{
+		szSpec += 9;
+		C4ID idPortrait;
+		const char *szPortraitName = C4Portrait::EvaluatePortraitString(szSpec, idPortrait, C4ID::None, &dwClr);
+		if (idPortrait == C4ID::None) return false;
+		C4Def *pPortraitDef = ::Definitions.ID2Def(idPortrait);
+		if (!pPortraitDef || !pPortraitDef->Portraits) return false;
+		C4DefGraphics *pDefPortraitGfx = pPortraitDef->Portraits->Get(szPortraitName);
+		if (!pDefPortraitGfx) return false;
+		C4PortraitGraphics *pPortraitGfx = pDefPortraitGfx->IsPortrait();
+		if (!pPortraitGfx) return false;
+		C4Surface *sfcPortrait = pPortraitGfx->GetBitmap(dwClr);
+		if (!sfcPortrait) return false;
+		fctTarget.Set(sfcPortrait, 0, 0, sfcPortrait->Wdt, sfcPortrait->Hgt);
+		return true;
+	}
 	else
 	{
 		// regular ID? -> Draw def
@@ -3846,26 +3864,7 @@ bool C4Game::DrawTextSpecImage(C4FacetSurface &fctTarget, const char *szSpec, ui
 			}
 		}
 	}
-	/*
-	// portrait spec?
-	if (SEqual2(szSpec, "Portrait:"))
-		{
-		szSpec += 9;
-		C4ID idPortrait;
-		const char *szPortraitName = C4Portrait::EvaluatePortraitString(szSpec, idPortrait, C4ID::None, &dwClr);
-		if (idPortrait == C4ID::None) return false;
-		C4Def *pPortraitDef = ::Definitions.ID2Def(idPortrait);
-		if (!pPortraitDef || !pPortraitDef->Portraits) return false;
-		C4DefGraphics *pDefPortraitGfx = pPortraitDef->Portraits->Get(szPortraitName);
-		if (!pDefPortraitGfx) return false;
-		C4PortraitGraphics *pPortraitGfx = pDefPortraitGfx->IsPortrait();
-		if (!pPortraitGfx) return false;
-		C4Surface *sfcPortrait = pPortraitGfx->GetBitmap(dwClr);
-		if (!sfcPortrait) return false;
-		fctTarget.Set(sfcPortrait, 0, 0, sfcPortrait->Wdt, sfcPortrait->Hgt);
-		return true;
-		}
-	*/
+
 	// unknown spec
 	return false;
 	}

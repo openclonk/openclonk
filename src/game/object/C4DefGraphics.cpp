@@ -647,38 +647,37 @@ bool C4Portrait::CopyFrom(C4Portrait &rCopy)
 	}
 
 const char *C4Portrait::EvaluatePortraitString(const char *szPortrait, C4ID &rIDOut, C4ID idDefaultID, uint32_t *pdwClrOut)
-	{
-		/* FIXME: Doesn't work with variable length IDs
+{
 	// examine portrait string
-	if (SLen(szPortrait)>6 && szPortrait[4]==':' && szPortrait[5]==':')
-		{
+	const char *delim_pos;
+	if ((delim_pos = SSearch(szPortrait, "::")))
+	{
 		// C4ID::PortraitName or C4ID::dwClr::PortraitName
-		rIDOut = C4Id(szPortrait);
+		StdStrBuf portrait_id;
+		portrait_id.Copy(szPortrait, delim_pos-szPortrait-2);
+		rIDOut = C4ID(portrait_id.getData());
 		// color specified?
-		szPortrait+=6;
-		const char *szAfterQColon = SSearch(szPortrait, "::");
-		if (szAfterQColon)
-			{
+		szPortrait = delim_pos;
+		delim_pos = SSearch(szPortrait, "::");
+		if (delim_pos)
+		{
 			char buf[7];
-
-			// szAfterQColon-szPortrait-2 results in long on 64bit,
+			// delim_pos-szPortrait-2 results in long on 64bit,
 			// so the template needs to be specialised
-			SCopy(szPortrait, buf, Min<ptrdiff_t>(6, szAfterQColon-szPortrait-2));
+			SCopy(szPortrait, buf, Min<ptrdiff_t>(6, delim_pos-szPortrait-2));
 			if (pdwClrOut) sscanf(buf, "%x", pdwClrOut);
-			szPortrait = szAfterQColon;
-			}
+			szPortrait = delim_pos;
+		}
 		// return last part of string
 		return szPortrait;
-		}
+	}
 	else
-		{
+	{
 		// PortraitName. ID is info ID
 		rIDOut = idDefaultID;
 		return szPortrait;
-		}
-		*/
-		return szPortrait;
 	}
+}
 
 
 
