@@ -392,7 +392,7 @@ void C4GameMessageList::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 	{
 		// determine zoom: GUI object messages need to be drawn in GUI zoom
 		float msg_zoom = Zoom;
-		if (cmsg->Target && (cmsg->Target->Category & C4D_Foreground))
+		if ((cmsg->Target && (cmsg->Target->Category & C4D_Foreground)) || cmsg->Type == C4GM_Global || cmsg->Type == C4GM_GlobalPlayer)
 			msg_zoom = C4GUI::GetZoom();
 		// draw msg
 		cmsg->Draw(cgo,iPlayer,msg_zoom);

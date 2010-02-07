@@ -5398,6 +5398,7 @@ static bool FnCustomMessage(C4AulContext *ctx, C4String *pMsg, C4Object *pObj, l
 		}
 	// message color
 	if (!dwClr) dwClr = 0xffffffff;
+	else dwClr = (dwClr&0xffffff) | (0xff000000u - uint32_t(dwClr|0xff000000)); // message internals use inverted alpha channel
 	// message type
 	int32_t iType;
 	if (pObj)
