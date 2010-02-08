@@ -45,6 +45,7 @@ class C4PlayerControlDef
 			CDA_Script,          // default: Script callback
 			CDA_Menu,            // open player menu (async)
 			CDA_MenuOK, CDA_MenuCancel, CDA_MenuLeft, CDA_MenuUp, CDA_MenuRight, CDA_MenuDown, // player menu controls (async)
+			CDA_ObjectMenuOK, CDA_ObjectMenuOKAll, CDA_ObjectMenuSelect, CDA_ObjectMenuCancel, CDA_ObjectMenuLeft, CDA_ObjectMenuUp, CDA_ObjectMenuRight, CDA_ObjectMenuDown, // object menu controls (sync)
 			CDA_ZoomIn, CDA_ZoomOut // player viewport control (async)
 			};
 	private:
@@ -70,8 +71,9 @@ class C4PlayerControlDef
 		bool operator ==(const C4PlayerControlDef &cmp) const;
 
 		bool Execute(bool fUp, const C4KeyEventData &rKeyExtraData); // key was triggered - execute and return if handled
-		bool IsAsync() const { return eAction != CDA_None && eAction != CDA_Script; } // true if to be executed directly when triggered
-		bool IsSync() const { return eAction == CDA_Script; } // true if to be executed via control queue
+		bool IsObjectMenuControl() const { return eAction>=CDA_ObjectMenuOK && eAction<=CDA_ObjectMenuDown; }
+		bool IsAsync() const { return eAction != CDA_None && eAction != CDA_Script && !IsObjectMenuControl(); } // true if to be executed directly when triggered
+		bool IsSync() const { return eAction == CDA_Script || IsObjectMenuControl(); } // true if to be executed via control queue
 		bool IsValid() const { return eAction != CDA_None; }
 	};
 
@@ -88,8 +90,8 @@ class C4PlayerControlDefs
 	public:
 		struct CInternalCons
 			{
-			int32_t CON_MenuSelect, CON_MenuEnterAll, CON_MenuEnter, CON_MenuClose;
-			CInternalCons() : CON_MenuSelect(CON_None), CON_MenuEnterAll(CON_None), CON_MenuEnter(CON_None), CON_MenuClose(CON_None) {}
+			int32_t CON_ObjectMenuSelect, CON_ObjectMenuOKAll, CON_ObjectMenuOK, CON_ObjectMenuCancel;
+			CInternalCons() : CON_ObjectMenuSelect(CON_None), CON_ObjectMenuOKAll(CON_None), CON_ObjectMenuOK(CON_None), CON_ObjectMenuCancel(CON_None) {}
 			} InternalCons;
 
 		void UpdateInternalCons();

@@ -369,6 +369,12 @@
 	Action=MenuOK
 	
 	[ControlDef]
+	Identifier=MenuSelect
+	GUIName=MenuSelect
+	GUIDesc=Select specific item
+	Action=MenuSelect
+	
+	[ControlDef]
 	Identifier=MenuCancel
 	GUIName=Cancel
 	GUIDesc=Cancel or close the menu
@@ -397,6 +403,54 @@
 	GUIName=Down
 	GUIDesc=In the menu
 	Action=MenuDown
+	
+	[ControlDef]
+	Identifier=ObjectMenuOK # hardcoded identifier called by engine mouse control - do not change!
+	GUIName=OK
+	GUIDesc=Confirm in menus
+	Action=ObjectMenuOK
+	
+	[ControlDef]
+	Identifier=ObjectMenuOKAll # hardcoded identifier called by engine mouse control - do not change!
+	GUIName=OK
+	GUIDesc=Confirm in menus
+	Action=ObjectMenuOKAll
+	
+	[ControlDef]
+	Identifier=ObjectMenuSelect # hardcoded identifier called by engine mouse control - do not change!
+	GUIName=MenuSelect
+	GUIDesc=Select specific item
+	Action=ObjectMenuSelect
+	
+	[ControlDef]
+	Identifier=ObjectMenuCancel # hardcoded identifier called by engine mouse control - do not change!
+	GUIName=Cancel
+	GUIDesc=Cancel or close the menu
+	Action=ObjectMenuCancel
+	
+	[ControlDef]
+	Identifier=ObjectMenuLeft
+	GUIName=Left
+	GUIDesc=In the menu
+	Action=ObjectMenuLeft
+	
+	[ControlDef]
+	Identifier=ObjectMenuRight
+	GUIName=Right
+	GUIDesc=In the menu
+	Action=ObjectMenuRight
+	
+	[ControlDef]
+	Identifier=ObjectMenuUp
+	GUIName=Up
+	GUIDesc=In the menu
+	Action=ObjectMenuUp
+	
+	[ControlDef]
+	Identifier=ObjectMenuDown
+	GUIName=Down
+	GUIDesc=In the menu
+	Action=ObjectMenuDown
 	
 	# Extra buttons...
 	
@@ -517,11 +571,43 @@
 		
 		[Assignment]
 		Key=Return
+		Priority=100
 		Control=MenuOK
 		
 		[Assignment]
 		Key=Back
+		Priority=100
 		Control=MenuCancel
+		
+		[Assignment]
+		Key=A
+		Priority=90
+		Control=ObjectMenuLeft
+
+		[Assignment]
+		Key=D
+		Priority=90
+		Control=ObjectMenuRight
+
+		[Assignment]
+		Key=S
+		Priority=90
+		Control=ObjectMenuDown
+
+		[Assignment]
+		Key=W
+		Priority=90
+		Control=ObjectMenuUp
+		
+		[Assignment]
+		Key=Return
+		Priority=90
+		Control=ObjectMenuOK
+		
+		[Assignment]
+		Key=Back
+		Priority=90
+		Control=ObjectMenuCancel
 		
 		[Assignment]
 		Key=Space

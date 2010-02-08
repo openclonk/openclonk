@@ -29,6 +29,8 @@
 #include "C4MouseControl.h"
 #include "C4GraphicsSystem.h"
 #include "C4Viewport.h"
+#include "C4Object.h"
+#include "C4ObjectMenu.h"
 
 #include <algorithm>
 
@@ -56,6 +58,14 @@ void C4PlayerControlDef::CompileFunc(StdCompiler *pComp)
 		{ "MenuUp",      CDA_MenuUp      },
 		{ "MenuRight",   CDA_MenuRight   },
 		{ "MenuDown",    CDA_MenuDown    },
+		{ "ObjectMenuOK",    CDA_ObjectMenuOK      },
+		{ "ObjectMenuOKAll", CDA_ObjectMenuOKAll   },
+		{ "ObjectMenuSelect",CDA_ObjectMenuSelect      },
+		{ "ObjectMenuCancel",CDA_ObjectMenuCancel  },
+		{ "ObjectMenuLeft",  CDA_ObjectMenuLeft    },
+		{ "ObjectMenuUp",    CDA_ObjectMenuUp      },
+		{ "ObjectMenuRight", CDA_ObjectMenuRight   },
+		{ "ObjectMenuDown",  CDA_ObjectMenuDown    },
 		{ "ZoomIn",      CDA_ZoomIn      },
 		{ "ZoomOut",     CDA_ZoomOut     },
 		{ NULL, CDA_None } };
@@ -82,10 +92,10 @@ bool C4PlayerControlDef::operator ==(const C4PlayerControlDef &cmp) const
 
 void C4PlayerControlDefs::UpdateInternalCons()
 	{
-	InternalCons.CON_MenuSelect   = GetControlIndexByIdentifier("MenuSelect");
-	InternalCons.CON_MenuEnter    = GetControlIndexByIdentifier("MenuEnter");
-	InternalCons.CON_MenuEnterAll = GetControlIndexByIdentifier("MenuEnterAll");
-	InternalCons.CON_MenuClose    = GetControlIndexByIdentifier("MenuClose");
+	InternalCons.CON_ObjectMenuSelect   = GetControlIndexByIdentifier("ObjectMenuSelect");
+	InternalCons.CON_ObjectMenuOK       = GetControlIndexByIdentifier("ObjectMenuOK");
+	InternalCons.CON_ObjectMenuOKAll    = GetControlIndexByIdentifier("ObjectMenuOKAll");
+	InternalCons.CON_ObjectMenuCancel   = GetControlIndexByIdentifier("ObjectMenuCancel");
 	}
 
 void C4PlayerControlDefs::Clear()
@@ -824,10 +834,14 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 	// get affected player
 	C4Player *pPlr = NULL;
 	C4Viewport *pVP;
+	C4Object *pCursor = NULL;
+	C4Menu *pCursorMenu = NULL;
 	if (iPlr > -1)
 		{
 		pPlr = ::Players.Get(iPlr);
 		if (!pPlr) return false;
+		pCursor = pPlr->Cursor;
+		if (pCursor && pCursor->Menu && pCursor->Menu->IsActive()) pCursorMenu = pCursor->Menu;
 		}
 	// exec action (on player)
 	switch (eAction)
@@ -844,6 +858,15 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 		case C4PlayerControlDef::CDA_MenuUp:     if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuUp   ,0); return true; // navigate
 		case C4PlayerControlDef::CDA_MenuRight:  if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuRight,0); return true; // navigate
 		case C4PlayerControlDef::CDA_MenuDown:   if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuDown ,0); return true; // navigate
+
+		case C4PlayerControlDef::CDA_ObjectMenuOK:     if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuEnter,0); return true; // ok on item
+		case C4PlayerControlDef::CDA_ObjectMenuOKAll:  if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuEnterAll,0); return true; // alt ok on item
+		case C4PlayerControlDef::CDA_ObjectMenuSelect: if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuSelect,rKeyExtraData.iStrength); return true; // select an item directly
+		case C4PlayerControlDef::CDA_ObjectMenuCancel:       if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuClose,0); return true; // close menu
+		case C4PlayerControlDef::CDA_ObjectMenuLeft:         if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuLeft ,0); return true; // navigate
+		case C4PlayerControlDef::CDA_ObjectMenuUp:           if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuUp   ,0); return true; // navigate
+		case C4PlayerControlDef::CDA_ObjectMenuRight:        if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuRight,0); return true; // navigate
+		case C4PlayerControlDef::CDA_ObjectMenuDown:         if (!pCursorMenu || fUp) return false; pCursorMenu->Control(COM_MenuDown ,0); return true; // navigate
 		
 		case C4PlayerControlDef::CDA_ZoomIn:   if (!pPlr || !(pVP = GraphicsSystem.GetViewport(iPlr))) return false; pVP->ChangeZoom(C4GFX_ZoomStep); return true; // viewport zoom
 		case C4PlayerControlDef::CDA_ZoomOut:  if (!pPlr || !(pVP = GraphicsSystem.GetViewport(iPlr))) return false; pVP->ChangeZoom(1.0f/C4GFX_ZoomStep); return true; // viewport zoom

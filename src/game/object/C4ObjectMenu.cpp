@@ -345,19 +345,19 @@ void C4ObjectMenu::Execute()
 void C4ObjectMenu::OnUserSelectItem(int32_t Player, int32_t iIndex)
 	{
 	// queue.... 2do
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,Game.PlayerControlDefs.InternalCons.CON_MenuSelect,iIndex | C4MN_AdjustPosition));
+	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,Game.PlayerControlDefs.InternalCons.CON_ObjectMenuSelect,iIndex | C4MN_AdjustPosition));
 	}
 
 void C4ObjectMenu::OnUserEnter(int32_t Player, int32_t iIndex, bool fRight)
 	{
 	// object menu: Through queue 2do
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,fRight ? Game.PlayerControlDefs.InternalCons.CON_MenuEnterAll : Game.PlayerControlDefs.InternalCons.CON_MenuEnter,iIndex)); 
+	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,fRight ? Game.PlayerControlDefs.InternalCons.CON_ObjectMenuOKAll : Game.PlayerControlDefs.InternalCons.CON_ObjectMenuOK,iIndex)); 
 	}
 
 void C4ObjectMenu::OnUserClose()
 	{
 	// Queue 2do
-	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(::MouseControl.GetPlayer(),Game.PlayerControlDefs.InternalCons.CON_MenuClose,0));
+	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(::MouseControl.GetPlayer(),Game.PlayerControlDefs.InternalCons.CON_ObjectMenuCancel,0));
 	}
 
 bool C4ObjectMenu::IsReadOnly()
