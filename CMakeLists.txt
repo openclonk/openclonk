@@ -44,6 +44,7 @@ if(NOT USE_GL AND NOT USE_DIRECTX)
 	message(STATUS "No graphics display enabled; building dedicated server")
 	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
 endif()
+option(BUILD_TO_PLANET "Put build files to ./planet/" OFF)
 
 ############################################################################
 # Check for compiler quirks and features
@@ -690,6 +691,23 @@ target_link_libraries(c4group
 )
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS C4ENGINE GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
+
+############################################################################
+# build to planet
+############################################################################
+if(BUILD_TO_PLANET) 
+	if(MSVC) #get the files out of the Build folders
+		if(CMAKE_VERSION VERSION_LESS "2.8")
+			message(SEND_ERROR "You need CMake 2.8 or higher for BUILD_TO_PLANET to get the builds out of MSVCs folders. You have ${CMAKE_VERSION}")
+		else()
+			set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_RELEASE "../Clonk")
+			set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_DEBUG "../ClonkD")
+			set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_MINSIZEREL "../ClonkMSR")
+			set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_NAME_RELWITHDEBINFO "../ClonkRD")
+		endif()
+	endif()
+	set_target_properties(clonk PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/planet)
+endif()
 
 ############################################################################
 # Precompiled header support, part 2 (post-target)
