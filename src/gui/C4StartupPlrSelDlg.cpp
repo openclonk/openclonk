@@ -231,7 +231,7 @@ void C4StartupPlrSelDlg::PlayerListItem::Load(const StdStrBuf &rsFilename)
 	SetFilename(rsFilename);
 	// load player info
 	C4Group PlrGroup;
-	if (!PlrGroup.Open(Config.AtDataReadPath(rsFilename.getData())))
+	if (!PlrGroup.Open(Config.AtUserDataPath(rsFilename.getData())))
 		throw LoadError(FormatString("Error loading player file from %s: Error opening group: %s", rsFilename.getData(), PlrGroup.GetError()));
 	if (!Core.Load(PlrGroup))
 		throw LoadError(FormatString("Error loading player file from %s: Core data invalid or missing (Group: %s)!", rsFilename.getData(), PlrGroup.GetError()));
@@ -278,7 +278,7 @@ void C4StartupPlrSelDlg::PlayerListItem::GrabCustomIcon(C4FacetSurface &fctGrabF
 void C4StartupPlrSelDlg::PlayerListItem::UpdateCore(C4PlayerInfoCore & NewCore)
 	{
 	C4Group PlrGroup;
-	if (!PlrGroup.Open(GetFilename().getData())
+	if (!PlrGroup.Open(Config.AtUserDataPath(GetFilename().getData()))
 		|| !NewCore.Save(PlrGroup)
 		|| !PlrGroup.Close())
 		{
@@ -327,7 +327,7 @@ StdStrBuf C4StartupPlrSelDlg::PlayerListItem::GetDelWarning()
 bool C4StartupPlrSelDlg::PlayerListItem::MoveFilename(const char *szToFilename)
 	{
 	// anything to do?
-	if (ItemIdentical(GetFilename().getData(), szToFilename)) return true;
+	if (ItemIdentical(Config.AtUserDataPath(GetFilename().getData()), szToFilename)) return true;
 	// do it
 	if (!MoveItem(GetFilename().getData(), szToFilename)) return false;
 	// reflect change in class
@@ -926,7 +926,7 @@ bool C4StartupPlrSelDlg::CheckPlayerName(const StdStrBuf &Playername, StdStrBuf 
 //	Path.Append(Config.General.PlayerPath);
 	Path.Append(Filename);
 	// validity check: Must not exist yet if renamed
-	if (!pPrevFilename || !ItemIdentical(Path.getData(), pPrevFilename->getData())) if (ItemExists(Path.getData()))
+	if (!pPrevFilename || !ItemIdentical(Path.getData(), Config.AtUserDataPath(pPrevFilename->getData()))) if (ItemExists(Path.getData()))
 		{
 		C4GUI::Screen::GetScreenS()->ShowMessage(FormatString(LoadResStr("IDS_ERR_PLRNAME_TAKEN"),
 								Playername.getData()).getData(), "", C4GUI::Ico_Error);
@@ -1240,24 +1240,26 @@ C4StartupPlrPropertiesDlg::C4StartupPlrPropertiesDlg(C4StartupPlrSelDlg::PlayerL
 	UpdateBigIcon();
 	UpdatePlayerColor(true);
 	caMain.ExpandTop(-BetweenElementDist);
+	// AutoStopControl: currently unused
+	// once we have an idea how many control schemes we have, we might revive this for selecting e.g. between "Mouse+Keyboard" and "Gamepad".
 	// place AutoStopControl label
-	AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr("IDS_DLG_MOVEMENT")).getData(), caMain.GetFromTop(pSmallFont->GetLineHeight()), ALeft, C4StartupFontClr, pSmallFont, false));
+	//AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr("IDS_DLG_MOVEMENT")).getData(), caMain.GetFromTop(pSmallFont->GetLineHeight()), ALeft, C4StartupFontClr, pSmallFont, false));
 	// place AutoStopControl controls
-	C4Facet &rfctMovementIcons = C4Startup::Get()->Graphics.fctPlrCtrlType;
-	C4GUI::ComponentAligner caMovement(caMain.GetFromTop(rfctMovementIcons.Hgt), 5, 0);
-	C4Rect rcBtn = caMovement.GetFromLeft(rfctMovementIcons.GetWidthByHeight(caMovement.GetHeight()));
-	AddElement(pLbl = new C4GUI::Label(LoadResStr("IDS_DLG_JUMPANDRUN"), rcBtn.x+rcBtn.Wdt/2, rcBtn.y+rcBtn.Hgt-6, ACenter, C4StartupFontClr, pSmallFont, false));
-	szTip = LoadResStr("IDS_DLGTIP_JUMPANDRUN");
-	pLbl->SetToolTip(szTip);
-	AddElement(pJumpNRunBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_None, rcBtn, 'J' /* 2do */, &C4StartupPlrPropertiesDlg::OnMovementBtn));
-	pJumpNRunBtn->SetToolTip(szTip);
-	rcBtn = caMovement.GetFromRight(rfctMovementIcons.GetWidthByHeight(caMovement.GetHeight()));
-	AddElement(pLbl = new C4GUI::Label(LoadResStr("IDS_DLG_CLASSIC"), rcBtn.x+rcBtn.Wdt/2, rcBtn.y+rcBtn.Hgt-6, ACenter, C4StartupFontClr, pSmallFont, false));
-	szTip = LoadResStr("IDS_DLGTIP_CLASSIC");
-	pLbl->SetToolTip(szTip);
-	AddElement(pClassicBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_None, rcBtn, 'C' /* 2do */, &C4StartupPlrPropertiesDlg::OnMovementBtn));
-	pClassicBtn->SetToolTip(szTip);
-	UpdatePlayerMovement();
+	//C4Facet &rfctMovementIcons = C4Startup::Get()->Graphics.fctPlrCtrlType;
+	//C4GUI::ComponentAligner caMovement(caMain.GetFromTop(rfctMovementIcons.Hgt), 5, 0);
+	//C4Rect rcBtn = caMovement.GetFromLeft(rfctMovementIcons.GetWidthByHeight(caMovement.GetHeight()));
+	//AddElement(pLbl = new C4GUI::Label(LoadResStr("IDS_DLG_JUMPANDRUN"), rcBtn.x+rcBtn.Wdt/2, rcBtn.y+rcBtn.Hgt-6, ACenter, C4StartupFontClr, pSmallFont, false));
+	//szTip = LoadResStr("IDS_DLGTIP_JUMPANDRUN");
+	//pLbl->SetToolTip(szTip);
+	//AddElement(pJumpNRunBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_None, rcBtn, 'J' /* 2do */, &C4StartupPlrPropertiesDlg::OnMovementBtn));
+	//pJumpNRunBtn->SetToolTip(szTip);
+	//rcBtn = caMovement.GetFromRight(rfctMovementIcons.GetWidthByHeight(caMovement.GetHeight()));
+	//AddElement(pLbl = new C4GUI::Label(LoadResStr("IDS_DLG_CLASSIC"), rcBtn.x+rcBtn.Wdt/2, rcBtn.y+rcBtn.Hgt-6, ACenter, C4StartupFontClr, pSmallFont, false));
+	//szTip = LoadResStr("IDS_DLGTIP_CLASSIC");
+	//pLbl->SetToolTip(szTip);
+	//AddElement(pClassicBtn = new C4GUI::CallbackButton<C4StartupPlrPropertiesDlg, C4GUI::IconButton>(C4GUI::Ico_None, rcBtn, 'C' /* 2do */, &C4StartupPlrPropertiesDlg::OnMovementBtn));
+	//pClassicBtn->SetToolTip(szTip);
+	//UpdatePlayerMovement();
 	// place buttons
 	// OK
 	C4GUI::Button *pBtnOK = new C4GUI::OKIconButton(C4Rect(147-GetMarginLeft(), 295+35-GetMarginTop(), 54, 33), C4GUI::Ico_None);
@@ -1364,6 +1366,7 @@ void C4StartupPlrPropertiesDlg::OnCtrlChangeLeft(C4GUI::Control *pBtn)
 	// previous control set in list
 	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
 	int32_t index = Game.PlayerControlAssignmentSets.GetSetIndex(control_set);
+	if (index < 0) index = 0; // defined control set not found - probably an old CR player file
 	if (!index--) index = Game.PlayerControlAssignmentSets.GetSetCount() - 1;
 	control_set = Game.PlayerControlAssignmentSets.GetSetByIndex(index);
 	if (control_set) C4P.PrefControl = control_set->GetName();
@@ -1375,6 +1378,7 @@ void C4StartupPlrPropertiesDlg::OnCtrlChangeRight(C4GUI::Control *pBtn)
 	// next control set in list
 	C4PlayerControlAssignmentSet *control_set = Game.PlayerControlAssignmentSets.GetSetByName(C4P.PrefControl.getData());
 	int32_t index = Game.PlayerControlAssignmentSets.GetSetIndex(control_set);
+	if (index < 0) index = 0; // defined control set not found - probably an old CR player file
 	if (++index >= Game.PlayerControlAssignmentSets.GetSetCount()) index = 0;
 	control_set = Game.PlayerControlAssignmentSets.GetSetByIndex(index);
 	if (control_set) C4P.PrefControl = control_set->GetName();
