@@ -76,7 +76,5 @@ void CStdWindow::SetTitle(const char * Title) {
 	SDL_WM_SetCaption(Title, 0);
 }
 
-#ifndef __APPLE__
 void CStdWindow::FlashWindow() {
 }
-#endif

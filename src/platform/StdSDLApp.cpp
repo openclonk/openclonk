@@ -172,8 +172,6 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 void CStdApp::RestoreVideoMode() {
 }
 
-#ifndef __APPLE__
-
 // stubs
 
 void CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
@@ -193,8 +191,6 @@ void CStdApp::ClearClipboard(bool fClipboard) {
 void CStdApp::MessageDialog(const char * message)
 {
 }
-
-#endif
 
 // Event-pipe-whatever stuff I do not understand.
 
