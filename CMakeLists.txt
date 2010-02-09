@@ -603,12 +603,14 @@ endif()
 include(CheckFunctionExists)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 
-CHECK_FUNCTION_EXISTS(iconv HAVE_ICONV_WO_LINK)
-mark_as_advanced(HAVE_ICONV_WO_LINK)
+if(HAVE_ICONV)
+	CHECK_FUNCTION_EXISTS(iconv HAVE_ICONV_WO_LINK)
+	mark_as_advanced(HAVE_ICONV_WO_LINK)
 
-if(NOT HAVE_ICONV_WO_LINK)
-	FIND_LIBRARY( ICONV_LIBRARY NAMES iconv )
-	MARK_AS_ADVANCED( ICONV_LIBRARY )
+	if(NOT HAVE_ICONV_WO_LINK)
+		FIND_LIBRARY( ICONV_LIBRARY NAMES iconv )
+		MARK_AS_ADVANCED( ICONV_LIBRARY )
+	endif()
 endif()
 
 ############################################################################
