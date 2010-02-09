@@ -33,7 +33,7 @@ else()
 	SET(USE_DIRECTX OFF)
 	SET(HAVE_FMOD OFF)
 endif()
-if(UNIX)
+if(UNIX AND NOT USE_SDL_MAINLOOP)
 	option(USE_X11 "Use X11 to create windows etc." ON)
 	option(USE_GTK "Use GTK for the developer mode" ON)
 else()
@@ -603,6 +603,14 @@ endif()
 include(CheckFunctionExists)
 CHECK_FUNCTION_EXISTS(vasprintf HAVE_VASPRINTF)
 
+CHECK_FUNCTION_EXISTS(iconv HAVE_ICONV_WO_LINK)
+mark_as_advanced(HAVE_ICONV_WO_LINK)
+
+if(NOT HAVE_ICONV_WO_LINK)
+	FIND_LIBRARY( ICONV_LIBRARY NAMES iconv )
+	MARK_AS_ADVANCED( ICONV_LIBRARY )
+endif()
+
 ############################################################################
 # Locate necessary libraries
 ############################################################################
@@ -684,6 +692,7 @@ target_link_libraries(clonk
 	${PNG_LIBRARIES}
 	${JPEG_LIBRARIES}
 	${OPENSSL_LIBRARIES}
+	${ICONV_LIBRARY}
 )
 target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
@@ -817,7 +826,7 @@ if (WIN32)
 		set(HAVE_FMOD FALSE)
 	endif()
 endif()
-if(NOT HAVE_FMOD)
+if(NOT HAVE_FMOD OR USE_SDL_MAINLOOP)
 	include(FindSDL)
 	SET(HAVE_SDL ${SDL_FOUND})
 	if(SDL_FOUND)
