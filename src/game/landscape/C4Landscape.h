@@ -62,6 +62,7 @@ class C4Landscape
 		CSurface8 * Map;
     DWORD MatCount[C4MaxMaterial]; // NoSave //
     DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
+	uint8_t *BridgeMatConversion[C4MaxMaterial]; // NoSave //
 		int32_t BlastMatCount[C4MaxMaterial]; // SyncClearance-NoSave //
 		bool NoScan; // ExecuteScan() disabled
     int32_t ScanX,ScanSpeed; // SyncClearance-NoSave //
@@ -128,7 +129,7 @@ class C4Landscape
 		bool DrawLine(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT);
 		bool DrawBox(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iGrade, const char *szMaterial, const char *szTexture, bool fIFT);
 		bool DrawChunks(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t icntx, int32_t icnty, const char *szMaterial, const char *szTexture, bool bIFT);
-		bool DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool bIFT);
+		bool DrawQuad(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2, int32_t iX3, int32_t iY3, int32_t iX4, int32_t iY4, const char *szMaterial, bool bIFT, bool fDrawBridge);
 		CStdPalette *GetPal() const { return Surface8 ? Surface8->pPal : NULL; }
 		inline BYTE _GetPix(int32_t x, int32_t y) // get landscape pixel (bounds not checked)
 			{
@@ -241,6 +242,7 @@ class C4Landscape
 		void PrepareChange(C4Rect BoundingBox);
 		void FinishChange(C4Rect BoundingBox);
     static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
+		uint8_t *C4Landscape::GetBridgeMatConversion(int for_material);
   public:
     void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky
 		bool DebugSave(const char *szFilename);

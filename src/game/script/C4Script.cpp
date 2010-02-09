@@ -4495,10 +4495,14 @@ static bool FnSetObjectOrder(C4AulContext* ctx, C4Object *pObjBeforeOrAfter, C4O
 	return true;
 	}
 
-static bool FnDrawMaterialQuad(C4AulContext* ctx, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, bool fSub)
+static const int32_t DMQ_Sky = 0, // draw w/ sky IFT
+                     DMQ_Sub = 1, // draw w/ tunnel IFT
+                     DMQ_Bridge = 2; // draw only over materials you can bridge over
+
+static bool FnDrawMaterialQuad(C4AulContext* ctx, C4String *szMaterial, long iX1, long iY1, long iX2, long iY2, long iX3, long iY3, long iX4, long iY4, int draw_mode)
 	{
-  const char *szMat = FnStringPar(szMaterial);
-	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, fSub);
+	const char *szMat = FnStringPar(szMaterial);
+	return !! ::Landscape.DrawQuad(iX1, iY1, iX2, iY2, iX3, iY3, iX4, iY4, szMat, draw_mode == DMQ_Sub, draw_mode==DMQ_Bridge);
 	}
 
 static bool FnFightWith(C4AulObjectContext *ctx, C4Object *pTarget)
@@ -6740,6 +6744,10 @@ C4ScriptConstDef C4ScriptConstMap[]={
 	{ "ANIM_Loop"                 ,C4V_Int,      ANIM_Loop },
 	{ "ANIM_Hold"                 ,C4V_Int,      ANIM_Hold },
 	{ "ANIM_Remove"               ,C4V_Int,      ANIM_Remove },
+
+	{ "DMQ_Sky"                   ,C4V_Int,      DMQ_Sky },
+	{ "DMQ_Sub"                   ,C4V_Int,      DMQ_Sub },
+	{ "DMQ_Bridge"                ,C4V_Int,      DMQ_Bridge },
 
 	{ NULL, C4V_Any, 0} };
 

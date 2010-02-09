@@ -342,7 +342,7 @@ static CPolyEdge *remove_edge(CPolyEdge *list, CPolyEdge *edge)
 const int QuickPolyBufSize = 20;
 CPolyEdge QuickPolyBuf[QuickPolyBufSize];
 
-void CSurface8::Polygon(int iNum, int *ipVtx, int iCol)
+void CSurface8::Polygon(int iNum, int *ipVtx, int iCol, uint8_t *conversion_table)
 	{
 	// Variables for polygon drawer
 	int c,x1,x2,y;
@@ -403,7 +403,10 @@ void CSurface8::Polygon(int iNum, int *ipVtx, int iCol)
 			// Fix coordinates
 			if (x1>x2) Swap(x1,x2);
 			// Set line
-			for (int xcnt=x2-x1; xcnt>=0; xcnt--) SetPix(x1+xcnt, y, iCol);
+			if (conversion_table)
+				for (int xcnt=x2-x1; xcnt>=0; xcnt--) SetPix(x1+xcnt, y, conversion_table[uint8_t(GetPix(x1+xcnt, y))]);
+			else
+				for (int xcnt=x2-x1; xcnt>=0; xcnt--) SetPix(x1+xcnt, y, iCol);
 			edge = edge->next->next;
 			}
 
