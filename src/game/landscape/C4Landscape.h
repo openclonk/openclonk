@@ -242,7 +242,7 @@ class C4Landscape
 		void PrepareChange(C4Rect BoundingBox);
 		void FinishChange(C4Rect BoundingBox);
     static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
-		uint8_t *C4Landscape::GetBridgeMatConversion(int for_material);
+		uint8_t *GetBridgeMatConversion(int for_material);
   public:
     void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky
 		bool DebugSave(const char *szFilename);
