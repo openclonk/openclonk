@@ -59,7 +59,6 @@ class C4ConfigGeneral
 		int32_t MMTimer;	// use multimedia-timers
 		int32_t FairCrew;   // don't use permanent crew physicals
 		int32_t FairCrewStrength, MaxFairCrewStrength; // strength of clonks in fair crew mode
-		int32_t MouseAScroll; // auto scroll strength
 		int32_t ScrollSmooth; // view movement smoothing
 		int32_t ConfigResetSafety; // safety value: If this value is screwed, the config got currupted and must be reset
 		// Determined at run-time

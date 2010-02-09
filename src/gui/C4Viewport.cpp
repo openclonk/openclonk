@@ -1194,15 +1194,11 @@ void C4Viewport::AdjustPosition()
 		float iTargetViewY = pPlr->ViewY - ViewHgt / (Zoom * 2);
 		// add mouse auto scroll
 		float iPrefViewX = ViewX - ViewOffsX, iPrefViewY = ViewY - ViewOffsY;
-		if(pPlr->MouseControl && ::MouseControl.InitCentered && Config.General.MouseAScroll)
-			{
-			int32_t iAutoScrollBorder = Min(Min(ViewWdt/10,ViewHgt/10), C4SymbolSize);
-			if(iAutoScrollBorder)
-				{
-				iPrefViewX += BoundBy<int32_t>(0, ::MouseControl.VpX - ViewWdt + iAutoScrollBorder, ::MouseControl.VpX - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
-				iPrefViewY += BoundBy<int32_t>(0, ::MouseControl.VpY - ViewHgt + iAutoScrollBorder, ::MouseControl.VpY - iAutoScrollBorder) * iScrollRange * BoundBy<int32_t>(Config.General.MouseAScroll, 0, 100) / 100 / iAutoScrollBorder;
-				}
-			}
+		if(pPlr->MouseControl && ::MouseControl.InitCentered && Config.Controls.MouseAScroll)
+		{
+			iTargetViewX += (::MouseControl.VpX - ViewWdt / 2) / Zoom;
+			iTargetViewY += (::MouseControl.VpY - ViewHgt / 2) / Zoom;
+		}
 		// scroll range
 		iTargetViewX = BoundBy(iPrefViewX, iTargetViewX - iScrollRange, iTargetViewX + iScrollRange);
 		iTargetViewY = BoundBy(iPrefViewY, iTargetViewY - iScrollRange, iTargetViewY + iScrollRange);
