@@ -786,8 +786,10 @@ bool ObjectComCancelAttach(C4Object *cObj)
 
 void ObjectComStopDig(C4Object *cObj)
 	{
-	// Stand
+	// Stand - but keep momentum to allow more dyanamic digging
+	FIXED o_xdir = cObj->xdir, o_ydir = cObj->ydir;
 	ObjectActionStand(cObj);
+	cObj->xdir = o_xdir; cObj->ydir = o_ydir;
 	// Clear digging command
 	if (cObj->Command)
 		if (cObj->Command->Command == C4CMD_Dig)

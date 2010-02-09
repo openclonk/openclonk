@@ -15,22 +15,13 @@ public func GetCarryTransform(clonk)
 public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "pos_hand1"; }
 
 local fDigging;
+
 public func IsDigging() { return fDigging; }
+
 
 public func ControlUseStart(object clonk, int x, int y)
 {
-	if(clonk->GetAction() == "Walk")
-	{
-		clonk->SetAction("Dig");
-		clonk->SetComDir(COMD_None);
-		clonk->SetXDir(0);
-		clonk->SetYDir(1);
-		AddEffect("ShovelDust",clonk,1,1,this);
-		fDigging = 1;
-	}
-	else
-		clonk->CancelUse();
-
+	ControlUseHolding(clonk, x, y);
 	return true;
 }
 
@@ -38,25 +29,55 @@ public func HoldingEnabled() { return true; }
 
 public func ControlUseHolding(object clonk, int x, int y)
 {
-	// something happened - don't try to dig anymore
+	var xdir_boost = 0, ydir_boost = 0;
+	// Currently not digging?
 	if(clonk->GetAction() != "Dig")
 	{
-		clonk->CancelUse();
-		return true;
+		var is_scaling = (clonk->GetProcedure() == "SCALE");
+		var can_dig = (clonk->GetAction() == "Walk" || is_scaling || clonk->GetProcedure() == "HANGLE");
+		if (can_dig)
+		{
+			clonk->SetAction("Dig");
+			clonk->SetComDir(COMD_None);
+			if (is_scaling)
+			{
+				// speed boost when Clonk started digging from scaling, so we don't drop down
+				xdir_boost = (clonk->GetDir()*2-1)*1000;
+				ydir_boost = -100;
+			}
+		}
+		else
+		{
+			if (fDigging)
+			{
+				fDigging = false;
+				RemoveEffect("ShovelDust",clonk,0);
+			}
+			return true;
+		}
 	}
+	// Dig start procedure
+	if(!fDigging && clonk->GetAction() == "Dig")
+	{
+		AddEffect("ShovelDust",clonk,1,1,this);
+		fDigging = true;
+	}
+	if (fDigging)
+	{
 	
-	var angle = Angle(0,0,x,y);
-	var speed = clonk->GetPhysical("Dig")/400;
+		var angle = Angle(0,0,x,y);
+		var speed = clonk->GetPhysical("Dig")/400;
 
-	var iAnimation = EffectVar(1, clonk, GetEffect("IntDig", clonk));
-	var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
-	Message("%d", clonk, iPosition);
-	speed = speed*(Cos(iPosition-45, 50)**2)/2500;
-	Message("%d", clonk, speed);
-	// limit angle
-	angle = BoundBy(angle,65,300);
-	clonk->SetXDir(Sin(angle,+speed),100);
-	clonk->SetYDir(Cos(angle,-speed),100);
+		var iAnimation = EffectVar(1, clonk, GetEffect("IntDig", clonk));
+		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
+		Message("%d", clonk, iPosition);
+		speed = speed*(Cos(iPosition-45, 50)**2)/2500;
+		Message("%d", clonk, speed);
+		// limit angle
+		angle = BoundBy(angle,65,300);
+		clonk->SetXDir(Sin(angle,+speed)+xdir_boost,100);
+		clonk->SetYDir(Cos(angle,-speed)+ydir_boost,100);
+	}
 	
 	return true;
 }
@@ -68,8 +89,11 @@ public func ControlUseCancel(object clonk, int x, int y)
 
 public func ControlUseStop(object clonk, int x, int y)
 {
-	fDigging = 0;
-	RemoveEffect("ShovelDust",clonk,0);
+	if (fDigging)
+	{
+		fDigging = 0;
+		RemoveEffect("ShovelDust",clonk,0);
+	}
 	if(clonk->GetAction() != "Dig") return true;
 
 //	EffectCall(clonk, GetEffect("IntDig", clonk), "StopDig");

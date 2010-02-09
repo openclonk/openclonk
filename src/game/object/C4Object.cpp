@@ -3571,7 +3571,7 @@ void C4Object::ContactAction()
 				break;
 			case DFA_DIG:
 				// Dig: Stop
-				ObjectComStopDig(this); return;
+				if (!(Action.pActionDef->GetPropertyInt(P_Attach) & CNAT_Top)) ObjectComStopDig(this); return;
 			case DFA_HANGLE:
 				Action.ComDir=COMD_Stop;
 				break;
@@ -3623,7 +3623,7 @@ void C4Object::ContactAction()
 				return;
 			case DFA_DIG:
 				// Dig: Stop
-				ObjectComStopDig(this);
+				if (!(Action.pActionDef->GetPropertyInt(P_Attach) & CNAT_Left)) ObjectComStopDig(this);
 				return;
 			}
 		}
@@ -3674,7 +3674,7 @@ void C4Object::ContactAction()
 				return;
 			case DFA_DIG:
 				// Dig: Stop
-				ObjectComStopDig(this);
+				if (!(Action.pActionDef->GetPropertyInt(P_Attach) & CNAT_Right)) ObjectComStopDig(this);
 				return;
 			}
 		}
@@ -4075,16 +4075,31 @@ void C4Object::ExecAction()
       break;
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case DFA_DIG:
+			{
+			if (pAction->GetPropertyInt(P_Attach))
+			{
+				Action.t_attach |= pAction->GetPropertyInt(P_Attach);
+			}
+			else
+			{
+				Action.t_attach |= CNAT_Bottom;
+			}
 			smpx=GetX(); smpy=GetY();
-			if (!Shape.Attach(smpx,smpy,CNAT_Bottom))
-				{ ObjectComStopDig(this); return; }
 			lLimit=ValByPhysical(125, pPhysical->Dig);
+			bool fAttachOK = false;
+			if (Action.t_attach & CNAT_Bottom && Shape.Attach(smpx,smpy,CNAT_Bottom)) fAttachOK = true;
+			else if (Action.t_attach & CNAT_Left && Shape.Attach(smpx,smpy,CNAT_Left)) { fAttachOK = true; }
+			else if (Action.t_attach & CNAT_Right && Shape.Attach(smpx,smpy,CNAT_Right)) { fAttachOK = true; }
+			else if (Action.t_attach & CNAT_Top && Shape.Attach(smpx,smpy,CNAT_Top)) fAttachOK = true;
+			if (!fAttachOK)
+				{ ObjectComStopDig(this); return; }
 			iPhaseAdvance=40*lLimit;
 
 			if (xdir < 0) SetDir(DIR_Left); else if (xdir > 0) SetDir(DIR_Right);
 			Action.t_attach=CNAT_None;
 			Mobile=1;
 			break;
+			}
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     case DFA_SWIM:
       lLimit=ValByPhysical(160, pPhysical->Swim);

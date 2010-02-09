@@ -1275,6 +1275,7 @@ Dig = {
 	AbortCall = "StopDigging",
 	DigFree = 11,
 	InLiquidAction = "Swim",
+	Attach = CNAT_Left | CNAT_Right | CNAT_Bottom,
 },
 Bridge = {
 	Prototype = Action,
