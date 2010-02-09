@@ -29,8 +29,8 @@ xmlfiles := $(sort $(shell find sdk -name '.*' -prune -o -name \*.xml -print))
 
 # Targets:
 
-# strip from all files the .xml, and add a .php
-htmlfiles := $(addsuffix .php, $(basename $(xmlfiles)))
+# strip from all files the .xml, and add a .html
+htmlfiles := $(addsuffix .html, $(basename $(xmlfiles)))
 
 # The translated files and directories
 sdk-dirs-en := $(subst sdk, sdk-en, $(sdk-dirs))
@@ -38,7 +38,7 @@ xmlfiles-en := $(subst sdk, sdk-en, $(xmlfiles))
 htmlfiles-en := $(subst sdk, sdk-en, $(htmlfiles))
 
 # For clonk.de
-online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) content.php))
+online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) content.html))
 online-dirs := $(foreach lang, en de, $(addprefix online/$(lang)/, $(sdk-dirs) images))
 online-extra-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(extra-files)))
 
@@ -75,10 +75,10 @@ chm/de/Output.hhc: $(xmlfiles) chm/de/. chm/en/. build_chm_files.py experimental
 	@echo generate chm files
 	@python build_chm_files.py $(xmlfiles)
 
-online/de/content.php: chm/de/Output.hhc build_contents.pl
+online/de/content.html: chm/de/Output.hhc build_contents.pl
 	@echo generate $@
 	@perl build_contents.pl $< > $@
-online/en/content.php: chm/en/Output.hhc build_contents.pl
+online/en/content.html: chm/en/Output.hhc build_contents.pl
 	@echo generate $@
 	@perl build_contents.pl $< > $@
 
@@ -103,12 +103,12 @@ sdk-en/%.xml: sdk/%.xml en.mo xml2po.py clonk.py
 
 define run-xslt
 @echo generate $@
-@xsltproc -o $@ --param webnotes $(webnotes) --param fileext "'.php'" $(XSLTFLAGS) $(stylesheet) $<
+@xsltproc -o $@ --param webnotes $(webnotes) --param fileext "'.html'" $(XSLTFLAGS) $(stylesheet) $<
 endef
 online/%: webnotes=1
 chm/%: webnotes=0
-online/de/sdk/%.php: sdk/%.xml $(stylesheet) ; $(run-xslt)
-online/en/sdk/%.php: sdk-en/%.xml $(stylesheet) ; $(run-xslt)
+online/de/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
+online/en/sdk/%.html: sdk-en/%.xml $(stylesheet) ; $(run-xslt)
 chm/de/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
 chm/en/sdk/%.html: sdk-en/%.xml $(stylesheet) ; $(run-xslt)
 

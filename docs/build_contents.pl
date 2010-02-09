@@ -3,7 +3,7 @@
 use strict;
 
 # A quick and dirty script to turn Microsofts hhc-format to strict html in Clonkstyle
-# usage: build_contents.pl infile.hhc > outfile.php
+# usage: build_contents.pl infile.hhc > outfile.html
 
 #print header
 

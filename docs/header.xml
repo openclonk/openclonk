@@ -1,0 +1,41 @@
+<!-- this needs to be valid xml for clonk.xsl to work.
+Unfortunately, xml documents can only have one root, so there needs to be a dummy element.
+header is an appropiate html element, so it's arbitrarily chosen.
+clonk.xsl also uses it to match the processing for it. -->
+<header>
+	<!-- header -->
+	<div id="nav_header">
+
+		<!-- search -->
+		<div id="nav_search">
+			<!-- clonk.xsl will add the relative path here -->
+			<form  id="searchform" action="search.php"><div>
+				<input name="search" value="" type="text" />
+				<input name="func" value="s" type="hidden" />
+				<input value="Search" type="submit" class="nav_searchButton" id="searchButton" />
+			</div></form>
+		</div>
+
+		<!-- logo -->
+		<div id="nav_logo">
+			<a href="http://wiki.openclonk.org/"><img src="http://www.openclonk.org/header/logo.png" alt="OpenClonk"/></a>
+		</div>
+
+	</div>
+
+	<!-- Navigation Menu -->
+	<div id="nav_navigation">
+
+	<ul><li><a href="http://wiki.openclonk.org/">Home</a></li>
+	<li><a href="http://blog.openclonk.org/">Blog</a></li>
+	<li><a href='http://forum.openclonk.org'>Forum</a></li>
+	<li><a href="http://wiki.openclonk.org/w/Project">Project</a></li>
+	<li><a href="http://hg.openclonk.org">Source</a></li>
+	<li><a href="http://www.openclonk.org/nightly-builds">Builds</a></li>
+	<li><a href="http://bugs.openclonk.org">Bugtracker</a></li>
+	<li><a href="http://docs.openclonk.org/en/sdk/">Reference</a></li>
+	<li><a href="http://wiki.openclonk.org/w/What_is_Clonk">About</a></li>	</ul>
+
+	</div>
+
+</header>
