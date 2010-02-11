@@ -29,6 +29,8 @@ protected func Construction()
   SetDir(Random(2));
   // Broadcast für Spielregeln
   GameCallEx("OnClonkCreation", this);
+
+	AddEffect("IntTurn", this, 1, 1, this);
 }
 
 
@@ -490,6 +492,86 @@ static CLNK_HangleStates;
 static CLNK_SwimStates;
 */
 
+/* Turn */
+local iTurnAction;
+local iTurnAction2;
+local iTurnAction3;
+
+local iTurnKnot1;
+local iTurnKnot2;
+
+func FxIntTurnStart(pTarget, iNumber, fTmp)
+{
+	if(fTmp) return;
+	EffectVar(0, pTarget, iNumber) = GetDirection();
+	var iTurnPos = 0;
+	if(EffectVar(0, pTarget, iNumber) == COMD_Right) iTurnPos = 1;
+
+	iTurnAction  = PlayAnimation("TurnRoot120", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot120")), Anim_Const(1000));
+	iTurnAction2 = PlayAnimation("TurnRoot180", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot180")), Anim_Const(1000), iTurnAction);
+	iTurnKnot1 = iTurnAction2+1;
+	iTurnAction3 = PlayAnimation("TurnRoot240", 1, Anim_Const(iTurnPos*GetAnimationLength("TurnRoot240")), Anim_Const(1000), iTurnAction2);
+	iTurnKnot2 = iTurnAction3+1;
+
+	EffectVar(1, pTarget, iNumber) = 0;
+}
+
+func FxIntTurnTimer(pTarget, iNumber, iTime)
+{
+	// Check wether the clonk wants to turn (Not when he wants to stop)
+  if(EffectVar(0, pTarget, iNumber) != GetDirection())
+	{
+		var iTurnTime = 10;
+		if(EffectVar(0, pTarget, iNumber) == COMD_Right)
+		{
+			SetAnimationPosition(iTurnAction,  Anim_Linear(GetAnimationLength("TurnRoot120"), GetAnimationLength("TurnRoot120"), 0, iTurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction2, Anim_Linear(GetAnimationLength("TurnRoot180"), GetAnimationLength("TurnRoot180"), 0, iTurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction3, Anim_Linear(GetAnimationLength("TurnRoot240"), GetAnimationLength("TurnRoot240"), 0, iTurnTime, ANIM_Hold));
+		}
+		else
+		{
+			SetAnimationPosition(iTurnAction,  Anim_Linear(0, 0, GetAnimationLength("TurnRoot120"), iTurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction2, Anim_Linear(0, 0, GetAnimationLength("TurnRoot180"), iTurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction3, Anim_Linear(0, 0, GetAnimationLength("TurnRoot240"), iTurnTime, ANIM_Hold));
+		}
+		// Save new ComDir
+		EffectVar(0, pTarget, iNumber) = GetDirection();
+		EffectVar(1, pTarget, iNumber) = iTurnTime;
+	}
+	// Turning
+	if(EffectVar(1, pTarget, iNumber))
+	{
+		EffectVar(1, pTarget, iNumber)--;
+		if(EffectVar(1, pTarget, iNumber) == 0)
+		{
+			SetAnimationPosition(iTurnAction,  Anim_Const(GetAnimationLength("TurnRoot120")*(GetDirection()==COMD_Right)));
+			SetAnimationPosition(iTurnAction2, Anim_Const(GetAnimationLength("TurnRoot180")*(GetDirection()==COMD_Right)));
+			SetAnimationPosition(iTurnAction3, Anim_Const(GetAnimationLength("TurnRoot240")*(GetDirection()==COMD_Right)));
+		}
+	}
+}
+
+func SetTurnType(iIndex)
+{
+	if(iIndex == 0)
+	{
+		if(GetAnimationWeight(iTurnKnot1) > 0)
+			SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),1000,0,10,ANIM_Hold));
+	}
+	if(iIndex == 1)
+	{
+		if(GetAnimationWeight(iTurnKnot1) < 1000)
+			SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),0,1000,10,ANIM_Hold));
+		if(GetAnimationWeight(iTurnKnot2) > 0)
+			SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),1000,0,10,ANIM_Hold));
+	}
+	if(iIndex == 2)
+	{
+		if(GetAnimationWeight(iTurnKnot2) > 0)
+			SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),0,1000,10,ANIM_Hold));
+	}
+}
+
 /* Walk */
 
 static const CLNK_WalkStand = "Stand";
@@ -536,8 +618,6 @@ func GetWalkAnimationPosition(string anim)
 		return Anim_AbsX(0, 0, GetAnimationLength(anim), 50);
 }
 
-local iTurnAction;
-
 func FxIntWalkStart(pTarget, iNumber, fTmp)
 {
 	if(fTmp) return;
@@ -547,16 +627,8 @@ func FxIntWalkStart(pTarget, iNumber, fTmp)
 	EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
-
-	EffectVar(17, pTarget, iNumber) = GetDirection();
-	var iTurnPos = 0;
-	if(EffectVar(17, pTarget, iNumber) == COMD_Right) iTurnPos = 1200;
-
-	if(iTurnAction == nil || GetAnimationPosition(iTurnAction) == nil)
-		iTurnAction = PlayAnimation("TurnRoot", 1, Anim_Const(iTurnPos), Anim_Const(1000));
-	else { SetAnimationPosition(iTurnAction, Anim_Const(iTurnPos)); }
-
-	EffectVar(4, pTarget, iNumber) = 0;
+	// Set proper turn
+	SetTurnType(0);
 }
 
 func FxIntWalkStop(pTarget, iNumber, fTmp)
@@ -572,19 +644,19 @@ func FxIntWalkStop(pTarget, iNumber, fTmp)
 
 func FxIntWalkTimer(pTarget, iNumber)
 {
-	if(EffectVar(4, pTarget, iNumber))
+/*	if(EffectVar(4, pTarget, iNumber))
 	{
 		EffectVar(4, pTarget, iNumber)--;
 		if(EffectVar(4, pTarget, iNumber) == 0)
 			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
-	}
+	}*/
 	var anim = GetCurrentWalkAnimation();
 	if(anim != EffectVar(0, pTarget, iNumber) && !EffectVar(4, pTarget, iNumber))
 	{
 		EffectVar(0, pTarget, iNumber) = anim;
 		EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
-	// Check wether the clonk wants to turn (Not when he wants to stop)
+/*	// Check wether the clonk wants to turn (Not when he wants to stop)
 	if(EffectVar(17, pTarget, iNumber) != GetDirection())
 	{
 		var iTurnTime = 10;
@@ -606,7 +678,7 @@ func FxIntWalkTimer(pTarget, iNumber)
 		// Save new ComDir
 		EffectVar(17, pTarget, iNumber) = GetDirection();
 		EffectVar(4, pTarget, iNumber) = iTurnTime;
-	}
+	}*/
 }
 
 func GetDirection()
@@ -763,13 +835,10 @@ func StartScale()
 {
 	// TODO: Tweak animation speed
 	PlayAnimation("Scale", 5, Anim_Y(0, GetAnimationLength("Scale"), 0, 15), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-	SetAnimationPosition(iTurnAction, Anim_Const(1800*GetDir()));
-}
-
-func StopScale()
-{
-//	StopAnimation(GetRootAnimation(5));
-	SetAnimationPosition(iTurnAction, Anim_Const(1200*GetDir()));
+	// Set proper turn type
+	SetTurnType(1);
+	// Update carried items
+	UpdateAttach();
 }
 
 /* Jump */
@@ -780,13 +849,8 @@ func StartJump()
 	PlayAnimation("Jump", 5, Anim_Linear(0, 0, GetAnimationLength("Jump"), 8*3, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
-}
-
-func StopJump()
-{
-//	StopAnimation(GetRootAnimation(5));
-  // Update carried items
-	UpdateAttach();
+	// Set proper turn type
+	SetTurnType(0);
 }
 
 /* Hangle */
@@ -797,6 +861,10 @@ func StartHangle()
 		CLNK_HangleStates = ["HangleStand", "Hangle"];*/
 	if(!GetEffect("IntHangle", this))
 		AddEffect("IntHangle", this, 1, 1, this);
+	// Set proper turn type
+	SetTurnType(1);
+	// Update carried items
+	UpdateAttach();
 }
 
 func StopHangle()
@@ -818,17 +886,12 @@ func FxIntHangleStart(pTarget, iNumber, fTmp)
 
 	EffectVar(1, pTarget, iNumber) = PlayAnimation("HangleStand", 5, Anim_Linear(0, 0, 2000, 100, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 
-	EffectVar(20, pTarget, iNumber) = GetDirection();
-	EffectVar(21, pTarget, iNumber) = 0;
-	SetAnimationPosition(iTurnAction, Anim_Const(1800*(GetDirection()==COMD_Right)));
 }
 
 func FxIntHangleStop(pTarget, iNumber, iReasonm, fTmp)
 {
 	SetPhysical("Hangle", EffectVar(10, pTarget, iNumber), 2);
 	if(fTmp) return;
-	SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
-//	StopAnimation(GetRootAnimation(5));
 }
 
 func FxIntHangleTimer(pTarget, iNumber, iTime)
@@ -892,25 +955,6 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 			EffectVar(1, pTarget, iNumber) = PlayAnimation("Hangle", 5, Anim_Const(begin), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 		}
 	}
-	// Check wether the clonk wants to turn (Not when he wants to stop)
-  if(EffectVar(20, pTarget, iNumber) != GetDirection())
-	{
-		var iTurnTime = 10;
-		if(EffectVar(20, pTarget, iNumber) == COMD_Right)
-			SetAnimationPosition(iTurnAction, Anim_Linear(1800, 1800, 0, iTurnTime, ANIM_Hold));
-		else
-			SetAnimationPosition(iTurnAction, Anim_Linear(0, 0, 1800, iTurnTime, ANIM_Hold));
-		// Save new ComDir
-		EffectVar(20, pTarget, iNumber) = GetDirection();
-		EffectVar(21, pTarget, iNumber) = iTurnTime;
-	}
-	// Turning
-	if(EffectVar(21, pTarget, iNumber))
-	{
-		EffectVar(21, pTarget, iNumber)--;
-		if(EffectVar(21, pTarget, iNumber) == 0)
-			SetAnimationPosition(iTurnAction, Anim_Const(1800*(GetDirection()==COMD_Right)));
-	}
 }
 
 /* Swim */
@@ -949,8 +993,11 @@ func FxIntSwimStart(pTarget, iNumber, fTmp)
 	EffectVar(8, pTarget, iNumber) = 0; // Turn Phase
 	AnimationSetState("SwimStand", 0, 1000);*/
 
-	EffectVar(20, pTarget, iNumber) = GetDirection();
-	EffectVar(21, pTarget, iNumber) = 0;
+	// Set proper turn type
+	SetTurnType(0);
+	// Update carried items
+	UpdateAttach();
+	SetAnimationWeight(iTurnKnot2, Anim_Const(1000));
 }
 
 func FxIntSwimStop(pTarget, iNumber, iReason, fTmp)
@@ -975,6 +1022,7 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 			EffectVar(0, pTarget, iNumber) = "SwimStand";
 			EffectVar(1, pTarget, iNumber) = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
 		}
+		SetAnimationWeight(iTurnKnot1, Anim_Const(0));
 	}
 	// Swimming
 	else if(!GBackSemiSolid(0, -4))
@@ -986,6 +1034,7 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 			// TODO: Determine starting position from previous animation
 			PlayAnimation("Swim", 5, Anim_AbsX(0, 0, GetAnimationLength("Swim"), 25), Anim_Linear(0, 0, 1000, 15, ANIM_Remove));
 		}
+		SetAnimationWeight(iTurnKnot1, Anim_Const(0));
 	}
 	// Diving
 	else
@@ -1012,25 +1061,7 @@ func FxIntSwimTimer(pTarget, iNumber, iTime)
 		// TODO: Shouldn't weight go by sin^2 or cos^2 instead of linear in angle?
 		var weight = 1000*EffectVar(4, pTarget, iNumber)/180;
 		SetAnimationWeight(EffectVar(1, pTarget, iNumber), Anim_Const(1000 - weight));
-	}
-	// Check wether the clonk wants to turn (Not when he wants to stop)
-  if(EffectVar(20, pTarget, iNumber) != GetDirection())
-	{
-		var iTurnTime = 10;
-		if(EffectVar(20, pTarget, iNumber) == COMD_Right)
-			SetAnimationPosition(iTurnAction, Anim_Linear(1200, 1200, 0, iTurnTime, ANIM_Hold));
-		else
-			SetAnimationPosition(iTurnAction, Anim_Linear(0, 0, 1200, iTurnTime, ANIM_Hold));
-		// Save new ComDir
-		EffectVar(20, pTarget, iNumber) = GetDirection();
-		EffectVar(21, pTarget, iNumber) = iTurnTime;
-	}
-	// Turning
-	if(EffectVar(21, pTarget, iNumber))
-	{
-		EffectVar(21, pTarget, iNumber)--;
-		if(EffectVar(21, pTarget, iNumber) == 0)
-			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
+		SetAnimationWeight(iTurnKnot1, Anim_Const(1000 - weight));
 	}
 }
 
@@ -1121,27 +1152,8 @@ func FxIntDigStart(pTarget, iNumber, fTmp)
   // Sound
 	Digging();
 
-	EffectVar(17, pTarget, iNumber) = GetDirection();
-	var iTurnPos = 0;
-	if(EffectVar(17, pTarget, iNumber) == COMD_Right) iTurnPos = 1200;
-
-	if(iTurnAction == nil || GetAnimationPosition(iTurnAction) == nil)
-		iTurnAction = PlayAnimation("TurnRoot", 1, Anim_Const(iTurnPos), Anim_Const(1000));
-	else { SetAnimationPosition(iTurnAction, Anim_Const(iTurnPos)); }
-
-	EffectVar(4, pTarget, iNumber) = 0;
-
-	EffectVar(10, pTarget, iNumber) = GetPhysical("Dig");
-}
-
-func FxIntDigStop(pTarget, iNumber, fTmp)
-{
-	if(fTmp) return;
-
-	// Update carried items
-	UpdateAttach();
-	
-	SetPhysical("Dig", EffectVar(10, pTarget, iNumber), 2);
+	// Set proper turn type
+	SetTurnType(0);
 }
 
 func FxIntDigTimer(pTarget, iNumber, iTime)
@@ -1160,41 +1172,15 @@ func FxIntDigTimer(pTarget, iNumber, iTime)
 			return -1;
 		}
 	}
-	// Adjust dig speed
-//	var iSpeed = 50+Cos(GetAnimationPosition(EffectVar(1, pTarget, iNumber))*180/GetAnimationLength("Dig"), 50);
-//	SetPhysical("Dig", EffectVar(10, pTarget, iNumber)/75*iSpeed, 2);
-	// Check wether the clonk wants to turn (Not when he wants to stop)
-  if(EffectVar(17, pTarget, iNumber) != GetDirection())
-	{
-		var iTurnTime = 10;
-		if(EffectVar(17, pTarget, iNumber) == COMD_Right)
-			SetAnimationPosition(iTurnAction, Anim_Linear(1200, 1200, 0, iTurnTime, ANIM_Hold));
-		else
-			SetAnimationPosition(iTurnAction, Anim_Linear(0, 0, 1200, iTurnTime, ANIM_Hold));
-		// Save new ComDir
-		EffectVar(17, pTarget, iNumber) = GetDirection();
-		EffectVar(4, pTarget, iNumber) = iTurnTime;
-	}
-	// Turning
-	if(EffectVar(4, pTarget, iNumber))
-	{
-		EffectVar(4, pTarget, iNumber)--;
-		if(EffectVar(4, pTarget, iNumber) == 0)
-			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
-	}
-}
-
-func FxIntDigStopDig(pTarget, iNumber)
-{
-	EffectVar(5, pTarget, iNumber) = 1;
 }
 
 func StartDead()
 {
 	PlayAnimation("Dead", 5, Anim_Linear(0, 0, GetAnimationLength("Dead"), 20, ANIM_Hold), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
-	SetAnimationPosition(iTurnAction, Anim_Const(1800*GetDir()));
 	// Update carried items
 	UpdateAttach();
+	// Set proper turn type
+	SetTurnType(1);
 }
 
 func StartTumble()
@@ -1202,6 +1188,8 @@ func StartTumble()
 	PlayAnimation("Tumble", 5, Anim_Linear(0, 0, GetAnimationLength("Tumble"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
+	// Set proper turn type
+	SetTurnType(0);
 }
 
 /* Act Map */
@@ -1240,7 +1228,6 @@ Scale = {
 	OffX = 0,
 	OffY = 0,
 	StartCall = "StartScale",
-	AbortCall = "StopScale",
 },
 Tumble = {
 	Prototype = Action,
@@ -1340,7 +1327,6 @@ Jump = {
 	PhaseCall = "CheckStuck",
 //	Animation = "Jump",
 	StartCall = "StartJump",
-	AbortCall = "StopJump",
 },
 Dive = {
 	Prototype = Action,
