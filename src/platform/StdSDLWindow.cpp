@@ -76,5 +76,10 @@ void CStdWindow::SetTitle(const char * Title) {
 	SDL_WM_SetCaption(Title, 0);
 }
 
+// For Max OS X, the implementation resides in StdMacApp.mm
+#ifndef __APPLE__
+
 void CStdWindow::FlashWindow() {
 }
+
+#endif
