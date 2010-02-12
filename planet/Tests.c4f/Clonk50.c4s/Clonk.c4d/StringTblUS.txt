@@ -1,0 +1,8 @@
+CtxConstructionDesc=Construction
+CtxConstructionMaterial=Construction material
+CtxHomeDesc=Back to base
+CtxRelease=Release
+CtxChop=Chop
+CtrlMenuDesc=Menu
+TxtDescend=Jump off
+TxtEnergysupply=Energy supply

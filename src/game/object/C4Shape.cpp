@@ -210,40 +210,8 @@ bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
 	// Until a better solution for designing battlements is found, the old-style
 	// behaviour will be used for Clonks.	Both code variants should behave equally
 	// for objects with only one matching vertex to cnat_pos.
-	if (!(cnat_pos & CNAT_MultiAttach))
-		{
-		// old-style attachment
-		for (vtx=0; vtx<VtxNum; vtx++)
-			if (VtxCNAT[vtx] & cnat_pos)
-				{
-				xcd=ycd=0;
-				switch (cnat_pos & (~CNAT_Flags))
-					{
-					case CNAT_Top:    ycd=-1; break;
-					case CNAT_Bottom: ycd=+1; break;
-					case CNAT_Left:   xcd=-1; break;
-					case CNAT_Right:  xcd=+1; break;
-					}
-				xcrng=AttachRange*xcd*(-1); ycrng=AttachRange*ycd*(-1);
-				for (xcnt=xcrng,ycnt=ycrng; (xcnt!=-xcrng) || (ycnt!=-ycrng); xcnt+=xcd,ycnt+=ycd)
-					{
-					int32_t ax=cx+VtxX[vtx]+xcnt+xcd, ay=cy+VtxY[vtx]+ycnt+ycd;
-					if (GBackDensity(ax,ay) >= ContactDensity)
-						{
-						cpix=GBackPix(ax,ay);
-						AttachMat=PixCol2Mat(cpix);
-						iAttachX=ax; iAttachY=ay;
-						iAttachVtx=vtx;
-						cx+=xcnt; cy+=ycnt;
-						fAttached=1;
-						break;
-						}
-					}
-				}
-		}
-	else // CNAT_MultiAttach
-		{
-		// new-style attachment
+
+	  // new-style attachment
 		// determine attachment direction
 		xcd=ycd=0;
 		switch (cnat_pos & (~CNAT_Flags))
@@ -280,8 +248,7 @@ bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
 						break;
 						}
 					}
-		}
-
+	  
   return fAttached;
   }
 

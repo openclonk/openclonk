@@ -273,29 +273,38 @@ CSurface *CClrModAddMap::GetSurface()
 
 void CClrModAddMap::ReduceModulation(int cx, int cy, int Radius, int (*VisProc)(int, int, int, int, int))
 	{
-	// landscape coordinates: cx, cy, VisProc
-	// display coordinates: zx, zy, x, y
-	float zx = float(cx);
-	float zy = float(cy);
-	lpDDraw->ApplyZoom(zx, zy);
-	Radius = int(lpDDraw->Zoom * Radius);
 	// reveal all within iRadius1; fade off squared until iRadius2
 	int x = OffX, y = OffY, xe = Wdt*ResolutionX+OffX;
 	int RadiusSq = Radius*Radius;
 	for (unsigned int i = 0; i < MapSize; i++)
 		{
-		if ((x-zx)*(x-zx)+(y-zy)*(y-zy) < RadiusSq)
+		if ((x-cx)*(x-cx)+(y-cy)*(y-cy) < RadiusSq)
 			{
-			float lx = float(x);
-			float ly = float(y);
-			lpDDraw->RemoveZoom(lx, ly);
-			pMap[i] = Max<int>(pMap[i], VisProc(255, int(lx), int(ly), int(cx), int(cy)));
+				pMap[i] = 255; // Max<int>(pMap[i], VisProc(255, int(lx), int(ly), int(cx), int(cy)));
 			}
 		// next pos
 		x += ResolutionX;
 		if (x >= xe) { x = OffX; y += ResolutionY; }
 		}
 	}
+
+/*
+void CClrModAddMap::PropagateModulation(int (*VisProc)(int, int, int, int, int))
+{
+	int x = OffX, y = OffY, xe = Wdt*ResolutionX+OffX;
+	for(unsigned int i = 0; i < MapSize; i++)
+	{
+		if(pMap[i] > 0) {
+			// propagate left?
+			if((i % Wdt) > 0 && pMap[i - 1] < 255)
+				pMap[i - 1] = VisProc(pMap[i - 1], 
+		
+		// next pos
+		x += ResolutionX;
+		if (x >= xe) { x = OffX; y += ResolutionY; }
+	}
+}
+*/
 
 void CClrModAddMap::AddModulation(int cx, int cy, int Radius, uint8_t Transparency)
 	{
@@ -330,6 +339,9 @@ uint32_t CClrModAddMap::GetModAt(int x, int y) const
 	// slower, more accurate method: Interpolate between 4 neighboured modulations
 	x -= OffX;
 	y -= OffY;
+		
+		float lx = x, ly = y; lpDDraw->RemoveZoom(lx, ly); x = lx; y = ly;
+		
 	int tx = BoundBy(x / ResolutionX, 0, Wdt-1);
 	int ty = BoundBy(y / ResolutionY, 0, Hgt-1);
 	int tx2 = Min(tx + 1, Wdt-1);
@@ -344,7 +356,7 @@ uint32_t CClrModAddMap::GetModAt(int x, int y) const
 	uint32_t c3 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
 	Vis = pMap[ty2*Wdt+tx2];
 	uint32_t c4 = FadeTransparent ? 0xffffff | (Vis << 24) : 0xff000000|RGB(Vis, Vis, Vis);
-	CColorFadeMatrix clrs(tx*ResolutionX, ty*ResolutionY, ResolutionX, ResolutionY, c1, c2, c3, c4);
+	CColorFadeMatrix clrs(tx*ResolutionX, ty*ResolutionY, ResolutionX, ResolutionY, c1, c1, c1, c1);
 	return clrs.GetColorAt(x, y);
 #endif
 	}

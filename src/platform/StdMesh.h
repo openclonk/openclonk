@@ -233,7 +233,7 @@ public:
 	StdCopyStrBuf Name;
 	float Length;
 
-private:
+public:
 	std::vector<StdMeshTrack*> Tracks; // bone-indexed
 };
 
