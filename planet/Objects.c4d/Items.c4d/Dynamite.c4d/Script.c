@@ -82,7 +82,18 @@ protected func Incineration() { Extinguish(); Fuse(); }
 
 protected func RejectEntrance()
 {
-  return GetAction() == "Fuse";
+  return GetAction() == "Fuse" || GetAction() == "Ready";
+}
+
+// Controle of the Dynamite box
+public func SetReady()
+{
+	SetAction("Ready");
+}
+// Controle of the Dynamite box
+public func SetFuse()
+{
+	SetAction("Fuse");
 }
 
 private func Fusing() {
@@ -110,6 +121,15 @@ protected func Definition(def) {
 				FacetBase = 1,
 				Sound = "Fusing",
 				StartCall = "Fusing"
+			},
+			Ready = {
+				Prototype = Action,
+				Name = "Ready",
+				Procedure = DFA_FLOAT,
+				NextAction = "Ready",
+				Delay = 1,
+				Length = 1,
+				FacetBase = 1,
 			}
 		};
 }

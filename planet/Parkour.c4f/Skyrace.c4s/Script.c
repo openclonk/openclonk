@@ -18,7 +18,7 @@ protected func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
 	clonk->CreateContents(BOW1);
-	clonk->CreateContents(ARRW);
+	clonk->CreateContents(DYNB);
 	clonk->CreateObject(CLUB);
 	return;
 }

@@ -344,6 +344,7 @@ public func IsClonk() { return true; }
 
 local iHandMesh;
 local fHandAction;
+local fBothHanded;
 // GetSelected
 
 func OnSelectionChanged(int oldslot, int newslot, bool secondaryslot)
@@ -362,6 +363,14 @@ func OnSlotFull(int slot)
 	if(GetSelected(0) == slot) AttachHandItem(0);
 	if(GetSelected(1) == slot) AttachHandItem(1);
 	return _inherited(slot);
+}
+
+public func DetachObject(object obj)
+{
+	if(GetSelectedItem(0) == obj)
+		DetachHandItem(0);
+	if(GetSelectedItem(1) == obj)
+		DetachHandItem(1);
 }
 
 func DetachHandItem(bool secondary)
@@ -409,6 +418,8 @@ func DoUpdateAttach(bool sec)
 	var closehand = "Close2Hand";
 	if(sec) closehand = "Close1Hand";
 
+	if(!sec) fBothHanded = 0;
+
 	var special = obj->~GetCarrySpecial(this);
 	if(special)
 	{
@@ -418,7 +429,7 @@ func DoUpdateAttach(bool sec)
 
 	if(iAttachMode == CARRY_Hand)
 	{
-		if(HasHandAction())
+		if(HasHandAction(sec))
 		{
   		iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
@@ -428,7 +439,7 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_HandBack)
 	{
-		if(HasHandAction())
+		if(HasHandAction(sec))
 		{
   		iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
@@ -445,6 +456,18 @@ func DoUpdateAttach(bool sec)
 	{
 		iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
 	}
+	else if(iAttachMode == CARRY_BothHands)
+	{
+		if(sec) return;
+		if(HasHandAction(sec))
+		{
+			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
+			PlayAnimation("CarryArms", 6, Anim_Const(obj->~GetCarryPhase(this)), Anim_Const(1000));
+			fBothHanded = 1;
+		}
+		else
+			; // Don't display
+	}
 }
 
 public func GetHandMesh(object obj)
@@ -460,9 +483,12 @@ static const CARRY_Hand         = 1;
 static const CARRY_HandBack     = 2;
 static const CARRY_HandAlways   = 3;
 static const CARRY_Back         = 4;
+static const CARRY_BothHands		= 5;
 
-func HasHandAction()
+func HasHandAction(sec)
 {
+	if(sec && fBothHanded)
+		return false;
 	if( (GetAction() == "Walk" || GetAction() == "Jump") && !fHandAction )
 		return true;
 	return false;
@@ -570,6 +596,16 @@ func SetTurnType(iIndex)
 		if(GetAnimationWeight(iTurnKnot2) > 0)
 			SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),0,1000,10,ANIM_Hold));
 	}
+}
+
+func GetDirection()
+{
+	// Get direction from ComDir
+	if(ComDirLike(GetComDir(), COMD_Right)) return COMD_Right;
+	else if(ComDirLike(GetComDir(), COMD_Left)) return COMD_Left;
+	// if ComDir hasn't a direction, use GetDir
+	if(GetDir()==DIR_Right) return COMD_Right;
+	else return COMD_Left;
 }
 
 /* Walk */
@@ -681,17 +717,13 @@ func FxIntWalkTimer(pTarget, iNumber)
 	}*/
 }
 
-func GetDirection()
+func StartStand()
 {
-	// Get direction from ComDir
-	if(ComDirLike(GetComDir(), COMD_Right)) return COMD_Right;
-	else if(ComDirLike(GetComDir(), COMD_Left)) return COMD_Left;
-	// if ComDir hasn't a direction, use GetDir
-	else
-	{
-		if(GetDir()==DIR_Right) return COMD_Right;
-		else return COMD_Left;
-	}
+	PlayAnimation(CLNK_WalkStand, 5, GetWalkAnimationPosition(CLNK_WalkStand), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	// Update carried items
+	UpdateAttach();
+	// Set proper turn type
+	SetTurnType(0);
 }
 
 /*
@@ -1008,7 +1040,7 @@ func FxIntSwimStop(pTarget, iNumber, iReason, fTmp)
 
 func FxIntSwimTimer(pTarget, iNumber, iTime)
 {
-	DoEnergy(1); //TODO Remove this! Endless Energy while diving is only for the testers
+//	DoEnergy(1); //TODO Remove this! Endless Energy while diving is only for the testers
 
 	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
 
@@ -1211,6 +1243,21 @@ Walk = {
 	Hgt = 20,
 	StartCall = "StartWalk",
 	AbortCall = "StopWalk",
+	InLiquidAction = "Swim",
+},
+Stand = {
+	Prototype = Action,
+	Name = "Stand",
+	Procedure = DFA_THROW,
+	Directions = 2,
+	FlipDir = 0,
+	Length = 1,
+	Delay = 0,
+	X = 0,
+	Y = 0,
+	Wdt = 8,
+	Hgt = 20,
+	StartCall = "StartStand",
 	InLiquidAction = "Swim",
 },
 Scale = {

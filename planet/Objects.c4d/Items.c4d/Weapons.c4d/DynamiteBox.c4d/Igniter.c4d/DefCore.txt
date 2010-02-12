@@ -1,0 +1,17 @@
+[DefCore]
+id=IGNT
+Version=4,9,8
+Category=C4D_Object
+Width=4
+Height=15
+Offset=-2,-7
+Vertices=3
+VertexY=-6,6,0
+VertexFriction=120,120,120
+Value=15
+Mass=15
+Components=WOOD=5
+Picture=4,0,21,21
+Collectible=1
+Rotate=1
+Float=1
