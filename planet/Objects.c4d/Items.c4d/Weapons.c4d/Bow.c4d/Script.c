@@ -203,7 +203,7 @@ func FxIntWalkSlowStop(pTarget, iNumber)
 public func AddArrow(clonk)
 {
 	if(!fAiming) return;
-	iArrowMesh = clonk->AttachMesh(HARW, "pos_hand1", "main", Trans_Scale(2000, 1000, 2000));
+	iArrowMesh = clonk->AttachMesh(HARW, "pos_hand1", "main", nil);
 }
 
 func RejectCollect(id arrowid, object arrows)
@@ -214,4 +214,5 @@ func RejectCollect(id arrowid, object arrows)
 
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
+	SetProperty("PerspectiveR", 15000, def);
 }

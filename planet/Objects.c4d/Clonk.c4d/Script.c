@@ -409,7 +409,9 @@ func DoUpdateAttach(bool sec)
 
 	var bone = "main";
 	if(obj->~GetCarryBone()) bone = obj->~GetCarryBone(this);
-	var trans = obj->~GetCarryTransform(this);
+	var nohand = 0;
+	if(!HasHandAction(sec)) nohand = 1;
+	var trans = obj->~GetCarryTransform(this, sec, nohand);
 
 	var pos_hand = "pos_hand2";
 	if(sec) pos_hand = "pos_hand1";
@@ -540,6 +542,7 @@ func FxIntTurnStart(pTarget, iNumber, fTmp)
 	iTurnKnot2 = iTurnAction3+1;
 
 	EffectVar(1, pTarget, iNumber) = 0;
+	SetTurnType(0);
 }
 
 func FxIntTurnTimer(pTarget, iNumber, iTime)

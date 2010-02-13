@@ -2,8 +2,8 @@
 	<bones>
 		<bone id="0" name="main">
 			<position x="0.000000" y="0.000000" z="0.000000"/>
-			<rotation angle="1.617914">
-				<axis x="0.997483" y="-0.048141" z="-0.052057"/>
+			<rotation angle="1.570796">
+				<axis x="1.000000" y="0.000000" z="0.000000"/>
 			</rotation>
 		</bone>
 	</bones>

@@ -6,7 +6,7 @@ private func Hit()
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }
-public func GetCarryTransform() { return Trans_Scale(130); }
+//public func GetCarryTransform() { return Trans_Scale(130); }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
 
@@ -119,4 +119,7 @@ public func IsToolProduct() { return 1; }
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
+	SetProperty("PerspectiveR", 14000, def);
+  SetProperty("PerspectiveTheta", 20, def);
+  SetProperty("PerspectivePhi", 40, def);
 }

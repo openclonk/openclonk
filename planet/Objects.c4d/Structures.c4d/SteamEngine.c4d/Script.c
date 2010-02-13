@@ -83,7 +83,7 @@ Y = 0,
 Wdt = 110,
 Hgt = 80,
 NextAction = "Work",
-//Animation = "Work",
+Animation = "Work",
 EndCall = "ConsumeFuel",
 },  }, def);
   SetProperty("Name", "$Name$", def);

@@ -48,13 +48,13 @@ public func Ignite(clonk)
 	clonk->DetachObject(this);
 
 	// The igniter isn't used anymore...
-	RemoveObject();
+//	RemoveObject();
 }
 
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PerspectiveR", 4000, def);
+  SetProperty("PerspectiveR", 7000, def);
   SetProperty("PerspectiveTheta", 20, def);
   SetProperty("PerspectivePhi", -30, def);
 }

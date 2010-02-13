@@ -1,4 +1,4 @@
-material MaterialWind
+material Windmill
 {
 	receive_shadows on
 	technique

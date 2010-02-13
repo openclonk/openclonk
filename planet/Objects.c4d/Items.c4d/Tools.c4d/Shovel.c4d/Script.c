@@ -6,7 +6,6 @@ private func Hit()
 }
 
 public func GetCarryMode(clonk) { return CARRY_Back; }
-public func GetCarryTransform(clonk)	{	return Trans_Scale(2000);	}
 
 public func GetCarrySpecial(clonk) { if(clonk->~GetAction() == "Dig") return "pos_hand1"; }
 
@@ -127,7 +126,7 @@ public func IsToolProduct() { return 1; }
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PerspectiveR", 5000, def);
+  SetProperty("PerspectiveR", 15000, def);
 //  SetProperty("PerspectiveTheta", 20, def);
 //  SetProperty("PerspectivePhi", 70, def);
 }

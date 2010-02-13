@@ -47,7 +47,7 @@ public func ControlUse(object clonk, int x, int y)
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PerspectiveR", 6000, def);
+  SetProperty("PerspectiveR", 10000, def);
   SetProperty("PerspectiveTheta", 20, def);
   SetProperty("PerspectivePhi", 60, def);
 }

@@ -6,10 +6,8 @@ private func Hit()
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }
-public func GetCarryTransform() { return Trans_Scale(130); }
-public func GetCarryBone() { return "Main"; }
+public func GetCarryBone() { return "main"; }
 
-local fDrawn;
 local fAttack;
 local iAnimStrike;
 
@@ -17,7 +15,7 @@ static const SWOR_StrikeTime = 35;
 
 public func ControlUse(object clonk, int x, int y)
 {
-	if(fDrawn && !fAttack)
+	if(!fAttack)
 	{
 		Message("!Attack!", this);
 		fAttack = 1;
@@ -26,12 +24,6 @@ public func ControlUse(object clonk, int x, int y)
 		ScheduleCall(this, "DoStrike", 15*SWOR_StrikeTime/20, 1, clonk);  // Do Damage at animation frame 15 of 20
 		ScheduleCall(this, "StrikeEnd", SWOR_StrikeTime, 1, clonk);
 	}
-	else if(clonk->GetAction() == "Walk" && !fAttack)
-	{
-		DrawSword(0);
-		Message("Draw!", this);
-	}
-
 	return true;
 }
 
@@ -48,19 +40,10 @@ public func StrikeEnd(clonk)
 	fAttack = 0;
 }
 
-public func DrawSword(fUndraw)
-{
-	if(fDrawn != fUndraw) return 0;
-	if(fDrawn) RemoveEffect("IntSword", Contained());
-	else AddEffect("IntSword", Contained(), 1, 1, this);
-	return 1;	
-}
-
 func FxIntSwordStart(pTarget, iNumber, fTmp)
 {
 	if(fTmp) return;
 //	pTarget->SetPhysical("Walk", 20000, 2);
-	fDrawn = 1;
 	fAttack = 0;
 }
 
@@ -73,29 +56,6 @@ func FxIntSwordStop(pTarget, iNumber, iReason, fTmp)
 {
 	if(fTmp) return;
 	if(fAttack) StrikeEnd(pTarget);
-  fDrawn = 0;
-}
-
-local itemmesh;
-
-public func Entrance(pTarget)
-{
-	fDrawn = 0;
-}
-
-public func Departure()
-{
-	// if the item had a holdmode detach mesh
-}
-
-public func Selection(pTarget, fSecond)
-{
-//	if(second) return;
-}
-
-public func Deselection(pTarget, fSecond)
-{
-	DrawSword(1);
 }
 
 public func IsTool() { return 1; }
@@ -105,4 +65,7 @@ public func IsToolProduct() { return 1; }
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
+  SetProperty("PerspectiveR", 15000, def);
+  SetProperty("PerspectiveTheta", 10, def);
+  SetProperty("PerspectivePhi", -10, def);
 }

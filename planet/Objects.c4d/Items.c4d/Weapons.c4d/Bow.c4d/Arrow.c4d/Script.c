@@ -24,7 +24,10 @@ protected func Construction()
 public func Launch(int angle, int str, object shooter)
 {
 	SetGraphics(0, HARW);
-	SetObjDrawTransform(700, 0, 0, 0, 1000);
+	SetShape(-2,-2,4,11);
+	SetVertex(0, 1, 4, 1);
+	SetVertex(1, 1, 8, 1);
+	SetVertex(2, 1, 0, 1);
 	var xdir = Sin(angle,str);
 	var ydir = Cos(angle,-str);
 	SetXDir(xdir);
@@ -46,15 +49,15 @@ private func Stick()
 		SetYDir(0);
 		SetRDir(0);
 	
-		var x=Sin(GetR(),+12);
-		var y=Cos(GetR(),-12);
+		var x=Sin(GetR(),+2);
+		var y=Cos(GetR(),-2);
 		var mat = GetMaterial(x,y);
 		if(mat != -1)
 		{
 			if(GetMaterialVal("DigFree","Material",mat))
 			{
 			// stick in landscape
-			SetVertex(2,VTX_Y,-15,1);
+			SetVertex(2,VTX_Y,-3,1);
 			}
 		}
 	}
