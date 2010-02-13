@@ -24,7 +24,7 @@ protected func Initialize()
 
 protected func ControlUseStart(object pClonk, ix, iy)
 {	
-	if(pClonk->GetProcedure()!="WALK" && pClonk->GetProcedure()!="FLIGHT") return 1;
+	if(pClonk->GetProcedure()!="WALK" && pClonk->GetProcedure()!="FLIGHT" && pClonk->GetProcedure()!="ATTACH") return 1;
 
 	if(GetEffect("Flight",this)!=nil)
 	{
@@ -69,8 +69,7 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 {
 	if(fuel<20 && Distance(GetX(), GetY(), rider->GetX(), rider->GetY())<30)
 	{
-		rider->SetAction("Tumble");
-		rider->SetVelocity(angle,20);
+		JumpOff(rider);
 	}
 
 	if(fuel<=0)
@@ -92,8 +91,18 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 	if(Random(3)==1) CastParticles("Spark",1,Random(30),sin,cos,30,60,RGB(255,255,0),RGB(255,200,0));
 }
 
+protected func JumpOff(object clonk)
+{
+	clonk->SetAction("Tumble");
+	clonk->SetVelocity(angle,25);
+}
+
 protected func Hit()
 {
+	if(rider!=nil)
+	{
+		JumpOff(rider);
+	}
 	Message("I have hit something",this);
 	if(GetEffect("Flight",this)) Explode(30);
 	Sound("WoodHit");
