@@ -1,4 +1,4 @@
-/*-- Ice --*/
+/*-- Snowball --*/
 
 #strict 2
 
@@ -11,7 +11,6 @@ protected func Initialize()
 protected func Check()
 {
 	if(GetTemperature() > 0) Melt();
-	if(GetTemperature() <= 0 && GetMaterial()==Material("Water")) Freeze();
 }
 
 private func Melt()
@@ -20,11 +19,10 @@ private func Melt()
 	DoCon(-2);
 }
 
-private func Freeze()
+private func Hit()
 {
-	DoCon(2);
-	var i=2;
-	while(i>0) ExtractLiquid() && i=--i;
+	if(GetMaterial(0,3)==Material("Snow")) return 1;
+	CastPXS("Snow", 225,18);
 }
 
 func Definition(def) {

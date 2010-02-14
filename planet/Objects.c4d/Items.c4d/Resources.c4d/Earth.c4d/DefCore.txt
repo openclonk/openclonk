@@ -1,0 +1,16 @@
+[DefCore]
+id=ERTH
+Version=4,10,0,0
+Category=C4D_Object
+Width=8
+Height=8
+Offset=-4,-4
+Vertices=3
+VertexX=0,3,-3
+VertexY=3,-3,-3
+VertexFriction=100
+Mass=12
+Components=ILOA=1
+Collectible=1
+Fragile=1
+Rotate=1

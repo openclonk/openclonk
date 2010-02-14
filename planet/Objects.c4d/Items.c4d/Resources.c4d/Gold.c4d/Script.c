@@ -2,6 +2,11 @@
 
 #strict 2
 
+protected func Initialize()
+{
+	SetGraphics(Format("%d.8",Random(2)));
+}
+
 protected func Hit()
 {
    Sound("RockHit*");

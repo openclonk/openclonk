@@ -1,1 +1,1 @@
-Name=Chunk of gold
+Name=Chunk of Gold
