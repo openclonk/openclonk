@@ -1,5 +1,5 @@
 [DefCore]
-id=SNOW
+id=SNWB
 Version=4,9,10,10
 Category=C4D_Object
 MaxUserSelect=100

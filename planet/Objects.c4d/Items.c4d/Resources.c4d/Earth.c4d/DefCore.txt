@@ -7,7 +7,7 @@ Height=8
 Offset=-4,-4
 Vertices=3
 VertexX=0,3,-3
-VertexY=3,-3,-3
+VertexY=3,-2,-2
 VertexFriction=100
 Mass=12
 Components=ILOA=1

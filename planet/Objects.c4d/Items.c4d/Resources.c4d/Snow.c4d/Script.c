@@ -21,8 +21,8 @@ private func Melt()
 
 private func Hit()
 {
-	if(GetMaterial(0,3)==Material("Snow")) return 1;
-	CastPXS("Snow", 225,18);
+	CastPXS("Snow", 400,18);
+	RemoveObject();
 }
 
 func Definition(def) {

@@ -4,7 +4,7 @@
 
 protected func Initialize()
 {
-	SetGraphics(Format("%.8",Random(2)));
+	SetGraphics(Format("%d.8",Random(2)));
 }
 
 protected func Hit()

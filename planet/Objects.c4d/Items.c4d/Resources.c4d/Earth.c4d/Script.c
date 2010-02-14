@@ -4,12 +4,12 @@
 
 protected func Initialize()
 {
-	SetGraphics(Format("%d.10", Random(2)));
+	SetGraphics(Format("%d.8", Random(2)));
 }
 
 protected func Hit()
 {
-  CastPXS("Earth", 225, 18);
+  CastPXS("Earth", 200, 18);
   Sound("EarthHit*");
   RemoveObject();
   return 1;
