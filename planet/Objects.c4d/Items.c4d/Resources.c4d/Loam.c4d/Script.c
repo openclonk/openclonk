@@ -18,8 +18,9 @@ func Hit()
 // Item activation
 func ControlUseStart(object clonk, int x, int y)
 {
-	// Clonk must stand on ground
-	if(clonk->GetProcedure() != "WALK")
+	// Clonk must stand on ground. Allow during SCALE; but Clonk won't keep animation if he's not actually near the ground
+	var clnk_proc = clonk->GetProcedure();
+	if(clnk_proc != "WALK" && clnk_proc != "SCALE")
 	{
 		clonk->CancelUse();
 		return true;
@@ -101,12 +102,15 @@ public func ControlUseCancel(object clonk, int x, int y)
 
 private func LoamDone(object clonk)
 { 
-	if(last_frame != begin_frame)
+	// Get out of animation
+	if(clonk->GetAction() == "Bridge")
 	{
-		if(clonk->GetAction() != "Bridge") return true;
 		clonk->SetAction("Walk");
 		clonk->SetComDir(COMD_Stop);
-		
+	}
+	// Remove loam object if any of it has been consumed
+	if(last_frame != begin_frame)
+	{
 		RemoveObject();
 	}
 }
