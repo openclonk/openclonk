@@ -1,2 +1,0 @@
-DE:Schub
-US:Thrust
