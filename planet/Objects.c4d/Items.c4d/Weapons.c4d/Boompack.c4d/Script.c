@@ -8,8 +8,12 @@
 local fuel;
 local rider;
 
-public func GetCarryMode(clonk) { return CARRY_Back; }
-public func GetCarryTransform(clonk)	{	return Trans_Scale(2000);	}
+static boomtrans;
+static carrypos;
+
+public func GetCarryMode(clonk) { return CARRY_BothHands; }
+public func GetCarryTransform(clonk)	{	return Trans_Translate(-1500,2000,-3000);	} // TODO change when ck has fixed the bug
+public func GetCarryPhase() { return 700; }
 
 protected func Construction()
 {
@@ -214,7 +218,7 @@ func FxFireworkTimer(object target, int num, int time)
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
   SetProperty("Collectible",1, def);
-  SetProperty("PerspectiveR", 4500, def);
+  SetProperty("PerspectiveR", 20000, def);
   SetProperty("PerspectiveTheta", 25, def);
   SetProperty("PerspectivePhi", 30, def);
 }

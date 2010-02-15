@@ -463,14 +463,14 @@ func DoUpdateAttach(bool sec)
 		if(sec) return;
 		if(HasHandAction(sec))
 		{
-			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
+			iHandMesh[sec] = AttachMesh(obj, "pos_tool1", bone, trans);
 			PlayAnimation("CarryArms", 6, Anim_Const(obj->~GetCarryPhase(this)), Anim_Const(1000));
 			fBothHanded = 1;
 		}
 		else
 			; // Don't display
 	}
-}
+}//AttachMesh(DYNB, "pos_tool1", "main", Trans_Translate(0,0,0));
 
 public func GetHandMesh(object obj)
 {
@@ -601,6 +601,12 @@ func SetTurnType(iIndex)
 	}
 }
 
+// For test purpose
+public func TurnFront()
+{
+	SetAnimationPosition(iTurnAction, Anim_Const(500));
+}
+
 func GetDirection()
 {
 	// Get direction from ComDir
@@ -668,17 +674,6 @@ func FxIntWalkStart(pTarget, iNumber, fTmp)
 	UpdateAttach();
 	// Set proper turn
 	SetTurnType(0);
-}
-
-func FxIntWalkStop(pTarget, iNumber, fTmp)
-{
-	if(fTmp) return;
-
-	// Remove all
-//	StopAnimation(GetRootAnimation(5));
-
-	// Update carried items
-	UpdateAttach();
 }
 
 func FxIntWalkTimer(pTarget, iNumber)
@@ -1033,12 +1028,6 @@ func FxIntSwimStart(pTarget, iNumber, fTmp)
 	// Update carried items
 	UpdateAttach();
 	SetAnimationWeight(iTurnKnot2, Anim_Const(1000));
-}
-
-func FxIntSwimStop(pTarget, iNumber, iReason, fTmp)
-{
-	if(fTmp) return;
-//	StopAnimation(GetRootAnimation(5));
 }
 
 func FxIntSwimTimer(pTarget, iNumber, iTime)
