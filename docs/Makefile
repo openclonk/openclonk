@@ -49,7 +49,7 @@ all: $(online-dirs) $(sdk-en-dirs) $(online-extra-files) $(online-sdk-files)
 
 online-de: $(addprefix online/de/, $(sdk-dirs) images $(htmlfiles) sdk/content.html $(extra-files))
 
-chm: $(chm-dirs) Entwickler.chm Developer.chm
+chm: $(chm-dirs) chm/de/Entwickler.chm chm/en/Developer.chm
 
 install: all
 	$(MKDIR_P) $(prefix)
@@ -62,11 +62,11 @@ clean:
 	rm -f *.mo Entwickler.chm Developer.chm doku.pot
 	rm -rf online sdk-en chm
 
-chm/de/Output.hhp chm/de/Output.hhk chm/en/Output.hhc chm/en/Output.hhp chm/en/Output.hhk sdk/content.xml: chm/de/Output.hhc
+chm/de/Output.hhp chm/de/Output.hhk chm/en/Output.hhp chm/en/Output.hhk: sdk/content.xml
 #update timestamp
 	touch $@
-chm/de/Output.hhc: $(xmlfiles) chm/de/. chm/en/. build_chm_files.py experimental.py \
-  Template.hhc Template.en.hhc Template.hhk Template.en.hhk Template.hhp Template.en.hhp en.mo
+sdk/content.xml: $(xmlfiles) chm/de/. chm/en/. build_chm_files.py experimental.py \
+  sdk/content.xml.in Template.hhk Template.en.hhk Template.hhp Template.en.hhp en.mo
 	@echo generate chm files
 	@python build_chm_files.py $(xmlfiles)
 
@@ -99,6 +99,10 @@ online/de/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
 online/en/sdk/%.html: sdk-en/%.xml $(stylesheet) ; $(run-xslt)
 chm/de/sdk/%.html: sdk/%.xml $(stylesheet) ; $(run-xslt)
 chm/en/sdk/%.html: sdk-en/%.xml $(stylesheet) ; $(run-xslt)
+chm/de/Output.hhc: stylesheet=hhc.xsl
+chm/en/Output.hhc: stylesheet=hhc.xsl
+chm/de/Output.hhc: sdk/content.xml hhc.xsl ; $(run-xslt)
+chm/en/Output.hhc: sdk-en/content.xml hhc.xsl ; $(run-xslt)
 
 $(filter online/en/%, $(online-extra-files)): online/en/%: %
 	$(CP) $< $@
@@ -109,8 +113,8 @@ $(addprefix chm/en/, $(extra-files-chm)): chm/en/%: %
 $(addprefix chm/de/, $(extra-files-chm)): chm/de/%: %
 	$(CP) $< $@
 
-Entwickler.chm: chm/de/Output.hhp chm/de/Output.hhk chm/de/Output.hhc $(addprefix chm/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
-	$(HHC) $<
-Developer.chm: chm/en/Output.hhp chm/en/Output.hhk chm/en/Output.hhc $(addprefix chm/en/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
-	$(HHC) $<
+chm/de/Entwickler.chm: chm/de/Output.hhp chm/de/Output.hhk chm/de/Output.hhc $(addprefix chm/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
+	"$(HHC)" $<
+chm/en/Developer.chm: chm/en/Output.hhp chm/en/Output.hhk chm/en/Output.hhc $(addprefix chm/en/, $(sdk-dirs) images $(htmlfiles) $(extra-files-chm))
+	"$(HHC)" $<
 

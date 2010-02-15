@@ -218,19 +218,19 @@ if 0:
 mofile = open("en.mo", "rb")
 gt = gettext.GNUTranslations(mofile)
 
-_ = lambda s: s.encode('iso-8859-1')
-for f, fin in ((file("chm/de/Output.hhc", "w"), file("Template.hhc", "r")),
-               (file("chm/en/Output.hhc", "w"), file("Template.en.hhc", "r"))):
-    for line in fin:
-        if line.find("<!-- Insert Functions here 1-->") != -1:
-            printcontents1(f, _)
-        elif line.find("<!-- Insert Functions here 2-->") != -1:
-            printcontents2(f, _)
-        else:
-            f.write(line)
-    f.close()
-    fin.close()
-    _ = lambda s: gt.ugettext(s).encode('iso-8859-1')
+#_ = lambda s: s.encode('iso-8859-1')
+#for f, fin in ((file("chm/de/Output.hhc", "w"), file("Template.hhc", "r")),
+#               (file("chm/en/Output.hhc", "w"), file("Template.en.hhc", "r"))):
+#    for line in fin:
+#        if line.find("<!-- Insert Functions here 1-->") != -1:
+#            printcontents1(f, _)
+#        elif line.find("<!-- Insert Functions here 2-->") != -1:
+#            printcontents2(f, _)
+#        else:
+#            f.write(line)
+#    f.close()
+#    fin.close()
+#    _ = lambda s: gt.ugettext(s).encode('iso-8859-1')
 
 _ = lambda s: s.encode('utf-8')
 f, fin = (file("sdk/content.xml", "w"), file("sdk/content.xml.in", "r"))
