@@ -58,6 +58,8 @@ public func SelectItem(selection, bool second)
 	var oldnum = GetSelected(second);
 	var item = inventory[oldnum];
 	
+	selection = BoundBy(0,MaxContentsCount()-1);
+	
 	// selection didnt change
 	if (oldnum == selection) return;
 	
@@ -150,6 +152,9 @@ public func GetItemPos(object item)
 
 public func Switch2Items(int one, int two)
 {
+	if(!Inside(one,0,MaxContentsCount(one)-1)) return;
+	if(!Inside(two,0,MaxContentsCount(two)-1)) return;
+
 	var temp = inventory[one];
 	inventory[one] = inventory[two];
 	inventory[two] = temp;

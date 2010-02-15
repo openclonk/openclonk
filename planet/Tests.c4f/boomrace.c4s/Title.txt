@@ -1,2 +1,2 @@
-DE:Test 1
-US:Test 1
+DE:Kamikaze Feuerwerk
+US:Kamikaze Fireworks

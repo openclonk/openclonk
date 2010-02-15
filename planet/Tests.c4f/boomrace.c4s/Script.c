@@ -13,7 +13,7 @@ func Initialize()
 	pGoal->AddCheckpoint(3830, 710, 28);
 	pGoal->SetFinishpoint(3650, 180);
 
-	ScriptGo(1);
+	SetSkyAdjust (RGB(255,128,0), RGB(0,0,0)); 
 }
 
 // Gamecall from Race-goal, on respawning.
@@ -22,19 +22,11 @@ func PlrHasRespawned(int iPlr, object cp)
 	var clonk = GetCrew(iPlr);
 	if(clonk->Contents())
 		clonk->Contents()->RemoveObject();
+	clonk->CreateContents(BOOM);
 }
 
-func Script1()
+global func FxRespawnBoomTimer(object target, int num, int time)
 {
-	for(var i=0; i<GetPlayerCount(); i++)
-	{
-		var clonk = GetCursor(GetPlayerByIndex(i));
-		if(clonk)
-			clonk->CreateContents(BOOM);
-	}
-}
-
-func Script15()
-{
-	goto(1);
+	target->CreateContents(BOOM);
+	return -1;
 }
