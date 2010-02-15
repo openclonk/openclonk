@@ -90,8 +90,11 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 	
 	var sizemod = ignition*ignition/3;
 	
-	CreateParticle("ExploSmoke",0,0,RandomX(-1,1),RandomX(-1,2),RandomX(120,280),RGBa(130,130,130,75));
-    CreateParticle("Thrust",0,0,GetXDir()/2,GetYDir()/2,RandomX(80,120)+sizemod,RGBa(255,200,200,160));
+	var x = -Sin(GetR(),22);
+	var y = +Cos(GetR(),22);
+	
+	CreateParticle("ExploSmoke",x,y,RandomX(-1,1),RandomX(-1,2),RandomX(120,280),RGBa(130,130,130,75));
+    CreateParticle("Thrust",x,y,GetXDir()/2,GetYDir()/2,RandomX(80,120)+sizemod,RGBa(255,200,200,160));
 	
 	fuel--;
 }
@@ -163,7 +166,7 @@ func DoFireworks(int speed)
 	
 	for(var i=0; i<16; ++i)
 	{
-		CreateParticle("ExploSmoke",RandomX(-80,80),RandomX(-80,80),0,0,RandomX(500,700),RGBa(255,255,255,80));
+		CreateParticle("ExploSmoke",RandomX(-80,80),RandomX(-80,80),0,0,RandomX(500,700),RGBa(255,255,255,120));
 	}
 	CastParticles("Spark",60,190,0,0,40,70,color,color);
 	
