@@ -152,7 +152,7 @@ func DoFireworks(int speed)
 {
 	RemoveEffect("Flight",this);
 	
-	var color = RGB(255,120,0);
+	var color = HSL(Random(8)*32,255,127);
 	
 	if(!speed) speed = 12;
 	for(var i=0; i<36; ++i)
