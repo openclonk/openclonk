@@ -1,0 +1,4 @@
+RelaunchMsg0=%s versucht es nochmal.
+RelaunchMsg1=%s ist tot.
+RelaunchMsg2=Eine Runde Gelaechter fuer %s.
+RelaunchMsg3=Wir trauern um %s.

@@ -1,6 +1,6 @@
 [Head]
 Icon=26
-Title=S2SkyRace
+Title=Cave race 2 [R]
 Version=4,10
 Difficulty=10
 Access=1
@@ -12,6 +12,7 @@ ForcedGfxMode=1
 Definition1=Objects.c4d
 
 [Game]
+Goals=RACE=1
 Rules=RSTR=1
 
 [Player1]
@@ -37,7 +38,7 @@ InEarth=ROCK=1;GOLD=1;DYNA=1;LOAM=1
 InEarthLevel=65,0,0,100
 Sky=Clouds2
 BottomOpen=1
-MapWidth=500,0,64,10000
+MapWidth=400,0,64,10000
 MapHeight=100,0,40,10000
 Amplitude=10,10,0,100
 Phase=50,50,0,100

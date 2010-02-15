@@ -1,0 +1,37 @@
+overlay mats
+{
+  mask = 1;
+  overlay {algo = rndchecker; turbulence = 100; mat = granite; a=3;b=4;};
+  overlay {algo = rndchecker; turbulence = 100; mat = rock; a=4;b=3;};
+  overlay {algo = rndchecker; turbulence = 100; mat = ore; a=6;b=3;};
+  overlay {algo = rndchecker; turbulence = 100; mat = rock; a=5;b=3; tex=rock_cracked;};
+  overlay {algo = rndchecker; turbulence = 100; mat = gold; a=4;b=7;};
+  overlay {algo = rndchecker; turbulence = 100; mat = earth; a=3;b=6;};
+};
+
+map o
+{
+  overlay
+  {
+    algo = lines; a=26; b=45; mat = tunnel; turbulence = 100; zoomY=60; y=5;
+    overlay {mat = earth; algo = rndchecker; zoomX=40; a=2;b=1; turbulence = 100; mats{};};
+    overlay {mat = earth; hgt=3;};
+    overlay 
+    {
+      algo = lines; rotate = 75; a=5; b=30; turbulence = 50; mat = earth; mats{};
+      overlay {algo = rndchecker; a=2;b=2; mat = tunnel; turbulence = 100;};
+    };
+  };
+  overlay
+  {
+    algo = sin; mask = 1; oy=80; zoomY=-100; zoomX=50;
+    overlay
+    {
+      mat = earth; algo = border; invert = 1; a=2;b=2; turbulence = 100;
+      mats{};
+      overlay {algo = lines; mat = tunnel; a=13; b=55; turbulence = 20;};
+    };
+  };
+  overlay {y=86;wdt=5; mat = earth; mats{};};
+  overlay {y = 76;hgt=10;wdt=6; mat = tunnel;};
+};
