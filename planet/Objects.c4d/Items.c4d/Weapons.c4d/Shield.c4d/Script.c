@@ -25,7 +25,7 @@ local mTrans;
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PerspectiveR", 10000, def);
-  SetProperty("PerspectiveTheta", 0, def);
-  SetProperty("PerspectivePhi", 0, def);
+  SetProperty("PerspectiveR", 9500, def);
+  SetProperty("PerspectiveTheta", 15, def);
+  SetProperty("PerspectivePhi", 20, def);
 }

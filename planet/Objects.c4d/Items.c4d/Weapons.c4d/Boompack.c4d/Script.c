@@ -5,108 +5,210 @@
 	A risky method of flight.
 --*/
 
-#strict 2
-
-local angle;
 local fuel;
 local rider;
 
 public func GetCarryMode(clonk) { return CARRY_Back; }
 public func GetCarryTransform(clonk)	{	return Trans_Scale(2000);	}
 
-protected func Initialize()
+protected func Construction()
 {
 	//flight length
 	fuel=100;
 }
 
-//protected func HoldingEnabled() { return true; }
-
-protected func ControlUseStart(object pClonk, ix, iy)
+func ControlRight()
 {	
-	if(pClonk->GetProcedure()!="WALK" && pClonk->GetProcedure()!="FLIGHT" && pClonk->GetProcedure()!="ATTACH") return 1;
+	SetRDir(+3);
+	return true;
+}
 
-	if(GetEffect("Flight",this)!=nil)
+func ControlLeft()
+{
+	SetRDir(-3);
+	return true;
+}
+
+func ControlStop()
+{
+	SetRDir(0);
+	return true;
+}
+
+func ControlUp(object clonk)
+{
+	JumpOff(clonk,20);
+	return true;
+}
+
+func ControlUseAlt(object clonk)
+{
+	JumpOff(clonk,20);
+	return true;
+}
+
+func ControlUse(object clonk, ix, iy)
+{	
+	// already riding? Use ControlUse to jump off
+	if(clonk->GetProcedure()=="ATTACH" && clonk->GetActionTarget() == this)
 	{
-		pClonk->SetAction("Tumble");
-		pClonk->SetVelocity(angle,20);
-		return 1;
+		JumpOff(clonk,20);
+		return true;
 	}
 
-	angle=Angle(0,0,ix,iy);
-	if(angle>180) angle=angle-360;//sodding angles
+	// only use during walk or jump
+	if(clonk->GetProcedure()!="WALK" && clonk->GetProcedure()!="FLIGHT") return true;
+
+	var angle=Angle(0,0,ix,iy);
+	Launch(angle,clonk);
+
+	return true;
+}
+
+
+protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
+{
+	// clonk does sense the danger and with great presence of mind jumps of the rocket
+	if(fuel<20 && rider)
+	{
+		JumpOff(rider,10);
+	}
+
+	if(fuel<=0)
+	{
+		DoFireworks();
+	}
+
+	var ignition = iEffectTime % 9;
+	
+	if(!ignition)
+	{
+		var angle = GetR()+RandomX(-12,12);
+		SetXDir(3*GetXDir()/4+Sin(angle,24));
+		SetYDir(3*GetYDir()/4-Cos(angle,24));
+		SetR(angle);
+	}
+	
+	var sizemod = ignition*ignition/3;
+	
+	CreateParticle("ExploSmoke",0,0,RandomX(-1,1),RandomX(-1,2),RandomX(120,280),RGBa(130,130,130,75));
+    CreateParticle("Thrust",0,0,GetXDir()/2,GetYDir()/2,RandomX(80,120)+sizemod,RGBa(255,200,200,160));
+	
+	fuel--;
+}
+
+private func JumpOff(object clonk, int speed)
+{
+	if(!clonk) return;
+	clonk->SetAction("Tumble");
+	clonk->SetXDir(Sin(GetR(),speed)-10);
+	clonk->SetYDir(Cos(GetR(),-speed));
+	rider = nil;
+}
+
+protected func Hit()
+{
+	if(rider)
+	{
+		JumpOff(rider);
+	}
+	//Message("I have hit something",this);
+	if(GetEffect("Flight",this)) DoFireworks();
+	Sound("WoodHit");
+}
+
+func Launch(int angle, object clonk)
+{
+	SetProperty("Collectible",0);
+	SetCategory(C4D_Vehicle);
 
 	AddEffect("Flight",this,150,1,this,this);
 	Exit();
 
 	//Ride the rocket!
-	pClonk->SetAction("Ride",this);
-	rider=pClonk;
-	SetProperty("Collectible",0);
+	if(clonk)
+	{
+		clonk->SetAction("Ride",this);
+		rider=clonk;
+	}
 
+	var level = 16;
+	var i=0, count = 3+level/8, r = Random(360);
+	while(count > 0 && ++i < count*6) {
+	  r += RandomX(40,80);
+	  var smokex = +Sin(r,RandomX(level/4,level/2));
+	  var smokey = -Cos(r,RandomX(level/4,level/2));
+	  if(GBackSolid(smokex,smokey))
+	    continue;
+	  CreateSmokeTrail(2*level,r,smokex,smokey,nil,true);
+	  count--;
+	}
+	
 	SetR(angle);
-	if(Random(2)==1)
+	SetVelocity(angle,60);
+}
+
+func DoFireworks(int speed)
+{
+	RemoveEffect("Flight",this);
+	
+	var color = RGB(255,120,0);
+	
+	if(!speed) speed = 12;
+	for(var i=0; i<36; ++i)
 	{
-		SetRDir(5);
-		return 1;
+		var oangle = Random(70);
+		var num = AddEffect("Firework", nil, 300, 1, nil, GetID(), Cos(oangle,speed), i*10+Random(5), GetX(), GetY());
+		EffectVar(4,nil,num) = color;
 	}
-	SetRDir(-5);
-	return 1;
-}
-
-public func ControlUseHolding(object pClonk, ix, iy)
-{
-	return 1;
-}
-
-protected func ControlUseStop(object pClonk, ix, iy)
-{
-	//JumpOff(pClonk);
-	return 1;
-}
-
-protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
-{
-	if(fuel<20 && Distance(GetX(), GetY(), rider->GetX(), rider->GetY())<30)
+	
+	for(var i=0; i<16; ++i)
 	{
-		JumpOff(rider);
+		CreateParticle("ExploSmoke",RandomX(-80,80),RandomX(-80,80),0,0,RandomX(500,700),RGBa(255,255,255,80));
 	}
-
-	if(fuel<=0)
-	{
-		Explode(30);
-	}
-
-	//Shaking motion midair
-	if(GetR()<angle-25) SetRDir(GetRDir()+5);
-	if(GetR()>angle+25) SetRDir(GetRDir()-5);
-	SetVelocity(GetR(),70);
-
-	fuel=fuel-1;
-
-	var sin=-Sin(180-GetR(),16);
-	var cos=-Cos(180-GetR(),16);		
-	if(Random(3)==1) CastParticles("NozzleFlame",1,10,sin,cos,100,160,RGB(255,255,255),RGB(200,200,200));
-	CreateParticle("BurnSmoke",sin,cos,RandomX(-2,2),RandomX(-2,2),80,RGB(255,255,255));
-	if(Random(3)==1) CastParticles("Spark",1,Random(30),sin,cos,30,60,RGB(255,255,0),RGB(255,200,0));
+	CastParticles("Spark",60,190,0,0,40,70,color,color);
+	
+	CreateParticle("FireworkGlow",0,0,0,0,3500,color | (200 & 255)<<24);
+	
+	Explode(30);
 }
 
-protected func JumpOff(object clonk)
+func FxFireworkStart(object target, int num, int tmp, speed, angle, x, y, color)
 {
-	clonk->SetAction("Tumble");
-	clonk->SetVelocity(angle,25);
+	if(tmp) return;
+
+	EffectVar(0, target, num) = speed*100;
+	EffectVar(1, target, num) = angle;
+	EffectVar(2, target, num) = x*100;
+	EffectVar(3, target, num) = y*100;
 }
 
-protected func Hit()
+func FxFireworkTimer(object target, int num, int time)
 {
-	if(rider!=nil)
-	{
-		JumpOff(rider);
-	}
-	Message("I have hit something",this);
-	if(GetEffect("Flight",this)) Explode(30);
-	Sound("WoodHit");
-
+	var speed = EffectVar(0, target, num);
+	var angle = EffectVar(1, target, num);
+	var x = EffectVar(2, target, num);
+	var y = EffectVar(3, target, num);
+	
+	if(time > 65) return -1;
+	
+	if(GBackSemiSolid(x/100,y/100)) return -1;
+	
+	// loose speed
+	speed = 25*speed/26;
+	
+	var xdir = Sin(angle,speed);
+	var ydir = -Cos(angle,speed);
+	
+	CreateParticle("FireworkGlow",x/100,y/100,xdir/100,ydir/100,50,EffectVar(4, target, num) | (200 & 255)<<24);
+	
+	// gravity
+	ydir += GetGravity()*18/100;
+	
+	EffectVar(0, target, num) = speed;
+	EffectVar(1, target, num) = Angle(0,0,xdir,ydir);
+	EffectVar(2, target, num) = x+xdir;
+	EffectVar(3, target, num) = y+ydir;
 }
 
 func Definition(def) {

@@ -43,14 +43,33 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	// Explosion outside: Explosion effects
 	if (!container)
 	{
-    // incinerate oil
-    if (!IncinerateLandscape(x,y))
-      if (!IncinerateLandscape(x,y-10))
-        if (!IncinerateLandscape(x-5,y-5))
-          IncinerateLandscape(x+5,y-5);
+		// incinerate oil
+		if (!IncinerateLandscape(x,y))
+		  if (!IncinerateLandscape(x,y-10))
+			if (!IncinerateLandscape(x-5,y-5))
+			  IncinerateLandscape(x+5,y-5);
 
-    // graphic effects:
+		// graphic effects:
 
+		ExplosionEffect(level,x,y);
+
+	}
+
+  // Schaden in den Objekten bzw. draußen
+  BlastObjects(x+GetX(),y+GetY(), level, inobj, cause_plr, layer);
+  if (inobj != container) BlastObjects(x+GetX(),y+GetY(), level, container, cause_plr, layer);
+
+  // Landschaft zerstören. Nach BlastObjects, damit neu freigesprengte Materialien nicht betroffen sind
+  if (!container)
+    {
+    BlastFree(x,y, level, cause_plr);
+    }
+
+  return true;
+  }
+
+global func ExplosionEffect(int level, int x, int y)
+{
 	// blast particle
 	CreateParticle("Blast", x,y, 0,0, level*10, RGBa(255,255,255,100));
 	CastParticles("Spark",10,80+level,x,y,35,40,RGB(255,200,0),RGB(255,255,150));
@@ -68,22 +87,7 @@ global func DoExplosion(int x, int y, int level, object inobj, int cause_plr, ob
 	  CreateSmokeTrail(lvl,angle,x+smokex,y+smokey);
 	  count--;
 	}
-
-  }
-
-  // Schaden in den Objekten bzw. draußen
-  BlastObjects(x+GetX(),y+GetY(), level, inobj, cause_plr, layer);
-  if (inobj != container) BlastObjects(x+GetX(),y+GetY(), level, container, cause_plr, layer);
-
-  // Landschaft zerstören. Nach BlastObjects, damit neu freigesprengte Materialien nicht betroffen sind
-  if (!container)
-    {
-    BlastFree(x,y, level, cause_plr);
-    }
-
-  return true;
-  }
-
+}
 
 /* ----------------------- Blast objects & shockwaves  --------------------- */
 
@@ -264,10 +268,13 @@ global func FxShakeEffectStop() {
 
 /* ----------------------------- Smoke trails ------------------------------ */
 
-global func CreateSmokeTrail(int iStrength, int iAngle, int iX, int iY) {
+global func CreateSmokeTrail(int iStrength, int iAngle, int iX, int iY, int color, bool noblast) {
     iX += GetX();
     iY += GetY();
-  AddEffect("SmokeTrail", nil, 300, 1, nil, nil, iStrength, iAngle, iX, iY);
+	var num = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, iStrength, iAngle, iX, iY);
+    if(!color) color = RGBa(130,130,130,90);
+	EffectVar(6, nil, num) = color;
+	EffectVar(7, nil, num) = noblast;
 }
 
 // Variables:
@@ -277,6 +284,8 @@ global func CreateSmokeTrail(int iStrength, int iAngle, int iX, int iY) {
 // 3 - Y-Position
 // 4 - Starting-X-Speed
 // 5 - Starting-Y-Speed
+// 6 - color [opt]
+// 7 - no blast
 global func FxSmokeTrailStart(object pTarget, int iEffectNumber, int iTemp, iStrength, iAngle, iX, iY) {
 
   if(iTemp)
@@ -291,6 +300,8 @@ global func FxSmokeTrailStart(object pTarget, int iEffectNumber, int iTemp, iStr
   EffectVar(3, pTarget, iEffectNumber) = iY;
   EffectVar(4, pTarget, iEffectNumber) = +Sin(iAngle,iStrength*40);
   EffectVar(5, pTarget, iEffectNumber) = -Cos(iAngle,iStrength*40);
+  
+
 }
 
 global func FxSmokeTrailTimer(object pTarget, int iEffectNumber, int iEffectTime) {
@@ -300,6 +311,7 @@ global func FxSmokeTrailTimer(object pTarget, int iEffectNumber, int iEffectTime
   var iY = EffectVar(3, pTarget, iEffectNumber);
   var iXDir = EffectVar(4, pTarget, iEffectNumber);
   var iYDir = EffectVar(5, pTarget, iEffectNumber);
+  var color = EffectVar(6, pTarget, iEffectNumber);
 
   iAStr = Max(1,iAStr-iAStr/5);
   iAStr--;
@@ -313,8 +325,9 @@ global func FxSmokeTrailTimer(object pTarget, int iEffectNumber, int iEffectTime
   iY += RandomX(-3,3);
   
   // draw
-  CreateParticle("ExploSmoke",iX,iY,RandomX(-2,2),RandomX(-2,4),150+iAStr*12,RGBa(130,130,130,90));
-  CreateParticle("Blast",iX,iY,0,0,10+iAStr*8,RGBa(255,100,50,150));
+  CreateParticle("ExploSmoke",iX,iY,RandomX(-2,2),RandomX(-2,4),150+iAStr*12,color);
+  if(!EffectVar(7, pTarget, iEffectNumber))
+	CreateParticle("Blast",iX,iY,0,0,10+iAStr*8,RGBa(255,100,50,150));
 
   // then calc next position
   iX += xdir/100;

@@ -1,0 +1,12 @@
+[Particle]
+Name=Thrust
+MaxCount=300
+InitFn=StdInit
+ExecFn=StdExec
+DrawFn=Std
+Face=0,0,16,16,-8,-8
+Delay=0
+Repeats=1
+Reverse=1
+Additive=1
+AlphaFade=40
