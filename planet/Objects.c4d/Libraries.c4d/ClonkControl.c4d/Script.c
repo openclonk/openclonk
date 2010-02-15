@@ -221,7 +221,7 @@ global func ShiftContents()
 protected func Construction()
 {
 	selected = 0;
-	selected2 = 2;
+	selected2 = Min(2,MaxContentsCount()-1);
 	alt = false;
 	using = nil;
 	inventory = CreateArray();
@@ -393,12 +393,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	if (house)
 	{
-		if (Control2Script(ctrl, x, y, strength, repeat, release, "Contained", house))
-			return true;
+		return Control2Script(ctrl, x, y, strength, repeat, release, "Contained", house);
 	}
-	else if (vehicle && (proc == "PUSH" || proc == "ATTACH"))
+	if (vehicle && proc == "PUSH")
 	{
-		// control to grabbed vehicle or riding etc.
+		// control to grabbed vehicle
+		return Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle);
+	}
+	if (vehicle && proc == "ATTACH")
+	{
+		// control to horse or something
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
 			return true;
 	}
@@ -406,7 +410,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// left, right, up and down, too. We don't want that, so this is why we
 	// check that ctrl is Use.
 	// Release commands are always forwarded even if contents is 0, in case we need to cancel use of an object that left inventory
-	else if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
+	if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
 			return true;
@@ -448,7 +452,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (inv_control) return true;
 
 	// only if not in house, not grabbing a vehicle and an item selected
-	if (!house && (!vehicle || (proc != "PUSH" && proc != "ATTACH")))
+	if (!house && (!vehicle || proc != "PUSH"))
 	{
 		if (contents)
 		{

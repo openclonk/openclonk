@@ -367,9 +367,9 @@ public func UpdateSelectionStatus()
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
 		if(crew->GetSelected() == hotkey-1)
-			sel = 1;
+			sel += 1;
 		if(crew->GetSelected(true) == hotkey-1)
-			sel = 2;
+			sel += 2;
 	}
 			
 	selected = sel;
@@ -442,13 +442,13 @@ public func UpdateHands()
 			
 	if(hands)
 	{
-		if(hands == 1 || actiontype != ACTIONTYPE_INVENTORY)
+		if(hands & 1 || actiontype != ACTIONTYPE_INVENTORY)
 		{
 			SetGraphics("One",GetID(),3,GFXOV_MODE_Base);
 			SetObjDrawTransform(HandSize(),0,-16000,0,HandSize(),-12000, 3);
 		}
 		else SetGraphics(nil,nil,3);
-		if(hands == 2 || actiontype != ACTIONTYPE_INVENTORY)
+		if(hands & 2 || actiontype != ACTIONTYPE_INVENTORY)
 		{
 			SetGraphics("Two",GetID(),4,GFXOV_MODE_Base);
 			SetObjDrawTransform(HandSize(),0,8000,0,HandSize(),-12000, 4);

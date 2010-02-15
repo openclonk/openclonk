@@ -45,20 +45,15 @@ func ControlUp(object clonk)
 	return true;
 }
 
-func ControlUseAlt(object clonk)
-{
-	JumpOff(clonk,20);
-	return true;
-}
-
 func ControlUse(object clonk, ix, iy)
 {	
 	// already riding? Use ControlUse to jump off
-	if(clonk->GetProcedure()=="ATTACH" && clonk->GetActionTarget() == this)
+	if(clonk->GetProcedure()=="ATTACH") return true;
+	/*if(clonk->GetProcedure()=="ATTACH" && clonk->GetActionTarget() == this)
 	{
 		JumpOff(clonk,20);
 		return true;
-	}
+	}*/
 
 	// only use during walk or jump
 	if(clonk->GetProcedure()!="WALK" && clonk->GetProcedure()!="FLIGHT") return true;

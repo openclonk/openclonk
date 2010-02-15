@@ -170,7 +170,6 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 	
 	var exclusive = false;
 	
-	// if contained, search for vehicles that are inside the buildings to push out
 	if((!target->Contained()))
 	{
 		// target->FindObjects(Find_AtPoint(0,0),Find_OCF(OCF_Grab),Find_NoContainer());
@@ -197,10 +196,11 @@ public func FxIntSearchInteractionObjectsTimer(object target, int num, int time)
 			}
 		}
 	}
-	else
+	// if contained, search for vehicles that are inside the buildings to push out
+/*	else
 	{
 		vehicles = FindObjects(Find_OCF(OCF_Grab),Find_Container(target->Contained()));
-	}
+	}*/
 	
 	for(var vehicle in vehicles)
 	{
