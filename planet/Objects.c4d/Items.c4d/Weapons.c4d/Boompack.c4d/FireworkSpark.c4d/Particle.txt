@@ -1,4 +1,4 @@
-﻿[Particle]
+[Particle]
 Name=FireworkGlow
 MaxCount=6200
 InitFn=StdInit
