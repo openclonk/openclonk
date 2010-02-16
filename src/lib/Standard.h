@@ -161,13 +161,10 @@ typedef ptrdiff_t ssize_t;
 typedef uint32_t       DWORD;
 typedef uint8_t        BYTE;
 typedef uint16_t       WORD;
-typedef uint32_t       UINT;
 
 typedef struct {
     long left; long top; long right; long bottom;
 } RECT;
-
-#define INFINITE	0xFFFFFFFF
 
 unsigned long timeGetTime(void);
 
@@ -240,6 +237,9 @@ inline void MemCopy(const void *lpMem1, void *lpMem2, size_t dwSize)
 bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
              bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar=0,
 						 int32_t *lastx=NULL, int32_t *lasty=NULL);
+
+// open a weblink in an external browser
+bool OpenURL(const char *szURL);
 
 #include <cctype>
 inline char CharCapital(char cChar) { return std::toupper(cChar); }
@@ -317,13 +317,6 @@ int SLineGetCharacters(const char *szText, const char *cpPosition);
 bool SWildcardMatchEx(const char *szString, const char *szWildcard);
 
 #define LineFeed "\x00D\x00A"
-#define EndOfFile "\x020"
-
-#ifdef _WIN32
-#define DirSep "\\"
-#else
-#define DirSep "/"
-#endif
 
 // sprintf wrapper
 

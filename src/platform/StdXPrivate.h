@@ -134,15 +134,12 @@ class CStdAppPrivate {
 #ifdef WITH_GLIB
 		GLibProc(g_main_context_default()),
 #endif // WITH_GLIB
-#ifdef USE_X11
 		PrimarySelection(), ClipboardSelection(),
 		LastEventTime(CurrentTime), tasked_out(false), pending_desktop(false),
 		xim(0), xic(0), X11Proc(pApp),
-#endif
 		argc(0), argv(0) { }
 	static CStdWindow * GetWindow(unsigned long wnd);
 	static void SetWindow(unsigned long wnd, CStdWindow * pWindow);
-#ifdef USE_X11
 	bool SwitchToFullscreen(CStdApp * pApp, Window wnd);
 	void SwitchToDesktop(CStdApp * pApp, Window wnd);
 	void SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window wnd);
@@ -163,7 +160,6 @@ class CStdAppPrivate {
 	XIC xic;
 	Bool detectable_autorepeat_supported;
 	CX11Proc X11Proc;
-#endif
 	int argc; char ** argv;
 };
 

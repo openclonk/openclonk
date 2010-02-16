@@ -44,14 +44,14 @@ bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists);
 #endif
 
 #ifdef _WIN32
+#define DirSep "\\"
 #define DirectorySeparator '\\'
 #define AltDirectorySeparator '/'
 #else
+#define DirSep "/"
 #define DirectorySeparator '/'
 #define AltDirectorySeparator '\\'
-#define DIRECTORYSEPARATORS "/"
 #endif
-#define Wildcard '*'
 
 /** Create a directory and all of its parents.
  * \p[in] path Directory to create

@@ -21,6 +21,8 @@
 /* A wrapper class to OS dependent event and window interfaces, X11 version */
 
 #include <Standard.h>
+
+#ifdef USE_X11
 #include <StdWindow.h>
 #include <StdGL.h>
 #include <StdDDraw2.h>
@@ -29,16 +31,12 @@
 
 #include "C4Version.h"
 
-#ifdef USE_X11
-#define bool _BOOL
 #include "c4x.xpm"
 #include <X11/Xlib.h>
 #include <X11/xpm.h>
 #include <X11/Xatom.h>
 #include <X11/extensions/xf86vmode.h>
 #include <GL/glx.h>
-#undef bool
-#endif
 
 #include <string>
 #include <map>
@@ -66,9 +64,6 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp) {
 }
 
 CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor) {
-#ifndef USE_X11
-	return this;
-#else
 	Active = true;
 	dpy = pApp->dpy;
 
@@ -181,11 +176,9 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 	renderwnd = wnd;
 
 	return this;
-#endif // USE_X11
 }
 
 void CStdWindow::Clear() {
-#ifdef USE_X11
 	// Destroy window
 	if (wnd) {
 		CStdAppPrivate::SetWindow(wnd, 0);
@@ -198,10 +191,8 @@ void CStdWindow::Clear() {
 		XFlush(dpy);
 	}
 	wnd = renderwnd = 0;
-#endif
 }
 
-#ifdef USE_X11
 bool CStdWindow::FindInfo()
 {
 #ifdef USE_GL
@@ -243,7 +234,6 @@ bool CStdWindow::FindInfo()
 
 	return true;
 }
-#endif // USE_X11
 
 bool CStdWindow::StorePosition(const char *, const char *, bool) { return true; }
 
@@ -253,7 +243,6 @@ bool CStdWindow::RestorePosition(const char *, const char *, bool) {
 }
 
 bool CStdWindow::GetSize(RECT * pRect) {
-#ifdef USE_X11
 	Window winDummy;
 	unsigned int borderDummy;
 	int x, y;
@@ -265,30 +254,21 @@ bool CStdWindow::GetSize(RECT * pRect) {
 	pRect->bottom = height + y;
 	pRect->top = y;
 	pRect->left = x;
-#else
-  pRect->left = pRect->right = pRect->top = pRect->bottom = 0;
-#endif
 	return true;
 }
 
 void CStdWindow::SetSize(unsigned int X, unsigned int Y) {
-#ifdef USE_X11
 	XResizeWindow(dpy, wnd, X, Y);
-#endif
 }
 void CStdWindow::SetTitle(const char * Title) {
-#ifdef USE_X11
 	XTextProperty title_property;
 	StdStrBuf tbuf(Title, true);
 	char * tbufstr = tbuf.getMData();
 	XStringListToTextProperty(&tbufstr, 1, &title_property);
 	XSetWMName(dpy, wnd, &title_property);
-#endif
 }
 
 void CStdWindow::FlashWindow() {
-#ifdef USE_X11
-
 	// This tries to implement flashing via
 	// _NET_WM_STATE_DEMANDS_ATTENTION, but it simply does not work for me.
 	// -ck.
@@ -314,10 +294,8 @@ void CStdWindow::FlashWindow() {
 		wm_hint->flags |= XUrgencyHint;
 		XSetWMHints(dpy, wnd, wm_hint);
 	}
-#endif
 }
 
-#ifdef USE_X11
 void CStdWindow::HandleMessage(XEvent& event)
 {
 	if(event.type == FocusIn)
@@ -346,4 +324,4 @@ void CStdWindow::HandleMessage(XEvent& event)
 		}
 	}
 }
-#endif
+#endif // USE_X11

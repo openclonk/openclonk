@@ -416,7 +416,7 @@ void C4Application::GameTick()
 			assert(AppState != C4AS_None);
 			break;
 		case C4AS_Quit:
-			// Do nothing, HandleMessage will return HR_Failure soon
+			// Do nothing, the main loop will exit soon
 			break;
 		case C4AS_PreInit:
 			if (!PreInit()) Quit();

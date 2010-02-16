@@ -52,11 +52,9 @@ static CStdApp * readline_callback_use_this_app = 0;
 #  endif
 #endif /* HAVE_READLINE_HISTORY */
 
-#include "StdXPrivate.h"
-
 /* CStdApp */
 
-CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), Priv(new CStdAppPrivate()),
+CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
 	Location(""), DoNotDelay(false),
 	// main thread
 #ifdef HAVE_PTHREAD
@@ -67,14 +65,13 @@ CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), Priv(new CStdAppPriv
 }
 
 CStdApp::~CStdApp() {
-	delete Priv;
 }
 
 bool CStdApp::Init(int argc, char * argv[]) {
 	// Set locale
 	setlocale(LC_ALL,"");
 	// Try to figure out the location of the executable
-	Priv->argc=argc; Priv->argv=argv;
+	this->argc=argc; this->argv=argv;
 	static char dir[PATH_MAX];
 	SCopy(argv[0], dir);
 	if (dir[0] != '/') {
@@ -97,115 +94,20 @@ bool CStdApp::Init(int argc, char * argv[]) {
 	rl_callback_handler_install (">", readline_callback);
 	readline_callback_use_this_app = this;
 #endif
-	// create pipe
-	if(pipe(Priv->Pipe) != 0) {
-		Log("Error creating Pipe");
-		return false;
-	}
-
 	// Custom initialization
 	return DoInit ();
 }
-
-bool CStdApp::InitTimer() { gettimeofday(&LastExecute, 0); return true; }
 
 void CStdApp::Clear() {
 #if USE_CONSOLE && HAVE_LIBREADLINE
 	rl_callback_handler_remove();
 #endif
-	// close pipe
-	close(Priv->Pipe[0]);
-	close(Priv->Pipe[1]);
 }
 
 void CStdApp::Quit() {
 	fQuitMsgReceived = true;
 }
-
-void CStdApp::Execute () {
-	time_t seconds = LastExecute.tv_sec;
-	timeval tv;
-	gettimeofday(&tv, 0);
-	// Too slow?
-	if (LastExecute.tv_sec < tv.tv_sec + 2) {
-		gettimeofday(&LastExecute, 0);
-	} else {
-		LastExecute.tv_usec += Delay;
-		if (LastExecute.tv_usec > 1000000) {
-			++LastExecute.tv_sec;
-			LastExecute.tv_usec -= 1000000;
-		}
-	}
-	// This will make the FPS look "prettier" in some situations
-	// But who cares...
-	if (seconds != LastExecute.tv_sec) {
-		pWindow->Sec1Timer();
-	}
-}
-void CStdApp::NextTick(bool fYield) {
-	DoNotDelay = true;
-}
-
-void CStdApp::Run() {
-	// Main message loop
-	while (true) if (HandleMessage(INFINITE, true) == HR_Failure) return;
-}
-
-void CStdApp::ResetTimer(unsigned int d) { Delay = 1000 * d; }
-
-C4AppHandleResult CStdApp::HandleMessage(unsigned int iTimeout, bool fCheckTimer) {
-	// quit check for nested HandleMessage-calls
-	if (fQuitMsgReceived) return HR_Failure;
-	bool do_execute = fCheckTimer;
-	// Wait Delay microseconds.
-	timeval tv = { 0, 0 };
-	if (DoNotDelay) {
-		DoNotDelay = false;
-	} else if (fCheckTimer) {
-		gettimeofday(&tv, 0);
-		//printf("tv %d %d\n", tv.tv_sec, tv.tv_usec);
-		//printf("le %d %d\n", LastExecute.tv_sec, LastExecute.tv_usec);
-		tv.tv_usec = LastExecute.tv_usec - tv.tv_usec + Delay
-			- 1000000 * (tv.tv_sec - LastExecute.tv_sec);
-		if (iTimeout != INFINITE && iTimeout * 1000 < tv.tv_usec) tv.tv_usec = iTimeout * 1000;
-		if (tv.tv_usec < 0)
-			tv.tv_usec = 0;
-		tv.tv_sec = 0;
-	} else {
-		tv.tv_usec = iTimeout * 1000;
-	}
-
-	// Watch dpy to see when it has input.
-	int max_fd = 0;
-	fd_set rfds;
-	FD_ZERO(&rfds);
-
-#ifdef USE_CONSOLE
-	// Wait for commands from stdin
-	FD_SET(0, &rfds);
-#endif
-	// And for events from the network thread
-	FD_SET(Priv->Pipe[0], &rfds);
-	max_fd = Max(Priv->Pipe[0], max_fd);
-	//printf("%d %d\n", tv.tv_sec, tv.tv_usec);
-	switch (select(max_fd + 1, &rfds, NULL, NULL, &tv)) {
-		// error
-		case -1:
-		if (errno == EINTR) return HR_Timeout; //Whatever, probably never needed
-		Log(strerror(errno));
-		Log("select error.");
-		return HR_Failure;
-
-		// timeout
-		case 0:
-		if (do_execute) {
-			Execute();
-			return HR_Timer;
-		}
-		return HR_Timeout;
-
-		default:
-#ifdef USE_CONSOLE
+/*
 		// handle commands
 		if(FD_ISSET(0, &rfds))
 		{
@@ -214,11 +116,7 @@ C4AppHandleResult CStdApp::HandleMessage(unsigned int iTimeout, bool fCheckTimer
 			if(!ReadStdInCommand())
 				return HR_Failure;
 		}
-#endif
-		return HR_Message;
-	}
-}
-
+*/
 bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor) {
 	return false;
 }

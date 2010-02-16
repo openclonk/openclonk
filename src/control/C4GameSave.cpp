@@ -275,7 +275,7 @@ bool C4GameSave::SaveDesc(C4Group &hToGroup)
 	WriteDesc(sBuffer);
 
 	// End of file
-	sBuffer.Append(LineFeed "}" LineFeed EndOfFile);
+	sBuffer.Append(LineFeed "}" LineFeed);
 
 	// Generate Filename
 	StdStrBuf sFilename; char szLang[3];

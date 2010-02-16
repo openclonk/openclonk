@@ -1119,7 +1119,6 @@ bool CStdDDraw::BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt
 		rot.SetRotate(iAngle, (float) (tx+tx+twdt)/2, (float) (ty+ty+thgt)/2);
 		return Blit(sfcSource, float(fx), float(fy), float(fwdt), float(fhgt), sfcTarget, float(tx), float(ty), float(twdt), float(thgt), true, &rot);
 		}
-	const double pi=3.1415926535;
   // Object is first stretched to dest rect, then rotated at place.
   int xcnt,ycnt,fcx,fcy,tcx,tcy,cpcx,cpcy;
   int npcx,npcy;

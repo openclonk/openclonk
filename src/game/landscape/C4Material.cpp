@@ -516,7 +516,6 @@ bool C4MaterialMap::SaveEnumeration(C4Group &hGroup)
 		SAppend(Map[cnt].Name,mapbuf);
 		SAppend(LineFeed,mapbuf);
 		}
-	SAppend(EndOfFile,mapbuf);
 	return hGroup.Add(C4CFN_MatMap,mapbuf,SLen(mapbuf),false,true);
 	}
 

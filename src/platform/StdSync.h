@@ -61,7 +61,7 @@ public:
 
 // Value to specify infinite wait.
 #ifndef INFINITE
-#define INFINITE (~0)
+#define INFINITE (~0u)
 #endif
 
 class CStdCSec

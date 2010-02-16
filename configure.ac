@@ -92,7 +92,7 @@ AC_ARG_ENABLE([sound],
 GTK_REQUIRED="glib-2.0 >= 2.4 gtk+-2.0 >= 2.4"
 AC_ARG_WITH([gtk],
   [AC_HELP_STRING([--with-gtk], [Use gtk for the developer mode [default=auto]])],
-  , [PKG_CHECK_EXISTS([$GTK_REQUIRED], [with_gtk=yes], [with_gtk=no])])
+  , [AS_IF([test $enable_console = no],[PKG_CHECK_EXISTS([$GTK_REQUIRED], [with_gtk=yes], [with_gtk=no])],[with_gtk=no])])
 AS_IF([test $with_gtk = yes],[
   PKG_CHECK_MODULES(GTK, [$GTK_REQUIRED])
   AC_DEFINE([WITH_GLIB], 1, [Glib])
@@ -156,7 +156,6 @@ fi
 # Check for libjpeg
 AC_CHECK_LIB(jpeg, jpeg_read_header, [
   CLONK_LIBS="-ljpeg $CLONK_LIBS"
-  with_internal_libjpeg=no
 ], [
   AC_MSG_ERROR([libjpeg not found.])
 ])
@@ -164,7 +163,6 @@ AC_CHECK_LIB(jpeg, jpeg_read_header, [
 # Check for libpng
 AC_CHECK_LIB(png, png_read_image, [
   CLONK_LIBS="-lpng $CLONK_LIBS"
-  with_internal_libpng=no
 ], [
   AC_MSG_ERROR([libpng not found.])
 ], [-lz])

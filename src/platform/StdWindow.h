@@ -341,6 +341,29 @@ public:
 #define CStdMultimediaTimerProc CStdTimerProc
 #endif
 
+#ifdef USE_CONSOLE
+// A simple alertable proc
+class CStdInProc : public StdSchedulerProc
+	{
+public:
+	CStdInProc();
+	~CStdInProc() { }
+
+public:
+	void Notify();
+	bool Check();
+	bool CheckAndReset();
+public:
+	// StdSchedulerProc override
+	virtual bool Execute(int iTimeout, pollfd *);
+	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
+		{
+		pollfd pfd = { 0, POLLIN, 0 };
+		checkfds.push_back(pfd);
+		}
+	};
+#endif
+
 class CStdApp : public StdScheduler
 	{
 public:
@@ -391,13 +414,11 @@ public:
 	// notify user to get back to the program
 	void NotifyUserIfInactive()
 	{
-	  #ifdef _WIN32
+#ifdef _WIN32
 	   if (!Active && pWindow) pWindow->FlashWindow();
-	  #elif defined (__APPLE__)
+#else
 	   if (pWindow) pWindow->FlashWindow();
-	  #elif defined (USE_X11)
-	   if(pWindow) pWindow->FlashWindow();
-	  #endif
+#endif
 	}
 	void MessageDialog(const char * message);
 	const char *GetLastError() { return sLastError.getData(); }
@@ -466,14 +487,17 @@ protected:
 	void OnXInput();
 	void OnStdInInput();
 protected:
-#if defined(USE_SDL_MAINLOOP)
+#if defined(USE_SDL_MAINLOOP) || defined(USE_CONSOLE)
 	int argc; char ** argv;
-	int Pipe[2];
 #endif
+#ifdef USE_X11
 	class CStdAppPrivate * Priv;
 	void HandleXMessage();
-
+#endif
 	unsigned int KeyMask;
+#endif
+#ifdef USE_CONSOLE
+	CStdInProc InProc;
 #endif
 	const char *szCmdLine;
 	StdStrBuf sLastError;

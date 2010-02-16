@@ -50,7 +50,6 @@ int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2)
 
 int Angle(int iX1, int iY1, int iX2, int iY2)
 	{
-	const double pi = 3.141592654;
 	int iAngle = (int) ( 180.0 * atan2( float(Abs(iY1-iY2)), float(Abs(iX1-iX2)) ) / pi );
 	if (iX2>iX1 )
 		{	if (iY2<iY1) iAngle = 90-iAngle; else iAngle = 90+iAngle;	}

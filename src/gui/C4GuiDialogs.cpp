@@ -340,7 +340,9 @@ bool Dialog::CreateConsoleWindow()
 		return false;
 		}
 	// create rendering context
+#ifdef USE_GL
 	if (lpDDraw) pCtx = lpDDraw->CreateContext(pWindow, &Application);
+#endif
 	return true;
 	}
 
@@ -352,7 +354,9 @@ void Dialog::DestroyConsoleWindow()
 		delete pWindow;
 		pWindow = NULL;
 		}
+#ifdef USE_GL
 	if (pCtx) { delete pCtx; pCtx=NULL; }
+#endif
 	}
 
 Dialog::Dialog(int32_t iWdt, int32_t iHgt, const char *szTitle, bool fViewportDlg):
@@ -731,8 +735,7 @@ bool Dialog::DoModal()
   // main message loop
   while (fShow)
     {
-		int32_t iResult=1;
-		while ((iResult != HR_Timer) && fShow)
+		while (fShow)
 			{
 			// dialog idle proc
 			OnIdle();

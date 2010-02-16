@@ -28,11 +28,7 @@
 #include <StdFile.h>
 #include <StdBuf.h>
 
-//  Xmd.h typedefs bool to CARD8, but we want int
-#define bool _BOOL
 #include <X11/Xmd.h>
-#undef bool
-
 #include <X11/Xlib.h>
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
