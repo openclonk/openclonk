@@ -28,8 +28,8 @@
 #define C4EDITORCAPTION       "Clonk Editor"
 
 #define C4CFG_Company "RedWolf Design"
-#define C4COPYRIGHT_YEAR	 "2009" // might make this dynamic some time...
-#define C4COPYRIGHT_COMPANY "RedWolf Design GmbH"
+#define C4COPYRIGHT_YEAR	 "2010" // might make this dynamic some time...
+#define C4COPYRIGHT_COMPANY "OpenClonk Project"
 
 #define C4VERSIONBUILDNAME "Blue"
 

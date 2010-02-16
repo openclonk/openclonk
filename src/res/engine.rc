@@ -31,7 +31,7 @@ LANGUAGE LANG_GERMAN, SUBLANG_GERMAN
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_00_C4X              ICON    DISCARDABLE     "cz.ico"
+IDI_00_C4X              ICON    DISCARDABLE     "oc.ico" 
 IDI_01_C4S              ICON    DISCARDABLE     "c4s.ico"
 IDI_02_C4G              ICON    DISCARDABLE     "c4g.ico"
 IDI_03_C4F              ICON    DISCARDABLE     "c4f.ico"
