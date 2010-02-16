@@ -7,12 +7,11 @@
 
 local fuel;
 local rider;
-
-static boomtrans;
-static carrypos;
+local ridervis;
+local riderattach;
 
 public func GetCarryMode(clonk) { return CARRY_BothHands; }
-public func GetCarryTransform(clonk)	{	return Trans_Translate(-1500,2000,-3000);	} // TODO change when ck has fixed the bug
+public func GetCarryTransform(clonk)	{	return Trans_Translate(-1500,2000,0);	} // TODO change when ck has fixed the bug
 public func GetCarryPhase() { return 700; }
 
 protected func Construction()
@@ -102,9 +101,12 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 private func JumpOff(object clonk, int speed)
 {
 	if(!clonk) return;
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	clonk->SetAction("Tumble");
 	clonk->SetXDir(Sin(GetR(),speed)-10);
 	clonk->SetYDir(Cos(GetR(),-speed));
+	clonk->SetProperty("Visibility", ridervis);
+	DetachMesh(riderattach);
 	rider = nil;
 }
 
@@ -130,7 +132,14 @@ func Launch(int angle, object clonk)
 	//Ride the rocket!
 	if(clonk)
 	{
+		var iDir = 1;
+		if(clonk->GetDir() == 1) iDir = -1;
 		clonk->SetAction("Ride",this);
+		clonk->PlayAnimation("PosRocket", 10, Anim_Const(0), Anim_Const(1000));
+		riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(2000, -1000, -2000*iDir), Trans_Rotate(90*iDir,0,1,0)));
+		SetColor(clonk->GetColor());
+		ridervis = clonk->GetProperty("Visibility");
+		clonk->SetProperty("Visibility", VIS_None);//TODO: make this with an effect or better do this in the clonk script
 		rider=clonk;
 	}
 

@@ -16,3 +16,4 @@ Mass=5
 Components=GPDR=2;WOOD=1;METL=1;
 Rebuy=1
 Rotate=1
+ColorByOwner=1
