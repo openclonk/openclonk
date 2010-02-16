@@ -40,7 +40,7 @@ func ControlStop()
 
 func ControlUp(object clonk)
 {
-	JumpOff(clonk,20);
+	JumpOff(clonk,60);
 	return true;
 }
 
@@ -50,7 +50,7 @@ func ControlUse(object clonk, ix, iy)
 	if(clonk->GetProcedure()=="ATTACH") return true;
 	/*if(clonk->GetProcedure()=="ATTACH" && clonk->GetActionTarget() == this)
 	{
-		JumpOff(clonk,20);
+		JumpOff(clonk,60);
 		return true;
 	}*/
 
@@ -69,7 +69,7 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 	// clonk does sense the danger and with great presence of mind jumps of the rocket
 	if(fuel<20 && rider)
 	{
-		JumpOff(rider,10);
+		JumpOff(rider,30);
 	}
 
 	if(fuel<=0)
@@ -101,12 +101,22 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 private func JumpOff(object clonk, int speed)
 {
 	if(!clonk) return;
-	clonk->StopAnimation(clonk->GetRootAnimation(10));
+	
+	var xdir = 20;
+	var ydir = clonk->GetPhysical("Jump")/1000;
+	// which direction does the clonk jump?
+	if(GetRDir() == 0) xdir = 0;
+	if(GetRDir() < 0) xdir = -xdir;
+	
 	clonk->SetAction("Tumble");
-	clonk->SetXDir(Sin(GetR(),speed)-10);
-	clonk->SetYDir(Cos(GetR(),-speed));
+	clonk->SetXDir(GetXDir()/2+speed*xdir/100);
+	clonk->SetYDir(GetYDir()/2-speed*ydir/100);
+	
+	// mesh stuff
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	clonk->SetProperty("Visibility", ridervis);
 	DetachMesh(riderattach);
+	
 	rider = nil;
 }
 
@@ -126,8 +136,9 @@ func Launch(int angle, object clonk)
 	SetProperty("Collectible",0);
 	SetCategory(C4D_Vehicle);
 
-	AddEffect("Flight",this,150,1,this,this);
 	Exit();
+	AddEffect("Flight",this,150,1,this,this);
+	AddEffect("HitCheck", this, 1,1, nil,nil, clonk, true);
 
 	//Ride the rocket!
 	if(clonk)
@@ -175,7 +186,7 @@ func DoFireworks(int speed)
 	
 	for(var i=0; i<16; ++i)
 	{
-		CreateParticle("ExploSmoke",RandomX(-80,80),RandomX(-80,80),0,0,RandomX(500,700),RGBa(255,255,255,120));
+		CreateParticle("ExploSmoke",RandomX(-80,80),RandomX(-80,80),0,0,RandomX(500,700),RGBa(255,255,255,90));
 	}
 	CastParticles("Spark",60,190,0,0,40,70,color,color);
 	
@@ -220,6 +231,16 @@ func FxFireworkTimer(object target, int num, int time)
 	EffectVar(1, target, num) = Angle(0,0,xdir,ydir);
 	EffectVar(2, target, num) = x+xdir;
 	EffectVar(3, target, num) = y+ydir;
+}
+
+func SetFuel(int new)
+{
+	fuel = new;
+}
+
+func GetFuel()
+{
+	return fuel;
 }
 
 func Definition(def) {
