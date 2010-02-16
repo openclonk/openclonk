@@ -145,6 +145,35 @@ div.author {
 	font-style: italic;
 }
 
+ul.contents, ul.contents ul {
+	list-style:none;
+	padding:0;
+	margin:0;
+}
+ul.contents ul {
+	padding-left:1em;
+}
+ul.contents li {
+	font-weight: bold;
+}
+ul.contents li a {
+	font-weight: normal;
+}
+ul.contents a {
+	color: navy; 
+	text-decoration: none;  
+}  
+ul.contents a.visited {
+	color: navy;  
+	text-decoration: none;  
+}
+.collapseimg {
+	cursor: pointer;
+}
+.toggleinvisi .invisi {
+	display: none;
+}
+
 ul.nav {
 	background: #333 url(images/cellpic_nav.gif);
 	text-align: center;

@@ -149,6 +149,56 @@ def printcontents2(f, _):
         f.write('        </UL>\n')
     f.write('      </UL>\n')
 
+def printcontents3(f, _):
+    ihack = [1000]
+    def folder(name):
+        i = str(ihack[0])
+        f.write("<li><img id='tgl" + i + "' class='collapseimg' src='../images/bullet_folder.gif' alt='-' onclick='tb(" + i + ")' ondblclick='ta(" + i + ")' />\n" +
+            name + "\n" +
+            "<ul id='brn" + i + "' class='invisi'>\n")
+        ihack[0] = ihack[0] + 1
+    def sheet(url, name):
+        f.write("<li><img src='../images/bullet_sheet.gif' alt='' />\n" +
+            "<a href='" + url[4:] + "'>" + name + "</a></li>\n")
+    def sheetE(url, name):
+        f.write("<li><img src='../images/bullet_sheet.gif' alt='' />\n" +
+            "<a href='" + url[4:] + "'>" + name + "</a> (erweitert)</li>\n")
+    folder("Funktionen nach Kategorie")
+    cats = parser.cats.keys()
+    cats.sort()
+    for cat in cats:
+        folder(_(cat))
+        subcats = parser.subcats[cat].keys()
+        subcats.sort()
+        for subcat in subcats:
+            folder(_(subcat))
+            titles = parser.subcats[cat][subcat].keys()
+            titles.sort()
+            for title in titles:
+                sheet(parser.subcats[cat][subcat][title] + '#' + _(title), _(title))
+            f.write('</ul></li>\n')
+        titles = parser.cats[cat].keys()
+        titles.sort()
+        for title in titles:
+            sheet(parser.cats[cat][title] + '#' + _(title), _(title))
+        f.write('</ul></li>\n')
+    f.write('</ul></li>\n')
+    folder("Funktionen nach Version")
+    versions = parser.versions.keys()
+    versions.sort()
+    for version in versions:
+        folder(_(version))
+        titles = parser.versions[version].keys()
+        titles.sort()
+        for title in titles:
+            sheet(parser.versions[version][title] + '#' + _(title), _(title))
+        titles = parser.extversions[version].keys()
+        titles.sort()
+        for title in titles:
+            sheetE(parser.extversions[version][title] + '#' + _(title), _(title))
+        f.write('</ul></li>\n')
+    f.write('</ul></li>\n')
+
 parser = Clonkparser()
 reader = xml.sax.make_parser()
 reader.setContentHandler(parser)
@@ -182,6 +232,15 @@ for f, fin in ((file("chm/de/Output.hhc", "w"), file("Template.hhc", "r")),
     fin.close()
     _ = lambda s: gt.ugettext(s).encode('iso-8859-1')
 
+_ = lambda s: s.encode('utf-8')
+f, fin = (file("sdk/content.xml", "w"), file("sdk/content.xml.in", "r"))
+for line in fin:
+    if line.find("<!-- Insert Functions here -->") != -1:
+        printcontents3(f, _)
+    else:
+        f.write(line)
+f.close()
+fin.close()
 
 for f, fin in ((file("chm/de/Output.hhp", "w"), file("Template.hhp", "r")),
                (file("chm/en/Output.hhp", "w"), file("Template.en.hhp", "r"))):

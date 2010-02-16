@@ -25,7 +25,7 @@ extra-files := $(sort $(wildcard *.css *.php *.js images/*.*))
 extra-files-chm := $(sort $(wildcard *.css *.js images/*.*))
 
 # find all *.xml files recursively in sdk/
-xmlfiles := $(sort $(shell find sdk -name '.*' -prune -o -name \*.xml -print))
+xmlfiles := $(sort $(shell find sdk -name '.*' -prune -o -name 'content.xml' -prune -o -name \*.xml -print))
 
 # Targets:
 
@@ -33,32 +33,27 @@ xmlfiles := $(sort $(shell find sdk -name '.*' -prune -o -name \*.xml -print))
 htmlfiles := $(addsuffix .html, $(basename $(xmlfiles)))
 
 # The translated files and directories
-sdk-dirs-en := $(subst sdk, sdk-en, $(sdk-dirs))
-xmlfiles-en := $(subst sdk, sdk-en, $(xmlfiles))
-htmlfiles-en := $(subst sdk, sdk-en, $(htmlfiles))
+sdk-en-dirs := $(subst sdk, sdk-en, $(sdk-dirs))
 
-# For clonk.de
-online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) content.html))
+# For openclonk.org
+online-sdk-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(htmlfiles) sdk/content.html))
 online-dirs := $(foreach lang, en de, $(addprefix online/$(lang)/, $(sdk-dirs) images))
 online-extra-files := $(foreach lang, en de, $(addprefix online/$(lang)/, $(extra-files)))
 
 # For Entwickler.chm
 chm-dirs := $(foreach lang, en de, $(addprefix chm/$(lang)/, . $(sdk-dirs) images))
 
-.PHONY: all online-de chm install svn-update check clean
+.PHONY: all online-de chm install check clean
 
-all: $(online-dirs) $(sdk-dirs-en) $(online-extra-files) $(online-sdk-files)
+all: $(online-dirs) $(sdk-en-dirs) $(online-extra-files) $(online-sdk-files)
 
-online-de: $(addprefix online/de/, $(sdk-dirs) images $(htmlfiles) $(extra-files))
+online-de: $(addprefix online/de/, $(sdk-dirs) images $(htmlfiles) sdk/content.html $(extra-files))
 
 chm: $(chm-dirs) Entwickler.chm Developer.chm
 
 install: all
 	$(MKDIR_P) $(prefix)
 	$(CP_R) $(PWD)/online/* $(prefix)
-
-svn-update:
-	svn up
 
 check:
 	xmllint --noblanks --noout --valid $(xmlfiles)
@@ -67,7 +62,7 @@ clean:
 	rm -f *.mo Entwickler.chm Developer.chm doku.pot
 	rm -rf online sdk-en chm
 
-chm/de/Output.hhp chm/de/Output.hhk chm/en/Output.hhc chm/en/Output.hhp chm/en/Output.hhk: chm/de/Output.hhc
+chm/de/Output.hhp chm/de/Output.hhk chm/en/Output.hhc chm/en/Output.hhp chm/en/Output.hhk sdk/content.xml: chm/de/Output.hhc
 #update timestamp
 	touch $@
 chm/de/Output.hhc: $(xmlfiles) chm/de/. chm/en/. build_chm_files.py experimental.py \
@@ -75,14 +70,7 @@ chm/de/Output.hhc: $(xmlfiles) chm/de/. chm/en/. build_chm_files.py experimental
 	@echo generate chm files
 	@python build_chm_files.py $(xmlfiles)
 
-online/de/content.html: chm/de/Output.hhc build_contents.pl
-	@echo generate $@
-	@perl build_contents.pl $< > $@
-online/en/content.html: chm/en/Output.hhc build_contents.pl
-	@echo generate $@
-	@perl build_contents.pl $< > $@
-
-$(sdk-dirs-en) $(online-dirs) $(chm-dirs):
+$(sdk-en-dirs) $(online-dirs) $(chm-dirs):
 	mkdir -p $@
 
 doku.pot: $(xmlfiles) extra-strings.xml xml2po.py clonk.py

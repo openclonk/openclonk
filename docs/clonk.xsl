@@ -10,16 +10,13 @@
   <xsl:param name="fileext" select="'.xml'" />
   <xsl:template name="head">
     <head>
+      <xsl:apply-templates mode="head" />
       <link rel="stylesheet">
         <xsl:attribute name="href"><xsl:value-of select="$relpath" />doku.css</xsl:attribute>
       </link>
       <xsl:if test="$webnotes">
       <link rel="stylesheet" href="http://www.openclonk.org/header/header.css" />
       </xsl:if>
-      <title>
-        OpenClonk <xsl:choose><xsl:when test='lang("en")'>Reference -
-        </xsl:when><xsl:otherwise>Referenz - </xsl:otherwise></xsl:choose><xsl:value-of select="descendant::title" /><xsl:apply-templates select="../deprecated" />
-      </title>
       <xsl:if test="descendant::table[bitmask]">
         <script>
           <xsl:attribute name="src"><xsl:value-of select="$relpath" />bitmasks.js</xsl:attribute>
@@ -47,6 +44,20 @@
     </head>
   </xsl:template>
 
+  <xsl:template match="title" mode="head">
+    <title><xsl:value-of select="." /><xsl:apply-templates select="../deprecated" /> -
+      OpenClonk <xsl:choose>
+        <xsl:when test='lang("en")'>Reference</xsl:when>
+        <xsl:otherwise>Referenz</xsl:otherwise>
+      </xsl:choose>
+    </title>
+  </xsl:template>
+  <xsl:template match="script">
+      <xsl:copy><xsl:apply-templates select="@*|node()" /></xsl:copy>
+  </xsl:template>
+  <xsl:template match="*" mode="head" />
+  <xsl:template match="title" />
+
   <xsl:template name="header">
     <xsl:if test="$webnotes">
 <!--<xsl:processing-instruction name="php">
@@ -68,8 +79,6 @@
   </xsl:template>
 
 
-  <!-- The title content is used for the page title-->
-  <xsl:template match="title" />
   <xsl:template match="deprecated">
     (<xsl:choose><xsl:when test='lang("en")'>deprecated</xsl:when><xsl:otherwise>veraltet</xsl:otherwise></xsl:choose>)
   </xsl:template>
@@ -245,8 +254,8 @@
     <h4><xsl:apply-templates select="@id|node()" /></h4>
   </xsl:template>
 
-  <!-- copy img, a, em and br literally -->
-  <xsl:template match="img|a|em|strong|br|code/i|code/b">
+  <!-- copy some HTML elements literally -->
+  <xsl:template match="img|a|em|strong|br|code/i|code/b|ul|li">
     <xsl:copy>
       <!-- including every attribute -->
 <!--      <xsl:for-each select="@*|node()">
@@ -311,16 +320,6 @@
   </xsl:template>
 
   <xsl:template match="date" />
-  
-  <xsl:template match="ul">
-    <ul>
-      <xsl:apply-templates />
-    </ul>
-  </xsl:template>
-
-  <xsl:template match="li">
-    <li><xsl:apply-templates /></li>
-  </xsl:template>
 
   <xsl:template match="table">
     <table>
@@ -392,7 +391,7 @@
         </xsl:choose></xsl:with-param>
       </xsl:call-template></li>
       <li><a>
-        <xsl:attribute name="href"><xsl:value-of select="$relpath" />content.html</xsl:attribute>
+        <xsl:attribute name="href"><xsl:value-of select="$relpath" />sdk/content.html</xsl:attribute>
         <xsl:choose>
           <xsl:when test='lang("en")'>Contents</xsl:when>
           <xsl:otherwise>Inhalt</xsl:otherwise>
