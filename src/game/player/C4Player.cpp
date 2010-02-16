@@ -5,7 +5,7 @@
  * Copyright (c) 2001-2008  Sven Eberhardt
  * Copyright (c) 2002-2008  Peter Wortmann
  * Copyright (c) 2004  Armin Burgmeier
- * Copyright (c) 2005-2009  G√ºnther Brammer
+ * Copyright (c) 2005-2009  Günther Brammer
  * Copyright (c) 2009  Nicolas Hake
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
@@ -963,7 +963,7 @@ void C4Player::CheckCrewExPromotion()
 	C4Object *hirank;
 	if ((hirank=GetHiRankActiveCrew(false)))
 		if (hirank->Info)
-			if (hirank->Info->Rank<1) // No F‰hnrich -> except. promo.
+			if (hirank->Info->Rank<1) // No Fähnrich -> except. promo.
 				if ((hirank=GetHiExpActiveCrew(false)))
 					hirank->Promote(1,true,false);
 	}
