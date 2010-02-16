@@ -20,6 +20,11 @@ protected func Construction()
 	fuel=100;
 }
 
+protected func Destruction()
+{
+	if(rider) JumpOff(rider);
+}
+
 func ControlRight()
 {	
 	SetRDir(+3);

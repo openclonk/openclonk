@@ -58,7 +58,7 @@ public func SelectItem(selection, bool second)
 	var oldnum = GetSelected(second);
 	var item = inventory[oldnum];
 	
-	selection = BoundBy(0,MaxContentsCount()-1);
+	selection = BoundBy(selection,0,MaxContentsCount()-1);
 	
 	// selection didnt change
 	if (oldnum == selection) return;
