@@ -78,12 +78,6 @@ bool CStdApp::Init(int argc, char * argv[]) {
 	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
 #endif
 
-	// create pipe
-	if(pipe(this->Pipe) != 0) {
-		Log("Error creating Pipe");
-		return false;
-	}
-
 	// Custom initialization
 	return DoInit ();
 }
