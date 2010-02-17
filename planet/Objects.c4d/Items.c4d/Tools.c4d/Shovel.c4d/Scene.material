@@ -7,8 +7,15 @@ material shovel
 		{
 			ambient 0.500000 0.500000 0.500000 1.000000
 			diffuse 0.702745 0.702745 0.702745 1.000000
-			specular 0.380648 0.380648 0.380648 1.000000 6.750000
+			specular 0.000000 0.000000 0.000000 1.000000 0.250000
 			emissive 0.000000 0.000000 0.000000 1.000000
+			texture_unit
+			{
+				texture shovel.png
+				tex_address_mode wrap
+				filtering trilinear
+				colour_op alpha_blend
+			}
 		}
 	}
 }
