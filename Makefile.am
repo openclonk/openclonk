@@ -60,7 +60,6 @@ AM_CPPFLAGS = \
   -I$(srcdir)/src/game/object \
   -I$(srcdir)/src/lib/texture \
   -I$(srcdir)/src/script \
-  -DC4ENGINE \
   $(GLEW_CFLAGS) $(GTK_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS)
 
 #various hacks to get dependency tracking working with a precompiled C4Include

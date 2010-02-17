@@ -29,7 +29,7 @@
 
 C4ComponentHost *pCmpHost=NULL;
 
-#if defined(C4ENGINE) && defined(_WIN32)
+#ifdef _WIN32
 #include "resource.h"
 
 BOOL CALLBACK ComponentDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
@@ -313,20 +313,14 @@ bool C4ComponentHost::Save(C4Group &hGroup)
 
 void C4ComponentHost::Open()
 	{
-
+#ifdef _WIN32
 	pCmpHost=this;
-
-#if defined(C4ENGINE) && defined(_WIN32)
-
 	DialogBox(Application.GetInstance(),
 						MAKEINTRESOURCE(IDD_COMPONENT),
 						Application.GetWindowHandle(),
 						(DLGPROC) ComponentDlgProc);
-
 #endif
-
 	pCmpHost=NULL;
-
 	}
 
 bool C4ComponentHost::GetLanguageString(const char *szLanguage, StdStrBuf &rTarget)

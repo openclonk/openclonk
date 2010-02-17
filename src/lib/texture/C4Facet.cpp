@@ -441,7 +441,7 @@ void C4Facet::Set(CSurface &rSfc)
 #ifdef _WIN32
 void C4Facet::Draw(HWND hWnd, int32_t iTx, int32_t iTy, int32_t iTWdt, int32_t iTHgt, bool fAspect, int32_t iPhaseX, int32_t iPhaseY)
 	{
-#if defined(C4ENGINE) && defined(USE_DIRECTX)
+#if defined(USE_DIRECTX)
 	if (!pD3D || !Surface || !hWnd || !Wdt || !Hgt) return;
 
 	if (fAspect)

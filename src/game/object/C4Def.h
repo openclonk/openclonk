@@ -239,11 +239,6 @@ class C4Def: public C4PropList
     C4Def();
     ~C4Def();
   public:
-
-#if defined(_WIN32) && !defined(C4ENGINE) && !defined(C4GROUP)
-    HBITMAP Picture;
-    HBITMAP Image;
-#endif
 		char Maker[C4MaxName+1];
 		char Filename[_MAX_FNAME+1];
 		int32_t Creation;

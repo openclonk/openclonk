@@ -23,14 +23,7 @@
 
 #include "C4Include.h"
 #include <Standard.h>
-#if defined(HAVE_PTHREAD) && defined(C4ENGINE)
-// c4group is single-threaded
 #include <StdSync.h>
-#endif
-
-#ifdef _WIN32
-#include <shellapi.h>
-#endif
 
 #include <math.h>
 #include <sys/timeb.h>
@@ -796,7 +789,7 @@ const char* SGetParameter(const char *strCommandLine, int iParameter, char *strT
 
 /* Some part of the Winapi */
 
-#if defined(HAVE_PTHREAD) && defined(C4ENGINE) && defined(NEED_FALLBACK_ATOMIC_FUNCS)
+#ifdef NEED_FALLBACK_ATOMIC_FUNCS
 static CStdCSec SomeMutex;
 long InterlockedIncrement(long * var)
 	{

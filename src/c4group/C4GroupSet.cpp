@@ -106,7 +106,7 @@ bool C4GroupSet::RegisterGroup(C4Group &rGroup, bool fOwnGrp, int32_t Priority, 
 	pNewNode->Priority = Priority;
 	pNewNode->Contents = Contents;
 
-#if defined(C4ENGINE) && !defined(USE_CONSOLE)
+#if !defined(USE_CONSOLE)
 	// always add fonts directly
 	if (Contents & C4GSCnt_FontDefs)
 		Game.FontLoader.LoadDefs(rGroup, Config);

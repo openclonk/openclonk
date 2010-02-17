@@ -701,7 +701,7 @@ target_link_libraries(c4group
 	${ZLIB_LIBRARIES}
 	${OPENSSL_LIBRARIES}
 )
-set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS C4ENGINE GLEW_STATIC)
+set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
 ############################################################################

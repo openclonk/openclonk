@@ -357,6 +357,7 @@ template <typename T>
 // open a weblink in an external browser
 bool OpenURL(const char *szURL);
 
+bool EraseItemSafe(const char *szFilename);
 
 #endif // INC_STANDARD
 

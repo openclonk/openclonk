@@ -56,6 +56,10 @@ char strExecuteAtEnd[_MAX_PATH + 1] = "";
 
 int iResult = 0;
 
+bool EraseItemSafe(const char *szFilename) {
+  return false;
+}
+
 bool Log(const char *msg) {
   if (!fQuiet)
     printf("%s\n", msg);

@@ -63,3 +63,28 @@ bool OpenURL(const char *szURL)
 	// operating system not supported, or all opening method(s) failed
 	return false;
 	}
+
+
+// delete item to the recycle bin
+bool EraseItemSafe(const char *szFilename)
+	{
+#ifdef _WIN32
+	char Filename[_MAX_PATH+1];
+	SCopy(szFilename, Filename, _MAX_PATH);
+	Filename[SLen(Filename)+1]=0;
+	SHFILEOPSTRUCT shs;
+	shs.hwnd=0;
+	shs.wFunc=FO_DELETE;
+	shs.pFrom=Filename;
+	shs.pTo=NULL;
+	shs.fFlags=FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT;
+	shs.fAnyOperationsAborted=false;
+	shs.hNameMappings=0;
+	shs.lpszProgressTitle=NULL;
+	return !SHFileOperation(&shs);
+#endif
+#ifdef __APPLE__
+	return MacUtility::sendFileToTrash(szFilename);
+#endif
+	return false;
+	}

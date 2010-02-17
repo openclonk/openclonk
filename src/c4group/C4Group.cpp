@@ -35,7 +35,6 @@
 #include <sys/stat.h>
 #ifdef _WIN32
 #include <sys/utime.h>
-#include <shellapi.h>
 #else
 #include <utime.h>
 #include <fcntl.h>
@@ -47,7 +46,6 @@
 #include <fcntl.h>
 #include <openssl/sha.h>
 
-#include "MacUtility.h"
 
 //------------------------------ File Sort Lists -------------------------------------------
 
@@ -1584,30 +1582,6 @@ bool C4Group::Delete(const char *szFiles, bool fRecursive)
 
   return true; // Would be nicer to return the file count and add up all counts from recursive actions...
   }
-
-// delete item to the recycle bin
-bool EraseItemSafe(const char *szFilename)
-	{
-#ifdef _WIN32
-	char Filename[_MAX_PATH+1];
-	SCopy(szFilename, Filename, _MAX_PATH);
-	Filename[SLen(Filename)+1]=0;
-	SHFILEOPSTRUCT shs;
-	shs.hwnd=0;
-	shs.wFunc=FO_DELETE;
-	shs.pFrom=Filename;
-	shs.pTo=NULL;
-	shs.fFlags=FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_SILENT;
-	shs.fAnyOperationsAborted=false;
-	shs.hNameMappings=0;
-	shs.lpszProgressTitle=NULL;
-	return !SHFileOperation(&shs);
-#elif defined(USE_SDL_MAINLOOP) && defined(C4ENGINE) && defined(__APPLE__)
-	MacUtility::sendFileToTrash(szFilename);
-#else
-  return false;
-#endif
-	}
 
 bool C4Group::DeleteEntry(const char *szFilename, bool fRecycle)
   {

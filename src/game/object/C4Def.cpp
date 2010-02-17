@@ -411,11 +411,6 @@ C4Def::C4Def()
 void C4Def::Default()
 	{
 	DefaultDefCore();
-
-#if !defined(C4ENGINE) && !defined(C4GROUP)
-  Picture=NULL;
-  Image=NULL;
-#endif
   Next=NULL;
   Temporary=false;
 	Maker[0]=0;
@@ -535,42 +530,6 @@ bool C4Def::Load(C4Group &hGroup,
 			DebugLogF("  Error loading portrait graphics of %s (%s)", hGroup.GetFullName().getData(), id.ToString());
 			return false;
 			}
-
-
-#if !defined(C4ENGINE) && !defined(C4GROUP)
-
-	// Override PictureRect if PictureRectFE is given
-	if (PictureRectFE.Wdt > 0)
-		PictureRect = PictureRectFE;
-
-  // Read picture section (this option is currently unused...)
-  if (dwLoadWhat & C4D_Load_Picture)
-    // Load from PNG graphics
-		if (!hGroup.AccessEntry(C4CFN_DefGraphicsPNG)
-     || !hGroup.ReadPNGSection(&Picture,NULL,PictureRect.x,PictureRect.y,PictureRect.Wdt,PictureRect.Hgt))
-			// Load from BMP graphics
-			if (!hGroup.AccessEntry(C4CFN_DefGraphics)
-			 || !hGroup.ReadDDBSection(&Picture,NULL,PictureRect.x,PictureRect.y,PictureRect.Wdt,PictureRect.Hgt))
-				// None loaded
-				return false;
-
-  // Read picture section for use in image list
-  if (dwLoadWhat & C4D_Load_Image)
-		// Load from PNG title
-		if (!hGroup.AccessEntry(C4CFN_ScenarioTitlePNG)
-		 || !hGroup.ReadPNGSection(&Image, NULL, -1, -1, -1, -1, 32, 32))
-			// Load from BMP title
-			if (!hGroup.AccessEntry(C4CFN_ScenarioTitle)
-			 || !hGroup.ReadDDBSection(&Image, NULL, -1, -1, -1, -1, 32, 32, true))
-				// Load from PNG graphics
-				if (!hGroup.AccessEntry(C4CFN_DefGraphicsPNG)
-				 || !hGroup.ReadPNGSection(&Image, NULL, PictureRect.x, PictureRect.y, PictureRect.Wdt, PictureRect.Hgt, 32, 32))
-					// Load from BMP graphics
-					if (!hGroup.AccessEntry(C4CFN_DefGraphics)
-					 || !hGroup.ReadDDBSection(&Image, NULL, PictureRect.x, PictureRect.y, PictureRect.Wdt, PictureRect.Hgt, 32, 32, true))
-						// None loaded
-						return false;
-#endif
 
   // Read script
   if (dwLoadWhat & C4D_Load_Script)

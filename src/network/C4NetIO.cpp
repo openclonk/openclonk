@@ -3139,11 +3139,7 @@ void C4NetIOUDP::DoCheck() // (mt-safe)
 #endif
 void C4NetIOUDP::OpenDebugLog()
 {
-#if defined C4ENGINE //&& 0
-	const char *szFileBase = Config.AtExePath("NetIOUDP%d.log");
-#else
 	const char *szFileBase = "NetIOUDP%d.log";
-#endif
 	char szFilePath[_MAX_PATH + 1];
 	for(int i = 0; i < 1000; i++)
 	{
