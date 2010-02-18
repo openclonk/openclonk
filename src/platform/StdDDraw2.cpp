@@ -659,7 +659,7 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 			tTexBlt.bottom= (fTexBlt.bottom+ iBlitY - fy) * scaleY + ty;
 			// prepare blit data texture matrix
 			// translate back to texture 0/0 regarding indent and blit offset
-			/*BltData.TexPos.SetMoveScale(-tTexBlt.left - DDrawCfg.fBlitOff, -tTexBlt.top  - DDrawCfg.fBlitOff, 1, 1);
+			/*BltData.TexPos.SetMoveScale(-tTexBlt.left, -tTexBlt.top, 1, 1);
 			// apply back scaling and texture-indent - simply scale matrix down
 			int i;
 			for (i=0; i<3; ++i) BltData.TexPos.mat[i] /= scaleX2;
@@ -669,16 +669,16 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 				((float) fTexBlt.top) / iTexSize, 1, 1);*/
 			// Set resulting matrix directly
 			BltData.TexPos.SetMoveScale(
-				fTexBlt.left / iTexSize - (tTexBlt.left + DDrawCfg.fBlitOff) / scaleX2,
-				fTexBlt.top / iTexSize - (tTexBlt.top + DDrawCfg.fBlitOff) / scaleY2,
+				fTexBlt.left / iTexSize - tTexBlt.left / scaleX2,
+				fTexBlt.top / iTexSize - tTexBlt.top / scaleY2,
 				1 / scaleX2,
 				1 / scaleY2);
 			// set up blit data as rect
 			BltData.byNumVertices = 4;
-			BltData.vtVtx[0].ftx = tTexBlt.left  + DDrawCfg.fBlitOff; BltData.vtVtx[0].fty = tTexBlt.top    + DDrawCfg.fBlitOff;
-			BltData.vtVtx[1].ftx = tTexBlt.right + DDrawCfg.fBlitOff; BltData.vtVtx[1].fty = tTexBlt.top    + DDrawCfg.fBlitOff;
-			BltData.vtVtx[2].ftx = tTexBlt.right + DDrawCfg.fBlitOff; BltData.vtVtx[2].fty = tTexBlt.bottom + DDrawCfg.fBlitOff;
-			BltData.vtVtx[3].ftx = tTexBlt.left  + DDrawCfg.fBlitOff; BltData.vtVtx[3].fty = tTexBlt.bottom + DDrawCfg.fBlitOff;
+			BltData.vtVtx[0].ftx = tTexBlt.left;  BltData.vtVtx[0].fty = tTexBlt.top;
+			BltData.vtVtx[1].ftx = tTexBlt.right; BltData.vtVtx[1].fty = tTexBlt.top;
+			BltData.vtVtx[2].ftx = tTexBlt.right; BltData.vtVtx[2].fty = tTexBlt.bottom;
+			BltData.vtVtx[3].ftx = tTexBlt.left;  BltData.vtVtx[3].fty = tTexBlt.bottom;
 
 			CTexRef * pBaseTex = pTex;
 			// is there a base-surface to be blitted first?
@@ -1361,7 +1361,7 @@ CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 	{
 	// set cfg again, as engine has been decided
-	DDrawCfg.Set(DDrawCfg.Cfg, DDrawCfg.fBlitOff);
+	DDrawCfg.Set(DDrawCfg.Cfg);
 
 	this->pApp = pApp;
 

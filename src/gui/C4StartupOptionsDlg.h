@@ -141,7 +141,7 @@ class C4StartupOptionsDlg : public C4StartupDlg
 		C4GUI::CheckBox *pCheckGfxEngines[3], *pCheckGfxClrDepth[2];
 		C4GUI::GroupBox *pGroupTrouble;
 		C4GUI::CheckBox *pShaders;
-		int32_t iGfxTexIndent, iGfxBlitOff; EditConfig *pEdtGfxBlitOff;
+		int32_t iGfxTexIndent;
 		C4GUI::ScrollBar *pEffectLevelSlider;
 
 		void LoadGfxTroubleshoot(); void SaveGfxTroubleshoot();

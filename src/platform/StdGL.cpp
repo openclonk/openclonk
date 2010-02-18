@@ -1350,8 +1350,6 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 				{
 				Vtx[i].tx /= iTexSize;
 				Vtx[i].ty /= iTexSize;
-				Vtx[i].ftx += DDrawCfg.fBlitOff;
-				Vtx[i].fty += DDrawCfg.fBlitOff;
 				Vtx[i].ftz = 0;
 				}
 			if(mattextures)

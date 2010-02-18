@@ -150,8 +150,6 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(MsgBrdFadeDelay,				"MsgBrdFadeDelay"	,			10						));
 	pComp->Value(mkNamingAdapt(PXSGfx,								"PXSGfx"	,							1							));
 	pComp->Value(mkNamingAdapt(Engine,								"Engine"	,							1							,false, true));
-	pComp->Value(mkNamingAdapt(BlitOff,								"BlitOff"	,							-50						));
-	pComp->Value(mkNamingAdapt(BlitOffGL,							"BlitOffGL"	,						0							));
 	pComp->Value(mkNamingAdapt(Gamma1,								"Gamma1"	,							0							));
 	pComp->Value(mkNamingAdapt(Gamma2,								"Gamma2"	,							0x808080			));
 	pComp->Value(mkNamingAdapt(Gamma3,								"Gamma3"	,							0xffffff			));

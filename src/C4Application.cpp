@@ -165,13 +165,13 @@ bool C4Application::DoInit()
 		case GFXENGN_DIRECTX:
 		case GFXENGN_DIRECTXS:
 			// Direct3D
-			DDrawCfg.Set(Config.Graphics.NewGfxCfg, (float) Config.Graphics.BlitOff/100.0f);
+			DDrawCfg.Set(Config.Graphics.NewGfxCfg);
 			break;
 #endif
 #ifdef USE_GL
 		case GFXENGN_OPENGL:
 		// OpenGL
-		DDrawCfg.Set(Config.Graphics.NewGfxCfgGL, (float) Config.Graphics.BlitOffGL/100.0f);
+		DDrawCfg.Set(Config.Graphics.NewGfxCfgGL);
 		break;
 #endif
 		default: ;	// Always have at least one statement

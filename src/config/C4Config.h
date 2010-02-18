@@ -135,8 +135,6 @@ class C4ConfigGraphics
 		int32_t MsgBrdFadeDelay;
 		int32_t PXSGfx;			// show PXS-graphics (instead of sole pixels)
 		int32_t Engine;			// 0: D3D; 1: OpenGL;
-		int32_t BlitOff;		// blit offset (percent)
-		int32_t BlitOffGL;	// blit offset (percent) (OpenGL)
 		int32_t Gamma1, Gamma2, Gamma3; // gamma ramps
 		int32_t Currency;		// default wealth symbolseb
 		int32_t RenderInactiveEM; // draw vieports even if inactive in CPEM

@@ -74,7 +74,6 @@ class CDDrawCfg
 	{
 	public:
 		bool ClipManuallyE; // do manual clipping in the easy cases
-		float fBlitOff;			// blit offsets
 		bool NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 		bool NoAcceleration; // wether direct rendering is used (X11)
 		bool Windowed; // wether the resolution will not be set
@@ -86,23 +85,21 @@ class CDDrawCfg
 			// Let's end this silly bitmask business in the config.
 			Shader (false)
 			{
-			Set(0, 0.0f);
+			Set(0);
 			}
 
-		void Set(int dwCfg, float fBlitOff) // set cfg
+		void Set(int dwCfg) // set cfg
 			{
 			Cfg=dwCfg;
-			this->fBlitOff = fBlitOff;
 			ClipManuallyE = true;
 			NoOffscreenBlits = true; // not yet working properly... !!(dwCfg&C4GFXCFG_NOOFFBLITS);
 			Windowed = !!(dwCfg&C4GFXCFG_WINDOWED);
 			}
-		void Get(int32_t & dwCfg, float & fBlitOff)
+		void Get(int32_t & dwCfg)
 			{
 			dwCfg =
 				// (NoOffscreenBlits  ?  true & // not yet working properly... dwCfg&C4GFXCFG_NOOFFBLITS) |
 				(Windowed ? C4GFXCFG_WINDOWED : 0);
-			fBlitOff = this->fBlitOff;
 			}
 	};
 extern CDDrawCfg DDrawCfg; // ddraw config

@@ -224,6 +224,10 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 		bltClrVertices[i].y = rBltData.vtVtx[i].fty;
 		if (rBltData.pTransform)
 			rBltData.pTransform->TransformPoint(bltClrVertices[i].x, bltClrVertices[i].y);
+		// Compensate for D3D's half-a-pixel offset
+		// FIXME: Put this into a global transformation matrix or something
+		bltClrVertices[i].x -= 0.5;
+		bltClrVertices[i].y -= 0.5;
 		bltClrVertices[i].tu = rBltData.vtVtx[i].ftx;
 		bltClrVertices[i].tv = rBltData.vtVtx[i].fty;
 		rBltData.TexPos.TransformPoint(bltClrVertices[i].tu, bltClrVertices[i].tv);

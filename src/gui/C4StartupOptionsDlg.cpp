@@ -845,10 +845,6 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pShaders->SetToolTip("Shaders");
 	pShaders->SetOnChecked(pGfxGroubleCheckCB);
 	pGroupTrouble->AddElement(pShaders);
-	// blit offset
-	pEdtGfxBlitOff = new EditConfig(caGroupTrouble.GetGridCell(3,5,1,2,-1,iEdit2Hgt,true,2), LoadResStr("IDS_MSG_BLITOFFSET"), NULL, &iGfxBlitOff, false);
-	pEdtGfxBlitOff->SetToolTip(LoadResStr("IDS_MSG_BLITOFFSET_DESC"));
-	pGroupTrouble->AddElement(pEdtGfxBlitOff);
 	// load values of currently selected engine for troubleshooting
 	LoadGfxTroubleshoot();
 	// --subgroup options
@@ -1405,10 +1401,8 @@ void C4StartupOptionsDlg::LoadGfxTroubleshoot()
 	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
 	// get config values for this config
 	uint32_t dwGfxCfg = fUseGL ? Config.Graphics.NewGfxCfgGL : Config.Graphics.NewGfxCfg;
-	iGfxBlitOff = fUseGL ? Config.Graphics.BlitOffGL : Config.Graphics.BlitOff;
 	// set it in controls
 	pShaders->SetChecked(!!DDrawCfg.Shader);
-	pEdtGfxBlitOff->SetIntVal(iGfxBlitOff);
 	// title of troubleshooting-box by config set
 	pGroupTrouble->SetTitle(FormatString("%s: %s", LoadResStrNoAmp("IDS_CTL_TROUBLE"), fUseGL ? "OpenGL" : "DirectX").getData());
 	}
@@ -1420,16 +1414,14 @@ void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 	uint32_t dwGfxCfg = 0u;
 	DDrawCfg.Shader=pShaders->GetChecked();
 	if (DDrawCfg.Windowed) dwGfxCfg |= C4GFXCFG_WINDOWED;
-	pEdtGfxBlitOff->Save2Config();
 	// get config set to be used
 	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
 	// set config values into this set
 	(fUseGL ? Config.Graphics.NewGfxCfgGL : Config.Graphics.NewGfxCfg) = dwGfxCfg;
-	(fUseGL ? Config.Graphics.BlitOffGL : Config.Graphics.BlitOff) = iGfxBlitOff;
 	// and apply them directly, if the engine is current
 	if (fUseGL == lpDDraw->IsOpenGL())
 		{
-		DDrawCfg.Set(dwGfxCfg, (float) iGfxBlitOff/100.0f);
+		DDrawCfg.Set(dwGfxCfg);
 		lpDDraw->InvalidateDeviceObjects();
 		lpDDraw->RestoreDeviceObjects();
 		}

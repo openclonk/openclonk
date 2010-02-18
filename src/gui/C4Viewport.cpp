@@ -513,13 +513,7 @@ gboolean C4ViewportWindow::OnKeyPressStatic(GtkWidget* widget, GdkEventKey* even
 {
 	if(event->keyval == GDK_Scroll_Lock)
 		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
-#ifdef _DEBUG
-	switch (event->keyval)
-	{
-		case GDK_1: DDrawCfg.fBlitOff -= 0.05; printf("%f\n", DDrawCfg.fBlitOff); break;
-		case GDK_2: DDrawCfg.fBlitOff += 0.05; printf("%f\n", DDrawCfg.fBlitOff); break;
-	}
-#endif
+
 	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
 	Game.DoKeyboardInput(key, KEYEV_Down, !!(event->state & GDK_MOD1_MASK), !!(event->state & GDK_CONTROL_MASK), !!(event->state & GDK_SHIFT_MASK), false, NULL);
 	return true;
