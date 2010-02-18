@@ -26,6 +26,7 @@
 #include <cctype>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 // key context classifications
 enum C4KeyScope
@@ -425,6 +426,7 @@ class C4CustomKey
 		const StdStrBuf &GetName() const { return Name; }
 		C4KeyScope GetScope() const { return Scope; }
 		unsigned int GetPriority() const { return uiPriority; }
+		bool IsCodeMatched(const C4KeyCodeEx &key) const { const CodeList &codes = GetCodes(); return (std::find(codes.begin(),codes.end(),key) != codes.end()); }
 
 		void Update(const C4CustomKey *pByKey); // merge given key into this
 		bool Execute(C4KeyEventType eEv, C4KeyCodeEx key);
@@ -453,7 +455,7 @@ class C4KeyboardInput
 			bool operator()(const char *p, const char *q) const { return p && q && (strcmp(p,q)<0); }
 			};
 
-		typedef std::multimap<C4KeyCodeEx, C4CustomKey *> KeyCodeMap;
+		typedef std::multimap<C4KeyCode, C4CustomKey *> KeyCodeMap;
 		typedef std::map<const char *, C4CustomKey *, szLess> KeyNameMap;
 		// mapping of all keys by code and name
 		KeyCodeMap KeysByCode;

@@ -382,32 +382,35 @@ bool C4PlayerControlAssignmentSet::operator ==(const C4PlayerControlAssignmentSe
 	}
 
 void C4PlayerControlAssignmentSet::GetAssignmentsByKey(const C4PlayerControlDefs &rDefs, const C4KeyCodeEx &key, bool fHoldKeysOnly, C4PlayerControlAssignmentPVec *pOutVec, const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const
-	{
+{
 	assert(pOutVec);
-	// primary match by TriggerKey
+	// primary match by TriggerKey (todo: Might use a hash map here if matching speed becomes an issue due to large control sets)
 	for (C4PlayerControlAssignmentVec::const_iterator i = Assignments.begin(); i != Assignments.end(); ++i)
-		{
+	{
 		const C4PlayerControlAssignment &rAssignment = *i;
-		if (!(rAssignment.GetTriggerKey() == key)) continue;
+		const C4KeyCodeEx &rAssignmentTriggerKey = rAssignment.GetTriggerKey();
+		if (!(rAssignmentTriggerKey.Key == key.Key)) continue;
+		// special: hold-keys-only ignore shift, because shift state might have been release during hold
+		if (!fHoldKeysOnly) if (rAssignmentTriggerKey.dwShift != key.dwShift) continue;
 		// check linked control def
 		const C4PlayerControlDef *pCtrl = rDefs.GetControlByIndex(rAssignment.GetControl());
 		if (!pCtrl) continue;
 		// only want hold keys?
 		if (fHoldKeysOnly)
-			{
+		{
 			// a hold/release-trigger key is not a real hold key, even if the underlying control is
 			if (!pCtrl->IsHoldKey() || (rAssignment.GetTriggerMode() & (C4PlayerControlAssignment::CTM_Hold | C4PlayerControlAssignment::CTM_Release))) continue;
-			}
+		}
 		else if (rAssignment.HasCombo())
-			{
+		{
 			// hold-only events match the trigger key only (i.e., Release-events are generated as soon as the trigger key goes up)
 			// other events must match either the sequence or the down-key-combination
 			if (!rAssignment.IsComboMatched(DownKeys, RecentKeys)) continue;
-			}
+		}
 		// we got  match! Store it
 		pOutVec->push_back(&rAssignment);
-		}
 	}
+}
 
 void C4PlayerControlAssignmentSet::GetTriggerKeys(const C4PlayerControlDefs &rDefs, C4KeyCodeExVec *pRegularKeys, C4KeyCodeExVec *pHoldKeys) const
 	{

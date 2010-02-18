@@ -805,7 +805,7 @@ void C4KeyboardInput::UpdateKeyCodes(C4CustomKey *pKey, const C4CustomKey::CodeL
 		{
 		// no need to kill if code stayed
 		if (std::find(rNewCodes.begin(), rNewCodes.end(), *iCode) != rNewCodes.end()) continue;
-		std::pair<KeyCodeMap::iterator, KeyCodeMap::iterator> KeyRange = KeysByCode.equal_range(*iCode);
+		std::pair<KeyCodeMap::iterator, KeyCodeMap::iterator> KeyRange = KeysByCode.equal_range((*iCode).Key);
 		for (KeyCodeMap::iterator i = KeyRange.first; i != KeyRange.second; ++i)
 			if (i->second == pKey)
 				{
@@ -818,19 +818,19 @@ void C4KeyboardInput::UpdateKeyCodes(C4CustomKey *pKey, const C4CustomKey::CodeL
 		{
 		// no double-add if it was in old list already
 		if (std::find(rOldCodes.begin(), rOldCodes.end(), *iCode) != rOldCodes.end()) continue;
-		KeysByCode.insert(std::make_pair(*iCode, pKey));
+		KeysByCode.insert(std::make_pair((*iCode).Key, pKey));
 		}
 	}
 
 void C4KeyboardInput::RegisterKey(C4CustomKey *pRegKey)
-	{
+{
 	assert(pRegKey); if (!pRegKey) return;
 	// key will be added: ref it
 	pRegKey->Ref();
 	// search key of same name first
 	C4CustomKey *pDupKey = KeysByName[pRegKey->GetName().getData()];
 	if (pDupKey)
-		{
+	{
 		// key of this name exists: Merge them (old codes copied cuz they'll be overwritten)
 		C4CustomKey::CodeList OldCodes = pDupKey->GetCodes();
 		const C4CustomKey::CodeList &rNewCodes = pRegKey->GetCodes();
@@ -839,18 +839,20 @@ void C4KeyboardInput::RegisterKey(C4CustomKey *pRegKey)
 		if (!(OldCodes == rNewCodes)) UpdateKeyCodes(pDupKey, OldCodes, rNewCodes);
 		// key to be registered no longer used
 		pRegKey->Deref();
-		}
+	}
 	else
-		{
-		// new unique key: Insert into both maps
+	{
+		// new unique key: Insert into map
 		KeysByName[pRegKey->GetName().getData()] = pRegKey;
 		for (C4CustomKey::CodeList::const_iterator i = pRegKey->GetCodes().begin(); i != pRegKey->GetCodes().end(); ++i)
-			KeysByCode.insert(std::make_pair(*i, pRegKey));
+		{
+			KeysByCode.insert(std::make_pair((*i).Key, pRegKey));
 		}
 	}
+}
 
 void C4KeyboardInput::UnregisterKey(const StdStrBuf &rsName)
-	{
+{
 	// kill from name map
 	KeyNameMap::iterator in = KeysByName.find(rsName.getData());
 	if (in == KeysByName.end()) return;
@@ -858,18 +860,18 @@ void C4KeyboardInput::UnregisterKey(const StdStrBuf &rsName)
 	KeysByName.erase(in);
 	// kill all key bindings from key map
 	for (C4CustomKey::CodeList::const_iterator iCode = pKey->GetCodes().begin(); iCode != pKey->GetCodes().end(); ++iCode)
-		{
-		std::pair<KeyCodeMap::iterator, KeyCodeMap::iterator> KeyRange = KeysByCode.equal_range(*iCode);
+	{
+		std::pair<KeyCodeMap::iterator, KeyCodeMap::iterator> KeyRange = KeysByCode.equal_range((*iCode).Key);
 		for (KeyCodeMap::iterator i = KeyRange.first; i != KeyRange.second; ++i)
 			if (i->second == pKey)
-				{
+			{
 				KeysByCode.erase(i);
 				break;
-				}
-		}
+			}
+	}
 	// release reference to key
 	pKey->Deref();
-	}
+}
 
 void C4KeyboardInput::UnregisterKeyBinding(C4CustomKey *pUnregKey)
 	{
@@ -902,19 +904,19 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 	const int32_t iKeyRangeMax = 5;
 	int32_t iKeyRangeCnt=0, j;
 	std::pair<KeyCodeMap::iterator, KeyCodeMap::iterator> KeyRanges[iKeyRangeMax];
-	KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(InKey);
+	KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(InKey.Key);
 	if (Key_IsGamepadButton(InKey.Key))
 		{
 		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
 		uint8_t byBtnIndex = Key_GetGamepadButtonIndex(InKey.Key);
 		// even/odd button events: Add even button indices as odd events, because byBtnIndex is zero-based and the event naming scheme is for one-based button indices
-		if (byBtnIndex % 2) KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(C4KeyCodeEx(KEY_Gamepad(byGamepad, KEY_JOY_AnyEvenButton)));
-		               else KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(C4KeyCodeEx(KEY_Gamepad(byGamepad, KEY_JOY_AnyOddButton)));
+		if (byBtnIndex % 2) KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(KEY_Gamepad(byGamepad, KEY_JOY_AnyEvenButton));
+		               else KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(KEY_Gamepad(byGamepad, KEY_JOY_AnyOddButton));
 		// high/low button events
-		if (byBtnIndex < 4) KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(C4KeyCodeEx(KEY_Gamepad(byGamepad, KEY_JOY_AnyLowButton)));
-		               else KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(C4KeyCodeEx(KEY_Gamepad(byGamepad, KEY_JOY_AnyHighButton)));
+		if (byBtnIndex < 4) KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(KEY_Gamepad(byGamepad, KEY_JOY_AnyLowButton));
+		               else KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(KEY_Gamepad(byGamepad, KEY_JOY_AnyHighButton));
 		// "any gamepad button"-event
-		KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(C4KeyCodeEx(KEY_Gamepad(byGamepad, KEY_JOY_AnyButton)));
+		KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(KEY_Gamepad(byGamepad, KEY_JOY_AnyButton));
 		}
 	else if (Key_IsGamepadAxis(InKey.Key))
 		{
@@ -927,9 +929,9 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 			if (fHigh) keyAxisDir = KEY_JOY_Down; else keyAxisDir = KEY_JOY_Up;
 		else
 			if (fHigh) keyAxisDir = KEY_JOY_Right; else keyAxisDir = KEY_JOY_Left;
-		KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(C4KeyCodeEx(KEY_Gamepad(byGamepad, (uint8_t)keyAxisDir)));
+		KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(KEY_Gamepad(byGamepad, (uint8_t)keyAxisDir));
 		}
-	if (InKey.Key != KEY_Any) KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(C4KeyCodeEx(KEY_Any, C4KeyShiftState(InKey.dwShift)));
+	if (InKey.Key != KEY_Any) KeyRanges[iKeyRangeCnt++] = KeysByCode.equal_range(KEY_Any);
 	assert(iKeyRangeCnt <= iKeyRangeMax);
 	// check all assigned keys
 	// exec from highest to lowest priority
@@ -957,9 +959,11 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 				if (pKey->GetPriority() == uiExecPrio)
 					// check scope
 					if (pKey->GetScope() & InScope)
-						// exec it
-						if (pKey->Execute(InEvent, InKey))
-							return true;
+						// check shift modifier (not on release, because a key release might happen with a different modifier than its pressing!)
+						if (InEvent == KEYEV_Up || pKey->IsCodeMatched(InKey))
+							// exec it
+							if (pKey->Execute(InEvent, InKey))
+								return true;
 				}
 		// nothing found in this priority: exec next
 		uiLastPrio = uiExecPrio;
