@@ -994,7 +994,7 @@ int32_t C4Landscape::BlastFreePix(int32_t tx, int32_t ty, int32_t grade, int32_t
     if (::MaterialMap.Map[mat].BlastShiftTo)
 			{
 			// blast free amount; always blast if 100% is to be blasted away
-			if (Random(BlastMatCount[mat]) < iBlastSize * grade / 6)
+			//if (Random(BlastMatCount[mat]) < iBlastSize * grade / 6)
 				SetPix(tx,ty,MatTex2PixCol(::MaterialMap.Map[mat].BlastShiftTo)+GBackIFT(tx,ty));
 			}
     // Blast Free

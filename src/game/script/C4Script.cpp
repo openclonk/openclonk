@@ -308,12 +308,6 @@ static bool FnChangeDef(C4AulObjectContext *cthr, C4ID to_id)
 	return !!cthr->Obj->ChangeDef(to_id);
 }
 
-static C4Void FnExplode(C4AulObjectContext *cthr, long iLevel, C4ID idEffect, C4String *szEffect)
-{
-	cthr->Obj->Explode(iLevel, idEffect, FnStringPar(szEffect));
-	return C4VNull;
-}
-
 static bool FnIncinerate(C4AulObjectContext *cthr, Nillable<long> causedBy)
 {
 	long iCausedBy = causedBy;
@@ -414,7 +408,7 @@ static bool FnJump(C4AulObjectContext *cthr)
 
 static bool FnEnter(C4AulObjectContext *cthr, C4Object *pTarget)
 {
-	return !!cthr->Obj->Enter(pTarget);
+	return !!cthr->Obj->Enter(pTarget,true,true,NULL);
 }
 
 static bool FnExit(C4AulObjectContext *cthr, long tx, long ty, long tr, long txdir, long tydir, long trdir)
@@ -6384,7 +6378,6 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "this", Fn_this);
 	AddFunc(pEngine, "ChangeDef", FnChangeDef);
-	AddFunc(pEngine, "Explode", FnExplode);
 	AddFunc(pEngine, "Incinerate", FnIncinerate);
 	AddFunc(pEngine, "IncinerateLandscape", FnIncinerateLandscape);
 	AddFunc(pEngine, "Extinguish", FnExtinguish);

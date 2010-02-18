@@ -308,7 +308,6 @@ class C4Object: public C4PropList
 		int32_t GetCon() { return Con; }
 		void DoExperience(int32_t change);
 		bool Promote(int32_t torank, bool exception, bool fForceRankName);
-		void Explode(int32_t iLevel, C4ID idEffect=C4ID::None, const char *szEffect=NULL);
 		void Blast(int32_t iLevel, int32_t iCausedBy);
 		bool Build(int32_t iLevel, C4Object *pBuilder);
 		bool Chop(C4Object *pByObject);

@@ -1603,15 +1603,6 @@ bool C4Object::ActivateEntrance(int32_t by_plr, C4Object *by_obj)
   return false;
   }
 
-void C4Object::Explode(int32_t iLevel, C4ID idEffect, const char *szEffect)
-  {
-	// Called by FnExplode only
-  C4Object *pContainer = Contained;
-	int32_t iCausedBy = Controller;
-  AssignRemoval();
-  Explosion(GetX(),GetY(),iLevel,pContainer,iCausedBy,this, idEffect,szEffect);
-  }
-
 bool C4Object::Build(int32_t iLevel, C4Object *pBuilder)
   {
 	int32_t cnt;

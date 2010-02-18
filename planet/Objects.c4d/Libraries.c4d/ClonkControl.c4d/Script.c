@@ -37,19 +37,21 @@
 */
 
 local selected, selected2;
+local indexed_inventory;
+local disableautosort;
+local inventory;
+
 local using;
 local alt;
-local inventory;
 local mlastx, mlasty;
 local virtual_cursor;
-local disableautosort;
 local noholdingcallbacks;
 
 /* ++++++++ Item controls ++++++++++ */
 
 /* Item limit */
 
-public func MaxContentsCount() { return 3; }
+public func MaxContentsCount() { return 2; }
 
 /* Item select access*/
 
@@ -93,11 +95,12 @@ public func SelectItem(selection, bool second)
 	this->~OnSelectionChanged(oldnum, GetSelected(second),second);
 	
 	// the first and secondary selection may not be on the same spot
-	if (selected2 == selected)
-	{
-		if (second) SelectItem(oldnum,false);
-		else SelectItem(oldnum,true);
-	}
+	// - why not?
+	//if (selected2 == selected)
+	//{
+	//	if (second) SelectItem(oldnum,false);
+	//	else SelectItem(oldnum,true);
+	//}
 }
 
 public func ShiftSelectedItem(int dir, bool second)
@@ -222,6 +225,7 @@ protected func Construction()
 {
 	selected = 0;
 	selected2 = Min(2,MaxContentsCount()-1);
+	indexed_inventory = 0;
 	alt = false;
 	using = nil;
 	inventory = CreateArray();
@@ -248,6 +252,7 @@ protected func Collection2(object obj)
 			sel = (selected+i) % MaxContentsCount();
 			if (!inventory[sel])
 			{
+				indexed_inventory++;
 				inventory[sel] = obj;
 				break;
 			}
@@ -270,6 +275,7 @@ protected func Ejection(object obj)
 		if (inventory[i] == obj)
 		{
 			inventory[i] = nil;
+			indexed_inventory--;
 			break;
 		}
 	}
@@ -279,6 +285,28 @@ protected func Ejection(object obj)
 	
 	if (i == selected || i == selected2)
 		obj->~Deselection(this,i == selected2);
+	
+	// we have over-weight? Put the next unindexed
+	// object inside that slot
+	if(ContentsCount() > indexed_inventory && !inventory[i])
+	{
+		for(var c=0; c<ContentsCount();++c)
+		{
+			if(GetItemPos(Contents(c)) == nil)
+			{
+				// found it! Collect it properly
+				inventory[i] = Contents(c);
+				indexed_inventory++;
+				
+				this->~OnSlotFull(i);
+				
+				if (i == selected || i == selected2)
+					Contents(c)->~Selection(this,i == selected2);
+					
+				break;
+			}
+		}
+	}
 	
 	_inherited(obj,...);
 }

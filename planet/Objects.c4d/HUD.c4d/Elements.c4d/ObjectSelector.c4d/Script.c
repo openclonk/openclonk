@@ -66,7 +66,8 @@ public func MouseSelectionAlt(int plr)
 	// object is in inventory
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
-		crew->SelectItem(hotkey-1,true);
+		if(myobject != crew->GetSelectedItem())
+			crew->SelectItem(hotkey-1,true);
 		return true;
 	}
 }
@@ -79,7 +80,8 @@ public func MouseSelection(int plr)
 	// object is in inventory
 	if(actiontype == ACTIONTYPE_INVENTORY)
 	{
-		crew->SelectItem(hotkey-1);
+		if(myobject != crew->GetSelectedItem(true))
+			crew->SelectItem(hotkey-1);
 		return true;
 	}
 
