@@ -375,8 +375,6 @@ void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
 
 void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 	{
-	// clipping
-	if (DDrawCfg.ClipManually && rBltData.pTransform) ClipPoly(rBltData);
 	// global modulation map
 	int i;
 	bool fAnyModNotBlack = (dwModClr != 0xff000000);

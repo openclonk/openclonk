@@ -73,7 +73,6 @@ extern CStdGL *pGL;
 class CDDrawCfg
 	{
 	public:
-		bool ClipManually;  // do manual clipping
 		bool ClipManuallyE; // do manual clipping in the easy cases
 		float fBlitOff;			// blit offsets
 		bool NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
@@ -93,7 +92,6 @@ class CDDrawCfg
 		void Set(int dwCfg, float fBlitOff) // set cfg
 			{
 			Cfg=dwCfg;
-			ClipManually=!!(dwCfg&C4GFXCFG_CLIPMANUALLY);
 			this->fBlitOff = fBlitOff;
 			ClipManuallyE = true;
 			NoOffscreenBlits = true; // not yet working properly... !!(dwCfg&C4GFXCFG_NOOFFBLITS);
@@ -102,7 +100,6 @@ class CDDrawCfg
 		void Get(int32_t & dwCfg, float & fBlitOff)
 			{
 			dwCfg =
-				(ClipManually ? C4GFXCFG_CLIPMANUALLY : 0) |
 				// (NoOffscreenBlits  ?  true & // not yet working properly... dwCfg&C4GFXCFG_NOOFFBLITS) |
 				(Windowed ? C4GFXCFG_WINDOWED : 0);
 			fBlitOff = this->fBlitOff;

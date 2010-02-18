@@ -163,10 +163,6 @@ struct CBltData
 	CBltVertex vtVtx[8]; // vertices for polygon - up to eight vertices may be needed
 	CBltTransform TexPos; // texture mapping matrix
 	CBltTransform *pTransform; // Vertex transformation
-
-	// clip poly, so that for any point (x,y) is: (fX*x + fY*y <= fMax)
-	// assumes a valid poly!
-	bool ClipBy(float fX, float fY, float fMax);
 	};
 
 
@@ -273,7 +269,6 @@ class CStdDDraw
 		bool ApplyPrimaryClipper(SURFACE sfcSurface);
 		bool DetachPrimaryClipper(SURFACE sfcSurface);
 		virtual bool UpdateClipper() = 0; // set current clipper to render target
-		bool ClipPoly(CBltData &rBltData); // clip polygon to clipper; return whether completely clipped out
 		// Surface
 		bool GetSurfaceSize(SURFACE sfcSurface, int &iWdt, int &iHgt);
 		bool WipeSurface(SURFACE sfcSurface);

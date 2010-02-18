@@ -212,8 +212,6 @@ bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 {
 	if (!lpDevice || !pVB) return;
-	if (DDrawCfg.ClipManually && rBltData.pTransform)
-		if (!ClipPoly(rBltData)) return;
 
 	// globally modulated blit
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
