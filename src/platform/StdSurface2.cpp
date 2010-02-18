@@ -41,9 +41,6 @@
 #ifdef HAVE_IO_H
 #include <io.h>
 #endif
-#ifdef USE_DIRECTX
-#include <ddraw.h>
-#endif
 
 #include <math.h>
 #include <stdio.h>

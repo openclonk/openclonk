@@ -39,14 +39,6 @@ typedef void* IDirect3DSurface9;
 #include <list>
 
 // config settings
-#define C4GFXCFG_NO_ALPHA_ADD			1
-#define C4GFXCFG_POINT_FILTERING	2
-#define C4GFXCFG_NOADDITIVEBLTS		8
-#define C4GFXCFG_NOBOXFADES				16
-#define C4GFXCFG_GLSMARTTASK			32
-#define C4GFXCFG_CLIPMANUALLY     64
-#define C4GFXCFG_NOOFFBLITS       256
-#define C4GFXCFG_NOACCELERATION   512
 #define C4GFXCFG_WINDOWED         1024
 
 // blitting modes
@@ -81,16 +73,9 @@ extern CStdGL *pGL;
 class CDDrawCfg
 	{
 	public:
-		bool NoAlphaAdd;		// always modulate alpha values instead of assing them (->no custom modulated alpha)
-		bool PointFiltering;// don't use linear filtering, because some crappy graphic cards can't handle it...
-		bool PointFilteringStd;// backup value of PointFiltering
-		bool AdditiveBlts;	// enable additive blitting
-		bool NoBoxFades;		// map all DrawBoxFade-calls to DrawBoxDw
-		bool GLKeepRes;			// do not switch back to windows resolution during taskswitch in OpenGL
 		bool ClipManually;  // do manual clipping
 		bool ClipManuallyE; // do manual clipping in the easy cases
 		float fBlitOff;			// blit offsets
-		DWORD AllowedBlitModes; // bit mask for allowed blitting modes
 		bool NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
 		bool NoAcceleration; // wether direct rendering is used (X11)
 		bool Windowed; // wether the resolution will not be set
@@ -108,36 +93,17 @@ class CDDrawCfg
 		void Set(int dwCfg, float fBlitOff) // set cfg
 			{
 			Cfg=dwCfg;
-			NoAlphaAdd=!!(dwCfg&C4GFXCFG_NO_ALPHA_ADD);
-			PointFiltering=PointFilteringStd=!!(dwCfg&C4GFXCFG_POINT_FILTERING);
-			AdditiveBlts=!(dwCfg&C4GFXCFG_NOADDITIVEBLTS);
-			NoBoxFades=!!(dwCfg&C4GFXCFG_NOBOXFADES);
-#ifdef _WIN32
-			GLKeepRes=!(dwCfg&C4GFXCFG_GLSMARTTASK);
-#else
-			GLKeepRes=false;
-#endif
 			ClipManually=!!(dwCfg&C4GFXCFG_CLIPMANUALLY);
 			this->fBlitOff = fBlitOff;
-			AllowedBlitModes = AdditiveBlts ? C4GFXBLIT_ALL : C4GFXBLIT_NOADD;
 			ClipManuallyE = true;
 			NoOffscreenBlits = true; // not yet working properly... !!(dwCfg&C4GFXCFG_NOOFFBLITS);
-			NoAcceleration = !!(dwCfg&C4GFXCFG_NOACCELERATION);
 			Windowed = !!(dwCfg&C4GFXCFG_WINDOWED);
 			}
 		void Get(int32_t & dwCfg, float & fBlitOff)
 			{
 			dwCfg =
-				(NoAlphaAdd ? C4GFXCFG_NO_ALPHA_ADD : 0) |
-				(PointFiltering ? C4GFXCFG_POINT_FILTERING : 0) |
-				(AdditiveBlts ? 0 : C4GFXCFG_NOADDITIVEBLTS) |
-				(NoBoxFades ? C4GFXCFG_NOBOXFADES : 0) |
-#ifdef _WIN32
-				(GLKeepRes ? 0 : C4GFXCFG_GLSMARTTASK) |
-#endif
 				(ClipManually ? C4GFXCFG_CLIPMANUALLY : 0) |
 				// (NoOffscreenBlits  ?  true & // not yet working properly... dwCfg&C4GFXCFG_NOOFFBLITS) |
-				(NoAcceleration ? C4GFXCFG_NOACCELERATION : 0) |
 				(Windowed ? C4GFXCFG_WINDOWED : 0);
 			fBlitOff = this->fBlitOff;
 			}

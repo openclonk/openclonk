@@ -370,7 +370,7 @@ void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
 		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
 		}
 	// set modes
-	glShadeModel((fUseClrModMap && !shaders[0] && !DDrawCfg.NoBoxFades) ? GL_SMOOTH : GL_FLAT);
+	glShadeModel((fUseClrModMap && !shaders[0]) ? GL_SMOOTH : GL_FLAT);
 	}
 
 void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
@@ -406,7 +406,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	fMod2 = fMod2 && fAnyModNotBlack;
 	SetupTextureEnv(fMod2, false);
 	glBindTexture(GL_TEXTURE_2D, pTex->texName);
-	if (!fExact && !DDrawCfg.PointFiltering)
+	if (!fExact)
 		{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -476,7 +476,7 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 		}
 	glDrawArrays(GL_POLYGON, 0, rBltData.byNumVertices);
 	glLoadIdentity();
-	if (!fExact && !DDrawCfg.PointFiltering)
+	if (!fExact)
 		{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -1509,14 +1509,7 @@ void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwC
 		ModulateClr(dwClr3, pClrModMap->GetModAt(int(ipVtx[4]), int(ipVtx[5])));
 		ModulateClr(dwClr4, pClrModMap->GetModAt(int(ipVtx[6]), int(ipVtx[7])));
 		}
-	// no clr fading supported
-	if (DDrawCfg.NoBoxFades)
-		{
-		NormalizeColors(dwClr1, dwClr2, dwClr3, dwClr4);
-		glShadeModel(GL_FLAT);
-		}
-	else
-		glShadeModel((dwClr1 == dwClr2 && dwClr1 == dwClr3 && dwClr1 == dwClr4) ? GL_FLAT : GL_SMOOTH);
+	glShadeModel((dwClr1 == dwClr2 && dwClr1 == dwClr3 && dwClr1 == dwClr4) ? GL_FLAT : GL_SMOOTH);
 	// set blitting state
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 	glBlendFunc(GL_SRC_ALPHA, iAdditive ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);

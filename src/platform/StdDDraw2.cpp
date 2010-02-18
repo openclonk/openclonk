@@ -897,41 +897,40 @@ bool CStdDDraw::Blit(SURFACE sfcSource, float fx, float fy, float fwdt, float fh
 	bool fExact = !pTransform && fwdt==twdt && fhgt==thgt;
 	// manual clipping? (primary surface only)
 	if (DDrawCfg.ClipManuallyE && !pTransform && sfcTarget->fPrimary)
-		if (true) // always clip! /*(scaleX < 10.0) && (scaleY < 10.0)*/)
+		{
+		float iOver;
+		// Left
+		iOver=tx-iClipX1;
+		if (iOver<0)
 			{
-			float iOver;
-			// Left
-			iOver=tx-iClipX1;
-			if (iOver<0)
-				{
-				twdt+=iOver;
-				fwdt+=iOver/scaleX;
-				fx-=iOver/scaleX;
-				tx=float(iClipX1);
-				}
-			// Top
-			iOver=ty-iClipY1;
-			if (iOver<0)
-				{
-				thgt+=iOver;
-				fhgt+=iOver/scaleY;
-				fy-=iOver/scaleY;
-				ty=float(iClipY1);
-				}
-			// Right
-			iOver=iClipX2+1-(tx+twdt);
-			if (iOver<0)
-				{
-				fwdt+=iOver/scaleX;
-				twdt+=iOver;
-				}
-			// Bottom
-			iOver=iClipY2+1-(ty+thgt);
-			if (iOver<0)
-				{
-				fhgt+=iOver/scaleY;
-				thgt+=iOver;
-				}
+			twdt+=iOver;
+			fwdt+=iOver/scaleX;
+			fx-=iOver/scaleX;
+			tx=float(iClipX1);
+			}
+		// Top
+		iOver=ty-iClipY1;
+		if (iOver<0)
+			{
+			thgt+=iOver;
+			fhgt+=iOver/scaleY;
+			fy-=iOver/scaleY;
+			ty=float(iClipY1);
+			}
+		// Right
+		iOver=iClipX2+1-(tx+twdt);
+		if (iOver<0)
+			{
+			fwdt+=iOver/scaleX;
+			twdt+=iOver;
+			}
+		// Bottom
+		iOver=iClipY2+1-(ty+thgt);
+		if (iOver<0)
+			{
+			fhgt+=iOver/scaleY;
+			thgt+=iOver;
+			}
 		}
 	// inside screen?
 	if (twdt<=0 || thgt<=0) return false;

@@ -709,8 +709,6 @@ void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dw
 	{
 	// prepare rendering to target
 	if (!PrepareRendering(sfcTarget)) return;
-	// no clr fading supported
-	if (DDrawCfg.NoBoxFades) NormalizeColors(dwClr1, dwClr2, dwClr3, dwClr4);
 	// set blitting state
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 	drawSolidState[iAdditive]->Apply();
@@ -1065,8 +1063,6 @@ bool CStdD3D::DeleteDeviceObjects()
 
 bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent, bool fSolid, bool fBaseTex, bool fAdditive, bool fMod2)
 	{
-	// settings
-	if (!DDrawCfg.AdditiveBlts) fAdditive=false;
 	// begin capturing
 	lpDevice->BeginStateBlock();
 	// set states
@@ -1108,8 +1104,8 @@ bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent,
 		}
 	lpDevice->SetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
 	lpDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
-	lpDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, DDrawCfg.PointFiltering ? D3DTEXF_POINT : D3DTEXF_LINEAR );
-	lpDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, DDrawCfg.PointFiltering ? D3DTEXF_POINT : D3DTEXF_LINEAR );
+	lpDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
+	lpDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );
 	lpDevice->SetSamplerState( 0, D3DSAMP_MIPFILTER, D3DTEXF_NONE );
 	lpDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0 );
 	lpDevice->SetTextureStageState( 0, D3DTSS_TEXTURETRANSFORMFLAGS, D3DTTFF_DISABLE );

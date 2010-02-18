@@ -333,7 +333,7 @@ class CStdDDraw
 		void ActivateBlitModulation(DWORD dwWithClr) { BlitModulated=true; BlitModulateClr=dwWithClr; } // modulate following blits with a given color
 		void DeactivateBlitModulation() { BlitModulated=false; }	// stop color modulation of blits
 		bool GetBlitModulation(DWORD &rdwColor) { rdwColor=BlitModulateClr; return BlitModulated; }
-		void SetBlitMode(DWORD dwBlitMode) { this->dwBlitMode=dwBlitMode & DDrawCfg.AllowedBlitModes; } // set blit mode extra flags (additive blits, mod2-modulation, etc.)
+		void SetBlitMode(DWORD dwBlitMode) { this->dwBlitMode=dwBlitMode & C4GFXBLIT_ALL; } // set blit mode extra flags (additive blits, mod2-modulation, etc.)
 		DWORD SetBlitModeGetPrev(DWORD dwNewBlitMode) { DWORD dwTemp=dwBlitMode; SetBlitMode(dwNewBlitMode); return dwTemp; } // set blit mode extra flags, returning old flags
 		void ResetBlitMode() { dwBlitMode=0; }
 		void ClrByCurrentBlitMod(DWORD &rdwClr)

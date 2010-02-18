@@ -839,42 +839,12 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	C4GUI::ComponentAligner caGroupTrouble(pGroupTrouble->GetClientRect(), iIndentX1, iIndentY2, true);
 	C4GUI::BaseCallbackHandler *pGfxGroubleCheckCB = new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxTroubleCheck);
 	int32_t iNumGfxOptions = 6, iOpt=0;
-	// no alpha adding
-	pCheckGfxNoAlphaAdd = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_NOALPHAADD"), false);
-	pCheckGfxNoAlphaAdd->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pCheckGfxNoAlphaAdd->SetToolTip(LoadResStr("IDS_MSG_NOALPHAADD_DESC"));
-	pCheckGfxNoAlphaAdd->SetOnChecked(pGfxGroubleCheckCB);
-	pGroupTrouble->AddElement(pCheckGfxNoAlphaAdd);
-	// point filtering
-	pCheckGfxPointFilter = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_POINTFILTERING"), false);
-	pCheckGfxPointFilter->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pCheckGfxPointFilter->SetToolTip(LoadResStr("IDS_MSG_POINTFILTERING_DESC"));
-	pCheckGfxPointFilter->SetOnChecked(pGfxGroubleCheckCB);
-	pGroupTrouble->AddElement(pCheckGfxPointFilter);
-	// no additive blitting
-	pCheckGfxNoAddBlit = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_NOADDBLT"), false);
-	pCheckGfxNoAddBlit->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pCheckGfxNoAddBlit->SetToolTip(LoadResStr("IDS_MSG_NOADDBLT_DESC"));
-	pCheckGfxNoAddBlit->SetOnChecked(pGfxGroubleCheckCB);
-	pGroupTrouble->AddElement(pCheckGfxNoAddBlit);
-	// no box fades
-	pCheckGfxNoBoxFades = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_NOCLRFADE"), false);
-	pCheckGfxNoBoxFades->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pCheckGfxNoBoxFades->SetToolTip(LoadResStr("IDS_MSG_NOCLRFADE_DESC"));
-	pCheckGfxNoBoxFades->SetOnChecked(pGfxGroubleCheckCB);
-	pGroupTrouble->AddElement(pCheckGfxNoBoxFades);
 	// Shaders
 	pShaders = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), "Shaders", false);
 	pShaders->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pShaders->SetToolTip("Shaders");
 	pShaders->SetOnChecked(pGfxGroubleCheckCB);
 	pGroupTrouble->AddElement(pShaders);
-	// manual clipping
-	pCheckGfxClipManually = new C4GUI::CheckBox(caGroupTrouble.GetGridCell(0,2,iOpt++,iNumGfxOptions,-1,iCheckHgt,true), LoadResStr("IDS_CTL_MANUALCLIP"), false);
-	pCheckGfxClipManually->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
-	pCheckGfxClipManually->SetToolTip(LoadResStr("IDS_MSG_MANUALCLIP_DESC"));
-	pCheckGfxClipManually->SetOnChecked(pGfxGroubleCheckCB);
-	pGroupTrouble->AddElement(pCheckGfxClipManually);
 	// blit offset
 	pEdtGfxBlitOff = new EditConfig(caGroupTrouble.GetGridCell(3,5,1,2,-1,iEdit2Hgt,true,2), LoadResStr("IDS_MSG_BLITOFFSET"), NULL, &iGfxBlitOff, false);
 	pEdtGfxBlitOff->SetToolTip(LoadResStr("IDS_MSG_BLITOFFSET_DESC"));
@@ -1437,11 +1407,6 @@ void C4StartupOptionsDlg::LoadGfxTroubleshoot()
 	uint32_t dwGfxCfg = fUseGL ? Config.Graphics.NewGfxCfgGL : Config.Graphics.NewGfxCfg;
 	iGfxBlitOff = fUseGL ? Config.Graphics.BlitOffGL : Config.Graphics.BlitOff;
 	// set it in controls
-	pCheckGfxNoAlphaAdd->SetChecked(!!(dwGfxCfg & C4GFXCFG_NO_ALPHA_ADD));
-	pCheckGfxPointFilter->SetChecked(!!(dwGfxCfg & C4GFXCFG_POINT_FILTERING));
-	pCheckGfxNoAddBlit->SetChecked(!!(dwGfxCfg & C4GFXCFG_NOADDITIVEBLTS));
-	pCheckGfxNoBoxFades->SetChecked(!!(dwGfxCfg & C4GFXCFG_NOBOXFADES));
-	pCheckGfxClipManually->SetChecked(!!(dwGfxCfg & C4GFXCFG_CLIPMANUALLY));
 	pShaders->SetChecked(!!DDrawCfg.Shader);
 	pEdtGfxBlitOff->SetIntVal(iGfxBlitOff);
 	// title of troubleshooting-box by config set
@@ -1453,11 +1418,6 @@ void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 	// copntrols to config
 	// get it from controls
 	uint32_t dwGfxCfg = 0u;
-	if (pCheckGfxNoAlphaAdd->GetChecked()) dwGfxCfg |= C4GFXCFG_NO_ALPHA_ADD;
-	if (pCheckGfxPointFilter->GetChecked()) dwGfxCfg |= C4GFXCFG_POINT_FILTERING;
-	if (pCheckGfxNoAddBlit->GetChecked()) dwGfxCfg |= C4GFXCFG_NOADDITIVEBLTS;
-	if (pCheckGfxNoBoxFades->GetChecked()) dwGfxCfg |= C4GFXCFG_NOBOXFADES;
-	if (pCheckGfxClipManually->GetChecked()) dwGfxCfg |= C4GFXCFG_CLIPMANUALLY;
 	DDrawCfg.Shader=pShaders->GetChecked();
 	if (DDrawCfg.Windowed) dwGfxCfg |= C4GFXCFG_WINDOWED;
 	pEdtGfxBlitOff->Save2Config();
