@@ -549,7 +549,7 @@ bool C4MainMenu::ActivateOptions(int32_t iPlayer, int32_t selection)
 	AddRefSym(LoadResStr("IDS_MNU_MUSIC"), GfxR->fctOptions.GetPhase(1 + Config.Sound.RXMusic),"Options:Music",C4MN_Item_NoCount);
 	// Mouse control
 	C4Player *pPlr = ::Players.Get(iPlayer);
-	if (pPlr && !Game.C4S.Head.DisableMouse)
+	if (pPlr)
 		{
 		if (pPlr->MouseControl)
 			AddRefSym(LoadResStr("IDS_MNU_MOUSECONTROL"), GfxR->fctOptions.GetPhase(11 + 1), "Options:Mouse");

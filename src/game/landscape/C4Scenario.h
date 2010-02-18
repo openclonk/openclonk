@@ -78,22 +78,18 @@ class C4SHead
     char Loader[C4MaxTitle+1];
     char Font[C4MaxTitle+1]; // scenario specific font; may be 0
 		int32_t	 Difficulty;
-		int32_t  EnableUnregisteredAccess;
-    int32_t  Icon;
+		int32_t  Icon;
 		int32_t  NoInitialize;
 		int32_t  MaxPlayer, MinPlayer, MaxPlayerLeague;
 		int32_t  SaveGame;
 		int32_t  Replay;
 		int32_t  Film;
-		int32_t  DisableMouse;
-		int32_t  IgnoreSyncChecks;
 		int32_t  StartupPlayerCount; // set for Frame0-replay!
 		int32_t  RandomSeed;
 		char Engine[C4MaxTitle+1]; // Relative filename of engine to be used for this scenario
 		char MissionAccess[C4MaxTitle+1];
 		bool NetworkGame;
 		bool NetworkRuntimeJoin;
-		int32_t ForcedGfxMode;					// 0: free; 1/2: newgfx/oldgfx
 		int32_t ForcedFairCrew;           // 0: free; 1: force FairCrew; 2: force normal Crew (C4SForceFairCrew)
 		int32_t FairCrewStrength;
 		StdCopyStrBuf Origin; // original oath and filename to scenario (for records and savegames)
@@ -216,7 +212,7 @@ class C4SWeather
   public:
     C4SVal Climate;
     C4SVal StartSeason,YearSpeed;
-    C4SVal Rain,Lightning,Wind;
+    C4SVal Rain,Wind;
 		char Precipitation[C4M_MaxName+1];
 		int32_t NoGamma;
   public:
@@ -243,17 +239,6 @@ class C4SEnvironment
     void CompileFunc(StdCompiler *pComp);
   };
 
-class C4SDisasters
-  {
-  public:
-    C4SVal Volcano;
-    C4SVal Earthquake;
-    C4SVal Meteorite;
-  public:
-    void Default();
-    void CompileFunc(StdCompiler *pComp);
-  };
-
 class C4Scenario
   {
   public:
@@ -266,7 +251,6 @@ class C4Scenario
     C4SLandscape		Landscape;
     C4SAnimals			Animals;
     C4SWeather			Weather;
-    C4SDisasters		Disasters;
 		C4SEnvironment	Environment;
   public:
 	  void SetExactLandscape();

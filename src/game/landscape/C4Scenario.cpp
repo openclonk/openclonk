@@ -80,7 +80,6 @@ void C4Scenario::Default()
   Landscape.Default();
   Animals.Default();
   Weather.Default();
-  Disasters.Default();
   Game.Realism.Default();
 	Environment.Default();
   }
@@ -117,7 +116,6 @@ void C4Scenario::CompileFunc(StdCompiler *pComp, bool fSection)
   pComp->Value(mkNamingAdapt(Landscape, "Landscape"));
   pComp->Value(mkNamingAdapt(Animals, "Animals"));
   pComp->Value(mkNamingAdapt(Weather, "Weather"));
-  pComp->Value(mkNamingAdapt(Disasters, "Disasters"));
   pComp->Value(mkNamingAdapt(Environment, "Environment"));
   }
 
@@ -149,9 +147,7 @@ void C4SHead::Default()
 	*Title = *Loader = *Font = *Engine = *MissionAccess = '\0';
 	C4XVer[0] = C4XVer[1] = C4XVer[2] = C4XVer[3] = 0;
 	Difficulty = StartupPlayerCount = RandomSeed = SaveGame = Replay =
-		Film = EnableUnregisteredAccess = DisableMouse = 
-		IgnoreSyncChecks = NoInitialize = ForcedGfxMode = 
-		ForcedFairCrew = FairCrewStrength = 0;
+	Film = NoInitialize = ForcedFairCrew = FairCrewStrength = 0;
 	NetworkGame = NetworkRuntimeJoin = false;
 
 	MaxPlayer=MaxPlayerLeague=C4S_MaxPlayerDefault;
@@ -168,29 +164,25 @@ void C4SHead::CompileFunc(StdCompiler *pComp, bool fSection)
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Loader),   "Loader",               ""));
 		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Font),     "Font",                 ""));
 		pComp->Value(mkNamingAdapt(mkArrayAdaptDM(C4XVer,0),  "Version"               ));
-		pComp->Value(mkNamingAdapt(Difficulty,								"Difficulty",						0));
-		pComp->Value(mkNamingAdapt(EnableUnregisteredAccess,  "Access",               false));
+		pComp->Value(mkNamingAdapt(Difficulty,                "Difficulty",           0));
 		pComp->Value(mkNamingAdapt(MaxPlayer,                 "MaxPlayer",            C4S_MaxPlayerDefault));
 		pComp->Value(mkNamingAdapt(MaxPlayerLeague,           "MaxPlayerLeague",      MaxPlayer));
 		pComp->Value(mkNamingAdapt(MinPlayer,                 "MinPlayer",            0));
 		pComp->Value(mkNamingAdapt(SaveGame,                  "SaveGame",             false));
 		pComp->Value(mkNamingAdapt(Replay,                    "Replay",               false));
 		pComp->Value(mkNamingAdapt(Film,                      "Film",                 false));
-		pComp->Value(mkNamingAdapt(DisableMouse,              "DisableMouse",         false));
-		pComp->Value(mkNamingAdapt(IgnoreSyncChecks,          "IgnoreSyncChecks",     false));
 		pComp->Value(mkNamingAdapt(StartupPlayerCount,        "StartupPlayerCount",   0));
 		}
-  pComp->Value(mkNamingAdapt(NoInitialize,              "NoInitialize",         false));
-  pComp->Value(mkNamingAdapt(RandomSeed,                "RandomSeed",           0));
+	pComp->Value(mkNamingAdapt(NoInitialize,              "NoInitialize",         false));
+	pComp->Value(mkNamingAdapt(RandomSeed,                "RandomSeed",           0));
 	if (!fSection)
 		{
-	  pComp->Value(mkNamingAdapt(mkStringAdaptMA(Engine),   "Engine",               ""));
-	  pComp->Value(mkNamingAdapt(mkStringAdaptMA(MissionAccess), "MissionAccess", ""));
-	  pComp->Value(mkNamingAdapt(NetworkGame,               "NetworkGame",          false));
+		pComp->Value(mkNamingAdapt(mkStringAdaptMA(Engine),   "Engine",               ""));
+		pComp->Value(mkNamingAdapt(mkStringAdaptMA(MissionAccess), "MissionAccess", ""));
+		pComp->Value(mkNamingAdapt(NetworkGame,               "NetworkGame",          false));
 		pComp->Value(mkNamingAdapt(NetworkRuntimeJoin,        "NetworkRuntimeJoin",   false));
-	  pComp->Value(mkNamingAdapt(ForcedGfxMode,							"ForcedGfxMode",         0));
-	  pComp->Value(mkNamingAdapt(ForcedFairCrew,            "ForcedNoCrew",          0));
-	  pComp->Value(mkNamingAdapt(FairCrewStrength,          "DefCrewStrength",       0));
+		pComp->Value(mkNamingAdapt(ForcedFairCrew,            "ForcedNoCrew",          0));
+		pComp->Value(mkNamingAdapt(FairCrewStrength,          "DefCrewStrength",       0));
 		pComp->Value(mkNamingAdapt(mkStrValAdapt(mkParAdapt(Origin, StdCompiler::RCT_All), C4InVal::VAL_SubPathFilename),	 "Origin",  StdCopyStrBuf()));
 		// windows needs backslashes in Origin; other systems use forward slashes
 		if (pComp->isCompiler()) Origin.ReplaceChar(AltDirectorySeparator, DirectorySeparator);
@@ -354,7 +346,7 @@ void C4SWeather::Default()
   Climate.Set(50,10);
   StartSeason.Set(50,50);
   YearSpeed.Set(50);
-  Rain.Default(); Lightning.Default(); Wind.Set(0,70,-100,+100);
+  Rain.Default(); Wind.Set(0,70,-100,+100);
 	SCopy("Water",Precipitation,C4M_MaxName);
 	NoGamma=1;
   }
@@ -366,7 +358,6 @@ void C4SWeather::CompileFunc(StdCompiler *pComp)
   pComp->Value(mkNamingAdapt(YearSpeed,               "YearSpeed",               C4SVal(50)));
   pComp->Value(mkNamingAdapt(Rain,                    "Rain",                  C4SVal()));
   pComp->Value(mkNamingAdapt(Wind,                    "Wind",                  C4SVal(0,70,-100,+100), true));
-  pComp->Value(mkNamingAdapt(Lightning,               "Lightning",             C4SVal()));
   pComp->Value(mkNamingAdapt(mkStringAdaptMA(Precipitation),"Precipitation",   "Water"));
   pComp->Value(mkNamingAdapt(NoGamma,                 "NoGamma",               true));
   }
@@ -398,20 +389,6 @@ void C4SRealism::Default()
 	LandscapePushPull=0;
 	LandscapeInsertThrust=0;
 	ValueOverloads.Default();
-  }
-
-void C4SDisasters::Default()
-  {
-  Volcano.Default();
-  Earthquake.Default();
-  Meteorite.Default();
-  }
-
-void C4SDisasters::CompileFunc(StdCompiler *pComp)
-  {
-  pComp->Value(mkNamingAdapt(Meteorite,               "Meteorite",             C4SVal()));
-  pComp->Value(mkNamingAdapt(Volcano,                 "Volcano",               C4SVal()));
-  pComp->Value(mkNamingAdapt(Earthquake,              "Earthquake",            C4SVal()));
   }
 
 bool C4Scenario::Compile(const char *szSource, bool fLoadSection)

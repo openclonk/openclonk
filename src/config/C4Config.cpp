@@ -371,7 +371,7 @@ void C4ConfigControls::CompileFunc(StdCompiler *pComp, bool fKeysOnly)
 
 	if (fKeysOnly) return;
 
-	pComp->Value(mkNamingAdapt(MouseAScroll,			"MouseAutoScroll",			0));
+	pComp->Value(mkNamingAdapt(MouseAScroll,			"MouseAutoScroll",			1));
 	pComp->Value(mkNamingAdapt(GamepadGuiControl, "GamepadGuiControl",    0,		 false, true));
 
 #undef KEY

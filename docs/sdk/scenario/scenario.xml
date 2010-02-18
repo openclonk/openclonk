@@ -38,14 +38,34 @@ bestimmt.</text>
 		<col>Vom Szenario benötigte Version der Engine.</col>
 	</row>
 	<row>
-		<col>RoundOptions</col>
+		<col>MinPlayer</col>
 		<col>Integer</col>
-		<col>0 oder 1. Freigabe der Szenarioeigenschaften im Menüsystem für andere Spieler.</col>
+		<col>Minimale Anzahl der Spieler.</col>
 	</row>
 	<row>
 		<col>MaxPlayer</col>
 		<col>Integer</col>
 		<col>Maximale Anzahl der Spieler.</col>
+	</row>
+	<row>
+		<col>MaxPlayerLeague</col>
+		<col>Integer</col>
+		<col>Maximale Anzahl der Spieler für die Liga. Default ist MaxPlayerLeague = MaxPlayer.</col>
+	</row>
+	<row>
+		<col>Loader</col>
+		<col>Zeichenfolge</col>
+		<col>Dateiname (ohne Dateiendung) des Gewünschten Ladebildschirms.</col>
+	</row>
+	<row>
+		<col>Font</col>
+		<col>Zeichenfolge</col>
+		<col>Name der Schriftart die für dieses Szenario anstatt der Default-Schriftart benutzt werden soll. </col>
+	</row>
+	<row>
+		<col>Difficulty</col>
+		<col>Integer</col>
+		<col>Schwierigkeitsgrad des Szenarios. Szenarien in einem Ordner werden nach aufsteigender Schwierigkeit sortiert, ansonsten nach dem Alphabet.</col>
 	</row>
 	<row>
 		<col>NoInitialize</col>
@@ -58,19 +78,19 @@ bestimmt.</text>
 		<col>Szenario kann nur gestartet werden, wenn ein Spieler zuvor dieses Zugangspasswort in einem anderen Szenario erspielt hat. Siehe Scriptfunktion <funclink>GainMissionAccess</funclink>().</col>
 	</row>
 	<row>
-		<col>Replay</col>
+		<col>ForcedFairCrew</col>
 		<col>Integer</col>
-		<col>Wird von der Engine automatisch gesetzt, und markiert eine Aufnahme.</col>
+		<col>0 oder 1. Bei 1 wird für dieses Szenario immer eine faire Crew verwendet.</col>
+	</row>
+	<row>
+		<col>FairCrewStrength</col>
+		<col>Integer</col>
+		<col>Stärke der fairen Crew.</col>
 	</row>
 	<row>
 		<col>Film</col>
 		<col>Integer</col>
 		<col>0 oder 1 und nur bei Aufnahmen. Bei 1 folgt die Sicht nur dem ersten Spieler und alle Spielerkontrollen werden ausgeblendet.</col>
-	</row>
-	<row>
-		<col>ForcedGfxMode</col>
-		<col>Integer</col>
-		<col>0-2. 0: Jede Engine möglich; 1: Nur NewGfx (OpenGL/D3D); 2: Nur OldGfx (8Bit-DDraw).</col>
 	</row>
 </table></text>
 
@@ -101,16 +121,7 @@ bestimmt.</text>
 		<col>DWORD</col>
 		<col>Farbe des Fog of War.</col>
 	</row>
-	<row>
-		<col>BaseFunctionality</col>
-		<col>Integer</col>
-		<col>Bitmaske, die angibt, welche Funktionen eine Basis erfüllt. Siehe <emlink href="scenario/basefunc.html">Basisfunktionalitäten</emlink>. Ab CR.</col>
-	</row>
-	<row>
-		<col>BaseRegenerateEnergyPrice</col>
-		<col>Integer</col>
-		<col>Kosten, die aufgewendet werden, um einen Clonk in einer Basis um 100 Energiepunkte zu heilen. Standard ist 5; bei 0 ist die Heilung kostenlos. Ab CR.</col>
-	</row>
+
 </table></text>
 
 <text><table>
@@ -378,11 +389,6 @@ bestimmt.</text>
 		<col>-100-100 und Abweichung. Windrichtung und -stärke.</col>
 	</row>
 	<row>
-		<col>Lightning</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Blitzwahrscheinlichkeit.</col>
-	</row>
-	<row>
 		<col>Precipitation</col>
 		<col>Zeichenfolge</col>
 		<col>Einfache Materialdefinition Niederschlag.</col>
@@ -391,30 +397,6 @@ bestimmt.</text>
 		<col>NoGamma</col>
 		<col>Integer</col>
 		<col>0 oder 1. Bei 1 wirken sich die Jahreszeiten nicht auf die Bildschirmfärbung aus.</col>
-	</row>
-</table></text>
-
-<text><table>
-	<caption id="SektionDisasters">Sektion [Disasters]</caption>
-	<rowh>
-		<col>Wert</col>
-		<col>Datentyp</col>
-		<col>Beschreibung</col>
-	</rowh>
-	<row>
-		<col>Meteorite</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Meteoritenwahrscheinlichkeit.</col>
-	</row>
-	<row>
-		<col>Volcano</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Vulkanwahrscheinlichkeit.</col>
-	</row>
-	<row>
-		<col>Earthquake</col>
-		<col>4 Integer</col>
-		<col>0-100 und Abweichung. Erdbebenwahrscheinlichkeit.</col>
 	</row>
 </table></text>
 
@@ -457,5 +439,6 @@ bestimmt.</text>
 </table></text>
 
 <author>Sven2</author><date>April 2002</date>
+<author>Newton</author><date>Februar 2010</date>
 
 </doc>

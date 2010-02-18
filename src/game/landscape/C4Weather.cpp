@@ -62,12 +62,6 @@ void C4Weather::Init(bool fScenario)
 										  Game.C4S.Weather.Rain.Evaluate(),
 										  Game.C4S.Weather.Precipitation);
           }
-	  // Lightning
-	  LightningLevel=Game.C4S.Weather.Lightning.Evaluate();
-    // Disasters
-    MeteoriteLevel=Game.C4S.Disasters.Meteorite.Evaluate();
-    VolcanoLevel=Game.C4S.Disasters.Volcano.Evaluate();
-    EarthquakeLevel=Game.C4S.Disasters.Earthquake.Evaluate();
 	  // gamma?
 	  NoGamma=Game.C4S.Weather.NoGamma;
     }
@@ -106,56 +100,11 @@ void C4Weather::Execute()
                  Game.C4S.Weather.Wind.Max);
   if (!::Game.iTick10)
     SoundLevel("Wind",NULL,Max(Abs(Wind)-30,0)*2);
-  // Disaster launch
-  if (!::Game.iTick10)
-    {
-		// Meteorite
-    if (!Random(60))
-     if (Random(100)<MeteoriteLevel)
-      {
-      C4Object *meto;
-			// In cave landscapes, meteors must be created a bit lower so they don't hit the ceiling
-			// (who activates meteors in cave landscapes anyway?)
-      meto=Game.CreateObject(C4ID::Meteor, NULL, NO_OWNER,
-												Random(GBackWdt),::Landscape.TopOpen ? -20 : 5,0,
-                        itofix(Random(100+1)-50)/10,
-                        ::Landscape.TopOpen ? Fix0 : itofix(2), itofix(1)/5);
-      }
-		// Lightning
-		if (!Random(35))
-			if (Random(100)<LightningLevel)
-				LaunchLightning(Random(GBackWdt),0,
-												-20,41,+5,15, true);
-		// Earthquake
-		if (!Random(50))
-			if (Random(100)<EarthquakeLevel)
-				LaunchEarthquake(Random(GBackWdt),Random(GBackHgt));
-		// Volcano
-		if (!Random(60))
-			if (Random(100)<VolcanoLevel)
-				LaunchVolcano(::MaterialMap.Get("Lava"),
-											Random(GBackWdt),GBackHgt-1,
-											BoundBy(15*GBackHgt/500+Random(10),10,60));
-    }
   }
 
 void C4Weather::Clear()
 	{
 
-	}
-
-bool C4Weather::LaunchLightning(int32_t x, int32_t y, int32_t xdir, int32_t xrange, int32_t ydir, int32_t yrange, bool fDoGamma)
-	{
-	C4Object *pObj;
-	if ((pObj=Game.CreateObject(C4ID("FXL1"), NULL)))
-		pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(x),
-																				 C4VInt(y),
-																				 C4VInt(xdir),
-																				 C4VInt(xrange),
-																				 C4VInt(ydir),
-																				 C4VInt(yrange),
-																				 C4VBool(!!fDoGamma)));
-	return true;
 	}
 
 int32_t C4Weather::GetWind(int32_t x, int32_t y)
@@ -169,31 +118,13 @@ int32_t C4Weather::GetTemperature()
 	return Temperature;
 	}
 
-bool C4Weather::LaunchVolcano(int32_t mat, int32_t x, int32_t y, int32_t size)
-	{
-	C4Object *pObj;
-	if ((pObj=Game.CreateObject(C4ID("FXV1"), NULL)))
-		pObj->Call(PSF_Activate,&C4AulParSet(C4VInt(x), C4VInt(y), C4VInt(size), C4VInt(mat)));
-	return true;
-	}
-
 void C4Weather::Default()
 	{
   Season=0; YearSpeed=0; SeasonDelay=0;
   Wind=TargetWind=0;
   Temperature=Climate=0;
   TemperatureRange=30;
-  MeteoriteLevel=VolcanoLevel=EarthquakeLevel=LightningLevel=0;
 	NoGamma=true;
-	}
-
-bool C4Weather::LaunchEarthquake(int32_t iX, int32_t iY)
-	{
-	C4Object *pObj;
-	if ((pObj=Game.CreateObject(C4ID("FXQ1"),NULL,NO_OWNER,iX,iY)))
-		if (!! pObj->Call(PSF_Activate))
-			return true;
-	return false;
 	}
 
 bool C4Weather::LaunchCloud(int32_t iX, int32_t iY, int32_t iWidth, int32_t iStrength, const char *szPrecipitation)
@@ -289,10 +220,6 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(Temperature,      "Temperature",           0));
 	pComp->Value(mkNamingAdapt(TemperatureRange, "TemperatureRange",      30));
 	pComp->Value(mkNamingAdapt(Climate,          "Climate",               0));
-	pComp->Value(mkNamingAdapt(MeteoriteLevel,   "MeteoriteLevel",        0));
-	pComp->Value(mkNamingAdapt(VolcanoLevel,     "VolcanoLevel",          0));
-	pComp->Value(mkNamingAdapt(EarthquakeLevel,  "EarthquakeLevel",       0));
-	pComp->Value(mkNamingAdapt(LightningLevel,   "LightningLevel",        0));
 	pComp->Value(mkNamingAdapt(NoGamma,          "NoGamma",               0));
 	uint32_t dwGammaDefaults[C4MaxGammaRamps*3];
 	for (int32_t i=0; i<C4MaxGammaRamps; ++i)

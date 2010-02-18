@@ -1721,9 +1721,8 @@ void C4Player::InitControl()
 		}
 		// Mouse
 		if (ControlSet && ControlSet->HasMouse() && PrefMouse)
-			if (!Game.C4S.Head.DisableMouse)
-				if (!::Players.MouseControlTaken())
-					MouseControl=true;
+			if (!::Players.MouseControlTaken())
+				MouseControl=true;
 	}
 	// clear old control method and register new
 	Control.RegisterKeyset(Number, ControlSet);
