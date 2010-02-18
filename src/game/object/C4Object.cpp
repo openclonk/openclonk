@@ -715,10 +715,9 @@ void C4Object::SetOCF()
   // OCF_Collection
   if ((OCF & OCF_FullCon) || Def->IncompleteActivity)
     if ((Def->Collection.Wdt>0) && (Def->Collection.Hgt>0))
-      if (!Def->CollectionLimit || (Contents.ObjectCount()<Def->CollectionLimit) )
-        if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
-          if (NoCollectDelay==0)
-            OCF|=OCF_Collection;
+      if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
+        if (NoCollectDelay==0)
+          OCF|=OCF_Collection;
   // OCF_Living
 	if (Category & C4D_Living)
 		{
@@ -836,10 +835,9 @@ void C4Object::UpdateOCF()
   // OCF_Collection
   if ((OCF & OCF_FullCon) || Def->IncompleteActivity)
     if ((Def->Collection.Wdt>0) && (Def->Collection.Hgt>0))
-      if (!Def->CollectionLimit || (Contents.ObjectCount()<Def->CollectionLimit) )
-        if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
-          if (NoCollectDelay==0)
-            OCF|=OCF_Collection;
+      if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))
+        if (NoCollectDelay==0)
+          OCF|=OCF_Collection;
   // OCF_FightReady
   if (OCF & OCF_Alive)
     if (!Action.pActionDef || (!Action.pActionDef->GetPropertyInt(P_ObjectDisabled)))

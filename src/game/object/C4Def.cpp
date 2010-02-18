@@ -105,7 +105,6 @@ void C4Def::DefaultDefCore()
 	NoHorizontalMove=0;
 	BorderBound=0;
 	LiftTop=0;
-	CollectionLimit=0;
 	GrabPutGet=0;
 	ContainBlast=0;
 	UprightAttach=0;
@@ -278,7 +277,6 @@ void C4Def::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(StdNullAdapt(),								"PictureFE"															));
 	pComp->Value(mkNamingAdapt(Entrance,											"Entrance",						Rect0							));
 	pComp->Value(mkNamingAdapt(Collection,										"Collection",					Rect0							));
-	pComp->Value(mkNamingAdapt(CollectionLimit,								"CollectionLimit",		0									));
 	pComp->Value(mkNamingAdapt(Placement,											"Placement",					0									));
 	pComp->Value(mkNamingAdapt(Exclusive,											"Exclusive",					0									));
 	pComp->Value(mkNamingAdapt(ContactIncinerate,							"ContactIncinerate",	0									));

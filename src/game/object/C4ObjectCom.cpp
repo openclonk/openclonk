@@ -411,8 +411,6 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	// Check for linekit
 	if (!(linekit=cObj->Contents.Find(C4ID::Linekit)))
 		{
-		// Check for collection limit
-		if (cObj->Def->CollectionLimit && (cObj->Contents.ObjectCount()>=cObj->Def->CollectionLimit) ) return false;
     // Check line pickup
 		ocf=OCF_LineConstruct;
 		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
@@ -625,8 +623,6 @@ bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing)
       }
   // Target no fullcon
   if (!(pTarget->OCF & OCF_FullCon)) return false;
-	// Check target collection limit
-	if (pTarget->Def->CollectionLimit && (pTarget->Contents.ObjectCount()>=pTarget->Def->CollectionLimit)) return false;
   // Transfer thing
 	bool fRejectCollect;
   if (!pThing->Enter(pTarget, true, true, &fRejectCollect)) return false;

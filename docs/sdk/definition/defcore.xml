@@ -70,8 +70,6 @@ Entwickleridentifikation</emlink>.</text>
   <col>Koordinaten des Eingangsbereichs des Objekts relativ zur Objektmitte.</col></row>
 <row><col>Collection</col><col>4 Integer</col>
   <col>Koordinaten des Aufnahmebereichs des Objekts relativ zur Objektmitte.</col></row>
-<row><col>CollectionLimit</col><col>Integer</col>
-  <col>Anzahl der maximal aufnehmbaren Objekte, 0 für uneingeschränkt.</col></row>
 <row><col>FireTop</col><col>Integer</col>
   <col>Flammenabstand zur Objektunterkante.</col></row>
 <row><col>Placement</col><col>Integer</col>

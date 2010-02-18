@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 		</syntax>
-		<desc>Object character flag: Das Objekt bestizt einen Collection-Bereich, ist nicht voll (CollectionLimit), verdreht oder unfertig.</desc>
+		<desc>Object character flag: Das Objekt besitzt einen Collection-Bereich, ist nicht verdreht oder unfertig.</desc>
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
 		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten siehe <emlink href="definition/ocf.html">Object character flags</emlink>.</remark>
 		<related>

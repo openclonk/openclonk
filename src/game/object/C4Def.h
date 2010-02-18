@@ -178,7 +178,6 @@ class C4Def: public C4PropList
     int32_t NoHorizontalMove;
     int32_t BorderBound;
     int32_t LiftTop;
-    int32_t CollectionLimit;
     int32_t GrabPutGet;
     int32_t ContainBlast;
     int32_t UprightAttach;

@@ -1029,13 +1029,7 @@ bool C4Command::GetTryEnter()
 	if (Target->Contained && CheckMinimumCon(Target)) { /* fail??! */ return false; }
 	// Target contained and container has RejectContents: fail
 	if (Target->Contained && !!Target->Contained->Call(PSF_RejectContents)) { Finish(); return false; }
-	// Collection limit: drop other object
-	// return after drop, so multiple objects may be dropped
-	if (cObj->Def->CollectionLimit && (cObj->Contents.ObjectCount()>=cObj->Def->CollectionLimit))
-		{
-		if (!cObj->PutAwayUnusedObject(Target)) { Finish(); return false; }
-		return false;
-		}
+	// FIXME: Drop stuff if full here
 	bool fWasContained = !!Target->Contained;
 	// Grab target object
 	bool fRejectCollect = false;
@@ -1197,8 +1191,7 @@ void C4Command::Get()
 						{
 						// Side-move jump
 						cObj->AddCommand(C4CMD_Jump,NULL,Tx._getInt(),Ty);
-						if (cObj->Def->CollectionLimit && (cObj->Contents.ObjectCount()>=cObj->Def->CollectionLimit))
-							cObj->AddCommand(C4CMD_Drop); // Drop object if necessary due to collection limit
+						// FIXME: Drop stuff if full here
 						// Need to kill NoCollectDelay after drop...!
 						cObj->AddCommand(C4CMD_MoveTo,NULL,iSideX,cObj->GetY(),50);
 						}
