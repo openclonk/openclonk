@@ -160,22 +160,6 @@ bool C4Application::DoInit()
 #endif
 
 	DDrawCfg.Shader = Config.Graphics.EnableShaders;
-	switch (Config.Graphics.Engine) {
-#ifdef USE_DIRECTX
-		case GFXENGN_DIRECTX:
-		case GFXENGN_DIRECTXS:
-			// Direct3D
-			DDrawCfg.Set(Config.Graphics.NewGfxCfg);
-			break;
-#endif
-#ifdef USE_GL
-		case GFXENGN_OPENGL:
-		// OpenGL
-		DDrawCfg.Set(Config.Graphics.NewGfxCfgGL);
-		break;
-#endif
-		default: ;	// Always have at least one statement
-	}
 
 	// Fixup resolution
 	ApplyResolutionConstraints();
@@ -226,6 +210,12 @@ bool C4Application::DoInit()
 	// Initialize D3D/OpenGL
 	DDraw = DDrawInit(this, isFullScreen, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
 	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
+	
+	if (isFullScreen)
+		{
+		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed))
+			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
+		}
 
 #if defined(_WIN32) && !defined(USE_CONSOLE)
 	// Register clonk file classes - notice: under Vista this will only work if we have administrator rights

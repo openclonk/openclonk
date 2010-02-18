@@ -1360,9 +1360,6 @@ CStdDDraw *DDrawInit(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 
 bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigned int iXRes, unsigned int iYRes, int iBitDepth, unsigned int iMonitor)
 	{
-	// set cfg again, as engine has been decided
-	DDrawCfg.Set(DDrawCfg.Cfg);
-
 	this->pApp = pApp;
 
 	// store default gamma

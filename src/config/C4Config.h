@@ -125,12 +125,11 @@ class C4ConfigGraphics
 		int32_t ShowClock;
 		int32_t ResX,ResY;
 		int32_t GuiResX,GuiResY;
+		int32_t Windowed;
 		int32_t ShowAllResolutions;
 		int32_t ShowCrewNames; // show player name above clonks?
 		int32_t ShowCrewCNames; // show clonk names above clonks?
 		int32_t BitDepth; // used bit depth for newgfx
-		int32_t NewGfxCfg;	// some configuration settings for newgfx
-		int32_t NewGfxCfgGL;	// some configuration settings for newgfx (OpenGL)
 		int32_t MsgBoard;
 		int32_t MsgBrdFadeDelay;
 		int32_t PXSGfx;			// show PXS-graphics (instead of sole pixels)

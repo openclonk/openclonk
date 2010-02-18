@@ -454,6 +454,7 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 	if ((lpD3D=Direct3DCreate9(D3D_SDK_VERSION))==NULL) return Error("  Direct3DCreate9 failure.");
 	// set monitor info (Monitor-var and target rect)
 	DebugLog("  SetOutput adapter...");
+	// FIXME: Do not do resolution changes here
 	if (!SetOutputAdapter(iMonitor))
 		return Error("  Output adapter failure.");
 
@@ -472,7 +473,7 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 		{
 		// fullscreen mode
 		// pick a display mode
-		if (DDrawCfg.Windowed)
+		if (0)
 		{
 			// "Windowed fullscreen"
 			if (lpD3D->GetAdapterDisplayMode(iMonitor, &dspMode) != D3D_OK)
@@ -563,7 +564,7 @@ bool CStdD3D::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
 	assert(lpDevice);
 	// If fullscreen: SetVideoMode will have handled this.
-	if (fFullscreen && !DDrawCfg.Windowed) return true;
+	//if (fFullscreen && !DDrawCfg.Windowed) return true;
 
 	// NOTE: This should be replaced by using a desktop-size video buffer and
 	// just clipping to the current resolution to improve performance
@@ -587,7 +588,7 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	HRESULT hr;
 	HWND hWindow = pApp->pWindow->hWindow;
 	// pick a display mode
-	if (DDrawCfg.Windowed)
+	if (!fFullScreen)
 		{
 		// "Windowed fullscreen"
 		if (lpD3D->GetAdapterDisplayMode(iMonitor, &dspMode) != D3D_OK)

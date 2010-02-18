@@ -825,7 +825,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 		pGroupResolution->AddElement(pCheckGfxClrDepth[iBitDepthIdx]);
 		}
 	// fullscreen checkbox
-	pCheck = new C4GUI::CheckBox(caGroupResolution.GetGridCell(0,1,3,4,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FULLSCREEN"), !DDrawCfg.Windowed);
+	pCheck = new C4GUI::CheckBox(caGroupResolution.GetGridCell(0,1,3,4,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FULLSCREEN"), !Config.Graphics.Windowed);
 	pCheck->SetOnChecked(new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnFullscreenChange));
 	pCheck->SetToolTip(LoadResStr("IDS_MSG_FULLSCREEN_DESC"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
@@ -1133,7 +1133,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 	else
 		iNewFontSize = 16;
 	// call application to set it
-	if (!Application.SetVideoMode(iResX, iResY,Config.Graphics.BitDepth, Config.Graphics.Monitor,!DDrawCfg.Windowed))
+	if (!Application.SetVideoMode(iResX, iResY,Config.Graphics.BitDepth, Config.Graphics.Monitor,!Config.Graphics.Windowed))
 		{
 		StdCopyStrBuf strChRes(LoadResStr("IDS_MNU_SWITCHRESOLUTION"));
 		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), Application.GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, NULL);
@@ -1154,7 +1154,7 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 		// abort: Restore screen, if this was not some program abort
 		if (C4GUI::IsGUIValid())
 			{
-			if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.BitDepth, Config.Graphics.Monitor,!DDrawCfg.Windowed))
+			if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.BitDepth, Config.Graphics.Monitor,!Config.Graphics.Windowed))
 				{
 				if (iNewFontSize != iOldFontSize) Application.SetGameFont(Config.General.RXFontName, iOldFontSize);
 				RecreateDialog(false);
@@ -1204,15 +1204,8 @@ void C4StartupOptionsDlg::OnGfxClrDepthCheck(C4GUI::Element *pCheckBox)
 
 void C4StartupOptionsDlg::OnFullscreenChange(C4GUI::Element *pCheckBox)
 	{
-	DDrawCfg.Windowed = !static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked();
-#ifdef USE_GL
-	if (pGL) pGL->fFullscreen = !DDrawCfg.Windowed;
-#endif
-	Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !DDrawCfg.Windowed);
-#ifdef USE_GL
-	lpDDraw->InvalidateDeviceObjects();
-	lpDDraw->RestoreDeviceObjects();
-#endif
+	Config.Graphics.Windowed = !static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked();
+	Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
 	}
 
 void C4StartupOptionsDlg::OnGfxAllResolutionsChange(C4GUI::Element *pCheckBox)
@@ -1396,33 +1389,20 @@ void C4StartupOptionsDlg::RecreateDialog(bool fFade)
 
 void C4StartupOptionsDlg::LoadGfxTroubleshoot()
 	{
-	// config to controls
-	// get config set to be used
-	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
-	// get config values for this config
-	uint32_t dwGfxCfg = fUseGL ? Config.Graphics.NewGfxCfgGL : Config.Graphics.NewGfxCfg;
-	// set it in controls
 	pShaders->SetChecked(!!DDrawCfg.Shader);
-	// title of troubleshooting-box by config set
-	pGroupTrouble->SetTitle(FormatString("%s: %s", LoadResStrNoAmp("IDS_CTL_TROUBLE"), fUseGL ? "OpenGL" : "DirectX").getData());
+	// title of troubleshooting-box
+	pGroupTrouble->SetTitle(LoadResStrNoAmp("IDS_CTL_TROUBLE"));
 	}
 
 void C4StartupOptionsDlg::SaveGfxTroubleshoot()
 	{
-	// copntrols to config
 	// get it from controls
-	uint32_t dwGfxCfg = 0u;
 	DDrawCfg.Shader=pShaders->GetChecked();
-	if (DDrawCfg.Windowed) dwGfxCfg |= C4GFXCFG_WINDOWED;
 	// get config set to be used
 	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
-	// set config values into this set
-	(fUseGL ? Config.Graphics.NewGfxCfgGL : Config.Graphics.NewGfxCfg) = dwGfxCfg;
 	// and apply them directly, if the engine is current
 	if (fUseGL == lpDDraw->IsOpenGL())
 		{
-		DDrawCfg.Set(dwGfxCfg);
-		lpDDraw->InvalidateDeviceObjects();
 		lpDDraw->RestoreDeviceObjects();
 		}
 	}

@@ -84,7 +84,6 @@ void CStdGL::Clear()
 	if (lpPrimary) delete lpPrimary;
 	lpPrimary = lpBack = NULL;
 	RenderTarget = NULL;
-	if (lines_tex) { glDeleteTextures(1, &lines_tex); lines_tex = 0; }
 	// clear context
 	if (pCurrCtx) pCurrCtx->Deselect();
 	MainCtx.Clear();
@@ -1424,42 +1423,13 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
 	}
 #endif
 
-bool CStdGL::CreatePrimarySurfaces(bool Playermode, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
+bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorDepth, unsigned int)
 	{
-	//remember fullscreen setting
-	fFullscreen = Playermode && !DDrawCfg.Windowed;
-
-
-	DebugLog("  gl: SetVideoMode...");
-	// Set window size only in playermode
-	if (Playermode)
-		{
-#ifdef _WIN32
-		// HACK: Disable window border
-		SetWindowLong(pApp->pWindow->hWindow, GWL_STYLE,
-			GetWindowLong(pApp->pWindow->hWindow, GWL_STYLE) & ~(WS_CAPTION|WS_THICKFRAME|WS_BORDER));
-		SetWindowLong(pApp->pWindow->hWindow, GWL_EXSTYLE,
-			GetWindowLong(pApp->pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
-#endif
-		// Always search for display mode, in case the user decides to activate fullscreen later
-		if (!pApp->SetVideoMode(iXRes, iYRes, iColorDepth, iMonitor, fFullscreen))
-			{
-			Error("  gl: No Display mode found; leaving current!");
-			fFullscreen = false;
-			}
-		if (!fFullscreen)
-			{
-			pApp->pWindow->SetSize(iXRes, iYRes);
-			}
-		}
-
 	// store options
 	byByteCnt=4; iClrDpt=iColorDepth;
 
 	// create lpPrimary and lpBack (used in first context selection)
 	lpPrimary=lpBack=new CSurface();
-	lpPrimary->AttachSfc(NULL, iXRes, iYRes);
-	lpPrimary->byBytesPP=byByteCnt;
 
 	// create+select gl context
 	DebugLog("  gl: Create Main Context...");
@@ -1470,21 +1440,7 @@ bool CStdGL::CreatePrimarySurfaces(bool Playermode, unsigned int iXRes, unsigned
 		{
 		return Error("  gl: OpenGL Version 1.3 or higher required.");
 		}
-	MaxTexSize = 64;
-	GLint s = 0;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
-	if (s>0) MaxTexSize = s;
 
-	// lines texture
-	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glGenTextures(1, &lines_tex);
-	glBindTexture(GL_TEXTURE_2D, lines_tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	const char * linedata = byByteCnt == 2 ? "\xff\xf0\xff\xff" : "\xff\xff\xff\x00\xff\xff\xff\xff";
-	glTexImage2D(GL_TEXTURE_2D, 0, 4, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
 	return RestoreDeviceObjects();
 	}
 
@@ -1650,8 +1606,25 @@ bool CStdGL::RestoreDeviceObjects()
 	if (!lpPrimary) return false;
 	// delete any previous objects
 	InvalidateDeviceObjects();
+
+	// lines texture
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glGenTextures(1, &lines_tex);
+	glBindTexture(GL_TEXTURE_2D, lines_tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	const char * linedata = byByteCnt == 2 ? "\xff\xf0\xff\xff" : "\xff\xff\xff\x00\xff\xff\xff\xff";
+	glTexImage2D(GL_TEXTURE_2D, 0, 4, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
+
 	// restore primary/back
 	RenderTarget=lpPrimary;
+
+	MaxTexSize = 64;
+	GLint s = 0;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
+	if (s>0) MaxTexSize = s;
 
 	// set states
 	Active = pCurrCtx ? (pCurrCtx->Select()) : MainCtx.Select();
@@ -1743,6 +1716,11 @@ bool CStdGL::InvalidateDeviceObjects()
 	// invalidate font objects
 	// invalidate primary surfaces
 	if (lpPrimary) lpPrimary->Clear();
+	if (lines_tex)
+		{
+		glDeleteTextures(1, &lines_tex);
+		lines_tex = 0;
+		}
 	if (shaders[0])
 		{
 		glDeleteProgramsARB(sizeof(shaders)/sizeof(*shaders), shaders);
@@ -1830,6 +1808,7 @@ bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	lpPrimary->byBytesPP=byByteCnt;
 	// Re-create primary clipper to adapt to new size.
 	CreatePrimaryClipper(iXRes, iYRes);
+	RestoreDeviceObjects();
 	return true;
 	}
 

@@ -230,8 +230,7 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	this->pWindow = pWindow;
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	// try direct rendering first
-	if (!DDrawCfg.NoAcceleration)
-		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, True);
+	ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, True);
 	// without, rendering will be unacceptable slow, but that's better than nothing at all
 	if (!ctx)
 		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, False);
@@ -366,7 +365,6 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	if (!pGL) return false;
 	// store window
 	this->pWindow = pWindow;
-	assert(!DDrawCfg.NoAcceleration);
 	// No luck at all?
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
 	// init extensions

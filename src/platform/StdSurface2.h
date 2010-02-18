@@ -38,9 +38,6 @@ typedef void* IDirect3DSurface9;
 
 #include <list>
 
-// config settings
-#define C4GFXCFG_WINDOWED         1024
-
 // blitting modes
 #define C4GFXBLIT_NORMAL          0 // regular blit
 #define C4GFXBLIT_ADDITIVE        1 // all blits additive
@@ -75,31 +72,14 @@ class CDDrawCfg
 	public:
 		bool ClipManuallyE; // do manual clipping in the easy cases
 		bool NoOffscreenBlits; // if set, all blits to non-primary-surfaces are emulated
-		bool NoAcceleration; // wether direct rendering is used (X11)
-		bool Windowed; // wether the resolution will not be set
-		int Cfg;
 
-		int32_t Shader; // wether to use pixelshaders
+		bool Shader; // whether to use pixelshaders
 
-		CDDrawCfg(): // ctor
-			// Let's end this silly bitmask business in the config.
-			Shader (false)
+		CDDrawCfg():
+			NoOffscreenBlits (true), // not yet working properly...
+			Shader (false),
+			ClipManuallyE (true)
 			{
-			Set(0);
-			}
-
-		void Set(int dwCfg) // set cfg
-			{
-			Cfg=dwCfg;
-			ClipManuallyE = true;
-			NoOffscreenBlits = true; // not yet working properly... !!(dwCfg&C4GFXCFG_NOOFFBLITS);
-			Windowed = !!(dwCfg&C4GFXCFG_WINDOWED);
-			}
-		void Get(int32_t & dwCfg)
-			{
-			dwCfg =
-				// (NoOffscreenBlits  ?  true & // not yet working properly... dwCfg&C4GFXCFG_NOOFFBLITS) |
-				(Windowed ? C4GFXCFG_WINDOWED : 0);
 			}
 	};
 extern CDDrawCfg DDrawCfg; // ddraw config

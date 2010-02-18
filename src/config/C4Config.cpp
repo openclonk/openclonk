@@ -144,8 +144,7 @@ void C4ConfigGraphics::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ShowCrewNames,					"ShowCrewNames",				1							,false, true));
 	pComp->Value(mkNamingAdapt(ShowCrewCNames,				"ShowCrewCNames",				1							,false, true));
 	pComp->Value(mkNamingAdapt(BitDepth,							"BitDepth",							32						,false, true));
-	pComp->Value(mkNamingAdapt(NewGfxCfg,							"NewGfxCfg",						0							));
-	pComp->Value(mkNamingAdapt(NewGfxCfgGL,						"NewGfxCfgGL",					0							));
+	pComp->Value(mkNamingAdapt(Windowed,							"Windowed",             0             ,false, true));
 	pComp->Value(mkNamingAdapt(MsgBoard,							"MsgBoard"	,						1							));
 	pComp->Value(mkNamingAdapt(MsgBrdFadeDelay,				"MsgBrdFadeDelay"	,			10						));
 	pComp->Value(mkNamingAdapt(PXSGfx,								"PXSGfx"	,							1							));

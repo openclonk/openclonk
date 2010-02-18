@@ -314,6 +314,11 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 		}
 #endif
 #ifdef USE_GL
+	// HACK: Disable window border
+	SetWindowLong(pWindow->hWindow, GWL_STYLE,
+		GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~(WS_CAPTION|WS_THICKFRAME|WS_BORDER));
+	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
+		GetWindowLong(pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
 	bool fFound=false;
 	DEVMODE dmode;
 	// if a monitor is given, search on that instead
