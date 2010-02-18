@@ -1,6 +1,4 @@
 
-#strict 2
-
 // *** einige Funktionen, die Informationen über die
 //     GetXVal-Familie abfragen
 
@@ -128,11 +126,7 @@ global func GetScenClimate()   { return GetScenarioVal("Climate", "Weather"); }
 global func GetScenYearSpeed() { return GetScenarioVal("YearSpeed", "Weather"); }
 global func GetScenRain()      { return GetScenarioVal("Rain", "Weather"); }
 global func GetScenWind()      { return GetScenarioVal("Wind", "Weather"); }
-global func GetScenLightning() { return GetScenarioVal("Lightning", "Weather"); }
 global func GetScenPrecipitation() { return GetScenarioVal("Precipitation", "Weather"); }
-global func GetScenMeteorite() { return GetScenarioVal("Meteorite", "Disasters"); }
-global func GetScenVolcano()   { return GetScenarioVal("Volcano", "Weather"); }
-global func GetScenEarthquake() { return GetScenarioVal("Earthquake", "Weather"); }
 
 // GetObjectInfoCoreVal
 

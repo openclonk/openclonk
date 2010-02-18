@@ -1,6 +1,4 @@
 
-#strict 2
-
 // Some common transformation matrices, and a function to multiple them
 // together to produce more complex transformations.
 

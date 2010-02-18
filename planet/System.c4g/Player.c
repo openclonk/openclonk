@@ -1,6 +1,5 @@
 /*-- Player related functions --*/
 
-#strict 2
 
 // Returns the player number of szPlrName, or none if there is no such player. (written by timi for CR/CE/CP)
 global func GetPlayerByName(string szPlrName)

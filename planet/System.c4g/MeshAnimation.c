@@ -1,6 +1,4 @@
 
-#strict 2
-
 // Wrappers for convenient calls to PlayAnimation
 
 global func Anim_Const(int Value)

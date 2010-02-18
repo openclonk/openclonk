@@ -1,5 +1,3 @@
-#strict 2
-
 /*-- flgr --*/
 
 // Returns the offset to x.
@@ -258,4 +256,26 @@ global func LaunchProjectile(int iAngle, int iDistance, iSpeed, int iX, int iY, 
 		SetVelocity(iAngle, iSpeed);
 		return 1;
 	}
+}
+
+/* ComDir */
+
+global func ComDirTransform(int comdir, int tocomdir)
+{
+  if (comdir == tocomdir) return (comdir);
+  if (comdir == COMD_Stop) return (tocomdir);
+  if (comdir == (tocomdir + 3) % 8 + 1) return (COMD_Stop);
+  if (Inside(comdir, tocomdir + 1, tocomdir + 3)) return (comdir - 1);
+  if (Inside(comdir, tocomdir - 1, tocomdir - 3)) return (comdir + 1);
+  if (Inside(comdir, tocomdir - 7, tocomdir - 5)) return ((comdir + 6) % 8 + 1);
+  return (comdir % 8 + 1);
+}
+
+global func ComDirLike(int comdir1, int comdir2)
+{
+  if (comdir1 == comdir2) return (true);
+  if (comdir1 == COMD_Stop || comdir2 == COMD_Stop) return false;
+  if (comdir1 % 8 + 1 == comdir2) return (true);
+  if (comdir1 == comdir2 % 8 + 1) return (true);
+  return (false);
 }

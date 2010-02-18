@@ -1,4 +1,4 @@
-#strict 2
+
 
 // Einen Script zeitverzögert und ggf. wiederholt ausführen
 global func Schedule(string strScript, int iInterval, int iRepeat, object pObj)

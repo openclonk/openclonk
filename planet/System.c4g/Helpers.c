@@ -1,7 +1,5 @@
 /* Some useful helper functions */
 
-#strict 2
-
 global func MessageWindow(string pMsg, int iForPlr, id idIcon, string pCaption)
 {
 	// get icon

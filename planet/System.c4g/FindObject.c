@@ -1,5 +1,4 @@
 
-#strict 2
 
 // Wrappers for conventient calls to FindObjects
 
