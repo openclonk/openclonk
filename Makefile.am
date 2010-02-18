@@ -536,8 +536,7 @@ c4group_CPPFLAGS = \
   -I$(srcdir)/src/game \
   -I$(srcdir)/src/game/object \
   -I$(srcdir)/src/lib/texture \
-  -I$(srcdir)/src/script \
-  -DUSE_CONSOLE
+  -I$(srcdir)/src/script
 
 c4group_SOURCES = \
 src/c4group/c4group_ng.cpp \
