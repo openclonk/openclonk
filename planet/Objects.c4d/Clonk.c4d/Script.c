@@ -501,7 +501,7 @@ func HasHandAction(sec)
 {
 	if(sec && fBothHanded)
 		return false;
-	if( (GetAction() == "Walk" || GetAction() == "Jump") && !fHandAction )
+	if( (GetAction() == "Walk" || GetAction() == "Jump" || GetAction() == "Kneel") && !fHandAction )
 		return true;
 	return false;
 }
@@ -620,7 +620,7 @@ public func TurnFront()
 func GetDirection()
 {
 	// Get direction from ComDir
-	if(GetAction() != "Scale")
+	if(GetAction() != "Scale" && GetAction() != "Jump")
 	{
 		if(ComDirLike(GetComDir(), COMD_Right)) return COMD_Right;
 		else if(ComDirLike(GetComDir(), COMD_Left)) return COMD_Left;
@@ -1167,6 +1167,22 @@ func FxIntScaleTimer(pTarget, iNumber, iTime)
 	EffectVar(4, pTarget, iNumber) = iState;
 }*/
 
+func Hit(int iXSpeed, int iYSpeed)
+{
+	if(iYSpeed < 300) return;
+	if(GetAction() != "Walk") return;
+	var iKneelDownSpeed = 18;
+	SetXDir(0);
+	SetAction("Kneel");
+	PlayAnimation("KneelDown", 5, Anim_Linear(0, 0, GetAnimationLength("KneelDown"), iKneelDownSpeed, ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	ScheduleCall(this, "EndKneel", iKneelDownSpeed, 1);
+}
+
+func EndKneel()
+{
+	SetAction("Walk");
+}
+
 func StartDigging()
 {
 	if(!GetEffect("IntDig", this))
@@ -1272,6 +1288,21 @@ Stand = {
 	Wdt = 8,
 	Hgt = 20,
 	StartCall = "StartStand",
+	InLiquidAction = "Swim",
+},
+Kneel = {
+	Prototype = Action,
+	Name = "Kneel",
+	Procedure = DFA_KNEEL,
+	Directions = 2,
+	FlipDir = 0,
+	Length = 1,
+	Delay = 0,
+	X = 0,
+	Y = 0,
+	Wdt = 8,
+	Hgt = 20,
+//	StartCall = "StartKneel",
 	InLiquidAction = "Swim",
 },
 Scale = {
