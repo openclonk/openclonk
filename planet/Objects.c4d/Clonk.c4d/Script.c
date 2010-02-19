@@ -544,9 +544,9 @@ func FxIntTurnStart(pTarget, iNumber, fTmp)
 	EffectVar(1, pTarget, iNumber) = 0;
 	SetTurnType(0);
 }
-
+local iTimer;
 func FxIntTurnTimer(pTarget, iNumber, iTime)
-{
+{iTimer = iTime;
 	// Check wether the clonk wants to turn (Not when he wants to stop)
   if(EffectVar(0, pTarget, iNumber) != GetDirection())
 	{
@@ -581,7 +581,7 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 }
 
 func SetTurnType(iIndex)
-{
+{//Log("%d %s %d", iIndex, GetAction(), iTimer);
 	if(iIndex == 0)
 	{
 		if(GetAnimationWeight(iTurnKnot1) > 0)
@@ -610,8 +610,11 @@ public func TurnFront()
 func GetDirection()
 {
 	// Get direction from ComDir
-	if(ComDirLike(GetComDir(), COMD_Right)) return COMD_Right;
-	else if(ComDirLike(GetComDir(), COMD_Left)) return COMD_Left;
+	if(GetAction() != "Scale")
+	{
+		if(ComDirLike(GetComDir(), COMD_Right)) return COMD_Right;
+		else if(ComDirLike(GetComDir(), COMD_Left)) return COMD_Left;
+	}
 	// if ComDir hasn't a direction, use GetDir
 	if(GetDir()==DIR_Right) return COMD_Right;
 	else return COMD_Left;
@@ -1449,7 +1452,7 @@ Push = {
   SetProperty("Name", "Clonk", def);
 
   // Set perspective
-  SetProperty("PerspectiveR", 12000, def);
+  SetProperty("PerspectiveR", 20000, def);
   SetProperty("PerspectiveTheta", 20, def);
   SetProperty("PerspectivePhi", 70, def);
 }
