@@ -52,7 +52,7 @@ void CStdApp::ClearClipboard(bool fClipboard) {
 
 void CStdApp::MessageDialog(const char * message)
 {
-	NSAlert* alert = [NSAlert alertWithMessageText:@"Fatal Error" defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:[NSString stringWithCString:message]];
+	NSAlert* alert = [NSAlert alertWithMessageText:@"Fatal Error" defaultButton:nil alternateButton:nil otherButton:nil informativeTextWithFormat:[NSString stringWithUTF8String:message]];
 	[alert runModal];
 }
 

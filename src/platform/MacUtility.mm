@@ -24,7 +24,7 @@ namespace MacUtility {
 	
 	bool sendFileToTrash(const char* szFilename)
 	{
-		NSString* filename = [NSString stringWithCString: szFilename];
+		NSString* filename = [NSString stringWithUTF8String: szFilename];
 		return [[NSWorkspace sharedWorkspace]
 				performFileOperation: NSWorkspaceRecycleOperation
 				source: [filename stringByDeletingLastPathComponent]
