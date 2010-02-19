@@ -117,9 +117,6 @@ code, div.fnsyntax, pre.code {
 
 pre.code {
 	display: block;
-	white-space: -moz-pre-wrap; /* Gecko */
-	white-space: -pre-wrap;     /* Opera 4 - 6 */
-	white-space: -o-pre-wrap;   /* Opera >= 7 */
 	white-space: pre-wrap;      /* CSS2.1 */
 	word-wrap: break-word;      /* IE 5.5+ */
 	padding: 8px;
