@@ -201,6 +201,7 @@
 		5804A5E810C4BBC600A26AD0 /* C4Globals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58CBBCB710BDF19400FBA25E /* C4Globals.cpp */; };
 		5830903A10E11D2200F1AECF /* C4PlayerControl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5830903910E11D2200F1AECF /* C4PlayerControl.cpp */; };
 		583F3F53110A7E6D00C5E281 /* C4MeshAnimation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 583F3F52110A7E6D00C5E281 /* C4MeshAnimation.cpp */; };
+		58437DEE112EDF2200DFE775 /* C4AulDebug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 58437DED112EDF2200DFE775 /* C4AulDebug.cpp */; };
 		5862E1191032E57A002CAE9E /* C4Application.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5862DF3B1032E57A002CAE9E /* C4Application.cpp */; };
 		5862E11A1032E57A002CAE9E /* C4FullScreen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5862DF3D1032E57A002CAE9E /* C4FullScreen.cpp */; };
 		5862E11B1032E57A002CAE9E /* C4Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5862DF3F1032E57A002CAE9E /* C4Game.cpp */; };
@@ -501,6 +502,7 @@
 		5830903910E11D2200F1AECF /* C4PlayerControl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4PlayerControl.cpp; sourceTree = "<group>"; };
 		583F3F51110A7E6D00C5E281 /* C4MeshAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4MeshAnimation.h; sourceTree = "<group>"; };
 		583F3F52110A7E6D00C5E281 /* C4MeshAnimation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4MeshAnimation.cpp; sourceTree = "<group>"; };
+		58437DED112EDF2200DFE775 /* C4AulDebug.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4AulDebug.cpp; sourceTree = "<group>"; };
 		58508E1C103482EF00533E7D /* StdMacApp.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = StdMacApp.mm; sourceTree = "<group>"; };
 		5862DF3B1032E57A002CAE9E /* C4Application.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = C4Application.cpp; sourceTree = "<group>"; };
 		5862DF3C1032E57A002CAE9E /* C4Application.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C4Application.h; sourceTree = "<group>"; };
@@ -1810,6 +1812,7 @@
 		5862E1021032E57A002CAE9E /* script */ = {
 			isa = PBXGroup;
 			children = (
+				58437DED112EDF2200DFE775 /* C4AulDebug.cpp */,
 				588FCF9D103637B700BCF686 /* C4StringTable.h */,
 				588FCF9E103637B700BCF686 /* C4StringTable.cpp */,
 				5862E1031032E57A002CAE9E /* C4AList.cpp */,
@@ -2402,6 +2405,7 @@
 				58E9D4B710F2B267005760F5 /* tinyxmlerror.cpp in Sources */,
 				58E9D4B810F2B267005760F5 /* tinyxmlparser.cpp in Sources */,
 				583F3F53110A7E6D00C5E281 /* C4MeshAnimation.cpp in Sources */,
+				58437DEE112EDF2200DFE775 /* C4AulDebug.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
