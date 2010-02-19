@@ -79,5 +79,5 @@ YearSpeed=20,10,0,100
 Wind=1,100,-100,100
 
 [Environment]
-Objects=EGLN=1;EGRS=1
+Objects=EGLN=1;EGRS=1;GRSP=1;
  

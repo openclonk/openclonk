@@ -95,7 +95,7 @@ protected func ControlUseStop(object pClonk, ix, iy)
 	// Fire
 	if(Contents(0))
 	{
-		if(Contents(0)->IsMusketAmmo())
+		if(Contents(0)->IsMusketAmmo() && PathFree(GetX(),GetY(),GetX()+Sin(180-Angle(0,0,ix,iy),iBarrel),GetY()+Cos(180-Angle(0,0,ix,iy),iBarrel)))
 		{
 			FireWeapon(pClonk, ix, iy);
 		}
