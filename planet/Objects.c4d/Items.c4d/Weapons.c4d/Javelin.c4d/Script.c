@@ -6,7 +6,7 @@
 --*/
 
 #include L_ST
-public func MaxStackCount() { return 999; }
+public func MaxStackCount() { return 3; }
 
 local fAiming;
 local power;
@@ -118,9 +118,9 @@ protected func ControlUseCancel(object clonk, int x, int y)
 public func DoThrow(object pClonk, int angle)
 {
 	var javelin=TakeObject();
-	//If someone wants to use HitCheck for this, feel free to implement it. I can't seem to get it to work, anyways.
 	javelin->LaunchProjectile(angle+RandomX(-1, 1), 6, 90);
 	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
+	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,pClonk);
 	
 	power=0;
 	
@@ -142,12 +142,45 @@ public func ResetClonk(clonk)
 	clonk->UpdateAttach();
 }
 
+protected func JavelinStrength() { return 14; }
+
+//slightly modified HitObject() from arrow
+public func HitObject(object obj)
+{
+	var speed = Sqrt(GetXDir()*GetXDir()+GetYDir()*GetYDir());
+
+	if(obj->~QueryCatchBlow(this)) return;
+  
+	// arrow hit
+	obj->~OnArrowHit(this);
+	if(!this) return;
+	// ouch!
+	var dmg = JavelinStrength()*speed/100;
+	if(obj->GetAlive())
+	{
+		obj->DoEnergy(-dmg);
+	    obj->~CatchBlow(-dmg,this);
+	}
+	
+	RemoveEffect("HitCheck",this);
+
+	// target could have done something with this arrow
+	if(!this) return;
+	
+	// tumble target
+    if(obj->GetAlive())
+    {
+		obj->SetAction("Tumble");
+		obj->SetSpeed(obj->GetXDir()+GetXDir()/3,obj->GetYDir()+GetYDir()/3-1);
+    }
+}
+
 private func Hit()
 {	
 	Sound("WoodHit");
 	SetSpeed();
-	RemoveEffect("HitCheck",this);
 	RemoveEffect("Flight",this);
+	RemoveEffect("HitCheck",this);
 }
 
 protected func FxFlightStart(object pTarget, int iEffectNumber)
