@@ -25,6 +25,7 @@
 #ifdef __APPLE__
 #include <cstdlib>
 #include <string>
+#include <MacUtility.h>
 #endif
 
 #ifdef _WIN32
