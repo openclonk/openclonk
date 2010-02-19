@@ -470,6 +470,15 @@ func DoUpdateAttach(bool sec)
 		else
 			; // Don't display
 	}
+	else if(iAttachMode == CARRY_Spear)
+	{
+		if(HasHandAction(sec))
+		{
+			PlayAnimation("CarrySpear", 6, Anim_Const(0), Anim_Const(1000));
+		}
+		else
+			iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
+	}
 }//AttachMesh(DYNB, "pos_tool1", "main", Trans_Translate(0,0,0));
 
 public func GetHandMesh(object obj)
@@ -485,7 +494,8 @@ static const CARRY_Hand         = 1;
 static const CARRY_HandBack     = 2;
 static const CARRY_HandAlways   = 3;
 static const CARRY_Back         = 4;
-static const CARRY_BothHands		= 5;
+static const CARRY_BothHands    = 5;
+static const CARRY_Spear        = 6;
 
 func HasHandAction(sec)
 {
@@ -1212,12 +1222,21 @@ func StartDead()
 
 func StartTumble()
 {
+	if(GetEffect("IntTumble", this)) return;
 	PlayAnimation("Tumble", 5, Anim_Linear(0, 0, GetAnimationLength("Tumble"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn type
 	SetTurnType(0);
+	AddEffect("IntTumble", this, 1, 0);
 }
+
+func StopTumble()
+{
+	if(GetAction() != "Tumble")
+		RemoveEffect("IntTumble", this);
+}
+
 
 /* Act Map */
 
@@ -1286,6 +1305,7 @@ Tumble = {
 	ObjectDisabled = 1,
 	InLiquidAction = "Swim",
 	StartCall = "StartTumble",
+	AbortCall = "StopTumble",
 	EndCall = "CheckStuck",
 },
 Dig = {

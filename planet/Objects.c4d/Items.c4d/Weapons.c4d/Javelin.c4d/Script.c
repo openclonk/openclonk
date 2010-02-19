@@ -6,7 +6,7 @@
 --*/
 
 #include L_ST
-public func MaxStackCount() { return 3; }
+public func MaxStackCount() { return 999; }
 
 local fAiming;
 local power;
@@ -14,10 +14,10 @@ local power;
 local iAim;
 local fWait;
 
-public func GetCarryMode(clonk) { return CARRY_Back; }
+public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_HandBack; }
 public func GetCarryBone() { return "Javelin"; }
-public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
-public func GetCarryTransform() { if(fAiming) return Trans_Rotate(180, 1, 0, 0); }
+public func GetCarrySpecial(clonk) { if(fAiming >= 0) return "pos_hand2"; }
+public func GetCarryTransform() { if(fAiming == 1) return Trans_Rotate(180, 1, 0, 0); }
 
 public func ControlUseStart(object pClonk, int x, int y)
 {
@@ -76,6 +76,8 @@ protected func ControlUseHolding(object pClonk, int ix, int iy)
 	return 1;
 }
 
+static const JAVE_ThrowTime = 16;
+
 protected func ControlUseStop(object pClonk, int ix, int iy)
 {
 	if(fWait) return;
@@ -90,7 +92,7 @@ protected func ControlUseStop(object pClonk, int ix, int iy)
 	var angle = pClonk->GetAnimationPosition(iAim)*180/(pClonk->GetAnimationLength("SpearAimArms"));
 	if(!pClonk->GetDir()) angle = -angle;
 
-	var iThrowtime = 10;
+	var iThrowtime = JAVE_ThrowTime;
 	if(Abs(angle) < 90)
 	{
 		iAim = pClonk->PlayAnimation("SpearThrow2Arms",  10, Anim_Linear(0, 0, pClonk->GetAnimationLength("SpearThrow2Arms" ), iThrowtime), Anim_Const(1000));
@@ -104,7 +106,7 @@ protected func ControlUseStop(object pClonk, int ix, int iy)
 		pClonk->SetAnimationWeight(iAim+1, Anim_Const(1000*(Abs(angle)-90)/90));
 	}
 
-	ScheduleCall(this, "DoThrow", iThrowtime, 1, pClonk, angle);
+	ScheduleCall(this, "DoThrow", iThrowtime/2, 1, pClonk, angle);
 }
 
 protected func ControlUseCancel(object clonk, int x, int y)
@@ -122,14 +124,16 @@ public func DoThrow(object pClonk, int angle)
 	
 	power=0;
 	
-	fAiming=false;
-	ResetClonk(pClonk);
+	fAiming = -1;
+  pClonk->UpdateAttach();
+	ScheduleCall(this, "ResetClonk", JAVE_ThrowTime/2, 1, pClonk);
 }
 
 public func ResetClonk(clonk)
 {
 	// Already aiming angain? Don't remove Actions
-	if(fAiming) return;
+	if(fAiming == 1) return;
+	fAiming = 0;
 
 	clonk->SetHandAction(0);
 
