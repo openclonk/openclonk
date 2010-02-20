@@ -483,9 +483,30 @@ if(WIN32)
 		src/platform/StdJoystick.cpp
 		src/platform/StdJoystick.h
 		src/platform/C4FileClasses.cpp
-		src/res/engine.rc
 		src/res/resource.h
 	)
+
+	if(MINGW)
+		# cmake does not support compiling resources with MinGW
+		# natively, see http://www.cmake.org/Bug/view.php?id=4068.
+		# cross-compiler sets CMAKE_RC_COMPILER in toolchain file
+		if(NOT CMAKE_RC_COMPILER)
+			SET(CMAKE_RC_COMPILER windres)
+		endif()
+
+		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
+		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/src
+		                                                -i${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc
+		                                                -o ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o)
+
+		list(APPEND OC_SYSTEM_SOURCES
+			${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
+		)
+	else(MINGW)
+		list(APPEND OC_SYSTEM_SOURCES
+			src/res/engine.rc
+		)
+	endif(MINGW)
 elseif(USE_SDL_MAINLOOP)
 	list(APPEND OC_SYSTEM_SOURCES
 		src/platform/StdSDLApp.cpp
