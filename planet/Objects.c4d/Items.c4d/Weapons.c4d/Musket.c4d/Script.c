@@ -13,9 +13,13 @@ local fAiming;
 local iAim;
 local fWait;
 
-public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Back; }
+public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_HandBack; }
 public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
-//public func GetCarryTransform() { if(fAiming == 1) return Trans_Rotate(180, 1, 0, 0); }
+public func GetCarryBone()	{	return	"main";	}
+/*public func GetCarryTransform()
+{ 
+	if(fAiming != 1) return Trans_Rotate(-90, 0, 1, 0);
+}*/
 
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
@@ -129,7 +133,7 @@ func ControlUseHolding(object pClonk, ix, iy)
 		if(Abs(Normalize(angle,-180)) > 90)
 			IY=Cos(180-angle,MuskDown)+MuskOffset;
 		//Create debug dot to show muzzle-point
-		CastParticles("DebugReticle",1,0,IX,IY,30,30,RGB(255,0,0),RGB(255,0,0));
+		//CastParticles("DebugReticle",1,0,IX,IY,30,30,RGB(255,0,0),RGB(255,0,0));
 		//DrawParticleLine("DebugReticle",0,0,IX,IY,2,20,RGB(30,30,30),RGB(100,100,100)); //Debug: Enable to see firing angle of musket
 
 		// angle
@@ -152,7 +156,11 @@ func ControlUseHolding(object pClonk, ix, iy)
 protected func ControlUseStop(object pClonk, ix, iy)
 {
 	if(fWait) return;
-	if(!loaded) return true;
+	if(!loaded)
+	{
+		ControlUseCancel(pClonk,ix,iy);
+		return true;
+	}
 	
 	if(!ClonkCanAim(pClonk)) return true;
 	
@@ -192,14 +200,15 @@ public func ResetClonk(clonk)
 private func FireWeapon(object pClonk, iX, iY, iAngle)
 {
 	var shot = Contents(0)->TakeObject();
-	shot->LaunchProjectile(Angle(0,0,iX,iY)+RandomX(-2, 2), iBarrel, 300);
+	var angle = Normalize(Angle(0,0,iX,iY)-180);
+	if(angle>180 && pClonk->GetDir()==1) angle=angle-180;
+	if(angle<180 && pClonk->GetDir()==0) angle=angle+180;
+	shot->LaunchProjectile(angle+RandomX(-2, 2), iBarrel, 300);
 	shot->AffectShot(pClonk,iY,iX,iAngle);
 	
 	loaded = false;
 
 	Sound("Blast3");
-	
-	Message("Bang!", pClonk); //For debug.
 
 	// Muzzle Flash
 	var IX=Sin(180-iAngle,MuskFront);
