@@ -375,9 +375,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// aiming with analog pad or keys
 	if(VirtualCursorAiming())
 	{
-		if (ctrl == CON_AimAnalog || ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight)
+		if (ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight)
 		{
-			VirtualCursor()->Aim(ctrl,x,y,repeat,release);
+			VirtualCursor()->Aim(ctrl,strength,repeat,release);
 			return true;
 		}
 	}
@@ -612,9 +612,6 @@ private func StartUseDelayedControl(int ctrl, control, object obj)
 {
 	using = obj;
 	var hold_enabled = obj->Call("~HoldingEnabled");
-			
-	if (hold_enabled)
-		SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, true);
 				
 	if (ctrl == CON_UseDelayed) alt = false;
 	else alt = true;
@@ -656,7 +653,6 @@ private func StopUseControl(control, int x, int y, object obj, bool cancel)
 	if (holding_enabled)
 	{
 		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
-		SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, false);
 	}
 	if (virtual_cursor)
 		virtual_cursor->StopAim();
@@ -702,9 +698,6 @@ private func StopUseDelayedControl(control, object obj)
 	using = nil;
 	alt = false;
 	noholdingcallbacks = false;
-			
-	if (holding_enabled)
-		SetPlayerControlEnabled(GetOwner(), CON_AimAnalog, false);
 		
 	return handled;
 }

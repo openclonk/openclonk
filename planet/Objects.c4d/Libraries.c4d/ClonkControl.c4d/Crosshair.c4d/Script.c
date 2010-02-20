@@ -5,7 +5,7 @@
 	Virtual cursor for gamepad controls
 */
 
-local crew, angle, dirx, diry, saveangle;
+local crew, angle, dirx, diry, saveangle, xpos,ypos;
 
 static const CURSOR_Radius = 100;
 
@@ -13,11 +13,13 @@ protected func Initialize()
 {
 	this["Visibility"] = VIS_None;
 	saveangle = 900;
+	dirx = diry = xpos = ypos = 0;
 }
 
 public func FxMoveTimer()
 {
 	var speed = 0;
+	// dpad mode
 	if(diry)
 	{
 		if (diry < 0) speed = -Sin(angle,100,10);
@@ -29,6 +31,17 @@ public func FxMoveTimer()
 		if (dirx < 0) speed = -Cos(angle,100,10);
 		else if (dirx > 0) speed = +Cos(angle,100,10);
 		angle += 30*speed/100;
+	}
+	// analog pad mode
+	if(!dirx && !diry)
+	{
+		var target_angle = Angle(0,0,xpos,ypos)*10;
+		var analog_strength = BoundBy(Sqrt(xpos*xpos+ypos*ypos),0,100);
+
+		var angle_diff = Normalize(target_angle - angle, -1800, 10);
+		var dir = angle_diff / Abs(angle_diff);
+		
+		angle = angle + angle_diff * analog_strength / 100;
 	}
 	
 	UpdatePosition();
@@ -86,17 +99,22 @@ public func IsAiming()
 	return GetEffect("Move",this);
 }
 
-public func Aim(int ctrl, int x, int y, int repeat, int release)
+public func Aim(int ctrl, int strength, int repeat, int release)
 {
-	if (ctrl == CON_AimAnalog)
+	if (strength != nil)
 	{
-		Message("%d,%d",this,x,y);
+		dirx = diry = 0;
+
+		if(ctrl == CON_AimUp) ypos = -strength;
+		if(ctrl == CON_AimDown) ypos = strength;
+		if(ctrl == CON_AimLeft) xpos = -strength;
+		if(ctrl == CON_AimRight) xpos = strength;
 	}
 	// stop
 	else if (release)
 	{
 		if(ctrl == CON_AimUp || ctrl == CON_AimDown) diry = 0;
-		if(ctrl == CON_AimLeft || ctrl == CON_AimRight) dirx = 0;
+		else if(ctrl == CON_AimLeft || ctrl == CON_AimRight) dirx = 0;
 	}
 	else if(!release && !repeat)
 	{

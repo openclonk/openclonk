@@ -26,15 +26,12 @@
 	# ---------------
 	# Aim
 	#
-	# Gamepad controls (w/ analog pad)
+	# Gamepad controls
 	# -------------------------------------
 	# CancelUse ThrowDelayed ThrowAltDelayed
 	# UseDelayed UseAltDelayed
-	# AimAnalog
-	# 
-	# Gamepad controls (w\ analog pad) / keyboard only
-	# ------------------------------------------------
 	# AimUp AimDown AimLeft AimRight
+	# AimXMin, AimXMax, AimYMin, AimYMax
 	# 
 	# with Keyboard
 	# ------------------
@@ -50,12 +47,6 @@
 	DefaultDisabled=1
 	GUIName=Aim
 	GUIDesc=Aim with mouse
-	
-	[ControlDef]
-	Identifier=AimAnalog
-	DefaultDisabled=1
-	GUIName=Aim
-	GUIDesc=Aim with analog pad
 	
 	[ControlDef]
 	Identifier=AimUp
@@ -494,11 +485,11 @@
 	#
 	# Hotkey0-9							(0-9)
 	#
-	# Use, Throw						Left mouse button
+	# Use								Left mouse button
 	# Throw								Shift+Left mouse button
 	# Drop								S+Left mouse button
 	#
-	# UseAlt, ThrowAlt					Right mouse button
+	# UseAlt							Right mouse button
 	# ThrowAlt							Shift+Right mouse button
 	# DropAlt							S+Right mouse button
 	#
@@ -736,10 +727,10 @@
 		Priority=100
 		Control=Use
 		
-		[Assignment]
-		Key=GameMouse1ButtonLeft
-		Priority=50
-		Control=Throw
+		#[Assignment]
+		#Key=GameMouse1ButtonLeft
+		#Priority=50
+		#Control=Throw
 		
 		[Assignment]
 		Key=Shift+GameMouse1ButtonLeft
@@ -755,10 +746,10 @@
 		Priority=100
 		Control=UseAlt
 		
-		[Assignment]
-		Key=GameMouse1ButtonRight
-		Priority=50
-		Control=ThrowAlt
+		#[Assignment]
+		#Key=GameMouse1ButtonRight
+		#Priority=50
+		#Control=ThrowAlt
 		
 		[Assignment]
 		Key=Shift+GameMouse1ButtonRight
@@ -971,10 +962,10 @@
 		Priority=100
 		Control=Use
 		
-		[Assignment]
-		Key=GameMouse1ButtonLeft
-		Priority=50
-		Control=Throw
+		#[Assignment]
+		#Key=GameMouse1ButtonLeft
+		#Priority=50
+		#Control=Throw
 		
 		[Assignment]
 		Key=Shift+GameMouse1ButtonLeft
@@ -990,10 +981,10 @@
 		Priority=100
 		Control=UseAlt
 		
-		[Assignment]
-		Key=GameMouse1ButtonRight
-		Priority=50
-		Control=ThrowAlt
+		#[Assignment]
+		#Key=GameMouse1ButtonRight
+		#Priority=50
+		#Control=ThrowAlt
 		
 		[Assignment]
 		Key=Shift+GameMouse1ButtonRight
@@ -1020,27 +1011,26 @@
 	# --------
 	# MenuLeft, AimLeft, Left			Joy1Left
 	# MenuRight, AimRight, Right		Joy1Right
-	# MenuUp, AimUp, Up, Jump			Joy1Up
+	# MenuUp, AimUp, Up					Joy1Up
 	# MenuDown, AimDown, Down			Joy1Down
 	#
-	# Use, Throw						Joy1A
-	# Throw								Joy1A+Joy1C
+	# Jump								Joy1C
+	#
+	# Use								Joy1A
+	# Throw								Joy1A+Joy1F
 	# Drop								Joy1Down+Joy1A
 	#
-	# UseAlt, ThrowAlt					Joy1D
-	# ThrowAlt							Joy1D+Joy1C
+	# UseAlt							Joy1D
+	# ThrowAlt							Joy1D+Joy1F
 	# DropAlt							Joy1Down+Joy1D
 	#
 	# PushEnter, GrabNext, Ungrab,
-	# Grab, Exit, Enter					Joy1C
-	#
-	# NextCrew							Joy1B
-	# NextItem							Joy1E
-	# NextAltItem						Joy1F
+	# Grab, Exit, Enter					Joy1B
 	# 
 	# MenuOK							Joy1C
 	# MenuCancel						Joy1B
-	# 
+	#
+	# NextCrew							Joy1G	
 	# PlayerMenu						Joy1H
 		
 	[ControlSet]
@@ -1091,7 +1081,7 @@
 		Control=AimUp
 		
 		[Assignment]
-		Key=Joy1Up
+		Key=Joy1C
 		Priority=10
 		Control=Jump
 
@@ -1124,50 +1114,50 @@
 		Control=MenuCancel
 		
 		[Assignment]
-		Key=Joy1C
+		Key=Joy1B
 		Priority=45
 		Control=PushEnter
 		
 		[Assignment]
-		Key=Joy1C
+		Key=Joy1B
 		Priority=40
 		Control=GrabNext
 		
 		[Assignment]
-		Key=Joy1C
+		Key=Joy1B
 		Priority=35
 		Control=Ungrab
 		
 		[Assignment]
-		Key=Joy1C
+		Key=Joy1B
 		Priority=30
 		Control=Grab
 		
 		[Assignment]
-		Key=Joy1C
+		Key=Joy1B
 		Priority=25
 		Control=Exit
 		
 		[Assignment]
-		Key=Joy1C
+		Key=Joy1B
 		Priority=20
 		Control=Enter
 		
 		[Assignment]
-		Key=Joy1B
+		Key=Joy1G
 		Control=NextCrew
 		
 		[Assignment]
 		Key=Joy1H
 		Control=PlayerMenu
 		
-		[Assignment]
-		Key=Joy1E
-		Control=NextItem
+		#[Assignment]
+		#Key=Joy1E
+		#Control=NextItem
 		
-		[Assignment]
-		Key=Joy1F
-		Control=NextAltItem
+		#[Assignment]
+		#Key=Joy1F
+		#Control=NextAltItem
 		
 		[Assignment]
 		Key=Joy1A
@@ -1175,17 +1165,12 @@
 		Control=UseDelayed
 		
 		[Assignment]
-		Key=Joy1A
-		Priority=50
-		Control=ThrowDelayed
-		
-		[Assignment]
 		Key=Joy1Down,Joy1A
 		Priority=150
 		Control=Drop
 		
 		[Assignment]
-		Key=Joy1C,Joy1A
+		Key=Joy1F,Joy1A
 		Control=ThrowDelayed
 		
 		[Assignment]
@@ -1194,16 +1179,194 @@
 		Control=UseAltDelayed
 		
 		[Assignment]
-		Key=Joy1D
-		Priority=50
-		Control=ThrowAltDelayed
-		
-		[Assignment]
-		Key=Joy1Down,Joy1D
+		Key=Joy1Down,Joy1F
 		Priority=150
 		Control=DropAlt
 		
 		[Assignment]
-		Key=Joy1C,Joy1D
+		Key=Joy1F,Joy1D
 		Control=ThrowAltDelayed
+		
+
+	# Dualshock-like Gamepad (12 buttons [A-L], 1 D-Pad, 2 analog sticks)
+	#
+	# Summary
+	# --------
+	# MenuLeft, AimLeft, Left			Joy1Left
+	# MenuRight, AimRight, Right		Joy1Right
+	# MenuUp, AimUp, Up					Joy1Up
+	# MenuDown, AimDown, Down			Joy1Down
+	#
+	# Jump								Joy1C
+	#
+	# Use								Joy1A
+	# Throw								Joy1G
+	# Drop								Joy1Down+Joy1A
+	#
+	# UseAlt							Joy1D
+	# ThrowAlt							Joy1H
+	# DropAlt							Joy1Down+Joy1D
+	#
+	# PushEnter, GrabNext, Ungrab,
+	# Grab, Exit, Enter					Joy1B
+	# 
+	# MenuOK							Joy1C
+	# MenuCancel						Joy1B
+	#
+	# NextCrew							Joy1I	
+	# PlayerMenu						Joy1J
+		
+	[ControlSet]
+	Name=GamepadDualshock
+	Keyboard=0
+	Mouse=0
+	Gamepad=1
+	
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=50
+		Control=Up
+
+		[Assignment]
+		Key=Joy1Axis1Min
+		Control=AimLeft
+
+		[Assignment]
+		Key=Joy1Axis1Max
+		Control=AimRight
+
+		[Assignment]
+		Key=Joy1Axis2Max
+		Control=AimDown
+
+		[Assignment]
+		Key=Joy1Axis2Min
+		Control=AimUp
+		
+		[Assignment]
+		Key=Joy1C
+		Priority=10
+		Control=Jump
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=100
+		Control=MenuLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=100
+		Control=MenuRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=100
+		Control=MenuDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=100
+		Control=MenuUp
+		
+		[Assignment]
+		Key=Joy1C
+		Control=MenuOK
+		
+		[Assignment]
+		Key=Joy1B
+		Control=MenuCancel
+		
+		[Assignment]
+		Key=Joy1B
+		Priority=45
+		Control=PushEnter
+		
+		[Assignment]
+		Key=Joy1B
+		Priority=40
+		Control=GrabNext
+		
+		[Assignment]
+		Key=Joy1B
+		Priority=35
+		Control=Ungrab
+		
+		[Assignment]
+		Key=Joy1B
+		Priority=30
+		Control=Grab
+		
+		[Assignment]
+		Key=Joy1B
+		Priority=25
+		Control=Exit
+		
+		[Assignment]
+		Key=Joy1B
+		Priority=20
+		Control=Enter
+		
+		[Assignment]
+		Key=Joy1I
+		Control=NextCrew
+		
+		[Assignment]
+		Key=Joy1J
+		Control=PlayerMenu
+		
+		#[Assignment]
+		#Key=Joy1E
+		#Control=NextItem
+		
+		#[Assignment]
+		#Key=Joy1F
+		#Control=NextAltItem
+		
+		[Assignment]
+		Key=Joy1A
+		Priority=100
+		Control=UseDelayed
+		
+		[Assignment]
+		Key=Joy1Down,Joy1A
+		Priority=150
+		Control=Drop
+		
+		[Assignment]
+		Key=Joy1G
+		Control=ThrowDelayed
+		
+		[Assignment]
+		Key=Joy1D
+		Priority=100
+		Control=UseAltDelayed
+		
+		[Assignment]
+		Key=Joy1Down,Joy1F
+		Priority=150
+		Control=DropAlt
+		
+		[Assignment]
+		Key=Joy1H
+		Control=ThrowAltDelayed
+		
+		[Assignment]
+		Key=Joy1K
+		Control=CancelUse
 		
