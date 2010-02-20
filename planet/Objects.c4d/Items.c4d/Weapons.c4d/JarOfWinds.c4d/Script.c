@@ -16,10 +16,17 @@ local MaxCap;
 local yOffset;
 local iBarrel;
 
+local JarTrans;
+
+public func GetCarryMode(clonk) { return CARRY_BothHands; }
+public func GetCarryTransform(clonk)	{	return JarTrans; } // TODO change when ck has fixed the bug
+public func GetCarryPhase() { return 600; }
+
 protected func Initialize()
 {
 	MaxCap=50; //Changes duration and power of the Jar
 	SetR(-45);
+	JarTrans = Trans_Translate(-1500,2000,0);
 }
 
 protected func HoldingEnabled() { return true; }
@@ -32,6 +39,9 @@ protected func ControlUseStart(object pClonk, ix, iy)
 
 public func ControlUseHolding(object pClonk, ix, iy)
 {
+	JarTrans = Trans_Mul(Trans_Translate(-1500,2000,0), Trans_Rotate(Angle(0,0,ix,iy)*(-1+2*pClonk->GetDir()),0,0,1));
+	// TODO a bit hacky, but i fear using animations here also leads to the bug like the musket and co. So I'll make the animation when the bug is fixed
+	pClonk->UpdateAttach();
 	//Angle Finder
 	if(GBackSolid()) return -1;
 	if(GBackLiquid()) return -1;	
@@ -70,7 +80,7 @@ public func ControlUseHolding(object pClonk, ix, iy)
 
 protected func ControlUseStop(object pClonk, ix, iy)
 {
-	
+	JarTrans = Trans_Translate(-1500,2000,0);
 	if(Amount>(MaxCap/5)) //can fire, enough air in?
 	{
 	 // Fire	
@@ -156,6 +166,8 @@ private func FireWeapon(object pClonk,iX,iY)
 
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
+
+	SetProperty("PerspectiveR", 9000, def);
 }
 		  									//enemys are pushed back	
 
