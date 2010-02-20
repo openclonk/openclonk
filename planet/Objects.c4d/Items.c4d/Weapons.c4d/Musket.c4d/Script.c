@@ -72,12 +72,12 @@ func ControlUseStart(object clonk, int x, int y)
 		// reload weapon if not loaded yet
 		if(!loaded)
 		{
-			reload = 50;
+			reload = 100;
 			var iLoadTime = reload;
 			iAim = clonk->PlayAnimation("MusketLoadArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("MusketLoadArms"), iLoadTime, ANIM_Hold), Anim_Const(1000));
 		}
 		else
-			iAim = clonk->PlayAnimation("MusketAimArms", 10, Anim_Const(0), Anim_Const(1000));
+			iAim = clonk->PlayAnimation("MusketAimArms", 10, Anim_Const(clonk->GetAnimationLength("MusketAimArms")/2), Anim_Const(1000));
 		fAiming = 1;
 		clonk->SetHandAction(1);
 		clonk->UpdateAttach();

@@ -5,8 +5,6 @@ material Musket
 	{
 		pass
 		{
-			cull_hardware none
-			
 			ambient 0.500000 0.500000 0.500000 1.000000
 			diffuse 0.702745 0.702745 0.702745 1.000000
 			specular 0.500000 0.500000 0.500000 1.000000 12.500000
