@@ -1,10 +1,8 @@
 /*--- Der Stein ---*/
 
-#strict 2
-
 protected func Initialize()
 {
-	SetGraphics(Format("%d.8",Random(2)));
+	SetGraphics(Format("%d.8",Random(5)));
 }
 
 protected func Hit()
@@ -13,8 +11,6 @@ protected func Hit()
   return 1;
 }
 
-func IsAlchemContainer() { return true; }
-func AlchemProcessTime() { return 160; }
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);

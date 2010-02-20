@@ -6,13 +6,14 @@ MaxUserSelect=10
 Width=8
 Height=8
 Offset=-4,-4
-Vertices=2
-VertexX=-3,3
-VertexY=1,-1
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
 VertexFriction=20
 Value=1
 Mass=10
-Components=IROC=3
+Components=ROCK=1
 Rebuy=1
 Projectile=1
+Rotate=1
 

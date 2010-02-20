@@ -7,9 +7,9 @@ Width=8
 Height=8
 Offset=-4,-4
 Picture=0,0,8,8
-Vertices=2
-VertexX=0,0
-VertexY=3,-3
+Vertices=3
+VertexX=0,2,-2
+VertexY=1,-1,-1
 VertexFriction=75,75
 Components=WOOD=2;
 Value=4

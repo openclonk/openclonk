@@ -1,30 +1,31 @@
 /*-- Ice --*/
 
-#strict 2
-
-
 protected func Initialize()
 {
-	SetGraphics(Format("%d.8", Random(2)));
+	SetGraphics(Format("%d.8", Random(5)));
 }
 
 protected func Check()
 {
 	if(GetTemperature() > 0) Melt();
-	if(GetTemperature() <= 0 && GetMaterial()==Material("Water")) Freeze();
+	if(GetTemperature() <= 0 && GetMaterial()==Material("Water") && GetCon()<100) Freeze();
 }
 
 private func Melt()
 {
 	CastPXS("Water",2,0);
-	DoCon(-2);
+	DoCon(-1);
 }
 
 private func Freeze()
 {
-	DoCon(2);
+	DoCon(1);
 	var i=2;
-	while(i>0) ExtractLiquid() && i=--i;
+	while(i>0)
+	{
+		ExtractLiquid();
+		i=--i;
+	}
 }
 
 func Definition(def) {

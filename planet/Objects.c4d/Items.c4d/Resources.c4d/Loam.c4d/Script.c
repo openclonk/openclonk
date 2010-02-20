@@ -4,6 +4,11 @@ local last_x, last_y, last_frame, begin_frame;
 
 static const LOAM_Bridge_Time = 50; // frames
 
+protected func Initialize()
+{
+	SetGraphics(Format("%d.8",Random(5)));
+}
+
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);

@@ -1,1 +1,1 @@
-Name=Fire stone
+Name=Fire Stone
