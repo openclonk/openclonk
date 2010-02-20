@@ -111,6 +111,7 @@ protected func ControlUseStop(object pClonk, int ix, int iy)
 
 protected func ControlUseCancel(object clonk, int x, int y)
 {
+	if(fWait) return;
   fAiming = 0;
   ResetClonk(clonk);
 }
