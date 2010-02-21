@@ -51,10 +51,10 @@ protected func DeRecruitment(int iPlr) {
   return _inherited(iPlr,...);
 }
 
-/*
+
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
-  // Kommando MoveTo an Pferd weiterleiten
+/*  // Kommando MoveTo an Pferd weiterleiten
   if (szCommand == "MoveTo")
     if (IsRiding())
       return GetActionTarget()->~ControlCommand(szCommand, pTarget, iTx, iTy);
@@ -64,6 +64,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
     GetActionTarget()->SetComDir(COMD_Stop);
     GetActionTarget()->~ControlDownDouble(this);
   }
+  */
   // RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
   if(szCommand == "Construct")
   {
@@ -75,7 +76,7 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
   // Kein �berladenes Kommando
   return 0;
 }
-*/
+
 
 /* Verwandlung */
 
@@ -1497,6 +1498,21 @@ Push = {
 	Wdt = 8,
 	Hgt = 20,
 	NextAction = "Push",
+	InLiquidAction = "Swim",
+},
+Build = {
+	Prototype = Action,
+	Name = "Build",
+	Procedure = DFA_BUILD,
+	Directions = 2,
+	FlipDir = 1,
+	Length = 8,
+	Delay = 15,
+	X = 128,
+	Y = 140,
+	Wdt = 8,
+	Hgt = 20,
+	NextAction = "Build",
 	InLiquidAction = "Swim",
 },
 }, def);

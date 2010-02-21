@@ -1,28 +1,51 @@
 /*-- Hammer --*/
 
-#strict 2
-
 private func Hit()
 {
   Sound("RockHit");
   return 1;
 }
 
-public func ControlUse(object pByClonk, int iX, int iY)
+public func GetCarryMode()	{	return CARRY_HandBack;	}
+public func GetCarryBone()	{	return "main";	}
+public func GetCarryTransform()	{	return Trans_Rotate(90,0,1,0);	}
+
+public func ControlUse(object clonk, int ix, int iy)
 { 
+	Message("Using hammer", clonk);
   // Stop clonk
-  pByClonk->SetComDir(COMD_Stop);
+  clonk->SetComDir(COMD_Stop);
+
   // Is the clonk able to build?
-  if (pByClonk && !pByClonk->GetPhysical("CanConstruct", PHYS_Current))
+  if (clonk && !clonk->GetPhysical("CanConstruct", PHYS_Current) && CheckCanUse(clonk)==true)
     { 
-     PlayerMessage(pByClonk->GetController(), "$TxtCantConstruct$", this, pByClonk->GetName()); 
-     return false; 
+     PlayerMessage(clonk->GetController(), "$TxtCantConstruct$", this, clonk->GetName()); 
+     return 1; 
     }
+
+	if(clonk->GetAction()=="Build") //Stop building
+	{
+		Message("Cancelling building",clonk);
+		clonk->SetAction("Walk");
+		clonk->SetActionTargets(0,0);
+		return 1;
+	}
+
+	//Start building
+	var structure=FindObject(Find_Category(C4D_Structure),Find_Distance(30));
+	if(structure) {
+		if(structure->GetCon()<100)
+		{
+			Message("Building",clonk);
+			clonk->SetAction("Build",structure);
+			return 1;
+		}}
+  
   // Create menu and fill it with the player's plans
-  CreateMenu(CXCN, pByClonk, this(), 1, "$TxtNoconstructionplansa$");
+  clonk->CreateMenu(HAMR, this, 1, "$TxtNoconstructionplansa$");
   var idType; var i = 0;
-  while (idType = GetPlrKnowledge(pByClonk->GetOwner(), 0, i++, C4D_Structure))
-    AddMenuItem("$TxtConstructions$", "CreateConstructionSite", idType, pByClonk);
+  while (idType = GetPlrKnowledge(clonk->GetOwner(), 0, i++, C4D_Structure))
+    clonk->AddMenuItem("$TxtConstructions$", "CreateConstructionSite", idType);
   return 1;
 }
 
@@ -41,6 +64,12 @@ protected func CreateConstructionSite(idType)
   // Message
   Message("$TxtConstructions$", Contained(), pSite->GetName());
   return 1;
+}
+
+protected func CheckCanUse(object clonk)
+{
+	if(clonk->GetProcedure()=="WALK") return true;
+	return false;
 }
 
 public func IsTool() { return 1; }
