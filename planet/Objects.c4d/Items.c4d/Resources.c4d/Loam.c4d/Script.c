@@ -4,9 +4,11 @@ local last_x, last_y, last_frame, begin_frame;
 
 static const LOAM_Bridge_Time = 50; // frames
 
-protected func Initialize()
+protected func Construction()
 {
-	SetGraphics(Format("%d.8",Random(5)));
+	var graphic = Random(5);
+	if(graphic)
+		SetGraphics(Format("%d",graphic));
 }
 
 func Definition(def) {

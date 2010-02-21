@@ -1,8 +1,10 @@
 /*-- Ice --*/
 
-protected func Initialize()
+protected func Construction()
 {
-	SetGraphics(Format("%d.8", Random(5)));
+	var graphic = Random(5);
+	if(graphic)
+		SetGraphics(Format("%d",graphic));
 }
 
 protected func Check()

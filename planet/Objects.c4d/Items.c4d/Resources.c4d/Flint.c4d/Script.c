@@ -1,5 +1,12 @@
 /*--- Flint ---*/
 
+protected func Construction()
+{
+	var graphic = Random(3);
+	if(graphic)
+		SetGraphics(Format("%d",graphic));
+}
+
 func Hit()
 {
 	Explode(20);
