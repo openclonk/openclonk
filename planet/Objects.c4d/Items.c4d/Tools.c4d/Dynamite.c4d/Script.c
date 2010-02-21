@@ -1,7 +1,7 @@
 #strict 2
 
 // The dynamite is not a weapon but a mining tool
-public func ControlUse(object clonk)
+public func ControlUse(object clonk, int iX, int iY,)
 {
 	// if already activated, nothing (so, throw)
 	if(GetAction() == "Fuse")
@@ -9,46 +9,22 @@ public func ControlUse(object clonk)
 		return false;
 	}
 
-	var x = 0, y = 0;
-	
-	// hangling
-	if(WildcardMatch(clonk->GetAction(),"Hangle*"))
+	var iAngle = Angle(0,0,iX,iY);
+	if(!GetWall(iAngle, iX, iY, clonk))
 	{
-		y = -clonk->GetDefHeight()/2;
-	}
-	// climbing
-	else if(WildcardMatch(clonk->GetAction(), "Climb*"))
-	{
-		x = clonk->GetDefWidth()/2;
-		if(clonk->GetDir() == DIR_Left) x = -x;
-	}
-	// something else
-	else
-	{
-		// no wall -> put into ground
-		if(!getWall(x, y, clonk))
-		{
-			// contact to ground
-			if(clonk->GetContact(-1) & CNAT_Bottom)
-			{
-				y = clonk->GetDefHeight()/2;
-			}
-			// probably flying or swimming
-			else
-			{
-				// nothing
-				return false;
-			}
-		}
-
+		//CreateParticle ("Blast", iX, iY, 0, 0, 50, RGB(255,200,0), clonk);
+		Message("Can't place dynamite here!", clonk);
+		return true;
 	}
 
 	// Fuse
 	Fuse();
-	
+
 	// put into ...
 	Sound("Connect");
-	Exit(x*6/10, y + GetDefHeight()/2, Angle(x,y,0,0) + RandomX(-25,25));
+
+	Exit(iX, iY, Angle(iX,iY));
+	SetPosition(clonk->GetX()+iX, clonk->GetY()+iY);
 
 	return true;
 }
@@ -62,17 +38,18 @@ public func Fuse()
 	}
 }
 
-// returns true if there is a wall in direction in which "clonk" looks 
+// returns true if there is a wall in direction in which "clonk" looks
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
-private func getWall(&xo, &yo, object clonk)
+private func GetWall(iAngle, &iX, &iY, clonk)
 {
-	var wdt = clonk->GetDefWidth();
-	var dir = clonk->GetDir()*2-1;
-	var x = (wdt/2)*dir;
-	var s = false;
-	if(GBackSolid(x, 0)) { xo = x; yo = 0; return true; }
-	if(GBackSolid(x, -5)) { xo = x; yo = -5; return true; }
-	if(GBackSolid(x, +5)) { xo = x; yo = +5; return true; }
+	var iDist = 8;
+	for(var iDist = 8; iDist < 18; iDist++)
+	{
+		iX = Sin(iAngle, iDist);
+	  iY = -Cos(iAngle, iDist);
+		Message("%d", clonk, iDist);
+		if(GBackSolid(iX, iY)) return true;
+	}
 	return false;
 }
 
@@ -114,7 +91,7 @@ protected func Definition(def) {
 			Fuse = {
 				Prototype = Action,
 				Name = "Fuse",
-				Procedure = DFA_FLOAT,
+				Procedure = DFA_NONE,
 				NextAction = "Fuse",
 				Delay = 1,
 				Length = 1,
@@ -125,7 +102,7 @@ protected func Definition(def) {
 			Ready = {
 				Prototype = Action,
 				Name = "Ready",
-				Procedure = DFA_FLOAT,
+				Procedure = DFA_NONE,
 				NextAction = "Ready",
 				Delay = 1,
 				Length = 1,
