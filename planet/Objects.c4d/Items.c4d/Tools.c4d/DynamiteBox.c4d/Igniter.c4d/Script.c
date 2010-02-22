@@ -1,5 +1,7 @@
 /*-- Dynamite Igniter --*/
 
+#include DYNB
+
 private func Hit()
 {
   Sound("WoodHit"); //TODO Some metal sond
@@ -31,6 +33,8 @@ public func ControlUse(object clonk, int x, int y)
 	PlayAnimation("Ignite", 1, Anim_Linear(0, 0, GetAnimationLength("Ignite"),  iIgniteTime, ANIM_Hold), Anim_Const(1000));
 
 	ScheduleCall(this, "Ignite", iIgniteTime, 1, clonk);
+
+	RemoveEffect("IntLength", this);
 	
 	return true;
 }

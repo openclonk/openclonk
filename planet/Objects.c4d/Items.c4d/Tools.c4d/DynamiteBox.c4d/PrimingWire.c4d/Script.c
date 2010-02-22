@@ -6,9 +6,18 @@ local fHasMessage;
 
 protected func Initialize ()
 {
+	SetProperty("LineColors", [RGB(100,50,0), RGB(1,1,1)]);
   // Put the first to vertices on the actual position
   SetVertex(0,0,GetX()); SetVertex(0,1,GetY());
   SetVertex(1,0,GetX()); SetVertex(1,1,GetY());
+}
+
+public func SetColorWarning(fOn)
+{
+	if(!fOn)
+		SetProperty("LineColors", [RGB(100,50,0), RGB(1,1,1)]);
+	else
+		SetProperty("LineColors", [RGB(200,100,0), RGB(1,1,1)]);
 }
 
 public func Connect(pTarget1, pTarget2)

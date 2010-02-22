@@ -79,13 +79,15 @@ public func SetFuse()
 	SetAction("Fuse");
 }
 
+public func Reset()
+{
+	SetAction("Idle");
+}
+
 private func Fusing() {
 	// Effekt
 	if(GetActTime() < 120)
-	{
-		var h = GetDefHeight()/2;
-		CastParticles("Spark",1,20,Sin(GetR(),h),-Cos(GetR(),h),15,25,RGB(255,200,0),RGB(255,255,150));
-	}
+		CastParticles("Spark",1,20,0,0,15,25,RGB(255,200,0),RGB(255,255,150));
 	// Explosion
 	else if(GetActTime() > 140)
 		DoExplode();
