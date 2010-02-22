@@ -185,7 +185,8 @@ class C4GraphicsOverlay
 			MODE_IngamePicture=4, // draw picture of source def
 			MODE_Object=5,        // draw another object gfx
 			MODE_ExtraGraphics=6,       // draw like this were a ClrByOwner-surface
-			MODE_Rank=7                 // draw rank symbol
+			MODE_Rank=7,                 // draw rank symbol
+			MODE_ObjectPicture=8		// draw the picture of source object
 			};
 	protected:
 		Mode eMode;                // overlay mode
@@ -233,6 +234,8 @@ class C4GraphicsOverlay
 			{ Set(MODE_IngamePicture, pBaseGfx, NULL, dwBMode, NULL); }
 		void SetAsObject(C4Object *pOverlayObj, DWORD dwBMode)
 			{ Set(MODE_Object, NULL, NULL, dwBMode, pOverlayObj); }
+		void SetAsObjectPicture(C4Object *pOverlayObj, DWORD dwBMode)
+			{ Set(MODE_ObjectPicture, NULL, NULL, dwBMode, pOverlayObj); }
 		void SetAsExtraGraphics(C4DefGraphics *pGfx, DWORD dwBMode)
 			{ Set(MODE_ExtraGraphics, pGfx, NULL, dwBMode, NULL); }
 		void SetAsRank(DWORD dwBMode, C4Object *rank_obj)

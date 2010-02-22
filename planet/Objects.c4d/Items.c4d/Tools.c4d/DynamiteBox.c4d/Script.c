@@ -13,7 +13,7 @@ public func Initialize()
 		aDynamites[i] = 0;
 		aWires[i] = 0;
 	}
-	SetGraphics(Format("%d", DYNA_MaxCount), this, 1, GFXOV_MODE_Picture);
+	SetGraphics(Format("%d", DYNA_MaxCount), PIWI, 1, GFXOV_MODE_Picture);
 }
 
 private func Hit()
@@ -54,7 +54,7 @@ public func ControlUse(object clonk, int x, int y)
 	aWires[iCount-1] = pWire;
 	
 	iCount--;
-	SetGraphics(Format("%d", iCount), this, 1, GFXOV_MODE_Picture);
+	SetGraphics(Format("%d", iCount), PIWI, 1, GFXOV_MODE_Picture);
 
 	Message("%d left", clonk, iCount);
 
@@ -62,7 +62,7 @@ public func ControlUse(object clonk, int x, int y)
 	{
 		var pos = clonk->GetItemPos(this);
 		ChangeDef(IGNT);
-		SetGraphics("Picture", this, 1, GFXOV_MODE_Picture);
+		SetGraphics("0", PIWI, 1, GFXOV_MODE_Picture);
 		clonk->UpdateAttach();
 		clonk->OnSlotFull(pos);
 	}

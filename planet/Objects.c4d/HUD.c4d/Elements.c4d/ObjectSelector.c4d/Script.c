@@ -275,7 +275,8 @@ public func SetObject(object obj, int type, int pos)
 	}
 	else
 	{
-		SetGraphics(nil,myobject->GetID(),1,GFXOV_MODE_IngamePicture);
+//		SetGraphics(nil,myobject->GetID(),1,GFXOV_MODE_IngamePicture);
+		SetGraphics(nil,nil,1,GFXOV_MODE_ObjectPicture, 0, 0, myobject);
 		this["MouseDragImage"] = myobject;
 		if(actiontype == nil)
 		{

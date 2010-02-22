@@ -219,8 +219,9 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	}
 	
 	// Try from Mesh first
-	if (LoadMesh(hGroup, loader)) return true;
-	// load basic graphics
+//	if (LoadMesh(hGroup, loader)) return true;
+	// load basic graphics only if we haven't already a mesh
+	if (!LoadMesh(hGroup, loader))
 	if (!LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
 
 	// load additional graphics
@@ -764,6 +765,10 @@ void C4GraphicsOverlay::UpdateFacet()
 				
 				break;
 			}
+		case MODE_ObjectPicture: // ingame picture of object
+			// calculated at runtime
+			break;
+			
 		case MODE_IngamePicture:
 		case MODE_Picture: // def picture
 			fZoomToShape = true;
@@ -805,7 +810,7 @@ void C4GraphicsOverlay::Set(Mode aMode, C4DefGraphics *pGfx, const char *szActio
 bool C4GraphicsOverlay::IsValid(const C4Object *pForObj) const
 {
 	assert(pForObj);
-	if (eMode == MODE_Object || eMode == MODE_Rank)
+	if (eMode == MODE_Object || eMode == MODE_Rank || eMode == MODE_ObjectPicture)
 	{
 		if (!pOverlayObj || !pOverlayObj->Status) return false;
 		return (eMode == MODE_Rank) || !pOverlayObj->HasGraphicsOverlayRecursion(pForObj);
@@ -1009,16 +1014,26 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	// drawing specific object?
 	else if (pOverlayObj)
 	{
-		// Draw specified object at target pos of this object; offset by transform.
-		// This ignores any other transform than offset, and it doesn't work with parallax overlay objects yet
-		// (But any parallaxity of pForObj is regarded in calculation of cotx/y!)
-		int32_t oldTx = cgo.TargetX, oldTy = cgo.TargetY;
-		cgo.TargetX = cotx - pForObj->GetX() + pOverlayObj->GetX() - Transform.GetXOffset();
-		cgo.TargetY = coty - pForObj->GetY() + pOverlayObj->GetY() - Transform.GetYOffset();
-		pOverlayObj->Draw(cgo, iByPlayer, C4Object::ODM_Overlay);
-		pOverlayObj->DrawTopFace(cgo, iByPlayer, C4Object::ODM_Overlay);
-		cgo.TargetX = oldTx;
-		cgo.TargetY = oldTy;
+		if (eMode == MODE_ObjectPicture)
+		{
+			// TODO seems not to workk for meshes and overlays of the pictures yet...
+			C4Facet fctTarget;
+			fctTarget.Set(cgo.Surface, iTx-pForObj->Shape.Wdt/2, iTy-pForObj->Shape.Hgt/2, pForObj->Shape.Wdt, pForObj->Shape.Hgt);
+			pOverlayObj->DrawPicture(fctTarget, 0, 0);
+		}
+		else
+		{
+			// Draw specified object at target pos of this object; offset by transform.
+			// This ignores any other transform than offset, and it doesn't work with parallax overlay objects yet
+			// (But any parallaxity of pForObj is regarded in calculation of cotx/y!)
+			int32_t oldTx = cgo.TargetX, oldTy = cgo.TargetY;
+			cgo.TargetX = cotx - pForObj->GetX() + pOverlayObj->GetX() - Transform.GetXOffset();
+			cgo.TargetY = coty - pForObj->GetY() + pOverlayObj->GetY() - Transform.GetYOffset();
+			pOverlayObj->Draw(cgo, iByPlayer, C4Object::ODM_Overlay);
+			pOverlayObj->DrawTopFace(cgo, iByPlayer, C4Object::ODM_Overlay);
+			cgo.TargetX = oldTx;
+			cgo.TargetY = oldTy;
+		}
 	}
 	else if (eMode == MODE_ExtraGraphics)
 	{
