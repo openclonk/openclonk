@@ -4,6 +4,7 @@ public func Initialize()
 {
 	iCount = 5;
 	aDynamites = [0,0,0,0,0];
+	aWires = [0,0,0,0,0];
 	SetGraphics("5", this, 1, GFXOV_MODE_Picture);
 }
 
@@ -19,16 +20,30 @@ public func GetCarryPhase() { return 450; }
 
 local iCount;
 local aDynamites;
+local aWires;
+
+local pWire;
 
 public func ControlUse(object clonk, int x, int y)
 {
 	if(clonk->GetAction() != "Walk") return true;
 
+	var pDyna = aDynamites[iCount-1] = CreateContents(DYNA);
+	if(!pDyna->ControlUse(clonk, x, y, 1))
+	{
+		pDyna->RemoveObject();
+		return true;
+	}
+	if(pWire)
+		pWire->Connect(aDynamites[iCount], pDyna);
+
+	pWire = CreateObject(PIWI);
+	pWire->Connect(pDyna, this);
+  Sound("Connect");
+	aWires[iCount-1] = pWire;
+	
 	iCount--;
 	SetGraphics(Format("%d", iCount), this, 1, GFXOV_MODE_Picture);
-
-	var pDyna = aDynamites[iCount] = CreateObject(DYNA, 0, clonk->GetDefHeight()/2);
-	pDyna->SetReady();
 
 	Message("%d left", clonk, iCount);
 

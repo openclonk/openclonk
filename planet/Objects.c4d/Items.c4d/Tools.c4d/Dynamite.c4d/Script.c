@@ -1,7 +1,7 @@
 #strict 2
 
 // The dynamite is not a weapon but a mining tool
-public func ControlUse(object clonk, int iX, int iY,)
+public func ControlUse(object clonk, int iX, int iY, bool fBox)
 {
 	// if already activated, nothing (so, throw)
 	if(GetAction() == "Fuse")
@@ -14,11 +14,13 @@ public func ControlUse(object clonk, int iX, int iY,)
 	{
 		//CreateParticle ("Blast", iX, iY, 0, 0, 50, RGB(255,200,0), clonk);
 		Message("Can't place dynamite here!", clonk);
+		if(fBox) return false;
 		return true;
 	}
 
 	// Fuse
-	Fuse();
+	if(fBox) SetReady();
+	else Fuse();
 
 	// put into ...
 	Sound("Connect");
@@ -40,15 +42,19 @@ public func Fuse()
 
 // returns true if there is a wall in direction in which "clonk" looks
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
-private func GetWall(iAngle, &iX, &iY, clonk)
+private func GetWall(iAngle, &iX, &iY)
 {
 	var iDist = 8;
 	for(var iDist = 8; iDist < 18; iDist++)
 	{
 		iX = Sin(iAngle, iDist);
 	  iY = -Cos(iAngle, iDist);
-		Message("%d", clonk, iDist);
-		if(GBackSolid(iX, iY)) return true;
+		if(GBackSolid(iX, iY))
+		{
+			iX = Sin(iAngle, iDist-5);
+			iY = -Cos(iAngle, iDist-5);
+			return true;
+		}
 	}
 	return false;
 }
@@ -82,7 +88,12 @@ private func Fusing() {
 	}
 	// Explosion
 	else if(GetActTime() > 140)
-		Explode(18);
+		DoExplode();
+}
+
+public func DoExplode()
+{
+	Explode(18);
 }
 
 protected func Definition(def) {
