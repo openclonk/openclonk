@@ -151,11 +151,6 @@ bool CStdD3D::UpdateClipper()
 		return true;
 		}
 	ClipAll=false;
-	// clipping set to manual?
-#ifdef _DEBUG
-	// it won't hurt to clip anyway, if we are not debugging manual clipping
-	if (DDrawCfg.ClipManually) return true;
-#endif
 	// bound clipper to surface size
 	D3DVIEWPORT9 Clipper;
 	Clipper.X=iX; Clipper.Y=iY; Clipper.Width=iWdt; Clipper.Height=iHgt;
