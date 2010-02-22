@@ -762,7 +762,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		if (release)
 		{
 			// if any movement key has been released, ControlStop is called
-			if (obj->Call(Format("~%sStop",control),this))  return true;
+			if (obj->Call(Format("~%sStop",control),this,ctrl))  return true;
 		}
 		else
 		{
