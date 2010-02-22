@@ -921,35 +921,6 @@ bool ComDirLike(int32_t iComDir, int32_t iSample)
 	return false;
 	}
 
-void DrawCommandKey(C4Facet &cgo, int32_t iCom, bool fPressed, const char *szText)
-	{
-	// Draw key
-	::GraphicsResource.fctKey.Draw(cgo,false,fPressed);
-	// Draw control symbol
-	if (iCom == COM_PlayerMenu)
-		::GraphicsResource.fctOKCancel.Draw(cgo,true,1,1);
-	else
-		::GraphicsResource.fctCommand.Draw(cgo,true,Com2Control(iCom),((iCom & COM_Double)!=0));
-	// Use smaller font on smaller buttons
-	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? ::GraphicsResource.FontTiny : ::GraphicsResource.FontRegular;
-	// Draw text
-	if (szText && Config.Graphics.ShowCommandKeys)
-		Application.DDraw->TextOut(szText, rFont, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt-rFont.iLineHgt-2,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
-	}
-
-void DrawControlKey(C4Facet &cgo, int32_t iControl, bool fPressed, const char *szText)
-	{
-	// Draw key
-	::GraphicsResource.fctKey.Draw(cgo,false,fPressed);
-	// Draw control symbol
-	::GraphicsResource.fctCommand.Draw(cgo,true,iControl);
-	// Use smaller font on smaller buttons
-	CStdFont &rFont = (cgo.Hgt <= C4MN_SymbolSize) ? ::GraphicsResource.FontRegular : ::GraphicsResource.FontTiny;
-	// Draw text
-	if (szText)
-		Application.DDraw->TextOut(szText, rFont, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt-rFont.iLineHgt-2,CStdDDraw::DEFAULT_MESSAGE_COLOR,ACenter);
-	}
-
 bool PlayerObjectCommand(int32_t plr, int32_t cmdf, C4Object *pTarget, int32_t tx, int32_t ty)
 	{
 	C4Player *pPlr=::Players.Get(plr);

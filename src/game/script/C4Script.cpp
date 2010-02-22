@@ -2381,28 +2381,6 @@ static bool FnSetPlrView(C4AulContext *cthr, long iPlr, C4Object *tobj)
   return true;
   }
 
-static bool FnSetPlrShowControl(C4AulContext *cthr, long iPlr, C4String *defstring)
-  {
-  if (!ValidPlr(iPlr)) return false;
-  ::Players.Get(iPlr)->ShowControl=StringBitEval(FnStringPar(defstring));
-  return true;
-  }
-
-static bool FnSetPlrShowCommand(C4AulContext *cthr, long iPlr, long iCom)
-	{
-  if (!ValidPlr(iPlr)) return false;
-  ::Players.Get(iPlr)->FlashCom=iCom;
-	if (!Config.Graphics.ShowCommands) Config.Graphics.ShowCommands=true;
-  return true;
-	}
-
-static bool FnSetPlrShowControlPos(C4AulContext *cthr, long iPlr, long pos)
-  {
-  if (!ValidPlr(iPlr)) return false;
-  ::Players.Get(iPlr)->ShowControlPos=pos;
-  return true;
-  }
-
 static C4String *FnGetPlrControlName(C4AulContext *cthr, long iPlr, long iCon, bool fShort)
   {
   return String(PlrControlKeyName(iPlr,iCon,fShort).getData());
@@ -6159,10 +6137,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "GetScore", FnGetScore);
 	AddFunc(pEngine, "GetPlrValue", FnGetPlrValue);
 	AddFunc(pEngine, "GetPlrValueGain", FnGetPlrValueGain);
-	AddFunc(pEngine, "SetPlrShowControl", FnSetPlrShowControl);
-	AddFunc(pEngine, "SetPlrShowControlPos", FnSetPlrShowControlPos);
   AddFunc(pEngine, "GetPlrControlName", FnGetPlrControlName);
-	AddFunc(pEngine, "SetPlrShowCommand", FnSetPlrShowCommand);
 	AddFunc(pEngine, "GetWind", FnGetWind);
 	AddFunc(pEngine, "SetWind", FnSetWind);
 	AddFunc(pEngine, "GetTemperature", FnGetTemperature);

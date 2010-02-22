@@ -101,7 +101,6 @@ class C4Player: public C4PlayerInfoCore
 		C4Object *ViewTarget; // NoSave //
 		int32_t ViewWealth,ViewValue;
 		bool ShowStartup;
-		int32_t ShowControl,ShowControlPos;
 		int32_t FlashCom; // NoSave //
 		bool fFogOfWar;
 		bool fFogOfWarInitialized; // No Save //

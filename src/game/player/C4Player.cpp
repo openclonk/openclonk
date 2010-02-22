@@ -1102,12 +1102,7 @@ void C4Player::DrawHostility(C4Facet &cgo, int32_t iIndex)
 	C4Player *pPlr;
 	if ((pPlr=::Players.GetByIndex(iIndex)))
 		{
-		// Portrait
-		if (Config.Graphics.ShowPortraits && pPlr->BigIcon.Surface)
-			pPlr->BigIcon.Draw(cgo);
-		// Standard player image
-		else
-			::GraphicsResource.fctCrewClr.DrawClr(cgo, true, pPlr->ColorDw);
+		::GraphicsResource.fctCrewClr.DrawClr(cgo, true, pPlr->ColorDw);
 		// Other player and hostile
 		if (pPlr != this)
 			if (Hostility.find(pPlr) != Hostility.end())
@@ -1395,8 +1390,6 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	bool bForceFogOfWar = false;
 	pComp->Value(mkNamingAdapt(bForceFogOfWar,      "ForceFogOfWar",        false));
 	pComp->Value(mkNamingAdapt(ShowStartup,         "ShowStartup",          false));
-	pComp->Value(mkNamingAdapt(ShowControl,         "ShowControl",          0));
-	pComp->Value(mkNamingAdapt(ShowControlPos,      "ShowControlPos",       0));
 	pComp->Value(mkNamingAdapt(Wealth,              "Wealth",               0));
 	pComp->Value(mkNamingAdapt(Points,              "Points",               0));
 	pComp->Value(mkNamingAdapt(Value,               "Value",                0));
@@ -1538,7 +1531,6 @@ void C4Player::DefaultRuntimeData()
 	ShowStartup=true;
 	CrewCnt=0;
 	ViewWealth=ViewValue=0;
-	ShowControl=ShowControlPos=0;
 	Wealth=0;
 	Points=0;
 	Value=InitialValue=ValueGain=0;

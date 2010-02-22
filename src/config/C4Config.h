@@ -108,10 +108,6 @@ class C4ConfigGraphics
 	{
 	public:
 		int32_t SplitscreenDividers;
-		int32_t ShowPlayerInfoAlways;
-		int32_t ShowCommands;
-		int32_t ShowCommandKeys;
-		int32_t ShowPortraits;
 		int32_t AddNewCrewPortraits;
 		int32_t SaveDefaultPortraits;
 		int32_t ShowStartupMessages;

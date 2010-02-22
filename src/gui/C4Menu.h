@@ -145,7 +145,6 @@ class C4Menu : public C4GUI::Dialog
 		int32_t ItemCount;
 		int32_t ItemWidth,ItemHeight;
 		int32_t Extra,ExtraData;
-		int32_t DrawMenuControls;
 		int32_t Identification;
 		int32_t Columns; // sync
 		int32_t Lines; // async
@@ -257,7 +256,7 @@ class C4Menu : public C4GUI::Dialog
 		virtual void UserClose(bool fOK);
 
 		// bottom area needed for extra info
-		virtual int32_t GetMarginBottom() { return ((Extra || DrawMenuControls) ? C4MN_SymbolSize : 0) + C4MN_FrameWidth + BaseClass::GetMarginBottom(); }
+		virtual int32_t GetMarginBottom() { return ((Extra) ? C4MN_SymbolSize : 0) + C4MN_FrameWidth + BaseClass::GetMarginBottom(); }
 		virtual int32_t GetMarginLeft() { return C4MN_FrameWidth + BaseClass::GetMarginLeft(); }
 		virtual int32_t GetMarginRight() { return C4MN_FrameWidth + BaseClass::GetMarginRight(); }
 

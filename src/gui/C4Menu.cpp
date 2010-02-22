@@ -308,7 +308,6 @@ void C4Menu::Default()
 	Permanent=false;
 	Extra=C4MN_Extra_None;
 	ExtraData=0;
-	DrawMenuControls = Config.Graphics.ShowCommands;
 	TimeOnSelection=0;
 	Identification=0;
 	LocationSet=false;
@@ -382,7 +381,6 @@ bool C4Menu::InitMenu(const char *szEmpty, int32_t iExtra, int32_t iExtraData, i
 		Columns=1;
 	if (iStyle & C4MN_Style_EqualItemHeight) SetEqualItemHeight(true);
 	if (Style == C4MN_Style_Dialog) Alignment = C4MN_Align_Top;
-	if (Style == C4MN_Style_Dialog) DrawMenuControls = 0;
 	if (::pGUI) ::pGUI->ShowDialog(this, false);
 	fTextProgressing = false;
 	fActive = true;
@@ -877,41 +875,9 @@ void C4Menu::DrawElement(C4TargetFacet &cgo)
 	C4Facet cgoExtra(cgo.Surface, cgo.TargetX+rcBounds.x+1, cgo.TargetY+rcBounds.y+rcBounds.Hgt-C4MN_SymbolSize-1, rcBounds.Wdt-2, C4MN_SymbolSize);
 
 	// Draw bar divider
-	if (Extra || DrawMenuControls)
+	if (Extra)
 		{
 		DrawFrame(cgoExtra.Surface, cgoExtra.X-1, cgoExtra.Y-1, cgoExtra.Wdt+1, cgoExtra.Hgt+1);
-		}
-
-	// Draw menu controls
-	if (DrawMenuControls)
-		{
-		C4Facet cgoControl;
-		// Determine player
-		int32_t iPlayer = GetControllingPlayer();
-		// Draw menu 'enter' command (unless info dialog)
-		if (Style != C4MN_Style_Info)
-			{
-			// Normal enter
-			cgoControl = cgoExtra.TruncateSection(C4FCT_Left);
-			DrawCommandKey(cgoControl, COM_Throw, false, PlrControlKeyName(iPlayer, Com2Control(COM_Throw), true).getData());
-			cgoControl = cgoExtra.TruncateSection(C4FCT_Left);
-			GfxR->fctOKCancel.Draw(cgoControl, true, 0, 0);
-			// Enter-all on Special2
-			if (pItem && pItem->Command2[0])
-				{
-				cgoControl = cgoExtra.TruncateSection(C4FCT_Left);
-				DrawCommandKey(cgoControl, COM_Special2, false, PlrControlKeyName(iPlayer, Com2Control(COM_Special2), true).getData());
-				cgoControl = cgoExtra.TruncateSection(C4FCT_Left);
-				GfxR->fctOKCancel.Draw(cgoControl, true, 2, 1);
-				}
-			}
-		// Draw menu 'close' command
-		cgoControl = cgoExtra.TruncateSection(C4FCT_Left);
-		DrawCommandKey(cgoControl, COM_Dig, false, PlrControlKeyName(iPlayer, Com2Control(COM_Dig), true).getData());
-		cgoControl = cgoExtra.TruncateSection(C4FCT_Left);
-		// Close command contains "Exit"? Show an exit symbol in the status bar.
-		if (SSearch(CloseCommand.getData(), "\"Exit\"")) GfxR->fctExit.Draw(cgoControl);
-		else GfxR->fctOKCancel.Draw(cgoControl, true, 1, 0);
 		}
 
 	// live max magic

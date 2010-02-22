@@ -300,53 +300,6 @@ void C4ObjectInfo::Clear()
 	pDef=NULL;
 	}
 
-void C4ObjectInfo::Draw(C4Facet &cgo, bool fShowPortrait, C4Object *pOfObj)
-	{
-
-	int iX=0;
-
-	// Portrait
-	if (fShowPortrait)
-		{
-		C4DefGraphics *pPortraitGfx;
-		if ((pPortraitGfx = Portrait.GetGfx())) if (pPortraitGfx->Bmp.Bitmap->Wdt)
-			{
-			//C4Facet fctPortrait; fctPortrait.Set(Portrait);
-			C4Facet ccgo; ccgo.Set(cgo.Surface,cgo.X+iX,cgo.Y,4*cgo.Hgt/3+10,cgo.Hgt+10);
-			DWORD dwColor = 0xFFFFFFFF;
-			if (pOfObj && ::Players.Get(pOfObj->Owner))
-				dwColor = ::Players.Get(pOfObj->Owner)->ColorDw;
-			pPortraitGfx->DrawClr(ccgo, true, dwColor);
-			iX+=4*cgo.Hgt/3;
-			}
-		}
-
-	// Rank symbol
-	C4RankSystem *pRankSys = &::DefaultRanks;
-	C4Facet *pRankRes=&::GraphicsResource.fctRank;
-	int iRankCnt=::GraphicsResource.iNumRanks;
-	if (pOfObj)
-		{
-		C4Def *pDef=pOfObj->Def;
-		if (pDef->pRankSymbols)
-			{
-			pRankRes=pDef->pRankSymbols;
-			iRankCnt=pDef->iNumRankSymbols;
-			}
-		if (pDef->pRankNames)
-			{
-			pRankSys = pDef->pRankNames;
-			}
-		}
-	pRankSys->DrawRankSymbol(NULL, Rank, pRankRes, iRankCnt, false, iX, &cgo);
-	iX+=::GraphicsResource.fctRank.Wdt;
-	// Rank & Name
-	StdStrBuf name;
-	if (Rank>0)	name.Format("%s|%s",sRankName.getData(),pOfObj->GetName ());
-	else name.Format("%s",pOfObj->GetName ());
-	Application.DDraw->TextOut(name.getData(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+iX,cgo.Y,CStdDDraw::DEFAULT_MESSAGE_COLOR,ALeft);
-	}
-
 void C4ObjectInfo::Recruit()
 	{
 	// already recruited?

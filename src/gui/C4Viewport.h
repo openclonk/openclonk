@@ -124,14 +124,11 @@ class C4Viewport
 		C4ViewportWindow * pWindow;
 		CClrModAddMap ClrModMap; // color modulation map for viewport drawing
 		void DrawPlayerFogOfWar(C4TargetFacet &cgo);
-		void DrawMouseButtons(C4TargetFacet &cgo);
 		void DrawPlayerStartup(C4TargetFacet &cgo);
 		void Draw(C4TargetFacet &cgo, bool fDrawOverlay);
 		void DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom);
 		void DrawMenu(C4TargetFacet &cgo);
-		void DrawCursorInfo(C4TargetFacet &cgo);
 		void DrawPlayerInfo(C4TargetFacet &cgo);
-		void DrawPlayerControls(C4TargetFacet &cgo);
 		void BlitOutput();
 		void AdjustPosition();
 		bool UpdateOutputSize();

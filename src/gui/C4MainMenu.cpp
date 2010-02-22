@@ -89,10 +89,10 @@ bool C4MainMenu::ActivateNewPlayer(int32_t iPlayer)
 			if (!C4P.Load(hGroup)) { hGroup.Close(); continue; }
 			// Load custom portrait
 			C4FacetSurface fctPortrait;
-			if (Config.Graphics.ShowPortraits)
-				if (!fctPortrait.Load(hGroup, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, true))
-					if (!fctPortrait.Load(hGroup, C4CFN_Portrait, C4FCT_Full, C4FCT_Full, false, true))
-						fctPortrait.Load(hGroup, C4CFN_Portrait_Old, C4FCT_Full, C4FCT_Full, false, true);
+			//if (Config.Graphics.ShowPortraits)
+			//	if (!fctPortrait.Load(hGroup, C4CFN_BigIcon, C4FCT_Full, C4FCT_Full, false, true))
+			//		if (!fctPortrait.Load(hGroup, C4CFN_Portrait, C4FCT_Full, C4FCT_Full, false, true))
+			//			fctPortrait.Load(hGroup, C4CFN_Portrait_Old, C4FCT_Full, C4FCT_Full, false, true);
 			// Close group
 			hGroup.Close();
 			// Add player item
@@ -547,16 +547,6 @@ bool C4MainMenu::ActivateOptions(int32_t iPlayer, int32_t selection)
 	AddRefSym(LoadResStr("IDS_DLG_SOUND"), GfxR->fctOptions.GetPhase(17 + Config.Sound.RXSound),"Options:Sound",C4MN_Item_NoCount);
 	// Music
 	AddRefSym(LoadResStr("IDS_MNU_MUSIC"), GfxR->fctOptions.GetPhase(1 + Config.Sound.RXMusic),"Options:Music",C4MN_Item_NoCount);
-	// Mouse control
-	C4Player *pPlr = ::Players.Get(iPlayer);
-	if (pPlr)
-		{
-		if (pPlr->MouseControl)
-			AddRefSym(LoadResStr("IDS_MNU_MOUSECONTROL"), GfxR->fctOptions.GetPhase(11 + 1), "Options:Mouse");
-		else
-			if (!::Players.MouseControlTaken())
-				AddRefSym(LoadResStr("IDS_MNU_MOUSECONTROL"), GfxR->fctOptions.GetPhase(11), "Options:Mouse");
-		}
 	// Music
 	AddRefSym(LoadResStr("IDS_MENU_DISPLAY"), GfxR->fctMenu.GetPhase(8), "ActivateMenu:Display");
 	// Restore selection
@@ -577,12 +567,6 @@ bool C4MainMenu::ActivateDisplay(int32_t iPlayer, int32_t selection)
 	AddRefSym(LoadResStr("IDS_MNU_PLAYERNAMES"), GfxR->fctOptions.GetPhase(7 + Config.Graphics.ShowCrewNames), "Display:PlayerNames", C4MN_Item_NoCount, NULL, LoadResStr("IDS_MENU_PLAYERNAMES_DESC"));
 	// Crew clonk names
 	AddRefSym(LoadResStr("IDS_MNU_CLONKNAMES"), GfxR->fctOptions.GetPhase(9 + Config.Graphics.ShowCrewCNames), "Display:ClonkNames", C4MN_Item_NoCount, NULL, LoadResStr("IDS_MENU_CLONKNAMES_DESC"));
-	// Portraits
-	AddRefSym(LoadResStr("IDS_MNU_PORTRAITS"), GfxR->fctOptions.GetPhase(13 + Config.Graphics.ShowPortraits), "Display:Portraits", C4MN_Item_NoCount);
-	// ShowCommands
-	AddRefSym(LoadResStr("IDS_MENU_SHOWCOMMANDS"), GfxR->fctOptions.GetPhase(19 + Config.Graphics.ShowCommands), "Display:ShowCommands", C4MN_Item_NoCount);
-	// ShowCommandKeys
-	AddRefSym(LoadResStr("IDS_MENU_SHOWCOMMANDKEYS"), GfxR->fctOptions.GetPhase(21 + Config.Graphics.ShowCommandKeys), "Display:ShowCommandKeys", C4MN_Item_NoCount);
 	// Upper Board
 	if (Application.isFullScreen)
 		{
@@ -816,10 +800,6 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 					{ Log(LoadResStr("IDS_PRC_NOSND")); }
 				}
 			}
-		// Mouse control
-		if (SEqual(szCommand + 8, "Mouse"))
-			if (pPlr)
-				pPlr->ToggleMouseControl();
 		// Reopen with updated options
 		ActivateOptions(Player, GetSelection());
 		return true;
@@ -839,12 +819,6 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		if (SEqual(szCommand + 8, "PlayerNames")) Config.Graphics.ShowCrewNames = !Config.Graphics.ShowCrewNames;
 		// Clonk names
 		if (SEqual(szCommand + 8, "ClonkNames")) Config.Graphics.ShowCrewCNames = !Config.Graphics.ShowCrewCNames;
-		// Portraits
-		if (SEqual(szCommand + 8, "Portraits")) Config.Graphics.ShowPortraits = !Config.Graphics.ShowPortraits;
-		// ShowCommands
-		if (SEqual(szCommand + 8, "ShowCommands")) Config.Graphics.ShowCommands = !Config.Graphics.ShowCommands;
-		// ShowCommandKeys
-		if (SEqual(szCommand + 8, "ShowCommandKeys")) Config.Graphics.ShowCommandKeys = !Config.Graphics.ShowCommandKeys;
 		// Clock
 		if (SEqual(szCommand + 8, "Clock")) Config.Graphics.ShowClock = !Config.Graphics.ShowClock;
 		// Reopen with updated options

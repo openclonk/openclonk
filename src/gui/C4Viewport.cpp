@@ -868,10 +868,6 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		DrawPlayerFogOfWar(cgo);
 		C4ST_STOP(FoWStat)
 		// Player info
-		// TODO: remove all the functions for drawing portraits, ranks, bla bla etc.
-		//C4ST_STARTNEW(CInfoStat, "C4Viewport::DrawOverlay: Cursor Info")
-		//DrawCursorInfo(cgo);
-		//C4ST_STOP(CInfoStat)
 		C4ST_STARTNEW(PInfoStat, "C4Viewport::DrawOverlay: Player Info")
 		DrawPlayerInfo(cgo);
 		C4ST_STOP(PInfoStat)
@@ -883,59 +879,6 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
  	C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
 	::Messages.Draw(cgo, Player, Zoom);
 	C4ST_STOP(MsgStat)
-
-	// Control overlays (if not film/replay)
-	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
-		{
-		// Mouse control
-		if (::MouseControl.IsViewport(this))
-			{
-			C4ST_STARTNEW(MouseStat, "C4Viewport::DrawOverlay: Mouse")
-			if (Config.Graphics.ShowCommands) // Now, ShowCommands is respected even for mouse control...
-				DrawMouseButtons(cgo);
-			::MouseControl.Draw(cgo, GameZoom);
-			// Draw GUI-mouse in EM if active
-			if (pWindow && ::pGUI) ::pGUI->RenderMouse(cgo);
-			C4ST_STOP(MouseStat)
-			}
-		// Keyboard/Gamepad
-		else
-			{
-			// Player menu button
-			if (Config.Graphics.ShowCommands)
-				{
-				int32_t iSymbolSize = C4SymbolSize * 2 / 3;
-				C4Facet ccgo; ccgo.Set(cgo.Surface,cgo.X+cgo.Wdt-iSymbolSize,cgo.Y+C4SymbolSize+2*C4SymbolBorder,iSymbolSize,iSymbolSize); ccgo.Y+=iSymbolSize;
-				DrawCommandKey(ccgo, COM_PlayerMenu, false, PlrControlKeyName(Player, Com2Control(COM_PlayerMenu), true).getData());
-				}
-			}
-		}
-	}
-
-void C4Viewport::DrawCursorInfo(C4TargetFacet &cgo)
-	{
-	C4Facet ccgo,ccgo2;
-
-	// Get cursor
-	C4Object *cursor, *realcursor;
-	C4Player *pPlr = ::Players.Get(Player);
-	if (!pPlr) return;
-	realcursor = pPlr->Cursor;
-	if (!(cursor=pPlr->ViewCursor))
-		if (!(cursor=realcursor))
-			return;
-
-	// Draw info
-	if (Config.Graphics.ShowPlayerInfoAlways)
-		if (cursor->Info)
-			{
-			C4ST_STARTNEW(ObjInfStat, "C4Viewport::DrawCursorInfo: Object info")
-			ccgo.Set(cgo.Surface,cgo.X+C4SymbolBorder,cgo.Y+C4SymbolBorder,3*C4SymbolSize,C4SymbolSize);
-			cursor->Info->Draw(	ccgo,
-													!!Config.Graphics.ShowPortraits, // && ::Players.Get(Player)->CursorFlash,
-													 cursor );
-			C4ST_STOP(ObjInfStat)
-			}
 	}
 
 void C4Viewport::DrawMenu(C4TargetFacet &cgo)
@@ -1301,9 +1244,7 @@ void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
 	C4Facet ccgo;
 	if (!ValidPlr(Player)) return;
 
-
 	// Controls
-	DrawPlayerControls(cgo);
 	DrawPlayerStartup(cgo);
 
 	}
@@ -1381,40 +1322,6 @@ StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 	return StdStrBuf();
 }
 
-void C4Viewport::DrawPlayerControls(C4TargetFacet &cgo)
-	{
-	if (!ValidPlr(Player)) return;
-	if (!::Players.Get(Player)->ShowControl) return;
-	int32_t size = Min( cgo.Wdt/3, 7*cgo.Hgt/24 );
-	int32_t tx;
-	int32_t ty;
-	switch (::Players.Get(Player)->ShowControlPos)
-		{
-		case 1: // Position 1: bottom right corner
-			tx = cgo.X+cgo.Wdt*3/4-size/2;
-			ty = cgo.Y+cgo.Hgt/2-size/2;
-			break;
-		case 2: // Position 2: bottom left corner
-			tx = cgo.X+cgo.Wdt/4 - size/2;
-			ty = cgo.Y+cgo.Hgt/2-size/2;
-			break;
-		case 3: // Position 3: top left corner
-			tx = cgo.X+cgo.Wdt/4 - size/2;
-			ty = cgo.Y+15;
-			break;
-		case 4: // Position 4: top right corner
-			tx = cgo.X+cgo.Wdt*3/4-size/2;
-			ty = cgo.Y+15;
-			break;
-		default: // default: Top center
-			tx = cgo.X+cgo.Wdt/2-size/2;
-			ty = cgo.Y+15;
-			break;
-		}
-
-	// TODO
-	}
-
 extern int32_t DrawMessageOffset;
 
 void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
@@ -1474,30 +1381,6 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 void C4Viewport::ClearPointers(C4Object *pObj)
 	{
 	Regions.ClearPointers(pObj);
-	}
-
-void C4Viewport::DrawMouseButtons(C4TargetFacet &cgo)
-	{
-	C4Facet ccgo;
-	C4Region rgn;
-	int32_t iSymbolSize = C4SymbolSize * 2 / 3;
-	// Help
-	ccgo.Set(cgo.Surface,cgo.X+cgo.Wdt-iSymbolSize,cgo.Y+C4SymbolSize+2*C4SymbolBorder,iSymbolSize,iSymbolSize);
-	GfxR->fctKey.Draw(ccgo);
-	GfxR->fctOKCancel.Draw(ccgo,true,0,1);
-	if (SetRegions) {	rgn.Default(); rgn.Set(ccgo,LoadResStr("IDS_CON_HELP")); rgn.Com=COM_Help; SetRegions->Add(rgn); }
-	// Player menu
-	ccgo.Y+=iSymbolSize;
-	DrawCommandKey(ccgo, COM_PlayerMenu, false, PlrControlKeyName(Player, Com2Control(COM_PlayerMenu), true).getData());
-	if (SetRegions) {	rgn.Default(); rgn.Set(ccgo,LoadResStr("IDS_CON_PLAYERMENU")); rgn.Com=COM_PlayerMenu; SetRegions->Add(rgn); }
-	// Chat
-	if (C4ChatDlg::IsChatActive())
-		{
-		ccgo.Y+=iSymbolSize;
-		GfxR->fctKey.Draw(ccgo);
-		C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_Chat).Draw(ccgo,true);
-		if (SetRegions) {	rgn.Default(); rgn.Set(ccgo,LoadResStr("IDS_DLG_CHAT")); rgn.Com=COM_Chat; SetRegions->Add(rgn); }
-		}
 	}
 
 void C4Viewport::DrawPlayerFogOfWar(C4TargetFacet &cgo)
