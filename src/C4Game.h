@@ -161,7 +161,7 @@ class C4Game
 		void Abort(bool fApproved = false); // hard-quit on Esc+Y (/J/O)
 		void Evaluate();
 		void ShowGameOverDlg();
-		bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false);
+		bool DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog=NULL, bool fPlrCtrlOnly=false, int32_t iStrength=-1);
 		void DrawCursors(C4TargetFacet &cgo, int32_t iPlayer);
 		void FixRandom(int32_t iSeed);
 		bool Init();

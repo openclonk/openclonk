@@ -479,7 +479,7 @@ class C4KeyboardInput
 		void UnregisterKey(const StdStrBuf &rsName); // remove key from all maps
 		void UnregisterKeyBinding(C4CustomKey *pKey); // just remove callbacks from a key
 
-		bool DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, DWORD InScope);
+		bool DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, DWORD InScope, int32_t iStrength);
 
 		void CompileFunc(StdCompiler *pComp);
 		bool LoadCustomConfig(); // load keyboard customization file

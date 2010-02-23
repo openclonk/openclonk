@@ -98,39 +98,51 @@ uint32_t CStdGamePad::GetButtons()
 	return joynfo.dwButtons;
 	}
 
-CStdGamePad::AxisPos CStdGamePad::GetAxisPos(int idAxis)
-	{
+CStdGamePad::AxisPos CStdGamePad::GetAxisPos(int idAxis, int32_t *out_strength)
+{
+	if (out_strength) *out_strength = 0; // default no strength
 	if (idAxis<0 || idAxis>=CStdGamepad_MaxAxis) return Mid; // wrong axis
 	// get raw axis data
 	if (idAxis<CStdGamepad_MaxCalAxis)
-		{
+	{
 		uint32_t dwPos = (&joynfo.dwXpos)[idAxis];
 		// evaluate axis calibration
 		if (fAxisCalibrated[idAxis])
-			{
+		{
 			// update it
 			dwAxisMin[idAxis] = Min<uint32_t>(dwAxisMin[idAxis], dwPos);
 			dwAxisMax[idAxis] = Max<uint32_t>(dwAxisMax[idAxis], dwPos);
 			// Calculate center
 			DWORD dwCenter = (dwAxisMin[idAxis] + dwAxisMax[idAxis]) / 2;
-			// Trigger range is 30% off center
-			DWORD dwRange = (dwAxisMax[idAxis] - dwCenter) / 3;
-			if (dwPos < dwCenter - dwRange) return Low;
-			if (dwPos > dwCenter + dwRange) return High;
-			}
-		else
+			// Axis strength
+			DWORD dwRange = (dwAxisMax[idAxis] - dwCenter);
+			// Trigger range is 20% off center
+			DWORD dwThresh = dwRange / 5;
+			if (dwPos < dwCenter - dwThresh)
 			{
+				if (out_strength && dwRange) *out_strength = (dwCenter-dwPos)*100/dwRange;
+				return Low;
+			}
+			if (dwPos > dwCenter + dwThresh)
+			{
+				if (out_strength && dwRange) *out_strength = (dwPos-dwCenter)*100/dwRange;
+				return High;
+			}
+		}
+		else
+		{
 			// init it
 			dwAxisMin[idAxis] = dwAxisMax[idAxis] = dwPos;
 			fAxisCalibrated[idAxis] = true;
-			}
 		}
+	}
 	else
-		{
+	{
 		// It's a POV head
 		DWORD dwPos = POV2Position(joynfo.dwPOV, idAxis==PAD_Axis_POVy);
+		if (out_strength) *out_strength = Abs(int32_t(dwPos) - 100);
 		if (dwPos > 130) return High; else if (dwPos < 70) return Low;
-		}
+	}
 	return Mid;
 	}
 

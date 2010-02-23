@@ -53,7 +53,7 @@ class CStdGamePad
 
 		bool Update(); // read current gamepad data
 		uint32_t GetButtons(); // returns bitmask of pressed buttons for last retrieved info
-		AxisPos GetAxisPos(int idAxis); // return axis extension - mid for error or center position
+		AxisPos GetAxisPos(int idAxis, int32_t *out_strength=NULL); // return axis extension - mid for error or center position
 	};
 
 #endif

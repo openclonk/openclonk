@@ -1864,7 +1864,7 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 	return true;
 	}
 
-bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog, bool fPlrCtrlOnly)
+bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool fAlt, bool fCtrl, bool fShift, bool fRepeated, class C4GUI::Dialog *pForDialog, bool fPlrCtrlOnly, int32_t iStrength)
 	{
 #ifdef USE_X11
 	static std::map<C4KeyCode, bool> PressedKeys;
@@ -1928,7 +1928,7 @@ bool C4Game::DoKeyboardInput(C4KeyCode vk_code, C4KeyEventType eEventType, bool 
 			}
 		}
 	// okay; do input
-	if (KeyboardInput.DoInput(Key, eEventType, InScope))
+	if (KeyboardInput.DoInput(Key, eEventType, InScope, iStrength))
 		return true;
 
 	// unprocessed key

@@ -111,7 +111,8 @@ void C4GamePadControl::Execute()
 		bool fAnyAxis = false;
 		for (int iAxis = 0; iAxis < CStdGamepad_MaxAxis; ++iAxis)
 			{
-			CStdGamePad::AxisPos eAxisPos = rPad.pGamepad->GetAxisPos(iAxis), ePrevAxisPos = rPad.AxisPosis[iAxis];
+			int32_t iStrength = 100;
+			CStdGamePad::AxisPos eAxisPos = rPad.pGamepad->GetAxisPos(iAxis, &iStrength), ePrevAxisPos = rPad.AxisPosis[iAxis];
 			// Evaluate changes and pass single controls
 			// this is a generic Gamepad-control: Create events
 			if (eAxisPos != ePrevAxisPos)
@@ -120,7 +121,7 @@ void C4GamePadControl::Execute()
 				if (ePrevAxisPos != CStdGamePad::Mid)
 					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Axis(iAxis, (ePrevAxisPos==CStdGamePad::High))), KEYEV_Up, false, false, false, false);
 				if (eAxisPos != CStdGamePad::Mid)
-					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Axis(iAxis, (eAxisPos==CStdGamePad::High))), KEYEV_Down, false, false, false, false);
+					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Axis(iAxis, (eAxisPos==CStdGamePad::High))), KEYEV_Down, false, false, false, false, NULL, false, iStrength);
 				}
 			}
 		uint32_t Buttons = rPad.pGamepad->GetButtons();
