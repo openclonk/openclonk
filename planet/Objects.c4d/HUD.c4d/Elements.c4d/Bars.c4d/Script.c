@@ -1,5 +1,3 @@
-#strict 2
-
 /*
 	Progress-Bar element
 	Author: Newton

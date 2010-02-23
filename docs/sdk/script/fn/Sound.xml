@@ -9,7 +9,7 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>szSound</name><desc>Name des Soundeffekts (ohne .wav-Endung)</desc></param>
+        <param><type>string</type><name>szSound</name><desc>Name des Soundeffekts (ohne .wav-Endung). Falls es sich um eine .ogg handelt, muss die Dateiendung mit angegeben werden.</desc></param>
         <param><type>bool</type><name>fGlobal</name><desc>Gibt an, ob der Sound global, d.h. unabhängig von der Objektposition immer in derselben Lautstärke abgespielt werden soll.</desc><optional /></param>
         <param><type>int</type><name>iVolume</name><desc>0-100: Lautstärke, in der der Sound abgespielt wird. Bei nil wird 100 als Standard angenommen.</desc><optional /></param>
         <param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spielers, für den der Sound abgespielt werden soll. Im Netzwerkspiel wird der Sound dann nicht bei einem Spieler abgespielt, der an einem anderen Rechner spielt. Wenn nil oder nicht angegeben, wird der Sound für alle Spieler abgespielt.</desc><optional /></param>

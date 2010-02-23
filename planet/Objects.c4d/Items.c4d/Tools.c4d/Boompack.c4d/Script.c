@@ -1,8 +1,14 @@
 /*--
 	Boompack
-	Author: Ringwaul
+	Authors: Ringwaul, Newton
 
-	A risky method of flight.
+	A risky method of flight. When the boompack is used and launched towards
+	the sky, the category of the boompack is changed to be a vehicle and set
+	to be non-collectible. The clonk is then attached to the boompack. While
+	he is attached, he has more control over it than if it were just in his
+	inventory: The ControlLeft/Right/Up/Down callbacks are issued to the boom-
+	pack too. Here, they are used to slightly steer the boompack to the left
+	or right plus to jump off the rocket. 
 --*/
 
 local fuel;
@@ -43,7 +49,7 @@ func ControlStop()
 	return true;
 }
 
-func ControlUp(object clonk)
+func ControlJump(object clonk)
 {
 	JumpOff(clonk,60);
 	return true;

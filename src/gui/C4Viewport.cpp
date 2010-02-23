@@ -879,6 +879,20 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
  	C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
 	::Messages.Draw(cgo, Player, Zoom);
 	C4ST_STOP(MsgStat)
+
+	// Control overlays (if not film/replay)
+	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
+		{
+		// Mouse control
+		if (::MouseControl.IsViewport(this))
+			{
+			C4ST_STARTNEW(MouseStat, "C4Viewport::DrawOverlay: Mouse")
+			::MouseControl.Draw(cgo, GameZoom);
+			// Draw GUI-mouse in EM if active
+			if (pWindow && ::pGUI) ::pGUI->RenderMouse(cgo);
+			C4ST_STOP(MouseStat)
+			}
+		}
 	}
 
 void C4Viewport::DrawMenu(C4TargetFacet &cgo)

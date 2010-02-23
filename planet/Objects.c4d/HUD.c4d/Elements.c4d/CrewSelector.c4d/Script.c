@@ -1,4 +1,3 @@
-#strict 2
 #include BAR0
 
 /*

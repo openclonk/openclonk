@@ -52,7 +52,7 @@
 #61=Crystal-Structure
 #62=Crystal-Structure2
 
-65=Ice-ice1
+65=Ice-ice2
 66=Ice-ice2
 67=Ice-ice3
 68=Ice-ice3

@@ -358,7 +358,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 {
 	if (!this) return false;
 	
-	//Log(Format("%d, %d, %s, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), repeat, release));
+	//Message(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
 	// aiming with mouse
 	if(using && ctrl == CON_Aim)
@@ -757,7 +757,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	}
 	
 	// overloads of movement commandos
-	else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up)
+	else if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Down || ctrl == CON_Up || ctrl == CON_Jump)
 	{
 		if (release)
 		{
@@ -771,6 +771,10 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 			if (ctrl == CON_Right) if (obj->Call(Format("~%sRight",control),this)) return true;
 			if (ctrl == CON_Up)    if (obj->Call(Format("~%sUp",control),this))    return true;
 			if (ctrl == CON_Down)  if (obj->Call(Format("~%sDown",control),this))  return true;
+			
+			// for attached (e.g. horse: also Jump command
+			if(GetProcedure() == "ATTACH")
+				if (ctrl == CON_Jump)  if(obj->Call("ControlJump",this)) return true;
 		}
 	}
 	

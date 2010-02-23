@@ -1,24 +1,35 @@
-Artwork
-=======
-
-  Original Artwork (CC-BY 3.0)
-Florian Graier
-Tobias Zwick
-Andrew McConnochie
-Dustin Senos
-Günther Brammer
-Redwolf Design GmbH
-
-  Sources (CC-BY 2.0, http://creativecommons.org/licenses/by/2.0/)
-John Talbot - http://www.flickr.com/photos/laserstars/2322517542/
-Ricardo Martins - http://www.flickr.com/photos/redneck/479128746/
-Dominic Alves - http://www.flickr.com/photos/dominicspics/3300369368/
-
-Sound effects
-=======
-See authors.txt in Sound.c4g
+The OpenClonk project is licensed under the ISC license for code and CC licenses for
+media. See below for details on the authors and on the specific licenses used for
+the different contributions.
 
 Scripts
 =======
-Redwolf Design GmbH
+The author(s) are listed in the individual script files. If no author is 
+specified: The OpenClonk Project
+All scripts are licensed under the terms of the ISC license.
 
+
+Source
+=======
+The author(s) are listed in the individual source code files. All source files 
+are licensed under the terms of the ISC license.
+
+
+Graphics and Models
+===================
+???
+
+
+Music
+=====
+- 
+
+
+Sounds
+======
+See authors.txt in Sound.c4g
+
+
+Material textures
+=================
+See authors.txt in Material.c4g
