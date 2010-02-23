@@ -1431,6 +1431,9 @@ bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorD
 	// create lpPrimary and lpBack (used in first context selection)
 	lpPrimary=lpBack=new CSurface();
 
+	lpPrimary->AttachSfc(0,0,0);
+	lpPrimary->byBytesPP=byByteCnt;
+	
 	// create+select gl context
 	DebugLog("  gl: Create Main Context...");
 	if (!MainCtx.Init(pApp->pWindow, pApp)) return Error("  gl: Error initializing context");
