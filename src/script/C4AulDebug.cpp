@@ -1,3 +1,4 @@
+#ifndef NOAULDEBUG
 
 #include <C4Include.h>
 #include <C4Version.h>
@@ -453,3 +454,5 @@ StdStrBuf C4AulDebug::FormatCodePos(C4AulScriptContext *pCtx, C4AulBCC *pCPos)
 	// Format
 	return FormatString("%s:%d", RelativePath(pCtx->Func->pOrgScript->ScriptName), iLine);
 	}
+
+#endif

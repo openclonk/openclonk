@@ -160,9 +160,11 @@ bool Log(const char *szMessage)
 	// security
 	if(!szMessage) return false;
 
+#ifndef NOAULDEBUG
 	// Pass on to debugger
 	if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
 		pDebug->OnLog(szMessage);
+#endif
 	// Pass on to console
 	Console.Out(szMessage);
 	// pass on to lobby

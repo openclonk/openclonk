@@ -444,7 +444,9 @@ C4AulScriptEngine::C4AulScriptEngine():
 	GlobalConsts.Reset();
 	GlobalConsts.SetNameList(&GlobalConstNames);
 
+#ifndef NOAULDEBUG
 	pDebug = NULL;
+#endif
 	}
 
 
@@ -452,8 +454,10 @@ C4AulScriptEngine::~C4AulScriptEngine() { Clear(); }
 
 void C4AulScriptEngine::Clear()
 	{
+#ifndef NOAULDEBUG
 	// stop debugger
 	delete pDebug; pDebug = NULL;
+#endif
 	// clear inherited
 	C4AulScript::Clear();
 	// clear own stuff
@@ -524,6 +528,7 @@ void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
 
 bool C4AulScriptEngine::InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait)
 	{
+#ifndef NOAULDEBUG
 	// Create debug object
 	if(!pDebug) pDebug = new C4AulDebug();
 	// Initialize
@@ -544,6 +549,7 @@ bool C4AulScriptEngine::InitDebug(uint16_t iPort, const char *szPassword, const 
 			if(!Application.ScheduleProcs())
 				return false;
 		}
+#endif
 	// Done
 	return true;
 	}

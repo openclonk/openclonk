@@ -540,7 +540,9 @@ class C4AulScriptEngine : public C4AulScript
 		C4AList itbl; // include table
 		C4AList atbl; // append table
 		C4AulFuncMap FuncLookUp;
+#ifndef NOAULDEBUG
 		C4AulDebug *pDebug;
+#endif
 
 	public:
 		int warnCnt, errCnt; // number of warnings/errors
@@ -583,7 +585,9 @@ class C4AulScriptEngine : public C4AulScript
 		void UnLink(); // called when a script is being reloaded (clears string table)
 
 		bool InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait);
+#ifndef NOAULDEBUG
 		inline C4AulDebug *GetDebugger() const { return pDebug; }
+#endif
 
 		// Compile scenario script data (without strings and constants)
 		void CompileFunc(StdCompiler *pComp);

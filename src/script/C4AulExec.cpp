@@ -151,10 +151,12 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	{
 
+#ifndef NOAULDEBUG
 	// Debugger pointer
 	C4AulDebug * const pDebug = ::ScriptEngine.GetDebugger();
 	if (pDebug)
 		pDebug->DebugStepIn(pCPos);
+#endif
 
 	// Save start context
 	C4AulScriptContext *pOldCtx = pCurCtx;
@@ -691,10 +693,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 						LogF("%s%s returned %s", Buf.getData(), pCurCtx->Func->Name, pCurVal->GetDataString().getData());
 						}
 
+#ifndef NOAULDEBUG
 					// Notify debugger
 					C4Value *pReturn = pCurCtx->Return;
 					if(pDebug)
 						pDebug->DebugStepOut(pReturn ? (pCurCtx-1)->CPos + 1 : NULL, pCurCtx, pCurVal);
+#endif
 
 					// External call?
 					if(!pReturn)
@@ -865,7 +869,9 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					}
 
 				case AB_DEBUG:
+#ifndef NOAULDEBUG
 					if(pDebug) pDebug->DebugStep(pCPos);
+#endif
 					break;
 
 				default:
@@ -951,9 +957,11 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		ctx.CPos = NULL;
 		PushContext(ctx);
 
+#ifndef NOAULDEBUG
 		// Notify debugger
 		if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
 			pDebug->DebugStepIn(pSFunc->Code);
+#endif
 
 		// Jump to code
 		return pSFunc->Code;
@@ -1012,6 +1020,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		assert(pCtx == pCurCtx);
 #endif
 
+#ifndef NOAULDEBUG
 		// Notify debugger
 		if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
 			{
@@ -1028,6 +1037,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			ctx.CPos = NULL;
 			pDebug->DebugStepOut(pCurCtx->CPos + 1, pCurCtx, pReturn);
 			}
+#endif
 
 		// Remove parameters from stack
 		PopValuesUntil(pReturn);

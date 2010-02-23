@@ -2,6 +2,8 @@
 #ifndef C4AULDEBUG_H
 #define C4AULDEBUG_H
 
+#ifndef NOAULDEBUG
+
 #include "C4Aul.h"
 #include "C4NetIO.h"
 
@@ -71,4 +73,5 @@ class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass
 		bool SendLine(const char *szType, const char *szData = NULL);
 	};
 
+#endif
 #endif
