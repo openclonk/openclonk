@@ -201,23 +201,6 @@ public func Drink(object pDrink)
 
 /* Actions */
 
-private func Riding()
-{
-  // change dir of horse
-  SetDir(GetActionTarget()->GetDir());
-  // horse is still, the clonk too please!
-  if (GetActionTarget()->~IsStill())
-  {
-    if (GetAction() != "RideStill")
-      SetAction("RideStill");
-  }
-  // the horse is not still... the clonk too please!
-  else
-    if (GetAction() != "Ride")
-      SetAction("Ride");
-  return 1;
-}
-
 private func Fighting()
 {
   if (!Random(2)) SetAction("Punch");
@@ -1254,6 +1237,51 @@ func StopTumble()
 		RemoveEffect("IntTumble", this);
 }
 
+/* Riding */
+public func StartRiding()
+{
+	if(!GetEffect("IntRiding", this))
+		AddEffect("IntRiding", this, 1, 0, this);
+}
+
+public func AttachTargetLost()
+{
+	if(GetEffect("IntRiding", this))
+		RemoveEffect("IntRiding", this);
+}
+
+public func StopRiding()
+{
+	if(GetEffect("IntRiding", this))
+		RemoveEffect("IntRiding", this);
+}
+
+func FxIntRidingStart(pTarget, iNumber, fTmp)
+{
+	if(fTmp) return;
+	var pMount = GetActionTarget();
+	if(!pMount) return -1;
+	if(pMount->~OnMount(this)) // Notifiy the mount, that the clonk is mounted (it should take care, that the clonk get's attached!
+	{
+		// if mount has returned true we should be attached
+		// So make the clonk object invisible
+		EffectVar(0,pTarget,iNumber) = GetProperty("Visibility");
+		SetProperty("Visibility", VIS_None);
+	}
+	else EffectVar(0,pTarget,iNumber) = -1;
+	EffectVar(1,pTarget,iNumber) = pMount;
+}
+
+func FxIntRidingStop(pTarget, iNumber, fTmp)
+{
+	if(fTmp) return;
+	if(EffectVar(0,pTarget,iNumber) != -1)
+		SetProperty("Visibility", EffectVar(0,pTarget,iNumber));
+
+	var pMount = EffectVar(1,pTarget,iNumber);
+	if(pMount)
+		pMount->~OnUnmount(this);
+}
 
 /* Act Map */
 
@@ -1458,31 +1486,14 @@ Ride = {
 	Name = "Ride",
 	Procedure = DFA_ATTACH,
 	Directions = 2,
-	FlipDir = 1,
-	Length = 4,
-	Delay = 3,
-	X = 128,
-	Y = 120,
-	Wdt = 8,
-	Hgt = 20,
-	NextAction = "Ride",
-	StartCall = "Riding",
-	InLiquidAction = "Swim",
-},
-RideStill = {
-	Prototype = Action,
-	Name = "RideStill",
-	Procedure = DFA_ATTACH,
-	Directions = 2,
-	FlipDir = 1,
 	Length = 1,
-	Delay = 10,
+	Delay = 0,
 	X = 128,
 	Y = 120,
 	Wdt = 8,
 	Hgt = 20,
-	NextAction = "RideStill",
-	StartCall = "Riding",
+	StartCall = "StartRiding",
+	AbortCall = "StopRiding",
 	InLiquidAction = "Swim",
 },
 Push = {

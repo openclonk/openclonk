@@ -123,11 +123,6 @@ private func JumpOff(object clonk, int speed)
 	clonk->SetXDir(GetXDir()/2+speed*xdir/100);
 	clonk->SetYDir(GetYDir()/2-speed*ydir/100);
 	
-	// mesh stuff
-	clonk->StopAnimation(clonk->GetRootAnimation(10));
-	clonk->SetProperty("Visibility", ridervis);
-	DetachMesh(riderattach);
-	
 	rider = nil;
 }
 
@@ -142,6 +137,22 @@ protected func Hit()
 	Sound("WoodHit");
 }
 
+public func OnMount(clonk)
+{
+	var iDir = 1;
+	if(clonk->GetDir() == 1) iDir = -1;
+	clonk->PlayAnimation("PosRocket", 10, Anim_Const(0), Anim_Const(1000));
+	riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(2000, -1000, -2000*iDir), Trans_Rotate(90*iDir,0,1,0)));
+	return true;
+}
+
+public func OnUnmount(clonk)
+{
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
+	DetachMesh(riderattach);
+	return true;
+}
+
 func Launch(int angle, object clonk)
 {
 	SetProperty("Collectible",0);
@@ -154,14 +165,7 @@ func Launch(int angle, object clonk)
 	//Ride the rocket!
 	if(clonk)
 	{
-		var iDir = 1;
-		if(clonk->GetDir() == 1) iDir = -1;
 		clonk->SetAction("Ride",this);
-		clonk->PlayAnimation("PosRocket", 10, Anim_Const(0), Anim_Const(1000));
-		riderattach = AttachMesh(clonk, "main", "pos_tool1", Trans_Mul(Trans_Translate(2000, -1000, -2000*iDir), Trans_Rotate(90*iDir,0,1,0)));
-		SetColor(clonk->GetColor());
-		ridervis = clonk->GetProperty("Visibility");
-		clonk->SetProperty("Visibility", VIS_None);//TODO: make this with an effect or better do this in the clonk script
 		rider=clonk;
 	}
 
