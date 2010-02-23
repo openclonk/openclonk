@@ -218,7 +218,7 @@ void C4ValueMapData::OnNameListChanged(const char **pOldNames, int32_t iOldSize)
 			if(SEqual(pNames->pNames[j], pOldNames[i]))
 			{
 				pOldData[i].Move(&pData[j]);
-				break; // in hope this will only break the last for...
+				break;
 			}
 		}
 	}

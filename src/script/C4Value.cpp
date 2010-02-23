@@ -694,7 +694,6 @@ bool C4Value::operator == (const C4Value& Value2) const
 
 bool C4Value::operator != (const C4Value& Value2) const
 {
-	// Fixme: implement faster
 	return !(*this == Value2);
 }
 

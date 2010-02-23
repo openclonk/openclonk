@@ -102,7 +102,6 @@ public:
 
 	// Checked getters
 	int32_t getInt() { return ConvertTo(C4V_Int) ? Data.Int : 0; }
-	int32_t getIntOrID() { Deref(); if (Type == C4V_Int || Type == C4V_Bool /* FIXME || Type == C4V_C4ID*/) return Data.Int; else return 0; }
 	bool getBool() { return ConvertTo(C4V_Bool) ? !! Data : 0; }
 	C4ID getC4ID();
 	C4Object * getObj() { return ConvertTo(C4V_C4Object) ? Data.Obj : NULL; }

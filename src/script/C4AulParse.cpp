@@ -2822,7 +2822,6 @@ void C4AulParseState::Parse_Const()
 				case ATT_INT: vGlobalValue.SetInt(cInt); break;
 				case ATT_BOOL: vGlobalValue.SetBool(!!cInt); break;
 				case ATT_STRING: vGlobalValue.SetString(reinterpret_cast<C4String *>(cInt)); break; // increases ref count of C4String in cInt to 1
-				//FIXME case ATT_C4ID: vGlobalValue.SetC4ID(cInt); break;
 				case ATT_NIL: vGlobalValue.Set0(); break;
 				case ATT_IDTF:
 					// identifier is only OK if it's another constant
