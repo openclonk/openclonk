@@ -25,7 +25,7 @@ public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
 
 public func HoldingEnabled() { return true; }
 
-protected func ControlUseStart(object clonk, int x, int y)
+public func ControlUseStart(object clonk, int x, int y)
 {
 	// Reset the clonk (important, if the last aiming wasn't finished)
 	ClearScheduleCall(this, "Shoot");
@@ -50,14 +50,15 @@ protected func ControlUseStart(object clonk, int x, int y)
 		return true;
 	}
 
-  // Start aiming
+	// Start aiming
 	fAiming = 1;
 	clonk->SetHandAction(1); // Setting the hands as blocked, so that no other items are carried in the hands
-  clonk->UpdateAttach(); // Update, that the Clonk takes the bow in the right hand (see GetCarrySpecial)
+	clonk->UpdateAttach(); // Update, that the Clonk takes the bow in the right hand (see GetCarrySpecial)
 	ScheduleCall(this, "AddArrow", 5*aimtime/20, 1, clonk); // Attach the arrow during the animation
 	iAnimLoad = clonk->PlayAnimation("BowLoadArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BowLoadArms"), aimtime, ANIM_Remove), Anim_Const(1000));
-  iDrawAnim = PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), aimtime, ANIM_Hold), Anim_Const(1000));
+	iDrawAnim = PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), aimtime, ANIM_Hold), Anim_Const(1000));
 	AddEffect("IntWalkSlow", clonk, 1, 0, this);
+
 	return true;
 }
 
@@ -82,7 +83,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 			// Stop loading and start aiming
 			StopAnimation(iDrawAnim);
 			iAnimLoad = clonk->PlayAnimation("BowAimArms", 10, Anim_Const(0), Anim_Const(1000));
-      iDrawAnim = PlayAnimation("Draw", 6, Anim_Const(GetAnimationLength("Draw")), Anim_Const(1000));
+			iDrawAnim = PlayAnimation("Draw", 6, Anim_Const(GetAnimationLength("Draw")), Anim_Const(1000));
 			clonk->SetAnimationPosition(iAnimLoad, Anim_Const(2000*Abs(90)/180));
 		}
 	}
@@ -105,7 +106,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 	return true;
 }
 
-protected func ControlUseStop(object clonk, int x, int y)
+public func ControlUseStop(object clonk, int x, int y)
 {
 	fAiming = 0;
 	StopAnimation(iDrawAnim);
@@ -138,6 +139,13 @@ protected func ControlUseStop(object clonk, int x, int y)
 	return true;
 }
 
+public func ControlUseCancel(object clonk, int x, int y)
+{
+	fAiming = 0;
+	ResetClonk(clonk);
+	return true;
+}
+
 public func ResetClonk(clonk)
 {
 	// Already aiming angain? Don't remove Actions
@@ -153,7 +161,7 @@ public func ResetClonk(clonk)
 		clonk->StopAnimation(iCloseAnim);
 	iCloseAnim = nil;
 	
-  clonk->StopAnimation(clonk->GetRootAnimation(10));
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	if(iDrawAnim != nil)
 		StopAnimation(iDrawAnim);
 	iDrawAnim = nil;
@@ -165,12 +173,6 @@ public func ResetClonk(clonk)
 public func Shoot(object clonk, int x, int y)
 {
 	ResetClonk(clonk);
-}
-
-protected func ControlUseCancel(object clonk, int x, int y)
-{
-  fAiming = 0;
-  ResetClonk(clonk);
 }
 
 private func ClonkAimLimit(object clonk, int angle)
@@ -213,6 +215,6 @@ func RejectCollect(id arrowid, object arrows)
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 	SetProperty("PerspectiveR", 15000, def);
 }

@@ -53,13 +53,16 @@ public func Stack(object obj)
 	
 	var howmany = Min(obj->GetStackCount(),MaxStackCount()-GetStackCount());
 	
+	if(count+howmany > 999) return 0;
+	
 	SetStackCount(count+howmany);
+
 	return howmany;
 }
 
 public func SetStackCount(int amount)
 {
-	count = amount;
+	count = BoundBy(amount,0,999);
 	Update();
 }
 
@@ -106,18 +109,28 @@ private func UpdatePicture()
 	var ten = (GetStackCount()/10)%10;
 	var hun = (GetStackCount()/100)%10;
 	
+	var s = 400;
+	var yoffs = 14000;
+	var xoffs = 22000;
+	var spacing = 14000;
+	
 	if(hun > 0)
 	{
 		SetGraphics(Format("%d",hun),NUMB,10,GFXOV_MODE_Picture);
-		SetObjDrawTransform(400,0,-19000,0,400,+10000, 1);
+		SetObjDrawTransform(s,0,xoffs-spacing*2,0,s,yoffs, 10);
 	}
-	if(ten > 0)
+	else
+		SetGraphics(nil,nil,10);
+	if(ten > 0 || hun > 0)
 	{
 		SetGraphics(Format("%d",ten),NUMB,11,GFXOV_MODE_Picture);
-		SetObjDrawTransform(400,0,-12000,0,400,+10000, 2);
+		SetObjDrawTransform(s,0,xoffs-spacing,0,s,yoffs, 11);
 	}
-	SetGraphics(Format("%d",hun),NUMB,12,GFXOV_MODE_Picture);
-	SetObjDrawTransform(400,0,-5000,0,400,+10000, 3);
+	else
+		SetGraphics(nil,nil,10);
+		
+	SetGraphics(Format("%d",one),NUMB,12,GFXOV_MODE_Picture);
+	SetObjDrawTransform(s,0,xoffs,0,s,yoffs, 12);
 }
 
 private func UpdateName()
