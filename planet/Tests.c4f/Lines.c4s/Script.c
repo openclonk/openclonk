@@ -21,8 +21,7 @@
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(50, 490);
-	clonk->CreateContents(BOW1);
-	clonk->CreateContents(FIGB);
-	clonk->Collect(CreateObject(ARRW));
+	clonk->CreateContents(MSKT);
+	clonk->Collect(CreateObject(MBLL));
 	return;
 }
