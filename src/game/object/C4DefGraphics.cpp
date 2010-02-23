@@ -219,9 +219,8 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 	}
 	
 	// Try from Mesh first
-//	if (LoadMesh(hGroup, loader)) return true;
-	// load basic graphics only if we haven't already a mesh
-	if (!LoadMesh(hGroup, loader))
+	if (LoadMesh(hGroup, loader)) return true;
+	// load basic graphics
 	if (!LoadBitmap(hGroup, C4CFN_DefGraphics, C4CFN_DefGraphicsPNG, C4CFN_ClrByOwnerPNG, fColorByOwner)) return false;
 
 	// load additional graphics

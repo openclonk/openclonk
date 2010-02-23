@@ -172,7 +172,7 @@ public func UpdateTitleGraphic()
 	
 	//SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_Object,nil,nil,crew);
 	
-	SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_IngamePicture);
+	SetGraphics(nil,crew->GetID(),1,GFXOV_MODE_ObjectPicture, 0, 0, crew);
 	
 	// doesn't work:
 	//SetColorDw(crew->GetColorDw());

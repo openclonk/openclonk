@@ -676,14 +676,32 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 			fctPicture.Draw(cgo,true,iPhaseX,iPhaseY,true);
 			break;
 		case C4DefGraphics::TYPE_Mesh:
+			// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
+			StdMeshInstance dummy(*graphics->Mesh);
+			int32_t r = GetPropertyInt(P_PerspectiveR);
+			int32_t theta = GetPropertyInt(P_PerspectiveTheta);
+			int32_t phi = GetPropertyInt(P_PerspectivePhi);
+			if(pObj)
 			{
-				// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
-				StdMeshInstance dummy(*graphics->Mesh);
-				if(pObj && ((pObj->ColorMod >> 24) & 0xff) != 0xff)
-					dummy.SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
-				// TODO: Keep aspect ratio of mesh dimensions
-				lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X, cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : 0xff0000ff /* blue */, NULL);
+				r = pObj->GetPropertyInt(P_PerspectiveR);
+				theta = pObj->GetPropertyInt(P_PerspectiveTheta);
+				phi = pObj->GetPropertyInt(P_PerspectivePhi);
 			}
+
+			if(r > 0)
+			{
+				lpDDraw->SetPerspective(r/1000.0f, theta, phi);
+				if (pObj)
+				  lpDDraw->RenderMesh(*pObj->pMeshInstance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj->Color, NULL);
+				else
+				  lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, iColor, NULL);
+				lpDDraw->UnsetPerspective();
+			}
+			else
+			{
+				lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, iColor, NULL);
+			}
+		
 			break;
 		}
 
