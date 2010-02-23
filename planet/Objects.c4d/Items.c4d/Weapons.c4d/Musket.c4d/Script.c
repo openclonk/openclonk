@@ -110,16 +110,12 @@ func ControlUseHolding(object pClonk, ix, iy)
 		// If Clonk messes up during reload, he must restart. :(
 		if(Contained()->GetProcedure() != "WALK")
 			pClonk->CancelUse();
-			
-		// count
-		Message("%d",pClonk,reload);
-		
+					
 		reload--;
 		if(reload <= 0)
 		{
 			loaded = true;
 			reload = 0;
-			Message("Pashunk!", Contained());
 			pClonk->CancelUse();
 		}
 	}
@@ -203,12 +199,11 @@ private func FireWeapon(object pClonk, iX, iY, iAngle)
 	var angle = Normalize(Angle(0,0,iX,iY)-180);
 	if(angle>180 && pClonk->GetDir()==1) angle=angle-180;
 	if(angle<180 && pClonk->GetDir()==0) angle=angle+180;
-	shot->LaunchProjectile(angle+RandomX(-2, 2), iBarrel, 300);
-	shot->AffectShot(pClonk,iY,iX,iAngle);
+	shot->Launch(pClonk,angle+RandomX(-2, 2),iBarrel,300);
 	
 	loaded = false;
 
-	Sound("Blast3");
+	Sound("GunShoot*.ogg");
 
 	// Muzzle Flash
 	var IX=Sin(180-iAngle,MuskFront);

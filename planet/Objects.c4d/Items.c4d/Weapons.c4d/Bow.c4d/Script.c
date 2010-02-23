@@ -10,11 +10,9 @@
 #include L_ES
 
 local aimtime;
-
-local iArrowMesh;
-
 local fAiming;
 
+local iArrowMesh;
 local iAnimLoad;
 local iDrawAnim;
 local iCloseAnim;
@@ -23,6 +21,10 @@ public func GetCarryMode() { return CARRY_HandBack; }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
 
+
+/* +++++++++++ Controls ++++++++++++++ */
+
+// holding callbacks are made
 public func HoldingEnabled() { return true; }
 
 public func ControlUseStart(object clonk, int x, int y)
@@ -49,15 +51,22 @@ public func ControlUseStart(object clonk, int x, int y)
 		clonk->CancelUse();
 		return true;
 	}
-
+	
+	
+	
 	// Start aiming
 	fAiming = 1;
-	clonk->SetHandAction(1); // Setting the hands as blocked, so that no other items are carried in the hands
-	clonk->UpdateAttach(); // Update, that the Clonk takes the bow in the right hand (see GetCarrySpecial)
-	ScheduleCall(this, "AddArrow", 5*aimtime/20, 1, clonk); // Attach the arrow during the animation
+	// walk slow
+	AddEffect("IntWalkSlow", clonk, 1, 0, this);
+	
+	// Setting the hands as blocked, so that no other items are carried in the hands
+	clonk->SetHandAction(1);
+	// Update, that the Clonk takes the bow in the right hand (see GetCarrySpecial)
+	clonk->UpdateAttach();
+	// Attach the arrow during the animation
+	ScheduleCall(this, "AddArrow", 5*aimtime/20, 1, clonk);
 	iAnimLoad = clonk->PlayAnimation("BowLoadArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BowLoadArms"), aimtime, ANIM_Remove), Anim_Const(1000));
 	iDrawAnim = PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), aimtime, ANIM_Hold), Anim_Const(1000));
-	AddEffect("IntWalkSlow", clonk, 1, 0, this);
 
 	return true;
 }
@@ -77,6 +86,9 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 	if(aimtime > 0)
 	{
+		if(aimtime == 30) Sound("GetArrow*.ogg");
+		if(aimtime == 12) Sound("BowLoad*.ogg");
+	
 		aimtime--;
 		if(aimtime == 1)
 		{
@@ -97,6 +109,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 				else if(clonk->GetDir() == 0 && angle > 0) clonk->SetDir(1);
 			}
 		if(Abs(angle) > 160) angle = 160;
+		
 		// Adjust the aiming position
 		var pos = clonk->GetAnimationPosition(iAnimLoad);
 		pos += BoundBy(2000*Abs(angle)/180-pos, -100, 100);
@@ -112,7 +125,7 @@ public func ControlUseStop(object clonk, int x, int y)
 	StopAnimation(iDrawAnim);
 	clonk->DetachMesh(iArrowMesh);
 
-	// "canceled"	
+	// not done reloading or out of range: cancel
 	var angle = clonk->GetAnimationPosition(iAnimLoad)*180/2000;
 	if(!clonk->GetDir()) angle = 360-angle;
 	if(aimtime > 0 || !ClonkAimLimit(clonk,angle))
@@ -121,12 +134,14 @@ public func ControlUseStop(object clonk, int x, int y)
 		return true;
 	}
 	
+	// shoot
 	if(Contents(0))
 	{
 		if(Contents(0)->~IsArrow())
 		{
 			var arrow = Contents(0)->TakeObject();
 			arrow->Launch(angle,100,clonk);
+			Sound("BowShoot*.ogg");
 		}
 	}
 
@@ -145,6 +160,8 @@ public func ControlUseCancel(object clonk, int x, int y)
 	ResetClonk(clonk);
 	return true;
 }
+
+/* ++++++++ Animation functions ++++++++ */
 
 public func ResetClonk(clonk)
 {
@@ -175,6 +192,14 @@ public func Shoot(object clonk, int x, int y)
 	ResetClonk(clonk);
 }
 
+public func AddArrow(clonk)
+{
+	if(!fAiming) return;
+	iArrowMesh = clonk->AttachMesh(HARW, "pos_hand1", "main", nil);
+}
+
+/* ++++++++ Helper functions ++++++++ */
+
 private func ClonkAimLimit(object clonk, int angle)
 {
 	angle = Normalize(angle,-180);
@@ -187,10 +212,12 @@ private func ClonkAimLimit(object clonk, int angle)
 private func ClonkCanAim(object clonk)
 {
 	var p = clonk->GetProcedure();
-//	if(clonk->GetHandAction()) return false;
+	//if(clonk->GetHandAction()) return false;
 	if(p != "WALK" && p != "ATTACH" && p != "FLIGHT") return false;
 	return true;
 }
+
+/* +++++++++++ Slow walk +++++++++++ */
 
 func FxIntWalkSlowStart(pTarget, iNumber, fTmp)
 {
@@ -202,16 +229,22 @@ func FxIntWalkSlowStop(pTarget, iNumber)
 	pTarget->ResetPhysical("Walk");
 }
 
-public func AddArrow(clonk)
-{
-	if(!fAiming) return;
-	iArrowMesh = clonk->AttachMesh(HARW, "pos_hand1", "main", nil);
-}
+/* +++++++++++ Various callbacks +++++++++ */
 
 func RejectCollect(id arrowid, object arrows)
 {
 	// arrows are not arrows? decline!
 	if(!(arrows->~IsArrow())) return true;
+}
+
+func Selection()
+{
+	Sound("DrawBow.ogg");
+}
+
+func Deselection()
+{
+	Sound("PutAwayBow.ogg");
 }
 
 func Definition(def) {

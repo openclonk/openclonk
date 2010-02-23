@@ -1,31 +1,43 @@
 /*-- Musket Ball --*/
 
-#strict 2
 #include L_ST
 
 public func MaxStackCount() { return 8; }
 
 public func IsMusketAmmo() { return 1; }
 
+public func ProjectileDamage() { return 10; }
 
 protected func Hit()
 {
-	RemoveEffect("HitCheck",this);
-	SetVelocity(Random(359)); //stops object from careening over the terrain, ricochets would be better :p
+	if(GetEffect("HitCheck",this))
+	{
+		RemoveEffect("HitCheck",this);
+	
+		Sound("BulletHitGround*.ogg");
+		
+		// TODO: ricochets? nice effects?
+		RemoveObject();
+	}
 }
 
-public func AffectShot(object shooter,int ix,int iy)
+public func Launch(object shooter, int angle, int dist, int speed)
 {
-	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);	
+	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
+
+	LaunchProjectile(angle+RandomX(-2, 2), dist, speed);	
 	//Smush vertexes into one point
 	SquishVertices(true);
+	
+	// sound
+	Sound("BulletShot*.ogg");
 }
 
 private func HitObject(object pVictim)
 {
-	Message("Ouch!", pVictim); //Remove when sound works; for debug
+	Sound("ProjectileHitLiving*.ogg");
 
-	pVictim->DoEnergy(-RandomX(10,15));
+	pVictim->DoEnergy(-ProjectileDamage());
 	RemoveObject();
 }
 

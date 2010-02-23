@@ -33,6 +33,7 @@ public func Launch(int angle, int str, object shooter)
 	SetXDir(xdir);
 	SetYDir(ydir);
 	SetR(angle);
+	Sound("ArrowShoot*.ogg");
 	
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 	AddEffect("InFlight", this, 1,1, this);
@@ -42,6 +43,8 @@ private func Stick()
 {
 	if(GetEffect("InFlight",this))
 	{
+		Sound("ArrowHitGround.ogg");
+	
 		RemoveEffect("HitCheck",this);
 		RemoveEffect("InFlight",this);
 	
@@ -49,15 +52,15 @@ private func Stick()
 		SetYDir(0);
 		SetRDir(0);
 	
-		var x=Sin(GetR(),+2);
-		var y=Cos(GetR(),-2);
+		var x=Sin(GetR(),+4);
+		var y=Cos(GetR(),-4);
 		var mat = GetMaterial(x,y);
 		if(mat != -1)
 		{
 			if(GetMaterialVal("DigFree","Material",mat))
 			{
 			// stick in landscape
-			SetVertex(2,VTX_Y,-3,1);
+			SetVertex(2,VTX_Y,-6,1);
 			}
 		}
 	}
@@ -74,6 +77,8 @@ public func HitObject(object obj)
 	obj->~OnArrowHit(this);
 	if(!this) return;
 	// ouch!
+	Sound("ProjectileHitLiving*.ogg");
+	
 	var dmg = ArrowStrength()*speed/100;
 	if(obj->GetAlive())
 	{
