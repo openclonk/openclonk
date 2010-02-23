@@ -29,6 +29,7 @@
 #include <C4Log.h>
 #include <C4Network2Stats.h>
 #include <C4MouseControl.h>
+#include <C4GamePadCon.h>
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4355)
@@ -530,6 +531,7 @@ void C4GameControl::PrepareInput()
 {
 	// add per-controlframe input
 	::MouseControl.DoMoveInput();
+	if (Application.pGamePadControl) Application.pGamePadControl->DoAxisInput();
 }
 
 C4GameControl Control;

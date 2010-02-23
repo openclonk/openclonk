@@ -159,7 +159,7 @@ bool C4Application::DoInit()
 			return true;
 #endif
 
-	DDrawCfg.Shader = Config.Graphics.EnableShaders;
+	DDrawCfg.Shader = !!Config.Graphics.EnableShaders;
 
 	// Fixup resolution
 	ApplyResolutionConstraints();

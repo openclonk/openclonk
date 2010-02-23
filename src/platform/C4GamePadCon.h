@@ -48,9 +48,12 @@ class C4GamePadControl {
 			int iRefCount;
 			uint32_t Buttons;
 			CStdGamePad::AxisPos AxisPosis[CStdGamepad_MaxAxis];
+			int32_t AxisStrengths[CStdGamepad_MaxAxis];
 			};
 		Pad Gamepads[CStdGamepad_MaxGamePad];
 		int iNumGamepads;
+
+		enum { AxisStrengthChangeThreshold = 2 }; // if axis strength change > this value, a new control is issued
 
 	public:
 		void OpenGamepad(int id);  // add gamepad ref
@@ -67,7 +70,8 @@ class C4GamePadControl {
 		~C4GamePadControl();
 		void Clear();
 		int GetGamePadCount();
-		void Execute();
+		void Execute(bool send_axis_strength_changes=false);
+		void DoAxisInput(); // period axis strength update controls sent on each control frame creation
 		static bool AnyButtonDown();
 };
 

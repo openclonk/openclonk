@@ -60,20 +60,24 @@ void C4GamePadControl::Clear()
 	}
 
 void C4GamePadControl::OpenGamepad(int id)
-	{
+{
 	if (!Inside(id, 0, CStdGamepad_MaxGamePad-1)) return;
 	// add gamepad ref
 	if (!(Gamepads[id].iRefCount++))
-		{
+	{
 		// this is the first gamepad opening: Init it
 		Pad &rPad = Gamepads[id];
 		rPad.pGamepad = new CStdGamePad(id);
 		rPad.Buttons= 0;
-		for (int i=0; i< CStdGamepad_MaxAxis; ++i) rPad.AxisPosis[i] = CStdGamePad::Mid;
+		for (int i=0; i< CStdGamepad_MaxAxis; ++i)
+		{
+			rPad.AxisPosis[i] = CStdGamePad::Mid;
+			rPad.AxisStrengths[i] = 0;
+		}
 		rPad.pGamepad->SetCalibration(&(Config.Gamepads[id].AxisMin[0]), &(Config.Gamepads[id].AxisMax[0]), &(Config.Gamepads[id].AxisCalibrated[0]));
 		++iNumGamepads;
-		}
 	}
+}
 
 void C4GamePadControl::CloseGamepad(int id)
 	{
@@ -98,7 +102,7 @@ int C4GamePadControl::GetGamePadCount()
 
 const int MaxGamePadButton=10;
 
-void C4GamePadControl::Execute()
+void C4GamePadControl::Execute(bool send_axis_strength_changes)
 	{
 	// Get gamepad inputs
 	int iNum = iNumGamepads;
@@ -113,11 +117,13 @@ void C4GamePadControl::Execute()
 			{
 			int32_t iStrength = 100;
 			CStdGamePad::AxisPos eAxisPos = rPad.pGamepad->GetAxisPos(iAxis, &iStrength), ePrevAxisPos = rPad.AxisPosis[iAxis];
+			int32_t iPrevStrength = rPad.AxisStrengths[iAxis];
 			// Evaluate changes and pass single controls
 			// this is a generic Gamepad-control: Create events
-			if (eAxisPos != ePrevAxisPos)
+			if (eAxisPos != ePrevAxisPos || (send_axis_strength_changes && Abs(iPrevStrength-iStrength) > AxisStrengthChangeThreshold))
 				{
 				rPad.AxisPosis[iAxis] = eAxisPos;
+				rPad.AxisStrengths[iAxis] = iStrength;
 				if (ePrevAxisPos != CStdGamePad::Mid)
 					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Axis(iAxis, (ePrevAxisPos==CStdGamePad::High))), KEYEV_Up, false, false, false, false);
 				if (eAxisPos != CStdGamePad::Mid)
@@ -138,6 +144,13 @@ void C4GamePadControl::Execute()
 			}
 		}
 	}
+
+void C4GamePadControl::DoAxisInput()
+	{
+	// Send axis strength changes
+	Execute(true);
+	}
+
 
 bool C4GamePadControl::AnyButtonDown()
 	{
