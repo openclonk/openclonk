@@ -41,7 +41,7 @@ public func FxMoveTimer()
 		var angle_diff = Normalize(target_angle - angle, -1800, 10);
 		var dir = angle_diff / Abs(angle_diff);
 		
-		angle = angle + angle_diff * analog_strength / 100;
+		angle = angle + angle_diff * analog_strength / 100 / 7;
 	}
 	
 	UpdatePosition();
@@ -109,6 +109,7 @@ public func Aim(int ctrl, int strength, int repeat, int release)
 		if(ctrl == CON_AimDown) ypos = strength;
 		if(ctrl == CON_AimLeft) xpos = -strength;
 		if(ctrl == CON_AimRight) xpos = strength;
+		Message("%d,%d",this,xpos,ypos);
 	}
 	// stop
 	else if (release)
