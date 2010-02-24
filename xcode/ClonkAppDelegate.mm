@@ -1,11 +1,11 @@
-// Roughly adapted from the original SDLMain.m; haxxed to death by teh Gurkendoktor.
+// Roughly adapted from the original ClonkAppDelegate.m; haxxed to death by teh Gurkendoktor.
 // Look at main() to get an idea for what happens here.
 
-#import "SDLMain.h"
+#import "ClonkAppDelegate.h"
 #import "SDL/SDL.h"
 
 /* The main class of the application, the appl¤ication's delegate */
-@implementation SDLMain
+@implementation ClonkAppDelegate
 
 - (id) init
 {

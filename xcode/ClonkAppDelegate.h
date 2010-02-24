@@ -7,7 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-@interface SDLMain: NSObject
+@interface ClonkAppDelegate: NSObject
 {
 	NSMutableArray* gatheredArguments;
 	NSString* clonkDirectory;
