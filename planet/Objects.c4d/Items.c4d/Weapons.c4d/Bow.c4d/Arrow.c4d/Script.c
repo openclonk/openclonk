@@ -52,15 +52,15 @@ private func Stick()
 		SetYDir(0);
 		SetRDir(0);
 	
-		var x=Sin(GetR(),+4);
-		var y=Cos(GetR(),-4);
+		var x=Sin(GetR(),+9);
+		var y=Cos(GetR(),-9);
 		var mat = GetMaterial(x,y);
 		if(mat != -1)
 		{
 			if(GetMaterialVal("DigFree","Material",mat))
 			{
 			// stick in landscape
-			SetVertex(2,VTX_Y,-6,1);
+			SetVertex(2,VTX_Y,-12,1);
 			}
 		}
 	}

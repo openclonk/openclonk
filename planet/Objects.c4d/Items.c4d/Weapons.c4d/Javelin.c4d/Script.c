@@ -124,7 +124,7 @@ public func DoThrow(object pClonk, int angle)
 	
 	// how fast the javelin is thrown depends very much on
 	// the speed of the clonk
-	var speed = 1000 * pClonk->GetPhysical("Throw") / 12000 + 100 * pClonk->GetXDir()*2;
+	var speed = 1000 * pClonk->GetPhysical("Throw") / 12000 + 100 * Abs(pClonk->GetXDir())*2;
 	var xdir = Sin(angle,+speed);
 	var ydir = Cos(angle,-speed);
 	javelin->SetXDir(xdir,1000);
@@ -138,7 +138,7 @@ public func DoThrow(object pClonk, int angle)
 	power=0;
 	
 	fAiming = -1;
-  pClonk->UpdateAttach();
+	pClonk->UpdateAttach();
 	ScheduleCall(this, "ResetClonk", JAVE_ThrowTime/2, 1, pClonk);
 }
 
@@ -150,7 +150,7 @@ public func ResetClonk(clonk)
 
 	clonk->SetHandAction(0);
 
-  clonk->StopAnimation(clonk->GetRootAnimation(10));
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
 
 	clonk->UpdateAttach();
 }
@@ -190,7 +190,7 @@ public func HitObject(object obj)
     }
 }
 
-private func Hit()
+protected func Hit()
 {	
 	if(GetEffect("Flight",this))
 	{
@@ -200,10 +200,28 @@ private func Hit()
 
 		RemoveEffect("Flight",this);
 		RemoveEffect("HitCheck",this);
+		
+		var x=Sin(GetR(),+16);
+		var y=Cos(GetR(),-16);
+		var mat = GetMaterial(x,y);
+		if(mat != -1)
+		{
+			if(GetMaterialVal("DigFree","Material",mat))
+			{
+			// stick in landscape
+			SetVertex(2,VTX_Y,-18,1);
+			}
+		}
 		return;
 	}
 	
 	Sound("WoodHit");
+}
+
+func Entrance()
+{
+	// reset sticky-vertex
+	SetVertex(2,VTX_Y,0,1);
 }
 
 protected func FxFlightStart(object pTarget, int iEffectNumber)

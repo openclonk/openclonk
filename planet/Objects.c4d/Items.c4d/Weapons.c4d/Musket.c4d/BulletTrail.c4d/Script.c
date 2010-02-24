@@ -70,7 +70,7 @@ private func Traveling()
 
 public func Hit()
 {
-	Message("OWWWWW");
+	Remove();
 }
 
 public func Remove() {
@@ -78,6 +78,7 @@ public func Remove() {
 	SetYDir();
 	l = Min(l,1000*Distance(x,y,GetX(),GetY())/this["ActMap"]["Travel"]["Hgt"]);
 	fRemove = true;
+	pShot = nil;
 }
 
 public func DrawTransform() {
