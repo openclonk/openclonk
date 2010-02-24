@@ -7,16 +7,24 @@
 /* The main class of the application, the appl¤ication's delegate */
 @implementation SDLMain
 
-- (id) init {
+- (id) init
+{
 	if (self = [super init]) {
-		// first argument is path to executable (for authenticity)
-		gatheredArguments = [NSMutableArray arrayWithCapacity:10];
+		gatheredArguments = [[NSMutableArray arrayWithCapacity:10] retain];
 		[gatheredArguments addObject:[[NSBundle mainBundle] executablePath]];
 	}
 	return self;
 }
 
-- (void) release {
+- (void)awakeFromNib
+{
+	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:self
+												       andSelector:@selector(getUrl:withReplyEvent:)
+													 forEventClass:kInternetEventClass andEventID:kAEGetURL];
+}
+
+- (void) release
+{
 	if (terminateRequested)
 		[NSApp replyToApplicationShouldTerminate:YES];
 	[super release];
@@ -28,17 +36,18 @@
     
 	NSArray* clonkFileNameExtensions = [NSArray arrayWithObjects:@"c4d", @"c4s", @"c4f", @"c4g", @"c4s", nil];
 	if ([clonkFileNameExtensions containsObject:pathExtension])
-	 {
-		 // later decide whether to install or run
-		 addonSupplied = filename;
-		 if (hasFinished) {
-			 // if application is already running install immediately
-			 [self installAddOn];
-			 return YES;
-		 }
-		 // still add to gatheredArguments
-		 // return YES;
-	 }
+	{
+		// later decide whether to install or run
+		addonSupplied = filename;
+		if (YES)
+		{
+			// if application is already running install immediately
+			[self installAddOn];
+			return YES;
+		}
+		// still add to gatheredArguments
+		// return YES;
+	}
 	
 	// Key/Update files or simply arguments: Just pass to engine, will install
 	[gatheredArguments addObject:filename];
@@ -52,6 +61,30 @@
 	[gatheredArguments addObject:url];
 }
 
+- (void)gameLoop
+{
+	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[self clonkDirectory]];
+
+	[NSApp activateIgnoringOtherApps:YES];
+	
+	/*if ([self argsLookLikeItShouldBeInstallation:argv argc:argc]) {
+		if ([self installAddOn])
+			return 0;
+	}*/
+
+    // Hand off to Clonk code
+	char** newArgv;
+	int newArgc;
+	[self makeFakeArgs:&newArgv argc:&newArgc];
+	int status = SDL_main(newArgc, newArgv);
+	
+	for (int i = newArgc-1; i >= 0; i--)
+	{
+		free (newArgv[i]);
+	}
+	free(newArgv);
+}
+
 /* Called when the internal event loop has just started running */
 - (void) applicationDidFinishLaunching: (NSNotification *) note
 {
@@ -59,12 +92,19 @@
 	for (NSString* key in args) {
 		[gatheredArguments addObject:[NSString stringWithFormat:@"/%@:%@", key, [args valueForKey:key]]];
 	}*/
-	hasFinished = YES;
+	[self gameLoop];
+	gameLoopFinished = YES;
+	[NSApp terminate:self];
 }
 
-- (NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication*)application {
-	[self terminate:application];
-	return NSTerminateCancel; // cancels logoff but it's the only way that does not interrupt the lifecycle of the application
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)application
+{
+	if (!gameLoopFinished)
+	{
+		[self terminate:application];
+		return NSTerminateCancel; // cancels logoff but it's the only way that does not interrupt the lifecycle of the application
+	}
+	return NSTerminateNow;
 }
 
 - (void)terminate:(NSApplication*)sender
@@ -75,12 +115,9 @@
 	SDL_PushEvent(&event);
 }
 
-- (BOOL)hasFinished {
-	return hasFinished;
-}
-
 // arguments that should be converted to a c char* array and then passed on to SDL_main
-- (NSMutableArray*)gatheredArguments {
+- (NSMutableArray*)gatheredArguments
+{
 	return gatheredArguments;
 }
 
@@ -94,8 +131,9 @@
 }
 
 // Look for -psn argument which generally is a clue that the application should open a file (double-clicking, calling /usr/bin/open and such)
-- (BOOL) argsLookLikeItShouldBeInstallation:(char**)argv argc:(int)argc {
-	// not having this check leads to deletion of Clonk foler -.-
+- (BOOL) argsLookLikeItShouldBeInstallation:(char**)argv argc:(int)argc
+{
+	// not having this check leads to deletion of Clonk folder -.-
 	if (!addonSupplied)
 		return NO;
 	for (int i = 0; i < argc; i++) {
@@ -106,7 +144,8 @@
 }
 
 // Copies the add-on to the clonk directory
-- (BOOL) installAddOn {
+- (BOOL) installAddOn
+{
 	
 	if (!addonSupplied)
 		return NO;
@@ -141,11 +180,13 @@
 }
 
 // convert gatheredArguments to c array
-- (void)makeFakeArgs:(char***)argv argc:(int*)argc {
+- (void)makeFakeArgs:(char***)argv argc:(int*)argc
+{
 	int argCount = [gatheredArguments count];
 	char** args = (char**)malloc(sizeof(char*) * argCount);
-	for (int i = 0; i < argCount; i++) {
-		args[i] = strdup([[gatheredArguments objectAtIndex:i] cStringUsingEncoding:NSASCIIStringEncoding]);
+	for (int i = 0; i < argCount; i++)
+	{
+		args[i] = strdup([[gatheredArguments objectAtIndex:i] cStringUsingEncoding:NSUTF8StringEncoding]);
 	}
 	*argv = args;
 	*argc = argCount;
@@ -158,56 +199,7 @@
 #endif
 
 /* Main entry point to executable - should *not* be SDL_main! */
-int main (int argc, char **argv)
+int main (int argc, const char **argv)
 {
-    // Catches whatever would be leaked otherwise.
-    // Gets rid of warnings from hax0red SDL framework.
-    [[NSAutoreleasePool alloc] init];
-	
-	SDLMain* sdlMain = [[SDLMain alloc] init];
-	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[sdlMain clonkDirectory]];
-	
-    // Set up application & delegate.
-    [NSApplication sharedApplication];
-    [NSApp setDelegate:sdlMain];
-	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:sdlMain
-													   andSelector:@selector(getUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
-    [NSBundle loadNibNamed:@"SDLMain" owner:NSApp];
-    [NSApp finishLaunching];
-	
-	[NSApp activateIgnoringOtherApps:YES];
-    
-    // Now there's openFile calls and all that waiting for us in the event queue.
-    // Fetch events until applicationHasFinishedLaunching was called.
-    while (![sdlMain hasFinished]) {
-        NSEvent *event = [NSApp nextEventMatchingMask:NSAnyEventMask
-											untilDate:nil
-											   inMode:NSDefaultRunLoopMode
-											  dequeue:YES ];
-        if ( event == nil ) {
-            break;
-        }
-        [NSApp sendEvent:event];
-    }
-	
-	if ([sdlMain argsLookLikeItShouldBeInstallation:argv argc:argc]) {
-		if ([sdlMain installAddOn])
-			return 0;
-	}
-		
-    // Hand off to Clonk code
-	char** newArgv;
-	int newArgc;
-	[sdlMain makeFakeArgs:&newArgv argc:&newArgc];
-	int status = SDL_main(newArgc, newArgv);
-	
-	// I don't think this is even necessary since the OS will just wipe it all out when the process ends
-	for (int i = newArgc-1; i >= 0; i--) {
-		free (newArgv[i]);
-	}
-	free(newArgv);
-	
-	[sdlMain release];
-	
-    return status;
+	return NSApplicationMain(argc, argv);
 }

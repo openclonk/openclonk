@@ -9,12 +9,12 @@
 
 @interface SDLMain: NSObject
 {
-	NSString* clonkDirectory;
 	NSMutableArray* gatheredArguments;
+	NSString* clonkDirectory;
 	NSString* addonSupplied;
 	BOOL doNotLaunch;
-	BOOL hasFinished;
 	BOOL terminateRequested;
+	BOOL gameLoopFinished;
 }
 - (NSString*) clonkDirectory;
 - (BOOL) argsLookLikeItShouldBeInstallation:(char**)argv argc:(int)argc;
