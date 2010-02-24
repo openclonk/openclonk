@@ -30,6 +30,13 @@
 #include <C4Log.h>
 #include <C4Game.h>
 
+// regardless of WIN32 or SDL
+void C4GamePadControl::DoAxisInput()
+	{
+	// Send axis strength changes
+	Execute(true);
+	}
+
 #ifdef _WIN32
 //#include <StdJoystick.h>
 
@@ -147,13 +154,6 @@ void C4GamePadControl::Execute(bool send_axis_strength_changes)
 		}
 	}
 
-void C4GamePadControl::DoAxisInput()
-	{
-	// Send axis strength changes
-	Execute(true);
-	}
-
-
 bool C4GamePadControl::AnyButtonDown()
 	{
 	return false;
@@ -199,7 +199,7 @@ C4GamePadControl::C4GamePadControl() {
 C4GamePadControl::~C4GamePadControl() {
 }
 
-void C4GamePadControl::Execute() {
+void C4GamePadControl::Execute(bool) {
 	#ifndef USE_SDL_MAINLOOP
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) {
