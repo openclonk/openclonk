@@ -1201,11 +1201,11 @@
 	#
 	# Use								Joy1A
 	# Throw								Joy1G
-	# Drop								Joy1Down+Joy1A
+	# Drop								Joy1Down+Joy1G
 	#
 	# UseAlt							Joy1D
 	# ThrowAlt							Joy1H
-	# DropAlt							Joy1Down+Joy1D
+	# DropAlt							Joy1Down+Joy1H
 	#
 	# PushEnter, GrabNext, Ungrab,
 	# Grab, Exit, Enter					Joy1B
@@ -1344,7 +1344,7 @@
 		Control=UseDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1A
+		Key=Joy1Down,Joy1G
 		Priority=150
 		Control=Drop
 		
@@ -1358,7 +1358,7 @@
 		Control=UseAltDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1F
+		Key=Joy1Down,Joy1H
 		Priority=150
 		Control=DropAlt
 		

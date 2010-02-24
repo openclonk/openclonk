@@ -205,7 +205,7 @@ func DoFireworks(int speed)
 	}
 	CastParticles("Spark",60,190,0,0,40,70,color,color);
 	
-	CreateParticle("FireworkGlow",0,0,0,0,3500,color | (200 & 255)<<24);
+	CreateParticle("Flash",0,0,0,0,3500,color | (200 & 255)<<24);
 	
 	Explode(30);
 }
@@ -237,7 +237,7 @@ func FxFireworkTimer(object target, int num, int time)
 	var xdir = Sin(angle,speed);
 	var ydir = -Cos(angle,speed);
 	
-	CreateParticle("FireworkGlow",x/100,y/100,xdir/100,ydir/100,50,EffectVar(4, target, num) | (200 & 255)<<24);
+	CreateParticle("Flash",x/100,y/100,xdir/100,ydir/100,50,EffectVar(4, target, num) | (200 & 255)<<24);
 	
 	// gravity
 	ydir += GetGravity()*18/100;

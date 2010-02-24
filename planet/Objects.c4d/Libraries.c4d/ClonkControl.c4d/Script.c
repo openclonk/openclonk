@@ -1037,12 +1037,6 @@ public func ControlJump()
 	if (GetProcedure() == "WALK")
 	{
 		ydir = GetPhysical("Jump")/1000;
-		// forward jump
-		if (Abs(GetXDir()) >= 20)
-		{
-			xdir = 10;
-			ydir = ydir*3/4;
-		}
 	}
 	else if (InLiquid())
 	{

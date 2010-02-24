@@ -5,6 +5,12 @@ private func Hit()
   Sound("WoodHit"); //TODO Some metal sond
 }
 
+// TODO:
+// The clonk must be able to duck behind the shield
+// when he ducks, he is at least invulnerable against spears and arrows,
+// other bonuses perhaps too
+
+
 public func HoldingEnabled() { return true; }
 
 public func GetCarryMode() { return CARRY_HandBack; }

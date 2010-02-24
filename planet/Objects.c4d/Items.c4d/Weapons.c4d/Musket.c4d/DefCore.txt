@@ -12,7 +12,7 @@ VertexY=-2,-2,2
 VertexFriction=50,50,70
 Picture=22,0,20,21
 Value=35
-Mass=15
+Mass=10
 Collectible=1
 Components=METL=2;WOOD=1;
 Rebuy=1

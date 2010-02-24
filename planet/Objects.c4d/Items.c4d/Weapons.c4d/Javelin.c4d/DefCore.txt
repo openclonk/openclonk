@@ -12,7 +12,7 @@ VertexX=0,0
 VertexY=-12,13
 VertexFriction=100,50
 Components=WOOD=2;METL=1;
-Mass=45
+Mass=9
 Rebuy=1
 Collectible=1
 Rotate=1

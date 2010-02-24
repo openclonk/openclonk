@@ -9,7 +9,7 @@ Vertices=3
 VertexY=-6,6,0
 VertexFriction=120,120,120
 Value=15
-Mass=15
+Mass=8
 Components=WOOD=5
 Picture=4,0,21,21
 Collectible=1

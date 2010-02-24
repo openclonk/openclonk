@@ -1,0 +1,10 @@
+[DefCore]
+id=TRAI
+Category=C4D_Vehicle
+Width=5
+Height=5
+Offset=-2,-2
+BorderBound=7
+
+[Physical]
+Float=100000

@@ -163,12 +163,16 @@ protected func ControlUseStop(object pClonk, ix, iy)
 	// Fire
 	if(Contents(0))
 	{
-		if(Contents(0)->IsMusketAmmo() && PathFree(GetX(),GetY(),GetX()+Sin(180-Angle(0,0,ix,iy),iBarrel),GetY()+Cos(180-Angle(0,0,ix,iy),iBarrel)))
+		if(Contents(0)->IsMusketAmmo())
 		{
-			var angle = pClonk->GetAnimationPosition(iAim)*180/(pClonk->GetAnimationLength("MusketAimArms"));
-			if(!pClonk->GetDir()) angle = 360-angle;
-			FireWeapon(pClonk, ix, iy, angle);
-			ScheduleCall(this, "ResetClonk", 20, 1, pClonk);
+//			if(PathFree(GetX(),GetY(),GetX()+Sin(180-Angle(0,0,ix,iy),iBarrel),GetY()+Cos(180-Angle(0,0,ix,iy),iBarrel)))
+//			{
+				var displayangle = pClonk->GetAnimationPosition(iAim)*180/(pClonk->GetAnimationLength("MusketAimArms"));
+				if(!pClonk->GetDir()) displayangle = 360-displayangle;
+				
+				FireWeapon(pClonk, ix, iy, displayangle);
+				ScheduleCall(this, "ResetClonk", 20, 1, pClonk);
+//			}
 		}
 	}
 	return true;
@@ -193,26 +197,32 @@ public func ResetClonk(clonk)
 	RemoveEffect("IntWalkSlow", clonk);
 }
 
-private func FireWeapon(object pClonk, iX, iY, iAngle)
+private func FireWeapon(object pClonk, int iX, int iY, int displayangle)
 {
 	var shot = Contents(0)->TakeObject();
 	var angle = Normalize(Angle(0,0,iX,iY)-180);
 	if(angle>180 && pClonk->GetDir()==1) angle=angle-180;
 	if(angle<180 && pClonk->GetDir()==0) angle=angle+180;
-	shot->Launch(pClonk,angle+RandomX(-2, 2),iBarrel,300);
+	shot->Launch(pClonk,angle,iBarrel,300);
 	
 	loaded = false;
 
 	Sound("GunShoot*.ogg");
 
-	// Muzzle Flash
-	var IX=Sin(180-iAngle,MuskFront);
-	var IY=Cos(180-iAngle,MuskUp)+MuskOffset;
-	if(Abs(Normalize(iAngle,-180)) > 90)
-		IY=Cos(180-iAngle,MuskDown)+MuskOffset;
-	CreateParticle("MuzzleFlash",IX,IY,+Sin(iAngle,500),-Cos(iAngle,500),300,RGB(255,255,255),pClonk);
-	//Gun Smoke
-	CastParticles("GunSmoke",10,3,IX,IY,20,50,RGBa(110,110,110,128),RGB(150,150,150,128));
+	// Muzzle Flash & gun smoke
+	var IX=Sin(180-displayangle,MuskFront);
+	var IY=Cos(180-displayangle,MuskUp)+MuskOffset;
+	if(Abs(Normalize(displayangle,-180)) > 90)
+		IY=Cos(180-displayangle,MuskDown)+MuskOffset;
+
+	for(var i=0; i<10; ++i)
+	{
+		var speed = RandomX(0,10);
+		var r = displayangle;
+		CreateParticle("ExploSmoke",IX,IY,+Sin(r,speed)+RandomX(-2,2),-Cos(r,speed)+RandomX(-2,2),RandomX(100,400),RGBa(255,255,255,50));
+	}
+	CreateParticle("MuzzleFlash",IX,IY,+Sin(displayangle,500),-Cos(displayangle,500),450,RGB(255,255,255),pClonk);
+	CreateParticle("Flash",0,0,0,0,800,RGBa(255,255,64,150));
 }
 
 private func ClonkCanAim(object clonk)
