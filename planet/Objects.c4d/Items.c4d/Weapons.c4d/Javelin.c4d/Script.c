@@ -33,6 +33,8 @@ public func ControlUseStart(object pClonk, int x, int y)
 	pClonk->UpdateAttach();
 	iAim = pClonk->PlayAnimation("SpearAimArms", 10, Anim_Const(0), Anim_Const(1000));
 
+	Sound("DrawJavelin.ogg");
+	
 	var angle = Angle(0,0,x,y);
 	angle = Normalize(angle,-180);
 	pClonk->SetAnimationPosition(iAim, Anim_Const(Abs(angle)*pClonk->GetAnimationLength("SpearAimArms")/180));
@@ -119,9 +121,19 @@ protected func ControlUseCancel(object clonk, int x, int y)
 public func DoThrow(object pClonk, int angle)
 {
 	var javelin=TakeObject();
-	javelin->LaunchProjectile(angle+RandomX(-1, 1), 6, 90);
+	
+	// how fast the javelin is thrown depends very much on
+	// the speed of the clonk
+	var speed = 1000 * pClonk->GetPhysical("Throw") / 12000 + 100 * pClonk->GetXDir()*2;
+	var xdir = Sin(angle,+speed);
+	var ydir = Cos(angle,-speed);
+	javelin->SetXDir(xdir,1000);
+	javelin->SetYDir(ydir,1000);
+	
 	javelin->AddEffect("Flight",javelin,1,1,javelin,nil);
 	javelin->AddEffect("HitCheck",javelin,1,1,nil,nil,pClonk);
+	
+	Sound("ThrowJavelin*.ogg");
 	
 	power=0;
 	
@@ -156,6 +168,8 @@ public func HitObject(object obj)
 	obj->~OnArrowHit(this);
 	if(!this) return;
 	// ouch!
+	Sound("ProjectileHitLiving*.ogg");
+	
 	var dmg = JavelinStrength()*speed/100;
 	if(obj->GetAlive())
 	{
@@ -178,10 +192,18 @@ public func HitObject(object obj)
 
 private func Hit()
 {	
+	if(GetEffect("Flight",this))
+	{
+		Sound("JavelinHitGround.ogg");
+		
+		SetSpeed();
+
+		RemoveEffect("Flight",this);
+		RemoveEffect("HitCheck",this);
+		return;
+	}
+	
 	Sound("WoodHit");
-	SetSpeed();
-	RemoveEffect("Flight",this);
-	RemoveEffect("HitCheck",this);
 }
 
 protected func FxFlightStart(object pTarget, int iEffectNumber)

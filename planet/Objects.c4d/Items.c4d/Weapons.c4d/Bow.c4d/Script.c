@@ -236,7 +236,7 @@ func RejectCollect(id arrowid, object arrows)
 	// arrows are not arrows? decline!
 	if(!(arrows->~IsArrow())) return true;
 }
-
+/*
 func Selection()
 {
 	Sound("DrawBow.ogg");
@@ -246,7 +246,7 @@ func Deselection()
 {
 	Sound("PutAwayBow.ogg");
 }
-
+*/
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
 	SetProperty("PerspectiveR", 15000, def);

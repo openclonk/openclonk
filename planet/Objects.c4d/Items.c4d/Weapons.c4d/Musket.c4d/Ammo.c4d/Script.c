@@ -7,6 +7,7 @@ public func MaxStackCount() { return 8; }
 public func IsMusketAmmo() { return 1; }
 
 public func ProjectileDamage() { return 10; }
+public func FlightTime() { return 30; }
 
 protected func Hit()
 {
@@ -16,7 +17,8 @@ protected func Hit()
 	
 		Sound("BulletHitGround*.ogg");
 		
-		// TODO: ricochets? nice effects?
+		CastParticles("Spark",1,20,0,0,15,25,RGB(255,200,0),RGB(255,255,150));
+		
 		RemoveObject();
 	}
 }
@@ -26,8 +28,15 @@ public func Launch(object shooter, int angle, int dist, int speed)
 	AddEffect("HitCheck", this, 1,1, nil,nil, shooter);
 
 	LaunchProjectile(angle+RandomX(-2, 2), dist, speed);	
+	
+	// remove after some time
+	SetAction("Travel");
+
 	//Smush vertexes into one point
 	SquishVertices(true);
+	
+	// neat trail
+	CreateObject(TRAI,0,0)->Set(3, 200, this);
 	
 	// sound
 	Sound("BulletShot*.ogg");
@@ -81,6 +90,28 @@ private func SquishVertices(bool squish)
 
 }
 
+protected func Traveling()
+{
+	if(GetActTime() > FlightTime()) RemoveObject();
+}
+
+public func TrailColor(int time)
+{
+	return RGBa(255,255,255,240*Max(0,FlightTime()-time)/FlightTime());
+}
+
 func Definition(def) {
+	SetProperty("ActMap", {
+
+	Travel = {
+		Prototype = Action,
+		Name = "Travel",
+		Procedure = DFA_FLOAT,
+		NextAction = "Travel",
+		Length = 1,
+		Delay = 1,
+		FacetBase = 1,
+		StartCall = "Traveling"
+	}}, def);
   SetProperty("Name", "$Name$", def);
 }
