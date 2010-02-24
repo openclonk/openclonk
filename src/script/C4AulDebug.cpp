@@ -1,5 +1,3 @@
-#ifndef NOAULDEBUG
-
 #include <C4Include.h>
 #include <C4Version.h>
 #include <C4GameControl.h>
@@ -9,6 +7,8 @@
 
 #include "C4AulDebug.h"
 #include "C4AulExec.h"
+
+#ifndef NOAULDEBUG
 
 // *** C4AulDebug
 
