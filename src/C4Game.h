@@ -153,7 +153,9 @@ class C4Game
 		bool DebugMode;
 		// next mission to be played after this one
 		StdCopyStrBuf NextMission, NextMissionText, NextMissionDesc;
-
+	private:
+		// debug settings
+		uint16_t DebugPort; StdStrBuf DebugPassword, DebugHost; bool DebugWait;
 	public:
 		// Init and execution
 		void Default();

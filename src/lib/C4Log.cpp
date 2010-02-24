@@ -24,6 +24,7 @@
 
 #include <C4Include.h>
 #include <C4Log.h>
+#include <C4AulDebug.h>
 
 #include <C4Console.h>
 #include <C4GameLobby.h>
@@ -158,6 +159,12 @@ bool Log(const char *szMessage)
 	if (iDisableLog) return true;
 	// security
 	if(!szMessage) return false;
+
+#ifndef NOAULDEBUG
+	// Pass on to debugger
+	if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+		pDebug->OnLog(szMessage);
+#endif
 	// Pass on to console
 	Console.Out(szMessage);
 	// pass on to lobby

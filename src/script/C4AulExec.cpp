@@ -21,6 +21,7 @@
 
 #include <C4Include.h>
 #include <C4Aul.h>
+#include <C4AulDebug.h>
 
 #include <C4Object.h>
 #include <C4Config.h>
@@ -29,6 +30,10 @@
 #include <C4Log.h>
 #include <C4Record.h>
 #include <algorithm>
+
+#include <C4AulExec.h>
+
+C4AulExec AulExec;
 
 C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
 	{
@@ -50,11 +55,10 @@ void C4AulExecError::show()
 		}
 	}
 
-const int MAX_CONTEXT_STACK = 512;
-const int MAX_VALUE_STACK = 1024;
-
-void C4AulScriptContext::dump(StdStrBuf Dump)
+StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 	{
+	if (!Func)
+		return StdStrBuf("");
 	bool fDirectExec = !*Func->Name;
 	if(!fDirectExec)
 		{
@@ -96,193 +100,15 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 		Dump.AppendFormat(" (%s:%d)",
 			Func->pOrgScript->ScriptName.getData(),
 			SGetLine(Func->pOrgScript->GetScript(), CPos ? CPos->SPos : Func->Script));
-	// Log it
-	DebugLog(Dump.getData());
+	// Return it
+	return Dump;
 	}
 
-class C4AulExec
-	{
-
-	public:
-		C4AulExec()
-			: pCurCtx(Contexts - 1), pCurVal(Values - 1), iTraceStart(-1)
-		{ }
-
-	private:
-		C4AulScriptContext Contexts[MAX_CONTEXT_STACK];
-		C4Value Values[MAX_VALUE_STACK];
-
-		C4AulScriptContext *pCurCtx;
-		C4Value *pCurVal;
-
-		int iTraceStart;
-		bool fProfiling;
-		time_t tDirectExecStart, tDirectExecTotal; // profiler time for DirectExec
-		C4AulScript *pProfiledScript;
-
-	public:
-		C4Value Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value pPars[], bool fPassErrors, bool fTemporaryScript = false);
-		C4Value Exec(C4AulBCC *pCPos, bool fPassErrors);
-
-		void StartTrace();
-		void StartProfiling(C4AulScript *pScript); // resets profling times and starts recording the times
-		void StopProfiling(); // stop the profiler and displays results
-		void AbortProfiling() { fProfiling=false; }
-		inline void StartDirectExec() { if (fProfiling) tDirectExecStart = timeGetTime(); }
-		inline void StopDirectExec() { if (fProfiling) tDirectExecTotal += timeGetTime() - tDirectExecStart; }
-
-	private:
-
-		void PushContext(const C4AulScriptContext &rContext)
-		{
-			if(pCurCtx >= Contexts + MAX_CONTEXT_STACK - 1)
-				throw new C4AulExecError(pCurCtx->Obj, "context stack overflow!");
-			*++pCurCtx = rContext;
-			// Trace?
-			if(iTraceStart >= 0)
-				{
-				StdStrBuf Buf("T");
-				Buf.AppendChars('>', ContextStackSize() - iTraceStart);
-				pCurCtx->dump(Buf);
-				}
-			// Profiler: Safe time to measure difference afterwards
-			if (fProfiling) pCurCtx->tTime = timeGetTime();
-		}
-
-		void PopContext()
-		{
-			if(pCurCtx < Contexts)
-				throw new C4AulExecError(pCurCtx->Obj, "context stack underflow!");
-			// Profiler adding up times
-			if (fProfiling)
-				{
-				time_t dt = timeGetTime() - pCurCtx->tTime;
-				if (dt && pCurCtx->Func)
-					pCurCtx->Func->tProfileTime += dt;
-				}
-			// Trace done?
-			if(iTraceStart >= 0)
-				{
-				if(ContextStackSize() <= iTraceStart)
-					{
-					iTraceStart = -1;
-					}
-				}
-			if(pCurCtx->TemporaryScript)
-				delete pCurCtx->Func->Owner;
-			pCurCtx--;
-		}
-
-		void CheckOverflow(int iCnt)
-		{
-			if(ValueStackSize() + iCnt > MAX_VALUE_STACK)
-				throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack overflow!");
-		}
-
-		void PushString(C4String * Str)
-		{
-			CheckOverflow(1);
-			(++pCurVal)->SetString(Str);
-		}
-
-		void PushArray(C4ValueArray * Array)
-		{
-			CheckOverflow(1);
-			(++pCurVal)->SetArray(Array);
-		}
-		
-		void PushPropList(C4PropList * PropList)
-		{
-			CheckOverflow(1);
-			(++pCurVal)->SetPropList(PropList);
-		}
-
-		void PushValue(const C4Value &rVal)
-		{
-			CheckOverflow(1);
-			(++pCurVal)->Set(rVal);
-		}
-
-		void PushValueRef(C4Value &rVal)
-		{
-			CheckOverflow(1);
-			(++pCurVal)->SetRef(&rVal);
-		}
-
-		void PushNullVals(int iCnt)
-		{
-			CheckOverflow(iCnt);
-			pCurVal += iCnt;
-		}
-
-		bool PopValue()
-		{
-			if(LocalValueStackSize() < 1)
-				throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow!");
-			(pCurVal--)->Set0();
-			return true;
-		}
-
-		void PopValues(int n)
-		{
-			if(LocalValueStackSize() < n)
-				throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow!");
-			while(n--)
-				(pCurVal--)->Set0();
-		}
-
-		void PopValuesUntil(C4Value *pUntilVal)
-		{
-			if(pUntilVal < Values - 1)
-				throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack underflow!");
-			while(pCurVal > pUntilVal)
-				(pCurVal--)->Set0();
-		}
-
-		int ContextStackSize() const
-		{
-			return pCurCtx - Contexts + 1;
-		}
-
-		int ValueStackSize() const
-		{
-			return pCurVal - Values + 1;
-		}
-
-		int LocalValueStackSize() const
-		{
-			return ContextStackSize()
-				? pCurVal - pCurCtx->Vars - pCurCtx->Func->VarNamed.iSize + 1
-				: pCurVal - Values + 1;
-		}
-
-		void CheckOpPars(int iOpID)
-		{
-			// Get parameters
-			C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-
-			// Typecheck parameters
-			if(!pPar1->ConvertTo(C4ScriptOpMap[iOpID].Type1))
-				throw new C4AulExecError(pCurCtx->Obj,
-					FormatString("operator \"%s\" left side: got \"%s\", but expected \"%s\"!",
-						C4ScriptOpMap[iOpID].Identifier, pPar1->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
-			if(!pPar2->ConvertTo(C4ScriptOpMap[iOpID].Type2))
-				throw new C4AulExecError(pCurCtx->Obj,
-					FormatString("operator \"%s\" right side: got \"%s\", but expected \"%s\"!",
-						C4ScriptOpMap[iOpID].Identifier, pPar2->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type2)).getData());
-		}
-		void CheckOpPar(int iOpID)
-		{
-			// Typecheck parameter
-			if(!pCurVal->ConvertTo(C4ScriptOpMap[iOpID].Type1))
-				throw new C4AulExecError(pCurCtx->Obj,
-					FormatString("operator \"%s\": got \"%s\", but expected \"%s\"!",
-						C4ScriptOpMap[iOpID].Identifier, pCurVal->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
-		}
-		C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4Object *pObj = NULL, C4Def *pDef = NULL);
-	};
-
-C4AulExec AulExec;
+void C4AulScriptContext::dump(StdStrBuf Dump)
+{
+	// Log it
+	DebugLog(ReturnDump(Dump).getData());
+}
 
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
 	{
@@ -324,6 +150,13 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 
 C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	{
+
+#ifndef NOAULDEBUG
+	// Debugger pointer
+	C4AulDebug * const pDebug = ::ScriptEngine.GetDebugger();
+	if (pDebug)
+		pDebug->DebugStepIn(pCPos);
+#endif
 
 	// Save start context
 	C4AulScriptContext *pOldCtx = pCurCtx;
@@ -860,8 +693,14 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 						LogF("%s%s returned %s", Buf.getData(), pCurCtx->Func->Name, pCurVal->GetDataString().getData());
 						}
 
-					// External call?
+#ifndef NOAULDEBUG
+					// Notify debugger
 					C4Value *pReturn = pCurCtx->Return;
+					if(pDebug)
+						pDebug->DebugStepOut(pReturn ? (pCurCtx-1)->CPos + 1 : NULL, pCurCtx, pCurVal);
+#endif
+
+					// External call?
 					if(!pReturn)
 						{
 						// Get return value and stop executing.
@@ -1029,6 +868,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 					}
 
+				case AB_DEBUG:
+#ifndef NOAULDEBUG
+					if(pDebug) pDebug->DebugStep(pCPos);
+#endif
+					break;
+
 				default:
 					assert(false);
 				}
@@ -1112,6 +957,12 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		ctx.CPos = NULL;
 		PushContext(ctx);
 
+#ifndef NOAULDEBUG
+		// Notify debugger
+		if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+			pDebug->DebugStepIn(pSFunc->Code);
+#endif
+
 		// Jump to code
 		return pSFunc->Code;
 		}
@@ -1123,7 +974,6 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 		CallCtx.Obj = pObj;
 		CallCtx.Def = pDef;
 		CallCtx.Caller = pCurCtx;
-
 
 #ifdef DEBUGREC_SCRIPT
 		if (Game.FrameCounter >= DEBUGREC_START_FRAME)
@@ -1157,16 +1007,36 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			AddDbgRec(RCT_AulFunc, sCallText.getData(), sCallText.getLength()+1);
 			}
 #endif
+
 		// Execute
 #ifdef _DEBUG
 		C4AulScriptContext *pCtx = pCurCtx;
-#endif
+#endif		
 		if(pReturn > pCurVal)
 			PushValue(pFunc->Exec(&CallCtx, pPars, true));
 		else
 			pReturn->Set(pFunc->Exec(&CallCtx, pPars, true));
 #ifdef _DEBUG
 		assert(pCtx == pCurCtx);
+#endif
+
+#ifndef NOAULDEBUG
+		// Notify debugger
+		if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+			{
+			// Make dummy context
+			C4AulScriptContext ctx;
+			ctx.Obj = pObj;
+			ctx.Def = pDef;
+			ctx.Caller = pCurCtx;
+			ctx.Return = pReturn;
+			ctx.Pars = pPars;
+			ctx.Vars = pPars + pFunc->GetParCount();
+			ctx.Func = pSFunc;
+			ctx.TemporaryScript = false;
+			ctx.CPos = NULL;
+			pDebug->DebugStepOut(pCurCtx->CPos + 1, pCurCtx, pReturn);
+			}
 #endif
 
 		// Remove parameters from stack
