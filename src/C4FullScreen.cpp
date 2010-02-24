@@ -339,16 +339,11 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
             #ifdef USE_GL
             if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
             {
-                DDrawCfg.Windowed = !DDrawCfg.Windowed;
-                if (pGL) pGL->fFullscreen = !DDrawCfg.Windowed;
-		Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !DDrawCfg.Windowed);
+                Config.Graphics.Windowed = !Config.Graphics.Windowed;
+                if (pGL) pGL->fFullscreen = !Config.Graphics.Windowed;
+				Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
                 lpDDraw->InvalidateDeviceObjects();
                 lpDDraw->RestoreDeviceObjects();
-
-                if (DDrawCfg.Windowed)
-                	Config.Graphics.NewGfxCfgGL |= C4GFXCFG_WINDOWED;
-                else
-                	Config.Graphics.NewGfxCfgGL &= ~C4GFXCFG_WINDOWED;
 
                 break;
             }
