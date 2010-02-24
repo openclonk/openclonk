@@ -358,7 +358,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 {
 	if (!this) return false;
 	
-	//Message(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
+	Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
 	// aiming with mouse
 	if(using && ctrl == CON_Aim)
@@ -375,10 +375,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	// aiming with analog pad or keys
 	if(VirtualCursorAiming())
 	{
-		if (ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight)
+		if (ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight
+		||  ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
 		{
-			VirtualCursor()->Aim(ctrl,strength,repeat,release);
-			return true;
+			if(!(VirtualCursor()->IsAiming())) return false;
+			return VirtualCursor()->Aim(ctrl,strength,repeat,release);
 		}
 	}
 	
@@ -650,10 +651,8 @@ private func StopUseControl(control, int x, int y, object obj, bool cancel)
 	alt = false;
 	noholdingcallbacks = false;
 			
-	if (holding_enabled)
-	{
-		SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
-	}
+	SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+
 	if (virtual_cursor)
 		virtual_cursor->StopAim();
 		
@@ -709,7 +708,8 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	// click on secondary cancels primary and the other way round
 	if (using)
 	{
-		if (ctrl == CON_Use && alt || ctrl == CON_UseAlt && !alt)
+		if (ctrl == CON_Use && alt || ctrl == CON_UseAlt && !alt
+		||  ctrl == CON_UseDelayed && alt || ctrl == CON_UseAltDelayed && !alt)
 		{
 			CancelUseControl(control, x, y, using);
 			return true;
@@ -766,6 +766,10 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		}
 		else
 		{
+			// what about deadzone?
+			if (strength != nil && strength < CON_Gamepad_Deadzone)
+				return true;
+			
 			// Control*
 			if (ctrl == CON_Left)  if (obj->Call(Format("~%sLeft",control),this))  return true;
 			if (ctrl == CON_Right) if (obj->Call(Format("~%sRight",control),this)) return true;

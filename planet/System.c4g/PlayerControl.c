@@ -1,4 +1,7 @@
 
+
+static const CON_Gamepad_Deadzone = 60;
+
 // Functions to handle player controls (i.e., input keys)
 
 // PlayerControlRelease
@@ -179,13 +182,17 @@ global func GetEntranceObject()
 	return obj;
 }
 
-
 // Called when CON_Left/Right/Up/Down controls are issued/released
 // Return whether handled
 global func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 {
 	if (!this) return false;
 
+	// this is for controlling movement with Analogpad
+	if(!release)
+		if(strength != nil && strength < CON_Gamepad_Deadzone)
+			return true;
+	
 	var proc = GetProcedure();
 	// Some specific movement controls
 	if (!release)

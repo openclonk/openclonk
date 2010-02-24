@@ -1,8 +1,13 @@
+
+###############################################################################
+#                                                                             #
+#                                ControlDefs                                  #
+#                                                                             #
+###############################################################################
+
 [ControlDefs]
 
 	[ControlDef]
-	Identifier=None
-
 	# Summary
 	# --------
 	# Left Right Up Down Jump
@@ -18,7 +23,9 @@
 	#
 	# NextCrew PreviousCrew AllCrew
 	#
-	# MenuCancel MenuOK MenuDown MenuUp MenuLeft MenuRight
+	# MenuCancel MenuOK MenuDown MenuUp MenuLeft MenuRight MenuSelect
+	# ObjectMenuCancel ObjectMenuOK ObjectMenuSelect ObjectMenuSelectAll
+	# ObjectMenuDown ObjectMenuUp ObjectMenuLeft ObjectMenuRight
 	# PlayerMenu 
 	#
 	#
@@ -31,7 +38,7 @@
 	# CancelUse ThrowDelayed ThrowAltDelayed
 	# UseDelayed UseAltDelayed
 	# AimUp AimDown AimLeft AimRight
-	# AimXMin, AimXMax, AimYMin, AimYMax
+	# AimAxisUp AimAxisDown AimAxisLeft AimAxisRight
 	# 
 	# with Keyboard
 	# ------------------
@@ -50,24 +57,57 @@
 	
 	[ControlDef]
 	Identifier=AimUp
+	DefaultDisabled=1
 	GUIName=Aim up
 	GUIDesc=Aim up
 	Hold=1
 	
 	[ControlDef]
 	Identifier=AimDown
+	DefaultDisabled=1
 	GUIName=Aim down
 	GUIDesc=Aim down
 	Hold=1
 	
 	[ControlDef]
 	Identifier=AimLeft
+	DefaultDisabled=1
 	GUIName=Aim left
 	GUIDesc=Aim left
 	Hold=1
 	
 	[ControlDef]
 	Identifier=AimRight
+	DefaultDisabled=1
+	GUIName=Aim right
+	GUIDesc=Aim right
+	Hold=1
+	
+
+	[ControlDef]
+	Identifier=AimAxisUp
+	DefaultDisabled=1
+	GUIName=Aim up
+	GUIDesc=Aim up
+	Hold=1
+	
+	[ControlDef]
+	Identifier=AimAxisDown
+	DefaultDisabled=1
+	GUIName=Aim down
+	GUIDesc=Aim down
+	Hold=1
+	
+	[ControlDef]
+	Identifier=AimAxisLeft
+	DefaultDisabled=1
+	GUIName=Aim left
+	GUIDesc=Aim left
+	Hold=1
+	
+	[ControlDef]
+	Identifier=AimAxisRight
+	DefaultDisabled=1
 	GUIName=Aim right
 	GUIDesc=Aim right
 	Hold=1
@@ -280,8 +320,6 @@
 	Identifier=Hotkey0
 	GUIName=Select tenth
 	GUIDesc=Select tenth item
- 
-	# the stuff for the second item comes later
 	
 	# Crew 
 	
@@ -395,26 +433,28 @@
 	GUIDesc=In the menu
 	Action=MenuDown
 	
+	# hardcoded identifier called by engine mouse control - do not change!
+	
 	[ControlDef]
-	Identifier=ObjectMenuOK # hardcoded identifier called by engine mouse control - do not change!
+	Identifier=ObjectMenuOK
 	GUIName=OK
 	GUIDesc=Confirm in menus
 	Action=ObjectMenuOK
 	
 	[ControlDef]
-	Identifier=ObjectMenuOKAll # hardcoded identifier called by engine mouse control - do not change!
+	Identifier=ObjectMenuOKAll
 	GUIName=OK
 	GUIDesc=Confirm in menus
 	Action=ObjectMenuOKAll
 	
 	[ControlDef]
-	Identifier=ObjectMenuSelect # hardcoded identifier called by engine mouse control - do not change!
+	Identifier=ObjectMenuSelect
 	GUIName=MenuSelect
 	GUIDesc=Select specific item
 	Action=ObjectMenuSelect
 	
 	[ControlDef]
-	Identifier=ObjectMenuCancel # hardcoded identifier called by engine mouse control - do not change!
+	Identifier=ObjectMenuCancel
 	GUIName=Cancel
 	GUIDesc=Cancel or close the menu
 	Action=ObjectMenuCancel
@@ -451,12 +491,6 @@
 	GUIDesc=Open player menu
 	Action=Menu
 	
-	
-	[ControlDef]
-	Identifier=Test
-	GUIName=Test
-	GUIDesc=Test
-	
 	# Viewport Zoom
 	
 	[ControlDef]
@@ -470,18 +504,38 @@
 	GUIName=Zoom out
 	GUIDesc=Decrease viewport zoom
 	Action=ZoomOut
+	
 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+###############################################################################
+#                                                                             #
+#                                  ControlSets                                #
+#                                                                             #
+###############################################################################
  
 [ControlSets]
 
-	# Mouse control with keyboard
+	# ======================================================================= #
+	#                   Mouse control with keyboard (QWERTY)                  #
+	# ======================================================================= #
+	#
 	#
 	# Summary
 	# --------
-	# MenuLeft, Left					A
-	# MenuRight, Right					D
-	# MenuUp, Up, Jump					W
-	# MenuDown, Down					S
+	# ObjectMenuLeft, MenuLeft, Left	A
+	# ObjectMenuRight, MenuRight, Right	D
+	# ObjectMenuUp, MenuUp, Up, Jump	W
+	# ObjectMenuDown, MenuDown, Down	S
 	#
 	# Hotkey0-9							(0-9)
 	#
@@ -500,10 +554,10 @@
 	# NextCrew							E
 	# PreviousCrew						Q
 	# 
-	# MenuOK							Return
-	# MenuCancel						Backspace
+	# ObjectMenuOK, MenuOK				Return
+	# ObjectMenuCancel, MenuCancel		Backspace
 	# 
-	# PlayerMenu						End
+	# PlayerMenu						F
 
 	[ControlSet]
 	Name=WASD_Mouse
@@ -511,35 +565,18 @@
 	Mouse=1
 	Gamepad=0
 
+		# Aiming
+	
 		[Assignment]
 		Key=GameMouse1Move
 		Control=Aim
 	
-		[Assignment]
-		Key=A
-		Priority=50
-		Control=Left
+		# Menu
 
 		[Assignment]
-		Key=D
-		Priority=50
-		Control=Right
-
-		[Assignment]
-		Key=S
-		Priority=50
-		Control=Down
-
-		[Assignment]
-		Key=W
-		Priority=50
-		Control=Up
-
-		[Assignment]
-		Key=W
-		Priority=10
-		Control=Jump
-
+		Key=F
+		Control=PlayerMenu
+		
 		[Assignment]
 		Key=A
 		Priority=100
@@ -599,6 +636,35 @@
 		Key=Back
 		Priority=90
 		Control=ObjectMenuCancel
+
+		# Movement
+		
+		[Assignment]
+		Key=A
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=D
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=S
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=W
+		Priority=50
+		Control=Up
+
+		[Assignment]
+		Key=W
+		Priority=10
+		Control=Jump
+		
+		# Object interaction
 		
 		[Assignment]
 		Key=Space
@@ -629,6 +695,8 @@
 		Key=Space
 		Priority=20
 		Control=Enter
+		
+		# Hotkeys
 		
 		[Assignment]
 		Key=0
@@ -710,6 +778,8 @@
 		Key=Shift+9
 		Control=PlayerHotkey9
 		
+		# Crew
+		
 		[Assignment]
 		Key=Q
 		Control=PreviousCrew
@@ -718,19 +788,12 @@
 		Key=E
 		Control=NextCrew
 		
-		[Assignment]
-		Key=End
-		Control=PlayerMenu
+		# Usage, Throwing, Dropping
 		
 		[Assignment]
 		Key=GameMouse1ButtonLeft
 		Priority=100
 		Control=Use
-		
-		#[Assignment]
-		#Key=GameMouse1ButtonLeft
-		#Priority=50
-		#Control=Throw
 		
 		[Assignment]
 		Key=Shift+GameMouse1ButtonLeft
@@ -746,11 +809,6 @@
 		Priority=100
 		Control=UseAlt
 		
-		#[Assignment]
-		#Key=GameMouse1ButtonRight
-		#Priority=50
-		#Control=ThrowAlt
-		
 		[Assignment]
 		Key=Shift+GameMouse1ButtonRight
 		Control=ThrowAlt
@@ -759,6 +817,8 @@
 		Key=S,GameMouse1ButtonRight
 		Priority=150
 		Control=DropAlt
+		
+		# Zoom
 		
 		[Assignment]
 		Key=Mouse1Wheel1Up
@@ -770,43 +830,34 @@
 		Priority=100
 		Control=ZoomOut
 
-	# Would be cool to be able to "inherit" from WASD_Mouse and
-	# just overwrite the entries that change
+	# ======================================================================= #
+	#                   Mouse control with keyboard (DVORAK)                  #
+	# ======================================================================= #
+	#
+	#
+	# Summary
+	# --------
+	#
+	# See QWERTY. Same but with DVORAK keyboard
+	#
 	[ControlSet]
 	Name=WASD_Mouse_Dvorak
 	Keyboard=1
 	Mouse=1
 	Gamepad=0
 
+		# Aiming
+	
 		[Assignment]
 		Key=GameMouse1Move
 		Control=Aim
 	
-		[Assignment]
-		Key=A
-		Priority=50
-		Control=Left
+		# Menu
 
 		[Assignment]
-		Key=E
-		Priority=50
-		Control=Right
-
-		[Assignment]
-		Key=O
-		Priority=50
-		Control=Down
-
-		[Assignment]
-		Key=Comma
-		Priority=50
-		Control=Up
-
-		[Assignment]
-		Key=Comma
-		Priority=10
-		Control=Jump
-
+		Key=I
+		Control=PlayerMenu
+		
 		[Assignment]
 		Key=A
 		Priority=100
@@ -829,11 +880,72 @@
 		
 		[Assignment]
 		Key=Return
+		Priority=100
 		Control=MenuOK
 		
 		[Assignment]
 		Key=Back
+		Priority=100
 		Control=MenuCancel
+		
+		[Assignment]
+		Key=A
+		Priority=90
+		Control=ObjectMenuLeft
+
+		[Assignment]
+		Key=E
+		Priority=90
+		Control=ObjectMenuRight
+
+		[Assignment]
+		Key=O
+		Priority=90
+		Control=ObjectMenuDown
+
+		[Assignment]
+		Key=Comma
+		Priority=90
+		Control=ObjectMenuUp
+		
+		[Assignment]
+		Key=Return
+		Priority=90
+		Control=ObjectMenuOK
+		
+		[Assignment]
+		Key=Back
+		Priority=90
+		Control=ObjectMenuCancel
+
+		# Movement
+		
+		[Assignment]
+		Key=A
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=E
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=O
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=Comma
+		Priority=50
+		Control=Up
+
+		[Assignment]
+		Key=Comma
+		Priority=10
+		Control=Jump
+		
+		# Object interaction
 		
 		[Assignment]
 		Key=Space
@@ -864,6 +976,8 @@
 		Key=Space
 		Priority=20
 		Control=Enter
+		
+		# Hotkeys
 		
 		[Assignment]
 		Key=0
@@ -945,6 +1059,8 @@
 		Key=Shift+9
 		Control=PlayerHotkey9
 		
+		# Crew
+		
 		[Assignment]
 		Key=Apostrophe
 		Control=PreviousCrew
@@ -953,26 +1069,19 @@
 		Key=Period
 		Control=NextCrew
 		
-		[Assignment]
-		Key=End
-		Control=PlayerMenu
+		# Usage, Throwing, Dropping
 		
 		[Assignment]
 		Key=GameMouse1ButtonLeft
 		Priority=100
 		Control=Use
 		
-		#[Assignment]
-		#Key=GameMouse1ButtonLeft
-		#Priority=50
-		#Control=Throw
-		
 		[Assignment]
 		Key=Shift+GameMouse1ButtonLeft
 		Control=Throw
 		
 		[Assignment]
-		Key=O,GameMouse1ButtonLeft
+		Key=S,GameMouse1ButtonLeft
 		Priority=150
 		Control=Drop
 
@@ -981,19 +1090,16 @@
 		Priority=100
 		Control=UseAlt
 		
-		#[Assignment]
-		#Key=GameMouse1ButtonRight
-		#Priority=50
-		#Control=ThrowAlt
-		
 		[Assignment]
 		Key=Shift+GameMouse1ButtonRight
 		Control=ThrowAlt
 		
 		[Assignment]
-		Key=O,GameMouse1ButtonRight
+		Key=S,GameMouse1ButtonRight
 		Priority=150
 		Control=DropAlt
+		
+		# Zoom
 		
 		[Assignment]
 		Key=Mouse1Wheel1Up
@@ -1005,30 +1111,43 @@
 		Priority=100
 		Control=ZoomOut
 
-	# SNES-like Gamepad (8 buttons [A-H], 1 D-Pad)
+	# ======================================================================= #
+	#                  SNES-like gamepad (8 buttons, 1 D-Pad)                 #
+	# ======================================================================= #
+	#
+	# This control definition is designed to be also compatible with gamepads
+	# that have eight buttons (4 main buttons [A-D], 2 shoulder buttons
+	# [E-G], 2 buttons [G-H] in the front) and no analog stick.
+	#
+	# This one would be compatible with Svens gamepad (6 main buttons, 2
+	# shoulder buttons and 2 buttons on the front).
 	#
 	# Summary
 	# --------
-	# MenuLeft, AimLeft, Left			Joy1Left
-	# MenuRight, AimRight, Right		Joy1Right
-	# MenuUp, AimUp, Up					Joy1Up
-	# MenuDown, AimDown, Down			Joy1Down
+	# ObjectMenuLeft, MenuLeft,
+	# AimLeft, Left						Joy1Left
+	# ObjectMenuLeft, MenuRight,
+	# AimRight, Right					Joy1Right
+	# ObjectMenuLeft, MenuUp,
+	# AimUp, Up							Joy1Up
+	# ObjectMenuLeft, MenuDown,
+	# AimDown, Down						Joy1Down
 	#
 	# Jump								Joy1C
 	#
 	# Use								Joy1A
-	# Throw								Joy1A+Joy1F
-	# Drop								Joy1Down+Joy1A
+	# Throw								Joy1E
+	# Drop								Joy1Down+Joy1E
 	#
 	# UseAlt							Joy1D
-	# ThrowAlt							Joy1D+Joy1F
-	# DropAlt							Joy1Down+Joy1D
+	# ThrowAlt							Joy1F
+	# DropAlt							Joy1Down+Joy1F
 	#
 	# PushEnter, GrabNext, Ungrab,
 	# Grab, Exit, Enter					Joy1B
 	# 
-	# MenuOK							Joy1C
-	# MenuCancel						Joy1B
+	# ObjectMenuOK, MenuOK				Joy1C
+	# ObjectMenuCancel, MenuCancel		Joy1B
 	#
 	# NextCrew							Joy1G	
 	# PlayerMenu						Joy1H
@@ -1039,52 +1158,12 @@
 	Mouse=0
 	Gamepad=1
 	
+		# Menu
 
 		[Assignment]
-		Key=Joy1Left
-		Priority=50
-		Control=Left
-
-		[Assignment]
-		Key=Joy1Right
-		Priority=50
-		Control=Right
-
-		[Assignment]
-		Key=Joy1Down
-		Priority=50
-		Control=Down
-
-		[Assignment]
-		Key=Joy1Up
-		Priority=50
-		Control=Up
-
-		[Assignment]
-		Key=Joy1Left
-		Priority=70
-		Control=AimLeft
-
-		[Assignment]
-		Key=Joy1Right
-		Priority=70
-		Control=AimRight
-
-		[Assignment]
-		Key=Joy1Down
-		Priority=70
-		Control=AimDown
-
-		[Assignment]
-		Key=Joy1Up
-		Priority=70
-		Control=AimUp
+		Key=Joy1H
+		Control=PlayerMenu
 		
-		[Assignment]
-		Key=Joy1C
-		Priority=10
-		Control=Jump
-
 		[Assignment]
 		Key=Joy1Left
 		Priority=100
@@ -1112,6 +1191,85 @@
 		[Assignment]
 		Key=Joy1B
 		Control=MenuCancel
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=100
+		Control=ObjectMenuLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=100
+		Control=ObjectMenuRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=100
+		Control=ObjectMenuDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=100
+		Control=ObjectMenuUp
+		
+		[Assignment]
+		Key=Joy1C
+		Control=ObjectMenuOK
+		
+		[Assignment]
+		Key=Joy1B
+		Control=ObjectMenuCancel
+
+		# Movement
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=50
+		Control=Up
+
+		[Assignment]
+		Key=Joy1C
+		Priority=10
+		Control=Jump
+		
+		# Aiming
+		
+		[Assignment]
+		Key=Joy1Left
+		Priority=70
+		Control=AimLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=70
+		Control=AimRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=70
+		Control=AimDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=70
+		Control=AimUp
+		
+		# Object interaction
 		
 		[Assignment]
 		Key=Joy1B
@@ -1143,21 +1301,13 @@
 		Priority=20
 		Control=Enter
 		
+		# Crew
+		
 		[Assignment]
 		Key=Joy1G
 		Control=NextCrew
 		
-		[Assignment]
-		Key=Joy1H
-		Control=PlayerMenu
-		
-		#[Assignment]
-		#Key=Joy1E
-		#Control=NextItem
-		
-		#[Assignment]
-		#Key=Joy1F
-		#Control=NextAltItem
+		# Use, Throw, Drop
 		
 		[Assignment]
 		Key=Joy1A
@@ -1165,12 +1315,12 @@
 		Control=UseDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1A
+		Key=Joy1Down,Joy1E
 		Priority=150
 		Control=Drop
 		
 		[Assignment]
-		Key=Joy1F,Joy1A
+		Key=Joy1E
 		Control=ThrowDelayed
 		
 		[Assignment]
@@ -1184,34 +1334,53 @@
 		Control=DropAlt
 		
 		[Assignment]
-		Key=Joy1F,Joy1D
+		Key=Joy1F
 		Control=ThrowAltDelayed
 		
-
-	# Dualshock-like Gamepad (12 buttons [A-L], 1 D-Pad, 2 analog sticks)
+	# ======================================================================= #
+	#     Dualshock-like gamepad (10-12 buttons, 1 D-Pad, 2 analog stick)     #
+	# ======================================================================= #
+	#
+	# This control definition is designed to be also compatible with gamepads
+	# that only have ten buttons (4 main buttons [A-D], 4 shoulder buttons
+	# [E-H], 2 buttons [I-J] in the front) and no analog stick.
+	#
+	# However it is not compatible with Sven's gamepad! (with 6 main buttons
+	# but otherwise no analog stick and only 2 shoulder buttons). It would be
+	# he found out a way how to distinguish shoulder buttons from main buttons
+	# :P
 	#
 	# Summary
 	# --------
-	# MenuLeft, AimLeft, Left			Joy1Left
-	# MenuRight, AimRight, Right		Joy1Right
-	# MenuUp, AimUp, Up					Joy1Up
-	# MenuDown, AimDown, Down			Joy1Down
+	# ObjectMenuLeft, MenuLeft,
+	# AimLeft, Left						Joy1Left
+	# ObjectMenuLeft, MenuRight,
+	# AimRight, Right					Joy1Right
+	# ObjectMenuLeft, MenuUp,
+	# AimUp, Up							Joy1Up
+	# ObjectMenuLeft, MenuDown,
+	# AimDown, Down						Joy1Down
+	#
+	# AimAxisLeft, Left					Joy1Axis1Min
+	# AimAxisRight, Right				Joy1Axis1Max
+	# AimAxisUp, Up						Joy1Axis2Min
+	# AimAxisDown, Down					Joy1Axis2Max
 	#
 	# Jump								Joy1C
 	#
 	# Use								Joy1A
-	# Throw								Joy1G
-	# Drop								Joy1Down+Joy1G
+	# Throw								Joy1E
+	# Drop								Joy1Down+Joy1E
 	#
 	# UseAlt							Joy1D
-	# ThrowAlt							Joy1H
-	# DropAlt							Joy1Down+Joy1H
+	# ThrowAlt							Joy1G
+	# DropAlt							Joy1Down+Joy1G
 	#
 	# PushEnter, GrabNext, Ungrab,
 	# Grab, Exit, Enter					Joy1B
 	# 
-	# MenuOK							Joy1C
-	# MenuCancel						Joy1B
+	# ObjectMenuOK, MenuOK				Joy1C
+	# ObjectMenuCancel, MenuCancel		Joy1B
 	#
 	# NextCrew							Joy1I	
 	# PlayerMenu						Joy1J
@@ -1222,48 +1391,12 @@
 	Mouse=0
 	Gamepad=1
 	
+		# Menu
 
 		[Assignment]
-		Key=Joy1Left
-		Priority=50
-		Control=Left
-
-		[Assignment]
-		Key=Joy1Right
-		Priority=50
-		Control=Right
-
-		[Assignment]
-		Key=Joy1Down
-		Priority=50
-		Control=Down
-
-		[Assignment]
-		Key=Joy1Up
-		Priority=50
-		Control=Up
-
-		[Assignment]
-		Key=Joy1Axis1Min
-		Control=AimLeft
-
-		[Assignment]
-		Key=Joy1Axis1Max
-		Control=AimRight
-
-		[Assignment]
-		Key=Joy1Axis2Max
-		Control=AimDown
-
-		[Assignment]
-		Key=Joy1Axis2Min
-		Control=AimUp
+		Key=Joy1J
+		Control=PlayerMenu
 		
-		[Assignment]
-		Key=Joy1C
-		Priority=10
-		Control=Jump
-
 		[Assignment]
 		Key=Joy1Left
 		Priority=100
@@ -1291,6 +1424,125 @@
 		[Assignment]
 		Key=Joy1B
 		Control=MenuCancel
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=100
+		Control=ObjectMenuLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=100
+		Control=ObjectMenuRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=100
+		Control=ObjectMenuDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=100
+		Control=ObjectMenuUp
+		
+		[Assignment]
+		Key=Joy1C
+		Control=ObjectMenuOK
+		
+		[Assignment]
+		Key=Joy1B
+		Control=ObjectMenuCancel
+
+		# Movement
+
+		[Assignment]
+		Key=Joy1Left
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=50
+		Control=Up
+
+		[Assignment]
+		Key=Joy1C
+		Priority=10
+		Control=Jump
+
+		[Assignment]
+		Key=Joy1Axis1Min
+		Priority=50
+		Control=Left
+
+		[Assignment]
+		Key=Joy1Axis1Max
+		Priority=50
+		Control=Right
+
+		[Assignment]
+		Key=Joy1Axis2Max
+		Priority=50
+		Control=Down
+
+		[Assignment]
+		Key=Joy1Axis2Min
+		Priority=50
+		Control=Up
+				
+		# Aiming
+		
+		[Assignment]
+		Key=Joy1Left
+		Priority=70
+		Control=AimLeft
+
+		[Assignment]
+		Key=Joy1Right
+		Priority=70
+		Control=AimRight
+
+		[Assignment]
+		Key=Joy1Down
+		Priority=70
+		Control=AimDown
+
+		[Assignment]
+		Key=Joy1Up
+		Priority=70
+		Control=AimUp
+		
+		[Assignment]
+		Key=Joy1Axis1Min
+		Priority=70
+		Control=AimAxisLeft
+
+		[Assignment]
+		Key=Joy1Axis1Max
+		Priority=70
+		Control=AimAxisRight
+
+		[Assignment]
+		Key=Joy1Axis2Max
+		Priority=70
+		Control=AimAxisDown
+
+		[Assignment]
+		Key=Joy1Axis2Min
+		Priority=70
+		Control=AimAxisUp
+
+		# Object interaction
 		
 		[Assignment]
 		Key=Joy1B
@@ -1322,21 +1574,13 @@
 		Priority=20
 		Control=Enter
 		
+		# Crew
+		
 		[Assignment]
 		Key=Joy1I
 		Control=NextCrew
 		
-		[Assignment]
-		Key=Joy1J
-		Control=PlayerMenu
-		
-		#[Assignment]
-		#Key=Joy1E
-		#Control=NextItem
-		
-		#[Assignment]
-		#Key=Joy1F
-		#Control=NextAltItem
+		# Use, Throw, Drop
 		
 		[Assignment]
 		Key=Joy1A
@@ -1344,12 +1588,12 @@
 		Control=UseDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1G
+		Key=Joy1Down,Joy1E
 		Priority=150
 		Control=Drop
 		
 		[Assignment]
-		Key=Joy1G
+		Key=Joy1E
 		Control=ThrowDelayed
 		
 		[Assignment]
@@ -1358,15 +1602,14 @@
 		Control=UseAltDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1H
+		Key=Joy1Down,Joy1G
 		Priority=150
 		Control=DropAlt
 		
 		[Assignment]
-		Key=Joy1H
+		Key=Joy1G
 		Control=ThrowAltDelayed
 		
 		[Assignment]
 		Key=Joy1K
 		Control=CancelUse
-		

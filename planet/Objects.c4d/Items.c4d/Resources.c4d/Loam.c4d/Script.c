@@ -2,7 +2,7 @@
 
 local last_x, last_y, last_frame, begin_frame;
 
-static const LOAM_Bridge_Time = 50; // frames
+static const LOAM_Bridge_Time = 65; // frames
 
 protected func Construction()
 {
@@ -68,7 +68,7 @@ func ControlUseHolding(object clonk, int x, int y)
 	x += GetX(); y += GetY();
 	
 	// bridge speed by dig physical
-	var speed = clonk->GetPhysical("Dig")/3500;
+	var speed = clonk->GetPhysical("Dig")/4500;
 	
 	// build bridge in chunks (for better angle precision)
 	var dt = FrameCounter() - last_frame;
