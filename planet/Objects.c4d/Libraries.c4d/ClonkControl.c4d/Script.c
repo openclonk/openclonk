@@ -358,7 +358,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 {
 	if (!this) return false;
 	
-	Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
+	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
 	// aiming with mouse
 	if(using && ctrl == CON_Aim)
