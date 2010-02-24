@@ -69,9 +69,6 @@ class C4StartupGraphics
 		// context button for combo boxes on white
 		C4FacetID fctContext;
 
-		// player selection: player property control type buttons
-		C4FacetID fctPlrCtrlType;
-
 		// options dlg gfx
 		C4FacetID fctOptionsDlgPaper, fctOptionsIcons, fctOptionsTabClip;
 

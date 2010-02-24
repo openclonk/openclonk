@@ -1392,23 +1392,6 @@ void C4StartupPlrPropertiesDlg::OnCtrlChangeMouse(C4GUI::Control *pBtn)
 	UpdatePlayerControl();
 	}
 
-void C4StartupPlrPropertiesDlg::UpdatePlayerMovement()
-	{
-	// hightlight to control type that is selected
-	pJumpNRunBtn->SetFacet(C4Startup::Get()->Graphics.fctPlrCtrlType.GetPhase(C4P.OldPrefControlStyle ? 1 : 0, 1));
-	pClassicBtn->SetFacet(C4Startup::Get()->Graphics.fctPlrCtrlType.GetPhase(C4P.OldPrefControlStyle ? 0 : 1, 0));
-	}
-
-void C4StartupPlrPropertiesDlg::OnMovementBtn(C4GUI::Control *pBtn)
-	{
-	// Set new control style
-	C4P.OldPrefControlStyle = (pBtn == pJumpNRunBtn);
-	// Adjust pref for AutoContextMenus along with control style
-	C4P.OldPrefAutoContextMenu = C4P.OldPrefControlStyle;
-	// Update dialog
-	UpdatePlayerMovement();
-	}
-
 void C4StartupPlrPropertiesDlg::UserClose(bool fOK)
 	{
 	// check name validity

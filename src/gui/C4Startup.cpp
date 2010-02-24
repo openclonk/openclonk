@@ -80,9 +80,6 @@ bool C4StartupGraphics::Init()
 	Game.SetInitProgress(68);
 	fctScenSelIcons.Wdt = fctScenSelIcons.Hgt; // icon width is determined by icon height
 	if (!LoadFile(fctScenSelTitleOverlay, "StartupScenSelTitleOv")) return false;
-	Game.SetInitProgress(70);
-	if (!LoadFile(fctPlrCtrlType, "StartupPlrCtrlType")) return false;
-	fctPlrCtrlType.Set(fctPlrCtrlType.Surface, 0,0,128,52);
 	Game.SetInitProgress(72);
 	if (!LoadFile(fctOptionsDlgPaper, "StartupDlgPaper")) return false;
 	Game.SetInitProgress(74);

@@ -655,14 +655,6 @@ bool C4PortraitSelDlg::SelectPortrait(C4GUI::Screen *pOnScreen, StdStrBuf *pSele
 		if (hGroup.Open(Config.AtSystemDataPath(C4CFN_Graphics)))
 			{
 			hGroup.Extract("Portrait1.png", Config.AtUserDataPath("Clonk.png"));
-			hGroup.Extract("PortraitBandit.png", Config.AtUserDataPath("Bandit.png"));
-			hGroup.Extract("PortraitIndianChief.png", Config.AtUserDataPath("IndianChief.png"));
-			hGroup.Extract("PortraitKing.png", Config.AtUserDataPath("King.png"));
-			hGroup.Extract("PortraitKnight.png", Config.AtUserDataPath("Knight.png"));
-			hGroup.Extract("PortraitMage.png", Config.AtUserDataPath("Mage.png"));
-			hGroup.Extract("PortraitPiranha.png", Config.AtUserDataPath("Piranha.png"));
-			hGroup.Extract("PortraitSheriff.png", Config.AtUserDataPath("Sheriff.png"));
-			hGroup.Extract("PortraitWipf.png", Config.AtUserDataPath("Wipf.png"));
 			hGroup.Close();
 			}
 		Config.General.UserPortraitsWritten = true;

@@ -278,13 +278,11 @@ class C4StartupPlrPropertiesDlg: public C4GUI::Dialog
 		void OnCtrlChangeLeft(C4GUI::Control *pBtn);
 		void OnCtrlChangeRight(C4GUI::Control *pBtn);
 		void OnCtrlChangeMouse(C4GUI::Control *pBtn);
-		void OnMovementBtn(C4GUI::Control *pBtn);
 		void OnPictureBtn(C4GUI::Control *pBtn);
 
 	private:
 		void UpdatePlayerColor(bool fUpdateSliders);
 		void UpdatePlayerControl();
-		void UpdatePlayerMovement(); // updates Jump'n'Run vs Classic
 		void UpdateBigIcon();
 
 		bool SetNewPicture(C4Surface &srcSfc, C4FacetSurface *trgFct, int32_t iMaxSize, bool fColorize);
