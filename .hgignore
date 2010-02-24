@@ -33,14 +33,17 @@ intermediate
 # Visual studio files
 deps/
 planet/Release
+planet/RelWithDebInfo
 planet/Debug
 planet/CMakeFiles
 planet/clonk.dir
 planet/c4group.dir
 planet/ZERO_CHECK.dir
 planet/libeay32.dll
+planet/fmod.dll
 planet/cmake_install.cmake
 planet/clonk.sln
+planet/clonk.ilk
 planet/CMakeCache.txt
 
 # Temporary files created by Microsoft Visual Studio

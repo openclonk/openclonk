@@ -124,8 +124,10 @@ void C4GamePadControl::Execute(bool send_axis_strength_changes)
 				{
 				rPad.AxisPosis[iAxis] = eAxisPos;
 				rPad.AxisStrengths[iAxis] = iStrength;
-				if (ePrevAxisPos != CStdGamePad::Mid)
+				if (ePrevAxisPos != CStdGamePad::Mid && eAxisPos != ePrevAxisPos)
 					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Axis(iAxis, (ePrevAxisPos==CStdGamePad::High))), KEYEV_Up, false, false, false, false);
+				// it's tempting to send fRepeated here for eAxisPos == ePrevAxisPos, but it would cause the key to be ignored for sync controls
+				// might improve the check in sync controls so they accept repeated keys if strength is updated?
 				if (eAxisPos != CStdGamePad::Mid)
 					Game.DoKeyboardInput(KEY_Gamepad(idGamepad, KEY_JOY_Axis(iAxis, (eAxisPos==CStdGamePad::High))), KEYEV_Down, false, false, false, false, NULL, false, iStrength);
 				}
