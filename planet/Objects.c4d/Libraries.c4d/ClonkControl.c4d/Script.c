@@ -238,6 +238,8 @@ protected func Collection2(object obj)
 
 	if (disableautosort) return _inherited(obj,...);
 	
+	var success = false;
+	
 	// into selected area if empty
 	if (!inventory[selected])
 	{
@@ -254,11 +256,13 @@ protected func Collection2(object obj)
 			{
 				indexed_inventory++;
 				inventory[sel] = obj;
+				success = true;
 				break;
 			}
 		}
 	}
-	this->~OnSlotFull(sel);
+	if(success)
+		this->~OnSlotFull(sel);
 	
 	if (sel == selected || sel == selected2)
 		obj->~Selection(this,sel == selected2);
@@ -268,20 +272,23 @@ protected func Collection2(object obj)
 
 protected func Ejection(object obj)
 {
-	var i;
 	// find obj in array and delete (cancel using too)
-	for(i = 0; i < MaxContentsCount(); ++i)
+	var i = 0;
+	var success = false;
+	for(var item in inventory)
 	{
-		if (inventory[i] == obj)
+		if (obj == item) 
 		{
 			inventory[i] = nil;
 			indexed_inventory--;
+			success = true;
 			break;
 		}
+		++i;
 	}
 	if (using == obj) CancelUse();
-	
-	this->~OnSlotEmpty(i);
+
+	if(success) this->~OnSlotEmpty(i);
 	
 	if (i == selected || i == selected2)
 		obj->~Deselection(this,i == selected2);
