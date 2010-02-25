@@ -61,12 +61,6 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 	clonk->SetAnimationWeight(iAimKnot, Anim_Const(Abs(angle)*1000/180));
 
-	// Turn clonk if aiming in the other direction and he isn't moving
-	if(clonk->GetComDir() == COMD_Stop && !clonk->GetXDir())
-	{
-		if(clonk->GetDir() == 1 && angle < 0) clonk->SetDir(0);
-		else if(clonk->GetDir() == 0 && angle > 0) clonk->SetDir(1);
-	}
 }
 
 protected func ControlUseStop(object clonk, int x, int y)

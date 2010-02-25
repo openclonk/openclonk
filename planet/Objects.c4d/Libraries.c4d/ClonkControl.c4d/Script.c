@@ -673,6 +673,39 @@ private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
 	}
 	
 	//Message("%d,%d",this,mex,mey);
+
+	// automatic adjustment of the position
+	// --------------------
+	// if this is desired for ALL objects is the question, we will find out.
+	// For now, this is done for items and vehicles, not for buildings and
+	// mounts (naturally). If turning vehicles just liket hat without issuing
+	// a turning animation is the question. But after all, the clonk can turn
+	// by setting the dir too.
+	
+	
+	//   not riding and                not in building
+	if (GetProcedure() != "ATTACH" && !Contained())
+	{
+		// pushing vehicle: object to turn is the vehicle
+		var dir_obj = GetActionTarget();
+
+		// otherwise, turn the clonk
+		if(!dir_obj) dir_obj = this;
+	
+		if ((dir_obj->GetComDir() == COMD_Stop && dir_obj->GetXDir() == 0) || dir_obj->GetProcedure() == "FLIGHT")
+		{
+			if (dir_obj->GetDir() == DIR_Left)
+			{
+				if (mex > 0)
+					dir_obj->SetDir(DIR_Right);
+			}
+			else
+			{
+				if (mex < 0)
+					dir_obj->SetDir(DIR_Left);
+			}
+		}
+	}
 	
 	var handled = obj->Call(Format("~%sUse%sHolding",control,estr),this,mex,mey);
 			

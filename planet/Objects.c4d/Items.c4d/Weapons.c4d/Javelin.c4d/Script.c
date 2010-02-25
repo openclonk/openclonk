@@ -70,11 +70,7 @@ protected func ControlUseHolding(object pClonk, int ix, int iy)
 	var iPos = pClonk->GetAnimationPosition(iAim);
 	iPos += BoundBy(iTargetPosition-iPos, -50, 50);
 	pClonk->SetAnimationPosition(iAim, Anim_Const(iPos));
-	if( (pClonk->GetComDir() == COMD_Stop && !pClonk->GetXDir()) || pClonk->GetAction() == "Jump")
-	{
-		if(pClonk->GetDir() == 1 && angle < 0) pClonk->SetDir(0);
-		else if(pClonk->GetDir() == 0 && angle > 0) pClonk->SetDir(1);
-	}
+
 	return 1;
 }
 

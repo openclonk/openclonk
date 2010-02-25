@@ -84,20 +84,6 @@ private func UpdatePosition()
 	var x = +Sin(angle,CURSOR_Radius,10);
 	var y = -Cos(angle,CURSOR_Radius,10);
 	
-	if((crew->GetComDir() == COMD_Stop && crew->GetXDir() == 0) || crew->GetProcedure() == "FLIGHT")
-	{
-		if(crew->GetDir() == DIR_Left)
-		{
-			if(x > 0)
-				crew->SetDir(DIR_Right);
-		}
-		else
-		{
-			if(x < 0)
-				crew->SetDir(DIR_Left);
-		}
-	}
-	
 	SetPosition(crew->GetX()+x,crew->GetY()+y);
 	crew->UpdateVirtualCursorPos();
 }

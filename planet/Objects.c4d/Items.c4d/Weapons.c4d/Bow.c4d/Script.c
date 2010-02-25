@@ -103,15 +103,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 	}
 	else 
 	{
-		// Turn clonk if aiming in the other direction and he isn't moving
-		if(!ClonkAimLimit(clonk,angle))
-			if(clonk->GetComDir() == COMD_Stop && !clonk->GetXDir())
-			{
-				if(clonk->GetDir() == 1 && angle < 0) clonk->SetDir(0);
-				else if(clonk->GetDir() == 0 && angle > 0) clonk->SetDir(1);
-			}
 		if(Abs(angle) > 160) angle = 160;
-		
 		// Adjust the aiming position
 		var pos = clonk->GetAnimationPosition(iAnimLoad);
 		pos += BoundBy(2000*Abs(angle)/180-pos, -100, 100);
