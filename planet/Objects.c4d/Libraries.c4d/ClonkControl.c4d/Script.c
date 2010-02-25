@@ -245,6 +245,7 @@ protected func Collection2(object obj)
 	{
 		inventory[selected] = obj;
 		sel = selected;
+		success = true;
 	}
 	// otherwise, next if empty
 	else
