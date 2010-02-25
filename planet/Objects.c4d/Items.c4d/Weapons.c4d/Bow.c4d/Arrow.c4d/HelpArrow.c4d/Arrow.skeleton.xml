@@ -3,7 +3,7 @@
 		<bone id="0" name="main">
 			<position x="0.000000" y="0.000000" z="0.000000"/>
 			<rotation angle="2.094395">
-				<axis x="0.577350" y="-0.577350" z="-0.577350"/>
+				<axis x="0.577350" y="0.577350" z="0.577350"/>
 			</rotation>
 		</bone>
 	</bones>

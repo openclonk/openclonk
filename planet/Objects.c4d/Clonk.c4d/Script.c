@@ -1,4 +1,10 @@
-/*-- Der Clonk --*/
+/*
+	Clonk
+	Author: Randrian
+
+	The protoganist of the game. Witty and nimble if skillfully controled ;-)
+*/
+
 
 // selectable by HUD
 #include HUDS
@@ -505,15 +511,6 @@ public func GetHandAction()
 	return false;
 }
 
-/*
-// Test to synchronize the walkanimation with the movement
-local OldPos;
-
-static CLNK_WalkStates; // TODO: Well wasn't there once a patch, allowing arrys to be assigned to global static?
-static CLNK_HangleStates;
-static CLNK_SwimStates;
-*/
-
 /* Turn */
 local iTurnAction;
 local iTurnAction2;
@@ -521,6 +518,9 @@ local iTurnAction3;
 
 local iTurnKnot1;
 local iTurnKnot2;
+
+local iLastTurn;
+local iTurnSpecial;
 
 func FxIntTurnStart(pTarget, iNumber, fTmp)
 {
@@ -574,8 +574,30 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 	}
 }
 
-func SetTurnType(iIndex)
-{//Log("%d %s %d", iIndex, GetAction(), iTimer);
+local iLastTurn;
+local iTurnSpecial;
+
+
+func SetTurnType(iIndex, iSpecial)
+{
+	if(iSpecial != nil && iSpecial != 0)
+	{
+		if(iSpecial == 1) // Start a turn that is forced to the clonk and overwrites the normal action's turntype
+			iTurnSpecial = 1;
+		if(iSpecial == -1) // Reset special turn (here the iIndex is ignored)
+		{
+			iTurnSpecial = 0;
+			SetTurnType(iLastTurn);
+			return;
+		}
+	}
+	else
+	{
+		// Standart turn? Save and do nothin if we are blocked
+		iLastTurn = iIndex;
+		if(iTurnSpecial) return;
+	}
+	//Log("%d %s %d", iIndex, GetAction(), iTimer);
 	if(iIndex == 0)
 	{
 		if(GetAnimationWeight(iTurnKnot1) > 0)

@@ -68,6 +68,8 @@ public func ControlUseStart(object clonk, int x, int y)
 	iAnimLoad = clonk->PlayAnimation("BowLoadArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BowLoadArms"), aimtime, ANIM_Remove), Anim_Const(1000));
 	iDrawAnim = PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), aimtime, ANIM_Hold), Anim_Const(1000));
 
+	clonk->SetTurnType(1, 1);
+	
 	return true;
 }
 
@@ -146,7 +148,7 @@ public func ControlUseStop(object clonk, int x, int y)
 	}
 
 	// Open the hand to let the string go and play the fire animation
-	var iShootTime = 35/2;
+	var iShootTime = 20;
 	iDrawAnim = PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), iShootTime, ANIM_Hold), Anim_Const(1000));
 	iCloseAnim = clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
 	// Reset everything after the animation
@@ -167,6 +169,8 @@ public func ResetClonk(clonk)
 {
 	// Already aiming angain? Don't remove Actions
 	if(fAiming) return;
+
+	clonk->SetTurnType(0, -1);
 
 	clonk->SetHandAction(0);
 	
