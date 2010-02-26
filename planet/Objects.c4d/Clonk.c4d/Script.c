@@ -491,9 +491,23 @@ func HasHandAction(sec)
 {
 	if(sec && fBothHanded)
 		return false;
-	if( (GetAction() == "Walk" || GetAction() == "Jump" || GetAction() == "Kneel") && !fHandAction )
+	if( HasActionProcedure() && !fHandAction )
 		return true;
 	return false;
+}
+
+func HasActionProcedure()
+{
+	if(GetAction() == "Walk" || GetAction() == "Jump" || GetAction() == "Kneel" || GetAction() == "Ride")
+		return true;
+	return false;
+}
+
+public func ReadyToAction(fNoArmCheck)
+{
+	if(!fNoArmCheck)
+		return HasActionProcedure();
+	return HasHandAction(0);
 }
 
 public func SetHandAction(bool fNewValue)
@@ -502,6 +516,7 @@ public func SetHandAction(bool fNewValue)
 		fHandAction = 1;
 	else
 		fHandAction = 0;
+	UpdateAttach();
 }
 
 public func GetHandAction()
@@ -538,9 +553,9 @@ func FxIntTurnStart(pTarget, iNumber, fTmp)
 	EffectVar(1, pTarget, iNumber) = 0;
 	SetTurnType(0);
 }
-local iTimer;
+
 func FxIntTurnTimer(pTarget, iNumber, iTime)
-{iTimer = iTime;
+{
 	// Check wether the clonk wants to turn (Not when he wants to stop)
   if(EffectVar(0, pTarget, iNumber) != GetDirection())
 	{
@@ -577,7 +592,6 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 local iLastTurn;
 local iTurnSpecial;
 
-
 func SetTurnType(iIndex, iSpecial)
 {
 	if(iSpecial != nil && iSpecial != 0)
@@ -597,23 +611,18 @@ func SetTurnType(iIndex, iSpecial)
 		iLastTurn = iIndex;
 		if(iTurnSpecial) return;
 	}
-	//Log("%d %s %d", iIndex, GetAction(), iTimer);
 	if(iIndex == 0)
 	{
-		if(GetAnimationWeight(iTurnKnot1) > 0)
-			SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),1000,0,10,ANIM_Hold));
+		SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),1000,0,10,ANIM_Hold));
 	}
 	if(iIndex == 1)
 	{
-		if(GetAnimationWeight(iTurnKnot1) < 1000)
-			SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),0,1000,10,ANIM_Hold));
-		if(GetAnimationWeight(iTurnKnot2) > 0)
-			SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),1000,0,10,ANIM_Hold));
+		SetAnimationWeight(iTurnKnot1, Anim_Linear(GetAnimationWeight(iTurnKnot1),0,1000,10,ANIM_Hold));
+		SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),1000,0,10,ANIM_Hold));
 	}
 	if(iIndex == 2)
 	{
-		if(GetAnimationWeight(iTurnKnot2) > 0)
-			SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),0,1000,10,ANIM_Hold));
+		SetAnimationWeight(iTurnKnot2, Anim_Linear(GetAnimationWeight(iTurnKnot2),0,1000,10,ANIM_Hold));
 	}
 }
 
@@ -636,6 +645,53 @@ func GetDirection()
 	else return COMD_Left;
 }
 
+/* Animation Manager */
+
+local PropAnimations;
+
+public func ReplaceAction(string action, string byaction)
+{
+	if(PropAnimations == nil) PropAnimations = CreatePropList();
+	if(byaction == nil || byaction == 0)
+	{
+		SetProperty(action, nil, PropAnimations);
+		ResetAnimationEffects();
+		return true;
+	}
+	if(GetAnimationLength(byaction) == nil)
+	{
+		Log("ERROR: No animation %s in Definition %s", byaction, GetID()->GetName());
+		return false;
+	}
+	SetProperty(action, byaction, PropAnimations);
+	ResetAnimationEffects();
+	return true;
+}
+
+public func ResetAnimationEffects()
+{
+	if(GetEffect("IntWalk", this))
+		EffectCall(this, GetEffect("IntWalk", this), "Reset");
+	if(GetAction() == "Jump")
+		StartJump();
+}
+
+public func PlayAnimation(string animation, int index, array position, array weight, int sibling)
+{
+	if(PropAnimations != nil)
+		if(GetProperty(animation, PropAnimations) != nil)
+			animation = GetProperty(animation, PropAnimations);
+	return inherited(animation, index, position, weight, sibling, ...);
+}
+
+public func GetAnimationLength(string animation)
+{
+	if(PropAnimations != nil)
+		if(GetProperty(animation, PropAnimations))
+			animation = GetProperty(animation, PropAnimations);
+	return inherited(animation, ...);
+}
+
 /* Walk */
 
 static const CLNK_WalkStand = "Stand";
@@ -644,8 +700,6 @@ static const CLNK_WalkRun   = "Run";
 
 func StartWalk()
 {
-//	if(CLNK_WalkStates == nil)
-//		CLNK_WalkStates = ["Stand", "Walk", "Run", "StandTurn", "RunTurn"];
 	if(!GetEffect("IntWalk", this))
 		AddEffect("IntWalk", this, 1, 1, this);
 }
@@ -732,6 +786,11 @@ func FxIntWalkTimer(pTarget, iNumber)
 		EffectVar(17, pTarget, iNumber) = GetDirection();
 		EffectVar(4, pTarget, iNumber) = iTurnTime;
 	}*/
+}
+
+func FxIntWalkReset(pTarget, iNumber)
+{
+	EffectVar(0, pTarget, iNumber) = 0;
 }
 
 func StartStand()

@@ -11,6 +11,7 @@
 
 local aimtime;
 local fAiming;
+local fWait;
 
 local iArrowMesh;
 local iAnimLoad;
@@ -29,9 +30,14 @@ public func HoldingEnabled() { return true; }
 
 public func ControlUseStart(object clonk, int x, int y)
 {
-	// Reset the clonk (important, if the last aiming wasn't finished)
-	ClearScheduleCall(this, "Shoot");
-	ResetClonk(clonk);
+	// if the clonk doesn't have an action where he can use it's hands do nothing
+	if(!clonk->HasHandAction())
+	{
+		fWait = 1;
+		return true;
+	}
+
+	fAiming=true;
 	
 	// check for ammo
 	if(!Contents(0))
@@ -52,33 +58,43 @@ public func ControlUseStart(object clonk, int x, int y)
 		return true;
 	}
 	
-	
-	
 	// Start aiming
+	fWait = false;
 	fAiming = 1;
 	// walk slow
 	AddEffect("IntWalkSlow", clonk, 1, 0, this);
 	
 	// Setting the hands as blocked, so that no other items are carried in the hands
 	clonk->SetHandAction(1);
-	// Update, that the Clonk takes the bow in the right hand (see GetCarrySpecial)
-	clonk->UpdateAttach();
 	// Attach the arrow during the animation
 	ScheduleCall(this, "AddArrow", 5*aimtime/20, 1, clonk);
 	iAnimLoad = clonk->PlayAnimation("BowLoadArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BowLoadArms"), aimtime, ANIM_Remove), Anim_Const(1000));
 	iDrawAnim = PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), aimtime, ANIM_Hold), Anim_Const(1000));
 
 	clonk->SetTurnType(1, 1);
+
+	// Adjust base animations to fit the bow
+	clonk->ReplaceAction("Walk", "BowWalk");
+	clonk->ReplaceAction("Stand", "BowStand");
+	clonk->ReplaceAction("Jump", "BowJump");
+	clonk->ReplaceAction("KneelDown", "BowKneel");
 	
 	return true;
 }
 
 public func ControlUseHolding(object clonk, int x, int y)
 {
-	// check procedure
-	if(!ClonkCanAim(clonk))
+	if(fWait)
 	{
-		clonk->CancelUse();
+		if(clonk->HasHandAction())
+			ControlUseStart(clonk, x, y);
+		return 0;
+	}
+	// check procedure
+	if(!clonk->ReadyToAction())
+	{
+		ResetClonk(clonk);
+		fWait = 1;
 		return true;
 	}
 
@@ -109,13 +125,12 @@ public func ControlUseHolding(object clonk, int x, int y)
 		pos += BoundBy(2000*Abs(angle)/180-pos, -100, 100);
 		clonk->SetAnimationPosition(iAnimLoad, Anim_Const(pos));
 	}
-
+	
 	return true;
 }
 
 public func ControlUseStop(object clonk, int x, int y)
 {
-	fAiming = 0;
 	StopAnimation(iDrawAnim);
 	clonk->DetachMesh(iArrowMesh);
 
@@ -150,7 +165,6 @@ public func ControlUseStop(object clonk, int x, int y)
 
 public func ControlUseCancel(object clonk, int x, int y)
 {
-	fAiming = 0;
 	ResetClonk(clonk);
 	return true;
 }
@@ -159,12 +173,7 @@ public func ControlUseCancel(object clonk, int x, int y)
 
 public func ResetClonk(clonk)
 {
-	// Already aiming angain? Don't remove Actions
-	if(fAiming) return;
-
-	clonk->SetTurnType(0, -1);
-
-	clonk->SetHandAction(0);
+	fAiming = 0;
 	
 	if(iArrowMesh != nil)
 		clonk->DetachMesh(iArrowMesh);
@@ -179,8 +188,15 @@ public func ResetClonk(clonk)
 		StopAnimation(iDrawAnim);
 	iDrawAnim = nil;
 	
-	clonk->UpdateAttach();
 	RemoveEffect("IntWalkSlow", clonk);
+
+	clonk->SetTurnType(0, -1);
+	clonk->SetHandAction(0);
+
+	clonk->ReplaceAction("Walk", nil);
+	clonk->ReplaceAction("Stand", nil);
+	clonk->ReplaceAction("Jump", nil);
+	clonk->ReplaceAction("KneelDown", nil);
 }
 
 public func Shoot(object clonk, int x, int y)
@@ -202,14 +218,6 @@ private func ClonkAimLimit(object clonk, int angle)
 	if(Abs(angle) > 160) return false;
 	if(clonk->GetDir() == 1 && angle < 0) return false;
 	if(clonk->GetDir() == 0 && angle > 0) return false;
-	return true;
-}
-
-private func ClonkCanAim(object clonk)
-{
-	var p = clonk->GetProcedure();
-	//if(clonk->GetHandAction()) return false;
-	if(p != "WALK" && p != "ATTACH" && p != "FLIGHT") return false;
 	return true;
 }
 
