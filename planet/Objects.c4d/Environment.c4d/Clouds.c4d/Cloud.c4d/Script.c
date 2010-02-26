@@ -125,15 +125,6 @@ public func RainDrop()
 	CastPXS(szMat, 1, 1, RandomX(-50, 50));
 }
 
-//Sven2's alpha function
-global func SetObjAlpha(int byAlpha, pObj)
-{
-  var dwClrMod=GetClrModulation(pObj);
-
-  if (!dwClrMod) dwClrMod = byAlpha<<24; else dwClrMod = dwClrMod & 16777215 | byAlpha<<24;
-  return(SetClrModulation(dwClrMod, pObj));
-}
-
 //For use as scenario setting. Can work after initialize, if you really want to.
 global func AdjustLightningFrequency(int iFreq) 
 {

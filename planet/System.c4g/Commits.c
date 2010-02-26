@@ -279,3 +279,13 @@ global func ComDirLike(int comdir1, int comdir2)
   if (comdir1 == comdir2 % 8 + 1) return (true);
   return (false);
 }
+
+/*-- Sven2 --*/
+
+global func SetObjAlpha(int byAlpha)
+{
+  var dwClrMod=GetClrModulation();
+
+  if (!dwClrMod) dwClrMod = byAlpha<<24; else dwClrMod = dwClrMod & 16777215 | byAlpha<<24;
+  return(SetClrModulation(dwClrMod));
+}

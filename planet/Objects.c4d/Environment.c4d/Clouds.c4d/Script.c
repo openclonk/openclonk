@@ -3,7 +3,7 @@
 #strict 2
 
 //Great thanks to Maikel for the following function provided 
-protected func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
+global func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
 {
   var iX, iY;
   for(var i = 0; i < 500; i++)
