@@ -7,17 +7,21 @@
 
 #import <Cocoa/Cocoa.h>
 
+enum ClonkAppDelegateGameState {
+	GS_NotYetStarted,
+	GS_Running,
+	GS_Finished
+};
+
 @interface ClonkAppDelegate: NSObject
 {
 	NSMutableArray* gatheredArguments;
 	NSString* clonkDirectory;
 	NSString* addonSupplied;
-	BOOL doNotLaunch;
-	BOOL terminateRequested;
-	BOOL gameLoopFinished;
+	ClonkAppDelegateGameState gameState;
 }
 - (NSString*) clonkDirectory;
-- (BOOL) argsLookLikeItShouldBeInstallation:(char**)argv argc:(int)argc;
+- (BOOL) argsLookLikeItShouldBeInstallation;
 - (void)makeFakeArgs:(char***)argv argc:(int*)argc;
 - (BOOL)installAddOn;
 - (void)terminate:(NSApplication*)sender;

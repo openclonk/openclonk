@@ -10,8 +10,9 @@
 - (id) init
 {
 	if (self = [super init]) {
-		gatheredArguments = [[NSMutableArray arrayWithCapacity:10] retain];
-		[gatheredArguments addObject:[[NSBundle mainBundle] executablePath]];
+		NSArray* args = [[NSProcessInfo processInfo] arguments];
+		gatheredArguments = [args copy];
+		gameState = GS_NotYetStarted;
 	}
 	return self;
 }
@@ -23,13 +24,6 @@
 													 forEventClass:kInternetEventClass andEventID:kAEGetURL];
 }
 
-- (void) release
-{
-	if (terminateRequested)
-		[NSApp replyToApplicationShouldTerminate:YES];
-	[super release];
-}
-
 - (BOOL)application:(NSApplication *)theApplication openFile:(NSString *)filename
 {
 	NSString* pathExtension = [[filename pathExtension] lowercaseString];
@@ -39,19 +33,12 @@
 	{
 		// later decide whether to install or run
 		addonSupplied = filename;
-		if (YES)
+		if (gameState == GS_Running)
 		{
 			// if application is already running install immediately
 			[self installAddOn];
-			return YES;
 		}
-		// still add to gatheredArguments
-		// return YES;
 	}
-	
-	// Key/Update files or simply arguments: Just pass to engine, will install
-	[gatheredArguments addObject:filename];
-	fflush(0);
 	return YES;
 }
 
@@ -66,40 +53,31 @@
 	[[NSFileManager defaultManager] changeCurrentDirectoryPath:[self clonkDirectory]];
 
 	[NSApp activateIgnoringOtherApps:YES];
-	
-	/*if ([self argsLookLikeItShouldBeInstallation:argv argc:argc]) {
-		if ([self installAddOn])
-			return 0;
-	}*/
 
     // Hand off to Clonk code
 	char** newArgv;
 	int newArgc;
 	[self makeFakeArgs:&newArgv argc:&newArgc];
 	int status = SDL_main(newArgc, newArgv);
-	
-	for (int i = newArgc-1; i >= 0; i--)
-	{
-		free (newArgv[i]);
-	}
+	for (int i = newArgc-1; i >= 0; i--) {free (newArgv[i]);}
 	free(newArgv);
 }
 
 /* Called when the internal event loop has just started running */
 - (void) applicationDidFinishLaunching: (NSNotification *) note
 {
-/*	NSDictionary* args = [[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain];
-	for (NSString* key in args) {
-		[gatheredArguments addObject:[NSString stringWithFormat:@"/%@:%@", key, [args valueForKey:key]]];
-	}*/
-	[self gameLoop];
-	gameLoopFinished = YES;
+	if (!([self argsLookLikeItShouldBeInstallation] && [self installAddOn]))
+	{
+		gameState = GS_Running;
+		[self gameLoop];
+		gameState = GS_Finished;
+	}
 	[NSApp terminate:self];
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication*)application
 {
-	if (!gameLoopFinished)
+	if (gameState == GS_Running)
 	{
 		[self terminate:application];
 		return NSTerminateCancel; // cancels logoff but it's the only way that does not interrupt the lifecycle of the application
@@ -131,13 +109,15 @@
 }
 
 // Look for -psn argument which generally is a clue that the application should open a file (double-clicking, calling /usr/bin/open and such)
-- (BOOL) argsLookLikeItShouldBeInstallation:(char**)argv argc:(int)argc
+- (BOOL) argsLookLikeItShouldBeInstallation
 {
 	// not having this check leads to deletion of Clonk folder -.-
 	if (!addonSupplied)
 		return NO;
-	for (int i = 0; i < argc; i++) {
-		if ([[NSString stringWithUTF8String:argv[i]] hasPrefix:@"-psn"])
+	for (int i = 0; i < [gatheredArguments count]; i++)
+	{
+		NSString* arg = [gatheredArguments objectAtIndex:i];
+		if ([arg hasPrefix:@"-psn"])
 			return YES;
 	}
 	return NO;
