@@ -1,0 +1,5 @@
+[DefCore]
+id=L_WN
+Version=4,9,5
+Category=1
+MaxUserSelect=10

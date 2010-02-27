@@ -1,5 +1,7 @@
 /*-- Club --*/
 
+#include L_WN
+
 private func Hit()
 {
   Sound("WoodHit");
@@ -78,13 +80,32 @@ protected func ControlUseStop(object clonk, int x, int y)
 
 	ScheduleCall(this, "EndStrike", iStrikeTime, 0, clonk);
 	// At frame 6 of the animation the bat reaches it's hit point here the hit should take place TODO: Zapper!
-//	ScheduleCall(this, "DoStrike", iStrikeTime*600/(clonk->GetAnimationLength("BatStrikeArms")), 0, clonk);
+	ScheduleCall(this, "DoStrike", iStrikeTime*600/(clonk->GetAnimationLength("BatStrikeArms")), 0, clonk, angle);
 }
 
 public func EndStrike(object clonk, int x, int y)
 {
 	fAiming = 0;
 	ResetClonk(clonk);
+}
+
+func DoStrike(clonk, angle)
+{
+	var x=Sin(angle, 7);
+	var y=-Cos(angle, 7);
+	
+	for(var obj in FindObjects(Find_Distance(7, x, y), Find_Or(Find_OCF(OCF_Alive), Find_Category(C4D_Object)), Find_Exclude(clonk), Find_NoContainer()))
+	{
+		if(obj->GetOCF() & OCF_Alive)
+		{
+			ApplyWeaponBash(obj, 400, angle);
+		}
+		else
+		{
+			obj->SetXDir((obj->GetXDir(100) + Sin(angle, 2000)) / 2, 100);
+			obj->SetYDir((obj->GetYDir(100) - Cos(angle, 2000)) / 2, 100);
+		}
+	}
 }
 
 protected func ControlUseCancel(object clonk, int x, int y)
