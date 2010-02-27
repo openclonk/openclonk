@@ -139,8 +139,8 @@ private func FireWeapon(object pClonk,iX,iY)
 						Find_Distance(10,Sin(180-Angle(0,0,iX,iY),20),Cos(180-Angle(0,0,iX,iY),20)),
 						Find_Distance(18,Sin(180-Angle(0,0,iX,iY),40),Cos(180-Angle(0,0,iX,iY),40)),
 						Find_Distance(25,Sin(180-Angle(0,0,iX,iY),70),Cos(180-Angle(0,0,iX,iY),70))
-						   )
-										
+						   ),
+						Find_Not(Find_Category(C4D_Structure))				
 					     )
 	   )
 	   
