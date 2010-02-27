@@ -1483,14 +1483,21 @@ void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwC
 	}
 
 #ifdef _MSC_VER
+#ifdef _M_X64
+#	include <emmintrin.h>
+#endif
 static inline long int lrintf(float f)
 {
+#ifdef _M_X64
+	return _mm_cvtt_ss2si(_mm_load_ps1(&f));
+#else
 	long int i;
 	__asm {
 		fld f
 		fistp i
 	};
 	return i;
+#endif
 }
 #endif
 

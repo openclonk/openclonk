@@ -153,7 +153,7 @@ C4Console::~C4Console()
 	}
 
 #ifdef _WIN32
-BOOL CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
+INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 	{
 	switch (Msg)
 		{

@@ -178,18 +178,18 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			if (LOWORD(wParam) == WA_INACTIVE)
 			{
 				if (Console.PropertyDlg.hDialog)
-					SetWindowLong(Console.PropertyDlg.hDialog, GWL_HWNDPARENT, reinterpret_cast<LONG>(Console.hWindow));
+					SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
 				if (Console.ToolsDlg.hDialog)
-					SetWindowLong(Console.PropertyDlg.hDialog, GWL_HWNDPARENT, reinterpret_cast<LONG>(Console.hWindow));
+					SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
 			} else {
 				// FALLTHROUGH
 		case WM_MOUSEACTIVATE:
 				// WM_MOUSEACTIVATE is emitted when the user hovers over a window and pushes a mouse button.
 				// Setting the window owner here avoids z-order flickering.
 				if (Console.PropertyDlg.hDialog)
-					SetWindowLong(Console.PropertyDlg.hDialog, GWL_HWNDPARENT, reinterpret_cast<LONG>(hwnd));
+					SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
 				if (Console.ToolsDlg.hDialog)
-					SetWindowLong(Console.ToolsDlg.hDialog, GWL_HWNDPARENT, reinterpret_cast<LONG>(hwnd));
+					SetWindowLongPtr(Console.ToolsDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
 			}
 			break;
     //----------------------------------------------------------------------------------------------------------------------------------

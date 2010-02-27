@@ -128,7 +128,7 @@ typedef ptrdiff_t ssize_t;
 
 #if defined(_DEBUG) && defined(_MSC_VER)
 // use inline assembler to invoke the "breakpoint exception"
-#  define BREAKPOINT_HERE _asm int 3
+#  define BREAKPOINT_HERE __debugbreak()
 #elif defined(_DEBUG) && defined(__GNUC__)
 #  define BREAKPOINT_HERE asm volatile("int $3")
 #elif defined(_DEBUG) && defined(HAVE_SIGNAL_H)
