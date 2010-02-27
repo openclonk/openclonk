@@ -1,0 +1,9 @@
+[DefCore]
+id=CELS
+Version=4,10,0,0
+Category=C4D_Environment|C4D_StaticBack
+Width=1
+Height=1
+Vertices=1
+VertexY=0
+Mass=1

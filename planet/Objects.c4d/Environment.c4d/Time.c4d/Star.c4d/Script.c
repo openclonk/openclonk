@@ -7,7 +7,7 @@ protected func Initialize()
 	var alpha=0;
 	if(GetTime()<300 || GetTime()>1140) alpha=255;
 	SetClrModulation(RGBa(255,255,255,alpha));
-	this["Parallaxity"] = [60+Random(30),100];
+	this["Parallaxity"] = [10+Random(30),100];
 
 	SetCategory(GetCategory() | C4D_Parallax | C4D_Background);
 }

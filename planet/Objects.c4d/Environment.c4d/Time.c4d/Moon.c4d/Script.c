@@ -7,17 +7,21 @@ protected func Initialize()
 	var alpha=0;
 	if(GetTime()<300 || GetTime()>1140) alpha=255;
 	SetClrModulation(RGBa(255,255,255,alpha));
-	phase=0;
-	Phase();
-	this["Parallaxity"] = [30,100];
+	phase=1;
+	Phase(true);
+	this["Parallaxity"] = [40,100];
 }
 
-public func Phase()
+public func Phase(bool noAdvance)
 {
-	if(phase<5) phase=phase+1;
-	if(phase>=5) phase=1;
+	if(noAdvance!=true)
+	{	
+	if(phase<=5) phase=phase+1;
+	if(phase>=6) phase=1;
+	}
 
-	SetGraphics(Format("%d.2",phase-1));
+	if(phase==1) SetGraphics();
+	if(phase>1) SetGraphics(Format("%d.2",LocalN("phase")-1));
 	if(phase==1) SetPosition(LandscapeWidth()/4,LandscapeHeight()/4);
 	if(phase==2) SetPosition(LandscapeWidth()/3,LandscapeHeight()/5);
 	if(phase==3) SetPosition(LandscapeWidth()/2,LandscapeHeight()/6);
@@ -25,16 +29,19 @@ public func Phase()
 	if(phase==5) SetPosition(LandscapeWidth()-LandscapeWidth()/4,LandscapeHeight()/4);
 }
 
+//Query phase can also be used to modify the phase... ie: QueryPhase(3) would set
+//the phase of the moon to phase 3. QueryPhase() will simply return the current moon phase.
 global func QueryPhase(int iphase)
 {
 	var moonphase=FindObject(Find_ID(MOON))->LocalN("phase");
-	if(iphase!=nil && iphase<6) SetPhase(iphase);
+	if(iphase!=nil && iphase<6) FindObject(Find_ID(MOON))->SetPhase(iphase);
 	return moonphase;
 }
 //ties global to local func
 public func SetPhase(int iphase)
 {
 	phase=iphase;
+	Phase(true);
 }
 
 //only appears during the night

@@ -11,12 +11,24 @@
 
 local itime;
 
-global func SetTime(int iTime) //Sets the current time using a 24-hour clock scheme.
+global func SetTime(int iTime) //Sets the current time using a 1440-minute clock scheme.
 {
 	var timeobject=FindObject(Find_ID(TIME));
 
-	if(IsDay()==true && IsDay(iTime)==false) AddEffect("IntSunset",0,1,GetEffect("IntTimePass",0,0,3));
-	if(IsDay()==false && IsDay(iTime)==true) AddEffect("IntSunrise",0,1,GetEffect("IntTimePass",0,0,3));
+	//clear any existing sunrise/sunset effects
+	if(!GetEffect("IntSunrise")) RemoveEffect("IntSunrise");
+	if(!GetEffect("IntSunset")) RemoveEffect("IntSunset");
+
+	if(IsDay()==true && IsDay(iTime)==false)
+	{
+		AddEffect("IntSunset",0,1,1);
+	}
+
+	if(IsDay()==false && IsDay(iTime)==true) 
+	{
+		AddEffect("IntSunrise",0,1,1);
+	}
+
 	timeobject->LocalN("itime")=iTime;
 	if(timeobject!=nil) return 1;
 	else 
@@ -51,7 +63,7 @@ global func IsDay(int iTime)
 	if(iTime!=nil) time=iTime;
 
 	//The day spans from 300(5:00) to 1140(19:00).
-	if(time>300 && time<1140) return true;
+	if(time>=300 && time<1140) return true;
 
 	//if false, then it is night
 	return false;
@@ -62,8 +74,13 @@ protected func Initialize()
 	if(ObjectCount(Find_ID(TIME))>1) RemoveObject();
 	AddEffect("IntTimePass",0,1,18);
 	itime=720; //Sets the time to midday (12:00)
-	CreateObject(MOON,LandscapeWidth()/2,LandscapeHeight()/6); //Currently stars display in front of the moon for some reason D:
-	PlaceStars();
+
+	if(FindObject(Find_ID(CELS)))
+	{
+		var moon=CreateObject(MOON,LandscapeWidth()/2,LandscapeHeight()/6);
+		moon->Resort();
+		PlaceStars();
+	}
 }
 
 protected func PlaceStars()
@@ -84,10 +101,10 @@ protected func PlaceStars()
 
 global func FxIntTimePassTimer(object pTarget,int iNumber,int iTime)
 {
-	Message("%s",0,GetTime(true));
+	Message("%d",0,GetTime(true));
 
-	if(GetTime()==300) AddEffect("IntSunrise",0,1,GetEffect("IntTimePass",0,0,3));
-	if(GetTime()==1140) AddEffect("IntSunset",0,1,GetEffect("IntTimePass",0,0,3));
+	if(GetTime()==299) AddEffect("IntSunrise",0,1,1);
+	if(GetTime()==1140) AddEffect("IntSunset",0,1,1);
 
 	//time advancement
 	if(GetTime()>=1439) SetTime(0);
@@ -97,24 +114,26 @@ global func FxIntTimePassTimer(object pTarget,int iNumber,int iTime)
 
 global func FxIntSunriseTimer(object pTarget, int iNumber,int iTime)
 {
+	if(iTime>60)
+	{
+		var moon=FindObject(Find_ID(MOON));
+		if(moon) moon->Phase();
+		return -1;
+	}
+
 	var skyshade=iTime*425/100;
 	SetSkyAdjust(RGB(skyshade,skyshade,skyshade));
 	for(var celestial in FindObjects(Find_Func("IsCelestial")))
 		celestial->SetObjAlpha(255-skyshade); //makes objects with the IsCelestial func fade away
-	if(skyshade==255)
-	{
-		FindObject(Find_ID(MOON))->Phase();
-		return -1;
-	}
 }
 
 global func FxIntSunsetTimer(object pTarget, int iNumber,int iTime)
 {
+	if(iTime>60) return -1;
 	var skyshade=255-(iTime*425/100);
 	SetSkyAdjust(RGB(skyshade,skyshade,skyshade));
 	for(var celestial in FindObjects(Find_Func("IsCelestial")))
 		celestial->SetObjAlpha(255-skyshade); //makes objects with the IsCelestial func appear
-	if(skyshade==0) return -1;
 }
 
 func Definition(def) {
