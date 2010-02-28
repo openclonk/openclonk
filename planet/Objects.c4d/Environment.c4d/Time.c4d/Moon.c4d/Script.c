@@ -21,7 +21,7 @@ public func Phase(bool noAdvance)
 	}
 
 	if(phase==1) SetGraphics();
-	if(phase>1) SetGraphics(Format("%d.2",LocalN("phase")-1));
+	if(phase>1) SetGraphics(Format("%d",LocalN("phase")-1));
 	if(phase==1) SetPosition(LandscapeWidth()/4,LandscapeHeight()/4);
 	if(phase==2) SetPosition(LandscapeWidth()/3,LandscapeHeight()/5);
 	if(phase==3) SetPosition(LandscapeWidth()/2,LandscapeHeight()/6);

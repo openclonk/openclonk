@@ -90,32 +90,43 @@ bool C4Surface::LoadAny(C4GroupSet &hGroupset, const char *szName, bool fOwnPal,
 
 bool C4Surface::Load(C4Group &hGroup, const char *szFilename, bool fOwnPal, bool fNoErrIfNotFound)
 {
-	// Look for scaled images
+	int ScaleToSet = 1;
+	// Image is scaled?
 	StdStrBuf strFilename;
 	char strBasename[_MAX_FNAME + 1]; SCopy(szFilename, strBasename, _MAX_FNAME); RemoveExtension(strBasename);
-	const size_t base_length = std::strlen(strBasename);
-	char strExtension[128 + 1]; SCopy(GetExtension(szFilename), strExtension, 128);
-	int ScaleToSet = 1;
-	char scaled_name[_MAX_PATH+1];
-	if (strExtension[0])
+	int32_t extpos; int scale;
+	if (((extpos = SCharLastPos('.', strBasename)) > -1) && (sscanf(strBasename+extpos+1, "%d", &scale) == 1))
 	{
-		std::string wildcard(strBasename);
-		wildcard += ".*.";
-		wildcard += strExtension;
-		int max_scale = -1;
-		if (hGroup.FindEntry(wildcard.c_str(), scaled_name))
+		// Filename with scale information was passed. Just store scale.
+		ScaleToSet = scale;
+	}
+	else
+	{
+		// a filename with out scale information was passed in
+		// Look for scaled images
+		const size_t base_length = std::strlen(strBasename);
+		char strExtension[128 + 1]; SCopy(GetExtension(szFilename), strExtension, 128);
+		char scaled_name[_MAX_PATH+1];
+		if (strExtension[0])
 		{
-			do
+			std::string wildcard(strBasename);
+			wildcard += ".*.";
+			wildcard += strExtension;
+			int max_scale = -1;
+			if (hGroup.FindEntry(wildcard.c_str(), scaled_name))
 			{
-				int scale = -1;
-				if (sscanf(scaled_name + base_length + 1, "%d", &scale) == 1)
-					max_scale = std::max(scale, max_scale);
-			} while (hGroup.FindNextEntry(wildcard.c_str(), scaled_name));
-		}
-		if (max_scale > -1)
-		{
-			ScaleToSet = max_scale;
-			szFilename = scaled_name;
+				do
+				{
+					int scale = -1;
+					if (sscanf(scaled_name + base_length + 1, "%d", &scale) == 1)
+						max_scale = std::max(scale, max_scale);
+				} while (hGroup.FindNextEntry(wildcard.c_str(), scaled_name));
+			}
+			if (max_scale > -1)
+			{
+				ScaleToSet = max_scale;
+				szFilename = scaled_name;
+			}
 		}
 	}
 	// Access entry

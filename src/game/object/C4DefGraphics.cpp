@@ -240,6 +240,11 @@ bool C4DefGraphics::Load(C4Group &hGroup, bool fColorByOwner)
 		char GrpName[_MAX_PATH+1];
 		SCopy(Filename + iWildcardPos, GrpName, _MAX_PATH);
 		RemoveExtension(GrpName);
+		// remove trailing number for scaled graphics
+		int32_t extpos; int scale;
+		if ((extpos = SCharLastPos('.', GrpName)) > -1)
+			if (sscanf(GrpName+extpos+1, "%d", &scale) == 1)
+				GrpName[extpos] = '\0';
 		// clip to max length
 		GrpName[C4MaxName]=0;
 		// create new graphics
