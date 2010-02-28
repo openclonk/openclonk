@@ -13,7 +13,7 @@ local fAiming;
 local iAim;
 local fWait;
 
-public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_HandBack; }
+public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Musket; }
 public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
 public func GetCarryBone()	{	return	"main";	}
 /*public func GetCarryTransform()
