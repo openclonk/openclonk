@@ -51,7 +51,7 @@ char GetC4VID(const C4V_Type Type);
 C4V_Type GetC4VFromID(char C4VID);
 
 union C4V_Data {
-	long Int;
+	intptr_t Int;
 	C4Object * Obj;
 	C4PropList * PropList;
 	C4String * Str;
