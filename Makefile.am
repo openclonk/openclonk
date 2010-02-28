@@ -457,6 +457,7 @@ src/res/Static.h \
 src/script/C4AList.cpp \
 src/script/C4AList.h \
 src/script/C4Aul.cpp \
+src/script/C4AulDebug.cpp \
 src/script/C4AulExec.cpp \
 src/script/C4Aul.h \
 src/script/C4AulLink.cpp \
