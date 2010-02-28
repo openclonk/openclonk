@@ -664,7 +664,7 @@ func GetDirection()
 
 local PropAnimations;
 
-public func ReplaceAction(string action, string byaction)
+public func ReplaceAction(string action, byaction)
 {
 	if(PropAnimations == nil) PropAnimations = CreatePropList();
 	if(byaction == nil || byaction == 0)
@@ -673,11 +673,11 @@ public func ReplaceAction(string action, string byaction)
 		ResetAnimationEffects();
 		return true;
 	}
-	if(GetAnimationLength(byaction) == nil)
+/*	if(GetAnimationLength(byaction) == nil)
 	{
 		Log("ERROR: No animation %s in Definition %s", byaction, GetID()->GetName());
 		return false;
-	}
+	}*/
 	SetProperty(action, byaction, PropAnimations);
 	ResetAnimationEffects();
 	return true;
@@ -734,6 +734,9 @@ func GetCurrentWalkAnimation()
 
 func GetWalkAnimationPosition(string anim)
 {
+	if(PropAnimations != nil)
+		if(GetProperty(Format("%s_Position", anim), PropAnimations))
+			return GetProperty(Format("%s_Position", anim), PropAnimations);
 	// TODO: Choose proper starting positions, depending on the current
 	// animation and its position: For Stand->Walk or Stand->Run, start
 	// with a frame where one of the clonk's feets is on the ground and

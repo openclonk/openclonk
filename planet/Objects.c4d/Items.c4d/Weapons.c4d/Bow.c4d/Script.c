@@ -62,7 +62,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	fWait = false;
 	fAiming = 1;
 	// walk slow
-	AddEffect("IntWalkSlow", clonk, 1, 0, this);
+	AddEffect("IntWalkSlow", clonk, 1, 0, this, 0, 15000);
 	
 	// Setting the hands as blocked, so that no other items are carried in the hands
 	clonk->SetHandAction(1);
@@ -75,6 +75,7 @@ public func ControlUseStart(object clonk, int x, int y)
 
 	// Adjust base animations to fit the bow
 	clonk->ReplaceAction("Walk", "BowWalk");
+	clonk->ReplaceAction("Walk_Position", Anim_AbsX(0, 0, clonk->GetAnimationLength("BowWalk"), 5));
 	clonk->ReplaceAction("Stand", "BowStand");
 	clonk->ReplaceAction("Jump", "BowJump");
 	clonk->ReplaceAction("KneelDown", "BowKneel");
@@ -194,6 +195,7 @@ public func ResetClonk(clonk)
 	clonk->SetHandAction(0);
 
 	clonk->ReplaceAction("Walk", nil);
+	clonk->ReplaceAction("Walk_Position", nil);
 	clonk->ReplaceAction("Stand", nil);
 	clonk->ReplaceAction("Jump", nil);
 	clonk->ReplaceAction("KneelDown", nil);
@@ -223,9 +225,10 @@ private func ClonkAimLimit(object clonk, int angle)
 
 /* +++++++++++ Slow walk +++++++++++ */
 
-func FxIntWalkSlowStart(pTarget, iNumber, fTmp)
+func FxIntWalkSlowStart(pTarget, iNumber, fTmp, iValue)
 {
-	pTarget->SetPhysical("Walk", 30000, PHYS_StackTemporary);
+	if(iValue == nil || iValue == 0) iValue = 30000;
+	pTarget->SetPhysical("Walk", iValue, PHYS_StackTemporary);
 }
 
 func FxIntWalkSlowStop(pTarget, iNumber)
