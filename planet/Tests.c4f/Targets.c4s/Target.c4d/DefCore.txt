@@ -1,0 +1,14 @@
+[DefCore]
+id=_TRG
+Version=4,9,8
+Category=C4D_StaticBack
+MaxUserSelect=10
+Width=25
+Height=25
+Offset=-12,-12
+Vertices=1
+VertexY=1
+VertexFriction=50
+Value=10
+Mass=15
+Components=METL=1
