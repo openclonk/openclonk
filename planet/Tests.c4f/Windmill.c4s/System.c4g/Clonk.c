@@ -1,1 +1,0 @@
-#appendto CLNKprotected func RejectCollect(id objid, object obj){	if(objid != BOW1 && objid != ARRW) return true;	return _inherited(objid, obj);}public func MaxContentsCount() { return 1; }

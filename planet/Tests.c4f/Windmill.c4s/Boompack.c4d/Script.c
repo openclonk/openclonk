@@ -58,6 +58,13 @@ public func QueryCatchBlow(obj)
 	return 1;
 }
 
+/* Contact */
+
+protected func ContactBottom() { return Hit(); }
+protected func ContactTop() { return Hit(); }
+protected func ContactLeft() { return Hit(); }
+protected func ContactRight() { return Hit(); }
+
 protected func Hit()
 {
 	//Message("I have hit something",this);
