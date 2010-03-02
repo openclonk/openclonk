@@ -1,8 +1,6 @@
 /*-- Steam engine --*/
 
-#strict 2
-
-#include PWRG
+#include Library_PowerGenerator
 
 /*-- Power system --*/
 

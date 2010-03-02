@@ -18,7 +18,7 @@
 		<desc>Bei angegebenen id gibt die Funktion die Menge der Objekte zurück, die der Spieler in seiner Heimatbasis kaufen kann. iIndex und dwCategory werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Objekttyp der entsprechenden Kategorie der kaufbaren Objekte des Spielers. Der Objekttyp (id) taucht in der Liste auf und wird zurückgeliefert, selbst wenn zur Zeit keine Objekte dieses Typs verfügbar sind.</desc>
 		<examples>
 			<example>
-				<code><funclink>Message</funclink>("Spieler %s kann %d Flintstones kaufen",0,<funclink>GetPlayerName</funclink>(0), GetHomebaseMaterial(0,FLNT));</code>
+				<code><funclink>Message</funclink>("Spieler %s kann %d Flintstones kaufen",0,<funclink>GetPlayerName</funclink>(0), GetHomebaseMaterial(0,Firestone));</code>
 				<text>Meldet die Anzahl Feuersteine, die sich der Erste Spieler kaufen kann (sofern er das benötigte Geld hat)</text>
 				<code>var def=GetHomebaseMaterial(0,0,3,<funclink>C4D_Vehicle</funclink>());
 <funclink>Message</funclink>("Der dritte kaufbare Fahrzeugtyp des Spielers ist %i",0,def);</code>

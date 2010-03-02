@@ -30,8 +30,8 @@ anzeigen. Jeder Script-Programmierer sollte den Debugmodus aktivieren.</text>
 <emlink href="script/Funcs.html">Funktionen</emlink> deklariert werden:</text>
 <code>func CreateRock()
 {
-  [Erzeugt einen Stein|Image=ROCK]
-  <funclink>CreateObject</funclink>(ROCK,50,50);
+  [Erzeugt einen Stein|Image=Rock]
+  <funclink>CreateObject</funclink>(Rock,50,50);
   <funclink>return</funclink>(1);
 }
 </code>

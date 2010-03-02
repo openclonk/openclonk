@@ -1,7 +1,5 @@
 /*-- Arrow target --*/
 
-#strict 2
-
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
 }
@@ -26,7 +24,7 @@ func DoFireworks(int speed)
 	for(var i=0; i<36; ++i)
 	{
 		var oangle = Random(70);
-		var num = AddEffect("Firework", nil, 300, 1, nil, BOOM, Cos(oangle,speed), i*10+Random(5), GetX(), GetY());
+		var num = AddEffect("Firework", nil, 300, 1, nil, Boompack, Cos(oangle,speed), i*10+Random(5), GetX(), GetY());
 		EffectVar(4,nil,num) = color;
 	}
 

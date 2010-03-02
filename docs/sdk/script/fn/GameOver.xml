@@ -12,7 +12,7 @@
     <desc>Beendet die Runde. Die Runde wird für alle überlebenden Spieler als gewonnen gewertet.</desc>
     <examples>
       <example>
-        <code><funclink>if</funclink>(!<funclink>ObjectCount</funclink>(ROCK))
+        <code><funclink>if</funclink>(!<funclink>ObjectCount</funclink>(Rock))
 {
   <funclink>Log</funclink>("Prima, keine Steine stören mehr.");
   GameOver();

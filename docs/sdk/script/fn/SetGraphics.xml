@@ -34,7 +34,7 @@
     <remark>Es wird bei iOverlay=0 nur die Grafik eines Objekts geändert. Der Effekt entspricht dem Ersetzen der Graphics.bmp/-.png/Overlay.png in der <emlink href="definition/index.html">Definition</emlink>; Quellangaben aus der <emlink href="definition/actmap.html">ActMap.txt</emlink> oder <emlink href="definition/defcore.html">DefCore.txt</emlink> werden dadurch nicht beeinflusst; diese Koordinaten sollten also in der neuen Grafik auf sinnvolle Positionen verweisen (Das gilt auch für SolidMasks!).</remark>
     <examples>
       <example>
-        <code><funclink>FindObject</funclink>(ROCK)->SetGraphics(nil, GOLD);</code>
+        <code><funclink>FindObject</funclink>(Rock)->SetGraphics(nil, Gold);</code>
         <text>Gibt einem zufälligen Stein aus der Landschaft die Grafik des Goldes.</text>
       </example>
       <example>
@@ -46,7 +46,7 @@
         <text>Gibt allen Objekten im Spiel ihre Ursprungsgrafiken zurück.</text>
       </example>
       
-<example><code>SetGraphics(nil, CLNK, GFX_Overlay, GFXOV_MODE_Picture);
+<example><code>SetGraphics(nil, Clonk, GFX_Overlay, GFXOV_MODE_Picture);
 <funclink>SetObjDrawTransform</funclink>(800,0,0, 0,800,0, <funclink>this</funclink>(), GFX_Overlay);</code>
 <text>Objektscript: Das aufrufende Objekt bekommt ein verkleinertes Clonk-Bild auf die Picture-Grafik gedruckt.</text></example>
 

@@ -1,6 +1,6 @@
 [DefCore]
-id=ORE1
-Version=4,9,10,10
+id=Ore
+Version=4,9,10,0
 Category=C4D_Object
 MaxUserSelect=50
 Width=8
@@ -10,8 +10,6 @@ Picture=0,0,8,8
 Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
-VertexFriction=80,80
-Components=ROCK=3;
 Value=5
 Mass=9
 Rotate=1

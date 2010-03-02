@@ -2,16 +2,16 @@
 
 protected func Initialize()
 {
-	if(ObjectCount(Find_ID(GRAS))>1) RemoveObject(); //Failsafe to stop creation of more than one grass controller.
+	if(ObjectCount(Find_ID(Grass))>1) RemoveObject(); //Failsafe to stop creation of more than one grass controller.
 	SetGrassDensity(85);
 }
 
 global func SetGrassDensity(int iAmount) //Allows a scenario to change the percentage of earth covered in grass on Initialize().
 {
-	for(var allgrass in FindObjects(Find_ID(GRAS)))
+	for(var allgrass in FindObjects(Find_ID(Grass)))
 		allgrass->RemoveObject();
 
-	FindObject(Find_ID(GRSP))->PlaceGrass(iAmount);
+	FindObject(Find_ID(Environment_Grass))->PlaceGrass(iAmount);
 }
 
 public func PlaceGrass(int iAmount)
@@ -40,7 +40,7 @@ public func GrowGrass(int x, int y)
 	if(!GBackSolid(x+6,y+3)) rot=40;
 	if(!GBackSolid(x-6,y+3)) rot=-40;
 	if(!GBackSolid(x-6,y+3) && !GBackSolid(x+6,y+3)) rot=0;
-	var grass=CreateObject(GRAS,x,y+3);
+	var grass=CreateObject(Grass,x,y+3);
 	grass->SetR(rot);
 	grass->DoCon(Random(50));
 }

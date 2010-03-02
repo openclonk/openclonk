@@ -7,7 +7,7 @@
 */
 
 // has extra slot
-#include L_ES
+#include Library_HasExtraSlot
 
 local aimtime;
 local fAiming;
@@ -220,7 +220,7 @@ public func Shoot(object clonk, int x, int y)
 public func AddArrow(clonk)
 {
 	if(!fAiming) return;
-	iArrowMesh = clonk->AttachMesh(HARW, "pos_hand1", "main", nil);
+	iArrowMesh = clonk->AttachMesh(HelpArrow, "pos_hand1", "main", nil);
 }
 
 /* ++++++++ Helper functions ++++++++ */

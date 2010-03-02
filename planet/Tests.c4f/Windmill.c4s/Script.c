@@ -23,7 +23,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 
  func RelaunchPlayer(int iPlr)
 {
-	var clonk = CreateObject(CLNK, 0, 0, iPlr);
+	var clonk = CreateObject(Clonk, 0, 0, iPlr);
 	clonk->MakeCrewMember(iPlr);
 	SetCursor(iPlr,clonk);
 	SelectCrew(iPlr, clonk, true);
@@ -36,7 +36,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(LandscapeWidth()/2, 0);
-	clonk->CreateContents(BOW1);
-	clonk->Collect(CreateObject(ARRW));
+	clonk->CreateContents(Bow);
+	clonk->Collect(CreateObject(Arrow));
 	return;
 }

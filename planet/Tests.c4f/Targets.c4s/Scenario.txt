@@ -16,24 +16,24 @@ Rules=RSTR=1
 
 [Player1]
 Wealth=50,0,0,250
-Crew=CLNK=1
+Crew=Clonk=1
 
 [Player2]
 Wealth=50,0,0,250
-Crew=CLNK=1
+Crew=Clonk=1
 
 [Player3]
 Wealth=50,0,0,250
-Crew=CLNK=1
+Crew=Clonk=1
 
 [Player4]
 Wealth=50,0,0,250
-Crew=CLNK=1
+Crew=Clonk=1
 
 [Landscape]
 Vegetation=TRE1=1;TRE2=2;TRE3=1;TRE4=1
 VegetationLevel=100,0,0,100
-InEarth=ROCK=1;GOLD=1;FIGB=1;LOAM=1
+InEarth=Rock=1;Gold=1;FIGB=1;Loam=1
 InEarthLevel=65,0,0,100
 Sky=Clouds2
 BottomOpen=1

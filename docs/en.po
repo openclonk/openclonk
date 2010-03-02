@@ -1499,8 +1499,8 @@ msgid "Ruft die überladene Funktion auf. Funktionen überladen sich, wenn sie b
 msgstr "Calls the overloaded function. A function overloads another function if it is declared with the same name in the same scope."
 
 #: sdk/script/fn/inherited.xml:25(text)
-msgid "So könnte das Script eines neuen Clonktyp aussehen. Er leitet seine Basisfunktionalität vom Clonk (CLNK) ab, und erweitert den Initialize-EngineCallback."
-msgstr "This could be the script of a new clonk type. It derives its basic functionality from the normal clonk (CLNK) and extends the Initialize function."
+msgid "So könnte das Script eines neuen Clonktyp aussehen. Er leitet seine Basisfunktionalität vom Clonk (Clonk) ab, und erweitert den Initialize-EngineCallback."
+msgstr "This could be the script of a new clonk type. It derives its basic functionality from the normal clonk (Clonk) and extends the Initialize function."
 
 #: sdk/script/fn/if.xml:15(desc)
 msgid "Wenn fCondition ungleich Null, wird der unmittelbar folgende Block bzw. die unmittelbar folgende Anweisung einmal ausgeführt."
@@ -8657,8 +8657,8 @@ msgid "Gibt aus: ' 1'"
 msgstr "Displays: ' 1'"
 
 #: sdk/script/fn/Format.xml:44(text)
-msgid "Gibt z.B. aus: 'CLNK'"
-msgstr "Displays (e.g.): 'CLNK'"
+msgid "Gibt z.B. aus: 'Clonk'"
+msgstr "Displays (e.g.): 'Clonk'"
 
 #: sdk/script/fn/Format.xml:48(text)
 msgid "Gibt aus: ' 05'"
@@ -10516,8 +10516,8 @@ msgid "Wandelt einen String in eine ID um."
 msgstr "Converts a string into an id."
 
 #: sdk/script/fn/C4Id.xml:19(text)
-msgid "Gibt die ID 'ROCK' zurück."
-msgstr "Returns the id 'ROCK'."
+msgid "Gibt die ID 'Rock' zurück."
+msgstr "Returns the id 'Rock'."
 
 #: sdk/script/fn/C4D_Vehicle.xml:12(desc)
 msgid "Objektkategorie: Fahrzeug."
@@ -11663,8 +11663,8 @@ msgid "<code>return</code>, <code>if</code> und <code>while</code> nehmen nur no
 msgstr "<code>return</code>, <code>if</code> and <code>while</code> only accept one parameter. Also some other expressions which used to cause a warning only are now no longer accepted."
 
 #: sdk/script/Strict.xml:39(li)
-msgid "<code>==</code> und <code>!=</code> vergleichen nicht mehr die Identität von Werten, sondern ihren Inhalt und Typ. Beispielsweise gilt jetzt [1,2]==[2-1,2], \"Hallo\"==\"Hallo\" und CastInt(CLNK)!=CLNK."
-msgstr "<code>==</code> and <code>!=</code> do not compare identity of two values, but their type and contents. Example: [1,2]==[2-1,2], \"Hallo\"==\"Hallo\" and CastInt(CLNK)!=CLNK."
+msgid "<code>==</code> und <code>!=</code> vergleichen nicht mehr die Identität von Werten, sondern ihren Inhalt und Typ. Beispielsweise gilt jetzt [1,2]==[2-1,2], \"Hallo\"==\"Hallo\" und CastInt(Clonk)!=Clonk."
+msgstr "<code>==</code> and <code>!=</code> do not compare identity of two values, but their type and contents. Example: [1,2]==[2-1,2], \"Hallo\"==\"Hallo\" and CastInt(Clonk)!=Clonk."
 
 #: sdk/script/Strict.xml:40(li)
 msgid "Funktions- und Variablennamen dürfen nur noch die Zeichen a-z, A-Z und _, sowie 0-9 in der Mitte des Namens enthalten."
@@ -11997,12 +11997,12 @@ msgid "for"
 msgstr "for"
 
 #: sdk/script/Funcs.xml:60(text)
-msgid "Diese Funktion gibt einem übergebenen Clonk (<code>clnk</code>) eine Anzahl von Objekten (<code>anzahl</code>) vom angegebenen Typ (<code>def</code>) und gibt die Nachricht <code>msg</code> über seinem Kopf aus. Dabei wird bei Funktionsaufruf sichergestellt, dass alle Parameter in den angegebenen Typ konvertiert werden, sofern dies möglich ist (siehe <emlink href=\"script/Typechecks.html\">Typechecks</emlink>)."
+msgid "Diese Funktion gibt einem übergebenen Clonk (<code>Clonk</code>) eine Anzahl von Objekten (<code>anzahl</code>) vom angegebenen Typ (<code>def</code>) und gibt die Nachricht <code>msg</code> über seinem Kopf aus. Dabei wird bei Funktionsaufruf sichergestellt, dass alle Parameter in den angegebenen Typ konvertiert werden, sofern dies möglich ist (siehe <emlink href=\"script/Typechecks.html\">Typechecks</emlink>)."
 msgstr "This functions creates a given number of a given type of objects inside the specified clonk and displays a variable message above his head. The function declaration ensures that only those values will be accepted that can be converted to the declared parameter types (see also <emlink href=\"script/Typechecks.html\">type checking</emlink>)."
 
 #: sdk/script/Funcs.xml:61(text)
-msgid "Ein Aufruf wie <code>TypParameterFunktion(1, CLNK, \"Text\", 5)</code> hier würde also einen Typfehler auslösen."
-msgstr "Making a call such as <code>TypParameterFunktion(1, CLNK, \"Text\", 5)</code> would cause a type checking error."
+msgid "Ein Aufruf wie <code>TypParameterFunktion(1, Clonk, \"Text\", 5)</code> hier würde also einen Typfehler auslösen."
+msgstr "Making a call such as <code>TypParameterFunktion(1, Clonk, \"Text\", 5)</code> would cause a type checking error."
 
 #: sdk/script/Funcs.xml:63(h)
 msgid "Vorgabeparameter"
@@ -15218,7 +15218,7 @@ msgid "Da nicht jede Objektdefinition die globale PlayerControl-Funktion ueberla
 msgstr ""
 
 #: sdk/playercontrols.xml:229(text)
-msgid "Dabei sei SHVL die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:"
+msgid "Dabei sei Shovel die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:"
 msgstr ""
 
 #: sdk/playercontrols.xml:239(text)

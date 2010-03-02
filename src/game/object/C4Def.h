@@ -138,9 +138,6 @@ const DWORD C4D_Load_None      =  0,
 #define C4D_Blit_Additive   1
 #define C4D_Blit_ModAdd     2
 
-#define C4DGFXMODE_NEWGFX 1
-#define C4DGFXMODE_OLDGFX 2
-
 class C4Def: public C4PropList
   {
   public:

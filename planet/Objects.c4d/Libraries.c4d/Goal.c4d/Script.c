@@ -9,10 +9,10 @@ local missionPassword; // mission password to be gained when the goal is fulfill
 // Initialization
 func Initialize()
 {
-  // Do not create GOAL itself
-  if (GetID()==GOAL)
+  // Do not create Library_Goal itself
+  if (GetID()==Library_Goal)
   {
-    Log("WARNING: Abstract GOAL object should not be created; object removed.");
+    Log("WARNING: Abstract Library_Goal object should not be created; object removed.");
     return RemoveObject();
   }
   // Create timer if it doesn't exist yet
@@ -46,14 +46,14 @@ public func NotifyHUD()
   for(var i = 0; i < GetPlayerCount(); ++i)
   {
 	var plr = GetPlayerByIndex(i);
-	var HUD = FindObject(Find_ID(HUDC),Find_Owner(plr));
+	var HUD = FindObject(Find_ID(GUI_Controller),Find_Owner(plr));
 	if(HUD) HUD->OnGoalUpdate(this);
   }
 }
 
 protected func InitializePlayer(int plr)
 {
-	var HUD = FindObject(Find_ID(HUDC),Find_Owner(plr));
+	var HUD = FindObject(Find_ID(GUI_Controller),Find_Owner(plr));
 	if(HUD) HUD->OnGoalUpdate(this);
 }
 

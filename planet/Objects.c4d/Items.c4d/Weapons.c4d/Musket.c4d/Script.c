@@ -7,7 +7,7 @@
 --*/
 
 //Uses the extra slot library
-#include L_ES
+#include Library_HasExtraSlot
 
 local fAiming;
 local iAim;
@@ -83,7 +83,7 @@ func ControlUseStart(object clonk, int x, int y)
 		fAiming = 1;
 		clonk->SetHandAction(1);
 		clonk->UpdateAttach();
-		AddEffect("IntWalkSlow", clonk, 1, 0, 0, BOW1);
+		AddEffect("IntWalkSlow", clonk, 1, 0, 0, Bow);
 		// Aim timer
 		if(!GetEffect("IntAiming", clonk))
 			AddEffect("IntAiming", clonk, 1, 1, this);

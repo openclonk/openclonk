@@ -32,7 +32,7 @@
 
   <examples>
    <example>
-    <code>#include CLNK
+    <code>#include Clonk
 
 local fInvisible;
     

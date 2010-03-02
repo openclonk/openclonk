@@ -17,12 +17,12 @@
       <example>
 
 <code>#strict
-#include CLNK
+#include Clonk
 Initialize:
-  CreateContents(SWOR);
+  CreateContents(Sword);
   <funclink>return</funclink>(inherited(<funclink>Par</funclink>(), <funclink>Par</funclink>(1)));</code>
 
-        <text>So könnte das Script eines neuen Clonktyp aussehen. Er leitet seine Basisfunktionalität vom Clonk (CLNK) ab, und erweitert den Initialize-EngineCallback.</text>
+        <text>So könnte das Script eines neuen Clonktyp aussehen. Er leitet seine Basisfunktionalität vom Clonk (Clonk) ab, und erweitert den Initialize-EngineCallback.</text>
       </example>
     </examples>
     <related>

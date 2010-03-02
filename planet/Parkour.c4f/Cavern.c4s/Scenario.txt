@@ -8,19 +8,19 @@ MaxPlayer=12
 Definition1=Objects.c4d
 
 [Player1]
-Crew=CLNK=1
+Crew=Clonk=1
 
 [Player2]
-Crew=CLNK=1
+Crew=Clonk=1
 
 [Player3]
-Crew=CLNK=1
+Crew=Clonk=1
 
 [Player4]
-Crew=CLNK=1
+Crew=Clonk=1
 
 [Landscape]
-InEarth=ROCK=1;DYNA=3;LOAM=3
+InEarth=Rock=1;Dynamite=3;Loam=3
 InEarthLevel=80,0,0,100
 Sky=Clouds1
 MapWidth=100,0,64,10000
@@ -35,4 +35,4 @@ YearSpeed=0,0,0,100
 Wind=1,100,-100,100
 
 [Animals]
-Nest=LOAM=50;DYNA=20
+Nest=Loam=50;Dynamite=20

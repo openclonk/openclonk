@@ -1,5 +1,5 @@
 [DefCore]
-id=DYNB
+id=DynamiteBox
 Version=4,9,5
 Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
 MaxUserSelect=5
@@ -13,7 +13,7 @@ VertexX=3,3,-3,-3
 VertexY=-2,2,-2,2
 VertexFriction=50,50,50,50
 Picture=0,0,64,64
-Components=WOOD=1;METL=1;
+Components=Wood=1;Metal=1;
 Rebuy=1
 Collectible=1
 Rotate=1

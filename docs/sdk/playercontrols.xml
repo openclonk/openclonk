@@ -225,8 +225,8 @@
   Identifier=Dig
   GUIName=Dig
   GUIDesc=Going underground
-  ExtraData=SHVL</code>
-<text>Dabei sei SHVL die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:</text>
+  ExtraData=Shovel</code>
+<text>Dabei sei Shovel die ID eines Schaufelobjektes. Im globalen Script kann zum Beispiel folgende, allgemeine Behandlung fuer unbekannte Kommandos stehen:</text>
 <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)
 {
   // Behandlung bekannter Befehle

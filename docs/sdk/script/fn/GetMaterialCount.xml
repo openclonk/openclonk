@@ -24,7 +24,7 @@ public func IsFulfilled()
   // noch zu viel?
   if (iGold >= 150) return();
   // noch Goldstücke abzubauen?
-  return(!<funclink>ObjectCount</funclink>(GOLD));
+  return(!<funclink>ObjectCount</funclink>(Gold));
 }
 				</code>
 				<text>Auszug aus dem Goldminen-Spielzielobjekt (GLDM).</text>

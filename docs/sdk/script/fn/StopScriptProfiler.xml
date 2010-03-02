@@ -23,7 +23,7 @@
 00020ms	TRB2::Damage
 00020ms	TRB2::ChopDown
 00018ms	game DeployPlayer
-00018ms	LOAM::Hit
+00018ms	Loam::Hit
 00018ms	BIRD::ControlDigDouble
 00012ms	_QSF::Active
 00012ms	Direct exec

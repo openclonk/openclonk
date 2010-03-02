@@ -1,5 +1,5 @@
 [DefCore]
-id=MBLL
+id=LeadShot
 Version=4,9,10,10
 Category=C4D_Object
 MaxUserSelect=50
@@ -14,5 +14,5 @@ Picture=8,0,8,8
 Value=10
 Mass=5
 Collectible=1
-Components=METL=1;BPDR=1;
+Components=Metal=1;Blackpowder=1;
 Rebuy=1

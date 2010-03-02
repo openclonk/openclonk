@@ -42,7 +42,7 @@ public func ControlUse(object clonk, int ix, int iy)
 		}}
   
   // Create menu and fill it with the player's plans
-  clonk->CreateMenu(HAMR, this, 1, "$TxtNoconstructionplansa$");
+  clonk->CreateMenu(Hammer, this, 1, "$TxtNoconstructionplansa$");
   var idType; var i = 0;
   while (idType = GetPlrKnowledge(clonk->GetOwner(), 0, i++, C4D_Structure))
     clonk->AddMenuItem("$TxtConstructions$", "CreateConstructionSite", idType);

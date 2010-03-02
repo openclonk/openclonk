@@ -1,6 +1,6 @@
 /*-- Der Clonk --*/
 
-#include CLNK
+#include Clonk
 
 /* Act Map */
 

@@ -1,5 +1,5 @@
 [DefCore]
-id=MJOW
+id=JarOfWinds
 Version=4,9,10,10
 Category=C4D_Object
 MaxUserSelect=30
@@ -14,6 +14,6 @@ Picture=0,1,9,9
 Value=35
 Mass=15
 Collectible=1
-Components=ROCK=6;METL=1;
+Components=Rock=6;Metal=1;
 Rebuy=1
 Rotate=1

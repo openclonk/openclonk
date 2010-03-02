@@ -31,7 +31,7 @@
 		  <col><code>id</code></col>
 		  <col>Definitions-ID</col>
 		  <col>ID einer Objektdefinition (siehe <emlink href="definition/index.html#ObjektundEntwicklerIdentifikation">Objektdefinitionen</emlink>). Wird sofort in eine Proplist umgewandelt.</col>
-		  <col><code>CLNK </code></col>
+		  <col><code>Clonk </code></col>
 		</row>
 		<row>
 		  <col><code>string</code></col>
@@ -49,14 +49,14 @@
 		  <col><code>array</code></col>
 		  <col>Array</col>
 		  <col>Ein Typ, der eine Reihe weiterer durchnummerierter Variablen enthält, deren Anzahl mit <funclink>GetLength</funclink> abgefragt werden kann, und die mit <code><em>array</em>[<em>index</em>]</code> abgerufen werden können. Ab CR.</col>
-		  <col><code>[0,42,CLNK] </code></col>
+		  <col><code>[0,42,Clonk] </code></col>
 		</row>
 		<row>
 		  <col><code>proplist</code></col>
 		  <col>Objekt</col>
 		  <col>Ein allgemeiner Objekttyp. Mit <funclink>GetProperty</funclink> und <funclink>SetProperty</funclink> können Eigenschaften abgefragt bzw. gesetzt werden.
 		  Wenn die Eigenschaft <code>"Prototype"</code> gesetzt ist und eine nicht gesetzte Eigenschaft abgefragt wird, wird im Prototyp nachgeguckt.</col>
-		  <col><code>[0,42,CLNK] </code></col>
+		  <col><code>[0,42,Clonk] </code></col>
 		</row>
 	</table></text>
 	
@@ -87,7 +87,7 @@
 		<h>Beispiel 2</h>
 <code>func RandomID()
 {
-  var a = [CLNK, WIPF, BIRD, HUT1];
+  var a = [Clonk, WIPF, BIRD, HUT1];
   return (a[Random(4)]);
 }</code>
 		<text>Diese Funktion wählt zufällig aus einer der vier ids aus und gibt diese zurück.</text>

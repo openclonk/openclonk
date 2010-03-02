@@ -33,8 +33,8 @@ public func Phase(bool noAdvance)
 //the phase of the moon to phase 3. QueryPhase() will simply return the current moon phase.
 global func QueryPhase(int iphase)
 {
-	var moonphase=FindObject(Find_ID(MOON))->LocalN("phase");
-	if(iphase!=nil && iphase<6) FindObject(Find_ID(MOON))->SetPhase(iphase);
+	var moonphase=FindObject(Find_ID(Moon))->LocalN("phase");
+	if(iphase!=nil && iphase<6) FindObject(Find_ID(Moon))->SetPhase(iphase);
 	return moonphase;
 }
 //ties global to local func

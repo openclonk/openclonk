@@ -3,36 +3,36 @@
 func Initialize()
 {
 
- CreateObject(DYNA,1050,1150,-1);
- CreateObject(DYNA,1050,1150,-1);
+ CreateObject(Dynamite,1050,1150,-1);
+ CreateObject(Dynamite,1050,1150,-1);
  
- CreateObject(DYNA,500,900,-1);
- CreateObject(DYNA,500,900,-1);
+ CreateObject(Dynamite,500,900,-1);
+ CreateObject(Dynamite,500,900,-1);
  
  
- CreateObject(DYNA,1336,1116,-1);
- CreateObject(DYNA,1675,1075,-1);
- CreateObject(BPDR,1130,1007,-1);
+ CreateObject(Dynamite,1336,1116,-1);
+ CreateObject(Dynamite,1675,1075,-1);
+ CreateObject(Blackpowder,1130,1007,-1);
  
  DrawMaterialQuad("Tunnel",1378,1327-5,1860,1327-5,1860,1330,1387,1330);
  for(var i = 1380; i<=1800; i+=30)
  {
- 	CreateObject(BPDR,i,1328,-1);
+ 	CreateObject(Blackpowder,i,1328,-1);
  
  }
  
- CreateObject(BPDR,2553,918,-1);
+ CreateObject(Blackpowder,2553,918,-1);
  
- CreateObject(DYNA,3208,1188,-1);
+ CreateObject(Dynamite,3208,1188,-1);
  
- CreateObject(DYNA,3361,749,-1);
- CreateObject(DYNA,3243,557,-1);
+ CreateObject(Dynamite,3361,749,-1);
+ CreateObject(Dynamite,3243,557,-1);
  
  for(var i=0; i<=6; i++)
- CreateObject(DYNA,3090-(3*i),564,-1);
+ CreateObject(Dynamite,3090-(3*i),564,-1);
  
  // Create the race goal.
-	var pGoal = CreateObject(Core_Goal_Parkour, 0, 0, NO_OWNER);
+	var pGoal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	pGoal->SetStartpoint(20, 1000);
 	pGoal->AddCheckpoint(760,950,RACE_CP_Ordered);
 	pGoal->AddCheckpoint(400,660,RACE_CP_Ordered);
@@ -60,7 +60,7 @@ func Initialize()
 protected func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
-	clonk->CreateContents(MJOW);
+	clonk->CreateContents(JarOfWinds);
 	return;
 }
 

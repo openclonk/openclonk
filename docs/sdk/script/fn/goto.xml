@@ -25,7 +25,7 @@ protected func Initialize()
 protected func Script100()
   {
   // Flints erzeugen
-  <funclink>CastObjects</funclink>(FLNT,10,200, <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), 20);
+  <funclink>CastObjects</funclink>(Firestone,10,200, <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), 20);
   goto(90);
   }</code>
         <text>Script eines Szenarios: Ein Flintregen. Es werden alle 100 Frames 10 Flints erzeugt.</text>

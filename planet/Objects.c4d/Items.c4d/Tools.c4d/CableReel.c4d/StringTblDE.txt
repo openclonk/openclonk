@@ -1,0 +1,5 @@
+TxtConnectLine=Leitung verbinden
+TxtNoNewLine=Hier kann keine neue Leitung verlegt werden.
+TxtLineRemoval=Stromleitung abgenommen.
+TxtConnect=Stromleitung verbunden|mit %s
+Name=Kabelspule

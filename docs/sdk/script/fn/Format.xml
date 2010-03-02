@@ -41,7 +41,7 @@
       </example>
       <example>
         <code><funclink>Log</funclink>(Format("'%i'", <funclink>GetID</funclink>(<funclink>GetCursor</funclink>())));</code>
-        <text>Gibt z.B. aus: 'CLNK'</text>
+        <text>Gibt z.B. aus: 'Clonk'</text>
       </example>
       <example>
         <code><funclink>Log</funclink>(Format("'%3.2d'", 5));</code>

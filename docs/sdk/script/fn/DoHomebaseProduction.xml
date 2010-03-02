@@ -17,7 +17,7 @@
 		<desc>Verändert die Nachlieferung von kaufbaren Objekten in der Heimatbasis.</desc>
 		<examples>
 			<example>
-				<code><funclink>DoHomebaseProduction</funclink>(0, FLNT, -<funclink>GetHomebaseProduction</funclink>(0, FLNT));</code>
+				<code><funclink>DoHomebaseProduction</funclink>(0, Firestone, -<funclink>GetHomebaseProduction</funclink>(0, Firestone));</code>
 				<text>Feuersteine werden für den ersten Spieler nicht mehr nachgeliefert.</text>
 			</example>
 		</examples>

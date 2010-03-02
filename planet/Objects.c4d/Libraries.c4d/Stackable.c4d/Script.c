@@ -116,20 +116,21 @@ private func UpdatePicture()
 	
 	if(hun > 0)
 	{
-		SetGraphics(Format("%d",hun),NUMB,10,GFXOV_MODE_Picture);
+		SetGraphics(Format("%d",hun),Icon_Number,10,GFXOV_MODE_Picture);
 		SetObjDrawTransform(s,0,xoffs-spacing*2,0,s,yoffs, 10);
 	}
 	else
 		SetGraphics(nil,nil,10);
+
 	if(ten > 0 || hun > 0)
 	{
-		SetGraphics(Format("%d",ten),NUMB,11,GFXOV_MODE_Picture);
+		SetGraphics(Format("%d",ten),Icon_Number,11,GFXOV_MODE_Picture);
 		SetObjDrawTransform(s,0,xoffs-spacing,0,s,yoffs, 11);
 	}
 	else
-		SetGraphics(nil,nil,10);
+		SetGraphics(nil,nil,11);
 		
-	SetGraphics(Format("%d",one),NUMB,12,GFXOV_MODE_Picture);
+	SetGraphics(Format("%d",one),Icon_Number,12,GFXOV_MODE_Picture);
 	SetObjDrawTransform(s,0,xoffs,0,s,yoffs, 12);
 }
 

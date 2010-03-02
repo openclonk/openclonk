@@ -2,7 +2,7 @@
 
 func Initialize()
 {
-	var pGoal = CreateObject(Core_Goal_Parkour, 0, 0, NO_OWNER);
+	var pGoal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	pGoal->SetStartpoint(90, 820);
 	pGoal->AddCheckpoint(660, 580, 28);
 	pGoal->AddCheckpoint(500, 270, 28);
@@ -22,11 +22,11 @@ func PlrHasRespawned(int iPlr, object cp)
 	var clonk = GetCrew(iPlr);
 	if(clonk->Contents())
 		clonk->Contents()->RemoveObject();
-	clonk->CreateContents(BOOM);
+	clonk->CreateContents(Boompack);
 }
 
 global func FxRespawnBoomTimer(object target, int num, int time)
 {
-	target->CreateContents(BOOM);
+	target->CreateContents(Boompack);
 	return -1;
 }

@@ -5,7 +5,8 @@
 	A simple but dangerous throwing weapon.
 --*/
 
-#include L_ST
+#include Library_Stackable
+
 public func MaxStackCount() { return 3; }
 
 local fAiming;
@@ -80,7 +81,7 @@ protected func ControlUseHolding(object clonk, int ix, int iy)
 	return 1;
 }
 
-static const JAVE_ThrowTime = 16;
+static const Javelin_ThrowTime = 16;
 
 protected func ControlUseStop(object clonk, int ix, int iy)
 {
@@ -89,7 +90,7 @@ protected func ControlUseStop(object clonk, int ix, int iy)
 	var angle = clonk->GetAnimationPosition(iAim)*180/(clonk->GetAnimationLength("SpearAimArms"));
 	if(!clonk->GetDir()) angle = -angle;
 
-	var iThrowtime = JAVE_ThrowTime;
+	var iThrowtime = Javelin_ThrowTime;
 	if(Abs(angle) < 90)
 	{
 		iAim = clonk->PlayAnimation("SpearThrow2Arms",  10, Anim_Linear(0, 0, clonk->GetAnimationLength("SpearThrow2Arms" ), iThrowtime), Anim_Const(1000));
@@ -135,7 +136,7 @@ public func DoThrow(object clonk, int angle)
 	
 	fAiming = -1;
 	clonk->UpdateAttach();
-	ScheduleCall(this, "ResetClonk", JAVE_ThrowTime/2, 1, clonk);
+	ScheduleCall(this, "ResetClonk", Javelin_ThrowTime/2, 1, clonk);
 }
 
 public func ResetClonk(clonk)

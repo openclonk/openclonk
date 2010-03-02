@@ -18,10 +18,10 @@
 
 <code>#strict
 
-#appendto CLNK
+#appendto Clonk
 
 Initialize:
-  <funclink>CreateContents</funclink>(FLNT);
+  <funclink>CreateContents</funclink>(Firestone);
   <funclink>return</funclink>(_inherited(<funclink>Par</funclink>(), <funclink>Par</funclink>(1)));</code>
 
         <text>Gibt jedem Clonk zu Beginn einen Feuerstein.</text>

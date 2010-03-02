@@ -22,11 +22,11 @@
   <funclink>SetAction</funclink>("Idle");
   // Erz suchen
   var pOre;
-  <funclink>if</funclink> (!(pOre = <funclink>FindContents</funclink>(ORE1))) <funclink>return</funclink>(1);
+  <funclink>if</funclink> (!(pOre = <funclink>FindContents</funclink>(Ore))) <funclink>return</funclink>(1);
   // Erz verbrauchen
   pOre-><funclink>RemoveObject</funclink>();
   // Metall auswerfen
-  <funclink>CreateContents</funclink>(METL)-><funclink>Exit</funclink>(-27, +13, 0, -1);
+  <funclink>CreateContents</funclink>(Metal)-><funclink>Exit</funclink>(-27, +13, 0, -1);
   // Sound
   <funclink>Sound</funclink>("Pshshsh");
 }

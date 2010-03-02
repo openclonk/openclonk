@@ -1,5 +1,7 @@
 /*--- The Base ---*/
 
+// Author: Randrian
+
 // Determines it the Building is acutally a base
 local fIsBase;
 local iEnergy;
@@ -109,8 +111,8 @@ public func MakeBase(bool fRemoveBase)
   {
     fIsBase = 1;
     AddEffect("IntBase", this, 1, 10, this);
-	if(!FindObject(Find_ID(BASM), Find_Owner(GetOwner())))
-		CreateObject(BASM,AbsX(10),AbsY(10),GetOwner());
+	if(!FindObject(Find_ID(BaseMaterial), Find_Owner(GetOwner())))
+		CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
   }
 }
 
@@ -179,13 +181,13 @@ func FxIntBaseHealTimer(pClonk, iEffect)
 
 func ContextSell(object pClonk)
 {
-  [$Sell$|Image=BASM|Condition=IsBase]
+  [$Sell$|Image=BaseMaterial|Condition=IsBase]
   return OpenSellMenu(pClonk);
 }
 
 func ContextBuy(object pClonk)
 {
-  [$Buy$|Image=BASE|Condition=IsBase]
+  [$Buy$|Image=Library_Base|Condition=IsBase]
   return OpenBuyMenu(pClonk);
 }
 // ------------------------ Buying -------------------------------------
@@ -211,7 +213,7 @@ func UpdateClonkBuyMenus()
   {
     iIndex++;
     if(!pClonk) continue;
-    if(pClonk->GetMenu() != BASE)
+    if(pClonk->GetMenu() != Library_Base)
     {
       aClonkBuyList[iIndex-1] = 0;
       continue;
@@ -226,7 +228,7 @@ func OpenBuyMenu(object pClonk, id idDef, int iSelection)
   var aBuy = [0,0,0];
   var iIndex, iSelection;
   AddClonkBuyList(pClonk);
-  pClonk->CreateMenu (BASE, this, C4MN_Extra_Value, "$TxtNothingToBuy$", 0, C4MN_Style_Normal, 0, C4Id("BuyMenu"));
+  pClonk->CreateMenu (Library_Base, this, C4MN_Extra_Value, "$TxtNothingToBuy$", 0, C4MN_Style_Normal, 0, C4Id("BuyMenu"));
   for(aBuy in GetBuyObjects())
   {
     if(aBuy[0] == idDef) iSelection = iIndex;
@@ -321,7 +323,7 @@ func UpdateClonkSellMenus()
   {
     iIndex++;
     if(!pClonk) continue;
-    if(pClonk->GetMenu() != BASM)
+    if(pClonk->GetMenu() != BaseMaterial)
     {
       aClonkSellList[iIndex-1] = 0;
       continue;
@@ -341,7 +343,7 @@ func OpenSellMenu(object pClonk, int iSelection, bool fNoListUpdate)
   if(!fNoListUpdate)
     UpdateSellList();
   AddClonkSellList(pClonk);
-  pClonk->CreateMenu (BASM, this, C4MN_Extra_Value, "$TxtNothingToSell$", 0, C4MN_Style_Normal, 1);
+  pClonk->CreateMenu (BaseMaterial, this, C4MN_Extra_Value, "$TxtNothingToSell$", 0, C4MN_Style_Normal, 1);
   var iIndex;
   for(aArray in aSellList) // aArray contains [idDef, iCount, pObj]
   {

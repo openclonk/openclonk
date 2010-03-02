@@ -1,6 +1,6 @@
 [DefCore]
-id=SNWB
-Version=4,9,10,10
+id=Snow
+Version=4,9,10,0
 Category=C4D_Object
 MaxUserSelect=100
 Timer=30
@@ -13,7 +13,7 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=40,40
-Components=SNWB=1;
+Components=Snow=1;
 StretchGrowth=1
 Float=1
 Value=0

@@ -11,4 +11,4 @@ VertexY=1
 VertexFriction=50
 Value=10
 Mass=15
-Components=METL=1
+Components=Metal=1

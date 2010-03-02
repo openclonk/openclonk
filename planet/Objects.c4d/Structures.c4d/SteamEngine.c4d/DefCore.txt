@@ -1,5 +1,5 @@
 [DefCore]
-id=POWR
+id=SteamEngine
 Version=4,9,8
 Category=C4D_Structure|C4D_SelectBuilding|C4D_SelectKnowledge
 MaxUserSelect=1
@@ -13,12 +13,11 @@ VertexY=-6,-6,40,40,40
 VertexFriction=50,50,100,100
 Value=180
 Mass=4000
-Components=ROCK=6;METL=3
+Components=Rock=6;Metal=3
 Picture=0,0,64,52
 Collection=-53,15,15,17
 Exclusive=1
 BlastIncinerate=130
-BurnTo=POWB
 LineConnect=C4D_PowerOutput|C4D_PowerGenerator|C4D_LiquidInput
 Construction=1
 ContainBlast=1

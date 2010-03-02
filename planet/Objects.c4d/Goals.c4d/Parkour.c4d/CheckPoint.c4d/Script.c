@@ -194,7 +194,7 @@ protected func DoGraphics()
 	// Start & Finish.
 	if (cp_mode & RACE_CP_Start || cp_mode & RACE_CP_Finish)
 	{
-		SetGraphics("", Core_Goal_Flag, 1, GFXOV_MODE_Base);
+		SetGraphics("", ParkourFlag, 1, GFXOV_MODE_Base);
 		SetObjDrawTransform(350, 0, 2000, 0, 350, 2000, 1);
 		SetClrModulation(RGBa(255, 255, 255, 160) , 1);
 	}
@@ -204,12 +204,12 @@ protected func DoGraphics()
 		var shift = 0;
 		if (GetCPNumber() >= 10)
 		{
-			SetGraphics(Format("%d", GetCPNumber()/10), NUMB, 3, GFXOV_MODE_Base);
+			SetGraphics(Format("%d", GetCPNumber()/10), Icon_Number, 3, GFXOV_MODE_Base);
 			SetObjDrawTransform(300, 0, -4500, 0, 300, 0, 3);
 			SetClrModulation(RGBa(255, 255, 255, 128) , 3);
 			shift = 1;
 		}
-		SetGraphics(Format("%d", GetCPNumber()%10), NUMB, 2, GFXOV_MODE_Base);
+		SetGraphics(Format("%d", GetCPNumber()%10), Icon_Number, 2, GFXOV_MODE_Base);
 		SetObjDrawTransform(300, 0, shift * 4500, 0, 300, 0, 2);
 		SetClrModulation(RGBa(255, 255, 255, 128) , 2);
 	}

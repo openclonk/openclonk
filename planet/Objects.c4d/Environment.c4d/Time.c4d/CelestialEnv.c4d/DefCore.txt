@@ -1,5 +1,5 @@
 [DefCore]
-id=CELS
+id=Environment_Celestial
 Version=4,10,0,0
 Category=C4D_Environment|C4D_StaticBack
 Width=1

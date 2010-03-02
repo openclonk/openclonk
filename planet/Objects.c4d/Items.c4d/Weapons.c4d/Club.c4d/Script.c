@@ -1,6 +1,6 @@
 /*-- Club --*/
 
-#include L_WN
+#include Library_MeleeWeapon
 
 private func Hit()
 {
@@ -41,7 +41,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	iAim2 = clonk->PlayAnimation("BatAim2Arms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BatAim2Arms"), iLoopTime, ANIM_Loop), Anim_Const(1000), iAim1);
 	iAimKnot = iAim2 + 1;
 
-	AddEffect("IntWalkSlow", clonk, 1, 0, 0, BOW1);
+	AddEffect("IntWalkSlow", clonk, 1, 0, 0, Bow);
 
 	return true;
 }

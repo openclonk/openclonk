@@ -1,6 +1,6 @@
 [DefCore]
-id=PWRC
-Version=4,9,0,0
+id=Library_PowerConsumer
+Version=4,10,0,0
 Category=C4D_StaticBack
 Width=13
 Height=19

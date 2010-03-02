@@ -9,7 +9,7 @@
 	from Hazard to search for targets during flight.
 */
 
-#include L_ST
+#include Library_Stackable
 
 public func IsArrow() { return true; }
 public func MaxStackCount() { return 15; }
@@ -23,7 +23,7 @@ protected func Construction()
 
 public func Launch(int angle, int str, object shooter)
 {
-	SetGraphics(0, HARW);
+	SetGraphics(0, HelpArrow);
 	SetShape(-2,-2,4,11);
 	SetVertex(0, 1, 4, 1);
 	SetVertex(1, 1, 8, 1);

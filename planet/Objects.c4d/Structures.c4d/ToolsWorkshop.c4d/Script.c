@@ -1,8 +1,6 @@
 /*-- Tools workshop --*/
 
-#strict 2
-
-#include PWRC
+#include Library_PowerConsumer
 
 /* Product properties (can be overloaded) */
 func ProductType() { return C4D_Vehicle | C4D_Object; }
@@ -42,7 +40,7 @@ func FindSuppliedObjectCloseTo (obj, def)
   if (!def) def = GetID ();
   for(var obj2 in FindObjects(Find_ID(def), Find_InRect((obj->GetX () - 1000) - GetX (), (obj->GetY () - 500) - GetY (), 2000, 1000),
     Find_OCF(OCF_Fullcon)))
-      if (FindObject (Find_ID(PWRL),Find_Action("Connect",obj2)))
+      if (FindObject (Find_ID(PowerLine),Find_Action("Connect",obj2)))
         return obj2;
   return 0;
 }

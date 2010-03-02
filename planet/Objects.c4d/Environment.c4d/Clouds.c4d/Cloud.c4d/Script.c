@@ -100,7 +100,7 @@ protected func Evaporation() //Creates a search line every x-amount(currently fi
 		ExtractMaterialAmount(0, iSearchY,Material("Water"), 3) &&
 		(iSize = iSize+3);
 	}
-	if(ObjectCount(Find_ID(ACDR))>=1 && GetMaterial(0, iSearchY) == Material("Acid")) ExtractMaterialAmount(0, iSearchY,Material("Acid"), 3) &&
+	if(ObjectCount(Find_ID(Environment_AcidRain))>=1 && GetMaterial(0, iSearchY) == Material("Acid")) ExtractMaterialAmount(0, iSearchY,Material("Acid"), 3) &&
 		(iAcidity = iAcidity+3);
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid"))
 		iSearchY = iSearchY + iPrecision;
@@ -128,7 +128,7 @@ public func RainDrop()
 //For use as scenario setting. Can work after initialize, if you really want to.
 global func AdjustLightningFrequency(int iFreq) 
 {
-	for(var Cloud in FindObjects(Find_ID(CLOD)))
+	for(var Cloud in FindObjects(Find_ID(Cloud)))
 		Cloud->SetLightningFrequency(iFreq);
 	return(iFreq);
 }

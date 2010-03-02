@@ -1,5 +1,8 @@
 /*--- The Base ---*/
 
+// Author: Randrian
+// TODO -> torough explanation how to use it
+
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
 }
@@ -34,7 +37,7 @@ func Initialize()
   }
 }
 
-static const BASM_MaxHomeBaseProduction = 25;
+static const BaseMaterial_MaxHomeBaseProduction = 25;
 
 local ProductionUnit;
 
@@ -51,7 +54,7 @@ func ExecHomeBaseProduction()
     // if this id is produced check if it isn't already full
     if (aArray[1]>0)
       if (ProductionUnit % BoundBy(11-aArray[1],1,10) == 0)
-        if (DoGetHomebaseMaterial(aArray[0])<BASM_MaxHomeBaseProduction)
+        if (DoGetHomebaseMaterial(aArray[0])<BaseMaterial_MaxHomeBaseProduction)
           // Produce Material
           DoDoHomebaseMaterial(aArray[0], 1);
 }
@@ -63,29 +66,29 @@ local aHomabaseProduction;
 
 global func GetHomebaseMaterial (int iPlr, id idDef, int iIndex, int dwCategory)
 {
-  var pObj = FindObject(Find_ID(BASM), Find_Owner(iPlr));
-  if(!pObj) pObj = CreateObject(BASM,AbsX(10),AbsY(10),GetOwner());
+  var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
+  if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
   if(pObj) return pObj->DoGetHomebaseMaterial(idDef, iIndex, dwCategory);
 }
 
 global func GetHomebaseProduction (int iPlr, id idDef, int iIndex, int dwCategory)
 {
-  var pObj = FindObject(Find_ID(BASM), Find_Owner(iPlr));
-  if(!pObj) pObj = CreateObject(BASM,AbsX(10),AbsY(10),GetOwner());
+  var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
+  if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
   if(pObj) return pObj->DoGetHomebaseProduction(idDef, iIndex, dwCategory);
 }
 
 global func DoHomebaseMaterial (int iPlr, id idID, int iChange)
 {
-  var pObj = FindObject(Find_ID(BASM), Find_Owner(iPlr));
-  if(!pObj) pObj = CreateObject(BASM,AbsX(10),AbsY(10),GetOwner());
+  var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
+  if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
   if(pObj) return pObj->DoDoHomebaseMaterial(idID, iChange);
 }
 
 global func DoHomebaseProduction (int iPlr, id idID, int iChange)
 {
-  var pObj = FindObject(Find_ID(BASM), Find_Owner(iPlr));
-  if(!pObj) pObj = CreateObject(BASM,AbsX(10),AbsY(10),GetOwner());
+  var pObj = FindObject(Find_ID(BaseMaterial), Find_Owner(iPlr));
+  if(!pObj) pObj = CreateObject(BaseMaterial,AbsX(10),AbsY(10),GetOwner());
   if(pObj) return pObj->DoDoHomebaseProduction(idID, iChange);
 }
 

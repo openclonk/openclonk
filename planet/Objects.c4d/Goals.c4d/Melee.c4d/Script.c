@@ -1,6 +1,6 @@
 /*-- Melee --*/
 
-#include GOAL
+#include Library_Goal
 
 protected func InitializePlayer(int newplr, int x, int y, object base, int team)
 {

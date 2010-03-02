@@ -1,5 +1,5 @@
 [DefCore]
-id=SHVL
+id=Shovel
 Version=4,9,5
 Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
 MaxUserSelect=5
@@ -12,7 +12,7 @@ Vertices=3
 VertexX=0,0,0
 VertexY=-7,9,0
 VertexFriction=50,50,50
-Components=WOOD=1;METL=1;
+Components=Wood=1;Metal=1;
 Rebuy=1
 Collectible=1
 Rotate=1

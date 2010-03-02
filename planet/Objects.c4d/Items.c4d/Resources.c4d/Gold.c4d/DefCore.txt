@@ -1,5 +1,5 @@
 [DefCore]
-id=GOLD
+id=Gold
 Version=4,10,0,0
 Category=C4D_Object|C4D_SelectMaterial
 MaxUserSelect=100
@@ -12,7 +12,7 @@ VertexY=1,-1,-1
 VertexFriction=40,40,40
 Value=25
 Mass=12
-Components=GOLD=1
+Components=Gold=1
 Rebuy=0
 Rotate=1
 StretchGrowth=1

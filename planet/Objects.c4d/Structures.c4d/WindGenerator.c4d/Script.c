@@ -1,8 +1,6 @@
-/*-- Windmill --*/
+/*-- Wind generator --*/
 
-#strict 2
-
-#include PWRG
+#include Library_PowerGenerator
 
 public func GetCapacity() { return 500; }
 public func GetGeneratorPriority() { return 256; }

@@ -1,5 +1,5 @@
 [DefCore]
-id=ICE1
+id=Ice
 Version=4,9,10,10
 Category=C4D_Object
 MaxUserSelect=50
@@ -13,7 +13,7 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=40,40
-Components=ICE1=1;
+Components=Ice=1;
 StretchGrowth=1
 Float=1
 Value=0

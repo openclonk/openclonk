@@ -35,7 +35,7 @@
 				<text>Gibt die Nachricht "This is madness!" nur für Spieler 0 aus, wobei das Wort "madness" in kursiver Schrift angezeigt wird.</text>
 			</example>
 			<example>
-				<code>CustomMessage("&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world", 0, NO_OWNER, 100,100, 0, MD69, "Portrait:CLNK::00ff00::1);</code>
+				<code>CustomMessage("&lt;c ffff00&gt;Tonki:&lt;/c&gt; Hello, world", 0, NO_OWNER, 100,100, 0, MD69, "Portrait:Clonk::00ff00::1);</code>
 				<text>Gibt eine Nachricht mit Dekorahmen aus. Der Name Tonki ist gelb eingefärbt. Links von der Nachricht wird ein grünes Clonk-Portrait angezeigt. Es muss die Dekorationsdefinition MD69 geladen sein.</text>
 			</example>
 		</examples>

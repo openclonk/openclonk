@@ -1,5 +1,5 @@
 [DefCore]
-id=HAMR
+id=Hammer
 Version=4,9,5
 Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
 MaxUserSelect=10
@@ -12,7 +12,7 @@ Vertices=4
 VertexX=-1,-1,-3,3
 VertexY=1,5,-2,-2
 VertexFriction=80,80,80,80
-Components=WOOD=1;ROCK=1;
+Components=Wood=1;Rock=1;
 Picture=0,8,64,64
 Rebuy=1
 Collectible=1

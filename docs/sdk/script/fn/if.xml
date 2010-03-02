@@ -15,9 +15,9 @@
     <desc>Wenn fCondition ungleich Null, wird der unmittelbar folgende Block bzw. die unmittelbar folgende Anweisung einmal ausgeführt.</desc>
     <examples>
       <example>
-        <code>if(!<funclink>FindObject</funclink>()) <funclink>CreateObject</funclink>(ROCK);</code>
+        <code>if(!<funclink>FindObject</funclink>()) <funclink>CreateObject</funclink>(Rock);</code>
         <text>Erstellt einen Stein, wenn sonst keine Objekte vorhanden sind.</text>
-        <code>if(!<funclink>FindObject</funclink>()) { <funclink>CreateObject</funclink>(ROCK); <funclink>CreateObject</funclink>(GOLD); }</code>
+        <code>if(!<funclink>FindObject</funclink>()) { <funclink>CreateObject</funclink>(Rock); <funclink>CreateObject</funclink>(Gold); }</code>
         <text>Erstellt einen Stein und einen Goldklumpen, wenn sonst keine Objekte vorhanden sind.</text>
       </example>
     </examples>

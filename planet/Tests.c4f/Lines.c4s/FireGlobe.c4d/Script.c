@@ -36,7 +36,7 @@ func ControlUseStart(object clonk, int x, int y)
 	sy = y+clonk->GetY();
 	
 	if(vis) vis->RemoveObject();
-	vis = CreateObject(VIPU,0,0,clonk->GetOwner());
+	vis = CreateObject(VisualPath,0,0,clonk->GetOwner());
 	vis->Set(sx,sy,x+clonk->GetX(),y+clonk->GetY());
 	vis["Visibility"]=VIS_Owner;
 

@@ -98,7 +98,7 @@ protected func InitializeScriptPlayer(int iPlr, int idTeam)
   // Ein Alienspieler ist beigetreten
   // Da keine Szenarieninitialisierung durchgeführt wurde, muss in diesem Callback eine Crew für den Spieler erstellt werden
   // Erstelle einen grünen Clonk - ein richtiges Szenario sollte natürlich echte Aliens mitbringen :)
-  var pAlien = CreateObject(CLNK, LandscapeWidth()/2, -1, iPlr);
+  var pAlien = CreateObject(Clonk, LandscapeWidth()/2, -1, iPlr);
   MakeCrewMember(pAlien, iPlr);
   SetClrModulation(0x7fff7f, pAlien);
   // Und angreifen lassen

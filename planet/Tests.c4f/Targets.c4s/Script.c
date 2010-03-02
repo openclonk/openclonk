@@ -2,7 +2,7 @@
 
 func Initialize()
 {
-	CreateObject(GRSP, 10, 10);
+	CreateObject(Environment_Grass, 10, 10);
 	Message("@Here is a butterfly!|(ck draw it!)", CreateObject(_BTF, 10, 10));
 }
 
@@ -14,7 +14,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 
  func RelaunchPlayer(int iPlr)
 {
-	var clonk = CreateObject(CLNK, 0, 0, iPlr);
+	var clonk = CreateObject(Clonk, 0, 0, iPlr);
 	clonk->MakeCrewMember(iPlr);
 	SetCursor(iPlr,clonk);
 	SelectCrew(iPlr, clonk, true);
@@ -27,7 +27,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(384, 469);
-	clonk->CreateContents(BOW1);
-	clonk->Collect(CreateObject(ARRW));
+	clonk->CreateContents(Bow);
+	clonk->Collect(CreateObject(Arrow));
 	return;
 }

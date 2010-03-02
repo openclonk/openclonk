@@ -1,5 +1,5 @@
 [DefCore]
-id=FXL1
+id=Lightning
 Version=4,10,0,0
 Category=C4D_StaticBack
 Line=C4D_LineLightning

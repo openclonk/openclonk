@@ -1,5 +1,5 @@
 [DefCore]
-id=CLUB
+id=Club
 Version=4,9,5
 Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
 MaxUserSelect=5
@@ -13,7 +13,7 @@ VertexX=0,0
 VertexY=-7,7
 VertexFriction=50,50
 Picture=10,10,54,54
-Components=WOOD=1;
+Components=Wood=1;
 Rebuy=1
 Collectible=1
 Rotate=1

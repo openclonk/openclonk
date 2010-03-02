@@ -49,7 +49,7 @@
    <example>
 	   <code>protected func Initialize()
 {
-  WOOD->SetName("Baumstamm");
+  Wood->SetName("Baumstamm");
   }</code>
 	   <text>Szenarioscript: Holz wird in dieser Runde Baumstamm genannt.</text>
    </example>

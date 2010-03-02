@@ -3,19 +3,25 @@
 	Author: Randrian
 
 	The protoganist of the game. Witty and nimble if skillfully controled ;-)
+	
+	TODO:
+	+ You should write a lot about the functioning of the animations-system,
+	holding weapons etc. and/or put that into a seperate library - Newton
+	
+	+ replace German comments
 */
 
 
 // selectable by HUD
-#include HUDS
+#include Library_HUDAdapter
 // standard controls
-#include L_CO
+#include Library_ClonkControl
 
 // un-comment them as soon as the new controls work with context menus etc.^
 // Context menu
-//#include L_CMAniF
+//#include Library_ContextMenu
 // Auto production
-//#include L_AP
+//#include Library_AutoProduction
 
 local pInventory;
 
@@ -25,10 +31,10 @@ protected func Construction()
 {
   _inherited(...);
   // shovel...
-  var shov = CreateObject(SHVL,0,0,GetOwner());
+  var shov = CreateObject(Shovel,0,0,GetOwner());
   Collect(shov,false,2);
   // Clonks mit Magiephysikal aus fehlerhaften Szenarien korrigieren
-  if (GetID () == CLNK)
+  if (GetID () == Clonk)
     if (GetPhysical ("Magic", 1))
       SetPhysical ("Magic", 0, 1);
   SetAction("Walk");
@@ -483,7 +489,7 @@ func DoUpdateAttach(bool sec)
 		else
 			iHandMesh[sec] = AttachMesh(obj, pos_back, bone, trans);
 	}
-}//AttachMesh(DYNB, "pos_tool1", "main", Trans_Translate(0,0,0));
+}//AttachMesh(DynamiteBox, "pos_tool1", "main", Trans_Translate(0,0,0));
 
 public func GetHandMesh(object obj)
 {
@@ -709,9 +715,9 @@ public func GetAnimationLength(string animation)
 
 /* Walk */
 
-static const CLNK_WalkStand = "Stand";
-static const CLNK_WalkWalk  = "Walk";
-static const CLNK_WalkRun   = "Run";
+static const Clonk_WalkStand = "Stand";
+static const Clonk_WalkWalk  = "Walk";
+static const Clonk_WalkRun   = "Run";
 
 func StartWalk()
 {
@@ -727,9 +733,9 @@ func StopWalk()
 func GetCurrentWalkAnimation()
 {
 	var velocity = Distance(0,0,GetXDir(),GetYDir());
-	if(velocity < 1) return CLNK_WalkStand;
-	if(velocity < 10) return CLNK_WalkWalk;
-	return CLNK_WalkRun;
+	if(velocity < 1) return Clonk_WalkStand;
+	if(velocity < 10) return Clonk_WalkWalk;
+	return Clonk_WalkRun;
 }
 
 func GetWalkAnimationPosition(string anim)
@@ -746,11 +752,11 @@ func GetWalkAnimationPosition(string anim)
 	// GetAnimationPosition()). Walk->Stand is arbitrary I guess.
 	// First parameter of Anim_Linear/Anim_AbsX is initial position.
 	// Movement synchronization might also be tweaked somewhat as well.
-	if(anim == CLNK_WalkStand)
+	if(anim == Clonk_WalkStand)
 		return Anim_Linear(0, 0, GetAnimationLength(anim), 35, ANIM_Loop);
-	else if(anim == CLNK_WalkWalk)
+	else if(anim == Clonk_WalkWalk)
 		return Anim_AbsX(0, 0, GetAnimationLength(anim), 20);
-	else if(anim == CLNK_WalkRun)
+	else if(anim == Clonk_WalkRun)
 		return Anim_AbsX(0, 0, GetAnimationLength(anim), 50);
 }
 
@@ -813,7 +819,7 @@ func FxIntWalkReset(pTarget, iNumber)
 
 func StartStand()
 {
-	PlayAnimation(CLNK_WalkStand, 5, GetWalkAnimationPosition(CLNK_WalkStand), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	PlayAnimation(Clonk_WalkStand, 5, GetWalkAnimationPosition(Clonk_WalkStand), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn type
@@ -824,8 +830,8 @@ func StartStand()
 func FxIntWalkStart(pTarget, iNumber, fTmp)
 {
 	if(fTmp) return;
-	for(var i = 0; i < GetLength(CLNK_WalkStates); i++)
-		AnimationPlay(CLNK_WalkStates[i], 0);
+	for(var i = 0; i < GetLength(Clonk_WalkStates); i++)
+		AnimationPlay(Clonk_WalkStates[i], 0);
 	EffectVar(0, pTarget, iNumber) = 0; // Phase
 	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
 	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
@@ -848,8 +854,8 @@ func FxIntWalkStart(pTarget, iNumber, fTmp)
 func FxIntWalkStop(pTarget, iNumber, iReason, fTmp)
 {
 	if(fTmp) return;
-	for(var i = 0; i < GetLength(CLNK_WalkStates); i++)
-		AnimationStop(CLNK_WalkStates[i]);
+	for(var i = 0; i < GetLength(Clonk_WalkStates); i++)
+		AnimationStop(Clonk_WalkStates[i]);
 }
 
 func FxIntWalkTimer(pTarget, iNumber, iTime)
@@ -948,7 +954,7 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 			if(EffectVar(i, pTarget, iNumber) > 0)
 				EffectVar(i, pTarget, iNumber) -= 200;
 		}
-		AnimationSetState(CLNK_WalkStates[i-1], nil, EffectVar(i, pTarget, iNumber));
+		AnimationSetState(Clonk_WalkStates[i-1], nil, EffectVar(i, pTarget, iNumber));
 	}
 	EffectVar(14, pTarget, iNumber) = iState;
 }
@@ -983,8 +989,8 @@ func StartJump()
 
 func StartHangle()
 {
-/*	if(CLNK_HangleStates == nil)
-		CLNK_HangleStates = ["HangleStand", "Hangle"];*/
+/*	if(Clonk_HangleStates == nil)
+		Clonk_HangleStates = ["HangleStand", "Hangle"];*/
 	if(!GetEffect("IntHangle", this))
 		AddEffect("IntHangle", this, 1, 1, this);
 	// Set proper turn type
@@ -1087,8 +1093,8 @@ func FxIntHangleTimer(pTarget, iNumber, iTime)
 
 func StartSwim()
 {
-/*	if(CLNK_SwimStates == nil)
-		CLNK_SwimStates = ["SwimStand", "Swim", "SwimDive", "SwimTurn", "SwimDiveTurn", "SwimDiveUp", "SwimDiveDown"];*/
+/*	if(Clonk_SwimStates == nil)
+		Clonk_SwimStates = ["SwimStand", "Swim", "SwimDive", "SwimTurn", "SwimDiveTurn", "SwimDiveUp", "SwimDiveDown"];*/
 	if(!GetEffect("IntSwim", this))
 		AddEffect("IntSwim", this, 1, 1, this);
 }
@@ -1105,8 +1111,8 @@ func FxIntSwimStart(pTarget, iNumber, fTmp)
 	EffectVar(0, pTarget, iNumber) = "SwimStand";
 	EffectVar(1, pTarget, iNumber) = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 /*
-	for(var i = 0; i < GetLength(CLNK_SwimStates); i++)
-  	AnimationPlay(CLNK_SwimStates[i], 0);
+	for(var i = 0; i < GetLength(Clonk_SwimStates); i++)
+  	AnimationPlay(Clonk_SwimStates[i], 0);
 	EffectVar(0, pTarget, iNumber) = 0; // Phase
 	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
 	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
@@ -1245,7 +1251,7 @@ func FxIntScaleTimer(pTarget, iNumber, iTime)
 			if(EffectVar(i, pTarget, iNumber) > 0)
 				EffectVar(i, pTarget, iNumber) -= 200;
 		}
-//		AnimationSetState(CLNK_WalkStates[i-1], nil, EffectVar(i, pTarget, iNumber));
+//		AnimationSetState(Clonk_WalkStates[i-1], nil, EffectVar(i, pTarget, iNumber));
 	}
 	EffectVar(4, pTarget, iNumber) = iState;
 }*/
@@ -1300,7 +1306,7 @@ func FxIntDigTimer(pTarget, iNumber, iTime)
 	}
 	if( (iTime-18) % 36 == 0)
 	{
-		var pShovel = FindObject(Find_ID(SHVL), Find_Container(this));
+		var pShovel = FindObject(Find_ID(Shovel), Find_Container(this));
 		if(!pShovel || !pShovel->IsDigging())
 		{
 			SetAction("Walk");

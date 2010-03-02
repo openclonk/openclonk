@@ -1,6 +1,6 @@
 /*--- Auto production ---*/
 
-#strict 2
+// todo: explanation
 
 public func ControlCommandAcquire(target, x, y, target2, def)
 {

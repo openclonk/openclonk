@@ -44,8 +44,8 @@ func Activate()
 	// Menüeinträge erzeugen
 	AddMenuItem("Hallo sagen", "SayHello", 0);
 	AddMenuItem("Zaubern", "DoMagic", 0);
-	AddMenuItem("Objekt erzeugen: %s", "CreateItem", ROCK);
-	AddMenuItem("Objekt erzeugen: %s", "CreateItem", FLNT);
+	AddMenuItem("Objekt erzeugen: %s", "CreateItem", Rock);
+	AddMenuItem("Objekt erzeugen: %s", "CreateItem", Firestone);
 }
 
 /* Diese Kommados werden vom Menü aufgerufen */

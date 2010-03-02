@@ -335,7 +335,7 @@ while(<strong>++Var(0)</strong> &lt; 10)
 			<text>Diese beiden Operatoren haben (ab <emlink href="script/Strict.html">#strict 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:</text>
 			<code>0 &amp;&amp; Explode(20);</code>
 			<text>Außerdem ist das Ergebnis des Operators der Wert des ersten oder zweiten Parameters, je nachdem ob einer oder beide ausgewertet wurden. Beispielsweise kann man so wenn möglich einen Ritter, und ansonsten einen Clonk erzeugen:</text>
-			<code>CreateObject(KNIG,0,0,GetOwner()) || CreateObject(CLNK,0,0,GetOwner())</code>
+			<code>CreateObject(KNIG,0,0,GetOwner()) || CreateObject(Clonk,0,0,GetOwner())</code>
 		</part>
 		
 		<h id="prio">Prioritäten und Assoziativität</h>

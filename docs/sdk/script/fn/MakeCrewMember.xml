@@ -23,8 +23,8 @@
 
   <examples>
    <example>
-    <code>var nclnk = <funclink>CreateObject</funclink>(CLNK, 0, 0, <funclink>GetOwner</funclink>());
-nclnk->MakeCrewMember(<funclink>GetOwner</funclink>());
+    <code>var nClonk = <funclink>CreateObject</funclink>(Clonk, 0, 0, <funclink>GetOwner</funclink>());
+nClonk->MakeCrewMember(<funclink>GetOwner</funclink>());
     </code>
     <text>Dieser kurze Objektscript erstellt einen neuen Clonk und fügt ihn der Crew seines Besitzers hinzu.</text>
    </example>

@@ -1,7 +1,7 @@
 /*-- Sky Parkour --*/
 func Initialize()
 {
-  var pGoal = CreateObject(Core_Goal_Parkour, 0, 0, NO_OWNER);
+  var pGoal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
   var x, y;
   y=LandscapeHeight()/2;
   x=10;
@@ -16,7 +16,7 @@ func Initialize()
 protected func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
-	clonk->CreateContents(LOAM);
-	clonk->CreateContents(MJOW);
+	clonk->CreateContents(Loam);
+	clonk->CreateContents(JarOfWinds);
 	return;
 }

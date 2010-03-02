@@ -15,7 +15,7 @@ Beschreibung der Scriptsprache C4Script siehe
 
 <code>func Initialize()
 {
-  <emlink href="script/fn/CreateContents.html">CreateContents</emlink>(ROCK);
+  <emlink href="script/fn/CreateContents.html">CreateContents</emlink>(Rock);
   <emlink href="script/fn/return.html">return</emlink>(1);
 }  
 </code>
@@ -40,7 +40,7 @@ nur bei seltenen und kurzzeitig ausgeführten Aktivitäten eingesetzt werden). Die
 der Aufrufe bestimmt sich aus der Aktivitätsgeschwindigkeit.</text>
 <h>#include</h>
 <text>Ein Objektscript kann auf dem Script eines anderen Objekts basieren:</text>
-<code>#include CLNK</code>
+<code>#include Clonk</code>
 <text>An dieser Position wird das komplette Script der jeweiligen Objektdefinition (hier des Clonks)
 eingefügt, die selbstverständlich vorhanden und geladen sein muss. Funktionen können
 durch später im Script folgende Funktionen gleichen Namens überladen werden. Siehe auch

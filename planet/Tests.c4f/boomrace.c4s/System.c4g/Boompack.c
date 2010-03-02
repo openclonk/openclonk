@@ -1,4 +1,4 @@
-#appendto BOOM
+#appendto Boompack
 
 func Launch(int angle, object clonk)
 {

@@ -1,5 +1,5 @@
 [DefCore]
-id=VIPU
+id=VisualPath
 Version=4,9,8,2
 Category=C4D_StaticBack
 Width=1

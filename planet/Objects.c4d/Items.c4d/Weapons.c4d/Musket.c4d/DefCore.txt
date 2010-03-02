@@ -1,5 +1,5 @@
 [DefCore]
-id=MSKT
+id=Musket
 Version=4,9,10,10
 Category=C4D_Object
 MaxUserSelect=30
@@ -14,6 +14,6 @@ Picture=22,0,20,21
 Value=35
 Mass=10
 Collectible=1
-Components=METL=2;WOOD=1;
+Components=Metal=2;Wood=1;
 Rebuy=1
 Rotate=1

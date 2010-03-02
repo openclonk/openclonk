@@ -18,7 +18,7 @@
 		<examples>
 			<example>
 <code>var iValue=GetValue();
-<funclink>while</funclink> (iValue-->0) <funclink>CreateContents</funclink>(ROCK);
+<funclink>while</funclink> (iValue-->0) <funclink>CreateContents</funclink>(Rock);
 <funclink>RemoveObject</funclink>(true);</code>
 				<text>Objektscript: Das Objekt erzeugt so viele Steine, wie es wert ist, und vernichtet sich dann selber (wobei es die Steine auswirft).</text>
 			</example>

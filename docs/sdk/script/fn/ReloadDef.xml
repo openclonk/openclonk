@@ -15,7 +15,7 @@
 		<desc>Aktualisiert eine Definition. Dieser Befehl kann im Entwicklermodus in der Konsole eingegeben werden, nachdem die Definition auf der Festplatte verändert wurde. Sie muss zuvor geladen gewesen sein.</desc>
 		<examples>
 			<example>
-				<code>ReloadDef(ROCK);</code>
+				<code>ReloadDef(Rock);</code>
 				<text>Der Stein wird neu geladen.</text>
 			</example>
 		</examples>

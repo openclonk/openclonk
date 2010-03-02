@@ -16,7 +16,7 @@ local size;
 /// \returns \c true if the lightning could be launched, \c false otherwise.
 global func LaunchLightning(int x, int y, int xdir, int xdev, int ydir, int ydev, bool doGamma)
 {
-	return LaunchEffect(FXL1, x, y, xdir, xdev, ydir, ydev, doGamma == nil || doGamma);
+	return LaunchEffect(Lightning, x, y, xdir, xdev, ydir, ydev, doGamma == nil || doGamma);
 }
 
 public func Activate(int x, int y, int xdir, int xdev, int ydir, int ydev, bool doGamma, int startSize)
@@ -26,7 +26,7 @@ public func Activate(int x, int y, int xdir, int xdev, int ydir, int ydev, bool 
 	gamma = doGamma;
 	size = startSize || 10;
 	AddVertex(x-GetX(), y-GetY());
-	//Log("FXL1 %d: Launching at %d/%d (offset %d/%d)", ObjectNumber(), GetX(), GetY(), GetVertex(0,0), GetVertex(0,1));
+	//Log("Lightning %d: Launching at %d/%d (offset %d/%d)", ObjectNumber(), GetX(), GetY(), GetVertex(0,0), GetVertex(0,1));
 	AddEffect("LightningMove", this, 1, 1, this);
 	return true;
 }
@@ -39,13 +39,13 @@ protected func FxLightningMoveTimer()
 	var newx = oldx + xDir + xDev - Random(2 * xDev);
 	var newy = oldy + yDir + yDev - Random(2 * yDev);
 	var pathCheckX = oldx+GetX(), pathCheckY = oldy+GetY();
-	//Log("FXL1 %d: Moving from %d/%d to %d/%d", ObjectNumber(), pathCheckX, pathCheckY, newx+GetX(), newy+GetY());
+	//Log("Lightning %d: Moving from %d/%d to %d/%d", ObjectNumber(), pathCheckX, pathCheckY, newx+GetX(), newy+GetY());
 	var strike_solid = !PathFree2(pathCheckX, pathCheckY, newx+GetX(), newy+GetY());
 	if (strike_solid)
 	{
 		newx = pathCheckX - GetX();
 		newy = pathCheckY - GetY();
-		//Log("FXL1 %d: Move blocked, moving to %d/%d instead", ObjectNumber(), newx+GetX(), newy+GetY());
+		//Log("Lightning %d: Move blocked, moving to %d/%d instead", ObjectNumber(), newx+GetX(), newy+GetY());
 	}
 	AddVertex(newx, newy);
 	DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, size/5, size*2, 0xa0f0f0f0);
@@ -62,7 +62,7 @@ protected func FxLightningMoveTimer()
 	else if (size > 2 && !Random(20/size))
 	{
 		// Branch
-		LaunchEffect(FXL1, newx+GetX(), newy+GetY(), xDir, xDev, yDir, yDev, false, size - 2);
+		LaunchEffect(Lightning, newx+GetX(), newy+GetY(), xDir, xDev, yDir, yDev, false, size - 2);
 	}
 }
 
@@ -74,7 +74,7 @@ private func Redraw()
 	{
 		var newx = GetVertex(vtx, 0);
 		var newy = GetVertex(vtx, 1);
-		//Log("FXL1 %d: Redraw vtx %d->%d %d/%d->%d/%d", ObjectNumber(), vtx-1, vtx, oldx, oldy, newx, newy);
+		//Log("Lightning %d: Redraw vtx %d->%d %d/%d->%d/%d", ObjectNumber(), vtx-1, vtx, oldx, oldy, newx, newy);
 		DrawRotatedParticleLine("LightningBolt", oldx, oldy, newx, newy, size/5, size*2, 0xa0f0f0f0);
 		oldx = newx; oldy = newy;
 	}

@@ -50,15 +50,15 @@
 	<h id="parametertypen">Parametertypen</h>
 	<text>Es ist möglich, den Typ der ürgebenen Parameter zu erzwingen. Dazu einfach den Namen des entsprechenden Typs (siehe dazu <emlink href="script/Typechecks.html">Typechecks</emlink>) vor den Parameternamen setzen:</text>
 	
-	<code>func TypParameterFunktion(object clnk, id def, int anzahl, string msg)
+	<code>func TypParameterFunktion(object Clonk, id def, int anzahl, string msg)
 {
   <emlink href="for.html">for</emlink>(var i = 0; i &lt; anzahl; i++)
-    <funclink>CreateContents</funclink>(def, clnk);
-  <funclink>Message</funclink>(msg, clnk);
+    <funclink>CreateContents</funclink>(def, Clonk);
+  <funclink>Message</funclink>(msg, Clonk);
 }</code>
 	
-	<text>Diese Funktion gibt einem übergebenen Clonk (<code>clnk</code>) eine Anzahl von Objekten (<code>anzahl</code>) vom angegebenen Typ (<code>def</code>) und gibt die Nachricht <code>msg</code> über seinem Kopf aus. Dabei wird bei Funktionsaufruf sichergestellt, dass alle Parameter in den angegebenen Typ konvertiert werden, sofern dies möglich ist (siehe <emlink href="script/Typechecks.html">Typechecks</emlink>).</text>
-	<text>Ein Aufruf wie <code>TypParameterFunktion(1, CLNK, "Text", 5)</code> hier würde also einen Typfehler auslösen.</text>
+	<text>Diese Funktion gibt einem übergebenen Clonk (<code>Clonk</code>) eine Anzahl von Objekten (<code>anzahl</code>) vom angegebenen Typ (<code>def</code>) und gibt die Nachricht <code>msg</code> über seinem Kopf aus. Dabei wird bei Funktionsaufruf sichergestellt, dass alle Parameter in den angegebenen Typ konvertiert werden, sofern dies möglich ist (siehe <emlink href="script/Typechecks.html">Typechecks</emlink>).</text>
+	<text>Ein Aufruf wie <code>TypParameterFunktion(1, Clonk, "Text", 5)</code> hier würde also einen Typfehler auslösen.</text>
 	
 	<h id="spezial">Vorgabeparameter</h>
 	<text>Anders als in verschiedenen anderen Programmiersprachen ist es in C4Script immer erlaubt, weniger oder auch mehr Parameter zu übergeben als in der Funktion definiert (maximal jedoch 10).</text>

@@ -12,7 +12,7 @@
 		<desc>Liefert den Namen der momentanen Aktivität eines Objekts zurück, "Idle", wenn das Objekt keine Aktivität ausführt.</desc>
 		<examples>
 			<example>
-				<code><funclink>if</funclink>(<funclink>FindObject</funclink>(Find_ID(CLNK))->GetAction() == "Swim") <funclink>Message</funclink>("Toll, irgendein Clonk schwimmt");</code>
+				<code><funclink>if</funclink>(<funclink>FindObject</funclink>(Find_ID(Clonk))->GetAction() == "Swim") <funclink>Message</funclink>("Toll, irgendein Clonk schwimmt");</code>
 			</example>
 		</examples>
 		<related>

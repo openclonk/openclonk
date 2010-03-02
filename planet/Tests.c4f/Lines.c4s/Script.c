@@ -8,7 +8,7 @@
 
  func RelaunchPlayer(int iPlr)
 {
-	var clonk = CreateObject(CLNK, 0, 0, iPlr);
+	var clonk = CreateObject(Clonk, 0, 0, iPlr);
 	clonk->MakeCrewMember(iPlr);
 	SetCursor(iPlr,clonk);
 	SelectCrew(iPlr, clonk, true);
@@ -21,7 +21,7 @@
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(50, 490);
-	clonk->CreateContents(MSKT);
-	clonk->Collect(CreateObject(MBLL));
+	clonk->CreateContents(Musket);
+	clonk->Collect(CreateObject(LeadShot));
 	return;
 }

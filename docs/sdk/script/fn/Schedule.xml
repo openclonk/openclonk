@@ -21,7 +21,7 @@
 		<remark>Entsprechend darf das Script nur aus genau einem Befehl bestehen (es ist nicht möglich, mehrere Befehle mit ";" aufzulisten)</remark>
     <examples>
       <example>
-				<code>Schedule("<funclink>Explode</funclink>(50)", 1000, 0, <funclink>FindObject</funclink>(CLNK));</code>
+				<code>Schedule("<funclink>Explode</funclink>(50)", 1000, 0, <funclink>FindObject</funclink>(Clonk));</code>
 				<text>Lässt einen Clonk auf der Landschaft mit 1000 Ticks Verzögerung explodieren.</text>
 			</example>
       <example>

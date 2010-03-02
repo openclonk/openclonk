@@ -17,7 +17,7 @@
 		     die angegebene Funktion und das angegebene Objekt werden abgebrochen.</desc>
     <examples>
       <example>
-				<code>ClearScheduleCall(<funclink>FindObject</funclink>(CLNK), "Redefine");</code>
+				<code>ClearScheduleCall(<funclink>FindObject</funclink>(Clonk), "Redefine");</code>
 				<text>Bricht alle verzögerten "Redefine"-Aufrufe an den ersten Clonk ab.</text>
 			</example>
 		</examples>

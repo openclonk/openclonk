@@ -1,6 +1,13 @@
-/*-- Power consumer --*/
-
-#strict 2
+/*--
+	Power consumer
+	Author: Maikel
+	
+	To be included by all objects that need a supply of energy. 
+	The object then can check and consume power by calling it's
+	function CheckPower(int power, bool nosubstract)
+	See below for an explanation
+	
+--*/
 
 /*-- Public calls --*/
 // Functions that specify object properties, should be overloaded by the consumer.
@@ -26,7 +33,7 @@ public func CanPowerConnect() // Other name?
 // If true it stops showing the power need object.
 public func CheckPower(int iPowerCheck, bool fNoSubstract) 
 {
-	if(!FindObject(Find_ID(ENRG))) // Rule: Consumers do not need power.
+	if(!FindObject(Find_ID(Rule_NeedEnergy))) // Rule: Consumers do not need power.
 		return true;
 	// Check all power generators connected to this consumer and sort them according to priority.
 	for(var pGenerator in FindObjects(Find_PowerGenerator(), Sort_GeneratorPriority())) 
@@ -62,7 +69,7 @@ private func Sort_GeneratorPriority()
 private func FxEnergyNeedStart(object pTarget, int iEffectNumber, int iTemp)
 {
 	// Start showing energy need symbol.
-	pTarget->SetGraphics(nil, PWRC, GFX_Overlay, GFXOV_MODE_Base);
+	pTarget->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
 	pTarget->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500*GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
 	EffectVar(0, pTarget, iEffectNumber) = true; // Effect is showing symbol.
 	return 1;
@@ -93,14 +100,10 @@ private func FxEnergyNeedTimer(object pTarget, int iEffectNumber, int iEffectTim
 	else // Effect was not showing symbol.
 	{	
 		// Do show symbol.
-		pTarget->SetGraphics(nil, PWRC, GFX_Overlay, GFXOV_MODE_Base);
+		pTarget->SetGraphics(nil, Library_PowerConsumer, GFX_Overlay, GFXOV_MODE_Base);
 		pTarget->SetObjDrawTransform(1000, 0, 0, 0, 1000, -500*GetID()->GetDefCoreVal("Height", "DefCore"), GFX_Overlay);
 		EffectVar(0, pTarget, iEffectNumber) = true;
 	}
 	return 1;
 }
 
-func Definition(def) {
-  SetProperty("Name", "$Name$", def);
-}
-	

@@ -21,7 +21,7 @@
 					  die Funktion <funclink>Call</funclink> realisiert.</remark>
     <examples>
       <example>
-				<code>ScheduleCall(<funclink>FindObject</funclink>(CLNK), "Redefine", 500, 0, MCLK);</code>
+				<code>ScheduleCall(<funclink>FindObject</funclink>(Clonk), "Redefine", 500, 0, MCLK);</code>
 				<text>Ruft in einem Clonk die Funktion "Redefine" mit 500 Ticks Verzögerung auf und übergibt als Parameter "MCLK". Dadurch wird der Clonk nach 500 Ticks zu einem Magier, sofern der Aufruf nicht durch <funclink>ClearScheduleCall</funclink> vorher abgebrochen wird.</text>
 			</example>
 		</examples>

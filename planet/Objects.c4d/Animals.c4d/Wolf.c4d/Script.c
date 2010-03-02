@@ -1,8 +1,6 @@
 /*-- Wolf --*/
 
-#strict 2
-
-#include ANIM
+#include Library_Animal
 
 public func IsPossessible() { return 1; }
 

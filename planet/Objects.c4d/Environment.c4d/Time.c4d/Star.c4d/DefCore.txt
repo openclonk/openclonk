@@ -1,5 +1,5 @@
 [DefCore]
-id=STAR
+id=Star
 Version=4,10,0,0
 Category=C4D_StaticBack|C4D_Background
 Width=2

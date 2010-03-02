@@ -13,7 +13,7 @@ public func Initialize()
 		aDynamites[i] = 0;
 		aWires[i] = 0;
 	}
-	SetGraphics(Format("%d", DYNA_MaxCount), PIWI, 1, GFXOV_MODE_Picture);
+	SetGraphics(Format("%d", DYNA_MaxCount), Fuse, 1, GFXOV_MODE_Picture);
 }
 
 private func Hit()
@@ -36,7 +36,7 @@ public func ControlUse(object clonk, int x, int y)
 {
 	if(clonk->GetAction() != "Walk") return true;
 
-	var pDyna = aDynamites[iCount-1] = CreateContents(DYNA);
+	var pDyna = aDynamites[iCount-1] = CreateContents(Dynamite);
 	if(!pDyna->ControlUse(clonk, x, y, 1))
 	{
 		pDyna->RemoveObject();
@@ -48,21 +48,21 @@ public func ControlUse(object clonk, int x, int y)
 	else
 		AddEffect("IntLength", this, 1, 10, this);
 
-	pWire = CreateObject(PIWI);
+	pWire = CreateObject(Fuse);
 	pWire->Connect(pDyna, this);
   Sound("Connect");
 	aWires[iCount-1] = pWire;
 	
 	iCount--;
-	SetGraphics(Format("%d", iCount), PIWI, 1, GFXOV_MODE_Picture);
+	SetGraphics(Format("%d", iCount), Fuse, 1, GFXOV_MODE_Picture);
 
 	Message("%d left", clonk, iCount);
 
 	if(iCount == 0)
 	{
 		var pos = clonk->GetItemPos(this);
-		ChangeDef(IGNT);
-		SetGraphics("0", PIWI, 1, GFXOV_MODE_Picture);
+		ChangeDef(Igniter);
+		SetGraphics("0", Fuse, 1, GFXOV_MODE_Picture);
 		clonk->UpdateAttach();
 		clonk->OnSlotFull(pos);
 	}

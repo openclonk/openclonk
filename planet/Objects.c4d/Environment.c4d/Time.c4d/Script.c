@@ -13,7 +13,7 @@ local itime;
 
 global func SetTime(int iTime) //Sets the current time using a 1440-minute clock scheme.
 {
-	var timeobject=FindObject(Find_ID(TIME));
+	var timeobject=FindObject(Find_ID(Environment_Time));
 
 	//clear any existing sunrise/sunset effects
 	if(!GetEffect("IntSunrise")) RemoveEffect("IntSunrise");
@@ -46,12 +46,12 @@ global func SetTimeSpeed(int iFrames)
 //If clock is true, an integer of the hours/minutes will be output instead of raw minutes. Not for use in calculations!
 global func GetTime(bool clock)
 {
-	if(!FindObject(Find_ID(TIME))) return nil;
-	if(clock!=true)	return FindObject(Find_ID(TIME))->LocalN("itime");
+	if(!FindObject(Find_ID(Environment_Time))) return nil;
+	if(clock!=true)	return FindObject(Find_ID(Environment_Time))->LocalN("itime");
 	if(clock==true)
 	{
-		var hour=FindObject(Find_ID(TIME))->LocalN("itime")/60*100;
-		var minute=(FindObject(Find_ID(TIME))->LocalN("itime")*100/60-hour)*6/10;
+		var hour=FindObject(Find_ID(Environment_Time))->LocalN("itime")/60*100;
+		var minute=(FindObject(Find_ID(Environment_Time))->LocalN("itime")*100/60-hour)*6/10;
 		return hour+minute;
 	}
 }
@@ -71,13 +71,13 @@ global func IsDay(int iTime)
 
 protected func Initialize()
 {
-	if(ObjectCount(Find_ID(TIME))>1) RemoveObject();
+	if(ObjectCount(Find_ID(Environment_Time))>1) RemoveObject();
 	AddEffect("IntTimePass",0,1,18);
 	itime=720; //Sets the time to midday (12:00)
 
-	if(FindObject(Find_ID(CELS)))
+	if(FindObject(Find_ID(Environment_Celestial)))
 	{
-		var moon=CreateObject(MOON,LandscapeWidth()/2,LandscapeHeight()/6);
+		var moon=CreateObject(Moon,LandscapeWidth()/2,LandscapeHeight()/6);
 		moon->Resort();
 		PlaceStars();
 	}
@@ -94,7 +94,7 @@ protected func PlaceStars()
 	while(amount!=maxamount)
 	{
 		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()))
-			CreateObject(STAR,iX,iY); //Places stars around like PlacesObjects should, but that function is broken
+			CreateObject(Star,iX,iY); //Places stars around like PlacesObjects should, but that function is broken
 		amount=++amount;
 	}
 }
@@ -116,7 +116,7 @@ global func FxIntSunriseTimer(object pTarget, int iNumber,int iTime)
 {
 	if(iTime>60)
 	{
-		var moon=FindObject(Find_ID(MOON));
+		var moon=FindObject(Find_ID(Moon));
 		if(moon) moon->Phase();
 		return -1;
 	}

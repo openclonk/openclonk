@@ -7,7 +7,7 @@ global func Bubble(int iamount)
 {
 	if(iamount==nil || iamount==0) iamount=3;
 
-	CastObjects(BUBL,iamount);
+	CastObjects(Bubble1,iamount);
 }
 
 protected func Initialize()
@@ -32,7 +32,7 @@ public func FxMoveTimer(pTarget, iEffectNumber, iEffectTime)
 		while(i>0)
 		{
 			i=--i;
-			var bubble=CreateObject(BUBL);
+			var bubble=CreateObject(Bubble1);
 			bubble->SetCon(pTarget->GetCon()/15*10);
 			bubble->SetYDir(pTarget->GetYDir());
 		}

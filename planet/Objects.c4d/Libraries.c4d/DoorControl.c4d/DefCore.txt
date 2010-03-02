@@ -1,7 +1,4 @@
 [DefCore]
-id=DOOR
-Version=4,9,8
+id=Library_DoorControl
+Version=4,10,0,0
 Category=C4D_StaticBack
-Width=1
-Height=1
-Picture=0,0,64,64

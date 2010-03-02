@@ -1,6 +1,6 @@
 [DefCore]
-id=SPHR
-Version=4,9,10,10
+id=Sulphur
+Version=4,9,10,0
 Category=C4D_Object
 MaxUserSelect=50
 Width=8
@@ -11,7 +11,7 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=40,40
-Components=SPHR=1;
+Components=Sulphur=1;
 Value=5
 Mass=10
 Rotate=1

@@ -297,7 +297,7 @@ public func SetObject(object obj, int type, int pos)
 			{
 				if(!subselector)
 				{
-					subselector = CreateObject(ACB2,0,0,GetOwner());
+					subselector = CreateObject(GUI_ExtraSlot,0,0,GetOwner());
 					subselector->SetPosition(GetX()+16,GetY()+16);
 				}
 				subselector->SetContainer(myobject);
@@ -341,7 +341,7 @@ public func ShowHotkey()
 		var num = hotkey;
 		if(hotkey == 10) num = 0;
 		var name = Format("%d",num);
-		SetGraphics(name,NUMB,12,GFXOV_MODE_IngamePicture);
+		SetGraphics(name,Icon_Number,12,GFXOV_MODE_IngamePicture);
 		SetObjDrawTransform(300,0,16000,0,300,-34000, 12);
 		SetClrModulation(RGB(160,0,0),12);
 	}

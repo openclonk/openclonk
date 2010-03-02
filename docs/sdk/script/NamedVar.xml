@@ -65,7 +65,7 @@ protected func Timer()
     <funclink>return</funclink>();
   }
 
-  var obj = <funclink>FindObject</funclink>(CLNK, 0, 0, -1, -1);
+  var obj = <funclink>FindObject</funclink>(Clonk, 0, 0, -1, -1);
 
   if(<funclink>ObjectDistance</funclink>(obj) &lt; 20)
     <funclink>DoDamage</funclink>(-10, obj);

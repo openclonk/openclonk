@@ -1,5 +1,4 @@
 [DefCore]
-id=L_WN
-Version=4,9,5
+id=Library_MeleeWeapon
+Version=4,10,0,0
 Category=1
-MaxUserSelect=10

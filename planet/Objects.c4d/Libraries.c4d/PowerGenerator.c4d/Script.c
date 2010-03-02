@@ -1,6 +1,11 @@
-/*-- Power generator --*/
+/*--
+	Power generator
+	Author: Maikel
+	
+	To be included by all objects which are power generators.
+	Explanation of the interface see public funcs below.
+--*/
 
-#strict 2
 
 // Local variable to keep track of the power level inside the generator.
 local iPower;
@@ -100,8 +105,3 @@ private func FxShowPowerTimer(object pTarget, int iEffectNumber, int iEffectTime
 	Message("P:%d", pTarget, pTarget->GetPower());
 	return true;
 }
-
-func Definition(def) {
-  SetProperty("Name", "$Name$", def);
-}
-

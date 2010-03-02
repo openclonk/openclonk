@@ -33,8 +33,8 @@ protected func Construction()
 	ReorderCrewSelectors();
 	
 	// wealth display
-	wealth = CreateObject(WEAL,0,0,GetOwner());
-	wealth->SetPosition(-16-WEAL->GetDefHeight()/2,8+WEAL->GetDefHeight()/2);
+	wealth = CreateObject(GUI_Wealth,0,0,GetOwner());
+	wealth->SetPosition(-16-GUI_Wealth->GetDefHeight()/2,8+GUI_Wealth->GetDefHeight()/2);
 	wealth->Update();
 }
 
@@ -95,15 +95,15 @@ protected func OnClonkDeath(object clonk, int killer)
 
 public func OnGoalUpdate(object goal)
 {
-	var HUDgoal = FindObject(Find_ID(HGOL),Find_Owner(GetOwner()));
+	var HUDgoal = FindObject(Find_ID(GUI_Goal),Find_Owner(GetOwner()));
 	if(!goal)
 	{
 		if(HUDgoal) HUDgoal->RemoveObject();
 	}
 	else
 	{
-		if(!HUDgoal) HUDgoal = CreateObject(HGOL,0,0,GetOwner());
-		HUDgoal->SetPosition(-64-16-HGOL->GetDefHeight()/2,8+HGOL->GetDefHeight()/2);
+		if(!HUDgoal) HUDgoal = CreateObject(GUI_Goal,0,0,GetOwner());
+		HUDgoal->SetPosition(-64-16-GUI_Goal->GetDefHeight()/2,8+GUI_Goal->GetDefHeight()/2);
 		HUDgoal->SetGoal(goal);
 	}
 }
@@ -250,7 +250,7 @@ public func OnSlotObjectChanged(int slot)
 
 private func ActionButton(object forClonk, int pos, object interaction, int actiontype)
 {
-	var size = ACBT->GetDefWidth();
+	var size = GUI_ObjectSelector->GetDefWidth();
 	var spacing = 12 + size;
 
 	// don't forget the spacings between inventory - vehicle,structure
@@ -261,7 +261,7 @@ private func ActionButton(object forClonk, int pos, object interaction, int acti
 	// no object yet... create it
 	if(!bt)
 	{
-		bt = CreateObject(ACBT,0,0,GetOwner());
+		bt = CreateObject(GUI_ObjectSelector,0,0,GetOwner());
 	}
 	
 	bt->SetPosition(64 + pos * spacing + extra, -16 - size/2);
@@ -299,7 +299,7 @@ public func ControlHotkey(int hotindex)
 
 private func CreateSelectorFor(object clonk)
 {
-		var selector = CreateObject(CSLR,10,10,-1);
+		var selector = CreateObject(GUI_CrewSelector,10,10,-1);
 		selector->SetCrew(clonk);
 		clonk->SetSelector(selector);
 		return selector;
@@ -318,7 +318,7 @@ public func ReorderCrewSelectors(object leaveout)
 		var sel = crew->GetSelector();
 		if(sel)
 		{
-			sel->SetPosition(32 + j * (CSLR->GetDefWidth() + spacing) + CSLR->GetDefWidth()/2, 16+CSLR->GetDefHeight()/2);
+			sel->SetPosition(32 + j * (GUI_CrewSelector->GetDefWidth() + spacing) + GUI_CrewSelector->GetDefWidth()/2, 16+GUI_CrewSelector->GetDefHeight()/2);
 			if(j+1 == 10) sel->SetHotkey(0);
 			else if(j+1 < 10) sel->SetHotkey(j+1);
 		}

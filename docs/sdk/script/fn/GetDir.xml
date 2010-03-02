@@ -16,7 +16,7 @@
 protected func Activate()
 {
 	// Pfeil erstellen
-	var pArrow = <funclink>CreateContents</funclink>(ARRW);
+	var pArrow = <funclink>CreateContents</funclink>(Arrow);
 	// X-Geschwindigkeit für den Pfeil ermitteln
 	var ispeedX = -10 + 20 * <funclink>GetDir</funclink>();
 	// X-Ausgangsposition für den Pfeil ermitteln

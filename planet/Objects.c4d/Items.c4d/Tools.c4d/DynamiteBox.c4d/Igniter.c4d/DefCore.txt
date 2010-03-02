@@ -1,5 +1,5 @@
 [DefCore]
-id=IGNT
+id=Igniter
 Version=4,9,8
 Category=C4D_Object
 Width=4
@@ -10,7 +10,7 @@ VertexY=1,5
 VertexFriction=120,120,120
 Value=15
 Mass=15
-Components=WOOD=5
+Components=Wood=5
 Picture=4,0,21,21
 Collectible=1
 Rotate=1

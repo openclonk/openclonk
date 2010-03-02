@@ -1,6 +1,6 @@
 /*-- Dynamite Igniter --*/
 
-#include DYNB
+#include DynamiteBox
 
 private func Hit()
 {
@@ -53,7 +53,7 @@ public func Ignite(clonk)
 	iVertexCounter = aWires[0]->GetVertexNum()-1;
 	var iIgniteX = aWires[iIgniteNumber]->GetVertex(iVertexCounter,0)*10;
 	var iIgniteY = aWires[iIgniteNumber]->GetVertex(iVertexCounter,1)*10;
-	pHelper = CreateObject(PIWI);
+	pHelper = CreateObject(Fuse);
 	pHelper->SetPosition(iIgniteX/10, iIgniteY/10);
 	aWires[iIgniteNumber]->Connect(aDynamites[iIgniteNumber], pHelper);
 	

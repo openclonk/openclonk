@@ -3,7 +3,7 @@
 protected func Initialize()
 {
 	// Create the parkour goal.
-	var goal = CreateObject(Core_Goal_Parkour, 0, 0, NO_OWNER);
+	var goal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
 	// Set start point.
 	var x, y;
 	var d = 100;
@@ -59,8 +59,8 @@ protected func FindPosInMat(int &tx, int &ty, string mat, int rx, int ry, int wd
 protected func PlrHasRespawned(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
-	clonk->CreateContents(LOAM);
-	clonk->CreateContents(MJOW);
+	clonk->CreateContents(Loam);
+	clonk->CreateContents(JarOfWinds);
 	return;
 }
 

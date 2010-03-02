@@ -1,5 +1,5 @@
 [DefCore]
-id=TRAI
+id=BulletTrail
 Category=C4D_Vehicle
 Width=5
 Height=5

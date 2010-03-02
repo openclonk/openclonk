@@ -1,5 +1,5 @@
 [DefCore]
-id=BUBL
+id=Bubble1
 Version=4,10,0,0
 Category=C4D_Vehicle
 Width=2

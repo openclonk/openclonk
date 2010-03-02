@@ -17,7 +17,7 @@
 		<desc>Überprüft ob sich an angegebener Position in der Landschaft Himmel befindet.</desc>
 		<examples>
 			<example>
-				<code>var obj=<funclink>FindObject</funclink>(ROCK);
+				<code>var obj=<funclink>FindObject</funclink>(Rock);
 <funclink>while</funclink>(<emlink href="script/operatoren.html">!</emlink>GBackSky(<funclink>GetX</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>())) <funclink>SetPosition</funclink>(GetX(obj),GetY(obj)<emlink href="script/operatoren.html">-</emlink>5,obj);</code>
 				<text>Versetzt einen Stein an die frische Luft.</text>
 			</example>

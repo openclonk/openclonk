@@ -1,6 +1,6 @@
 /* larger dynamite explosion */
 
-#appendto DYNA
+#appendto Dynamite
 
 func Explode(size)
 {

@@ -1,5 +1,5 @@
 [DefCore]
-id=Core_Goal_Flag
+id=ParkourFlag
 Version=4,10,0,0
 Category=C4D_StaticBack
 Width=64

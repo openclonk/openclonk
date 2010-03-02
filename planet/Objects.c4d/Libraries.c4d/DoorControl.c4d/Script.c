@@ -1,7 +1,5 @@
 /*-- Door control --*/
 
-#strict 2
-
 /*
   This object supplies the base functionality for structures with doors.
   The buildings have to have OpenDoor, DoorOpen and CloseDoor in their act map

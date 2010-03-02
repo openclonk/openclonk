@@ -37,7 +37,7 @@ Es wird sichergestellt, dass keine Endlosschleife entsteht.
 		</remark>
 		<examples>
 			<example>
-				<code>PlaceObjects(LOAM,20,<funclink>Material</funclink>("Earth"),100,0,200)</code>
+				<code>PlaceObjects(Loam,20,<funclink>Material</funclink>("Earth"),100,0,200)</code>
 				<text>Erzeugt 20 Lehmklumpen in Erde innherhalb der Koordinaten 100,0 und 200,LandscapeHeight()</text>
 			</example>
 			<example>

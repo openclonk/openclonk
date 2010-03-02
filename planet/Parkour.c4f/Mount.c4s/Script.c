@@ -2,7 +2,7 @@
 
 func Initialize()
 {
-  var pGoal = CreateObject(Core_Goal_Parkour, 0, 0, NO_OWNER);
+  var pGoal = CreateObject(Goal_Parkour, 0, 0, NO_OWNER);
   var x, y;
   y=LandscapeHeight()-120;
   x=LandscapeWidth()/2;
@@ -27,9 +27,9 @@ protected func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
 	if (!Random(2))
-		clonk->CreateContents(LOAM);
+		clonk->CreateContents(Loam);
 	else
-		clonk->CreateContents(DYNA);
-	clonk->CreateContents(MJOW);
+		clonk->CreateContents(Dynamite);
+	clonk->CreateContents(JarOfWinds);
 	return;
 }

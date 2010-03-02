@@ -15,7 +15,7 @@ VertexFriction=80,60,60
 Picture=0,0,16,16
 Value=10
 Mass=5
-Components=GPDR=2;WOOD=1;METL=1;
+Components=GPDR=2;Wood=1;Metal=1;
 Rebuy=1
 Rotate=1
 ColorByOwner=1

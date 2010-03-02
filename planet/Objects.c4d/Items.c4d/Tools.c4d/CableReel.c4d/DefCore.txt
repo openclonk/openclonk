@@ -1,0 +1,17 @@
+[DefCore]
+id=CableReel
+Version=4,10,0,0
+Category=C4D_Object|C4D_SelectMaterial|C4D_SelectKnowledge|C4D_SelectHomebase
+MaxUserSelect=10
+Width=8
+Height=6
+Offset=-4,-3
+Vertices=1
+VertexY=1
+VertexFriction=50
+Value=10
+Mass=15
+Components=Metal=1
+Picture=0,6,64,64
+Rebuy=1
+Collectible=1

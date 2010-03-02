@@ -18,8 +18,6 @@ Checkmaty		- Items/Weapons/Bow
 				  Items/Weapons/Shield
 				  ProjectileHitLiving*
 
-
-
 Taken from freesound.org
 ------------------------
 These sound effects are licensed under the CC Sampling plus license.
@@ -30,3 +28,4 @@ Benboncan		- Blast3
 kwandalist		- RockHit*
 thecheeseman	- Hurt*, Die 
 tobyk			- Fanfare
+broumbroum		- Goals/Parkour/Checkpoint

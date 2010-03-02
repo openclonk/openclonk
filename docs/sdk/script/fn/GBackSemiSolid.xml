@@ -17,7 +17,7 @@
 		<desc>Überprüft ob sich an angegebener Position in der Landschaft feste Materie oder Flüssigkeit befindet. Also alles außer Himmel und Tunnel.</desc>
 		<examples>
 			<example>
-				<code>var obj=<funclink>FindObject</funclink>(ROCK);
+				<code>var obj=<funclink>FindObject</funclink>(Rock);
 while(GBackSemiSolid(<funclink>GetX</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetX</funclink>(),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink><funclink>GetY</funclink>())) <funclink>SetPosition</funclink>(<funclink>GetX</funclink>(obj),<funclink>GetY</funclink>(obj)<emlink href="script/operatoren.html">-</emlink>1,obj);</code>
 				<text>Dieses kleine Stückchen Script versetzt einen Stein an die Oberfläche.</text>
 			</example>

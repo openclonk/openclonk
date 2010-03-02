@@ -1,5 +1,5 @@
 [DefCore]
-id=WMIL
+id=WindGenerator
 Version=4,9,8
 Category=C4D_Structure|C4D_SelectBuilding|C4D_SelectKnowledge
 MaxUserSelect=3
@@ -14,7 +14,7 @@ VertexY=-22,-14,-14,44,44
 VertexFriction=50,50,100,100
 Value=45
 Mass=900
-Components=WOOD=4;METL=1
+Components=Wood=4;Metal=1
 Picture=30,0,80,94
 Exclusive=1
 ContactIncinerate=4

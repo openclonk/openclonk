@@ -1,2 +1,0 @@
-DE:HUD selektierbar
-US:HUD selectable

@@ -36,7 +36,7 @@ werden. Scripte ohne <code>#strict 2</code> werden nur aus Gründen der Abwärtsko
 <text><ul>
 <li><code>&amp;&amp;</code> und <code>||</code> führen den zweiten Parameter nicht aus, wenn das Ergebnis schon nach Auswertung des ersten feststeht.</li>
 <li><code>return</code>, <code>if</code> und <code>while</code> nehmen nur noch einen Parameter. Auch an anderen Stellen nimmt der Parser Ausdrücke nicht mehr an, vor denen früher nur gewarnt wurde.</li>
-<li><code>==</code> und <code>!=</code> vergleichen nicht mehr die Identität von Werten, sondern ihren Inhalt und Typ. Beispielsweise gilt jetzt [1,2]==[2-1,2], "Hallo"=="Hallo" und CastInt(CLNK)!=CLNK.</li>
+<li><code>==</code> und <code>!=</code> vergleichen nicht mehr die Identität von Werten, sondern ihren Inhalt und Typ. Beispielsweise gilt jetzt [1,2]==[2-1,2], "Hallo"=="Hallo" und CastInt(Clonk)!=Clonk.</li>
 <li>Funktions- und Variablennamen dürfen nur noch die Zeichen a-z, A-Z und _, sowie 0-9 in der Mitte des Namens enthalten.</li>
 <li><code>eq</code>, <code>ne</code>, <code>S=</code> gibt es nicht mehr. Man kann jetzt Funktionen und Variablen <code>eq</code> und <code>ne</code> nennen oder eine Variable namens <code>S</code> mit <code>S=42;</code> ändern.</li>
 </ul></text>

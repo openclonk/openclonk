@@ -345,7 +345,7 @@ protected func Departure()        { CancelUse(); return _inherited(...); }
 // The same for vehicles
 protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
 protected func GrabLost()         { CancelUse(); return _inherited(...); }
-// TODO: what is missing here is a callback for when the clonk STARTs a attach or push
+// TODO: what is missing here is a callback for when the clonk StarTs a attach or push
 // action.
 // So if a clonk e.g. uses a tool and still while using it (holding down the mouse button)
 // hits SPACE (grab vehicle), ControlUseStop is not called to the tool. 
@@ -971,11 +971,11 @@ private func VirtualCursor()
 {
 	if(!virtual_cursor)
 	{
-		virtual_cursor = FindObject(Find_ID(L_CR),Find_Owner(GetOwner()));
+		virtual_cursor = FindObject(Find_ID(GUI_Crosshair),Find_Owner(GetOwner()));
 	}
 	if(!virtual_cursor)
 	{
-		virtual_cursor=CreateObject(L_CR,0,0,GetOwner());
+		virtual_cursor=CreateObject(GUI_Crosshair,0,0,GetOwner());
 	}
 	
 	return virtual_cursor;

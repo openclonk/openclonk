@@ -1,5 +1,3 @@
-#include BAR0
-
 /*
 	Crew selector HUD
 	Author: Newton
@@ -12,6 +10,8 @@
 	but rely on the HUD controller to be notified of any changes.
 
 */
+
+#include Library_Bars
 
 /*
 	TODO:	Callback when the name is changed
@@ -113,7 +113,7 @@ public func SetHotkey(int num)
 	
 	hotkey = true;
 	var name = Format("%d",num);
-	SetGraphics(name,NUMB,12,GFXOV_MODE_IngamePicture);
+	SetGraphics(name,Icon_Number,12,GFXOV_MODE_IngamePicture);
 	SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
 	SetClrModulation(HSL(0,0,180),12);
 }

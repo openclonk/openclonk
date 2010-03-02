@@ -1,5 +1,5 @@
 [DefCore]
-id=COAL
+id=Coal
 Version=4,9,10,10
 Category=C4D_Object
 MaxUserSelect=50
@@ -11,7 +11,7 @@ Vertices=3
 VertexX=0,2,-2
 VertexY=1,-1,-1
 VertexFriction=75,75
-Components=WOOD=2;
+Components=Wood=2;
 Value=4
 Mass=9
 Rotate=1

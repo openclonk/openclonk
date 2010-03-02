@@ -1,6 +1,6 @@
 /*-- Musket Ball --*/
 
-#include L_ST
+#include Library_Stackable
 
 public func MaxStackCount() { return 8; }
 
@@ -36,7 +36,7 @@ public func Launch(object shooter, int angle, int dist, int speed)
 	SquishVertices(true);
 	
 	// neat trail
-	CreateObject(TRAI,0,0)->Set(3, 200, this);
+	CreateObject(BulletTrail,0,0)->Set(3, 200, this);
 	
 	// sound
 	Sound("BulletShot*.ogg");

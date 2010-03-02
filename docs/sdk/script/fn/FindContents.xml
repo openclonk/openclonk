@@ -17,7 +17,7 @@
 			<example>
 
 <code>var hut;
-<funclink>if</funclink> (hut=<funclink>FindObject</funclink>(HUT2)) hut->FindContents(CLNK)-><funclink>Exit</funclink>(hut-><funclink>GetX</funclink>(), hut-><funclink>GetY</funclink>());</code>
+<funclink>if</funclink> (hut=<funclink>FindObject</funclink>(HUT2)) hut->FindContents(Clonk)-><funclink>Exit</funclink>(hut-><funclink>GetX</funclink>(), hut-><funclink>GetY</funclink>());</code>
 				<text>Befördert einen Clonk aus einer Hütte heraus.</text>
 			</example>
 		</examples>

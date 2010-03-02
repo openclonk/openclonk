@@ -1,5 +1,5 @@
 [Object]
-id=WMIL
+id=WindGenerator
 Number=385
 Category=1154
 Size=100000
@@ -17,10 +17,10 @@ Picture=0,0,0,0
 OCF=740558529
 Component=WOOD=4;METL=1
 LocalNamed=2;wind_anim=i0,iPower=i30
-Effects=ShowPower(1,100,0,10,385,WMIL)
+Effects=ShowPower(1,100,0,10,385,WindGenerator)
 
 [Object]
-id=WMIL
+id=WindGenerator
 Number=386
 Category=1154
 Rotation=20
@@ -40,10 +40,10 @@ Picture=0,0,0,0
 OCF=740558529
 Component=WOOD=4;METL=1
 LocalNamed=2;wind_anim=i0,iPower=i30
-Effects=ShowPower(1,100,0,10,386,WMIL)
+Effects=ShowPower(1,100,0,10,386,WindGenerator)
 
 [Object]
-id=WMIL
+id=WindGenerator
 Number=387
 Category=1154
 Rotation=60
@@ -63,10 +63,10 @@ Picture=0,0,0,0
 OCF=740558529
 Component=WOOD=4;METL=1
 LocalNamed=2;wind_anim=i0,iPower=i30
-Effects=ShowPower(1,100,0,10,387,WMIL)
+Effects=ShowPower(1,100,0,10,387,WindGenerator)
 
 [Object]
-id=WMIL
+id=WindGenerator
 Number=388
 Category=1154
 Rotation=170
@@ -86,10 +86,10 @@ Picture=0,0,0,0
 OCF=740558529
 Component=WOOD=4;METL=1
 LocalNamed=2;wind_anim=i0,iPower=i30
-Effects=ShowPower(1,100,0,10,388,WMIL)
+Effects=ShowPower(1,100,0,10,388,WindGenerator)
 
 [Object]
-id=WMIL
+id=WindGenerator
 Number=389
 Category=1154
 Rotation=190
@@ -109,10 +109,10 @@ Picture=0,0,0,0
 OCF=740558529
 Component=WOOD=4;METL=1
 LocalNamed=2;wind_anim=i0,iPower=i0
-Effects=ShowPower(1,100,0,10,389,WMIL)
+Effects=ShowPower(1,100,0,10,389,WindGenerator)
 
 [Object]
-id=WMIL
+id=WindGenerator
 Number=390
 Category=1154
 Rotation=310
@@ -132,5 +132,5 @@ Picture=0,0,0,0
 OCF=740558529
 Component=WOOD=4;METL=1
 LocalNamed=2;wind_anim=i0,iPower=i0
-Effects=ShowPower(1,100,0,10,390,WMIL)
+Effects=ShowPower(1,100,0,10,390,WindGenerator)
 

@@ -15,8 +15,8 @@
 		<desc>Wandelt einen String in eine ID um.</desc>
 		<examples>
 			<example>
-				<code>C4Id("ROCK")</code>
-				<text>Gibt die ID 'ROCK' zurück.</text>
+				<code>C4Id("Rock")</code>
+				<text>Gibt die ID 'Rock' zurück.</text>
 			</example>
 		</examples>
 	</func>

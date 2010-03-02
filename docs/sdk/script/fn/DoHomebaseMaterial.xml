@@ -17,7 +17,7 @@
 		<desc>Verändert die Kaufbarkeit von Objekten in der Heimatbasis.</desc>
 		<examples>
 			<example>
-				<code>DoHomebaseMaterial(0, FLNT, 1);</code>
+				<code>DoHomebaseMaterial(0, Firestone, 1);</code>
 				<text>Der Spieler kann sich jetzt einen Flint mehr kaufen.</text>
 			</example>
 		</examples>

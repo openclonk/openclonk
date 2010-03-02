@@ -1,5 +1,5 @@
 [DefCore]
-id=Core_Goal_Melee
+id=Goal_Melee
 Version=4,10,0,0
 Category=C4D_StaticBack|C4D_Goal
 MaxUserSelect=1

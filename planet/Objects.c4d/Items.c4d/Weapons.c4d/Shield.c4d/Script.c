@@ -1,6 +1,6 @@
 /*-- Shield --*/
 
-#include L_WN
+#include Library_MeleeWeapon
 
 private func Hit()
 {

@@ -18,7 +18,7 @@
 		<desc>Bei angegebenen id gibt die Funktion zurück, wie schnell die Menge der Objekte in der Heimatbasis des Spielers nachgeliefert wird. iIndex und dwCategory werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Objekttyp der entsprechenden Kategorie der nachgelieferten Objekte des Spielers. Der Objekttyp (id) taucht in der Liste auf und wird zurückgeliefert, selbst wenn zur Zeit keine Objekte dieses Typs nachgeliefert werden.</desc>
 		<examples>
 			<example>
-				<code>if(!<funclink>GetHomebaseProduction</funclink>(0, FLNT)) <funclink>GetCursor</funclink>(0)-><funclink>CreateContents</funclink>(FLNT);</code>
+				<code>if(!<funclink>GetHomebaseProduction</funclink>(0, Firestone)) <funclink>GetCursor</funclink>(0)-><funclink>CreateContents</funclink>(Firestone);</code>
 				<text>Gibt dem ausgewählten Clonk des ersten Spielers einen Feuerstein, wenn in seiner Heimatbasis keine Feuersteine nachgeliefert werden.</text>
 			</example>
 		</examples>

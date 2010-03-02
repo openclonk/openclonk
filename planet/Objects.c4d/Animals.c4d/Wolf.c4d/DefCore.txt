@@ -1,5 +1,5 @@
 [DefCore]
-id=WOLF
+id=Wolf
 Version=4,9,8
 Category=C4D_Living|C4D_SelectAnimal
 MaxUserSelect=10

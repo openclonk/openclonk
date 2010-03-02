@@ -1,5 +1,5 @@
 [DefCore]
-id=TWKS
+id=ToolsWorkshop
 Version=4,9,8
 Category=C4D_Structure|C4D_SelectBuilding|C4D_SelectKnowledge
 MaxUserSelect=2
@@ -14,11 +14,10 @@ VertexY=-4,-3,19,19
 VertexFriction=50,50,100,100
 Value=200
 Mass=4500
-Components=WOOD=6;METL=3
+Components=Wood=6;Metal=3
 Entrance=-8,0,25,20
 Exclusive=1
 BlastIncinerate=100
-BurnTo=WRKB
 LineConnect=C4D_PowerInput|C4D_PowerOutput|C4D_PowerConsumer
 Construction=1
 Rotate=1
