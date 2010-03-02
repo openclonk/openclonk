@@ -294,7 +294,7 @@ namespace Ogre
 		Type GetType() const { return type; }
 		size_t GetSize() const { return size; }
 
-		static const size_t ChunkHeaderLength = sizeof(unsigned short) + sizeof(unsigned long);
+		static const size_t ChunkHeaderLength = sizeof(uint16_t) /* chunk type */ + sizeof(uint32_t) /* chunk length */;
 		static Type Peek(const DataStream *stream)
 		{
 			return static_cast<Type>(stream->Peek<uint16_t>());

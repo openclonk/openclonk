@@ -73,14 +73,14 @@ namespace
 			dest[0] = *reinterpret_cast<const float*>(source + sizeof(float) * 0);
 			break;
 		case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Color_ABGR:
-			dest[3] = *reinterpret_cast<const float*>(source);
+			dest[3] = source[0] / 255.0f;
 			for (int i = 0; i < 3; ++i)
-				dest[i] = *reinterpret_cast<const float*>(source + sizeof(float) * (3 - i));
+				dest[i] = source[3 - i] / 255.0f;
 			break;
 		case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Color_ARGB:
-			dest[3] = *reinterpret_cast<const float*>(source);
+			dest[3] = source[0] / 255.0f;
 			for (int i = 0; i < 3; ++i)
-				dest[i] = *reinterpret_cast<const float*>(source + sizeof(float) * (i + 1));
+				dest[i] = source[i + 1] / 255.0f;
 			break;
 		}
 	}
@@ -90,10 +90,41 @@ namespace
 		if (!VertexDeclarationIsSane(geo.vertexDeclaration))
 			throw Ogre::Mesh::InvalidVertexDeclaration();
 
+		// Get maximum size of a vertex according to the declaration
+		std::map<int, size_t> max_offset;
+		BOOST_FOREACH(const Ogre::Mesh::ChunkGeometryVertexDeclElement &el, geo.vertexDeclaration)
+		{
+			size_t elsize = 0;
+			switch (el.type)
+			{
+			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Float1: elsize = sizeof(float) * 1; break;
+			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Float2: elsize = sizeof(float) * 2; break;
+			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Float3: elsize = sizeof(float) * 3; break;
+			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Float4: elsize = sizeof(float) * 4; break;
+			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Color_ABGR:
+			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Color_ARGB: elsize = sizeof(uint8_t) * 4; break;
+			}
+			max_offset[el.source] = std::max<size_t>(max_offset[el.source], el.offset + elsize);
+		}
+
 		// Generate array of vertex buffer cursors
-		std::vector<const char *> cursors;
+		std::map<int, const char *> cursors;
 		BOOST_FOREACH(const Ogre::Mesh::ChunkGeometryVertexBuffer &buf, geo.vertexBuffers)
-			cursors.push_back(static_cast<const char *>(buf.data->data));
+		{
+			if (cursors.find(buf.index) != cursors.end())
+				throw Ogre::MultipleSingletonChunks("Multiple vertex buffers were bound to the same stream");
+			cursors[buf.index] = static_cast<const char *>(buf.data->data);
+			// Check that the vertices don't overlap
+			if (buf.vertexSize < max_offset[buf.index])
+				throw Ogre::InsufficientData("Vertices overlapping");
+			// Check that the vertex buffer has enough room for all vertices
+			if (buf.GetSize() < (geo.vertexCount - 1) * buf.vertexSize + max_offset[buf.index])
+				throw Ogre::InsufficientData("Vertex buffer too small");
+			max_offset.erase(buf.index);
+		}
+
+		if (!max_offset.empty())
+			throw Ogre::InsufficientData("A vertex element references an unbound stream");
 
 		// Generate vertices
 		std::vector<StdSubMesh::Vertex> vertices;
@@ -108,7 +139,7 @@ namespace
 			BOOST_FOREACH(Ogre::Mesh::ChunkGeometryVertexDeclElement element, geo.vertexDeclaration)
 			{
 				float values[4];
-				ReadNormalizedVertexData(values, cursors[element.source] + element.offset, element.type);
+				ReadNormalizedVertexData(values, cursors.at(element.source) + element.offset, element.type);
 				switch (element.semantic)
 				{
 				case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Position:
@@ -129,8 +160,8 @@ namespace
 			}
 			vertices.push_back(vertex);
 			// Advance vertex buffer cursors
-			for (size_t cursor = 0; cursor < geo.vertexBuffers.size(); ++cursor)
-				cursors[cursor] += geo.vertexBuffers[cursor].vertexSize;
+			BOOST_FOREACH(const Ogre::Mesh::ChunkGeometryVertexBuffer &buf, geo.vertexBuffers)
+				cursors[buf.index] += buf.vertexSize;
 		}
 
 		return vertices;
