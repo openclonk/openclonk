@@ -124,6 +124,10 @@ namespace Ogre
 				case CID_Mesh_Bone_Assignment:
 				default:
 					LogF("StdMeshLoader: I don't know what to do with a chunk of type 0x%xu inside a CID_Mesh chunk", chunk->GetType());
+					// Fall through
+				case CID_Submesh_Name_Table:
+				case CID_Edge_List:
+					// Ignore those
 					delete chunk;
 					break;
 				}
