@@ -383,17 +383,6 @@ C4ChatControl::C4ChatControl(C4Network2IRCClient *pnIRCClient) : C4GUI::Window()
 	const char *szNick = Config.IRC.Nick, *szRealName = Config.IRC.RealName;
 	StdStrBuf sNick, sRealName;
 	if (!*szNick) szNick = Config.Network.Nick.getData();
-	if (Config.Registered())
-		{
-		if (!szNick || !*szNick) { sNick.Copy(Config.GetRegistrationData("Nick")); szNick = sNick.getData(); }
-		if (!*szRealName)
-			{
-			sRealName.Copy(Config.GetRegistrationData("FirstName"));
-			sRealName.AppendChar(' ');
-			sRealName.Append(Config.GetRegistrationData("LastName"));
-			szRealName = sRealName.getData();
-			}
-		}
 	pEdtLoginNick->SetText(szNick, false);
 	pEdtLoginRealName->SetText(szRealName, false);
 	pEdtLoginChannel->SetText(Config.IRC.Channel, false);

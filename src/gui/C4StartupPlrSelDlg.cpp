@@ -401,12 +401,6 @@ C4GUI::ContextMenu *C4StartupPlrSelDlg::CrewListItem::ContextMenu()
 
 void C4StartupPlrSelDlg::CrewListItem::OnDeathMessageCtx(C4GUI::Element *el)
 	{
-	// Registered version only
-	if (!Config.Registered())
-		{
-		::pGUI->ShowMessageModal(LoadResStr("IDS_CTL_REGISTEREDONLY"), LoadResStr("IDS_MSG_SETDEATHMESSAGE"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
-		return;
-		}
 	// Death message dialog
 	C4GUI::InputDialog *pDlg;
 	GetScreen()->ShowRemoveDlg(pDlg=new C4GUI::InputDialog(LoadResStr("IDS_MSG_ENTERNEWDEATHMESSAGE"), LoadResStr("IDS_MSG_SETDEATHMESSAGE"), C4GUI::Ico_Ex_Comment, new C4GUI::InputCallback<C4StartupPlrSelDlg::CrewListItem>(this, &C4StartupPlrSelDlg::CrewListItem::OnDeathMessageSet), false));

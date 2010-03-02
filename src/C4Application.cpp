@@ -186,20 +186,6 @@ bool C4Application::DoInit()
 	Log(C4ENGINEINFOLONG);
 	LogF("Version: %s %s", C4VERSION, C4_OS);
 
-	// Log registration info
-	if (Config.Registered())
-		{
-		char buf[4096 + 1] = "";
-		SAppend("Registered to: ", buf, 4096);
-		SAppend(Config.General.Name, buf, 4096); SAppend(" ", buf, 4096);
-		if (Config.GetRegistrationData("Nick")[0])
-			{ SAppend("(", buf, 4096); SAppend(Config.GetRegistrationData("Nick"), buf, 4096); SAppend(") ", buf, 4096); }
-		SAppend("[", buf, 4096); SAppend(Config.GetRegistrationData("Cuid"), buf, 4096); SAppend("]", buf, 4096);
-		Log(buf);
-		}
-	else
-		Log(Config.GetRegistrationError());
-
 #if defined(USE_DIRECTX) && defined(_WIN32)
 	// DDraw emulation warning
 	DWORD DDrawEmulationState;

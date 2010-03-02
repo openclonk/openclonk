@@ -712,8 +712,7 @@ namespace C4GUI {
 		Ico_Ex_Update        = Ico_Extended + 14,
 		Ico_Ex_Chat          = Ico_Extended + 15,
 		Ico_Ex_GameList      = Ico_Extended + 16,
-		Ico_Ex_Comment       = Ico_Extended + 17,
-		Ico_Ex_Unregistered  = Ico_Extended + 18
+		Ico_Ex_Comment       = Ico_Extended + 17
 		};
 
 	// cute, litte, useless thingy

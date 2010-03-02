@@ -33,7 +33,6 @@ class C4StartupMainDlg : public C4StartupDlg
 
 	protected:
 
-		void HandleIncomingKeyfile(const char *strIncomingKey);
 		void ConfirmMoveKey(const char *strKeyFilename);
 
 		virtual void DrawElement(C4TargetFacet &cgo);

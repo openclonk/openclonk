@@ -285,22 +285,6 @@ void C4PlayerInfoListBox::PlayerListItem::UpdateIcon(C4PlayerInfo *pInfo, C4Play
 			::GraphicsResource.fctPlayerClr.DrawClr(pIcon->GetMFacet(), true, dwPlayerClr);
 			}
 		fIconSet = true;
-		// unreg icon? Grayscale and stamp!
-		bool fUnreg = false;
-		C4ClientPlayerInfos *pClientPlrInfos = Game.PlayerInfos.GetClientInfoByPlayerID(pInfo->GetID());
-		if (pClientPlrInfos)
-			{
-			int32_t idClient = pClientPlrInfos->GetClientID();
-			C4Client *pClient = Game.Clients.getClientByID(idClient);
-			if (pClient) fUnreg = !pClient->isRegistered();
-			}
-		if (fUnreg)
-			{
-			C4FacetSurface &rPlrImg = pIcon->GetMFacet();
-			rPlrImg.EnsureOwnSurface();
-			rPlrImg.Grayscale(30);
-			C4GUI::Icon::GetIconFacet(C4GUI::Ico_Ex_Unregistered).Draw(rPlrImg);
-			}
 		}
 	else
 		// no player info known - either res not retrieved yet or script player

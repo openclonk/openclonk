@@ -1036,16 +1036,6 @@ bool C4StartupNetDlg::DoOK()
 					C4GUI::Ico_Error);
 			return true;
 			}
-		// no unregistered join
-		if (pRef->isRegJoinOnly())
-			if (!Config.Registered())
-				{
-				::pGUI->ShowMessageModal(LoadResStr("IDS_NET_REGJOINONLY"),
-																		strNoJoin.getData(),
-																		C4GUI::MessageDialog::btnOK,
-																		C4GUI::Ico_Error);
-				return true;
-				}
 		// no runtime join
 		if (!pRef->isJoinAllowed())
 			{

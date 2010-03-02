@@ -97,12 +97,11 @@ bool ProcessGroup(const char *szFilename)
 		printf("Group: %s\n",szFilename);
 
 	// Open group file
-  if (hGroup.Open(szFilename, true && Config.Registered()))
+  if (hGroup.Open(szFilename, true))
     {
     // No commands: display contents
     if (iFirstCommand<0)
 		{
-			if (Config.Registered())
 				hGroup.View("*");
 		}
 
@@ -113,12 +112,6 @@ bool ProcessGroup(const char *szFilename)
 			// This argument is a command
       if (argv[iArg][0]=='-')
         {
-				// Block unregistered commands
-				if (!Config.Registered() && (SCharPos(argv[iArg][1], "yw") < 0))
-				{
-			    printf("Command -%c not allowed in unregistered version: %s\n", argv[iArg][1], Config.GetRegistrationError());
-					continue;
-				}
 				// Handle commands
         switch (argv[iArg][1])
           {

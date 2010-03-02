@@ -47,31 +47,6 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 	C4GUI::ComponentAligner caInfo(C4Rect(rcClient.x + rcClient.Wdt - iInfoWdt, rcClient.y, iInfoWdt, rcClient.Hgt/8), 0,0, false);
 	AddElement(new C4GUI::Label(sVersion.getData(), caInfo.GetGridCell(0,1,0,4), ARight));
 	StdStrBuf sRegStr, sKeyFile;
-	if (Config.Registered())
-		{
-		StdStrBuf sRegName, sFirstName, sLastName, sNick;
-		sFirstName.Copy(Config.GetRegistrationData("FirstName"));
-		sLastName.Copy(Config.GetRegistrationData("LastName"));
-		sNick.Copy(Config.GetRegistrationData("Nick"));
-		sRegName.Format("%s %s (%s)", sFirstName.getData(), sLastName.getData(), sNick.getData());
-		sRegStr.Format(LoadResStr("IDS_PRC_REG"), sRegName.getData());
-		sKeyFile.Format("%s %s", LoadResStr("IDS_CTL_KEYFILE"), Config.GetKeyFilename());
-		C4GUI::Label *pLbl;
-		AddElement(pLbl = new C4GUI::Label(sRegStr.getData(), caInfo.GetGridCell(0,1,1,4), ARight));
-		pLbl->SetToolTip(sKeyFile.getData());
-		AddElement(pLbl = new C4GUI::Label(FormatString("%s %s", LoadResStr("IDS_CTL_CUID"), Config.GetRegistrationData("Cuid")).getData(), caInfo.GetGridCell(0,1,2,4), ARight));
-		pLbl->SetToolTip(sKeyFile.getData());
-		AddElement(pWebCodeLbl = new C4GUI::Label("", caInfo.GetGridCell(0,1,3,4), ARight));
-		pWebCodeLbl ->SetToolTip(sKeyFile.getData());
-		}
-	else
-		{
-		AddElement(new C4GUI::Label(LoadResStr("IDS_CTL_UNREGISTERED"), caInfo.GetGridCell(0,1,1,4), ARight));
-		AddElement(new C4GUI::Label(Config.GetRegistrationError(), caInfo.GetGridCell(0,1,2,4), ARight));
-		pWebCodeLbl = NULL;
-		}
-	// webcode-display timer
-	iWebCodeTimer = C4AboutWebCodeShowTime + 1;
 	Application.Add(this);
 	OnSec1Timer();
 
@@ -82,11 +57,6 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 	int32_t iButtonWidth = caButtons.GetInnerWidth() / 4;
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_BACK"), caButtons.GetGridCell(0,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnBackBtn));
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_BACKMAIN"));
-	if (!Config.Registered())
-		{
-		AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_REGISTERNOW"), caButtons.GetGridCell(1,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnRegisterBtn));
-		btn->SetToolTip(LoadResStr("IDS_DESC_GOTOTHEONLINEREGISTRATION"));
-		}
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_CHECKFORUPDATES"), caButtons.GetGridCell(2,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnUpdateBtn));
 	btn->SetToolTip(LoadResStr("IDS_DESC_CHECKONLINEFORNEWVERSIONS"));
 	}
@@ -104,23 +74,6 @@ void C4StartupAboutDlg::DoBack()
 
 void C4StartupAboutDlg::OnSec1Timer()
 	{
-	// no webcode label in unregistered
-	if (!pWebCodeLbl) return;
-	// display countdown first
-	// display webcode after time is up
-	if (iWebCodeTimer)
-		{
-		if (--iWebCodeTimer)
-			{
-			// countdown
-			pWebCodeLbl->SetText(FormatString("%s %s (%d)", LoadResStr("IDS_CTL_WEBCODE"), LoadResStr("IDS_CTL_PLEASEWAIT"), iWebCodeTimer).getData(), false);
-			}
-		else
-			{
-			// webcode display
-			pWebCodeLbl->SetText(FormatString("%s %s", LoadResStr("IDS_CTL_WEBCODE"), Config.GetRegistrationData("WebCode")).getData(), false);
-			}
-		}
 	}
 
 void C4StartupAboutDlg::DrawElement(C4TargetFacet &cgo)

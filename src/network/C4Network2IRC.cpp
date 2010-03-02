@@ -727,14 +727,8 @@ void C4Network2IRCClient::OnMessage(bool fNotice, const char *szSender, const ch
 			if(SEqualNoCase(Tag.getData(), "FINGER") && !fNotice)
 				{
 				StdStrBuf Answer;
-				if(Config.Registered())
-					{
-					Answer = Config.GetRegistrationData("Cuid");
-					}
-				else
-					{
-					Answer = LoadResStr("IDS_PRC_UNREGUSER");
-					}
+				Answer = LoadResStr("IDS_PRC_UNREGUSER"); //ToDo: Anser sth. else 
+				
 				Send("NOTICE", FormatString("%s :%cFINGER %s%c",
 					Sender.getData(), X_DELIM,
 					Answer.getData(),
