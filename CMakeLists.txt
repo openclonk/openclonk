@@ -666,6 +666,8 @@ include(FindZLIB)
 include(FindBoost)
 if(NOT Boost_INCLUDE_DIR)
 	message(SEND_ERROR "Could not find the Boost C++ Libraries")
+else()
+	include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 endif()
 
 include(FindThreads)
