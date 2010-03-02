@@ -12,6 +12,9 @@ You can build on Windows using either:
 
 * Some other compilers and IDEs which are supported by CMake might also work
 
+Building OpenClonk requires the Boost C++ Libraries (from http://www.boost.org/). It uses the
+header-only parts of the library, so you don't have to build any of the binary libraries.
+
 Notes for MinGW
 ===============
 

@@ -42,6 +42,7 @@
 #include <C4RankSystem.h>
 #include <C4GraphicsResource.h>
 #include <C4MeshAnimation.h>
+#include "StdMeshLoader.h"
 
 // Helper class to load additional ressources required for meshes from
 // a C4Group.
@@ -164,30 +165,23 @@ bool C4DefGraphics::LoadBitmap(C4Group &hGroup, const char *szFilename, const ch
 
 bool C4DefGraphics::LoadMesh(C4Group &hGroup, StdMeshSkeletonLoader& loader)
 {
-	char* buf;
+	char* buf = NULL;
 	size_t size;
-	if(!hGroup.LoadEntry(C4CFN_DefMesh, &buf, &size, 1)) return false;
 
-	Mesh = new StdMesh;
-
-	bool result;
 	try
 	{
-		Mesh->InitXML(C4CFN_DefMesh, buf, loader, Game.MaterialManager);
-		result = true;
+		if (hGroup.LoadEntry(C4CFN_DefMesh, &buf, &size, 1))
+			Mesh = StdMeshLoader::LoadMeshBinary(buf, size, Game.MaterialManager, loader);
+		else if (hGroup.LoadEntry(C4CFN_DefMeshXml, &buf, &size, 1))
+			Mesh = StdMeshLoader::LoadMeshXml(buf, size, Game.MaterialManager, loader);
+		else
+			return false;
+		delete[] buf;
 	}
-	catch(const StdMeshError& ex)
+	catch (const StdMeshLoader::LoaderException &ex)
 	{
 		DebugLogF("Failed to load mesh: %s", ex.what());
-		result = false;
-	}
-
-	delete[] buf;
-	if(!result)
-	{
-		delete Mesh;
-		Mesh = NULL;
-
+		delete[] buf;
 		return false;
 	}
 

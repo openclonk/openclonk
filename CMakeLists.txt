@@ -430,6 +430,12 @@ set(OC_CLONK_SOURCES
 	src/platform/StdGL.h
 	src/platform/StdMesh.cpp
 	src/platform/StdMesh.h
+	src/platform/StdMeshLoader.h
+	src/platform/StdMeshLoaderBinary.cpp
+	src/platform/StdMeshLoaderBinaryChunks.cpp
+	src/platform/StdMeshLoaderBinaryChunks.h
+	src/platform/StdMeshLoaderDataStream.h
+	src/platform/StdMeshLoaderXml.cpp
 	src/platform/StdMeshMaterial.cpp
 	src/platform/StdMeshMaterial.h
 	src/platform/StdNoGfx.cpp
@@ -657,6 +663,10 @@ SET(JPEG_NAMES ${JPEG_NAMES} libjpeg)
 include(FindJPEG)
 include(FindPNG)
 include(FindZLIB)
+include(FindBoost)
+if(NOT Boost_INCLUDE_DIR)
+	message(SEND_ERROR "Could not find the Boost C++ Libraries")
+endif()
 
 include(FindThreads)
 if(NOT WIN32)

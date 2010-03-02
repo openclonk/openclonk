@@ -21,29 +21,7 @@
 
 #include <StdMeshMaterial.h>
 
-// Loader for OGRE meshes. Currently supports XML files only.
-
-class StdMeshError: public std::exception
-{
-public:
-	StdMeshError(const StdStrBuf& message, const char* file, unsigned int line);
-	virtual ~StdMeshError() throw() {}
-
-	virtual const char* what() const throw() { return Buf.getData(); }
-
-protected:
-	StdCopyStrBuf Buf;
-};
-
-// Interface to load skeleton files. Given a filename occuring in the
-// mesh file, this should load the skeleton file from wherever the mesh file
-// was loaded from, for example from a C4Group. Return default-construted
-// StdStrBuf with NULL data in case of error.
-class StdMeshSkeletonLoader
-{
-public:
-	virtual StdStrBuf LoadSkeleton(const char* filename) = 0;
-};
+// OGRE mesh
 
 struct StdMeshVector
 {
@@ -162,6 +140,7 @@ StdMeshVertex operator*(const StdMeshMatrix& lhs, const StdMeshVertex& rhs);
 class StdMeshBone
 {
 	friend class StdMesh;
+	friend class StdMeshLoader;
 public:
 	StdMeshBone() {}
 
@@ -210,7 +189,7 @@ public:
 // Animation track, specifies transformation for one bone for each keyframe
 class StdMeshTrack
 {
-	friend class StdMesh;
+	friend class StdMeshLoader;
 public:
 	StdMeshTransformation GetTransformAt(float time) const;
 
@@ -221,7 +200,7 @@ private:
 // Animation, consists of one Track for each animated Bone
 class StdMeshAnimation
 {
-	friend class StdMesh;
+	friend class StdMeshLoader;
 	friend class StdMeshInstance;
 public:
 	StdMeshAnimation() {}
@@ -246,6 +225,7 @@ struct StdMeshBox
 class StdSubMesh
 {
 	friend class StdMesh;
+	friend class StdMeshLoader;
 public:
 	// Remember bone assignments for vertices
 	class Vertex: public StdMeshVertex
@@ -273,15 +253,10 @@ private:
 
 class StdMesh
 {
-	//friend class StdMeshInstance;
-public:
+	friend class StdMeshLoader;
 	StdMesh();
+public:
 	~StdMesh();
-
-	// filename is only used to show it in error messages. The model is
-	// loaded from xml_data.
-	// Throws StdMeshError.
-	void InitXML(const char* filename, const char* xml_data, StdMeshSkeletonLoader& skel_loader, const StdMeshMatManager& manager);
 
 	const StdSubMesh& GetSubMesh(unsigned int i) const { return SubMeshes[i]; }
 	unsigned int GetNumSubMeshes() const { return SubMeshes.size(); }

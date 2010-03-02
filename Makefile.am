@@ -423,6 +423,12 @@ src/platform/StdGLCtx.cpp \
 src/platform/StdGL.h \
 src/platform/StdMesh.cpp \
 src/platform/StdMesh.h \
+src/platform/StdMeshLoader.h \
+src/platform/StdMeshLoaderBinary.cpp \
+src/platform/StdMeshLoaderBinaryChunks.cpp \
+src/platform/StdMeshLoaderBinaryChunks.h \
+src/platform/StdMeshLoaderDataStream.h \
+src/platform/StdMeshLoaderXml.cpp \
 src/platform/StdMeshMaterial.cpp \
 src/platform/StdMeshMaterial.h \
 src/platform/StdNoGfx.cpp \
