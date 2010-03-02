@@ -18,6 +18,8 @@ local iAnimLoad;
 local iDrawAnim;
 local iCloseAnim;
 
+local target_angle;
+
 public func GetCarryMode() { return CARRY_HandBack; }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
@@ -63,6 +65,10 @@ public func ControlUseStart(object clonk, int x, int y)
 	fAiming = 1;
 	// walk slow
 	AddEffect("IntWalkSlow", clonk, 1, 0, this, 0, 30000);
+
+	// Aim timer
+	if(!GetEffect("IntAiming", clonk))
+		AddEffect("IntAiming", clonk, 1, 1, this);
 	
 	// Setting the hands as blocked, so that no other items are carried in the hands
 	clonk->SetHandAction(1);
@@ -83,12 +89,12 @@ public func ControlUseStart(object clonk, int x, int y)
 	return true;
 }
 
-public func ControlUseHolding(object clonk, int x, int y)
+func FxIntAimingTimer(clonk, number)
 {
 	if(fWait)
 	{
 		if(clonk->HasHandAction())
-			ControlUseStart(clonk, x, y);
+			ControlUseStart(clonk);
 		return 0;
 	}
 	// check procedure
@@ -99,15 +105,11 @@ public func ControlUseHolding(object clonk, int x, int y)
 		return true;
 	}
 
-	// angle
-	var angle = Angle(0,0,x,y);
-	angle = Normalize(angle,-180);
-
 	if(aimtime > 0)
 	{
 		if(aimtime == 30) Sound("GetArrow*.ogg");
 		if(aimtime == 12) Sound("BowLoad*.ogg");
-	
+
 		aimtime--;
 		if(aimtime == 1)
 		{
@@ -118,14 +120,21 @@ public func ControlUseHolding(object clonk, int x, int y)
 			clonk->SetAnimationPosition(iAnimLoad, Anim_Const(2000*Abs(90)/180));
 		}
 	}
-	else 
+	else
 	{
-		if(Abs(angle) > 160) angle = 160;
+		if(Abs(target_angle) > 160) target_angle = 160;
 		// Adjust the aiming position
 		var pos = clonk->GetAnimationPosition(iAnimLoad);
-		pos += BoundBy(2000*Abs(angle)/180-pos, -100, 100);
+		pos += BoundBy(2000*Abs(target_angle)/180-pos, -100, 100);
 		clonk->SetAnimationPosition(iAnimLoad, Anim_Const(pos));
 	}
+}
+
+public func ControlUseHolding(object clonk, int x, int y)
+{
+	// Save new angle
+	var angle = Angle(0,0,x,y);
+	target_angle = Normalize(angle,-180);
 	
 	return true;
 }
@@ -134,6 +143,7 @@ public func ControlUseStop(object clonk, int x, int y)
 {
 	StopAnimation(iDrawAnim);
 	clonk->DetachMesh(iArrowMesh);
+	RemoveEffect("IntAiming", clonk);
 
 	// not done reloading or out of range: cancel
 	var angle = clonk->GetAnimationPosition(iAnimLoad)*180/2000;
@@ -166,6 +176,7 @@ public func ControlUseStop(object clonk, int x, int y)
 
 public func ControlUseCancel(object clonk, int x, int y)
 {
+	RemoveEffect("IntAiming", clonk);
 	ResetClonk(clonk);
 	return true;
 }

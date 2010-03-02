@@ -13,6 +13,8 @@ local fAiming;
 local iAim;
 local fWait;
 
+local target_angle;
+
 public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Musket; }
 public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
 public func GetCarryBone()	{	return	"main";	}
@@ -82,78 +84,81 @@ func ControlUseStart(object clonk, int x, int y)
 		clonk->SetHandAction(1);
 		clonk->UpdateAttach();
 		AddEffect("IntWalkSlow", clonk, 1, 0, 0, BOW1);
+		// Aim timer
+		if(!GetEffect("IntAiming", clonk))
+			AddEffect("IntAiming", clonk, 1, 1, this);
 	}
 	else clonk->CancelUse();
 	
 	return true;
 }
 
-func ControlUseHolding(object pClonk, ix, iy)
+func FxIntAimingTimer(clonk, number)
 {
 	if(fWait)
 	{
-		if(pClonk->HasHandAction())
-			ControlUseStart(pClonk, ix, iy);
+		if(clonk->HasHandAction())
+			ControlUseStart(clonk);
 		return 0;
 	}
-	var p = pClonk->GetProcedure();
-	if(p != "WALK" && p != "FLIGHT")
+	// check procedure
+	if(!clonk->ReadyToAction())
 	{
-		fAiming = 0;
-		ResetClonk(pClonk);
+		ResetClonk(clonk);
 		fWait = 1;
-		return 1;
+		return -1;
 	}
+
 	// loading...
 	if(!loaded)
 	{
-		// If Clonk messes up during reload, he must restart. :(
-		if(Contained()->GetProcedure() != "WALK")
-			pClonk->CancelUse();
-					
 		reload--;
 		if(reload <= 0)
 		{
 			loaded = true;
 			reload = 0;
-			pClonk->CancelUse();
+			clonk->CancelUse();
+			ResetClonk(clonk);
+			return -1;
 		}
 	}
 	// loaded
 	else
 	{
-		var angle = Angle(0,0,ix,iy-MuskOffset);
 		//Angle Finder
-		var IX=Sin(180-angle,MuskFront);
-		var IY=Cos(180-angle,MuskUp)+MuskOffset;
-		if(Abs(Normalize(angle,-180)) > 90)
-			IY=Cos(180-angle,MuskDown)+MuskOffset;
+		var IX=Sin(180-target_angle,MuskFront);
+		var IY=Cos(180-target_angle,MuskUp)+MuskOffset;
+		if(Abs(Normalize(target_angle,-180)) > 90)
+			IY=Cos(180-target_angle,MuskDown)+MuskOffset;
 		//Create debug dot to show muzzle-point
 		//CastParticles("DebugReticle",1,0,IX,IY,30,30,RGB(255,0,0),RGB(255,0,0));
 		//DrawParticleLine("DebugReticle",0,0,IX,IY,2,20,RGB(30,30,30),RGB(100,100,100)); //Debug: Enable to see firing angle of musket
 
-		// angle
-		angle = Normalize(angle,-180);
-
-		var iTargetPosition = Abs(angle)*pClonk->GetAnimationLength("MusketAimArms")/180;
-		var iPos = pClonk->GetAnimationPosition(iAim);
+		var iTargetPosition = Abs(target_angle)*clonk->GetAnimationLength("MusketAimArms")/180;
+		var iPos = clonk->GetAnimationPosition(iAim);
 		iPos += BoundBy(iTargetPosition-iPos, -50, 50);
-		pClonk->SetAnimationPosition(iAim, Anim_Const(iPos));
+		clonk->SetAnimationPosition(iAim, Anim_Const(iPos));
 	}
+}
+
+func ControlUseHolding(object clonk, ix, iy)
+{
+	var angle = Angle(0,0,ix,iy-MuskOffset);
+	target_angle = Normalize(angle,-180);
 	
 	return true;
 }
 
-protected func ControlUseStop(object pClonk, ix, iy)
+protected func ControlUseStop(object clonk, ix, iy)
 {
+	if(!loaded) return;
+	RemoveEffect("IntAiming", clonk);
 	if(fWait) return;
 	if(!loaded)
 	{
-		ControlUseCancel(pClonk,ix,iy);
+		ControlUseCancel(clonk,ix,iy);
 		return true;
 	}
-	
-	if(!ClonkCanAim(pClonk)) return true;
 	
 	// Fire
 	if(Contents(0))
@@ -162,11 +167,11 @@ protected func ControlUseStop(object pClonk, ix, iy)
 		{
 //			if(PathFree(GetX(),GetY(),GetX()+Sin(180-Angle(0,0,ix,iy),iBarrel),GetY()+Cos(180-Angle(0,0,ix,iy),iBarrel)))
 //			{
-				var displayangle = pClonk->GetAnimationPosition(iAim)*180/(pClonk->GetAnimationLength("MusketAimArms"));
-				if(!pClonk->GetDir()) displayangle = 360-displayangle;
+				var displayangle = clonk->GetAnimationPosition(iAim)*180/(clonk->GetAnimationLength("MusketAimArms"));
+				if(!clonk->GetDir()) displayangle = 360-displayangle;
 				
-				FireWeapon(pClonk, ix, iy, displayangle);
-				ScheduleCall(this, "ResetClonk", 20, 1, pClonk);
+				FireWeapon(clonk, ix, iy, displayangle);
+				ScheduleCall(this, "ResetClonk", 20, 1, clonk);
 //			}
 		}
 	}
@@ -175,6 +180,8 @@ protected func ControlUseStop(object pClonk, ix, iy)
 
 protected func ControlUseCancel(object clonk, int x, int y)
 {
+	if(!loaded) return;
+	RemoveEffect("IntAiming", clonk);
 	if(fWait) return;
   fAiming = 0;
   ResetClonk(clonk);
@@ -192,13 +199,13 @@ public func ResetClonk(clonk)
 	RemoveEffect("IntWalkSlow", clonk);
 }
 
-private func FireWeapon(object pClonk, int iX, int iY, int displayangle)
+private func FireWeapon(object clonk, int iX, int iY, int displayangle)
 {
 	var shot = Contents(0)->TakeObject();
 	var angle = Normalize(Angle(0,0,iX,iY)-180);
-	if(angle>180 && pClonk->GetDir()==1) angle=angle-180;
-	if(angle<180 && pClonk->GetDir()==0) angle=angle+180;
-	shot->Launch(pClonk,angle,iBarrel,300);
+	if(angle>180 && clonk->GetDir()==1) angle=angle-180;
+	if(angle<180 && clonk->GetDir()==0) angle=angle+180;
+	shot->Launch(clonk,angle,iBarrel,300);
 	
 	loaded = false;
 
@@ -216,15 +223,8 @@ private func FireWeapon(object pClonk, int iX, int iY, int displayangle)
 		var r = displayangle;
 		CreateParticle("ExploSmoke",IX,IY,+Sin(r,speed)+RandomX(-2,2),-Cos(r,speed)+RandomX(-2,2),RandomX(100,400),RGBa(255,255,255,50));
 	}
-	CreateParticle("MuzzleFlash",IX,IY,+Sin(displayangle,500),-Cos(displayangle,500),450,RGB(255,255,255),pClonk);
+	CreateParticle("MuzzleFlash",IX,IY,+Sin(displayangle,500),-Cos(displayangle,500),450,RGB(255,255,255),clonk);
 	CreateParticle("Flash",0,0,0,0,800,RGBa(255,255,64,150));
-}
-
-private func ClonkCanAim(object clonk)
-{
-	var p = clonk->GetProcedure();
-	if(p != "WALK" && p != "ATTACH" && p != "FLIGHT") return false;
-	return true;
 }
 
 func RejectCollect(id shotid, object shot)
