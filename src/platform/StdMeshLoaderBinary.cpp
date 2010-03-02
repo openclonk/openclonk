@@ -193,7 +193,7 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 			sm.Faces[face].Vertices[2] = csm.faceVertices[face * 3 + 2];
 		}
 		Ogre::Mesh::ChunkGeometry &geo = *(csm.hasSharedVertices ? cmesh.geometry : csm.geometry);
-		sm.Vertices.swap(ReadSubmeshGeometry(geo));
+		sm.Vertices = ReadSubmeshGeometry(geo);
 
 		// Read bone assignments
 		BOOST_FOREACH(const Ogre::Mesh::BoneAssignment &ba, csm.boneAssignments)
