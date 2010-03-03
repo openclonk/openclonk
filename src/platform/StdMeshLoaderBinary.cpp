@@ -139,7 +139,7 @@ namespace
 			BOOST_FOREACH(Ogre::Mesh::ChunkGeometryVertexDeclElement element, geo.vertexDeclaration)
 			{
 				float values[4];
-				ReadNormalizedVertexData(values, cursors.at(element.source) + element.offset, element.type);
+				ReadNormalizedVertexData(values, cursors[element.source] + element.offset, element.type);
 				switch (element.semantic)
 				{
 				case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Position:
