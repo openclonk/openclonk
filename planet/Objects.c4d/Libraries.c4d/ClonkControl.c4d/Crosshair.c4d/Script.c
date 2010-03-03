@@ -5,7 +5,7 @@
 	Virtual cursor for gamepad controls
 */
 
-local crew, angle, dirx, diry, saveangle, xpos,ypos, analogaim;
+local crew, angle, dirx, diry, saveangle, xpos,ypos, analogaim, aiming;
 
 static const CURSOR_Radius = 100;
 
@@ -14,12 +14,14 @@ protected func Initialize()
 	this["Visibility"] = VIS_None;
 	saveangle = 900;
 	dirx = diry = xpos = ypos = 0;
+	aiming = false;
 }
 
 public func FxMoveTimer()
 {
 	var speed = 0;
 	var dpad_rotatespeed = 35;
+	
 	// dpad mode
 	if(diry)
 	{
@@ -48,7 +50,7 @@ public func FxMoveTimer()
 	}
 	
 	UpdatePosition();
-	crew->TriggerHoldingControl();
+	if(aiming) crew->TriggerHoldingControl();
 }
 
 private func UpdateAnalogpadPos()
@@ -57,26 +59,34 @@ private func UpdateAnalogpadPos()
 	ypos = Cos(angle/10,-100);
 }
 
-public func StartAim(int ctrl, object clonk, object using)
+public func StartAim(int ctrl, object clonk, object using, bool stealth)
 {
-	this["Visibility"] = VIS_Owner;
-	if(ctrl != CON_ThrowDelayed)
-		angle = saveangle*(clonk->GetDir()*2-1);
-	// throw must be fast! normally, the clonk wants to throw
-	// like 80° or so. Previously thrown direction is not saved
-	else
-		angle = 800*(clonk->GetDir()*2-1);
+
+	if(!GetEffect("Move",this))
+	{
+		if(ctrl != CON_ThrowDelayed)
+			angle = saveangle*(clonk->GetDir()*2-1);
+		// throw must be fast! normally, the clonk wants to throw
+		// like 80° or so. Previously thrown direction is not saved
+		else
+			angle = 800*(clonk->GetDir()*2-1);
+	}
 	
 	// set starting position for analog pad
 	UpdateAnalogpadPos();
 	
-	EnableKeyAimControls(true);
-	
 	crew = clonk;
-	crew->SetComDir(COMD_Stop);
 	UpdatePosition();
 	RemoveEffect("Move",this);
 	AddEffect("Move",this,1,1,this);
+
+	if(!stealth)
+	{
+		this["Visibility"] = VIS_Owner;
+		crew->SetComDir(COMD_Stop);
+		aiming = true;
+		EnableKeyAimControls(true);
+	}
 }
 
 private func UpdatePosition()
@@ -88,6 +98,12 @@ private func UpdatePosition()
 	crew->UpdateVirtualCursorPos();
 }
 
+private func MirrorCursor()
+{
+	angle = -Normalize(angle,-1800,10);
+	UpdateAnalogpadPos();
+}
+
 public func StopAim()
 {
 	RemoveEffect("Move",this);
@@ -97,6 +113,7 @@ public func StopAim()
 	EnableKeyAimControls(false);
 	saveangle = Abs(Normalize(angle,-1800,10));
 	analogaim = false;
+	aiming = false;
 }
 
 private func EnableKeyAimControls(bool enable)
@@ -106,24 +123,29 @@ private func EnableKeyAimControls(bool enable)
 	SetPlayerControlEnabled(GetOwner(), CON_AimLeft, enable);
 	SetPlayerControlEnabled(GetOwner(), CON_AimRight, enable);
 	
-	SetPlayerControlEnabled(GetOwner(), CON_AimAxisUp, enable);
+	// never disabled
+	/*SetPlayerControlEnabled(GetOwner(), CON_AimAxisUp, enable);
 	SetPlayerControlEnabled(GetOwner(), CON_AimAxisDown, enable);
 	SetPlayerControlEnabled(GetOwner(), CON_AimAxisLeft, enable);
-	SetPlayerControlEnabled(GetOwner(), CON_AimAxisRight, enable);
+	SetPlayerControlEnabled(GetOwner(), CON_AimAxisRight, enable);*/
 }
 
 public func IsAiming()
 {
-	return GetEffect("Move",this);
+	return aiming;
 }
 
-public func Aim(int ctrl, int strength, int repeat, int release)
+public func Aim(int ctrl, object clonk, int strength, int repeat, int release)
 {
+	// start (stealth) aiming
+	if(!GetEffect("Move",this))
+		StartAim(nil, clonk, nil,true);
+
 	// aiming with analog pad
 	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
 	{	
 		dirx = diry = 0;
-
+		
 		if(ctrl == CON_AimAxisUp) ypos = -strength;
 		if(ctrl == CON_AimAxisDown) ypos = strength;
 		if(ctrl == CON_AimAxisLeft) xpos = -strength;
@@ -147,4 +169,21 @@ public func Aim(int ctrl, int strength, int repeat, int release)
 		return true;
 	}
 	return false;
+}
+
+public func Direction(int ctrl)
+{
+	if(!crew) return;
+	
+	angle = Normalize(angle,-1800,10);
+	Message("%d, %d",this,angle,ctrl);
+	if(ctrl == CON_Left)
+		if(angle > 0)
+			MirrorCursor();
+		
+	if(ctrl == CON_Right)
+		if(angle < 0)
+			MirrorCursor();		
+	
+	return;
 }

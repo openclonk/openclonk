@@ -86,28 +86,24 @@
 
 	[ControlDef]
 	Identifier=AimAxisUp
-	DefaultDisabled=1
 	GUIName=Aim up
 	GUIDesc=Aim up
 	Hold=1
 	
 	[ControlDef]
 	Identifier=AimAxisDown
-	DefaultDisabled=1
 	GUIName=Aim down
 	GUIDesc=Aim down
 	Hold=1
 	
 	[ControlDef]
 	Identifier=AimAxisLeft
-	DefaultDisabled=1
 	GUIName=Aim left
 	GUIDesc=Aim left
 	Hold=1
 	
 	[ControlDef]
 	Identifier=AimAxisRight
-	DefaultDisabled=1
 	GUIName=Aim right
 	GUIDesc=Aim right
 	Hold=1

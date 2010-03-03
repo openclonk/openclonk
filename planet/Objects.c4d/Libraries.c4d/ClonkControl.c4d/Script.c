@@ -155,8 +155,8 @@ public func GetItemPos(object item)
 
 public func Switch2Items(int one, int two)
 {
-	if(!Inside(one,0,MaxContentsCount(one)-1)) return;
-	if(!Inside(two,0,MaxContentsCount(two)-1)) return;
+	if (!Inside(one,0,MaxContentsCount(one)-1)) return;
+	if (!Inside(two,0,MaxContentsCount(two)-1)) return;
 
 	var temp = inventory[one];
 	inventory[one] = inventory[two];
@@ -262,7 +262,7 @@ protected func Collection2(object obj)
 			}
 		}
 	}
-	if(success)
+	if (success)
 		this->~OnSlotFull(sel);
 	
 	if (sel == selected || sel == selected2)
@@ -289,18 +289,18 @@ protected func Ejection(object obj)
 	}
 	if (using == obj) CancelUse();
 
-	if(success) this->~OnSlotEmpty(i);
+	if (success) this->~OnSlotEmpty(i);
 	
 	if (i == selected || i == selected2)
 		obj->~Deselection(this,i == selected2);
 	
 	// we have over-weight? Put the next unindexed
 	// object inside that slot
-	if(ContentsCount() > indexed_inventory && !inventory[i])
+	if (ContentsCount() > indexed_inventory && !inventory[i])
 	{
 		for(var c=0; c<ContentsCount();++c)
 		{
-			if(GetItemPos(Contents(c)) == nil)
+			if (GetItemPos(Contents(c)) == nil)
 			{
 				// found it! Collect it properly
 				inventory[i] = Contents(c);
@@ -369,7 +369,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
 	// aiming with mouse
-	if(using && ctrl == CON_Aim)
+	if (using && ctrl == CON_Aim)
 	{
 		if (alt) ctrl = CON_UseAlt;
 		else     ctrl = CON_Use;
@@ -381,16 +381,21 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	else SetCommand("None");
 	
 	// aiming with analog pad or keys
-	if(VirtualCursorAiming())
+	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
 	{
-		if (ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight
-		||  ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
+		var success = VirtualCursor()->Aim(ctrl,this,strength,repeat,release);
+		// in any case, AimAxis* is called but it is only successful if the virtual cursor is aiming
+		return success && VirtualCursor()->IsAiming();
+	}
+	else if (VirtualCursorAiming())
+	{
+		if (ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight)
 		{
-			if(!(VirtualCursor()->IsAiming())) return false;
-			return VirtualCursor()->Aim(ctrl,strength,repeat,release);
+			if (!(VirtualCursor()->IsAiming())) return false;
+			return VirtualCursor()->Aim(ctrl,this,strength,repeat,release);
 		}
 	}
-	
+
 	// save last mouse position
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
@@ -504,7 +509,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// throw delayed
 			if (ctrl == CON_ThrowDelayed)
 			{
-				if(release)
+				if (release)
 				{
 					VirtualCursor()->StopAim();
 				
@@ -538,7 +543,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// throw delayed
 			if (ctrl == CON_ThrowAltDelayed)
 			{
-				if(release)
+				if (release)
 				{
 					VirtualCursor()->StopAim();
 				
@@ -562,6 +567,23 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	// Unhandled control
 	return false;
+}
+
+public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
+{
+	var result = inherited(plr,ctrl,strength,release);
+
+	if(!release)
+		if(strength != nil && strength < CON_Gamepad_Deadzone)
+			return result;
+
+	virtual_cursor = FindObject(Find_ID(GUI_Crosshair),Find_Owner(GetOwner()));
+	if(!virtual_cursor) return result;
+
+	if(!release)
+		virtual_cursor->Direction(ctrl);
+
+	return result;
 }
 
 public func ObjectCommand(string command, object target, int tx, int ty, object target2)
@@ -632,7 +654,7 @@ private func StartUseDelayedControl(int ctrl, control, object obj)
 			
 	// call UseStart
 	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,mlastx,mlasty);
-	if(!handled) noholdingcallbacks = true;
+	if (!handled) noholdingcallbacks = true;
 	else noholdingcallbacks = false;
 	
 	return handled;
@@ -698,7 +720,7 @@ private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
 		var dir_obj = GetActionTarget();
 
 		// otherwise, turn the clonk
-		if(!dir_obj) dir_obj = this;
+		if (!dir_obj) dir_obj = this;
 	
 		if ((dir_obj->GetComDir() == COMD_Stop && dir_obj->GetXDir() == 0) || dir_obj->GetProcedure() == "FLIGHT")
 		{
@@ -818,8 +840,8 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 			if (ctrl == CON_Down)  if (obj->Call(Format("~%sDown",control),this))  return true;
 			
 			// for attached (e.g. horse: also Jump command
-			if(GetProcedure() == "ATTACH")
-				if (ctrl == CON_Jump)  if(obj->Call("ControlJump",this)) return true;
+			if (GetProcedure() == "ATTACH")
+				if (ctrl == CON_Jump)  if (obj->Call("ControlJump",this)) return true;
 		}
 	}
 	
@@ -969,11 +991,11 @@ private func ShiftVehicle(int plr, bool back)
 
 private func VirtualCursor()
 {
-	if(!virtual_cursor)
+	if (!virtual_cursor)
 	{
 		virtual_cursor = FindObject(Find_ID(GUI_Crosshair),Find_Owner(GetOwner()));
 	}
-	if(!virtual_cursor)
+	if (!virtual_cursor)
 	{
 		virtual_cursor=CreateObject(GUI_Crosshair,0,0,GetOwner());
 	}
@@ -983,7 +1005,7 @@ private func VirtualCursor()
 
 private func VirtualCursorAiming()
 {
-	if(!virtual_cursor) return false;
+	if (!virtual_cursor) return false;
 	return virtual_cursor->IsAiming();
 }
 

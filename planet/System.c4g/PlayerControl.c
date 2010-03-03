@@ -322,6 +322,10 @@ global func GetPlayerControlName(int ctrl)
 	if (ctrl == CON_AimRight)		return "AimRight";
 	if (ctrl == CON_AimUp)		return "AimUp";
 	if (ctrl == CON_AimDown)		return "AimDown";
+	if (ctrl == CON_AimAxisLeft)		return "AimAxisLeft";
+	if (ctrl == CON_AimAxisRight)		return "AimAxisRight";
+	if (ctrl == CON_AimAxisUp)		return "AimAxisUp";
+	if (ctrl == CON_AimAxisDown)		return "AimAxisDown";
 	if (ctrl == CON_Left)		return "Left";
 	if (ctrl == CON_Right)		return "Right";
 	if (ctrl == CON_Up)			return "Up";
