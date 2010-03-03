@@ -2,7 +2,7 @@
 
 protected func Construction()
 {
-	var graphic = Random(5);
+	var graphic = Random(10);
 	if(graphic)
 		SetGraphics(Format("%d",graphic));
 }
