@@ -176,7 +176,7 @@ public func Direction(int ctrl)
 	if(!crew) return;
 	
 	angle = Normalize(angle,-1800,10);
-	Message("%d, %d",this,angle,ctrl);
+	//Message("%d, %d",this,angle,ctrl);
 	if(ctrl == CON_Left)
 		if(angle > 0)
 			MirrorCursor();
