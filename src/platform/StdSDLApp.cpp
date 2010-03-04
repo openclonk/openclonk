@@ -19,7 +19,7 @@
 
 /* A wrapper class to OS dependent event and window interfaces, SDL version */
 
-#include <Standard.h>
+#include <C4Include.h>
 #include <StdWindow.h>
 #include <StdGL.h>
 #include <StdDDraw2.h>

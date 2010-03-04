@@ -21,7 +21,7 @@
 
 #import <AppKit/AppKit.h>
 
-#include <Standard.h>
+#include <C4Include.h>
 #include <StdWindow.h>
 
 void CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {

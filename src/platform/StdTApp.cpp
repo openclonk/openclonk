@@ -19,7 +19,7 @@
 
 /* A wrapper class to OS dependent event and window interfaces, Text version */
 
-#include <Standard.h>
+#include <C4Include.h>
 #ifdef USE_CONSOLE
 #include <StdWindow.h>
 #include <StdGL.h>
