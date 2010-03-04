@@ -38,9 +38,6 @@
 
 #include <math.h>
 
-#include "StdCompiler.h"
-#include "StdAdaptors.h"
-
 // activate to switch to classic fixed-point math
 #define USE_FIXED 1
 #define inline ALWAYS_INLINE
@@ -71,7 +68,7 @@ class C4Fixed
 #else
 		friend void FIXED_TO_FLOAT(float *pVal);
 #endif
-		friend inline void CompileFunc(C4Fixed &rValue, StdCompiler *pComp);
+		friend void CompileFunc(C4Fixed &rValue, StdCompiler *pComp);
 
 	public:
 		int32_t val;	// internal value
@@ -343,32 +340,6 @@ inline void FIXED_TO_FLOAT(FIXED *pVal)
 #undef inline
 
 // CompileFunc for FIXED
-inline void CompileFunc(FIXED &rValue, StdCompiler *pComp)
-{
-#ifdef USE_FIXED
-	char cFormat = 'F';
-#else
-	char cFormat = 'f';
-#endif
-	try {
-		// Read/write type
-		pComp->Character(cFormat);
-
-	} catch(StdCompiler::NotFoundException *pEx) {
-		delete pEx;
-		// Expect old format if not found
-		cFormat = 'F';
-	}
-	// Read value (as int32_t)
-	pComp->Value(mkCastAdapt<int32_t>(rValue));
-	// convert, if neccessary
-#ifdef USE_FIXED
-	if(cFormat == 'f')
-		FLOAT_TO_FIXED(&rValue);
-#else
-	if(cFormat == 'F')
-		FIXED_TO_FLOAT(&rValue);
-#endif
-}
+void CompileFunc(FIXED &rValue, StdCompiler *pComp);
 
 #endif //FIXED_H_INC

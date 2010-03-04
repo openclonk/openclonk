@@ -20,6 +20,9 @@
 #include "C4Include.h"
 #include <Fixed.h>
 
+#include "StdCompiler.h"
+#include "StdAdaptors.h"
+
 #ifdef USE_FIXED
 
 // static table with sinus values from 0.00 degree to 90.00 degree inclusively
@@ -9027,3 +9030,31 @@ long SineTable[9001] = {
 	65536
 };
 #endif // USE_FIXED
+
+void CompileFunc(FIXED &rValue, StdCompiler *pComp)
+{
+#ifdef USE_FIXED
+	char cFormat = 'F';
+#else
+	char cFormat = 'f';
+#endif
+	try {
+		// Read/write type
+		pComp->Character(cFormat);
+
+	} catch(StdCompiler::NotFoundException *pEx) {
+		delete pEx;
+		// Expect old format if not found
+		cFormat = 'F';
+	}
+	// Read value (as int32_t)
+	pComp->Value(mkCastAdapt<int32_t>(rValue));
+	// convert, if neccessary
+#ifdef USE_FIXED
+	if(cFormat == 'f')
+		FLOAT_TO_FIXED(&rValue);
+#else
+	if(cFormat == 'F')
+		FIXED_TO_FLOAT(&rValue);
+#endif
+}

@@ -25,11 +25,12 @@
 #define INC_C4Include
 
 #include "Standard.h"
+#include "C4Prototypes.h"
 #include "Fixed.h"
 #include "StdBuf.h"
 #include "StdFile.h"
 #include "StdResStr2.h"
-#include "C4Prototypes.h"
+#include "C4Log.h"
 
 #include "C4PlayerControl.h"
 

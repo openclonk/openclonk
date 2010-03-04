@@ -22,15 +22,14 @@
 #define INC_C4Log
 
 #include <StdBuf.h>
-#include <StdCompiler.h>
 
 bool OpenLog();
 bool CloseLog();
-/* Declared in Standard.h
-bool LogSilent(const char *szMessage);
+
 bool Log(const char *szMessage);
+bool LogSilent(const char *szMessage);
+bool LogF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
 bool LogSilentF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
-bool LogF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;*/
 bool DebugLog(const char *strMessage);
 bool DebugLogF(const char *strMessage ...) GNUC_FORMAT_ATTRIBUTE;
 
@@ -38,7 +37,6 @@ bool LogFatal(const char *szMessage); // log message and store it as a fatal err
 void ResetFatalError();               // clear any fatal error message
 const char *GetFatalError();          // return message that was set as fatal error, if any
 
-bool CompileError(bool fWarning, StdCompiler::Exception *Exc);
 size_t GetLogPos(); // get current log position;
 bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut); // re-read log data from file
 

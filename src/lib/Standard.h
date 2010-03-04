@@ -191,13 +191,6 @@ inline int stricmp(const char *s1, const char *s2) {
 	#define C4_OS "unknown";
 #endif
 
-
-// These functions have to be provided by the application.
-bool Log(const char *szMessage);
-bool LogSilent(const char *szMessage);
-bool LogF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
-bool LogSilentF(const char *strMessage, ...) GNUC_FORMAT_ATTRIBUTE;
-
 // Color triplets
 #define C4RGB(r, g, b) (((DWORD)(0xff)<<24)|(((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
 
@@ -237,9 +230,6 @@ inline void MemCopy(const void *lpMem1, void *lpMem2, size_t dwSize)
 bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
              bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar=0,
 						 int32_t *lastx=NULL, int32_t *lasty=NULL);
-
-// open a weblink in an external browser
-bool OpenURL(const char *szURL);
 
 #include <cctype>
 inline char CharCapital(char cChar) { return std::toupper(cChar); }
