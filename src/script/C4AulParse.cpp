@@ -568,7 +568,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 		TGS_Ident,			// getting identifier
 		TGS_Int,				// getting integer
 		TGS_IntHex,     // getting hexadecimal integer
-		TGS_C4ID,				// getting C4ID
 		TGS_String,			// getting string
 		TGS_Dir					// getting directive
 		};
@@ -717,12 +716,6 @@ C4AulTokenType C4AulParseState::GetNextToken(char *pToken, long int *pInt, HoldS
 						if (*SPos0 == '0' && C == 'x' && Len == 1)
 							{
 							State = TGS_IntHex;
-							break;
-							}
-						// some strange C4ID?
-						if (((C >= 'A') && (C <= 'Z')) || (C == '_'))
-							{
-							State = TGS_C4ID;
 							break;
 							}
 						// parse as decimal int
