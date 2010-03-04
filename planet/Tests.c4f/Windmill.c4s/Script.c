@@ -76,6 +76,23 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 	return;
 }
 
+func RemovePlayer(int iPlr)
+{
+	for(var obj in FindObjects(Find_Owner(iPlr)))
+	{
+		obj->RemoveObject();
+	}
+}
+
+func RelaunchPlayer(int plr)
+{
+	var clonk = CreateObject(Clonk, 0, 0, plr);
+	clonk->MakeCrewMember(plr);
+	SetCursor(plr, clonk);
+	SelectCrew(plr, clonk, true);
+	JoinPlayer(plr);
+}
+
 func JoinPlayer(int iPlr)
 {
 	var clonk = GetCrew(iPlr);

@@ -9,9 +9,8 @@ public func IsProjectileTarget(target,shooter)
 	return 1;
 }
 
-public func QueryCatchBlow(obj)
+public func OnProjectileHit()
 {
-//	obj->Schedule("RemoveObject", 1);
 	Fireworks();
 	return 1;
 }

@@ -51,7 +51,11 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 
 public func IsProjectileTarget(target,shooter)
 {
-	return 1;
+	if(target == GetID())
+	{
+		return false;
+	}
+	return true;
 }
 
 public func OnProjectileHit()
