@@ -42,12 +42,19 @@ public func Launch(object shooter, int angle, int dist, int speed)
 	Sound("BulletShot*.ogg");
 }
 
-private func HitObject(object pVictim)
+public func HitObject(object obj)
 {
-	Sound("ProjectileHitLiving*.ogg");
-
-	pVictim->DoEnergy(-ProjectileDamage());
+	ProjectileHit(obj,ProjectileDamage(),true);
 	RemoveObject();
+}
+
+// called by successful hit of object after from ProjectileHit(...)
+public func OnStrike(object obj)
+{
+	if(obj->GetAlive())
+		Sound("ProjectileHitLiving*.ogg");
+	else
+		Sound("BulletHitGround*.ogg");
 }
 
 func UpdatePicture()

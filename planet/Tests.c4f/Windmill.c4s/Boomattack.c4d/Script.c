@@ -1,5 +1,5 @@
 /*--
-	Boom command
+	Boom attack
 	Authors: Randrian, Newton
 
 	An evil rocket which is hungry on the destruction of windmills
@@ -11,9 +11,6 @@ protected func Construction()
 {
 	//flight length
 	fuel=1000;
-
-	var iAngle = Angle(GetX(), GetY(), LandscapeWidth()/2, LandscapeHeight()/2);
-	Launch(iAngle);
 }
 
 
@@ -57,12 +54,11 @@ public func IsProjectileTarget(target,shooter)
 	return 1;
 }
 
-public func QueryCatchBlow(obj)
+public func OnProjectileHit()
 {
-//	obj->Schedule("RemoveObject", 1);
 	DoFireworks();
 	var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
-	gol->IncShotScore();
+	if(gol)	gol->IncShotScore();
 	return 1;
 }
 
@@ -77,7 +73,12 @@ protected func Hit()
 {
 	//Message("I have hit something",this);
 	if(GetEffect("Flight",this)) DoFireworks();
-	Sound("WoodHit");
+	else Sound("WoodHit");
+}
+
+protected func HitObject()
+{
+	DoFireworks();
 }
 
 func Launch(int angle)
@@ -88,7 +89,7 @@ func Launch(int angle)
 	
 	Exit();
 	AddEffect("Flight",this,150,1,this,this);
-	AddEffect("HitCheck", this, 1,1, nil,nil, 0, true);
+	AddEffect("HitCheck", this, 1,1, nil,nil, 0, 0);
 	
 	SetR(angle);
 }

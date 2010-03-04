@@ -1,4 +1,5 @@
 #appendto Arrow
+#appendto LeadShot
 
 public func SetStackCount(int amount)
 {
@@ -8,11 +9,17 @@ public func SetStackCount(int amount)
 
 public func Hit()
 {
-	RemoveObject();
+	if(GetEffect("HitCheck",this))
+		RemoveObject();
 }
 
 public func HitObject(object obj)
 {
 	inherited(obj,...);
-	Hit();
+	RemoveObject();
+}
+
+func UpdatePicture()
+{
+	SetGraphics("1");
 }

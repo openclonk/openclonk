@@ -23,7 +23,7 @@ protected func Construction()
 
 public func Launch(int angle, int str, object shooter)
 {
-	SetGraphics(0, HelpArrow);
+	//SetGraphics(0, HelpArrow);
 	SetShape(-2,-2,4,11);
 	SetVertex(0, 1, 4, 1);
 	SetVertex(1, 1, 8, 1);
@@ -43,8 +43,6 @@ private func Stick()
 {
 	if(GetEffect("InFlight",this))
 	{
-		Sound("ArrowHitGround.ogg");
-	
 		RemoveEffect("HitCheck",this);
 		RemoveEffect("InFlight",this);
 	
@@ -68,37 +66,27 @@ private func Stick()
 
 public func HitObject(object obj)
 {
-	var speed = Sqrt(GetXDir()*GetXDir()+GetYDir()*GetYDir());
+	var relx = GetXDir() - obj->GetXDir();
+	var rely = GetYDir() - obj->GetYDir();
+	var speed = Sqrt(relx*relx+rely*rely);
 	Stick();
 
-	if(obj->~QueryCatchBlow(this)) return;
-  
-	// arrow hit
-	obj->~OnArrowHit(this);
-	if(!this) return;
-	// ouch!
-	Sound("ProjectileHitLiving*.ogg");
-	
 	var dmg = ArrowStrength()*speed/100;
+	ProjectileHit(obj,dmg,true);
+}
+
+// called by successful hit of object after from ProjectileHit(...)
+public func OnStrike(object obj)
+{
 	if(obj->GetAlive())
-	{
-		obj->DoEnergy(-dmg);
-	    obj->~CatchBlow(-dmg,this);
-	}
-	
-	// target could have done something with this arrow
-	if(!this) return;
-	
-	// tumble target
-    if(obj->GetAlive())
-    {
-		obj->SetAction("Tumble");
-		obj->SetSpeed(obj->GetXDir()+GetXDir()/3,obj->GetYDir()+GetYDir()/3-1);
-    }
+		Sound("ProjectileHitLiving*.ogg");
+	else
+		Sound("ArrowHitGround.ogg");
 }
 
 public func Hit()
 {
+	Sound("ArrowHitGround.ogg");
 	Stick();
 }
 

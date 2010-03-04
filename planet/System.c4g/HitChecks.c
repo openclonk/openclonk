@@ -40,6 +40,47 @@ global func FxHitCheckStop(object target, int effect, int reason, bool temp)
 	target->SetCategory(target->GetID()->GetCategory());
 }
 
+global func FxHitCheckDoCheck(object target, int effect)
+{
+	var obj;
+	var oldx = EffectVar(0, target, effect);
+	var oldy = EffectVar(1, target, effect);
+	var newx = target->GetX();
+	var newy = target->GetY();
+	var dist = Distance(oldx, oldy, newx, newy);
+	
+	var shooter = EffectVar(2,target,effect);
+	var live = EffectVar(4,target,effect);
+	
+	if(live) shooter = target;
+	
+	if(Distance(oldx,oldy,newx,newy) <= Max(1,Max(Abs(target->GetXDir()),Abs(target->GetYDir())))*2)
+	{
+		// we search for objects along the line on which we moved since the last check
+		// ans sort by distance (closer first)
+		for(obj in FindObjects(Find_OnLine(oldx,oldy,newx,newy),
+		                       Find_NoContainer(),
+		                       Sort_Distance(oldx, oldy)))
+		{
+			// Excludes
+			if(obj == target) continue;
+			if(obj == shooter) continue;
+
+
+			
+			// unlike in hazard, there is no NOFF rule (yet)
+			// CheckEnemy
+			//if(!CheckEnemy(obj,target)) continue;
+
+			// IsProjectileTarget or Alive will be hit
+			if(obj->~IsProjectileTarget(target,shooter) || obj->GetOCF() & OCF_Alive)
+			{
+				target->~HitObject(obj);
+			}
+		}
+	}
+}
+
 global func FxHitCheckEffect(string newname)
 {
 	if(newname == "HitCheck") return -2;
@@ -60,47 +101,16 @@ global func FxHitCheckAdd(object target, int effect, string neweffectname, int n
 
 global func FxHitCheckTimer(object target, int effect, int time)
 {
-	var obj;
-	// Oh man. :O
-	var oldx = EffectVar(0, target, effect);
-	var oldy = EffectVar(1, target, effect);
-	var newx = target->GetX();
-	var newy = target->GetY();
-	var dist = Distance(oldx, oldy, newx, newy);
+	EffectCall(target,effect,"DoCheck");
+	// it could be that he hit something and removed itself. thus, check if target is still there
+	// the effect will be deleted right after this
+	if(!target) return;
 	
-	var shooter = EffectVar(2,target,effect);
+	EffectVar(0, target, effect) = target->GetX();
+	EffectVar(1, target, effect) = target->GetY();
 	var live = EffectVar(4,target,effect);
 	var nevershooter = EffectVar(5,target,effect);
-	
-	if(live) shooter = target;
-	
-	if(Distance(oldx,oldy,newx,newy) <= Max(1,Max(Abs(target->GetXDir()),Abs(target->GetYDir())))*2)
-	{
-		// we search for objects along the line on which we moved since the last check
-		// ans sort by distance (closer first)
-		for(obj in FindObjects(Find_OnLine(oldx,oldy,newx,newy),
-													 Find_NoContainer(),
-													 Sort_Distance(oldx, oldy)))
-		{
-			// Excludes
-			if(obj == target) continue;
-			if(obj == shooter) continue;
-			
-			// unlike in hazard, there is no NOFF rule (yet)
-			// CheckEnemy
-			//if(!CheckEnemy(obj,target)) continue;
-
-			// IsBulletTarget or Alive will be hit
-			if(obj->~IsProjectileTarget(target,shooter) || obj->GetOCF() & OCF_Alive)
-			{
-				//Log("%s IsBulletTarget: %i, %s, %s","HitCheck",GetName(obj),GetID(target),GetName(target),GetName(EffectVar(2, target, effect)));
-				return(target->~HitObject(obj));
-			}
-		}
-	}
-
-	EffectVar(0, target, effect) = newx;
-	EffectVar(1, target, effect) = newy;
+	var shooter = EffectVar(2,target,effect);
 
 	// the projectile will be only switched to "live", meaning that it can hit the
 	// shooter himself when the shot exited the shape of the shooter one time
@@ -120,4 +130,36 @@ global func FxHitCheckTimer(object target, int effect, int time)
 				EffectVar(4, target, effect) = true;
 		}
 	}
+}
+
+global func ProjectileHit(object obj, int dmg, bool tumble)
+{
+	if(!this || !obj) return;
+	
+	if(obj->GetAlive())
+		if(obj->~QueryCatchBlow(this))
+			return;
+	if(!this || !obj) return;
+	obj->~OnProjectileHit(this);
+	if(!this || !obj) return;
+	
+	this->~OnStrike(obj);
+	if(obj->GetAlive())
+	{
+		obj->DoEnergy(-dmg,false,FX_Call_EngObjHit,GetOwner());
+	    obj->~CatchBlow(-dmg,this);
+	}
+	else
+	{
+		obj->DoDamage(dmg,FX_Call_EngObjHit,GetOwner());
+	}
+	// target could have done something with this projectile
+	if(!this || !obj) return;
+	
+	// tumble target
+    if(obj->GetAlive() && tumble)
+    {
+		obj->SetAction("Tumble");
+		obj->SetSpeed(obj->GetXDir()+GetXDir()/3,obj->GetYDir()+GetYDir()/3-1);
+    }
 }
