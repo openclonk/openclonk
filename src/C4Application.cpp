@@ -218,11 +218,10 @@ void C4Application::ApplyResolutionConstraints()
 	int32_t idx = 0, iXRes, iYRes, iBitDepth;
 	int32_t best_match = -1;
 	uint32_t best_delta = ~0;
-	int32_t ResX = Config.Graphics.ResX, ResY = Config.Graphics.ResY, BitDepth = Config.Graphics.BitDepth;
 	while (GetIndexedDisplayMode(idx++, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor))
 	{
-		uint32_t delta = std::abs(ResX*ResY - iXRes*iYRes);
-		if (!delta && iBitDepth == BitDepth)
+		uint32_t delta = std::abs(Config.Graphics.ResX*Config.Graphics.ResY - iXRes*iYRes);
+		if (!delta && iBitDepth == Config.Graphics.BitDepth)
 			return; // Exactly the expected mode
 		if (delta < best_delta)
 		{
@@ -235,11 +234,11 @@ void C4Application::ApplyResolutionConstraints()
 	{
 		// Apply next-best mode
 		GetIndexedDisplayMode(best_match, &iXRes, &iYRes, &iBitDepth, Config.Graphics.Monitor);
-		if (iXRes != ResX || iYRes != ResY)
+		if (iXRes != Config.Graphics.ResX || iYRes != Config.Graphics.ResY)
 			// Don't warn if only bit depth changes
 			// Also, lang table not loaded yet
-			LogF("Warning: The selected resolution %dx%d is not available and has been changed to %dx%d.", ResX, ResY, iXRes, iYRes);
-		ResX = iXRes; ResY = iYRes;
+			LogF("Warning: The selected resolution %dx%d is not available and has been changed to %dx%d.", Config.Graphics.ResX, Config.Graphics.ResY, iXRes, iYRes);
+		Config.Graphics.ResX = iXRes; Config.Graphics.ResY = iYRes;
 	}
 }
 
