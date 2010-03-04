@@ -23,7 +23,6 @@
 #ifndef INC_StdSurface2
 #define INC_StdSurface2
 
-#include <Standard.h>
 #include <StdColors.h>
 
 #ifdef USE_DIRECTX

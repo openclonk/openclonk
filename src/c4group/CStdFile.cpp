@@ -22,7 +22,6 @@
 /* A handy wrapper class to gzio files */
 
 #include "C4Include.h"
-#include <Standard.h>
 #include <StdFile.h>
 #include <CStdFile.h>
 

@@ -21,7 +21,6 @@
 #ifndef INC_STDFONT
 #define INC_STDFONT
 
-#include <Standard.h>
 #include <StdMarkup.h>
 #include <StdFacet.h>
 #include <StdBuf.h>

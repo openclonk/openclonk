@@ -19,7 +19,6 @@
 /* Auto-registering data structures */
 
 #include "C4Include.h"
-#include <Standard.h>
 #include <StdRegistry.h>
 #include <StdConfig.h>
 

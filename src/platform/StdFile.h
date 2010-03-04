@@ -24,7 +24,6 @@
 #ifndef STDFILE_INCLUDED
 #define STDFILE_INCLUDED
 
-#include <Standard.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>

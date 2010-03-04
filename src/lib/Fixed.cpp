@@ -18,7 +18,6 @@
 // fixed numbers - sine functions
 
 #include "C4Include.h"
-#include <Standard.h>
 #include <Fixed.h>
 
 #ifdef USE_FIXED

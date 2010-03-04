@@ -22,7 +22,6 @@
 // text drawing facility for CStdDDraw
 
 #include "C4Include.h"
-#include <Standard.h>
 #include <StdBuf.h>
 #include <StdDDraw2.h>
 #include <StdSurface2.h>

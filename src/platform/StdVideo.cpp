@@ -23,7 +23,6 @@
 #include "C4Include.h"
 #ifdef _WIN32
 
-#include <Standard.h>
 #include <StdVideo.h>
 #include <StdSurface2.h>
 

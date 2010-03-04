@@ -21,7 +21,6 @@
 /* Some wrappers for easier access to the Windows registry */
 
 #include "C4Include.h"
-#include <Standard.h>
 #include <StdRegistry.h>
 
 #ifdef _WIN32

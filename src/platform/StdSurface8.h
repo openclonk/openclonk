@@ -20,7 +20,6 @@
 #ifndef INC_StdSurface8
 #define INC_StdSurface8
 
-#include <Standard.h>
 #include <StdColors.h>
 
 class CSurface8

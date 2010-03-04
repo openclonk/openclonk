@@ -23,8 +23,6 @@
 #ifndef INC_C4Constants
 #define INC_C4Constants
 
-#include "Standard.h" // For uint32_t
-
 //============================= Main =====================================================
 
 const size_t C4MaxTitle   = 512;

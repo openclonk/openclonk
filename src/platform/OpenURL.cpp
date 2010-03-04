@@ -16,7 +16,6 @@
  * See clonk_trademark_license.txt for full license.
  */
 #include "C4Include.h"
-#include <Standard.h>
 
 #ifdef WITH_GLIB
 #include <glib.h>

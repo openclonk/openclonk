@@ -19,7 +19,6 @@
 #ifndef INC_StdMeshMaterial
 #define INC_StdMeshMaterial
 
-#include <Standard.h>
 #include <StdBuf.h>
 #include <StdSurface2.h>
 #include <C4Surface.h>

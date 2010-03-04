@@ -22,7 +22,6 @@
 /* All kinds of valuable helpers */
 
 #include "C4Include.h"
-#include <Standard.h>
 #include <StdSync.h>
 
 #include <math.h>

@@ -20,7 +20,6 @@
 /* Load strings from a primitive memory string table */
 
 #include "C4Include.h"
-#include <Standard.h>
 #include <StdResStr2.h>
 #include <StdBuf.h>
 

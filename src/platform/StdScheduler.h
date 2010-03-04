@@ -23,7 +23,6 @@
 #ifndef STDSCHEDULER_H
 #define STDSCHEDULER_H
 
-#include "Standard.h"
 #include "StdSync.h"
 
 // Events are Windows-specific

@@ -20,8 +20,6 @@
 #ifndef INC_STDMARKUP
 #define INC_STDMARKUP
 
-#include <Standard.h>
-
 struct FONT2DVERTEX;
 
 class CBltTransform;

@@ -19,8 +19,6 @@
 /* Buffered fast and network-safe random */
 
 #include "C4Include.h"
-#include <Standard.h>
-#include "C4Prototypes.h"
 #include <C4Random.h>
 #include <C4Record.h>
 

@@ -20,7 +20,6 @@
 // RTF file parsing functionality
 
 #include "C4Include.h"
-#include "Standard.h"
 #include "C4RTF.h"
 
 #include <cctype>

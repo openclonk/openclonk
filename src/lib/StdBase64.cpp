@@ -18,7 +18,6 @@
 /* Base64 encoding / decoding */
 
 #include "C4Include.h"
-#include "Standard.h"
 #include "StdBase64.h"
 
 // Peter's B64Encode implementation would yield incorrect results in Release build

@@ -21,7 +21,6 @@
 #ifndef INC_STDPNG
 #define INC_STDPNG
 
-#include <Standard.h>
 #include <png.h>
 
 void PNGAPI CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length); // reading proc (callback)

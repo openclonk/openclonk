@@ -25,7 +25,6 @@
 #include <C4Log.h>
 #include <C4Gui.h>
 
-#include <Standard.h>
 #include <StdFile.h>
 
 #ifdef HAVE_IO_H

@@ -18,7 +18,6 @@
 // a buffer holding a log history
 
 #include "C4Include.h"
-#include "Standard.h"
 #include "C4LogBuf.h"
 
 C4LogBuffer::C4LogBuffer(int iSize, int iMaxLines, int iLBWidth, const char *szIndentChars, bool fDynamicGrow, bool fMarkup)

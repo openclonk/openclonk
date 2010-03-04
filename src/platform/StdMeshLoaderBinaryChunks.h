@@ -18,7 +18,6 @@
 #ifndef INC_StdMeshLoaderChunks
 #define INC_StdMeshLoaderChunks
 
-#include "Standard.h"
 #include "StdMesh.h"
 #include "StdMeshLoaderDataStream.h"
 

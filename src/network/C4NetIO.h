@@ -21,7 +21,6 @@
 #ifndef C4NETIO_H
 #define C4NETIO_H
 
-#include "Standard.h"
 #include "StdSync.h"
 #include "StdBuf.h"
 #include "StdCompiler.h"

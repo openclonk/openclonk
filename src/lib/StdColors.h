@@ -21,7 +21,6 @@
 #ifndef INC_StdColors
 #define INC_StdColors
 
-#include "Standard.h"
 #include <math.h>
 
 // color definitions

@@ -26,7 +26,6 @@
 #ifndef INC_STDWINDOW
 #define INC_STDWINDOW
 
-#include <Standard.h>
 #include <StdBuf.h>
 #include <StdScheduler.h>
 #include <StdSync.h>
