@@ -1,4 +1,4 @@
-material Boompack
+material Boompack_Big
 {
 	receive_shadows on
 	technique
@@ -11,7 +11,7 @@ material Boompack
 			emissive 0.000000 0.000000 0.000000 1.000000
 			texture_unit
 			{
-				texture boompack.png
+				texture boomattack.png
 				tex_address_mode wrap
 				filtering trilinear
 				colour_op alpha_blend

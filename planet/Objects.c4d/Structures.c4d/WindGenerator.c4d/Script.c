@@ -32,7 +32,9 @@ func Wind2Turn()
 
 	// Number of frames for one revolution: the more wind the more
 	// revolutions per frame.
-	var l = 7200/Abs(GetWind());
+	var wind = Abs(GetWind());
+	if(wind == 0) wind = 1;
+	var l = 4500/wind;
 
 	// Note ending is irrelevant since this is called again after 35 frames
 	if(l > 0)

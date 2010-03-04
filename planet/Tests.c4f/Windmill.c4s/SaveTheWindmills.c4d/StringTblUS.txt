@@ -1,0 +1,2 @@
+Name=Save the windmills
+ShotScore=shot %d

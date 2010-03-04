@@ -1,0 +1,2 @@
+Name=Rette die Windräder
+ShotScore=%d abgeschossen

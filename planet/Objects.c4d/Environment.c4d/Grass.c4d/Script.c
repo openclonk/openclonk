@@ -3,46 +3,39 @@
 protected func Initialize()
 {
 	if(ObjectCount(Find_ID(Grass))>1) RemoveObject(); //Failsafe to stop creation of more than one grass controller.
-	SetGrassDensity(85);
+	PlaceGrass(85);
 }
 
-global func SetGrassDensity(int iAmount) //Allows a scenario to change the percentage of earth covered in grass on Initialize().
+global func PlaceGrass(int iAmount, int start, int end)
 {
-	for(var allgrass in FindObjects(Find_ID(Grass)))
-		allgrass->RemoveObject();
-
-	FindObject(Find_ID(Environment_Grass))->PlaceGrass(iAmount);
-}
-
-public func PlaceGrass(int iAmount)
-{
-	SetPosition();
-
-	var x=0;
-	while(x<LandscapeWidth())
+	if(!start)
+		start = 0;
+		
+	if(!end)
+		end = LandscapeWidth();
+		
+	var x=start;
+	while(x<end)
 	{
-    var y = MaterialDepthCheck(x,0,"Sky");
+		var y = MaterialDepthCheck(AbsX(x),0,"Sky");
 
-	if(GetMaterial(x,y) == Material("Earth"))
-	{
-	if(Random(100)>(100-iAmount)) GrowGrass(x,y);
+		if(GetMaterial(AbsX(x),AbsY(y)) == Material("Earth"))
+		{
+			if(Random(100)>(100-iAmount))
+			{
+				var rot;
+				//Rotates grass to form to terrain.
+				if(!GBackSolid(AbsX(x+6),AbsY(y+3))) rot=40;
+				if(!GBackSolid(AbsX(x-6),AbsY(y+3))) rot=-40;
+				if(!GBackSolid(AbsX(x-6),AbsY(y+3)) && !GBackSolid(AbsX(x+6),AbsY(y+3))) rot=0;
+				var grass=CreateObject(Grass,AbsX(x),AbsY(y+3));
+				grass->SetR(rot);
+				grass->DoCon(Random(50));
+			}
+		}
+
+		x+=9;
 	}
-
-	x+=9;
-	}
-	return 1;
-}
-
-public func GrowGrass(int x, int y)
-{
-	var rot;
-	//Rotates grass to form to terrain.
-	if(!GBackSolid(x+6,y+3)) rot=40;
-	if(!GBackSolid(x-6,y+3)) rot=-40;
-	if(!GBackSolid(x-6,y+3) && !GBackSolid(x+6,y+3)) rot=0;
-	var grass=CreateObject(Grass,x,y+3);
-	grass->SetR(rot);
-	grass->DoCon(Random(50));
 }
 
 func Definition(def) {

@@ -1,2 +1,2 @@
-DE:Test 1
-US:Test 1
+DE:Windradfressende Raketen
+US:Windmill-eating Rockets

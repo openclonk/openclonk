@@ -1,0 +1,17 @@
+[DefCore]
+id=Boomattack
+Version=4,9,10,10
+Category=C4D_Object
+MaxUserSelect=15
+ContactCalls=1
+Width=15
+Height=27
+Offset=-7,-13
+Vertices=4
+VertexX=0,0,-6,6
+VertexY=4,-9,15,15
+VertexCNAT=4,8,1,2
+VertexFriction=80,60,60,60
+Rotate=1
+StretchGrowth=1
+Oversize=1

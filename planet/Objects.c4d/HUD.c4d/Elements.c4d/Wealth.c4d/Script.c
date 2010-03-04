@@ -11,7 +11,7 @@ public func Update()
 {
 	var val = GetWealth(GetOwner());
 	
-	CustomMessage(Format("@%d",val), this, GetOwner(), 0, 75);
+	CustomMessage(Format("@%d",val), this, GetOwner(), 0, 90);
 	
 	var num;
 	if(val < 180) num = 4;

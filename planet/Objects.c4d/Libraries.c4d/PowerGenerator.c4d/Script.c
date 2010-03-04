@@ -96,7 +96,7 @@ public func DoPower(int iDoPower)
 
 protected func Initialize() 
 {
-	AddEffect("ShowPower",this,100,10,this);
+	//AddEffect("ShowPower",this,100,10,this);
 	return _inherited(...);
 }
 
