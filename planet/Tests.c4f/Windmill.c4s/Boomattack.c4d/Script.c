@@ -51,7 +51,7 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 
 public func IsProjectileTarget(target,shooter)
 {
-	if(target == GetID())
+	if(target->GetID() == GetID())
 	{
 		return false;
 	}

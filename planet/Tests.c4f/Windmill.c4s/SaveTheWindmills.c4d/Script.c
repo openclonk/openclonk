@@ -11,6 +11,12 @@ func Initialize()
 
 public func IsFulfilled()
 {
+	if(!FindObject(Find_ID(WindGenerator)))
+		for(var i = 0; i<GetPlayerCount(); ++i)
+		{
+			EliminatePlayer(GetPlayerByIndex(i));
+			return false;
+		}
 	return false;
 }
 
