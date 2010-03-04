@@ -36,6 +36,10 @@ public:
 		pollfd pfd = { XConnectionNumber(pApp->dpy), POLLIN, 0 };
 		fds.push_back(pfd);
 	}
+	virtual int GetNextTick(int Now)
+	{
+		return XEventsQueued(pApp->dpy, QueuedAlready) ? Now : -1;
+	}
 	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0) {
 		pApp->OnXInput();
 		return true;
