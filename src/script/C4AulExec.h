@@ -40,46 +40,8 @@ class C4AulExec
 		C4AulScriptContext *GetContext(int iLevel) { return iLevel >= 0 && iLevel < GetContextDepth() ? Contexts + iLevel : NULL; }
 
 	private:
-
-		void PushContext(const C4AulScriptContext &rContext)
-		{
-			if(pCurCtx >= Contexts + MAX_CONTEXT_STACK - 1)
-				throw new C4AulExecError(pCurCtx->Obj, "context stack overflow!");
-			*++pCurCtx = rContext;
-			// Trace?
-			if(iTraceStart >= 0)
-				{
-				StdStrBuf Buf("T");
-				Buf.AppendChars('>', ContextStackSize() - iTraceStart);
-				pCurCtx->dump(Buf);
-				}
-			// Profiler: Safe time to measure difference afterwards
-			if (fProfiling) pCurCtx->tTime = timeGetTime();
-		}
-
-		void PopContext()
-		{
-			if(pCurCtx < Contexts)
-				throw new C4AulExecError(pCurCtx->Obj, "context stack underflow!");
-			// Profiler adding up times
-			if (fProfiling)
-				{
-				time_t dt = timeGetTime() - pCurCtx->tTime;
-				if (dt && pCurCtx->Func)
-					pCurCtx->Func->tProfileTime += dt;
-				}
-			// Trace done?
-			if(iTraceStart >= 0)
-				{
-				if(ContextStackSize() <= iTraceStart)
-					{
-					iTraceStart = -1;
-					}
-				}
-			if(pCurCtx->TemporaryScript)
-				delete pCurCtx->Func->Owner;
-			pCurCtx--;
-		}
+		void PushContext(const C4AulScriptContext &rContext);
+		void PopContext();
 
 		void CheckOverflow(int iCnt)
 		{

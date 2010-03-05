@@ -21,6 +21,7 @@
 
 #include <C4Include.h>
 #include <C4Aul.h>
+#include <C4AulExec.h>
 #include <C4AulDebug.h>
 
 #include <C4Object.h>
@@ -30,8 +31,6 @@
 #include <C4Log.h>
 #include <C4Record.h>
 #include <algorithm>
-
-#include <C4AulExec.h>
 
 C4AulExec AulExec;
 
@@ -67,7 +66,7 @@ StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
 		// Parameters
 		Dump.AppendChar('(');
 		int iNullPars = 0;
-		for(int i = 0; i < C4AUL_MAX_Par; i++)
+		for(int i = 0; i < Func->GetParCount(); i++)
 			if(Pars + i < Vars)
 				{
 				if(!Pars[i])
@@ -1085,6 +1084,46 @@ void C4AulExec::StopProfiling()
 	pProfiledScript->CollectProfilerTimes(Profiler);
 	Profiler.Show();
 	}
+
+void C4AulExec::PushContext(const C4AulScriptContext &rContext)
+{
+	if(pCurCtx >= Contexts + MAX_CONTEXT_STACK - 1)
+		throw new C4AulExecError(pCurCtx->Obj, "context stack overflow!");
+	*++pCurCtx = rContext;
+	// Trace?
+	if(iTraceStart >= 0)
+		{
+		StdStrBuf Buf("T");
+		Buf.AppendChars('>', ContextStackSize() - iTraceStart);
+		pCurCtx->dump(Buf);
+		}
+	// Profiler: Safe time to measure difference afterwards
+	if (fProfiling) pCurCtx->tTime = timeGetTime();
+}
+
+void C4AulExec::PopContext()
+{
+	if(pCurCtx < Contexts)
+		throw new C4AulExecError(pCurCtx->Obj, "context stack underflow!");
+	// Profiler adding up times
+	if (fProfiling)
+		{
+		time_t dt = timeGetTime() - pCurCtx->tTime;
+		if (dt && pCurCtx->Func)
+			pCurCtx->Func->tProfileTime += dt;
+		}
+	// Trace done?
+	if(iTraceStart >= 0)
+		{
+		if(ContextStackSize() <= iTraceStart)
+			{
+			iTraceStart = -1;
+			}
+		}
+	if(pCurCtx->TemporaryScript)
+		delete pCurCtx->Func->Owner;
+	pCurCtx--;
+}
 
 void C4AulProfiler::StartProfiling(C4AulScript *pScript)
 	{
