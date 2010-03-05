@@ -633,9 +633,6 @@ bool C4Console::Out(const char *szText)
 	gtk_text_buffer_insert(buffer, &end, "\n", 1);
 
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(txtLog), gtk_text_buffer_get_insert(buffer), 0.0, false, 0.0, 0.0);
-
-	// Cheap hack to get the Console window updated while loading
-	Application.IterateGLibMainLoop();
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	return true;
 	}

@@ -206,6 +206,10 @@ bool CStdApp::FlushMessages() {
 	if(fQuitMsgReceived)
 		return false;
 
+#ifdef WITH_GLIB
+	Priv->GLibProc.IteratePendingEvents();
+#endif
+
 	return Priv->X11Proc.Execute(0);
 }
 
@@ -601,13 +605,6 @@ static void readline_callback (char * line) {
 	}
 #endif
 	free(line);
-}
-#endif
-
-#ifdef WITH_GLIB
-void CStdApp::IterateGLibMainLoop()
-{
-	Priv->GLibProc.IteratePendingEvents();
 }
 #endif
 

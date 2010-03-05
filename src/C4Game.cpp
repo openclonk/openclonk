@@ -3580,6 +3580,8 @@ void C4Game::SetInitProgress(float fToProgress)
 		LastInitProgressShowTime=timeGetTime();
 		GraphicsSystem.MessageBoard.LogNotify();
 		}
+	// Cheap hack to get the Console window updated while loading
+	Application.FlushMessages();
 	}
 
 void C4Game::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
