@@ -160,7 +160,7 @@ func Launch(int angle, object clonk)
 
 	Exit();
 	AddEffect("Flight",this,150,1,this,this);
-	AddEffect("HitCheck", this, 1,1, nil,nil, clonk, true);
+	//AddEffect("HitCheck", this, 1,1, nil,nil, clonk, true);
 
 	//Ride the rocket!
 	if(clonk)

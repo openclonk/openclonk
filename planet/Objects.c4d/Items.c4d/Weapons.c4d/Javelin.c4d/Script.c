@@ -155,43 +155,39 @@ protected func JavelinStrength() { return 14; }
 //slightly modified HitObject() from arrow
 public func HitObject(object obj)
 {
-	var speed = Sqrt(GetXDir()*GetXDir()+GetYDir()*GetYDir());
+	var relx = GetXDir() - obj->GetXDir();
+	var rely = GetYDir() - obj->GetYDir();
+	var speed = Sqrt(relx*relx+rely*rely);
+	Stick();
 
-	if(obj->~QueryCatchBlow(this)) return;
-  
-	// arrow hit
-	obj->~OnArrowHit(this);
-	if(!this) return;
-	// ouch!
-	Sound("ProjectileHitLiving*.ogg");
-	
 	var dmg = JavelinStrength()*speed/100;
-	if(obj->GetAlive())
-	{
-		obj->DoEnergy(-dmg);
-	    obj->~CatchBlow(-dmg,this);
-	}
-	
-	RemoveEffect("HitCheck",this);
+	ProjectileHit(obj,dmg,true);
+}
 
-	// target could have done something with this arrow
-	if(!this) return;
-	
-	// tumble target
-    if(obj->GetAlive())
-    {
-		obj->SetAction("Tumble");
-		obj->SetSpeed(obj->GetXDir()+GetXDir()/3,obj->GetYDir()+GetYDir()/3-1);
-    }
+// called by successful hit of object after from ProjectileHit(...)
+public func OnStrike(object obj)
+{
+	if(obj->GetAlive())
+		Sound("ProjectileHitLiving*.ogg");
+	else
+		Sound("JavelinHitGround.ogg");
 }
 
 protected func Hit()
 {	
 	if(GetEffect("Flight",this))
-	{
 		Sound("JavelinHitGround.ogg");
-		
-		SetSpeed();
+	else	
+		Sound("WoodHit");
+}
+
+protected func Stick()
+{
+	if(GetEffect("Flight",this))
+	{
+		SetXDir(0);
+		SetYDir(0);
+		SetRDir(0);
 
 		RemoveEffect("Flight",this);
 		RemoveEffect("HitCheck",this);
@@ -209,8 +205,6 @@ protected func Hit()
 		}
 		return;
 	}
-	
-	Sound("WoodHit");
 }
 
 func Entrance()

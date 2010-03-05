@@ -86,7 +86,8 @@ public func OnStrike(object obj)
 
 public func Hit()
 {
-	Sound("ArrowHitGround.ogg");
+	if(GetEffect("InFlight",this))
+		Sound("ArrowHitGround.ogg");
 	Stick();
 }
 
