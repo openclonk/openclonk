@@ -6,7 +6,8 @@ local score;
 
 func Initialize()
 {
-	score = 0;
+	score = CreateArray();
+	inherited(...);
 }
 
 public func IsFulfilled()
@@ -26,15 +27,19 @@ public func Activate(int byplr)
 	return;
 }
 
-public func IncShotScore()
+public func IncShotScore(int plr)
 {
-	score++;
+	score[GetPlayerID(plr)]++;
 	NotifyHUD();
 }
 
 public func GetShortDescription(int plr)
 {
-	return Format("$ShotScore$",score);
+	var allscore = 0;
+	for(var i=0; i<GetLength(score); ++i)
+		allscore += score[i];
+		
+	return Format("$ShotScore$",allscore);
 }
 
 func Definition(def) {

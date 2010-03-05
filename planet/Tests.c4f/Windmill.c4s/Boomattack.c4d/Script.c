@@ -58,11 +58,11 @@ public func IsProjectileTarget(target,shooter)
 	return true;
 }
 
-public func OnProjectileHit()
+public func OnProjectileHit(object shot)
 {
 	DoFireworks();
 	var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
-	if(gol)	gol->IncShotScore();
+	if(gol)	gol->IncShotScore(shot->GetOwner());
 	return 1;
 }
 
@@ -93,7 +93,7 @@ func Launch(int angle)
 	
 	Exit();
 	AddEffect("Flight",this,150,1,this,this);
-	AddEffect("HitCheck", this, 1,1, nil,nil, 0, 0);
+	//AddEffect("HitCheck", this, 1,1, nil,nil, 0, 0);
 	
 	SetR(angle);
 }

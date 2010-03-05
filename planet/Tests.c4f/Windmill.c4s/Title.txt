@@ -1,2 +1,2 @@
-DE:Windradfressende Raketen
-US:Windmill-eating Rockets
+DE:Die Hüter der Windräder
+US:The Guardians of Windmills

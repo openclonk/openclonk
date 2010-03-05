@@ -66,8 +66,6 @@ global func FxHitCheckDoCheck(object target, int effect)
 			if(obj == target) continue;
 			if(obj == shooter) continue;
 
-
-			
 			// unlike in hazard, there is no NOFF rule (yet)
 			// CheckEnemy
 			//if(!CheckEnemy(obj,target)) continue;
@@ -76,6 +74,7 @@ global func FxHitCheckDoCheck(object target, int effect)
 			if(obj->~IsProjectileTarget(target,shooter) || obj->GetOCF() & OCF_Alive)
 			{
 				target->~HitObject(obj);
+				if(!target) return;
 			}
 		}
 	}
@@ -104,7 +103,7 @@ global func FxHitCheckTimer(object target, int effect, int time)
 	EffectCall(target,effect,"DoCheck");
 	// it could be that he hit something and removed itself. thus, check if target is still there
 	// the effect will be deleted right after this
-	if(!target) return;
+	if(!target) return -1;
 	
 	EffectVar(0, target, effect) = target->GetX();
 	EffectVar(1, target, effect) = target->GetY();

@@ -1,0 +1,1 @@
+MsgWave=Attack wave %d

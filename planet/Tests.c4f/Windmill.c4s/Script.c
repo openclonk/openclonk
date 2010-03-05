@@ -10,7 +10,7 @@ static const Boomattack_wave_delay = 25;
 
 static const Boomattack_angle_spread = 45;
 // the bigger this value, the slower does the attack size grow
-static const Boomattack_attack_growth = 300;
+static const Boomattack_attack_growth = 90;
 
 func Initialize()
 {
@@ -19,7 +19,7 @@ func Initialize()
 	CreateObject(WindGenerator, 985, 1125+offs)->SetR(-170);
 	CreateObject(WindGenerator, 1055, 1109+offs)->SetR(140);
 	CreateObject(WindGenerator, 971, 857+offs)->SetR(-20);
-	CreateObject(WindGenerator, 1147, 1059+offs)->SetR(160);
+	CreateObject(WindGenerator, 1147, 1054+offs)->SetR(160);
 	CreateObject(WindGenerator, 1036, 870+offs)->SetR(-10);
 	CreateObject(WindGenerator, 1081, 873+offs)->SetR(18);
 	CreateObject(WindGenerator, 858, 930+offs)->SetR(-10);
@@ -32,12 +32,13 @@ func Initialize()
 
 global func FxBoomAttackTimer(object target, int effect, int time)
 {
-
 	if(time/35 % Boomattack_wave_delay == 1)
 	{
-		var wave_strength = Sqrt(20+time/Boomattack_attack_growth);
+		Message("           $MsgWave$           ",nil,1+time/35/Boomattack_wave_delay);
 
-		CreateAttackWave( Random(360) , RandomX(-1,1) + wave_strength + GetPlayerCount(),Boomattack_angle_spread);
+		var wave_strength = Sqrt(9+GetPlayerCount()*time/Boomattack_attack_growth);
+
+		CreateAttackWave( Random(360) , RandomX(-1,1) + wave_strength,Boomattack_angle_spread);
 	}
 }
 
@@ -73,6 +74,7 @@ func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 {
 	SetFoW(false,iPlr);
 	JoinPlayer(iPlr);
+	GetHiRank(iPlr)->SetPosition(LandscapeWidth()/2, LandscapeHeight()/2);
 	return;
 }
 
@@ -80,24 +82,27 @@ func RemovePlayer(int iPlr)
 {
 	for(var obj in FindObjects(Find_Owner(iPlr)))
 	{
-		obj->RemoveObject();
+		if(obj)
+			obj->RemoveObject();
 	}
 }
 
 func RelaunchPlayer(int plr)
 {
-	var clonk = CreateObject(Clonk, 0, 0, plr);
+	var clonk = CreateObject(Clonk, LandscapeWidth()/2, 600, plr);
 	clonk->MakeCrewMember(plr);
 	SetCursor(plr, clonk);
 	SelectCrew(plr, clonk, true);
 	JoinPlayer(plr);
+	var gui_arrow = FindObject(Find_ID(GUI_GoalArrow), Find_Owner(plr));
+	gui_arrow->SetAction("Show", GetCursor(plr));
 }
 
 func JoinPlayer(int iPlr)
 {
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(1000);
-	clonk->SetPosition(LandscapeWidth()/2, LandscapeHeight()/2);
+
 	var shovel = FindObject(Find_ID(Shovel),Find_Container(clonk));
 	if(shovel) shovel->RemoveObject();
 	clonk->CreateContents(Bow);
