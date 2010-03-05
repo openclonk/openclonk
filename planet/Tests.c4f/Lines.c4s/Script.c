@@ -1,5 +1,11 @@
 /* Sky race */
 
+func Initialize()
+{
+	CreateObject(Ropeladder, 328, 564);
+	CreateObject(Ropeladder, 226, 330);
+}
+
  func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
 {
 	JoinPlayer(iPlr);

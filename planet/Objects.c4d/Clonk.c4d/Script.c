@@ -23,6 +23,9 @@
 // Auto production
 //#include Library_AutoProduction
 
+// ladder climbing
+#include Library_CanClimbLadder
+
 local pInventory;
 
 /* Initialization */

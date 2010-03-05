@@ -1,0 +1,11 @@
+[DefCore]
+id=Ropeladder_Segment
+Version=4,9,8
+Category=C4D_StaticBack
+Width=5
+Height=3
+Offset=-3,-2
+Vertices=2
+VertexX=0,0
+VertexY=-5,5
+Picture=0,0,36,32

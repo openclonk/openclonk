@@ -1,0 +1,13 @@
+[DefCore]
+id=Ropeladder
+Version=4,9,8
+Category=C4D_StaticBack
+Width=1
+Height=1
+Vertices=2
+Value=10
+Mass=15
+Picture=0,0,36,32
+Line=C4D_LinePower
+TimerCall=TimeStep
+Timer=1
