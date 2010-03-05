@@ -246,7 +246,6 @@ class CStdDDraw
 #ifdef _WIN32
 		virtual CStdGLCtx *CreateContext(HWND, CStdApp *) { return NULL; }
 #endif
-		virtual bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL, CStdWindow * pWindow = NULL) = 0;
 		virtual int GetEngine() = 0;		// get indexed engine
 		virtual void TaskOut() = 0; // user taskswitched the app away
 		virtual void TaskIn() = 0;  // user tasked back

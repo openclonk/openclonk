@@ -1073,7 +1073,7 @@ void C4Viewport::BlitOutput()
 		RECT rtSrc,rtDst;
 		rtSrc.left=DrawX; rtSrc.top=DrawY;	rtSrc.right=DrawX+ViewWdt; rtSrc.bottom=DrawY+ViewHgt;
 		rtDst.left=OutX;	rtDst.top=OutY;		rtDst.right=OutX+	ViewWdt; rtDst.bottom=OutY+	ViewHgt;
-		Application.DDraw->PageFlip(&rtSrc, &rtDst, pWindow);
+		pWindow->pSurface->PageFlip(&rtSrc, &rtDst);
 		}
 	}
 

@@ -148,7 +148,7 @@ bool C4GraphicsSystem::StartDrawing()
 
 void C4GraphicsSystem::FinishDrawing()
 	{
-	if (Application.isFullScreen) Application.DDraw->PageFlip();
+	if (Application.isFullScreen) FullScreen.pSurface->PageFlip();
 	}
 
 void C4GraphicsSystem::Execute()
@@ -647,7 +647,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 			// draw there
 			pVP->Draw(bkFct, false);
 			// render
-			Application.DDraw->PageFlip(); Application.DDraw->PageFlip();
+			FullScreen.pSurface->PageFlip(); FullScreen.pSurface->PageFlip();
 			// get output (locking primary!)
 			if (FullScreen.pSurface->Lock())
 				{

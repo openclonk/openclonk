@@ -36,6 +36,7 @@
 #include <C4MessageInput.h>
 #include <C4Game.h>
 #include <C4PlayerList.h>
+#include <C4FullScreen.h>
 
 const int C4LogSize=30000, C4LogMaxLines=1000;
 
@@ -365,7 +366,7 @@ void C4MessageBoard::LogNotify()
 	// Draw
 	Draw(Output);
 	// startup: Draw message board only and do page flip
-	if (Startup) Application.DDraw->PageFlip();
+	if (Startup) FullScreen.pSurface->PageFlip();
 	}
 
 C4Player* C4MessageBoard::GetMessagePlayer(const char *szMessage)

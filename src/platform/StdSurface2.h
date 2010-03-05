@@ -141,6 +141,7 @@ class CSurface
 		void MoveFrom(CSurface *psfcFrom); // grab data from other surface - invalidates other surface
 		bool IsRenderTarget();				// surface can be used as a render target?
 	protected:
+		CStdWindow * pWindow;
 		int Locked;
 		bool Attached;
 		bool fPrimary;
@@ -171,7 +172,10 @@ class CSurface
 #ifdef USE_GL
 		bool CreatePrimaryGLTextures();									// create primary textures from back buffer
 #endif
-		bool UpdateSize(int wdt, int hgt); // Only for surfaces which map to a window
+		// Only for surfaces which map to a window
+		bool UpdateSize(int wdt, int hgt);
+		bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL);
+
 		void Clear();
 		void Default();
 		void Clip(int iX, int iY, int iX2, int iY2);

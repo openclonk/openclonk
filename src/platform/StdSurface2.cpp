@@ -67,9 +67,11 @@ CSurface::CSurface(CStdApp * pApp, CStdWindow * pWindow):
 	{
 	Default();
 	fPrimary=true;
+	this->pWindow=pWindow;
 	// create rendering context
 #ifdef USE_GL
-	if (pGL) pCtx = pGL->CreateContext(pWindow, pApp);
+	if (pGL)
+		pCtx = pGL->CreateContext(pWindow, pApp);
 #endif
 	// reset clipping
 	NoClip();
@@ -95,6 +97,7 @@ void CSurface::Default()
 	ppTex=NULL;
 	pMainSfc=NULL;
 	pCtx=NULL;
+	pWindow=NULL;
 	ClrByOwnerClr=0;
 	iTexSize=iTexX=iTexY=0;
 	fIsRenderTarget=false;
@@ -471,6 +474,23 @@ bool CSurface::UpdateSize(int wdt, int hgt)
 		return false;
 	this->Wdt = wdt; this->Hgt = hgt;
 	return true;
+	}
+
+bool CSurface::PageFlip(RECT *pSrcRt, RECT *pDstRt)
+	{
+	assert(fPrimary);
+	if(!fPrimary)
+		return false;
+	// call from gfx thread only!
+	if (!lpDDraw->pApp || !lpDDraw->pApp->AssertMainThread()) return false;
+#ifdef USE_GL
+	if(pGL)
+		pCtx->PageFlip();
+#endif
+#ifdef USE_DIRECTX
+	if (pD3D)
+		pD3D->PageFlip(pSrcRt, pDstRt);
+#endif
 	}
 
 #ifdef USE_DIRECTX

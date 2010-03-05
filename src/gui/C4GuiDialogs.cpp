@@ -680,7 +680,7 @@ void Dialog::Draw(C4TargetFacet &cgo0)
 		RECT rtSrc,rtDst;
 		rtSrc.left=rcBounds.x; rtSrc.top=rcBounds.y;	rtSrc.right=rcBounds.x+rcBounds.Wdt; rtSrc.bottom=rcBounds.y+rcBounds.Hgt;
 		rtDst.left=0;	rtDst.top=0;		rtDst.right=rcBounds.Wdt; rtDst.bottom=rcBounds.Hgt;
-		Application.DDraw->PageFlip(&rtSrc, &rtDst, pWindow);
+		pWindow->pSurface->PageFlip(&rtSrc, &rtDst);
 		}
 	}
 

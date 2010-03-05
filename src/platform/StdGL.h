@@ -75,7 +75,6 @@ class CStdGL : public CStdDDraw
 	public:
 		CStdGL();
 		~CStdGL();
-		virtual bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL, CStdWindow * pWindow = NULL);
 	protected:
 
 		int iPixelFormat;						// used pixel format

@@ -29,7 +29,6 @@ public:
 	CStdNoGfx();
 	virtual ~CStdNoGfx();
 public:
-	virtual bool PageFlip(RECT *pSrcRt=NULL, RECT *pDstRt=NULL, CStdWindow * pWindow = NULL) { return true; }
 	virtual bool BeginScene() { return true; }
 	virtual void EndScene() { }
 	virtual int GetEngine() { return GFXENGN_NOGFX; }
