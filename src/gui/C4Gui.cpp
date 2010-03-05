@@ -681,6 +681,16 @@ Dialog *Screen::GetDialog(HWND hWindow)
 	return NULL;
 	}
 #endif
+Dialog *Screen::GetDialog(CStdWindow * pWindow)
+	{
+	// get dialog with matching window
+	Dialog *pDlg;
+	for (Element *pEl = pLast; pEl; pEl = pEl->GetPrev())
+		if (pDlg = pEl->GetDlg())
+			if (pDlg->pWindow == pWindow)
+				return pDlg;
+	return NULL;
+	}
 void Screen::Render(bool fDoBG)
 	{
 	// get output cgo

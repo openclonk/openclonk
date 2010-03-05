@@ -41,6 +41,11 @@
 #ifdef _WIN32
 #include "resource.h"
 #endif
+#ifdef USE_X11
+#define None Die_XLib_Die
+#include <X11/Xlib.h>
+#undef None
+#endif
 
 namespace C4GUI {
 
@@ -318,6 +323,101 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 		}
 	return NULL;
 	}
+#ifdef USE_X11
+void DialogWindow::HandleMessage (XEvent &e)
+	{
+	// Parent handling
+	CStdWindow::HandleMessage(e);
+
+	// Determine dialog
+	Dialog *pDlg = ::pGUI ? ::pGUI->GetDialog(this) : NULL;
+	if (!pDlg) return;
+
+	switch (e.type)
+		{
+		case KeyPress:
+			{
+			// Do not take into account the state of the various modifiers and locks
+			// we don't need that for keyboard control
+			DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
+			Game.DoKeyboardInput(key, KEYEV_Down, Application.IsAltDown(), Application.IsControlDown(), Application.IsShiftDown(), false, pDlg);
+			break;
+			}
+		case KeyRelease:
+			{
+			DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
+			Game.DoKeyboardInput(key, KEYEV_Up, e.xkey.state & Mod1Mask, e.xkey.state & ControlMask, e.xkey.state & ShiftMask, false, pDlg);
+			break;
+			}
+		case ButtonPress:
+			{
+			static int last_left_click, last_right_click;
+			switch (e.xbutton.button)
+				{
+				case Button1:
+				if (timeGetTime() - last_left_click < 400) {
+					::pGUI->MouseInput(C4MC_Button_LeftDouble,
+						e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+					last_left_click = 0;
+				} else {
+					::pGUI->MouseInput(C4MC_Button_LeftDown,
+						e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+					last_left_click = timeGetTime();
+				}
+				break;
+				case Button2:
+				::pGUI->MouseInput(C4MC_Button_MiddleDown,
+					e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+				break;
+				case Button3:
+				if (timeGetTime() - last_right_click < 400) {
+					::pGUI->MouseInput(C4MC_Button_RightDouble,
+						e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+					last_right_click = 0;
+				} else {
+					::pGUI->MouseInput(C4MC_Button_RightDown,
+						e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+					last_right_click = timeGetTime();
+				}
+				break;
+				case Button4:
+				::pGUI->MouseInput(C4MC_Button_Wheel,
+					e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(32) << 16), pDlg, NULL);
+				break;
+				case Button5:
+				::pGUI->MouseInput(C4MC_Button_Wheel,
+					e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-32) << 16), pDlg, NULL);
+				break;
+				default:
+				break;
+				}
+			}
+		break;
+		case ButtonRelease:
+		switch (e.xbutton.button)
+			{
+			case Button1:
+			::pGUI->MouseInput(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+			break;
+			case Button2:
+			::pGUI->MouseInput(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+			break;
+			case Button3:
+			::pGUI->MouseInput(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+			break;
+			default:
+			break;
+			}
+		break;
+		case MotionNotify:
+		::pGUI->MouseInput(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, pDlg, NULL);
+		break;
+		case ConfigureNotify:
+		pSurface->UpdateSize(e.xconfigure.width, e.xconfigure.height);
+		break;
+		}
+	}
+#endif
 #endif // _WIN32
 
 void DialogWindow::Close()
@@ -506,6 +606,17 @@ void Dialog::UpdateSize()
 		}
 	}
 
+void Dialog::UpdatePos()
+	{
+	// Dialogs with their own windows can only be at 0/0
+	if (pWindow)
+		{
+		rcBounds.x = 0;
+		rcBounds.y = 0;
+		}
+	Window::UpdatePos();
+	}
+
 void Dialog::RemoveElement(Element *pChild)
 	{
 	// inherited
@@ -517,9 +628,12 @@ void Dialog::RemoveElement(Element *pChild)
 void Dialog::Draw(C4TargetFacet &cgo0)
 	{
 	C4TargetFacet cgo; cgo.Set(cgo0);
-	// Dialogs with a window just ignore the cgo. FIXME: Might want to ignore the coordinates in it, too.
+	// Dialogs with a window just ignore the cgo.
 	if (pWindow)
+		{
 		cgo.Surface = pWindow->pSurface;
+		cgo.X = 0; cgo.Y = 0; cgo.Wdt = rcBounds.Wdt; cgo.Hgt = rcBounds.Hgt;
+		}
 	Screen *pScreen;
 	// evaluate fading
 	switch (eFade)

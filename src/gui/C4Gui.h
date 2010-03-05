@@ -1934,6 +1934,9 @@ namespace C4GUI {
 			using CStdWindow::Init;
 			CStdWindow * Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, const C4Rect &rcBounds, const char *szID);
 			virtual void Close();
+#if defined(USE_X11)
+			virtual void HandleMessage (XEvent &);
+#endif
 		};
 
 	// information on how to draw dialog borders and face
@@ -1989,6 +1992,7 @@ namespace C4GUI {
 			void DestroyConsoleWindow();
 
 			virtual void UpdateSize();                // called when own size changed - update assigned pWindow
+			virtual void UpdatePos(); // Dialogs with their own windows can only be at 0/0
 
 		public:
 			Dialog(int32_t iWdt, int32_t iHgt, const char *szTitle, bool fViewportDlg); // ctor
@@ -2512,6 +2516,7 @@ namespace C4GUI {
 #ifdef _WIN32
 			Dialog *GetDialog(HWND hWindow); // get console dialog
 #endif
+			Dialog *GetDialog(CStdWindow * pWindow); // get console dialog
 			void DoContext(ContextMenu *pNewCtx, Element *pAtElement, int32_t iX, int32_t iY); // open context menu (closes any other contextmenu)
 			void AbortContext(bool fByUser) { if (pContext) pContext->Abort(fByUser); } // close context menu
 			int32_t GetContextMenuIndex() { return pContext ? pContext->GetMenuIndex() : 0; } // get current context-menu (lowest level)
