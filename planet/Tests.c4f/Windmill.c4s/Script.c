@@ -28,23 +28,50 @@ func Initialize()
 	PlaceGrass(100, 800, 1400);
 	SetSkyParallax(0,25,25,0,0,0,50);
 	AddEffect("BoomAttack", 0, 100, 35);
+	Sound("WindLoop.ogg",true,40,nil,+1);
 }
 
 global func FxBoomAttackTimer(object target, int effect, int time)
 {
+	var wave = 1+time/35/Boomattack_wave_delay;
+
 	if(time/35 % Boomattack_wave_delay == 1)
 	{
-		Message("           $MsgWave$           ",nil,1+time/35/Boomattack_wave_delay);
+		if (wave < 13)
+		{
+			Message("                   $MsgWave$                   ",nil,wave);
+			var wave_strength = Sqrt(9+GetPlayerCount()*time/Boomattack_attack_growth);
+			CreateAttackWave( Random(360) , wave_strength,Boomattack_angle_spread);
+		}
+		else if (wave == 13)
+		{
+			Message("                   $MsgBoss$                   ");
+			CreateAttackWave( Random(360) , -1, Boomattack_angle_spread);
+		}
 
-		var wave_strength = Sqrt(9+GetPlayerCount()*time/Boomattack_attack_growth);
-
-		CreateAttackWave( Random(360) , RandomX(-1,1) + wave_strength,Boomattack_angle_spread);
+	}
+	
+	// won!
+	if(wave > 13)
+	{
+		if (!FindObject(Find_ID(BigBoomattack)))
+		{
+			GameOver();
+		}
 	}
 }
 
 global func CreateAttackWave(int angle, int rockets, int anglespread)
 {
 	var radius = Min(LandscapeWidth()/2, LandscapeHeight()/2);
+	var rocket_id = Boomattack;
+	// boss
+	if(rockets == -1)
+	{
+		rockets = 1;
+		rocket_id = BigBoomattack;
+	}
+	
 	for(var i=0; i<rockets; ++i) 
 	{
 		var rocket_angle = angle + Random(anglespread) - anglespread/2;
@@ -52,7 +79,7 @@ global func CreateAttackWave(int angle, int rockets, int anglespread)
 		var x =  Sin(rocket_angle, rocket_radius)+LandscapeWidth()/2;
 		var y = -Cos(rocket_angle, rocket_radius)+LandscapeHeight()/2;
 
-		CreateObject(Boomattack, x, y)->Launch(rocket_angle + 180);
+		CreateObject(rocket_id, x, y)->Launch(rocket_angle + 180);
 	}
 	
 	for(var i=0; i<GetPlayerCount(); ++i)

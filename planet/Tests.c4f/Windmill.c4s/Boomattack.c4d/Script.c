@@ -124,8 +124,8 @@ Fly = {
 	Procedure = DFA_FLOAT,
 	Length = 1,
 	Delay = 0,
-	Wdt=15,
-	Hgt=27,
+	Wdt = 15,
+	Hgt = 27
 },
 }, def);
   SetProperty("Name", "$Name$", def);

@@ -1,6 +1,6 @@
 <mesh>
 	<submeshes>
-		<submesh material="Boomattack" usesharedvertices="false">
+		<submesh material="BigBoomattack" usesharedvertices="false">
 			<faces count="96">
 				<face v1="0" v2="1" v3="2"/>
 				<face v1="0" v2="2" v3="3"/>

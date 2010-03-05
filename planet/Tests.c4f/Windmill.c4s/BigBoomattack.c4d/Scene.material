@@ -1,4 +1,4 @@
-material Boomattack
+material BigBoomattack
 {
 	receive_shadows on
 	technique
@@ -9,13 +9,6 @@ material Boomattack
 			diffuse 0.640000 0.640000 0.640000 1.000000
 			specular 0.000000 0.000000 0.000000 1.000000 12.500000
 			emissive 0.000000 0.000000 0.000000 1.000000
-			texture_unit
-			{
-				texture boomattack.png
-				tex_address_mode wrap
-				filtering trilinear
-				colour_op alpha_blend
-			}
 		}
 	}
 }
