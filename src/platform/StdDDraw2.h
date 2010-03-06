@@ -18,7 +18,7 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-/* A wrapper class to DirectDraw */
+/* A wrapper class to OpenGL and Direct3d */
 
 #ifndef INC_STDDDRAW2
 #define INC_STDDDRAW2
@@ -213,8 +213,6 @@ class CStdDDraw
 		virtual ~CStdDDraw() { lpDDraw=NULL; }
 	public:
 		CStdApp * pApp; // the application
-		SURFACE lpPrimary;	// primary and back surface (emulation...)
-		SURFACE lpBack;
 		CStdPalette Pal;		// 8bit-pal
 		bool Active;										// set if device is ready to render, etc.
 		CGammaControl Gamma;						// gamma

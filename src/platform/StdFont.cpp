@@ -244,6 +244,7 @@ bool CStdFont::AddRenderedChar(uint32_t dwChar, CFacet *pfctTarget)
 	pfctTarget->Set(sfcCurrent, iCurrentSfcX, iCurrentSfcY, size.cx, size.cy);
 
 #elif defined HAVE_FREETYPE // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	if(!pVectorFont) return false;
 	// Freetype character rendering
 	FT_Set_Pixel_Sizes(*pVectorFont, dwDefFontHeight, dwDefFontHeight);
 	int32_t iBoldness = dwWeight-400; // zero is normal; 300 is bold

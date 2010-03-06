@@ -32,7 +32,7 @@
 /* CStdWindow */
 
 CStdWindow::CStdWindow ():
-	Active(false)
+	Active(false), pSurface(0)
 {
 }
 

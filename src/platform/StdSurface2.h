@@ -62,6 +62,7 @@ extern CStdD3D *pD3D;
 
 #ifdef USE_GL
 class CStdGL;
+class CStdGLCtx;
 extern CStdGL *pGL;
 #endif
 
@@ -81,15 +82,8 @@ class CDDrawCfg
 			{
 			}
 	};
+
 extern CDDrawCfg DDrawCfg; // ddraw config
-
-// class predefs
-class CTexRef;
-class CTexMgr;
-class CPattern;
-class CStdDDraw;
-class CBlitRememberer;
-
 extern CStdDDraw *lpDDraw;
 
 class CSurface
@@ -102,6 +96,7 @@ class CSurface
 		CSurface();
 		~CSurface();
 		CSurface(int iWdt, int iHgt); // create new surface and init it
+		CSurface(CStdApp * pApp, CStdWindow * pWindow); // create new surface for a window
 	public:
 		int Wdt,Hgt; // size of surface
 		int Scale; // scale of image; divide coordinates by this value to get the "original" image size
@@ -132,6 +127,7 @@ class CSurface
 #endif
 #ifdef USE_GL
 				GLenum Format;								// used color format in textures
+				CStdGLCtx * pCtx;
 #endif
 #if defined(USE_DIRECTX) && defined(USE_GL)
 				};
@@ -175,8 +171,7 @@ class CSurface
 #ifdef USE_GL
 		bool CreatePrimaryGLTextures();									// create primary textures from back buffer
 #endif
-		bool Attach(CSurface *sfcSurface);
-		bool AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsigned int iYRes); // wdt and hgt not assigned in DirectX
+		bool UpdateSize(int wdt, int hgt); // Only for surfaces which map to a window
 		void Clear();
 		void Default();
 		void Clip(int iX, int iY, int iX2, int iY2);

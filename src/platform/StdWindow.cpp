@@ -53,7 +53,7 @@
 #define C4FullScreenClassName "C4FullScreen"
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-CStdWindow::CStdWindow (): Active(false), hWindow(0) {
+CStdWindow::CStdWindow (): Active(false), hWindow(0), pSurface(0) {
 }
 CStdWindow::~CStdWindow () {
 }

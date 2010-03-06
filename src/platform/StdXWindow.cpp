@@ -50,10 +50,7 @@
 /* CStdWindow */
 
 CStdWindow::CStdWindow ():
-	Active(false)
-#ifdef USE_X11
-	,wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0)
-#endif
+	Active(false), wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0), pSurface(0)
 {
 }
 CStdWindow::~CStdWindow () {

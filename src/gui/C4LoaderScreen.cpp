@@ -28,6 +28,7 @@
 #include <C4Random.h>
 #include <C4GroupSet.h>
 #include <C4Game.h>
+#include <C4FullScreen.h>
 
 C4LoaderScreen::C4LoaderScreen() : TitleFont(::GraphicsResource.FontTitle), LogFont(::GraphicsResource.FontTiny)
 	{
@@ -123,7 +124,7 @@ bool C4LoaderScreen::Init(const char *szLoaderSpec)
 
 	// initial draw
 	C4Facet cgo;
-	cgo.Set(Application.DDraw->lpPrimary,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
+	cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
 	Draw(cgo);
 
 	// done, success!

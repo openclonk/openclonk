@@ -62,6 +62,19 @@ CSurface::CSurface(int iWdt, int iHgt) : fIsBackground(false)
 	Create(iWdt, iHgt);
 	}
 
+CSurface::CSurface(CStdApp * pApp, CStdWindow * pWindow):
+	Wdt(0), Hgt(0)
+	{
+	Default();
+	fPrimary=true;
+	// create rendering context
+#ifdef USE_GL
+	if (pGL) pCtx = pGL->CreateContext(pWindow, pApp);
+#endif
+	// reset clipping
+	NoClip();
+	}
+
 CSurface::~CSurface()
 	{
 	Clear();
@@ -81,6 +94,7 @@ void CSurface::Default()
 #endif
 	ppTex=NULL;
 	pMainSfc=NULL;
+	pCtx=NULL;
 	ClrByOwnerClr=0;
 	iTexSize=iTexX=iTexY=0;
 	fIsRenderTarget=false;
@@ -138,6 +152,13 @@ void CSurface::Clear()
 		if (pSfc) pSfc->Release();
 		}
 	pSfc=NULL;
+#endif
+#ifdef USE_GL
+	if (pCtx)
+		{
+		delete pCtx;
+		pCtx = 0;
+		}
 #endif
 	FreeTextures();
 	ppTex=NULL;
@@ -443,30 +464,12 @@ bool CSurface::SetAsClrByOwnerOf(CSurface *pOfSurface)
 	}*/
 #endif
 
-bool CSurface::AttachSfc(IDirect3DSurface9 *sfcSurface, unsigned int iXRes, unsigned int iYRes)
+bool CSurface::UpdateSize(int wdt, int hgt)
 	{
-	Clear(); Default();
-	fPrimary=true;
-#ifdef USE_DIRECTX	
-	if (pD3D)
-		{
-		// store surface
-		pSfc=sfcSurface;
-		Attached=true;
-		// get size
-		D3DSURFACE_DESC desc;
-		if (pSfc->GetDesc(&desc) != D3D_OK) return false;
-		Wdt=desc.Width; Hgt=desc.Height;
-		}
-	else
-#endif
-		{
-		// primary surface: use application size
-		Wdt = iXRes;
-		Hgt = iYRes;
-		}
-	// reset clipping
-	NoClip();
+	assert(fPrimary);
+	if(!fPrimary)
+		return false;
+	this->Wdt = wdt; this->Hgt = hgt;
 	return true;
 	}
 
@@ -1396,8 +1399,7 @@ bool CTexRef::Lock()
 		{
 		if (texName)
 			{
-			// select context, if not already done
-			if (!pGL->pCurrCtx) if (!pGL->MainCtx.Select()) return false;
+			if (!pGL->pCurrCtx) return false;
 			// get texture
 			texLock.pBits = new unsigned char[iSize*iSize*pGL->byByteCnt];
 			texLock.Pitch = iSize * pGL->byByteCnt;
@@ -1431,8 +1433,12 @@ void CTexRef::Unlock()
 #ifdef USE_GL
 	if (pGL)
 		{
-		// select context, if not already done
-		if (!pGL->pCurrCtx) if (!pGL->MainCtx.Select()) return;
+		if (!pGL->pCurrCtx)
+			{
+//			BREAKPOINT_HERE;
+			assert(pGL->pMainCtx);
+			pGL->pMainCtx->Select();
+			}
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 		if (!texName)
 			{

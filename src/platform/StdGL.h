@@ -49,7 +49,6 @@ class CStdGLCtx
 
 		bool Select(bool verbose = false);							// select this context
 		void Deselect();							// select this context
-		bool UpdateSize();					// get new size from hWnd
 
 		bool PageFlip();						// present scene
 
@@ -82,7 +81,7 @@ class CStdGL : public CStdDDraw
 		int iPixelFormat;						// used pixel format
 
 		GLenum sfcFmt;							// texture surface format
-		CStdGLCtx MainCtx;					// main GL context
+		CStdGLCtx * pMainCtx;					// main GL context
 		CStdGLCtx *pCurrCtx;				// current context (owned if fullscreen)
 		bool fFullscreen;						// fullscreen mode?
 		int iClrDpt;								// color depth
@@ -107,7 +106,6 @@ class CStdGL : public CStdDDraw
 		bool PrepareMaterial(StdMeshMaterial& mat);
 		// Surface
 		bool PrepareRendering(SURFACE sfcToSurface); // check if/make rendering possible to given surface
-		CStdGLCtx &GetMainCtx() { return MainCtx; }
 		virtual CStdGLCtx *CreateContext(CStdWindow * pWindow, CStdApp *pApp);
 #ifdef _WIN32
 		virtual CStdGLCtx *CreateContext(HWND hWindow, CStdApp *pApp);
@@ -131,13 +129,7 @@ class CStdGL : public CStdDDraw
 		bool InvalidateDeviceObjects();	// free device dependent objects
 		void SetTexture();
 		void ResetTexture();
-#ifdef _WIN32
-		bool DeviceReady() { return !!MainCtx.hrc; }
-#elif defined(USE_X11)
-		bool DeviceReady() { return !!MainCtx.ctx; }
-#else
-		bool DeviceReady() { return true; } // SDL
-#endif
+		bool DeviceReady() { return !!pMainCtx; }
 
 	protected:
 		bool CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor);

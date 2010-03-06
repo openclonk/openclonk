@@ -120,7 +120,6 @@ class C4Viewport
 		bool ResetMenuPositions;
 		C4RegionList *SetRegions;
 		C4Viewport *Next;
-		CStdGLCtx *pCtx; // rendering context for OpenGL
 		C4ViewportWindow * pWindow;
 		CClrModAddMap ClrModMap; // color modulation map for viewport drawing
 		void DrawPlayerFogOfWar(C4TargetFacet &cgo);

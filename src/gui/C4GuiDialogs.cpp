@@ -340,9 +340,7 @@ bool Dialog::CreateConsoleWindow()
 		return false;
 		}
 	// create rendering context
-#ifdef USE_GL
-	if (lpDDraw) pCtx = lpDDraw->CreateContext(pWindow, &Application);
-#endif
+	pWindow->pSurface = new CSurface(&Application, pWindow);
 	return true;
 	}
 
@@ -350,17 +348,15 @@ void Dialog::DestroyConsoleWindow()
 	{
 	if (pWindow)
 		{
+		delete pWindow->pSurface;
 		pWindow->Clear();
 		delete pWindow;
 		pWindow = NULL;
 		}
-#ifdef USE_GL
-	if (pCtx) { delete pCtx; pCtx=NULL; }
-#endif
 	}
 
 Dialog::Dialog(int32_t iWdt, int32_t iHgt, const char *szTitle, bool fViewportDlg):
-	Window(), pTitle(NULL), pCloseBtn(NULL), fDelOnClose(false), fViewportDlg(fViewportDlg), pWindow(NULL), pCtx(NULL), pFrameDeco(NULL)
+	Window(), pTitle(NULL), pCloseBtn(NULL), fDelOnClose(false), fViewportDlg(fViewportDlg), pWindow(NULL), pFrameDeco(NULL)
 	{
 	// zero fields
 	pActiveCtrl = NULL;
@@ -518,12 +514,12 @@ void Dialog::RemoveElement(Element *pChild)
 	if (pChild == pActiveCtrl) pActiveCtrl = NULL;
 	}
 
-void Dialog::Draw(C4TargetFacet &cgo)
+void Dialog::Draw(C4TargetFacet &cgo0)
 	{
-#ifdef USE_GL
-	// select rendering context
-	if (pCtx) if (!pCtx->Select()) return;
-#endif
+	C4TargetFacet cgo; cgo.Set(cgo0);
+	// Dialogs with a window just ignore the cgo. FIXME: Might want to ignore the coordinates in it, too.
+	if (pWindow)
+		cgo.Surface = pWindow->pSurface;
 	Screen *pScreen;
 	// evaluate fading
 	switch (eFade)
@@ -572,10 +568,6 @@ void Dialog::Draw(C4TargetFacet &cgo)
 		rtDst.left=0;	rtDst.top=0;		rtDst.right=rcBounds.Wdt; rtDst.bottom=rcBounds.Hgt;
 		Application.DDraw->PageFlip(&rtSrc, &rtDst, pWindow);
 		}
-#ifdef USE_GL
-	// switch back to original context
-	if (pCtx) pGL->GetMainCtx().Select();
-#endif
 	}
 
 void Dialog::DrawElement(C4TargetFacet &cgo)

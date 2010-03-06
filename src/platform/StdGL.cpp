@@ -55,9 +55,11 @@ static void DwTo4UB(DWORD dwClr, GLubyte (&r)[4])
 	r[3] = GLubyte(dwClr>>24);
 	}
 
-CStdGL::CStdGL()
+CStdGL::CStdGL():
+	pMainCtx(0)
 	{
 	Default();
+	byByteCnt=4;
 	// global ptr
 	pGL = this;
 	shaders[0] = 0;
@@ -72,24 +74,15 @@ CStdGL::~CStdGL()
 
 void CStdGL::Clear()
 	{
-	#ifndef USE_SDL_MAINLOOP
-	CStdDDraw::Clear();
-	#endif
 	NoPrimaryClipper();
 	if (pTexMgr) pTexMgr->IntUnlock();
 	InvalidateDeviceObjects();
 	NoPrimaryClipper();
-	// del main surfaces
-	if (lpPrimary) delete lpPrimary;
-	lpPrimary = lpBack = NULL;
 	RenderTarget = NULL;
 	// clear context
 	if (pCurrCtx) pCurrCtx->Deselect();
-	MainCtx.Clear();
-	pCurrCtx=NULL;
-	#ifndef USE_SDL_MAINLOOP
+	pMainCtx=0;
 	CStdDDraw::Clear();
-	#endif
 	}
 
 bool CStdGL::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
@@ -106,7 +99,7 @@ bool CStdGL::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
 
 void CStdGL::FillBG(DWORD dwClr)
 	{
-	if (!pCurrCtx) if (!MainCtx.Select()) return;
+	if (!pCurrCtx) return;
 	glClearColor((float)GetBValue(dwClr)/255.0f, (float)GetGValue(dwClr)/255.0f, (float)GetRValue(dwClr)/255.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
@@ -142,7 +135,7 @@ bool CStdGL::UpdateClipper()
 bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 {
 	// select context, if not already done
-	if (!pCurrCtx) if (!MainCtx.Select()) return false;
+	if (!pCurrCtx) return false;
 
 	for(unsigned int i = 0; i < mat.Techniques.size(); ++i)
 	{
@@ -307,8 +300,6 @@ bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
 {
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
-	// device?
-	if (!pCurrCtx) if (!MainCtx.Select()) return false;
 	// not ready?
 	if (!Active)
 		//if (!RestoreDeviceObjects())
@@ -322,6 +313,9 @@ bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
 		{
 		// target is a render-target?
 		if (!sfcToSurface->IsRenderTarget()) return false;
+		// context
+		if (sfcToSurface->pCtx && sfcToSurface->pCtx != pCurrCtx)
+			if (!sfcToSurface->pCtx->Select()) return false;
 		// set target
 		RenderTarget=sfcToSurface;
 		// new target has different size; needs other clipping rect
@@ -1398,6 +1392,7 @@ CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 	if (!pWindow) return NULL;
 	// create it
 	CStdGLCtx *pCtx = new CStdGLCtx();
+	if (!pMainCtx) pMainCtx = pCtx;
 	if (!pCtx->Init(pWindow, pApp))
 		{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
@@ -1417,6 +1412,7 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
 		{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
 		}
+	if (!pMainCtx) pMainCtx = pCtx;
 	// done
 	return pCtx;
 	}
@@ -1425,23 +1421,6 @@ CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
 bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorDepth, unsigned int)
 	{
 	// store options
-	byByteCnt=4; iClrDpt=iColorDepth;
-
-	// create lpPrimary and lpBack (used in first context selection)
-	lpPrimary=lpBack=new CSurface();
-
-	lpPrimary->AttachSfc(0,0,0);
-	lpPrimary->byBytesPP=byByteCnt;
-	
-	// create+select gl context
-	DebugLog("  gl: Create Main Context...");
-	if (!MainCtx.Init(pApp->pWindow, pApp)) return Error("  gl: Error initializing context");
-
-	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
-	if (!GLEW_VERSION_1_3)
-		{
-		return Error("  gl: OpenGL Version 1.3 or higher required.");
-		}
 
 	return RestoreDeviceObjects();
 	}
@@ -1611,10 +1590,19 @@ static void DefineShaderARB(const char * p, GLuint & s)
 
 bool CStdGL::RestoreDeviceObjects()
 	{
-	// safety
-	if (!lpPrimary) return false;
+	assert(pMainCtx);
 	// delete any previous objects
 	InvalidateDeviceObjects();
+
+	// set states
+	Active = pMainCtx->Select();
+	RenderTarget = pApp->pWindow->pSurface;
+
+	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
+	if (!GLEW_VERSION_1_3)
+		{
+		return Error("  gl: OpenGL Version 1.3 or higher required.");
+		}
 
 	// lines texture
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1627,16 +1615,12 @@ bool CStdGL::RestoreDeviceObjects()
 	const char * linedata = byByteCnt == 2 ? "\xff\xf0\xff\xff" : "\xff\xff\xff\x00\xff\xff\xff\xff";
 	glTexImage2D(GL_TEXTURE_2D, 0, 4, 1, 2, 0, GL_BGRA, byByteCnt == 2 ? GL_UNSIGNED_SHORT_4_4_4_4_REV : GL_UNSIGNED_INT_8_8_8_8_REV, linedata);
 
-	// restore primary/back
-	RenderTarget=lpPrimary;
 
 	MaxTexSize = 64;
 	GLint s = 0;
 	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &s);
 	if (s>0) MaxTexSize = s;
 
-	// set states
-	Active = pCurrCtx ? (pCurrCtx->Select()) : MainCtx.Select();
 	// restore gamma if active
 	if (Active)
 		EnableGamma();
@@ -1724,7 +1708,6 @@ bool CStdGL::InvalidateDeviceObjects()
 	Active=false;
 	// invalidate font objects
 	// invalidate primary surfaces
-	if (lpPrimary) lpPrimary->Clear();
 	if (lines_tex)
 		{
 		glDeleteTextures(1, &lines_tex);
@@ -1813,8 +1796,6 @@ void CStdGL::TaskIn()
 
 bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 	{
-	lpPrimary->AttachSfc(NULL, iXRes, iYRes);
-	lpPrimary->byBytesPP=byByteCnt;
 	// Re-create primary clipper to adapt to new size.
 	CreatePrimaryClipper(iXRes, iYRes);
 	RestoreDeviceObjects();
@@ -1824,11 +1805,10 @@ bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 void CStdGL::Default()
 	{
 	CStdDDraw::Default();
-	//pCurrCtx = NULL;
+	pCurrCtx = NULL;
 	iPixelFormat=0;
 	sfcFmt=0;
 	iClrDpt=0;
-	MainCtx.Clear();
 	}
 
 #endif // USE_GL

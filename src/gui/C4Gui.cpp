@@ -685,7 +685,7 @@ void Screen::Render(bool fDoBG)
 	{
 	// get output cgo
 	C4TargetFacet cgo;
-	cgo.Set(lpDDraw->lpBack, rcBounds);
+	cgo.Set(FullScreen.pSurface, rcBounds);
 	// draw to it
 	Draw(cgo, fDoBG);
 	}

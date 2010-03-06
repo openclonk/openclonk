@@ -404,7 +404,6 @@ void CStdDDraw::Default()
 	dwBlitMode = 0;
 	Gamma.Default();
 	DefRamp.Default();
-	lpPrimary=lpBack=NULL;
 	// pClrModMap = NULL; - invalid if !fUseClrModMap anyway
 	fUseClrModMap = false;
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
@@ -1065,7 +1064,6 @@ void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, floa
 	{
 	ApplyZoom(x1, y1);
 	ApplyZoom(x2, y2);
-	// FIXME: zoom width
   	// manual clipping?
 	if (DDrawCfg.ClipManuallyE)
 		{
@@ -1363,6 +1361,8 @@ bool CStdDDraw::Init(CStdApp * pApp, bool Fullscreen, bool fUsePageLock, unsigne
 
 	// store default gamma
 	SaveDefaultGammaRamp(pApp->pWindow);
+
+	pApp->pWindow->pSurface = new CSurface(pApp, pApp->pWindow);
 
 	if (!CreatePrimarySurfaces(Fullscreen, iXRes, iYRes, iBitDepth, iMonitor))
 		return false;

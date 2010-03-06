@@ -110,6 +110,14 @@ class StdMeshBone;
 class StdMeshInstance;
 class StdMeshMaterial;
 class StdMeshSkeletonLoader;
+class CTexRef;
+class CTexMgr;
+class CPattern;
+class CStdDDraw;
+class CBlitRememberer;
+class CStdApp;
+class CStdWindow;
+class CSurface;
 
 namespace C4GUI { class Screen; }
 typedef C4GUI::Screen C4GUIScreen;

@@ -516,28 +516,6 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 
 bool C4Config::Save()
 	{
-	/* - deactivated: Graphics.Engine might not be same as last initialized engine, because it might be changed by C4StartupOptionsDlg
-#ifdef USE_DIRECTX
-	// set ddraw config
-	if (Graphics.Engine == GFXENGN_DIRECTX || Graphics.Engine == GFXENGN_DIRECTXS)
-		{
-		// Direct3D
-		float BlitOff;
-		DDrawCfg.Get(Graphics.NewGfxCfg, BlitOff);
-		}
-	else
-#endif
-#ifdef USE_GL
-	if (Graphics.Engine == GFXENGN_OPENGL)
-		{
-		// OpenGL
-		float BlitOff;
-		DDrawCfg.Get(Graphics.NewGfxCfgGL, BlitOff);
-		}
-	else
-#endif
-		;*/
-	// FIXME: When the engine starts changing BlitOff, save that
 	try
 		{
 #ifdef _WIN32

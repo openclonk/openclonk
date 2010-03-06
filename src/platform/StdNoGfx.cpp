@@ -26,7 +26,6 @@ CStdNoGfx::CStdNoGfx()
 
 CStdNoGfx::~CStdNoGfx()
 	{
-	delete lpPrimary; lpPrimary = NULL;
 	Clear();
 	}
 
@@ -35,8 +34,6 @@ bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsig
 	Log("Graphics disabled.");
 	// Save back color depth
 	byByteCnt = iColorDepth / 8;
-	// Create dummy surface
-	lpPrimary = lpBack = new CSurface();
 	MaxTexSize = 64;
 	return true;
 	}

@@ -93,7 +93,7 @@ bool C4GraphicsSystem::Init()
 #endif
 	// Init video module
 	if (Config.Graphics.VideoModule)
-		Video.Init(Application.DDraw->lpBack);
+		Video.Init(FullScreen.pSurface);
 	// Success
 	return true;
 	}
@@ -349,7 +349,7 @@ void C4GraphicsSystem::DrawFullscreenBackground()
 	for (int i=0, iNum=BackgroundAreas.GetCount(); i<iNum; ++i)
 		{
 		const C4Rect &rc = BackgroundAreas.Get(i);
-		Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,Application.DDraw->lpBack,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
+		Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,FullScreen.pSurface,rc.x,rc.y,rc.Wdt,rc.Hgt,-rc.x,-rc.y);
 		}
 	--iRedrawBackground;
 	}
@@ -424,7 +424,7 @@ void C4GraphicsSystem::RecalculateViewports()
 	if (Config.Graphics.UpperBoard)
 		iBorderTop = C4UpperBoardHeight;
 	iBorderBottom = MessageBoard.Output.Hgt;
-	ViewportArea.Set(Application.DDraw->lpBack,0,iBorderTop, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt()-iBorderTop-iBorderBottom);
+	ViewportArea.Set(FullScreen.pSurface,0,iBorderTop, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt()-iBorderTop-iBorderBottom);
 
 	// Redraw flag
 	InvalidateBg();
@@ -613,7 +613,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 	// Fullscreen only
 	if (!Application.isFullScreen) return false;
 	// back surface must be present
-	if (!Application.DDraw->lpBack) return false;
+	if (!FullScreen.pSurface) return false;
 
 	// save landscape
 	if (fSaveAll)
@@ -643,20 +643,20 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 			if (iX+bkWdt2>lWdt) bkWdt2-=iX+bkWdt2-lWdt;
 			if (iY+bkHgt2>lHgt) bkHgt2-=iY+bkHgt2-lHgt;
 			// update facet
-			bkFct.Set(Application.DDraw->lpBack, 0, 0, bkWdt2, bkHgt2, iX, iY);
+			bkFct.Set(FullScreen.pSurface, 0, 0, bkWdt2, bkHgt2, iX, iY);
 			// draw there
 			pVP->Draw(bkFct, false);
 			// render
 			Application.DDraw->PageFlip(); Application.DDraw->PageFlip();
 			// get output (locking primary!)
-			if (Application.DDraw->lpBack->Lock())
+			if (FullScreen.pSurface->Lock())
 				{
 				// transfer each pixel - slooow...
 				for (int32_t iY2=0; iY2<bkHgt2; ++iY2)
 					for (int32_t iX2=0; iX2<bkWdt2; ++iX2)
-						png.SetPix(iX+iX2, iY+iY2, Application.DDraw->ApplyGammaTo(Application.DDraw->lpBack->GetPixDw(iX2, iY2, false)));
+						png.SetPix(iX+iX2, iY+iY2, Application.DDraw->ApplyGammaTo(FullScreen.pSurface->GetPixDw(iX2, iY2, false)));
 				// done; unlock
-				Application.DDraw->lpBack->Unlock();
+				FullScreen.pSurface->Unlock();
 				}
 			}
 		// restore viewport player
@@ -668,7 +668,7 @@ bool C4GraphicsSystem::DoSaveScreenshot(bool fSaveAll, const char *szFilename)
 		return png.Save(szFilename);
 		}
 	// Save primary surface
-	return Application.DDraw->lpBack->SavePNG(szFilename, false, true, false);
+	return FullScreen.pSurface->SavePNG(szFilename, false, true, false);
 	}
 
 void C4GraphicsSystem::DeactivateDebugOutput()
@@ -687,7 +687,7 @@ void C4GraphicsSystem::DrawHoldMessages()
 	if (Application.isFullScreen && Game.HaltCount)
 		{
 		Application.DDraw->TextOut("Pause", ::GraphicsResource.FontRegular,1.0,
-			Application.DDraw->lpBack, C4GUI::GetScreenWdt()/2,
+			FullScreen.pSurface, C4GUI::GetScreenWdt()/2,
 			C4GUI::GetScreenHgt()/2 - ::GraphicsResource.FontRegular.iLineHgt*2,
 			CStdDDraw::DEFAULT_MESSAGE_COLOR, ACenter);
 		::GraphicsSystem.OverwriteBg();
@@ -743,7 +743,7 @@ void C4GraphicsSystem::DrawFlashMessage()
 	{
 	if (!FlashMessageTime) return;
 	if (!Application.isFullScreen) return;
-	Application.DDraw->TextOut(FlashMessageText, ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(FlashMessageText, ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 		(FlashMessageX==-1) ? C4GUI::GetScreenWdt()/2 : FlashMessageX,
 		(FlashMessageY==-1) ? C4GUI::GetScreenHgt()/2 : FlashMessageY,
 		CStdDDraw::DEFAULT_MESSAGE_COLOR,
@@ -779,7 +779,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("\n<c ffff00>%s</c> - %s\n", GetKeyboardInputName("Screenshot").getData(), LoadResStr("IDS_CTL_SCREENSHOT"));
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("ScreenshotEx").getData(), LoadResStr("IDS_CTL_SCREENSHOTEX"));
 
-	Application.DDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 														 iX + 128, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
 
 	// right coloumn
@@ -793,7 +793,7 @@ void C4GraphicsSystem::DrawHelp()
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowVtxToggle").getData(), "Entrance+Vertices");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowActionToggle").getData(), "Actions/Commands/Pathfinder");
 	strText.AppendFormat("<c ffff00>%s</c> - %s\n", GetKeyboardInputName("DbgShowSolidMaskToggle").getData(), "SolidMasks");
-	Application.DDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, Application.DDraw->lpBack,
+	Application.DDraw->TextOut(strText.getData(), ::GraphicsResource.FontRegular, 1.0, FullScreen.pSurface,
 														 iX + iWdt/2 + 64, iY + 64, CStdDDraw::DEFAULT_MESSAGE_COLOR, ALeft);
 	}
 

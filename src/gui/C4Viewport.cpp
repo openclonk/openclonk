@@ -826,10 +826,9 @@ bool C4Viewport::UpdateOutputSize()
 	ScrollBarsByViewPosition();
 	// Reset menus
 	ResetMenuPositions=true;
-#ifdef USE_GL
 	// update internal GL size
-	if (pCtx) pCtx->UpdateSize();
-#endif
+	if (pWindow && pWindow->pSurface)
+		pWindow->pSurface->UpdateSize(ViewWdt, ViewHgt);
 	// Done
 	return true;
 	}
@@ -846,10 +845,7 @@ C4Viewport::~C4Viewport()
 
 void C4Viewport::Clear()
 	{
-#ifdef USE_GL
-	if (pCtx) { delete pCtx; pCtx=NULL; }
-#endif
-	if (pWindow) { pWindow->Clear(); delete pWindow; pWindow = NULL; }
+	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); delete pWindow; pWindow = NULL; }
 	Player=NO_OWNER;
 	ViewX=ViewY=0;
 	ViewWdt=ViewHgt=0;
@@ -954,13 +950,14 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 extern int32_t iLastControlSize,iPacketDelay,ScreenRate;
 extern int32_t ControlQueueSize,ControlQueueDataSize;
 
-void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
+void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	{
 
 #ifdef USE_CONSOLE
 	// No drawing in console mode
 	return;
 #endif
+	C4TargetFacet cgo; cgo.Set(cgo0);
 	ZoomData GameZoom;
 	GameZoom.X = cgo.X; GameZoom.Y = cgo.Y;
 	GameZoom.Zoom = Zoom;
@@ -1042,7 +1039,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo, bool fDrawOverlay)
 		// now restore complete cgo range for overlay drawing
 		lpDDraw->SetZoom(DrawX,DrawY, fGUIZoom);
 		Application.DDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1)/fGUIZoom,DrawY+(ViewHgt-1)/fGUIZoom);
-		cgo.Set(Application.DDraw->lpBack,DrawX,DrawY,int(float(ViewWdt)/fGUIZoom),int(float(ViewHgt)/fGUIZoom),ViewX,ViewY);
+		cgo.Set(cgo0);
 
 		last_gui_draw_cgo = cgo;
 
@@ -1095,13 +1092,12 @@ void C4Viewport::Execute()
 		}
 	// Adjust position
 	AdjustPosition();
-#ifdef USE_GL
-	// select rendering context
-	if (pCtx) if (!pCtx->Select()) return;
-#endif
 	// Current graphics output
 	C4TargetFacet cgo;
-	cgo.Set(Application.DDraw->lpBack,DrawX,DrawY,int32_t(float(ViewWdt)/Zoom),int32_t(float(ViewHgt)/Zoom),ViewX,ViewY);
+	CStdWindow * w = pWindow;
+	if (!w) w = &FullScreen;
+	cgo.Set(w->pSurface,DrawX,DrawY,int32_t(float(ViewWdt)/Zoom),int32_t(float(ViewHgt)/Zoom),ViewX,ViewY);
+	lpDDraw->PrepareRendering(w->pSurface);
 	// Draw
 	Draw(cgo, true);
 	// Video record & status (developer mode, first player viewport)
@@ -1110,10 +1106,6 @@ void C4Viewport::Execute()
 			::GraphicsSystem.Video.Execute();
 	// Blit output
 	BlitOutput();
-#ifdef USE_GL
-	// switch back to original context
-	if (pCtx) pGL->GetMainCtx().Select();
-#endif
 	}
 
 void C4Viewport::ChangeZoom(float by_factor)
@@ -1231,8 +1223,6 @@ void C4Viewport::UpdateViewPosition()
 
 void C4Viewport::Default()
 	{
-	pCtx=NULL;
-	//hWnd=NULL;
 	pWindow=NULL;
 	Player=0;
 	ViewX=ViewY=0;
@@ -1286,6 +1276,7 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	pWindow = new C4ViewportWindow(this);
 	if (!pWindow->Init(pApp, (Player==NO_OWNER) ? LoadResStr("IDS_CNS_VIEWPORT") : ::Players.Get(Player)->GetName(), pParent, false))
 		return false;
+	pWindow->pSurface = new CSurface(pApp, pWindow);
 	// Position and size
 	pWindow->RestorePosition(FormatString("Viewport%i", Player+1).getData(), Config.GetSubkeyPath("Console"));
 	//UpdateWindow(hWnd);
@@ -1293,8 +1284,6 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	UpdateOutputSize();
 	// Disable player lock on unowned viewports
 	if (!ValidPlr(Player)) TogglePlayerLock();
-	// create rendering context
-	if (lpDDraw) pCtx = lpDDraw->CreateContext(pWindow, pApp);
 	// Draw
 	Execute();
 	// Success

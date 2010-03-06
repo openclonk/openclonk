@@ -30,10 +30,6 @@
 void CStdGLCtx::SelectCommon()
 	{
 	pGL->pCurrCtx = this;
-	// update size
-	UpdateSize();
-	// assign size
-	pGL->lpPrimary->Wdt=cx; pGL->lpPrimary->Hgt=cy;
 	// set some default states
 	glDisable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -103,9 +99,9 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
 
 	// share textures
 	wglMakeCurrent(NULL, NULL); pGL->pCurrCtx=NULL;
-	if (this != &pGL->MainCtx)
+	if (this != pGL->pMainCtx)
 		{
-		if (!wglShareLists(pGL->MainCtx.hrc, hrc)) pGL->Error("  gl: Textures for secondary context not available");
+		if (!wglShareLists(pGL->pMainCtx->hrc, hrc)) pGL->Error("  gl: Textures for secondary context not available");
 		return true;
 		}
 
@@ -126,7 +122,7 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
 bool CStdGLCtx::Select(bool verbose)
 	{
 	// safety
-	if (!pGL || !hrc) return false; if (!pGL->lpPrimary) return false;
+	if (!pGL || !hrc) return false;
 	// make context current
 	if (!wglMakeCurrent (hDC, hrc)) return false;
 	SelectCommon();
@@ -143,24 +139,8 @@ void CStdGLCtx::Deselect()
 		{
 		wglMakeCurrent(NULL, NULL);
 		pGL->pCurrCtx=NULL;
+		pGL->RenderTarget=NULL;
 		}
-	}
-
-bool CStdGLCtx::UpdateSize()
-	{
-	// safety
-	if (!pWindow && !hWindow) return false;
-	// get size
-	RECT rt; if (!GetClientRect(pWindow ? pWindow->hWindow : hWindow, &rt)) return false;
-	int cx2=rt.right-rt.left, cy2=rt.bottom-rt.top;
-	// assign if different
-	if (cx!=cx2 || cy!=cy2)
-		{
-		cx=cx2; cy=cy2;
-		if (pGL) pGL->UpdateClipper();
-		}
-	// success
-	return true;
 	}
 
 bool CStdGLCtx::PageFlip()
@@ -189,8 +169,8 @@ bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
 
 bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 	{
-	if (!MainCtx.hDC || (!Active && !fForce)) return false;
-	if (!SetDeviceGammaRamp(MainCtx.hDC, &ramp))
+	if (!pMainCtx || (!Active && !fForce)) return false;
+	if (!SetDeviceGammaRamp(pMainCtx->hDC, &ramp))
 		{
 		int i=::GetLastError();
 		//Beep(i,i);
@@ -229,10 +209,10 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	this->pWindow = pWindow;
 	// Create Context with sharing (if this is the main context, our ctx will be 0, so no sharing)
 	// try direct rendering first
-	ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, True);
+	ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, pGL->pMainCtx ? (GLXContext)pGL->pMainCtx->ctx : 0, True);
 	// without, rendering will be unacceptable slow, but that's better than nothing at all
 	if (!ctx)
-		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, (GLXContext)pGL->MainCtx.ctx, False);
+		ctx = glXCreateContext(pWindow->dpy, (XVisualInfo*)pWindow->Info, pGL->pMainCtx ? (GLXContext)pGL->pMainCtx->ctx : 0, False);
 	// No luck at all?
 	if (!ctx) return pGL->Error("  gl: Unable to create context");
 	if (!Select(true)) return pGL->Error("  gl: Unable to select context");
@@ -252,11 +232,6 @@ bool CStdGLCtx::Select(bool verbose)
 	if (!pGL || !ctx)
 		{
 		if (verbose) pGL->Error("  gl: pGL is zero");
-		return false;
-		}
-	if (!pGL->lpPrimary)
-		{
-		if (verbose) pGL->Error("  gl: lpPrimary is zero");
 		return false;
 		}
 	// make context current
@@ -283,29 +258,8 @@ void CStdGLCtx::Deselect()
 		{
 		glXMakeCurrent(pWindow->dpy, None, NULL);
 		pGL->pCurrCtx = 0;
+		pGL->RenderTarget = 0;
 		}
-	}
-
-bool CStdGLCtx::UpdateSize()
-	{
-	// safety
-	if (!pWindow) return false;
-	// get size
-	Window winDummy;
-	unsigned int borderDummy;
-	int x, y;
-	unsigned int width, height;
-	unsigned int depth;
-	XGetGeometry(pWindow->dpy, pWindow->renderwnd, &winDummy, &x, &y,
-		&width, &height, &borderDummy, &depth);
-	// assign if different
-	if (cx!=width || cy!=height)
-		{
-		cx=width; cy=height;
-		if (pGL) pGL->UpdateClipper();
-		}
-	// success
-	return true;
 	}
 
 bool CStdGLCtx::PageFlip()
@@ -395,25 +349,8 @@ void CStdGLCtx::Deselect()
 	if (pGL && pGL->pCurrCtx == this)
     {
 		pGL->pCurrCtx = 0;
+		pGL->RenderTarget = 0;
     }
-}
-
-bool CStdGLCtx::UpdateSize()
-{
-	// safety
-	if (!pWindow) return false;
-	// get size
-    RECT rc;
-    pWindow->GetSize(&rc);
-    int width = rc.right - rc.left, height = rc.bottom - rc.top;
-	// assign if different
-	if (cx!=width || cy!=height)
-    {
-		cx=width; cy=height;
-		if (pGL) pGL->UpdateClipper();
-    }
-	// success
-	return true;
 }
 
 bool CStdGLCtx::PageFlip()

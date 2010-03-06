@@ -247,7 +247,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	// Lock primary surface
 #ifdef USE_DIRECTX
 	if(pD3D)
-		Application.DDraw->lpBack->Lock();
+		cgo.Surface->Lock();
 #endif
 
 	// First pass: draw old-style PXS (lines/pixels)
@@ -284,7 +284,7 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 	// Unlock primary surface
 #ifdef USE_DIRECTX
 	if(pD3D)
-		Application.DDraw->lpBack->Unlock();
+		cgo.Surface->Unlock();
 #endif
 
 	// PXS graphics disabled?

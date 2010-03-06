@@ -186,17 +186,10 @@ bool C4Application::DoInit()
 	Log(C4ENGINEINFOLONG);
 	LogF("Version: %s %s", C4VERSION, C4_OS);
 
-#if defined(USE_DIRECTX) && defined(_WIN32)
-	// DDraw emulation warning
-	DWORD DDrawEmulationState;
-	if (GetRegistryDWord(HKEY_LOCAL_MACHINE,"Software\\Microsoft\\DirectDraw","EmulationOnly",&DDrawEmulationState))
-		if (DDrawEmulationState)
-			Log("WARNING: DDraw Software emulation is activated!");
-#endif
 	// Initialize D3D/OpenGL
 	DDraw = DDrawInit(this, isFullScreen, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);
 	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
-	
+
 	if (isFullScreen)
 		{
 		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed))
@@ -458,6 +451,8 @@ void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 		Game.OnResolutionChanged(iXRes, iYRes);
 		DDraw->OnResolutionChanged(iXRes, iYRes);
 		}
+	if(pWindow && pWindow->pSurface)
+		pWindow->pSurface->UpdateSize(iXRes, iYRes);
 	}
 
 bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)

@@ -1983,7 +1983,6 @@ namespace C4GUI {
 			StdStrBuf TitleString;
 			bool fViewportDlg; // set in ctor: if true, dlg is not independant, but drawn ad controlled within viewports
 			DialogWindow *pWindow;  // window in console mode
-			CStdGLCtx *pCtx; // rendering context for OpenGL
 			FrameDecoration *pFrameDeco;
 
 			bool CreateConsoleWindow();

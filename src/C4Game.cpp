@@ -302,7 +302,7 @@ bool C4Game::PreInit()
 	if (Application.isFullScreen)
 		if (Config.Graphics.ShowStartupMessages || NetworkActive)
 			{
-			C4Facet cgo; cgo.Set(Application.DDraw->lpBack,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
+			C4Facet cgo; cgo.Set(FullScreen.pSurface,0,0,C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
 			GraphicsSystem.MessageBoard.Init(cgo,true);
 			}
 
@@ -476,7 +476,7 @@ bool C4Game::Init()
 	SetInitProgress(99);
 
 	// Color palette
-	if (Application.isFullScreen)	Application.DDraw->WipeSurface(Application.DDraw->lpPrimary);
+	if (Application.isFullScreen)	Application.DDraw->WipeSurface(FullScreen.pSurface);
 	GraphicsSystem.SetPalette();
 	GraphicsSystem.SetDarkColorTable();
 	GraphicsSystem.ApplyGamma();
@@ -760,18 +760,18 @@ void C4Game::InitFullscreenComponents(bool fRunning)
 		{
 		// running game: Message board upper board and viewports
 		C4Facet cgo;
-		cgo.Set(Application.DDraw->lpBack, 0, C4GUI::GetScreenHgt() - ::GraphicsResource.FontRegular.iLineHgt,
+		cgo.Set(FullScreen.pSurface, 0, C4GUI::GetScreenHgt() - ::GraphicsResource.FontRegular.iLineHgt,
 		        C4GUI::GetScreenWdt(), ::GraphicsResource.FontRegular.iLineHgt);
 		GraphicsSystem.MessageBoard.Init(cgo,false);
 		C4Facet cgo2;
-		cgo2.Set(Application.DDraw->lpBack, 0, 0, C4GUI::GetScreenWdt(), C4UpperBoardHeight);
+		cgo2.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4UpperBoardHeight);
 		GraphicsSystem.UpperBoard.Init(cgo2);
 		GraphicsSystem.RecalculateViewports();
 		}
 	else
 		{
 		// startup game: Just fullscreen message board
-		C4Facet cgo; cgo.Set(Application.DDraw->lpBack, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
+		C4Facet cgo; cgo.Set(FullScreen.pSurface, 0, 0, C4GUI::GetScreenWdt(), C4GUI::GetScreenHgt());
 		GraphicsSystem.MessageBoard.Init(cgo, true);
 		}
 	}
@@ -1853,7 +1853,7 @@ bool C4Game::SaveGameTitle(C4Group &hGroup)
 		if (!(sfcPic = new CSurface(iSfcWdt,iSfcHgt))) return false;
 
 		// Fullscreen
-		Application.DDraw->Blit(Application.DDraw->lpBack,
+		Application.DDraw->Blit(FullScreen.pSurface,
 			0.0f,0.0f,float(C4GUI::GetScreenWdt()),float(C4GUI::GetScreenHgt()-::GraphicsResource.FontRegular.iLineHgt),
 			sfcPic,0,0,iSfcWdt,iSfcHgt);
 

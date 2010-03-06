@@ -274,7 +274,7 @@ void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float t
 	// TODO: Implement this
 	for (int x = 0; x < twdt; x += 10)
 		for (int y = 0; y < thgt; y += 10)
-			this->DrawBoxDw(lpPrimary, tx+x, ty+y, tx+Min(twdt, x+10.0f), ty+Min(thgt, y+10.0f),
+			this->DrawBoxDw(0, tx+x, ty+y, tx+Min(twdt, x+10.0f), ty+Min(thgt, y+10.0f),
 			(((x+y)/10)&1)?0xff00ff:0x00ff00);
 }
 
@@ -448,7 +448,7 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 	if ((lpD3D=Direct3DCreate9(D3D_SDK_VERSION))==NULL) return Error("  Direct3DCreate9 failure.");
 	// set monitor info (Monitor-var and target rect)
 	DebugLog("  SetOutput adapter...");
-	// FIXME: Do not do resolution changes here
+	// FIXME: Do not do resolution changes here, SetVideoMode will take care of that
 	if (!SetOutputAdapter(iMonitor))
 		return Error("  Output adapter failure.");
 
@@ -750,6 +750,7 @@ void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dw
 
 void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 	{
+	// FIXME: zoom width
 	//dwClr |= 0xf0000000;
 	// render target?
 	if (sfcTarget->IsRenderTarget())
@@ -916,8 +917,6 @@ bool CStdD3D::InitDeviceObjects()
 	pD3D->lpDevice->GetDeviceCaps(&d3dCaps);
 	MaxTexSize = d3dCaps.MaxTextureWidth;
 	bool fSuccess=true;
-	// create lpPrimary and lpBack
-	lpPrimary=lpBack=new CSurface();
 	// Create shaders
 	for (int i=0; i<SHIDX_Size; ++i) if (pShaders[i]) { delete pShaders[i]; pShaders[i]=NULL; }
 	if (DDrawCfg.Shader)
@@ -959,13 +958,13 @@ bool CStdD3D::RestoreDeviceObjects()
 	if (lpDevice->TestCooperativeLevel() != D3D_OK) return false;
 	bool fSuccess=true;
 	// restore primary/back
-	IDirect3DSurface9 *pPrimarySfc;
+/*	IDirect3DSurface9 *pPrimarySfc;
 	if (lpDevice->GetRenderTarget(0, &pPrimarySfc) != D3D_OK)
 		{ Error("Could not get primary surface"); fSuccess=false; }
 	RenderTarget=lpPrimary;
 	lpPrimary->AttachSfc(pPrimarySfc,0,0);
 	lpPrimary->dwClrFormat=PrimarySrfcFormat;
-	lpPrimary->byBytesPP=Format2BitDepth(PrimarySrfcFormat)/8;
+	lpPrimary->byBytesPP=Format2BitDepth(PrimarySrfcFormat)/8;*/
 	// create vertex buffer
 	if( lpDevice->CreateVertexBuffer(sizeof(bltVertices), 0, D3DFVF_C4VERTEX, D3DPOOL_DEFAULT, &pVB, NULL) != D3D_OK ) return false;
 	// fill initial data for vertex buffer
@@ -1040,8 +1039,6 @@ bool CStdD3D::InvalidateDeviceObjects()
 	SafeRelease(pVBClr);
 	SafeRelease(pVB);
 	SafeRelease(pVBClrTex);
-	// invalidate primary surfaces
-	if (lpPrimary) lpPrimary->Clear();
 	return fSuccess;
 }
 
@@ -1051,8 +1048,6 @@ bool CStdD3D::DeleteDeviceObjects()
 	bool fSuccess=true;
 	NoPrimaryClipper();
 	// del main surfaces
-	if (lpPrimary) delete lpPrimary;
-	lpPrimary=lpBack=NULL;
 	RenderTarget=NULL;
 	for (int i=0; i<SHIDX_Size; ++i) if (pShaders[i]) { delete pShaders[i]; pShaders[i]=NULL; }
 	return fSuccess;
