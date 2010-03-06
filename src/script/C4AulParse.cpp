@@ -1930,10 +1930,10 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 			{
 			// get a parameter
 			Parse_Expression();
-			if (pFunc)
+			if (pFunc && (Type == PARSER))
 				{
 				bool anyfunctakesref = (pFunc->GetParType()[size] == C4V_pC4Value);
-				// pFunc either was the return value from a GetFuncFast-Call or
+				// pFunc either was the return value from a GetFirstFunc-Call or
 				// pFunc is the only function that could be called, so this loop is superflous
 				C4AulFunc * pFunc2 = pFunc;
 				while ((pFunc2 = a->Engine->GetNextSNFunc(pFunc2)))
@@ -1941,23 +1941,36 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 				// Change the bytecode to the equivalent that does not produce a reference.
 				if (!anyfunctakesref)
 					SetNoRef();
-				/*C4V_Type from = C4V_Any;
+				C4V_Type from = C4V_Any;
+				C4V_Type to = pFunc->GetParType()[size];
 				switch((a->CPos-1)->bccType)
 					{
-					case AB_C4ID: from = C4V_C4ID; break;
-					case AB_INT: from = C4V_Int; break;
+					case AB_INT: from = (a->CPos-1)->Par.i ? C4V_Int : C4V_Any; break;
 					case AB_STRING: from = C4V_String; break;
 					case AB_ARRAY: from = C4V_Array; break;
 					case AB_BOOL: from = C4V_Bool; break;
-					case AB_UNOP: case AB_BINOP: from = C4ScriptOpMap[(a->CPos-1)->Par.i].RetType; break;
-					case AB_FUNC: case AB_CALL: case AB_CALLFS:
-						if((a->CPos-1)->Par.i) from = reinterpret_cast<C4AulFunc *>((a->CPos-1)->Par.i)->GetRetType(); break;
+//					case AB_UNOP: case AB_BINOP: from = C4ScriptOpMap[(a->CPos-1)->Par.i].RetType; break;
+					case AB_FUNC:
+						if((a->CPos-1)->Par.f) from = (a->CPos-1)->Par.f->GetRetType(); break;
+					case AB_CALL: case AB_CALLFS:
+						{
+						C4String * pName = (a->CPos-1)->Par.s;
+						C4AulFunc * pFunc2 = a->Engine->GetFirstFunc(pName->GetCStr());
+						bool allwarn = true;
+						while(pFunc2 && allwarn)
+							{
+							from = pFunc2->GetRetType();
+							allwarn = allwarn && C4Value::WarnAboutConversion(from, to);
+							pFunc2 = a->Engine->GetNextSNFunc(pFunc2);
+							}
+						}
 					case AB_ARRAYA_R: case AB_PAR_R: case AB_PARN_R: case AB_VARN_R: case AB_LOCALN_R: case AB_GLOBALN_R:
 						from = C4V_pC4Value; break;
 					}
-				C4V_Type to = pFunc->GetParType()[size];
-				// TODO: Check wether from could be converted to to, but take every pFunc2 into account
-				*/
+				if (C4Value::WarnAboutConversion(from, to))
+					{
+					Warn(FormatString("Conversion from \"%s\" to \"%s\" in parameter %d of \"%s\"", GetC4VName(from), GetC4VName(to), size, sWarn).getData(), NULL);
+					}
 				}
 			++size;
 			// end of parameter list?

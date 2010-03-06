@@ -487,7 +487,9 @@ src/tinyxml/tinyxml.h \
 src/tinyxml/tinyxmlerror.cpp \
 src/tinyxml/tinyxmlparser.cpp \
 src/zlib/gzio.c \
-src/zlib/zutil.h
+src/zlib/zutil.h \
+src/script/C4AulDebug.h \
+src/script/C4AulExec.h
 
 if WIN32
 clonk_SOURCES += src/platform/C4FileClasses.cpp

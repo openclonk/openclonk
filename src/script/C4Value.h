@@ -192,6 +192,10 @@ public:
 			return (*Fn.Function)(this, vtToType);
 		return true;
 		}
+	inline static bool WarnAboutConversion(C4V_Type vtFromType, C4V_Type vtToType)
+		{
+		return C4ScriptCnvMap[vtFromType][vtToType].Warn;
+		}
 
 	// Compilation
 	void CompileFunc(StdCompiler *pComp);
