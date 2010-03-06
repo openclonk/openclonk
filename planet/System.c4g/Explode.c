@@ -270,7 +270,7 @@ global func CreateSmokeTrail(int iStrength, int iAngle, int iX, int iY, int colo
     iX += GetX();
     iY += GetY();
 	var num = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, iStrength, iAngle, iX, iY);
-    if(!color) color = RGBa(130,130,130,90);
+    if(!color) color = RGBa(130,130,130,70);
 	EffectVar(6, nil, num) = color;
 	EffectVar(7, nil, num) = noblast;
 }
