@@ -78,11 +78,14 @@ func CheckStrike(iTime)
 		if(Abs(iAngle-a) > Abs(iAngle-(a+360)))
 			a=((a+360) + iAngle)/2;
 		if(!speed) continue;
-		if(speed > 5000) continue;
-		speed=Max(150, speed-200);
+		//if(speed > 5000) continue;
+		speed=Max(150, speed/2);
 		obj->SetXDir(+Sin(a, speed), 100);
 		obj->SetYDir(-Cos(a, speed), 100); 
+		found=true;
 	}
+	if(found)
+		Sound("ShieldMetalHit*", false, this);
 	/*for(var cnt=0;cnt<10;++cnt)
 	{
 		CreateParticle("Spark", Sin(iAngle, 4*cnt), -Cos(iAngle, 4*cnt), 0, 0, 50, RGB(255,255,255));

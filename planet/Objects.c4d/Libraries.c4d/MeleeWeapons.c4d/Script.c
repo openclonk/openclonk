@@ -9,9 +9,14 @@ local iAnimStrike;*/
 //local hWeaponMesh;
 local hWeaponAnimStrike;
 
+func CheckStrike()
+{
+	return _inherited(...);
+}
+
 public func CanStrikeWithWeapon(clonk)
 {
-	if(!(clonk->IsClonk())) return false;
+	if(!(clonk->~IsClonk())) return false;
 	
 	if(GetEffect("*WeaponCooldown*", clonk))
 	{
@@ -51,7 +56,7 @@ func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
 		return -1;
 	}*/
 	if(this->Contained() != pTarget) return -1;
-	if(!pTarget->IsWalking() && !pTarget->IsJumping()) return -1;
+	if(!pTarget->~IsWalking() && !pTarget->~IsJumping()) return -1;
 	var strikeTime=EffectVar(2, pTarget, iEffectNumber);
 	if(strikeTime != -1 && iEffectTime > strikeTime)
 	{
@@ -130,7 +135,7 @@ func FxIntWeaponChargeStop(pTarget, iEffectNumber, iTemp)
 	{
 		this->StopWeaponAnimation(pTarget);
 		//this->DetachWeaponMesh(pTarget);
-		this->~OnWeaponHitCheckStop();
+		this->~OnWeaponHitCheckStop(pTarget);
 	}
 	
 }
@@ -296,7 +301,10 @@ func GetJumpLength(pClonk)
 }
 
 func ApplyShieldFactor(pFrom, pTo, damage)
-{
+{	
+	// totally prevent the strike?
+	if(pTo->~QueryCatchBlow(pFrom)) return 100;
+	
 	var shield=-1;
 	for(var i = GetEffectCount(0, pTo); i--;)
 	{
@@ -314,8 +322,11 @@ func ApplyShieldFactor(pFrom, pTo, damage)
     			}
     		}
     	}
-    if(shield == -1) return 0;
-    return shield;
+    	
+	
+
+    	if(shield == -1) return 0;
+   	 return shield;
 }
 
 func StartWeaponHitCheckEffect(pClonk, iLength, iInterval)
@@ -355,4 +366,22 @@ func GetWeaponSlow(pClonk)
 func ApplyWeaponBash(pTo, int strength, angle)
 {
 	AddEffect("IntIsBeingStruck", pTo, 2, 1, 0, GetID(), strength, angle);
+}
+
+func TranslateVelocity(object pTarget, int angle, int iLimited)
+{
+	var speed=Sqrt((pTarget->GetXDir(100) ** 2) + (pTarget->GetYDir(100) ** 2));
+	var a=Angle(0, 0, pTarget->GetXDir(), pTarget->GetYDir());
+	
+	if(iLimited)
+	{
+		//if(Abs(angle-a) > Abs(angle-(a+360)))
+		//	a=(a+360);
+		angle+=360;
+		a+=360;
+		angle=BoundBy(angle, a-iLimited, a+iLimited);
+	}
+	
+	pTarget->SetXDir(Sin(angle, speed), 100);
+	pTarget->SetYDir(-Cos(angle, speed), 100);
 }
