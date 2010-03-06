@@ -56,7 +56,7 @@ global func FxBoomAttackTimer(object target, int effect, int time)
 	{
 		if (!FindObject(Find_ID(BigBoomattack)))
 		{
-			ScheduleCall(nil,"GameOver",40);
+			ScheduleCall(FindObject(Find_ID(WindGenerator)),"GameOver",40);
 		}
 	}
 }
