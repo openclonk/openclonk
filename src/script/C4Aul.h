@@ -188,7 +188,6 @@ enum C4AulBCCType
 
 	AB_CALL,		// direct object call
 	AB_CALLFS,	// failsafe direct call
-	AB_CALLNS,	// direct object call: namespace operator
 	AB_STACK,		// push nulls / pop
 	AB_INT,			// constant: int
 	AB_BOOL,		// constant: bool

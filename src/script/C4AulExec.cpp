@@ -790,10 +790,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					PopValue();
 					break;
 
-				case AB_CALLNS:
-					// Ignore. TODO: Fix this.
-					break;
-
 				case AB_CALL:
 				case AB_CALLFS:
 					{

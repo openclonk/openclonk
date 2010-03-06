@@ -888,7 +888,6 @@ static const char * GetTTName(C4AulBCCType e)
 
 	case AB_CALL: return "CALL";		// direct object call
 	case AB_CALLFS: return "CALLFS";	// failsafe direct call
-	case AB_CALLNS: return "CALLNS";	// direct object call: namespace operator
 	case AB_STACK: return "STACK";		// push nulls / pop
 	case AB_INT: return "INT";			// constant: int
 	case AB_BOOL: return "bool";		// constant: bool
@@ -1096,7 +1095,6 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_EOFN:
 		case AB_EOF:
 		case AB_JUMP:
-		case AB_CALLNS:
 		case AB_DEBUG:
 			break;
 
@@ -1163,9 +1161,7 @@ void C4AulParseState::SetNoRef()
 		case AB_VARN_R: CPos->bccType = AB_VARN_V; break;
 		case AB_LOCALN_R: CPos->bccType = AB_LOCALN_V; break;
 		case AB_GLOBALN_R: CPos->bccType = AB_GLOBALN_V; break;
-		default:
-			// TODO
-			break;
+		default: break;
 		}
 	}
 
