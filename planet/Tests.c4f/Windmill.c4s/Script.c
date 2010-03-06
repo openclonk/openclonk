@@ -47,17 +47,10 @@ global func FxBoomAttackTimer(object target, int effect, int time)
 		{
 			Message("                   $MsgBoss$                   ");
 			CreateAttackWave( Random(360) , -1, Boomattack_angle_spread);
+			var gol = FindObject(Find_ID(Goal_SaveTheWindmills));
+			if(gol) gol->BossAttacks();
 		}
 
-	}
-	
-	// won!
-	if(wave > 13)
-	{
-		if (!FindObject(Find_ID(BigBoomattack)))
-		{
-			ScheduleCall(FindObject(Find_ID(WindGenerator)),"GameOver",40);
-		}
 	}
 }
 

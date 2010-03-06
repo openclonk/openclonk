@@ -2,22 +2,30 @@
 
 #include Library_Goal
 
-local score;
+local score, boss;
 
 func Initialize()
 {
 	score = CreateArray();
+	boss = false;
 	inherited(...);
 }
 
 public func IsFulfilled()
 {
 	if(!FindObject(Find_ID(WindGenerator)))
+	{
 		for(var i = 0; i<GetPlayerCount(); ++i)
 		{
 			EliminatePlayer(GetPlayerByIndex(i));
 			return false;
 		}
+	}
+	else if(boss)
+	{
+		if(!FindObject(Find_ID(BigBoomattack)))
+			return true;
+	}
 	return false;
 }
 
@@ -31,6 +39,11 @@ public func IncShotScore(int plr)
 {
 	score[GetPlayerID(plr)]++;
 	NotifyHUD();
+}
+
+public func BossAttacks()
+{
+	boss = true;
 }
 
 public func GetShortDescription(int plr)
