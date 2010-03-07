@@ -369,7 +369,9 @@ namespace Ogre
 
 		class ChunkFileHeader : public Chunk
 		{
-			static const std::string ExpectedVersion;
+			typedef std::map<std::string, uint32_t> VersionTable_t;
+			static const VersionTable_t VersionTable;
+			static const uint32_t CurrentVersion;
 		public:
 			std::string version;
 			

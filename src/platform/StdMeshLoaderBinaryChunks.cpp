@@ -20,13 +20,19 @@
 #include "StdMeshLoaderDataStream.h"
 #include <cassert>
 #include <boost/static_assert.hpp>
+#include <boost/assign/list_of.hpp>
 #include <string>
 
 namespace Ogre
 {
 	namespace Mesh
 	{
-		const std::string ChunkFileHeader::ExpectedVersion("[MeshSerializer_v1.41]");
+		const uint32_t ChunkFileHeader::CurrentVersion = 1041; // Major * 1000 + Minor
+		const std::map<std::string, uint32_t> ChunkFileHeader::VersionTable = boost::assign::map_list_of
+			// 1.41: Current version
+			("[MeshSerializer_v1.41]", CurrentVersion)
+			// 1.40: Changes to CID_Mesh_LOD chunks, we ignore those, so no special handling needed
+			("[MeshSerializer_v1.40]", 1040);
 
 		// Chunk factory
 		Chunk *Chunk::Read(DataStream *stream)
@@ -81,8 +87,8 @@ namespace Ogre
 		void ChunkFileHeader::ReadImpl(DataStream *stream)
 		{
 			// Simple version check
-			version = stream->Read<std::string>();
-			if (version != ExpectedVersion)
+			VersionTable_t::const_iterator it = VersionTable.find(stream->Read<std::string>());
+			if (it == VersionTable.end())
 				throw InvalidVersion();
 		}
 
