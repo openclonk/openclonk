@@ -60,7 +60,7 @@ function SearchDir($path) {
 				$divs = $doc->getElementsByTagName('div');
 				foreach($divs as $div) {
 					if(strpos($div->getAttribute('class'), 'text') !== false) {
-						if(preg_match("/\b" . htmlspecialchars($_GET['search']) . "\b/i", strip_tags($div->nodeValue))) {
+						if(strpos(strip_tags($div->nodeValue),htmlspecialchars($_GET['search'])) !== false) {
 							$dirname = basename(rtrim($path, '/'));
 							if(!isset($result[$dirname]))
 								$result[$dirname] = array();
@@ -107,7 +107,7 @@ text-decoration: none;
 <body>
 <?php
 if ($lang == 'de') {
-	getprint("http://www.openclonk.org/header/header.php?p=docsde");
+	readfile("http://www.openclonk.org/header/header.php?p=docsde");
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
@@ -122,7 +122,7 @@ if ($lang == 'de') {
 <h1>Suche nach Scriptfunktionen</h1>
 HEADER;
 } else {
-	getprint("http://www.openclonk.org/header/header.php?p=docs");
+	readfile("http://www.openclonk.org/header/header.php?p=docs");
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
