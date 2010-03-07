@@ -344,7 +344,7 @@ func DoWeaponSlow(pClonk, iStrength)
 {
 	var e=GetEffect("IntWeaponCharge", pClonk);
 	var s=Sqrt( (pClonk->GetXDir(1000)) ** 2 + (pClonk->GetYDir(1000)) ** 2);
-	var angle=Angle(0,0,pClonk->GetXDir(), pClonk->GetXDir());
+	var angle=Angle(0,0,pClonk->GetXDir(), pClonk->GetYDir());
 	
 	s-=iStrength;
 	if(s < 0) s=0;

@@ -76,6 +76,7 @@ func WeaponStrikeExpired()
 
 func CheckStrike(iTime)
 {
+	//if(iTime < 20) return;
 	var width=8;
 	var height=20;
 	var slowedVelocity=GetWeaponSlow(Contained());
@@ -92,28 +93,48 @@ func CheckStrike(iTime)
 		else angle=(Max(5, Abs(Contained()->GetXDir())));
 	}
 	
-	for(var obj in FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_OCF(OCF_Living), Find_NoContainer(), Find_Exclude(Contained())))
+	for(var obj in FindObjects(Find_AtRect(-width/2, -height/2, width, height), Find_OCF(OCF_Alive), Find_NoContainer(), Find_Exclude(Contained())))
 	{
 		found=true;
+		
+		if(iTime < 20)
+		{
+			DoWeaponSlow(obj, 800);
+			continue;
+		}
+		
 		var velocity=GetRelativeVelocity(Contained(), obj) * 2;
 		velocity+= slowedVelocity / 10;
-		velocity=Max(5, velocity);
-		if(velocity > 30) velocity=30;
+		velocity=Max(100, velocity*3);
+		if(velocity > 300) velocity=300;
 		
 		var shield=ApplyShieldFactor(Contained(), obj, damage);
 		if(shield == 100)
 			continue;
 		
-		var damage=((100-shield)*(5000 * velocity) / 100) / 100;
+		var damage=((100-shield)*(15000 * velocity) / 100) / 100;
 		obj->DoEnergy(-damage,  true, 0, Contained()->GetOwner());
 		if(doBash)
 			ApplyWeaponBash(obj, velocity, Angle(0, 0, angle, Contained()->GetYDir()));
 		
 		
 		if(doBash)
-			DoWeaponSlow(obj, 10);
+			DoWeaponSlow(obj, 800);
 	}
-	if(found && doBash) DoWeaponSlow(Contained(), 20);
+	if(found)
+	{
+		if(iTime < 20)
+		{
+			DoWeaponSlow(Contained(), 1000);
+		}
+		else
+		{
+			this->Sound("ShieldMetal*", false);
+			if(doBash)
+				DoWeaponSlow(Contained(), 2000);
+			this->StopWeaponHitCheckEffect(Contained());
+		}
+	}
 }
 
 

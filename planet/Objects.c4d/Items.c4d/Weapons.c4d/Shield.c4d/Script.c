@@ -61,7 +61,10 @@ func OnWeaponHitCheckStop()
 func CheckStrike(iTime)
 {
 	var found=false;
-	for(var obj in FindObjects(Find_Distance(20), Find_Category(C4D_Object), Find_NoContainer(), Find_Exclude(Contained())))
+	var found_alive=false;
+	var push_livings=false;
+	if(Abs(Contained()->GetXDir()) > 5 || Abs(Contained()->GetYDir()) > 5) push_livings=true;
+	for(var obj in FindObjects(Find_Distance(20), Find_Or(Find_Category(C4D_Object), Find_OCF(OCF_Alive)), Find_NoContainer(), Find_Exclude(Contained())))
 	{
 
 		if(obj->GetX() > GetX())
@@ -73,7 +76,18 @@ func CheckStrike(iTime)
 		var a=Angle(GetX(), GetY(), obj->GetX(), obj->GetY());
 		if(!Inside(a, iAngle-45, iAngle+45))
 			if(!Inside(a+360, iAngle-45, iAngle+45)) continue;
-
+		
+		if(obj->GetOCF() & OCF_Alive)
+		{
+			if(push_livings)
+			{	
+				found_alive=true;
+				obj->SetXDir((obj->GetXDir() + Contained()->GetXDir() * 3) / 4);
+				obj->SetYDir((obj->GetYDir() + Contained()->GetYDir() * 3) / 4);
+			}
+			continue;
+		}
+		
 		var speed=Sqrt((obj->GetXDir(100)**2) + (obj->GetYDir(100)**2));
 		if(Abs(iAngle-a) > Abs(iAngle-(a+360)))
 			a=((a+360) + iAngle)/2;
@@ -84,8 +98,12 @@ func CheckStrike(iTime)
 		obj->SetYDir(-Cos(a, speed), 100); 
 		found=true;
 	}
+	
+	if(found_alive)
+		DoWeaponSlow(Contained(), 5000);
+	
 	if(found)
-		Sound("ShieldMetalHit*", false, this);
+		this->Sound("ShieldMetalHit*", false);
 	/*for(var cnt=0;cnt<10;++cnt)
 	{
 		CreateParticle("Spark", Sin(iAngle, 4*cnt), -Cos(iAngle, 4*cnt), 0, 0, 50, RGB(255,255,255));
@@ -101,7 +119,7 @@ func HitByWeapon(pFrom, iDamage)
 	else if(!Inside(iAngle, 180, 360)) return 0;
 		
 	// bash him hard!
-	ApplyWeaponBash(pFrom, 50, iAngle);
+	ApplyWeaponBash(pFrom, 500, iAngle);
 	
 	// shield factor
 	return 50;
