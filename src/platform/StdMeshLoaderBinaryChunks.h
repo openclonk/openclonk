@@ -499,8 +499,10 @@ namespace Ogre
 				VDES_Diffuse = 5,
 				VDES_Specular = 6,
 				VDES_Texcoords = 7,
+				VDES_Binormal = 8,
+				VDES_Tangent = 9,
 				VDES_MIN = VDES_Position,
-				VDES_MAX = VDES_Texcoords
+				VDES_MAX = VDES_Tangent
 			} semantic;
 			uint16_t index;
 		protected:
