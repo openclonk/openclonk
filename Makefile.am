@@ -405,6 +405,7 @@ src/platform/C4Video.h \
 src/platform/C4VideoPlayback.cpp \
 src/platform/C4VideoPlayback.h \
 src/platform/OpenURL.cpp \
+src/platform/PlatformAbstraction.h \
 src/platform/StdConfig.cpp \
 src/platform/StdConfig.h \
 src/platform/StdD3D.cpp \

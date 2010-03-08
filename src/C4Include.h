@@ -24,6 +24,7 @@
 #ifndef INC_C4Include
 #define INC_C4Include
 
+#include "PlatformAbstraction.h"
 #include "Standard.h"
 #include "C4Prototypes.h"
 #include "Fixed.h"
