@@ -9,21 +9,13 @@
 // has extra slot
 #include Library_HasExtraSlot
 
-local aimtime;
 local fAiming;
-local fWait;
 
 local iArrowMesh;
-local iAnimLoad;
-local iDrawAnim;
-local iCloseAnim;
-
-local target_angle;
 
 public func GetCarryMode() { return CARRY_HandBack; }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
-
 
 /* +++++++++++ Controls ++++++++++++++ */
 
@@ -73,7 +65,6 @@ public func ControlUseStart(object clonk, int x, int y)
 			obj->Enter(this);
 		}
 	}
-	aimtime = 30;
 	
 	if(!Contents(0))
 	{
@@ -87,7 +78,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	
 	// Attach the arrow during the animation
 	ScheduleCall(this, "AddArrow", 5*animation_set["LoadTime"]/20, 1, clonk);
-	iDrawAnim = PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), animation_set["LoadTime"], ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), animation_set["LoadTime"], ANIM_Hold), Anim_Const(1000));
 
 	clonk->StartLoad(this);
 	
@@ -127,7 +118,8 @@ public func ControlUseHolding(object clonk, int x, int y)
 // Stopping says the clonk to stop with aiming (he will go on untill he has finished loading and aiming at the given angle)
 public func ControlUseStop(object clonk, int x, int y)
 {
-	clonk->StopAim();
+	if(fAiming)
+		clonk->StopAim();
 	return true;
 }
 
@@ -149,8 +141,8 @@ public func StopAim(object clonk, int angle)
 	}
 
 	// Open the hand to let the string go and play the fire animation
-	iDrawAnim = PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold), Anim_Const(1000));
-	iCloseAnim = clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
+	PlayAnimation("Fire", 6, Anim_Linear(0, 0, GetAnimationLength("Fire"), animation_set["ShootTime"], ANIM_Hold), Anim_Const(1000));
+	clonk->PlayAnimation("Close1Hand", 11, Anim_Const(0), Anim_Const(1000));
 	clonk->StartShoot(this);
 	return true;
 }

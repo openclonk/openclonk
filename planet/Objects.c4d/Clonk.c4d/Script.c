@@ -463,7 +463,7 @@ func DoUpdateAttach(bool sec)
 	else if(iAttachMode == CARRY_BothHands)
 	{
 		if(sec) return;
-		if(HasHandAction(sec))
+		if(HasHandAction(sec) && !sec)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_tool1", bone, trans);
 			PlayAnimation("CarryArms", 6, Anim_Const(obj->~GetCarryPhase(this)), Anim_Const(1000));
@@ -474,7 +474,7 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_Spear)
 	{
-		if(HasHandAction(sec))
+		if(HasHandAction(sec) && !sec)
 		{
 			PlayAnimation("CarrySpear", 6, Anim_Const(0), Anim_Const(1000));
 		}
@@ -483,7 +483,7 @@ func DoUpdateAttach(bool sec)
 	}
 	else if(iAttachMode == CARRY_Musket)
 	{
-		if(HasHandAction(sec))
+		if(HasHandAction(sec) && !sec)
 		{
 			iHandMesh[sec] = AttachMesh(obj, "pos_hand2", bone, trans);
 			PlayAnimation("CarryMusket", 6, Anim_Const(0), Anim_Const(1000));
@@ -810,15 +810,18 @@ public func StartAim(object weapon)
 
 func FxIntAimTimer(target, number, time)
 {
-	var pos, delta_pos;
+	var angle, delta_angle, length;
+	var speed = aim_set["AimSpeed"];
+	if(speed == nil) speed = 50;
 	if(aim_set["AimMode"] == AIM_Position)
 	{
-		pos = GetAnimationPosition(aim_animation_index);
-		delta_pos = BoundBy(GetAnimationLength(aim_set["AnimationAim"])*Abs(aim_angle)/180-pos, -100, 100);
-		SetAnimationPosition(aim_animation_index, Anim_Const(pos+delta_pos));
+		length = GetAnimationLength(aim_set["AnimationAim"]);
+		angle = GetAnimationPosition(aim_animation_index)*1800/length;
+		delta_angle = BoundBy(Abs(aim_angle*10)-angle, -speed, speed);
+		SetAnimationPosition(aim_animation_index, Anim_Const( (angle+delta_angle)*length/1800 ));
 	}
 	// We have reached the angle and we want to stop
-	if(delta_pos == 0 && aim_stop == 1)
+	if(Abs(delta_angle) <= 5 && aim_stop == 1)
 	{
 		DoStopAim();
 		return -1;
@@ -901,7 +904,14 @@ public func ApplySet(set)
 
 public func ResetHands(bool pause)
 {
-	aim_weapon->~Reset(this);
+	if(aim_weapon != nil)
+	{
+		aim_weapon->~Reset(this);
+
+		if(aim_set["AnimationReplacements"] != nil)
+			for(var replace in aim_set["AnimationReplacements"])
+				ReplaceAction(replace[0], nil);
+	}
 
 	aim_stop = 0;
 	aim_angle = -90+180*GetDir();
@@ -911,9 +921,6 @@ public func ResetHands(bool pause)
 	RemoveEffect("IntWalkSlow", this);
 
 	RemoveEffect("IntAim", this);
-
-	for(var replace in aim_set["AnimationReplacements"])
-		ReplaceAction(replace[0], nil);
 	
 	SetTurnType(0, -1);
 	SetHandAction(0);
