@@ -713,8 +713,8 @@ private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
 	// by setting the dir too.
 	
 	
-	//   not riding and                not in building
-	if (GetProcedure() != "ATTACH" && !Contained())
+	//   not riding and                not in building  not while scaling
+	if (GetProcedure() != "ATTACH" && !Contained() &&   GetProcedure() != "SCALE")
 	{
 		// pushing vehicle: object to turn is the vehicle
 		var dir_obj = GetActionTarget();

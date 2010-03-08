@@ -502,7 +502,7 @@ public func GetHandMesh(object obj)
 	  return iHandMesh[1];
 }
 
-static const CARRY_None = 0;
+static const CARRY_None         = 0;
 static const CARRY_Hand         = 1;
 static const CARRY_HandBack     = 2;
 static const CARRY_HandAlways   = 3;
@@ -669,6 +669,274 @@ func GetDirection()
 	else return COMD_Left;
 }
 
+/* Aim Manager */
+local aim_set;
+local aim_weapon;
+local aim_animation_index;
+local aim_angle;
+local aim_stop;
+local aim_pause;
+
+local aim_schedule_timer;
+local aim_schedule_call;
+
+static const AIM_Position = 1;
+
+func FxIntAimCheckProcedureStart(target, number, tmp)
+{
+	if(tmp) return;
+	aim_pause = 0;
+}
+
+func FxIntAimCheckProcedureTimer()
+{
+	// check procedure
+	if(!ReadyToAction())
+	{
+		// Already released? cancel
+		if(aim_stop)
+		{
+			CancelAiming();
+			return -1;
+		}
+		if(aim_pause != 1)
+		{
+			PauseAim();
+			aim_schedule_call = nil;
+			aim_schedule_timer = nil;
+			aim_pause = 1;
+		}
+	}
+	else
+	{
+		if(aim_pause == 1)
+		{
+			if(!RestartAim()) // Can't start again? :-( stop
+			{
+				aim_weapon = nil;
+				aim_set = nil;
+				return -1;
+			}
+			aim_pause = 0;
+		}
+	}
+	if(aim_schedule_timer != nil)
+	{
+		aim_schedule_timer--;
+		if(aim_schedule_timer == 0)
+		{ 
+			Call(aim_schedule_call);
+			aim_schedule_call = nil;
+			aim_schedule_timer = nil;
+		}
+	}
+}
+
+func PauseAim()
+{
+	ResetHands(1);
+	aim_weapon->~OnPauseAim(this);
+}
+
+func RestartAim()
+{
+	if(!aim_weapon->~OnRestartAim(this)) return false;
+	// Applay the set
+	ApplySet(aim_set);
+	return true;
+}
+
+public func StartLoad(object weapon)
+{
+	// only if we aren't adjusted to this weapon already
+	if(weapon != aim_weapon)
+	{
+		// Reset old
+		if(aim_weapon != nil) aim_weapon->~Reset();
+		if(aim_set    != nil) ResetHands();
+
+		// Remember new
+		aim_weapon = weapon;
+		aim_set = weapon->~GetAnimationSet();
+
+		// Applay the set
+		ApplySet(aim_set);
+
+		// Add effect to ensure procedure
+		AddEffect("IntAimCheckProcedure", this, 1,  1, this);
+	}
+	
+	if(aim_set["AnimationLoad"] != nil)
+		PlayAnimation(aim_set["AnimationLoad"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationLoad"]), aim_set["LoadTime"], ANIM_Remove), Anim_Const(1000));
+
+	aim_schedule_timer = aim_set["LoadTime"];
+	aim_schedule_call  = "StopLoad";
+}
+
+public func StopLoad()
+{
+	if(!aim_weapon->~StopLoad(this)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
+		ResetHands();
+}
+
+public func StartAim(object weapon)
+{
+	// only if we aren't adjusted to this weapon already
+	if(weapon != aim_weapon)
+	{
+		// Reset old
+		if(aim_weapon != nil) aim_weapon->~Reset();
+		if(aim_set    != nil) ResetHands();
+
+		// Remember new
+		aim_weapon = weapon;
+		aim_set = weapon->~GetAnimationSet();
+
+		// Applay the set
+		ApplySet(aim_set);
+
+		// Add effect to ensure procedure
+		AddEffect("IntAimCheckProcedure", this, 1,  1, this);
+	}
+
+	if(aim_set["AnimationAim"] != nil)
+	{
+		if(aim_set["AimMode"] == AIM_Position)
+			aim_animation_index = PlayAnimation(aim_set["AnimationAim"], 10, Anim_Const(GetAnimationLength(aim_set["AnimationAim"])/2), Anim_Const(1000));
+	}
+
+	AddEffect("IntAim", this, 1, 1, this);
+}
+
+func FxIntAimTimer(target, number, time)
+{Message("->%d", this, time);
+	var pos, delta_pos;
+	if(aim_set["AimMode"] == AIM_Position)
+	{
+		pos = GetAnimationPosition(aim_animation_index);
+		delta_pos = BoundBy(GetAnimationLength(aim_set["AnimationAim"])*Abs(aim_angle)/180-pos, -100, 100);
+		SetAnimationPosition(aim_animation_index, Anim_Const(pos+delta_pos));
+	}
+	// We have reached the angle and we want to stop
+	if(delta_pos == 0 && aim_stop == 1)
+	{
+		DoStopAim();
+		return -1;
+	}
+}
+
+public func SetAimPosition(int angle)
+{
+	aim_angle = angle;
+}
+
+public func StopAim()
+{
+	// Schedule Stop
+	aim_stop = 1;
+}
+
+private func DoStopAim()
+{
+	if(!aim_weapon->~StopAim(this, aim_angle)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
+		ResetHands();
+}
+
+public func StartShoot(object weapon)
+{
+	// only if we aren't adjusted to this weapon already
+	if(weapon != aim_weapon)
+	{
+		// Reset old
+		if(aim_weapon != nil) aim_weapon->~Reset();
+		if(aim_set    != nil) ResetHands();
+
+		// Remember new
+		aim_weapon = weapon;
+		aim_set = weapon->~GetAnimationSet();
+
+		// Applay the set
+		ApplySet(aim_set);
+
+		// Add effect to ensure procedure
+		AddEffect("IntAimCheckProcedure", this, 1,  1, this);
+	}
+
+	if(aim_set["AnimationShoot"] != nil)
+		PlayAnimation(aim_set["AnimationShoot"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
+
+	aim_schedule_timer = aim_set["ShootTime"];
+	aim_schedule_call  = "StopShoot";
+}
+
+public func StopShoot()
+{
+	if(!aim_weapon->~StopShoot(this)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
+		ResetHands();
+}
+
+public func CancelAiming()
+{
+	ResetHands();
+}
+
+public func ApplySet(set)
+{
+		// Setting the hands as blocked, so that no other items are carried in the hands
+	SetHandAction(1);
+
+	if(set["TurnType"] != nil)
+		SetTurnType(set["TurnType"], 1);
+
+	if(set["AnimationReplacements"] != nil)
+		for(var replace in set["AnimationReplacements"])
+			ReplaceAction(replace[0], replace[1]);
+
+	if(set["WalkSpeed"] != nil)
+		AddEffect("IntWalkSlow", this, 1, 0, this, 0, set["WalkSpeed"]);
+}
+
+public func ResetHands(bool pause)
+{
+	aim_weapon->~Reset(this);
+
+	aim_stop = 0;
+	aim_angle = -90+180*GetDir();
+
+	StopAnimation(GetRootAnimation(10));
+
+	RemoveEffect("IntWalkSlow", this);
+
+	RemoveEffect("IntAim", this);
+
+	for(var replace in aim_set["AnimationReplacements"])
+		ReplaceAction(replace[0], nil);
+	
+	SetTurnType(0, -1);
+	SetHandAction(0);
+
+	if(!pause)
+	{
+		aim_weapon = nil;
+		aim_set = nil;
+
+		RemoveEffect("IntAimCheckProcedure", this);
+	}
+}
+
+/* +++++++++++ Slow walk +++++++++++ */
+
+func FxIntWalkSlowStart(pTarget, iNumber, fTmp, iValue)
+{
+	if(iValue == nil) iValue = 30000;
+	pTarget->SetPhysical("Walk", iValue, PHYS_StackTemporary);
+}
+
+func FxIntWalkSlowStop(pTarget, iNumber)
+{
+	pTarget->ResetPhysical("Walk");
+}
+
 /* Animation Manager */
 
 local PropAnimations;
@@ -745,7 +1013,11 @@ func GetWalkAnimationPosition(string anim)
 {
 	if(PropAnimations != nil)
 		if(GetProperty(Format("%s_Position", anim), PropAnimations))
-			return GetProperty(Format("%s_Position", anim), PropAnimations);
+		{
+			var length = GetAnimationLength(anim);
+			if(GetProperty(anim, PropAnimations)) length = GetAnimationLength(GetProperty(anim, PropAnimations));
+			return Anim_AbsX(0, 0, length, GetProperty(Format("%s_Position", anim), PropAnimations));
+		}
 	// TODO: Choose proper starting positions, depending on the current
 	// animation and its position: For Stand->Walk or Stand->Run, start
 	// with a frame where one of the clonk's feets is on the ground and

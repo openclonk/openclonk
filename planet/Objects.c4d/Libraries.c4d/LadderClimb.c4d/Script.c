@@ -5,8 +5,6 @@
 	Gives the ability to climb on ladders
 --*/
 
-#strict 2
-
 local jump_startcall;
 local no_ladder_counter;
 
@@ -25,9 +23,12 @@ func Initialize()
 		StartCall = "StartScale",
 	}, GetProperty("ActMap"));
 	// save old phasecall of jump
-	jump_startcall = GetProperty("StartCall", GetProperty("Jump", GetProperty("ActMap")));
-	// and add new one
-	SetProperty("StartCall", "StartSearchLadder", GetProperty("Jump", GetProperty("ActMap")));
+	if(jump_startcall == nil)
+	{
+		jump_startcall = GetProperty("StartCall", GetProperty("Jump", GetProperty("ActMap")));
+		// and add new one
+		SetProperty("StartCall", "StartSearchLadder", GetProperty("Jump", GetProperty("ActMap")));
+	}
 	return _inherited(...);
 }
 
@@ -42,11 +43,13 @@ func StartSearchLadder()
 	// call overwriten old phase call
 	if(jump_startcall != nil && jump_startcall != "StartSearchLadder")
 		Call(jump_startcall);
-	ScheduleCall(this, "SearchLadder", 1);
+	if(!GetEffect("InSearchLadder", this))
+		AddEffect("IntSearchLadder", this, 1, 1, this);
 }
 
-func SearchLadder()
+func FxIntSearchLadderTimer()
 {
+	if(GetAction() != "Jump") return -1;
 	var ladder;
 	if(!no_ladder_counter) ladder = FindObject(Find_AtRect(-5,-5,10,10), Find_Func("IsLadder"));
 	else no_ladder_counter--;
@@ -57,9 +60,8 @@ func SearchLadder()
 		Message("Ladder", this);
 		ladder->~OnLadderGrab(this);
 		AddEffect("IntClimbControl", this, 1, 1, this, 0, ladder);
-		return true;
+		return -1;
 	}
-	ScheduleCall(this, "SearchLadder", 1);
 }
 
 func FxIntClimbControlStart(target, number, tmp, ladder)
@@ -86,6 +88,12 @@ func FxIntClimbControlTimer(target, number)
 		}
 		if(EffectVar(0, target, number) == nil)
 		{
+			var contact = GetContact(-1);
+			if(contact & CNAT_Left || contact & CNAT_Right)
+			{
+				SetAction("Scale");
+				return -1;
+			}
 			SetAction("Jump");
 			SetXDir(-5+10*GetDir());
 			SetYDir(-5);
@@ -103,6 +111,12 @@ func FxIntClimbControlTimer(target, number)
 		}
 		if(EffectVar(0, target, number) == nil)
 		{
+			var contact = GetContact(-1);
+			if(contact & CNAT_Left || contact & CNAT_Right)
+			{
+				SetAction("Scale");
+				return -1;
+			}
 			SetAction("Jump");
 			return -1;
 		}
@@ -166,7 +180,7 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 		else
 		{
 			SetAction("Jump");
-			SetXDir(-5);
+			SetXDir(-15);
 		}
 	}
 	else if(ctrl == CON_Right)
@@ -183,7 +197,7 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 		else
 		{
 		SetAction("Jump");
-		SetXDir(+5);
+		SetXDir(+15);
 		}
 	}
 	return 1;

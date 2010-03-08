@@ -7,7 +7,6 @@
 	The segments are an extra object, which handels the graphics and the detection of the ladder by the clonk.
 	Strings are drawn by the engine, which is a bit buggy cause the engine enforces it's own line handling.
 */
-#strict 2
 
 local particles;
 
@@ -36,7 +35,7 @@ TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0,
 			segments[i-1]->SetPreviousLadder(segments[i]);
 		}
 	}
-  SetAction("Connect", segments[0], segments[GetLength(segments)-1]);
+//  SetAction("Connect", segments[0], segments[GetLength(segments)-1]);
   SetVertexXY(0, GetX(), GetY());
   SetVertexXY(1, GetX(), GetY());
 	particles = CreateArray(MaxParticles);
@@ -86,12 +85,12 @@ func UpdateLines()
 
 		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
   }
-/*	for(var i=0; i < MaxParticles; i++)
+	for(var i=0; i < MaxParticles; i++)
 	{
 		if(i+MaxParticles >= GetVertexNum()) AddVertex();
 		SetVertexXY(i+MaxParticles, GetPartX(MaxParticles-i-1)+2, GetPartY(MaxParticles-i-1)-1);
-  }*/
-	while(GetVertexNum()>MaxParticles) RemoveVertex(GetVertexNum()-1);
+  }
+	while(GetVertexNum()>MaxParticles*2) RemoveVertex(GetVertexNum()-1);
 }
 /*
 GetCursor()->CreateObject(Test_Rope, 40, -100)
@@ -179,6 +178,20 @@ func SatisfyConstraints() {
     particles[i][0]   = Vec_Add(x1, Vec_Div(Vec_Mul(delta, invmass1*diff), 1000));
     particles[i+1][0] = Vec_Sub(x2, Vec_Div(Vec_Mul(delta, invmass2*diff), 1000));
 	}
+/*	for(var i=0; i < MaxParticles-1; i++)
+	{
+		// Keep length
+		var restlength = 5*Precision;
+    var x1 = particles[i][0];
+    var x2 = particles[i+1][0];
+		var invmass1 = 0;//particles[i][3];
+		var invmass2 = 1;//particles[i+1][3];
+    var delta = Vec_Sub(x2,x1);
+    var deltalength = Sqrt(Vec_Dot(delta,delta));
+    var diff = (deltalength-restlength)*1000/(deltalength*(invmass1+invmass2));
+    particles[i][0]   = Vec_Add(x1, Vec_Div(Vec_Mul(delta, invmass1*diff), 1000));
+    particles[i+1][0] = Vec_Sub(x2, Vec_Div(Vec_Mul(delta, invmass2*diff), 1000));
+	}*/
 	for(var i=0; i < MaxParticles; i++)
 	{
 		// Don't touch ground

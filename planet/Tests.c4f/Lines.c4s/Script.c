@@ -27,7 +27,7 @@ func Initialize()
 	var clonk = GetCrew(iPlr);
 	clonk->DoEnergy(100000);
 	clonk->SetPosition(50, 490);
-	clonk->CreateContents(Musket);
-	clonk->Collect(CreateObject(LeadShot));
+	clonk->CreateContents(Bow);
+	clonk->Collect(CreateObject(Arrow));
 	return;
 }
