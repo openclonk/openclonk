@@ -809,7 +809,7 @@ public func StartAim(object weapon)
 }
 
 func FxIntAimTimer(target, number, time)
-{Message("->%d", this, time);
+{
 	var pos, delta_pos;
 	if(aim_set["AimMode"] == AIM_Position)
 	{
@@ -827,7 +827,10 @@ func FxIntAimTimer(target, number, time)
 
 public func SetAimPosition(int angle)
 {
+	// Save angle
 	aim_angle = angle;
+	// Remove scheduled stop if aiming again
+	aim_stop = 0;
 }
 
 public func StopAim()

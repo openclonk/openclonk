@@ -60,7 +60,6 @@ public func ControlUseStart(object clonk, int x, int y)
 	// if the clonk doesn't have an action where he can use it's hands do nothing
 	if(!clonk->HasHandAction())
 	{
-		fWait = 1;
 		return true;
 	}
 	
@@ -84,7 +83,6 @@ public func ControlUseStart(object clonk, int x, int y)
 	}
 	
 	// Start aiming
-	fWait = false;
 	fAiming = 1;
 	
 	// Attach the arrow during the animation
