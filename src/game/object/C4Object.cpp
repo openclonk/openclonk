@@ -552,6 +552,10 @@ void C4Object::DrawFace(C4TargetFacet &cgo, float offX, float offY, int32_t iPha
 
 void C4Object::DrawActionFace(C4TargetFacet &cgo, float offX, float offY)
 	{
+	// This should not be called for meshes since Facet has no meaning
+	// for them. Only use DrawFace() with meshes!
+	assert(GetGraphics()->Type == C4DefGraphics::TYPE_Bitmap);
+
 	// Regular action facet
 	const float swdt = float(Action.Facet.Wdt);
 	const float shgt = float(Action.Facet.Hgt);
@@ -2382,7 +2386,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 	else
 		{
 		// FacetBase
-		if (Action.pActionDef->GetPropertyInt(P_FacetBase))
+		if (Action.pActionDef->GetPropertyInt(P_FacetBase) || GetGraphics()->Type != C4DefGraphics::TYPE_Bitmap)
 			DrawFace(cgo, offX, offY, 0, Action.DrawDir);
 
 		// Special: stretched action facet
@@ -2396,7 +2400,7 @@ void C4Object::Draw(C4TargetFacet &cgo, int32_t iByPlayer, DrawMode eDrawMode)
 					(fixtof(Action.Target->fix_y) + Action.Target->Shape.GetY()) - (fixtof(fix_y) + Shape.GetY() + Action.FacetY),
 					true);
 			}
-		else if (Action.Facet.Surface || GetGraphics()->Type != C4DefGraphics::TYPE_Bitmap)
+		else if (Action.Facet.Surface)
 			DrawActionFace(cgo, offX, offY);
 		}
 
