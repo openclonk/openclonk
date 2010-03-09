@@ -57,6 +57,8 @@ local aim_pause;
 local aim_schedule_timer;
 local aim_schedule_call;
 
+local aim_pause_timer;
+
 // Aim modes
 static const AIM_Position = 1; // The aim angle alters the position of the animation (0° menas 0% animation position, 180° menas 100% andimation position)
 static const AIM_Weight   = 2; // The aim angle alters with blending between AnimationAim (for 0°) and AnimationAim2 (for 180°)
@@ -71,6 +73,7 @@ func FxIntAimCheckProcedureStart(target, number, tmp)
 {
 	if(tmp) return;
 	aim_pause = 0;
+	aim_pause_timer = 0;
 }
 
 func FxIntAimCheckProcedureTimer()
@@ -78,22 +81,28 @@ func FxIntAimCheckProcedureTimer()
 	// check procedure
 	if(!ReadyToAction())
 	{
-		// Already released? cancel
-		if(aim_stop)
+		if(aim_pause_timer >= 20) // Wait 20 frames, so a very short scale passage doesn't ruin aiming TODO: see if this is a good idea
 		{
-			CancelAiming();
-			return -1;
+			// Already released? cancel
+			if(aim_stop)
+			{
+				CancelAiming();
+				return -1;
+			}
+			if(aim_pause != 1)
+			{
+				PauseAim();
+				aim_schedule_call = nil;
+				aim_schedule_timer = nil;
+				aim_pause = 1;
+			}
+			aim_pause_timer = 0;
 		}
-		if(aim_pause != 1)
-		{
-			PauseAim();
-			aim_schedule_call = nil;
-			aim_schedule_timer = nil;
-			aim_pause = 1;
-		}
+		else aim_pause_timer++;
 	}
 	else
 	{
+		aim_pause_timer = 0;
 		if(aim_pause == 1)
 		{
 			if(!RestartAim()) // Can't start again? :-( stop
@@ -275,7 +284,7 @@ public func CancelAiming()
 
 public func ApplySet(set)
 {
-		// Setting the hands as blocked, so that no other items are carried in the hands
+	// Setting the hands as blocked, so that no other items are carried in the hands
 	SetHandAction(1);
 
 	if(set["TurnType"] != nil)
