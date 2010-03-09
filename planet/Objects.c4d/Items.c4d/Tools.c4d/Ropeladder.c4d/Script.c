@@ -25,9 +25,13 @@ protected func Initialize()
 TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
 
 	segments = CreateArray(MaxParticles);
-	for(var i = 0; i < MaxParticles; i++)
+	for(var i = MaxParticles-1; i >= 0; i--)
 	{
 		segments[i] = CreateObject(Ropeladder_Segment);
+		if(i == 0) segments[i]->SetGraphics("NoRope");
+	}
+	for(var i = 0; i < MaxParticles; i++)
+	{
 		segments[i]->SetMaster(this, i);
 		if(i > 0)
 		{
@@ -35,17 +39,12 @@ TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0,
 			segments[i-1]->SetPreviousLadder(segments[i]);
 		}
 	}
-//  SetAction("Connect", segments[0], segments[GetLength(segments)-1]);
-  SetVertexXY(0, GetX(), GetY());
-  SetVertexXY(1, GetX(), GetY());
 	particles = CreateArray(MaxParticles);
 	for(var i = 0; i < MaxParticles; i++)
 		particles[i] = [[ (GetX()+i*1)*Precision, GetY()*Precision], [ (GetX()+i*1)*Precision, GetY()*Precision], [0,1*Precision], 1]; // Pos, Oldpos, acceleration (gravity), mass
 	particles[0][2] = [0,0];
 	particles[0][3] = 0;
-	SetProperty("LineColors", [RGB(100,60)]);
 	SetPosition(GetX(), GetY()-10);
-//	Message("@!", this);
 	Verlet(1);
 }
 
@@ -79,18 +78,14 @@ func UpdateLines()
 	var fTimeStep = 1;
   for(var i=0; i < MaxParticles; i++)
 	{
-		if(i >= GetVertexNum()) AddVertex();
-
-		SetVertexXY(i, GetPartX(i)-2, GetPartY(i)+1);
-
 		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
+		segments[i]->SetObjDrawTransform(1000, 0, particles[i][0][0]*10-GetPartX(i)*1000, 0, 1000, particles[i][0][1]*10-GetPartY(i)*1000);
+
+		var angle;
+		if(i >= 1)
+			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
+		segments[i]->SetR(angle);
   }
-	for(var i=0; i < MaxParticles; i++)
-	{
-		if(i+MaxParticles >= GetVertexNum()) AddVertex();
-		SetVertexXY(i+MaxParticles, GetPartX(MaxParticles-i-1)+2, GetPartY(MaxParticles-i-1)-1);
-  }
-	while(GetVertexNum()>MaxParticles*2) RemoveVertex(GetVertexNum()-1);
 }
 /*
 GetCursor()->CreateObject(Test_Rope, 40, -100)
@@ -140,15 +135,15 @@ public func GetLadderData(index, &startx, &starty, &endx, &endy, &angle)
 	{
 		endx = startx;
 		endy = starty-5;
-		angle = Angle(GetPartX(2), GetPartY(2), GetPartX(0), GetPartY(0));
+		angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
 		return true;
 	}
 	if(index == MaxParticles-1)
 	{
-		angle = Angle(GetPartX(MaxParticles-1), GetPartY(MaxParticles-1), GetPartX(MaxParticles-3), GetPartY(MaxParticles-3));
+		angle = Angle(particles[index][0][0], particles[index][0][1], particles[index-2][0][0], particles[index-2][0][1]);
 	}
 	else
-		angle = Angle(GetPartX(index+1), GetPartY(index+1), GetPartX(index-1), GetPartY(index-1));
+		angle = Angle(particles[index+1][0][0], particles[index+1][0][1], particles[index-1][0][0], particles[index-1][0][1]);
 	endx = GetPartX(index-1);
 	endy = GetPartY(index-1);
 	return true;
