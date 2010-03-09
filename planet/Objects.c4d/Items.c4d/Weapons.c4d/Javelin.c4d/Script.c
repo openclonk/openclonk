@@ -9,13 +9,24 @@
 
 public func MaxStackCount() { return 3; }
 
+local animation_set;
+
+func Initialize()
+{
+	animation_set = {
+		AimMode         = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
+		AnimationAim    = "SpearAimArms",
+		AnimationShoot  = "SpearThrowArms",
+		AnimationShoot2 = "SpearThrow2Arms",
+		AnimationShoot3 = "SpearThrow3Arms",
+		ShootTime       = 16,
+		ShootTime2      =  8,
+	};
+}
+
+public func GetAnimationSet() { return animation_set; }
+
 local fAiming;
-local power;
-
-local iAim;
-local fWait;
-
-local target_angle;
 
 public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_HandBack; }
 public func GetCarryBone() { return "Javelin"; }
@@ -26,93 +37,57 @@ public func ControlUseStart(object clonk, int x, int y)
 {
 	// if the clonk doesn't have an action where he can use it's hands do nothing
 	if(!clonk->HasHandAction())
-	{
-		fWait = 1;
 		return true;
-	}
-	fWait = false;
-	fAiming=true;
-	clonk->SetHandAction(1);
-	clonk->UpdateAttach();
-	iAim = clonk->PlayAnimation("SpearAimArms", 10, Anim_Const(0), Anim_Const(1000));
 
-	// Aim timer
-	if(!GetEffect("IntAiming", clonk))
-		AddEffect("IntAiming", clonk, 1, 1, this);
+	fAiming = true;
+
+	clonk->StartAim(this);
 	
 	Sound("DrawJavelin.ogg");
-	
-	var angle = Angle(0,0,x,y);
-	angle = Normalize(angle,-180);
-	clonk->SetAnimationPosition(iAim, Anim_Const(Abs(angle)*clonk->GetAnimationLength("SpearAimArms")/180));
 	return 1;
 }
 
 public func HoldingEnabled() { return true; }
 
-func FxIntAimingTimer(clonk, number)
+func ControlUseHolding(object clonk, ix, iy)
 {
-	if(fWait)
-	{
-		if(clonk->HasHandAction())
-			ControlUseStart(clonk);
-		return 0;
-	}
-	// check procedure
-	if(!clonk->ReadyToAction())
-	{
-		ResetClonk(clonk);
-		fWait = 1;
-		return true;
-	}
-
-	var iTargetPosition = Abs(target_angle)*clonk->GetAnimationLength("SpearAimArms")/180;
-	var iPos = clonk->GetAnimationPosition(iAim);
-	iPos += BoundBy(iTargetPosition-iPos, -50, 50);
-	clonk->SetAnimationPosition(iAim, Anim_Const(iPos));
-}
-
-protected func ControlUseHolding(object clonk, int ix, int iy)
-{
-	// angle
 	var angle = Angle(0,0,ix,iy);
-	target_angle = Normalize(angle,-180);
+	angle = Normalize(angle,-180);
 
-	return 1;
+	clonk->SetAimPosition(angle);
+
+	return true;
 }
 
-static const Javelin_ThrowTime = 16;
-
-protected func ControlUseStop(object clonk, int ix, int iy)
+protected func ControlUseStop(object clonk, ix, iy)
 {
-	RemoveEffect("IntAiming", clonk);
-	
-	var angle = clonk->GetAnimationPosition(iAim)*180/(clonk->GetAnimationLength("SpearAimArms"));
-	if(!clonk->GetDir()) angle = -angle;
+	clonk->StopAim();
+	return true;
+}
 
-	var iThrowtime = Javelin_ThrowTime;
-	if(Abs(angle) < 90)
-	{
-		iAim = clonk->PlayAnimation("SpearThrow2Arms",  10, Anim_Linear(0, 0, clonk->GetAnimationLength("SpearThrow2Arms" ), iThrowtime), Anim_Const(1000));
-		iAim = clonk->PlayAnimation("SpearThrowArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("SpearThrowArms"), iThrowtime), Anim_Const(1000), iAim);
-		clonk->SetAnimationWeight(iAim+1, Anim_Const(1000*Abs(angle)/90));
-	}
-	else
-	{
-		iAim = clonk->PlayAnimation("SpearThrowArms",  10, Anim_Linear(0, 0, clonk->GetAnimationLength("SpearThrowArms" ), iThrowtime), Anim_Const(1000));
-		iAim = clonk->PlayAnimation("SpearThrow3Arms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("SpearThrow3Arms"), iThrowtime), Anim_Const(1000), iAim);
-		clonk->SetAnimationWeight(iAim+1, Anim_Const(1000*(Abs(angle)-90)/90));
-	}
-
-	ScheduleCall(this, "DoThrow", iThrowtime/2, 1, clonk, angle);
+// Callback from the clonk, when he actually has stopped aiming
+public func FinishedAiming(object clonk, int angle)
+{
+	clonk->StartShoot(this);
+	return true;
 }
 
 protected func ControlUseCancel(object clonk, int x, int y)
 {
-	RemoveEffect("IntAiming", clonk);
-  if(fWait) return;
-  fAiming = 0;
-  ResetClonk(clonk);
+	if(fAiming)
+		clonk->CancelAiming(this);
+	return true;
+}
+
+public func Reset(clonk)
+{
+	fAiming = 0;
+}
+
+// Called in the half of the shoot animation (when ShootTime2 is over)
+public func DuringShoot(object clonk, int angle)
+{
+	DoThrow(clonk, angle);
 }
 
 public func DoThrow(object clonk, int angle)
@@ -132,21 +107,7 @@ public func DoThrow(object clonk, int angle)
 	
 	Sound("ThrowJavelin*.ogg");
 	
-	power=0;
-	
 	fAiming = -1;
-	clonk->UpdateAttach();
-	ScheduleCall(this, "ResetClonk", Javelin_ThrowTime/2, 1, clonk);
-}
-
-public func ResetClonk(clonk)
-{
-	fAiming = 0;
-
-	clonk->SetHandAction(0);
-
-	clonk->StopAnimation(clonk->GetRootAnimation(10));
-
 	clonk->UpdateAttach();
 }
 

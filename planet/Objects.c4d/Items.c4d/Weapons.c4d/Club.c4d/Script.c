@@ -8,85 +8,84 @@ private func Hit()
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }
-//public func GetCarryTransform() { return Trans_Scale(130); }
 
 public func GetCarrySpecial(clonk) { if(fAiming) return "pos_hand2"; }
+
+local animation_set;
+
+func Initialize()
+{
+	animation_set = {
+		AimMode         = AIM_Weight,
+		AnimationAim    = "BatAimArms",
+		AnimationAim2   = "BatAim2Arms",
+		AimTime         = 35*3,
+		AnimationShoot  = "BatStrikeArms",
+		AnimationShoot2 = "BatStrike2Arms",
+		ShootTime       = 35/2,
+		ShootTime2      = (35/2)*6/19, // At 6/19 of the shooting animation
+	};
+}
+
+public func GetAnimationSet() { return animation_set; }
 
 public func HoldingEnabled() { return true; }
 
 local fAiming;
-local iAim1;
-local iAim2;
-local iAimKnot;
-
-local iWait;
 
 public func ControlUseStart(object clonk, int x, int y)
 {
-	// Not finished last strike?
-	if(fAiming == 1)
-	{
-		// Wait
-		iWait = 1;
+	// if the clonk doesn't have an action where he can use it's hands do nothing
+	if(!clonk->HasHandAction())
 		return true;
-	}
-	iWait = 0;
-	fAiming = 1;
 
-	clonk->SetHandAction(1); // Setting the hands as blocked, so that no other items are carried in the hands
-  clonk->UpdateAttach(); // Update, that the Clonk takes the bow in the right hand (see GetCarrySpecial)
+	fAiming = true;
 
-	var iLoopTime = 35*3;
-	iAim1 = clonk->PlayAnimation("BatAimArms",  10, Anim_Linear(0, 0, clonk->GetAnimationLength("BatAimArms"),  iLoopTime, ANIM_Loop), Anim_Const(1000));
-	iAim2 = clonk->PlayAnimation("BatAim2Arms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BatAim2Arms"), iLoopTime, ANIM_Loop), Anim_Const(1000), iAim1);
-	iAimKnot = iAim2 + 1;
+	clonk->StartAim(this);
+	return 1;
+}
 
-	AddEffect("IntWalkSlow", clonk, 1, 0, 0, Bow);
+public func HoldingEnabled() { return true; }
+
+func ControlUseHolding(object clonk, ix, iy)
+{
+	var angle = Angle(0,0,ix,iy);
+	angle = Normalize(angle,-180);
+
+	clonk->SetAimPosition(angle);
 
 	return true;
 }
 
-public func ControlUseHolding(object clonk, int x, int y)
+protected func ControlUseStop(object clonk, ix, iy)
 {
-	// Still waiting?
-	if(iWait)
-	{
-		// Last move finished?
-		if(fAiming == 0)
-			ControlUseStart(clonk, x, y);
-		// do nothing and wait
-		return;
-	}
-	// angle
-	var angle = Angle(0,0,x,y);
-	angle = Normalize(angle,-180);
-
-	clonk->SetAnimationWeight(iAimKnot, Anim_Const(Abs(angle)*1000/180));
-
+	clonk->StopAim();
+	return true;
 }
 
-protected func ControlUseStop(object clonk, int x, int y)
+// Callback from the clonk, when he actually has stopped aiming
+public func FinishedAiming(object clonk, int angle)
 {
-	if(iWait) return;
-	var iStrikeTime = 35/2;
-	iAim1 = clonk->PlayAnimation("BatStrikeArms",  10, Anim_Linear(0, 0, clonk->GetAnimationLength("BatStrikeArms"),  iStrikeTime, ANIM_Remove), Anim_Const(1000));
-	iAim2 = clonk->PlayAnimation("BatStrike2Arms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("BatStrike2Arms"), iStrikeTime, ANIM_Remove), Anim_Const(1000), iAim1);
-	iAimKnot = iAim2 + 1;
-
-	var angle = Angle(0,0,x,y);
-	angle = Normalize(angle,-180);
-
-	clonk->SetAnimationWeight(iAimKnot, Anim_Const(Abs(angle)*1000/180));
-
-	ScheduleCall(this, "EndStrike", iStrikeTime, 0, clonk);
-	// At frame 6 of the animation the bat reaches it's hit point here the hit should take place TODO: Zapper!
-	ScheduleCall(this, "DoStrike", iStrikeTime*600/(clonk->GetAnimationLength("BatStrikeArms")), 0, clonk, angle);
+	clonk->StartShoot(this);
+	return true;
 }
 
-public func EndStrike(object clonk, int x, int y)
+protected func ControlUseCancel(object clonk, int x, int y)
+{
+	if(fAiming)
+		clonk->CancelAiming(this);
+	return true;
+}
+
+public func Reset(clonk)
 {
 	fAiming = 0;
-	ResetClonk(clonk);
+}
+
+// Called in the half of the shoot animation (when ShootTime2 is over)
+public func DuringShoot(object clonk, int angle)
+{
+	DoStrike(clonk, angle);
 }
 
 func DoStrike(clonk, angle)
@@ -106,25 +105,6 @@ func DoStrike(clonk, angle)
 			obj->SetYDir((obj->GetYDir(100) - Cos(angle, 2000)) / 2, 100);
 		}
 	}
-}
-
-protected func ControlUseCancel(object clonk, int x, int y)
-{
-  fAiming = 0;
-  ResetClonk(clonk);
-}
-
-public func ResetClonk(clonk)
-{
-	// Already aiming angain? Don't remove Actions
-	if(fAiming) return;
-
-	clonk->SetHandAction(0);
-
-  clonk->StopAnimation(clonk->GetRootAnimation(10));
-
-	clonk->UpdateAttach();
-	RemoveEffect("IntWalkSlow", clonk);
 }
 
 public func IsTool() { return 1; }

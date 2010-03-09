@@ -31,6 +31,7 @@ func Initialize()
 		AnimationAim   = "BowAimArms",
 		AnimationLoad  = "BowLoadArms",
 		LoadTime       = 30,
+		LoadTime2      = 5*30/20,
 		AnimationShoot = nil,
 		ShootTime      = 20,
 		TurnType       = 1,
@@ -76,8 +77,6 @@ public func ControlUseStart(object clonk, int x, int y)
 	// Start aiming
 	fAiming = 1;
 	
-	// Attach the arrow during the animation
-	ScheduleCall(this, "AddArrow", 5*animation_set["LoadTime"]/20, 1, clonk);
 	PlayAnimation("Draw", 6, Anim_Linear(0, 0, GetAnimationLength("Draw"), animation_set["LoadTime"], ANIM_Hold), Anim_Const(1000));
 
 	clonk->StartLoad(this);
@@ -85,16 +84,18 @@ public func ControlUseStart(object clonk, int x, int y)
 	return true;
 }
 
+// Attach the arrow during the animation
+public func DuringLoad(object clonk) { return AddArrow(clonk); }
+
 // Called during loading then the arrow is added to the animation
 public func AddArrow(object clonk)
 {
-	if(!fAiming) return;
 	Sound("BowLoad*.ogg");
 	iArrowMesh = clonk->AttachMesh(HelpArrow, "pos_hand1", "main", nil);
 }
 
 // Callback from the clonk when loading is finished
-public func StopLoad(object clonk)
+public func FinishedLoading(object clonk)
 {
 	clonk->~StartAim(this);
 	return true;
@@ -124,7 +125,7 @@ public func ControlUseStop(object clonk, int x, int y)
 }
 
 // Callback from the clonk, when he actually has stopped aiming
-public func StopAim(object clonk, int angle)
+public func FinishedAiming(object clonk, int angle)
 {
 	clonk->DetachMesh(iArrowMesh);
 	iArrowMesh = nil;

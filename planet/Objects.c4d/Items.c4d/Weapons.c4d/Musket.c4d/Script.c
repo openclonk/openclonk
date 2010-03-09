@@ -10,10 +10,6 @@
 #include Library_HasExtraSlot
 
 local fAiming;
-local iAim;
-local fWait;
-
-local target_angle;
 
 public func GetCarryMode(clonk) { if(fAiming >= 0) return CARRY_Musket; }
 public func GetCarrySpecial(clonk) { if(fAiming > 0) return "pos_hand2"; }
@@ -35,8 +31,8 @@ func Initialize()
 	
 	animation_set = {
 		AimMode        = AIM_Position, // The aiming animation is done by adjusting the animation position to fit the angle
-		AnimationAim   = "MusketAimArms",
-		AnimationLoad  = "MusketLoadArms",
+		AnimationAim   = "MusketAim",
+		AnimationLoad  = "MusketLoad",
 		LoadTime       = 100,
 		AnimationShoot = nil,
 		ShootTime      = 20,
@@ -92,7 +88,7 @@ func ControlUseStart(object clonk, int x, int y)
 }
 
 // Callback from the clonk when loading is finished
-public func StopLoad(object clonk)
+public func FinishedLoading(object clonk)
 {
 	loaded = true;
 	return false; // false means stop here and reset the clonk
@@ -115,7 +111,7 @@ protected func ControlUseStop(object clonk, ix, iy)
 }
 
 // Callback from the clonk, when he actually has stopped aiming
-public func StopAim(object clonk, int angle)
+public func FinishedAiming(object clonk, int angle)
 {
 	if(!loaded) return;
 	
