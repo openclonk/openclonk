@@ -17,6 +17,9 @@
 // standard controls
 #include Library_ClonkControl
 
+// manager for aiming
+#include Library_AimManager
+
 // un-comment them as soon as the new controls work with context menus etc.^
 // Context menu
 //#include Library_ContextMenu
@@ -561,6 +564,13 @@ local iTurnKnot2;
 local iLastTurn;
 local iTurnSpecial;
 
+local turn_forced;
+
+func SetTurnForced(int dir)
+{
+	turn_forced = dir+1;
+}
+
 func FxIntTurnStart(pTarget, iNumber, fTmp)
 {
 	if(fTmp) return;
@@ -658,6 +668,12 @@ public func TurnFront()
 
 func GetDirection()
 {
+	// Are we forced to a special direction?
+	if(turn_forced)
+	{
+		if(turn_forced == 1) return COMD_Left;
+		if(turn_forced == 2) return COMD_Right;
+	}
 	// Get direction from ComDir
 	if(GetAction() != "Scale" && GetAction() != "Jump")
 	{
@@ -667,284 +683,6 @@ func GetDirection()
 	// if ComDir hasn't a direction, use GetDir
 	if(GetDir()==DIR_Right) return COMD_Right;
 	else return COMD_Left;
-}
-
-/* Aim Manager */
-local aim_set;
-local aim_weapon;
-local aim_animation_index;
-local aim_angle;
-local aim_stop;
-local aim_pause;
-
-local aim_schedule_timer;
-local aim_schedule_call;
-
-static const AIM_Position = 1;
-
-func FxIntAimCheckProcedureStart(target, number, tmp)
-{
-	if(tmp) return;
-	aim_pause = 0;
-}
-
-func FxIntAimCheckProcedureTimer()
-{
-	// check procedure
-	if(!ReadyToAction())
-	{
-		// Already released? cancel
-		if(aim_stop)
-		{
-			CancelAiming();
-			return -1;
-		}
-		if(aim_pause != 1)
-		{
-			PauseAim();
-			aim_schedule_call = nil;
-			aim_schedule_timer = nil;
-			aim_pause = 1;
-		}
-	}
-	else
-	{
-		if(aim_pause == 1)
-		{
-			if(!RestartAim()) // Can't start again? :-( stop
-			{
-				aim_weapon = nil;
-				aim_set = nil;
-				return -1;
-			}
-			aim_pause = 0;
-		}
-	}
-	if(aim_schedule_timer != nil)
-	{
-		aim_schedule_timer--;
-		if(aim_schedule_timer == 0)
-		{ 
-			Call(aim_schedule_call);
-			aim_schedule_call = nil;
-			aim_schedule_timer = nil;
-		}
-	}
-}
-
-func PauseAim()
-{
-	ResetHands(1);
-	aim_weapon->~OnPauseAim(this);
-}
-
-func RestartAim()
-{
-	if(!aim_weapon->~OnRestartAim(this)) return false;
-	// Applay the set
-	ApplySet(aim_set);
-	return true;
-}
-
-public func StartLoad(object weapon)
-{
-	// only if we aren't adjusted to this weapon already
-	if(weapon != aim_weapon)
-	{
-		// Reset old
-		if(aim_weapon != nil) aim_weapon->~Reset();
-		if(aim_set    != nil) ResetHands();
-
-		// Remember new
-		aim_weapon = weapon;
-		aim_set = weapon->~GetAnimationSet();
-
-		// Applay the set
-		ApplySet(aim_set);
-
-		// Add effect to ensure procedure
-		AddEffect("IntAimCheckProcedure", this, 1,  1, this);
-	}
-	
-	if(aim_set["AnimationLoad"] != nil)
-		PlayAnimation(aim_set["AnimationLoad"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationLoad"]), aim_set["LoadTime"], ANIM_Remove), Anim_Const(1000));
-
-	aim_schedule_timer = aim_set["LoadTime"];
-	aim_schedule_call  = "StopLoad";
-}
-
-public func StopLoad()
-{
-	if(!aim_weapon->~StopLoad(this)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
-		ResetHands();
-}
-
-public func StartAim(object weapon)
-{
-	// only if we aren't adjusted to this weapon already
-	if(weapon != aim_weapon)
-	{
-		// Reset old
-		if(aim_weapon != nil) aim_weapon->~Reset();
-		if(aim_set    != nil) ResetHands();
-
-		// Remember new
-		aim_weapon = weapon;
-		aim_set = weapon->~GetAnimationSet();
-
-		// Applay the set
-		ApplySet(aim_set);
-
-		// Add effect to ensure procedure
-		AddEffect("IntAimCheckProcedure", this, 1,  1, this);
-	}
-
-	if(aim_set["AnimationAim"] != nil)
-	{
-		if(aim_set["AimMode"] == AIM_Position)
-			aim_animation_index = PlayAnimation(aim_set["AnimationAim"], 10, Anim_Const(GetAnimationLength(aim_set["AnimationAim"])/2), Anim_Const(1000));
-	}
-
-	AddEffect("IntAim", this, 1, 1, this);
-}
-
-func FxIntAimTimer(target, number, time)
-{
-	var angle, delta_angle, length;
-	var speed = aim_set["AimSpeed"];
-	if(speed == nil) speed = 50;
-	if(aim_set["AimMode"] == AIM_Position)
-	{
-		length = GetAnimationLength(aim_set["AnimationAim"]);
-		angle = GetAnimationPosition(aim_animation_index)*1800/length;
-		delta_angle = BoundBy(Abs(aim_angle*10)-angle, -speed, speed);
-		SetAnimationPosition(aim_animation_index, Anim_Const( (angle+delta_angle)*length/1800 ));
-	}
-	// We have reached the angle and we want to stop
-	if(Abs(delta_angle) <= 5 && aim_stop == 1)
-	{
-		DoStopAim();
-		return -1;
-	}
-}
-
-public func SetAimPosition(int angle)
-{
-	// Save angle
-	aim_angle = angle;
-	// Remove scheduled stop if aiming again
-	aim_stop = 0;
-}
-
-public func StopAim()
-{
-	// Schedule Stop
-	aim_stop = 1;
-}
-
-private func DoStopAim()
-{
-	if(!aim_weapon->~StopAim(this, aim_angle)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
-		ResetHands();
-}
-
-public func StartShoot(object weapon)
-{
-	// only if we aren't adjusted to this weapon already
-	if(weapon != aim_weapon)
-	{
-		// Reset old
-		if(aim_weapon != nil) aim_weapon->~Reset();
-		if(aim_set    != nil) ResetHands();
-
-		// Remember new
-		aim_weapon = weapon;
-		aim_set = weapon->~GetAnimationSet();
-
-		// Applay the set
-		ApplySet(aim_set);
-
-		// Add effect to ensure procedure
-		AddEffect("IntAimCheckProcedure", this, 1,  1, this);
-	}
-
-	if(aim_set["AnimationShoot"] != nil)
-		PlayAnimation(aim_set["AnimationShoot"], 10, Anim_Linear(0, 0, GetAnimationLength(aim_set["AnimationShoot"]), aim_set["ShootTime"], ANIM_Remove), Anim_Const(1000));
-
-	aim_schedule_timer = aim_set["ShootTime"];
-	aim_schedule_call  = "StopShoot";
-}
-
-public func StopShoot()
-{
-	if(!aim_weapon->~StopShoot(this)) // return 1 means the weapon goes on doing something (e.g. start aiming) then we don't reset
-		ResetHands();
-}
-
-public func CancelAiming()
-{
-	ResetHands();
-}
-
-public func ApplySet(set)
-{
-		// Setting the hands as blocked, so that no other items are carried in the hands
-	SetHandAction(1);
-
-	if(set["TurnType"] != nil)
-		SetTurnType(set["TurnType"], 1);
-
-	if(set["AnimationReplacements"] != nil)
-		for(var replace in set["AnimationReplacements"])
-			ReplaceAction(replace[0], replace[1]);
-
-	if(set["WalkSpeed"] != nil)
-		AddEffect("IntWalkSlow", this, 1, 0, this, 0, set["WalkSpeed"]);
-}
-
-public func ResetHands(bool pause)
-{
-	if(aim_weapon != nil)
-	{
-		aim_weapon->~Reset(this);
-
-		if(aim_set["AnimationReplacements"] != nil)
-			for(var replace in aim_set["AnimationReplacements"])
-				ReplaceAction(replace[0], nil);
-	}
-
-	aim_stop = 0;
-	aim_angle = -90+180*GetDir();
-
-	StopAnimation(GetRootAnimation(10));
-
-	RemoveEffect("IntWalkSlow", this);
-
-	RemoveEffect("IntAim", this);
-	
-	SetTurnType(0, -1);
-	SetHandAction(0);
-
-	if(!pause)
-	{
-		aim_weapon = nil;
-		aim_set = nil;
-
-		RemoveEffect("IntAimCheckProcedure", this);
-	}
-}
-
-/* +++++++++++ Slow walk +++++++++++ */
-
-func FxIntWalkSlowStart(pTarget, iNumber, fTmp, iValue)
-{
-	if(iValue == nil) iValue = 30000;
-	pTarget->SetPhysical("Walk", iValue, PHYS_StackTemporary);
-}
-
-func FxIntWalkSlowStop(pTarget, iNumber)
-{
-	pTarget->ResetPhysical("Walk");
 }
 
 /* Animation Manager */
