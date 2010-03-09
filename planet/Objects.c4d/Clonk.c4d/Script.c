@@ -566,6 +566,8 @@ local iTurnSpecial;
 
 local turn_forced;
 
+static const CLONK_TurnTime = 10;
+
 func SetTurnForced(int dir)
 {
 	turn_forced = dir+1;
@@ -593,22 +595,21 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 	// Check wether the clonk wants to turn (Not when he wants to stop)
   if(EffectVar(0, pTarget, iNumber) != GetDirection())
 	{
-		var iTurnTime = 10;
 		if(EffectVar(0, pTarget, iNumber) == COMD_Right)
 		{
-			SetAnimationPosition(iTurnAction,  Anim_Linear(GetAnimationLength("TurnRoot120"), GetAnimationLength("TurnRoot120"), 0, iTurnTime, ANIM_Hold));
-			SetAnimationPosition(iTurnAction2, Anim_Linear(GetAnimationLength("TurnRoot180"), GetAnimationLength("TurnRoot180"), 0, iTurnTime, ANIM_Hold));
-			SetAnimationPosition(iTurnAction3, Anim_Linear(GetAnimationLength("TurnRoot240"), GetAnimationLength("TurnRoot240"), 0, iTurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction,  Anim_Linear(GetAnimationLength("TurnRoot120"), GetAnimationLength("TurnRoot120"), 0, CLONK_TurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction2, Anim_Linear(GetAnimationLength("TurnRoot180"), GetAnimationLength("TurnRoot180"), 0, CLONK_TurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction3, Anim_Linear(GetAnimationLength("TurnRoot240"), GetAnimationLength("TurnRoot240"), 0, CLONK_TurnTime, ANIM_Hold));
 		}
 		else
 		{
-			SetAnimationPosition(iTurnAction,  Anim_Linear(0, 0, GetAnimationLength("TurnRoot120"), iTurnTime, ANIM_Hold));
-			SetAnimationPosition(iTurnAction2, Anim_Linear(0, 0, GetAnimationLength("TurnRoot180"), iTurnTime, ANIM_Hold));
-			SetAnimationPosition(iTurnAction3, Anim_Linear(0, 0, GetAnimationLength("TurnRoot240"), iTurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction,  Anim_Linear(0, 0, GetAnimationLength("TurnRoot120"), CLONK_TurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction2, Anim_Linear(0, 0, GetAnimationLength("TurnRoot180"), CLONK_TurnTime, ANIM_Hold));
+			SetAnimationPosition(iTurnAction3, Anim_Linear(0, 0, GetAnimationLength("TurnRoot240"), CLONK_TurnTime, ANIM_Hold));
 		}
 		// Save new ComDir
 		EffectVar(0, pTarget, iNumber) = GetDirection();
-		EffectVar(1, pTarget, iNumber) = iTurnTime;
+		EffectVar(1, pTarget, iNumber) = CLONK_TurnTime;
 	}
 	// Turning
 	if(EffectVar(1, pTarget, iNumber))
@@ -621,6 +622,11 @@ func FxIntTurnTimer(pTarget, iNumber, iTime)
 			SetAnimationPosition(iTurnAction3, Anim_Const(GetAnimationLength("TurnRoot240")*(GetDirection()==COMD_Right)));
 		}
 	}
+}
+
+public func GetTurnPhase()
+{
+	return GetAnimationPosition(iTurnAction)*100/GetAnimationLength("TurnRoot120");
 }
 
 local iLastTurn;

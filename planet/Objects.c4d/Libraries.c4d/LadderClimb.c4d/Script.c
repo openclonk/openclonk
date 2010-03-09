@@ -8,6 +8,8 @@
 local jump_startcall;
 local no_ladder_counter;
 
+func GetTurnPhase() { return _inherited(...); }
+
 func Initialize()
 {
 	// add action
@@ -44,10 +46,13 @@ func StartSearchLadder()
 	if(jump_startcall != nil && jump_startcall != "StartSearchLadder")
 		Call(jump_startcall);
 	if(!GetEffect("InSearchLadder", this))
-		AddEffect("IntSearchLadder", this, 1, 1, this);
+	{
+		AddEffect("IntSearchLadder", this, 1, 5, this);
+	}
+	FxIntSearchLadderTimer();
 }
 
-func FxIntSearchLadderTimer()
+func FxIntSearchLadderTimer(target, number, time)
 {
 	if(GetAction() != "Jump") return -1;
 	var ladder;
@@ -57,11 +62,16 @@ func FxIntSearchLadderTimer()
 	if(ladder != nil)
 	{
 		SetAction("Climb");
-		Message("Ladder", this);
 		ladder->~OnLadderGrab(this);
 		AddEffect("IntClimbControl", this, 1, 1, this, 0, ladder);
 		return -1;
 	}
+}
+
+func FxIntSearchLadderStop(target, number, reason, tmp)
+{
+	if(tmp) return;
+	no_ladder_counter = 0; 
 }
 
 func FxIntClimbControlStart(target, number, tmp, ladder)
@@ -70,7 +80,6 @@ func FxIntClimbControlStart(target, number, tmp, ladder)
 	EffectVar(0, target, number) = ladder;
 	SetXDir(0); SetYDir(0);
 	SetComDir(COMD_Stop);
-	no_ladder_counter = 20;
 	EffectVar(2, target, number) = 0; // angle
 }
 
@@ -94,6 +103,7 @@ func FxIntClimbControlTimer(target, number)
 				SetAction("Scale");
 				return -1;
 			}
+			no_ladder_counter = 5;
 			SetAction("Jump");
 			SetXDir(-5+10*GetDir());
 			SetYDir(-5);
@@ -117,6 +127,7 @@ func FxIntClimbControlTimer(target, number)
 				SetAction("Scale");
 				return -1;
 			}
+			no_ladder_counter = 5;
 			SetAction("Jump");
 			return -1;
 		}
@@ -124,7 +135,7 @@ func FxIntClimbControlTimer(target, number)
 	}
 	var startx, starty, endx, endy, angle;
 	EffectVar(0, target, number)->GetLadderData(startx, starty, endx, endy, angle);
-	var x = startx + (endx-startx)*EffectVar(1, target, number)/100+5-10*GetDir();
+	var x = startx + (endx-startx)*EffectVar(1, target, number)/100+5-10*GetTurnPhase()/100;
 	var y = starty + (endy-starty)*EffectVar(1, target, number)/100;
 	var old_x = GetX(), old_y = GetY();
 	SetPosition(x, y);
@@ -146,11 +157,11 @@ func FxIntClimbControlTimer(target, number)
 			SetAction("Walk");
 			return -1;
 		}
-		if(contact & CNAT_Left || contact & CNAT_Right)
+/*		if(contact & CNAT_Left || contact & CNAT_Right)
 		{
 			SetAction("Scale");
 			return -1;
-		}
+		}*/
 	}
 }
 
@@ -179,6 +190,7 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 		}
 		else
 		{
+			no_ladder_counter = 5;
 			SetAction("Jump");
 			SetXDir(-15);
 		}
@@ -196,6 +208,7 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 		}
 		else
 		{
+		no_ladder_counter = 5;
 		SetAction("Jump");
 		SetXDir(+15);
 		}
