@@ -1117,11 +1117,6 @@ public func ControlJump()
 		SetAction("Jump");
 		SetXDir(GetXDir()+(GetDir()*2-1)*xdir*GetCon()/100);
 		SetYDir(-ydir*GetCon()/100);
-		var iX=GetX(),iY=GetY(),iXDir=GetXDir(),iYDir=GetYDir();
-		if (SimFlight(iX,iY,iXDir,iYDir,25))
-			if (GBackLiquid(iX-GetX(),iY-GetY()) && GBackLiquid(iX-GetX(),iY+GetDefHeight()/2-GetY()))
-				SetAction("Dive");
-				
 		return true;
 	}
 	return false;

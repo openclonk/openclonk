@@ -275,6 +275,9 @@ public func SetAimPosition(int angle)
 
 public func StopAim()
 {
+	// while pausing interpret this as cancel
+	if(aim_pause == 1)
+		return CancelAiming();
 	// Schedule Stop
 	aim_stop = 1;
 }

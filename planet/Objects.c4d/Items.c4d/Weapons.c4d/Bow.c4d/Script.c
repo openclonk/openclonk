@@ -119,8 +119,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 // Stopping says the clonk to stop with aiming (he will go on untill he has finished loading and aiming at the given angle)
 public func ControlUseStop(object clonk, int x, int y)
 {
-	if(fAiming)
-		clonk->StopAim();
+	clonk->StopAim();
 	return true;
 }
 
