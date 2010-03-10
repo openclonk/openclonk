@@ -1056,7 +1056,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 			parity = !parity;
 
 		// Move to target location
-		glTranslatef(tx, ty, 0.0f);
+		glTranslatef(tx-iClipX1, ty-iClipY1, 0.0f);
 		glScalef(((float)twdt)/iWdt, ((float)thgt)/iHgt, 1.0f);
 
 		// Return to Clonk coordinate frame

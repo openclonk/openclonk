@@ -1014,10 +1014,10 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	{
 		if (eMode == MODE_ObjectPicture)
 		{
-			// TODO seems not to workk for meshes and overlays of the pictures yet...
 			C4Facet fctTarget;
-			fctTarget.Set(cgo.Surface, iTx-pForObj->Shape.Wdt/2, iTy-pForObj->Shape.Hgt/2, pForObj->Shape.Wdt, pForObj->Shape.Hgt);
-			pOverlayObj->DrawPicture(fctTarget, 0, 0);
+			fctTarget.Set(cgo.Surface, iTx+pForObj->Shape.x, iTy+pForObj->Shape.y, pForObj->Shape.Wdt, pForObj->Shape.Hgt);
+
+			pOverlayObj->DrawPicture(fctTarget, false, NULL);
 		}
 		else
 		{
@@ -1073,6 +1073,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 				float fZoom = Min<float>((float) pForObj->Shape.Wdt / Max<int>(fctBlit.Wdt,1), (float) pForObj->Shape.Hgt / Max<int>(fctBlit.Hgt,1));
 				trf.ScaleAt(fZoom, fZoom,  float(iTx), float(iTy));
 			}
+
 			fctBlit.DrawT(cgo.Surface, iTx - fctBlit.Wdt/2 + fctBlit.TargetX, iTy - fctBlit.Hgt/2 + fctBlit.TargetY, iPhase, 0, &trf);
 		}
 		else
