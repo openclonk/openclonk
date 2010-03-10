@@ -129,12 +129,12 @@ public func OnLadderClimb(clonk, index)
 
 public func GetLadderData(index, &startx, &starty, &endx, &endy, &angle)
 {
-	startx = GetPartX(index);
-	starty = GetPartY(index);
+	startx = particles[index][0][0]*10;
+	starty = particles[index][0][1]*10;
 	if(index == 0)
 	{
 		endx = startx;
-		endy = starty-5;
+		endy = starty-5000;
 		angle = Angle(particles[2][0][0], particles[2][0][1], particles[0][0][0], particles[0][0][1]);
 		return true;
 	}
@@ -144,8 +144,8 @@ public func GetLadderData(index, &startx, &starty, &endx, &endy, &angle)
 	}
 	else
 		angle = Angle(particles[index+1][0][0], particles[index+1][0][1], particles[index-1][0][0], particles[index-1][0][1]);
-	endx = GetPartX(index-1);
-	endy = GetPartY(index-1);
+	endx = particles[index-1][0][0]*10;
+	endy = particles[index-1][0][1]*10;
 	return true;
 }
 

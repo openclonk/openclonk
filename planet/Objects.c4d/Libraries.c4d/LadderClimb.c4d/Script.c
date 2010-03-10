@@ -10,8 +10,7 @@ local no_ladder_counter;
 
 func GetTurnPhase() { return _inherited(...); }
 
-func Initialize()
-{
+func Definition(def) {
 	// add action
 	SetProperty("Climb", {
 		Prototype = Action,
@@ -25,13 +24,11 @@ func Initialize()
 		StartCall = "StartScale",
 	}, GetProperty("ActMap"));
 	// save old phasecall of jump
-	if(jump_startcall == nil)
-	{
-		jump_startcall = GetProperty("StartCall", GetProperty("Jump", GetProperty("ActMap")));
-		// and add new one
-		SetProperty("StartCall", "StartSearchLadder", GetProperty("Jump", GetProperty("ActMap")));
-	}
-	return _inherited(...);
+	var jump_startcall = GetProperty("StartCall", GetProperty("Jump", GetProperty("ActMap")));
+	// and add new one
+	SetProperty("StartCall", "StartSearchLadder", GetProperty("Jump", GetProperty("ActMap")));
+	SetProperty("StartCallLadderOverloaded", jump_startcall, GetProperty("Jump", GetProperty("ActMap")));
+	_inherited(def);
 }
 
 func StartScale()
@@ -43,8 +40,8 @@ func StartScale()
 func StartSearchLadder()
 {
 	// call overwriten old phase call
-	if(jump_startcall != nil && jump_startcall != "StartSearchLadder")
-		Call(jump_startcall);
+	if(GetProperty("StartCallLadderOverloaded", GetProperty("Jump", GetProperty("ActMap"))))
+		Call(GetProperty("StartCallLadderOverloaded", GetProperty("Jump", GetProperty("ActMap"))));
 	if(!GetEffect("InSearchLadder", this))
 	{
 		AddEffect("IntSearchLadder", this, 1, 5, this);
@@ -80,7 +77,7 @@ func FxIntClimbControlStart(target, number, tmp, ladder)
 	EffectVar(0, target, number) = ladder;
 	SetXDir(0); SetYDir(0);
 	SetComDir(COMD_Stop);
-	EffectVar(2, target, number) = 0; // angle
+	EffectVar(2, target, number) = 0; // odd or even segment?
 }
 
 func FxIntClimbControlTimer(target, number)
@@ -94,6 +91,7 @@ func FxIntClimbControlTimer(target, number)
 		{
 			EffectVar(1, target, number) = 0;
 			EffectVar(0, target, number) = EffectVar(0, target, number)->GetNextLadder();
+			EffectVar(2, target, number) = !EffectVar(2, target, number);
 		}
 		if(EffectVar(0, target, number) == nil)
 		{
@@ -118,6 +116,7 @@ func FxIntClimbControlTimer(target, number)
 		{
 			EffectVar(1, target, number) = 100;
 			EffectVar(0, target, number) = EffectVar(0, target, number)->GetPreviousLadder();
+			EffectVar(2, target, number) = !EffectVar(2, target, number);
 		}
 		if(EffectVar(0, target, number) == nil)
 		{
@@ -135,14 +134,25 @@ func FxIntClimbControlTimer(target, number)
 	}
 	var startx, starty, endx, endy, angle;
 	EffectVar(0, target, number)->GetLadderData(startx, starty, endx, endy, angle);
-	var x = startx + (endx-startx)*EffectVar(1, target, number)/100+5-10*GetTurnPhase()/100;
+	var x = startx + (endx-startx)*EffectVar(1, target, number)/100+5000-100*GetTurnPhase();
 	var y = starty + (endy-starty)*EffectVar(1, target, number)/100;
 	var old_x = GetX(), old_y = GetY();
-	SetPosition(x, y);
-	SetDTRotation(-angle);//EffectVar(2, target, number));
+	SetPosition(LadderToLandscapeCoordinates(x), LadderToLandscapeCoordinates(y));
+	SetXDir(0); SetYDir(0);
+	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//EffectVar(2, target, number));
 	if(Stuck())
 	{
 		SetPosition(old_x, old_y);
+	}
+	// Make the animation synchron with movement TODO: this only makes the feet synchronous for the arms the animation has to be adapted
+	var animation = GetRootAnimation(5);
+	if(animation != nil)
+	{
+		if(GetAnimationName(animation) != nil)
+		{
+			var length = GetAnimationLength(GetAnimationName(animation));
+			SetAnimationPosition(animation, Anim_Const(EffectVar(1, target, number)*length/200+length/2*EffectVar(2, target, number)));
+		}
 	}
 	var contact = GetContact(-1);
 	if(contact)
@@ -165,9 +175,14 @@ func FxIntClimbControlTimer(target, number)
 	}
 }
 
+func LadderToLandscapeCoordinates(int x)
+{
+	return (x+500)/1000; // round to the next thousand
+}
+
 func FxIntClimbControlStop(target, number)
 {
-	SetDTRotation(0);
+	SetLadderRotation(0);
 }
 
 func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, release)
@@ -216,11 +231,11 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 	return 1;
 }
 
-global func SetDTRotation (int r, int xoff, int yoff) {
+func SetLadderRotation (int r, int xoff, int yoff) {
   var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
   // set matrix values
   SetObjDrawTransform (
-    +fcos, +fsin, (1000-fcos)*xoff - fsin*yoff,
-    -fsin, +fcos, (1000-fcos)*yoff + fsin*xoff,
+    +fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
+    -fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
   );
 }

@@ -1667,5 +1667,7 @@ Build = {
   SetProperty("PerspectiveR", 20000, def);
   SetProperty("PerspectiveTheta", 20, def);
   SetProperty("PerspectivePhi", 70, def);
+
+	_inherited(def);
 }
 
