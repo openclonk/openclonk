@@ -80,11 +80,9 @@ func FxIntClimbControlStart(target, number, tmp, ladder)
 	EffectVar(2, target, number) = 0; // odd or even segment?
 }
 
-func FxIntClimbControlTimer(target, number)
+func LadderStep(target, number, fUp)
 {
-	if(GetAction() != "Climb") return -1;
-	// Progress
-	if(GetComDir() == COMD_Up)
+	if(fUp == 1)
 	{
 		EffectVar(1, target, number) += 10;
 		if(EffectVar(1, target, number) > 100)
@@ -99,17 +97,16 @@ func FxIntClimbControlTimer(target, number)
 			if(contact & CNAT_Left || contact & CNAT_Right)
 			{
 				SetAction("Scale");
-				return -1;
+				return 0;
 			}
 			no_ladder_counter = 5;
 			SetAction("Jump");
 			SetXDir(-5+10*GetDir());
 			SetYDir(-5);
-			return -1;
+			return 0;
 		}
-		if(EffectVar(0, target, number)) EffectVar(0, target, number)->~OnLadderClimb(this);
 	}
-	if(GetComDir() == COMD_Down)
+	else
 	{
 		EffectVar(1, target, number) -= 10;
 		if(EffectVar(1, target, number) < 0)
@@ -124,13 +121,41 @@ func FxIntClimbControlTimer(target, number)
 			if(contact & CNAT_Left || contact & CNAT_Right)
 			{
 				SetAction("Scale");
-				return -1;
+				return 0;
 			}
 			no_ladder_counter = 5;
 			SetAction("Jump");
-			return -1;
+			return 0;
 		}
-		if(EffectVar(0, target, number)) EffectVar(0, target, number)->~OnLadderClimb(this);
+	}
+	if(EffectVar(0, target, number) == nil) return 0;
+	return true;
+}
+
+func FxIntClimbControlTimer(target, number)
+{
+	if(GetAction() != "Climb") return -1;
+	// Progress
+	var step = 0;
+	if(GetComDir() == COMD_Down) step = -1;
+	if(GetComDir() == COMD_Up)   step = 1;
+
+	if(step && LadderStep(target, number, step) == 0)
+	{
+		var contact = GetContact(-1);
+		if(contact & CNAT_Left || contact & CNAT_Right)
+				SetAction("Scale");
+		else
+		{
+			no_ladder_counter = 5;
+			SetAction("Jump");
+			if(step == 1) // For Up add some speed
+			{
+				SetXDir(-5+10*GetDir());
+				SetYDir(-5);
+			}
+		}
+		return -1;
 	}
 	var startx, starty, endx, endy, angle;
 	EffectVar(0, target, number)->GetLadderData(startx, starty, endx, endy, angle);
@@ -142,8 +167,22 @@ func FxIntClimbControlTimer(target, number)
 	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//EffectVar(2, target, number));
 	if(Stuck())
 	{
+		// Revert Position and step
 		SetPosition(old_x, old_y);
+		if(step) LadderStep(target, number, -step);
+		// if we are to far left or right try to turn
+		if(GetDir() == 0 && LadderToLandscapeCoordinates(x) > GetX())
+		{
+			SetComDir(COMD_Right);
+			SetDir(1);
+		}
+		else if(GetDir() == 1 && LadderToLandscapeCoordinates(x) < GetX())
+		{
+			SetComDir(COMD_Left);
+			SetDir(0);
+		}
 	}
+	else EffectVar(0, target, number)->~OnLadderClimb(this);
 	// Make the animation synchron with movement TODO: this only makes the feet synchronous for the arms the animation has to be adapted
 	var animation = GetRootAnimation(5);
 	if(animation != nil)
@@ -157,12 +196,22 @@ func FxIntClimbControlTimer(target, number)
 	var contact = GetContact(-1);
 	if(contact)
 	{
-		if(contact & CNAT_Top)
+		if(contact & CNAT_Top && GetComDir() == COMD_Up)
 		{
 			SetAction("Hangle");
+			if(GetDir() == 0)
+			{
+				SetComDir(COMD_Right);
+				SetDir(1);
+			}
+			else
+			{
+				SetComDir(COMD_Left);
+				SetDir(0);
+			}
 			return -1;
 		}
-		if(contact & CNAT_Bottom)
+		if(contact & CNAT_Bottom && GetComDir() == COMD_Down)
 		{
 			SetAction("Walk");
 			return -1;
@@ -198,8 +247,13 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 		{
 			if(GetComDir() == COMD_Stop)
 			{
-				SetComDir(COMD_Right);
-				SetDir(1);
+				SetPosition(GetX()-10, GetY());
+				if(!Stuck())
+				{
+					SetComDir(COMD_Right);
+					SetDir(1);
+				}
+				SetPosition(GetX()+10, GetY());
 			}
 			SetComDir(COMD_Stop);
 		}
@@ -216,8 +270,13 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 		{
 			if(GetComDir() == COMD_Stop)
 			{
-				SetComDir(COMD_Left);
-				SetDir(0);
+				SetPosition(GetX()+10, GetY());
+				if(!Stuck())
+				{
+					SetComDir(COMD_Left);
+					SetDir(0);
+				}
+				SetPosition(GetX()-10, GetY());
 			}
 			SetComDir(COMD_Stop);
 		}
