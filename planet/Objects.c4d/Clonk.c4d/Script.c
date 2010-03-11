@@ -763,14 +763,16 @@ func GetCurrentWalkAnimation()
 	return Clonk_WalkRun;
 }
 
-func GetWalkAnimationPosition(string anim)
+func GetWalkAnimationPosition(string anim, int pos)
 {
+	var dir = -1;
+	if(GetDirection() == COMD_Right) dir = +1;
 	if(PropAnimations != nil)
 		if(GetProperty(Format("%s_Position", anim), PropAnimations))
 		{
 			var length = GetAnimationLength(anim);
 			if(GetProperty(anim, PropAnimations)) length = GetAnimationLength(GetProperty(anim, PropAnimations));
-			return Anim_AbsX(0, 0, length, GetProperty(Format("%s_Position", anim), PropAnimations));
+			return Anim_X(pos, 0, length, GetProperty(Format("%s_Position", anim), PropAnimations)*dir);
 		}
 	// TODO: Choose proper starting positions, depending on the current
 	// animation and its position: For Stand->Walk or Stand->Run, start
@@ -782,11 +784,11 @@ func GetWalkAnimationPosition(string anim)
 	// First parameter of Anim_Linear/Anim_AbsX is initial position.
 	// Movement synchronization might also be tweaked somewhat as well.
 	if(anim == Clonk_WalkStand)
-		return Anim_Linear(0, 0, GetAnimationLength(anim), 35, ANIM_Loop);
+		return Anim_Linear(pos, 0, GetAnimationLength(anim), 35, ANIM_Loop);
 	else if(anim == Clonk_WalkWalk)
-		return Anim_AbsX(0, 0, GetAnimationLength(anim), 20);
+		return Anim_X(pos, 0, GetAnimationLength(anim), 20*dir);
 	else if(anim == Clonk_WalkRun)
-		return Anim_AbsX(0, 0, GetAnimationLength(anim), 50);
+		return Anim_X(pos, 0, GetAnimationLength(anim), 50*dir);
 }
 
 func FxIntWalkStart(pTarget, iNumber, fTmp)
@@ -814,7 +816,7 @@ func FxIntWalkTimer(pTarget, iNumber)
 	if(anim != EffectVar(0, pTarget, iNumber) && !EffectVar(4, pTarget, iNumber))
 	{
 		EffectVar(0, pTarget, iNumber) = anim;
-		EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+		EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	}
 /*	// Check wether the clonk wants to turn (Not when he wants to stop)
 	if(EffectVar(17, pTarget, iNumber) != GetDirection())
