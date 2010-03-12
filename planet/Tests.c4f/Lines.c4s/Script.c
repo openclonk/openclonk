@@ -2,6 +2,7 @@
 
 func Initialize()
 {
+	CreateObject(Ropeladder, 174, 445)->Unroll(-1);
 	CreateObject(Ropeladder, 328, 564);
 	CreateObject(Ropeladder, 226, 330);
 }

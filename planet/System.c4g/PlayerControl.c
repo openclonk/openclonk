@@ -122,7 +122,7 @@ global func StopSelected(int plr)
 
 // Control2Effect
 // Call control function in all effects that have "Control" in their name
-global func Control2Effect(int ctrl, int x, int y, int strength, bool repeat, bool release)
+global func Control2Effect(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
 	// x and y are local coordinates
 	if (!this) return false;

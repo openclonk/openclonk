@@ -153,6 +153,7 @@ func FxIntClimbControlTimer(target, number)
 			{
 				SetXDir(-5+10*GetDir());
 				SetYDir(-5);
+				no_ladder_counter = 10;
 			}
 		}
 		return -1;
@@ -165,6 +166,17 @@ func FxIntClimbControlTimer(target, number)
 	SetPosition(LadderToLandscapeCoordinates(x), LadderToLandscapeCoordinates(y));
 	SetXDir(0); SetYDir(0);
 	SetLadderRotation(-angle, x-GetX()*1000, y-GetY()*1000);//EffectVar(2, target, number));
+	if(Stuck())
+	{
+		var dir = -1;
+		if(GetDir() == 0) dir = 1;
+		for(var i = 1; i <= 5; i++)
+		{
+			SetPosition(LadderToLandscapeCoordinates(x)+i*dir, LadderToLandscapeCoordinates(y));
+			if(!Stuck()) break;
+		}
+		if(Stuck()) SetPosition(LadderToLandscapeCoordinates(x)+5*dir, LadderToLandscapeCoordinates(y));
+	}
 	if(Stuck())
 	{
 		// Revert Position and step
@@ -238,7 +250,6 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 {
 	if(ctrl != CON_Up && ctrl != CON_Down && ctrl != CON_Right && ctrl != CON_Left) return;
 	if(release == 1) return;
-//	Log("%v %v %v %v %v %v", ctrl, x, y, strength, repeat, release);
 	if(ctrl == CON_Up)   SetComDir(COMD_Up);
 	else if(ctrl == CON_Down) SetComDir(COMD_Down);
 	else if(ctrl == CON_Left)
