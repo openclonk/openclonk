@@ -20,7 +20,7 @@ public func ControlUse(object clonk, int x, int y)
 	Exit(0, 10);
 	// Unroll dir
 	var dir = -1;
-	if(clonk->GetDir()) dir = 1;
+	if(x > 0) dir = 1;
 	Unroll(dir);
 
 	return true;
@@ -31,7 +31,8 @@ protected func Unroll(dir)
 	SetCategory(C4D_StaticBack);
 	SetAction("Hanging");
 	SetProperty("Collectible", 0);
-	
+
+//	TestArray = [[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9]];
 	TestArray = [[0, 1], [1, 0], [1, 1], [0, 2], [1, 2], [2, 0], [2, 1], [2, 2], [0, 3], [1, 3], [2, 3], [3, 0], [3, 1], [3, 2], [0, 4], [1, 4], [2, 4], [3, 3], [4, 0], [4, 1], [4, 2], [0, 5], [1, 5], [2, 5], [3, 4], [3, 5], [4, 3], [4, 4], [5, 0], [5, 1], [5, 2], [5, 3], [0, 6], [1, 6], [2, 6], [3, 6], [4, 5], [5, 4], [6, 0], [6, 1], [6, 2], [6, 3], [0, 7], [1, 7], [2, 7], [3, 7], [4, 6], [5, 5], [5, 6], [6, 4], [6, 5], [7, 0], [7, 1], [7, 2], [7, 3], [0, 8], [1, 8], [2, 8], [3, 8], [4, 7], [4, 8], [5, 7], [6, 6], [7, 4], [7, 5], [8, 0], [8, 1], [8, 2], [8, 3], [8, 4], [0, 9], [1, 9], [2, 9], [3, 9], [4, 9], [5, 8], [6, 7], [7, 6], [7, 7], [8, 5], [9, 0], [9, 1], [9, 2], [9, 3], [9, 4]];
 
 	segments = CreateArray(Ladder_MaxParticles);
@@ -200,8 +201,10 @@ func SatisfyConstraints()
 				if(particles[i][0][1] < particles[i][1][1])
 					ydir = 1;
 				// Look for all possible places where the particle could move (from nearest to farest)
+//				for(var y = 0; y < 10; y++)
+//					for(var x = 0; x < 10; x++)
 				for(var pos in TestArray)
-				{
+				{//var pos = [x,y];
 					if(!GBackSolid(GetPartX(i)-GetX()+xdir*pos[0], GetPartY(i)-GetY()+ydir*pos[1]))
 					{
 						particles[i][0][0] = (GetPartX(i)+xdir*pos[0])*Ladder_Precision;
