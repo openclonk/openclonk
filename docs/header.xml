@@ -9,10 +9,10 @@ clonk.xsl also uses it to match the processing for it. -->
 		<!-- search -->
 		<div id="nav_search">
 			<!-- clonk.xsl will add the relative path here -->
-			<form  id="searchform" action="search.php"><div>
-				<input name="search" value="" type="text" />
-				<input name="func" value="s" type="hidden" />
-				<input value="Search" type="submit" class="nav_searchButton" id="searchButton" />
+			<form  id="searchform" action="http://docs.openclonk.org/en/search.php"><div>
+				<input name="search" value="" type="text">
+				<input name="func" value="s" type="hidden">
+				<input value="Search" type="submit" class="nav_searchButton" id="searchButton">
 			</div></form>
 		</div>
 
@@ -26,16 +26,38 @@ clonk.xsl also uses it to match the processing for it. -->
 	<!-- Navigation Menu -->
 	<div id="nav_navigation">
 
-	<ul><li><a href="http://wiki.openclonk.org/">Home</a></li>
-	<li><a href="http://blog.openclonk.org/">Blog</a></li>
-	<li><a href='http://forum.openclonk.org'>Forum</a></li>
-	<li><a href="http://wiki.openclonk.org/w/Project">Project</a></li>
-	<li><a href="http://hg.openclonk.org">Source</a></li>
-	<li><a href="http://www.openclonk.org/nightly-builds">Builds</a></li>
-	<li><a href="http://bugs.openclonk.org">Bugtracker</a></li>
-	<li><a href="http://docs.openclonk.org/en/sdk/">Reference</a></li>
-	<li><a href="http://wiki.openclonk.org/w/What_is_Clonk">About</a></li>	</ul>
+	<ul>
+	<li><a  href="http://wiki.openclonk.org/">Home</a>
+	<ul>
+		<li><a href="http://wiki.openclonk.org/w/What_is_Clonk">What is Clonk?</a></li>
+		<li><a href="http://wiki.openclonk.org/w/Screenshots">Screenshots</a></li>
+		<li><a href="http://wiki.openclonk.org/w/Download">Download</a></li>
+
+		<li><a href="http://wiki.openclonk.org/w/FAQ">FAQ</a></li>
+		<li><a href="http://boom.openclonk.org">Running games</a></li>
+	</ul>
+	</li>
+	<li><a class="current" href="http://wiki.openclonk.org/w/Create">Create</a>
+	<ul>
+		<li><a href="http://docs.openclonk.org/en/sdk/">C4Script reference</a></li>
+
+		<li><a href="http://www.openclonk.org/nightly-builds">Nightly builds</a></li>
+	</ul>
+	</li>
+	<li><a  href="http://blog.openclonk.org/">Blog</a></li>
+	<li><a  href='http://forum.openclonk.org'>Forum</a></li>
+	<li><a  href="http://wiki.openclonk.org/w/Project">Project</a>
+	<ul>
+
+		<li><a href="http://bugs.openclonk.org">Bugtracker</a></li>
+		<li><a href="http://hg.openclonk.org/openclonk/">Changelog</a></li>
+		<li><a href="http://hg.openclonk.org/openclonk/file/">View source</a></li>
+		<li><a href="http://hg.openclonk.org/openclonk-resources/file/">Resources</a></li>
+	</ul>
+	</li>
+	</ul>
 
 	</div>
+
 
 </header>
