@@ -9,16 +9,16 @@
                 <syntax>
                         <rtype>string</rtype>
                         <params>
-                                <param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spieler, dessen Name abgefragt werden soll</desc></param>
+                                <param><type>int</type><name>player</name><desc>Spielernummer des Spieler, dessen Name abgefragt werden soll</desc></param>
                         </params>
                 </syntax>
                 <desc>Liefert den Namen eines Spielers. Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird 0 zurückgegeben. Dadurch kann diese Funktion auch benutzt werden, um zu ermitteln, ob eine Spielernummer gültig ist.</desc>
                 <examples>
                         <example>
-<code>protected func Activate(pClonk)
+<code>protected func Activate(clonk)
   {
   // Begrüßen
-  <funclink>Message</funclink>("Moin, %s. Was macht %s?", <funclink>this</funclink>(), <funclink>GetName</funclink>(pClonk), GetPlayerName(<funclink>GetOwner</funclink>(pClonk)));
+  <funclink>Message</funclink>("Moin, %s. Was macht %s?", <funclink>this</funclink>(), <funclink>GetName</funclink>(clonk), GetPlayerName(<funclink>GetOwner</funclink>(clonk)));
   // Fertig
   <funclink>return</funclink>(1);
   }</code>

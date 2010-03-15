@@ -9,8 +9,8 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iCols</name><desc>0-50: Anzahl der Menüeinträge, die das Menü in der Breite anzeigen können soll</desc></param>
-        <param><type>int</type><name>iRows</name><desc>0-50: Anzahl der Menüeinträge, die das Menü in der Höhe anzeigen können soll</desc></param>
+        <param><type>int</type><name>coloumns</name><desc>0-50: Anzahl der Menüeinträge, die das Menü in der Breite anzeigen können soll</desc></param>
+        <param><type>int</type><name>rows</name><desc>0-50: Anzahl der Menüeinträge, die das Menü in der Höhe anzeigen können soll</desc></param>
       </params>
     </syntax>
     <desc>Ändert die Größe eines Objektmenüs, so dass die vorgegebene Anzahl an Menüeinträgen in Breite und Höhe hineinpassen.</desc>

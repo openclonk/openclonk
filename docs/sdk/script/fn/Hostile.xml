@@ -9,9 +9,9 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr1</name><desc>Erster Spieler</desc></param>
-				<param><type>int</type><name>iPlr2</name><desc>Zweiter Spieler</desc></param>
-				<param><type>bool</type><name>fCheckOneWayOnly</name><desc>Wenn WAHR, wird nur geprüft, ob iPlr1 mit iPlr2 verfeindet ist und nicht umgekehrt.</desc><optional /></param>
+				<param><type>int</type><name>player1</name><desc>Erster Spieler</desc></param>
+				<param><type>int</type><name>player2</name><desc>Zweiter Spieler</desc></param>
+				<param><type>bool</type><name>check_one_way</name><desc>Wenn WAHR, wird nur geprüft, ob player1 mit player2 verfeindet ist und nicht umgekehrt.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Prüft, ob zwei Spieler verfeindet sind. Dazu reicht es, wenn nur einer von beiden mit dem anderen Spieler verfeindet ist.</desc>

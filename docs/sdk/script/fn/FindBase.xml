@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spielernummer des Spielers, dessen Basis gesucht wird</desc></param>
-				<param><type>int</type><name>iIndex</name><desc>Suchindex, mit dem mehrere Basen eines Spielers gefunden werden können. iIndex=0 sucht die erste Basis.</desc><optional /></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Basis gesucht wird</desc></param>
+				<param><type>int</type><name>index</name><desc>Suchindex, mit dem mehrere Basen eines Spielers gefunden werden können. index=0 sucht die erste Basis.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Sucht eine Heimatbasis eines Spielers. Die Heimatbasis ist zumeist das Gebäude, auf dem eine Flagge weht.</desc>

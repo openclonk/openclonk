@@ -12,36 +12,36 @@
       <params>
         <param>
           <type>string</type>
-          <name>szCommand</name>
+          <name>command</name>
           <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
         </param>
         <param>
           <type>object</type>
-          <name>pTarget</name>
+          <name>target</name>
           <optional />
           <desc>Zielobjekt für Aktion</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iX</name>
+          <name>x</name>
           <optional />
           <desc>X-Zielkoordinate</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iY</name>
+          <name>y</name>
           <optional />
           <desc>Y-Zielkoordinate</desc>
         </param>
         <param>
           <type>object</type>
-          <name>pTarget2</name>
+          <name>target2</name>
           <optional />
           <desc>zweites Zielobjekt</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iInterval</name>
+          <name>delay</name>
           <optional />
           <desc>Zeit (in Ticks/Frames), bis das Kommando abgebrochen wird (es wird dann mit dem nachsten in der Kommandoliste fortgesetzt)</desc>
         </param>
@@ -53,17 +53,17 @@
         </param>
         <param>
           <type>int</type>
-          <name>iRetries</name>
+          <name>retries</name>
           <optional />
           <desc>Anzahl der Wiederholungen (wenn das Kommando fehlschlägt), bis das Kommando abgebrochen wird.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iBaseMode</name>
+          <name>base_mode</name>
           <optional />
           <desc>Bestimmt, wie beim Fehlschlag des Commands verfahren wird.<br/><br/>
             <table>
-              <rowh><col>iBaseMode</col> <col>Name</col> <col>Beschreibung</col>
+              <rowh><col>base_mode</col> <col>Name</col> <col>Beschreibung</col>
                     <col>Fehlschlagsmeldung und CallFailed-Aufrufe</col> <col>Nächster Befehl</col></rowh>
               <row><col>0</col> <col>C4CMD_SilentSub</col> <col>Stiller Unterbefehl</col>
                    <col>Nur wenn dies der letzte Befehl ist</col> <col>Schlägt fehl</col></row>

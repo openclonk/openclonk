@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iData</name><desc>Zusatzparameter für die Aktivität.</desc></param>
+				<param><type>any</type><name>data</name><desc>Zusatzparameter für die Aktivität.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt den Zusatzparameter für die aktuell ausgeführte Aktivitäts-Prozedur. Die Auswirkung dieses Parameters hängt von der gesetzten Prozedur ab. Siehe dazu auch <emlink href="definition/procedures.html">ActMap-Prozeduren</emlink>.</desc>
@@ -19,7 +19,7 @@
   {
   <funclink>SetAction</funclink>("Bridge");
   SetActionData(<funclink>Material</funclink>("Gold"));
-  <funclink>SetComDir</funclink>(<funclink>COMD_Up</funclink>());
+  <funclink>SetComDir</funclink>(<funclink>COMD_Up</funclink>);
   }</code>
 				<text>Scriptfunktion für einen Spezialclonk: Auf Spezial 2 baut er eine senkrechte Goldbrücke.</text>
 			</example>

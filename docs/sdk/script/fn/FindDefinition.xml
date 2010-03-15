@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>id</type><name>idDef</name><desc>Die ID die überprüft wird</desc></param>
+				<param><type>id</type><name>definition</name><desc>Die ID die überprüft wird</desc></param>
 			</params>
 		</syntax>
 		<desc>Überprüft ob eine ID existiert (=im Spiel geladen ist).</desc>

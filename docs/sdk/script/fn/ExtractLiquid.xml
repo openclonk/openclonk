@@ -10,8 +10,8 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Position, an der abgesogen wird. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-        <param><type>int</type><name>iY</name><desc>Y-Position, an der abgesogen wird. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+        <param><type>int</type><name>x</name><desc>X-Position, an der abgesogen wird. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+        <param><type>int</type><name>y</name><desc>Y-Position, an der abgesogen wird. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
       </params>
     </syntax>
     <desc>Saugt ein Pixel Flüssigkeit an der angegebenen Position ab. Zurückgegeben wird die Materialnummer des abgesogenen Materials; bei Misserfolg -1.</desc>

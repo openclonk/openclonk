@@ -9,8 +9,8 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iChange</name><desc>Änderung der Sichtbarkeit des Scoreboards.</desc></param>
-        <param><type>int</type><name>iForPlr</name><desc>Wenn größer 0, Spielernummer+1 des Spielers, für den die Scoreboard-Sichtbarkeit geändert werden soll.</desc><optional /></param>
+        <param><type>int</type><name>change</name><desc>Änderung der Sichtbarkeit des Scoreboards.</desc></param>
+        <param><type>int</type><name>for_player</name><desc>Wenn größer 0, Spielernummer+1 des Spielers, für den die Scoreboard-Sichtbarkeit geändert werden soll.</desc><optional /></param>
       </params>
     </syntax>
     <desc>

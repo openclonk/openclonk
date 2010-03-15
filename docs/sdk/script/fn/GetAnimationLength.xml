@@ -11,7 +11,7 @@
       <params>
         <param>
           <type>string</type>
-          <name>szAnimation</name>
+          <name>animation</name>
           <desc>Name der Animation deren Länge abgefragt werden soll.</desc>
         </param>
       </params>

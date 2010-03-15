@@ -11,7 +11,7 @@
       <params>
         <param>
           <type>int</type>
-          <name>iAnimationNumber</name>
+          <name>animation_number</name>
           <desc>Animationsnummer der Animation deren Name abgefragt werden soll.</desc>
         </param>
       </params>

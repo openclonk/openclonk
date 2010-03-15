@@ -9,7 +9,7 @@
     <syntax>
       <rtype>object</rtype>
       <params>
-        <param><type>id</type><name>idType</name><desc>ID des zu ignorierenden Objekttyps</desc></param>
+        <param><type>id</type><name>type</name><desc>ID des zu ignorierenden Objekttyps</desc></param>
       </params>
     </syntax>
     <desc>Liefert das erste Inhaltsobjekt eines Behälters, das nicht vom angegebenen Typ ist.</desc>

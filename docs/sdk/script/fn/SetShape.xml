@@ -9,10 +9,10 @@
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Offset des neuen Shapes</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Offset des neuen Shapes</desc></param>
-        <param><type>int</type><name>iWdt</name><desc>Breite des neuen Shapes</desc></param>
-        <param><type>int</type><name>iHgt</name><desc>Höhe des neuen Shapes</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Offset des neuen Shapes</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Offset des neuen Shapes</desc></param>
+        <param><type>int</type><name>width</name><desc>Breite des neuen Shapes</desc></param>
+        <param><type>int</type><name>height</name><desc>Höhe des neuen Shapes</desc></param>
       </params>
     </syntax>
     <desc>Ändert das interne Objektrechteck des aufrufenden Objekts. Das Objektrechteck wird beispielsweise für Kollisionsabfragen verwendet. Dies hat keine Auswirkung auf die Darstellung des Objekts.</desc>

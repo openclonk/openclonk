@@ -9,7 +9,7 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>dwClrMod</name><desc>Primäre Farbmodulation</desc></param>
+        <param><type>int</type><name>colorMod</name><desc>Primäre Farbmodulation</desc></param>
       </params>
     </syntax>
     <desc>Setzt die Materialmodulation. Die Materialfarben werden mit der angegebenen Farbe so verrechnet wie auch ColorByOwner-Grafiken.</desc>

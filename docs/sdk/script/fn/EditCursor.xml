@@ -12,9 +12,9 @@
     <desc>Liefert im Entwicklermodus der Engine das Objekt, welches sich im gerade unter dem Mauscursor befindet (Modus: Objekte auswählen und verschieben).</desc>
     <examples>
     <example>
-<code>var pCur = EditCursor();
-<funclink>Message</funclink>("%s|x: %d y: %d|xdir: %d ydir: %d", pCur, <funclink>GetName</funclink>(pCur), <funclink>GetX</funclink>(pCur), <funclink>GetY</funclink>(pCur),
-  <funclink>GetXDir</funclink>(pCur), <funclink>GetYDir</funclink>(pCur));</code>
+<code>var cursor = EditCursor();
+<funclink>Message</funclink>("%s|x: %d y: %d|xdir: %d ydir: %d", cursor, <funclink>GetName</funclink>(cursor), <funclink>GetX</funclink>(cursor), <funclink>GetY</funclink>(cursor),
+  <funclink>GetXDir</funclink>(cursor), <funclink>GetYDir</funclink>(cursor));</code>
       <text>Zeigt einige Informationen über das Objekt an, über dem gerade der Mauscursor schwebt.</text>
     </example>
     </examples>

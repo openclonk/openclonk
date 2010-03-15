@@ -10,7 +10,7 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iCon</name><desc>Fertigstellung/Wachstum in Prozent</desc></param>
+        <param><type>int</type><name>con</name><desc>Fertigstellung/Wachstum in Prozent</desc></param>
       </params>
     </syntax>
     <desc>Setzt die Fertigstellung des aufrufenden Objekts auf den angegebenen Wert.</desc>

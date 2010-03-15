@@ -19,7 +19,6 @@ protected func Damage()
 	if(GetOCF() &amp; <funclink>OCF_OnFire</funclink>)
 		// Freuen
 		<funclink>Message</funclink>("Juhu! Ich brenne!", <funclink>this</funclink>);
-<funclink>return</funclink>(1);
 }		
 				</code>
 				<text>Masochist</text>

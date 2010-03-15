@@ -9,12 +9,12 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iAngle</name><desc>Winkel in Grad</desc></param>
-				<param><type>int</type><name>iRadius</name><desc>Radius</desc></param>
-				<param><type>int</type><name>iPrec</name><desc>Der angegebene Winkel wird, wenn angegeben, vor der Berechnung durch diesen Wert dividiert. Bei einem Winkel von 455 und einer Präzision von 10 würde intern also mit einem Winkel von 45,5° gerechnet werden.</desc><optional /></param>
+				<param><type>int</type><name>angle</name><desc>Winkel in Grad</desc></param>
+				<param><type>int</type><name>radius</name><desc>Radius</desc></param>
+				<param><type>int</type><name>precision</name><desc>Der angegebene Winkel wird, wenn angegeben, vor der Berechnung durch diesen Wert dividiert. Bei einem Winkel von 455 und einer Präzision von 10 würde intern also mit einem Winkel von 45,5° gerechnet werden.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Liefert cos(iAngle) * iRadius.</desc>
+		<desc>Liefert cos(angle) * radius.</desc>
 		<related>
 			<funclink>Sin</funclink>
 			<funclink>Tan</funclink>

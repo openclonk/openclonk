@@ -11,22 +11,22 @@
       <params>
         <param>
           <type>int</type>
-          <name>iVal</name>
+          <name>value</name>
           <desc>Eingabewert</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iRange1</name>
+          <name>lower_bound</name>
           <desc>Untergrenze für den Wert</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iRange2</name>
+          <name>upper_bound</name>
           <desc>Obergrenze für den Wert</desc>
         </param>
       </params>
     </syntax>
-    <desc>Gibt TRUE zurück, wenn iVal &gt;= iRange1 und iVal &lt;= iRange2 ist.</desc>
+    <desc>Gibt TRUE zurück, wenn value &gt;= lower_bound und value &lt;= upper_bound ist.</desc>
     <related>
       <funclink>BoundBy</funclink>
     </related>

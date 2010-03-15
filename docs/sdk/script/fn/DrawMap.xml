@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>Linke Kante des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>iY</name><desc>Obere Kante des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>iWdt</name><desc>Breite des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>int</type><name>iHgt</name><desc>Höhe des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
-				<param><type>string</type><name>szMap</name><desc>Definition der dynamischen Karte. Das umschließende map { ...} - Tag muss vorhanden sein.</desc></param>
+				<param><type>int</type><name>x</name><desc>Linke Kante des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
+				<param><type>int</type><name>y</name><desc>Obere Kante des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
+				<param><type>int</type><name>width</name><desc>Breite des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
+				<param><type>int</type><name>height</name><desc>Höhe des Rechtecks, in dem die Karte gezeichnet werden soll</desc></param>
+				<param><type>string</type><name>map</name><desc>Definition der dynamischen Karte. Das umschließende map { ...} - Tag muss vorhanden sein.</desc></param>
 			</params>
 		</syntax>
 		<desc>Zeichnet eine dynamische Zufallskarte innerhalb eines Bereichs. Dazu wird derselbe Generator benutzt, der auch die Karten der Landscape.txt zeichnet.</desc>

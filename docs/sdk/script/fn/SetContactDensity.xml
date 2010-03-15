@@ -9,7 +9,7 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iDensity</name><desc>Dichte des Materials, mit dem das Objekt kollidieren soll.</desc></param>
+        <param><type>int</type><name>density</name><desc>Dichte des Materials, mit dem das Objekt kollidieren soll.</desc></param>
       </params>
     </syntax>
     <desc>Legt fest, welche Dichte ein Material haben muss, damit das Objekt mit diesem kollidiert. Standardm‰ﬂig liegt dieser Wert bei 50 (dichtes Material).</desc>

@@ -9,7 +9,7 @@
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>iCounter</name><desc>Neue Position des Skriptzählers. Der nächste ScriptXXX-Aufruf wird bei diesem Zählerwert getätigt.</desc></param>
+        <param><type>int</type><name>counter</name><desc>Neue Position des Skriptzählers. Der nächste ScriptXXX-Aufruf wird bei diesem Zählerwert getätigt.</desc></param>
       </params>
     </syntax>
     <desc>Setzt den Skriptzähler in Szenarioskripten auf den gewünschten Wert. Der Scriptzähler sorgt dafür, dass die ScriptXXX-Funktionen im Szenrienscript aufgerufen werden. Dies funktioniert nicht in Objektscripten, stattdessen sollten TimerCalls oder ActMaps mit StartCall/PhaseCall/EndCall verwendet werden.</desc>

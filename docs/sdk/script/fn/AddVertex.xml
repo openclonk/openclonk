@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>X-Koordinate, von der Objektmitte aus gesehen.</desc></param>
-				<param><type>int</type><name>iY</name><desc>Y-Koordinate, von der Objektmitte aus gesehen.</desc></param>
+				<param><type>int</type><name>x</name><desc>X-Koordinate, von der Objektmitte aus gesehen.</desc></param>
+				<param><type>int</type><name>y</name><desc>Y-Koordinate, von der Objektmitte aus gesehen.</desc></param>
 			</params>
 		</syntax>
 		<desc>Fügt dem aufrufenden Objekt einen neuen Vertex hinzu.</desc>

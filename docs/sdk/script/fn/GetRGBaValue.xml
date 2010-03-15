@@ -10,13 +10,13 @@
 			<rtype>int</rtype>
 			<params>
 				<param><type>int</type><name>Val</name><desc>32Bit-Farbwert</desc></param>
-				<param><type>int</type><name>iSelect</name><desc>0-3: Auswahl des gewünschten Rückgabewerts</desc></param>
+				<param><type>int</type><name>select</name><desc>0-3: Auswahl des gewünschten Rückgabewerts</desc></param>
 			</params>
 		</syntax>
 		<desc>
 		Liefert einer der folgenden Farbwerte des angegebenen 32Bit-Farbwerts:
 		
-     <table><rowh><col>iSelect</col><col>Rückgabewert</col></rowh>
+     <table><rowh><col>select</col><col>Rückgabewert</col></rowh>
      <row><col>0</col><col>Alpha-Wert</col></row>
      <row><col>1</col><col>Rotanteil</col></row>
      <row><col>2</col><col>Grünanteil</col></row>

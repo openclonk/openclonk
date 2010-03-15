@@ -10,14 +10,14 @@
 			<rtype>bool</rtype>
 			<params>
 				<param><type>string</type><name>szName</name><desc>Name des Partikels</desc></param>
-				<param><type>int</type><name>iX</name><desc>X-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
-				<param><type>int</type><name>iY</name><desc>Y-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
-				<param><type>int</type><name>iXDir</name><desc>Horizontale Anfangsgeschwindigkeit des Partikels</desc></param>
-				<param><type>int</type><name>iYDir</name><desc>Vertikale Anfangsgeschwindigkeit des Partikels</desc></param>
+				<param><type>int</type><name>x</name><desc>X-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
+				<param><type>int</type><name>y</name><desc>Y-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
+				<param><type>int</type><name>xdir</name><desc>Horizontale Anfangsgeschwindigkeit des Partikels</desc></param>
+				<param><type>int</type><name>ydir</name><desc>Vertikale Anfangsgeschwindigkeit des Partikels</desc></param>
 				<param><type>int</type><name>a</name><desc>Zusatzparameter. Dies ist normalerweise die Größe des Partikels in 1/5-Pixeln.</desc></param>
 				<param><type>int</type><name>b</name><desc>Zweiter Zusatzparameter. Dies ist normalerweise die Farbmodulation des Partikels.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Zielobjekt für objektlokale Partikel. Objektlokale Partikel werden direkt über den jeweiligen Objekten gezeichnet, und beim Entfernen des Objekts gelöscht.</desc><optional /></param>
-				<param><type>bool</type><name>fBehind</name><desc>Wenn ungleich null wird der Partikel hinter dem Zielobjekt gezeichnet.</desc><optional /></param>
+				<param><type>object</type><name>target</name><desc>Zielobjekt für objektlokale Partikel. Objektlokale Partikel werden direkt über den jeweiligen Objekten gezeichnet, und beim Entfernen des Objekts gelöscht.</desc><optional /></param>
+				<param><type>bool</type><name>behind_target</name><desc>Wenn ungleich null wird der Partikel hinter dem Zielobjekt gezeichnet.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Erzeugt ein Partikel. Das Partikel muss unter dem angegebenen Namen geladen sein. Für weitere Informationen siehe Partikeldokumentation.</desc>

@@ -11,27 +11,27 @@
       <params>
         <param>
           <type>string</type>
-          <name>szAnimationName</name>
+          <name>animation</name>
           <desc>Name der abzuspielenden Animation.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iSlot</name>
+          <name>slot</name>
 	  <desc>Slot im Animation Stack in den die Animation eingefügt werden soll. Siehe <emlink href="definition/animations.html">Animationen</emlink>.</desc>
         </param>
         <param>
           <type>array</type>
-          <name>Position</name>
+          <name>position</name>
           <desc>Bestimmt, wie die aktuelle Position der Animation berechnet wird. Diese wird mittels Animationsfunktionen der Form "Anim_" angegeben.</desc>
         </param>
         <param>
           <type>array</type>
-          <name>Weight</name>
+          <name>weight</name>
           <desc>Bestimmt, wie die aktuelle Gewichtung der Animation berechnet wird, falls die Animation mit einer anderen Animation im gegebenen Slot kombiniert wird. Diese wird mittels Animationsfunktionen der Form "Anim_" angegeben.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iSibling</name>
+          <name>sibling</name>
 	  <desc>Falls die Animation mit einer anderen Animation kombiniert wird, dann gibt dies den Knoten an, mit dem die neue Animation kombiniert wird. Falls nicht angegeben oder nil wird die Animation mit der obersten Animation des Slots verknüpft wie sie von <funclink>GetRootAnimation</funclink> zurückgeliefert wird.</desc>
 	  <optional />
         </param>

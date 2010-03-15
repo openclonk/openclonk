@@ -9,11 +9,11 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>szSound</name><desc>Name des Soundeffekts (ohne .wav-Endung). Falls es sich um eine .ogg handelt, muss die Dateiendung mit angegeben werden.</desc></param>
-        <param><type>bool</type><name>fGlobal</name><desc>Gibt an, ob der Sound global, d.h. unabhängig von der Objektposition immer in derselben Lautstärke abgespielt werden soll.</desc><optional /></param>
-        <param><type>int</type><name>iVolume</name><desc>0-100: Lautstärke, in der der Sound abgespielt wird. Bei nil wird 100 als Standard angenommen.</desc><optional /></param>
-        <param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spielers, für den der Sound abgespielt werden soll. Im Netzwerkspiel wird der Sound dann nicht bei einem Spieler abgespielt, der an einem anderen Rechner spielt. Wenn nil oder nicht angegeben, wird der Sound für alle Spieler abgespielt.</desc><optional /></param>
-        <param><type>int</type><name>iLoopCount</name><desc>Erhöht oder verringert die Anzahl der in einer Endlosschleife laufenden Sounds. Bei +1 wird dieser Sound unendlich oft abgespielt bis diese Funktion noch einmal mit -1 aufgerufen wird. Bei 0 wird der Sound normal abgespielt.</desc><optional /></param>
+        <param><type>string</type><name>name</name><desc>Name des Soundeffekts (ohne .wav-Endung). Falls es sich um eine .ogg handelt, muss die Dateiendung mit angegeben werden.</desc></param>
+        <param><type>bool</type><name>global</name><desc>Gibt an, ob der Sound global, d.h. unabhängig von der Objektposition immer in derselben Lautstärke abgespielt werden soll.</desc><optional /></param>
+        <param><type>int</type><name>volume</name><desc>0-100: Lautstärke, in der der Sound abgespielt wird. Bei nil wird 100 als Standard angenommen.</desc><optional /></param>
+        <param><type>int</type><name>player</name><desc>Spielernummer des Spielers, für den der Sound abgespielt werden soll. Im Netzwerkspiel wird der Sound dann nicht bei einem Spieler abgespielt, der an einem anderen Rechner spielt. Wenn nil oder nicht angegeben, wird der Sound für alle Spieler abgespielt.</desc><optional /></param>
+        <param><type>int</type><name>loop_count</name><desc>Erhöht oder verringert die Anzahl der in einer Endlosschleife laufenden Sounds. Bei +1 wird dieser Sound unendlich oft abgespielt bis diese Funktion noch einmal mit -1 aufgerufen wird. Bei 0 wird der Sound normal abgespielt.</desc><optional /></param>
       </params>
     </syntax>
     <desc>Spielt einen Sound ab. Die entsprechende Sounddatei muss in der Gruppendatei Sound.c4g, in der aktiven Szenariodatei oder in einer geladenen Objektdefinition vorhanden sein. Bei lokalen Aufrufen werden Geräusche abhängig von der aktuellen Position des aufrufenden Objekts abgespielt.</desc>

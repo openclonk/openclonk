@@ -11,12 +11,12 @@
       <params>
         <param>
           <type>int</type>
-          <name>iAnimationNumber</name>
+          <name>animation_number</name>
           <desc>Animationsnummer der Animation deren Position gesetzt werden soll.</desc>
         </param>
         <param>
           <type>array</type>
-          <name>Weight</name>
+          <name>weight</name>
           <desc>Bestimmt, wie die aktuelle Gewichtung der Animation berechnet wird, falls die Animation mit einer anderen Animation im gegebenen Slot kombiniert wird. Diese wird mittels Animationsfunktionen der Form "Anim_" angegeben.</desc>
         </param>
       </params>
@@ -28,9 +28,9 @@
 
     <examples>
       <example>
-	      <code>var iAngle = <funclink>Angle</funclink>(0, 0, <funclink>GetXDir</funclink>(), <funclink>GetYDir</funclink>());
-<funclink>if</funclink>(iAngle > 360) iAngle = 360 - iAngle;
-<funclink>SetAnimationWeight</funclink>(swim_comb, <funclink>Anim_Const</funclink>(500+<funclink>Cos</funclink>(iAngle, 500)));</code>
+	      <code>var angle = <funclink>Angle</funclink>(0, 0, <funclink>GetXDir</funclink>(), <funclink>GetYDir</funclink>());
+<funclink>if</funclink>(angle > 360) angle = 360 - angle;
+<funclink>SetAnimationWeight</funclink>(swim_comb, <funclink>Anim_Const</funclink>(500+<funclink>Cos</funclink>(angle, 500)));</code>
 	<text>Ist in swim_comb die Animationsnummer eines Animationsknoten gespeichert, welcher eine Nach-Oben-Schwimmen- und eine Nach-Unten-Schwimmen-Animation kombiniert (siehe Beispiel zu <funclink>PlayAnimation</funclink>), so wird hier das Gewicht kosinusförmig abhängig von der aktuellen Schwimmrichtung gesetzt.</text>
       </example>
     </examples>

@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>string</type><name>strCommand</name><desc>Name des MessageBoard-Kommandos</desc></param>
-				<param><type>string</type><name>strScript</name><desc>Auszuführender Script</desc></param>
+				<param><type>string</type><name>command</name><desc>Name des MessageBoard-Kommandos</desc></param>
+				<param><type>string</type><name>script</name><desc>Auszuführender Script</desc></param>
 			</params>
 		</syntax>
 		<desc>Erzeugt ein neues selbstdefiniertes Messageboard-Kommando. Dieses Kommando kann von jedem Spieler im Spiel durch Eingabe von "/[Kommandoname]" aufgerufen werden.

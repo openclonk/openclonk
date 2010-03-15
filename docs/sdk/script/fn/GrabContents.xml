@@ -10,10 +10,10 @@
                 <syntax>
                         <rtype>bool</rtype>
                         <params>
-                                <param><type>object</type><name>pObj</name><desc>Objekt dessen Inhalt gestohlen werden soll.</desc></param>
+                                <param><type>object</type><name>obj</name><desc>Objekt dessen Inhalt gestohlen werden soll.</desc></param>
                         </params>
                 </syntax>
-                <desc>Entfernt sämtlichen Inhalt von *pObj, und gibt diesen dem aufrufenden Objekt.</desc>
+                <desc>Entfernt sämtlichen Inhalt von *obj, und gibt diesen dem aufrufenden Objekt.</desc>
                 <related>
                         <funclink>Contents</funclink>
                 </related>

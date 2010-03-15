@@ -11,24 +11,24 @@
       <params>
         <param>
           <type>string</type>
-          <name>strEntry</name>
+          <name>entry</name>
           <desc>Name des abzufragenden Eintrags</desc>
         </param>
         <param>
           <type>string</type>
-          <name>strSection</name>
+          <name>section</name>
           <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
           <optional/>
         </param>
         <param>
           <type>int</type>
-          <name>iMaterial</name>
+          <name>material</name>
           <desc>Nummer des Materials, von dem der Eintrag abgefragt werden soll. Bei Übergabe von 0 wird die Definition des aufrufenden Objekts angenommen.</desc>
           <optional/>
         </param>
         <param>
           <type>int</type>
-          <name>iEntryNr</name>
+          <name>entry_number</name>
           <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
           <optional/>
         </param>

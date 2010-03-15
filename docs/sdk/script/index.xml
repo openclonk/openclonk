@@ -32,7 +32,7 @@ anzeigen. Jeder Script-Programmierer sollte den Debugmodus aktivieren.</text>
 {
   [Erzeugt einen Stein|Image=Rock]
   <funclink>CreateObject</funclink>(Rock,50,50);
-  <funclink>return</funclink>(1);
+  <funclink>return</funclink> 1;
 }
 </code>
 <text>Unmittelbar nach dem Funktionsnamen kann in eckigen Klammern eine Beschreibung der Funktion
@@ -49,13 +49,13 @@ herausgefiltert und komplett ignoriert.</text>
 <code>func MeineFunktion() // Ein Kommentar bis zum Ende der Zeile
 {
   <funclink>Message</funclink>(&quot;Dieser Code wird ausgeführt&quot;); /* Ein Kommentar in einem Block */ <funclink>Message</funclink>(&quot;Dieser auch&quot;);
-  <funclink>return</funclink>(1);
+  <funclink>return</funclink> 1;
 }
 </code>
 
 <h id="Infos">Weitere Informationen</h>
 <text><emlink href="script/AppendTo.html">#appendto: Zum nachträglichen Erweitern fremder Scripte</emlink></text>
-<text><emlink href="script/Strict.html">#strict: Der neue Standard</emlink></text>
+<text><emlink href="script/Strict.html">: Der neue Standard</emlink></text>
 <text><emlink href="script/BreakContinue.html">Befehle zur Schleifenkontrolle</emlink></text>
 <text><emlink href="script/FuncCall.html">Aufruf von Scriptfunktionen</emlink></text>
 <text><emlink href="script/Effects.html">Effekte</emlink></text>

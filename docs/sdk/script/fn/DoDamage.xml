@@ -9,12 +9,12 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iChange</name><desc>Veränderung des Schadenswertes; positiv oder negativ</desc></param>
-				<param><type>int</type><name>iDmgType</name><desc>Schadensursache, die an Fx*Damage-Callbacks von Effekten übergeben wird (siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>). Standard ist FX_Call_DmgScript.</desc><optional /></param>
-				<param><type>int</type><name>iCausedBy</name><desc>Spielernummer des Spielers, der den Schaden verursacht hat.</desc><optional /></param>
+				<param><type>int</type><name>change</name><desc>Veränderung des Schadenswertes; positiv oder negativ</desc></param>
+				<param><type>int</type><name>damage_type</name><desc>Schadensursache, die an Fx*Damage-Callbacks von Effekten übergeben wird (siehe <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>). Standard ist FX_Call_DmgScript.</desc><optional /></param>
+				<param><type>int</type><name>caused_by</name><desc>Spielernummer des Spielers, der den Schaden verursacht hat.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Verändert den Schadenswert des aufrufenden Objekts. Bei iChange ungleich Null wird im Zielobjekt außerdem die Funktion Damage aufgerufen.</desc>
+		<desc>Verändert den Schadenswert des aufrufenden Objekts. Bei change ungleich Null wird im Zielobjekt außerdem die Funktion Damage aufgerufen.</desc>
 		<examples>
 			<example>
 				<code><funclink>FindObject</funclink>(TREE)->DoDamage(500);</code>

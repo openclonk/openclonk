@@ -10,8 +10,8 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>X-Position, an der das Material abgefragt werden soll. Offset bei lokalem Aufruf.</desc></param>
-				<param><type>int</type><name>iY</name><desc>Y-Position, an der das Material abgefragt werden soll. Offset bei lokalem Aufruf.</desc></param>
+				<param><type>int</type><name>x</name><desc>X-Position, an der das Material abgefragt werden soll. Offset bei lokalem Aufruf.</desc></param>
+				<param><type>int</type><name>y</name><desc>Y-Position, an der das Material abgefragt werden soll. Offset bei lokalem Aufruf.</desc></param>
 			</params>
 		</syntax>
 		<desc>Fragt das Material an einer bestimmten Stelle der Landschaft ab. Der zurückgegebene Wert ist ein Materialindex, der mit anderen Indizes zum Beispiel über die Funktion <funclink>Material</funclink>() verglichen werden kann. Für Himmel gibt die Funktion -1 zurück.</desc>

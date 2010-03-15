@@ -9,12 +9,12 @@
 		<syntax>
 			<rtype>any</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, in dem die Funktion aufgerufen werden soll.</desc></param>
-				<param><type>string</type><name>szFunction</name><desc>Funktion, die aufgerufen werden soll.</desc></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, in dem die Funktion aufgerufen werden soll.</desc></param>
+				<param><type>string</type><name>function</name><desc>Funktion, die aufgerufen werden soll.</desc></param>
 				<param><type>any</type><name>...</name><desc>Parameter der Funktion.</desc></param>
 			</params>
 		</syntax>
-		<desc>Ruft die private, geschützte oder öffentliche Funktion szFunction in pObj auf. Es sollte überlegt werden, ob der Aufruf wirklich nötig ist.</desc>
+		<desc>Ruft die private, geschützte oder öffentliche Funktion function in obj auf. Es sollte überlegt werden, ob der Aufruf wirklich nötig ist.</desc>
 		<related>
 			<funclink>ObjectCall</funclink>
 			<funclink>ProtectedCall</funclink>

@@ -13,7 +13,7 @@
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
     <examples>
       <example>
-        <code><funclink>if</funclink> (<funclink>GetType</funclink>(x) != C4V_Array()) x = <funclink>CreateArray</funclink>();</code>
+        <code><funclink>if</funclink> (<funclink>GetType</funclink>(x) != C4V_Array) x = <funclink>CreateArray</funclink>();</code>
         <text>Speichert ein neues, leeres Array in x wenn es noch kein Array ist.</text>
       </example>
     </examples>

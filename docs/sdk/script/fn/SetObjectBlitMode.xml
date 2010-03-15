@@ -10,7 +10,7 @@
 			<rtype>int</rtype>
 			<params>
 				<param><type>int</type><name>dwNewBlitMod</name><desc>Neuer Zeichenmodus (mögliche Werte siehe unten) - bei 0 wird das Objekt auf seinen Definitions-Blitmodus zurückgesetzt. Ansonsten wird Bit 8 (benutzerdefinierter Farbwert) implizit gesetzt.</desc><optional /></param>
-				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
+				<param><type>int</type><name>overlay_id</name><desc>Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Ändert den Zeichenmodus für das aufrufende Objekt. Die möglichen Werte entsprechen denen des DefCore-Flags BlitMode (siehe Anmerkung). Die Funktion gibt jeweils den vorher gesetzten Blitmodus zurück.</desc>
@@ -41,7 +41,7 @@ protected func Script100()
   g_pCursor-><funclink>SetClrModulation</funclink>(<funclink>RGB</funclink>(100, 255, 110));
   // Nachricht
   <funclink>Message</funclink>("Schau her, ich kann leuchten!", g_pCursor);
-  return(1);
+  return true;
   }
 
 protected func Script200()
@@ -51,7 +51,7 @@ protected func Script200()
   g_pCursor-><funclink>SetClrModulation</funclink>(g_dwPrevMod);
   // Nachricht
   <funclink>Message</funclink>("Schon vorbei :/", g_pCursor);
-  <funclink>return</funclink>(1);
+  <funclink>return</funclink> 1;
   }</code>
 				<text>Teil eines Szenarioscripts: Färbt den ausgewählten Clonk des ersten Spielers für eine Weile teilweise leuchtend grün.<br />
 				Für einen solchen Effekt in aufwändigeren Szenarien oder in allgemein verwendbaren Objekten sollte an solcher Stelle natürlich ein <emlink href="script/Effects.html">Effekt</emlink> verwendet werden, um beispielsweise Komplikationen mit verfärbenden Zaubern zu vermeiden.</text>

@@ -12,7 +12,7 @@
    <params>
     <param>
      <type>int</type>
-     <name>iIndex</name>
+     <name>index</name>
      <desc>0-9: Index des abzufragenden Parameters</desc>
     </param>
    </params>

@@ -12,7 +12,8 @@
     <desc>Prüft, ob das aufrufende Objekt eine Aktivität ausführt.</desc>
     <examples>
       <example>
-	      <code><funclink>if</funclink>((i = <funclink>FindObject</funclink>(HUT1))->ActIdle()) i-><funclink>Explode</funclink>(15);</code>
+	      <code>var hut = <funclink>FindObject</funclink>(HUT1);
+		  <funclink>if</funclink>(hut->ActIdle()) hut-><funclink>Explode</funclink>(15);</code>
         <text>Lässt die Bambushütte explodieren, wenn die Tür geschlossen ist</text>
       </example>
     </examples>

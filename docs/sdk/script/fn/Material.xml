@@ -10,7 +10,7 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>string</type><name>szMaterialName</name><desc>Name des Materials</desc></param>
+        <param><type>string</type><name>material_name</name><desc>Name des Materials</desc></param>
       </params>
     </syntax>
     <desc>Gibt den Index eines Materials anhand seines Namens zurück. Dieser Index wird in den meisten materialbezogenen Funktionen verwendet.</desc>

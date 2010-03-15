@@ -11,12 +11,12 @@
       <params>
         <param>
           <type>int</type>
-          <name>iAnimationNumber</name>
+          <name>animation_number</name>
           <desc>Animationsnummer der Animation deren Position gesetzt werden soll.</desc>
         </param>
         <param>
           <type>array</type>
-          <name>Position</name>
+          <name>position</name>
           <desc>Bestimmt, wie die aktuelle Position der Animation berechnet wird. Diese wird mittels Animationsfunktionen der Form "Anim_" angegeben.</desc>
         </param>
       </params>
@@ -28,7 +28,7 @@
 
     <examples>
       <example>
-        <code><funclink>SetAnimationPosition</funclink>(iAnimationNumber, <funclink>Anim_Const</funclink>(<funclink>GetAnimationPosition</funclink>(iAnimationNumber)+100));</code>
+        <code><funclink>SetAnimationPosition</funclink>(animation_number, <funclink>Anim_Const</funclink>(<funclink>GetAnimationPosition</funclink>(animation_number)+100));</code>
 	<text>Script für einen Timer: Bei jeder Durchführung wird die Animation um 100 Millisekunden weitergespielt. Falls der Timer im gleichen Abstand aufgerufen wird kann stattdessen auch <funclink>Anim_Linear</funclink> verwendet werden.</text>
       </example>
     </examples>

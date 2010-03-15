@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, das neu einsortiert werden soll. 0 bei lokalem Aufruf. Bei 0 im globalen Aufruf wird die gesamte Objektliste neu sortiert (Zur Behebung von Sortierungsfehlern).</desc><optional /></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, das neu einsortiert werden soll. 0 bei lokalem Aufruf. Bei 0 im globalen Aufruf wird die gesamte Objektliste neu sortiert (Zur Behebung von Sortierungsfehlern).</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Sortiert ein Objekt neu in die Objektliste ein.</desc>

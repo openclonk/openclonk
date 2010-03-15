@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spielernummer des Spielers, dessen Punktewert verändert werden soll</desc></param>
-				<param><type>int</type><name>iChange</name><desc>Positiv oder negativ: Die Veränderung des Punktewertes</desc></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Punktewert verändert werden soll</desc></param>
+				<param><type>int</type><name>change</name><desc>Positiv oder negativ: Die Veränderung des Punktewertes</desc></param>
 			</params>
 		</syntax>
 		<desc>Verändert den Punktewert eines Spielers. Dieser Wert ergibt zusammen mit dem Spielerwert (Wert aller Objekte im Besitz) die Gesamtpunktezahl des Spielers.</desc>

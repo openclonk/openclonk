@@ -9,9 +9,9 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Position der Rauchwolke. Offset bei lokalem Aufruf.</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Position der Rauchwolke. Offset bei lokalem Aufruf.</desc></param>
-        <param><type>int</type><name>iLevel</name><desc>Größe des Rauchs</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Position der Rauchwolke. Offset bei lokalem Aufruf.</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Position der Rauchwolke. Offset bei lokalem Aufruf.</desc></param>
+        <param><type>int</type><name>level</name><desc>Größe des Rauchs</desc></param>
       </params>
     </syntax>
     <desc>Erzeugt eine Rauchwolke an der angegebenen Position.</desc>

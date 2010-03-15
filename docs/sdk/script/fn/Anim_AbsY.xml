@@ -11,28 +11,28 @@
       <params>
         <param>
           <type>int</type>
-          <name>iPosition</name>
-          <desc>Startwert. Sollte innerhalb des von iBegin und iEnd aufgespannten Intervalls liegen.</desc>
+          <name>position</name>
+          <desc>Startwert. Sollte innerhalb des von begin und end aufgespannten Intervalls liegen.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iBegin</name>
+          <name>begin</name>
           <desc>Beginn des Intervalls.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iEnd</name>
-          <desc>Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so nimmt der Wert mit der Bewegung des Objekts zu, andernfalls nimmt er ab.</desc>
+          <name>end</name>
+          <desc>Schluss des Intervalls. Wenn end größer als begin ist, so nimmt der Wert mit der Bewegung des Objekts zu, andernfalls nimmt er ab.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iLength</name>
-          <desc>Anzahl Pixel die in Y-Richtung zurückgelegt werden müssen um die Animation von iBegin bis nach iEnd durchzuspielen.</desc>
+          <name>length</name>
+          <desc>Anzahl Pixel die in Y-Richtung zurückgelegt werden müssen um die Animation von begin bis nach end durchzuspielen.</desc>
 	</param>
       </params>
     </syntax>
 
-    <desc>Der Wert hängt von der Bewegung des Objekts in Y-Richtung ab. Jeder Pixel den sich das Objekt in Y-Richtung bewegt erhöht den Wert etwas. Wenn iEnd erreicht wurde wird der Wert wieder auf iBegin zurückgesetzt. Im Gegensatz zu <funclink>Anim_Y</funclink> bewegt sich der Wert immer auf iEnd zu, egal in welche Richtung sich das Objekt bewegt.</desc>
+    <desc>Der Wert hängt von der Bewegung des Objekts in Y-Richtung ab. Jeder Pixel den sich das Objekt in Y-Richtung bewegt erhöht den Wert etwas. Wenn end erreicht wurde wird der Wert wieder auf begin zurückgesetzt. Im Gegensatz zu <funclink>Anim_Y</funclink> bewegt sich der Wert immer auf end zu, egal in welche Richtung sich das Objekt bewegt.</desc>
 
     <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
 

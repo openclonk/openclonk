@@ -11,12 +11,12 @@
    <params>
     <param>
      <type>object</type>
-     <name>pCrew</name>
+     <name>crew</name>
      <desc>Crewobjekt, aus dessen Infosektion zusätzliche Daten abgefragt werden. 0 für lokalen Aufruf.</desc>
     </param>
     <param>
      <type>string</type>
-     <name>strDataName</name>
+     <name>data_name</name>
      <desc>Name, dessen zugeordnete Daten abgefragt werden.</desc>
     </param>
    </params>

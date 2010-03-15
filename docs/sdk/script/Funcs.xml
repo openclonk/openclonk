@@ -131,32 +131,32 @@ ZeigeSumme(1, 2, 3, 4, 5, 6);</code>
 		
 		<h>Beispiel:</h>
 
-<code>global func CreateContents(id, pObj, iCnt)
+<code>global func CreateContents(id, obj, count)
 {
-  var pObj;
-  <emlink href="for.html">for</emlink>(var i = 0; i &lt; iCnt; i++)
-    pObj = <funclink>inherited</funclink>(id, pObj);
-  return(pObj);
+  var obj;
+  <emlink href="for.html">for</emlink>(var i = 0; i &lt; count; i++)
+    obj = <funclink>inherited</funclink>(id, obj);
+  return(obj);
 }</code>
 	
-		<text>Definiert die Engine-Funktion <funclink>CreateContents</funclink> neu. Dabei wird sie um einen neuen Parameter iCnt erweitert, der es erlaubt, mehrere Objekte zu erzeugen. Man beachte, dass <funclink>inherited</funclink> innerhalb dieser Funktion der durch sie überladenen Engine-Funktion <funclink>CreateContents</funclink> entspricht!</text>
+		<text>Definiert die Engine-Funktion <funclink>CreateContents</funclink> neu. Dabei wird sie um einen neuen Parameter count erweitert, der es erlaubt, mehrere Objekte zu erzeugen. Man beachte, dass <funclink>inherited</funclink> innerhalb dieser Funktion der durch sie überladenen Engine-Funktion <funclink>CreateContents</funclink> entspricht!</text>
 		
 		<h>Achtung!</h>
 		<text>Eine globale Skriptfunktion übernimmt den Kontext der aufrufenden Funktion. Das bedeutet insbesondere, dass <funclink>this</funclink>() das aufrufende Objekt ist (natürlich nur, wenn die Funktion auch aus einem Objekt aufgerufen wurde). Deshalb darf in einer globalen Funktion auch keine objektlokale Variable verwendet werden und auch keine andere lokale Funktion aufgerufen oder lokale Variablen verändert werden! Das folgende Objektscript ist also nicht zulässig:</text>
 		
-		<code>local iNummer;
+		<code>local number;
 func ObjektFunktion()
 {
-  <funclink>Log</funclink>("ObjectFunktion: local iNummer hat den Wert %d!", iNummer);
+  <funclink>Log</funclink>("ObjectFunktion: local number hat den Wert %d!", number);
 }
 
 global func GlobaleFunktion()
 {
   ObjectFunktion(); // Fehler!
-  iNummer++; // Fehler!
+  number++; // Fehler!
 }</code>
 		
-		<text>Beide Versuche, auf objektlokale Elemente zuzugreifen, schlagen fehl. Das ist leicht einsichtig, da GlobalFunktion() ja aus jedem beliebigen Script, also auch aus dem Szenarioscript oder aus dem Script eines anderen Objekts aufgerufen werden kann. Dieses Script besitzt dann höchstwahrscheinlich auch keine Variable "iNummer" oder Funktion "ObjectFunktion", die benutzt werden könnte. Da die Engine dies beim Vararbeiten des Scripts nicht sicherstellen kann, wird ein Fehler ausgelöst.</text>
+		<text>Beide Versuche, auf objektlokale Elemente zuzugreifen, schlagen fehl. Das ist leicht einsichtig, da GlobalFunktion() ja aus jedem beliebigen Script, also auch aus dem Szenarioscript oder aus dem Script eines anderen Objekts aufgerufen werden kann. Dieses Script besitzt dann höchstwahrscheinlich auch keine Variable "number" oder Funktion "ObjectFunktion", die benutzt werden könnte. Da die Engine dies beim Vararbeiten des Scripts nicht sicherstellen kann, wird ein Fehler ausgelöst.</text>
 		<text>Anmerkung: Soll eine lokale Funktion in einem fremden Kontext aufgerufen werden, so sollte "<code>this()->Funktion(...)</code>" verwendet werden. Dann gibt es nur einen Fehler, wenn die Funktion auch wirklich nicht im Objekt existiert.</text>
 	</part>
 	
@@ -174,12 +174,12 @@ global func GlobaleFunktion()
 
 func Aufruf()
 {
-  var iHiRankX, iHiRankY;
-  GetHiRankPosition(0, iHiRankX, iHiRankY);
-  <funclink>Message</funclink>("Die Position des HiRanks von Spieler 1 ist: %d/%d", 0, iHiRankX, iHiRankY);
+  var hiRankX, hiRankY;
+  GetHiRankPosition(0, hiRankX, hiRankY);
+  <funclink>Message</funclink>("Die Position des HiRanks von Spieler 1 ist: %d/%d", 0, hiRankX, hiRankY);
 }</code>
 	
-	<text><code>x</code> und <code>y</code> in <code>GetHiRankPosition</code> sind hier <strong>Referenzen</strong>, d.h. wenn man sie setzt, werden die Variablen gesetzt, die man als Parameter angab (in diesem Fall <code>iHiRankX</code> und <code>iHiRankY</code>). Man beachte, dass ein Aufruf wie "<code>GetHiRankPosition(0, iHiRankX + 1, iHiRankY)</code>" zu einem Typfehler führt, da "<code>iHiRankX + 1</code>" keine Variable, sondern eine Zahl ist!</text>
+	<text><code>x</code> und <code>y</code> in <code>GetHiRankPosition</code> sind hier <strong>Referenzen</strong>, d.h. wenn man sie setzt, werden die Variablen gesetzt, die man als Parameter angab (in diesem Fall <code>hiRankX</code> und <code>hiRankY</code>). Man beachte, dass ein Aufruf wie "<code>GetHiRankPosition(0, hiRankX + 1, hiRankY)</code>" zu einem Typfehler führt, da "<code>hiRankX + 1</code>" keine Variable, sondern eine Zahl ist!</text>
 	<text>Man beachte, dass "<code>&amp;</code>" ein eigenständiger Typ ist, deshalb darf für einen Referenzparameter kein weiterer Typ angegeben werden, "<code>int &amp;x</code>" wäre also ungültig!</text>
 </part>
 

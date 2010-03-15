@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlayer</name><desc>Spieler für den die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>object</type><name>pObject</name><desc>Objekt, von dem die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int</type><name>player</name><desc>Spieler für den die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, von dem die Sichtbarkeit abgefragt wird. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Fragt die Sichtbarkeit eines Objekts ab. Siehe dazu auch <funclink>SetVisibility</funclink>.</desc>

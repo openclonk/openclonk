@@ -9,7 +9,7 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iPrecision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
+                                <param><type>int</type><name>precision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
                         </params>
                 </syntax>
                 <desc>Liefert die Rotations-Geschwindigkeit des aufrufenden Objekts.</desc>

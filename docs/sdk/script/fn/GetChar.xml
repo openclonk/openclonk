@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>string</type><name>szText</name><desc>Zeichenkette, von der ein Zeichen abgefragt wird</desc></param>
-				<param><type>int</type><name>iIndex</name><desc>Position des abgefragten Zeichens. 0 entspricht dabei dem ersten Zeichen. Ist dieser Wert größer oder gleich der Länge der Zeichenkette, wird 0 zurückgegeben.</desc></param>
+				<param><type>string</type><name>text</name><desc>Zeichenkette, von der ein Zeichen abgefragt wird</desc></param>
+				<param><type>int</type><name>index</name><desc>Position des abgefragten Zeichens. 0 entspricht dabei dem ersten Zeichen. Ist dieser Wert größer oder gleich der Länge der Zeichenkette, wird 0 zurückgegeben.</desc></param>
 			</params>
 		</syntax>
 		<desc>Ermittelt den Zeichencode eines indizierten Zeichens einer Zeichenkette.</desc>

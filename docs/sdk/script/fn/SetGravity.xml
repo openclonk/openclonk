@@ -9,10 +9,10 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iGravity</name><desc>Neue Schwerkraft: Werte -300 bis 300 (in Prozent)</desc></param>
+				<param><type>int</type><name>gravity</name><desc>Neue Schwerkraft: Werte -300 bis 300 (in Prozent)</desc></param>
 			</params>
 		</syntax>
-		<desc>Setzt die Schwerkraft. Dabei entspricht die Standardgravitation (100%) einer Beschleunigung von 0.2 Pixeln pro Tick² (Zunahme der YDir um 2 pro Tick bei iPrecision=10)</desc>
+		<desc>Setzt die Schwerkraft. Dabei entspricht die Standardgravitation (100%) einer Beschleunigung von 0.2 Pixeln pro Tick² (Zunahme der YDir um 2 pro Tick bei precision=10)</desc>
 		<related>
 			<funclink>GetGravity</funclink>
 		</related>

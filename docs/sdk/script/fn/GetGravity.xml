@@ -13,7 +13,7 @@
 		<examples>
 			<example>
 <code><funclink>for</funclink> (var obj in <funclink>FindObjects</funclink>(<funclink>Find_Distance</funclink>(100)))
-  <funclink>SetYDir</funclink>(<funclink>GetYDir</funclink>(obj, 500) - GetGravity(), obj, 500);</code>
+  obj-><funclink>SetYDir</funclink>(obj-><funclink>GetYDir</funclink>(500) - GetGravity(), 500);</code>
 				<text>Hebt die Gravitation in einem Radius von 100 Pixeln auf, wenn jeden Frame aufgerufen.</text>
 			</example>
 		</examples>

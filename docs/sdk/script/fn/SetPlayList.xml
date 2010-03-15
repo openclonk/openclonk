@@ -9,7 +9,7 @@
   <syntax>
    <rtype>int</rtype>
    <params>
-    <param><type>string</type><name>szPlayList</name><desc>Liste der abzuspielenden Musikstücke. Dabei werden die Einzeldateinamen jeweils mit einem Semikolon (";") getrennt. Wildcards dürfen benutzt werden. Wird der Parameter wegelassen, so wird die Standard-Musikliste gespielt.</desc><optional/></param>
+    <param><type>string</type><name>playlist</name><desc>Liste der abzuspielenden Musikstücke. Dabei werden die Einzeldateinamen jeweils mit einem Semikolon (";") getrennt. Wildcards dürfen benutzt werden. Wird der Parameter wegelassen, so wird die Standard-Musikliste gespielt.</desc><optional/></param>
    </params>
   </syntax>
   <desc>Setzt die Liste der Musikstücke, die in zufälliger Reihenfolge abgespielt werden sollen (wenn die Musik aktiviert ist). Zurückgegeben wird die Anzahl der aktivierten Musikstücke (Im Netzwerk wird allerdings immer 0 zurückgegeben).</desc>

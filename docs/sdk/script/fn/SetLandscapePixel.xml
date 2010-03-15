@@ -9,8 +9,8 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Position des Pixels, das umgefärbt werden soll; relative Koordinaten bei objektlokalem Aufruf</desc></param>
         <param><type>int</type><name>dwValue</name><desc>32Bit-Farbwert des Pixels.</desc></param>
       </params>
     </syntax>

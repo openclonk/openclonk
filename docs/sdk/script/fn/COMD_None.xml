@@ -14,7 +14,7 @@
 		<remark>COMD_None und <funclink>COMD_Stop</funclink> sind identisch und haben den Wert 0.</remark>
 		<examples>
 			<example>
-				<code><funclink>SetComDir</funclink>(COMD_None(), <funclink>GetCursor</funclink>());</code>
+				<code><funclink>SetComDir</funclink>(COMD_None, <funclink>GetCursor</funclink>());</code>
 				<text>Lässt den aktuell ausgewählten Clonk des ersten Spielers anhalten.</text>
 			</example>
 		</examples>

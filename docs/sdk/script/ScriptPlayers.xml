@@ -18,33 +18,33 @@
 
 <code>/* Script einer aktivierten Spielregel namens "KI Erzeugen" */
 
-#strict
 
-public func Activate(int iPlr)
+
+public func Activate(int player)
   {
-  // Der Spieler iPlr hat die Spielregel ausgewählt. Erzeuge einen KI-Gegner!
+  // Der Spieler player hat die Spielregel ausgewählt. Erzeuge einen KI-Gegner!
   <funclink>return</funclink>(<funclink>CreateScriptPlayer</funclink>("Computer", 0x7f7f7f));
   }
   
-protected func InitializePlayer(int iPlr)
+protected func InitializePlayer(int player)
   {
   // Ein Spieler ist beigetreten. Dieser Aufruf erfolgt an das Szenarienscript, sowie an alle Spielregeln,
   // Spielziele und Umweltobjekte
   // Ist es ein Scriptspieler?
-  <funclink>if</funclink> (<funclink>GetPlayerType</funclink>(iPlr) == C4PT_Script)
+  <funclink>if</funclink> (<funclink>GetPlayerType</funclink>(player) == C4PT_Script)
     {
     // Dann übernimm die Steuerung für alle Clonks!
-    var iCrew, pCrew;
-    <funclink>while</funclink> (pCrew = <funclink>GetCrew</funclink>(iPlr, iCrew++))
-      <funclink>AddEffect</funclink>("Int_EAI", pCrew, 1, 100, <funclink>this</funclink>());
+    var crew_counter, crew;
+    <funclink>while</funclink> (crew = <funclink>GetCrew</funclink>(player, crew_counter++))
+      <funclink>AddEffect</funclink>("Int_EAI", crew, 1, 100, <funclink>this</funclink>());
     }
   }
   
-protected func FxInt_EAITimer(object pCrew, int iEffNum, int iEffTime)
+protected func FxInt_EAITimer(object crew, int num, int time)
   {
   // Nächsten Gegner angreifen
-  var pEnemy = <funclink>FindObject</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(pCrew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
-  <funclink>if</funclink> (pEnemy) <funclink>SetCommand</funclink>(pCrew, "Attack", pEnemy);
+  var enemy = <funclink>FindObject</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(crew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
+  <funclink>if</funclink> (enemy) <funclink>SetCommand</funclink>(crew, "Attack", enemy);
   <funclink>return</funclink> FX_OK;
   }
 </code>
@@ -85,31 +85,31 @@ LastPlayerID=1
 
 <code>/* Script einer aktivierten Spielregel namens "Aliens erzeugen" */
 
-#strict
 
-public func Activate(int iPlr)
+
+public func Activate(int player)
   {
-  // Der Spieler iPlr hat die Spielregel ausgewählt. Erzeuge einen Alien-Gegner!
+  // Der Spieler player hat die Spielregel ausgewählt. Erzeuge einen Alien-Gegner!
   <funclink>return</funclink>(<funclink>CreateScriptPlayer</funclink>("Aliens", 0x00ff00, 0, CSPF_FixedAttributes | CSPF_NoScenarioInit, GetID()));
   }
   
-protected func InitializeScriptPlayer(int iPlr, int idTeam)
+protected func InitializeScriptPlayer(int player, int idTeam)
   {
   // Ein Alienspieler ist beigetreten
   // Da keine Szenarieninitialisierung durchgeführt wurde, muss in diesem Callback eine Crew für den Spieler erstellt werden
   // Erstelle einen grünen Clonk - ein richtiges Szenario sollte natürlich echte Aliens mitbringen :)
-  var pAlien = CreateObject(Clonk, LandscapeWidth()/2, -1, iPlr);
-  MakeCrewMember(pAlien, iPlr);
-  SetClrModulation(0x7fff7f, pAlien);
+  var alien = CreateObject(Clonk, LandscapeWidth()/2, -1, player);
+  MakeCrewMember(alien, player);
+  SetClrModulation(0x7fff7f, alien);
   // Und angreifen lassen
-  <funclink>AddEffect</funclink>("Int_EAI", pAlien, 1, 100, 0, GetID());
+  <funclink>AddEffect</funclink>("Int_EAI", alien, 1, 100, 0, GetID());
   }
   
-protected func FxInt_EAITimer(object pCrew, int iEffNum, int iEffTime)
+protected func FxInt_EAITimer(object crew, int num, int time)
   {
   // Nächsten Gegner angreifen
-  var pEnemy = <funclink>FindObject</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(pCrew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
-  <funclink>if</funclink> (pEnemy) <funclink>SetCommand</funclink>(pCrew, "Attack", pEnemy);
+  var enemy = <funclink>FindObject</funclink>(<funclink>Find_Hostile</funclink>(<funclink>GetOwner</funclink>(crew)), <funclink>Find_OCF</funclink>(<funclink>OCF_Alive</funclink>), <funclink>Sort_Distance</funclink>());
+  <funclink>if</funclink> (enemy) <funclink>SetCommand</funclink>(crew, "Attack", enemy);
   <funclink>return</funclink> FX_OK;
   }
 </code>

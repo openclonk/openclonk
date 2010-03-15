@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>id</type><name>idDef</name><desc>ID der neu zu ladenden Definition</desc></param>
+				<param><type>id</type><name>definition</name><desc>ID der neu zu ladenden Definition</desc></param>
 			</params>
 		</syntax>
 		<desc>Aktualisiert eine Definition. Dieser Befehl kann im Entwicklermodus in der Konsole eingegeben werden, nachdem die Definition auf der Festplatte verändert wurde. Sie muss zuvor geladen gewesen sein.</desc>

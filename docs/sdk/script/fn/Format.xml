@@ -9,12 +9,12 @@
     <syntax>
       <rtype>string</rtype>
       <params>
-        <param><type>string</type><name>szStr</name><desc>Zeichenkette, in die die Werte eingesetzt werden</desc></param>
+        <param><type>string</type><name>text</name><desc>Zeichenkette, in die die Werte eingesetzt werden</desc></param>
         <param><type></type><name>...</name><desc>Werte, die in die Zeichenkette eingesetzt werden</desc></param>
       </params>
     </syntax>
     <desc>
-      Setzt eine Zeichenkette aus verschiedenen Werten zusammen. Dabei wird szStr von vorne bis zum Ende nach mit '%' beginnenden Platzhaltern durchsucht, um diese dann durch die Parameter zu ersetzen.<br />
+      Setzt eine Zeichenkette aus verschiedenen Werten zusammen. Dabei wird text von vorne bis zum Ende nach mit '%' beginnenden Platzhaltern durchsucht, um diese dann durch die Parameter zu ersetzen.<br />
       Das allgemeine Syntax für diese Platzhalter lautet:<br />
       <code>%[Länge][.Präzision]Typ</code>
       Bis auf den Typ sind also alle Parameter optional. Der Typ gibt den Datentyp an, den der Parameter hat. Möglich sind folgende Werte:

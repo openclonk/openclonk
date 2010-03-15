@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iGameSpeed</name><desc>Spielgeschwindigkeit in FPS (Frames per Second). Wird der Parameter nicht angegeben oder 0 übergeben, so wird die Standard-Spielgeschwindigkeit (38 FPS) gewählt.</desc></param>
+				<param><type>int</type><name>game_speed</name><desc>Spielgeschwindigkeit in FPS (Frames per Second). Wird der Parameter nicht angegeben oder 0 übergeben, so wird die Standard-Spielgeschwindigkeit (38 FPS) gewählt.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Spielgeschwindigkeit.</desc>

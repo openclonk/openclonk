@@ -9,9 +9,9 @@
 		<syntax>
 			<rtype>bool / id</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spieler, dessen Magiewissen abgefragt wird.</desc></param>
-				<param><type>id</type><name>id</name><desc>Bei angegebenen id gibt die Funktion TRUE zurück, wenn der iPlr betreffenden Zauber zur Verfügung hat. iIndex wird hierbei ignoriert.</desc></param>
-				<param><type>int</type><name>iIndex</name><desc>Bei angegebenem iIndex liefert die Funktion den indizierten Zauberspruch, der dem Spieler zur Verfügung steht.</desc></param>
+				<param><type>int</type><name>player</name><desc>Spieler, dessen Magiewissen abgefragt wird.</desc></param>
+				<param><type>id</type><name>id</name><desc>Bei angegebenen id gibt die Funktion TRUE zurück, wenn der player betreffenden Zauber zur Verfügung hat. index wird hierbei ignoriert.</desc></param>
+				<param><type>int</type><name>index</name><desc>Bei angegebenem index liefert die Funktion den indizierten Zauberspruch, der dem Spieler zur Verfügung steht.</desc></param>
 			</params>
 		</syntax>
 		<desc>Stellt das Magiewissen eines bestimmten Spielers fest.</desc>

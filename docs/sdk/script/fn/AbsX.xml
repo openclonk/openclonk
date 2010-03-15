@@ -10,7 +10,7 @@
   <syntax>
    <rtype>int</rtype>
    <params>
-    <param><type>int</type><name>iX</name><desc>X</desc></param>
+    <param><type>int</type><name>x</name><desc>X</desc></param>
    </params>
   </syntax>
   <desc>Liefert das relative X in Bezug auf Objektmitte wenn von einem Objekt aufgerufen. Sonst liefert diese Funktion das übergebene X zurück</desc>

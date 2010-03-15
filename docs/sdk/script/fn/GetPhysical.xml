@@ -9,8 +9,8 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>string</type><name>szPhysical</name><desc>Name der abzufragenden physischen Eigenschaft.</desc></param>
-                                <param><type>int</type><name>iMode</name><desc>Änderungsmodus (symbolische Konstanten ab CR):<br />
+                                <param><type>string</type><name>physical</name><desc>Name der abzufragenden physischen Eigenschaft.</desc></param>
+                                <param><type>int</type><name>mode</name><desc>Änderungsmodus (symbolische Konstanten ab CR):<br />
 					<table><rowh><col>Konstante</col><col>Wert</col><col>Bedeutung</col></rowh>
 					<row><col>PHYS_Current</col><col>0</col><col>Im Objektkontext: Die Eigenschaften werden im gerade aktiven Modus (temporär oder permanent) des Objektes abgefragt. Dieser Modus funktioniert als einziger auch bei Objekten ohne Objektinfo. Im Definitionskontext: Die Standardwerte der Definition werden abgefragt.</col></row>
 					<row><col>PHYS_Permanent</col><col>1</col><col>Die permanenten Eigenschaften aus der Spielerdatei werden abgefragt. Dies ist nur bei Spielercrew-Mitgliedern möglich.</col></row>

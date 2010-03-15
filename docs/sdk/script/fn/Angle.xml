@@ -9,11 +9,11 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iX1</name><desc>X-Koordinate des ersten Punktes</desc></param>
-        <param><type>int</type><name>iY1</name><desc>Y-Koordinate des ersten Punktes</desc></param>
-        <param><type>int</type><name>iX2</name><desc>X-Koordinate des zweiten Punktes</desc></param>
-        <param><type>int</type><name>iY2</name><desc>Y-Koordinate des zweiten Punktes</desc></param>
-        <param><type>int</type><name>iPrec</name><desc>Gibt, wenn angegeben, den Winkel multipliziert mit iPrec zurück, um so genauere Winkel zu erhalten. Eine Präzision von 10 gibt also Werte zwischen 0 und 3600 zurück.</desc><optional/></param>
+        <param><type>int</type><name>x1</name><desc>X-Koordinate des ersten Punktes</desc></param>
+        <param><type>int</type><name>y1</name><desc>Y-Koordinate des ersten Punktes</desc></param>
+        <param><type>int</type><name>x2</name><desc>X-Koordinate des zweiten Punktes</desc></param>
+        <param><type>int</type><name>y2</name><desc>Y-Koordinate des zweiten Punktes</desc></param>
+        <param><type>int</type><name>precision</name><desc>Gibt, wenn angegeben, den Winkel multipliziert mit precision zurück, um so genauere Winkel zu erhalten. Eine Präzision von 10 gibt also Werte zwischen 0 und 3600 zurück.</desc><optional/></param>
       </params>
     </syntax>
     <desc>Liefert den Winkel, in dem sich der zweite Punkt vom ersten Punkt aus gesehen befindet. Der Winkel wird in Grad zurückgeliefert, 0° ist senkrecht oben. Alle Koordinaten sind global.</desc>

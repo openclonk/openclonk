@@ -12,21 +12,21 @@
    <params>
     <param>
      <type>int</type>
-     <name>iVal1</name>
+     <name>value1</name>
      <desc>Basis</desc>
     </param>
     <param>
      <type>int</type>
-     <name>iVal2</name>
+     <name>value2</name>
      <desc>Exponent</desc>
     </param>
    </params>
   </syntax>
 
-  <desc>Errechnet die Potenz von iVal1 und iVal2 ("X hoch Y")</desc>
+  <desc>Errechnet die Potenz von value1 und value2 ("X hoch Y")</desc>
 
   <remark>Statt Pow() sollte der <emlink href="script/operatoren.html">Operator</emlink> "**" verwendet werden:
-  <code>iVal1 ** iVal2</code></remark>
+  <code>value1 ** value2</code></remark>
 
   <related>
    <funclink>Mul</funclink>

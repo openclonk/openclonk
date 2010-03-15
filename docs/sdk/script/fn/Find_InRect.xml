@@ -9,10 +9,10 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>X-Position der linken oberen Ecke des Suchbereiches. Bei lokalem Aufruf relativ zur Objektmitte.</desc></param>
-				<param><type>int</type><name>iY</name><desc>Y-Position der linken oberen Ecke des Suchbereiches. Bei lokalem Aufruf relativ zur Objektmitte.</desc></param>
-				<param><type>int</type><name>iWdt</name><desc>Breite des Suchbereiches</desc></param>
-				<param><type>int</type><name>iHgt</name><desc>Höhe des Suchbereiches</desc></param>
+				<param><type>int</type><name>x</name><desc>X-Position der linken oberen Ecke des Suchbereiches. Bei lokalem Aufruf relativ zur Objektmitte.</desc></param>
+				<param><type>int</type><name>y</name><desc>Y-Position der linken oberen Ecke des Suchbereiches. Bei lokalem Aufruf relativ zur Objektmitte.</desc></param>
+				<param><type>int</type><name>width</name><desc>Breite des Suchbereiches</desc></param>
+				<param><type>int</type><name>height</name><desc>Höhe des Suchbereiches</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: sucht alle Objekte im angegebenen Suchrechteck.</desc>

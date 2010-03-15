@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>id</rtype>
 			<params>
-				<param><type>int</type><name>iIndex</name><desc>Index der gesuchten Definition.</desc></param>
-				<param><type>int</type><name>dwCategory</name><desc>Die Kategory, in der die gesuchte Definition ist.</desc><optional /></param>
+				<param><type>int</type><name>index</name><desc>Index der gesuchten Definition.</desc></param>
+				<param><type>int</type><name>category</name><desc>Die Kategorie, in der die gesuchte Definition ist.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Liefert das ID der indizierten von der Engine in dieser Runde geladenen Objektdefinition der angegebenen Kategorie (dwCategory 0 für alle Objektkategorien).</desc>
+		<desc>Liefert das ID der indizierten von der Engine in dieser Runde geladenen Objektdefinition der angegebenen Kategorie (category 0 für alle Objektkategorien).</desc>
 		<examples>
 			<example>
 				<text>siehe <funclink>C4D_Goal</funclink>.</text>

@@ -9,7 +9,7 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iPlayerNumber</name><desc>Spielernummer, dessen ID abgefragt werden soll.</desc></param>
+        <param><type>int</type><name>player</name><desc>Spielernummer, dessen ID abgefragt werden soll.</desc></param>
       </params>
     </syntax>
     <desc>
@@ -20,11 +20,11 @@
       <example>
         <code>static num_scores;
         
-protected func RemovePlayer(int iPlr)
+protected func RemovePlayer(int player)
   {
-  var idPlr = GetPlayerID(iPlr);
-  <funclink>Global</funclink>(idPlr*2)   = <funclink>GetPlayerName</funclink>(iPlr);
-  <funclink>Global</funclink>(idPlr*2+1) = <funclink>GetScore</funclink>(iPlr);
+  var player_id = GetPlayerID(player);
+  <funclink>Global</funclink>(player_id*2)   = <funclink>GetPlayerName</funclink>(player);
+  <funclink>Global</funclink>(player_id*2+1) = <funclink>GetScore</funclink>(player);
   ++num_scores;
   }
   

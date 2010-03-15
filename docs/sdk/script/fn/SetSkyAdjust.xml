@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>dwClrMod</name><desc>Primäre Farbmodulation</desc></param>
-				<param><type>int</type><name>dwBackClr</name><desc>Hintergrundfarbe. Wenn in dwClrMod das Alphabyte nicht 0 ist, wird diese Farbe als Hintergrund hinter den Himmel gelegt. So lassen sich auch hellere oder entsättigte Himmel realisieren.</desc></param>
+				<param><type>int</type><name>colorMod</name><desc>Primäre Farbmodulation</desc></param>
+				<param><type>int</type><name>dwBackClr</name><desc>Hintergrundfarbe. Wenn in colorMod das Alphabyte nicht 0 ist, wird diese Farbe als Hintergrund hinter den Himmel gelegt. So lassen sich auch hellere oder entsättigte Himmel realisieren.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Himmelsmodulation. Die Himmelsfarben werden mit der angegebenen Farbe so verrechnet wie auch ColorByOwner-Grafiken.</desc>

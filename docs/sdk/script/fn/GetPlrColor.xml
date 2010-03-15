@@ -9,7 +9,7 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iPlr</name><desc>Abgefragter Spieler</desc></param>
+        <param><type>int</type><name>player</name><desc>Abgefragter Spieler</desc></param>
       </params>
     </syntax>
     <desc>Fragt die Spielerfarbe ab. Die Spielerfarbe wird verwendet, um einige Besitzobjekte wie Clonks oder Flaggen, sowie Textnachrichten dieses Spielers einzufärben.</desc>

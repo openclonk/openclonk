@@ -9,8 +9,8 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iRDir</name><desc>Rotationsgeschwindigkeit geteilt durch iPrecision</desc></param>
-        <param><type>int</type><name>iPrecision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
+        <param><type>int</type><name>rdir</name><desc>Rotationsgeschwindigkeit geteilt durch precision</desc></param>
+        <param><type>int</type><name>precision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
       </params>
     </syntax>
     <desc>Setzt die Drehungsgeschwindigkeit des aufrufenden Objekts.</desc>

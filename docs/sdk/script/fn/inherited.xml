@@ -16,11 +16,14 @@
     <examples>
       <example>
 
-<code>#strict
+<code>
 #include Clonk
-Initialize:
+
+func Initialize()
+{
   CreateContents(Sword);
-  <funclink>return</funclink>(inherited(<funclink>Par</funclink>(), <funclink>Par</funclink>(1)));</code>
+  <funclink>return</funclink> inherited(...);
+}</code>
 
         <text>So könnte das Script eines neuen Clonktyp aussehen. Er leitet seine Basisfunktionalität vom Clonk (Clonk) ab, und erweitert den Initialize-EngineCallback.</text>
       </example>

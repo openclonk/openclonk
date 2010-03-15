@@ -9,7 +9,7 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>id</type><name>idDef</name><desc>C4ID, die in einen Scoreboard-Spaltenindex umgewandelt werden soll. Für Scoreboards auf Objektbasis sollte hier die ID der Objektdefinition genommen werden, die die Scoreboardfunktionen bereit stellt.</desc></param>
+        <param><type>id</type><name>definition</name><desc>C4ID, die in einen Scoreboard-Spaltenindex umgewandelt werden soll. Für Scoreboards auf Objektbasis sollte hier die ID der Objektdefinition genommen werden, die die Scoreboardfunktionen bereit stellt.</desc></param>
       </params>
     </syntax>
     <desc>

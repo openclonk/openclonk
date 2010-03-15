@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>object</type><name>pObj2</name><desc>Zweites Objekt.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Erstes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>object</type><name>obj2</name><desc>Zweites Objekt.</desc></param>
+				<param><type>object</type><name>obj</name><desc>Erstes Objekt. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Liefert die Distanz zwischen zwei Objekten. Ist pObj 0, Wird die Distanz zwischen dem aufrufenden Objekt und pObj2 gemessen.</desc>
+		<desc>Liefert die Distanz zwischen zwei Objekten. Ist obj 0, Wird die Distanz zwischen dem aufrufenden Objekt und obj2 gemessen.</desc>
 		<related>
 			<funclink>Distance</funclink>
 			<funclink>Sqrt</funclink>

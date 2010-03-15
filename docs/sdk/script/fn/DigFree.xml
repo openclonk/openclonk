@@ -9,9 +9,9 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>X-Koordinate</desc></param>
-				<param><type>int</type><name>iY</name><desc>Y-Koordinate</desc></param>
-				<param><type>int</type><name>iRadius</name><desc>Lochradius</desc></param>
+				<param><type>int</type><name>x</name><desc>X-Koordinate</desc></param>
+				<param><type>int</type><name>y</name><desc>Y-Koordinate</desc></param>
+				<param><type>int</type><name>radius</name><desc>Lochradius</desc></param>
 			</params>
 		</syntax>
 		<desc>Gräbt ein kreisrundes Loch in halbfesten Materialien.</desc>

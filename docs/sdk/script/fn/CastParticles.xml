@@ -9,19 +9,19 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>szName</name><desc>Name des Partikeltyps</desc></param>
-        <param><type>int</type><name>iAmount</name><desc>Anzahl der Partikel</desc></param>
-        <param><type>int</type><name>iLevel</name><desc>Geschwindigkeit, mit der verschleudert werden soll</desc></param>
-        <param><type>int</type><name>iX</name><desc>X-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
+        <param><type>string</type><name>name</name><desc>Name des Partikeltyps</desc></param>
+        <param><type>int</type><name>amount</name><desc>Anzahl der Partikel</desc></param>
+        <param><type>int</type><name>level</name><desc>Geschwindigkeit, mit der verschleudert werden soll</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Position des Partikels. Relative Koordinaten bei lokalem Aufruf.</desc></param>
         <param><type>int</type><name>a0</name><desc>Untere Schranke für den ersten Zusatzparameter. Dies ist normalerweise die Größe des Partikels in 1/5-Pixeln.</desc></param>
         <param><type>int</type><name>a1</name><desc>Obere Schranke für den ersten Zusatzparameter</desc></param>
         <param><type>int</type><name>b0</name><desc>Untere Schranke für den zweiten Zusatzparameter. Dies ist normalerweise die Farbmodulation des Partikels.</desc></param>
         <param><type>int</type><name>b1</name><desc>Obere Schranke für den zweiten Zusatzparameter</desc></param>
-        <param><type>object</type><name>pObj</name><desc>Zielobjekt für objektlokale Partikel. Objektlokale Partikel werden direkt über den jeweiligen Objekten gezeichnet, und beim Entfernen des Objekts gelöscht.</desc><optional /></param>
+        <param><type>object</type><name>obj</name><desc>Zielobjekt für objektlokale Partikel. Objektlokale Partikel werden direkt über den jeweiligen Objekten gezeichnet, und beim Entfernen des Objekts gelöscht.</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Verschleudert iAmount Partikel vom angegebenen Typ. Die Zusatzparameter werden zufällig zwischen a0/b0 und a1/b1 gesetzt.</desc>
+    <desc>Verschleudert amount Partikel vom angegebenen Typ. Die Zusatzparameter werden zufällig zwischen a0/b0 und a1/b1 gesetzt.</desc>
     <remark>Diese Funktion gibt im 8Bit-Modus immer 1 zurück. Ansonsten wird nur 0 zurückgegeben, wenn die Partikeldefinition unter dem Namen nicht geladen wurde. Es gibt also keine Möglichkeit, herauszufinden, ob ein Partikel wirklich erzeugt wurde. Dies muss aus Gründen der Netzwerksynchronisation so sein, und Partikel sollten darum nur für kurzzeitige Effekte verwendet werden. Wer mehr Kontolle benötigt, sollte stattdessen auf Objekte zurückgreifen.</remark>
     <examples>
       <example>

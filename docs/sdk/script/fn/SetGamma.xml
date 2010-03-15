@@ -9,17 +9,17 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>dwClr1</name><desc>Veränderung für dunkle Farben. Standard ist <funclink>RGB</funclink>(0,0,0) für keine Veränderung.</desc></param>
-				<param><type>int</type><name>dwClr2</name><desc>Veränderung für mittlere Farben. Standard ist <funclink>RGB</funclink>(128,128,128) für keine Veränderung.</desc></param>
-				<param><type>int</type><name>dwClr3</name><desc>Veränderung für helle Farben. Standard ist <funclink>RGB</funclink>(255,255,255) für keine Veränderung.</desc></param>
-				<param><type>int</type><name>iRampIndex</name><desc>0-7: Index der zu verändernden Rampe. Es stehen acht Gammarampen zur Verfügung, die aufeinander gerechnet werden. So können zum Beispiel Tag/Nacht-Objekte die globale Helligkeit verändern, ohne dabei andere Effekte wie Blitze zu behindern.</desc></param>
+				<param><type>int</type><name>color1</name><desc>Veränderung für dunkle Farben. Standard ist <funclink>RGB</funclink>(0,0,0) für keine Veränderung.</desc></param>
+				<param><type>int</type><name>color2</name><desc>Veränderung für mittlere Farben. Standard ist <funclink>RGB</funclink>(128,128,128) für keine Veränderung.</desc></param>
+				<param><type>int</type><name>color3</name><desc>Veränderung für helle Farben. Standard ist <funclink>RGB</funclink>(255,255,255) für keine Veränderung.</desc></param>
+				<param><type>int</type><name>ramp_index</name><desc>0-7: Index der zu verändernden Rampe. Es stehen acht Gammarampen zur Verfügung, die aufeinander gerechnet werden. So können zum Beispiel Tag/Nacht-Objekte die globale Helligkeit verändern, ohne dabei andere Effekte wie Blitze zu behindern.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt eine Gammarampe. Mit Gammarampen kann global das Aussehen des gesamten Spieles gesteuert werden, indem jedem Farbkanal eine eigene Tabelle zugewiesen wird, aus der die neue Helligkeit abgelesen wird. Damit kann man zum Beispiel bestimmte Farben speziell hervorheben, alles abdunkeln oder erhellen oder sogar das Bild komplett invertieren.</desc>
 		<remark>
 			Die acht Gammarampen haben folgende, für eigene Szenarien selbstverständlich nicht bindende Funktionen:<br /><br />
 			<table>
-				<rowh><col>iRampIndex</col><col>Funktion</col></rowh>
+				<rowh><col>ramp_index</col><col>Funktion</col></rowh>
 				<row><col>0</col><col>Szenarienglobaler Wert</col></row>
 				<row><col>1</col><col>Klima/Jahreszeiten (Engineintern benutzt, wenn im Szenario aktiviert!)</col></row>
 				<row><col>2</col><col>frei</col></row>

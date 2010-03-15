@@ -9,12 +9,12 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spieler, dem ein Bauplan gegeben werden soll</desc></param>
-				<param><type>id</type><name>idDef</name><desc>ID der Objektdefinition, für die der Bauplan gegeben werden soll</desc></param>
-				<param><type>bool</type><name>fRemove</name><desc>Wenn ungleich 0, wird der Bauplan vom Wissen des Spielers entfernt</desc><optional /></param>
+				<param><type>int</type><name>player</name><desc>Spieler, dem ein Bauplan gegeben werden soll</desc></param>
+				<param><type>id</type><name>definition</name><desc>ID der Objektdefinition, für die der Bauplan gegeben werden soll</desc></param>
+				<param><type>bool</type><name>remove</name><desc>Wenn ungleich 0, wird der Bauplan vom Wissen des Spielers entfernt</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Fügt einen Bauplan zum Wissen des Spielers hinzu (oder entfernt ihn bei angegebenem fRemove).</desc>
+		<desc>Fügt einen Bauplan zum Wissen des Spielers hinzu (oder entfernt ihn bei angegebenem remove).</desc>
 		<examples>
 			<example>
 				<code>var i, id; <funclink>while</funclink> (id = <funclink>GetDefinition</funclink>(i++)) SetPlrKnowledge(0, id);</code>

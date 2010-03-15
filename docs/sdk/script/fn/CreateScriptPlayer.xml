@@ -9,16 +9,16 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szName</name><desc>Name für den Scriptspieler. Muss angegeben werden.</desc></param>
-				<param><type>int</type><name>dwClr</name><desc>Spielerfarbe</desc></param>
-				<param><type>int</type><name>idTeam</name><desc>Team-ID. Wird 0 angegeben, so wird ein Team nach denselben Regeln ausgewählt wie bei einem normal beitretenden Spieler.</desc><optional /></param>
-				<param><type>int</type><name>dwFlags</name><desc>Bitmaske aus folgenden Werten:
+				<param><type>string</type><name>name</name><desc>Name für den Scriptspieler. Muss angegeben werden.</desc></param>
+				<param><type>int</type><name>color</name><desc>Spielerfarbe</desc></param>
+				<param><type>int</type><name>team</name><desc>Team-ID. Wird 0 angegeben, so wird ein Team nach denselben Regeln ausgewählt wie bei einem normal beitretenden Spieler.</desc><optional /></param>
+				<param><type>int</type><name>flags</name><desc>Bitmaske aus folgenden Werten:
 				<table><rowh><col>Bit</col><col>Konstante</col><col>Beschreibung</col></rowh>
 				<row><col>0</col><col>CSPF_FixedAttributes</col><col>Wenn gesetzt, tritt der Spieler garantiert mit den in den Parameter angegebenen Namen und Farbe bei. Ansonsten werden die Attribute bei Kollisionen geändert.</col></row>
-				<row><col>1</col><col>CSPF_NoScenarioInit</col><col>Wenn wahr, wird die Szenarieninitialisierung, also das Erzeugen von Heimatbasismaterial und Clonks, das Setzen der Baupläne nach Szenarienvorgaben, etc., nicht durchgeführt. Außerdem werden die globalen PreInitializePlayer- und InitializePlayer-Callbacks ans Szenarienscript und die Spielziel-, Regel- und Umweltobjekte nicht ausgeführt. Stattdessen wird ein InitializeScriptPlayer(Spielernummer, Team)-Callback als DefinitionCall (d.h. ohne <funclink>this</funclink>()-Objekt) auf der in idExtraData angegebenen Definition ausgeführt. Mit diesem Parameter lassen sich also spezialisierte Scriptspieler realisieren, die nicht gleichberechtigt mit menschlichen Spielern agieren.</col></row>
+				<row><col>1</col><col>CSPF_NoScenarioInit</col><col>Wenn wahr, wird die Szenarieninitialisierung, also das Erzeugen von Heimatbasismaterial und Clonks, das Setzen der Baupläne nach Szenarienvorgaben, etc., nicht durchgeführt. Außerdem werden die globalen PreInitializePlayer- und InitializePlayer-Callbacks ans Szenarienscript und die Spielziel-, Regel- und Umweltobjekte nicht ausgeführt. Stattdessen wird ein InitializeScriptPlayer(Spielernummer, Team)-Callback als DefinitionCall (d.h. ohne <funclink>this</funclink>()-Objekt) auf der in extra_data angegebenen Definition ausgeführt. Mit diesem Parameter lassen sich also spezialisierte Scriptspieler realisieren, die nicht gleichberechtigt mit menschlichen Spielern agieren.</col></row>
 				<row><col>2</col><col>CSPF_NoEliminationCheck</col><col>Wenn gesetzt, wird der Spieler nicht automatisch eliminiert, wenn er keine Crew mehr hat.</col></row>
 				<row><col>3</col><col>CSPF_Invisible</col><col>Wenn gesetzt, ist der Spieler nicht in Spielerlisten wie zum Beispiel in der Lobby und im Verfeindungsmenü sichtbar.</col></row></table></desc><optional /></param>
-				<param><type>id</type><name>idExtraData</name><desc>ID, die durchgereicht und an den InitializePlayer-Aufruf weitergegeben wird. Durch Angabe einer ID lassen sich Scriptspieler-Typen unterscheiden. Beispielsweise könnte ein Szenario dynamisch Alien- oder Clonkgegner anbieten.</desc><optional /></param>
+				<param><type>id</type><name>extra_data</name><desc>ID, die durchgereicht und an den InitializePlayer-Aufruf weitergegeben wird. Durch Angabe einer ID lassen sich Scriptspieler-Typen unterscheiden. Beispielsweise könnte ein Szenario dynamisch Alien- oder Clonkgegner anbieten.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Initiiert den Beitritt eines Scriptspielers. Scriptspieler berhalten sich von der Scriptseite wie reguläre Spieler. Sie haben eine Stammcrew, ein Konto, Baupläne, Heimatbasismaterial, Verfeindungen, Teams, etc. Für diese Spieler wird jedoch regulär kein Sichtfenster geöffnet und sie lassen sich nicht von menschlichen Spielern steuern.<br />Scriptspieler können zum Beispiel verwendet werden, um KI-Gegner wie z.B. Bots in Hazard zu realisieren.</desc>

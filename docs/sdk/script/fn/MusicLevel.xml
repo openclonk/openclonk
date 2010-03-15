@@ -9,24 +9,24 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iLevel</name><desc>Gewünschte Lautstärke (0-100).</desc></param>
+        <param><type>int</type><name>level</name><desc>Gewünschte Lautstärke (0-100).</desc></param>
       </params>
     </syntax>
     <desc>Setzt die Lautstärke, mit der die Hintergrundmusik abgespielt wird (siehe <funclink>Music</funclink>).</desc>
     <examples>
       <example>
-        <code>local iVolume;
+        <code>local volume;
 
 func Initialize()
 {
-  iVolume = 100;
+  volume = 100;
 }
 
 func Timer()
 {
-  iVolume--;
-  MusicLevel(iVolume);
-  if(iVolume &lt;= 0)
+  volume--;
+  MusicLevel(volume);
+  if(volume &lt;= 0)
   {
     <funclink>Music</funclink>();
     <funclink>RemoveObject</funclink>();

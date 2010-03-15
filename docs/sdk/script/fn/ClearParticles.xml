@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szName</name><desc>Name der Partikeldefinition, dessen Instanzen gelöscht werden sollen. Bei 0 werden alle Partikel entfernt.</desc></param>
+				<param><type>string</type><name>name</name><desc>Name der Partikeldefinition, dessen Instanzen gelöscht werden sollen. Bei 0 werden alle Partikel entfernt.</desc></param>
 
 			</params>
 		</syntax>

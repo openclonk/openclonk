@@ -159,8 +159,8 @@
 		
 		<dt id="Algo_script">script</dt>
 		<dd><text>Das Verhalten des Algorithmus wird durch eine Script-Funktion im <emlink href="scenario/script.html">Szenarioscript</emlink> festgelegt. Diese sollte folgende Form haben:</text>
-		<code>func ScriptAlgo[Overlay-Name](iX, iY, iAlpha, iBeta)</code>
-		<text>Als Rückgabewert wird 0 (= kein Material) oder 1 (= Material) erwartet. iX und iY sind die Koordinaten (in Pixeln), für den der Algorithmuswert zurückgegeben werden soll. iAlpha und iBeta entsprechen den Algo-Parametern a und b.</text>
+		<code>func ScriptAlgo[Overlay-Name](x, y, iAlpha, iBeta)</code>
+		<text>Als Rückgabewert wird 0 (= kein Material) oder 1 (= Material) erwartet. x und y sind die Koordinaten (in Pixeln), für den der Algorithmuswert zurückgegeben werden soll. iAlpha und iBeta entsprechen den Algo-Parametern a und b.</text>
 		<text>Hat die Ebene keinen Namen, wird die Funktion "ScriptAlgo" benutzt.</text></dd>
 		
 		<dt id="Algo_poly">poly</dt>

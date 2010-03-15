@@ -9,11 +9,11 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iBaseIndex</name><desc>ID des Overlays hinter dem die Suche beginnen soll.</desc></param>
+        <param><type>int</type><name>base_index</name><desc>ID des Overlays hinter dem die Suche beginnen soll.</desc></param>
         </params>
     </syntax>
-    <desc>Gibt eine ungenutzte Overlay-ID zurück. Es wird der erste freie Overlay nach iBaseIndex zurückgegeben.</desc>
-    <remark>Die Basisgrafik zählt nicht als Overlay, also sollte iBaseIndex mindestens 1 sein.</remark>
+    <desc>Gibt eine ungenutzte Overlay-ID zurück. Es wird der erste freie Overlay nach base_index zurückgegeben.</desc>
+    <remark>Die Basisgrafik zählt nicht als Overlay, also sollte base_index mindestens 1 sein.</remark>
     <related>
       <funclink>SetGraphics</funclink>
     </related>

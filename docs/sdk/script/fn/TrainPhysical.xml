@@ -9,32 +9,32 @@
                 <syntax>
                         <rtype>bool</rtype>
                         <params>
-                                <param><type>string</type><name>szPhysical</name><desc>Name Eigenschaft, die geändert werden soll</desc></param>
-                                <param><type>int</type><name>iTrainBy</name><desc>0-100000: Wert, um den trainiert wird</desc></param>
-                                <param><type>int</type><name>iMaxTrain</name><desc>Wert, der durch das Training nie überschritten wird. Es wird allerdings in keinem Fall die Physical reduziert, auch wenn der Zielwert unter dem hier angegebenen Wert läge.<br /></desc></param>
+                                <param><type>string</type><name>physical</name><desc>Name Eigenschaft, die geändert werden soll</desc></param>
+                                <param><type>int</type><name>train_by</name><desc>0-100000: Wert, um den trainiert wird</desc></param>
+                                <param><type>int</type><name>max_train</name><desc>Wert, der durch das Training nie überschritten wird. Es wird allerdings in keinem Fall die Physical reduziert, auch wenn der Zielwert unter dem hier angegebenen Wert läge.<br /></desc></param>
 			</params>
 		</syntax>
-                <desc>Erhöht den Wert der physischen Eigenschaft des aufrufenden Objekts um den in iTrainBy angegebenen Wert. Mit diesem Aufruf werden sowohl die permanenten, als auch temporäre und temporär gestapelte Physicals trainiert. Dieser Befehl kann beispielsweise genutzt werden, um nach einem Zauber die Magiephysical zu trainieren.</desc>
+                <desc>Erhöht den Wert der physischen Eigenschaft des aufrufenden Objekts um den in train_by angegebenen Wert. Mit diesem Aufruf werden sowohl die permanenten, als auch temporäre und temporär gestapelte Physicals trainiert. Dieser Befehl kann beispielsweise genutzt werden, um nach einem Zauber die Magiephysical zu trainieren.</desc>
 		<examples>
 			<example>
 <code>// Globaler Aufruf, wenn ein Zauber erfolgreich war: Magie trainieren
-global func OnClonkSucceededSpell(id idSpell, object pClonk)
+global func OnClonkSucceededSpell(id spell, object clonk)
   {
-  if (!pClonk) if (!(pClonk = <funclink>this</funclink>())) <funclink>return</funclink>(<funclink>_inherited</funclink>(idSpell));
+  if (!clonk) if (!(clonk = <funclink>this</funclink>())) <funclink>return</funclink>(<funclink>_inherited</funclink>(spell));
   // Zauberkraft trainieren (plus 1/10 des Zauberwerts)
   if (!<funclink>ObjectCount</funclink>(NMGE))
     {
-    var iMaxTrain, idInfo;
+    var max_train, info;
     // Maximales Training bei Infoobjekten: Nach Ursprungsdefinition richten
-    if (idInfo = pClonk-><funclink>GetObjectInfoCoreVal</funclink>("id", "ObjectInfo")) iMaxTrain = idInfo->~MaxMagicPhysical();
+    if (info = clonk-><funclink>GetObjectInfoCoreVal</funclink>("id", "ObjectInfo")) max_train = info->~MaxMagicPhysical();
     // Infodefinition hat kein MaxMagicPhysical (d.h., kein Zauberclonk) oder kein Infoobjekt vorhanden:
     // Training wird eh nicht permanent gesichert; nach aktueller Definition richten
-    if (!iMaxTrain) iMaxTrain = pClonk->~MaxMagicPhysical();
+    if (!max_train) max_train = clonk->~MaxMagicPhysical();
     // Trainieren
-    pClonk->TrainPhysical("Magic", <funclink>Value</funclink>(idSpell)/MCLK_ManaTrainRate, iMaxTrain);
+    clonk->TrainPhysical("Magic", <funclink>Value</funclink>(spell)/MCLK_ManaTrainRate, max_train);
     }
   // Gegebenenfalls weitere Hooks erlauben
-  <funclink>return</funclink> (<funclink>_inherited</funclink>(idSpell, pClonk));
+  <funclink>return</funclink> (<funclink>_inherited</funclink>(spell, clonk));
   }</code>
 				<text>Beispiel aus der System.c4g: Trainiert bei einem erfolgreichen Zauber die Magiephsical des Zauberers. Dabei wird sicher gestellt, dass der zaubernde Clonk nicht über das durch die Funktion MaxMagicPhysical() in seiner Definition angegebene Limit trainiert werden kann.</text>
 			</example>

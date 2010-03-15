@@ -9,7 +9,7 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spieler, dessen Typ abgefragt werden soll</desc></param>
+                                <param><type>int</type><name>player</name><desc>Spielernummer des Spieler, dessen Typ abgefragt werden soll</desc></param>
                         </params>
                 </syntax>
                 <desc>Liefert den Typ eines Spielers. Mögliche Typen sind:
@@ -21,13 +21,13 @@
                 <remark>Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird 0 zurückgegeben.</remark>
                 <examples>
                         <example>
-<code>protected func InitializePlayer(int iPlr)
+<code>protected func InitializePlayer(int player)
   {
   // Ist es ein Scriptspieler?
-  if (GetPlayerType(iPlr) == C4PT_Script)
+  if (GetPlayerType(player) == C4PT_Script)
     {
     // Dann ein KI-Objekt erstellen
-    <funclink>CreateObject</funclink>(_EAI, 50,50, iPlr);
+    <funclink>CreateObject</funclink>(_EAI, 50,50, player);
     }
   <funclink>return</funclink> true;
   }</code>

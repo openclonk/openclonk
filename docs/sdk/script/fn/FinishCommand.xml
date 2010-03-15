@@ -12,12 +12,12 @@
       <params>
         <param>
           <type>bool</type>
-          <name>fSuccess</name>
+          <name>success</name>
           <desc>Ob das Kommando als erfolgreich gewertet werden soll.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iCommandNum</name>
+          <name>command_num</name>
           <optional />
           <desc>Index des Kommandos. 0 für das aktuelle, 1 für das als nächstes auszuführende usw.</desc>
         </param>
@@ -31,8 +31,8 @@
         <code>public func Production(object clonk)
 {
   // Baum suchen
-  <emlink href="script/NamedVar.html">var</emlink> pTree;
-  if (!(pTree = FindWorkTree(clonk)))
+  <emlink href="script/NamedVar.html">var</emlink> tree;
+  if (!(tree = FindWorkTree(clonk)))
   // Kein geeigneter Baum (fertig)
   {
 	<funclink>Message</funclink>("$TxtNomoresuitabletrees$",this);

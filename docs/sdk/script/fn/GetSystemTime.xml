@@ -9,14 +9,14 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iWhat</name><desc>Was genau zurückgegeben werden soll (siehe Anmerkung)</desc>
+				<param><type>int</type><name>what</name><desc>Was genau zurückgegeben werden soll (siehe Anmerkung)</desc>
 				</param>
 			</params>
 		</syntax>
 		<desc>Gibt die momentane Uhrzeit zurück.</desc>
-		<remark>Je nach Wert von iWhat gibt GetSystemTime die folgende Angabe zurück:
+		<remark>Je nach Wert von what gibt GetSystemTime die folgende Angabe zurück:
 						<table>
-							<rowh><col>iWhat</col><col>Rückgabe</col></rowh>
+							<rowh><col>what</col><col>Rückgabe</col></rowh>
 							<row><col>0</col><col>Jahr</col></row>
 							<row><col>1</col><col>Monat (1 = Januar, 2 = Februar usw.)</col></row>
 							<row><col>2</col><col>Wochentag (0 = Sonntag, 1 = Montag usw.)</col></row>

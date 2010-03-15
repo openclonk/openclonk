@@ -9,10 +9,10 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>bool</type><name>fCondition</name><desc>Bedingung</desc></param>
+				<param><type>bool</type><name>condition</name><desc>Bedingung</desc></param>
 			</params>
 		</syntax>
-		<desc>Solange fCondition ungleich Null ist, wird der unmittelbar folgende Block bzw. die unmittelbar folgende Anweisung ausgeführt.</desc>
+		<desc>Solange condition ungleich Null ist, wird der unmittelbar folgende Block bzw. die unmittelbar folgende Anweisung ausgeführt.</desc>
 		<examples>
 			<example>
 				<code>while(<funclink>FindObject</funclink>()) <funclink>RemoveObject</funclink>(<funclink>FindObject</funclink>());</code>

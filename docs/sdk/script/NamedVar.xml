@@ -43,23 +43,23 @@
 	
 	<h>Beispiel:</h>
 	
-	<code>static iObjectCount;
-local  iTimeToLive;
+	<code>static object_count;
+local  time_to_live;
 
 protected func Initialize()
 {
-  iObjectCount++;
-  iTimeToLive = 100;
+  object_count++;
+  time_to_live = 100;
 }
 
 protected func Destruction()
 {
-  iObjectCount--;
+  object_count--;
 }
 
 protected func Timer()
 {
-  if(!--iTimeToLive)
+  if(!--time_to_live)
   {
     <funclink>RemoveObject</funclink>();
     <funclink>return</funclink>();

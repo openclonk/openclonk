@@ -16,15 +16,15 @@
 protected func Activate()
 {
 	// Pfeil erstellen
-	var pArrow = <funclink>CreateContents</funclink>(Arrow);
+	var arrow = <funclink>CreateContents</funclink>(Arrow);
 	// X-Geschwindigkeit für den Pfeil ermitteln
-	var ispeedX = -10 + 20 * <funclink>GetDir</funclink>();
+	var xspeed = -10 + 20 * <funclink>GetDir</funclink>();
 	// X-Ausgangsposition für den Pfeil ermitteln
-	var iexitX = -5 + 10 * <funclink>GetDir</funclink>();
+	var xexit = -5 + 10 * <funclink>GetDir</funclink>();
 	// Rotation des Pfeiles
-	var irot = -90 + 180 * <funclink>GetDir</funclink>();
+	var rotation = -90 + 180 * <funclink>GetDir</funclink>();
 	// Pfeil schleudern
-	pArrow-><funclink>Exit</funclink>(iexitX, 0, irot, ispeedX, 0);
+	arrow-><funclink>Exit</funclink>(xexit, 0, rotation, xspeed, 0);
 	<funclink>return</funclink> 1;
 } 
 				</code>

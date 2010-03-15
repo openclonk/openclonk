@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iSeason</name><desc>Jahreszeit von 0 (Frühling) bis 100 (Winter).</desc></param>
+				<param><type>int</type><name>season</name><desc>Jahreszeit von 0 (Frühling) bis 100 (Winter).</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Jahreszeit.</desc>

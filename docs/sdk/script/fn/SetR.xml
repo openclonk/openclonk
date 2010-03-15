@@ -9,7 +9,7 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iR</name><desc>Winkel in Grad</desc></param>
+        <param><type>int</type><name>angle</name><desc>Winkel in Grad</desc></param>
       </params>
     </syntax>
     <desc>Setzt die Drehung des aufrufenden Objekts.</desc>

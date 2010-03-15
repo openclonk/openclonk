@@ -11,18 +11,18 @@
       <params>
         <param>
           <type>int</type>
-          <name>iVarIndex</name>
+          <name>index</name>
           <desc>Index der Variable. Es sind theoretisch beliebig viele Variablen möglich; da aber die Liste beim Abfragen von Variablen außerhalb des erzeugten Bereiches neu erstellt werden muss, sollten hier nicht größere Werte als nötig genommen werden.</desc>
         </param>
         <param>
           <type>object</type>
-          <name>pTarget</name>
+          <name>target</name>
           <desc>Zielobjekt des Effektes, auf dessen Variablenspeicher zugegriffen wird. 0 für globale Effekte.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
-          <name>iNumber</name>
+          <name>number</name>
           <desc>Effektnummer. Effektnummern werden an Effekt-Callbackfunktionen übergeben, sind Rückgabewert von <funclink>AddEffect</funclink> und lassen sich über <funclink>GetEffect</funclink> aus dem Effektnamen herausfinden.</desc>
         </param>
       </params>

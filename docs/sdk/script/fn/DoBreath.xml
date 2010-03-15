@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iChange</name><desc>Veränderung des Atemwertes; positiv oder negativ in Prozent zum Maximalwert. 100% entsprechen hierbei dem maximalen Physical-Wert von 100000.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Atem verändert wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int</type><name>change</name><desc>Veränderung des Atemwertes; positiv oder negativ in Prozent zum Maximalwert. 100% entsprechen hierbei dem maximalen Physical-Wert von 100000.</desc></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, dessen Atem verändert wird. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Verändert den Atemwert eines Objekts.</desc>

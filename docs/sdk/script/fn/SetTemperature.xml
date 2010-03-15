@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iTemperature</name><desc>Temperatur von -100 bis 100.</desc></param>
+				<param><type>int</type><name>temperature</name><desc>Temperatur von -100 bis 100.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die globale Temperatur.</desc>

@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>string</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Baumaterialsbedarf abgefragt wird. 0 bei lokalem Aufruf.</desc></param>
+				<param><type>object</type><name>need_mat_object</name><desc>Objekt, dessen Baumaterialsbedarf abgefragt wird. 0 bei lokalem Aufruf.</desc></param>
 			</params>
 		</syntax>
 		<desc>Liefert die noch benötigten Baumaterialien des Objekts</desc>
@@ -19,9 +19,9 @@
 private func Building()
 {
   /* benötigtes Baumaterial abfragen */
-  var string=GetNeededMatStr(<funclink>GetActionTarget</funclink>());
+  var need_mat_text=GetNeededMatStr(<funclink>GetActionTarget</funclink>());
   /* Ausgeben */
-  <funclink>Message</funclink>(<funclink>Format</funclink>("%s",string),<funclink>this</funclink>());
+  <funclink>Message</funclink>(<funclink>Format</funclink>("%s",need_mat_text),<funclink>this</funclink>());
   return(1);
 }
 				</code>

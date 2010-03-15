@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>int</type><name>iIndex</name><desc>Index des Objekts in pObj, Zählung beginnt mit 0</desc></param>
+				<param><type>int</type><name>index</name><desc>Index des Objekts in obj, Zählung beginnt mit 0</desc></param>
 			</params>
 		</syntax>
 		<desc>Liefert das indizierte Objekt, das im aufrufenden Objekt enthalten ist.</desc>

@@ -11,7 +11,7 @@
       <params>
         <param>
           <type>string</type>
-          <name>szName</name>
+          <name>name</name>
           <desc>Name der Variablen, zu der eine Referenz zurückgegeben werden soll</desc>
         </param>
       </params>

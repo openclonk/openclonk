@@ -11,7 +11,7 @@
       <params>
         <param>
           <type>string</type>
-          <name>strScript</name>
+          <name>script</name>
           <desc>Auszuführender Script</desc>
         </param>
       </params>

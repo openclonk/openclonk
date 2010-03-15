@@ -11,12 +11,12 @@
    <params>
     <param>
      <type>string</type>
-     <name>strMessage</name>
+     <name>message</name>
      <desc>Nachricht, die angezeigt werden soll.</desc>
     </param>
     <param>
      <type>object</type>
-     <name>pObj</name>
+     <name>obj</name>
      <optional/>
      <desc>Objekt, über dem die Nachricht angezeigt werden soll. Wenn nicht angegeben oder 0 wird die Nachricht global angezeigt.</desc>
     </param>

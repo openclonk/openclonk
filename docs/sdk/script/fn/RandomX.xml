@@ -9,11 +9,11 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iVal1</name><desc>Anfang des Bereichs</desc><optional /></param>
-        <param><type>int</type><name>iVal2</name><desc>Ende des Bereichs</desc><optional /></param>
+        <param><type>int</type><name>value1</name><desc>Anfang des Bereichs</desc><optional /></param>
+        <param><type>int</type><name>value2</name><desc>Ende des Bereichs</desc><optional /></param>
       </params>
     </syntax>
-    <desc>Liefert einen Zufallswert zwischen iVal1 und iVal2. Dabei ist egal, welcher Wert der größere ist.</desc>
+    <desc>Liefert einen Zufallswert zwischen value1 und value2. Dabei ist egal, welcher Wert der größere ist.</desc>
     <examples>
       <example>
 

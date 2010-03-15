@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>string</type><name>strFunction</name><desc>Aufzurufende Funktion</desc></param>
+				<param><type>string</type><name>function</name><desc>Aufzurufende Funktion</desc></param>
 				<param><type></type><name>...</name><desc>Parameter für die Funktion</desc><optional /></param>
 			</params>
 		</syntax>

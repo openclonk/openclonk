@@ -11,31 +11,31 @@
       <params>
         <param>
           <type>string</type>
-          <name>szEffectName</name>
+          <name>name</name>
           <desc>Name des Effektes ohne vorangestelltes Fx. Es können '*' und '?' als Suchmaske verwendet werden.</desc>
           <optional />
         </param>
         <param>
           <type>object</type>
-          <name>pTarget</name>
+          <name>target</name>
           <desc>Zielobjekt, in dem ein Effekt gelöscht werden sollen. Bei 0 wird die globale Effektliste durchsucht.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
-          <name>iIndex</name>
-          <desc>Effektindex. Bei angegebenem szEffectName gibt dies bei mehreren, der Suchmaske entsprechenden Effekten den indizierten Effekt in der Liste der passenden Effekte an. Ist szEffectName nicht angegeben, wird dagegen der Effekt mit der entsprechenden Effektnummer geändert. Im Gegensatz zu Effektnummern ist bei Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl alle Effekte erfasst werden.</desc>
+          <name>index</name>
+          <desc>Effektindex. Bei angegebenem name gibt dies bei mehreren, der Suchmaske entsprechenden Effekten den indizierten Effekt in der Liste der passenden Effekte an. Ist name nicht angegeben, wird dagegen der Effekt mit der entsprechenden Effektnummer geändert. Im Gegensatz zu Effektnummern ist bei Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl alle Effekte erfasst werden.</desc>
           <optional />
         </param>
         <param>
           <type>bool</type>
-          <name>fDoNoCalls</name>
+          <name>no_calls</name>
           <optional />
           <desc>Wenn ungleich 0, werden keine Stop-Aufrufe durchgeführt.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iNewTimer</name>
+          <name>new_timer</name>
           <optional />
           <desc>Neues Timer-Intervall. Bei -1 wird der alte Wert beibehalten; ansonsten wird bei diesem Aufruf auch die Effektzeit zurückgesetzt.</desc>
         </param>
@@ -44,7 +44,7 @@
 
     <desc>Löscht einen Effekt</desc>
 
-    <remark>Beispiel siehe <funclink>GetEffect</funclink>. Achtung: Wenn sich ein Effekt mit dieser Funktion selbst löschen soll, wird nur pTarget und iIndex angegeben, nicht szEffectName!</remark>
+    <remark>Beispiel siehe <funclink>GetEffect</funclink>. Achtung: Wenn sich ein Effekt mit dieser Funktion selbst löschen soll, wird nur target und index angegeben, nicht name!</remark>
 
     <related>
       <emlink href="script/Effects.html">Effekte-Dokumentation</emlink>

@@ -10,7 +10,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iChange</name><desc>Veränderung des Erfahrungswertes</desc></param>
+				<param><type>int</type><name>change</name><desc>Veränderung des Erfahrungswertes</desc></param>
 			</params>
 		</syntax>
 		<desc>Gibt dem aufrufenden Clonk Erfahrungspunkte.</desc>

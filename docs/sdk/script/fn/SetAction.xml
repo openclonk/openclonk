@@ -9,13 +9,13 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szAction</name><desc>Neue Aktivität. "ActIdle" oder "Idle" löscht die Aktivität.</desc></param>
-				<param><type>object</type><name>pTarget1</name><desc>Erstes Zielobjekt für die Aktivität</desc><optional /></param>
-				<param><type>object</type><name>pTarget2</name><desc>Zweites Zielobjekt für die Aktivität</desc><optional /></param>
+				<param><type>string</type><name>action</name><desc>Neue Aktivität. "ActIdle" oder "Idle" löscht die Aktivität.</desc></param>
+				<param><type>object</type><name>target1</name><desc>Erstes Zielobjekt für die Aktivität</desc><optional /></param>
+				<param><type>object</type><name>target2</name><desc>Zweites Zielobjekt für die Aktivität</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Aktivität des aufrufenden Objekts. Siehe auch <emlink href="definition/actmap.html">ActMap.txt</emlink>.</desc>
-		<remark>Wird pTarget1 bzw. pTarget2 nicht angegeben bzw. 0 übergeben, so bleibt das jeweiligen Action Target der vorigen Aktion erhalten. Um die Action Targets zu löschen sollte <funclink>SetActionTargets</funclink> benutzt werden.</remark>
+		<remark>Wird target1 bzw. target2 nicht angegeben bzw. 0 übergeben, so bleibt das jeweiligen Action Target der vorigen Aktion erhalten. Um die Action Targets zu löschen sollte <funclink>SetActionTargets</funclink> benutzt werden.</remark>
 		<remark>Der StartCall der Aktivität wird während der Ausführung von SetAction aufgerufen. Wenn dieser also zum Beispiel das Objekt löscht, darf die aufrufende Funktion danach nichts mehr mit dem Objekt machen!</remark>
 		<examples>
 			<example>

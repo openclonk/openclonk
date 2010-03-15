@@ -10,7 +10,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iRange</name><desc>Sichtweite in Pixel.</desc></param>
+				<param><type>int</type><name>range</name><desc>Sichtweite in Pixel.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Sichtweite des aufrufenden Objekts.</desc>
@@ -18,13 +18,13 @@
 		<examples>
 			<example>
 				<code>/* Wird bei Doppelklick auf Graben aufgerufen */
-protected func Activate(pClonk)
+protected func Activate(clonk)
 {
 	// Den Clonk blenden
-	pClonk->SetPlrViewRange(0);
+	clonk->SetPlrViewRange(0);
 	// Schmerzensschrei 
-	<funclink>Sound</funclink>("Scream", pClonk);
-	return(1);
+	<funclink>Sound</funclink>("Scream", clonk);
+	return true;
 }
 				</code>
 				<text>Mit Augentropfen verwechseltes Säureglas.</text>

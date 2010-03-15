@@ -9,12 +9,12 @@
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik</desc></param>
-        <param><type>int</type><name>iWdt</name><desc>Breite der neuen SolidMask in der Definitionsgrafik</desc></param>
-        <param><type>int</type><name>iHgt</name><desc>Höhe der neuen SolidMask in der Definitionsgrafik</desc></param>
-        <param><type>int</type><name>iTx</name><desc>X-Zielposition der neuen SolidMask relativ zur oberen linken Objektecke</desc></param>
-        <param><type>int</type><name>iTx</name><desc>Y-Zielposition der neuen SolidMask relativ zur oberen linken Objektecke</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Position der oberen linken Ecke der neuen SolidMask in der Definitionsgrafik</desc></param>
+        <param><type>int</type><name>width</name><desc>Breite der neuen SolidMask in der Definitionsgrafik</desc></param>
+        <param><type>int</type><name>height</name><desc>Höhe der neuen SolidMask in der Definitionsgrafik</desc></param>
+        <param><type>int</type><name>target_x</name><desc>X-Zielposition der neuen SolidMask relativ zur oberen linken Objektecke</desc></param>
+        <param><type>int</type><name>target_y</name><desc>Y-Zielposition der neuen SolidMask relativ zur oberen linken Objektecke</desc></param>
       </params>
     </syntax>
     <desc>Setzt einen neuen, festen Bereich eines Objekts. Das Quellrechteck der Grafik gibt dabei an, welche Pixel im Rechteck fest werden sollen: Alle Pixel, die zu weniger als 50% transparent sind, werden fest. Siehe auch Eintrag SolidMask in der <emlink href="definition/defcore.html">DefCore.txt</emlink>.</desc>

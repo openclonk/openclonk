@@ -9,8 +9,8 @@
     <syntax>
       <rtype>string</rtype>
       <params>
-        <param><type>string</type><name>szStr</name><desc>String, der überprüft werden soll.</desc></param>
-        <param><type>string</type><name>szWildcard</name><desc>String zum Vergleichen.</desc></param>
+        <param><type>string</type><name>text</name><desc>String, der überprüft werden soll.</desc></param>
+        <param><type>string</type><name>wildcard</name><desc>String zum Vergleichen.</desc></param>
       </params>
     </syntax>
     <desc>

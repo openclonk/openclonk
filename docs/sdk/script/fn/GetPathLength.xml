@@ -11,22 +11,22 @@
       <params>
         <param>
           <type>int</type>
-          <name>iFromX</name>
+          <name>startx</name>
           <desc>X-Koordiante der Startposition</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iFromY</name>
+          <name>starty</name>
           <desc>Y-Koordiante der Startposition</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iToX</name>
+          <name>endx</name>
           <desc>X-Koordiante der Zielposition</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iToY</name>
+          <name>endy</name>
           <desc>Y-Koordiante der Zielposition</desc>
         </param>
       </params>

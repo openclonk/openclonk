@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>any</rtype>
 			<params>
-				<param><type>string</type><name>szFunction</name><desc>Name der Funktion im Szenario-Script</desc></param>
+				<param><type>string</type><name>function</name><desc>Name der Funktion im Szenario-Script</desc></param>
 				<param><type>any</type><name>...</name><desc>Bis zu neun Parameter, die an die Funktion im Szenario-Script übergeben werden</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Ruft szFunction im Szenario-Script auf. Falls die Funktion nicht im Szenario-Script vorhanden ist, gibt die Funktion Null zurück und verursacht keine Fehlermeldung.</desc>
+		<desc>Ruft function im Szenario-Script auf. Falls die Funktion nicht im Szenario-Script vorhanden ist, gibt die Funktion Null zurück und verursacht keine Fehlermeldung.</desc>
 		<examples>
 			<example>
 				<code>GameCall("InitializePlayer",0);</code>

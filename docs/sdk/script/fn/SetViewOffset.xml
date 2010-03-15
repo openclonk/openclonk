@@ -10,9 +10,9 @@
     <syntax>
       <rtype>BOOL</rtype>
       <params>
-        <param><type>int</type><name>iPlayer</name><desc>Spieler, für den der Sicht-Offset gesetzt werden soll.</desc></param>
-        <param><type>int</type><name>iX</name><desc>X-Komponente des Offsets (in Pixel).</desc></param>
-        <param><type>int</type><name>iX</name><desc>Y-Komponente des Offsets (in Pixel).</desc></param>
+        <param><type>int</type><name>player</name><desc>Spieler, für den der Sicht-Offset gesetzt werden soll.</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Komponente des Offsets (in Pixel).</desc></param>
+        <param><type>int</type><name>x</name><desc>Y-Komponente des Offsets (in Pixel).</desc></param>
       </params>
     </syntax>
     <desc>Verschiebt die Sicht eines Spielers permanent um einen bestimmten Betrag. Ein erneuter Aufruf überschreibt die Verschiebung wieder, ein Aufruf mit 0-Koordinaten setzt die Sicht wieder in den Normalzustand zurück.</desc>

@@ -10,9 +10,9 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>object</type><name>pObjBeforeOrAfter</name><desc>Objekt, vor oder nach dem pSortObj einsortiert werden soll</desc></param>
-				<param><type>object</type><name>pSortObj</name><desc>Objekt, das vor oder nach pObjBefore eingeordnet wird. 0 bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>bool</type><name>fAfter</name><desc>Wenn ungleich 0, wird sichergestellt, dass das pSortObj hinter statt vor pObjBeforeOrAfter einsortiert wird.</desc><optional /></param>
+				<param><type>object</type><name>object_before_or_after</name><desc>Objekt, vor oder nach dem sort_object einsortiert werden soll</desc></param>
+				<param><type>object</type><name>sort_object</name><desc>Objekt, das vor oder nach pObjBefore eingeordnet wird. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>bool</type><name>after</name><desc>Wenn ungleich 0, wird sichergestellt, dass das sort_object hinter statt vor object_before_or_after einsortiert wird.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Sorgt dafür, dass ein Objekt mit Sicherheit vor oder hinter einem anderen Objekt angeordnet ist. Dadurch lässt sich beispielsweise sicherstellen, dass sich ein Fahrstuhlkorb immer vor dem zugehörigen Fahrstuhl befindet.</desc>

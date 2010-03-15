@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iXDir</name><desc>X-Schleudergeschwindigkeit</desc></param>
-				<param><type>int</type><name>iYDir</name><desc>Y-Schleudergeschwindigkeit</desc></param>
+				<param><type>int</type><name>xdir</name><desc>X-Schleudergeschwindigkeit</desc></param>
+				<param><type>int</type><name>ydir</name><desc>Y-Schleudergeschwindigkeit</desc></param>
 			</params>
 		</syntax>
 		<desc>Verschleudert das aufrufende Objekt in die angegebene Richtung. Diese Funktion ist für Lebewesen konzipiert, da sie die entsprechenden Aktivitäten setzt.</desc>

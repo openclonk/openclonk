@@ -10,11 +10,11 @@
    <rtype>object</rtype>
    <params>
     <param><type>id</type><name>id</name><desc>ID des zu erstellenden Objekts.</desc></param>
-    <param><type>int</type><name>iX</name><desc>Obere linke Ecke des Zielrechtecks, X-Koordinate</desc></param>
-    <param><type>int</type><name>iY</name><desc>Obere linke Ecke des Zielrechtecks, Y-Koordinate</desc></param>
-    <param><type>int</type><name>iWdt</name><desc>Breite des Zielrechtecks</desc></param>
-    <param><type>int</type><name>iHgt</name><desc>Höhe des Zielrechtecks</desc></param>
-    <param><type>int</type><name>iGrowth</name><desc>Wachstumsphase des Zielobjekts. -1 platziert Vegetation in zufälligem Wachstumsstadium, ansonsten gilt der Wertebereich 1-100000 (1-100%)</desc></param>
+    <param><type>int</type><name>x</name><desc>Obere linke Ecke des Zielrechtecks, X-Koordinate</desc></param>
+    <param><type>int</type><name>y</name><desc>Obere linke Ecke des Zielrechtecks, Y-Koordinate</desc></param>
+    <param><type>int</type><name>width</name><desc>Breite des Zielrechtecks</desc></param>
+    <param><type>int</type><name>height</name><desc>Höhe des Zielrechtecks</desc></param>
+    <param><type>int</type><name>growth</name><desc>Wachstumsphase des Zielobjekts. -1 platziert Vegetation in zufälligem Wachstumsstadium, ansonsten gilt der Wertebereich 1-100000 (1-100%)</desc></param>
    </params>
   </syntax>
   <desc>Platziert Vegetation im angegebenen Zielrechteck. Bei lokalen Aufrufen gelten die Koordinaten als Offset zur Mitte des aufrufenden Objekts. Rückgabewert ist ein Zeiger auf das neu erzeugte Objekt.</desc>

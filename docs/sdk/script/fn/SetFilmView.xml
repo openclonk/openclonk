@@ -10,15 +10,15 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iToPlr</name><desc>Nummer des Spielers, dessen Sicht gezeigt werden soll.</desc></param>
+				<param><type>int</type><name>for_player</name><desc>Nummer des Spielers, dessen Sicht gezeigt werden soll.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Sicht in Filmwiedergaben auf den angegebenen Spieler.</desc>
 		<examples>
 			<example>
-<code>protected func InitializePlayer(iPlr)
+<code>protected func InitializePlayer(player)
 {
-	<funclink>if</funclink> (<funclink>GetPlayerName</funclink>(iPlr) eq "Kamera") SetFilmView(iPlr);
+	<funclink>if</funclink> (<funclink>GetPlayerName</funclink>(player) eq "Kamera") SetFilmView(player);
 }</code>
 				<text>Dieses Szenarioscript setzt die Sicht in der Wiedergabe der aufgenommenen Runde auf den Spieler mit dem Namen "Kamera".</text>
 			</example>

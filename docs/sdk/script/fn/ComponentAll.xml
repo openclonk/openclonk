@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>id</type><name>idComponents</name><desc>ID der erwarteten Components.</desc></param>
+				<param><type>id</type><name>components</name><desc>ID der erwarteten Components.</desc></param>
 			</params>
 		</syntax>
 		<desc>Prüft, ob das aufrufende Objekt nur aus Objekten vom Typ id besteht.</desc>

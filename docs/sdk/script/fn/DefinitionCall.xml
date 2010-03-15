@@ -9,8 +9,8 @@
     <syntax>
       <rtype>any</rtype>
       <params>
-        <param><type>id</type><name>idDef</name><desc>ID der Definition, in dessen Script die Funktion aufgerufen wird</desc></param>
-        <param><type>string</type><name>szFunction</name><desc>Aufzurufende Funktion</desc></param>
+        <param><type>id</type><name>definition</name><desc>ID der Definition, in dessen Script die Funktion aufgerufen wird</desc></param>
+        <param><type>string</type><name>function</name><desc>Aufzurufende Funktion</desc></param>
         <param><type>any</type><name>...</name><desc>Zusätzliche Parameter, die an die Funktion übergeben werden</desc><optional /></param>
       </params>
     </syntax>

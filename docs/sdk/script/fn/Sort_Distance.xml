@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>Bezugspunkt für den Abstand. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-				<param><type>int</type><name>iY</name><desc>Bezugspunkt für den Abstand. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+				<param><type>int</type><name>x</name><desc>Bezugspunkt für den Abstand. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+				<param><type>int</type><name>y</name><desc>Bezugspunkt für den Abstand. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Sortierkriterium: Sortiert die gefundenen Objekte nach Entfernung zum angegebenen Bezugspunkt. Die nahesten Objekte zuerst.</desc>

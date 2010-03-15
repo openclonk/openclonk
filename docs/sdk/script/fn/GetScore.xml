@@ -9,10 +9,10 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iPlayer</name><desc>Spieler-Nummer dessen Punkte zurück gegeben werden sollen.</desc></param>
+                                <param><type>int</type><name>player</name><desc>Spieler-Nummer dessen Punkte zurück gegeben werden sollen.</desc></param>
                         </params>
                 </syntax>
-                <desc>Liefert die Punkte die iPlayer hat.</desc>
+                <desc>Liefert die Punkte die player hat.</desc>
                 <related>
                         <funclink>GetWealth</funclink>
                 </related>

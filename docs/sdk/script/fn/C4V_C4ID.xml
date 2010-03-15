@@ -13,7 +13,7 @@
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
     <examples>
       <example>
-        <code><funclink>if</funclink> (<funclink>GetType</funclink>(x) == C4V_C4ID()) <funclink>Log</funclink>("x=%i", x);</code>
+        <code><funclink>if</funclink> (<funclink>GetType</funclink>(x) == C4V_C4ID) <funclink>Log</funclink>("x=%i", x);</code>
         <text>Gibt x im Log aus, wenn es eine ID ist.</text>
       </example>
     </examples>

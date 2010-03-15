@@ -9,7 +9,7 @@
     <syntax>
       <rtype>string</rtype>
       <params>
-        <param><type>int</type><name>iTeam</name><desc>Teamnummer des Teams, dessen Name abgefragt werden soll</desc></param>
+        <param><type>int</type><name>team</name><desc>Teamnummer des Teams, dessen Name abgefragt werden soll</desc></param>
       </params>
     </syntax>
     <desc>

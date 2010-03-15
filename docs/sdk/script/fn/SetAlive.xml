@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>bool</type><name>fAlive</name><desc>0 = Tot; ansonsten lebendig</desc></param>
+				<param><type>bool</type><name>alive</name><desc>0 = Tot; ansonsten lebendig</desc></param>
 			</params>
 		</syntax>
 		<desc>Legt fest, ob ein Objekt lebt.</desc>

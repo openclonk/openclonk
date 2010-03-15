@@ -10,7 +10,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Nummer des Spielers, dessen Sichtmodus abgefragt werden soll.</desc></param>
+				<param><type>int</type><name>player</name><desc>Nummer des Spielers, dessen Sichtmodus abgefragt werden soll.</desc></param>
 			</params>
 		</syntax>
 		<desc>Fragt den aktuellen Sichtmodus eines Spielers ab. Die Funktion gibt einen der folgenden Werte zurück:

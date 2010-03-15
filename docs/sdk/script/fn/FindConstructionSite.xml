@@ -9,12 +9,12 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>id</type><name>idDef</name><desc>ID des gewünschten Gebäudetyps</desc></param>
-				<param><type>int</type><name>iVarNumX</name><desc>Variablennummer, in  der die globale X-Position des Bauplatzes abgelegt wird. Diese Variable sollte zuvor eine X-Position für den Start der Suche enthalten.</desc></param>
-				<param><type>int</type><name>iVarNumY</name><desc>Variablennummer, in  der die globale Y-Position des Bauplatzes abgelegt wird. Diese Variable sollte zuvor eine Y-Position für den Start der Suche enthalten.</desc></param>
+				<param><type>id</type><name>definition</name><desc>ID des gewünschten Gebäudetyps</desc></param>
+				<param><type>int</type><name>var_num_x</name><desc>Variablennummer, in  der die globale X-Position des Bauplatzes abgelegt wird. Diese Variable sollte zuvor eine X-Position für den Start der Suche enthalten.</desc></param>
+				<param><type>int</type><name>var_num_y</name><desc>Variablennummer, in  der die globale Y-Position des Bauplatzes abgelegt wird. Diese Variable sollte zuvor eine Y-Position für den Start der Suche enthalten.</desc></param>
 			</params>
 		</syntax>
-		<desc>Sucht einen Bauplatz für ein Gebäude, ausgehend von <funclink>Var</funclink>(iVarNumX)/<funclink>Var</funclink>(iVarNumY). Wenn ein Bauplatz gefunden wird, wird er in den entsprechenden Variablen abgelegt, und es wird TRUE zurückgegeben. Ansonsten ist der Rückgabewert FALSE.</desc>
+		<desc>Sucht einen Bauplatz für ein Gebäude, ausgehend von <funclink>Var</funclink>(var_num_x)/<funclink>Var</funclink>(var_num_y). Wenn ein Bauplatz gefunden wird, wird er in den entsprechenden Variablen abgelegt, und es wird TRUE zurückgegeben. Ansonsten ist der Rückgabewert FALSE.</desc>
 		<examples>
 			<example>
 

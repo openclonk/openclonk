@@ -19,10 +19,10 @@
 				<code>func TestCos()
 {
 	if(<funclink>IsNetwork</funclink>()) <funclink>return</funclink>(<funclink>Log</funclink>("TestCos funktioniert im Netzwerk nicht!"));
-	var iStartTime = GetTime();
+	var start_time = GetTime();
 	for(var i = 0; i &lt; 100; i++) var x = <funclink>Cos</funclink>(i, 100);
-	var iTime = GetTime() - iStartTime;
-	<funclink>Log</funclink>("Ein Cos-Aufruf benötigt: %d.%02d ms", iTime / 100, iTime % 100);
+	var time = GetTime() - start_time;
+	<funclink>Log</funclink>("Ein Cos-Aufruf benötigt: %d.%02d ms", time / 100, time % 100);
 }</code>
 				<text>Diese Funktion prüft die Performance der Funktion "<funclink>Cos</funclink>".
 							Dabei wird die Funktion 100-mal aufgerufen und die verbrauchte Zeit mittels GetTime()

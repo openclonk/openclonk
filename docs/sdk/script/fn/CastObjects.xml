@@ -10,15 +10,15 @@
 			<rtype>int</rtype>
 			<params>
 				<param><type>id </type><name>id</name><desc>ID des Objekttyps, der verschleudert wird</desc></param>
-				<param><type>int </type><name>iNumber</name><desc>Anzahl verschleuderter Objekte.</desc></param>
-				<param><type>int </type><name>iLevel</name><desc>Geschwindigkeit der verschleuderten Objekte</desc></param>
-				<param><type>int </type><name>iX</name><desc>X-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>int </type><name>iY</name><desc>Y-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
-				<param><type>int </type><name>iAngle</name><desc>Winkel in den die Objekte verschleudert werden.</desc><optional /></param>
-				<param><type>int </type><name>iAngleVariance</name><desc>Maximale Abweichung von diesem Winkel. Wenn nicht angegeben werden Objekte in alle Richtungen verschleudert.</desc><optional /></param>
+				<param><type>int </type><name>number</name><desc>Anzahl verschleuderter Objekte.</desc></param>
+				<param><type>int </type><name>level</name><desc>Geschwindigkeit der verschleuderten Objekte</desc></param>
+				<param><type>int </type><name>x</name><desc>X-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int </type><name>y</name><desc>Y-Ausgangsposition. Offset zum aufrufenden Objekt bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>int </type><name>angle</name><desc>Winkel in den die Objekte verschleudert werden.</desc><optional /></param>
+				<param><type>int </type><name>angle_variance</name><desc>Maximale Abweichung von diesem Winkel. Wenn nicht angegeben werden Objekte in alle Richtungen verschleudert.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Verschleudert iNumber Objekte an angegebener Position mit einer Geschwindigkeit von iLevel. Bei einem lokalen Aufruf haben die erzeugten Objekte den selben Besitzer wie das aufrufende Objekt.</desc>
+		<desc>Verschleudert number Objekte an angegebener Position mit einer Geschwindigkeit von level. Bei einem lokalen Aufruf haben die erzeugten Objekte den selben Besitzer wie das aufrufende Objekt.</desc>
 		<examples>
 			<example>
 				<code>var num=<funclink>GetVertexNum</funclink>()<emlink href="script/operatoren.html">-</emlink>1;

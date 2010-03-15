@@ -9,9 +9,9 @@
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Mittelposition des freigeschüttelten Kreises. Immer global.</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Mittelposition des freigeschüttelten Kreises. Immer global.</desc></param>
-        <param><type>int</type><name>iRadius</name><desc>Radius des freigeschüttelten Kreises</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Mittelposition des freigeschüttelten Kreises. Immer global.</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Mittelposition des freigeschüttelten Kreises. Immer global.</desc></param>
+        <param><type>int</type><name>radius</name><desc>Radius des freigeschüttelten Kreises</desc></param>
       </params>
     </syntax>
     <desc>Löst innerhalb eines kreisförmigen Bereiches halbfestes Material in der Landschaft. Für gelöstes Material wird neu geprüft, ob es in darunterliegendes Material fallen kann. Dadurch kann man zum Beispiel Höhlendecken einstürzen lassen.</desc>

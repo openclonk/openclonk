@@ -10,7 +10,7 @@
   <syntax>
    <rtype>int</rtype>
    <params>
-    <param><type>int</type><name>iY</name><desc>Y</desc></param>
+    <param><type>int</type><name>y</name><desc>Y</desc></param>
    </params>
   </syntax>
   <desc>Liefert das relative Y in Bezug auf Objektmitte wenn von einem Objekt aufgerufen. Sonst liefert diese Funktion das übergebene Y zurück</desc>

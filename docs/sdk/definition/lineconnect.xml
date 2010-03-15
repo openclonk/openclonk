@@ -28,7 +28,6 @@ angeschlossen werden können und welches Leitungsverhalten das Objekt hat.</text>
 </row><row>
 	<col>8</col><col>256</col><col>C4D_EnergyHolder</col><col>Das Objekt verliert nicht von allein Energie, auch wenn es kein Lebewesen oder Basis ist.</col>
 </row>
-<bitmask>LineConnect</bitmask>
 </table>
 </text>
 <author>Sven2</author><date>April 2002</date>

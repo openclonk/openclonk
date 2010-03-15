@@ -10,7 +10,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spieler, dessen Mannschaft abgewählt werden soll.</desc></param>
+				<param><type>int</type><name>player</name><desc>Spieler, dessen Mannschaft abgewählt werden soll.</desc></param>
 			</params>
 		</syntax>
 		<desc>Wählt die gesamte Mannschaft eines Spieler ab. Nach dem Aufruf dieses Befehls sollte mit <funclink>SelectCrew</funclink> wieder ein Clonk angewählt werden.</desc>

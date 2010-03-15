@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iDir</name><desc>Aktionsrichtung. Vordefinierte Werte: <funclink>DIR_Right</funclink>() / <funclink>DIR_Left</funclink>()</desc></param>
+				<param><type>int</type><name>dir</name><desc>Aktionsrichtung. Vordefinierte Werte: <funclink>DIR_Right</funclink>() / <funclink>DIR_Left</funclink>()</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Richtung des aufrufenden Objekts.</desc>

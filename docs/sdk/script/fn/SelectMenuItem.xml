@@ -9,23 +9,23 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iItem</name><desc>Nummer des MenuItems, das selektiert werden soll. Der erste Eintrag hat die Nummer 0.</desc></param>
+        <param><type>int</type><name>number</name><desc>Nummer des MenuItems, das selektiert werden soll. Der erste Eintrag hat die Nummer 0.</desc></param>
       </params>
     </syntax>
     <desc>Setzt die Auswahl in einem Menü.</desc>
     <examples>
       <example>
         <text>SelectMenuItem kann zusammen mit <funclink>GetMenuSelection</funclink> dazu verwendet werden, ein Menu zu aktualisieren, ohne dabei die Selektion zu verändern:</text>
-        <code>var iSelection = -1;
+        <code>var selection = -1;
 // Menu bereits geöffnet?
 if(<funclink>GetMenu</funclink>())
-  iSelection = <funclink>GetMenuSelection</funclink>();
+  selection = <funclink>GetMenuSelection</funclink>();
 
 // [ Hier Menu (neu) erstellen... ]
 
 // Selektion wiederherstellen?
-if(iSelection &gt;= 0)
-  SelectMenuItem(iSelection);</code>
+if(selection &gt;= 0)
+  SelectMenuItem(selection);</code>
       </example>
     </examples>
     <related><funclink>GetMenuSelection</funclink><funclink>GetMenu</funclink><funclink>CreateMenu</funclink><funclink>AddMenuItem</funclink></related>

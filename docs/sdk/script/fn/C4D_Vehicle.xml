@@ -13,7 +13,7 @@
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
 		<examples>
 			<example>
-				<code><funclink>GetPlrKnowledge</funclink>(0, 0, 0, C4D_Vehicle( ));</code>
+				<code><funclink>GetPlrKnowledge</funclink>(0, 0, 0, C4D_Vehicle);</code>
 				<text>Liefert das erste Fahrzeug zurück, das der 1. Spieler bauen kann, z.B. BALN.</text>
 			</example>
 		</examples>

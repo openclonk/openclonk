@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szResortFunc</name><desc>Name der Funktion, die für die Umsortierung aufgerufen wird.</desc></param>
-				<param><type>int</type><name>iCategory</name><desc>Umzusortierende Objektkategorie (z.B. <funclink>C4D_StaticBack</funclink>). 0 sortiert alle Objekte neu.</desc><optional /></param>
+				<param><type>string</type><name>resort_func</name><desc>Name der Funktion, die für die Umsortierung aufgerufen wird.</desc></param>
+				<param><type>int</type><name>category</name><desc>Umzusortierende Objektkategorie (z.B. <funclink>C4D_StaticBack</funclink>). 0 sortiert alle Objekte neu.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Sortiert die Objektliste teilweise oder komplett neu. Dafür wird ein einfacher Sortierungsalgorithmus angewandt, der immer wieder die angegebene Funktion aufruft, welche dann die Relation zweier Objekte zueinander zurückgeben muss. Die beiden Objekte werden als <funclink>Par</funclink>(0) und <funclink>Par</funclink>(1) übergeben. Wenn das erste Objekt vor dem zweiten stehen sollte, muss die Funktion einen Wert kleiner Null zurückgeben. Ansonsten einen Wert größer oder gleich Null.</desc>

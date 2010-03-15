@@ -9,10 +9,10 @@
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>dwNewColor</name><desc>Neue Farbe für ColorByOwner-Flächen</desc></param>
+        <param><type>int</type><name>color</name><desc>Neue Farbe für ColorByOwner-Flächen</desc></param>
       </params>
     </syntax>
-    <desc>Setzt die ColorByOwner-Färbung des aufrufenden Objekts. Dieser Aufruf entspricht dem Setzen eines neuen Besitzers mit <funclink>SetOwner</funclink> bei einem Spieler mit der Spielerfarbe dwNewColor.</desc>
+    <desc>Setzt die ColorByOwner-Färbung des aufrufenden Objekts. Dieser Aufruf entspricht dem Setzen eines neuen Besitzers mit <funclink>SetOwner</funclink> bei einem Spieler mit der Spielerfarbe color.</desc>
     <examples>
       <example>
 

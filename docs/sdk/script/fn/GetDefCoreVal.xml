@@ -11,18 +11,18 @@
       <params>
         <param>
           <type>string</type>
-          <name>strEntry</name>
+          <name>entry</name>
           <desc>Name des abzufragenden Eintrags</desc>
         </param>
         <param>
           <type>string</type>
-          <name>strSection</name>
+          <name>section</name>
           <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
           <optional/>
         </param>
         <param>
           <type>int</type>
-          <name>iEntryNr</name>
+          <name>entry_number</name>
           <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
           <optional/>
         </param>
@@ -33,7 +33,7 @@
           zurück.</desc>
 
     <remark>Ist der abzufragende Eintrag eine ID-Liste (z.B. "Components" in der DefCore.txt), so wird bei
-            geradem iEntryNr die ID, bei ungeradem iEntryNr die Anzahl zurückgegeben (siehe Beispiel)</remark>
+            geradem entry_number die ID, bei ungeradem entry_number die Anzahl zurückgegeben (siehe Beispiel)</remark>
 
     <examples>
       <example>

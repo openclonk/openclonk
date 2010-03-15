@@ -70,7 +70,7 @@ und ist damit immer auf der sicheren Seite.</text>
   größer gleich 100).</col></row>
 <row id="Completion"><col>Completion</col><col></col>
   <col>Veraltet. Wie Initialize.</col></row>
-<row id="Construction"><col>Construction</col><col>object pByObj</col>
+<row id="Construction"><col>Construction</col><col>object by_object</col>
   <col>Wenn das Objekt erzeugt wird. Als Parameter wird das Objekt übergeben, in dem das erzeugende Script steht. Siehe auch <emlink href="script/fn/Construction.html">Construction</emlink></col></row>
 <row id="Destruction"><col>Destruction</col><col></col>
   <col>Wenn das Objekt gelöscht wird.</col></row>
@@ -83,93 +83,93 @@ und ist damit immer auf der sicheren Seite.</text>
 <row id="Hit3"><col>Hit3</col><col></col>
   <col>Wie Hit, bei Geschwindigkeiten >= 60 (siehe
   <emlink href="script/fn/OCF_HitSpeed3.html">OCF_HitSpeed3</emlink>).</col></row>
-<row id="Grab"><col>Grab</col><col>object pTarget, bool fGrab</col>
+<row id="Grab"><col>Grab</col><col>object target, bool grab</col>
   <col>Wenn das Objekt ein anderes Objekt anfasst oder loslässt.</col></row>
-<row id="Grabbed"><col>Grabbed</col><col>object pByObject, bool fGrab</col>
+<row id="Grabbed"><col>Grabbed</col><col>object by_object, bool grab</col>
   <col>Wenn das Objekt durch ein anderes Objekt angefasst oder losgelassen wird. Ab 4.9.8.4.</col></row>
-<row id="Get"><col>Get</col><col>object pTarget</col>
+<row id="Get"><col>Get</col><col>object target</col>
   <col>Wenn das Objekt ein Objekt aus einem anderen Objekt herausnimmt.</col></row>
 <row id="Put"><col>Put</col><col></col>
   <col>Wenn das Objekt ein Objekt in einem anderen Objekt ablegt.</col></row>
-<row id="Damage"><col>Damage</col><col>int iChange, int iByPlayer</col>
+<row id="Damage"><col>Damage</col><col>int change, int by_player</col>
   <col>Wenn das Objekt beschädigt wird.</col></row>
 <row id="DeepBreath"><col>DeepBreath</col><col></col>
   <col>Wenn das Lebewesen nach dem Auftauchen mehr als die Hälfte seiner Atemkapazität
   auffüllt.</col></row>
-<row id="Incineration"><col>Incineration</col><col>int iByPlayer</col>
+<row id="Incineration"><col>Incineration</col><col>int by_player</col>
   <col>Wenn das Objekt entzündet wird. Achtung: Bei Objekten, die ihre Definition mit BurnTo
   ändern, findet der Aufruf im verbrannten Objekt statt!</col></row>
-<row id="IncinerationEx"><col>IncinerationEx</col><col>int iByPlayer</col>
+<row id="IncinerationEx"><col>IncinerationEx</col><col>int by_player</col>
   <col>Wenn das Objekt in einer löschenden Flüssigkeit gesprengt, und damit nicht
   angezündet wird. Aufruf analog zu Incineration. Ab CE.</col></row>
 <row id="Death"><col>Death</col><col></col>
   <col>Wenn ein Lebwesen stirbt.</col></row>
-<row id="Activate"><col>Activate</col><col>object pByObj</col>
+<row id="Activate"><col>Activate</col><col>object by_object</col>
   <col>Aktivierung durch einen Doppelklick auf Graben. Nur getragene Objekte und direkt
   spielergesteuerte Objekte. Wird aufgerufen, nachdem die interne Befehlskette (z.B. Bäume
   fällen) abgearbeitet wurde.</col></row>
 <row id="Contact_"><col>Contact_</col><col></col>
   <col>Wenn das Objekt die Landschaft berührt. Siehe <emlink href="definition/cnat.html">CNAT
   - Contact Attachment</emlink>.</col></row>
-<row id="Control_"><col>Control_</col><col>object pByObj</col>
+<row id="Control_"><col>Control_</col><col>object by_object</col>
   <col>Wenn das Objekt von außen gesteuert wird. Siehe <a
 href="#Control-Funktionen">Control-Funktionen</a>.</col></row>
-<row id="Contained_"><col>Contained_</col><col>object pByObj</col>
+<row id="Contained_"><col>Contained_</col><col>object by_object</col>
   <col>Wenn das Objekt von innen gesteuert wird. Siehe <a href="#Control-Funktionen">Control-Funktionen</a>.</col></row>
-<row id="ControlCommand"><col>ControlCommand</col><col>string strCommand, object pTarget, int iTx, int iTy, object pTarget2, int iData, object pCmdObj</col>
+<row id="ControlCommand"><col>ControlCommand</col><col>string command, object target, int x, int y, object target2, int data, object command_object</col>
   <col>Wenn dem Objekt durch den Spieler ein selbständig auszuführender Befehl gegeben
 wurde. Siehe <a href="#Control-Funktionen">Control-Funktionen</a>.</col></row>
-<row id="ControlCommandFinished"><col>ControlCommandFinished</col><col>string strCommand, object pTarget, int iTx, int iTy, object pTarget2, C4Value Data</col>
+<row id="ControlCommandFinished"><col>ControlCommandFinished</col><col>string command, object target, int x, int y, object target2, any Data</col>
   <col>Wenn das Objekt einen selbständigen auszuführenden Befehl vollendet hat oder die
 Ausführung des Befehls fehlgeschlagen ist.</col></row>
-<row id="ControlTransfer"><col>ControlTransfer</col><col>object pObj, int iTx, int iTy</col>
-  <col>Wenn ein durch die Wegfindungsroutine gesteuertes Objekt (pObj) die Transferzone dieses
-Objekts zum Zielpunkt iTx/iTy passieren möchte. Die Transferfunktion kann dem Objekt
+<row id="ControlTransfer"><col>ControlTransfer</col><col>object obj, int x, int y</col>
+  <col>Wenn ein durch die Wegfindungsroutine gesteuertes Objekt (obj) die Transferzone dieses
+Objekts zum Zielpunkt x/y passieren möchte. Die Transferfunktion kann dem Objekt
 entsprechende Kommandos geben und sollte bei erfolgreicher Bearbeitung TRUE zurückliefern.
 Siehe auch <emlink href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col></row>
 <row id="UpdateTransferZone"><col>UpdateTransferZone</col><col></col>
   <col>Wenn ein Objekt geladen oder synchronisiert wird. Objekte mit einer TransferZone sollten
 diese bei jedem Aufruf von UpdateTransferZone neu setzen. Siehe auch <emlink
 href="script/fn/SetTransferZone.html">SetTransferZone</emlink>().</col></row>
-<row id="MenuQueryCancel"><col>MenuQueryCancel</col><col>int iSelection, object pMenuObj</col>
+<row id="MenuQueryCancel"><col>MenuQueryCancel</col><col>int selection, object menu_object</col>
   <col>Wird in einem Objekt aufgerufen, wenn der Spieler ein benutzerdefiniertes Menu
 schließen will. Bei Rückgabewert TRUE bleibt das Menu geöffnet.</col></row>
 <row id="IsFulfilled"><col>IsFulfilled</col><col></col>
   <col>Nur bei Spielziel-Objekten. Bei Rückgabewert TRUE ist das Spielziel erfüllt.</col></row>
-<row id="ControlContents"><col>ControlContents</col><col>id idTarget</col>
+<row id="ControlContents"><col>ControlContents</col><col>id target</col>
   <col>Wenn ein neues Inhaltsobjekt angewählt wird. Siehe <a href="#Control-Funktionen">Control-Funktionen</a>.</col></row>
-<row id="Selection"><col>Selection</col><col>object pContainer</col>
+<row id="Selection"><col>Selection</col><col>object container</col>
   <col>Wenn das Objekt durch einen Inventarwechsel ausgewählt wird. Wenn die Funktion
 abgefangen wird, sollte ein eigener Auswahlsound abgespielt werden.</col></row>
-<row id="CatchBlow"><col>CatchBlow</col><col>int iLevel, object pBy</col>
+<row id="CatchBlow"><col>CatchBlow</col><col>int level, object by</col>
   <col>Wenn das Objekt von einem anderen Objekt geschlagen oder getroffen wird.</col></row>
-<row id="QueryCatchBlow"><col>QueryCatchBlow</col><col>object pBy</col>
+<row id="QueryCatchBlow"><col>QueryCatchBlow</col><col>object by</col>
   <col>Bevor das Objekt von einem anderen Objekt geschlagen oder getroffen wird. Wenn QueryCatchBlow
 TRUE zurückgibt, können damit physikalische Treffer abgefangen werden.</col></row>
-<row id="LineBreak"><col>LineBreak</col><col>int iCause</col>
-  <col>Wenn ein Leitungsobjekt unterbrochen wird. iCause: 0 durch Bewegung, 1 durch fehlendes oder unvollständiges Zielobjekt.</col></row>
-<row id="BuildNeedsMaterial"><col>BuildNeedsMaterial</col><col>id idMaterial, int iAmount</col>
+<row id="LineBreak"><col>LineBreak</col><col>int cause</col>
+  <col>Wenn ein Leitungsobjekt unterbrochen wird. cause: 0 durch Bewegung, 1 durch fehlendes oder unvollständiges Zielobjekt.</col></row>
+<row id="BuildNeedsMaterial"><col>BuildNeedsMaterial</col><col>id material_definition, int amount</col>
   <col>Wenn das Objekt ein anderes Objekt baut und noch Baumaterial benötigt wird. Parameter
 sind Typ und Menge des ersten noch benötigten Baustoffs. Durch Rückgabewert TRUE kann die
 Textmeldung über fehlendes Material abgefangen werden.</col></row>
 <row id="AttachTargetLost"><col>AttachTargetLost</col><col></col>
   <col>Wenn das Objekt eine ATTACH-Aktivität besessen hatte, aber das Actiontarget verloren
 hat. Die Aktivität ist beim Aufruf bereits zurückgesetzt.</col></row>
-<row id="CrewSelection"><col>CrewSelection</col><col>bool fDeselect, bool fCursorOnly</col>
-  <col>Bei Änderung der Crewauswahl. fCursorOnly gibt an, ob nur das Mannschaftsmitglied angewählt wurde, welches den Cursor hat.</col></row>
-<row id="GetObject2Drop"><col>GetObject2Drop</col><col>object pForCollectionOfObj</col>
+<row id="CrewSelection"><col>CrewSelection</col><col>bool deselect, bool cursor_only</col>
+  <col>Bei Änderung der Crewauswahl. cursor_only gibt an, ob nur das Mannschaftsmitglied angewählt wurde, welches den Cursor hat.</col></row>
+<row id="GetObject2Drop"><col>GetObject2Drop</col><col>object for_collection_of_object</col>
   <col>Zur Ermittlung des am wenigsten gebrauchten Objekts, wenn der Clonk versucht, ein neues
 aufzunehmen. Die Funktion sollte das abzulegende Objekt zurückliefern, oder 0 für
 keins.</col></row>
-<row id="OnMenuSelection"><col>OnMenuSelection</col><col>int iItemIndex, object pMenuObject</col>
+<row id="OnMenuSelection"><col>OnMenuSelection</col><col>int index, object menu_object</col>
   <col>Wenn ein Menueintrag ausgewählt wurde.</col></row>
-<row id="CalcValue"><col>CalcValue</col><col>object pInBase, int iForPlayer</col>
+<row id="CalcValue"><col>CalcValue</col><col>object in_base, int for_player</col>
   <col>Ermittelt den Wert eines Objekts. Siehe auch <emlink href="script/fn/GetValue.html">GetValue</emlink>().</col></row>
-<row id="CalcDefValue"><col>CalcDefValue</col><col>object pInBase, int iForPlayer</col>
+<row id="CalcDefValue"><col>CalcDefValue</col><col>object in_base, int for_player</col>
   <col>Ermittelt den Wert eines (noch nicht gekauften) Objekttyps. Siehe auch <emlink href="script/fn/GetValue.html">GetValue</emlink>().</col></row>
-<row id="CalcBuyValue"><col>CalcBuyValue</col><col>id idItem, int iDefValue</col>
+<row id="CalcBuyValue"><col>CalcBuyValue</col><col>id item, int value</col>
   <col>Rückgabewert ist Einkaufspreis des Objekttyps.</col></row>
-<row id="CalcSellValue"><col>CalcSellValue</col><col>object pObj, int iObjValue</col>
+<row id="CalcSellValue"><col>CalcSellValue</col><col>object obj, int object_value</col>
   <col>Rückgabewert ist Verkaufspreis des Objekttyps.</col></row>
 <row id="LiftTop"><col>LiftTop</col><col></col>
   <col>Wenn das Objekt bei einer LIFT-Aktivität ein anderes Objekt höher angehoben hat als in der DefCore angegeben.</col></row>
@@ -177,42 +177,42 @@ keins.</col></row>
   <col>Wird aufgerufen, wenn das Ziel einer PUSH- oder LIFT-Aktivität festhängt.</col></row>
 <row id="GrabLost"><col>GrabLost</col><col></col>
   <col>Wenn das Ziel einer PUSH- oder PULL-Aktion verloren geht.</col></row>
-<row id="Collection"><col>Collection</col><col>object pObj, bool fPut</col>
-  <col>Wenn das Objekt ein anderes Objekt (pObj) aufgenommen hat (nur durch einsammeln oder anfassen und ablegen).</col></row>
-<row id="Collection2"><col>Collection2</col><col>object pObj</col>
-  <col>Wenn das Objekt ein anderes Objekt (pObj) aufgenommen hat (immer, auch durch Scriptbefehl
+<row id="Collection"><col>Collection</col><col>object obj, bool put</col>
+  <col>Wenn das Objekt ein anderes Objekt (obj) aufgenommen hat (nur durch einsammeln oder anfassen und ablegen).</col></row>
+<row id="Collection2"><col>Collection2</col><col>object obj</col>
+  <col>Wenn das Objekt ein anderes Objekt (obj) aufgenommen hat (immer, auch durch Scriptbefehl
 Enter) </col></row>
-<row id="Departure"><col>Departure</col><col>object pContainer</col>
-  <col>Wenn das Objekt ein anderes Objekt (pContainer) verlassen hat.</col></row>
-<row id="Ejection"><col>Ejection</col><col>object pObj</col>
-  <col>Wenn ein Objekt (pObj) dieses Objekt verlassen hat (auch durch Scriptbefehl
+<row id="Departure"><col>Departure</col><col>object container</col>
+  <col>Wenn das Objekt ein anderes Objekt (container) verlassen hat.</col></row>
+<row id="Ejection"><col>Ejection</col><col>object obj</col>
+  <col>Wenn ein Objekt (obj) dieses Objekt verlassen hat (auch durch Scriptbefehl
 Exit).</col></row>
-<row id="Entrance"><col>Entrance</col><col>object pContainer</col>
-  <col>Wenn das Objekt ein anderes Objekt (pContainer) betreten hat.</col></row>
-<row id="ActivateEntrance"><col>ActivateEntrance</col><col>object pByObj</col>
+<row id="Entrance"><col>Entrance</col><col>object container</col>
+  <col>Wenn das Objekt ein anderes Objekt (container) betreten hat.</col></row>
+<row id="ActivateEntrance"><col>ActivateEntrance</col><col>object by_object</col>
   <col>Wenn ein anderes Objekt versucht, das Objekt durch Entrance zu betreten.</col></row>
-<row id="RejectCollect"><col>RejectCollect</col><col>id idObj, object pObj</col>
+<row id="RejectCollect"><col>RejectCollect</col><col>id def, object obj</col>
   <col>Wird vor Collection aufgerufen. Wenn RejectCollect TRUE zurückgibt, kann damit die
 Aufnahme des anderen Objekts verhindert werden.</col></row>
-<row id="RejectEntrance"><col>RejectEntrance</col><col>object pIntoObj</col>
+<row id="RejectEntrance"><col>RejectEntrance</col><col>object into_object</col>
   <col>Wird vor Entrance aufgerufen. Wenn RejectEntrance TRUE zurückgibt, kann damit das
 Hineinversetzen in das andere Objekt verhindert werden.</col></row>
-<row id="InitializePlayer"><col>InitializePlayer</col><col>int iPlr</col>
+<row id="InitializePlayer"><col>InitializePlayer</col><col>int player</col>
   <col>Aufruf in Spielziel, -regel und Umweltobjekten nach der Platzierung eines beitretenden
 Spielers, und vor dem entsprechenden Aufruf im Szenarioscript.</col></row>
-<row id="SellTo"><col>SellTo</col><col>int iByPlr</col>
+<row id="SellTo"><col>SellTo</col><col>int by_player</col>
   <col>Wenn das Objekt verkauft wird. Rückgabewert 0 oder die ID des Objekts, welches dem
 Heimatbasismaterial hinzugefügt wird.</col></row>
-<row id="Sale"><col>Sale</col><col>int iByPlr</col>
+<row id="Sale"><col>Sale</col><col>int by_player</col>
   <col>Wenn das Objekt verkauft wird. Ab CE.</col></row>
-<row id="Purchase"><col>Purchase</col><col>int iByPlr, object BuyObject</col>
+<row id="Purchase"><col>Purchase</col><col>int by_player, object buy_object</col>
   <col>Wenn das Objekt gekauft wird. Ab CE.</col></row>
-<row id="Recruitment"><col>Recruitment</col><col>int iPlr</col>
+<row id="Recruitment"><col>Recruitment</col><col>int player</col>
   <col>Wenn das Objekt der Crew eines Spielers hinzugefügt wird. Ab CE 4.95.2.</col></row>
-<row id="RejectTeamSwitch"><col>RejectTeamSwitch</col><col>int iPlr, int iNewTeam</col>
+<row id="RejectTeamSwitch"><col>RejectTeamSwitch</col><col>int player, int new_team</col>
   <col>Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn RejectTeamSwitch TRUE zurückgibt, kann der Teamwechsel eines Spielers (durch <funclink>SetPlayerTeam</funclink>) verhindert werden. Ab 4.9.6.0 CR.</col></row>
-<row id="OnTeamSwitch"><col>OnTeamSwitch</col><col>int iPlr, int iNewTeam, int iOldTeam</col>
-  <col>Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn ein Spieler erfolgreich von iOldTeam zu iNewTeam transferiert wurde (durch <funclink>SetPlayerTeam</funclink>). Ab 4.9.6.0 CR.</col></row>
+<row id="OnTeamSwitch"><col>OnTeamSwitch</col><col>int player, int new_team, int old_team</col>
+  <col>Aufruf in Spielziel, -regel und Umweltobjekten und dem Szenarioscript. Wenn ein Spieler erfolgreich von old_team zu new_team transferiert wurde (durch <funclink>SetPlayerTeam</funclink>). Ab 4.9.6.0 CR.</col></row>
 </table></text>
 
 <h id="Control-Funktionen">Control-Funktionen</h>
@@ -250,21 +250,21 @@ für die direkte Steuerung gedacht und werden nicht an den Behälter umgeleitet.</
 für selbständig auszuführende Befehle (Commands) aus, die direkt durch den Spieler
 gegeben wurden (z.B. durch Maussteuerung).</text>
 
-<code>func ControlCommand(string strCommand, object pTarget, int iTx, int iTy, object pTarget2, int iData, object pCmdObj)
+<code>func ControlCommand(string command, object target, int x, int y, object target2, int data, object command_object)
 {
   // Ein Kommando mit Zielobjekt
-  <emlink href="script/fn/if.html">if</emlink> (pTarget)
-    <emlink href="script/fn/Message.html">Message</emlink>(&quot;Befehl: %s Ziel: %s Koordinaten: %d/%d&quot;, <emlink href="script/fn/this.html">this</emlink>(), strCommand, pTarget->GetName(), iTx, iTy);
+  <emlink href="script/fn/if.html">if</emlink> (target)
+    <emlink href="script/fn/Message.html">Message</emlink>(&quot;Befehl: %s Ziel: %s Koordinaten: %d/%d&quot;, <emlink href="script/fn/this.html">this</emlink>(), command, target->GetName(), x, y);
   // Ein Kommando ohne Zielobjekt
   else
-    <emlink href="script/fn/Message.html">Message</emlink>(&quot;Befehl: %s Koordinaten: %d/%d&quot;, <emlink href="script/fn/this.html">this</emlink>(), strCommand, iTx, iTy);
+    <emlink href="script/fn/Message.html">Message</emlink>(&quot;Befehl: %s Koordinaten: %d/%d&quot;, <emlink href="script/fn/this.html">this</emlink>(), command, x, y);
   // Kommando nicht abfangen
   <emlink href="script/fn/return.html">return</emlink>(0);
 }  
 </code>
 
 <text>Durch Rückgabe des Werts 1 kann der Befehl abgefangen und die interne Verarbeitung
-verhindert werden. "pCmdObj" ist in jedem Fall das Objekt, für das das Kommando gesetzt werden
+verhindert werden. "command_object" ist in jedem Fall das Objekt, für das das Kommando gesetzt werden
 soll, auch wenn der Aufruf von einem enthaltenen Objekt kommt (siehe VehicleControl in der <emlink
 href="definition/defcore.html">DefCore</emlink>). Der Script-Befehl <emlink
 href="script/fn/SetCommand.html">SetCommand</emlink> verursacht keinen ControlCommand-Aufruf.</text>
@@ -293,11 +293,11 @@ Objekts. Die Engine übergibt beim Aufruf einen Zeiger auf das aufrufende Objekt 
 Parameter (bei Mannschaftsmitgliedern immer das Objekt selbst). Context-Funktionen sollten immer
 eine gültige Funktionsbeschreibung haben und müssen public sein.</text>
 
-<code>public func ContextConstruction(object pCaller)
+<code>public func ContextConstruction(object caller)
 {
   [Bauauftrag|Image=CXCN|Condition=HasKnowledge]
-  SetCommand(this(), "Construct");
-  return(1);
+  SetCommand(this, "Construct");
+  return true;
 }  
 </code>
   

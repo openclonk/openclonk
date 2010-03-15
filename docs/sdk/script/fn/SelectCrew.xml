@@ -9,9 +9,9 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spielernummer.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>An- bzw. abzuwählendes Objekt</desc></param>
-				<param><type>bool</type><name>fSelect</name><desc>Auswahl, ob an- oder abgewählt werden soll.</desc></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer.</desc></param>
+				<param><type>object</type><name>obj</name><desc>An- bzw. abzuwählendes Objekt</desc></param>
+				<param><type>bool</type><name>do_select</name><desc>Auswahl, ob an- oder abgewählt werden soll.</desc></param>
 			</params>
 		</syntax>
 		<desc>Aktiviert bzw. deaktiviert ein Mannschaftsmitglied für die Steuerung.</desc>

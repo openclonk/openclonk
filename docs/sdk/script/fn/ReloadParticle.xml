@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szParticle</name><desc>Name des neu zu ladenden Partikeltyps.</desc></param>
+				<param><type>string</type><name>particle</name><desc>Name des neu zu ladenden Partikeltyps.</desc></param>
 			</params>
 		</syntax>
 		<desc>Aktualisiert eine Partikeldefinition. Dieser Befehl kann im Entwicklermodus in der Konsole eingegeben werden, nachdem die Definition auf der Festplatte verändert wurde. Sie muss zuvor geladen gewesen sein.</desc>

@@ -9,7 +9,7 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>szPortrait</name>
+        <param><type>string</type><name>portrait</name>
           <desc>Name des zu setzenden Portraits. Dabei wird die Datei "PortraitX.png" benutzt (wobei X der Name ist). Dieser Parameter kann die folgenden Spezialwerte annehmen:
             <table>
               <rowh><col>Wert</col><col>Bedeutung</col></rowh>
@@ -19,9 +19,9 @@
             </table>
 	        </desc>
         </param>
-        <param><type>id</type><name>idSrcDef</name><desc>Definition, von der das Portrait entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird.</desc><optional /></param>
-        <param><type>bool</type><name>fPermanent</name><desc>Wenn TRUE wird das neue Portrait in der Spielerdatei vermerkt und bei weiteren Runden ebenfalls verwendet. Andernfalls verfällt das Portrait nach dem Ende der Runde.</desc><optional /></param>
-        <param><type>bool</type><name>fCopyGfx</name><desc>Kopiert die Grafik des neuen Portraits in die Spielerdatei des Spielers und setzt das Portrait auf "custom". Dies bewirkt, dass das Portrait auch dann noch erhalten bleibt, wenn die Definition, aus der das Objekt kommt, nicht mehr vorhanden ist. Allerdings lässt sich dann nicht mehr zurückverfolgen, woher das Portrait stammt oder wie es heißt.</desc><optional /></param>
+        <param><type>id</type><name>source_definition</name><desc>Definition, von der das Portrait entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird.</desc><optional /></param>
+        <param><type>bool</type><name>permanent</name><desc>Wenn TRUE wird das neue Portrait in der Spielerdatei vermerkt und bei weiteren Runden ebenfalls verwendet. Andernfalls verfällt das Portrait nach dem Ende der Runde.</desc><optional /></param>
+        <param><type>bool</type><name>copy_gfx</name><desc>Kopiert die Grafik des neuen Portraits in die Spielerdatei des Spielers und setzt das Portrait auf "custom". Dies bewirkt, dass das Portrait auch dann noch erhalten bleibt, wenn die Definition, aus der das Objekt kommt, nicht mehr vorhanden ist. Allerdings lässt sich dann nicht mehr zurückverfolgen, woher das Portrait stammt oder wie es heißt.</desc><optional /></param>
       </params>
     </syntax>
     <desc>Ändert das Portrait des aufrufenden Crew-Mitglieds während des Spiels.</desc>

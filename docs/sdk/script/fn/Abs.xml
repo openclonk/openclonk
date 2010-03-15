@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iValue</name><desc>Wert, von dem der absolutwert gebildet werden soll</desc></param>
+				<param><type>int</type><name>value</name><desc>Wert, von dem der absolutwert gebildet werden soll</desc></param>
 			</params>
 		</syntax>
 		<desc>Bildet den Absolutwert (Betrag), entfernt also das Vorzeichen des ersten Parameters.</desc>

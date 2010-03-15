@@ -9,8 +9,8 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iPlr</name><desc>Spielernummer des Spielers, dessen Vermögen verändert werden soll</desc></param>
-        <param><type>int</type><name>iValue</name><desc>Die Änderung des Vermögens.</desc></param>
+        <param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Vermögen verändert werden soll</desc></param>
+        <param><type>int</type><name>value</name><desc>Die Änderung des Vermögens.</desc></param>
       </params>
     </syntax>
     <desc>Verändert das Vermögen eines Spielers.</desc>

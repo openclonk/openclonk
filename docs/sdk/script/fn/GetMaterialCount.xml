@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iMaterial</name><desc>Materialsindex</desc></param>
+				<param><type>int</type><name>material_index</name><desc>Materialsindex</desc></param>
 			</params>
 		</syntax>
 		<desc>Liefert die in der Landschaft vorhandene Menge des angegebenen Materials.</desc>
@@ -20,9 +20,9 @@
 public func IsFulfilled()
 {
   // Gold noch nicht gezählt?
-  if ((var iGold=GetMaterialCount(<funclink>Material</funclink>("Gold")))==-1) return();
+  if ((var gold_count=GetMaterialCount(<funclink>Material</funclink>("Gold")))==-1) return();
   // noch zu viel?
-  if (iGold >= 150) return();
+  if (gold_count >= 150) return();
   // noch Goldstücke abzubauen?
   return(!<funclink>ObjectCount</funclink>(Gold));
 }

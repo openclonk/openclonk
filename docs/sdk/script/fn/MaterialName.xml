@@ -10,7 +10,7 @@
     <syntax>
       <rtype>string</rtype>
       <params>
-        <param><type>int</type><name>iMat</name><desc>Index des Materials, dessen Name ermittelt wird</desc></param>
+        <param><type>int</type><name>material_index</name><desc>Index des Materials, dessen Name ermittelt wird</desc></param>
       </params>
     </syntax>
     <desc>Gibt den (internen, englischen) Namen eines Materials zurück.</desc>

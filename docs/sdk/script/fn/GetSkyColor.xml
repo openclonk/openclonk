@@ -9,11 +9,11 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iIndex</name><desc>Farb-Index in der Clonk-Palette.</desc></param>
-                                <param><type>int</type><name>iRGB</name><desc>Rückgabetyp bestimmen.</desc></param>
+                                <param><type>int</type><name>index</name><desc>Farb-Index in der Clonk-Palette.</desc></param>
+                                <param><type>int</type><name>rgb_index</name><desc>Rückgabetyp bestimmen.</desc></param>
                         </params>
                 </syntax>
-                <desc>Liefert den Farbwert des Himmels. Mit iRGB kann angegeben werden ob entweder Rot (iRGB ist 0), Grün (iRGB ist 1) oder Blau (iRGB ist 2) zurück gegeben werden soll. Mit iIndex wird festgelegt von welchem Palettenindex (0 - 19) der Wert zurück gegeben werden soll.</desc>
+                <desc>Liefert den Farbwert des Himmels. Mit rgb_index kann angegeben werden ob entweder Rot (rgb_index ist 0), Grün (rgb_index ist 1) oder Blau (rgb_index ist 2) zurück gegeben werden soll. Mit index wird festgelegt von welchem Palettenindex (0 - 19) der Wert zurück gegeben werden soll.</desc>
                 <related>
                         <funclink>SetSkyColor</funclink>
                         <funclink>SetSkyFade</funclink>

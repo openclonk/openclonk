@@ -14,18 +14,18 @@
    <params>
     <param>
      <type>string</type>
-     <name>szNewName</name>
+     <name>name</name>
      <desc>Neuer Name. Wenn nil, wird der Name des Objekts auf den Namen seiner Definition beziehungsweise den Namen in der Spielerdatei zurückgesetzt.</desc>
     </param>
     <param>
      <type>bool</type>
-     <name>fSetInInfo</name>
+     <name>set_permanent</name>
      <desc>Nur für Crewobjekte: Wenn wahr, wird der Name permanent in der Infosektion des Spielers geändert. Namen dürfen jeweils nur einmal pro Spielerdatei vorkommen. Ab CR.</desc>
      <optional />
     </param>
     <param>
      <type>bool</type>
-     <name>fMakeValidIfExists</name>
+     <name>make_valid_if_exists</name>
      <desc>Steuert das Verhalten, falls ein Clonk mit dem angegebenen Namen schon in der Stammcrew des Spielers existiert: Wenn unwahr, schlägt die Funktion in diesem Fall fehl. Wenn wahr, wird ein neuer Name durch Anhängen einer Zahl erzeugt. Ab CR.</desc>
      <optional />
     </param>
@@ -39,10 +39,10 @@
 
   <examples>
    <example>
-<code>protected func InitializePlayer(iPlr)
+<code>protected func InitializePlayer(player)
   {
-  <funclink>GetHiRank</funclink>(iPlr)->SetName("Strunzmuffel");
-  <funclink>return</funclink>(1);
+  <funclink>GetHiRank</funclink>(player)->SetName("Strunzmuffel");
+  <funclink>return</funclink> 1;
   }</code>
     <text>Szenarioscript: Die höchstrangigen Clonks neu beitretender Spieler heißen in dieser Runde anders. <!--werden umgetauft (Und bleiben es auch nach Beenden der Runde!).--></text>
    </example>

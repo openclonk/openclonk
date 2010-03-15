@@ -9,10 +9,10 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spielernummer</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Anzuwählendes Objekt</desc></param>
-				<param><type>bool</type><name>fNoSelectMark</name><desc>Wenn ungleich 0, wird bei der Anwahl kein Auswahlrahmen angezeigt. Ab CE.</desc><optional /></param>
-				<param><type>bool</type><name>fNoSelectArrow</name><desc>Wenn ungleich 0, wird bei der Anwahl kein Auswahlpfeil angezeigt. Ab CE.</desc><optional /></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer</desc></param>
+				<param><type>object</type><name>obj</name><desc>Anzuwählendes Objekt</desc></param>
+				<param><type>bool</type><name>no_select_mark</name><desc>Wenn ungleich 0, wird bei der Anwahl kein Auswahlrahmen angezeigt. Ab CE.</desc><optional /></param>
+				<param><type>bool</type><name>no_select_arrow</name><desc>Wenn ungleich 0, wird bei der Anwahl kein Auswahlpfeil angezeigt. Ab CE.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Auswahlmarkierung eines Spielers auf ein Zielobjekt und aktiviert dieses für die Steuerung. Gibt false zurück falls das Zielobjekt momentan durch <funclink>SetCrewEnabled</funclink> deaktiviert ist.</desc>

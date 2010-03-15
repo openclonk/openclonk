@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>&amp;</rtype>
 			<params>
-				<param><type>string</type><name>szName</name><desc>Name der Variablen, zu der eine Referenz zurückgegeben werden soll</desc></param>
+				<param><type>string</type><name>name</name><desc>Name der Variablen, zu der eine Referenz zurückgegeben werden soll</desc></param>
 			</params>
 		</syntax>
 		<desc>Gibt eine Referenz auf eine Objektlokale Variable zurück. Diese Referenz kann zum Lesen und Schreiben benutzt werden.</desc>

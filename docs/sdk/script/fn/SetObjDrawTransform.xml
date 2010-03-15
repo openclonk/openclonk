@@ -9,13 +9,13 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iWidth</name><desc>Breite der Grafik. 1000 ist die Standardbreite, negative Angaben bedeuten eine horizontale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
-				<param><type>int</type><name>iXSkew</name><desc>Horizontale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der horizontalen Kante um 45° nach links (oben nach links, unten nach rechts). Negative Werte bedeuten eine Verschiebung nach rechts.</desc></param>
-				<param><type>int</type><name>iXAdjust</name><desc>Horizontale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach rechts verschoben, bei negativen Angaben wird die Grafik nach links verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
-				<param><type>int</type><name>iYSkew</name><desc>Vertikale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der vertikalen Kante um 45° nach unten (links hoch, rechts runter). Negative Werte bedeuten eine Verschiebung nach oben.</desc></param>
-				<param><type>int</type><name>iHeight</name><desc>Höhe der Grafik. 1000 ist die Standardhöhe, negative Angaben bedeuten eine vertikale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
-				<param><type>int</type><name>iYAdjust</name><desc>Vertikale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach unten verschoben, bei negativen Angaben wird die Grafik nach oben verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
-				<param><type>int</type><name>iOverlayID</name><desc>ID des Overlays, dessen Transformation angepasst werden soll. Bei 0 (default) wird die Hauptgrafik transformiert.</desc></param>
+				<param><type>int</type><name>width</name><desc>Breite der Grafik. 1000 ist die Standardbreite, negative Angaben bedeuten eine horizontale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
+				<param><type>int</type><name>xskew</name><desc>Horizontale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der horizontalen Kante um 45° nach links (oben nach links, unten nach rechts). Negative Werte bedeuten eine Verschiebung nach rechts.</desc></param>
+				<param><type>int</type><name>xadjust</name><desc>Horizontale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach rechts verschoben, bei negativen Angaben wird die Grafik nach links verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
+				<param><type>int</type><name>yskew</name><desc>Vertikale schräge Streckung der Grafik: 0 bedeutet keine Streckung. 1000 bedeutet eine Verschiebung der vertikalen Kante um 45° nach unten (links hoch, rechts runter). Negative Werte bedeuten eine Verschiebung nach oben.</desc></param>
+				<param><type>int</type><name>height</name><desc>Höhe der Grafik. 1000 ist die Standardhöhe, negative Angaben bedeuten eine vertikale Spiegelung der Grafik. Die Grafik wird immer mittig (zentriert) dargestellt.</desc></param>
+				<param><type>int</type><name>yadjust</name><desc>Vertikale Verschiebung der Grafik. Bei 1000 wird die Grafik einen Pixel nach unten verschoben, bei negativen Angaben wird die Grafik nach oben verschoben. Die Grafik um halbe Pixel zu verschieben, ist auch möglich.</desc></param>
+				<param><type>int</type><name>overlay_id</name><desc>ID des Overlays, dessen Transformation angepasst werden soll. Bei 0 (default) wird die Hauptgrafik transformiert.</desc></param>
 			</params>
 		</syntax>
 		<desc>Transformiert die Grafik des aufrufenden Objektes.</desc>

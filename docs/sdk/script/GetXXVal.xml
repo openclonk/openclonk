@@ -7,13 +7,13 @@
 <h>GetDefCoreVal, GetActMapVal, GetObjectVal, GetScenarioVal</h>
 <part>
 	<text><ul>
-		<li>GetDefCoreVal(string strEntry, string strSection, id idDef); </li>
-		<li>GetActMapVal(string strEntry, stringstrAction, id idDef); </li>
-		<li>GetObjectVal(string strEntry, string strSection, object pObj); </li>
-		<li>GetObjectInfoCoreVal(string strEntry, string strSection, object pObj); </li>
-		<li>GetScenarioVal(string strEntry, string strSection);</li>
-		<li>GetPlayerVal(string strEntry, string strSection, int iPlr); </li>
-		<li>GetPlayerInfoCoreVal(string strEntry, string strSection, int iPlr); </li>
+		<li>GetDefCoreVal(string entry, string section, id definition); </li>
+		<li>GetActMapVal(string entry, string action, id definition); </li>
+		<li>GetObjectVal(string entry, string section, object obj); </li>
+		<li>GetObjectInfoCoreVal(string entry, string section, object obj); </li>
+		<li>GetScenarioVal(string entry, string section);</li>
+		<li>GetPlayerVal(string entry, string section, int player); </li>
+		<li>GetPlayerInfoCoreVal(string entry, string section, int player); </li>
 	</ul></text>
 	
 	<text>Diese Funktionsfamilie gewährt direkten Zugriff auf sämtliche Eigenschaften der entsprechenden Objekte, wie sie auch abgespeichert werden.</text>
@@ -55,7 +55,7 @@
 	</table></text>
 	
 	<text>Die Eigenschaft wird jeweils anhand ihres Namen und ggf. der Sektion übergeben (wird 0 übergeben, so werden alle Sektionen nach einem gleichnamigen Wert durchsucht). Wurde eine entsprechende Eigenschaft nicht gefunden oder entsprcht der Typ der Eigenschaft keinem gültigen Script-Datenformat (z.B. ID-Liste), so wird 0 zurückgegeben.</text>
-	<text>Wird GetObjectVal für pObj/idDef jeweils 0 zurückgegeben, so wird das Objekt (bzw. dessen Definition), aus dem der Aufruf erfolgte angenommen.</text>
+	<text>Wird GetObjectVal für obj/definition jeweils 0 zurückgegeben, so wird das Objekt (bzw. dessen Definition), aus dem der Aufruf erfolgte angenommen.</text>
 	<text>Die Zusatzfunktionen GetXVal.c (in System.c4g) ermöglichen Aufrufe verschiedener Get*Val-Funktionen durch globale Scriptfunktionen (z.B. <code>GetObjWidth()</code>, entspricht <code>GetObjectVal("Width", 0, -obj-)</code>).</text>
 </part>
 

@@ -9,10 +9,10 @@
                 <syntax>
                         <rtype>&amp;</rtype>
                         <params>
-                                <param><type>string</type><name>szText</name><desc>Name einer globalen Variable.</desc></param>
+                                <param><type>string</type><name>text</name><desc>Name einer globalen Variable.</desc></param>
                         </params>
                 </syntax>
-                <desc>Liefert den Inhalt der globalen Variable mit dem Namen szText. Per GlobalN("Name")=Wert; kann der Wert einer benannten globalen Variable gesetzt werden.</desc>
+                <desc>Liefert den Inhalt der globalen Variable mit dem Namen text. Per GlobalN("Name")=Wert; kann der Wert einer benannten globalen Variable gesetzt werden.</desc>
                 <related>
                         <funclink>Global</funclink>
                 </related>

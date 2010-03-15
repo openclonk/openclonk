@@ -10,10 +10,10 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Position, an der Material extrahiert wird. Offset bei lokalem Aufruf.</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Position, an der Material extrahiert wird. Offset bei lokalem Aufruf.</desc></param>
-        <param><type>int</type><name>iMat</name><desc>Index des Materials, das extrahiert wird. Siehe dazu auch <funclink>Material</funclink>.</desc></param>
-        <param><type>int</type><name>iAmount</name><desc>Maximale Menge, die extrahiert wird</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Position, an der Material extrahiert wird. Offset bei lokalem Aufruf.</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Position, an der Material extrahiert wird. Offset bei lokalem Aufruf.</desc></param>
+        <param><type>int</type><name>material_index</name><desc>Index des Materials, das extrahiert wird. Siehe dazu auch <funclink>Material</funclink>.</desc></param>
+        <param><type>int</type><name>amount</name><desc>Maximale Menge, die extrahiert wird</desc></param>
       </params>
     </syntax>
     <desc>Extrahiert eine bestimmte Menge des gleichen Materials an einer Stelle. Zurückgegeben wird die tatsächlich erfolgreich extrahierte Materialmenge.</desc>

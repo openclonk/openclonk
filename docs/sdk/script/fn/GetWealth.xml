@@ -9,10 +9,10 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iOwner</name><desc>Spielernummer</desc></param>
+                                <param><type>int</type><name>owner</name><desc>Spielernummer</desc></param>
                         </params>
                 </syntax>
-                <desc>Liefert das Vermögen von iOwner.</desc>
+                <desc>Liefert das Vermögen von owner.</desc>
                 <related>
                         <funclink>SetWealth</funclink>
      					<funclink>DoWealth</funclink>

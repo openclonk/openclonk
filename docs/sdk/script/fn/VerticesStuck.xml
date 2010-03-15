@@ -12,13 +12,13 @@
         <params>
           <param>
             <type>object</type>
-            <name>pObj</name>
+            <name>obj</name>
             <desc>Zielobjekt</desc><optional />
           </param>
         </params>
       </syntax>
 
-      <desc>Liefert die Anzahl feststeckender Vertices von *pObj</desc>
+      <desc>Liefert die Anzahl feststeckender Vertices von *obj</desc>
 
       <examples>
         <example>

@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>string</type><name>szAction</name><desc>Aktion nach der gesucht werden soll</desc></param>
+				<param><type>string</type><name>action</name><desc>Aktion nach der gesucht werden soll</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: sucht alle Objekte mit der entsprechenden Aktion.</desc>
