@@ -9,18 +9,18 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
+				<param><type>int</type><name>overlay_id</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Fragt die Farbmodulation des aufrufenden Objekts ab. Diese ist ein Farbwert, der multiplikativ (oder auch additiv, bei entsprechend aktiviertem  BlitMode in der DefCore) aufgerechnet wird. Für weitere Hinweise siehe auch <funclink>SetClrModulation</funclink>().</desc>
 		<remark>Wurde keine Modulation durchgeführt, so ist der Rückgabewert dieser Funktion -1 (analog zu <funclink>RGBa</funclink>(255,255,255,255)).</remark>
 		<examples>
 			<example>
-<code>global func SetObjAlpha(byAlpha, pObj)
+<code>global func SetObjAlpha(byAlpha, obj)
   {
-  var dwClrMod=pObj->GetClrModulation();
+  var dwClrMod=obj->GetClrModulation();
   <funclink>if</funclink> (!dwClrMod) dwClrMod = byAlpha&lt;&lt;24; else dwClrMod = dwClrMod &amp; 16777215 | byAlpha&lt;&lt;24;
-  <funclink>return</funclink>(pObj-><funclink>SetClrModulation</funclink>(dwClrMod));
+  <funclink>return</funclink>(obj-><funclink>SetClrModulation</funclink>(dwClrMod));
   }</code>
 				<text>Globale Funktion: Setzt nur den Alphawert der Farbmodulation eines Objekts.</text>
 			</example>

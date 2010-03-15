@@ -17,7 +17,7 @@
 			<example>
 				<code>private func Division( dividend, divisor )
 {
-	return( dividend / divisor );
+	return dividend / divisor;
 }
 				</code>
 				<text>Teilt dividend durch divisor und gibt das Ergebnis zurück.</text>

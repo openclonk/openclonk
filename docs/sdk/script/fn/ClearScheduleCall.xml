@@ -9,8 +9,8 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, für das verzögerte Funktionsaufrufe abgebrochen werden sollen. 0 für aufrufendes Objekt.</desc></param>
-        <param><type>string</type><name>szFunction</name><desc>Name der Funktion, die durch die abzubrechenden Aufrufe aufgerufen würde.</desc></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, für das verzögerte Funktionsaufrufe abgebrochen werden sollen. 0 für aufrufendes Objekt.</desc></param>
+        <param><type>string</type><name>function</name><desc>Name der Funktion, die durch die abzubrechenden Aufrufe aufgerufen würde.</desc></param>
       </params>
     </syntax>
     <desc>Bricht durch <funclink>ScheduleCall</funclink> erzeugte verzögerte Funktionsaufrufe ab. Alle momentan wartenden Funktionsaufrufe an

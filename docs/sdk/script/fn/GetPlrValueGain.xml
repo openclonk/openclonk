@@ -9,7 +9,7 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iPlr</name><desc>Spieler, dessen Spielerwertgewinn gesucht wird.</desc></param>
+                                <param><type>int</type><name>player</name><desc>Spieler, dessen Spielerwertgewinn gesucht wird.</desc></param>
                         </params>
                 </syntax>
                 <desc>Liefert die Änderung des Spielerwerts seit Beginn der Runde.</desc>

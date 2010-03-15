@@ -9,12 +9,12 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>Offset der X-Austrittsposition.</desc><optional /></param>
-				<param><type>int</type><name>iY</name><desc>Offset der Y-Austrittsposition.</desc><optional /></param>
+				<param><type>int</type><name>x</name><desc>Offset der X-Austrittsposition.</desc><optional /></param>
+				<param><type>int</type><name>y</name><desc>Offset der Y-Austrittsposition.</desc><optional /></param>
 				<param><type>int</type><name>iR</name><desc>Rotation des Austrittsobjekts in Grad.</desc><optional /></param>
-				<param><type>int</type><name>iXDir</name><desc>X-Geschwindigkeit des Austrittsobjekts. Es gilt der übergebene Wert ohne Genauigkeitsteilung (Precision 1).</desc><optional /></param>
-				<param><type>int</type><name>iYDir</name><desc>Y-Geschwindigkeit des Austrittsobjekts. Es gilt der übergebene Wert ohne Genauigkeitsteilung (Precision 1).</desc><optional /></param>
-				<param><type>int</type><name>iRDir</name><desc>Rotationsgeschwindigkeit des Austrittsobjekts.</desc><optional /></param>
+				<param><type>int</type><name>xdir</name><desc>X-Geschwindigkeit des Austrittsobjekts. Es gilt der übergebene Wert ohne Genauigkeitsteilung (Precision 1).</desc><optional /></param>
+				<param><type>int</type><name>ydir</name><desc>Y-Geschwindigkeit des Austrittsobjekts. Es gilt der übergebene Wert ohne Genauigkeitsteilung (Precision 1).</desc><optional /></param>
+				<param><type>int</type><name>rdir</name><desc>Rotationsgeschwindigkeit des Austrittsobjekts.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Versetzt das aufrufende Objekt aus seinem Behälter heraus, und setzt optional seine Geschwindigkeit.</desc>

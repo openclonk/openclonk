@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>iOCF</name><desc>Object-Character-Flag der zu suchenden Objekte</desc></param>
+				<param><type>int</type><name>ocf</name><desc>Object-Character-Flag der zu suchenden Objekte</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: Sucht alle Objekte, bei denen eine der angegebenen Object-Character-Flags gesetzt ist.</desc>

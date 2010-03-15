@@ -11,12 +11,12 @@
    <params>
     <param>
      <type>int</type>
-     <name>iPlr</name>
+     <name>player</name>
      <desc>Nummer des Spielers, für den zusätzliche Daten gespeichert werden sollen</desc>
     </param>
     <param>
      <type>string</type>
-     <name>strDataName</name>
+     <name>data_name</name>
      <desc>Name, der den Daten zugeordnet werden soll</desc>
     </param>
    </params>

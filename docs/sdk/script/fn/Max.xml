@@ -11,12 +11,12 @@
    <params>
     <param>
      <type>int</type>
-     <name>iVal1</name>
+     <name>value1</name>
      <desc>erster Wert</desc>
     </param>
     <param>
      <type>int</type>
-     <name>iVal2</name>
+     <name>value2</name>
      <desc>zweiter Wert</desc>
     </param>
    </params>

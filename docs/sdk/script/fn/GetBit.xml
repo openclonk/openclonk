@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iOldVal</name><desc>Alter Wert der Bitmaske</desc></param>
-				<param><type>int</type><name>iBitNumber</name><desc>Das abzufragende Bit</desc></param>
+				<param><type>int</type><name>old_value</name><desc>Alter Wert der Bitmaske</desc></param>
+				<param><type>int</type><name>bit_number</name><desc>Das abzufragende Bit</desc></param>
 			</params>
 		</syntax>
-		<desc>Gibt den Wert des iBitNumber'nten Bits zurück.</desc>
+		<desc>Gibt den Wert des bit_number'nten Bits zurück.</desc>
 		<related>
 			<funclink>SetBit</funclink>
 			<funclink>ToggleBit</funclink>

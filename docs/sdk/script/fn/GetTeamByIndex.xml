@@ -9,7 +9,7 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-		<param><type>int</type><name>iIndex</name><desc>Index in der Teamliste</desc></param>
+		<param><type>int</type><name>index</name><desc>Index in der Teamliste</desc></param>
       </params>
     </syntax>
     <desc>

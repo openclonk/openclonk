@@ -22,7 +22,7 @@
 		</remark>
 		<examples>
 			<example>
-				<code>#strict 2
+				<code> 2
 #appendto Clonk
 
 func Initialize() {

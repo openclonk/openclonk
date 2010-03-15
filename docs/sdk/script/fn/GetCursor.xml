@@ -10,18 +10,18 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spielers, dessen kontrollierter Clonk zurückgegeben werden soll.</desc></param>
-				<param><type>int</type><name>iIndex</name><desc>Index, mit dem durch die ausgewählte Crew durchgeschaltet werden kann. 0 gibt immer den aktiv gelenkten Clonk zurück.</desc><optional /></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen kontrollierter Clonk zurückgegeben werden soll.</desc></param>
+				<param><type>int</type><name>index</name><desc>Index, mit dem durch die ausgewählte Crew durchgeschaltet werden kann. 0 gibt immer den aktiv gelenkten Clonk zurück.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Gibt den momentan kontrollierten Clonk eines Spielers zurück. Werden mehrere Clonks gelenkt, ist es bei iIndex=0 (oder weggelassen) immer das primär ausgewählte Mannschaftsmitglied. Also das, dem beispielsweise auch die Sicht folgt.</desc>
+		<desc>Gibt den momentan kontrollierten Clonk eines Spielers zurück. Werden mehrere Clonks gelenkt, ist es bei index=0 (oder weggelassen) immer das primär ausgewählte Mannschaftsmitglied. Also das, dem beispielsweise auch die Sicht folgt.</desc>
 		<examples>
 			<example>
 				<code><funclink>if</funclink> (!GetCursor(0)) <funclink>SetCursor</funclink>(<funclink>GetHiRank</funclink>(0));</code>
 				<text>Wählt den höchstrangigen Clonk des ersten Spielers aus, wenn ansonsten gerade kein anderer Clonk ausgewählt ist.</text>
 			</example>
 			<example>
-				<code>var pCrew,i; <funclink>while</funclink> (pCrew=GetCursor(0,i++)) <funclink>Message</funclink>("Hurra!", i);</code>
+				<code>var crew,i; <funclink>while</funclink> (crew=GetCursor(0,i++)) <funclink>Message</funclink>("Hurra!", i);</code>
 				<text>Gibt eine Nachricht über allen ausgewählten Clonks des ersten Spielers aus.</text>
 			</example>
 		</examples>

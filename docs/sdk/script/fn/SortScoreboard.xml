@@ -9,8 +9,8 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iColID</name><desc>ID der Spalte, nach der sortiert werden soll.</desc></param>
-        <param><type>bool</type><name>fReverse</name><desc>Wenn wahr, wird in absteigender Reihenfolge sortiert. Ansonsten in aufsteigender Reihenfolge.</desc><optional /></param>
+        <param><type>int</type><name>coloumn_id</name><desc>ID der Spalte, nach der sortiert werden soll.</desc></param>
+        <param><type>bool</type><name>reverse</name><desc>Wenn wahr, wird in absteigender Reihenfolge sortiert. Ansonsten in aufsteigender Reihenfolge.</desc><optional /></param>
       </params>
     </syntax>
     <desc>

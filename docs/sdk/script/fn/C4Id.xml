@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>id</rtype>
 			<params>
-				<param><type>string</type><name>szID</name><desc>Der String, der in eine id umgewandelt werden soll.</desc></param>
+				<param><type>string</type><name>id_string</name><desc>Der String, der in eine id umgewandelt werden soll.</desc></param>
 			</params>
 		</syntax>
 		<desc>Wandelt einen String in eine ID um.</desc>

@@ -11,7 +11,7 @@
       <params>
         <param>
           <type>int</type>
-          <name>iValue</name>
+          <name>value</name>
           <desc>Zu verwendender Wert.</desc>
         </param>
       </params>

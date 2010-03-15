@@ -9,10 +9,10 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>szScript</name><desc>Auszuführendes Script</desc></param>
-        <param><type>int</type><name>iInterval</name><desc>Zeit, bis das Script zum ersten Mal ausgeführt werden soll. Wenn iRepeat &gt; 1, ist es außerdem der Zeitabstand zwischen erneuten Ausführungen.</desc></param>
-				<param><type>int</type><name>iRepeat</name><desc>Anzahl der Ausführungen. Wenn 0 oder nicht angegeben wird das Script genau ein mal ausgeführt.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, in dem das Script ausgeführt werden soll. 0 für lokalen Aufruf.</desc></param>
+        <param><type>string</type><name>script</name><desc>Auszuführendes Script</desc></param>
+        <param><type>int</type><name>delay</name><desc>Zeit, bis das Script zum ersten Mal ausgeführt werden soll. Wenn repeat &gt; 1, ist es außerdem der Zeitabstand zwischen erneuten Ausführungen.</desc></param>
+				<param><type>int</type><name>repeat</name><desc>Anzahl der Ausführungen. Wenn 0 oder nicht angegeben wird das Script genau ein mal ausgeführt.</desc></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, in dem das Script ausgeführt werden soll. 0 für lokalen Aufruf.</desc></param>
       </params>
     </syntax>
     <desc>Führt einen bestimmes Script mit Verzögerung aus.</desc>

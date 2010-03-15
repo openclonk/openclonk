@@ -9,11 +9,11 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iVal</name><desc>Länge der Ankathete</desc></param>
-        <param><type>int</type><name>iRadius</name><desc>Länge der Hypotenuse</desc></param>
+        <param><type>int</type><name>value</name><desc>Länge der Ankathete</desc></param>
+        <param><type>int</type><name>radius</name><desc>Länge der Hypotenuse</desc></param>
       </params>
     </syntax>
-    <desc>Berechnet den Arcuscosinus von iVal/iRadius, also Result=arccos(iVal/iRadius). Dies entspricht cos(Result)=iVal/iRadius. Die Funktion wird benötigt, um Seitenverhältnisse zu einem Winkel umzurechnen. Für die meisten Fälle ist <funclink>Angle</funclink>() aber ausreichend und praktischer.</desc>
+    <desc>Berechnet den Arcuscosinus von value/radius, also Result=arccos(value/radius). Dies entspricht cos(Result)=value/radius. Die Funktion wird benötigt, um Seitenverhältnisse zu einem Winkel umzurechnen. Für die meisten Fälle ist <funclink>Angle</funclink>() aber ausreichend und praktischer.</desc>
     <examples>
       <example>
         <code><funclink>Log</funclink>("Zielwinkel: %d Grad", ArcCos(<funclink>Abs</funclink>(<funclink>GetX</funclink>(target)-<funclink>GetX</funclink>()), <funclink>ObjectDistance</funclink>(target)));</code>

@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>int</type><name>iObj</name><desc>Eindeutige Objektnummer.</desc></param>
+				<param><type>int</type><name>object_number</name><desc>Eindeutige Objektnummer.</desc></param>
 			</params>
 		</syntax>
 		<desc>Wandelt eine Objektnummer in einen Objektpointer um.</desc>

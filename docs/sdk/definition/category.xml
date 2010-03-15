@@ -63,7 +63,7 @@
 </row>
 <row>
   <col>C4D_MouseSelect</col>
-  <col>Objekt mit der Maus anwählbar, MouseSelection(int iPlr)-Callback im Objekt.</col>
+  <col>Objekt mit der Maus anwählbar, MouseSelection(int player)-Callback im Objekt.</col>
 </row>
 <row>
   <col>C4D_Foreground</col>

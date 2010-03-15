@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>id</type><name>idDef</name><desc>ID der zu findenden Objekte</desc></param>
+				<param><type>id</type><name>definition</name><desc>ID der zu findenden Objekte</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: sucht alle Objekte mit der angegeben ID.</desc>

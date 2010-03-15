@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spielernummer, der Besitzer der zu suchenden Objekte sein soll</desc></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer, der Besitzer der zu suchenden Objekte sein soll</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: sucht alle Objekte die dem angegebenen Spieler gehören.</desc>

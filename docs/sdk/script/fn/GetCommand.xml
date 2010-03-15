@@ -15,20 +15,20 @@
       <params>
         <param>
           <type>int</type>
-          <name>iElement</name>
+          <name>element</name>
           <optional />
           <desc>Information, die zurückgegeben werden soll. 0 oder kA: Name, 1: Target, 2: TargetX, 3: TargetY, 4: Target2, 5: Data</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iCommandNum</name>
+          <name>command_num</name>
           <optional />
           <desc>Nummer des Kommandos. 0 steht für das momentan aktive, 1 für das danach auszuführende usw.</desc>
         </param>
       </params>
     </syntax>
 
-    <desc>Gibt Informationen über ein Kommando des aufrufenden Objekts zurück. Führt das Objekt momentan keine Aktion aus, so wird (bei jedem Wert von iElement) 0 zurückgegeben.</desc>
+    <desc>Gibt Informationen über ein Kommando des aufrufenden Objekts zurück. Führt das Objekt momentan keine Aktion aus, so wird (bei jedem Wert von element) 0 zurückgegeben.</desc>
 
     <examples>
       <example>

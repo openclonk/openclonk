@@ -10,14 +10,14 @@
 			<rtype>int</rtype>
 			<params>
 				<param><type>int</type><name>Val</name><desc>32Bit-Farbwert</desc></param>
-				<param><type>int</type><name>iNewVal</name><desc>0-255: Farbwert, der mit dem alten ersetzt werden soll.</desc></param>
-				<param><type>int</type><name>iSelect</name><desc>0-3: Farbwert, der geändert werden soll</desc></param>
+				<param><type>int</type><name>NewVal</name><desc>0-255: Farbwert, der mit dem alten ersetzt werden soll.</desc></param>
+				<param><type>int</type><name>select</name><desc>0-3: Farbwert, der geändert werden soll</desc></param>
 			</params>
 		</syntax>
 		<desc>
 		Setzt einen einzelnen Farbwert des angegebenen 32bit-Farbewerts.
 		
-     <table><rowh><col>iSelect</col><col>Auswahl</col></rowh>
+     <table><rowh><col>select</col><col>Auswahl</col></rowh>
      <row><col>0</col><col>Alpha-Wert</col></row>
      <row><col>1</col><col>Rotanteil</col></row>
      <row><col>2</col><col>Grünanteil</col></row>

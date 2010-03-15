@@ -11,24 +11,24 @@
       <params>
         <param>
           <type>string</type>
-          <name>strEntry</name>
+          <name>entry</name>
           <desc>Name des abzufragenden Eintrags</desc>
         </param>
         <param>
           <type>string</type>
-          <name>strAction</name>
+          <name>action</name>
           <desc>Name der Aktion, von der der Eintrag abgefragt werden soll</desc>
           <optional/>
         </param>
         <param>
           <type>id</type>
-          <name>idDef</name>
+          <name>definition</name>
           <desc>Objektdefinition, von der die Aktionsdaten abgefragt werden sollen. Bei Übergabe von 0 wird die Definition des aufrufenden Objekts angenommen.</desc>
           <optional/>
         </param>
         <param>
           <type>int</type>
-          <name>iEntryNr</name>
+          <name>entry_number</name>
           <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
           <optional/>
         </param>
@@ -39,7 +39,7 @@
 
     <examples>
       <example>
-        <code>var iActLength = GetActMapVal("Length", <funclink>GetAction</funclink>()) * GetActMapVal("Delay", <funclink>GetAction</funclink>());</code>
+        <code>var act_length = GetActMapVal("Length", <funclink>GetAction</funclink>()) * GetActMapVal("Delay", <funclink>GetAction</funclink>());</code>
         <text>Berechnet die Länge in Ticks, die die aktuelle Action dauert</text>
       </example>
     </examples>

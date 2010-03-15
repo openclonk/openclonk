@@ -9,9 +9,9 @@
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Mittelposition des durchgeschüttelten Kreises. Immer global.</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Mittelposition des durchgeschüttelten Kreises. Immer global.</desc></param>
-        <param><type>int</type><name>iRadius</name><desc>Radius des durchgeschüttelten Kreises</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Mittelposition des durchgeschüttelten Kreises. Immer global.</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Mittelposition des durchgeschüttelten Kreises. Immer global.</desc></param>
+        <param><type>int</type><name>radius</name><desc>Radius des durchgeschüttelten Kreises</desc></param>
       </params>
     </syntax>
     <desc>Schüttelt innerhalb eines kreisförmigen Bereiches alle Lebewesen durch. Dieses Verhalten ist vergleichbar mit <funclink>Fling</funclink>()-Aufrufen mit kleinen Zufallswerten auf alle Objekte im Zielbereich.</desc>

@@ -12,7 +12,7 @@
    <params>
     <param>
      <type>object</type>
-     <name>pFrom</name>
+     <name>from</name>
      <desc>Objekt (Clonk), von dem die Infosektion genommen werden soll.</desc>
     </param>
    </params>
@@ -26,7 +26,7 @@
 <code>protected Death:
   var newclnk = <funclink>CreateObject</funclink>(<funclink>GetID</funclink>(), <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>())-<funclink>GetX</funclink>(), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>())-<funclink>GetY</funclink>(), <funclink>GetOwner</funclink>());
   newclnk->GrabObjectInfo(<funclink>this</funclink>());
-  <funclink>return</funclink>(1);</code>
+  <funclink>return</funclink> 1;</code>
     <text>Dieser Teil eines Objektscripts sorgt dafür, dass ein Clonk bei seinem Tod irgendwo in der Landschaft neu erstellt wird, und unter demselben Namen und mit denselben Physicals weiterspielen kann.</text>
    </example>
   </examples>

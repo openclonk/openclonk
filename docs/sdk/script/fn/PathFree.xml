@@ -9,10 +9,10 @@
   <syntax>
    <rtype>bool</rtype>
    <params>
-    <param><type>int</type><name>iX1</name><desc>X-Position des Anfangspunktes</desc></param>
-    <param><type>int</type><name>iY1</name><desc>Y-Position des Anfangspunktes</desc></param>
-    <param><type>int</type><name>iX2</name><desc>X-Position des Endpunktes</desc></param>
-    <param><type>int</type><name>iY2</name><desc>Y-Position des Endpunktes</desc></param>
+    <param><type>int</type><name>x1</name><desc>X-Position des Anfangspunktes</desc></param>
+    <param><type>int</type><name>y1</name><desc>Y-Position des Anfangspunktes</desc></param>
+    <param><type>int</type><name>x2</name><desc>X-Position des Endpunktes</desc></param>
+    <param><type>int</type><name>y2</name><desc>Y-Position des Endpunktes</desc></param>
    </params>
   </syntax>
 
@@ -24,14 +24,14 @@
     <example>
 <code>protected func ControlSpecial2()
   {
-  var i, pBase;
-  while (pBase=FindBase(GetOwner(), i++))
-    if (PathFree(GetX(), GetY(), GetX(pBase), GetY(pBase)))
+  var i, base;
+  while (base=FindBase(GetOwner(), i++))
+    if (PathFree(GetX(), GetY(), GetX(base), GetY(base)))
       {
       Message("Ich sehe meine Basis!", this());
       break;
       }
-  if (!pBase) Message("Ich sehe meine Basis nicht :/", this());
+  if (!base) Message("Ich sehe meine Basis nicht :/", this());
   }</code>
       <text>Script eines Spezialclonks: Auf Spezial2 sagt er, ob er eine seiner Basen sehen kann.</text>
     </example>

@@ -9,10 +9,10 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iBridgeLength</name><desc>Länge der Brücke.</desc></param>
-				<param><type>bool</type><name>fMoveClonk</name><desc>Ob sich der Clonk mit der Brücke mitbewegen soll.</desc></param>
-				<param><type>bool</type><name>fWall</name><desc>Sollte <code>true</code> sein, wenn der Clonk keine Brücke, sondern eine Wand (d.h. über seinem Kopf) baut.</desc></param>
-				<param><type>int</type><name>iBridgeMaterial</name><desc>Materialnummer des Materials aus dem die Brücke bestehen soll.</desc></param>
+				<param><type>int</type><name>bridge_length</name><desc>Länge der Brücke.</desc></param>
+				<param><type>bool</type><name>move_clonk</name><desc>Ob sich der Clonk mit der Brücke mitbewegen soll.</desc></param>
+				<param><type>bool</type><name>build_wall</name><desc>Sollte <code>true</code> sein, wenn der Clonk keine Brücke, sondern eine Wand (d.h. über seinem Kopf) baut.</desc></param>
+				<param><type>int</type><name>bridge_material</name><desc>Materialnummer des Materials aus dem die Brücke bestehen soll.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt Zusatzparameter für eine aktuell ausgeführte BRIDGE-Prozedur des aufrufenden Objekts.</desc>

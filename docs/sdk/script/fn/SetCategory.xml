@@ -10,7 +10,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iCategory</name><desc>Objektkategorie. Sollte ein gültiger C4D_x-Wert sein.</desc></param>
+				<param><type>int</type><name>category</name><desc>Objektkategorie. Sollte ein gültiger C4D_x-Wert sein.</desc></param>
 			</params>
 		</syntax>
 		<desc>Ändert die Kategorie des aufrufenden Objekts.</desc>

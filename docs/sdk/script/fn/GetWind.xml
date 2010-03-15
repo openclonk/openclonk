@@ -9,12 +9,12 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iX</name><desc>X-Position</desc></param>
-                                <param><type>int</type><name>iY</name><desc>Y-Position</desc></param>
-                                <param><type>bool</type><name>fGlobal</name><desc>Ob der globale Wind abgefragt werden soll. Ab CE.</desc><optional /></param>
+                                <param><type>int</type><name>x</name><desc>X-Position</desc></param>
+                                <param><type>int</type><name>y</name><desc>Y-Position</desc></param>
+                                <param><type>bool</type><name>global</name><desc>Ob der globale Wind abgefragt werden soll. Ab CE.</desc><optional /></param>
                         </params>
                 </syntax>
-                <desc>Liefert die Windstärke und Richtung an der Position X, Y. Wird die Funktion aus einem Objekt heraus aufgerufen, so ist die Position relativ zur Objektposition. Wenn fGlobal=true, wird der globale Wind zurückgegeben.</desc>
+                <desc>Liefert die Windstärke und Richtung an der Position X, Y. Wird die Funktion aus einem Objekt heraus aufgerufen, so ist die Position relativ zur Objektposition. Wenn global=true, wird der globale Wind zurückgegeben.</desc>
                 <related>
                         <funclink>SetWind</funclink>
                 </related>

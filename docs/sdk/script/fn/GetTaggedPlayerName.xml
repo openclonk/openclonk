@@ -9,16 +9,16 @@
                 <syntax>
                         <rtype>string</rtype>
                         <params>
-                                <param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spieler, dessen Name abgefragt werden soll</desc></param>
+                                <param><type>int</type><name>player</name><desc>Spielernummer des Spieler, dessen Name abgefragt werden soll</desc></param>
                         </params>
                 </syntax>
                 <desc>Liefert den Namen eines Spielers mit Markup in dessen Spielerfarbe. Wenn die Spielernummer zu keinem gültigen Spieler gehört, wird 0 zurückgegeben. Dadurch kann diese Funktion auch benutzt werden, um zu ermitteln, ob eine Spielernummer gültig ist.</desc>
                 <remark>Die Farbe wird so gewählt, dass der Spielername auf dunklem Untergrund lesbar ist. Dunkle Spielerfarben werden dazu aufgehellt.</remark>
                 <examples>
                         <example>
-<code>protected func Activate(pClonk)
+<code>protected func Activate(clonk)
   {
-  <funclink>Message</funclink>("%s hat das Objekt aktiviert!", 0, GetTaggedPlayerName(<funclink>GetController</funclink>(pClonk)));
+  <funclink>Message</funclink>("%s hat das Objekt aktiviert!", 0, GetTaggedPlayerName(<funclink>GetController</funclink>(clonk)));
   <funclink>return</funclink>(1);
   }</code>
                                 <text>Objektscript: Beim Aktivieren wird eine globale Nachricht ausgegeben, die den Spieler verpetzt.</text>

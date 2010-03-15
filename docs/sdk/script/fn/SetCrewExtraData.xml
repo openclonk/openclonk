@@ -11,7 +11,7 @@
    <params>
     <param>
      <type>string</type>
-     <name>strDataName</name>
+     <name>data_name</name>
      <desc>Name, der den Daten zugeordnet werden soll</desc>
     </param>
     <param>
@@ -34,7 +34,7 @@
    <example>
     <code>#include Clonk
 
-local fInvisible;
+local is_invisible;
     
 protected func Recruitment(a,b,c,d,e,f,g,h,i,j)
   {
@@ -45,11 +45,11 @@ protected func Recruitment(a,b,c,d,e,f,g,h,i,j)
     
 protected func ControlSpecial()
   {
-  if (fInvisible = !fInvisible)
+  if (is_invisible = !is_invisible)
     <funclink>SetVisibility</funclink>();
   else
     <funclink>SetVisibility</funclink>(<funclink>VIS_Owner</funclink>);
-  SetCrewExtraData("C4ID_Invisible", fInvisible);
+  SetCrewExtraData("C4ID_Invisible", is_invisible);
   }</code>
     <text>Script für einen Spezialclonk: Der Clonk kann sich auf Taste Spezial unsichtbar und wieder sichtbar machen. Diese Unsichtbarkeit bleibt auch erhalten, wenn man das Szenario beendet und ein anderes Szenario mit diesem Clonk startet.</text>
    </example>

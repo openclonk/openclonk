@@ -13,7 +13,7 @@
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
 		<remark>
 			Für weitere Informationen und Beispiele zur Benutzung dieser Konstanten siehe <emlink href="definition/ocf.html">Object character flags</emlink>.<br />
-			Objekte, die das OCF_CrewMember()-Flag gesetzt haben, bekommen von der Engine außerdem einige Sonderbehandlungen:<br />
+			Objekte, die das OCF_CrewMember-Flag gesetzt haben, bekommen von der Engine außerdem einige Sonderbehandlungen:<br />
 			<ul><li>Es sucht auch ohne PathFinder=1 in der DefCore mit dem PathFinder</li>
 			<li>Es benutzt einige PathFinder-interne Optimierungen, die auf die Größe eines Clonks zugeschnitten sind</li>
 			<li>Er benutzt auch ohne PathFinder=1 die veränderten Sprungmethoden (z.B. kurze Sprünge)</li>

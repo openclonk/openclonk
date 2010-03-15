@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
+				<param><type>int</type><name>overlay_id</name><desc>Wenn angegeben, wird stattdessen der Blitmodus dieses Grafikoverlays abgefragt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Liefert den aktuellen Zeichenmodus des aufrufenden Objekts.</desc>

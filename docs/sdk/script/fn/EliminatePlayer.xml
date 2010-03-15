@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spielernummer des zu eliminierenden Spielers</desc></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer des zu eliminierenden Spielers</desc></param>
 			</params>
 		</syntax>
 		<desc>Eliminiert einen Spieler. Die Runde gilt für diesen Spieler als verloren.</desc>

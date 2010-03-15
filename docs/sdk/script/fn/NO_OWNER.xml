@@ -13,8 +13,8 @@
 		<remark>Dieser Wert ist als Engine-Konstante definiert. Die Funktionsklammern können daher optional weggelassen werden.</remark>
 		<examples>
 			<example>
-				<code><funclink>CreateObject</funclink>(EFLN, 100,100, NO_OWNER);</code>
-				<text>Erzeugt einen besitzerlosen Flint.</text>
+				<code><funclink>CreateObject</funclink>(Firestone, 100,100, NO_OWNER);</code>
+				<text>Erzeugt einen besitzerlosen Feuerstein.</text>
 			</example>
 		</examples>
 		<related>

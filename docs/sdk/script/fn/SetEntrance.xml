@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iStatus</name><desc>0 = Geschlossen; 1 = Offen</desc></param>
+				<param><type>int</type><name>status</name><desc>0 = Geschlossen; 1 = Offen</desc></param>
 			</params>
 		</syntax>
 		<desc>Ermöglicht bzw. verhindert das Betreten eines Gebäudes. Nur lokale Aufrufe.</desc>

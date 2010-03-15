@@ -11,12 +11,12 @@
       <params>
         <param>
           <type>int</type>
-          <name>iX</name>
+          <name>x</name>
           <desc>X-Zielposition</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iY</name>
+          <name>y</name>
           <desc>Y-Zielposition</desc>
         </param>
       </params>

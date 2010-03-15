@@ -317,12 +317,12 @@
 	<h>Reaktionstyp 'Script'</h><text>
 	Mit dieser sehr rechenintensiven Methode kann das Materialveralten frei bestimmt werden. Die Scriptfunktion sollte global deklariert haben und folgende Parameter besitzen:
 	<table><rowh><col>Parameternummer(n)</col><col>Name(n)</col><col>Datentyp</col><col>Beschreibung</col></rowh>
-				<row><col>1,2</col><col>iX, iY</col><col>Integer</col><col>Position des losen Materials. Die Parameter können verändert werden, um das Materialpixel zu verschieben.</col></row>
-				<row><col>3,4</col><col>iLSPosX, iLSPosY</col><col>Integer</col><col>Position in der Landschaft, auf die das Material trifft.</col></row>
-				<row><col>5,6</col><col>iXDir, iYDir</col><col>Integer</col><col>Geschwindigkeit (in 1/100px) der Bewegung des Materials. Kann geändert werden, um die Geschwindigkeit des Materialpixels zu beeinflussen. Nicht für MassMover.</col></row>
-				<row><col>7</col><col>iPxsMat</col><col>Integer</col><col>Materialnummer des losen Materials. Nützlich, wenn die gleiche Funktion für Reaktionen mehrerer Materialen verwendet wird</col></row>
-				<row><col>8</col><col>iLsMat</col><col>Integer</col><col>Materialnummer des festen Materials.</col></row>
-				<row><col>9</col><col>iEvent</col><col>Integer</col><col>Siehe <emlink href="material/c4m.html#ReactEvents">Reaktionsereignisse</emlink>.</col></row>
+				<row><col>1,2</col><col>x, y</col><col>Integer</col><col>Position des losen Materials. Die Parameter können verändert werden, um das Materialpixel zu verschieben.</col></row>
+				<row><col>3,4</col><col>landscape_x, landscape_y</col><col>Integer</col><col>Position in der Landschaft, auf die das Material trifft.</col></row>
+				<row><col>5,6</col><col>xdir, ydir</col><col>Integer</col><col>Geschwindigkeit (in 1/100px) der Bewegung des Materials. Kann geändert werden, um die Geschwindigkeit des Materialpixels zu beeinflussen. Nicht für MassMover.</col></row>
+				<row><col>7</col><col>pxs_material</col><col>Integer</col><col>Materialnummer des losen Materials. Nützlich, wenn die gleiche Funktion für Reaktionen mehrerer Materialen verwendet wird</col></row>
+				<row><col>8</col><col>landscape_material</col><col>Integer</col><col>Materialnummer des festen Materials.</col></row>
+				<row><col>9</col><col>event</col><col>Integer</col><col>Siehe <emlink href="material/c4m.html#ReactEvents">Reaktionsereignisse</emlink>.</col></row>
 	</table>
 	Der Rückgabewert der Funktion sollte entweder 1 für Entfernen oder 0 für Erhalten des losen Materials sein.
 	</text>

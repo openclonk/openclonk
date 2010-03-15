@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>any</rtype>
 			<params>
-				<param><type>string</type><name>szFunction</name><desc>Funktion, die aufgerufen werden soll.</desc></param>
+				<param><type>string</type><name>function</name><desc>Funktion, die aufgerufen werden soll.</desc></param>
 				<param><type>any</type><name>...</name><desc>Parameter der Funktion.</desc></param>
 			</params>
 		</syntax>
-		<desc>Ruft die lokale Funktion szFunction auf. Wird "~" vor den Funktionsnamen gesetzt, wird der Aufruf failsafe durchgeführt.</desc>
+		<desc>Ruft die lokale Funktion function auf. Wird "~" vor den Funktionsnamen gesetzt, wird der Aufruf failsafe durchgeführt.</desc>
 		<related>
 			<funclink>ProtectedCall</funclink>
 			<funclink>PrivateCall</funclink>

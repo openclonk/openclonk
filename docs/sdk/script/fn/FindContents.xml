@@ -9,10 +9,10 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>id</type><name>idType</name><desc>Objekttyp, von dem das Inhaltsobjekt sein soll</desc></param>
+				<param><type>id</type><name>type</name><desc>Objekttyp, von dem das Inhaltsobjekt sein soll</desc></param>
 			</params>
 		</syntax>
-		<desc>Liefert das erste in einem Behälter enthaltene Objekt vom Typ idType.</desc>
+		<desc>Liefert das erste in einem Behälter enthaltene Objekt vom Typ type.</desc>
 		<examples>
 			<example>
 

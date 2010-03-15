@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>bool</type><name>fEjectContents</name><desc>Wenn wahr, wird der Inhalt des Objekts vor der Vernichtung ausgeleert. Ansonsten wird er mit vernichtet.</desc><optional /></param>
+				<param><type>bool</type><name>eject_contents</name><desc>Wenn wahr, wird der Inhalt des Objekts vor der Vernichtung ausgeleert. Ansonsten wird er mit vernichtet.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Entfernt das aufrufende Objekt.</desc>
@@ -19,7 +19,7 @@
 		</remark>
 		<examples>
 			<example>
-				<code>public func Activate(pClonk) { pClonk->RemoveObject(); }</code>
+				<code>public func Activate(clonk) { clonk->RemoveObject(); }</code>
 				<text>Wenn ein Clonk dieses Objekt aktiviert, wird er entfernt.</text>
 			</example>
 		</examples>

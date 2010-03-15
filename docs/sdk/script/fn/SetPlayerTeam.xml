@@ -9,9 +9,9 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iPlr</name><desc>Spielernummer des Spieler, dessen Team geändert werden soll.</desc></param>
-        <param><type>int</type><name>idNewTeam</name><desc>Teamnummer des neuen Teams.</desc></param>
-        <param><type>bool</type><name>fDoNoCalls</name><desc>Wenn WAHR, werden die Aufrufe "RejectTeamSwitch" und "OnTeamSwitch" nicht getätigt. Der Spieler wird auch nicht neu verfeindet (dies muss ggf. selbst nachgeholt werden).</desc></param>
+        <param><type>int</type><name>player</name><desc>Spielernummer des Spieler, dessen Team geändert werden soll.</desc></param>
+        <param><type>int</type><name>new_team</name><desc>Teamnummer des neuen Teams.</desc></param>
+        <param><type>bool</type><name>no_calls</name><desc>Wenn WAHR, werden die Aufrufe "RejectTeamSwitch" und "OnTeamSwitch" nicht getätigt. Der Spieler wird auch nicht neu verfeindet (dies muss ggf. selbst nachgeholt werden).</desc></param>
       </params>
     </syntax>
     <desc>

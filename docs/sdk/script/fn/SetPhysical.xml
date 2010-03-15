@@ -9,9 +9,9 @@
                 <syntax>
                         <rtype>bool</rtype>
                         <params>
-                                <param><type>string</type><name>szPhysical</name><desc>Name Eigenschaft, die geändert werden soll</desc></param>
-                                <param><type>int</type><name>iValue</name><desc>0-100000: Neuer Wert für diese Eigenschaft</desc></param>
-                                <param><type>int</type><name>iMode</name><desc>Änderungsmodus (symbolische Konstanten ab CR):<br />
+                                <param><type>string</type><name>physical</name><desc>Name Eigenschaft, die geändert werden soll</desc></param>
+                                <param><type>int</type><name>value</name><desc>0-100000: Neuer Wert für diese Eigenschaft</desc></param>
+                                <param><type>int</type><name>mode</name><desc>Änderungsmodus (symbolische Konstanten ab CR):<br />
 					<table><rowh><col>Konstante</col><col>Wert</col><col>Bedeutung</col></rowh>
 					<row><col>PHYS_Current</col><col>0</col><col>Die Eigenschaften werden im gerade aktiven Modus (temporär oder permanent) des Objektes geändert.</col></row>
 					<row><col>PHYS_Permanent</col><col>1</col><col>Die Eigenschaften werden permanent geändert. Das heißt, dass auch die Infosektion des Objektes modifiziert wird, und die Änderungen somit auch in die Spielerdatei geschrieben werden. Nur Spielercrewobjekte besitzen eine Infosektion.</col></row>
@@ -22,17 +22,17 @@
                 <desc>Ändert die physischen Eigenschaften des aufrufenden Objekts. Hiermit können die in der Physical-Sektion der <emlink href="definition/DefCore.html">DefCore.txt</emlink> angegebenen Werte temporär oder permanent angepasst werden.</desc>
 		<examples>
 			<example>
-<code>protected func Activate(pEater)
+<code>protected func Activate(eater)
   {
   [$DescEatPill$]
-  pEater->SetPhysical("Magic", 1000000, PHYS_Temporary);
-  <funclink>while</funclink>(pEater-><funclink>DoMagicEnergy</funclink>(1)) ;
+  eater->SetPhysical("Magic", 1000000, PHYS_Temporary);
+  <funclink>while</funclink>(eater-><funclink>DoMagicEnergy</funclink>(1)) ;
   <funclink>RemoveObject</funclink>();
   }</code>
 				<text>Script für eine Magiepille: Der essende Clonk bekommt temporär Zauberenergie.</text>
 			</example>
 			<example>
-<code>protected func FxJumpBoostStart(object trg, int num, int iTemp)
+<code>protected func FxJumpBoostStart(object trg, int num, int temporary)
   {
   trg->SetPhysical("Jump", trg-><funclink>GetPhysical</funclink>("Jump", PHYS_Current) + 10000, PHYS_StackTemporary);
   <funclink>return</funclink>(FX_OK);

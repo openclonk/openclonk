@@ -11,31 +11,31 @@
       <params>
         <param>
           <type>string</type>
-          <name>szEffectName</name>
+          <name>name</name>
           <desc>Name des Effektes ohne vorangestelltes Fx. Es können '*' und '?' als Suchmaske verwendet werden.</desc>
           <optional />
         </param>
         <param>
           <type>object</type>
-          <name>pTarget</name>
+          <name>target</name>
           <desc>Zielobjekt, in dem Effekte geändert werden sollen. Bei 0 wird die globale Effektliste durchsucht.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
-          <name>iIndex</name>
-          <desc>Effektindex. Bei angegebenem szEffectName gibt dies bei mehreren, der Suchmaske entsprechenden Effekten den indizierten Effekt in der Liste der passenden Effekte an. Ist szEffectName nicht angegeben, wird dagegen der Effekt mit der entsprechenden Effektnummer geändert. Im Gegensatz zu Effektnummern ist bei Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl alle Effekte erfasst werden.</desc>
+          <name>index</name>
+          <desc>Effektindex. Bei angegebenem name gibt dies bei mehreren, der Suchmaske entsprechenden Effekten den indizierten Effekt in der Liste der passenden Effekte an. Ist name nicht angegeben, wird dagegen der Effekt mit der entsprechenden Effektnummer geändert. Im Gegensatz zu Effektnummern ist bei Indizes stets sichergestellt, dass beim Hochzählen von 0 bis zur Effektzahl alle Effekte erfasst werden.</desc>
           <optional />
         </param>
         <param>
           <type>string</type>
-          <name>szNewEffectName</name>
+          <name>new_name</name>
           <optional />
           <desc>Neuer Effektname ohne vorangestelltes Fx</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iNewTimer</name>
+          <name>new_timer</name>
           <optional />
           <desc>Neues Timer-Intervall. Bei -1 wird der alte Wert beibehalten; ansonsten wird bei diesem Aufruf auch die Effektzeit zurückgesetzt.</desc>
         </param>
@@ -50,10 +50,10 @@
         <text>Ändert den globalen Effekt "MeinEffekt" auf "AndererEffekt", wenn er existierte.</text>
       </example>
       <example>
-        <code>var obj, i, iEffect;
+        <code>var obj, i, effect;
 <funclink>while</funclink> ((i=0) || obj=<funclink>FindObject</funclink>(0, 0,0,0,0, 0, 0,0, 0, obj))
-  <funclink>while</funclink> (iEffect = <funclink>GetEffect</funclink>("*Fire*", obj, i))
-    ChangeEffect(0, obj, i++, <funclink>GetEffect</funclink>(0, obj, iIndex, 1), 2);</code>
+  <funclink>while</funclink> (effect = <funclink>GetEffect</funclink>("*Fire*", obj, i))
+    ChangeEffect(0, obj, i++, <funclink>GetEffect</funclink>(0, obj, index, 1), 2);</code>
         <text>Schaltet alle Feuer in den Zeitraffer.</text>
       </example>
     </examples>

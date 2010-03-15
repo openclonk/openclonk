@@ -9,10 +9,10 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iXDir</name><desc>Horizontale Gechwindigkeit geteilt durch iPrecision.</desc></param>
-				<param><type>int</type><name>iYDir</name><desc>Vertikale Gechwindigkeit geteilt durch iPrecision.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Zielobjekt. Bei lokalem Aufruf Null.</desc><optional /></param>
-				<param><type>int</type><name>iPrecision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
+				<param><type>int</type><name>xdir</name><desc>Horizontale Gechwindigkeit geteilt durch precision.</desc></param>
+				<param><type>int</type><name>ydir</name><desc>Vertikale Gechwindigkeit geteilt durch precision.</desc></param>
+				<param><type>object</type><name>obj</name><desc>Zielobjekt. Bei lokalem Aufruf Null.</desc><optional /></param>
+				<param><type>int</type><name>precision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Geschwindigkeit eines Objekts.</desc>

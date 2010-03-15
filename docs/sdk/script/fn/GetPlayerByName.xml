@@ -9,10 +9,10 @@
                 <syntax>
                         <rtype>int</rtype>
 			<params>
-				<param><type>string</type><name>szName</name><desc>Name des Spielers</desc></param>
+				<param><type>string</type><name>player_name</name><desc>Name des Spielers</desc></param>
 			</params>
                 </syntax>
-                <desc>Gibt die Spielernummer des angegebenen Spielers oder -1 wenn kein solcher Spiler gefunden wurde zurück.</desc>
+                <desc>Gibt die Spielernummer des angegebenen Spielers oder -1 wenn kein solcher Spieler gefunden wurde zurück.</desc>
                 <related>
                         <funclink>GetPlayerName</funclink>
                         <funclink>GetPlayerByIndex</funclink>

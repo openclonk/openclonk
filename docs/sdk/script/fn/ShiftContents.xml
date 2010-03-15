@@ -11,9 +11,9 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>bool</type><name>fShiftBack</name><desc>Wenn wahr, wird rückwärts durchsortiert.</desc><optional /></param>
-        <param><type>id</type><name>idTarget</name><desc>ID des Objekttyps, der als nächstes ausgewählt sein soll. Wenn dieser Parameter angegeben ist, wird kein ControlContents-Aufruf mehr getätigt, sondern es wird direkt und ohne das Abspielen eines Sounds durchgeschaltet. Damit lässt sich beispielsweise das Durchschalten des Inventars in ControlConents überladen, und mit eigenen Sounds oder Zusatzaktivitäten versehen.</desc><optional /></param>
-        <param><type>bool</type><name>fDoCalls</name><desc>Wenn wahr, werden ControlContents- und Selection-Aufrufe getätigt.</desc><optional /></param>
+        <param><type>bool</type><name>shift_back</name><desc>Wenn wahr, wird rückwärts durchsortiert.</desc><optional /></param>
+        <param><type>id</type><name>target_id</name><desc>ID des Objekttyps, der als nächstes ausgewählt sein soll. Wenn dieser Parameter angegeben ist, wird kein ControlContents-Aufruf mehr getätigt, sondern es wird direkt und ohne das Abspielen eines Sounds durchgeschaltet. Damit lässt sich beispielsweise das Durchschalten des Inventars in ControlConents überladen, und mit eigenen Sounds oder Zusatzaktivitäten versehen.</desc><optional /></param>
+        <param><type>bool</type><name>no_calls</name><desc>Wenn wahr, werden ControlContents- und Selection-Aufrufe getätigt.</desc><optional /></param>
       </params>
     </syntax>
     <desc>Sortiert die Inhaltsobjekte des aufrufenden Objekts so um, dass das nächste Objekt mit anderer ID vorne liegt. Die häufigste Anwendung für diesen Befehl ist ein Inventarwechsel.</desc>
@@ -30,9 +30,9 @@
         <text>Teil eines Objektscripts. Verschiebt die Inhaltsobjekte eines Objekts auf Spezialtaste 1.</text>
       </example>
       <example>
-<code>protected func ControlContents(idTarget)
+<code>protected func ControlContents(target_id)
   {
-  if (!ShiftContents(false, idTarget)) <funclink>return</funclink> 1;
+  if (!ShiftContents(false, target_id)) <funclink>return</funclink> 1;
   <funclink>Sound</funclink>("Ding");
   <funclink>return</funclink> 1;
   }</code>

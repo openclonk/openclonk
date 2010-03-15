@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>bool</type><name>fBackColor</name><desc>Wenn ungleich 0, wird die in SetSkyAdjust angegebene Zweitfarbe zurückgegeben.</desc></param>
+				<param><type>bool</type><name>back_color</name><desc>Wenn ungleich 0, wird die in SetSkyAdjust angegebene Zweitfarbe zurückgegeben.</desc></param>
 			</params>
 		</syntax>
 		<desc>Gibt die mit <funclink>SetSkyAdjust</funclink> gesetzte Himmelsmodulation zurück. Für weitere Informationen siehe <funclink>SetSkyAdjust</funclink></desc>

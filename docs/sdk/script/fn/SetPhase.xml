@@ -9,7 +9,7 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iPhase</name><desc>Neue Aktionsphase.</desc></param>
+        <param><type>int</type><name>phase</name><desc>Neue Aktionsphase.</desc></param>
       </params>
     </syntax>
     <desc>Setzt die Aktivitätsphase des aufrufenden Objekts.</desc>

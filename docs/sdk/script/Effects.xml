@@ -14,34 +14,34 @@
 
 	<code>/* Unsichtbarkeitszauber ohne Effektsystem */
 
-#strict
 
-local iRestTime; // Zeit, die der Zauber noch aktiv ist
-local pTarget;   // Unsichtbar gemachter Clonk
-local iOldVisibility; // Vorheriger Sichtbarkeitsstatus
-local iOldModulation; // Vorherige Farbmodulation
 
-public func Activate(pCaster, pCaster2)
+local remaining_time; // Zeit, die der Zauber noch aktiv ist
+local target;   // Unsichtbar gemachter Clonk
+local old_visibility; // Vorheriger Sichtbarkeitsstatus
+local old_modulation; // Vorherige Farbmodulation
+
+public func Activate(caster, caster2)
 {
   // Zauberer ermitteln
-  if (pCaster2) pCaster = pCaster2; pTarget = pCaster;
+  if (caster2) caster = caster2; target = caster;
   // Magie kann man hören, ganz klar ;)
   Sound("Magic*");
   // Vorherige Sichtbarkeit des Zauberers speichern
-  iOldVisibility = GetVisibility(pCaster);
-  iOldModulation = GetClrModulation(pCaster);
+  old_visibility = GetVisibility(caster);
+  old_modulation = GetClrModulation(caster);
   // Zauberer unsichtbar machen
-  SetVisibility(VIS_Owner() | VIS_Allies() | VIS_God(), pCaster);
+  SetVisibility(VIS_Owner | VIS_Allies | VIS_God, caster);
   // Halbdurchsichtig bläulich für den Besitzer und Verbündete
-  SetClrModulation(ModulateColor(iOldModulation, RGBa(127,127,255,127)), pCaster);
+  SetClrModulation(ModulateColor(old_modulation, RGBa(127,127,255,127)), caster);
   // Timer starten: 30 Sekunden unsichtbar
-  iRestTime = 30;
+  remaining_time = 30;
 }
 
 protected func TimerCall()
 {
   // Zeit zählen
-  if (iRestTime--) return(1);
+  if (remaining_time--) return true;
   // Fertig; Objekt entfernen
   return(RemoveObject());
 }
@@ -49,9 +49,9 @@ protected func TimerCall()
 protected func Destruction()
 {
   // Zauber wird entfernt: Unsichtbarkeit aufheben
-  SetClrModulation(iOldModulation, pTarget);
-  SetVisibility(iOldVisibility, pTarget);
-  return(1);
+  SetClrModulation(old_modulation, target);
+  SetVisibility(old_visibility, target);
+  return true;
 }</code>
 	
 	<text>Das Zauberobjekt bleibt hier einfach so lange erhalten, bis die Zeit abgelaufen ist, und macht den Clonk dann wieder sichtbar. Die Sichtbarmachung im Destruction-Callback macht das Objekt auch wieder sichtbar, wenn das Objekt aus irgendwelchen Gründen (z.B. Wechsel der Szenariensektion) entfernt wurde - ansonsten bliebe der Clonk in dem Fall auf ewig unsichtbar. Außerdem wird ein Timer verwendet, bei dem davon ausgegangen wird, dass er in der DefCore definiert ist und jede Sekunde aufgerufen wird. Ein Timer mit einem Intervall in der Dauer der Unsichtbarkeit wäre übrigens nicht möglich gewesen, da die Objekt-Timer je nach Spielzeit an unterschielichen Zeiten im Intervall beginnen können. Um den Timer zu sparen, hätte man also eine Aktivität definieren müssen.</text>
@@ -62,53 +62,53 @@ protected func Destruction()
 	
 	<code>/* Unsichtbarkeitszauber mit Effektsystem */
 	
-#strict
+
 
 // EffectVars:
 //   0 - Vorheriger Sichtbarkeitsstatus
 //   1 - Vorherige Farbmodulation
 
-public func Activate(pCaster, pCaster2)
+public func Activate(caster, caster2)
 {
   // Zauberer ermitteln
-  if (pCaster2) pCaster = pCaster2;
+  if (caster2) caster = caster2;
   // Magie kann man hören, ganz klar ;)
   Sound("Magic*");
   // Effekt starten
-  AddEffect("InvisPSpell", pCaster, 200, 1111, 0, GetID());
+  AddEffect("InvisPSpell", caster, 200, 1111, 0, GetID());
   // Fertig - das Zauberobjekt wird nun nicht mehr gebraucht
   return(RemoveObject());
 }
 
-protected func FxInvisPSpellStart(pTarget, iEffectNumber)
+protected func FxInvisPSpellStart(target, num)
 {
   // Vorherige Sichtbarkeit des Zauberers speichern
-  EffectVar(0, pTarget, iEffectNumber) = GetVisibility(pTarget);
-  var iOldMod = EffectVar(1, pTarget, iEffectNumber) = GetClrModulation(pTarget);
+  EffectVar(0, target, num) = GetVisibility(target);
+  var old_mod = EffectVar(1, target, num) = GetClrModulation(target);
   // Zauberer unsichtbar machen
-  SetVisibility(VIS_Owner() | VIS_Allies() | VIS_God(), pTarget);
+  SetVisibility(VIS_Owner() | VIS_Allies() | VIS_God(), target);
   // Halbdurchsichtig bläulich für den Besitzer und Verbündete
-  SetClrModulation(ModulateColor(iOldMod, RGBa(127,127,255,127)), pTarget);
+  SetClrModulation(ModulateColor(old_mod, RGBa(127,127,255,127)), target);
   // Fertig
-  return(1);
+  return true;
 }
 
-protected func FxInvisPSpellStop(pTarget, iEffectNumber)
+protected func FxInvisPSpellStop(target, num)
 {
   // Status wiederherstellen
-  SetClrModulation(EffectVar(1, pTarget, iEffectNumber), pTarget);
-  SetVisibility(EffectVar(0, pTarget, iEffectNumber), pTarget);
+  SetClrModulation(EffectVar(1, target, num), target);
+  SetVisibility(EffectVar(0, target, num), target);
   // Fertig
-  return(1);
+  return true;
 }</code>
 	
 	<text>Hier startet das Zauberobjekt nur noch den Effekt, und entfernt sich dann. Die Engine sorgt dafür, dass keine Probleme bei der Sichtbarkeit auftreten: Effekte werden in einem Stapel angelegt, der sicher stellt, dass jeder Effekte immer in der umgekehrten Reihenfolge entfernt werden, in der sie hinzugefügt wurden. Dazu sind ein paar zusätzliche Start- und Stop-Aufrufe notwendig, auf die später noch eingegangen wird.</text>
 	<text>Der Effekt hat außerdem keinen Timer-Aufruf, aber trotzdem ein angegebenes TimerIntervall von 1111. Das sorgt dafür, dass mit dem ersten Aufruf nach 1111 Frames der Standard-Timer ausgelöst wird, der den Effekt löscht. Alternativ hätte man auch eine Timerfunktion definieren können:</text>
 	
-	<code>protected func FxInvisPSpellTimer(pTarget, iEffectNumber)
+	<code>protected func FxInvisPSpellTimer(target, num)
 {
   // Rückgabewert -1 bedeutet, dass der Effekt gelöscht wird
-  return(-1);
+  return -1;
 }</code>
 	
 	<text>Zum Speichern der vorherigen Statuswerte des Effektziels wird der spezielle Speicherbereich in <funclink>EffectVar</funclink>() verwendet. Dies ist nötig, da die Effekt-Callbacks in diesem Fall keinen Befehlskontext haben. Es können also keine objektlokalen Variablen (<code>local</code>) verwendet werden - das Zauberobjekt wurde schließlich gelöscht. Falls ein Objektkontext benötigt wird, kann man diesen auch an <funclink>AddEffect</funclink>() übergeben. Die Aufrufe sind dann objektlokal, und der Effekt wird automatisch gelöscht, wenn das Befehlszielobjekt gelöscht wurde.</text>
@@ -119,31 +119,31 @@ protected func FxInvisPSpellStop(pTarget, iEffectNumber)
 	
 	<code>/* Feuerimmunitätszauber */
 
-#strict
 
-public func Activate(pCaster, pCaster2)
+
+public func Activate(caster, caster2)
 {
   // Zauberer ermitteln
-  if (pCaster2) pCaster = pCaster2;
+  if (caster2) caster = caster2;
   // Magie kann man hören, ganz klar ;)
   Sound("Magic*");
   // Effekt starten
-  AddEffect("BanBurnPSpell", pCaster, 180, 1111, 0, GetID());
+  AddEffect("BanBurnPSpell", caster, 180, 1111, 0, GetID());
   // Fertig - das Zauberobjekt wird nun nicht mehr gebraucht
   return(RemoveObject());
 }
 
-protected func FxBanBurnPSpellStart(pTarget, iEffectNumber, iTemp)
+protected func FxBanBurnPSpellStart(target, num, temporary)
 {
   // Beim Start des Effektes: Clonk löschen, wenn er brennt
-  if (!iTemp) Extinguish(pTarget);
-  return(1);
+  if (!temporary) Extinguish(target);
+  return true;
 }
 
-protected func FxBanBurnPSpellEffect(szNewEffect, iEffectTarget, iEffectNumber, iNewEffectNumber, var1, var2, var3)
+protected func FxBanBurnPSpellEffect(new_name, target, num, new_num, var1, var2, var3)
 {
   // Feuer abblocken
-  if (WildcardMatch(szNewEffect, "*Fire*")) return(-1);
+  if (WildcardMatch(new_name, "*Fire*")) return -1;
   // Alles andere ist OK
   return();
 }</code>
@@ -152,18 +152,18 @@ protected func FxBanBurnPSpellEffect(szNewEffect, iEffectTarget, iEffectNumber, 
 	
 	<code>[...]
 
-protected func FxBanBurnPSpellEffect(szNewEffect, iEffectTarget, iEffectNumber, iNewEffectNumber, var1, var2, var3)
+protected func FxBanBurnPSpellEffect(new_name, target, num, new_num, var1, var2, var3)
 {
   // Nur Feuer behandeln
-  if (!WildcardMatch(szNewEffect, "*Fire*")) return();
+  if (!WildcardMatch(new_name, "*Fire*")) return();
   // Beim Feuer haben die drei Extraparameter normalerweise folgende Bedeutung:
-  // var1: iCausedBy           - Spieler, der für das Feuer verantwortlich ist
-  // var2: fBlasted            - bool: Ob das Feuer durch eine Explosion zustande kam
-  // var3: pIncineratingObject - Objekt: Anzündendes Objekt
+  // var1: caused_by           - Spieler, der für das Feuer verantwortlich ist
+  // var2: blasted             - bool: Ob das Feuer durch eine Explosion zustande kam
+  // var3: burning_object      - Objekt: Anzündendes Objekt
   // Anzündendes Objekt löschen
   if (var3 &amp;&amp; GetType(var3) == C4V_C4Object()) Extinguish(var3);
   // Feuer abblocken
-  return(-1);
+  return -1;
 }</code>
 	
 	<text>Dies würde sogar alle brennenden Objekte löschen, die das Zielobjekt ansonsten anzünden würden. Der Typecheck für var3 ist enthalten, weil sich andere Effekte ebenfalls Fire in den Namen setzen und andere Parameter haben könnten. Es ist offensichtlich, dass man dies vermeiden sollte, weil Funktionen wie die obige dann im ungünstigsten Fall ein völlig anderes Objekt löschen könnten.</text>
@@ -191,48 +191,48 @@ protected func FxBanBurnPSpellEffect(szNewEffect, iEffectTarget, iEffectNumber, 
 	
 	<h id="SpecAddRemove">Spezielle Add/Remove-Aufrufe</h>
 	<text>Damit die Engine sicherstellen kann, dass Effekte immer in umgekehrter Reihenfolge entfernt werden, wie sie hinzugefügt wurden, müssen zuweilen Effekte temporär entfernt und wieder hinzugefügt werden. In diesen Aufrufen sollte der Scripter natürlich alle Statuszustände löschen und wiederherstellen, damit sich die anderen Effekte danach ausrichten können. Aktionen, die nur einmal beim Starten oder enden des Effektes ausgeführt werden sollen. Dazu gehört zum Beispiel das Löschen des Zielobjektes beim letzten Beispielscript, oder auch Soundeffekte.</text>
-	<text>Effekte werden auch dann entfernt, wenn das Zielobjekt entfernt wird oder stirbt - der Grund wird im iReason-Parameter an die Remove-Funktion der Effekte übergeben. Auf diese Weise kann man beispielsweise dafür sorgen, dass ein Clonk nach dem Sterben sofort wiederbelebt wird:</text>
+	<text>Effekte werden auch dann entfernt, wenn das Zielobjekt entfernt wird oder stirbt - der Grund wird im reason-Parameter an die Remove-Funktion der Effekte übergeben. Auf diese Weise kann man beispielsweise dafür sorgen, dass ein Clonk nach dem Sterben sofort wiederbelebt wird:</text>
 	
 	<code>/* Wiederbelebungszauber */
 
-#strict
+
 
 // EffectVars: 0 - Anzahl der zusätzlichen Wiederbelebungen
 
-public func Activate(pCaster, pCaster2)
+public func Activate(caster, caster2)
 {
   // Zauberer ermitteln
-  if (pCaster2) pCaster = pCaster2;
+  if (caster2) caster = caster2;
   // Magie kann man hören, ganz klar ;)
   Sound("Magic*");
   // Effekt starten
-  AddEffect("ReincarnationPSpell", pCaster, 180, 0, 0, GetID());
+  AddEffect("ReincarnationPSpell", caster, 180, 0, 0, GetID());
   // Fertig - das Zauberobjekt wird nun nicht mehr gebraucht
   return(RemoveObject());
 }
 
-protected func FxReincarnationPSpellStart(pTarget, iEffectNumber, iTemp)
+protected func FxReincarnationPSpellStart(target, num, temporary)
 {
   // Nur beim ersten Start: Meldung
-  if (!iTemp) Message("%s bekommt|ein Extraleben", pTarget, GetName(pTarget));
-  return(1);
+  if (!temporary) Message("%s bekommt|ein Extraleben", target, GetName(target));
+  return true;
 }
 
-protected func FxReincarnationPSpellStop(pTarget, iEffectNumber, iReason, fTemp)
+protected func FxReincarnationPSpellStop(target, num, reason, temporary)
 {
   // Nur beim Tod des Clonks
-  if (iReason != 4) return(1);
+  if (reason != 4) return true;
   // Effekt erhalten, wenn der Clonk lebt: Wurde wohl durch einen anderen Effekt wiederbelebt :)
-  if (GetAlive(pTarget)) return(-1);
+  if (GetAlive(target)) return -1;
   // Clonk wiederbeleben
-  SetAlive(1, pTarget);
+  SetAlive(1, target);
   // Energie geben
-  DoEnergy(100, pTarget);
+  DoEnergy(100, target);
   // Nachricht
-  Sound("Magic*", 0, pTarget);
-  Message("%s|wurde wiederbelebt.", pTarget, GetName(pTarget));
+  Sound("Magic*", 0, target);
+  Message("%s|wurde wiederbelebt.", target, GetName(target));
   // Effekt wirkt nur einmal: Entfernen
-  return(1);
+  return true;
 }</code>
 	
 	<text>Dieser Effekt belebt den Clonk beim Tod so oft wieder, wie er den Zauber gesprochen hat.</text>
@@ -243,92 +243,93 @@ protected func FxReincarnationPSpellStop(pTarget, iEffectNumber, iReason, fTemp)
 	
 	<code>/* Gravitationszauber */
 
-#strict
+
 
 // EffectVars: 0 - Vorherige Gravitation
 //             1 - Änderung durch den Zauber
 
-public func Activate(pCaster, pCaster2)
+public func Activate(caster, caster2)
 {
   // Magie kann man hören, ganz klar ;)
   Sound("Magic*");
   // Effekt global starten
   AddEffect("GravChangeUSpell", 0, 150, 37, 0, GetID(), -10);
   // Fertig - das Zauberobjekt wird nun nicht mehr gebraucht
-  return(RemoveObject());
+  RemoveObject();
+  return true;
 }
 
-protected func FxGravChangeUSpellStart(pTarget, iEffectNumber, iTemp, iChange)
+protected func FxGravChangeUSpellStart(target, num, temporary, change)
 {
   // Anderen Gravitationseffekt suchen
-  if (!iTemp)
+  if (!temporary)
   {
-    var iOtherEffect = GetEffect("GravChangeUSpell", pTarget);
-    if (iOtherEffect == iEffectNumber) iOtherEffect = GetEffect("GravChangeUSpell", pTarget, 1);
+    var iOtherEffect = GetEffect("GravChangeUSpell", target);
+    if (iOtherEffect == num) iOtherEffect = GetEffect("GravChangeUSpell", target, 1);
     if (iOtherEffect)
     {
       // Gravitationsänderung auf diesen Effekt aufrechnen
-      EffectVar(1, pTarget, iOtherEffect) += iChange;
-      SetGravity(GetGravity() + iChange);
+      EffectVar(1, target, iOtherEffect) += change;
+      SetGravity(GetGravity() + change);
       // Selbst entfernen
-      return(-1);
+      return -1;
     }
   }
   // Vorherige Gravitation sichern
-  var iOldGrav = EffectVar(0, pTarget, iEffectNumber) = GetGravity();
-  // Für nichttemporäre Aufrufe wird iChange übergeben, und auf den Änderungswert aufgerechnet
-  if (iChange) EffectVar(1, pTarget, iEffectNumber) += iChange;
+  var iOldGrav = EffectVar(0, target, num) = GetGravity();
+  // Für nichttemporäre Aufrufe wird change übergeben, und auf den Änderungswert aufgerechnet
+  if (change) EffectVar(1, target, num) += change;
   // Gravitationsänderung setzen
-  // Die Änderung kann in temporären Aufrufen auch ungleich iChange sein
-  SetGravity(iOldGrav + EffectVar(1, pTarget, iEffectNumber));
+  // Die Änderung kann in temporären Aufrufen auch ungleich change sein
+  SetGravity(iOldGrav + EffectVar(1, target, num));
   // Fertig
-  return(1);
+  return true;
 }
 
-protected func FxGravChangeUSpellTimer(pTarget, iEffectNumber)
+protected func FxGravChangeUSpellTimer(target, num)
 {
   // Gravitation in Richtung Normalwert schrauben
-  var iGravChange = EffectVar(1, pTarget, iEffectNumber);
+  var gravity_change = EffectVar(1, target, num);
   // Fertig?
-  if (Inside(iGravChange, -1, 1)) return(-1);
+  if (Inside(gravity_change, -1, 1)) return -1;
   // Anpassen
-  var iDir = -iGravChange/Abs(iGravChange);
-  EffectVar(1, pTarget, iEffectNumber) += iDir;
+  var iDir = -gravity_change/Abs(gravity_change);
+  EffectVar(1, target, num) += iDir;
   SetGravity(GetGravity() + iDir);
-  return(1);
+  return true;
 }
 
-protected func FxGravChangeUSpellStop(pTarget, iEffectNumber)
+protected func FxGravChangeUSpellStop(target, num)
 {
   // Gravitation Wiederherstellen
-  SetGravity(EffectVar(0, pTarget, iEffectNumber));
+  SetGravity(EffectVar(0, target, num));
   // Effekt entfernen
-  return(1);
+  return true;
 }</code>
 	
-	<text>pTarget wird hier in allen Effektaufrufen 0 sein. Trotzdem sollte der Parameter immer an Aufrufe wie <funclink>EffectVar</funclink>() übergeben werden, da es dann auch möglich ist, den Effekt an den Zauberer oder ggf. den Zauberturm zu binden. In diesem Fall würde die Gravitation automatisch zurückgesetzt, sobald der Zauberer stirbt oder der Turm gelöscht wird.</text>
+	<text>target wird hier in allen Effektaufrufen 0 sein. Trotzdem sollte der Parameter immer an Aufrufe wie <funclink>EffectVar</funclink>() übergeben werden, da es dann auch möglich ist, den Effekt an den Zauberer oder ggf. den Zauberturm zu binden. In diesem Fall würde die Gravitation automatisch zurückgesetzt, sobald der Zauberer stirbt oder der Turm gelöscht wird.</text>
 	
 	<h id="AddEffects">Zusammenfassen von Effekten</h>
 	<text>Im letzten Beispiel wurden mehrere Gravitationseffekte zusammen gefasst, so dass die Änderung der Gravitation länger andauert, wenn mehrmals gezaubert wurde. Die Zusammenfassung durfte nicht im Effect-Callback passieren, da der Gravitationseffekt immer noch von einem Effekt mit höherer Priorität (beispielsweise ein keine-globalen-Zauber-erlauben-Effekt) abgelehnt werden könnte. Über den speziellen Fx*Add-Callback kann man dasselbe Ergebnis aber auch einfacher (oder zumindest übersichtlicher) erreichen:</text>
 	
 	<code>[...]
 
-protected func FxGravChangeUSpellEffect(szNewEffect, pTarget, iEffectNumber)
+protected func FxGravChangeUSpellEffect(new_name, target, num)
 {
   // Falls der neu hinzugefügte Effekt auch eine Gravitationsänderung ist, Interesse am Übernehmen anmelden
-  if (szNewEffect eq "GravChangeUSpell") return (-3);
+  if (new_name eq "GravChangeUSpell") return (-3);
   // Ansonsten ignorieren
   return();
 }
 
-protected func FxGravChangeUSpellAdd(pTarget, iEffectNumber, szNewEffect, pTarget, iNewTimer, iChange)
+protected func FxGravChangeUSpellAdd(target, num, new_name, target, new_timer, change)
 {
   // Aufruf erfolgt, wenn der Effekt übernommen werden konnte
   // Gravitationsänderung auf diesen Effekt aufrechnen
-  EffectVar(1, pTarget, iEffectNumber) += iChange;
-  SetGravity(GetGravity() + iChange);  
+  EffectVar(1, target, num) += change;
+  SetGravity(GetGravity() + change);  
   // Fertig
-  return(1);
+  return true;
 }</code>
 	
 	<text>Die Rückgabe von -3 an den Fx*Effect-Callback, sorgt dafür, dass der Fx*Add-Callback für den neuen Effekt ausgeführt wird. Der neue Effekt wird dabei nicht erzeugt, und die entsprechende AddEffect-Funktion gibt die Effektnummer des Effektes zurück, der den neuen Effekt übernommen hat. Die Methode hat gegenüber der weiter oben verwendeten also den Vorteil, dass der Rückgabewert von AddEffect benutzt werden kann, um festzustellen, ob der Effekt überhaupt erzeugt werden konnte.</text>
@@ -336,18 +337,18 @@ protected func FxGravChangeUSpellAdd(pTarget, iEffectNumber, szNewEffect, pTarge
 	<h id="UserCallbacks">Benutzerdefinierte Eigenschaften</h>
 	<text>Viele Klassifizierungen von Effekten können einfach über den Namen geregelt werden. Auf diese Weise können beispielsweise schnell alle Zaubereffekte über Wildcards gesucht und entfernt werden. Falls man aber zum Beispiel eigene Eigenschaften definieren will, die auch für existierende Effekte gelten, kann man zusätzliche Effektfunktionen definieren:</text>
 	
-	<code>global func FxFireIsHot() { return(1); } // Feuer is heiß
+	<code>global func FxFireIsHot() { return true; } // Feuer is heiß
 
 // Funktion, die alle heißen Effekte vom Zielobjekt entfernt
-global func RemoveAllHotEffects(pTarget)
+global func RemoveAllHotEffects(target)
 {
   // Lokaler Aufruf
-  if (!pTarget) pTarget=this();
+  if (!target) target=this();
   // Alle Effekte durchsuchen und die heißen entfernen
-  var iEffect, i;
-  while (iEffect = GetEffect("*", pTarget, i++))
-    if (EffectCall(pTarget, iEffect, "IsHot"))
-      RemoveEffect(0, pTarget, iEffect);
+  var effect_num, i;
+  while (effect_num = GetEffect("*", target, i++))
+    if (EffectCall(target, effect_num, "IsHot"))
+      RemoveEffect(0, target, effect_num);
 }</code>
 	
 	<text>Über <funclink>EffectCall</funclink>() können natürlich auch Funktionen im Effekt ausgelöst werden; beispielsweise um bestimmte Effekte zu verlängern.</text>
@@ -357,16 +358,16 @@ global func RemoveAllHotEffects(pTarget)
 	
 	<code>/* Erdbebenzauber */
 
-#strict
 
-public func Activate(object pCaster, object pCaster2)
+
+public func Activate(object caster, object caster2)
 {
   Sound("Magic1");
   // Effekt prüfen
-  var iResult;
-  if (iResult = CheckEffect("EarthquakeNSpell", 0, 150)) return(iResult!=-1 &amp;&amp; RemoveObject());
+  var result;
+  if (result = CheckEffect("EarthquakeNSpell", 0, 150)) return(result!=-1 &amp;&amp; RemoveObject());
   // Effekt ausführen
-  if (GetDir(pCaster)==DIR_Left()) CastLeft(); else CastRight();
+  if (GetDir(caster)==DIR_Left()) CastLeft(); else CastRight();
   // Zauberobjekt entfernen
   return(RemoveObject());
 }</code>
@@ -386,16 +387,16 @@ public func CastlePartDestruction()
   // Globaler Temporäreffekt, wenn nicht schon vorhanden
   if (!GetEffect("IntCPW2CastleChange"))
   	AddEffect("IntCPW2CastleChange", 0, 1, 2, 0, CPW2);
-  return(1);
+  return true;
 }
 
 protected func FxIntCPW2CastleChangeStop()
 {
   // Alle BurgTeile benachrichtigen
-  for(var pObj in FindObjects(Find_OCF(OCF_Fullcon), Find_NoContainer())
-    pObj->~CastleChange();
+  for(var obj in FindObjects(Find_OCF(OCF_Fullcon), Find_NoContainer())
+    obj->~CastleChange();
   // Fertig
-  return(1);
+  return true;
 }</code>
 	
 	<text>Bei derartigen Effekten sollte der Name mit "Int" beginnen; insbesondere falls sie mit globalem Callback erzeugt werden, sollte darauf die ID des Objekts folgen, um Namenskollisionen zu vermeiden.</text>
@@ -404,8 +405,6 @@ protected func FxIntCPW2CastleChangeStop()
 	
 	<code>/* Szenarioscript */
 
-#strict
-
 protected func Initialize()
 {
   // Alle Wipfe manipulieren
@@ -413,11 +412,11 @@ protected func Initialize()
     AddEffect("ExplodeOnDeathCurse", obj, 20);
 }
 
-global func FxExplodeOnDeathCurseStop(pTarget, iEffectNumber, iReason)
+global func FxExplodeOnDeathCurseStop(target, num, reason)
 {
   // Bumm!
-  if (iReason == 4) Explode(20, pTarget);
-  return(1);
+  if (reason == 4) Explode(20, target);
+  return true;
 }</code>
 
 	<text>Alle Wipfe, die von Anfang an im Szenario waren, explodieren beim Tod.</text>
@@ -474,21 +473,21 @@ global func FxExplodeOnDeathCurseStop(pTarget, iEffectNumber, iReason)
 		<text>Folgenge Callbacks werden von der Engine ausgeführt, und sollten - je nach Bedarf - im Script implementiert werden. * steht jeweils für den Effektnamen.</text>
 		
 		<h>Fx*Start</h>
-		<text><code>int Fx*Start (object pTarget, int iEffectNumber, int iTemp, C4Value var1, C4Value var2, C4Value var3, C4Value var4);</code></text>
-		<text>Wird beim Start des Effektes aufgerufen. pTarget gibt das Zielobjekt des Effektes an, und iEffectNumber den Index. Über diese beiden Parameter lässt sich der Effekt eindeutig identifizieren, um beispielsweise zugehörige Variablen in <funclink>EffectVar</funclink>() zu manipulieren.</text>
-		<text>Der Parameter iTemp ist 0 beim normalen Hinzufügen des Effektes, 1 wenn der Effekt nur hinzugefügt wird, weil er vorher temporär entfernt wurde, und 2 wenn der Effekt hinzugefügt wird, weil er zuvor temporär entfernt wurde aber jetzt selber gelöscht werden soll (in dem Fall folgt dann ein Remove-Aufruf).</text>
+		<text><code>int Fx*Start (object target, int num, int temporary, any var1, any var2, any var3, any var4);</code></text>
+		<text>Wird beim Start des Effektes aufgerufen. target gibt das Zielobjekt des Effektes an, und num den Index. Über diese beiden Parameter lässt sich der Effekt eindeutig identifizieren, um beispielsweise zugehörige Variablen in <funclink>EffectVar</funclink>() zu manipulieren.</text>
+		<text>Der Parameter temporary ist 0 beim normalen Hinzufügen des Effektes, 1 wenn der Effekt nur hinzugefügt wird, weil er vorher temporär entfernt wurde, und 2 wenn der Effekt hinzugefügt wird, weil er zuvor temporär entfernt wurde aber jetzt selber gelöscht werden soll (in dem Fall folgt dann ein Remove-Aufruf).</text>
 		<text>Die Werte var1 bis var4 entsprechen den übergebenen Parametern an <funclink>AddEffect</funclink>(), und können verwendet werden, um Effekte mit unterschiedlichen Eigenschaften zu erzeugen.</text>
-		<text>Wenn iTemp 0 ist und dieser Callback -1 zurückgibt, wird der Effekt nicht erzeugt und der zugehörige <funclink>AddEffect</funclink>()-Aufruf gibt 0 zurück.</text>
+		<text>Wenn temporary 0 ist und dieser Callback -1 zurückgibt, wird der Effekt nicht erzeugt und der zugehörige <funclink>AddEffect</funclink>()-Aufruf gibt 0 zurück.</text>
 		
 		<h>Fx*Stop</h>
-		<text><code>int Fx*Stop (object pTarget, int iEffectNumber, int iReason, bool fTemp);</code></text>
-		<text>Aufruf, wenn der Effekt temporär oder permanent entfernt wird. pTarget ist wieder das Effekt-Zielobjekt und iEffectNumber der Effektindex in der Effekteliste des Objekts.</text>
-		<text>iReason gibt den Grund für das Entfernen des Effektes an, und kann einer der folgenden Werte sein:</text>
+		<text><code>int Fx*Stop (object target, int num, int reason, bool temporary);</code></text>
+		<text>Aufruf, wenn der Effekt temporär oder permanent entfernt wird. target ist wieder das Effekt-Zielobjekt und num der Effektindex in der Effekteliste des Objekts.</text>
+		<text>reason gibt den Grund für das Entfernen des Effektes an, und kann einer der folgenden Werte sein:</text>
 		
 		<text><table>
-			<rowh><col>iReason</col><col>Bedeutung</col></rowh>
+			<rowh><col>reason</col><col>Bedeutung</col></rowh>
 			<row><col>0</col><col>Effekt wird regulär entfernt</col></row>
-			<row><col>1</col><col>Effekt wird nur temporär entfernt. fTemp ist in dem Fall 1.</col></row>
+			<row><col>1</col><col>Effekt wird nur temporär entfernt. temporary ist in dem Fall 1.</col></row>
 			<row><col>2</col><col>nicht verwendet</col></row>
 			<row><col>3</col><col>Effekt wird entfernt, weil das Objekt gelöscht wird</col></row>
 			<row><col>4</col><col>Effekt wird entfernt, weil das Objekt stirbt</col></row>
@@ -497,33 +496,33 @@ global func FxExplodeOnDeathCurseStop(pTarget, iEffectNumber, iReason)
 		<text>Wenn der Effekt nicht gelöscht werden soll, kann in der Funktion -1 zurückgegeben werden, um das Löschen zu verhindern. Bei temporären Aufrufen oder wenn das Zielobjekt gelöscht wird, bringt dies natürlich nichts.</text>
 		
 		<h>Fx*Timer</h>
-		<text><code>int Fx*Timer (object pTarget, int iEffectNumber, int iEffectTime);</code></text>
-		<text>Periodischer Timer-Aufruf, wenn bei der Effekterzeugung ein Timer-Intervall angegeben wurde. pTarget und iEffectNumber spezifizieren auch hier Zielobjekt und Effekt.</text>
-		<text>iEffectTime gibt die die Zeit an, die der Effekt schon läuft. Diese lässt sich auch über <funclink>GetEffect</funclink>() mit entsprechenden Parametern abfragen.</text>
+		<text><code>int Fx*Timer (object target, int num, int time);</code></text>
+		<text>Periodischer Timer-Aufruf, wenn bei der Effekterzeugung ein Timer-Intervall angegeben wurde. target und num spezifizieren auch hier Zielobjekt und Effekt.</text>
+		<text>time gibt die die Zeit an, die der Effekt schon läuft. Diese lässt sich auch über <funclink>GetEffect</funclink>() mit entsprechenden Parametern abfragen.</text>
 		<text>Ein Rückgabewert von -1 bedeutet, dass der Effekt nach dem Aufruf gelöscht wird. Dasselbe passiert, wenn die Funktion nicht implementiert wird.</text>
 		
 		
 		<h>Fx*Effect</h>
-		<text><code>int Fx*Effect (string szNewEffectName, object pTarget, int iEffectNumber, int iNewEffectNumber, C4Value var1, C4Value var2, C4Value var3, C4Value var4);</code></text>
-		<text>Aufruf an alle Effekte mit höherer Priorität, wenn ein neuer Effekt zu demselben Objekt (pTarget) hinzugefügt werden soll. szNewEffectName gibt den Namen des neuen Effektes an; iEffectNumber den Effektindex des Effektes, bei dem angefragt wird, und iNewEffectNumber den Index des neu zu erzeugenden Effektes.</text>
-		<text>Achtung: Der neue Effekt ist noch nicht fertig initialisiert, und sollte daher nicht manipuliert werden. Insbesondere das Priority-Feld ist möglicherweise noch nicht initialisiert. Der iNewEffectNumber-Parameter kann aber verwendet werden, um mit <funclink>EffectCall</funclink>() Informationen über den Effekt abzufragen. Bei Aufrufen durch die <funclink>CheckEffect</funclink>()-Funktion ist iNewEffectNumber 0.</text>
+		<text><code>int Fx*Effect (string new_name, object target, int num, int new_num, any var1, any var2, any var3, any var4);</code></text>
+		<text>Aufruf an alle Effekte mit höherer Priorität, wenn ein neuer Effekt zu demselben Objekt (target) hinzugefügt werden soll. new_name gibt den Namen des neuen Effektes an; num den Effektindex des Effektes, bei dem angefragt wird, und new_num den Index des neu zu erzeugenden Effektes.</text>
+		<text>Achtung: Der neue Effekt ist noch nicht fertig initialisiert, und sollte daher nicht manipuliert werden. Insbesondere das Priority-Feld ist möglicherweise noch nicht initialisiert. Der new_num-Parameter kann aber verwendet werden, um mit <funclink>EffectCall</funclink>() Informationen über den Effekt abzufragen. Bei Aufrufen durch die <funclink>CheckEffect</funclink>()-Funktion ist new_num 0.</text>
 		<text>Die Funktion sollte -1 zurückgeben, wenn sie den neuen Effekt ablehnt. Da der Effekt auch noch von einem anderen Effekt abgelehnt werden kann, sollte dieser Callback nicht dazu verwendet werden, um beispielsweise Effekte zusammenzufassen (siehe Beispiel zum Gravitationszauber). Überhaupt sollte es möglichst vermieden werden, in diesem Aufruf die Effektliste zu manipulieren.</text>
 		<text>Ein Rückgabewert von -2 oder -3 sollte angegeben werden, wenn der Effekt übernommen wird. Sofern der Effekt dann von keinem anderen Effekt abgelehnt wurde (über Rückgabewert -1), wird ein Fx*Add-Aufruf an den übernehmenden Effekt gesendet, der neue Effekt selber entfernt, und die aufrufende AddEffect-Funktion erhält als Rückgabewert die Nummer des übernehmenden Effektes. Rückgabewert -3 bedeutet dabei im Gegensatz zu -2, dass vor dem Fx*Add-Aufruf alle Effekte mit höherer Priorität temporär entfernt, und nach dem Aufruf dieselben wieder temporär hinzugefügt werden.</text>
 		<text>var1 bis var4 sind die Parameter, die an die <funclink>AddEffect</funclink>()-Funktion übergeben wurden.</text>
 		
 		<h>Fx*Add</h>
-		<text><code>int Fx*Add (object pTarget, int iEffectNumber, string szNewEffectName, int iNewEffectTimer, C4Value var1, C4Value var2, C4Value var3, C4Value var4);</code></text>
-		<text>Aufruf an einen übernehmenden Effekt, wenn dieser zuvor auf einen Fx*Effect-Callback hin -2 oder -3 zurückgegeben hat. iEffectNumber gibt die Nummer des Effektes an, zu dem hinzugefügt wird; pTarget das Zielobjekt (0 bei globalen Effekten).</text>
-		<text>iNewEffectTimer ist das Timer-Intervall des neu erzeugten Effektes; var1 bis var4 die an AddEffect übergebenen Zusatzparameter. ACHTUNG: Diese Zusatzparameter werden natürlich nicht bei temporären Aufrufen übergeben, sondern sind dann 0.</text>
+		<text><code>int Fx*Add (object target, int num, string new_name, int new_timer, any var1, any var2, any var3, any var4);</code></text>
+		<text>Aufruf an einen übernehmenden Effekt, wenn dieser zuvor auf einen Fx*Effect-Callback hin -2 oder -3 zurückgegeben hat. num gibt die Nummer des Effektes an, zu dem hinzugefügt wird; target das Zielobjekt (0 bei globalen Effekten).</text>
+		<text>new_timer ist das Timer-Intervall des neu erzeugten Effektes; var1 bis var4 die an AddEffect übergebenen Zusatzparameter. ACHTUNG: Diese Zusatzparameter werden natürlich nicht bei temporären Aufrufen übergeben, sondern sind dann 0.</text>
 		<text>Wird -1 zurückgegeben, wird auch der übernehmende Effekt entfernt. Logischerweise gibt die erzeugende AddEffect-Funktion dann -2 zurück.</text>
 		
 		<h>Fx*Damage</h>
-		<text><code>int Fx*Damage (object pTarget, int iEffectNumber, int iDmgEngy, int iCause);</code></text>
+		<text><code>int Fx*Damage (object target, int num, int damage, int cause);</code></text>
 		<text>Jeder Effekt erhält diesen Callback, wann immer sich der Energie- oder Schadenswert des Zielobjektes ändert. Falls die Funktion definiert wird, sollte der Rückgabewert dabei die erlaubte Änderung angeben.</text>
-		<text>Der Callback wird bei Energiewertänderungen bei Lebewesen, sowie bei Schadenswertänderungen bei nicht-Lebewesen durchgeführt - nicht aber umgekehrt. iCause gibt den geänderten Wert und den Grund an:</text>
+		<text>Der Callback wird bei Energiewertänderungen bei Lebewesen, sowie bei Schadenswertänderungen bei nicht-Lebewesen durchgeführt - nicht aber umgekehrt. cause gibt den geänderten Wert und den Grund an:</text>
 		
 		<text><table>
-			<rowh><col>Scriptkonstante</col><col>iCause</col><col>Bedeutung</col></rowh>
+			<rowh><col>Scriptkonstante</col><col>cause</col><col>Bedeutung</col></rowh>
 			<row><col>FX_Call_DmgScript</col><col>0</col><col>Schaden durch Scriptaufruf <funclink>DoDamage</funclink>()</col></row>
 			<row><col>FX_Call_DmgBlast</col><col>1</col><col>Schaden durch Explosion</col></row>
 			<row><col>FX_Call_DmgFire</col><col>2</col><col>Schaden durch Feuer</col></row>
@@ -539,7 +538,7 @@ global func FxExplodeOnDeathCurseStop(pTarget, iEffectNumber, iReason)
 			<row><col>FX_Call_EngGetPunched</col><col>40</col><col>Energieverlust im Clonk-zu-Clonk-Kampf</col></row>
 		</table></text>
 		
-		<text>Allgemein kann der Ausdruck "iCause &amp; 32" verwendet werden, um festzustellen, ob Energie oder Schadenswert verändert wurden. Werte für die Energie sind dabei exakt, das heißt 100.000 entspricht der vollen Energie eines normalen Clonks mit Rang 10 (C4MaxPhysical).</text>
+		<text>Allgemein kann der Ausdruck "cause &amp; 32" verwendet werden, um festzustellen, ob Energie oder Schadenswert verändert wurden. Werte für die Energie sind dabei exakt, das heißt 100.000 entspricht der vollen Energie eines normalen Clonks mit Rang 10 (C4MaxPhysical).</text>
 		<text>Über diesen Callback kann zum Beispiel Schaden an einem Objekt verhindert, abgeschwächt oder verstärkt werden; man kann Lebensschaden zunächst nur von der Zauberenergie abziehen, gleichmäßig auf verbundene Clonks verteilen und so weiter.</text>
 	</part>
 	

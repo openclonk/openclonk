@@ -9,13 +9,13 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iX1</name><desc>X-Position des ersten Punktes</desc></param>
-				<param><type>int</type><name>iY1</name><desc>Y-Position des ersten Punktes</desc></param>
-				<param><type>int</type><name>iX2</name><desc>X-Position des zweiten Punktes</desc></param>
-				<param><type>int</type><name>iY2</name><desc>Y-Position des zweiten Punktes</desc></param>
+				<param><type>int</type><name>x1</name><desc>X-Position des ersten Punktes</desc></param>
+				<param><type>int</type><name>y1</name><desc>Y-Position des ersten Punktes</desc></param>
+				<param><type>int</type><name>x2</name><desc>X-Position des zweiten Punktes</desc></param>
+				<param><type>int</type><name>y2</name><desc>Y-Position des zweiten Punktes</desc></param>
 			</params>
 		</syntax>
-		<desc>Berechnet den Abstand zwischen zwei Punkten. Die Funktion entspricht Sqrt((iX2-iX1)^2 + (iY2-iY1)^2;).</desc>
+		<desc>Berechnet den Abstand zwischen zwei Punkten. Die Funktion entspricht Sqrt((x2-x1)^2 + (y2-y1)^2;).</desc>
 		<examples>
 			<example>
 				<code>Message("Schnell, noch %d Clonks trennen dich vom Ziel!", 0, Distance(<funclink>GetX</funclink>(<funclink>GetCursor</funclink>(0)), <funclink>GetY</funclink>(<funclink>GetCursor</funclink>(0)), 1000, 200));</code>

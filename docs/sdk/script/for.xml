@@ -69,22 +69,6 @@ und für einen Durchlauf ein Element in einer Variable zu speichern. Das Script s
 Zählt rückwärts von 10 bis 1.
 </text>
 
-<code><funclink>Var</funclink>(0) = 2;
-<funclink>Var</funclink>(1) = 1;
-<funclink>Var</funclink>(2) = 4;
-<funclink>Var</funclink>(3) = 3;
-<funclink>Var</funclink>(4) = 2;
-for(var i = 0; <funclink>Var</funclink>(i) != 3; i++)
-  <funclink>Log</funclink>("Var(%d) = %d", i, <funclink>Var</funclink>(i));
-</code>
-
-<text> Gibt die lokalen nummerierten Variablen (siehe <code><funclink>Var</funclink>()</code>) aus,
-bis die erste  3 gefunden wird. Im Beispiel wird also folgende Ausgabe erzeugt: </text>
-
-<code>Var(0) = 2
-Var(1) = 1
-Var(2) = 4
-</code>
 </part>
 <author>Peter</author><date>Juni 2004</date>
 </doc>

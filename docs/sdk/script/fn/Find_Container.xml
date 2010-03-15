@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>object</type><name>pContainer</name><desc>Behälter der zu findenden Objekte</desc></param>
+				<param><type>object</type><name>container</name><desc>Behälter der zu findenden Objekte</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: sucht alle Objekte im angegebenen Behälter.</desc>

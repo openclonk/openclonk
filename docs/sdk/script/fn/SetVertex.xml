@@ -9,20 +9,20 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iIndex</name><desc>Index des Vertex.</desc></param>
-				<param><type>int</type><name>iValueToSet</name><desc>Gibt an, welche Vertexdaten gesetzt werden sollen.
+				<param><type>int</type><name>index</name><desc>Index des Vertex.</desc></param>
+				<param><type>int</type><name>select</name><desc>Gibt an, welche Vertexdaten gesetzt werden sollen.
 					<table><rowh><col>Wert</col><col>Bedeutung</col></rowh>
 						<row><col>VTX_X</col><col>X-Koordinate des Vertex.</col></row>
 						<row><col>VTX_Y</col><col>Y-Koordinate des Vertex.</col></row>
 						<row><col>VTX_CNAT</col><col><emlink href="definition/cnat.html">CNAT-Wert</emlink> des Vertex.</col></row>
 						<row><col>VTX_Friction</col><col>Reibung des Vertex.</col></row>
 					</table></desc></param>
-				<param><type>int</type><name>iValue</name><desc>Wert, auf den gesetzt werden soll.</desc></param>
-				<param><type>int</type><name>iSetCustomPermanent</name><desc>Wenn 1 oder 2, wird der Wert in den hinteren 25 Vertices gesetzt und aus diesen beim nächsten Shape-Update kopiert. Mit diesem Parameter kann dafür gesorgt werden, dass benutzerdefinierte Vertices auch bei rotierten Objekten erhalten bleiben. Bei Wert 2 werden die gegenwärtigen Objektvertices auch gleich aktualisiert. Ab CE.</desc><optional/></param>
+				<param><type>int</type><name>value</name><desc>Wert, auf den gesetzt werden soll.</desc></param>
+				<param><type>int</type><name>set_custom_permanent</name><desc>Wenn 1 oder 2, wird der Wert in den hinteren 25 Vertices gesetzt und aus diesen beim nächsten Shape-Update kopiert. Mit diesem Parameter kann dafür gesorgt werden, dass benutzerdefinierte Vertices auch bei rotierten Objekten erhalten bleiben. Bei Wert 2 werden die gegenwärtigen Objektvertices auch gleich aktualisiert. Ab CE.</desc><optional/></param>
 			</params>
 		</syntax>
 		<desc>Setzt eine Koordinate des indizierten Vertex (siehe <emlink href="definition/defcore.html">DefCore.txt</emlink>) eines Objekts. Koordinaten in Relation zur Objektmitte.</desc>
-		<remark>Achtung: Bei jeder Vertexaktualisierung (also beispielsweise dann, wenn sich Fertigstellungswert oder Rotation eines Objekts ändern) werden normalerweise alle Vertices wieder auf die Definitionswerte zurückgesetzt. Um dies zu umgehen, kann der iSetCustomPermanent-Parameter verwendet werden (Beispiel siehe CE-Drache).</remark>
+		<remark>Achtung: Bei jeder Vertexaktualisierung (also beispielsweise dann, wenn sich Fertigstellungswert oder Rotation eines Objekts ändern) werden normalerweise alle Vertices wieder auf die Definitionswerte zurückgesetzt. Um dies zu umgehen, kann der set_custom_permanent-Parameter verwendet werden (Beispiel siehe CE-Drache).</remark>
 		<related>
 			<funclink>GetVertex</funclink>
 			<funclink>AddVertex</funclink>

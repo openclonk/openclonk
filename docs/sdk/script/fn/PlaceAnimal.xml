@@ -9,7 +9,7 @@
   <syntax>
    <rtype>object</rtype>
    <params>
-    <param><type>id</type><name>id</name><desc>ID des zu erstellenden Tieres.</desc></param>
+    <param><type>id</type><name>animal_id</name><desc>ID des zu erstellenden Tieres.</desc></param>
    </params>
   </syntax>
   <desc>Erzeugt ein Lebewesen vom angegebenen Typ in der Landschaft. Die Startposition bestimmt sich dabei aus dem Wert Placement im <emlink href="definition/defcore.html">DefCore</emlink> des Lebewesens. Rückgabewert ist ein Zeiger auf das neu erzeugte Objekt.</desc>

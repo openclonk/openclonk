@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>X-Position des Suchpunktes. Relativ zu Objektmitte bei lokalem Aufruf.</desc></param>
-				<param><type>int</type><name>iY</name><desc>Y-Position des Suchpunktes. Relativ zu Objektmitte bei lokalem Aufruf.</desc></param>
+				<param><type>int</type><name>x</name><desc>X-Position des Suchpunktes. Relativ zu Objektmitte bei lokalem Aufruf.</desc></param>
+				<param><type>int</type><name>y</name><desc>Y-Position des Suchpunktes. Relativ zu Objektmitte bei lokalem Aufruf.</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: sucht alle Objekte, deren Grafikbereich (Shape) den angegebenen Punkt überlappt.</desc>

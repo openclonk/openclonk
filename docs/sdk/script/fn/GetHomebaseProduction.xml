@@ -9,13 +9,13 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Die Nummer des Spielers, dessen Kaufmöglichkeiten abgefragt werden sollen. Der erste Spieler hat die Nummer 0.</desc></param>
-				<param><type>id</type><name>id</name><desc>Wenn angegeben, gibt die Funktion die Menge der Objekte zurück, die in der Heimatbasis des Spielers nachgeliefert wird. iIndex und dwCategory werden hierbei ignoriert.</desc><optional /></param>
-				<param><type>int</type><name>iIndex</name><desc>Der Index der gesuchten Kaufmöglichkeit.</desc><optional /></param>
-				<param><type>int</type><name>dwCategory</name><desc>Die Kategorie der gesuchten Kaufmöglichkeit.</desc><optional /></param>
+				<param><type>int</type><name>player</name><desc>Die Nummer des Spielers, dessen Kaufmöglichkeiten abgefragt werden sollen. Der erste Spieler hat die Nummer 0.</desc></param>
+				<param><type>id</type><name>id</name><desc>Wenn angegeben, gibt die Funktion die Menge der Objekte zurück, die in der Heimatbasis des Spielers nachgeliefert wird. index und category werden hierbei ignoriert.</desc><optional /></param>
+				<param><type>int</type><name>index</name><desc>Der Index der gesuchten Kaufmöglichkeit.</desc><optional /></param>
+				<param><type>int</type><name>category</name><desc>Die Kategorie der gesuchten Kaufmöglichkeit.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Bei angegebenen id gibt die Funktion zurück, wie schnell die Menge der Objekte in der Heimatbasis des Spielers nachgeliefert wird. iIndex und dwCategory werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Objekttyp der entsprechenden Kategorie der nachgelieferten Objekte des Spielers. Der Objekttyp (id) taucht in der Liste auf und wird zurückgeliefert, selbst wenn zur Zeit keine Objekte dieses Typs nachgeliefert werden.</desc>
+		<desc>Bei angegebenen id gibt die Funktion zurück, wie schnell die Menge der Objekte in der Heimatbasis des Spielers nachgeliefert wird. index und category werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Objekttyp der entsprechenden Kategorie der nachgelieferten Objekte des Spielers. Der Objekttyp (id) taucht in der Liste auf und wird zurückgeliefert, selbst wenn zur Zeit keine Objekte dieses Typs nachgeliefert werden.</desc>
 		<examples>
 			<example>
 				<code>if(!<funclink>GetHomebaseProduction</funclink>(0, Firestone)) <funclink>GetCursor</funclink>(0)-><funclink>CreateContents</funclink>(Firestone);</code>

@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szPassword</name><desc>Passwort, das der Liste hinzugefügt wird.</desc></param>
+				<param><type>string</type><name>password</name><desc>Passwort, das der Liste hinzugefügt wird.</desc></param>
 			</params>
 		</syntax>
 		<desc>Fügt ein Passwort in die Liste der Missionszugänge ein. Alle Spieler auf dem selben Computer können dann ein Szenario starten, welches in der Scenario.txt dieses Passwort als Voraussetzung enthält. Sinnvollerweise sollte jedes Szenario in einer Reihe von Missionen bei erfolgreichem Beenden der Runde das für die jeweils nächste Mission benötigte Passwort freigeben.</desc>

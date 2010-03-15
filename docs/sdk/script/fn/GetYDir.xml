@@ -9,11 +9,11 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iPrecision</name><desc>Genauigkeit mit der die Geschwindigkeit zurückgegeben werden soll (Standardwert: 10)</desc></param>
+                                <param><type>int</type><name>precision</name><desc>Genauigkeit mit der die Geschwindigkeit zurückgegeben werden soll (Standardwert: 10)</desc></param>
                         </params>
                 </syntax>
 		<desc>Liefert die Geschwindigkeit in Y-Richtung des aufrufenden Objekts.</desc>
-                <remark>Es wird immer die wahre Geschwindigkeit (in Pixeln pro Frame) mal iPrecision zurückgegeben. Wird iPrecision also nicht angegeben, wird immer das zehnfache der "wahren" Geschwindigkeit zurückgegeben!</remark>
+                <remark>Es wird immer die wahre Geschwindigkeit (in Pixeln pro Frame) mal precision zurückgegeben. Wird precision also nicht angegeben, wird immer das zehnfache der "wahren" Geschwindigkeit zurückgegeben!</remark>
                 <related>
                         <funclink>GetXDir</funclink>
                         <funclink>SetXDir</funclink>

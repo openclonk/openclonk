@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iChange</name><desc>Veränderung des Magiewertes; positiv oder negativ</desc></param>
-				<param><type>bool</type><name>fAllowPartial</name><desc>Wenn wahr, überträgt der Befehl auch teilweise Zauberenergie bis auf 0 oder das Maximum. Der Befehl schlägt nur fehl, wenn die Zauberenergie gar nicht verändert wurde. Ab CR.</desc><optional /></param>
+				<param><type>int</type><name>change</name><desc>Veränderung des Magiewertes; positiv oder negativ</desc></param>
+				<param><type>bool</type><name>allow_partial</name><desc>Wenn wahr, überträgt der Befehl auch teilweise Zauberenergie bis auf 0 oder das Maximum. Der Befehl schlägt nur fehl, wenn die Zauberenergie gar nicht verändert wurde. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Verändert den Magiewert des aufrufenden Objekts. Jedoch wird die gewünschte Veränderung vorgabemäßig nur als ganze ausgeführt und daher auch nur, wenn dadurch nicht die Ober- bzw. Untergrenze (physische Fähigkeit des Clonks bzw. 0) überschritten wird. Wenn die Veränderung iChange nicht als ganze ausgeführt werden kann, gibt die Funktion FALSE zurück. Hierdurch kann mit einem einzelnen Funktionsaufruf gleichzeitig überprüft werden, ob eine Transaktion überhaupt möglich ist.</desc>
+		<desc>Verändert den Magiewert des aufrufenden Objekts. Jedoch wird die gewünschte Veränderung vorgabemäßig nur als ganze ausgeführt und daher auch nur, wenn dadurch nicht die Ober- bzw. Untergrenze (physische Fähigkeit des Clonks bzw. 0) überschritten wird. Wenn die Veränderung change nicht als ganze ausgeführt werden kann, gibt die Funktion FALSE zurück. Hierdurch kann mit einem einzelnen Funktionsaufruf gleichzeitig überprüft werden, ob eine Transaktion überhaupt möglich ist.</desc>
 		<examples>
 			<example>
 				<code><funclink>if</funclink> (DoMagicEnergy(-10)) <funclink>CreateObject</funclink>(MLGT)->Activate(<funclink>this</funclink>);</code>

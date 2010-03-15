@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>array</type><name>aResize</name><desc>Array, dessen Länge verändert werden soll</desc></param>
-				<param><type>int</type><name>iSize</name><desc>Neue Länge des Feldes</desc></param>
+				<param><type>array</type><name>resize</name><desc>Array, dessen Länge verändert werden soll</desc></param>
+				<param><type>int</type><name>size</name><desc>Neue Länge des Feldes</desc></param>
 			</params>
 		</syntax>
 		<desc>Verändert die Länge eines Arrays auf den angegebenen Wert. Überzählige Elemente werden dabei gegebenenfalls gelöscht.</desc>

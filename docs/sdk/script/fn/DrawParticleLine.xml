@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>string</type><name>szKind</name><desc>Name des Partikeltyps, von dem die Partikel zu erzeugen sind</desc></param>
+				<param><type>string</type><name>particle</name><desc>Name des Partikeltyps, von dem die Partikel zu erzeugen sind</desc></param>
 				<param><type>int</type><name>x0</name><desc>X-Position des Startpunktes. Offset bei lokalem Aufruf.</desc></param>
 				<param><type>int</type><name>y0</name><desc>Y-Position des Startpunktes. Offset bei lokalem Aufruf.</desc></param>
 				<param><type>int</type><name>x1</name><desc>X-Position des Endpunktes. Offset bei lokalem Aufruf.</desc></param>
@@ -18,7 +18,7 @@
 				<param><type>int</type><name>a</name><desc>Zusatzparameter. Dies ist normalerweise die Größe des Partikels in 1/5-Pixeln.</desc></param>
 				<param><type>int</type><name>b0</name><desc>Zweiter Zusatzparameter am Startpunkt. Dies ist normalerweise die Farbmodulation des Partikels.</desc></param>
 				<param><type>int</type><name>b1</name><desc>Zweiter Zusatzparameter am Endpunkt. Dieser Parameter wird vom Start- zum Endpunkt linear interpoliert.</desc></param>
-				<param><type>int</type><name>iYDir</name><desc>Vertikale Anfangsgeschwindigkeit der Partikel</desc></param>
+				<param><type>int</type><name>ydir</name><desc>Vertikale Anfangsgeschwindigkeit der Partikel</desc></param>
 			</params>
 		</syntax>
 		<desc>Erzeugt ein Linie zwischen zwei Punkten aus Partikeln. Rückgabewert ist die Anzahl der erzeugten Partikel.</desc>

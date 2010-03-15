@@ -12,7 +12,7 @@
    <params>
     <param>
      <type>int</type>
-     <name>iPlayer</name>
+     <name>player</name>
      <desc>Spieler, dessen Crew das Objekt hinzugefügt werden soll.</desc>
     </param>
    </params>

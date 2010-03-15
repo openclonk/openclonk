@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Objekt, das zerlegt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, das zerlegt werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Zerlegt ein Objekt in seine Bestandteile. Die Bestandteile werden in zufälliger Drehung und mit geringer Geschwindigkeit in zufälliger Richtung an der Stelle erzeugt, an der sich das Objekt befand. Das Objekt wird anschließend vernichtet. Wenn sich das Objekt in einem Behälter befand, werden auch die Komponenten nach der Erschaffung in den Behälter versetzt.</desc>
@@ -18,10 +18,10 @@
 			<example>
 <code>protected func ControlDigDouble()
   {
-  var pTarget=<funclink>Contents</funclink>();
-  <funclink>if</funclink> (!pTarget) <funclink>return</funclink>();
-  Split2Components(pTarget);
-  return(1);
+  var target=<funclink>Contents</funclink>();
+  <funclink>if</funclink> (!target) <funclink>return</funclink>();
+  Split2Components(target);
+  return true;
   }</code>
 				<text>Script für einen Clonk: Auf Doppelgraben zerlegt er das erste Objekt, das er trägt.</text>
 			</example>

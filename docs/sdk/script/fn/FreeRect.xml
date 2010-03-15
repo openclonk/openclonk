@@ -9,11 +9,11 @@
     <syntax>
       <rtype>void</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>Linke Kante des Rechtecks</desc></param>
-        <param><type>int</type><name>iY</name><desc>Obere Kante des Rechtecks</desc></param>
-        <param><type>int</type><name>iWdt</name><desc>Breite des Rechtecks</desc></param>
-        <param><type>int</type><name>iHgt</name><desc>Höhe des Rechtecks</desc></param>
-        <param><type>int</type><name>iFreeDensity</name><desc>Wenn angegeben, wird Material mit der entsprechenden Dichte entfernt</desc></param>
+        <param><type>int</type><name>x</name><desc>Linke Kante des Rechtecks</desc></param>
+        <param><type>int</type><name>y</name><desc>Obere Kante des Rechtecks</desc></param>
+        <param><type>int</type><name>width</name><desc>Breite des Rechtecks</desc></param>
+        <param><type>int</type><name>height</name><desc>Höhe des Rechtecks</desc></param>
+        <param><type>int</type><name>density</name><desc>Wenn angegeben, wird Material mit der entsprechenden Dichte entfernt</desc></param>
       </params>
     </syntax>
     <desc>Entfernt alle Materialien innerhalb des angegebenen Rechtecks. Die Koordinaten sind immer global, und der untere und rechte Rand des Rechtecks zählen nicht mit dazu.</desc>

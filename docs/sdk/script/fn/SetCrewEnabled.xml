@@ -10,7 +10,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>bool</type><name>fEnabled</name><desc>Gibt an, ob das Mannschaftsmitglied aktiviert oder deaktiviert werden soll.</desc></param>
+				<param><type>bool</type><name>enabled</name><desc>Gibt an, ob das Mannschaftsmitglied aktiviert oder deaktiviert werden soll.</desc></param>
 			</params>
 		</syntax>
 		<desc>Aktiviert oder deaktiviert Mannschaftsmitglieder. Deaktivierte Mannschaftsmitglieder können nicht mehr vom Spieler angewählt werden. So kann es auch passieren, dass ein Spieler zwar 0 Mannschaftsmitglieder zur Auswahl hat, aber trotzdem nicht eliminiert ist. Nur für Objekte, die auch wirklich zu einer Mannschaft gehören. Deaktivierte Mannschaftsmitglieder sind automatisch nicht mehr ausgewählt.</desc>

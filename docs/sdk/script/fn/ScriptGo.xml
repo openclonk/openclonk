@@ -8,7 +8,7 @@
     <version>4.6.5.0 CP</version>
     <syntax>
       <rtype>bool</rtype>
-      <params><param><type>bool</type><name>fStart</name><desc>Angabe, ob der Zähler gestartet oder gestoppt werden soll.</desc></param></params>
+      <params><param><type>bool</type><name>start</name><desc>Angabe, ob der Zähler gestartet oder gestoppt werden soll.</desc></param></params>
     </syntax>
     <desc>Startet den Scriptzähler, bzw. hält ihn wieder an.</desc>
     <examples>

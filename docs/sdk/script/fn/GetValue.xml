@@ -9,16 +9,16 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>object</type><name>pBase</name><desc>Basis, in der gekauft wird. Falls pObj einen CalcValue-Aufruf zur Verfügung stellt, wird dieser Parameter an den Aufruf weitergegeben.</desc><optional /></param>
-				<param><type>int</type><name>iForPlayer</name><desc>Spieler, für den der Wert gilt. Falls pObj einen CalcValue-Aufruf zur Verfügung stellt, wird auch dieser Parameter an den Aufruf weitergegeben.</desc><optional /></param>
+				<param><type>object</type><name>base</name><desc>Basis, in der gekauft wird. Falls obj einen CalcValue-Aufruf zur Verfügung stellt, wird dieser Parameter an den Aufruf weitergegeben.</desc><optional /></param>
+				<param><type>int</type><name>for_player</name><desc>Spieler, für den der Wert gilt. Falls obj einen CalcValue-Aufruf zur Verfügung stellt, wird auch dieser Parameter an den Aufruf weitergegeben.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Gibt einen Objekt- oder Definitionswert zurück.<br />Ein Objektwert berechnet sich folgendermaßen: Zunächst geprüft, ob eine CalcValue-Funktion im Script des Objekttyps vorhanden ist, und gegebenenfalls ausgewertet. Ansonsten wird der Definitionswert (siehe nächster Absatz) verwendet. Unabhängig davon wird der Wert des Objekts immer mit der Fertigstellung (<funclink>GetCon</funclink>()/100) multipliziert. Tote Lebewesen (<funclink>GetCategory</funclink>()&amp;<funclink>OCF_Living</funclink> &amp;&amp; !<funclink>GetAlive</funclink>()) haben immer den Wert 0.<br />Der Definitionswert wird folgendermaßen ermittelt: Ist eine CalcDefValue-Funktion im Script vorhanden, wird diese ausgewertet. Ansonsten wird eine Wertüberladung aus der Scenario.txt verwendet. Ist diese ebenfalls nicht vorhanden, wird der in der DefCore angegebene Wert benutzt.<br /></desc>
-		<remark>Die beiden Parameter pBase und iForPlayer sind für szenarienspezifische Handelsmodelle gedacht, und werden nur in CalcValue/CalcDefValue-Aufrufen verwendet.</remark>
+		<remark>Die beiden Parameter base und for_player sind für szenarienspezifische Handelsmodelle gedacht, und werden nur in CalcValue/CalcDefValue-Aufrufen verwendet.</remark>
 		<examples>
 			<example>
-<code>var iValue=GetValue();
-<funclink>while</funclink> (iValue-->0) <funclink>CreateContents</funclink>(Rock);
+<code>var value=GetValue();
+<funclink>while</funclink> (value-->0) <funclink>CreateContents</funclink>(Rock);
 <funclink>RemoveObject</funclink>(true);</code>
 				<text>Objektscript: Das Objekt erzeugt so viele Steine, wie es wert ist, und vernichtet sich dann selber (wobei es die Steine auswirft).</text>
 			</example>

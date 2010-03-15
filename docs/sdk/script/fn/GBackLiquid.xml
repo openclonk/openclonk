@@ -10,8 +10,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>X-Koordinate, Offset bei lokalem Aufruf</desc></param>
-				<param><type>int</type><name>iY</name><desc>Y-Koordinate, Offset bei lokalem Aufruf</desc></param>
+				<param><type>int</type><name>x</name><desc>X-Koordinate, Offset bei lokalem Aufruf</desc></param>
+				<param><type>int</type><name>y</name><desc>Y-Koordinate, Offset bei lokalem Aufruf</desc></param>
 			</params>
 		</syntax>
 		<desc>Überprüft ob sich an angegebener Position in der Landschaft Flüssigkeit befindet.</desc>

@@ -9,10 +9,10 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>int</type><name>iPlayer</name><desc>Spieler</desc></param>
+				<param><type>int</type><name>player</name><desc>Spieler</desc></param>
 			</params>
 		</syntax>
-		<desc>Liefert den höchstrangigen aktiven Clonk von iPlayer.</desc>
+		<desc>Liefert den höchstrangigen aktiven Clonk von player.</desc>
 		<examples>
 			<example>
 				<code><funclink>Kill</funclink>(GetHiRank(2));</code>

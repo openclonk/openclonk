@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>bool</type><name>fEnabled</name><desc>Wenn TRUE, wird der Kriegsnebel aktiviert, bei FALSE deaktiviert.</desc></param>
-				<param><type>int</type><name>iPlayer</name><desc>Nummer des Spielers.</desc></param>
+				<param><type>bool</type><name>enabled</name><desc>Wenn TRUE, wird der Kriegsnebel aktiviert, bei FALSE deaktiviert.</desc></param>
+				<param><type>int</type><name>player</name><desc>Nummer des Spielers.</desc></param>
 			</params>
 		</syntax>
 		<desc>Schaltet den Nebel des Krieges für einen Spieler ein oder aus.</desc>

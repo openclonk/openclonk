@@ -11,19 +11,19 @@
       <params>
         <param>
           <type>int</type>
-          <name>iAnimationNumber</name>
+          <name>animation_number</name>
           <desc>Animationsnummer der Animation deren Position abgefragt werden soll.</desc>
         </param>
       </params>
     </syntax>
 
-    <desc>Gibt die Stelle zurück an der die Animation mit der angegebenen Nummer gerade ist. Die Zahl liegt zwischen 0 und <funclink>GetAnimationLength</funclink>(<funclink>GetAnimationName</funclink>(iAnimationNumber)). Falls es keine Animation mit der angegebenen Nummer gibt oder es sich dabei um einen Kombinationsknoten handelt gibt die Funktion nil zurück.</desc>
+    <desc>Gibt die Stelle zurück an der die Animation mit der angegebenen Nummer gerade ist. Die Zahl liegt zwischen 0 und <funclink>GetAnimationLength</funclink>(<funclink>GetAnimationName</funclink>(animation_number)). Falls es keine Animation mit der angegebenen Nummer gibt oder es sich dabei um einen Kombinationsknoten handelt gibt die Funktion nil zurück.</desc>
 
     <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
 
     <examples>
       <example>
-        <code><funclink>SetAnimationPosition</funclink>(iAnimationNumber, <funclink>Anim_Const</funclink>(<funclink>GetAnimationPosition</funclink>(iAnimationNumber)+100));</code>
+        <code><funclink>SetAnimationPosition</funclink>(animation_number, <funclink>Anim_Const</funclink>(<funclink>GetAnimationPosition</funclink>(animation_number)+100));</code>
 	<text>Script für einen Timer: Bei jeder Durchführung wird die Animation um 100 Millisekunden weitergespielt. Falls der Timer im gleichen Abstand aufgerufen wird kann stattdessen auch <funclink>Anim_Linear</funclink> verwendet werden.</text>
       </example>
     </examples>

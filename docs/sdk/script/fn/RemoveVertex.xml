@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iX</name><desc>Index des Vertex, das entfernt werden soll.</desc></param>
+				<param><type>int</type><name>index</name><desc>Index des Vertex, das entfernt werden soll.</desc></param>
 			</params>
 		</syntax>
 		<desc>Entfernt einen Vertex vom aufrufenden Objekt.</desc>

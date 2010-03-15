@@ -15,7 +15,7 @@
 						Entweder <funclink>VIS_All</funclink> oder <funclink>VIS_None</funclink>, oder eine Bitmaske aus <funclink>VIS_Owner</funclink>, <funclink>VIS_Allies</funclink>, <funclink>VIS_Enemies</funclink>, <funclink>VIS_God</funclink> und <funclink>VIS_Local</funclink>.
 					</desc>
 				</param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, dessen Sichtbarkeit geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, dessen Sichtbarkeit geändert werden soll. 0 bei lokalem Aufruf.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>

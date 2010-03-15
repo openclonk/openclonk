@@ -11,7 +11,7 @@
       <params>
         <param>
           <type>int</type>
-          <name>iAnimationNumber</name>
+          <name>animation_number</name>
           <desc>Animationsnummer der Animation deren Gewichtung abgefragt werden soll.</desc>
         </param>
       </params>
@@ -23,8 +23,8 @@
 
     <examples>
       <example>
-        <code><funclink>if</funclink>(<funclink>GetAnimationWeight</funclink>(iAnimationNumber) == 1000) <funclink>StopAnimation</funclink>(iAnimationNumber);</code>
-	<text>Entfernt den Kombinationsknoten "iAnimationNumber" wenn seine Gewichtung 1000 erreicht hat.</text>
+        <code><funclink>if</funclink>(<funclink>GetAnimationWeight</funclink>(animation_number) == 1000) <funclink>StopAnimation</funclink>(animation_number);</code>
+	<text>Entfernt den Kombinationsknoten "animation_number" wenn seine Gewichtung 1000 erreicht hat.</text>
       </example>
     </examples>
 

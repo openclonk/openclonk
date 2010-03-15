@@ -9,13 +9,13 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iNewController</name><desc>Spielernummer des neuen, steuernden Spielers. NO_OWNER für keinen Spieler.</desc></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer des neuen, steuernden Spielers. NO_OWNER für keinen Spieler.</desc></param>
 			</params>
 		</syntax>
 		<desc>Ändert den steuernden Spieler des aufrufenden Objekts.</desc>
 		<examples>
 			<example>
-				<code>protected func Entrance(pContainer) { SetController(pContainer-><funclink>GetController</funclink>()); }</code>
+				<code>protected func Entrance(container) { SetController(container-><funclink>GetController</funclink>()); }</code>
 				<text>Das Objekt ändert seinen steuernden Spieler, wenn es eingesammelt oder in einem Fahrzeug oder Gebäude abgelegt wird.</text>
 			</example>
 		</examples>

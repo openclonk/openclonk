@@ -9,10 +9,10 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iRampIndex</name><desc>0-7: Index der Gammarampe, die zurückgesetzt werden soll.</desc></param>
+        <param><type>int</type><name>ramp_index</name><desc>0-7: Index der Gammarampe, die zurückgesetzt werden soll.</desc></param>
       </params>
     </syntax>
-    <desc>Setzt eine Gammarampe auf den Normalwert zurück. Dies entspricht <funclink>SetGamma</funclink>(<funclink>RGB</funclink>(0,0,0), <funclink>RGB</funclink>(128,128,128), <funclink>RGB</funclink>(255,255,255), iRampIndex);. Für weitere Informationen siehe <funclink>SetGamma</funclink>.</desc>
+    <desc>Setzt eine Gammarampe auf den Normalwert zurück. Dies entspricht <funclink>SetGamma</funclink>(<funclink>RGB</funclink>(0,0,0), <funclink>RGB</funclink>(128,128,128), <funclink>RGB</funclink>(255,255,255), ramp_index);. Für weitere Informationen siehe <funclink>SetGamma</funclink>.</desc>
     <examples>
       <example>
         <code><funclink>for</funclink> (var i; i&lt;8; i++) ResetGamma(i);</code>

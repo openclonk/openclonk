@@ -12,25 +12,25 @@
         <params>
           <param>
             <type>int</type>
-            <name>iIndex</name>
+            <name>index</name>
             <desc>Vertexnummer</desc>
           </param>
 
     <param>
             <type>int</type>
-            <name>iXPos</name>
+            <name>xpos</name>
             <desc>Gewünschte X-Position des Vertices</desc>
           </param>
 
           <param>
             <type>int</type>
-            <name>iYPos</name>
+            <name>ypos</name>
             <desc>Gewünschte Y-Position des Vertices</desc>
           </param>
 
           <param>
             <type>object</type>
-            <name>pObj</name>
+            <name>obj</name>
             <desc>Zielobjekt</desc>
             <optional />
           </param>

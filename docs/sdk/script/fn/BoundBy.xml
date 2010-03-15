@@ -9,12 +9,12 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iVal</name><desc>Zu vergleichende Zahl</desc></param>
-        <param><type>int</type><name>iRange1</name><desc>Untere Grenze</desc></param>
-        <param><type>int</type><name>iRange2</name><desc>Obere Grenze</desc></param>
+        <param><type>int</type><name>value</name><desc>Zu vergleichende Zahl</desc></param>
+        <param><type>int</type><name>lower_bound</name><desc>Untere Grenze</desc></param>
+        <param><type>int</type><name>upper_bound</name><desc>Obere Grenze</desc></param>
       </params>
     </syntax>
-    <desc>Gibt iVal zurück, wenn der Wert innerhalb der Grenzen liegt (iVal &gt;= iRange1 und iVal &lt;= iRange2). Andernfalls wird die jeweils nächstliegende Grenze zurückgegeben.</desc>
+    <desc>Gibt value zurück, wenn der Wert innerhalb der Grenzen liegt (value &gt;= lower_bound und value &lt;= upper_bound). Andernfalls wird die jeweils nächstliegende Grenze zurückgegeben.</desc>
     <related>
       <funclink>Inside</funclink>
       <funclink>LessThan</funclink>

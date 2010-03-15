@@ -9,10 +9,10 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iRowID</name><desc>Wert größer oder gleich 0, oder SBRD_Caption. Index der Zeile, dessen Daten gesetzt werden sollen. Die Konstante SBRD_Caption steht dabei für die erste Spalte, die als Spaltenbeschriftung verwendet werden sollte.</desc></param>
-        <param><type>int</type><name>iColID</name><desc>Wert größer oder gleich 0, oder SBRD_Caption. Index der Spalte, dessen Daten gesetzt werden sollen. Die Konstante SBRD_Caption steht dabei für die erste Zeile, die als Zeilenüberschrift verwendet werden sollte.</desc></param>
-        <param><type>string</type><name>sText</name><desc>Zu setzender Zellentext. Wenn 0 oder nicht angegeben, wird die Zelle ausgeleert. Sind in einer Zeile alle Zellen bis auf die Überschrift (Index SBRD_Caption) leer, wird diese Zeile komplett entfernt. Selbiges gilt für Spalten. Die Überprüfung auf leere Zeilen und Spalten wird immer nur dann durchgeführt, wenn eine Zelle ausgeleert wird.<br />Um Text in anderen Farben darzustellen oder Symbole im Scoreboard einzufügen, sollte entsprechendes Markup verwendet werden.</desc><optional /></param>
-        <param><type>int</type><name>iData</name><desc>Zusatzdaten für diese Zellen. Nach diesen Daten wird das Scoreboard mit <funclink>SortScoreboard</funclink> sortiert.</desc><optional /></param>
+        <param><type>int</type><name>row_id</name><desc>Wert größer oder gleich 0, oder SBRD_Caption. Index der Zeile, dessen Daten gesetzt werden sollen. Die Konstante SBRD_Caption steht dabei für die erste Spalte, die als Spaltenbeschriftung verwendet werden sollte.</desc></param>
+        <param><type>int</type><name>coloumn_id</name><desc>Wert größer oder gleich 0, oder SBRD_Caption. Index der Spalte, dessen Daten gesetzt werden sollen. Die Konstante SBRD_Caption steht dabei für die erste Zeile, die als Zeilenüberschrift verwendet werden sollte.</desc></param>
+        <param><type>string</type><name>text</name><desc>Zu setzender Zellentext. Wenn 0 oder nicht angegeben, wird die Zelle ausgeleert. Sind in einer Zeile alle Zellen bis auf die Überschrift (Index SBRD_Caption) leer, wird diese Zeile komplett entfernt. Selbiges gilt für Spalten. Die Überprüfung auf leere Zeilen und Spalten wird immer nur dann durchgeführt, wenn eine Zelle ausgeleert wird.<br />Um Text in anderen Farben darzustellen oder Symbole im Scoreboard einzufügen, sollte entsprechendes Markup verwendet werden.</desc><optional /></param>
+        <param><type>int</type><name>data</name><desc>Zusatzdaten für diese Zellen. Nach diesen Daten wird das Scoreboard mit <funclink>SortScoreboard</funclink> sortiert.</desc><optional /></param>
       </params>
     </syntax>
     <desc>
@@ -20,37 +20,37 @@
 	Das Scoreboard wird automatisch erstellt, sobald Daten darin gesetzt werden. Es wird automatisch gelöscht, wenn es außer Überschriften keine Daten mehr enthält.<br />
 	Daten werden über einen Zeilen- und Spaltenindex adressiert. Werte mit gleichem Zeilenindex landen in der gleichen Zeile; Werte mit gleichem Spaltenindex in der gleichen Spalte. Existieren noch keine Daten für einen Zeilen- bzw. Spaltenindex, so wird die Zeile bzw. Spalte neu angelegt und unten bzw. rechts angehängt. Es ist also nicht entscheidend, welche Indizes verwendet werden, solange sie eindeutig sind. Es können z.B. Spielernummern, Spieler-IDs (siehe <funclink>GetPlayerID</funclink>) oder Team-IDs (siehe <funclink>GetPlayerTeam</funclink>) angegeben werden. Damit mehrere Objektdefinitionen wie zum Beispiel ein Todeszähler nicht dieselben IDs für Spalten verwenden, gibt es die Funktion <funclink>ScoreboardCol</funclink>, die aus einer ID einen eindeutige Spaltenindex generiert. Dabei ist natürlich trotzdem darauf zu achten, dass mehrere solcher Objekte die gleichen Zeilenadressierungen verwenden. Indizes müssen nicht fortlaufend sein; Zeilen und Spalten werden nach Reihenfolge des Hinzufügens und nicht nach Indizes sortiert. Für benutzerdefinierte Sortierungen (zum Beispiel absteigend nach Punkten für eine Bestenliste) dient die Funktion <funclink>SortScoreboard</funclink>.
     </desc>
-    <remark>Die Zelle in der oberen, linken Ecke wird nie dargestellt. Stattdessen wird der Wert für iRowID == SBRD_Caption und iColID == SBRD_Caption in der Titelleiste des Scoreboards angezeigt. Wird hier kein Wert festgelegt, besitzt das Scoreboard keine Titelleiste und kann so auch nicht mit der Maus verschoben werden.</remark>
+    <remark>Die Zelle in der oberen, linken Ecke wird nie dargestellt. Stattdessen wird der Wert für row_id == SBRD_Caption und coloumn_id == SBRD_Caption in der Titelleiste des Scoreboards angezeigt. Wird hier kein Wert festgelegt, besitzt das Scoreboard keine Titelleiste und kann so auch nicht mit der Maus verschoben werden.</remark>
     <examples>
       <example>
-        <code>protected func InitializePlayer(int iPlr)
+        <code>protected func InitializePlayer(int player)
   {
-  var iPlrID = <funclink>GetPlayerID</funclink>(iPlr), iColID = 1;
-  SetScoreboardData(SBRD_Caption, iColID,       "{{RVLR}}",                iColID);
-  SetScoreboardData(iPlrID,       iColID,       "0" ,                      0);
+  var player_id = <funclink>GetPlayerID</funclink>(player), coloumn_id = 1;
+  SetScoreboardData(SBRD_Caption, coloumn_id,   "{{RVLR}}",                coloumn_id);
+  SetScoreboardData(player_id,    coloumn_id,   "0" ,                      0);
   SetScoreboardData(SBRD_Caption, SBRD_Caption, "Score",                   SBRD_Caption);
-  SetScoreboardData(iPlrID,       SBRD_Caption, <funclink>GetTaggedPlayerName</funclink>(iPlr), iPlrID);
-  <funclink>SortScoreboard</funclink>(iColID, true);
-  <funclink>Global</funclink>(iPlr)=0;
+  SetScoreboardData(player_id,    SBRD_Caption, <funclink>GetTaggedPlayerName</funclink>(player), player_id);
+  <funclink>SortScoreboard</funclink>(coloumn_id, true);
+  <funclink>Global</funclink>(player)=0;
   return(1);
   }</code>
         <text>So könnte eine typische Funktion zur Initialisierung des Scoreboards in einem Szenarienscript aussehen: Es wird für jeden Spieler eine Zeile angelegt. Die Beschriftung dieser Zeile ist der Spielername, und in einer weiteren Spalte befindet sich für jeden Spieler die Punktezahl 0.<br />
-        Als Indizierung der Zeilen wird die Spieler-ID (iPlrID) verwendet. Diese ID ist eindeutig für jeden Spielerbeitritt, so dass jeder neu beitretende Spieler eine eigene Zeile im Scoreboard bekommt. Als Spalten-ID für die Punktespalte wird 1 genommen. Solange keine weiteren Funktionen das Scoreboard benutzen, ist diese ID relativ egal.<br />
+        Als Indizierung der Zeilen wird die Spieler-ID (player_id) verwendet. Diese ID ist eindeutig für jeden Spielerbeitritt, so dass jeder neu beitretende Spieler eine eigene Zeile im Scoreboard bekommt. Als Spalten-ID für die Punktespalte wird 1 genommen. Solange keine weiteren Funktionen das Scoreboard benutzen, ist diese ID relativ egal.<br />
         Der erste Aufruf von SetScoreboardData setzt die Überschrift für die Punktespalte auf "{{RVLR}}"; zeigt also das Symbol der Spielregel "Wettkampf". Der zweite Aufruf trägt eine "0" in die Punktespalte für den neu beitretenden Spieler ein. Der dritte Aufruf setzt die Überschrift des Scoreboards auf "Score". Der vierte Aufruf setzt die Zeilenüberschrift (das heißt die linke Spalte) der für den Spieler neu hinzugefügten Zeile auf dessen Spielernamen in dessen Spielerfarbe.<br />
         Mittels <funclink>SortScoreboard</funclink> wird anschließend das Scoreboard nach der Punktespalte absteigend sortiert. Die globale Variable mit Spielerindex wird dann auf 0 gesetzt, so dass in den globalen Variablen die Punkte gezählt werden können.</text>
-      <code>protected func RemovePlayer(int iPlr)
+      <code>protected func RemovePlayer(int player)
   {
-  var iPlrID = <funclink>GetPlayerID</funclink>(iPlr), iColID = 1;
-  SetScoreboardData(iPlrID, iColID, 0 ,0);
+  var player_id = <funclink>GetPlayerID</funclink>(player), coloumn_id = 1;
+  SetScoreboardData(player_id, coloumn_id, 0 ,0);
   }</code>
       <text>Als weitere Funktionsdefinition im Szenarienscript würde dies die Zelle in der Punktespalte des gelöschten Spielers entfernen. Wenn keine weiteren Scripte das Scoreboard benutzen, würde der Spieler damit effektiv aus dem Scoreboard entfernt, da keine weiteren Zellen außer Überschriften in dieser Zeile Daten enthalten.</text>
-      <code>public func AddScore(int iPlr)
+      <code>public func AddScore(int player)
   {
-  var iPlrID = <funclink>GetPlayerID</funclink>(iPlr), iColID = 1, iScore = ++<funclink>Global</funclink>(iPlr);
-  SetScoreboardData(iPlrID, iColID, <funclink>Format</funclink>("%d", iScore), iScore);
-  <funclink>SortScoreboard</funclink>(iColID, true);
-  <funclink>DoScoreboardShow</funclink>(1, iPlr+1);
-  <funclink>Schedule</funclink>(<funclink>Format</funclink>("<funclink>DoScoreboardShow</funclink>(-1, %d)", iPlr+1), 200);
+  var player_id = <funclink>GetPlayerID</funclink>(player), coloumn_id = 1, iScore = ++<funclink>Global</funclink>(player);
+  SetScoreboardData(player_id, coloumn_id, <funclink>Format</funclink>("%d", iScore), iScore);
+  <funclink>SortScoreboard</funclink>(coloumn_id, true);
+  <funclink>DoScoreboardShow</funclink>(1, player+1);
+  <funclink>Schedule</funclink>(<funclink>Format</funclink>("<funclink>DoScoreboardShow</funclink>(-1, %d)", player+1), 200);
   }</code>
         <text>Diese Funktion fügt schließlich einen Punkt für den Spieler hinzu. Als Extradaten werden die Punktwerte gesetzt, damit die Sortierung nach der Punktespalte automatisch richtig sortiert.<br />
         Mittels <funclink>DoScoreboardShow</funclink> wird das Scoreboard für den Spieler, der den Punkte erhält, angezeigt. Der nachfolgende Aufruf von Schedule lässt dann in einigen Sekunden (200 Frames) das Scoreboard wieder verschwinden.</text>

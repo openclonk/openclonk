@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>id</type><name>idComponent</name><desc>Hinzuzufügende Komponente</desc></param>
-				<param><type>int</type><name>iCount</name><desc>Zu setzende Anzahl der Komponenten mit der ID idComponent</desc></param>
+				<param><type>id</type><name>component</name><desc>Hinzuzufügende Komponente</desc></param>
+				<param><type>int</type><name>count</name><desc>Zu setzende Anzahl der Komponenten mit der ID component</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die Anzahl einer Komponente des aufrufenden Objekts.</desc>

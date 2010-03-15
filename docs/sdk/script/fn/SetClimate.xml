@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iClimate</name><desc>Temperatur zwischen -50 und 50.</desc></param>
+				<param><type>int</type><name>temperature</name><desc>Temperatur zwischen -50 und 50.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt das Klima (Durchschnittstemperatur).</desc>

@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>any</type><name>szText</name><desc>Zeichenkette oder Array, von der die Länge abgefragt wird</desc></param>
+				<param><type>any</type><name>text</name><desc>Zeichenkette oder Array, von der die Länge abgefragt wird</desc></param>
 			</params>
 		</syntax>
 		<desc>Ermittelt die Länge einer Zeichenkette oder eines Arrays.</desc>

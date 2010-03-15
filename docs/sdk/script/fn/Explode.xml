@@ -9,9 +9,9 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iLevel</name><desc>Explosionsstärke. Die Explosionsstärke bestimmt das Ausmaß des Explosionsschadens sowie die akustische Gestaltung. Bis Stärke 29 einschließlich wird Blast1 abgespielt, von Stärke 30 bis stärke 39 einschließlich Blast2, und bei Werten darüber Blast3.</desc></param>
-				<param><type>id</type><name>idEffect</name><desc>Wenn angegeben, wird ein Objekt dieser Art und keine Partikel erzeugt. Es wird angenommen, dass das neu erstellte Objekt den Explosionseffekt übernimmt. Ab 4.9.6.0 CR</desc><optional /></param>
-				<param><type>string</type><name>szParticle</name><desc>Name eines Partikels, der statt der normalen Explosionspartikel erzeugt wird.</desc><optional /></param>
+				<param><type>int</type><name>level</name><desc>Explosionsstärke. Die Explosionsstärke bestimmt das Ausmaß des Explosionsschadens sowie die akustische Gestaltung. Bis Stärke 29 einschließlich wird Blast1 abgespielt, von Stärke 30 bis stärke 39 einschließlich Blast2, und bei Werten darüber Blast3.</desc></param>
+				<param><type>id</type><name>effect</name><desc>Wenn angegeben, wird ein Objekt dieser Art und keine Partikel erzeugt. Es wird angenommen, dass das neu erstellte Objekt den Explosionseffekt übernimmt. Ab 4.9.6.0 CR</desc><optional /></param>
+				<param><type>string</type><name>particle</name><desc>Name eines Partikels, der statt der normalen Explosionspartikel erzeugt wird.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Lässt ein Objekt explodieren. Die Explosion beschädigt Landschaft und Objekte, und das Objekt wird mitsamt Inhalt vor der Explosion entfernt. Wenn sich das Objekt in einen anderen Objekt befindet, werden alle anderen Inhaltsobjekte und das enthaltende Objekt beschädigt. Als Verursacher des Schadens gilt der Besitzer des explodierenden Objekts.</desc>

@@ -12,30 +12,30 @@
       <params>
         <param>
           <type>string</type>
-          <name>szCommand</name>
+          <name>command</name>
           <desc>Kommandoname (als String). Siehe untere Tabelle </desc>
         </param>
         <param>
           <type>object</type>
-          <name>pTarget</name>
+          <name>target</name>
           <optional />
           <desc>Zielobjekt für Aktion</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iX</name>
+          <name>x</name>
           <optional />
           <desc>X-Zielkoordinate</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iY</name>
+          <name>y</name>
           <optional />
           <desc>Y-Zielkoordinate</desc>
         </param>
         <param>
           <type>object</type>
-          <name>pTarget2</name>
+          <name>target2</name>
           <optional />
           <desc>zweites Zielobjekt</desc>
         </param>
@@ -47,7 +47,7 @@
         </param>
         <param>
           <type>int</type>
-          <name>iRetries</name>
+          <name>retries</name>
           <optional />
           <desc>Anzahl der Wiederholungen (wenn das Kommando fehlschlägt), bis das Kommando abgebrochen wird.</desc>
         </param>
@@ -61,7 +61,7 @@
     <remark>
        Es sind folgende Kommandos definiert:
       <table>
-        <rowh><col>szCommand</col><col>pTarget</col><col>iX,iY</col><col>pTarget2</col><col>iData</col><col>Beschreibung</col></rowh>
+        <rowh><col>command</col><col>target</col><col>x,y</col><col>target2</col><col>iData</col><col>Beschreibung</col></rowh>
         <row><col>Acquire</col><col>Null</col><col>0,0</col><col>Behälter ignorieren</col><col>Objekttyp (id)</col><col>Objekt von Objekttyp beschaffen, wenn nötig kaufen. Material im angegebenen Behälter (Target2) wird bei der Suche ignoriert.</col></row>
         <row><col>Activate</col><col>Zielobjekt</col><col></col><col></col><col></col><col>Zielobjekt aktivieren (aus Gebäude herausholen).</col></row>
         <row><col>Activate</col><col>Null</col><col>0,0</col><col>Zielobjekt</col><col></col><col>Holen-Menü für Inhalt des Zielobjekts öffnen.</col></row>

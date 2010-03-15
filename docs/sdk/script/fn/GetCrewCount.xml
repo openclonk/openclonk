@@ -10,7 +10,7 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spielers, dessen Mannschaftsmitglieder gezählt werden sollen.</desc></param>
+        <param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Mannschaftsmitglieder gezählt werden sollen.</desc></param>
       </params>
     </syntax>
     <desc>Liefert die Anzahl der Mannschaftsmitglieder eines Spielers zurück.</desc>

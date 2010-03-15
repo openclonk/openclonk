@@ -9,16 +9,16 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>object</type><name>pTarget1</name><desc>Erstes Zielobjekt</desc></param>
-				<param><type>object</type><name>pTarget2</name><desc>Zweites Zielobjekt</desc><optional /></param>
+				<param><type>object</type><name>target1</name><desc>Erstes Zielobjekt</desc></param>
+				<param><type>object</type><name>target2</name><desc>Zweites Zielobjekt</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Setzt die aktuellen Aktivitätszielobjekte des aufrufenden Objekts. Die Auswirkung der Zielobjekte richtet sich nach der <emlink href="definition/procedures.html">Prozedur</emlink> der aktuell gesetzten Aktivität.</desc>
 		<examples>
 			<example>
-				<code>protected func Entrance(pIntoObj)
+				<code>protected func Entrance(into_object)
   {
-  SetActionTargets(pIntoObj);
+  SetActionTargets(into_object);
   }</code>
 				<text>Scriptteil für einen Schildzauber, der gerade eine ATTACH-Aktivität ausführt: Wenn der tragende Clonk ein Gebäude betritt, klebt er sich an dieses Gebäude. Das Script sorgt allerdings nicht dafür, dass sich der Zauber wieder an den Clonk klebt, wenn dieser das Gebäude verlässt.</text>
 			</example>

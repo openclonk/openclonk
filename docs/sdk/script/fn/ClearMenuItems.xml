@@ -13,14 +13,14 @@
 		<examples>
 			<example>
 
-<code>var pClonk=<funclink>GetCursor</funclink>();
-pClonk-><funclink>CreateMenu</funclink>(Clonk, pClonk, nil, "", 0, 2);
-pClonk-><funclink>AddMenuItem</funclink>("", "", TIM1, nil,nil,"Alter Text");
+<code>var clonk=<funclink>GetCursor</funclink>();
+clonk-><funclink>CreateMenu</funclink>(Clonk, clonk, nil, "", 0, 2);
+clonk-><funclink>AddMenuItem</funclink>("", "", TIM1, nil,nil,"Alter Text");
 
 [...]
 
-pClonk->ClearMenuItems();
-pClonk-><funclink>AddMenuItem</funclink>(nil, "", TIM1, nil,0,0,"Neuer Text");</code>
+clonk->ClearMenuItems();
+clonk-><funclink>AddMenuItem</funclink>(nil, "", TIM1, nil,0,0,"Neuer Text");</code>
 				<text>Öffnet zunächst ein Textfenster mit dem Inhalt "Alter Text" für den ausgewählten Clonk des ersten Spielers, und ändert die Beschriftung dann später auf "Neuer Text".</text>
 			</example>
 		</examples>

@@ -315,24 +315,24 @@ Log(" Ergebnis: %d", !0);</code>
 			
 			<h>Beispiel: (postfix)</h>
 	
-			<code>Var(0) = 0;
-while(<strong>Var(0)++</strong> &lt; 10)
-  Log("%d", Var(0) )</code>
+			<code>somevar = 0;
+while(<strong>somevar++</strong> &lt; 10)
+  Log("%d", somevar )</code>
 			
 			<h>Beispiel 2: (prefix)</h>
 	
-			<code>Var(0) = 0;
-while(<strong>++Var(0)</strong> &lt; 10)
-  Log("%d", Var(0) )</code>
+			<code>somevar = 0;
+while(<strong>++somevar</strong> &lt; 10)
+  Log("%d", somevar )</code>
 	
-			<text>Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung Var(0) um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen.</text>
-			<text>Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben.	D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist Var(0) am Anfang 9. Dann wird sie um eins erhöht (Var(0) ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben.</text>
-			<text>Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn Var(0) 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen.</text>
+			<text>Diese beiden Beispiele sind fast identisch. In jedem Fall wird bei jeder Schleifenwiederholung somevar um 1 erhöht. Das Ergebnis wird jeweils mit 10 verglichen.</text>
+			<text>Doch eine wichtige Feinheit unterscheidet die beiden Operatorenvarianten: wird der postfix-Operator benutzt, so wird jeweils <strong>alte</strong> Wert der Variable zurückgegeben.	D.h. das Ergebnis der Schleife im 1. Beispiel wäre eine Zahlenreihe von 1 bis <strong>10</strong>. Denn bei dem letzten Schleifendurchlauf ist somevar am Anfang 9. Dann wird sie um eins erhöht (somevar ist dann 10), es wird aber der alte Wert (9) zurückgegeben und mit der 10 verglichen. Die Schleife wird also ein weiteres Mal durchlaufen, und es wird der Wert 10 ausgegeben.</text>
+			<text>Anders beim 2. Beispiel. Hier läuft die Schleife von 1 bis <strong>9</strong>. Denn wenn somevar 9 ist und erhöht wird, so wird der neue Wert, eben 10, zurückgegeben. Dieser Wert ist nicht kleiner als 10, deshalb wird die Schleife abgebrochen.</text>
 		</part>
 			
 		<h id="andor">Die Operatoren &amp;&amp; und ||</h>
 		<part>
-			<text>Diese beiden Operatoren haben (ab <emlink href="script/Strict.html">#strict 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:</text>
+			<text>Diese beiden Operatoren haben (ab <emlink href="script/Strict.html"> 2</emlink>) eine Besonderheit. Wenn das Ergebnis bereits nach Auswertung des ersten Parameter feststeht, wird der zweite Parameter gar nicht erst ausgewertet. Beispielsweise explodiert ein Objekt durch dieses Script nicht, weil das Ergebnis 0 wäre, egal was Explode zurücklieferte:</text>
 			<code>0 &amp;&amp; Explode(20);</code>
 			<text>Außerdem ist das Ergebnis des Operators der Wert des ersten oder zweiten Parameters, je nachdem ob einer oder beide ausgewertet wurden. Beispielsweise kann man so wenn möglich einen Ritter, und ansonsten einen Clonk erzeugen:</text>
 			<code>CreateObject(KNIG,0,0,GetOwner()) || CreateObject(Clonk,0,0,GetOwner())</code>
@@ -352,12 +352,12 @@ while(<strong>++Var(0)</strong> &lt; 10)
 			<text>Dabei taucht aber noch ein Problem auf: was ist zu tun, wenn "benachbarte" Operatoren dieselbe Priorität haben? Ist dann der linke oder der rechte Ausdruck zu klammern? Über diese Frage entscheidet die sog. Assoziativität. Ist ein Operator links-assoziativ, so hat jeweils der linke Operator Priorität (übrigens auch der Regelfall, denn meistens wird von links nach rechts gerechnet). Anders bei den rechts-assoziativen Operatoren, wo jeweils der rechte Operator Priorität hat.</text>
 			
 			<h>Beispiel:</h>
-			<code>Var(0) = Var(1) = 1 + 2 + 3 + 4;</code>
+			<code>somevar = othervar = 1 + 2 + 3 + 4;</code>
 			<text>entspricht:</text>
-			<code>Var(0) = (Var(1) = (((1 + 2) + 3) + 4) );</code>
+			<code>somevar = (othervar = (((1 + 2) + 3) + 4) );</code>
 			
 			<text>Hier sieht man deutlich, dass der Operator "+" links-assoziativ ist, der Ausdruck "<code>1 + 2 + 3</code>" wird zu "<code>(1 + 2) + 3</code>".</text>
-			<text>Dagegen wird der Ausdruck "<code>Var(0) = Var(1) = x</code>" zu "<code>Var(0) = (Var(1) = x)</code>", da der Operator "=" rechts-assoziativ ist.</text>
+			<text>Dagegen wird der Ausdruck "<code>somevar = othervar = x</code>" zu "<code>somevar = (othervar = x)</code>", da der Operator "=" rechts-assoziativ ist.</text>
 			<text>Die Angaben über Prioritäten bzw. Assoziativitäten finden sich in der obigen Liste.</text>
 		</part>
 		

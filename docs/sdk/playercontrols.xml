@@ -181,7 +181,7 @@
 <h id="Script">Script-Callbacks</h>
 <text>Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im Spielermenue), rufen eine globale Scriptfunktion auf:</text>
 <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)</code>
-<text>Fuer eine Erlaeuterung der Parameter siehe <funclink>PlayerControl</funclink>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in iPlr, sowie das ausgefuehrte Kommando in iControl.</text>
+<text>Fuer eine Erlaeuterung der Parameter siehe <funclink>PlayerControl</funclink>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in player, sowie das ausgefuehrte Kommando in iControl.</text>
 <text>Fuer ein einfaches Beispiel sei in der globalen <em>PlayerControls.txt</em> folgendes Kommando definiert:</text>
 <code>[ControlDefs]
   [ControlDef]
@@ -211,7 +211,7 @@
     if (player_clonk &amp;&amp; player_clonk->Jump())
     {
       // Das Kommando wurde erfolgreich abgearbeitet
-      return true;
+      return true;;
     }
   }
   // Unbekanntes Kommando
@@ -286,7 +286,7 @@ global func UpdateControlDir(int player)
     if (GetPlayerControlState(player, CON_Left)) new_comdir = COMD_Left;
     player_clonk->SetComDir(new_comdir);
     // Kommando behandelt
-    return true;
+    return true;;
   }
   // Kommando behandelt
   return false;

@@ -9,8 +9,8 @@
                 <syntax>
                         <rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iIndex</name><desc>Index in der Spielerliste</desc></param>
-				<param><type>int</type><name>ePlayerType</name><desc>Wenn angegeben, wird der indizierte Spieler des angegebenen Typs zurückgegeben. So lassen sich zum Beispiel nur alle menschlichen oder nur alle Scriptspieler durchgehen. Für eine Liste gültiger Werte, siehe <funclink>GetPlayerType</funclink>.</desc><optional /></param>
+				<param><type>int</type><name>index</name><desc>Index in der Spielerliste</desc></param>
+				<param><type>int</type><name>player_type</name><desc>Wenn angegeben, wird der indizierte Spieler des angegebenen Typs zurückgegeben. So lassen sich zum Beispiel nur alle menschlichen oder nur alle Scriptspieler durchgehen. Für eine Liste gültiger Werte, siehe <funclink>GetPlayerType</funclink>.</desc><optional /></param>
 			</params>
                 </syntax>
                 <desc>Gibt die indizierte Spielernummer zurück. Die Funktion garantiert für Werte zwischen 0 und GetPlayerCount()-1, dass eine gültige Spielernummer zurückgegeben wird (denn durch eliminierte Spieler und Neubeitritte kann es vorkommen, dass "Löcher" unbelegter Spielernummern in der Liste entstehen!). Damit ist es einfacher, eine Schleife zu schreiben, die alle Spielernummern durchgeht. Ab 4.9.6.0 CR.</desc>

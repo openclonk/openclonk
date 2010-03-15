@@ -10,14 +10,14 @@
       <rtype>bool</rtype>
       <params>
         <param><type>string</type><name>szMaterialTexture</name><desc>Material-Textur-Tupel für das Material, das gezeichnet werden soll</desc></param>
-        <param><type>int</type><name>iX1</name><desc>X-Position des ersten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>iY1</name><desc>Y-Position des ersten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>iX2</name><desc>X-Position des zweiten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>iY2</name><desc>Y-Position des zweiten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>iX3</name><desc>X-Position des dritten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>iY3</name><desc>Y-Position des dritten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>iX4</name><desc>X-Position des vierten Eckpunktes. Immer global.</desc></param>
-        <param><type>int</type><name>iY4</name><desc>Y-Position des vierten Eckpunktes. Immer global.</desc></param>
+        <param><type>int</type><name>x1</name><desc>X-Position des ersten Eckpunktes. Immer global.</desc></param>
+        <param><type>int</type><name>y1</name><desc>Y-Position des ersten Eckpunktes. Immer global.</desc></param>
+        <param><type>int</type><name>x2</name><desc>X-Position des zweiten Eckpunktes. Immer global.</desc></param>
+        <param><type>int</type><name>y2</name><desc>Y-Position des zweiten Eckpunktes. Immer global.</desc></param>
+        <param><type>int</type><name>x3</name><desc>X-Position des dritten Eckpunktes. Immer global.</desc></param>
+        <param><type>int</type><name>y3</name><desc>Y-Position des dritten Eckpunktes. Immer global.</desc></param>
+        <param><type>int</type><name>x4</name><desc>X-Position des vierten Eckpunktes. Immer global.</desc></param>
+        <param><type>int</type><name>y4</name><desc>Y-Position des vierten Eckpunktes. Immer global.</desc></param>
 			<param><type>bool</type><name>sub</name><desc>Wenn true, wird das Material unterirdisch gezeichnet.</desc></param>
       </params>
     </syntax>

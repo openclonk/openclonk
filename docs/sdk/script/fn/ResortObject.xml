@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szResortFunc</name><desc>Name der Funktion, die für die Einsortierung aufgerufen wird.</desc></param>
+				<param><type>string</type><name>resort_function</name><desc>Name der Funktion, die für die Einsortierung aufgerufen wird.</desc></param>
 			</params>
 		</syntax>
 		<desc>Sortiert das aufrufende Objekt neu in die Objektliste ein. Die Platzierung ergibt sich nach einer Platzierungsfunktion, die die Objektposition relativ zu jedem anderen Objekt in der Objektliste definieren sollte. Wenn das erste Objekt vor dem zweiten stehen sollte, muss die Funktion einen Wert kleiner Null zurückgeben. Ansonsten einen Wert größer oder gleich Null.</desc>
@@ -18,7 +18,7 @@
 			<example>
 
 <code>protected func Collection2() { <funclink>return</funclink>(ResortObject("ResortProc"); };
-protected func ResortProc(pObj1, pObj2) { return(pObj1-><funclink>GetMass</funclink>()-pObj2-><funclink>GetMass</funclink>());</code>
+protected func ResortProc(obj1, obj2) { return(obj1-><funclink>GetMass</funclink>()-obj2-><funclink>GetMass</funclink>());</code>
 				<text>Objektscript: Das Objekt sortiert sich selbst bei Objektaufnahme nach seiner Masse in die Objektliste ein (leichte Objekte nach vorne).</text>
 			</example>
 		</examples>

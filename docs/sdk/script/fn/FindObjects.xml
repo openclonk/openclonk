@@ -18,22 +18,22 @@
 		<remark>Die Kriterien werden genau so angegeben wie bei <funclink>FindObject</funclink> und <funclink>ObjectCount</funclink>.</remark>
 		<examples>
 			<example>
-<code><funclink>for</funclink>(var pVehicle in FindObjects (<funclink>Find_Owner</funclink>(1), <funclink>Find_Category</funclink>(<funclink>C4D_Vehicle</funclink>)))
-  <funclink>RemoveObject</funclink> (pVehicle);</code>
+<code><funclink>for</funclink>(var vehicle in FindObjects (<funclink>Find_Owner</funclink>(1), <funclink>Find_Category</funclink>(<funclink>C4D_Vehicle</funclink>)))
+  <funclink>RemoveObject</funclink> (vehicle);</code>
 				<text>Lässt alle Fahrzeuge von Spieler 2 verschwinden.</text>
 			</example>
 			<example>
 <code>protected func Hit()
 {
-  <funclink>for</funclink>(var pStructure in FindObjects(<funclink>Find_AtPoint</funclink>(), <funclink>Find_Category</funclink>(<funclink>C4D_Structure</funclink>), <funclink>Find_OCF</funclink>(<funclink>OCF_Inflammable</funclink>)))
-    Incinerate(pStructure);
+  <funclink>for</funclink>(var structure in FindObjects(<funclink>Find_AtPoint</funclink>(), <funclink>Find_Category</funclink>(<funclink>C4D_Structure</funclink>), <funclink>Find_OCF</funclink>(<funclink>OCF_Inflammable</funclink>)))
+    Incinerate(structure);
   <funclink>RemoveObject</funclink>();
 }</code>
 				<text>Der Feuerteufelflint: entzündet beim Auftreffen alle brennbaren Gebäude, die er berührt.</text>
 			</example>
 			<example>
-<code><funclink>for</funclink>(var pObj in FindObjects( <funclink>Find_Not</funclink>(<funclink>Find_Owner</funclink>(<funclink>NO_OWNER</funclink>)) ))
-  pObj-><funclink>SetOwner</funclink>(<funclink>NO_OWNER</funclink>);</code>
+<code><funclink>for</funclink>(var obj in FindObjects( <funclink>Find_Not</funclink>(<funclink>Find_Owner</funclink>(<funclink>NO_OWNER</funclink>)) ))
+  obj-><funclink>SetOwner</funclink>(<funclink>NO_OWNER</funclink>);</code>
 				<text>Anarchie! Kein Objekt gehört mehr einem Spieler.</text>
 			</example>
 		</examples>

@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>iCategory</name><desc>Objektkategorie der zu suchenden Objekte</desc></param>
+				<param><type>int</type><name>category</name><desc>Objektkategorie der zu suchenden Objekte</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: sucht alle Objekte mit der entsprechenden Kategorie.</desc>

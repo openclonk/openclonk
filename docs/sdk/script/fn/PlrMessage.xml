@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szMessage</name><desc>Nachricht, die ausgegeben wird</desc></param>
-				<param><type>int</type><name>iPlr</name><desc>Nummer des Spielers, bei dem die Nachricht ausgegeben wird</desc></param>
+				<param><type>string</type><name>message</name><desc>Nachricht, die ausgegeben wird</desc></param>
+				<param><type>int</type><name>player</name><desc>Nummer des Spielers, bei dem die Nachricht ausgegeben wird</desc></param>
 				<param><type></type><name>...</name><desc>*</desc><optional /></param>
 			</params>
 		</syntax>

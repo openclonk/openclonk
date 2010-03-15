@@ -9,8 +9,8 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Position der Luftblase. Offset bei lokalem Aufruf.</desc><optional /></param>
-        <param><type>int</type><name>iY</name><desc>Y-Position der Luftblase. Offset bei lokalem Aufruf.</desc><optional /></param>
+        <param><type>int</type><name>x</name><desc>X-Position der Luftblase. Offset bei lokalem Aufruf.</desc><optional /></param>
+        <param><type>int</type><name>y</name><desc>Y-Position der Luftblase. Offset bei lokalem Aufruf.</desc><optional /></param>
       </params>
     </syntax>
     <desc>Erzeugt eine Luftblase.</desc>

@@ -9,18 +9,18 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iNewMass</name><desc>Neue Eigenmasse</desc></param>
+				<param><type>int</type><name>mass</name><desc>Neue Eigenmasse</desc></param>
 			</params>
 		</syntax>
 		<desc>Ändert die Eigenmasse des aufrufenden Objekts. Die Eigenmasse entspricht dem in der <emlink href="definition/DefCore.html">DefCore.txt</emlink> angegebenen Wert unter [DefCore], Mass. Die tatsächliche Objektmasse ergibt sich durch Hinzurechnen der Masse aller enthaltenen Objekte.</desc>
 		<examples>
 			<example>
 
-<code>private func GetOwnMass(pClonk)
+<code>private func GetOwnMass(clonk)
   {
-  var iMass=pClonk-><funclink>GetMass</funclink>(), i, pObj;
-  <funclink>while</funclink>(pObj = pClonk-><funclink>Contents</funclink>(i++)) iMass -= pObj-><funclink>GetMass</funclink>();
-  <funclink>return</funclink>(iMass);
+  var mass=clonk-><funclink>GetMass</funclink>(), i, obj;
+  <funclink>while</funclink>(obj = clonk-><funclink>Contents</funclink>(i++)) mass -= obj-><funclink>GetMass</funclink>();
+  <funclink>return</funclink>(mass);
   }
 
 protected func Activate(pByClonk)

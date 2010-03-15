@@ -9,8 +9,8 @@
     <syntax>
       <rtype>any</rtype>
       <params>
-        <param><type>bool</type><name>fGetID</name><desc>Wenn TRUE gibt die Funktion die ID der Definition zurück, aus der das Portrait stammt. Andernfalls wird der Name des Portraits zurückgegeben.</desc><optional /></param>
-        <param><type>bool</type><name>fGetPermanent</name><desc>Wenn TRUE gibt die Funktion die Portraitwerte des permanenten Portraits zurück, sonst die des momentan verwendeten.</desc><optional /></param>
+        <param><type>bool</type><name>get_id</name><desc>Wenn TRUE gibt die Funktion die ID der Definition zurück, aus der das Portrait stammt. Andernfalls wird der Name des Portraits zurückgegeben.</desc><optional /></param>
+        <param><type>bool</type><name>get_permanent</name><desc>Wenn TRUE gibt die Funktion die Portraitwerte des permanenten Portraits zurück, sonst die des momentan verwendeten.</desc><optional /></param>
       </params>
     </syntax>
     <desc>Fragt Name oder ID des Portraits des aufrufenden Crew-Mitglieds ab.</desc>

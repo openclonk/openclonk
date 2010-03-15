@@ -9,9 +9,9 @@
                 <syntax>
                         <rtype>void</rtype>
                         <params>
-                                <param><type>int</type><name>iX</name><desc>Neue X-Position für das Objekt</desc></param>
-                                <param><type>int</type><name>iY</name><desc>Neue Y-Position für das Objekt</desc></param>
-                                <param><type>bool</type><name>fCheckBounds</name><desc>Nur wirksam für Objekte mit angegebenem BorderBound. Stellt sicher, dass die Position immer innerhalb der dem Objekt auferlegten Grenzen ist. (Ab CR)</desc><optional /></param>
+                                <param><type>int</type><name>x</name><desc>Neue X-Position für das Objekt</desc></param>
+                                <param><type>int</type><name>y</name><desc>Neue Y-Position für das Objekt</desc></param>
+                                <param><type>bool</type><name>check_bounds</name><desc>Nur wirksam für Objekte mit angegebenem BorderBound. Stellt sicher, dass die Position immer innerhalb der dem Objekt auferlegten Grenzen ist. (Ab CR)</desc><optional /></param>
                         </params>
                 </syntax>
                 <desc>Verschiebt das aufrufende Objekt an die angegebene Position. Dabei wird das Objekt an die exakte Pixelposition gesetzt, und eventuelle, interne Verschiebungen um Pixelbruchteile werden verworfen.</desc>

@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iIndex</name><desc>Index des Vertex.</desc></param>
+				<param><type>int</type><name>index</name><desc>Index des Vertex.</desc></param>
 				<param><type>int</type><name>data</name><desc>
 					<table><rowh><col>Wert</col><col>Bedeutung</col></rowh>
 							<row><col>VTX_X</col><col>X-Koordinate des Vertex.</col></row>

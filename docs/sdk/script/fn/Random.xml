@@ -9,10 +9,10 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iMaxVal</name><desc>Höchstwert</desc></param>
+        <param><type>int</type><name>max</name><desc>Höchstwert</desc></param>
       </params>
     </syntax>
-    <desc>Gibt eine Zufallszahl zwischen 0 und iMaxVal-1 zurück. Der zurückgegebene Wert kann jedoch nicht höher als 32767 sein.</desc>
+    <desc>Gibt eine Zufallszahl zwischen 0 und max-1 zurück. Der zurückgegebene Wert kann jedoch nicht höher als 32767 sein.</desc>
     <examples>
       <example>
         <code>protected func Hit()

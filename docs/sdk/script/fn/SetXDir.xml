@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iXDir</name><desc>Horizontale Gechwindigkeit geteilt durch iPrecision.</desc></param>
-				<param><type>int</type><name>iPrecision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
+				<param><type>int</type><name>xdir</name><desc>Horizontale Gechwindigkeit geteilt durch precision.</desc></param>
+				<param><type>int</type><name>precision</name><desc>Genauigkeit. Keine Angabe oder Null entspricht 10.</desc><optional/></param>
 			</params>
 		</syntax>
 		<desc>Setzt die horizontale Geschwindigkeit des aufrufenden Objekts.</desc>

@@ -9,17 +9,17 @@
     <syntax>
       <rtype>int</rtype>
       <params>
-        <param><type>int</type><name>iValue</name><desc>Wert, aus dem die Wurzel gezogen werden soll</desc></param>
+        <param><type>int</type><name>value</name><desc>Wert, aus dem die Wurzel gezogen werden soll</desc></param>
       </params>
     </syntax>
     <desc>Zieht die Wurzel aus dem ersten Parameter. Ist der Parameter kleiner als 0, wird einfach 0 zurückgegeben.</desc>
     <examples>
       <example>
 
-<code>global func ObjectDistance(pObj1, pObj2)
+<code>global func ObjectDistance(obj1, obj2)
 {
-  var dx = <funclink>GetX</funclink>(pObj1) - <funclink>GetX</funclink>(pObj2);
-  var dy = <funclink>GetY</funclink>(pObj1) - <funclink>GetY</funclink>(pObj2);
+  var dx = <funclink>GetX</funclink>(obj1) - <funclink>GetX</funclink>(obj2);
+  var dy = <funclink>GetY</funclink>(obj1) - <funclink>GetY</funclink>(obj2);
   <funclink>return</funclink>(Sqrt(dx*dx+dy*dy));
 }</code>
 

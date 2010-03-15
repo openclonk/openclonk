@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>Length</name><desc>Länge des neuen Felds</desc></param>
+				<param><type>int</type><name>length</name><desc>Länge des neuen Felds</desc></param>
 			</params>
 		</syntax>
 		<desc>Erzeugt ein neues, mit Nullen gefülltes Feld.</desc>

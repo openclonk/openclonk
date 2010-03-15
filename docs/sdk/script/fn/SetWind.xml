@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iWind</name><desc>Windstärke von -100 bis 100.</desc></param>
+				<param><type>int</type><name>strength</name><desc>Windstärke von -100 bis 100.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt die globale Windrichtung und -stärke.</desc>
@@ -19,14 +19,14 @@
 protected func ControlLeft()
 { 
 	SetWind(-100);
-	return(1);
+	return true;
 }
 
 /* Nach Rechts pusten */
 protected func ControlRight()
 {
 	SetWind(100);
-	return(1);
+	return true;
 }
 				</code>
 				<text>Pusteclonk</text>

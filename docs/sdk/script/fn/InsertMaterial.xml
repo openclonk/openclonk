@@ -10,11 +10,11 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iMat</name><desc>Einzufügendes Material (siehe <funclink>Material</funclink>())</desc></param>
-        <param><type>int</type><name>iX</name><desc>X-Einfügeposition/-offset</desc><optional /></param>
-        <param><type>int</type><name>iY</name><desc>Y-Einfügeposition/-offset</desc><optional /></param>
-        <param><type>int</type><name>iXDir</name><desc>X-Geschwindigkeit des eingefügten Mateiralpixels</desc><optional /></param>
-        <param><type>int</type><name>iYDir</name><desc>Y-Geschwindigkeit des eingefügten Mateiralpixels</desc><optional /></param>
+        <param><type>int</type><name>material_index</name><desc>Einzufügendes Material (siehe <funclink>Material</funclink>())</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Einfügeposition/-offset</desc><optional /></param>
+        <param><type>int</type><name>y</name><desc>Y-Einfügeposition/-offset</desc><optional /></param>
+        <param><type>int</type><name>xdir</name><desc>X-Geschwindigkeit des eingefügten Mateiralpixels</desc><optional /></param>
+        <param><type>int</type><name>ydir</name><desc>Y-Geschwindigkeit des eingefügten Mateiralpixels</desc><optional /></param>
       </params>
     </syntax>
     <desc>Fügt ein Materialpixel an der angegebenen Position in der angegebenen Geschwindigkeit ein.</desc>

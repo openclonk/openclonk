@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iVal</name><desc>Länge der Gegenkathete</desc></param>
-				<param><type>int</type><name>iRadius</name><desc>Länge der Hypotenuse</desc></param>
+				<param><type>int</type><name>value</name><desc>Länge der Gegenkathete</desc></param>
+				<param><type>int</type><name>radius</name><desc>Länge der Hypotenuse</desc></param>
 			</params>
 		</syntax>
-		<desc>Berechnet den Arcussinus von iVal/iRadius, also Result=arcsin(iVal/iRadius). Dies entspricht Sin(Result)=iVal/iRadius. Die Funktion wird benötigt, um Seitenverhältnisse zu einem Winkel umzurechnen. Für die meisten Fälle ist <funclink>Angle</funclink>() aber ausreichend und praktischer.</desc>
+		<desc>Berechnet den Arcussinus von value/radius, also Result=arcsin(value/radius). Dies entspricht Sin(Result)=value/radius. Die Funktion wird benötigt, um Seitenverhältnisse zu einem Winkel umzurechnen. Für die meisten Fälle ist <funclink>Angle</funclink>() aber ausreichend und praktischer.</desc>
 		<examples>
 			<example>
 				<code><funclink>Log</funclink>("Zielwinkel: %d Grad", ArcSin(<funclink>Abs</funclink>(<funclink>GetY</funclink>(target)-<funclink>GetY</funclink>()), <funclink>ObjectDistance</funclink>(target)));</code>

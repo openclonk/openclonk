@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>id</type><name>id</name><desc>Objekttyp, der gezählt wird</desc></param>
+				<param><type>id</type><name>object_id</name><desc>Objekttyp, der gezählt wird</desc></param>
 			</params>
 		</syntax>
 		<desc>Liefert die Anzahl der Objekte vom Typ id, die im aufrufenden Objekt enthalten sind.</desc>

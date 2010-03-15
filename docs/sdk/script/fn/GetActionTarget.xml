@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>int</type><name>iTargetIndex</name><desc>0 für pTarget oder 1 für pTarget2</desc></param>
+				<param><type>int</type><name>index</name><desc>0 für target oder 1 für target2</desc></param>
 			</params>
 		</syntax>
 		<desc>Liefert die aktuellen Aktivitätszielobjekte des aufrufenden Objekts.</desc>

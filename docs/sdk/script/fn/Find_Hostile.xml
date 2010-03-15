@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spielernummer, dessen Feinde Besitzer der zu suchenden Objekte sein müssen</desc></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer, dessen Feinde Besitzer der zu suchenden Objekte sein müssen</desc></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: sucht alle Objekte die Spielern gehören, die mit dem angegebenen Spieler verfeindet sind.</desc>

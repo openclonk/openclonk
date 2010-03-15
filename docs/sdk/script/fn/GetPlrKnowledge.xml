@@ -9,13 +9,13 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spieler, über dessen Baupläne Informationen abgerufen werden sollen.</desc></param>
+				<param><type>int</type><name>player</name><desc>Spieler, über dessen Baupläne Informationen abgerufen werden sollen.</desc></param>
 				<param><type>id</type><name>id</name><desc>Wenn angegebenen, dann gibt die Funktion TRUE zurück, wenn der Spieler den Bauplan des betreffenden herstellbaren Objekts besitzt, ansonsten FALSE.</desc><optional /></param>
-				<param><type>int</type><name>iIndex</name><desc>Nur angeben, wenn keine id=0.</desc><optional /></param>
-				<param><type>int</type><name>dwCategory</name><desc>Nur angeben, wenn keine id=0.</desc><optional /></param>
+				<param><type>int</type><name>index</name><desc>Nur angeben, wenn keine id=0.</desc><optional /></param>
+				<param><type>int</type><name>category</name><desc>Nur angeben, wenn keine id=0.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Bei angegebenen id gibt die Funktion TRUE zurück, wenn der Spieler den Bauplan des betreffenden herstellbaren Objekts besitzt. iIndex und dwCategory werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Bauplan der entsprechenden Kategorie des Spielers.</desc>
+		<desc>Bei angegebenen id gibt die Funktion TRUE zurück, wenn der Spieler den Bauplan des betreffenden herstellbaren Objekts besitzt. index und category werden hierbei ignoriert. Wird als id Null übergeben, liefert die Funktion den indizierten Bauplan der entsprechenden Kategorie des Spielers.</desc>
 		<examples>
 			<example>
 				<code><funclink>if</funclink>(GetPlrKnowledge(0,HUT1))

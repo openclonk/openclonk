@@ -9,17 +9,17 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>id</type><name>idBuyObj</name><desc>ID des Objekttyps, der gekauft wird</desc></param>
-				<param><type>int</type><name>iForPlr</name><desc>Nummer des Spielers, dem das Objekt hinterher gehört</desc></param>
-				<param><type>int</type><name>iPayPlr</name><desc>Nummer des Spielers, der den Kauf bezahlt</desc></param>
-				<param><type>object</type><name>pToBase</name><desc>Zielobjekt, in das das neu gekaufte Objekt hineinversetzt wird</desc><optional /></param>
-				<param><type>bool</type><name>fShowErrors</name><desc>Wenn ungleich Null, werden Fehlermeldugnen wie "Kaufen nicht möglich" aufgrund von Geldmangel angezeigt.</desc><optional /></param>
+				<param><type>id</type><name>buy_object</name><desc>ID des Objekttyps, der gekauft wird</desc></param>
+				<param><type>int</type><name>for_player</name><desc>Nummer des Spielers, dem das Objekt hinterher gehört</desc></param>
+				<param><type>int</type><name>pay_player</name><desc>Nummer des Spielers, der den Kauf bezahlt</desc></param>
+				<param><type>object</type><name>to_base</name><desc>Zielobjekt, in das das neu gekaufte Objekt hineinversetzt wird</desc><optional /></param>
+				<param><type>bool</type><name>show_errors</name><desc>Wenn ungleich Null, werden Fehlermeldugnen wie "Kaufen nicht möglich" aufgrund von Geldmangel angezeigt.</desc><optional /></param>
 			</params>
 		</syntax>
-		<desc>Kauft ein Objekt für iForPlr, und zieht iPayPlr Geld ab. Wenn dieser nicht genug Geld oder das Objekt nicht im Heimatbasismaterial hat, wird der Vorgang nicht ausgeführt.</desc>
+		<desc>Kauft ein Objekt für for_player, und zieht pay_player Geld ab. Wenn dieser nicht genug Geld oder das Objekt nicht im Heimatbasismaterial hat, wird der Vorgang nicht ausgeführt.</desc>
 		<examples>
 			<example>
-				<code>Buy(CNKT, 0, 0, <funclink>FindBase</funclink>(0), 1);</code>
+				<code>Buy(Rock, 0, 0, <funclink>FindBase</funclink>(0), 1);</code>
 				<text>Kauft einen Stein in der Basis des ersten Spielers.</text>
 			</example>
 		</examples>

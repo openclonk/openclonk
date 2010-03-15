@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>void</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Nummer des Spielers, an den verkauft wird</desc></param>
+				<param><type>int</type><name>player</name><desc>Nummer des Spielers, an den verkauft wird</desc></param>
 			</params>
 		</syntax>
 		<desc>Verkauft das aufrufende Objekt mitsamt Inhalt.</desc>

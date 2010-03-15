@@ -11,7 +11,7 @@
       <params>
         <param>
           <type>int</type>
-          <name>iSlot</name>
+          <name>slot</name>
           <desc>Slot dessen oberste Animation zurückgegeben werden soll.</desc>
         </param>
       </params>

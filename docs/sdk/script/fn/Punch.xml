@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>object</type><name>pObj</name><desc>Das Opfer.</desc></param>
-				<param><type>int</type><name>iX</name><desc>Stärke des Schlages (abgezogene Energiemenge).</desc></param>
+				<param><type>object</type><name>obj</name><desc>Das Opfer.</desc></param>
+				<param><type>int</type><name>strength</name><desc>Stärke des Schlages (abgezogene Energiemenge).</desc></param>
 			</params>
 		</syntax>
-		<desc>Schlägt pObj.</desc>
+		<desc>Schlägt obj.</desc>
 		<related>
 			<funclink>DoEnergy</funclink>
 		</related>

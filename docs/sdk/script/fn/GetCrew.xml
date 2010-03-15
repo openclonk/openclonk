@@ -10,8 +10,8 @@
 		<syntax>
 			<rtype>object</rtype>
 			<params>
-				<param><type>int</type><name>iPlayer</name><desc>Spielernummer des Spielers, dessen Mannschaftsmitglied zurückgegeben werden soll.</desc></param>
-				<param><type>int</type><name>iIndex</name><desc>Index des Clonks in der Crew</desc></param>
+				<param><type>int</type><name>player</name><desc>Spielernummer des Spielers, dessen Mannschaftsmitglied zurückgegeben werden soll.</desc></param>
+				<param><type>int</type><name>index</name><desc>Index des Clonks in der Crew</desc></param>
 			</params>
 		</syntax>
 		<desc>Gibt ein Mannschaftsmitglied eines Spielers zurück. Wird ein ungültiger Index angegeben, gibt die Funktion nil zurück.</desc>

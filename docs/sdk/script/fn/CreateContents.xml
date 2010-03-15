@@ -10,7 +10,7 @@
 			<rtype>object</rtype>
 			<params>
 				<param><type>id</type><name>id</name><desc>Typ des zu erstellenden Objekts</desc></param>
-				<param><type>int</type><name>iCount</name><desc>Anzahl zu erstellender Objekte. Wenn nicht angegeben, wird 1 angenommen.</desc></param>
+				<param><type>int</type><name>count</name><desc>Anzahl zu erstellender Objekte. Wenn nicht angegeben, wird 1 angenommen.</desc></param>
 			</params>
 		</syntax>
 		<desc>Erzeugt ein Objekt vom Typ id als Inhalt des aufrufenden Objekts.</desc>

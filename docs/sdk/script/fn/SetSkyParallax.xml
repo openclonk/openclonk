@@ -9,13 +9,13 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iMode</name><desc>Scrollmodus. 0 ist Standard; bei 1 bewegt sich der Himmel mit dem Wind.</desc></param>
-				<param><type>int</type><name>iParX</name><desc>Parallaxität in X-Richtung. Bei 10 ist der Himmel fest mit der Landschaft, mit größeren Werten beginnt die Parallaxität. Bei 0 wird der vorherige Wert beibehalten.</desc></param>
-				<param><type>int</type><name>iParY</name><desc>Parallaxität in Y-Richtung</desc></param>
-				<param><type>int</type><name>iXDir</name><desc>Feste, horizontale Bewegungsgeschwindigkeit des Himmels</desc></param>
-				<param><type>int</type><name>iYDir</name><desc>Feste, vertikale Bewegungsgeschwindigkeit des Himmels</desc></param>
-				<param><type>int</type><name>iX</name><desc>X-Scrollposition des Himmels</desc></param>
-				<param><type>int</type><name>iY</name><desc>Y-Scrollposition des Himmels</desc></param>
+				<param><type>int</type><name>mode</name><desc>Scrollmodus. 0 ist Standard; bei 1 bewegt sich der Himmel mit dem Wind.</desc></param>
+				<param><type>int</type><name>xpar</name><desc>Parallaxität in X-Richtung. Bei 10 ist der Himmel fest mit der Landschaft, mit größeren Werten beginnt die Parallaxität. Bei 0 wird der vorherige Wert beibehalten.</desc></param>
+				<param><type>int</type><name>ypar</name><desc>Parallaxität in Y-Richtung</desc></param>
+				<param><type>int</type><name>xdir</name><desc>Feste, horizontale Bewegungsgeschwindigkeit des Himmels</desc></param>
+				<param><type>int</type><name>ydir</name><desc>Feste, vertikale Bewegungsgeschwindigkeit des Himmels</desc></param>
+				<param><type>int</type><name>x</name><desc>X-Scrollposition des Himmels</desc></param>
+				<param><type>int</type><name>y</name><desc>Y-Scrollposition des Himmels</desc></param>
 			</params>
 		</syntax>
 		<desc>Verändert Parallaxität und Scrollgeschwindigkeit des Himmels.</desc>

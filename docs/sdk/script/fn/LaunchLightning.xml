@@ -11,42 +11,42 @@
       <params>
         <param>
           <type>int</type>
-          <name>iX</name>
+          <name>x</name>
           <desc>X-Zielposition</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iY</name>
+          <name>y</name>
           <desc>Y-Zielposition</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iXAdvance</name>
+          <name>xspeed</name>
           <desc>horizontale mittlere Geschwindigkeit des Blitzes</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iXRange</name>
-          <desc>maximale Abweichung von iXAdvance</desc>
+          <name>xrange</name>
+          <desc>maximale Abweichung von xspeed</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iYAdvance</name>
+          <name>yspeed</name>
           <desc>vertikale mittlere Geschwindigkeit des Blitzes</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iYRange</name>
-          <desc>maximale Abweichung von iYAdvance</desc>
+          <name>yrange</name>
+          <desc>maximale Abweichung von yspeed</desc>
         </param>
         <param>
           <type>bool</type>
-          <name>fDoGamma</name>
+          <name>do_gamma</name>
           <desc>Wenn gesetzt, bewirkt dieser Blitz ein Aufflackern des Bildschirms bei allen Spielern.</desc>
         </param>
       </params>
     </syntax>
-    <desc>Erzeugt einen Blitz. Dieser bewegt sich von der Position (iX, iY) mit der angegebenen Geschwindigkeit fort. Dabei geben iXRange/iYRange an, wie sehr der Blitz von diesem vorgegegebenen Weg abweichen kann (mit iXRange = iYRange = 0 würde der Blitz schnurgerade verlaufen). iXRange/iYRange sind sozusagen ein Maß für die "Zackigkeit" eines Blitzes.<br/>
+    <desc>Erzeugt einen Blitz. Dieser bewegt sich von der Position (x, y) mit der angegebenen Geschwindigkeit fort. Dabei geben xrange/yrange an, wie sehr der Blitz von diesem vorgegegebenen Weg abweichen kann (mit xrange = yrange = 0 würde der Blitz schnurgerade verlaufen). xrange/yrange sind sozusagen ein Maß für die "Zackigkeit" eines Blitzes.<br/>
           Die Position muss auch bei lokalem Aufruf in globalen Koordinaten angegeben werden.</desc>
     <examples>
       <example>

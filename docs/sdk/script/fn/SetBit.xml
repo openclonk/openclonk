@@ -9,12 +9,12 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iOldVal</name><desc>Alter Wert der Bitmaske</desc></param>
-				<param><type>int</type><name>iBitNumber</name><desc>Das zu verändernde Bit</desc></param>
-				<param><type>bool</type><name>fBit</name><desc>Der neue Wert des Bits</desc></param>
+				<param><type>int</type><name>old_value</name><desc>Alter Wert der Bitmaske</desc></param>
+				<param><type>int</type><name>bit_number</name><desc>Das zu verändernde Bit</desc></param>
+				<param><type>bool</type><name>bit</name><desc>Der neue Wert des Bits</desc></param>
 			</params>
 		</syntax>
-		<desc>Gibt die neue Bitmaske mit dem an iBitNumber durch fBit ersetzten Bit zurück.</desc>
+		<desc>Gibt die neue Bitmaske mit dem an bit_number durch bit ersetzten Bit zurück.</desc>
 		<related>
 			<funclink>GetBit</funclink>
 			<funclink>ToggleBit</funclink>

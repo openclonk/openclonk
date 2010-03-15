@@ -11,19 +11,19 @@
       <params>
         <param>
           <type>string</type>
-          <name>szMask</name>
+          <name>mask</name>
           <desc>Suchmaske für den Namen der Effekte. Es können '*' und '?' in der Maske verwendet, oder auch direkt Effektnamen angegeben werden. Bei 0, werden alle Effekte gezählt.</desc>
           <optional />
         </param>
         <param>
           <type>object</type>
-          <name>pTarget</name>
+          <name>target</name>
           <desc>Zielobjekt, dessen Effekte gezählt werden sollen. Bei 0 werden globale Effekte gezählt.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
-          <name>iMaxPriority</name>
+          <name>max_priority</name>
           <desc>Wenn ungleich 0, werden nur Effekte zurückgegeben, die höchstens die angegebene Priorität haben.</desc>
           <optional />
         </param>

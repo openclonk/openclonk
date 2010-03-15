@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>szMessage</name><desc>Auszugebender Text</desc></param>
+				<param><type>string</type><name>message</name><desc>Auszugebender Text</desc></param>
 				<param><type></type><name>...</name><desc>Zusätzliche Parameter, mit denen der Text formatiert wird</desc><optional /></param>
 			</params>
 		</syntax>

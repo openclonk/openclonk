@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>dwClr</name><desc>Neue Farbe, mit der moduliert wird.</desc></param>
-				<param><type>int</type><name>iOverlayID</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
+				<param><type>int</type><name>color</name><desc>Neue Farbe, mit der moduliert wird.</desc></param>
+				<param><type>int</type><name>overlay_id</name><desc>Wenn angegeben, wird stattdessen die Farbmodulation dieses Grafikoverlays gesetzt. Das Overlay muss vorher mit <funclink>SetGraphics</funclink> erstellt worden sein. Ab CR.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Ändert die Farbmodulation des aufrufenden Objekts. Diese ist ein Farbwert, der multiplikativ aufgerechnet wird. Bei <funclink>RGB</funclink>(255,0,0) würden also nur die Rotanteile der Grafik gezeichnet werden. <funclink>RGBa</funclink>(255,255,255,128) würde die Grafik halbtransparent machen (sofern Alphaaddition nicht in den Grafikoptionen deaktiviert ist).</desc>

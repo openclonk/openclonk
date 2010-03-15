@@ -9,10 +9,10 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>int</type><name>iX</name><desc>X-Position der oberen linken Ecke der neuen Transferzone; relativ zum Objektmittelpunkt</desc></param>
-        <param><type>int</type><name>iY</name><desc>Y-Position der oberen linken Ecke der neuen Transferzone; relativ zum Objektmittelpunkt</desc></param>
-        <param><type>int</type><name>iWdt</name><desc>Breite der neuen Transferzone</desc></param>
-        <param><type>int</type><name>iHgt</name><desc>Höhe der neuen Transferzone</desc></param>
+        <param><type>int</type><name>x</name><desc>X-Position der oberen linken Ecke der neuen Transferzone; relativ zum Objektmittelpunkt</desc></param>
+        <param><type>int</type><name>y</name><desc>Y-Position der oberen linken Ecke der neuen Transferzone; relativ zum Objektmittelpunkt</desc></param>
+        <param><type>int</type><name>width</name><desc>Breite der neuen Transferzone</desc></param>
+        <param><type>int</type><name>height</name><desc>Höhe der neuen Transferzone</desc></param>
       </params>
     </syntax>
     <desc>Setzt einen neuen Transferbereich für das aufrufende Objekt. Führt die Suche der Wegfindung durch einen Transferbereich (dieser gilt für die Wegfindung immer als komplett durchlaufbar), werden für den Clonk ControlTransfer-Aufrufe an das Script des Objekts aufgerufen. In diesen sollte mit Hilfe von Befehlen dafür gesorgt werden, dass der Clonk an seine Zielposition kommt.</desc>
@@ -23,10 +23,10 @@
 
 protected func UpdateTransferZone() { <funclink>return</funclink>(SetTransferZone(-<funclink>GetX</funclink>(), -<funclink>GetY</funclink>(), <funclink>LandscapeWidth</funclink>(), <funclink>LandscapeHeight</funclink>()));
 
-protected func ControlTransfer(pClonk, iToX, iToY)
+protected func ControlTransfer(clonk, endx, endy)
   {
-  pClonk-><funclink>SetPosition</funclink>(iToX, iToY);
-  <funclink>return</funclink>(1);
+  clonk-><funclink>SetPosition</funclink>(endx, endy);
+  <funclink>return</funclink> 1;
   }</code>
         <text>Script für ein Cheatobjekt: Ein Spieler, der mit der Maussteuerung an ein Ziel klickt, wird sofort dorthin versetzt.</text>
       </example>

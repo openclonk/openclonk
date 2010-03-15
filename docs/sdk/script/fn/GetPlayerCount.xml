@@ -9,7 +9,7 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                        <param><type>int</type><name>ePlayerType</name><desc>Wenn angegeben, wird nur die Anzahl des Spielers vom angegebenen Typ zurückgegeben. Für eine Liste gültiger Spielertypen siehe <funclink>GetPlayerType</funclink>.</desc><optional /></param>
+                        <param><type>int</type><name>player_type</name><desc>Wenn angegeben, wird nur die Anzahl des Spielers vom angegebenen Typ zurückgegeben. Für eine Liste gültiger Spielertypen siehe <funclink>GetPlayerType</funclink>.</desc><optional /></param>
                         </params>
                 </syntax>
                 <desc>Liefert die Anzahl der Spieler, die momentan im Spiel sind.</desc>

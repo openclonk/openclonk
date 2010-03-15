@@ -14,7 +14,7 @@
 		<examples>
 			<example>
 
-<code>for(var obj in FindObjects(Find_OCF(<funclink>OCF_CrewMember</funclink>))) SetVisibility(VIS_Owner(), obj);</code>
+<code>for(var obj in FindObjects(Find_OCF(<funclink>OCF_CrewMember</funclink>))) SetVisibility(VIS_Owner, obj);</code>
 
 				<text>Macht alle gesteuerten Clonks nur noch für ihre Besitzer sichtbar.</text>
 			</example>

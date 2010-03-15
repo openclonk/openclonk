@@ -11,24 +11,24 @@
       <params>
         <param>
           <type>string</type>
-          <name>strEntry</name>
+          <name>entry</name>
           <desc>Name des abzufragenden Eintrags</desc>
         </param>
         <param>
           <type>string</type>
-          <name>strSection</name>
+          <name>section</name>
           <desc>Sektion des abzufragenden Eintrags. Wird 0 übergeben, werden alle Sektionen nach einem Eintrag mit dem entspr. Namen durchsucht.</desc>
           <optional/>
         </param>
         <param>
           <type>int</type>
-          <name>iPlayer</name>
+          <name>player</name>
           <desc>Nummer des Spielers, von dem der Eintrag abgefragt werden soll.</desc>
           <optional/>
         </param>
         <param>
           <type>int</type>
-          <name>iEntryNr</name>
+          <name>entry_number</name>
           <desc>Nummer des abzufragenden Wertes, wenn der Eintrag mehrere Werte enthält.</desc>
           <optional/>
         </param>
@@ -40,13 +40,13 @@
     <remark>Achtung! Die abgefragten Werte können teilweise sync-sicher sein (also z.B. bei
             verschiedenen Rechnern in einem Netzwerkspiel verschiedene Werte zurückliefern)</remark>
 
-    <remark>Die meisten Möglichkeiten für Werte von strEntry sind bereits in System.c4g/GetXVal.c vordefiniert</remark>
+    <remark>Die meisten Möglichkeiten für Werte von entry sind bereits in System.c4g/GetXVal.c vordefiniert</remark>
 
     <examples>
       <example>
-        <code><funclink>Log</funclink>("Spieler %d hat %d Objekte!", iPlr, GetPlrObjectsOwned(iPlr));</code>
+        <code><funclink>Log</funclink>("Spieler %d hat %d Objekte!", player, GetPlrObjectsOwned(player));</code>
 
-        <text>Schreibt die Anzahl der Objekte, die der Spieler mit der Nummer iPlr besitzt ins Log.</text>
+        <text>Schreibt die Anzahl der Objekte, die der Spieler mit der Nummer player besitzt ins Log.</text>
 
       </example>
     </examples>

@@ -11,23 +11,23 @@
       <params>
         <param>
           <type>int</type>
-          <name>iBegin</name>
+          <name>begin</name>
           <desc>Beginn des Intervalls.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iEnd</name>
-          <desc>Schluss des Intervalls. Wenn iEnd größer als iBegin ist, so nimmt der Wert mit größerer XDir zu, sonst nimmt er ab.</desc>
+          <name>end</name>
+          <desc>Schluss des Intervalls. Wenn end größer als begin ist, so nimmt der Wert mit größerer XDir zu, sonst nimmt er ab.</desc>
         </param>
         <param>
           <type>int</type>
-          <name>iMaxXDir</name>
-          <desc>Größter Wert der XDir der abgebildet soll. Noch größere Geschwindigkeiten führen zum gleichen Animationswert (iEnd).</desc>
+          <name>max_dir</name>
+          <desc>Größter Wert der XDir der abgebildet soll. Noch größere Geschwindigkeiten führen zum gleichen Animationswert (end).</desc>
 	</param>
       </params>
     </syntax>
 
-    <desc>Der Wert ist proportional zur X-Geschwindigkeit des Objekts. Die Geschwindigkeiten 0 bis iMaxXDir werden linear auf den Wertebereich von iBegin bis iEnd abgebildet.</desc>
+    <desc>Der Wert ist proportional zur X-Geschwindigkeit des Objekts. Die Geschwindigkeiten 0 bis max_dir werden linear auf den Wertebereich von begin bis end abgebildet.</desc>
 
     <remark>Siehe die <emlink href="definition/animations.html">Animations-Dokumentation</emlink> für eine Beschreibung des Animationssystems.</remark>
 

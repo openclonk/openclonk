@@ -9,7 +9,7 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>id</type><name>idNewDef</name><desc>ID der neuen Definition für das Objekt</desc></param>
+        <param><type>id</type><name>new_def</name><desc>ID der neuen Definition für das Objekt</desc></param>
       </params>
     </syntax>
     <desc>Weist einem Objekt eine neue Definition zu.</desc>

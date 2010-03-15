@@ -9,9 +9,9 @@
 		<syntax>
 			<rtype>array</rtype>
 			<params>
-				<param><type>int</type><name>iRadius</name><desc>Maximaler Abstand des Objektes.</desc></param>
-				<param><type>int</type><name>iX</name><desc>Bezugspunkt für den Abstand. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
-				<param><type>int</type><name>iY</name><desc>Bezugspunkt für den Abstand. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+				<param><type>int</type><name>radius</name><desc>Maximaler Abstand des Objektes.</desc></param>
+				<param><type>int</type><name>x</name><desc>Bezugspunkt für den Abstand. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
+				<param><type>int</type><name>y</name><desc>Bezugspunkt für den Abstand. Bei lokalem Aufruf Offset zum aufrufenden Objekt.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Suchkriterium: Sucht alle Objekte, die höchstens den angegebenen Radius vom Bezugspunkt entfernt sind. Wird kein Bezugspunkt angegeben, gilt der Mittelpunkt des aufrufenden Objektes.</desc>

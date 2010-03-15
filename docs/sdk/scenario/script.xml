@@ -28,13 +28,13 @@
 	<text>Der Scriptzähler kann mit dem Befehl <funclink>goto</funclink>() auch manuell auf einen bestimmten Wert gesetzt werden.</text>
 	<text>Nach der Platzierung eines beitretenden Spielers ruft die Engine, wenn vorhanden, die Funktion InitializePlayer im Scenario-Script für diesen Spieler auf. Die Funktion wird aufgerufen, nachdem die in Scenario.txt beschriebenen Startkonditionen (Positionierung und Platzierung von Mannschaft, Gebäude, Fahrzeuge, Material) verarbeitet wurden. Mit dieser Funktion können weitere spielerabhängige Startkonditionen geschaffen werden.</text>
 
-	<code>func InitializePlayer(iPlr)
+	<code>func InitializePlayer(player)
 {
   // Eine Meldung für diesen Spieler
-  <funclink>Message</funclink>( "Spieler Nr. %d ist beigetreten", 0, iPlr );
+  <funclink>Message</funclink>( "Spieler Nr. %d ist beigetreten", 0, player );
   <funclink>Sound</funclink>("Ding");
   // Ersten Clonk des Spielers doch an einer anderen Stelle starten lassen
-  <funclink>SetPosition</funclink>( <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>()), <funclink>GetCrew</funclink>(iPlr));
+  <funclink>SetPosition</funclink>( <funclink>Random</funclink>(<funclink>LandscapeWidth</funclink>()), <funclink>Random</funclink>(<funclink>LandscapeHeight</funclink>()), <funclink>GetCrew</funclink>(player));
 }</code>
 
 	<text>Analog dazu ruft die Engine die Funktion RemovePlayer auf, wenn ein Spieler die Runde verlässt.</text>

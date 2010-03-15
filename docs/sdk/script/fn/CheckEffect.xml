@@ -11,24 +11,24 @@
       <params>
         <param>
           <type>string</type>
-          <name>szEffectName</name>
+          <name>name</name>
           <desc>Name des Effektes ohne vorangestelltes Fx.</desc>
         </param>
         <param>
           <type>object</type>
-          <name>pTarget</name>
+          <name>target</name>
           <desc>Zielobjekt, dessen Effekte benachrichtigt werden. Bei 0 wird die globale Effektliste benachrichtigt.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
-          <name>iPrio</name>
+          <name>priority</name>
           <desc>Priorität für den Effekt. Es werden Fx*Effect-Callbacks bei allen Effekten mit gleicher und höherer Priorität durchgeführt. Bei 0 werden alle Effekte benachrichtigt.</desc>
           <optional />
         </param>
         <param>
           <type>int</type>
-          <name>iTimerIntervall</name>
+          <name>timer</name>
           <optional />
           <desc>Intervall, in dem Timer-Aufrufe getätigt würden. Bei 0 würden keine Timer-Aufrufe durchgeführt, und der Effekt bliebe permanent bis er durch anderwertige Aufrufe entfernt würde.</desc>
         </param>

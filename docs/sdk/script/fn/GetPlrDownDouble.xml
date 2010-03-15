@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Nummer des Spielers, von dem die zuletzt gedrückten Tasten überprüft werden sollen.</desc></param>
+				<param><type>int</type><name>player</name><desc>Nummer des Spielers, von dem die zuletzt gedrückten Tasten überprüft werden sollen.</desc></param>
 			</params>
 		</syntax>
 		<desc>Gibt zurück, ob der angegebene Spieler als letzte Aktion Doppel-Stopp

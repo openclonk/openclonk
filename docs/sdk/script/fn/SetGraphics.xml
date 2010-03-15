@@ -9,11 +9,11 @@
     <syntax>
       <rtype>bool</rtype>
       <params>
-        <param><type>string</type><name>szGfxName</name><desc>Name der neu zu setzenden Grafik. Bei 0 wird die Standardgrafik (Graphics.png bzw. bmp) gesetzt.</desc><optional /></param>
-        <param><type>id</type><name>idSrcDef</name><desc>Definition, von der die Grafik entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird. Wenn nicht angegeben für iOverlay!=0, wird das entsprechende Overlay entfernt.</desc><optional /></param>
-        <param><type>int</type><name>iOverlay</name><desc>Index der zu setzenden Overlaygrafik. Muss wenn angegeben größer 0 sein, und fügt dem Objekt eine Grafik mit dem gegebenen Index hinzu, bzw. ändert sie wenn eine Grafik mit dem gegebenen Overlayindex schon existiert. Overlays mit größerem Index werden stets über denen mit kleinerem Index gezeichnet. Wenn ein Objekt nur eine Overlaygrafik hat, kann die symbolische Konstante GFX_Overlay (=1) verwendet werden.</desc><optional /></param>
-        <param><type>int</type><name>iOverlayMode</name><desc>
-			Nur beachtet bei angegebenem iOverlay: Gibt an, wie das Overlay gezeichnet wird. Folgende Konstanten sind möglich:
+        <param><type>string</type><name>gfx_name</name><desc>Name der neu zu setzenden Grafik. Bei 0 wird die Standardgrafik (Graphics.png bzw. bmp) gesetzt.</desc><optional /></param>
+        <param><type>id</type><name>source_definition</name><desc>Definition, von der die Grafik entnommen werden soll. Wenn nicht angegeben, gilt die Definition des Objekts, dessen Grafik geändert wird. Wenn nicht angegeben für overlay!=0, wird das entsprechende Overlay entfernt.</desc><optional /></param>
+        <param><type>int</type><name>overlay</name><desc>Index der zu setzenden Overlaygrafik. Muss wenn angegeben größer 0 sein, und fügt dem Objekt eine Grafik mit dem gegebenen Index hinzu, bzw. ändert sie wenn eine Grafik mit dem gegebenen Overlayindex schon existiert. Overlays mit größerem Index werden stets über denen mit kleinerem Index gezeichnet. Wenn ein Objekt nur eine Overlaygrafik hat, kann die symbolische Konstante GFX_Overlay (=1) verwendet werden.</desc><optional /></param>
+        <param><type>int</type><name>overlay_mode</name><desc>
+			Nur beachtet bei angegebenem overlay: Gibt an, wie das Overlay gezeichnet wird. Folgende Konstanten sind möglich:
 			<table>
                 <rowh><col>Konstante</col><col>Wert</col><col>Effekt</col></rowh>
                 <row><col>GFXOV_MODE_None</col><col>0</col><col>Ungültig: Nicht benutzen</col></row>
@@ -22,16 +22,16 @@
                 <row><col>GFXOV_MODE_Picture</col><col>3</col><col>Hat nur Auswirkung, wenn das Objekt im Inventar eines Clonks oder in einem Menü (z.B. Aktivieren in Gebäuden) auftaucht: Das Picture-Rechteck der angegebenen Definition wird über das Repräsentativbild des Objekts gezeichnet. Hiermit können zum Beispiel Zauberer auf Steine oder Zaubersymbole auf Schriftrollen gedruckt werden.</col></row>
                 <row><col>GFXOV_MODE_IngamePicture</col><col>4</col><col>Legt die Picture-Grafik der Quelldefinition über das Shape des Zielobjektes. Ab CR.</col></row>
                 <row><col>GFXOV_MODE_Object</col><col>5</col><col>Legt die aktuelle Objektgrafik inklusive aller Overlays von pOverlayObject über das Objekt. Achtung: Ein Objekt darf sich nicht rekursiv über sich selbst als Overlay legen. Ab CR.</col></row>
-                <row><col>GFXOV_MODE_ExtraGraphics</col><col>6</col><col>Benutzt die angegebene Grafik als Quellgrafik, um das Objekt erneut zu zeichnen. Die Quellkoordinaten sind die gleichen wie die, die auch beim Zeichnen von pObj verwendet wurden. Ab CR.</col></row>
+                <row><col>GFXOV_MODE_ExtraGraphics</col><col>6</col><col>Benutzt die angegebene Grafik als Quellgrafik, um das Objekt erneut zu zeichnen. Die Quellkoordinaten sind die gleichen wie die, die auch beim Zeichnen von obj verwendet wurden. Ab CR.</col></row>
             </table>
 		</desc><optional /></param>
-        <param><type>string</type><name>szAction</name><desc>Nur für iOverlayMode==GFXOV_MODE_Action: Aktivität in der Definition idSrcDef, dessen Grafik über das Zielobjekt gelegt werden soll. Diese Aktivität muss in der <emlink href="definition/actmap.html">ActMap.txt</emlink> der Quelldefinition definiert sein. Achtung: Die Länge dieser Animation sollte 1 sein; bewegte Animtionen sind noch nicht möglich. Ab CR.</desc><optional /></param>
+        <param><type>string</type><name>action</name><desc>Nur für overlay_mode==GFXOV_MODE_Action: Aktivität in der Definition source_definition, dessen Grafik über das Zielobjekt gelegt werden soll. Diese Aktivität muss in der <emlink href="definition/actmap.html">ActMap.txt</emlink> der Quelldefinition definiert sein. Achtung: Die Länge dieser Animation sollte 1 sein; bewegte Animtionen sind noch nicht möglich. Ab CR.</desc><optional /></param>
         <param><type>int</type><name>dwBlitMode</name><desc>Blitmodus der überlegten Grafik (z.B. additiv). Siehe <funclink>SetObjectBlitMode</funclink></desc><optional /></param>
-        <param><type>object</type><name>pOvelayObject</name><desc>Nur für iOverlayMode==GFXOV_MODE_Object: Objekt, dessen Grafik über das Zielobjekt gelegt werden soll. Ab CR.</desc><optional /></param>
+        <param><type>object</type><name>overlay_object</name><desc>Nur für overlay_mode==GFXOV_MODE_Object: Objekt, dessen Grafik über das Zielobjekt gelegt werden soll. Ab CR.</desc><optional /></param>
       </params>
     </syntax>
     <desc>Ändert die Grafik des aufrufenden Objekts. Diese beeinflusst die Darstellung des betreffenden Objekts überall im Spiel: In der Landschaft, im Menü oder auf Maussteuerungssymbolen.</desc>
-    <remark>Es wird bei iOverlay=0 nur die Grafik eines Objekts geändert. Der Effekt entspricht dem Ersetzen der Graphics.bmp/-.png/Overlay.png in der <emlink href="definition/index.html">Definition</emlink>; Quellangaben aus der <emlink href="definition/actmap.html">ActMap.txt</emlink> oder <emlink href="definition/defcore.html">DefCore.txt</emlink> werden dadurch nicht beeinflusst; diese Koordinaten sollten also in der neuen Grafik auf sinnvolle Positionen verweisen (Das gilt auch für SolidMasks!).</remark>
+    <remark>Es wird bei overlay=0 nur die Grafik eines Objekts geändert. Der Effekt entspricht dem Ersetzen der Graphics.bmp/-.png/Overlay.png in der <emlink href="definition/index.html">Definition</emlink>; Quellangaben aus der <emlink href="definition/actmap.html">ActMap.txt</emlink> oder <emlink href="definition/defcore.html">DefCore.txt</emlink> werden dadurch nicht beeinflusst; diese Koordinaten sollten also in der neuen Grafik auf sinnvolle Positionen verweisen (Das gilt auch für SolidMasks!).</remark>
     <examples>
       <example>
         <code><funclink>FindObject</funclink>(Rock)->SetGraphics(nil, Gold);</code>

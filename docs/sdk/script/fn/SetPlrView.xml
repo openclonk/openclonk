@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr</name><desc>Spieler, dessen Sicht gesetzt werden soll.</desc></param>
-				<param><type>object</type><name>pObj</name><desc>Objekt, auf das die Sicht gesetzt werden soll. </desc></param>
+				<param><type>int</type><name>player</name><desc>Spieler, dessen Sicht gesetzt werden soll.</desc></param>
+				<param><type>object</type><name>obj</name><desc>Objekt, auf das die Sicht gesetzt werden soll. </desc></param>
 			</params>
 		</syntax>
 		<desc>Zentriert das Sichtfenster eines Spielers auf ein Objekt. Die Sicht folgt dem Objekt bis zum nächsten Spielerkommando.</desc>

@@ -9,7 +9,7 @@
                 <syntax>
                         <rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iNewCount</name><desc>Neue, maximale Spielerzahl</desc></param>
+				<param><type>int</type><name>max</name><desc>Neue, maximale Spielerzahl</desc></param>
 			</params>
                 </syntax>
                 <desc>Ändert die Maximalzahl der Spieler, die an der Runde teilnehmen können. Dieser Wert wirkt sich nur auf Neubeitritte aus; es werden keine vorhandenen Spieler eliminiert, um das Limit zu erfüllen.</desc>

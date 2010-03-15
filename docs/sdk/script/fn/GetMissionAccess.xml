@@ -9,7 +9,7 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>string</type><name>strMissionAccess</name><desc>Missionszugang, der überprüft wird</desc></param>
+				<param><type>string</type><name>mission_access</name><desc>Missionszugang, der überprüft wird</desc></param>
 			</params>
 		</syntax>
 		<desc>Stellt fest und gibt zurück, ob der Spieler bereits das angegebene Missionszugangspasswort besitzt</desc>

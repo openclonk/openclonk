@@ -11,7 +11,7 @@
 			<rtype>bool</rtype>
 			<params>
 				<param>
-					<type>bool</type><name>fForced</name>
+					<type>bool</type><name>forced</name>
 					<desc>Wenn gesetzt, wird das Objekt auch dann getötet, wenn ein Effekt das zu unterbrechen versucht. Ab CE.</desc><optional />
 				</param>
 			</params>

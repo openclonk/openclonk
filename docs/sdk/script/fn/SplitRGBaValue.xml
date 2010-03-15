@@ -10,10 +10,10 @@
 			<rtype>bool</rtype>
 			<params>
 				<param><type>int</type><name>Val</name><desc>32Bit-Farbwert</desc></param>
-				<param><type>int</type><name>iRed</name><desc>[opt] Variable, in der der Rotanteil gespeichert werden soll</desc></param>
-				<param><type>int</type><name>iGreen</name><desc>[opt] Variable, in der der Grünanteil gespeichert werden soll</desc></param>
-				<param><type>int</type><name>iBlue</name><desc>[opt] Variable, in der der Blauanteil gespeichert werden soll</desc></param>
-				<param><type>int</type><name>iAlpha</name><desc>[opt] Variable, in der der Alpha-Wert gespeichert werden soll</desc></param>
+				<param><type>int</type><name>red</name><desc>[opt] Variable, in der der Rotanteil gespeichert werden soll</desc></param>
+				<param><type>int</type><name>green</name><desc>[opt] Variable, in der der Grünanteil gespeichert werden soll</desc></param>
+				<param><type>int</type><name>blue</name><desc>[opt] Variable, in der der Blauanteil gespeichert werden soll</desc></param>
+				<param><type>int</type><name>alpha</name><desc>[opt] Variable, in der der Alpha-Wert gespeichert werden soll</desc></param>
 			</params>
 		</syntax>
 		<desc>

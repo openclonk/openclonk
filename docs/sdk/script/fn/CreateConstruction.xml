@@ -9,17 +9,17 @@
     <syntax>
       <rtype>object</rtype>
       <params>
-        <param><type>id</type><name>id</name><desc>Typ des zu erstellenden Objekts</desc></param>
-        <param><type>int</type><name>iXOffset</name><desc>X-Koordinate</desc></param>
-        <param><type>int</type><name>iYOffset</name><desc>Y-Koordinate</desc></param>
-        <param><type>int</type><name>iOwner</name><desc>Besitzer des zu erstellenden Objekts (Index eines Spielers oder <funclink>NO_OWNER</funclink> für keinen Besitzer)</desc></param>
-        <param><type>int</type><name>iCompletion</name><desc>Gibt die Fertigstellung des Objekts in Prozent an (muss mindestens 1 sein)</desc></param>
-        <param><type>bool</type><name>fTerrain</name><desc>Bestimmt, ob die Landschaft an die Baustelle angepasst werden soll (inkl. Fundament).</desc></param>
-        <param><type>bool</type><name>fCheckSite</name><desc>Überprüft die Baustelle vorher auf ihre Eignung</desc></param>
+        <param><type>id</type><name>object_id</name><desc>Typ des zu erstellenden Objekts</desc></param>
+        <param><type>int</type><name>xoffset</name><desc>X-Koordinate</desc></param>
+        <param><type>int</type><name>yoffset</name><desc>Y-Koordinate</desc></param>
+        <param><type>int</type><name>owner</name><desc>Besitzer des zu erstellenden Objekts (Index eines Spielers oder <funclink>NO_OWNER</funclink> für keinen Besitzer)</desc></param>
+        <param><type>int</type><name>completion</name><desc>Gibt die Fertigstellung des Objekts in Prozent an (muss mindestens 1 sein)</desc></param>
+        <param><type>bool</type><name>adjust_terrain</name><desc>Bestimmt, ob die Landschaft an die Baustelle angepasst werden soll (inkl. Fundament).</desc></param>
+        <param><type>bool</type><name>check_site</name><desc>Überprüft die Baustelle vorher auf ihre Eignung</desc></param>
       </params>
     </syntax>
     <desc>Sollte statt <funclink>CreateObject</funclink> benutzt werden, wenn ein Gebäude oder eine Baustelle erzeugt werden soll. Bei lokalen Aufrufen dieser Funktion wird die angegebene Position zu Offset-Koordinaten zum aufrufenden Objekt.
-Wenn fCheckSite 1 ist, wird die Baustelle vorher auf ihre Eignung überprüft. Ist die Position ungeeignet (z.B. durch unebenen Untergrund oder andere Gebäude), wird beim aufrufenden Objekt eine entsprechende Meldung ausgegeben und die Funktion gibt 0 zurück.</desc>
+Wenn check_site 1 ist, wird die Baustelle vorher auf ihre Eignung überprüft. Ist die Position ungeeignet (z.B. durch unebenen Untergrund oder andere Gebäude), wird beim aufrufenden Objekt eine entsprechende Meldung ausgegeben und die Funktion gibt 0 zurück.</desc>
     <examples>
       <example>
         <code>CreateConstruction( HUT2, 150,100,  0,100,1 );</code>

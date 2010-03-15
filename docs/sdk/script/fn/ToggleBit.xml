@@ -9,8 +9,8 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>int</type><name>iOldVal</name><desc>Alter Wert der Bitmaske</desc></param>
-				<param><type>int</type><name>iBitNumber</name><desc>Das umzudrehende Bit</desc></param>
+				<param><type>int</type><name>old_value</name><desc>Alter Wert der Bitmaske</desc></param>
+				<param><type>int</type><name>bit_number</name><desc>Das umzudrehende Bit</desc></param>
 			</params>
 		</syntax>
 		<desc>Gibt die neue Bitmaske mit dem an der angegebenen Stelle umgedrehten Bit zurück</desc>

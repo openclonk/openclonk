@@ -9,11 +9,11 @@
 		<syntax>
 			<rtype>bool</rtype>
 			<params>
-				<param><type>int</type><name>iPlr1</name><desc>Der Spieler, dessen Bündnisverhältnis gesetzt wird</desc></param>
-				<param><type>int</type><name>iPlr2</name><desc>Der Spieler, zu dem das Bündnisverhältnis gesetzt wird</desc></param>
-				<param><type>bool</type><name>fHostile</name><desc>Wenn ungleich 0, wird verfeindet. Sonst verbündet.</desc></param>
-				<param><type>bool</type><name>fSilent</name><desc>Wenn ungleich 0, erscheint keine Verfeindungsnachricht im Messageboard. Im ersten Frame des Spieles wird auch ohne diesen Parameter nie eine Nachricht ausgegeben.</desc></param>
-				<param><type>bool</type><name>fNoCalls</name><desc>Wenn ungleich 0, werden die Callbacks RejectHostilityChange und OnHostilityChange nicht ausgeführt. Ab CR.</desc></param>
+				<param><type>int</type><name>player1</name><desc>Der Spieler, dessen Bündnisverhältnis gesetzt wird</desc></param>
+				<param><type>int</type><name>player2</name><desc>Der Spieler, zu dem das Bündnisverhältnis gesetzt wird</desc></param>
+				<param><type>bool</type><name>hostile</name><desc>Wenn ungleich 0, wird verfeindet. Sonst verbündet.</desc></param>
+				<param><type>bool</type><name>silent</name><desc>Wenn ungleich 0, erscheint keine Verfeindungsnachricht im Messageboard. Im ersten Frame des Spieles wird auch ohne diesen Parameter nie eine Nachricht ausgegeben.</desc></param>
+				<param><type>bool</type><name>no_calls</name><desc>Wenn ungleich 0, werden die Callbacks RejectHostilityChange und OnHostilityChange nicht ausgeführt. Ab CR.</desc></param>
 			</params>
 		</syntax>
 		<desc>Setzt das Bündnisverhältnis zwischen zwei Spielern einseitig.</desc>

@@ -9,10 +9,10 @@
 								<syntax>
 												<rtype>int / id</rtype>
 												<params>
-																<param><type>id</type><name>idComponent</name><desc>Objektkomponente, dessen Menge zurückgeliefert werden soll. Wenn 0, wird iIndex benutzt und eine Objektkomponente zurückgegeben.</desc><optional /></param>
-																<param><type>int</type><name>iIndex</name><desc>Index der zurückzuliefernden Komponente. Dieser Parameter wird ignoriert, wenn idComponent angegeben ist. Ansonsten wird eine ID der Komponente zurückgegeben, dessen Menge in einem darauffolgenden GetComponent-Aufruf ermittelt werden kann.</desc><optional /></param>
-																<param><type>object</type><name>pObj</name><desc>Objekt dessen Komponenten abgefragt werden sollen. 0 bei lokalem Aufruf. Wenn stattdessen eine idDef angegeben ist, wird dieser Parameter ignoriert.</desc><optional /></param>
-																<param><type>id</type><name>idDef</name><desc>Definition, von der die Komponenten abgefragt werden sollen. Wenn 0, wird stattdessen in pObj bzw. dem aufrufenden Objekt abgefragt.</desc><optional /></param>
+																<param><type>id</type><name>component</name><desc>Objektkomponente, dessen Menge zurückgeliefert werden soll. Wenn 0, wird index benutzt und eine Objektkomponente zurückgegeben.</desc><optional /></param>
+																<param><type>int</type><name>index</name><desc>Index der zurückzuliefernden Komponente. Dieser Parameter wird ignoriert, wenn component angegeben ist. Ansonsten wird eine ID der Komponente zurückgegeben, dessen Menge in einem darauffolgenden GetComponent-Aufruf ermittelt werden kann.</desc><optional /></param>
+																<param><type>object</type><name>obj</name><desc>Objekt dessen Komponenten abgefragt werden sollen. 0 bei lokalem Aufruf. Wenn stattdessen eine definition angegeben ist, wird dieser Parameter ignoriert.</desc><optional /></param>
+																<param><type>id</type><name>definition</name><desc>Definition, von der die Komponenten abgefragt werden sollen. Wenn 0, wird stattdessen in obj bzw. dem aufrufenden Objekt abgefragt.</desc><optional /></param>
 												</params>
 								</syntax>
 								<desc>Liefert Objektkomponenten.</desc>

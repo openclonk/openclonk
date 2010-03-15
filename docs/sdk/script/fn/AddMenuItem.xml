@@ -9,30 +9,30 @@
 		<syntax>
 			<rtype>int</rtype>
 			<params>
-				<param><type>string</type><name>szCaption</name><desc>Text des neuen Menüeintrags</desc></param>
-				<param><type>string</type><name>szCommand</name><desc>Kommando, das bei Auswahl des Menüeintrags ausgeführt werden soll. Kann entweder ein Funktionsname oder ein Statement sein. Wenn ein Funktionsname angegeben wird, dann wird die Funktion in dem Objekt aufgerufen, welches bei <funclink>CreateMenu</funclink> als pCommandObject übergeben wurde.</desc></param>
-				<param><type>id</type><name>idItem</name><desc>Die ID wird als Bild für den Menüeintrag verwendet. Der Name der Definition kann mit %s in szCaption verwendet werden. Außerdem wird die ID als erster Parameter an den Aufruf von szCommand übergeben, sofern dieser nur ein Funktionsname ist.</desc></param>
-				<param><type>int</type><name>iCount</name><desc>Gewünschte Zahl, die neben dem Menüeintrag angezeigt werden soll (ähnlich der Mengenanzeige im Aktivieren-Menü)</desc></param>
-				<param><type>int</type><name>iParameter</name><desc>Wird als 2. Parameter an die in szCommand angegebene Funktion übergeben (siehe Anmerkung)</desc></param>
-				<param><type>string</type><name>szInfoCaption</name><desc>Beschreibungstext des neuen Menüeintrags</desc></param>
-				<param><type>int</type><name>iExtra</name><desc>Zusatzparameter für das Verhalten des Menüeintrags.<br />
+				<param><type>string</type><name>caption</name><desc>Text des neuen Menüeintrags</desc></param>
+				<param><type>string</type><name>command</name><desc>Kommando, das bei Auswahl des Menüeintrags ausgeführt werden soll. Kann entweder ein Funktionsname oder ein Statement sein. Wenn ein Funktionsname angegeben wird, dann wird die Funktion in dem Objekt aufgerufen, welches bei <funclink>CreateMenu</funclink> als command_object übergeben wurde.</desc></param>
+				<param><type>id</type><name>symbol</name><desc>Die ID wird als Bild für den Menüeintrag verwendet. Der Name der Definition kann mit %s in caption verwendet werden. Außerdem wird die ID als erster Parameter an den Aufruf von command übergeben, sofern dieser nur ein Funktionsname ist.</desc></param>
+				<param><type>int</type><name>count</name><desc>Gewünschte Zahl, die neben dem Menüeintrag angezeigt werden soll (ähnlich der Mengenanzeige im Aktivieren-Menü)</desc></param>
+				<param><type>int</type><name>parameter</name><desc>Wird als 2. Parameter an die in command angegebene Funktion übergeben (siehe Anmerkung)</desc></param>
+				<param><type>string</type><name>info_caption</name><desc>Beschreibungstext des neuen Menüeintrags</desc></param>
+				<param><type>int</type><name>extra</name><desc>Zusatzparameter für das Verhalten des Menüeintrags.<br />
 					Untere 7 Bits (0-127): Menüsymbol.<br />
 					0: Normal<br />
-					1: Rangsymbol. Bei angegebenem idItem wird ggf. die Rank.png der Definition genutzt. iCount gibt die Ranghöhe an<br />
+					1: Rangsymbol. Bei angegebenem symbol wird ggf. die Rank.png der Definition genutzt. count gibt die Ranghöhe an<br />
 					2: Picturefacet, das um XPar1-fache Picturebreite nach rechts verschoben ist. Damit lassen sich mehrere Menüsymbole innerhalb einer Definition unterbringen.<br />
 					3: XPar1 gibt ein Objekt an, dessen Picture-Grafik mit Rang gezeichnet wird. Hat das Objekt keine Infosektion (und dmait keinen Rang), so wird in Kontextmenüs dennoch ein entsprechender Leerraum gelassen. Ab CE.<br />
 					4: XPar1 gibt ein Objekt an, dessen Picture-Grafik gezeichnet wird. Ab CE.<br />
-					Bit 8 (128): XPar2 wird als Wertangabe benutzt, und überschreibt die Standardangabe (Wert der Definition idItem). Siehe auch iExtra von <funclink>CreateMenu</funclink></desc><optional/></param>
-				<param><type>any</type><name>XPar1</name><desc>Erster Zusatzparameter für iExtra.</desc><optional /></param>
-				<param><type>any</type><name>XPar2</name><desc>Zweiter Zusatzparameter für iExtra.</desc><optional /></param>
+					Bit 8 (128): XPar2 wird als Wertangabe benutzt, und überschreibt die Standardangabe (Wert der Definition symbol). Siehe auch extra von <funclink>CreateMenu</funclink></desc><optional/></param>
+				<param><type>any</type><name>XPar1</name><desc>Erster Zusatzparameter für extra.</desc><optional /></param>
+				<param><type>any</type><name>XPar2</name><desc>Zweiter Zusatzparameter für extra.</desc><optional /></param>
 			</params>
 		</syntax>
 		<desc>Fügt einen Menüeintrag hinzu.</desc>
 		<remark>Menüsymbole sollten optimalerweise die Größe 35x35 für normale Menüs, 16x16 für Kontextmenüs besitzen. Andernfalls wird unter Beibehaltung des Höhe/Breite-Verhältnisses so gestreckt, dass die längere Seite dieser Größe entspricht.</remark>
-		<remark>Wird als szCommand-Parameter nur ein Funktionsname angegeben, werden folgende Parameter übergeben:
-			<code>idItem, iParameter, bRight[, iValue]</code>
+		<remark>Wird als command-Parameter nur ein Funktionsname angegeben, werden folgende Parameter übergeben:
+			<code>symbol, parameter, bRight[, value]</code>
 						wobei bRight angibt, ob der Menueintrag mit [Special2] bzw. der rechten Maustaste ausgewählt wurde.
-						iValue wird nur übergeben, wenn das Bit 8 bei iExtra gesetzt wird und gibt den (überschriebenen) angezeigten Wert des ausgewählten Menüeintrags an.
+						value wird nur übergeben, wenn das Bit 8 bei extra gesetzt wird und gibt den (überschriebenen) angezeigten Wert des ausgewählten Menüeintrags an.
 		</remark>
 		<examples>
 			<example>
@@ -51,7 +51,7 @@ func Activate()
 /* Diese Kommados werden vom Menü aufgerufen */
 func SayHello()
 {
-	Message("Hallo",this());
+	Message("Hallo",this);
 }
 
 func DoMagic()

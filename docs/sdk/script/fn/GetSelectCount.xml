@@ -9,10 +9,10 @@
                 <syntax>
                         <rtype>int</rtype>
                         <params>
-                                <param><type>int</type><name>iPlayer</name><desc>Spieler-Nummer.</desc></param>
+                                <param><type>int</type><name>player</name><desc>Spieler-Nummer.</desc></param>
                         </params>
                 </syntax>
-                <desc>Liefert die Anzahl der ausgewählten Clonks von Spieler iPlayer.</desc>
+                <desc>Liefert die Anzahl der ausgewählten Clonks von Spieler player.</desc>
                 <related>
                         <funclink>SelectCrew</funclink>
                 </related>
