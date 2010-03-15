@@ -1079,29 +1079,17 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		else
 		{
 			C4Def *pDef = pSourceGfx->pDef;
-			int32_t r = pDef->GetPropertyInt(P_PerspectiveR);
-			int32_t theta = pDef->GetPropertyInt(P_PerspectiveTheta);
-			int32_t phi = pDef->GetPropertyInt(P_PerspectivePhi);
+
+			C4Value value;
+			pDef->GetProperty(Strings.P[P_PictureTransformation], value);
+			StdMeshMatrix matrix = StdMeshMatrix::Identity();
+			C4ValueToMatrix(value, &matrix);
 
 			float twdt, thgt;
-			C4DrawTransform trf(Transform, float(iTx), float(iTy));
 			if(fZoomToShape)
 			{
 				twdt = pForObj->Shape.Wdt;
 				thgt = pForObj->Shape.Hgt;
-
-				// Keep aspect ratio for nonperspective projection
-				// (perspective projection will not show up distorted anyway, and this would distort it)
-				if(r <= 0)
-				{
-					if(twdt*pDef->Shape.Hgt < pDef->Shape.Wdt*thgt)
-						thgt = twdt*pDef->Shape.Hgt/pDef->Shape.Wdt;
-					else
-						twdt = thgt*pDef->Shape.Wdt/pDef->Shape.Hgt;
-				}
-
-				float fZoom = Min(pForObj->Shape.Wdt/twdt, pForObj->Shape.Hgt/thgt);
-				trf.ScaleAt(fZoom/*pForObj->Shape.Wdt/twdt*/, fZoom/*pForObj->Shape.Hgt/thgt*/,  float(iTx), float(iTy));
 			}
 			else
 			{
@@ -1109,16 +1097,9 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 				thgt = pDef->Shape.Hgt;
 			}
 
-			if(r > 0)
-			{
-				lpDDraw->SetPerspective(r/1000.0f, theta, phi);
-				lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &trf);
-				lpDDraw->UnsetPerspective();
-			}
-			else
-			{
-				lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &trf);
-			}
+			lpDDraw->SetPerspective(&matrix);
+			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &Transform);
+			lpDDraw->UnsetPerspective();
 		}
 	}
 
@@ -1184,20 +1165,15 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 	else
 	{
 		C4Def *pDef = pSourceGfx->pDef;
-		int32_t r = pDef->GetPropertyInt(P_PerspectiveR);
-		int32_t theta = pDef->GetPropertyInt(P_PerspectiveTheta);
-		int32_t phi = pDef->GetPropertyInt(P_PerspectivePhi);
+		
+		C4Value value;
+		pDef->GetProperty(Strings.P[P_PictureTransformation], value);
+		StdMeshMatrix matrix = StdMeshMatrix::Identity();
+		C4ValueToMatrix(value, &matrix);
 
-		if(r > 0)
-		{
-			lpDDraw->SetPerspective(r/1000.0f, theta, phi);
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &C4DrawTransform(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2));
-			lpDDraw->UnsetPerspective();
-		}
-		else
-		{
-			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &C4DrawTransform(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2));
-		}
+		lpDDraw->SetPerspective(&matrix);
+		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &C4DrawTransform(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2));
+		lpDDraw->UnsetPerspective();
 	}
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)

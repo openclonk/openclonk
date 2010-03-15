@@ -205,8 +205,5 @@ func GetFuel()
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
   SetProperty("Collectible",1, def);
-  SetProperty("PerspectiveR", 20000, def);
-  SetProperty("PerspectiveTheta", 25, def);
-  SetProperty("PerspectivePhi", 30, def);
 }
 		  							

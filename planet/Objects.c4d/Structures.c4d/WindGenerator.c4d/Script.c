@@ -49,7 +49,4 @@ func Wind2Turn()
 
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
-	SetProperty("PerspectiveR", 80000, def);
-  SetProperty("PerspectiveTheta", 20, def);
-  SetProperty("PerspectivePhi", 25, def);
 }

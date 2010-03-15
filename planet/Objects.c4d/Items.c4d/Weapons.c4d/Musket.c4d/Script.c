@@ -166,6 +166,4 @@ func RejectCollect(id shotid, object shot)
 
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
-
-	SetProperty("PerspectiveR", 12000, def);
 }

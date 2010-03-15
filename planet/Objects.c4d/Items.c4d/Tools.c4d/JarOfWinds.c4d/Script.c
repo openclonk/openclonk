@@ -166,8 +166,6 @@ private func FireWeapon(object pClonk,iX,iY)
 
 func Definition(def) {
   SetProperty("Name", "$Name$", def);
-
-	SetProperty("PerspectiveR", 9000, def);
 }
 		  									//enemys are pushed back	
 

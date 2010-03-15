@@ -26,6 +26,7 @@
 #include <C4Value.h>
 
 class C4AulScriptEngine;
+class StdMeshMatrix;
 
 const int C4SCR_Access_Public			= 0,
 					C4SCR_Access_Protected	= 1,
@@ -65,6 +66,9 @@ extern C4ScriptConstDef C4ScriptConstMap[];
 extern C4ScriptFnDef C4ScriptFnMap[];
 
 void InitFunctionMap(C4AulScriptEngine *pEngine); // add functions to engine
+
+bool C4ValueToMatrix(C4Value& value, StdMeshMatrix* matrix);
+bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 
 /* Engine-Calls */
 

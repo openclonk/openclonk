@@ -126,7 +126,4 @@ func FxIntLengthStop(pTarget, iNumber, iReason, fTmp)
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PerspectiveR", 10000, def);
-  SetProperty("PerspectiveTheta", 20, def);
-  SetProperty("PerspectivePhi", 60, def);
 }

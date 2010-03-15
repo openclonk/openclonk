@@ -124,7 +124,4 @@ public func ResetClonk(clonk)
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PerspectiveR", 7000, def);
-  SetProperty("PerspectiveTheta", 20, def);
-  SetProperty("PerspectivePhi", -30, def);
 }

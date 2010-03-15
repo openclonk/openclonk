@@ -222,5 +222,4 @@ func Deselection()
 */
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
-	SetProperty("PerspectiveR", 15000, def);
 }

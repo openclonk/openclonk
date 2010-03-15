@@ -209,7 +209,4 @@ NextAction = "Build",
 PhaseCall="Smoking",
 },  }, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PerspectiveR", 55000, def);
-  SetProperty("PerspectiveTheta", 20, def);
-  SetProperty("PerspectivePhi", 25, def);
 }

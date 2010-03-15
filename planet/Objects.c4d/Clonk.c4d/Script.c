@@ -1671,9 +1671,7 @@ Build = {
   SetProperty("Name", "Clonk", def);
 
   // Set perspective
-  SetProperty("PerspectiveR", 20000, def);
-  SetProperty("PerspectiveTheta", 20, def);
-  SetProperty("PerspectivePhi", 70, def);
+  SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), def);
 
 	_inherited(def);
 }

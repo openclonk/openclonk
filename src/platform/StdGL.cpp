@@ -967,6 +967,10 @@ namespace
 
 void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform* pTransform)
 {
+	// Field of View for perspective projection, in degrees
+	static const float FOV = 60.0f;
+	static const float TAN_FOV = tan(FOV / 2.0f / 180.0f * M_PI);
+
 	const StdMesh& mesh = instance.Mesh;
 
 	bool parity = OgreToClonkParity;
@@ -1046,11 +1050,11 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glTranslatef(-1.0f, 1.0f, 0.0f);
 		glScalef(2.0f/iWdt, -2.0f/iHgt, 1.0f);
 
-		// Compensate for 1.0f aspect (need to do this after having applied zoom and transform)
-		// which is why we can't directly set it in gluPerspective
-		glTranslatef(twdt/2,thgt/2, 0.0f);
+		// Compensate for 1.0f aspect (need to do this after having applied zoom and transform
+		// which is why we can't directly set it in gluPerspective)
+		glTranslatef(twdt/2+tx-iClipX1,thgt/2+ty-iClipY1, 0.0f);
 		glScalef((twdt>thgt)?(thgt/twdt):1.0f,(twdt>thgt)?(1.0f):(twdt/thgt), 1.0f);
-		glTranslatef(-twdt/2,-thgt/2, 0.0f);
+		glTranslatef(-twdt/2-tx+iClipX1,-thgt/2-ty+iClipY1, 0.0f);
 
 		if(!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
 			parity = !parity;
@@ -1067,8 +1071,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// -1 to 1, and this is mapped into tx/ty/twdt/thgt by the above code.
 		// aspect is 1.0f since it needs to be applied after zoom/transform,
 		// this is also done above.
-		gluPerspective(60.0f, 1.0f, 0.1f, 100.0f);
-
+		gluPerspective(FOV, 1.0f, 0.1f, 100.0f);
 	}
 
 	// Now set up modelview matrix
@@ -1091,31 +1094,65 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		const float MeshX = (v1.x + v2.x)/2.0f;
 		const float MeshY = (v1.y + v2.y)/2.0f;
 		const float MeshZ = (v1.z + v2.z)/2.0f;
+		
+		const float b = fabs(v2.x - v1.x)/2.0f;
+		const float h = fabs(v2.y - v1.y)/2.0f;
+		const float l = fabs(v2.z - v1.z)/2.0f;
 
-		const float cosEyeTheta = cos(EyeTheta/180.0f*M_PI);
-		const float sinEyeTheta = sin(EyeTheta/180.0f*M_PI);
-		const float cosEyePhi = cos(EyePhi/180.0f*M_PI);
-		const float sinEyePhi = sin(EyePhi/180.0f*M_PI);
+		// Setup camera position so that the mesh with uniform transformation
+		// fits well into the rectangle twdt/thgt (without distortion).
+		float EyeR;
+		if(thgt > twdt)
+			EyeR = l + std::max(b/TAN_FOV, h/TAN_FOV * twdt/thgt);
+		else
+			EyeR = l + std::max(b/TAN_FOV * thgt/twdt, h/TAN_FOV);
 
-		const float EyeX = MeshX + EyeR * sinEyePhi * cosEyeTheta;
-		const float EyeY = MeshY - EyeR * sinEyeTheta;
-		const float EyeZ = MeshZ + EyeR * cosEyePhi * cosEyeTheta;
+		const float EyeX = MeshX;
+		const float EyeY = MeshY;
+		const float EyeZ = MeshZ + EyeR;
 
 		// Up vector is unit vector in theta direction
-		const float UpX = -sinEyePhi * sinEyeTheta;
-		const float UpY = -cosEyeTheta;
-		const float UpZ = -cosEyePhi * sinEyeTheta;
+		const float UpX = 0;//-sinEyePhi * sinEyeTheta;
+		const float UpY = -1;//-cosEyeTheta;
+		const float UpZ = 0;//-cosEyePhi * sinEyeTheta;
 
 		// Apply lighting (light source at camera position)
 		const GLfloat light_position[] = { EyeX, EyeY, EyeZ, 1.0f };
 		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 		glEnable(GL_LIGHT0);
 
+		// Fix X axis (???)
+		glScalef(-1.0f, 1.0f, 1.0f);
 		// center on mesh's bounding box, so that the mesh is really in the center of the viewport
 		gluLookAt(EyeX, EyeY, EyeZ, MeshX, MeshY, MeshZ, UpX, UpY, UpZ);
 
-		// Fix X axis (???)
-		glScalef(-1.0f, 1.0f, 1.0f);
+		// Apply perspective matrix
+		if(PerspectiveMatrix)
+		{
+			// Convert to column-major order
+			const float Matrix[16] =
+			{
+				(*PerspectiveMatrix)(0,0), (*PerspectiveMatrix)(1,0), (*PerspectiveMatrix)(2,0), 0,
+				(*PerspectiveMatrix)(0,1), (*PerspectiveMatrix)(1,1), (*PerspectiveMatrix)(2,1), 0,
+				(*PerspectiveMatrix)(0,2), (*PerspectiveMatrix)(1,2), (*PerspectiveMatrix)(2,2), 0,
+				(*PerspectiveMatrix)(0,3), (*PerspectiveMatrix)(1,3), (*PerspectiveMatrix)(2,3), 1
+			};
+			
+			const float det = PerspectiveMatrix->Determinant();
+			if(det < 0) parity = !parity;
+
+			// Renormalize if transformation resizes the mesh
+			// for lighting to be correct
+			if(det != 1 && det != -1)
+				glEnable(GL_NORMALIZE);
+
+			// Apply Matrix in the coordinate system in which the mesh
+			// is centered, not in the mesh's coordinate system.
+			glTranslatef(MeshX, MeshY, MeshZ);
+			glMultMatrixf(Matrix);
+			glTranslatef(-MeshX, -MeshY, -MeshZ);
+		}
+
 		// Convert from Ogre to Clonk coordinate system
 		glMultMatrixf(OgreToClonkGL);
 	}
@@ -1149,6 +1186,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glClientActiveTexture(GL_TEXTURE0); // switch back to default
 	glDepthMask(GL_TRUE);
 
+	glDisable(GL_NORMALIZE);
 	glDisable(GL_LIGHT0);
 	glDisable(GL_LIGHTING);
 	glDisable(GL_DEPTH_TEST);

@@ -669,36 +669,33 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 	switch(graphics->Type)
 		{
 		case C4DefGraphics::TYPE_Bitmap:
-			fctPicture.Set((pObj ? *pObj->GetGraphics() : Graphics).GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
+			fctPicture.Set(graphics->GetBitmap(iColor),fctPicRect.x,fctPicRect.y,fctPicRect.Wdt,fctPicRect.Hgt);
 			fctPicture.Draw(cgo,true,iPhaseX,iPhaseY,true);
 			break;
 		case C4DefGraphics::TYPE_Mesh:
 			// TODO: Allow rendering of a mesh directly, without instance (to render pose; no animation)
-			StdMeshInstance dummy(*graphics->Mesh);
-			int32_t r = GetPropertyInt(P_PerspectiveR);
-			int32_t theta = GetPropertyInt(P_PerspectiveTheta);
-			int32_t phi = GetPropertyInt(P_PerspectivePhi);
+			std::auto_ptr<StdMeshInstance> dummy;
+			StdMeshInstance* instance;
+
 			if(pObj)
 			{
-				r = pObj->GetPropertyInt(P_PerspectiveR);
-				theta = pObj->GetPropertyInt(P_PerspectiveTheta);
-				phi = pObj->GetPropertyInt(P_PerspectivePhi);
-			}
-
-			if(r > 0)
-			{
-				lpDDraw->SetPerspective(r/1000.0f, theta, phi);
-				if (pObj)
-				  lpDDraw->RenderMesh(*pObj->pMeshInstance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj->Color, NULL);
-				else
-				  lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, iColor, NULL);
-				lpDDraw->UnsetPerspective();
+				instance = pObj->pMeshInstance;
 			}
 			else
 			{
-				lpDDraw->RenderMesh(dummy, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, iColor, NULL);
+				dummy.reset(new StdMeshInstance(*graphics->Mesh));
+				instance = dummy.get();
 			}
-		
+
+			C4Value value;
+			GetProperty(Strings.P[P_PictureTransformation], value);
+			StdMeshMatrix matrix = StdMeshMatrix::Identity();
+			C4ValueToMatrix(value, &matrix);
+
+			lpDDraw->SetPerspective(&matrix);
+			lpDDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, NULL);
+			lpDDraw->UnsetPerspective();
+
 			break;
 		}
 

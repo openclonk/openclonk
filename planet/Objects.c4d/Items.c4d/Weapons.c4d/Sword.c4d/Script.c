@@ -18,9 +18,6 @@ public func IsToolProduct() { return 1; }
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PerspectiveR", 15000, def);
-  SetProperty("PerspectiveTheta", 10, def);
-  SetProperty("PerspectivePhi", -10, def);
 }
 
 public func ControlUseStart(object clonk, int x, int y)
