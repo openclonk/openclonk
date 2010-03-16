@@ -1962,6 +1962,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 						}
 					case AB_ARRAYA_R: case AB_PAR_R: case AB_PARN_R: case AB_VARN_R: case AB_LOCALN_R: case AB_GLOBALN_R:
 						from = C4V_pC4Value; break;
+					default: break; // avoid compiler warning about unhandled enumerators
 					}
 				if (C4Value::WarnAboutConversion(from, to))
 					{

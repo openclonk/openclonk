@@ -294,7 +294,7 @@ bool C4AulDebug::SendLine(const char *szType, const char *szData)
 void C4AulDebug::DebugStep(C4AulBCC *pCPos)
 	{
 	// Get top context
-	C4AulScriptContext *pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
+	//C4AulScriptContext *pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
 
 	// Already stopped? Ignore.
 	// This means we are doing some calculation with suspended script engine.

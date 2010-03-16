@@ -76,9 +76,9 @@ class CDDrawCfg
 		bool Shader; // whether to use pixelshaders
 
 		CDDrawCfg():
+			ClipManuallyE (true),
 			NoOffscreenBlits (true), // not yet working properly...
-			Shader (false),
-			ClipManuallyE (true)
+			Shader (false)
 			{
 			}
 	};

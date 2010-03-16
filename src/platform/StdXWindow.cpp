@@ -50,7 +50,7 @@
 /* CStdWindow */
 
 CStdWindow::CStdWindow ():
-	Active(false), wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0), pSurface(0)
+	Active(false), pSurface(0), wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0)
 {
 }
 CStdWindow::~CStdWindow () {

@@ -686,7 +686,7 @@ Dialog *Screen::GetDialog(CStdWindow * pWindow)
 	// get dialog with matching window
 	Dialog *pDlg;
 	for (Element *pEl = pLast; pEl; pEl = pEl->GetPrev())
-		if (pDlg = pEl->GetDlg())
+		if ( (pDlg = pEl->GetDlg()) != NULL)
 			if (pDlg->pWindow == pWindow)
 				return pDlg;
 	return NULL;

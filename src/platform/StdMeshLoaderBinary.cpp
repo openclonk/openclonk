@@ -49,6 +49,7 @@ namespace
 				// Only one set of each of these elements allowed
 				if (semanticSeen[element.semantic])
 					return false;
+				break;
 			}
 			semanticSeen[element.semantic] = true;
 		}
@@ -366,5 +367,5 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 		}
 	}
 
-	DebugLogF("Loaded skeleton with %d bones, %d animations", mesh->GetNumBones(), animations.size());
+	DebugLogF("Loaded skeleton with %u bones, %u animations", mesh->GetNumBones(), static_cast<unsigned int>(animations.size()));
 }

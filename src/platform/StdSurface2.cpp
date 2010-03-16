@@ -485,12 +485,13 @@ bool CSurface::PageFlip(RECT *pSrcRt, RECT *pDstRt)
 	if (!lpDDraw->pApp || !lpDDraw->pApp->AssertMainThread()) return false;
 #ifdef USE_GL
 	if(pGL)
-		pCtx->PageFlip();
+		return pCtx->PageFlip();
 #endif
 #ifdef USE_DIRECTX
 	if (pD3D)
-		pD3D->PageFlip(pSrcRt, pDstRt);
+		return pD3D->PageFlip(pSrcRt, pDstRt);
 #endif
+	return true;
 	}
 
 #ifdef USE_DIRECTX
