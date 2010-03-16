@@ -1041,6 +1041,10 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		Application.DDraw->SetPrimaryClipper(DrawX,DrawY,DrawX+(ViewWdt-1)/fGUIZoom,DrawY+(ViewHgt-1)/fGUIZoom);
 		cgo.Set(cgo0);
 
+		cgo.X = DrawX; cgo.Y = DrawY;
+		cgo.Wdt = int(float(ViewWdt)/fGUIZoom);	cgo.Hgt = int(float(ViewHgt)/fGUIZoom);
+		cgo.TargetX = ViewX; cgo.TargetY = ViewY;
+
 		last_gui_draw_cgo = cgo;
 
 		// draw custom GUI objects
