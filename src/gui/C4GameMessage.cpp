@@ -224,8 +224,9 @@ void C4GameMessage::Draw(C4TargetFacet &cgo, int32_t iPlayer, float Zoom)
 					// Adjust position by output boundaries
 					int32_t iTX,iTY,iTWdt,iTHgt;
 					::GraphicsResource.FontRegular.GetTextExtent(sText.getData(),iTWdt,iTHgt,true);
-					iTX = BoundBy<float>((iMsgX - cgo.TargetX) * Zoom, iTWdt/2, cgo.Wdt - iTWdt / 2);
-					iTY = BoundBy<float>((iMsgY - cgo.TargetY) * Zoom - iTHgt, 0, cgo.Hgt - iTHgt);
+					// +0.5f for proper rounding; avoids oscillations near pixel border:
+					iTX = BoundBy<float>((iMsgX - cgo.TargetX) * Zoom, iTWdt/2, cgo.Wdt - iTWdt / 2) + 0.5f;
+					iTY = BoundBy<float>((iMsgY - cgo.TargetY) * Zoom - iTHgt, 0, cgo.Hgt - iTHgt) + 0.5f;
 					// Draw
 					Application.DDraw->TextOut(sText.getData(), ::GraphicsResource.FontRegular, 1.0,
 														cgo.Surface,
