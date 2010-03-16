@@ -95,7 +95,7 @@ public func DoThrow(object clonk, int angle)
 	
 	// how fast the javelin is thrown depends very much on
 	// the speed of the clonk
-	var speed = 1000 * clonk->GetPhysical("Throw") / 12000 + 100 * Abs(clonk->GetXDir())*2;
+	var speed = 1200 * clonk->GetPhysical("Throw") / 12000 + 150 * Abs(clonk->GetXDir());
 	var xdir = Sin(angle,+speed);
 	var ydir = Cos(angle,-speed);
 	javelin->SetXDir(xdir,1000);
@@ -136,7 +136,10 @@ public func OnStrike(object obj)
 protected func Hit()
 {	
 	if(GetEffect("Flight",this))
+	{
+		Stick();
 		Sound("JavelinHitGround.ogg");
+	}
 	else	
 		Sound("WoodHit");
 }
