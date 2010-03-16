@@ -35,7 +35,7 @@ namespace
 		const StdMeshVertex* m_vertices;
 
 		StdMeshInstanceFaceOrderingCmpPred(const StdMeshInstance& inst, unsigned int submesh):
-			m_inst(inst), m_vertices(m_inst.GetVertices(submesh)) {}
+			m_inst(inst), m_vertices(m_inst.GetSubMesh(submesh).GetVertices()) {}
 
 		bool operator()(const StdMeshFace& face1, const StdMeshFace& face2) const
 		{
@@ -793,6 +793,31 @@ const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 	return &iter->second;
 }
 
+StdSubMeshInstance::StdSubMeshInstance(const StdSubMesh& submesh):
+	Vertices(submesh.GetNumVertices()), Faces(submesh.GetNumFaces()),
+	Material(&submesh.GetMaterial()), PassData(Material->Techniques[Material->BestTechniqueIndex].Passes.size())
+{
+	// Copy initial Vertices/Faces
+	for(unsigned int i = 0; i < submesh.GetNumVertices(); ++i)
+		Vertices[i] = submesh.GetVertex(i);
+	for(unsigned int i = 0; i < submesh.GetNumFaces(); ++i)
+		Faces[i] = submesh.GetFace(i);
+
+	// Setup initial texture animation data
+	const StdMeshMaterialTechnique& technique = Material->Techniques[Material->BestTechniqueIndex];
+	for(unsigned int i = 0; i < PassData.size(); ++i)
+	{
+		const StdMeshMaterialPass& pass = technique.Passes[i];
+		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+		{
+			TexUnit unit;
+			unit.Phase = 0;
+			unit.PhaseDelay = 0.0f;
+			PassData[i].TexUnits.push_back(unit);
+		}
+	}
+}
+
 StdMeshInstance::AnimationNode::AnimationNode(const StdMeshAnimation* animation, ValueProvider* position):
 	Type(LeafNode), Parent(NULL)
 {
@@ -893,19 +918,13 @@ void StdMeshInstance::AttachedMesh::SetAttachTransformation(const StdMeshMatrix&
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
 	Mesh(mesh), CurrentFaceOrdering(FO_Fixed),
 	BoneTransforms(Mesh.GetNumBones(), StdMeshMatrix::Identity()),
-	Vertices(Mesh.GetNumSubMeshes()), Faces(Mesh.GetNumSubMeshes()),
-	AttachParent(NULL), BoneTransformsDirty(false)
+	SubMeshInstances(Mesh.GetNumSubMeshes()), AttachParent(NULL),
+	BoneTransformsDirty(false)
 {
 	for(unsigned int i = 0; i < Mesh.GetNumSubMeshes(); ++i)
 	{
 		const StdSubMesh& submesh = Mesh.GetSubMesh(i);
-		Vertices[i].resize(submesh.GetNumVertices());
-		Faces[i].resize(submesh.GetNumFaces());
-
-		for(unsigned int j = 0; j < submesh.GetNumVertices(); ++j)
-			Vertices[i][j] = submesh.GetVertex(j);
-		for(unsigned int j = 0; j < submesh.GetNumFaces(); ++j)
-			Faces[i][j] = submesh.GetFace(j);
+		SubMeshInstances[i] = new StdSubMeshInstance(submesh);
 	}
 }
 
@@ -922,6 +941,10 @@ StdMeshInstance::~StdMeshInstance()
 	while(!AnimationStack.empty())
 		StopAnimation(AnimationStack.front());
 	assert(AnimationNodes.empty());
+
+	// Delete submeshes
+	for(unsigned int i = 0; i < SubMeshInstances.size(); ++i)
+		delete SubMeshInstances[i];
 }
 
 void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
@@ -935,8 +958,9 @@ void StdMeshInstance::SetFaceOrdering(FaceOrdering ordering)
 			for(unsigned int i = 0; i < Mesh.GetNumSubMeshes(); ++i)
 			{
 				const StdSubMesh& submesh = Mesh.GetSubMesh(i);
+				//SubMeshInstances[i]->Faces = submesh.GetFaces();
 				for(unsigned int j = 0; j < submesh.GetNumFaces(); ++j)
-					Faces[i][j] = submesh.GetFace(j);
+					SubMeshInstances[i]->Faces[j] = submesh.GetFace(j);
 			}
 		}
 
@@ -1118,15 +1142,44 @@ void StdMeshInstance::SetAnimationWeight(AnimationNode* node, ValueProvider* wei
 	BoneTransformsDirty = true;
 }
 
-void StdMeshInstance::ExecuteAnimation()
+void StdMeshInstance::ExecuteAnimation(float dt)
 {
 	// Iterate from the back since slots might get removed
 	for(unsigned int i = AnimationStack.size(); i > 0; --i)
 		ExecuteAnimationNode(AnimationStack[i-1]);
 
+	// Update animated textures
+	for(unsigned int i = 0; i < SubMeshInstances.size(); ++i)
+	{
+		StdSubMeshInstance& submesh = *SubMeshInstances[i];
+		const StdMeshMaterial& material = submesh.GetMaterial();
+		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
+		for(unsigned int j = 0; j < submesh.PassData.size(); ++j)
+		{
+			StdSubMeshInstance::Pass& pass = submesh.PassData[j];
+			for(unsigned int k = 0; k < pass.TexUnits.size(); ++k)
+			{
+				const StdMeshMaterialTextureUnit& texunit = technique.Passes[j].TextureUnits[k];
+				if(texunit.IsAnimatedTexture())
+				{
+					StdSubMeshInstance::TexUnit& texunit_instance = submesh.PassData[j].TexUnits[k];
+					const unsigned int NumPhases = texunit.GetNumTextures();
+					const float PhaseDuration = texunit.Duration / NumPhases;
+
+					const float Position = texunit_instance.PhaseDelay + dt;
+					const unsigned int AddPhases = static_cast<unsigned int>(Position / PhaseDuration);
+
+					texunit_instance.Phase = (texunit_instance.Phase + AddPhases) % NumPhases;
+					texunit_instance.PhaseDelay = Position - AddPhases * PhaseDuration;
+					
+				}
+			}
+		}
+	}
+
 	// Update animation for attached meshes
 	for(AttachedMeshList::iterator iter = AttachChildren.begin(); iter != AttachChildren.end(); ++iter)
-		(*iter)->Child->ExecuteAnimation();
+		(*iter)->Child->ExecuteAnimation(dt);
 }
 
 StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation)
@@ -1242,10 +1295,10 @@ void StdMeshInstance::UpdateBoneTransforms()
 		// doing this on the GPU using a vertex shader. This would then probably
 		// need to go to CStdGL::PerformMesh and CStdD3D::PerformMesh.
 		// (can only work for fixed face ordering though)
-		for(unsigned int i = 0; i < Vertices.size(); ++i)
+		for(unsigned int i = 0; i < SubMeshInstances.size(); ++i)
 		{
 			const StdSubMesh& submesh = Mesh.GetSubMesh(i);
-			std::vector<StdMeshVertex>& instance_vertices = Vertices[i];
+			std::vector<StdMeshVertex>& instance_vertices = SubMeshInstances[i]->Vertices;
 			assert(submesh.GetNumVertices() == instance_vertices.size());
 			for(unsigned int j = 0; j < instance_vertices.size(); ++j)
 			{
@@ -1405,10 +1458,10 @@ bool StdMeshInstance::ExecuteAnimationNode(AnimationNode* node)
 
 void StdMeshInstance::ReorderFaces()
 {
-	for(unsigned int i = 0; i < Faces.size(); ++i)
+	for(unsigned int i = 0; i < SubMeshInstances.size(); ++i)
 	{
 		StdMeshInstanceFaceOrderingCmpPred pred(*this, i);
-		std::sort(Faces[i].begin(), Faces[i].end(), pred);
+		std::sort(SubMeshInstances[i]->Faces.begin(), SubMeshInstances[i]->Faces.end(), pred);
 	}
 	
 	// TODO: Also reorder submeshes and attached meshes... maybe this face ordering

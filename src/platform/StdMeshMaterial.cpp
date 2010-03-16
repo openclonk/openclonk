@@ -140,6 +140,8 @@ public:
 	Token AdvanceNonEOF(StdStrBuf& name);
 	Token AdvanceRequired(StdStrBuf& name, Token expect);
 	Token AdvanceRequired(StdStrBuf& name, Token expect1, Token expect2);
+	int AdvanceInt();
+	bool AdvanceIntOptional(int& value);
 	float AdvanceFloat();
 	bool AdvanceFloatOptional(float& value);
 	void AdvanceColor(bool with_alpha, float Color[4]);
@@ -259,12 +261,36 @@ Token StdMeshMaterialParserCtx::AdvanceRequired(StdStrBuf& name, Token expect1, 
 	return token;
 }
 
-#ifdef _MSC_VER
-static inline float strtof(const char *_Str, char **_EndPtr)
+int StdMeshMaterialParserCtx::AdvanceInt()
 {
-	return static_cast<float>(strtod(_Str, _EndPtr));
-}
+	StdStrBuf buf;
+	AdvanceRequired(buf, TOKEN_IDTF);
+	int i;
+#ifdef WITH_GLIB
+	char* end;
+	i = g_ascii_strtoll(buf.getData(), &end, 10);
+	if(*end != '\0')
+#else
+	if(!(std::istringstream(buf.getData()) >> i))
 #endif
+		Error(StdStrBuf("Integer value expected"));
+
+	return i;
+}
+
+bool StdMeshMaterialParserCtx::AdvanceIntOptional(int& value)
+{
+	StdStrBuf buf;
+	Token tok = Peek(buf);
+
+	if(tok == TOKEN_IDTF && isdigit(buf[0]))
+	{
+		value = AdvanceInt();
+		return true;
+	}
+
+	return false;
+}
 
 float StdMeshMaterialParserCtx::AdvanceFloat()
 {
@@ -417,8 +443,8 @@ StdMeshMaterialTextureUnit::TexRef::~TexRef()
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
-	TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate), ColorOpManualFactor(0.0f),
-	AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f), Texture(NULL)
+	Duration(0.0f), TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate), ColorOpManualFactor(0.0f),
+	AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f)
 {
 	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0f; TexBorderColor[3] = 1.0f;
 	Filtering[0] = Filtering[1] = F_Linear; Filtering[2] = F_Point;
@@ -429,12 +455,12 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
-	TexAddressMode(other.TexAddressMode),
+	Duration(other.Duration), TexAddressMode(other.TexAddressMode),
 	ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
-	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor), Texture(other.Texture)
+	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor), Textures(other.Textures)
 {
-	if(Texture)
-		++Texture->RefCount;
+	for(unsigned int i = 0; i < Textures.size(); ++i)
+		++Textures[i]->RefCount;
 
 	for(unsigned int i = 0; i < 4; ++i)
 		TexBorderColor[i] = other.TexBorderColor[i];
@@ -458,21 +484,30 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialText
 
 StdMeshMaterialTextureUnit::~StdMeshMaterialTextureUnit()
 {
-	if(Texture && !--Texture->RefCount)
-		delete Texture;
+	for(unsigned int i = 0; i < Textures.size(); ++i)
+	{
+		if(!--Textures[i]->RefCount)
+			delete Textures[i];
+	}
 }
 
 StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshMaterialTextureUnit& other)
 {
 	if(this == &other) return *this;
-	if(Texture) if(!--Texture->RefCount) delete Texture;
-	Texture = other.Texture;
-	if(Texture) ++Texture->RefCount;
+
+	for(unsigned int i = 0; i < Textures.size(); ++i)
+		if(!--Textures[i]->RefCount) delete Textures[i];
+	Textures = other.Textures;
+	for(unsigned int i = 0; i < Textures.size(); ++i)
+		++Textures[i]->RefCount;
+
+	Duration = other.Duration;
 	TexAddressMode = other.TexAddressMode;
 	for(unsigned int i = 0; i < 4; ++i)
 		TexBorderColor[i] = other.TexBorderColor[i];
 	for(unsigned int i = 0; i < 3; ++i)
 		Filtering[i] = other.Filtering[i];
+
 	ColorOpEx = other.ColorOpEx;
 	ColorOpSources[0] = other.ColorOpSources[0];
 	ColorOpSources[1] = other.ColorOpSources[1];
@@ -493,6 +528,20 @@ StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshM
 	return *this;
 }
 
+void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, const char* texname)
+{
+	std::auto_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(texname)); // be exception-safe
+	if(!surface.get())
+		ctx.Error(StdCopyStrBuf("Could not load texture '") + texname + "'");
+
+	if(surface->Wdt != surface->Hgt)
+		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is not quadratic");
+	if(surface->iTexX > 1 || surface->iTexY > 1)
+		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is too large");
+
+	Textures.push_back(new TexRef(surface.release()));	
+}
+
 void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
@@ -501,18 +550,48 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 	{
 		if(token_name == "texture")
 		{
+			if(!Textures.empty())
+				ctx.Error(StdCopyStrBuf("There can only be a single texture or texture_anim statement per texture unit"));
+
 			ctx.AdvanceRequired(token_name, TOKEN_IDTF);
 
-			std::auto_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(token_name.getData())); // be exception-safe
-			if(!surface.get())
-				ctx.Error(StdCopyStrBuf("Could not load texture '") + token_name + "'");
+			LoadTexture(ctx, token_name.getData());
+		}
+		else if(token_name == "anim_texture")
+		{
+			if(!Textures.empty())
+				ctx.Error(StdCopyStrBuf("There can only be a single texture or texture_anim statement per texture unit"));
 
-			if(surface->Wdt != surface->Hgt)
-				ctx.Error(StdCopyStrBuf("Texture '") + token_name + "' is not quadratic");
-			if(surface->iTexX > 1 || surface->iTexY > 1)
-				ctx.Error(StdCopyStrBuf("Texture '") + token_name + "' is too large");
+			StdCopyStrBuf base_name;
+			ctx.AdvanceRequired(base_name, TOKEN_IDTF);
 
-			Texture = new TexRef(surface.release());
+			int num_frames;
+			if(ctx.AdvanceIntOptional(num_frames))
+			{
+				const char* data = base_name.getData();
+				const char* sep = strrchr(data, '.');
+				for(int i = 0; i < num_frames; ++i)
+				{
+					StdCopyStrBuf buf;
+					if(sep)
+						buf.Format("%.*s_%d.%s", (int)(sep - data), data, i, sep+1);
+					else
+						buf.Format("%s_%d", data, i);
+
+					LoadTexture(ctx, buf.getData());
+				}
+
+				Duration = ctx.AdvanceFloat();
+			}
+			else
+			{
+				LoadTexture(ctx, base_name.getData());
+				while(!ctx.AdvanceFloatOptional(Duration))
+				{
+					ctx.AdvanceRequired(token_name, TOKEN_IDTF);
+					LoadTexture(ctx, token_name.getData());
+				}
+			}
 		}
 		else if(token_name == "tex_address_mode")
 		{

@@ -142,9 +142,10 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 			for(unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
 			{
 				StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[k];
-				if(texunit.HasTexture())
+				for(unsigned int l = 0; l < texunit.GetNumTextures(); ++l)
 				{
-					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture().texName);
+					const CTexRef& texture = texunit.GetTexture(l);
+					glBindTexture(GL_TEXTURE_2D, texture.texName);
 					switch(texunit.TexAddressMode)
 					{
 					case StdMeshMaterialTextureUnit::AM_Wrap:
@@ -178,15 +179,15 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						// efficient though.
 					
 						// Disabled for now, until we find a better place for this (CTexRef?)
-	#if 0
+#if 0
 						if(GLEW_VERSION_1_4)
-	{						glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<CTexRef*>(&texunit.GetTexture())->Lock(); const_cast<CTexRef*>(&texunit.GetTexture())->Unlock(); }
+							{ glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<CTexRef*>(&texunit.GetTexture())->Lock(); const_cast<CTexRef*>(&texunit.GetTexture())->Unlock(); }
 						else
 							technique.Available = false;
-	#else
+#else
 						// Disable mipmap for now as a workaround.
 						texunit.Filtering[2] = StdMeshMaterialTextureUnit::F_None;
-	#endif
+#endif
 					}
 
 					switch(texunit.Filtering[0]) // min
@@ -250,7 +251,7 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						technique.Available = false;
 						break;
 					}
-				} // HasTexture
+				} // loop over textures
 
 				// Check blending: Can only have one manual source color
 				unsigned int manu_count = 0;
@@ -660,10 +661,9 @@ namespace
 		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color);
 	}
 
-	void RenderSubMeshImpl(StdMeshInstance& instance, unsigned int submesh_index, DWORD dwModClr, DWORD dwPlayerColor, bool parity)
+	void RenderSubMeshImpl(const StdSubMeshInstance& instance, DWORD dwModClr, DWORD dwPlayerColor, bool parity)
 	{
-		const StdSubMesh& submesh = instance.Mesh.GetSubMesh(submesh_index);
-		const StdMeshMaterial& material = submesh.GetMaterial();
+		const StdMeshMaterial& material = instance.GetMaterial();
 		assert(material.BestTechniqueIndex != -1);
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
 
@@ -724,7 +724,7 @@ namespace
 			// states that "The texture coordinate state for other client texture units 
 			// is not updated, regardless of whether the client texture unit is enabled
 			// or not."
-			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices(submesh_index)[0].nx);
+			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices()[0].nx);
 
 			glMatrixMode(GL_TEXTURE);
 			GLuint have_texture = 0;
@@ -741,8 +741,9 @@ namespace
 				glEnable(GL_TEXTURE_2D);
 				if(texunit.HasTexture())
 				{
-					have_texture = texunit.GetTexture().texName;
-					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture().texName);
+					const unsigned int Phase = instance.GetTexturePhase(i, j);
+					have_texture = texunit.GetTexture(Phase).texName;
+					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture(Phase).texName); // TODO: Adapt for texture animation
 				}
 				else
 				{
@@ -752,7 +753,7 @@ namespace
 					glBindTexture(GL_TEXTURE_2D, have_texture);
 				}
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices(submesh_index)[0].u);
+				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices()[0].u);
 				glLoadIdentity();
 
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
@@ -837,7 +838,7 @@ namespace
 			}
 			glMatrixMode(GL_MODELVIEW);
 
-			glDrawElements(GL_TRIANGLES, instance.GetNumFaces(submesh_index)*3, GL_UNSIGNED_INT, instance.GetFaces(submesh_index));
+			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
 			for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
@@ -855,7 +856,7 @@ namespace
 
 		// Render each submesh
 		for(unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
-			RenderSubMeshImpl(instance, i, dwModClr, dwPlayerColor, parity);
+			RenderSubMeshImpl(instance.GetSubMesh(i), dwModClr, dwPlayerColor, parity);
 
 #if 0
 		// Draw attached bone

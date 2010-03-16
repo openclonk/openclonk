@@ -1104,7 +1104,8 @@ void C4Object::Execute()
 	// Base
 	ExecBase();
 	// Animation. If the mesh is attached, then don't execute animation here but let the parent object do it to make sure it is only executed once a frame.
-	if(pMeshInstance && !pMeshInstance->GetAttachParent()) pMeshInstance->ExecuteAnimation();
+	if(pMeshInstance && !pMeshInstance->GetAttachParent())
+		pMeshInstance->ExecuteAnimation(1.0f/37.0f /* play smoothly at 37 FPS */);
 	// Timer
 	Timer++;
 	if (Timer>=Def->Timer)

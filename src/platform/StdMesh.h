@@ -283,6 +283,54 @@ private:
 	StdMeshBox BoundingBox;
 };
 
+class StdSubMeshInstance
+{
+	friend class StdMeshInstance;
+public:
+	StdSubMeshInstance(const StdSubMesh& submesh);
+
+	// Get vertex of instance, with current animation applied. This needs to
+	// go elsewhere if/when we want to calculate this on the hardware.
+	const StdMeshVertex* GetVertices() const { return &Vertices[0]; }
+	unsigned int GetNumVertices() const { return Vertices.size(); }
+
+	// Get face of instance. The instance faces are the same as the mesh faces,
+	// with the exception that they are differently ordered, depending on the
+	// current FaceOrdering. See FaceOrdering in StdMeshInstance.
+	const StdMeshFace* GetFaces() const { return &Faces[0]; }
+	unsigned int GetNumFaces() const { return Faces.size(); }
+
+	unsigned int GetTexturePhase(unsigned int pass, unsigned int texunit) const { return PassData[pass].TexUnits[texunit].Phase; }
+
+	const StdMeshMaterial& GetMaterial() const { return *Material; }
+protected:
+	// Vertices transformed according to current animation
+	// Faces sorted according to current face ordering
+	// TODO: We can skip these if we decide to either
+	// a) recompute Vertex positions each frame or
+	// b) compute them on the GPU
+	std::vector<StdMeshVertex> Vertices;
+	std::vector<StdMeshFace> Faces;
+
+	const StdMeshMaterial* Material;
+
+	struct TexUnit // Runtime texunit data
+	{
+		float PhaseDelay;
+		unsigned int Phase;
+	};
+
+	struct Pass // Runtime pass data
+	{
+		std::vector<TexUnit> TexUnits;
+	};
+
+	std::vector<Pass> PassData;
+private:
+	StdSubMeshInstance(const StdSubMeshInstance& other); // noncopyable
+	StdSubMeshInstance& operator=(const StdSubMeshInstance& other); // noncopyable
+};
+
 class StdMeshInstance
 {
 public:
@@ -369,14 +417,15 @@ public:
 
 	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
 	AnimationNode* GetRootAnimationForSlot(int slot);
-
+			// child bone transforms are dirty (saves matrix inversion for unanimated attach children).
 	// Set new value providers for a node's position or weight - cannot be in
 	// class AnimationNode since we need to mark BoneTransforms dirty.
 	void SetAnimationPosition(AnimationNode* node, ValueProvider* position);
 	void SetAnimationWeight(AnimationNode* node, ValueProvider* weight);
 
-	// Update animations' value providers; call once a frame
-	void ExecuteAnimation();
+	// Update animations; call once a frame
+	// dt is used for texture animation, skeleton animation is updated via value providers
+	void ExecuteAnimation(float dt);
 
 	class AttachedMesh
 	{
@@ -423,18 +472,9 @@ public:
 	AttachedMeshIter AttachedMeshesEnd() const { return AttachChildren.end(); }
 	AttachedMesh* GetAttachParent() const { return AttachParent; }
 
-	// Get vertex of instance, with current animation applied. This needs to
-	// go elsewhere if/when we want to calculate this on the hardware.
-	//const StdMeshVertex& GetVertex(unsigned int i) const { return Vertices[i]; }
-	const StdMeshVertex* GetVertices(unsigned int submesh) const { return &Vertices[submesh][0]; }
-	unsigned int GetNumVertices(unsigned int submesh) const { return Vertices[submesh].size(); }
-
-	// Get face of instance. The instance faces are the same as the mesh faces,
-	// with the exception that they are differently ordered, depending on the
-	// current FaceOrdering. See also SetFaceOrdering.
-	//const StdMeshFace& GetFace(unsigned int i) const { return Faces[i]; }
-	const StdMeshFace* GetFaces(unsigned int submesh) const { return &Faces[submesh][0]; }
-	unsigned int GetNumFaces(unsigned int submesh) const { return Faces[submesh].size(); }
+	unsigned int GetNumSubMeshes() const { return SubMeshInstances.size(); }
+	StdSubMeshInstance& GetSubMesh(unsigned int i) { return *SubMeshInstances[i]; }
+	const StdSubMeshInstance& GetSubMesh(unsigned int i) const { return *SubMeshInstances[i]; }
 
 	const StdMeshMatrix& GetBoneTransform(unsigned int i) const { return BoneTransforms[i]; }
 
@@ -458,13 +498,7 @@ protected:
 	AnimationNodeList AnimationStack; // contains top level nodes only, ordered by slot number
 	std::vector<StdMeshMatrix> BoneTransforms;
 
-	// Vertices transformed according to current animation, for each submesh
-	// Faces sorted according to current face ordering, for each submesh
-	// TODO: We can skip these if we decide to either
-	// a) recompute Vertex positions each frame or
-	// b) compute them on the GPU
-	std::vector<std::vector<StdMeshVertex> > Vertices;
-	std::vector<std::vector<StdMeshFace> > Faces;
+	std::vector<StdSubMeshInstance*> SubMeshInstances;
 
 	// Not asymptotically efficient, but we do not expect many attached meshes anyway.
 	// In theory map would fit better, but it's probably not worth the extra overhead.

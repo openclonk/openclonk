@@ -131,10 +131,15 @@ public:
 
 	StdMeshMaterialTextureUnit& operator=(const StdMeshMaterialTextureUnit&);
 
+	void LoadTexture(StdMeshMaterialParserCtx& ctx, const char* texname);
 	void Load(StdMeshMaterialParserCtx& ctx);
 
-	bool HasTexture() const { return !!Texture; }
-	const CTexRef& GetTexture() const { return Texture->Tex; }
+	bool HasTexture() const { return !Textures.empty(); }
+	unsigned int GetNumTextures() const { return Textures.size(); }
+	const CTexRef& GetTexture(unsigned int i) const { return Textures[i]->Tex; }
+	bool IsAnimatedTexture() const { return Duration > 0; }
+
+	float Duration; // Duration of texture animation, if any.
 
 	TexAddressModeType TexAddressMode;
 	float TexBorderColor[4];
@@ -153,7 +158,7 @@ public:
 	float AlphaOpManualAlpha2;
 
 private:
-	TexRef* Texture;
+	std::vector<TexRef*> Textures;
 };
 
 class StdMeshMaterialPass
