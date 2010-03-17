@@ -305,6 +305,7 @@ public:
 	unsigned int GetTexturePhase(unsigned int pass, unsigned int texunit) const { return PassData[pass].TexUnits[texunit].Phase; }
 	double GetTexturePosition(unsigned int pass, unsigned int texunit) const { return PassData[pass].TexUnits[texunit].Position; }
 
+	void SetMaterial(const StdMeshMaterial& material);
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
 protected:
 	// Vertices transformed according to current animation

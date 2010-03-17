@@ -796,7 +796,7 @@ const StdMeshAnimation* StdMesh::GetAnimationByName(const StdStrBuf& name) const
 
 StdSubMeshInstance::StdSubMeshInstance(const StdSubMesh& submesh):
 	Vertices(submesh.GetNumVertices()), Faces(submesh.GetNumFaces()),
-	Material(&submesh.GetMaterial()), PassData(Material->Techniques[Material->BestTechniqueIndex].Passes.size())
+	Material(NULL)
 {
 	// Copy initial Vertices/Faces
 	for(unsigned int i = 0; i < submesh.GetNumVertices(); ++i)
@@ -804,11 +804,23 @@ StdSubMeshInstance::StdSubMeshInstance(const StdSubMesh& submesh):
 	for(unsigned int i = 0; i < submesh.GetNumFaces(); ++i)
 		Faces[i] = submesh.GetFace(i);
 
+	SetMaterial(submesh.GetMaterial());
+}
+
+void StdSubMeshInstance::SetMaterial(const StdMeshMaterial& material)
+{
+	Material = &material;
+
 	// Setup initial texture animation data
+	assert(Material->BestTechniqueIndex >= 0);
 	const StdMeshMaterialTechnique& technique = Material->Techniques[Material->BestTechniqueIndex];
+	PassData.resize(technique.Passes.size());
 	for(unsigned int i = 0; i < PassData.size(); ++i)
 	{
 		const StdMeshMaterialPass& pass = technique.Passes[i];
+		// Clear from previous material
+		PassData[i].TexUnits.clear();
+
 		for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 		{
 			TexUnit unit;

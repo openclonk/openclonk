@@ -5869,6 +5869,29 @@ static bool FnSetAttachTransform(C4AulObjectContext* ctx, long iAttachNumber, C4
 	return true;
 }
 
+static Nillable<C4String*> FnGetMeshMaterial(C4AulObjectContext* ctx, int iSubMesh)
+{
+	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return C4VNull;
+	if(iSubMesh < 0 || (unsigned int)iSubMesh >= ctx->Obj->pMeshInstance->GetNumSubMeshes()) return C4VNull;
+
+	StdSubMeshInstance& submesh = ctx->Obj->pMeshInstance->GetSubMesh(iSubMesh);
+	return String(submesh.GetMaterial().Name.getData());
+}
+
+static bool FnSetMeshMaterial(C4AulObjectContext* ctx, C4String* Material, int iSubMesh)
+{
+	if(!ctx->Obj || !ctx->Obj->pMeshInstance) return false;
+	if(iSubMesh < 0 || (unsigned int)iSubMesh >= ctx->Obj->pMeshInstance->GetNumSubMeshes()) return false;
+	if(!Material) return false;
+
+	const StdMeshMaterial* material = Game.MaterialManager.GetMaterial(Material->GetData().getData());
+	if(!material) return false;
+
+	StdSubMeshInstance& submesh = ctx->Obj->pMeshInstance->GetSubMesh(iSubMesh);
+	submesh.SetMaterial(*material);
+	return true;
+}
+
 //=========================== C4Script Function Map ===================================
 
 // defined function class
@@ -6355,6 +6378,8 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "DetachMesh", FnDetachMesh);
 	AddFunc(pEngine, "SetAttachBones", FnSetAttachBones);
 	AddFunc(pEngine, "SetAttachTransform", FnSetAttachTransform);
+	AddFunc(pEngine, "GetMeshMaterial", FnGetMeshMaterial);
+	AddFunc(pEngine, "SetMeshMaterial", FnSetMeshMaterial);
 
 	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "this", Fn_this);
