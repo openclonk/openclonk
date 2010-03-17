@@ -677,18 +677,20 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 			std::auto_ptr<StdMeshInstance> dummy;
 			StdMeshInstance* instance;
 
+			C4Value value;
 			if(pObj)
 			{
 				instance = pObj->pMeshInstance;
+				pObj->GetProperty(Strings.P[P_PictureTransformation], value);
 			}
 			else
 			{
 				dummy.reset(new StdMeshInstance(*graphics->Mesh));
 				instance = dummy.get();
+				GetProperty(Strings.P[P_PictureTransformation], value);
 			}
 
-			C4Value value;
-			GetProperty(Strings.P[P_PictureTransformation], value);
+
 			StdMeshMatrix matrix;
 			if(C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
