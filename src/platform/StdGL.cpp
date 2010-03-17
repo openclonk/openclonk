@@ -1086,7 +1086,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	if(!fUsePerspective)
 	{
 		// Put a light source in front of the object
-		const GLfloat light_position[] = { 0.0f, 0.0f, v2.z + 15.0f, 1.0f };
+		const GLfloat light_position[] = { 0.0f, 0.0f, 1.0f, 0.0f };
 		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 		glEnable(GL_LIGHT0);
 	}
