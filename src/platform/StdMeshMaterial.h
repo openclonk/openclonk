@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009-2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -103,6 +103,53 @@ public:
 		BOS_Manual
 	};
 
+	struct Transformation
+	{
+		enum Type {
+			T_SCROLL,
+			T_SCROLL_ANIM,
+			T_ROTATE,
+			T_ROTATE_ANIM,
+			T_SCALE,
+			T_TRANSFORM,
+			T_WAVE_XFORM
+		};
+		
+		enum XFormType {
+			XF_SCROLL_X,
+			XF_SCROLL_Y,
+			XF_ROTATE,
+			XF_SCALE_X,
+			XF_SCALE_Y
+		};
+
+		enum WaveType {
+			W_SINE,
+			W_TRIANGLE,
+			W_SQUARE,
+			W_SAWTOOTH,
+			W_INVERSE_SAWTOOTH
+		};
+
+		Type TransformType;
+
+		union
+		{
+			struct { float X; float Y; } Scroll;
+			struct { float XSpeed; float YSpeed; } ScrollAnim;
+			struct { float Angle; } Rotate;
+			struct { float RevsPerSec; } RotateAnim;
+			struct { float X; float Y; } Scale;
+			struct { float M[16]; } Transform;
+			struct { XFormType XForm; WaveType Wave; float Base; float Frequency; float Phase; float Amplitude; } WaveXForm;
+		};
+		
+		double GetScrollX(double t) const { assert(TransformType == T_SCROLL_ANIM); return ScrollAnim.XSpeed * t; }
+		double GetScrollY(double t) const { assert(TransformType == T_SCROLL_ANIM); return ScrollAnim.YSpeed * t; }
+		double GetRotate(double t) const { assert(TransformType == T_ROTATE_ANIM); return fmod(RotateAnim.RevsPerSec * t, 1.0) * 360.0; }
+		double GetWaveXForm(double t) const;
+	};
+
 	// Ref-counted texture. When a meterial inherits from one which contains
 	// a TextureUnit, then they will share the same CTexRef.
 	class TexRef
@@ -137,7 +184,8 @@ public:
 	bool HasTexture() const { return !Textures.empty(); }
 	unsigned int GetNumTextures() const { return Textures.size(); }
 	const CTexRef& GetTexture(unsigned int i) const { return Textures[i]->Tex; }
-	bool IsAnimatedTexture() const { return Duration > 0; }
+	bool HasFrameAnimation() const { return Duration > 0; }
+	bool HasTexCoordAnimation() const { return !Transformations.empty(); }
 
 	float Duration; // Duration of texture animation, if any.
 
@@ -156,6 +204,9 @@ public:
 	float AlphaOpManualFactor;
 	float AlphaOpManualAlpha1;
 	float AlphaOpManualAlpha2;
+
+	// Transformations to be applied to texture coordinates in order
+	std::vector<Transformation> Transformations;
 
 private:
 	std::vector<TexRef*> Textures;

@@ -813,6 +813,7 @@ StdSubMeshInstance::StdSubMeshInstance(const StdSubMesh& submesh):
 			TexUnit unit;
 			unit.Phase = 0;
 			unit.PhaseDelay = 0.0f;
+			unit.Position = 0.0;
 			PassData[i].TexUnits.push_back(unit);
 		}
 	}
@@ -1160,9 +1161,9 @@ void StdMeshInstance::ExecuteAnimation(float dt)
 			for(unsigned int k = 0; k < pass.TexUnits.size(); ++k)
 			{
 				const StdMeshMaterialTextureUnit& texunit = technique.Passes[j].TextureUnits[k];
-				if(texunit.IsAnimatedTexture())
+				StdSubMeshInstance::TexUnit& texunit_instance = submesh.PassData[j].TexUnits[k];
+				if(texunit.HasFrameAnimation())
 				{
-					StdSubMeshInstance::TexUnit& texunit_instance = submesh.PassData[j].TexUnits[k];
 					const unsigned int NumPhases = texunit.GetNumTextures();
 					const float PhaseDuration = texunit.Duration / NumPhases;
 
@@ -1171,8 +1172,10 @@ void StdMeshInstance::ExecuteAnimation(float dt)
 
 					texunit_instance.Phase = (texunit_instance.Phase + AddPhases) % NumPhases;
 					texunit_instance.PhaseDelay = Position - AddPhases * PhaseDuration;
-					
 				}
+
+				if(texunit.HasTexCoordAnimation())
+					texunit_instance.Position += dt;
 			}
 		}
 	}

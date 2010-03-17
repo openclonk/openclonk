@@ -301,6 +301,7 @@ public:
 	unsigned int GetNumFaces() const { return Faces.size(); }
 
 	unsigned int GetTexturePhase(unsigned int pass, unsigned int texunit) const { return PassData[pass].TexUnits[texunit].Phase; }
+	double GetTexturePosition(unsigned int pass, unsigned int texunit) const { return PassData[pass].TexUnits[texunit].Position; }
 
 	const StdMeshMaterial& GetMaterial() const { return *Material; }
 protected:
@@ -316,8 +317,13 @@ protected:
 
 	struct TexUnit // Runtime texunit data
 	{
+		// Frame animation
 		float PhaseDelay;
 		unsigned int Phase;
+
+		// Coordinate transformation animation
+		// This is never reset so use double to make sure we have enough precision
+		double Position;
 	};
 
 	struct Pass // Runtime pass data

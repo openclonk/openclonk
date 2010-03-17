@@ -1,7 +1,7 @@
 /*
  * OpenClonk, http://www.openclonk.org
  *
- * Copyright (c) 2009  Armin Burgmeier
+ * Copyright (c) 2009-2010  Armin Burgmeier
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -22,6 +22,12 @@
 
 #include <cctype>
 #include <memory>
+
+// MSVC doesn't define M_PI in math.h unless requested
+#ifdef  _MSC_VER
+#define _USE_MATH_DEFINES
+#endif  /* _MSC_VER */
+#include <math.h>
 
 #ifdef WITH_GLIB
 #include <glib.h>
@@ -106,6 +112,22 @@ namespace
 		{ "src_player_colour", StdMeshMaterialTextureUnit::BOS_PlayerColor },
 		{ "src_manual", StdMeshMaterialTextureUnit::BOS_Manual },
 		{ NULL }
+	};
+
+	const Enumerator<StdMeshMaterialTextureUnit::Transformation::XFormType> XFormTypeEnumerators[] = {
+		{ "scroll_x", StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_X },
+		{ "scroll_y", StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_Y },
+		{ "rotate", StdMeshMaterialTextureUnit::Transformation::XF_ROTATE },
+		{ "scale_x", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_X },
+		{ "scale_y", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_Y }
+	};
+	
+	const Enumerator<StdMeshMaterialTextureUnit::Transformation::WaveType> WaveTypeEnumerators[] = {
+		{ "sine", StdMeshMaterialTextureUnit::Transformation::W_SINE },
+		{ "triangle", StdMeshMaterialTextureUnit::Transformation::W_TRIANGLE },
+		{ "square", StdMeshMaterialTextureUnit::Transformation::W_SQUARE },
+		{ "sawtooth", StdMeshMaterialTextureUnit::Transformation::W_SAWTOOTH },
+		{ "inverse_sawtooth", StdMeshMaterialTextureUnit::Transformation::W_INVERSE_SAWTOOTH }
 	};
 
 	const Enumerator<StdMeshMaterialPass::CullHardwareType> CullHardwareEnumerators[] = {
@@ -430,6 +452,21 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 	Error(StdCopyStrBuf("Unexpected identifier: '") + identifier + "'");
 }
 
+double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
+{
+	assert(TransformType == T_WAVE_XFORM); 
+	const double val = fmod(WaveXForm.Frequency * t + WaveXForm.Phase, 1.0f);
+	switch(WaveXForm.Wave)
+	{
+		case W_SINE: return WaveXForm.Base + WaveXForm.Amplitude*0.5*(1.0 + sin(val * 2.0 * M_PI));
+		case W_TRIANGLE: if(val < 0.5) return WaveXForm.Base + WaveXForm.Amplitude*2.0*val; else return WaveXForm.Base + WaveXForm.Amplitude*2.0*(1.0 - val);
+		case W_SQUARE: if(val < 0.5) return WaveXForm.Base; else return WaveXForm.Base + WaveXForm.Amplitude;
+		case W_SAWTOOTH: return WaveXForm.Base + WaveXForm.Amplitude*val;
+		case W_INVERSE_SAWTOOTH: return WaveXForm.Base + WaveXForm.Amplitude*(1.0-val);
+		default: assert(false); return 0.0;
+	}
+}
+
 StdMeshMaterialTextureUnit::TexRef::TexRef(C4Surface* Surface):
 	RefCount(1), Surf(Surface), Tex(*Surface->ppTex[0])
 {
@@ -457,7 +494,8 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
 	Duration(other.Duration), TexAddressMode(other.TexAddressMode),
 	ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
-	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor), Textures(other.Textures)
+	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor), Textures(other.Textures),
+	Transformations(other.Transformations)
 {
 	for(unsigned int i = 0; i < Textures.size(); ++i)
 		++Textures[i]->RefCount;
@@ -525,6 +563,7 @@ StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshM
 	AlphaOpManualAlpha1 = other.AlphaOpManualAlpha1;
 	AlphaOpManualAlpha2 = other.AlphaOpManualAlpha1;
 
+	Transformations = other.Transformations;
 	return *this;
 }
 
@@ -648,6 +687,64 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 			if(AlphaOpEx == BOX_BlendManual) AlphaOpManualFactor = ctx.AdvanceFloat();
 			if(AlphaOpSources[0] == BOS_Manual) AlphaOpManualAlpha1 = ctx.AdvanceFloat();
 			if(AlphaOpSources[1] == BOS_Manual) AlphaOpManualAlpha2 = ctx.AdvanceFloat();
+		}
+		else if(token_name == "scroll")
+		{
+			Transformation trans;
+			trans.TransformType = Transformation::T_SCROLL;
+			trans.Scroll.X = ctx.AdvanceFloat();
+			trans.Scroll.Y = ctx.AdvanceFloat();
+			Transformations.push_back(trans);
+		}
+		else if(token_name == "scroll_anim")
+		{
+			Transformation trans;
+			trans.TransformType = Transformation::T_SCROLL_ANIM;
+			trans.ScrollAnim.XSpeed = ctx.AdvanceFloat();
+			trans.ScrollAnim.YSpeed = ctx.AdvanceFloat();
+			Transformations.push_back(trans);
+		}
+		else if(token_name == "rotate")
+		{
+			Transformation trans;
+			trans.TransformType = Transformation::T_ROTATE;
+			trans.Rotate.Angle = ctx.AdvanceFloat();
+			Transformations.push_back(trans);
+		}
+		else if(token_name == "rotate_anim")
+		{
+			Transformation trans;
+			trans.TransformType = Transformation::T_ROTATE_ANIM;
+			trans.RotateAnim.RevsPerSec = ctx.AdvanceFloat();
+			Transformations.push_back(trans);
+		}
+		else if(token_name == "scale")
+		{
+			Transformation trans;
+			trans.TransformType = Transformation::T_SCALE;
+			trans.Scale.X = ctx.AdvanceFloat();
+			trans.Scale.Y = ctx.AdvanceFloat();
+			Transformations.push_back(trans);
+		}
+		else if(token_name == "transform")
+		{
+			Transformation trans;
+			trans.TransformType = Transformation::T_TRANSFORM;
+			for(int i = 0; i < 16; ++i)
+				trans.Transform.M[i] = ctx.AdvanceFloat();
+			Transformations.push_back(trans);
+		}
+		else if(token_name == "wave_xform")
+		{
+			Transformation trans;
+			trans.TransformType = Transformation::T_WAVE_XFORM;
+			trans.WaveXForm.XForm = ctx.AdvanceEnum(XFormTypeEnumerators);
+			trans.WaveXForm.Wave = ctx.AdvanceEnum(WaveTypeEnumerators);
+			trans.WaveXForm.Base = ctx.AdvanceFloat();
+			trans.WaveXForm.Frequency = ctx.AdvanceFloat();
+			trans.WaveXForm.Phase = ctx.AdvanceFloat();
+			trans.WaveXForm.Amplitude = ctx.AdvanceFloat();
+			Transformations.push_back(trans);
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);

@@ -251,6 +251,21 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						technique.Available = false;
 						break;
 					}
+
+					for(unsigned int m = 0; m < texunit.Transformations.size(); ++m)
+					{
+						StdMeshMaterialTextureUnit::Transformation& trans = texunit.Transformations[m];
+						if(trans.TransformType == StdMeshMaterialTextureUnit::Transformation::T_TRANSFORM)
+						{
+							// transpose so we can directly pass it to glMultMatrixf
+							std::swap(trans.Transform.M[ 1], trans.Transform.M[ 4]);
+							std::swap(trans.Transform.M[ 2], trans.Transform.M[ 8]);
+							std::swap(trans.Transform.M[ 3], trans.Transform.M[12]);
+							std::swap(trans.Transform.M[ 6], trans.Transform.M[ 9]);
+							std::swap(trans.Transform.M[ 7], trans.Transform.M[13]);
+							std::swap(trans.Transform.M[11], trans.Transform.M[14]);
+						}
+					}
 				} // loop over textures
 
 				// Check blending: Can only have one manual source color
@@ -754,7 +769,55 @@ namespace
 				}
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glTexCoordPointer(2, GL_FLOAT, sizeof(StdMeshVertex), &instance.GetVertices()[0].u);
+
+				// Setup texture coordinate transform
 				glLoadIdentity();
+				const double Position = instance.GetTexturePosition(i, j);
+				for(unsigned int k = 0; k < texunit.Transformations.size(); ++k)
+				{
+					const StdMeshMaterialTextureUnit::Transformation& trans = texunit.Transformations[k];
+					switch(trans.TransformType)
+					{
+					case StdMeshMaterialTextureUnit::Transformation::T_SCROLL:
+						glTranslatef(trans.Scroll.X, trans.Scroll.Y, 0.0f);
+						break;
+					case StdMeshMaterialTextureUnit::Transformation::T_SCROLL_ANIM:
+						glTranslatef(trans.GetScrollX(Position), trans.GetScrollY(Position), 0.0f);
+						break;
+					case StdMeshMaterialTextureUnit::Transformation::T_ROTATE:
+						glRotatef(trans.Rotate.Angle, 0.0f, 0.0f, 1.0f);
+						break;
+					case StdMeshMaterialTextureUnit::Transformation::T_ROTATE_ANIM:
+						glRotatef(trans.GetRotate(Position), 0.0f, 0.0f, 1.0f);
+						break;
+					case StdMeshMaterialTextureUnit::Transformation::T_SCALE:
+						glScalef(trans.Scale.X, trans.Scale.Y, 1.0f);
+						break;
+					case StdMeshMaterialTextureUnit::Transformation::T_TRANSFORM:
+						glMultMatrixf(trans.Transform.M);
+						break;
+					case StdMeshMaterialTextureUnit::Transformation::T_WAVE_XFORM:
+						switch(trans.WaveXForm.XForm)
+						{
+						case StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_X:
+							glTranslatef(trans.GetWaveXForm(Position), 0.0f, 0.0f);
+							break;
+						case StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_Y:
+							glTranslatef(0.0f, trans.GetWaveXForm(Position), 0.0f);
+							break;
+						case StdMeshMaterialTextureUnit::Transformation::XF_ROTATE:
+							glRotatef(trans.GetWaveXForm(Position), 0.0f, 0.0f, 1.0f);
+							break;
+						case StdMeshMaterialTextureUnit::Transformation::XF_SCALE_X:
+							glScalef(trans.GetWaveXForm(Position), 1.0f, 1.0f);
+							break;
+						case StdMeshMaterialTextureUnit::Transformation::XF_SCALE_Y:
+							glScalef(1.0f, trans.GetWaveXForm(Position), 1.0f);
+							break;
+						}
+						break;
+					}
+				}
 
 				glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 
