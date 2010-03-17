@@ -689,12 +689,14 @@ void C4Def::Draw(C4Facet &cgo, bool fSelected, DWORD iColor, C4Object *pObj, int
 
 			C4Value value;
 			GetProperty(Strings.P[P_PictureTransformation], value);
-			StdMeshMatrix matrix = StdMeshMatrix::Identity();
-			C4ValueToMatrix(value, &matrix);
+			StdMeshMatrix matrix;
+			if(C4ValueToMatrix(value, &matrix))
+				lpDDraw->SetMeshTransform(&matrix);
 
-			lpDDraw->SetPerspective(&matrix);
+			lpDDraw->SetPerspective(true);
 			lpDDraw->RenderMesh(*instance, cgo.Surface, cgo.X,cgo.Y, cgo.Wdt, cgo.Hgt, pObj ? pObj->Color : iColor, NULL);
-			lpDDraw->UnsetPerspective();
+			lpDDraw->SetPerspective(false);
+			lpDDraw->SetMeshTransform(NULL);
 
 			break;
 		}

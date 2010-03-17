@@ -1080,11 +1080,6 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 		{
 			C4Def *pDef = pSourceGfx->pDef;
 
-			C4Value value;
-			pDef->GetProperty(Strings.P[P_PictureTransformation], value);
-			StdMeshMatrix matrix = StdMeshMatrix::Identity();
-			C4ValueToMatrix(value, &matrix);
-
 			float twdt, thgt;
 			if(fZoomToShape)
 			{
@@ -1097,9 +1092,16 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 				thgt = pDef->Shape.Hgt;
 			}
 
-			lpDDraw->SetPerspective(&matrix);
+			C4Value value;
+			pDef->GetProperty(Strings.P[P_PictureTransformation], value);
+			StdMeshMatrix matrix;
+			if(C4ValueToMatrix(value, &matrix))
+				lpDDraw->SetMeshTransform(&matrix);
+
+			lpDDraw->SetPerspective(true);
 			lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, iTx - twdt/2, iTy - thgt/2, twdt, thgt, pForObj->Color, &Transform);
-			lpDDraw->UnsetPerspective();
+			lpDDraw->SetPerspective(false);
+			lpDDraw->SetMeshTransform(NULL);
 		}
 	}
 
@@ -1168,12 +1170,14 @@ void C4GraphicsOverlay::DrawPicture(C4Facet &cgo, C4Object *pForObj)
 		
 		C4Value value;
 		pDef->GetProperty(Strings.P[P_PictureTransformation], value);
-		StdMeshMatrix matrix = StdMeshMatrix::Identity();
-		C4ValueToMatrix(value, &matrix);
+		StdMeshMatrix matrix;
+		if(C4ValueToMatrix(value, &matrix))
+			lpDDraw->SetMeshTransform(&matrix);
 
-		lpDDraw->SetPerspective(&matrix);
+		lpDDraw->SetPerspective(true);
 		lpDDraw->RenderMesh(*pMeshInstance, cgo.Surface, cgo.X, cgo.Y, pForObj->Shape.Wdt, pForObj->Shape.Hgt, pForObj->Color, &C4DrawTransform(Transform, cgo.X+float(pForObj->Shape.Wdt)/2, cgo.Y+float(pForObj->Shape.Hgt)/2));
-		lpDDraw->UnsetPerspective();
+		lpDDraw->SetPerspective(false);
+		lpDDraw->SetMeshTransform(NULL);
 	}
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)

@@ -119,6 +119,7 @@ C4StringTable::C4StringTable()
 	P[P_LineAttach] = RegString("LineAttach");
 	P[P_MouseDragImage] = RegString("MouseDragImage");
 	P[P_PictureTransformation] = RegString("PictureTransformation");
+	P[P_MeshTransformation] = RegString("MeshTransformation");
 	for (unsigned int i = 0; i < P_LAST; ++i) P[i]->IncRef();
 	}
 

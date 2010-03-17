@@ -407,7 +407,7 @@ void CStdDDraw::Default()
 	// pClrModMap = NULL; - invalid if !fUseClrModMap anyway
 	fUseClrModMap = false;
 	ZoomX = 0; ZoomY = 0; Zoom = 1;
-	//PerspectiveMatrix = NULL; invalid if !fUsePerspective anyway
+	MeshTransform = NULL;
 	fUsePerspective = false;
 	}
 

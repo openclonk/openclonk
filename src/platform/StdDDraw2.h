@@ -235,7 +235,7 @@ class CStdDDraw
 		bool fUseClrModMap;             // if set, pClrModMap will be checked for color modulations
 		unsigned char Saturation;		// if < 255, an extra filter is used to reduce the saturation
 		int ZoomX; int ZoomY;
-		StdMeshMatrix* PerspectiveMatrix; // Transformation to apply to mesh when rendering perspectively (not owned)
+		const StdMeshMatrix* MeshTransform; // Transformation to apply to mesh before rendering
 		bool fUsePerspective;
 	public:
 		float Zoom;
@@ -343,8 +343,8 @@ class CStdDDraw
 		void GetZoom(ZoomData *r) { r->Zoom=Zoom; r->X=ZoomX; r->Y=ZoomY; }
 		void ApplyZoom(float & X, float & Y);
 		void RemoveZoom(float & X, float & Y);
-		void SetPerspective(StdMeshMatrix* Matrix) { fUsePerspective = true; PerspectiveMatrix = Matrix; } // if non-NULL make sure to keep matrix valid until call to UnsetPerspective
-		void UnsetPerspective() { fUsePerspective = false; }
+		void SetMeshTransform(const StdMeshMatrix* Transform) { MeshTransform = Transform; } // if non-NULL make sure to keep matrix valid
+		void SetPerspective(bool fSet) { fUsePerspective = fSet; }
 		virtual void SetTexture() = 0;
 		virtual void ResetTexture() = 0;
 

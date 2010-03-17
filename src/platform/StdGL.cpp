@@ -743,7 +743,7 @@ namespace
 				{
 					const unsigned int Phase = instance.GetTexturePhase(i, j);
 					have_texture = texunit.GetTexture(Phase).texName;
-					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture(Phase).texName); // TODO: Adapt for texture animation
+					glBindTexture(GL_TEXTURE_2D, texunit.GetTexture(Phase).texName);
 				}
 				else
 				{
@@ -986,6 +986,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	v1 = OgreToClonk * v1; // TODO: Include translation
 	v2 = OgreToClonk * v2; // TODO: Include translation
 
+	// Vector from origin of mesh to center of mesh
+	const StdMeshVector MeshCenter = (v1 + v2)/2.0f;
+
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_LIGHTING);
@@ -1086,16 +1089,10 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		const GLfloat light_position[] = { 0.0f, 0.0f, v2.z + 15.0f, 1.0f };
 		glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 		glEnable(GL_LIGHT0);
-
-		// Convert from Ogre to Clonk coordinate system
-		glMultMatrixf(OgreToClonkGL);
 	}
 	else
 	{
-		const float MeshX = (v1.x + v2.x)/2.0f;
-		const float MeshY = (v1.y + v2.y)/2.0f;
-		const float MeshZ = (v1.z + v2.z)/2.0f;
-		
+		// Mesh extents
 		const float b = fabs(v2.x - v1.x)/2.0f;
 		const float h = fabs(v2.y - v1.y)/2.0f;
 		const float l = fabs(v2.z - v1.z)/2.0f;
@@ -1108,9 +1105,9 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		else
 			EyeR = l + std::max(b/TAN_FOV * thgt/twdt, h/TAN_FOV);
 
-		const float EyeX = MeshX;
-		const float EyeY = MeshY;
-		const float EyeZ = MeshZ + EyeR;
+		const float EyeX = MeshCenter.x;
+		const float EyeY = MeshCenter.y;
+		const float EyeZ = MeshCenter.z + EyeR;
 
 		// Up vector is unit vector in theta direction
 		const float UpX = 0;//-sinEyePhi * sinEyeTheta;
@@ -1125,38 +1122,39 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// Fix X axis (???)
 		glScalef(-1.0f, 1.0f, 1.0f);
 		// center on mesh's bounding box, so that the mesh is really in the center of the viewport
-		gluLookAt(EyeX, EyeY, EyeZ, MeshX, MeshY, MeshZ, UpX, UpY, UpZ);
-
-		// Apply perspective matrix
-		if(PerspectiveMatrix)
-		{
-			// Convert to column-major order
-			const float Matrix[16] =
-			{
-				(*PerspectiveMatrix)(0,0), (*PerspectiveMatrix)(1,0), (*PerspectiveMatrix)(2,0), 0,
-				(*PerspectiveMatrix)(0,1), (*PerspectiveMatrix)(1,1), (*PerspectiveMatrix)(2,1), 0,
-				(*PerspectiveMatrix)(0,2), (*PerspectiveMatrix)(1,2), (*PerspectiveMatrix)(2,2), 0,
-				(*PerspectiveMatrix)(0,3), (*PerspectiveMatrix)(1,3), (*PerspectiveMatrix)(2,3), 1
-			};
-			
-			const float det = PerspectiveMatrix->Determinant();
-			if(det < 0) parity = !parity;
-
-			// Renormalize if transformation resizes the mesh
-			// for lighting to be correct
-			if(det != 1 && det != -1)
-				glEnable(GL_NORMALIZE);
-
-			// Apply Matrix in the coordinate system in which the mesh
-			// is centered, not in the mesh's coordinate system.
-			glTranslatef(MeshX, MeshY, MeshZ);
-			glMultMatrixf(Matrix);
-			glTranslatef(-MeshX, -MeshY, -MeshZ);
-		}
-
-		// Convert from Ogre to Clonk coordinate system
-		glMultMatrixf(OgreToClonkGL);
+		gluLookAt(EyeX, EyeY, EyeZ, MeshCenter.x, MeshCenter.y, MeshCenter.z, UpX, UpY, UpZ);
 	}
+
+
+	// Apply mesh transformation matrix
+	if(MeshTransform)
+	{
+		// Convert to column-major order
+		const float Matrix[16] =
+		{
+			(*MeshTransform)(0,0), (*MeshTransform)(1,0), (*MeshTransform)(2,0), 0,
+			(*MeshTransform)(0,1), (*MeshTransform)(1,1), (*MeshTransform)(2,1), 0,
+			(*MeshTransform)(0,2), (*MeshTransform)(1,2), (*MeshTransform)(2,2), 0,
+			(*MeshTransform)(0,3), (*MeshTransform)(1,3), (*MeshTransform)(2,3), 1
+		};
+		
+		const float det = MeshTransform->Determinant();
+		if(det < 0) parity = !parity;
+
+		// Renormalize if transformation resizes the mesh
+		// for lighting to be correct
+		if(det != 1 && det != -1)
+			glEnable(GL_NORMALIZE);
+
+		// Apply Matrix in the coordinate system in which the mesh
+		// is centered, not in the mesh's coordinate system.
+		glTranslatef(MeshCenter.x, MeshCenter.y, MeshCenter.z);
+		glMultMatrixf(Matrix);
+		glTranslatef(-MeshCenter.x, -MeshCenter.y, -MeshCenter.z);
+	}
+
+	// Convert from Ogre to Clonk coordinate system
+	glMultMatrixf(OgreToClonkGL);
 
 	DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
