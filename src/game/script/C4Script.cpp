@@ -1076,11 +1076,13 @@ static bool FnSetName(C4AulContext *cthr, C4String *pNewName, bool fSetInInfo, b
 			}
 			SCopy(szName, pInfo->Name, C4MaxName);
 			cthr->Obj->SetName(); // make sure object uses info name
+			cthr->Obj->Call(PSF_NameChange,&C4AulParSet(C4VBool(true)));
 		}
 		else
 		{
 			if (!pNewName) cthr->Obj->SetName();
 			else cthr->Obj->SetName(pNewName->GetCStr());
+			cthr->Obj->Call(PSF_NameChange,&C4AulParSet(C4VBool(false)));
 		}
 	}
 	return true;

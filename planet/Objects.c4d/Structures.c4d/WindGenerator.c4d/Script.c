@@ -9,12 +9,18 @@ public func GetGeneratorPriority() { return 256; }
 
 local wind_anim;
 
+protected func Construction()
+{
+	SetProperty("MeshTransformation",Trans_Rotate(RandomX(5,25)*(Random(2)*2-1),0,1,0));
+	return _inherited(...);
+}
+
 protected func Initialize()
 {
-  wind_anim = PlayAnimation("Turn", 5, Anim_Const(0), Anim_Const(1000));
-  // Set initial position
-  Wind2Turn();
-  return _inherited(...);
+	wind_anim = PlayAnimation("Turn", 5, Anim_Const(0), Anim_Const(1000));
+	// Set initial position
+	Wind2Turn();
+	return _inherited(...);
 }
 
 func Wind2Turn()

@@ -81,7 +81,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_InitializeScriptPlayer		"~InitializeScriptPlayer" // iPlayer, idTeam
 #define PSF_PreInitializePlayer	"~PreInitializePlayer" // iPlayer
 #define PSF_RemovePlayer				"~RemovePlayer" // iPlayer
-#define PSF_OnGameOver					"~OnGameOver"
 #define PSF_Time1								"~Time1"
 #define PSF_Hit									"~Hit"
 #define PSF_Hit2								"~Hit2"
@@ -115,8 +114,6 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_CatchBlow						"~CatchBlow" // iLevel, pByObject
 #define PSF_QueryCatchBlow			"~QueryCatchBlow" // pByObject
 #define PSF_Stuck								"~Stuck"
-#define PSF_RejectCollection		"~RejectCollect" // idObject, pObject
-#define PSF_RejectContents			"~RejectContents" // blocks opening of activate/get/contents menus; no parameters
 #define PSF_GrabLost						"~GrabLost"
 #define PSF_LineBreak						"~LineBreak" // iCause
 #define PSF_BuildNeedsMaterial	"~BuildNeedsMaterial" // idMat1, iAmount1, idMat2, iAmount2...
@@ -129,51 +126,68 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_MenuQueryCancel			"~MenuQueryCancel" // int iSelection
 #define PSF_IsFulfilled					"~IsFulfilled"
 #define PSF_IsFulfilledforPlr   "~IsFulfilledforPlr" // int iCallPlayer
-#define PSF_RejectEntrance			"~RejectEntrance" // C4Object *pIntoObj
-#define PSF_RejectFight         "~RejectFight" // C4Object* pEnemy
 #define PSF_AttachTargetLost    "~AttachTargetLost"
 #define PSF_CrewSelection       "~CrewSelection" // bool fDeselect, bool fCursorOnly
 #define PSF_GetObject2Drop      "~GetObject2Drop" // C4Object *pForCollectionOfObj
 #define PSF_LeagueGetResult     "~LeagueGetResult" // int iForPlr
-#define PSF_MenuSelection       "~OnMenuSelection" // int iItemIndex, C4Object *pMenuObject
-#define PSF_OnActionJump        "~OnActionJump" // int iXDir100, iYDir100
+#define PSF_FireMode            "~FireMode"
+#define PSF_FrameDecoration     "~FrameDecoration%s"
+#define PSF_GetFairCrewPhysical "~GetFairCrewPhysical" // C4String *szPhysicalName, int iRank, int iPrevPhysical
+#define PSF_DoMagicEnergy       "DoMagicEnergy" // int iChange, C4Object *pObj, bool fAllowPartial
+#define PSF_GetCustomComponents "~GetCustomComponents" // C4Object *pBuilder
 #define PSF_CalcBuyValue        "~CalcBuyValue" // C4ID idItem, int iDefValue
 #define PSF_CalcSellValue       "~CalcSellValue" // C4Object *pObj, int iObjValue
-#define PSF_MouseSelection      "~MouseSelection" // int iByPlr
-#define PSF_MouseSelectionAlt   "~MouseSelectionAlt" // int iByPlr
-#define PSF_OnOwnerChanged      "~OnOwnerChanged" // iNewOwner, iOldOwner
 #define PSF_OnJoinCrew          "~Recruitment" // int Player
 #define PSF_OnRemoveCrew        "~DeRecruitment" // int Player
+
+
+// Effect callbacks
+
 #define PSF_FxStart             "Fx%sStart" // C4Object *pTarget, int iEffectNumber, int iTemp, C4Value vVar1, C4Value vVar2, C4Value vVar3, C4Value vVar4
 #define PSF_FxStop              "Fx%sStop" // C4Object *pTarget, int iEffectNumber, int iReason, bool fTemp
 #define PSF_FxTimer             "Fx%sTimer" // C4Object *pTarget, int iEffectNumber, int iEffectTime
 #define PSF_FxEffect            "Fx%sEffect" // C4String *szNewEffect, C4Object *pTarget, int iEffectNumber, int iNewEffectNumber, C4Value vNewEffectVar1, C4Value vNewEffectVar2, C4Value vNewEffectVar3, C4Value vNewEffectVar4
 #define PSF_FxDamage            "Fx%sDamage" // C4Object *pTarget, int iEffectNumber, int iDamage, int iCause, int iCausePlayer
 #define PSF_FxCustom            "Fx%s%s" // C4Object *pTarget, int iEffectNumber, C4Value vVar1, C4Value vVar2, C4Value vVar3, C4Value vVar4, C4Value vVar5, C4Value vVar6, C4Value vVar7
-#define PSF_FireMode            "~FireMode"
-#define PSF_FrameDecoration     "~FrameDecoration%s"
-#define PSF_GetFairCrewPhysical "~GetFairCrewPhysical" // C4String *szPhysicalName, int iRank, int iPrevPhysical
-#define PSF_DoMagicEnergy       "DoMagicEnergy" // int iChange, C4Object *pObj, bool fAllowPartial
-#define PSF_GetCustomComponents "~GetCustomComponents" // C4Object *pBuilder
-#define PSF_RejectHostilityChange "~RejectHostilityChange" // int iPlr1, int iPlr2, bool fNewHostility
-#define PSF_RejectTeamSwitch      "~RejectTeamSwitch" // int iPlr, int idNewTeam
-#define PSF_OnHostilityChange    "~OnHostilityChange" // int iPlr1, int iPlr2, bool fNewHostility, bool fOldHostility
-#define PSF_OnTeamSwitch         "~OnTeamSwitch" // int iPlr1, int idNewTeam, int idOldTeam
-#define PSF_OnOwnerRemoved       "~OnOwnerRemoved"
-#define PSF_PlayerControl        "PlayerControl" // int iPlr, int iControl, C4ID idControlExtraData, int x, int y, int iStrength, bool fRepeated, bool fReleased
-#define PSF_Definition           "~Definition" // proplist definition
 
+// Controls
+
+#define PSF_PlayerControl            "PlayerControl" // int iPlr, int iControl, C4ID idControlExtraData, int x, int y, int iStrength, bool fRepeated, bool fReleased
+#define PSF_MouseSelection           "~MouseSelection" // int iByPlr
+#define PSF_MouseSelectionAlt        "~MouseSelectionAlt" // int iByPlr
+#define PSF_MouseDragDrop            "~MouseDragDrop" // int iPlr, C4Object *source, C4Object *target
+
+// Proplist
+
+#define PSF_Definition               "~Definition" // proplist definition
+
+// Reject* Callbacks
+
+#define PSF_RejectHostilityChange    "~RejectHostilityChange" // int iPlr1, int iPlr2, bool fNewHostility
+#define PSF_RejectTeamSwitch         "~RejectTeamSwitch" // int iPlr, int idNewTeam
+#define PSF_RejectEntrance           "~RejectEntrance" // C4Object *pIntoObj
+#define PSF_RejectFight              "~RejectFight" // C4Object* pEnemy
+#define PSF_RejectCollection         "~RejectCollect" // idObject, pObject
+#define PSF_RejectContents           "~RejectContents" // blocks opening of activate/get/contents menus; no parameters
+
+// On* Callbacks
+
+#define PSF_OnGameOver               "~OnGameOver"
+#define PSF_MenuSelection            "~OnMenuSelection" // int iItemIndex, C4Object *pMenuObject
+#define PSF_OnActionJump             "~OnActionJump" // int iXDir100, iYDir100
+#define PSF_OnOwnerChanged           "~OnOwnerChanged" // iNewOwner, iOldOwner
 #define PSF_EnergyChange             "~OnEnergyChange" // int iChange, int iCause, int iCausedByPlayer
 #define PSF_BreathChange             "~OnBreathChange" // int iChange
+#define PSF_OnHostilityChange        "~OnHostilityChange" // int iPlr1, int iPlr2, bool fNewHostility, bool fOldHostility
+#define PSF_OnTeamSwitch             "~OnTeamSwitch" // int iPlr1, int idNewTeam, int idOldTeam
+#define PSF_OnOwnerRemoved           "~OnOwnerRemoved"
 #define PSF_MagicEnergyChange        "~OnMagicEnergyChange" // int iChange
 #define PSF_Promotion                "~OnPromotion"
 #define PSF_PhysicalChange           "~OnPhysicalChange" // C4String *Physical, int iChange, int iMode
 #define PSF_CrewEnabled              "~OnCrewEnabled"
 #define PSF_CrewDisabled             "~OnCrewDisabled"
-
+#define PSF_NameChange               "~OnNameChanged" // bool inInfoSection
 #define PSF_OnWealthChanged          "~OnWealthChanged" // int iPlr
-
-#define PSF_MouseDragDrop          "~MouseDragDrop" // int iPlr, C4Object *source, C4Object *target
 
 // Fx%s is automatically prefixed
 #define PSFS_FxAdd              "Add" // C4Object *pTarget, int iEffectNumber, C4String *szNewEffect, int iNewTimer, C4Value vNewEffectVar1, C4Value vNewEffectVar2, C4Value vNewEffectVar3, C4Value vNewEffectVar4

@@ -13,11 +13,8 @@
 
 #include Library_Bars
 
-/*
-	TODO:	Callback when the name is changed
-*/
-
-local crew, breathbar, magicbar, hotkey, cleared;
+local crew, breathbar, magicbar, hotkey;
+local energypos, magicpos;
 
 public func BarSpacing() { return -4; }
 public func HealthBarHeight() { return 14; }
@@ -58,7 +55,8 @@ protected func Construction()
 	breathbar = false;
 	magicbar = false;
 	hotkey = false;
-	cleared = false;
+	energypos = 0;
+	magicpos = 0;
 	
 	// parallaxity
 	this["Parallaxity"] = [0,0];
@@ -118,16 +116,22 @@ public func SetHotkey(int num)
 	SetClrModulation(HSL(0,0,180),12);
 }
 
-private func ClearMessage()
-{
-	if(cleared) return;
-	CustomMessage("",this,crew->GetOwner());
-	cleared = true;
-}
-
 public func CrewGone()
 {
 	RemoveObject();
+}
+
+private func UpdateTexts()
+{
+	CustomMessage("",this,crew->GetOwner());
+	
+	if(crew->GetEnergy() > 0)
+		CustomMessage(Format("@<c dddd00>%d</c>",crew->GetEnergy()), this, crew->GetOwner(), energypos, GetDefHeight()/2 + BarOffset(0) + 14, nil, nil, nil, MSG_Multiple);
+	
+	if(crew->GetMagicEnergy() > 0)
+		CustomMessage(Format("@<c 1188cc>%d</c>",crew->GetMagicEnergy()), this, crew->GetOwner(), magicpos, GetDefHeight()/2 + BarOffset(1) + 14, nil, nil, nil, MSG_Multiple);
+	
+	CustomMessage(Format("@%s",crew->GetName()), this, crew->GetOwner(), 0, GetDefHeight(), nil, nil, nil, MSG_Multiple);
 }
 
 public func UpdateController()
@@ -178,7 +182,7 @@ public func UpdateTitleGraphic()
 	//SetColorDw(crew->GetColorDw());
 }
 
-public func UpdateHealthBar(bool nocall)
+public func UpdateHealthBar()
 {
 	if(!crew) return;
 	var phys = crew->GetPhysical("Energy");
@@ -186,16 +190,10 @@ public func UpdateHealthBar(bool nocall)
 	if(phys == 0) promille = 0;
 	else promille = 1000 * crew->GetEnergy() / (phys / 1000);
 
-	// if this function has not been called by UpdateMagicBar
-	if(!nocall)
-	{
-		ClearMessage();
-		UpdateMagicBar(true);
-		SetBarProgress(promille,0);
-		UpdateName();
-	}
-	if(promille > 0)
-		CustomMessage(Format("@<c dddd00>%d</c>",crew->GetEnergy()), this, crew->GetOwner(), -GetDefWidth()/2*(1000-promille)/1000, GetDefHeight()/2 + BarOffset(0) + 14, nil, nil, nil, MSG_Multiple);
+	energypos = -GetDefWidth()/2*(1000-promille)/1000;
+
+	SetBarProgress(promille,0);
+	UpdateTexts();
 }
 
 public func UpdateBreathBar()
@@ -223,20 +221,14 @@ public func UpdateBreathBar()
 
 }
 
-public func UpdateMagicBar(bool nocall)
+public func UpdateMagicBar()
 {
 	if(!crew) return;
 	var phys = crew->GetPhysical("Magic");
 	var promille = 0;
 	if(phys != 0) promille = 1000 * crew->GetMagicEnergy() / (phys / 1000);
 
-	// if this function has not been called by UpdateHealthBar
-	if(!nocall)
-	{
-		ClearMessage();
-		UpdateHealthBar(true);
-		UpdateName();
-	}
+	magicpos = -GetDefWidth()/2*(1000-promille)/1000;
 		
 	// remove magic bar if no physical magic!
 	if(phys == 0)
@@ -249,19 +241,15 @@ public func UpdateMagicBar(bool nocall)
 	{
 		if(!magicbar)
 			AddMagicBar();
-		
-		if(promille > 0)
-			CustomMessage(Format("@<c 1188cc>%d</c>",crew->GetMagicEnergy()), this, crew->GetOwner(), -GetDefWidth()/2*(1000-promille)/1000, GetDefHeight()/2 + BarOffset(1) + 14, nil, nil, nil, MSG_Multiple);
 
-		if(!nocall)
-			SetBarProgress(promille,2);
+		SetBarProgress(promille,2);
 	}
+	UpdateTexts();
 }
 
 private func UpdateName()
 {
-	CustomMessage(Format("@%s",crew->GetName()), this, crew->GetOwner(), 0, GetDefHeight(), nil, nil, nil, MSG_Multiple);
-	cleared = false;
+	UpdateTexts();
 }
 
 private func BarOffset(int num)

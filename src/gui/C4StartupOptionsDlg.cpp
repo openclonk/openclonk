@@ -786,6 +786,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 #ifndef USE_GL
 	pCheckGfxEngines[GFXENGN_OPENGL]->SetEnabled(false);
 #endif
+	pCheckGfxEngines[GFXENGN_DIRECTX]->SetEnabled(false); // as long as DX doesnt work, its disabled
 	pCheckGfxEngines[GFXENGN_DIRECTXS]->SetEnabled(false); // better not using this
 	// --subgroup resolution
 	C4GUI::GroupBox *pGroupResolution = new C4GUI::GroupBox(caSheetGraphics.GetGridCell(1,2,0,3));
