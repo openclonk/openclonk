@@ -44,7 +44,9 @@ global func Trans_Rotate(int angle, int rx, int ry, int rz)
 
 global func Trans_Mul(array lhs, array rhs)
 {
-	return [
+	if(!rhs) return lhs;
+
+	var result = [
 		lhs[0]*rhs[0]/1000 + lhs[1]*rhs[4]/1000 + lhs[ 2]*rhs[ 8]/1000,
 		lhs[0]*rhs[1]/1000 + lhs[1]*rhs[5]/1000 + lhs[ 2]*rhs[ 9]/1000,
 		lhs[0]*rhs[2]/1000 + lhs[1]*rhs[6]/1000 + lhs[ 2]*rhs[10]/1000,
@@ -59,4 +61,6 @@ global func Trans_Mul(array lhs, array rhs)
 		lhs[8]*rhs[1]/1000 + lhs[9]*rhs[5]/1000 + lhs[10]*rhs[ 9]/1000,
 		lhs[8]*rhs[2]/1000 + lhs[9]*rhs[6]/1000 + lhs[10]*rhs[10]/1000,
 		lhs[8]*rhs[3]/1000 + lhs[9]*rhs[7]/1000 + lhs[10]*rhs[11]/1000 + lhs[11] ];
+
+	return Trans_Mul(result, ...);
 }
