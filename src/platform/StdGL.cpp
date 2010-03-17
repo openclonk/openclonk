@@ -1084,7 +1084,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 		// Scale so that Z coordinate is between -1 and 1, otherwise parts of
 		// the mesh could be clipped away by the near or far clipping plane.
-		// Note that this only works in the projection matrix, otherwise
+		// Note that this only works for the projection matrix, otherwise
 		// lighting is screwed up.
 
 		// This technique might also enable us not to clear the depth buffer
@@ -1095,8 +1095,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// meshes don't look distorted - if we should ever decide to use
 		// a perspective projection we need to think of something different.
 		// Take also into account that the depth is not linear but linear
-		// in the logarithm (if I am not mistaken), so goes like 1/z
-		const float scz = 1.0/fabs(v2.z - v1.z);
+		// in the logarithm (if I am not mistaken), so goes as 1/z
+
+		// Don't scale by Z extents since mesh might be transformed
+		// by MeshTransformation, so use GetBoundingRadius to be safe.
+		// Note this still fails if mesh is scaled in Z direction.
+		const float scz = 1.0/mesh.GetBoundingRadius();
 
 		// Keep aspect ratio:
 		//if(scx < scy) scy = scx;

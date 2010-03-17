@@ -268,6 +268,7 @@ public:
 	const StdMeshAnimation* GetAnimationByName(const StdStrBuf& name) const;
 
 	const StdMeshBox& GetBoundingBox() const { return BoundingBox; }
+	float GetBoundingRadius() const { return BoundingRadius; }
 
 private:
 	void AddMasterBone(StdMeshBone* bone);
@@ -281,6 +282,7 @@ private:
 	std::map<StdCopyStrBuf, StdMeshAnimation> Animations;
 
 	StdMeshBox BoundingBox;
+	float BoundingRadius;
 };
 
 class StdSubMeshInstance

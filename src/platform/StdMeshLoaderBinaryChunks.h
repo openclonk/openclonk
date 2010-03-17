@@ -382,12 +382,13 @@ namespace Ogre
 		class ChunkMesh : public Chunk
 		{
 		public:
-			ChunkMesh() : hasAnimatedSkeleton(false) {}
+			ChunkMesh() : hasAnimatedSkeleton(false), radius(0.0f) {}
 			bool hasAnimatedSkeleton;
 			std::string skeletonFile;
 			boost::scoped_ptr<ChunkGeometry> geometry;
 			boost::ptr_vector<ChunkSubmesh> submeshes;
 			StdMeshBox bounds;
+			float radius;
 
 		protected:
 			virtual void ReadImpl(DataStream *stream);

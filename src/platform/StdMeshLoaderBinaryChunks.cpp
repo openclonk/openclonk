@@ -125,6 +125,7 @@ namespace Ogre
 					break;
 				case CID_Mesh_Bounds:
 					bounds = static_cast<ChunkMeshBounds*>(chunk)->bounds;
+					radius = static_cast<ChunkMeshBounds*>(chunk)->radius;
 					delete chunk;
 					break;
 				case CID_Mesh_Bone_Assignment:

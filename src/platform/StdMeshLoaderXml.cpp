@@ -147,6 +147,10 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 			submesh.Vertices[i].u = xml.RequireFloatAttribute(texcoord_elem, "u");
 			submesh.Vertices[i].v = xml.RequireFloatAttribute(texcoord_elem, "v");
 
+			const float d = std::sqrt(submesh.Vertices[i].x*submesh.Vertices[i].x
+			                        + submesh.Vertices[i].y*submesh.Vertices[i].y
+			                        + submesh.Vertices[i].z*submesh.Vertices[i].z);
+
 			// Construct BoundingBox
 			StdMeshBox &BoundingBox = mesh->BoundingBox;
 			if(i == 0 && mesh->SubMeshes.size() == 1)
@@ -155,6 +159,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 				BoundingBox.x1 = BoundingBox.x2 = submesh.Vertices[i].x;
 				BoundingBox.y1 = BoundingBox.y2 = submesh.Vertices[i].y;
 				BoundingBox.z1 = BoundingBox.z2 = submesh.Vertices[i].z;
+				mesh->BoundingRadius = d;
 			}
 			else
 			{
@@ -164,6 +169,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 				BoundingBox.y2 = Max(submesh.Vertices[i].y, BoundingBox.y2);
 				BoundingBox.z1 = Min(submesh.Vertices[i].z, BoundingBox.z1);
 				BoundingBox.z2 = Max(submesh.Vertices[i].z, BoundingBox.z2);
+				mesh->BoundingRadius = Max(mesh->BoundingRadius, d);
 			}
 		}
 

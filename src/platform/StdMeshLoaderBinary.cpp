@@ -188,6 +188,7 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 	Ogre::Mesh::ChunkMesh &cmesh = *static_cast<Ogre::Mesh::ChunkMesh*>(root.get());
 	std::auto_ptr<StdMesh> mesh(new StdMesh);
 	mesh->BoundingBox = cmesh.bounds;
+	mesh->BoundingRadius = cmesh.radius;
 
 	// Read skeleton (if exists)
 	if (!cmesh.skeletonFile.empty())

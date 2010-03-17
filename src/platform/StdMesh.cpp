@@ -759,6 +759,7 @@ StdMesh::StdMesh()
 {
 	BoundingBox.x1 = BoundingBox.y1 = BoundingBox.z1 = 0.0f;
 	BoundingBox.x2 = BoundingBox.y2 = BoundingBox.z2 = 0.0f;
+	BoundingRadius = 0.0f;
 }
 
 StdMesh::~StdMesh()
