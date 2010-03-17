@@ -455,7 +455,7 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
 {
 	assert(TransformType == T_WAVE_XFORM); 
-	const double val = fmod(WaveXForm.Frequency * t + WaveXForm.Phase, 1.0f);
+	const double val = fmod(WaveXForm.Frequency * t + WaveXForm.Phase, 1.0);
 	switch(WaveXForm.Wave)
 	{
 		case W_SINE: return WaveXForm.Base + WaveXForm.Amplitude*0.5*(1.0 + sin(val * 2.0 * M_PI));
