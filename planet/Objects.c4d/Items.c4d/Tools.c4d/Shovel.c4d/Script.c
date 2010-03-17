@@ -73,9 +73,9 @@ public func ControlUseHolding(object clonk, int x, int y)
 
 		var iAnimation = EffectVar(1, clonk, GetEffect("IntDig", clonk));
 		var iPosition = clonk->GetAnimationPosition(iAnimation)*180/clonk->GetAnimationLength("Dig");
-		Message("%d", clonk, iPosition);
+		//Message("%d", clonk, iPosition);
 		speed = speed*(Cos(iPosition-45, 50)**2)/2500;
-		Message("%d", clonk, speed);
+		//Message("%d", clonk, speed);
 		// limit angle
 		angle = BoundBy(angle,65,300);
 		clonk->SetXDir(Sin(angle,+speed)+xdir_boost,100);

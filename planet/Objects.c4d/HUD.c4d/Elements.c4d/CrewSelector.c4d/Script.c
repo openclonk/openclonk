@@ -114,7 +114,7 @@ public func SetHotkey(int num)
 	hotkey = true;
 	var name = Format("%d",num);
 	SetGraphics(name,Icon_Number,12,GFXOV_MODE_IngamePicture);
-	SetObjDrawTransform(300,0,16000,0,300,-30000, 12);
+	SetObjDrawTransform(300,0,1000*GetDefWidth()/4,0,300,-1000*GetDefWidth()/4, 12);
 	SetClrModulation(HSL(0,0,180),12);
 }
 
@@ -195,7 +195,7 @@ public func UpdateHealthBar(bool nocall)
 		UpdateName();
 	}
 	if(promille > 0)
-		CustomMessage(Format("@<c dddd00>%d</c>",crew->GetEnergy()), this, crew->GetOwner(), -32*(1000-promille)/1000, 45 + BarOffset(0), nil, nil, nil, MSG_Multiple);
+		CustomMessage(Format("@<c dddd00>%d</c>",crew->GetEnergy()), this, crew->GetOwner(), -GetDefWidth()/2*(1000-promille)/1000, GetDefHeight()/2 + BarOffset(0) + 14, nil, nil, nil, MSG_Multiple);
 }
 
 public func UpdateBreathBar()
@@ -251,7 +251,7 @@ public func UpdateMagicBar(bool nocall)
 			AddMagicBar();
 		
 		if(promille > 0)
-			CustomMessage(Format("@<c 1188cc>%d</c>",crew->GetMagicEnergy()), this, crew->GetOwner(), -32*(1000-promille)/1000, 45 + BarOffset(1), nil, nil, nil, MSG_Multiple);
+			CustomMessage(Format("@<c 1188cc>%d</c>",crew->GetMagicEnergy()), this, crew->GetOwner(), -GetDefWidth()/2*(1000-promille)/1000, GetDefHeight()/2 + BarOffset(1) + 14, nil, nil, nil, MSG_Multiple);
 
 		if(!nocall)
 			SetBarProgress(promille,2);
@@ -260,13 +260,13 @@ public func UpdateMagicBar(bool nocall)
 
 private func UpdateName()
 {
-	CustomMessage(Format("@%s",crew->GetName()), this, crew->GetOwner(), 0, 65, nil, nil, nil, MSG_Multiple);
+	CustomMessage(Format("@%s",crew->GetName()), this, crew->GetOwner(), 0, GetDefHeight(), nil, nil, nil, MSG_Multiple);
 	cleared = false;
 }
 
 private func BarOffset(int num)
 {
-	var offset = GetDefWidth()/2 + HealthBarHeight()/2 + num * BarSpacing();
+	var offset = GetDefHeight()/2 + HealthBarHeight()/2 + num * BarSpacing();
 	if(num > 0) offset += HealthBarHeight();
 	if(num > 1) offset += MagicBarHeight();
 	return offset;
