@@ -222,4 +222,5 @@ func Deselection()
 */
 func Definition(def) {
 	SetProperty("Name", "$Name$", def);
+	SetProperty("PictureTransformation",Trans_Mul(Trans_Translate(-2000,-2000),Trans_Rotate(180,0,1,0),Trans_Rotate(-25,1,0,1)),def);
 }

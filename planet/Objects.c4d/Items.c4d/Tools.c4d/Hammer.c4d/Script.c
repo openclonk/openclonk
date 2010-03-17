@@ -79,4 +79,5 @@ public func IsToolProduct() { return 1; }
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
+  SetProperty("PictureTransformation",Trans_Rotate(20,1,0,1),def);
 }

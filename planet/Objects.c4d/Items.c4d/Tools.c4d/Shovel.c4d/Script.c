@@ -134,5 +134,5 @@ public func IsToolProduct() { return 1; }
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
-  SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(135, 0, 0, 1), Trans_Rotate(10, 1, 0, 0)), def);
+  SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(135, 0, 0, 1),Trans_Rotate(30, 0, 1, 0)),def);
 }

@@ -205,4 +205,5 @@ protected func FxFlightStop(object pTarget,int iEffectNumber)
 func Definition(def) {
   SetProperty("Collectible", 1, def);
   SetProperty("Name", "$Name$", def);
+  SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(40,0,0,1),Trans_Rotate(-10,1,0,0)),def);
 }

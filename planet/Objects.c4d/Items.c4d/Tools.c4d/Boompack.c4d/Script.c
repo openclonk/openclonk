@@ -203,7 +203,8 @@ func GetFuel()
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
-  SetProperty("Collectible",1, def);
+	SetProperty("Name", "$Name$", def);
+	SetProperty("Collectible",1, def);
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300)),def);
 }
 		  							
