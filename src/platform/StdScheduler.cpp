@@ -246,7 +246,7 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 			// Check intersection
 			for (unsigned int j = prev_fds; j < test_fds.size(); ++j) if (fds[j].events & fds[j].revents)
 			{
-				if(!ppProcs[i]->Execute(0))
+				if(!ppProcs[i]->Execute(0, &fds[j]))
 				{
 					OnError(ppProcs[i]);
 					fSuccess = false;
