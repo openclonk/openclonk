@@ -82,7 +82,6 @@ class CStdGL : public CStdDDraw
 		GLenum sfcFmt;							// texture surface format
 		CStdGLCtx * pMainCtx;					// main GL context
 		CStdGLCtx *pCurrCtx;				// current context (owned if fullscreen)
-		bool fFullscreen;						// fullscreen mode?
 		int iClrDpt;								// color depth
 		// shaders for the ARB extension
 		GLuint shaders[12];
