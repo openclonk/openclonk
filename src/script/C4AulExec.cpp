@@ -281,10 +281,9 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					{
 					CheckOpPars(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					if(pPar2->_getInt())
-						pPar1->SetInt(pPar1->_getInt() / pPar2->_getInt());
-					else
-						pPar1->Set0();
+					if (!pPar2->_getInt())
+						throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
+					pPar1->SetInt(pPar1->_getInt() / pPar2->_getInt());
 					PopValue();
 					break;
 					}
@@ -431,65 +430,69 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					}
 				case AB_MulIt:	// *=
 					{
-					CheckOpPars(pCPos->Par.i);
+					CheckOpPars3(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->GetData().Int *= pPar2 ->_getInt();
+					*pPar1 *= pPar2 ->_getInt();
 					PopValue();
 					break;
 					}
 				case AB_DivIt:	// /=
 					{
-					CheckOpPars(pCPos->Par.i);
+					CheckOpPars3(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->GetData().Int = pPar2->_getInt() ? pPar1->GetData().Int / pPar2->_getInt() : 0;
+					if (!pPar2->_getInt())
+						throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
+					*pPar1 /= pPar2->_getInt();
 					PopValue();
 					break;
 					}
 				case AB_ModIt:	// %=
 					{
-					CheckOpPars(pCPos->Par.i);
+					CheckOpPars3(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->GetData().Int = pPar2->_getInt() ? pPar1->GetData().Int % pPar2->_getInt() : 0;
+					if (!pPar2->_getInt())
+						throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
+					*pPar1 %= pPar2->_getInt();
 					PopValue();
 					break;
 					}
 				case AB_Inc: 	// +=
 					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->GetData().Int += pPar2 ->_getInt();
+					CheckOpPars3(pCPos->Par.i);
+					C4Value *pPar1 = &((pCurVal - 1)->GetRefVal()), *pPar2 = pCurVal;
+					*pPar1 += pPar2 ->_getInt();
 					PopValue();
 					break;
 					}
 				case AB_Dec: 	// -=
 					{
-					CheckOpPars(pCPos->Par.i);
+					CheckOpPars3(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->GetData().Int -= pPar2 ->_getInt();
+					*pPar1 -= pPar2 ->_getInt();
 					PopValue();
 					break;
 					}
 				case AB_AndIt:	// &=
 					{
-					CheckOpPars(pCPos->Par.i);
+					CheckOpPars3(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->GetData().Int &= pPar2 ->_getInt();
+					*pPar1 &= pPar2 ->_getInt();
 					PopValue();
 					break;
 					}
 				case AB_OrIt:	// |=
 					{
-					CheckOpPars(pCPos->Par.i);
+					CheckOpPars3(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->GetData().Int |= pPar2 ->_getInt();
+					*pPar1 |= pPar2 ->_getInt();
 					PopValue();
 					break;
 					}
 				case AB_XOrIt:	// ^=
 					{
-					CheckOpPars(pCPos->Par.i);
+					CheckOpPars3(pCPos->Par.i);
 					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->GetData().Int ^= pPar2 ->_getInt();
+					*pPar1 ^= pPar2 ->_getInt();
 					PopValue();
 					break;
 					}

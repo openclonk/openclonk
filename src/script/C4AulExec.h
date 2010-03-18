@@ -46,7 +46,7 @@ class C4AulExec
 		void CheckOverflow(int iCnt)
 		{
 			if(ValueStackSize() + iCnt > MAX_VALUE_STACK)
-				throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack overflow!");
+				throw new C4AulExecError(pCurCtx->Obj, "internal error: value stack overflow! (probably too deep recursion in script)");
 		}
 
 		void PushString(C4String * Str)
@@ -140,6 +140,18 @@ class C4AulExec
 				throw new C4AulExecError(pCurCtx->Obj,
 					FormatString("operator \"%s\" right side: got \"%s\", but expected \"%s\"!",
 						C4ScriptOpMap[iOpID].Identifier, pPar2->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type2)).getData());
+		}
+		void CheckOpPars3(int iOpID)
+		{
+			CheckOpPars(iOpID);
+			// Get parameters
+			C4Value *pPar1 = pCurVal - 1;
+
+			// check that the the first parameter references an int, not something else
+			if(!pPar1->GetRefVal().ConvertTo(C4V_Int))
+				throw new C4AulExecError(pCurCtx->Obj,
+					FormatString("operator \"%s\" left side: got reference to \"%s\", but expected reference to \"%s\"!",
+						C4ScriptOpMap[iOpID].Identifier, pPar1->GetRefVal().GetTypeInfo(), GetC4VName(C4V_Int)).getData());
 		}
 		void CheckOpPar(int iOpID)
 		{

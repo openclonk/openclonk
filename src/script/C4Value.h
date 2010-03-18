@@ -150,10 +150,16 @@ public:
 
 	// Change and set Type to int in case it was any before (avoids GuessType())
 	C4Value & operator += (int32_t by) { GetData().Int += by; GetRefVal().Type=C4V_Int; return *this; }
+	C4Value & operator -= (int32_t by) { GetData().Int -= by; GetRefVal().Type=C4V_Int; return *this; }
+	C4Value & operator *= (int32_t by) { GetData().Int *= by; GetRefVal().Type=C4V_Int; return *this; }
+	C4Value & operator /= (int32_t by) { GetData().Int /= by; GetRefVal().Type=C4V_Int; return *this; }
+	C4Value & operator %= (int32_t by) { GetData().Int %= by; GetRefVal().Type=C4V_Int; return *this; }
+	C4Value & operator &= (int32_t by) { GetData().Int &= by; GetRefVal().Type=C4V_Int; return *this; }
+	C4Value & operator ^= (int32_t by) { GetData().Int ^= by; GetRefVal().Type=C4V_Int; return *this; }
+	C4Value & operator |= (int32_t by) { GetData().Int |= by; GetRefVal().Type=C4V_Int; return *this; }
 	C4Value & operator ++ () { GetData().Int ++; GetRefVal().Type=C4V_Int; return *this; }
 	C4Value operator ++ (int) { C4Value alt = GetRefVal(); GetData().Int ++; GetRefVal().Type=C4V_Int; return alt; }
 	C4Value & operator -- () { GetData().Int --; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value & operator -= (int32_t by) { GetData().Int -= by; GetRefVal().Type=C4V_Int; return *this; }
 	C4Value operator -- (int) { C4Value alt = GetRefVal(); GetData().Int --; GetRefVal().Type=C4V_Int; return alt; }
 
 	void Move(C4Value *nValue);
