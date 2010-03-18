@@ -126,6 +126,7 @@ class C4AulParseState
 	enum Type { PARSER, PREPARSER };
 	C4AulParseState(C4AulScriptFunc *Fn, C4AulScript * a, enum Type Type):
 		Fn(Fn), a(a), SPos(Fn ? Fn->Script : a->Script.getData()),
+		TokenType(ATT_INVALID),
 		Done(false),
 		Type(Type),
 		fJump(false),
