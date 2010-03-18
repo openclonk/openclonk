@@ -98,10 +98,10 @@ class C4Fixed
 		int32_t to_int() const
 			{
 			int32_t r = val;
-			// be carefull not to overflow
+			// be careful not to overflow
 			r += (val <= 0x7fffffff - FIXED_FPF / 2) * FIXED_FPF / 2;
 			// ensure that -x.50 is rounded to -(x+1)
-			r -= (r < 0);
+			r -= (val < 0);
 			r >>= FIXED_SHIFT;
 			// round 32767.5 to 32768 (not that anybody cares)
 			r += (val > 0x7fffffff - FIXED_FPF / 2);
@@ -112,7 +112,7 @@ class C4Fixed
 			int64_t r = val;
 			r *= prec;
 			r += FIXED_FPF / 2;
-			r -= (r < 0);
+			r -= (val < 0);
 			r >>= FIXED_SHIFT;
 			return int32_t(r);
 			}
