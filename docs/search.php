@@ -56,7 +56,7 @@ function SearchDir($path) {
 			else {
 				// HTML-Dokument auslesen
 				$doc = new DOMDocument();
-				$doc->loadHTMLFile($path.$file);
+				@$doc->loadHTMLFile($path.$file);
 				$divs = $doc->getElementsByTagName('div');
 				foreach($divs as $div) {
 					if(strpos($div->getAttribute('class'), 'text') !== false) {
@@ -111,13 +111,13 @@ if ($lang == 'de') {
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
-<li><a href="sdk/index.php">Einleitung</a></li>
-<li><a href="content.php">Inhalt</a></li>
-<li><a href="search.php">Suche</a></li>
-<li><a href="sdk/console.php">Engine</a></li>
-<li><a href="sdk/cmdline.php">Kommandozeile</a></li>
-<li><a href="sdk/files.php">Spieldaten</a></li>
-<li><a href="sdk/script/index.php">Script</a></li>
+<li><a href="sdk/index.html">Einleitung</a></li>
+<li><a href="content.html">Inhalt</a></li>
+<li><a href="search.html">Suche</a></li>
+<li><a href="sdk/console.html">Engine</a></li>
+<li><a href="sdk/cmdline.html">Kommandozeile</a></li>
+<li><a href="sdk/files.html">Spieldaten</a></li>
+<li><a href="sdk/script/index.html">Script</a></li>
 </ul>
 <h1>Suche nach Scriptfunktionen</h1>
 HEADER;
@@ -126,13 +126,13 @@ HEADER;
 	echo <<<HEADER
 <div id="content">
 <ul class="nav">
-<li><a href="sdk/index.php">Introduction</a></li>
-<li><a href="content.php">Contents</a></li>
-<li><a href="search.php">Search</a></li>
-<li><a href="sdk/console.php">Engine</a></li>
-<li><a href="sdk/cmdline.php">Command Line</a></li>
-<li><a href="sdk/files.php">Game Data</a></li>
-<li><a href="sdk/script/index.php">Script</a></li>
+<li><a href="sdk/index.html">Introduction</a></li>
+<li><a href="content.html">Contents</a></li>
+<li><a href="search.html">Search</a></li>
+<li><a href="sdk/console.html">Engine</a></li>
+<li><a href="sdk/cmdline.html">Command Line</a></li>
+<li><a href="sdk/files.html">Game Data</a></li>
+<li><a href="sdk/script/index.html">Script</a></li>
 </ul>
 <h1>Search for Script Functions</h1>
 HEADER;
