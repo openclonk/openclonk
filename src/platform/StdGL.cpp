@@ -64,6 +64,7 @@ CStdGL::CStdGL():
 	pGL = this;
 	shaders[0] = 0;
 	vbo = 0;
+	lines_tex = 0;
 	}
 
 CStdGL::~CStdGL()
