@@ -113,6 +113,7 @@ C4StringTable::C4StringTable()
 	P[P_Reverse] = RegString("Reverse");
 	P[P_Step] = RegString("Step");
 	P[P_Animation] = RegString("Animation");
+	P[P_Action] = RegString("Action");
 	P[P_Visibility] = RegString("Visibility");
 	P[P_Parallaxity] = RegString("Parallaxity");
 	P[P_LineColors] = RegString("LineColors");

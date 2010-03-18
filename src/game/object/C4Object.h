@@ -90,7 +90,7 @@ class C4Action
 		C4Action();
 		~C4Action();
 	public:
-		C4PropList * pActionDef;
+		//C4PropList * pActionDef;
     int32_t Dir;
 		int32_t DrawDir; // NoSave // - needs to be calculated for old-style objects.txt anyway
     int32_t ComDir;
@@ -285,6 +285,7 @@ class C4Object: public C4PropList
 		bool Contact(int32_t cnat);
 		void TargetBounds(FIXED &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 		enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
+		C4PropList* GetAction();
 		bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 		bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 		bool SetActionByName(const char * szActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
@@ -397,11 +398,12 @@ class C4Object: public C4PropList
 
 		bool IsMoveableBySolidMask()
 			{
+			C4PropList* pActionDef = GetAction();
 			return (Status == C4OS_NORMAL)
 				&& !(Category & (C4D_StaticBack | C4D_Structure))
 				&& !Contained
 				&& ((~Category & C4D_Vehicle) || (OCF & OCF_Grab))
-				&& (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_FLOAT)
+				&& (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_FLOAT)
 				;
 			}
 

@@ -787,9 +787,10 @@ static bool FnSetAction(C4AulObjectContext *cthr, C4String *szAction,
 static bool FnSetBridgeActionData(C4AulObjectContext *cthr, long iBridgeLength, bool fMoveClonk, bool fWall, long iBridgeMaterial)
 {
 	if (!cthr->Obj->Status) return false;
+	C4PropList* pActionDef = cthr->Obj->GetAction();
 	// action must be BRIDGE
-	if (!cthr->Obj->Action.pActionDef) return false;
-	if (cthr->Obj->Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_BRIDGE) return false;
+	if (!pActionDef) return false;
+	if (pActionDef->GetPropertyInt(P_Procedure) != DFA_BRIDGE) return false;
 	// set data
 	cthr->Obj->Action.SetBridgeData(iBridgeLength, fMoveClonk, fWall, iBridgeMaterial);
 	return true;
@@ -798,11 +799,12 @@ static bool FnSetBridgeActionData(C4AulObjectContext *cthr, long iBridgeLength, 
 static bool FnSetActionData(C4AulObjectContext *cthr, long iData)
 {
 	if (!cthr->Obj->Status) return false;
+	C4PropList* pActionDef = cthr->Obj->GetAction();
 	// bridge: Convert from old style
-	if (cthr->Obj->Action.pActionDef && (cthr->Obj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_BRIDGE))
+	if (pActionDef && (pActionDef->GetPropertyInt(P_Procedure) == DFA_BRIDGE))
 		return FnSetBridgeActionData(cthr, 0, false, false, iData);
 	// attach: check for valid vertex indices
-	if (cthr->Obj->Action.pActionDef && (cthr->Obj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)) // Fixed Action.Act check here... matthes
+	if (pActionDef && (pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)) // Fixed Action.Act check here... matthes
 		if (((iData&255) >= C4D_MaxVertex) || ((iData>>8) >= C4D_MaxVertex))
 			return false;
 	// set data
@@ -990,8 +992,9 @@ static C4Value FnPlayerObjectCommand(C4AulContext *cthr, C4Value *pPars)
 
 static C4String *FnGetAction(C4AulObjectContext *cthr)
 {
-	if (!cthr->Obj->Action.pActionDef) return String("Idle");
-	return String(cthr->Obj->Action.pActionDef->GetName());
+  C4PropList* pActionDef = cthr->Obj->GetAction();
+	if (!pActionDef) return String("Idle");
+	return String(pActionDef->GetName());
 }
 
 static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
@@ -1787,7 +1790,7 @@ static C4Object *FnFindOtherContents(C4AulObjectContext *cthr, C4ID c_id)
 
 static bool FnActIdle(C4AulObjectContext *cthr)
 {
-	return !cthr->Obj->Action.pActionDef;
+	return !cthr->Obj->GetAction();
 }
 
 static bool FnCheckEnergyNeedChain(C4AulObjectContext *cthr)
@@ -3334,9 +3337,10 @@ static C4Void FnSetPicture(C4AulObjectContext *cthr, long iX, long iY, long iWdt
 static C4String *FnGetProcedure(C4AulObjectContext *cthr)
 {
 	// no action?
-	if (!cthr->Obj->Action.pActionDef) return NULL;
+	C4PropList* pActionDef = cthr->Obj->GetAction();
+	if (!pActionDef) return NULL;
 	// get proc
-	long iProc = cthr->Obj->Action.pActionDef->GetPropertyInt(P_Procedure);
+	long iProc = pActionDef->GetPropertyInt(P_Procedure);
 	// NONE?
 	if (iProc <= DFA_NONE) return NULL;
 	// return procedure name

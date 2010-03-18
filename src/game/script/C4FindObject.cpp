@@ -621,7 +621,7 @@ bool C4FindObjectCategory::IsEnsured()
 
 bool C4FindObjectAction::Check(C4Object *pObj)
 {
-	return SEqual(pObj->Action.pActionDef->GetName(), szAction);
+	return SEqual(pObj->GetAction()->GetName(), szAction);
 }
 
 bool C4FindObjectActionTarget::Check(C4Object *pObj)
@@ -638,7 +638,7 @@ bool C4FindObjectActionTarget::Check(C4Object *pObj)
 bool C4FindObjectProcedure::Check(C4Object *pObj)
 {
 	C4Value v;
-	pObj->Action.pActionDef->GetProperty(::Strings.P[P_Procedure], v);
+	pObj->GetAction()->GetProperty(::Strings.P[P_Procedure], v);
 	return v != C4VNull && v.getInt() == procedure;
 }
 

@@ -308,7 +308,7 @@ void C4Command::MoveTo()
     }
 
   // Idles can't move to
-  if (!cObj->Action.pActionDef)
+  if (!cObj->GetAction())
     { Finish(); return; }
 
   // Action
@@ -1695,9 +1695,10 @@ bool C4Command::FlightControl() // Called by DFA_WALK, DFA_FLIGHT
 	if (!((cObj->OCF & OCF_CrewMember) || cObj->Def->Pathfinder)) return false;
 
 	// Not while in a disabled action
-	if (cObj->Action.pActionDef)
+	C4PropList* pActionDef = cObj->GetAction();
+	if (pActionDef)
 	{
-		if (cObj->Action.pActionDef->GetPropertyInt(P_ObjectDisabled)) return false;
+		if (pActionDef->GetPropertyInt(P_ObjectDisabled)) return false;
 	}
 
 	// Target angle

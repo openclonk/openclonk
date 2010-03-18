@@ -663,9 +663,10 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
   int32_t tdir=0; int right=0;
 	bool isHanglingOrSwimming = false;
 	int32_t iProc = DFA_NONE;
-	if (cObj->Action.pActionDef)
+	C4PropList* pActionDef = cObj->GetAction();
+	if (pActionDef)
 		{
-		iProc = cObj->Action.pActionDef->GetPropertyInt(P_Procedure);
+		iProc = pActionDef->GetPropertyInt(P_Procedure);
 		if (iProc == DFA_HANGLE || iProc == DFA_SWIM) isHanglingOrSwimming = true;
 		}
 	int32_t iOutposReduction = 1; // don't exit object too far forward during jump
@@ -703,7 +704,7 @@ bool ObjectComBuild(C4Object *cObj, C4Object *pTarget)
   {
   if (!pTarget) return false;
   // Needs to be idle or walking
-  if (cObj->Action.pActionDef)
+  if (cObj->GetAction())
     if (cObj->GetProcedure()!=DFA_WALK)
       return false;
   return ObjectActionBuild(cObj,pTarget);

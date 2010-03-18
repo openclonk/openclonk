@@ -182,13 +182,16 @@ void C4Object::SideBounds(FIXED &ctcox)
 	{
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
-		if (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+		{
+		C4PropList* pActionDef = GetAction();
+		if (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			{
 			if (Category & C4D_StaticBack)
 				TargetBounds(ctcox,pLayer->GetX()+pLayer->Shape.GetX(),pLayer->GetX()+pLayer->Shape.GetX()+pLayer->Shape.Wdt,CNAT_Left,CNAT_Right);
 			else
 				TargetBounds(ctcox,pLayer->GetX()+pLayer->Shape.GetX()-Shape.GetX(),pLayer->GetX()+pLayer->Shape.GetX()+pLayer->Shape.Wdt+Shape.GetX(),CNAT_Left,CNAT_Right);
 			}
+		}
 	// landscape bounds
   if (Def->BorderBound & C4D_Border_Sides)
 		TargetBounds(ctcox,0-Shape.GetX(),GBackWdt+Shape.GetX(),CNAT_Left,CNAT_Right);
@@ -198,13 +201,16 @@ void C4Object::VerticalBounds(FIXED &ctcoy)
 	{
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
-		if (!Action.pActionDef || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+		{
+		C4PropList* pActionDef = GetAction();
+		if (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			{
 			if (Category & C4D_StaticBack)
 				TargetBounds(ctcoy,pLayer->GetY()+pLayer->Shape.GetY(),pLayer->GetY()+pLayer->Shape.GetY()+pLayer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
 			else
 				TargetBounds(ctcoy,pLayer->GetY()+pLayer->Shape.GetY()-Shape.GetY(),pLayer->GetY()+pLayer->Shape.GetY()+pLayer->Shape.Hgt+Shape.GetY(),CNAT_Top,CNAT_Bottom);
 			}
+		}
 	// landscape bounds
   if (Def->BorderBound & C4D_Border_Top)
 		TargetBounds(ctcoy,0-Shape.GetY(),+1000000,CNAT_Top,CNAT_Bottom);
@@ -220,11 +226,12 @@ void C4Object::DoMovement()
 	// Restrictions
 	if (Def->NoHorizontalMove) xdir=0;
 	// Dig free target area
-	if (Action.pActionDef)
-		if (Action.pActionDef->GetPropertyInt(P_DigFree))
+	C4PropList* pActionDef = GetAction();
+	if (pActionDef)
+		if (pActionDef->GetPropertyInt(P_DigFree))
 			{
 			// Shape size square
-			if (Action.pActionDef->GetPropertyInt(P_DigFree)==1)
+			if (pActionDef->GetPropertyInt(P_DigFree)==1)
 				{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
 				::Landscape.DigFreeRect(ctcox+Shape.GetX(),ctcoy+Shape.GetY(),Shape.Wdt,Shape.Hgt,Action.Data,this);
@@ -233,7 +240,7 @@ void C4Object::DoMovement()
 			else
 				{
 				ctcox=fixtoi(fix_x+xdir); ctcoy=fixtoi(fix_y+ydir);
-				int32_t rad = Action.pActionDef->GetPropertyInt(P_DigFree);
+				int32_t rad = pActionDef->GetPropertyInt(P_DigFree);
 				if (Con<FullCon) rad = rad*6*Con/5/FullCon;
 				::Landscape.DigFree(ctcox,ctcoy-1,rad,Action.Data,this);
 				}
@@ -558,9 +565,11 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 
   // Out of bounds check
   if ((!Inside<int32_t>(GetX(),0,GBackWdt) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))
+		{
+		C4PropList* pActionDef = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
 		//  and the attached objects follow one frame later
-		if (!Action.pActionDef || !Action.Target || Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
+		if (!pActionDef || !Action.Target || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			{
 			bool fRemove = true;
 			// never remove HUD objects
@@ -579,7 +588,7 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 				AssignRemoval();
 				}
 			}
-
+		}
   return true;
   }
 

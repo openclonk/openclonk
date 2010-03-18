@@ -176,7 +176,8 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 													iHitEnergy = Max<int32_t>(iHitEnergy/3, !!iHitEnergy); // hit energy reduced to 1/3rd, but do not drop to zero because of this division
 													obj1->DoEnergy(-iHitEnergy/5, false, C4FxCall_EngObjHit, obj2->Controller);
 													int tmass=Max<int32_t>(obj1->Mass,50);
-													if (!::Game.iTick3 || (obj1->Action.pActionDef && obj1->Action.pActionDef->GetPropertyInt(P_Procedure) != DFA_FLIGHT))
+													C4PropList* pActionDef = obj1->GetAction();
+													if (!::Game.iTick3 || (pActionDef && pActionDef->GetPropertyInt(P_Procedure) != DFA_FLIGHT))
 														obj1->Fling(obj2->xdir*50/tmass,-Abs(obj2->ydir/2)*50/tmass, false);
 													obj1->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(-iHitEnergy/5),
 																																C4VObj(obj2)));
