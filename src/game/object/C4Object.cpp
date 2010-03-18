@@ -1504,9 +1504,9 @@ bool C4Object::Exit(int32_t iX, int32_t iY, int32_t iR, FIXED iXDir, FIXED iYDir
   // No container
   Contained=NULL;
 	// Position/motion
-	BoundsCheck(iX, iY);
 	r=iR;
 	fix_x=itofix(iX); fix_y=itofix(iY); fix_r=itofix(r);
+	BoundsCheck(fix_x, fix_y);
 	xdir=iXDir; ydir=iYDir; rdir=iRDir;
 	// Misc updates
   Mobile=1;

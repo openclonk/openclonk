@@ -133,14 +133,14 @@ void C4Object::DoMotion(int32_t mx, int32_t my)
   fix_x += mx; fix_y += my;
   }
 
-static inline int32_t ForceLimits(int32_t &rVal, int32_t iLow, int32_t iHi)
+static inline int32_t ForceLimits(FIXED &rVal, int32_t iLow, int32_t iHi)
 	{
 	if (rVal<iLow) { rVal=iLow; return -1; }
 	if (rVal>iHi)  { rVal=iHi;  return +1; }
 	return 0;
 	}
 
-void C4Object::TargetBounds(int32_t &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi)
+void C4Object::TargetBounds(FIXED &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi)
 	{
 	switch (ForceLimits(ctco,limit_low,limit_hi))
 		{
@@ -178,7 +178,7 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY)
 	return Shape.ContactCount;
 	}
 
-void C4Object::SideBounds(int32_t &ctcox)
+void C4Object::SideBounds(FIXED &ctcox)
 	{
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
@@ -194,7 +194,7 @@ void C4Object::SideBounds(int32_t &ctcox)
 		TargetBounds(ctcox,0-Shape.GetX(),GBackWdt+Shape.GetX(),CNAT_Left,CNAT_Right);
 	}
 
-void C4Object::VerticalBounds(int32_t &ctcoy)
+void C4Object::VerticalBounds(FIXED &ctcoy)
 	{
 	// layer bounds
 	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
@@ -248,16 +248,17 @@ void C4Object::DoMovement()
 
 	FIXED new_x = fix_x + xdir;
 	FIXED new_y = fix_y + ydir;
-	ctcox=fixtoi(new_x);
-	SideBounds(ctcox);
+	SideBounds(new_x);
+	ctcox = fixtoi(new_x);
+
 	if (!Action.t_attach) // Unattached movement  = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		{
 		// Horizontal movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Move to target
-		while (GetX()!=ctcox)
+		while (Abs<FIXED>(fix_x - ctcox) > FIXED10(5))
 			{
 			// Next step
-			int step = Sign(ctcox - GetX());
+			int step = Sign<FIXED>(new_x - fix_x);
 			if ((iContact=ContactCheck(GetX() + step, GetY())))
 				{
 				fAnyContact=true; iContacts |= t_contact;
@@ -273,15 +274,15 @@ void C4Object::DoMovement()
 			}
 		// Vertical movement - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		// Movement target
-		ctcoy=fixtoi(fix_y + ydir);
 		new_y = fix_y + ydir;
 		// Movement bounds (vertical)
-		VerticalBounds(ctcoy);
+		VerticalBounds(new_y);
+		ctcoy=fixtoi(new_y);
 		// Move to target
-		while (GetY()!=ctcoy)
+		while (Abs<FIXED>(fix_y - ctcoy) > FIXED10(5))
 			{
 			// Next step
-			int step = Sign(ctcoy - GetY());
+			int step = Sign<FIXED>(new_y - fix_y);
 			if ((iContact=ContactCheck(GetX(), GetY() + step)))
 				{
 				fAnyContact=true; iContacts |= t_contact;
@@ -310,16 +311,18 @@ void C4Object::DoMovement()
 		}
 	if (Action.t_attach) // Attached movement = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
 		{
+		VerticalBounds(new_y);
 		ctcoy=fixtoi(new_y);
-		VerticalBounds(ctcoy);
-		bool at_xovr,at_yovr;
 		// Move to target
 		do
 			{
-			at_xovr=at_yovr=0;
+			bool at_xovr = false, at_yovr = false;
 			// Set next step target
-			int step_x = Sign(ctcox-GetX());
-			int step_y = Sign(ctcoy-GetY());
+			int step_x = 0, step_y = 0;
+			if(Abs<FIXED>(fix_x - ctcox) > FIXED10(5))
+				step_x = Sign<FIXED>(new_x - fix_x);
+			if(Abs<FIXED>(fix_y - ctcoy) > FIXED10(5))
+				step_y = Sign<FIXED>(new_y - fix_y);
 			int32_t ctx = GetX() + step_x; int32_t cty = GetY() + step_y;
 			// Attachment check
 			if (!Shape.Attach(ctx,cty,Action.t_attach))
@@ -343,7 +346,7 @@ void C4Object::DoMovement()
 			if (at_xovr) { ctcox=GetX(); xdir=Fix0; new_x = fix_x; }
 			if (at_yovr) { ctcoy=GetY(); ydir=Fix0; new_y = fix_y; }
 			}
-		while ((GetX()!=ctcox) || (GetY()!=ctcoy));
+		while (Abs<FIXED>(fix_x - ctcox) > FIXED10(5) || Abs<FIXED>(fix_y - ctcoy) > FIXED10(5));
 		}
 	fix_x = new_x;
 	fix_y = new_y;

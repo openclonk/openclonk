@@ -283,7 +283,7 @@ class C4Object: public C4PropList
 		void AutoContextMenu(int32_t iMenuSelect);
 		int32_t ContactCheck(int32_t atx, int32_t aty);
 		bool Contact(int32_t cnat);
-		void TargetBounds(int32_t &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
+		void TargetBounds(FIXED &ctco, int32_t limit_low, int32_t limit_hi, int32_t cnat_low, int32_t cnat_hi);
 		enum { SAC_StartCall = 1, SAC_EndCall = 2, SAC_AbortCall = 4 };
 		bool SetAction(C4PropList * Act, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
 		bool SetActionByName(C4String * ActName, C4Object *pTarget=NULL, C4Object *pTarget2=NULL, int32_t iCalls = SAC_StartCall | SAC_AbortCall, bool fForce = false);
@@ -358,11 +358,11 @@ class C4Object: public C4PropList
 		bool GetDragImage(C4Object **drag_object, C4ID *drag_id); // return true if object is draggable; assign drag_object/drag_id to gfx to be used for dragging
 
 	protected:
-		void SideBounds(int32_t &ctcox);       // apply bounds at side; regarding bourder bound and pLayer
-		void VerticalBounds(int32_t &ctcoy);   // apply bounds at top and bottom; regarding border bound and pLayer
+		void SideBounds(FIXED &ctcox);       // apply bounds at side; regarding bourder bound and pLayer
+		void VerticalBounds(FIXED &ctcoy);   // apply bounds at top and bottom; regarding border bound and pLayer
 
 	public:
-		void BoundsCheck(int32_t &ctcox, int32_t &ctcoy) // do bound checks, correcting target positions as necessary and doing contact-calls
+		void BoundsCheck(FIXED &ctcox, FIXED &ctcoy) // do bound checks, correcting target positions as necessary and doing contact-calls
 			{ SideBounds(ctcox); VerticalBounds(ctcoy); }
 
 	public:

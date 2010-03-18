@@ -474,10 +474,10 @@ static C4Void FnSetPosition(C4AulObjectContext *cthr, long iX, long iY, bool fCh
 {
 	if (fCheckBounds)
 	{
-		// BoundsCheck takes ref to int and not to long
-		int32_t i_x = iX, i_y = iY;
+		// BoundsCheck takes ref to FIXED and not to long
+		FIXED i_x = itofix(iX), i_y = itofix(iY);
 		cthr->Obj->BoundsCheck(i_x, i_y);
-		iX = i_x; iY = i_y;
+		iX = fixtoi(i_x); iY = fixtoi(i_y);
 	}
 	cthr->Obj->ForcePosition(iX,iY);
 	// update liquid
