@@ -56,13 +56,27 @@ AM_CONDITIONAL(MACOSX, [test $osx = true])
 
 # various used headers
 dnl the whitespace is there to prevent AC_INCLUDES_DEFAULT
-AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h execinfo.h sys/inotify.h sys/syscall.h], , , [[ ]])
+AC_CHECK_HEADERS([stdint.h unistd.h poll.h sys/stat.h sys/types.h locale.h sys/socket.h signal.h langinfo.h sys/inotify.h sys/syscall.h], , , [[ ]])
 # Mingw does not ship with multimon.h
 AC_CHECK_HEADERS([multimon.h io.h direct.h share.h], [], [], [[#include <windows.h>]])
 # iconv
 AX_ICONV
 # vasprintf is a GNU extension
 AC_CHECK_FUNCS(vasprintf)
+# so is execinfo.h - and some systems have the header despite the functions not being in the c library
+AC_CHECK_HEADER(execinfo.h)
+if test "x$ac_cv_header_execinfo_h" = xyes; then
+  AC_CHECK_FUNC(backtrace, [], [
+    AC_CHECK_LIB(execinfo, backtrace, [
+      CLONK_LIBS="-lexecinfo $CLONK_LIBS"
+    ], [
+      ac_cv_header_execinfo_h=no
+    ])
+  ])
+fi
+if test "x$ac_cv_header_execinfo_h" = xyes; then
+  AC_DEFINE(HAVE_EXECINFO_H, 1, [The backtrace function is declared in execinfo.h and works])
+fi
 
 AC_ARG_ENABLE([debug],
   [AC_HELP_STRING([--enable-debug], [debugging options [default=no]])],

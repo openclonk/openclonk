@@ -131,7 +131,6 @@ int main()
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <signal.h>
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -143,8 +142,11 @@ int main()
 # include <gtk/gtkwindow.h>
 #endif
 
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
 #ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
+#endif
 
 static void crash_handler(int signo)
 	{
@@ -170,6 +172,7 @@ static void crash_handler(int signo)
 		else break;
 		if (logfd < 0) break;
 		}
+#ifdef HAVE_EXECINFO_H
 	// Get the backtrace
 	void *stack[100];
 	int count = backtrace(stack, 100);
@@ -178,10 +181,11 @@ static void crash_handler(int signo)
 	// Also to the log file
 	if (logfd >= 0)
 		backtrace_symbols_fd (stack, count, logfd);
+#endif
 	// Bye.
 	_exit(C4XRV_Failure);
 	}
-#endif
+#endif // HAVE_SIGNAL_H
 
 #ifdef __APPLE__
 void restart(char* args[]) {
@@ -206,7 +210,7 @@ int main (int argc, char * argv[])
 		printf("Do not run %s as root!\n", argc ? argv[0] : "this program");
 		return C4XRV_Failure;
 		}
-#ifdef HAVE_EXECINFO_H
+#ifdef HAVE_SIGNAL_H
 	// Set up debugging facilities
 	signal(SIGBUS, crash_handler);
 	signal(SIGILL, crash_handler);

@@ -6,7 +6,7 @@
 /* Define to 1 if you have the <direct.h> header file. */
 #undef HAVE_DIRECT_H
 
-/* Define to 1 if you have the <execinfo.h> header file. */
+/* The backtrace function is declared in execinfo.h and works */
 #undef HAVE_EXECINFO_H
 
 /* Define to 1 if you have FreeType2. */
