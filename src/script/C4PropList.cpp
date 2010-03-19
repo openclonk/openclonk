@@ -58,6 +58,9 @@ C4PropList::C4PropList(C4PropList * prototype):
 	Number(-1), Status(1),
 	FirstRef(NULL), prototype(prototype)
 	{
+	if(prototype)
+		SetProperty(Strings.P[P_Prototype], C4VPropList(prototype));
+
 	// Enumerate object
 	do
 		Number = ++Game.ObjectEnumerationIndex;
@@ -186,7 +189,7 @@ void C4PropList::SetProperty(C4String * k, const C4Value & to)
 	if (k == Strings.P[P_Prototype] && to.GetType() == C4V_PropList)
 		{
 		prototype = to.GetData().PropList;
-		return;
+		//return;
 		}
 	if (Properties.Has(k))
 		{

@@ -171,7 +171,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	LastEnergyLossCausePlayer=NO_OWNER;
   Info=pInfo;
   Def=pDef->GetDef();assert(Def);
-	prototype = pDef;
+	SetProperty(Strings.P[P_Prototype], C4VPropList(pDef));
 	id=Def->id;
 	if (Info) SetName(pInfo->Name);
   Category=Def->Category;
@@ -1231,7 +1231,7 @@ bool C4Object::ChangeDef(C4ID idNew)
 	Def->Count--;
   // Def change
   Def=pDef;
-	prototype = pDef;
+	SetProperty(Strings.P[P_Prototype], C4VPropList(pDef));
 	id=pDef->id;
 	Def->Count++;
 	LocalNamed.SetNameList(&pDef->Script.LocalNamed);
@@ -2645,7 +2645,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	if(fCompiler)
 		{
 		Def = ::Definitions.ID2Def(id);
-		prototype = Def;
+		SetProperty(Strings.P[P_Prototype], C4VPropList(Def));
 		if(!Def)
 			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),id.ToString()); return; }
 		}
