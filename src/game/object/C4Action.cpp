@@ -34,7 +34,7 @@ C4Action::~C4Action()
 
 void C4Action::Default()
 	{
-	pActionDef = 0;
+	//pActionDef = 0;
   Dir=DIR_None;
 	DrawDir=Dir;
   ComDir=COMD_None;

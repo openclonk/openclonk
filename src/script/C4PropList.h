@@ -68,6 +68,7 @@ class C4PropList {
 	C4Value *FirstRef; // No-Save
 
 	C4Set<C4Property> Properties;
+	private:
 	C4PropList * prototype;
 };
 

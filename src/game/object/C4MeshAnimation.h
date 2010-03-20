@@ -230,11 +230,11 @@ private:
 class C4ValueProviderAction: public StdMeshInstance::ValueProvider
 {
 public:
-	C4ValueProviderAction(const C4Object* object);
+	C4ValueProviderAction(C4Object* object);
 	virtual bool Execute();
 
 private:
-	const C4Action& Action;
+	C4Object* Object;
 };
 
 // Reference another value (which is convertible to FIXED), and optionally scale it

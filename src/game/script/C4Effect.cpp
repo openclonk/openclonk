@@ -588,8 +588,11 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	cobj = 0;
 	if (!pObj->Def->IncompleteActivity && !pObj->Def->NoBurnDecay)
 		while ((cobj = Game.FindObject(C4ID::None, 0, 0, 0, 0, OCF_All, 0, pObj, 0, 0, ANY_OWNER, cobj)))
-			if (cobj->Action.pActionDef && (cobj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH))
+			{
+			C4PropList* pActionDef = cobj->GetAction();
+			if (pActionDef && (pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH))
 				cobj->SetAction(0);
+			}
 	// fire caused?
 	if (!fFireCaused)
 		{

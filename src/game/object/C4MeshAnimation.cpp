@@ -303,17 +303,20 @@ bool C4ValueProviderSinV::Execute()
 	return true;
 }
 
-C4ValueProviderAction::C4ValueProviderAction(const C4Object* object):
-	Action(object->Action)
+C4ValueProviderAction::C4ValueProviderAction(C4Object* object):
+	Object(object)
 {
 }
 
 bool C4ValueProviderAction::Execute()
 {
+	const C4Action& Action = Object->Action;
+	C4PropList* pActionDef = Object->GetAction();
+
 	// TODO: We could cache these...
 	const StdMeshAnimation* animation = Action.Animation->GetAnimation();
-	const int32_t length = Action.pActionDef->GetPropertyInt(P_Length);
-	const int32_t delay = Action.pActionDef->GetPropertyInt(P_Delay);
+	const int32_t length = pActionDef->GetPropertyInt(P_Length);
+	const int32_t delay = pActionDef->GetPropertyInt(P_Delay);
 
 	if(delay)
 		Value = itofix(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * ftofix(animation->Length);

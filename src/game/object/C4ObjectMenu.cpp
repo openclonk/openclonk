@@ -427,7 +427,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 	C4FacetSurface fctSymbol;
 
 	// ActionContext functions of target's action target (for first target only, because otherwise strange stuff can happen with outdated Target2s...)
-	if (pTarget->Action.pActionDef)
+	if (pTarget->GetAction())
 		if ((cObj = pTarget->Action.Target))
 			for (iFunction=0; (pFunction=cObj->Def->Script.GetSFunc(iFunction, "ActionContext")); iFunction++)
 				if (!pFunction->OverloadedBy)
@@ -471,8 +471,10 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 	// Script context functions of any objects attached to target (search global list, because attachment objects might be moved just about anywhere...)
 	for (clnk=::Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
 		if (cObj->Status && cObj->Action.Target == pTarget)
-			if (cObj->Action.pActionDef)
-				if (cObj->Action.pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)
+			{
+			C4PropList* pActionDef = cObj->GetAction();
+			if (pActionDef)
+				if (pActionDef->GetPropertyInt(P_Procedure) == DFA_ATTACH)
 					for (iFunction=0; (pFunction=cObj->Def->Script.GetSFunc(iFunction, "AttachContext")); iFunction++)
 						if (!pFunction->OverloadedBy)
 							if (!pFunction->Condition || !! pFunction->Condition->Exec(cObj, &C4AulParSet(C4VObj(Object), C4VID(pFunction->idImage), C4VObj(pTarget))))
@@ -488,6 +490,7 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 								else
 									iResult++;
 								}
+			}
 
 	// 'Activate' and 'ControlDigDouble' script functions of target
 	const char *func, *funcs[] = { "Activate", "ControlDigDouble", 0 };
