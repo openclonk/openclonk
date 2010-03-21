@@ -136,7 +136,6 @@ struct C4RCSetPix
 struct C4RCExecObj
 	{
 	int Number; // object number
-	int id;
 	FIXED fx,fy,fr;
 	};
 

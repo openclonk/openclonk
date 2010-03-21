@@ -260,7 +260,6 @@ void C4Object::AssignRemoval(bool fExitContents)
 	if (!Status) return;
 #ifdef DEBUGREC
 	C4RCCreateObj rc;
-	rc.id=Def->id;
 	rc.oei=Number;
 	rc.x=GetX(); rc.y=GetY(); rc.ownr=Owner;
 	AddDbgRec(RCT_DsObj, &rc, sizeof(rc));
@@ -1080,7 +1079,6 @@ void C4Object::Execute()
 	// record debug
 	C4RCExecObj rc;
 	rc.Number=Number;
-	rc.id=Def->id;
 	rc.fx=fix_x;
 	rc.fy=fix_y;
 	rc.fr=fix_r;
