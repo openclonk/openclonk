@@ -984,13 +984,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	C4Player *pPlr=::Players.Get(Player);
 	if (pPlr && pPlr->fFogOfWar)
 		{
-		ClrModMap.Reset(Game.C4S.Landscape.FoWRes, Game.C4S.Landscape.FoWRes,
-						ViewWdt/Zoom, ViewHgt/Zoom,
-						cgo.TargetX,
-						cgo.TargetY,
-						0,
-						cgo.X, cgo.Y,
-						Game.FoWColor, cgo.Surface);
+		ClrModMap.Reset(Game.C4S.Landscape.FoWRes, Game.C4S.Landscape.FoWRes, ViewWdt, ViewHgt, int(cgo.TargetX*Zoom), int(cgo.TargetY*Zoom), 0, cgo.X-BorderLeft, cgo.Y-BorderTop, Game.FoWColor, cgo.Surface);
 		pPlr->FoW2Map(ClrModMap, int(float(cgo.X)/Zoom-cgo.TargetX), int(float(cgo.Y)/Zoom-cgo.TargetY));
 		lpDDraw->SetClrModMap(&ClrModMap);
 		lpDDraw->SetClrModMapEnabled(true);

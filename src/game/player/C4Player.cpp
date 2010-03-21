@@ -963,7 +963,11 @@ void C4Player::CheckCrewExPromotion()
 	C4Object *hirank;
 	if ((hirank=GetHiRankActiveCrew(false)))
 		if (hirank->Info)
+<<<<<<< local
 			if (hirank->Info->Rank<1) // No FÃ¤hnrich -> except. promo.
+=======
+			if (hirank->Info->Rank<1) // No Fähnrich -> except. promo.
+>>>>>>> other
 				if ((hirank=GetHiExpActiveCrew(false)))
 					hirank->Promote(1,true,false);
 	}
@@ -1730,7 +1734,10 @@ int VisibilityCheck(int iVis, int sx, int sy, int cx, int cy)
 	{
 		int x = (sx * (st - i) + cx * i) / st, y = (sy * (st - i) + cy * i) / st;
 		if(GBackSolid(x, y))
-			return 0;
+			{
+			if((iVis -= 2) <= 0)
+				return 0;
+			}
 	}
 	return iVis;
 	}
@@ -1740,11 +1747,11 @@ void C4Player::FoW2Map(CClrModAddMap &rMap, int iOffX, int iOffY)
 	// No fog of war
 	if (!fFogOfWar) return;
 	igOffX = iOffX; igOffY = iOffY;
-	// Add view for all FoW-repellers - keep track of FoW-generators, which should be avaluated last
+	// Add view for all FoW-repellers - keep track of FoW-generators, which should be avaluated finally
 	// so they override repellers
 	bool fAnyGenerators = false;
-	C4Object *cobj; C4ObjectLink *clnk;
-	for (clnk=FoWViewObjs.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
+  C4Object *cobj; C4ObjectLink *clnk;
+  for (clnk=FoWViewObjs.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (!cobj->Contained || cobj->Contained->Def->ClosedContainer != 1)
 			{
 			if (cobj->PlrViewRange > 0)
