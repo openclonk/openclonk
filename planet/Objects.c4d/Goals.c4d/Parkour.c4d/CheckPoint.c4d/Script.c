@@ -236,6 +236,8 @@ protected func GetColorByAngle(int angle)
 	for (var i = 0; i < GetPlayerCount(); i++)
 		if (ClearedByPlr(GetPlayerByIndex(i)) || (cp_mode & RACE_CP_Start))
 			cnt++;
+	if(!cnt) return RGBa(255,255,255,192);
+
 	var prt = 360 / cnt;
 	var j = 0;
 	// Find the right player.
@@ -249,6 +251,8 @@ protected func GetColorByAngle(int angle)
 			j++;
 		}
 	}
+	
+	// Should not happen...
 	return RGBa(255,255,255,192);
 }
 
