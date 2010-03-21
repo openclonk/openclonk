@@ -287,7 +287,7 @@ namespace Ogre
 		void ChunkGeometryVertexDeclElement::ReadImpl(DataStream *stream)
 		{
 			source = stream->Read<uint16_t>();
-			uint32_t t = stream->Read<uint16_t>();
+			int32_t t = stream->Read<uint16_t>();
 			if (t < VDET_MIN || t > VDET_MAX)
 				throw InvalidVertexType();
 			type = static_cast<Type>(t);
