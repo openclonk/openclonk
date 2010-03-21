@@ -3964,9 +3964,9 @@ void C4Object::ExecAction()
           xdir+=accel; if (xdir>+lLimit) xdir=+lLimit;
           break;
         case COMD_Stop: case COMD_Up: case COMD_Down:
-          if (xdir<0) xdir+=WalkAccel;
-          if (xdir>0) xdir-=WalkAccel;
-          if ((xdir>-WalkAccel) && (xdir<+WalkAccel)) xdir=0;
+          if (xdir<0) xdir+=WalkBreak;
+          if (xdir>0) xdir-=WalkBreak;
+          if ((xdir>-WalkBreak) && (xdir<+WalkBreak)) xdir=0;
           break;
         }
       iPhaseAdvance=0;

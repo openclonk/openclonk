@@ -37,8 +37,8 @@ const FIXED FixFullCircle=itofix(360),FixHalfCircle=FixFullCircle/2;
 const FIXED FloatFriction=FIXED100(2);
 const FIXED RotateAccel=FIXED100(20);
 const FIXED FloatAccel=FIXED100(10);
-const FIXED WalkAccel=FIXED100(5);
-const FIXED WalkBreak=FIXED100(20);
+const FIXED WalkAccel=FIXED100(8);
+const FIXED WalkBreak=FIXED100(16);
 const FIXED ScaleAccel=FIXED100(20);
 const FIXED SwimAccel=FIXED100(7);
 const FIXED HitSpeed1=FIXED100(150); // Hit Event
