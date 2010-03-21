@@ -45,6 +45,7 @@ if(NOT USE_GL AND NOT USE_DIRECTX)
 	SET(USE_CONSOLE ON CACHE INTERNAL "Build dedicated server")
 endif()
 option(BUILD_TO_PLANET "Put build files to ./planet/" OFF)
+option(DEBUGREC "Debug records" OFF)
 
 ############################################################################
 # Check for compiler quirks and features
