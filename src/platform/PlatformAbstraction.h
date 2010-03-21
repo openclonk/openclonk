@@ -213,13 +213,6 @@ inline int stricmp(const char *s1, const char *s2) {
 #endif
 
 
-
-#ifdef _MSC_VER
-#define vsnprintf _vsnprintf
-#endif
-
-
-
 // open a weblink in an external browser
 bool OpenURL(const char *szURL);
 
