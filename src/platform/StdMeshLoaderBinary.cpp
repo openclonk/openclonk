@@ -50,6 +50,9 @@ namespace
 				if (semanticSeen[element.semantic])
 					return false;
 				break;
+			default:
+				// We ignore unhandled element semantics.
+				break;
 			}
 			semanticSeen[element.semantic] = true;
 		}
@@ -83,6 +86,9 @@ namespace
 			for (int i = 0; i < 3; ++i)
 				dest[i] = source[i + 1] / 255.0f;
 			break;
+		default:
+			assert(!"Unexpected enum value");
+			break;
 		}
 	}
 	
@@ -104,6 +110,7 @@ namespace
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Float4: elsize = sizeof(float) * 4; break;
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Color_ABGR:
 			case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDET_Color_ARGB: elsize = sizeof(uint8_t) * 4; break;
+			default: assert(!"Unexpected enum value"); break;
 			}
 			max_offset[el.source] = std::max<size_t>(max_offset[el.source], el.offset + elsize);
 		}
@@ -156,6 +163,9 @@ namespace
 				case Ogre::Mesh::ChunkGeometryVertexDeclElement::VDES_Texcoords:
 					vertex.u = values[0];
 					vertex.v = values[1];
+					break;
+				default:
+					// We ignore unhandled element semantics.
 					break;
 				}
 			}
@@ -304,6 +314,9 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 		case Ogre::Skeleton::CID_Animation:
 			// Collect animations for later (need bone table index, which we don't know yet)
 			animations.push_back(static_cast<Ogre::Skeleton::ChunkAnimation*>(chunk.release()));
+			break;
+		default:
+			assert(!"Unexpected enum value");
 			break;
 		}
 		if (stream.AtEof()) break;
