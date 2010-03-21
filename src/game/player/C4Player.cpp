@@ -963,11 +963,7 @@ void C4Player::CheckCrewExPromotion()
 	C4Object *hirank;
 	if ((hirank=GetHiRankActiveCrew(false)))
 		if (hirank->Info)
-<<<<<<< local
-			if (hirank->Info->Rank<1) // No FÃ¤hnrich -> except. promo.
-=======
 			if (hirank->Info->Rank<1) // No Fähnrich -> except. promo.
->>>>>>> other
 				if ((hirank=GetHiExpActiveCrew(false)))
 					hirank->Promote(1,true,false);
 	}
