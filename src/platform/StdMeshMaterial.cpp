@@ -494,8 +494,8 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
 	Duration(other.Duration), TexAddressMode(other.TexAddressMode),
 	ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
-	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor), Textures(other.Textures),
-	Transformations(other.Transformations)
+	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor),
+	Transformations(other.Transformations), Textures(other.Textures)
 {
 	for(unsigned int i = 0; i < Textures.size(); ++i)
 		++Textures[i]->RefCount;
