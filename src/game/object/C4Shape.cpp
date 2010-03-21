@@ -206,82 +206,44 @@ bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
 	// that sometimes Clonks get stuck scaling in very sharp edges or single
 	// floating material pixels; occuring quite often in Caverace, or maps where
 	// you blast Granite and many single pixels remain.
-	//
-	// Until a better solution for designing battlements is found, the old-style
-	// behaviour will be used for Clonks.	Both code variants should behave equally
-	// for objects with only one matching vertex to cnat_pos.
-	if (!(cnat_pos & CNAT_MultiAttach))
+
+	// determine attachment direction
+	xcd=ycd=0;
+	switch (cnat_pos & (~CNAT_Flags))
 		{
-		// old-style attachment
+		case CNAT_Top:    ycd=-1; break;
+		case CNAT_Bottom: ycd=+1; break;
+		case CNAT_Left:   xcd=-1; break;
+		case CNAT_Right:  xcd=+1; break;
+		}
+	// check within attachment range
+	xcrng=AttachRange*xcd*(-1); ycrng=AttachRange*ycd*(-1);
+	for (xcnt=xcrng,ycnt=ycrng; (xcnt!=-xcrng) || (ycnt!=-ycrng); xcnt+=xcd,ycnt+=ycd)
+		// check all vertices with matching CNAT
 		for (vtx=0; vtx<VtxNum; vtx++)
 			if (VtxCNAT[vtx] & cnat_pos)
 				{
-				xcd=ycd=0;
-				switch (cnat_pos & (~CNAT_Flags))
+				// get new vertex pos
+				int32_t ax=cx+VtxX[vtx]+xcnt+xcd, ay=cy+VtxY[vtx]+ycnt+ycd;
+				// can attach here?
+				cpix=GBackPix(ax,ay);
+				if (MatDensity(PixCol2Mat(cpix)) >= ContactDensity)
 					{
-					case CNAT_Top:    ycd=-1; break;
-					case CNAT_Bottom: ycd=+1; break;
-					case CNAT_Left:   xcd=-1; break;
-					case CNAT_Right:  xcd=+1; break;
-					}
-				xcrng=AttachRange*xcd*(-1); ycrng=AttachRange*ycd*(-1);
-				for (xcnt=xcrng,ycnt=ycrng; (xcnt!=-xcrng) || (ycnt!=-ycrng); xcnt+=xcd,ycnt+=ycd)
-					{
-					int32_t ax=cx+VtxX[vtx]+xcnt+xcd, ay=cy+VtxY[vtx]+ycnt+ycd;
-					if (GBackDensity(ax,ay) >= ContactDensity)
-						{
-						cpix=GBackPix(ax,ay);
-						AttachMat=PixCol2Mat(cpix);
-						iAttachX=ax; iAttachY=ay;
-						iAttachVtx=vtx;
-						cx+=xcnt; cy+=ycnt;
-						fAttached=1;
-						break;
-						}
+					// store attachment material
+					AttachMat=PixCol2Mat(cpix);
+					// store absolute attachment position
+					iAttachX=ax; iAttachY=ay;
+					iAttachVtx=vtx;
+					// move position here
+					cx+=xcnt; cy+=ycnt;
+					// mark attachment
+					fAttached=1;
+					// break both looops
+					xcnt=-xcrng-xcd; ycnt=-ycrng-ycd;
+					break;
 					}
 				}
-		}
-	else // CNAT_MultiAttach
-		{
-		// new-style attachment
-		// determine attachment direction
-		xcd=ycd=0;
-		switch (cnat_pos & (~CNAT_Flags))
-			{
-			case CNAT_Top:    ycd=-1; break;
-			case CNAT_Bottom: ycd=+1; break;
-			case CNAT_Left:   xcd=-1; break;
-			case CNAT_Right:  xcd=+1; break;
-			}
-		// check within attachment range
-		xcrng=AttachRange*xcd*(-1); ycrng=AttachRange*ycd*(-1);
-		for (xcnt=xcrng,ycnt=ycrng; (xcnt!=-xcrng) || (ycnt!=-ycrng); xcnt+=xcd,ycnt+=ycd)
-			// check all vertices with matching CNAT
-			for (vtx=0; vtx<VtxNum; vtx++)
-				if (VtxCNAT[vtx] & cnat_pos)
-					{
-					// get new vertex pos
-					int32_t ax=cx+VtxX[vtx]+xcnt+xcd, ay=cy+VtxY[vtx]+ycnt+ycd;
-					// can attach here?
-					cpix=GBackPix(ax,ay);
-					if (MatDensity(PixCol2Mat(cpix)) >= ContactDensity)
-						{
-						// store attachment material
-						AttachMat=PixCol2Mat(cpix);
-						// store absolute attachment position
-						iAttachX=ax; iAttachY=ay;
-						iAttachVtx=vtx;
-						// move position here
-						cx+=xcnt; cy+=ycnt;
-						// mark attachment
-						fAttached=1;
-						// break both looops
-						xcnt=-xcrng-xcd; ycnt=-ycrng-ycd;
-						break;
-						}
-					}
-		}
-
+	  
   return fAttached;
   }
 
