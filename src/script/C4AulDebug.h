@@ -56,7 +56,8 @@ class C4AulDebug : public C4NetIOTCP, private C4NetIO::CBClass
 		void SetEngine(class C4AulExec *pnExec) { pExec = pnExec; }
 
 		bool Init(uint16_t iPort);
-		bool Close();
+		virtual bool Close();
+		virtual bool Close(const addr_t &addr);
 
 		void OnLog(const char *szLine);
 		void DebugStep(C4AulBCC *pCPos);

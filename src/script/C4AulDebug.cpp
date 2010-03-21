@@ -133,6 +133,15 @@ bool C4AulDebug::Close()
 	return C4NetIOTCP::Close();
 	}
 
+bool C4AulDebug::Close(const addr_t &addr)
+	{
+	if(!fInit) return true;
+	bool success = C4NetIOTCP::Close(addr);
+	if (success)
+		fInit = fConnected = false;
+	return success;
+	}
+
 void C4AulDebug::OnLog(const char *szLine)
 	{
 	if(!fConnected) return;
