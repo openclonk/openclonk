@@ -26,50 +26,55 @@ public func ControlUseStart(object clonk, int x, int y)
 	if(!CanStrikeWithWeapon(clonk)) return true;
 	var slow=GetEffect("SwordStrikeSlow", clonk);
 	
+	var animation="StrikeArms";
 	// figure out the kind of attack to use
 	var length=0;
 	if(clonk->IsWalking())
 	{
-		length=30;
+		length=20;
 		if(!GetEffect("SwordStrikeSpeedUp", clonk) && !slow)
 			AddEffect("SwordStrikeSpeedUp", clonk,  1, 5, this);
 	} else
 	if(clonk->IsJumping())
 	{
-		if(clonk->GetYDir() < 0) length=40;
-		else length=GetJumpLength(clonk);
+		//if(clonk->GetYDir() < 0) length=20;
+		//else length=GetJumpLength(clonk);
+		length=20;
 		
 		if(!slow)
 		if(!GetEffect("DelayTranslateVelocity", clonk))
 		{
-			TranslateVelocity(clonk, Angle(0, 0, x,y), 90);
-			AddEffect("DelayTranslateVelocity", clonk, 1, 35*2);
+			TranslateVelocity(clonk, Angle(0, 0, x,y), 0, 300);
+			AddEffect("DelayTranslateVelocity", clonk, 1, 3, 0,  Library_MeleeWeapon, length );
 		}
 	}
 	else return true;
 
-	PlayWeaponAnimation(clonk, "StrikeArms", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("StrikeArms"), length, ANIM_Remove), Anim_Const(1000));
+	PlayWeaponAnimation(clonk, animation, 10, Anim_Linear(0, 0, clonk->GetAnimationLength(animation), length, ANIM_Remove), Anim_Const(1000));
 	StartWeaponHitCheckEffect(clonk, length, 1);
 	return true;
 }
 
 
+
 func ControlUseStop(object clonk, int x, int y)
 {
-	StopWeaponHitCheckEffect(clonk);
+	//StopWeaponHitCheckEffect(clonk);
 }
 
 func OnWeaponHitCheckStop(clonk)
 {
 	if(GetEffect("SwordStrikeSpeedUp", clonk))
 		RemoveEffect("SwordStrikeSpeedUp", clonk);
+	if(GetEffect("DelayTranslateVelocity", clonk))
+		RemoveEffect("DelayTranslateVelocity", clonk);	
 	return;
 }
 
 func WeaponStrikeExpired()
 {
-	if(Contained())
-		this->ScheduleCall(this, "ControlUseStart", 1, 0, Contained(), 0, 0);
+	//if(Contained())
+	//	this->ScheduleCall(this, "ControlUseStart", 1, 0, Contained(), 0, 0);
 }
 
 func CheckStrike(iTime)
@@ -95,16 +100,16 @@ func CheckStrike(iTime)
 	{
 		found=true;
 		
-		if(iTime < 20)
+		/*if(iTime < 20)
 		{
 			DoWeaponSlow(obj, 800);
 			continue;
-		}
+		}*/
 		
 		var velocity=GetRelativeVelocity(Contained(), obj) * 2;
 		velocity+= slowedVelocity / 10;
-		velocity=Max(100, velocity*3);
-		if(velocity > 300) velocity=300;
+		velocity=velocity*3;
+		//if(velocity > 300) velocity=300;
 		
 		var shield=ApplyShieldFactor(Contained(), obj, damage);
 		if(shield == 100)
@@ -116,20 +121,20 @@ func CheckStrike(iTime)
 			ApplyWeaponBash(obj, velocity, Angle(0, 0, angle, Contained()->GetYDir()));
 		
 		
-		if(doBash)
-			DoWeaponSlow(obj, 800);
+		//if(doBash)
+		//	DoWeaponSlow(obj, 800);
 	}
 	if(found)
 	{
-		if(iTime < 20)
+		/*if(iTime < 20)
 		{
 			DoWeaponSlow(Contained(), 1000);
 		}
-		else
+		else*/
 		{
 			this->Sound("ShieldMetal*", false);
-			if(doBash)
-				DoWeaponSlow(Contained(), 2000);
+			//if(doBash)
+			//	DoWeaponSlow(Contained(), 2000);
 			this->StopWeaponHitCheckEffect(Contained());
 		}
 	}
@@ -138,8 +143,12 @@ func CheckStrike(iTime)
 
 func FxSwordStrikeSpeedUpStart(pTarget, iEffectNumber, iTemp)
 {
-	//if(iTemp) return;
+	
 	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) * 2, PHYS_StackTemporary);
+	if(iTemp) return;
+	var dir=-1;
+	if(pTarget->GetDir() == DIR_Right) dir=1;
+	pTarget->SetXDir(pTarget->GetPhysical("Walk")*dir, 1000);
 }
 
 func FxSwordStrikeSpeedUpTimer(pTarget, iEffectNumber, iEffectTime)
@@ -162,7 +171,7 @@ func FxSwordStrikeSpeedUpStop(pTarget, iEffectNumber, iCause, iTemp)
 
 func FxSwordStrikeSlowStart(pTarget, iEffectNumber, iTemp, iTime)
 {
-	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) / 2, PHYS_StackTemporary);
+	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) / 3, PHYS_StackTemporary);
 	if(iTemp) return;
 	EffectVar(0, pTarget, iEffectNumber) = iTime;
 }

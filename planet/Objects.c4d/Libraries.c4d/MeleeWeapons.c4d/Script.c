@@ -31,7 +31,27 @@ public func CanStrikeWithWeapon(clonk)
 	return true;
 }
 
+func FxDelayTranslateVelocityStart(pTarget, iEffectNumber,  temp, p1)
+{
+	if(temp) return;
+	EffectVar(0, pTarget, iEffectNumber) = p1;
+}
 
+func FxDelayTranslateVelocityTimer(pTarget, iEffectNumber, iEffectTime)
+{
+	if(EffectVar(0, pTarget, iEffectNumber))
+		if(iEffectTime > EffectVar(0, pTarget, iEffectNumber)) return -1;
+	if(pTarget->GetContact(-1) & CNAT_Bottom) return -1;
+	return true;
+}
+
+func FxDelayTranslateVelocityStop(pTarget, iEffectNumber, reason, temp)
+{
+	if(temp) return;
+	if(!(pTarget->GetContact(-1) & CNAT_Bottom))
+	if(Sqrt(pTarget->GetXDir()**2 + pTarget->GetYDir()**2) > 10)
+		pTarget->SetSpeed(pTarget->GetXDir()/2, pTarget->GetYDir()/2);
+}
 
 func FxIntWeaponChargeStart(pTarget, iEffectNumber, iTemp, length)
 {
@@ -368,9 +388,9 @@ func ApplyWeaponBash(pTo, int strength, angle)
 	AddEffect("IntIsBeingStruck", pTo, 2, 1, 0, GetID(), strength, angle);
 }
 
-func TranslateVelocity(object pTarget, int angle, int iLimited)
+func TranslateVelocity(object pTarget, int angle, int iLimited, int iExtraVelocity)
 {
-	var speed=Sqrt((pTarget->GetXDir(100) ** 2) + (pTarget->GetYDir(100) ** 2));
+	var speed=Sqrt((pTarget->GetXDir(100) ** 2) + (pTarget->GetYDir(100) ** 2)) + iExtraVelocity;
 	var a=Angle(0, 0, pTarget->GetXDir(), pTarget->GetYDir());
 	
 	if(iLimited)
