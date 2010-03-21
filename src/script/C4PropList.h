@@ -34,17 +34,17 @@ class C4Property {
 	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if(Key) Key->IncRef(); }
 	C4Property & operator = (const C4Property &o)
 		{ assert(o.Key); o.Key->IncRef(); if(Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
-	~C4Property() { if(Key) Key->DecRef();}
+	~C4Property() { if(Key) Key->DecRef(); }
+	void CompileFunc(StdCompiler *pComp);
 	C4String * Key;
 	C4Value Value;
-	operator void * () { return Key; }
+	operator const void * () const { return Key; }
 	C4Property & operator = (void * p) { assert(!p); if(Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
 };
-
+class C4PropListNumbered;
 class C4PropList {
 	public:
-	int32_t Number;
-	int32_t Status; // NoSave //
+	int32_t Status;
 	void AddRef(C4Value *pRef);
 	void DelRef(const C4Value *pRef, C4Value * pNextRef);
 	void AssignRemoval();
@@ -53,6 +53,7 @@ class C4PropList {
 
 	virtual C4Def * GetDef();
 	virtual C4Object * GetObject();
+	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() { return prototype; }
 
 	bool GetProperty(C4String * k, C4Value & to);
@@ -61,15 +62,34 @@ class C4PropList {
 	void SetProperty(C4String * k, const C4Value & to);
 	void ResetProperty(C4String * k);
 
-	C4PropList(C4PropList * prototype = 0);
+	static C4PropList * New(C4PropList * prototype = 0);
+	virtual void DenumeratePointers();
 	virtual ~C4PropList();
 
-	protected:
-	C4Value *FirstRef; // No-Save
+	// Every proplist has to be initialized by either Init or CompileFunc.
+	void CompileFunc(StdCompiler *pComp);
 
+	protected:
+	C4PropList(C4PropList * prototype = 0);
 	C4Set<C4Property> Properties;
+
 	private:
+	C4Value *FirstRef; // No-Save
+	bool constant; // if true, this proplist is neither saved nor changeable FIXME: implement
+
 	C4PropList * prototype;
+	friend void CompileNewFunc<C4PropList>(C4PropList *&pStruct, StdCompiler *pComp);
 };
+
+class C4PropListNumbered: public C4PropList {
+	public:
+	int32_t Number;
+	C4PropListNumbered(C4PropList * prototype = 0);
+	~C4PropListNumbered();
+	void CompileFunc(StdCompiler *pComp);
+	virtual C4PropListNumbered * GetPropListNumbered();
+	void AcquireNumber();
+};
+
 
 #endif // C4PROPLIST_H

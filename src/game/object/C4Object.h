@@ -111,7 +111,7 @@ class C4Action
 		void GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfWall, int32_t &riBridgeMaterial);
   };
 
-class C4Object: public C4PropList
+class C4Object: public C4PropListNumbered
 	{
 	public:
 		C4Object();

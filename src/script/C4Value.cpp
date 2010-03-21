@@ -67,7 +67,7 @@ void C4Value::AddDataRef()
 		Data.PropList->AddRef(this);
 #ifdef _DEBUG
 		// check if the object actually exists
-		if(!::Objects.ObjectNumber(Data.PropList))
+		if(Data.PropList->GetPropListNumbered() && !::Objects.ObjectNumber(Data.PropList))
 			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.PropList)); }
 		else if(!Data.PropList->Status)
 			{ LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName()); }
@@ -284,6 +284,8 @@ char GetC4VID(const C4V_Type Type)
 		return 'V'; // should never happen
 	case C4V_C4ObjectEnum:
 		return 'O';
+	case C4V_C4DefEnum:
+		return 'D';
 	case C4V_Array:
 		return 'a';
 	case C4V_PropList:
@@ -310,6 +312,8 @@ C4V_Type GetC4VFromID(const char C4VID)
 		return C4V_pC4Value;
 	case 'O':
 		return C4V_C4ObjectEnum;
+	case 'D':
+		return C4V_C4DefEnum;
 	case 'a':
 		return C4V_Array;
 	case 'p':
@@ -470,9 +474,9 @@ StdStrBuf C4Value::GetDataString()
 		else
 			if (Data.PropList)
 				if (Data.Obj->Status == C4OS_NORMAL)
-					return FormatString("%s #%d", Data.PropList->GetName(), (int) Data.PropList->Number);
+					return FormatString("%s #%d", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
 				else
-					return FormatString("{%s #%d}", Data.PropList->GetName(), (int) Data.PropList->Number);
+					return FormatString("{%s #%d}", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
 			else
 				return StdStrBuf("0"); // (impossible)
 		}
@@ -520,16 +524,17 @@ void C4Value::DenumeratePointer()
 		return;
 	}
 	// object types only
-	if(Type != C4V_C4ObjectEnum && Type != C4V_Any) return;
+	if(Type != C4V_C4ObjectEnum) return;
 	// get obj id, search object
 	int iObjID = Data.Int;
-	C4PropList *pObj = ::Objects.ObjectPointer(iObjID);
+	C4PropList *pObj = Objects.PropListPointer(iObjID);
 	if(pObj)
 		// set
 		SetPropList(pObj);
 	else
 	{
 		// object: invalid value - set to zero
+		LogF("ERROR: Object number %d is missing.", Data.Int);
 		Set0();
 	}
 }
@@ -545,6 +550,10 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		char cC4VID = GetC4VID(Type);
 		// Object reference is saved enumerated
 		if(Type == C4V_C4Object)
+			cC4VID = GetC4VID(C4V_C4ObjectEnum);
+		if(Type == C4V_PropList && getPropList()->GetDef())
+			cC4VID = GetC4VID(C4V_C4DefEnum);
+		else if(Type == C4V_PropList)
 			cC4VID = GetC4VID(C4V_C4ObjectEnum);
 		// Write
 		pComp->Character(cC4VID);
@@ -600,18 +609,43 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 
 	// object: save object number instead
 	case C4V_C4Object: case C4V_PropList:
-		if(!fCompiler)
-			iTmp = ::Objects.ObjectNumber(getPropList());
-	case C4V_C4ObjectEnum:
-		if(!fCompiler) if (Type == C4V_C4ObjectEnum)
-			iTmp = Data.Int;
-		pComp->Value(iTmp);
-		if(fCompiler)
+		{
+		assert(!fCompiler);
+		C4PropList * p = getPropList();
+		if (Type == C4V_PropList && p->GetDef())
+			pComp->Value(p->GetDef()->id);
+		else
 			{
-			Type = C4V_C4ObjectEnum;
-			Data.Int = iTmp; // must be denumerated later
+			iTmp = ::Objects.ObjectNumber(getPropList());
+			pComp->Value(iTmp);
 			}
 		break;
+		}
+
+	case C4V_C4ObjectEnum:
+		assert(fCompiler);
+		pComp->Value(iTmp); // must be denumerated later
+		Data.Int = iTmp;
+		break;
+
+	case C4V_C4DefEnum:
+		{
+		assert(fCompiler);
+		C4ID id;
+		pComp->Value(id); // must be denumerated later
+		Data.PropList = Definitions.ID2Def(id);
+		Type = C4V_PropList;
+		if(!Data.PropList)
+			{
+			LogF("ERROR: Definition %s is missing.", id.ToString());
+			Type = C4V_Any;
+			}
+		else
+			{
+			Data.PropList->AddRef(this);
+			}
+		break;
+		}
 
 	// string: save string number
 	case C4V_String:

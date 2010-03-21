@@ -575,7 +575,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 
 				case AB_PROPLIST:
 					{
-					PushPropList(new C4PropList);
+					PushPropList(C4PropList::New());
 					break;
 					}
 				case AB_PROPSET:

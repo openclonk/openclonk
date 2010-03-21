@@ -37,6 +37,7 @@ class C4GameObjects : public C4NotifyingObjectList
 		void Init(int32_t iWidth, int32_t iHeight);
 		void Clear(bool fClearInactive); // clear objects
 		void Clear() { Clear(true); } // don't use default parameters so we get a correct vtbl entry
+		void CompileFunc(StdCompiler *pComp, bool fSkipPlayerObjects = false);
 
 	public:
 		C4LSectors Sectors; // section object lists
@@ -59,6 +60,7 @@ class C4GameObjects : public C4NotifyingObjectList
 
 		C4Object *FindInternal(C4ID id); // find object in first sector
 		virtual C4Object *ObjectPointer(int32_t iNumber); // object pointer by number
+		virtual C4PropList *PropListPointer(int32_t iNumber); // object pointer by number
 		int32_t ObjectNumber(C4PropList *pObj); // object number by pointer
 		C4Object* SafeObjectPointer(int32_t iNumber);
 		C4Object* Denumerated(C4Object *pObj);
@@ -96,8 +98,8 @@ class C4GameObjects : public C4NotifyingObjectList
 		void UpdateTransferZones();
 		void SetOCF();
 	protected:
-		C4Set<C4PropList *> PropLists;
-		friend class C4PropList;
+		C4Set<C4PropListNumbered *> PropLists;
+		friend class C4PropListNumbered;
 	};
 
 extern C4GameObjects Objects;

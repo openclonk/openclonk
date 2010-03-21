@@ -266,7 +266,7 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		// FIXME: move this to script
 		if (GlobalNamed.GetItem("Action"))
 		{
-			C4PropList * Action = new C4PropList;
+			C4PropList * Action = C4PropList::New();
 			Action->SetProperty(Strings.P[P_Length], C4VInt(1));
 			Action->SetProperty(Strings.P[P_Directions], C4VInt(1));
 			Action->SetProperty(Strings.P[P_Step], C4VInt(1));

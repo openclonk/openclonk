@@ -41,7 +41,8 @@ enum C4V_Type
 	C4V_Array=6,			// pointer on array of values
 	C4V_pC4Value=7,		// reference on a value (variable)
 
-	C4V_C4ObjectEnum=9 // enumerated object
+	C4V_C4ObjectEnum=9, // enumerated object
+	C4V_C4DefEnum=10, // enumerated object
 };
 
 #define C4V_Last (int) C4V_pC4Value

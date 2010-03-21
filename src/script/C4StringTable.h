@@ -77,6 +77,7 @@ public:
 		{
 		delete[] Table;
 		}
+	void CompileFunc(StdCompiler *pComp);
 	void Clear()
 		{
 		for (unsigned int i = 0; i < Capacity; ++i)

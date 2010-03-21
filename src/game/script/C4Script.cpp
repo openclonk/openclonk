@@ -999,7 +999,7 @@ static C4String *FnGetAction(C4AulObjectContext *cthr)
 
 static C4PropList * FnCreatePropList(C4AulContext *cthr, C4PropList * prototype)
 {
-	return new C4PropList(prototype);
+	return C4PropList::New(prototype);
 }
 
 static C4Value FnGetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value * pObj_C4V)
@@ -1493,7 +1493,10 @@ static C4Value FnAddMenuItem(C4AulContext *cthr, C4Value *pPars)
 		break;
 	case C4V_C4Object:
 	case C4V_PropList:
-		sprintf(parameter, "Object(%d)", Parameter.getPropList()->Number);
+		if (Parameter.getPropList()->GetPropListNumbered())
+			sprintf(parameter, "Object(%d)", Parameter.getPropList()->GetPropListNumbered()->Number);
+		else
+			sprintf(parameter, "C4Id(\"%s\")", Parameter.getPropList()->GetDef()->id.ToString());
 		break;
 	case C4V_String:
     // note this breaks if there is '"' in the string.

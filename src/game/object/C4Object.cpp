@@ -162,6 +162,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 										int32_t nx, int32_t ny, int32_t nr,
 										FIXED nxdir, FIXED nydir, FIXED nrdir, int32_t iController)
   {
+	C4PropListNumbered::AcquireNumber();
 	// currently initializing
 	Initializing=true;
 
@@ -2643,7 +2644,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	if(fCompiler)
 		{
 		Def = ::Definitions.ID2Def(id);
-		SetProperty(Strings.P[P_Prototype], C4VPropList(Def));
 		if(!Def)
 			{ pComp->excNotFound(LoadResStr("IDS_PRC_UNDEFINEDOBJECT"),id.ToString()); return; }
 		}
@@ -2656,8 +2656,7 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 		// Write the name only if the object has an individual name
 		// 2do: And what about binary compilers?
 		pComp->Value(mkNamingAdapt(Name, "Name"));*/
-
-	pComp->Value(mkNamingAdapt( Number,														"Number",							-1								));
+	C4PropListNumbered::CompileFunc(pComp);
 	pComp->Value(mkNamingAdapt( Status,														"Status",							1									));
 	pComp->Value(mkNamingAdapt( toC4CStrBuf(nInfo),								"Info",								""								));
 	pComp->Value(mkNamingAdapt( Owner,														"Owner",							NO_OWNER					));
@@ -2665,13 +2664,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Controller,												"Controller",					NO_OWNER					));
 	pComp->Value(mkNamingAdapt( LastEnergyLossCausePlayer,				"LastEngLossPlr", 		NO_OWNER					));
 	pComp->Value(mkNamingAdapt( Category,													"Category",						0									));
-	// old-style coordinates - compile dummy value to prevent warning
-	// remove this once all Objects.txt have been rewritten without the values
-	int32_t qX=0, qY=0, motion_x = 0, motion_y = 0;
-	pComp->Value(mkNamingAdapt( qX,																"X",									0									));
-	pComp->Value(mkNamingAdapt( qY,																"Y",									0									));
-	pComp->Value(mkNamingAdapt( motion_x,													"MotionX",						0									));
-	pComp->Value(mkNamingAdapt( motion_y,													"MotionY",						0									));
 
 	pComp->Value(mkNamingAdapt( r,																"Rotation",						0									));
 
@@ -2688,9 +2680,8 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( FirePhase,												"FirePhase",					0									));
 	pComp->Value(mkNamingAdapt( Color,														"Color",							0u								)); // TODO: Convert
 	pComp->Value(mkNamingAdapt( Color,														"ColorDw",						0u								));
-	// default to X/Y values to support objects where FixX/FixY was manually removed
-	pComp->Value(mkNamingAdapt( fix_x,														"FixX",								itofix(qX)									));
-	pComp->Value(mkNamingAdapt( fix_y,														"FixY",								itofix(qY)									));
+	pComp->Value(mkNamingAdapt( fix_x,														"X",								Fix0									));
+	pComp->Value(mkNamingAdapt( fix_y,														"Y",								Fix0									));
 	pComp->Value(mkNamingAdapt( fix_r,														"FixR",								0									));
 	pComp->Value(mkNamingAdapt( xdir,															"XDir",								0									));
 	pComp->Value(mkNamingAdapt( ydir,															"YDir",								0									));
@@ -2797,9 +2788,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 		// object needs to be resorted? May happen if there's unsorted objects in savegame
 		if (Unsorted) Game.fResortAnyObject = true;
 
-		// initial OCF update
-		SetOCF();
-
 		}
 
 	}
@@ -2832,7 +2820,7 @@ void C4Object::EnumeratePointers()
 
 void C4Object::DenumeratePointers()
 	{
-
+	C4PropList::DenumeratePointers();
 	// Standard enumerated pointers
 	Contained = ::Objects.ObjectPointer(nContained);
 	Action.Target = ::Objects.ObjectPointer(nActionTarget1);

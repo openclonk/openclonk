@@ -54,18 +54,66 @@ void C4PropList::AssignRemoval()
 	Game.ClearPointers(this);
 	}
 
+C4PropList * C4PropList::New(C4PropList * prototype)
+	{
+	C4PropListNumbered * r = new C4PropListNumbered(prototype);
+	r->AcquireNumber();
+	return r;
+	}
+
+C4PropListNumbered::C4PropListNumbered(C4PropList * prototype): C4PropList(prototype), Number(-1)
+	{
+	}
+
+void C4PropListNumbered::AcquireNumber()
+	{
+	// Enumerate object
+	do
+		Number = ++Game.ObjectEnumerationIndex;
+	while (::Objects.PropLists.Get(Number));
+	::Objects.PropLists.Add(this);
+	}
+
+C4PropListNumbered* C4PropListNumbered::GetPropListNumbered()
+	{
+	return this;
+	}
+
+void C4PropListNumbered::CompileFunc(StdCompiler *pComp)
+	{
+	pComp->Value(mkNamingAdapt(Number, "Number"));
+	C4PropList::CompileFunc(pComp);
+	if(pComp->isCompiler())
+		::Objects.PropLists.Add(this);
+	}
+
+C4PropListNumbered::~C4PropListNumbered()
+	{
+	if(Number != -1)
+		::Objects.PropLists.Remove(this);
+	else
+		Log("removing numbered proplist without number");
+	}
+
 C4PropList::C4PropList(C4PropList * prototype):
-	Number(-1), Status(1),
+	Status(1),
 	FirstRef(NULL), prototype(prototype)
 	{
 	if(prototype)
 		SetProperty(Strings.P[P_Prototype], C4VPropList(prototype));
+	}
 
-	// Enumerate object
-	do
-		Number = ++Game.ObjectEnumerationIndex;
-	while (::Objects.PropLists.Get(Game.ObjectEnumerationIndex));
-	::Objects.PropLists.Add(this);
+void C4PropList::DenumeratePointers()
+	{
+	const C4Property * p = Properties.First();
+	while (p)
+		{
+		const_cast<C4Value &>(p->Value).DenumeratePointer();
+		p = Properties.Next(p);
+		}
+	C4Value v;
+	GetProperty(Strings.P[P_Prototype], v);
+	prototype = v.getPropList();
 	}
 
 C4PropList::~C4PropList()
@@ -78,10 +126,81 @@ C4PropList::~C4PropList()
 		FirstRef = FirstRef->NextRef;
 		ref->NextRef = NULL;
 	}
-	::Objects.PropLists.Remove(this);
 	assert(!::Objects.ObjectNumber(this));
 	}
 
+void C4PropList::CompileFunc(StdCompiler *pComp)
+	{
+	pComp->Value(mkNamingAdapt(Properties, "Properties"));
+	}
+
+template<typename T>
+void C4Set<T>::CompileFunc(StdCompiler *pComp)
+	{
+	bool fNaming = pComp->hasNaming();
+	if (pComp->isCompiler())
+		{
+		// Compiling: Empty previous
+		Clear();
+		// Read size (binary only)
+		uint32_t iSize;
+		if(!pComp->hasNaming()) pComp->Value(iSize);
+		// Read new
+		do
+			{
+			// No entries left to read?
+			if(!fNaming && !iSize--)
+				break;
+			// Read entries
+			try
+				{
+				T e;
+				pComp->Value(e);
+				Add(e);
+				}
+			catch(StdCompiler::NotFoundException *pEx)
+				{
+				// No value found: Stop reading loop
+				delete pEx;
+				break;
+				}
+			}
+		while(pComp->Seperator(StdCompiler::SEP_SEP2));
+		}
+	else
+		{
+		// Write size (binary only)
+		if(!fNaming)
+			{
+			int32_t iSize = GetSize();
+			pComp->Value(iSize);
+			}
+		// Write all entries
+		const T * p = First();
+		while (p)
+			{
+			pComp->Value(*const_cast<T *>(p));
+			p = Next(p);
+			if (p) pComp->Seperator(StdCompiler::SEP_SEP2);
+			}
+		}
+	}
+
+void C4Property::CompileFunc(StdCompiler *pComp)
+	{
+	StdStrBuf s;
+	if (!pComp->isCompiler())
+		s = Key->GetData();
+	pComp->Value(s);
+	if (pComp->isCompiler())
+		{
+		if (Key) Key->DecRef();
+		Key = ::Strings.RegString(s);
+		Key->IncRef();
+		}
+	pComp->Seperator(StdCompiler::SEP_SET);
+	pComp->Value(Value);
+	}
 
 
 const char * C4PropList::GetName()
@@ -116,6 +235,12 @@ C4Def * C4PropList::GetDef()
 	return 0;
 	}
 
+
+C4PropListNumbered * C4PropList::GetPropListNumbered()
+	{
+	if (prototype) return prototype->GetPropListNumbered();
+	return 0;
+	}
 
 
 template<> template<>
@@ -210,7 +335,7 @@ void C4PropList::ResetProperty(C4String * k)
 
 
 template<> template<>
-unsigned int C4Set<C4PropList *>::Hash<int>(int e)
+unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int e)
 	{       
 	unsigned int hash = 4, tmp;
 	hash += e >> 16;
@@ -227,13 +352,25 @@ unsigned int C4Set<C4PropList *>::Hash<int>(int e)
 	}
 
 template<> template<>
-unsigned int C4Set<C4PropList *>::Hash<C4PropList *>(C4PropList * e)
+unsigned int C4Set<C4PropListNumbered *>::Hash<C4PropList *>(C4PropList * e)
+	{
+	return Hash(e->GetPropListNumbered()->Number);
+	}
+
+template<> template<>
+unsigned int C4Set<C4PropListNumbered *>::Hash<C4PropListNumbered *>(C4PropListNumbered * e)
 	{
 	return Hash(e->Number);
 	}
 
 template<> template<>
-bool C4Set<C4PropList *>::Equals<int>(C4PropList * a, int b)
+bool C4Set<C4PropListNumbered *>::Equals<int>(C4PropListNumbered * a, int b)
 	{
 	return a->Number == b;
+	}
+
+template<> template<>
+bool C4Set<C4PropListNumbered *>::Equals<C4PropList *>(C4PropListNumbered * a, C4PropList * b)
+	{
+	return a == b;
 	}
