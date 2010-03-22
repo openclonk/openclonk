@@ -221,7 +221,7 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 	if (!SEqualNoCase(HostCore.getRevision(), Application.GetRevision()))
 	{
 		StdStrBuf msg;
-		msg.Format("[!]WARNING! Host engine revision (%s) differs from local revision (%s). Engines might run out of sync.", HostCore.getRevision(), Application.GetRevision());
+		msg.Format(LoadResStr("IDS_NET_ERR_VERSIONMISMATCH"), HostCore.getRevision(), Application.GetRevision());
 		if (::pGUI)
 		{
 			if (!pGUI->ShowMessageModal(msg.getData(), "[!]Network warning", C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Notify, NULL /* do not allow to skip this message! */))

@@ -982,6 +982,7 @@ IDS_NET_CTRLMODE_NONE=Kein Netzwerkmodus
 IDS_NET_DEACTIVATECLIENT=De&aktivieren
 IDS_NET_ERR_COPYFILE=Fehler beim Dateikopieren
 IDS_NET_ERR_COPYFILE_LOCAL=Datei ist schon lokal vorhanden
+IDS_NET_ERR_VERSIONMISMATCH=WARNUNG! Spielversion beim Host (%s) weicht von lokaler Version (%s) ab. Das Spiel koennte asynchron ablaufen.
 IDS_NET_ERR_INITRESLIST=Netzwerk: Ressourcenliste kann nicht initialisiert werden!
 IDS_NET_ERR_LEAGUE=Ligafehler
 IDS_NET_ERR_LEAGUEINIT=Liga konnte nicht initialisiert werden: %s

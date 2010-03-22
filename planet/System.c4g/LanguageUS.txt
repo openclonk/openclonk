@@ -982,6 +982,7 @@ IDS_NET_CTRLMODE_NONE=No control mode
 IDS_NET_DEACTIVATECLIENT=De&activate
 IDS_NET_ERR_COPYFILE=Error copying file
 IDS_NET_ERR_COPYFILE_LOCAL=The file is local already
+IDS_NET_ERR_VERSIONMISMATCH=WARNING! Host engine revision (%s) differs from local revision (%s). Engines might run out of sync.
 IDS_NET_ERR_INITRESLIST=Network: failed to initialize resource list!
 IDS_NET_ERR_LEAGUE=League error
 IDS_NET_ERR_LEAGUEINIT=Could not initialize league: %s
