@@ -89,6 +89,17 @@ if(MSVC_VERSION)
 endif()
 
 ############################################################################
+# hgrevision as part of MSVC resources
+############################################################################
+if(WIN32)
+	if(BUILD_TO_PLANET) 
+		add_custom_command(OUTPUT hgrevision MAIN_DEPENDENCY .hg/dirstate COMMAND hg id > hgrevision)
+	else()
+		add_custom_command(OUTPUT hgrevision MAIN_DEPENDENCY .hg/dirstate COMMAND hg id > hgrevision)
+	endif()
+endif()
+
+############################################################################
 # List target source files. Don't directly create a target since we condi-
 # tionally add more sources depending on configuration options later.
 ############################################################################
@@ -506,6 +517,7 @@ if(WIN32)
 		endif()
 
 		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
+		                   DEPENDS hgrevision
 		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/src
 		                                                -i${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc
 		                                                -o ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o)
@@ -514,6 +526,8 @@ if(WIN32)
 			${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
 		)
 	else(MINGW)
+		add_dependencies(${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o hgrevision)
+
 		list(APPEND OC_SYSTEM_SOURCES
 			src/res/engine.rc
 		)
@@ -741,17 +755,6 @@ target_link_libraries(c4group
 )
 set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
-
-############################################################################
-# hgrevision as part of MSVC resources
-############################################################################
-if(MSVC_VERSION)
-	if(BUILD_TO_PLANET) 
-		add_custom_command(TARGET clonk PRE_BUILD COMMAND hg id > hgrevision)
-	else()
-		add_custom_command(TARGET clonk PRE_BUILD COMMAND hg id > ../hgrevision)
-	endif()
-endif()
 
 ############################################################################
 # build to planet
