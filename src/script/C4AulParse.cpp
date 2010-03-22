@@ -414,55 +414,56 @@ bool C4AulParseState::AdvanceSpaces()
 //=========================== C4Script Operator Map ===================================
 
 C4ScriptOpDef C4ScriptOpMap[] = {
-	// priority                     postfix  RetType
+	// priority                     postfix
 	// |  identifier                |  right-associative
-	// |  |     Bytecode            |  |  no second id ParType1      ParType2
+	// |  |     Bytecode            |  |  no second id
+	// |  |     |                   |  |  |  RetType   ParType1    ParType2
 	// prefix
-	{ 15, "++", AB_Inc1,            0, 1, 0, C4V_Int,  C4V_pC4Value, C4V_Any},
-	{ 15, "--", AB_Dec1,            0, 1, 0, C4V_Int,  C4V_pC4Value, C4V_Any},
-	{ 15, "~",  AB_BitNot,          0, 1, 0, C4V_Int,  C4V_Int,      C4V_Any},
-	{ 15, "!",  AB_Not,             0, 1, 0, C4V_Bool, C4V_Bool,     C4V_Any},
-	{ 15, "+",  AB_ERR,             0, 1, 0, C4V_Int,  C4V_Int,      C4V_Any},
-	{ 15, "-",  AB_Neg,             0, 1, 0, C4V_Int,  C4V_Int,      C4V_Any},
+	{ 15, "++", AB_Inc1,            0, 1, 0, C4V_Int,  C4V_Ref,    C4V_Any},
+	{ 15, "--", AB_Dec1,            0, 1, 0, C4V_Int,  C4V_Ref,    C4V_Any},
+	{ 15, "~",  AB_BitNot,          0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "!",  AB_Not,             0, 1, 0, C4V_Bool, C4V_Bool,   C4V_Any},
+	{ 15, "+",  AB_ERR,             0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
+	{ 15, "-",  AB_Neg,             0, 1, 0, C4V_Int,  C4V_Int,    C4V_Any},
 
 	// postfix (whithout second statement)
-	{ 16, "++", AB_Inc1_Postfix,    1, 1, 1, C4V_Int,  C4V_pC4Value, C4V_Any},
-	{ 16, "--", AB_Dec1_Postfix,    1, 1, 1, C4V_Int,  C4V_pC4Value, C4V_Any},
+	{ 16, "++", AB_Inc1_Postfix,    1, 1, 1, C4V_Int,  C4V_Ref,    C4V_Any},
+	{ 16, "--", AB_Dec1_Postfix,    1, 1, 1, C4V_Int,  C4V_Ref,    C4V_Any},
 
 	// postfix
-	{ 14, "**", AB_Pow,             1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 13, "/",  AB_Div,             1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 13, "*",  AB_Mul,             1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 13, "%",  AB_Mod,             1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 12, "-",  AB_Sub,             1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 12, "+",  AB_Sum,             1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 11, "<<", AB_LeftShift,       1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 11, ">>", AB_RightShift,      1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 10, "<",  AB_LessThan,        1, 0, 0, C4V_Bool, C4V_Int,      C4V_Int},
-	{ 10, "<=", AB_LessThanEqual,   1, 0, 0, C4V_Bool, C4V_Int,      C4V_Int},
-	{ 10, ">",  AB_GreaterThan,     1, 0, 0, C4V_Bool, C4V_Int,      C4V_Int},
-	{ 10, ">=", AB_GreaterThanEqual,1, 0, 0, C4V_Bool, C4V_Int,      C4V_Int},
-	{ 9, "==",  AB_Equal,           1, 0, 0, C4V_Bool, C4V_Any,      C4V_Any},
-	{ 9, "!=",  AB_NotEqual,        1, 0, 0, C4V_Bool, C4V_Any,      C4V_Any},
-	{ 9, "S=",  AB_SEqual,          1, 0, 0, C4V_Bool, C4V_String,   C4V_String},
-	{ 9, "eq",  AB_SEqual,          1, 0, 0, C4V_Bool, C4V_String,   C4V_String},
-	{ 9, "ne",  AB_SNEqual,         1, 0, 0, C4V_Bool, C4V_String,   C4V_String},
-	{ 8, "&",   AB_BitAnd,          1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 6, "^",   AB_BitXOr,          1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 6, "|",   AB_BitOr,           1, 0, 0, C4V_Int,  C4V_Int,      C4V_Int},
-	{ 5, "&&",  AB_JUMPAND,         1, 0, 0, C4V_Bool, C4V_Bool,     C4V_Bool},
-	{ 4, "||",  AB_JUMPOR,          1, 0, 0, C4V_Bool, C4V_Bool,     C4V_Bool},
-	{ 2, "*=",  AB_MulIt,           1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Int},
-	{ 2, "/=",  AB_DivIt,           1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Int},
-	{ 2, "%=",  AB_ModIt,           1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Int},
-	{ 2, "+=",  AB_Inc,             1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Int},
-	{ 2, "-=",  AB_Dec,             1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Int},
-	{ 2, "&=",  AB_AndIt,           1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Int},
-	{ 2, "|=",  AB_OrIt,            1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Int},
-	{ 2, "^=",  AB_XOrIt,           1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Int},
-	{ 2, "=",   AB_Set,             1, 1, 0, C4V_pC4Value,  C4V_pC4Value, C4V_Any},
+	{ 14, "**", AB_Pow,             1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 13, "/",  AB_Div,             1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 13, "*",  AB_Mul,             1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 13, "%",  AB_Mod,             1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 12, "-",  AB_Sub,             1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 12, "+",  AB_Sum,             1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 11, "<<", AB_LeftShift,       1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 11, ">>", AB_RightShift,      1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 10, "<",  AB_LessThan,        1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 10, "<=", AB_LessThanEqual,   1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 10, ">",  AB_GreaterThan,     1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 10, ">=", AB_GreaterThanEqual,1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
+	{ 9, "==",  AB_Equal,           1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
+	{ 9, "!=",  AB_NotEqual,        1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
+	{ 9, "S=",  AB_SEqual,          1, 0, 0, C4V_Bool, C4V_String, C4V_String},
+	{ 9, "eq",  AB_SEqual,          1, 0, 0, C4V_Bool, C4V_String, C4V_String},
+	{ 9, "ne",  AB_SNEqual,         1, 0, 0, C4V_Bool, C4V_String, C4V_String},
+	{ 8, "&",   AB_BitAnd,          1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 6, "^",   AB_BitXOr,          1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 6, "|",   AB_BitOr,           1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
+	{ 5, "&&",  AB_JUMPAND,         1, 0, 0, C4V_Bool, C4V_Bool,   C4V_Bool},
+	{ 4, "||",  AB_JUMPOR,          1, 0, 0, C4V_Bool, C4V_Bool,   C4V_Bool},
+	{ 2, "*=",  AB_MulIt,           1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Int},
+	{ 2, "/=",  AB_DivIt,           1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Int},
+	{ 2, "%=",  AB_ModIt,           1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Int},
+	{ 2, "+=",  AB_Inc,             1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Int},
+	{ 2, "-=",  AB_Dec,             1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Int},
+	{ 2, "&=",  AB_AndIt,           1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Int},
+	{ 2, "|=",  AB_OrIt,            1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Int},
+	{ 2, "^=",  AB_XOrIt,           1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Int},
+	{ 2, "=",   AB_Set,             1, 1, 0, C4V_Ref,  C4V_Ref,    C4V_Any},
 
-	{ 0, NULL,  AB_ERR,             0, 0, 0, C4V_Any,  C4V_Any,      C4V_Any}
+	{ 0, NULL,  AB_ERR,             0, 0, 0, C4V_Any,  C4V_Any,    C4V_Any}
 };
 
 int C4AulParseState::GetOperator(const char* pScript)
@@ -1572,7 +1573,7 @@ void C4AulParseState::Parse_FuncHead()
 			else if (SEqual(Idtf, C4AUL_TypeString)) { Fn->ParType[cpar] = C4V_String; Shift(Discard,false); }
 			else if (SEqual(Idtf, C4AUL_TypeArray)) { Fn->ParType[cpar] = C4V_Array; Shift(Discard,false); }
 			// ampersand?
-			if (TokenType == ATT_AMP) { Fn->ParType[cpar] = C4V_pC4Value; Shift(Discard,false); }
+			if (TokenType == ATT_AMP) { Fn->ParType[cpar] = C4V_Ref; Shift(Discard,false); }
 			if (TokenType != ATT_IDTF)
 				{
 				UnexpectedToken("parameter name");
@@ -1929,12 +1930,12 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 			Parse_Expression();
 			if (pFunc && (Type == PARSER))
 				{
-				bool anyfunctakesref = (pFunc->GetParType()[size] == C4V_pC4Value);
+				bool anyfunctakesref = (pFunc->GetParType()[size] == C4V_Ref);
 				// pFunc either was the return value from a GetFirstFunc-Call or
 				// pFunc is the only function that could be called, so this loop is superflous
 				C4AulFunc * pFunc2 = pFunc;
 				while ((pFunc2 = a->Engine->GetNextSNFunc(pFunc2)))
-					if (pFunc2->GetParType()[size] == C4V_pC4Value) anyfunctakesref = true;
+					if (pFunc2->GetParType()[size] == C4V_Ref) anyfunctakesref = true;
 				// Change the bytecode to the equivalent that does not produce a reference.
 				if (!anyfunctakesref)
 					SetNoRef();
@@ -1962,7 +1963,7 @@ int C4AulParseState::Parse_Params(int iMaxCnt, const char * sWarn, C4AulFunc * p
 							}
 						}
 					case AB_ARRAYA_R: case AB_PAR_R: case AB_PARN_R: case AB_VARN_R: case AB_LOCALN_R: case AB_GLOBALN_R:
-						from = C4V_pC4Value; break;
+						from = C4V_Ref; break;
 					default: break; // avoid compiler warning about unhandled enumerators
 					}
 				if (C4Value::WarnAboutConversion(from, to))
@@ -2564,7 +2565,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 					C4ScriptOpMap[OpID].Priority <= iParentPrio)
 				return;
 			// If the operator does not modify the first argument, no reference is necessary
-			if(C4ScriptOpMap[OpID].Type1 != C4V_pC4Value)
+			if(C4ScriptOpMap[OpID].Type1 != C4V_Ref)
 				SetNoRef();
 			Shift();
 
@@ -2587,7 +2588,7 @@ void C4AulParseState::Parse_Expression2(int iParentPrio)
 					{
 					Parse_Expression(C4ScriptOpMap[OpID].Priority);
 					// If the operator does not modify the second argument, no reference is necessary
-					if(C4ScriptOpMap[OpID].Type2 != C4V_pC4Value)
+					if(C4ScriptOpMap[OpID].Type2 != C4V_Ref)
 						SetNoRef();
 					}
 				// write byte code

@@ -56,7 +56,7 @@ void C4Value::AddDataRef()
 	assert(Type != C4V_Any || !Data);
 	switch (Type)
 	{
-		case C4V_pC4Value: Data.Ref->AddRef(this); break;
+		case C4V_Ref: Data.Ref->AddRef(this); break;
 		case C4V_Array: Data.Array = Data.Array->IncRef(); break;
 		case C4V_String: Data.Str->IncRef(); break;
 		case C4V_C4Object:
@@ -79,7 +79,7 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 	// clean up
 	switch (Type)
 	{
-		case C4V_pC4Value:
+		case C4V_Ref:
 		// Save because AddDataRef does not set this flag
 		HasBaseArray = false;
 		Data.Ref->DelRef(this, pNextRef, pBaseArray);
@@ -169,7 +169,7 @@ void C4Value::GetArrayElement(int32_t Index, C4Value & target, C4AulContext *pct
 		{
 			Ref.Data.Array = Ref.Data.Array->IncElementRef();
 			target.SetRef(&Ref.Data.Array->GetItem(Index));
-			if (target.Type == C4V_pC4Value)
+			if (target.Type == C4V_Ref)
 			{
 				assert(!target.NextRef);
 				target.BaseArray = Ref.Data.Array;
@@ -196,7 +196,7 @@ void C4Value::SetArrayLength(int32_t size, C4AulContext *cthr)
 const C4Value & C4Value::GetRefVal() const
 {
 	const C4Value* pVal = this;
-	while(pVal->Type == C4V_pC4Value)
+	while(pVal->Type == C4V_Ref)
 		pVal = pVal->Data.Ref;
 	return *pVal;
 }
@@ -204,7 +204,7 @@ const C4Value & C4Value::GetRefVal() const
 C4Value &C4Value::GetRefVal()
 {
 	C4Value* pVal = this;
-	while(pVal->Type == C4V_pC4Value)
+	while(pVal->Type == C4V_Ref)
 		pVal = pVal->Data.Ref;
 	return *pVal;
 }
@@ -260,7 +260,7 @@ const char* GetC4VName(const C4V_Type Type)
 		return "array";
 	case C4V_PropList:
 		return "proplist";
-	case C4V_pC4Value:
+	case C4V_Ref:
 		return "&";
 	default:
 		return "!Fehler!";
@@ -281,7 +281,7 @@ char GetC4VID(const C4V_Type Type)
 		return 'o';
 	case C4V_String:
 		return 's';
-	case C4V_pC4Value:
+	case C4V_Ref:
 		return 'V'; // should never happen
 	case C4V_C4ObjectEnum:
 		return 'O';
@@ -310,7 +310,7 @@ C4V_Type GetC4VFromID(const char C4VID)
 	case 's':
 		return C4V_String;
 	case 'V':
-		return C4V_pC4Value;
+		return C4V_Ref;
 	case 'O':
 		return C4V_C4ObjectEnum;
 	case 'D':
@@ -435,7 +435,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK		}, // Array      same
 		{ CnvError	}, // pC4Value   NEVER!
 	},
-	{ // C4V_pC4Value - resolve reference and retry type check
+	{ // C4V_Ref - resolve reference and retry type check
 		{ CnvDeref	}, // any
 		{ CnvDeref	}, // int
 		{ CnvDeref	}, // Bool
@@ -456,7 +456,7 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 // Humanreadable debug output
 StdStrBuf C4Value::GetDataString()
 {
-	if (Type == C4V_pC4Value)
+	if (Type == C4V_Ref)
 		return GetRefVal().GetDataString() + "*";
 
 	// ouput by type info
@@ -682,7 +682,7 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		break;
 
 	// shouldn't happen
-	case C4V_pC4Value:
+	case C4V_Ref:
 	default:
 		assert(false);
 		break;

@@ -344,7 +344,7 @@ class C4AulScriptFunc : public C4AulFunc
 
 		virtual bool GetPublic() { return true; }
 		virtual C4V_Type *GetParType() { return ParType; }
-		virtual C4V_Type GetRetType() { return bReturnRef ? C4V_pC4Value : C4V_Any; }
+		virtual C4V_Type GetRetType() { return bReturnRef ? C4V_Ref : C4V_Any; }
 		virtual C4Value Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors=false); // execute func (script call, should not happen)
 		virtual C4Value Exec(C4Object *pObj=NULL, C4AulParSet *pPars = NULL, bool fPassErrors=false); // execute func (engine call)
 

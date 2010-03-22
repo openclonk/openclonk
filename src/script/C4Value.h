@@ -39,13 +39,13 @@ enum C4V_Type
 	C4V_C4Object=4,		// Pointer on Object
 	C4V_String=5,			// String
 	C4V_Array=6,			// pointer on array of values
-	C4V_pC4Value=7,		// reference on a value (variable)
+	C4V_Ref=7,		// reference on a value (variable)
 
 	C4V_C4ObjectEnum=9, // enumerated object
 	C4V_C4DefEnum=10, // enumerated object
 };
 
-#define C4V_Last (int) C4V_pC4Value
+#define C4V_Last (int) C4V_Ref
 
 const char* GetC4VName(const C4V_Type Type);
 char GetC4VID(const C4V_Type Type);
@@ -94,7 +94,7 @@ public:
 		{ Data.Array = pArray; AddDataRef(); }
 	explicit C4Value(C4PropList *p): NextRef(NULL), FirstRef(NULL), Type(p ? C4V_PropList : C4V_Any), HasBaseArray(false)
 		{ Data.PropList = p; AddDataRef(); }
-	explicit C4Value(C4Value *pVal): NextRef(NULL), FirstRef(NULL), Type(pVal ? C4V_pC4Value : C4V_Any), HasBaseArray(false)
+	explicit C4Value(C4Value *pVal): NextRef(NULL), FirstRef(NULL), Type(pVal ? C4V_Ref : C4V_Any), HasBaseArray(false)
 		{ Data.Ref = pVal; AddDataRef(); }
 
 	C4Value& operator = (const C4Value& nValue);
@@ -109,7 +109,7 @@ public:
 	C4PropList * getPropList() { return ConvertTo(C4V_PropList) ? Data.PropList : NULL; }
 	C4String * getStr() { return ConvertTo(C4V_String) ? Data.Str : NULL; }
 	C4ValueArray * getArray() { return ConvertTo(C4V_Array) ? Data.Array : NULL; }
-	C4Value * getRef() { return ConvertTo(C4V_pC4Value) ? Data.Ref : NULL; }
+	C4Value * getRef() { return ConvertTo(C4V_Ref) ? Data.Ref : NULL; }
 
 	// Unchecked getters
 	int32_t _getInt() const { return Data.Int; }
@@ -142,7 +142,7 @@ public:
 
 	void SetPropList(C4PropList * PropList) { C4V_Data d; d.PropList = PropList; Set(d, C4V_PropList); }
 
-	void SetRef(C4Value* nValue) { C4V_Data d; d.Ref = nValue; Set(d, C4V_pC4Value); }
+	void SetRef(C4Value* nValue) { C4V_Data d; d.Ref = nValue; Set(d, C4V_Ref); }
 
 	void Set0();
 
@@ -167,7 +167,7 @@ public:
 
 	C4Value GetRef() { return C4Value(this); }
 	void Deref() { Set(GetRefVal()); }
-	bool IsRef() { return Type == C4V_pC4Value; }
+	bool IsRef() { return Type == C4V_Ref; }
 
 	// get data of referenced value
 	C4V_Data GetData() const { return GetRefVal().Data; }
@@ -327,7 +327,7 @@ template <> struct C4ValueConv<C4PropList *>
 };
 template <> struct C4ValueConv<C4Value *>
 {
-	inline static C4V_Type Type() { return C4V_pC4Value; }
+	inline static C4V_Type Type() { return C4V_Ref; }
 	inline static C4Value *FromC4V(C4Value &v) { return v.getRef(); }
 	inline static C4Value *_FromC4V(C4Value &v) { return v._getRef(); }
 	inline static C4Value ToC4V(C4Value *v) { return C4VRef(v); }
