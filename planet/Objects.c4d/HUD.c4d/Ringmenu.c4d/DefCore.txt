@@ -1,0 +1,7 @@
+[DefCore]
+id=GUI_RingMenu
+Category=C4D_StaticBack
+Width=32
+Height=32
+Offset=-16,-16
+Picture=0,0,1,1

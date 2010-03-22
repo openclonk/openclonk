@@ -1,0 +1,8 @@
+[DefCore]
+id=GUI_RingMenu_Icon
+Version=4,10,0,0
+Category=C4D_StaticBack
+Width=32
+Height=32
+Offset=-16,-16
+StretchGrowth=1

@@ -1,0 +1,1 @@
+#appendto Clonkpublic func MaxContentsCount() { return 3; }
