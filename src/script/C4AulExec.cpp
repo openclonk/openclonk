@@ -228,18 +228,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 			// prefix
 				case AB_Inc1:	// ++
-					CheckOpPar(pCPos->Par.i);
-					if(pCurVal->GetRefVal().ConvertTo(C4V_Int))
-						++(*pCurVal);
-					else
-						pCurVal->Set0();
+					CheckOpPar2(pCPos->Par.i);
+					++(*pCurVal);
 					break;
 				case AB_Dec1:	// --
-					CheckOpPar(pCPos->Par.i);
-					if(pCurVal->GetRefVal().ConvertTo(C4V_Int))
-						--(*pCurVal);
-					else
-						pCurVal->Set0();
+					CheckOpPar2(pCPos->Par.i);
+					--(*pCurVal);
 					break;
 				case AB_BitNot:	// ~
 					CheckOpPar(pCPos->Par.i);
@@ -255,18 +249,12 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 			// postfix (whithout second statement)
 				case AB_Inc1_Postfix:	// ++
-					CheckOpPar(pCPos->Par.i);
-					if(pCurVal->GetRefVal().ConvertTo(C4V_Int))
-						pCurVal->Set((*pCurVal)++);
-					else
-						pCurVal->Set0();
+					CheckOpPar2(pCPos->Par.i);
+					pCurVal->Set((*pCurVal)++);
 					break;
 				case AB_Dec1_Postfix:	// --
-					CheckOpPar(pCPos->Par.i);
-					if(pCurVal->GetRefVal().ConvertTo(C4V_Int))
-						pCurVal->Set((*pCurVal)--);
-					else
-						pCurVal->Set0();
+					CheckOpPar2(pCPos->Par.i);
+					pCurVal->Set((*pCurVal)--);
 					break;
 			// postfix
 				case AB_Pow: 	// **
@@ -459,7 +447,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				case AB_Inc: 	// +=
 					{
 					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = &((pCurVal - 1)->GetRefVal()), *pPar2 = pCurVal;
+					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
 					*pPar1 += pPar2 ->_getInt();
 					PopValue();
 					break;

@@ -161,6 +161,17 @@ class C4AulExec
 					FormatString("operator \"%s\": got \"%s\", but expected \"%s\"!",
 						C4ScriptOpMap[iOpID].Identifier, pCurVal->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
 		}
+		void CheckOpPar2(int iOpID)
+		{
+			CheckOpPar(iOpID);
+			C4Value *pPar1 = pCurVal;
+
+			// check that the the first parameter references an int, not something else
+			if(!pPar1->GetRefVal().ConvertTo(C4V_Int))
+				throw new C4AulExecError(pCurCtx->Obj,
+					FormatString("operator \"%s\": got reference to \"%s\", but expected reference to \"%s\"!",
+						C4ScriptOpMap[iOpID].Identifier, pPar1->GetRefVal().GetTypeInfo(), GetC4VName(C4V_Int)).getData());
+		}
 		C4AulBCC *Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4Object *pObj = NULL, C4Def *pDef = NULL);
 	};
 
