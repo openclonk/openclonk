@@ -998,19 +998,15 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pCheck->SetToolTip(LoadResStr("IDS_DESC_AUTOMATICUPDATES"));
 	pCheck->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 	pSheetNetwork->AddElement(pCheck);
-	const char *szNameCfgText = LoadResStr("IDS_NET_COMPUTERNAME");
+	const char *szNameCfgText = LoadResStr("IDS_NET_USERNAME");
 	int iNameCfgWdt=200, iNameCfgHgt=48; C4StartupOptionsDlg::EditConfig::GetControlSize(&iNameCfgWdt, &iNameCfgHgt, szNameCfgText, false);
 	iNameCfgWdt += 5;
-	pNetworkNameEdit = new EditConfig(caSheetNetwork.GetGridCell(0,2,0,1, iNameCfgWdt, iNameCfgHgt), szNameCfgText, &Config.Network.LocalName, NULL, false);
-	pNetworkNickEdit = new EditConfig(caSheetNetwork.GetGridCell(1,2,0,1, iNameCfgWdt, iNameCfgHgt), LoadResStr("IDS_NET_USERNAME"), &Config.Network.Nick, NULL, false);
-	pNetworkNameEdit->SetToolTip(LoadResStr("IDS_NET_COMPUTERNAME_DESC"));
+	pNetworkNickEdit = new EditConfig(caSheetNetwork.GetFromTop(iNameCfgHgt), szNameCfgText, &Config.Network.Nick, NULL, false);
 	pNetworkNickEdit->SetToolTip(LoadResStr("IDS_NET_USERNAME_DESC"));
-	pSheetNetwork->AddElement(pNetworkNameEdit);
 	pSheetNetwork->AddElement(pNetworkNickEdit);
 
 	StdCopyStrBuf NickBuf(Config.Network.Nick);
 	if(!NickBuf.getLength()) NickBuf.Copy(Config.GetRegistrationData("Nick"));
-	if(!NickBuf.getLength()) NickBuf.Copy(Config.Network.LocalName);
 	pNetworkNickEdit->GetEdit()->SetText(NickBuf.getData(), false);
 
 	// initial focus is on tab selection
@@ -1241,12 +1237,10 @@ bool C4StartupOptionsDlg::SaveConfig(bool fForce, bool fKeepOpen)
 	pPortCfgRef->SavePort();
 	pPortCfgDsc->SavePort();
 	pLeagueServerCfg->Save2Config();
-	pNetworkNameEdit->Save2Config();
 	pNetworkNickEdit->Save2Config();
 	// if nick is same as default by registry, don't save in config
 	// so regkey updates will change the nick as well
 	const char *szRegNick = Config.GetRegistrationData("Nick");
-	if (!szRegNick || !*szRegNick) szRegNick = Config.Network.LocalName.getData();
 	if (SEqual(Config.Network.Nick.getData(), szRegNick)) Config.Network.Nick.Clear();
 	// make sure config is saved, in case the game crashes later on or another instance is started
 	Config.Save();

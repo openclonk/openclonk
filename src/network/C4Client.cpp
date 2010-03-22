@@ -54,7 +54,7 @@ void C4ClientCore::SetLocal(int32_t inID, bool fnActivated, bool fnObserver)
 	fActivated = fnActivated;
   fObserver = fnObserver;
 	// misc
-	Name.CopyValidated(Config.Network.LocalName);
+	Name.CopyValidated(Config.Network.Nick);
 	CUID.CopyValidated(Config.GetRegistrationData("Cuid"));
 	Revision.CopyValidated(Application.GetRevision());
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> NickBuf;

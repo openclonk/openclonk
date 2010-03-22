@@ -176,7 +176,6 @@ class C4ConfigNetwork
 		int32_t SendPortraits;
 		int32_t PortTCP,PortUDP,PortDiscovery,PortRefServer;
 		int32_t ControlMode;
-		ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> LocalName;
 		ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> Nick;
 		int32_t MaxLoadFileSize;
 		char LastPassword[CFG_MaxString+1];

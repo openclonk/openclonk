@@ -185,7 +185,6 @@ void C4ConfigNetwork::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(PortRefServer,						"PortRefServer",				C4NetStdPortRefServer	,false, true));
 	pComp->Value(mkNamingAdapt(ControlMode,	        		"ControlMode",	      	0           	));
 	pComp->Value(mkNamingAdapt(SendPortraits,						"SendPortraits",				0							,false, true));
-	pComp->Value(mkNamingAdapt(LocalName,               "LocalName",						"Unknown"			,false, true));
 	pComp->Value(mkNamingAdapt(Nick,                    "Nick",									""	       		,false, true));
 	pComp->Value(mkNamingAdapt(MaxLoadFileSize,					"MaxLoadFileSize",			5*1024*1024		,false, true));
 
@@ -478,11 +477,11 @@ bool C4Config::Load(bool forceWorkingDirectory, const char *szConfigFile)
 	WSADATA wsadata;
 	bool fWinSock = !WSAStartup(WINSOCK_VERSION, &wsadata);
 #endif
-	if (SEqual(Network.LocalName.getData(), "Unknown"))
+	if (SEqual(Network.Nick.getData(), "Unknown"))
 		{
 		char LocalName[25+1]; *LocalName = 0;
 		gethostname(LocalName, 25);
-		if (*LocalName) Network.LocalName.Copy(LocalName);
+		if (*LocalName) Network.Nick.Copy(LocalName);
 		}
 #ifdef HAVE_WINSOCK
 	if (fWinSock) WSACleanup();

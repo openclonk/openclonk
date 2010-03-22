@@ -111,7 +111,7 @@ class C4StartupOptionsDlg : public C4StartupDlg
 				static bool GetControlSize(int *piWdt, int *piHgt, const char *szForText, bool fMultiline);
 				int32_t GetIntVal() { return atoi(GetEdit()->GetText()); }
 				void SetIntVal(int32_t iToVal) { GetEdit()->SetText(FormatString("%d", (int) iToVal).getData(), false); }
-			} *pNetworkNameEdit, *pNetworkNickEdit;
+			} *pNetworkNickEdit;
 		// message dialog with a timer; used to restore the resolution if the user didn't press anything for a while
 		class ResChangeConfirmDlg : public C4GUI::Dialog, private C4ApplicationSec1Timer
 		{
