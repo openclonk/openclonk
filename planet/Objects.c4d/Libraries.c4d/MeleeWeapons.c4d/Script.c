@@ -39,10 +39,10 @@ func FxDelayTranslateVelocityStart(pTarget, iEffectNumber,  temp, p1)
 
 func FxDelayTranslateVelocityTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	if(EffectVar(0, pTarget, iEffectNumber))
-		if(iEffectTime > EffectVar(0, pTarget, iEffectNumber)) return -1;
+	//if(EffectVar(0, pTarget, iEffectNumber))
+	//	if(iEffectTime > EffectVar(0, pTarget, iEffectNumber)) return -1;
 	if(pTarget->GetContact(-1) & CNAT_Bottom) return -1;
-	return true;
+	return 1;
 }
 
 func FxDelayTranslateVelocityStop(pTarget, iEffectNumber, reason, temp)
@@ -50,7 +50,7 @@ func FxDelayTranslateVelocityStop(pTarget, iEffectNumber, reason, temp)
 	if(temp) return;
 	if(!(pTarget->GetContact(-1) & CNAT_Bottom))
 	if(Sqrt(pTarget->GetXDir()**2 + pTarget->GetYDir()**2) > 10)
-		pTarget->SetSpeed(pTarget->GetXDir()/2, pTarget->GetYDir()/2);
+		pTarget->SetSpeed(pTarget->GetXDir()/3, pTarget->GetYDir()/3);
 }
 
 func FxIntWeaponChargeStart(pTarget, iEffectNumber, iTemp, length)

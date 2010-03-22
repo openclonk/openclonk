@@ -44,8 +44,11 @@ public func ControlUseStart(object clonk, int x, int y)
 		if(!slow)
 		if(!GetEffect("DelayTranslateVelocity", clonk))
 		{
-			TranslateVelocity(clonk, Angle(0, 0, x,y), 0, 300);
-			AddEffect("DelayTranslateVelocity", clonk, 1, 3, 0,  Library_MeleeWeapon, length );
+			//TranslateVelocity(clonk, Angle(0, 0, x,y), 0, 300, 1);
+			var a=Angle(0, 0, x,y);
+			clonk->SetXDir(Sin(a, 60));
+			clonk->SetYDir(-Cos(a, 60));
+			AddEffect("DelayTranslateVelocity", clonk, 2, 3, nil, Library_MeleeWeapon);
 		}
 	}
 	else return true;
@@ -66,8 +69,8 @@ func OnWeaponHitCheckStop(clonk)
 {
 	if(GetEffect("SwordStrikeSpeedUp", clonk))
 		RemoveEffect("SwordStrikeSpeedUp", clonk);
-	if(GetEffect("DelayTranslateVelocity", clonk))
-		RemoveEffect("DelayTranslateVelocity", clonk);	
+	//if(GetEffect("DelayTranslateVelocity", clonk))
+	//	RemoveEffect("DelayTranslateVelocity", clonk);	
 	return;
 }
 
@@ -115,7 +118,7 @@ func CheckStrike(iTime)
 		if(shield == 100)
 			continue;
 		
-		var damage=((100-shield)*(15000 * velocity) / 100) / 100;
+		var damage=((100-shield)*(5000 * velocity) / 100) / 100;
 		obj->DoEnergy(-damage,  true, 0, Contained()->GetOwner());
 		if(doBash)
 			ApplyWeaponBash(obj, velocity, Angle(0, 0, angle, Contained()->GetYDir()));
@@ -144,11 +147,11 @@ func CheckStrike(iTime)
 func FxSwordStrikeSpeedUpStart(pTarget, iEffectNumber, iTemp)
 {
 	
-	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) * 2, PHYS_StackTemporary);
+	pTarget->SetPhysical("Walk", pTarget->GetPhysical("Walk", 0) * 3, PHYS_StackTemporary);
 	if(iTemp) return;
 	var dir=-1;
 	if(pTarget->GetDir() == DIR_Right) dir=1;
-	pTarget->SetXDir(pTarget->GetPhysical("Walk")*dir, 1000);
+	pTarget->SetXDir(pTarget->GetPhysical("Walk")*dir, 100000);
 }
 
 func FxSwordStrikeSpeedUpTimer(pTarget, iEffectNumber, iEffectTime)
