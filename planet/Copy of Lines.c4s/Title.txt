@@ -1,2 +1,0 @@
-DE:Test 1sgf
-US:Test 1sgd
