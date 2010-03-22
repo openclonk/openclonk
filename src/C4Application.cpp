@@ -28,6 +28,7 @@
 #ifdef _WIN32
 #include <StdRegistry.h>
 #include <C4UpdateDlg.h>
+#include <resource.h>
 #endif
 
 #include "C4Game.h"
@@ -118,6 +119,30 @@ bool C4Application::DoInit()
 	// Open log
 	OpenLog();
 
+	Revision.Ref("unknown");
+#ifdef _WIN32
+	// load hg revision
+	HRSRC hrsrc = FindResource(NULL, MAKEINTRESOURCE(IDR_HGREVISION), RT_RCDATA);
+	if (hrsrc)
+	{
+		DWORD hr_sz = SizeofResource(NULL, hrsrc);
+		HGLOBAL hr = LoadResource(NULL, hrsrc);
+		if (hr && hr_sz)
+		{
+			const char *hr_ptr = static_cast<const char *>(LockResource(hr));
+			if (hr_ptr)
+			{
+				// copy max until first space (omit stuff like "tip")
+				const char *rev_end = static_cast<const char *>(memchr(hr_ptr, 0x0a, hr_sz));
+				if (rev_end) hr_sz = rev_end - hr_ptr;
+				Revision.Copy(hr_ptr, hr_sz);
+				UnlockResource(hr); // Not necessary and has no effect.
+			}
+		}
+		DeleteObject(hrsrc);
+	}
+#endif
+
 	// init system group
 	if (!SystemGroup.Open(C4CFN_System))
 		{
@@ -184,7 +209,7 @@ bool C4Application::DoInit()
 
 	// Engine header message
 	Log(C4ENGINEINFOLONG);
-	LogF("Version: %s %s", C4VERSION, C4_OS);
+	LogF("Version: %s %s (%s)", C4VERSION, C4_OS, Revision.getData());
 
 	// Initialize D3D/OpenGL
 	DDraw = DDrawInit(this, isFullScreen, false, Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Engine, Config.Graphics.Monitor);

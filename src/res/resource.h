@@ -93,6 +93,7 @@
 #define IDR_CONSOLEMENU                 6000
 #define IDR_CONTEXTMENUS                6001
 #define IDM_FILE_RECORD                 40041
+#define IDR_HGREVISION                  7000
 
 // Next default values for new objects
 //

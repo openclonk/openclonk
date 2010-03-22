@@ -217,6 +217,21 @@ C4Network2::InitResult C4Network2::InitClient(const C4Network2Reference &Ref, bo
 	if(isEnabled()) Clear();
 	// Get host core
 	const C4ClientCore &HostCore = Ref.Parameters.Clients.getHost()->getCore();
+	// host core revision check
+	if (!SEqualNoCase(HostCore.getRevision(), Application.GetRevision()))
+	{
+		StdStrBuf msg;
+		msg.Format("[!]WARNING! Host engine revision (%s) differs from local revision (%s). Engines might run out of sync.");
+		if (::pGUI)
+		{
+			if (!pGUI->ShowMessageModal(msg.getData(), "[!]Network warning", C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Notify, NULL /* do not allow to skip this message! */))
+				return IR_Fatal;
+		}
+		else
+		{
+			Log(msg.getData());
+		}
+	}
 	// repeat if wrong password
 	fWrongPassword = Ref.isPasswordNeeded();
 	StdStrBuf Password;
@@ -1192,6 +1207,11 @@ bool C4Network2::Join(C4ClientCore &CCore, C4Network2IOConnection *pConn, const 
 	// get client, set status
 	C4Network2Client *pClient = Clients.GetClient(CCore);
 	if(pClient) pClient->SetStatus(NCS_Joining);
+	// warn if client revision doesn't match our host revision
+	if (!SEqualNoCase(CCore.getRevision(), Application.GetRevision()))
+	{
+		LogF("[!]WARNING! Client %s engine revision (%s) differs from local revision (%s). Client might run out of sync.", CCore.getName(), CCore.getRevision(), Application.GetRevision());
+	}
 	// ok, client joined.
 	return true;
 	// Note that the connection isn't fully accepted at this point and won't be

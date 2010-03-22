@@ -43,8 +43,9 @@ protected:
 
 	// identification
 	int32_t iID;
-  ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> Name, Nick;
+	ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> Name, Nick;
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> CUID;
+	ValidatedStdCopyStrBuf<C4InVal::VAL_NameAllowEmpty> Revision; // engine hg revision number
 
 	// version info
 	int iVersion[4];
@@ -68,6 +69,7 @@ public:
 	const char *getName()			const { return Name.getData(); }
 	const char *getCUID()			const { return CUID.getData(); }
 	const char *getNick()			const { return Nick.getData(); }
+	const char *getRevision()		const { return Revision.getData(); }
 	bool				isRegistered()const	{ return CUID.getLength()>0; }
 
 	// initialization

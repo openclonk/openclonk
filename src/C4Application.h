@@ -42,6 +42,8 @@ class C4Application: public CStdApp
 	private:
 		// if set, this mission will be launched next
 		StdCopyStrBuf NextMission;
+		// version information strings
+		StdCopyStrBuf Revision;
 	public:
 		C4Application();
 		~C4Application();
@@ -100,6 +102,8 @@ class C4Application: public CStdApp
 		void QuitGame(); // quit game only, but restart application if in fullscreen startup menu mode
 		void Activate(); // activate app to gain full focus in OS
 		void SetNextMission(const char *szMissionFilename);
+
+		const char *GetRevision() const { return Revision.getData(); }
 	};
 
 extern C4Application	Application;

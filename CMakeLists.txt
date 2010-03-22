@@ -743,6 +743,13 @@ set_property(TARGET clonk APPEND PROPERTY COMPILE_DEFINITIONS GLEW_STATIC)
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 
 ############################################################################
+# hgrevision as part of MSVC resources
+############################################################################
+if(MSVC_VERSION)
+	add_custom_command(TARGET clonk PRE_BUILD COMMAND hg id > hgrevision)
+endif()
+
+############################################################################
 # build to planet
 ############################################################################
 if(BUILD_TO_PLANET) 

@@ -56,7 +56,7 @@ void C4ClientCore::SetLocal(int32_t inID, bool fnActivated, bool fnObserver)
 	// misc
 	Name.CopyValidated(Config.Network.LocalName);
 	CUID.CopyValidated(Config.GetRegistrationData("Cuid"));
-
+	Revision.CopyValidated(Application.GetRevision());
 	ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> NickBuf;
 	NickBuf.Copy(Config.Network.Nick);
 	if (!NickBuf.getLength()) NickBuf.CopyValidated(Config.GetRegistrationData("Nick"));
@@ -70,6 +70,7 @@ void C4ClientCore::SetUnknown(int32_t inID)
 	iID = inID;
 	// fill everything else with default values
 	Name.Ref("unknown"); CUID.Ref("unknown"); Nick.Ref("unknown");
+	Revision.Ref("unknown");
 	fActivated = fObserver = false;
 }
 
@@ -98,6 +99,7 @@ void C4ClientCore::CompileFunc(StdCompiler *pComp)
   pComp->Value(mkNamingAdapt(Name, "Name", ""));
   pComp->Value(mkNamingAdapt(CUID, "CUID", ""));
   pComp->Value(mkNamingAdapt(Nick, "Nick", ""));
+  pComp->Value(mkNamingAdapt(Revision, "Revision", ""));
 }
 
 // *** C4Client
