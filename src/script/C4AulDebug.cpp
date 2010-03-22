@@ -270,6 +270,7 @@ Done:
 	}
 	else if (SEqualNoCase(szCmd, "VAR"))
 	{
+		
 		C4Value *val = NULL;
 		int varIndex;
 		C4AulScriptContext* pCtx = pExec->GetContext(pExec->GetContextDepth() - 1);
@@ -279,12 +280,13 @@ Done:
 			{
 				val = &pCtx->Pars[varIndex];
 			}
-			else if ((varIndex = pCtx->Func->VarNamed.GetItemNr(szData)) != 1)
+			else if ((varIndex = pCtx->Func->VarNamed.GetItemNr(szData)) != -1)
 			{
 				val = &pCtx->Vars[varIndex];
 			}
 		}
-		StdStrBuf output = FormatString("%s=%s", szData, val ? val->GetDataString().getData() : "Unknown");
+		const char* typeName = val ? GetC4VName(val->GetType()) : "any";
+		StdStrBuf output = FormatString("%s %s %s", szData, typeName, val ? val->GetDataString().getData() : "Unknown");
 		SendLine("VAR", output.getData());
 	}
 	else
