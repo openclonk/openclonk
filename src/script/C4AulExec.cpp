@@ -374,24 +374,6 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					PopValue();
 					break;
 					}
-				case AB_SEqual:	// S=, eq
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(SEqual(pPar1->_getStr() ? pPar1->_getStr()->GetCStr() : "",
-					                      pPar2->_getStr() ? pPar2->_getStr()->GetCStr() : ""));
-					PopValue();
-					break;
-					}
-				case AB_SNEqual:	// ne
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(!SEqual(pPar1->_getStr() ? pPar1->_getStr()->GetCStr() : "",
-					                      pPar2->_getStr() ? pPar2->_getStr()->GetCStr() : ""));
-					PopValue();
-					break;
-					}
 				case AB_BitAnd:	// &
 					{
 					CheckOpPars(pCPos->Par.i);

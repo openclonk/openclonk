@@ -171,8 +171,6 @@ enum C4AulBCCType
 	AB_GreaterThanEqual,	// >=
 	AB_Equal,	// ==
 	AB_NotEqual,	// !=
-	AB_SEqual,	// S=, eq
-	AB_SNEqual,	// ne
 	AB_BitAnd,	// &
 	AB_BitXOr,	// ^
 	AB_BitOr,	// |

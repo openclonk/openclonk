@@ -174,27 +174,6 @@
 		 <col>bool, any/any</col>
 		</row>
 		<row>
-		 <col>9l</col>
-		 <col>S=</col>
-		 <col>gibt zurück, ob zwei Strings gleich sind</col>
-		 <col>postfix</col>
-		 <col>bool, String/String</col>
-		</row>
-		<row>
-		 <col>9l</col>
-		 <col>eq</col>
-		 <col>gibt ebenfalls zurück, ob zwei Strings gleich sind</col>
-		 <col>postfix</col>
-		 <col>bool, String/String</col>
-		</row>
-		<row>
-		 <col>9l</col>
-		 <col>ne</col>
-		 <col>gibt ebenfalls zurück, ob zwei Strings nicht gleich sind</col>
-		 <col>postfix</col>
-		 <col>bool, String/String</col>
-		</row>
-		<row>
 		 <col>8l</col>
 		 <col>&amp;</col>
 		 <col>führt ein bitweises And aus</col>

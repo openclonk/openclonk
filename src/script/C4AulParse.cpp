@@ -445,9 +445,6 @@ C4ScriptOpDef C4ScriptOpMap[] = {
 	{ 10, ">=", AB_GreaterThanEqual,1, 0, 0, C4V_Bool, C4V_Int,    C4V_Int},
 	{ 9, "==",  AB_Equal,           1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
 	{ 9, "!=",  AB_NotEqual,        1, 0, 0, C4V_Bool, C4V_Any,    C4V_Any},
-	{ 9, "S=",  AB_SEqual,          1, 0, 0, C4V_Bool, C4V_String, C4V_String},
-	{ 9, "eq",  AB_SEqual,          1, 0, 0, C4V_Bool, C4V_String, C4V_String},
-	{ 9, "ne",  AB_SNEqual,         1, 0, 0, C4V_Bool, C4V_String, C4V_String},
 	{ 8, "&",   AB_BitAnd,          1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 6, "^",   AB_BitXOr,          1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
 	{ 6, "|",   AB_BitOr,           1, 0, 0, C4V_Int,  C4V_Int,    C4V_Int},
@@ -873,8 +870,6 @@ static const char * GetTTName(C4AulBCCType e)
 	case AB_GreaterThanEqual: return "GreaterThanEqual";	// >=
 	case AB_Equal: return "Equal";	// ==
 	case AB_NotEqual: return "NotEqual";	// !=
-	case AB_SEqual: return "SEqual";	// S=, eq
-	case AB_SNEqual: return "SNEqual";	// ne
 	case AB_BitAnd: return "BitAnd";	// &
 	case AB_BitXOr: return "BitXOr";	// ^
 	case AB_BitOr: return "BitOr";	// |
@@ -1047,8 +1042,6 @@ void C4AulParseState::AddBCC(C4AulBCCType eType, intptr_t X)
 		case AB_GreaterThanEqual:
 		case AB_Equal:
 		case AB_NotEqual:
-		case AB_SEqual:
-		case AB_SNEqual:
 		case AB_BitAnd:
 		case AB_BitXOr:
 		case AB_BitOr:
