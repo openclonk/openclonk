@@ -416,7 +416,13 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	if (hot > 0) return this->~ControlHotkey(hot-1);
+	var menu = this->~GetMenu();
+	
+	if (hot > 0)
+	{
+		if (menu) menu->~SelectHotkey(hot-1);
+		return this->~ControlHotkey(hot-1);
+	}
 	
 	var proc = GetProcedure();
 
@@ -427,12 +433,16 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return true;
 	}
 	
-	// building, vehicle, contents control
+	// building, vehicle, contents menu control
 	var house = Contained();
 	var vehicle = GetActionTarget();
 	var contents = GetSelectedItem();
 	var contents2 = GetSelectedItem(true);
 	
+	if (menu)
+	{
+		return Control2Menu(ctrl, x,y,strength, repeat, release);
+	}
 	if (house)
 	{
 		return Control2Script(ctrl, x, y, strength, repeat, release, "Contained", house);
@@ -764,6 +774,21 @@ private func StopUseDelayedControl(control, object obj)
 	return handled;
 }
 
+private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool release)
+{
+	var angle = Angle(0,0,x,y);
+
+	if (repeat) return true;
+	
+	// select
+	if (ctrl == CON_Use || ctrl == CON_UseDelayed)
+		this->GetMenu()->Select(angle, false);
+	if (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
+		this->GetMenu()->Select(angle, false);
+		
+	return true;
+}
+
 // Control redirected to script
 private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, bool release, string control, object obj)
 {
@@ -1082,9 +1107,9 @@ public func ControlThrow(object target, int x, int y)
 		return true;
 	}
 	// riding
-	if (GetAction() == "Ride" || GetAction() == "RideStill")
+	if (GetProcedure() == "ATTACH")
 	{
-		SetAction("RideThrow");
+		//SetAction("RideThrow");
 		return DoThrow(target,throwAngle);
 	}
 	return false;

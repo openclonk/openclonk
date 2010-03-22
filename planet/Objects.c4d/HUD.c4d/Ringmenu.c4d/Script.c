@@ -23,7 +23,8 @@ func Construction()
 // rinmenu certain position for the calling object
 global func CreateRingMenu(id symbol, int x, int y, object commander)
 {
-	if(!(this->GetOCF() & OCF_CrewMember)) return -1;
+	if(!(this->GetOCF() & OCF_CrewMember)) return nil;
+	if(!(this->~HasMenuControl())) return nil;
 	var menu=CreateObject(GUI_RingMenu,x,y,this->GetOwner());
 	menu->SetMenu(this,commander);
 	menu->SetMenuIcon(symbol);
@@ -39,6 +40,7 @@ public func SetMenu(object menuobject, object commandobject)
 	if(menuobject->GetOCF() & OCF_CrewMember)
 		menu_object=menuobject;	
 	command_object=commandobject;
+	menuobject->~SetMenu(this);
 }	
 
 
@@ -81,6 +83,7 @@ public func AddItem(id new_item, int amount, extra)
 public func Select(int angle, bool alt)
 {
 	 	var item_count=GetLength(menu_icons); 
+		if(!item_count) item_count = 1;
         var segment=360/item_count;
         var dvar=0;
         
@@ -110,44 +113,11 @@ public func SelectHotkey(int key, bool alt)
 //am i visible?
 func IsVisible() { return shown; }
 
-
-//recalculates if missing icons
-private func RecalculateAmount()
-{
-	var miss=0;
-	for(var i=0; i<(GetLength(menu_icons)); i++)
-	{
-		if(!menu_icons[i]) miss++;
-	}
-	if(miss==0) return 0;
-	
-	for( ; miss >0; miss--)
-	{
-	var b=false;
-	for(var i=0; i<(GetLength(menu_icons)-miss); i++)
-	{
-		if(!menu_icons[i])
-		{
-			b=true;
-		}
-		if(b)
-		{
-			menu_icons[i]=menu_icons[i+1];
-		}	
-	}
-	SetLength(menu_icons,GetLength(menu_icons)-1);
-	}
-	
-
-Show();
-}
-
 //makes me visible/updates me
 func Show() 
-{	
-		RecalculateAmount();
-		
+{
 		var item_count=GetLength(menu_icons); 
+		if(!item_count) item_count = 1;
         var segment=360/item_count;
         
 		var x=GetX();

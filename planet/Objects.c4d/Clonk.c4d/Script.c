@@ -16,7 +16,8 @@
 #include Library_HUDAdapter
 // standard controls
 #include Library_ClonkControl
-
+// menu adapter
+#include Library_MenuControl
 // manager for aiming
 #include Library_AimManager
 

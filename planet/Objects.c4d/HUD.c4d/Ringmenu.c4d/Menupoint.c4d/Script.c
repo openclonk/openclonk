@@ -33,7 +33,7 @@ public func SetSymbol(id obj)
 	}
 	else
 	{
-		SetGraphics(nil,myid,1,4);
+		SetGraphics(nil,myid,1,GFXOV_MODE_IngamePicture);
 		
 		SetName(myid->GetName());
 	}
