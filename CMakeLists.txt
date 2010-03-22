@@ -746,7 +746,11 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS_DEBUG _DEBUG)
 # hgrevision as part of MSVC resources
 ############################################################################
 if(MSVC_VERSION)
-	add_custom_command(TARGET clonk PRE_BUILD COMMAND hg id > hgrevision)
+	if(BUILD_TO_PLANET) 
+		add_custom_command(TARGET clonk PRE_BUILD COMMAND hg id > hgrevision)
+	else()
+		add_custom_command(TARGET clonk PRE_BUILD COMMAND hg id > ../hgrevision)
+	endif()
 endif()
 
 ############################################################################
