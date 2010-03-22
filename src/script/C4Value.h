@@ -43,7 +43,7 @@ enum C4V_Type
 	C4V_PropListRef=8, // reference to an entry in a proplist
 
 	C4V_C4ObjectEnum=9, // enumerated object
-	C4V_C4DefEnum=10,   // enumerated definition
+	C4V_C4DefEnum=10 // enumerated object
 };
 
 #define C4V_Last (int) C4V_PropListRef
