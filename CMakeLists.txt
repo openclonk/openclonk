@@ -93,9 +93,9 @@ endif()
 ############################################################################
 if(WIN32)
 	if(BUILD_TO_PLANET) 
-		add_custom_command(OUTPUT hgrevision MAIN_DEPENDENCY .hg/dirstate COMMAND hg id > hgrevision)
+		add_custom_command(OUTPUT hgrevision MAIN_DEPENDENCY .hg/dirstate COMMAND hg id --id > hgrevision)
 	else()
-		add_custom_command(OUTPUT hgrevision MAIN_DEPENDENCY .hg/dirstate COMMAND hg id > hgrevision)
+		add_custom_command(OUTPUT hgrevision MAIN_DEPENDENCY .hg/dirstate COMMAND hg id --id > hgrevision)
 	endif()
 endif()
 

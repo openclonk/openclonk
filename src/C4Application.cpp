@@ -132,10 +132,9 @@ bool C4Application::DoInit()
 			const char *hr_ptr = static_cast<const char *>(LockResource(hr));
 			if (hr_ptr)
 			{
-				// copy max until first space (omit stuff like "tip")
-				const char *rev_end = static_cast<const char *>(memchr(hr_ptr, 0x0a, hr_sz));
-				if (rev_end) hr_sz = rev_end - hr_ptr;
+				// copy max until first space (omit stuff like "tip" or trailing space)a
 				Revision.Copy(hr_ptr, hr_sz);
+				Revision.TrimSpaces();
 				UnlockResource(hr); // Not necessary and has no effect.
 			}
 		}
