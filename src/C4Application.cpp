@@ -28,7 +28,6 @@
 #ifdef _WIN32
 #include <StdRegistry.h>
 #include <C4UpdateDlg.h>
-#include <resource.h>
 #endif
 
 #include "C4Game.h"
@@ -43,6 +42,7 @@
 #include <C4Log.h>
 #include <C4GamePadCon.h>
 #include <C4GameLobby.h>
+#include "hgrevision.h"
 
 #include <StdRegistry.h> // For DDraw emulation warning
 
@@ -119,28 +119,7 @@ bool C4Application::DoInit()
 	// Open log
 	OpenLog();
 
-	Revision.Ref("unknown");
-#ifdef _WIN32
-	// load hg revision
-	HRSRC hrsrc = FindResource(NULL, MAKEINTRESOURCE(IDR_HGREVISION), RT_RCDATA);
-	if (hrsrc)
-	{
-		DWORD hr_sz = SizeofResource(NULL, hrsrc);
-		HGLOBAL hr = LoadResource(NULL, hrsrc);
-		if (hr && hr_sz)
-		{
-			const char *hr_ptr = static_cast<const char *>(LockResource(hr));
-			if (hr_ptr)
-			{
-				// copy max until first space (omit stuff like "tip" or trailing space)a
-				Revision.Copy(hr_ptr, hr_sz);
-				Revision.TrimSpaces();
-				UnlockResource(hr); // Not necessary and has no effect.
-			}
-		}
-		DeleteObject(hrsrc);
-	}
-#endif
+	Revision.Ref(OC_HG_REVISION);
 
 	// init system group
 	if (!SystemGroup.Open(C4CFN_System))

@@ -89,6 +89,20 @@ if(MSVC_VERSION)
 endif()
 
 ############################################################################
+# Generate hgrevision.h
+############################################################################
+if(CMAKE_HOST_WIN32 AND NOT CMAKE_HOST_UNIX)
+	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/.hg/dirstate
+		COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/tools/get_hg_revision.bat" > "${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h"
+		VERBATIM)
+else()
+	# Assume all non-windows system to have /bin/sh.
+	add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/.hg/dirstate
+		COMMAND /bin/sh "${CMAKE_CURRENT_SOURCE_DIR}/tools/get_hg_revision.sh" > "${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h"
+		VERBATIM)
+endif()
+
+############################################################################
 # List target source files. Don't directly create a target since we condi-
 # tionally add more sources depending on configuration options later.
 ############################################################################
@@ -484,6 +498,7 @@ set(OC_CLONK_SOURCES
 	src/tinyxml/tinyxmlparser.cpp
 	src/zlib/gzio.c
 	src/zlib/zutil.h
+	${CMAKE_CURRENT_BINARY_DIR}/hgrevision.h
 )
 mark_as_advanced(OC_CLONK_SOURCES)
 mark_as_advanced(OC_SYSTEM_SOURCES)
@@ -495,7 +510,6 @@ if(WIN32)
 		src/platform/StdJoystick.h
 		src/platform/C4FileClasses.cpp
 		src/res/resource.h
-		hgrevision
 	)
 
 	if(MINGW)
@@ -507,7 +521,6 @@ if(WIN32)
 		endif()
 
 		ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
-		                   DEPENDS hgrevision
 		                   COMMAND ${CMAKE_RC_COMPILER} -I${CMAKE_CURRENT_SOURCE_DIR}/src
 		                                                -i${CMAKE_CURRENT_SOURCE_DIR}/src/res/engine.rc
 		                                                -o ${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o)
@@ -516,9 +529,6 @@ if(WIN32)
 			${CMAKE_CURRENT_BINARY_DIR}/engine_rc.o
 		)
 	else(MINGW)
-		#add_dependencies(${CMAKE_CURRENT_BINARY_DIR}/engine.res hgrevision)
-		#add_dependencies(engine.rc hgrevision)
-
 		list(APPEND OC_SYSTEM_SOURCES
 			src/res/engine.rc
 		)
