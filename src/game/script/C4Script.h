@@ -80,6 +80,7 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 #define PSF_InitializePlayer		"~InitializePlayer" // iPlayer, iX, iY, pBase, iTeam, idExtra
 #define PSF_InitializeScriptPlayer		"~InitializeScriptPlayer" // iPlayer, idTeam
 #define PSF_PreInitializePlayer	"~PreInitializePlayer" // iPlayer
+#define PSF_InitializePlayerControl "~InitializePlayerControl" // iPlayer, szControlSet, hasKeyboard, hasMouse, hasGamepad
 #define PSF_RemovePlayer				"~RemovePlayer" // iPlayer
 #define PSF_Time1								"~Time1"
 #define PSF_Hit									"~Hit"
