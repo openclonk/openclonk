@@ -58,8 +58,6 @@ const C4ID C4ID::Rivalry("RVLR");
 #endif
 
 C4ID::C4ID(const std::string &s) { assign(s); }
-C4ID::C4ID(const char *s) { assign(s); }
-C4ID::C4ID(char *s) { assign(s); }
 
 void C4ID::assign(const std::string &s)
 {

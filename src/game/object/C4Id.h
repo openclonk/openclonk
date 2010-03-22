@@ -70,8 +70,9 @@ public:
 	C4ID &operator =(const C4ID &other) { v = other.v; return *this; }
 
 	explicit C4ID(const std::string &s);
-	explicit C4ID(char *s);
-	DEPRECATED explicit C4ID(const char *s); // Only difference is deprecation; const char should get all inline constants, but not stuff ead into variables
+	template<size_t N>
+	DEPRECATED explicit C4ID(const char (&s)[N]) { assign(s); }
+
 	explicit inline C4ID(Handle i): v(i)
 	{
 		assert(v < names.size());
