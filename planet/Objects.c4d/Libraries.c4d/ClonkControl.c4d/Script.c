@@ -811,7 +811,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		{
 			return StartUseControl(ctrl, control, x, y, obj);
 		}
-		else if (release && using == obj)
+		else if (release)
 		{
 			return StopUseControl(control, x, y, obj);
 		}
@@ -823,7 +823,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 		{
 			return StartUseDelayedControl(ctrl, control,obj);
 		}
-		else if (release && using == obj)
+		else if (release)
 		{
 			return StopUseDelayedControl(control,obj);
 		}
@@ -832,13 +832,13 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	// more use (holding)
 	if (ctrl == CON_Use || ctrl == CON_UseAlt || ctrl == CON_UseDelayed || ctrl == CON_UseAltDelayed)
 	{
-		if (release && using)
+		if (release)
 		{
 		  // leftover use release
 		  CancelUse();
 		  return true;
 		}
-		else if (repeat && using == obj && !noholdingcallbacks)
+		else if (repeat && !noholdingcallbacks)
 		{
 			return HoldingUseControl(ctrl, control, x, y, obj);
 		}
