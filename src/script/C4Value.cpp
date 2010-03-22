@@ -596,7 +596,7 @@ void C4Value::DenumeratePointer()
 	else
 	{
 		// object: invalid value - set to zero
-		LogF("ERROR: Object number %d is missing.", Data.Int);
+		LogF("ERROR: Object number %d is missing.", iObjID);
 		Set0();
 	}
 }
