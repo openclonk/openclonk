@@ -159,9 +159,9 @@ public:
 	C4Value & operator ^= (int32_t by) { GetData().Int ^= by; GetRefVal().Type=C4V_Int; return *this; }
 	C4Value & operator |= (int32_t by) { GetData().Int |= by; GetRefVal().Type=C4V_Int; return *this; }
 	C4Value & operator ++ () { GetData().Int ++; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value operator ++ (int) { C4Value alt = GetRefVal(); GetData().Int ++; GetRefVal().Type=C4V_Int; return alt; }
+	C4Value operator ++ (int) { C4Value alt = GetRefValConst(); GetData().Int ++; GetRefVal().Type=C4V_Int; return alt; }
 	C4Value & operator -- () { GetData().Int --; GetRefVal().Type=C4V_Int; return *this; }
-	C4Value operator -- (int) { C4Value alt = GetRefVal(); GetData().Int --; GetRefVal().Type=C4V_Int; return alt; }
+	C4Value operator -- (int) { C4Value alt = GetRefValConst(); GetData().Int --; GetRefVal().Type=C4V_Int; return alt; }
 
 	void Move(C4Value *nValue);
 
@@ -178,10 +178,14 @@ public:
 
 	// return referenced value
 	const C4Value & GetRefVal() const;
+	const C4Value & GetRefValConst() const { return GetRefVal(); }
+	protected:
+	// This also creates a new entry in a proplist if the referenced value was previously only in the prototype
 	C4Value & GetRefVal();
 
+	public:
 	// Get the Value at the index. Throws C4AulExecError if not an array
-	void GetArrayElement(int32_t index, C4Value & to, struct C4AulContext *pctx = 0, bool noref = false);
+	void GetArrayElement(int32_t index, C4Value & to, struct C4AulContext *pctx, bool noref);
 	// Set the length of the array. Throws C4AulExecError if not an array
 	void SetArrayLength(int32_t size, C4AulContext *cthr);
 
@@ -253,6 +257,7 @@ protected:
 
 	friend class C4PropList;
 	friend class C4AulDefFunc;
+	friend class C4AulExec;
 	friend C4Value C4VInt(int32_t iVal);
 	friend C4Value C4VBool(bool fVal);
 };

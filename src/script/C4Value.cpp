@@ -46,10 +46,7 @@ C4Value::~C4Value()
 C4Value &C4Value::operator = (const C4Value &nValue)
 {
 	// set referenced value
-	if(Type == C4V_pC4Value)
-		GetRefVal().operator = (nValue);
-	else
-		Set(nValue.GetRefVal());
+	GetRefVal().Set(nValue.GetRefVal());
 
 	return *this;
 }
@@ -149,12 +146,12 @@ void C4Value::Move(C4Value *nValue)
 
 void C4Value::GetArrayElement(int32_t Index, C4Value & target, C4AulContext *pctx, bool noref)
 {
-	C4Value & Ref = GetRefVal();
-	// No array (and no nullpointer because Data==0 => Type==any)
-	if (Ref.Type != C4V_Array)
-		throw new C4AulExecError(pctx->Obj, "Array access: array expected");
 	if (noref)
 	{
+		const C4Value & Ref = GetRefValConst();
+		// No array (and no nullpointer because Data==0 => Type==any)
+		if (Ref.Type != C4V_Array)
+			throw new C4AulExecError(pctx->Obj, "Array access: array expected");
 		// Get the item, but do not resize the array - it might be used more than once
 		if (Index < Ref.Data.Array->GetSize())
 			target.Set(Ref.Data.Array->GetItem(Index));
@@ -163,6 +160,10 @@ void C4Value::GetArrayElement(int32_t Index, C4Value & target, C4AulContext *pct
 	}
 	else
 	{
+		C4Value & Ref = GetRefVal();
+		// No array (and no nullpointer because Data==0 => Type==any)
+		if (Ref.Type != C4V_Array)
+			throw new C4AulExecError(pctx->Obj, "Array access: array expected");
 		// Is target the first ref?
 		if (Index >= Ref.Data.Array->GetSize() || !Ref.Data.Array->GetItem(Index).FirstRef)
 		{

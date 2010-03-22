@@ -195,7 +195,7 @@ typedef C4ID t_id;
 typedef C4Object *t_object;
 typedef C4String *t_string;
 typedef C4Value &t_ref;
-typedef C4Value &t_any;
+typedef C4Value t_any;
 typedef C4ValueArray *t_array;
 
 inline t_int getPar_int(C4Value *pVal) { return pVal->getInt(); }
@@ -203,8 +203,8 @@ inline t_bool getPar_bool(C4Value *pVal) { return pVal->getBool(); }
 inline t_id getPar_id(C4Value *pVal) { return pVal->getC4ID(); }
 inline t_object getPar_object(C4Value *pVal) { return pVal->getObj(); }
 inline t_string getPar_string(C4Value *pVal) { return pVal->getStr(); }
-inline t_ref getPar_ref(C4Value *pVal) { return pVal->GetRefVal(); }
-inline t_any getPar_any(C4Value *pVal) { return pVal->GetRefVal(); }
+//inline t_ref getPar_ref(C4Value *pVal) { return pVal->GetRefVal(); }
+inline t_any getPar_any(C4Value *pVal) { return pVal->GetRefValConst(); }
 inline t_array getPar_array(C4Value *pVal) { return pVal->getArray(); }
 
 #define PAR(type, name) t_##type name = getPar_##type(pPars++)
@@ -1929,8 +1929,8 @@ static bool FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, C4
   if (!(pDef=PropList->GetDef())) return false;
 	// Get thread vars
 	if(!cthr->Caller) return false;
-  C4Value& V1 = VarX->GetRefVal();
-	C4Value& V2 = VarY->GetRefVal();
+  C4Value V1 = VarX->GetRefValConst();
+	C4Value V2 = VarY->GetRefValConst();
   // Construction check at starting position
   if (ConstructionCheck(PropList,V1.getInt(),V2.getInt()))
     return true;
@@ -1940,7 +1940,7 @@ static bool FnFindConstructionSite(C4AulContext *cthr, C4PropList * PropList, C4
                          pDef->Shape.Wdt,pDef->Shape.Hgt,
                          pDef->Category,
                          20);
-  V1 = C4VInt(v1); V2 = C4VInt(v2);
+  *VarX = C4VInt(v1); *VarY = C4VInt(v2);
   return result;
   }
 
@@ -2920,8 +2920,9 @@ static bool FnPathFree(C4AulContext *cthr, long X1, long Y1, long X2, long Y2)
 static C4Value FnPathFree2_C4V(C4AulContext *cthr, C4Value * X1, C4Value * Y1, C4Value * X2, C4Value * Y2)
 	{
 	int32_t x = -1, y = -1;
+	C4Value x1 = X1->GetRefValConst(), y1 = Y1->GetRefValConst();
 	// Do not use getInt on the references, because it destroys them.
-	bool r = !!PathFree(X1->GetRefVal().getInt(), Y1->GetRefVal().getInt(), X2->getInt(), Y2->getInt(), &x, &y);
+	bool r = !!PathFree(x1.getInt(), y1.getInt(), X2->getInt(), Y2->getInt(), &x, &y);
 	if (!r)
 		{
 		*X1 = C4VInt(x);
@@ -3400,20 +3401,15 @@ static C4Value FnGetIndexOf(C4AulContext *cthr, C4Value *pPars)
 	return C4VInt(-1);
 	}
 
-static C4Value FnSetLength(C4AulContext *cthr, C4Value *pPars)
+static C4Void FnSetLength(C4AulContext *cthr, C4Value *pArrayRef, int iNewSize)
 {
-	PAR(ref, pArrayRef);
-	PAR(int, iNewSize);
-
 	// safety
 	if (iNewSize<0 || iNewSize > C4ValueArray::MaxSize)
 		throw new C4AulExecError(cthr->Obj, FormatString("SetLength: invalid array size (%d)", iNewSize).getData());
 
 	// set new size
-	pArrayRef.SetArrayLength(iNewSize, cthr);
-
-	// yeah, done!
-	return C4VBool(true);
+	pArrayRef->SetArrayLength(iNewSize, cthr);
+	return C4VNull;
 }
 
 static bool FnSetClrModulation(C4AulObjectContext *cthr, Nillable<long> dwClr, long iOverlayID)
@@ -6387,6 +6383,7 @@ void InitFunctionMap(C4AulScriptEngine *pEngine)
 	AddFunc(pEngine, "SetAttachTransform", FnSetAttachTransform);
 	AddFunc(pEngine, "GetMeshMaterial", FnGetMeshMaterial);
 	AddFunc(pEngine, "SetMeshMaterial", FnSetMeshMaterial);
+	AddFunc(pEngine, "SetLength", FnSetLength);
 
 	AddFunc(pEngine, "goto", Fn_goto);
 	AddFunc(pEngine, "this", Fn_this);
@@ -6802,7 +6799,6 @@ C4ScriptFnDef C4ScriptFnMap[]={
   { "CreateArray",          1  ,C4V_Array    ,{ C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnCreateArray },
   { "GetLength",            1  ,C4V_Int      ,{ C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetLength },
   { "GetIndexOf",           1  ,C4V_Int      ,{ C4V_Any     ,C4V_Array   ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnGetIndexOf },
-  { "SetLength",            1  ,C4V_Bool     ,{ C4V_pC4Value,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,0,                                   FnSetLength },
 
   { "GetDefCoreVal",        1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Int     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetDefCoreVal,             0 },
   { "GetObjectVal",         1  ,C4V_Any      ,{ C4V_String  ,C4V_String  ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any     ,C4V_Any    ,C4V_Any    ,C4V_Any    ,C4V_Any}   ,MkFnC4V FnGetObjectVal,              0 },
