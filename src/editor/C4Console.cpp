@@ -101,6 +101,10 @@ namespace {
 }
 #endif
 
+#define FILE_SELECT_FILTER_FOR_C4S "Clonk 4 Scenario\0"         \
+                                   "*.c4s;*.c4f;Scenario.txt\0" \
+                                   "\0"
+
 C4Console::C4Console()
 	{
 	Active = false;
@@ -942,9 +946,9 @@ bool C4Console::FileOpen()
 	// Get scenario file name
 	char c4sfile[512+1]="";
 	if (!FileSelect(c4sfile,512,
-									"Clonk 4 Scenario\0*.c4s;*.c4f;Scenario.txt\0\0",
-									OFN_HIDEREADONLY | OFN_FILEMUSTEXIST
-									)) return false;
+	                FILE_SELECT_FILTER_FOR_C4S,
+	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
+		return false;
 	// Compose command line
 	char cmdline[2000]="";
 	SAppend("\"",cmdline,1999); SAppend(c4sfile,cmdline,1999); SAppend("\" ",cmdline,1999);
@@ -958,9 +962,9 @@ bool C4Console::FileOpenWPlrs()
 	// Get scenario file name
 	char c4sfile[512+1]="";
 	if (!FileSelect(c4sfile,512,
-									"Clonk 4 Scenario\0*.c4s;*.c4f\0\0",
-									OFN_HIDEREADONLY | OFN_FILEMUSTEXIST
-									)) return false;
+	                FILE_SELECT_FILTER_FOR_C4S,
+	                OFN_HIDEREADONLY | OFN_FILEMUSTEXIST))
+		return false;
 	// Get player file name(s)
 	char c4pfile[4096+1]="";
 	if (!FileSelect(c4pfile,4096,
