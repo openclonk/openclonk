@@ -1,6 +1,7 @@
 
 
 static const CON_Gamepad_Deadzone = 60;
+static CON_VC_Players;
 
 // Functions to handle player controls (i.e., input keys)
 
@@ -49,6 +50,29 @@ global func PlayerControl(int plr, int ctrl, id spec_id, int x, int y, int stren
 	}
 	// No cursor? Nothing to handle control then
 	return false;
+}
+
+global func InitializePlayerControl(int plr, string controlset_name, bool keyboard, bool mouse, bool gamepad)
+{
+	// VC = VirtualCursor
+	if(!CON_VC_Players)
+		CON_VC_Players = CreateArray();
+		
+	CON_VC_Players[plr] = !mouse;
+	
+	// for all clonks...
+	for(var clonk in FindObjects(Find_OCF(OCF_CrewMember)))
+	{
+		clonk->~ReinitializeControls();
+	}
+}
+
+global func PlayerHasVirtualCursor(int plr)
+{
+	if(!CON_VC_Players)
+		return -1;
+		
+	return CON_VC_Players[plr];
 }
 
 // Control2Player

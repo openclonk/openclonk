@@ -1,18 +1,8 @@
-/*
-	
-*/
-
-
-/*
-Spellchooser via Mouse
-Author: MimmoO
-
-*/
 
 local menuitem;
 local choses;
 
-func ContainedUse(object clonk, int x, int y)
+func ChooseMenu(object clonk)
 {
 	if(!menuitem)
 	{

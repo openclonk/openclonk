@@ -47,6 +47,8 @@ local mlastx, mlasty;
 local virtual_cursor;
 local noholdingcallbacks;
 
+local menu;
+
 /* ++++++++ Item controls ++++++++++ */
 
 /* Item limit */
@@ -223,6 +225,7 @@ global func ShiftContents()
 
 protected func Construction()
 {
+	menu = nil;
 	selected = 0;
 	selected2 = Min(2,MaxContentsCount()-1);
 	indexed_inventory = 0;
@@ -416,11 +419,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	var menu = this->~GetMenu();
+	var mnu = this->~GetMenu();
 	
 	if (hot > 0)
 	{
-		if (menu) menu->~SelectHotkey(hot-1);
+		if (mnu) mnu->~SelectHotkey(hot-1);
 		return this->~ControlHotkey(hot-1);
 	}
 	
@@ -530,7 +533,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				}
 				else
 				{
-					VirtualCursor()->StartAim(ctrl,this,contents);
+					VirtualCursor()->StartAim(this);
 				}
 			}
 			// drop
@@ -564,7 +567,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 				}
 				else
 				{
-					VirtualCursor()->StartAim(ctrl,this,contents2);
+					VirtualCursor()->StartAim(this);
 				}
 			}
 			// drop
@@ -660,7 +663,7 @@ private func StartUseDelayedControl(int ctrl, control, object obj)
 	var estr = "";
 	if (alt && !(obj->Contained())) estr = "Alt";
 			
-	VirtualCursor()->StartAim(ctrl,this,obj);
+	VirtualCursor()->StartAim(this);
 			
 	// call UseStart
 	var handled = obj->Call(Format("~%sUseStart%s",control,estr),this,mlastx,mlasty);
@@ -714,7 +717,7 @@ private func HoldingUseControl(int ctrl, control, int x, int y, object obj)
 	
 	//Message("%d,%d",this,mex,mey);
 
-	// automatic adjustment of the position
+	// automatic adjustment of the direction
 	// --------------------
 	// if this is desired for ALL objects is the question, we will find out.
 	// For now, this is done for items and vehicles, not for buildings and
@@ -776,16 +779,27 @@ private func StopUseDelayedControl(control, object obj)
 
 private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
-	var angle = Angle(0,0,x,y);
-
-	if (repeat) return true;
-	
-	// select
-	if (ctrl == CON_Use || ctrl == CON_UseDelayed)
-		this->GetMenu()->Select(angle, false);
-	if (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
-		this->GetMenu()->Select(angle, false);
+	var angle;
+	if (PlayerHasVirtualCursor(GetOwner()))
+		angle = Angle(0,0,mlastx,mlasty);
+	else
+		angle = Angle(0,0,x,y);
 		
+	if (repeat)
+	{	
+		if (ctrl == CON_Use || ctrl == CON_UseDelayed
+		 || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
+			this->GetMenu()->~UpdateCursor(angle);
+	}
+	if (release)
+	{
+		// select
+		if (ctrl == CON_Use || ctrl == CON_UseDelayed)
+			this->GetMenu()->Select(angle, false);
+		if (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
+			this->GetMenu()->Select(angle, false);	
+	}
+	
 	return true;
 }
 
@@ -1042,7 +1056,14 @@ public func UpdateVirtualCursorPos()
 
 public func TriggerHoldingControl()
 {
-	if (using && !noholdingcallbacks)
+	// using has been commented because it must be possible to use the virtual
+	// cursor aim also without a used object - for menus
+	// However, I think the check for 'using' here is just an unecessary safeguard
+	// since there is always a using-object if the clonk is aiming for a throw
+	// or a use. If the clonk uses it, there will be callbacks that cancel the
+	// callbacks to the virtual cursor
+	// - Newton
+	if (/*using && */!noholdingcallbacks)
 	{
 		var ctrl;
 		if (alt) ctrl = CON_UseAltDelayed;
@@ -1051,6 +1072,64 @@ public func TriggerHoldingControl()
 		ObjectControl(GetOwner(), ctrl, 0, 0, 0, true, false);
 	}
 
+}
+
+
+func HasMenuControl()
+{
+	return true;
+}
+
+func SetMenu(object m)
+{
+	// multiple menus are currently not supported (yet)
+	if (menu && m)
+	{
+		menu->Close();
+	}
+	// new one
+	menu = m;
+	if (menu)
+	{	
+		// we need to be notified when the ringmenu is gone
+
+		if (PlayerHasVirtualCursor(GetOwner()))
+			VirtualCursor()->StartAim(this);
+		else
+			SetPlayerControlEnabled(GetOwner(), CON_Aim, true);
+	}
+	// close menu
+	if (!menu)
+	{
+		if (PlayerHasVirtualCursor(GetOwner()))
+			VirtualCursor()->StopAim();
+		else
+			SetPlayerControlEnabled(GetOwner(), CON_Aim, false);
+	}
+}
+
+func GetMenu()
+{
+	return menu;
+}
+
+func ReinitializeControls()
+{
+	if((PlayerHasVirtualCursor(GetOwner())))
+	{
+		// if is aiming or in menu and no virtual cursor is there? Create one
+		if (!virtual_cursor)
+			if (menu || using)
+			{
+				VirtualCursor()->StartAim(this);
+			}
+	}
+	else
+	{
+		// remove any virtual cursor
+		if (virtual_cursor)
+			virtual_cursor->RemoveObject();
+	}
 }
 
 // Throwing

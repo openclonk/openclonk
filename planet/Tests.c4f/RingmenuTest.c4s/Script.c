@@ -30,7 +30,9 @@ protected func PlrHasRespawned(int iPlr, object cp)
 {
 	var clonk = GetCrew(iPlr);
 	clonk->Contents()->RemoveObject();
-	clonk->Enter(CreateObject(RelaunchRoom,LandscapeWidth()/2,240,clonk->GetOwner()));
+	var relaunch = CreateObject(RelaunchRoom,LandscapeWidth()/2,240,clonk->GetOwner());
+	clonk->Enter(relaunch);
+	relaunch->ChooseMenu(clonk);
 	//clonk->CreateContents(SpellChooser,2);
 	return;
 }

@@ -136,6 +136,10 @@ func Show()
  		shown=true;
 }
 
+public func UpdateCursor(int angle)
+{
+	Log("%d",angle);
+}
 
 public func Hide() {
         for(var i=0; i<GetLength(menu_icons); i++)if(menu_icons[i]) menu_icons[i]["Visibility"] = VIS_None;
@@ -147,7 +151,9 @@ public func Hide() {
 func Close()
 {
  	for(var i=0; i<GetLength(menu_icons); i++) if(menu_icons[i]) menu_icons[i]->RemoveObject();
-  	return RemoveObject(); 
+	if(menu_object)
+		menu_object->SetMenu(nil);
+  	RemoveObject(); 
 }
 
 

@@ -5,14 +5,13 @@
 	Virtual cursor for gamepad controls
 */
 
-local crew, angle, dirx, diry, saveangle, xpos,ypos, analogaim, aiming;
+local crew, angle, dirx, diry, xpos,ypos, analogaim, aiming;
 
 static const CURSOR_Radius = 100;
 
 protected func Initialize()
 {
 	this["Visibility"] = VIS_None;
-	saveangle = 900;
 	dirx = diry = xpos = ypos = 0;
 	aiming = false;
 }
@@ -21,7 +20,7 @@ public func FxMoveTimer()
 {
 	var speed = 0;
 	var dpad_rotatespeed = 35;
-	
+
 	// dpad mode
 	if(diry)
 	{
@@ -44,6 +43,7 @@ public func FxMoveTimer()
 		var analog_strength = BoundBy(Sqrt(xpos*xpos+ypos*ypos),0,100);
 
 		var angle_diff = Normalize(target_angle - angle, -1800, 10);
+		if (angle_diff == 0) angle_diff = 1;
 		var dir = angle_diff / Abs(angle_diff);
 		
 		angle = angle + angle_diff * analog_strength / 100 / 8;
@@ -59,17 +59,13 @@ private func UpdateAnalogpadPos()
 	ypos = Cos(angle/10,-100);
 }
 
-public func StartAim(int ctrl, object clonk, object using, bool stealth)
+public func StartAim(object clonk, bool stealth)
 {
-
+	// only reinitialize angle if the crosshair hasn't been there before
 	if(!GetEffect("Move",this))
 	{
-		if(ctrl != CON_ThrowDelayed)
-			angle = saveangle*(clonk->GetDir()*2-1);
-		// throw must be fast! normally, the clonk wants to throw
-		// like 80° or so. Previously thrown direction is not saved
-		else
-			angle = 800*(clonk->GetDir()*2-1);
+		// which should basically be only the case on the first time aiming
+		angle = 800*(clonk->GetDir()*2-1);
 	}
 	
 	// set starting position for analog pad
@@ -111,7 +107,6 @@ public func StopAim()
 	dirx = 0;
 	diry = 0;
 	EnableKeyAimControls(false);
-	saveangle = Abs(Normalize(angle,-1800,10));
 	analogaim = false;
 	aiming = false;
 }
@@ -139,7 +134,7 @@ public func Aim(int ctrl, object clonk, int strength, int repeat, int release)
 {
 	// start (stealth) aiming
 	if(!GetEffect("Move",this))
-		StartAim(nil, clonk, nil,true);
+		StartAim(clonk,true);
 
 	// aiming with analog pad
 	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
