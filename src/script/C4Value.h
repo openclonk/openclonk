@@ -32,20 +32,21 @@ class C4ValueArray;
 // C4Value type
 enum C4V_Type
 {
-	C4V_Any=0,				// no type
-	C4V_Int=1,				// Integer
-	C4V_Bool=2,				// Boolean
+	C4V_Any=0,         // nil
+	C4V_Int=1,
+	C4V_Bool=2,
 	C4V_PropList=3,
-	C4V_C4Object=4,		// Pointer on Object
-	C4V_String=5,			// String
-	C4V_Array=6,			// pointer on array of values
-	C4V_Ref=7,		// reference on a value (variable)
+	C4V_C4Object=4,
+	C4V_String=5,
+	C4V_Array=6,
+	C4V_Ref=7,         // reference to a value (variable)
+	C4V_PropListRef=8, // reference to an entry in a proplist
 
 	C4V_C4ObjectEnum=9, // enumerated object
-	C4V_C4DefEnum=10, // enumerated object
+	C4V_C4DefEnum=10,   // enumerated definition
 };
 
-#define C4V_Last (int) C4V_Ref
+#define C4V_Last (int) C4V_PropListRef
 
 const char* GetC4VName(const C4V_Type Type);
 char GetC4VID(const C4V_Type Type);
@@ -64,6 +65,7 @@ union C4V_Data {
 	bool operator== (C4V_Data b) { return Ref == b.Ref; }
 	C4V_Data& operator= (C4Value * p) { Ref = p; return *this; }
 };
+
 // converter function, used in converter table
 struct C4VCnvFn
 	{
@@ -79,7 +81,7 @@ public:
 
 	C4Value() : NextRef(NULL), FirstRef(NULL), Type(C4V_Any), HasBaseArray(false) { Data.Ref = 0; }
 
-	C4Value(const C4Value &nValue) : Data(nValue.Data), NextRef(NULL), FirstRef(NULL), Type(nValue.Type), HasBaseArray(false)
+	C4Value(const C4Value &nValue) : Data(nValue.Data), PropListRefKey(nValue.PropListRefKey), FirstRef(NULL), Type(nValue.Type), HasBaseArray(false)
 		{ AddDataRef(); }
 
 	explicit C4Value(bool data): NextRef(NULL), FirstRef(NULL), Type(C4V_Bool), HasBaseArray(false)
@@ -128,7 +130,7 @@ public:
 	bool operator ! () const { return !GetData(); }
 	inline operator const void* () const { return GetData()?this:0; }  // To allow use of C4Value in conditions
 
-	void Set(const C4Value &nValue) { if (this != &nValue) Set(nValue.Data, nValue.Type); }
+	void Set(const C4Value &nValue) { if (this != &nValue) Set(nValue.Data, nValue.Type, nValue.PropListRefKey); }
 
 	void SetInt(int i) { C4V_Data d; d.Int = i; Set(d, C4V_Int); }
 
@@ -143,6 +145,8 @@ public:
 	void SetPropList(C4PropList * PropList) { C4V_Data d; d.PropList = PropList; Set(d, C4V_PropList); }
 
 	void SetRef(C4Value* nValue) { C4V_Data d; d.Ref = nValue; Set(d, C4V_Ref); }
+
+	void SetPropListRef(C4PropList * PropList, C4String * Key);
 
 	void Set0();
 
@@ -166,7 +170,7 @@ public:
 	void Move(C4Value *nValue);
 
 	C4Value GetRef() { return C4Value(this); }
-	void Deref() { Set(GetRefVal()); }
+	void Deref() { Set(GetRefValConst()); }
 	bool IsRef() { return Type == C4V_Ref; }
 
 	// get data of referenced value
@@ -222,6 +226,7 @@ protected:
 	union {
 	C4Value * NextRef;
 	C4ValueArray * BaseArray;
+	C4String * PropListRefKey;
 	};
 	C4Value * FirstRef;
 
@@ -243,17 +248,17 @@ protected:
 	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), NextRef(NULL), FirstRef(NULL), HasBaseArray(false)
 		{ Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
 
-	void Set(long nData, C4V_Type nType) { C4V_Data d; d.Int = nData; Set(d, nType); }
-	void Set(C4V_Data nData, C4V_Type nType);
+	void Set(C4V_Data nData, C4V_Type nType, C4String * PropListRefKey = 0);
 
 	void AddRef(C4Value *pRef);
 	void DelRef(const C4Value *pRef, C4Value * pNextRef, C4ValueArray * pBaseArray);
 
 	void AddDataRef();
-	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray);
+	void DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray, C4String * Key);
 
 	static C4VCnvFn C4ScriptCnvMap[C4V_Last+1][C4V_Last+1];
 	static bool FnCnvObject(C4Value *Val, C4V_Type toType);
+	static bool FnCnvPLR(C4Value *Val, C4V_Type toType);
 
 	friend class C4PropList;
 	friend class C4AulDefFunc;

@@ -54,7 +54,7 @@ template<typename T> class C4Set
 	unsigned int Capacity;
 	unsigned int Size;
 	T * Table;
-	void AddInternal(T e)
+	T * AddInternal(T e)
 		{
 		unsigned int h = Hash(e);
 		T * p = &Table[h % Capacity];
@@ -63,6 +63,7 @@ template<typename T> class C4Set
 			p = &Table[++h % Capacity];
 			}
 		*p = e;
+		return p;
 		}
 public:
 	template<typename H> static unsigned int Hash(H);
@@ -83,7 +84,7 @@ public:
 		for (unsigned int i = 0; i < Capacity; ++i)
 			Table[i] = 0;
 		}
-	template<typename H> T & Get(H e)
+	template<typename H> T & Get(H e) const
 		{
 		unsigned int h = Hash(e);
 		T * r = &Table[h % Capacity];
@@ -93,7 +94,7 @@ public:
 			}
 		return *r;
 		}
-	template<typename H> bool Has(H e)
+	template<typename H> bool Has(H e) const
 		{
 		unsigned int h = Hash(e);
 		T * r = &Table[h % Capacity];
@@ -104,7 +105,7 @@ public:
 		return !!*r;
 		}
 	unsigned int GetSize() { return Size; }
-	void Add(T e)
+	T * Add(T e)
 		{
 		// FIXME: Profile for load factor
 		if (Size > Capacity / 2)
@@ -121,8 +122,9 @@ public:
 				}
 			delete [] OTable;
 			}
-		AddInternal(e);
+		T * r = AddInternal(e);
 		++Size;
+		return r;
 		}
 	template<typename H> void Remove(H e)
 		{

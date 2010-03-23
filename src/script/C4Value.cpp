@@ -40,7 +40,7 @@ C4Value::~C4Value()
 		FirstRef->Set(*this);
 
 	// delete contents
-	DelDataRef(Data, Type, GetNextRef(), GetBaseArray());
+	DelDataRef(Data, Type, GetNextRef(), GetBaseArray(), Type == C4V_PropListRef ? PropListRefKey : NULL);
 }
 
 C4Value &C4Value::operator = (const C4Value &nValue)
@@ -57,6 +57,7 @@ void C4Value::AddDataRef()
 	switch (Type)
 	{
 		case C4V_Ref: Data.Ref->AddRef(this); break;
+		case C4V_PropListRef: Data.PropList->IncElementRef(); PropListRefKey->IncRef(); break;
 		case C4V_Array: Data.Array = Data.Array->IncRef(); break;
 		case C4V_String: Data.Str->IncRef(); break;
 		case C4V_C4Object:
@@ -74,7 +75,7 @@ void C4Value::AddDataRef()
 	}
 }
 
-void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray)
+void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4ValueArray * pBaseArray, C4String * Key)
 {
 	// clean up
 	switch (Type)
@@ -84,6 +85,7 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 		HasBaseArray = false;
 		Data.Ref->DelRef(this, pNextRef, pBaseArray);
 		break;
+		case C4V_PropListRef: Data.PropList->DecElementRef(); Key->DecRef(); break;
 		case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
 		case C4V_Array: Data.Array->DecRef(); break;
 		case C4V_String: Data.Str->DecRef(); break;
@@ -91,9 +93,10 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 	}
 }
 
-void C4Value::Set(C4V_Data nData, C4V_Type nType)
+void C4Value::Set(C4V_Data nData, C4V_Type nType, C4String * nPropListRefKey)
 {
 	assert(nType != C4V_Any || !nData);
+	assert(nType != C4V_PropListRef || nPropListRefKey);
 	// Do not add this to the same linked list twice.
 	if (Data == nData && Type == nType) return;
 
@@ -101,9 +104,11 @@ void C4Value::Set(C4V_Data nData, C4V_Type nType)
 	C4V_Type oType = Type;
 	C4Value * oNextRef = NextRef;
 	C4ValueArray * oBaseArray = BaseArray;
+	C4String * oKey = PropListRefKey;
 	bool oHasBaseArray = HasBaseArray;
 
 	// change
+	PropListRefKey = nPropListRefKey; // This will be overwritten if the union is needed for something else
 	Data = nData;
 	Type = nData || IsNullableType(nType) ? nType : C4V_Any;
 
@@ -111,7 +116,10 @@ void C4Value::Set(C4V_Data nData, C4V_Type nType)
 	AddDataRef();
 
 	// clean up
-	DelDataRef(oData, oType, oHasBaseArray ? NULL : oNextRef, oHasBaseArray ? oBaseArray : NULL);
+	DelDataRef(oData, oType,
+	           oHasBaseArray ? NULL : oNextRef,
+	           oHasBaseArray ? oBaseArray : NULL,
+	           oType == C4V_PropListRef ? oKey : NULL);
 }
 
 void C4Value::Set0()
@@ -124,7 +132,18 @@ void C4Value::Set0()
 	Type = C4V_Any;
 
 	// clean up (save even if Data was 0 before)
-	DelDataRef(oData, oType, HasBaseArray ? NULL : NextRef, HasBaseArray ? BaseArray : NULL);
+	DelDataRef(oData, oType,
+	           HasBaseArray ? NULL : NextRef,
+	           HasBaseArray ? BaseArray : NULL,
+	           oType == C4V_PropListRef ? PropListRefKey : NULL);
+}
+
+void C4Value::SetPropListRef(C4PropList * PropList, C4String * Key)
+{
+	assert(PropList);
+	assert(Key);
+	C4V_Data d; d.PropList = PropList;
+	Set(d, C4V_PropListRef, Key);
 }
 
 void C4Value::Move(C4Value *nValue)
@@ -196,17 +215,29 @@ void C4Value::SetArrayLength(int32_t size, C4AulContext *cthr)
 const C4Value & C4Value::GetRefVal() const
 {
 	const C4Value* pVal = this;
-	while(pVal->Type == C4V_Ref)
-		pVal = pVal->Data.Ref;
-	return *pVal;
+	while(1)
+	{
+		if(pVal->Type == C4V_Ref)
+			pVal = pVal->Data.Ref;
+		else if(pVal->Type == C4V_PropListRef)
+			pVal = pVal->Data.PropList->GetRefToPropertyConst(pVal->PropListRefKey);
+		else
+			return *pVal;
+	}
 }
 
 C4Value &C4Value::GetRefVal()
 {
 	C4Value* pVal = this;
-	while(pVal->Type == C4V_Ref)
-		pVal = pVal->Data.Ref;
-	return *pVal;
+	while(1)
+	{
+		if(pVal->Type == C4V_Ref)
+			pVal = pVal->Data.Ref;
+		else if(pVal->Type == C4V_PropListRef)
+			pVal = pVal->Data.PropList->GetRefToProperty(pVal->PropListRefKey);
+		else
+			return *pVal;
+	}
 }
 
 void C4Value::AddRef(C4Value *pRef)
@@ -281,8 +312,6 @@ char GetC4VID(const C4V_Type Type)
 		return 'o';
 	case C4V_String:
 		return 's';
-	case C4V_Ref:
-		return 'V'; // should never happen
 	case C4V_C4ObjectEnum:
 		return 'O';
 	case C4V_C4DefEnum:
@@ -291,6 +320,9 @@ char GetC4VID(const C4V_Type Type)
 		return 'a';
 	case C4V_PropList:
 		return 'p';
+	default:
+		assert(Type != C4V_Ref && Type != C4V_PropListRef);
+		assert(false);
 	}
 	return ' ';
 }
@@ -344,6 +376,14 @@ static bool FnCnvDeref(C4Value *Val, C4V_Type toType)
 	return Val->ConvertTo(toType);
 	}
 
+bool C4Value::FnCnvPLR(C4Value *Val, C4V_Type toType)
+	{
+	// resolve reference of Value
+	Val->SetRef(Val->Data.PropList->GetRefToProperty(Val->PropListRefKey));
+	// retry to check convert
+	return Val->ConvertTo(toType);
+	}
+
 static bool FnOk0(C4Value *Val, C4V_Type toType)
 	{
 	// 0 can be treated as nil, but every other integer can't
@@ -362,6 +402,7 @@ bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType)
 #define CnvOK0       FnOk0, true
 #define CnvError     FnCnvError, true
 #define CnvDeref     FnCnvDeref, false
+#define CnvPLR       FnCnvPLR, false
 #define CnvObject    FnCnvObject, false
 
 C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
@@ -373,7 +414,8 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK		}, // C4Object
 		{ CnvOK		}, // String
 		{ CnvOK		}, // Array
-		{ CnvError	}, // pC4Value
+		{ CnvError	}, // Ref
+		{ CnvError	}, // PropListRef
 	},
 	{ // C4V_Int
 		{ CnvOK		}, // any
@@ -383,7 +425,8 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK0	}, // C4Object   only if 0
 		{ CnvOK0	}, // String     only if 0
 		{ CnvOK0	}, // Array      only if 0
-		{ CnvError	}, // pC4Value
+		{ CnvError	}, // Ref
+		{ CnvError	}, // PropListRef
 	},
 	{ // C4V_Bool
 		{ CnvOK		}, // any
@@ -393,7 +436,8 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError	}, // C4Object   NEVER!
 		{ CnvError	}, // String     NEVER!
 		{ CnvError	}, // Array      NEVER!
-		{ CnvError	}, // pC4Value
+		{ CnvError	}, // Ref
+		{ CnvError	}, // PropListRef
 	},
 	{ // C4V_PropList
 		{ CnvOK		}, // any
@@ -403,7 +447,8 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvObject	}, // C4Object
 		{ CnvError	}, // String     NEVER!
 		{ CnvError	}, // Array      NEVER!
-		{ CnvError	}, // pC4Value   NEVER!
+		{ CnvError	}, // Ref   NEVER!
+		{ CnvError	}, // PropListRef
 	},
 	{ // C4V_Object
 		{ CnvOK		}, // any
@@ -413,7 +458,8 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvOK		}, // C4Object   same
 		{ CnvError	}, // String     NEVER!
 		{ CnvError	}, // Array      NEVER!
-		{ CnvError	}, // pC4Value   NEVER!
+		{ CnvError	}, // Ref   NEVER!
+		{ CnvError	}, // PropListRef
 	},
 	{ // C4V_String
 		{ CnvOK		}, // any
@@ -423,7 +469,8 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError	}, // C4Object   NEVER!
 		{ CnvOK		}, // String     same
 		{ CnvError	}, // Array      NEVER!
-		{ CnvError	}, // pC4Value   NEVER!
+		{ CnvError	}, // Ref   NEVER!
+		{ CnvError	}, // PropListRef
 	},
 	{ // C4V_Array
 		{ CnvOK		}, // any
@@ -433,7 +480,8 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvError	}, // C4Object   NEVER!
 		{ CnvError	}, // String     NEVER!
 		{ CnvOK		}, // Array      same
-		{ CnvError	}, // pC4Value   NEVER!
+		{ CnvError	}, // Ref   NEVER!
+		{ CnvError	}, // PropListRef
 	},
 	{ // C4V_Ref - resolve reference and retry type check
 		{ CnvDeref	}, // any
@@ -443,15 +491,28 @@ C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
 		{ CnvDeref	}, // C4Object
 		{ CnvDeref	}, // String
 		{ CnvDeref	}, // Array
-		{ CnvOK		}, // pC4Value   same
+		{ CnvOK		}, // Ref   same
+		{ CnvError	}, // PropListRef
+	},
+	{ // C4V_Ref - resolve reference and retry type check
+		{ CnvPLR	}, // any
+		{ CnvPLR	}, // int
+		{ CnvPLR	}, // Bool
+		{ CnvPLR	}, // PropList
+		{ CnvPLR	}, // C4Object
+		{ CnvPLR	}, // String
+		{ CnvPLR	}, // Array
+		{ CnvPLR	}, // Ref
+		{ CnvOK		}, // PropListRef   same
 	},
 };
 
 #undef CnvOK
-#undef CvnError
-#undef CnvInt2Id
-#undef CnvDirectOld
+#undef CnvOK0
+#undef CnvError
 #undef CnvDeref
+#undef CnvPLR
+#undef CnvObject
 
 // Humanreadable debug output
 StdStrBuf C4Value::GetDataString()
