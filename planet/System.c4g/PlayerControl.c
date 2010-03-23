@@ -70,7 +70,7 @@ global func InitializePlayerControl(int plr, string controlset_name, bool keyboa
 global func PlayerHasVirtualCursor(int plr)
 {
 	if(!CON_VC_Players)
-		return -1;
+		return false;
 		
 	return CON_VC_Players[plr];
 }

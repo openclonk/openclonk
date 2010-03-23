@@ -1092,7 +1092,7 @@ func SetMenu(object m)
 	if (menu)
 	{	
 		// we need to be notified when the ringmenu is gone
-
+		
 		if (PlayerHasVirtualCursor(GetOwner()))
 			VirtualCursor()->StartAim(this);
 		else
@@ -1115,14 +1115,12 @@ func GetMenu()
 
 func ReinitializeControls()
 {
-	if((PlayerHasVirtualCursor(GetOwner())))
+	if(PlayerHasVirtualCursor(GetOwner()))
 	{
 		// if is aiming or in menu and no virtual cursor is there? Create one
 		if (!virtual_cursor)
 			if (menu || using)
-			{
 				VirtualCursor()->StartAim(this);
-			}
 	}
 	else
 	{
