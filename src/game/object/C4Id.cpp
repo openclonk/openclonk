@@ -30,32 +30,27 @@
 C4ID::NamesList C4ID::names;
 C4ID::LookupTable C4ID::lookup;
 
-#ifdef _MSC_VER
-#	pragma warning (push)
-#	pragma warning (disable: 4996)
-#endif
-const C4ID C4ID::None("None");
-const C4ID C4ID::Contents("Contents");
-const C4ID C4ID::Energy("Rule_NeedEnergy");
-const C4ID C4ID::StructuresSnowIn("STSN");
-const C4ID C4ID::CnMaterial("CNMT");
-const C4ID C4ID::Flag("FLAG");
-const C4ID C4ID::FlagRemvbl("FGRV");
-const C4ID C4ID::Linekit("CableReel");
-const C4ID C4ID::Conkit("CNKT");
-const C4ID C4ID::SourcePipe("SPIP");
-const C4ID C4ID::DrainPipe("DPIP");
-const C4ID C4ID::PowerLine("PowerLine");
-const C4ID C4ID::Clonk("Clonk");
-const C4ID C4ID::Flame("FLAM");
-const C4ID C4ID::Meteor("METO");
-const C4ID C4ID::Blast("FXB1");
-const C4ID C4ID::Melee("MELE");
-const C4ID C4ID::TeamworkMelee("MEL2");
-const C4ID C4ID::Rivalry("RVLR");
-#ifdef _MSC_VER
-#	pragma warning (pop)
-#endif
+const C4ID C4ID::None(std::string("None"));
+const C4ID C4ID::Contents(std::string("Contents"));
+
+// TODO: Remove these eventually, since they are deprecated.
+const C4ID C4ID::Energy(std::string("Rule_NeedEnergy"));
+const C4ID C4ID::StructuresSnowIn(std::string("STSN"));
+const C4ID C4ID::CnMaterial(std::string("CNMT"));
+const C4ID C4ID::Flag(std::string("FLAG"));
+const C4ID C4ID::FlagRemvbl(std::string("FGRV"));
+const C4ID C4ID::Linekit(std::string("CableReel"));
+const C4ID C4ID::Conkit(std::string("CNKT"));
+const C4ID C4ID::SourcePipe(std::string("SPIP"));
+const C4ID C4ID::DrainPipe(std::string("DPIP"));
+const C4ID C4ID::PowerLine(std::string("PowerLine"));
+const C4ID C4ID::Clonk(std::string("Clonk"));
+const C4ID C4ID::Flame(std::string("FLAM"));
+const C4ID C4ID::Meteor(std::string("METO"));
+const C4ID C4ID::Blast(std::string("FXB1"));
+const C4ID C4ID::Melee(std::string("MELE"));
+const C4ID C4ID::TeamworkMelee(std::string("MEL2"));
+const C4ID C4ID::Rivalry(std::string("RVLR"));
 
 C4ID::C4ID(const std::string &s) { assign(s); }
 
