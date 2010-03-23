@@ -40,11 +40,11 @@
 
 
 #ifdef _MSC_VER
-#define DEPRECATED(f) __declspec(deprecated) f
+#define DEPRECATED __declspec(deprecated)
 #elif defined(__GNUC__)
-#define DEPRECATED(f) f __attribute__((deprecated))
+#define DEPRECATED __attribute__((deprecated))
 #else
-#define DEPRECATED(f) f
+#define DEPRECATED
 #endif
 
 
