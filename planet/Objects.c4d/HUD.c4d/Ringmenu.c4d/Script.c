@@ -138,7 +138,7 @@ func Show()
 
 public func UpdateCursor(int angle)
 {
-	Log("%d",angle);
+
 }
 
 public func Hide() {
