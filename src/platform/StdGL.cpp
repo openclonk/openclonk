@@ -1122,17 +1122,17 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glTranslatef(-1.0f, 1.0f, 0.0f);
 		glScalef(2.0f/iWdt, -2.0f/iHgt, 1.0f);
 
-		// Compensate for 1.0f aspect (need to do this after having applied zoom and transform
-		// which is why we can't directly set it in gluPerspective)
-		glTranslatef(twdt/2+tx-iClipX1,thgt/2+ty-iClipY1, 0.0f);
-		glScalef((twdt>thgt)?(thgt/twdt):1.0f,(twdt>thgt)?(1.0f):(twdt/thgt), 1.0f);
-		glTranslatef(-twdt/2-tx+iClipX1,-thgt/2-ty+iClipY1, 0.0f);
-
+		glTranslatef(-iClipX1, -iClipY1, 0.0f);
 		if(!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
 			parity = !parity;
 
+		// Compensate for 1.0f aspect (TODO: Can we do that directly in gluPerspective?)
+		glTranslatef(twdt/2+tx,thgt/2+ty, 0.0f);
+		glScalef((twdt>thgt)?(thgt/twdt):1.0f,(twdt>thgt)?(1.0f):(twdt/thgt), 1.0f);
+		glTranslatef(-twdt/2-tx,-thgt/2-ty, 0.0f);
+
 		// Move to target location
-		glTranslatef(tx-iClipX1, ty-iClipY1, 0.0f);
+		glTranslatef(tx, ty, 0.0f);
 		glScalef(((float)twdt)/iWdt, ((float)thgt)/iHgt, 1.0f);
 
 		// Return to Clonk coordinate frame
