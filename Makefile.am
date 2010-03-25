@@ -62,9 +62,14 @@ AM_CPPFLAGS = \
   -I$(srcdir)/src/script \
   $(GLEW_CFLAGS) $(GTK_CFLAGS) $(FREETYPE_CFLAGS) $(SDL_CFLAGS)
 
+BUILT_SOURCES = hgrevision.h
+hgrevision.h: $(srcdir)/.hg/dirstate
+	$(srcdir)/tools/get_hg_revision.sh > hgrevision.h
+$(srcdir)/.hg/dirstate:
+
 #various hacks to get dependency tracking working with a precompiled C4Include
 if RECENT_GCC
-BUILT_SOURCES = C4Include.h.gch
+BUILT_SOURCES += C4Include.h.gch
 CLEANFILES = C4Include.h.gch
 DISTCLEANFILES = @am__quote@$(DEPDIR)/C4Include.Po@am__quote@
 
@@ -490,7 +495,8 @@ src/tinyxml/tinyxmlparser.cpp \
 src/zlib/gzio.c \
 src/zlib/zutil.h \
 src/script/C4AulDebug.h \
-src/script/C4AulExec.h
+src/script/C4AulExec.h \
+hgrevision.h
 
 if WIN32
 clonk_SOURCES += src/platform/C4FileClasses.cpp
