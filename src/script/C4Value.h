@@ -121,7 +121,6 @@ public:
 	C4ValueArray *_getArray() const { return Data.Array; }
 	C4PropList *_getPropList() const { return Data.PropList; }
 	C4Value *_getRef() { return Data.Ref; }
-	long _getRaw() const { return Data.Int; }
 
 	// Template versions
 	template <typename T> inline T Get() { return C4ValueConv<T>::FromC4V(*this); }

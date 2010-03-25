@@ -241,7 +241,7 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 					break;
 				case AB_Not: 	// !
 					CheckOpPar(pCPos->Par.i);
-					pCurVal->SetBool(!pCurVal->_getRaw());
+					pCurVal->SetBool(!pCurVal->_getBool());
 					break;
 				case AB_Neg: 	// -
 					CheckOpPar(pCPos->Par.i);
