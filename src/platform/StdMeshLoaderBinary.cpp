@@ -338,7 +338,7 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 		throw Ogre::Skeleton::MissingMasterBone();
 
 	// Transfer bone ownership to mesh (double .release() is correct)
-	bones.release().release();
+	while(!bones.empty()) bones.release(bones.begin()).release();
 
 	// Build handle->index quick access table
 	std::map<uint16_t, size_t> handle_lookup;
