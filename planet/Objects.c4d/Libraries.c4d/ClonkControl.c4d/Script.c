@@ -325,12 +325,18 @@ protected func Ejection(object obj)
 protected func RejectCollect(id objid, object obj)
 {
 	for(var i=0; Contents(i); ++i)
-	{
 		if (Contents(i)->~HasExtraSlot())
 			if (!(Contents(i)->Contents(0)))
 				if (Contents(i)->Collect(obj,true))
 					return true;
-	}
+					
+	// try to stuff an object in clonk into obj if it has an extra slot
+	if (obj->~HasExtraSlot())
+		if (!(obj->Contents(0)))
+			for(var i=0; Contents(i); ++i)
+				if (obj->Collect(Contents(i),true))
+					return false;
+			
 
 	// check max contents
 	if (ContentsCount() >= MaxContentsCount()) return true;
