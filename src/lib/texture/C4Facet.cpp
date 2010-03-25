@@ -77,7 +77,7 @@ void C4Facet::Draw(SURFACE sfcTarget, float iX, float iY, int32_t iPhaseX, int32
 								iX,iY,Wdt,Hgt,true);
 	}
 
-void C4Facet::DrawT(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
+void C4Facet::DrawT(SURFACE sfcTarget, float iX, float iY, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
 	{
 	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
 
@@ -352,7 +352,7 @@ void C4Facet::DrawXFloat(SURFACE sfcTarget, float fX, float fY, float fWdt, floa
 								true);*/
 	}
 
-void C4Facet::DrawXT(SURFACE sfcTarget, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
+void C4Facet::DrawXT(SURFACE sfcTarget, float iX, float iY, int32_t iWdt, int32_t iHgt, int32_t iPhaseX, int32_t iPhaseY, C4DrawTransform *pTransform)
 	{
 	if (!lpDDraw || !Surface || !sfcTarget || !Wdt || !Hgt) return;
 	lpDDraw->Blit(Surface,
