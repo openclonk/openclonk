@@ -1,5 +1,1 @@
-TxtConnectLine=Connect line
-TxtNoNewLine=Cannot create a new line here.
-TxtLineRemoval=Power line disconnected.
-TxtConnect=Power line connected|to %s
-Name=Wireroll
+Name=Target

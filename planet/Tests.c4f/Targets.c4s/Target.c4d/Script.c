@@ -12,5 +12,6 @@ public func IsProjectileTarget(target,shooter)
 public func OnProjectileHit()
 {
 	Fireworks();
+	RemoveObject();
 	return 1;
 }

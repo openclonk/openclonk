@@ -1,5 +1,5 @@
 [DefCore]
-id=_BTF
+id=Butterfly
 Category=69640
 MaxUserSelect=10
 TimerCall=Activity
@@ -9,7 +9,6 @@ Height=24
 Offset=-12,-12
 Value=1
 Mass=1
-Components=_BTF=1;
 Vertices=4
 VertexX=0,0,-7,7
 VertexY=-5,5,0,0

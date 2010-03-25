@@ -1,5 +1,5 @@
 [DefCore]
-id=_TRG
+id=PracticeTarget
 Version=4,9,8
 Category=C4D_StaticBack
 MaxUserSelect=10
@@ -11,4 +11,3 @@ VertexY=1
 VertexFriction=50
 Value=10
 Mass=15
-Components=Metal=1

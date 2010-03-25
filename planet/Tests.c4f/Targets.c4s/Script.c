@@ -3,7 +3,15 @@
 func Initialize()
 {
 	CreateObject(Environment_Grass, 10, 10);
-	Message("@Here is a butterfly!|(ck draw it!)", CreateObject(_BTF, 10, 10));
+	Message("@Here is a butterfly!|(ck draw it!)", CreateObject(Butterfly, 10, 10));
+	//CreateObject(PracticeTarget);
+	CreateObject(PracticeTarget,629,165,NO_OWNER);
+	CreateObject(PracticeTarget,332,295,NO_OWNER);
+	CreateObject(PracticeTarget,126,359,NO_OWNER);
+	CreateObject(PracticeTarget,788,531,NO_OWNER);
+	CreateObject(PracticeTarget,54,573,NO_OWNER);
+	CreateObject(PracticeTarget,853,396,NO_OWNER);
+
 }
 
 func InitializePlayer(int iPlr, int iX, int iY, object pBase, int iTeam)
