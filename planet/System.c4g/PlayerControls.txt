@@ -535,12 +535,10 @@
 	#
 	# Hotkey0-9							(0-9)
 	#
-	# Use								Left mouse button
-	# Throw								Shift+Left mouse button
+	# Use, Throw						Left mouse button
 	# Drop								S+Left mouse button
 	#
-	# UseAlt							Right mouse button
-	# ThrowAlt							Shift+Right mouse button
+	# UseAlt, ThrowAlt					Right mouse button
 	# DropAlt							S+Right mouse button
 	#
 	# PushEnter, GrabNext, Ungrab,
@@ -792,7 +790,8 @@
 		Control=Use
 		
 		[Assignment]
-		Key=Shift+GameMouse1ButtonLeft
+		Key=GameMouse1ButtonLeft
+		Priority=50
 		Control=Throw
 		
 		[Assignment]
@@ -806,7 +805,8 @@
 		Control=UseAlt
 		
 		[Assignment]
-		Key=Shift+GameMouse1ButtonRight
+		Key=GameMouse1ButtonRight
+		Priority=50
 		Control=ThrowAlt
 		
 		[Assignment]
@@ -1073,7 +1073,8 @@
 		Control=Use
 		
 		[Assignment]
-		Key=Shift+GameMouse1ButtonLeft
+		Key=GameMouse1ButtonLeft
+		Priority=50
 		Control=Throw
 		
 		[Assignment]
@@ -1087,7 +1088,8 @@
 		Control=UseAlt
 		
 		[Assignment]
-		Key=Shift+GameMouse1ButtonRight
+		Key=GameMouse1ButtonRight
+		Priority=50
 		Control=ThrowAlt
 		
 		[Assignment]
@@ -1131,13 +1133,11 @@
 	#
 	# Jump								Joy1C
 	#
-	# Use								Joy1A
-	# Throw								Joy1E
-	# Drop								Joy1Down+Joy1E
+	# Use, Throw						Joy1A
+	# Drop								Joy1Down+Joy1A
 	#
-	# UseAlt							Joy1D
-	# ThrowAlt							Joy1F
-	# DropAlt							Joy1Down+Joy1F
+	# UseAlt, ThrowAlt					Joy1D
+	# DropAlt							Joy1Down+Joy1D
 	#
 	# PushEnter, GrabNext, Ungrab,
 	# Grab, Exit, Enter					Joy1B
@@ -1311,12 +1311,13 @@
 		Control=UseDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1E
+		Key=Joy1Down,Joy1A
 		Priority=150
 		Control=Drop
 		
 		[Assignment]
-		Key=Joy1E
+		Key=Joy1A
+		Priority=50
 		Control=ThrowDelayed
 		
 		[Assignment]
@@ -1325,12 +1326,13 @@
 		Control=UseAltDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1F
+		Key=Joy1Down,Joy1D
 		Priority=150
 		Control=DropAlt
 		
 		[Assignment]
-		Key=Joy1F
+		Key=Joy1D
+		Priority=50
 		Control=ThrowAltDelayed
 		
 	# ======================================================================= #
@@ -1364,13 +1366,13 @@
 	#
 	# Jump								Joy1C
 	#
-	# Use								Joy1A
-	# Throw								Joy1E
-	# Drop								Joy1Down+Joy1E
+	# Backpack							Joy1E
 	#
-	# UseAlt							Joy1D
-	# ThrowAlt							Joy1G
-	# DropAlt							Joy1Down+Joy1G
+	# Use, Throw						Joy1A
+	# Drop								Joy1Down+Joy1A
+	#
+	# UseAlt, ThrowAlt					Joy1D
+	# DropAlt							Joy1Down+Joy1D
 	#
 	# PushEnter, GrabNext, Ungrab,
 	# Grab, Exit, Enter					Joy1B
@@ -1584,12 +1586,13 @@
 		Control=UseDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1E
+		Key=Joy1Down,Joy1A
 		Priority=150
 		Control=Drop
 		
 		[Assignment]
-		Key=Joy1E
+		Key=Joy1A
+		Priority=50
 		Control=ThrowDelayed
 		
 		[Assignment]
@@ -1598,12 +1601,13 @@
 		Control=UseAltDelayed
 		
 		[Assignment]
-		Key=Joy1Down,Joy1G
+		Key=Joy1Down,Joy1D
 		Priority=150
 		Control=DropAlt
 		
 		[Assignment]
-		Key=Joy1G
+		Key=Joy1D
+		Priority=50
 		Control=ThrowAltDelayed
 		
 		[Assignment]
