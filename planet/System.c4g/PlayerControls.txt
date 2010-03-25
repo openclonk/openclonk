@@ -594,7 +594,7 @@
 		Control=MenuUp
 		
 		[Assignment]
-		Key=Return
+		Key=Space
 		Priority=100
 		Control=MenuOK
 		
@@ -624,7 +624,7 @@
 		Control=ObjectMenuUp
 		
 		[Assignment]
-		Key=Return
+		Key=Space
 		Priority=90
 		Control=ObjectMenuOK
 		
@@ -875,7 +875,7 @@
 		Control=MenuUp
 		
 		[Assignment]
-		Key=Return
+		Key=Space
 		Priority=100
 		Control=MenuOK
 		
@@ -905,7 +905,7 @@
 		Control=ObjectMenuUp
 		
 		[Assignment]
-		Key=Return
+		Key=Space
 		Priority=90
 		Control=ObjectMenuOK
 		
