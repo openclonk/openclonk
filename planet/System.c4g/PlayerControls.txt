@@ -790,6 +790,16 @@
 		Control=Use
 		
 		[Assignment]
+		Key=Shift+GameMouse1ButtonLeft
+		Priority=150
+		Control=Throw
+		
+		[Assignment]
+		Key=Shift+GameMouse1ButtonRight
+		Priority=150
+		Control=ThrowAlt
+		
+		[Assignment]
 		Key=GameMouse1ButtonLeft
 		Priority=50
 		Control=Throw
@@ -1066,6 +1076,16 @@
 		Control=NextCrew
 		
 		# Usage, Throwing, Dropping
+		
+		[Assignment]
+		Key=Shift+GameMouse1ButtonLeft
+		Priority=150
+		Control=Throw
+		
+		[Assignment]
+		Key=Shift+GameMouse1ButtonRight
+		Priority=150
+		Control=ThrowAlt
 		
 		[Assignment]
 		Key=GameMouse1ButtonLeft
