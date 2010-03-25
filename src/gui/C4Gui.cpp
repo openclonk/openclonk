@@ -881,7 +881,7 @@ bool Screen::MouseInput(int32_t iButton, int32_t iPxX, int32_t iPxY, DWORD dwKey
 							iOffX = rcOut.x; iOffY = rcOut.y;
 							}
 						// hit test; or special: dragging possible outside active dialog
-						if (rcDlgBounds.Contains(fX-iOffX, fY-iOffY) || (pDlg == pActiveDlg && Mouse.pDragElement))
+						if (rcDlgBounds.Contains(fX-iOffX, fY-iOffY) || (pDlg == pActiveDlg && Mouse.pDragElement && Mouse.pDragElement->GetDlg() == pDlg))
 							{
 							// Okay; do input
 							pDlg->MouseInput(Mouse, iButton, fX - rcDlgBounds.x - iOffX, fY - rcDlgBounds.y - iOffY, dwKeyParam);
