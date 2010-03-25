@@ -4,30 +4,27 @@
 public func ControlUse(object clonk, int iX, int iY, bool fBox)
 {
 	// if already activated, nothing (so, throw)
-	if(GetAction() == "Fuse")
+	if(GetAction() == "Fuse" || fBox)
 	{
-		return false;
-	}
+		var iAngle = Angle(0,0,iX,iY);
+		if(!GetWall(iAngle, iX, iY, clonk))
+		{
+			//CreateParticle ("Blast", iX, iY, 0, 0, 50, RGB(255,200,0), clonk);
+			Message("Can't place dynamite here!", clonk);
+			if(fBox) return false;
+			return true;
+		}
+		if(fBox) SetReady();
+		// put into ...
+		Sound("Connect");
 
-	var iAngle = Angle(0,0,iX,iY);
-	if(!GetWall(iAngle, iX, iY, clonk))
+		Exit(iX, iY, Angle(iX,iY));
+		SetPosition(clonk->GetX()+iX, clonk->GetY()+iY);
+	}
+	else
 	{
-		//CreateParticle ("Blast", iX, iY, 0, 0, 50, RGB(255,200,0), clonk);
-		Message("Can't place dynamite here!", clonk);
-		if(fBox) return false;
-		return true;
+		Fuse();
 	}
-
-	// Fuse
-	if(fBox) SetReady();
-	else Fuse();
-
-	// put into ...
-	Sound("Connect");
-
-	Exit(iX, iY, Angle(iX,iY));
-	SetPosition(clonk->GetX()+iX, clonk->GetY()+iY);
-
 	return true;
 }
 
