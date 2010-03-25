@@ -179,6 +179,15 @@
 
 </part>
 <h id="Script">Script-Callbacks</h>
+<text>Zum Initialisieren der Spielersteuerung wird für jeden gesteuerten Spieler die Funktion InitializePlayerControl aufgerufen. Dieser Aufruf erfolgt gegebenenfalls einige Frames verspätet nach InitializePlayer, da die Initialisierung der Steuerung im Netzwerk übertragen werden muss. Beim Fortsetzen von Spielständen wird InitializePlayerControl wiederholt aufgerufen. Die gewählte Steuerung kann sich hier von der ursprünglichen Steuerung unterscheiden. Gleiches gilt, falls der Spieler mitten im Spiel die Steuerung wechselt.</text>
+
+<code>global func InitializePlayerControl(int player, string control_name, bool has_keyboard, bool has_mouse, bool has_gamepad)
+{
+  // Hier bietet sich die Möglichkeit, spezielle Kontrollelemente wie ein Gamepad-Zielkreuz zu erzeugen
+  // oder zu zerstören, falls die Kontrolle vom Gamepad weggeschaltet wurde
+  return true;
+}</code>
+
 <text>Die meisten Kommandos (abgesehen von asyrnchronen Kommandos im Spielermenue), rufen eine globale Scriptfunktion auf:</text>
 <code>global func PlayerControl(int player, int control, C4ID control_extra, int x, int y, int strength, bool repeated, bool release)</code>
 <text>Fuer eine Erlaeuterung der Parameter siehe <funclink>PlayerControl</funclink>. Die Funktion erhaelt unter anderem den aufrufenden Spieler in player, sowie das ausgefuehrte Kommando in iControl.</text>

@@ -55,7 +55,6 @@ herausgefiltert und komplett ignoriert.</text>
 
 <h id="Infos">Weitere Informationen</h>
 <text><emlink href="script/AppendTo.html">#appendto: Zum nachträglichen Erweitern fremder Scripte</emlink></text>
-<text><emlink href="script/Strict.html">: Der neue Standard</emlink></text>
 <text><emlink href="script/BreakContinue.html">Befehle zur Schleifenkontrolle</emlink></text>
 <text><emlink href="script/FuncCall.html">Aufruf von Scriptfunktionen</emlink></text>
 <text><emlink href="script/Effects.html">Effekte</emlink></text>
