@@ -402,6 +402,7 @@ C4FullScreen::C4FullScreen()
 C4FullScreen::~C4FullScreen()
 	{
 	if (pMenu) delete pMenu;
+	if (pSurface) delete pSurface;
 	}
 
 void C4FullScreen::Close()
