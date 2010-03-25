@@ -854,7 +854,7 @@ bool C4PlayerControl::ExecuteControlAction(int32_t iControl, C4PlayerControlDef:
 			return ExecuteControlScript(iControl, idControlExtraData, fUp, rKeyExtraData, fRepeated);
 
 		// menu controls
-		case C4PlayerControlDef::CDA_Menu: if (!pPlr || fUp) return false; if (pPlr->Menu.IsActive()) pPlr->Menu.Close(false); else pPlr->ActivateMenuMain(); return true; // toggle
+		case C4PlayerControlDef::CDA_Menu: if (!pPlr || fUp) return false; if (pPlr->Menu.IsActive()) pPlr->Menu.TryClose(false, true); else pPlr->ActivateMenuMain(); return true; // toggle
 		case C4PlayerControlDef::CDA_MenuOK:     if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuEnter,0); return true; // ok on item
 		case C4PlayerControlDef::CDA_MenuCancel: if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuClose,0); return true; // close menu
 		case C4PlayerControlDef::CDA_MenuLeft:   if (!pPlr || !pPlr->Menu.IsActive() || fUp) return false; pPlr->Menu.Control(COM_MenuLeft ,0); return true; // navigate
