@@ -966,7 +966,7 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 					// check scope
 					if (pKey->GetScope() & InScope)
 						// check shift modifier (not on release, because a key release might happen with a different modifier than its pressing!)
-						if (InEvent == KEYEV_Up || pKey->IsCodeMatched(FallbackKeys[j]))
+						if (InEvent == KEYEV_Up || pKey->IsCodeMatched(C4KeyCodeEx(FallbackKeys[j], C4KeyShiftState(InKey.dwShift))))
 							// exec it
 							if (pKey->Execute(InEvent, InKey))
 								return true;
