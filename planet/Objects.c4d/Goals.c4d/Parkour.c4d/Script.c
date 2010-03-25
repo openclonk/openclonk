@@ -9,7 +9,7 @@
 		* Ordered: On/Off - The checkpoints mussed be passed in the order specified.
 		* The start and finish are also checkpoints.
 	ToDo: 
-		* Update CP Graphics -> looks satisfactory atm.
+		* Update CP Graphics -> looks satisfactory atm but cpu intensive.
 		* Relative distance to next CP in scoreboard -> done.
 		* Arrow showing direction to next CP -> partially done.
 		* maybe update array access to plrID -> done.
@@ -43,9 +43,8 @@ protected func Initialize()
 	if (!ObjectCount(Find_ID(Rule_Restart)))
 		CreateObject(Rule_Restart, 0, 0, NO_OWNER);
 
-	// Scoreboard distance display.
+	// Scoreboard.
 	InitScoreboard();
-	AddEffect("IntSBDistance", this, 100, 35, this);
 	return _inherited(...);
 }
 
@@ -67,7 +66,8 @@ public func SetFinishpoint(int x, int y)
 	cp->SetPosition(x, y);
 	cp->SetCPMode(RACE_CP_Finish);
 	cp->SetCPController(this);
-	cp_list[cp_count + 1] = cp;
+	cp_count++;
+	cp_list[cp_count] = cp;
 	return;
 }
 
@@ -91,6 +91,8 @@ public func AddCheckpoint(int x, int y, int mode)
 // Called from a finish CP to indicate that plr has reached it.
 public func PlrReachedFinishCP(int plr)
 {
+	if (finished)
+		return;
 	var plrid = GetPlayerID(plr);
 	plr_list[plrid]++;
 	if (GetPlayerTeam(plr))
@@ -116,6 +118,8 @@ public func SetPlrRespawnCP(int plr, object cp)
 // Called from a check CP to indicate that plr has cleared it.
 public func AddPlrClearedCP(int plr)
 {
+	if (finished)
+		return;
 	var plrid = GetPlayerID(plr);
 	var team = GetPlayerTeam(plr);
 	plr_list[plrid]++;
@@ -270,8 +274,6 @@ private func FindRespawnPos(int plr, int &x, int &y)
 
 protected func RemovePlayer(int plr)
 {
-	// TODO
-
 	if (!finished)
 		AddEvalData(plr);
 	return;
@@ -279,89 +281,39 @@ protected func RemovePlayer(int plr)
 
 /*-- Scoreboard --*/
 
-protected func FxIntSBDistanceTimer()
-{
-	for (var i = 0; i < GetPlayerCount(); i++)
-		UpdateScoreboard(GetPlayerByIndex(i));
-	return FX_OK;
-}
-
 static const SBRD_Checkpoints = 0;
-static const SBRD_Distance = 1;
-static const SBRD_BestTime = 2;
+static const SBRD_BestTime = 1;
 
 private func InitScoreboard()
 {
 	if (cp_count > 0)
-		var caption = Format("$MsgCaptionX$", cp_count + 1);
+		var caption = Format("$MsgCaptionX$", cp_count);
 	else
 		var caption = "$MsgCaptionNone$";
 	// The above row.
 	SetScoreboardData(SBRD_Caption, SBRD_Caption, caption, SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, SBRD_Checkpoints, Format("{{%i}}", ParkourCheckpoint), SBRD_Caption);
-	SetScoreboardData(SBRD_Caption, SBRD_Distance, Format("->{{%i}}", ParkourCheckpoint), SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, SBRD_BestTime, "T", SBRD_Caption);
 	return;
 }
 
 private func UpdateScoreboard(int plr)
 {
+	if (finished)
+		return;
 	var plrid = GetPlayerID(plr);
 	// The player name.
 	SetScoreboardData(plrid, SBRD_Caption, GetTaggedPlayerName(plr), SBRD_Caption);
 	// The player scores.
 	SetScoreboardData(plrid, SBRD_Checkpoints, Format("%d", plr_list[plrid]), plr_list[plrid]);
-	SetScoreboardData(plrid, SBRD_Distance, Format("%d%", GetDistToCP(plr)), GetDistToCP(plr));
-	SetScoreboardData(plrid, SBRD_BestTime, TimeToString(GetPlrExtraData(plr, time_store)), SBRD_Caption);
+	SetScoreboardData(plrid, SBRD_BestTime, TimeToString(GetPlrExtraData(plr, time_store)), GetPlrExtraData(plr, time_store));
 	// Sort.
-	SortScoreboard(SBRD_Distance, false);
+	SortScoreboard(SBRD_BestTime, false);
 	SortScoreboard(SBRD_Checkpoints, true);
 	return;
 }
 
-/*-- Direction & distance indication --*/
-
-// Returns the last cleared CP for plr.
-private func FindLastCP(int plr)
-{
-	var lastcp;
-	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Ordered), Find_Func("ClearedByPlr", plr)))
-		if (!lastcp || lastcp->~GetCPNumber() < cp->~GetCPNumber())
-			lastcp = cp;
-	if (!lastcp)
-		lastcp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Start));
-	return lastcp;
-}
-
-// Returns the next CP for plr.
-private func FindNextCP(int plr)
-{
-	var nextcp;
-
-	return;
-}
-
-// Only works for ordered CPs
-private func GetDistToCP(int plr)
-{
-	// Get last finished ordered CP.
-	var lastcp = FindLastCP(plr);
-	if (!lastcp)
-		return 0;
-	// Get next ordered CP.
-	var nextcp;
-	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Ordered)))
-		if (cp->GetCPNumber() == lastcp->GetCPNumber() + 1)
-			nextcp = cp;
-	if (!nextcp)
-		nextcp = FindObject(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Finish));
-	if (!nextcp)
-		return 0;
-	var dist = ObjectDistance(GetCrew(plr), nextcp); 
-	dist = (100 * dist) / ObjectDistance(lastcp, nextcp); 
-	dist = BoundBy(dist, 0, 100);
-	return dist;
-}
+/*-- Direction indication --*/
 
 // Effect for direction indication for the clonk.
 protected func FxIntDirNextCPStart(object target, int fxnum)
@@ -375,6 +327,7 @@ protected func FxIntDirNextCPStart(object target, int fxnum)
 protected func FxIntDirNextCPTimer(object target, int fxnum)
 {
 	var plr = target->GetOwner();
+	var team = GetPlayerTeam(plr);
 	// Find nearest CP.
 	var nextcp;
 	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Check | RACE_CP_Finish), Sort_Distance(target->GetX()-GetX(), target->GetY()-GetY())))
@@ -384,7 +337,7 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 			break;
 		}	
 	if (!nextcp)
-		return;
+		return EffectVar(0, target, fxnum)->SetClrModulation(RGBa(0,0,0,0));
 	// Calculate parameters.
 	var angle = Angle(target->GetX(), target->GetY(), nextcp->GetX(), nextcp->GetY());
 	var dist = Min(510*ObjectDistance(GetCrew(plr), nextcp)/400, 510); 
@@ -462,6 +415,8 @@ private func SetEvalData(int winner)
 
 private func AddEvalData(int plr)
 {
+	if (finished)
+		return;
 	var plrid = GetPlayerID(plr);
 	var cps = plr_list[plrid];
 	var msg;
