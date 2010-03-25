@@ -36,24 +36,18 @@
 	or directly)
 */
 
+local menu;
+
+/* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
+
 local selected, selected2;
 local indexed_inventory;
 local disableautosort;
 local inventory;
 
-local using;
-local alt;
-local mlastx, mlasty;
-local virtual_cursor;
-local noholdingcallbacks;
-
-local menu;
-
-/* ++++++++ Item controls ++++++++++ */
-
 /* Item limit */
 
-public func MaxContentsCount() { return 2; }
+public func MaxContentsCount() { return 5; }
 
 /* Item select access*/
 
@@ -83,11 +77,6 @@ public func SelectItem(selection, bool second)
 	if (!second) item = inventory[selected];
 	else item = inventory[selected2];
 	
-	// DEBUG
-	//var bla = "nothing";
-	//if (item) bla = item->~GetName();
-	//Message("selected %s (position %d)", this, bla, selected);
-	
 	if (item)
 		if (!item->~Selection(this,second))
 			Sound("Grab");
@@ -95,14 +84,6 @@ public func SelectItem(selection, bool second)
 	// callback to clonk (self):
 	// OnSelectionChanged(oldslotnumber, newslotnumber)
 	this->~OnSelectionChanged(oldnum, GetSelected(second),second);
-	
-	// the first and secondary selection may not be on the same spot
-	// - why not?
-	//if (selected2 == selected)
-	//{
-	//	if (second) SelectItem(oldnum,false);
-	//	else SelectItem(oldnum,true);
-	//}
 }
 
 public func ShiftSelectedItem(int dir, bool second)
@@ -123,11 +104,15 @@ public func ShiftSelectedItem(int dir, bool second)
 	}
 }
 
+/* Get selected index */
+
 public func GetSelected(bool second)
 {
 	if (!second) return selected;
 	return selected2;
 }
+
+/* Get selected item */
 
 public func GetSelectedItem(bool second)
 {
@@ -135,10 +120,14 @@ public func GetSelectedItem(bool second)
 	return inventory[selected2];
 }
 
+/* Get the ith item in the inventory */
+
 public func GetItem(int i)
 {
 	return inventory[i];
 }
+
+/* Search the index of an item */
 
 public func GetItemPos(object item)
 {
@@ -155,19 +144,24 @@ public func GetItemPos(object item)
 	return nil;
 }
 
+/* Switch two items in the clonk's inventory */
+
 public func Switch2Items(int one, int two)
 {
+	// no valid inventory index: cancel
 	if (!Inside(one,0,MaxContentsCount(one)-1)) return;
 	if (!Inside(two,0,MaxContentsCount(two)-1)) return;
 
+	// switch them around
 	var temp = inventory[one];
 	inventory[one] = inventory[two];
 	inventory[two] = temp;
 	
-	// callbacks
+	// callbacks: cancel use
 	if (using == inventory[one] || using == inventory[two])
 		CancelUse();
 	
+	// callbacks: (de)selection
 	if (one == selected)       if (inventory[two]) inventory[two]->~Deselection(this,false);
 	else if (one == selected2) if (inventory[two]) inventory[two]->~Deselection(this,true);
 	if (two == selected)       if (inventory[one]) inventory[one]->~Deselection(this,false);
@@ -178,16 +172,24 @@ public func Switch2Items(int one, int two)
 	if (two == selected)       if (inventory[two]) inventory[two]->~Selection(this,false);
 	else if (two == selected2) if (inventory[two]) inventory[two]->~Selection(this,true);
 	
-	if (inventory[one])
-		this->~OnSlotFull(one);
-	else
-		this->~OnSlotEmpty(one);
-		
-	if (inventory[two])
-		this->~OnSlotFull(two);
-	else
-		this->~OnSlotEmpty(two);
+	// callbacks: to self, for HUD
+	if (one < 2)
+	{
+		if (inventory[one])
+			this->~OnSlotFull(one);
+		else
+			this->~OnSlotEmpty(one);
+	}
+	if (two < 2)
+	{
+		if (inventory[two])
+			this->~OnSlotFull(two);
+		else
+			this->~OnSlotEmpty(two);
+	}
 }
+
+/* Overload of Collect function */
 
 public func Collect(object item, bool ignoreOCF, int pos)
 {
@@ -199,7 +201,11 @@ public func Collect(object item, bool ignoreOCF, int pos)
 	pos = BoundBy(pos,0,MaxContentsCount()-1);
 	
 	disableautosort = true;
-	// collect but do not sort in
+	// collect but do not sort in_
+	// Collection2 will be called which attempts to automatically sort in
+	// the collected item into the next free inventory slot. Since 'pos'
+	// is given as a parameter, we don't want that to happen and sort it
+	// in manually afterwards
 	var success = _inherited(item);
 	disableautosort = false;
 	if (success)
@@ -226,12 +232,17 @@ global func ShiftContents()
 protected func Construction()
 {
 	menu = nil;
+
+	// inventory variables
 	selected = 0;
-	selected2 = Min(2,MaxContentsCount()-1);
+	selected2 = Min(1,MaxContentsCount()-1);
 	indexed_inventory = 0;
+	inventory = CreateArray();
+
+	// using variables
 	alt = false;
 	using = nil;
-	inventory = CreateArray();
+
 	return _inherited(...);
 }
 
@@ -239,6 +250,7 @@ protected func Collection2(object obj)
 {
 	var sel;
 
+	// See Collect()
 	if (disableautosort) return _inherited(obj,...);
 	
 	var success = false;
@@ -265,6 +277,7 @@ protected func Collection2(object obj)
 			}
 		}
 	}
+	// callbacks
 	if (success)
 		this->~OnSlotFull(sel);
 	
@@ -276,6 +289,8 @@ protected func Collection2(object obj)
 
 protected func Ejection(object obj)
 {
+	// if an object leaves this object
+	
 	// find obj in array and delete (cancel using too)
 	var i = 0;
 	var success = false;
@@ -292,16 +307,18 @@ protected func Ejection(object obj)
 	}
 	if (using == obj) CancelUse();
 
+	// callbacks
 	if (success) this->~OnSlotEmpty(i);
 	
 	if (i == selected || i == selected2)
 		obj->~Deselection(this,i == selected2);
 	
-	// we have over-weight? Put the next unindexed
-	// object inside that slot
+	// we have over-weight? Put the next unindexed object inside that slot
+	// this happens if the clonk is stuffed full with items he can not
+	// carry via Enter, CreateContents etc.
 	if (ContentsCount() > indexed_inventory && !inventory[i])
 	{
-		for(var c=0; c<ContentsCount();++c)
+		for(var c = 0; c < ContentsCount(); ++c)
 		{
 			if (GetItemPos(Contents(c)) == nil)
 			{
@@ -324,6 +341,7 @@ protected func Ejection(object obj)
 
 protected func RejectCollect(id objid, object obj)
 {
+	// try to stuff obj into an object with an extra slot
 	for(var i=0; Contents(i); ++i)
 		if (Contents(i)->~HasExtraSlot())
 			if (!(Contents(i)->Contents(0)))
@@ -340,6 +358,13 @@ protected func RejectCollect(id objid, object obj)
 
 	// check max contents
 	if (ContentsCount() >= MaxContentsCount()) return true;
+
+	// check if the two first slots are full. If the overloaded
+	// Collect() is called, this check will be skipped
+	if (!disableautosort)
+		if (GetItem(0) && GetItem(1))
+			return true;
+	
 	return _inherited(objid,obj,...);
 }
 
@@ -354,6 +379,14 @@ protected func Departure()        { CancelUse(); return _inherited(...); }
 // The same for vehicles
 protected func AttachTargetLost() { CancelUse(); return _inherited(...); }
 protected func GrabLost()         { CancelUse(); return _inherited(...); }
+
+// ...aaand the same for when the clonk is deselected
+protected func CrewSelection(bool unselect)
+{
+	if (unselect) CancelUse();
+	return _inherited(unselect,...);
+}
+
 // TODO: what is missing here is a callback for when the clonk StarTs a attach or push
 // action.
 // So if a clonk e.g. uses a tool and still while using it (holding down the mouse button)
@@ -363,12 +396,14 @@ protected func GrabLost()         { CancelUse(); return _inherited(...); }
 // is put into a grabbing/attached action via Script.
 
 
-// ...aaand the same for when the clonk is deselected
-protected func CrewSelection(bool unselect)
-{
-	if (unselect) CancelUse();
-	return _inherited(unselect,...);
-}
+
+/* +++++++++++++++++++++++++++ Clonk Control +++++++++++++++++++++++++++ */
+
+local using;
+local alt;
+local mlastx, mlasty;
+local virtual_cursor;
+local noholdingcallbacks;
 
 /* Main control function */
 public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool repeat, bool release)
@@ -377,7 +412,36 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	
 	//Log(Format("%d, %d, %s, strength: %d, repeat: %v, release: %v",  x,y,GetPlayerControlName(ctrl), strength, repeat, release),this);
 	
-	// aiming with mouse
+	if (ctrl == CON_Backpack)
+	{
+		if (menu)
+		{
+			menu->Close();
+		}
+		else if(MaxContentsCount() > 2)
+		{
+			menu = CreateRingMenu(nil,0,0,this);
+			for(var i = 2; i < MaxContentsCount(); ++i)
+			{
+				var item = GetItem(i);
+				var item_id = nil;
+				if (item) item_id = item->GetID();
+				menu->AddItem(item_id,nil,i);
+			}
+			menu->Show();
+		}
+		return true;
+	}
+	
+	/* aiming with mouse:
+	   The CON_Aim control is transformed into a use command. Con_Use if
+	   repeated does not bear the updated x,y coordinates, that's why this
+	   other control needs to be issued and transformed. CON_Aim is a
+	   control which is issued on mouse move but disabled when not aiming
+	   or when HoldingEnabled() of the used item does not return true.
+	   For the rest of the control code, it looks like the x,y coordinates
+	   came from CON_Use.
+	  */
 	if (using && ctrl == CON_Aim)
 	{
 		if (alt) ctrl = CON_UseAlt;
@@ -386,26 +450,32 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		repeat = true;
 		release = false;
 	}
-	// Any control resets a previously given command
+	// controls except a few reset a previously given command
 	else SetCommand("None");
 	
-	// aiming with analog pad or keys
-	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight)
+	/* aiming with analog pad or keys:
+	   This works completely different. There are CON_AimAxis* and CON_Aim*,
+	   both work about the same. A virtual cursor is created which moves in a
+	   circle around the clonk and is controlled via these CON_Aim* functions.
+	   CON_Aim* is normally on the same buttons as the movement and has a
+	   higher priority, thus is called first. The aim is always done, even if
+	   the clonk is not aiming. However this returns only true (=handled) if
+	   the clonk is really aiming. So if the clonk is not aiming, the virtual
+	   cursor aims into the direction in which the clonk is running and e.g.
+	   CON_Left is still called afterwards. So if the clonk finally starts to
+	   aim, the virtual cursor already aims into the direction in which he ran
+	*/
+	if (ctrl == CON_AimAxisUp || ctrl == CON_AimAxisDown || ctrl == CON_AimAxisLeft || ctrl == CON_AimAxisRight
+	 || ctrl == CON_AimUp     || ctrl == CON_AimDown     || ctrl == CON_AimLeft     || ctrl == CON_AimRight)
 	{
 		var success = VirtualCursor()->Aim(ctrl,this,strength,repeat,release);
-		// in any case, AimAxis* is called but it is only successful if the virtual cursor is aiming
+		// in any case, CON_Aim* is called but it is only successful if the virtual cursor is aiming
 		return success && VirtualCursor()->IsAiming();
 	}
-	else if (VirtualCursorAiming())
-	{
-		if (ctrl == CON_AimUp || ctrl == CON_AimDown || ctrl == CON_AimLeft || ctrl == CON_AimRight)
-		{
-			if (!(VirtualCursor()->IsAiming())) return false;
-			return VirtualCursor()->Aim(ctrl,this,strength,repeat,release);
-		}
-	}
-
-	// save last mouse position
+	
+	// save last mouse position:
+	// if the using has to be canceled, no information about the current x,y
+	// is available. Thus, the last x,y position needs to be saved
 	if (ctrl == CON_Use || ctrl == CON_UseAlt)
 	{
 		mlastx = x;
@@ -425,12 +495,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	if (ctrl == CON_Hotkey8) hot = 8;
 	if (ctrl == CON_Hotkey9) hot = 9;
 	
-	var mnu = this->~GetMenu();
-	
+	// if a menu is available, the control is forwarded to the menu
 	if (hot > 0)
 	{
-		if (mnu) mnu->~SelectHotkey(hot-1);
-		return this->~ControlHotkey(hot-1);
+		if (this->~GetMenu())
+			this->GetMenu()->~SelectHotkey(hot-1);
+		else
+			this->~ControlHotkey(hot-1);
+		return true;
 	}
 	
 	var proc = GetProcedure();
@@ -466,11 +538,14 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		// control to horse or something
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", vehicle))
 			return true;
+		// only if the horse does handle the control, it is not forwarded
+		// to the items in the clonk
 	}
 	// out of convencience we call Control2Script, even though it handles
 	// left, right, up and down, too. We don't want that, so this is why we
 	// check that ctrl is Use.
-	// Release commands are always forwarded even if contents is 0, in case we need to cancel use of an object that left inventory
+	// Release commands are always forwarded even if contents is 0, in case we
+	// need to cancel use of an object that left inventory
 	if ((contents || (release && using)) && (ctrl == CON_Use || ctrl == CON_UseDelayed))
 	{
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents))
@@ -481,16 +556,11 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		if (Control2Script(ctrl, x, y, strength, repeat, release, "Control", contents2))
 			return true;
 	}
-	/*
-	if (!vehicle && !house)
-	{
-		if (ctrl == CON_Jump) if (this->~ControlJump(this)) return true;
-	}*/
 	
 	// everything down from here:
 	// standard controls that are called if not overloaded via script
 	
-	// Movement controls
+	// Movement controls (defined in PlayerControl.c, partly overloaded here)
 	if (ctrl == CON_Left || ctrl == CON_Right || ctrl == CON_Up || ctrl == CON_Down || ctrl == CON_Jump)
 		return ObjectControlMovement(plr, ctrl, strength, release);
 
@@ -503,6 +573,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 		return ObjectControlEntrance(plr,ctrl);
 
 	// Inventory control
+	// TODO: probably not used anymore
 	var inv_control = true;
 	if (ctrl == CON_NextItem)              { ShiftSelectedItem(+1); }
 	else if (ctrl == CON_PreviousItem)     { ShiftSelectedItem(-1); }
@@ -590,15 +661,19 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 
 public func ObjectControlMovement(int plr, int ctrl, int strength, bool release)
 {
-	var result = inherited(plr,ctrl,strength,release);
+	// from PlayerControl.c
+	var result = inherited(plr,ctrl,strength,release,...);
 
+	// do the following only if strength >= CON_Gamepad_Deadzone
 	if(!release)
 		if(strength != nil && strength < CON_Gamepad_Deadzone)
 			return result;
 
+	
 	virtual_cursor = FindObject(Find_ID(GUI_Crosshair),Find_Owner(GetOwner()));
 	if(!virtual_cursor) return result;
 
+	// change direction of virtual_cursor
 	if(!release)
 		virtual_cursor->Direction(ctrl);
 
@@ -609,11 +684,13 @@ public func ObjectCommand(string command, object target, int tx, int ty, object 
 {
 	// special control for throw and jump
 	// but only with controls, not with general commands
-	if (command == "Throw") ControlThrow(target,tx,ty);
-	else if (command == "Jump") ControlJump();
+	if (command == "Throw") this->~ControlThrow(target,tx,ty);
+	else if (command == "Jump") this->~ControlJump();
 	// else standard command
 	else SetCommand(command,target,tx,ty,target2);
 }
+
+/* ++++++++++++++++++++++++ Use Controls ++++++++++++++++++++++++ */
 
 public func CancelUse()
 {
@@ -623,6 +700,7 @@ public func CancelUse()
 	if (Contained() == using)
 		control = "Contained";
 	
+	// use the saved x,y coordinates for canceling
 	CancelUseControl(control, mlastx, mlasty, using);
 }
 
@@ -783,27 +861,33 @@ private func StopUseDelayedControl(control, object obj)
 	return handled;
 }
 
+/* Control to menu */
+
 private func Control2Menu(int ctrl, int x, int y, int strength, bool repeat, bool release)
 {
+
+	// determine angle by control type
 	var angle;
 	if (PlayerHasVirtualCursor(GetOwner()))
 		angle = Angle(0,0,mlastx,mlasty);
 	else
 		angle = Angle(0,0,x,y);
-		
+	
+	// update angle for visual effect on the menu
 	if (repeat)
 	{	
 		if (ctrl == CON_Use || ctrl == CON_UseDelayed
 		 || ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
 			this->GetMenu()->~UpdateCursor(angle);
 	}
+	// click on menu
 	if (release)
 	{
 		// select
 		if (ctrl == CON_Use || ctrl == CON_UseDelayed)
 			this->GetMenu()->Select(angle, false);
 		if (ctrl == CON_UseAlt || ctrl == CON_UseAltDelayed)
-			this->GetMenu()->Select(angle, false);	
+			this->GetMenu()->Select(angle, true);
 	}
 	
 	return true;
@@ -854,9 +938,9 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	{
 		if (release)
 		{
-		  // leftover use release
-		  CancelUse();
-		  return true;
+			// leftover use release
+			CancelUse();
+			return true;
 		}
 		else if (repeat && !noholdingcallbacks)
 		{
@@ -893,7 +977,7 @@ private func Control2Script(int ctrl, int x, int y, int strength, bool repeat, b
 	return false;
 }
 
-// returns true if the clonk is able to enter a building (actionwise)
+// returns true if the clonk is able to enter a building (procedurewise)
 public func CanEnter()
 {
 	var proc = GetProcedure();
@@ -1034,6 +1118,9 @@ private func ShiftVehicle(int plr, bool back)
 	return true;
 } 
 
+/* Virtual cursor stuff */
+
+// get virtual cursor, if noone is there, create it
 private func VirtualCursor()
 {
 	if (!virtual_cursor)
@@ -1048,12 +1135,14 @@ private func VirtualCursor()
 	return virtual_cursor;
 }
 
+// virtual cursor is visible
 private func VirtualCursorAiming()
 {
 	if (!virtual_cursor) return false;
 	return virtual_cursor->IsAiming();
 }
 
+// store pos of virtual cursor into mlastx, mlasty
 public func UpdateVirtualCursorPos()
 {
 	mlastx = VirtualCursor()->GetX()-GetX();
@@ -1080,6 +1169,7 @@ public func TriggerHoldingControl()
 
 }
 
+/* +++++++++++++++++++++++ Menu control +++++++++++++++++++++++ */
 
 func HasMenuControl()
 {
@@ -1135,6 +1225,20 @@ func ReinitializeControls()
 			virtual_cursor->RemoveObject();
 	}
 }
+
+/* Backpack control */
+
+func Selected(object mnu, object mnu_item, bool alt)
+{
+	var backpack_index = mnu_item->GetExtraData();
+	var hands_index = 0;
+	if (alt) hands_index = 1;
+	// swap index with backpack index
+	Switch2Items(hands_index, backpack_index);
+	return true;
+}
+
+/* +++++++++++++++  Throwing, jumping +++++++++++++++ */
 
 // Throwing
 private func DoThrow(object obj, int angle)

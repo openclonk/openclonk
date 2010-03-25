@@ -82,22 +82,20 @@ public func AddItem(id new_item, int amount, extra)
 //selects by angle alt=alternative selection
 public func Select(int angle, bool alt)
 {
-	 	var item_count=GetLength(menu_icons); 
-		if(!item_count) item_count = 1;
-        var segment=360/item_count;
-        var dvar=0;
-        
-        for(var i=0; i<=item_count ; i++)
-        { 
-        		if(i==item_count) var miss=360-(segment*item_count);
-                if(angle>=(segment*i) && angle<=((segment*(i+1)+miss))) dvar=i+1;
-        }    
-		if(dvar==item_count+1) dvar=item_count;
-
+	var item_count=GetLength(menu_icons); 
+	if(!item_count) item_count = 1;
+	var segment=360/item_count;
+	var dvar=0;
+    
+	for(var i=0; i<=item_count ; i++)
+	{ 
+		if(i==item_count) var miss=360-(segment*item_count);
+		if(angle>=(segment*i) && angle<=((segment*(i+1)+miss))) dvar=i+1;
+	}    
+	if(dvar==item_count+1) dvar=item_count;
 
 	if(command_object->Selected(this,menu_icons[dvar-1],alt)) Close();
-	return 1;
-	
+	return 1;	
 }
 
 
@@ -150,10 +148,14 @@ public func Hide() {
 //closes (removes) the menu
 func Close()
 {
- 	for(var i=0; i<GetLength(menu_icons); i++) if(menu_icons[i]) menu_icons[i]->RemoveObject();
+ 	for(var i=0; i<GetLength(menu_icons); i++)
+		if(menu_icons[i])
+			menu_icons[i]->RemoveObject();
+			
 	if(menu_object)
 		menu_object->SetMenu(nil);
-  	RemoveObject(); 
+
+	RemoveObject(); 
 }
 
 

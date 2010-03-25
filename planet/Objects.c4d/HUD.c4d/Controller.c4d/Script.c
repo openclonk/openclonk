@@ -133,7 +133,7 @@ public func OnCrewSelection(object clonk, bool deselect)
 		// fill actionbar
 		// inventory
 		var i;
-		for(i = 0; i < clonk->MaxContentsCount(); ++i)
+		for(i = 0; i < Min(2,clonk->MaxContentsCount()); ++i)
 		{
 			ActionButton(clonk,i,clonk->GetItem(i),ACTIONTYPE_INVENTORY);
 		}		

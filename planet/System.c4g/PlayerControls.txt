@@ -28,6 +28,7 @@
 	# ObjectMenuDown ObjectMenuUp ObjectMenuLeft ObjectMenuRight
 	# PlayerMenu 
 	#
+	# Backpack
 	#
 	# with Mouse
 	# ---------------
@@ -228,6 +229,11 @@
 	GUIName=Use 2
 	GUIDesc=Use secondary selected or controlled item
 	Hold=1
+	
+	[ControlDef]
+	Identifier=Backpack
+	GUIName=Backpack
+	GUIDesc=Open/close backpack
 	
 	[ControlDef]
 	Identifier=Grab
@@ -537,6 +543,7 @@
 	#
 	# Use, Throw						Left mouse button
 	# Drop								S+Left mouse button
+	# Backpack							Q
 	#
 	# UseAlt, ThrowAlt					Right mouse button
 	# DropAlt							S+Right mouse button
@@ -545,8 +552,8 @@
 	# Grab, Exit, Enter					Space
 	#
 	# PlayerHotkey0-9					X+(0-9)
-	# NextCrew							E
-	# PreviousCrew						Q
+	# NextCrew							T
+	# PreviousCrew						R
 	# 
 	# ObjectMenuOK, MenuOK				Return
 	# ObjectMenuCancel, MenuCancel		Backspace
@@ -564,6 +571,12 @@
 		[Assignment]
 		Key=GameMouse1Move
 		Control=Aim
+	
+		# Backpack
+		
+		[Assignment]
+		Key=Q
+		Control=Backpack
 	
 		# Menu
 
@@ -775,11 +788,11 @@
 		# Crew
 		
 		[Assignment]
-		Key=Q
+		Key=R
 		Control=PreviousCrew
 		
 		[Assignment]
-		Key=E
+		Key=T
 		Control=NextCrew
 		
 		# Usage, Throwing, Dropping
@@ -857,7 +870,13 @@
 		[Assignment]
 		Key=GameMouse1Move
 		Control=Aim
-	
+
+		# Backpack
+
+		[Assignment]
+		Key=Apostrophe
+		Control=Backpack
+		
 		# Menu
 
 		[Assignment]
@@ -1068,11 +1087,11 @@
 		# Crew
 		
 		[Assignment]
-		Key=Apostrophe
+		Key=P
 		Control=PreviousCrew
 		
 		[Assignment]
-		Key=Period
+		Key=Y
 		Control=NextCrew
 		
 		# Usage, Throwing, Dropping
@@ -1151,6 +1170,8 @@
 	# ObjectMenuLeft, MenuDown,
 	# AimDown, Down						Joy1Down
 	#
+	# Backpack							Joy1E
+	#
 	# Jump								Joy1C
 	#
 	# Use, Throw						Joy1A
@@ -1173,6 +1194,12 @@
 	Keyboard=0
 	Mouse=0
 	Gamepad=1
+	
+		# Backpack
+
+		[Assignment]
+		Key=Joy1E
+		Control=Backpack
 	
 		# Menu
 
@@ -1408,6 +1435,12 @@
 	Keyboard=0
 	Mouse=0
 	Gamepad=1
+
+		# Backpack
+	
+		[Assignment]
+		Key=Joy1E
+		Control=Backpack
 	
 		# Menu
 
