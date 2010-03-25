@@ -1149,7 +1149,7 @@ private func DoThrow(object obj, int angle)
   if (iYDir > 0) iYDir = iYDir * 8/10;
   
   // add own velocity
-  iXDir += GetXDir(1000);
+  iXDir += GetXDir(1000)/2;
   iYDir += GetYDir(1000)/2;
 
   // throw
@@ -1167,35 +1167,7 @@ public func ControlThrow(object target, int x, int y)
 	if (!x && !y) return false;
 	if (!target) return false;
 	
-	var throwAngle = Angle(0,0,x,y);
-	
-	// walking (later with animation: flight, scale, hangle?) and hands free
-	if ( (GetProcedure() == "WALK" || GetAction() == "Jump" || GetAction() == "Dive")
-		&& this->~HasHandAction())
-	{
-		if (throwAngle < 180) SetDir(DIR_Right);
-		else SetDir(DIR_Left);
-		//SetAction("Throw");
-		this->~SetHandAction(1); // Set hands ocupied
-		var iThrowTime = 16;
-		PlayAnimation("ThrowArms", 10, Anim_Linear(0, 0, GetAnimationLength("ThrowArms"), iThrowTime), Anim_Const(1000));
-		ScheduleCall(this, "DoThrow", iThrowTime*8/15, 0, target,throwAngle);
-		ScheduleCall(this, "ThrowEnd", iThrowTime);
-		return true;
-	}
-	// riding
-	if (GetProcedure() == "ATTACH")
-	{
-		//SetAction("RideThrow");
-		return DoThrow(target,throwAngle);
-	}
 	return false;
-}
-
-public func ThrowEnd()
-{
-	StopAnimation(GetRootAnimation(10));
-	this->~SetHandAction(0);
 }
 
 public func ControlJump()
