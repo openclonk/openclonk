@@ -423,8 +423,15 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 			uint32_t dwOldBlitMode = cobj->BlitMode;
 			cobj->ColorMod = 0xffffffff;
 			cobj->BlitMode = C4GFXBLIT_CLRSFC_MOD2 | C4GFXBLIT_ADDITIVE;
+			ZoomData zd;
+			if (~cobj->Category & C4D_Foreground)
+			{
+				lpDDraw->GetZoom(&zd);
+				lpDDraw->SetZoom(cgo.X, cgo.Y, Zoom);
+			}
 			cobj->Draw(cgo,-1);
 			cobj->DrawTopFace(cgo, -1);
+			if (~cobj->Category & C4D_Foreground) lpDDraw->SetZoom(zd);
 			cobj->ColorMod = dwOldMod;
 			cobj->BlitMode = dwOldBlitMode;
 			}
@@ -610,7 +617,7 @@ void C4EditCursor::ApplyToolFill()
 
 bool C4EditCursor::DoContextMenu()
 	{
-	bool fObjectSelected = Selection.ObjectCount();
+	bool fObjectSelected = !!Selection.ObjectCount();
 #ifdef _WIN32
 	POINT point; GetCursorPos(&point);
 	HMENU hContext = GetSubMenu(hMenu,0);

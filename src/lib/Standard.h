@@ -68,7 +68,7 @@ bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
 #include <cctype>
 inline char CharCapital(char cChar) { return std::toupper(cChar); }
 bool IsIdentifier(char cChar);
-inline bool IsWhiteSpace(char cChar) { return !!std::isspace(cChar); }
+inline bool IsWhiteSpace(char cChar) { return !!std::isspace((unsigned char)cChar); }
 
 inline int SLen(const char *sptr) { return sptr?std::strlen(sptr):0; }
 inline int SLenUntil(const char *szStr, char cUntil)
