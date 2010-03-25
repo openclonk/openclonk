@@ -46,6 +46,7 @@ class C4FullScreen: public CStdWindow
 		bool MenuKeyControl(BYTE byCom); // direct keyboard callback
 		// User requests close
 		virtual void Close();
+		virtual void Clear();
 		virtual void CharIn(const char * c);
 #ifdef USE_X11
 		virtual void HandleMessage (XEvent &e);

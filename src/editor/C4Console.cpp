@@ -1190,6 +1190,8 @@ void C4Console::Clear()
 	ClearViewportMenu();
 	ClearPlayerMenu();
 	ClearNetMenu();
+	if(pSurface) delete pSurface;
+	pSurface = 0;
 #ifndef _WIN32
 	Application.Quit();
 #endif

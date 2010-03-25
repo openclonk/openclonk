@@ -413,6 +413,13 @@ void C4FullScreen::Close()
 		Application.Quit();
 	}
 
+void C4FullScreen::Clear()
+	{
+	if (pSurface) delete pSurface;
+	pSurface = 0;
+	CStdWindow::Clear();
+	}
+
 void C4FullScreen::Execute()
 	{
 	// Execute menu
