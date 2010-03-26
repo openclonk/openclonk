@@ -1193,8 +1193,9 @@ func SetMenu(object m)
 	menu = m;
 	if (menu)
 	{	
-		// we need to be notified when the ringmenu is gone
-		
+		// stop clonk
+		SetComDir(COMD_Stop);
+	
 		if (PlayerHasVirtualCursor(GetOwner()))
 			VirtualCursor()->StartAim(this);
 		else
