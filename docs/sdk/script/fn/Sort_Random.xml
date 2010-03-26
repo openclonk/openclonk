@@ -10,6 +10,7 @@
 			<rtype>array</rtype>
 		</syntax>
 		<desc>Sortierkriterium: Sortiert die gefundenen Objekte zufällig.</desc>
+		<remark>Sort_Random sollte nicht in Verbindung mit <funclink>FindObject</funclink> verwendet werden, um ein zufälliges, passendes Objekt zu ermitteln. Stattdessen kann zum Beispiel das erste Element einer <funclink>FindObjects</funclink>-Suche mit SortRandom-Parameter verwendet werden.</remark>
 		<remark>Für weitere Informationen und Beispiele zur Benutzung dieser Funktion sehe <funclink>FindObjects</funclink>.</remark>
 		<related>
 			<funclink>FindObjects</funclink>
