@@ -1,0 +1,10 @@
+Name=Micromelee
+
+MsgKill=%s was killed by %s, and has
+MsgSelfKill=%s died, and has
+MsgTeamKill=%s was killed by its teammate %s, and has
+
+MsgRelaunch0=no relaunches left.
+MsgRelaunch1=one relaunch left.
+MsgRelaunchX=%d relaunches left.
+MsgFail=lost.

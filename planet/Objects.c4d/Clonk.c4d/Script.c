@@ -292,36 +292,35 @@ protected func Put()
   Sound("Grab");
 }
 
-protected func Death(int iKilledBy)
+protected func Death(int killed_by)
 {
-  // Info-Broadcasts f�r sterbende Clonks
-  GameCallEx("OnClonkDeath", this, iKilledBy);
+	// Info-broadcasts for dying clonks.
+	GameCallEx("OnClonkDeath", this, killed_by);
+	
+	// The broadcast could have revived the clonk.
+	if (GetAlive()) 
+		return;
   
-  // Der Broadcast k�nnte seltsame Dinge gemacht haben: Clonk ist noch tot?
-  if (GetAlive()) return;
-  
-  Sound("Die");
-  DeathAnnounce();
-  // Letztes Mannschaftsmitglied tot: Script benachrichtigen
-  if (!GetCrew(GetOwner()))
-    GameCallEx("RelaunchPlayer",GetOwner());
-  return;
+	Sound("Die");
+	DeathAnnounce();
+	// If the last crewmember died, do another broadcast.
+	if (!GetCrew(GetOwner()))
+    	GameCallEx("RelaunchPlayer", GetOwner(), killed_by);
+	return;
 }
 
 protected func Destruction()
 {
-  // Clonk war noch nicht tot: Jetzt ist er es
-  if (GetAlive())
-    GameCallEx("OnClonkDeath", this, GetKiller());
-  // Dies ist das letztes Mannschaftsmitglied: Script benachrichtigen
-  if (GetCrew(GetOwner()) == this)
-    if (GetCrewCount(GetOwner()) == 1)
-      //Nur wenn der Spieler noch lebt und nicht gerade eleminiert wird
-      if (GetPlayerName(GetOwner()))
-        {
-        GameCallEx("RelaunchPlayer",GetOwner());
-        }
-  return;
+	// If the clonk wasn't dead yet, he will be now. 
+	if (GetAlive())
+    	GameCallEx("OnClonkDeath", this, GetKiller());
+  	// If this is the last crewmember, do broadcast.
+  	if (GetCrew(GetOwner()) == this)
+    	if (GetCrewCount(GetOwner()) == 1)
+      		// Only if the player is still alive and not yet elimnated.
+    		if (GetPlayerName(GetOwner()))
+        		GameCallEx("RelaunchPlayer", GetOwner(), GetKiller());
+	return;
 }
 
 protected func DeepBreath()
