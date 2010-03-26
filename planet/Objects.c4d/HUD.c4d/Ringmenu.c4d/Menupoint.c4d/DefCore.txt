@@ -6,3 +6,4 @@ Width=32
 Height=32
 Offset=-16,-16
 StretchGrowth=1
+Rotate=1;

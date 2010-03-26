@@ -4,7 +4,7 @@
 		Overlays:
 		0=Grey Circle
 		1=Icon of the Object
-		5=datakey
+		5=hotkey
 		10,11,12: Amount 
 */
 
@@ -13,6 +13,8 @@ local myid;
 local amnt;
 local data;
 local hot;
+local size;
+
 
 protected func Construction()
 {
@@ -20,6 +22,16 @@ protected func Construction()
 	// visibility
 	this["Visibility"] = VIS_Owner;
 }
+
+public func SetSize(int s)
+{
+	SetObjDrawTransform(s,0,0,0,s,0,0);
+	SetObjDrawTransform(s,0,0,0,s,0,1);
+	size=s;
+}
+
+public func ResetSize() { SetSize(1000); }
+
 
 public func SetSymbol(id obj)
 {
@@ -44,6 +56,8 @@ public func GetAmount() 	{ return amnt; 	}
 public func GetExtraData()	{ return data;	}
 public func GetSymbol()		{ return myid;	}
 public func GetHotkey()		{ return hot;	}
+public func GetSize()		{ return size; 	}
+
 public func SetHotkey(int hotkey)
 {
 if(hotkey > 10 || hotkey <= 0)
