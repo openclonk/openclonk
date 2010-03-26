@@ -9,7 +9,7 @@ local command_object; //at which selectes will be sent
 local menu_icons;	//array for the icons
 local menu_object;	//the clonk which the menu is for
 local shown;	//am i visible?
-local selector;		 //shows you what is selected
+
 
 func Construction()
 {
@@ -41,8 +41,7 @@ public func SetMenu(object menuobject, object commandobject)
 		menu_object=menuobject;	
 	command_object=commandobject;
 	menuobject->~SetMenu(this);
-	selector=CreateObject(GUI_RingMenu_Icon,0,0,this->GetOwner());
-	selector["Visibility"] = VIS_None;
+
 	
 }	
 
@@ -123,49 +122,55 @@ func Show()
         
 		var x=GetX();
 		var y=GetY();
-		var bigger=false;
-		if(GetLength(menu_icons)<=8) bigger=true;
+		var stat=false;
+		if(item_count<=10) stat=true;
         for(var i=0; i<(GetLength(menu_icons)); i++) 
         {	
         		if(menu_icons[i])
         		{
         			var angle=(i*segment)+(segment/2);
         			if(GetLength(menu_icons)==1) angle=90;
-        			menu_icons[i]->SetPosition(x+Sin(angle,Max(60,30+(GetLength(menu_icons)*3))),y-Cos(angle,Max(60,30+(GetLength(menu_icons)*3))));
+        			menu_icons[i]->SetPosition(x+Sin(angle,100),y-Cos(angle,100));
         			menu_icons[i]["Visibility"] = VIS_Owner;
-        			if(bigger) menu_icons[i]->SetSize((1500/GetLength(menu_icons))+800);
+        			if(!stat) 	menu_icons[i]->SetSize(((620000)/item_count)/32);
+        			else 		menu_icons[i]->SetSize(1950);
         		}
         }
  		this["Visibility"] = VIS_Owner;
- 		selector["Visibility"] = VIS_Owner;
+
  		shown=true;
 }
 
 public func UpdateCursor(int angle)
-{
-	var x=GetX();
-	var y=GetY();
-	selector["Visibility"] = VIS_Owner;
-	var item_count=GetLength(menu_icons);
+{	
+	var item_count=GetLength(menu_icons); 
+	if(!item_count) item_count = 1;
 	var segment=360/item_count;
-	var dvar;
-	
+	var dvar=0;
+    var stat=false;
+	if(item_count<=10) stat=true;
 	for(var i=0; i<=item_count ; i++)
 	{ 
+		if(menu_icons[i])
+        		{
+        			if(!stat) 	menu_icons[i]->SetSize(((600000)/item_count)/32);
+        			else 		menu_icons[i]->SetSize(1950);
+        		}
 		if(i==item_count) var miss=360-(segment*item_count);
 		if(angle>=(segment*i) && angle<=((segment*(i+1)+miss))) dvar=i+1;
 	}    
 	if(dvar==item_count+1) dvar=item_count;
-	
-	selector->SetPosition(x+Sin(dvar*segment + segment/2,Max(60,30+(GetLength(menu_icons)*3))),y-Cos(dvar*segment + segment/2,Max(60,30+(GetLength(menu_icons)*3))));
-	if(GetLength(menu_icons)<=8) selector->SetSize(((1500/GetLength(menu_icons))+800)-333);
+	if(menu_icons[dvar-1])
+	{
+	if(!stat)	menu_icons[dvar-1]->SetSize(((((600000)/item_count)/32)*16) /10);
+    else 		menu_icons[dvar-1]->SetSize(1950*14 /10);
+   	}
 
 }
 
 public func Hide() {
         for(var i=0; i<GetLength(menu_icons); i++)if(menu_icons[i]) menu_icons[i]["Visibility"] = VIS_None;
         this["Visibility"] = VIS_None;
-        selector["Visibility"] = VIS_None;
         shown=false;
 }
 
@@ -179,8 +184,6 @@ func Close()
 	if(menu_object)
 		menu_object->SetMenu(nil);
 
-	if(selector)
-		selector->RemoveObject();
 	RemoveObject(); 
 }
 
