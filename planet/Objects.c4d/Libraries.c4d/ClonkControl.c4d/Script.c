@@ -36,8 +36,6 @@
 	or directly)
 */
 
-local menu;
-
 /* ++++++++++++++++++++++++ Clonk Inventory Control ++++++++++++++++++++++++ */
 
 local selected, selected2;
@@ -448,7 +446,7 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 	   For the rest of the control code, it looks like the x,y coordinates
 	   came from CON_Use.
 	  */
-	if (using && ctrl == CON_Aim)
+	if ((using || menu) && ctrl == CON_Aim)
 	{
 		if (alt) ctrl = CON_UseAlt;
 		else     ctrl = CON_Use;
@@ -1176,6 +1174,8 @@ public func TriggerHoldingControl()
 }
 
 /* +++++++++++++++++++++++ Menu control +++++++++++++++++++++++ */
+
+local menu;
 
 func HasMenuControl()
 {
