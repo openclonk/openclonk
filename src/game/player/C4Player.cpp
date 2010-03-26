@@ -339,6 +339,9 @@ bool C4Player::Init(int32_t iNumber, int32_t iAtClient, const char *szAtClientNa
 		// Init control method before scenario init, because script callbacks may need to know it!
 		InitControl();
 
+		// defaultdisabled controls
+		Control.Init();
+
 		// Special: Script players may skip scenario initialization altogether, and just desire a single callback to all objects
 		// of a given ID
 		if (!pInfo->IsScenarioInitDesired())

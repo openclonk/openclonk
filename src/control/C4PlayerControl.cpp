@@ -644,6 +644,17 @@ bool  C4PlayerControl::CSync::SetControlDisabled(int32_t iControl, int32_t iVal)
 	return true;
 	}
 
+void C4PlayerControl::CSync::InitDefaults(const C4PlayerControlDefs &ControlDefs)
+{
+	const C4PlayerControlDef *def;
+	int32_t i=0;
+	while (def = ControlDefs.GetControlByIndex(i))
+	{
+		if (def->IsDefaultDisabled()) SetControlDisabled(i, true);
+		++i;
+	}
+}
+
 void C4PlayerControl::CSync::Clear()
 	{
 	ControlDownStates.clear();
@@ -662,10 +673,18 @@ bool C4PlayerControl::CSync::operator ==(const CSync &cmp) const
 	    && ControlDisableStates == cmp.ControlDisableStates;
 	}
 
+void C4PlayerControl::Init()
+{
+	// defaultdisabled controls
+	Sync.InitDefaults(ControlDefs);
+}
+
 void C4PlayerControl::CompileFunc(StdCompiler *pComp)
 	{
 	// compile sync values only
-	pComp->Value(mkNamingAdapt(Sync, "PlayerControl", CSync()));
+	CSync DefaultSync;
+	DefaultSync.InitDefaults(ControlDefs);
+	pComp->Value(mkNamingAdapt(Sync, "PlayerControl", DefaultSync));
 	}
 
 bool C4PlayerControl::ProcessKeyEvent(const C4KeyCodeEx &pressed_key, const C4KeyCodeEx &matched_key, bool fUp, const C4KeyEventData &rKeyExtraData)
