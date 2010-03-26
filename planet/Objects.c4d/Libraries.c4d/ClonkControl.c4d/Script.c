@@ -47,6 +47,7 @@ local inventory;
 
 /* Item limit */
 
+private func HandObjects() { return 2; }
 public func MaxContentsCount() { return 5; }
 
 /* Item select access*/
@@ -173,14 +174,14 @@ public func Switch2Items(int one, int two)
 	else if (two == selected2) if (inventory[two]) inventory[two]->~Selection(this,true);
 	
 	// callbacks: to self, for HUD
-	if (one < 2)
+	if (one < HandObjects())
 	{
 		if (inventory[one])
 			this->~OnSlotFull(one);
 		else
 			this->~OnSlotEmpty(one);
 	}
-	if (two < 2)
+	if (two < HandObjects())
 	{
 		if (inventory[two])
 			this->~OnSlotFull(two);
@@ -211,7 +212,8 @@ public func Collect(object item, bool ignoreOCF, int pos)
 	if (success)
 	{
 		inventory[pos] = item;
-		this->~OnSlotFull(pos);
+		if (pos < HandObjects())
+			this->~OnSlotFull(pos);
 	}
 		
 	return success;
@@ -279,7 +281,8 @@ protected func Collection2(object obj)
 	}
 	// callbacks
 	if (success)
-		this->~OnSlotFull(sel);
+		if (sel < HandObjects())
+			this->~OnSlotFull(sel);
 	
 	if (sel == selected || sel == selected2)
 		obj->~Selection(this,sel == selected2);
@@ -308,7 +311,9 @@ protected func Ejection(object obj)
 	if (using == obj) CancelUse();
 
 	// callbacks
-	if (success) this->~OnSlotEmpty(i);
+	if (success)
+		if (i < HandObjects())
+			this->~OnSlotEmpty(i);
 	
 	if (i == selected || i == selected2)
 		obj->~Deselection(this,i == selected2);
@@ -326,7 +331,8 @@ protected func Ejection(object obj)
 				inventory[i] = Contents(c);
 				indexed_inventory++;
 				
-				this->~OnSlotFull(i);
+				if (i < HandObjects())
+					this->~OnSlotFull(i);
 				
 				if (i == selected || i == selected2)
 					Contents(c)->~Selection(this,i == selected2);
