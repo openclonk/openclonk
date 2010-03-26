@@ -648,7 +648,7 @@ void C4PlayerControl::CSync::InitDefaults(const C4PlayerControlDefs &ControlDefs
 {
 	const C4PlayerControlDef *def;
 	int32_t i=0;
-	while (def = ControlDefs.GetControlByIndex(i))
+	while ((def = ControlDefs.GetControlByIndex(i)))
 	{
 		if (def->IsDefaultDisabled()) SetControlDisabled(i, true);
 		++i;
