@@ -11,12 +11,15 @@ c4group
 .dirstamp
 *.a
 *.c4p
+planet/Records.c4f
 *.lib
-*.vcproj
+*.dll
 stamp-h1
 config.h
 config.log
 config.status
+hgrevision.h
+hgrevision
 Makefile
 C4Include.h.gch
 Makefile.in
@@ -35,6 +38,7 @@ deps/
 planet/Release
 planet/RelWithDebInfo
 planet/Debug
+planet/MinSizeRel
 planet/CMakeFiles
 planet/clonk.dir
 planet/c4group.dir
@@ -45,6 +49,21 @@ planet/cmake_install.cmake
 planet/clonk.sln
 planet/clonk.ilk
 planet/CMakeCache.txt
+Release
+RelWithDebInfo
+MinSizeRel
+Debug
+CMakeFiles
+clonk.dir
+c4group.dir
+ZERO_CHECK.dir
+libeay32.dll
+fmod.dll
+cmake_install.cmake
+clonk.sln
+clonk.ilk
+CMakeCache.txt
+*.vcproj
 
 # Temporary files created by Microsoft Visual Studio
 *.ncb
@@ -56,6 +75,9 @@ planet/CMakeCache.txt
 BuildLog.htm
 *.user
 *.positions
+*.idb
+*.pdb
+*.ilk
 
 # TortoiseHg loves to generate those
 *.orig
@@ -65,7 +87,8 @@ BuildLog.htm
 xcode/build
 *.xcodeproj
 
+
 # Binaries
 planet/Clonk.app
-planet/clonk.exe
+*.exe
 

@@ -66,6 +66,7 @@ class C4PlayerControlDef
 		bool IsGlobal() const { return fGlobal; }
 		int32_t GetRepeatDelay() const { return iRepeatDelay; }
 		int32_t GetInitialRepeatDelay() const { return iInitialRepeatDelay; }
+		bool IsDefaultDisabled() const { return fDefaultDisabled; }
 
 		//C4PlayerControlDef &operator =(const C4PlayerControlDef &src);
 		bool operator ==(const C4PlayerControlDef &cmp) const;
@@ -314,6 +315,7 @@ class C4PlayerControl
 			void SetControlDownState(int32_t iControl, const C4KeyEventData &rDownState, int32_t iDownFrame, bool fDownByUser);
 			bool SetControlDisabled(int32_t iControl, int32_t iVal);
 
+			void InitDefaults(const C4PlayerControlDefs &ControlDefs);
 			void Clear();
 			void CompileFunc(StdCompiler *pComp);
 			bool operator ==(const CSync &cmp) const;
@@ -340,6 +342,11 @@ class C4PlayerControl
 		~C4PlayerControl() { Clear(); }
 		void Clear();
 
+		// first-time init call after player join
+		// not called again after control set change/savegame resume
+		// does DefaultDisabled controls
+		void Init();
+
 		void CompileFunc(StdCompiler *pComp);
 
 		void RegisterKeyset(int32_t iPlr, C4PlayerControlAssignmentSet *pKeyset); // register all keys into Game.KeyboardInput creating KeyBindings
@@ -360,6 +367,7 @@ class C4PlayerControl
 		// control enable/disable
 		bool SetControlDisabled(int ctrl, bool is_disabled) { return Sync.SetControlDisabled(ctrl, is_disabled); }
 		bool IsControlDisabled(int ctrl) const { return Sync.IsControlDisabled(ctrl); }
+
 
 	};
 
