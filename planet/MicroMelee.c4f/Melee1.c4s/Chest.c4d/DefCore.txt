@@ -15,4 +15,3 @@ Mass=10
 Grab=2
 GrabPutGet=C4D_GrabGet|C4D_GrabPut
 ContainBlast=1
-
