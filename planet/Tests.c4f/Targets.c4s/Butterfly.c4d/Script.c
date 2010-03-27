@@ -9,6 +9,9 @@
 
 protected func Initialize()
 {
+  // TODO: Fix mesh extents?
+  SetObjDrawTransform(20000,0,0,0,20000,-160000);
+
   SetAction("Fly");
   MoveToTarget();
   return 1;
@@ -128,8 +131,5 @@ Flutter = {
 }, def);
   SetProperty("Name", "Butterfly", def);
 
-  // Set perspective
-  SetProperty("PerspectiveR", 20000, def);
-  SetProperty("PerspectiveTheta", 20, def);
-  SetProperty("PerspectivePhi", 70, def);
+  SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(20,1,0,0),Trans_Rotate(70,0,1,0)), def);
 }

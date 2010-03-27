@@ -3,7 +3,7 @@
 func Initialize()
 {
 	CreateObject(Environment_Grass, 10, 10);
-	Message("@Here is a butterfly!|(ck draw it!)", CreateObject(Butterfly, 10, 10));
+	CreateObject(Butterfly, 10, 10);
 	//CreateObject(PracticeTarget);
 	CreateObject(PracticeTarget,629,165,NO_OWNER);
 	CreateObject(PracticeTarget,332,295,NO_OWNER);
