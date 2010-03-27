@@ -932,7 +932,7 @@ void C4AulScript::AddBCC(C4AulBCCType eType, intptr_t X, const char * SPos)
 	CPos->SPos = SPos;
 	switch (eType)
 		{
-		case AB_STRING: case AB_CALL: case AB_CALLFS:
+		case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN_R: case AB_LOCALN_V:
 			CPos->Par.s->IncRef();
 			break;
 		default:
@@ -948,7 +948,7 @@ void C4AulScript::ClearCode()
 		{
 		switch (Code[i].bccType)
 			{
-			case AB_STRING: case AB_CALL: case AB_CALLFS:
+			case AB_STRING: case AB_CALL: case AB_CALLFS: case AB_LOCALN_R: case AB_LOCALN_V:
 				Code[i].Par.s->DecRef();
 				break;
 			default:
@@ -2320,7 +2320,8 @@ void C4AulParseState::Parse_Expression(int iParentPrio)
 				if(Fn->Owner == &::ScriptEngine)
 					throw new C4AulParseError(this, "using local variable in global function!");
 				// insert variable by id
-				AddBCC(AB_LOCALN_R, a->LocalNamed.GetItemNr(Idtf));
+				C4String * pKey = Strings.RegString(Idtf);
+				AddBCC(AB_LOCALN_R, (intptr_t) pKey);
 				Shift();
 				}
 			// check for global variable (static)

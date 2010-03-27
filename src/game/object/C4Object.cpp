@@ -142,7 +142,6 @@ void C4Object::Default()
 	PhysicalTemporary=false;
 	TemporaryPhysical.Default();
 	MaterialContents=NULL;
-	LocalNamed.Reset();
 	Marker=0;
 	ColorMod=0xffffffff;
 	BlitMode=0;
@@ -235,9 +234,6 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 
 	// Initial OCF
 	SetOCF();
-
-	// local named vars
-	LocalNamed.SetNameList(&Def->Script.LocalNamed);
 
 	// finished initializing
 	Initializing=false;
@@ -1233,7 +1229,6 @@ bool C4Object::ChangeDef(C4ID idNew)
 	SetProperty(Strings.P[P_Prototype], C4VPropList(pDef));
 	id=pDef->id;
 	Def->Count++;
-	LocalNamed.SetNameList(&pDef->Script.LocalNamed);
 	// new def: Needs to be resorted
 	Unsorted=true;
 	// graphics change
@@ -2705,7 +2700,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( Component,												"Component"															));
 	pComp->Value(mkNamingAdapt( Contents,													"Contents"															));
 	pComp->Value(mkNamingAdapt( PlrViewRange,											"PlrViewRange",				0									));
-	pComp->Value(mkNamingAdapt( LocalNamed,												"LocalNamed"														));
 	pComp->Value(mkNamingAdapt( ColorMod,													"ColorMod",						0xffffffffu								));
 	pComp->Value(mkNamingAdapt( BlitMode,													"BlitMode",						0u								));
 	pComp->Value(mkNamingAdapt( CrewDisabled,											"CrewDisabled",				false							));
@@ -2758,8 +2752,6 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 		// add to def count
 		Def->Count++;
 
-		// set local variable names
-		LocalNamed.SetNameList(&Def->Script.LocalNamed);
 
 		// Set action (override running data)
 		/* FIXME 
@@ -2829,9 +2821,6 @@ void C4Object::DenumeratePointers()
 
 	// Post-compile object list
 	Contents.DenumerateRead();
-
-	// Local variable pointers
-	LocalNamed.DenumeratePointers();
 
 	// Commands
 	for (C4Command *pCom=Command; pCom; pCom=pCom->Next)

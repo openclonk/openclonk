@@ -208,16 +208,11 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 				case AB_VARN_V:
 					PushValue(pCurCtx->Vars[pCPos->Par.i]);
 					break;
-
 				case AB_LOCALN_R: case AB_LOCALN_V:
 					if(!pCurCtx->Obj)
 						throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call!");
-					if(pCurCtx->Func->Owner->Def != pCurCtx->Def)
-						throw new C4AulExecError(pCurCtx->Obj, "can't access local variables after ChangeDef!");
-					if (pCPos->bccType == AB_LOCALN_R)
-						PushValueRef(*pCurCtx->Obj->LocalNamed.GetItem(pCPos->Par.i));
-					else
-						PushValue(*pCurCtx->Obj->LocalNamed.GetItem(pCPos->Par.i));
+					PushNullVals(1);
+					pCurCtx->Obj->GetPropertyRef(pCPos->Par.s, pCurVal[0]);
 					break;
 
 				case AB_GLOBALN_R:

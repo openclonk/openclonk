@@ -226,18 +226,6 @@ bool C4PropertyDlg::Update()
 				Output.Append(LoadResStr("IDS_CNS_ACTION"));
 				Output.Append(cobj->GetAction()->GetName());
 				}
-			// Locals
-			int cnt; bool fFirstLocal = true;
-			for (cnt=0; cnt < cobj->LocalNamed.GetAnzItems(); cnt++)
-				{
-				// Header
-				if (fFirstLocal) { Output.Append(LineFeed); Output.Append(LoadResStr("IDS_CNS_LOCALS")); fFirstLocal = false; }
-				Output.Append(LineFeed);
-				// Append name
-				Output.AppendFormat(" %s = ", cobj->LocalNamed.pNames->pNames[cnt]);
-				// write value
-				Output.Append(static_cast<const StdStrBuf &>(cobj->LocalNamed.pData[cnt].GetDataString()));
-				}
 			// Effects
 			for(C4Effect *pEffect = cobj->pEffects; pEffect; pEffect = pEffect->pNext)
 				{

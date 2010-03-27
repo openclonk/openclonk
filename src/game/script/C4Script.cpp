@@ -4024,15 +4024,14 @@ static C4Value FnLocalN(C4AulContext* cthr, C4Value* strName_C4V)
 	if (!cthr->Obj)
 		throw new NeedObjectContext("LocalN");
 
-	const char* strName = FnStringPar(strName_C4V->getStr());
+	C4String * key = strName_C4V->getStr();
+	if(!key) return C4VNull;
 
-	// find variable
-	C4Value* pVarN = cthr->Obj->LocalNamed.GetItem(strName);
+	// get reference on variable
+	C4Value r;
+	cthr->Obj->GetPropertyRef(key, r);
 
-	if(!pVarN) return C4VNull;
-
-	// return reference on variable
-	return pVarN->GetRef();
+	return r;
 }
 
 static C4Value FnGlobalN(C4AulContext* cthr, C4Value* strName_C4V)
