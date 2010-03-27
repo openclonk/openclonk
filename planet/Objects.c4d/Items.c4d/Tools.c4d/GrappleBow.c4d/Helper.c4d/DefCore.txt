@@ -1,0 +1,12 @@
+[DefCore]
+id=GrappleHelp
+Version=4,10,0,0
+Category=C4D_Vehicle
+Width=8
+Height=20
+Offset=-4,-10
+Vertices=7
+VertexX=0,0,0,-2,2,-4,4
+VertexY=2,-7,9,-3,-3,3,3
+VertexFriction=300,300,100,300,300,300,300
+Mass=50

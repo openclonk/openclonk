@@ -1705,6 +1705,21 @@ Build = {
 	NextAction = "Build",
 	InLiquidAction = "Swim",
 },
+HangOnto = {
+	Prototype = Action,
+	Name = "HangOnto",
+	Procedure = DFA_ATTACH,
+	Directions = 2,
+	Length = 1,
+	Delay = 0,
+	X = 128,
+	Y = 120,
+	Wdt = 8,
+	Hgt = 20,
+	//StartCall = "StartRiding",
+	AbortCall = "AbortHangOnto",
+	InLiquidAction = "Swim",
+},
 }, def);
   SetProperty("Name", "Clonk", def);
 
@@ -1714,3 +1729,9 @@ Build = {
 	_inherited(def);
 }
 
+protected func AbortHangOnto()
+{
+	if (GetActionTarget(0)) 
+		GetActionTarget(0)->~HangOntoLost(this);
+	return;
+}

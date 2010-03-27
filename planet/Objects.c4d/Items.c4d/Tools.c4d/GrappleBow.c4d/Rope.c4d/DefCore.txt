@@ -1,0 +1,7 @@
+[DefCore]
+id=GrappleRope
+Version=4,10,0,0
+Category=C4D_StaticBack
+Vertices=2
+Line=C4D_LineRope
+LineIntersect=0

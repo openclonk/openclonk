@@ -28,6 +28,21 @@ protected func Initialize()
 	while(!FindPosInMat(x, y, "Sky", 0, 20 + d, LandscapeWidth(), 40, 20) && d < LandscapeHeight())
 		d += 10;
 	goal->SetFinishpoint(x, y);
+	// Place chests.
+	d = 300; 
+	while (d < LandscapeHeight() - 300)
+	{
+		var i = 0;
+		while (!FindPosInMat(x, y, "Tunnel", 0, d, LandscapeWidth(), 300, 15) && i < 25)
+			i++; // Max 25 attempts.
+		CreateObject(Chest, x, y + 8, NO_OWNER);
+		d += RandomX(250, 300); 
+	}
+	// Fill chests.
+	var content_list = [GrappleBow, DynamiteBox, Ropeladder, Boompack, Loam];
+	for (var chest in FindObjects(Find_ID(Chest)))
+		for (var i = 0; i < 4; i++)
+			chest->CreateContents(content_list[Random(GetLength(content_list))]);
 	// Create Disasters.
 	//CreateObject(Core_Disaster_Earthquake, 0, 0, NO_OWNER)->SetChance(100);
 	// Snow
@@ -59,8 +74,8 @@ protected func FindPosInMat(int &tx, int &ty, string mat, int rx, int ry, int wd
 protected func PlrHasRespawned(int plr, object cp)
 {
 	var clonk = GetCrew(plr);
+	clonk->CreateContents(GrappleBow);
 	clonk->CreateContents(Loam);
-	clonk->CreateContents(JarOfWinds);
 	return;
 }
 
