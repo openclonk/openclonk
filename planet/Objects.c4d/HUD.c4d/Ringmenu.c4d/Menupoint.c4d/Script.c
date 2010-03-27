@@ -71,7 +71,7 @@ if(hotkey > 10 || hotkey <= 0)
 		if(hotkey == 10) num = 0;
 		var name = Format("%d",num);
 		SetGraphics(name,Icon_Number,5,GFXOV_MODE_IngamePicture);
-		SetObjDrawTransform(300,0,13000,0,300,-30000, 5);
+		SetObjDrawTransform(150,0,6500,0,150,-15000, 5);
 		SetClrModulation(RGB(160,0,0),5);
 	}
 }
@@ -89,10 +89,10 @@ public func SetAmount(Amount)
 	var ten = (Amount/10)%10;
 	var hun = (Amount/100)%10;
 	
-	var s = 400;
-	var yoffs = 14000;
-	var xoffs = 22000;
-	var spacing = 14000;
+	var s = 200;
+	var yoffs = 7000;
+	var xoffs = 11000;
+	var spacing = 7000;
 
 	if(hun > 0)
 	{

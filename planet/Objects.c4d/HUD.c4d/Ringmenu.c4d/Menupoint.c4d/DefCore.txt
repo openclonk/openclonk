@@ -2,8 +2,8 @@
 id=GUI_RingMenu_Icon
 Version=4,10,0,0
 Category=C4D_StaticBack
-Width=32
-Height=32
-Offset=-16,-16
+Width=64
+Height=64
+Offset=-32,-32
 StretchGrowth=1
 Rotate=1;

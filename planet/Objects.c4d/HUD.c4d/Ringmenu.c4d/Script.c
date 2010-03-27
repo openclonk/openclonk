@@ -25,7 +25,7 @@ global func CreateRingMenu(id symbol, int x, int y, object commander)
 {
 	if(!(this->GetOCF() & OCF_CrewMember)) return nil;
 	if(!(this->~HasMenuControl())) return nil;
-	var menu=CreateObject(GUI_RingMenu,x,y+16,this->GetOwner());
+	var menu=CreateObject(GUI_RingMenu,x,y+32,this->GetOwner());
 	menu->SetMenu(this,commander);
 	menu->SetMenuIcon(symbol);
 	menu->Hide();
@@ -58,6 +58,8 @@ func SetMenuIcon(id symbol)
 	else
 	{
 		SetGraphics(nil,symbol,1,4);
+		SetObjDrawTransform(750,0,0,0,750,0,1);
+		SetObjDrawTransform(750,0,0,0,750,0,0);
 	}
 }
 
@@ -132,7 +134,7 @@ func Show()
         			if(GetLength(menu_icons)==1) angle=90;
         			menu_icons[i]->SetPosition(x+Sin(angle,100),y-Cos(angle,100));
         			menu_icons[i]["Visibility"] = VIS_Owner;
-        			if(!stat) 	menu_icons[i]->SetSize(((620000)/item_count)/32);
+        			if(!stat) 	menu_icons[i]->SetSize(((620000)/item_count)/64);
         			else 		menu_icons[i]->SetSize(1950);
         		}
         }
@@ -153,7 +155,7 @@ public func UpdateCursor(int angle)
 	{ 
 		if(menu_icons[i])
         		{
-        			if(!stat) 	menu_icons[i]->SetSize(((600000)/item_count)/32);
+        			if(!stat) 	menu_icons[i]->SetSize(((600000)/item_count)/64);
         			else 		menu_icons[i]->SetSize(1950);
         		}
 		if(i==item_count) var miss=360-(segment*item_count);
@@ -162,7 +164,7 @@ public func UpdateCursor(int angle)
 	if(dvar==item_count+1) dvar=item_count;
 	if(menu_icons[dvar-1])
 	{
-	if(!stat)	menu_icons[dvar-1]->SetSize(((((600000)/item_count)/32)*16) /10);
+	if(!stat)	menu_icons[dvar-1]->SetSize(((((600000)/item_count)/64)*16) /10);
     else 		menu_icons[dvar-1]->SetSize(1950*14 /10);
    	}
 
