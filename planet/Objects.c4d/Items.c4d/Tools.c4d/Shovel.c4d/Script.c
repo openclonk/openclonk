@@ -38,7 +38,7 @@ public func ControlUseHolding(object clonk, int x, int y)
 			{
 				// speed boost when Clonk started digging from scaling, so we don't drop down
 				var clnk_xdir = clonk->GetDir()*2-1;
-				if (x*clnk_xdir/Abs(y) > 0) // only if player actually wants to go sideways in the scaling direction (|x|>|y| and sign(x)==sign(clnk_xdir))
+				if (Abs(x) > Abs(y) && x*clnk_xdir > 0) // only if player actually wants to go sideways in the scaling direction (|x|>|y| and sign(x)==sign(clnk_xdir))
 				{
 					// not if standing on ground (to prevent speed boost digging) or on ceiling (to make working your way upwards through earth a little harder)
 					if (!clonk->GetContact(-1, CNAT_Top|CNAT_Bottom))
