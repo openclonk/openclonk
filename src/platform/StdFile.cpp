@@ -55,19 +55,19 @@ static const char *DirectorySeparators = "/";
 // Return pointer to position after last backslash.
 
 char *GetFilename(char *szPath)
-  {
+	{
 	if (!szPath) return NULL;
 	char *pPos,*pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos==DirectorySeparator || *pPos=='/') pFilename = pPos+1;
 	return pFilename;
-  }
+	}
 const char *GetFilename(const char *szPath)
-  {
+	{
 	if (!szPath) return NULL;
 	const char *pPos,*pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos==DirectorySeparator || *pPos=='/') pFilename = pPos+1;
 	return pFilename;
-  }
+	}
 
 const char* GetFilenameOnly(const char *strFilename)
 {
@@ -131,23 +131,23 @@ const char *GetFilenameWeb(const char *szPath)
 // Return pointer to last file extension.
 
 char *GetExtension(char *szFilename)
-  {
-  int pos, end;
-  for (end=0; szFilename[end]; end++) {}
-  pos = end;
-  while ((pos > 0) && (szFilename[pos-1] != '.') && (szFilename[pos-1] != DirectorySeparator)) --pos;
-  if ((pos > 0) && szFilename[pos-1] == '.') return szFilename + pos;
-  return szFilename + end;
-  }
+	{
+	int pos, end;
+	for (end=0; szFilename[end]; end++) {}
+	pos = end;
+	while ((pos > 0) && (szFilename[pos-1] != '.') && (szFilename[pos-1] != DirectorySeparator)) --pos;
+	if ((pos > 0) && szFilename[pos-1] == '.') return szFilename + pos;
+	return szFilename + end;
+	}
 const char *GetExtension(const char *szFilename)
-  {
-  int pos, end;
-  for (end=0; szFilename[end]; end++) {}
-  pos = end;
-  while ((pos>0) && (szFilename[pos-1] != '.') && (szFilename[pos-1] != DirectorySeparator)) pos--;
-  if (szFilename[pos-1] == '.') return szFilename+pos;
-  return szFilename+end;
-  }
+	{
+	int pos, end;
+	for (end=0; szFilename[end]; end++) {}
+	pos = end;
+	while ((pos>0) && (szFilename[pos-1] != '.') && (szFilename[pos-1] != DirectorySeparator)) pos--;
+	if (szFilename[pos-1] == '.') return szFilename+pos;
+	return szFilename+end;
+	}
 
 
 void RealPath(const char *szFilename, char *pFullFilename)
@@ -155,14 +155,14 @@ void RealPath(const char *szFilename, char *pFullFilename)
 #ifdef _WIN32
 	_fullpath(pFullFilename, szFilename, _MAX_PATH);
 #else
-  char *pSuffix = NULL;
+	char *pSuffix = NULL;
 	char szCopy[_MAX_PATH + 1];
-  for(;;)
+	for(;;)
 		{
 		// Try to convert to full filename. Note this might fail if the given file doesn't exist
 		if(realpath(szFilename, pFullFilename))
 			break;
-    // ... which is undesired behaviour here. Try to reduce the filename until it works.
+		// ... which is undesired behaviour here. Try to reduce the filename until it works.
 		if(!pSuffix)
 			{
 			SCopy(szFilename, szCopy, _MAX_PATH);
@@ -271,59 +271,59 @@ bool TruncatePath(char *szPath) {
 // Append terminating backslash if not present.
 
 void AppendBackslash(char *szFilename)
-  {
-  int i=SLen(szFilename);
-  if (i>0) if ((szFilename[i-1]==DirectorySeparator)) return;
-  SAppendChar(DirectorySeparator,szFilename);
-  }
+	{
+	int i=SLen(szFilename);
+	if (i>0) if ((szFilename[i-1]==DirectorySeparator)) return;
+	SAppendChar(DirectorySeparator,szFilename);
+	}
 
 // Remove terminating backslash if present.
 
 void TruncateBackslash(char *szFilename)
 	{
-  int i=SLen(szFilename);
-  if (i>0) if ((szFilename[i-1]==DirectorySeparator)) szFilename[i-1]=0;
+	int i=SLen(szFilename);
+	if (i>0) if ((szFilename[i-1]==DirectorySeparator)) szFilename[i-1]=0;
 	}
 
 // Append extension if no extension.
 
 void DefaultExtension(char *szFilename, const char *szExtension)
-  {
-  if (!(*GetExtension(szFilename)))
-    { SAppend(".",szFilename); SAppend(szExtension,szFilename); }
-  }
+	{
+	if (!(*GetExtension(szFilename)))
+		{ SAppend(".",szFilename); SAppend(szExtension,szFilename); }
+	}
 
 void DefaultExtension(StdStrBuf *sFilename, const char *szExtension)
-  {
+	{
 	assert(sFilename);
-  if (!(*GetExtension(sFilename->getData())))
-    { sFilename->AppendChar('.'); sFilename->Append(szExtension); }
-  }
+	if (!(*GetExtension(sFilename->getData())))
+		{ sFilename->AppendChar('.'); sFilename->Append(szExtension); }
+	}
 
 // Append or overwrite extension.
 
 void EnforceExtension(char *szFilename, const char *szExtension)
-  {
+	{
 	char *ext = GetExtension(szFilename);
-  if (ext[0])	{ SCopy(szExtension,ext); }
+	if (ext[0])	{ SCopy(szExtension,ext); }
 	else { SAppend(".",szFilename); SAppend(szExtension,szFilename); }
-  }
+	}
 
 void EnforceExtension(StdStrBuf *sFilename, const char *szExtension)
-  {
+	{
 	assert(sFilename);
 	const char *ext = GetExtension(sFilename->getData());
-  if (ext[0])	{ sFilename->ReplaceEnd(ext - sFilename->getData(), szExtension); }
+	if (ext[0])	{ sFilename->ReplaceEnd(ext - sFilename->getData(), szExtension); }
 	else { sFilename->AppendChar('.'); sFilename->Append(szExtension); }
-  }
+	}
 
 // remove extension
 
 void RemoveExtension(char *szFilename)
-  {
+	{
 	char *ext = GetExtension(szFilename);
-  if (ext[0]) ext[-1]=0;
-  }
+	if (ext[0]) ext[-1]=0;
+	}
 
 void RemoveExtension(StdStrBuf *psFileName)
 	{
@@ -337,35 +337,35 @@ void RemoveExtension(StdStrBuf *psFileName)
 // Enforce indexed extension until item does not exist.
 
 void MakeTempFilename(char *szFilename)
-  {
-  DefaultExtension(szFilename,"tmp");
-  char *fn_ext=GetExtension(szFilename);
-  int cnum=-1;
-  do
-    {
-    cnum++;
-    osprintf(fn_ext,"%03d",cnum);
-    }
-  while (FileExists(szFilename) && (cnum<999));
-  }
+	{
+	DefaultExtension(szFilename,"tmp");
+	char *fn_ext=GetExtension(szFilename);
+	int cnum=-1;
+	do
+		{
+		cnum++;
+		osprintf(fn_ext,"%03d",cnum);
+		}
+	while (FileExists(szFilename) && (cnum<999));
+	}
 
 void MakeTempFilename(StdStrBuf *sFilename)
 	{
 	assert(sFilename);
 	if (!sFilename->getLength()) sFilename->Copy("temp.tmp");
 	EnforceExtension(sFilename, "tmp");
-  char *fn_ext=GetExtension(sFilename->getMData());
-  int cnum=-1;
-  do
-    {
-    cnum++;
-    osprintf(fn_ext,"%03d",cnum);
-    }
-  while (FileExists(sFilename->getData()) && (cnum<999));
+	char *fn_ext=GetExtension(sFilename->getMData());
+	int cnum=-1;
+	do
+		{
+		cnum++;
+		osprintf(fn_ext,"%03d",cnum);
+		}
+	while (FileExists(sFilename->getData()) && (cnum<999));
 	}
 
 bool WildcardListMatch(const char *szWildcardList, const char *szString)
-  {
+	{
 	// safety
 	if(!szString || !szWildcardList) return false;
 	// match any item in list
@@ -377,7 +377,7 @@ bool WildcardListMatch(const char *szWildcardList, const char *szString)
 		}
 	// none matched
 	return false;
-  }
+	}
 
 bool IsWildcardString(const char *szString)
 	{
@@ -388,31 +388,31 @@ bool IsWildcardString(const char *szString)
 	}
 
 bool WildcardMatch(const char *szWildcard, const char *szString)
-  {
+	{
 	// safety
 	if(!szString || !szWildcard) return false;
-  // match char-wise
-  const char *pWild = szWildcard, *pPos = szString;
-  const char *pLWild = NULL, *pLPos = NULL; // backtracking
-  while(*pWild || pLWild)
-    // string wildcard?
-    if(*pWild == '*')
-      { pLWild = ++pWild; pLPos = pPos; }
-    // nothing left to match?
-    else if(!*pPos)
-      break;
-    // equal or one-character-wildcard? proceed
-    else if(*pWild == '?' || tolower(*pWild) == tolower(*pPos))
-      { pWild++; pPos++; }
-    // backtrack possible?
-    else if(pLPos)
-      { pWild = pLWild; pPos = ++pLPos; }
-    // match failed
-    else
-      return false;
-  // match complete if both strings are fully matched
-  return !*pWild && !*pPos;
-  }
+	// match char-wise
+	const char *pWild = szWildcard, *pPos = szString;
+	const char *pLWild = NULL, *pLPos = NULL; // backtracking
+	while(*pWild || pLWild)
+		// string wildcard?
+		if(*pWild == '*')
+			{ pLWild = ++pWild; pLPos = pPos; }
+		// nothing left to match?
+		else if(!*pPos)
+			break;
+		// equal or one-character-wildcard? proceed
+		else if(*pWild == '?' || tolower(*pWild) == tolower(*pPos))
+			{ pWild++; pPos++; }
+		// backtrack possible?
+		else if(pLPos)
+			{ pWild = pLWild; pPos = ++pLPos; }
+		// match failed
+		else
+			return false;
+	// match complete if both strings are fully matched
+	return !*pWild && !*pPos;
+	}
 
 #define SStripChars "!\"§%&/=?+*#:;<>\\."
 // create a valid file name from some title
@@ -473,7 +473,7 @@ int FileTime(const char *szFilename)
 	}
 
 bool EraseFile(const char *szFilename)
-  {
+	{
 	//chmod(szFilename,200);
 #ifdef _WIN32
 	SetFileAttributes(szFilename, FILE_ATTRIBUTE_NORMAL);
@@ -565,19 +565,19 @@ bool MakeOriginalFilename(char *szFilename)
 /* Directories */
 
 const char *GetWorkingDirectory()
-  {
-  static char buf[_MAX_PATH+1];
-  return getcwd(buf,_MAX_PATH);
-  }
+	{
+	static char buf[_MAX_PATH+1];
+	return getcwd(buf,_MAX_PATH);
+	}
 
 bool SetWorkingDirectory(const char *path)
-  {
+	{
 #ifdef _WIN32
-  return SetCurrentDirectory(path) != 0;
+	return SetCurrentDirectory(path) != 0;
 #else
-  return (chdir(path)==0);
+	return (chdir(path)==0);
 #endif
-  }
+	}
 
 bool CreatePath(const std::string &path)
 {
@@ -755,26 +755,26 @@ bool RenameItem(const char *szItemName, const char *szNewItemName)
 	}
 
 bool EraseItem(const char *szItemName)
-  {
-  if (!EraseFile(szItemName)) return EraseDirectory(szItemName);
-  else return true;
-  }
+	{
+	if (!EraseFile(szItemName)) return EraseDirectory(szItemName);
+	else return true;
+	}
 
 bool CreateItem(const char *szItemname)
-  {
+	{
 	// Overwrite any old item
 	EraseItem(szItemname);
 	// Create dummy item
-  FILE *fhnd;
-  if (!(fhnd=fopen(szItemname,"wb"))) return false;
-  fclose(fhnd);
+	FILE *fhnd;
+	if (!(fhnd=fopen(szItemname,"wb"))) return false;
+	fclose(fhnd);
 	// Success
 	return true;
-  }
+	}
 #ifdef _WIN32
 bool EraseItems(const char *szItemPath)
 	{
-  return ForEachFile(szItemPath,&EraseItem) > 0;
+	return ForEachFile(szItemPath,&EraseItem) > 0;
 	}
 #endif
 bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes)

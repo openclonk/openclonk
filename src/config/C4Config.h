@@ -145,7 +145,7 @@ class C4ConfigGraphics
 class C4ConfigSound
 	{
 	public:
-    int32_t RXSound;
+		int32_t RXSound;
 		int32_t RXMusic;
 		int32_t FEMusic;
 		int32_t FESamples;
@@ -165,7 +165,7 @@ class C4ConfigNetwork
 		int32_t NoRuntimeJoin;
 		int32_t NoReferenceRequest;
 		int32_t MaxResSearchRecursion;
-    char WorkPath[CFG_MaxString+1];
+		char WorkPath[CFG_MaxString+1];
 		ValidatedStdCopyStrBuf<C4InVal::VAL_Comment> Comment;
 		int32_t MasterServerSignUp;
 		int32_t MasterServerActive;
@@ -233,18 +233,18 @@ class C4ConfigExplorer
 	public:
 		int32_t Mode;
 		int32_t Run;
-    char Definitions[CFG_MaxString+1];
+		char Definitions[CFG_MaxString+1];
 		char Engines[CFG_MaxString+1];
-    char EditorBitmap[CFG_MaxString+1];
-    char EditorPNG[CFG_MaxString+1];
-    char EditorMusic[CFG_MaxString+1];
-    char EditorRichText[CFG_MaxString+1];
-    char EditorScript[CFG_MaxString+1];
-    char EditorText[CFG_MaxString+1];
-    char EditorSound[CFG_MaxString+1];
-    char EditorZip[CFG_MaxString+1];
-    char EditorDefinition[CFG_MaxString+1];
-    char EditorHtml[CFG_MaxString+1];
+		char EditorBitmap[CFG_MaxString+1];
+		char EditorPNG[CFG_MaxString+1];
+		char EditorMusic[CFG_MaxString+1];
+		char EditorRichText[CFG_MaxString+1];
+		char EditorScript[CFG_MaxString+1];
+		char EditorText[CFG_MaxString+1];
+		char EditorSound[CFG_MaxString+1];
+		char EditorZip[CFG_MaxString+1];
+		char EditorDefinition[CFG_MaxString+1];
+		char EditorHtml[CFG_MaxString+1];
 		char CommandLine[CFG_MaxString+1];
 		int32_t EditorUseShell;
 		int32_t Kindersicherung;
@@ -275,7 +275,7 @@ class C4ConfigControls
 	public:
 		int32_t GamepadGuiControl;
 		int32_t MouseAScroll; // auto scroll strength
-    int32_t Keyboard[C4MaxKeyboardSet][C4MaxKey];
+		int32_t Keyboard[C4MaxKeyboardSet][C4MaxKey];
 		void CompileFunc(StdCompiler *pComp, bool fKeysOnly=false);
 		void ResetKeys(); // reset all keys to default
 	};

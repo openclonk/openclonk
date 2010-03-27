@@ -62,9 +62,9 @@ void C4Network2Address::CompileFunc(StdCompiler *pComp)
 	pComp->Seperator(StdCompiler::SEP_PART2); // ':'
 
 	// Write port
-  uint16_t iPort = htons(addr.sin_port);
-  pComp->Value(iPort);
-  addr.sin_port = htons(iPort);
+	uint16_t iPort = htons(addr.sin_port);
+	pComp->Value(iPort);
+	addr.sin_port = htons(iPort);
 }
 
 StdStrBuf C4Network2Address::toString() const
@@ -89,9 +89,9 @@ C4Network2Client::C4Network2Client(C4Client *pClient)
 	: pClient(pClient),
 		iAddrCnt(0),
 		eStatus(NCS_Ready),
-    iLastActivity(0),
+		iLastActivity(0),
 		pMsgConn(NULL), pDataConn(NULL),
-    iNextConnAttempt(0),
+		iNextConnAttempt(0),
 		pNext(NULL), pParent(NULL), pstatPing(NULL)
 {
 }
@@ -146,29 +146,29 @@ void C4Network2Client::RemoveConn(C4Network2IOConnection *pConn)
 
 void C4Network2Client::CloseConns(const char *szMsg)
 {
-  C4PacketConnRe Pkt(false, false, szMsg);
-  C4Network2IOConnection *pConn;
-  while((pConn = pMsgConn))
-  {
-    // send packet, close
-    if(pConn->isOpen())
-    {
-      pConn->Send(MkC4NetIOPacket(PID_ConnRe, Pkt));
-      pConn->Close();
-    }
-    // remove
-    RemoveConn(pConn);
-  }
+	C4PacketConnRe Pkt(false, false, szMsg);
+	C4Network2IOConnection *pConn;
+	while((pConn = pMsgConn))
+	{
+		// send packet, close
+		if(pConn->isOpen())
+		{
+			pConn->Send(MkC4NetIOPacket(PID_ConnRe, Pkt));
+			pConn->Close();
+		}
+		// remove
+		RemoveConn(pConn);
+	}
 }
 
 bool C4Network2Client::SendMsg(C4NetIOPacket rPkt) const
 {
-  return getMsgConn() && getMsgConn()->Send(rPkt);
+	return getMsgConn() && getMsgConn()->Send(rPkt);
 }
 
 bool C4Network2Client::SendData(C4NetIOPacket rPkt) const
 {
-  return getDataConn() && getDataConn()->Send(rPkt);
+	return getDataConn() && getDataConn()->Send(rPkt);
 }
 
 bool C4Network2Client::DoConnectAttempt(C4Network2IO *pIO)
@@ -234,35 +234,35 @@ bool C4Network2Client::AddAddr(const C4Network2Address &addr, bool fAnnounce)
 
 void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 {
-  // set up address struct
+	// set up address struct
 	sockaddr_in addr; ZeroMem(&addr, sizeof addr);
 	addr.sin_family = AF_INET;
 
-  // get local address(es)
-  in_addr **ppAddr = NULL;
+	// get local address(es)
+	in_addr **ppAddr = NULL;
 #ifdef HAVE_WINSOCK
 	bool fGotWinSock = AcquireWinSock();
-  if(fGotWinSock)
+	if(fGotWinSock)
 #endif
-  {
-    // get local host name
-    char szLocalHostName[128+1]; *szLocalHostName = '\0';
-    ::gethostname(szLocalHostName, 128);
-    // get hostent-struct
-    hostent *ph = ::gethostbyname(szLocalHostName);
-    // check type, get addr list
-    if(ph)
-    {
-      if(ph->h_addrtype != AF_INET)
-        ph = NULL;
-      else
-        ppAddr = reinterpret_cast<in_addr **>(ph->h_addr_list);
-    }
-  }
+	{
+		// get local host name
+		char szLocalHostName[128+1]; *szLocalHostName = '\0';
+		::gethostname(szLocalHostName, 128);
+		// get hostent-struct
+		hostent *ph = ::gethostbyname(szLocalHostName);
+		// check type, get addr list
+		if(ph)
+		{
+			if(ph->h_addrtype != AF_INET)
+				ph = NULL;
+			else
+				ppAddr = reinterpret_cast<in_addr **>(ph->h_addr_list);
+		}
+	}
 
-  // add address(es)
-  for(;;)
-  {
+	// add address(es)
+	for(;;)
+	{
 	  if(iPortTCP >= 0)
 	  {
 		  addr.sin_port = htons(iPortTCP);
@@ -273,13 +273,13 @@ void C4Network2Client::AddLocalAddrs(int16_t iPortTCP, int16_t iPortUDP)
 		  addr.sin_port = htons(iPortUDP);
 		  AddAddr(C4Network2Address(addr, P_UDP), false);
 	  }
-    // get next
-    if(!ppAddr || !*ppAddr) break;
-    addr.sin_addr = **ppAddr++;
-  }
+		// get next
+		if(!ppAddr || !*ppAddr) break;
+		addr.sin_addr = **ppAddr++;
+	}
 
 #ifdef HAVE_WINSOCK
-  if(fGotWinSock) ReleaseWinSock();
+	if(fGotWinSock) ReleaseWinSock();
 #endif
 }
 
@@ -387,7 +387,7 @@ C4Network2Client *C4Network2ClientList::GetHost()
 
 C4Network2Client *C4Network2ClientList::GetNextClient(C4Network2Client *pClient)
 {
-  return pClient ? pClient->pNext : pFirst;
+	return pClient ? pClient->pNext : pFirst;
 }
 
 void C4Network2ClientList::Init(C4ClientList *pnClientList, bool fnHost)
@@ -409,7 +409,7 @@ C4Network2Client *C4Network2ClientList::RegClient(C4Client *pClient)
 	for(;pPos; pLast = pPos, pPos = pPos->getNext())
 		if(pPos->getID() > pClient->getID())
 			break;
-  assert(!pLast || pLast->getID() != pClient->getID());
+	assert(!pLast || pLast->getID() != pClient->getID());
 	// create new client
 	C4Network2Client *pNetClient = new C4Network2Client(pClient);
 	// add to list
@@ -609,9 +609,9 @@ bool C4Network2ClientList::AllClientsReady() const
 void C4Network2ClientList::UpdateClientActivity()
 {
 	for(C4Network2Client *pClient = pFirst; pClient; pClient = pClient->getNext())
-    if(pClient->isActivated())
-      if(::Players.GetAtClient(pClient->getID()))
-        pClient->SetLastActivity(Game.FrameCounter);
+		if(pClient->isActivated())
+			if(::Players.GetAtClient(pClient->getID()))
+				pClient->SetLastActivity(Game.FrameCounter);
 }
 
 // *** C4PacketAddr

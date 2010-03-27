@@ -99,9 +99,9 @@ void C4ScriptHost::Close()
 	}
 
 int32_t C4ScriptHost::GetControlMethod(int32_t com, int32_t first, int32_t second)
-  {
+	{
 	return ((first >> com) & 0x01) | (((second >> com) & 0x01) << 1);
-  }
+	}
 
 void C4ScriptHost::GetControlMethodMask(const char *szFunctionFormat, int32_t& first, int32_t& second)
 	{
@@ -137,20 +137,20 @@ C4Value C4ScriptHost::Call(const char *szFunction, C4Object *pObj, C4AulParSet *
 	}
 
 bool C4ScriptHost::ReloadScript(const char *szPath)
-  {
-  // this?
-  if(SEqualNoCase(szPath, FilePath) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
-  {
-    // try reload
-    char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
-    if(GetParentPath(szPath, szParentPath))
-      if(ParentGrp.Open(szParentPath))
-        if(Load(Name, ParentGrp, Filename, Config.General.Language, NULL, stringTable))
-          return true;
-  }
-  // call for childs
-  return C4AulScript::ReloadScript(szPath);
-  }
+	{
+	// this?
+	if(SEqualNoCase(szPath, FilePath) || (stringTable && SEqualNoCase(szPath, stringTable->GetFilePath())))
+	{
+		// try reload
+		char szParentPath[_MAX_PATH + 1]; C4Group ParentGrp;
+		if(GetParentPath(szPath, szParentPath))
+			if(ParentGrp.Open(szParentPath))
+				if(Load(Name, ParentGrp, Filename, Config.General.Language, NULL, stringTable))
+					return true;
+	}
+	// call for childs
+	return C4AulScript::ReloadScript(szPath);
+	}
 
 void C4ScriptHost::SetError(const char *szMessage)
 	{
@@ -249,7 +249,7 @@ C4Value C4GameScriptHost::GRBroadcast(const char *szFunction, C4AulParSet *pPars
 	}
 
 void C4GameScriptHost::CompileFunc(StdCompiler *pComp)
-  {
+	{
 	pComp->Value(mkNamingAdapt(Go,             "Go",                    false));
 	pComp->Value(mkNamingAdapt(Counter,        "Counter",               0));
-  }
+	}

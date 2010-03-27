@@ -278,14 +278,14 @@ bool C4GameResList::InitNetwork(C4Network2ResList *pNetResList)
 
 void C4GameResList::CalcHashes()
 	{
-  for (int32_t i = 0; i < iResCount; i++)
+	for (int32_t i = 0; i < iResCount; i++)
 		pResList[i]->CalcHash();
 	}
 
 bool C4GameResList::RetrieveFiles()
 	{
 	// wait for all resources
-  for (int32_t i = 0; i < iResCount; i++)
+	for (int32_t i = 0; i < iResCount; i++)
 		{
 		const C4Network2ResCore &Core = *pResList[i]->getResCore();
 		StdStrBuf ResNameBuf = FormatString("%s: %s", LoadResStr("IDS_DLG_DEFINITION"), GetFilename(Core.getFileName()));
@@ -513,7 +513,7 @@ void C4GameParameters::CompileFunc(StdCompiler *pComp, C4Scenario *pScenario)
 		pComp->Value(mkNamingAdapt(Teams,						"Teams"							));
 	}
 
-  pComp->Value(Clients);
+	pComp->Value(Clients);
 
 }
 

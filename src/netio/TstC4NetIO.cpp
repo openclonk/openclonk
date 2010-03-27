@@ -31,18 +31,18 @@ char DummyData[1024 * 1024];
 
 class MyCBClass : public C4NetIOMan
 {
-  unsigned int iTime, iPcks;
+	unsigned int iTime, iPcks;
 public:
 	virtual bool OnConn(const C4NetIO::addr_t &addr, const C4NetIO::addr_t &addr2, C4NetIO *pNetIO)
 	{
 		cout << "got connection from " << inet_ntoa(addr.sin_addr) << endl;
-    iTime = timeGetTime(); iPcks = 0;
+		iTime = timeGetTime(); iPcks = 0;
 
 #ifdef ASYNC_CONNECT
 		if(!fHost)
 		{
-      DummyData[0] = 0;
-      if(!pNetIO->Send(C4NetIOPacket(DummyData, iSize, true, addr)))
+			DummyData[0] = 0;
+			if(!pNetIO->Send(C4NetIOPacket(DummyData, iSize, true, addr)))
 				cout << " Fehler: " << (pNetIO->GetError() ? pNetIO->GetError() : "bla") << endl;
 		}
 #endif
@@ -50,23 +50,23 @@ public:
 	}
 	virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 	{
-    if(timeGetTime() > iTime + 1000) {
-      cout << iPcks << " packets in " << timeGetTime() - iTime << " ms (" << iPcks * 1000 / (timeGetTime() - iTime) << " per second, " << (iPcks ? (timeGetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
-      iTime = timeGetTime(); iPcks = 0;
-    }
-    if(!rPacket.getStatus())
-    {
-      // dummys
-      DummyData[0] = 1;
-      C4NetIOPacket Dummy(DummyData, iSize, true, rPacket.getAddr());
-      for(int i = 0; i < iCnt; i++) {
-        if(!pNetIO->Send(Dummy))
+		if(timeGetTime() > iTime + 1000) {
+			cout << iPcks << " packets in " << timeGetTime() - iTime << " ms (" << iPcks * 1000 / (timeGetTime() - iTime) << " per second, " << (iPcks ? (timeGetTime() - iTime) * 1000 / iPcks : -1u) << "us per packet)" << endl;
+			iTime = timeGetTime(); iPcks = 0;
+		}
+		if(!rPacket.getStatus())
+		{
+			// dummys
+			DummyData[0] = 1;
+			C4NetIOPacket Dummy(DummyData, iSize, true, rPacket.getAddr());
+			for(int i = 0; i < iCnt; i++) {
+				if(!pNetIO->Send(Dummy))
 				  cout << " Fehler: " << (pNetIO->GetError() ? pNetIO->GetError() : "bla") << endl;
-      }
-      // pong
-      pNetIO->Send(rPacket);
-      iPcks++;
-    }
+			}
+			// pong
+			pNetIO->Send(rPacket);
+			iPcks++;
+		}
 		// cout << "got " << rPacket.GetSize() << " bytes of data (" << int(*rPacket.GetData()) << ")" << endl;
 	}
 	virtual void OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const char *szReason)

@@ -66,8 +66,8 @@ class CSurface8
 		void GetSurfaceSize(int &irX, int &irY); // get surface size
 		void EnforceC0Transparency() { pPal->EnforceC0Transparency(); }
 		void AllowColor(BYTE iRngLo, BYTE iRngHi, bool fAllowZero=false);
-    void SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch);
-    void ReleaseBuffer();
+		void SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch);
+		void ReleaseBuffer();
 	protected:
 		void MapBytes(BYTE *bpMap);
 		bool ReadBytes(BYTE **lpbpData, void *bpTarget, int iSize);

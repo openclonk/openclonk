@@ -31,12 +31,12 @@ bool DeleteRegistryValue(HKEY hKey, const char *szSubKey,
 bool DeleteRegistryValue(const char *szSubKey, const char *szValueName);
 
 bool GetRegistryDWord(HKEY hKey, const char *szSubKey,
-                      const char *szValueName, DWORD *lpdwValue);
+											const char *szValueName, DWORD *lpdwValue);
 bool GetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD *lpdwValue);
 
 
 bool SetRegistryDWord(HKEY hKey, const char *szSubKey,
-                      const char *szValueName, DWORD dwValue);
+											const char *szValueName, DWORD dwValue);
 bool SetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD dwValue);
 
 
@@ -47,22 +47,22 @@ bool DeleteRegistryKey(HKEY hKey, const char *szSubKey);
 bool DeleteRegistryKey(const char *szSubKey);
 
 bool SetRegClassesRoot(const char *szSubKey,
-                       const char *szValueName,
-                       const char *szStringValue);
+											 const char *szValueName,
+											 const char *szStringValue);
 
 bool SetRegShell(const char *szClassName,
-                 const char *szShellName,
-                 const char *szShellCaption,
-                 const char *szCommand,
+								 const char *szShellName,
+								 const char *szShellCaption,
+								 const char *szCommand,
 								 bool fMakeDefault = false);
 
 bool RemoveRegShell(const char *szClassName,
 										const char *szShellName);
 
 bool SetRegFileClass(const char *szClassRoot,
-                     const char *szExtension,
-                     const char *szClassName,
-                     const char *szIconPath, int iIconNum,
+										 const char *szExtension,
+										 const char *szClassName,
+										 const char *szIconPath, int iIconNum,
 										 const char *szContentType);
 
 bool StoreWindowPosition(HWND hwnd,
@@ -84,35 +84,35 @@ public:
 	StdCompilerConfigWrite(HKEY hRoot, const char *szPath);
 	~StdCompilerConfigWrite();
 
-  // Properties
-  virtual bool hasNaming() { return true; }
+	// Properties
+	virtual bool hasNaming() { return true; }
 	virtual bool forceWrite() { return true; }
 
-  // Naming
-  virtual bool Name(const char *szName);
-  virtual void NameEnd(bool fBreak = false);
-  virtual bool FollowName(const char *szName);
+	// Naming
+	virtual bool Name(const char *szName);
+	virtual void NameEnd(bool fBreak = false);
+	virtual bool FollowName(const char *szName);
 	virtual bool Default(const char *szName);
 
-  // Seperators
-  virtual bool Seperator(Sep eSep);
+	// Seperators
+	virtual bool Seperator(Sep eSep);
 
-  // Data writers
-  virtual void DWord(int32_t &rInt);
-  virtual void DWord(uint32_t &rInt);
-  virtual void Word(int16_t &rShort);
-  virtual void Word(uint16_t &rShort);
-  virtual void Byte(int8_t &rByte);
-  virtual void Byte(uint8_t &rByte);
-  virtual void Boolean(bool &rBool);
-  virtual void Character(char &rChar);
-  virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
-  virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
-  virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
+	// Data writers
+	virtual void DWord(int32_t &rInt);
+	virtual void DWord(uint32_t &rInt);
+	virtual void Word(int16_t &rShort);
+	virtual void Word(uint16_t &rShort);
+	virtual void Byte(int8_t &rByte);
+	virtual void Byte(uint8_t &rByte);
+	virtual void Boolean(bool &rBool);
+	virtual void Character(char &rChar);
+	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
+	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
+	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
 
-  // Passes
-  virtual void Begin();
-  virtual void End();
+	// Passes
+	virtual void Begin();
+	virtual void End();
 
 private:
 
@@ -140,34 +140,34 @@ public:
 	StdCompilerConfigRead(HKEY hRoot, const char *szPath);
 	~StdCompilerConfigRead();
 
-  // Properties
+	// Properties
 	virtual bool isCompiler() { return true; }
-  virtual bool hasNaming() { return true; }
+	virtual bool hasNaming() { return true; }
 
-  // Naming
-  virtual bool Name(const char *szName);
-  virtual void NameEnd(bool fBreak = false);
-  virtual bool FollowName(const char *szName);
+	// Naming
+	virtual bool Name(const char *szName);
+	virtual void NameEnd(bool fBreak = false);
+	virtual bool FollowName(const char *szName);
 
-  // Seperators
-  virtual bool Seperator(Sep eSep);
+	// Seperators
+	virtual bool Seperator(Sep eSep);
 
-  // Data writers
-  virtual void DWord(int32_t &rInt);
-  virtual void DWord(uint32_t &rInt);
-  virtual void Word(int16_t &rShort);
-  virtual void Word(uint16_t &rShort);
-  virtual void Byte(int8_t &rByte);
-  virtual void Byte(uint8_t &rByte);
-  virtual void Boolean(bool &rBool);
-  virtual void Character(char &rChar);
-  virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
-  virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
-  virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
+	// Data writers
+	virtual void DWord(int32_t &rInt);
+	virtual void DWord(uint32_t &rInt);
+	virtual void Word(int16_t &rShort);
+	virtual void Word(uint16_t &rShort);
+	virtual void Byte(int8_t &rByte);
+	virtual void Byte(uint8_t &rByte);
+	virtual void Boolean(bool &rBool);
+	virtual void Character(char &rChar);
+	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped);
+	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped);
+	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
 
-  // Passes
-  virtual void Begin();
-  virtual void End();
+	// Passes
+	virtual void Begin();
+	virtual void End();
 
 private:
 

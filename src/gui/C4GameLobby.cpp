@@ -43,7 +43,7 @@ namespace C4GameLobby {
 
 void C4PacketCountdown::CompileFunc(StdCompiler *pComp)
 	{
-  pComp->Value(mkNamingAdapt(iCountdown, "Countdown", 0));
+	pComp->Value(mkNamingAdapt(iCountdown, "Countdown", 0));
 	}
 
 StdStrBuf C4PacketCountdown::GetCountdownMsg(bool fInitialMsg) const
@@ -64,7 +64,7 @@ ScenDesc::ScenDesc(const C4Rect &rcBounds, bool fActive) : C4GUI::Window(), fDes
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	//AddElement(pTitle = new C4GUI::Label("", caMain.GetFromTop(rTitleFont.GetLineHeight()), ALeft, C4GUI_CaptionFontClr, &rTitleFont, true));
 	AddElement(pDescBox = new C4GUI::TextWindow(caMain.GetAll(), 0, 0, 0, 100, 4096, "", true));
-  pDescBox->SetDecoration(false, false, NULL, true);
+	pDescBox->SetDecoration(false, false, NULL, true);
 	//pDescBox->SetToolTip(LoadResStr("IDS_MSG_SCENARIODESC")); annoying when scrolling through desc...
 	// initial update to set current data
 	if (fActive) Activate();
@@ -109,7 +109,7 @@ void ScenDesc::Update()
 	else
 		{
 		pDescBox->AddTextLine(FormatString(LoadResStr("IDS_MSG_SCENARIODESC_LOADING"), (int) pRes->getPresentPercent()).getData(),
-                            &rTextFont, C4GUI_MessageFontClr, false, true);
+														&rTextFont, C4GUI_MessageFontClr, false, true);
 		}
 	pDescBox->UpdateHeight();
 	}
@@ -724,11 +724,11 @@ C4GUI::ContextMenu *MainDlg::OnRightTabContext(C4GUI::Element *pLabel, int32_t i
 	pMenu->AddItem(pPlayerSheet->GetTitle(), pPlayerSheet->GetToolTip(), C4GUI::Ico_Player,
 		new C4GUI::CBMenuHandler<MainDlg>(this, &MainDlg::OnCtxTabPlayers));
 	if (Game.Teams.IsMultiTeams())
-      {
-      StdCopyStrBuf strShowTeamsDesc(LoadResStr("IDS_MSG_SHOWTEAMS_DESC"));
+			{
+			StdCopyStrBuf strShowTeamsDesc(LoadResStr("IDS_MSG_SHOWTEAMS_DESC"));
 		pMenu->AddItem(LoadResStr("IDS_MSG_SHOWTEAMS"), strShowTeamsDesc.getData(), C4GUI::Ico_Team,
 			new C4GUI::CBMenuHandler<MainDlg>(this, &MainDlg::OnCtxTabTeams));
-      }
+			}
 	pMenu->AddItem(pResSheet->GetTitle(), pResSheet->GetToolTip(), C4GUI::Ico_Resource,
 		new C4GUI::CBMenuHandler<MainDlg>(this, &MainDlg::OnCtxTabRes));
 	pMenu->AddItem(pOptionsSheet->GetTitle(), pOptionsSheet->GetToolTip(), C4GUI::Ico_Options,

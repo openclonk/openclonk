@@ -30,32 +30,32 @@
 
 void StdCompiler::Warn(const char *szWarning, ...)
 {
-  // Got warning callback?
-  if(!pWarnCB) return;
-  // Format message
-  va_list args; va_start(args, szWarning);
-  StdStrBuf Msg; Msg.FormatV(szWarning, args);
-  // do callback
-  (*pWarnCB)(pWarnData, getPosition().getData(), Msg.getData());
+	// Got warning callback?
+	if(!pWarnCB) return;
+	// Format message
+	va_list args; va_start(args, szWarning);
+	StdStrBuf Msg; Msg.FormatV(szWarning, args);
+	// do callback
+	(*pWarnCB)(pWarnData, getPosition().getData(), Msg.getData());
 }
 
 char StdCompiler::SeperatorToChar(Sep eSep)
 {
 	switch(eSep)
 	{
-  case SEP_SEP: return ',';
-  case SEP_SEP2: return ';';
-  case SEP_SET: return '=';
-  case SEP_PART: return '.';
-  case SEP_PART2: return ':';
+	case SEP_SEP: return ',';
+	case SEP_SEP2: return ';';
+	case SEP_SET: return '=';
+	case SEP_PART: return '.';
+	case SEP_PART2: return ':';
 	case SEP_PLUS: return '+';
 	case SEP_START: return '(';
 	case SEP_END: return ')';
 	case SEP_START2: return '[';
 	case SEP_END2: return ']';
 	case SEP_VLINE: return '|';
-  case SEP_DOLLAR: return '$';
-  default: assert(!"Unhandled Seperator value");
+	case SEP_DOLLAR: return '$';
+	default: assert(!"Unhandled Seperator value");
 	}
 	return ' ';
 }
@@ -72,18 +72,18 @@ void StdCompilerBinWrite::Boolean(bool &rBool)   { WriteValue(rBool); }
 void StdCompilerBinWrite::Character(char &rChar) { WriteValue(rChar); }
 void StdCompilerBinWrite::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
-  WriteData(szString, strlen(szString) + 1);
+	WriteData(szString, strlen(szString) + 1);
 }
 void StdCompilerBinWrite::String(char **pszString, RawCompileType eType)
 {
-  if(*pszString)
-    WriteData(*pszString, strlen(*pszString) + 1);
-  else
-    WriteValue('\0');
+	if(*pszString)
+		WriteData(*pszString, strlen(*pszString) + 1);
+	else
+		WriteValue('\0');
 }
 
 template <class T>
-  void StdCompilerBinWrite::WriteValue(const T &rValue)
+	void StdCompilerBinWrite::WriteValue(const T &rValue)
 	{
 		// Copy data
 		if(fSecondPass)
@@ -94,28 +94,28 @@ template <class T>
 void StdCompilerBinWrite::WriteData(const void *pData, size_t iSize)
 {
 	// Copy data
-  if(fSecondPass)
+	if(fSecondPass)
 		Buf.Write(pData, iSize, iPos);
-  iPos += iSize;
+	iPos += iSize;
 }
 
 void StdCompilerBinWrite::Raw(void *pData, size_t iSize, RawCompileType eType)
 {
 	// Copy data
-  if(fSecondPass)
+	if(fSecondPass)
 		Buf.Write(pData, iSize, iPos);
-  iPos += iSize;
+	iPos += iSize;
 }
 
 void StdCompilerBinWrite::Begin()
 {
-  fSecondPass = false; iPos = 0;
+	fSecondPass = false; iPos = 0;
 }
 
 void StdCompilerBinWrite::BeginSecond()
 {
-  Buf.New(iPos);
-  fSecondPass = true; iPos = 0;
+	Buf.New(iPos);
+	fSecondPass = true; iPos = 0;
 }
 
 // *** StdCompilerBinRead
@@ -159,11 +159,11 @@ void StdCompilerBinRead::String(char **pszString, RawCompileType eType)
 
 void StdCompilerBinRead::Raw(void *pData, size_t iSize, RawCompileType eType)
 {
-  if(iPos + iSize > Buf.getSize())
+	if(iPos + iSize > Buf.getSize())
 		{ excEOF(); return; }
-  // Copy data
-  memcpy(pData, Buf.getPtr(iPos), iSize);
-  iPos += iSize;
+	// Copy data
+	memcpy(pData, Buf.getPtr(iPos), iSize);
+	iPos += iSize;
 }
 
 StdStrBuf StdCompilerBinRead::getPosition() const
@@ -191,275 +191,275 @@ void StdCompilerBinRead::Begin()
 
 bool StdCompilerINIWrite::Name(const char *szName)
 {
-  // Sub-Namesections exist, so it's a section. Write name if not already done so.
-  if(fPutName) PutName(true);
-  // Push struct
-  Naming *pnNaming = new Naming;
-  pnNaming->Name.Copy(szName);
-  pnNaming->Parent = pNaming;
-  pNaming = pnNaming;
-  iDepth++;
-  // Done
-  fPutName = true; fInSection = false;
-  return true;
+	// Sub-Namesections exist, so it's a section. Write name if not already done so.
+	if(fPutName) PutName(true);
+	// Push struct
+	Naming *pnNaming = new Naming;
+	pnNaming->Name.Copy(szName);
+	pnNaming->Parent = pNaming;
+	pNaming = pnNaming;
+	iDepth++;
+	// Done
+	fPutName = true; fInSection = false;
+	return true;
 }
 
 void StdCompilerINIWrite::NameEnd(bool fBreak)
 {
-  // Nothing written? Do not put name.
-  //if(fPutName) PutName(false);
+	// Nothing written? Do not put name.
+	//if(fPutName) PutName(false);
 
-  // Append newline
+	// Append newline
 	if(!fPutName && !fInSection)
 		Buf.Append("\r\n");
 	fPutName = false;
 	// Note this makes it impossible to distinguish an empty name section from
 	// a non-existing name section.
 
-  // Pop
-  assert(iDepth);
-  Naming *poNaming = pNaming;
-  pNaming = poNaming->Parent;
-  delete poNaming;
-  iDepth--;
-  // We're inside a section now
-  fInSection = true;
+	// Pop
+	assert(iDepth);
+	Naming *poNaming = pNaming;
+	pNaming = poNaming->Parent;
+	delete poNaming;
+	iDepth--;
+	// We're inside a section now
+	fInSection = true;
 }
 
 bool StdCompilerINIWrite::Seperator(Sep eSep)
 {
-  if(fInSection)
-  {
-    // Re-put section name
-    PutName(true);
-  }
-  else
+	if(fInSection)
+	{
+		// Re-put section name
+		PutName(true);
+	}
+	else
 	{
 		PrepareForValue();
 		Buf.AppendChar(SeperatorToChar(eSep));
 	}
-  return true;
+	return true;
 }
 
 void StdCompilerINIWrite::DWord(int32_t &rInt)
 {
-  PrepareForValue();
-  Buf.AppendFormat("%d", rInt);
+	PrepareForValue();
+	Buf.AppendFormat("%d", rInt);
 }
 void StdCompilerINIWrite::DWord(uint32_t &rInt)
 {
-  PrepareForValue();
-  Buf.AppendFormat("%u", rInt);
+	PrepareForValue();
+	Buf.AppendFormat("%u", rInt);
 }
 void StdCompilerINIWrite::Word(int16_t &rInt)
 {
-  PrepareForValue();
-  Buf.AppendFormat("%d", rInt);
+	PrepareForValue();
+	Buf.AppendFormat("%d", rInt);
 }
 void StdCompilerINIWrite::Word(uint16_t &rInt)
 {
-  PrepareForValue();
-  Buf.AppendFormat("%u", rInt);
+	PrepareForValue();
+	Buf.AppendFormat("%u", rInt);
 }
 void StdCompilerINIWrite::Byte(int8_t &rByte)
 {
-  PrepareForValue();
-  Buf.AppendFormat("%d", rByte);
+	PrepareForValue();
+	Buf.AppendFormat("%d", rByte);
 }
 void StdCompilerINIWrite::Byte(uint8_t &rInt)
 {
-  PrepareForValue();
-  Buf.AppendFormat("%u", rInt);
+	PrepareForValue();
+	Buf.AppendFormat("%u", rInt);
 }
 void StdCompilerINIWrite::Boolean(bool &rBool)
 {
-  PrepareForValue();
-  Buf.Append(rBool ? "true" : "false");
+	PrepareForValue();
+	Buf.Append(rBool ? "true" : "false");
 }
 void StdCompilerINIWrite::Character(char &rChar)
 {
-  PrepareForValue();
-  Buf.AppendFormat("%c", rChar);
+	PrepareForValue();
+	Buf.AppendFormat("%c", rChar);
 }
 
 void StdCompilerINIWrite::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
-  PrepareForValue();
-  switch(eType)
-  {
-  case RCT_Escaped:
-    WriteEscaped(szString, szString + strlen(szString));
-    break;
-  case RCT_All:
-  case RCT_Idtf:
+	PrepareForValue();
+	switch(eType)
+	{
+	case RCT_Escaped:
+		WriteEscaped(szString, szString + strlen(szString));
+		break;
+	case RCT_All:
+	case RCT_Idtf:
 	case RCT_IdtfAllowEmpty:
-  case RCT_ID:
-    Buf.Append(szString);
-  }
+	case RCT_ID:
+		Buf.Append(szString);
+	}
 }
 
 void StdCompilerINIWrite::String(char **pszString, RawCompileType eType)
 {
-  char cNull = '\0';
-  String(*pszString ? *pszString : &cNull, 0, eType);
+	char cNull = '\0';
+	String(*pszString ? *pszString : &cNull, 0, eType);
 }
 
 void StdCompilerINIWrite::Raw(void *pData, size_t iSize, RawCompileType eType)
 {
-  switch(eType)
-  {
-  case RCT_Escaped:
-    WriteEscaped(reinterpret_cast<char *>(pData), reinterpret_cast<char *>(pData) + iSize);
-    break;
-  case RCT_All:
-  case RCT_Idtf:
+	switch(eType)
+	{
+	case RCT_Escaped:
+		WriteEscaped(reinterpret_cast<char *>(pData), reinterpret_cast<char *>(pData) + iSize);
+		break;
+	case RCT_All:
+	case RCT_Idtf:
 	case RCT_IdtfAllowEmpty:
-  case RCT_ID:
-    Buf.Append(reinterpret_cast<char *>(pData), iSize);
-  }
+	case RCT_ID:
+		Buf.Append(reinterpret_cast<char *>(pData), iSize);
+	}
 }
 
 
 void StdCompilerINIWrite::Begin()
 {
-  pNaming = NULL;
-  fPutName = false;
-  iDepth = 0;
-  fInSection = false;
-  Buf.Clear();
+	pNaming = NULL;
+	fPutName = false;
+	iDepth = 0;
+	fInSection = false;
+	Buf.Clear();
 }
 
 void StdCompilerINIWrite::End()
 {
-  // Ensure all namings were closed properly
-  assert(!iDepth);
+	// Ensure all namings were closed properly
+	assert(!iDepth);
 }
 
 void StdCompilerINIWrite::PrepareForValue()
 {
-  // Put name (value-type), if not already done so
-  if(fPutName) PutName(false);
-  // No data allowed inside of sections
-  assert(!fInSection);
-  // No values allowed on top-level - must be contained in at least one section
-  assert(iDepth > 1);
+	// Put name (value-type), if not already done so
+	if(fPutName) PutName(false);
+	// No data allowed inside of sections
+	assert(!fInSection);
+	// No values allowed on top-level - must be contained in at least one section
+	assert(iDepth > 1);
 }
 
 void StdCompilerINIWrite::WriteEscaped(const char *szString, const char *pEnd)
 {
-  Buf.AppendChar('"');
-  // Try to write chunks as huge as possible of "normal" chars.
-  // Note this excludes '\0', so the standard Append() can be used.
-  const char *pStart, *pPos; pStart = pPos = szString;
-  bool fLastNumEscape = false; // catch "\1""1", which must become "\1\61"
-  for(; pPos < pEnd; pPos++)
-    if(!isprint((unsigned char)(unsigned char) *pPos) || *pPos == '\\' || *pPos == '"' || (fLastNumEscape && isdigit((unsigned char)*pPos)))
-    {
-      // Write everything up to this point
-      if(pPos - pStart) Buf.Append(pStart, pPos - pStart);
-      // Escape
-      fLastNumEscape = false;
-      switch(*pPos)
-      {
-      case '\a': Buf.Append("\\a"); break;
-      case '\b': Buf.Append("\\b"); break;
-      case '\f': Buf.Append("\\f"); break;
-      case '\n': Buf.Append("\\n"); break;
-      case '\r': Buf.Append("\\r"); break;
-      case '\t': Buf.Append("\\t"); break;
-      case '\v': Buf.Append("\\v"); break;
-      case '\"': Buf.Append("\\\""); break;
-      case '\\': Buf.Append("\\\\"); break;
-      default:
-        Buf.AppendFormat("\\%o", *reinterpret_cast<const unsigned char *>(pPos));
-        fLastNumEscape = true;
-      }
-      // Set pointer
-      pStart = pPos + 1;
-    }
-    else
-      fLastNumEscape = false;
-  // Write the rest
-  if(pEnd - pStart) Buf.Append(pStart, pEnd - pStart);
-  Buf.AppendChar('"');
+	Buf.AppendChar('"');
+	// Try to write chunks as huge as possible of "normal" chars.
+	// Note this excludes '\0', so the standard Append() can be used.
+	const char *pStart, *pPos; pStart = pPos = szString;
+	bool fLastNumEscape = false; // catch "\1""1", which must become "\1\61"
+	for(; pPos < pEnd; pPos++)
+		if(!isprint((unsigned char)(unsigned char) *pPos) || *pPos == '\\' || *pPos == '"' || (fLastNumEscape && isdigit((unsigned char)*pPos)))
+		{
+			// Write everything up to this point
+			if(pPos - pStart) Buf.Append(pStart, pPos - pStart);
+			// Escape
+			fLastNumEscape = false;
+			switch(*pPos)
+			{
+			case '\a': Buf.Append("\\a"); break;
+			case '\b': Buf.Append("\\b"); break;
+			case '\f': Buf.Append("\\f"); break;
+			case '\n': Buf.Append("\\n"); break;
+			case '\r': Buf.Append("\\r"); break;
+			case '\t': Buf.Append("\\t"); break;
+			case '\v': Buf.Append("\\v"); break;
+			case '\"': Buf.Append("\\\""); break;
+			case '\\': Buf.Append("\\\\"); break;
+			default:
+				Buf.AppendFormat("\\%o", *reinterpret_cast<const unsigned char *>(pPos));
+				fLastNumEscape = true;
+			}
+			// Set pointer
+			pStart = pPos + 1;
+		}
+		else
+			fLastNumEscape = false;
+	// Write the rest
+	if(pEnd - pStart) Buf.Append(pStart, pEnd - pStart);
+	Buf.AppendChar('"');
 }
 
 void StdCompilerINIWrite::WriteIndent(bool fSection)
 {
-  // Do not indent level 1 (level 0 values aren't allowed - see above)
-  int iIndent = iDepth - 1;
-  // Sections are indented more, even though they belong to this level
-  if(!fSection) iIndent--;
-  // Do indention
-  if(iIndent <= 0) return;
-  Buf.AppendChars(' ',  iIndent * 2);
+	// Do not indent level 1 (level 0 values aren't allowed - see above)
+	int iIndent = iDepth - 1;
+	// Sections are indented more, even though they belong to this level
+	if(!fSection) iIndent--;
+	// Do indention
+	if(iIndent <= 0) return;
+	Buf.AppendChars(' ',  iIndent * 2);
 }
 
 void StdCompilerINIWrite::PutName(bool fSection)
 {
-  if(fSection && Buf.getLength())
+	if(fSection && Buf.getLength())
 		Buf.Append("\r\n");
-  WriteIndent(fSection);
-  // Put name
-  if(fSection)
-    Buf.AppendFormat("[%s]\r\n", pNaming->Name.getData());
-  else
-    Buf.AppendFormat("%s=", pNaming->Name.getData());
-  // Set flag
-  fPutName = false;
+	WriteIndent(fSection);
+	// Put name
+	if(fSection)
+		Buf.AppendFormat("[%s]\r\n", pNaming->Name.getData());
+	else
+		Buf.AppendFormat("%s=", pNaming->Name.getData());
+	// Set flag
+	fPutName = false;
 }
 
 // *** StdCompilerINIRead
 
 StdCompilerINIRead::StdCompilerINIRead()
-  : pNameRoot(NULL), iDepth(0), iRealDepth(0)
+	: pNameRoot(NULL), iDepth(0), iRealDepth(0)
 {
 
 }
 
 StdCompilerINIRead::~StdCompilerINIRead()
 {
-  FreeNameTree();
+	FreeNameTree();
 }
 
 // Naming
 bool StdCompilerINIRead::Name(const char *szName)
 {
-  // Increase depth
-  iDepth++;
-  // Parent category virtual?
-  if(iDepth - 1 > iRealDepth)
-    return false;
-  // Name must be alphanumerical and non-empty (force it)
-  if(!isalpha((unsigned char)*szName))
-    { assert(false); return false; }
-  for(const char *p = szName + 1; *p; p++)
-    // C4Update needs Name**...
-    if(!isalnum((unsigned char)*p) && *p != ' ' && *p != '_' && *p != '*')
-      { assert(false); return false; }
-  // Search name
-  NameNode *pNode;
-  for(pNode = pName->FirstChild; pNode; pNode = pNode->NextChild)
-    if(pNode->Pos && pNode->Name == szName)
-      break;
-  // Not found?
-  if(!pNode)
+	// Increase depth
+	iDepth++;
+	// Parent category virtual?
+	if(iDepth - 1 > iRealDepth)
+		return false;
+	// Name must be alphanumerical and non-empty (force it)
+	if(!isalpha((unsigned char)*szName))
+		{ assert(false); return false; }
+	for(const char *p = szName + 1; *p; p++)
+		// C4Update needs Name**...
+		if(!isalnum((unsigned char)*p) && *p != ' ' && *p != '_' && *p != '*')
+			{ assert(false); return false; }
+	// Search name
+	NameNode *pNode;
+	for(pNode = pName->FirstChild; pNode; pNode = pNode->NextChild)
+		if(pNode->Pos && pNode->Name == szName)
+			break;
+	// Not found?
+	if(!pNode)
 	{
 		NotFoundName = szName;
 		return false;
 	}
-  // Save tree position, indicate success
-  pName = pNode;
-  pPos = pName->Pos;
+	// Save tree position, indicate success
+	pName = pNode;
+	pPos = pName->Pos;
 	pReenter = NULL;
-  iRealDepth++;
-  return true;
+	iRealDepth++;
+	return true;
 }
 void StdCompilerINIRead::NameEnd(bool fBreak)
 {
-  assert(iDepth > 0);
-  if(iRealDepth == iDepth)
-  {
+	assert(iDepth > 0);
+	if(iRealDepth == iDepth)
+	{
 		// Remove childs
 		for(NameNode *pNode = pName->FirstChild, *pNext; pNode; pNode = pNext)
 		{
@@ -470,26 +470,26 @@ void StdCompilerINIRead::NameEnd(bool fBreak)
 			pNext = pNode->NextChild;
 			delete pNode;
 		}
-    // Remove name so it won't be found again
+		// Remove name so it won't be found again
 		NameNode *pParent = pName->Parent;
 		(pName->PrevChild ? pName->PrevChild->NextChild : pParent->FirstChild) = pName->NextChild;
 		(pName->NextChild ? pName->NextChild->PrevChild : pParent->LastChild) = pName->PrevChild;
 		delete pName;
-    // Go up
-    pName = pParent;
-    iRealDepth--;
-  }
-  // Decrease depth
-  iDepth--;
-  // This is the middle of nowhere
-  pPos = NULL; pReenter = NULL;
+		// Go up
+		pName = pParent;
+		iRealDepth--;
+	}
+	// Decrease depth
+	iDepth--;
+	// This is the middle of nowhere
+	pPos = NULL; pReenter = NULL;
 }
 
 bool StdCompilerINIRead::FollowName(const char *szName)
 {
 	// Current naming virtual?
-  if(iDepth > iRealDepth)
-    return false;
+	if(iDepth > iRealDepth)
+		return false;
 	// Next section must be the one
 	if(!pName->NextChild || pName->NextChild->Name != szName)
 	{
@@ -510,32 +510,32 @@ bool StdCompilerINIRead::FollowName(const char *szName)
 // Seperators
 bool StdCompilerINIRead::Seperator(Sep eSep)
 {
-  if(iDepth > iRealDepth) return false;
-  // In section?
-  if(pName->Section)
-  {
-    // Store current name, search another section with the same name
-    StdStrBuf CurrName = pName->Name;
-    NameEnd();
-    return Name(CurrName.getData());
-  }
+	if(iDepth > iRealDepth) return false;
+	// In section?
+	if(pName->Section)
+	{
+		// Store current name, search another section with the same name
+		StdStrBuf CurrName = pName->Name;
+		NameEnd();
+		return Name(CurrName.getData());
+	}
 	// Position saved back from seperator mismatch?
-  if(pReenter) { pPos = pReenter; pReenter = NULL; }
+	if(pReenter) { pPos = pReenter; pReenter = NULL; }
 	// Nothing to read?
 	if(!pPos) return false;
-  // Read (while skipping over whitespace)
-  SkipWhitespace();
+	// Read (while skipping over whitespace)
+	SkipWhitespace();
 	// Seperator mismatch? Let all read attempts fail until the correct seperator is found or the naming ends.
-  if(*pPos != SeperatorToChar(eSep)) { pReenter = pPos; pPos = NULL; return false; }
-  // Go over seperator, success
-  pPos++;
-  return true;
+	if(*pPos != SeperatorToChar(eSep)) { pReenter = pPos; pPos = NULL; return false; }
+	// Go over seperator, success
+	pPos++;
+	return true;
 }
 
 void StdCompilerINIRead::NoSeperator()
 {
 	// Position saved back from seperator mismatch?
-  if(pReenter) { pPos = pReenter; pReenter = NULL; }
+	if(pReenter) { pPos = pReenter; pReenter = NULL; }
 }
 
 int StdCompilerINIRead::NameCount(const char *szName)
@@ -544,102 +544,102 @@ int StdCompilerINIRead::NameCount(const char *szName)
 	if (iDepth > iRealDepth || !pName) return 0;
 	// count within current name
 	int iCount = 0;
-  NameNode *pNode;
-  for(pNode = pName->FirstChild; pNode; pNode = pNode->NextChild)
+	NameNode *pNode;
+	for(pNode = pName->FirstChild; pNode; pNode = pNode->NextChild)
 		// if no name is given, all valid subsections are counted
-    if(pNode->Pos && (!szName || pNode->Name == szName))
-      ++iCount;
+		if(pNode->Pos && (!szName || pNode->Name == szName))
+			++iCount;
 	return iCount;
 	}
 
 // Various data readers
 void StdCompilerINIRead::DWord(int32_t &rInt)
 {
-  rInt = ReadNum();
+	rInt = ReadNum();
 }
 void StdCompilerINIRead::DWord(uint32_t &rInt)
 {
-  rInt = ReadUNum();
+	rInt = ReadUNum();
 }
 void StdCompilerINIRead::Word(int16_t &rShort)
 {
-  const int MIN = -(1 << 15), MAX = (1 << 15) - 1;
-  int iNum = ReadNum();
-  if(iNum < MIN || iNum > MAX)
-    Warn("number out of range (%d to %d): %d ", MIN, MAX, iNum);
-  rShort = BoundBy(iNum, MIN, MAX);
+	const int MIN = -(1 << 15), MAX = (1 << 15) - 1;
+	int iNum = ReadNum();
+	if(iNum < MIN || iNum > MAX)
+		Warn("number out of range (%d to %d): %d ", MIN, MAX, iNum);
+	rShort = BoundBy(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Word(uint16_t &rShort)
 {
-  const unsigned int MIN = 0, MAX = (1 << 15) - 1;
-  unsigned int iNum = ReadUNum();
-  if(iNum > MAX)
-    Warn("number out of range (%u to %u): %u ", MIN, MAX, iNum);
-  rShort = BoundBy(iNum, MIN, MAX);
+	const unsigned int MIN = 0, MAX = (1 << 15) - 1;
+	unsigned int iNum = ReadUNum();
+	if(iNum > MAX)
+		Warn("number out of range (%u to %u): %u ", MIN, MAX, iNum);
+	rShort = BoundBy(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Byte(int8_t &rByte)
 {
-  const int MIN = -(1 << 7), MAX = (1 << 7) - 1;
-  int iNum = ReadNum();
-  if(iNum < MIN || iNum > MAX)
-    Warn("number out of range (%d to %d): %d ", MIN, MAX, iNum);
-  rByte = BoundBy(iNum, MIN, MAX);
+	const int MIN = -(1 << 7), MAX = (1 << 7) - 1;
+	int iNum = ReadNum();
+	if(iNum < MIN || iNum > MAX)
+		Warn("number out of range (%d to %d): %d ", MIN, MAX, iNum);
+	rByte = BoundBy(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Byte(uint8_t &rByte)
 {
-  const unsigned int MIN = 0, MAX = (1 << 8) - 1;
-  unsigned int iNum = ReadUNum();
-  if(iNum > MAX)
-    Warn("number out of range (%u to %u): %u ", MIN, MAX, iNum);
-  rByte = BoundBy(iNum, MIN, MAX);
+	const unsigned int MIN = 0, MAX = (1 << 8) - 1;
+	unsigned int iNum = ReadUNum();
+	if(iNum > MAX)
+		Warn("number out of range (%u to %u): %u ", MIN, MAX, iNum);
+	rByte = BoundBy(iNum, MIN, MAX);
 }
 void StdCompilerINIRead::Boolean(bool &rBool)
 {
-  if(!pPos) { notFound("Boolean"); return; }
-  if(*pPos == '1' && !isdigit((unsigned char)*(pPos+1)))
-    { rBool = true; pPos ++; }
-  else if(*pPos == '0' && !isdigit((unsigned char)*(pPos+1)))
-    { rBool = false; pPos ++; }
-  else if(SEqual2(pPos, "true"))
-    { rBool = true; pPos += 4; }
-  else if(SEqual2(pPos, "false"))
-    { rBool = false; pPos += 5; }
-  else
+	if(!pPos) { notFound("Boolean"); return; }
+	if(*pPos == '1' && !isdigit((unsigned char)*(pPos+1)))
+		{ rBool = true; pPos ++; }
+	else if(*pPos == '0' && !isdigit((unsigned char)*(pPos+1)))
+		{ rBool = false; pPos ++; }
+	else if(SEqual2(pPos, "true"))
+		{ rBool = true; pPos += 4; }
+	else if(SEqual2(pPos, "false"))
+		{ rBool = false; pPos += 5; }
+	else
 		{ notFound("Boolean"); return; }
 }
 void StdCompilerINIRead::Character(char &rChar)
 {
-  if(!pPos || !isalpha((unsigned char)*pPos))
+	if(!pPos || !isalpha((unsigned char)*pPos))
 		{ notFound("Character"); return; }
-  rChar = *pPos++;
+	rChar = *pPos++;
 }
 void StdCompilerINIRead::String(char *szString, size_t iMaxLength, RawCompileType eType)
 {
-  // Read data
-  StdBuf Buf = ReadString(iMaxLength, eType, true);
-  // Copy
-  SCopy(getBufPtr<char>(Buf), szString, iMaxLength);
+	// Read data
+	StdBuf Buf = ReadString(iMaxLength, eType, true);
+	// Copy
+	SCopy(getBufPtr<char>(Buf), szString, iMaxLength);
 }
 void StdCompilerINIRead::String(char **pszString, RawCompileType eType)
 {
-  // For Backwards compatibility: Escaped strings default to normal strings if no escaped string is given
+	// For Backwards compatibility: Escaped strings default to normal strings if no escaped string is given
 	if (eType == RCT_Escaped && pPos && *pPos!='"') eType = RCT_All;
-  // Get length
-  size_t iLength = GetStringLength(eType);
-  // Read data
-  StdBuf Buf = ReadString(iLength, eType, true);
-  // Set
-  *pszString = reinterpret_cast<char *>(Buf.GrabPointer());
+	// Get length
+	size_t iLength = GetStringLength(eType);
+	// Read data
+	StdBuf Buf = ReadString(iLength, eType, true);
+	// Set
+	*pszString = reinterpret_cast<char *>(Buf.GrabPointer());
 }
 void StdCompilerINIRead::Raw(void *pData, size_t iSize, RawCompileType eType)
 {
-  // Read data
-  StdBuf Buf = ReadString(iSize, eType, false);
-  // Correct size?
-  if(Buf.getSize() != iSize)
-    Warn("got %u bytes raw data, but %u bytes expected!", Buf.getSize(), iSize);
-  // Copy
-  MemCopy(Buf.getData(), pData, iSize);
+	// Read data
+	StdBuf Buf = ReadString(iSize, eType, false);
+	// Correct size?
+	if(Buf.getSize() != iSize)
+		Warn("got %u bytes raw data, but %u bytes expected!", Buf.getSize(), iSize);
+	// Copy
+	MemCopy(Buf.getData(), pData, iSize);
 }
 
 StdStrBuf StdCompilerINIRead::getPosition()	const
@@ -656,305 +656,305 @@ StdStrBuf StdCompilerINIRead::getPosition()	const
 
 void StdCompilerINIRead::Begin()
 {
-  // Already running? This may happen if someone confuses Compile with Value.
-  assert(!iDepth && !iRealDepth && !pNameRoot);
-  // Create tree
-  CreateNameTree();
-  // Start must be inside a section
-  iDepth = iRealDepth = 0;
-  pPos = NULL; pReenter = NULL;
+	// Already running? This may happen if someone confuses Compile with Value.
+	assert(!iDepth && !iRealDepth && !pNameRoot);
+	// Create tree
+	CreateNameTree();
+	// Start must be inside a section
+	iDepth = iRealDepth = 0;
+	pPos = NULL; pReenter = NULL;
 }
 void StdCompilerINIRead::End()
 {
-  assert(!iDepth && !iRealDepth);
-  FreeNameTree();
+	assert(!iDepth && !iRealDepth);
+	FreeNameTree();
 }
 
 void StdCompilerINIRead::CreateNameTree()
 {
 	FreeNameTree();
-  // Create root node
-  pName = pNameRoot = new NameNode();
+	// Create root node
+	pName = pNameRoot = new NameNode();
 	// No input? Stop
 	if(!Buf) return;
-  // Start scanning
-  pPos = Buf.getPtr(0);
-  while(*pPos)
-  {
-    // Go over whitespace
-    int iIndent = 0;
-    while(*pPos == ' ' || *pPos == '\t')
-      { pPos++; iIndent++; }
-    // Name/Section?
-    bool fSection = *pPos == '[' && isalpha((unsigned char)*(pPos+1));
-    if(fSection || isalpha((unsigned char)*pPos))
-    {
-      // Treat values as if they had more indention
-      // (so they become children of sections on the same level)
-      if(!fSection) iIndent++; else pPos++;
-      // Go up in tree structure if there is less indention
-      while(pName->Parent && pName->Indent >= iIndent)
-        pName = pName->Parent;
-      // Copy name
-      StdStrBuf Name;
-      while(isalnum((unsigned char)*pPos) || *pPos == ' ' || *pPos == '_')
-        Name.AppendChar(*pPos++);
-      while(*pPos == ' ' || *pPos == '\t') pPos++;
-      if( *pPos != (fSection ? ']' : '=') )
-        // Warn, ignore
-        Warn(isprint((unsigned char)*pPos) ? "Unexpected character ('%c'): %s ignored" : "Unexpected character ('0x%02x'): %s ignored", unsigned(*pPos), fSection ? "section" : "value");
-      else
-      {
-        pPos++;
-        // Create new node
+	// Start scanning
+	pPos = Buf.getPtr(0);
+	while(*pPos)
+	{
+		// Go over whitespace
+		int iIndent = 0;
+		while(*pPos == ' ' || *pPos == '\t')
+			{ pPos++; iIndent++; }
+		// Name/Section?
+		bool fSection = *pPos == '[' && isalpha((unsigned char)*(pPos+1));
+		if(fSection || isalpha((unsigned char)*pPos))
+		{
+			// Treat values as if they had more indention
+			// (so they become children of sections on the same level)
+			if(!fSection) iIndent++; else pPos++;
+			// Go up in tree structure if there is less indention
+			while(pName->Parent && pName->Indent >= iIndent)
+				pName = pName->Parent;
+			// Copy name
+			StdStrBuf Name;
+			while(isalnum((unsigned char)*pPos) || *pPos == ' ' || *pPos == '_')
+				Name.AppendChar(*pPos++);
+			while(*pPos == ' ' || *pPos == '\t') pPos++;
+			if( *pPos != (fSection ? ']' : '=') )
+				// Warn, ignore
+				Warn(isprint((unsigned char)*pPos) ? "Unexpected character ('%c'): %s ignored" : "Unexpected character ('0x%02x'): %s ignored", unsigned(*pPos), fSection ? "section" : "value");
+			else
+			{
+				pPos++;
+				// Create new node
 				NameNode *pPrev = pName->LastChild;
-        pName =
-          pName->LastChild =
-            (pName->LastChild ? pName->LastChild->NextChild : pName->FirstChild) =
-              new NameNode(pName);
+				pName =
+					pName->LastChild =
+						(pName->LastChild ? pName->LastChild->NextChild : pName->FirstChild) =
+							new NameNode(pName);
 				pName->PrevChild = pPrev;
 				pName->Name.Take(std::move(Name));
-        pName->Pos = pPos;
-        pName->Indent = iIndent;
-        pName->Section = fSection;
-        // Values don't have children (even if the indention looks like it)
-        if(!fSection)
-          pName = pName->Parent;
-      }
-    }
-    // Skip line
-    while(*pPos && (*pPos != '\n' && *pPos != '\r'))
-      pPos++;
-    while(*pPos == '\n' || *pPos == '\r')
-      pPos++;
-  }
-  // Set pointer back
-  pName = pNameRoot;
+				pName->Pos = pPos;
+				pName->Indent = iIndent;
+				pName->Section = fSection;
+				// Values don't have children (even if the indention looks like it)
+				if(!fSection)
+					pName = pName->Parent;
+			}
+		}
+		// Skip line
+		while(*pPos && (*pPos != '\n' && *pPos != '\r'))
+			pPos++;
+		while(*pPos == '\n' || *pPos == '\r')
+			pPos++;
+	}
+	// Set pointer back
+	pName = pNameRoot;
 }
 
 void StdCompilerINIRead::FreeNameTree()
 {
-  // free all nodes
+	// free all nodes
 	FreeNameNode(pNameRoot);
-  pName = pNameRoot = NULL;
+	pName = pNameRoot = NULL;
 }
 
 void StdCompilerINIRead::FreeNameNode(NameNode *pDelNode)
 {
 	NameNode *pNode = pDelNode;
-  while(pNode)
-  {
-    if(pNode->FirstChild)
-      pNode = pNode->FirstChild;
-    else
-    {
-      NameNode *pDelete = pNode;
+	while(pNode)
+	{
+		if(pNode->FirstChild)
+			pNode = pNode->FirstChild;
+		else
+		{
+			NameNode *pDelete = pNode;
 			if (pDelete == pDelNode) { delete pDelete; break; }
-      if(pNode->NextChild)
+			if(pNode->NextChild)
 				pNode = pNode->NextChild;
 			else
 			{
 				pNode = pNode->Parent;
 				if(pNode) pNode->FirstChild = NULL;
 			}
-      delete pDelete;
-    }
-  }
+			delete pDelete;
+		}
+	}
 }
 
 void StdCompilerINIRead::SkipWhitespace()
 {
-  while(*pPos == ' ' || *pPos == '\t')
-    pPos++;
+	while(*pPos == ' ' || *pPos == '\t')
+		pPos++;
 }
 
 void StdCompilerINIRead::SkipNum()
 {
-  while(*pPos == '+' || *pPos == '-' || isdigit((unsigned char)*pPos))
-    pPos++;
+	while(*pPos == '+' || *pPos == '-' || isdigit((unsigned char)*pPos))
+		pPos++;
 }
 
 long StdCompilerINIRead::ReadNum()
 {
-  if(!pPos)
+	if(!pPos)
 		{ notFound("Number"); return 0; }
-  // Skip whitespace
-  SkipWhitespace();
+	// Skip whitespace
+	SkipWhitespace();
 	// Read number. If this breaks, Günther is to blame!
 	const char *pnPos = pPos;
 	long iNum = strtol(pPos, const_cast<char **>(&pnPos), 10);
 	// Could not read?
 	if(!iNum && pnPos == pPos)
 		{ notFound("Number"); return 0; }
-  // Get over it
-  pPos = pnPos;
-  return iNum;
+	// Get over it
+	pPos = pnPos;
+	return iNum;
 }
 
 unsigned long StdCompilerINIRead::ReadUNum()
 {
-  if(!pPos)
+	if(!pPos)
 		{ notFound("Number"); return 0; }
-  // Skip whitespace
-  SkipWhitespace();
+	// Skip whitespace
+	SkipWhitespace();
 	// Read number. If this breaks, Günther is to blame!
 	const char *pnPos = pPos;
 	unsigned long iNum = strtoul(pPos, const_cast<char **>(&pnPos), 10);
 	// Could not read?
 	if(!iNum && pnPos == pPos)
 		{ notFound("Number"); return 0; }
-  // Get over it
-  pPos = pnPos;
-  return iNum;
+	// Get over it
+	pPos = pnPos;
+	return iNum;
 }
 
 size_t StdCompilerINIRead::GetStringLength(RawCompileType eRawType)
 {
-  // Excpect valid position
-  if(!pPos)
+	// Excpect valid position
+	if(!pPos)
 		{ notFound("String"); return 0; }
-  // Skip whitespace
-  SkipWhitespace();
-  // Save position
-  const char *pStart = pPos;
-  // Escaped? Go over '"'
-  if(eRawType == RCT_Escaped && *pPos++ != '"')
+	// Skip whitespace
+	SkipWhitespace();
+	// Save position
+	const char *pStart = pPos;
+	// Escaped? Go over '"'
+	if(eRawType == RCT_Escaped && *pPos++ != '"')
 		{ notFound("Escaped string"); return 0; }
-  // Search end of string
-  size_t iLength = 0;
-  while(!TestStringEnd(eRawType))
-  {
-    // Read a character (we're just counting atm)
-    if(eRawType == RCT_Escaped)
-      ReadEscapedChar();
-    else
-      pPos++;
-    // Count it
-    iLength++;
-  }
-  // Reset position, return the length
-  pPos = pStart;
-  return iLength;
+	// Search end of string
+	size_t iLength = 0;
+	while(!TestStringEnd(eRawType))
+	{
+		// Read a character (we're just counting atm)
+		if(eRawType == RCT_Escaped)
+			ReadEscapedChar();
+		else
+			pPos++;
+		// Count it
+		iLength++;
+	}
+	// Reset position, return the length
+	pPos = pStart;
+	return iLength;
 }
 
 StdBuf StdCompilerINIRead::ReadString(size_t iLength, RawCompileType eRawType, bool fAppendNull)
 {
-  // Excpect valid position
-  if(!pPos)
+	// Excpect valid position
+	if(!pPos)
 		{ notFound("String"); return StdBuf(); }
-  // Skip whitespace
-  SkipWhitespace();
-  // Escaped? Go over '"'
-  if(eRawType == RCT_Escaped && *pPos++ != '"')
+	// Skip whitespace
+	SkipWhitespace();
+	// Escaped? Go over '"'
+	if(eRawType == RCT_Escaped && *pPos++ != '"')
 		{ notFound("Escaped string"); return StdBuf(); }
-  // Create buffer
-  StdBuf OutBuf; OutBuf.New(iLength + (fAppendNull ? sizeof('\0') : 0));
-  // Read
-  char *pOut = getMBufPtr<char>(OutBuf);
-  while(iLength && !TestStringEnd(eRawType))
-  {
-    // Read a character
-    if(eRawType == RCT_Escaped)
-      *pOut++ = ReadEscapedChar();
-    else
-      *pOut++ = *pPos++;
-    // Count it
-    iLength--;
-  }
-  // Escaped: Go over '"'
-  if(eRawType == RCT_Escaped)
-  {
-    while(*pPos != '"')
-    {
-      if(!*pPos || *pPos == '\n' || *pPos == '\r')
+	// Create buffer
+	StdBuf OutBuf; OutBuf.New(iLength + (fAppendNull ? sizeof('\0') : 0));
+	// Read
+	char *pOut = getMBufPtr<char>(OutBuf);
+	while(iLength && !TestStringEnd(eRawType))
+	{
+		// Read a character
+		if(eRawType == RCT_Escaped)
+			*pOut++ = ReadEscapedChar();
+		else
+			*pOut++ = *pPos++;
+		// Count it
+		iLength--;
+	}
+	// Escaped: Go over '"'
+	if(eRawType == RCT_Escaped)
+	{
+		while(*pPos != '"')
+		{
+			if(!*pPos || *pPos == '\n' || *pPos == '\r')
 			{
 				Warn("string not terminated!");
 				pPos--;
 				break;
 			}
-      pPos++;
-    }
-    pPos++;
-  }
+			pPos++;
+		}
+		pPos++;
+	}
 	// Nothing read? Identifiers need to be non-empty
 	if(pOut == OutBuf.getData() && (eRawType == RCT_Idtf || eRawType == RCT_ID))
 		{ notFound("String"); return StdBuf(); }
-  // Append null
-  if(fAppendNull)
-    *pOut = '\0';
-  // Shrink, if less characters were read
-  OutBuf.Shrink(iLength);
-  // Done
-  return OutBuf;
+	// Append null
+	if(fAppendNull)
+		*pOut = '\0';
+	// Shrink, if less characters were read
+	OutBuf.Shrink(iLength);
+	// Done
+	return OutBuf;
 }
 
 bool StdCompilerINIRead::TestStringEnd(RawCompileType eType)
 {
-  switch(eType)
-  {
-  case RCT_Escaped: return *pPos == '"' || !*pPos || *pPos == '\n' || *pPos == '\r';
-  case RCT_All: return !*pPos || *pPos == '\n' || *pPos == '\r';
-  // '-' is needed for Layers in Scenario.txt (C4NameList) and other Material-Texture combinations
-  case RCT_Idtf: case RCT_IdtfAllowEmpty: case RCT_ID: return !isalnum((unsigned char)*pPos) && *pPos != '_' && *pPos != '-';
-  }
-  // unreachable
-  return true;
+	switch(eType)
+	{
+	case RCT_Escaped: return *pPos == '"' || !*pPos || *pPos == '\n' || *pPos == '\r';
+	case RCT_All: return !*pPos || *pPos == '\n' || *pPos == '\r';
+	// '-' is needed for Layers in Scenario.txt (C4NameList) and other Material-Texture combinations
+	case RCT_Idtf: case RCT_IdtfAllowEmpty: case RCT_ID: return !isalnum((unsigned char)*pPos) && *pPos != '_' && *pPos != '-';
+	}
+	// unreachable
+	return true;
 }
 
 char StdCompilerINIRead::ReadEscapedChar()
 {
-  // Catch some no-noes like \0, \n etc.
-  if(*pPos >= 0 && iscntrl((unsigned char)*pPos))
+	// Catch some no-noes like \0, \n etc.
+	if(*pPos >= 0 && iscntrl((unsigned char)*pPos))
 	{
 		Warn("Nonprintable character found in string: %02x", static_cast<unsigned char>(*pPos));
 		return *pPos;
 	}
-  // Not escaped? Just return it
-  if(*pPos != '\\') return *pPos++;
-  // What type of escape?
-  switch(*++pPos)
-  {
-  case 'a': pPos++; return '\a';
-  case 'b': pPos++; return '\b';
-  case 'f': pPos++; return '\f';
-  case 'n': pPos++; return '\n';
-  case 'r': pPos++; return '\r';
-  case 't': pPos++; return '\t';
-  case 'v': pPos++; return '\v';
-  case '\'': pPos++; return '\'';
-  case '"': pPos++; return '"';
-  case '\\': pPos++; return '\\';
-  case '?': pPos++; return '?';
-  case 'x':
-    // Treat '\x' as 'x' - damn special cases
-    if(!isxdigit((unsigned char)*++pPos))
-      return 'x';
-    else
-    {
-      // Read everything that looks like it might be hexadecimal - MSVC does it this way, so do not sue me.
-      int iCode = 0;
-      do
-        { iCode = iCode * 16 + (isdigit((unsigned char)*pPos) ? *pPos - '0' : *pPos - 'a' + 10); pPos++; }
-      while(isxdigit((unsigned char)*pPos));
-      // Done. Don't bother to check the range (we aren't doing anything mission-critical here, are we?)
-      return char(iCode);
-    }
-  default:
-    // Not octal? Let it pass through.
-    if(!isdigit((unsigned char)*pPos) || *pPos >= '8')
-      return *pPos++;
-    else
-    {
-      // Read it the octal way.
-      int iCode = 0;
-      do
-        { iCode = iCode * 8 + (*pPos - '0'); pPos++;}
-      while(isdigit((unsigned char)*pPos) && *pPos < '8');
-      // Done. See above.
-      return char(iCode);
-    }
-  }
-  // unreachable
+	// Not escaped? Just return it
+	if(*pPos != '\\') return *pPos++;
+	// What type of escape?
+	switch(*++pPos)
+	{
+	case 'a': pPos++; return '\a';
+	case 'b': pPos++; return '\b';
+	case 'f': pPos++; return '\f';
+	case 'n': pPos++; return '\n';
+	case 'r': pPos++; return '\r';
+	case 't': pPos++; return '\t';
+	case 'v': pPos++; return '\v';
+	case '\'': pPos++; return '\'';
+	case '"': pPos++; return '"';
+	case '\\': pPos++; return '\\';
+	case '?': pPos++; return '?';
+	case 'x':
+		// Treat '\x' as 'x' - damn special cases
+		if(!isxdigit((unsigned char)*++pPos))
+			return 'x';
+		else
+		{
+			// Read everything that looks like it might be hexadecimal - MSVC does it this way, so do not sue me.
+			int iCode = 0;
+			do
+				{ iCode = iCode * 16 + (isdigit((unsigned char)*pPos) ? *pPos - '0' : *pPos - 'a' + 10); pPos++; }
+			while(isxdigit((unsigned char)*pPos));
+			// Done. Don't bother to check the range (we aren't doing anything mission-critical here, are we?)
+			return char(iCode);
+		}
+	default:
+		// Not octal? Let it pass through.
+		if(!isdigit((unsigned char)*pPos) || *pPos >= '8')
+			return *pPos++;
+		else
+		{
+			// Read it the octal way.
+			int iCode = 0;
+			do
+				{ iCode = iCode * 8 + (*pPos - '0'); pPos++;}
+			while(isdigit((unsigned char)*pPos) && *pPos < '8');
+			// Done. See above.
+			return char(iCode);
+		}
+	}
+	// unreachable
 	assert (false);
 }
 

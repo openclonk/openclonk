@@ -81,7 +81,7 @@ public:
 
 	void InitLocal();
 
-  void SortNullIPsBack();
+	void SortNullIPsBack();
 
 	void CompileFunc(StdCompiler *pComp);
 };
@@ -94,12 +94,12 @@ public:
 	virtual ~C4Network2RefServer();
 
 private:
-  CStdCSec RefCSec;
-  C4Network2Reference *pReference;
+	CStdCSec RefCSec;
+	C4Network2Reference *pReference;
 
 public:
-  void Clear();
-  void SetReference(C4Network2Reference *pReference);
+	void Clear();
+	void SetReference(C4Network2Reference *pReference);
 
 protected:
 	// Overridden
@@ -136,11 +136,11 @@ private:
 	size_t iDownloadedSize, iTotalSize;
 	bool fCompressed;
 
-  // Event queue to use for notify when something happens
-  class C4InteractiveThread *pNotify;
+	// Event queue to use for notify when something happens
+	class C4InteractiveThread *pNotify;
 
 protected:
-  StdCopyBuf ResultBin; // set if fBinary
+	StdCopyBuf ResultBin; // set if fBinary
 	StdCopyStrBuf ResultString; // set if !fBinary
 
 protected:
@@ -158,26 +158,26 @@ protected:
 	virtual int32_t GetDefaultPort() { return 80; }
 
 public:
-  bool Query(const StdBuf &Data, bool fBinary);
-  bool Query(const char *szData, bool fBinary) { return Query(StdBuf(szData, SLen(szData)), fBinary); }
+	bool Query(const StdBuf &Data, bool fBinary);
+	bool Query(const char *szData, bool fBinary) { return Query(StdBuf(szData, SLen(szData)), fBinary); }
 
-  bool isBusy() const { return fBusy; }
-  bool isSuccess() const { return fSuccess; }
+	bool isBusy() const { return fBusy; }
+	bool isSuccess() const { return fSuccess; }
 	bool isConnected() const { return fConnected; }
 	size_t getTotalSize() const { return iTotalSize; }
 	size_t getDownloadedSize() const { return iDownloadedSize; }
-  const StdBuf &getResultBin() const { assert(fBinary); return ResultBin; }
+	const StdBuf &getResultBin() const { assert(fBinary); return ResultBin; }
 	const char *getResultString() const { assert(!fBinary); return ResultString.getData(); }
 	const char *getServerName() const { return Server.getData(); }
 	const char *getRequest() const { return RequestPath.getData(); }
 	const C4NetIO::addr_t &getServerAddress() const { return ServerAddr; }
 
 	void Cancel(const char *szReason);
-  void Clear();
+	void Clear();
 
-  bool SetServer(const char *szServerAddress);
+	bool SetServer(const char *szServerAddress);
 
-  void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
+	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
 
 	// Overridden
 	virtual bool Execute(int iMaxTime, pollfd * readyfds) { return Execute(iMaxTime); }
@@ -200,8 +200,8 @@ protected:
 public:
 	C4Network2RefClient() : C4Network2HTTPClient(), fVerSet(false) {}
 
-  bool QueryReferences();
-  bool GetReferences(C4Network2Reference **&rpReferences, int32_t &rRefCount);
+	bool QueryReferences();
+	bool GetReferences(C4Network2Reference **&rpReferences, int32_t &rRefCount);
 	bool GetMasterVersion(C4GameVersion *pSaveToVer); // call only after GetReferences
 };
 

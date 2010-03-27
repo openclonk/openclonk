@@ -334,15 +334,15 @@ bool C4MessageInput::IsTypeIn()
 
 bool C4MessageInput::ProcessInput(const char *szText)
 	{
-  // helper variables
+	// helper variables
 	char OSTR[402]; // cba
-  C4ControlMessageType eMsgType;
-  const char *szMsg = NULL;
-  int32_t iToPlayer = -1;
+	C4ControlMessageType eMsgType;
+	const char *szMsg = NULL;
+	int32_t iToPlayer = -1;
 
-  // Starts with '^', "team:" or "/team ": Team message
-  if(szText[0] == '^' || SEqual2NoCase(szText, "team:") || SEqual2NoCase(szText, "/team "))
-    {
+	// Starts with '^', "team:" or "/team ": Team message
+	if(szText[0] == '^' || SEqual2NoCase(szText, "team:") || SEqual2NoCase(szText, "/team "))
+		{
 		if (!Game.Teams.IsTeamVisible())
 			{
 			// team not known; can't send!
@@ -355,65 +355,65 @@ bool C4MessageInput::ProcessInput(const char *szText)
 			szMsg = szText[0] == '^' ? szText+1 :
 							szText[0] == '/' ? szText+6 : szText+5;
 			}
-    }
+		}
 	// Starts with "/private ": Private message (running game only)
 	else if(Game.IsRunning && SEqual2NoCase(szText, "/private "))
 		{
-    // get target name
-    char szTargetPlr[C4MaxName + 1];
-    SCopyUntil(szText + 9, szTargetPlr, ' ', C4MaxName);
-    // search player
-    C4Player *pToPlr = ::Players.GetByName(szTargetPlr);
-    if(!pToPlr) return false;
-    // set
-    eMsgType = C4CMT_Private;
+		// get target name
+		char szTargetPlr[C4MaxName + 1];
+		SCopyUntil(szText + 9, szTargetPlr, ' ', C4MaxName);
+		// search player
+		C4Player *pToPlr = ::Players.GetByName(szTargetPlr);
+		if(!pToPlr) return false;
+		// set
+		eMsgType = C4CMT_Private;
 		iToPlayer = pToPlr->Number;
-    szMsg = szText + 10 + SLen(szText);
-    if(szMsg > szText + SLen(szText)) return false;
+		szMsg = szText + 10 + SLen(szText);
+		if(szMsg > szText + SLen(szText)) return false;
 		}
-  // Starts with "/me ": Me-Message
-  else if(SEqual2NoCase(szText, "/me "))
-    {
-    eMsgType = C4CMT_Me;
-    szMsg = szText+4;
-    }
-  // Starts with "/sound ": Sound-Message
-  else if(SEqual2NoCase(szText, "/sound "))
-    {
-    eMsgType = C4CMT_Sound;
-    szMsg = szText+7;
-    }
-  // Starts with "/alert": Taskbar flash (message optional)
-  else if(SEqual2NoCase(szText, "/alert ") || SEqualNoCase(szText, "/alert"))
-    {
-    eMsgType = C4CMT_Alert;
-    szMsg = szText+6;
+	// Starts with "/me ": Me-Message
+	else if(SEqual2NoCase(szText, "/me "))
+		{
+		eMsgType = C4CMT_Me;
+		szMsg = szText+4;
+		}
+	// Starts with "/sound ": Sound-Message
+	else if(SEqual2NoCase(szText, "/sound "))
+		{
+		eMsgType = C4CMT_Sound;
+		szMsg = szText+7;
+		}
+	// Starts with "/alert": Taskbar flash (message optional)
+	else if(SEqual2NoCase(szText, "/alert ") || SEqualNoCase(szText, "/alert"))
+		{
+		eMsgType = C4CMT_Alert;
+		szMsg = szText+6;
 		if (*szMsg) ++szMsg;
-    }
-  // Starts with '"': Let the clonk say it
-  else if(Game.IsRunning && szText[0] == '"')
-    {
-    eMsgType = C4CMT_Say;
-    // Append '"', if neccessary
+		}
+	// Starts with '"': Let the clonk say it
+	else if(Game.IsRunning && szText[0] == '"')
+		{
+		eMsgType = C4CMT_Say;
+		// Append '"', if neccessary
 		StdStrBuf text(szText);
-    SCopy(szText, OSTR, 400);
-    char *pEnd = OSTR + SLen(OSTR) - 1;
-    if(*pEnd != '"') { *++pEnd = '"'; *++pEnd = 0; }
-    szMsg = OSTR;
-    }
+		SCopy(szText, OSTR, 400);
+		char *pEnd = OSTR + SLen(OSTR) - 1;
+		if(*pEnd != '"') { *++pEnd = '"'; *++pEnd = 0; }
+		szMsg = OSTR;
+		}
 	// Starts with '/': Command
 	else if(szText[0] == '/')
 		return ProcessCommand(szText);
-  // Regular message
-  else
-  {
-    eMsgType = C4CMT_Normal;
-    szMsg = szText;
-  }
+	// Regular message
+	else
+	{
+		eMsgType = C4CMT_Normal;
+		szMsg = szText;
+	}
 
-  // message?
-  if(szMsg)
-  {
+	// message?
+	if(szMsg)
+	{
 		char szMessage[C4MaxMessage + 1];
 		// go over whitespaces, check empty message
 		while(IsWhiteSpace(*szMsg)) szMsg++;
@@ -435,13 +435,13 @@ bool C4MessageInput::ProcessInput(const char *szText)
 			// get message
 			SCopy(szMsg, szMessage, Min<unsigned long>(C4MaxMessage, szEnd - szMsg + 1));
 			}
-    // get sending player (if any)
+		// get sending player (if any)
 		C4Player *pPlr = Game.IsRunning ? ::Players.GetLocalByIndex(0) : NULL;
-    // send
-    ::Control.DoInput(CID_Message,
-      new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->Number : -1, iToPlayer),
-      CDT_Private);
-  }
+		// send
+		::Control.DoInput(CID_Message,
+			new C4ControlMessage(eMsgType, szMessage, pPlr ? pPlr->Number : -1, iToPlayer),
+			CDT_Private);
+	}
 
 	return true;
 	}
@@ -484,9 +484,9 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if (!Game.IsRunning) return false;
 		if (!Game.DebugMode) return false;
 		if (!::Network.isEnabled() && !SEqual(Game.ScenarioFile.GetMaker(), Config.General.Name) && Game.ScenarioFile.GetStatus() != GRPF_Folder) return false;
-    if (::Network.isEnabled() && !::Network.isHost()) return false;
+		if (::Network.isEnabled() && !::Network.isHost()) return false;
 
-    ::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
+		::Control.DoInput(CID_Script, new C4ControlScript(pCmdPar, C4ControlScript::SCOPE_Console, false), CDT_Decide);
 		return true;
 		}
 	// set runtimte properties
@@ -510,9 +510,9 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 		if(SEqual2(pCmdPar, "comment ") || SEqual(pCmdPar, "comment"))
 		  {
 			if(!::Network.isEnabled() || !::Network.isHost()) return false;
-      // Set in configuration, update reference
+			// Set in configuration, update reference
 			Config.Network.Comment.CopyValidated(pCmdPar[7] ? (pCmdPar+8) : "");
-      ::Network.InvalidateReference();
+			::Network.InvalidateReference();
 			Log(LoadResStr("IDS_NET_COMMENTCHANGED"));
 			return true;
 		  }
@@ -523,20 +523,20 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 			if (pLobby) pLobby->UpdatePassword();
 			return true;
 		  }
-    if(SEqual2(pCmdPar, "faircrew "))
-      {
-      C4ControlSet *pSet = NULL;
-      if(SEqual(pCmdPar + 9, "on"))
-        pSet = new C4ControlSet(C4CVT_FairCrew, Config.General.FairCrewStrength);
-      else if(SEqual(pCmdPar + 9, "off"))
-        pSet = new C4ControlSet(C4CVT_FairCrew, -1);
-      else if(isdigit((unsigned char)pCmdPar[9]))
-        pSet = new C4ControlSet(C4CVT_FairCrew, atoi(pCmdPar + 9));
-      else
-        return false;
-      ::Control.DoInput(CID_Set, pSet, CDT_Decide);
-      return true;
-      }
+		if(SEqual2(pCmdPar, "faircrew "))
+			{
+			C4ControlSet *pSet = NULL;
+			if(SEqual(pCmdPar + 9, "on"))
+				pSet = new C4ControlSet(C4CVT_FairCrew, Config.General.FairCrewStrength);
+			else if(SEqual(pCmdPar + 9, "off"))
+				pSet = new C4ControlSet(C4CVT_FairCrew, -1);
+			else if(isdigit((unsigned char)pCmdPar[9]))
+				pSet = new C4ControlSet(C4CVT_FairCrew, atoi(pCmdPar + 9));
+			else
+				return false;
+			::Control.DoInput(CID_Set, pSet, CDT_Decide);
+			return true;
+			}
 		// unknown property
 		return false;
 		}
@@ -647,8 +647,8 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 	// kick/activate/deactivate/observer
 	if(SEqual(szCmdName, "activate") || SEqual(szCmdName, "deactivate") || SEqual(szCmdName, "observer"))
 		{
-    if (!::Network.isEnabled() || !::Network.isHost())
-      { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return false; }
+		if (!::Network.isEnabled() || !::Network.isHost())
+			{ Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return false; }
 		// search for client
 		C4Client *pClient = Game.Clients.getClientByName(pCmdPar);
 		if (!pClient)
@@ -674,12 +674,12 @@ bool C4MessageInput::ProcessCommand(const char *szCommand)
 
 	// control mode
 	if(SEqual(szCmdName, "centralctrl") || SEqual(szCmdName, "decentralctrl")  || SEqual(szCmdName, "asyncctrl"))
-    {
-    if (!::Network.isEnabled() || !::Network.isHost())
-      { Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return false; }
-    ::Network.SetCtrlMode(*szCmdName == 'c' ? CNM_Central : *szCmdName == 'd' ? CNM_Decentral : CNM_Async);
+		{
+		if (!::Network.isEnabled() || !::Network.isHost())
+			{ Log(LoadResStr("IDS_MSG_CMD_HOSTONLY")); return false; }
+		::Network.SetCtrlMode(*szCmdName == 'c' ? CNM_Central : *szCmdName == 'd' ? CNM_Decentral : CNM_Async);
 		return true;
-    }
+		}
 
 	// show chart
 	if (Game.IsRunning) if (SEqual(szCmdName, "chart"))
@@ -786,7 +786,7 @@ void C4MessageInput::ClearPointers(C4Object *pObj)
 	}
 
 void C4MessageInput::AbortMsgBoardQuery(C4Object *pObj, int32_t iPlr)
-  {
+	{
 	// close typein if it is used for the given parameters
 	C4ChatInputDialog *pDlg = GetTypeIn();
 	if (pDlg && pDlg->IsScriptQueried() && pDlg->GetScriptTargetObject() == pObj && pDlg->GetScriptTargetPlayer() == iPlr) CloseTypeIn();

@@ -139,47 +139,47 @@ const DWORD C4D_Load_None      =  0,
 #define C4D_Blit_ModAdd     2
 
 class C4Def: public C4PropList
-  {
-  public:
-    C4ID id;
+	{
+	public:
+		C4ID id;
 		int32_t rC4XVer[4];
 		C4IDList RequireDef;
 		C4PhysicalInfo Physical;
-    C4Shape Shape;
-    C4Rect Entrance;
-    C4Rect Collection;
-    C4Rect PictureRect;
-    C4TargetRect SolidMask;
-    C4TargetRect TopFace;
-    C4IDList Component;
-    C4ID BurnTurnTo;
-    C4ID BuildTurnTo;
-    int32_t GrowthType;
-    int32_t CrewMember;
+		C4Shape Shape;
+		C4Rect Entrance;
+		C4Rect Collection;
+		C4Rect PictureRect;
+		C4TargetRect SolidMask;
+		C4TargetRect TopFace;
+		C4IDList Component;
+		C4ID BurnTurnTo;
+		C4ID BuildTurnTo;
+		int32_t GrowthType;
+		int32_t CrewMember;
 		int32_t NativeCrew;
-    int32_t Mass;
-    int32_t Value;
-    int32_t Exclusive;
-    int32_t Category;
-    int32_t Growth;
-    int32_t Rebuyable;
-    int32_t ContactIncinerate; // 0 off 1 high - 5 low
-    int32_t BlastIncinerate; // 0 off 1 - x if > damage
-    int32_t Constructable;
-    int32_t Grab; // 0 not 1 push 2 grab only
-    int32_t Carryable;
-    int32_t Rotateable;
-    int32_t Chopable;
-    int32_t Float;
-    int32_t ColorByOwner;
-    int32_t NoHorizontalMove;
-    int32_t BorderBound;
-    int32_t LiftTop;
-    int32_t GrabPutGet;
-    int32_t ContainBlast;
-    int32_t UprightAttach;
-    int32_t ContactFunctionCalls;
-    int32_t MaxUserSelect;
+		int32_t Mass;
+		int32_t Value;
+		int32_t Exclusive;
+		int32_t Category;
+		int32_t Growth;
+		int32_t Rebuyable;
+		int32_t ContactIncinerate; // 0 off 1 high - 5 low
+		int32_t BlastIncinerate; // 0 off 1 - x if > damage
+		int32_t Constructable;
+		int32_t Grab; // 0 not 1 push 2 grab only
+		int32_t Carryable;
+		int32_t Rotateable;
+		int32_t Chopable;
+		int32_t Float;
+		int32_t ColorByOwner;
+		int32_t NoHorizontalMove;
+		int32_t BorderBound;
+		int32_t LiftTop;
+		int32_t GrabPutGet;
+		int32_t ContainBlast;
+		int32_t UprightAttach;
+		int32_t ContactFunctionCalls;
+		int32_t MaxUserSelect;
 		int32_t Line;
 		int32_t LineConnect;
 		int32_t LineIntersect;
@@ -201,7 +201,7 @@ class C4Def: public C4PropList
 		int32_t Timer;
 		int32_t NoComponentMass;
 		int32_t NoStabilize;
-    char STimerCall[C4AUL_MAX_Identifier];
+		char STimerCall[C4AUL_MAX_Identifier];
 		int32_t ClosedContainer;	// if set, contained objects are not damaged by lava/acid etc. 1: Contained objects can't view out; 2: They can
 		int32_t SilentCommands;		// if set, no command failure messages are printed
 		int32_t NoBurnDamage;			// if set, the object won't take damage when burning
@@ -221,7 +221,7 @@ class C4Def: public C4PropList
 		int32_t AllowPictureStack; // allow stacking of multiple items in menus even if some attributes do not match. APS_*-values
 	public:
 		void DefaultDefCore();
-    bool LoadDefCore(C4Group &hGroup);
+		bool LoadDefCore(C4Group &hGroup);
 		bool Save(C4Group &hGroup);
 		void CompileFunc(StdCompiler *pComp);
 	protected:
@@ -230,11 +230,11 @@ class C4Def: public C4PropList
 
 
 // Here begins the C4Def
-  friend class C4DefList;
-  public:
-    C4Def();
-    ~C4Def();
-  public:
+	friend class C4DefList;
+	public:
+		C4Def();
+		~C4Def();
+	public:
 		char Maker[C4MaxName+1];
 		char Filename[_MAX_FNAME+1];
 		int32_t Creation;
@@ -264,25 +264,25 @@ class C4Def: public C4PropList
 
 		C4Facet MainFace;
 
-  protected:
-    C4Def *Next;
-    bool Temporary;
+	protected:
+		C4Def *Next;
+		bool Temporary;
 	public:
 		void Clear();
 		void Default();
-    bool Load(C4Group &hGroup,
-              DWORD dwLoadWhat, const char *szLanguage,
+		bool Load(C4Group &hGroup,
+							DWORD dwLoadWhat, const char *szLanguage,
 							class C4SoundSystem *pSoundSystem = NULL);
 		void Draw(C4Facet &cgo, bool fSelected=false, DWORD iColor=0, C4Object *pObj=NULL, int32_t iPhaseX=0, int32_t iPhaseY=0);
 
 		inline C4Facet &GetMainFace(C4DefGraphics *pGraphics, DWORD dwClr=0) { MainFace.Surface=pGraphics->GetBitmap(dwClr); return MainFace; }
 		int32_t GetValue(C4Object *pInBase, int32_t iBuyPlayer);         // get value of def; calling script functions if defined
 		C4PhysicalInfo *GetFairCrewPhysicals(); // get fair crew physicals at current fair crew strength
-    void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
+		void ClearFairCrewPhysicals();  // remove cached fair crew physicals, will be created fresh on demand
 		void Synchronize();
 		const char *GetDesc() { return Desc.GetData(); }
 		virtual C4Def* GetDef() { return this; }
-  protected:
+	protected:
 	  bool LoadPortraits(C4Group &hGroup);
 		bool LoadActMap(C4Group &hGroup);
 		void CrossMapActMap();
@@ -299,34 +299,34 @@ class C4Def: public C4PropList
 
 		C4PropList *GetActionByName(const char *actname);
 		C4PropList *GetActionByName(C4String *actname);
-  };
+	};
 
 class C4DefList
 : public CStdFont::CustomImages
-  {
-  public:
-    C4DefList();
-    virtual ~C4DefList();
+	{
+	public:
+		C4DefList();
+		virtual ~C4DefList();
 	public:
 		bool LoadFailure;
 	typedef std::map<C4ID, C4Def*> Table;
 	Table table;
-  protected:
-    C4Def *FirstDef;
-  public:
+	protected:
+		C4Def *FirstDef;
+	public:
 	  void Default();
-    void Clear();
-    int32_t Load(C4Group &hGroup,
-             DWORD dwLoadWhat, const char *szLanguage,
+		void Clear();
+		int32_t Load(C4Group &hGroup,
+						 DWORD dwLoadWhat, const char *szLanguage,
 						 C4SoundSystem *pSoundSystem = NULL,
 						 bool fOverload = false,
 						 bool fSearchMessage = false, int32_t iMinProgress=0, int32_t iMaxProgress=0, bool fLoadSysGroups = true);
-    int32_t Load(const char *szSearch,
-             DWORD dwLoadWhat, const char *szLanguage,
+		int32_t Load(const char *szSearch,
+						 DWORD dwLoadWhat, const char *szLanguage,
 						 C4SoundSystem *pSoundSystem = NULL,
 						 bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-    int32_t LoadFolderLocal(const char *szPath,
-             DWORD dwLoadWhat, const char *szLanguage,
+		int32_t LoadFolderLocal(const char *szPath,
+						 DWORD dwLoadWhat, const char *szLanguage,
 						 C4SoundSystem *pSoundSystem = NULL,
 						 bool fOverload = false, char *szStoreName=NULL, int32_t iMinProgress=0, int32_t iMaxProgress=0);
 	  int32_t LoadForScenario(const char *szScenario,
@@ -334,19 +334,19 @@ class C4DefList
 						 DWORD dwLoadWhat, const char *szLanguage,
 						 C4SoundSystem *pSoundSystem = NULL,
 						 bool fOverload = false, int32_t iMinProgress=0, int32_t iMaxProgress=0);
-    C4Def *ID2Def(C4ID id);
-    C4Def *GetDef(int32_t Index, DWORD dwCategory = C4D_All);
-    C4Def *GetByPath(const char *szPath);
+		C4Def *ID2Def(C4ID id);
+		C4Def *GetDef(int32_t Index, DWORD dwCategory = C4D_All);
+		C4Def *GetByPath(const char *szPath);
 		int32_t GetDefCount(DWORD dwCategory = C4D_All);
-    int32_t GetIndex(C4ID id);
-    int32_t RemoveTemporary();
+		int32_t GetIndex(C4ID id);
+		int32_t RemoveTemporary();
 		int32_t CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4);
 		int32_t CheckRequireDef();
 		void Draw(C4ID id, C4Facet &cgo, bool fSelected, int32_t iColor);
-    void Remove(C4Def *def);
-    bool Remove(C4ID id);
+		void Remove(C4Def *def);
+		bool Remove(C4ID id);
 	  bool Reload(C4Def *pDef, DWORD dwLoadWhat, const char *szLanguage, C4SoundSystem *pSoundSystem = NULL);
-    bool Add(C4Def *ndef, bool fOverload);
+		bool Add(C4Def *ndef, bool fOverload);
 	void BuildTable();
 		void ResetIncludeDependencies(); // resets all pointers into foreign definitions caused by include chains
 		void CallEveryDefinition();
@@ -354,7 +354,7 @@ class C4DefList
 
 		// callback from font renderer: get ID image
 		virtual bool GetFontImage(const char *szImageTag, CFacet &rOutImgFacet);
-  };
+	};
 
 extern C4DefList Definitions;
 

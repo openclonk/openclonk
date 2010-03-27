@@ -93,7 +93,7 @@ public:
 	~C4Network2Client();
 
 protected:
-  // client data
+	// client data
 	C4Client *pClient;
 
 	// addresses
@@ -101,17 +101,17 @@ protected:
 	int32_t AddrAttempts[C4ClientMaxAddr];
 	int32_t iAddrCnt;
 
-  // status
+	// status
 	C4Network2ClientStatus eStatus;
 
-  // frame of last activity
-  int32_t iLastActivity;
+	// frame of last activity
+	int32_t iLastActivity;
 
-  // connections
+	// connections
 	C4Network2IOConnection *pMsgConn, *pDataConn;
 	time_t iNextConnAttempt;
 
-  // part of client list
+	// part of client list
 	C4Network2Client *pNext;
 	class C4Network2ClientList *pParent;
 
@@ -141,13 +141,13 @@ public:
 
 	bool				isConnected()		const { return !! pMsgConn; }
 	time_t			getNextConnAttempt() const { return iNextConnAttempt; }
-  int32_t     getLastActivity() const { return iLastActivity; }
+	int32_t     getLastActivity() const { return iLastActivity; }
 	class C4TableGraph *getStatPing() const { return pstatPing; }
 
 	C4Network2Client *getNext() const { return pNext; }
 
-  void SetStatus(C4Network2ClientStatus enStatus) { eStatus = enStatus; }
-  void SetLastActivity(int32_t iTick) { iLastActivity = iTick; }
+	void SetStatus(C4Network2ClientStatus enStatus) { eStatus = enStatus; }
+	void SetLastActivity(int32_t iTick) { iLastActivity = iTick; }
 
 	C4Network2IOConnection *getMsgConn() const { return pMsgConn; }
 	C4Network2IOConnection *getDataConn() const { return pDataConn; }
@@ -155,10 +155,10 @@ public:
 	void SetMsgConn(C4Network2IOConnection *pConn);
 	void SetDataConn(C4Network2IOConnection *pConn);
 	void RemoveConn(C4Network2IOConnection *pConn);
-  void CloseConns(const char *szMsg);
+	void CloseConns(const char *szMsg);
 
-  bool SendMsg(C4NetIOPacket rPkt) const;
-  bool SendData(C4NetIOPacket rPkt) const;
+	bool SendMsg(C4NetIOPacket rPkt) const;
+	bool SendData(C4NetIOPacket rPkt) const;
 
 	bool DoConnectAttempt(class C4Network2IO *pIO);
 
@@ -222,8 +222,8 @@ public:
 	void ResetReady();
 	bool AllClientsReady() const;
 
-  // activity
-  void UpdateClientActivity();
+	// activity
+	void UpdateClientActivity();
 };
 
 // * Packets *

@@ -415,7 +415,7 @@ C4Particle *C4ParticleSystem::Create(C4ParticleDef *pOfDef,
 																			float x, float y,
 																			float xdir, float ydir,
 																			float a, int32_t b, C4ParticleList *pPxList,
-                                      C4Object *pObj)
+																			C4Object *pObj)
 	{
 	// safety
 	if (!pOfDef) return NULL;
@@ -437,10 +437,10 @@ C4Particle *C4ParticleSystem::Create(C4ParticleDef *pOfDef,
 	pPrt->xdir=xdir; pPrt->ydir=ydir;
 	pPrt->a=a; pPrt->b=b;
 	pPrt->pDef = pOfDef;
-  if(pPrt->pDef->Attach && pObj != NULL) {
-    pPrt->x -= pObj->GetX();
-    pPrt->y -= pObj->GetY();
-  }
+	if(pPrt->pDef->Attach && pObj != NULL) {
+		pPrt->x -= pObj->GetX();
+		pPrt->y -= pObj->GetY();
+	}
 	// call initialization
 	if (!pOfDef->InitProc(pPrt,pObj))
 		// failed :(
@@ -651,16 +651,16 @@ bool fxStdInit(C4Particle *pPrt, C4Object *pTarget)
 bool fxStdExec(C4Particle *pPrt, C4Object *pTarget)
 	{
 
-  float dx = pPrt->x, dy = pPrt->y;
-  float dxdir = pPrt->xdir, dydir = pPrt->ydir;
-  // rel. position & movement
-  if(pPrt->pDef->Attach && pTarget != NULL)
-  {
-    dx += pTarget->GetX();
-    dy += pTarget->GetY();
-    dxdir += fixtof(pTarget->xdir);
-    dydir += fixtof(pTarget->ydir);
-  }
+	float dx = pPrt->x, dy = pPrt->y;
+	float dxdir = pPrt->xdir, dydir = pPrt->ydir;
+	// rel. position & movement
+	if(pPrt->pDef->Attach && pTarget != NULL)
+	{
+		dx += pTarget->GetX();
+		dy += pTarget->GetY();
+		dxdir += fixtof(pTarget->xdir);
+		dydir += fixtof(pTarget->ydir);
+	}
 
 	// move
 	if (pPrt->xdir || pPrt->ydir)
@@ -779,16 +779,16 @@ void fxStdDraw(C4Particle *pPrt, C4TargetFacet &cgo, C4Object *pTarget)
 	int32_t tx=cgo.TargetX*pDef->Parallaxity[0]/100;
 	int32_t ty=cgo.TargetY*pDef->Parallaxity[1]/100;
 
-  float dx = pPrt->x, dy = pPrt->y;
-  float dxdir = pPrt->xdir, dydir = pPrt->ydir;
-  // relative position & movement
-  if(pPrt->pDef->Attach && pTarget != NULL)
-  {
-    dx += pTarget->GetX();
-    dy += pTarget->GetY();
-    dxdir += fixtof(pTarget->xdir);
-    dydir += fixtof(pTarget->ydir);
-  }
+	float dx = pPrt->x, dy = pPrt->y;
+	float dxdir = pPrt->xdir, dydir = pPrt->ydir;
+	// relative position & movement
+	if(pPrt->pDef->Attach && pTarget != NULL)
+	{
+		dx += pTarget->GetX();
+		dy += pTarget->GetY();
+		dxdir += fixtof(pTarget->xdir);
+		dydir += fixtof(pTarget->ydir);
+	}
 
 	// check if it's in screen range
 	if (!Inside(dx, tx-pPrt->a, tx+cgo.Wdt+pPrt->a)) return;

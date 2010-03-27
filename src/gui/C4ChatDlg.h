@@ -117,7 +117,7 @@ class C4ChatControl : public C4GUI::Window, private C4InteractiveThread::Callbac
 		StdStrBuf sTitle;
 		C4GUI::BaseInputCallback *pTitleChangeBC;
 
-    C4Network2IRCClient *pIRCClient;
+		C4Network2IRCClient *pIRCClient;
 		bool fInitialMessagesReceived; // set after initial update call, which fetches all messages. Subsequent calls fetch only unread messages
 
 	public:
@@ -131,7 +131,7 @@ class C4ChatControl : public C4GUI::Window, private C4InteractiveThread::Callbac
 
 	public:
 		virtual class C4GUI::Control *GetDefaultControl();
-    C4Network2IRCClient *getIRCClient() { return pIRCClient; }
+		C4Network2IRCClient *getIRCClient() { return pIRCClient; }
 
 		void SetTitleChangeCB(C4GUI::BaseInputCallback *pNewCB);
 		virtual void OnShown(); // callback when shown
@@ -153,8 +153,8 @@ class C4ChatControl : public C4GUI::Window, private C4InteractiveThread::Callbac
 		ChatSheet *GetServerSheet();
 		void ClearChatSheets();
 
-    // IRC event hook
-    virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) { if(pEventData == pIRCClient) Update(); }
+		// IRC event hook
+		virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) { if(pEventData == pIRCClient) Update(); }
 
 	};
 

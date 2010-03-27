@@ -457,7 +457,7 @@ void C4ToolsDlg::Clear()
 bool C4ToolsDlg::SetTool(int32_t iTool, bool fTemp)
 	{
 	Tool=iTool;
-  if (!fTemp) SelectedTool = Tool;
+	if (!fTemp) SelectedTool = Tool;
 	UpdateToolCtrls();
 	UpdatePreview();
 	return true;
@@ -680,7 +680,7 @@ void C4ToolsDlg::UpdatePreview()
 	// Material-Texture
 	else
 		{
-    bCol=Mat2PixColDefault(::MaterialMap.Get(Material));
+		bCol=Mat2PixColDefault(::MaterialMap.Get(Material));
 		// Get/Create TexMap entry
 		BYTE iTex = ::TextureMap.GetIndex(Material, Texture, true);
 		if (iTex)
@@ -755,11 +755,11 @@ void C4ToolsDlg::InitGradeCtrl()
 #ifdef _WIN32
 	if (!hDialog) return;
 	HWND hwndTrack = GetDlgItem(hDialog,IDC_SLIDERGRADE);
-  SendMessage(hwndTrack,TBM_SETPAGESIZE,0,(LPARAM)5);
-  SendMessage(hwndTrack,TBM_SETLINESIZE,0,(LPARAM)1);
-  SendMessage(hwndTrack,TBM_SETRANGE,(WPARAM)false,
-      (LPARAM) MAKELONG(C4TLS_GradeMin,C4TLS_GradeMax));
-  SendMessage(hwndTrack,TBM_SETPOS,(WPARAM)true,(LPARAM)C4TLS_GradeMax-Grade);
+	SendMessage(hwndTrack,TBM_SETPAGESIZE,0,(LPARAM)5);
+	SendMessage(hwndTrack,TBM_SETLINESIZE,0,(LPARAM)1);
+	SendMessage(hwndTrack,TBM_SETRANGE,(WPARAM)false,
+			(LPARAM) MAKELONG(C4TLS_GradeMin,C4TLS_GradeMax));
+	SendMessage(hwndTrack,TBM_SETPOS,(WPARAM)true,(LPARAM)C4TLS_GradeMax-Grade);
 	UpdateWindow(hwndTrack);
 #else
 #ifdef WITH_DEVELOPER_MODE
@@ -1034,16 +1034,16 @@ bool C4ToolsDlg::SelectMaterial(const char *szMaterial)
 	}
 
 void C4ToolsDlg::SetAlternateTool()
-  {
-  // alternate tool is the picker in any mode
-  SetTool(C4TLS_Picker, true);
-  }
+	{
+	// alternate tool is the picker in any mode
+	SetTool(C4TLS_Picker, true);
+	}
 
 void C4ToolsDlg::ResetAlternateTool()
-  {
-  // reset tool to selected tool in case alternate tool was set
-  SetTool(SelectedTool, true);
-  }
+	{
+	// reset tool to selected tool in case alternate tool was set
+	SetTool(SelectedTool, true);
+	}
 
 #ifdef WITH_DEVELOPER_MODE
 // GTK+ callbacks

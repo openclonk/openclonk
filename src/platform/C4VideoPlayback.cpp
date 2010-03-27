@@ -131,8 +131,8 @@ bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 	}
 	SMPEG_setdisplay(mpeg, surface, NULL, /*glmpeg_update*/NULL);
 
-        /* Play the movie, using SDL_mixer for audio */
-        //SMPEG_enableaudio(mpeg, 0);
+				/* Play the movie, using SDL_mixer for audio */
+				//SMPEG_enableaudio(mpeg, 0);
 	SDL_AudioSpec audiofmt;
 	Uint16 format;
 	int freq, channels;
@@ -144,7 +144,7 @@ bool C4VideoShowDialog::LoadVideo(C4VideoFile *pVideoFile)
 	audiofmt.channels = channels;
 	SMPEG_actualSpec(mpeg, &audiofmt);
 
-        SMPEG_play(mpeg);
+				SMPEG_play(mpeg);
 	/* Hook in the MPEG music mixer */
 	Mix_HookMusic(SMPEG_playAudioSDL, mpeg);
 	//SMPEG_enableaudio(mpeg, 1);
@@ -163,10 +163,10 @@ C4VideoShowDialog::~C4VideoShowDialog()
 #ifdef HAVE_LIBSMPEG
 	// FIXME
 	return;
-        /* Stop the movie and unhook SMPEG from the mixer */
-        SMPEG_stop(mpeg);
+				/* Stop the movie and unhook SMPEG from the mixer */
+				SMPEG_stop(mpeg);
 	SMPEG_delete(mpeg);
-        Mix_HookMusic(NULL, NULL);
+				Mix_HookMusic(NULL, NULL);
 	SDL_FreeSurface(surface);
 	delete mpeg_info;
 #endif // HAVE_LIBSMPEG

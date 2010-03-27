@@ -208,8 +208,8 @@ typedef CSurface * SURFACE;
 #ifndef USE_DIRECTX
 typedef struct _D3DLOCKED_RECT
 {
-    int                 Pitch;
-    unsigned char *     pBits;
+		int                 Pitch;
+		unsigned char *     pBits;
 } D3DLOCKED_RECT;
 #endif
 

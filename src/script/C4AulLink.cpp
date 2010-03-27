@@ -211,13 +211,13 @@ void C4AulScript::AfterLink()
 	}
 
 bool C4AulScript::ReloadScript(const char *szPath)
-  {
-  // call for childs
+	{
+	// call for childs
 	for (C4AulScript *s = Child0; s; s = s->Next)
-    if(s->ReloadScript(szPath))
-      return true;
-  return false;
-  }
+		if(s->ReloadScript(szPath))
+			return true;
+	return false;
+	}
 
 void C4AulScriptEngine::Link(C4DefList *rDefs)
 	{
@@ -277,10 +277,10 @@ void C4AulScriptEngine::Link(C4DefList *rDefs)
 		rDefs->CallEveryDefinition();
 		// display state
 		LogF("C4AulScriptEngine linked - %d line%s, %d warning%s, %d error%s",
-      lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
+			lineCnt, (lineCnt != 1 ? "s" : ""), warnCnt, (warnCnt != 1 ? "s" : ""), errCnt, (errCnt != 1 ? "s" : ""));
 
-    // reset counters
-    warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
+		// reset counters
+		warnCnt = errCnt = nonStrictCnt = lineCnt = 0;
 		}
 	catch (C4AulError *err)
 		{
@@ -315,13 +315,13 @@ void C4AulScriptEngine::ReLink(C4DefList *rDefs)
 	}
 
 bool C4AulScriptEngine::ReloadScript(const char *szScript, C4DefList *pDefs)
-  {
-  // reload
-  if(!C4AulScript::ReloadScript(szScript))
-    return false;
-  // relink
-  ReLink(pDefs);
-  // ok
-  return true;
-  }
+	{
+	// reload
+	if(!C4AulScript::ReloadScript(szScript))
+		return false;
+	// relink
+	ReLink(pDefs);
+	// ok
+	return true;
+	}
 

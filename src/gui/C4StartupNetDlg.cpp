@@ -103,14 +103,14 @@ void C4StartupNetListEntry::DrawElement(C4TargetFacet &cgo)
 	}
 
 void C4StartupNetListEntry::ClearRef()
-  {
+	{
 	// del old ref data
 	if (pRefClient)
-    {
-    C4InteractiveThread &Thread = Application.InteractiveThread;
-    Thread.RemoveProc(pRefClient);
-    delete pRefClient; pRefClient = NULL;
-    }
+		{
+		C4InteractiveThread &Thread = Application.InteractiveThread;
+		Thread.RemoveProc(pRefClient);
+		delete pRefClient; pRefClient = NULL;
+		}
 	if (pRef) { delete pRef; pRef = NULL; }
 	eQueryType = NRQT_Unknown;
 	iTimeout = iRequestTimeout = 0;
@@ -162,9 +162,9 @@ void C4StartupNetListEntry::SetRefQuery(const char *szAddress, enum QueryType eQ
 	// masterserver: always on top
 	if (eQueryType == NRQT_Masterserver)
 		iSortOrder = 100;
-  // register proc
-  C4InteractiveThread &Thread = Application.InteractiveThread;
-  Thread.AddProc(pRefClient);
+	// register proc
+	C4InteractiveThread &Thread = Application.InteractiveThread;
+	Thread.AddProc(pRefClient);
 	// start querying!
 	QueryReferences();
 	}
@@ -215,24 +215,24 @@ bool C4StartupNetListEntry::Execute()
 	if (pRefClient->isBusy())
 		// still requesting - but do not wait forever
 		if (time(NULL) >= iRequestTimeout)
-      {
+			{
 			SetError(LoadResStr("IDS_NET_ERR_REFREQTIMEOUT"), TT_RefReqWait);
-      pRefClient->Cancel("Timeout");
-      }
-  return true;
+			pRefClient->Cancel("Timeout");
+			}
+	return true;
 	}
 
 bool C4StartupNetListEntry::OnReference()
-  {
-  // wrong type / still busy?
-  if (!pRefClient || pRefClient->isBusy())
-    return true;
+	{
+	// wrong type / still busy?
+	if (!pRefClient || pRefClient->isBusy())
+		return true;
 	// successful?
 	if (!pRefClient->isSuccess())
 		{
 		// couldn't get references
 		SetError(pRefClient->GetError(), TT_RefReqWait);
-    return true;
+		return true;
 		}
 	// Ref getting done!
 	pIcon->SetAnimated(false, 1);
@@ -286,8 +286,8 @@ bool C4StartupNetListEntry::OnReference()
 	else
 		// no ref found on custom adress: Schedule re-check
 		SetTimeout(TT_RefReqWait);
-  return true;
-  }
+	return true;
+	}
 
 C4GUI::Element* C4StartupNetListEntry::GetNextLower(int32_t sortOrder)
 {
@@ -660,7 +660,7 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 		pChatGroup->SetColors(0u, C4GUI_CaptionFontClr, C4GUI_StandardBGColor);
 		pChatGroup->SetMargin(2);
 		pSheetChat->AddElement(pChatGroup);
-    pChatCtrl = new C4ChatControl(&Application.IRCClient);
+		pChatCtrl = new C4ChatControl(&Application.IRCClient);
 		pChatCtrl->SetBounds(pChatGroup->GetContainedClientRect());
 		pChatCtrl->SetTitleChangeCB(new C4GUI::InputCallback<C4StartupNetDlg>(this, &C4StartupNetDlg::OnChatTitleChange));
 		StdStrBuf sCurrTitle; sCurrTitle.Ref(pChatCtrl->GetTitle()); OnChatTitleChange(sCurrTitle);
@@ -707,15 +707,15 @@ C4StartupNetDlg::C4StartupNetDlg() : C4StartupDlg(LoadResStr("IDS_DLG_NETSTART")
 	// register timer
 	Application.Add(this);
 
-  // register as receiver of reference notifies
-  Application.InteractiveThread.SetCallback(Ev_HTTP_Response, this);
+	// register as receiver of reference notifies
+	Application.InteractiveThread.SetCallback(Ev_HTTP_Response, this);
 
 	}
 
 C4StartupNetDlg::~C4StartupNetDlg()
 	{
-  // disable notifies
-  Application.InteractiveThread.ClearCallback(Ev_HTTP_Response, this);
+	// disable notifies
+	Application.InteractiveThread.ClearCallback(Ev_HTTP_Response, this);
 	DiscoverClient.Close();
 	Application.Remove(this);
 	if (pMasterserverClient) delete pMasterserverClient;
@@ -852,12 +852,12 @@ void C4StartupNetDlg::UpdateList(bool fGotReference)
 		{
 		pNextElem = pElem->GetNext(); // determine next exec element now - execution
 		C4StartupNetListEntry *pEntry = static_cast<C4StartupNetListEntry *>(pElem);
-    // do item updates
-    bool fKeepEntry = true;
-    if(fGotReference)
-      fKeepEntry = pEntry->OnReference();
-    if(fKeepEntry)
-      fKeepEntry = pEntry->Execute();
+		// do item updates
+		bool fKeepEntry = true;
+		if(fGotReference)
+			fKeepEntry = pEntry->OnReference();
+		if(fKeepEntry)
+			fKeepEntry = pEntry->Execute();
 		// remove?
 		if (!fKeepEntry)
 			{
@@ -942,9 +942,9 @@ C4StartupNetDlg::DlgMode C4StartupNetDlg::GetDlgMode()
 	}
 
 void C4StartupNetDlg::OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData)
-  {
-  UpdateList(true);
-  }
+	{
+	UpdateList(true);
+	}
 
 bool C4StartupNetDlg::DoOK()
 	{
@@ -985,7 +985,7 @@ bool C4StartupNetDlg::DoOK()
 		}
 	// get currently selected item
 	C4GUI::Element *pSelection = pGameSelList->GetSelectedItem();
-   StdCopyStrBuf strNoJoin(LoadResStr("IDS_NET_NOJOIN"));
+	 StdCopyStrBuf strNoJoin(LoadResStr("IDS_NET_NOJOIN"));
 	if(!pSelection)
 		{
 		// no ref selected: Oh noes!
@@ -1029,8 +1029,8 @@ bool C4StartupNetDlg::DoOK()
 			{
 			::pGUI->ShowMessageModal(
 					FormatString(LoadResStr("IDS_NET_NOJOIN_BADVER"),
-                            pRef->getGameVersion().GetString().getData(),
-                            verThis.GetString().getData()).getData(),
+														pRef->getGameVersion().GetString().getData(),
+														verThis.GetString().getData()).getData(),
 					strNoJoin.getData(),
 					C4GUI::MessageDialog::btnOK,
 					C4GUI::Ico_Error);
@@ -1088,7 +1088,7 @@ void C4StartupNetDlg::DoRefresh()
 	// (Re-)Start discovery
 	if(!DiscoverClient.StartDiscovery())
 		{
-      StdCopyStrBuf strNoDiscovery(LoadResStr("IDS_NET_NODISCOVERY"));
+			StdCopyStrBuf strNoDiscovery(LoadResStr("IDS_NET_NODISCOVERY"));
 		::pGUI->ShowMessageModal(
 			FormatString(LoadResStr("IDS_NET_NODISCOVERY_DESC"), DiscoverClient.GetError()).getData(),
 			strNoDiscovery.getData(),

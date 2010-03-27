@@ -64,7 +64,7 @@ protected:
 	volatile int32_t iControlPreSend;
 
 	// statistics
-  int32_t iWaitStart;
+	int32_t iWaitStart;
 	int32_t iAvgControlSendTime;
 	int32_t iTargetFPS; // used for PreSend-colculation
 
@@ -75,12 +75,12 @@ protected:
 	C4GameControlPacket *pCtrlStack;
 	CStdCSec CtrlCSec;
 
-  // list of clients (activated only!)
-  C4GameControlClient *pClients;
-  CStdCSec ClientsCSec;
+	// list of clients (activated only!)
+	C4GameControlClient *pClients;
+	CStdCSec ClientsCSec;
 
 	// holds control that needs to be executed synchronized (main thread only)
-  C4Control SyncControl;
+	C4Control SyncControl;
 	C4GameControlPacket *pSyncCtrlQueue;
 
 	// control request timing
@@ -107,7 +107,7 @@ public:
 	void Execute(); // by main thread
 	bool CtrlReady(int32_t iTick); // by main thread
 	bool CtrlOverflow(int32_t iTick) const { return fRunning && iControlReady >= iTick + C4ControlOverflowLimit; } // by main thread
-  int32_t GetBehind(int32_t iTick) const { return iControlReady - iTick + 1; } // by main thread
+	int32_t GetBehind(int32_t iTick) const { return iControlReady - iTick + 1; } // by main thread
 	bool GetControl(C4Control *pCtrl, int32_t iTick); // by main thread
 	bool ClientReady(int32_t iClientID, int32_t iTick); // by main thread
 	int32_t ClientPerfStat(int32_t iClientID); // by main thread
@@ -115,7 +115,7 @@ public:
 
 	bool CtrlNeeded(int32_t iTick) const; // by main thread
 	void DoInput(const C4Control &Input); // by main thread
-  void DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, enum C4ControlDeliveryType eType); // by main thread
+	void DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, enum C4ControlDeliveryType eType); // by main thread
 
 	// sync control
 	C4ControlDeliveryType DecideControlDelivery() const; // by main thread
@@ -131,8 +131,8 @@ public:
 	void SetCtrlMode(C4GameControlNetworkMode enMode); // by main thread
 	C4GameControlNetworkMode GetCtrlMode() const { return eMode; } // by main thread
 
-  // performance
-  void CalcPerformance(int32_t iCtrlTick); // by main thread
+	// performance
+	void CalcPerformance(int32_t iCtrlTick); // by main thread
 
 	// interfaces
 	void HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Network2IOConnection *pConn);
@@ -141,19 +141,19 @@ public:
 protected:
 
 	// clients
-  void AddClient(int32_t iClientID, const char *szName); // by main thread
-  void RemoveClient(int32_t iClientID); // by main thread
-  void ClearClients(); // by main thread
+	void AddClient(int32_t iClientID, const char *szName); // by main thread
+	void RemoveClient(int32_t iClientID); // by main thread
+	void ClearClients(); // by main thread
 
 	// packet handling
 	void HandleControl(int32_t iByClientID, const C4GameControlPacket &rPkt);
 	void HandleControlReq(const C4PacketControlReq &rPkt, C4Network2IOConnection *pConn);
 	void HandleControlPkt(C4PacketType eCtrlType, C4ControlPacket *pPkt, enum C4ControlDeliveryType eType);
 
-  // client list
-  C4GameControlClient *getClient(int32_t iID);
-  void AddClient(C4GameControlClient *pClient);
-  void RemoveClient(C4GameControlClient *pClient);
+	// client list
+	C4GameControlClient *getClient(int32_t iID);
+	void AddClient(C4GameControlClient *pClient);
+	void RemoveClient(C4GameControlClient *pClient);
 
 	// control stack
 	C4GameControlPacket *getCtrl(int32_t iClientID, int32_t iCtrlTick); // by both
@@ -181,7 +181,7 @@ public:
 protected:
 	// header
 	int32_t iClientID, iCtrlTick;
-  int32_t iTime;
+	int32_t iTime;
 
 	// data
 	C4Control Ctrl;
@@ -192,7 +192,7 @@ protected:
 public:
 	int32_t					 getClientID()	const { return iClientID; }
 	int32_t					 getCtrlTick()	const { return iCtrlTick; }
-  int32_t          getTime()      const { return iTime; }
+	int32_t          getTime()      const { return iTime; }
 	const C4Control &getControl()		const { return Ctrl; }
 
 	void Set(int32_t iClientID, int32_t iCtrlTick);
@@ -216,8 +216,8 @@ protected:
 	// next expected control for this client
 	int32_t iNextControl;
 
-  // performance data
-  int32_t iPerformance;
+	// performance data
+	int32_t iPerformance;
 
 	// list (C4GameControl)
 	C4GameControlClient *pNext;
@@ -226,11 +226,11 @@ public:
 	int32_t			getClientID() const { return iClientID; }
 	const char *getName()			const { return szName; }
 	int32_t     getNextControl() const { return iNextControl; }
-  int32_t     getPerfStat() const;
+	int32_t     getPerfStat() const;
 
-  void Set(int32_t iClientID, const char *szName);
+	void Set(int32_t iClientID, const char *szName);
 	void SetNextControl(int32_t inNextControl) { iNextControl = inNextControl; }
-  void AddPerf(int32_t iTime);
+	void AddPerf(int32_t iTime);
 };
 
 // * Packet classes *

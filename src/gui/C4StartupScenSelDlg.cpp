@@ -200,7 +200,7 @@ void C4MapFolderData::CompileFunc(StdCompiler *pComp)
 	// compile scenario list
 	int32_t iOldScenCount = iScenCount;
 	pComp->Value(mkNamingCountAdapt(iScenCount,  "Scenario"));
-  if (pComp->isCompiler())
+	if (pComp->isCompiler())
 		{
 		while (iOldScenCount--) delete ppScenList[iOldScenCount];
 		delete [] ppScenList;
@@ -220,7 +220,7 @@ void C4MapFolderData::CompileFunc(StdCompiler *pComp)
 	// compile access gfx list
 	int32_t iOldAccesGfxCount = iAccessGfxCount;
 	pComp->Value(mkNamingCountAdapt(iAccessGfxCount,  "AccessGfx"));
-  if (pComp->isCompiler())
+	if (pComp->isCompiler())
 		{
 		while (iOldAccesGfxCount--) delete ppAccessGfxList[iOldAccesGfxCount];
 		delete [] ppAccessGfxList;
@@ -615,7 +615,7 @@ bool C4ScenarioListLoader::Entry::RenameTo(const char *szNewName)
 	SCopy(sFilename.getData(), fullfn, _MAX_PATH);
 	char *fullfn_fn = GetFilename(fullfn);
 	SCopy(fn, fullfn_fn, _MAX_PATH - (fullfn_fn - fullfn));
-   StdCopyStrBuf strErr(LoadResStr("IDS_FAIL_RENAME"));
+	 StdCopyStrBuf strErr(LoadResStr("IDS_FAIL_RENAME"));
 	// check if a rename is due
 	if (!ItemIdentical(sFilename.getData(), fullfn))
 		{
@@ -697,7 +697,7 @@ bool C4ScenarioListLoader::Scenario::LoadCustomPre(C4Group &rGrp)
 	// load scenario core first
 	StdStrBuf sFileContents;
 	if (!rGrp.LoadEntryString(C4CFN_ScenarioCore, sFileContents)) return false;
-  if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
+	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkParAdapt(C4S, false), sFileContents, (rGrp.GetFullName() + DirSep C4CFN_ScenarioCore).getData()))
 		return false;
 	return true;
 	}
@@ -1243,8 +1243,8 @@ bool C4ScenarioListLoader::ReloadCurrent()
 
 // font clrs
 const uint32_t ClrScenarioItem   = 0xff000000,
-               ClrScenarioItemXtra = 0x7f000000,
-               ClrScenarioItemDisabled = 0x7f000000;
+							 ClrScenarioItemXtra = 0x7f000000,
+							 ClrScenarioItemDisabled = 0x7f000000;
 
 // ------------------------------------------------
 // --- C4StartupScenSelDlg::ScenListItem

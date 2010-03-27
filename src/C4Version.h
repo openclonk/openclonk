@@ -49,9 +49,9 @@
 
 // Build Options
 #ifdef _DEBUG
-  #define C4BUILDDEBUG " dbg"
+	#define C4BUILDDEBUG " dbg"
 #else
-  #define C4BUILDDEBUG
+	#define C4BUILDDEBUG
 #endif
 
 #define C4BUILDOPT C4BUILDDEBUG

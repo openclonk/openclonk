@@ -31,7 +31,7 @@ class C4UpdatePackageCore
 	public:
 		C4UpdatePackageCore();  // ctor
 	public:
-    int32_t RequireVersion[4];
+		int32_t RequireVersion[4];
 		char Name[C4MaxName+1];
 		char DestPath[_MAX_PATH+1];
 		int32_t GrpUpdate;

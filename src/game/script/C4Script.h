@@ -52,15 +52,15 @@ struct C4ScriptConstDef
 // * the second (C4V2) takes an array of 10 parameters
 // only one may be set.
 struct C4ScriptFnDef
-  {
-  const char* Identifier; // the name of the func in the script
+	{
+	const char* Identifier; // the name of the func in the script
 	bool Public;
 	C4V_Type RetType; // type returned. ignored when C4V
 	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
 	C4Value (*FunctionC4V)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,
 	                                           C4Value*, C4Value*, C4Value*, C4Value*, C4Value*);
 	C4Value (*FunctionC4V2)(struct C4AulContext *, C4Value *);
-  };
+	};
 
 extern C4ScriptConstDef C4ScriptConstMap[];
 extern C4ScriptFnDef C4ScriptFnMap[];

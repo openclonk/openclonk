@@ -67,7 +67,7 @@ BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst) {
 	WndClass.hbrBackground = (HBRUSH) COLOR_BACKGROUND;
 	WndClass.lpszClassName = C4FullScreenClassName;
 	WndClass.hIcon         = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
-  WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
+	WndClass.hIconSm       = LoadIcon (hInst, MAKEINTRESOURCE (IDI_00_C4X) );
 	return RegisterClassEx(&WndClass);
 }
 
@@ -285,9 +285,9 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	// prepare search struct
 	DEVMODE dmode;
 	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
-  StdStrBuf Mon;
+	StdStrBuf Mon;
 	if (iMonitor)
-    Mon.Format("\\\\.\\Display%d", iMonitor+1);
+		Mon.Format("\\\\.\\Display%d", iMonitor+1);
 	// check if indexed mode exists
 	if (!EnumDisplaySettings(Mon.getData(), iIndex, &dmode)) return false;
 	// mode exists; return it

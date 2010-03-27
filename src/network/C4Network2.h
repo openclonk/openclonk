@@ -39,15 +39,15 @@ const int16_t C4NetStdPortTCP = 11112,
 							C4NetStdPortDiscovery = 11114,
 							C4NetStdPortRefServer = 11111,
 							C4NetStdPortPuncher = 11115,
-              C4NetStdPortHTTP = 80;
+							C4NetStdPortHTTP = 80;
 
 // ressource retrieve wait timeout
 const int C4NetResRetrieveTimeout = 100000; // (ms)
 
 // client (de)activation
 const int C4NetActivationReqInterval = 5000, // (ms)
-          C4NetMaxBehind4Activation = 20, // (ticks)
-          C4NetDeactivationDelay = 500; // (ticks)
+					C4NetMaxBehind4Activation = 20, // (ticks)
+					C4NetDeactivationDelay = 500; // (ticks)
 
 // client chase
 const unsigned int C4NetChaseTargetUpdateInterval = 5; // (s)
@@ -89,7 +89,7 @@ public:
 	int32_t					getCtrlMode()					const { return iCtrlMode; }
 	int32_t					getTargetCtrlTick()		const { return iTargetCtrlTick; }
 	const char		 *getStateName()				const;
-  const char     *getDescription()			const;
+	const char     *getDescription()			const;
 
 	bool						isEnabled()			const { return eState != GS_None; }
 	bool						isLobbyActive()	const { return eState == GS_Lobby; }
@@ -165,16 +165,16 @@ protected:
 	// chase
 	uint32_t iLastChaseTargetUpdate;
 
-  // activation
-  uint32_t iLastActivateRequest;
+	// activation
+	uint32_t iLastActivateRequest;
 
-  // reference
-  uint32_t iLastReferenceUpdate;
+	// reference
+	uint32_t iLastReferenceUpdate;
 	uint32_t iLastLeagueUpdate, iLeagueUpdateDelay;
 	bool fLeagueEndSent;
 
-  // league
-  class C4LeagueClient *pLeagueClient;
+	// league
+	class C4LeagueClient *pLeagueClient;
 
 	// game password
 	StdStrBuf sPassword;
@@ -231,7 +231,7 @@ public:
 	bool InitHost(bool fLobby);
 	InitResult InitClient(const class C4Network2Reference &Ref, bool fObserver);
 	InitResult InitClient(const class C4Network2Address *pAddrs, int iAddrCount, const class C4ClientCore &HostCore, const char *szPassword = NULL);
-  bool InitHostRessources();
+	bool InitHostRessources();
 	bool DoLobby();
 	bool Start();
 	bool Pause();
@@ -253,7 +253,7 @@ public:
 	bool ToggleClientListDlg();
 	void AllowJoin(bool fAllow);
 	void SetAllowObserve(bool fAllow);
-  void SetCtrlMode(int32_t iCtrlMode);
+	void SetCtrlMode(int32_t iCtrlMode);
 	void SetPassword(const char *szToPassword);
 	StdStrBuf QueryClientPassword(); // ask client for a password; empty if user canceled
 
@@ -269,17 +269,17 @@ public:
 	// status
 	void DrawStatus(C4TargetFacet &cgo);
 
-  // client activation
-  void RequestActivate();
-  void DeactivateInactiveClients(); // host
+	// client activation
+	void RequestActivate();
+	void DeactivateInactiveClients(); // host
 
-  // league
-  void LeagueGameEvaluate(const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL);
+	// league
+	void LeagueGameEvaluate(const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL);
 	void LeagueSignupDisable(); // if "internet game" button is switched off in lobby: Remove from league server
 	bool LeagueSignupEnable();  // if "internet game" button is switched on in lobby: (re)Add to league server
 	void InvalidateReference(); // forces a recreation and re-send of the game reference in the next execution cycle
-  bool LeaguePlrAuth(C4PlayerInfo *pInfo); // client: get authentication for a player from the league server
-  bool LeaguePlrAuthCheck(C4PlayerInfo *pInfo); // host: check AUID of player info with league server
+	bool LeaguePlrAuth(C4PlayerInfo *pInfo); // client: get authentication for a player from the league server
+	bool LeaguePlrAuthCheck(C4PlayerInfo *pInfo); // host: check AUID of player info with league server
 	void LeagueNotifyDisconnect(int32_t iClientID, enum C4LeagueDisconnectReason eReason); //
 	void LeagueWaitNotBusy(); // block until league serveris no longer busy. Process update reply if last message was an update
 	void LeagueSurrender(); // forfeit in league - just fake a disconnect
@@ -427,13 +427,13 @@ public:
 class C4PacketActivateReq : public C4PacketBase
 {
 public:
-  C4PacketActivateReq(int32_t iTick = -1) : iTick(iTick) { }
+	C4PacketActivateReq(int32_t iTick = -1) : iTick(iTick) { }
 
 protected:
-  int32_t iTick;
+	int32_t iTick;
 
 public:
-  int32_t getTick() const { return iTick; }
+	int32_t getTick() const { return iTick; }
 
 	virtual void CompileFunc(StdCompiler *pComp);
 };

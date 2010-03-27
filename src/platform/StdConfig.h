@@ -40,8 +40,8 @@ class CStdConfigValue
 		const char *Name;
 		int Offset;
 		long Default; // Pointers are cast into this field, so be prepared
-                  // to hold 64 bit on x86_64
-  };
+									// to hold 64 bit on x86_64
+	};
 
 class CStdConfig
 	{

@@ -283,7 +283,7 @@ protected:
 	void * Info;
 #elif defined(USE_SDL_MAINLOOP)
 private:
-    int width, height;
+		int width, height;
 protected:
 	virtual void HandleMessage(SDL_Event&) {}
 #endif

@@ -41,7 +41,7 @@ C4AbortGameDialog::C4AbortGameDialog()
 														MessageDialog::btnYesNo,
 														true,
 														C4GUI::Ico_Exit),
-  fGameHalted(false)
+	fGameHalted(false)
 	{
 	is_shown = true; // assume dlg will be shown, soon
 	}

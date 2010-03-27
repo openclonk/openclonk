@@ -116,7 +116,7 @@ void C4ObjectMenu::ClearPointers(C4Object *pObj)
 
 C4Object* C4ObjectMenu::GetParentObject()
 	{
-  C4Object *cObj; C4ObjectLink *cLnk;
+	C4Object *cObj; C4ObjectLink *cLnk;
 	for (cLnk=::Objects.First; cLnk && (cObj=cLnk->Obj); cLnk=cLnk->Next)
 		if ( cObj->Menu == this )
 			return cObj;

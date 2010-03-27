@@ -60,21 +60,21 @@ static bool SurfaceEnsureSize(C4Surface **ppSfc, int iMinWdt, int iMinHgt)
 	}
 
 void C4Sky::SetFadePalette(int32_t *ipColors)
-  {
-  // If colors all zero, use game palette default blue
-  if (ipColors[0]+ipColors[1]+ipColors[2]+ipColors[3]+ipColors[4]+ipColors[5]==0)
-    {
+	{
+	// If colors all zero, use game palette default blue
+	if (ipColors[0]+ipColors[1]+ipColors[2]+ipColors[3]+ipColors[4]+ipColors[5]==0)
+		{
 		BYTE *pClr=::GraphicsResource.GamePalette+3*CSkyDef1;
 		FadeClr1=C4RGB(pClr[0], pClr[1], pClr[2]);
 		FadeClr2=C4RGB(pClr[3*19+0], pClr[3*19+1], pClr[3*19+2]);
-    }
+		}
 	else
 		{
 		// set colors
 		FadeClr1=C4RGB(ipColors[0], ipColors[1], ipColors[2]);
 		FadeClr2=C4RGB(ipColors[3], ipColors[4], ipColors[5]);
 		}
-  }
+	}
 
 bool C4Sky::Init(bool fSavegame)
 	{
@@ -165,8 +165,8 @@ bool C4Sky::Init(bool fSavegame)
 		}
 
 	// Success
-  return true;
-  }
+	return true;
+	}
 
 void C4Sky::Default()
 	{
@@ -261,7 +261,7 @@ bool C4Sky::SetModulation(DWORD dwWithClr, DWORD dwBackClr)
 	}
 
 void C4Sky::CompileFunc(StdCompiler *pComp)
-  {
+	{
 	pComp->Value(mkNamingAdapt(mkCastIntAdapt(x),   "X",                     Fix0));
 	pComp->Value(mkNamingAdapt(mkCastIntAdapt(y),   "Y",                     Fix0));
 	pComp->Value(mkNamingAdapt(mkCastIntAdapt(xdir),"XDir",                  Fix0));
@@ -272,4 +272,4 @@ void C4Sky::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ParallaxMode,    "ParMode",               C4SkyPM_Fixed));
 	pComp->Value(mkNamingAdapt(BackClr,         "BackClr",               0));
 	pComp->Value(mkNamingAdapt(BackClrEnabled,  "BackClrEnabled",        false));
-  }
+	}

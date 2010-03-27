@@ -35,7 +35,7 @@ inline void FixedRandom(DWORD dwSeed)
 	srand((unsigned)time(NULL));
 	RandomHold=dwSeed; // srand(dwSeed);
 	RandomCount=0;
-  }
+	}
 
 #ifdef DEBUGREC
 int Random(int iRange);

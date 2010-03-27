@@ -201,8 +201,8 @@ bool C4ComponentHost::Load(const char *szName,
 		}
 	// Truncate any additional segments from stored filename
 	SReplaceChar(Filename, '|', 0);
-  // skip full path (unknown)
-  FilePath[0] = 0;
+	// skip full path (unknown)
+	FilePath[0] = 0;
 	// Not loaded
 	return false;
 	}

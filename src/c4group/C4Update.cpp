@@ -198,17 +198,17 @@ public:
 		memcpy(&pCore->Time, &SavedCore.Time, (char *)&SavedCore + sizeof(SavedCore) - (char *)&SavedCore.Time);
 	}
 
-  void SetEntryTime(const char *szEntry, int iEntryTime)
-  {
+	void SetEntryTime(const char *szEntry, int iEntryTime)
+	{
 		C4GroupEntryCore *pCore = GetEntry(szEntry);
-    if(pCore) pCore->Time = iEntryTime;
-  }
+		if(pCore) pCore->Time = iEntryTime;
+	}
 
-  void SetNoSort(const char *szEntry)
-  {
+	void SetNoSort(const char *szEntry)
+	{
 		C4GroupEntry *pEntry = GetEntry(szEntry);
-    if(pEntry) pEntry->NoSort = true;
-  }
+		if(pEntry) pEntry->NoSort = true;
+	}
 
 	// close without header update
 	bool Close(bool fHeaderUpdate)
@@ -350,7 +350,7 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 		uint32_t iCRC32;
 		if(!C4Group_GetFileCRC(TargetGrp.GetFullName().getData(), &iCRC32))
 			return false;
-        int i = 0;
+				int i = 0;
 		for(; i < UpGrpCnt; i++)
 			if(iCRC32 == GrpChks1[i])
 				break;
@@ -463,7 +463,7 @@ int C4UpdatePackage::Check(C4Group *pGroup)
 		// so there's nothing to do
 		return C4UPD_CHK_ALREADY_UPDATED;
 	// check if it's one of our registered sources
-    int i = 0;
+		int i = 0;
 	for(; i < UpGrpCnt; i++)
 		if(iCRC32 == GrpChks1[i])
 			break;
@@ -521,7 +521,7 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 #ifdef _MSC_VER
 		OutputDebugString(strMsg);
 #elif _DEBUG
-        puts(strMsg);
+				puts(strMsg);
 #endif
 		if(!C4Group_CopyEntry(pGrpFrom, pGrpTo, strFileName))
 			return false;
@@ -546,33 +546,33 @@ bool C4UpdatePackage::DoGrpUpdate(C4Group *pUpdateData, C4GroupEx *pGrpTo)
 		{
 			bool fGotIt = false;
 			for(int i = 0; (fGotIt = SCopySegment(pData, i, strItemName2, '|', _MAX_FNAME)); i++)
-      {
-        // remove seperator
-        char *pSep = strchr(strItemName2, '=');
-        if(pSep) *pSep = '\0';
-        // in list?
+			{
+				// remove seperator
+				char *pSep = strchr(strItemName2, '=');
+				if(pSep) *pSep = '\0';
+				// in list?
 				if(SEqual(strItemName, strItemName2))
 					break;
-      }
+			}
 			if(!fGotIt)
 				pGrpTo->DeleteEntry(strItemName);
 		}
-    // set entry times, set sort list
-    char strSortList[32767] = "";
+		// set entry times, set sort list
+		char strSortList[32767] = "";
 		for(int i = 0; SCopySegment(pData, i, strItemName, '|', _MAX_FNAME); i++)
-    {
-      // get time (if given)
-      char *pTime = strchr(strItemName, '=');
-      if(pTime) *pTime++ = '\0';
-      // set
-      if(pTime) pGrpTo->SetEntryTime(strItemName, atoi(pTime));
+		{
+			// get time (if given)
+			char *pTime = strchr(strItemName, '=');
+			if(pTime) *pTime++ = '\0';
+			// set
+			if(pTime) pGrpTo->SetEntryTime(strItemName, atoi(pTime));
 			// update EntryCRC32. This will make updates to old groups invalid
 			// however, it's needed so updates will update the EntryCRC of *unchanged* files correctly
 			pGrpTo->EntryCRC32(strItemName);
-      // copy to sort list
-      SAppend(strItemName, strSortList);
-      SAppendChar('|', strSortList);
-    }
+			// copy to sort list
+			SAppend(strItemName, strSortList);
+			SAppendChar('|', strSortList);
+		}
 		// sort by list
 		pGrpTo->Sort(strSortList);
 		delete[] pData;
@@ -673,7 +673,7 @@ bool C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 				// that would mess up the update result...
 			{ WriteLog("Error: could not add to update package - target groups don't match (checksum error)\n"); return false; }
 		// already supported by this update?
-        int i = 0;
+				int i = 0;
 		for(; i < UpGrpCnt; i++)
 			if(GrpChks1[UpGrpCnt] == GrpChks1[i])
 				break;
@@ -729,7 +729,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 	{
 		// add to entry list
 		if(!!EntryList) EntryList.AppendChar('|');
-    EntryList.AppendFormat("%s=%d", strItemName, pGrp2->EntryTime(strItemName));
+		EntryList.AppendFormat("%s=%d", strItemName, pGrp2->EntryTime(strItemName));
 		// no modification detected yet? then check order
 		if(!*fModified)
 		{

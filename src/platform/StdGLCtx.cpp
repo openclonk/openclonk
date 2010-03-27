@@ -347,10 +347,10 @@ bool CStdGLCtx::Select(bool verbose)
 void CStdGLCtx::Deselect()
 {
 	if (pGL && pGL->pCurrCtx == this)
-    {
+		{
 		pGL->pCurrCtx = 0;
 		pGL->RenderTarget = 0;
-    }
+		}
 }
 
 bool CStdGLCtx::PageFlip()

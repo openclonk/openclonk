@@ -31,31 +31,31 @@ const int32_t C4MaxPhysical = 100000,
 			C4MaxDeathMsg = 75;
 
 class C4PhysicalInfo
-  {
-  public:
+	{
+	public:
 		C4PhysicalInfo();
 
 		typedef int32_t C4PhysicalInfo::* Offset;
 
-  public:
-    int32_t Energy;
+	public:
+		int32_t Energy;
 		int32_t Breath;
-    int32_t Walk;
+		int32_t Walk;
 		int32_t Jump;
 		int32_t Scale;
 		int32_t Hangle;
 		int32_t Dig;
 		int32_t Swim;
-    int32_t Throw;
+		int32_t Throw;
 		int32_t Push;
 		int32_t Fight;
 		int32_t Magic;
-    int32_t CanScale;
+		int32_t CanScale;
 		int32_t CanHangle;
-    int32_t CanDig;
+		int32_t CanDig;
 		int32_t CanConstruct;
 		int32_t CanChop;
-    int32_t CanSwimDig;
+		int32_t CanSwimDig;
 		int32_t CanFly;
 		int32_t CorrosionResist;
 		int32_t BreatheWater;
@@ -78,7 +78,7 @@ class C4PhysicalInfo
 		static void TrainValue(int32_t *piVal, int32_t iTrainBy, int32_t iMaxTrain);
 	public:
 		void Train(Offset mpiOffset, int32_t iTrainBy, int32_t iMaxTrain);
-  };
+	};
 
 class C4PhysicalChange
 	{
@@ -125,33 +125,33 @@ class C4TempPhysicalInfo : public C4PhysicalInfo
 	};
 
 class C4ObjectInfoCore
-  {
-  public:
-    C4ObjectInfoCore();
-  public:
-    C4ID id;
-    char Name[C4MaxName+1];
-    int32_t  Participation;
-    int32_t  Rank;
+	{
+	public:
+		C4ObjectInfoCore();
+	public:
+		C4ID id;
+		char Name[C4MaxName+1];
+		int32_t  Participation;
+		int32_t  Rank;
 		StdStrBuf sRankName;
 		StdStrBuf sNextRankName;
 		int32_t NextRankExp; // EXP_NoPromotion for no more promotion; 0 if standard rank system is used
-    int32_t  Experience,Rounds;
-    int32_t  DeathCount;
+		int32_t  Experience,Rounds;
+		int32_t  DeathCount;
 		char TypeName[C4MaxName+1+1];
 		int32_t  Birthday,TotalPlayingTime;
 		int32_t  Age;
 		char DeathMessage[C4MaxDeathMsg+1];
 		char PortraitFile[C4MaxName+2+4+1]; // used portrait
-    C4PhysicalInfo Physical;
+		C4PhysicalInfo Physical;
 		C4ValueMapData ExtraData;
 		bool NoSave; // set for _XYZ-CrewMembers
-  public:
+	public:
 	  bool Save(C4Group &hGroup, class C4DefList *pDefs);
 	  bool Load(C4Group &hGroup);
-    void Default(C4ID n_id=C4ID::None, class C4DefList *pDefs=NULL, const char *cpNames=NULL);
-    //bool LoadNext(C4Group &hGroup); Old c4o support disabled...
-    //bool Add(C4Group &hGroup);
+		void Default(C4ID n_id=C4ID::None, class C4DefList *pDefs=NULL, const char *cpNames=NULL);
+		//bool LoadNext(C4Group &hGroup); Old c4o support disabled...
+		//bool Add(C4Group &hGroup);
 		void Promote(int32_t iRank, C4RankSystem &rRanks, bool fForceRankName);
 		bool GetNextRankInfo(C4RankSystem &rDefaultRanks, int32_t *piNextRankExp, StdStrBuf *psNextRankName);
 		void CompileFunc(StdCompiler *pComp);
@@ -160,24 +160,24 @@ class C4ObjectInfoCore
 		bool Decompile(char **ppOutput, size_t *ipSize);
 
 		void UpdateCustomRanks(C4DefList *pDefs); // sets NextRankName and NextRankExp
-  };
+	};
 
 class C4RoundResult
-  {
+	{
 	public:
 		C4RoundResult();
-  public:
-    StdCopyStrBuf Title;
-    uint32_t Date;
-    int32_t Duration;
-    int32_t Won;
-    int32_t Score,FinalScore,TotalScore;
+	public:
+		StdCopyStrBuf Title;
+		uint32_t Date;
+		int32_t Duration;
+		int32_t Won;
+		int32_t Score,FinalScore,TotalScore;
 		int32_t Bonus;
 		int32_t Level;
 	public:
 		void Default();
 		void CompileFunc(StdCompiler *pComp);
-  };
+	};
 
 class C4PlayerInfoCore
 {

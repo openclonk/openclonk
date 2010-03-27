@@ -128,7 +128,7 @@ bool AVIOpenGrab(const char *szFilename,
 	{
 
 	// Open avi stream
-  if ( AVIStreamOpenFromFile(
+	if ( AVIStreamOpenFromFile(
 					ppAviStream,
 					szFilename,
 					streamtypeVIDEO,

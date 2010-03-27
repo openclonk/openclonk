@@ -48,16 +48,16 @@ class C4LanguageInfo
 
 class C4Language
 {
-  public:
-    C4Language();
-    ~C4Language();
-  protected:
+	public:
+		C4Language();
+		~C4Language();
+	protected:
 		C4Group PackDirectory;
 		C4GroupSet Packs;
 		C4GroupSet PackGroups;
 		C4LanguageInfo* Infos;
 		char PackGroupLocation[_MAX_FNAME + 1];
-  public:
+	public:
 	  bool CloseGroup(const char *strPath);
 	  void ClearLanguage();
 		// Initialization

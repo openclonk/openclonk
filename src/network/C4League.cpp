@@ -30,32 +30,32 @@
 // *** C4LeagueRequestHead
 
 void C4LeagueRequestHead::CompileFunc(StdCompiler *pComp)
-  {
+	{
 
-  StdEnumEntry<C4LeagueAction> Actions[] =
-    {
-      { "Start",            C4LA_Start        },
-      { "Update",           C4LA_Update       },
-      { "End",              C4LA_End          },
-      { "Join",             C4LA_PlrAuthCheck	},
+	StdEnumEntry<C4LeagueAction> Actions[] =
+		{
+			{ "Start",            C4LA_Start        },
+			{ "Update",           C4LA_Update       },
+			{ "End",              C4LA_End          },
+			{ "Join",             C4LA_PlrAuthCheck	},
 
-      { "",                 C4LA_RefQuery     },
-      { "Auth",             C4LA_PlrAuth			},
+			{ "",                 C4LA_RefQuery     },
+			{ "Auth",             C4LA_PlrAuth			},
 
-      { "ReportDisconnect", C4LA_ReportDisconnect	},
-    };
+			{ "ReportDisconnect", C4LA_ReportDisconnect	},
+		};
 
-  pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eAction, Actions), "Action", C4LA_RefQuery));
-  pComp->Value(mkNamingAdapt(mkParAdapt(CSID, StdCompiler::RCT_IdtfAllowEmpty), "CSID", ""));
-  pComp->Value(mkNamingAdapt(mkParAdapt(AUID, StdCompiler::RCT_IdtfAllowEmpty), "AUID", ""));
+	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eAction, Actions), "Action", C4LA_RefQuery));
+	pComp->Value(mkNamingAdapt(mkParAdapt(CSID, StdCompiler::RCT_IdtfAllowEmpty), "CSID", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(AUID, StdCompiler::RCT_IdtfAllowEmpty), "AUID", ""));
 
 	// Auth
-  pComp->Value(mkNamingAdapt(mkParAdapt(Account, StdCompiler::RCT_All), "Account", ""));
-  pComp->Value(mkNamingAdapt(mkParAdapt(Password, StdCompiler::RCT_All), "Password", ""));
-  pComp->Value(mkNamingAdapt(mkParAdapt(NewAccount, StdCompiler::RCT_All), "NewAccount", ""));
-  pComp->Value(mkNamingAdapt(mkParAdapt(NewPassword, StdCompiler::RCT_All), "NewPassword", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Account, StdCompiler::RCT_All), "Account", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Password, StdCompiler::RCT_All), "Password", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(NewAccount, StdCompiler::RCT_All), "NewAccount", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(NewPassword, StdCompiler::RCT_All), "NewPassword", ""));
 
-  }
+	}
 
 void C4LeagueRequestHead::SetAuth(const char *szAccount, const char *szPassword)
 	{
@@ -76,18 +76,18 @@ void C4LeagueRequestHead::SetNewPassword(const char *szNewPassword)
 // *** C4LeagueReportDisconnectHead
 
 void C4LeagueReportDisconnectHead::CompileFunc(StdCompiler *pComp)
-  {
-  // inherited fields
-  C4LeagueRequestHead::CompileFunc(pComp);
-  // reason
-  StdEnumEntry<C4LeagueDisconnectReason> Reasons[] =
-    {
-      { "",                 C4LDR_Unknown     },
-      { "ConnectionFailed", C4LDR_ConnectionFailed},
-      { "Desync",           C4LDR_Desync      },
-    };
-  pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eReason, Reasons), "Reason", C4LDR_Unknown));
-  }
+	{
+	// inherited fields
+	C4LeagueRequestHead::CompileFunc(pComp);
+	// reason
+	StdEnumEntry<C4LeagueDisconnectReason> Reasons[] =
+		{
+			{ "",                 C4LDR_Unknown     },
+			{ "ConnectionFailed", C4LDR_ConnectionFailed},
+			{ "Desync",           C4LDR_Desync      },
+		};
+	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eReason, Reasons), "Reason", C4LDR_Unknown));
+	}
 
 // *** C4LeagueRequestHeadEnd
 
@@ -102,16 +102,16 @@ void C4LeagueRequestHeadEnd::CompileFunc(StdCompiler *pComp)
 // *** C4LeagueResponseHead
 
 void C4LeagueResponseHead::CompileFunc(StdCompiler *pComp)
-  {
-  pComp->Value(mkNamingAdapt(mkParAdapt(Status, StdCompiler::RCT_IdtfAllowEmpty), "Status", ""));
-  pComp->Value(mkNamingAdapt(mkParAdapt(CSID, StdCompiler::RCT_IdtfAllowEmpty), "CSID", ""));
-  pComp->Value(mkNamingAdapt(mkParAdapt(Message, StdCompiler::RCT_All), "Message", ""));
+	{
+	pComp->Value(mkNamingAdapt(mkParAdapt(Status, StdCompiler::RCT_IdtfAllowEmpty), "Status", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(CSID, StdCompiler::RCT_IdtfAllowEmpty), "CSID", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Message, StdCompiler::RCT_All), "Message", ""));
 
 	// Auth
-  pComp->Value(mkNamingAdapt(mkParAdapt(Account, StdCompiler::RCT_All), "Account", ""));
-  pComp->Value(mkNamingAdapt(mkParAdapt(AUID, StdCompiler::RCT_All), "AUID", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(Account, StdCompiler::RCT_All), "Account", ""));
+	pComp->Value(mkNamingAdapt(mkParAdapt(AUID, StdCompiler::RCT_All), "AUID", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(FBID, StdCompiler::RCT_All), "FBID", ""));
-  }
+	}
 
 // *** C4LeagueResponseHeadStart
 
@@ -139,8 +139,8 @@ void C4LeagueResponseHeadUpdate::CompileFunc(StdCompiler *pComp)
 	// League name
 	pComp->Value(mkNamingAdapt(League, "League", ""));
 
-  // player infos
-  pComp->Value(mkNamingAdapt(PlrInfos, "PlayerInfos"));
+	// player infos
+	pComp->Value(mkNamingAdapt(PlrInfos, "PlayerInfos"));
 	}
 
 // *** C4LeagueRequestHeadAuthCheck
@@ -290,29 +290,29 @@ class DisconnectData
 // *** C4LeagueClient
 
 bool C4LeagueClient::Start(const C4Network2Reference &Ref)
-  {
-  // Create query
-  eCurrAction = C4LA_Start;
+	{
+	// Create query
+	eCurrAction = C4LA_Start;
 	C4LeagueRequestHead Head(eCurrAction);
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-      mkInsertAdapt(
-         mkNamingAdapt(Head, "Request"),
-         mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
-         false));
-  // Perform query
+			mkInsertAdapt(
+				 mkNamingAdapt(Head, "Request"),
+				 mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
+				 false));
+	// Perform query
 	return Query(QueryText.getData(), false);
-  }
+	}
 
 bool C4LeagueClient::GetStartReply(StdStrBuf *pMessage, StdStrBuf *pLeague, StdStrBuf *pStreamingAddr, int32_t *pSeed, int32_t *pMaxPlayers)
-  {
-  if(!isSuccess() || eCurrAction != C4LA_Start) return false;
-  // Parse response head
-  C4LeagueResponseHeadStart Head;
+	{
+	if(!isSuccess() || eCurrAction != C4LA_Start) return false;
+	// Parse response head
+	C4LeagueResponseHeadStart Head;
 	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Start Reply"))
 		return false;
-  // Get message, league and seed
-  if(pMessage)
-    pMessage->Copy(Head.getMessage());
+	// Get message, league and seed
+	if(pMessage)
+		pMessage->Copy(Head.getMessage());
 	if(pLeague)
 		pLeague->Copy(Head.getLeague());
 	if(pStreamingAddr)
@@ -321,9 +321,9 @@ bool C4LeagueClient::GetStartReply(StdStrBuf *pMessage, StdStrBuf *pLeague, StdS
 		*pSeed = Head.getSeed();
 	if(pMaxPlayers)
 		*pMaxPlayers = Head.getMaxPlayers();
-  // No success?
-  if(!Head.isSuccess())
-    return false;
+	// No success?
+	if(!Head.isSuccess())
+		return false;
 	// Got no CSID?
 	if(!Head.getCSID() || !*Head.getCSID())
 		{
@@ -331,99 +331,99 @@ bool C4LeagueClient::GetStartReply(StdStrBuf *pMessage, StdStrBuf *pLeague, StdS
 			pMessage->Copy(LoadResStr("IDS_LGA_INVALIDRESPONSE3"));
 		return false;
 		}
-  // So save back CSID
-  CSID = Head.getCSID();
-  return true;
-  }
+	// So save back CSID
+	CSID = Head.getCSID();
+	return true;
+	}
 
 bool C4LeagueClient::Update(const C4Network2Reference &Ref)
-  {
+	{
 	assert(CSID.getLength());
-  // Create query
-  eCurrAction = C4LA_Update;
+	// Create query
+	eCurrAction = C4LA_Update;
 	C4LeagueRequestHead Head(eCurrAction, CSID.getData());
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-      mkInsertAdapt(
-         mkNamingAdapt(Head, "Request"),
-         mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
-         false));
-  // Perform query
+			mkInsertAdapt(
+				 mkNamingAdapt(Head, "Request"),
+				 mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
+				 false));
+	// Perform query
 	return Query(QueryText.getData(), false);
-  }
+	}
 
 bool C4LeagueClient::GetUpdateReply(StdStrBuf *pMessage, C4ClientPlayerInfos *pPlayerLeagueInfos)
-  {
-  C4LeagueResponseHeadUpdate Reply;
-  if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Reply, "Response"), ResultString, "Update Reply"))
+	{
+	C4LeagueResponseHeadUpdate Reply;
+	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Reply, "Response"), ResultString, "Update Reply"))
 		return false;
-  // Get message
-  if(pMessage)
-    pMessage->Copy(Reply.getMessage());
-  // get plr infos
-  if (pPlayerLeagueInfos)
-    *pPlayerLeagueInfos = Reply.GetPlrInfos();
-  // Success
-  return true;
-  }
+	// Get message
+	if(pMessage)
+		pMessage->Copy(Reply.getMessage());
+	// get plr infos
+	if (pPlayerLeagueInfos)
+		*pPlayerLeagueInfos = Reply.GetPlrInfos();
+	// Success
+	return true;
+	}
 
 bool C4LeagueClient::End(const C4Network2Reference &Ref, const char *szRecordName, const BYTE *pRecordSHA)
-  {
+	{
 	assert(CSID.getLength());
-  // Create query
-  eCurrAction = C4LA_End;
+	// Create query
+	eCurrAction = C4LA_End;
 	C4LeagueRequestHeadEnd Head(eCurrAction, CSID.getData(), szRecordName, pRecordSHA);
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-      mkInsertAdapt(
-         mkNamingAdapt(Head, "Request"),
-         mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
-         false));
-  // Perform query
+			mkInsertAdapt(
+				 mkNamingAdapt(Head, "Request"),
+				 mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
+				 false));
+	// Perform query
 	return Query(QueryText.getData(), false);
-  }
+	}
 
 bool C4LeagueClient::GetEndReply(StdStrBuf *pMessage, C4RoundResultsPlayers *pRoundResults)
-  {
-  // Parse response head
-  C4LeagueResponseHead Head;
+	{
+	// Parse response head
+	C4LeagueResponseHead Head;
 	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "End Reply"))
 		return false;
-  // Get message
-  if(pMessage)
-    pMessage->Copy(Head.getMessage());
-  if(pRoundResults)
+	// Get message
+	if(pMessage)
+		pMessage->Copy(Head.getMessage());
+	if(pRoundResults)
 	  CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(mkNamingAdapt(*pRoundResults, "PlayerInfos"), "Response"), ResultString, "Round Results");
-  // Done
-  return Head.isSuccess();
-  }
+	// Done
+	return Head.isSuccess();
+	}
 
 bool C4LeagueClient::Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount, const char *szNewPassword)
 	{
 	// Build header
-  eCurrAction = C4LA_PlrAuth;
+	eCurrAction = C4LA_PlrAuth;
 	C4LeagueRequestHead Head(eCurrAction);
 	Head.SetAuth(szAccount, szPassword);
 	if(szNewAccount)
 		Head.SetNewAccount(szNewAccount);
 	if(szNewPassword)
 		Head.SetNewPassword(szNewPassword);
-  // Create query
+	// Create query
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-      mkInsertAdapt(
-         mkNamingAdapt(Head, "Request"),
-         mkNamingAdapt(mkDecompileAdapt(PlrInfo), "PlrInfo"),
-         false));
-  // Perform query
+			mkInsertAdapt(
+				 mkNamingAdapt(Head, "Request"),
+				 mkNamingAdapt(mkDecompileAdapt(PlrInfo), "PlrInfo"),
+				 false));
+	// Perform query
 	return Query(QueryText.getData(), false);
 	}
 
 bool C4LeagueClient::GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister)
 	{
-  C4LeagueResponseHead Head;
+	C4LeagueResponseHead Head;
 	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Auth Reply"))
 		return false;
-  // Get message & account
-  if(pMessage)
-    pMessage->Copy(Head.getMessage());
+	// Get message & account
+	if(pMessage)
+		pMessage->Copy(Head.getMessage());
 	if(pAccount)
 		pAccount->Copy(Head.getAccount());
 	if(pRegister)
@@ -431,7 +431,7 @@ bool C4LeagueClient::GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrB
 	// No success?
 	if(!Head.isSuccess())
 		return false;
-  // Check AUID
+	// Check AUID
 	if(!Head.getAUID() || !*Head.getAUID())
 		{
 		pMessage->Ref(LoadResStr("IDS_MSG_LEAGUESERVERREPLYWITHOUTA"));
@@ -441,29 +441,29 @@ bool C4LeagueClient::GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrB
 	if(pAUID)
 		pAUID->Copy(Head.getAUID());
 	FBIDList.AddFBID(Head.getFBID(), Head.getAccount());
-  return true;
+	return true;
 	}
 
 bool C4LeagueClient::AuthCheck(const C4PlayerInfo &PlrInfo)
 	{
 	assert(CSID.getLength());
 	// Build header
-  eCurrAction = C4LA_PlrAuthCheck;
+	eCurrAction = C4LA_PlrAuthCheck;
 	C4LeagueRequestHead Head(eCurrAction, CSID.getData(), PlrInfo.getAuthID());
-  // Create query
+	// Create query
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-      mkInsertAdapt(
-         mkNamingAdapt(Head, "Request"),
-         mkNamingAdapt(mkDecompileAdapt(PlrInfo), "PlrInfo"),
-         false));
-  // Perform query
+			mkInsertAdapt(
+				 mkNamingAdapt(Head, "Request"),
+				 mkNamingAdapt(mkDecompileAdapt(PlrInfo), "PlrInfo"),
+				 false));
+	// Perform query
 	return Query(QueryText.getData(), false);
 	}
 
 bool C4LeagueClient::GetAuthCheckReply(StdStrBuf *pMessage, const char *szLeague, C4PlayerInfo *pPlrInfo)
 	{
-  // Parse response head
-  C4LeagueResponseHeadAuthCheck Head;
+	// Parse response head
+	C4LeagueResponseHeadAuthCheck Head;
 	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Auth Check Reply"))
 		return false;
 	// Get message and additional data

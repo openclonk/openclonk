@@ -1266,7 +1266,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 }
 
 void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
-                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
+													 SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
 	{
 	//Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
 	// safety
@@ -1648,7 +1648,7 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 	}
 
 void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
-  {
+	{
 	// render target?
 	if (sfcTarget->IsRenderTarget())
 		{
@@ -1667,7 +1667,7 @@ void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
 		// emulate
 		sfcTarget->SetPixDw((int)tx, (int)ty, dwClr);
 		}
-  }
+	}
 
 static void DefineShaderARB(const char * p, GLuint & s)
 	{

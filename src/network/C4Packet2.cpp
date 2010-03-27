@@ -33,7 +33,7 @@
 template <class T> struct unpack_class {
 	static C4PacketBase *unpack(StdCompiler *pComp)
 	{
-    assert(pComp->isCompiler());
+		assert(pComp->isCompiler());
 		T *pPkt = new T();
 		try
 			{
@@ -163,8 +163,8 @@ C4NetIOPacket C4PacketBase::pack(uint8_t cStatus, const C4NetIO::addr_t &addr) c
 
 void C4PacketBase::unpack(const C4NetIOPacket &Pkt, char *pStatus)
 {
-  if(pStatus) *pStatus = Pkt.getStatus();
-  CompileFromBuf<StdCompilerBinRead>(*this, pStatus ? Pkt.getPBuf() : Pkt.getRef());
+	if(pStatus) *pStatus = Pkt.getStatus();
+	CompileFromBuf<StdCompilerBinRead>(*this, pStatus ? Pkt.getPBuf() : Pkt.getRef());
 }
 
 
@@ -208,7 +208,7 @@ C4IDPacket::C4IDPacket(const C4IDPacket &Packet2)
 		eID(PID_None), pPkt(NULL), fOwnPkt(true), pNext(NULL)
 {
 	// kinda hacky (note this might throw an uncaught exception)
-  C4PacketBase::unpack(Packet2.C4PacketBase::pack());
+	C4PacketBase::unpack(Packet2.C4PacketBase::pack());
 }
 
 C4IDPacket::~C4IDPacket()
@@ -218,16 +218,16 @@ C4IDPacket::~C4IDPacket()
 
 const char *C4IDPacket::getPktName() const
 {
-  // Use map
-  for(const C4PktHandlingData *pPData = PktHandlingData; pPData->ID != PID_None; pPData++)
+	// Use map
+	for(const C4PktHandlingData *pPData = PktHandlingData; pPData->ID != PID_None; pPData++)
 	  if(pPData->ID == eID && pPData->Name)
-      return pPData->Name;
-  return "Unknown Packet Type";
+			return pPData->Name;
+	return "Unknown Packet Type";
 }
 
 void C4IDPacket::Default()
 {
-  eID = PID_None; pPkt = NULL;
+	eID = PID_None; pPkt = NULL;
 }
 
 void C4IDPacket::Clear()
@@ -239,29 +239,29 @@ void C4IDPacket::Clear()
 void C4IDPacket::CompileFunc(StdCompiler *pComp)
 {
 	// Packet ID
-  pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eID), "ID", PID_None));
+	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eID), "ID", PID_None));
 	// Compiling or Decompiling?
-  if(pComp->isCompiler())
-  {
-    if(!pComp->Name(getPktName()))
+	if(pComp->isCompiler())
+	{
+		if(!pComp->Name(getPktName()))
 			{ pComp->excCorrupt("C4IDPacket: Data value needed! Packet data missing!"); return; }
-    // Delete old packet
-    if(fOwnPkt) delete pPkt; pPkt = NULL;
-    if(eID == PID_None) return;
-    // Search unpacking function
+		// Delete old packet
+		if(fOwnPkt) delete pPkt; pPkt = NULL;
+		if(eID == PID_None) return;
+		// Search unpacking function
 	  for(const C4PktHandlingData *pPData = PktHandlingData; pPData->ID != PID_None; pPData++)
 		  if(pPData->ID == eID && pPData->FnUnpack)
-      {
-        pPkt = pPData->FnUnpack(pComp);
-        break;
-      }
-    if(!pPkt)
-      pComp->excCorrupt("C4IDPacket: could not unpack packet id %02x!", eID);
-    pComp->NameEnd();
-  }
-  else if(eID != PID_None)
-    // Just write
-    pComp->Value(mkNamingAdapt(*pPkt, getPktName()));
+			{
+				pPkt = pPData->FnUnpack(pComp);
+				break;
+			}
+		if(!pPkt)
+			pComp->excCorrupt("C4IDPacket: could not unpack packet id %02x!", eID);
+		pComp->NameEnd();
+	}
+	else if(eID != PID_None)
+		// Just write
+		pComp->Value(mkNamingAdapt(*pPkt, getPktName()));
 }
 
 // *** C4PacketList
@@ -319,9 +319,9 @@ void C4PacketList::AddHead(C4PacketType eType, C4PacketBase *pPkt)
 
 void C4PacketList::Take(C4PacketList &List)
 {
-  pFirst = List.pFirst;
-  pLast = List.pLast;
-  List.pFirst = List.pLast = NULL;
+	pFirst = List.pFirst;
+	pLast = List.pLast;
+	List.pFirst = List.pLast = NULL;
 }
 
 void C4PacketList::Append(const C4PacketList &List)
@@ -366,13 +366,13 @@ void C4PacketList::Delete(C4IDPacket *pPkt)
 void C4PacketList::CompileFunc(StdCompiler *pComp)
 {
 	// unpack packets
-  if(pComp->isCompiler())
-  {
-    // Read until no further sections available
-    while(pComp->Name("IDPacket"))
-    {
-      // Read the packet
-      C4IDPacket *pPkt = new C4IDPacket();
+	if(pComp->isCompiler())
+	{
+		// Read until no further sections available
+		while(pComp->Name("IDPacket"))
+		{
+			// Read the packet
+			C4IDPacket *pPkt = new C4IDPacket();
 			try
 				{
 				pComp->Value(*pPkt);
@@ -383,25 +383,25 @@ void C4PacketList::CompileFunc(StdCompiler *pComp)
 				delete pPkt;
 				throw;
 				}
-      // Terminator?
-      if(!pPkt->getPkt()) { delete pPkt; break; }
-      // Add to list
-      Add(pPkt);
-    }
-    pComp->NameEnd();
-  }
-  else
-  {
-    // Write all packets
-    for(C4IDPacket *pPkt = pFirst; pPkt; pPkt = pPkt->pNext)
-      pComp->Value(mkNamingAdapt(*pPkt, "IDPacket"));
-    // Terminate, if no naming is available
-    if(!pComp->hasNaming())
+			// Terminator?
+			if(!pPkt->getPkt()) { delete pPkt; break; }
+			// Add to list
+			Add(pPkt);
+		}
+		pComp->NameEnd();
+	}
+	else
 	{
-      C4IDPacket Pkt;
-      pComp->Value(mkNamingAdapt(Pkt, "IDPacket"));
-    }
-  }
+		// Write all packets
+		for(C4IDPacket *pPkt = pFirst; pPkt; pPkt = pPkt->pNext)
+			pComp->Value(mkNamingAdapt(*pPkt, "IDPacket"));
+		// Terminate, if no naming is available
+		if(!pComp->hasNaming())
+	{
+			C4IDPacket Pkt;
+			pComp->Value(mkNamingAdapt(Pkt, "IDPacket"));
+		}
+	}
 }
 
 // *** C4PacketConn
@@ -442,9 +442,9 @@ C4PacketConnRe::C4PacketConnRe(bool fnOK, bool fWrongPassword, const char *sznMs
 
 void C4PacketConnRe::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(fOK, "OK", true));
-  pComp->Value(mkNamingAdapt(szMsg, "Message", ""));
-  pComp->Value(mkNamingAdapt(fWrongPassword, "WrongPassword", false));
+	pComp->Value(mkNamingAdapt(fOK, "OK", true));
+	pComp->Value(mkNamingAdapt(szMsg, "Message", ""));
+	pComp->Value(mkNamingAdapt(fWrongPassword, "WrongPassword", false));
 }
 
 // *** C4PacketFwd
@@ -488,22 +488,22 @@ void C4PacketFwd::AddClient(int32_t iClient)
 
 void C4PacketFwd::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(fNegativeList, "Negative", false));
+	pComp->Value(mkNamingAdapt(fNegativeList, "Negative", false));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iClientCnt), "ClientCnt", 0));
-  pComp->Value(mkNamingAdapt(mkArrayAdaptMap(iClients, iClientCnt, mkIntPackAdapt<int32_t>), "Clients", -1));
-  pComp->Value(mkNamingAdapt(Data, "Data"));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptMap(iClients, iClientCnt, mkIntPackAdapt<int32_t>), "Clients", -1));
+	pComp->Value(mkNamingAdapt(Data, "Data"));
 }
 
 // *** C4PacketJoinData
 
 void C4PacketJoinData::CompileFunc(StdCompiler *pComp)
-  {
+	{
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iClientID), "ClientID", C4ClientIDUnknown));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iStartCtrlTick), "CtrlTick", -1));
-  pComp->Value(mkNamingAdapt(mkParAdapt(GameStatus, true), "GameStatus"));
-  pComp->Value(mkNamingAdapt(Dynamic, "Dynamic"));
-  pComp->Value(Parameters);
-  }
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iStartCtrlTick), "CtrlTick", -1));
+	pComp->Value(mkNamingAdapt(mkParAdapt(GameStatus, true), "GameStatus"));
+	pComp->Value(mkNamingAdapt(Dynamic, "Dynamic"));
+	pComp->Value(Parameters);
+	}
 
 // *** C4PacketPing
 
@@ -539,8 +539,8 @@ C4PacketResStatus::C4PacketResStatus(int32_t iResID, const C4Network2ResChunkDat
 
 void C4PacketResStatus::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(iResID, "ResID"));
-  pComp->Value(mkNamingAdapt(Chunks, "Chunks"));
+	pComp->Value(mkNamingAdapt(iResID, "ResID"));
+	pComp->Value(mkNamingAdapt(Chunks, "Chunks"));
 }
 
 // *** C4PacketResDiscover
@@ -569,8 +569,8 @@ bool C4PacketResDiscover::AddDisID(int32_t iID)
 
 void C4PacketResDiscover::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iDisIDCnt), "DiscoverCnt", 0));
-  pComp->Value(mkNamingAdapt(mkArrayAdapt(iDisIDs, iDisIDCnt), "Discovers", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iDisIDCnt), "DiscoverCnt", 0));
+	pComp->Value(mkNamingAdapt(mkArrayAdapt(iDisIDs, iDisIDCnt), "Discovers", -1));
 }
 
 // *** C4PacketResRequest
@@ -597,14 +597,14 @@ C4PacketControlReq::C4PacketControlReq(int32_t inCtrlTick)
 
 void C4PacketControlReq::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCtrlTick), "CtrlTick", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCtrlTick), "CtrlTick", -1));
 }
 
 // *** C4PacketActivateReq
 
 void C4PacketActivateReq::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iTick), "Tick", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iTick), "Tick", -1));
 }
 
 

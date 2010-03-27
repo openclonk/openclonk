@@ -64,7 +64,7 @@ protected:
 public:
 	C4Network2VersionInfoClient() : C4Network2HTTPClient() {}
 
-  bool QueryVersion();
+	bool QueryVersion();
 	bool GetVersion(C4GameVersion *pSaveToVer);
 };
 

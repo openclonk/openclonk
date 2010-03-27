@@ -91,25 +91,25 @@ class C4Action
 		~C4Action();
 	public:
 		//C4PropList * pActionDef;
-    int32_t Dir;
+		int32_t Dir;
 		int32_t DrawDir; // NoSave // - needs to be calculated for old-style objects.txt anyway
-    int32_t ComDir;
-    int32_t Time;
-    int32_t Data;
-    int32_t Phase,PhaseDelay;
-    int32_t t_attach; // SyncClearance-NoSave //
-    C4Object *Target,*Target2;
-    C4Facet Facet; // NoSave //
-    int32_t FacetX,FacetY; // NoSave //
-    StdMeshInstance::AnimationNode* Animation; // NoSave //
-  public:
+		int32_t ComDir;
+		int32_t Time;
+		int32_t Data;
+		int32_t Phase,PhaseDelay;
+		int32_t t_attach; // SyncClearance-NoSave //
+		C4Object *Target,*Target2;
+		C4Facet Facet; // NoSave //
+		int32_t FacetX,FacetY; // NoSave //
+		StdMeshInstance::AnimationNode* Animation; // NoSave //
+	public:
 	  void Default();
 		void CompileFunc(StdCompiler *pComp);
 
 		// BRIDGE procedure: data mask
 		void SetBridgeData(int32_t iBridgeTime, bool fMoveClonk, bool fWall, int32_t iBridgeMaterial);
 		void GetBridgeData(int32_t &riBridgeTime, bool &rfMoveClonk, bool &rfWall, int32_t &riBridgeMaterial);
-  };
+	};
 
 class C4Object: public C4PropListNumbered
 	{
@@ -420,6 +420,6 @@ class C4Object: public C4PropListNumbered
 
 		// overloaded from C4PropList
 		virtual C4Object * GetObject() { return this; }
-  };
+	};
 
 #endif

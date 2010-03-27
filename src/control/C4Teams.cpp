@@ -131,12 +131,12 @@ int32_t C4Team::GetFirstUnjoinedPlayerID() const
 void C4Team::CompileFunc(StdCompiler *pComp)
 	{
 	if (pComp->isCompiler()) Clear();
-  pComp->Value(mkNamingAdapt(iID,                  "id",             0));
-  pComp->Value(mkNamingAdapt(mkStringAdaptMA(Name), "Name",          ""));
+	pComp->Value(mkNamingAdapt(iID,                  "id",             0));
+	pComp->Value(mkNamingAdapt(mkStringAdaptMA(Name), "Name",          ""));
 	pComp->Value(mkNamingAdapt(iPlrStartIndex,       "PlrStartIndex",  0));
-  pComp->Value(mkNamingAdapt(iPlayerCount,         "PlayerCount", 0));
-  if(pComp->isCompiler()) { delete [] piPlayers; piPlayers = new int32_t [iPlayerCapacity = iPlayerCount]; ZeroMem(piPlayers, sizeof(*piPlayers) * iPlayerCount); }
-  pComp->Value(mkNamingAdapt(mkArrayAdapt(piPlayers, iPlayerCount, -1), "Players"));
+	pComp->Value(mkNamingAdapt(iPlayerCount,         "PlayerCount", 0));
+	if(pComp->isCompiler()) { delete [] piPlayers; piPlayers = new int32_t [iPlayerCapacity = iPlayerCount]; ZeroMem(piPlayers, sizeof(*piPlayers) * iPlayerCount); }
+	pComp->Value(mkNamingAdapt(mkArrayAdapt(piPlayers, iPlayerCount, -1), "Players"));
 	pComp->Value(mkNamingAdapt(dwClr,                "Color",        0u));
 	pComp->Value(mkNamingAdapt(sIconSpec,            "IconSpec",     StdCopyStrBuf()));
 	pComp->Value(mkNamingAdapt(iMaxPlayer,           "MaxPlayer",    0));
@@ -542,12 +542,12 @@ bool C4TeamList::IsJoin2TeamAllowed(int32_t idTeam)
 void C4TeamList::CompileFunc(StdCompiler *pComp)
 	{
 	// if (pComp->isCompiler()) Clear(); - do not clear, because this would corrupt  the fCustom-flag
-  pComp->Value(mkNamingAdapt(fActive,               "Active",               true));
-  pComp->Value(mkNamingAdapt(fCustom,			          "Custom",               true));
-  pComp->Value(mkNamingAdapt(fAllowHostilityChange, "AllowHostilityChange", false));
+	pComp->Value(mkNamingAdapt(fActive,               "Active",               true));
+	pComp->Value(mkNamingAdapt(fCustom,			          "Custom",               true));
+	pComp->Value(mkNamingAdapt(fAllowHostilityChange, "AllowHostilityChange", false));
 	pComp->Value(mkNamingAdapt(fAllowTeamSwitch,      "AllowTeamSwitch",      false));
 	pComp->Value(mkNamingAdapt(fAutoGenerateTeams,    "AutoGenerateTeams",    false));
-  pComp->Value(mkNamingAdapt(iLastTeamID, "LastTeamID", 0));
+	pComp->Value(mkNamingAdapt(iLastTeamID, "LastTeamID", 0));
 
 	StdEnumEntry<TeamDist> TeamDistEntries[] =
 		{
@@ -563,9 +563,9 @@ void C4TeamList::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(sScriptPlayerNames, "ScriptPlayerNames", StdStrBuf()));
 
 	int32_t iOldTeamCount = iTeamCount;
-  pComp->Value(mkNamingCountAdapt(iTeamCount,  "Team"));
+	pComp->Value(mkNamingCountAdapt(iTeamCount,  "Team"));
 
-  if (pComp->isCompiler())
+	if (pComp->isCompiler())
 		{
 		while (iOldTeamCount--) delete ppList[iOldTeamCount];
 		delete [] ppList;
@@ -646,14 +646,14 @@ bool C4TeamList::Save(C4Group &hGroup)
 	// remove previous entry from group
 	hGroup.DeleteEntry(C4CFN_Teams);
 	// decompile
-  try
-    {
-    StdStrBuf Buf = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*this, "Teams"));
+	try
+		{
+		StdStrBuf Buf = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*this, "Teams"));
 	  // save it
 	  hGroup.Add(C4CFN_Teams, Buf, false, true);
-    }
-  catch(StdCompiler::Exception *)
-    { return false; }
+		}
+	catch(StdCompiler::Exception *)
+		{ return false; }
 	// done, success
 	return true;
 	}

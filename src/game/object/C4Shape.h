@@ -41,27 +41,27 @@ class C4DensityProvider
 extern C4DensityProvider DefaultDensityProvider;
 
 class C4Shape: public C4Rect
-  {
-  public:
+	{
+	public:
 	  C4Shape();
-  public:
+	public:
 		// remember to adjust C4Shape::CopyFrom and CreateOwnOriginalCopy when adding members here!
-    int32_t FireTop;
-    int32_t VtxNum;
-    int32_t VtxX[C4D_MaxVertex];
-    int32_t VtxY[C4D_MaxVertex];
-    int32_t VtxCNAT[C4D_MaxVertex];
-    int32_t VtxFriction[C4D_MaxVertex];
+		int32_t FireTop;
+		int32_t VtxNum;
+		int32_t VtxX[C4D_MaxVertex];
+		int32_t VtxY[C4D_MaxVertex];
+		int32_t VtxCNAT[C4D_MaxVertex];
+		int32_t VtxFriction[C4D_MaxVertex];
 		int32_t ContactDensity;
 		int32_t ContactCNAT;
 		int32_t ContactCount;
 		int32_t AttachMat;
-    int32_t VtxContactCNAT[C4D_MaxVertex];
-    int32_t VtxContactMat[C4D_MaxVertex];
+		int32_t VtxContactCNAT[C4D_MaxVertex];
+		int32_t VtxContactMat[C4D_MaxVertex];
 		int32_t iAttachX, iAttachY, iAttachVtx;
-  public:
+	public:
 	  void Default();
-    void Clear();
+		void Clear();
 		void Rotate(int32_t iAngle, bool bUpdateVertices);
 		void Stretch(int32_t iCon, bool bUpdateVertices);
 		void Jolt(int32_t iCon, bool bUpdateVertices);
@@ -82,6 +82,6 @@ class C4Shape: public C4Rect
 		int32_t GetVertexContact(int32_t iVtx, DWORD dwCheckMask, int32_t tx, int32_t ty, const C4DensityProvider &rDensityProvider = DefaultDensityProvider); // get CNAT-mask for given vertex - does not check range for iVtx!
 		void CreateOwnOriginalCopy(C4Shape &rFrom); // create copy of all vertex members in back area of own buffers
 		void CompileFunc(StdCompiler *pComp, bool fRuntime);
-  };
+	};
 
 #endif // INC_C4Shape

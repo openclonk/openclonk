@@ -34,11 +34,11 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 	// If not put, put mask to background,
 	// storing background pixels in cSolidMask.
 
-  // No mask
-  if (!pSolidMask || !pSolidMaskMatBuff) { iAttachingObjectsCount = 0; return; }
-  // Contained
-  if (pForObject->Contained) { iAttachingObjectsCount = 0; return; }
-  // Mask is put
+	// No mask
+	if (!pSolidMask || !pSolidMaskMatBuff) { iAttachingObjectsCount = 0; return; }
+	// Contained
+	if (pForObject->Contained) { iAttachingObjectsCount = 0; return; }
+	// Mask is put
 	if (fCauseInstability) CheckConsistency();
 
 	bool RegularPut;
@@ -57,11 +57,11 @@ void C4SolidMask::Put(bool fCauseInstability, C4TargetRect *pClipRect, bool fRes
 		if (!pClipRect->ClipBy(MaskPutRect)) return;
 		RegularPut = false;
 		}
-  // Lock mask surface
-  int iPitch = pForObject->SolidMask.Wdt;
+	// Lock mask surface
+	int iPitch = pForObject->SolidMask.Wdt;
 	int xcnt,ycnt,iTx,iTy;
 	// Put mask pixels
-  BYTE byPixel;
+	BYTE byPixel;
 	// not rotated?
 	if (!MaskPutRotation)
 		{
@@ -234,7 +234,7 @@ void C4SolidMask::Remove(bool fCauseInstability, bool fBackupAttachment)
 	// If put, restore background pixels from buffer
 
 	// Not put
-  if (!MaskPut || !pSolidMask || !pSolidMaskMatBuff) return;
+	if (!MaskPut || !pSolidMask || !pSolidMaskMatBuff) return;
 
 	CheckConsistency();
 

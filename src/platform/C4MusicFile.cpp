@@ -195,11 +195,11 @@ bool C4MusicFileMP3::Play(bool loop)
 
 	// Play Song
 	Channel = FSOUND_Stream_Play(FSOUND_FREE, stream);
-  if(Channel == -1) return false;
+	if(Channel == -1) return false;
 
-  // Set highest priority
-  if(!FSOUND_SetPriority(Channel, 255))
-    return false;
+	// Set highest priority
+	if(!FSOUND_SetPriority(Channel, 255))
+		return false;
 
 	return true;
 	}
@@ -253,15 +253,15 @@ bool C4MusicFileOgg::Play(bool loop)
 
 	// Play Song
 	Channel = FSOUND_Stream_Play(FSOUND_FREE, stream);
-  if(Channel == -1) return false;
+	if(Channel == -1) return false;
 
-  // Set highest priority
-  if(!FSOUND_SetPriority(Channel, 255))
-    return false;
+	// Set highest priority
+	if(!FSOUND_SetPriority(Channel, 255))
+		return false;
 
-  Playing = true;
+	Playing = true;
 
-  FSOUND_Stream_SetEndCallback(stream, &C4MusicFileOgg::OnEnd, this);
+	FSOUND_Stream_SetEndCallback(stream, &C4MusicFileOgg::OnEnd, this);
 
 	return true;
 	}
@@ -269,9 +269,9 @@ bool C4MusicFileOgg::Play(bool loop)
 // End Callback
 signed char __stdcall C4MusicFileOgg::OnEnd(FSOUND_STREAM* stream, void* buff, int length, void *param)
 {
-  C4MusicFileOgg* pFile = static_cast<C4MusicFileOgg*>(param);
-  pFile->Playing = false;
-  return 0;
+	C4MusicFileOgg* pFile = static_cast<C4MusicFileOgg*>(param);
+	pFile->Playing = false;
+	return 0;
 }
 
 void C4MusicFileOgg::Stop(int fadeout_ms)
@@ -282,13 +282,13 @@ void C4MusicFileOgg::Stop(int fadeout_ms)
 		stream = NULL;
 		}
 	if(Data) { delete[] Data; Data = NULL; }
-  Playing = false;
+	Playing = false;
 	}
 
 void C4MusicFileOgg::CheckIfPlaying()
-  {
+	{
 
-  if(!Playing)
+	if(!Playing)
 	//if(FSOUND_Stream_GetPosition(stream) >= (unsigned) FSOUND_Stream_GetLength(stream))
 		Application.MusicSystem.NotifySuccess();
 	}

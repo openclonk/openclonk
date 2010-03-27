@@ -150,8 +150,8 @@ class C4ToolsDlg
 		bool ToggleIFT() { return !!SetIFT(!ModeIFT); }
 		bool SelectTexture(const char *szTexture);
 		bool SelectMaterial(const char *szMaterial);
-    void SetAlternateTool();
-    void ResetAlternateTool();
+		void SetAlternateTool();
+		void ResetAlternateTool();
 	protected:
 		void AssertValidTexture();
 		void LoadBitmaps();

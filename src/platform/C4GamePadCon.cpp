@@ -104,7 +104,7 @@ int C4GamePadControl::GetGamePadCount()
 	ZeroMem(&joy, sizeof(JOYINFOEX));	joy.dwSize = sizeof(JOYINFOEX); joy.dwFlags = JOY_RETURNALL;
 	int iCnt=0;
 	while (iCnt<CStdGamepad_MaxGamePad && ::joyGetPosEx(iCnt, &joy) == JOYERR_NOERROR) ++iCnt;
-  return iCnt;
+	return iCnt;
 	}
 
 const int MaxGamePadButton=10;
@@ -205,8 +205,8 @@ void C4GamePadControl::Execute(bool) {
 	while (SDL_PollEvent(&event)) {
 		switch(event.type) {
 			case SDL_JOYAXISMOTION:
-            case SDL_JOYBALLMOTION:
-            case SDL_JOYHATMOTION:
+						case SDL_JOYBALLMOTION:
+						case SDL_JOYHATMOTION:
 			case SDL_JOYBUTTONDOWN:
 			case SDL_JOYBUTTONUP:
 				FeedEvent(event);
@@ -217,55 +217,55 @@ void C4GamePadControl::Execute(bool) {
 }
 
 namespace {
-    const int deadZone = 13337;
+		const int deadZone = 13337;
 
-    int amplify(int i) {
-        if (i < 0)
-            return -(deadZone + 1);
-        if (i > 0)
-            return deadZone + 1;
-        return 0;
-    }
+		int amplify(int i) {
+				if (i < 0)
+						return -(deadZone + 1);
+				if (i > 0)
+						return deadZone + 1;
+				return 0;
+		}
 }
 
 void C4GamePadControl::FeedEvent(SDL_Event& event) {
 	switch(event.type) {
-        case SDL_JOYHATMOTION:
-        {
-            SDL_Event fakeX;
-            fakeX.jaxis.type = SDL_JOYAXISMOTION;
-            fakeX.jaxis.which = event.jhat.which;
-            fakeX.jaxis.axis = event.jhat.hat * 2 + 6; /* *magic*number* */
-            fakeX.jaxis.value = 0;
-            SDL_Event fakeY = fakeX;
-            fakeY.jaxis.axis += 1;
-            switch (event.jhat.value) {
-                case SDL_HAT_LEFTUP:    fakeX.jaxis.value = amplify(-1); fakeY.jaxis.value = amplify(-1); break;
-                case SDL_HAT_LEFT:      fakeX.jaxis.value = amplify(-1); break;
-                case SDL_HAT_LEFTDOWN:  fakeX.jaxis.value = amplify(-1); fakeY.jaxis.value = amplify(+1); break;
-                case SDL_HAT_UP:        fakeY.jaxis.value = amplify(-1); break;
-                case SDL_HAT_DOWN:      fakeY.jaxis.value = amplify(+1); break;
-                case SDL_HAT_RIGHTUP:   fakeX.jaxis.value = amplify(+1); fakeY.jaxis.value = amplify(-1); break;
-                case SDL_HAT_RIGHT:     fakeX.jaxis.value = amplify(+1); break;
-                case SDL_HAT_RIGHTDOWN: fakeX.jaxis.value = amplify(+1); fakeY.jaxis.value = amplify(+1); break;
-            }
-            FeedEvent(fakeX);
-            FeedEvent(fakeY);
-            return;
-        }
-        case SDL_JOYBALLMOTION:
-        {
-            SDL_Event fake;
-            fake.jaxis.type = SDL_JOYAXISMOTION;
-            fake.jaxis.which = event.jball.which;
-            fake.jaxis.axis = event.jball.ball * 2 + 12; /* *magic*number* */
-            fake.jaxis.value = amplify(event.jball.xrel);
-            FeedEvent(event);
-            fake.jaxis.axis += 1;
-            fake.jaxis.value = amplify(event.jball.yrel);
-            FeedEvent(event);
-            return;
-        }
+		case SDL_JOYHATMOTION:
+		{
+			SDL_Event fakeX;
+			fakeX.jaxis.type = SDL_JOYAXISMOTION;
+			fakeX.jaxis.which = event.jhat.which;
+			fakeX.jaxis.axis = event.jhat.hat * 2 + 6; /* *magic*number* */
+			fakeX.jaxis.value = 0;
+			SDL_Event fakeY = fakeX;
+			fakeY.jaxis.axis += 1;
+			switch (event.jhat.value) {
+				case SDL_HAT_LEFTUP:    fakeX.jaxis.value = amplify(-1); fakeY.jaxis.value = amplify(-1); break;
+				case SDL_HAT_LEFT:      fakeX.jaxis.value = amplify(-1); break;
+				case SDL_HAT_LEFTDOWN:  fakeX.jaxis.value = amplify(-1); fakeY.jaxis.value = amplify(+1); break;
+				case SDL_HAT_UP:        fakeY.jaxis.value = amplify(-1); break;
+				case SDL_HAT_DOWN:      fakeY.jaxis.value = amplify(+1); break;
+				case SDL_HAT_RIGHTUP:   fakeX.jaxis.value = amplify(+1); fakeY.jaxis.value = amplify(-1); break;
+				case SDL_HAT_RIGHT:     fakeX.jaxis.value = amplify(+1); break;
+				case SDL_HAT_RIGHTDOWN: fakeX.jaxis.value = amplify(+1); fakeY.jaxis.value = amplify(+1); break;
+			}
+			FeedEvent(fakeX);
+			FeedEvent(fakeY);
+			return;
+		}
+		case SDL_JOYBALLMOTION:
+		{
+			SDL_Event fake;
+			fake.jaxis.type = SDL_JOYAXISMOTION;
+			fake.jaxis.which = event.jball.which;
+			fake.jaxis.axis = event.jball.ball * 2 + 12; /* *magic*number* */
+			fake.jaxis.value = amplify(event.jball.xrel);
+			FeedEvent(event);
+			fake.jaxis.axis += 1;
+			fake.jaxis.value = amplify(event.jball.yrel);
+			FeedEvent(event);
+			return;
+		}
 		case SDL_JOYAXISMOTION:
 		{
 			C4KeyCode minCode = KEY_Gamepad(event.jaxis.which, KEY_JOY_Axis(event.jaxis.axis, false));

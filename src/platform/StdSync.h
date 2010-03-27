@@ -67,79 +67,79 @@ public:
 class CStdCSec
 {
 public:
-  CStdCSec() {
+	CStdCSec() {
 		pthread_mutexattr_t attr;
 		pthread_mutexattr_init(&attr);
 		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
 		pthread_mutex_init(&mutex, &attr);
 	}
-  virtual ~CStdCSec() { pthread_mutex_destroy(&mutex); }
+	virtual ~CStdCSec() { pthread_mutex_destroy(&mutex); }
 
 protected:
-  pthread_mutex_t mutex;
+	pthread_mutex_t mutex;
 
 public:
-  virtual void Enter() { pthread_mutex_lock(&mutex); }
-  virtual void Leave() { pthread_mutex_unlock(&mutex); }
+	virtual void Enter() { pthread_mutex_lock(&mutex); }
+	virtual void Leave() { pthread_mutex_unlock(&mutex); }
 };
 
 class CStdEvent
 {
 public:
-  CStdEvent(bool fManualReset) : fManualReset(fManualReset), fSet(false)
-  {
-    pthread_cond_init(&cond, NULL);
-    pthread_mutex_init(&mutex, NULL);
-  }
-  ~CStdEvent()
-  {
-    pthread_cond_destroy(&cond);
-    pthread_mutex_destroy(&mutex);
-  }
+	CStdEvent(bool fManualReset) : fManualReset(fManualReset), fSet(false)
+	{
+		pthread_cond_init(&cond, NULL);
+		pthread_mutex_init(&mutex, NULL);
+	}
+	~CStdEvent()
+	{
+		pthread_cond_destroy(&cond);
+		pthread_mutex_destroy(&mutex);
+	}
 
 protected:
-  pthread_cond_t cond;
-  pthread_mutex_t mutex;
-  bool fManualReset, fSet;
+	pthread_cond_t cond;
+	pthread_mutex_t mutex;
+	bool fManualReset, fSet;
 
 public:
-  void Set()
-  {
-    pthread_mutex_lock(&mutex);
-    fSet = true;
-    pthread_cond_broadcast(&cond);
-    pthread_mutex_unlock(&mutex);
-  }
-  void Pulse()
-  {
-    pthread_cond_broadcast(&cond);
-  }
-  void Reset()
-  {
-    pthread_mutex_lock(&mutex);
-    fSet = false;
-    pthread_mutex_unlock(&mutex);
-  }
-  bool WaitFor(unsigned int iMillis)
-  {
-    pthread_mutex_lock(&mutex);
-    // Already set?
-    while(!fSet)
-    {
-      // Use pthread_cond_wait or pthread_cond_timedwait depending on wait length. Check return value.
-      // Note this will temporarily unlock the mutex, so no deadlock should occur.
-      timespec ts = { iMillis / 1000, (iMillis % 1000) * 1000000 };
-      if(0 != (iMillis != INFINITE ? pthread_cond_timedwait(&cond, &mutex, &ts) : pthread_cond_wait(&cond, &mutex)))
-      {
-        pthread_mutex_unlock(&mutex);
-        return false;
-      }
-    }
-    // Reset flag, release mutex, done.
-    if (!fManualReset) fSet = false;
-    pthread_mutex_unlock(&mutex);
-    return true;
-  }
+	void Set()
+	{
+		pthread_mutex_lock(&mutex);
+		fSet = true;
+		pthread_cond_broadcast(&cond);
+		pthread_mutex_unlock(&mutex);
+	}
+	void Pulse()
+	{
+		pthread_cond_broadcast(&cond);
+	}
+	void Reset()
+	{
+		pthread_mutex_lock(&mutex);
+		fSet = false;
+		pthread_mutex_unlock(&mutex);
+	}
+	bool WaitFor(unsigned int iMillis)
+	{
+		pthread_mutex_lock(&mutex);
+		// Already set?
+		while(!fSet)
+		{
+			// Use pthread_cond_wait or pthread_cond_timedwait depending on wait length. Check return value.
+			// Note this will temporarily unlock the mutex, so no deadlock should occur.
+			timespec ts = { iMillis / 1000, (iMillis % 1000) * 1000000 };
+			if(0 != (iMillis != INFINITE ? pthread_cond_timedwait(&cond, &mutex, &ts) : pthread_cond_wait(&cond, &mutex)))
+			{
+				pthread_mutex_unlock(&mutex);
+				return false;
+			}
+		}
+		// Reset flag, release mutex, done.
+		if (!fManualReset) fSet = false;
+		pthread_mutex_unlock(&mutex);
+		return true;
+	}
 };
 
 #if defined __GNUC__ && ((__GNUC__ >= 4 && __GNUC_MINOR__ >= 1) || (__GNUC__ >= 5))
@@ -177,10 +177,10 @@ public:
 class CStdLock
 {
 public:
-  CStdLock(CStdCSec *pSec) : sec(pSec)
-    { sec->Enter(); }
-  ~CStdLock()
-    { Clear(); }
+	CStdLock(CStdCSec *pSec) : sec(pSec)
+		{ sec->Enter(); }
+	~CStdLock()
+		{ Clear(); }
 
 protected:
 	CStdCSec *sec;

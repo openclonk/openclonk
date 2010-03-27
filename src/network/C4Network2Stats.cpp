@@ -385,8 +385,8 @@ C4Graph *C4Network2Stats::GetGraphByName(const StdStrBuf &rszName, bool &rfIsTem
 	// compare against default graph names
 	rfIsTemp = false;
 	if (SEqualNoCase(rszName.getData(), "oc")) return &statObjCount;
-  if (SEqualNoCase(rszName.getData(), "fps")) return &statFPS;
-  if (SEqualNoCase(rszName.getData(), "netio")) return &graphNetIO;
+	if (SEqualNoCase(rszName.getData(), "fps")) return &statFPS;
+	if (SEqualNoCase(rszName.getData(), "netio")) return &graphNetIO;
 	if (SEqualNoCase(rszName.getData(), "pings")) return &statPings;
 	if (SEqualNoCase(rszName.getData(), "control")) return &statControls;
 	if (SEqualNoCase(rszName.getData(), "apm")) return &statActions;

@@ -49,74 +49,74 @@ const FIXED HitSpeed4=itofix(8); // Flat
 /* Some helper functions */
 
 void RedirectForce(FIXED &from, FIXED &to, int32_t tdir)
-  {
-  FIXED fred;
-  fred=Min(Abs(from), FRedirect);
-  from-=fred*Sign(from);
-  to+=fred*tdir;
-  }
+	{
+	FIXED fred;
+	fred=Min(Abs(from), FRedirect);
+	from-=fred*Sign(from);
+	to+=fred*tdir;
+	}
 
 void ApplyFriction(FIXED &tval, int32_t percent)
-  {
-  FIXED ffric=FFriction*percent/100;
-  if (tval>+ffric) { tval-=ffric; return; }
-  if (tval<-ffric) { tval+=ffric; return; }
-  tval=0;
-  }
+	{
+	FIXED ffric=FFriction*percent/100;
+	if (tval>+ffric) { tval-=ffric; return; }
+	if (tval<-ffric) { tval+=ffric; return; }
+	tval=0;
+	}
 
 // Compares all Shape.VtxContactCNAT[] CNAT flags to search flag.
 // Returns true if CNAT match has been found.
 
 bool ContactVtxCNAT(C4Object *cobj, BYTE cnat_dir)
-  {
-  int32_t cnt;
-  bool fcontact=false;
-  for (cnt=0; cnt<cobj->Shape.VtxNum; cnt++)
-    if (cobj->Shape.VtxContactCNAT[cnt] & cnat_dir)
-      fcontact=true;
-  return fcontact;
-  }
+	{
+	int32_t cnt;
+	bool fcontact=false;
+	for (cnt=0; cnt<cobj->Shape.VtxNum; cnt++)
+		if (cobj->Shape.VtxContactCNAT[cnt] & cnat_dir)
+			fcontact=true;
+	return fcontact;
+	}
 
 // Finds first vertex with contact flag set.
 // Returns -1/0/+1 for relation on vertex to object center.
 
 int32_t ContactVtxWeight(C4Object *cobj)
-  {
-  int32_t cnt;
-  for (cnt=0; cnt<cobj->Shape.VtxNum; cnt++)
-    if (cobj->Shape.VtxContactCNAT[cnt])
-      {
-      if (cobj->Shape.VtxX[cnt]<0) return -1;
-      if (cobj->Shape.VtxX[cnt]>0) return +1;
-      }
-  return 0;
-  }
+	{
+	int32_t cnt;
+	for (cnt=0; cnt<cobj->Shape.VtxNum; cnt++)
+		if (cobj->Shape.VtxContactCNAT[cnt])
+			{
+			if (cobj->Shape.VtxX[cnt]<0) return -1;
+			if (cobj->Shape.VtxX[cnt]>0) return +1;
+			}
+	return 0;
+	}
 
 // ContactVtxFriction: Returns 0-100 friction value of first
 //                     contacted vertex;
 
 int32_t ContactVtxFriction(C4Object *cobj)
-  {
-  int32_t cnt;
-  for (cnt=0; cnt<cobj->Shape.VtxNum; cnt++)
-    if (cobj->Shape.VtxContactCNAT[cnt])
-      return cobj->Shape.VtxFriction[cnt];
-  return 0;
-  }
+	{
+	int32_t cnt;
+	for (cnt=0; cnt<cobj->Shape.VtxNum; cnt++)
+		if (cobj->Shape.VtxContactCNAT[cnt])
+			return cobj->Shape.VtxFriction[cnt];
+	return 0;
+	}
 
 const char *CNATName(int32_t cnat)
-  {
-  switch (cnat)
-    {
-    case CNAT_None:   return "None";
-    case CNAT_Left:   return "Left";
-    case CNAT_Right:  return "Right";
-    case CNAT_Top:    return "Top";
-    case CNAT_Bottom: return "Bottom";
-    case CNAT_Center: return "Center";
-    }
-  return "Undefined";
-  }
+	{
+	switch (cnat)
+		{
+		case CNAT_None:   return "None";
+		case CNAT_Left:   return "Left";
+		case CNAT_Right:  return "Right";
+		case CNAT_Top:    return "Top";
+		case CNAT_Bottom: return "Bottom";
+		case CNAT_Center: return "Center";
+		}
+	return "Undefined";
+	}
 
 bool C4Object::Contact(int32_t iCNAT)
 	{
@@ -124,14 +124,14 @@ bool C4Object::Contact(int32_t iCNAT)
 		{
 		return !! Call(FormatString(PSF_Contact, CNATName(iCNAT)).getData());
 		}
-  return false;
+	return false;
 	}
 
 void C4Object::DoMotion(int32_t mx, int32_t my)
-  {
-  if (pSolidMaskData) pSolidMaskData->Remove(true, true);
-  fix_x += mx; fix_y += my;
-  }
+	{
+	if (pSolidMaskData) pSolidMaskData->Remove(true, true);
+	fix_x += mx; fix_y += my;
+	}
 
 static inline int32_t ForceLimits(FIXED &rVal, int32_t iLow, int32_t iHi)
 	{
@@ -167,10 +167,10 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY)
 	// Store shape contact values in object t_contact
 	t_contact=Shape.ContactCNAT;
 
-  // Contact script call for the first contacted cnat
-  if (Shape.ContactCNAT)
-    for (int32_t ccnat=0; ccnat<4; ccnat++) // Left, right, top bottom
-      if (Shape.ContactCNAT & (1<<ccnat))
+	// Contact script call for the first contacted cnat
+	if (Shape.ContactCNAT)
+		for (int32_t ccnat=0; ccnat<4; ccnat++) // Left, right, top bottom
+			if (Shape.ContactCNAT & (1<<ccnat))
 				if (Contact(1<<ccnat))
 					break; // Will stop on first positive return contact call!
 
@@ -193,7 +193,7 @@ void C4Object::SideBounds(FIXED &ctcox)
 			}
 		}
 	// landscape bounds
-  if (Def->BorderBound & C4D_Border_Sides)
+	if (Def->BorderBound & C4D_Border_Sides)
 		TargetBounds(ctcox,0-Shape.GetX(),GBackWdt+Shape.GetX(),CNAT_Left,CNAT_Right);
 	}
 
@@ -212,9 +212,9 @@ void C4Object::VerticalBounds(FIXED &ctcoy)
 			}
 		}
 	// landscape bounds
-  if (Def->BorderBound & C4D_Border_Top)
+	if (Def->BorderBound & C4D_Border_Top)
 		TargetBounds(ctcoy,0-Shape.GetY(),+1000000,CNAT_Top,CNAT_Bottom);
-  if (Def->BorderBound & C4D_Border_Bottom)
+	if (Def->BorderBound & C4D_Border_Bottom)
 		TargetBounds(ctcoy,-1000000,GBackHgt+Shape.GetY(),CNAT_Top,CNAT_Bottom);
 	}
 
@@ -465,32 +465,32 @@ void C4Object::DoMovement()
 	}
 
 void C4Object::Stabilize()
-  {
+	{
 	// def allows stabilization?
 	if (Def->NoStabilize) return;
 	// normalize angle
 	int32_t nr = r; while(nr < -180) nr+=360; while(nr > 180) nr-=360;
 	if (nr!=0)
-    if (Inside<int32_t>(nr,-StableRange,+StableRange))
-      {
-      // Save step undos
-      int32_t lcobjr=r;
-      C4Shape lshape=Shape;
-      // Try rotation
-      r=0;
-      UpdateShape();
-      if (ContactCheck(GetX(),GetY()))
-        { // Undo rotation
-        Shape=lshape;
-        r=lcobjr;
-        }
-      else
-        { // Stabilization okay
-        fix_r=itofix(r);
-        UpdateFace(true);
-        }
-      }
-  }
+		if (Inside<int32_t>(nr,-StableRange,+StableRange))
+			{
+			// Save step undos
+			int32_t lcobjr=r;
+			C4Shape lshape=Shape;
+			// Try rotation
+			r=0;
+			UpdateShape();
+			if (ContactCheck(GetX(),GetY()))
+				{ // Undo rotation
+				Shape=lshape;
+				r=lcobjr;
+				}
+			else
+				{ // Stabilization okay
+				fix_r=itofix(r);
+				UpdateFace(true);
+				}
+			}
+	}
 
 void C4Object::CopyMotion(C4Object *from)
 	{
@@ -523,48 +523,48 @@ void C4Object::MovePosition(int32_t dx, int32_t dy)
 
 
 bool C4Object::ExecMovement() // Every Tick1 by Execute
-  {
+	{
 
-  // Containment check
-  if (Contained)
-    {
-    CopyMotion(Contained);
+	// Containment check
+	if (Contained)
+		{
+		CopyMotion(Contained);
 
-    return true;
-    }
+		return true;
+		}
 
-  // General mobility check
-  if (Category & C4D_StaticBack) return false;
+	// General mobility check
+	if (Category & C4D_StaticBack) return false;
 
-  // Movement execution
-  if (Mobile) // Object is moving
-    {
-    // Move object
-    DoMovement();
-    // Demobilization check
-    if ((xdir==0) && (ydir==0) && (rdir==0)) Mobile=0;
-    // Check for stabilization
-    if (rdir==0) Stabilize();
-    }
-  else // Object is static
-    {
-    // Check for stabilization
-    Stabilize();
-    // Check for mobilization
-    if (!::Game.iTick10)
-      {
-      // Gravity mobilization
-      xdir=ydir=rdir=0;
-      fix_r=itofix(r);
-      Mobile=1;
-      }
-    }
+	// Movement execution
+	if (Mobile) // Object is moving
+		{
+		// Move object
+		DoMovement();
+		// Demobilization check
+		if ((xdir==0) && (ydir==0) && (rdir==0)) Mobile=0;
+		// Check for stabilization
+		if (rdir==0) Stabilize();
+		}
+	else // Object is static
+		{
+		// Check for stabilization
+		Stabilize();
+		// Check for mobilization
+		if (!::Game.iTick10)
+			{
+			// Gravity mobilization
+			xdir=ydir=rdir=0;
+			fix_r=itofix(r);
+			Mobile=1;
+			}
+		}
 
-  // Enforce zero rotation
-  if (!Def->Rotateable) r=0;
+	// Enforce zero rotation
+	if (!Def->Rotateable) r=0;
 
-  // Out of bounds check
-  if ((!Inside<int32_t>(GetX(),0,GBackWdt) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))
+	// Out of bounds check
+	if ((!Inside<int32_t>(GetX(),0,GBackWdt) && !(Def->BorderBound & C4D_Border_Sides)) || (GetY()>GBackHgt && !(Def->BorderBound & C4D_Border_Bottom)))
 		{
 		C4PropList* pActionDef = GetAction();
 		// Never remove attached objects: If they are truly outside landscape, their target will be removed,
@@ -589,35 +589,35 @@ bool C4Object::ExecMovement() // Every Tick1 by Execute
 				}
 			}
 		}
-  return true;
-  }
+	return true;
+	}
 
 bool SimFlight(FIXED &x, FIXED &y, FIXED &xdir, FIXED &ydir, int32_t iDensityMin, int32_t iDensityMax, int32_t iIter)
 {
-  bool fBreak = false;
+	bool fBreak = false;
 	int32_t ctcox,ctcoy,cx,cy;
 	cx = fixtoi(x); cy = fixtoi(y);
-  do
+	do
 		{
 		if(!iIter--) return false;
-    // Set target position by momentum
-    x+=xdir; y+=ydir;
-    // Movement to target
-    ctcox=fixtoi(x); ctcoy=fixtoi(y);
-    // Bounds
-    if (!Inside<int32_t>(ctcox,0,GBackWdt) || (ctcoy>=GBackHgt)) return false;
-    // Move to target
-    do
-      {
-      // Set next step target
-      cx+=Sign(ctcox-cx); cy+=Sign(ctcoy-cy);
-      // Contact check
-      if(Inside(GBackDensity(cx,cy), iDensityMin, iDensityMax))
+		// Set target position by momentum
+		x+=xdir; y+=ydir;
+		// Movement to target
+		ctcox=fixtoi(x); ctcoy=fixtoi(y);
+		// Bounds
+		if (!Inside<int32_t>(ctcox,0,GBackWdt) || (ctcoy>=GBackHgt)) return false;
+		// Move to target
+		do
+			{
+			// Set next step target
+			cx+=Sign(ctcox-cx); cy+=Sign(ctcoy-cy);
+			// Contact check
+			if(Inside(GBackDensity(cx,cy), iDensityMin, iDensityMax))
 				{ fBreak = true; break; }
-      }
-    while ((cx!=ctcox) || (cy!=ctcoy));
-    // Adjust GravAccel once per frame
-    ydir+=GravAccel;
+			}
+		while ((cx!=ctcox) || (cy!=ctcoy));
+		// Adjust GravAccel once per frame
+		ydir+=GravAccel;
 		}
 	while(!fBreak);
 	// write position back
@@ -627,7 +627,7 @@ bool SimFlight(FIXED &x, FIXED &y, FIXED &xdir, FIXED &ydir, int32_t iDensityMin
 }
 
 bool SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir)
-  {
+	{
 	// Start in water?
 	if(DensityLiquid(GBackDensity(fixtoi(fcx), fixtoi(fcy))))
 		if(!SimFlight(fcx, fcy, xdir, ydir, 0, C4M_Liquid - 1, 10))
@@ -637,5 +637,5 @@ bool SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir)
 		return false;
 	// liquid & deep enough?
 	return GBackLiquid(fixtoi(fcx), fixtoi(fcy)) && GBackLiquid(fixtoi(fcx), fixtoi(fcy) + 9);
-  }
+	}
 

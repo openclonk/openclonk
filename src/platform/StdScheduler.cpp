@@ -85,7 +85,7 @@ bool StdSchedulerProc::IsSignaled()
 	return GetEvent() && WaitForSingleObject(GetEvent(), 0) == WAIT_OBJECT_0;
 #else
 	// Initialize file descriptor sets
-  	std::vector<struct pollfd> fds;
+		std::vector<struct pollfd> fds;
 
 	// Get file descriptors
 	GetFDs(fds);
@@ -348,7 +348,7 @@ void StdSchedulerThread::Remove(StdSchedulerProc *pProc)
 	bool fGotThread = fThread;
 	if(fGotThread) Stop();
 	// Set
-  StdScheduler::Remove(pProc);
+	StdScheduler::Remove(pProc);
 	// Restart
 	if(fGotThread) Start();
 }

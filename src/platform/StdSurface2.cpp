@@ -345,26 +345,26 @@ void CSurface::FreeTextures()
 
 bool ClrByOwner(DWORD &dwClr) // new style, based on Microsoft Knowledge Base Article - 29240
 {
-  int H,L,S;
-  WORD R,G,B;
-  BYTE cMax,cMin;
-  WORD  Rdelta,Gdelta,Bdelta;
-  // get RGB (from BGR...?)
-  R = GetBValue(dwClr);
-  G = GetGValue(dwClr);
-  B = GetRValue(dwClr);
-  // calculate lightness
-  cMax = Max<int>(Max<int>(R,G),B);
-  cMin = Min<int>(Min<int>(R,G),B);
-  L = ( ((cMax+cMin)*HLSMAX) + RGBMAX )/(2*RGBMAX);
-  // achromatic case
-  if (cMax == cMin)
+	int H,L,S;
+	WORD R,G,B;
+	BYTE cMax,cMin;
+	WORD  Rdelta,Gdelta,Bdelta;
+	// get RGB (from BGR...?)
+	R = GetBValue(dwClr);
+	G = GetGValue(dwClr);
+	B = GetRValue(dwClr);
+	// calculate lightness
+	cMax = Max<int>(Max<int>(R,G),B);
+	cMin = Min<int>(Min<int>(R,G),B);
+	L = ( ((cMax+cMin)*HLSMAX) + RGBMAX )/(2*RGBMAX);
+	// achromatic case
+	if (cMax == cMin)
 	{
-     S = 0;
-     H = (HLSMAX*2/3);
-  }
+		 S = 0;
+		 H = (HLSMAX*2/3);
+	}
 	// chromatic case
-  else
+	else
 	{
 		// saturation
 		if (L <= (HLSMAX/2))
@@ -386,7 +386,7 @@ bool ClrByOwner(DWORD &dwClr) // new style, based on Microsoft Knowledge Base Ar
 			H += HLSMAX;
 		if (H > HLSMAX)
 			H -= HLSMAX;
-  }
+	}
 	// Not blue
 	if (!(Inside(H, 145, 175) && (S > 100))) return false;
 	// It's blue: make it gray
@@ -636,13 +636,13 @@ bool CSurface::ReadBMP(CStdStream &hGroup, bool fOwnPal)
 		}
 
 	// Close file
-  hFile.Close();
+	hFile.Close();
 
 	// Unlock
 	Unlock();
 
 	// Success
-  return true;
+	return true;
 	}
 */
 bool CSurface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma, bool fSaveOverlayOnly)
@@ -688,7 +688,7 @@ bool CSurface::SavePNG(const char *szFilename, bool fSaveAlpha, bool fApplyGamma
 	Unlock();
 
 	// Success
-  return true;
+	return true;
 	}
 
 

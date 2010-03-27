@@ -202,11 +202,11 @@ CStdWindow * DialogWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 	// create it!
 	if (!Title || !*Title) Title = "???";
 	hWindow = ::CreateWindowEx	(
-          0,
+					0,
 					ConsoleDlgClassName, Title,
-          ConsoleDlgWindowStyle,
-          CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
-          pParent->hWindow,NULL,pApp->GetInstance(),NULL);
+					ConsoleDlgWindowStyle,
+					CW_USEDEFAULT,CW_USEDEFAULT,rtSize.right-rtSize.left,rtSize.bottom-rtSize.top,
+					pParent->hWindow,NULL,pApp->GetInstance(),NULL);
 	if (hWindow)
 		{
 		// update pos
@@ -227,22 +227,22 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	if (!pDlg) return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 	// Process message
-  switch (uMsg)
-    {
-    //---------------------------------------------------------------------------------------------------------------------------
-    case WM_KEYDOWN:
+	switch (uMsg)
+		{
+		//---------------------------------------------------------------------------------------------------------------------------
+		case WM_KEYDOWN:
 			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), pDlg)) return 0;
 			break;
-    //---------------------------------------------------------------------------------------------------------------------------
-    case WM_KEYUP:
+		//---------------------------------------------------------------------------------------------------------------------------
+		case WM_KEYUP:
 			if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, pDlg)) return 0;
 			break;
-    //------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------
 		case WM_SYSKEYDOWN:
 			if (wParam == 18) break;
 			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), pDlg)) return 0;
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_DESTROY:
 			{
 			const char *szID = pDlg->GetID();
@@ -250,21 +250,21 @@ LRESULT APIENTRY DialogWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 				StoreWindowPosition(hwnd, FormatString("ConsoleGUI_%s", szID).getData(), Config.GetSubkeyPath("Console"), false);
 			}
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_CLOSE:
 			pDlg->Close(false);
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_SIZE:
 			// UpdateOutputSize
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_PAINT:
 			// 2do: only draw specific dlg?
 			//::GraphicsSystem.Execute();
 			break;
 			return 0;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONDOWN: ::pGUI->MouseInput(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
 		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_LBUTTONUP: ::pGUI->MouseInput(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, pDlg, NULL);	break;
@@ -838,9 +838,9 @@ void Dialog::OnClosed(bool fOK)
 
 bool Dialog::DoModal()
 	{
-  // main message loop
-  while (fShow)
-    {
+	// main message loop
+	while (fShow)
+		{
 		while (fShow)
 			{
 			// dialog idle proc

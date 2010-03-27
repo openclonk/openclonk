@@ -42,9 +42,9 @@ CStdPalette *lpDDrawPal=NULL;
 int iGfxEngine=-1;
 
 inline void SetRect(RECT &rect, int left, int top, int right, int bottom)
-  {
-  rect.left=left; rect.top=top; rect.bottom=bottom; rect.right=right;
-  }
+	{
+	rect.left=left; rect.top=top; rect.bottom=bottom; rect.right=right;
+	}
 
 inline DWORD GetTextShadowClr(DWORD dwTxtClr)
 	{
@@ -481,7 +481,7 @@ bool CStdDDraw::NoPrimaryClipper()
 	}
 
 void CStdDDraw::BlitLandscape(SURFACE sfcSource, float fx, float fy,
-                              SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[])
+															SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE textures[])
 	{
 	Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt, false);
 	}
@@ -767,19 +767,19 @@ bool CStdDDraw::BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt
 		rot.SetRotate(iAngle, (float) (tx+tx+twdt)/2, (float) (ty+ty+thgt)/2);
 		return Blit(sfcSource, float(fx), float(fy), float(fwdt), float(fhgt), sfcTarget, float(tx), float(ty), float(twdt), float(thgt), true, &rot);
 		}
-  // Object is first stretched to dest rect, then rotated at place.
-  int xcnt,ycnt,fcx,fcy,tcx,tcy,cpcx,cpcy;
-  int npcx,npcy;
-  double mtx[4],dang;
-  if (!fwdt || !fhgt || !twdt || !thgt) return false;
-  // Lock the surfaces
-  if (!sfcSource->Lock())
-    return false;
-  if (!sfcTarget->Lock())
-    { sfcSource->Unlock(); return false; }
-  // Rectangle centers
-  fcx=fwdt/2; fcy=fhgt/2;
-  tcx=twdt/2; tcy=thgt/2;
+	// Object is first stretched to dest rect, then rotated at place.
+	int xcnt,ycnt,fcx,fcy,tcx,tcy,cpcx,cpcy;
+	int npcx,npcy;
+	double mtx[4],dang;
+	if (!fwdt || !fhgt || !twdt || !thgt) return false;
+	// Lock the surfaces
+	if (!sfcSource->Lock())
+		return false;
+	if (!sfcTarget->Lock())
+		{ sfcSource->Unlock(); return false; }
+	// Rectangle centers
+	fcx=fwdt/2; fcy=fhgt/2;
+	tcx=twdt/2; tcy=thgt/2;
 	// Adjust angle range
 	while (iAngle<0) iAngle+=36000; while (iAngle>35999) iAngle-=36000;
 	// Exact/free rotation
@@ -843,10 +843,10 @@ bool CStdDDraw::BlitRotate(SURFACE sfcSource, int fx, int fy, int fwdt, int fhgt
 			break;
 		}
 
-  // Unlock the surfaces
+	// Unlock the surfaces
 	sfcSource->Unlock();
 	sfcTarget->Unlock();
-  return true;
+	return true;
 	}
 
 
@@ -889,18 +889,18 @@ bool CStdDDraw::BlitSurface(SURFACE sfcSurface, SURFACE sfcTarget, int tx, int t
 		sfcSurface->pMainSfc = pSfcBase;
 		return true;
 		}
-  }
+	}
 
 bool CStdDDraw::BlitSurfaceTile(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX, int iOffsetY, bool fSrcColKey)
-  {
-  int iSourceWdt,iSourceHgt,iX,iY,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
+	{
+	int iSourceWdt,iSourceHgt,iX,iY,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
 	// Get source surface size
-  if (!GetSurfaceSize(sfcSurface,iSourceWdt,iSourceHgt)) return false;
+	if (!GetSurfaceSize(sfcSurface,iSourceWdt,iSourceHgt)) return false;
 	// reduce offset to needed size
 	iOffsetX %= iSourceWdt;
 	iOffsetY %= iSourceHgt;
 	// Vertical blits
-  for (iY=iToY+iOffsetY; iY<iToY+iToHgt; iY+=iSourceHgt)
+	for (iY=iToY+iOffsetY; iY<iToY+iToHgt; iY+=iSourceHgt)
 		{
 		// Vertical blit size
 		iBlitY=Max(iToY-iY,0); iBlitHgt=Min(iSourceHgt,iToY+iToHgt-iY)-iBlitY;
@@ -913,8 +913,8 @@ bool CStdDDraw::BlitSurfaceTile(SURFACE sfcSurface, SURFACE sfcTarget, int iToX,
 			if (!Blit(sfcSurface,float(iBlitX),float(iBlitY),float(iBlitWdt),float(iBlitHgt),sfcTarget,float(iX+iBlitX),float(iY+iBlitY),float(iBlitWdt),float(iBlitHgt),fSrcColKey)) return false;
 			}
 		}
-  return true;
-  }
+	return true;
+	}
 
 bool CStdDDraw::BlitSurfaceTile2(SURFACE sfcSurface, SURFACE sfcTarget, int iToX, int iToY, int iToWdt, int iToHgt, int iOffsetX, int iOffsetY, bool fSrcColKey)
 	{
@@ -922,7 +922,7 @@ bool CStdDDraw::BlitSurfaceTile2(SURFACE sfcSurface, SURFACE sfcTarget, int iToX
 	// repeating textures, however, aren't currently supported
 	/*if (sfcTarget->IsRenderTarget())
 		return Blit(sfcSurface, iOffsetX, iOffsetY, iToWdt, iToHgt, sfcTarget, iToX, iToY, iToWdt, iToHgt, false);*/
-  int tx,ty,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
+	int tx,ty,iBlitX,iBlitY,iBlitWdt,iBlitHgt;
 	// get tile size
 	int iTileWdt=sfcSurface->Wdt;
 	int iTileHgt=sfcSurface->Hgt;
@@ -1046,13 +1046,13 @@ void CStdDDraw::DrawBox(SURFACE sfcDest, int iX1, int iY1, int iX2, int iY2, BYT
 		}
 	// draw as primitives
 	DrawBoxDw(sfcDest, iX1, iY1, iX2, iY2, dwClr);
-  }
+	}
 
 void CStdDDraw::DrawLineDw(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
 	{
 	ApplyZoom(x1, y1);
 	ApplyZoom(x2, y2);
-  	// manual clipping?
+		// manual clipping?
 	if (DDrawCfg.ClipManuallyE)
 		{
 		float i;
@@ -1152,53 +1152,53 @@ void CStdDDraw::DrawVerticalLine(SURFACE sfcDest, int x, int y1, int y2, BYTE co
 	}
 
 void CStdDDraw::DrawFrame(SURFACE sfcDest, int x1, int y1, int x2, int y2, BYTE col)
-  {
-  DrawHorizontalLine(sfcDest,x1,x2,y1,col);
-  DrawHorizontalLine(sfcDest,x1,x2,y2,col);
-  DrawVerticalLine(sfcDest,x1,y1,y2,col);
-  DrawVerticalLine(sfcDest,x2,y1,y2,col);
-  }
+	{
+	DrawHorizontalLine(sfcDest,x1,x2,y1,col);
+	DrawHorizontalLine(sfcDest,x1,x2,y2,col);
+	DrawVerticalLine(sfcDest,x1,y1,y2,col);
+	DrawVerticalLine(sfcDest,x2,y1,y2,col);
+	}
 
 void CStdDDraw::DrawFrameDw(SURFACE sfcDest, int x1, int y1, int x2, int y2, DWORD dwClr) // make these parameters float...?
-  {
+	{
 	DrawLineDw(sfcDest,(float)x1,(float)y1,(float)x2,(float)y1, dwClr);
 	DrawLineDw(sfcDest,(float)x2,(float)y1,(float)x2,(float)y2, dwClr);
 	DrawLineDw(sfcDest,(float)x2,(float)y2,(float)x1,(float)y2, dwClr);
 	DrawLineDw(sfcDest,(float)x1,(float)y2,(float)x1,(float)y1, dwClr);
-  }
+	}
 
 // Globally locked surface variables - for DrawLine callback crap
 
 CSurface *GLSBuffer=NULL;
 
 bool LockSurfaceGlobal(SURFACE sfcTarget)
-  {
-  if (GLSBuffer) return false;
-  GLSBuffer=sfcTarget;
+	{
+	if (GLSBuffer) return false;
+	GLSBuffer=sfcTarget;
 	return !!sfcTarget->Lock();
-  }
+	}
 
 bool UnLockSurfaceGlobal(SURFACE sfcTarget)
-  {
-  if (!GLSBuffer) return false;
+	{
+	if (!GLSBuffer) return false;
 	sfcTarget->Unlock();
-  GLSBuffer=NULL;
-  return true;
-  }
+	GLSBuffer=NULL;
+	return true;
+	}
 
 bool DLineSPix(int32_t x, int32_t y, int32_t col)
-  {
-  if (!GLSBuffer) return false;
-  GLSBuffer->SetPix(x,y,col);
-  return true;
-  }
+	{
+	if (!GLSBuffer) return false;
+	GLSBuffer->SetPix(x,y,col);
+	return true;
+	}
 
 bool DLineSPixDw(int32_t x, int32_t y, int32_t dwClr)
-  {
-  if (!GLSBuffer) return false;
-  GLSBuffer->SetPixDw(x,y,(DWORD) dwClr);
-  return true;
-  }
+	{
+	if (!GLSBuffer) return false;
+	GLSBuffer->SetPixDw(x,y,(DWORD) dwClr);
+	return true;
+	}
 
 void CStdDDraw::DrawPatternedCircle(SURFACE sfcDest, int x, int y, int r, BYTE col, CPattern & Pattern, CStdPalette &rPal)
 	{

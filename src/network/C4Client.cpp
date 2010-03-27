@@ -37,7 +37,7 @@
 C4ClientCore::C4ClientCore()
 	: iID(-1),
 		fActivated(false),
-    fObserver(false)
+		fObserver(false)
 {
 	Name.Ref(""); CUID.Ref(""); Nick.Ref("");
 }
@@ -52,7 +52,7 @@ void C4ClientCore::SetLocal(int32_t inID, bool fnActivated, bool fnObserver)
 	// status
 	iID = inID;
 	fActivated = fnActivated;
-  fObserver = fnObserver;
+	fObserver = fnObserver;
 	// misc
 	Name.CopyValidated(Config.Network.Nick);
 	CUID.CopyValidated(Config.GetRegistrationData("Cuid"));
@@ -93,13 +93,13 @@ int32_t C4ClientCore::getDiffLevel(const C4ClientCore &CCore2) const
 
 void C4ClientCore::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(iID, "ID", C4ClientIDUnknown));
-  pComp->Value(mkNamingAdapt(fActivated, "Activated", false));
-  pComp->Value(mkNamingAdapt(fObserver, "Observer", false));
-  pComp->Value(mkNamingAdapt(Name, "Name", ""));
-  pComp->Value(mkNamingAdapt(CUID, "CUID", ""));
-  pComp->Value(mkNamingAdapt(Nick, "Nick", ""));
-  pComp->Value(mkNamingAdapt(Revision, "Revision", ""));
+	pComp->Value(mkNamingAdapt(iID, "ID", C4ClientIDUnknown));
+	pComp->Value(mkNamingAdapt(fActivated, "Activated", false));
+	pComp->Value(mkNamingAdapt(fObserver, "Observer", false));
+	pComp->Value(mkNamingAdapt(Name, "Name", ""));
+	pComp->Value(mkNamingAdapt(CUID, "CUID", ""));
+	pComp->Value(mkNamingAdapt(Nick, "Nick", ""));
+	pComp->Value(mkNamingAdapt(Revision, "Revision", ""));
 }
 
 // *** C4Client

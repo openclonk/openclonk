@@ -139,7 +139,7 @@ void C4MaterialCore::Clear()
 	ColorAnimation = 0;
 	TempConvStrength = 0;
 	MinHeightCount = 0;
-  SplashRate=10;
+	SplashRate=10;
 	}
 
 void C4MaterialCore::Default()
@@ -154,7 +154,7 @@ bool C4MaterialCore::Load(C4Group &hGroup,
 	if (!hGroup.LoadEntryString(szEntryName,Source))
 		return false;
 	StdStrBuf Name = hGroup.GetFullName() + DirSep + szEntryName;
-  if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Source, Name.getData()))
+	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, Source, Name.getData()))
 		return false;
 	// adjust placement, if not specified
 	if (!Placement)
@@ -218,7 +218,7 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(BelowTempConvertDir,			"BelowTempConvertDir",0									));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sBelowTempConvertTo, StdCompiler::RCT_IdtfAllowEmpty),"BelowTempConvertTo", ""					));
 	pComp->Value(mkNamingAdapt(MinHeightCount,				   "MinHeightCount",	  0									));
-  pComp->Value(mkNamingAdapt(SplashRate,	    			   "SplashRate",	      10								));
+	pComp->Value(mkNamingAdapt(SplashRate,	    			   "SplashRate",	      10								));
 	pComp->NameEnd();
 	// material reactions
 	pComp->Value(mkNamingAdapt(
@@ -230,12 +230,12 @@ void C4MaterialCore::CompileFunc(StdCompiler *pComp)
 // -------------------------------------- C4Material
 
 C4Material::C4Material()
-  {
-  BlastShiftTo=0;
-  InMatConvertTo=MNone;
-  BelowTempConvertTo=0;
-  AboveTempConvertTo=0;
-  }
+	{
+	BlastShiftTo=0;
+	InMatConvertTo=MNone;
+	BelowTempConvertTo=0;
+	AboveTempConvertTo=0;
+	}
 
 void C4Material::UpdateScriptPointers()
 	{
@@ -248,35 +248,35 @@ void C4Material::UpdateScriptPointers()
 
 
 C4MaterialMap::C4MaterialMap() : DefReactConvert(&mrfConvert), DefReactPoof(&mrfPoof), DefReactCorrode(&mrfCorrode), DefReactIncinerate(&mrfIncinerate), DefReactInsert(&mrfInsert)
-  {
+	{
 	Default();
-  }
+	}
 
 
 C4MaterialMap::~C4MaterialMap()
-  {
-  Clear();
-  }
+	{
+	Clear();
+	}
 
 void C4MaterialMap::Clear()
-  {
-  if (Map) delete [] Map; Map=NULL;
+	{
+	if (Map) delete [] Map; Map=NULL;
 	delete [] ppReactionMap; ppReactionMap = NULL;
-  }
+	}
 
 int32_t C4MaterialMap::Load(C4Group &hGroup)
-  {
+	{
 	char entryname[256+1];
 
-  // Determine number of materials in files
-  int32_t mat_num=hGroup.EntryCount(C4CFN_MaterialFiles);
+	// Determine number of materials in files
+	int32_t mat_num=hGroup.EntryCount(C4CFN_MaterialFiles);
 
-  // Allocate new map
+	// Allocate new map
 	C4Material *pNewMap = new C4Material [mat_num + Num];
 	if(!pNewMap) return 0;
 
-  // Load material cores to map
-  hGroup.ResetSearch(); int32_t cnt=0;
+	// Load material cores to map
+	hGroup.ResetSearch(); int32_t cnt=0;
 	while (hGroup.FindNextEntry(C4CFN_MaterialFiles,entryname))
 		{
 		// Load mat
@@ -298,8 +298,8 @@ int32_t C4MaterialMap::Load(C4Group &hGroup)
 	// set material number
 	Num+=cnt;
 
-  return cnt;
-  }
+	return cnt;
+	}
 
 bool C4MaterialMap::HasMaterials(C4Group &hGroup) const
 	{
@@ -307,13 +307,13 @@ bool C4MaterialMap::HasMaterials(C4Group &hGroup) const
 	}
 
 int32_t C4MaterialMap::Get(const char *szMaterial)
-  {
-  int32_t cnt;
-  for (cnt=0; cnt<Num; cnt++)
-    if (SEqualNoCase(szMaterial,Map[cnt].Name))
-      return cnt;
-  return MNone;
-  }
+	{
+	int32_t cnt;
+	for (cnt=0; cnt<Num; cnt++)
+		if (SEqualNoCase(szMaterial,Map[cnt].Name))
+			return cnt;
+	return MNone;
+	}
 
 
 bool C4MaterialMap::CrossMapMaterials() // Called after load
@@ -465,16 +465,16 @@ bool C4MaterialMap::CrossMapMaterials() // Called after load
 			}
 		}
 	// second loop (DefaultMatTex is needed by GetIndexMatTex)
-  for (cnt=0; cnt<Num; cnt++)
-    {
-    if (Map[cnt].sBlastShiftTo.getLength())
+	for (cnt=0; cnt<Num; cnt++)
+		{
+		if (Map[cnt].sBlastShiftTo.getLength())
 			Map[cnt].BlastShiftTo=::TextureMap.GetIndexMatTex(Map[cnt].sBlastShiftTo.getData(), NULL, true, FormatString("BlastShiftTo of mat %s", Map[cnt].Name).getData());
-    if (Map[cnt].sInMatConvertTo.getLength())
-      Map[cnt].InMatConvertTo=Get(Map[cnt].sInMatConvertTo.getData());
-    if (Map[cnt].sBelowTempConvertTo.getLength())
-      Map[cnt].BelowTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sBelowTempConvertTo.getData(), NULL, true, FormatString("BelowTempConvertTo of mat %s", Map[cnt].Name).getData());
-    if (Map[cnt].sAboveTempConvertTo.getLength())
-      Map[cnt].AboveTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, true, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
+		if (Map[cnt].sInMatConvertTo.getLength())
+			Map[cnt].InMatConvertTo=Get(Map[cnt].sInMatConvertTo.getData());
+		if (Map[cnt].sBelowTempConvertTo.getLength())
+			Map[cnt].BelowTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sBelowTempConvertTo.getData(), NULL, true, FormatString("BelowTempConvertTo of mat %s", Map[cnt].Name).getData());
+		if (Map[cnt].sAboveTempConvertTo.getLength())
+			Map[cnt].AboveTempConvertTo=::TextureMap.GetIndexMatTex(Map[cnt].sAboveTempConvertTo.getData(), NULL, true, FormatString("AboveTempConvertTo of mat %s", Map[cnt].Name).getData());
 		}
 #if 0
 	int32_t i=0;
@@ -511,7 +511,7 @@ bool C4MaterialMap::SaveEnumeration(C4Group &hGroup)
 	char *mapbuf = new char [1000];
 	mapbuf[0]=0;
 	SAppend("[Enumeration]",mapbuf); SAppend(LineFeed,mapbuf);
-  for (int32_t cnt=0; cnt<Num; cnt++)
+	for (int32_t cnt=0; cnt<Num; cnt++)
 		{
 		SAppend(Map[cnt].Name,mapbuf);
 		SAppend(LineFeed,mapbuf);
@@ -575,8 +575,8 @@ bool C4MaterialMap::SortEnumeration(int32_t iMat, const char *szMatName)
 
 void C4MaterialMap::Default()
 	{
-  Num=0;
-  Map=NULL;
+	Num=0;
+	Map=NULL;
 	ppReactionMap=NULL;
 	}
 
@@ -871,7 +871,7 @@ int32_t PixCol2MatOld(BYTE pixc)
 	}
 
 int32_t PixCol2MatOld2(BYTE pixc)
-  {
+	{
 	int32_t iMat = ((int32_t) (pixc&0x7f)) -1;
 	// if above MVehic, don't forget additional vehicle-colors
 	if (iMat<=MVehic) return iMat;
@@ -880,6 +880,6 @@ int32_t PixCol2MatOld2(BYTE pixc)
 	// above: range check
 	iMat-=2; if (iMat >= ::MaterialMap.Num) return MNone;
 	return iMat;
-  }
+	}
 
 C4MaterialMap MaterialMap;

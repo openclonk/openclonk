@@ -34,9 +34,9 @@ struct FLOAT_RECT { float left,right,top,bottom; };
 class C4TargetFacet;
 
 class C4Rect
-  {
-  public:
-    int32_t x,y,Wdt,Hgt;
+	{
+	public:
+		int32_t x,y,Wdt,Hgt;
 	public:
 		void Set(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt);
 		void Default();
@@ -57,8 +57,8 @@ class C4Rect
 		void Normalize()
 			{ if(Wdt < 0) { x+=Wdt+1; Wdt=-Wdt; } if(Hgt < 0) { y+=Hgt+1; Hgt=-Hgt; } }
 
-    void Enlarge(int32_t iBy)
-      { x -= iBy; y -= iBy; Wdt += 2*iBy; Hgt += 2*iBy; }
+		void Enlarge(int32_t iBy)
+			{ x -= iBy; y -= iBy; Wdt += 2*iBy; Hgt += 2*iBy; }
 
 		int32_t GetMiddleX() { return x+Wdt/2; }
 		int32_t GetMiddleY() { return y+Hgt/2; }
@@ -73,13 +73,13 @@ class C4Rect
 			  Hgt=static_cast<int32_t>(ceilf(rcfOuter.bottom)-floorf(rcfOuter.top)); }
 
 		void CompileFunc(StdCompiler *pComp);
-  };
+	};
 
 class C4TargetRect: public C4Rect
-  {
-  public:
-    int32_t tx,ty;
-  public:
+	{
+	public:
+		int32_t tx,ty;
+	public:
 		C4TargetRect(int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt, int32_t iTX, int32_t iTY)
 			: C4Rect(iX, iY, iWdt, iHgt), tx(iTX), ty(iTY) { }
 		C4TargetRect() { } // default ctor; doesn't initialize
@@ -90,7 +90,7 @@ class C4TargetRect: public C4Rect
 		void Set(const C4TargetFacet &rSrc); // copy contents from facet
 
 		void CompileFunc(StdCompiler *pComp);
-  };
+	};
 
 const C4Rect Rect0(0,0,0,0);
 const C4TargetRect TargetRect0(0,0,0,0,0,0);

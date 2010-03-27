@@ -84,10 +84,10 @@ int dbg_printf(const char *strMessage, ...)
 bool ProcessGroup(const char *szFilename)
 	{
 
-  C4Group hGroup;
-  int iArg;
+	C4Group hGroup;
+	int iArg;
 	bool fDeleteGroup = false;
-  hGroup.SetStdOutput(true);
+	hGroup.SetStdOutput(true);
 
 	int argc = globalArgC;
 	char **argv = globalArgV;
@@ -97,146 +97,146 @@ bool ProcessGroup(const char *szFilename)
 		printf("Group: %s\n",szFilename);
 
 	// Open group file
-  if (hGroup.Open(szFilename, true))
-    {
-    // No commands: display contents
-    if (iFirstCommand<0)
+	if (hGroup.Open(szFilename, true))
+		{
+		// No commands: display contents
+		if (iFirstCommand<0)
 		{
 				hGroup.View("*");
 		}
 
-    // Process commands
+		// Process commands
 		else
-    for (iArg=iFirstCommand; iArg<argc; iArg++)
-      {
+		for (iArg=iFirstCommand; iArg<argc; iArg++)
+			{
 			// This argument is a command
-      if (argv[iArg][0]=='-')
-        {
+			if (argv[iArg][0]=='-')
+				{
 				// Handle commands
-        switch (argv[iArg][1])
-          {
+				switch (argv[iArg][1])
+					{
 					// Add
-          case 'a':
-            if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
-              printf("Missing argument for add command\n");
-            else
-              {
-              if ((argv[iArg][2]=='s') || (argv[iArg][2] && (argv[iArg][3]=='s')) )
-                {
-                if ((iArg+2>=argc) || (argv[iArg+2][0]=='-'))
-                  printf("Missing argument for add as command\n");
-                else
-                  { hGroup.Add(argv[iArg+1],argv[iArg+2]); iArg+=2;  }
-                }
-              else
+					case 'a':
+						if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
+							printf("Missing argument for add command\n");
+						else
+							{
+							if ((argv[iArg][2]=='s') || (argv[iArg][2] && (argv[iArg][3]=='s')) )
+								{
+								if ((iArg+2>=argc) || (argv[iArg+2][0]=='-'))
+									printf("Missing argument for add as command\n");
+								else
+									{ hGroup.Add(argv[iArg+1],argv[iArg+2]); iArg+=2;  }
+								}
+							else
 #ifdef _WIN32
-                { hGroup.Add(argv[iArg+1]); iArg++; }
+								{ hGroup.Add(argv[iArg+1]); iArg++; }
 #else
-                { hGroup.Add(argv[iArg+1], argv[iArg+1]); iArg++; }
+								{ hGroup.Add(argv[iArg+1], argv[iArg+1]); iArg++; }
 #endif
-              }
-            break;
+							}
+						break;
 					// Move
-          case 'm':
-            if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
-              printf("Missing argument for move command\n");
-            else
+					case 'm':
+						if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
+							printf("Missing argument for move command\n");
+						else
 #ifdef _WIN32
 							{ hGroup.Move(argv[iArg+1]); iArg++; }
 #else
 							{ hGroup.Move(argv[iArg+1], argv[iArg+1]); iArg++; }
 #endif
-            break;
+						break;
 					// Extract
-          case 'e':
-            if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
-              printf("Missing argument for extract command\n");
-            else
-              {
-              if ((argv[iArg][2]=='t') || (argv[iArg][2] && (argv[iArg][3]=='s')) )
-                {
-                if ((iArg+2>=argc) || (argv[iArg+2][0]=='-'))
-                  printf("Missing argument for extract as command\n");
-                else
-                  { hGroup.Extract(argv[iArg+1],argv[iArg+2]); iArg+=2; }
-                }
-              else
-                { hGroup.Extract(argv[iArg+1]); iArg++; }
-              }
-            break;
+					case 'e':
+						if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
+							printf("Missing argument for extract command\n");
+						else
+							{
+							if ((argv[iArg][2]=='t') || (argv[iArg][2] && (argv[iArg][3]=='s')) )
+								{
+								if ((iArg+2>=argc) || (argv[iArg+2][0]=='-'))
+									printf("Missing argument for extract as command\n");
+								else
+									{ hGroup.Extract(argv[iArg+1],argv[iArg+2]); iArg+=2; }
+								}
+							else
+								{ hGroup.Extract(argv[iArg+1]); iArg++; }
+							}
+						break;
 					// Delete
-          case 'd':
-       	    if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
-              printf("Missing argument for delete command\n");
-            else
-              { hGroup.Delete(argv[iArg+1], fRecursive); iArg++; }
-            break;
+					case 'd':
+			 	    if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
+							printf("Missing argument for delete command\n");
+						else
+							{ hGroup.Delete(argv[iArg+1], fRecursive); iArg++; }
+						break;
 					// Sort
-          case 's':
+					case 's':
 						// First sort parameter overrides default Clonk sort list
 						C4Group_SetSortList(NULL);
 						// Missing argument
-       	    if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
-              printf("Missing argument for sort command\n");
+			 	    if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
+							printf("Missing argument for sort command\n");
 						// Sort, advance to next argument
-            else
-              { hGroup.Sort(argv[iArg+1]); iArg++; }
-            break;
+						else
+							{ hGroup.Sort(argv[iArg+1]); iArg++; }
+						break;
 					// Rename
-          case 'r':
-            if ((iArg+2>=argc) || (argv[iArg+1][0]=='-') || (argv[iArg+2][0]=='-'))
-              printf("Missing argument(s) for rename command\n");
-            else
-              { hGroup.Rename(argv[iArg+1],argv[iArg+2]); iArg+=2; }
-            break;
+					case 'r':
+						if ((iArg+2>=argc) || (argv[iArg+1][0]=='-') || (argv[iArg+2][0]=='-'))
+							printf("Missing argument(s) for rename command\n");
+						else
+							{ hGroup.Rename(argv[iArg+1],argv[iArg+2]); iArg+=2; }
+						break;
 					// View
-          case 'v':
-            if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
-              { hGroup.View("*"); }
-            else
-              { hGroup.View(argv[iArg+1]); iArg++; }
-            break;
+					case 'v':
+						if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
+							{ hGroup.View("*"); }
+						else
+							{ hGroup.View(argv[iArg+1]); iArg++; }
+						break;
 					// Make original
-          case 'o':
-            hGroup.MakeOriginal(true);
-            break;
+					case 'o':
+						hGroup.MakeOriginal(true);
+						break;
 					// Pack
-          case 'p':
+					case 'p':
 						printf("Packing...\n");
-            // Close
+						// Close
 						if (!hGroup.Close()) printf("Closing failed: %s\n",hGroup.GetError());
 						// Pack
 						else if (!C4Group_PackDirectory(szFilename)) printf("Pack failed\n");
 						// Reopen
 						else if (!hGroup.Open(szFilename)) printf("Reopen failed: %s\n",hGroup.GetError());
-            break;
+						break;
 					// Unpack
-          case 'u':
+					case 'u':
 						printf("Unpacking...\n");
-            // Close
+						// Close
 						if (!hGroup.Close()) printf("Closing failed: %s\n",hGroup.GetError());
 						// Unpack
 						else if (!C4Group_UnpackDirectory(szFilename)) printf("Unpack failed\n");
 						// Reopen
 						else if (!hGroup.Open(szFilename)) printf("Reopen failed: %s\n",hGroup.GetError());
-            break;
+						break;
 					// Unpack
-          case 'x':
+					case 'x':
 						printf("Exploding...\n");
-            // Close
+						// Close
 						if (!hGroup.Close()) printf("Closing failed: %s\n",hGroup.GetError());
 						// Explode
 						else if (!C4Group_ExplodeDirectory(szFilename)) printf("Unpack failed\n");
 						// Reopen
 						else if (!hGroup.Open(szFilename)) printf("Reopen failed: %s\n",hGroup.GetError());
-            break;
+						break;
 					// Print maker
-          case 'k':
+					case 'k':
 						printf("%s\n",hGroup.GetMaker());
-            break;
+						break;
 					// Generate update
 					case 'g':
-       	    if ((iArg + 3 >= argc) || (argv[iArg+1][0] == '-') || (argv[iArg+2][0] == '-') || (argv[iArg+3][0] == '-'))
+			 	    if ((iArg + 3 >= argc) || (argv[iArg+1][0] == '-') || (argv[iArg+2][0] == '-') || (argv[iArg+3][0] == '-'))
 							printf("Update generation failed: too few arguments\n");
 						else
 						{
@@ -261,11 +261,11 @@ bool ProcessGroup(const char *szFilename)
 						break;
 					// Optimize update generation target
 					case 'z':
-       	    if ((iArg + 1 >= argc) || (argv[iArg+1][0] == '-'))
+			 	    if ((iArg + 1 >= argc) || (argv[iArg+1][0] == '-'))
 							printf("Missing parameter for optimization\n");
 						else
 						{
-              printf("Optimizing %s...\n", argv[iArg+1]);
+							printf("Optimizing %s...\n", argv[iArg+1]);
 							if(!C4UpdatePackage::Optimize(&hGroup, argv[iArg+1]))
 								printf("Optimization failed.\n");
 							iArg++;
@@ -278,11 +278,11 @@ bool ProcessGroup(const char *szFilename)
 						break;
 #endif
 					// Wait
-          case 'w':
-            if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
-              printf("Missing argument for wait command\n");
-            else
-              {
+					case 'w':
+						if ((iArg+1>=argc) || (argv[iArg+1][0]=='-'))
+							printf("Missing argument for wait command\n");
+						else
+							{
 							int iMilliseconds = 0;
 							sscanf(argv[iArg+1], "%d", &iMilliseconds);
 							// Wait for specified time
@@ -303,28 +303,28 @@ bool ProcessGroup(const char *szFilename)
 								printf("\n");
 							}
 							iArg++;
-              }
-            break;
-          // Undefined
-          default:
-            printf("Unknown command: %s\n",argv[iArg]);
-            break;
-          }
-        }
-      else
-        {
-        printf("Invalid parameter %s\n",argv[iArg]);
-        }
+							}
+						break;
+					// Undefined
+					default:
+						printf("Unknown command: %s\n",argv[iArg]);
+						break;
+					}
+				}
+			else
+				{
+				printf("Invalid parameter %s\n",argv[iArg]);
+				}
 
-      }
+			}
 
 		// Error: output status
 		if (!SEqual(hGroup.GetError(),"No Error"))
 			printf("Status: %s\n",hGroup.GetError());
 
-    // Close group file
-    if (!hGroup.Close())
-      printf("Closing: %s\n",hGroup.GetError());
+		// Close group file
+		if (!hGroup.Close())
+			printf("Closing: %s\n",hGroup.GetError());
 
 		// Delete group file if desired (i.e. after apply update)
 		if (fDeleteGroup)
@@ -333,13 +333,13 @@ bool ProcessGroup(const char *szFilename)
 			EraseItem(szFilename);
 			}
 
-    }
+		}
 
 	// Couldn't open group
-  else
-    {
-    printf("Status: %s\n",hGroup.GetError());
-    }
+	else
+		{
+		printf("Status: %s\n",hGroup.GetError());
+		}
 
 	// Done
 	return true;
@@ -405,7 +405,7 @@ int UnregisterShellExtensions()
 
 bool Log(const char *msg)
 {
-  if (!fQuiet)
+	if (!fQuiet)
 		printf("%s\n", msg);
 	return 1;
 }
@@ -433,7 +433,7 @@ void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *sz
 
 
 int main(int argc, char *argv[])
-  {
+	{
 
 	// Scan options (scan including first parameter - this means the group filename cannot start with a '/'...)
 	for (int i = 1; i < argc; i++)
@@ -506,18 +506,18 @@ int main(int argc, char *argv[])
 			printf("Error removing shell extensions.\n");
 
 	// At least one parameter (filename, not option or command): process file(s)
-  if ((argc>1) && (argv[1][0] != '/') && (argv[1][0] != '-')) // ...remember filenames cannot start with a forward slash because of options format
-    {
+	if ((argc>1) && (argv[1][0] != '/') && (argv[1][0] != '-')) // ...remember filenames cannot start with a forward slash because of options format
+		{
 		// Wildcard in filename: use file search
 		if (SCharCount('*',argv[1]))
 			ForEachFile(argv[1], &ProcessGroup);
 		// Only one file
 		else
 			ProcessGroup(argv[1]);
-    }
+		}
 
 	// Too few parameters: output help (if we didn't register stuff)
-  else
+	else
 		if (!fRegisterShell && !fUnregisterShell)
 			{
 			printf("\n");
@@ -568,6 +568,6 @@ int main(int argc, char *argv[])
 		}
 
 	// Done
-  return iResult;
+	return iResult;
 
-  }
+	}

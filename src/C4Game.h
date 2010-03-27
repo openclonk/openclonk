@@ -169,7 +169,7 @@ class C4Game
 		bool Init();
 		bool PreInit();
 		void ParseCommandLine(const char *szCmdLine);
-    bool Execute();
+		bool Execute();
 		class C4Player *JoinPlayer(const char *szFilename, int32_t iAtClient, const char *szAtClientName, C4PlayerInfo *pInfo);
 	  bool DoGameOver();
 		bool CanQuickSave();
@@ -197,18 +197,18 @@ class C4Game
 	  bool ReloadDef(C4ID id);
 		bool ReloadParticle(const char *szName);
 		// Object functions
-    void ClearPointers(C4PropList *cobj);
-    C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
-                           int32_t x=50, int32_t y=50, int32_t r=0,
-                           FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
+		void ClearPointers(C4PropList *cobj);
+		C4Object *CreateObject(C4PropList * type, C4Object *pCreator, int32_t owner=NO_OWNER,
+													 int32_t x=50, int32_t y=50, int32_t r=0,
+													 FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
 		C4Object *CreateObject(C4ID type, C4Object *pCreator, int32_t owner=NO_OWNER,
 				int32_t x=50, int32_t y=50, int32_t r=0,
 				FIXED xdir=Fix0, FIXED ydir=Fix0, FIXED rdir=Fix0, int32_t iController=NO_OWNER);
-    C4Object *CreateObjectConstruction(C4PropList * type,
+		C4Object *CreateObjectConstruction(C4PropList * type,
 				C4Object *pCreator,
 				int32_t owner,
 				int32_t ctx=0, int32_t bty=0,
-                                       int32_t con=1, bool terrain=false);
+																			 int32_t con=1, bool terrain=false);
 				C4Object *CreateInfoObject(C4ObjectInfo *cinf, int32_t owner,
 				int32_t tx=50, int32_t ty=50);
 		void BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj);
@@ -228,7 +228,7 @@ class C4Game
 				float iX, float iY,
 				DWORD category,
 				float gui_x, float gui_y);
-   /* int32_t ObjectCount(C4ID id,
+	 /* int32_t ObjectCount(C4ID id,
 				int32_t x=0, int32_t y=0, int32_t wdt=0, int32_t hgt=0,
 				DWORD ocf=OCF_All,
 				const char *szAction=NULL, C4Object *pActionTarget=NULL,
@@ -262,9 +262,9 @@ class C4Game
 		void InitValueOverloads();
 	  void InitEnvironment();
 	  void UpdateRules();
-    void CloseScenario();
-    void DeleteObjects(bool fDeleteInactive);
-    void ExecObjects();
+		void CloseScenario();
+		void DeleteObjects(bool fDeleteInactive);
+		void ExecObjects();
 		void Ticks();
 	  const char *FoldersWithLocalsDefs(const char *szPath);
 	  bool CheckObjectEnumeration();
@@ -287,9 +287,9 @@ class C4Game
 		bool LinkScriptEngine();
 		bool InitPlayers();
 		bool InitRecord();
-    bool OpenScenario();
-    bool InitDefs();
-    bool InitMaterialTexture();
+		bool OpenScenario();
+		bool InitDefs();
+		bool InitMaterialTexture();
 		bool GameOverCheck();
 		bool PlaceInEarth(C4ID id);
 		bool Compile(const char *szSource);
@@ -302,14 +302,14 @@ class C4Game
 	  bool StoreParticipantPlayers();
 	  bool RecreatePlayerFiles();
 
-    // Object function internals
-    C4Object *NewObject( C4PropList *ndef, C4Object *pCreator,
-                         int32_t owner, C4ObjectInfo *info,
-                         int32_t tx, int32_t ty, int32_t tr,
-                         FIXED xdir, FIXED ydir, FIXED rdir,
-                         int32_t con, int32_t iController);
-    void ClearObjectPtrs(C4Object *tptr);
-    void ObjectRemovalCheck();
+		// Object function internals
+		C4Object *NewObject( C4PropList *ndef, C4Object *pCreator,
+												 int32_t owner, C4ObjectInfo *info,
+												 int32_t tx, int32_t ty, int32_t tr,
+												 FIXED xdir, FIXED ydir, FIXED rdir,
+												 int32_t con, int32_t iController);
+		void ClearObjectPtrs(C4Object *tptr);
+		void ObjectRemovalCheck();
 
 		bool ToggleDebugMode(); // dbg modeon/off if allowed
 		bool ActivateMenu(const char *szCommand); // exec given menu command for first local player
@@ -317,7 +317,7 @@ class C4Game
 	public:
 		bool ToggleChart(); // chart dlg on/off
 		void SetMusicLevel(int32_t iToLvl); // change game music volume; multiplied by config volume for real volume
-  };
+	};
 
 
 const int32_t C4RULE_StructuresNeedEnergy			 = 1,

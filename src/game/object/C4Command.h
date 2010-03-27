@@ -62,13 +62,13 @@ const int32_t C4CMD_First			= C4CMD_Follow,
 					C4CMD_Last			= C4CMD_Take2; // carlo
 
 const int32_t C4CMD_Mode_SilentSub	= 0, // subcommand; failure will cause base to fail (no message in case of failure)
-          C4CMD_Mode_Base       = 1, // regular base command
-          C4CMD_Mode_SilentBase = 2, // silent base command (no message in case of failure)
-          C4CMD_Mode_Sub		= 3; // subcommand; failure will cause base to fail
+					C4CMD_Mode_Base       = 1, // regular base command
+					C4CMD_Mode_SilentBase = 2, // silent base command (no message in case of failure)
+					C4CMD_Mode_Sub		= 3; // subcommand; failure will cause base to fail
 
 // MoveTo and Enter command options: Include push target
 const int32_t C4CMD_MoveTo_NoPosAdjust = 1,
-              C4CMD_MoveTo_PushTarget  = 2;
+							C4CMD_MoveTo_PushTarget  = 2;
 
 const int32_t C4CMD_Enter_PushTarget   = 2;
 
@@ -77,25 +77,25 @@ const char* CommandNameID(int32_t iCommand);
 int32_t CommandByName(const char *szCommand);
 
 class C4Command
-  {
-  public:
-    C4Command();
-    ~C4Command();
-  public:
+	{
+	public:
+		C4Command();
+		~C4Command();
+	public:
 		C4Object *cObj;
-    int32_t Command;
+		int32_t Command;
 		C4Value Tx;
 		int32_t Ty;
-    C4Object *Target,*Target2;
+		C4Object *Target,*Target2;
 		C4Value Data;
-    int32_t UpdateInterval;
-    int32_t Evaluated,PathChecked,Finished;
+		int32_t UpdateInterval;
+		int32_t Evaluated,PathChecked,Finished;
 		int32_t Failures,Retries,Permit;
 		C4String *Text;
-    C4Command *Next;
+		C4Command *Next;
 		int32_t iExec; // 0 = not executing, 1 = executing, 2 = executing, command should delete himself on finish
 		int32_t BaseMode; // 0: subcommand/unmarked base (if failing, base will fail, too); 1: base command; 2: silent base command
-  public:
+	public:
 		void Set(int32_t iCommand, C4Object *pObj, C4Object *pTarget, C4Value iTx, int32_t iTy, C4Object *pTarget2, C4Value iData, int32_t iUpdateInterval, bool fEvaluated, int32_t iRetries, C4String *szText, int32_t iBaseMode);
 	  void Clear();
 	  void Execute();
@@ -103,8 +103,8 @@ class C4Command
 	  void Default();
 	  void EnumeratePointers();
 	  void DenumeratePointers();
-    void CompileFunc(StdCompiler *pComp);
-  protected:
+		void CompileFunc(StdCompiler *pComp);
+	protected:
 	  void Call();
 	  void Home();
 	  void Retry();
@@ -117,33 +117,33 @@ class C4Command
 	  void Transfer();
 	  void Construct();
 	  void Finish(bool fSuccess=false, const char *szFailMessage=0);
-    void Follow();
-    void MoveTo();
-    void Enter();
-    void Exit();
-    void Grab();
-    void UnGrab();
-    void Throw();
-    void Chop();
-    void Build();
-    void Jump();
-    void Wait();
+		void Follow();
+		void MoveTo();
+		void Enter();
+		void Exit();
+		void Grab();
+		void UnGrab();
+		void Throw();
+		void Chop();
+		void Build();
+		void Jump();
+		void Wait();
 		void Take();
 		void Take2();
 		bool GetTryEnter(); // at object pos during get-command: Try entering it
-    void Get();
-    void Put();
-    void Drop();
-    void Dig();
-    void Activate();
-    void PushTo();
-    void Context();
+		void Get();
+		void Put();
+		void Drop();
+		void Dig();
+		void Activate();
+		void PushTo();
+		void Context();
 	  int32_t CallFailed();
 	  bool JumpControl();
 	  bool FlightControl();
 	  bool InitEvaluation();
 		int32_t GetExpGain(); // get control counts gained by this command; 1EXP=5 ControlCounts
 		bool CheckMinimumCon (C4Object *pObj);
-  };
+	};
 
 #endif

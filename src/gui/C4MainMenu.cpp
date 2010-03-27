@@ -717,11 +717,11 @@ bool C4MainMenu::MenuCommand(const char *szCommand, bool fIsCloseCommand)
 		{
 		// only if allowed
 		if (!Game.Teams.IsHostilityChangeAllowed()) return false;
-    int32_t iOpponent; sscanf(szCommand+13,"%i",&iOpponent);
+		int32_t iOpponent; sscanf(szCommand+13,"%i",&iOpponent);
 		C4Player *pOpponent = ::Players.Get(iOpponent);
 		if (!pOpponent || pOpponent->GetType() != C4PT_User) return false;
 		// TODO: doesn't really work
-    Game.Input.Add(CID_Script, new C4ControlScript(FormatString("SetHostility(%d, %d, !Hostile(%d, %d, true))", Player, iOpponent, Player, iOpponent).getData(), C4ControlScript::SCOPE_Global, true));
+		Game.Input.Add(CID_Script, new C4ControlScript(FormatString("SetHostility(%d, %d, !Hostile(%d, %d, true))", Player, iOpponent, Player, iOpponent).getData(), C4ControlScript::SCOPE_Global, true));
 		return true;
 		}
 	// Abort

@@ -65,9 +65,9 @@ void C4Network2ClientDlg::UpdateText()
 		// get client (may be NULL for local info)
 		C4Network2Client *pNetClient = pClient->getNetClient();
 		// show some info
-      StdCopyStrBuf strActivated(LoadResStr(pClient->isActivated() ? "IDS_MSG_ACTIVE" : "IDS_MSG_INACTIVE"));
-      StdCopyStrBuf strLocal(LoadResStr(pClient->isLocal() ? "IDS_MSG_LOCAL" : "IDS_MSG_REMOTE"));
-      StdCopyStrBuf strHost(LoadResStr(pClient->isHost() ? "IDS_MSG_HOST" : "IDS_MSG_CLIENT"));
+			StdCopyStrBuf strActivated(LoadResStr(pClient->isActivated() ? "IDS_MSG_ACTIVE" : "IDS_MSG_INACTIVE"));
+			StdCopyStrBuf strLocal(LoadResStr(pClient->isLocal() ? "IDS_MSG_LOCAL" : "IDS_MSG_REMOTE"));
+			StdCopyStrBuf strHost(LoadResStr(pClient->isHost() ? "IDS_MSG_HOST" : "IDS_MSG_CLIENT"));
 		AddLineFmt(LoadResStr("IDS_NET_CLIENT_INFO_FORMAT"),
 			strActivated.getData(), strLocal.getData(), strHost.getData(),
 			pClient->getName(), iClientID,
@@ -354,7 +354,7 @@ void C4Network2ClientListBox::ConnectionListItem::Update()
 		::Network.NetIO.getNetIOName(pConn->getNetClass()),
 		inet_ntoa(pConn->getPeerAddr().sin_addr),
 		htons(pConn->getPeerAddr().sin_port),
-    pConn->getPacketLoss()).getData());
+		pConn->getPacketLoss()).getData());
 	}
 
 void C4Network2ClientListBox::ConnectionListItem::OnButtonDisconnect(C4GUI::Control *pButton)
@@ -487,7 +487,7 @@ void C4Network2ClientListDlg::Update()
 	StdStrBuf sStatusText;
 	sStatusText.Format("Tick %d, Behind %d, Rate %d, PreSend %d, ACT: %d",
 		(int)::Control.ControlTick, (int)::Control.Network.GetBehind(::Control.ControlTick),
-    (int)::Control.ControlRate, (int)::Control.Network.getControlPreSend(),
+		(int)::Control.ControlRate, (int)::Control.Network.getControlPreSend(),
 		(int)::Control.Network.getAvgControlSendTime());
 	// Update status label
 	pStatusLabel->SetText(sStatusText.getData());
@@ -499,7 +499,7 @@ bool C4Network2ClientListDlg::Toggle()
 	if (!C4GUI::IsGUIValid()) return false;
 	// toggle off?
 	if (pInstance) { pInstance->Close(true); return true; }
-  // toggle on!
+	// toggle on!
 	return ::pGUI->ShowRemoveDlg(pInstance = new C4Network2ClientListDlg());
 	}
 
@@ -716,9 +716,9 @@ void C4GameOptionButtons::OnCommentSet(const StdStrBuf &rsNewComment)
 	{
 	// check for change; no reference invalidation if not changed
 	if (rsNewComment == Config.Network.Comment) return;
-  // Set in configuration, update reference
+	// Set in configuration, update reference
 	Config.Network.Comment.CopyValidated(rsNewComment.getData());
-  ::Network.InvalidateReference();
+	::Network.InvalidateReference();
 	// message feedback
 	Log(LoadResStr("IDS_NET_COMMENTCHANGED"));
 	// acoustic feedback
@@ -783,7 +783,7 @@ int GetAxisStepRange(int iRange, int iMaxSteps)
 	while (iDec>=iNextStepDivider && iNextStepDivider*iRange/iDec <= iMaxSteps)
 		{
 		iDec/=iNextStepDivider;
-    iNextStepDivider = 7 - iNextStepDivider;
+		iNextStepDivider = 7 - iNextStepDivider;
 		}
 	return iDec;
 	}

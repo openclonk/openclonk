@@ -42,12 +42,12 @@ void C4RoundResultsPlayer::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(iLeagueScoreGain,  "GameScore",    -1));     // name used in league reply!
 	pComp->Value(mkNamingAdapt(iLeagueRankNew,  "Rank",    0));             // name used in league reply!
 	pComp->Value(mkNamingAdapt(iLeagueRankSymbolNew,  "RankSymbol",    0)); // name used in league reply!
-  StdEnumEntry<LeagueStatus> LeagueStatusEntries[] =
-    {
-      { "",     RRPLS_Unknown },
-      { "Lost", RRPLS_Lost    },
-      { "Won",  RRPLS_Won     },
-    };
+	StdEnumEntry<LeagueStatus> LeagueStatusEntries[] =
+		{
+			{ "",     RRPLS_Unknown },
+			{ "Lost", RRPLS_Lost    },
+			{ "Won",  RRPLS_Won     },
+		};
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eLeagueStatus, LeagueStatusEntries),  "Status",    RRPLS_Unknown));            // name used in league reply!
 	}
 
@@ -143,22 +143,22 @@ void C4RoundResultsPlayers::Clear()
 void C4RoundResultsPlayers::CompileFunc(StdCompiler *pComp)
 	{
 	bool fCompiler = pComp->isCompiler();
-  if(fCompiler) Clear();
+	if(fCompiler) Clear();
 	int32_t iTemp = iPlayerCount;
-  pComp->Value(mkNamingCountAdapt<int32_t>(iTemp, "Player"));
-  if(iTemp < 0 || iTemp > C4MaxPlayer)
+	pComp->Value(mkNamingCountAdapt<int32_t>(iTemp, "Player"));
+	if(iTemp < 0 || iTemp > C4MaxPlayer)
 		{ pComp->excCorrupt("player count out of range"); return; }
-  // Grow list, if necessary
-  if(fCompiler && iTemp > iPlayerCapacity)
-  {
-    GrowList(iTemp - iPlayerCapacity);
+	// Grow list, if necessary
+	if(fCompiler && iTemp > iPlayerCapacity)
+	{
+		GrowList(iTemp - iPlayerCapacity);
 		iPlayerCount = iTemp;
-    ZeroMem(ppPlayers, sizeof(*ppPlayers) * iPlayerCount);
-  }
-  // Compile
-  pComp->Value(mkNamingAdapt(mkArrayAdaptMap(ppPlayers, iPlayerCount, mkPtrAdaptNoNull<C4RoundResultsPlayer>), "Player"));
-  // Force specialization
-  mkPtrAdaptNoNull<C4RoundResultsPlayer>(*ppPlayers);
+		ZeroMem(ppPlayers, sizeof(*ppPlayers) * iPlayerCount);
+	}
+	// Compile
+	pComp->Value(mkNamingAdapt(mkArrayAdaptMap(ppPlayers, iPlayerCount, mkPtrAdaptNoNull<C4RoundResultsPlayer>), "Player"));
+	// Force specialization
+	mkPtrAdaptNoNull<C4RoundResultsPlayer>(*ppPlayers);
 	}
 
 C4RoundResultsPlayer *C4RoundResultsPlayers::GetByIndex(int32_t idx) const
@@ -256,22 +256,22 @@ void C4RoundResults::Init()
 
 void C4RoundResults::CompileFunc(StdCompiler *pComp)
 	{
-  bool fCompiler = pComp->isCompiler();
-  if(fCompiler) Clear();
-  pComp->Value(mkNamingAdapt(Goals, "Goals", C4IDList()));
+	bool fCompiler = pComp->isCompiler();
+	if(fCompiler) Clear();
+	pComp->Value(mkNamingAdapt(Goals, "Goals", C4IDList()));
 	pComp->Value(mkNamingAdapt(iPlayingTime, "PlayingTime", 0u));
 	pComp->Value(mkNamingAdapt(fHideSettlementScore, "HideSettlementScore", Game.C4S.Game.IsMelee()));
 	pComp->Value(mkNamingAdapt(sCustomEvaluationStrings, "CustomEvaluationStrings", StdCopyStrBuf()));
 	pComp->Value(mkNamingAdapt(iLeaguePerformance, "LeaguePerformance", 0));
 	pComp->Value(mkNamingAdapt(Players, "PlayerInfos", C4RoundResultsPlayers()));
 	pComp->Value(mkNamingAdapt(sNetResult, "NetResult", StdCopyStrBuf()));
-  StdEnumEntry<NetResult> NetResultEntries[] =
-    {
-      { "",            NR_None       },
-      { "LeagueOK",    NR_LeagueOK   },
-      { "LeagueError", NR_LeagueError},
+	StdEnumEntry<NetResult> NetResultEntries[] =
+		{
+			{ "",            NR_None       },
+			{ "LeagueOK",    NR_LeagueOK   },
+			{ "LeagueError", NR_LeagueError},
 			{ "NetError",    NR_NetError   },
-    };
+		};
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eNetResult, NetResultEntries), "NetResult", NR_None));
 	}
 
@@ -397,16 +397,16 @@ bool C4RoundResults::Save(C4Group &hGroup, const char *szFilename)
 	// remove previous entry from group
 	hGroup.DeleteEntry(szFilename);
 	// decompile
-  try
-    {
-    StdStrBuf Buf = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*this, "RoundResults"));
+	try
+		{
+		StdStrBuf Buf = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*this, "RoundResults"));
 	  // save it, if not empty
 		if (Buf.getLength())
 			if (!hGroup.Add(szFilename, Buf, false, true))
 				return false;
-    }
-  catch(StdCompiler::Exception *)
-    { return false; }
+		}
+	catch(StdCompiler::Exception *)
+		{ return false; }
 	// done, success
 	return true;
 	}
@@ -415,9 +415,9 @@ bool C4RoundResults::Save(C4Group &hGroup, const char *szFilename)
 // *** C4PacketLeagueRoundResults
 
 void C4PacketLeagueRoundResults::CompileFunc(StdCompiler *pComp)
-  {
+	{
 	pComp->Value(mkNamingAdapt(fSuccess, "Success", false));
 	pComp->Value(mkNamingAdapt(sResultsString, "ResultString", StdCopyStrBuf()));
-  pComp->Value(Players);
-  }
+	pComp->Value(Players);
+	}
 

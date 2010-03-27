@@ -583,7 +583,7 @@ bool CStdApp::ReadStdInCommand() {
 	char c;
 	if(read(0, &c, 1) != 1)
 		return false;
-  if(c == '\n') {
+	if(c == '\n') {
 		if(!CmdBuf.isNull()) {
 			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
 		}

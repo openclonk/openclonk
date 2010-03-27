@@ -577,9 +577,9 @@ void C4ConfigGeneral::DeterminePaths(bool forceWorkingDirectory)
 	else
 		SCopy("/tmp/", TempPath);
 #else
-    // Mac: Just use the working directory as ExePath.
+		// Mac: Just use the working directory as ExePath.
 	SCopy(GetWorkingDirectory(), ExePath);
-    AppendBackslash(ExePath);
+		AppendBackslash(ExePath);
 	SCopy("/tmp/", TempPath);
 #endif
 	// Force working directory to exe path if desired
@@ -673,35 +673,35 @@ void C4ConfigGeneral::AddAdditionalDataPath(const char *szPath)
 char AtPathFilename[_MAX_PATH+1];
 
 const char* C4Config::AtExePath(const char *szFilename)
-  {
+	{
 	SCopy(General.ExePath,AtPathFilename,_MAX_PATH);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 	}
 
 const char* C4Config::AtUserDataPath(const char *szFilename)
-  {
+	{
 	SCopy(General.UserDataPath, AtPathFilename, _MAX_PATH);
 	SAppend(szFilename, AtPathFilename, _MAX_PATH);
 	return AtPathFilename;
 	}
 
 const char* C4Config::AtSystemDataPath(const char *szFilename)
-  {
+	{
 	SCopy(General.SystemDataPath, AtPathFilename, _MAX_PATH);
 	SAppend(szFilename, AtPathFilename, _MAX_PATH);
 	return AtPathFilename;
 	}
 
 const char* C4Config::AtTempPath(const char *szFilename)
-  {
+	{
 	SCopy(General.TempPath,AtPathFilename,_MAX_PATH);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);
 	return AtPathFilename;
 	}
 
 const char* C4Config::AtNetworkPath(const char *szFilename)
-  {
+	{
 	SCopy(General.UserDataPath,AtPathFilename,_MAX_PATH);
 	SAppend(Network.WorkPath,AtPathFilename,_MAX_PATH);
 	SAppend(szFilename,AtPathFilename,_MAX_PATH);

@@ -52,7 +52,7 @@ class C4ScriptHost : public C4AulScript, public C4ComponentHost
 	protected:
 		void SetError(const char *szMessage);
 		void MakeScript();
-    bool ReloadScript(const char *szPath);
+		bool ReloadScript(const char *szPath);
 	};
 
 
@@ -88,12 +88,12 @@ class C4GameScriptHost : public C4ScriptHost
 
 		// Global script data
 		// FIXME: Move to C4AulScriptEngine
-    int32_t Counter;
+		int32_t Counter;
 		bool Go;
 		bool Execute();
 
-    // Compile scenario script data
-    void CompileFunc(StdCompiler *pComp);
+		// Compile scenario script data
+		void CompileFunc(StdCompiler *pComp);
 
 	};
 

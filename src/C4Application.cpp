@@ -83,7 +83,7 @@ bool C4Application::DoInit()
 	assert(AppState == C4AS_None);
 	// Config overwrite by parameter
 	StdStrBuf sConfigFilename;
-  char szParameter[_MAX_PATH+1];
+	char szParameter[_MAX_PATH+1];
 	for (int32_t iPar=0; SGetParameter(GetCommandLine(), iPar, szParameter, _MAX_PATH); iPar++)
 		if (SEqual2NoCase(szParameter, "/config:"))
 			sConfigFilename.Copy(szParameter + 8);
@@ -499,19 +499,19 @@ void C4Application::Activate()
 	// As this is officially not possible any more in new versions of Windows
 	// (BringWindowTopTop alone won't have any effect if the calling process is
 	// not in the foreground itself), we are using an ugly OS hack.
-  DWORD nForeThread = GetWindowThreadProcessId(GetForegroundWindow(), 0);
-  DWORD nAppThread = GetCurrentThreadId();
+	DWORD nForeThread = GetWindowThreadProcessId(GetForegroundWindow(), 0);
+	DWORD nAppThread = GetCurrentThreadId();
 	if (nForeThread != nAppThread)
 		{
-    AttachThreadInput(nForeThread, nAppThread, true);
-    BringWindowToTop(FullScreen.hWindow);
-    ShowWindow(FullScreen.hWindow, SW_SHOW);
-    AttachThreadInput(nForeThread, nAppThread, false);
+		AttachThreadInput(nForeThread, nAppThread, true);
+		BringWindowToTop(FullScreen.hWindow);
+		ShowWindow(FullScreen.hWindow, SW_SHOW);
+		AttachThreadInput(nForeThread, nAppThread, false);
 		}
-  else
+	else
 		{
-    BringWindowToTop(FullScreen.hWindow);
-    ShowWindow(FullScreen.hWindow, SW_SHOW);
+		BringWindowToTop(FullScreen.hWindow);
+		ShowWindow(FullScreen.hWindow, SW_SHOW);
 		}
 #endif
 	}

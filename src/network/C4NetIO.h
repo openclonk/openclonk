@@ -119,10 +119,10 @@ public:
 	virtual bool SetBroadcast(const addr_t &addr, bool fSet = true) = 0;
 	virtual bool Broadcast(const class C4NetIOPacket &rPacket) = 0;
 
-  // statistics
-  virtual bool GetStatistic(int *pBroadcastRate) = 0;
-  virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss) = 0;
-  virtual void ClearStatistic() = 0;
+	// statistics
+	virtual bool GetStatistic(int *pBroadcastRate) = 0;
+	virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss) = 0;
+	virtual void ClearStatistic() = 0;
 
 	// *** errors
 protected:
@@ -155,7 +155,7 @@ public:
 
 protected:
 
-  // address
+	// address
 	C4NetIO::addr_t addr;
 
 public:
@@ -165,12 +165,12 @@ public:
 	uint8_t			getStatus()const { return getSize() ? *getBufPtr<char>(*this) : 0; }
 	const char *getPData() const { return getSize() ? getBufPtr<char>(*this, 1) : NULL; }
 	size_t			getPSize() const { return getSize() ? getSize() - 1 : 0; }
-  StdBuf      getPBuf()  const { return getSize() ? getPart(1, getSize() - 1) : getRef(); }
+	StdBuf      getPBuf()  const { return getSize() ? getPart(1, getSize() - 1) : getRef(); }
 
 	// Some overloads
 	C4NetIOPacket getRef() const { return C4NetIOPacket(StdBuf::getRef(), addr); }
 	C4NetIOPacket Duplicate() const  { return C4NetIOPacket(StdBuf::Duplicate(), addr); }
-  // change addr
+	// change addr
 	void SetAddr(const C4NetIO::addr_t &naddr) { addr = naddr; }
 
 	// delete contents
@@ -213,10 +213,10 @@ public:
 #endif
 	virtual int GetNextTick(int Now);
 
-  // statistics
-  virtual bool GetStatistic(int *pBroadcastRate);
-  virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss);
-  virtual void ClearStatistic();
+	// statistics
+	virtual bool GetStatistic(int *pBroadcastRate);
+	virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss);
+	virtual void ClearStatistic();
 
 protected:
 
@@ -238,9 +238,9 @@ protected:
 		Peer(const C4NetIO::addr_t &naddr, SOCKET nsock, C4NetIOTCP *pnParent);
 		~Peer();
 	protected:
-    // constants
-    static const unsigned int iTCPHeaderSize; // = 28 + 24; // (bytes)
-    static const unsigned int iMinIBufSize; // = 8192; // (bytes)
+		// constants
+		static const unsigned int iTCPHeaderSize; // = 28 + 24; // (bytes)
+		static const unsigned int iMinIBufSize; // = 8192; // (bytes)
 		// parent
 		C4NetIOTCP *const pParent;
 		// addr
@@ -250,8 +250,8 @@ protected:
 		// incoming & outgoing buffer
 		StdBuf IBuf, OBuf;
 		int iIBufUsage;
-    // statistics
-    int iIRate, iORate;
+		// statistics
+		int iIRate, iORate;
 		// status (1 = open, 0 = closed)
 		bool fOpen;
 		// selected for broadcast?
@@ -262,8 +262,8 @@ protected:
 		// data access
 		const C4NetIO::addr_t &GetAddr() const { return addr; }
 		SOCKET								 GetSocket() const { return sock; }
-    int                    GetIRate() const { return iIRate; }
-    int                    GetORate() const { return iORate; }
+		int                    GetIRate() const { return iIRate; }
+		int                    GetORate() const { return iORate; }
 		// send a packet to this peer
 		bool Send(const C4NetIOPacket &rPacket);
 		// send as much data of the interal outgoing buffer as possible
@@ -282,8 +282,8 @@ protected:
 		bool hasWaitingData() const { return !OBuf.isNull(); }
 		// select/unselect peer
 		void SetBroadcast(bool fSet) { fDoBroadcast = fSet; }
-    // statistics
-    void ClearStatistics();
+		// statistics
+		void ClearStatistics();
 	public:
 		// next peer
 		Peer *Next;
@@ -375,9 +375,9 @@ public:
 	virtual bool SetBroadcast(const addr_t &addr, bool fSet = true) { assert(false); return false; }
 
 	virtual bool GetStatistic(int *pBroadcastRate) { assert(false); return false; }
-  virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss)
+	virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss)
 		{ assert(false); return false; }
-  virtual void ClearStatistic() { assert(false); }
+	virtual void ClearStatistic() { assert(false); }
 
 private:
 	// status
@@ -455,9 +455,9 @@ public:
 
 	virtual int GetNextTick(int Now);
 
-  virtual bool GetStatistic(int *pBroadcastRate);
-  virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss);
-  virtual void ClearStatistic();
+	virtual bool GetStatistic(int *pBroadcastRate);
+	virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss);
+	virtual void ClearStatistic();
 
 protected:
 
@@ -483,12 +483,12 @@ protected:
 	// constants
 	static const unsigned int iVersion; // = 2;
 
-  static const unsigned int iStdTimeout, // = 1000, // (ms)
+	static const unsigned int iStdTimeout, // = 1000, // (ms)
 		                        iCheckInterval; // = 1000 // (ms)
 
 	static const unsigned int iMaxOPacketBacklog; // = 100;
 
-  static const unsigned int iUDPHeaderSize; // = 8 + 24; // (bytes)
+	static const unsigned int iUDPHeaderSize; // = 8 + 24; // (bytes)
 
 	// packet class
 	class PacketList;
@@ -609,7 +609,7 @@ protected:
 		unsigned int iIPacketCounter, iRIPacketCounter;
 		unsigned int iIMCPacketCounter, iRIMCPacketCounter;
 
-    unsigned int iMCAckPacketCounter;
+		unsigned int iMCAckPacketCounter;
 
 		// output critical section
 		CStdCSec OutCSec;
@@ -622,11 +622,11 @@ protected:
 		unsigned int iTimeout;
 		unsigned int iRetries;
 
-    // statistics
-    int iIRate, iORate, iLoss;
+		// statistics
+		int iIRate, iORate, iLoss;
 		CStdCSec StatCSec;
 
-  public:
+	public:
 		// data access
 		const C4NetIO::addr_t &GetAddr() const { return addr; }
 		const C4NetIO::addr_t &GetAltAddr() const { return addr2; }
@@ -651,8 +651,8 @@ protected:
 		// multicast support?
 		bool MultiCast() const { return fMultiCast; }
 
-    // acknowledgment check
-    unsigned int GetMCAckPacketCounter() const { return iMCAckPacketCounter; }
+		// acknowledgment check
+		unsigned int GetMCAckPacketCounter() const { return iMCAckPacketCounter; }
 
 		// timeout checking
 		int GetTimeout() { return iTimeout; }
@@ -666,11 +666,11 @@ protected:
 		// alternate address
 		void SetAltAddr(const C4NetIO::addr_t &naddr2) { addr2 = naddr2; }
 
-    // statistics
-    int GetIRate() const { return iIRate; }
-    int GetORate() const { return iORate; }
-    int GetLoss() const { return iLoss; }
-    void ClearStatistics();
+		// statistics
+		int GetIRate() const { return iIRate; }
+		int GetORate() const { return iORate; }
+		int GetLoss() const { return iLoss; }
+		void ClearStatistics();
 
 	protected:
 
@@ -727,9 +727,9 @@ protected:
 	PacketList OPackets;
 	unsigned int iOPacketCounter;
 
-  // statistics
-  int iBroadcastRate;
-  CStdCSec StatCSec;
+	// statistics
+	int iBroadcastRate;
+	CStdCSec StatCSec;
 
 	// callback proxy
 	NETIO_CREATE_CALLBACK_PROXY(C4NetIOUDP, CBProxy)
@@ -742,7 +742,7 @@ protected:
 
 	// multicast related
 	bool DoLoopbackTest();
-  void ClearMCPackets();
+	void ClearMCPackets();
 
 	// peer list
 	void AddPeer(Peer *pPeer);
@@ -823,23 +823,23 @@ inline uint8_t &in_addr_b(in_addr &addr, int i) {
 
 inline void CompileFunc(in_addr &ip, StdCompiler *pComp)
 {
-  pComp->Value(in_addr_b(ip, 0)); pComp->Seperator(StdCompiler::SEP_PART);
-  pComp->Value(in_addr_b(ip, 1)); pComp->Seperator(StdCompiler::SEP_PART);
-  pComp->Value(in_addr_b(ip, 2)); pComp->Seperator(StdCompiler::SEP_PART);
-  pComp->Value(in_addr_b(ip, 3));
+	pComp->Value(in_addr_b(ip, 0)); pComp->Seperator(StdCompiler::SEP_PART);
+	pComp->Value(in_addr_b(ip, 1)); pComp->Seperator(StdCompiler::SEP_PART);
+	pComp->Value(in_addr_b(ip, 2)); pComp->Seperator(StdCompiler::SEP_PART);
+	pComp->Value(in_addr_b(ip, 3));
 }
 
 inline void CompileFunc(C4NetIO::addr_t &addr, StdCompiler *pComp)
 {
 	pComp->Value(addr.sin_addr); pComp->Seperator(StdCompiler::SEP_PART2);
-  uint16_t iPort = htons(addr.sin_port);
-  pComp->Value(iPort);
-  addr.sin_port = htons(iPort);
-  if(pComp->isCompiler())
-  {
-    addr.sin_family = AF_INET;
-    ZeroMem(addr.sin_zero, sizeof(addr.sin_zero));
-  }
+	uint16_t iPort = htons(addr.sin_port);
+	pComp->Value(iPort);
+	addr.sin_port = htons(iPort);
+	if(pComp->isCompiler())
+	{
+		addr.sin_family = AF_INET;
+		ZeroMem(addr.sin_zero, sizeof(addr.sin_zero));
+	}
 }
 
 #ifdef HAVE_WINSOCK

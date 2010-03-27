@@ -500,7 +500,7 @@ StdMeshQuaternion operator*(const StdMeshQuaternion& lhs, float rhs)
 
 StdMeshQuaternion operator*(float lhs, const StdMeshQuaternion& rhs)
 {
-  return rhs * lhs;
+	return rhs * lhs;
 }
 
 StdMeshQuaternion& operator+=(StdMeshQuaternion& lhs, const StdMeshQuaternion& rhs)
@@ -890,7 +890,7 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 }
 
 StdMeshInstance::AttachedMesh::AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child,
-                                            unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform):
+																						unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform):
 	Number(number), Parent(parent), Child(child), OwnChild(own_child),
 	ParentBone(parent_bone), ChildBone(child_bone), AttachTrans(transform),
 	FinalTransformDirty(true)

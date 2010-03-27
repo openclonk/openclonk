@@ -43,85 +43,85 @@
 
 bool StdBuf::LoadFromFile(const char *szFile)
 {
-  // Open file
-  int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
-  if(fh < 0) return false;
-  // Create buf
-  New(FileSize(fh));
-  // Read
-  if(read(fh, getMData(), getSize()) != (signed int) getSize())
-  {
-    close(fh);
-    return false;
-  }
-  close(fh);
-  // Ok
-  return true;
+	// Open file
+	int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+	if(fh < 0) return false;
+	// Create buf
+	New(FileSize(fh));
+	// Read
+	if(read(fh, getMData(), getSize()) != (signed int) getSize())
+	{
+		close(fh);
+		return false;
+	}
+	close(fh);
+	// Ok
+	return true;
 }
 bool StdBuf::SaveToFile(const char *szFile) const
 {
-  // Open file
-  int fh = open(szFile, O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
-  if(fh < 0) return false;
-  // Write data
-  if(write(fh, getData(), getSize()) != (signed int) getSize())
-  {
-    close(fh);
-    return false;
-  }
-  close(fh);
-  // Ok
-  return true;
+	// Open file
+	int fh = open(szFile, O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+	if(fh < 0) return false;
+	// Write data
+	if(write(fh, getData(), getSize()) != (signed int) getSize())
+	{
+		close(fh);
+		return false;
+	}
+	close(fh);
+	// Ok
+	return true;
 }
 
 bool StdStrBuf::LoadFromFile(const char *szFile)
 {
-  // Open file
-  int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
-  if(fh < 0) return false;
-  // Create buf
-  SetLength(FileSize(fh));
-  // Read
-  if(read(fh, getMData(), getLength()) != (ssize_t) getLength())
-  {
-    close(fh);
-    return false;
-  }
-  close(fh);
-  // Ok
-  return true;
+	// Open file
+	int fh = open(szFile, O_BINARY | O_RDONLY | O_SEQUENTIAL, S_IREAD | S_IWRITE);
+	if(fh < 0) return false;
+	// Create buf
+	SetLength(FileSize(fh));
+	// Read
+	if(read(fh, getMData(), getLength()) != (ssize_t) getLength())
+	{
+		close(fh);
+		return false;
+	}
+	close(fh);
+	// Ok
+	return true;
 }
 bool StdStrBuf::SaveToFile(const char *szFile) const
 {
-  // Open file
-  int fh = open(szFile, O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
-  if(fh < 0) return false;
-  // Write data
-  if(write(fh, getData(), getLength()) != (ssize_t) getLength())
-  {
-    close(fh);
-    return false;
-  }
-  close(fh);
-  // Ok
-  return true;
+	// Open file
+	int fh = open(szFile, O_BINARY | O_CREAT | O_WRONLY | O_SEQUENTIAL | O_TRUNC, S_IREAD | S_IWRITE);
+	if(fh < 0) return false;
+	// Write data
+	if(write(fh, getData(), getLength()) != (ssize_t) getLength())
+	{
+		close(fh);
+		return false;
+	}
+	close(fh);
+	// Ok
+	return true;
 }
 
 void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 {
-  // Size (guess it is a small value most of the time - if it's big, an extra byte won't hurt anyway)
+	// Size (guess it is a small value most of the time - if it's big, an extra byte won't hurt anyway)
 	uint32_t tmp = iSize; pComp->Value(mkIntPackAdapt(tmp)); iSize = tmp;
-  pComp->Seperator(StdCompiler::SEP_PART2);
-  // Read/write data
+	pComp->Seperator(StdCompiler::SEP_PART2);
+	// Read/write data
 	if(pComp->isCompiler())
-  {
-    New(iSize);
-    pComp->Raw(getMData(), iSize, StdCompiler::RawCompileType(iType));
-  }
-  else
-  {
-    pComp->Raw(const_cast<void *>(getData()), iSize, StdCompiler::RawCompileType(iType));
-  }
+	{
+		New(iSize);
+		pComp->Raw(getMData(), iSize, StdCompiler::RawCompileType(iType));
+	}
+	else
+	{
+		pComp->Raw(const_cast<void *>(getData()), iSize, StdCompiler::RawCompileType(iType));
+	}
 }
 
 // *** StdStringBuf
@@ -129,7 +129,7 @@ void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 void StdStrBuf::Format(const char *szFmt, ...)
 {
 	// Create argument list
-  va_list args; va_start(args, szFmt);
+	va_list args; va_start(args, szFmt);
 	// Format
 	FormatV(szFmt, args);
 }
@@ -145,7 +145,7 @@ void StdStrBuf::FormatV(const char *szFmt, va_list args)
 void StdStrBuf::AppendFormat(const char *szFmt, ...)
 {
 	// Create argument list
-  va_list args; va_start(args, szFmt);
+	va_list args; va_start(args, szFmt);
 	// Format
 	AppendFormatV(szFmt, args);
 }
@@ -167,12 +167,12 @@ void StdStrBuf::AppendFormatV(const char *szFmt, va_list args)
 #elif defined(HAVE_VSCPRINTF)
 	// Save append start
 	int iStart = getLength();
-  // Calculate size, allocate
-  int iLength = vscprintf(szFmt, args);
-  Grow(iLength);
-  // Format
-  char *pPos = getMElem<char>(*this, iSize - iLength - 1);
-  vsprintf(getMPtr(iStart), szFmt, args);
+	// Calculate size, allocate
+	int iLength = vscprintf(szFmt, args);
+	Grow(iLength);
+	// Format
+	char *pPos = getMElem<char>(*this, iSize - iLength - 1);
+	vsprintf(getMPtr(iStart), szFmt, args);
 #else
 	// Save append start
 	int iStart = getLength(), iBytes;
@@ -193,31 +193,31 @@ void StdStrBuf::AppendFormatV(const char *szFmt, va_list args)
 
 void StdStrBuf::CompileFunc(StdCompiler *pComp, int iRawType)
 {
-  if(pComp->isCompiler())
-  {
-    char *pnData;
-    pComp->String(&pnData, StdCompiler::RawCompileType(iRawType));
-    Take(pnData);
-  }
-  else
-  {
-    char *pData = const_cast<char *>(getData());
-    if (!pData) pData = const_cast<char *>("");
-    pComp->String(&pData, StdCompiler::RawCompileType(iRawType));
-  }
+	if(pComp->isCompiler())
+	{
+		char *pnData;
+		pComp->String(&pnData, StdCompiler::RawCompileType(iRawType));
+		Take(pnData);
+	}
+	else
+	{
+		char *pData = const_cast<char *>(getData());
+		if (!pData) pData = const_cast<char *>("");
+		pComp->String(&pData, StdCompiler::RawCompileType(iRawType));
+	}
 }
 
 StdStrBuf FormatString(const char *szFmt, ...)
 {
-  va_list args; va_start(args, szFmt);
-  return FormatStringV(szFmt, args);
+	va_list args; va_start(args, szFmt);
+	return FormatStringV(szFmt, args);
 }
 
 StdStrBuf FormatStringV(const char *szFmt, va_list args)
 {
-  StdStrBuf Buf;
-  Buf.FormatV(szFmt, args);
-  return Buf;
+	StdStrBuf Buf;
+	Buf.FormatV(szFmt, args);
+	return Buf;
 }
 
 // replace all occurences of one string with another. Return number of replacements.

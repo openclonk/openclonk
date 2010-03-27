@@ -31,8 +31,8 @@
 #include <C4Material.h>
 
 const uint8_t GBM = 128,
-           GBM_ColNum = 64,
-           IFT = 0x80,
+					 GBM_ColNum = 64,
+					 IFT = 0x80,
 					 IFTOld = GBM_ColNum;
 
 const uint8_t CSkyDef1=104,CSkyDef2=123;
@@ -40,7 +40,7 @@ const uint8_t CSkyDef1=104,CSkyDef2=123;
 const int32_t C4MaxMaterial = 125;
 
 const int32_t C4LSC_Undefined = 0,
-          C4LSC_Dynamic = 1,
+					C4LSC_Dynamic = 1,
 					C4LSC_Static = 2,
 					C4LSC_Exact = 3;
 
@@ -51,29 +51,29 @@ class C4Object;
 class C4PropList;
 
 class C4Landscape
-  {
-  public:
-    C4Landscape();
+	{
+	public:
+		C4Landscape();
 		~C4Landscape();
-  public:
+	public:
 		int32_t Mode;
 		int32_t Width,Height;
 		int32_t MapWidth,MapHeight,MapZoom;
 		CSurface8 * Map;
-    DWORD MatCount[C4MaxMaterial]; // NoSave //
-    DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
+		DWORD MatCount[C4MaxMaterial]; // NoSave //
+		DWORD EffectiveMatCount[C4MaxMaterial]; // NoSave //
 	uint8_t *BridgeMatConversion[C4MaxMaterial]; // NoSave //
 		int32_t BlastMatCount[C4MaxMaterial]; // SyncClearance-NoSave //
 		bool NoScan; // ExecuteScan() disabled
-    int32_t ScanX,ScanSpeed; // SyncClearance-NoSave //
+		int32_t ScanX,ScanSpeed; // SyncClearance-NoSave //
 		int32_t LeftOpen,RightOpen,TopOpen,BottomOpen;
 		FIXED Gravity;
 		uint32_t Modulation;		// landscape blit modulation; 0 means normal
 		int32_t MapSeed; // random seed for MapToLandscape
-    C4Sky Sky;
+		C4Sky Sky;
 		C4MapCreatorS2 *pMapCreator; // map creator for script-generated maps
 		bool fMapChanged;
-    BYTE *pInitial; // Initial landscape after creation - used for diff
+		BYTE *pInitial; // Initial landscape after creation - used for diff
 	protected:
 		CSurface * Surface32;
 		CSurface8 * Surface8;
@@ -84,15 +84,15 @@ class C4Landscape
 	public:
 		void Default();
 	  void Clear(bool fClearMapCreator=true, bool fClearSky=true);
-    void Execute();
+		void Execute();
 		void Synchronize();
 		void Draw(C4TargetFacet &cgo, int32_t iPlayer=-1);
-    void ScenarioInit();
+		void ScenarioInit();
 		void ClearRect(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt);
 		void ClearRectDensity(int32_t iTx, int32_t iTy, int32_t iWdt, int32_t iHgt, int32_t iOfDensity);
 		void ClearMatCount();
 		void ClearBlastMatCount();
-    void ScanSideOpen();
+		void ScanSideOpen();
 		void CheckInstabilityRange(int32_t tx, int32_t ty);
 		void ShakeFree(int32_t tx, int32_t ty, int32_t rad);
 		void DigFree(int32_t tx, int32_t ty, int32_t rad, bool fRequest=false, C4Object *pByObj=NULL);
@@ -107,7 +107,7 @@ class C4Landscape
 		bool Save(C4Group &hGroup);
 		bool SaveDiff(C4Group &hGroup, bool fSyncSave);
 		bool SaveMap(C4Group &hGroup);
-    bool SaveInitial();
+		bool SaveInitial();
 		bool SaveTextures(C4Group &hGroup);
 		bool Init(C4Group &hGroup, bool fOverloadCurrent, bool fLoadSky, bool &rfLoaded, bool fSavegame);
 		bool MapToLandscape();
@@ -192,7 +192,7 @@ class C4Landscape
 		inline int32_t GetPixMat(BYTE byPix) { return Pix2Mat[byPix]; }
 		inline int32_t GetPixDensity(BYTE byPix) { return Pix2Dens[byPix]; }
 		bool _PathFree(int32_t x, int32_t y, int32_t x2, int32_t y2); // quickly checks wether there *might* be pixel in the path.
-    int32_t GetMatHeight(int32_t x, int32_t y, int32_t iYDir, int32_t iMat, int32_t iMax);
+		int32_t GetMatHeight(int32_t x, int32_t y, int32_t iYDir, int32_t iMat, int32_t iMax);
 		int32_t DigFreePix(int32_t tx, int32_t ty);
 		int32_t ShakeFreePix(int32_t tx, int32_t ty);
 		int32_t BlastFreePix(int32_t tx, int32_t ty, int32_t grade, int32_t iBlastSize);
@@ -211,10 +211,10 @@ class C4Landscape
 		void SetMapChanged() { fMapChanged = true; }
 		void HandleTexMapUpdate();
 		void UpdatePixMaps();
-    bool DoRelights();
-    void RemoveUnusedTexMapEntries();
-  protected:
-    void ExecuteScan();
+		bool DoRelights();
+		void RemoveUnusedTexMapEntries();
+	protected:
+		void ExecuteScan();
 		int32_t DoScan(int32_t x, int32_t y, int32_t mat, int32_t dir);
 		int32_t ChunkyRandom(int32_t &iOffset, int32_t iRange); // return static random value, according to offset and MapSeed
 		void DrawChunk(int32_t tx, int32_t ty, int32_t wdt, int32_t hgt, int32_t mcol, int32_t iChunkType, int32_t cro);
@@ -232,21 +232,21 @@ class C4Landscape
 		bool ApplyLighting(C4Rect To);
 		DWORD GetClrByTex(int32_t iX, int32_t iY);
 		bool Mat2Pal(); // assign material colors to landscape palette
-    void DigFreeSinglePix(int32_t x, int32_t y, int32_t dx, int32_t dy)
-      {
-      if(GetDensity(x, y) > GetDensity(x + dx, y + dy))
-        DigFreePix(x, y);
-      }
+		void DigFreeSinglePix(int32_t x, int32_t y, int32_t dx, int32_t dy)
+			{
+			if(GetDensity(x, y) > GetDensity(x + dx, y + dy))
+				DigFreePix(x, y);
+			}
 		void UpdatePixCnt(const class C4Rect &Rect, bool fCheck = false);
 		void UpdateMatCnt(C4Rect Rect, bool fPlus);
 		void PrepareChange(C4Rect BoundingBox);
 		void FinishChange(C4Rect BoundingBox);
-    static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
+		static bool DrawLineLandscape(int32_t iX, int32_t iY, int32_t iGrade);
 		uint8_t *GetBridgeMatConversion(int for_material);
-  public:
-    void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky
+	public:
+		void CompileFunc(StdCompiler *pComp); // without landscape bitmaps and sky
 		bool DebugSave(const char *szFilename);
-  };
+	};
 
 extern C4Landscape Landscape;
 
@@ -277,31 +277,31 @@ int32_t PixCol2Mat(BYTE pixc);
 #define _SBackPixIfMask ::Landscape._SetPixIfMask
 
 inline bool DensitySolid(int32_t dens)
-  {
-  return (dens>=C4M_Solid);
-  }
+	{
+	return (dens>=C4M_Solid);
+	}
 
 inline bool DensitySemiSolid(int32_t dens)
-  {
-  return (dens>=C4M_SemiSolid);
-  }
+	{
+	return (dens>=C4M_SemiSolid);
+	}
 
 inline bool DensityLiquid(int32_t dens)
-  {
-  return ((dens>=C4M_Liquid) && (dens<C4M_Solid));
-  }
+	{
+	return ((dens>=C4M_Liquid) && (dens<C4M_Solid));
+	}
 
 inline BYTE PixColIFT(BYTE pixc)
-  {
+	{
 	return pixc & IFT;
-  }
+	}
 
 // always use OldGfx-version (used for convert)
 inline BYTE PixColIFTOld(BYTE pixc)
-  {
-  if (pixc>=GBM+IFTOld) return IFTOld;
-  return 0;
-  }
+	{
+	if (pixc>=GBM+IFTOld) return IFTOld;
+	return 0;
+	}
 
 inline int32_t PixCol2Tex(BYTE pixc)
 	{
@@ -314,32 +314,32 @@ inline int32_t PixCol2Tex(BYTE pixc)
 	}
 
 inline BYTE GBackIFT(int32_t x, int32_t y)
-  {
-  return PixColIFT(GBackPix(x,y));
-  }
+	{
+	return PixColIFT(GBackPix(x,y));
+	}
 
 inline int32_t GBackMat(int32_t x, int32_t y)
-  {
+	{
 	return ::Landscape.GetMat(x, y);
-  }
+	}
 
 inline int32_t GBackDensity(int32_t x, int32_t y)
-  {
+	{
 	return ::Landscape.GetDensity(x, y);
-  }
+	}
 
 inline bool GBackSolid(int32_t x, int32_t y)
-  {
-  return DensitySolid(GBackDensity(x,y));
-  }
+	{
+	return DensitySolid(GBackDensity(x,y));
+	}
 
 inline bool GBackSemiSolid(int32_t x, int32_t y)
-  {
-  return DensitySemiSolid(GBackDensity(x,y));
-  }
+	{
+	return DensitySemiSolid(GBackDensity(x,y));
+	}
 
 inline bool GBackLiquid(int32_t x, int32_t y)
-  {
-  return DensityLiquid(GBackDensity(x,y));
-  }
+	{
+	return DensityLiquid(GBackDensity(x,y));
+	}
 #endif

@@ -57,16 +57,16 @@ namespace C4InVal
 // Validation adapter: Call ValidateString on string after compiling it
 template <class T> struct C4StrValAdapt
 {
-  T &rValue; C4InVal::ValidationOption eValType;
-  explicit C4StrValAdapt(T &rValue, C4InVal::ValidationOption eValType) : rValue(rValue), eValType(eValType) { }
-  inline void CompileFunc(StdCompiler *pComp)
-  {
-    pComp->Value(rValue);
+	T &rValue; C4InVal::ValidationOption eValType;
+	explicit C4StrValAdapt(T &rValue, C4InVal::ValidationOption eValType) : rValue(rValue), eValType(eValType) { }
+	inline void CompileFunc(StdCompiler *pComp)
+	{
+		pComp->Value(rValue);
 		if (pComp->isCompiler()) C4InVal::ValidateString(rValue.GetObj(), eValType); // works on Par adapt only :(
-  }
+	}
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline C4StrValAdapt<T> &operator = (const D &nValue) { rValue = nValue; return *this; }
-  ALLOW_TEMP_TO_REF(C4StrValAdapt)
+	ALLOW_TEMP_TO_REF(C4StrValAdapt)
 };
 template <class T> inline C4StrValAdapt<T> mkStrValAdapt(T RREF rValue, C4InVal::ValidationOption eValType) { return C4StrValAdapt<T>(rValue, eValType); }
 
@@ -76,11 +76,11 @@ struct ValidatedStdCopyStrBufBase : public StdCopyStrBuf
 	ValidatedStdCopyStrBufBase(const char *szCopy) : StdCopyStrBuf(szCopy) {}
 	ValidatedStdCopyStrBufBase() : StdCopyStrBuf() {}
 
-  inline void CompileFunc(StdCompiler *pComp, int iRawType = 0)
-  {
-    pComp->Value(mkParAdapt(static_cast<StdCopyStrBuf &>(*this), iRawType));
+	inline void CompileFunc(StdCompiler *pComp, int iRawType = 0)
+	{
+		pComp->Value(mkParAdapt(static_cast<StdCopyStrBuf &>(*this), iRawType));
 		if (pComp->isCompiler()) Validate();
-  }
+	}
 
 	virtual bool Validate() = 0;
 

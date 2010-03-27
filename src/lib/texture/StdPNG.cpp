@@ -187,7 +187,7 @@ DWORD CPNGFile::GetPix(int iX, int iY)
 		case PNG_COLOR_TYPE_RGB:
 			return 0xff << 24 | RGB(pPix[0], pPix[1], pPix[2]);
 		case PNG_COLOR_TYPE_RGB_ALPHA:
-            return pPix[3] << 24 | RGB(pPix[0], pPix[1], pPix[2]);
+			return pPix[3] << 24 | RGB(pPix[0], pPix[1], pPix[2]);
 		}
 	return 0;
 	}

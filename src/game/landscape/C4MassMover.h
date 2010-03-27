@@ -28,40 +28,40 @@ class C4Group;
 class C4MassMoverSet;
 
 class C4MassMover
-  {
-  friend class C4MassMoverSet;
-  protected:
-    int32_t Mat,x,y;
-  protected:
-    void Cease();
-    bool Execute();
-    bool Init(int32_t tx, int32_t ty);
+	{
+	friend class C4MassMoverSet;
+	protected:
+		int32_t Mat,x,y;
+	protected:
+		void Cease();
+		bool Execute();
+		bool Init(int32_t tx, int32_t ty);
 		bool Corrosion(int32_t dx, int32_t dy);
-  };
+	};
 
 class C4MassMoverSet
-  {
-  public:
-    C4MassMoverSet();
-    ~C4MassMoverSet();
-  public:
-    int32_t Count;
-    int32_t CreatePtr;
-  protected:
-    C4MassMover Set[C4MassMoverChunk];
-  public:
+	{
+	public:
+		C4MassMoverSet();
+		~C4MassMoverSet();
+	public:
+		int32_t Count;
+		int32_t CreatePtr;
+	protected:
+		C4MassMover Set[C4MassMoverChunk];
+	public:
 	  void Copy(C4MassMoverSet &rSet);
 	  void Synchronize();
 	  void Default();
-    void Clear();
-    void Draw();
-    void Execute();
-    bool Create(int32_t x, int32_t y, bool fExecute=false);
+		void Clear();
+		void Draw();
+		void Execute();
+		bool Create(int32_t x, int32_t y, bool fExecute=false);
 	  bool Load(C4Group &hGroup);
 	  bool Save(C4Group &hGroup);
-  protected:
+	protected:
 	  void Consolidate();
-  };
+	};
 
 extern C4MassMoverSet MassMover;
 

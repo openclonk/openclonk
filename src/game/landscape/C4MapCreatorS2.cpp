@@ -385,7 +385,7 @@ bool C4MCOverlay::SetField(C4MCParser *pParser, const char *szField, const char 
 					*((C4MCCallbackArray **) pTarget) = new C4MCCallbackArray(pSFunc, MapCreator);
 					}
 				default:
-                                        // TODO
+																				// TODO
 					break;
 				}
 			// done
@@ -818,9 +818,9 @@ CSurface8 * C4MapCreatorS2::Render(const char *szMapName)
 	}
 
 static inline void DWordAlign(int &val)
-  {
-  if (val%4) { val>>=2; val<<=2; val+=4; }
-  }
+	{
+	if (val%4) { val>>=2; val<<=2; val+=4; }
+	}
 
 BYTE *C4MapCreatorS2::RenderBuf(const char *szMapName, int32_t &sfcWdt, int32_t &sfcHgt)
 	{
@@ -1480,7 +1480,7 @@ bool AlgoChecker(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 
 bool AlgoBozo(C4MCOverlay *pOvrl, int32_t iX, int32_t iY)
 	{
-  // do some bozo stuff - keep it regular here, since it may be modified by turbulence
+	// do some bozo stuff - keep it regular here, since it may be modified by turbulence
 	int32_t iXC=(iX/10+s+(iY/80))%(z*2)-z;
 	int32_t iYC=(iY/10+s+(iX/80))%(z*2)-z;
 	int32_t id=Abs(iXC*iYC); // ((iSeed^iX^iY)%z)

@@ -45,29 +45,29 @@ struct StdNullAdapt
 template <class T, class D>
 struct StdDefaultAdapt
 {
-  T &rValue; const D &rDefault;
-  StdDefaultAdapt(T &rValue, const D &rDefault) : rValue(rValue), rDefault(rDefault) { }
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    try
-    {
+	T &rValue; const D &rDefault;
+	StdDefaultAdapt(T &rValue, const D &rDefault) : rValue(rValue), rDefault(rDefault) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		try
+		{
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
 			if(!pComp->ValueSafe(rValue))
 				rValue = rDefault;
 #else
-      pComp->Value(rValue);
+			pComp->Value(rValue);
 #endif
-    }
-    catch(StdCompiler::NotFoundException *pEx)
-    {
-      rValue = rDefault;
-      delete pEx;
-    }
-  }
-  ALLOW_TEMP_TO_REF(StdDefaultAdapt)
+		}
+		catch(StdCompiler::NotFoundException *pEx)
+		{
+			rValue = rDefault;
+			delete pEx;
+		}
+	}
+	ALLOW_TEMP_TO_REF(StdDefaultAdapt)
 };
 template <class T, class D>
-  inline StdDefaultAdapt<T, D> mkDefaultAdapt(T RREF rValue, const D &rDefault) { return StdDefaultAdapt<T, D>(rValue, rDefault); }
+	inline StdDefaultAdapt<T, D> mkDefaultAdapt(T RREF rValue, const D &rDefault) { return StdDefaultAdapt<T, D>(rValue, rDefault); }
 
 // * Naming Adaptor
 // Embeds a value into a named section, failsafe
@@ -75,40 +75,40 @@ template <class T, class D>
 template <class T>
 struct StdNamingAdapt
 {
-  T &rValue; const char *szName;
-  StdNamingAdapt(T &rValue, const char *szName) : rValue(rValue), szName(szName) { }
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    pComp->Name(szName);
-    try
-    {
-      pComp->Value(rValue);
-    }
-    catch(StdCompiler::Exception *)
-    {
-      pComp->NameEnd(true);
-      throw;
-    }
-    pComp->NameEnd();
-  }
+	T &rValue; const char *szName;
+	StdNamingAdapt(T &rValue, const char *szName) : rValue(rValue), szName(szName) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		pComp->Name(szName);
+		try
+		{
+			pComp->Value(rValue);
+		}
+		catch(StdCompiler::Exception *)
+		{
+			pComp->NameEnd(true);
+			throw;
+		}
+		pComp->NameEnd();
+	}
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline StdNamingAdapt &operator = (const D &nValue) { rValue = nValue; return *this; }
-  ALLOW_TEMP_TO_REF(StdNamingAdapt)
+	ALLOW_TEMP_TO_REF(StdNamingAdapt)
 };
 template <class T>
-  inline StdNamingAdapt<T> mkNamingAdapt(T RREF rValue, const char *szName) { return StdNamingAdapt<T>(rValue, szName); }
+	inline StdNamingAdapt<T> mkNamingAdapt(T RREF rValue, const char *szName) { return StdNamingAdapt<T>(rValue, szName); }
 
 // * Naming Adaptor (defaulting)
 // Embeds a value into a named section, sets default on fail
 template <class T, class D>
 struct StdNamingDefaultAdapt
 {
-  T &rValue; const char *szName; const D &rDefault; bool fPrefillDefault; bool fStoreDefault;
-  StdNamingDefaultAdapt(T &rValue, const char *szName, const D &rDefault, bool fPrefillDefault, bool fStoreDefault) : rValue(rValue), szName(szName), rDefault(rDefault), fPrefillDefault(fPrefillDefault), fStoreDefault(fStoreDefault) { }
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    // Default check
-    if(pComp->hasNaming() && pComp->isDecompiler() && rValue == rDefault && !fStoreDefault)
+	T &rValue; const char *szName; const D &rDefault; bool fPrefillDefault; bool fStoreDefault;
+	StdNamingDefaultAdapt(T &rValue, const char *szName, const D &rDefault, bool fPrefillDefault, bool fStoreDefault) : rValue(rValue), szName(szName), rDefault(rDefault), fPrefillDefault(fPrefillDefault), fStoreDefault(fStoreDefault) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		// Default check
+		if(pComp->hasNaming() && pComp->isDecompiler() && rValue == rDefault && !fStoreDefault)
 		{
 			if (pComp->Default(szName)) return;
 		}
@@ -128,67 +128,67 @@ struct StdNamingDefaultAdapt
 			pComp->NameEnd(true);
 			throw;
 		}
-    // End section
-    pComp->NameEnd();
-  }
-  ALLOW_TEMP_TO_REF(StdNamingDefaultAdapt)
+		// End section
+		pComp->NameEnd();
+	}
+	ALLOW_TEMP_TO_REF(StdNamingDefaultAdapt)
 };
 template <class T, class D>
-  inline StdNamingDefaultAdapt<T,D> mkNamingAdapt(T RREF rValue, const char *szName, const D &rDefault, bool fPrefillDefault=false, bool fStoreDefault=false) { return StdNamingDefaultAdapt<T,D>(rValue, szName, rDefault, fPrefillDefault, fStoreDefault); }
+	inline StdNamingDefaultAdapt<T,D> mkNamingAdapt(T RREF rValue, const char *szName, const D &rDefault, bool fPrefillDefault=false, bool fStoreDefault=false) { return StdNamingDefaultAdapt<T,D>(rValue, szName, rDefault, fPrefillDefault, fStoreDefault); }
 
 // * Decompiling Adaptor
 // Allows to use const objects if the compiler won't change the targets
 template <class T>
 struct StdDecompileAdapt
 {
-  const T &rValue;
-  explicit StdDecompileAdapt(const T &rValue) : rValue(rValue) { }
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    assert(pComp->isDecompiler());
-    pComp->Value(const_cast<T &>(rValue));
-  }
-  ALLOW_TEMP_TO_REF(StdDecompileAdapt)
+	const T &rValue;
+	explicit StdDecompileAdapt(const T &rValue) : rValue(rValue) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		assert(pComp->isDecompiler());
+		pComp->Value(const_cast<T &>(rValue));
+	}
+	ALLOW_TEMP_TO_REF(StdDecompileAdapt)
 };
 template <class T>
-  inline StdDecompileAdapt<T> mkDecompileAdapt(const T &rValue) { return StdDecompileAdapt<T>(rValue); }
+	inline StdDecompileAdapt<T> mkDecompileAdapt(const T &rValue) { return StdDecompileAdapt<T>(rValue); }
 
 // * Runtime value Adaptor
 // Allows the C4ValueSetCompiler to set the value
 template <class T>
 struct StdRuntimeValueAdapt
 {
-  T &rValue;
-  explicit StdRuntimeValueAdapt(T &rValue) : rValue(rValue) { }
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    pComp->setRuntimeWritesAllowed(+1);
-    pComp->Value(rValue);
+	T &rValue;
+	explicit StdRuntimeValueAdapt(T &rValue) : rValue(rValue) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		pComp->setRuntimeWritesAllowed(+1);
+		pComp->Value(rValue);
 		pComp->setRuntimeWritesAllowed(-1);
-  }
+	}
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline StdRuntimeValueAdapt<T> &operator = (const D &nValue) { rValue = nValue; return *this; }
-  ALLOW_TEMP_TO_REF(StdRuntimeValueAdapt)
+	ALLOW_TEMP_TO_REF(StdRuntimeValueAdapt)
 };
 template <class T>
-  inline StdRuntimeValueAdapt<T> mkRuntimeValueAdapt(T RREF rValue) { return StdRuntimeValueAdapt<T>(rValue); }
+	inline StdRuntimeValueAdapt<T> mkRuntimeValueAdapt(T RREF rValue) { return StdRuntimeValueAdapt<T>(rValue); }
 
 // * String adaptor
 struct StdStringAdapt
 {
-  char *szString; int iMaxLength; StdCompiler::RawCompileType eRawType;
-  StdStringAdapt(char *szString, int iMaxLength, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
-    : szString(szString), iMaxLength(iMaxLength), eRawType(eRawType) { }
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    pComp->String(szString, iMaxLength, eRawType);
-  }
+	char *szString; int iMaxLength; StdCompiler::RawCompileType eRawType;
+	StdStringAdapt(char *szString, int iMaxLength, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
+		: szString(szString), iMaxLength(iMaxLength), eRawType(eRawType) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		pComp->String(szString, iMaxLength, eRawType);
+	}
 	inline bool operator == (const char *szDefault) const { return SEqual(szString, szDefault); }
 	inline StdStringAdapt &operator = (const char *szDefault) { SCopy(szDefault, szString, iMaxLength); return *this; }
-  ALLOW_TEMP_TO_REF(StdStringAdapt)
+	ALLOW_TEMP_TO_REF(StdStringAdapt)
 };
 inline StdStringAdapt mkStringAdapt(char *szString, int iMaxLength, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
-  { return StdStringAdapt(szString, iMaxLength, eRawType); }
+	{ return StdStringAdapt(szString, iMaxLength, eRawType); }
 #define mkStringAdaptM(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1)
 #define mkStringAdaptMA(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_All)
 #define mkStringAdaptMI(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_Idtf)
@@ -197,18 +197,18 @@ inline StdStringAdapt mkStringAdapt(char *szString, int iMaxLength, StdCompiler:
 // * Raw adaptor
 struct StdRawAdapt
 {
-  void *pData; size_t iSize; StdCompiler::RawCompileType eRawType;
-  StdRawAdapt(void *pData, size_t iSize, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
-    : pData(pData), iSize(iSize), eRawType(eRawType) { }
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    pComp->Raw(pData, iSize, eRawType);
-  }
+	void *pData; size_t iSize; StdCompiler::RawCompileType eRawType;
+	StdRawAdapt(void *pData, size_t iSize, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
+		: pData(pData), iSize(iSize), eRawType(eRawType) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		pComp->Raw(pData, iSize, eRawType);
+	}
 	inline bool operator == (const void *pDefault) const { return !memcmp(pDefault, pData, iSize); }
 	inline StdRawAdapt &operator = (const void *pDefault) { memcpy(pData, pDefault, iSize); return *this; }
 };
 inline StdRawAdapt mkRawAdapt(void *pData, size_t iSize, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
-  { return StdRawAdapt(pData, iSize, eRawType); }
+	{ return StdRawAdapt(pData, iSize, eRawType); }
 #define mkRawAdaptM(X) mkRawAdapt(&X, sizeof(X))
 
 // * Integer Adaptor
@@ -228,7 +228,7 @@ struct StdIntAdapt
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline StdIntAdapt &operator = (const D &nValue) { rValue = nValue; return *this; }
-  ALLOW_TEMP_TO_REF(StdIntAdapt)
+	ALLOW_TEMP_TO_REF(StdIntAdapt)
 
 };
 template <class T> inline StdIntAdapt<T> mkIntAdapt(T &rValue) { return StdIntAdapt<T>(rValue); }
@@ -252,7 +252,7 @@ struct StdCastAdapt
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rValue == nValue; }
 	template <class D> inline StdCastAdapt &operator = (const D &nValue) { rValue = nValue; return *this; }
-  ALLOW_TEMP_TO_REF(StdCastAdapt)
+	ALLOW_TEMP_TO_REF(StdCastAdapt)
 
 };
 template <class to_t, class T> StdCastAdapt<T, to_t> mkCastAdapt(T &rValue) { return StdCastAdapt<T, to_t>(rValue); }
@@ -262,7 +262,7 @@ template <class T> StdCastAdapt<T, int32_t> mkCastIntAdapt(T &rValue) { return S
 template <class T>
 struct _IdFuncClass
 {
-  T &operator ()(T &rValue) const { return rValue; }
+	T &operator ()(T &rValue) const { return rValue; }
 };
 
 // * Array Adaptor
@@ -270,52 +270,52 @@ struct _IdFuncClass
 template <class T, class M = _IdFuncClass<T> >
 struct StdArrayAdapt
 {
-  StdArrayAdapt(T *pArray, int iSize, M map = M())
-    : pArray(pArray), iSize(iSize), map(map)
-  { }
-  T *pArray; int iSize; M map;
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    for(int i = 0; i < iSize; i++)
-    {
-      if(i) pComp->Seperator(StdCompiler::SEP_SEP);
-      pComp->Value(map(pArray[i]));
-    }
-  }
+	StdArrayAdapt(T *pArray, int iSize, M map = M())
+		: pArray(pArray), iSize(iSize), map(map)
+	{ }
+	T *pArray; int iSize; M map;
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		for(int i = 0; i < iSize; i++)
+		{
+			if(i) pComp->Seperator(StdCompiler::SEP_SEP);
+			pComp->Value(map(pArray[i]));
+		}
+	}
 	// Operators for default checking/setting
-  inline bool operator == (const T &rDefault) const
-  {
-    for(int i = 0; i < iSize; i++)
-      if(pArray[i] != rDefault)
-        return false;
-    return true;
-  }
-  inline StdArrayAdapt &operator = (const T &rDefault)
-  {
-    for(int i = 0; i < iSize; i++)
-      pArray[i] = rDefault;
-    return *this;
-  }
-  inline bool operator == (const T *pDefaults) const
-  {
-    for(int i = 0; i < iSize; i++)
-      if(pArray[i] != pDefaults[i])
-        return false;
-    return true;
-  }
-  inline StdArrayAdapt &operator = (const T *pDefaults)
-  {
-    for(int i = 0; i < iSize; i++)
-      pArray[i] = pDefaults[i];
-    return *this;
-  }
-  ALLOW_TEMP_TO_REF(StdArrayAdapt)
+	inline bool operator == (const T &rDefault) const
+	{
+		for(int i = 0; i < iSize; i++)
+			if(pArray[i] != rDefault)
+				return false;
+		return true;
+	}
+	inline StdArrayAdapt &operator = (const T &rDefault)
+	{
+		for(int i = 0; i < iSize; i++)
+			pArray[i] = rDefault;
+		return *this;
+	}
+	inline bool operator == (const T *pDefaults) const
+	{
+		for(int i = 0; i < iSize; i++)
+			if(pArray[i] != pDefaults[i])
+				return false;
+		return true;
+	}
+	inline StdArrayAdapt &operator = (const T *pDefaults)
+	{
+		for(int i = 0; i < iSize; i++)
+			pArray[i] = pDefaults[i];
+		return *this;
+	}
+	ALLOW_TEMP_TO_REF(StdArrayAdapt)
 };
 template <class T>
-  inline StdArrayAdapt<T> mkArrayAdapt(T *pArray, int iSize) { return StdArrayAdapt<T>(pArray, iSize); }
+	inline StdArrayAdapt<T> mkArrayAdapt(T *pArray, int iSize) { return StdArrayAdapt<T>(pArray, iSize); }
 #define mkArrayAdaptM(A) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)))
 template <class T, class M>
-  inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M map) { return StdArrayAdapt<T, M>(pArray, iSize, map); }
+	inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M map) { return StdArrayAdapt<T, M>(pArray, iSize, map); }
 #define mkArrayAdaptMapM(A, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), M)
 
 // * Array Adaptor (defaulting)
@@ -323,52 +323,52 @@ template <class T, class M>
 template <class T, class D, class M = _IdFuncClass<T> >
 struct StdArrayDefaultAdapt
 {
-  StdArrayDefaultAdapt(T *pArray, size_t iSize, const D &rDefault, const M &map = M())
-    : pArray(pArray), iSize(iSize), rDefault(rDefault), map(map)
-  { }
-  T *pArray; size_t iSize; const D &rDefault; const M map;
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
-    size_t i, iWrite = iSize;
-    bool fCompiler = pComp->isCompiler();
-    // Decompiling: Omit defaults
-    if(!fCompiler && pComp->hasNaming())
-      while(iWrite > 0 && pArray[iWrite - 1] == rDefault)
-        iWrite--;
-    // Read/write values
-    for(i = 0; i < iWrite; i++)
-    {
-      // Seperator?
-      if(i) if(!pComp->Seperator(StdCompiler::SEP_SEP)) break;
-      // Expect a value. Default if not found.
-      pComp->Value(mkDefaultAdapt(map(pArray[i]), rDefault));
-    }
-    // Fill rest of array
-    if(fCompiler)
-      for(; i < iSize; i++)
-        pArray[i] = rDefault;
-  }
+	StdArrayDefaultAdapt(T *pArray, size_t iSize, const D &rDefault, const M &map = M())
+		: pArray(pArray), iSize(iSize), rDefault(rDefault), map(map)
+	{ }
+	T *pArray; size_t iSize; const D &rDefault; const M map;
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
+		size_t i, iWrite = iSize;
+		bool fCompiler = pComp->isCompiler();
+		// Decompiling: Omit defaults
+		if(!fCompiler && pComp->hasNaming())
+			while(iWrite > 0 && pArray[iWrite - 1] == rDefault)
+				iWrite--;
+		// Read/write values
+		for(i = 0; i < iWrite; i++)
+		{
+			// Seperator?
+			if(i) if(!pComp->Seperator(StdCompiler::SEP_SEP)) break;
+			// Expect a value. Default if not found.
+			pComp->Value(mkDefaultAdapt(map(pArray[i]), rDefault));
+		}
+		// Fill rest of array
+		if(fCompiler)
+			for(; i < iSize; i++)
+				pArray[i] = rDefault;
+	}
 	// Additional defaulting (whole array)
-  inline bool operator == (const T *pDefaults) const
-  {
-    for(size_t i = 0; i < iSize; i++)
-      if(pArray[i] != pDefaults[i])
-        return false;
-    return true;
-  }
-  inline StdArrayDefaultAdapt &operator = (const T *pDefaults)
-  {
-    for(size_t i = 0; i < iSize; i++)
-      pArray[i] = pDefaults[i];
-    return *this;
-  }
-  ALLOW_TEMP_TO_REF(StdArrayDefaultAdapt)
+	inline bool operator == (const T *pDefaults) const
+	{
+		for(size_t i = 0; i < iSize; i++)
+			if(pArray[i] != pDefaults[i])
+				return false;
+		return true;
+	}
+	inline StdArrayDefaultAdapt &operator = (const T *pDefaults)
+	{
+		for(size_t i = 0; i < iSize; i++)
+			pArray[i] = pDefaults[i];
+		return *this;
+	}
+	ALLOW_TEMP_TO_REF(StdArrayDefaultAdapt)
 };
 template <class T, class D>
-  inline StdArrayDefaultAdapt<T, D> mkArrayAdapt(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultAdapt<T, D>(pArray, iSize, rDefault); }
+	inline StdArrayDefaultAdapt<T, D> mkArrayAdapt(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultAdapt<T, D>(pArray, iSize, rDefault); }
 #define mkArrayAdaptDM(A, D) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)), D)
 template <class T, class D, class M>
-  inline StdArrayDefaultAdapt<T, D, M> mkArrayAdaptMap(T *pArray, size_t iSize, const D &rDefault, M map) { return StdArrayDefaultAdapt<T, D, M>(pArray, iSize, rDefault, map); }
+	inline StdArrayDefaultAdapt<T, D, M> mkArrayAdaptMap(T *pArray, size_t iSize, const D &rDefault, M map) { return StdArrayDefaultAdapt<T, D, M>(pArray, iSize, rDefault, map); }
 #define mkArrayAdaptMapDM(A, D, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), D, M)
 
 // * Insertion Adaptor
@@ -376,32 +376,32 @@ template <class T, class D, class M>
 template <class T, class I>
 struct StdInsertAdapt
 {
-  StdInsertAdapt(T &rObj, I &rIns, bool fBefore = true)
-    : rObj(rObj), rIns(rIns), fBefore(fBefore)
-  { }
-  T &rObj; I &rIns; bool fBefore;
-  void CompileFunc(StdCompiler *pComp) const
-  {
-    if(fBefore) pComp->Value(rIns);
-    pComp->Value(rObj);
-    if(!fBefore) pComp->Value(rIns);
-  }
-  ALLOW_TEMP_TO_REF(StdInsertAdapt)
+	StdInsertAdapt(T &rObj, I &rIns, bool fBefore = true)
+		: rObj(rObj), rIns(rIns), fBefore(fBefore)
+	{ }
+	T &rObj; I &rIns; bool fBefore;
+	void CompileFunc(StdCompiler *pComp) const
+	{
+		if(fBefore) pComp->Value(rIns);
+		pComp->Value(rObj);
+		if(!fBefore) pComp->Value(rIns);
+	}
+	ALLOW_TEMP_TO_REF(StdInsertAdapt)
 };
 template <class T, class I>
-  inline StdInsertAdapt<T, I> mkInsertAdapt(T RREF rObj, I RREF rIns, bool fBefore = true) { return StdInsertAdapt<T,I>(rObj, rIns, fBefore); }
+	inline StdInsertAdapt<T, I> mkInsertAdapt(T RREF rObj, I RREF rIns, bool fBefore = true) { return StdInsertAdapt<T,I>(rObj, rIns, fBefore); }
 
 // * Parameter Adaptor
 // Specify a second parameter for the CompileFunc
 template <class T, class P>
 struct StdParameterAdapt
 {
-  StdParameterAdapt(T &rObj, const P &rPar) : rObj(rObj), Par(rPar) { }
-  T &rObj; const P Par;
-  void CompileFunc(StdCompiler *pComp) const
-  {
-    rObj.CompileFunc(pComp, Par);
-  }
+	StdParameterAdapt(T &rObj, const P &rPar) : rObj(rObj), Par(rPar) { }
+	T &rObj; const P Par;
+	void CompileFunc(StdCompiler *pComp) const
+	{
+		rObj.CompileFunc(pComp, Par);
+	}
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rObj == nValue; }
 	template <class D> inline StdParameterAdapt &operator = (const D &nValue) { rObj = nValue; return *this; }
@@ -409,29 +409,29 @@ struct StdParameterAdapt
 	// getting value
 	inline T &GetObj() { return rObj; }
 
-  ALLOW_TEMP_TO_REF(StdParameterAdapt)
+	ALLOW_TEMP_TO_REF(StdParameterAdapt)
 };
 template <class T, class P>
-  inline StdParameterAdapt<T, P> mkParAdapt(T &rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
+	inline StdParameterAdapt<T, P> mkParAdapt(T &rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
 
 // * Parameter Adaptor 2
 // Specify a second and a third parameter for the CompileFunc
 template <class T, class P1, class P2>
 struct StdParameter2Adapt
 {
-  StdParameter2Adapt(T &rObj, const P1 &rPar1, const P2 &rPar2) : rObj(rObj), rPar1(rPar1), rPar2(rPar2) { }
-  T &rObj; const P1 &rPar1; const P2 &rPar2;
-  void CompileFunc(StdCompiler *pComp) const
-  {
-    rObj.CompileFunc(pComp, rPar1, rPar2);
-  }
+	StdParameter2Adapt(T &rObj, const P1 &rPar1, const P2 &rPar2) : rObj(rObj), rPar1(rPar1), rPar2(rPar2) { }
+	T &rObj; const P1 &rPar1; const P2 &rPar2;
+	void CompileFunc(StdCompiler *pComp) const
+	{
+		rObj.CompileFunc(pComp, rPar1, rPar2);
+	}
 	// Operators for default checking/setting
 	template <class D> inline bool operator == (const D &nValue) const { return rObj == nValue; }
 	template <class D> inline StdParameter2Adapt &operator = (const D &nValue) { rObj = nValue; return *this; }
-  ALLOW_TEMP_TO_REF(StdParameter2Adapt)
+	ALLOW_TEMP_TO_REF(StdParameter2Adapt)
 };
 template <class T, class P1, class P2>
-  inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const P2 &rPar2) { return StdParameter2Adapt<T, P1, P2>(rObj, rPar1, rPar2); }
+	inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const P2 &rPar2) { return StdParameter2Adapt<T, P1, P2>(rObj, rPar1, rPar2); }
 
 
 // * Store pointer (contents)
@@ -439,36 +439,36 @@ template <class T, class P1, class P2>
 template <class T>
 struct StdPtrAdapt
 {
-  StdPtrAdapt(T *&rpObj, bool fAllowNull = true, const char *szNaming = "Data")
+	StdPtrAdapt(T *&rpObj, bool fAllowNull = true, const char *szNaming = "Data")
 		: rpObj(rpObj), fAllowNull(fAllowNull), szNaming(szNaming)
 	{ }
-  T *&rpObj; bool fAllowNull; const char *szNaming;
-  void CompileFunc(StdCompiler *pComp) const
-  {
-    bool fCompiler = pComp->isCompiler(),
-         fNaming = pComp->hasNaming();
-    // Compiling? Clear object before
-    if(fCompiler) { delete rpObj; rpObj = NULL; }
-    // Null checks - different with naming support.
-    if(fAllowNull)
-      if(fNaming)
-      {
-        // Null check: just omit when writing
-        if(!fCompiler && !rpObj) return;
-        // Set up naming
-        if(!pComp->Name(szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
-      }
-      else
-      {
-        bool fNull = !! rpObj;
-        pComp->Value(fNull);
-        // Null? Nothing further to do
-        if(fNull) return;
-      }
-    else if(!fCompiler)
-      assert(rpObj);
-    // Compile value
-    if(fCompiler)
+	T *&rpObj; bool fAllowNull; const char *szNaming;
+	void CompileFunc(StdCompiler *pComp) const
+	{
+		bool fCompiler = pComp->isCompiler(),
+				 fNaming = pComp->hasNaming();
+		// Compiling? Clear object before
+		if(fCompiler) { delete rpObj; rpObj = NULL; }
+		// Null checks - different with naming support.
+		if(fAllowNull)
+			if(fNaming)
+			{
+				// Null check: just omit when writing
+				if(!fCompiler && !rpObj) return;
+				// Set up naming
+				if(!pComp->Name(szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
+			}
+			else
+			{
+				bool fNull = !! rpObj;
+				pComp->Value(fNull);
+				// Null? Nothing further to do
+				if(fNull) return;
+			}
+		else if(!fCompiler)
+			assert(rpObj);
+		// Compile value
+		if(fCompiler)
 			{
 			T *rpnObj;
 			CompileNewFunc(rpnObj, pComp);
@@ -476,22 +476,22 @@ struct StdPtrAdapt
 			}
 		else
 			pComp->Value(mkDecompileAdapt(*rpObj));
-    // Close naming
-    if(fAllowNull && fNaming) pComp->NameEnd();
-  }
+		// Close naming
+		if(fAllowNull && fNaming) pComp->NameEnd();
+	}
 	// Operators for default checking/setting
 	inline bool operator == (const T &nValue) const { return rpObj && *rpObj == nValue; }
 	inline StdPtrAdapt &operator = (const T &nValue) { delete rpObj; rpObj = new T(nValue); return *this; }
 	inline bool operator == (const T *pValue) const { return rpObj == pValue; }
 	inline StdPtrAdapt &operator = (const T *pValue) { delete rpObj; rpObj = pValue; return *this; }
-  ALLOW_TEMP_TO_REF(StdPtrAdapt)
+	ALLOW_TEMP_TO_REF(StdPtrAdapt)
 };
 template <class T>
-  inline StdPtrAdapt<T> mkPtrAdapt(T *&rpObj, bool fAllowNull = true) { return StdPtrAdapt<T>(rpObj, fAllowNull); }
+	inline StdPtrAdapt<T> mkPtrAdapt(T *&rpObj, bool fAllowNull = true) { return StdPtrAdapt<T>(rpObj, fAllowNull); }
 template <class T>
-  inline StdPtrAdapt<T> mkNamingPtrAdapt(T *&rpObj, const char *szNaming) { return StdPtrAdapt<T>(rpObj, true, szNaming); }
+	inline StdPtrAdapt<T> mkNamingPtrAdapt(T *&rpObj, const char *szNaming) { return StdPtrAdapt<T>(rpObj, true, szNaming); }
 template <class T>
-  inline StdPtrAdapt<T> mkPtrAdaptNoNull(T *&rpObj) { return mkPtrAdapt<T>(rpObj, false); }
+	inline StdPtrAdapt<T> mkPtrAdaptNoNull(T *&rpObj) { return mkPtrAdapt<T>(rpObj, false); }
 
 // * Adaptor for STL containers
 // Writes a comma-seperated list for compilers that support it. Otherwise, the size is calculated and safed.
@@ -500,10 +500,10 @@ template <class C>
 struct StdSTLContainerAdapt
 {
 	StdSTLContainerAdapt(C &rStruct, StdCompiler::Sep eSep = StdCompiler::SEP_SEP)
-    : rStruct(rStruct), eSep(eSep) { }
+		: rStruct(rStruct), eSep(eSep) { }
 	C &rStruct; const StdCompiler::Sep eSep;
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
 		typedef typename C::value_type T;
 		// Get compiler specs
 		bool fCompiler = pComp->isCompiler();
@@ -557,7 +557,7 @@ struct StdSTLContainerAdapt
 	// Operators for default checking/setting
 	inline bool operator == (const C &nValue) const { return rStruct == nValue; }
 	inline StdSTLContainerAdapt &operator = (const C &nValue) { rStruct = nValue; return *this; }
-  ALLOW_TEMP_TO_REF(StdSTLContainerAdapt)
+	ALLOW_TEMP_TO_REF(StdSTLContainerAdapt)
 };
 template <class C>
 	inline StdSTLContainerAdapt<C> mkSTLContainerAdapt(C &rTarget, StdCompiler::Sep eSep = StdCompiler::SEP_SEP) { return StdSTLContainerAdapt<C>(rTarget, eSep); }
@@ -636,7 +636,7 @@ struct StdIntPackAdapt
 	}
 	template <class D> inline bool operator == (const D &nValue) const { return rVal == nValue; }
 	template <class D> inline StdIntPackAdapt &operator = (const D &nValue) { rVal = nValue; return *this; }
-  ALLOW_TEMP_TO_REF(StdIntPackAdapt)
+	ALLOW_TEMP_TO_REF(StdIntPackAdapt)
 };
 template <class T>
 	StdIntPackAdapt<T> mkIntPackAdapt(T &rVal) { return StdIntPackAdapt<T>(rVal); }
@@ -723,7 +723,7 @@ struct StdEnumAdapt
 	template <class D> inline bool operator == (const D &nValue) const { return rVal == nValue; }
 	template <class D> inline StdEnumAdapt<T, int_t> &operator = (const D &nValue) { rVal = nValue; return *this; }
 
-  ALLOW_TEMP_TO_REF(StdEnumAdapt)
+	ALLOW_TEMP_TO_REF(StdEnumAdapt)
 };
 template <class T, class int_t>
 	StdEnumAdapt<T, int_t> mkEnumAdapt(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
@@ -830,7 +830,7 @@ struct StdBitfieldAdapt
 	template <class D> inline bool operator == (const D &nValue) const { return rVal == nValue; }
 	template <class D> inline StdBitfieldAdapt<T> &operator = (const D &nValue) { rVal = nValue; return *this; }
 
-  ALLOW_TEMP_TO_REF(StdBitfieldAdapt)
+	ALLOW_TEMP_TO_REF(StdBitfieldAdapt)
 };
 template <class T>
 	StdBitfieldAdapt<T> mkBitfieldAdapt(T &rVal, const StdBitfieldEntry<T> *pNames) { return StdBitfieldAdapt<T>(rVal, pNames); }
@@ -843,9 +843,9 @@ template <class int_t>
 struct StdNamingCountAdapt
 {
 	int_t &iCount; const char *szName;
-  StdNamingCountAdapt(int_t &iCount, const char *szName) : iCount(iCount), szName(szName) { }
-  inline void CompileFunc(StdCompiler *pComp) const
-  {
+	StdNamingCountAdapt(int_t &iCount, const char *szName) : iCount(iCount), szName(szName) { }
+	inline void CompileFunc(StdCompiler *pComp) const
+	{
 		if(pComp->hasNaming())
 		{
 			if(pComp->isCompiler())
@@ -853,8 +853,8 @@ struct StdNamingCountAdapt
 		}
 		else
 			pComp->Value(mkIntPackAdapt(iCount));
-  }
-  ALLOW_TEMP_TO_REF(StdNamingCountAdapt)
+	}
+	ALLOW_TEMP_TO_REF(StdNamingCountAdapt)
 };
 template <class int_t>
 	inline StdNamingCountAdapt<int_t> mkNamingCountAdapt(int_t &iCount, const char *szName) { return StdNamingCountAdapt<int_t>(iCount, szName); }

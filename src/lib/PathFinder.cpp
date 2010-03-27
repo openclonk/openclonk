@@ -194,38 +194,38 @@ bool CPathFinderRay::Execute()
 
 bool CPathFinderRay::PathFree(int &rX, int &rY, int iToX, int iToY)
 	{
-  int d,dx,dy,aincr,bincr,xincr,yincr,x,y;
+	int d,dx,dy,aincr,bincr,xincr,yincr,x,y;
 	// Y based
-  if (Abs(iToX-rX)<Abs(iToY-rY))
-    {
-    xincr=(iToX>rX) ? +1 : -1;
+	if (Abs(iToX-rX)<Abs(iToY-rY))
+		{
+		xincr=(iToX>rX) ? +1 : -1;
 		yincr=(iToY>rY) ? +1 : -1;
-    dy=Abs(iToY-rY); dx=Abs(iToX-rX);
+		dy=Abs(iToY-rY); dx=Abs(iToX-rX);
 		d=2*dx-dy; aincr=2*(dx-dy); bincr=2*dx; x=rX; y=rY;
-    for (y=rY; y!=iToY; y+=yincr)
-      {
+		for (y=rY; y!=iToY; y+=yincr)
+			{
 			if (PointFree(x,y)) { rY=y; rX=x; }
 			else return false;
-      if (d>=0) { x+=xincr; d+=aincr; } else d+=bincr;
-      }
-    }
+			if (d>=0) { x+=xincr; d+=aincr; } else d+=bincr;
+			}
+		}
 	// X based
-  else
-    {
-    yincr=(iToY>rY) ? +1 : -1;
-    xincr=(iToX>rX) ? +1 : -1;
+	else
+		{
+		yincr=(iToY>rY) ? +1 : -1;
+		xincr=(iToX>rX) ? +1 : -1;
 		dx=Abs(iToX-rX); dy=Abs(iToY-rY);
 		d=2*dy-dx; aincr=2*(dy-dx); bincr=2*dy; x=rX; y=rY;
 		for (x=rX; x!=iToX; x+=xincr)
-      {
+			{
 			if (PointFree(x,y)) { rY=y; rX=x; }
 			else return false;
-      if (d>=0)	{ y+=yincr; d+=aincr; }
-      else d+=bincr;
-      }
-    }
+			if (d>=0)	{ y+=yincr; d+=aincr; }
+			else d+=bincr;
+			}
+		}
 
-  return true;
+	return true;
 	}
 
 bool CPathFinderRay::Crawl()

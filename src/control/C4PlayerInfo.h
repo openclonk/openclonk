@@ -55,9 +55,9 @@ class C4PlayerInfo
 			PIF_TempFile       = 1<<5,   // player file is temporary and to be deleted after join recreation
 			PIF_InScenarioFile = 1<<6,   // player file is present within the scenario; res is not to be used
 			PIF_JoinedForSavegameOnly = 1<<7, // player file has been specified to take over a savegame player; do not join as normal player if association fails
-      PIF_Disconnected   = 1<<8,   // the player was removed because his client disconnected
-      PIF_Won            = 1<<9,   // player survived until game end (for game evaluation only)
-      PIF_VotedOut       = 1<<10,  // player was removed from the round after a successful voting
+			PIF_Disconnected   = 1<<8,   // the player was removed because his client disconnected
+			PIF_Won            = 1<<9,   // player survived until game end (for game evaluation only)
+			PIF_VotedOut       = 1<<10,  // player was removed from the round after a successful voting
 			PIF_AttributesFixed= 1<<11, // player color and name aren't changed on collision
 			PIF_NoScenarioInit = 1<<12, // do not call ScenariInit for this player
 			PIF_NoEliminationCheck = 1<<13, // do not eliminate player if crew is empty
@@ -141,8 +141,8 @@ class C4PlayerInfo
 			{ dwFlags |= PIF_VotedOut; }
 		void SetLeagueProjectedGain(int32_t iProjectedGain)
 			{ assert(iProjectedGain>=0); iLeagueProjectedGain = iProjectedGain; }
-    void ResetLeagueProjectedGain()
-      { iLeagueProjectedGain = -1; }
+		void ResetLeagueProjectedGain()
+			{ iLeagueProjectedGain = -1; }
 		void SetForcedName(const char *szNewName)
 			{ if (szNewName) sForcedName.CopyValidated(szNewName); else sForcedName.Clear(); }
 
@@ -184,7 +184,7 @@ class C4PlayerInfo
 		int32_t getLeagueRankSymbol() const { return iLeagueRankSymbol; } // returns rank symbol on league server (0 for not assigned)
 		int32_t getLeagueScoreProjected() const { return iLeagueScoreProjected; } // returns score on league server in case of win (0 for not assigned)
 		int32_t GetInGameNumber() const { return iInGameNumber; } // returns player number the player had in the game
-    bool IsLeagueProjectedGainValid() const { return iLeagueProjectedGain>=0; }
+		bool IsLeagueProjectedGainValid() const { return iLeagueProjectedGain>=0; }
 		int32_t GetLeagueProjectedGain() const { return iLeagueProjectedGain; } // get score gain in primary league if this player's team wins
 
 		int32_t GetID() const { return iID; }                    // get unique ID, if assigned
@@ -193,8 +193,8 @@ class C4PlayerInfo
 
 		DWORD GetFlags() { return dwFlags; } // for dbg print only
 
-    void SetDisconnected() { dwFlags |= PIF_Disconnected; }
-    void SetWinner() { dwFlags |= PIF_Won; }
+		void SetDisconnected() { dwFlags |= PIF_Disconnected; }
+		void SetWinner() { dwFlags |= PIF_Won; }
 
 		bool LoadBigIcon(C4FacetSurface &fctTarget); // load BigIcon.png of player into target facet; return false if no bigicon present or player file not yet loaded
 	};
@@ -412,7 +412,7 @@ class C4PlayerInfoList
 		bool SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fSaveUserPlrs, bool fSaveScriptPlrs, bool fSetUserPlrRefToLocalGroup, bool fSetScriptPlrRefToLocalGroup); // copy all joined players from player list
 		bool RemoveUnassociatedPlayers(C4PlayerInfoList &rSavegamePlayers); // remove all savegame players that are not associated to this list from the game
 		int32_t GetFreePlayerSlotCount();       // get number of players that may still join
-    void ResetLeagueProjectedGain(bool fSetUpdated); // reset known projected gains for all players (to be updated by league again)
+		void ResetLeagueProjectedGain(bool fSetUpdated); // reset known projected gains for all players (to be updated by league again)
 
 		// network: Load all resources connected with the players that are not being loaded yet
 		void LoadResources();

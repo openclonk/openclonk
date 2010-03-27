@@ -76,12 +76,12 @@ DWORD MakeColorReadableOnBlack(DWORD &rdwClr)
 	// max alpha
 	DWORD dwAlpha = Max<DWORD>(rdwClr>>24&255, 0xff)<<24;
 	rdwClr &= 0xffffff;
-  // determine brightness
-  // 50% red, 87% green, 27% blue (max 164 * 255)
-  DWORD r=(rdwClr>>16&255), g=(rdwClr>>8&255), b=(rdwClr&255);
-  int32_t iLightness = r*50 + g*87 + b*27;
-  // above 65/164 (*255) is OK
-  if (iLightness < 16575)
+	// determine brightness
+	// 50% red, 87% green, 27% blue (max 164 * 255)
+	DWORD r=(rdwClr>>16&255), g=(rdwClr>>8&255), b=(rdwClr&255);
+	int32_t iLightness = r*50 + g*87 + b*27;
+	// above 65/164 (*255) is OK
+	if (iLightness < 16575)
 		{
 		int32_t iInc = (16575-iLightness) / 164;
 		// otherwise, lighten

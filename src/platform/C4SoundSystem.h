@@ -36,8 +36,8 @@
 #endif
 
 const int32_t C4MaxSoundName=100,
-          C4MaxSoundInstances=20,
-          C4NearSoundRadius=50,
+					C4MaxSoundInstances=20,
+					C4NearSoundRadius=50,
 					C4AudibilityRadius=700;
 
 class C4Object;
@@ -45,14 +45,14 @@ class C4SoundInstance;
 
 class C4SoundEffect
 {
-  friend class C4SoundInstance;
+	friend class C4SoundInstance;
 public:
-  C4SoundEffect();
-  ~C4SoundEffect();
+	C4SoundEffect();
+	~C4SoundEffect();
 public:
-  char Name[C4MaxSoundName+1];
-  int32_t UsageTime, Instances;
-  int32_t SampleRate, Length;
+	char Name[C4MaxSoundName+1];
+	int32_t UsageTime, Instances;
+	int32_t SampleRate, Length;
 	bool Static;
 #ifdef HAVE_FMOD
 	FSOUND_SAMPLE *pSample;
@@ -60,55 +60,55 @@ public:
 #ifdef HAVE_LIBSDL_MIXER
 	Mix_Chunk * pSample;
 #endif
-  C4SoundInstance *FirstInst;
-  C4SoundEffect *Next;
+	C4SoundInstance *FirstInst;
+	C4SoundEffect *Next;
 public:
-  void Clear();
-  bool Load(const char *szFileName, C4Group &hGroup, bool fStatic);
+	void Clear();
+	bool Load(const char *szFileName, C4Group &hGroup, bool fStatic);
 	bool Load(BYTE *pData, size_t iDataLen, bool fStatic, bool fRaw=false); // load directly from memory
-  void Execute();
-  C4SoundInstance *New(bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0);
-  C4SoundInstance *GetInstance(C4Object *pObj);
-  void ClearPointers(C4Object *pObj);
-  int32_t GetStartedInstanceCount(int32_t iX, int32_t iY, int32_t iRad); // local
-  int32_t GetStartedInstanceCount(); // global
+	void Execute();
+	C4SoundInstance *New(bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0);
+	C4SoundInstance *GetInstance(C4Object *pObj);
+	void ClearPointers(C4Object *pObj);
+	int32_t GetStartedInstanceCount(int32_t iX, int32_t iY, int32_t iRad); // local
+	int32_t GetStartedInstanceCount(); // global
 protected:
-  void AddInst(C4SoundInstance *pInst);
-  void RemoveInst(C4SoundInstance *pInst);
+	void AddInst(C4SoundInstance *pInst);
+	void RemoveInst(C4SoundInstance *pInst);
 };
 
 class C4SoundInstance
 {
-  friend class C4SoundEffect;
+	friend class C4SoundEffect;
 protected:
-  C4SoundInstance();
+	C4SoundInstance();
 public:
-  ~C4SoundInstance();
+	~C4SoundInstance();
 protected:
-  C4SoundEffect *pEffect;
-  int32_t iVolume, iPan, iChannel;
-  unsigned long iStarted;
-  int32_t iNearInstanceMax;
-  bool fLooping;
-  C4Object *pObj;
+	C4SoundEffect *pEffect;
+	int32_t iVolume, iPan, iChannel;
+	unsigned long iStarted;
+	int32_t iNearInstanceMax;
+	bool fLooping;
+	C4Object *pObj;
 	int32_t iFalloffDistance;
-  C4SoundInstance *pNext;
+	C4SoundInstance *pNext;
 public:
-  C4Object *getObj() const { return pObj; }
-  bool isStarted() const { return iChannel != -1; }
-  void Clear();
-  bool Create(C4SoundEffect *pEffect, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iNearInstanceMax = 0, int32_t iFalloffDistance = 0);
-  bool CheckStart();
-  bool Start();
-  bool Stop();
-  bool Playing();
-  void Execute();
-  void SetVolume(int32_t inVolume) { iVolume = inVolume; }
-  void SetPan(int32_t inPan) { iPan = inPan; }
-  void SetVolumeByPos(int32_t x, int32_t y);
-  void SetObj(C4Object *pnObj) { pObj = pnObj; }
-  void ClearPointers(C4Object *pObj);
-  bool Inside(int32_t iX, int32_t iY, int32_t iRad);
+	C4Object *getObj() const { return pObj; }
+	bool isStarted() const { return iChannel != -1; }
+	void Clear();
+	bool Create(C4SoundEffect *pEffect, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iNearInstanceMax = 0, int32_t iFalloffDistance = 0);
+	bool CheckStart();
+	bool Start();
+	bool Stop();
+	bool Playing();
+	void Execute();
+	void SetVolume(int32_t inVolume) { iVolume = inVolume; }
+	void SetPan(int32_t inPan) { iPan = inPan; }
+	void SetVolumeByPos(int32_t x, int32_t y);
+	void SetObj(C4Object *pnObj) { pObj = pnObj; }
+	void ClearPointers(C4Object *pObj);
+	bool Inside(int32_t iX, int32_t iY, int32_t iRad);
 };
 
 const int32_t SoundUnloadTime=60, SoundMaxUnloadSize=100000;
@@ -124,7 +124,7 @@ class C4SoundSystem
 		C4SoundInstance *NewEffect(const char *szSound, bool fLoop = false, int32_t iVolume = 100, C4Object *pObj = NULL, int32_t iCustomFalloffDistance = 0);
 		C4SoundInstance *FindInstance(const char *szSound, C4Object *pObj);
 		bool Init();
-    void ClearPointers(C4Object *pObj);
+		void ClearPointers(C4Object *pObj);
 	protected:
 		C4Group SoundFile;
 		C4SoundEffect *FirstSound;

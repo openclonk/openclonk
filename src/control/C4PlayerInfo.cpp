@@ -42,7 +42,7 @@ void C4PlayerInfo::Clear()
 	// del temp file
 	DeleteTempFile();
 	// clear fields
-  sName.Clear(); szFilename.Clear();
+	sName.Clear(); szFilename.Clear();
 	pRes = NULL;
 	ResCore.Clear();
 	// default fields
@@ -66,7 +66,7 @@ void C4PlayerInfo::DeleteTempFile()
 		EraseItem(szFilename.getData());
 		// reset flag and filename to prevent double deletion
 		dwFlags &= ~PIF_TempFile;
-    szFilename.Clear();
+		szFilename.Clear();
 		}
 	}
 
@@ -179,13 +179,13 @@ bool C4PlayerInfo::HasTeamWon() const
 	}
 
 void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
-  {
-  // Names
-  pComp->Value(mkNamingAdapt(sName, "Name", ""));
+	{
+	// Names
+	pComp->Value(mkNamingAdapt(sName, "Name", ""));
 	pComp->Value(mkNamingAdapt(sForcedName, "ForcedName", ""));
-  pComp->Value(mkNamingAdapt(szFilename, "Filename", ""));
+	pComp->Value(mkNamingAdapt(szFilename, "Filename", ""));
 
-  // Flags
+	// Flags
 	const StdBitfieldEntry<uint16_t> Entries[] =
 		{
 			{ "Joined", PIF_Joined },
@@ -202,9 +202,9 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 			{ "Invisible", PIF_Invisible},
 			{ NULL, 0 },
 		};
-  uint16_t dwSyncFlags = dwFlags & PIF_SyncFlags; // do not store local flags!
-  pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, Entries), "Flags", 0u));
-  if(pComp->isCompiler()) dwFlags = dwSyncFlags;
+	uint16_t dwSyncFlags = dwFlags & PIF_SyncFlags; // do not store local flags!
+	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwSyncFlags, Entries), "Flags", 0u));
+	if(pComp->isCompiler()) dwFlags = dwSyncFlags;
 	pComp->Value(mkNamingAdapt(iID, "ID", 0));
 
 	// type
@@ -224,7 +224,7 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 		}
 
 	// load colors
-  pComp->Value(mkNamingAdapt(dwColor, "Color", 0u));
+	pComp->Value(mkNamingAdapt(dwColor, "Color", 0u));
 	pComp->Value(mkNamingAdapt(dwOriginalColor, "OriginalColor", dwColor));
 	// load savegame ID
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(idSavegamePlayer), "SavgamePlayer", 0));
@@ -234,18 +234,18 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(szAuthID, "AUID", ""));
 
 	// InGame info
-  if(dwFlags & PIF_Joined)
-    {
+	if(dwFlags & PIF_Joined)
+		{
 	  pComp->Value(mkNamingAdapt(iInGameNumber,    "GameNumber", -1));
 	  pComp->Value(mkNamingAdapt(iInGameJoinFrame, "GameJoinFrame", -1));
-    }
-  else
-    iInGameNumber = iInGameJoinFrame = -1;
+		}
+	else
+		iInGameNumber = iInGameJoinFrame = -1;
 
-  if(dwFlags & PIF_Removed)
+	if(dwFlags & PIF_Removed)
 	  pComp->Value(mkNamingAdapt(iInGamePartFrame, "GamePartFrame", -1));
-  else
-    iInGamePartFrame = -1;
+	else
+		iInGamePartFrame = -1;
 
 	// script player extra data
 	pComp->Value(mkNamingAdapt(idExtraData, "ExtraData", C4ID::None));
@@ -255,13 +255,13 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iLeagueScore), "LeagueScore", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iLeagueRank), "LeagueRank", 0));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iLeagueRankSymbol), "LeagueRankSymbol", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iLeagueProjectedGain), "ProjectedGain", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iLeagueProjectedGain), "ProjectedGain", -1));
 	pComp->Value(mkNamingAdapt(mkParAdapt(sClanTag, StdCompiler::RCT_All), "ClanTag", ""));
 
 	// file resource
 	if (dwFlags & PIF_HasRes)
 		{
-    // ResCore
+		// ResCore
 		if (pComp->isDecompiler() && pRes)
 			{
 			// ensure ResCore is up-to-date
@@ -270,11 +270,11 @@ void C4PlayerInfo::CompileFunc(StdCompiler *pComp)
 		pComp->Value(mkNamingAdapt(ResCore, "ResCore"));
 		}
 
-  }
+	}
 
 void C4PlayerInfo::SetFilename(const char *szToFilename)
 	{
-  szFilename = szToFilename;
+	szFilename = szToFilename;
 	}
 
 void C4PlayerInfo::SetToScenarioFilename(const char *szScenFilename)
@@ -630,10 +630,10 @@ int32_t C4ClientPlayerInfos::GetJoinedPlayerCount() const
 	}
 
 void C4ClientPlayerInfos::CompileFunc(StdCompiler *pComp)
-  {
-  bool fCompiler = pComp->isCompiler();
-  if(fCompiler) Clear();
-  pComp->Value(mkNamingAdapt(iClientID, "ID", C4ClientIDUnknown));
+	{
+	bool fCompiler = pComp->isCompiler();
+	if(fCompiler) Clear();
+	pComp->Value(mkNamingAdapt(iClientID, "ID", C4ClientIDUnknown));
 
 	// Flags
 	StdBitfieldEntry<uint32_t> Entries[] =
@@ -645,22 +645,22 @@ void C4ClientPlayerInfos::CompileFunc(StdCompiler *pComp)
 
 			{ NULL, 0	}
 		};
-  pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwFlags, Entries), "Flags", 0u));
+	pComp->Value(mkNamingAdapt(mkBitfieldAdapt(dwFlags, Entries), "Flags", 0u));
 
-  pComp->Value(mkNamingCountAdapt<int32_t>(iPlayerCount, "Player"));
-  if(iPlayerCount < 0 || iPlayerCount > C4MaxPlayer)
+	pComp->Value(mkNamingCountAdapt<int32_t>(iPlayerCount, "Player"));
+	if(iPlayerCount < 0 || iPlayerCount > C4MaxPlayer)
 		{ pComp->excCorrupt("player count out of range"); return; }
-  // Grow list, if necessary
-  if(fCompiler && iPlayerCount > iPlayerCapacity)
-  {
-    GrowList(iPlayerCount - iPlayerCapacity);
-    ZeroMem(ppPlayers, sizeof(*ppPlayers) * iPlayerCount);
-  }
-  // Compile
-  pComp->Value(mkNamingAdapt(mkArrayAdaptMap(ppPlayers, iPlayerCount, mkPtrAdaptNoNull<C4PlayerInfo>), "Player"));
-  // Force specialization
-  mkPtrAdaptNoNull<C4PlayerInfo>(*ppPlayers);
-  }
+	// Grow list, if necessary
+	if(fCompiler && iPlayerCount > iPlayerCapacity)
+	{
+		GrowList(iPlayerCount - iPlayerCapacity);
+		ZeroMem(ppPlayers, sizeof(*ppPlayers) * iPlayerCount);
+	}
+	// Compile
+	pComp->Value(mkNamingAdapt(mkArrayAdaptMap(ppPlayers, iPlayerCount, mkPtrAdaptNoNull<C4PlayerInfo>), "Player"));
+	// Force specialization
+	mkPtrAdaptNoNull<C4PlayerInfo>(*ppPlayers);
+	}
 
 void C4ClientPlayerInfos::LoadResources()
 	{
@@ -770,7 +770,7 @@ bool C4PlayerInfoList::DoLocalNonNetworkPlayerInfoUpdate(C4ClientPlayerInfos *pU
 	UpdatePlayerAttributes(pUpdate, true);
 	// add through queue: This will add directly, do the record and put player joins into the queue
 	// in running mode, this call will also put the actual player joins into the queue
-  ::Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(*pUpdate), Game.IsRunning ? CDT_Queue : CDT_Direct);
+	::Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(*pUpdate), Game.IsRunning ? CDT_Queue : CDT_Direct);
 	// done, success
 	return true;
 	}
@@ -1215,11 +1215,11 @@ bool C4PlayerInfoList::Load(C4Group &hGroup, const char *szFromFile, C4LangStrin
 		return true;
 	// replace strings
 	if (pLang) pLang->ReplaceStrings(Buf);
-  // (try to) compile
-  if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-      mkNamingAdapt(*this, "PlayerInfoList"),
-      Buf, szFromFile))
-    return false;
+	// (try to) compile
+	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(
+			mkNamingAdapt(*this, "PlayerInfoList"),
+			Buf, szFromFile))
+		return false;
 	// done, success
 	return true;
 	}
@@ -1231,16 +1231,16 @@ bool C4PlayerInfoList::Save(C4Group &hGroup, const char *szToFile)
 	// anything to save?
 	if (!iClientCount) return true;
 	// save it
-  try
-    {
-    // decompile
-    StdStrBuf Buf = DecompileToBuf<StdCompilerINIWrite>(
-      mkNamingAdapt(*this, "PlayerInfoList"));
+	try
+		{
+		// decompile
+		StdStrBuf Buf = DecompileToBuf<StdCompilerINIWrite>(
+			mkNamingAdapt(*this, "PlayerInfoList"));
 	  // save buffer to group
 	  hGroup.Add(szToFile, Buf, false, true);
-    }
-  catch(StdCompiler::Exception *)
-    { return false; }
+		}
+	catch(StdCompiler::Exception *)
+		{ return false; }
 	// done, success
 	return true;
 	}
@@ -1613,7 +1613,7 @@ bool C4PlayerInfoList::RecreatePlayers()
 					{
 					const char *szName = pInfo->GetName();
 					if (!::Network.RetrieveRes(pJoinRes->getCore(), C4NetResRetrieveTimeout,
-                                             FormatString(LoadResStr("IDS_NET_RES_PLRFILE"), szName).getData()))
+																						 FormatString(LoadResStr("IDS_NET_RES_PLRFILE"), szName).getData()))
 						szFilename=NULL;
 					}
 				// file present?
@@ -1757,49 +1757,49 @@ bool C4PlayerInfoList::SetAsRestoreInfos(C4PlayerInfoList &rFromPlayers, bool fS
 	}
 
 void C4PlayerInfoList::ResetLeagueProjectedGain(bool fSetUpdated)
-  {
+	{
 	C4ClientPlayerInfos *pClient; int iClient=0;
 	while ((pClient = GetIndexedInfo(iClient++)))
 		{
 		C4PlayerInfo *pInfo; int iInfo = 0;
 		while ((pInfo = pClient->GetPlayerInfo(iInfo++)))
-      if (pInfo->IsLeagueProjectedGainValid())
-        {
-        pInfo->ResetLeagueProjectedGain();
-        if (fSetUpdated)
-          pClient->SetUpdated();
-        }
-    }
-  }
+			if (pInfo->IsLeagueProjectedGainValid())
+				{
+				pInfo->ResetLeagueProjectedGain();
+				if (fSetUpdated)
+					pClient->SetUpdated();
+				}
+		}
+	}
 
 void C4PlayerInfoList::CompileFunc(StdCompiler *pComp)
 	{
 	bool fCompiler = pComp->isCompiler();
-  if(fCompiler) Clear();
+	if(fCompiler) Clear();
 	// skip compiling if there is nothing to compile (cosmentics)
 	if(!fCompiler && pComp->hasNaming() && iLastPlayerID == 0 && iClientCount == 0)
 		return;
 	// header
-  pComp->Value(mkNamingAdapt(iLastPlayerID, "LastPlayerID", 0));
-  // client count
-  int32_t iTemp = iClientCount;
-  pComp->Value(mkNamingCountAdapt<int32_t>(iTemp, "Client"));
-  if(iTemp < 0 || iTemp > C4MaxClient)
+	pComp->Value(mkNamingAdapt(iLastPlayerID, "LastPlayerID", 0));
+	// client count
+	int32_t iTemp = iClientCount;
+	pComp->Value(mkNamingCountAdapt<int32_t>(iTemp, "Client"));
+	if(iTemp < 0 || iTemp > C4MaxClient)
 		{ pComp->excCorrupt("client count out of range"); return; }
-  // grow list
-  if(fCompiler)
-  {
-    if(iTemp > iClientCapacity) GrowList(iTemp - iClientCapacity);
-    iClientCount = iTemp;
-    ZeroMem(ppClients, sizeof(*ppClients) * iClientCount);
-  }
+	// grow list
+	if(fCompiler)
+	{
+		if(iTemp > iClientCapacity) GrowList(iTemp - iClientCapacity);
+		iClientCount = iTemp;
+		ZeroMem(ppClients, sizeof(*ppClients) * iClientCount);
+	}
 	// client packets
-  pComp->Value(
-    mkNamingAdapt(
-      mkArrayAdaptMap(ppClients, iClientCount, mkPtrAdaptNoNull<C4ClientPlayerInfos>),
-      "Client"));
-  // force compiler to specialize
-  mkPtrAdaptNoNull<C4ClientPlayerInfos>(*ppClients);
+	pComp->Value(
+		mkNamingAdapt(
+			mkArrayAdaptMap(ppClients, iClientCount, mkPtrAdaptNoNull<C4ClientPlayerInfos>),
+			"Client"));
+	// force compiler to specialize
+	mkPtrAdaptNoNull<C4ClientPlayerInfos>(*ppClients);
 	}
 
 int32_t C4PlayerInfoList::GetStartupCount()
@@ -1839,12 +1839,12 @@ void C4PlayerInfoList::FixIDCounter()
 /* -- Player info packets -- */
 
 void C4PacketPlayerInfoUpdRequest::CompileFunc(StdCompiler *pComp)
-  {
-  pComp->Value(Info);
-  }
+	{
+	pComp->Value(Info);
+	}
 
 void C4PacketPlayerInfo::CompileFunc(StdCompiler *pComp)
-  {
-  pComp->Value(mkNamingAdapt(fIsRecreationInfo, "Recreation", false));
-  pComp->Value(mkNamingAdapt(Info, "Info"));
-  }
+	{
+	pComp->Value(mkNamingAdapt(fIsRecreationInfo, "Recreation", false));
+	pComp->Value(mkNamingAdapt(Info, "Info"));
+	}

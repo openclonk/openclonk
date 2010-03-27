@@ -63,7 +63,7 @@ EVP_PKEY* loadPublicKey(const char *memKey, bool deBase64 = false, bool deXOR = 
 	unsigned int keyDataLen;
 	memset(keyData, 0, maxKeyDataLen + 1);
 
-  // De-base64 certificate
+	// De-base64 certificate
 	if (deBase64)
 	{
 		// The man page says that the data memKey points to will not be modified by this
@@ -80,7 +80,7 @@ EVP_PKEY* loadPublicKey(const char *memKey, bool deBase64 = false, bool deXOR = 
 		memcpy(keyData, memKey, keyDataLen);
 	}
 
-  // De-XOR certificate
+	// De-XOR certificate
 	if (deXOR)
 	{
 		int xorStrLen = strlen(strXOR);
@@ -102,7 +102,7 @@ EVP_PKEY* loadPublicKey(const char *memKey, bool deBase64 = false, bool deXOR = 
 
 void clearPublicKey(EVP_PKEY* pubKey)
 {
-   EVP_PKEY_free(pubKey);
+	 EVP_PKEY_free(pubKey);
 }
 
 // Verifies the specified block of data using the public key provided.
@@ -268,7 +268,7 @@ C4ConfigShareware::~C4ConfigShareware()
 
 void C4ConfigShareware::Default()
 	{
-  ZeroMem(this, sizeof (C4ConfigShareware));
+	ZeroMem(this, sizeof (C4ConfigShareware));
 	C4Config::Default();
 	}
 

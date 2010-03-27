@@ -28,13 +28,13 @@
 #include <C4FacetEx.h>
 
 class C4ObjectInfo: public C4ObjectInfoCore
-  {
-  public:
+	{
+	public:
 	  C4ObjectInfo();
 		~C4ObjectInfo();
-  public:
-    bool WasInAction;
-    bool InAction;
+	public:
+		bool WasInAction;
+		bool InAction;
 		int32_t	InActionTime;
 		bool HasDied;
 		int32_t ControlCount;
@@ -43,8 +43,8 @@ class C4ObjectInfo: public C4ObjectInfoCore
 		C4Portrait *pNewPortrait;    // new permanent portrait link (usually to def graphics)
 		C4Portrait *pCustomPortrait; // if assigned, the Clonk has a custom portrait to be set via SetPortrait("custom")
 	  char Filename[_MAX_PATH+1];
-    C4ObjectInfo *Next;
-  public:
+		C4ObjectInfo *Next;
+	public:
 	  void Default();
 	  void Clear();
 	  void Evaluate();
@@ -58,6 +58,6 @@ class C4ObjectInfo: public C4ObjectInfoCore
 		bool SetPortrait(const char *szPortraitName, C4Def *pSourceDef, bool fAssignPermanently, bool fCopyFile);
 		bool SetPortrait(C4PortraitGraphics *pNewPortraitGfx, bool fAssignPermanently, bool fCopyFile);
 		bool ClearPortrait(bool fPermanently);
-   };
+	 };
 
 #endif

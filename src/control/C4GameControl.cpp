@@ -40,7 +40,7 @@
 C4GameControl::C4GameControl()
 	: Network(this)
 {
-  Default();
+	Default();
 }
 
 C4GameControl::~C4GameControl()
@@ -121,7 +121,7 @@ void C4GameControl::ChangeToLocal()
 	// (otherwise, clients start game when host disconnected!)
 	if (!C4GameOverDlg::IsShown()) Game.HaltCount = 0;
 
-  // set status
+	// set status
 	eMode = CM_Local; fHost = true;
 	ControlRate = 1;
 }
@@ -138,7 +138,7 @@ void C4GameControl::OnGameSynchronizing()
 
 bool C4GameControl::StartRecord(bool fInitial, bool fStreaming)
 {
-  assert(fInitComplete);
+	assert(fInitComplete);
 	// already recording?
 	if(pRecord) StopRecord();
 	// start
@@ -170,7 +170,7 @@ void C4GameControl::StopRecord(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 	if(pRecord)
 	{
 		::Network.FinishStreaming();
-    pRecord->Stop(pRecordName, pRecordSHA1);
+		pRecord->Stop(pRecordName, pRecordSHA1);
 		// just delete
 		delete pRecord; pRecord = NULL;
 	}
@@ -179,7 +179,7 @@ void C4GameControl::StopRecord(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 void C4GameControl::RequestRuntimeRecord()
 	{
 	if (!IsRuntimeRecordPossible()) return; // cannot record
-  fRecordNeeded = true;
+	fRecordNeeded = true;
 	// request through a synchronize-call
 	// currnetly do not request, but start record with next gamesync, so network runtime join can be debugged
 #ifndef DEBUGREC
@@ -209,30 +209,30 @@ void C4GameControl::Clear()
 {
 	StopRecord();
 	ChangeToLocal();
-  Default();
+	Default();
 }
 
 void C4GameControl::Default()
 {
 	Input.Clear();
-  Network.Clear();
+	Network.Clear();
 	eMode = CM_None;
 	fHost = fPreInit = fInitComplete = false;
 	iClientID = C4ClientIDUnknown;
 	pRecord = NULL;
 	pPlayback = NULL;
-  SyncChecks.Clear();
+	SyncChecks.Clear();
 	ControlRate = BoundBy<int>(Config.Network.ControlRate, 1, C4MaxControlRate);
-  ControlTick = 0;
-  SyncRate = C4SyncCheckRate;
-  DoSync = false;
+	ControlTick = 0;
+	SyncRate = C4SyncCheckRate;
+	DoSync = false;
 	fRecordNeeded = false;
 	pExecutingControl = NULL;
 }
 
 bool C4GameControl::Prepare()
 {
-  assert(fInitComplete);
+	assert(fInitComplete);
 
 	// Prepare control, return true if everything is ready for GameGo.
 	bool is_input_prepared = false;
@@ -279,7 +279,7 @@ void C4GameControl::Execute()
 {
 	// Execute all available control
 
-  assert(fInitComplete);
+	assert(fInitComplete);
 
 	// control tick? replay must always be executed.
 	if(!isReplay() && Game.FrameCounter % ControlRate)
@@ -329,7 +329,7 @@ void C4GameControl::Execute()
 
 void C4GameControl::Ticks()
 {
-  assert(fInitComplete);
+	assert(fInitComplete);
 
 	if(!(Game.FrameCounter % ControlRate))
 		ControlTick++;
@@ -349,12 +349,12 @@ void C4GameControl::Ticks()
 
 bool C4GameControl::CtrlTickReached(int32_t iTick)
 {
-  // 1. control tick reached?
-  if(ControlTick < iTick) return false;
+	// 1. control tick reached?
+	if(ControlTick < iTick) return false;
 	// 2. control tick?
 	if(Game.FrameCounter % ControlRate) return false;
-  // ok then
-  return true;
+	// ok then
+	return true;
 }
 
 int32_t C4GameControl::getCtrlTick(int32_t iFrame) const
@@ -388,7 +388,7 @@ void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4Con
 {
 	assert(fPreInit);
 
-  // check if the control can be executed
+	// check if the control can be executed
 	if(eDelivery == CDT_Direct || eDelivery == CDT_Private)
 		assert(!pPkt->Sync());
 	if(!fInitComplete)
@@ -398,8 +398,8 @@ void C4GameControl::DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4Con
 	if(eDelivery == CDT_Decide)
 		eDelivery = DecideControlDelivery();
 
-  // queue?
-  if(eDelivery == CDT_Queue)
+	// queue?
+	if(eDelivery == CDT_Queue)
 	{
 		// add, will be executed/sent later
 		Input.Add(eCtrlType, pPkt);
@@ -447,9 +447,9 @@ C4ControlDeliveryType C4GameControl::DecideControlDelivery()
 
 void C4GameControl::DoSyncCheck()
 {
-  // only once
-  if(!DoSync) return;
-  DoSync = false;
+	// only once
+	if(!DoSync) return;
+	DoSync = false;
 	// create sync check
 	C4ControlSyncCheck *pSyncCheck = new C4ControlSyncCheck();
 	pSyncCheck->Set();
@@ -477,14 +477,14 @@ void C4GameControl::DoSyncCheck()
 
 void C4GameControl::ExecControl(const C4Control &rCtrl)
 {
-  // nothing to do?
-  if(!rCtrl.firstPkt()) return;
-  // execute it
-  if(!rCtrl.PreExecute()) Log("Control: PreExecute failed for sync control!");
-  rCtrl.Execute();
-  // record
-  if(pRecord)
-    pRecord->Rec(rCtrl, Game.FrameCounter);
+	// nothing to do?
+	if(!rCtrl.firstPkt()) return;
+	// execute it
+	if(!rCtrl.PreExecute()) Log("Control: PreExecute failed for sync control!");
+	rCtrl.Execute();
+	// record
+	if(pRecord)
+		pRecord->Rec(rCtrl, Game.FrameCounter);
 }
 
 void C4GameControl::ExecControlPacket(C4PacketType eCtrlType, C4ControlPacket *pPkt)

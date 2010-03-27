@@ -44,7 +44,7 @@ C4GameControlNetwork::C4GameControlNetwork(C4GameControl *pnParent)
 
 C4GameControlNetwork::~C4GameControlNetwork()
 {
-  Clear();
+	Clear();
 }
 
 bool C4GameControlNetwork::Init(int32_t inClientID, bool fnHost, int32_t iStartTick, bool fnActivated, C4Network2 *pnNetwork) // by main thread
@@ -61,7 +61,7 @@ bool C4GameControlNetwork::Init(int32_t inClientID, bool fnHost, int32_t iStartT
 	// make sure no control has been lost
 	pNetwork->Clients.BroadcastMsgToConnClients(MkC4NetIOPacket(PID_ControlReq, C4PacketControlReq(iControlReady + 1)));
 	// ok
-  fEnabled = true; fRunning = false;
+	fEnabled = true; fRunning = false;
 	iTargetFPS = 38; iNextControlReqeust = timeGetTime() + C4ControlRequestInterval;
 	return true;
 }
@@ -70,7 +70,7 @@ void C4GameControlNetwork::Clear() // by main thread
 {
 	fEnabled = false; fRunning = false;
 	iAvgControlSendTime = 0;
-  ClearCtrl(); ClearClients();
+	ClearCtrl(); ClearClients();
 	// clear sync control
 	SyncControl.Clear();
 	while(pSyncCtrlQueue)
@@ -87,9 +87,9 @@ void C4GameControlNetwork::Execute() // by main thread
 	if(Game.FrameCounter % ::Control.ControlRate)
 		return;
 
-  // Save time the control tick was reached
-  if(iWaitStart == -1)
-    iWaitStart = timeGetTime();
+	// Save time the control tick was reached
+	if(iWaitStart == -1)
+		iWaitStart = timeGetTime();
 
 	// Execute any queued sync control
 	ExecQueuedSyncCtrl();
@@ -98,9 +98,9 @@ void C4GameControlNetwork::Execute() // by main thread
 bool C4GameControlNetwork::CtrlReady(int32_t iTick) // by main thread
 {
 	// check for complete control and pack it
-  CheckCompleteCtrl(false);
+	CheckCompleteCtrl(false);
 	// control ready?
-  return iControlReady >= iTick;
+	return iControlReady >= iTick;
 }
 
 bool C4GameControlNetwork::GetControl(C4Control *pCtrl, int32_t iTick) // by main thread
@@ -113,9 +113,9 @@ bool C4GameControlNetwork::GetControl(C4Control *pCtrl, int32_t iTick) // by mai
 		return false;
 	// set
 	pCtrl->Clear();
-  pCtrl->Append(pPkt->getControl());
-  // calc performance
-  CalcPerformance(iTick);
+	pCtrl->Append(pPkt->getControl());
+	// calc performance
+	CalcPerformance(iTick);
 	iWaitStart = -1;
 	// ok
 	return true;
@@ -130,20 +130,20 @@ bool C4GameControlNetwork::ClientReady(int32_t iClientID, int32_t iTick) // by m
 int32_t C4GameControlNetwork::ClientPerfStat(int32_t iClientID) // by main thread
 {
 	if(eMode == CNM_Central && !fHost) return true;
-  // get client
-  CStdLock ClientsLock(&ClientsCSec);
-  C4GameControlClient *pClient = getClient(iClientID);
-  // return performance
-  return pClient ? pClient->getPerfStat() : 0;
+	// get client
+	CStdLock ClientsLock(&ClientsCSec);
+	C4GameControlClient *pClient = getClient(iClientID);
+	// return performance
+	return pClient ? pClient->getPerfStat() : 0;
 }
 
 int32_t C4GameControlNetwork::ClientNextControl(int32_t iClientID) // by main thread
 {
-  // get client
-  CStdLock ClientsLock(&ClientsCSec);
-  C4GameControlClient *pClient = getClient(iClientID);
-  // return performance
-  return pClient ? pClient->getNextControl() : 0;
+	// get client
+	CStdLock ClientsLock(&ClientsCSec);
+	C4GameControlClient *pClient = getClient(iClientID);
+	// return performance
+	return pClient ? pClient->getNextControl() : 0;
 }
 
 bool C4GameControlNetwork::CtrlNeeded(int32_t iFrame) const // by main thread
@@ -185,7 +185,7 @@ void C4GameControlNetwork::DoInput(const C4Control &Input) // by main thread
 
 void C4GameControlNetwork::DoInput(C4PacketType eCtrlType, C4ControlPacket *pCtrl, C4ControlDeliveryType eDelivery) // by main thread
 {
-  if(!fEnabled) return;
+	if(!fEnabled) return;
 
 	// Create packet
 	C4PacketControlPkt CtrlPkt(eDelivery, C4IDPacket(eCtrlType, pCtrl, false));
@@ -250,7 +250,7 @@ void C4GameControlNetwork::DoInput(C4PacketType eCtrlType, C4ControlPacket *pCtr
 C4ControlDeliveryType C4GameControlNetwork::DecideControlDelivery() const
 {
 	// This doesn't make sense for clients
-    if(!fHost)
+		if(!fHost)
 		return CDT_Queue;
 	// Decide the fastest control delivery type atm. Note this is a guess.
 	// Control sent with the returned delivery type may in theory be delayed infinitely.
@@ -307,20 +307,20 @@ void C4GameControlNetwork::ExecSyncControl(int32_t iControlTick) // by main thre
 
 void C4GameControlNetwork::AddClient(int32_t iClientID, const char *szName) // by main thread
 {
-  // security
-  if(!fEnabled || getClient(iClientID)) return;
-  // create new
-  C4GameControlClient *pClient = new C4GameControlClient();
-  pClient->Set(iClientID, szName);
+	// security
+	if(!fEnabled || getClient(iClientID)) return;
+	// create new
+	C4GameControlClient *pClient = new C4GameControlClient();
+	pClient->Set(iClientID, szName);
 	pClient->SetNextControl(::Control.ControlTick);
-  // add client
-  AddClient(pClient);
+	// add client
+	AddClient(pClient);
 }
 
 void C4GameControlNetwork::ClearClients()
 {
-  CStdLock ClientsLock(&ClientsCSec);
-  while(pClients) { C4GameControlClient *pClient = pClients; RemoveClient(pClient); delete pClient; }
+	CStdLock ClientsLock(&ClientsCSec);
+	while(pClients) { C4GameControlClient *pClient = pClients; RemoveClient(pClient); delete pClient; }
 }
 
 void C4GameControlNetwork::CopyClientList(const C4ClientList &rClients)
@@ -336,7 +336,7 @@ void C4GameControlNetwork::CopyClientList(const C4ClientList &rClients)
 
 void C4GameControlNetwork::SetRunning(bool fnRunning, int32_t inTargetTick) // by main thread
 {
-  assert(fEnabled);
+	assert(fEnabled);
 	// check for redundant update, stop if running (safety)
 	if(fRunning == fnRunning && iTargetTick == inTargetTick) return;
 	fRunning = false;
@@ -355,7 +355,7 @@ void C4GameControlNetwork::SetRunning(bool fnRunning, int32_t inTargetTick) // b
 
 void C4GameControlNetwork::SetActivated(bool fnActivated) // by main thread
 {
-  assert(fEnabled);
+	assert(fEnabled);
 	// no change? ignore
 	if(fActivated == fnActivated) return;
 	// set
@@ -367,36 +367,36 @@ void C4GameControlNetwork::SetActivated(bool fnActivated) // by main thread
 
 void C4GameControlNetwork::SetCtrlMode(C4GameControlNetworkMode enMode) // by main thread
 {
-  assert(fEnabled);
-  // no change?
-  if(eMode == enMode) return;
+	assert(fEnabled);
+	// no change?
+	if(eMode == enMode) return;
 	// set mode
 	eMode = enMode;
-  // changed to decentral? rebroadcast all own control
-  if(enMode == CNM_Decentral)
-  {
-    CStdLock CtrlLock(&CtrlCSec); C4GameControlPacket *pPkt;
-    for(int32_t iCtrlTick = ::Control.ControlTick; (pPkt = getCtrl(iClientID, iCtrlTick)); iCtrlTick++)
-  		::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
-  }
+	// changed to decentral? rebroadcast all own control
+	if(enMode == CNM_Decentral)
+	{
+		CStdLock CtrlLock(&CtrlCSec); C4GameControlPacket *pPkt;
+		for(int32_t iCtrlTick = ::Control.ControlTick; (pPkt = getCtrl(iClientID, iCtrlTick)); iCtrlTick++)
+			::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
+	}
 	else if(enMode == CNM_Central && fHost)
 	{
-    CStdLock CtrlLock(&CtrlCSec); C4GameControlPacket *pPkt;
-    for(int32_t iCtrlTick = ::Control.ControlTick; (pPkt = getCtrl(C4ClientIDAll, iCtrlTick)); iCtrlTick++)
-  		::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
+		CStdLock CtrlLock(&CtrlCSec); C4GameControlPacket *pPkt;
+		for(int32_t iCtrlTick = ::Control.ControlTick; (pPkt = getCtrl(C4ClientIDAll, iCtrlTick)); iCtrlTick++)
+			::Network.Clients.BroadcastMsgToClients(MkC4NetIOPacket(PID_Control, *pPkt));
 	}
 }
 
 void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 {
-  CStdLock ControlLock(&CtrlCSec);
-  CStdLock ClientLock(&ClientsCSec);
-  // should only be called if ready
-  assert(CtrlReady(iCtrlTick));
-  // calc perfomance for all clients
+	CStdLock ControlLock(&CtrlCSec);
+	CStdLock ClientLock(&ClientsCSec);
+	// should only be called if ready
+	assert(CtrlReady(iCtrlTick));
+	// calc perfomance for all clients
 	int32_t iClientsPing=0; int32_t iPingClientCount=0; int32_t iNumTunnels=0; int32_t iHostPing=0;
-  for(C4GameControlClient *pClient = pClients; pClient; pClient = pClient->pNext)
-  {
+	for(C4GameControlClient *pClient = pClients; pClient; pClient = pClient->pNext)
+	{
 		// Some rudimentary PreSend-calculation
 		// get associated connection - NULL for self
 		C4Network2Client *pNetClt = ::Network.Clients.GetClientByID(pClient->getClientID());
@@ -417,12 +417,12 @@ void C4GameControlNetwork::CalcPerformance(int32_t iCtrlTick)
 				}
 		}
 		// Performance statistics
-    // find control (may not be found, if we only got the complete ctrl)
-    C4GameControlPacket *pCtrl = getCtrl(pClient->getClientID(), iCtrlTick);
-    if(!pCtrl) continue;
-    // calc stats
-    pClient->AddPerf(pCtrl->getTime() - iWaitStart);
-  }
+		// find control (may not be found, if we only got the complete ctrl)
+		C4GameControlPacket *pCtrl = getCtrl(pClient->getClientID(), iCtrlTick);
+		if(!pCtrl) continue;
+		// calc stats
+		pClient->AddPerf(pCtrl->getTime() - iWaitStart);
+	}
 	// Now do PreSend-calcs based on ping times
 	int32_t iControlSendTime;
 	if (eMode == CNM_Decentral)
@@ -476,30 +476,30 @@ void C4GameControlNetwork::HandlePacket(char cStatus, const C4PacketBase *pPacke
 
 	case PID_ControlReq: // control request
 	{
-    if(!IsEnabled()) break;
+		if(!IsEnabled()) break;
 		if(pConn->isClosed() || !pConn->isAccepted()) break;
 		GETPKT(C4PacketControlReq, rPkt)
 		HandleControlReq(rPkt, pConn);
 	}
 	break;
 
-  case PID_ControlPkt: // single control packet (main thread!)
-  {
+	case PID_ControlPkt: // single control packet (main thread!)
+	{
 		GETPKT(C4PacketControlPkt, rPkt)
-    // security
-    if(!fEnabled) break;
-    if(rPkt.getCtrl().getPktType() < CID_First) break;
-    // create copy (HandleControlPkt will store or delete)
-    C4IDPacket Copy(rPkt.getCtrl());
+		// security
+		if(!fEnabled) break;
+		if(rPkt.getCtrl().getPktType() < CID_First) break;
+		// create copy (HandleControlPkt will store or delete)
+		C4IDPacket Copy(rPkt.getCtrl());
 		// some sanity checks
 		C4ControlPacket *pCtrlPkt = static_cast<C4ControlPacket *>(Copy.getPkt());
 		if(!pConn->isHost() && pConn->getClientID() != pCtrlPkt->getByClient())
 			break;
 		// handle
 		HandleControlPkt(Copy.getPktType(), pCtrlPkt, rPkt.getDelivery());
-    Copy.Default();
-  }
-  break;
+		Copy.Default();
+	}
+	break;
 
 	case PID_ExecSyncCtrl:
 	{
@@ -602,55 +602,55 @@ void C4GameControlNetwork::HandleControlPkt(C4PacketType eCtrlType, C4ControlPac
 
 C4GameControlClient *C4GameControlNetwork::getClient(int32_t iID) // by both
 {
-  CStdLock ClientsLock(&ClientsCSec);
-  for(C4GameControlClient *pClient = pClients; pClient; pClient = pClient->pNext)
-    if(pClient->getClientID() == iID)
-      return pClient;
-  return NULL;
+	CStdLock ClientsLock(&ClientsCSec);
+	for(C4GameControlClient *pClient = pClients; pClient; pClient = pClient->pNext)
+		if(pClient->getClientID() == iID)
+			return pClient;
+	return NULL;
 }
 
 void C4GameControlNetwork::AddClient(C4GameControlClient *pClient) // by main thread
 {
-  if(!pClient) return;
-  // lock
-  CStdLock ClientsLock(&ClientsCSec);
-  // add (ordered)
-  C4GameControlClient *pPrev = NULL, *pPos = pClients;
-  for(; pPos; pPrev = pPos, pPos = pPos->pNext)
-    if(pPos->getClientID() > pClient->getClientID())
-      break;
-  // insert
-  (pPrev ? pPrev->pNext : pClients) = pClient;
-  pClient->pNext = pPos;
+	if(!pClient) return;
+	// lock
+	CStdLock ClientsLock(&ClientsCSec);
+	// add (ordered)
+	C4GameControlClient *pPrev = NULL, *pPos = pClients;
+	for(; pPos; pPrev = pPos, pPos = pPos->pNext)
+		if(pPos->getClientID() > pClient->getClientID())
+			break;
+	// insert
+	(pPrev ? pPrev->pNext : pClients) = pClient;
+	pClient->pNext = pPos;
 }
 
 void C4GameControlNetwork::RemoveClient(C4GameControlClient *pClient) // by main thread
 {
-  // obtain lock
-  CStdLock ClientsLock(&ClientsCSec);
-  // first client?
-  if(pClient == pClients)
-    pClients = pClient->pNext;
-  else
-  {
-    C4GameControlClient *pPrev;
-    for(pPrev = pClients; pPrev && pPrev->pNext; pPrev = pPrev->pNext)
-      if(pPrev->pNext == pClient)
-        break;
-    if(pPrev && pPrev->pNext == pClient)
-      pPrev->pNext = pClient->pNext;
-  }
+	// obtain lock
+	CStdLock ClientsLock(&ClientsCSec);
+	// first client?
+	if(pClient == pClients)
+		pClients = pClient->pNext;
+	else
+	{
+		C4GameControlClient *pPrev;
+		for(pPrev = pClients; pPrev && pPrev->pNext; pPrev = pPrev->pNext)
+			if(pPrev->pNext == pClient)
+				break;
+		if(pPrev && pPrev->pNext == pClient)
+			pPrev->pNext = pClient->pNext;
+	}
 }
 
 C4GameControlPacket *C4GameControlNetwork::getCtrl(int32_t iClientID, int32_t iCtrlTick) // by both
 {
-  // lock
-  CStdLock CtrlLock(&CtrlCSec);
-  // search
-  for(C4GameControlPacket *pCtrl = pCtrlStack; pCtrl; pCtrl = pCtrl->pNext)
-    if(pCtrl->getClientID() == iClientID && pCtrl->getCtrlTick() == iCtrlTick)
-      return pCtrl;
-  return NULL;
+	// lock
+	CStdLock CtrlLock(&CtrlCSec);
+	// search
+	for(C4GameControlPacket *pCtrl = pCtrlStack; pCtrl; pCtrl = pCtrl->pNext)
+		if(pCtrl->getClientID() == iClientID && pCtrl->getCtrlTick() == iCtrlTick)
+			return pCtrl;
+	return NULL;
 }
 
 void C4GameControlNetwork::AddCtrl(C4GameControlPacket *pCtrl) // by both
@@ -720,9 +720,9 @@ void C4GameControlNetwork::CheckCompleteCtrl(bool fSetEvent) // by both
 			if(!(pComplete = PackCompleteCtrl(iControlReady + 1)))
 				break;
 		}
-    // preexecute to check if it's ready for execute
-    if(!pComplete->getControl().PreExecute())
-      break;
+		// preexecute to check if it's ready for execute
+		if(!pComplete->getControl().PreExecute())
+			break;
 		// ok, control for this tick is ready
 		iControlReady++;
 		// tell the main thread to move on
@@ -851,7 +851,7 @@ void C4GameControlNetwork::ExecQueuedSyncCtrl()  // by main thread
 C4GameControlPacket::C4GameControlPacket()
 	: iClientID(C4ClientIDUnknown),
 		iCtrlTick(-1),
-    iTime(timeGetTime()),
+		iTime(timeGetTime()),
 		pNext(NULL)
 {
 
@@ -860,7 +860,7 @@ C4GameControlPacket::C4GameControlPacket()
 C4GameControlPacket::C4GameControlPacket(const C4GameControlPacket &Pkt2)
 	: C4PacketBase(Pkt2), iClientID(Pkt2.getClientID()),
 		iCtrlTick(Pkt2.getCtrlTick()),
-    iTime(timeGetTime()),
+		iTime(timeGetTime()),
 		pNext(NULL)
 {
 	Ctrl.Copy(Pkt2.getControl());
@@ -887,14 +887,14 @@ void C4GameControlPacket::Set(int32_t inClientID, int32_t inCtrlTick, const C4Co
 
 void C4GameControlPacket::Add(const C4GameControlPacket &Ctrl2)
 {
-  Ctrl.Append(Ctrl2.getControl());
+	Ctrl.Append(Ctrl2.getControl());
 }
 
 void C4GameControlPacket::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iClientID), "ClientID", C4ClientIDUnknown));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCtrlTick), "CtrlTick", -1));
-  pComp->Value(mkNamingAdapt(Ctrl, "Ctrl"));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iClientID), "ClientID", C4ClientIDUnknown));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCtrlTick), "CtrlTick", -1));
+	pComp->Value(mkNamingAdapt(Ctrl, "Ctrl"));
 }
 
 // *** C4GameControlClient

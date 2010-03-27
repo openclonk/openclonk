@@ -183,7 +183,7 @@ typedef uint8_t        BYTE;
 typedef uint16_t       WORD;
 
 typedef struct {
-    long left; long top; long right; long bottom;
+		long left; long top; long right; long bottom;
 } RECT;
 
 unsigned long timeGetTime(void);

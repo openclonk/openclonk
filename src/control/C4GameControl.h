@@ -35,12 +35,12 @@ enum C4ControlMode
 
 enum C4ControlDeliveryType
 {
-  CDT_Queue		= 0,	// Send in control queue (sync)
-  CDT_Sync		= 1,	// Send, delay execution until net is sync (sync)
-  CDT_Direct	= 2,	// Send directly to all clients (not sync)
-  CDT_Private	= 3,  // Send only to some clients (not sync, obviously)
+	CDT_Queue		= 0,	// Send in control queue (sync)
+	CDT_Sync		= 1,	// Send, delay execution until net is sync (sync)
+	CDT_Direct	= 2,	// Send directly to all clients (not sync)
+	CDT_Private	= 3,  // Send only to some clients (not sync, obviously)
 
-  CDT_Decide				// Use whatever sync mode seems fastest atm (sync)
+	CDT_Decide				// Use whatever sync mode seems fastest atm (sync)
 };
 
 // Additional notes / requirements:
@@ -72,7 +72,7 @@ public:
 
 protected:
 	C4ControlMode				eMode;
-  bool                fPreInit, fInitComplete;
+	bool                fPreInit, fInitComplete;
 	bool								fHost;							// (set for local, too)
 	bool								fActivated;
 	bool                fRecordNeeded;
@@ -83,7 +83,7 @@ protected:
 
 	C4Control						SyncChecks;
 
-  C4GameControlClient *pClients;
+	C4GameControlClient *pClients;
 
 	C4Control           *pExecutingControl; // Control that is in the process of being executed - needed by non-initial records
 
@@ -96,7 +96,7 @@ public:
 
 public:
 
-  // configuration
+	// configuration
 	bool isLocal() const { return eMode == CM_Local; }
 	bool isNetwork() const { return eMode == CM_Network; }
 	bool isReplay() const { return eMode == CM_Replay; }
@@ -107,11 +107,11 @@ public:
 
 	bool NoInput() const { return isReplay(); }
 
-  // client list
-  C4GameControlClient *getClient(int32_t iID);
-  C4GameControlClient *getClient(const char *szName);
+	// client list
+	C4GameControlClient *getClient(int32_t iID);
+	C4GameControlClient *getClient(const char *szName);
 
-  // initialization
+	// initialization
 	bool InitLocal(C4Client *pLocal);
 	bool InitNetwork(C4Client *pLocal);
 	bool InitReplay(C4Group &rGroup);
@@ -121,7 +121,7 @@ public:
 	void Clear();
 	void Default();
 
-  // records
+	// records
 	bool StartRecord(bool fInitial, bool fStreaming);
 	void StopRecord(StdStrBuf *pRecordName = NULL, BYTE *pRecordSHA1 = NULL);
 	void RequestRuntimeRecord();
@@ -134,7 +134,7 @@ public:
 	void Ticks();
 
 	// public helpers
-  bool CtrlTickReached(int32_t iTick);
+	bool CtrlTickReached(int32_t iTick);
 	int32_t getCtrlTick(int32_t iFrame) const;
 	int32_t getNextControlTick() const;
 
@@ -146,13 +146,13 @@ public:
 	// activation
 	void SetActivated(bool fActivated);
 
-  // input
-  void DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4ControlDeliveryType eDelivery);
-  void DbgRec(C4RecordChunkType eType, const uint8_t *pData=NULL, size_t iSize=0); // record debug stuff
+	// input
+	void DoInput(C4PacketType eCtrlType, C4ControlPacket *pPkt, C4ControlDeliveryType eDelivery);
+	void DbgRec(C4RecordChunkType eType, const uint8_t *pData=NULL, size_t iSize=0); // record debug stuff
 	C4ControlDeliveryType DecideControlDelivery();
 
-  // sync check
-  void DoSyncCheck();
+	// sync check
+	void DoSyncCheck();
 
 	// execute and record control (by self or C4GameControlNetwork)
 	void ExecControl(const C4Control &rCtrl);

@@ -453,8 +453,8 @@ C4ObjectList &C4GameObjects::ObjectsInt()
 
 void C4GameObjects::RemoveSolidMasks()
 	{
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
+	C4ObjectLink *cLnk;
+	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			if (cLnk->Obj->pSolidMaskData)
 				cLnk->Obj->pSolidMaskData->Remove(false, false);
@@ -462,8 +462,8 @@ void C4GameObjects::RemoveSolidMasks()
 
 void C4GameObjects::PutSolidMasks()
 	{
-  C4ObjectLink *cLnk;
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
+	C4ObjectLink *cLnk;
+	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj->Status)
 			cLnk->Obj->UpdateSolidMask(false);
 	}
@@ -478,13 +478,13 @@ void C4GameObjects::DeleteObjects(bool fDeleteInactive)
 	}
 
 void C4GameObjects::Clear(bool fClearInactive)
-  {
-  DeleteObjects(fClearInactive);
-  if(fClearInactive)
-    InactiveObjects.Clear();
-  ResortProc = NULL;
+	{
+	DeleteObjects(fClearInactive);
+	if(fClearInactive)
+		InactiveObjects.Clear();
+	ResortProc = NULL;
 	LastUsedMarker = 0;
-  }
+	}
 
 /* C4ObjResort */
 
@@ -696,26 +696,26 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	Clear(!fKeepInactive);
 
 	// Load data component
-  StdStrBuf Source;
+	StdStrBuf Source;
 	if (!hGroup.LoadEntryString(C4CFN_ScenarioObjects, Source))
-    return 0;
+		return 0;
 
-  // Compile
+	// Compile
 	StdStrBuf Name = hGroup.GetFullName() + DirSep C4CFN_ScenarioObjects;
-  if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(
-      mkParAdapt(*this, false),
-      Source,
-      Name.getData()))
-    return 0;
+	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(
+			mkParAdapt(*this, false),
+			Source,
+			Name.getData()))
+		return 0;
 
 	// Process objects
-  C4ObjectLink *cLnk;
-  C4Object *pObj;
-  bool fObjectNumberCollision = false;
-  int32_t iMaxObjectNumber = 0;
-  for(cLnk = Last; cLnk; cLnk = cLnk->Prev)
-    {
-    C4Object *pObj = cLnk->Obj;
+	C4ObjectLink *cLnk;
+	C4Object *pObj;
+	bool fObjectNumberCollision = false;
+	int32_t iMaxObjectNumber = 0;
+	for(cLnk = Last; cLnk; cLnk = cLnk->Prev)
+		{
+		C4Object *pObj = cLnk->Obj;
 		// check object number collision with inactive list
 		if (fKeepInactive)
 			{
@@ -733,7 +733,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 		// Unterminate end
 		}
 
-  // Denumerate pointers
+	// Denumerate pointers
 	// if object numbers collideded, numbers will be adjusted afterwards
 	// so fake inactive object list empty meanwhile
 	C4ObjectLink *pInFirst = NULL;
@@ -794,7 +794,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 				}
 			}
 	// sort out inactive objects
-  C4ObjectLink *cLnkNext;
+	C4ObjectLink *cLnkNext;
 	for (cLnk=First; cLnk; cLnk=cLnkNext)
 		{
 		cLnkNext = cLnk->Next;
@@ -827,7 +827,7 @@ int C4GameObjects::Load(C4Group &hGroup, bool fKeepInactive)
 	//Sectors.Dump();
 
 	// misc updates
-  for (cLnk=First; cLnk; cLnk=cLnk->Next)
+	for (cLnk=First; cLnk; cLnk=cLnk->Next)
 		if ((pObj=cLnk->Obj)->Status)
 			{
 			// add to plrview
@@ -861,28 +861,28 @@ bool C4GameObjects::Save(const char *szFilename, bool fSaveGame, bool fSaveInact
 	InactiveObjects.Enumerate();
 
 	// Decompile objects to buffer
-  StdStrBuf Buffer;
-  bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame), &Buffer, szFilename);
+	StdStrBuf Buffer;
+	bool fSuccess = DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(*this, !fSaveGame), &Buffer, szFilename);
 
-  // Decompile inactives
-  if(fSaveInactive)
-    {
-    StdStrBuf InactiveBuffer;
-    fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, false, !fSaveGame), &InactiveBuffer, szFilename);
-    Buffer.Append("\r\n");
-    Buffer.Append(InactiveBuffer);
-    }
+	// Decompile inactives
+	if(fSaveInactive)
+		{
+		StdStrBuf InactiveBuffer;
+		fSuccess &= DecompileToBuf_Log<StdCompilerINIWrite>(mkParAdapt(InactiveObjects, false, !fSaveGame), &InactiveBuffer, szFilename);
+		Buffer.Append("\r\n");
+		Buffer.Append(InactiveBuffer);
+		}
 
-  // Denumerate
+	// Denumerate
 	InactiveObjects.Denumerate();
 	Denumerate();
 
-  // Error?
-  if(!fSuccess)
-    return false;
+	// Error?
+	if(!fSuccess)
+		return false;
 
-  // Write
-  return Buffer.SaveToFile(szFilename);
+	// Write
+	return Buffer.SaveToFile(szFilename);
 	}
 
 void C4GameObjects::UpdateScriptPointers()
@@ -1017,14 +1017,14 @@ void C4GameObjects::FixObjectOrder()
 
 void C4GameObjects::ResortUnsorted()
 	{
-  C4ObjectLink *clnk=First; C4Object *cObj;
-  while (clnk && (cObj=clnk->Obj))
-    {
-    clnk=clnk->Next;
-    if (cObj->Unsorted)
-      {
+	C4ObjectLink *clnk=First; C4Object *cObj;
+	while (clnk && (cObj=clnk->Obj))
+		{
+		clnk=clnk->Next;
+		if (cObj->Unsorted)
+			{
 			// readd to main object list
-      Remove(cObj);
+			Remove(cObj);
 			cObj->Unsorted=false;
 			if (!Add(cObj))
 				{
@@ -1032,9 +1032,9 @@ void C4GameObjects::ResortUnsorted()
 				Game.ClearPointers(cObj);
 				delete cObj;
 				}
-      }
-    }
-  }
+			}
+		}
+	}
 
 void C4GameObjects::ExecuteResorts()
 	{

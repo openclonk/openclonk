@@ -33,14 +33,14 @@
 #include <StdRegistry.h>
 
 C4RankSystem::C4RankSystem()
-  {
+	{
 	Default();
-  }
+	}
 
 int C4RankSystem::Init(const char *szRegister,
 											 const char *szDefRanks,
 											 int iRankBase)
-  {
+	{
 
 	// Init
 	SCopy(szRegister,Register,256);
@@ -94,7 +94,7 @@ int C4RankSystem::Init(const char *szRegister,
 		}
 	return iRankNum;
 #endif
-  }
+	}
 
 bool C4RankSystem::Load(C4Group &hGroup, const char *szFilenames, int DefRankBase, const char *szLanguage)
 	{
@@ -187,8 +187,8 @@ bool C4RankSystem::Load(C4Group &hGroup, const char *szFilenames, int DefRankBas
 	}
 
 StdStrBuf C4RankSystem::GetRankName(int iRank, bool fReturnLastIfOver)
-  {
-  if (iRank<0) return StdStrBuf();
+	{
+	if (iRank<0) return StdStrBuf();
 	// if a new-style ranklist is loaded, seek there
 	if (pszRankNames)
 		{
@@ -227,14 +227,14 @@ StdStrBuf C4RankSystem::GetRankName(int iRank, bool fReturnLastIfOver)
 		--iRank;
 		}
 #endif
-  return StdStrBuf();
+	return StdStrBuf();
 	}
 
 int C4RankSystem::Experience(int iRank)
-  {
-  if (iRank<0) return 0;
-  return (int) ( pow (double(iRank), 1.5) * RankBase );
-  }
+	{
+	if (iRank<0) return 0;
+	return (int) ( pow (double(iRank), 1.5) * RankBase );
+	}
 
 int C4RankSystem::RankByExperience(int iExp)
 	{

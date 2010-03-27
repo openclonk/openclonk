@@ -74,7 +74,7 @@ public:
 
 	void DenumeratePointers();
 
-  void CompileFunc(StdCompiler *pComp);
+	void CompileFunc(StdCompiler *pComp);
 
 private:
 

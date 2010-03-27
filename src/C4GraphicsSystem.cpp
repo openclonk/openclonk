@@ -804,12 +804,12 @@ int32_t C4GraphicsSystem::GetAudibility(int32_t iX, int32_t iY, int32_t *iPan, i
 	// Accumulate audibility by viewports
 	int32_t iAudible=0; *iPan = 0;
 	for (C4Viewport *cvp=FirstViewport; cvp; cvp=cvp->Next)
-    {
+		{
 		iAudible = Max( iAudible,
 										BoundBy<int32_t>(100-100*Distance(cvp->ViewX+cvp->ViewWdt/2,cvp->ViewY+cvp->ViewHgt/2,iX,iY)/C4AudibilityRadius,0,100) );
-    *iPan += (iX-(cvp->ViewX+cvp->ViewWdt/2)) / 5;
-    }
-  *iPan = BoundBy<int32_t>(*iPan, -100, 100);
+		*iPan += (iX-(cvp->ViewX+cvp->ViewWdt/2)) / 5;
+		}
+	*iPan = BoundBy<int32_t>(*iPan, -100, 100);
 	return iAudible;
 	}
 

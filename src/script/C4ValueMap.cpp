@@ -262,21 +262,21 @@ void C4ValueMapData::DenumeratePointers()
 
 void C4ValueMapData::CompileFunc(StdCompiler *pComp)
 {
-  bool fCompiler = pComp->isCompiler();
-  if(fCompiler) Reset();
-  // Compile item count
-  int32_t iValueCnt;
-  if(!fCompiler) iValueCnt = pNames ? pNames->iSize : 0;
-  pComp->Value(mkDefaultAdapt(iValueCnt, 0));
+	bool fCompiler = pComp->isCompiler();
+	if(fCompiler) Reset();
+	// Compile item count
+	int32_t iValueCnt;
+	if(!fCompiler) iValueCnt = pNames ? pNames->iSize : 0;
+	pComp->Value(mkDefaultAdapt(iValueCnt, 0));
 	// nuthing 2do for no items
 	if (!iValueCnt) return;
-  // Seperator (';')
-  pComp->Seperator(StdCompiler::SEP_SEP2);
-  // Data
-  char **ppNames = !fCompiler ? pNames->pNames : new char * [iValueCnt];
+	// Seperator (';')
+	pComp->Seperator(StdCompiler::SEP_SEP2);
+	// Data
+	char **ppNames = !fCompiler ? pNames->pNames : new char * [iValueCnt];
 	if (fCompiler) for(int32_t i = 0; i < iValueCnt; i++) ppNames[i] = 0;
-  C4Value *pValues = !fCompiler ? pData : new C4Value [iValueCnt];
-  // Compile
+	C4Value *pValues = !fCompiler ? pData : new C4Value [iValueCnt];
+	// Compile
 	try
 	{
 		for(int32_t i = 0; i < iValueCnt; i++)
@@ -305,19 +305,19 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp)
 		}
 		throw;
 	}
-  // Set
-  if(fCompiler)
-  {
-    C4ValueMapNames *pOldNames = pNames;
-    // Set
-    CreateTempNameList();
-    pNames->SetNameArray(const_cast<const char **>(ppNames), iValueCnt);
+	// Set
+	if(fCompiler)
+	{
+		C4ValueMapNames *pOldNames = pNames;
+		// Set
+		CreateTempNameList();
+		pNames->SetNameArray(const_cast<const char **>(ppNames), iValueCnt);
 		for(int32_t i = 0; i < iValueCnt; i++) delete ppNames[i];
-    delete [] ppNames; delete [] pData;
-    pData = pValues;
-    // Assign old name list
-    if(pOldNames) SetNameList(pOldNames);
-  }
+		delete [] ppNames; delete [] pData;
+		pData = pValues;
+		// Assign old name list
+		if(pOldNames) SetNameList(pOldNames);
+	}
 }
 
 // *** C4ValueMapNames ***
@@ -436,7 +436,7 @@ void C4ValueMapNames::SetNameArray(const char **pnNames, int32_t nSize)
 int32_t C4ValueMapNames::AddName(const char *pnName)
 {
 	// name already existing?
-  int32_t iNr;
+	int32_t iNr;
 	if((iNr=GetItemNr(pnName)) != -1)
 		return iNr;
 

@@ -212,15 +212,15 @@ void C4RTFFile::ParseChars(StdStrBuf &sResult, const char *szChars)
 void C4RTFFile::ParseHexChar(StdStrBuf &sResult, char c)
 	{
 	pState->bHex = pState->bHex << 4;
-  if (isdigit((unsigned char)c))
+	if (isdigit((unsigned char)c))
 		pState->bHex += c - '0';
-  else if (Inside<char>(c, 'a', 'f'))
+	else if (Inside<char>(c, 'a', 'f'))
 		pState->bHex += c - 'a' + 10;
-  else if (Inside<char>(c, 'A', 'F'))
+	else if (Inside<char>(c, 'A', 'F'))
 		pState->bHex += c - 'A' + 10;
 	else
 		throw new ParserError("Invalid hex character");
-  if (!--pState->iHexBinCnt)
+	if (!--pState->iHexBinCnt)
 		{
 		pState->eState = psNormal;
 		ParseChar(sResult, pState->bHex);
@@ -281,8 +281,8 @@ StdStrBuf C4RTFFile::GetPlainText()
 				case '\\':
 					ParseKeyword(sResult, iPos);
 					break;
-        case 0x0d: case 0x0a: // ignored chars
-          break;
+				case 0x0d: case 0x0a: // ignored chars
+					break;
 				default:
 					// regular char parsing
 					if (pState->eState == psNormal)
@@ -321,56 +321,56 @@ StdStrBuf C4RTFFile::GetPlainText()
 // Keyword descriptions
 C4RTFFile::KeywordTableEntry RTFKeywordTable [] = {
 //    keyword iDefaultPar fForceDef  eType       idx
-    { "par",      0,      false,     kwdChars,   "\n", 0 },
-    { "\0x0a",    0,      false,     kwdChars,   "\n", 0 },
-    { "\0x0d",    0,      false,     kwdChars,   "\n", 0 },
-    { "tab",      0,      false,     kwdChars,   "\t", 0 },
-    { "ldblquote",0,      false,     kwdChars,   "\x93", 0 },
-    { "rdblquote",0,      false,     kwdChars,   "\x94", 0 },
-    { "lquote",   0,      false,     kwdChars,   "\x91", 0 },
-    { "rquote",   0,      false,     kwdChars,   "\x92", 0 },
-    { "bullet",   0,      false,     kwdChars,   "\x95", 0 },
-    { "endash",   0,      false,     kwdChars,   "\x96", 0 },
-    { "emdash",   0,      false,     kwdChars,   "\x97", 0 },
-    { "bin",      0,      false,     kwdSpec,    NULL, C4RTFFile::specBin },
-    { "*",        0,      false,     kwdSpec,    NULL, C4RTFFile::specSkipDest },
-    { "'",        0,      false,     kwdSpec,    NULL, C4RTFFile::specHex },
-    { "ansicpg",  0,      false,     kwdSpec,    NULL, C4RTFFile::specAnsicpg },
-    { "author",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "buptim",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "colortbl", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "comment",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "creatim",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "doccomm",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "fonttbl",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "footer",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "footerf",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "footerl",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "footerr",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "footnote", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "ftncn",    0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "ftnsep",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "ftnsepc",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "header",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "headerf",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "headerl",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "headerr",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "info",     0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "keywords", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "operator", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "pict",     0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "printim",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "private1", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "revtim",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "rxe",      0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "stylesheet",0,     false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "subject",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "tc",       0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "title",    0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "txe",      0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "xe",       0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
-    { "{",        0,      false,     kwdChars,   "{", 0 },
-    { "}",        0,      false,     kwdChars,   "}", 0 },
-    { "\\",       0,      false,     kwdChars,   "\\", 0 },
-    { NULL, 0, false, kwdChars, NULL, 0 }
-    };
+		{ "par",      0,      false,     kwdChars,   "\n", 0 },
+		{ "\0x0a",    0,      false,     kwdChars,   "\n", 0 },
+		{ "\0x0d",    0,      false,     kwdChars,   "\n", 0 },
+		{ "tab",      0,      false,     kwdChars,   "\t", 0 },
+		{ "ldblquote",0,      false,     kwdChars,   "\x93", 0 },
+		{ "rdblquote",0,      false,     kwdChars,   "\x94", 0 },
+		{ "lquote",   0,      false,     kwdChars,   "\x91", 0 },
+		{ "rquote",   0,      false,     kwdChars,   "\x92", 0 },
+		{ "bullet",   0,      false,     kwdChars,   "\x95", 0 },
+		{ "endash",   0,      false,     kwdChars,   "\x96", 0 },
+		{ "emdash",   0,      false,     kwdChars,   "\x97", 0 },
+		{ "bin",      0,      false,     kwdSpec,    NULL, C4RTFFile::specBin },
+		{ "*",        0,      false,     kwdSpec,    NULL, C4RTFFile::specSkipDest },
+		{ "'",        0,      false,     kwdSpec,    NULL, C4RTFFile::specHex },
+		{ "ansicpg",  0,      false,     kwdSpec,    NULL, C4RTFFile::specAnsicpg },
+		{ "author",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "buptim",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "colortbl", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "comment",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "creatim",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "doccomm",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "fonttbl",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "footer",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "footerf",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "footerl",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "footerr",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "footnote", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "ftncn",    0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "ftnsep",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "ftnsepc",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "header",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "headerf",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "headerl",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "headerr",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "info",     0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "keywords", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "operator", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "pict",     0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "printim",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "private1", 0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "revtim",   0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "rxe",      0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "stylesheet",0,     false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "subject",  0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "tc",       0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "title",    0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "txe",      0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "xe",       0,      false,     kwdDest,    NULL, C4RTFFile::dsSkip },
+		{ "{",        0,      false,     kwdChars,   "{", 0 },
+		{ "}",        0,      false,     kwdChars,   "}", 0 },
+		{ "\\",       0,      false,     kwdChars,   "\\", 0 },
+		{ NULL, 0, false, kwdChars, NULL, 0 }
+		};

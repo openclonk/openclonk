@@ -109,7 +109,7 @@ class C4StartupNetListEntry : public C4GUI::Window
 		void SetReference(C4Network2Reference *pNewRef); // replace the reference
 
 		bool Execute(); // update stuff - if false is returned, the item is to be removed
-    bool OnReference(); // like Execute(), but only called if some reference was received
+		bool OnReference(); // like Execute(), but only called if some reference was received
 		void UpdateCollapsed(bool fToCollapseValue);
 
 		const char *GetError() { return fError ? sError.getData() : NULL; } // return error message, if any is set
@@ -191,8 +191,8 @@ class C4StartupNetDlg : public C4StartupDlg, private C4InteractiveThread::Callba
 
 		DlgMode GetDlgMode();
 
-    // callback from C4Network2ReferenceClient
-    virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData);
+		// callback from C4Network2ReferenceClient
+		virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData);
 
 	public:
 		bool DoOK(); // join currently selected item

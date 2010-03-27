@@ -401,9 +401,9 @@ unsigned int C4Set<C4PropListNumbered *>::Hash<int>(int e)
 	{       
 	unsigned int hash = 4, tmp;
 	hash += e >> 16;
-        tmp   = ((e & 0xffff) << 11) ^ hash;
-        hash  = (hash << 16) ^ tmp;
-        hash += hash >> 11;
+	tmp   = ((e & 0xffff) << 11) ^ hash;
+	hash  = (hash << 16) ^ tmp;
+	hash += hash >> 11;
 	hash ^= hash << 3;
 	hash += hash >> 5;
 	hash ^= hash << 4;

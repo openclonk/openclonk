@@ -266,8 +266,8 @@ bool C4Network2IRCClient::OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO:
 void C4Network2IRCClient::OnDisconn(const C4NetIO::addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason)
 	{
 	fConnected = false;
-  // Show a message with the reason
-  PushMessage(MSG_Status, "", Nick.getData(), FormatString(LoadResStr("IDS_MSG_DISCONNECTEDFROMSERVER"), szReason).getData());
+	// Show a message with the reason
+	PushMessage(MSG_Status, "", Nick.getData(), FormatString(LoadResStr("IDS_MSG_DISCONNECTEDFROMSERVER"), szReason).getData());
 	}
 
 void C4Network2IRCClient::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
@@ -397,36 +397,36 @@ bool C4Network2IRCClient::Part(const char *szChannel)
 bool C4Network2IRCClient::Message(const char *szTarget, const char *szText)
 	{
 	if(!Send("PRIVMSG", FormatString("%s :%s", szTarget, szText).getData()))
-    return false;
-  PushMessage(MSG_Message, Nick.getData(), szTarget, szText);
-  return true;
+		return false;
+	PushMessage(MSG_Message, Nick.getData(), szTarget, szText);
+	return true;
 	}
 
 bool C4Network2IRCClient::Notice(const char *szTarget, const char *szText)
 	{
 	if(!Send("NOTICE", FormatString("%s :%s", szTarget, szText).getData()))
-    return false;
-  PushMessage(MSG_Notice, Nick.getData(), szTarget, szText);
-  return true;
+		return false;
+	PushMessage(MSG_Notice, Nick.getData(), szTarget, szText);
+	return true;
 	}
 
 bool C4Network2IRCClient::Action(const char *szTarget, const char *szText)
-  {
-  if(!Send("PRIVMSG", FormatString("%s :\1ACTION %s\1", szTarget, szText).getData()))
-    return false;
-  PushMessage(MSG_Action, Nick.getData(), szTarget, szText);
-  return true;
-  }
+	{
+	if(!Send("PRIVMSG", FormatString("%s :\1ACTION %s\1", szTarget, szText).getData()))
+		return false;
+	PushMessage(MSG_Action, Nick.getData(), szTarget, szText);
+	return true;
+	}
 
 bool C4Network2IRCClient::ChangeNick(const char *szNewNick)
-  {
-  return Send("NICK", szNewNick);
-  }
+	{
+	return Send("NICK", szNewNick);
+	}
 
 bool C4Network2IRCClient::RegisterNick(const char *szPassword, const char *szMail)
-  {
+	{
 	return Send("PRIVMSG", FormatString("NickServ :REGISTER %s %s", szPassword, szMail).getData());
-  }
+	}
 
 void C4Network2IRCClient::OnCommand(const char *szSender, const char *szCommand, const char *szParameters)
 	{
@@ -513,14 +513,14 @@ void C4Network2IRCClient::OnCommand(const char *szSender, const char *szCommand,
 		// Get comment
 		StdStrBuf Comment = ircExtractPar(&szParameters);
 		// Format status message
-    StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_HASDISCONNECTED"), SenderNick.getData(), Comment.getData());
-    // Remove him from all channels
-    for(C4Network2IRCChannel *pChan = pChannels; pChan; pChan = pChan->Next)
-      if(pChan->getUser(SenderNick.getData()))
-        {
-        pChan->OnPart(SenderNick.getData(), "Quit");
-        PushMessage(MSG_Status, szSender, pChan->getName(), Message.getData());
-        }
+		StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_HASDISCONNECTED"), SenderNick.getData(), Comment.getData());
+		// Remove him from all channels
+		for(C4Network2IRCChannel *pChan = pChannels; pChan; pChan = pChan->Next)
+			if(pChan->getUser(SenderNick.getData()))
+				{
+				pChan->OnPart(SenderNick.getData(), "Quit");
+				PushMessage(MSG_Status, szSender, pChan->getName(), Message.getData());
+				}
 		}
 	// Topic change?
 	if(SEqualNoCase(szCommand, "TOPIC"))
@@ -562,18 +562,18 @@ void C4Network2IRCClient::OnCommand(const char *szSender, const char *szCommand,
 		// Get new nick
 		StdStrBuf NewNick = ircExtractPar(&szParameters);
 		// Format status message
-    StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_ISNOWKNOWNAS"), SenderNick.getData(), NewNick.getData());
-    // Rename on all channels
-    for(C4Network2IRCChannel *pChan = pChannels; pChan; pChan = pChan->Next)
-      if(pChan->getUser(SenderNick.getData()))
-        {
-        pChan->OnPart(SenderNick.getData(), "Nickchange");
-        pChan->OnJoin(NewNick.getData());
-        PushMessage(MSG_Status, szSender, pChan->getName(), Message.getData());
-        }
-    // Self?
-    if(SenderNick == Nick)
-      Nick = NewNick;
+		StdStrBuf Message = FormatString(LoadResStr("IDS_MSG_ISNOWKNOWNAS"), SenderNick.getData(), NewNick.getData());
+		// Rename on all channels
+		for(C4Network2IRCChannel *pChan = pChannels; pChan; pChan = pChan->Next)
+			if(pChan->getUser(SenderNick.getData()))
+				{
+				pChan->OnPart(SenderNick.getData(), "Nickchange");
+				pChan->OnJoin(NewNick.getData());
+				PushMessage(MSG_Status, szSender, pChan->getName(), Message.getData());
+				}
+		// Self?
+		if(SenderNick == Nick)
+			Nick = NewNick;
 		}
 	}
 
@@ -638,8 +638,8 @@ void C4Network2IRCClient::OnNumericCommand(const char *szSender, int iCommand, c
 			// Finish
 			AddChannel(Channel.getData())->OnUsersEnd();
 			fShowMessage = false;
-      // Notify
-      if(pNotify) pNotify->PushEvent(Ev_IRC_Message, this);
+			// Notify
+			if(pNotify) pNotify->PushEvent(Ev_IRC_Message, this);
 			}
 			break;
 
@@ -785,9 +785,9 @@ void C4Network2IRCClient::PushMessage(C4Network2IRCMessageType eType, const char
 	iUnreadLogLength++;
 	while(iLogLength > C4NetIRCMaxLogLength)
 		PopMessage();
-  // Notify
-  if(pNotify)
-    pNotify->PushEvent(Ev_IRC_Message, this);
+	// Notify
+	if(pNotify)
+		pNotify->PushEvent(Ev_IRC_Message, this);
 	}
 
 C4Network2IRCChannel *C4Network2IRCClient::AddChannel(const char *szName)

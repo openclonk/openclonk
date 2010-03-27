@@ -68,19 +68,19 @@ const char *ProcedureName[C4D_MaxDFA]={ "WALK",
 //--------------------------------- C4DefCore ----------------------------------------------
 
 void C4Def::DefaultDefCore()
-  {
+	{
 	rC4XVer[0]=rC4XVer[1]=rC4XVer[2]=rC4XVer[3]=0;
 	RequireDef.Clear();
 	Physical.Default();
-  Shape.Default();
-  Entrance.Default();
-  Collection.Default();
-  PictureRect.Default();
-  SolidMask.Default();
-  TopFace.Default();
-  Component.Default();
-  BurnTurnTo=C4ID::None;
-  BuildTurnTo=C4ID::None;
+	Shape.Default();
+	Entrance.Default();
+	Collection.Default();
+	PictureRect.Default();
+	SolidMask.Default();
+	TopFace.Default();
+	Component.Default();
+	BurnTurnTo=C4ID::None;
+	BuildTurnTo=C4ID::None;
 	STimerCall[0]=0;
 	Timer=35;
 	GrowthType=0;
@@ -409,8 +409,8 @@ C4Def::C4Def()
 void C4Def::Default()
 	{
 	DefaultDefCore();
-  Next=NULL;
-  Temporary=false;
+	Next=NULL;
+	Temporary=false;
 	Maker[0]=0;
 	Filename[0]=0;
 	Creation=0;
@@ -427,7 +427,7 @@ void C4Def::Default()
 	PortraitCount = 0;
 	Portraits = NULL;
 	pFairCrewPhysical = NULL;
-  }
+	}
 
 C4Def::~C4Def()
 	{
@@ -435,7 +435,7 @@ C4Def::~C4Def()
 	}
 
 void C4Def::Clear()
-  {
+	{
 
 	Graphics.Clear();
 
@@ -455,10 +455,10 @@ void C4Def::Clear()
 	}
 
 bool C4Def::Load(C4Group &hGroup,
-                 DWORD dwLoadWhat,
+								 DWORD dwLoadWhat,
 								 const char *szLanguage,
 								 C4SoundSystem *pSoundSystem)
-  {
+	{
 	bool fSuccess=true;
 
 	bool AddFileMonitoring = false;
@@ -493,7 +493,7 @@ bool C4Def::Load(C4Group &hGroup,
 		}
 
 
-  // Read DefCore
+	// Read DefCore
 	if (fSuccess) fSuccess=LoadDefCore(hGroup);
 
 	// skip def: don't even read sounds!
@@ -526,8 +526,8 @@ bool C4Def::Load(C4Group &hGroup,
 			return false;
 			}
 
-  // Read script
-  if (dwLoadWhat & C4D_Load_Script)
+	// Read script
+	if (dwLoadWhat & C4D_Load_Script)
 		{
 		// reg script to engine
 		Script.Reg2List(&::ScriptEngine, &::ScriptEngine);
@@ -608,8 +608,8 @@ bool C4Def::Load(C4Group &hGroup,
 		}
 
 
-  // Read desc
-  if (dwLoadWhat & C4D_Load_Desc)
+	// Read desc
+	if (dwLoadWhat & C4D_Load_Desc)
 		{
 		Desc.LoadEx("Desc", hGroup, C4CFN_DefDesc, szLanguage);
 		Desc.TrimSpaces();
@@ -621,7 +621,7 @@ bool C4Def::Load(C4Group &hGroup,
 		if (pSoundSystem)
 			pSoundSystem->LoadEffects(hGroup);
 
-  // Bitmap post-load settings
+	// Bitmap post-load settings
 	if (Graphics.GetBitmap())
 		{
 		// check SolidMask
@@ -751,11 +751,11 @@ C4PhysicalInfo *C4Def::GetFairCrewPhysicals()
 	}
 
 void C4Def::ClearFairCrewPhysicals()
-  {
-  // invalidate physicals so the next call to GetFairCrewPhysicals will
-  // reacreate them
-  delete pFairCrewPhysical; pFairCrewPhysical = NULL;
-  }
+	{
+	// invalidate physicals so the next call to GetFairCrewPhysicals will
+	// reacreate them
+	delete pFairCrewPhysical; pFairCrewPhysical = NULL;
+	}
 
 void C4Def::Synchronize()
 	{
@@ -768,24 +768,24 @@ void C4Def::Synchronize()
 //--------------------------------- C4DefList ----------------------------------------------
 
 C4DefList::C4DefList()
-  {
+	{
 	Default();
-  }
+	}
 
 C4DefList::~C4DefList()
-  {
-  Clear();
-  }
+	{
+	Clear();
+	}
 
 int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 										const char *szLanguage,
 										C4SoundSystem *pSoundSystem,
 										bool fOverload,
 										bool fSearchMessage, int32_t iMinProgress, int32_t iMaxProgress, bool fLoadSysGroups)
-  {
+	{
 	int32_t iResult=0;
-  C4Def *nDef;
-  char szEntryname[_MAX_FNAME+1];
+	C4Def *nDef;
+	char szEntryname[_MAX_FNAME+1];
 	C4Group hChild;
 	bool fPrimaryDef=false;
 	bool fThisSearchMessage=false;
@@ -852,8 +852,8 @@ int32_t C4DefList::Load(C4Group &hGroup, DWORD dwLoadWhat,
 	// progress (could go down one level of recursion...)
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
 
-  return iResult;
-  }
+	return iResult;
+	}
 
 int32_t C4DefList::LoadFolderLocal( const char *szPath,
 																DWORD dwLoadWhat, const char *szLanguage,
@@ -887,11 +887,11 @@ int32_t C4DefList::LoadFolderLocal( const char *szPath,
 extern bool C4EngineLoadProcess(const char *szMessage, int32_t iProcess);
 
 int32_t C4DefList::Load(const char *szSearch,
-                    DWORD dwLoadWhat, const char *szLanguage,
+										DWORD dwLoadWhat, const char *szLanguage,
 										C4SoundSystem *pSoundSystem,
 										bool fOverload, int32_t iMinProgress, int32_t iMaxProgress)
-  {
-  int32_t iResult=0;
+	{
+	int32_t iResult=0;
 
 	// Empty
 	if (!szSearch[0]) return iResult;
@@ -956,14 +956,14 @@ int32_t C4DefList::Load(const char *szSearch,
 	// progress (could go down one level of recursion...)
 	if (iMinProgress != iMaxProgress) Game.SetInitProgress(float(iMaxProgress));
 
-  return iResult;
-  }
+	return iResult;
+	}
 
 bool C4DefList::Add(C4Def *pDef, bool fOverload)
-  {
-  if (!pDef) return false;
+	{
+	if (!pDef) return false;
 
-  // Check old def to overload
+	// Check old def to overload
 	C4Def *pLastDef = ID2Def(pDef->id);
 	if (pLastDef && !fOverload) return false;
 
@@ -979,42 +979,42 @@ bool C4DefList::Add(C4Def *pDef, bool fOverload)
 				}
 			}
 
-  // Remove old def
+	// Remove old def
 	Remove(pDef->id);
 
 	// Add new def
-  pDef->Next=FirstDef;
-  FirstDef=pDef;
+	pDef->Next=FirstDef;
+	FirstDef=pDef;
 
 	return true;
-  }
+	}
 
 bool C4DefList::Remove(C4ID id)
-  {
-  C4Def *cdef,*prev;
-  for (cdef=FirstDef,prev=NULL; cdef; prev=cdef,cdef=cdef->Next)
-    if (cdef->id==id)
-      {
-      if (prev) prev->Next=cdef->Next;
-      else FirstDef=cdef->Next;
-      delete cdef;
-      return true;
-      }
-  return false;
-  }
+	{
+	C4Def *cdef,*prev;
+	for (cdef=FirstDef,prev=NULL; cdef; prev=cdef,cdef=cdef->Next)
+		if (cdef->id==id)
+			{
+			if (prev) prev->Next=cdef->Next;
+			else FirstDef=cdef->Next;
+			delete cdef;
+			return true;
+			}
+	return false;
+	}
 
 void C4DefList::Remove(C4Def *def)
-  {
-  C4Def *cdef,*prev;
-  for (cdef=FirstDef,prev=NULL; cdef; prev=cdef,cdef=cdef->Next)
-    if (cdef==def)
-      {
-      if (prev) prev->Next=cdef->Next;
-      else FirstDef=cdef->Next;
-      delete cdef;
-      return;
-      }
-  }
+	{
+	C4Def *cdef,*prev;
+	for (cdef=FirstDef,prev=NULL; cdef; prev=cdef,cdef=cdef->Next)
+		if (cdef==def)
+			{
+			if (prev) prev->Next=cdef->Next;
+			else FirstDef=cdef->Next;
+			delete cdef;
+			return;
+			}
+	}
 
 void C4DefList::Clear()
 {
@@ -1050,92 +1050,92 @@ C4Def* C4DefList::ID2Def(C4ID id)
 }
 
 int32_t C4DefList::GetIndex(C4ID id)
-  {
-  C4Def *cdef;
-  int32_t cindex;
-  for (cdef=FirstDef,cindex=0; cdef; cdef=cdef->Next,cindex++)
-    if (cdef->id==id) return cindex;
-  return -1;
-  }
+	{
+	C4Def *cdef;
+	int32_t cindex;
+	for (cdef=FirstDef,cindex=0; cdef; cdef=cdef->Next,cindex++)
+		if (cdef->id==id) return cindex;
+	return -1;
+	}
 
 int32_t C4DefList::GetDefCount(DWORD dwCategory)
 	{
-  C4Def *cdef; int32_t ccount=0;
-  for (cdef=FirstDef; cdef; cdef=cdef->Next)
-    if (cdef->Category & dwCategory)
-      ccount++;
-  return ccount;
+	C4Def *cdef; int32_t ccount=0;
+	for (cdef=FirstDef; cdef; cdef=cdef->Next)
+		if (cdef->Category & dwCategory)
+			ccount++;
+	return ccount;
 	}
 
 C4Def* C4DefList::GetDef(int32_t iIndex, DWORD dwCategory)
-  {
-  C4Def *pDef; int32_t iCurrentIndex;
-  if (iIndex<0) return NULL;
-  for (pDef=FirstDef,iCurrentIndex=-1; pDef; pDef=pDef->Next)
-    if (pDef->Category & dwCategory)
-      {
-      iCurrentIndex++;
-      if (iCurrentIndex==iIndex) return pDef;
-      }
-  return NULL;
-  }
+	{
+	C4Def *pDef; int32_t iCurrentIndex;
+	if (iIndex<0) return NULL;
+	for (pDef=FirstDef,iCurrentIndex=-1; pDef; pDef=pDef->Next)
+		if (pDef->Category & dwCategory)
+			{
+			iCurrentIndex++;
+			if (iCurrentIndex==iIndex) return pDef;
+			}
+	return NULL;
+	}
 
 C4Def *C4DefList::GetByPath(const char *szPath)
-  {
-  // search defs
-  const char *szDefPath;
-  for(C4Def *pDef = FirstDef; pDef; pDef = pDef->Next)
-    if((szDefPath = Config.AtRelativePath(pDef->Filename)))
-      if(SEqual2NoCase(szPath, szDefPath))
-        {
-        // the definition itself?
-        if(!szPath[SLen(szDefPath)])
-          return pDef;
-        // or a component?
-        else if(szPath[SLen(szDefPath)] == '\\')
-          if(!strchr(szPath + SLen(szDefPath) + 1, '\\'))
-            return pDef;
-        }
-  // not found
-  return NULL;
-  }
+	{
+	// search defs
+	const char *szDefPath;
+	for(C4Def *pDef = FirstDef; pDef; pDef = pDef->Next)
+		if((szDefPath = Config.AtRelativePath(pDef->Filename)))
+			if(SEqual2NoCase(szPath, szDefPath))
+				{
+				// the definition itself?
+				if(!szPath[SLen(szDefPath)])
+					return pDef;
+				// or a component?
+				else if(szPath[SLen(szDefPath)] == '\\')
+					if(!strchr(szPath + SLen(szDefPath) + 1, '\\'))
+						return pDef;
+				}
+	// not found
+	return NULL;
+	}
 
 int32_t C4DefList::RemoveTemporary()
-  {
-  C4Def *cdef,*prev,*next;
-  int32_t removed=0;
-  for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
-    {
-    next=cdef->Next;
-    if (cdef->Temporary)
-      {
-      if (prev) prev->Next=next;
-      else FirstDef=next;
-      delete cdef;
-      removed++;
-      }
-    else
-      prev=cdef;
-    }
+	{
+	C4Def *cdef,*prev,*next;
+	int32_t removed=0;
+	for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
+		{
+		next=cdef->Next;
+		if (cdef->Temporary)
+			{
+			if (prev) prev->Next=next;
+			else FirstDef=next;
+			delete cdef;
+			removed++;
+			}
+		else
+			prev=cdef;
+		}
 	// rebuild quick access table
 	BuildTable();
-  return removed;
-  }
+	return removed;
+	}
 
 int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, int32_t ver4)
 	{
 	int32_t rcount=0;
-  C4Def *cdef,*prev,*next;
-  for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
+	C4Def *cdef,*prev,*next;
+	for (cdef=FirstDef,prev=NULL; cdef; cdef=next)
 		{
 		next=cdef->Next;
-    if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],cdef->rC4XVer[2],cdef->rC4XVer[3],ver1,ver2,ver3,ver4) > 0)
-      {
-      if (prev) prev->Next=cdef->Next;
-      else FirstDef=cdef->Next;
-      delete cdef;
+		if (CompareVersion(cdef->rC4XVer[0],cdef->rC4XVer[1],cdef->rC4XVer[2],cdef->rC4XVer[3],ver1,ver2,ver3,ver4) > 0)
+			{
+			if (prev) prev->Next=cdef->Next;
+			else FirstDef=cdef->Next;
+			delete cdef;
 			rcount++;
-      }
+			}
 		else prev=cdef;
 		}
 	return rcount;
@@ -1144,7 +1144,7 @@ int32_t C4DefList::CheckEngineVersion(int32_t ver1, int32_t ver2, int32_t ver3, 
 int32_t C4DefList::CheckRequireDef()
 	{
 	int32_t rcount=0, rcount2;
-  C4Def *cdef,*prev,*next;
+	C4Def *cdef,*prev,*next;
 	do
 		{
 		rcount2 = rcount;

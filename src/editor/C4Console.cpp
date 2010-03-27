@@ -102,8 +102,8 @@ namespace {
 #endif
 
 #define FILE_SELECT_FILTER_FOR_C4S "Clonk 4 Scenario\0"         \
-                                   "*.c4s;*.c4f;Scenario.txt\0" \
-                                   "\0"
+																	 "*.c4s;*.c4f;Scenario.txt\0" \
+																	 "\0"
 
 C4Console::C4Console()
 	{
@@ -161,30 +161,30 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 	{
 	switch (Msg)
 		{
-    //------------------------------------------------------------------------------------------------------------
-    case WM_ACTIVATEAPP:
-      Application.Active = wParam != 0;
-      return true;
-    //------------------------------------------------------------------------------------------------------------
-    case WM_DESTROY:
+		//------------------------------------------------------------------------------------------------------------
+		case WM_ACTIVATEAPP:
+			Application.Active = wParam != 0;
+			return true;
+		//------------------------------------------------------------------------------------------------------------
+		case WM_DESTROY:
 			StoreWindowPosition(hDlg, "Main", Config.GetSubkeyPath("Console"), false);
 			Application.Quit();
 			return true;
-    //------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------
 		case WM_CLOSE:
 			Console.Close();
 			return true;
-    //------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------
 		case MM_MCINOTIFY:
 			if (wParam == MCI_NOTIFY_SUCCESSFUL)
 				Application.MusicSystem.NotifySuccess();
 			return true;
-    //------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------
 		case WM_INITDIALOG:
-      SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
+			SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
 			Console.UpdateMenuText(GetMenu(hDlg));
-      return true;
-    //------------------------------------------------------------------------------------------------------------
+			return true;
+		//------------------------------------------------------------------------------------------------------------
 		case WM_COMMAND:
 			// Evaluate command
 			switch (LOWORD(wParam))
@@ -269,25 +269,25 @@ INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lPara
 				return true;
 				}
 			return false;
-    //------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------
 		case WM_USER_LOG:
 			if (SEqual2((const char *)lParam, "IDS_"))
 				Log(LoadResStr((const char *)lParam));
 			else
 				Log((const char *)lParam);
 			return false;
-    //------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------
 		case WM_COPYDATA:
-      COPYDATASTRUCT* pcds = reinterpret_cast<COPYDATASTRUCT *>(lParam);
-      if(pcds->dwData == WM_USER_RELOADFILE)
-      {
-        // get path, ensure proper termination
-        const char *szPath = reinterpret_cast<const char *>(pcds->lpData);
-        if(szPath[pcds->cbData - 1]) break;
-        // reload
-        Game.ReloadFile(szPath);
-      }
-      return false;
+			COPYDATASTRUCT* pcds = reinterpret_cast<COPYDATASTRUCT *>(lParam);
+			if(pcds->dwData == WM_USER_RELOADFILE)
+			{
+				// get path, ensure proper termination
+				const char *szPath = reinterpret_cast<const char *>(pcds->lpData);
+				if(szPath[pcds->cbData - 1]) break;
+				// reload
+				Game.ReloadFile(szPath);
+			}
+			return false;
 		}
 
 	return false;
@@ -1331,7 +1331,7 @@ void C4Console::EditScript()
 	{
 	if (::Network.isEnabled()) return;
 	Game.Script.Open();
-  ::ScriptEngine.ReLink(&::Definitions);
+	::ScriptEngine.ReLink(&::Definitions);
 	}
 
 void C4Console::EditInfo()

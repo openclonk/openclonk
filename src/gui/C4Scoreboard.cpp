@@ -293,25 +293,25 @@ void C4Scoreboard::HideDlg()
 
 void C4Scoreboard::CompileFunc(StdCompiler *pComp)
 	{
-  bool fCompiler = pComp->isCompiler();
-  if(fCompiler) Clear();
-  pComp->Value(mkNamingAdapt(iRows,     "Rows",     0));
-  pComp->Value(mkNamingAdapt(iCols,     "Cols",     0));
-  pComp->Value(mkNamingAdapt(iDlgShow,  "DlgShow",  0));
+	bool fCompiler = pComp->isCompiler();
+	if(fCompiler) Clear();
+	pComp->Value(mkNamingAdapt(iRows,     "Rows",     0));
+	pComp->Value(mkNamingAdapt(iCols,     "Cols",     0));
+	pComp->Value(mkNamingAdapt(iDlgShow,  "DlgShow",  0));
 	if (iRows * iCols)
 	  {
 	  if (fCompiler) pEntries = new Entry[iRows * iCols];
-    for (int32_t iRow = 0; iRow < iRows; ++iRow)
+		for (int32_t iRow = 0; iRow < iRows; ++iRow)
 			for (int32_t iCol = 0; iCol < iCols; ++iCol)
 				{
 				Entry *pEnt = GetCell(iCol, iRow);
-        pComp->Value(mkNamingAdapt(pEnt->Text, FormatString("Cell%i_%iString", iCol, iRow).getData()));
-        pComp->Value(mkNamingAdapt(pEnt->iVal, FormatString("Cell%i_%iValue", iCol, iRow).getData()));
+				pComp->Value(mkNamingAdapt(pEnt->Text, FormatString("Cell%i_%iString", iCol, iRow).getData()));
+				pComp->Value(mkNamingAdapt(pEnt->iVal, FormatString("Cell%i_%iValue", iCol, iRow).getData()));
 				}
 		// recheck dlg show in read mode
 		// will usually not do anything, because reading is done before enetering shared mode
 		if (pComp->isCompiler()) DoDlgShow(0, false);
-    }
+		}
 	}
 
 

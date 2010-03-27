@@ -49,7 +49,7 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp) {
 
 CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor) {
 	Active = true;
-    SetTitle(Title);
+		SetTitle(Title);
 	return this;
 }
 

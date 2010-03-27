@@ -41,10 +41,10 @@ template <class T> inline void Toggle(T &v) { v = !v; }
 const double pi = 3.14159265358979323846;
 
 inline int DWordAligned(int val)
-  {
-  if (val%4) { val>>=2; val<<=2; val+=4; }
+	{
+	if (val%4) { val>>=2; val<<=2; val+=4; }
 	return val;
-  }
+	}
 
 int32_t Distance(int32_t iX1, int32_t iY1, int32_t iX2, int32_t iY2);
 int Angle(int iX1, int iY1, int iX2, int iY2);
@@ -52,17 +52,17 @@ int Pow(int base, int exponent);
 
 #include <cstring>
 inline void ZeroMem(void *lpMem, size_t dwSize)
-  {
+	{
 	std::memset(lpMem,'\0',dwSize);
-  }
+	}
 
 inline void MemCopy(const void *lpMem1, void *lpMem2, size_t dwSize)
-  {
+	{
 	std::memmove(lpMem2,lpMem1,dwSize);
 	}
 
 bool ForLine(int32_t x1, int32_t y1, int32_t x2, int32_t y2,
-             bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar=0,
+						 bool (*fnCallback)(int32_t, int32_t, int32_t), int32_t iPar=0,
 						 int32_t *lastx=NULL, int32_t *lasty=NULL);
 
 #include <cctype>
@@ -151,8 +151,8 @@ bool SWildcardMatchEx(const char *szString, const char *szWildcard);
 inline int osprintf(char *str, const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
 inline int osprintf(char *str, const char *fmt, ...)
 {
-  va_list args; va_start(args, fmt);
-  return vsprintf(str, fmt, args);
+	va_list args; va_start(args, fmt);
+	return vsprintf(str, fmt, args);
 }
 
 // wrapper to detect "char *"
@@ -162,16 +162,16 @@ template <>  struct NoPointer<char *> { };
 // secure sprintf
 #define sprintf ssprintf
 template <typename T>
-  inline int ssprintf(T &str, const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	inline int ssprintf(T &str, const char *fmt, ...) GNUC_FORMAT_ATTRIBUTE_O;
 template <typename T>
-  inline int ssprintf(T &str, const char *fmt, ...)
-  {
-    NoPointer<T>::noPointer();
-    int n = sizeof(str);
-    va_list args; va_start(args, fmt);
-    int m = vsnprintf(str, n, fmt, args);
+	inline int ssprintf(T &str, const char *fmt, ...)
+	{
+		NoPointer<T>::noPointer();
+		int n = sizeof(str);
+		va_list args; va_start(args, fmt);
+		int m = vsnprintf(str, n, fmt, args);
 		if(m >= n) { m = n-1; str[m] = 0; }
 		return m;
-  }
+	}
 
 #endif // INC_STANDARD

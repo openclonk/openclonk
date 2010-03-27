@@ -26,7 +26,7 @@
 
 // dialog to download a file
 class C4DownloadDlg : public C4GUI::Dialog
-  {
+	{
 	private:
 		C4Network2HTTPClient HTTPClient;
 

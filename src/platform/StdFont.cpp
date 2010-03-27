@@ -493,9 +493,9 @@ void CStdFont::Init(CStdVectorFont & VectorFont, const char *font_face_name, DWO
 	}
 
 const DWORD  FontDelimeterColor        = 0xff0000,
-             FontDelimiterColorLB      = 0x00ff00,
-             FontDelimeterColorIndent1 = 0xffff00,
-             FontDelimeterColorIndent2 = 0xff00ff;
+						 FontDelimiterColorLB      = 0x00ff00,
+						 FontDelimeterColorIndent1 = 0xffff00,
+						 FontDelimeterColorIndent2 = 0xff00ff;
 
 // perform color matching in 16 bit
 inline bool ColorMatch(DWORD dwClr1, DWORD dwClr2)
@@ -570,7 +570,7 @@ void CStdFont::Init(const char *szFontName, CSurface *psfcFontSfc, int iIndent)
 				break;
 				}
 			}
-    }
+		}
 	// release texture data
 	sfcCurrent->Unlock();
 	// adjust line height
@@ -741,7 +741,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 				  {
 				  // image renderer not hooked or ID not found, or surface not present: just ignore it
 				  // printing it out wouldn't look better...
-          iCharWdt = 0;
+					iCharWdt = 0;
 				  }
 			  // skip image tag
 			  szPos+=iImgLgt+3;
@@ -750,11 +750,11 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, char *szOut, int iMaxOut
 			  {
 			  // regular char
 			  // look up character width in texture coordinates table
-  			if (c >= ' ')
+				if (c >= ' ')
 				  iCharWdt = int(fZoom * GetCharacterFacet(c).Wdt / iFontZoom) + iHSpace;
 			  else
-  				iCharWdt = 0; // OMFG ctrl char
-        }
+					iCharWdt = 0; // OMFG ctrl char
+				}
 			// add chars to output
 			while (szLastPos != szPos)
 				{
@@ -897,7 +897,7 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 				  {
 				  // image renderer not hooked or ID not found, or surface not present: just ignore it
 				  // printing it out wouldn't look better...
-          iCharWdt = 0;
+					iCharWdt = 0;
 				  }
 			  // skip image tag
 			  szPos+=iImgLgt+3;
@@ -906,11 +906,11 @@ int CStdFont::BreakMessage(const char *szMsg, int iWdt, StdStrBuf *pOut, bool fC
 			  {
 			  // regular char
 			  // look up character width in texture coordinates table
-  			if (c >= ' ')
+				if (c >= ' ')
 				  iCharWdt = int(fZoom * GetCharacterFacet(c).Wdt / iFontZoom) + iHSpace;
 			  else
-  				iCharWdt = 0; // OMFG ctrl char
-        }
+					iCharWdt = 0; // OMFG ctrl char
+				}
 			// add chars to output
 			pOut->Append(szLastPos, szPos - szLastPos);
 			// add to line; always add one char at minimum
@@ -1067,8 +1067,8 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 		}
 	// apply texture zoom
 	fZoom /= iFontZoom;
-  // set start markup transformation
-  if (!Markup.Clean()) pbt=&bt;
+	// set start markup transformation
+	if (!Markup.Clean()) pbt=&bt;
 	// output text
 	uint32_t c;
 	CFacet fctFromBlt; // source facet
@@ -1152,7 +1152,7 @@ void CStdFont::DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, cons
 									true, pbt);
 		// advance pos and skip character indent
 		iX+=w2+iHSpace;
-    }
+		}
 	// reset blit modulation
 	if (fWasModulated)
 		lpDDraw->ActivateBlitModulation(dwOldModClr);

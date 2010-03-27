@@ -133,7 +133,7 @@ bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
 	// needs to be kept for some special surfaces
 	//f8BitSfc=false;
 
-  // Create and lock surface
+	// Create and lock surface
 	if (!Create(BitmapInfo.Info.biWidth,BitmapInfo.Info.biHeight, fOwnPal)) return false;
 
 	if (BitmapInfo.Info.biBitCount == 8)
@@ -156,12 +156,12 @@ bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
 	BYTE *pBuf = new BYTE[iBufSize];
 	// Read lines
 	iLineRest = DWordAligned(BitmapInfo.Info.biWidth) - BitmapInfo.Info.biWidth;
-  for (lcnt=Hgt-1; lcnt>=0; lcnt--)
-    {
-    if (!hGroup.Read(pBuf, iBufSize))
-      { Clear(); delete [] pBuf; return false; }
+	for (lcnt=Hgt-1; lcnt>=0; lcnt--)
+		{
+		if (!hGroup.Read(pBuf, iBufSize))
+			{ Clear(); delete [] pBuf; return false; }
 		BYTE *pPix=pBuf;
-    for (int x=0; x<BitmapInfo.Info.biWidth; ++x)
+		for (int x=0; x<BitmapInfo.Info.biWidth; ++x)
 			switch (BitmapInfo.Info.biBitCount)
 			{
 			case 8:
@@ -171,11 +171,11 @@ bool CSurface8::Read(CStdStream &hGroup, bool fOwnPal)
 				return false;
 				break;
 			}
-    }
+		}
 	// free buffer again
 	delete [] pBuf;
 
-  return true;
+	return true;
 	}
 
 bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
@@ -202,10 +202,10 @@ bool CSurface8::Save(const char *szFilename, BYTE *bpPalette)
 		}
 
 	// Close file
-  hFile.Close();
+	hFile.Close();
 
 	// Success
-  return true;
+	return true;
 	}
 
 /*
@@ -282,60 +282,60 @@ void CSurface8::Circle(int x, int y, int r, BYTE col)
 /* Polygon drawing code extracted from ALLEGRO by Shawn Hargreaves */
 
 struct CPolyEdge          // An edge for the polygon drawer
-  {
-  int y;                  // Current (starting at the top) y position
-  int bottom;             // bottom y position of this edge
-  int x;                  // Fixed point x position
-  int dx;                 // Fixed point x gradient
-  int w;                  // Width of line segment
-  struct CPolyEdge *prev; // Doubly linked list
-  struct CPolyEdge *next;
-  };
+	{
+	int y;                  // Current (starting at the top) y position
+	int bottom;             // bottom y position of this edge
+	int x;                  // Fixed point x position
+	int dx;                 // Fixed point x gradient
+	int w;                  // Width of line segment
+	struct CPolyEdge *prev; // Doubly linked list
+	struct CPolyEdge *next;
+	};
 
 #define POLYGON_FIX_SHIFT     16
 
 static void fill_edge_structure(CPolyEdge *edge, int *i1, int *i2)
-  {
-  if (i2[1] < i1[1]) // Swap
-    { int *t=i1; i1=i2; i2=t; }
-  edge->y = i1[1];
-  edge->bottom = i2[1] - 1;
-  edge->dx = ((i2[0] - i1[0]) << POLYGON_FIX_SHIFT) / (i2[1] - i1[1]);
-  edge->x = (i1[0] << POLYGON_FIX_SHIFT) + (1<<(POLYGON_FIX_SHIFT-1)) - 1;
-  edge->prev = NULL;
-  edge->next = NULL;
-  if (edge->dx < 0)
-    edge->x += Min<int>(edge->dx+(1<<POLYGON_FIX_SHIFT), 0);
-  edge->w = Max<int>(Abs(edge->dx)-(1<<POLYGON_FIX_SHIFT), 0);
-  }
+	{
+	if (i2[1] < i1[1]) // Swap
+		{ int *t=i1; i1=i2; i2=t; }
+	edge->y = i1[1];
+	edge->bottom = i2[1] - 1;
+	edge->dx = ((i2[0] - i1[0]) << POLYGON_FIX_SHIFT) / (i2[1] - i1[1]);
+	edge->x = (i1[0] << POLYGON_FIX_SHIFT) + (1<<(POLYGON_FIX_SHIFT-1)) - 1;
+	edge->prev = NULL;
+	edge->next = NULL;
+	if (edge->dx < 0)
+		edge->x += Min<int>(edge->dx+(1<<POLYGON_FIX_SHIFT), 0);
+	edge->w = Max<int>(Abs(edge->dx)-(1<<POLYGON_FIX_SHIFT), 0);
+	}
 
 static CPolyEdge *add_edge(CPolyEdge *list, CPolyEdge *edge, int sort_by_x)
-  {
-  CPolyEdge *pos = list;
-  CPolyEdge *prev = NULL;
-  if (sort_by_x)
-    {
-    while ((pos) && (pos->x+pos->w/2 < edge->x+edge->w/2))
-      { prev = pos; pos = pos->next; }
-    }
-  else
-    {
-    while ((pos) && (pos->y < edge->y))
-      { prev = pos; pos = pos->next; }
-    }
-  edge->next = pos;
-  edge->prev = prev;
-  if (pos) pos->prev = edge;
-  if (prev) { prev->next = edge; return list; }
-  else return edge;
-  }
+	{
+	CPolyEdge *pos = list;
+	CPolyEdge *prev = NULL;
+	if (sort_by_x)
+		{
+		while ((pos) && (pos->x+pos->w/2 < edge->x+edge->w/2))
+			{ prev = pos; pos = pos->next; }
+		}
+	else
+		{
+		while ((pos) && (pos->y < edge->y))
+			{ prev = pos; pos = pos->next; }
+		}
+	edge->next = pos;
+	edge->prev = prev;
+	if (pos) pos->prev = edge;
+	if (prev) { prev->next = edge; return list; }
+	else return edge;
+	}
 
 static CPolyEdge *remove_edge(CPolyEdge *list, CPolyEdge *edge)
-  {
-  if (edge->next) edge->next->prev = edge->prev;
-  if (edge->prev) { edge->prev->next = edge->next; return list; }
-  else return edge->next;
-  }
+	{
+	if (edge->next) edge->next->prev = edge->prev;
+	if (edge->prev) { edge->prev->next = edge->next; return list; }
+	else return edge->next;
+	}
 
 // Global polygon quick buffer
 const int QuickPolyBufSize = 20;
@@ -458,19 +458,19 @@ void CSurface8::AllowColor(BYTE iRngLo, BYTE iRngHi, bool fAllowZero)
 	}
 
 void CSurface8::SetBuffer(BYTE *pbyToBuf, int Wdt, int Hgt, int Pitch)
-  {
-  // release old
-  Clear();
-  // set new
-  this->Wdt=Wdt;
-  this->Hgt=Hgt;
-  this->Pitch=Pitch;
-  this->Bits = pbyToBuf;
-  NoClip();
-  }
+	{
+	// release old
+	Clear();
+	// set new
+	this->Wdt=Wdt;
+	this->Hgt=Hgt;
+	this->Pitch=Pitch;
+	this->Bits = pbyToBuf;
+	NoClip();
+	}
 
 void CSurface8::ReleaseBuffer()
-  {
-  this->Bits = NULL;
-  Clear();
-  }
+	{
+	this->Bits = NULL;
+	Clear();
+	}

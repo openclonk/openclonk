@@ -23,29 +23,29 @@
 #include <C4Object.h>
 
 C4Action::C4Action()
-  {
+	{
 	Default();
-  }
+	}
 
 C4Action::~C4Action()
-  {
+	{
 
-  }
+	}
 
 void C4Action::Default()
 	{
 	//pActionDef = 0;
-  Dir=DIR_None;
+	Dir=DIR_None;
 	DrawDir=Dir;
-  ComDir=COMD_None;
-  Time=0;
-  Data=0;
-  Target=Target2=NULL;
-  Phase=PhaseDelay=0;
+	ComDir=COMD_None;
+	Time=0;
+	Data=0;
+	Target=Target2=NULL;
+	Phase=PhaseDelay=0;
 	Facet.Default();
-  FacetX=FacetY=0;
-  t_attach=CNAT_None;
-  Animation = NULL;
+	FacetX=FacetY=0;
+	t_attach=CNAT_None;
+	Animation = NULL;
 	}
 
 void C4Action::CompileFunc(StdCompiler *pComp)

@@ -37,10 +37,10 @@
 //------------------------------- Player Info ----------------------------------------
 
 C4PlayerInfoCore::C4PlayerInfoCore()
-  {
-  ZeroMem(this,sizeof(C4PlayerInfoCore));
+	{
+	ZeroMem(this,sizeof(C4PlayerInfoCore));
 	Default();
-  }
+	}
 
 void C4PlayerInfoCore::Default(C4RankSystem *pRanks)
 	{
@@ -74,7 +74,7 @@ DWORD C4PlayerInfoCore::GetPrefColorValue(int32_t iPrefColor)
 	}
 
 bool C4PlayerInfoCore::Load(C4Group &hGroup)
-  {
+	{
 	// New version
 	StdStrBuf Source;
 	if (hGroup.LoadEntryString(C4CFN_PlayerInfoCore,Source))
@@ -99,11 +99,11 @@ bool C4PlayerInfoCore::Load(C4Group &hGroup)
 		}
 
 	// Old version no longer supported - sorry
-  return false;
-  }
+	return false;
+	}
 
 bool C4PlayerInfoCore::Save(C4Group &hGroup)
-  {
+	{
 	StdStrBuf Source, Name = hGroup.GetFullName(); Name.Append(DirSep C4CFN_PlayerInfoCore);
 	if(!DecompileToBuf_Log<StdCompilerINIWrite>(*this, &Source, Name.getData()))
 		return false;
@@ -349,14 +349,14 @@ void C4PhysicalChange::CompileFunc(StdCompiler *pComp)
 //------------------------------- Object Info ----------------------------------------
 
 C4ObjectInfoCore::C4ObjectInfoCore()
-  {
+	{
 	Default();
-  }
+	}
 
 void C4ObjectInfoCore::Default(C4ID n_id,
 															 C4DefList *pDefs,
 															 const char *cpNames)
-  {
+	{
 
 	// Def
 	C4Def *pDef=NULL;
@@ -364,8 +364,8 @@ void C4ObjectInfoCore::Default(C4ID n_id,
 
 	// Defaults
 	id=n_id;
-  Participation=1;
-  Rank=0;
+	Participation=1;
+	Rank=0;
 	Experience=0;
 	Rounds=0;
 	DeathCount=0;

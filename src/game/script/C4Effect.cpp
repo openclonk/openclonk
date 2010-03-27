@@ -568,16 +568,16 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	// In extinguishing material
 	bool fFireCaused=true;
 	int32_t iMat;
-  if (MatValid(iMat=GBackMat(pObj->GetX(),pObj->GetY())))
-    if (::MaterialMap.Map[iMat].Extinguisher)
+	if (MatValid(iMat=GBackMat(pObj->GetX(),pObj->GetY())))
+		if (::MaterialMap.Map[iMat].Extinguisher)
 			{
 			// blasts should changedef in water, too!
 			if (fBlasted) if (pObj->Def->BurnTurnTo!=C4ID::None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
 			// no fire caused
 			fFireCaused = false;
 			}
-  // BurnTurnTo
-  if (fFireCaused) if (pObj->Def->BurnTurnTo!=C4ID::None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
+	// BurnTurnTo
+	if (fFireCaused) if (pObj->Def->BurnTurnTo!=C4ID::None) pObj->ChangeDef(pObj->Def->BurnTurnTo);
 	// eject contents
 	C4Object *cobj;
 	if (!pObj->Def->IncompleteActivity && !pObj->Def->NoBurnDecay)
@@ -610,8 +610,8 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 		if (dwCat & (C4D_Living | C4D_StaticBack)) // Tiere, Bäume
 			iFireMode = C4Fx_FireMode_LivingVeg;
 		else if (dwCat & (C4D_Structure | C4D_Vehicle)) // Gebäude und Fahrzeuge sind unten meist kantig
-      iFireMode = C4Fx_FireMode_StructVeh;
-    else
+			iFireMode = C4Fx_FireMode_StructVeh;
+		else
 			iFireMode = C4Fx_FireMode_Object;
 		}
 	else if (!Inside<int32_t>(iFireMode, 1, C4Fx_FireMode_Last))
@@ -631,7 +631,7 @@ int32_t FnFxFireStart(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 	// Engine script call
 	pObj->Call(PSF_Incineration,&C4AulParSet(C4VInt(iCausedBy)));
 	// Done, success
-  return C4Fx_OK;
+	return C4Fx_OK;
 	}
 
 int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_t iTime)
@@ -686,9 +686,9 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 
 	// get remainign size (%)
 	iCon=iWdtCon=Max<int32_t>((100*pObj->GetCon())/FullCon, 1);
-  if(!pObj->Def->GrowthType)
+	if(!pObj->Def->GrowthType)
 		// fixed width for not-stretched-objects
-    if(iWdtCon<100) iWdtCon=100;
+		if(iWdtCon<100) iWdtCon=100;
 
 	// regard non-center object offsets
 	iX += pObj->Shape.x + pObj->Shape.Wdt/2;
@@ -707,10 +707,10 @@ int32_t FnFxFireTimer(C4AulContext *ctx, C4Object *pObj, int32_t iNumber, int32_
 		}
 
 	// Adjust particle number by con
-  iCount = Max(2, iCount*iWdtCon/100);
+	iCount = Max(2, iCount*iWdtCon/100);
 
 	// calc base for particle size parameter
-  iA=(int32_t) (sqrt(sqrt(double(iWidth * iHeight))*(iCon+20)/120)*iRelParticleSize);
+	iA=(int32_t) (sqrt(sqrt(double(iWidth * iHeight))*(iCon+20)/120)*iRelParticleSize);
 
 	// create a double set of particles; first quarter normal (Fire); remaining three quarters additive (Fire2)
 	for(int32_t i=0; i<iCount*2; ++i)
@@ -790,7 +790,7 @@ C4String *FnFxFireInfo(C4AulContext *ctx, C4Object *pObj, int32_t iNumber)
 // Some other, internal effects -------------------------------------------------------------
 
 void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
-  {
+	{
 	// Splash only if there is free space above
 	if (GBackSemiSolid(tx, ty - 15)) return;
 	// get back mat
@@ -812,12 +812,12 @@ void Splash(int32_t tx, int32_t ty, int32_t amt, C4Object *pByObj)
 									FIXED100(-Random(200)));
 				}
 			}
-  // Splash sound
-  if (amt>=20)
+	// Splash sound
+	if (amt>=20)
 		StartSoundEffect("Splash2",false,100,pByObj);
-  else
+	else
 		if (amt>1) StartSoundEffect("Splash1",false,100,pByObj);
-  }
+	}
 
 int32_t GetSmokeLevel()
 	{
@@ -826,7 +826,7 @@ int32_t GetSmokeLevel()
 	}
 
 void BubbleOut(int32_t tx, int32_t ty)
-  {
+	{
 	// No bubbles from nowhere
 	if (!GBackSemiSolid(tx,ty)) return;
 	// User-defined smoke level
@@ -835,10 +835,10 @@ void BubbleOut(int32_t tx, int32_t ty)
 	if (::Objects.ObjectCount(C4ID("FXU1")) >= SmokeLevel) return;
 	// Create bubble
 	Game.CreateObject(C4ID("FXU1"),NULL,NO_OWNER,tx,ty);
-  }
+	}
 
 void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
-  {
+	{
 	if (::Particles.pSmoke)
 		{
 		::Particles.Create(::Particles.pSmoke, float(tx), float(ty)-level/2, 0.0f, 0.0f, float(level), dwClr);
@@ -853,22 +853,22 @@ void Smoke(int32_t tx, int32_t ty, int32_t level, DWORD dwClr)
 	C4Object *pObj;
 	if ((pObj = Game.CreateObjectConstruction(C4Id2Def(C4ID("FXS1")),NULL,NO_OWNER,tx,ty,FullCon*level/32)))
 		pObj->Call(PSF_Activate);
-  }
+	}
 
 void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t iCausedBy, C4Object *pByObj, C4ID idEffect, const char *szEffect)
-  {
-  int32_t grade=BoundBy((level/10)-1,1,3);
-  // Sound
-  StdStrBuf sound = FormatString("Blast%c", '0'+grade);
-  StartSoundEffect(sound.getData(),false,100,pByObj);
+	{
+	int32_t grade=BoundBy((level/10)-1,1,3);
+	// Sound
+	StdStrBuf sound = FormatString("Blast%c", '0'+grade);
+	StartSoundEffect(sound.getData(),false,100,pByObj);
 	// Check blast containment
-  C4Object *container=inobj;
-  while (container && !container->Def->ContainBlast) container=container->Contained;
-  // Uncontained blast effects
-  if (!container)
-    {
+	C4Object *container=inobj;
+	while (container && !container->Def->ContainBlast) container=container->Contained;
+	// Uncontained blast effects
+	if (!container)
+		{
 		// Incinerate landscape
-    if (!::Landscape.Incinerate(tx,ty))
+		if (!::Landscape.Incinerate(tx,ty))
 			if (!::Landscape.Incinerate(tx,ty-10))
 				if (!::Landscape.Incinerate(tx-5,ty-5))
 					::Landscape.Incinerate(tx+5,ty-5);
@@ -892,14 +892,14 @@ void Explosion(int32_t tx, int32_t ty, int32_t level, C4Object *inobj, int32_t i
 		else
 			if ((pBlast = Game.CreateObjectConstruction(C4Id2Def(idEffect ? idEffect : C4ID("FXB1")),pByObj,iCausedBy,tx,ty+level,FullCon*level/20)))
 				pBlast->Call(PSF_Activate);
-    }
-  // Blast objects
-  Game.BlastObjects(tx,ty,level,inobj,iCausedBy,pByObj);
-  if (container!=inobj) Game.BlastObjects(tx,ty,level,container,iCausedBy,pByObj);
+		}
+	// Blast objects
+	Game.BlastObjects(tx,ty,level,inobj,iCausedBy,pByObj);
+	if (container!=inobj) Game.BlastObjects(tx,ty,level,container,iCausedBy,pByObj);
 	if (!container)
 		{
 		// Blast free landscape. After blasting objects so newly mined materials don't get flinged
 		::Landscape.BlastFree(tx,ty,level,grade, iCausedBy);
 		}
-  }
+	}
 

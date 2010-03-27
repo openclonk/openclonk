@@ -36,7 +36,7 @@ class C4EditCursor
 		C4EditCursor();
 		~C4EditCursor();
 	protected:
-    bool fAltWasDown;
+		bool fAltWasDown;
 		bool fSelectionChanged;
 		int32_t Mode;
 		int32_t X,Y,X2,Y2;
@@ -79,8 +79,8 @@ class C4EditCursor
 		C4ObjectList &GetSelection() { return Selection; }
 		void SetHold(bool fToState) { Hold = fToState; }
 		void OnSelectionChanged();
-    bool AltDown();
-    bool AltUp();
+		bool AltDown();
+		bool AltUp();
 	protected:
 		bool UpdateStatusBar();
 		void ApplyToolPicker();
@@ -96,8 +96,8 @@ class C4EditCursor
 		void DrawSelectMark(C4Facet &cgo, FLOAT_RECT r);
 		void FrameSelection();
 		void MoveSelection(int32_t iXOff, int32_t iYOff);
-    void EMMoveObject(enum C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
-    void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
+		void EMMoveObject(enum C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj, const C4ObjectList *pObjs = NULL, const char *szScript = NULL);
+		void EMControl(enum C4PacketType eCtrlType, class C4ControlPacket *pCtrl);
 
 #ifdef WITH_DEVELOPER_MODE
 		static void OnDelete(GtkWidget* widget, gpointer data);

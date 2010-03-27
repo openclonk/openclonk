@@ -25,16 +25,16 @@
 #include <C4Material.h>
 
 class C4PXS
-  {
+	{
 	C4PXS(): Mat(MNone), x(Fix0), y(Fix0), xdir(Fix0), ydir(Fix0) {}
 	friend class C4PXSSystem;
-  protected:
-    int32_t Mat;
-    FIXED x,y,xdir,ydir;
-  protected:
-    void Execute();
-    void Deactivate();
-  };
+	protected:
+		int32_t Mat;
+		FIXED x,y,xdir,ydir;
+	protected:
+		void Execute();
+		void Deactivate();
+	};
 
 const size_t PXSChunkSize=500,PXSMaxChunk=20;
 

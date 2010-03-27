@@ -58,7 +58,7 @@ void C4ObjectInfo::Default()
 	HasDied=false;
 	ControlCount=0;
 	Filename[0]=0;
-  Next=NULL;
+	Next=NULL;
 	pDef = NULL;
 	Portrait.Default();
 	pNewPortrait = NULL;
@@ -289,7 +289,7 @@ bool C4ObjectInfo::Save(C4Group &hGroup, bool fStoreTiny, C4DefList *pDefs)
 void C4ObjectInfo::Evaluate()
 	{
 	Retire();
-  if (WasInAction) Rounds++;
+	if (WasInAction) Rounds++;
 	}
 
 void C4ObjectInfo::Clear()
@@ -304,8 +304,8 @@ void C4ObjectInfo::Recruit()
 	{
 	// already recruited?
 	if (InAction) return;
-  WasInAction=true;
-  InAction=true;
+	WasInAction=true;
+	InAction=true;
 	InActionTime=Game.Time;
 	// rank name overload by def?
 	C4Def *pDef=::Definitions.ID2Def(id);

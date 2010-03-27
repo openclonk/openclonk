@@ -496,7 +496,7 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::PlayerListItem::OnContext(C4GUI::Elemen
 			pMenu->AddItem(strTakeOver.getData(), LoadResStr("IDS_MSG_TAKEOVERPLR_DESC"), C4GUI::Ico_Player, NULL,
 			  new C4GUI::CBContextHandler<PlayerListItem>(this, &PlayerListItem::OnContextTakeOver));
 			}
-    }
+		}
 	else
 		{
 		// owned players or host can manipulate players
@@ -897,16 +897,16 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::ClientListItem::OnContext(C4GUI::Elemen
 	// host options
 	if (::Network.isHost() && GetNetClient())
 		{
-      StdCopyStrBuf strKickDesc(LoadResStr("IDS_NET_KICKCLIENT_DESC"));
+			StdCopyStrBuf strKickDesc(LoadResStr("IDS_NET_KICKCLIENT_DESC"));
 		pMenu->AddItem(LoadResStr("IDS_NET_KICKCLIENT"), strKickDesc.getData(), C4GUI::Ico_None,
 			new C4GUI::CBMenuHandler<ClientListItem>(this, &ClientListItem::OnCtxKick));
-      StdCopyStrBuf strActivateDesc(LoadResStr("IDS_NET_ACTIVATECLIENT_DESC"));
+			StdCopyStrBuf strActivateDesc(LoadResStr("IDS_NET_ACTIVATECLIENT_DESC"));
 		pMenu->AddItem(LoadResStr(pClient->isActivated() ? "IDS_NET_DEACTIVATECLIENT" : "IDS_NET_ACTIVATECLIENT"),
-         strActivateDesc.getData(), C4GUI::Ico_None,
+				 strActivateDesc.getData(), C4GUI::Ico_None,
 			new C4GUI::CBMenuHandler<ClientListItem>(this, &ClientListItem::OnCtxActivate));
 		}
 	// info
-   StdCopyStrBuf strClientInfoDesc(LoadResStr("IDS_NET_CLIENTINFO_DESC"));
+	 StdCopyStrBuf strClientInfoDesc(LoadResStr("IDS_NET_CLIENTINFO_DESC"));
 	pMenu->AddItem(LoadResStr("IDS_NET_CLIENTINFO"), strClientInfoDesc.getData(), C4GUI::Ico_None,
 		new C4GUI::CBMenuHandler<ClientListItem>(this, &ClientListItem::OnCtxInfo));
 	// open it

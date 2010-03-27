@@ -33,7 +33,7 @@
 static const FIXED WindDrift_Factor = itofix(1, 800);
 
 void C4PXS::Execute()
-  {
+	{
 #ifdef DEBUGREC_PXS
 	{
 	C4RCExecPXS rc;
@@ -132,19 +132,19 @@ void C4PXS::Execute()
 	}
 #endif
 	return;
-  }
+	}
 
 void C4PXS::Deactivate()
-  {
+	{
 #ifdef DEBUGREC_PXS
 	C4RCExecPXS rc;
 	rc.x=x; rc.y=y; rc.iMat=Mat;
 	rc.pos = 2;
 	AddDbgRec(RCT_ExecPXS, &rc, sizeof(rc));
 #endif
-  Mat=MNone;
+	Mat=MNone;
 	::PXS.Delete(this);
-  }
+	}
 
 C4PXSSystem::C4PXSSystem()
 	{
@@ -177,19 +177,19 @@ void C4PXSSystem::Clear()
 	}
 
 C4PXS* C4PXSSystem::New()
-  {
-  unsigned int cnt,cnt2;
-  C4PXS *pxp;
-  // Check chunks for available space
-  for (cnt=0; cnt<PXSMaxChunk; cnt++)
-    {
-    // Create new chunk if necessary
-    if (!Chunk[cnt])
-      {
-      if (!(Chunk[cnt]=new C4PXS[PXSChunkSize])) return NULL;
+	{
+	unsigned int cnt,cnt2;
+	C4PXS *pxp;
+	// Check chunks for available space
+	for (cnt=0; cnt<PXSMaxChunk; cnt++)
+		{
+		// Create new chunk if necessary
+		if (!Chunk[cnt])
+			{
+			if (!(Chunk[cnt]=new C4PXS[PXSChunkSize])) return NULL;
 			iChunkPXS[cnt] = 0;
-      }
-    // Check this chunk for space
+			}
+		// Check this chunk for space
 		if(iChunkPXS[cnt] < PXSChunkSize)
 			for (cnt2=0,pxp=Chunk[cnt]; cnt2<PXSChunkSize; cnt2++,pxp++)
 				if (pxp->Mat==MNone)
@@ -198,20 +198,20 @@ C4PXS* C4PXSSystem::New()
 					iChunkPXS[cnt]++;
 					return pxp;
 				}
-    }
-  return NULL;
-  }
+		}
+	return NULL;
+	}
 
 bool C4PXSSystem::Create(int32_t mat, FIXED ix, FIXED iy, FIXED ixdir, FIXED iydir)
-  {
-  C4PXS *pxp;
-  if (!MatValid(mat)) return false;
-  if (!(pxp=New())) return false;
-  pxp->Mat=mat;
-  pxp->x=ix; pxp->y=iy;
-  pxp->xdir=ixdir; pxp->ydir=iydir;
-  return true;
-  }
+	{
+	C4PXS *pxp;
+	if (!MatValid(mat)) return false;
+	if (!(pxp=New())) return false;
+	pxp->Mat=mat;
+	pxp->x=ix; pxp->y=iy;
+	pxp->xdir=ixdir; pxp->ydir=iydir;
+	return true;
+	}
 
 void C4PXSSystem::Execute()
 	{
@@ -316,17 +316,17 @@ void C4PXSSystem::Draw(C4TargetFacet &cgo)
 					}
 			}
 
-  }
+	}
 
 void C4PXSSystem::Cast(int32_t mat, int32_t num, int32_t tx, int32_t ty, int32_t level)
-  {
-  int32_t cnt;
-  for (cnt=0; cnt<num; cnt++)
-    Create(mat,
-           itofix(tx),itofix(ty),
-           itofix(Random(level+1)-level/2)/10,
-           itofix(Random(level+1)-level)/10);
-  }
+	{
+	int32_t cnt;
+	for (cnt=0; cnt<num; cnt++)
+		Create(mat,
+					 itofix(tx),itofix(ty),
+					 itofix(Random(level+1)-level/2)/10,
+					 itofix(Random(level+1)-level)/10);
+	}
 
 bool C4PXSSystem::Save(C4Group &hGroup)
 	{

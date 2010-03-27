@@ -151,7 +151,7 @@ bool C4Record::Start(bool fInitial)
 			Index++;
 
 	// compose record filename
-  sFilename.Format("%s" DirSep "%03i-%s.c4s", sDemoFolder.getData(), Index, sScenName);
+	sFilename.Format("%s" DirSep "%03i-%s.c4s", sDemoFolder.getData(), Index, sScenName);
 
 	// log
 	StdStrBuf sLog; sLog.Format(LoadResStr("IDS_PRC_RECORDINGTO"),sFilename.getData());
@@ -185,9 +185,9 @@ bool C4Record::Start(bool fInitial)
 	}
 
 bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
-  {
+	{
 	// safety
-  if (!fRecording) return false;
+	if (!fRecording) return false;
 	if (!DirectoryExists(sFilename.getData())) return false;
 
 	// streaming finished
@@ -220,35 +220,35 @@ bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 		if(!C4Group_GetFileSHA1(sFilename.getData(), pRecordSHA1))
 			return false;
 
-  // ok
+	// ok
 	fRecording = false;
-  return true;
-  }
+	return true;
+	}
 
 bool C4Record::Rec(const C4Control &Ctrl, int iFrame)
-  {
-  if(!fRecording) return false;
+	{
+	if(!fRecording) return false;
 	// don't record empty control
 	if(!Ctrl.firstPkt()) return true;
-  // create copy
-  C4Control Cpy; Cpy.Copy(Ctrl);
-  // prepare it for record
-  Cpy.PreRec(this);
-  // record it
-  return Rec(iFrame, DecompileToBuf<StdCompilerBinWrite>(Cpy), RCT_Ctrl);
-  }
+	// create copy
+	C4Control Cpy; Cpy.Copy(Ctrl);
+	// prepare it for record
+	Cpy.PreRec(this);
+	// record it
+	return Rec(iFrame, DecompileToBuf<StdCompilerBinWrite>(Cpy), RCT_Ctrl);
+	}
 
 bool C4Record::Rec(C4PacketType eCtrlType, C4ControlPacket *pCtrl, int iFrame)
-  {
-  if(!fRecording) return false;
-  // create copy
-  C4IDPacket Pkt = C4IDPacket(eCtrlType, pCtrl, false); if(!Pkt.getPkt()) return false;
-  C4ControlPacket *pCtrlCpy = static_cast<C4ControlPacket *>(Pkt.getPkt());
-  // prepare for recording
-  pCtrlCpy->PreRec(this);
-  // record it
-  return Rec(iFrame, DecompileToBuf<StdCompilerBinWrite>(Pkt), RCT_CtrlPkt);
-  }
+	{
+	if(!fRecording) return false;
+	// create copy
+	C4IDPacket Pkt = C4IDPacket(eCtrlType, pCtrl, false); if(!Pkt.getPkt()) return false;
+	C4ControlPacket *pCtrlCpy = static_cast<C4ControlPacket *>(Pkt.getPkt());
+	// prepare for recording
+	pCtrlCpy->PreRec(this);
+	// record it
+	return Rec(iFrame, DecompileToBuf<StdCompilerBinWrite>(Pkt), RCT_CtrlPkt);
+	}
 
 bool C4Record::Rec(int iFrame, const StdBuf &sBuf, C4RecordChunkType eType)
 	{
@@ -399,7 +399,7 @@ C4Playback::~C4Playback()
 	}
 
 bool C4Playback::Open(C4Group &rGrp)
-  {
+	{
 	// clean up
  	Clear();
 	fLoadSequential = !rGrp.IsPacked();
@@ -513,7 +513,7 @@ bool C4Playback::Open(C4Group &rGrp)
 #endif
 	// ok
 	return true;
-  }
+	}
 
 bool C4Playback::ReadBinary(const StdBuf &Buf)
 	{
@@ -784,7 +784,7 @@ void C4Playback::Strip()
 								}
 							break;
 						default:
-                                                        // TODO
+																												// TODO
 							break;
 						}
 					}
@@ -817,7 +817,7 @@ void C4Playback::Strip()
 						if (fStripMessages) fStripThis=true;
 						break;
 					default:
-                                                // TODO
+																								// TODO
 						break;
 					}
 				if (fStripThis)
@@ -847,13 +847,13 @@ void C4Playback::Strip()
 
 bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
 	{
-  // still playbacking?
+	// still playbacking?
 	if (currChunk == chunks.end()) return false;
 	if (Finished) { Finish(); return false; }
 #ifdef DEBUGREC
-  if(DebugRec.firstPkt())
-    DebugRecError("Debug rec overflow!");
-  DebugRec.Clear();
+	if(DebugRec.firstPkt())
+		DebugRecError("Debug rec overflow!");
+	DebugRec.Clear();
 #endif
 	// return all control until this frame
 	while(currChunk != chunks.end() && currChunk->Frame <= iFrame)
@@ -862,9 +862,9 @@ bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
 			{
 			case RCT_Ctrl:
 				pCtrl->Append(*currChunk->pCtrl);
-        break;
+				break;
 
-      case RCT_CtrlPkt:
+			case RCT_CtrlPkt:
 				{
 				C4IDPacket Packet(*currChunk->pPkt);
 				pCtrl->Add(Packet.getPktType(), static_cast<C4ControlPacket *>(Packet.getPkt()));
@@ -878,7 +878,7 @@ bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
 				break;
 
 #ifdef DEBUGREC
-      default: // expect it to be debug rec
+			default: // expect it to be debug rec
 				// append to debug rec buffer
 				if (currChunk->pDbg)
 					{
@@ -886,20 +886,20 @@ bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
 					// the debugrec buffer is now responsible for deleting the packet
 					currChunk->pDbg = NULL;
 					}
-        break;
+				break;
 #endif
 
 			}
 		// next chunk
 		NextChunk();
 		}
-  // Debug log
+	// Debug log
 #ifdef DEBUGREC
 	//sprintf(OSTR, "-- Frame %d:", Game.FrameCounter); Log(OSTR);
 	//char Indent[256+1]; strcpy(Indent, "");
 	//pCtrl->deb_print(Indent);
 #endif
-  return true;
+	return true;
 	}
 
 void C4Playback::Finish()
@@ -1127,7 +1127,7 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 		{
 
 		// Initialize stream
-    z_stream strm;
+		z_stream strm;
 		ZeroMem(&strm, sizeof strm);
 		strm.next_in = getMBufPtr<BYTE>(CompressedData);
 		strm.avail_in = CompressedData.getSize();

@@ -222,7 +222,7 @@ C4GameOptionsList::OptionTeamColors::OptionTeamColors(class C4GameOptionsList *p
 void C4GameOptionsList::OptionTeamColors::DoDropdownFill(C4GUI::ComboBox_FillCB *pFiller)
 	{
 	pFiller->AddEntry(LoadResStr("IDS_MSG_ENABLED"), 1);
-  pFiller->AddEntry(LoadResStr("IDS_MSG_DISABLED"), 0);
+	pFiller->AddEntry(LoadResStr("IDS_MSG_DISABLED"), 0);
 	}
 
 void C4GameOptionsList::OptionTeamColors::DoDropdownSelChange(int32_t idNewSelection)

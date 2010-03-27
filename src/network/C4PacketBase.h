@@ -43,7 +43,7 @@ public:
 
 inline C4NetIOPacket MkC4NetIOPacket(char cStatus, const class C4PacketBase &Pkt, const C4NetIO::addr_t &addr = C4NetIO::addr_t())
 {
-  return Pkt.pack(cStatus, addr);
+	return Pkt.pack(cStatus, addr);
 }
 
 // Filename Adaptor
@@ -71,7 +71,7 @@ struct C4NetFilenameAdapt
 		}
 #endif
 	}
-  ALLOW_TEMP_TO_REF(C4NetFilenameAdapt)
+	ALLOW_TEMP_TO_REF(C4NetFilenameAdapt)
 	template <class T> bool operator == (const T &rVal) { return FileName == rVal; }
 	template <class T> C4NetFilenameAdapt &operator = (const T &rVal) { FileName = rVal; return *this; }
 };
@@ -166,7 +166,7 @@ enum C4PacketType
 	CID_EMMoveObj 		= CID_First | 0x30,
 	CID_EMDrawTool    = CID_First | 0x31,
 
-  CID_DebugRec      = CID_First | 0x40
+	CID_DebugRec      = CID_First | 0x40
 };
 
 // packet classes
@@ -239,7 +239,7 @@ public:
 protected:
 	C4PacketType eID;
 	C4PacketBase *pPkt;
-  bool fOwnPkt;
+	bool fOwnPkt;
 
 	// used by C4PacketList
 	C4IDPacket *pNext;
@@ -278,7 +278,7 @@ public:
 	void Add(C4PacketType eType, C4PacketBase *pPkt);
 	void AddHead(C4PacketType eType, C4PacketBase *pPkt);
 
-  void Take(C4PacketList &List);
+	void Take(C4PacketList &List);
 	void Append(const C4PacketList &List);
 
 	void Clear();

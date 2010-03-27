@@ -105,8 +105,8 @@ C4StartupOptionsDlg::ResChangeConfirmDlg::ResChangeConfirmDlg()
 	C4GUI::Label *pLblMessage = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iMsgHeight), ACenter, C4GUI_MessageFontClr, &C4GUI::GetRes()->TextFont, false);
 	AddElement(pLblMessage);
 	iMsgHeight = C4GUI::GetRes()->TextFont.BreakMessage(FormatString(LoadResStr("IDS_MNU_SWITCHRESOLUTION_UNDO"),
-                                                                    (int)iResChangeSwitchTime).getData(),
-                                                       caMain.GetInnerWidth(), &sMsgBroken, true);
+																																		(int)iResChangeSwitchTime).getData(),
+																											 caMain.GetInnerWidth(), &sMsgBroken, true);
 	pOperationCancelLabel = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iMsgHeight), ACenter, C4GUI_MessageFontClr, &C4GUI::GetRes()->TextFont, false, false);
 	AddElement(pOperationCancelLabel);
 	// place buttons
@@ -142,8 +142,8 @@ void C4StartupOptionsDlg::ResChangeConfirmDlg::OnSec1Timer()
 	// update timer label
 	StdStrBuf sTimerText;
 	C4GUI::GetRes()->TextFont.BreakMessage(FormatString(LoadResStr("IDS_MNU_SWITCHRESOLUTION_UNDO"),
-                                                       (int)iResChangeSwitchTime).getData(),
-                                          pOperationCancelLabel->GetBounds().Wdt, &sTimerText, true);
+																											 (int)iResChangeSwitchTime).getData(),
+																					pOperationCancelLabel->GetBounds().Wdt, &sTimerText, true);
 	pOperationCancelLabel->SetText(sTimerText.getData());
 	}
 
@@ -163,9 +163,9 @@ const char *KeyID2Desc(int32_t iKeyID)
 
 C4StartupOptionsDlg::KeySelDialog::KeySelDialog(int32_t iKeyID, int32_t iCtrlSet, bool fGamepad)
 : C4GUI::MessageDialog(FormatString(LoadResStr(!fGamepad ? "IDS_MSG_PRESSKEY" : "IDS_MSG_PRESSBTN"),
-                                    KeyID2Desc(iKeyID), iCtrlSet+1).getData(), LoadResStr("IDS_MSG_DEFINEKEY"),
+																		KeyID2Desc(iKeyID), iCtrlSet+1).getData(), LoadResStr("IDS_MSG_DEFINEKEY"),
 																		C4GUI::MessageDialog::btnAbort, fGamepad ? C4GUI::Ico_Gamepad : C4GUI::Ico_Keyboard, C4GUI::MessageDialog::dsRegular),
-  key(KEY_Undefined), fGamepad(fGamepad), iCtrlSet(iCtrlSet)
+	key(KEY_Undefined), fGamepad(fGamepad), iCtrlSet(iCtrlSet)
 	{
 	pKeyListener = new C4KeyBinding(C4KeyCodeEx(KEY_Any, KEYS_None), "DefineKey", KEYSCOPE_Gui, new C4GUI::DlgKeyCBPassKey<C4StartupOptionsDlg::KeySelDialog>(*this, &C4StartupOptionsDlg::KeySelDialog::KeyDown), C4CustomKey::PRIO_PlrControl);
 	}
@@ -195,7 +195,7 @@ bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 // every key from 0 to C4MaxKey-1 MUST BE present here, or the engine will crash
 const int32_t iKeyPosMaxX = 3, iKeyPosMaxY = 4; // arrange keys in a 4-by-5-array
 const int32_t iKeyPosis[iKeyPosMaxY][iKeyPosMaxX] = {
-  { 0, 1, 2 },
+	{ 0, 1, 2 },
 	{ 3, 4, 5 },
 	{ 6, 7, 8 },
 	{ 9,10,11 } };
@@ -571,7 +571,7 @@ void C4StartupOptionsDlg::BoolConfig::OnCheckChange(C4GUI::Element *pCheckBox)
 	if (pbVal) *pbVal = (GetChecked() != fInvert);
 	if (piVal) *piVal = (GetChecked() != fInvert);
 	if (piRestartChangeCfgVal) GetScreen()->ShowMessage(LoadResStr("IDS_MSG_RESTARTCHANGECFG"), GetText(),
-                                                       C4GUI::Ico_Notify, piRestartChangeCfgVal);
+																											 C4GUI::Ico_Notify, piRestartChangeCfgVal);
 	}
 
 // ------------------------------------------------

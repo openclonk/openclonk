@@ -110,32 +110,32 @@ bool C4PlayerList::HostilityDeclared(int iPlayer1, int iPlayer2) const
 	}
 
 bool C4PlayerList::PositionTaken(int iPosition) const
-  {
+	{
 	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-    if (pPlr->Position==iPosition)
-      return true;
-  return false;
-  }
+		if (pPlr->Position==iPosition)
+			return true;
+	return false;
+	}
 
 bool C4PlayerList::ColorTaken(int iColor) const
-  {
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-    if (pPlr->Color==iColor)
-      return true;
-  return false;
-  }
+	{
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+		if (pPlr->Color==iColor)
+			return true;
+	return false;
+	}
 
 int C4PlayerList::CheckColorDw(DWORD dwColor, C4Player *pExclude)
 	{
 	// maximum difference
 	int iDiff=255+255+255;
 	// check all player's color difference
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next) if (pPlr != pExclude)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next) if (pPlr != pExclude)
 		{
 		// get color
 		DWORD dwClr2=pPlr->ColorDw;
 		// assign difference, if less than smallest difference found
-    iDiff=Min(iDiff,
+		iDiff=Min(iDiff,
 			  Abs(GetRValue(dwColor) - GetRValue(dwClr2))
 			+ Abs(GetGValue(dwColor) - GetGValue(dwClr2))
 			+ Abs(GetBValue(dwColor) - GetBValue(dwClr2)));
@@ -146,7 +146,7 @@ int C4PlayerList::CheckColorDw(DWORD dwColor, C4Player *pExclude)
 
 C4Player* C4PlayerList::Get(int iNumber) const
 	{
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->Number==iNumber)
 			return pPlr;
 	return NULL;
@@ -155,7 +155,7 @@ C4Player* C4PlayerList::Get(int iNumber) const
 int C4PlayerList::GetIndex(C4Player *tPlr) const
 	{
 	int cindex=0;
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next, cindex++)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next, cindex++)
 		if (pPlr==tPlr)
 			return cindex;
 	return -1;
@@ -163,7 +163,7 @@ int C4PlayerList::GetIndex(C4Player *tPlr) const
 
 C4Player* C4PlayerList::GetByIndex(int iIndex) const
 	{
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (!iIndex--)
 			return pPlr;
 	return NULL;
@@ -171,7 +171,7 @@ C4Player* C4PlayerList::GetByIndex(int iIndex) const
 
 C4Player* C4PlayerList::GetByIndex(int iIndex, C4PlayerType eType) const
 	{
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->GetType() == eType)
 			if (!iIndex--)
 				return pPlr;
@@ -180,7 +180,7 @@ C4Player* C4PlayerList::GetByIndex(int iIndex, C4PlayerType eType) const
 
 C4Player *C4PlayerList::GetByInfoID(int iInfoID) const
 	{
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->ID == iInfoID) return pPlr;
 	return NULL;
 	}
@@ -188,7 +188,7 @@ C4Player *C4PlayerList::GetByInfoID(int iInfoID) const
 int C4PlayerList::GetCount() const
 	{
 	int iCount = 0;
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		iCount++;
 	return iCount;
 	}
@@ -196,7 +196,7 @@ int C4PlayerList::GetCount() const
 int C4PlayerList::GetCount(C4PlayerType eType) const
 	{
 	int iCount = 0;
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->GetType() == eType)
 			iCount++;
 	return iCount;
@@ -249,11 +249,11 @@ bool C4PlayerList::Remove(C4Player *pPlr, bool fDisconnect, bool fNoCalls)
 		{
 		C4PlayerInfo *pInfo = Game.PlayerInfos.GetPlayerInfoByID(pPlr->ID);
 		if (pInfo)
-      {
-      pInfo->SetRemoved();
-      if(fDisconnect)
-        pInfo->SetDisconnected();
-      }
+			{
+			pInfo->SetRemoved();
+			if(fDisconnect)
+				pInfo->SetDisconnected();
+			}
 		// if player wasn't evaluated, store round results anyway
 		if (!pPlr->Evaluated) Game.RoundResults.EvaluatePlayer(pPlr);
 		}
@@ -454,7 +454,7 @@ int C4PlayerList::AverageValueGain() const
 
 C4Player* C4PlayerList::GetByName(const char *szName, int iExcluding) const
 	{
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (SEqual(pPlr->GetName(),szName))
 			if (pPlr->Number!=iExcluding)
 				return pPlr;
@@ -485,7 +485,7 @@ bool C4PlayerList::FileInUse(const char *szFilename) const
 C4Player* C4PlayerList::GetLocalByIndex(int iIndex) const
 	{
 	int cindex=0;
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->LocalControl)
 			{
 			if (cindex==iIndex)	return pPlr;
@@ -552,7 +552,7 @@ bool C4PlayerList::CtrlRemoveAtClient(const char *szName, bool fDisconnect)
 C4Player* C4PlayerList::GetAtClient(int iClient, int iIndex) const
 	{
 	int cindex=0;
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->AtClient == iClient)
 			{
 			if (cindex==iIndex)	return pPlr;
@@ -564,7 +564,7 @@ C4Player* C4PlayerList::GetAtClient(int iClient, int iIndex) const
 C4Player* C4PlayerList::GetAtClient(const char *szName, int iIndex) const
 	{
 	int cindex=0;
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (SEqualNoCase(pPlr->AtClientName,szName))
 			{
 			if (cindex==iIndex)	return pPlr;
@@ -590,7 +590,7 @@ bool C4PlayerList::RemoveAtRemoteClient(bool fDisconnect, bool fNoCalls)
 C4Player* C4PlayerList::GetAtRemoteClient(int iIndex) const
 	{
 	int cindex=0;
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (pPlr->AtClient != ::Control.ClientID())
 			{
 			if (cindex==iIndex)	return pPlr;
@@ -620,29 +620,29 @@ bool C4PlayerList::RemoveLocal(bool fDisconnect, bool fNoCalls)
 
 void C4PlayerList::EnumeratePointers()
 	{
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		pPlr->EnumeratePointers();
 	}
 
 void C4PlayerList::DenumeratePointers()
 	{
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		pPlr->DenumeratePointers();
 	}
 
 bool C4PlayerList::MouseControlTaken() const
 	{
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
-    if (pPlr->MouseControl)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+		if (pPlr->MouseControl)
 			if (pPlr->LocalControl)
 				return true;
-  return false;
+	return false;
 	}
 
 int C4PlayerList::GetCountNotEliminated() const
 	{
 	int iCount = 0;
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		if (!pPlr->Eliminated)
 			iCount++;
 	return iCount;
@@ -654,7 +654,7 @@ bool C4PlayerList::SynchronizeLocalFiles()
 	Log(LoadResStr("IDS_PRC_SYNCPLRS"));
 	bool fSuccess = true;
 	// check all players
-  for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
+	for (C4Player *pPlr=First; pPlr; pPlr=pPlr->Next)
 		// eliminated players will be saved soon, anyway
 		if (!pPlr->Eliminated)
 			if (!pPlr->LocalSync()) fSuccess = false;

@@ -66,8 +66,8 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
 	// shouldn't even come here though
 	assert(!Game.C4S.Head.Replay);
 	if (Game.C4S.Head.Replay) return false;
-  // if observing: don't try
-  if (Game.Clients.getLocal()->isObserver()) return false;
+	// if observing: don't try
+	if (Game.Clients.getLocal()->isObserver()) return false;
 	// network only
 	assert(::Network.isEnabled());
 	// create join info packet
@@ -101,9 +101,9 @@ bool C4Network2Players::JoinLocalPlayer(const char *szLocalPlayerFilename, bool 
 		// with infos of all other clients
  		if (fAdd && !JoinRequest.Info.GetPlayerCount()) return false;
 		::Network.Clients.SendMsgToHost(MkC4NetIOPacket(PID_PlayerInfoUpdReq, JoinRequest));
-    // request activation
-    if(JoinRequest.Info.GetPlayerCount() && !Game.Clients.getLocal()->isActivated())
-      ::Network.RequestActivate();
+		// request activation
+		if(JoinRequest.Info.GetPlayerCount() && !Game.Clients.getLocal()->isActivated())
+			::Network.RequestActivate();
 		}
 	// done, success
 	return true;
@@ -177,11 +177,11 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 	// this may only change colors and names of all unjoined players (which is all players in lobby mode)
 	// any affected players will get an updated-flag
 	rInfoList.UpdatePlayerAttributes(&OwnInfoPacket, true);
-  // league score gains may now be different
-  rInfoList.ResetLeagueProjectedGain(true);
-  int32_t iPlrInfo = 0;
-  C4PlayerInfo *pPlrInfo;
-  while ((pPlrInfo = OwnInfoPacket.GetPlayerInfo(iPlrInfo++))) pPlrInfo->ResetLeagueProjectedGain();
+	// league score gains may now be different
+	rInfoList.ResetLeagueProjectedGain(true);
+	int32_t iPlrInfo = 0;
+	C4PlayerInfo *pPlrInfo;
+	while ((pPlrInfo = OwnInfoPacket.GetPlayerInfo(iPlrInfo++))) pPlrInfo->ResetLeagueProjectedGain();
 	if (Game.Parameters.isLeague())
 		{
 		// lobby only
@@ -210,7 +210,7 @@ void C4Network2Players::HandlePlayerInfoUpdRequest(const class C4ClientPlayerInf
 	// so future player join request will take the other joined  clients into consideration
 	// when assigning player colors, etc.; it will also start resource loading
 	// in running mode, this call will also put the actual player joins into the queue
-  ::Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(OwnInfoPacket), CDT_Direct);
+	::Control.DoInput(CID_PlrInfo, new C4ControlPlayerInfo(OwnInfoPacket), CDT_Direct);
 	// notify lobby of updates
 	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	if (pLobby) pLobby->OnPlayersChange();
@@ -335,7 +335,7 @@ void C4Network2Players::JoinUnjoinedPlayersInControlQueue(C4ClientPlayerInfos *p
 			pInfo->SetJoinIssued();
 			// do so!
 			C4Network2Res *pPlrRes = pInfo->GetRes();
-      C4Network2Client *pClient = ::Network.Clients.GetClientByID(pNewPacket->GetClientID());
+			C4Network2Client *pClient = ::Network.Clients.GetClientByID(pNewPacket->GetClientID());
 			if (!pPlrRes || (!pClient && pNewPacket->GetClientID() != ::Control.ClientID()))
 				if (pInfo->GetType() != C4PT_Script)
 					{
@@ -361,7 +361,7 @@ void C4Network2Players::JoinUnjoinedPlayersInControlQueue(C4ClientPlayerInfos *p
 
 void C4Network2Players::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Network2IOConnection *pConn)
 	{
-  if(!pConn) return;
+	if(!pConn) return;
 
 	// find associated client
 	C4Network2Client *pClient = ::Network.Clients.GetClient(pConn);
@@ -422,8 +422,8 @@ void C4Network2Players::OnClientPart(C4Client *pPartClient)
 		rInfoList.UpdatePlayerAttributes();
 		// team distribution of remaining unjoined players may change
 		Game.Teams.RecheckTeams();
-    // league score gains may now be different
-    Game.PlayerInfos.ResetLeagueProjectedGain(true);
+		// league score gains may now be different
+		Game.PlayerInfos.ResetLeagueProjectedGain(true);
 		// send changes to all clients and reset update flags
 		SendUpdatedPlayers();
 		}

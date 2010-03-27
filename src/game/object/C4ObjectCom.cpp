@@ -44,153 +44,153 @@ bool SimFlightHitsLiquid(FIXED fcx, FIXED fcy, FIXED xdir, FIXED ydir);
 bool CreateConstructionSite(int32_t ctx, int32_t bty, C4ID strid, int32_t owner, C4Object *pByObj);
 
 bool ObjectActionWalk(C4Object *cObj)
-  {
-  if (!cObj->SetActionByName("Walk")) return false;
-  cObj->xdir=cObj->ydir=0;
-  return true;
-  }
+	{
+	if (!cObj->SetActionByName("Walk")) return false;
+	cObj->xdir=cObj->ydir=0;
+	return true;
+	}
 
 bool ObjectActionStand(C4Object *cObj)
-  {
-  cObj->Action.ComDir=COMD_Stop;
-  if (!ObjectActionWalk(cObj)) return false;
-  return true;
-  }
+	{
+	cObj->Action.ComDir=COMD_Stop;
+	if (!ObjectActionWalk(cObj)) return false;
+	return true;
+	}
 
 bool ObjectActionJump(C4Object *cObj, FIXED xdir, FIXED ydir, bool fByCom)
-  {
+	{
 	// scripted jump?
 	assert(cObj);
 	C4AulParSet pars(C4VInt(fixtoi(xdir, 100)), C4VInt(fixtoi(ydir, 100)), C4VBool(fByCom));
 	if (!!cObj->Call(PSF_OnActionJump, &pars)) return true;
 	// hardcoded jump by action
-  if (!cObj->SetActionByName("Jump")) return false;
-  cObj->xdir=xdir; cObj->ydir=ydir;
-  cObj->Mobile=1;
+	if (!cObj->SetActionByName("Jump")) return false;
+	cObj->xdir=xdir; cObj->ydir=ydir;
+	cObj->Mobile=1;
 	// unstick from ground, because jump command may be issued in an Action-callback,
 	// where attach-values have already been determined for that frame
 	cObj->Action.t_attach&=~CNAT_Bottom;
-  return true;
-  }
+	return true;
+	}
 
 bool ObjectActionDive(C4Object *cObj, FIXED xdir, FIXED ydir)
-  {
-  if (!cObj->SetActionByName("Dive")) return false;
-  cObj->xdir=xdir; cObj->ydir=ydir;
-  cObj->Mobile=1;
+	{
+	if (!cObj->SetActionByName("Dive")) return false;
+	cObj->xdir=xdir; cObj->ydir=ydir;
+	cObj->Mobile=1;
 	// unstick from ground, because jump command may be issued in an Action-callback,
 	// where attach-values have already been determined for that frame
 	cObj->Action.t_attach&=~CNAT_Bottom;
-  return true;
-  }
+	return true;
+	}
 
 bool ObjectActionTumble(C4Object *cObj, int32_t dir, FIXED xdir, FIXED ydir)
-  {
-  if (!cObj->SetActionByName("Tumble")) return false;
-  cObj->SetDir(dir);
-  cObj->xdir=xdir; cObj->ydir=ydir;
-  return true;
-  }
+	{
+	if (!cObj->SetActionByName("Tumble")) return false;
+	cObj->SetDir(dir);
+	cObj->xdir=xdir; cObj->ydir=ydir;
+	return true;
+	}
 
 bool ObjectActionGetPunched(C4Object *cObj, FIXED xdir, FIXED ydir)
-  {
-  if (!cObj->SetActionByName("GetPunched")) return false;
-  cObj->xdir=xdir; cObj->ydir=ydir;
-  return true;
-  }
+	{
+	if (!cObj->SetActionByName("GetPunched")) return false;
+	cObj->xdir=xdir; cObj->ydir=ydir;
+	return true;
+	}
 
 bool ObjectActionKneel(C4Object *cObj)
-  {
-  if (!cObj->SetActionByName("KneelDown")) return false;
-  cObj->xdir=cObj->ydir=0;
-  return true;
-  }
+	{
+	if (!cObj->SetActionByName("KneelDown")) return false;
+	cObj->xdir=cObj->ydir=0;
+	return true;
+	}
 
 bool ObjectActionFlat(C4Object *cObj, int32_t dir)
-  {
-  if (!cObj->SetActionByName("FlatUp")) return false;
-  cObj->xdir=cObj->ydir=0;
-  cObj->SetDir(dir);
-  return true;
-  }
+	{
+	if (!cObj->SetActionByName("FlatUp")) return false;
+	cObj->xdir=cObj->ydir=0;
+	cObj->SetDir(dir);
+	return true;
+	}
 
 bool ObjectActionScale(C4Object *cObj, int32_t dir)
-  {
-  if (!cObj->SetActionByName("Scale")) return false;
-  cObj->xdir=cObj->ydir=0;
-  cObj->SetDir(dir);
-  return true;
-  }
+	{
+	if (!cObj->SetActionByName("Scale")) return false;
+	cObj->xdir=cObj->ydir=0;
+	cObj->SetDir(dir);
+	return true;
+	}
 
 bool ObjectActionHangle(C4Object *cObj, int32_t dir)
-  {
-  if (!cObj->SetActionByName("Hangle")) return false;
-  cObj->xdir=cObj->ydir=0;
-  cObj->SetDir(dir);
-  return true;
-  }
+	{
+	if (!cObj->SetActionByName("Hangle")) return false;
+	cObj->xdir=cObj->ydir=0;
+	cObj->SetDir(dir);
+	return true;
+	}
 
 bool ObjectActionThrow(C4Object *cObj, C4Object *pThing)
-  {
-  // No object specified, first from contents
+	{
+	// No object specified, first from contents
 	if (!pThing) pThing = cObj->Contents.GetObject();
 	// Nothing to throw
 	if (!pThing) return false;
 	// Force and direction
-  FIXED pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
-  int32_t iDir=1; if (cObj->Action.Dir==DIR_Left) iDir=-1;
+	FIXED pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
+	int32_t iDir=1; if (cObj->Action.Dir==DIR_Left) iDir=-1;
 	// Set action
-  if (!cObj->SetActionByName("Throw")) return false;
+	if (!cObj->SetActionByName("Throw")) return false;
 	// Exit object
 	pThing->Exit(cObj->GetX(),
-              cObj->GetY()+cObj->Shape.y-1,
-              Random(360),
-              pthrow*iDir+cObj->xdir,-pthrow+cObj->ydir,pthrow*iDir);
+							cObj->GetY()+cObj->Shape.y-1,
+							Random(360),
+							pthrow*iDir+cObj->xdir,-pthrow+cObj->ydir,pthrow*iDir);
 	// Success
-  return true;
-  }
+	return true;
+	}
 
 bool ObjectActionDig(C4Object *cObj)
-  {
-  if (!cObj->SetActionByName("Dig")) return false;
-  cObj->Action.Data=0; // Material Dig2Object request
-  return true;
-  }
+	{
+	if (!cObj->SetActionByName("Dig")) return false;
+	cObj->Action.Data=0; // Material Dig2Object request
+	return true;
+	}
 
 bool ObjectActionBuild(C4Object *cObj, C4Object *target)
-  {
-  return cObj->SetActionByName("Build",target);
-  }
+	{
+	return cObj->SetActionByName("Build",target);
+	}
 
 bool ObjectActionPush(C4Object *cObj, C4Object *target)
-  {
-  return cObj->SetActionByName("Push",target);
-  }
+	{
+	return cObj->SetActionByName("Push",target);
+	}
 
 bool ObjectActionFight(C4Object *cObj, C4Object *target)
-  {
-  return cObj->SetActionByName("Fight",target);
-  }
+	{
+	return cObj->SetActionByName("Fight",target);
+	}
 
 bool ObjectActionChop(C4Object *cObj, C4Object *target)
-  {
-  return cObj->SetActionByName("Chop",target);
-  }
+	{
+	return cObj->SetActionByName("Chop",target);
+	}
 
 bool CornerScaleOkay(C4Object *cObj, int32_t iRangeX, int32_t iRangeY)
-  {
-  int32_t ctx,cty;
-  cty=cObj->GetY()-iRangeY;
-  if (cObj->Action.Dir==DIR_Left) ctx=cObj->GetX()-iRangeX;
-  else ctx=cObj->GetX()+iRangeX;
-  cObj->ContactCheck(ctx,cty); // (resets VtxContact & t_contact)
-  if (!(cObj->t_contact & CNAT_Top))
-    if (!(cObj->t_contact & CNAT_Left))
-      if (!(cObj->t_contact & CNAT_Right))
+	{
+	int32_t ctx,cty;
+	cty=cObj->GetY()-iRangeY;
+	if (cObj->Action.Dir==DIR_Left) ctx=cObj->GetX()-iRangeX;
+	else ctx=cObj->GetX()+iRangeX;
+	cObj->ContactCheck(ctx,cty); // (resets VtxContact & t_contact)
+	if (!(cObj->t_contact & CNAT_Top))
+		if (!(cObj->t_contact & CNAT_Left))
+			if (!(cObj->t_contact & CNAT_Right))
 				if (!(cObj->t_contact & CNAT_Bottom))
 					return true;
-  return false;
-  }
+	return false;
+	}
 
 bool CheckCornerScale(C4Object *cObj, int32_t &iRangeX, int32_t &iRangeY)
 	{
@@ -202,7 +202,7 @@ bool CheckCornerScale(C4Object *cObj, int32_t &iRangeX, int32_t &iRangeY)
 	}
 
 bool ObjectActionCornerScale(C4Object *cObj)
-  {
+	{
 	int32_t iRangeX,iRangeY;
 	// Scaling: check range max to min
 	if (cObj->GetProcedure()==DFA_SCALE)
@@ -229,10 +229,10 @@ bool ObjectActionCornerScale(C4Object *cObj)
 	}
 
 bool ObjectComMovement(C4Object *cObj, int32_t comdir)
-  {
-  cObj->Action.ComDir=comdir;
+	{
+	cObj->Action.ComDir=comdir;
 
-  PlayerObjectCommand(cObj->Owner,C4CMD_Follow,cObj);
+	PlayerObjectCommand(cObj->Owner,C4CMD_Follow,cObj);
 	// direkt turnaround if standing still
 	if (!cObj->xdir && (cObj->GetProcedure() == DFA_WALK || cObj->GetProcedure() == DFA_HANGLE))
 		switch (comdir)
@@ -244,8 +244,8 @@ bool ObjectComMovement(C4Object *cObj, int32_t comdir)
 				cObj->SetDir(DIR_Right);
 				break;
 			}
-  return true;
-  }
+	return true;
+	}
 
 bool ObjectComTurn(C4Object *cObj)
 	{
@@ -259,12 +259,12 @@ bool ObjectComTurn(C4Object *cObj)
 	}
 
 bool ObjectComStop(C4Object *cObj)
-  {
-  // Cease current action
-  cObj->SetActionByName("Idle");
-  // Action walk if possible
-  return ObjectActionStand(cObj);
-  }
+	{
+	// Cease current action
+	cObj->SetActionByName("Idle");
+	// Action walk if possible
+	return ObjectActionStand(cObj);
+	}
 
 bool ObjectComGrab(C4Object *cObj, C4Object *pTarget)
 	{
@@ -297,7 +297,7 @@ bool ObjectComUnGrab(C4Object *cObj)
 	}
 
 bool ObjectComJump(C4Object *cObj) // by ObjectComUp, ExecCMDFMoveTo, FnJump
-  {
+	{
 	// Only if walking
 	if (cObj->GetProcedure()!=DFA_WALK) return false;
 	// Calculate direction & forces
@@ -322,61 +322,61 @@ bool ObjectComJump(C4Object *cObj) // by ObjectComUp, ExecCMDFMoveTo, FnJump
 		if (SimFlightHitsLiquid(x,y,TXDir,-iPhysicalJump))
 			if (ObjectActionDive(cObj,TXDir,-iPhysicalJump))
 				return true;
-  // Regular jump
-  return ObjectActionJump(cObj,TXDir,-iPhysicalJump,true);
-  }
+	// Regular jump
+	return ObjectActionJump(cObj,TXDir,-iPhysicalJump,true);
+	}
 
 bool ObjectComLetGo(C4Object *cObj, int32_t xdirf)
-  { // by ACTSCALE, ACTHANGLE or ExecCMDFMoveTo
-  return ObjectActionJump(cObj,itofix(xdirf),Fix0,true);
-  }
+	{ // by ACTSCALE, ACTHANGLE or ExecCMDFMoveTo
+	return ObjectActionJump(cObj,itofix(xdirf),Fix0,true);
+	}
 
 bool ObjectComEnter(C4Object *cObj) // by pusher
-  {
-  if (!cObj) return false;
+	{
+	if (!cObj) return false;
 
 	// NoPushEnter
 	if (cObj->Def->NoPushEnter) return false;
 
-  // Check object entrance, try command enter
-  C4Object *pTarget;
-  DWORD ocf=OCF_Entrance;
-  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-    if (ocf & OCF_Entrance)
-      { cObj->SetCommand(C4CMD_Enter,pTarget); return true; }
+	// Check object entrance, try command enter
+	C4Object *pTarget;
+	DWORD ocf=OCF_Entrance;
+	if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+		if (ocf & OCF_Entrance)
+			{ cObj->SetCommand(C4CMD_Enter,pTarget); return true; }
 
-  return false;
-  }
+	return false;
+	}
 
 
 bool ObjectComUp(C4Object *cObj) // by DFA_WALK or DFA_SWIM
-  {
-  if (!cObj) return false;
+	{
+	if (!cObj) return false;
 
-  // Check object entrance, try command enter
-  C4Object *pTarget;
-  DWORD ocf=OCF_Entrance;
-  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-    if (ocf & OCF_Entrance)
-      return PlayerObjectCommand(cObj->Owner,C4CMD_Enter,pTarget);
+	// Check object entrance, try command enter
+	C4Object *pTarget;
+	DWORD ocf=OCF_Entrance;
+	if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+		if (ocf & OCF_Entrance)
+			return PlayerObjectCommand(cObj->Owner,C4CMD_Enter,pTarget);
 
-  // Try jump
+	// Try jump
 	if (cObj->GetProcedure()==DFA_WALK)
 		return PlayerObjectCommand(cObj->Owner,C4CMD_Jump);
 
 	return false;
-  }
+	}
 
 bool ObjectComDig(C4Object *cObj) // by DFA_WALK
-  {
-  C4PhysicalInfo *phys=cObj->GetPhysical();
-  if (!phys->CanDig || !ObjectActionDig(cObj))
-    {
+	{
+	C4PhysicalInfo *phys=cObj->GetPhysical();
+	if (!phys->CanDig || !ObjectActionDig(cObj))
+		{
 		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NODIG"),cObj->GetName()).getData(),cObj);
-    return false;
-    }
-  return true;
-  }
+		return false;
+		}
+	return true;
+	}
 
 C4Object *CreateLine(C4ID idType, int32_t iOwner, C4Object *pFrom, C4Object *pTo)
 	{
@@ -398,10 +398,10 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	C4Object *linekit,*tstruct,*cline;
 	DWORD ocf;
 
-  ObjectActionStand(cObj);
+	ObjectActionStand(cObj);
 
-  // Check physical
-  if (!cObj->GetPhysical()->CanConstruct)
+	// Check physical
+	if (!cObj->GetPhysical()->CanConstruct)
 		{
 		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOLINECONSTRUCT"),cObj->GetName()).getData(),cObj); return false;
 		}
@@ -411,7 +411,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	// Check for linekit
 	if (!(linekit=cObj->Contents.Find(C4ID::Linekit)))
 		{
-    // Check line pickup
+		// Check line pickup
 		ocf=OCF_LineConstruct;
 		tstruct=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj);
 		if (!tstruct || !(ocf & OCF_LineConstruct)) return false;
@@ -424,7 +424,7 @@ bool ObjectComLineConstruction(C4Object *cObj)
 				GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NODOUBLEKIT"),cline->GetName()).getData(),cObj);	return false;
 				}
 		// Create new linekit
-    if (!(linekit=Game.CreateObject(C4ID::Linekit,cObj,cline->Owner))) return false;
+		if (!(linekit=Game.CreateObject(C4ID::Linekit,cObj,cline->Owner))) return false;
 		// Enter linekit into clonk
 		bool fRejectCollect;
 		if (!linekit->Enter(cObj, true, true, &fRejectCollect))
@@ -546,10 +546,10 @@ bool ObjectComLineConstruction(C4Object *cObj)
 	}
 
 void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DFA_SWIM
-  {
+	{
 	C4Object *pTarget;
-  DWORD ocf;
-  C4PhysicalInfo *phys=cObj->GetPhysical();
+	DWORD ocf;
+	C4PhysicalInfo *phys=cObj->GetPhysical();
 
 	// Contents activation (first contents object only)
 	if (cObj->Contents.GetObject())
@@ -557,15 +557,15 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
 			return;
 
 	// Linekit: Line construction (move to linekit script...)
-  if (cObj->Contents.GetObject() && (cObj->Contents.GetObject()->id==C4ID::Linekit))
-    {
+	if (cObj->Contents.GetObject() && (cObj->Contents.GetObject()->id==C4ID::Linekit))
+		{
 		ObjectComLineConstruction(cObj);
 		return;
-    }
+		}
 
 	// Chop
-  ocf=OCF_Chop;
-  if (phys->CanChop)
+	ocf=OCF_Chop;
+	if (phys->CanChop)
 		if (cObj->GetProcedure()!=DFA_SWIM)
 	    if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
 		    if (ocf & OCF_Chop)
@@ -575,64 +575,64 @@ void ObjectComDigDouble(C4Object *cObj) // "Activation" by DFA_WALK, DFA_DIG, DF
 					}
 
 	// Line construction pick up
-  ocf=OCF_LineConstruct;
-  if (phys->CanConstruct)
+	ocf=OCF_LineConstruct;
+	if (phys->CanConstruct)
 	  if (!cObj->Contents.GetObject())
 	    if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
 		    if (ocf & OCF_LineConstruct)
 			    if (ObjectComLineConstruction(cObj))
 						return;
 
-  // Own activation call
-  if (!! cObj->Call(PSF_Activate, &C4AulParSet(C4VObj(cObj)))) return;
+	// Own activation call
+	if (!! cObj->Call(PSF_Activate, &C4AulParSet(C4VObj(cObj)))) return;
 
-  }
+	}
 
 bool ObjectComDownDouble(C4Object *cObj) // by DFA_WALK
-  {
-  C4Object *pTarget;
-  DWORD ocf= OCF_Construct | OCF_Grab;
-  if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
-    {
-    if (ocf & OCF_Construct)
-      { PlayerObjectCommand(cObj->Owner,C4CMD_Build,pTarget); return true; }
-    if (ocf & OCF_Grab)
-      { PlayerObjectCommand(cObj->Owner,C4CMD_Grab,pTarget); return true; }
-    }
-  return false;
-  }
+	{
+	C4Object *pTarget;
+	DWORD ocf= OCF_Construct | OCF_Grab;
+	if ((pTarget=::Objects.AtObject(cObj->GetX(),cObj->GetY(),ocf,cObj)))
+		{
+		if (ocf & OCF_Construct)
+			{ PlayerObjectCommand(cObj->Owner,C4CMD_Build,pTarget); return true; }
+		if (ocf & OCF_Grab)
+			{ PlayerObjectCommand(cObj->Owner,C4CMD_Grab,pTarget); return true; }
+		}
+	return false;
+	}
 
 bool ObjectComPut(C4Object *cObj, C4Object *pTarget, C4Object *pThing)
-  {
-  // No object specified, first from contents
+	{
+	// No object specified, first from contents
 	if (!pThing) pThing = cObj->Contents.GetObject();
 	// Nothing to put
 	if (!pThing) return false;
 	// No target
-  if (!pTarget) return false;
-  // Grabbing: check C4D_Grab_Put
-  if (pTarget!=cObj->Contained)
-    if (!(pTarget->Def->GrabPutGet & C4D_Grab_Put))
-      {
-      // Was meant to be a drop anyway - probably obsolete as controls are being revised
-      //if (ValidPlr(cObj->Owner))
-      //  if (Game.Players.Get(cObj->Owner)->LastComDownDouble)
-      //    return ObjectComDrop(cObj, pThing);
-      // No grab put: fail
-      return false;
-      }
-  // Target no fullcon
-  if (!(pTarget->OCF & OCF_FullCon)) return false;
-  // Transfer thing
+	if (!pTarget) return false;
+	// Grabbing: check C4D_Grab_Put
+	if (pTarget!=cObj->Contained)
+		if (!(pTarget->Def->GrabPutGet & C4D_Grab_Put))
+			{
+			// Was meant to be a drop anyway - probably obsolete as controls are being revised
+			//if (ValidPlr(cObj->Owner))
+			//  if (Game.Players.Get(cObj->Owner)->LastComDownDouble)
+			//    return ObjectComDrop(cObj, pThing);
+			// No grab put: fail
+			return false;
+			}
+	// Target no fullcon
+	if (!(pTarget->OCF & OCF_FullCon)) return false;
+	// Transfer thing
 	bool fRejectCollect;
-  if (!pThing->Enter(pTarget, true, true, &fRejectCollect)) return false;
+	if (!pThing->Enter(pTarget, true, true, &fRejectCollect)) return false;
 	// Put call to object script
-  cObj->Call(PSF_Put);
+	cObj->Call(PSF_Put);
 	// Target collection call
-  pTarget->Call(PSF_Collection,&C4AulParSet(C4VObj(pThing), C4VBool(true)));
+	pTarget->Call(PSF_Collection,&C4AulParSet(C4VObj(pThing), C4VBool(true)));
 	// Success
-  return true;
-  }
+	return true;
+	}
 
 bool ObjectComThrow(C4Object *cObj, C4Object *pThing)
 	{
@@ -650,8 +650,8 @@ bool ObjectComThrow(C4Object *cObj, C4Object *pThing)
 	}
 
 bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
-  {
-  // No object specified, first from contents
+	{
+	// No object specified, first from contents
 	if (!pThing) pThing = cObj->Contents.GetObject();
 	// Nothing to throw
 	if (!pThing) return false;
@@ -659,8 +659,8 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	// When dropping diagonally, drop from edge of shape
 	// When doing a diagonal forward drop during flight, exit a bit closer to the Clonk to allow planned tumbling
 	// Except when hangling, so you can mine effectively form the ceiling, and when swimming because you cannot tumble then
-  FIXED pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
-  int32_t tdir=0; int right=0;
+	FIXED pthrow=ValByPhysical(400, cObj->GetPhysical()->Throw);
+	int32_t tdir=0; int right=0;
 	bool isHanglingOrSwimming = false;
 	int32_t iProc = DFA_NONE;
 	C4PropList* pActionDef = cObj->GetAction();
@@ -683,54 +683,54 @@ bool ObjectComDrop(C4Object *cObj, C4Object *pThing)
 	// Update OCF
 	cObj->SetOCF();
 	// Ungrab
-  ObjectComUnGrab(cObj);
+	ObjectComUnGrab(cObj);
 	// Done
-  return true;
-  }
+	return true;
+	}
 
 bool ObjectComChop(C4Object *cObj, C4Object *pTarget)
-  {
-  if (!pTarget) return false;
-  if (!cObj->GetPhysical()->CanChop)
+	{
+	if (!pTarget) return false;
+	if (!cObj->GetPhysical()->CanChop)
 		{
-    GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCHOP"),cObj->GetName()).getData(),cObj);
+		GameMsgObject(FormatString(LoadResStr("IDS_OBJ_NOCHOP"),cObj->GetName()).getData(),cObj);
 		return false;
 		}
-  if (cObj->GetProcedure()!=DFA_WALK) return false;
-  return ObjectActionChop(cObj,pTarget);
-  }
+	if (cObj->GetProcedure()!=DFA_WALK) return false;
+	return ObjectActionChop(cObj,pTarget);
+	}
 
 bool ObjectComBuild(C4Object *cObj, C4Object *pTarget)
-  {
-  if (!pTarget) return false;
-  // Needs to be idle or walking
-  if (cObj->GetAction())
-    if (cObj->GetProcedure()!=DFA_WALK)
-      return false;
-  return ObjectActionBuild(cObj,pTarget);
-  }
+	{
+	if (!pTarget) return false;
+	// Needs to be idle or walking
+	if (cObj->GetAction())
+		if (cObj->GetProcedure()!=DFA_WALK)
+			return false;
+	return ObjectActionBuild(cObj,pTarget);
+	}
 
 bool ObjectComPutTake(C4Object *cObj, C4Object *pTarget, C4Object *pThing) // by C4CMD_Throw
-  {																																				 // by C4CMD_Drop
-  // Valid checks
-  if (!pTarget) return false;
-  // No object specified, first from contents
+	{																																				 // by C4CMD_Drop
+	// Valid checks
+	if (!pTarget) return false;
+	// No object specified, first from contents
 	if (!pThing) pThing = cObj->Contents.GetObject();
-  // Has thing, put to target
-  if (pThing)
-    return ObjectComPut(cObj,pTarget,pThing);
-  // If target is own container, activate activation menu
-  if (pTarget==cObj->Contained)
+	// Has thing, put to target
+	if (pThing)
+		return ObjectComPut(cObj,pTarget,pThing);
+	// If target is own container, activate activation menu
+	if (pTarget==cObj->Contained)
 		return ObjectComTake(cObj); // carlo
-  // Assuming target is grabbed, check for grab get
-  if (pTarget->Def->GrabPutGet & C4D_Grab_Get)
-    {
-    // Activate get menu
-    return cObj->ActivateMenu(C4MN_Get,0,0,0,pTarget);
-    }
-  // Failure
-  return false;
-  }
+	// Assuming target is grabbed, check for grab get
+	if (pTarget->Def->GrabPutGet & C4D_Grab_Get)
+		{
+		// Activate get menu
+		return cObj->ActivateMenu(C4MN_Get,0,0,0,pTarget);
+		}
+	// Failure
+	return false;
+	}
 
 // carlo
 bool ObjectComTake(C4Object *cObj) // by C4CMD_Take
@@ -745,8 +745,8 @@ bool ObjectComTake2(C4Object *cObj) // by C4CMD_Take2
 	}
 
 bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
-  {
-  if (!cObj || !pTarget) return false;
+	{
+	if (!cObj || !pTarget) return false;
 	if (!punch)
 		if (pTarget->GetPhysical()->Fight)
 			punch=BoundBy<int32_t>(5*cObj->GetPhysical()->Fight/pTarget->GetPhysical()->Fight,0,10);
@@ -754,32 +754,32 @@ bool ObjectComPunch(C4Object *cObj, C4Object *pTarget, int32_t punch)
 	bool fBlowStopped = !!pTarget->Call(PSF_QueryCatchBlow,&C4AulParSet(C4VObj(cObj)));
 	if (fBlowStopped && punch>1) punch=punch/2; // half damage for caught blow, so shield+armor help in fistfight and vs monsters
 	pTarget->DoEnergy(-punch, false, C4FxCall_EngGetPunched, cObj->Controller);
-  int32_t tdir=+1; if (cObj->Action.Dir==DIR_Left) tdir=-1;
-  pTarget->Action.ComDir=COMD_Stop;
+	int32_t tdir=+1; if (cObj->Action.Dir==DIR_Left) tdir=-1;
+	pTarget->Action.ComDir=COMD_Stop;
 	// No tumbles when blow was caught
 	if (fBlowStopped) return false;
-  // Hard punch
-  if (punch>=10)
-    if (ObjectActionTumble(pTarget,pTarget->Action.Dir,FIXED100(150)*tdir,itofix(-2)))
+	// Hard punch
+	if (punch>=10)
+		if (ObjectActionTumble(pTarget,pTarget->Action.Dir,FIXED100(150)*tdir,itofix(-2)))
 			{ pTarget->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(punch),
 																								 C4VObj(cObj)));
 		    return true; }
 
-  // Regular punch
-  if (ObjectActionGetPunched(pTarget,FIXED100(250)*tdir,Fix0))
+	// Regular punch
+	if (ObjectActionGetPunched(pTarget,FIXED100(250)*tdir,Fix0))
 		{ pTarget->Call(PSF_CatchBlow,&C4AulParSet(C4VInt(punch),
 																							 C4VObj(cObj)));
 			return true; }
 
 	return false;
-  }
+	}
 
 bool ObjectComCancelAttach(C4Object *cObj)
-  {
-  if (cObj->GetProcedure()==DFA_ATTACH)
-    return cObj->SetAction(0);
-  return false;
-  }
+	{
+	if (cObj->GetProcedure()==DFA_ATTACH)
+		return cObj->SetAction(0);
+	return false;
+	}
 
 void ObjectComStopDig(C4Object *cObj)
 	{
@@ -808,66 +808,66 @@ int32_t ComOrder(int32_t iIndex)
 	}
 
 const char *ComName(int32_t iCom)
-  {
-  switch (iCom)
-    {
-    case COM_Up:					return "Up";
-    case COM_Up_S:				return "UpSingle";
-    case COM_Up_D:				return "UpDouble";
-    case COM_Up_R:				return "UpReleased";
-    case COM_Down:				return "Down";
-    case COM_Down_S:			return "DownSingle";
-    case COM_Down_D:			return "DownDouble";
-    case COM_Down_R:			return "DownReleased";
-    case COM_Left:				return "Left";
-    case COM_Left_S:			return "LeftSingle";
-    case COM_Left_D:			return "LeftDouble";
-    case COM_Left_R:			return "LeftReleased";
-    case COM_Right:				return "Right";
-    case COM_Right_S:			return "RightSingle";
-    case COM_Right_D:			return "RightDouble";
-    case COM_Right_R:			return "RightReleased";
-    case COM_Dig:					return "Dig";
-    case COM_Dig_S:				return "DigSingle";
-    case COM_Dig_D:				return "DigDouble";
-    case COM_Dig_R:				return "DigReleased";
-    case COM_Throw:				return "Throw";
-    case COM_Throw_S:			return "ThrowSingle";
-    case COM_Throw_D:			return "ThrowDouble";
-    case COM_Throw_R:			return "ThrowReleased";
-    case COM_Special:			return "Special";
-    case COM_Special_S:		return "SpecialSingle";
-    case COM_Special_D:		return "SpecialDouble";
-    case COM_Special_R:     return "SpecialReleased";
-    case COM_Special2:		return "Special2";
-    case COM_Special2_S:	return "Special2Single";
-    case COM_Special2_D:	return "Special2Double";
-    case COM_Special2_R:    return "Special2Released";
-    case COM_WheelUp:			return "WheelUp";
-    case COM_WheelDown:		return "WheelDown";
-    }
-  return "Undefined";
-  }
+	{
+	switch (iCom)
+		{
+		case COM_Up:					return "Up";
+		case COM_Up_S:				return "UpSingle";
+		case COM_Up_D:				return "UpDouble";
+		case COM_Up_R:				return "UpReleased";
+		case COM_Down:				return "Down";
+		case COM_Down_S:			return "DownSingle";
+		case COM_Down_D:			return "DownDouble";
+		case COM_Down_R:			return "DownReleased";
+		case COM_Left:				return "Left";
+		case COM_Left_S:			return "LeftSingle";
+		case COM_Left_D:			return "LeftDouble";
+		case COM_Left_R:			return "LeftReleased";
+		case COM_Right:				return "Right";
+		case COM_Right_S:			return "RightSingle";
+		case COM_Right_D:			return "RightDouble";
+		case COM_Right_R:			return "RightReleased";
+		case COM_Dig:					return "Dig";
+		case COM_Dig_S:				return "DigSingle";
+		case COM_Dig_D:				return "DigDouble";
+		case COM_Dig_R:				return "DigReleased";
+		case COM_Throw:				return "Throw";
+		case COM_Throw_S:			return "ThrowSingle";
+		case COM_Throw_D:			return "ThrowDouble";
+		case COM_Throw_R:			return "ThrowReleased";
+		case COM_Special:			return "Special";
+		case COM_Special_S:		return "SpecialSingle";
+		case COM_Special_D:		return "SpecialDouble";
+		case COM_Special_R:     return "SpecialReleased";
+		case COM_Special2:		return "Special2";
+		case COM_Special2_S:	return "Special2Single";
+		case COM_Special2_D:	return "Special2Double";
+		case COM_Special2_R:    return "Special2Released";
+		case COM_WheelUp:			return "WheelUp";
+		case COM_WheelDown:		return "WheelDown";
+		}
+	return "Undefined";
+	}
 
 int32_t Com2Control(int32_t iCom)
-  {
+	{
 	iCom = iCom & ~(COM_Double | COM_Single);
-  switch (iCom)
-    {
-    case COM_CursorLeft:		return CON_CursorLeft;
-    case COM_CursorToggle:	return CON_CursorToggle;
-    case COM_CursorRight:		return CON_CursorRight;
-    case COM_Throw:					return CON_Throw;
-    case COM_Up:						return CON_Up;
-    case COM_Dig:						return CON_Dig;
-    case COM_Left:					return CON_Left;
-    case COM_Down:					return CON_Down;
-    case COM_Right:					return CON_Right;
-    case COM_Special:				return CON_Special;
-    case COM_Special2:			return CON_Special2;
-    }
+	switch (iCom)
+		{
+		case COM_CursorLeft:		return CON_CursorLeft;
+		case COM_CursorToggle:	return CON_CursorToggle;
+		case COM_CursorRight:		return CON_CursorRight;
+		case COM_Throw:					return CON_Throw;
+		case COM_Up:						return CON_Up;
+		case COM_Dig:						return CON_Dig;
+		case COM_Left:					return CON_Left;
+		case COM_Down:					return CON_Down;
+		case COM_Right:					return CON_Right;
+		case COM_Special:				return CON_Special;
+		case COM_Special2:			return CON_Special2;
+		}
 	return CON_Menu;
-  }
+	}
 
 int32_t Control2Com(int32_t iControl, bool fUp)
 	{

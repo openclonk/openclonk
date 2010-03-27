@@ -47,12 +47,12 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 
 	if(!FindInfo()) return 0;
 
-   assert(!window);
+	 assert(!window);
 
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
 	// Override gtk's default to match name/class of the XLib windows
-   gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
+	 gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
 
 	handlerDestroy = g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroyStatic), this);
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);

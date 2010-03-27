@@ -29,14 +29,14 @@ const int C4MaxNameList = 10;
 
 #include <cstring>
 class C4NameList
-  {
-  public:
-    C4NameList();
-  public:
-    char Name[C4MaxNameList][C4MaxName+1];
-    int32_t Count[C4MaxNameList];
-  public:
-    void Clear();
+	{
+	public:
+		C4NameList();
+	public:
+		char Name[C4MaxNameList][C4MaxName+1];
+		int32_t Count[C4MaxNameList];
+	public:
+		void Clear();
 		bool Add(const char *szName, int32_t iCount=0);
 		bool Set(const char *szName, int32_t iCount);
 		bool Read(const char *szSource, int32_t iDefValue=0);
@@ -45,7 +45,7 @@ class C4NameList
 		bool IsEmpty();
 		bool operator==(const C4NameList& rhs)
 			{	return !std::memcmp((const uint8_t*)this,(const uint8_t*)&rhs,sizeof(C4NameList)); }
-    void CompileFunc(StdCompiler *pComp, bool fValues = true);
-  };
+		void CompileFunc(StdCompiler *pComp, bool fValues = true);
+	};
 
 #endif

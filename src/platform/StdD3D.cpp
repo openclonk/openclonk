@@ -74,11 +74,11 @@ void CStdD3D::Clear()
 		EndScene();
 		DeleteDeviceObjects();
 		}
-  if (lpD3D)
-    {
+	if (lpD3D)
+		{
 		if (lpDevice) { lpDevice->Release(); lpDevice=NULL; }
-    lpD3D->Release(); lpD3D=NULL;
-    }
+		lpD3D->Release(); lpD3D=NULL;
+		}
 	SceneOpen=false;
 	CStdDDraw::Clear();
 	}
@@ -93,14 +93,14 @@ bool CStdD3D::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
 	// safety
 	if (!lpDevice) return false;
 	// end the scene and present it
-  EndScene();
+	EndScene();
 	if (lpDevice->Present(pSrcRt, pDstRt, pWindow ? pWindow->hWindow : 0, NULL) == D3DERR_DEVICELOST)
 		{
 		if (lpDevice->TestCooperativeLevel() == D3DERR_DEVICELOST) return false;
 		if (!RestoreDeviceObjects()) return false;
 		lpDevice->Present(NULL, NULL, NULL, NULL);
 		}
-  return true;
+	return true;
 	}
 
 
@@ -490,8 +490,8 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 		d3dpp.SwapEffect      = D3DSWAPEFFECT_FLIP;
 		d3dpp.Flags           = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 		hr = lpD3D->CreateDevice(iMonitor, fSoftware ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL, hWindow,
-                        D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
-                        &d3dpp, &lpDevice);
+												D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
+												&d3dpp, &lpDevice);
 		}
 	else
 		{
@@ -509,13 +509,13 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 		d3dpp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 		// create primary surface
 		hr = lpD3D->CreateDevice(iMonitor, fSoftware ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL, hWindow,
-                        D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
-                        &d3dpp, &lpDevice);
+												D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
+												&d3dpp, &lpDevice);
 		// windowed mode: Try dfault adapter as well
 		if (hr != D3D_OK && iMonitor != D3DADAPTER_DEFAULT)
 			hr = lpD3D->CreateDevice(D3DADAPTER_DEFAULT, fSoftware ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL, hWindow,
-                        D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
-                        &d3dpp, &lpDevice);
+												D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
+												&d3dpp, &lpDevice);
 		}
 	switch (hr)
 	{

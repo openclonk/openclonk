@@ -40,19 +40,19 @@ int CBitmapInfo::FileBitsOffset()
 void CBitmapInfo::Set(int iWdt, int iHgt, int iBitDepth)
 	{
 	Default();
-  // Set header
-  Head.bfType=*((WORD*)"BM");
-  Head.bfSize=sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+DWordAligned(iWdt)*iHgt;
-  Head.bfOffBits=sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER);
-  // Set bitmap info
-  Info.biSize=sizeof(BITMAPINFOHEADER);
-  Info.biWidth=iWdt;
-  Info.biHeight=iHgt;
-  Info.biPlanes=1;
-  Info.biBitCount=iBitDepth;
-  Info.biCompression=0;
-  Info.biSizeImage=iWdt*iHgt;
-  Info.biClrUsed=Info.biClrImportant=0;
+	// Set header
+	Head.bfType=*((WORD*)"BM");
+	Head.bfSize=sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+DWordAligned(iWdt)*iHgt;
+	Head.bfOffBits=sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER);
+	// Set bitmap info
+	Info.biSize=sizeof(BITMAPINFOHEADER);
+	Info.biWidth=iWdt;
+	Info.biHeight=iHgt;
+	Info.biPlanes=1;
+	Info.biBitCount=iBitDepth;
+	Info.biCompression=0;
+	Info.biSizeImage=iWdt*iHgt;
+	Info.biClrUsed=Info.biClrImportant=0;
 	}
 
 
@@ -63,8 +63,8 @@ CBitmap256Info::CBitmap256Info()
 
 bool CBitmap256Info::Valid()
 	{
-  if (Head.bfType != *((WORD*)"BM") ) return false;
-  if ((Info.biBitCount!=8) || (Info.biCompression!=0)) return false;
+	if (Head.bfType != *((WORD*)"BM") ) return false;
+	if ((Info.biBitCount!=8) || (Info.biCompression!=0)) return false;
 	return true;
 	}
 
@@ -76,26 +76,26 @@ int CBitmap256Info::FileBitsOffset()
 void CBitmap256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
 	{
 	Default();
-  // Set header
-  Head.bfType=*((WORD*)"BM");
-  Head.bfSize=sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+256*sizeof(RGBQUAD)+DWordAligned(iWdt)*iHgt;
-  Head.bfOffBits=sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+256*sizeof(RGBQUAD);
-  // Set bitmap info
-  Info.biSize=sizeof(BITMAPINFOHEADER);
-  Info.biWidth=iWdt;
-  Info.biHeight=iHgt;
-  Info.biPlanes=1;
-  Info.biBitCount=8;
-  Info.biCompression=0;
-  Info.biSizeImage=iWdt*iHgt;
-  Info.biClrUsed=Info.biClrImportant=256;
+	// Set header
+	Head.bfType=*((WORD*)"BM");
+	Head.bfSize=sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+256*sizeof(RGBQUAD)+DWordAligned(iWdt)*iHgt;
+	Head.bfOffBits=sizeof(BITMAPFILEHEADER)+sizeof(BITMAPINFOHEADER)+256*sizeof(RGBQUAD);
+	// Set bitmap info
+	Info.biSize=sizeof(BITMAPINFOHEADER);
+	Info.biWidth=iWdt;
+	Info.biHeight=iHgt;
+	Info.biPlanes=1;
+	Info.biBitCount=8;
+	Info.biCompression=0;
+	Info.biSizeImage=iWdt*iHgt;
+	Info.biClrUsed=Info.biClrImportant=256;
 	// Set palette
-  for (int cnt=0; cnt<256; cnt++)
-    {
-    Colors[cnt].rgbRed	 = bypPalette[cnt*3+0];
-    Colors[cnt].rgbGreen = bypPalette[cnt*3+1];
-    Colors[cnt].rgbBlue  = bypPalette[cnt*3+2];
-    }
+	for (int cnt=0; cnt<256; cnt++)
+		{
+		Colors[cnt].rgbRed	 = bypPalette[cnt*3+0];
+		Colors[cnt].rgbGreen = bypPalette[cnt*3+1];
+		Colors[cnt].rgbBlue  = bypPalette[cnt*3+2];
+		}
 	}
 
 void CBitmap256Info::Default()

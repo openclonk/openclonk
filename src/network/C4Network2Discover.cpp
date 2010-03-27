@@ -30,7 +30,7 @@ void C4Network2IODiscover::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO 
 {
 	// discovery?
 	if(fEnabled && rPacket.getSize() == 1 && rPacket.getStatus() == 3)
-      Announce();
+			Announce();
 }
 
 bool C4Network2IODiscover::Init(uint16_t iPort)
@@ -56,9 +56,9 @@ bool C4Network2IODiscover::Init(uint16_t iPort)
 
 bool C4Network2IODiscover::Announce()
 {
-   // Announce our presence
-   C4Network2IODiscoverReply Reply = { 4, htons(iRefServerPort) };
-   return Send(C4NetIOPacket(&Reply, sizeof(Reply), false, DiscoveryAddr));
+	 // Announce our presence
+	 C4Network2IODiscoverReply Reply = { 4, htons(iRefServerPort) };
+	 return Send(C4NetIOPacket(&Reply, sizeof(Reply), false, DiscoveryAddr));
 }
 
 // *** C4Network2IODiscoverClient

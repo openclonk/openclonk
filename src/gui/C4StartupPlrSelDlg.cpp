@@ -55,7 +55,7 @@ StdStrBuf DateString(int iTime)
 	if (!iTime) return StdStrBuf("", true);
 	time_t tTime = iTime; //time(&tTime);
 	struct tm *pLocalTime;
-  pLocalTime=localtime(&tTime);
+	pLocalTime=localtime(&tTime);
 	return FormatString(	"%02d.%02d.%d %02d:%02d",
 																 pLocalTime->tm_mday,
 																 pLocalTime->tm_mon+1,
@@ -959,7 +959,7 @@ void C4StartupPlrSelDlg::SetCrewMode(PlayerListItem *pSel)
 	if (!CurrPlayer.Grp.Open(pSel->GetFilename().getData())) return;
 	if (!CurrPlayer.Grp.FindEntry(C4CFN_ObjectInfoFiles))
 		{
-    StdCopyStrBuf strCrew(FormatString("%s %s", LoadResStrNoAmp("IDS_CTL_CREW"), CurrPlayer.Core.PrefName));
+		StdCopyStrBuf strCrew(FormatString("%s %s", LoadResStrNoAmp("IDS_CTL_CREW"), CurrPlayer.Core.PrefName));
 		// player has no crew!
 		GetScreen()->ShowMessage(FormatString(LoadResStr("IDS_ERR_PLRNOCREW"),
 											  CurrPlayer.Core.PrefName).getData(),

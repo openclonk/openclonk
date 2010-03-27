@@ -53,9 +53,9 @@ void C4IDListChunk::Clear()
 	}
 
 C4IDList::C4IDList() : C4IDListChunk()
-  {
-  Default();
-  }
+	{
+	Default();
+	}
 
 C4IDList::C4IDList(const C4IDList &rCopy): C4IDListChunk()
 	{
@@ -95,48 +95,48 @@ void C4IDList::Clear()
 	}
 
 bool C4IDList::IsClear() const
-  {
+	{
 	return !Count;
-  }
+	}
 
 C4ID C4IDList::GetID(size_t index, int32_t *ipCount) const
-  {
+	{
 	// outside list?
 	if (!Inside<int32_t>(index,0,Count-1)) return C4ID::None;
 	// get chunk to query
 	const C4IDListChunk *pQueryChunk=this;
 	while (index>=C4IDListChunkSize) { pQueryChunk=pQueryChunk->pNext; index-=C4IDListChunkSize; }
 	// query it
-  if (ipCount) *ipCount=pQueryChunk->Count[index];
-  return pQueryChunk->id[index];
-  }
+	if (ipCount) *ipCount=pQueryChunk->Count[index];
+	return pQueryChunk->id[index];
+	}
 
 int32_t C4IDList::GetCount(size_t index) const
-  {
+	{
 	// outside list?
-  if (!Inside<int32_t>(index,0,Count-1)) return 0;
+	if (!Inside<int32_t>(index,0,Count-1)) return 0;
 	// get chunk to query
 	const C4IDListChunk *pQueryChunk=this;
 	while (index>=C4IDListChunkSize) { pQueryChunk=pQueryChunk->pNext; index-=C4IDListChunkSize; }
 	// query it
-  return pQueryChunk->Count[index];
-  }
+	return pQueryChunk->Count[index];
+	}
 
 bool C4IDList::SetCount(size_t index, int32_t iCount)
-  {
+	{
 	// outside list?
-  if (!Inside<int32_t>(index,0,Count-1)) return false;
+	if (!Inside<int32_t>(index,0,Count-1)) return false;
 	// get chunk to set in
 	C4IDListChunk *pQueryChunk=this;
 	while (index>=C4IDListChunkSize) { pQueryChunk=pQueryChunk->pNext; index-=C4IDListChunkSize; }
 	// set it
-  pQueryChunk->Count[index]=iCount;
+	pQueryChunk->Count[index]=iCount;
 	// success
-  return true;
-  }
+	return true;
+	}
 
 int32_t C4IDList::GetIDCount(C4ID c_id, int32_t iZeroDefVal) const
-  {
+	{
 	// find id
 	const C4IDListChunk *pQueryChunk=this;
 	size_t cnt=Count,cntl=0;
@@ -154,11 +154,11 @@ int32_t C4IDList::GetIDCount(C4ID c_id, int32_t iZeroDefVal) const
 			}
 		}
 	// none found
-  return 0;
-  }
+	return 0;
+	}
 
 bool C4IDList::SetIDCount(C4ID c_id, int32_t iCount, bool fAddNewID)
-  {
+	{
 	// find id
 	C4IDListChunk *pQueryChunk=this;
 	size_t cnt=Count,cntl=0;
@@ -194,13 +194,13 @@ bool C4IDList::SetIDCount(C4ID c_id, int32_t iCount, bool fAddNewID)
 		return true;
 		}
 	// failure
-  return false;
-  }
+	return false;
+	}
 
 int32_t C4IDList::GetNumberOfIDs() const
-  {
+	{
 	return Count;
-  }
+	}
 
 int32_t C4IDList::GetIndex(C4ID c_id) const
 	{
@@ -221,7 +221,7 @@ int32_t C4IDList::GetIndex(C4ID c_id) const
 	}
 
 bool C4IDList::IncreaseIDCount(C4ID c_id, bool fAddNewID, int32_t IncreaseBy, bool fRemoveEmpty)
-  {
+	{
 	// find id in list
 	C4IDListChunk *pQueryChunk=this;
 	size_t cnt=Count,cntl=0;
@@ -264,64 +264,64 @@ bool C4IDList::IncreaseIDCount(C4ID c_id, bool fAddNewID, int32_t IncreaseBy, bo
 
 // Access by category-sorted index
 C4ID C4IDList::GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount) const
-  {
-  int32_t cindex=-1;
-  C4Def *cDef;
-  if (ipCount) *ipCount=0;
+	{
+	int32_t cindex=-1;
+	C4Def *cDef;
+	if (ipCount) *ipCount=0;
 	// find id
 	const C4IDListChunk *pQueryChunk=this;
 	size_t cnt=Count,cntl=0;
 	while (cnt--)
 		{
 		if ((dwCategory==C4D_All) || ( (cDef=rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
-      {
-      cindex++;
-      if (cindex==index) { if (ipCount) *ipCount=pQueryChunk->Count[cntl]; return pQueryChunk->id[cntl]; }
-      }
+			{
+			cindex++;
+			if (cindex==index) { if (ipCount) *ipCount=pQueryChunk->Count[cntl]; return pQueryChunk->id[cntl]; }
+			}
 		if (++cntl==C4IDListChunkSize)
 			{
 			pQueryChunk=pQueryChunk->pNext;
 			cntl=0;
 			}
 		}
-  return C4ID::None;
-  }
+	return C4ID::None;
+	}
 
 int32_t C4IDList::GetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index) const
-  {
-  int32_t cindex=-1;
-  C4Def *cDef;
+	{
+	int32_t cindex=-1;
+	C4Def *cDef;
 	const C4IDListChunk *pQueryChunk=this;
 	size_t cnt=Count,cntl=0;
 	while (cnt--)
 		{
 		if ((dwCategory==C4D_All) || ( (cDef=rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
-      {
-      cindex++;
-      if (cindex==index) return pQueryChunk->Count[cntl];
-      }
+			{
+			cindex++;
+			if (cindex==index) return pQueryChunk->Count[cntl];
+			}
 		if (++cntl==C4IDListChunkSize)
 			{
 			pQueryChunk=pQueryChunk->pNext;
 			cntl=0;
 			}
 		}
-  return 0;
-  }
+	return 0;
+	}
 
 bool C4IDList::SetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t iCount)
-  {
-  int32_t cindex=-1;
-  C4Def *cDef;
+	{
+	int32_t cindex=-1;
+	C4Def *cDef;
 	C4IDListChunk *pQueryChunk=this;
 	size_t cnt=Count,cntl=0;
 	while (cnt--)
 		{
 		if ((dwCategory==C4D_All) || ( (cDef=rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
-      {
-      cindex++;
-      if (cindex==index) { pQueryChunk->Count[cntl]=iCount; return true; }
-      }
+			{
+			cindex++;
+			if (cindex==index) { pQueryChunk->Count[cntl]=iCount; return true; }
+			}
 		if (++cntl==C4IDListChunkSize)
 			{
 			pQueryChunk=pQueryChunk->pNext;
@@ -329,26 +329,26 @@ bool C4IDList::SetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index, int
 			}
 		}
 	return false;
-  }
+	}
 
 int32_t C4IDList::GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const
-  {
-  int32_t idnum=0;
-  C4Def *cDef;
+	{
+	int32_t idnum=0;
+	C4Def *cDef;
 	const C4IDListChunk *pQueryChunk=this;
 	size_t cnt=Count,cntl=0;
 	while (cnt--)
 		{
 		if ((dwCategory==C4D_All) || ( (cDef=rDefs.ID2Def(pQueryChunk->id[cntl])) && (cDef->Category & dwCategory) ) )
-      idnum++;
+			idnum++;
 		if (++cntl==C4IDListChunkSize)
 			{
 			pQueryChunk=pQueryChunk->pNext;
 			cntl=0;
 			}
 		}
-  return idnum;
-  }
+	return idnum;
+	}
 // IDList merge
 
 bool C4IDList::Add(C4IDList &rList)
@@ -370,13 +370,13 @@ bool C4IDList::Add(C4IDList &rList)
 // Removes all empty id gaps from the list.
 
 bool C4IDList::Consolidate()
-  {
+	{
 	// however, there ain't be any of those crappy gaps!
-  return false;
-  }
+	return false;
+	}
 
 bool C4IDList::ConsolidateValids(C4DefList &rDefs, int32_t dwCategory)
-  {
+	{
 	bool fIDsRemoved=false;
 	C4IDListChunk *pQueryChunk=this;
 	size_t cnt=Count,cntl=0;
@@ -400,7 +400,7 @@ bool C4IDList::ConsolidateValids(C4DefList &rDefs, int32_t dwCategory)
 			}
 		}
 	return fIDsRemoved;
-  }
+	}
 
 void C4IDList::SortByCategory(C4DefList &rDefs)
 	{
@@ -443,7 +443,7 @@ void C4IDList::SortByValue(C4DefList &rDefs)
 
 void C4IDList::Load(C4DefList &rDefs, int32_t dwCategory)
 	{
-  // (deprecated, use StdCompiler instead)
+	// (deprecated, use StdCompiler instead)
 	C4Def *cdef; size_t cntl=0,cnt=0;
 	// clear list
 	Clear();
@@ -484,9 +484,9 @@ void C4IDList::Draw(C4Facet &cgo, int32_t iSelection,
 		{
 		cgo2 = cgo.TruncateSection(iAlign);
 		rDefs.Draw(c_id,cgo2,(firstid+cnt==iSelection),0);
-    sprintf(buf,"%dx",idcount);
-    if (fCounts) Application.DDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
-    }
+		sprintf(buf,"%dx",idcount);
+		if (fCounts) Application.DDraw->TextOut(buf, ::GraphicsResource.FontRegular, 1.0, cgo2.Surface,cgo2.X+cgo2.Wdt-1, cgo2.Y + cgo2.Hgt - 1 - ::GraphicsResource.FontRegular.iLineHgt,CStdDDraw::DEFAULT_MESSAGE_COLOR,ARight);
+		}
 
 	}
 
@@ -592,64 +592,64 @@ bool C4IDList::operator==(const C4IDList& rhs) const
 	}
 
 void C4IDList::CompileFunc(StdCompiler *pComp, bool fValues)
-  {
-  // Get compiler characteristics
-  bool fCompiler = pComp->isCompiler();
-  bool fNaming = pComp->hasNaming();
-  // Compiling: Clear existing data first
-  if(fCompiler) Clear();
-  // Start
-  C4IDListChunk *pChunk = this;
-  size_t iNr = 0, iCNr = 0;
-  // Without naming: Compile Count
+	{
+	// Get compiler characteristics
+	bool fCompiler = pComp->isCompiler();
+	bool fNaming = pComp->hasNaming();
+	// Compiling: Clear existing data first
+	if(fCompiler) Clear();
+	// Start
+	C4IDListChunk *pChunk = this;
+	size_t iNr = 0, iCNr = 0;
+	// Without naming: Compile Count
 	int32_t iCount = Count;
-  if(!fNaming) pComp->Value(iCount);
+	if(!fNaming) pComp->Value(iCount);
 	Count = iCount;
-  // Read
-  for(;;)
-  {
-    // Prepare compiling of single mapping
-    if(!fCompiler)
-      {
-      // End of list?
-      if(iNr >= Count) break;
-      // End of chunk?
-      if(iCNr >= C4IDListChunkSize)
-        {
-        pChunk = pChunk->pNext;
-        iCNr = 0;
-        }
-      }
-    else
-      {
-      // End of list?
-      if(!fNaming) if(iNr >= Count) break;
-      // End of chunk?
-      if(iCNr >= C4IDListChunkSize)
-        {
-        pChunk = pChunk->pNext = new C4IDListChunk();
-        iCNr = 0;
-        }
-      }
-    // Seperator (';')
-    if(iNr > 0) if(!pComp->Seperator(StdCompiler::SEP_SEP2)) break;
-    // ID
-    pComp->Value(mkDefaultAdapt(pChunk->id[iCNr], C4ID::None));
-    // ID not valid? Note that C4ID::None is invalid.
+	// Read
+	for(;;)
+	{
+		// Prepare compiling of single mapping
+		if(!fCompiler)
+			{
+			// End of list?
+			if(iNr >= Count) break;
+			// End of chunk?
+			if(iCNr >= C4IDListChunkSize)
+				{
+				pChunk = pChunk->pNext;
+				iCNr = 0;
+				}
+			}
+		else
+			{
+			// End of list?
+			if(!fNaming) if(iNr >= Count) break;
+			// End of chunk?
+			if(iCNr >= C4IDListChunkSize)
+				{
+				pChunk = pChunk->pNext = new C4IDListChunk();
+				iCNr = 0;
+				}
+			}
+		// Seperator (';')
+		if(iNr > 0) if(!pComp->Seperator(StdCompiler::SEP_SEP2)) break;
+		// ID
+		pComp->Value(mkDefaultAdapt(pChunk->id[iCNr], C4ID::None));
+		// ID not valid? Note that C4ID::None is invalid.
 	if(pChunk->id[iCNr] == C4ID::None) break;
-    // Value: Skip this part if requested
-    if(fValues)
-    {
-      // Seperator ('=')
-      if(pComp->Seperator(StdCompiler::SEP_SET))
+		// Value: Skip this part if requested
+		if(fValues)
+		{
+			// Seperator ('=')
+			if(pComp->Seperator(StdCompiler::SEP_SET))
 				// Count
 				pComp->Value(mkDefaultAdapt(pChunk->Count[iCNr], 0));
-    }
-    else if(fCompiler)
-      pChunk->Count[iCNr] = 0;
-    // Goto next entry
-    iNr++; iCNr++;
-    // Save back count
-    if(fCompiler && fNaming) Count = iNr;
-    }
-  }
+		}
+		else if(fCompiler)
+			pChunk->Count[iCNr] = 0;
+		// Goto next entry
+		iNr++; iCNr++;
+		// Save back count
+		if(fCompiler && fNaming) Count = iNr;
+		}
+	}

@@ -270,11 +270,11 @@ class C4Record // demo recording
 		const StdBuf &GetStreamingBuf() const { return StreamingData; }
 
 		bool Start(bool fInitial);
-    bool Stop(StdStrBuf *pRecordName = NULL, BYTE *pRecordSHA1 = NULL);
+		bool Stop(StdStrBuf *pRecordName = NULL, BYTE *pRecordSHA1 = NULL);
 
-    bool Rec(const C4Control &Ctrl, int iFrame); // record control
-    bool Rec(C4PacketType eCtrlType, C4ControlPacket *pCtrl, int iFrame); // record control packet
-    bool Rec(int iFrame, const StdBuf &sBuf, C4RecordChunkType eType);
+		bool Rec(const C4Control &Ctrl, int iFrame); // record control
+		bool Rec(C4PacketType eCtrlType, C4ControlPacket *pCtrl, int iFrame); // record control packet
+		bool Rec(int iFrame, const StdBuf &sBuf, C4RecordChunkType eType);
 
 		bool AddFile(const char *szLocalFilename, const char *szAddAs, bool fDelete = false);
 
@@ -300,7 +300,7 @@ class C4Playback // demo playback
 		uint32_t iLastSequentialFrame; // frame number of last chunk read
 		void Finish(); // end playback
 #ifdef DEBUGREC
-    C4PacketList DebugRec;
+		C4PacketList DebugRec;
 #endif
 	public:
 		C4Playback(); // constructor; init playback
@@ -319,7 +319,7 @@ class C4Playback // demo playback
 		void Clear();
 #ifdef DEBUGREC
 		void Check(C4RecordChunkType eType, const uint8_t *pData, int iSize); // compare with debugrec
-    void DebugRecError(const char *szError);
+		void DebugRecError(const char *szError);
 #endif
 		static bool StreamToRecord(const char *szStream, StdStrBuf *pRecord);
 	};

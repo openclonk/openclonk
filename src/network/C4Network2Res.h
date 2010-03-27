@@ -99,7 +99,7 @@ public:
 
 	void Set(C4Network2ResType eType, int32_t iResID, const char *strFileName, uint32_t iContentsCRC, const char *szAutor);
 	void SetID(int32_t inID)						{ iID = inID; }
-  void SetDerived(int32_t inDerID)    { iDerID = inDerID; }
+	void SetDerived(int32_t inDerID)    { iDerID = inDerID; }
 	void SetLoadable(uint32_t iSize, uint32_t iCRC);
 	void SetFileSHA(BYTE *pSHA)					{ memcpy(FileSHA, pSHA, SHA_DIGEST_LENGTH); fHasFileSHA = true; }
 	void Clear();
@@ -213,7 +213,7 @@ protected:
 	bool fDirty;
 
 	// local file data
-  CStdCSec FileCSec;
+	CStdCSec FileCSec;
 	char szFile[_MAX_PATH + 1], szStandalone[_MAX_PATH + 1];
 	bool fTempFile, fStandaloneFailed;
 
@@ -244,19 +244,19 @@ public:
 	int32_t			getResID()			const { return Core.getID(); }
 	int32_t			getResClient()	const { return Core.getID() >> 16; }
 	const char *getFile()				const { return szFile; }
-  CStdCSec   *getFileCSec()         { return &FileCSec; }
+	CStdCSec   *getFileCSec()         { return &FileCSec; }
 	int32_t			getLastReqTime()const { return iLastReqTime; }
 	bool				isRemoved()			const { return fRemoved; }
 	bool				isLoading()			const { return fLoading; }
 	bool				isComplete()		const { return !fLoading; }
-  int32_t			getPresentPercent() const { return fLoading ? Chunks.getPresentPercent() : 100; }
+	int32_t			getPresentPercent() const { return fLoading ? Chunks.getPresentPercent() : 100; }
 
 	bool SetByFile(const char *strFilePath, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName = NULL, bool fSilent = false);
 	bool SetByGroup(C4Group *pGrp, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName = NULL, bool fSilent = false);
 	bool SetByCore(const C4Network2ResCore &nCore, bool fSilent = false, const char *szAsFilename = NULL, int32_t iRecursion=0);
 	bool SetLoad(const C4Network2ResCore &nCore);
 
-  bool SetDerived(const char *strName, const char *strFilePath, bool fTemp, C4Network2ResType eType, int32_t iDResID);
+	bool SetDerived(const char *strName, const char *strFilePath, bool fTemp, C4Network2ResType eType, int32_t iDResID);
 
 	void ChangeID(int32_t inID);
 
@@ -264,10 +264,10 @@ public:
 	bool GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, bool fAllowUnloadable = false, bool fSilent = false);
 	bool CalculateSHA();
 
-  bool SaveBackFile();
+	bool SaveBackFile();
 	C4Network2Res::Ref Derive();
-  bool FinishDerive();
-  bool FinishDerive(const C4Network2ResCore &nCore);
+	bool FinishDerive();
+	bool FinishDerive(const C4Network2ResCore &nCore);
 
 	bool SendStatus(C4Network2IOConnection *pTo = NULL);
 	bool SendChunk(uint32_t iChunk, int32_t iToClient);
@@ -315,7 +315,7 @@ protected:
 	StdBuf Data;
 
 public:
-  int32_t		getResID()	 const { return iResID; }
+	int32_t		getResID()	 const { return iResID; }
 	uint32_t	getChunkNr() const { return iChunk; }
 
 	bool Set(C4Network2Res *pRes, uint32_t iChunk);

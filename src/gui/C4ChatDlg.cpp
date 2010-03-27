@@ -388,13 +388,13 @@ C4ChatControl::C4ChatControl(C4Network2IRCClient *pnIRCClient) : C4GUI::Window()
 	pEdtLoginChannel->SetText(Config.IRC.Channel, false);
 	// initial sheets
 	ClearChatSheets();
-  // set IRC event callback
-  Application.InteractiveThread.SetCallback(Ev_IRC_Message, this);
+	// set IRC event callback
+	Application.InteractiveThread.SetCallback(Ev_IRC_Message, this);
 	}
 
 C4ChatControl::~C4ChatControl()
 	{
-  Application.InteractiveThread.ClearCallback(Ev_IRC_Message, this);
+	Application.InteractiveThread.ClearCallback(Ev_IRC_Message, this);
 	delete pTitleChangeBC;
 	}
 
@@ -540,16 +540,16 @@ void C4ChatControl::OnConnectBtn(C4GUI::Control *btn)
 	sWarnMsg.Format(LoadResStr("IDS_MSG_YOUAREABOUTTOCONNECTTOAPU"), sServer.getData());
 	if (!GetScreen()->ShowMessageModal(sWarnMsg.getData(), LoadResStr("IDS_MSG_CHATDISCLAIMER"), C4GUI::MessageDialog::btnOKAbort, C4GUI::Ico_Notify, &Config.Startup.HideMsgIRCDangerous))
 		return;
-  // set up IRC callback
-  pIRCClient->SetNotify(&Application.InteractiveThread);
+	// set up IRC callback
+	pIRCClient->SetNotify(&Application.InteractiveThread);
 	// initiate connection
 	if (!pIRCClient->Connect(sServer.getData(), sNick.getData(), sRealName.getData(), sPass.getData(), sChannel.getData()))
 		{
 		GetScreen()->ShowErrorMessage(FormatString(LoadResStr("IDS_ERR_IRCCONNECTIONFAILED"), pIRCClient->GetError()).getData());
 		return;
 		}
-  // enable client execution
-  Application.InteractiveThread.AddProc(pIRCClient);
+	// enable client execution
+	Application.InteractiveThread.AddProc(pIRCClient);
 	// reset chat sheets (close queries, etc.)
 	ClearChatSheets();
 	// connection message
@@ -619,8 +619,8 @@ void C4ChatControl::Update()
 				--i;
 				}
 		}
-  // retrieve messages: All messages in initial update; only unread in subsequent calls
-  C4Network2IRCMessage *pMsg;
+	// retrieve messages: All messages in initial update; only unread in subsequent calls
+	C4Network2IRCMessage *pMsg;
 	if (fInitialMessagesReceived)
 		{
 		pMsg = pIRCClient->getUnreadMessageLog();
@@ -668,7 +668,7 @@ void C4ChatControl::Update()
 				pChatSheet = GetServerSheet();
 				}
 			else if (sUser == pIRCClient->getUserName())
-        {
+				{
 				// private message by myself
 				// message to a service into service window; otherwise (new) query
 				if (IsServiceName(pMsg->getTarget()))
@@ -681,8 +681,8 @@ void C4ChatControl::Update()
 					pChatSheet = OpenQuery(pMsg->getTarget(), true, NULL);
 					if (pChatSheet) pChatSheet->SetChatTitle(pMsg->getTarget());
 					}
-        }
-      else
+				}
+			else
 				{
 				// private message
 				pChatSheet = OpenQuery(sUser.getData(), false, sIdent.getData());
@@ -706,9 +706,9 @@ void C4ChatControl::Update()
 
 				case MSG_Notice:
 					if (sUser.getLength())
-            if (sUser != pIRCClient->getUserName())
+						if (sUser != pIRCClient->getUserName())
 						  sMsg.Format("-%s- %s", sUser.getData(), pMsg->getData());
-            else
+						else
 						  sMsg.Format("-> -%s- %s", pMsg->getTarget(), pMsg->getData());
 					else
 						sMsg.Format("* %s", pMsg->getData());
@@ -905,8 +905,8 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 			{
 	    if (C4InVal::ValidateString(sParam, C4InVal::VAL_IRCName))
 				pChatSheet->DoError(FormatString(LoadResStr("IDS_ERR_INVALIDNICKNAME2"), sCommand.getData()).getData());
-      else
-  			fIRCSuccess = pIRCClient->ChangeNick(sParam.getData());
+			else
+				fIRCSuccess = pIRCClient->ChangeNick(sParam.getData());
 			}
 		else
 			{
@@ -926,9 +926,9 @@ bool C4ChatControl::ProcessInput(const char *szInput, ChatSheet *pChatSheet)
 		else
 			{
 			szMsgTarget = pChatSheet->GetTitle();
-      if (*szInput == '/') // action
+			if (*szInput == '/') // action
 			  fIRCSuccess = pIRCClient->Action(szMsgTarget, szInput+4);
-      else
+			else
 			  fIRCSuccess = pIRCClient->Message(szMsgTarget, szInput);
 			}
 		}
@@ -1016,7 +1016,7 @@ bool C4ChatDlg::IsChatActive()
 	// not if chat is disabled
 	if (!IsChatEnabled()) return false;
 	// check whether IRC is connected
-  return Application.IRCClient.IsActive();
+	return Application.IRCClient.IsActive();
 	}
 
 bool C4ChatDlg::IsChatEnabled()

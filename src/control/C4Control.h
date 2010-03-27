@@ -46,13 +46,13 @@ protected:
 public:
 	int32_t	getByClient() const { return iByClient; }
 	bool LocalControl() const;
-  bool HostControl() const { return iByClient == C4ClientIDHost; }
+	bool HostControl() const { return iByClient == C4ClientIDHost; }
 
 	void SetByClient(int32_t iByClient);
 
 	virtual bool PreExecute() const { return true; }
 	virtual void Execute() const = 0;
-  virtual void PreRec(C4Record *pRecord) { }
+	virtual void PreRec(C4Record *pRecord) { }
 
 	// allowed in lobby (without dynamic loaded)?
 	virtual bool Lobby() const { return false; }
@@ -73,11 +73,11 @@ public:
 	~C4Control();
 
 protected:
-  C4PacketList Pkts;
+	C4PacketList Pkts;
 
 public:
 
-  void Clear();
+	void Clear();
 
 	// packet list wrappers
 	C4IDPacket *firstPkt() const { return Pkts.firstPkt(); }
@@ -86,9 +86,9 @@ public:
 	void AddHead(C4PacketType eType, C4ControlPacket *pCtrl) { Pkts.AddHead(eType, pCtrl); }
 	void Add(C4PacketType eType, C4ControlPacket *pCtrl)  { Pkts.Add(eType, pCtrl); }
 
-  void Take(C4Control &Ctrl) { Pkts.Take(Ctrl.Pkts); }
-  void Append(const C4Control &Ctrl) { Pkts.Append(Ctrl.Pkts); }
-  void Copy(const C4Control &Ctrl) { Clear(); Pkts.Append(Ctrl.Pkts); }
+	void Take(C4Control &Ctrl) { Pkts.Take(Ctrl.Pkts); }
+	void Append(const C4Control &Ctrl) { Pkts.Append(Ctrl.Pkts); }
+	void Copy(const C4Control &Ctrl) { Clear(); Pkts.Append(Ctrl.Pkts); }
 	void Remove(C4IDPacket *pPkt) { Pkts.Remove(pPkt); }
 	void Delete(C4IDPacket *pPkt) { Pkts.Delete(pPkt); }
 
@@ -104,21 +104,21 @@ public:
 
 enum C4CtrlValueType
 {
-  C4CVT_None = -1,
+	C4CVT_None = -1,
 	C4CVT_ControlRate = 0,
 	C4CVT_AllowDebug = 1,
 	C4CVT_MaxPlayer = 2,
 	C4CVT_TeamDistribution = 3,
 	C4CVT_TeamColors = 4,
-  C4CVT_FairCrew = 5
+	C4CVT_FairCrew = 5
 };
 
 class C4ControlSet : public C4ControlPacket // sync, lobby
 {
 public:
-  C4ControlSet()
-    : eValType(C4CVT_None), iData(0)
-  { }
+	C4ControlSet()
+		: eValType(C4CVT_None), iData(0)
+	{ }
 	C4ControlSet(C4CtrlValueType eValType, int32_t iData)
 		: eValType(eValType), iData(iData)
 	{ }
@@ -137,9 +137,9 @@ class C4ControlScript : public C4ControlPacket // sync
 public:
 	enum { SCOPE_Console=-2, SCOPE_Global=-1 }; // special scopes to be passed as target objects
 
-  C4ControlScript()
-    : iTargetObj(-1), fInternal(true)
-  { }
+	C4ControlScript()
+		: iTargetObj(-1), fInternal(true)
+	{ }
 	C4ControlScript(const char *szScript, int32_t iTargetObj = SCOPE_Global, bool fInternal = true)
 		: iTargetObj(iTargetObj), fInternal(fInternal), Script(szScript, true)
 	{ }
@@ -155,8 +155,8 @@ public:
 class C4ControlPlayerSelect : public C4ControlPacket // sync
 {
 public:
-  C4ControlPlayerSelect()
-    : iPlr(-1), fIsAlt(false), iObjCnt(0), pObjNrs(NULL) { }
+	C4ControlPlayerSelect()
+		: iPlr(-1), fIsAlt(false), iObjCnt(0), pObjNrs(NULL) { }
 	C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt);
 	~C4ControlPlayerSelect() { delete[] pObjNrs; }
 protected:
@@ -204,8 +204,8 @@ public:
 class C4ControlPlayerCommand : public C4ControlPacket // sync
 {
 public:
-  C4ControlPlayerCommand()
-    : iPlr(-1), iCmd(-1) { }
+	C4ControlPlayerCommand()
+		: iPlr(-1), iCmd(-1) { }
 	C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32_t iX, int32_t iY,
 												 C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode);
 protected:
@@ -232,7 +232,7 @@ protected:
 public:
 	void Set();
 	int32_t getFrame() const { return Frame; }
-  virtual bool Sync() const { return false; }
+	virtual bool Sync() const { return false; }
 	DECLARE_C4CONTROL_VIRTUALS
 protected:
 	static int32_t GetAllCrewPosX();
@@ -258,8 +258,8 @@ public:
 public:
 	C4ClientCore Core;
 public:
-  virtual bool Sync() const { return false; }
-  virtual bool Lobby() const { return true; }
+	virtual bool Sync() const { return false; }
+	virtual bool Lobby() const { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
@@ -280,8 +280,8 @@ public:
 	C4ControlClientUpdType eType;
 	int32_t iData;
 public:
-  virtual bool Sync() const { return false; }
-  virtual bool Lobby() const { return true; }
+	virtual bool Sync() const { return false; }
+	virtual bool Lobby() const { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
@@ -294,8 +294,8 @@ public:
 	int32_t iID;
 	StdCopyStrBuf strReason;
 public:
-  virtual bool Sync() const { return false; }
-  virtual bool Lobby() const { return true; }
+	virtual bool Sync() const { return false; }
+	virtual bool Lobby() const { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
@@ -303,29 +303,29 @@ public:
 class C4ControlPlayerInfo : public C4ControlPacket // not sync, lobby
 {
 public:
-  C4ControlPlayerInfo()
-  { }
-  C4ControlPlayerInfo(const C4ClientPlayerInfos &PlrInfo)
-    : PlrInfo(PlrInfo)
-  { }
+	C4ControlPlayerInfo()
+	{ }
+	C4ControlPlayerInfo(const C4ClientPlayerInfos &PlrInfo)
+		: PlrInfo(PlrInfo)
+	{ }
 protected:
-  C4ClientPlayerInfos PlrInfo;
+	C4ClientPlayerInfos PlrInfo;
 public:
 	const C4ClientPlayerInfos &GetInfo() const { return PlrInfo; }
-  virtual bool Sync() const { return false; }
-  virtual bool Lobby() const { return true; }
-  DECLARE_C4CONTROL_VIRTUALS
+	virtual bool Sync() const { return false; }
+	virtual bool Lobby() const { return true; }
+	DECLARE_C4CONTROL_VIRTUALS
 };
 
 struct C4ControlJoinPlayer : public C4ControlPacket // sync
 {
 public:
-  C4ControlJoinPlayer() : iAtClient(-1), idInfo(-1) { }
+	C4ControlJoinPlayer() : iAtClient(-1), idInfo(-1) { }
 	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo, const C4Network2ResCore &ResCore);
 	C4ControlJoinPlayer(const char *szFilename, int32_t iAtClient, int32_t iIDInfo);
 protected:
 	StdStrBuf Filename;
-  int32_t iAtClient;
+	int32_t iAtClient;
 	int32_t idInfo;
 	bool fByRes;
 	StdBuf PlrData;				   			// for fByRes == false
@@ -350,7 +350,7 @@ enum C4ControlEMObjectAction
 class C4ControlEMMoveObject : public C4ControlPacket // sync
 {
 public:
-  C4ControlEMMoveObject() : pObjects(NULL) { }
+	C4ControlEMMoveObject() : pObjects(NULL) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj,
 												int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
 	~C4ControlEMMoveObject();
@@ -360,7 +360,7 @@ protected:
 	int32_t iTargetObj;		// enumerated ptr to target object
 	int32_t iObjectNum;		// number of objects moved
 	int32_t *pObjects;		// pointer on array of objects moved
-  StdStrBuf Script; // script to execute
+	StdStrBuf Script; // script to execute
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
@@ -377,7 +377,7 @@ enum C4ControlEMDrawAction
 class C4ControlEMDrawTool : public C4ControlPacket // sync
 {
 public:
-  C4ControlEMDrawTool() { }
+	C4ControlEMDrawTool() { }
 	C4ControlEMDrawTool(C4ControlEMDrawAction eAction, int32_t iMode,
 										  int32_t iX=-1, int32_t iY=-1, int32_t iX2=-1, int32_t iY2=-1, int32_t iGrade=-1,
 									    bool fIFT=true, const char *szMaterial=NULL, const char *szTexture=NULL);
@@ -407,8 +407,8 @@ enum C4ControlMessageType
 class C4ControlMessage : public C4ControlPacket // not sync, lobby
 {
 public:
-  C4ControlMessage()
-    : eType(C4CMT_Normal), iPlayer(-1) { }
+	C4ControlMessage()
+		: eType(C4CMT_Normal), iPlayer(-1) { }
 	C4ControlMessage(C4ControlMessageType eType, const char *szMessage, int32_t iPlayer = -1, int32_t iToPlayer = -1)
 		: eType(eType), iPlayer(iPlayer), iToPlayer(iToPlayer), Message(szMessage, true)
 	{ }
@@ -417,16 +417,16 @@ protected:
 	int32_t iPlayer, iToPlayer;
 	StdStrBuf Message;
 public:
-  virtual bool Sync() const { return false; }
-  virtual bool Lobby() const { return true; }
+	virtual bool Sync() const { return false; }
+	virtual bool Lobby() const { return true; }
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
 class C4ControlRemovePlr : public C4ControlPacket // sync
 {
 public:
-  C4ControlRemovePlr()
-    : iPlr(-1) { }
+	C4ControlRemovePlr()
+		: iPlr(-1) { }
 	C4ControlRemovePlr(int32_t iPlr, bool fDisconnected)
 		: iPlr(iPlr), fDisconnected(fDisconnected) { }
 protected:
@@ -439,10 +439,10 @@ public:
 class C4ControlDebugRec : public C4ControlPacket // sync
 {
 public:
-  C4ControlDebugRec()
-    { }
-  C4ControlDebugRec(StdBuf &Data)
-    : Data(Data) { }
+	C4ControlDebugRec()
+		{ }
+	C4ControlDebugRec(StdBuf &Data)
+		: Data(Data) { }
 protected:
 	StdBuf Data;
 public:
@@ -452,7 +452,7 @@ public:
 enum C4ControlVoteType
 {
 	VT_None = -1,
-  VT_Cancel,
+	VT_Cancel,
 	VT_Kick,
 	VT_Pause
 };
@@ -477,7 +477,7 @@ public:
 	StdStrBuf getDesc() const;
 	StdStrBuf getDescWarning() const;
 
-  virtual bool Sync() const { return false; }
+	virtual bool Sync() const { return false; }
 
 	DECLARE_C4CONTROL_VIRTUALS
 };

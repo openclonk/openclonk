@@ -30,9 +30,9 @@
 #include <C4Game.h>
 
 C4Weather::C4Weather()
-  {
+	{
 	Default();
-  }
+	}
 
 C4Weather::~C4Weather()
 	{
@@ -40,67 +40,67 @@ C4Weather::~C4Weather()
 	}
 
 void C4Weather::Init(bool fScenario)
-  {
-  if(fScenario)
-    {
-    // Season
-    Season=Game.C4S.Weather.StartSeason.Evaluate();
-    YearSpeed=Game.C4S.Weather.YearSpeed.Evaluate();
-    // Temperature
-    Climate=100-Game.C4S.Weather.Climate.Evaluate()-50;
-    Temperature=Climate;
-    // Wind
-    Wind=TargetWind=Game.C4S.Weather.Wind.Evaluate();
-    // Precipitation
+	{
+	if(fScenario)
+		{
+		// Season
+		Season=Game.C4S.Weather.StartSeason.Evaluate();
+		YearSpeed=Game.C4S.Weather.YearSpeed.Evaluate();
+		// Temperature
+		Climate=100-Game.C4S.Weather.Climate.Evaluate()-50;
+		Temperature=Climate;
+		// Wind
+		Wind=TargetWind=Game.C4S.Weather.Wind.Evaluate();
+		// Precipitation
 	  if (!Game.C4S.Head.NoInitialize)
 		  if (Game.C4S.Weather.Rain.Evaluate())
 			  for (int32_t iClouds = Min(GBackWdt/500,5); iClouds>0; iClouds--)
-          {
-          volatile int iWidth = GBackWdt/15+Random(320);
-          volatile int iX = Random(GBackWdt);
+					{
+					volatile int iWidth = GBackWdt/15+Random(320);
+					volatile int iX = Random(GBackWdt);
 				  LaunchCloud(iX,-1,iWidth,
 										  Game.C4S.Weather.Rain.Evaluate(),
 										  Game.C4S.Weather.Precipitation);
-          }
+					}
 	  // gamma?
 	  NoGamma=Game.C4S.Weather.NoGamma;
-    }
+		}
 	// set gamma
 	SetSeasonGamma();
-  }
+	}
 
 void C4Weather::Execute()
-  {
-  // Season
-  if (!::Game.iTick35)
-    {
-    SeasonDelay+=YearSpeed;
-    if (SeasonDelay>=200)
-      {
-      SeasonDelay=0;
-      Season++;
-      if (Season>Game.C4S.Weather.StartSeason.Max)
-        Season=Game.C4S.Weather.StartSeason.Min;
-			SetSeasonGamma();
-      }
-    }
-  // Temperature
-  if (!::Game.iTick35)
+	{
+	// Season
+	if (!::Game.iTick35)
 		{
-    int32_t iTemperature=Climate-(int32_t)(TemperatureRange*cos(6.28*(float)Season/100.0));
+		SeasonDelay+=YearSpeed;
+		if (SeasonDelay>=200)
+			{
+			SeasonDelay=0;
+			Season++;
+			if (Season>Game.C4S.Weather.StartSeason.Max)
+				Season=Game.C4S.Weather.StartSeason.Min;
+			SetSeasonGamma();
+			}
+		}
+	// Temperature
+	if (!::Game.iTick35)
+		{
+		int32_t iTemperature=Climate-(int32_t)(TemperatureRange*cos(6.28*(float)Season/100.0));
 		if (Temperature<iTemperature) Temperature++;
 		else if (Temperature>iTemperature) Temperature--;
 		}
-  // Wind
-  if (!::Game.iTick1000)
-    TargetWind=Game.C4S.Weather.Wind.Evaluate();
-  if (!::Game.iTick10)
-    Wind=BoundBy<int32_t>(Wind+Sign(TargetWind-Wind),
-                 Game.C4S.Weather.Wind.Min,
-                 Game.C4S.Weather.Wind.Max);
-  if (!::Game.iTick10)
-    SoundLevel("Wind",NULL,Max(Abs(Wind)-30,0)*2);
-  }
+	// Wind
+	if (!::Game.iTick1000)
+		TargetWind=Game.C4S.Weather.Wind.Evaluate();
+	if (!::Game.iTick10)
+		Wind=BoundBy<int32_t>(Wind+Sign(TargetWind-Wind),
+								 Game.C4S.Weather.Wind.Min,
+								 Game.C4S.Weather.Wind.Max);
+	if (!::Game.iTick10)
+		SoundLevel("Wind",NULL,Max(Abs(Wind)-30,0)*2);
+	}
 
 void C4Weather::Clear()
 	{
@@ -120,10 +120,10 @@ int32_t C4Weather::GetTemperature()
 
 void C4Weather::Default()
 	{
-  Season=0; YearSpeed=0; SeasonDelay=0;
-  Wind=TargetWind=0;
-  Temperature=Climate=0;
-  TemperatureRange=30;
+	Season=0; YearSpeed=0; SeasonDelay=0;
+	Wind=TargetWind=0;
+	Temperature=Climate=0;
+	TemperatureRange=30;
 	NoGamma=true;
 	}
 
@@ -211,7 +211,7 @@ void C4Weather::SetSeasonGamma()
 	}
 
 void C4Weather::CompileFunc(StdCompiler *pComp)
-  {
+	{
 	pComp->Value(mkNamingAdapt(Season,           "Season",                0));
 	pComp->Value(mkNamingAdapt(YearSpeed,        "YearSpeed",             0));
 	pComp->Value(mkNamingAdapt(SeasonDelay,      "SeasonDelay",           0));
@@ -229,6 +229,6 @@ void C4Weather::CompileFunc(StdCompiler *pComp)
 		dwGammaDefaults[i*3+2] = 0xffffff;
 		}
 	pComp->Value(mkNamingAdapt(mkArrayAdaptM(::GraphicsSystem.dwGamma), "Gamma", dwGammaDefaults));
-  }
+	}
 
 C4Weather Weather;

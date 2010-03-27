@@ -134,47 +134,47 @@ const char *GetSocketErrorMsg()
 }
 bool HaveSocketError()
 {
-  return !! WSAGetLastError();
+	return !! WSAGetLastError();
 }
 bool HaveWouldBlockError()
 {
-  return WSAGetLastError() == WSAEWOULDBLOCK;
+	return WSAGetLastError() == WSAEWOULDBLOCK;
 }
 bool HaveConnResetError()
 {
-  return WSAGetLastError() == WSAECONNRESET;
+	return WSAGetLastError() == WSAECONNRESET;
 }
 void ResetSocketError()
 {
-  WSASetLastError(0);
+	WSASetLastError(0);
 }
 
 static int iWSockUseCounter = 0;
 
 bool AcquireWinSock()
 {
-  if(!iWSockUseCounter)
-  {
-    // initialize winsock
-    WSADATA data;
-    int res = WSAStartup(WINSOCK_VERSION, &data);
-    // success? count
-    if(!res)
-      iWSockUseCounter++;
-    // return result
-    return !res;
-  }
-  // winsock already initialized
-  iWSockUseCounter++;
-  return true;
+	if(!iWSockUseCounter)
+	{
+		// initialize winsock
+		WSADATA data;
+		int res = WSAStartup(WINSOCK_VERSION, &data);
+		// success? count
+		if(!res)
+			iWSockUseCounter++;
+		// return result
+		return !res;
+	}
+	// winsock already initialized
+	iWSockUseCounter++;
+	return true;
 }
 
 void ReleaseWinSock()
 {
-  iWSockUseCounter--;
-  // last use?
-  if(!iWSockUseCounter)
-    WSACleanup();
+	iWSockUseCounter--;
+	// last use?
+	if(!iWSockUseCounter)
+		WSACleanup();
 }
 
 #else
@@ -185,24 +185,24 @@ const char *GetSocketErrorMsg(int iError)
 }
 const char *GetSocketErrorMsg()
 {
-  return GetSocketErrorMsg(errno);
+	return GetSocketErrorMsg(errno);
 }
 
 bool HaveSocketError()
 {
-  return !! errno;
+	return !! errno;
 }
 bool HaveWouldBlockError()
 {
-  return errno == EINPROGRESS || errno == EWOULDBLOCK;
+	return errno == EINPROGRESS || errno == EWOULDBLOCK;
 }
 bool HaveConnResetError()
 {
-  return errno == ECONNRESET;
+	return errno == ECONNRESET;
 }
 void ResetSocketError()
 {
-  errno = 0;
+	errno = 0;
 }
 
 #endif // HAVE_WINSOCK
@@ -297,12 +297,12 @@ bool C4NetIOTCP::Init(uint16_t iPort)
 	if(fInit) Close();
 
 #ifdef HAVE_WINSOCK
-  // init winsock
-  if(!AcquireWinSock())
-  {
-    SetError("could not start winsock");
-    return false;
-  }
+	// init winsock
+	if(!AcquireWinSock())
+	{
+		SetError("could not start winsock");
+		return false;
+	}
 #endif
 
 #ifdef STDSCHEDULER_USE_EVENTS
@@ -376,8 +376,8 @@ bool C4NetIOTCP::Close()
 #endif
 
 #ifdef HAVE_WINSOCK
-  // release winsock
-  ReleaseWinSock();
+	// release winsock
+	ReleaseWinSock();
 #endif
 
 	// ok
@@ -804,30 +804,30 @@ int C4NetIOTCP::GetNextTick(int Now) // (mt-safe)
 
 bool C4NetIOTCP::GetStatistic(int *pBroadcastRate) // (mt-safe)
 {
-  // no broadcast
-  if(pBroadcastRate) *pBroadcastRate = 0;
-  return true;
+	// no broadcast
+	if(pBroadcastRate) *pBroadcastRate = 0;
+	return true;
 }
 
 bool C4NetIOTCP::GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss) // (mt-safe)
 {
 	CStdShareLock PeerListLock(&PeerListCSec);
 	// find peer
-  Peer *pPeer = GetPeer(addr);
-  if(!pPeer || !pPeer->Open()) return false;
-  // return statistics
-  if(pIRate) *pIRate = pPeer->GetIRate();
-  if(pORate) *pORate = pPeer->GetORate();
-  if(pLoss) *pLoss = 0;
-  return true;
+	Peer *pPeer = GetPeer(addr);
+	if(!pPeer || !pPeer->Open()) return false;
+	// return statistics
+	if(pIRate) *pIRate = pPeer->GetIRate();
+	if(pORate) *pORate = pPeer->GetORate();
+	if(pLoss) *pLoss = 0;
+	return true;
 }
 
 void C4NetIOTCP::ClearStatistic()
 {
 	CStdShareLock PeerListLock(&PeerListCSec);
 	// clear all peer statistics
-  for(Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
-    pPeer->ClearStatistics();
+	for(Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
+		pPeer->ClearStatistics();
 }
 
 C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) // (mt-safe)
@@ -877,9 +877,9 @@ C4NetIOTCP::Peer *C4NetIOTCP::Accept(SOCKET nsock, const addr_t &ConnectAddr) //
 		return NULL;
 	}
 
-  // disable nagle (yep, we know what we are doing here - I think)
-  int iNoDelay = 1;
-  ::setsockopt(nsock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char *>(&iNoDelay), sizeof(iNoDelay));
+	// disable nagle (yep, we know what we are doing here - I think)
+	int iNoDelay = 1;
+	::setsockopt(nsock, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<const char *>(&iNoDelay), sizeof(iNoDelay));
 
 #ifdef STDSCHEDULER_USE_EVENTS
 	// set event
@@ -1179,8 +1179,8 @@ bool C4NetIOTCP::Peer::Send() // (mt-safe)
 	// nothin sent?
 	if(iBytesSent == SOCKET_ERROR || !iBytesSent) return true;
 
-  // increase output rate
-  iORate += iBytesSent + iTCPHeaderSize;
+	// increase output rate
+	iORate += iBytesSent + iTCPHeaderSize;
 
 	// data remaining?
 	if(unsigned(iBytesSent) < OBuf.getSize())
@@ -1271,14 +1271,14 @@ void C4NetIOTCP::Peer::Close() // (mt-safe)
 	// clear buffers
 	IBuf.Clear(); OBuf.Clear();
 	iIBufUsage = 0;
-  // reset statistics
-  iIRate = iORate = 0;
+	// reset statistics
+	iIRate = iORate = 0;
 }
 
 void C4NetIOTCP::Peer::ClearStatistics() // (mt-safe)
 {
 	CStdLock ILock(&ICSec); CStdLock OLock(&OCSec);
-  iIRate = iORate = 0;
+	iIRate = iORate = 0;
 }
 
 // *** C4NetIOSimpleUDP
@@ -1306,12 +1306,12 @@ bool C4NetIOSimpleUDP::Init(uint16_t inPort)
 	if(fInit) Close();
 
 #ifdef HAVE_WINSOCK
-  // init winsock
-  if(!AcquireWinSock())
-  {
-    SetError("could not start winsock");
-    return false;
-  }
+	// init winsock
+	if(!AcquireWinSock())
+	{
+		SetError("could not start winsock");
+		return false;
+	}
 #endif
 
 	// create socket
@@ -1453,10 +1453,10 @@ bool C4NetIOSimpleUDP::Close()
 #ifdef STDSCHEDULER_USE_EVENTS
 	// close event
 	if(hEvent != NULL)
-  {
+	{
 		WSACloseEvent(hEvent);
-    hEvent = NULL;
-  }
+		hEvent = NULL;
+	}
 #else
 	// close pipes
 	close(Pipe[0]);
@@ -1464,12 +1464,12 @@ bool C4NetIOSimpleUDP::Close()
 #endif
 
 #ifdef HAVE_WINSOCK
-  // release winsock
-  ReleaseWinSock();
+	// release winsock
+	ReleaseWinSock();
 #endif
 
 	// ok
-  fInit = false;
+	fInit = false;
 	return false;
 }
 
@@ -1730,7 +1730,7 @@ struct C4NetIOUDP::PacketHdr
 
 struct C4NetIOUDP::ConnPacket : public PacketHdr
 {
-  uint32_t ProtocolVer;
+	uint32_t ProtocolVer;
 	C4NetIO::addr_t Addr;
 	C4NetIO::addr_t MCAddr;
 };
@@ -1932,7 +1932,7 @@ bool C4NetIOUDP::InitBroadcast(addr_t *pBroadcastAddr)
 	// set flags
 	fMultiCast = true;
 	iOPacketCounter = 0;
-  iBroadcastRate = 0;
+	iBroadcastRate = 0;
 
 	// ok
 	return true;
@@ -1962,7 +1962,7 @@ bool C4NetIOUDP::Close()
 #endif
 
 	// ok
-  fInit = false;
+	fInit = false;
 	return fSuccess;
 }
 
@@ -2098,33 +2098,33 @@ int C4NetIOUDP::GetNextTick(int Now) // (mt-safe)
 
 bool C4NetIOUDP::GetStatistic(int *pBroadcastRate) // (mt-safe)
 {
-  CStdLock StatLock(&StatCSec);
-  if(pBroadcastRate) *pBroadcastRate = iBroadcastRate;
-  return true;
+	CStdLock StatLock(&StatCSec);
+	if(pBroadcastRate) *pBroadcastRate = iBroadcastRate;
+	return true;
 }
 
 bool C4NetIOUDP::GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss) // (mt-safe)
 {
 	CStdShareLock PeerListLock(&PeerListCSec);
 	// find peer
-  Peer *pPeer = GetPeer(addr);
-  if(!pPeer || !pPeer->Open()) return false;
-  // return statistics
-  if(pIRate) *pIRate = pPeer->GetIRate();
-  if(pORate) *pORate = pPeer->GetORate();
-  if(pLoss) *pLoss = 0;
-  return true;
+	Peer *pPeer = GetPeer(addr);
+	if(!pPeer || !pPeer->Open()) return false;
+	// return statistics
+	if(pIRate) *pIRate = pPeer->GetIRate();
+	if(pORate) *pORate = pPeer->GetORate();
+	if(pLoss) *pLoss = 0;
+	return true;
 }
 
 void C4NetIOUDP::ClearStatistic()
 {
 	CStdShareLock PeerListLock(&PeerListCSec);
 	// clear all peer statistics
-  for(Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
-    pPeer->ClearStatistics();
-  // broadcast statistics
-  CStdLock StatLock(&StatCSec);
-  iBroadcastRate = 0;
+	for(Peer *pPeer = pPeerList; pPeer; pPeer = pPeer->Next)
+		pPeer->ClearStatistics();
+	// broadcast statistics
+	CStdLock StatLock(&StatCSec);
+	iBroadcastRate = 0;
 }
 
 void C4NetIOUDP::OnPacket(const C4NetIOPacket &Packet, C4NetIO *pNetIO)
@@ -2238,7 +2238,7 @@ C4NetIOUDP::Packet::Packet(C4NetIOPacket RREF rnData, nr_t inNr)
 
 C4NetIOUDP::Packet::~Packet()
 {
-  delete [] pFragmentGot; pFragmentGot = NULL;
+	delete [] pFragmentGot; pFragmentGot = NULL;
 }
 
 // implementation
@@ -2442,9 +2442,9 @@ bool C4NetIOUDP::PacketList::DeletePacket(Packet *pPacket)
 
 void C4NetIOUDP::PacketList::ClearPackets(unsigned int iUntil)
 {
-  CStdLock ListLock(&ListCSec);
-  while(pFront && pFront->GetNr() < iUntil)
-    DeletePacket(pFront);
+	CStdLock ListLock(&ListCSec);
+	while(pFront && pFront->GetNr() < iUntil)
+		DeletePacket(pFront);
 }
 
 void C4NetIOUDP::PacketList::Clear()
@@ -2473,7 +2473,7 @@ C4NetIOUDP::Peer::Peer(const sockaddr_in &naddr, C4NetIOUDP *pnParent)
 		iIMCPacketCounter(0), iRIMCPacketCounter(0),
 		iMCAckPacketCounter(0),
 		iNextReCheck(0),
-    iIRate(0), iORate(0), iLoss(0)
+		iIRate(0), iORate(0), iLoss(0)
 {
 	ZeroMem(&addr2, sizeof(addr2));
 	ZeroMem(&PeerAddr, sizeof(PeerAddr));
@@ -2543,8 +2543,8 @@ bool C4NetIOUDP::Peer::Check(bool fForceCheck)
 
 void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 {
-  // statistics
-  { CStdLock StatLock(&StatCSec); iIRate += rPacket.getSize() + iUDPHeaderSize; }
+	// statistics
+	{ CStdLock StatLock(&StatCSec); iIRate += rPacket.getSize() + iUDPHeaderSize; }
 	// get packet header
 	if(rPacket.getSize()  < sizeof(PacketHdr)) return;
 	const PacketHdr *pHdr = getBufPtr<PacketHdr>(rPacket);
@@ -2565,8 +2565,8 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 			// check size
 			if(rPacket.getSize() != sizeof(ConnPacket)) break;
 			const ConnPacket *pPkt = getBufPtr<ConnPacket>(rPacket);
-      // right version?
-      if(pPkt->ProtocolVer != pParent->iVersion) break;
+			// right version?
+			if(pPkt->ProtocolVer != pParent->iVersion) break;
 			if(!fBroadcasted)
 			{
 				// Second connection attempt using different address?
@@ -2695,14 +2695,14 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 			const CheckPacketHdr *pPkt = getBufPtr<CheckPacketHdr>(rPacket);
 			// check packet size
 			if(rPacket.getSize() < sizeof(CheckPacketHdr) + (pPkt->AskCount + pPkt->MCAskCount) * sizeof(int)) break;
-      // clear all acknowledged packets
+			// clear all acknowledged packets
 			CStdLock OutLock(&OutCSec);
-      OPackets.ClearPackets(pPkt->AckNr);
-      if(pPkt->MCAckNr > iMCAckPacketCounter)
-      {
-        iMCAckPacketCounter = pPkt->MCAckNr;
-        pParent->ClearMCPackets();
-      }
+			OPackets.ClearPackets(pPkt->AckNr);
+			if(pPkt->MCAckNr > iMCAckPacketCounter)
+			{
+				iMCAckPacketCounter = pPkt->MCAckNr;
+				pParent->ClearMCPackets();
+			}
 			OutLock.Clear();
 			// read ask list
 			const int *pAskList = getBufPtr<int>(rPacket, sizeof(CheckPacketHdr));
@@ -2714,7 +2714,7 @@ void C4NetIOUDP::Peer::OnRecv(const C4NetIOPacket &rPacket) // (mt-safe)
 				bool fMCPacket = i >= pPkt->AskCount;
 				CStdLock OutLock(fMCPacket ? &pParent->OutCSec : &OutCSec);
 				Packet *pPkt2Send = (fMCPacket ? pParent->OPackets : OPackets).GetPacketFrgm(pAskList[i]);
-        if(!pPkt2Send) { Close("starvation"); break; }
+				if(!pPkt2Send) { Close("starvation"); break; }
 				// send the fragment
 				if(fMCPacket)
 					pParent->BroadcastDirect(*pPkt2Send, pAskList[i]);
@@ -2766,9 +2766,9 @@ void C4NetIOUDP::Peer::CheckTimeout()
 
 void C4NetIOUDP::Peer::ClearStatistics()
 {
-  CStdLock StatLock(&StatCSec);
-  iIRate = iORate = 0;
-  iLoss = 0;
+	CStdLock StatLock(&StatCSec);
+	iIRate = iORate = 0;
+	iLoss = 0;
 }
 
 bool C4NetIOUDP::Peer::DoConn(bool fMC) // (mt-safe)
@@ -2780,7 +2780,7 @@ bool C4NetIOUDP::Peer::DoConn(bool fMC) // (mt-safe)
 	// send packet (include current outgoing packet counter and mc addr)
 	ConnPacket Pkt;
 	Pkt.StatusByte = uint8_t(IPID_Conn) | (fMC ?  0x80 : 0x00);
-  Pkt.ProtocolVer = pParent->iVersion;
+	Pkt.ProtocolVer = pParent->iVersion;
 	Pkt.Nr = fMC ? pParent->iOPacketCounter : iOPacketCounter;
 	Pkt.Addr = addr;
 	if(pParent->fMultiCast)
@@ -2794,8 +2794,8 @@ bool C4NetIOUDP::Peer::DoCheck(int iAskCnt, int iMCAskCnt, unsigned int *pAskLis
 {
 	// security
 	if(!pAskList) iAskCnt = iMCAskCnt = 0;
-  // statistics
-  { CStdLock StatLock(&StatCSec); iLoss += iAskCnt + iMCAskCnt; }
+	// statistics
+	{ CStdLock StatLock(&StatCSec); iLoss += iAskCnt + iMCAskCnt; }
 	// alloc data
 	int iAskListSize = (iAskCnt + iMCAskCnt) * sizeof(*pAskList);
 	StdBuf Packet; Packet.New(sizeof(CheckPacketHdr) + iAskListSize);
@@ -2803,8 +2803,8 @@ bool C4NetIOUDP::Peer::DoCheck(int iAskCnt, int iMCAskCnt, unsigned int *pAskLis
 	// set up header
 	pChkPkt->StatusByte = IPID_Check; // (note: always du here, see C4NetIOUDP::DoCheck)
 	pChkPkt->Nr = iOPacketCounter;
-  pChkPkt->AckNr = iIPacketCounter;
-  pChkPkt->MCAckNr = iIMCPacketCounter;
+	pChkPkt->AckNr = iIPacketCounter;
+	pChkPkt->MCAckNr = iIMCPacketCounter;
 	// copy ask list
 	pChkPkt->AskCount = iAskCnt;
 	pChkPkt->MCAskCount = iMCAskCnt;
@@ -2830,10 +2830,10 @@ bool C4NetIOUDP::Peer::SendDirect(C4NetIOPacket RREF rPacket) // (mt-safe)
 {
 	// insert correct addr
 	if(!(rPacket.getStatus() & 0x80)) rPacket.SetAddr(addr);
-  // count outgoing
-  { CStdLock StatLock(&StatCSec); iORate += rPacket.getSize() + iUDPHeaderSize; }
+	// count outgoing
+	{ CStdLock StatLock(&StatCSec); iORate += rPacket.getSize() + iUDPHeaderSize; }
 	// forward call
-  	return pParent->SendDirect(std::move(rPacket));
+		return pParent->SendDirect(std::move(rPacket));
 }
 
 void C4NetIOUDP::Peer::OnConn()
@@ -2878,8 +2878,8 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 	Packet *pPkt;
 	while((pPkt = IPackets.GetFirstPacketComplete()))
 	{
-    // missing packet?
-    if(pPkt->GetNr() != iIPacketCounter) break;
+		// missing packet?
+		if(pPkt->GetNr() != iIPacketCounter) break;
 		// do callback
 		if(pParent->pCB)
 			pParent->pCB->OnPacket(pPkt->GetData(), pParent);
@@ -2892,8 +2892,8 @@ void C4NetIOUDP::Peer::CheckCompleteIPackets()
 	}
 	while((pPkt = IMCPackets.GetFirstPacketComplete()))
 	{
-    // missing packet?
-    if(pPkt->GetNr() != iIMCPacketCounter) break;
+		// missing packet?
+		if(pPkt->GetNr() != iIMCPacketCounter) break;
 		// do callback
 		if(pParent->pCB)
 			pParent->pCB->OnPacket(pPkt->GetData(), pParent);
@@ -2956,13 +2956,13 @@ bool C4NetIOUDP::SendDirect(C4NetIOPacket RREF rPacket) // (mt-safe)
 	addr_t toaddr = rPacket.getAddr();
 	// packet meant to be broadcasted?
 	if(rPacket.getStatus() & 0x80)
-  {
+	{
 		// set addr
 		toaddr = C4NetIOSimpleUDP::getMCAddr();
-    // statistics
-    CStdLock StatLock(&StatCSec);
-    iBroadcastRate += rPacket.getSize() + iUDPHeaderSize;
-  }
+		// statistics
+		CStdLock StatLock(&StatCSec);
+		iBroadcastRate += rPacket.getSize() + iUDPHeaderSize;
+	}
 
 	// debug
 #ifdef C4NETIO_DEBUG
@@ -2970,8 +2970,8 @@ bool C4NetIOUDP::SendDirect(C4NetIOPacket RREF rPacket) // (mt-safe)
 #endif
 
 #ifdef C4NETIO_SIMULATE_PACKETLOSS
-  if((rPacket.getStatus() & 0x7F) != IPID_Test)
-    if(SafeRandom(100) < C4NETIO_SIMULATE_PACKETLOSS) return true;
+	if((rPacket.getStatus() & 0x7F) != IPID_Test)
+		if(SafeRandom(100) < C4NETIO_SIMULATE_PACKETLOSS) return true;
 #endif
 
 	// send it
@@ -3019,20 +3019,20 @@ bool C4NetIOUDP::DoLoopbackTest()
 
 void C4NetIOUDP::ClearMCPackets()
 {
-  CStdShareLock PeerListLock(&PeerListCSec);
-  CStdLock OutLock(&OutCSec);
-  // clear packets if no client is present
-  if(!pPeerList)
-    OPackets.Clear();
-  else
-  {
-    // find minimum acknowledged packet number
-    unsigned int iAckNr = pPeerList->GetMCAckPacketCounter();
-    for(Peer *pPeer = pPeerList->Next; pPeer; pPeer = pPeer->Next)
-      iAckNr = Min(iAckNr, pPeerList->GetMCAckPacketCounter());
-    // clear packets
-    OPackets.ClearPackets(iAckNr);
-  }
+	CStdShareLock PeerListLock(&PeerListCSec);
+	CStdLock OutLock(&OutCSec);
+	// clear packets if no client is present
+	if(!pPeerList)
+		OPackets.Clear();
+	else
+	{
+		// find minimum acknowledged packet number
+		unsigned int iAckNr = pPeerList->GetMCAckPacketCounter();
+		for(Peer *pPeer = pPeerList->Next; pPeer; pPeer = pPeer->Next)
+			iAckNr = Min(iAckNr, pPeerList->GetMCAckPacketCounter());
+		// clear packets
+		OPackets.ClearPackets(iAckNr);
+	}
 }
 
 void C4NetIOUDP::AddPeer(Peer *pPeer)
@@ -3084,17 +3084,17 @@ C4NetIOUDP::Peer *C4NetIOUDP::GetPeer(const addr_t &addr)
 C4NetIOUDP::Peer *C4NetIOUDP::ConnectPeer(const addr_t &PeerAddr, bool fFailCallback) // (mt-safe)
 {
 	CStdShareLock PeerListLock(&PeerListCSec);
-  // lock so no new peer can be added after this point
-  CStdLock PeerListAddLock(&PeerListAddCSec);
-  // recheck: address already known?
-  Peer *pnPeer = GetPeer(PeerAddr);
-  if(pnPeer) return pnPeer;
-  // create new Peer class
+	// lock so no new peer can be added after this point
+	CStdLock PeerListAddLock(&PeerListAddCSec);
+	// recheck: address already known?
+	Peer *pnPeer = GetPeer(PeerAddr);
+	if(pnPeer) return pnPeer;
+	// create new Peer class
 	pnPeer = new Peer(PeerAddr, this);
 	if(!pnPeer) return NULL;
 	// add peer to list
 	AddPeer(pnPeer);
-  PeerListAddLock.Clear();
+	PeerListAddLock.Clear();
 	// send connection request
 	if(!pnPeer->Connect(fFailCallback)) { pnPeer->Close("connect failed"); return NULL; }
 	// ok (do not wait for peer)
@@ -3333,26 +3333,26 @@ bool ResolveAddress(const char *szAddress, C4NetIO::addr_t *paddr, uint16_t iPor
 	raddr.sin_family = AF_INET;
 	raddr.sin_port = htons(iPort);
 	// no plain IP address?
-  if((raddr.sin_addr.s_addr = inet_addr(szAddress)) == INADDR_NONE)
-  {
+	if((raddr.sin_addr.s_addr = inet_addr(szAddress)) == INADDR_NONE)
+	{
 #ifdef HAVE_WINSOCK
 		if(!AcquireWinSock()) return false;
 #endif
-    // resolve
-    hostent *pHost;
-    if(!(pHost = gethostbyname(szAddress)))
+		// resolve
+		hostent *pHost;
+		if(!(pHost = gethostbyname(szAddress)))
 #ifdef HAVE_WINSOCK
 			{ ReleaseWinSock(); return false; }
 		ReleaseWinSock();
 #else
-  		return false;
-#endif
-    // correct type?
-    if(pHost->h_addrtype != AF_INET || pHost->h_length != sizeof(in_addr))
 			return false;
-    // get address
-    raddr.sin_addr = *reinterpret_cast<in_addr *>(pHost->h_addr_list[0]);
-  }
+#endif
+		// correct type?
+		if(pHost->h_addrtype != AF_INET || pHost->h_length != sizeof(in_addr))
+			return false;
+		// get address
+		raddr.sin_addr = *reinterpret_cast<in_addr *>(pHost->h_addr_list[0]);
+	}
 	// ok
 	*paddr = raddr;
 	return true;

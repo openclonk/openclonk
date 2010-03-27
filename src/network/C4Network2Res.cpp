@@ -123,9 +123,9 @@ void C4Network2ResCore::Clear()
 
 void C4Network2ResCore::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eType, C4Network2ResType_EnumMap), "Type", NRT_Null));
-  pComp->Value(mkNamingAdapt(iID, "ID", -1));
-  pComp->Value(mkNamingAdapt(iDerID, "DerID", -1));
+	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eType, C4Network2ResType_EnumMap), "Type", NRT_Null));
+	pComp->Value(mkNamingAdapt(iID, "ID", -1));
+	pComp->Value(mkNamingAdapt(iDerID, "DerID", -1));
 	pComp->Value(mkNamingAdapt(fLoadable, "Loadable", true));
 	if(fLoadable)
 	{
@@ -134,12 +134,12 @@ void C4Network2ResCore::CompileFunc(StdCompiler *pComp)
 	  pComp->Value(mkNamingAdapt(iChunkSize, "ChunkSize", C4NetResChunkSize));
 		if(!iChunkSize) pComp->excCorrupt("zero chunk size");
 	}
-  pComp->Value(mkNamingAdapt(iContentsCRC, "ContentsCRC", 0U));
+	pComp->Value(mkNamingAdapt(iContentsCRC, "ContentsCRC", 0U));
 	pComp->Value(mkNamingCountAdapt(fHasFileSHA, "FileSHA"));
 	if(fHasFileSHA)
 		pComp->Value(mkNamingAdapt(mkHexAdapt(FileSHA), "FileSHA"));
-  pComp->Value(mkNamingAdapt(mkNetFilenameAdapt(FileName), "Filename", ""));
-  pComp->Value(mkNamingAdapt(mkNetFilenameAdapt(Author), "Author", ""));
+	pComp->Value(mkNamingAdapt(mkNetFilenameAdapt(FileName), "Filename", ""));
+	pComp->Value(mkNamingAdapt(mkNetFilenameAdapt(Author), "Author", ""));
 }
 
 // *** C4Network2ResLoad
@@ -329,33 +329,33 @@ int32_t C4Network2ResChunkData::getPresentChunk(int32_t iNr) const
 
 void C4Network2ResChunkData::CompileFunc(StdCompiler *pComp)
 {
-  bool fCompiler = pComp->isCompiler();
-  if(fCompiler) Clear();
-  // Data
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iChunkCnt), "ChunkCnt", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iChunkRangeCnt), "ChunkRangeCnt", 0));
+	bool fCompiler = pComp->isCompiler();
+	if(fCompiler) Clear();
+	// Data
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iChunkCnt), "ChunkCnt", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iChunkRangeCnt), "ChunkRangeCnt", 0));
 	// Ranges
-  if(!pComp->Name("Ranges"))
-    pComp->excCorrupt("ResChunk ranges expected!");
-  ChunkRange *pRange = NULL;
+	if(!pComp->Name("Ranges"))
+		pComp->excCorrupt("ResChunk ranges expected!");
+	ChunkRange *pRange = NULL;
 	for(int32_t i = 0; i < iChunkRangeCnt; i++)
 	{
-    // Create new range / go to next range
-    if(fCompiler)
-      pRange = (pRange ? pRange->Next : pChunkRanges) = new ChunkRange;
-    else
-      pRange = pRange ? pRange->Next : pChunkRanges;
-    // Seperate
-    if(i) pComp->Seperator();
-    // Compile range
+		// Create new range / go to next range
+		if(fCompiler)
+			pRange = (pRange ? pRange->Next : pChunkRanges) = new ChunkRange;
+		else
+			pRange = pRange ? pRange->Next : pChunkRanges;
+		// Seperate
+		if(i) pComp->Seperator();
+		// Compile range
 		pComp->Value(mkIntPackAdapt(pRange->Start));
-    pComp->Seperator(StdCompiler::SEP_PART2);
+		pComp->Seperator(StdCompiler::SEP_PART2);
 		pComp->Value(mkIntPackAdapt(pRange->Length));
 	}
-  // Terminate list
-  if(fCompiler)
-    (pRange ? pRange->Next : pChunkRanges) = NULL;
-  pComp->NameEnd();
+	// Terminate list
+	if(fCompiler)
+		(pRange ? pRange->Next : pChunkRanges) = NULL;
+	pComp->NameEnd();
 }
 
 // *** C4Network2Res
@@ -375,13 +375,13 @@ C4Network2Res::C4Network2Res(C4Network2ResList *pnParent)
 
 C4Network2Res::~C4Network2Res()
 {
-  assert(!pNext);
+	assert(!pNext);
 	Clear();
 }
 
 bool C4Network2Res::SetByFile(const char *strFilePath, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName, bool fSilent)
 {
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	// default ressource name: relative path
 	if(!szResName) szResName = Config.AtRelativePath(strFilePath);
 	SCopy(strFilePath, szFile, sizeof(szFile)-1);
@@ -415,7 +415,7 @@ bool C4Network2Res::SetByFile(const char *strFilePath, bool fTemp, C4Network2Res
 bool C4Network2Res::SetByGroup(C4Group *pGrp, bool fTemp, C4Network2ResType eType, int32_t iResID, const char *szResName, bool fSilent) // by main thread
 {
 	Clear();
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	// default ressource name: relative path
 	StdStrBuf sResName;
 	if (szResName)
@@ -501,7 +501,7 @@ bool C4Network2Res::SetByCore(const C4Network2ResCore &nCore, bool fSilent, cons
 bool C4Network2Res::SetLoad(const C4Network2ResCore &nCore) // by main thread
 {
 	Clear();
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	// must be loadable
 	if(!nCore.isLoadable()) return false;
 	// save core, set chunks
@@ -530,24 +530,24 @@ bool C4Network2Res::SetLoad(const C4Network2ResCore &nCore) // by main thread
 
 bool C4Network2Res::SetDerived(const char *strName, const char *strFilePath, bool fTemp, C4Network2ResType eType, int32_t iDResID)
 {
-  Clear();
-  CStdLock FileLock(&FileCSec);
-  // set core
-  Core.Set(eType, C4NetResIDAnonymous, strName, ~0, "");
-  Core.SetDerived(iDResID);
-  // save file path
-  SCopy(strFilePath, szFile, _MAX_PATH);
-  *szStandalone = '\0';
-  // set flags
-  fDirty = false;
-  fTempFile = fTemp;
-  fStandaloneFailed = false;
-  fRemoved = false;
+	Clear();
+	CStdLock FileLock(&FileCSec);
+	// set core
+	Core.Set(eType, C4NetResIDAnonymous, strName, ~0, "");
+	Core.SetDerived(iDResID);
+	// save file path
+	SCopy(strFilePath, szFile, _MAX_PATH);
+	*szStandalone = '\0';
+	// set flags
+	fDirty = false;
+	fTempFile = fTemp;
+	fStandaloneFailed = false;
+	fRemoved = false;
 	iLastReqTime = time(NULL);
 	fLoading = false;
-  // Do not set any chunk data - anonymous ressources are very likely to change.
-  // Wait for FinishDerived()-call.
-  return true;
+	// Do not set any chunk data - anonymous ressources are very likely to change.
+	// Wait for FinishDerived()-call.
+	return true;
 }
 
 void C4Network2Res::ChangeID(int32_t inID)
@@ -560,7 +560,7 @@ bool C4Network2Res::IsBinaryCompatible()
 	// returns wether the standalone of this ressource is binary compatible
 	// to the official version (means: matches the file checksum)
 
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	// standalone set? ok then (see GetStandalone)
 	if(szStandalone[0]) return true;
 	// is a directory?
@@ -587,10 +587,10 @@ bool C4Network2Res::GetStandalone(char *pTo, int32_t iMaxL, bool fSetOfficial, b
 	if(!fSetOfficial && !Core.isLoadable()) return false;
 	// set flag, so failure below will let future calls fail
 	fStandaloneFailed = true;
-  // lock file
-  CStdLock FileLock(&FileCSec);
+	// lock file
+	CStdLock FileLock(&FileCSec);
 
-  // directory?
+	// directory?
 	SCopy(szFile, szStandalone, sizeof(szStandalone)-1);
 	if(DirectoryExists(szFile))
 	{
@@ -697,105 +697,105 @@ bool C4Network2Res::CalculateSHA()
 
 C4Network2Res::Ref C4Network2Res::Derive()
 {
-  // Called before the file is changed. Rescues all files and creates a
-  // new ressource for the file. This ressource is flagged as "anonymous", as it
-  // has no official core (no res ID, to be exact).
-  // The resource gets its final core when FinishDerive() is called.
+	// Called before the file is changed. Rescues all files and creates a
+	// new ressource for the file. This ressource is flagged as "anonymous", as it
+	// has no official core (no res ID, to be exact).
+	// The resource gets its final core when FinishDerive() is called.
 
-  // For security: This doesn't make much sense if the resource is currently being
-  // loaded. So better assume the caller doesn't know what he's doing and check.
-  if(isLoading()) return NULL;
+	// For security: This doesn't make much sense if the resource is currently being
+	// loaded. So better assume the caller doesn't know what he's doing and check.
+	if(isLoading()) return NULL;
 
-  CStdLock FileLock(&FileCSec);
-  // Save back original file name
-  char szOrgFile[_MAX_PATH+1];
-  SCopy(szFile, szOrgFile, _MAX_PATH);
-  bool fOrgTempFile = fTempFile;
+	CStdLock FileLock(&FileCSec);
+	// Save back original file name
+	char szOrgFile[_MAX_PATH+1];
+	SCopy(szFile, szOrgFile, _MAX_PATH);
+	bool fOrgTempFile = fTempFile;
 
-  // Create a copy of the file, if neccessary
-  if(!*szStandalone || SEqual(szStandalone, szFile))
-  {
+	// Create a copy of the file, if neccessary
+	if(!*szStandalone || SEqual(szStandalone, szFile))
+	{
 		if(!pParent->FindTempResFileName(szOrgFile, szFile))
 			{ Log("Derive: could not find free name for temporary file!"); return NULL; }
 		if(!C4Group_CopyItem(szOrgFile, szFile))
 			{ Log("Derive: could not copy to temporary file!"); return NULL; }
-    // set standalone
-    if(*szStandalone)
-      SCopy(szFile, szStandalone, _MAX_PATH);
-    fTempFile = true;
-  }
-  else
-  {
-    // Standlone exists: Just set szFile to point on the standlone. It's
-    // assumed that the original file isn't of intrest after this point anyway.
-    SCopy(szStandalone, szFile, _MAX_PATH);
-    fTempFile = true;
-  }
+		// set standalone
+		if(*szStandalone)
+			SCopy(szFile, szStandalone, _MAX_PATH);
+		fTempFile = true;
+	}
+	else
+	{
+		// Standlone exists: Just set szFile to point on the standlone. It's
+		// assumed that the original file isn't of intrest after this point anyway.
+		SCopy(szStandalone, szFile, _MAX_PATH);
+		fTempFile = true;
+	}
 
 	Application.InteractiveThread.ThreadLogS("Network: Ressource: deriving from %d:%s, original at %s", getResID(), Core.getFileName(), szFile);
 
-  // (note: should remove temp file if something fails after this point)
+	// (note: should remove temp file if something fails after this point)
 
-  // create new ressource
+	// create new ressource
 	C4Network2Res::Ref pDRes = new C4Network2Res(pParent);
-  if(!pDRes) return NULL;
+	if(!pDRes) return NULL;
 
-  // initialize
-  if(!pDRes->SetDerived(Core.getFileName(), szOrgFile, fOrgTempFile, getType(), getResID()))
-    return NULL;
+	// initialize
+	if(!pDRes->SetDerived(Core.getFileName(), szOrgFile, fOrgTempFile, getType(), getResID()))
+		return NULL;
 
-  // add to list
-  pParent->Add(pDRes);
+	// add to list
+	pParent->Add(pDRes);
 
-  // return new ressource
-  return pDRes;
+	// return new ressource
+	return pDRes;
 }
 
 bool C4Network2Res::FinishDerive() // by main thread
 {
-  // All changes have been made. Register this ressource with a new ID.
+	// All changes have been made. Register this ressource with a new ID.
 
-  // security
-  if(!isAnonymous()) return false;
+	// security
+	if(!isAnonymous()) return false;
 
-  CStdLock FileLock(&FileCSec);
-  // Save back data
-  int32_t iDerID = Core.getDerID();
-  char szName[_MAX_PATH+1]; SCopy(Core.getFileName(), szName, _MAX_PATH);
-  char szFileC[_MAX_PATH+1]; SCopy(szFile, szFileC, _MAX_PATH);
-  // Set by file
-  if(!SetByFile(szFileC, fTempFile, getType(), pParent->nextResID(), szName))
-    return false;
-  // create standalone
-  if(!GetStandalone(NULL, 0, true))
-    return false;
-  // Set ID
-  Core.SetDerived(iDerID);
+	CStdLock FileLock(&FileCSec);
+	// Save back data
+	int32_t iDerID = Core.getDerID();
+	char szName[_MAX_PATH+1]; SCopy(Core.getFileName(), szName, _MAX_PATH);
+	char szFileC[_MAX_PATH+1]; SCopy(szFile, szFileC, _MAX_PATH);
+	// Set by file
+	if(!SetByFile(szFileC, fTempFile, getType(), pParent->nextResID(), szName))
+		return false;
+	// create standalone
+	if(!GetStandalone(NULL, 0, true))
+		return false;
+	// Set ID
+	Core.SetDerived(iDerID);
 	// announce derive
 	pParent->getIOClass()->BroadcastMsg(MkC4NetIOPacket(PID_NetResDerive, Core));
-  // derivation is dirty bussines
-  fDirty = true;
-  // ok
-  return true;
+	// derivation is dirty bussines
+	fDirty = true;
+	// ok
+	return true;
 }
 
 bool C4Network2Res::FinishDerive(const C4Network2ResCore &nCore)
 {
-  // security
-  if(!isAnonymous()) return false;
-  // Set core
-  Core = nCore;
-  // Set chunks (assume the ressource is complete)
-  Chunks.SetComplete(Core.getChunkCnt());
+	// security
+	if(!isAnonymous()) return false;
+	// Set core
+	Core = nCore;
+	// Set chunks (assume the ressource is complete)
+	Chunks.SetComplete(Core.getChunkCnt());
 
-  // Note that the Contents-CRC is /not/ checked. Derivation needs to be
-  // synchronized outside of C4Network2Res.
+	// Note that the Contents-CRC is /not/ checked. Derivation needs to be
+	// synchronized outside of C4Network2Res.
 
-  // But note that the ressource /might/ be binary compatible (though very
-  // unlikely), so do not set fNotBinaryCompatible.
+	// But note that the ressource /might/ be binary compatible (though very
+	// unlikely), so do not set fNotBinaryCompatible.
 
-  // ok
-  return true;
+	// ok
+	return true;
 }
 
 C4Group *C4Network2Res::OpenAsGrp() const
@@ -842,7 +842,7 @@ bool C4Network2Res::SendChunk(uint32_t iChunk, int32_t iToClient)
 	// save last request time
 	iLastReqTime = time(NULL);
 	// create packet
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	C4Network2ResChunk ResChunk;
 	ResChunk.Set(this, iChunk);
 	// send
@@ -903,8 +903,8 @@ void C4Network2Res::OnChunk(const C4Network2ResChunk &rChunk)
 	if(!fLoading) return;
 	// correct ressource?
 	if(rChunk.getResID() != getResID()) return;
-  // add ressource data
-  CStdLock FileLock(&FileCSec);
+	// add ressource data
+	CStdLock FileLock(&FileCSec);
 	bool fSuccess = rChunk.AddTo(this, pParent->getIOClass());
 #ifdef C4NET2RES_DEBUG_LOG
 	// log
@@ -977,7 +977,7 @@ bool C4Network2Res::NeedsDiscover()
 
 void C4Network2Res::Clear()
 {
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	// delete files
 	if(fTempFile)
 		if(FileExists(szFile))
@@ -1000,14 +1000,14 @@ void C4Network2Res::Clear()
 
 int32_t C4Network2Res::OpenFileRead()
 {
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	if(!GetStandalone(NULL, 0, false, false, true)) return -1;
 	return open(szStandalone, _O_BINARY | O_RDONLY);
 }
 
 int32_t C4Network2Res::OpenFileWrite()
 {
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	return open(szStandalone, _O_BINARY | O_CREAT | O_WRONLY, S_IREAD | S_IWRITE);
 }
 
@@ -1154,7 +1154,7 @@ void C4Network2Res::RemoveCChunks(ClientChunks *pChunks)
 
 bool C4Network2Res::OptimizeStandalone(bool fSilent)
 {
-  CStdLock FileLock(&FileCSec);
+	CStdLock FileLock(&FileCSec);
 	// for now: player files only
 	if(Core.getType() == NRT_Player)
 	{
@@ -1285,9 +1285,9 @@ void C4Network2ResChunk::CompileFunc(StdCompiler *pComp)
 {
 	// pack header
 	pComp->Value(mkNamingAdapt(iResID, "ResID", -1));
-  pComp->Value(mkNamingAdapt(iChunk, "Chunk", ~0U));
-  // Data
-  pComp->Value(mkNamingAdapt(Data, "Data"));
+	pComp->Value(mkNamingAdapt(iChunk, "Chunk", ~0U));
+	// Data
+	pComp->Value(mkNamingAdapt(Data, "Data"));
 }
 
 // *** C4Network2ResList
@@ -1385,10 +1385,10 @@ C4Network2Res::Ref C4Network2ResList::getRefRes(const char *szFile, bool fLocalO
 C4Network2Res::Ref C4Network2ResList::getRefNextRes(int32_t iResID)
 {
 	CStdShareLock ResListLock(&ResListCSec);
-  C4Network2Res *pRes = NULL;
+	C4Network2Res *pRes = NULL;
 	for(C4Network2Res *pCur = pFirst; pCur; pCur = pCur->pNext)
 		if(!pCur->isRemoved() && pCur->getResID() >= iResID)
-      if(!pRes || pRes->getResID() > pCur->getResID())
+			if(!pRes || pRes->getResID() > pCur->getResID())
 			  pRes = pCur;
 	return pRes;
 }
@@ -1470,7 +1470,7 @@ C4Network2Res::Ref C4Network2ResList::AddByCore(const C4Network2ResCore &Core, b
 	// try set by core
 	if(!pRes->SetByCore(Core, true))
 		{
-    pRes.Clear();
+		pRes.Clear();
 		// try load (if specified)
 		return fLoad ? AddLoad(Core) : NULL;
 		}
@@ -1651,7 +1651,7 @@ void C4Network2ResList::OnShareFree(CStdCSecEx *pCSec)
 				// unlink
 				(pPrev ? pPrev->pNext : pFirst) = pNext;
 				// remove
-        pRes->pNext = NULL;
+				pRes->pNext = NULL;
 				pRes->DelRef();
 			}
 			else
@@ -1721,23 +1721,23 @@ bool C4Network2ResList::CreateNetworkFolder()
 
 bool C4Network2ResList::FindTempResFileName(const char *szFilename, char *pTarget)
 {
-    char safeFilename[_MAX_PATH];
-    char* safePos = safeFilename;
-    while (*szFilename)
-    {
-        if ((*szFilename >= 'a' && *szFilename <= 'z') ||
-            (*szFilename >= 'A' && *szFilename <= 'Z') ||
-            (*szFilename >= '0' && *szFilename <= '9') ||
-            (*szFilename == '.') || (*szFilename == '/'))
-            *safePos = *szFilename;
-        else
-            *safePos = '_';
+		char safeFilename[_MAX_PATH];
+		char* safePos = safeFilename;
+		while (*szFilename)
+		{
+				if ((*szFilename >= 'a' && *szFilename <= 'z') ||
+						(*szFilename >= 'A' && *szFilename <= 'Z') ||
+						(*szFilename >= '0' && *szFilename <= '9') ||
+						(*szFilename == '.') || (*szFilename == '/'))
+						*safePos = *szFilename;
+				else
+						*safePos = '_';
 
-        ++safePos;
-        ++szFilename;
-    }
-    *safePos = 0;
-    szFilename = safeFilename;
+				++safePos;
+				++szFilename;
+		}
+		*safePos = 0;
+		szFilename = safeFilename;
 
 	// create temporary file
 	SCopy(Config.AtNetworkPath(GetFilename(szFilename)), pTarget, _MAX_PATH);

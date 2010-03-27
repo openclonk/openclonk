@@ -59,9 +59,9 @@ int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 
 	// Write dump
 	MINIDUMP_EXCEPTION_INFORMATION ExpParam;
-  ExpParam.ThreadId = GetCurrentThreadId();
-  ExpParam.ExceptionPointers = pExceptionPointers;
-  ExpParam.ClientPointers = true;
+	ExpParam.ThreadId = GetCurrentThreadId();
+	ExpParam.ExceptionPointers = pExceptionPointers;
+	ExpParam.ClientPointers = true;
 	MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(),
 		file, MiniDumpNormal, &ExpParam, NULL, NULL);
 
@@ -76,12 +76,12 @@ int GenerateDump(EXCEPTION_POINTERS* pExceptionPointers)
 
 int WINAPI WinMain (HINSTANCE hInst,
 										HINSTANCE hPrevInstance,
-                    LPSTR lpszCmdParam,
+										LPSTR lpszCmdParam,
 										int nCmdShow)
 	{
 #if defined(_DEBUG) && defined(_MSC_VER)
 	// enable debugheap!
-  _CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	_CrtSetDbgFlag( _CrtSetDbgFlag( _CRTDBG_REPORT_FLAG ) | _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
 #ifdef GENERATE_MINI_DUMP

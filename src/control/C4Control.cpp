@@ -59,7 +59,7 @@ C4ControlPacket::~C4ControlPacket()
 
 bool C4ControlPacket::LocalControl() const
 {
-  return iByClient == ::Control.ClientID();
+	return iByClient == ::Control.ClientID();
 }
 
 void C4ControlPacket::SetByClient(int32_t inByClient)
@@ -92,9 +92,9 @@ void C4Control::Clear()
 
 bool C4Control::PreExecute() const
 {
-  bool fReady = true;
-  for(C4IDPacket *pPkt = firstPkt(); pPkt; pPkt = nextPkt(pPkt))
-  {
+	bool fReady = true;
+	for(C4IDPacket *pPkt = firstPkt(); pPkt; pPkt = nextPkt(pPkt))
+	{
 		// recheck packet type: Must be control
 		if (pPkt->getPktType() & CID_First)
 			{
@@ -106,14 +106,14 @@ bool C4Control::PreExecute() const
 			{
 			LogF("C4Control::PreExecute: WARNING: Ignoring packet type %2x (not control.)", pPkt->getPktType());
 			}
-  }
-  return fReady;
+	}
+	return fReady;
 }
 
 void C4Control::Execute() const
 {
-  for(C4IDPacket *pPkt = firstPkt(); pPkt; pPkt = nextPkt(pPkt))
-  {
+	for(C4IDPacket *pPkt = firstPkt(); pPkt; pPkt = nextPkt(pPkt))
+	{
 		// recheck packet type: Must be control
 		if (pPkt->getPktType() & CID_First)
 			{
@@ -125,22 +125,22 @@ void C4Control::Execute() const
 			{
 			LogF("C4Control::Execute: WARNING: Ignoring packet type %2x (not control.)", pPkt->getPktType());
 			}
-  }
+	}
 }
 
 void C4Control::PreRec(C4Record *pRecord) const
 {
-  for(C4IDPacket *pPkt = firstPkt(); pPkt; pPkt = nextPkt(pPkt))
-  {
-    C4ControlPacket *pCtrlPkt = static_cast<C4ControlPacket *>(pPkt->getPkt());
-    if(pCtrlPkt)
-      pCtrlPkt->PreRec(pRecord);
-  }
+	for(C4IDPacket *pPkt = firstPkt(); pPkt; pPkt = nextPkt(pPkt))
+	{
+		C4ControlPacket *pCtrlPkt = static_cast<C4ControlPacket *>(pPkt->getPkt());
+		if(pCtrlPkt)
+			pCtrlPkt->PreRec(pRecord);
+	}
 }
 
 void C4Control::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(Pkts);
+	pComp->Value(Pkts);
 }
 
 // *** C4ControlSet
@@ -184,14 +184,14 @@ void C4ControlSet::Execute() const
 	case C4CVT_MaxPlayer:
 		// host only
 		if(iByClient != C4ClientIDHost) break;
-      // not in league
-      if (Game.Parameters.isLeague())
-         {
-         Log("/set maxplayer disabled in league!");
-         C4GUI::GUISound("Error");
-         break;
-         }
-      // set it
+			// not in league
+			if (Game.Parameters.isLeague())
+				 {
+				 Log("/set maxplayer disabled in league!");
+				 C4GUI::GUISound("Error");
+				 break;
+				 }
+			// set it
 		Game.Parameters.MaxPlayers = iData;
 		LogF("MaxPlayer = %d", (int)Game.Parameters.MaxPlayers);
 		break;
@@ -210,7 +210,7 @@ void C4ControlSet::Execute() const
 		Game.Teams.SetTeamColors(!!iData);
 		break;
 
-  case C4CVT_FairCrew:
+	case C4CVT_FairCrew:
 		// host only
 		if(!HostControl()) break;
 		// deny setting if it's fixed by scenario
@@ -219,17 +219,17 @@ void C4ControlSet::Execute() const
 			if (::Control.isCtrlHost()) Log(LoadResStr("IDS_MSG_NOMODIFYFAIRCREW"));
 			break;
 			}
-    // set new value
-    if(iData < 0)
-      {
-      Game.Parameters.UseFairCrew = false;
-      Game.Parameters.FairCrewStrength = 0;
-      }
-    else
-      {
-      Game.Parameters.UseFairCrew = true;
-      Game.Parameters.FairCrewStrength = iData;
-      }
+		// set new value
+		if(iData < 0)
+			{
+			Game.Parameters.UseFairCrew = false;
+			Game.Parameters.FairCrewStrength = 0;
+			}
+		else
+			{
+			Game.Parameters.UseFairCrew = true;
+			Game.Parameters.FairCrewStrength = iData;
+			}
 		// runtime updates for runtime fairness adjustments
 		if (Game.IsRunning)
 			{
@@ -254,15 +254,15 @@ void C4ControlSet::Execute() const
 		// this setting is part of the reference
 		if (::Network.isEnabled() && ::Network.isHost())
 			::Network.InvalidateReference();
-    break;
+		break;
 	}
 }
 
 void C4ControlSet::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntAdapt(eValType), "Type", C4CVT_None));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iData), "Data", 0));
-  C4ControlPacket::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(mkIntAdapt(eValType), "Type", C4CVT_None));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iData), "Data", 0));
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 // *** C4ControlScript
@@ -311,10 +311,10 @@ void C4ControlScript::Execute() const
 
 void C4ControlScript::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(iTargetObj, "TargetObj", -1));
-  pComp->Value(mkNamingAdapt(fInternal, "Internal", false));
-  pComp->Value(mkNamingAdapt(Script, "Script", ""));
-  C4ControlPacket::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(iTargetObj, "TargetObj", -1));
+	pComp->Value(mkNamingAdapt(fInternal, "Internal", false));
+	pComp->Value(mkNamingAdapt(Script, "Script", ""));
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 // *** C4ControlPlayerSelect
@@ -365,15 +365,15 @@ void C4ControlPlayerSelect::Execute() const
 
 void C4ControlPlayerSelect::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(iPlr, "Player", -1));
-  pComp->Value(mkNamingAdapt(fIsAlt, "IsAlt", false));
-  pComp->Value(mkNamingAdapt(iObjCnt, "ObjCnt", 0));
-  // Compile array
-  if(pComp->isCompiler())
+	pComp->Value(mkNamingAdapt(iPlr, "Player", -1));
+	pComp->Value(mkNamingAdapt(fIsAlt, "IsAlt", false));
+	pComp->Value(mkNamingAdapt(iObjCnt, "ObjCnt", 0));
+	// Compile array
+	if(pComp->isCompiler())
 		{ delete[] pObjNrs; pObjNrs = new int32_t [iObjCnt]; }
-  pComp->Value(mkNamingAdapt(mkArrayAdapt(pObjNrs, iObjCnt), "Objs", 0));
+	pComp->Value(mkNamingAdapt(mkArrayAdapt(pObjNrs, iObjCnt), "Objs", 0));
 
-  C4ControlPacket::CompileFunc(pComp);
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 
@@ -443,15 +443,15 @@ void C4ControlPlayerCommand::Execute() const
 
 void C4ControlPlayerCommand::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCmd), "Cmd", 0));
-  pComp->Value(mkNamingAdapt(iX, "X", 0));
-  pComp->Value(mkNamingAdapt(iY, "Y", 0));
-  pComp->Value(mkNamingAdapt(iTarget, "Target", 0));
-  pComp->Value(mkNamingAdapt(iTarget2, "Target2", 0));
-  pComp->Value(mkNamingAdapt(iData, "Data", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddMode), "AddMode", 0));
-  C4ControlPacket::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Player", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iCmd), "Cmd", 0));
+	pComp->Value(mkNamingAdapt(iX, "X", 0));
+	pComp->Value(mkNamingAdapt(iY, "Y", 0));
+	pComp->Value(mkNamingAdapt(iTarget, "Target", 0));
+	pComp->Value(mkNamingAdapt(iTarget2, "Target2", 0));
+	pComp->Value(mkNamingAdapt(iData, "Data", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddMode), "AddMode", 0));
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 // *** C4ControlSyncCheck
@@ -464,7 +464,7 @@ void C4ControlSyncCheck::Set()
 {
 	extern int32_t FRndPtr3;
 	Frame = Game.FrameCounter;
-  ControlTick = ::Control.ControlTick;
+	ControlTick = ::Control.ControlTick;
 	Random3 = FRndPtr3;
 	RandomCount = ::RandomCount;
 	AllCrewPosX = GetAllCrewPosX();
@@ -518,7 +518,7 @@ void C4ControlSyncCheck::Execute() const
 		LogFatal(FormatString("Network: %s Frm %i Ctrl %i Rnc %i Rn3 %i Cpx %i PXS %i MMi %i Obc %i Oei %i Sct %i", szOther, SyncCheck.Frame,SyncCheck.ControlTick,SyncCheck.RandomCount,SyncCheck.Random3,SyncCheck.AllCrewPosX,SyncCheck.PXSCount,SyncCheck.MassMoverIndex,SyncCheck.ObjectCount,SyncCheck.ObjectEnumerationIndex, SyncCheck.SectShapeSum).getData());
 		StartSoundEffect("SyncError");
 #ifdef _DEBUG
-    // Debug safe
+		// Debug safe
 	  C4GameSaveNetwork SaveGame(false);
 	  SaveGame.Save(Config.AtExePath("Desync.c4s"));
 #endif
@@ -538,17 +538,17 @@ void C4ControlSyncCheck::Execute() const
 
 void C4ControlSyncCheck::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(Frame), "Frame", -1));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(ControlTick), "ControlTick", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(Random3), "Random3", 0));
-  pComp->Value(mkNamingAdapt(RandomCount, "RandomCount", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(AllCrewPosX), "AllCrewPosX", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(PXSCount), "PXSCount", 0));
-  pComp->Value(mkNamingAdapt(MassMoverIndex, "MassMoverIndex", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(ObjectCount), "ObjectCount", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(ObjectEnumerationIndex), "ObjectEnumerationIndex", 0));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(SectShapeSum), "SectShapeSum", 0));
-  C4ControlPacket::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(Frame), "Frame", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(ControlTick), "ControlTick", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(Random3), "Random3", 0));
+	pComp->Value(mkNamingAdapt(RandomCount, "RandomCount", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(AllCrewPosX), "AllCrewPosX", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(PXSCount), "PXSCount", 0));
+	pComp->Value(mkNamingAdapt(MassMoverIndex, "MassMoverIndex", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(ObjectCount), "ObjectCount", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(ObjectEnumerationIndex), "ObjectEnumerationIndex", 0));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(SectShapeSum), "SectShapeSum", 0));
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 // *** C4ControlSynchronize
@@ -556,14 +556,14 @@ void C4ControlSyncCheck::CompileFunc(StdCompiler *pComp)
 void C4ControlSynchronize::Execute() const
 {
 	Game.Synchronize(fSavePlrFiles);
-  if(fSyncClearance) Game.SyncClearance();
+	if(fSyncClearance) Game.SyncClearance();
 }
 
 void C4ControlSynchronize::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(fSavePlrFiles, "SavePlrs", false));
-  pComp->Value(mkNamingAdapt(fSyncClearance, "SyncClear", false));
-  C4ControlPacket::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(fSavePlrFiles, "SavePlrs", false));
+	pComp->Value(mkNamingAdapt(fSyncClearance, "SyncClear", false));
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 // *** C4ControlClientJoin
@@ -608,7 +608,7 @@ void C4ControlClientUpdate::Execute() const
 		// nothing to do?
 		if(pClient->isActivated() == !!iData) break;
 		// log
-      LogF(LoadResStr(iData ? "IDS_NET_CLIENT_ACTIVATED" : "IDS_NET_CLIENT_DEACTIVATED"), strClient.getData(), pClient->getName());
+			LogF(LoadResStr(iData ? "IDS_NET_CLIENT_ACTIVATED" : "IDS_NET_CLIENT_DEACTIVATED"), strClient.getData(), pClient->getName());
 		// activate/deactivate
 		pClient->SetActivated(!!iData);
 		// local?
@@ -619,7 +619,7 @@ void C4ControlClientUpdate::Execute() const
 		// nothing to do?
 		if(pClient->isObserver()) break;
 		// log
-      LogF(LoadResStr("IDS_NET_CLIENT_OBSERVE"), strClient.getData(), pClient->getName());
+			LogF(LoadResStr("IDS_NET_CLIENT_OBSERVE"), strClient.getData(), pClient->getName());
 		// set observer (will deactivate)
 		pClient->SetObserver();
 		// local?
@@ -670,7 +670,7 @@ void C4ControlClientRemove::Execute() const
 	// remove client
 	if(!Game.Clients.Remove(pClient)) return;
 	// log
-  LogF(LoadResStr("IDS_NET_CLIENT_REMOVED"), strClient.getData(), pClient->getName(), strReason.getData());
+	LogF(LoadResStr("IDS_NET_CLIENT_REMOVED"), strClient.getData(), pClient->getName(), strReason.getData());
 	// remove all players
 	::Players.RemoveAtClient(iID, true);
 	// remove all resources
@@ -762,8 +762,8 @@ void C4ControlJoinPlayer::Execute() const
 		// Local player: Just join from local file
 		Game.JoinPlayer(szFilename, iAtClient, pClient->getName(), pInfo);
 	}
-  else if(!fByRes)
-  {
+	else if(!fByRes)
+	{
 		if (PlrData.getSize())
 		{
 			// create temp file
@@ -788,7 +788,7 @@ void C4ControlJoinPlayer::Execute() const
 			assert(false);
 			return;
 		}
-  }
+	}
 	else if(::Control.isNetwork())
 	{
 		// Find ressource
@@ -811,12 +811,12 @@ void C4ControlJoinPlayer::Strip()
 {
 	// By resource? Can't touch player file, then.
 	if(fByRes) return;
-  // create temp file
+	// create temp file
 	StdStrBuf PlayerFilename; PlayerFilename = GetFilename(Filename.getData());
-  PlayerFilename = Config.AtTempPath(PlayerFilename.getData());
+	PlayerFilename = Config.AtTempPath(PlayerFilename.getData());
 	// Copy to it
-  if(PlrData.SaveToFile(PlayerFilename.getData()))
-  {
+	if(PlrData.SaveToFile(PlayerFilename.getData()))
+	{
 		// open as group
 		C4Group Grp;
 		if(!Grp.Open(PlayerFilename.getData()))
@@ -836,29 +836,29 @@ void C4ControlJoinPlayer::Strip()
 		PlrData = NewPlrData;
 		// Done
 		EraseFile(PlayerFilename.getData());
-  }
+	}
 }
 
 bool C4ControlJoinPlayer::PreExecute() const
 {
-  // all data included in control packet?
-  if(!fByRes) return true;
+	// all data included in control packet?
+	if(!fByRes) return true;
 	// client lost?
 	if(!Game.Clients.getClientByID(iAtClient)) return true;
-  // network only
+	// network only
 	if(!::Control.isNetwork()) return true;
-  // search ressource
+	// search ressource
 	C4Network2Res::Ref pRes = ::Network.ResList.getRefRes(ResCore.getID());
 	// doesn't exist? start loading
 	if(!pRes) { pRes = ::Network.ResList.AddByCore(ResCore, true); }
 	if(!pRes) return true;
-  // is loading or removed?
+	// is loading or removed?
 	return !pRes->isLoading();
 }
 
 void C4ControlJoinPlayer::PreRec(C4Record *pRecord)
 {
-  if(!pRecord) return;
+	if(!pRecord) return;
 	if (fByRes)
 		{
 		// get local file by id
@@ -882,22 +882,22 @@ void C4ControlJoinPlayer::PreRec(C4Record *pRecord)
 
 void C4ControlJoinPlayer::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkNetFilenameAdapt(Filename), "Filename", ""));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAtClient), "AtClient", -1));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(idInfo), "InfoID", -1));
-  pComp->Value(mkNamingAdapt(fByRes, "ByRes", false));
-  if(fByRes)
-    pComp->Value(mkNamingAdapt(ResCore, "ResCore"));
-  else
-    pComp->Value(mkNamingAdapt(PlrData, "PlrData"));
-  C4ControlPacket::CompileFunc(pComp);
+	pComp->Value(mkNamingAdapt(mkNetFilenameAdapt(Filename), "Filename", ""));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAtClient), "AtClient", -1));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(idInfo), "InfoID", -1));
+	pComp->Value(mkNamingAdapt(fByRes, "ByRes", false));
+	if(fByRes)
+		pComp->Value(mkNamingAdapt(ResCore, "ResCore"));
+	else
+		pComp->Value(mkNamingAdapt(PlrData, "PlrData"));
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 // *** C4ControlEMMoveObject
 
 C4ControlEMMoveObject::C4ControlEMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj,
 												int32_t iObjectNum, int32_t *pObjects, const char *szScript)
-  : eAction(eAction), tx(tx), ty(ty), iTargetObj(::Objects.ObjectNumber(pTargetObj)),
+	: eAction(eAction), tx(tx), ty(ty), iTargetObj(::Objects.ObjectNumber(pTargetObj)),
 		iObjectNum(iObjectNum), pObjects(pObjects), Script(szScript, true)
 {
 
@@ -953,26 +953,26 @@ void C4ControlEMMoveObject::Execute() const
 					}
 			// update status
 			if (fLocalCall)
-        {
+				{
 				Console.EditCursor.SetHold(true);
 		    Console.PropertyDlg.Update(Console.EditCursor.GetSelection());
-        }
+				}
 			}
 			break;
 		case EMMO_Script:
 			{
 			if(!pObjects) return;
-      // execute script ...
-      C4ControlScript ScriptCtrl(Script.getData(), C4ControlScript::SCOPE_Global, false);
-      ScriptCtrl.SetByClient(iByClient);
-      // ... for each object in selection
+			// execute script ...
+			C4ControlScript ScriptCtrl(Script.getData(), C4ControlScript::SCOPE_Global, false);
+			ScriptCtrl.SetByClient(iByClient);
+			// ... for each object in selection
 			for (int i=0; i<iObjectNum; ++i)
-      {
-        ScriptCtrl.SetTargetObj(pObjects[i]);
-        ScriptCtrl.Execute();
-      }
+			{
+				ScriptCtrl.SetTargetObj(pObjects[i]);
+				ScriptCtrl.Execute();
+			}
 			break;
-      }
+			}
 		case EMMO_Remove:
 			{
 			if(!pObjects) return;
@@ -982,7 +982,7 @@ void C4ControlEMMoveObject::Execute() const
 				if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 					pObj->AssignRemoval();
 			}
-      break; // Here was fallthrough. Seemed wrong. ck.
+			break; // Here was fallthrough. Seemed wrong. ck.
 		case EMMO_Exit:
 			{
 			if(!pObjects) return;
@@ -992,12 +992,12 @@ void C4ControlEMMoveObject::Execute() const
 				if ((pObj = ::Objects.SafeObjectPointer(pObjects[i])))
 					pObj->Exit(pObj->GetX(), pObj->GetY(), pObj->r);
 			}
-      break; // Same. ck.
-    }
+			break; // Same. ck.
+		}
 	// update property dlg & status bar
 	if(fLocalCall)
 		Console.EditCursor.OnSelectionChanged();
-  }
+	}
 
 void C4ControlEMMoveObject::CompileFunc(StdCompiler *pComp)
 {
@@ -1006,11 +1006,11 @@ void C4ControlEMMoveObject::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(ty, "ty", 0));
 	pComp->Value(mkNamingAdapt(iTargetObj, "TargetObj", -1));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iObjectNum), "ObjectNum", 0));
-  if(pComp->isCompiler()) { delete [] pObjects; pObjects = new int32_t [iObjectNum]; }
+	if(pComp->isCompiler()) { delete [] pObjects; pObjects = new int32_t [iObjectNum]; }
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(pObjects, iObjectNum), "Objs", -1));
-  if(eAction == EMMO_Script)
-    pComp->Value(mkNamingAdapt(Script, "Script", ""));
-  C4ControlPacket::CompileFunc(pComp);
+	if(eAction == EMMO_Script)
+		pComp->Value(mkNamingAdapt(Script, "Script", ""));
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 // *** C4ControlEMDrawTool
@@ -1098,7 +1098,7 @@ void C4ControlMessage::Execute() const
 	C4GameLobby::MainDlg *pLobby = ::Network.GetLobby();
 	StdStrBuf str;
 	switch(eType)
-  {
+	{
 	case C4CMT_Normal:
 	case C4CMT_Me:
 		// log it
@@ -1190,23 +1190,23 @@ void C4ControlMessage::Execute() const
 		Application.NotifyUserIfInactive();
 		break;
 
-  case C4CMT_System:
-    // sender must be host
-    if(!HostControl()) break;
-    // show
-    LogF("Network: %s", szMessage);
-    break;
+	case C4CMT_System:
+		// sender must be host
+		if(!HostControl()) break;
+		// show
+		LogF("Network: %s", szMessage);
+		break;
 
 	}
 }
 
 void C4ControlMessage::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eType), "Type", C4CMT_Normal));
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlayer), "Player", -1));
+	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eType), "Type", C4CMT_Normal));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlayer), "Player", -1));
 	if(eType == C4CMT_Private)
-    pComp->Value(mkNamingAdapt(mkIntPackAdapt(iToPlayer), "ToPlayer", -1));
-  pComp->Value(mkNamingAdapt(Message, "Message", ""));
+		pComp->Value(mkNamingAdapt(mkIntPackAdapt(iToPlayer), "ToPlayer", -1));
+	pComp->Value(mkNamingAdapt(Message, "Message", ""));
 	C4ControlPacket::CompileFunc(pComp);
 }
 
@@ -1234,8 +1234,8 @@ void C4ControlPlayerInfo::Execute() const
 
 void C4ControlPlayerInfo::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(PlrInfo);
-  C4ControlPacket::CompileFunc(pComp);
+	pComp->Value(PlrInfo);
+	C4ControlPacket::CompileFunc(pComp);
 }
 
 // *** C4ControlRemovePlr
@@ -1250,8 +1250,8 @@ void C4ControlRemovePlr::Execute() const
 
 void C4ControlRemovePlr::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Plr", -1));
-  pComp->Value(mkNamingAdapt(fDisconnected, "Disconnected", false));
+	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iPlr), "Plr", -1));
+	pComp->Value(mkNamingAdapt(fDisconnected, "Disconnected", false));
 	C4ControlPacket::CompileFunc(pComp);
 }
 
@@ -1264,7 +1264,7 @@ void C4ControlDebugRec::Execute() const
 
 void C4ControlDebugRec::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(Data);
+	pComp->Value(Data);
 }
 
 // *** C4ControlVote
@@ -1397,9 +1397,9 @@ void C4ControlVote::Execute() const
 
 void C4ControlVote::CompileFunc(StdCompiler *pComp)
 {
-  pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eType), "Type", VT_None));
-  pComp->Value(mkNamingAdapt(fApprove, "Approve", true));
-  pComp->Value(mkNamingAdapt(iData, "Data", 0));
+	pComp->Value(mkNamingAdapt(mkIntAdaptT<uint8_t>(eType), "Type", VT_None));
+	pComp->Value(mkNamingAdapt(fApprove, "Approve", true));
+	pComp->Value(mkNamingAdapt(iData, "Data", 0));
 	C4ControlPacket::CompileFunc(pComp);
 }
 

@@ -147,8 +147,8 @@ class C4Network2IRCClient : public C4NetIOTCP, private C4NetIO::CBClass
 		C4Network2IRCMessage *pLog, *pLogLastRead, *pLogEnd;
 		int32_t iLogLength, iUnreadLogLength;
 
-    // Event queue for notify
-    class C4InteractiveThread *pNotify;
+		// Event queue for notify
+		class C4InteractiveThread *pNotify;
 
 		// Critical section for data
 		CStdCSec CSec;
@@ -186,8 +186,8 @@ class C4Network2IRCClient : public C4NetIOTCP, private C4NetIO::CBClass
 		using C4NetIOTCP::Send;
 		bool Send(const char *szCommand, const char *szParameters = NULL);
 
-    // Notfiy interface
-    void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
+		// Notfiy interface
+		void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
 
 		// Special IRC commands
 		bool Quit(const char *szReason);
@@ -195,9 +195,9 @@ class C4Network2IRCClient : public C4NetIOTCP, private C4NetIO::CBClass
 		bool Part(const char *szChannel);
 		bool Message(const char *szTarget, const char *szText);
 		bool Notice(const char *szTarget, const char *szText);
-    bool Action(const char *szTarget, const char *szText);
-    bool ChangeNick(const char *szNewNick);
-    bool RegisterNick(const char *szPassword, const char *szMail);
+		bool Action(const char *szTarget, const char *szText);
+		bool ChangeNick(const char *szNewNick);
+		bool RegisterNick(const char *szPassword, const char *szMail);
 
 		// Status
 		bool IsActive() const { return fConnecting || fConnected; }

@@ -89,7 +89,7 @@ void C4DownloadDlg::SetStatus(const char *szNewText, int32_t iProgressPercent)
 	}
 
 void C4DownloadDlg::OnIdle()
-  {
+	{
 	// continue query process
 	if (!HTTPClient.Execute())
 		{
@@ -138,7 +138,7 @@ void C4DownloadDlg::OnIdle()
 	}
 
 void C4DownloadDlg::UserClose(bool fOK)
-  {
+	{
 	// user cancelled
 	HTTPClient.Cancel(LoadResStr("IDS_ERR_USERCANCEL"));
 	}

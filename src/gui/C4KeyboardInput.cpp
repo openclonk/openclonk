@@ -42,12 +42,12 @@
 
 namespace
 {
-    std::string getKeyName(C4KeyCode k)
-    {
-        std::string result = SDL_GetKeyName(static_cast<SDLKey>(k));
+		std::string getKeyName(C4KeyCode k)
+		{
+				std::string result = SDL_GetKeyName(static_cast<SDLKey>(k));
 		// unknown key
-        if (result == "unknown key")
-            result = FormatString("\\x%x", (DWORD) k).getData();
+				if (result == "unknown key")
+						result = FormatString("\\x%x", (DWORD) k).getData();
 		// some special cases
 		if (result == "world 0") result = "´";
 		if (result == "world 1") result = "ß";
@@ -57,8 +57,8 @@ namespace
 		// capitalize first letter
 		result[0] = toupper(result[0]);
 		// return key name
-        return result;
-    }
+				return result;
+		}
 }
 #endif
 
@@ -997,7 +997,7 @@ void C4KeyboardInput::CompileFunc(StdCompiler *pComp)
 				if (!(OldCodes == rNewCodes)) UpdateKeyCodes(i->second, OldCodes, rNewCodes);
 				}
 			}
-    }
+		}
 	catch(StdCompiler::Exception *pEx)
 		{
 		pComp->NameEnd(true);
@@ -1014,7 +1014,7 @@ bool C4KeyboardInput::LoadCustomConfig()
 	StdBuf sFileContents;
 	if (!GrpExtra.LoadEntry(C4CFN_KeyConfig, sFileContents)) return false;
 	StdStrBuf sFileContentsString((const char *) sFileContents.getData());
-  if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, sFileContentsString, "Custom keys from" C4CFN_Extra DirSep C4CFN_KeyConfig))
+	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, sFileContentsString, "Custom keys from" C4CFN_Extra DirSep C4CFN_KeyConfig))
 		return false;
 	LogF(LoadResStr("IDS_PRC_LOADEDKEYCONF"), C4CFN_Extra DirSep C4CFN_KeyConfig);
 	return true;

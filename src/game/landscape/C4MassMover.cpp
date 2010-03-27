@@ -42,19 +42,19 @@
 // hardly ever exceeding 1000.										      October 1997
 
 C4MassMoverSet::C4MassMoverSet()
-  {
+	{
 	Default();
-  }
+	}
 
 C4MassMoverSet::~C4MassMoverSet()
-  {
-  Clear();
-  }
+	{
+	Clear();
+	}
 
 void C4MassMoverSet::Clear()
-  {
+	{
 
-  }
+	}
 
 void C4MassMoverSet::Execute()
 	{
@@ -69,75 +69,75 @@ void C4MassMoverSet::Execute()
 			if (cmm->Mat!=MNone)
 				{ Count++; cmm->Execute(); }
 		}
-  }
+	}
 
 bool C4MassMoverSet::Create(int32_t x, int32_t y, bool fExecute)
-  {
+	{
 	if(Count == C4MassMoverChunk) return false;
 #ifdef DEBUGREC
 	C4RCMassMover rc;
 	rc.x=x; rc.y=y;
 	AddDbgRec(RCT_MMC, &rc, sizeof(rc));
 #endif
-  int32_t cptr=CreatePtr;
-  do
-    {
-    cptr++;
-    if (cptr>=C4MassMoverChunk) cptr=0;
-    if (Set[cptr].Mat==MNone)
-      {
-      if (!Set[cptr].Init(x,y)) return false;
-      CreatePtr=cptr;
+	int32_t cptr=CreatePtr;
+	do
+		{
+		cptr++;
+		if (cptr>=C4MassMoverChunk) cptr=0;
+		if (Set[cptr].Mat==MNone)
+			{
+			if (!Set[cptr].Init(x,y)) return false;
+			CreatePtr=cptr;
 			if (fExecute) Set[cptr].Execute();
 			return true;
-      }
-    }
-  while (cptr!=CreatePtr);
-  return false;
-  }
+			}
+		}
+	while (cptr!=CreatePtr);
+	return false;
+	}
 
 void C4MassMoverSet::Draw()
-  {
-  /*int32_t cnt;
-  for (cnt=0; cnt<C4MassMoverChunk; cnt++)
-    if (Set[cnt].Mat!=MNone)*/
-  }
+	{
+	/*int32_t cnt;
+	for (cnt=0; cnt<C4MassMoverChunk; cnt++)
+		if (Set[cnt].Mat!=MNone)*/
+	}
 
 bool C4MassMover::Init(int32_t tx, int32_t ty)
-  {
-  // Out of bounds check
-  if (!Inside<int32_t>(tx,0,GBackWdt-1) || !Inside<int32_t>(ty,0,GBackHgt-1))
-    return false;
-  // Check mat
-  Mat=GBackMat(tx,ty);
-  x=tx; y=ty;
+	{
+	// Out of bounds check
+	if (!Inside<int32_t>(tx,0,GBackWdt-1) || !Inside<int32_t>(ty,0,GBackHgt-1))
+		return false;
+	// Check mat
+	Mat=GBackMat(tx,ty);
+	x=tx; y=ty;
 	::MassMover.Count++;
-  return (Mat!=MNone);
-  }
+	return (Mat!=MNone);
+	}
 
 void C4MassMover::Cease()
-  {
+	{
 #ifdef DEBUGREC
 	C4RCMassMover rc;
 	rc.x=x; rc.y=y;
 	AddDbgRec(RCT_MMD, &rc, sizeof(rc));
 #endif
 	::MassMover.Count--;
-  Mat=MNone;
-  }
+	Mat=MNone;
+	}
 
 bool C4MassMover::Execute()
-  {
-  int32_t tx,ty;
+	{
+	int32_t tx,ty;
 
-  // Lost target material
-  if (GBackMat(x,y)!=Mat) { Cease(); return false; }
+	// Lost target material
+	if (GBackMat(x,y)!=Mat) { Cease(); return false; }
 
-  // Check for transfer target space
+	// Check for transfer target space
 	C4Material *pMat = ::MaterialMap.Map+Mat;
-  tx=x; ty=y;
-  if (!::Landscape.FindMatPath(tx,ty,+1,pMat->Density,pMat->MaxSlide))
-    {
+	tx=x; ty=y;
+	if (!::Landscape.FindMatPath(tx,ty,+1,pMat->Density,pMat->MaxSlide))
+		{
 		// Contact material reaction check: corrosion/evaporation/inflammation/etc.
 		if (Corrosion(+0,+1) || Corrosion(-1,+0) || Corrosion(+1,+0))
 			{
@@ -163,7 +163,7 @@ bool C4MassMover::Execute()
 	if (Game.C4S.Game.Realism.LandscapeInsertThrust)
 		omat = GBackMat(tx, ty);
 
-  // Transfer mass
+	// Transfer mass
 	if(Random(10))
 		SBackPix(tx,ty,Mat2PixColDefault(::Landscape.ExtractMaterial(x,y))+GBackIFT(tx,ty));
 	else
@@ -173,11 +173,11 @@ bool C4MassMover::Execute()
 	if(Game.C4S.Game.Realism.LandscapeInsertThrust && MatValid(omat) && ::MaterialMap.Map[omat].Density > 0)
 		::Landscape.InsertMaterial(omat, tx, ty + 1);
 
-  // Create new mover at target
-  ::MassMover.Create(tx,ty,!Rnd3());
+	// Create new mover at target
+	::MassMover.Create(tx,ty,!Rnd3());
 
-  return true;
-  }
+	return true;
+	}
 
 bool C4MassMover::Corrosion(int32_t dx, int32_t dy)
 	{
@@ -195,10 +195,10 @@ bool C4MassMover::Corrosion(int32_t dx, int32_t dy)
 
 void C4MassMoverSet::Default()
 	{
-  int32_t cnt;
-  for (cnt=0; cnt<C4MassMoverChunk; cnt++) Set[cnt].Mat=MNone;
-  Count=0;
-  CreatePtr=0;
+	int32_t cnt;
+	for (cnt=0; cnt<C4MassMoverChunk; cnt++) Set[cnt].Mat=MNone;
+	Count=0;
+	CreatePtr=0;
 	}
 
 bool C4MassMoverSet::Save(C4Group &hGroup)
@@ -263,7 +263,7 @@ void C4MassMoverSet::Consolidate()
 			if (iSpot==iPtr) iSpot=-1;
 			}
 		}
-  // Reset create ptr
+	// Reset create ptr
 	CreatePtr=0;
 	}
 
@@ -277,7 +277,7 @@ void C4MassMoverSet::Copy(C4MassMoverSet &rSet)
 	Clear();
 	Count=rSet.Count;
 	CreatePtr=rSet.CreatePtr;
-  for (int32_t cnt=0; cnt<C4MassMoverChunk; cnt++) Set[cnt]=rSet.Set[cnt];
+	for (int32_t cnt=0; cnt<C4MassMoverChunk; cnt++) Set[cnt]=rSet.Set[cnt];
 	}
 
 C4MassMoverSet MassMover;

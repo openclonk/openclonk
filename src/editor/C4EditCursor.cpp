@@ -64,23 +64,23 @@ C4EditCursor::~C4EditCursor()
 
 void C4EditCursor::Execute()
 	{
-  // alt check
-  bool fAltIsDown = Application.IsAltDown();
-  if (fAltIsDown != fAltWasDown)
+	// alt check
+	bool fAltIsDown = Application.IsAltDown();
+	if (fAltIsDown != fAltWasDown)
 	{
 		if ((fAltWasDown = fAltIsDown))
 			AltDown();
 		else
 			AltUp();
 	}
-  // drawing
+	// drawing
 	switch (Mode)
 		{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModeEdit:
 			// Hold selection
 			if (Hold)
-        EMMoveObject(EMMO_Move, 0, 0, NULL, &Selection);
+				EMMoveObject(EMMO_Move, 0, 0, NULL, &Selection);
 			break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		case C4CNS_ModeDraw:
@@ -398,8 +398,8 @@ bool C4EditCursor::OpenPropTools()
 
 bool C4EditCursor::Duplicate()
 	{
-  EMMoveObject(EMMO_Duplicate, 0, 0, NULL, &Selection);
-  return true;
+	EMMoveObject(EMMO_Duplicate, 0, 0, NULL, &Selection);
+	return true;
 	}
 
 void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
@@ -476,13 +476,13 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 
 void C4EditCursor::MoveSelection(int32_t iXOff, int32_t iYOff)
 	{
-  EMMoveObject(EMMO_Move, iXOff, iYOff, NULL, &Selection);
+	EMMoveObject(EMMO_Move, iXOff, iYOff, NULL, &Selection);
 	}
 
 void C4EditCursor::FrameSelection()
 	{
 	Selection.Clear();
-  C4Object *cobj; C4ObjectLink *clnk;
+	C4Object *cobj; C4ObjectLink *clnk;
 	for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (cobj->Status) if (cobj->OCF & OCF_NotContained)
 			{
@@ -494,13 +494,13 @@ void C4EditCursor::FrameSelection()
 
 bool C4EditCursor::In(const char *szText)
 	{
-  EMMoveObject(EMMO_Script, 0, 0, NULL, &Selection, szText);
+	EMMoveObject(EMMO_Script, 0, 0, NULL, &Selection, szText);
 	return true;
 	}
 
 void C4EditCursor::Default()
 	{
-  fAltWasDown=false;
+	fAltWasDown=false;
 	Mode=C4CNS_ModePlay;
 	X=Y=X2=Y2=0;
 	Target=DropTarget=NULL;
@@ -587,7 +587,7 @@ void C4EditCursor::ApplyToolBrush()
 	{
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
-  // execute/send control
+	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
@@ -595,7 +595,7 @@ void C4EditCursor::ApplyToolLine()
 	{
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
-  // execute/send control
+	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
@@ -603,7 +603,7 @@ void C4EditCursor::ApplyToolRect()
 	{
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
-  // execute/send control
+	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
 	}
 
@@ -611,7 +611,7 @@ void C4EditCursor::ApplyToolFill()
 	{
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
-  // execute/send control
+	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
 	}
 
@@ -668,12 +668,12 @@ void C4EditCursor::GrabContents()
 	Hold=true;
 
 	// Exit all objects
-  EMMoveObject(EMMO_Exit, 0, 0, NULL, &Selection);
+	EMMoveObject(EMMO_Exit, 0, 0, NULL, &Selection);
 	}
 
 void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
 	{
-  C4Object *cobj; C4ObjectLink *clnk;
+	C4Object *cobj; C4ObjectLink *clnk;
 
 	DropTarget=NULL;
 
@@ -692,7 +692,7 @@ void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
 void C4EditCursor::PutContents()
 	{
 	if (!DropTarget) return;
-  EMMoveObject(EMMO_Enter, 0, 0, DropTarget, &Selection);
+	EMMoveObject(EMMO_Enter, 0, 0, DropTarget, &Selection);
 	}
 
 C4Object *C4EditCursor::GetTarget()
@@ -759,69 +759,69 @@ void C4EditCursor::ApplyToolPicker()
 	}
 
 void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj, const C4ObjectList *pObjs, const char *szScript)
-  {
-  // construct object list
-  int32_t iObjCnt = 0; int32_t *pObjIDs = NULL;
-  if(pObjs && (iObjCnt = pObjs->ObjectCount()))
-    {
-    pObjIDs = new int32_t [iObjCnt];
-    // fill
-    int32_t i = 0;
-    for(C4ObjectLink *pLnk = pObjs->First; pLnk; pLnk = pLnk->Next, i++)
-      if(pLnk->Obj && pLnk->Obj->Status)
-        pObjIDs[i] = pLnk->Obj->Number;
-    }
+	{
+	// construct object list
+	int32_t iObjCnt = 0; int32_t *pObjIDs = NULL;
+	if(pObjs && (iObjCnt = pObjs->ObjectCount()))
+		{
+		pObjIDs = new int32_t [iObjCnt];
+		// fill
+		int32_t i = 0;
+		for(C4ObjectLink *pLnk = pObjs->First; pLnk; pLnk = pLnk->Next, i++)
+			if(pLnk->Obj && pLnk->Obj->Status)
+				pObjIDs[i] = pLnk->Obj->Number;
+		}
 
-  // execute control
-  EMControl(CID_EMMoveObj, new C4ControlEMMoveObject(eAction, tx, ty, pTargetObj, iObjCnt, pObjIDs, szScript));
+	// execute control
+	EMControl(CID_EMMoveObj, new C4ControlEMMoveObject(eAction, tx, ty, pTargetObj, iObjCnt, pObjIDs, szScript));
 
-  }
+	}
 
 void C4EditCursor::EMControl(C4PacketType eCtrlType, C4ControlPacket *pCtrl)
-  {
-  ::Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
-  }
+	{
+	::Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
+	}
 
 #ifdef WITH_DEVELOPER_MODE
 // GTK+ callbacks
 void C4EditCursor::OnDelete(GtkWidget* widget, gpointer data)
 {
-  static_cast<C4EditCursor*>(data)->Delete();
+	static_cast<C4EditCursor*>(data)->Delete();
 }
 
 void C4EditCursor::OnDuplicate(GtkWidget* widget, gpointer data)
 {
-  static_cast<C4EditCursor*>(data)->Duplicate();
+	static_cast<C4EditCursor*>(data)->Duplicate();
 }
 
 void C4EditCursor::OnGrabContents(GtkWidget* widget, gpointer data)
 {
-  static_cast<C4EditCursor*>(data)->GrabContents();
+	static_cast<C4EditCursor*>(data)->GrabContents();
 }
 
 void C4EditCursor::OnProperties(GtkWidget* widget, gpointer data)
 {
-  static_cast<C4EditCursor*>(data)->OpenPropTools();
+	static_cast<C4EditCursor*>(data)->OpenPropTools();
 }
 #endif
 
 bool C4EditCursor::AltDown()
-  {
-  // alt only has an effect in draw mode (picker)
-  if (Mode == C4CNS_ModeDraw)
-    {
-    Console.ToolsDlg.SetAlternateTool();
-    }
-  // key not processed - allow further usages of Alt
-  return false;
-  }
+	{
+	// alt only has an effect in draw mode (picker)
+	if (Mode == C4CNS_ModeDraw)
+		{
+		Console.ToolsDlg.SetAlternateTool();
+		}
+	// key not processed - allow further usages of Alt
+	return false;
+	}
 
 bool C4EditCursor::AltUp()
-  {
-  if (Mode == C4CNS_ModeDraw)
-    {
-    Console.ToolsDlg.ResetAlternateTool();
-    }
-  // key not processed - allow further usages of Alt
-  return false;
-  }
+	{
+	if (Mode == C4CNS_ModeDraw)
+		{
+		Console.ToolsDlg.ResetAlternateTool();
+		}
+	// key not processed - allow further usages of Alt
+	return false;
+	}

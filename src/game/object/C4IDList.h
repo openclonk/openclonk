@@ -35,7 +35,7 @@ const size_t C4IDListChunkSize = 5; // size of id-chunks
 
 class C4IDListChunk
 	{
-  public:
+	public:
 		C4ID id[C4IDListChunkSize];
 		int32_t Count[C4IDListChunkSize];
 
@@ -50,9 +50,9 @@ class C4IDListChunk
 	};
 
 class C4IDList : protected C4IDListChunk
-  {
-  public:
-    C4IDList();
+	{
+	public:
+		C4IDList();
 		C4IDList(const C4IDList &rCopy);		// copy ctor
 		C4IDList &operator = (const C4IDList &rCopy);	// assignment
 		~C4IDList();
@@ -61,37 +61,37 @@ class C4IDList : protected C4IDListChunk
 		ALLOW_TEMP_TO_REF(C4IDList)
 	protected:
 		size_t Count;										// number of IDs in this list
-  public:
+	public:
 		// General
 		void Default();
-    void Clear();
+		void Clear();
 		bool IsClear() const;
-    // Access by direct index
-    C4ID GetID(size_t index, int32_t *ipCount=NULL) const;
-    int32_t  GetCount(size_t index) const;
-    bool SetCount(size_t index, int32_t iCount);
-    // Access by ID
-    int32_t  GetIDCount(C4ID c_id, int32_t iZeroDefVal=0) const;
+		// Access by direct index
+		C4ID GetID(size_t index, int32_t *ipCount=NULL) const;
+		int32_t  GetCount(size_t index) const;
+		bool SetCount(size_t index, int32_t iCount);
+		// Access by ID
+		int32_t  GetIDCount(C4ID c_id, int32_t iZeroDefVal=0) const;
 		bool SetIDCount(C4ID c_id, int32_t iCount, bool fAddNewID=false);
-    bool IncreaseIDCount(C4ID c_id, bool fAddNewID=true, int32_t IncreaseBy=1, bool fRemoveEmpty=false);
-    bool DecreaseIDCount(C4ID c_id, bool fRemoveEmptyID=true)
+		bool IncreaseIDCount(C4ID c_id, bool fAddNewID=true, int32_t IncreaseBy=1, bool fRemoveEmpty=false);
+		bool DecreaseIDCount(C4ID c_id, bool fRemoveEmptyID=true)
 			{ return IncreaseIDCount(c_id, false, -1, fRemoveEmptyID); }
-    int32_t  GetNumberOfIDs() const;
+		int32_t  GetNumberOfIDs() const;
 		int32_t GetIndex(C4ID c_id) const;
-    // Access by category-sorted index
-    C4ID GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount=NULL) const;
-    int32_t  GetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index) const;
-    bool SetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t iCount);
-    int32_t  GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const;
+		// Access by category-sorted index
+		C4ID GetID(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t *ipCount=NULL) const;
+		int32_t  GetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index) const;
+		bool SetCount(C4DefList &rDefs, int32_t dwCategory, int32_t index, int32_t iCount);
+		int32_t  GetNumberOfIDs(C4DefList &rDefs, int32_t dwCategory) const;
 		// IDList merge
 		bool Add(C4IDList &rList);
-    // Aux
-    bool Consolidate();
-    bool ConsolidateValids(C4DefList &rDefs, int32_t dwCategory = 0);
+		// Aux
+		bool Consolidate();
+		bool ConsolidateValids(C4DefList &rDefs, int32_t dwCategory = 0);
 		bool ConsolidateCounts();
 		void SortByCategory(C4DefList &rDefs);
 		void SortByValue(C4DefList &rDefs);
-    void Load(C4DefList &rDefs, int32_t dwCategory);
+		void Load(C4DefList &rDefs, int32_t dwCategory);
 		// Item operation
 		bool DeleteItem(size_t iIndex);
 		bool SwapItems(size_t iIndex1, size_t iIndex2);
@@ -99,8 +99,8 @@ class C4IDList : protected C4IDListChunk
 		void Draw(C4Facet &cgo, int32_t iSelection,
 							C4DefList &rDefs, DWORD dwCategory,
 							bool fCounts=true, int32_t iAlign=0) const;
-    // Compiling
-    void CompileFunc(StdCompiler *pComp, bool fValues = true);
-  };
+		// Compiling
+		void CompileFunc(StdCompiler *pComp, bool fValues = true);
+	};
 
 #endif

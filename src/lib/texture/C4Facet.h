@@ -118,18 +118,18 @@ class C4DrawTransform : public CBltTransform
 	};
 
 class C4Facet
-  {
-  public:
-    SURFACE Surface;
-    int32_t X,Y,Wdt,Hgt;
+	{
+	public:
+		SURFACE Surface;
+		int32_t X,Y,Wdt,Hgt;
 	public:
 		C4Facet();
 		C4Facet(SURFACE pSfc, int32_t iX, int32_t iY, int32_t iWdt, int32_t iHgt)
 			: Surface(pSfc), X(iX), Y(iY), Wdt(iWdt), Hgt(iHgt) {  }
-  public:
+	public:
 	  void Default();
 	  void Set(CSurface &rSfc);
-    void Set(SURFACE nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt);
+		void Set(SURFACE nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt);
 		void Set(const C4Facet &cpy) { *this=cpy; }
 	  void Wipe();
 	  void Expand(int32_t iLeft=0, int32_t iRight=0, int32_t iTop=0, int32_t iBottom=0);
@@ -165,6 +165,6 @@ class C4Facet
 #ifdef _WIN32
 		void Draw(HWND hWnd, int32_t iTx, int32_t iTy, int32_t iTWdt, int32_t iTHgt, bool fAspect=true, int32_t iPhaseX=0, int32_t iPhaseY=0);
 #endif
-  };
+	};
 
 #endif // INC_C4Facet

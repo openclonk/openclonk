@@ -64,7 +64,7 @@ BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 			break;
 		//------------------------------------------------------------------------------------------------
 		case WM_INITDIALOG:
-      SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
+			SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
 			return true;
 		//------------------------------------------------------------------------------------------------
 		case WM_COMMAND:
@@ -86,7 +86,7 @@ BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				}
 			return false;
-    //-----------------------------------------------------------------------------------------------
+		//-----------------------------------------------------------------------------------------------
 		}
 	return false;
 	}
@@ -178,7 +178,7 @@ bool C4PropertyDlg::Update(C4ObjectList &rSelection)
 
 bool IsObjectPointer(int iValue)
 	{
-  for (C4ObjectLink *cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
+	for (C4ObjectLink *cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj == (C4Object*) iValue)
 			return true;
 	return false;

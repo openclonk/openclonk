@@ -151,7 +151,7 @@ bool C4MenuItem::IsDragElement()
 	}
 
 int32_t C4MenuItem::GetSymbolWidth(int32_t iForHeight)
-  {
+	{
 	// Context or dialog menus
 	if (iStyle==C4MN_Style_Context || (iStyle==C4MN_Style_Dialog && Symbol.Surface))
 		return Max(Symbol.Wdt * iForHeight / Max<int32_t>(Symbol.Hgt, 1), iForHeight);
@@ -323,7 +323,7 @@ void C4Menu::Default()
 
 void C4Menu::Clear()
 	{
-  Close(false);
+	Close(false);
 	Symbol.Clear();
 	ClearItems();
 	ClearFrameDeco();
@@ -538,7 +538,7 @@ bool C4Menu::Enter(bool fRight)
 		return true;
 		}
 	// Copy command to buffer (menu might be cleared)
-  char szCommand[_MAX_FNAME+30+1];
+	char szCommand[_MAX_FNAME+30+1];
 	SCopy(pItem->Command,szCommand);
 	if (fRight && pItem->Command2[0]) SCopy(pItem->Command2,szCommand);
 
@@ -951,7 +951,7 @@ void C4Menu::SetPermanent(bool fPermanent)
 	}
 
 bool C4Menu::RefillInternal()
-  {
+	{
 	// Reset flag
 	NeedRefill=false;
 
@@ -976,7 +976,7 @@ bool C4Menu::RefillInternal()
 		}
 	// Success
 	return true;
-  }
+	}
 
 void C4Menu::ClearItems(bool fResetSelection)
 	{

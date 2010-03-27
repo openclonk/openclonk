@@ -388,8 +388,8 @@ bool ContextMenu::AddElement(Element *pChild)
 	{
 	// add it
 	Window::AddElement(pChild);
-  // update own size and positions
-  UpdateElementPositions();
+	// update own size and positions
+	UpdateElementPositions();
 	// success
 	return true;
 	}
@@ -398,8 +398,8 @@ bool ContextMenu::InsertElement(Element *pChild, Element *pInsertBefore)
 	{
 	// insert it
 	Window::InsertElement(pChild, pInsertBefore);
-  // update own size and positions
-  UpdateElementPositions();
+	// update own size and positions
+	UpdateElementPositions();
 	// success
 	return true;
 	}

@@ -55,7 +55,7 @@ void C4Shape::Clear()
 	}
 
 void C4Shape::Rotate(int32_t iAngle, bool bUpdateVertices)
-  {
+	{
 #ifdef DEBUGREC
 	C4RCRotVtx rc;
 	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt; rc.r=iAngle;
@@ -64,11 +64,11 @@ void C4Shape::Rotate(int32_t iAngle, bool bUpdateVertices)
 		{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
 	AddDbgRec(RCT_RotVtx1, &rc, sizeof(rc));
 #endif
-  int32_t cnt,nvtx,nvty,rdia;
+	int32_t cnt,nvtx,nvty,rdia;
 
 	//int32_t *vtx=VtxX;
 	//int32_t *vty=VtxY;
-  FIXED mtx[4];
+	FIXED mtx[4];
 	FIXED fAngle = itofix(iAngle);
 
 	if (bUpdateVertices)
@@ -104,89 +104,89 @@ void C4Shape::Rotate(int32_t iAngle, bool bUpdateVertices)
 
 		}
 
-  // Enlarge Rect
-  rdia= (int32_t) sqrt(double(x*x+y*y)) + 2;
-  x=-rdia;
-  y=-rdia;
-  Wdt=2*rdia;
-  Hgt=2*rdia;
+	// Enlarge Rect
+	rdia= (int32_t) sqrt(double(x*x+y*y)) + 2;
+	x=-rdia;
+	y=-rdia;
+	Wdt=2*rdia;
+	Hgt=2*rdia;
 #ifdef DEBUGREC
 	rc.x=x; rc.y=y; rc.wdt=Wdt; rc.hgt=Hgt;
 	for (i=0; i<4; ++i)
 		{ rc.VtxX[i]=VtxX[i]; rc.VtxY[i]=VtxY[i]; }
 	AddDbgRec(RCT_RotVtx2, &rc, sizeof(rc));
 #endif
-  }
+	}
 
 void C4Shape::Stretch(int32_t iCon, bool bUpdateVertices)
-  {
-  int32_t cnt;
-  x=x*iCon/FullCon;
-  y=y*iCon/FullCon;
-  Wdt=Wdt*iCon/FullCon;
-  Hgt=Hgt*iCon/FullCon;
-  FireTop=FireTop*iCon/FullCon;
+	{
+	int32_t cnt;
+	x=x*iCon/FullCon;
+	y=y*iCon/FullCon;
+	Wdt=Wdt*iCon/FullCon;
+	Hgt=Hgt*iCon/FullCon;
+	FireTop=FireTop*iCon/FullCon;
 	if (bUpdateVertices)
 		for (cnt=0; cnt<VtxNum; cnt++)
 	    {
 			VtxX[cnt]=VtxX[cnt]*iCon/FullCon;
 			VtxY[cnt]=VtxY[cnt]*iCon/FullCon;
 			}
-  }
+	}
 
 void C4Shape::Jolt(int32_t iCon, bool bUpdateVertices)
-  {
-  int32_t cnt;
-  y=y*iCon/FullCon;
-  Hgt=Hgt*iCon/FullCon;
-  FireTop=FireTop*iCon/FullCon;
+	{
+	int32_t cnt;
+	y=y*iCon/FullCon;
+	Hgt=Hgt*iCon/FullCon;
+	FireTop=FireTop*iCon/FullCon;
 	if (bUpdateVertices)
 		for (cnt=0; cnt<VtxNum; cnt++)
 	    VtxY[cnt]=VtxY[cnt]*iCon/FullCon;
-  }
+	}
 
 void C4Shape::GetVertexOutline(C4Rect &rRect)
-  {
-  int32_t cnt;
-  rRect.x=rRect.y=rRect.Wdt=rRect.Hgt=0;
-  for (cnt=0; cnt<VtxNum; cnt++)
-    {
+	{
+	int32_t cnt;
+	rRect.x=rRect.y=rRect.Wdt=rRect.Hgt=0;
+	for (cnt=0; cnt<VtxNum; cnt++)
+		{
 		// Extend left
-    if (VtxX[cnt]<rRect.x)
-      {
-      rRect.Wdt+=rRect.x-VtxX[cnt];
-      rRect.x=VtxX[cnt];
-      }
+		if (VtxX[cnt]<rRect.x)
+			{
+			rRect.Wdt+=rRect.x-VtxX[cnt];
+			rRect.x=VtxX[cnt];
+			}
 		// Extend right
-    else if (VtxX[cnt]>rRect.x+rRect.Wdt)
-      { rRect.Wdt=VtxX[cnt]-rRect.x; }
+		else if (VtxX[cnt]>rRect.x+rRect.Wdt)
+			{ rRect.Wdt=VtxX[cnt]-rRect.x; }
 
 		// Extend up
-    if (VtxY[cnt]<rRect.y)
-      {
-      rRect.Hgt+=rRect.y-VtxY[cnt];
-      rRect.y=VtxY[cnt];
-      }
+		if (VtxY[cnt]<rRect.y)
+			{
+			rRect.Hgt+=rRect.y-VtxY[cnt];
+			rRect.y=VtxY[cnt];
+			}
 		// Extend down
-    else if (VtxY[cnt]>rRect.y+rRect.Hgt)
-      { rRect.Hgt=VtxY[cnt]-rRect.y; }
-    }
+		else if (VtxY[cnt]>rRect.y+rRect.Hgt)
+			{ rRect.Hgt=VtxY[cnt]-rRect.y; }
+		}
 
-  rRect.Hgt+=rRect.y-y;
-  rRect.y=y;
+	rRect.Hgt+=rRect.y-y;
+	rRect.y=y;
 
-  }
+	}
 
 
 bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
-  {
+	{
 	// Adjust given position to one pixel before contact
 	// at vertices matching CNAT request.
 
-  bool fAttached=false;
+	bool fAttached=false;
 
 
-  int32_t vtx,xcnt,ycnt,xcrng,ycrng,xcd,ycd;
+	int32_t vtx,xcnt,ycnt,xcrng,ycrng,xcd,ycd;
 	BYTE cpix;
 
 	// reset attached material
@@ -244,8 +244,8 @@ bool C4Shape::Attach(int32_t &cx, int32_t &cy, BYTE cnat_pos)
 					}
 				}
 	  
-  return fAttached;
-  }
+	return fAttached;
+	}
 
 
 bool C4Shape::LineConnect(int32_t tx, int32_t ty, int32_t cvtx, int32_t ld, int32_t oldx, int32_t oldy)
@@ -335,14 +335,14 @@ bool C4Shape::CheckContact(int32_t cx, int32_t cy)
 	// Return true on any contact.
 
 
-  for (int32_t cvtx=0; cvtx<VtxNum; cvtx++)
+	for (int32_t cvtx=0; cvtx<VtxNum; cvtx++)
 		if (!(VtxCNAT[cvtx] & CNAT_NoCollision))
 			if (GBackDensity(cx+VtxX[cvtx],cy+VtxY[cvtx]) >= ContactDensity)
 				return true;
 
 
-  return false;
-  }
+	return false;
+	}
 
 bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 	{
@@ -352,10 +352,10 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 	// Return true on any contact.
 
 
-  ContactCNAT=CNAT_None;
+	ContactCNAT=CNAT_None;
 	ContactCount=0;
 
-  for (int32_t cvtx=0; cvtx<VtxNum; cvtx++)
+	for (int32_t cvtx=0; cvtx<VtxNum; cvtx++)
 
 		// Ignore vertex if collision has been flagged out
  	  if (!(VtxCNAT[cvtx] & CNAT_NoCollision))
@@ -383,8 +383,8 @@ bool C4Shape::ContactCheck(int32_t cx, int32_t cy)
 	    }
 
 
-  return !!ContactCount;
-  }
+	return !!ContactCount;
+	}
 
 int32_t C4Shape::GetVertexX(int32_t iVertex)
 	{

@@ -70,7 +70,7 @@ class CStdFont
 
 	protected:
 		DWORD dwDefFontHeight; // configured font size (in points)
-    char szFontName[80+1]; // used font name (or surface file name)
+		char szFontName[80+1]; // used font name (or surface file name)
 
 		bool fPrerenderedFont;  // true for fonts that came from a prerendered bitmap surface - no runtime adding of characters
 		CSurface **psfcFontData; // font recource surfaces - additional surfaces created as needed
@@ -119,8 +119,8 @@ class CStdFont
 
 	public:
 		int	iLineHgt;        // height of one line of font (in pixels)
-    // draw ine line of text
-    void DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, CMarkup &Markup, float fZoom);
+		// draw ine line of text
+		void DrawText(SURFACE sfcDest, float iX, float iY, DWORD dwColor, const char *szText, DWORD dwFlags, CMarkup &Markup, float fZoom);
 
 		// get text size
 		bool GetTextExtent(const char *szText, int32_t &rsx, int32_t &rsy, bool fCheckMarkup = true);

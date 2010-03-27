@@ -55,7 +55,7 @@ void C4GameMessage::Init(int32_t iType, const StdStrBuf & sText, C4Object *pTarg
 	Type=iType;
 	Delay=Max<int32_t>(C4GM_MinDelay, Text.getLength() * TextMsgDelayFactor);
 	DecoID=idDecoID;
-  this->dwFlags=dwFlags;
+	this->dwFlags=dwFlags;
 	if (szPortraitDef && *szPortraitDef) PortraitDef.Copy(szPortraitDef); else PortraitDef.Clear();
 	// Permanent message
 	if ('@' == Text[0])
@@ -344,13 +344,13 @@ bool C4GameMessageList::New(int32_t iType, const StdStrBuf & sText, C4Object *pT
 bool C4GameMessageList::Append(int32_t iType, const char *szText, C4Object *pTarget, int32_t iPlayer, int32_t iX, int32_t iY, uint8_t bCol, bool fNoDuplicates)
 	{
 	C4GameMessage *cmsg = NULL;
-  if (iType == C4GM_Target)
+	if (iType == C4GM_Target)
 		{
 	  for (cmsg=::Messages.First; cmsg; cmsg=cmsg->Next)
 		  if (pTarget == cmsg->Target)
 				break;
 		}
-  if (iType == C4GM_Global || iType == C4GM_GlobalPlayer)
+	if (iType == C4GM_Global || iType == C4GM_GlobalPlayer)
 		{
 	  for (cmsg=::Messages.First; cmsg; cmsg=cmsg->Next)
 		  if (iPlayer == cmsg->Player)

@@ -223,7 +223,7 @@ void C4MusicSystem::Load(const char *szFile)
 
 		case MUSICTYPE_MID:
 			if (MODInitialized)
-        NewSong = new C4MusicFileMID;
+				NewSong = new C4MusicFileMID;
 			break;
 		}
 #elif defined HAVE_LIBSDL_MIXER

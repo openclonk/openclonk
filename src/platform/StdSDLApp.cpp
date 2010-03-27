@@ -67,7 +67,7 @@ bool CStdApp::Init(int argc, char * argv[]) {
 	szCmdLine = s.c_str();
 
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
-        Log("Error initializing SDL.");
+				Log("Error initializing SDL.");
 		return false;
 	}
 
@@ -105,7 +105,7 @@ bool CStdApp::FlushMessages() {
 }
 
 void CStdApp::HandleSDLEvent(SDL_Event& event) {
-    // Directly handle QUIT messages.
+		// Directly handle QUIT messages.
 	switch (event.type) {
 		case SDL_QUIT:
 		  Quit();
@@ -116,7 +116,7 @@ void CStdApp::HandleSDLEvent(SDL_Event& event) {
 	MacUtility::ensureWindowInFront();
 #endif
 
-    // Everything else goes to the window.
+		// Everything else goes to the window.
 	if (pWindow)
 		pWindow->HandleMessage(event);
 }

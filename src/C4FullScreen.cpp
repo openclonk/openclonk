@@ -235,7 +235,7 @@ void C4FullScreen::HandleMessage (XEvent &e)
 			::GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, NULL);
 			break;
 			default:
-            break;
+						break;
 			}
 		break;
 		case MotionNotify:
@@ -257,75 +257,75 @@ void C4FullScreen::HandleMessage (XEvent &e)
 
 namespace
 {
-    void sdlToC4MCBtn(const SDL_MouseButtonEvent &e,
-                      int32_t& button, DWORD& flags)
-    {
-        static int lastLeftClick = 0, lastRightClick = 0;
+	void sdlToC4MCBtn(const SDL_MouseButtonEvent &e,
+		int32_t& button, DWORD& flags)
+	{
+		static int lastLeftClick = 0, lastRightClick = 0;
 		static int lastX = 0, lastY = 0;
 		static const int clickDist = 2;
 
-        button = C4MC_Button_None;
-        flags = 0;
+		button = C4MC_Button_None;
+		flags = 0;
 
-        switch (e.button)
-        {
-        case SDL_BUTTON_LEFT:
-            if (e.state == SDL_PRESSED)
-                if (timeGetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
-                {
-                    lastLeftClick = 0;
-                    button = C4MC_Button_LeftDouble;
-                }
-                else
-                {
-                    lastLeftClick = timeGetTime();
-                    button = C4MC_Button_LeftDown;
-                }
-            else
-                button = C4MC_Button_LeftUp;
-            break;
-        case SDL_BUTTON_RIGHT:
-            if (e.state == SDL_PRESSED)
-                if (timeGetTime() - lastRightClick < 400)
-                {
-                    lastRightClick = 0;
-                    button = C4MC_Button_RightDouble;
-                }
-                else
-                {
-                    lastRightClick = timeGetTime();
-                    button = C4MC_Button_RightDown;
-                }
-                else
-                    button = C4MC_Button_RightUp;
-            break;
-        case SDL_BUTTON_MIDDLE:
-            if (e.state == SDL_PRESSED)
-                button = C4MC_Button_MiddleDown;
-            else
-                button = C4MC_Button_MiddleUp;
-            break;
-        case SDL_BUTTON_WHEELUP:
-            button = C4MC_Button_Wheel;
-            flags = (+32) << 16;
-            break;
-        case SDL_BUTTON_WHEELDOWN:
-            button = C4MC_Button_Wheel;
-            flags = (-32) << 16;
-            break;
-        }
-		lastX = e.x;
-		lastY = e.y;
-    }
+		switch (e.button)
+		{
+		case SDL_BUTTON_LEFT:
+			if (e.state == SDL_PRESSED)
+				if (timeGetTime() - lastLeftClick < 400 && abs(lastX-e.x) <= clickDist && abs(lastY-e.y) <= clickDist)
+				{
+					lastLeftClick = 0;
+					button = C4MC_Button_LeftDouble;
+				}
+				else
+				{
+					lastLeftClick = timeGetTime();
+					button = C4MC_Button_LeftDown;
+				}
+			else
+				button = C4MC_Button_LeftUp;
+			break;
+		case SDL_BUTTON_RIGHT:
+			if (e.state == SDL_PRESSED)
+				if (timeGetTime() - lastRightClick < 400)
+				{
+					lastRightClick = 0;
+					button = C4MC_Button_RightDouble;
+				}
+				else
+				{
+					lastRightClick = timeGetTime();
+					button = C4MC_Button_RightDown;
+				}
+			else
+				button = C4MC_Button_RightUp;
+			break;
+		case SDL_BUTTON_MIDDLE:
+			if (e.state == SDL_PRESSED)
+				button = C4MC_Button_MiddleDown;
+			else
+				button = C4MC_Button_MiddleUp;
+			break;
+		case SDL_BUTTON_WHEELUP:
+			button = C4MC_Button_Wheel;
+			flags = (+32) << 16;
+			break;
+		case SDL_BUTTON_WHEELDOWN:
+			button = C4MC_Button_Wheel;
+			flags = (-32) << 16;
+			break;
+		}
+	lastX = e.x;
+	lastY = e.y;
+	}
 
-    bool isSpecialKey(unsigned unicode)
-    {
-        if (unicode >= 0xe00)
-            return true;
-        if (unicode < 32 || unicode == 127)
-            return true;
-        return false;
-    }
+	bool isSpecialKey(unsigned unicode)
+	{
+		if (unicode >= 0xe00)
+			return true;
+		if (unicode < 32 || unicode == 127)
+			return true;
+		return false;
+	}
 }
 
 #include "StdGL.h"
@@ -336,18 +336,18 @@ void C4FullScreen::HandleMessage (SDL_Event &e)
 		{
 		case SDL_KEYDOWN:
 			{
-            #ifdef USE_GL
-            if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
-            {
-                Config.Graphics.Windowed = !Config.Graphics.Windowed;
-                if (pGL) pGL->fFullscreen = !Config.Graphics.Windowed;
+			#ifdef USE_GL
+			if (e.key.keysym.sym == SDLK_f && (e.key.keysym.mod & (KMOD_LMETA | KMOD_RMETA)))
+			{
+				Config.Graphics.Windowed = !Config.Graphics.Windowed;
+				if (pGL) pGL->fFullscreen = !Config.Graphics.Windowed;
 				Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
-                lpDDraw->InvalidateDeviceObjects();
-                lpDDraw->RestoreDeviceObjects();
+				lpDDraw->InvalidateDeviceObjects();
+				lpDDraw->RestoreDeviceObjects();
 
-                break;
-            }
-            #endif
+				break;
+			}
+			#endif
 
 			// Only forward real characters to UI. (Nothing outside of "private use" range.)
 			// This works without iconv for some reason. Yay!
@@ -417,7 +417,7 @@ void C4FullScreen::Execute()
 	{
 	// Execute menu
 	if (pMenu) pMenu->Execute();
-  // Draw
+	// Draw
 	::GraphicsSystem.Execute();
 	}
 

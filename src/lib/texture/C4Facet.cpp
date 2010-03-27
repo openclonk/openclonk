@@ -38,7 +38,7 @@ void C4Facet::Default()
 	}
 
 void C4Facet::Set(SURFACE nsfc, int32_t nx, int32_t ny, int32_t nwdt, int32_t nhgt)
-  {
+	{
 	Surface=nsfc; X=nx; Y=ny; Wdt=nwdt; Hgt=nhgt;
 	}
 
@@ -265,7 +265,7 @@ void C4Facet::DrawSectionSelect(C4Facet &cgo, int32_t iSelection, int32_t iMaxSe
 		if (iSelection==firstid+cnt)
 			lpDDraw->DrawBox(cgo2.Surface,cgo2.X,cgo2.Y,cgo2.X+cgo2.Wdt-1,cgo2.Y+cgo2.Hgt-1,CRed);
 		Draw(cgo2,true,firstid+cnt,0);
-    }
+		}
 	}
 
 void C4Facet::DrawValue(C4Facet &cgo, int32_t iValue, int32_t iSectionX, int32_t iSectionY, int32_t iAlign)

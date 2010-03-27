@@ -180,11 +180,11 @@ void C4GraphicsResource::ClearFonts()
 }
 
 bool C4GraphicsResource::Init(bool fInitGUI)
-  {
+	{
 	// Init fonts (double init will never if groups didnt change)
 	if (!InitFonts())
 		return false;
-  // Game palette - could perhaps be eliminated...
+	// Game palette - could perhaps be eliminated...
 	int32_t idNewPalGrp;
 	C4Group *pPalGrp=Files.FindEntry("C4.pal", NULL, &idNewPalGrp);
 	if (!pPalGrp) { LogF("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), "C4.pal"); return false; }
@@ -207,7 +207,7 @@ bool C4GraphicsResource::Init(bool fInitGUI)
 		idPalGrp = idNewPalGrp;
 		}
 
-  // Control
+	// Control
 	if (!LoadFile(sfcControl, "Control", Files, idSfcControl)) return false;
 	fctKeyboard.Set(&sfcControl,0,0,80,36);
 	fctCommand.Set(&sfcControl,0,36,32,32);
@@ -215,7 +215,7 @@ bool C4GraphicsResource::Init(bool fInitGUI)
 	fctOKCancel.Set(&sfcControl,128,100,32,32);
 	fctMouse.Set(&sfcControl,198,100,32,32);
 
-  // Facet bitmap resources
+	// Facet bitmap resources
 	if (!LoadFile(fctFire,				"Fire",					Files, C4FCT_Height))	return false;
 	if (!LoadFile(fctBackground,	"Background",		Files))								return false;
 	if (!LoadFile(fctFlag,				"Flag",					Files))								return false;	// (new format)
@@ -291,8 +291,8 @@ bool C4GraphicsResource::Init(bool fInitGUI)
 	// mark initialized
 	fInitialized = true;
 
-  return true;
-  }
+	return true;
+	}
 
 bool C4GraphicsResource::LoadCursorGfx()
 	{
@@ -325,14 +325,14 @@ bool C4GraphicsResource::LoadCursorGfx()
 		}
 	if (iCursorSize == 13)
 	  {
-    fctInsideSymbol.Set(fctMouseCursor.Surface, 468, 0, 13, 13);
-    fctDropTarget.Set(fctMouseCursor.Surface, 494, 0, 13, 13);
-    }
-  else
-    {
-    fctInsideSymbol.Set(fctMouseCursor.Surface, 36*iCursorSize, 0, iCursorSize, iCursorSize);
-    fctDropTarget.Set(fctMouseCursor.Surface, 38*iCursorSize, 0, iCursorSize, iCursorSize);
-    }
+		fctInsideSymbol.Set(fctMouseCursor.Surface, 468, 0, 13, 13);
+		fctDropTarget.Set(fctMouseCursor.Surface, 494, 0, 13, 13);
+		}
+	else
+		{
+		fctInsideSymbol.Set(fctMouseCursor.Surface, 36*iCursorSize, 0, iCursorSize, iCursorSize);
+		fctDropTarget.Set(fctMouseCursor.Surface, 38*iCursorSize, 0, iCursorSize, iCursorSize);
+		}
 	// done
 	return true;
 	}

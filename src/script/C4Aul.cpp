@@ -220,7 +220,7 @@ void C4AulScript::Clear()
 	// delete script+code
 	Script.Clear();
 	ClearCode();
-  // reset flags
+	// reset flags
 	State = ASS_NONE;
 	}
 
@@ -520,11 +520,11 @@ bool C4AulScriptEngine::DenumerateVariablePointers()
 	}
 
 void C4AulScriptEngine::CompileFunc(StdCompiler *pComp)
-  {
+	{
 	C4ValueMapData GlobalNamedDefault;
 	GlobalNamedDefault.SetNameList(&GlobalNamedNames);
 	pComp->Value(mkNamingAdapt(GlobalNamed,    "GlobalNamed"            , GlobalNamedDefault));
-  }
+	}
 
 bool C4AulScriptEngine::InitDebug(uint16_t iPort, const char *szPassword, const char *szHost, bool fWait)
 	{

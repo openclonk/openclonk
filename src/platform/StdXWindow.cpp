@@ -236,7 +236,7 @@ bool CStdWindow::StorePosition(const char *, const char *, bool) { return true; 
 
 bool CStdWindow::RestorePosition(const char *, const char *, bool) {
 	// The Windowmanager is responsible for window placement.
-    return true;
+		return true;
 }
 
 bool CStdWindow::GetSize(RECT * pRect) {

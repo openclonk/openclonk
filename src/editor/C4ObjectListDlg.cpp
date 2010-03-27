@@ -253,7 +253,7 @@ c4_list_iter_children (GtkTreeModel * tree_model, GtkTreeIter * iter, GtkTreeIte
 // Return true if 'parent' has children.
 static gboolean
 c4_list_iter_has_child (GtkTreeModel *tree_model,
-                            GtkTreeIter  *parent)
+														GtkTreeIter  *parent)
 {
 	g_return_val_if_fail (parent == NULL || parent->user_data != NULL, false);
 	g_return_val_if_fail (C4_IS_LIST (tree_model), false);

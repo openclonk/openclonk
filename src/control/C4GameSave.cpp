@@ -66,7 +66,7 @@ bool C4GameSave::SaveCore()
 	rC4S = Game.C4S;
 	// Always mark current engine version
 	rC4S.Head.C4XVer[0]=C4XVER1; rC4S.Head.C4XVer[1]=C4XVER2;
-  rC4S.Head.C4XVer[2]=C4XVER3; rC4S.Head.C4XVer[3]=C4XVER4;
+	rC4S.Head.C4XVer[2]=C4XVER3; rC4S.Head.C4XVer[3]=C4XVER4;
 	// Some flags are not to be set for initial settings:
 	//  They depend on whether specific runtime data is present, which may simply not be stored into initial
 	//  saves, because they rely on any data present and up-to-date within the scenario!
@@ -460,8 +460,8 @@ bool C4GameSave::Save(C4Group &hToGroup, bool fKeepGroup)
 		pSaveGroup->Delete(C4CFN_Titles);
 		pSaveGroup->Delete(C4CFN_Info);
 		}
-  // Always save Game.txt; even for saved scenarios, because global effects need to be saved
-  if(!Game.SaveData(*pSaveGroup, false, fInitial, IsExact()))
+	// Always save Game.txt; even for saved scenarios, because global effects need to be saved
+	if(!Game.SaveData(*pSaveGroup, false, fInitial, IsExact()))
 		{ Log(LoadResStr("IDS_ERR_SAVE_RUNTIMEDATA")); return false; }
 	// save additional runtime data
 	if (GetSaveRuntimeData()) if (!SaveRuntimeData()) return false;

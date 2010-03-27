@@ -66,7 +66,7 @@ class C4GameSave
 		virtual bool GetCreateSmallFile() { return false; }           // return whether file size should be minimized
 		virtual bool GetForceExactLandscape() { return GetSaveRuntimeData() && IsExact(); } // whether exact landscape shall be saved
 		virtual bool GetSaveOrigin() { return false; }                // return whether C4S.Head.Origin shall be set
-    virtual bool GetClearOrigin() { return !GetSaveOrigin(); }    // return whether C4S.Head.Origin shall be cleared if it's set
+		virtual bool GetClearOrigin() { return !GetSaveOrigin(); }    // return whether C4S.Head.Origin shall be cleared if it's set
 		virtual bool GetSaveUserPlayers() { return IsExact(); }       // return whether joined user players shall be saved into SavePlayerInfos
 		virtual bool GetSaveScriptPlayers() { return IsExact(); }       // return whether joined script players shall be saved into SavePlayerInfos
 		virtual bool GetSaveUserPlayerFiles() { return IsExact(); }       // return whether .c4p files of joined user players shall be put into the scenario
@@ -122,7 +122,7 @@ class C4GameSaveScenario : public C4GameSave
 		bool fForceExactLandscape;
 		bool fSaveOrigin;
 		virtual bool GetSaveOrigin() { return fSaveOrigin; }
-    virtual bool GetClearOrigin() { return false; } // always keep existing origin
+		virtual bool GetClearOrigin() { return false; } // always keep existing origin
 		virtual bool GetSaveDesc() { return false; }    // should WriteDescData be executed in Save()-call?
 		virtual bool GetForceExactLandscape() { return C4GameSave::GetForceExactLandscape() || fForceExactLandscape; }
 		virtual bool GetSaveScriptPlayers() { return true; } // script players are also saved; but user players aren't!

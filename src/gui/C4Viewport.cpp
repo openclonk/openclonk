@@ -83,17 +83,17 @@ double round(double x)
 #include <shellapi.h>
 
 LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-  {
+	{
 	// Determine viewport
 	C4Viewport *cvp;
 	if (!(cvp=::GraphicsSystem.GetViewport(hwnd)))
 		return DefWindowProc(hwnd, uMsg, wParam, lParam);
 
 	// Process message
-  switch (uMsg)
-    {
-    //---------------------------------------------------------------------------------------------------------------------------
-    case WM_KEYDOWN:
+	switch (uMsg)
+		{
+		//---------------------------------------------------------------------------------------------------------------------------
+		case WM_KEYDOWN:
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			switch (wParam)
 				{
@@ -108,42 +108,42 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 				break;
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				}
-      break;
-    //---------------------------------------------------------------------------------------------------------------------------
-    case WM_KEYUP:
+			break;
+		//---------------------------------------------------------------------------------------------------------------------------
+		case WM_KEYUP:
 			if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, NULL)) return 0;
 			break;
-    //------------------------------------------------------------------------------------------------------------
+		//------------------------------------------------------------------------------------------------------------
 		case WM_SYSKEYDOWN:
 			if (wParam == 18) break;
 			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL)) return 0;
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_DESTROY:
 			StoreWindowPosition(hwnd, FormatString("Viewport%i",cvp->Player+1).getData(), Config.GetSubkeyPath("Console"));
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_CLOSE:
 			cvp->pWindow->Close();
 			break;
 
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_DROPFILES:
 			cvp->DropFiles((HANDLE) wParam);
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_USER_DROPDEF:
 			Game.DropDef(C4ID(lParam),cvp->ViewX+float(LOWORD(wParam))/cvp->Zoom,cvp->ViewY+float(HIWORD(wParam)/cvp->Zoom));
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_SIZE:
 			cvp->UpdateOutputSize();
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_PAINT:
 			::GraphicsSystem.Execute();
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_HSCROLL:
 			switch (LOWORD(wParam))
 				{
@@ -156,7 +156,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			cvp->Execute();
 			cvp->ScrollBarsByViewPosition();
 			return 0;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_VSCROLL:
 			switch (LOWORD(wParam))
 				{
@@ -169,7 +169,7 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			cvp->Execute();
 			cvp->ScrollBarsByViewPosition();
 			return 0;
-    //----------------------------------------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------------------------------
 		case WM_ACTIVATE:
 			// Keep editing dialogs on top of the current viewport, but don't make them
 			// float on other windows (i.e., no HWND_TOPMOST).
@@ -192,8 +192,8 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 					SetWindowLongPtr(Console.ToolsDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
 			}
 			break;
-    //----------------------------------------------------------------------------------------------------------------------------------
-    }
+		//----------------------------------------------------------------------------------------------------------------------------------
+		}
 
 	// Viewport mouse control
 	if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
@@ -249,17 +249,17 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 			}
 		}
 
-  return DefWindowProc(hwnd, uMsg, wParam, lParam);
-  }
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+	}
 
 CStdWindow * C4ViewportWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool) {
 	Active = true;
 	// Create window
 	hWindow = CreateWindowEx (
-          WS_EX_ACCEPTFILES,
+					WS_EX_ACCEPTFILES,
 					C4ViewportClassName, Title, C4ViewportWindowStyle,
-          CW_USEDEFAULT,CW_USEDEFAULT,400,250,
-          pParent->hWindow,NULL,pApp->GetInstance(),NULL);
+					CW_USEDEFAULT,CW_USEDEFAULT,400,250,
+					pParent->hWindow,NULL,pApp->GetInstance(),NULL);
 	return hWindow ? this : 0;
 }
 
@@ -852,7 +852,7 @@ void C4Viewport::Clear()
 	OutX=OutY=ViewWdt=ViewHgt=0;
 	DrawX=DrawY=0;
 	Regions.Clear();
-  ViewOffsX = ViewOffsY = 0;
+	ViewOffsX = ViewOffsY = 0;
 	}
 
 void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
@@ -1171,7 +1171,7 @@ void C4Viewport::AdjustPosition()
 		}
 	// NO_OWNER can't scroll
 	if (fIsNoOwnerViewport) { ViewOffsX=0; ViewOffsY=0; }
-  // clip at borders, update vars
+	// clip at borders, update vars
 	UpdateViewPosition();
 #ifdef WITH_DEVELOPER_MODE
 	//ScrollBarsByViewPosition();

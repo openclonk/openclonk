@@ -53,11 +53,11 @@ C4Network2IO::C4Network2IO()
 		pConnList(NULL),
 		iNextConnID(0),
 		fAllowConnect(false),
-    pAutoAcceptList(NULL),
+		pAutoAcceptList(NULL),
 		fExclusiveConn(false),
 		iLastExecute(0), iLastPing(0), iLastStatistic(0),
-    iTCPIRate(0), iTCPORate(0), iTCPBCRate(0),
-    iUDPIRate(0), iUDPORate(0), iUDPBCRate(0)
+		iTCPIRate(0), iTCPORate(0), iTCPBCRate(0),
+		iUDPIRate(0), iUDPORate(0), iUDPBCRate(0)
 {
 	ZeroMem(&PuncherAddr, sizeof(PuncherAddr));
 }
@@ -74,16 +74,16 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 
 	// init members
 	iLastPing = iLastStatistic = timeGetTime();
-  iTCPIRate = iTCPORate = iTCPBCRate = 0;
-  iUDPIRate = iUDPORate = iUDPBCRate = 0;
+	iTCPIRate = iTCPORate = iTCPBCRate = 0;
+	iUDPIRate = iUDPORate = iUDPBCRate = 0;
 
 	// init event callback
-  C4InteractiveThread &Thread = Application.InteractiveThread;
-  Thread.SetCallback(Ev_Net_Conn, this);
-  Thread.SetCallback(Ev_Net_Disconn, this);
-  Thread.SetCallback(Ev_Net_Packet, this);
+	C4InteractiveThread &Thread = Application.InteractiveThread;
+	Thread.SetCallback(Ev_Net_Conn, this);
+	Thread.SetCallback(Ev_Net_Disconn, this);
+	Thread.SetCallback(Ev_Net_Packet, this);
 
-  // initialize net i/o classes: TCP first
+	// initialize net i/o classes: TCP first
 	if(iPortTCP > 0)
 	{
 		// create
@@ -94,15 +94,15 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 			LogF("Network: could not init TCP i/o (%s)", pNetIO_TCP->GetError() ? pNetIO_TCP->GetError() : "");
 			delete pNetIO_TCP; pNetIO_TCP = NULL;
 		}
-    else
-      LogSilentF("Network: TCP initialized on port %d", iPortTCP);
+		else
+			LogSilentF("Network: TCP initialized on port %d", iPortTCP);
 
 		// add to thread, set callback
 		if(pNetIO_TCP)
-      {
-      Thread.AddProc(pNetIO_TCP);
-      pNetIO_TCP->SetCallback(this);
-      }
+			{
+			Thread.AddProc(pNetIO_TCP);
+			pNetIO_TCP->SetCallback(this);
+			}
 
 	}
 	// then UDP
@@ -116,8 +116,8 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 			LogF("Network: could not init UDP i/o (%s)", pNetIO_UDP->GetError() ? pNetIO_UDP->GetError() : "");
 			delete pNetIO_UDP; pNetIO_UDP = NULL;
 		}
-    else
-      LogSilentF("Network: UDP initialized on port %d", iPortUDP);
+		else
+			LogSilentF("Network: UDP initialized on port %d", iPortUDP);
 
 		// broadcast deactivated for now, it will possibly cause problems with connection recovery
 #if 0
@@ -134,40 +134,40 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 
 		// add to thread, set callback
 		if(pNetIO_UDP)
-      {
-      Thread.AddProc(pNetIO_UDP);
-      pNetIO_UDP->SetCallback(this);
-      }
+			{
+			Thread.AddProc(pNetIO_UDP);
+			pNetIO_UDP->SetCallback(this);
+			}
 
 	}
 
 	// no protocols?
 	if(!pNetIO_TCP && !pNetIO_UDP)
-  {
-    LogFatal("Network: fatal - no protocols available!");
-    Thread.ClearCallback(Ev_Net_Conn, this);
-    Thread.ClearCallback(Ev_Net_Disconn, this);
-    Thread.ClearCallback(Ev_Net_Packet, this);
-    return false;
-  }
+	{
+		LogFatal("Network: fatal - no protocols available!");
+		Thread.ClearCallback(Ev_Net_Conn, this);
+		Thread.ClearCallback(Ev_Net_Disconn, this);
+		Thread.ClearCallback(Ev_Net_Packet, this);
+		return false;
+	}
 
 	// discovery last
 	if(iPortDiscover > 0)
 	{
 		// create
 		pNetIODiscover = new C4Network2IODiscover(iPortRefServer);
-    pNetIODiscover->SetDiscoverable(false);
+		pNetIODiscover->SetDiscoverable(false);
 		// init
 		if(!pNetIODiscover->Init(iPortDiscover))
 		{
 			LogF("Network: could not init discovery (%s)", pNetIODiscover->GetError() ? pNetIODiscover->GetError() : "");
 			delete pNetIODiscover; pNetIODiscover = NULL;
 		}
-    else
-      LogSilentF("Network: discovery initialized on port %d", iPortDiscover);
+		else
+			LogSilentF("Network: discovery initialized on port %d", iPortDiscover);
 		// add to thread
 		if(pNetIODiscover)
-      Thread.AddProc(pNetIODiscover);
+			Thread.AddProc(pNetIODiscover);
 	}
 
 	// plus reference server
@@ -181,11 +181,11 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 			LogF("Network: could not init reference server (%s)", pNetIO_UDP->GetError() ? pNetIO_UDP->GetError() : "");
 			delete pRefServer; pRefServer = NULL;
 		}
-    else
-      LogSilentF("Network: reference server initialized on port %d", iPortRefServer);
+		else
+			LogSilentF("Network: reference server initialized on port %d", iPortRefServer);
 		// add to thread
 		if(pRefServer)
-      Thread.AddProc(pRefServer);
+			Thread.AddProc(pRefServer);
 	}
 
 	// own timer
@@ -199,12 +199,12 @@ bool C4Network2IO::Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscove
 void C4Network2IO::Clear() // by main thread
 {
 	// process remaining events
-  C4InteractiveThread &Thread = Application.InteractiveThread;
-  Thread.ProcessEvents();
+	C4InteractiveThread &Thread = Application.InteractiveThread;
+	Thread.ProcessEvents();
 	// clear event callbacks
-  Thread.ClearCallback(Ev_Net_Conn, this);
-  Thread.ClearCallback(Ev_Net_Disconn, this);
-  Thread.ClearCallback(Ev_Net_Packet, this);
+	Thread.ClearCallback(Ev_Net_Conn, this);
+	Thread.ClearCallback(Ev_Net_Disconn, this);
+	Thread.ClearCallback(Ev_Net_Packet, this);
 	// close all connections
 	CStdLock ConnListLock(&ConnListCSec);
 	for(C4Network2IOConnection *pConn = pConnList, *pNext; pConn; pConn = pNext)
@@ -218,7 +218,7 @@ void C4Network2IO::Clear() // by main thread
 	pConnList = NULL;
 	ConnListLock.Clear();
 	// close net i/o classes
-  Thread.RemoveProc(this);
+	Thread.RemoveProc(this);
 	if(pNetIODiscover) { Thread.RemoveProc(pNetIODiscover); delete pNetIODiscover; pNetIODiscover = NULL; }
 	if(pNetIO_TCP) { Thread.RemoveProc(pNetIO_TCP); delete pNetIO_TCP; pNetIO_TCP = NULL; }
 	if(pNetIO_UDP) { Thread.RemoveProc(pNetIO_UDP); delete pNetIO_UDP; pNetIO_UDP = NULL; }
@@ -284,15 +284,15 @@ bool C4Network2IO::Connect(const C4NetIO::addr_t &addr, C4Network2IOProtocol ePr
 void C4Network2IO::SetAcceptMode(bool fnAllowConnect) // by main thread
 {
 	fAllowConnect = fnAllowConnect;
-  // Allow connect? Allow discovery of this host
-  if(fAllowConnect)
-  {
-    if(pNetIODiscover)
-    {
-      pNetIODiscover->SetDiscoverable(true);
-      pNetIODiscover->Announce();
-    }
-  }
+	// Allow connect? Allow discovery of this host
+	if(fAllowConnect)
+	{
+		if(pNetIODiscover)
+		{
+			pNetIODiscover->SetDiscoverable(true);
+			pNetIODiscover->Announce();
+		}
+	}
 }
 
 void C4Network2IO::SetExclusiveConnMode(bool fnExclusiveConn) // by main thread
@@ -531,7 +531,7 @@ bool C4Network2IO::OnConn(const C4NetIO::addr_t &PeerAddr, const C4NetIO::addr_t
 	// log
 	Application.InteractiveThread.ThreadLogS("Network: got %s connection from %s:%d", getNetIOName(pNetIO), inet_ntoa(PeerAddr.sin_addr), htons(PeerAddr.sin_port));
 #endif
-  // do event (disabled - unused)
+	// do event (disabled - unused)
 	// pConn->AddRef(); PushNetEv(NE_Conn, pConn);
 	// ok
 	return true;
@@ -557,12 +557,12 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 	if(!pConn) pConn = GetConnectionByConnAddr(addr, pNetIO);
 	if(!pConn) return;
 #if(C4NET2IO_DUMP_LEVEL > 0)
-  // log
+	// log
 	Application.InteractiveThread.ThreadLogS("Network: %s connection to %s:%d %s (%s)",
 		getNetIOName(pNetIO), inet_ntoa(addr.sin_addr), htons(addr.sin_port), pConn->isConnecting() ? "failed" : "closed" , szReason);
 #endif
-  // already closed? ignore
-  if(!pConn->isClosed())
+	// already closed? ignore
+	if(!pConn->isClosed())
 	  // not accepted yet? count as connection failure
 	  pConn->SetStatus(pConn->isHalfAccepted() ? CS_Closed : CS_ConnectFail);
 	// keep connection for main thread message
@@ -570,7 +570,7 @@ void C4Network2IO::OnDisconn(const C4NetIO::addr_t &addr, C4NetIO *pNetIO, const
 	// check for pending welcome packets
 	SendConnPackets();
 	// signal to main thread
-  Application.InteractiveThread.PushEvent(Ev_Net_Disconn, pConn);
+	Application.InteractiveThread.PushEvent(Ev_Net_Disconn, pConn);
 	// don't remove connection from list - wait for postmortem or timeout
 }
 
@@ -621,10 +621,10 @@ bool C4Network2IO::Execute(int iTimeout, pollfd *)
 		iLastPing = iLastExecute;
 	}
 
-  // do statistics
+	// do statistics
 	if(!Inside<long unsigned int>(iLastStatistic, timeGetTime() - C4NetStatisticsFreq, timeGetTime()))
 	{
-    GenerateStatistics(iLastExecute - iLastStatistic);
+		GenerateStatistics(iLastExecute - iLastStatistic);
 		iLastStatistic = iLastExecute;
 	}
 
@@ -770,8 +770,8 @@ C4Network2IOConnection *C4Network2IO::GetConnectionByID(uint32_t iConnID) // by 
 
 void C4Network2IO::SetReference(C4Network2Reference *pReference)
 {
-  if(pRefServer)
-    pRefServer->SetReference(pReference);
+	if(pRefServer)
+		pRefServer->SetReference(pReference);
 	else
 		delete pReference;
 }
@@ -809,10 +809,10 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 	// unpack packet (yet another no-idea-why-it's-needed-cast)
 	C4IDPacket Pkt; C4PacketBase &PktB = Pkt;
 	try
-  {
-    PktB.unpack(rPacket);
-  }
-  catch(StdCompiler::Exception *pExc)
+	{
+		PktB.unpack(rPacket);
+	}
+	catch(StdCompiler::Exception *pExc)
 	{
 		Application.InteractiveThread.ThreadLog("Network: error: Failed to unpack packet id %02x: %s", rPacket.getStatus(), pExc->Msg.getData());
 		delete pExc;
@@ -832,9 +832,9 @@ bool C4Network2IO::HandlePacket(const C4NetIOPacket &rPacket, C4Network2IOConnec
 			(iTime / 1000 / 60 / 60), (iTime / 1000 / 60) % 60, (iTime / 1000) % 60, iTime % 1000,
 			inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port),
 			static_cast<unsigned long>(rPacket.getSize()), pConn->getInPacketCounter());
-    StdStrBuf Dump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(Pkt, PacketHeader.getData()));
-    // Put it directly. The standard functions behind StdBuf.Format seem to choke when you pass them too much data.
-    Application.InteractiveThread.PushEvent(Ev_LogSilent, Dump.GrabPointer());
+		StdStrBuf Dump = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(Pkt, PacketHeader.getData()));
+		// Put it directly. The standard functions behind StdBuf.Format seem to choke when you pass them too much data.
+		Application.InteractiveThread.PushEvent(Ev_LogSilent, Dump.GrabPointer());
 	}
 #endif
 
@@ -964,7 +964,7 @@ void C4Network2IO::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Net
 		if(doAutoAccept(rPkt.getCCore(), *pConn))
 		{
 			// send answer back
-      C4PacketConnRe pcr(true, false, "auto accept");
+			C4PacketConnRe pcr(true, false, "auto accept");
 			if(!pConn->Send(MkC4NetIOPacket(PID_ConnRe, pcr)))
 				pConn->Close();
 			// accept
@@ -990,10 +990,10 @@ void C4Network2IO::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Net
 		GETPKT(C4PacketConnRe, rPkt)
 		// auto accept connection
 		if(rPkt.isOK())
-    {
-  		if(pConn->isHalfAccepted() && pConn->isAutoAccepted())
+		{
+			if(pConn->isHalfAccepted() && pConn->isAutoAccepted())
 				pConn->SetAccepted();
-    }
+		}
 	}
 	break;
 
@@ -1070,7 +1070,7 @@ void C4Network2IO::HandlePacket(char cStatus, const C4PacketBase *pPacket, C4Net
 void C4Network2IO::HandleFwdReq(const C4PacketFwd &rFwd, C4Network2IOConnection *pBy)
 {
 	CStdLock ConnListLock(&ConnListCSec);
-  // init packet
+	// init packet
 	C4PacketFwd nFwd;
 	nFwd.SetListType(false);
 	// find all clients the message should be forwarded to
@@ -1168,18 +1168,18 @@ void C4Network2IO::CheckTimeout()
 		// status timeout
 		if(!pConn->isClosed() && !pConn->isAccepted())
 			if(difftime(time(NULL), pConn->getTimestamp()) > C4NetAcceptTimeout)
-      {
-        Application.InteractiveThread.ThreadLogS("Network: connection accept timeout to %s:%d", inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port));
+			{
+				Application.InteractiveThread.ThreadLogS("Network: connection accept timeout to %s:%d", inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port));
 				pConn->Close();
-      }
+			}
 		// ping timeout
 		if(pConn->isAccepted())
 			if((pConn->getLag() != -1 ? pConn->getLag() : 1000 * (time(NULL) - pConn->getTimestamp()))
 					> C4NetPingTimeout)
-      {
-        Application.InteractiveThread.ThreadLogS("Network: ping timeout to %s:%d", inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port));
+			{
+				Application.InteractiveThread.ThreadLogS("Network: ping timeout to %s:%d", inet_ntoa(pConn->getPeerAddr().sin_addr), htons(pConn->getPeerAddr().sin_port));
 				pConn->Close();
-      }
+			}
 		// delayed connection removal
 		if(pConn->isClosed())
 			if(difftime(time(NULL), pConn->getTimestamp()) > C4NetAcceptTimeout)
@@ -1189,40 +1189,40 @@ void C4Network2IO::CheckTimeout()
 
 void C4Network2IO::GenerateStatistics(int iInterval)
 {
-  int iTCPIRateSum = 0, iTCPORateSum = 0,
-      iUDPIRateSum = 0, iUDPORateSum = 0;
+	int iTCPIRateSum = 0, iTCPORateSum = 0,
+			iUDPIRateSum = 0, iUDPORateSum = 0;
 
-  // acquire lock, get connection statistics
+	// acquire lock, get connection statistics
 	CStdLock ConnListLock(&ConnListCSec);
 	for(C4Network2IOConnection *pConn = pConnList; pConn; pConn = pConn->pNext)
-    if(pConn->isOpen())
-    {
-      bool fTCP = pConn->getNetClass() == pNetIO_TCP;
-      pConn->DoStatistics(iInterval, fTCP ? &iTCPIRateSum : &iUDPIRateSum,
-                                     fTCP ? &iTCPORateSum : &iUDPORateSum);
-    }
-  ConnListLock.Clear();
+		if(pConn->isOpen())
+		{
+			bool fTCP = pConn->getNetClass() == pNetIO_TCP;
+			pConn->DoStatistics(iInterval, fTCP ? &iTCPIRateSum : &iUDPIRateSum,
+																		 fTCP ? &iTCPORateSum : &iUDPORateSum);
+		}
+	ConnListLock.Clear();
 
-  // get broadcast statistics
-  int inTCPBCRate = 0, inUDPBCRate = 0;
-  if(pNetIO_TCP) pNetIO_TCP->GetStatistic(&inTCPBCRate);
-  if(pNetIO_UDP) pNetIO_UDP->GetStatistic(&inUDPBCRate);
+	// get broadcast statistics
+	int inTCPBCRate = 0, inUDPBCRate = 0;
+	if(pNetIO_TCP) pNetIO_TCP->GetStatistic(&inTCPBCRate);
+	if(pNetIO_UDP) pNetIO_UDP->GetStatistic(&inUDPBCRate);
 
-  // normalize everything
-  iTCPIRateSum = iTCPIRateSum * 1000 / iInterval;
-  iTCPORateSum = iTCPORateSum * 1000 / iInterval;
-  iUDPIRateSum = iUDPIRateSum * 1000 / iInterval;
-  iUDPORateSum = iUDPORateSum * 1000 / iInterval;
-  inTCPBCRate = inTCPBCRate * 1000 / iInterval;
-  inUDPBCRate = inUDPBCRate * 1000 / iInterval;
+	// normalize everything
+	iTCPIRateSum = iTCPIRateSum * 1000 / iInterval;
+	iTCPORateSum = iTCPORateSum * 1000 / iInterval;
+	iUDPIRateSum = iUDPIRateSum * 1000 / iInterval;
+	iUDPORateSum = iUDPORateSum * 1000 / iInterval;
+	inTCPBCRate = inTCPBCRate * 1000 / iInterval;
+	inUDPBCRate = inUDPBCRate * 1000 / iInterval;
 
-  // clear
-  if(pNetIO_TCP) pNetIO_TCP->ClearStatistic();
-  if(pNetIO_UDP) pNetIO_UDP->ClearStatistic();
+	// clear
+	if(pNetIO_TCP) pNetIO_TCP->ClearStatistic();
+	if(pNetIO_UDP) pNetIO_UDP->ClearStatistic();
 
-  // save back
-  iTCPIRate = iTCPIRateSum; iTCPORate = iTCPORateSum; iTCPBCRate = inTCPBCRate;
-  iUDPIRate = iUDPIRateSum; iUDPORate = iUDPORateSum; iUDPBCRate = inUDPBCRate;
+	// save back
+	iTCPIRate = iTCPIRateSum; iTCPORate = iTCPORateSum; iTCPBCRate = inTCPBCRate;
+	iUDPIRate = iUDPIRateSum; iUDPORate = iUDPORateSum; iUDPBCRate = inUDPBCRate;
 }
 
 void C4Network2IO::SendConnPackets()
@@ -1490,21 +1490,21 @@ void C4Network2IOConnection::SetBroadcastTarget(bool fSet)
 
 void C4Network2IOConnection::DoStatistics(int iInterval, int *pIRateSum, int *pORateSum)
 {
-  // get C4NetIO statistics
-  int inIRate, inORate, inLoss;
-  if(!isOpen() || !pNetClass->GetConnStatistic(PeerAddr, &inIRate, &inORate, &inLoss))
-  {
-    iIRate = iORate = iPacketLoss = 0;
-    return;
-  }
-  // normalize
-  inIRate = inIRate * 1000 / iInterval;
-  inORate = inORate * 1000 / iInterval;
-  // set
-  iIRate = inIRate; iORate = inORate; iPacketLoss = inLoss;
-  // sum up
-  if(pIRateSum) *pIRateSum += iIRate;
-  if(pORateSum) *pORateSum += iORate;
+	// get C4NetIO statistics
+	int inIRate, inORate, inLoss;
+	if(!isOpen() || !pNetClass->GetConnStatistic(PeerAddr, &inIRate, &inORate, &inLoss))
+	{
+		iIRate = iORate = iPacketLoss = 0;
+		return;
+	}
+	// normalize
+	inIRate = inIRate * 1000 / iInterval;
+	inORate = inORate * 1000 / iInterval;
+	// set
+	iIRate = inIRate; iORate = inORate; iPacketLoss = inLoss;
+	// sum up
+	if(pIRateSum) *pIRateSum += iIRate;
+	if(pORateSum) *pORateSum += iORate;
 }
 
 void C4Network2IOConnection::AddRef()

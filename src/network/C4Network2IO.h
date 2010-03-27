@@ -40,9 +40,9 @@ const int C4NetTimer								= 500,	// ms
 const int C4NetMaxClients = 256;
 
 class C4Network2IO
-  : protected C4InteractiveThread::Callback,
-    protected C4NetIO::CBClass,
-    protected StdSchedulerProc
+	: protected C4InteractiveThread::Callback,
+		protected C4NetIO::CBClass,
+		protected StdSchedulerProc
 {
 public:
 	C4Network2IO();
@@ -88,18 +88,18 @@ protected:
 	// timer & ping
 	unsigned long iLastExecute, iLastPing;
 
-  // statistics
-  unsigned long iLastStatistic;
-  int iTCPIRate, iTCPORate, iTCPBCRate,
-      iUDPIRate, iUDPORate, iUDPBCRate;
+	// statistics
+	unsigned long iLastStatistic;
+	int iTCPIRate, iTCPORate, iTCPBCRate,
+			iUDPIRate, iUDPORate, iUDPBCRate;
 
 	// punching
 	C4NetIO::addr_t PuncherAddr;
 
 public:
 
-  bool hasTCP() const { return !! pNetIO_TCP; }
-  bool hasUDP() const { return !! pNetIO_UDP; }
+	bool hasTCP() const { return !! pNetIO_TCP; }
+	bool hasUDP() const { return !! pNetIO_UDP; }
 
 	// initialization
 	bool Init(int16_t iPortTCP, int16_t iPortUDP, int16_t iPortDiscovery = -1, int16_t iPortRefServer = -1, bool fBroadcast = false); // by main thread
@@ -140,13 +140,13 @@ public:
 	const char *getNetIOName(C4NetIO *pNetIO);
 	C4Network2IOProtocol getNetIOProt(C4NetIO *pNetIO);
 
-  // statistics
-  int getProtIRate(C4Network2IOProtocol eProt) const { return eProt == P_TCP ? iTCPIRate : iUDPIRate; }
-  int getProtORate(C4Network2IOProtocol eProt) const { return eProt == P_TCP ? iTCPORate : iUDPORate; }
-  int getProtBCRate(C4Network2IOProtocol eProt) const { return eProt == P_TCP ? iTCPBCRate : iUDPBCRate; }
+	// statistics
+	int getProtIRate(C4Network2IOProtocol eProt) const { return eProt == P_TCP ? iTCPIRate : iUDPIRate; }
+	int getProtORate(C4Network2IOProtocol eProt) const { return eProt == P_TCP ? iTCPORate : iUDPORate; }
+	int getProtBCRate(C4Network2IOProtocol eProt) const { return eProt == P_TCP ? iTCPBCRate : iUDPBCRate; }
 
-  // reference
-  void SetReference(class C4Network2Reference *pReference);
+	// reference
+	void SetReference(class C4Network2Reference *pReference);
 	bool IsReferenceNeeded();
 
 protected:
@@ -161,7 +161,7 @@ protected:
 	virtual bool Execute(int iTimeout, pollfd *);
 	virtual int GetNextTick(int Now);
 	// Event callback by C4InteractiveThread
-  void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData); // by main thread
+	void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData); // by main thread
 
 	// connections list
 	void AddConnection(C4Network2IOConnection *pConn); // by both
@@ -187,7 +187,7 @@ protected:
 	// misc
 	bool Ping();
 	void CheckTimeout();
-  void GenerateStatistics(int iInterval);
+	void GenerateStatistics(int iInterval);
 	void SendConnPackets();
 
 	// puncher
@@ -230,8 +230,8 @@ protected:
 	unsigned long iLastPong;								// last pong received
 	C4ClientCore CCore;											// client core (>= CS_HalfAccepted)
 	CStdCSec CCoreCSec;
-  int iIRate, iORate;                     // input/output rates (by C4NetIO, in b/s)
-  int iPacketLoss;                        // lost packets (in the last seconds)
+	int iIRate, iORate;                     // input/output rates (by C4NetIO, in b/s)
+	int iPacketLoss;                        // lost packets (in the last seconds)
 	StdCopyStrBuf Password;									// password to use for connect
 	bool fConnSent;													// initial connection packet send
 	bool fPostMortemSent;										// post mortem send
@@ -267,9 +267,9 @@ public:
 	bool			isHost()				const { return CCore.isHost(); }
 	int				getPingTime()		const { return iPingTime; }
 	int				getLag()				const;
-  int       getIRate()      const { return iIRate; }
-  int       getORate()      const { return iORate; }
-  int       getPacketLoss() const { return iPacketLoss; }
+	int       getIRate()      const { return iIRate; }
+	int       getORate()      const { return iORate; }
+	int       getPacketLoss() const { return iPacketLoss; }
 	const char *getPassword() const { return Password.getData(); }
 	bool			isConnSent()		const { return fConnSent; }
 
@@ -311,8 +311,8 @@ public:
 	bool Send(const C4NetIOPacket &rPkt);
 	void SetBroadcastTarget(bool fSet); // (only call after C4Network2IO::BeginBroadcast!)
 
-  // statistics
-  void DoStatistics(int iInterval, int *pIRateSum, int *pORateSum);
+	// statistics
+	void DoStatistics(int iInterval, int *pIRateSum, int *pORateSum);
 
 	// reference counting
 	void AddRef(); void DelRef();
