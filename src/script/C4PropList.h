@@ -58,10 +58,12 @@ class C4PropList {
 	virtual C4PropListNumbered * GetPropListNumbered();
 	C4PropList * GetPrototype() { return prototype; }
 
-	bool GetProperty(C4String * k, C4Value & to);
+	void GetPropertyRef(C4String * k, C4Value & to);
 	bool HasProperty(C4String * k) const;
 	C4Value * GetRefToProperty(C4String * k);
 	const C4Value * GetRefToPropertyConst(C4String * k) const;
+	bool GetPropertyVal(C4String * k, C4Value & to);
+	bool GetPropertyVal(C4PropertyName k, C4Value & to) { return GetPropertyVal(Strings.P[k], to); }
 	C4String * GetPropertyStr(C4PropertyName k);
 	int32_t GetPropertyInt(C4PropertyName k);
 	void SetProperty(C4String * k, const C4Value & to);

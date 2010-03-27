@@ -638,7 +638,7 @@ bool C4FindObjectActionTarget::Check(C4Object *pObj)
 bool C4FindObjectProcedure::Check(C4Object *pObj)
 {
 	C4Value v;
-	pObj->GetAction()->GetProperty(::Strings.P[P_Procedure], v);
+	pObj->GetAction()->GetPropertyVal(P_Procedure, v);
 	return v != C4VNull && v.getInt() == procedure;
 }
 

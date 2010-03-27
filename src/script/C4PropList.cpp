@@ -125,7 +125,7 @@ void C4PropList::DenumeratePointers()
 		p = Properties.Next(p);
 		}
 	C4Value v;
-	GetProperty(Strings.P[P_Prototype], v);
+	GetPropertyVal(Strings.P[P_Prototype], v);
 	prototype = v.getPropList();
 	}
 
@@ -288,20 +288,15 @@ bool C4PropList::HasProperty(C4String * k) const
 	return false;
 	}
 
-bool C4PropList::GetProperty(C4String * k, C4Value & to)
+void C4PropList::GetPropertyRef(C4String * k, C4Value & to)
 	{
 	// The prototype is special
 	if (k == Strings.P[P_Prototype])
 		{
 		to = C4VPropList(prototype);
-		return true;
+		return;
 		}
-	if (HasProperty(k))
-		{
-		to.SetPropListRef(this, k);
-		return true;
-		}
-	return false;
+	to.SetPropListRef(this, k);
 	}
 
 C4Value * C4PropList::GetRefToProperty(C4String * k)
@@ -340,6 +335,20 @@ const C4Value * C4PropList::GetRefToPropertyConst(C4String * k) const
 		return prototype->GetRefToPropertyConst(k);
 		}
 	return 0;
+	}
+
+bool C4PropList::GetPropertyVal(C4String * k, C4Value & to)
+	{
+	if (Properties.Has(k))
+		{
+		to = Properties.Get(k).Value;
+		return true;
+		}
+	if (prototype)
+		{
+		return prototype->GetPropertyVal(k, to);
+		}
+	return false;
 	}
 
 C4String * C4PropList::GetPropertyStr(C4PropertyName n)

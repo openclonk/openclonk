@@ -1011,7 +1011,7 @@ static C4Value FnGetProperty_C4V(C4AulContext *cthr, C4Value * key_C4V, C4Value 
 	C4String * key = key_C4V->_getStr();
 	if(!key) return C4VNull;
 	C4Value r;
-	pObj->GetProperty(key, r);
+	pObj->GetPropertyRef(key, r);
 	return r;
 }
 

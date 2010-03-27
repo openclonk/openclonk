@@ -580,16 +580,16 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 							throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, string expected!", Index.GetTypeName()).getData());
 						C4PropList *proplist = Array.getPropList();
 						assert(proplist);
-						if(!proplist->GetProperty(Index._getStr(), pCurVal[-1]))
+						if(pCPos->bccType == AB_ARRAYA_V)
 							{
-							C4Value PropList(pCurVal[-1]); // Keep proplist alive
-							pCurVal[-1].Set0();
-							if(pCPos->bccType == AB_ARRAYA_R)
+							if(!proplist->GetPropertyVal(Index._getStr(), pCurVal[-1]))
 								{
-								// Insert into proplist to allow changes
-								proplist->SetProperty(Index._getStr(), C4VNull);
-								proplist->GetProperty(Index._getStr(), pCurVal[-1]);
+								pCurVal[-1].Set0();
 								}
+							}
+						else
+							{
+							proplist->GetPropertyRef(Index._getStr(), pCurVal[-1]);
 							}
 						}
 					// Remove index

@@ -220,7 +220,10 @@ const C4Value & C4Value::GetRefVal() const
 		if(pVal->Type == C4V_Ref)
 			pVal = pVal->Data.Ref;
 		else if(pVal->Type == C4V_PropListRef)
+			{
 			pVal = pVal->Data.PropList->GetRefToPropertyConst(pVal->PropListRefKey);
+			if(!pVal) return C4VNull;
+			}
 		else
 			return *pVal;
 	}

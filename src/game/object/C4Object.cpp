@@ -491,7 +491,7 @@ void C4Object::DrawFaceImpl(C4TargetFacet &cgo, bool action, float fx, float fy,
 			break;
 		case C4DefGraphics::TYPE_Mesh:
 			C4Value value;
-			GetProperty(Strings.P[P_MeshTransformation], value);
+			GetPropertyVal(P_MeshTransformation, value);
 			StdMeshMatrix matrix;
 			if(C4ValueToMatrix(value, &matrix))
 				lpDDraw->SetMeshTransform(&matrix);
@@ -2608,7 +2608,7 @@ void C4Object::DrawLine(C4TargetFacet &cgo)
 	// additive mode?
 	PrepareDrawing();
 	// Draw line segments
-	C4Value colorsV; GetProperty(Strings.P[P_LineColors], colorsV);
+	C4Value colorsV; GetPropertyVal(P_LineColors, colorsV);
 	C4ValueArray *colors = colorsV.getArray();
 	int32_t color0 = 0xFFFF00FF, color1 = 0xFFFF00FF;	// use bright colors so author notices
 	if (colors)
@@ -3259,7 +3259,7 @@ void C4Object::Resort()
 C4PropList* C4Object::GetAction()
 {
 	C4Value value;
-	GetProperty(::Strings.P[P_Action], value);
+	GetPropertyVal(P_Action, value);
 	return value.getPropList();
 }
 
@@ -3390,9 +3390,9 @@ bool C4Object::SetActionByName(C4String *ActName,
 	// If we get the null string or ActIdle by name, set ActIdle
 	if (!ActName || ActName == Strings.P[P_Idle])
 		return SetAction(0,0,0,iCalls,fForce);
-	C4Value ActMap; GetProperty(Strings.P[P_ActMap], ActMap);
+	C4Value ActMap; GetPropertyVal(P_ActMap, ActMap);
 	if (!ActMap.getPropList()) return false;
-	C4Value Action; ActMap.getPropList()->GetProperty(ActName, Action);
+	C4Value Action; ActMap.getPropList()->GetPropertyVal(ActName, Action);
 	if (!Action.getPropList()) return false;
 	return SetAction(Action.getPropList(),pTarget,pTarget2,iCalls,fForce);      
 }
@@ -4511,7 +4511,7 @@ void C4Object::ExecAction()
 			int32_t attachVertex0,attachVertex1;
 			attachVertex0=attachVertex1=0;
 				{
-				C4Value lineAttachV; GetProperty(Strings.P[P_LineAttach], lineAttachV);
+				C4Value lineAttachV; GetPropertyVal(P_LineAttach, lineAttachV);
 				C4ValueArray *lineAttach = lineAttachV.getArray();
 				if (lineAttach)
 					{
@@ -4747,7 +4747,7 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 	{
 	bool fDraw;
 	C4Value vis;
-	if (!GetProperty(Strings.P[P_Visibility], vis))
+	if (!GetPropertyVal(P_Visibility, vis))
 		return true;
 
 	int32_t Visibility;
@@ -4969,7 +4969,7 @@ void C4Object::GetParallaxity(int32_t *parX, int32_t *parY)
 	assert(parX); assert(parY);
 	*parX = 100; *parY = 100;
 	if (!(Category & C4D_Parallax)) return;
-	C4Value parV; GetProperty(Strings.P[P_Parallaxity], parV);
+	C4Value parV; GetPropertyVal(P_Parallaxity, parV);
 	C4ValueArray *par = parV.getArray();
 	if (!par) return;
 	*parX = par->GetItem(0).getInt();
@@ -4979,7 +4979,7 @@ void C4Object::GetParallaxity(int32_t *parX, int32_t *parY)
 bool C4Object::GetDragImage(C4Object **drag_object, C4ID *drag_id)
 {
 	// drag is possible if MouseDragImage is assigned
-	C4Value parV; GetProperty(Strings.P[P_MouseDragImage], parV);
+	C4Value parV; GetPropertyVal(P_MouseDragImage, parV);
 	if (!parV) return false;
 	// determine drag object/id
 	C4Object *obj=NULL; C4ID id;
