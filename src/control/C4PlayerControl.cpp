@@ -164,25 +164,31 @@ void C4PlayerControlDefs::FinalInit()
 /* C4PlayerControlAssignment */
 
 void C4PlayerControlAssignment::KeyComboItem::CompileFunc(StdCompiler *pComp)
-	{
+{
 	// if key is compiled, also store as a string into KeyName for later resolving
 	if (pComp->isCompiler())
-		{
+	{
+		Key.dwShift = 0;
 		sKeyName.Clear();
 		pComp->Value(mkParAdapt(Key, &sKeyName));
 		if (!sKeyName)
-			{
+		{
 			// key was not assigned during compilation - this means it's a regular key (or undefined)
 			// store this as the name
 			sKeyName.Copy(Key.ToString(false, false));
-			}
 		}
-	else
+		else if (Key.dwShift)
 		{
-		// decompiler: Just write the stored key name; regardless of whether it's a key, undefined or a reference
-		pComp->Value(mkParAdapt(sKeyName, StdCompiler::RCT_Idtf));
+			// key name and shift was assigned during compilation - keep both in key name for later decompilation
+			sKeyName.Take(FormatString("%s+%s", C4KeyCodeEx::KeyShift2String((C4KeyShiftState) Key.dwShift).getData(), sKeyName.getData()));
 		}
 	}
+	else
+	{
+		// decompiler: Just write the stored key name; regardless of whether it's a key, undefined or a reference
+		pComp->Value(mkParAdapt(sKeyName, StdCompiler::RCT_Idtf));
+	}
+}
 
 void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 	{
@@ -198,54 +204,72 @@ void C4PlayerControlAssignment::CompileFunc(StdCompiler *pComp)
 		{ "AlwaysUnhandled", CTM_AlwaysUnhandled  },
 		{ NULL, 0 } };
 	pComp->Value(mkNamingAdapt(mkBitfieldAdapt< int32_t>(iTriggerMode, TriggerModeNames), "TriggerMode", CTM_Default));
+	pComp->Value(mkNamingAdapt(fOverrideAssignments, "OverrideAssignments", false));
 	pComp->NameEnd();
 	// newly loaded structures are not resolved
 	if (pComp->isCompiler()) fRefsResolved = false;
 	}
 
 bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParentSet, C4PlayerControlDefs *pControlDefs)
-	{
+{
 	// avoid circular chains
 	static C4PlayerControlAssignment *pCircularDetect = NULL;
 	if (!pCircularDetect) pCircularDetect = this; else if (pCircularDetect == this)
-		{
+	{
 		LogFatal(FormatString("Circular reference chain detected in player control assignments of set %s in assignment for key %s!", pParentSet->GetName(), GetControlName()).getData());
 		return false;
-		}
+	}
 	// resolve control name
 	iControl = pControlDefs->GetControlIndexByIdentifier(sControlName.getData());
 	// resolve keys
 	KeyComboVec NewCombo;
 	for (KeyComboVec::iterator i = KeyCombo.begin(); i != KeyCombo.end(); ++i)
-		{
+	{
 		KeyComboItem &rKeyComboItem = *i;
-		if (rKeyComboItem.Key == KEY_Default && rKeyComboItem.sKeyName.getLength())
-			{
+		if (rKeyComboItem.Key.Key == KEY_Default && rKeyComboItem.sKeyName.getLength())
+		{
 			// this is a key reference
+			// it may be preceded by modifiers (Shift+), which are already set in rKeyComboItem.Key.dwShift
 			// it may be preceded by CON_ to avoid ambigous keus
 			const char *szKeyName = rKeyComboItem.sKeyName.getData();
+			int last_shift_delim_pos;
+			if ((last_shift_delim_pos=SCharLastPos('+', szKeyName)) > -1) szKeyName += last_shift_delim_pos+1;
 			if (SEqual2(szKeyName, "CON_")) szKeyName +=4;
 			// - find it
 			C4PlayerControlAssignment *pRefAssignment = pParentSet->GetAssignmentByControlName(szKeyName);
 			if (pRefAssignment)
-				{
+			{
 				// resolve itself if necessary
 				if (!pRefAssignment->IsRefsResolved()) if (!pRefAssignment->ResolveRefs(pParentSet, pControlDefs)) return false;
 				// insert all keys of that combo into own combo
-				NewCombo.insert(NewCombo.end(), pRefAssignment->KeyCombo.begin(), pRefAssignment->KeyCombo.end());
-				}
-			else
+				// add any extra shift states from reference
+				DWORD ref_shift = rKeyComboItem.Key.dwShift;
+				if (ref_shift)
 				{
+					for (KeyComboVec::iterator j = pRefAssignment->KeyCombo.begin(); j != pRefAssignment->KeyCombo.end(); ++j)
+					{
+						KeyComboItem assignment_combo_item = *j;
+						assignment_combo_item.Key.dwShift |= ref_shift;
+						NewCombo.push_back(assignment_combo_item);
+					}
+				}
+				else
+				{
+					NewCombo.insert(NewCombo.end(), pRefAssignment->KeyCombo.begin(), pRefAssignment->KeyCombo.end());
+				}
+			}
+			else
+			{
 				// undefined reference? Not fatal, but inform user
 				LogF("WARNING: Control %s of set %s contains reference to unassigned control %s.", GetControlName(), pParentSet->GetName(), rKeyComboItem.sKeyName.getData());
 				NewCombo.clear();
-				}
-			}
-		else
-			{
-			NewCombo.push_back(rKeyComboItem);
 			}
 		}
+		else
+		{
+			NewCombo.push_back(rKeyComboItem);
+		}
+	}
 	KeyCombo = NewCombo;
 	// the trigger key is always last of the chain
 	if (KeyCombo.size()) TriggerKey = KeyCombo.back().Key; else TriggerKey = C4KeyCodeEx();
@@ -253,7 +277,7 @@ bool C4PlayerControlAssignment::ResolveRefs(C4PlayerControlAssignmentSet *pParen
 	fRefsResolved = true;
 	if (pCircularDetect == this) pCircularDetect = NULL;
 	return true;
-	}
+}
 
 bool C4PlayerControlAssignment::IsComboMatched(const C4PlayerControlRecentKeyList &DownKeys, const C4PlayerControlRecentKeyList &RecentKeys) const
 	{
@@ -322,25 +346,53 @@ void C4PlayerControlAssignmentSet::CompileFunc(StdCompiler *pComp)
 	}
 
 void C4PlayerControlAssignmentSet::MergeFrom(const C4PlayerControlAssignmentSet &Src, bool fLowPrio)
-	{
+{
 	// take over all assignments defined in Src
 	for (C4PlayerControlAssignmentVec::const_iterator i = Src.Assignments.begin(); i != Src.Assignments.end(); ++i)
-		{
+	{
 		const C4PlayerControlAssignment &SrcAssignment = *i;
-		// overwrite if def of same name existed if it's not low priority anyway?
-		// not so easy. Keys may be assigned to multiple controls and we may need to overwrite one or more of them...
-		C4PlayerControlAssignment *pPrevAssignment = GetAssignmentByControlName(SrcAssignment.GetControlName());
-		if (pPrevAssignment)
+		bool fIsReleaseKey = !!(SrcAssignment.GetTriggerMode() & C4PlayerControlAssignment::CTM_Release);
+		// overwrite same def and release key state
+		if (!fLowPrio && SrcAssignment.IsOverrideAssignments())
+		{
+			// high priority override control clears all previous (very inefficient method...might as well recreate the whole list)
+			bool any_remaining = true;
+			while (any_remaining)
 			{
-			if (!fLowPrio) *pPrevAssignment = SrcAssignment;
-			}
-		else
-			{
-			// new def: Append a copy
-			Assignments.push_back(SrcAssignment);
+				any_remaining = false;
+				for (C4PlayerControlAssignmentVec::iterator j = Assignments.begin(); j != Assignments.end(); ++j)
+					if (SEqual((*j).GetControlName(), SrcAssignment.GetControlName()))
+					{
+						bool fSelfIsReleaseKey = !!((*j).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release);
+						if (fSelfIsReleaseKey == fIsReleaseKey)
+						{
+							Assignments.erase(j);
+							any_remaining = true;
+							break;
+						}
+					}
 			}
 		}
+		else if (fLowPrio)
+		{
+			// if this is low priority, another override control kills this
+			bool any_override = false;
+			for (C4PlayerControlAssignmentVec::iterator j = Assignments.begin(); j != Assignments.end(); ++j)
+				if (SEqual((*j).GetControlName(), SrcAssignment.GetControlName()))
+				{
+					bool fSelfIsReleaseKey = !!((*j).GetTriggerMode() & C4PlayerControlAssignment::CTM_Release);
+					if (fSelfIsReleaseKey == fIsReleaseKey)
+					{
+						any_override = true;
+						break;
+					}
+				}
+			if (any_override) continue;
+		}
+		// new def: Append a copy
+		Assignments.push_back(SrcAssignment);
 	}
+}
 
 bool C4PlayerControlAssignmentSet::ResolveRefs(C4PlayerControlDefs *pDefs)
 	{

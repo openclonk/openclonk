@@ -164,7 +164,7 @@ inline uint8_t Key_GetMouse(C4KeyCode key)
 
 inline uint8_t Key_GetMouseEvent(C4KeyCode key)
 {
-	return ((uint32_t)key) & uint8_t(0xff | ~KEY_MOUSE_GameMask);
+	return ((uint32_t)key) & uint8_t(0xff & ~KEY_MOUSE_GameMask);
 }
 
 inline bool Key_GetMouseIsGameCoordinate(C4KeyCode key)

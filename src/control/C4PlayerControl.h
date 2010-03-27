@@ -150,6 +150,7 @@ class C4PlayerControlAssignment
 		StdCopyStrBuf sControlName; // name of the control to be executed on this key
 		int32_t iControl; // the control to be executed on this key, i.e. the resolved sControlName
 		int32_t iPriority;          // higher priority assignments get handled first
+		bool fOverrideAssignments;  // override all other assignments to the same key?
 
 	public:
 		// action to be performed on the control upon this key
@@ -167,7 +168,7 @@ class C4PlayerControlAssignment
 		bool fRefsResolved; // set to true after sControlName and sKeyNames have been resolved to runtime values
 
 	public:
-		C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), iTriggerMode(CTM_Default), fRefsResolved(false) {}
+		C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), iTriggerMode(CTM_Default), fRefsResolved(false), fOverrideAssignments(false) {}
 		~C4PlayerControlAssignment() {}
 
 		void CompileFunc(StdCompiler *pComp);
@@ -183,6 +184,7 @@ class C4PlayerControlAssignment
 		int32_t GetTriggerMode() const { return iTriggerMode; }
 		const C4KeyCodeEx &GetTriggerKey() const { return TriggerKey; }
 		bool HasCombo() const { return KeyCombo.size()>1; }
+		bool IsOverrideAssignments() const { return fOverrideAssignments; }
 	};
 
 typedef std::vector<C4PlayerControlAssignment> C4PlayerControlAssignmentVec;

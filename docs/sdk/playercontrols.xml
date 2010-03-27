@@ -171,6 +171,10 @@
 			<row>
 				<col>ToggleUnhandled</col>
 				<col>Der Tastendruck wird genau dann an die Belegung mit der naechstniedrigen Prioritaet weitergereicht, wenn das vorherige Kommando erfolgreich ausgefuehrt wurde. Hiermit lassen sich Makros definieren. **</col>
+			</row>
+			<row>
+				<col>OverrideAssignments</col>
+				<col>Die Zuweisung ueberschreibt alle weiteren Zuweisungen zum gleichen Control mit gleichem Press/Release-Triggermodus.</col>
 			</row></table></text>
 		</col>
 	</row></table></text>
