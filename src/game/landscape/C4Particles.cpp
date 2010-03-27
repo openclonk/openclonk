@@ -145,7 +145,8 @@ bool C4ParticleDef::Load(C4Group &rGrp)
 		// set facet, if assigned - otherwise, assume full surface
 		if (GfxFace.Wdt) Gfx.Set(Gfx.Surface, GfxFace.x, GfxFace.y, GfxFace.Wdt, GfxFace.Hgt, GfxFace.tx, GfxFace.ty);
 		// set phase num
-		int32_t Q; Gfx.GetPhaseNum(Length, Q);
+		int32_t Q; Gfx.GetPhaseNum(PhasesX, Q);
+		Length = PhasesX * Q;
 		if (!Length)
 			{
 			DebugLogF("invalid facet for particle '%s'", Name.getData());
@@ -779,6 +780,8 @@ void fxStdDraw(C4Particle *pPrt, C4TargetFacet &cgo, C4Object *pTarget)
 	int32_t tx=cgo.TargetX*pDef->Parallaxity[0]/100;
 	int32_t ty=cgo.TargetY*pDef->Parallaxity[1]/100;
 
+	int32_t phases = pDef->PhasesX;
+
 	float dx = pPrt->x, dy = pPrt->y;
 	float dxdir = pPrt->xdir, dydir = pPrt->ydir;
 	// relative position & movement
@@ -828,9 +831,9 @@ void fxStdDraw(C4Particle *pPrt, C4TargetFacet &cgo, C4Object *pTarget)
 	int32_t iDrawWdt=int32_t(pPrt->a);
 	int32_t iDrawHgt=int32_t(pDef->Aspect*iDrawWdt);
 	if (r)
-		pDef->Gfx.DrawXR(cgo.Surface, cx-iDrawWdt, cy-iDrawHgt, iDrawWdt*2, iDrawHgt*2, iPhase, 0, r);
+		pDef->Gfx.DrawXR(cgo.Surface, cx-iDrawWdt, cy-iDrawHgt, iDrawWdt*2, iDrawHgt*2, iPhase%phases, iPhase/phases, r);
 	else
-		pDef->Gfx.DrawX(cgo.Surface, cx-iDrawWdt, cy-iDrawHgt, iDrawWdt*2, iDrawHgt*2, iPhase, 0);
+		pDef->Gfx.DrawX(cgo.Surface, cx-iDrawWdt, cy-iDrawHgt, iDrawWdt*2, iDrawHgt*2, iPhase%phases, iPhase/phases);
 	Application.DDraw->ResetBlitMode();
 	Application.DDraw->RestorePrimaryClipper();
 	Application.DDraw->DeactivateBlitModulation();

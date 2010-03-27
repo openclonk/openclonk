@@ -104,6 +104,7 @@ class C4ParticleDef : public C4ParticleDefCore
 
 		C4FacetSurface Gfx;								// graphics
 		int32_t Length;										// number of phases in gfx
+		int32_t PhasesX;									// number of phases per line in gfx
 		float Aspect;									// height:width
 
 		C4ParticleInitProc InitProc;	// procedure called once upon creation of the particle
