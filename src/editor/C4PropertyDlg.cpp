@@ -51,73 +51,73 @@
 #include "resource.h"
 
 BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	switch (Msg)
+	{
+		//------------------------------------------------------------------------------------------------
+	case WM_CLOSE:
+		Console.PropertyDlg.Clear();
+		break;
+		//------------------------------------------------------------------------------------------------
+	case WM_DESTROY:
+		StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), false);
+		break;
+		//------------------------------------------------------------------------------------------------
+	case WM_INITDIALOG:
+		SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
+		return true;
+		//------------------------------------------------------------------------------------------------
+	case WM_COMMAND:
+		// Evaluate command
+		switch (LOWORD(wParam))
 		{
-		//------------------------------------------------------------------------------------------------
-		case WM_CLOSE:
-			Console.PropertyDlg.Clear();
-			break;
-		//------------------------------------------------------------------------------------------------
-		case WM_DESTROY:
-			StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), false);
-			break;
-		//------------------------------------------------------------------------------------------------
-		case WM_INITDIALOG:
-			SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDOK:
+			// IDC_COMBOINPUT to Console.EditCursor.In()
+			char buffer[16000];
+			GetDlgItemText(hDlg,IDC_COMBOINPUT,buffer,16000);
+			if (buffer[0])
+				Console.EditCursor.In(buffer);
 			return true;
-		//------------------------------------------------------------------------------------------------
-		case WM_COMMAND:
-			// Evaluate command
-			switch (LOWORD(wParam))
-				{
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDOK:
-					// IDC_COMBOINPUT to Console.EditCursor.In()
-					char buffer[16000];
-					GetDlgItemText(hDlg,IDC_COMBOINPUT,buffer,16000);
-					if (buffer[0])
-						Console.EditCursor.In(buffer);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONRELOADDEF:
-					Game.ReloadDef( Console.PropertyDlg.idSelectedDef );
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				}
-			return false;
-		//-----------------------------------------------------------------------------------------------
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONRELOADDEF:
+			Game.ReloadDef( Console.PropertyDlg.idSelectedDef );
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
-	return false;
+		return false;
+		//-----------------------------------------------------------------------------------------------
 	}
+	return false;
+}
 #endif
 C4PropertyDlg::C4PropertyDlg()
-	{
+{
 	Default();
-	}
+}
 
 C4PropertyDlg::~C4PropertyDlg()
-	{
+{
 	Clear();
 
 #ifdef WITH_DEVELOPER_MODE
-	if(vbox != NULL)
+	if (vbox != NULL)
 	{
 		g_signal_handler_disconnect(G_OBJECT(C4DevmodeDlg::GetWindow()), handlerHide);
 		C4DevmodeDlg::RemovePage(vbox);
 		vbox = NULL;
 	}
 #endif // WITH_DEVELOPER_MODE
-	}
+}
 
 bool C4PropertyDlg::Open()
-	{
+{
 #ifdef _WIN32
 	if (hDialog) return true;
 	hDialog = CreateDialog(Application.GetInstance(),
-												 MAKEINTRESOURCE(IDD_PROPERTIES),
-												 Console.hWindow,
-												 (DLGPROC) PropertyDlgProc);
+	                       MAKEINTRESOURCE(IDD_PROPERTIES),
+	                       Console.hWindow,
+	                       (DLGPROC) PropertyDlgProc);
 	if (!hDialog) return false;
 	// Set text
 	SetWindowText(hDialog,LoadResStr("IDS_DLG_PROPERTIES"));
@@ -131,7 +131,7 @@ bool C4PropertyDlg::Open()
 	ShowWindow(hDialog,SW_SHOWNOACTIVATE);
 #else // _WIN32
 #ifdef WITH_DEVELOPER_MODE
-	if(vbox == NULL)
+	if (vbox == NULL)
 	{
 		vbox = gtk_vbox_new(false, 6);
 
@@ -163,10 +163,10 @@ bool C4PropertyDlg::Open()
 #endif // _WIN32
 	Active = true;
 	return true;
-	}
+}
 
 bool C4PropertyDlg::Update(C4ObjectList &rSelection)
-	{
+{
 	if (!Active) return false;
 	// Set new selection
 	Selection.Copy(rSelection);
@@ -174,18 +174,18 @@ bool C4PropertyDlg::Update(C4ObjectList &rSelection)
 	UpdateInputCtrl(Selection.GetObject());
 	// Update contents
 	return Update();
-	}
+}
 
 bool IsObjectPointer(int iValue)
-	{
+{
 	for (C4ObjectLink *cLnk=::Objects.First; cLnk; cLnk=cLnk->Next)
 		if (cLnk->Obj == (C4Object*) iValue)
 			return true;
 	return false;
-	}
+}
 
 bool C4PropertyDlg::Update()
-	{
+{
 	if (!Active) return false;
 
 	StdStrBuf Output;
@@ -194,60 +194,60 @@ bool C4PropertyDlg::Update()
 
 	// Compose info text by selected object(s)
 	switch (Selection.ObjectCount())
-		{
+	{
 		// No selection
-		case 0:
-			Output = LoadResStr("IDS_CNS_NOOBJECT");
-			break;
+	case 0:
+		Output = LoadResStr("IDS_CNS_NOOBJECT");
+		break;
 		// One selected object
-		case 1:
-			{
-			C4Object *cobj=Selection.GetObject();
-			DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*cobj, "Object"), &Output, "C4PropertyDlg::Update");
-			// Type
-			Output.AppendFormat(LoadResStr("IDS_CNS_TYPE"),cobj->GetName(),cobj->Def->id.ToString());
-			// Owner
-			if (ValidPlr(cobj->Owner))
-				{
-				Output.Append(LineFeed);
-				Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),::Players.Get(cobj->Owner)->GetName());
-				}
-			// Contents
-			if (cobj->Contents.ObjectCount())
-				{
-				Output.Append(LineFeed);
-				Output.Append(LoadResStr("IDS_CNS_CONTENTS"));
-				Output.Append(static_cast<const StdStrBuf &>(cobj->Contents.GetNameList(::Definitions)));
-				}
-			// Action
-			if (cobj->GetAction())
-				{
-				Output.Append(LineFeed);
-				Output.Append(LoadResStr("IDS_CNS_ACTION"));
-				Output.Append(cobj->GetAction()->GetName());
-				}
-			// Effects
-			for(C4Effect *pEffect = cobj->pEffects; pEffect; pEffect = pEffect->pNext)
-				{
-				// Header
-				if (pEffect == cobj->pEffects)
-					{
-					Output.Append(LineFeed);
-					Output.Append(LoadResStr("IDS_CNS_EFFECTS"));
-					}
-				Output.Append(LineFeed);
-				// Effect name
-				Output.AppendFormat(" %s: Interval %d", pEffect->Name, pEffect->iIntervall);
-				}
-			// Store selected def
-			idSelectedDef=cobj->id;
-			break;
-			}
-		// Multiple selected objects
-		default:
-			Output.Format(LoadResStr("IDS_CNS_MULTIPLEOBJECTS"),Selection.ObjectCount());
-			break;
+	case 1:
+	{
+		C4Object *cobj=Selection.GetObject();
+		DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*cobj, "Object"), &Output, "C4PropertyDlg::Update");
+		// Type
+		Output.AppendFormat(LoadResStr("IDS_CNS_TYPE"),cobj->GetName(),cobj->Def->id.ToString());
+		// Owner
+		if (ValidPlr(cobj->Owner))
+		{
+			Output.Append(LineFeed);
+			Output.AppendFormat(LoadResStr("IDS_CNS_OWNER"),::Players.Get(cobj->Owner)->GetName());
 		}
+		// Contents
+		if (cobj->Contents.ObjectCount())
+		{
+			Output.Append(LineFeed);
+			Output.Append(LoadResStr("IDS_CNS_CONTENTS"));
+			Output.Append(static_cast<const StdStrBuf &>(cobj->Contents.GetNameList(::Definitions)));
+		}
+		// Action
+		if (cobj->GetAction())
+		{
+			Output.Append(LineFeed);
+			Output.Append(LoadResStr("IDS_CNS_ACTION"));
+			Output.Append(cobj->GetAction()->GetName());
+		}
+		// Effects
+		for (C4Effect *pEffect = cobj->pEffects; pEffect; pEffect = pEffect->pNext)
+		{
+			// Header
+			if (pEffect == cobj->pEffects)
+			{
+				Output.Append(LineFeed);
+				Output.Append(LoadResStr("IDS_CNS_EFFECTS"));
+			}
+			Output.Append(LineFeed);
+			// Effect name
+			Output.AppendFormat(" %s: Interval %d", pEffect->Name, pEffect->iIntervall);
+		}
+		// Store selected def
+		idSelectedDef=cobj->id;
+		break;
+	}
+	// Multiple selected objects
+	default:
+		Output.Format(LoadResStr("IDS_CNS_MULTIPLEOBJECTS"),Selection.ObjectCount());
+		break;
+	}
 	// Update info edit control
 #ifdef _WIN32
 	int iLine = SendDlgItemMessage(hDialog,IDC_EDITOUTPUT,EM_GETFIRSTVISIBLELINE,(WPARAM)0,(LPARAM)0);
@@ -261,10 +261,10 @@ bool C4PropertyDlg::Update()
 #endif
 #endif
 	return true;
-	}
+}
 
 void C4PropertyDlg::Default()
-	{
+{
 #ifdef _WIN32
 	hDialog=NULL;
 #else
@@ -275,24 +275,24 @@ void C4PropertyDlg::Default()
 	Active = false;
 	idSelectedDef=C4ID::None;
 	Selection.Default();
-	}
+}
 
 void C4PropertyDlg::Clear()
-	{
+{
 	Selection.Clear();
 #ifdef _WIN32
 	if (hDialog) DestroyWindow(hDialog); hDialog=NULL;
 #else
 #ifdef WITH_DEVELOPER_MODE
 	//if(vbox != NULL)
-	//	C4DevmodeDlg::SwitchPage(NULL);
+	//  C4DevmodeDlg::SwitchPage(NULL);
 #endif
 #endif
 	Active = false;
-	}
+}
 
 void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
-	{
+{
 	int cnt;
 #ifdef _WIN32
 	HWND hCombo = GetDlgItem(hDialog,IDC_COMBOINPUT);
@@ -310,7 +310,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 	// Uncouple list store from completion so that the completion is not
 	// notified for every row we are going to insert. This enhances
 	// performance significantly.
-	if(!completion)
+	if (!completion)
 	{
 		completion = gtk_entry_completion_new();
 		store = gtk_list_store_new(1, G_TYPE_STRING);
@@ -334,16 +334,16 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 	// add global and standard functions
 	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
 		if (pFn->GetPublic())
-			{
+		{
 #ifdef _WIN32
-				SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)pFn->Name);
+			SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)pFn->Name);
 #else
 #ifdef WITH_DEVELOPER_MODE
 			gtk_list_store_append(store, &iter);
 			gtk_list_store_set(store, &iter, 0, pFn->Name, -1);
 #endif
 #endif
-			}
+		}
 	// Add object script functions
 #ifdef _WIN32
 	bool fDivider = false;
@@ -355,7 +355,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 		for (cnt=0; (pRef=pObj->Def->Script.GetSFunc(cnt)); cnt++)
 			// Public functions only
 			if ((pRef->Access=AA_PUBLIC))
-				{
+			{
 #ifdef _WIN32
 				// Insert divider if necessary
 				if (!fDivider) { SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------"); fDivider=true; }
@@ -369,7 +369,7 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 				gtk_list_store_set(store, &iter, 0, pRef->Name, -1);
 #endif
 #endif
-				}
+			}
 
 #ifdef _WIN32
 	// Restore old text
@@ -378,24 +378,24 @@ void C4PropertyDlg::UpdateInputCtrl(C4Object *pObj)
 	// Reassociate list store with completion
 	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(store));
 #endif
-	}
+}
 
 void C4PropertyDlg::Execute()
-	{
+{
 	if (!::Game.iTick35) Update();
-	}
+}
 
 void C4PropertyDlg::ClearPointers(C4Object *pObj)
-	{
+{
 	Selection.ClearPointers(pObj);
-	}
+}
 
 #ifdef WITH_DEVELOPER_MODE
 // GTK+ callbacks
 void C4PropertyDlg::OnScriptActivate(GtkWidget* widget, gpointer data)
 {
 	const gchar* text = gtk_entry_get_text(GTK_ENTRY(widget));
-	if(text && text[0])
+	if (text && text[0])
 		Console.EditCursor.In(text);
 }
 
@@ -406,7 +406,7 @@ void C4PropertyDlg::OnWindowHide(GtkWidget* widget, gpointer user_data)
 
 /*void C4PropertyDlg::OnDestroy(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4PropertyDlg*>(data)->window = NULL;
-	static_cast<C4PropertyDlg*>(data)->Active = false;
+  static_cast<C4PropertyDlg*>(data)->window = NULL;
+  static_cast<C4PropertyDlg*>(data)->Active = false;
 }*/
 #endif

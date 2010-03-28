@@ -102,7 +102,7 @@ EVP_PKEY* loadPublicKey(const char *memKey, bool deBase64 = false, bool deXOR = 
 
 void clearPublicKey(EVP_PKEY* pubKey)
 {
-	 EVP_PKEY_free(pubKey);
+	EVP_PKEY_free(pubKey);
 }
 
 // Verifies the specified block of data using the public key provided.
@@ -144,7 +144,7 @@ int verifyData(char *data, unsigned int dataLen, EVP_PKEY* pubKey)
 	EVP_VerifyUpdate(&digest, data, dataOnlyLen);
 	int err = EVP_VerifyFinal(&digest, sig, sigLen, pubKey);
 	if (err != 1)
-	return -1;
+		return -1;
 	EVP_MD_CTX_cleanup(&digest);
 
 	// Data is valid
@@ -175,43 +175,43 @@ bool getClipboardText(char *pBuffer, int iBufferSize)
 #define ScrambleDefaultKey "_D.lp/8f3_ 3 ] =h16%2"
 
 const char ScrambleMark = '£',
-					 ScrambleRangeLow = '0',
-					 ScrambleRangeHi = 'z';
+                          ScrambleRangeLow = '0',
+                                             ScrambleRangeHi = 'z';
 
 void ScrambleString(char *szString, int iLen, const char *szKey)
-	{
+{
 	if (!szString || !szKey) return;
 	char *cpString = szString;
 	const char *cpKey = szKey;
 	int iChar,iEscSequence=0;
 	if (iLen<0) iLen=SLen(szString);
 	while (iLen>0)
-		{
+	{
 		// Detect character escape sequences
 		if (*cpString=='\\') iEscSequence=2;
 		// Process character
 		if (!iEscSequence)
-			{
+		{
 			// Scramble range
 			if (Inside(*cpString,ScrambleRangeLow,ScrambleRangeHi))
-				{
+			{
 				// Shift character
 				iChar= ((int) *cpString) + (BoundBy(*cpKey,ScrambleRangeLow,ScrambleRangeHi)-ScrambleRangeLow);
 				if (iChar>ScrambleRangeHi) iChar-=(ScrambleRangeHi-ScrambleRangeLow+1);
 				*cpString = (char) iChar;
 				// Advance key
 				cpKey++; if (!(*cpKey)) cpKey=szKey;
-				}
+			}
 			// Postconvert backslash
 			if (*cpString=='\\') *cpString='ø';
-			}
+		}
 		// Advance
 		cpString++; iLen--; if (iEscSequence) iEscSequence--;
-		}
 	}
+}
 
 void UnscrambleString(char *szString/*, int iLen, const char *szKey*/)
-	{
+{
 	int iLen=-1;
 	const char *szKey = ScrambleDefaultKey;
 
@@ -221,116 +221,116 @@ void UnscrambleString(char *szString/*, int iLen, const char *szKey*/)
 	int iChar,iEscSequence=0;
 	if (iLen<0) iLen=SLen(szString);
 	while (iLen>0)
-		{
+	{
 		// Detect character escape sequences
 		if (*cpString=='\\') iEscSequence=2;
 		// Process character
 		if (!iEscSequence)
-			{
+		{
 			// Preconvert backslash
-			if (*cpString=='ø')	*cpString='\\';
+			if (*cpString=='ø') *cpString='\\';
 			// Scramble range
 			if (Inside(*cpString,ScrambleRangeLow,ScrambleRangeHi))
-				{
+			{
 				// Unshift character
 				iChar= ((int) *cpString) - (BoundBy(*cpKey,ScrambleRangeLow,ScrambleRangeHi)-ScrambleRangeLow);
 				if (iChar<ScrambleRangeLow) iChar+=(ScrambleRangeHi-ScrambleRangeLow+1);
 				*cpString = (char) iChar;
 				// Advance key
 				cpKey++; if (!(*cpKey)) cpKey=szKey;
-				}
 			}
-		cpString++; iLen--; if (iEscSequence) iEscSequence--;
 		}
+		cpString++; iLen--; if (iEscSequence) iEscSequence--;
 	}
+}
 
 #define IDS_SEC_FREEFOLDERMAKER "£6ydHdln zhWijn"
 #define IDS_SEC_FREEFOLDERS     "£8>t`giiW.fcf>ECs;.P5l;OS>sV.X4nqNIyeoCrq.P5l;YS;lUh.c<Q>6afeU.cAS<SenIys.TtfC8dTs.f4H;QfogmkG.w4W0Mq^vMoqs.E4s"
 
 const char *LoadSecStr(const char *szString)
-	{
+{
 	static char szBuf[1024+1];
 	SCopy(szString,szBuf);
 	UnscrambleString(szBuf);
 	return szBuf+1;
-	}
+}
 
 C4ConfigShareware::C4ConfigShareware()
-	{
+{
 	KeyFile[0] = 0;
 	InvalidKeyFile[0] = 0;
-	}
+}
 
 C4ConfigShareware::~C4ConfigShareware()
-	{
+{
 
-	}
+}
 
 void C4ConfigShareware::Default()
-	{
+{
 	ZeroMem(this, sizeof (C4ConfigShareware));
 	C4Config::Default();
-	}
+}
 
 bool C4ConfigShareware::Load(bool forceWorkingDirectory, const char *szCustomFile)
-	{
+{
 	// Load standard config
 	if (!C4Config::Load(forceWorkingDirectory, szCustomFile)) return false;
 	// Load registration
 	LoadRegistration();
 	// Done
 	return true;
-	}
+}
 
 bool C4ConfigShareware::Save()
-	{
+{
 	// Save standard config
 	if (!C4Config::Save()) return false;
 	// Done
 	return true;
-	}
+}
 
 bool C4ConfigShareware::Registered()
-	{
+{
 	return RegistrationValid;
-	}
+}
 
 bool C4ConfigShareware::LoadRegistration()
-	{
+{
 	// Reset error message(s)
 	RegistrationError.Clear();
 
 	// First look in configured KeyPath
 	if (Security.KeyPath[0])
-		{
+	{
 		char searchPath[_MAX_PATH] = "";
 		SCopy(GetKeyPath(), searchPath);
 		for (DirectoryIterator i(searchPath); *i; ++i)
 			if (WildcardMatch("*.c4k", *i))
-				{
+			{
 				if (LoadRegistration(*i))
 					return true;
 				else
 					SCopy(*i, InvalidKeyFile, CFG_MaxString);
-				}
-		}
+			}
+	}
 
 	// Then look in ExePath
 	for (DirectoryIterator i(General.ExePath); *i; ++i)
 		if (WildcardMatch("*.c4k", *i))
-			{
+		{
 			if (LoadRegistration(*i))
 				return true;
 			else
 				SCopy(*i, InvalidKeyFile, CFG_MaxString);
-			}
+		}
 
 	// No key file found
 	return HandleError("No valid key file found.");
-	}
+}
 
 bool C4ConfigShareware::LoadRegistration(const char *keyFile)
-	{
+{
 
 #ifdef C4CHECKMEMLEAKS
 	// Set registered flag
@@ -377,15 +377,17 @@ bool C4ConfigShareware::LoadRegistration(const char *keyFile)
 	// Cuid blacklist (this will ban a certain player-id forever)
 	int i;
 	const char *BlackCuid[] = { "16206436", "36689615", "15315029", "13109693", "17584580", "14718309",
-															"10851931", "13295768", "15786864", "13769103",
-															NULL };
+	                            "10851931", "13295768", "15786864", "13769103",
+	                            NULL
+	                          };
 	for (i = 0; BlackCuid[i]; i++)
 		if (SEqual2(SSearch(RegData, "Cuid="), BlackCuid[i]))
 			return HandleError("Invalid User-Id.");
 
 	// Cuid-Webcode blacklist (this will only ban a key with a given cuid-webcode combination, allowing to create a new key without assigning a new cuid)
 	const char *BlackCuidWebCode[] = { "16826502", "398ED5F7",
-																		 NULL, NULL };
+	                                   NULL, NULL
+	                                 };
 	for (i = 0; BlackCuidWebCode[i]; i += 2)
 		if (SEqual2(SSearch(RegData, "Cuid="), BlackCuidWebCode[i]) && SEqual2(SSearch(RegData, "WebCode="), BlackCuidWebCode[i + 1]))
 			return HandleError("Invalid User-Id/WebCode.");
@@ -450,13 +452,13 @@ const char* C4ConfigShareware::GetKeyPath()
 
 StdStrBuf C4ConfigShareware::GetKeyMD5()
 {
-	if(!Registered()) return StdStrBuf();
+	if (!Registered()) return StdStrBuf();
 	// Calculate MD5 of full key data
 	BYTE Digest[MD5_DIGEST_LENGTH];
 	MD5(reinterpret_cast<BYTE *>(RegData), SLen(RegData), Digest);
 	// Convert to hex
 	StdStrBuf HexDigest;
-	for(int i = 0; i < MD5_DIGEST_LENGTH; i++)
+	for (int i = 0; i < MD5_DIGEST_LENGTH; i++)
 		HexDigest.AppendFormat("%02x", Digest[i]);
 	// Done
 	return HexDigest;
@@ -491,7 +493,7 @@ void C4ConfigShareware::ClearRegistrationError()
 }
 
 bool C4ConfigShareware::IsConfidentialData(const char *szInput)
-	{
+{
 	// safety
 	if (!szInput) return false;
 	// unreg users don't have confidential data
@@ -500,12 +502,12 @@ bool C4ConfigShareware::IsConfidentialData(const char *szInput)
 	const char *szWebCode = GetRegistrationData("WebCode");
 	if (szWebCode && *szWebCode) if (SSearchNoCase(szInput, szWebCode))
 		{
-/*		if (fShowWarningMessage && ::pGUI)
-			::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));*/
-		return true;
+			/*    if (fShowWarningMessage && ::pGUI)
+			      ::pGUI->ShowErrorMessage(LoadResStr("IDS_ERR_WARNINGYOUWERETRYINGTOSEN"));*/
+			return true;
 		}
 	// all OK
 	return false;
-	}
+}
 
 C4ConfigShareware Config;

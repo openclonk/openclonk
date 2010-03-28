@@ -50,21 +50,24 @@
 /* CStdWindow */
 
 CStdWindow::CStdWindow ():
-	Active(false), pSurface(0), wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0)
+		Active(false), pSurface(0), wnd(0), renderwnd(0), dpy(0), Hints(0), HasFocus(false), Info(0)
 {
 }
-CStdWindow::~CStdWindow () {
+CStdWindow::~CStdWindow ()
+{
 	Clear();
 }
-CStdWindow * CStdWindow::Init(CStdApp * pApp) {
+CStdWindow * CStdWindow::Init(CStdApp * pApp)
+{
 	return Init(pApp, C4ENGINENAME);
 }
 
-CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor) {
+CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+{
 	Active = true;
 	dpy = pApp->dpy;
 
-	if(!FindInfo() ) return 0;
+	if (!FindInfo() ) return 0;
 
 // Various properties
 	XSetWindowAttributes attr;
@@ -72,64 +75,75 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 	attr.background_pixel = 0;
 	// Which events we want to receive
 	attr.event_mask =
-		//EnterWindowMask |
-		//LeaveWindowMask |
-		StructureNotifyMask |
-		FocusChangeMask |
-		KeyPressMask |
-		KeyReleaseMask |
-		PointerMotionMask |
-		ButtonPressMask |
-		ButtonReleaseMask;
+	  //EnterWindowMask |
+	  //LeaveWindowMask |
+	  StructureNotifyMask |
+	  FocusChangeMask |
+	  KeyPressMask |
+	  KeyReleaseMask |
+	  PointerMotionMask |
+	  ButtonPressMask |
+	  ButtonReleaseMask;
 	attr.colormap = XCreateColormap(dpy, DefaultRootWindow(dpy), ((XVisualInfo*)Info)->visual, AllocNone);
 	unsigned long attrmask = CWBackPixel | CWBorderPixel | CWColormap | CWEventMask;
 	Pixmap bitmap = 0;
-	if (HideCursor) {
+	if (HideCursor)
+	{
 		// Hide the mouse cursor
 		XColor cursor_color;
 		// We do not care what color the invisible cursor has
 		memset(&cursor_color, 0, sizeof(cursor_color));
 		bitmap = XCreateBitmapFromData(dpy, DefaultRootWindow(dpy), "\000", 1, 1);
-		if (bitmap) {
+		if (bitmap)
+		{
 			attr.cursor = XCreatePixmapCursor(dpy, bitmap, bitmap, &cursor_color, &cursor_color, 0, 0);
 			if (attr.cursor)
 				attrmask |= CWCursor;
 			else
 				Log("Error creating cursor.");
-		} else {
+		}
+		else
+		{
 			Log("Error creating bitmap for cursor.");
 			attr.cursor = 0;
 		}
-	} else {
+	}
+	else
+	{
 		attr.cursor = 0;
 	}
 
 	wnd = XCreateWindow(dpy, DefaultRootWindow(dpy),
-		0, 0, 640, 480, 0, ((XVisualInfo*)Info)->depth, InputOutput, ((XVisualInfo*)Info)->visual,
-		attrmask, &attr);
+	                    0, 0, 640, 480, 0, ((XVisualInfo*)Info)->depth, InputOutput, ((XVisualInfo*)Info)->visual,
+	                    attrmask, &attr);
 	if (attr.cursor)
 		XFreeCursor(dpy, attr.cursor);
 	if (bitmap)
 		XFreePixmap(dpy, bitmap);
-	if (!wnd) {
+	if (!wnd)
+	{
 		Log("Error creating window.");
 		return 0;
 	}
 	// Update the XWindow->CStdWindow-Map
 	CStdAppPrivate::SetWindow(wnd, this);
-	if (!pApp->Priv->xic && pApp->Priv->xim) {
+	if (!pApp->Priv->xic && pApp->Priv->xim)
+	{
 		pApp->Priv->xic = XCreateIC(pApp->Priv->xim,
-			XNClientWindow, wnd,
-			XNFocusWindow, wnd,
-			XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
-			XNResourceName, C4ENGINENAME,
-			XNResourceClass, C4ENGINENAME,
-			NULL);
-		if (!pApp->Priv->xic) {
+		                            XNClientWindow, wnd,
+		                            XNFocusWindow, wnd,
+		                            XNInputStyle, XIMPreeditNothing | XIMStatusNothing,
+		                            XNResourceName, C4ENGINENAME,
+		                            XNResourceClass, C4ENGINENAME,
+		                            NULL);
+		if (!pApp->Priv->xic)
+		{
 			Log("Failed to create input context.");
 			XCloseIM(pApp->Priv->xim);
 			pApp->Priv->xim=0;
-		} else {
+		}
+		else
+		{
 			long ic_event_mask;
 			if (XGetICValues(pApp->Priv->xic, XNFilterEvents, &ic_event_mask, NULL) == NULL)
 				attr.event_mask |= ic_event_mask;
@@ -175,14 +189,16 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * p
 	return this;
 }
 
-void CStdWindow::Clear() {
+void CStdWindow::Clear()
+{
 	// Destroy window
-	if (wnd) {
+	if (wnd)
+	{
 		CStdAppPrivate::SetWindow(wnd, 0);
 		XUnmapWindow(dpy, wnd);
 		XDestroyWindow(dpy, wnd);
-		if(Info) XFree (Info);
-		if(Hints) XFree(Hints);
+		if (Info) XFree (Info);
+		if (Hints) XFree(Hints);
 
 		// Might be necessary when the last window is closed
 		XFlush(dpy);
@@ -196,57 +212,61 @@ bool CStdWindow::FindInfo()
 	// get an appropriate visual
 	// attributes for a single buffered visual in RGBA format with at least 4 bits per color
 	static int attrListSgl[] = { GLX_RGBA,
-		GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
-		GLX_DEPTH_SIZE, 8,
-		None };
+	                             GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
+	                             GLX_DEPTH_SIZE, 8,
+	                             None
+	                           };
 	// attributes for a double buffered visual in RGBA format with at least 4 bits per color
 	static int attrListDbl[] = { GLX_RGBA, GLX_DOUBLEBUFFER,
-		GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
-		GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
-		GLX_DEPTH_SIZE, 8,
-		None };
+	                             GLX_RED_SIZE, 4, GLX_GREEN_SIZE, 4, GLX_BLUE_SIZE, 4,
+	                             GLX_X_VISUAL_TYPE, GLX_TRUE_COLOR,
+	                             GLX_DEPTH_SIZE, 8,
+	                             None
+	                           };
 	// doublebuffered is the best
 	Info = glXChooseVisual(dpy, DefaultScreen(dpy), attrListDbl);
 	if (!Info)
-		{
+	{
 		Log("  gl: no doublebuffered visual.");
 		// a singlebuffered is probably better than the default
 		Info = glXChooseVisual(dpy, DefaultScreen(dpy), attrListSgl);
-		}
+	}
 #endif // USE_GL
 	if (!Info)
-		{
+	{
 		Log("  gl: no singlebuffered visual, either.");
 		// just try to get the default
 		XVisualInfo vitmpl; int blub;
 		vitmpl.visual = DefaultVisual(dpy, DefaultScreen(dpy));
 		vitmpl.visualid = XVisualIDFromVisual(vitmpl.visual);
 		Info = XGetVisualInfo(dpy, VisualIDMask, &vitmpl, &blub);
-		}
+	}
 	if (!Info)
-		{
+	{
 		Log("  gl: no visual at all.");
 		return false;
-		}
+	}
 
 	return true;
 }
 
 bool CStdWindow::StorePosition(const char *, const char *, bool) { return true; }
 
-bool CStdWindow::RestorePosition(const char *, const char *, bool) {
+bool CStdWindow::RestorePosition(const char *, const char *, bool)
+{
 	// The Windowmanager is responsible for window placement.
-		return true;
+	return true;
 }
 
-bool CStdWindow::GetSize(RECT * pRect) {
+bool CStdWindow::GetSize(RECT * pRect)
+{
 	Window winDummy;
 	unsigned int borderDummy;
 	int x, y;
 	unsigned int width, height;
 	unsigned int depth;
 	XGetGeometry(dpy, wnd, &winDummy, &x, &y,
-		&width, &height, &borderDummy, &depth);
+	             &width, &height, &borderDummy, &depth);
 	pRect->right = width + x;
 	pRect->bottom = height + y;
 	pRect->top = y;
@@ -254,10 +274,12 @@ bool CStdWindow::GetSize(RECT * pRect) {
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int X, unsigned int Y) {
+void CStdWindow::SetSize(unsigned int X, unsigned int Y)
+{
 	XResizeWindow(dpy, wnd, X, Y);
 }
-void CStdWindow::SetTitle(const char * Title) {
+void CStdWindow::SetTitle(const char * Title)
+{
 	XTextProperty title_property;
 	StdStrBuf tbuf(Title, true);
 	char * tbufstr = tbuf.getMData();
@@ -265,7 +287,8 @@ void CStdWindow::SetTitle(const char * Title) {
 	XSetWMName(dpy, wnd, &title_property);
 }
 
-void CStdWindow::FlashWindow() {
+void CStdWindow::FlashWindow()
+{
 	// This tries to implement flashing via
 	// _NET_WM_STATE_DEMANDS_ATTENTION, but it simply does not work for me.
 	// -ck.
@@ -285,7 +308,7 @@ void CStdWindow::FlashWindow() {
 	XSendEvent(dpy, DefaultRootWindow(dpy), false, SubstructureNotifyMask | SubstructureRedirectMask, &e);
 #endif
 
-	if(!HasFocus)
+	if (!HasFocus)
 	{
 		XWMHints * wm_hint = static_cast<XWMHints*>(Hints);
 		wm_hint->flags |= XUrgencyHint;
@@ -295,19 +318,19 @@ void CStdWindow::FlashWindow() {
 
 void CStdWindow::HandleMessage(XEvent& event)
 {
-	if(event.type == FocusIn)
+	if (event.type == FocusIn)
 	{
 		HasFocus = true;
 
 		// Clear urgency flag
 		XWMHints * wm_hint = static_cast<XWMHints*>(Hints);
-		if(wm_hint->flags & XUrgencyHint)
+		if (wm_hint->flags & XUrgencyHint)
 		{
 			wm_hint->flags &= ~XUrgencyHint;
 			XSetWMHints(dpy, wnd, wm_hint);
 		}
 	}
-	else if(event.type == FocusOut /*|| event.type == UnmapNotify*/)
+	else if (event.type == FocusOut /*|| event.type == UnmapNotify*/)
 	{
 		int detail = reinterpret_cast<XFocusChangeEvent*>(&event)->detail;
 
@@ -315,7 +338,7 @@ void CStdWindow::HandleMessage(XEvent& event)
 		// directly after a FocusIn event even when the window has
 		// focus. For these FocusOut events, detail is set to
 		// NotifyInferior which is why we are ignoring it here.
-		if(detail != NotifyInferior)
+		if (detail != NotifyInferior)
 		{
 			HasFocus = false;
 		}

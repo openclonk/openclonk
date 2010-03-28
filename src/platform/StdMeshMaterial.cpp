@@ -53,7 +53,8 @@ namespace
 		EnumType Values[Num];
 	};
 
-	const Enumerator<StdMeshMaterialTextureUnit::TexAddressModeType> TexAddressModeEnumerators[] = {
+	const Enumerator<StdMeshMaterialTextureUnit::TexAddressModeType> TexAddressModeEnumerators[] =
+	{
 		{ "wrap", StdMeshMaterialTextureUnit::AM_Wrap },
 		{ "clamp", StdMeshMaterialTextureUnit::AM_Clamp },
 		{ "mirror", StdMeshMaterialTextureUnit::AM_Mirror },
@@ -61,7 +62,8 @@ namespace
 		{ NULL }
 	};
 
-	const Enumerator<StdMeshMaterialTextureUnit::FilteringType> FilteringEnumerators[] = {
+	const Enumerator<StdMeshMaterialTextureUnit::FilteringType> FilteringEnumerators[] =
+	{
 		{ "none", StdMeshMaterialTextureUnit::F_None },
 		{ "point", StdMeshMaterialTextureUnit::F_Point },
 		{ "linear", StdMeshMaterialTextureUnit::F_Linear },
@@ -69,7 +71,8 @@ namespace
 		{ NULL }
 	};
 
-	const EnumeratorShortcut<3, StdMeshMaterialTextureUnit::FilteringType> FilteringShortcuts[] = {
+	const EnumeratorShortcut<3, StdMeshMaterialTextureUnit::FilteringType> FilteringShortcuts[] =
+	{
 		{ "none", { StdMeshMaterialTextureUnit::F_Point, StdMeshMaterialTextureUnit::F_Point, StdMeshMaterialTextureUnit::F_None } },
 		{ "bilinear", { StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Point } },
 		{ "trilinear", { StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear, StdMeshMaterialTextureUnit::F_Linear } },
@@ -77,7 +80,8 @@ namespace
 		{ NULL }
 	};
 
-	const Enumerator<StdMeshMaterialTextureUnit::BlendOpType> BlendOpEnumerators[] = {
+	const Enumerator<StdMeshMaterialTextureUnit::BlendOpType> BlendOpEnumerators[] =
+	{
 		{ "replace", StdMeshMaterialTextureUnit::BO_Replace },
 		{ "add", StdMeshMaterialTextureUnit::BO_Add },
 		{ "modulate", StdMeshMaterialTextureUnit::BO_Modulate },
@@ -85,8 +89,9 @@ namespace
 		{ NULL }
 	};
 
-	const Enumerator<StdMeshMaterialTextureUnit::BlendOpExType> BlendOpExEnumerators[] = {
-		{ "source1", StdMeshMaterialTextureUnit::BOX_Source1 }, 
+	const Enumerator<StdMeshMaterialTextureUnit::BlendOpExType> BlendOpExEnumerators[] =
+	{
+		{ "source1", StdMeshMaterialTextureUnit::BOX_Source1 },
 		{ "source2", StdMeshMaterialTextureUnit::BOX_Source2 },
 		{ "modulate", StdMeshMaterialTextureUnit::BOX_Modulate },
 		{ "modulate_x2", StdMeshMaterialTextureUnit::BOX_ModulateX2 },
@@ -103,8 +108,9 @@ namespace
 		{ "blend_diffuse_colour", StdMeshMaterialTextureUnit::BOX_BlendDiffuseColor },
 		{ NULL }
 	};
-	
-	const Enumerator<StdMeshMaterialTextureUnit::BlendOpSourceType> BlendOpSourceEnumerators[] = {
+
+	const Enumerator<StdMeshMaterialTextureUnit::BlendOpSourceType> BlendOpSourceEnumerators[] =
+	{
 		{ "src_current", StdMeshMaterialTextureUnit::BOS_Current },
 		{ "src_texture", StdMeshMaterialTextureUnit::BOS_Texture },
 		{ "src_diffuse", StdMeshMaterialTextureUnit::BOS_Diffuse },
@@ -114,15 +120,17 @@ namespace
 		{ NULL }
 	};
 
-	const Enumerator<StdMeshMaterialTextureUnit::Transformation::XFormType> XFormTypeEnumerators[] = {
+	const Enumerator<StdMeshMaterialTextureUnit::Transformation::XFormType> XFormTypeEnumerators[] =
+	{
 		{ "scroll_x", StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_X },
 		{ "scroll_y", StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_Y },
 		{ "rotate", StdMeshMaterialTextureUnit::Transformation::XF_ROTATE },
 		{ "scale_x", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_X },
 		{ "scale_y", StdMeshMaterialTextureUnit::Transformation::XF_SCALE_Y }
 	};
-	
-	const Enumerator<StdMeshMaterialTextureUnit::Transformation::WaveType> WaveTypeEnumerators[] = {
+
+	const Enumerator<StdMeshMaterialTextureUnit::Transformation::WaveType> WaveTypeEnumerators[] =
+	{
 		{ "sine", StdMeshMaterialTextureUnit::Transformation::W_SINE },
 		{ "triangle", StdMeshMaterialTextureUnit::Transformation::W_TRIANGLE },
 		{ "square", StdMeshMaterialTextureUnit::Transformation::W_SQUARE },
@@ -130,7 +138,8 @@ namespace
 		{ "inverse_sawtooth", StdMeshMaterialTextureUnit::Transformation::W_INVERSE_SAWTOOTH }
 	};
 
-	const Enumerator<StdMeshMaterialPass::CullHardwareType> CullHardwareEnumerators[] = {
+	const Enumerator<StdMeshMaterialPass::CullHardwareType> CullHardwareEnumerators[] =
+	{
 		{ "clockwise", StdMeshMaterialPass::CH_Clockwise },
 		{ "anticlockwise", StdMeshMaterialPass::CH_CounterClockwise },
 		{ "none", StdMeshMaterialPass::CH_None }
@@ -183,34 +192,34 @@ public:
 };
 
 StdMeshMaterialParserCtx::StdMeshMaterialParserCtx(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader):
-	Line(0), Script(mat_script), FileName(filename), TextureLoader(tex_loader)
+		Line(0), Script(mat_script), FileName(filename), TextureLoader(tex_loader)
 {
 }
 
 void StdMeshMaterialParserCtx::SkipWhitespace()
 {
-	while(isspace(*Script))
+	while (isspace(*Script))
 	{
-		if(*Script == '\n') ++Line;
+		if (*Script == '\n') ++Line;
 		++Script;
 	}
-	
-	if(*Script == '/')
+
+	if (*Script == '/')
 	{
-		if(*(Script+1) == '/')
+		if (*(Script+1) == '/')
 		{
 			Script += 2;
-			while(*Script != '\n' && *Script != '\0')
+			while (*Script != '\n' && *Script != '\0')
 				++Script;
 			SkipWhitespace();
 		}
-		else if(*Script == '*')
+		else if (*Script == '*')
 		{
-			for(Script += 2; *Script != '\0'; ++Script)
-				if(*Script == '*' && *(Script+1) == '/')
+			for (Script += 2; *Script != '\0'; ++Script)
+				if (*Script == '*' && *(Script+1) == '/')
 					break;
 
-			if(*Script == '*')
+			if (*Script == '*')
 			{
 				Script += 2;
 				SkipWhitespace();
@@ -233,7 +242,7 @@ Token StdMeshMaterialParserCtx::Advance(StdStrBuf& name)
 {
 	SkipWhitespace();
 
-	switch(*Script)
+	switch (*Script)
 	{
 	case '\0':
 		name.Clear();
@@ -253,7 +262,8 @@ Token StdMeshMaterialParserCtx::Advance(StdStrBuf& name)
 	default:
 		const char* begin = Script;
 		// Advance to next whitespace
-		do { ++Script; } while(!isspace(*Script) && *Script != '{' && *Script != '}' && *Script != ':');
+		do { ++Script; }
+		while (!isspace(*Script) && *Script != '{' && *Script != '}' && *Script != ':');
 		name.Copy(begin, Script - begin);
 		return TOKEN_IDTF;
 	}
@@ -262,7 +272,7 @@ Token StdMeshMaterialParserCtx::Advance(StdStrBuf& name)
 Token StdMeshMaterialParserCtx::AdvanceNonEOF(StdStrBuf& name)
 {
 	Token token = Advance(name);
-	if(token == TOKEN_EOF) Error(StdCopyStrBuf("Unexpected end of file"));
+	if (token == TOKEN_EOF) Error(StdCopyStrBuf("Unexpected end of file"));
 	return token;
 }
 
@@ -270,7 +280,7 @@ Token StdMeshMaterialParserCtx::AdvanceRequired(StdStrBuf& name, Token expect)
 {
 	Token token = AdvanceNonEOF(name);
 	// TODO: Explain what was actually expected
-	if(token != expect) Error(StdCopyStrBuf("'") + name + "' unexpected");
+	if (token != expect) Error(StdCopyStrBuf("'") + name + "' unexpected");
 	return token;
 }
 
@@ -278,7 +288,7 @@ Token StdMeshMaterialParserCtx::AdvanceRequired(StdStrBuf& name, Token expect1, 
 {
 	Token token = AdvanceNonEOF(name);
 	// TODO: Explain what was actually expected
-	if(token != expect1 && token != expect2)
+	if (token != expect1 && token != expect2)
 		Error(StdStrBuf("'") + name + "' unexpected");
 	return token;
 }
@@ -291,9 +301,9 @@ int StdMeshMaterialParserCtx::AdvanceInt()
 #ifdef WITH_GLIB
 	char* end;
 	i = g_ascii_strtoll(buf.getData(), &end, 10);
-	if(*end != '\0')
+	if (*end != '\0')
 #else
-	if(!(std::istringstream(buf.getData()) >> i))
+	if (!(std::istringstream(buf.getData()) >> i))
 #endif
 		Error(StdStrBuf("Integer value expected"));
 
@@ -305,7 +315,7 @@ bool StdMeshMaterialParserCtx::AdvanceIntOptional(int& value)
 	StdStrBuf buf;
 	Token tok = Peek(buf);
 
-	if(tok == TOKEN_IDTF && isdigit(buf[0]))
+	if (tok == TOKEN_IDTF && isdigit(buf[0]))
 	{
 		value = AdvanceInt();
 		return true;
@@ -322,7 +332,7 @@ float StdMeshMaterialParserCtx::AdvanceFloat()
 #ifdef WITH_GLIB
 	char* end;
 	f = g_ascii_strtod(buf.getData(), &end);
-	if(*end != '\0')
+	if (*end != '\0')
 #else
 	if (!(std::istringstream(buf.getData()) >> f))
 #endif
@@ -335,7 +345,7 @@ bool StdMeshMaterialParserCtx::AdvanceFloatOptional(float& value)
 	StdStrBuf buf;
 	Token tok = Peek(buf);
 
-	if(tok == TOKEN_IDTF && isdigit(buf[0]))
+	if (tok == TOKEN_IDTF && isdigit(buf[0]))
 	{
 		value = AdvanceFloat();
 		return true;
@@ -349,15 +359,15 @@ void StdMeshMaterialParserCtx::AdvanceColor(bool with_alpha, float Color[4])
 	Color[0] = AdvanceFloat();
 	Color[1] = AdvanceFloat();
 	Color[2] = AdvanceFloat();
-	if(with_alpha) AdvanceFloatOptional(Color[3]);
+	if (with_alpha) AdvanceFloatOptional(Color[3]);
 }
 
 bool StdMeshMaterialParserCtx::AdvanceBoolean()
 {
 	StdCopyStrBuf buf;
 	AdvanceRequired(buf, TOKEN_IDTF);
-	if(buf == "on") return true;
-	if(buf == "off") return false;
+	if (buf == "on") return true;
+	if (buf == "off") return false;
 	Error(StdCopyStrBuf("Expected either 'on' or 'off', but not '") + buf + "'");
 	return false; // Never reached
 }
@@ -368,8 +378,8 @@ EnumType StdMeshMaterialParserCtx::AdvanceEnum(const Enumerator<EnumType>* enume
 	StdCopyStrBuf buf;
 	AdvanceRequired(buf, TOKEN_IDTF);
 
-	for(const Enumerator<EnumType>* cur = enumerators; cur->Name; ++cur)
-		if(buf == cur->Name)
+	for (const Enumerator<EnumType>* cur = enumerators; cur->Name; ++cur)
+		if (buf == cur->Name)
 			return cur->Value;
 
 	ErrorUnexpectedIdentifier(buf);
@@ -379,7 +389,7 @@ EnumType StdMeshMaterialParserCtx::AdvanceEnum(const Enumerator<EnumType>* enume
 template<int Num, typename EnumType>
 void StdMeshMaterialParserCtx::AdvanceEnums(const Enumerator<EnumType>* enumerators, EnumType enums[Num])
 {
-	for(int i = 0; i < Num; ++i)
+	for (int i = 0; i < Num; ++i)
 		enums[i] = AdvanceEnum(enumerators);
 }
 
@@ -392,26 +402,26 @@ void StdMeshMaterialParserCtx::AdvanceEnums(const Enumerator<EnumType>* enumerat
 	const Enumerator<EnumType>* cenum;
 	const EnumeratorShortcut<Num, EnumType>* cshort;
 
-	for(cenum = enumerators; cenum->Name; ++cenum)
-		if(buf == cenum->Name)
+	for (cenum = enumerators; cenum->Name; ++cenum)
+		if (buf == cenum->Name)
 			break;
-	for(cshort = shortcuts; cshort->Name; ++cshort)
-		if(buf == cshort->Name)
+	for (cshort = shortcuts; cshort->Name; ++cshort)
+		if (buf == cshort->Name)
 			break;
 
-	if(!cenum->Name && !cshort->Name)
+	if (!cenum->Name && !cshort->Name)
 	{
 		ErrorUnexpectedIdentifier(buf);
 	}
-	else if(!cenum->Name && cshort->Name)
+	else if (!cenum->Name && cshort->Name)
 	{
-		for(int i = 0; i < Num; ++i)
+		for (int i = 0; i < Num; ++i)
 			enums[i] = cshort->Values[i];
 	}
-	else if(cenum->Name && (!cshort->Name || Num == 1))
+	else if (cenum->Name && (!cshort->Name || Num == 1))
 	{
 		enums[0] = cenum->Value;
-		for(int i = 1; i < Num; ++i)
+		for (int i = 1; i < Num; ++i)
 			enums[i] = AdvanceEnum(enumerators);
 	}
 	else
@@ -419,24 +429,24 @@ void StdMeshMaterialParserCtx::AdvanceEnums(const Enumerator<EnumType>* enumerat
 		// Both enumerator and shortcut are possible, determine by look-ahead
 		const Enumerator<EnumType>* cenum2 = NULL;
 		Token tok = Peek(buf);
-		if(tok == TOKEN_IDTF)
+		if (tok == TOKEN_IDTF)
 		{
-			for(cenum2 = enumerators; cenum2->Name; ++cenum2)
-				if(buf == cenum2->Name)
+			for (cenum2 = enumerators; cenum2->Name; ++cenum2)
+				if (buf == cenum2->Name)
 					break;
 		}
 
-		if(cenum2 && cenum2->Name)
+		if (cenum2 && cenum2->Name)
 		{
 			// The next item is an enumerator, so load as enumerators
 			enums[0] = cenum->Value;
-			for(int i = 1; i < Num; ++i)
+			for (int i = 1; i < Num; ++i)
 				enums[i] = AdvanceEnum(enumerators);
 		}
 		else
 		{
 			// The next item is something else, so load the shortcut
-			for(int i = 0; i < Num; ++i)
+			for (int i = 0; i < Num; ++i)
 				enums[i] = cshort->Values[i];
 		}
 	}
@@ -454,21 +464,21 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 
 double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
 {
-	assert(TransformType == T_WAVE_XFORM); 
+	assert(TransformType == T_WAVE_XFORM);
 	const double val = fmod(WaveXForm.Frequency * t + WaveXForm.Phase, 1.0);
-	switch(WaveXForm.Wave)
+	switch (WaveXForm.Wave)
 	{
-		case W_SINE: return WaveXForm.Base + WaveXForm.Amplitude*0.5*(1.0 + sin(val * 2.0 * M_PI));
-		case W_TRIANGLE: if(val < 0.5) return WaveXForm.Base + WaveXForm.Amplitude*2.0*val; else return WaveXForm.Base + WaveXForm.Amplitude*2.0*(1.0 - val);
-		case W_SQUARE: if(val < 0.5) return WaveXForm.Base; else return WaveXForm.Base + WaveXForm.Amplitude;
-		case W_SAWTOOTH: return WaveXForm.Base + WaveXForm.Amplitude*val;
-		case W_INVERSE_SAWTOOTH: return WaveXForm.Base + WaveXForm.Amplitude*(1.0-val);
-		default: assert(false); return 0.0;
+	case W_SINE: return WaveXForm.Base + WaveXForm.Amplitude*0.5*(1.0 + sin(val * 2.0 * M_PI));
+	case W_TRIANGLE: if (val < 0.5) return WaveXForm.Base + WaveXForm.Amplitude*2.0*val; else return WaveXForm.Base + WaveXForm.Amplitude*2.0*(1.0 - val);
+	case W_SQUARE: if (val < 0.5) return WaveXForm.Base; else return WaveXForm.Base + WaveXForm.Amplitude;
+	case W_SAWTOOTH: return WaveXForm.Base + WaveXForm.Amplitude*val;
+	case W_INVERSE_SAWTOOTH: return WaveXForm.Base + WaveXForm.Amplitude*(1.0-val);
+	default: assert(false); return 0.0;
 	}
 }
 
 StdMeshMaterialTextureUnit::TexRef::TexRef(C4Surface* Surface):
-	RefCount(1), Surf(Surface), Tex(*Surface->ppTex[0])
+		RefCount(1), Surf(Surface), Tex(*Surface->ppTex[0])
 {
 	assert(Surface->ppTex != NULL);
 }
@@ -480,8 +490,8 @@ StdMeshMaterialTextureUnit::TexRef::~TexRef()
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
-	Duration(0.0f), TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate), ColorOpManualFactor(0.0f),
-	AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f)
+		Duration(0.0f), TexAddressMode(AM_Wrap), ColorOpEx(BOX_Modulate), ColorOpManualFactor(0.0f),
+		AlphaOpEx(BOX_Modulate), AlphaOpManualFactor(0.0f)
 {
 	TexBorderColor[0] = TexBorderColor[1] = TexBorderColor[2] = 0.0f; TexBorderColor[3] = 1.0f;
 	Filtering[0] = Filtering[1] = F_Linear; Filtering[2] = F_Point;
@@ -492,28 +502,28 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
-	Duration(other.Duration), TexAddressMode(other.TexAddressMode),
-	ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
-	AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor),
-	Transformations(other.Transformations), Textures(other.Textures)
+		Duration(other.Duration), TexAddressMode(other.TexAddressMode),
+		ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
+		AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor),
+		Transformations(other.Transformations), Textures(other.Textures)
 {
-	for(unsigned int i = 0; i < Textures.size(); ++i)
+	for (unsigned int i = 0; i < Textures.size(); ++i)
 		++Textures[i]->RefCount;
 
-	for(unsigned int i = 0; i < 4; ++i)
+	for (unsigned int i = 0; i < 4; ++i)
 		TexBorderColor[i] = other.TexBorderColor[i];
 
-	for(unsigned int i = 0; i < 3; ++i)
+	for (unsigned int i = 0; i < 3; ++i)
 		Filtering[i] = other.Filtering[i];
 
 	ColorOpSources[0] = other.ColorOpSources[0];
 	ColorOpSources[1] = other.ColorOpSources[1];
-	for(unsigned int i = 0; i < 3; ++i)
+	for (unsigned int i = 0; i < 3; ++i)
 	{
 		ColorOpManualColor1[i] = other.ColorOpManualColor1[i];
 		ColorOpManualColor2[i] = other.ColorOpManualColor2[i];
 	}
-	
+
 	AlphaOpSources[0] = other.AlphaOpSources[0];
 	AlphaOpSources[1] = other.AlphaOpSources[1];
 	AlphaOpManualAlpha1 = other.AlphaOpManualAlpha1;
@@ -522,35 +532,35 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialText
 
 StdMeshMaterialTextureUnit::~StdMeshMaterialTextureUnit()
 {
-	for(unsigned int i = 0; i < Textures.size(); ++i)
+	for (unsigned int i = 0; i < Textures.size(); ++i)
 	{
-		if(!--Textures[i]->RefCount)
+		if (!--Textures[i]->RefCount)
 			delete Textures[i];
 	}
 }
 
 StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshMaterialTextureUnit& other)
 {
-	if(this == &other) return *this;
+	if (this == &other) return *this;
 
-	for(unsigned int i = 0; i < Textures.size(); ++i)
-		if(!--Textures[i]->RefCount) delete Textures[i];
+	for (unsigned int i = 0; i < Textures.size(); ++i)
+		if (!--Textures[i]->RefCount) delete Textures[i];
 	Textures = other.Textures;
-	for(unsigned int i = 0; i < Textures.size(); ++i)
+	for (unsigned int i = 0; i < Textures.size(); ++i)
 		++Textures[i]->RefCount;
 
 	Duration = other.Duration;
 	TexAddressMode = other.TexAddressMode;
-	for(unsigned int i = 0; i < 4; ++i)
+	for (unsigned int i = 0; i < 4; ++i)
 		TexBorderColor[i] = other.TexBorderColor[i];
-	for(unsigned int i = 0; i < 3; ++i)
+	for (unsigned int i = 0; i < 3; ++i)
 		Filtering[i] = other.Filtering[i];
 
 	ColorOpEx = other.ColorOpEx;
 	ColorOpSources[0] = other.ColorOpSources[0];
 	ColorOpSources[1] = other.ColorOpSources[1];
 	ColorOpManualFactor = other.ColorOpManualFactor;
-	for(unsigned int i = 0; i < 3; ++i)
+	for (unsigned int i = 0; i < 3; ++i)
 	{
 		ColorOpManualColor1[i] = other.ColorOpManualColor1[i];
 		ColorOpManualColor2[i] = other.ColorOpManualColor2[i];
@@ -570,49 +580,49 @@ StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshM
 void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, const char* texname)
 {
 	std::auto_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(texname)); // be exception-safe
-	if(!surface.get())
+	if (!surface.get())
 		ctx.Error(StdCopyStrBuf("Could not load texture '") + texname + "'");
 
-	if(surface->Wdt != surface->Hgt)
+	if (surface->Wdt != surface->Hgt)
 		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is not quadratic");
-	if(surface->iTexX > 1 || surface->iTexY > 1)
+	if (surface->iTexX > 1 || surface->iTexY > 1)
 		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is too large");
 
-	Textures.push_back(new TexRef(surface.release()));	
+	Textures.push_back(new TexRef(surface.release()));
 }
 
 void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
 	StdCopyStrBuf token_name;
-	while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
+	while ((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
 	{
-		if(token_name == "texture")
+		if (token_name == "texture")
 		{
-			if(!Textures.empty())
+			if (!Textures.empty())
 				ctx.Error(StdCopyStrBuf("There can only be a single texture or texture_anim statement per texture unit"));
 
 			ctx.AdvanceRequired(token_name, TOKEN_IDTF);
 
 			LoadTexture(ctx, token_name.getData());
 		}
-		else if(token_name == "anim_texture")
+		else if (token_name == "anim_texture")
 		{
-			if(!Textures.empty())
+			if (!Textures.empty())
 				ctx.Error(StdCopyStrBuf("There can only be a single texture or texture_anim statement per texture unit"));
 
 			StdCopyStrBuf base_name;
 			ctx.AdvanceRequired(base_name, TOKEN_IDTF);
 
 			int num_frames;
-			if(ctx.AdvanceIntOptional(num_frames))
+			if (ctx.AdvanceIntOptional(num_frames))
 			{
 				const char* data = base_name.getData();
 				const char* sep = strrchr(data, '.');
-				for(int i = 0; i < num_frames; ++i)
+				for (int i = 0; i < num_frames; ++i)
 				{
 					StdCopyStrBuf buf;
-					if(sep)
+					if (sep)
 						buf.Format("%.*s_%d.%s", (int)(sep - data), data, i, sep+1);
 					else
 						buf.Format("%s_%d", data, i);
@@ -625,33 +635,33 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 			else
 			{
 				LoadTexture(ctx, base_name.getData());
-				while(!ctx.AdvanceFloatOptional(Duration))
+				while (!ctx.AdvanceFloatOptional(Duration))
 				{
 					ctx.AdvanceRequired(token_name, TOKEN_IDTF);
 					LoadTexture(ctx, token_name.getData());
 				}
 			}
 		}
-		else if(token_name == "tex_address_mode")
+		else if (token_name == "tex_address_mode")
 		{
 			TexAddressMode = ctx.AdvanceEnum(TexAddressModeEnumerators);
 		}
-		else if(token_name == "tex_border_colour")
+		else if (token_name == "tex_border_colour")
 		{
 			ctx.AdvanceColor(true, TexBorderColor);
 		}
-		else if(token_name == "filtering")
+		else if (token_name == "filtering")
 		{
 			ctx.AdvanceEnums<3, StdMeshMaterialTextureUnit::FilteringType>(FilteringEnumerators, FilteringShortcuts, Filtering);
-			if(Filtering[0] == F_None || Filtering[1] == F_None)
+			if (Filtering[0] == F_None || Filtering[1] == F_None)
 				ctx.Error(StdCopyStrBuf("'none' is only valid for the mip filter"));
-			if(Filtering[2] == F_Anisotropic)
+			if (Filtering[2] == F_Anisotropic)
 				ctx.Error(StdCopyStrBuf("'anisotropic' is not a valid mip filter"));
 		}
-		else if(token_name == "colour_op")
+		else if (token_name == "colour_op")
 		{
 			BlendOpType ColorOp = ctx.AdvanceEnum(BlendOpEnumerators);
-			switch(ColorOp)
+			switch (ColorOp)
 			{
 			case BO_Replace:
 				ColorOpEx = BOX_Source1;
@@ -670,25 +680,25 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 			ColorOpSources[0] = BOS_Texture;
 			ColorOpSources[1] = BOS_Current;
 		}
-		else if(token_name == "colour_op_ex")
+		else if (token_name == "colour_op_ex")
 		{
 			ColorOpEx = ctx.AdvanceEnum(BlendOpExEnumerators);
 			ColorOpSources[0] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
 			ColorOpSources[1] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
-			if(ColorOpEx == BOX_BlendManual) ColorOpManualFactor = ctx.AdvanceFloat();
-			if(ColorOpSources[0] == BOS_Manual) ctx.AdvanceColor(false, ColorOpManualColor1);
-			if(ColorOpSources[1] == BOS_Manual) ctx.AdvanceColor(false, ColorOpManualColor2);
+			if (ColorOpEx == BOX_BlendManual) ColorOpManualFactor = ctx.AdvanceFloat();
+			if (ColorOpSources[0] == BOS_Manual) ctx.AdvanceColor(false, ColorOpManualColor1);
+			if (ColorOpSources[1] == BOS_Manual) ctx.AdvanceColor(false, ColorOpManualColor2);
 		}
-		else if(token_name == "alpha_op_ex")
+		else if (token_name == "alpha_op_ex")
 		{
 			AlphaOpEx = ctx.AdvanceEnum(BlendOpExEnumerators);
 			AlphaOpSources[0] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
 			AlphaOpSources[1] = ctx.AdvanceEnum(BlendOpSourceEnumerators);
-			if(AlphaOpEx == BOX_BlendManual) AlphaOpManualFactor = ctx.AdvanceFloat();
-			if(AlphaOpSources[0] == BOS_Manual) AlphaOpManualAlpha1 = ctx.AdvanceFloat();
-			if(AlphaOpSources[1] == BOS_Manual) AlphaOpManualAlpha2 = ctx.AdvanceFloat();
+			if (AlphaOpEx == BOX_BlendManual) AlphaOpManualFactor = ctx.AdvanceFloat();
+			if (AlphaOpSources[0] == BOS_Manual) AlphaOpManualAlpha1 = ctx.AdvanceFloat();
+			if (AlphaOpSources[1] == BOS_Manual) AlphaOpManualAlpha2 = ctx.AdvanceFloat();
 		}
-		else if(token_name == "scroll")
+		else if (token_name == "scroll")
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_SCROLL;
@@ -696,7 +706,7 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 			trans.Scroll.Y = ctx.AdvanceFloat();
 			Transformations.push_back(trans);
 		}
-		else if(token_name == "scroll_anim")
+		else if (token_name == "scroll_anim")
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_SCROLL_ANIM;
@@ -704,21 +714,21 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 			trans.ScrollAnim.YSpeed = ctx.AdvanceFloat();
 			Transformations.push_back(trans);
 		}
-		else if(token_name == "rotate")
+		else if (token_name == "rotate")
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_ROTATE;
 			trans.Rotate.Angle = ctx.AdvanceFloat();
 			Transformations.push_back(trans);
 		}
-		else if(token_name == "rotate_anim")
+		else if (token_name == "rotate_anim")
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_ROTATE_ANIM;
 			trans.RotateAnim.RevsPerSec = ctx.AdvanceFloat();
 			Transformations.push_back(trans);
 		}
-		else if(token_name == "scale")
+		else if (token_name == "scale")
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_SCALE;
@@ -726,15 +736,15 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 			trans.Scale.Y = ctx.AdvanceFloat();
 			Transformations.push_back(trans);
 		}
-		else if(token_name == "transform")
+		else if (token_name == "transform")
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_TRANSFORM;
-			for(int i = 0; i < 16; ++i)
+			for (int i = 0; i < 16; ++i)
 				trans.Transform.M[i] = ctx.AdvanceFloat();
 			Transformations.push_back(trans);
 		}
-		else if(token_name == "wave_xform")
+		else if (token_name == "wave_xform")
 		{
 			Transformation trans;
 			trans.TransformType = Transformation::T_WAVE_XFORM;
@@ -750,15 +760,15 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 			ctx.ErrorUnexpectedIdentifier(token_name);
 	}
 
-	if(token != TOKEN_BRACE_CLOSE)
+	if (token != TOKEN_BRACE_CLOSE)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 StdMeshMaterialPass::StdMeshMaterialPass():
-	DepthWrite(true), CullHardware(CH_Clockwise)
+		DepthWrite(true), CullHardware(CH_Clockwise)
 {
-	Ambient[0]	= Ambient[1]	= Ambient[2]	= 1.0f; Ambient[3]	= 1.0f;
-	Diffuse[0]	= Diffuse[1]	= Diffuse[2]	= 1.0f; Diffuse[3]	= 1.0f;
+	Ambient[0]  = Ambient[1]  = Ambient[2]  = 1.0f; Ambient[3]  = 1.0f;
+	Diffuse[0]  = Diffuse[1]  = Diffuse[2]  = 1.0f; Diffuse[3]  = 1.0f;
 	Specular[0] = Specular[1] = Specular[2] = 0.0f; Specular[3] = 0.0f;
 	Emissive[0] = Emissive[1] = Emissive[2] = 0.0f; Emissive[3] = 0.0f;
 	Shininess = 0.0f;
@@ -768,24 +778,24 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
 	StdCopyStrBuf token_name;
-	while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
+	while ((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
 	{
-		if(token_name == "texture_unit")
+		if (token_name == "texture_unit")
 		{
 			// TODO: Can there be an optional name?
 			ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
 			TextureUnits.push_back(StdMeshMaterialTextureUnit());
 			TextureUnits.back().Load(ctx);
 		}
-		else if(token_name == "ambient")
+		else if (token_name == "ambient")
 		{
 			ctx.AdvanceColor(true, Ambient);
 		}
-		else if(token_name == "diffuse")
+		else if (token_name == "diffuse")
 		{
 			ctx.AdvanceColor(true, Diffuse);
 		}
-		else if(token_name == "specular")
+		else if (token_name == "specular")
 		{
 			Specular[0] = ctx.AdvanceFloat();
 			Specular[1] = ctx.AdvanceFloat();
@@ -795,7 +805,7 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 			float specular3 = ctx.AdvanceFloat();
 
 			float shininess;
-			if(ctx.AdvanceFloatOptional(shininess))
+			if (ctx.AdvanceFloatOptional(shininess))
 			{
 				Specular[3] = specular3;
 				Shininess = shininess;
@@ -805,15 +815,15 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 				Shininess = specular3;
 			}
 		}
-		else if(token_name == "emissive")
+		else if (token_name == "emissive")
 		{
 			ctx.AdvanceColor(true, Emissive);
 		}
-		else if(token_name == "depth_write")
+		else if (token_name == "depth_write")
 		{
 			DepthWrite = ctx.AdvanceBoolean();
 		}
-		else if(token_name == "cull_hardware")
+		else if (token_name == "cull_hardware")
 		{
 			CullHardware = ctx.AdvanceEnum(CullHardwareEnumerators);
 		}
@@ -821,12 +831,12 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 			ctx.ErrorUnexpectedIdentifier(token_name);
 	}
 
-	if(token != TOKEN_BRACE_CLOSE)
+	if (token != TOKEN_BRACE_CLOSE)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 StdMeshMaterialTechnique::StdMeshMaterialTechnique():
-	Available(false)
+		Available(false)
 {
 }
 
@@ -834,9 +844,9 @@ void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
 	StdCopyStrBuf token_name;
-	while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
+	while ((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
 	{
-		if(token_name == "pass")
+		if (token_name == "pass")
 		{
 			// TODO: Can there be an optional name?
 			ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
@@ -847,12 +857,12 @@ void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 			ctx.ErrorUnexpectedIdentifier(token_name);
 	}
 
-	if(token != TOKEN_BRACE_CLOSE)
+	if (token != TOKEN_BRACE_CLOSE)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 StdMeshMaterial::StdMeshMaterial():
-	Line(0), ReceiveShadows(true), BestTechniqueIndex(-1)
+		Line(0), ReceiveShadows(true), BestTechniqueIndex(-1)
 {
 }
 
@@ -860,24 +870,24 @@ void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
 	StdCopyStrBuf token_name;
-	while((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
+	while ((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
 	{
-		if(token_name == "technique")
+		if (token_name == "technique")
 		{
 			// TODO: Can there be an optional name?
 			ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
 			Techniques.push_back(StdMeshMaterialTechnique());
 			Techniques.back().Load(ctx);
 		}
-		else if(token_name == "receive_shadows")
+		else if (token_name == "receive_shadows")
 		{
 			ReceiveShadows = ctx.AdvanceBoolean();
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
 	}
-	
-	if(token != TOKEN_BRACE_CLOSE)
+
+	if (token != TOKEN_BRACE_CLOSE)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
@@ -892,9 +902,9 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 
 	Token token;
 	StdCopyStrBuf token_name;
-	while((token = ctx.Advance(token_name)) == TOKEN_IDTF)
+	while ((token = ctx.Advance(token_name)) == TOKEN_IDTF)
 	{
-		if(token_name == "material")
+		if (token_name == "material")
 		{
 			// Read name
 			StdCopyStrBuf material_name;
@@ -902,14 +912,14 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 
 			// Check for uniqueness
 			std::map<StdCopyStrBuf, StdMeshMaterial>::iterator iter = Materials.find(material_name);
-			if(iter != Materials.end())
+			if (iter != Materials.end())
 				ctx.Error(FormatString("Material with name '%s' is already defined in %s:%u", material_name.getData(), iter->second.FileName.getData(), iter->second.Line));
 
 			// Check if there is a parent given
 			Token next = ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN, TOKEN_COLON);
 			// Read parent name, if any
 			StdMeshMaterial* parent = NULL;
-			if(next == TOKEN_COLON)
+			if (next == TOKEN_COLON)
 			{
 				// Note that if there is a parent, then it needs to be loaded
 				// already. This currently makes only sense when its defined above
@@ -920,7 +930,7 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 				ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
 
 				iter = Materials.find(parent_name);
-				if(iter == Materials.end())
+				if (iter == Materials.end())
 					ctx.Error(StdCopyStrBuf("Parent material '") + parent_name + "' does not exist (or is not yet loaded)");
 				parent = &iter->second;
 			}
@@ -934,9 +944,9 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 			mat.Line = ctx.Line;
 
 			mat.Load(ctx);
-			
+
 			// To Gfxspecific setup of the material; choose working techniques
-			if(lpDDraw->PrepareMaterial(mat) && mat.BestTechniqueIndex != -1)
+			if (lpDDraw->PrepareMaterial(mat) && mat.BestTechniqueIndex != -1)
 				Materials[material_name] = mat;
 			else
 				ctx.Error(StdCopyStrBuf("No working technique for material '") + material_name + "'");
@@ -945,13 +955,13 @@ void StdMeshMatManager::Parse(const char* mat_script, const char* filename, StdM
 			ctx.ErrorUnexpectedIdentifier(token_name);
 	}
 
-	if(token != TOKEN_EOF)
+	if (token != TOKEN_EOF)
 		ctx.Error(StdCopyStrBuf("'") + token_name.getData() + "' unexpected");
 }
 
 const StdMeshMaterial* StdMeshMatManager::GetMaterial(const char* material_name) const
 {
 	std::map<StdCopyStrBuf, StdMeshMaterial>::const_iterator iter = Materials.find(StdCopyStrBuf(material_name));
-	if(iter == Materials.end()) return NULL;
+	if (iter == Materials.end()) return NULL;
 	return &iter->second;
 }

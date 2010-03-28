@@ -41,23 +41,23 @@
 #include <limits.h>
 
 static void glColorDw(DWORD dwClr)
-	{
+{
 	glColor4ub(GLubyte(dwClr>>16), GLubyte(dwClr>>8), GLubyte(dwClr), GLubyte(dwClr>>24));
-	}
+}
 
 // GLubyte (&r)[4] is a reference to an array of four bytes named r.
 static void DwTo4UB(DWORD dwClr, GLubyte (&r)[4])
-	{
+{
 	//unsigned char r[4];
 	r[0] = GLubyte(dwClr>>16);
 	r[1] = GLubyte(dwClr>>8);
 	r[2] = GLubyte(dwClr);
 	r[3] = GLubyte(dwClr>>24);
-	}
+}
 
 CStdGL::CStdGL():
-	pMainCtx(0)
-	{
+		pMainCtx(0)
+{
 	Default();
 	byByteCnt=4;
 	// global ptr
@@ -65,16 +65,16 @@ CStdGL::CStdGL():
 	shaders[0] = 0;
 	vbo = 0;
 	lines_tex = 0;
-	}
+}
 
 CStdGL::~CStdGL()
-	{
+{
 	Clear();
 	pGL=NULL;
-	}
+}
 
 void CStdGL::Clear()
-	{
+{
 	NoPrimaryClipper();
 	if (pTexMgr) pTexMgr->IntUnlock();
 	InvalidateDeviceObjects();
@@ -84,17 +84,17 @@ void CStdGL::Clear()
 	if (pCurrCtx) pCurrCtx->Deselect();
 	pMainCtx=0;
 	CStdDDraw::Clear();
-	}
+}
 
 void CStdGL::FillBG(DWORD dwClr)
-	{
+{
 	if (!pCurrCtx) return;
 	glClearColor((float)GetBValue(dwClr)/255.0f, (float)GetGValue(dwClr)/255.0f, (float)GetRValue(dwClr)/255.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	}
+}
 
 bool CStdGL::UpdateClipper()
-	{
+{
 	// no render target? do nothing
 	if (!RenderTarget || !Active) return true;
 	// negative/zero?
@@ -103,10 +103,10 @@ bool CStdGL::UpdateClipper()
 	int iX=iClipX1; if (iX<0) { iWdt+=iX; iX=0; }
 	int iY=iClipY1; if (iY<0) { iHgt+=iY; iY=0; }
 	if (iWdt<=0 || iHgt<=0)
-		{
+	{
 		ClipAll=true;
 		return true;
-		}
+	}
 	ClipAll=false;
 	// set it
 	glViewport(iX, RenderTarget->Hgt-iY-iHgt, iWdt, iHgt);
@@ -119,35 +119,35 @@ bool CStdGL::UpdateClipper()
 	gluOrtho2D((GLdouble) iX, (GLdouble) (iX+iWdt), (GLdouble) (iY+iHgt), (GLdouble) iY);
 	//gluOrtho2D((GLdouble) 0, (GLdouble) xRes, (GLdouble) yRes, (GLdouble) yRes-iHgt);
 	return true;
-	}
+}
 
 bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 {
 	// select context, if not already done
 	if (!pCurrCtx) return false;
 
-	for(unsigned int i = 0; i < mat.Techniques.size(); ++i)
+	for (unsigned int i = 0; i < mat.Techniques.size(); ++i)
 	{
 		StdMeshMaterialTechnique& technique = mat.Techniques[i];
 		technique.Available = true;
-		for(unsigned int j = 0; j < technique.Passes.size(); ++j)
+		for (unsigned int j = 0; j < technique.Passes.size(); ++j)
 		{
 			StdMeshMaterialPass& pass = technique.Passes[j];
-			
+
 			GLint max_texture_units;
 			glGetIntegerv(GL_MAX_TEXTURE_UNITS, &max_texture_units);
 			assert(max_texture_units >= 1);
-			if(pass.TextureUnits.size() > static_cast<unsigned int>(max_texture_units-1)) // One texture is reserved for FoW/ClrModMap
+			if (pass.TextureUnits.size() > static_cast<unsigned int>(max_texture_units-1)) // One texture is reserved for FoW/ClrModMap
 				technique.Available = false;
-			
-			for(unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
+
+			for (unsigned int k = 0; k < pass.TextureUnits.size(); ++k)
 			{
 				StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[k];
-				for(unsigned int l = 0; l < texunit.GetNumTextures(); ++l)
+				for (unsigned int l = 0; l < texunit.GetNumTextures(); ++l)
 				{
 					const CTexRef& texture = texunit.GetTexture(l);
 					glBindTexture(GL_TEXTURE_2D, texture.texName);
-					switch(texunit.TexAddressMode)
+					switch (texunit.TexAddressMode)
 					{
 					case StdMeshMaterialTextureUnit::AM_Wrap:
 						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -166,8 +166,8 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						break;
 					}
 
-					if(texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Point ||
-						 texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Linear)
+					if (texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Point ||
+					    texunit.Filtering[2] == StdMeshMaterialTextureUnit::F_Linear)
 					{
 						// If mipmapping is enabled, then autogenerate mipmap data.
 						// In OGRE this is deactivated for several OS/graphics card
@@ -178,10 +178,10 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						// upload, which would be the same place where we could also use
 						// gluBuild2DMipmaps. GL_GENERATE_MIPMAP is probably still more
 						// efficient though.
-					
+
 						// Disabled for now, until we find a better place for this (CTexRef?)
 #if 0
-						if(GLEW_VERSION_1_4)
+						if (GLEW_VERSION_1_4)
 							{ glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); const_cast<CTexRef*>(&texunit.GetTexture())->Lock(); const_cast<CTexRef*>(&texunit.GetTexture())->Unlock(); }
 						else
 							technique.Available = false;
@@ -191,13 +191,13 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 #endif
 					}
 
-					switch(texunit.Filtering[0]) // min
+					switch (texunit.Filtering[0]) // min
 					{
 					case StdMeshMaterialTextureUnit::F_None:
 						technique.Available = false;
 						break;
 					case StdMeshMaterialTextureUnit::F_Point:
-						switch(texunit.Filtering[2]) // mip
+						switch (texunit.Filtering[2]) // mip
 						{
 						case StdMeshMaterialTextureUnit::F_None:
 							glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -214,7 +214,7 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						}
 						break;
 					case StdMeshMaterialTextureUnit::F_Linear:
-						switch(texunit.Filtering[2]) // mip
+						switch (texunit.Filtering[2]) // mip
 						{
 						case StdMeshMaterialTextureUnit::F_None:
 							glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -236,7 +236,7 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						break;
 					}
 
-					switch(texunit.Filtering[1]) // max
+					switch (texunit.Filtering[1]) // max
 					{
 					case StdMeshMaterialTextureUnit::F_None:
 						technique.Available = false; // invalid
@@ -253,10 +253,10 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 						break;
 					}
 
-					for(unsigned int m = 0; m < texunit.Transformations.size(); ++m)
+					for (unsigned int m = 0; m < texunit.Transformations.size(); ++m)
 					{
 						StdMeshMaterialTextureUnit::Transformation& trans = texunit.Transformations[m];
-						if(trans.TransformType == StdMeshMaterialTextureUnit::Transformation::T_TRANSFORM)
+						if (trans.TransformType == StdMeshMaterialTextureUnit::Transformation::T_TRANSFORM)
 						{
 							// transpose so we can directly pass it to glMultMatrixf
 							std::swap(trans.Transform.M[ 1], trans.Transform.M[ 4]);
@@ -271,30 +271,30 @@ bool CStdGL::PrepareMaterial(StdMeshMaterial& mat)
 
 				// Check blending: Can only have one manual source color
 				unsigned int manu_count = 0;
-				if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth || texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
+				if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth || texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
 					++manu_count;
-				if(texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
+				if (texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
 					++manu_count;
-				if(texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
+				if (texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
 					++manu_count;
 
-				if(manu_count > 1)
+				if (manu_count > 1)
 					technique.Available = false;
 
-				manu_count = 0;					
-				if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth || texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
+				manu_count = 0;
+				if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth || texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
 					++manu_count;
-				if(texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
+				if (texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
 					++manu_count;
-				if(texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
+				if (texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
 					++manu_count;
 
-				if(manu_count > 1)
+				if (manu_count > 1)
 					technique.Available = false;
 			}
 		}
 
-		if(technique.Available && mat.BestTechniqueIndex == -1)
+		if (technique.Available && mat.BestTechniqueIndex == -1)
 			mat.BestTechniqueIndex = i;
 	}
 
@@ -308,14 +308,14 @@ bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
 	// not ready?
 	if (!Active)
 		//if (!RestoreDeviceObjects())
-			return false;
+		return false;
 	// target?
 	if (!sfcToSurface) return false;
 	// target locked?
 	if (sfcToSurface->Locked) return false;
 	// target is already set as render target?
 	if (sfcToSurface != RenderTarget)
-		{
+	{
 		// target is a render-target?
 		if (!sfcToSurface->IsRenderTarget()) return false;
 		// context
@@ -325,34 +325,34 @@ bool CStdGL::PrepareRendering(SURFACE sfcToSurface)
 		RenderTarget=sfcToSurface;
 		// new target has different size; needs other clipping rect
 		UpdateClipper();
-		}
+	}
 	// done
 	return true;
-	}
+}
 
 void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
-	{
+{
 	if (shaders[0])
-		{
+	{
 		GLuint s = landscape ? 2 : (fMod2 ? 1 : 0);
 		if (Saturation < 255)
-			{
+		{
 			s += 3;
-			}
+		}
 		if (fUseClrModMap)
-			{
+		{
 			s += 6;
-			}
+		}
 		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, shaders[s]);
 		if (Saturation < 255)
-			{
+		{
 			GLfloat bla[4] = { Saturation / 255.0f, Saturation / 255.0f, Saturation / 255.0f, 1.0f };
 			glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, bla);
-			}
 		}
+	}
 	// texture environment
 	else
-		{
+	{
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE);
 		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB, fMod2 ? GL_ADD_SIGNED : GL_MODULATE);
 		glTexEnvf(GL_TEXTURE_ENV, GL_RGB_SCALE, fMod2 ? 2.0f : 1.0f);
@@ -365,47 +365,47 @@ void CStdGL::SetupTextureEnv(bool fMod2, bool landscape)
 		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
 		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
 		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
-		}
+	}
 	// set modes
 	glShadeModel((fUseClrModMap && !shaders[0]) ? GL_SMOOTH : GL_FLAT);
-	}
+}
 
 void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
-	{
+{
 	// global modulation map
 	int i;
 	bool fAnyModNotBlack = (dwModClr != 0xff000000);
 	if (!shaders[0] && fUseClrModMap && dwModClr != 0xff000000)
-		{
+	{
 		fAnyModNotBlack = false;
 		for (i=0; i<rBltData.byNumVertices; ++i)
-			{
+		{
 			float x = rBltData.vtVtx[i].ftx;
 			float y = rBltData.vtVtx[i].fty;
 			if (rBltData.pTransform)
-				{
+			{
 				rBltData.pTransform->TransformPoint(x,y);
-				}
+			}
 			DWORD c = pClrModMap->GetModAt(int(x), int(y));
 			ModulateClr(c, dwModClr);
 			if (c != 0xff000000) fAnyModNotBlack = true;
 			DwTo4UB(c, rBltData.vtVtx[i].color);
-			}
 		}
+	}
 	else
-		{
+	{
 		for (i=0; i<rBltData.byNumVertices; ++i)
 			DwTo4UB(dwModClr, rBltData.vtVtx[i].color);
-		}
+	}
 	// reset MOD2 for completely black modulations
 	fMod2 = fMod2 && fAnyModNotBlack;
 	SetupTextureEnv(fMod2, false);
 	glBindTexture(GL_TEXTURE_2D, pTex->texName);
 	if (!fExact)
-		{
+	{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		}
+	}
 
 	glMatrixMode(GL_TEXTURE);
 	float matrix[16];
@@ -416,73 +416,73 @@ void CStdGL::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool 
 	glLoadMatrixf(matrix);
 
 	if (shaders[0] && fUseClrModMap)
-		{
+	{
 		glActiveTexture(GL_TEXTURE3);
 		glLoadIdentity();
 		CSurface * pSurface = pClrModMap->GetSurface();
 		glScalef(1.0f/(pClrModMap->GetResolutionX()*(*pSurface->ppTex)->iSize), 1.0f/(pClrModMap->GetResolutionY()*(*pSurface->ppTex)->iSize), 1.0f);
 		glTranslatef(float(-pClrModMap->OffX), float(-pClrModMap->OffY), 0.0f);
-		}
+	}
 	if (rBltData.pTransform)
-		{
+	{
 		float * mat = rBltData.pTransform->mat;
 		matrix[0]=mat[0];  matrix[1]=mat[3];  matrix[2]=0;  matrix[3]=mat[6];
 		matrix[4]=mat[1];  matrix[5]=mat[4];  matrix[6]=0;  matrix[7]=mat[7];
 		matrix[8]=0;       matrix[9]=0;       matrix[10]=1; matrix[11]=0;
-		matrix[12]=mat[2]; matrix[13]=mat[5]; matrix[14]=0;	matrix[15]=mat[8];
+		matrix[12]=mat[2]; matrix[13]=mat[5]; matrix[14]=0; matrix[15]=mat[8];
 		if (shaders[0] && fUseClrModMap)
-			{
+		{
 			glMultMatrixf(matrix);
-			}
+		}
 		glActiveTexture(GL_TEXTURE0);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadMatrixf(matrix);
-		}
+	}
 	else
-		{
+	{
 		glActiveTexture(GL_TEXTURE0);
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		}
+	}
 
 	// draw polygon
 	for (i=0; i<rBltData.byNumVertices; ++i)
-		{
+	{
 		rBltData.vtVtx[i].tx = rBltData.vtVtx[i].ftx;
 		rBltData.vtVtx[i].ty = rBltData.vtVtx[i].fty;
 		//if (rBltData.pTransform) rBltData.pTransform->TransformPoint(rBltData.vtVtx[i].ftx, rBltData.vtVtx[i].fty);
 		rBltData.vtVtx[i].ftz = 0;
-		}
+	}
 	if (vbo)
-		{
+	{
 		glBufferDataARB(GL_ARRAY_BUFFER_ARB, rBltData.byNumVertices*sizeof(CBltVertex), rBltData.vtVtx, GL_STREAM_DRAW_ARB);
 		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), 0);
-		}
+	}
 	else
-		{
+	{
 		glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), rBltData.vtVtx);
-		}
+	}
 	if (shaders[0] && fUseClrModMap)
-		{
+	{
 		glClientActiveTexture(GL_TEXTURE3);
 		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &rBltData.vtVtx[0].ftx);
 		glClientActiveTexture(GL_TEXTURE0);
-		}
+	}
 	glDrawArrays(GL_POLYGON, 0, rBltData.byNumVertices);
 	glLoadIdentity();
 	if (!fExact)
-		{
+	{
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		}
 	}
+}
 
 namespace
 {
 	inline void SetTexCombine(GLenum combine, StdMeshMaterialTextureUnit::BlendOpExType blendop)
 	{
-		switch(blendop)
+		switch (blendop)
 		{
 		case StdMeshMaterialTextureUnit::BOX_Source1:
 		case StdMeshMaterialTextureUnit::BOX_Source2:
@@ -523,7 +523,7 @@ namespace
 
 	inline void SetTexScale(GLenum scale, StdMeshMaterialTextureUnit::BlendOpExType blendop)
 	{
-		switch(blendop)
+		switch (blendop)
 		{
 		case StdMeshMaterialTextureUnit::BOX_Source1:
 		case StdMeshMaterialTextureUnit::BOX_Source2:
@@ -550,10 +550,10 @@ namespace
 			break;
 		}
 	}
-	
+
 	inline void SetTexSource(GLenum source, StdMeshMaterialTextureUnit::BlendOpSourceType blendsource)
 	{
-		switch(blendsource)
+		switch (blendsource)
 		{
 		case StdMeshMaterialTextureUnit::BOS_Current:
 			glTexEnvi(GL_TEXTURE_ENV, source, GL_PREVIOUS);
@@ -573,11 +573,11 @@ namespace
 			break;
 		}
 	}
-	
+
 	inline void SetTexSource2(GLenum source, StdMeshMaterialTextureUnit::BlendOpExType blendop)
 	{
 		// Set Arg2 for interpolate (Arg0 for BOX_Add_Smooth)
-		switch(blendop)
+		switch (blendop)
 		{
 		case StdMeshMaterialTextureUnit::BOX_AddSmooth:
 			glTexEnvi(GL_TEXTURE_ENV, source, GL_CONSTANT); // 1.0, Set in SetTexColor
@@ -606,7 +606,7 @@ namespace
 
 	inline void SetTexOperand2(GLenum operand, StdMeshMaterialTextureUnit::BlendOpExType blendop)
 	{
-		switch(blendop)
+		switch (blendop)
 		{
 		case StdMeshMaterialTextureUnit::BOX_Add:
 		case StdMeshMaterialTextureUnit::BOX_AddSigned:
@@ -634,44 +634,44 @@ namespace
 	{
 		float Color[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
-		if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
+		if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
 		{
 			Color[0] = Color[1] = Color[2] = 1.0f;
 		}
-		else if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
+		else if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
 		{
 			// operand of GL_CONSTANT is set to alpha for this blend mode
 			// see SetTexOperand2
 			Color[3] = texunit.ColorOpManualFactor;
 		}
-		else if(texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor)
+		else if (texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor)
 		{
 			Color[0] = ((PlayerColor >> 16) & 0xff) / 255.0f;
 			Color[1] = ((PlayerColor >>  8) & 0xff) / 255.0f;
 			Color[2] = ((PlayerColor      ) & 0xff) / 255.0f;
 		}
-		else if(texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
+		else if (texunit.ColorOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
 		{
 			Color[0] = texunit.ColorOpManualColor1[0];
 			Color[1] = texunit.ColorOpManualColor1[1];
 			Color[2] = texunit.ColorOpManualColor1[2];
 		}
-		else if(texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
+		else if (texunit.ColorOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
 		{
 			Color[0] = texunit.ColorOpManualColor2[0];
 			Color[1] = texunit.ColorOpManualColor2[1];
 			Color[2] = texunit.ColorOpManualColor2[2];
 		}
 
-		if(texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
+		if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
 			Color[3] = 1.0f;
-		else if(texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
+		else if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_BlendManual)
 			Color[3] = texunit.AlphaOpManualFactor;
-		else if(texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor)
+		else if (texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_PlayerColor || texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_PlayerColor)
 			Color[3] = ((PlayerColor >> 24) & 0xff) / 255.0f;
-		else if(texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
+		else if (texunit.AlphaOpSources[0] == StdMeshMaterialTextureUnit::BOS_Manual)
 			Color[3] = texunit.AlphaOpManualAlpha1;
-		else if(texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
+		else if (texunit.AlphaOpSources[1] == StdMeshMaterialTextureUnit::BOS_Manual)
 			Color[3] = texunit.AlphaOpManualAlpha2;
 
 		glTexEnvfv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, Color);
@@ -684,7 +684,7 @@ namespace
 		const StdMeshMaterialTechnique& technique = material.Techniques[material.BestTechniqueIndex];
 
 		// Render each pass
-		for(unsigned int i = 0; i < technique.Passes.size(); ++i)
+		for (unsigned int i = 0; i < technique.Passes.size(); ++i)
 		{
 			const StdMeshMaterialPass& pass = technique.Passes[i];
 
@@ -718,7 +718,7 @@ namespace
 			glMaterialfv(GL_FRONT, GL_EMISSION, pass.Emissive);
 			glMaterialf(GL_FRONT, GL_SHININESS, pass.Shininess);
 
-			switch(pass.CullHardware)
+			switch (pass.CullHardware)
 			{
 			case StdMeshMaterialPass::CH_Clockwise:
 				glEnable(GL_CULL_FACE);
@@ -737,25 +737,25 @@ namespace
 			// Note that we need to do this before we do glTexCoordPointer for the
 			// texture units below, otherwise the texcoordpointer is reset by this
 			// call (or at least by my radeon driver), even though the documentation
-			// states that "The texture coordinate state for other client texture units 
+			// states that "The texture coordinate state for other client texture units
 			// is not updated, regardless of whether the client texture unit is enabled
 			// or not."
 			glInterleavedArrays(GL_N3F_V3F, sizeof(StdMeshVertex), &instance.GetVertices()[0].nx);
 
 			glMatrixMode(GL_TEXTURE);
 			GLuint have_texture = 0;
-			for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
 				// Note that it is guaranteed that the GL_TEXTUREn
 				// constants are contiguous.
 				// GL_TEXTURE3 is reserved for FoW/ClrModMap
-				if(j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
+				if (j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
 				else { glActiveTexture(GL_TEXTURE4+j-3); glClientActiveTexture(GL_TEXTURE4+j-3); }
-			
+
 				const StdMeshMaterialTextureUnit& texunit = pass.TextureUnits[j];
 
 				glEnable(GL_TEXTURE_2D);
-				if(texunit.HasTexture())
+				if (texunit.HasTexture())
 				{
 					const unsigned int Phase = instance.GetTexturePhase(i, j);
 					have_texture = texunit.GetTexture(Phase).texName;
@@ -774,10 +774,10 @@ namespace
 				// Setup texture coordinate transform
 				glLoadIdentity();
 				const double Position = instance.GetTexturePosition(i, j);
-				for(unsigned int k = 0; k < texunit.Transformations.size(); ++k)
+				for (unsigned int k = 0; k < texunit.Transformations.size(); ++k)
 				{
 					const StdMeshMaterialTextureUnit::Transformation& trans = texunit.Transformations[k];
-					switch(trans.TransformType)
+					switch (trans.TransformType)
 					{
 					case StdMeshMaterialTextureUnit::Transformation::T_SCROLL:
 						glTranslatef(trans.Scroll.X, trans.Scroll.Y, 0.0f);
@@ -798,7 +798,7 @@ namespace
 						glMultMatrixf(trans.Transform.M);
 						break;
 					case StdMeshMaterialTextureUnit::Transformation::T_WAVE_XFORM:
-						switch(trans.WaveXForm.XForm)
+						switch (trans.WaveXForm.XForm)
 						{
 						case StdMeshMaterialTextureUnit::Transformation::XF_SCROLL_X:
 							glTranslatef(trans.GetWaveXForm(Position), 0.0f, 0.0f);
@@ -830,14 +830,14 @@ namespace
 				SetTexScale(GL_RGB_SCALE, texunit.ColorOpEx);
 				SetTexScale(GL_ALPHA_SCALE, texunit.AlphaOpEx);
 
-				if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
+				if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
 				{
 					SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[1]);
 					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
 				}
 				else
 				{
-					if(texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
+					if (texunit.ColorOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
 					{
 						// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
 						SetTexSource2(GL_SOURCE0_RGB, texunit.ColorOpEx);
@@ -853,7 +853,7 @@ namespace
 						SetTexSource(GL_SOURCE0_RGB, texunit.ColorOpSources[0]);
 						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB, GL_SRC_COLOR);
 
-						if(texunit.ColorOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
+						if (texunit.ColorOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
 						{
 							SetTexSource(GL_SOURCE1_RGB, texunit.ColorOpSources[1]);
 							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB, GL_SRC_COLOR);
@@ -864,14 +864,14 @@ namespace
 					}
 				}
 
-				if(texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
+				if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_Source2)
 				{
 					SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[1]);
 					glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
 				}
 				else
 				{
-					if(texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
+					if (texunit.AlphaOpEx == StdMeshMaterialTextureUnit::BOX_AddSmooth)
 					{
 						// GL_SOURCE0 is GL_CONSTANT to achieve the desired effect with GL_INTERPOLATE
 						SetTexSource2(GL_SOURCE0_ALPHA, texunit.AlphaOpEx);
@@ -887,7 +887,7 @@ namespace
 						SetTexSource(GL_SOURCE0_ALPHA, texunit.AlphaOpSources[0]);
 						glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_ALPHA, GL_SRC_ALPHA);
 
-						if(texunit.AlphaOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
+						if (texunit.AlphaOpEx != StdMeshMaterialTextureUnit::BOX_Source1)
 						{
 							SetTexSource(GL_SOURCE1_ALPHA, texunit.AlphaOpSources[1]);
 							glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_ALPHA, GL_SRC_ALPHA);
@@ -904,9 +904,9 @@ namespace
 
 			glDrawElements(GL_TRIANGLES, instance.GetNumFaces()*3, GL_UNSIGNED_INT, instance.GetFaces());
 
-			for(unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
+			for (unsigned int j = 0; j < pass.TextureUnits.size(); ++j)
 			{
-				if(j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
+				if (j < 3) { glActiveTexture(GL_TEXTURE0+j); glClientActiveTexture(GL_TEXTURE0+j); }
 				else { glActiveTexture(GL_TEXTURE4+j-3); glClientActiveTexture(GL_TEXTURE4+j-3); }
 				glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 				glDisable(GL_TEXTURE_2D);
@@ -919,12 +919,12 @@ namespace
 		const StdMesh& mesh = instance.Mesh;
 
 		// Render each submesh
-		for(unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
+		for (unsigned int i = 0; i < mesh.GetNumSubMeshes(); ++i)
 			RenderSubMeshImpl(instance.GetSubMesh(i), dwModClr, dwPlayerColor, parity);
 
 #if 0
 		// Draw attached bone
-		if(instance.GetAttachParent())
+		if (instance.GetAttachParent())
 		{
 			const StdMeshInstance::AttachedMesh* attached = instance.GetAttachParent();
 			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attached->ChildBone) * StdMeshMatrix::Transform(instance.Mesh.GetBone(attached->ChildBone).Transformation);
@@ -944,13 +944,14 @@ namespace
 #endif
 
 		// Render attached meshes
-		for(StdMeshInstance::AttachedMeshIter iter = instance.AttachedMeshesBegin(); iter != instance.AttachedMeshesEnd(); ++iter)
+		for (StdMeshInstance::AttachedMeshIter iter = instance.AttachedMeshesBegin(); iter != instance.AttachedMeshesEnd(); ++iter)
 		{
 			const StdMeshInstance::AttachedMesh* attach = *iter;
 			const StdMeshMatrix& FinalTrans = attach->GetFinalTransformation();
 
 			// Convert matrix to column-major order, add fourth row
-			const float attach_trans_gl[16] = {
+			const float attach_trans_gl[16] =
+			{
 				FinalTrans(0,0), FinalTrans(1,0), FinalTrans(2,0), 0,
 				FinalTrans(0,1), FinalTrans(1,1), FinalTrans(2,1), 0,
 				FinalTrans(0,2), FinalTrans(1,2), FinalTrans(2,2), 0,
@@ -965,7 +966,7 @@ namespace
 
 #if 0
 			const StdMeshMatrix& own_trans = instance.GetBoneTransform(attach->ParentBone)
-		                                 * StdMeshMatrix::Transform(instance.Mesh.GetBone(attach->ParentBone).Transformation);
+			                                 * StdMeshMatrix::Transform(instance.Mesh.GetBone(attach->ParentBone).Transformation);
 
 			// Draw attached bone
 			glDisable(GL_DEPTH_TEST);
@@ -993,19 +994,19 @@ namespace
 		glTranslatef(-ZoomX, -ZoomY, 0.0f);
 
 		// Apply transformation
-		if(pTransform)
+		if (pTransform)
 		{
 			const GLfloat transform[16] = { pTransform->mat[0], pTransform->mat[3], 0, pTransform->mat[6], pTransform->mat[1], pTransform->mat[4], 0, pTransform->mat[7], 0, 0, 1, 0, pTransform->mat[2], pTransform->mat[5], 0, pTransform->mat[8] };
 			glMultMatrixf(transform);
-		
+
 			// Compute parity of the transformation matrix - if parity is swapped then
 			// we need to cull front faces instead of back faces.
 			const float det = transform[0]*transform[5]*transform[15]
-				        + transform[4]*transform[13]*transform[3]
-				        + transform[12]*transform[1]*transform[7]
-				        - transform[0]*transform[13]*transform[7]
-				        - transform[4]*transform[1]*transform[15]
-				        - transform[12]*transform[5]*transform[3];
+			                  + transform[4]*transform[13]*transform[3]
+			                  + transform[12]*transform[1]*transform[7]
+			                  - transform[0]*transform[13]*transform[7]
+			                  - transform[4]*transform[1]*transform[15]
+			                  - transform[12]*transform[5]*transform[3];
 			return det > 0;
 		}
 
@@ -1065,12 +1066,12 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 
-	if(!fUsePerspective)
+	if (!fUsePerspective)
 	{
 		// Orthographic projection. The orthographic projection matrix
 		// is already loaded in the GL matrix stack.
 
-		if(!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
+		if (!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
 			parity = !parity;
 
 		// Scale so that the mesh fits in (tx,ty,twdt,thgt)
@@ -1078,8 +1079,8 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		const float ry = -std::min(v1.y,v2.y) / fabs(v2.y - v1.y);
 		const float dx = tx + rx*twdt;
 		const float dy = ty + ry*thgt;
-//		const float scx = twdt/fabs(v2.x - v1.x);
-//		const float scy = thgt/fabs(v2.y - v1.y);
+//    const float scx = twdt/fabs(v2.x - v1.x);
+//    const float scy = thgt/fabs(v2.y - v1.y);
 		const float scx = 1;
 		const float scy = 1;
 
@@ -1123,7 +1124,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		glScalef(2.0f/iWdt, -2.0f/iHgt, 1.0f);
 
 		glTranslatef(-iClipX1, -iClipY1, 0.0f);
-		if(!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
+		if (!ApplyZoomAndTransform(ZoomX, ZoomY, Zoom, pTransform))
 			parity = !parity;
 
 		// Compensate for 1.0f aspect (TODO: Can we do that directly in gluPerspective?)
@@ -1151,7 +1152,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glPushMatrix();
 	glLoadIdentity();
 
-	if(!fUsePerspective)
+	if (!fUsePerspective)
 	{
 		// Put a light source in front of the object
 		const GLfloat light_position[] = { 0.0f, 0.0f, 1.0f, 0.0f };
@@ -1168,7 +1169,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 		// Setup camera position so that the mesh with uniform transformation
 		// fits well into the rectangle twdt/thgt (without distortion).
 		float EyeR;
-		if(thgt > twdt)
+		if (thgt > twdt)
 			EyeR = l + std::max(b/TAN_FOV, h/TAN_FOV * twdt/thgt);
 		else
 			EyeR = l + std::max(b/TAN_FOV * thgt/twdt, h/TAN_FOV);
@@ -1195,7 +1196,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 
 
 	// Apply mesh transformation matrix
-	if(MeshTransform)
+	if (MeshTransform)
 	{
 		// Convert to column-major order
 		const float Matrix[16] =
@@ -1205,13 +1206,13 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 			(*MeshTransform)(0,2), (*MeshTransform)(1,2), (*MeshTransform)(2,2), 0,
 			(*MeshTransform)(0,3), (*MeshTransform)(1,3), (*MeshTransform)(2,3), 1
 		};
-		
+
 		const float det = MeshTransform->Determinant();
-		if(det < 0) parity = !parity;
+		if (det < 0) parity = !parity;
 
 		// Renormalize if transformation resizes the mesh
 		// for lighting to be correct
-		if(det != 1 && det != -1)
+		if (det != 1 && det != -1)
 			glEnable(GL_NORMALIZE);
 
 		// Apply Matrix in the coordinate system in which the mesh
@@ -1233,7 +1234,7 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	// ClrModMap for each vertex with the correct coordinates.
 	CBltTransform Transform;
 	Transform.SetMoveScale(dx, dy, scx, scy);
-	if(pTransform) Transform *= *pTransform;
+	if (pTransform) Transform *= *pTransform;
 
 	Transform.MoveScale(-ZoomX, -ZoomY, 1.0f, 1.0f);
 	Transform.MoveScale(0.0f, 0.0f, Zoom, Zoom);
@@ -1260,14 +1261,14 @@ void CStdGL::PerformMesh(StdMeshInstance &instance, float tx, float ty, float tw
 	glDisable(GL_CULL_FACE);
 	//glDisable(GL_BLEND);
 	glShadeModel(GL_FLAT);
-	
+
 	// TODO: glScissor, so that we only clear the area the mesh covered.
 	glClear(GL_DEPTH_BUFFER_BIT);
 }
 
 void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
-													 SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
-	{
+                           SURFACE sfcTarget, float tx, float ty, float wdt, float hgt, const SURFACE mattextures[])
+{
 	//Blit(sfcSource, fx, fy, wdt, hgt, sfcTarget, tx, ty, wdt, hgt);return;
 	// safety
 	if (!sfcSource || !sfcTarget || !wdt || !hgt) return;
@@ -1284,50 +1285,50 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	if (ClipAll) return;
 	// manual clipping? (primary surface only)
 	if (DDrawCfg.ClipManuallyE)
-		{
+	{
 		int iOver;
 		// Left
 		iOver=int(tx)-iClipX1;
 		if (iOver<0)
-			{
+		{
 			wdt+=iOver;
 			twdt+=iOver*Zoom;
 			fx-=iOver;
 			tx=float(iClipX1);
-			}
+		}
 		// Top
 		iOver=int(ty)-iClipY1;
 		if (iOver<0)
-			{
+		{
 			hgt+=iOver;
 			thgt+=iOver*Zoom;
 			fy-=iOver;
 			ty=float(iClipY1);
-			}
+		}
 		// Right
 		iOver=iClipX2+1-int(tx+twdt);
 		if (iOver<0)
-			{
+		{
 			wdt+=iOver/Zoom;
 			twdt+=iOver;
-			}
+		}
 		// Bottom
 		iOver=iClipY2+1-int(ty+thgt);
 		if (iOver<0)
-			{
+		{
 			hgt+=iOver/Zoom;
 			thgt+=iOver;
-			}
 		}
+	}
 	// inside screen?
 	if (wdt<=0 || hgt<=0) return;
 	// prepare rendering to surface
 	if (!PrepareRendering(sfcTarget)) return;
 	// texture present?
 	if (!sfcSource->ppTex)
-		{
+	{
 		return;
-		}
+	}
 	// get involved texture offsets
 	int iTexSize=sfcSource->iTexSize;
 	int iTexX=Max(int(fx/iTexSize), 0);
@@ -1337,11 +1338,11 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	// blit from all these textures
 	SetTexture();
 	if (mattextures)
-		{
+	{
 		glActiveTexture(GL_TEXTURE1);
 		glEnable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
-		}
+	}
 	DWORD dwModMask = 0;
 	SetupTextureEnv(false, !!mattextures);
 	glMatrixMode(GL_MODELVIEW);
@@ -1349,9 +1350,9 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
 	for (int iY=iTexY; iY<iTexY2; ++iY)
-		{
+	{
 		for (int iX=iTexX; iX<iTexX2; ++iX)
-			{
+		{
 			// blit
 			DWORD dwModClr = BlitModulated ? BlitModulateClr : 0xffffffff;
 
@@ -1359,24 +1360,24 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			CTexRef *pTex = *(sfcSource->ppTex + iY * sfcSource->iTexX + iX);
 			glBindTexture(GL_TEXTURE_2D, pTex->texName);
 			if (!mattextures && Zoom != 1.0)
-				{
+			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				}
+			}
 			else
-				{
+			{
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				}
+			}
 
 			// get current blitting offset in texture (beforing any last-tex-size-changes)
 			int iBlitX=iTexSize*iX;
 			int iBlitY=iTexSize*iY;
 			// size changed? recalc dependant, relevant (!) values
 			if (iTexSize != pTex->iSize)
-				{
+			{
 				iTexSize = pTex->iSize;
-				}
+			}
 			// get new texture source bounds
 			FLOAT_RECT fTexBlt;
 			// get new dest bounds
@@ -1405,7 +1406,7 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 			// color modulation
 			// global modulation map
 			if (shaders[0] && fUseClrModMap)
-				{
+			{
 				glActiveTexture(GL_TEXTURE3);
 				glLoadIdentity();
 				CSurface * pSurface = pClrModMap->GetSurface();
@@ -1416,34 +1417,34 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &Vtx[0].ftx);
 				glClientActiveTexture(GL_TEXTURE0);
-				}
+			}
 			if (!shaders[0] && fUseClrModMap && dwModClr)
-				{
+			{
 				for (int i=0; i<4; ++i)
-					{
+				{
 					DWORD c = pClrModMap->GetModAt(int(Vtx[i].ftx), int(Vtx[i].fty));
 					ModulateClr(c, dwModClr);
 					DwTo4UB(c | dwModMask, Vtx[i].color);
-					}
 				}
+			}
 			else
-				{
+			{
 				for (int i=0; i<4; ++i)
 					DwTo4UB(dwModClr | dwModMask, Vtx[i].color);
-				}
+			}
 			for (int i=0; i<4; ++i)
-				{
+			{
 				Vtx[i].tx /= iTexSize;
 				Vtx[i].ty /= iTexSize;
 				Vtx[i].ftz = 0;
-				}
-			if(mattextures)
-				{
+			}
+			if (mattextures)
+			{
 				GLfloat shaderparam[4];
-				for (int cnt=1;cnt<127;cnt++)
+				for (int cnt=1; cnt<127; cnt++)
+				{
+					if (mattextures[cnt])
 					{
-					if(mattextures[cnt])
-						{
 						shaderparam[0]=static_cast<GLfloat>(cnt)/255.0f;
 						glProgramLocalParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, shaderparam);
 						//Bind Mat Texture
@@ -1457,29 +1458,29 @@ void CStdGL::BlitLandscape(SURFACE sfcSource, float fx, float fy,
 
 						glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
 						glDrawArrays(GL_QUADS, 0, 4);
-						}
 					}
 				}
+			}
 			else
-				{
+			{
 				glInterleavedArrays(GL_T2F_C4UB_V3F, sizeof(CBltVertex), Vtx);
 				glDrawArrays(GL_QUADS, 0, 4);
-				}
-
 			}
+
 		}
+	}
 	if (mattextures)
-		{
+	{
 		glActiveTexture(GL_TEXTURE1);
 		glDisable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
-		}
+	}
 	// reset texture
 	ResetTexture();
-	}
+}
 
 CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
-	{
+{
 	DebugLog("  gl: Create Context...");
 	// safety
 	if (!pWindow) return NULL;
@@ -1487,39 +1488,39 @@ CStdGLCtx *CStdGL::CreateContext(CStdWindow * pWindow, CStdApp *pApp)
 	CStdGLCtx *pCtx = new CStdGLCtx();
 	if (!pMainCtx) pMainCtx = pCtx;
 	if (!pCtx->Init(pWindow, pApp))
-		{
+	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
-		}
+	}
 	// done
 	return pCtx;
-	}
+}
 
 #ifdef _WIN32
 CStdGLCtx *CStdGL::CreateContext(HWND hWindow, CStdApp *pApp)
-	{
+{
 	// safety
 	if (!hWindow) return NULL;
 	// create it
 	CStdGLCtx *pCtx = new CStdGLCtx();
 	if (!pCtx->Init(NULL, pApp, hWindow))
-		{
+	{
 		delete pCtx; Error("  gl: Error creating secondary context!"); return NULL;
-		}
+	}
 	if (!pMainCtx) pMainCtx = pCtx;
 	// done
 	return pCtx;
-	}
+}
 #endif
 
 bool CStdGL::CreatePrimarySurfaces(bool, unsigned int, unsigned int, int iColorDepth, unsigned int)
-	{
+{
 	// store options
 
 	return RestoreDeviceObjects();
-	}
+}
 
 void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
-	{
+{
 	// prepare rendering to target
 	if (!PrepareRendering(sfcTarget)) return;
 	// apply global modulation
@@ -1529,12 +1530,12 @@ void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwC
 	ClrByCurrentBlitMod(dwClr4);
 	// apply modulation map
 	if (fUseClrModMap)
-		{
+	{
 		ModulateClr(dwClr1, pClrModMap->GetModAt(int(ipVtx[0]), int(ipVtx[1])));
 		ModulateClr(dwClr2, pClrModMap->GetModAt(int(ipVtx[2]), int(ipVtx[3])));
 		ModulateClr(dwClr3, pClrModMap->GetModAt(int(ipVtx[4]), int(ipVtx[5])));
 		ModulateClr(dwClr4, pClrModMap->GetModAt(int(ipVtx[6]), int(ipVtx[7])));
-		}
+	}
 	glShadeModel((dwClr1 == dwClr2 && dwClr1 == dwClr3 && dwClr1 == dwClr4) ? GL_FLAT : GL_SMOOTH);
 	// set blitting state
 	int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
@@ -1551,11 +1552,11 @@ void CStdGL::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwC
 	glDrawArrays(GL_POLYGON, 0, 4);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glShadeModel(GL_FLAT);
-	}
+}
 
 #ifdef _MSC_VER
 #ifdef _M_X64
-#	include <emmintrin.h>
+# include <emmintrin.h>
 #endif
 static inline long int lrintf(float f)
 {
@@ -1563,7 +1564,8 @@ static inline long int lrintf(float f)
 	return _mm_cvtt_ss2si(_mm_load_ps1(&f));
 #else
 	long int i;
-	__asm {
+	__asm
+	{
 		fld f
 		fistp i
 	};
@@ -1573,10 +1575,10 @@ static inline long int lrintf(float f)
 #endif
 
 void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
-	{
+{
 	// render target?
 	if (sfcTarget->IsRenderTarget())
-		{
+	{
 		// prepare rendering to target
 		if (!PrepareRendering(sfcTarget)) return;
 		SetTexture();
@@ -1598,9 +1600,9 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 		glMatrixMode(GL_TEXTURE);
 		glLoadIdentity();
 		if (fUseClrModMap)
-			{
+		{
 			if (shaders[0])
-				{
+			{
 				glActiveTexture(GL_TEXTURE3);
 				glLoadIdentity();
 				CSurface * pSurface = pClrModMap->GetSurface();
@@ -1611,13 +1613,13 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 				glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 				glTexCoordPointer(2, GL_FLOAT, sizeof(CBltVertex), &vtx[0].ftx);
 				glClientActiveTexture(GL_TEXTURE0);
-				}
+			}
 			else
-				{
+			{
 				ModulateClr(dwClr1, pClrModMap->GetModAt(lrintf(x1), lrintf(y1)));
 				ModulateClr(dwClr, pClrModMap->GetModAt(lrintf(x2), lrintf(y2)));
-				}
 			}
+		}
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 		DwTo4UB(dwClr1,vtx[0].color);
@@ -1637,21 +1639,21 @@ void CStdGL::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float 
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		glClientActiveTexture(GL_TEXTURE0);
 		ResetTexture();
-		}
+	}
 	else
-		{
+	{
 		// emulate
 		if (!LockSurfaceGlobal(sfcTarget)) return;
 		ForLine((int32_t)x1,(int32_t)y1,(int32_t)x2,(int32_t)y2,&DLineSPix,(int) dwClr);
 		UnLockSurfaceGlobal(sfcTarget);
-		}
 	}
+}
 
 void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
-	{
+{
 	// render target?
 	if (sfcTarget->IsRenderTarget())
-		{
+	{
 		if (!PrepareRendering(sfcTarget)) return;
 		int iAdditive = dwBlitMode & C4GFXBLIT_ADDITIVE;
 		// use a different blendfunc here because of GL_POINT_SMOOTH
@@ -1661,28 +1663,28 @@ void CStdGL::PerformPix(SURFACE sfcTarget, float tx, float ty, DWORD dwClr)
 		glColorDw(dwClr);
 		glVertex2f(tx + 0.5f, ty + 0.5f);
 		glEnd();
-		}
+	}
 	else
-		{
+	{
 		// emulate
 		sfcTarget->SetPixDw((int)tx, (int)ty, dwClr);
-		}
 	}
+}
 
 static void DefineShaderARB(const char * p, GLuint & s)
-	{
+{
 	glBindProgramARB (GL_FRAGMENT_PROGRAM_ARB, s);
 	glProgramStringARB (GL_FRAGMENT_PROGRAM_ARB, GL_PROGRAM_FORMAT_ASCII_ARB, strlen(p), p);
 	if (GL_INVALID_OPERATION == glGetError())
-		{
+	{
 		GLint errPos; glGetIntegerv (GL_PROGRAM_ERROR_POSITION_ARB, &errPos);
 		fprintf (stderr, "ARB program%d:%d: Error: %s\n", s, errPos, glGetString (GL_PROGRAM_ERROR_STRING_ARB));
 		s = 0;
-		}
 	}
+}
 
 bool CStdGL::RestoreDeviceObjects()
-	{
+{
 	assert(pMainCtx);
 	// delete any previous objects
 	InvalidateDeviceObjects();
@@ -1693,9 +1695,9 @@ bool CStdGL::RestoreDeviceObjects()
 
 	// BGRA Pixel Formats, Multitexturing, Texture Combine Environment Modes
 	if (!GLEW_VERSION_1_3)
-		{
+	{
 		return Error("  gl: OpenGL Version 1.3 or higher required.");
-		}
+	}
 
 	// lines texture
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -1722,57 +1724,57 @@ bool CStdGL::RestoreDeviceObjects()
 
 	// Vertex Buffer Objects crash some versions of the free radeon driver. TODO: provide an option for them
 	if (0 && GLEW_ARB_vertex_buffer_object)
-		{
+	{
 		glGenBuffersARB(1, &vbo);
 		glBindBufferARB(GL_ARRAY_BUFFER_ARB, vbo);
 		glBufferDataARB(GL_ARRAY_BUFFER_ARB, 8 * sizeof(CBltVertex), 0, GL_STREAM_DRAW_ARB);
-		}
+	}
 
-	if(!DDrawCfg.Shader)
-		{
-		}
+	if (!DDrawCfg.Shader)
+	{
+	}
 	else if (!shaders[0] && GLEW_ARB_fragment_program)
-		{
+	{
 		glGenProgramsARB (sizeof(shaders)/sizeof(*shaders), shaders);
 		const char * preface =
-		"!!ARBfp1.0\n"
-		"TEMP tmp;\n"
-		// sample the texture
-		"TXP tmp, fragment.texcoord[0], texture, 2D;\n";
+		  "!!ARBfp1.0\n"
+		  "TEMP tmp;\n"
+		  // sample the texture
+		  "TXP tmp, fragment.texcoord[0], texture, 2D;\n";
 		const char * alpha_mod =
-		// perform the modulation
-		"MUL tmp.rgba, tmp, fragment.color.primary;\n";
+		  // perform the modulation
+		  "MUL tmp.rgba, tmp, fragment.color.primary;\n";
 		const char * funny_add =
-		// perform the modulation
-		"ADD tmp.rgb, tmp, fragment.color.primary;\n"
-		"MUL tmp.a, tmp, fragment.color.primary;\n"
-		"MAD_SAT tmp, tmp, { 2.0, 2.0, 2.0, 1.0 }, { -1.0, -1.0, -1.0, 0.0 };\n";
+		  // perform the modulation
+		  "ADD tmp.rgb, tmp, fragment.color.primary;\n"
+		  "MUL tmp.a, tmp, fragment.color.primary;\n"
+		  "MAD_SAT tmp, tmp, { 2.0, 2.0, 2.0, 1.0 }, { -1.0, -1.0, -1.0, 0.0 };\n";
 		const char * grey =
-		"TEMP grey;\n"
-		"DP3 grey, tmp, { 0.299, 0.587, 0.114, 1.0 };\n"
-		"LRP tmp.rgb, program.local[0], tmp, grey;\n";
+		  "TEMP grey;\n"
+		  "DP3 grey, tmp, { 0.299, 0.587, 0.114, 1.0 };\n"
+		  "LRP tmp.rgb, program.local[0], tmp, grey;\n";
 		const char * landscape =
-		"TEMP col;\n"
-		"MOV col.x, program.local[1].x;\n" //Load color to indentify
-		"ADD col.y, col.x, 0.001;\n"
-		"SUB col.z, col.x, 0.001;\n"  //epsilon-range
-		"SGE tmp.r, tmp.b, 0.5015;\n" //Tunnel?
-		"MAD tmp.r, tmp.r, -0.5019, tmp.b;\n"
-		"SGE col.z, tmp.r, col.z;\n" //mat identified?
-		"SLT col.y, tmp.r, col.y;\n"
-		"TEMP coo;\n"
-		"MOV coo, fragment.texcoord;\n"
-		"MUL coo.xy, coo, 3.0;\n"
-		"TXP tmp, coo, texture[1], 2D;\n"
-		"MUL tmp.a, col.y, col.z;\n";
+		  "TEMP col;\n"
+		  "MOV col.x, program.local[1].x;\n" //Load color to indentify
+		  "ADD col.y, col.x, 0.001;\n"
+		  "SUB col.z, col.x, 0.001;\n"  //epsilon-range
+		  "SGE tmp.r, tmp.b, 0.5015;\n" //Tunnel?
+		  "MAD tmp.r, tmp.r, -0.5019, tmp.b;\n"
+		  "SGE col.z, tmp.r, col.z;\n" //mat identified?
+		  "SLT col.y, tmp.r, col.y;\n"
+		  "TEMP coo;\n"
+		  "MOV coo, fragment.texcoord;\n"
+		  "MUL coo.xy, coo, 3.0;\n"
+		  "TXP tmp, coo, texture[1], 2D;\n"
+		  "MUL tmp.a, col.y, col.z;\n";
 		const char * fow =
-		"TEMP fow;\n"
-		// sample the texture
-		"TXP fow, fragment.texcoord[3], texture[3], 2D;\n"
-		"LRP tmp.rgb, fow.aaaa, tmp, fow;\n";
+		  "TEMP fow;\n"
+		  // sample the texture
+		  "TXP fow, fragment.texcoord[3], texture[3], 2D;\n"
+		  "LRP tmp.rgb, fow.aaaa, tmp, fow;\n";
 		const char * end =
-		"MOV result.color, tmp;\n"
-		"END\n";
+		  "MOV result.color, tmp;\n"
+		  "END\n";
 		DefineShaderARB(FormatString("%s%s%s",       preface,            alpha_mod,            end).getData(), shaders[0]);
 		DefineShaderARB(FormatString("%s%s%s",       preface,            funny_add,            end).getData(), shaders[1]);
 		DefineShaderARB(FormatString("%s%s%s%s",     preface, landscape, alpha_mod,            end).getData(), shaders[2]);
@@ -1785,123 +1787,123 @@ bool CStdGL::RestoreDeviceObjects()
 		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            alpha_mod, grey, fow, end).getData(), shaders[9]);
 		DefineShaderARB(FormatString("%s%s%s%s%s",   preface,            funny_add, grey, fow, end).getData(), shaders[10]);
 		DefineShaderARB(FormatString("%s%s%s%s%s%s", preface, landscape, alpha_mod, grey, fow, end).getData(), shaders[11]);
-		}
+	}
 	// done
 	return Active;
-	}
+}
 
 bool CStdGL::InvalidateDeviceObjects()
 {
 	bool fSuccess=true;
 	// clear gamma
-	#ifndef USE_SDL_MAINLOOP
+#ifndef USE_SDL_MAINLOOP
 	DisableGamma();
-	#endif
+#endif
 	// deactivate
 	Active=false;
 	// invalidate font objects
 	// invalidate primary surfaces
 	if (lines_tex)
-		{
+	{
 		glDeleteTextures(1, &lines_tex);
 		lines_tex = 0;
-		}
+	}
 	if (shaders[0])
-		{
+	{
 		glDeleteProgramsARB(sizeof(shaders)/sizeof(*shaders), shaders);
 		shaders[0] = 0;
-		}
+	}
 	if (vbo)
-		{
+	{
 		glDeleteBuffersARB(1, &vbo);
 		vbo = 0;
-		}
+	}
 	return fSuccess;
 }
 
 void CStdGL::SetTexture()
-	{
+{
 	glBlendFunc(GL_SRC_ALPHA, (dwBlitMode & C4GFXBLIT_ADDITIVE) ? GL_ONE : GL_ONE_MINUS_SRC_ALPHA);
 	if (shaders[0])
-		{
+	{
 		glEnable(GL_FRAGMENT_PROGRAM_ARB);
 		if (fUseClrModMap)
-			{
+		{
 			glActiveTexture(GL_TEXTURE3);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, (*pClrModMap->GetSurface()->ppTex)->texName);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glActiveTexture(GL_TEXTURE0);
-			}
 		}
-	glEnable(GL_TEXTURE_2D);
 	}
+	glEnable(GL_TEXTURE_2D);
+}
 
 void CStdGL::ResetTexture()
-	{
+{
 	// disable texturing
 	if (shaders[0])
-		{
+	{
 		glDisable(GL_FRAGMENT_PROGRAM_ARB);
 		glActiveTexture(GL_TEXTURE3);
 		glDisable(GL_TEXTURE_2D);
 		glActiveTexture(GL_TEXTURE0);
-		}
-	glDisable(GL_TEXTURE_2D);
 	}
+	glDisable(GL_TEXTURE_2D);
+}
 
 bool CStdGL::CheckGLError(const char *szAtOp)
-	{
+{
 	GLenum err = glGetError();
 	if (!err) return true;
 	Log(szAtOp);
 	switch (err)
-		{
-		case GL_INVALID_ENUM:				Log("GL_INVALID_ENUM"); break;
-		case GL_INVALID_VALUE:			Log("GL_INVALID_VALUE"); break;
-		case GL_INVALID_OPERATION:	Log("GL_INVALID_OPERATION"); break;
-		case GL_STACK_OVERFLOW:			Log("GL_STACK_OVERFLOW"); break;
-		case GL_STACK_UNDERFLOW:		Log("GL_STACK_UNDERFLOW"); break;
-		case GL_OUT_OF_MEMORY:			Log("GL_OUT_OF_MEMORY"); break;
-		default: Log("unknown error"); break;
-		}
-	return false;
+	{
+	case GL_INVALID_ENUM:       Log("GL_INVALID_ENUM"); break;
+	case GL_INVALID_VALUE:      Log("GL_INVALID_VALUE"); break;
+	case GL_INVALID_OPERATION:  Log("GL_INVALID_OPERATION"); break;
+	case GL_STACK_OVERFLOW:     Log("GL_STACK_OVERFLOW"); break;
+	case GL_STACK_UNDERFLOW:    Log("GL_STACK_UNDERFLOW"); break;
+	case GL_OUT_OF_MEMORY:      Log("GL_OUT_OF_MEMORY"); break;
+	default: Log("unknown error"); break;
 	}
+	return false;
+}
 
 CStdGL *pGL=NULL;
 
 void CStdGL::TaskOut()
-	{
+{
 	// deactivate
 	// backup textures
 	if (pTexMgr && fFullscreen) pTexMgr->IntLock();
 	if (pCurrCtx) pCurrCtx->Deselect();
-	}
+}
 
 void CStdGL::TaskIn()
-	{
+{
 	// restore gl
 	//if (!DeviceReady()) MainCtx.Init(pWindow, pApp);
 	// restore textures
 	if (pTexMgr && fFullscreen) pTexMgr->IntUnlock();
-	}
+}
 
 bool CStdGL::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
-	{
+{
 	// Re-create primary clipper to adapt to new size.
 	CreatePrimaryClipper(iXRes, iYRes);
 	RestoreDeviceObjects();
 	return true;
-	}
+}
 
 void CStdGL::Default()
-	{
+{
 	CStdDDraw::Default();
 	pCurrCtx = NULL;
 	iPixelFormat=0;
 	sfcFmt=0;
 	iClrDpt=0;
-	}
+}
 
 #endif // USE_GL

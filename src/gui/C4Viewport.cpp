@@ -68,7 +68,8 @@
 #endif
 #endif
 
-namespace {
+namespace
+{
 	const int32_t ViewportScrollSpeed=10;
 }
 
@@ -83,7 +84,7 @@ double round(double x)
 #include <shellapi.h>
 
 LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	// Determine viewport
 	C4Viewport *cvp;
 	if (!(cvp=::GraphicsSystem.GetViewport(hwnd)))
@@ -91,227 +92,230 @@ LRESULT APIENTRY ViewportWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 	// Process message
 	switch (uMsg)
+	{
+		//---------------------------------------------------------------------------------------------------------------------------
+	case WM_KEYDOWN:
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		switch (wParam)
 		{
-		//---------------------------------------------------------------------------------------------------------------------------
-		case WM_KEYDOWN:
 			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-			switch (wParam)
-				{
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case VK_SCROLL:
-					// key bound to this specific viewport. Don't want to pass this through C4Game...
-					cvp->TogglePlayerLock();
-					break;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				default:
-					if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL)) return 0;
-				break;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				}
+		case VK_SCROLL:
+			// key bound to this specific viewport. Don't want to pass this through C4Game...
+			cvp->TogglePlayerLock();
 			break;
-		//---------------------------------------------------------------------------------------------------------------------------
-		case WM_KEYUP:
-			if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, NULL)) return 0;
-			break;
-		//------------------------------------------------------------------------------------------------------------
-		case WM_SYSKEYDOWN:
-			if (wParam == 18) break;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		default:
 			if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL)) return 0;
 			break;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		}
+		break;
+		//---------------------------------------------------------------------------------------------------------------------------
+	case WM_KEYUP:
+		if (Game.DoKeyboardInput(wParam, KEYEV_Up, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), false, NULL)) return 0;
+		break;
+		//------------------------------------------------------------------------------------------------------------
+	case WM_SYSKEYDOWN:
+		if (wParam == 18) break;
+		if (Game.DoKeyboardInput(wParam, KEYEV_Down, !!(lParam & 0x20000000), Application.IsControlDown(), Application.IsShiftDown(), !!(lParam & 0x40000000), NULL)) return 0;
+		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_DESTROY:
-			StoreWindowPosition(hwnd, FormatString("Viewport%i",cvp->Player+1).getData(), Config.GetSubkeyPath("Console"));
-			break;
+	case WM_DESTROY:
+		StoreWindowPosition(hwnd, FormatString("Viewport%i",cvp->Player+1).getData(), Config.GetSubkeyPath("Console"));
+		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_CLOSE:
-			cvp->pWindow->Close();
-			break;
+	case WM_CLOSE:
+		cvp->pWindow->Close();
+		break;
 
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_DROPFILES:
-			cvp->DropFiles((HANDLE) wParam);
-			break;
+	case WM_DROPFILES:
+		cvp->DropFiles((HANDLE) wParam);
+		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_USER_DROPDEF:
-			Game.DropDef(C4ID(lParam),cvp->ViewX+float(LOWORD(wParam))/cvp->Zoom,cvp->ViewY+float(HIWORD(wParam)/cvp->Zoom));
-			break;
+	case WM_USER_DROPDEF:
+		Game.DropDef(C4ID(lParam),cvp->ViewX+float(LOWORD(wParam))/cvp->Zoom,cvp->ViewY+float(HIWORD(wParam)/cvp->Zoom));
+		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_SIZE:
-			cvp->UpdateOutputSize();
-			break;
+	case WM_SIZE:
+		cvp->UpdateOutputSize();
+		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_PAINT:
-			::GraphicsSystem.Execute();
-			break;
+	case WM_PAINT:
+		::GraphicsSystem.Execute();
+		break;
 		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_HSCROLL:
-			switch (LOWORD(wParam))
-				{
-				case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewX=HIWORD(wParam);	break;
-				case SB_LINELEFT: cvp->ViewX-=ViewportScrollSpeed; break;
-				case SB_LINERIGHT: cvp->ViewX+=ViewportScrollSpeed; break;
-				case SB_PAGELEFT: cvp->ViewX-=cvp->ViewWdt; break;
-				case SB_PAGERIGHT: cvp->ViewX+=cvp->ViewWdt; break;
-				}
-			cvp->Execute();
-			cvp->ScrollBarsByViewPosition();
-			return 0;
-		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_VSCROLL:
-			switch (LOWORD(wParam))
-				{
-				case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewY=HIWORD(wParam);	break;
-				case SB_LINEUP: cvp->ViewY-=ViewportScrollSpeed; break;
-				case SB_LINEDOWN: cvp->ViewY+=ViewportScrollSpeed; break;
-				case SB_PAGEUP: cvp->ViewY-=cvp->ViewWdt; break;
-				case SB_PAGEDOWN: cvp->ViewY+=cvp->ViewWdt; break;
-				}
-			cvp->Execute();
-			cvp->ScrollBarsByViewPosition();
-			return 0;
-		//----------------------------------------------------------------------------------------------------------------------------------
-		case WM_ACTIVATE:
-			// Keep editing dialogs on top of the current viewport, but don't make them
-			// float on other windows (i.e., no HWND_TOPMOST).
-			// Also, don't use SetParent, since that activates the window, which in turn
-			// posts a new WM_ACTIVATE to us, and so on, ultimately leading to a hang.
-			if (LOWORD(wParam) == WA_INACTIVE)
-			{
-				if (Console.PropertyDlg.hDialog)
-					SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
-				if (Console.ToolsDlg.hDialog)
-					SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
-			} else {
-				// FALLTHROUGH
-		case WM_MOUSEACTIVATE:
-				// WM_MOUSEACTIVATE is emitted when the user hovers over a window and pushes a mouse button.
-				// Setting the window owner here avoids z-order flickering.
-				if (Console.PropertyDlg.hDialog)
-					SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
-				if (Console.ToolsDlg.hDialog)
-					SetWindowLongPtr(Console.ToolsDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
-			}
-			break;
-		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_HSCROLL:
+		switch (LOWORD(wParam))
+		{
+		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewX=HIWORD(wParam); break;
+		case SB_LINELEFT: cvp->ViewX-=ViewportScrollSpeed; break;
+		case SB_LINERIGHT: cvp->ViewX+=ViewportScrollSpeed; break;
+		case SB_PAGELEFT: cvp->ViewX-=cvp->ViewWdt; break;
+		case SB_PAGERIGHT: cvp->ViewX+=cvp->ViewWdt; break;
 		}
+		cvp->Execute();
+		cvp->ScrollBarsByViewPosition();
+		return 0;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_VSCROLL:
+		switch (LOWORD(wParam))
+		{
+		case SB_THUMBTRACK: case SB_THUMBPOSITION: cvp->ViewY=HIWORD(wParam); break;
+		case SB_LINEUP: cvp->ViewY-=ViewportScrollSpeed; break;
+		case SB_LINEDOWN: cvp->ViewY+=ViewportScrollSpeed; break;
+		case SB_PAGEUP: cvp->ViewY-=cvp->ViewWdt; break;
+		case SB_PAGEDOWN: cvp->ViewY+=cvp->ViewWdt; break;
+		}
+		cvp->Execute();
+		cvp->ScrollBarsByViewPosition();
+		return 0;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	case WM_ACTIVATE:
+		// Keep editing dialogs on top of the current viewport, but don't make them
+		// float on other windows (i.e., no HWND_TOPMOST).
+		// Also, don't use SetParent, since that activates the window, which in turn
+		// posts a new WM_ACTIVATE to us, and so on, ultimately leading to a hang.
+		if (LOWORD(wParam) == WA_INACTIVE)
+		{
+			if (Console.PropertyDlg.hDialog)
+				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
+			if (Console.ToolsDlg.hDialog)
+				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(Console.hWindow));
+		}
+		else
+		{
+			// FALLTHROUGH
+		case WM_MOUSEACTIVATE:
+			// WM_MOUSEACTIVATE is emitted when the user hovers over a window and pushes a mouse button.
+			// Setting the window owner here avoids z-order flickering.
+			if (Console.PropertyDlg.hDialog)
+				SetWindowLongPtr(Console.PropertyDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
+			if (Console.ToolsDlg.hDialog)
+				SetWindowLongPtr(Console.ToolsDlg.hDialog, GWLP_HWNDPARENT, reinterpret_cast<LONG_PTR>(hwnd));
+		}
+		break;
+		//----------------------------------------------------------------------------------------------------------------------------------
+	}
 
 	// Viewport mouse control
 	if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
-		{
+	{
 		switch (uMsg)
-			{
+		{
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_LBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
+		case WM_LBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_LBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
+		case WM_LBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_LeftUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONDOWN: ::GraphicsSystem.MouseMove(C4MC_Button_RightDown,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
+		case WM_RBUTTONUP: ::GraphicsSystem.MouseMove(C4MC_Button_RightUp,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_LBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
+		case WM_LBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);  break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp);	break;
+		case WM_RBUTTONDBLCLK: ::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,LOWORD(lParam),HIWORD(lParam),wParam, cvp); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_MOUSEMOVE:
-				if ( Inside<int32_t>(LOWORD(lParam)-cvp->DrawX,0,cvp->ViewWdt-1)
-					&& Inside<int32_t>(HIWORD(lParam)-cvp->DrawY,0,cvp->ViewHgt-1) )
-						SetCursor(NULL);
-				::GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
-				break;
+		case WM_MOUSEMOVE:
+			if ( Inside<int32_t>(LOWORD(lParam)-cvp->DrawX,0,cvp->ViewWdt-1)
+			     && Inside<int32_t>(HIWORD(lParam)-cvp->DrawY,0,cvp->ViewHgt-1) )
+				SetCursor(NULL);
+			::GraphicsSystem.MouseMove(C4MC_Button_None,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_MOUSEWHEEL:
-				::GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
-				break;
+		case WM_MOUSEWHEEL:
+			::GraphicsSystem.MouseMove(C4MC_Button_Wheel,LOWORD(lParam),HIWORD(lParam),wParam, cvp);
+			break;
 			//----------------------------------------------------------------------------------------------------------------------------------
 
-			}
 		}
+	}
 	// Console edit cursor control
 	else
-		{
+	{
 		switch (uMsg)
-			{
+		{
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_LBUTTONDOWN:
-				// movement update needed before, so target is always up-to-date
-				Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam);
-				Console.EditCursor.LeftButtonDown(!!(wParam & MK_CONTROL)); break;
+		case WM_LBUTTONDOWN:
+			// movement update needed before, so target is always up-to-date
+			Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam);
+			Console.EditCursor.LeftButtonDown(!!(wParam & MK_CONTROL)); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp();	break;
+		case WM_LBUTTONUP: Console.EditCursor.LeftButtonUp(); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONDOWN: Console.EditCursor.RightButtonDown(!!(wParam & MK_CONTROL));	break;
+		case WM_RBUTTONDOWN: Console.EditCursor.RightButtonDown(!!(wParam & MK_CONTROL)); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(); break;
+		case WM_RBUTTONUP: Console.EditCursor.RightButtonUp(); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			case WM_MOUSEMOVE: Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam);	break;
+		case WM_MOUSEMOVE: Console.EditCursor.Move(cvp->ViewX+cvp->Zoom*LOWORD(lParam),cvp->ViewY+cvp->Zoom*HIWORD(lParam),wParam); break;
 			//----------------------------------------------------------------------------------------------------------------------------------
-			}
 		}
-
-	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 
-CStdWindow * C4ViewportWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool) {
+	return DefWindowProc(hwnd, uMsg, wParam, lParam);
+}
+
+CStdWindow * C4ViewportWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool)
+{
 	Active = true;
 	// Create window
 	hWindow = CreateWindowEx (
-					WS_EX_ACCEPTFILES,
-					C4ViewportClassName, Title, C4ViewportWindowStyle,
-					CW_USEDEFAULT,CW_USEDEFAULT,400,250,
-					pParent->hWindow,NULL,pApp->GetInstance(),NULL);
+	            WS_EX_ACCEPTFILES,
+	            C4ViewportClassName, Title, C4ViewportWindowStyle,
+	            CW_USEDEFAULT,CW_USEDEFAULT,400,250,
+	            pParent->hWindow,NULL,pApp->GetInstance(),NULL);
 	return hWindow ? this : 0;
 }
 
 bool C4Viewport::DropFiles(HANDLE hDrop)
-	{
+{
 	if (!Console.Editing) { Console.Message(LoadResStr("IDS_CNS_NONETEDIT")); return false; }
 
 	int32_t iFileNum = DragQueryFile((HDROP)hDrop,0xFFFFFFFF,NULL,0);
 	POINT pntPoint;
 	char szFilename[500+1];
 	for (int32_t cnt=0; cnt<iFileNum; cnt++)
-		{
+	{
 		DragQueryFile((HDROP)hDrop,cnt,szFilename,500);
 		DragQueryPoint((HDROP)hDrop,&pntPoint);
 		Game.DropFile(szFilename,ViewX+float(pntPoint.x)/Zoom,ViewY+float(pntPoint.y)/Zoom);
-		}
+	}
 	DragFinish((HDROP)hDrop);
 	return true;
-	}
+}
 
 void UpdateWindowLayout(HWND hwnd)
-	{
+{
 	bool fMinimized = !!IsIconic(hwnd);
 	bool fMaximized = !!IsZoomed(hwnd);
 	RECT rect;
 	GetWindowRect(hwnd,&rect);
 	MoveWindow(hwnd,rect.left,rect.top,rect.right-rect.left-1,rect.bottom-rect.top,true);
 	MoveWindow(hwnd,rect.left,rect.top,rect.right-rect.left,rect.bottom-rect.top,true);
-	}
+}
 
 bool C4Viewport::TogglePlayerLock()
-	{
+{
 	// Disable player lock
 	if (PlayerLock)
-		{
+	{
 		PlayerLock=false;
 		SetWindowLong(pWindow->hWindow,GWL_STYLE,C4ViewportWindowStyle | WS_HSCROLL | WS_VSCROLL);
 		UpdateWindowLayout(pWindow->hWindow);
 		ScrollBarsByViewPosition();
-		}
+	}
 	// Enable player lock
 	else if (ValidPlr(Player))
-		{
+	{
 		PlayerLock=true;
 		SetWindowLong(pWindow->hWindow,GWL_STYLE,C4ViewportWindowStyle);
 		UpdateWindowLayout(pWindow->hWindow);
-		}
-	return true;
 	}
+	return true;
+}
 
 bool C4Viewport::ViewPositionByScrollBars()
-	{
+{
 	if (PlayerLock) return false;
 	SCROLLINFO scroll;
 	scroll.cbSize=sizeof(SCROLLINFO);
@@ -324,10 +328,10 @@ bool C4Viewport::ViewPositionByScrollBars()
 	GetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll);
 	ViewX=float(scroll.nPos);
 	return true;
-	}
+}
 
 bool C4Viewport::ScrollBarsByViewPosition()
-	{
+{
 	if (PlayerLock) return false;
 	SCROLLINFO scroll;
 	scroll.cbSize=sizeof(SCROLLINFO);
@@ -346,10 +350,11 @@ bool C4Viewport::ScrollBarsByViewPosition()
 	scroll.nPos=int(ViewX);
 	SetScrollInfo(pWindow->hWindow,SB_HORZ,&scroll,true);
 	return true;
-	}
+}
 
 #elif defined(WITH_DEVELOPER_MODE)
-static GtkTargetEntry drag_drop_entries[] = {
+static GtkTargetEntry drag_drop_entries[] =
+{
 	{ const_cast<gchar*>("text/uri-list"), 0, 0 }
 };
 
@@ -373,10 +378,10 @@ GtkWidget* C4ViewportWindow::InitGUI()
 	adjustment->step_increment = ViewportScrollSpeed;
 
 	g_signal_connect(
-		G_OBJECT(adjustment),
-		"value-changed",
-		G_CALLBACK(OnHScrollStatic),
-		this
+	  G_OBJECT(adjustment),
+	  "value-changed",
+	  G_CALLBACK(OnHScrollStatic),
+	  this
 	);
 
 	adjustment = gtk_range_get_adjustment(GTK_RANGE(v_scrollbar));
@@ -385,10 +390,10 @@ GtkWidget* C4ViewportWindow::InitGUI()
 	adjustment->step_increment = ViewportScrollSpeed;
 
 	g_signal_connect(
-		G_OBJECT(adjustment),
-		"value-changed",
-		G_CALLBACK(OnVScrollStatic),
-		this
+	  G_OBJECT(adjustment),
+	  "value-changed",
+	  G_CALLBACK(OnVScrollStatic),
+	  this
 	);
 
 	gtk_table_attach(GTK_TABLE(table), drawing_area, 0, 1, 0, 1, static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), 0, 0);
@@ -422,7 +427,7 @@ GtkWidget* C4ViewportWindow::InitGUI()
 
 bool C4Viewport::TogglePlayerLock()
 {
-	if(PlayerLock)
+	if (PlayerLock)
 	{
 		PlayerLock = false;
 		gtk_widget_show(pWindow->h_scrollbar);
@@ -441,7 +446,7 @@ bool C4Viewport::TogglePlayerLock()
 
 bool C4Viewport::ScrollBarsByViewPosition()
 {
-	if(PlayerLock) return false;
+	if (PlayerLock) return false;
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
 	adjustment->page_increment = pWindow->drawing_area->allocation.width;
@@ -460,7 +465,7 @@ bool C4Viewport::ScrollBarsByViewPosition()
 
 bool C4Viewport::ViewPositionByScrollBars()
 {
-	if(PlayerLock) return false;
+	if (PlayerLock) return false;
 
 	GtkAdjustment* adjustment = gtk_range_get_adjustment(GTK_RANGE(pWindow->h_scrollbar));
 	ViewX = static_cast<int32_t>(adjustment->value);
@@ -476,12 +481,12 @@ void C4ViewportWindow::OnDragDataReceivedStatic(GtkWidget* widget, GdkDragContex
 	C4ViewportWindow* window = static_cast<C4ViewportWindow*>(user_data);
 
 	gchar** uris = gtk_selection_data_get_uris(data);
-	if(!uris) return;
+	if (!uris) return;
 
-	for(gchar** uri = uris; *uri != NULL; ++ uri)
+	for (gchar** uri = uris; *uri != NULL; ++ uri)
 	{
 		gchar* file = g_filename_from_uri(*uri, NULL, NULL);
-		if(!file) continue;
+		if (!file) continue;
 
 		Game.DropFile(file, window->cvp->ViewX+x, window->cvp->ViewY+y);
 		g_free(file);
@@ -502,7 +507,7 @@ gboolean C4ViewportWindow::OnExposeStatic(GtkWidget* widget, GdkEventExpose* eve
 void C4ViewportWindow::OnRealizeStatic(GtkWidget* widget, gpointer user_data)
 {
 	// Initial PlayerLock
-	if(static_cast<C4ViewportWindow*>(user_data)->cvp->PlayerLock == true)
+	if (static_cast<C4ViewportWindow*>(user_data)->cvp->PlayerLock == true)
 	{
 		gtk_widget_hide(static_cast<C4ViewportWindow*>(user_data)->h_scrollbar);
 		gtk_widget_hide(static_cast<C4ViewportWindow*>(user_data)->v_scrollbar);
@@ -511,7 +516,7 @@ void C4ViewportWindow::OnRealizeStatic(GtkWidget* widget, gpointer user_data)
 
 gboolean C4ViewportWindow::OnKeyPressStatic(GtkWidget* widget, GdkEventKey* event, gpointer user_data)
 {
-	if(event->keyval == GDK_Scroll_Lock)
+	if (event->keyval == GDK_Scroll_Lock)
 		static_cast<C4ViewportWindow*>(user_data)->cvp->TogglePlayerLock();
 
 	DWORD key = XKeycodeToKeysym(GDK_WINDOW_XDISPLAY(event->window), event->hardware_keycode, 0);
@@ -532,7 +537,7 @@ gboolean C4ViewportWindow::OnScrollStatic(GtkWidget* widget, GdkEventScroll* eve
 
 	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
-		switch(event->direction)
+		switch (event->direction)
 		{
 		case GDK_SCROLL_UP:
 			::GraphicsSystem.MouseMove(C4MC_Button_Wheel, (int32_t)event->x, (int32_t)event->y, event->state + (short(1) << 16), window->cvp);
@@ -554,21 +559,21 @@ gboolean C4ViewportWindow::OnButtonPressStatic(GtkWidget* widget, GdkEventButton
 
 	if (::MouseControl.IsViewport(window->cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 	{
-		switch(event->button)
+		switch (event->button)
 		{
 		case 1:
-			if(event->type == GDK_BUTTON_PRESS)
+			if (event->type == GDK_BUTTON_PRESS)
 				::GraphicsSystem.MouseMove(C4MC_Button_LeftDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
-			else if(event->type == GDK_2BUTTON_PRESS)
+			else if (event->type == GDK_2BUTTON_PRESS)
 				::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 2:
 			::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		case 3:
-			if(event->type == GDK_BUTTON_PRESS)
+			if (event->type == GDK_BUTTON_PRESS)
 				::GraphicsSystem.MouseMove(C4MC_Button_RightDown, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
-			else if(event->type == GDK_2BUTTON_PRESS)
+			else if (event->type == GDK_2BUTTON_PRESS)
 				::GraphicsSystem.MouseMove(C4MC_Button_RightDouble, (int32_t)event->x, (int32_t)event->y, event->state, window->cvp);
 			break;
 		}
@@ -676,138 +681,145 @@ bool C4Viewport::TogglePlayerLock() { return false; }
 bool C4Viewport::ScrollBarsByViewPosition() { return false; }
 #if defined(USE_X11)
 void C4ViewportWindow::HandleMessage (XEvent & e)
-	{
+{
 	switch (e.type)
+	{
+	case KeyPress:
+	{
+		// Do not take into account the state of the various modifiers and locks
+		// we don't need that for keyboard control
+		DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
+		//case VK_SCROLL: cvp->TogglePlayerLock();
+		Game.DoKeyboardInput(key, KEYEV_Down, Application.IsAltDown(), Application.IsControlDown(), Application.IsShiftDown(), false, NULL);
+		break;
+	}
+	case KeyRelease:
+	{
+		DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
+		Game.DoKeyboardInput(key, KEYEV_Up, e.xkey.state & Mod1Mask, e.xkey.state & ControlMask, e.xkey.state & ShiftMask, false, NULL);
+		break;
+	}
+	case ButtonPress:
+	{
+		static int last_left_click, last_right_click;
+		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 		{
-		case KeyPress:
-			{
-			// Do not take into account the state of the various modifiers and locks
-			// we don't need that for keyboard control
-			DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
-			//case VK_SCROLL:	cvp->TogglePlayerLock();
-			Game.DoKeyboardInput(key, KEYEV_Down, Application.IsAltDown(), Application.IsControlDown(), Application.IsShiftDown(), false, NULL);
-			break;
-			}
-		case KeyRelease:
-			{
-			DWORD key = XKeycodeToKeysym(e.xany.display, e.xkey.keycode, 0);
-			Game.DoKeyboardInput(key, KEYEV_Up, e.xkey.state & Mod1Mask, e.xkey.state & ControlMask, e.xkey.state & ShiftMask, false, NULL);
-			break;
-			}
-		case ButtonPress:
-			{
-			static int last_left_click, last_right_click;
-			if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
-				{
-				switch (e.xbutton.button)
-					{
-					case Button1:
-					if (timeGetTime() - last_left_click < 400) {
-						::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,
-							e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-						last_left_click = 0;
-					} else {
-						::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,
-							e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-						last_left_click = timeGetTime();
-					}
-					break;
-					case Button2:
-					::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown,
-						e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-					break;
-					case Button3:
-					if (timeGetTime() - last_right_click < 400) {
-						::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,
-							e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-						last_right_click = 0;
-					} else {
-						::GraphicsSystem.MouseMove(C4MC_Button_RightDown,
-							e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-						last_right_click = timeGetTime();
-					}
-					break;
-					case Button4:
-					::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
-						e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(1) << 16), cvp);
-					break;
-					case Button5:
-					::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
-						e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-1) << 16), cvp);
-					break;
-					default:
-					break;
-					}
-				}
-			else
-				{
-				switch (e.xbutton.button)
-					{
-					case Button1:
-					Console.EditCursor.LeftButtonDown(e.xbutton.state & MK_CONTROL);
-					break;
-					case Button3:
-					Console.EditCursor.RightButtonDown(e.xbutton.state & MK_CONTROL);
-					break;
-					}
-				}
-			}
-		break;
-		case ButtonRelease:
-		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
-			{
 			switch (e.xbutton.button)
-				{
-				case Button1:
-				::GraphicsSystem.MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-				break;
-				case Button2:
-				::GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-				break;
-				case Button3:
-				::GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
-				break;
-				default:
-				break;
-				}
-			}
-		else
 			{
+			case Button1:
+				if (timeGetTime() - last_left_click < 400)
+				{
+					::GraphicsSystem.MouseMove(C4MC_Button_LeftDouble,
+					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+					last_left_click = 0;
+				}
+				else
+				{
+					::GraphicsSystem.MouseMove(C4MC_Button_LeftDown,
+					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+					last_left_click = timeGetTime();
+				}
+				break;
+			case Button2:
+				::GraphicsSystem.MouseMove(C4MC_Button_MiddleDown,
+				                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				break;
+			case Button3:
+				if (timeGetTime() - last_right_click < 400)
+				{
+					::GraphicsSystem.MouseMove(C4MC_Button_RightDouble,
+					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+					last_right_click = 0;
+				}
+				else
+				{
+					::GraphicsSystem.MouseMove(C4MC_Button_RightDown,
+					                           e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+					last_right_click = timeGetTime();
+				}
+				break;
+			case Button4:
+				::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+				                           e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(1) << 16), cvp);
+				break;
+			case Button5:
+				::GraphicsSystem.MouseMove(C4MC_Button_Wheel,
+				                           e.xbutton.x, e.xbutton.y, e.xbutton.state + (short(-1) << 16), cvp);
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
 			switch (e.xbutton.button)
-				{
-				case Button1:
-				Console.EditCursor.LeftButtonUp();
-				break;
-				case Button3:
-				Console.EditCursor.RightButtonUp();
-				break;
-				}
-			}
-		break;
-		case MotionNotify:
-		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
 			{
-			::GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+			case Button1:
+				Console.EditCursor.LeftButtonDown(e.xbutton.state & MK_CONTROL);
+				break;
+			case Button3:
+				Console.EditCursor.RightButtonDown(e.xbutton.state & MK_CONTROL);
+				break;
 			}
-		else
-			{
-			Console.EditCursor.Move(cvp->ViewX + e.xbutton.x, cvp->ViewY + e.xbutton.y, e.xbutton.state);
-			}
-		break;
-		case ConfigureNotify:
-		cvp->UpdateOutputSize();
-		break;
 		}
 	}
+	break;
+	case ButtonRelease:
+		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+		{
+			switch (e.xbutton.button)
+			{
+			case Button1:
+				::GraphicsSystem.MouseMove(C4MC_Button_LeftUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				break;
+			case Button2:
+				::GraphicsSystem.MouseMove(C4MC_Button_MiddleUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				break;
+			case Button3:
+				::GraphicsSystem.MouseMove(C4MC_Button_RightUp, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+				break;
+			default:
+				break;
+			}
+		}
+		else
+		{
+			switch (e.xbutton.button)
+			{
+			case Button1:
+				Console.EditCursor.LeftButtonUp();
+				break;
+			case Button3:
+				Console.EditCursor.RightButtonUp();
+				break;
+			}
+		}
+		break;
+	case MotionNotify:
+		if (::MouseControl.IsViewport(cvp) && (Console.EditCursor.GetMode()==C4CNS_ModePlay))
+		{
+			::GraphicsSystem.MouseMove(C4MC_Button_None, e.xbutton.x, e.xbutton.y, e.xbutton.state, cvp);
+		}
+		else
+		{
+			Console.EditCursor.Move(cvp->ViewX + e.xbutton.x, cvp->ViewY + e.xbutton.y, e.xbutton.state);
+		}
+		break;
+	case ConfigureNotify:
+		cvp->UpdateOutputSize();
+		break;
+	}
+}
 #endif // USE_X11
 #endif // WITH_DEVELOPER_MODE/_WIN32
 
-void C4ViewportWindow::Close() {
+void C4ViewportWindow::Close()
+{
 	::GraphicsSystem.CloseViewport(cvp);
 }
 
 bool C4Viewport::UpdateOutputSize()
-	{
+{
 	if (!pWindow) return false;
 	// Output size
 	RECT rect;
@@ -831,20 +843,20 @@ bool C4Viewport::UpdateOutputSize()
 		pWindow->pSurface->UpdateSize(ViewWdt, ViewHgt);
 	// Done
 	return true;
-	}
+}
 
 C4Viewport::C4Viewport()
-	{
+{
 	Default();
-	}
+}
 
 C4Viewport::~C4Viewport()
-	{
+{
 	Clear();
-	}
+}
 
 void C4Viewport::Clear()
-	{
+{
 	if (pWindow) { delete pWindow->pSurface; pWindow->Clear(); delete pWindow; pWindow = NULL; }
 	Player=NO_OWNER;
 	ViewX=ViewY=0;
@@ -853,12 +865,12 @@ void C4Viewport::Clear()
 	DrawX=DrawY=0;
 	Regions.Clear();
 	ViewOffsX = ViewOffsY = 0;
-	}
+}
 
 void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
-	{
+{
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
-		{
+	{
 		C4ST_STARTNEW(FoWStat, "C4Viewport::DrawOverlay: FoW")
 		// Player fog of war
 		DrawPlayerFogOfWar(cgo);
@@ -870,40 +882,40 @@ void C4Viewport::DrawOverlay(C4TargetFacet &cgo, const ZoomData &GameZoom)
 		C4ST_STARTNEW(MenuStat, "C4Viewport::DrawOverlay: Menu")
 		DrawMenu(cgo);
 		C4ST_STOP(MenuStat)
-		}
+	}
 	// Game messages
- 	C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
+	C4ST_STARTNEW(MsgStat, "C4Viewport::DrawOverlay: Messages")
 	::Messages.Draw(cgo, Player, Zoom);
 	C4ST_STOP(MsgStat)
 
 	// Control overlays (if not film/replay)
 	if (!Game.C4S.Head.Film || !Game.C4S.Head.Replay)
-		{
+	{
 		// Mouse control
 		if (::MouseControl.IsViewport(this))
-			{
+		{
 			C4ST_STARTNEW(MouseStat, "C4Viewport::DrawOverlay: Mouse")
 			::MouseControl.Draw(cgo, GameZoom);
 			// Draw GUI-mouse in EM if active
 			if (pWindow && ::pGUI) ::pGUI->RenderMouse(cgo);
 			C4ST_STOP(MouseStat)
-			}
 		}
 	}
+}
 
 void C4Viewport::DrawMenu(C4TargetFacet &cgo)
-	{
+{
 
 	// Get player
 	C4Player *pPlr = ::Players.Get(Player);
 
 	// Player eliminated
 	if (pPlr && pPlr->Eliminated)
-		{
-		Application.DDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :	"IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
-			::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+2*cgo.Hgt/3,0xfaFF0000,ACenter);
+	{
+		Application.DDraw->TextOut(FormatString(LoadResStr(pPlr->Surrendered ? "IDS_PLR_SURRENDERED" :  "IDS_PLR_ELIMINATED"),pPlr->GetName()).getData(),
+		                           ::GraphicsResource.FontRegular, 1.0, cgo.Surface,cgo.X+cgo.Wdt/2,cgo.Y+2*cgo.Hgt/3,0xfaFF0000,ACenter);
 		return;
-		}
+	}
 
 	// for menus, cgo is using GUI-syntax: TargetX/Y marks the drawing offset; x/y/Wdt/Hgt marks the offset rect
 	float iOldTx = cgo.TargetX; float iOldTy = cgo.TargetY;
@@ -912,32 +924,32 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 
 	// Player cursor object menu
 	if (pPlr && pPlr->Cursor && pPlr->Cursor->Menu)
-		{
+	{
 		if (ResetMenuPositions) pPlr->Cursor->Menu->ResetLocation();
 		// if mouse is dragging, make it transparent to easy construction site drag+drop
 		bool fDragging=false;
 		if (::MouseControl.IsDragging() && ::MouseControl.IsViewport(this))
-			{
+		{
 			fDragging = true;
 			lpDDraw->ActivateBlitModulation(0x4fffffff);
-			}
+		}
 		// draw menu
 		pPlr->Cursor->Menu->Draw(cgo);
 		// reset modulation for dragging
 		if (fDragging) lpDDraw->DeactivateBlitModulation();
-		}
+	}
 	// Player menu
 	if (pPlr && pPlr->Menu.IsActive())
-		{
+	{
 		if (ResetMenuPositions) pPlr->Menu.ResetLocation();
 		pPlr->Menu.Draw(cgo);
-		}
+	}
 	// Fullscreen menu
 	if (FullScreen.pMenu && FullScreen.pMenu->IsActive())
-		{
+	{
 		if (ResetMenuPositions) FullScreen.pMenu->ResetLocation();
 		FullScreen.pMenu->Draw(cgo);
-		}
+	}
 
 	// Flag done
 	ResetMenuPositions=false;
@@ -945,13 +957,13 @@ void C4Viewport::DrawMenu(C4TargetFacet &cgo)
 	// restore cgo
 	cgo.X = int32_t(cgo.TargetX); cgo.Y = int32_t(cgo.TargetY);
 	cgo.TargetX = iOldTx; cgo.TargetY = iOldTy;
-	}
+}
 
 extern int32_t iLastControlSize,iPacketDelay,ScreenRate;
 extern int32_t ControlQueueSize,ControlQueueDataSize;
 
 void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
-	{
+{
 
 #ifdef USE_CONSOLE
 	// No drawing in console mode
@@ -963,7 +975,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	GameZoom.Zoom = Zoom;
 
 	if (fDrawOverlay)
-		{
+	{
 		// Draw landscape borders. Only if overlay, so complete map screenshots don't get messed up
 		if (BorderLeft)  Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX,DrawY,BorderLeft,ViewHgt,-DrawX,-DrawY);
 		if (BorderTop)   Application.DDraw->BlitSurfaceTile(::GraphicsResource.fctBackground.Surface,cgo.Surface,DrawX+BorderLeft,DrawY,ViewWdt-BorderLeft-BorderRight,BorderTop,-DrawX-BorderLeft,-DrawY);
@@ -977,18 +989,18 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		// Apply Zoom
 		lpDDraw->SetZoom(GameZoom);
 		Application.DDraw->SetPrimaryClipper(cgo.X,cgo.Y,cgo.X+(ViewWdt-1-BorderRight-BorderLeft)/Zoom,cgo.Y+(ViewHgt-1-BorderBottom-BorderTop)/Zoom);
-		}
+	}
 	last_game_draw_cgo = cgo;
 
 	// landscape mod by FoW
 	C4Player *pPlr=::Players.Get(Player);
 	if (pPlr && pPlr->fFogOfWar)
-		{
+	{
 		ClrModMap.Reset(Game.C4S.Landscape.FoWRes, Game.C4S.Landscape.FoWRes, ViewWdt, ViewHgt, int(cgo.TargetX*Zoom), int(cgo.TargetY*Zoom), 0, cgo.X-BorderLeft, cgo.Y-BorderTop, Game.FoWColor, cgo.Surface);
 		pPlr->FoW2Map(ClrModMap, int(float(cgo.X)/Zoom-cgo.TargetX), int(float(cgo.Y)/Zoom-cgo.TargetY));
 		lpDDraw->SetClrModMap(&ClrModMap);
 		lpDDraw->SetClrModMapEnabled(true);
-		}
+	}
 	else
 		lpDDraw->SetClrModMapEnabled(false);
 
@@ -1027,7 +1039,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 	lpDDraw->SetClrModMapEnabled(false);
 
 	if (fDrawOverlay)
-		{
+	{
 		// Determine zoom of overlay
 		float fGUIZoom = C4GUI::GetZoom();
 		// now restore complete cgo range for overlay drawing
@@ -1036,7 +1048,7 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		cgo.Set(cgo0);
 
 		cgo.X = DrawX; cgo.Y = DrawY;
-		cgo.Wdt = int(float(ViewWdt)/fGUIZoom);	cgo.Hgt = int(float(ViewHgt)/fGUIZoom);
+		cgo.Wdt = int(float(ViewWdt)/fGUIZoom); cgo.Hgt = int(float(ViewHgt)/fGUIZoom);
 		cgo.TargetX = ViewX; cgo.TargetY = ViewY;
 
 		last_gui_draw_cgo = cgo;
@@ -1060,34 +1072,34 @@ void C4Viewport::Draw(C4TargetFacet &cgo0, bool fDrawOverlay)
 		// Remove zoom n clippers
 		lpDDraw->SetZoom(0, 0, 1.0);
 		Application.DDraw->NoPrimaryClipper();
-		}
-
 	}
+
+}
 
 void C4Viewport::BlitOutput()
-	{
+{
 	if (pWindow)
-		{
+	{
 		RECT rtSrc,rtDst;
-		rtSrc.left=DrawX; rtSrc.top=DrawY;	rtSrc.right=DrawX+ViewWdt; rtSrc.bottom=DrawY+ViewHgt;
-		rtDst.left=OutX;	rtDst.top=OutY;		rtDst.right=OutX+	ViewWdt; rtDst.bottom=OutY+	ViewHgt;
+		rtSrc.left=DrawX; rtSrc.top=DrawY;  rtSrc.right=DrawX+ViewWdt; rtSrc.bottom=DrawY+ViewHgt;
+		rtDst.left=OutX;  rtDst.top=OutY;   rtDst.right=OutX+ ViewWdt; rtDst.bottom=OutY+ ViewHgt;
 		pWindow->pSurface->PageFlip(&rtSrc, &rtDst);
-		}
 	}
+}
 
 void C4Viewport::Execute()
-	{
+{
 	// Update regions
 	static int32_t RegionUpdate=0;
 	SetRegions=NULL;
 	RegionUpdate++;
 	if (RegionUpdate>=5)
-		{
+	{
 		RegionUpdate=0;
 		Regions.Clear();
 		Regions.SetAdjust(-OutX,-OutY);
 		SetRegions=&Regions;
-		}
+	}
 	// Adjust position
 	AdjustPosition();
 	// Current graphics output
@@ -1104,36 +1116,36 @@ void C4Viewport::Execute()
 			::GraphicsSystem.Video.Execute();
 	// Blit output
 	BlitOutput();
-	}
+}
 
 void C4Viewport::ChangeZoom(float by_factor)
-	{
+{
 	ZoomTarget *= by_factor;
-	}
+}
 
 void C4Viewport::AdjustPosition()
-	{
+{
 	const float ZoomAdjustFactor = 1.08f; // must be > 1.0 to have effect
 	float ViewportScrollBorder = fIsNoOwnerViewport ? 0 : float(C4ViewportScrollBorder);
 	// View position
 	if (PlayerLock && ValidPlr(Player))
-		{
+	{
 		C4Player *pPlr = ::Players.Get(Player);
 		float iScrollRange = Min(ViewWdt/(10*Zoom),ViewHgt/(10*Zoom));
 		float iExtraBoundsX = 0, iExtraBoundsY = 0;
-		if(pPlr->ViewMode == C4PVM_Scrolling)
-			{
+		if (pPlr->ViewMode == C4PVM_Scrolling)
+		{
 			iScrollRange=0;
 			iExtraBoundsX=iExtraBoundsY=ViewportScrollBorder;
-			}
+		}
 		else
-			{
+		{
 			// if view is close to border, allow scrolling
 			if (pPlr->ViewX < ViewportScrollBorder) iExtraBoundsX = Min<float>(ViewportScrollBorder - pPlr->ViewX, ViewportScrollBorder);
 			else if (pPlr->ViewX >= GBackWdt - ViewportScrollBorder) iExtraBoundsX = Min<float>(float(pPlr->ViewX - GBackWdt), 0) + ViewportScrollBorder;
 			if (pPlr->ViewY < ViewportScrollBorder) iExtraBoundsY = Min<float>(ViewportScrollBorder - pPlr->ViewY, ViewportScrollBorder);
 			else if (pPlr->ViewY >= GBackHgt - ViewportScrollBorder) iExtraBoundsY = Min<float>(float(pPlr->ViewY - GBackHgt), 0) + ViewportScrollBorder;
-			}
+		}
 		iExtraBoundsX = Max(iExtraBoundsX, (ViewWdt/Zoom - GBackWdt) / 2+1);
 		iExtraBoundsY = Max(iExtraBoundsY, (ViewHgt/Zoom - GBackHgt) / 2+1);
 		// calc target view position
@@ -1141,7 +1153,7 @@ void C4Viewport::AdjustPosition()
 		float iTargetViewY = pPlr->ViewY - ViewHgt / (Zoom * 2);
 		// add mouse auto scroll
 		float iPrefViewX = ViewX - ViewOffsX, iPrefViewY = ViewY - ViewOffsY;
-		if(pPlr->MouseControl && ::MouseControl.InitCentered && Config.Controls.MouseAScroll)
+		if (pPlr->MouseControl && ::MouseControl.InitCentered && Config.Controls.MouseAScroll)
 		{
 			iTargetViewX += (::MouseControl.VpX - ViewWdt / 2) / Zoom;
 			iTargetViewY += (::MouseControl.VpY - ViewHgt / 2) / Zoom;
@@ -1168,7 +1180,7 @@ void C4Viewport::AdjustPosition()
 		ViewY -= ViewHgt / (Zoom * 2);
 		// apply offset
 		ViewX += ViewOffsX; ViewY += ViewOffsY;
-		}
+	}
 	// NO_OWNER can't scroll
 	if (fIsNoOwnerViewport) { ViewOffsX=0; ViewOffsY=0; }
 	// clip at borders, update vars
@@ -1176,51 +1188,51 @@ void C4Viewport::AdjustPosition()
 #ifdef WITH_DEVELOPER_MODE
 	//ScrollBarsByViewPosition();
 #endif
-	}
+}
 
 void C4Viewport::CenterPosition()
-	{
+{
 	// center viewport position on map
 	// set center position
 	ViewX = (GBackWdt-ViewWdt/Zoom)/2;
 	ViewY = (GBackHgt-ViewHgt/Zoom)/2;
 	// clips and updates
 	UpdateViewPosition();
-	}
+}
 
 void C4Viewport::UpdateViewPosition()
-	{
+{
 	// no-owner viewports should not scroll outside viewing area
-	if(fIsNoOwnerViewport)
-		{
+	if (fIsNoOwnerViewport)
+	{
 		if (Application.isFullScreen && GBackWdt<ViewWdt / Zoom)
-			{
+		{
 			ViewX = (GBackWdt-ViewWdt / Zoom)/2;
-			}
+		}
 		else
-			{
+		{
 			ViewX = Min(ViewX, GBackWdt-ViewWdt / Zoom);
 			ViewX = Max(ViewX, 0.0f);
-			}
+		}
 		if (Application.isFullScreen && GBackHgt<ViewHgt / Zoom)
-			{
+		{
 			ViewY = (GBackHgt-ViewHgt / Zoom)/2;
-			}
+		}
 		else
-			{
+		{
 			ViewY = Min(ViewY, GBackHgt-ViewHgt / Zoom);
 			ViewY = Max(ViewY, 0.0f);
-			}
 		}
+	}
 	// update borders
 	BorderLeft = int32_t(Max(-ViewX * Zoom, 0.0f));
 	BorderTop = int32_t(Max(-ViewY * Zoom, 0.0f));
 	BorderRight = int32_t(Max(ViewWdt - GBackWdt * Zoom + ViewX * Zoom, 0.0f));
 	BorderBottom = int32_t(Max(ViewHgt - GBackHgt * Zoom + ViewY * Zoom, 0.0f));
-	}
+}
 
 void C4Viewport::Default()
-	{
+{
 	pWindow=NULL;
 	Player=0;
 	ViewX=ViewY=0;
@@ -1239,20 +1251,20 @@ void C4Viewport::Default()
 	fIsNoOwnerViewport = false;
 	last_game_draw_cgo.Default();
 	last_gui_draw_cgo.Default();
-	}
+}
 
 void C4Viewport::DrawPlayerInfo(C4TargetFacet &cgo)
-	{
+{
 	C4Facet ccgo;
 	if (!ValidPlr(Player)) return;
 
 	// Controls
 	DrawPlayerStartup(cgo);
 
-	}
+}
 
 bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
-	{
+{
 	// Fullscreen viewport initialization
 	// Set Player
 	if (!ValidPlr(iPlayer)) iPlayer = NO_OWNER;
@@ -1261,10 +1273,10 @@ bool C4Viewport::Init(int32_t iPlayer, bool fSetTempOnly)
 	// Owned viewport: clear any flash message explaining observer menu
 	if (ValidPlr(iPlayer)) ::GraphicsSystem.FlashMessage("");
 	return true;
-	}
+}
 
 bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
-	{
+{
 	// Console viewport initialization
 	// Set Player
 	if (!ValidPlr(iPlayer)) iPlayer = NO_OWNER;
@@ -1286,7 +1298,7 @@ bool C4Viewport::Init(CStdWindow * pParent, CStdApp * pApp, int32_t iPlayer)
 	Execute();
 	// Success
 	return true;
-	}
+}
 
 StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 {
@@ -1313,9 +1325,9 @@ StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 		const char *szKeyID;
 		switch (iControl)
 		{
-			case CON_Throw: szKeyID = "FullscreenMenuOK"; break;
-			case CON_Dig:   szKeyID = "FullscreenMenuCancel"; break;
-			default: szKeyID = NULL; break;
+		case CON_Throw: szKeyID = "FullscreenMenuOK"; break;
+		case CON_Dig:   szKeyID = "FullscreenMenuCancel"; break;
+		default: szKeyID = NULL; break;
 		}
 		if (szKeyID) return Game.KeyboardInput.GetKeyCodeNameByKeyName(szKeyID, fShort);
 	}
@@ -1326,7 +1338,7 @@ StdStrBuf PlrControlKeyName(int32_t iPlayer, int32_t iControl, bool fShort)
 extern int32_t DrawMessageOffset;
 
 void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
-	{
+{
 	C4Player *pPlr;
 	if (!(pPlr = ::Players.Get(Player))) return;
 	if (!pPlr->LocalControl || !pPlr->ShowStartup) return;
@@ -1335,27 +1347,27 @@ void C4Viewport::DrawPlayerStartup(C4TargetFacet &cgo)
 	// Control
 	if (pPlr->MouseControl)
 		GfxR->fctMouse.Draw(cgo.Surface,
-												cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2+55,
-												cgo.Y+cgo.Hgt * 2/3 - 10 + DrawMessageOffset,
-												0,0);
+		                    cgo.X+(cgo.Wdt-GfxR->fctKeyboard.Wdt)/2+55,
+		                    cgo.Y+cgo.Hgt * 2/3 - 10 + DrawMessageOffset,
+		                    0,0);
 	if (pPlr && pPlr->ControlSet)
-		{
+	{
 		C4Facet controlset_facet = pPlr->ControlSet->GetPicture();
 		if (controlset_facet.Wdt) controlset_facet.Draw(cgo.Surface,
-													 cgo.X+(cgo.Wdt-controlset_facet.Wdt)/2,
-													 cgo.Y+cgo.Hgt * 2/3 + DrawMessageOffset,
-													 0,0);
+			    cgo.X+(cgo.Wdt-controlset_facet.Wdt)/2,
+			    cgo.Y+cgo.Hgt * 2/3 + DrawMessageOffset,
+			    0,0);
 		iNameHgtOff=GfxR->fctKeyboard.Hgt;
-		}
+	}
 
 	// Name
 	Application.DDraw->TextOut(pPlr->GetName(), ::GraphicsResource.FontRegular, 1.0, cgo.Surface,
-				cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt*2/3+iNameHgtOff + DrawMessageOffset,
-				pPlr->ColorDw | 0xff000000, ACenter);
-	}
+	                           cgo.X+cgo.Wdt/2,cgo.Y+cgo.Hgt*2/3+iNameHgtOff + DrawMessageOffset,
+	                           pPlr->ColorDw | 0xff000000, ACenter);
+}
 
 void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, int32_t iOutY, int32_t iOutWdt, int32_t iOutHgt)
-	{
+{
 	// update view position: Remain centered at previous position
 	ViewX += (ViewWdt-iOutWdt)/2;
 	ViewY += (ViewHgt-iOutHgt)/2;
@@ -1370,45 +1382,44 @@ void C4Viewport::SetOutputSize(int32_t iDrawX, int32_t iDrawY, int32_t iOutX, in
 	C4Player *pPlr;
 	if ((pPlr=::Players.Get(Player)))
 		if (pPlr->MouseControl)
-			{
+		{
 			::MouseControl.UpdateClip();
 			// and inform GUI
 			if (::pGUI)
 				//::pGUI->SetBounds(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
 				::pGUI->SetPreferredDlgRect(C4Rect(iOutX, iOutY, iOutWdt, iOutHgt));
-			}
-	}
+		}
+}
 
 void C4Viewport::ClearPointers(C4Object *pObj)
-	{
+{
 	Regions.ClearPointers(pObj);
-	}
+}
 
 void C4Viewport::DrawPlayerFogOfWar(C4TargetFacet &cgo)
-	{
+{
 	/*
 	C4Player *pPlr=::Players.Get(Player);
 	if (!pPlr || !pPlr->FogOfWar) return;
 	pPlr->FogOfWar->Draw(cgo);*/ // now done by modulation
-	}
+}
 
 void C4Viewport::NextPlayer()
-	{
+{
 	C4Player *pPlr; int32_t iPlr;
 	if (!(pPlr = ::Players.Get(Player)))
-		{
+	{
 		if (!(pPlr = ::Players.First)) return;
-		}
-	else
-		if (!(pPlr = pPlr->Next))
-			if (Game.C4S.Head.Film && Game.C4S.Head.Replay)
-				pPlr = ::Players.First; // cycle to first in film mode only; in network obs mode allow NO_OWNER-view
+	}
+	else if (!(pPlr = pPlr->Next))
+		if (Game.C4S.Head.Film && Game.C4S.Head.Replay)
+			pPlr = ::Players.First; // cycle to first in film mode only; in network obs mode allow NO_OWNER-view
 	if (pPlr) iPlr = pPlr->Number; else iPlr = NO_OWNER;
 	if (iPlr != Player) Init(iPlr, true);
-	}
+}
 
 bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
-	{
+{
 	// check all associated menus
 	// Get player
 	C4Player *pPlr = ::Players.Get(Player);
@@ -1422,4 +1433,4 @@ bool C4Viewport::IsViewportMenu(class C4Menu *pMenu)
 	if (FullScreen.pMenu && FullScreen.pMenu->IsActive() && FullScreen.pMenu == pMenu) return true;
 	// no match
 	return false;
-	}
+}

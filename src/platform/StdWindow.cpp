@@ -53,12 +53,15 @@
 #define C4FullScreenClassName "C4FullScreen"
 LRESULT APIENTRY FullScreenWinProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-CStdWindow::CStdWindow (): Active(false), hWindow(0), pSurface(0) {
+CStdWindow::CStdWindow (): Active(false), hWindow(0), pSurface(0)
+{
 }
-CStdWindow::~CStdWindow () {
+CStdWindow::~CStdWindow ()
+{
 }
 
-BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst) {
+BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst)
+{
 	WNDCLASSEX WndClass = {0};
 	WndClass.cbSize        = sizeof(WNDCLASSEX);
 	WndClass.style         = CS_DBLCLKS;
@@ -71,20 +74,21 @@ BOOL CStdWindow::RegisterWindowClass(HINSTANCE hInst) {
 	return RegisterClassEx(&WndClass);
 }
 
-CStdWindow * CStdWindow::Init(CStdApp * pApp) {
+CStdWindow * CStdWindow::Init(CStdApp * pApp)
+{
 	Active = true;
 
 	// Register window class
 	if (!RegisterWindowClass(pApp->hInstance)) return NULL;
 
 	// Create window
-	hWindow = CreateWindowEx	(
-							0,
-							C4FullScreenClassName,
-							C4ENGINENAME,
-							WS_OVERLAPPEDWINDOW,
-							CW_USEDEFAULT,CW_USEDEFAULT,0,0,
-							NULL,NULL,pApp->hInstance,NULL);
+	hWindow = CreateWindowEx  (
+	            0,
+	            C4FullScreenClassName,
+	            C4ENGINENAME,
+	            WS_OVERLAPPEDWINDOW,
+	            CW_USEDEFAULT,CW_USEDEFAULT,0,0,
+	            NULL,NULL,pApp->hInstance,NULL);
 
 #ifndef USE_CONSOLE
 	// Show & focus
@@ -95,33 +99,40 @@ CStdWindow * CStdWindow::Init(CStdApp * pApp) {
 	return this;
 }
 
-void CStdWindow::Clear() {
+void CStdWindow::Clear()
+{
 	// Destroy window
 	if (hWindow) DestroyWindow(hWindow);
 	hWindow = NULL;
 }
 
-bool CStdWindow::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize) {
+bool CStdWindow::StorePosition(const char *szWindowName, const char *szSubKey, bool fStoreSize)
+{
 	return StoreWindowPosition(hWindow, szWindowName, szSubKey, fStoreSize) != 0;
 }
 
-bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden) {
+bool CStdWindow::RestorePosition(const char *szWindowName, const char *szSubKey, bool fHidden)
+{
 	if (!RestoreWindowPosition(hWindow, szWindowName, szSubKey, fHidden))
 		ShowWindow(hWindow,SW_SHOWNORMAL);
 	return true;
 }
 
-void CStdWindow::SetTitle(const char *szToTitle) {
+void CStdWindow::SetTitle(const char *szToTitle)
+{
 	if (hWindow) SetWindowText(hWindow, szToTitle ? szToTitle : "");
 }
 
-bool CStdWindow::GetSize(RECT * pRect) {
+bool CStdWindow::GetSize(RECT * pRect)
+{
 	if (!(hWindow && GetClientRect(hWindow,pRect))) return false;
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int cx, unsigned int cy) {
-	if (hWindow) {
+void CStdWindow::SetSize(unsigned int cx, unsigned int cy)
+{
+	if (hWindow)
+	{
 		// If bordered, add border size
 		RECT rect = {0, 0, cx, cy};
 		::AdjustWindowRectEx(&rect, GetWindowLong(hWindow, GWL_STYLE), FALSE, GetWindowLong(hWindow, GWL_EXSTYLE));
@@ -130,101 +141,101 @@ void CStdWindow::SetSize(unsigned int cx, unsigned int cy) {
 }
 
 void CStdWindow::FlashWindow()
-	{
+{
 	// please activate me!
 	if (hWindow)
 		::FlashWindow(hWindow, FLASHW_ALL | FLASHW_TIMERNOFG);
-	}
+}
 
 /* CStdTimerProc */
 
 int CStdMultimediaTimerProc::iTimePeriod = 0;
 
 CStdMultimediaTimerProc::CStdMultimediaTimerProc(uint32_t iDelay) :
-	idCriticalTimer(0),
-	uCriticalTimerDelay(28),
-	uCriticalTimerResolution(5),
-	Event(true)
-	{
+		idCriticalTimer(0),
+		uCriticalTimerDelay(28),
+		uCriticalTimerResolution(5),
+		Event(true)
+{
 
-	if(!iTimePeriod)
-		{
+	if (!iTimePeriod)
+	{
 		// Get resolution caps
 		TIMECAPS tc;
 		timeGetDevCaps(&tc, sizeof(tc));
 		// Establish minimum resolution
 		uCriticalTimerResolution = BoundBy(uCriticalTimerResolution, tc.wPeriodMin, tc.wPeriodMax);
 		timeBeginPeriod(uCriticalTimerResolution);
-		}
+	}
 	iTimePeriod++;
 
 	SetDelay(iDelay);
 
-	}
+}
 
 CStdMultimediaTimerProc::~CStdMultimediaTimerProc()
-	{
+{
 	if (idCriticalTimer)
-		{
+	{
 		timeKillEvent(idCriticalTimer);
 		idCriticalTimer = 0;
 
 		iTimePeriod--;
 		if (!iTimePeriod)
 			timeEndPeriod(uCriticalTimerResolution);
-		}
 	}
+}
 
 void CStdMultimediaTimerProc::SetDelay(uint32_t iDelay)
-	{
+{
 
 	// Kill old timer (of any)
-	if(idCriticalTimer)
+	if (idCriticalTimer)
 		timeKillEvent(idCriticalTimer);
 
 	// Set critical timer
 	idCriticalTimer=timeSetEvent(
-		uCriticalTimerDelay,uCriticalTimerResolution,
-		(LPTIMECALLBACK) Event.GetEvent(),0,TIME_PERIODIC | TIME_CALLBACK_EVENT_SET);
+	                  uCriticalTimerDelay,uCriticalTimerResolution,
+	                  (LPTIMECALLBACK) Event.GetEvent(),0,TIME_PERIODIC | TIME_CALLBACK_EVENT_SET);
 
-	}
+}
 
 bool CStdMultimediaTimerProc::CheckAndReset()
-	{
-	if(!Check()) return false;
+{
+	if (!Check()) return false;
 	Event.Reset();
 	return true;
-	}
+}
 
 /* CStdMessageProc */
 
 bool CStdMessageProc::Execute(int iTimeout, pollfd *)
-	{
+{
 	// Peek messages
 	MSG msg;
 	while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))
-		{
+	{
 		// quit?
-		if(msg.message == WM_QUIT)
-			{
+		if (msg.message == WM_QUIT)
+		{
 			pApp->fQuitMsgReceived = true;
 			return false;
-			}
+		}
 		// Dialog message transfer
 		if (!pApp->DialogMessageHandling(&msg))
-			{
+		{
 			TranslateMessage(&msg); DispatchMessage(&msg);
-			}
 		}
-	return true;
 	}
+	return true;
+}
 
 /* CStdApp */
 
 CStdApp::CStdApp() :
-	Active(false), hInstance(NULL), fQuitMsgReceived(false),
-	fDspModeSet(false)
-	{
+		Active(false), hInstance(NULL), fQuitMsgReceived(false),
+		fDspModeSet(false)
+{
 	ZeroMemory(&pfd, sizeof(pfd)); pfd.nSize = sizeof(pfd);
 	ZeroMemory(&dspMode, sizeof(dspMode)); dspMode.dmSize =  sizeof(dspMode);
 	ZeroMemory(&OldDspMode, sizeof(OldDspMode)); OldDspMode.dmSize =  sizeof(OldDspMode);
@@ -233,15 +244,16 @@ CStdApp::CStdApp() :
 	MessageProc.SetApp(this);
 	Add(&MessageProc);
 #endif
-	}
+}
 
 CStdApp::~CStdApp()
-	{
-	}
+{
+}
 
 const char *LoadResStr(const char *id);
 
-bool CStdApp::Init(HINSTANCE hInst, int nCmdShow, char *szCmdLine) {
+bool CStdApp::Init(HINSTANCE hInst, int nCmdShow, char *szCmdLine)
+{
 	// Set instance vars
 	hInstance = hInst;
 	this->szCmdLine = szCmdLine;
@@ -250,18 +262,21 @@ bool CStdApp::Init(HINSTANCE hInst, int nCmdShow, char *szCmdLine) {
 	return DoInit ();
 }
 
-void CStdApp::Clear() {
+void CStdApp::Clear()
+{
 	hMainThread = NULL;
 }
 
-void CStdApp::Quit() {
+void CStdApp::Quit()
+{
 	PostQuitMessage(0);
 }
 
-bool CStdApp::FlushMessages() {
+bool CStdApp::FlushMessages()
+{
 
 	// Always fail after quit message
-	if(fQuitMsgReceived)
+	if (fQuitMsgReceived)
 		return false;
 
 	return MessageProc.Execute(0);
@@ -270,7 +285,7 @@ bool CStdApp::FlushMessages() {
 int GLMonitorInfoEnumCount;
 
 BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lprcMonitor, LPARAM dwData)
-	{
+{
 	// get to indexed monitor
 	if (GLMonitorInfoEnumCount--) return true;
 	// store it
@@ -278,10 +293,10 @@ BOOL CALLBACK GLMonitorInfoEnumProc(HMONITOR hMonitor, HDC hdcMonitor, LPRECT lp
 	pApp->hMon = hMonitor;
 	pApp->MonitorRect = *lprcMonitor;
 	return true;
-	}
+}
 
 bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
-	{
+{
 	// prepare search struct
 	DEVMODE dmode;
 	ZeroMemory(&dmode, sizeof(dmode)); dmode.dmSize = sizeof(dmode);
@@ -295,29 +310,29 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	if (piYRes) *piYRes = dmode.dmPelsHeight;
 	if (piBitDepth) *piBitDepth = dmode.dmBitsPerPel;
 	return true;
-	}
+}
 
 void CStdApp::RestoreVideoMode()
-	{
-	}
+{
+}
 
 bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
-	{
+{
 #ifdef USE_DIRECTX
 	if (pD3D)
-		{
-		if(!pD3D->SetVideoMode(iXRes, iYRes, iColorDepth, iMonitor, fFullScreen))
+	{
+		if (!pD3D->SetVideoMode(iXRes, iYRes, iColorDepth, iMonitor, fFullScreen))
 			return false;
 		OnResolutionChanged(iXRes, iYRes);
 		return true;
-		}
+	}
 #endif
 #ifdef USE_GL
 	// HACK: Disable window border
 	SetWindowLong(pWindow->hWindow, GWL_STYLE,
-		GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~(WS_CAPTION|WS_THICKFRAME|WS_BORDER));
+	              GetWindowLong(pWindow->hWindow, GWL_STYLE) & ~(WS_CAPTION|WS_THICKFRAME|WS_BORDER));
 	SetWindowLong(pWindow->hWindow, GWL_EXSTYLE,
-		GetWindowLong(pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
+	              GetWindowLong(pWindow->hWindow, GWL_EXSTYLE) | WS_EX_APPWINDOW);
 	bool fFound=false;
 	DEVMODE dmode;
 	// if a monitor is given, search on that instead
@@ -327,15 +342,15 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	EnumDisplayMonitors(NULL, NULL, GLMonitorInfoEnumProc, (LPARAM) this);
 	// no monitor assigned?
 	if (!hMon)
-		{
+	{
 		// Okay for primary; then just use a default
 		if (!iMonitor)
-			{
+		{
 			MonitorRect.left = MonitorRect.top = 0;
 			MonitorRect.right = iXRes; MonitorRect.bottom = iYRes;
-			}
-		else return false;
 		}
+		else return false;
+	}
 	StdStrBuf Mon;
 	if (iMonitor)
 		Mon.Format("\\\\.\\Display%d", iMonitor+1);
@@ -345,7 +360,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	while (EnumDisplaySettings(Mon.getData(), i++, &dmode))
 		// size and bit depth is OK?
 		if (dmode.dmPelsWidth==iXRes && dmode.dmPelsHeight==iYRes && dmode.dmBitsPerPel==iColorDepth)
-			{
+		{
 			// compare with found one
 			if (fFound)
 				// try getting a mode that is close to 85Hz, rather than taking the one with highest refresh rate
@@ -356,7 +371,7 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 			// choose this one
 			fFound=true;
 			dspMode=dmode;
-			}
+		}
 
 	// change mode
 	if (!fFullScreen)
@@ -390,15 +405,18 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 
 bool CStdApp::ReadStdInCommand()
 {
-	while(_kbhit())
+	while (_kbhit())
 	{
 		// Surely not the most efficient way to do it, but we won't have to read much data anyway.
 		char c = getch();
-		if(c == '\r') {
-			if(!CmdBuf.isNull()) {
+		if (c == '\r')
+		{
+			if (!CmdBuf.isNull())
+			{
 				OnCommand(CmdBuf.getData()); CmdBuf.Clear();
 			}
-		} else if(isprint((unsigned char)c))
+		}
+		else if (isprint((unsigned char)c))
 			CmdBuf.AppendChar(c);
 	}
 	return true;

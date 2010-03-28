@@ -28,7 +28,7 @@
 #ifdef USE_GL
 
 void CStdGLCtx::SelectCommon()
-	{
+{
 	pGL->pCurrCtx = this;
 	// set some default states
 	glDisable(GL_DEPTH_TEST);
@@ -40,28 +40,28 @@ void CStdGLCtx::SelectCommon()
 	//glEnable(GL_LINE_SMOOTH);
 	//glHint(GL_LINE_SMOOTH_HINT, GL_FASTEST);
 	//glEnable(GL_POINT_SMOOTH);
-	}
+}
 
 #ifdef _WIN32
 CStdGLCtx::CStdGLCtx(): hrc(0), pWindow(0), hDC(0), cx(0), cy(0) { }
 
 void CStdGLCtx::Clear()
-	{
+{
 	if (hrc)
-		{
+	{
 		Deselect();
 		wglDeleteContext(hrc); hrc=0;
-		}
+	}
 	if (hDC)
-		{
+	{
 		ReleaseDC(pWindow ? pWindow->hWindow : hWindow, hDC);
 		hDC=0;
-		}
-	pWindow = 0; cx = cy = 0; hWindow = NULL;
 	}
+	pWindow = 0; cx = cy = 0; hWindow = NULL;
+}
 
 bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
-	{
+{
 	// safety
 	if (!pGL) return false;
 
@@ -76,21 +76,21 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
 
 	PIXELFORMATDESCRIPTOR &rPfd = pApp->GetPFD();
 	if (!pGL->iPixelFormat)
-		{
+	{
 		// pixel format
 		memset(&rPfd, 0, sizeof(PIXELFORMATDESCRIPTOR)) ;
 		rPfd.nSize      = sizeof(PIXELFORMATDESCRIPTOR);
 		rPfd.nVersion   = 1 ;
 		rPfd.dwFlags    = PFD_DOUBLEBUFFER | /*(pGL->fFullscreen ? PFD_SWAP_EXCHANGE : 0) |*/
-	                        PFD_SUPPORT_OPENGL |
-	                        PFD_DRAW_TO_WINDOW ;
+		                  PFD_SUPPORT_OPENGL |
+		                  PFD_DRAW_TO_WINDOW ;
 		rPfd.iPixelType = PFD_TYPE_RGBA;
 		rPfd.cColorBits = pGL->iClrDpt;
 		rPfd.cDepthBits = 0;
 		rPfd.iLayerType = PFD_MAIN_PLANE;
 		pGL->iPixelFormat = ChoosePixelFormat(hDC, &rPfd);
 		if (!pGL->iPixelFormat) return !!pGL->Error("  gl: Error getting pixel format");
-		}
+	}
 	if (!SetPixelFormat (hDC, pGL->iPixelFormat, &rPfd)) pGL->Error("  gl: Error setting pixel format");
 
 	// create context
@@ -100,10 +100,10 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
 	// share textures
 	wglMakeCurrent(NULL, NULL); pGL->pCurrCtx=NULL;
 	if (this != pGL->pMainCtx)
-		{
+	{
 		if (!wglShareLists(pGL->pMainCtx->hrc, hrc)) pGL->Error("  gl: Textures for secondary context not available");
 		return true;
-		}
+	}
 
 	// select
 	if (!Select()) return !!pGL->Error("  gl: Unable to select context");
@@ -111,16 +111,16 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *pApp, HWND hWindow)
 	// init extensions
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
-		{
+	{
 		// Problem: glewInit failed, something is seriously wrong.
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-		}
+	}
 	// success
 	return true;
-	}
+}
 
 bool CStdGLCtx::Select(bool verbose)
-	{
+{
 	// safety
 	if (!pGL || !hrc) return false;
 	// make context current
@@ -131,52 +131,52 @@ bool CStdGLCtx::Select(bool verbose)
 	if (!pGL->UpdateClipper()) return false;
 	// success
 	return true;
-	}
+}
 
 void CStdGLCtx::Deselect()
-	{
+{
 	if (pGL && pGL->pCurrCtx == this)
-		{
+	{
 		wglMakeCurrent(NULL, NULL);
 		pGL->pCurrCtx=NULL;
 		pGL->RenderTarget=NULL;
-		}
 	}
+}
 
 bool CStdGLCtx::PageFlip()
-	{
+{
 	// flush GL buffer
 	glFlush();
 	SwapBuffers(hDC);
 	return true;
-	}
+}
 
 bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
-	{
+{
 	HDC hDC = GetDC(pWindow->hWindow);
 	if (hDC)
-		{
+	{
 		if (!GetDeviceGammaRamp(hDC, &DefRamp))
-			{
+		{
 			DefRamp.Default();
 			Log("  Error getting default gamma ramp; using standard");
-			}
+		}
 		ReleaseDC(pWindow->hWindow, hDC);
 		return true;
-		}
-	return false;
 	}
+	return false;
+}
 
 bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
-	{
+{
 	if (!pMainCtx || (!Active && !fForce)) return false;
 	if (!SetDeviceGammaRamp(pMainCtx->hDC, &ramp))
-		{
+	{
 		int i=::GetLastError();
 		//Beep(i,i);
-		}
-	return true;
 	}
+	return true;
+}
 
 #elif defined(USE_X11)
 
@@ -190,19 +190,19 @@ bool CStdGL::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
 CStdGLCtx::CStdGLCtx(): pWindow(0), ctx(0), cx(0), cy(0) { }
 
 void CStdGLCtx::Clear()
-	{
+{
 	Deselect();
 	if (ctx)
-		{
+	{
 		glXDestroyContext(pWindow->dpy, (GLXContext)ctx);
 		ctx = 0;
-		}
+	}
 	pWindow = 0;
 	cx = cy = 0;
-	}
+}
 
 bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
-	{
+{
 	// safety
 	if (!pGL) return false;
 	// store window
@@ -219,88 +219,89 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	// init extensions
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
-		{
+	{
 		// Problem: glewInit failed, something is seriously wrong.
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-		}
-	return true;
 	}
+	return true;
+}
 
 bool CStdGLCtx::Select(bool verbose)
-	{
+{
 	// safety
 	if (!pGL || !ctx)
-		{
+	{
 		if (verbose) pGL->Error("  gl: pGL is zero");
 		return false;
-		}
+	}
 	// make context current
 	if (!pWindow->renderwnd || !glXMakeCurrent(pWindow->dpy, pWindow->renderwnd, (GLXContext)ctx))
-		{
+	{
 		if (verbose) pGL->Error("  gl: glXMakeCurrent failed");
 		return false;
-		}
+	}
 	SelectCommon();
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
 	if (!pGL->UpdateClipper())
-		{
+	{
 		if (verbose) pGL->Error("  gl: UpdateClipper failed");
 		return false;
-		}
+	}
 	// success
 	return true;
-	}
+}
 
 void CStdGLCtx::Deselect()
-	{
+{
 	if (pGL && pGL->pCurrCtx == this)
-		{
+	{
 		glXMakeCurrent(pWindow->dpy, None, NULL);
 		pGL->pCurrCtx = 0;
 		pGL->RenderTarget = 0;
-		}
 	}
+}
 
 bool CStdGLCtx::PageFlip()
-	{
+{
 	// flush GL buffer
 	glFlush();
 	if (!pWindow || !pWindow->renderwnd) return false;
 	glXSwapBuffers(pWindow->dpy, pWindow->renderwnd);
 	return true;
-	}
+}
 
-bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce) {
+bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+{
 	if (!DeviceReady() || (!Active && !fForce)) return false;
 	if (pApp->xf86vmode_major_version < 2) return false;
 	if (gammasize != 256) return false;
 	return XF86VidModeSetGammaRamp(pApp->dpy, DefaultScreen(pApp->dpy), 256,
-		ramp.red, ramp.green, ramp.blue);
+	                               ramp.red, ramp.green, ramp.blue);
 }
 
 bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
-	{
+{
 	if (pApp->xf86vmode_major_version < 2) return false;
 	// Get the Display
 	Display * const dpy = pWindow->dpy;
 	XF86VidModeGetGammaRampSize(dpy, DefaultScreen(dpy), &gammasize);
 	if (gammasize != 256)
-		{
+	{
 		LogF("  Size of GammaRamp is %d, not 256", gammasize);
-		}
+	}
 	else
-		{
+	{
 		// store default gamma
 		if (!XF86VidModeGetGammaRamp(pWindow->dpy, DefaultScreen(pWindow->dpy), 256,
-				DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue))
-			{
+		                             DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue))
+		{
 			DefRamp.Default();
 			Log("  Error getting default gamma ramp; using standard");
-			}
 		}
-	return true;
 	}
+	return true;
+}
 
 #elif defined(USE_SDL_MAINLOOP)
 
@@ -323,10 +324,10 @@ bool CStdGLCtx::Init(CStdWindow * pWindow, CStdApp *)
 	// init extensions
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
-		{
+	{
 		// Problem: glewInit failed, something is seriously wrong.
 		return pGL->Error(reinterpret_cast<const char*>(glewGetErrorString(err)));
-		}
+	}
 	return true;
 }
 
@@ -336,10 +337,10 @@ bool CStdGLCtx::Select(bool verbose)
 	// update clipper - might have been done by UpdateSize
 	// however, the wrong size might have been assumed
 	if (!pGL->UpdateClipper())
-		{
+	{
 		if (verbose) pGL->Error("  gl: UpdateClipper failed");
 		return false;
-		}
+	}
 	// success
 	return true;
 }
@@ -347,10 +348,10 @@ bool CStdGLCtx::Select(bool verbose)
 void CStdGLCtx::Deselect()
 {
 	if (pGL && pGL->pCurrCtx == this)
-		{
+	{
 		pGL->pCurrCtx = 0;
 		pGL->RenderTarget = 0;
-		}
+	}
 }
 
 bool CStdGLCtx::PageFlip()
@@ -362,11 +363,13 @@ bool CStdGLCtx::PageFlip()
 	return true;
 }
 
-bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce) {
+bool CStdGL::ApplyGammaRamp(_D3DGAMMARAMP& ramp, bool fForce)
+{
 	return SDL_SetGammaRamp(ramp.red, ramp.green, ramp.blue) != -1;
 }
 
-bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow) {
+bool CStdGL::SaveDefaultGammaRamp(CStdWindow * pWindow)
+{
 	return SDL_GetGammaRamp(DefRamp.ramp.red, DefRamp.ramp.green, DefRamp.ramp.blue) != -1;
 }
 

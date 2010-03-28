@@ -58,7 +58,7 @@ namespace
 		}
 		return true;
 	}
-	
+
 	template<size_t N>
 	void ReadNormalizedVertexData(float (&dest)[N], const char *source, Ogre::Mesh::ChunkGeometryVertexDeclElement::Type vdet)
 	{
@@ -91,7 +91,7 @@ namespace
 			break;
 		}
 	}
-	
+
 	std::vector<StdSubMesh::Vertex> ReadSubmeshGeometry(const Ogre::Mesh::ChunkGeometry &geo)
 	{
 		if (!VertexDeclarationIsSane(geo.vertexDeclaration))
@@ -172,7 +172,7 @@ namespace
 			vertices.push_back(vertex);
 			// Advance vertex buffer cursors
 			BOOST_FOREACH(const Ogre::Mesh::ChunkGeometryVertexBuffer &buf, geo.vertexBuffers)
-				cursors[buf.index] += buf.vertexSize;
+			cursors[buf.index] += buf.vertexSize;
 		}
 
 		return vertices;
@@ -193,7 +193,7 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 	root.reset(Ogre::Mesh::Chunk::Read(&stream));
 	if (root->GetType() != Ogre::Mesh::CID_Mesh)
 		throw Ogre::Mesh::InvalidVersion();
-	
+
 	// Generate mesh from data
 	Ogre::Mesh::ChunkMesh &cmesh = *static_cast<Ogre::Mesh::ChunkMesh*>(root.get());
 	std::auto_ptr<StdMesh> mesh(new StdMesh);
@@ -256,9 +256,9 @@ StdMesh *StdMeshLoader::LoadMeshBinary(const char *src, size_t length, const Std
 		{
 			float sum = 0;
 			BOOST_FOREACH(StdMeshVertexBoneAssignment &ba, vertex.BoneAssignments)
-				sum += ba.Weight;
+			sum += ba.Weight;
 			BOOST_FOREACH(StdMeshVertexBoneAssignment &ba, vertex.BoneAssignments)
-				ba.Weight /= sum;
+			ba.Weight /= sum;
 		}
 		DebugLogF("Loaded submesh with %d faces, %d vertices, material %s", sm.GetNumFaces(), sm.GetNumVertices(), sm.GetMaterial().Name.getData());
 	}
@@ -278,39 +278,39 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 	boost::ptr_map<uint16_t, StdMeshBone> bones;
 	boost::ptr_vector<Ogre::Skeleton::ChunkAnimation> animations;
 	for (Ogre::Skeleton::ChunkID id = Ogre::Skeleton::Chunk::Peek(&stream);
-		id == Ogre::Skeleton::CID_Bone || id == Ogre::Skeleton::CID_Bone_Parent || id == Ogre::Skeleton::CID_Animation;
-		id = Ogre::Skeleton::Chunk::Peek(&stream)
-		)
+	     id == Ogre::Skeleton::CID_Bone || id == Ogre::Skeleton::CID_Bone_Parent || id == Ogre::Skeleton::CID_Animation;
+	     id = Ogre::Skeleton::Chunk::Peek(&stream)
+	    )
 	{
 		std::auto_ptr<Ogre::Skeleton::Chunk> chunk(Ogre::Skeleton::Chunk::Read(&stream));
 		switch (chunk->GetType())
 		{
 		case Ogre::Skeleton::CID_Bone:
-			{
-				Ogre::Skeleton::ChunkBone &cbone = *static_cast<Ogre::Skeleton::ChunkBone*>(chunk.get());
-				// Check that the bone ID is unique
-				if (bones.find(cbone.handle) != bones.end())
-					throw Ogre::Skeleton::IdNotUnique();
-				StdMeshBone *bone = new StdMeshBone;
-				bone->Parent = NULL;
-				bone->ID = cbone.handle;
-				bone->Name = cbone.name.c_str();
-				bone->Transformation.translate = cbone.position;
-				bone->Transformation.rotate = cbone.orientation;
-				bone->Transformation.scale = cbone.scale;
-				bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
-				bones.insert(cbone.handle, bone);
-			}
-			break;
+		{
+			Ogre::Skeleton::ChunkBone &cbone = *static_cast<Ogre::Skeleton::ChunkBone*>(chunk.get());
+			// Check that the bone ID is unique
+			if (bones.find(cbone.handle) != bones.end())
+				throw Ogre::Skeleton::IdNotUnique();
+			StdMeshBone *bone = new StdMeshBone;
+			bone->Parent = NULL;
+			bone->ID = cbone.handle;
+			bone->Name = cbone.name.c_str();
+			bone->Transformation.translate = cbone.position;
+			bone->Transformation.rotate = cbone.orientation;
+			bone->Transformation.scale = cbone.scale;
+			bone->InverseTransformation = StdMeshTransformation::Inverse(bone->Transformation);
+			bones.insert(cbone.handle, bone);
+		}
+		break;
 		case Ogre::Skeleton::CID_Bone_Parent:
-			{
-				Ogre::Skeleton::ChunkBoneParent &cbparent = *static_cast<Ogre::Skeleton::ChunkBoneParent*>(chunk.get());
-				if (bones.find(cbparent.parentHandle) == bones.end() || bones.find(cbparent.childHandle) == bones.end())
-					throw Ogre::Skeleton::BoneNotFound();
-				bones[cbparent.parentHandle].Children.push_back(&bones[cbparent.childHandle]);
-				bones[cbparent.childHandle].Parent = &bones[cbparent.parentHandle];
-			}
-			break;
+		{
+			Ogre::Skeleton::ChunkBoneParent &cbparent = *static_cast<Ogre::Skeleton::ChunkBoneParent*>(chunk.get());
+			if (bones.find(cbparent.parentHandle) == bones.end() || bones.find(cbparent.childHandle) == bones.end())
+				throw Ogre::Skeleton::BoneNotFound();
+			bones[cbparent.parentHandle].Children.push_back(&bones[cbparent.childHandle]);
+			bones[cbparent.childHandle].Parent = &bones[cbparent.parentHandle];
+		}
+		break;
 		case Ogre::Skeleton::CID_Animation:
 			// Collect animations for later (need bone table index, which we don't know yet)
 			animations.push_back(static_cast<Ogre::Skeleton::ChunkAnimation*>(chunk.release()));
@@ -338,7 +338,7 @@ void StdMeshLoader::LoadSkeletonBinary(StdMesh *mesh, const char *src, size_t si
 		throw Ogre::Skeleton::MissingMasterBone();
 
 	// Transfer bone ownership to mesh (double .release() is correct)
-	while(!bones.empty()) bones.release(bones.begin()).release();
+	while (!bones.empty()) bones.release(bones.begin()).release();
 
 	// Build handle->index quick access table
 	std::map<uint16_t, size_t> handle_lookup;

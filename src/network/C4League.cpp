@@ -30,20 +30,20 @@
 // *** C4LeagueRequestHead
 
 void C4LeagueRequestHead::CompileFunc(StdCompiler *pComp)
-	{
+{
 
 	StdEnumEntry<C4LeagueAction> Actions[] =
-		{
-			{ "Start",            C4LA_Start        },
-			{ "Update",           C4LA_Update       },
-			{ "End",              C4LA_End          },
-			{ "Join",             C4LA_PlrAuthCheck	},
+	{
+		{ "Start",            C4LA_Start        },
+		{ "Update",           C4LA_Update       },
+		{ "End",              C4LA_End          },
+		{ "Join",             C4LA_PlrAuthCheck },
 
-			{ "",                 C4LA_RefQuery     },
-			{ "Auth",             C4LA_PlrAuth			},
+		{ "",                 C4LA_RefQuery     },
+		{ "Auth",             C4LA_PlrAuth      },
 
-			{ "ReportDisconnect", C4LA_ReportDisconnect	},
-		};
+		{ "ReportDisconnect", C4LA_ReportDisconnect },
+	};
 
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eAction, Actions), "Action", C4LA_RefQuery));
 	pComp->Value(mkNamingAdapt(mkParAdapt(CSID, StdCompiler::RCT_IdtfAllowEmpty), "CSID", ""));
@@ -55,54 +55,54 @@ void C4LeagueRequestHead::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkParAdapt(NewAccount, StdCompiler::RCT_All), "NewAccount", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(NewPassword, StdCompiler::RCT_All), "NewPassword", ""));
 
-	}
+}
 
 void C4LeagueRequestHead::SetAuth(const char *szAccount, const char *szPassword)
-	{
+{
 	Account = szAccount;
 	Password = szPassword;
-	}
+}
 
 void C4LeagueRequestHead::SetNewAccount(const char *szNewAccount)
-	{
+{
 	NewAccount = szNewAccount;
-	}
+}
 
 void C4LeagueRequestHead::SetNewPassword(const char *szNewPassword)
-	{
+{
 	NewPassword = szNewPassword;
-	}
+}
 
 // *** C4LeagueReportDisconnectHead
 
 void C4LeagueReportDisconnectHead::CompileFunc(StdCompiler *pComp)
-	{
+{
 	// inherited fields
 	C4LeagueRequestHead::CompileFunc(pComp);
 	// reason
 	StdEnumEntry<C4LeagueDisconnectReason> Reasons[] =
-		{
-			{ "",                 C4LDR_Unknown     },
-			{ "ConnectionFailed", C4LDR_ConnectionFailed},
-			{ "Desync",           C4LDR_Desync      },
-		};
+	{
+		{ "",                 C4LDR_Unknown     },
+		{ "ConnectionFailed", C4LDR_ConnectionFailed},
+		{ "Desync",           C4LDR_Desync      },
+	};
 	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(eReason, Reasons), "Reason", C4LDR_Unknown));
-	}
+}
 
 // *** C4LeagueRequestHeadEnd
 
 void C4LeagueRequestHeadEnd::CompileFunc(StdCompiler *pComp)
-	{
+{
 	C4LeagueRequestHead::CompileFunc(pComp);
 	pComp->Value(mkNamingAdapt(mkParAdapt(RecordName, StdCompiler::RCT_All), "RecordName", ""));
-	if(RecordName.getLength())
+	if (RecordName.getLength())
 		pComp->Value(mkNamingAdapt(mkHexAdapt(RecordSHA, sizeof(RecordSHA)), "RecordSHA"));
-	}
+}
 
 // *** C4LeagueResponseHead
 
 void C4LeagueResponseHead::CompileFunc(StdCompiler *pComp)
-	{
+{
 	pComp->Value(mkNamingAdapt(mkParAdapt(Status, StdCompiler::RCT_IdtfAllowEmpty), "Status", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(CSID, StdCompiler::RCT_IdtfAllowEmpty), "CSID", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(Message, StdCompiler::RCT_All), "Message", ""));
@@ -111,12 +111,12 @@ void C4LeagueResponseHead::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(mkParAdapt(Account, StdCompiler::RCT_All), "Account", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(AUID, StdCompiler::RCT_All), "AUID", ""));
 	pComp->Value(mkNamingAdapt(mkParAdapt(FBID, StdCompiler::RCT_All), "FBID", ""));
-	}
+}
 
 // *** C4LeagueResponseHeadStart
 
 void C4LeagueResponseHeadStart::CompileFunc(StdCompiler *pComp)
-	{
+{
 	// Base members
 	C4LeagueResponseHead::CompileFunc(pComp);
 
@@ -124,15 +124,15 @@ void C4LeagueResponseHeadStart::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(League, "League", ""));
 	pComp->Value(mkNamingAdapt(StreamingAddr, "StreamTo", ""));
 	pComp->Value(mkNamingCountAdapt(fHaveSeed, "Seed"));
-	if(fHaveSeed)
+	if (fHaveSeed)
 		pComp->Value(mkNamingAdapt(iSeed, "Seed", (int32_t)0));
 	pComp->Value(mkNamingAdapt(iMaxPlayers, "MaxPlayers", (int32_t)0));
-	}
+}
 
 // *** C4LeagueResponseHeadUpdate
 
 void C4LeagueResponseHeadUpdate::CompileFunc(StdCompiler *pComp)
-	{
+{
 	// Base members
 	C4LeagueResponseHead::CompileFunc(pComp);
 
@@ -141,36 +141,36 @@ void C4LeagueResponseHeadUpdate::CompileFunc(StdCompiler *pComp)
 
 	// player infos
 	pComp->Value(mkNamingAdapt(PlrInfos, "PlayerInfos"));
-	}
+}
 
 // *** C4LeagueRequestHeadAuthCheck
 
 int32_t C4LeagueResponseHeadAuthCheck::getScore(const char *szLeague) const
-	{
-	for(int32_t i = 0; i < C4NetMaxLeagues; i++)
-		if(Leagues[i] == szLeague)
+{
+	for (int32_t i = 0; i < C4NetMaxLeagues; i++)
+		if (Leagues[i] == szLeague)
 			return Scores[i];
 	return 0;
-	}
+}
 
 int32_t C4LeagueResponseHeadAuthCheck::getRank(const char *szLeague) const
-	{
-	for(int32_t i = 0; i < C4NetMaxLeagues; i++)
-		if(Leagues[i] == szLeague)
+{
+	for (int32_t i = 0; i < C4NetMaxLeagues; i++)
+		if (Leagues[i] == szLeague)
 			return Ranks[i];
 	return 0;
-	}
+}
 
 int32_t C4LeagueResponseHeadAuthCheck::getRankSymbol(const char *szLeague) const
-	{
-	for(int32_t i = 0; i < C4NetMaxLeagues; i++)
-		if(Leagues[i] == szLeague)
+{
+	for (int32_t i = 0; i < C4NetMaxLeagues; i++)
+		if (Leagues[i] == szLeague)
 			return RankSymbols[i];
 	return 0;
-	}
+}
 
 void C4LeagueResponseHeadAuthCheck::CompileFunc(StdCompiler *pComp)
-	{
+{
 	// Base members
 	C4LeagueResponseHead::CompileFunc(pComp);
 
@@ -183,52 +183,52 @@ void C4LeagueResponseHeadAuthCheck::CompileFunc(StdCompiler *pComp)
 	// Clan tag
 	pComp->Value(mkNamingAdapt(mkParAdapt(ClanTag, StdCompiler::RCT_All), "ClanTag", ""));
 
-	}
+}
 
 // *** C4LeagueFBIDList
 
 void C4LeagueFBIDList::Clear()
-	{
+{
 	while (pFirst)
-		{
+	{
 		FBIDItem *pDel = pFirst;
 		pFirst = pDel->pNext;
 		delete pDel;
-		}
 	}
+}
 
 bool C4LeagueFBIDList::FindFBIDByAccount(const char *szAccount, StdStrBuf *pFBIDOut)
-	{
+{
 	assert(szAccount);
 	if (!szAccount) return false;
 	for (FBIDItem *pItem = pFirst; pItem; pItem = pItem->pNext)
 		if (pItem->Account == szAccount)
-			{
+		{
 			if (pFBIDOut) pFBIDOut->Copy(pItem->FBID);
 			return true;
-			}
+		}
 	return false;
-	}
+}
 
 void C4LeagueFBIDList::RemoveFBIDByAccount(const char *szAccount)
-	{
+{
 	FBIDItem *pPrev = NULL, *pItem = pFirst;
-	while(pItem)
-		{
+	while (pItem)
+	{
 		// Delete?
-		if(pItem->Account == szAccount)
-			{
+		if (pItem->Account == szAccount)
+		{
 			(pPrev ? pPrev->pNext : pFirst) = pItem->pNext;
 			delete pItem;
 			return;
-			}
+		}
 		// Next
 		pPrev = pItem; pItem = pItem->pNext;
-		}
 	}
+}
 
 void C4LeagueFBIDList::AddFBID(const char *szFBID, const char *szAccount)
-	{
+{
 	// add new FBID item to head of list
 	assert(szFBID); assert(szAccount);
 	// remove any existing FBIDs
@@ -239,274 +239,274 @@ void C4LeagueFBIDList::AddFBID(const char *szFBID, const char *szAccount)
 	pNewItem->Account.Copy(szAccount);
 	pNewItem->pNext = pFirst;
 	pFirst = pNewItem;
-	}
+}
 
 class DisconnectData
-	{
-	private:
-		C4LeagueFBIDList &rFBIDList;
-		const C4ClientPlayerInfos &rPlayerInfos;
+{
+private:
+	C4LeagueFBIDList &rFBIDList;
+	const C4ClientPlayerInfos &rPlayerInfos;
 
-	public:
-		ALLOW_TEMP_TO_REF(DisconnectData)
-		DisconnectData(C4LeagueFBIDList &rFBIDList, const C4ClientPlayerInfos &rPlayerInfos)
+public:
+	ALLOW_TEMP_TO_REF(DisconnectData)
+	DisconnectData(C4LeagueFBIDList &rFBIDList, const C4ClientPlayerInfos &rPlayerInfos)
 			: rFBIDList(rFBIDList), rPlayerInfos(rPlayerInfos) {}
 
-		void CompileFunc(StdCompiler *pComp)
-			{
-			if (pComp->isCompiler())
+	void CompileFunc(StdCompiler *pComp)
+	{
+		if (pComp->isCompiler())
+		{
+			// compiling not yet needed
+			assert(!"DisconnectData::CompileFunc not defined for compiler!");
+		}
+		else
+		{
+			// decompiling: Compile all joined and not removed player infos.
+			//   Compile them even if they're not in the FBID-List, but omit
+			//   the FBID (used for host message)
+			int32_t i=0; C4PlayerInfo *pInfo;
+			while ((pInfo = rPlayerInfos.GetPlayerInfo(i++)))
+				if (pInfo->IsJoined() && !pInfo->IsRemoved())
 				{
-				// compiling not yet needed
-				assert(!"DisconnectData::CompileFunc not defined for compiler!");
-				}
-			else
-				{
-				// decompiling: Compile all joined and not removed player infos.
-				//   Compile them even if they're not in the FBID-List, but omit
-				//   the FBID (used for host message)
-				int32_t i=0; C4PlayerInfo *pInfo;
-				while ((pInfo = rPlayerInfos.GetPlayerInfo(i++)))
-					if (pInfo->IsJoined() && !pInfo->IsRemoved())
-						{
-						pComp->Name("Player");
-						try
-							{
-							pComp->Value(mkNamingAdapt(mkDecompileAdapt(pInfo->GetID()), "ID"));
-							StdCopyStrBuf sFBID;
-							if (rFBIDList.FindFBIDByAccount(pInfo->getLeagueAccount(), &sFBID)) pComp->Value(mkNamingAdapt(mkParAdapt(sFBID, StdCompiler::RCT_IdtfAllowEmpty), "FBID"));
-							}
-						catch (StdCompiler::Exception *)
-							{
-							pComp->NameEnd();
-							throw;
-							}
+					pComp->Name("Player");
+					try
+					{
+						pComp->Value(mkNamingAdapt(mkDecompileAdapt(pInfo->GetID()), "ID"));
+						StdCopyStrBuf sFBID;
+						if (rFBIDList.FindFBIDByAccount(pInfo->getLeagueAccount(), &sFBID)) pComp->Value(mkNamingAdapt(mkParAdapt(sFBID, StdCompiler::RCT_IdtfAllowEmpty), "FBID"));
+					}
+					catch (StdCompiler::Exception *)
+					{
 						pComp->NameEnd();
-						}
+						throw;
+					}
+					pComp->NameEnd();
 				}
-			}
-	};
+		}
+	}
+};
 
 
 // *** C4LeagueClient
 
 bool C4LeagueClient::Start(const C4Network2Reference &Ref)
-	{
+{
 	// Create query
 	eCurrAction = C4LA_Start;
 	C4LeagueRequestHead Head(eCurrAction);
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-			mkInsertAdapt(
-				 mkNamingAdapt(Head, "Request"),
-				 mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
-				 false));
+	                        mkInsertAdapt(
+	                          mkNamingAdapt(Head, "Request"),
+	                          mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
+	                          false));
 	// Perform query
 	return Query(QueryText.getData(), false);
-	}
+}
 
 bool C4LeagueClient::GetStartReply(StdStrBuf *pMessage, StdStrBuf *pLeague, StdStrBuf *pStreamingAddr, int32_t *pSeed, int32_t *pMaxPlayers)
-	{
-	if(!isSuccess() || eCurrAction != C4LA_Start) return false;
+{
+	if (!isSuccess() || eCurrAction != C4LA_Start) return false;
 	// Parse response head
 	C4LeagueResponseHeadStart Head;
-	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Start Reply"))
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Start Reply"))
 		return false;
 	// Get message, league and seed
-	if(pMessage)
+	if (pMessage)
 		pMessage->Copy(Head.getMessage());
-	if(pLeague)
+	if (pLeague)
 		pLeague->Copy(Head.getLeague());
-	if(pStreamingAddr)
+	if (pStreamingAddr)
 		pStreamingAddr->Copy(Head.getStreamingAddr());
-	if(pSeed && Head.haveSeed())
+	if (pSeed && Head.haveSeed())
 		*pSeed = Head.getSeed();
-	if(pMaxPlayers)
+	if (pMaxPlayers)
 		*pMaxPlayers = Head.getMaxPlayers();
 	// No success?
-	if(!Head.isSuccess())
+	if (!Head.isSuccess())
 		return false;
 	// Got no CSID?
-	if(!Head.getCSID() || !*Head.getCSID())
-		{
-		if(pMessage)
+	if (!Head.getCSID() || !*Head.getCSID())
+	{
+		if (pMessage)
 			pMessage->Copy(LoadResStr("IDS_LGA_INVALIDRESPONSE3"));
 		return false;
-		}
+	}
 	// So save back CSID
 	CSID = Head.getCSID();
 	return true;
-	}
+}
 
 bool C4LeagueClient::Update(const C4Network2Reference &Ref)
-	{
+{
 	assert(CSID.getLength());
 	// Create query
 	eCurrAction = C4LA_Update;
 	C4LeagueRequestHead Head(eCurrAction, CSID.getData());
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-			mkInsertAdapt(
-				 mkNamingAdapt(Head, "Request"),
-				 mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
-				 false));
+	                        mkInsertAdapt(
+	                          mkNamingAdapt(Head, "Request"),
+	                          mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
+	                          false));
 	// Perform query
 	return Query(QueryText.getData(), false);
-	}
+}
 
 bool C4LeagueClient::GetUpdateReply(StdStrBuf *pMessage, C4ClientPlayerInfos *pPlayerLeagueInfos)
-	{
+{
 	C4LeagueResponseHeadUpdate Reply;
-	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Reply, "Response"), ResultString, "Update Reply"))
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Reply, "Response"), ResultString, "Update Reply"))
 		return false;
 	// Get message
-	if(pMessage)
+	if (pMessage)
 		pMessage->Copy(Reply.getMessage());
 	// get plr infos
 	if (pPlayerLeagueInfos)
 		*pPlayerLeagueInfos = Reply.GetPlrInfos();
 	// Success
 	return true;
-	}
+}
 
 bool C4LeagueClient::End(const C4Network2Reference &Ref, const char *szRecordName, const BYTE *pRecordSHA)
-	{
+{
 	assert(CSID.getLength());
 	// Create query
 	eCurrAction = C4LA_End;
 	C4LeagueRequestHeadEnd Head(eCurrAction, CSID.getData(), szRecordName, pRecordSHA);
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-			mkInsertAdapt(
-				 mkNamingAdapt(Head, "Request"),
-				 mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
-				 false));
+	                        mkInsertAdapt(
+	                          mkNamingAdapt(Head, "Request"),
+	                          mkNamingAdapt(mkDecompileAdapt(Ref), "Reference"),
+	                          false));
 	// Perform query
 	return Query(QueryText.getData(), false);
-	}
+}
 
 bool C4LeagueClient::GetEndReply(StdStrBuf *pMessage, C4RoundResultsPlayers *pRoundResults)
-	{
+{
 	// Parse response head
 	C4LeagueResponseHead Head;
-	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "End Reply"))
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "End Reply"))
 		return false;
 	// Get message
-	if(pMessage)
+	if (pMessage)
 		pMessage->Copy(Head.getMessage());
-	if(pRoundResults)
-	  CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(mkNamingAdapt(*pRoundResults, "PlayerInfos"), "Response"), ResultString, "Round Results");
+	if (pRoundResults)
+		CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(mkNamingAdapt(*pRoundResults, "PlayerInfos"), "Response"), ResultString, "Round Results");
 	// Done
 	return Head.isSuccess();
-	}
+}
 
 bool C4LeagueClient::Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount, const char *szNewPassword)
-	{
+{
 	// Build header
 	eCurrAction = C4LA_PlrAuth;
 	C4LeagueRequestHead Head(eCurrAction);
 	Head.SetAuth(szAccount, szPassword);
-	if(szNewAccount)
+	if (szNewAccount)
 		Head.SetNewAccount(szNewAccount);
-	if(szNewPassword)
+	if (szNewPassword)
 		Head.SetNewPassword(szNewPassword);
 	// Create query
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-			mkInsertAdapt(
-				 mkNamingAdapt(Head, "Request"),
-				 mkNamingAdapt(mkDecompileAdapt(PlrInfo), "PlrInfo"),
-				 false));
+	                        mkInsertAdapt(
+	                          mkNamingAdapt(Head, "Request"),
+	                          mkNamingAdapt(mkDecompileAdapt(PlrInfo), "PlrInfo"),
+	                          false));
 	// Perform query
 	return Query(QueryText.getData(), false);
-	}
+}
 
 bool C4LeagueClient::GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister)
-	{
+{
 	C4LeagueResponseHead Head;
-	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Auth Reply"))
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Auth Reply"))
 		return false;
 	// Get message & account
-	if(pMessage)
+	if (pMessage)
 		pMessage->Copy(Head.getMessage());
-	if(pAccount)
+	if (pAccount)
 		pAccount->Copy(Head.getAccount());
-	if(pRegister)
+	if (pRegister)
 		*pRegister = Head.isStatusRegister();
 	// No success?
-	if(!Head.isSuccess())
+	if (!Head.isSuccess())
 		return false;
 	// Check AUID
-	if(!Head.getAUID() || !*Head.getAUID())
-		{
+	if (!Head.getAUID() || !*Head.getAUID())
+	{
 		pMessage->Ref(LoadResStr("IDS_MSG_LEAGUESERVERREPLYWITHOUTA"));
 		return false;
-		}
+	}
 	// Success
-	if(pAUID)
+	if (pAUID)
 		pAUID->Copy(Head.getAUID());
 	FBIDList.AddFBID(Head.getFBID(), Head.getAccount());
 	return true;
-	}
+}
 
 bool C4LeagueClient::AuthCheck(const C4PlayerInfo &PlrInfo)
-	{
+{
 	assert(CSID.getLength());
 	// Build header
 	eCurrAction = C4LA_PlrAuthCheck;
 	C4LeagueRequestHead Head(eCurrAction, CSID.getData(), PlrInfo.getAuthID());
 	// Create query
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-			mkInsertAdapt(
-				 mkNamingAdapt(Head, "Request"),
-				 mkNamingAdapt(mkDecompileAdapt(PlrInfo), "PlrInfo"),
-				 false));
+	                        mkInsertAdapt(
+	                          mkNamingAdapt(Head, "Request"),
+	                          mkNamingAdapt(mkDecompileAdapt(PlrInfo), "PlrInfo"),
+	                          false));
 	// Perform query
 	return Query(QueryText.getData(), false);
-	}
+}
 
 bool C4LeagueClient::GetAuthCheckReply(StdStrBuf *pMessage, const char *szLeague, C4PlayerInfo *pPlrInfo)
-	{
+{
 	// Parse response head
 	C4LeagueResponseHeadAuthCheck Head;
-	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Auth Check Reply"))
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Auth Check Reply"))
 		return false;
 	// Get message and additional data
-	if(pMessage)
+	if (pMessage)
 		pMessage->Copy(Head.getMessage());
-	if(szLeague && pPlrInfo)
+	if (szLeague && pPlrInfo)
 		pPlrInfo->SetLeagueData(Head.getAccount(), Head.getClanTag(), Head.getScore(szLeague), Head.getRank(szLeague), Head.getRankSymbol(szLeague));
 	return Head.isSuccess();
-	}
+}
 
 bool C4LeagueClient::ReportDisconnect(const C4ClientPlayerInfos &rFeedbackClient, C4LeagueDisconnectReason eReason)
-	{
+{
 	// Build header
 	eCurrAction = C4LA_ReportDisconnect;
 	C4LeagueReportDisconnectHead Head(CSID.getData(), eReason);
 	// Create query
 	StdStrBuf QueryText = DecompileToBuf<StdCompilerINIWrite>(
-			mkInsertAdapt(
-				mkNamingAdapt(Head, "Request"),
-				mkNamingAdapt(DisconnectData(FBIDList, rFeedbackClient), "PlayerInfos"),
-				false));
+	                        mkInsertAdapt(
+	                          mkNamingAdapt(Head, "Request"),
+	                          mkNamingAdapt(DisconnectData(FBIDList, rFeedbackClient), "PlayerInfos"),
+	                          false));
 	// Perform query
 	return Query(QueryText.getData(), false);
-	}
+}
 
 bool C4LeagueClient::GetReportDisconnectReply(StdStrBuf *pMessage)
-	{
+{
 	// Parse response head
 	C4LeagueResponseHead Head;
-	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Report Disconnect"))
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(Head, "Response"), ResultString, "Report Disconnect"))
 		return false;
 	// Get message
-	if(pMessage)
-	  pMessage->Copy(Head.getMessage());
+	if (pMessage)
+		pMessage->Copy(Head.getMessage());
 	// Done
 	return Head.isSuccess();
-	}
+}
 
 // *** C4LeagueSignupDialog
 
 C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister)
-: C4GUI::Dialog(C4GUI_MessageDlgWdt, 100 /* will be resized as needed */, FormatString(LoadResStr("IDS_DLG_LEAGUESIGNUPON"), szLeagueServerName).getData(), false), strPlayerName(szPlayerName)
-	{
+		: C4GUI::Dialog(C4GUI_MessageDlgWdt, 100 /* will be resized as needed */, FormatString(LoadResStr("IDS_DLG_LEAGUESIGNUPON"), szLeagueServerName).getData(), false), strPlayerName(szPlayerName)
+{
 	// get positions
 	C4GUI::ComponentAligner caMain(GetClientRect(), C4GUI_DefDlgIndent, C4GUI_DefDlgIndent, true);
 	// place icon
@@ -516,7 +516,7 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 	// place message label
 	// use text with line breaks
 	StdStrBuf sMsg, sMsgBroken;
-	if(fRegister)
+	if (fRegister)
 		sMsg.Format(LoadResStr("IDS_MSG_LEAGUE_REGISTRATION"), szPlayerName);
 	else
 		sMsg.Format(LoadResStr("IDS_MSG_PASSWORDFORPLAYER"), szPlayerName);
@@ -533,8 +533,8 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 	C4GUI::LabeledEdit::GetControlSize(NULL, &iCtrlHeight, sAccountTxt.getData(), NULL, fSideEdits);
 	AddElement(pEdtAccount = new C4GUI::LabeledEdit(caMain.GetFromTop(iCtrlHeight), sAccountTxt.getData(), fSideEdits, szAccountPref));
 	// registering? Make password field optional
-	if(fRegister)
-		{
+	if (fRegister)
+	{
 		// place the checkbox
 		const char *szChkPasswordCaption = LoadResStr("IDS_CTL_LEAGUE_CHK_PLRPW");
 		C4GUI::CheckBox::GetStandardCheckBoxSize(NULL, &iCtrlHeight, szChkPasswordCaption, NULL);
@@ -553,9 +553,9 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 		pEdtPass2->SetVisibility(false);
 		// save how much to move the controls later
 		iEdtPassSpace = caTemp.GetHeight() - caMain.GetHeight();
-		}
+	}
 	else
-		{
+	{
 		// No password checkbox
 		pChkPassword = NULL;
 		// But a password edit box
@@ -564,13 +564,13 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 		AddElement(pEdtPass = new C4GUI::LabeledEdit(caMain.GetFromTop(iCtrlHeight), szEdtPassCaption, fSideEdits, szPassPref));
 		// No second password edit box
 		pEdtPass2 = NULL;
-		}
+	}
 	// Set password box options
 	pEdtPass->GetEdit()->SetPasswordMask('*');
-	if(pEdtPass2)
-		{
+	if (pEdtPass2)
+	{
 		pEdtPass2->GetEdit()->SetPasswordMask('*');
-		}
+	}
 	// place confirmation buttons
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromTop(C4GUI_ButtonAreaHgt), 0,0);
 	C4Rect rcBtn = caButtonArea.GetCentered(2*C4GUI_DefButton2Wdt+C4GUI_DefButton2HSpace, C4GUI_ButtonHgt);
@@ -584,88 +584,88 @@ C4LeagueSignupDialog::C4LeagueSignupDialog(const char *szPlayerName, const char 
 	SetClientSize(GetClientRect().Wdt, GetClientRect().Hgt - caMain.GetHeight());
 	// initial focus
 	SetFocus(fRegister ? pEdtAccount->GetEdit() : pEdtPass->GetEdit(), false);
-	}
+}
 
 void C4LeagueSignupDialog::UserClose(bool fOK)
-	{
+{
 	// Abort? That's always okay
-	if(!fOK)
-		{
+	if (!fOK)
+	{
 		Dialog::UserClose(fOK);
 		::pGUI->ShowMessageModal(FormatString(LoadResStr("IDS_MSG_LEAGUESIGNUPCANCELLED"), strPlayerName.getData()).getData(), LoadResStr("IDS_DLG_LEAGUESIGNUP"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
 		return;
-		}
+	}
 	// Check for empty account name
 	const char *szAccount = pEdtAccount->GetText();
-	if(!szAccount || !*szAccount)
-		{
+	if (!szAccount || !*szAccount)
+	{
 		SetFocus(pEdtAccount->GetEdit(), false);
 		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISSINGUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
-		}
+	}
 	// Username contains invalid characters
 	if (SCharCountEx(szAccount, C4League_Name_Valid_Characters) != SLen(szAccount))
-		{
+	{
 		SetFocus(pEdtAccount->GetEdit(), false);
 		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEINVALIDUSERNAME"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
-		}
+	}
 	// Username is too short
 	if (SLen(szAccount) < 3)
-		{
+	{
 		SetFocus(pEdtAccount->GetEdit(), false);
 		::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEUSERNAMETOOSHORT"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 		return;
-		}
+	}
 	// Check password
-	if(!pChkPassword || pChkPassword->GetChecked())
-		{
+	if (!pChkPassword || pChkPassword->GetChecked())
+	{
 		// Check for empty password
 		const char *szPassword = pEdtPass->GetText();
-		if(!szPassword || !*szPassword)
-			{
+		if (!szPassword || !*szPassword)
+		{
 			SetFocus(pEdtPass->GetEdit(), false);
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISSINGPASSWORD"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return;
-			}
+		}
 		// Check second password
-		if(pEdtPass2 && !SEqual(szPassword, pEdtPass2->GetText()))
-			{
+		if (pEdtPass2 && !SEqual(szPassword, pEdtPass2->GetText()))
+		{
 			SetFocus(pEdtPass2->GetEdit(), false);
 			pEdtPass2->GetEdit()->SetText("", false);
 			::pGUI->ShowMessageModal(LoadResStr("IDS_MSG_LEAGUEMISMATCHPASSWORD"), LoadResStr("IDS_DLG_INVALIDENTRY"), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Error);
 			return;
-			}
 		}
+	}
 	// Okay then
 	Dialog::UserClose(fOK);
-	}
+}
 
 bool C4LeagueSignupDialog::ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psCUID, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister)
-	{
+{
 	// show league signup dlg modally; return whether user pressed OK and change user and pass buffers in that case
 	assert(psCUID); assert(psPass);
 	if (!psCUID || !psPass || !::pGUI) return false;
 	C4LeagueSignupDialog *pDlg = new C4LeagueSignupDialog(szPlayerName, szLeagueName, szLeagueServerName, psCUID->getData(), psPass->getData(), fWarnThirdParty, fRegister);
 	bool fResult = ::pGUI->ShowModalDlg(pDlg, false);
 	if (fResult)
-		{
+	{
 		psCUID->Copy(pDlg->GetAccount());
-		if(pDlg->HasPass())
+		if (pDlg->HasPass())
 			psPass->Copy(pDlg->GetPass());
 		else
 			psPass->Clear();
-		}
+	}
 	delete pDlg;
 	return fResult;
-	}
+}
 
 void C4LeagueSignupDialog::OnChkPassword()
-	{
-	if(!pChkPassword) return;
+{
+	if (!pChkPassword) return;
 	// Show password elements?
-	if(!pChkPassword->GetChecked())
-		{
+	if (!pChkPassword->GetChecked())
+	{
 		// Enlarge dialog
 		C4Rect bnds = GetClientRect();
 		SetClientSize(bnds.Wdt, bnds.Hgt + iEdtPassSpace);
@@ -677,9 +677,9 @@ void C4LeagueSignupDialog::OnChkPassword()
 		pBtnOK->SetPos(bnds.x, bnds.y + iEdtPassSpace);
 		bnds = pBtnAbort->GetBounds();
 		pBtnAbort->SetPos(bnds.x, bnds.y + iEdtPassSpace);
-		}
+	}
 	else
-		{
+	{
 		// Shrink dialog
 		C4Rect bnds = GetClientRect();
 		SetClientSize(bnds.Wdt, bnds.Hgt - iEdtPassSpace);
@@ -691,5 +691,5 @@ void C4LeagueSignupDialog::OnChkPassword()
 		pBtnOK->SetPos(bnds.x, bnds.y - iEdtPassSpace);
 		bnds = pBtnAbort->GetBounds();
 		pBtnAbort->SetPos(bnds.x, bnds.y - iEdtPassSpace);
-		}
 	}
+}

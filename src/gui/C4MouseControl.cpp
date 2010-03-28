@@ -41,67 +41,67 @@
 #include <C4GameObjects.h>
 #include <C4GameControl.h>
 
-const int32_t C4MC_Drag_None					= 0,
-					C4MC_Drag_Selecting			= 1,
-					C4MC_Drag_Moving				= 2,
-					//C4MC_Drag_Menu					= 3,
-					//C4MC_Drag_MenuScroll		= 4,
-					C4MC_Drag_Construct			= 5,
-					C4MC_Drag_Script            = 6,
+const int32_t C4MC_Drag_None          = 0,
+                                        C4MC_Drag_Selecting     = 1,
+                                                                  C4MC_Drag_Moving        = 2,
+                                                                                            //C4MC_Drag_Menu          = 3,
+                                                                                            //C4MC_Drag_MenuScroll    = 4,
+                                                                                            C4MC_Drag_Construct     = 5,
+                                                                                                                      C4MC_Drag_Script            = 6,
 
-					C4MC_Selecting_Unknown	= 0;
+                                                                                                                                                    C4MC_Selecting_Unknown  = 0;
 
-const int32_t C4MC_Cursor_Region			= 0,
-					C4MC_Cursor_Crosshair		= 1,
-					C4MC_Cursor_Enter				= 2,
-					C4MC_Cursor_Grab				= 3,
-					C4MC_Cursor_Chop				= 4,
-					C4MC_Cursor_Dig					= 5,
-					C4MC_Cursor_Build				= 6,
-					C4MC_Cursor_Select			= 7,
-					C4MC_Cursor_Object			= 8,
-					C4MC_Cursor_Ungrab			= 9,
-					C4MC_Cursor_Up					= 10,
-					C4MC_Cursor_Down				= 11,
-					C4MC_Cursor_Left				= 12,
-					C4MC_Cursor_Right				= 13,
-					C4MC_Cursor_UpLeft			= 14,
-					C4MC_Cursor_UpRight			= 15,
-					C4MC_Cursor_DownLeft		= 16,
-					C4MC_Cursor_DownRight		= 17,
-					C4MC_Cursor_JumpLeft		= 18,
-					C4MC_Cursor_JumpRight		= 19,
-					C4MC_Cursor_Drop				= 20,
-					C4MC_Cursor_ThrowRight	= 21,
-					C4MC_Cursor_Put					= 22,
-					//C4MC_Cursor_DragMenu		= 23,
-					C4MC_Cursor_Vehicle			= 24,
-					C4MC_Cursor_VehiclePut	= 25,
-					C4MC_Cursor_ThrowLeft		= 26,
-					C4MC_Cursor_DragDrop		= 26,
-					C4MC_Cursor_Point				= 27,
-					C4MC_Cursor_DigObject		= 28,
-					C4MC_Cursor_Help				= 29,
-					C4MC_Cursor_DigMaterial	= 30,
-					C4MC_Cursor_Add					= 31,
-					C4MC_Cursor_Construct		= 32,
-					C4MC_Cursor_Attack			= 33,
-					C4MC_Cursor_Nothing			= 34;
+const int32_t C4MC_Cursor_Region      = 0,
+                                        C4MC_Cursor_Crosshair   = 1,
+                                                                  C4MC_Cursor_Enter       = 2,
+                                                                                            C4MC_Cursor_Grab        = 3,
+                                                                                                                      C4MC_Cursor_Chop        = 4,
+                                                                                                                                                C4MC_Cursor_Dig         = 5,
+                                                                                                                                                                          C4MC_Cursor_Build       = 6,
+                                                                                                                                                                                                    C4MC_Cursor_Select      = 7,
+                                                                                                                                                                                                                              C4MC_Cursor_Object      = 8,
+                                                                                                                                                                                                                                                        C4MC_Cursor_Ungrab      = 9,
+                                                                                                                                                                                                                                                                                  C4MC_Cursor_Up          = 10,
+                                                                                                                                                                                                                                                                                                            C4MC_Cursor_Down        = 11,
+                                                                                                                                                                                                                                                                                                                                      C4MC_Cursor_Left        = 12,
+                                                                                                                                                                                                                                                                                                                                                                C4MC_Cursor_Right       = 13,
+                                                                                                                                                                                                                                                                                                                                                                                          C4MC_Cursor_UpLeft      = 14,
+                                                                                                                                                                                                                                                                                                                                                                                                                    C4MC_Cursor_UpRight     = 15,
+                                                                                                                                                                                                                                                                                                                                                                                                                                              C4MC_Cursor_DownLeft    = 16,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                        C4MC_Cursor_DownRight   = 17,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  C4MC_Cursor_JumpLeft    = 18,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            C4MC_Cursor_JumpRight   = 19,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4MC_Cursor_Drop        = 20,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                C4MC_Cursor_ThrowRight  = 21,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          C4MC_Cursor_Put         = 22,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    //C4MC_Cursor_DragMenu    = 23,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    C4MC_Cursor_Vehicle     = 24,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4MC_Cursor_VehiclePut  = 25,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        C4MC_Cursor_ThrowLeft   = 26,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  C4MC_Cursor_DragDrop    = 26,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            C4MC_Cursor_Point       = 27,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      C4MC_Cursor_DigObject   = 28,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                C4MC_Cursor_Help        = 29,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          C4MC_Cursor_DigMaterial = 30,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    C4MC_Cursor_Add         = 31,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              C4MC_Cursor_Construct   = 32,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        C4MC_Cursor_Attack      = 33,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  C4MC_Cursor_Nothing     = 34;
 
-const int32_t C4MC_Time_on_Target			= 10;
+const int32_t C4MC_Time_on_Target     = 10;
 
 C4MouseControl::C4MouseControl()
-	{
+{
 	Default();
-	}
+}
 
 C4MouseControl::~C4MouseControl()
-	{
+{
 	Clear();
-	}
+}
 
 void C4MouseControl::Default()
-	{
+{
 	Active=false;
 	Player=NO_OWNER;
 	pPlayer=NULL;
@@ -139,32 +139,32 @@ void C4MouseControl::Default()
 	DragImagePhase=0;
 	fMouseOwned = true; // default mouse owned
 	fctViewport.Default();
-	}
+}
 
 void C4MouseControl::Clear()
-	{
+{
 	Active = false;
 	Selection.Clear();
 	UpdateClip(); // reset mouse clipping!
-	}
+}
 
 void C4MouseControl::Execute()
-	{
+{
 
 	if (!Active || !fMouseOwned) return;
 
 	// Scrolling/continuous update
 	if (Scrolling || !::Game.iTick5)
-		{
+	{
 		WORD wKeyState=0;
 		if (Application.IsControlDown()) wKeyState|=MK_CONTROL;
 		if (Application.IsShiftDown()) wKeyState|=MK_SHIFT;
 		Move(C4MC_Button_None,VpX,VpY,wKeyState);
-		}
 	}
+}
 
 bool C4MouseControl::Init(int32_t iPlayer)
-	{
+{
 	Clear();
 	Default();
 	Active = true;
@@ -172,10 +172,10 @@ bool C4MouseControl::Init(int32_t iPlayer)
 	InitCentered = false;
 	UpdateClip();
 	return true;
-	}
+}
 
 void C4MouseControl::ClearPointers(C4Object *pObj)
-	{
+{
 	if (TargetObject==pObj) TargetObject=NULL;
 	if (DownTarget==pObj) DownTarget=NULL;
 	if (DragObject==pObj)
@@ -185,15 +185,15 @@ void C4MouseControl::ClearPointers(C4Object *pObj)
 		DragImage.Default();
 	}
 	Selection.ClearPointers(pObj);
-	}
+}
 
 bool C4MouseControl::IsViewport(C4Viewport *pViewport)
-	{
+{
 	return (Viewport==pViewport);
-	}
+}
 
 void C4MouseControl::UpdateClip()
-	{
+{
 #ifdef _DEBUG
 	// never in debug
 	return;
@@ -212,17 +212,17 @@ void C4MouseControl::UpdateClip()
 	// adjust by window pos
 	RECT rtWindow;
 	if (GetWindowRect(FullScreen.hWindow, &rtWindow))
-		{
+	{
 		vpRct.left += rtWindow.left; vpRct.top += rtWindow.top;
 		vpRct.right += rtWindow.left; vpRct.bottom+= rtWindow.top;
-		}
+	}
 	ClipCursor(&vpRct);
 	// and inform GUI
 	if (::pGUI)
 		::pGUI->SetPreferredDlgRect(C4Rect(pVP->OutX, pVP->OutY, pVP->ViewWdt, pVP->ViewHgt));
 #endif
 	//StdWindow manages this.
-	}
+}
 
 void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFlags, bool fCenter)
 {
@@ -328,28 +328,28 @@ void C4MouseControl::Move(int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyFl
 	switch (iButton)
 	{
 		//------------------------------------------------------------------------------------------
-		case C4MC_Button_None:
-			switch (Drag)
-			{
-				case C4MC_Drag_None: DragNone(); break;
-				case C4MC_Drag_Selecting: DragSelect(); break;
-				case C4MC_Drag_Moving: DragMoving(); break;
-				case C4MC_Drag_Construct: DragConstruct(); break;
-				case C4MC_Drag_Script: DragScript(); break;
-			}
-			break;
+	case C4MC_Button_None:
+		switch (Drag)
+		{
+		case C4MC_Drag_None: DragNone(); break;
+		case C4MC_Drag_Selecting: DragSelect(); break;
+		case C4MC_Drag_Moving: DragMoving(); break;
+		case C4MC_Drag_Construct: DragConstruct(); break;
+		case C4MC_Drag_Script: DragScript(); break;
+		}
+		break;
 		//------------------------------------------------------------------------------------------
-		case C4MC_Button_LeftDown: LeftDown(); break;
+	case C4MC_Button_LeftDown: LeftDown(); break;
 		//------------------------------------------------------------------------------------------
-		case C4MC_Button_LeftUp: LeftUp(); break;
+	case C4MC_Button_LeftUp: LeftUp(); break;
 		//------------------------------------------------------------------------------------------
-		case C4MC_Button_LeftDouble: LeftDouble(); break;
+	case C4MC_Button_LeftDouble: LeftDouble(); break;
 		//------------------------------------------------------------------------------------------
-		case C4MC_Button_RightDown: RightDown(); break;
+	case C4MC_Button_RightDown: RightDown(); break;
 		//------------------------------------------------------------------------------------------
-		case C4MC_Button_RightUp: RightUp(); break;
+	case C4MC_Button_RightUp: RightUp(); break;
 		//------------------------------------------------------------------------------------------
-		case C4MC_Button_Wheel: Wheel(dwKeyFlags); break;
+	case C4MC_Button_Wheel: Wheel(dwKeyFlags); break;
 	}
 
 	// script handling of mouse control for everything but regular movement (which is sent at control frame intervals only)
@@ -399,118 +399,118 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 	switch (Drag)
 	{
 		//------------------------------------------------------------------------------------------
-		case C4MC_Drag_None: case C4MC_Drag_Moving: case C4MC_Drag_Construct: case C4MC_Drag_Script:
-			// Hotspot offset: Usually, hotspot is in center
-			iOffsetX = GfxR->fctMouseCursor.Wdt/2;
-			iOffsetY = GfxR->fctMouseCursor.Hgt/2;
-			// Previously, there used to be custom-defined hotspots for all cursors. Calc them in.
-			if (GfxR->fOldStyleCursor)
+	case C4MC_Drag_None: case C4MC_Drag_Moving: case C4MC_Drag_Construct: case C4MC_Drag_Script:
+		// Hotspot offset: Usually, hotspot is in center
+		iOffsetX = GfxR->fctMouseCursor.Wdt/2;
+		iOffsetY = GfxR->fctMouseCursor.Hgt/2;
+		// Previously, there used to be custom-defined hotspots for all cursors. Calc them in.
+		if (GfxR->fOldStyleCursor)
+		{
+			switch (Cursor)
 			{
-				switch (Cursor)
-				{
-					case C4MC_Cursor_Select: case C4MC_Cursor_Region: //case C4MC_Cursor_DragMenu:
-						iOffsetX=iOffsetY=0;
-						break;
-					case C4MC_Cursor_Dig: case C4MC_Cursor_DigMaterial:
-						iOffsetX=0; iOffsetY=GfxR->fctMouseCursor.Hgt;
-						break;
-					case C4MC_Cursor_Construct:
-					case C4MC_Cursor_DragDrop:
-						// calculated when dragimage is drawn
-						break;
-				}
+			case C4MC_Cursor_Select: case C4MC_Cursor_Region: //case C4MC_Cursor_DragMenu:
+				iOffsetX=iOffsetY=0;
+				break;
+			case C4MC_Cursor_Dig: case C4MC_Cursor_DigMaterial:
+				iOffsetX=0; iOffsetY=GfxR->fctMouseCursor.Hgt;
+				break;
+			case C4MC_Cursor_Construct:
+			case C4MC_Cursor_DragDrop:
+				// calculated when dragimage is drawn
+				break;
+			}
+		}
+		else
+		{
+			// for new cursors, this hotspot exists for the scrolling cursors only
+			switch (Cursor)
+			{
+			case C4MC_Cursor_Up: iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
+			case C4MC_Cursor_Down:iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
+			case C4MC_Cursor_Left: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; break;
+			case C4MC_Cursor_Right: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; break;
+			case C4MC_Cursor_UpLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
+			case C4MC_Cursor_UpRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
+			case C4MC_Cursor_DownLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
+			case C4MC_Cursor_DownRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
+			}
+		}
+		// Add mark
+		bool fAddMark; fAddMark=false;
+		if (ShiftDown)
+			if ((Cursor!=C4MC_Cursor_Region) && (Cursor!=C4MC_Cursor_Select) //&& (Cursor!=C4MC_Cursor_DragMenu)
+			    && (Cursor!=C4MC_Cursor_JumpLeft) && (Cursor!=C4MC_Cursor_JumpRight))
+				if (!IsPassive())
+					fAddMark=true;
+		// Drag image
+		if (DragImage.Surface)
+		{
+			// zoom mode: Drag in GUI or Game depending on source object
+			bool fIsGameZoom = true;
+			if (Drag == C4MC_Drag_Script && DragObject && (DragObject->Category & C4D_Foreground))
+				fIsGameZoom = false;
+			// drag image in game zoom
+			float XDraw, YDraw, ZoomDraw;
+			if (fIsGameZoom)
+			{
+				lpDDraw->SetZoom(GameZoom);
+				XDraw = GameX; YDraw = GameY;
+				ZoomDraw = 1.0f;
+				// for drag construct: draw rounded to game pixels, because construction site will be placed at rounded game pixel positions
+				if (Drag == C4MC_Drag_Construct) { XDraw=floor(XDraw); YDraw=floor(YDraw); }
 			}
 			else
 			{
-				// for new cursors, this hotspot exists for the scrolling cursors only
-				switch (Cursor)
-				{
-					case C4MC_Cursor_Up: iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-					case C4MC_Cursor_Down:iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
-					case C4MC_Cursor_Left: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; break;
-					case C4MC_Cursor_Right: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; break;
-					case C4MC_Cursor_UpLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-					case C4MC_Cursor_UpRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += -GfxR->fctMouseCursor.Hgt/2; break;
-					case C4MC_Cursor_DownLeft: iOffsetX += -GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
-					case C4MC_Cursor_DownRight: iOffsetX += +GfxR->fctMouseCursor.Wdt/2; iOffsetY += +GfxR->fctMouseCursor.Hgt/2; break;
-				}
+				ZoomDraw = 64.0f / DragImage.Wdt;
+				XDraw = GuiX; YDraw = GuiY;
 			}
-			// Add mark
-			bool fAddMark; fAddMark=false;
-			if (ShiftDown)
-				if ((Cursor!=C4MC_Cursor_Region) && (Cursor!=C4MC_Cursor_Select) //&& (Cursor!=C4MC_Cursor_DragMenu)
-				 && (Cursor!=C4MC_Cursor_JumpLeft) && (Cursor!=C4MC_Cursor_JumpRight))
-					if (!IsPassive())
-						fAddMark=true;
-			// Drag image
-			if (DragImage.Surface)
-			{
-				// zoom mode: Drag in GUI or Game depending on source object
-				bool fIsGameZoom = true;
-				if (Drag == C4MC_Drag_Script && DragObject && (DragObject->Category & C4D_Foreground))
-					fIsGameZoom = false;
-				// drag image in game zoom
-				float XDraw, YDraw, ZoomDraw;
-				if (fIsGameZoom)
-				{
-					lpDDraw->SetZoom(GameZoom);
-					XDraw = GameX; YDraw = GameY;
-					ZoomDraw = 1.0f;
-					// for drag construct: draw rounded to game pixels, because construction site will be placed at rounded game pixel positions
-					if (Drag == C4MC_Drag_Construct) { XDraw=floor(XDraw); YDraw=floor(YDraw); }
-				}
-				else
-				{
-					ZoomDraw = 64.0f / DragImage.Wdt;
-					XDraw = GuiX; YDraw = GuiY;
-				}
-				// draw in special modulation mode
-				lpDDraw->SetBlitMode(C4GFXBLIT_MOD2);
-				// draw DragImage in red or green, according to the phase to be used
-				iOffsetX=int(ZoomDraw*DragImage.Wdt/2);
-				if (Drag == C4MC_Drag_Construct)
-					iOffsetY=int(ZoomDraw*DragImage.Hgt);
-				else
-					iOffsetY=int(ZoomDraw*DragImage.Hgt/2);
-				lpDDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (DragImagePhase ? 0x8f7f0000 : 0x1f007f00));
-				lpDDraw->Blit(DragImage.Surface,
-				              float(DragImage.X), float(DragImage.Y), float(DragImage.Wdt), float(DragImage.Hgt),
-				              cgo.Surface,
-				              XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(DragImage.Wdt)*ZoomDraw, float(DragImage.Hgt)*ZoomDraw,true);
-				// reset color
-				lpDDraw->DeactivateBlitModulation();
-				lpDDraw->SetBlitMode(0);
-				if (fIsGameZoom) lpDDraw->SetZoom(GuiZoom);
-				// reset cursor hotspot offset for script drawing
-				iOffsetX = GfxR->fctMouseCursor.Wdt/2;
-				iOffsetY = GfxR->fctMouseCursor.Hgt/2;
-			}
-			// Cursor
-			if (!DragImage.Surface || (Drag == C4MC_Drag_Script))
-				GfxR->fctMouseCursor.Draw(cgo.Surface,cgo.X+GuiX-iOffsetX,cgo.Y+GuiY-iOffsetY,Cursor);
-			// Point
-			if ((ShowPointX!=-1) && (ShowPointY!=-1))
-				GfxR->fctMouseCursor.Draw( cgo.Surface,
-													int32_t(cgo.X+(ShowPointX-cgo.TargetX)*GameZoom.Zoom / GuiZoom.Zoom-GfxR->fctMouseCursor.Wdt/2),
-													int32_t(cgo.Y+(ShowPointY-cgo.TargetY)*GameZoom.Zoom / GuiZoom.Zoom-GfxR->fctMouseCursor.Hgt/2),
-													C4MC_Cursor_Point );
-			// Add mark
-			if (fAddMark)
-				GfxR->fctMouseCursor.Draw( cgo.Surface,
-																	 int32_t(cgo.X+GuiX-iOffsetX+8),
-																	 int32_t(cgo.Y+GuiY-iOffsetY+8),
-																	 C4MC_Cursor_Add );
-			break;
+			// draw in special modulation mode
+			lpDDraw->SetBlitMode(C4GFXBLIT_MOD2);
+			// draw DragImage in red or green, according to the phase to be used
+			iOffsetX=int(ZoomDraw*DragImage.Wdt/2);
+			if (Drag == C4MC_Drag_Construct)
+				iOffsetY=int(ZoomDraw*DragImage.Hgt);
+			else
+				iOffsetY=int(ZoomDraw*DragImage.Hgt/2);
+			lpDDraw->ActivateBlitModulation((Drag == C4MC_Drag_Script) ? 0x7fffffff : (DragImagePhase ? 0x8f7f0000 : 0x1f007f00));
+			lpDDraw->Blit(DragImage.Surface,
+			              float(DragImage.X), float(DragImage.Y), float(DragImage.Wdt), float(DragImage.Hgt),
+			              cgo.Surface,
+			              XDraw + cgo.X - iOffsetX, YDraw + cgo.Y - iOffsetY, float(DragImage.Wdt)*ZoomDraw, float(DragImage.Hgt)*ZoomDraw,true);
+			// reset color
+			lpDDraw->DeactivateBlitModulation();
+			lpDDraw->SetBlitMode(0);
+			if (fIsGameZoom) lpDDraw->SetZoom(GuiZoom);
+			// reset cursor hotspot offset for script drawing
+			iOffsetX = GfxR->fctMouseCursor.Wdt/2;
+			iOffsetY = GfxR->fctMouseCursor.Hgt/2;
+		}
+		// Cursor
+		if (!DragImage.Surface || (Drag == C4MC_Drag_Script))
+			GfxR->fctMouseCursor.Draw(cgo.Surface,cgo.X+GuiX-iOffsetX,cgo.Y+GuiY-iOffsetY,Cursor);
+		// Point
+		if ((ShowPointX!=-1) && (ShowPointY!=-1))
+			GfxR->fctMouseCursor.Draw( cgo.Surface,
+			                           int32_t(cgo.X+(ShowPointX-cgo.TargetX)*GameZoom.Zoom / GuiZoom.Zoom-GfxR->fctMouseCursor.Wdt/2),
+			                           int32_t(cgo.Y+(ShowPointY-cgo.TargetY)*GameZoom.Zoom / GuiZoom.Zoom-GfxR->fctMouseCursor.Hgt/2),
+			                           C4MC_Cursor_Point );
+		// Add mark
+		if (fAddMark)
+			GfxR->fctMouseCursor.Draw( cgo.Surface,
+			                           int32_t(cgo.X+GuiX-iOffsetX+8),
+			                           int32_t(cgo.Y+GuiY-iOffsetY+8),
+			                           C4MC_Cursor_Add );
+		break;
 		//------------------------------------------------------------------------------------------
-		case C4MC_Drag_Selecting:
-			// Draw frame
-			Application.DDraw->DrawFrame( cgo.Surface,
-															int32_t(cgo.X + GuiX),
-															int32_t(cgo.Y + GuiY),
-															int32_t(cgo.X + (DownX - cgo.TargetX) * GameZoom.Zoom / GuiZoom.Zoom),
-															int32_t(cgo.Y + (DownY - cgo.TargetY) * GameZoom.Zoom / GuiZoom.Zoom),
-															CRed );
-			break;
+	case C4MC_Drag_Selecting:
+		// Draw frame
+		Application.DDraw->DrawFrame( cgo.Surface,
+		                              int32_t(cgo.X + GuiX),
+		                              int32_t(cgo.Y + GuiY),
+		                              int32_t(cgo.X + (DownX - cgo.TargetX) * GameZoom.Zoom / GuiZoom.Zoom),
+		                              int32_t(cgo.Y + (DownY - cgo.TargetY) * GameZoom.Zoom / GuiZoom.Zoom),
+		                              CRed );
+		break;
 		//------------------------------------------------------------------------------------------
 	}
 
@@ -529,10 +529,10 @@ void C4MouseControl::Draw(C4TargetFacet &cgo, const ZoomData &GameZoom)
 			int32_t iWdt,iHgt;
 			::GraphicsResource.FontRegular.GetTextExtent(Caption.getData(), iWdt, iHgt, true);
 			Application.DDraw->TextOut(Caption.getData(), ::GraphicsResource.FontRegular, 1.0,
-													cgo.Surface,
-													float(cgo.X)+BoundBy<float>(GuiX,float(iWdt)/2+1,float(cgo.Wdt)-iWdt/2-1),
-													float(cgo.Y)+Min<float>( CaptionBottomY ? float(CaptionBottomY-iHgt-1) : GuiY+13, float(cgo.Hgt-iHgt)),
-													0xfaFF0000,ACenter);
+			                           cgo.Surface,
+			                           float(cgo.X)+BoundBy<float>(GuiX,float(iWdt)/2+1,float(cgo.Wdt)-iWdt/2-1),
+			                           float(cgo.Y)+Min<float>( CaptionBottomY ? float(CaptionBottomY-iHgt-1) : GuiY+13, float(cgo.Hgt-iHgt)),
+			                           0xfaFF0000,ACenter);
 		}
 	}
 
@@ -571,14 +571,14 @@ void C4MouseControl::UpdateCursorTarget()
 		if (TargetObject->Category & C4D_MouseSelect)
 			Cursor=C4MC_Cursor_Select;
 	}
-	
+
 	// Help
 	if (Help)
 		Cursor=C4MC_Cursor_Help;
 	// passive cursor
 	else if (IsPassive())
 		Cursor=C4MC_Cursor_Region;
-	
+
 	// Time on target: caption
 	if (Cursor==iLastCursor)
 	{
@@ -592,17 +592,17 @@ void C4MouseControl::UpdateCursorTarget()
 			// Target caption by cursor
 			switch (Cursor)
 			{
-				case C4MC_Cursor_Select: idCaption="IDS_CON_SELECT"; break;
-				case C4MC_Cursor_Help: idCaption="IDS_CON_NAME"; break;
+			case C4MC_Cursor_Select: idCaption="IDS_CON_SELECT"; break;
+			case C4MC_Cursor_Help: idCaption="IDS_CON_NAME"; break;
 			}
 			// Set caption
 			if (idCaption) if (!KeepCaption)
-			{
-				// Caption by cursor
-				Caption.Format(LoadResStr(idCaption), szName);
-				if (fDouble) { Caption.AppendChar('|'); Caption.Append(LoadResStr("IDS_CON_DOUBLECLICK")); }
-				IsHelpCaption = false;
-			}
+				{
+					// Caption by cursor
+					Caption.Format(LoadResStr(idCaption), szName);
+					if (fDouble) { Caption.AppendChar('|'); Caption.Append(LoadResStr("IDS_CON_DOUBLECLICK")); }
+					IsHelpCaption = false;
+				}
 		}
 	}
 	else
@@ -611,23 +611,23 @@ void C4MouseControl::UpdateCursorTarget()
 }
 
 int32_t C4MouseControl::UpdateSingleSelection()
-	{
+{
 
 	// Set single selection if cursor on selection object (clear prior object selection)
 	if (TargetObject && (Cursor==C4MC_Cursor_Select))
-		{	Selection.Clear(); Selection.Add(TargetObject, C4ObjectList::stNone);	}
+		{ Selection.Clear(); Selection.Add(TargetObject, C4ObjectList::stNone); }
 
 	// Cursor has moved off single object (or target object) selection: clear selection
 	else if (Selection.GetObject())
 		if (::Players.Get(Player)->ObjectInCrew(Selection.GetObject())
-			|| (Selection.GetObject()->Category & C4D_MouseSelect))
+		    || (Selection.GetObject()->Category & C4D_MouseSelect))
 			Selection.Clear();
 
 	return Selection.ObjectCount();
-	}
+}
 
 void C4MouseControl::UpdateScrolling()
-	{
+{
 	// Assume no scrolling
 	Scrolling=false;
 	// No scrolling if on region
@@ -642,11 +642,11 @@ void C4MouseControl::UpdateScrolling()
 	if (VpY==Viewport->ViewHgt-1)
 		{ Cursor=C4MC_Cursor_Down; ScrollView(0,+ScrollSpeed,Viewport->ViewWdt,Viewport->ViewHgt); Scrolling=true; }
 	// Set correct cursor
-	if ((VpX==0) && (VpY==0))	Cursor=C4MC_Cursor_UpLeft;
-	if ((VpX==Viewport->ViewWdt-1) && (VpY==0))	Cursor=C4MC_Cursor_UpRight;
-	if ((VpX==0) && (VpY==Viewport->ViewHgt-1))	Cursor=C4MC_Cursor_DownLeft;
-	if ((VpX==Viewport->ViewWdt-1) && (VpY==Viewport->ViewHgt-1))	Cursor=C4MC_Cursor_DownRight;
-	}
+	if ((VpX==0) && (VpY==0)) Cursor=C4MC_Cursor_UpLeft;
+	if ((VpX==Viewport->ViewWdt-1) && (VpY==0)) Cursor=C4MC_Cursor_UpRight;
+	if ((VpX==0) && (VpY==Viewport->ViewHgt-1)) Cursor=C4MC_Cursor_DownLeft;
+	if ((VpX==Viewport->ViewWdt-1) && (VpY==Viewport->ViewHgt-1)) Cursor=C4MC_Cursor_DownRight;
+}
 
 void C4MouseControl::UpdateTargetRegion()
 {
@@ -685,7 +685,7 @@ void C4MouseControl::UpdateTargetRegion()
 
 			// Control queue
 			Game.Input.Add(CID_PlrControl,
-				new C4ControlPlayerControl(Player,TargetRegion->MoveOverCom,TargetRegion->Data));
+			               new C4ControlPlayerControl(Player,TargetRegion->MoveOverCom,TargetRegion->Data));
 		}
 	}
 	else
@@ -717,10 +717,10 @@ void C4MouseControl::DragSelect()
 	if (FogOfWar) return;
 	switch (DragSelecting)
 	{
-		case C4MC_Selecting_Unknown:
-			// Determine selection type
-			// No selection in engine right now...
-			break;
+	case C4MC_Selecting_Unknown:
+		// Determine selection type
+		// No selection in engine right now...
+		break;
 	}
 }
 
@@ -734,15 +734,15 @@ void C4MouseControl::LeftUp()
 	switch (Drag)
 	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_None: LeftUpDragNone(); break;
+	case C4MC_Drag_None: LeftUpDragNone(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_Selecting:	ButtonUpDragSelecting(); break;
+	case C4MC_Drag_Selecting: ButtonUpDragSelecting(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_Moving: ButtonUpDragMoving(); break;
+	case C4MC_Drag_Moving: ButtonUpDragMoving(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_Construct: ButtonUpDragConstruct(); break;
+	case C4MC_Drag_Construct: ButtonUpDragConstruct(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_Script: ButtonUpDragScript(); break;
+	case C4MC_Drag_Script: ButtonUpDragScript(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 	}
 }
@@ -764,11 +764,11 @@ void C4MouseControl::DragNone()
 		switch (Cursor)
 		{
 			// Hold down on region
-			case C4MC_Cursor_Region:
-				if (!::Game.iTick5)
-					if (DownRegion.HoldCom)
-						SendControl(DownRegion.HoldCom);
-				break;
+		case C4MC_Cursor_Region:
+			if (!::Game.iTick5)
+				if (DownRegion.HoldCom)
+					SendControl(DownRegion.HoldCom);
+			break;
 		}
 	}
 
@@ -779,24 +779,24 @@ void C4MouseControl::DragNone()
 
 	// Button down: begin drag
 	if ( (LeftButtonDown || RightButtonDown)
-		&& ((Abs(GameX-DownX)>C4MC_DragSensitivity) || (Abs(GameY-DownY)>C4MC_DragSensitivity)) )
+	     && ((Abs(GameX-DownX)>C4MC_DragSensitivity) || (Abs(GameY-DownY)>C4MC_DragSensitivity)) )
 	{
 		// don't begin dragging from FoW; unless it's a menu
 		if (FogOfWar && DownCursor != C4MC_Cursor_Region) return;
 		bool fAllowDrag = true;
 		switch (DownCursor)
 		{
-				/*
+			/*
 			// Drag start selecting in landscape
 			case C4MC_Cursor_Crosshair:
-				Selection.Clear();
-				Drag=C4MC_Drag_Selecting; DragSelecting=C4MC_Selecting_Unknown;
-				break;
-				*/
+			Selection.Clear();
+			Drag=C4MC_Drag_Selecting; DragSelecting=C4MC_Selecting_Unknown;
+			break;
+			*/
 			// Help: no dragging
-			case C4MC_Cursor_Help:
-				fAllowDrag = false;
-				break;
+		case C4MC_Cursor_Help:
+			fAllowDrag = false;
+			break;
 		}
 		// check if target object allows scripted dragging
 		if (TargetObject)
@@ -814,24 +814,24 @@ void C4MouseControl::DragNone()
 }
 
 void C4MouseControl::LeftDouble()
-	{
+{
 	// Update status flag
 	LeftButtonDown=false;
 	// Set ignore flag for next left up
 	LeftDoubleIgnoreUp=true;
 	// Evaluate left double by drag status (can only be C4MC_Drag_None really)
 	switch (Drag)
-		{
+	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_None:
-			// Double left click (might be on a target)
-			break;
+	case C4MC_Drag_None:
+		// Double left click (might be on a target)
+		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		}
 	}
+}
 
 void C4MouseControl::RightDown()
-	{
+{
 	// Update status flag
 	RightButtonDown=true;
 	// Store down values (same MoveLeftDown -> use StoreDown)
@@ -840,55 +840,55 @@ void C4MouseControl::RightDown()
 	DownTarget=TargetObject;
 	DownRegion.Default();
 	if (TargetRegion)
-		{
+	{
 		DownRegion=(*TargetRegion);
 		DownTarget=TargetRegion->Target;
 		DownOffsetX=TargetRegion->X-GuiX; DownOffsetY=TargetRegion->Y-GuiY;
-		}
 	}
+}
 
 void C4MouseControl::RightUp()
-	{
+{
 	// Update status flag
 	RightButtonDown=false;
 	// Evaluate by drag status
 	switch (Drag)
-		{
+	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_None: RightUpDragNone(); break;
+	case C4MC_Drag_None: RightUpDragNone(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_Selecting:	ButtonUpDragSelecting(); break;
+	case C4MC_Drag_Selecting: ButtonUpDragSelecting(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_Moving: ButtonUpDragMoving(); break;
+	case C4MC_Drag_Moving: ButtonUpDragMoving(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_Construct: ButtonUpDragConstruct(); break;
+	case C4MC_Drag_Construct: ButtonUpDragConstruct(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4MC_Drag_Script: ButtonUpDragScript(); break;
+	case C4MC_Drag_Script: ButtonUpDragScript(); break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		}
 	}
+}
 
 void C4MouseControl::Wheel(DWORD dwFlags)
-	{
+{
 	//short iDelta = (short)(dwFlags >> 16);
 
 	// Normal wheel: control zoom
-	if(!ControlDown)
-		{
+	if (!ControlDown)
+	{
 		//if(iDelta > 0) Viewport->ChangeZoom(C4GFX_ZoomStep);
 		//if(iDelta < 0) Viewport->ChangeZoom(1.0f/C4GFX_ZoomStep);
-		}
+	}
 	// Ctrl + Wheel: pass to player control (might be used for inventory or such)
 	else
-		{
+	{
 		// TODO
 		//if(iDelta > 0) Game.LocalPlayerControl(Player, COM_WheelUp);
 		//if(iDelta < 0) Game.LocalPlayerControl(Player, COM_WheelDown);
-		}
 	}
+}
 
 bool C4MouseControl::IsValidMenu(C4Menu *pMenu)
-	{
+{
 	// Local control fullscreen menu
 	if (pMenu == FullScreen.pMenu)
 		if (pMenu->IsActive())
@@ -901,41 +901,41 @@ bool C4MouseControl::IsValidMenu(C4Menu *pMenu)
 				return true;
 	// No match found
 	return false;
-	}
+}
 
 bool C4MouseControl::SendControl(int32_t iCom, int32_t iData)
-	{
+{
 	// Help
 	if (iCom==COM_Help)
-		{
+	{
 		Help=true;
 		return true;
-		}
+	}
 	// Activate player menu / fullscreen main menu (local control)
 	if (iCom==COM_PlayerMenu)
-		{
+	{
 		if (IsPassive() && FullScreen.Active)
 			FullScreen.ActivateMenuMain();
 		else
 			pPlayer->ActivateMenuMain();
 		return true;
-		}
+	}
 	// Open chat
 	if (iCom==COM_Chat)
-		{
+	{
 		C4ChatDlg::ShowChat();
 		return true;
-		}
+	}
 	// other controls not valid in passive mode
 	if (IsPassive()) return false;
 	// Player control queue
 	Game.Input.Add(CID_PlrControl, new C4ControlPlayerControl(Player,iCom,iData));
 	// Done
 	return true;
-	}
+}
 
 void C4MouseControl::CreateDragImage(C4ID id, C4Object *obj, bool fPicture)
-	{
+{
 	// todo: real object drawing
 	if (obj) id = obj->id;
 	// Get definition
@@ -945,15 +945,15 @@ void C4MouseControl::CreateDragImage(C4ID id, C4Object *obj, bool fPicture)
 		DragImage.Set(pDef->Graphics.GetBitmap(),pDef->PictureRect.x,pDef->PictureRect.y,pDef->PictureRect.Wdt,pDef->PictureRect.Hgt);
 	else
 		DragImage=pDef->GetMainFace(&pDef->Graphics);
-	}
+}
 
 void C4MouseControl::DragConstruct()
-	{
+{
 	Cursor=C4MC_Cursor_Construct;
 	// Check site
 	DragImagePhase=1;
 	if (!FogOfWar && ConstructionCheck(C4Id2Def(DragID),int32_t(GameX),int32_t(GameY))) DragImagePhase=0;
-	}
+}
 
 void C4MouseControl::DragScript()
 {
@@ -968,62 +968,62 @@ void C4MouseControl::DragScript()
 }
 
 void C4MouseControl::LeftUpDragNone()
-	{
+{
 	// Single left click (might be on a target)
 	switch (Cursor)
-		{
+	{
 		// Region
-		case C4MC_Cursor_Region:
-			// Help click on region: ignore
-			if (Help) break;
-			// Region com & data
-			SendControl(DownRegion.Com,DownRegion.Data);
-			break;
+	case C4MC_Cursor_Region:
+		// Help click on region: ignore
+		if (Help) break;
+		// Region com & data
+		SendControl(DownRegion.Com,DownRegion.Data);
+		break;
 		// Selection
-		case C4MC_Cursor_Select:
-			// Object selection to control queue
-			if (!IsPassive()) Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,false));
-			break;
+	case C4MC_Cursor_Select:
+		// Object selection to control queue
+		if (!IsPassive()) Game.Input.Add(CID_PlrSelect, new C4ControlPlayerSelect(Player,Selection,false));
+		break;
 		// Help
-		case C4MC_Cursor_Help:
-			if (DownTarget)
-				{
-				if (DownTarget->Def->GetDesc())
-					Caption.Format("%s: %s",DownTarget->GetName(), DownTarget->Def->GetDesc());
-				else
-					Caption.Copy(DownTarget->GetName());
-				KeepCaption=Caption.getLength()/2;
-				IsHelpCaption = true;
-				}
-			break;
-		// Nothing
-		case C4MC_Cursor_Nothing:
-			break;
-		// Movement?
-		default:
-			// done in script
-			break;
+	case C4MC_Cursor_Help:
+		if (DownTarget)
+		{
+			if (DownTarget->Def->GetDesc())
+				Caption.Format("%s: %s",DownTarget->GetName(), DownTarget->Def->GetDesc());
+			else
+				Caption.Copy(DownTarget->GetName());
+			KeepCaption=Caption.getLength()/2;
+			IsHelpCaption = true;
 		}
+		break;
+		// Nothing
+	case C4MC_Cursor_Nothing:
+		break;
+		// Movement?
+	default:
+		// done in script
+		break;
+	}
 	// Clear selection
 	Selection.Clear();
-	}
+}
 
 void C4MouseControl::ButtonUpDragSelecting()
-	{
+{
 	// Finish drag
 	Drag=C4MC_Drag_None;
-	}
+}
 
 void C4MouseControl::ButtonUpDragMoving()
-	{
+{
 	// Finish drag
 	Drag=C4MC_Drag_None;
 	// Clear selection
 	Selection.Clear();
-	}
+}
 
 void C4MouseControl::ButtonUpDragConstruct()
-	{
+{
 	// Finish drag
 	Drag=C4MC_Drag_None;
 	DragImage.Default();
@@ -1032,7 +1032,7 @@ void C4MouseControl::ButtonUpDragConstruct()
 		SendCommand(C4CMD_Construct,int32_t(GameX),int32_t(GameY),NULL,NULL,DragID.GetHandle());
 	// Clear selection (necessary?)
 	Selection.Clear();
-	}
+}
 
 void C4MouseControl::ButtonUpDragScript()
 {
@@ -1054,14 +1054,14 @@ void C4MouseControl::ButtonUpDragScript()
 	// now drag/drop is handled by script
 	if (DropObject)
 		Game.Input.Add(CID_Script, new C4ControlScript(
-		  FormatString("%s(%d,Object(%d),Object(%d))", PSF_MouseDragDrop, (int)Player, (int)(DragObject->Number), (int)(DropObject->Number)).getData()));
+		                 FormatString("%s(%d,Object(%d),Object(%d))", PSF_MouseDragDrop, (int)Player, (int)(DragObject->Number), (int)(DropObject->Number)).getData()));
 	else
 		Game.Input.Add(CID_Script, new C4ControlScript(
-		  FormatString("%s(%d,Object(%d),nil)", PSF_MouseDragDrop, (int)Player, (int)(DragObject->Number)).getData()));
+		                 FormatString("%s(%d,Object(%d),nil)", PSF_MouseDragDrop, (int)Player, (int)(DragObject->Number)).getData()));
 }
 
 void C4MouseControl::SendCommand(int32_t iCommand, int32_t iX, int32_t iY, C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode)
-	{
+{
 	// no commands in passive mode
 	if (IsPassive()) return;
 	// no commands if player is eliminated or doesn't exist any more
@@ -1071,10 +1071,10 @@ void C4MouseControl::SendCommand(int32_t iCommand, int32_t iX, int32_t iY, C4Obj
 	if (ShiftDown) iAddMode|=C4P_Command_Append;
 	// Command to control queue
 	Game.Input.Add(CID_PlrCommand, new C4ControlPlayerCommand(Player,iCommand,iX,iY,pTarget,pTarget2,iData,iAddMode));
-	}
+}
 
 void C4MouseControl::RightUpDragNone()
-	{
+{
 
 	// Region: send control
 	if (Cursor==C4MC_Cursor_Region)
@@ -1090,40 +1090,40 @@ void C4MouseControl::RightUpDragNone()
 
 	// TODO: Evaluate right click
 
-	}
+}
 
 void C4MouseControl::UpdateFogOfWar()
-	{
+{
 	// Assume no fog of war
 	FogOfWar=false;
 	// Check for fog of war
 	if ((pPlayer->fFogOfWar && !pPlayer->FoWIsVisible(int32_t(GameX),int32_t(GameY))) || GameX<0 || GameY<0 || int32_t(GameX)>=GBackWdt || int32_t(GameY)>=GBackHgt)
-		{
+	{
 		FogOfWar=true;
 		// allow dragging, scrolling, region selection and manipulations of objects not affected by FoW
 		if (!TargetRegion && !Scrolling && (!TargetObject || !(TargetObject->Category & C4D_IgnoreFoW)))
-			{
+		{
 			Cursor=C4MC_Cursor_Nothing;
 			ShowPointX=ShowPointY=-1;
 			// dragging will reset the cursor
-			}
 		}
 	}
+}
 
 void C4MouseControl::ShowCursor()
-	{
+{
 	Visible=true;
-	}
+}
 
 void C4MouseControl::HideCursor()
-	{
+{
 	Visible=false;
-	}
+}
 
 const char *C4MouseControl::GetCaption()
-	{
+{
 	return Caption.getData();
-	}
+}
 
 C4Object *C4MouseControl::GetTargetObject()
 {
@@ -1135,35 +1135,35 @@ C4Object *C4MouseControl::GetTargetObject()
 }
 
 bool C4MouseControl::IsPassive()
-	{
+{
 	return ::Control.isReplay() || Player<=NO_OWNER;
-	}
+}
 
 void C4MouseControl::ScrollView(int32_t iX, int32_t iY, int32_t ViewWdt, int32_t ViewHgt)
-	{
+{
 	// player assigned: scroll player view
 	if (pPlayer)
 		pPlayer->ScrollView(iX, iY, ViewWdt, ViewHgt);
 	else if (Viewport)
-		{
+	{
 		// no player: Scroll fullscreen viewport
 		Viewport->ViewX = Viewport->ViewX+iX;
 		Viewport->ViewY = Viewport->ViewY+iY;
 		Viewport->UpdateViewPosition();
-		}
-
 	}
+
+}
 
 bool C4MouseControl::IsDragging()
-	{
+{
 	// no selection drag; return true for object drag only
 	return Active && (Drag == C4MC_Drag_Moving || Drag == C4MC_Drag_Construct);
-	}
+}
 
 void C4MouseControl::StartConstructionDrag(C4ID id)
-	{
+{
 	Drag=C4MC_Drag_Construct;
 	DragID=id;
 	CreateDragImage(DragID,NULL,false);
 	Selection.Clear();
-	}
+}

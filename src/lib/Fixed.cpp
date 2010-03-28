@@ -26,7 +26,8 @@
 #ifdef USE_FIXED
 
 // static table with sinus values from 0.00 degree to 90.00 degree inclusively
-long SineTable[9001] = {
+long SineTable[9001] =
+{
 	0,
 	11,
 	22,
@@ -9038,11 +9039,14 @@ void CompileFunc(FIXED &rValue, StdCompiler *pComp)
 #else
 	char cFormat = 'f';
 #endif
-	try {
+	try
+	{
 		// Read/write type
 		pComp->Character(cFormat);
 
-	} catch(StdCompiler::NotFoundException *pEx) {
+	}
+	catch (StdCompiler::NotFoundException *pEx)
+	{
 		delete pEx;
 		// Expect old format if not found
 		cFormat = 'F';
@@ -9051,10 +9055,10 @@ void CompileFunc(FIXED &rValue, StdCompiler *pComp)
 	pComp->Value(mkCastAdapt<int32_t>(rValue));
 	// convert, if neccessary
 #ifdef USE_FIXED
-	if(cFormat == 'f')
+	if (cFormat == 'f')
 		FLOAT_TO_FIXED(&rValue);
 #else
-	if(cFormat == 'F')
+	if (cFormat == 'F')
 		FIXED_TO_FLOAT(&rValue);
 #endif
 }

@@ -25,23 +25,23 @@ CPNGFile *pCurrPng=NULL; // global crap for file-reading callback
 
 // png reading proc
 void PNGAPI CPNGReadFn(png_structp png_ptr, png_bytep data, size_t length)
-	{
+{
 	// read from current pnt
 	if (!pCurrPng) return;
 	pCurrPng->Read(data, length);
-	}
+}
 
 void CPNGFile::Read(unsigned char *pData, int iLength)
-	{
+{
 	// fixme: overflow check schould be done here
 	// simply copy into buffer
 	memcpy(pData, pFilePtr, iLength);
 	// advance file ptr
 	pFilePtr+=iLength;
-	}
+}
 
 bool CPNGFile::DoLoad()
-	{
+{
 	// set current png ptr
 	pCurrPng=this;
 	// reset file ptr
@@ -79,11 +79,11 @@ bool CPNGFile::DoLoad()
 	iWdt = uWdt; iHgt = uHgt;
 	// get bit depth/check format
 	switch (iClrType)
-		{
-		case PNG_COLOR_TYPE_RGB: iPixSize=3; break;
-		case PNG_COLOR_TYPE_RGB_ALPHA: iPixSize=4; break;
-		default: return false; // unrecognized image
-		}
+	{
+	case PNG_COLOR_TYPE_RGB: iPixSize=3; break;
+	case PNG_COLOR_TYPE_RGB_ALPHA: iPixSize=4; break;
+	default: return false; // unrecognized image
+	}
 	// allocate mem for the whole image
 	iRowSize=png_get_rowbytes(png_ptr, info_ptr);
 	pImageData = new unsigned char[iRowSize*iHgt];
@@ -97,15 +97,15 @@ bool CPNGFile::DoLoad()
 	delete [] ppRowBuf;
 	// success
 	return true;
-	}
+}
 
 CPNGFile::CPNGFile()
-	{
+{
 	Default();
-	}
+}
 
 void CPNGFile::Default()
-	{
+{
 	// zero fields
 	pFile=NULL;
 	fpFileOwned=false;
@@ -116,31 +116,31 @@ void CPNGFile::Default()
 	iRowSize=0;
 	iPixSize=0;
 	fp=NULL;
-	}
+}
 
 CPNGFile::~CPNGFile()
-	{
+{
 	// clear
 	Clear();
-	}
+}
 
 void CPNGFile::ClearPngStructs()
-	{
+{
 	// clear internal png ptrs
 	if (png_ptr || info_ptr || end_info)
-		{
+	{
 		if (fWriteMode)
 			png_destroy_write_struct(&png_ptr, &info_ptr);
 		else
 			png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		}
+	}
 	png_ptr=NULL;
 	info_ptr=end_info=NULL;
 	fWriteMode=false;
-	}
+}
 
 void CPNGFile::Clear()
-	{
+{
 	// free image data
 	if (pImageData) { delete [] pImageData; pImageData=NULL; }
 	// clear internal png ptrs
@@ -154,10 +154,10 @@ void CPNGFile::Clear()
 	iPixSize=0;
 	// close file if open
 	if (fp) { fclose(fp); fp=NULL; }
-	}
+}
 
 bool CPNGFile::Load(unsigned char *pFile, int iSize)
-	{
+{
 	// clear any previously loaded file
 	Clear();
 	// store file ptr as not owned
@@ -166,34 +166,34 @@ bool CPNGFile::Load(unsigned char *pFile, int iSize)
 	fpFileOwned=false;
 	// perform the loading
 	if (!DoLoad())
-		{
+	{
 		Clear();
 		return false;
-		}
+	}
 	// reset file-field
 	this->pFile = NULL; iFileSize=0;
 	// success
 	return true;
-	}
+}
 
 DWORD CPNGFile::GetPix(int iX, int iY)
-	{
+{
 	// image loaded?
 	if (!pImageData) return 0;
 	// return pixel value
 	unsigned char *pPix=pImageData+iY*iRowSize+iX*iPixSize;
 	switch (iClrType)
-		{
-		case PNG_COLOR_TYPE_RGB:
-			return 0xff << 24 | RGB(pPix[0], pPix[1], pPix[2]);
-		case PNG_COLOR_TYPE_RGB_ALPHA:
-			return pPix[3] << 24 | RGB(pPix[0], pPix[1], pPix[2]);
-		}
-	return 0;
+	{
+	case PNG_COLOR_TYPE_RGB:
+		return 0xff << 24 | RGB(pPix[0], pPix[1], pPix[2]);
+	case PNG_COLOR_TYPE_RGB_ALPHA:
+		return pPix[3] << 24 | RGB(pPix[0], pPix[1], pPix[2]);
 	}
+	return 0;
+}
 
 bool CPNGFile::Create(int iWdt, int iHgt, bool fAlpha)
-	{
+{
 	// catch invalid size
 	if (iWdt<=0 || iHgt<=0) return false;
 	// clear current image in mem
@@ -215,30 +215,30 @@ bool CPNGFile::Create(int iWdt, int iHgt, bool fAlpha)
 	pImageData = new unsigned char[iHgt * iRowSize];
 	// success
 	return true;
-	}
+}
 
 bool CPNGFile::SetPix(int iX, int iY, DWORD dwValue)
-	{
+{
 	// image created?
 	if (!pImageData) return false;
 	// set pixel value
 	unsigned char *pPix=pImageData+iY*iRowSize+iX*iPixSize;
 	switch (iClrType)
-		{
-		case PNG_COLOR_TYPE_RGB: // RGB: set r, g and b values
-			pPix[0] = GetRValue(dwValue);
-			pPix[1] = GetGValue(dwValue);
-			pPix[2] = GetBValue(dwValue);
-			return true;
-		case PNG_COLOR_TYPE_RGB_ALPHA: // RGBA: simply set in mem
-			*(unsigned long *) pPix = dwValue;
-			return true;
-		}
-	return false;
+	{
+	case PNG_COLOR_TYPE_RGB: // RGB: set r, g and b values
+		pPix[0] = GetRValue(dwValue);
+		pPix[1] = GetGValue(dwValue);
+		pPix[2] = GetBValue(dwValue);
+		return true;
+	case PNG_COLOR_TYPE_RGB_ALPHA: // RGBA: simply set in mem
+		*(unsigned long *) pPix = dwValue;
+		return true;
 	}
+	return false;
+}
 
 bool CPNGFile::Save(const char *szFilename)
-	{
+{
 	// regular file saving - first, there has to be a buffer
 	if (!pImageData) return false;
 	// open the file
@@ -267,10 +267,10 @@ bool CPNGFile::Save(const char *szFilename)
 	// double-check our calculated row size
 	int iRealRowSize=png_get_rowbytes(png_ptr, info_ptr);
 	if (iRealRowSize != iRowSize)
-		{
+	{
 		// this won't go well, so better abort
 		Clear(); return false;
-		}
+	}
 	// write png header
 	png_write_info(png_ptr, info_ptr);
 	// image data is given as bgr...
@@ -291,14 +291,14 @@ bool CPNGFile::Save(const char *szFilename)
 	ClearPngStructs();
 	// success!
 	return true;
-	}
+}
 
 int CPNGFile::GetBitsPerPixel()
-	{
+{
 	switch (iClrType)
-		{
-		case PNG_COLOR_TYPE_RGB: return 24;
-		case PNG_COLOR_TYPE_RGB_ALPHA: return 32;
-		}
-	return 0;
+	{
+	case PNG_COLOR_TYPE_RGB: return 24;
+	case PNG_COLOR_TYPE_RGB_ALPHA: return 32;
 	}
+	return 0;
+}

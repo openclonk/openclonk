@@ -53,17 +53,17 @@
 #endif
 
 C4EditCursor::C4EditCursor()
-	{
+{
 	Default();
-	}
+}
 
 C4EditCursor::~C4EditCursor()
-	{
+{
 	Clear();
-	}
+}
 
 void C4EditCursor::Execute()
-	{
+{
 	// alt check
 	bool fAltIsDown = Application.IsAltDown();
 	if (fAltIsDown != fAltWasDown)
@@ -75,36 +75,36 @@ void C4EditCursor::Execute()
 	}
 	// drawing
 	switch (Mode)
+	{
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeEdit:
+		// Hold selection
+		if (Hold)
+			EMMoveObject(EMMO_Move, 0, 0, NULL, &Selection);
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeDraw:
+		switch (Console.ToolsDlg.Tool)
 		{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeEdit:
-			// Hold selection
-			if (Hold)
-				EMMoveObject(EMMO_Move, 0, 0, NULL, &Selection);
+		case C4TLS_Fill:
+			if (Hold) if (!Game.HaltCount) if (Console.Editing) ApplyToolFill();
 			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeDraw:
-			switch (Console.ToolsDlg.Tool)
-				{
-				case C4TLS_Fill:
-					if (Hold) if (!Game.HaltCount) if (Console.Editing) ApplyToolFill();
-					break;
-				}
-			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	}
 	// selection update
 	if (fSelectionChanged)
-		{
+	{
 		fSelectionChanged = false;
 		UpdateStatusBar();
 		Console.PropertyDlg.Update(Selection);
 		Console.ObjectListDlg.Update(Selection);
-		}
- 	}
+	}
+}
 
 bool C4EditCursor::Init()
-	{
+{
 
 #ifdef _WIN32
 	if (!(hMenu = LoadMenu(Application.GetInstance(),MAKEINTRESOURCE(IDR_CONTEXTMENUS))))
@@ -135,199 +135,199 @@ bool C4EditCursor::Init()
 	Console.UpdateModeCtrls(Mode);
 
 	return true;
-	}
+}
 
 void C4EditCursor::ClearPointers(C4Object *pObj)
-	{
+{
 	if (Target==pObj) Target=NULL;
 	if (Selection.ClearPointers(pObj))
-	OnSelectionChanged();
-	}
+		OnSelectionChanged();
+}
 
 bool C4EditCursor::Move(float iX, float iY, WORD wKeyFlags)
-	{
+{
 	// Offset movement
 	float xoff = iX-X; float yoff = iY-Y;
 	X=int32_t(iX); Y=int32_t(iY);
 
 	switch (Mode)
+	{
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeEdit:
+		// Hold
+		if (!DragFrame && Hold)
 		{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeEdit:
-			// Hold
-			if (!DragFrame && Hold)
-				{
-				MoveSelection(int32_t(xoff),int32_t(yoff));
-				UpdateDropTarget(wKeyFlags);
-				}
-			// Update target
-			// Shift always indicates a target outside the current selection
-			else
-				{
-				Target = ((wKeyFlags & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
-				do
-					{
-						Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, NULL, NULL, NULL, NULL, ANY_OWNER, Target);
-					}
-				while ((wKeyFlags & MK_SHIFT) && Target && Selection.GetLink(Target));
-				}
-			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeDraw:
-			switch (Console.ToolsDlg.Tool)
-				{
-				case C4TLS_Brush:
-					if (Hold) ApplyToolBrush();
-					break;
-				case C4TLS_Line: case C4TLS_Rect:
-					break;
-				}
-			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			MoveSelection(int32_t(xoff),int32_t(yoff));
+			UpdateDropTarget(wKeyFlags);
 		}
+		// Update target
+		// Shift always indicates a target outside the current selection
+		else
+		{
+			Target = ((wKeyFlags & MK_SHIFT) && Selection.Last) ? Selection.Last->Obj : NULL;
+			do
+			{
+				Target = Game.FindObject(C4ID::None,X,Y,0,0,OCF_NotContained, NULL, NULL, NULL, NULL, ANY_OWNER, Target);
+			}
+			while ((wKeyFlags & MK_SHIFT) && Target && Selection.GetLink(Target));
+		}
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeDraw:
+		switch (Console.ToolsDlg.Tool)
+		{
+		case C4TLS_Brush:
+			if (Hold) ApplyToolBrush();
+			break;
+		case C4TLS_Line: case C4TLS_Rect:
+			break;
+		}
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	}
 
 	// Update
 	UpdateStatusBar();
 	return true;
-	}
+}
 
 bool C4EditCursor::UpdateStatusBar()
-	{
+{
 	StdStrBuf str;
 	switch (Mode)
-		{
+	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModePlay:
-			if (::MouseControl.GetCaption()) str.CopyUntil(::MouseControl.GetCaption(),'|');
-			break;
+	case C4CNS_ModePlay:
+		if (::MouseControl.GetCaption()) str.CopyUntil(::MouseControl.GetCaption(),'|');
+		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeEdit:
-			str.Format("%i/%i (%s)",X,Y,Target ? (Target->GetName()) : LoadResStr("IDS_CNS_NOTHING") );
-			break;
+	case C4CNS_ModeEdit:
+		str.Format("%i/%i (%s)",X,Y,Target ? (Target->GetName()) : LoadResStr("IDS_CNS_NOTHING") );
+		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeDraw:
-			str.Format("%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? ::MaterialMap.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
-			break;
+	case C4CNS_ModeDraw:
+		str.Format("%i/%i (%s)",X,Y,MatValid(GBackMat(X,Y)) ? ::MaterialMap.Map[GBackMat(X,Y)].Name : LoadResStr("IDS_CNS_NOTHING") );
+		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		}
-	return Console.UpdateCursorBar(str.getData());
 	}
+	return Console.UpdateCursorBar(str.getData());
+}
 
 void C4EditCursor::OnSelectionChanged()
-	{
+{
 	fSelectionChanged = true;
-	}
+}
 
 bool C4EditCursor::LeftButtonDown(bool fControl)
-	{
+{
 
 	// Hold
 	Hold=true;
 
 	switch (Mode)
+	{
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeEdit:
+		if (fControl)
 		{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeEdit:
-			if (fControl)
-				{
-				// Toggle target
-				if (Target)
-					if (!Selection.Remove(Target))
-						Selection.Add(Target, C4ObjectList::stNone);
-				}
-			else
-				{
-				// Click on unselected: select single
-				if (Target && !Selection.GetLink(Target))
-					{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
-				// Click on nothing: drag frame
-				if (!Target)
-					{ Selection.Clear(); DragFrame=true; X2=X; Y2=Y; }
-				}
-			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeDraw:
-			switch (Console.ToolsDlg.Tool)
-				{
-				case C4TLS_Brush: ApplyToolBrush(); break;
-				case C4TLS_Line: DragLine=true; X2=X; Y2=Y; break;
-				case C4TLS_Rect: DragFrame=true; X2=X; Y2=Y; break;
-				case C4TLS_Fill:
-					if (Game.HaltCount)
-						{ Hold=false; Console.Message(LoadResStr("IDS_CNS_FILLNOHALT")); return false; }
-					break;
-				case C4TLS_Picker: ApplyToolPicker(); break;
-				}
-			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			// Toggle target
+			if (Target)
+				if (!Selection.Remove(Target))
+					Selection.Add(Target, C4ObjectList::stNone);
 		}
+		else
+		{
+			// Click on unselected: select single
+			if (Target && !Selection.GetLink(Target))
+				{ Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone); }
+			// Click on nothing: drag frame
+			if (!Target)
+				{ Selection.Clear(); DragFrame=true; X2=X; Y2=Y; }
+		}
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeDraw:
+		switch (Console.ToolsDlg.Tool)
+		{
+		case C4TLS_Brush: ApplyToolBrush(); break;
+		case C4TLS_Line: DragLine=true; X2=X; Y2=Y; break;
+		case C4TLS_Rect: DragFrame=true; X2=X; Y2=Y; break;
+		case C4TLS_Fill:
+			if (Game.HaltCount)
+				{ Hold=false; Console.Message(LoadResStr("IDS_CNS_FILLNOHALT")); return false; }
+			break;
+		case C4TLS_Picker: ApplyToolPicker(); break;
+		}
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	}
 
 	DropTarget=NULL;
 
 	OnSelectionChanged();
 	return true;
-	}
+}
 
 bool C4EditCursor::RightButtonDown(bool fControl)
-	{
+{
 
 	switch (Mode)
+	{
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeEdit:
+		if (!fControl)
 		{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeEdit:
-			if (!fControl)
+			// Check whether cursor is on anything in the selection
+			bool fCursorIsOnSelection = false;
+			for (C4ObjectLink *pLnk = Selection.First; pLnk; pLnk = pLnk->Next)
+				if (pLnk->Obj->At(X,Y))
 				{
-				// Check whether cursor is on anything in the selection
-				bool fCursorIsOnSelection = false;
-				for (C4ObjectLink *pLnk = Selection.First; pLnk; pLnk = pLnk->Next)
-					if (pLnk->Obj->At(X,Y))
-						{
-						fCursorIsOnSelection = true;
-						break;
-						}
-				if (!fCursorIsOnSelection)
-					{
-					// Click on unselected
-					if (Target && !Selection.GetLink(Target))
-							{
-							Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone);
-						}
-					// Click on nothing
-					if (!Target) Selection.Clear();
-					}
+					fCursorIsOnSelection = true;
+					break;
 				}
-			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+			if (!fCursorIsOnSelection)
+			{
+				// Click on unselected
+				if (Target && !Selection.GetLink(Target))
+				{
+					Selection.Clear(); Selection.Add(Target, C4ObjectList::stNone);
+				}
+				// Click on nothing
+				if (!Target) Selection.Clear();
+			}
 		}
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	}
 
 	OnSelectionChanged();
 	return true;
-	}
+}
 
 bool C4EditCursor::LeftButtonUp()
-	{
+{
 	// Finish edit/tool
 	switch (Mode)
+	{
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeEdit:
+		if (DragFrame) FrameSelection();
+		if (DropTarget) PutContents();
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	case C4CNS_ModeDraw:
+		switch (Console.ToolsDlg.Tool)
 		{
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeEdit:
-			if (DragFrame) FrameSelection();
-			if (DropTarget) PutContents();
+		case C4TLS_Line:
+			if (DragLine) ApplyToolLine();
 			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeDraw:
-			switch (Console.ToolsDlg.Tool)
-				{
-				case C4TLS_Line:
-					if (DragLine) ApplyToolLine();
-					break;
-				case C4TLS_Rect:
-					if (DragFrame) ApplyToolRect();
-					break;
-				}
+		case C4TLS_Rect:
+			if (DragFrame) ApplyToolRect();
 			break;
-		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		}
+		break;
+		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+	}
 
 	// Release
 	Hold=false;
@@ -337,16 +337,16 @@ bool C4EditCursor::LeftButtonUp()
 	// Update
 	UpdateStatusBar();
 	return true;
-	}
+}
 
 #ifdef _WIN32
 bool SetMenuItemEnable(HMENU hMenu, WORD id, bool fEnable)
-	{
+{
 	return !!EnableMenuItem(hMenu,id,MF_BYCOMMAND | MF_ENABLED | ( fEnable ? 0 : MF_GRAYED));
-	}
+}
 
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
-	{
+{
 	MENUITEMINFO minfo;
 	ZeroMem(&minfo,sizeof(minfo));
 	minfo.cbSize = sizeof(minfo);
@@ -356,11 +356,11 @@ bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText)
 	minfo.dwTypeData = (char*) szText;
 	minfo.cch = SLen(szText);
 	return !!SetMenuItemInfo(hMenu,id,false,&minfo);
-	}
+}
 #endif
 
 bool C4EditCursor::RightButtonUp()
-	{
+{
 	Target=NULL;
 
 	DoContextMenu();
@@ -368,57 +368,59 @@ bool C4EditCursor::RightButtonUp()
 	// Update
 	UpdateStatusBar();
 	return true;
-	}
+}
 
 bool C4EditCursor::Delete()
-	{
+{
 	if (!EditingOK()) return false;
 	EMMoveObject(EMMO_Remove, 0, 0, NULL, &Selection);
-	if(::Control.isCtrlHost())
-		{
+	if (::Control.isCtrlHost())
+	{
 		OnSelectionChanged();
-		}
-	return true;
 	}
+	return true;
+}
 
 bool C4EditCursor::OpenPropTools()
-	{
+{
 	switch (Mode)
-		{
-		case C4CNS_ModeEdit: case C4CNS_ModePlay:
-			Console.PropertyDlg.Open();
-			Console.PropertyDlg.Update(Selection);
-			break;
-		case C4CNS_ModeDraw:
-			Console.ToolsDlg.Open();
-			break;
-		}
-	return true;
+	{
+	case C4CNS_ModeEdit: case C4CNS_ModePlay:
+		Console.PropertyDlg.Open();
+		Console.PropertyDlg.Update(Selection);
+		break;
+	case C4CNS_ModeDraw:
+		Console.ToolsDlg.Open();
+		break;
 	}
+	return true;
+}
 
 bool C4EditCursor::Duplicate()
-	{
+{
 	EMMoveObject(EMMO_Duplicate, 0, 0, NULL, &Selection);
 	return true;
-	}
+}
 
 void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
-	{
+{
 	// Draw selection marks
 	C4Object *cobj; C4ObjectLink *clnk;
 	for (clnk=Selection.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
-		{
+	{
 		// target pos (parallax)
 		float cotx = cgo.TargetX, coty = cgo.TargetY; cobj->TargetPos(cotx, coty, cgo);
-		FLOAT_RECT frame = {
+		FLOAT_RECT frame =
+		{
 			(cobj->GetX()+cobj->Shape.x-cotx)*Zoom + cgo.X,
 			(cobj->GetX()+cobj->Shape.x-cotx)*Zoom + cgo.X + cobj->Shape.Wdt*Zoom,
 			(cobj->GetY()+cobj->Shape.y-coty)*Zoom + cgo.Y,
-			(cobj->GetY()+cobj->Shape.y-coty)*Zoom + cgo.Y + cobj->Shape.Hgt*Zoom };
+			(cobj->GetY()+cobj->Shape.y-coty)*Zoom + cgo.Y + cobj->Shape.Hgt*Zoom
+		};
 		DrawSelectMark(cgo, frame);
 		// highlight selection if shift is pressed
 		if (Application.IsShiftDown())
-			{
+		{
 			uint32_t dwOldMod = cobj->ColorMod;
 			uint32_t dwOldBlitMode = cobj->BlitMode;
 			cobj->ColorMod = 0xffffffff;
@@ -434,8 +436,8 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 			if (~cobj->Category & C4D_Foreground) lpDDraw->SetZoom(zd);
 			cobj->ColorMod = dwOldMod;
 			cobj->BlitMode = dwOldBlitMode;
-			}
 		}
+	}
 	// Draw drag frame
 	if (DragFrame)
 		Application.DDraw->DrawFrame(cgo.Surface,Min(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Min(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,Max(X,X2)*Zoom+cgo.X-cgo.TargetX*Zoom,Max(Y,Y2)*Zoom+cgo.Y-cgo.TargetY*Zoom,CWhite);
@@ -445,13 +447,13 @@ void C4EditCursor::Draw(C4TargetFacet &cgo, float Zoom)
 	// Draw drop target
 	if (DropTarget)
 		::GraphicsResource.fctDropTarget.Draw(cgo.Surface,
-											 DropTarget->GetX()*Zoom+cgo.X-cgo.TargetX*Zoom-::GraphicsResource.fctDropTarget.Wdt/2,
-											 DropTarget->GetY()*Zoom+DropTarget->Shape.y+cgo.Y-cgo.TargetY*Zoom-::GraphicsResource.fctDropTarget.Hgt);
-	}
+		                                      DropTarget->GetX()*Zoom+cgo.X-cgo.TargetX*Zoom-::GraphicsResource.fctDropTarget.Wdt/2,
+		                                      DropTarget->GetY()*Zoom+DropTarget->Shape.y+cgo.Y-cgo.TargetY*Zoom-::GraphicsResource.fctDropTarget.Hgt);
+}
 
 
 void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
-	{
+{
 	if ((cgo.Wdt<1) || (cgo.Hgt<1)) return;
 
 	if (!cgo.Surface) return;
@@ -471,35 +473,35 @@ void C4EditCursor::DrawSelectMark(C4Facet &cgo, FLOAT_RECT frame)
 	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-1,0xFFFFFFFF);
 	Application.DDraw->DrawPix(cgo.Surface,frame.right-2,frame.bottom-1,0xFFFFFFFF);
 	Application.DDraw->DrawPix(cgo.Surface,frame.right-1,frame.bottom-2,0xFFFFFFFF);
-	}
+}
 
 
 void C4EditCursor::MoveSelection(int32_t iXOff, int32_t iYOff)
-	{
+{
 	EMMoveObject(EMMO_Move, iXOff, iYOff, NULL, &Selection);
-	}
+}
 
 void C4EditCursor::FrameSelection()
-	{
+{
 	Selection.Clear();
 	C4Object *cobj; C4ObjectLink *clnk;
 	for (clnk=::Objects.First; clnk && (cobj=clnk->Obj); clnk=clnk->Next)
 		if (cobj->Status) if (cobj->OCF & OCF_NotContained)
 			{
-			if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
-				Selection.Add(cobj, C4ObjectList::stNone);
+				if (Inside(cobj->GetX(),Min(X,X2),Max(X,X2)) && Inside(cobj->GetY(),Min(Y,Y2),Max(Y,Y2)))
+					Selection.Add(cobj, C4ObjectList::stNone);
 			}
 	Console.PropertyDlg.Update(Selection);
-	}
+}
 
 bool C4EditCursor::In(const char *szText)
-	{
+{
 	EMMoveObject(EMMO_Script, 0, 0, NULL, &Selection, szText);
 	return true;
-	}
+}
 
 void C4EditCursor::Default()
-	{
+{
 	fAltWasDown=false;
 	Mode=C4CNS_ModePlay;
 	X=Y=X2=Y2=0;
@@ -510,18 +512,18 @@ void C4EditCursor::Default()
 	Hold=DragFrame=DragLine=false;
 	Selection.Default();
 	fSelectionChanged = false;
-	}
+}
 
 void C4EditCursor::Clear()
-	{
+{
 #ifdef _WIN32
 	if (hMenu) DestroyMenu(hMenu); hMenu=NULL;
 #endif
 	Selection.Clear();
-	}
+}
 
 bool C4EditCursor::SetMode(int32_t iMode)
-	{
+{
 	// Store focus
 #ifdef _WIN32
 	HWND hFocus=GetFocus();
@@ -535,21 +537,21 @@ bool C4EditCursor::SetMode(int32_t iMode)
 	// Update prop tools by mode
 	bool fOpenPropTools = false;
 	switch (Mode)
-		{
+	{
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeEdit: case C4CNS_ModePlay:
-			if (Console.ToolsDlg.Active || Console.PropertyDlg.Active) fOpenPropTools=true;
-			Console.ToolsDlg.Clear();
-			if (fOpenPropTools) OpenPropTools();
-			break;
+	case C4CNS_ModeEdit: case C4CNS_ModePlay:
+		if (Console.ToolsDlg.Active || Console.PropertyDlg.Active) fOpenPropTools=true;
+		Console.ToolsDlg.Clear();
+		if (fOpenPropTools) OpenPropTools();
+		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		case C4CNS_ModeDraw:
-			if (Console.ToolsDlg.Active || Console.PropertyDlg.Active) fOpenPropTools=true;
-			Console.PropertyDlg.Clear();
-			if (fOpenPropTools) OpenPropTools();
-			break;
+	case C4CNS_ModeDraw:
+		if (Console.ToolsDlg.Active || Console.PropertyDlg.Active) fOpenPropTools=true;
+		Console.PropertyDlg.Clear();
+		if (fOpenPropTools) OpenPropTools();
+		break;
 		// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-		}
+	}
 	// Update cursor
 	if (Mode==C4CNS_ModePlay) ::MouseControl.ShowCursor();
 	else ::MouseControl.HideCursor();
@@ -559,64 +561,64 @@ bool C4EditCursor::SetMode(int32_t iMode)
 #endif
 	// Done
 	return true;
-	}
+}
 
 bool C4EditCursor::ToggleMode()
-	{
+{
 
-	if(!EditingOK()) return false;
+	if (!EditingOK()) return false;
 
 	// Step through modes
 	int32_t iNewMode;
 	switch (Mode)
-		{
-		case C4CNS_ModePlay: iNewMode=C4CNS_ModeEdit; break;
-		case C4CNS_ModeEdit: iNewMode=C4CNS_ModeDraw; break;
-		case C4CNS_ModeDraw: iNewMode=C4CNS_ModePlay; break;
-		default:						 iNewMode=C4CNS_ModePlay; break;
-		}
+	{
+	case C4CNS_ModePlay: iNewMode=C4CNS_ModeEdit; break;
+	case C4CNS_ModeEdit: iNewMode=C4CNS_ModeDraw; break;
+	case C4CNS_ModeDraw: iNewMode=C4CNS_ModePlay; break;
+	default:             iNewMode=C4CNS_ModePlay; break;
+	}
 
 	// Set new mode
 	SetMode(iNewMode);
 
 	return true;
 
-	}
+}
 
 void C4EditCursor::ApplyToolBrush()
-	{
+{
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Brush, ::Landscape.Mode, X,Y,0,0, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
-	}
+}
 
 void C4EditCursor::ApplyToolLine()
-	{
+{
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Line, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
-	}
+}
 
 void C4EditCursor::ApplyToolRect()
-	{
+{
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Rect, ::Landscape.Mode, X,Y,X2,Y2, pTools->Grade, !!pTools->ModeIFT, pTools->Material,pTools->Texture));
-	}
+}
 
 void C4EditCursor::ApplyToolFill()
-	{
+{
 	if (!EditingOK()) return;
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	// execute/send control
 	EMControl(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_Fill, ::Landscape.Mode, X,Y,0,Y2, pTools->Grade, false, pTools->Material));
-	}
+}
 
 bool C4EditCursor::DoContextMenu()
-	{
+{
 	bool fObjectSelected = !!Selection.ObjectCount();
 #ifdef _WIN32
 	POINT point; GetCursorPos(&point);
@@ -630,18 +632,18 @@ bool C4EditCursor::DoContextMenu()
 	SetMenuItemText(hContext,IDM_VIEWPORT_CONTENTS,LoadResStr("IDS_MNU_CONTENTS"));
 	SetMenuItemText(hContext,IDM_VIEWPORT_PROPERTIES,LoadResStr((Mode==C4CNS_ModeEdit) ? "IDS_CNS_PROPERTIES" : "IDS_CNS_TOOLS"));
 	int32_t iItem = TrackPopupMenu(
-								 hContext,
-								 TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_LEFTBUTTON | TPM_NONOTIFY,
-								 point.x,point.y, 0,
-								 Console.hWindow,
-								 NULL);
+	                  hContext,
+	                  TPM_LEFTALIGN | TPM_TOPALIGN | TPM_RETURNCMD | TPM_LEFTBUTTON | TPM_NONOTIFY,
+	                  point.x,point.y, 0,
+	                  Console.hWindow,
+	                  NULL);
 	switch (iItem)
-		{
-		case IDM_VIEWPORT_DELETE:	Delete();	break;
-		case IDM_VIEWPORT_DUPLICATE: Duplicate();	break;
-		case IDM_VIEWPORT_CONTENTS: GrabContents(); break;
-		case IDM_VIEWPORT_PROPERTIES:	OpenPropTools();	break;
-		}
+	{
+	case IDM_VIEWPORT_DELETE: Delete(); break;
+	case IDM_VIEWPORT_DUPLICATE: Duplicate(); break;
+	case IDM_VIEWPORT_CONTENTS: GrabContents(); break;
+	case IDM_VIEWPORT_PROPERTIES: OpenPropTools();  break;
+	}
 #else
 #ifdef WITH_DEVELOPER_MODE
 	gtk_widget_set_sensitive(itemDelete, fObjectSelected && Console.Editing);
@@ -656,10 +658,10 @@ bool C4EditCursor::DoContextMenu()
 #endif
 #endif
 	return true;
-	}
+}
 
 void C4EditCursor::GrabContents()
-	{
+{
 	// Set selection
 	C4Object *pFrom;
 	if (!( pFrom = Selection.GetObject() )) return;
@@ -669,10 +671,10 @@ void C4EditCursor::GrabContents()
 
 	// Exit all objects
 	EMMoveObject(EMMO_Exit, 0, 0, NULL, &Selection);
-	}
+}
 
 void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
-	{
+{
 	C4Object *cobj; C4ObjectLink *clnk;
 
 	DropTarget=NULL;
@@ -687,100 +689,100 @@ void C4EditCursor::UpdateDropTarget(WORD wKeyFlags)
 								if (!Selection.GetLink(cobj))
 									{ DropTarget=cobj; break; }
 
-	}
+}
 
 void C4EditCursor::PutContents()
-	{
+{
 	if (!DropTarget) return;
 	EMMoveObject(EMMO_Enter, 0, 0, DropTarget, &Selection);
-	}
+}
 
 C4Object *C4EditCursor::GetTarget()
-	{
+{
 	return Target;
-	}
+}
 
 bool C4EditCursor::EditingOK()
-	{
+{
 	if (!Console.Editing)
-		{
+	{
 		Hold=false;
 		Console.Message(LoadResStr("IDS_CNS_NONETEDIT"));
 		return false;
-		}
-	return true;
 	}
+	return true;
+}
 
 int32_t C4EditCursor::GetMode()
-	{
+{
 	return Mode;
-	}
+}
 
 void C4EditCursor::ToolFailure()
-	{
+{
 	C4ToolsDlg *pTools=&Console.ToolsDlg;
 	Hold=false;
 	Console.Message(FormatString(LoadResStr("IDS_CNS_NOMATDEF"),pTools->Material,pTools->Texture).getData());
-	}
+}
 
 void C4EditCursor::ApplyToolPicker()
-	{
+{
 	int32_t iMaterial;
 	BYTE byIndex;
 	switch (::Landscape.Mode)
+	{
+	case C4LSC_Static:
+		// Material-texture from map
+		if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
 		{
-		case C4LSC_Static:
-			// Material-texture from map
-			if ((byIndex=::Landscape.GetMapIndex(X/::Landscape.MapZoom,Y/::Landscape.MapZoom)))
-				{
-				const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
-				if(pTex)
-					{
-					Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
-					Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
-					Console.ToolsDlg.SetIFT(byIndex & ~(IFT-1));
-					}
-				}
-			else
-				Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
-			break;
-		case C4LSC_Exact:
-			// Material only from landscape
-			if (MatValid(iMaterial=GBackMat(X,Y)))
-				{
-				Console.ToolsDlg.SelectMaterial(::MaterialMap.Map[iMaterial].Name);
-				Console.ToolsDlg.SetIFT(!!GBackIFT(X,Y));
-				}
-			else
-				Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
-			break;
+			const C4TexMapEntry *pTex = ::TextureMap.GetEntry(byIndex & (IFT-1));
+			if (pTex)
+			{
+				Console.ToolsDlg.SelectMaterial(pTex->GetMaterialName());
+				Console.ToolsDlg.SelectTexture(pTex->GetTextureName());
+				Console.ToolsDlg.SetIFT(byIndex & ~(IFT-1));
+			}
 		}
-	Hold=false;
+		else
+			Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
+		break;
+	case C4LSC_Exact:
+		// Material only from landscape
+		if (MatValid(iMaterial=GBackMat(X,Y)))
+		{
+			Console.ToolsDlg.SelectMaterial(::MaterialMap.Map[iMaterial].Name);
+			Console.ToolsDlg.SetIFT(!!GBackIFT(X,Y));
+		}
+		else
+			Console.ToolsDlg.SelectMaterial(C4TLS_MatSky);
+		break;
 	}
+	Hold=false;
+}
 
 void C4EditCursor::EMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj, const C4ObjectList *pObjs, const char *szScript)
-	{
+{
 	// construct object list
 	int32_t iObjCnt = 0; int32_t *pObjIDs = NULL;
-	if(pObjs && (iObjCnt = pObjs->ObjectCount()))
-		{
+	if (pObjs && (iObjCnt = pObjs->ObjectCount()))
+	{
 		pObjIDs = new int32_t [iObjCnt];
 		// fill
 		int32_t i = 0;
-		for(C4ObjectLink *pLnk = pObjs->First; pLnk; pLnk = pLnk->Next, i++)
-			if(pLnk->Obj && pLnk->Obj->Status)
+		for (C4ObjectLink *pLnk = pObjs->First; pLnk; pLnk = pLnk->Next, i++)
+			if (pLnk->Obj && pLnk->Obj->Status)
 				pObjIDs[i] = pLnk->Obj->Number;
-		}
+	}
 
 	// execute control
 	EMControl(CID_EMMoveObj, new C4ControlEMMoveObject(eAction, tx, ty, pTargetObj, iObjCnt, pObjIDs, szScript));
 
-	}
+}
 
 void C4EditCursor::EMControl(C4PacketType eCtrlType, C4ControlPacket *pCtrl)
-	{
+{
 	::Control.DoInput(eCtrlType, pCtrl, CDT_Decide);
-	}
+}
 
 #ifdef WITH_DEVELOPER_MODE
 // GTK+ callbacks
@@ -806,22 +808,22 @@ void C4EditCursor::OnProperties(GtkWidget* widget, gpointer data)
 #endif
 
 bool C4EditCursor::AltDown()
-	{
+{
 	// alt only has an effect in draw mode (picker)
 	if (Mode == C4CNS_ModeDraw)
-		{
+	{
 		Console.ToolsDlg.SetAlternateTool();
-		}
+	}
 	// key not processed - allow further usages of Alt
 	return false;
-	}
+}
 
 bool C4EditCursor::AltUp()
-	{
+{
 	if (Mode == C4CNS_ModeDraw)
-		{
+	{
 		Console.ToolsDlg.ResetAlternateTool();
-		}
+	}
 	// key not processed - allow further usages of Alt
 	return false;
-	}
+}

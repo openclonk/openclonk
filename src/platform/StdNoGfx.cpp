@@ -20,20 +20,20 @@
 #include <StdNoGfx.h>
 
 CStdNoGfx::CStdNoGfx()
-	{
+{
 	Default();
-	}
+}
 
 CStdNoGfx::~CStdNoGfx()
-	{
+{
 	Clear();
-	}
+}
 
 bool CStdNoGfx::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
-	{
+{
 	Log("Graphics disabled.");
 	// Save back color depth
 	byByteCnt = iColorDepth / 8;
 	MaxTexSize = 64;
 	return true;
-	}
+}

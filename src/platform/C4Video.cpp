@@ -39,17 +39,17 @@
 #endif
 
 C4Video::C4Video()
-	{
+{
 	Default();
-	}
+}
 
 C4Video::~C4Video()
-	{
+{
 	Clear();
-	}
+}
 
 void C4Video::Default()
-	{
+{
 	Active=false;
 	pAviFile=NULL;
 	pAviStream=NULL;
@@ -63,15 +63,15 @@ void C4Video::Default()
 	Recording=false;
 	Surface=NULL;
 	ShowFlash=0;
-	}
+}
 
 void C4Video::Clear()
-	{
+{
 	Stop();
-	}
+}
 
 void C4Video::Init(SURFACE sfcSource, int iWidth, int iHeight)
-	{
+{
 	// Activate
 	Active=true;
 	// Set source surface
@@ -79,24 +79,24 @@ void C4Video::Init(SURFACE sfcSource, int iWidth, int iHeight)
 	// Set video size
 	Width=iWidth; Height=iHeight;
 	AspectRatio = (double) iWidth / (double) iHeight;
-	}
+}
 
 bool C4Video::Enlarge()
-	{
+{
 	if (!Config.Graphics.VideoModule) return false;
 	Resize(+16);
 	return true;
-	}
+}
 
 bool C4Video::Reduce()
-	{
+{
 	if (!Config.Graphics.VideoModule) return false;
 	Resize(-16);
 	return true;
-	}
+}
 
 void C4Video::Execute() // Record frame, draw status
-	{
+{
 #ifdef _WIN32
 	// Not active
 	if (!Active) return;
@@ -107,17 +107,17 @@ void C4Video::Execute() // Record frame, draw status
 	// Draw
 	Draw();
 #endif
-	}
+}
 
 bool C4Video::Toggle()
-	{
+{
 	if (!Config.Graphics.VideoModule) return false;
 	if (!Recording) return(Start());
 	return(Stop());
-	}
+}
 
 bool C4Video::Stop()
-	{
+{
 #ifdef _WIN32
 	// Recording: close file
 	if (Recording) AVICloseOutput(&pAviFile,&pAviStream);
@@ -128,29 +128,30 @@ bool C4Video::Stop()
 #endif
 	// Done
 	return true;
-	}
+}
 
 bool C4Video::Start()
-	{
+{
 	// Determine new filename
 	char szFilename[_MAX_PATH+1]; int iIndex=0;
-	do { sprintf(szFilename,"Video%03d.avi",iIndex++); } while (ItemExists(szFilename));
+	do { sprintf(szFilename,"Video%03d.avi",iIndex++); }
+	while (ItemExists(szFilename));
 	// Start recording
 	return(Start(szFilename));
-	}
+}
 
 bool C4Video::Start(const char *szFilename)
-	{
+{
 #ifdef _WIN32
 	// Stop any recording
 	Stop();
 	// Open output file
 	if (!AVIOpenOutput(szFilename,&pAviFile,&pAviStream,Width,Height))
-		{
+	{
 		Log("AVIOpenOutput failure");
 		AVICloseOutput(&pAviFile,&pAviStream);
 		return false;
-		}
+	}
 	// Create video buffer
 	AviFrame=0;
 	InfoSize = sizeof(BITMAPINFOHEADER);
@@ -170,20 +171,20 @@ bool C4Video::Start(const char *szFilename)
 	pInfo->bmiHeader.biSizeImage = DWordAligned(Width)*Height * Config.Graphics.BitDepth/8;
 	if (Config.Graphics.BitDepth == 8)
 		for (int cnt=0; cnt<256; cnt++)
-			{
+		{
 			pInfo->bmiColors[cnt].rgbRed = ::GraphicsResource.GamePalette[cnt*3+0];
 			pInfo->bmiColors[cnt].rgbGreen = ::GraphicsResource.GamePalette[cnt*3+1];
 			pInfo->bmiColors[cnt].rgbBlue = ::GraphicsResource.GamePalette[cnt*3+2];
-			}
+		}
 	// Recording flag
 	Recording=true;
 #endif //_WIN32
 	// Success
 	return true;
-	}
+}
 
 void C4Video::Resize(int iChange)
-	{
+{
 	// Not while recording
 	if (Recording) return;
 	// Resize
@@ -193,27 +194,27 @@ void C4Video::Resize(int iChange)
 	AdjustPosition();
 	// Show flash
 	ShowFlash=50;
-	}
+}
 
 void C4Video::Draw(C4TargetFacet &cgo)
-	{
+{
 	// Not active
 	if (!Active) return;
 	// No show
 	if (!ShowFlash) return;
 	// Draw frame
 	Application.DDraw->DrawFrame(cgo.Surface, X+cgo.X,Y+cgo.Y,
-												 X+cgo.X+Width-1,Y+cgo.Y+Height-1,
-												 Recording ? CRed : CWhite);
+	                             X+cgo.X+Width-1,Y+cgo.Y+Height-1,
+	                             Recording ? CRed : CWhite);
 	// Draw status
 	StdStrBuf str;
 	if (Recording) str.Format("%dx%d Frame %d",Width,Height,AviFrame);
 	else str.Format("%dx%d",Width,Height);
 	Application.DDraw->TextOut(str.getData(), ::GraphicsResource.FontRegular, 1.0,cgo.Surface,cgo.X+X+4,cgo.Y+Y+3,Recording ? 0xfaFF0000 : 0xfaFFFFFF);
-	}
+}
 
 bool C4Video::AdjustPosition()
-	{
+{
 	// Get source player & viewport
 	C4Viewport *pViewport = ::GraphicsSystem.GetFirstViewport();
 	if (!pViewport) return false;
@@ -226,44 +227,44 @@ bool C4Video::AdjustPosition()
 	Y = BoundBy( Y, 0, pViewport->ViewHgt - Height );
 	// Success
 	return true;
-	}
+}
 
 #ifdef _WIN32
 static void StdBlit(uint8_t *bypSource, int iSourcePitch, int iSrcBufHgt,
-					int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
-					uint8_t *bypTarget, int iTargetPitch, int iTrgBufHgt,
-					int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt,
-					int iBytesPerPixel=1, bool fFlip=false)
-	{
+                    int iSrcX, int iSrcY, int iSrcWdt, int iSrcHgt,
+                    uint8_t *bypTarget, int iTargetPitch, int iTrgBufHgt,
+                    int iTrgX, int iTrgY, int iTrgWdt, int iTrgHgt,
+                    int iBytesPerPixel=1, bool fFlip=false)
+{
 	if (!bypSource || !bypTarget) return;
 	if (!iTrgWdt || !iTrgHgt) return;
 	int xcnt,ycnt,zcnt,sline,tline,fy;
 	for (ycnt=0; ycnt<iTrgHgt; ycnt++)
-		{
+	{
 		fy = iSrcHgt * ycnt / iTrgHgt;
 		if (iSrcBufHgt>0) sline = ( iSrcBufHgt - 1 - iSrcY - fy ) * iSourcePitch;
 		else sline = ( iSrcY + fy ) * iSourcePitch;
 		if (iTrgBufHgt>0) tline = ( iTrgBufHgt - 1 - iTrgY - ycnt ) * iTargetPitch;
 		else tline = ( iTrgY + ycnt ) * iTargetPitch;
 		if (!fFlip)
-			{
-	    for (xcnt=0; xcnt<iTrgWdt; xcnt++)
+		{
+			for (xcnt=0; xcnt<iTrgWdt; xcnt++)
 				for (zcnt=0; zcnt<iBytesPerPixel; zcnt++)
-		      bypTarget [ tline + (iTrgX + xcnt) * iBytesPerPixel + zcnt]
-			     = bypSource [ sline + (iSrcX + iSrcWdt * xcnt / iTrgWdt) * iBytesPerPixel + zcnt ];
-			}
+					bypTarget [ tline + (iTrgX + xcnt) * iBytesPerPixel + zcnt]
+					= bypSource [ sline + (iSrcX + iSrcWdt * xcnt / iTrgWdt) * iBytesPerPixel + zcnt ];
+		}
 		else
-			{
-	    for (xcnt=0; xcnt<iTrgWdt; xcnt++)
+		{
+			for (xcnt=0; xcnt<iTrgWdt; xcnt++)
 				for (zcnt=0; zcnt<iBytesPerPixel; zcnt++)
-		      bypTarget [ tline + (iTrgX + iTrgWdt - 1 -xcnt) * iBytesPerPixel + zcnt]
-			     = bypSource [ sline + (iSrcX + iSrcWdt * xcnt / iTrgWdt) * iBytesPerPixel + zcnt ];
-			}
+					bypTarget [ tline + (iTrgX + iTrgWdt - 1 -xcnt) * iBytesPerPixel + zcnt]
+					= bypSource [ sline + (iSrcX + iSrcWdt * xcnt / iTrgWdt) * iBytesPerPixel + zcnt ];
 		}
 	}
+}
 
 bool C4Video::RecordFrame()
-	{
+{
 	// No buffer
 	if (!Buffer) return false;
 	// Lock source
@@ -276,18 +277,18 @@ bool C4Video::RecordFrame()
 	if (!AdjustPosition()) { Log("Video: player/viewport failure"); Stop(); return false; }
 	// Blit screen to buffer
 	StdBlit((uint8_t*)bypBits,iPitch,-iHeight,
-					X,Y,Width,Height,
-					(uint8_t*)Buffer+InfoSize,
-					DWordAligned(Width) * (Config.Graphics.BitDepth/8),Height,
-					0,0,Width,Height,
-					Config.Graphics.BitDepth/8);
+	        X,Y,Width,Height,
+	        (uint8_t*)Buffer+InfoSize,
+	        DWordAligned(Width) * (Config.Graphics.BitDepth/8),Height,
+	        0,0,Width,Height,
+	        Config.Graphics.BitDepth/8);
 	// Unlock source
 	Surface->Unlock();
 	// Write frame to file
 	if (!AVIPutFrame(pAviStream,
-									 AviFrame,
-		               Buffer,InfoSize,
-									 Buffer+InfoSize,BufferSize-InfoSize))
+	                 AviFrame,
+	                 Buffer,InfoSize,
+	                 Buffer+InfoSize,BufferSize-InfoSize))
 		{ Log("AVIPutFrame failure"); Stop(); return false; }
 	// Advance frame
 	AviFrame++;
@@ -295,19 +296,19 @@ bool C4Video::RecordFrame()
 	ShowFlash=1;
 	// Success
 	return true;
-	}
+}
 
 void C4Video::Draw()
-	{
+{
 	// Not active
 	if (!Active) return;
 	// Get viewport
 	C4Viewport *pViewport;
 	if (pViewport = ::GraphicsSystem.GetFirstViewport())
-		{
+	{
 		C4TargetFacet cgo;
 		cgo.Set(Surface,pViewport->DrawX,pViewport->DrawY,pViewport->ViewWdt,pViewport->ViewHgt,pViewport->ViewX,pViewport->ViewY);
 		Draw(cgo);
-		}
 	}
+}
 #endif //_WIN32

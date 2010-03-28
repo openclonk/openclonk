@@ -32,24 +32,27 @@
 /* CStdWindow */
 
 CStdWindow::CStdWindow ():
-	Active(false), pSurface(0)
+		Active(false), pSurface(0)
 {
 }
 
-CStdWindow::~CStdWindow () {
+CStdWindow::~CStdWindow ()
+{
 	Clear();
 }
 
 // Only set title.
 // FIXME: Read from application bundle on the Mac.
 
-CStdWindow * CStdWindow::Init(CStdApp * pApp) {
+CStdWindow * CStdWindow::Init(CStdApp * pApp)
+{
 	return Init(pApp, C4ENGINENAME);
 }
 
-CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor) {
+CStdWindow * CStdWindow::Init(CStdApp * pApp, const char * Title, CStdWindow * pParent, bool HideCursor)
+{
 	Active = true;
-		SetTitle(Title);
+	SetTitle(Title);
 	return this;
 }
 
@@ -62,24 +65,28 @@ bool CStdWindow::RestorePosition(const char *, const char *, bool) { return true
 // Window size is automatically managed by CStdApp's display mode management.
 // Just remember the size for others to query.
 
-bool CStdWindow::GetSize(RECT * pRect) {
- 	pRect->left = pRect->top = 0;
+bool CStdWindow::GetSize(RECT * pRect)
+{
+	pRect->left = pRect->top = 0;
 	pRect->right = width, pRect->bottom = height;
 	return true;
 }
 
-void CStdWindow::SetSize(unsigned int X, unsigned int Y) {
+void CStdWindow::SetSize(unsigned int X, unsigned int Y)
+{
 	width = X, height = Y;
 }
 
-void CStdWindow::SetTitle(const char * Title) {
+void CStdWindow::SetTitle(const char * Title)
+{
 	SDL_WM_SetCaption(Title, 0);
 }
 
 // For Max OS X, the implementation resides in StdMacApp.mm
 #ifndef __APPLE__
 
-void CStdWindow::FlashWindow() {
+void CStdWindow::FlashWindow()
+{
 }
 
 #endif

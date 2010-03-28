@@ -44,24 +44,24 @@ private:
 };
 
 StdMeshXML::StdMeshXML(const char* filename, const char* xml_data):
-	FileName(filename)
+		FileName(filename)
 {
 	Document.Parse(xml_data);
-	if(Document.Error())
+	if (Document.Error())
 		Error(StdStrBuf(Document.ErrorDesc()), Document.ErrorRow());
 }
 
 const char* StdMeshXML::RequireStrAttribute(TiXmlElement* element, const char* attribute) const
 {
 	const char* value = element->Attribute(attribute);
-	if(!value) Error(FormatString("Element '%s' does not have attribute '%s'", element->Value(), attribute), element);
+	if (!value) Error(FormatString("Element '%s' does not have attribute '%s'", element->Value(), attribute), element);
 	return value;
 }
 
 int StdMeshXML::RequireIntAttribute(TiXmlElement* element, const char* attribute) const
 {
 	int retval;
-	if(element->QueryIntAttribute(attribute, &retval) != TIXML_SUCCESS)
+	if (element->QueryIntAttribute(attribute, &retval) != TIXML_SUCCESS)
 		Error(FormatString("Element '%s' does not have integer attribute '%s'", element->Value(), attribute), element);
 	return retval;
 }
@@ -69,7 +69,7 @@ int StdMeshXML::RequireIntAttribute(TiXmlElement* element, const char* attribute
 float StdMeshXML::RequireFloatAttribute(TiXmlElement* element, const char* attribute) const
 {
 	float retval = 0;
-	if(element->QueryFloatAttribute(attribute, &retval) != TIXML_SUCCESS)
+	if (element->QueryFloatAttribute(attribute, &retval) != TIXML_SUCCESS)
 		Error(FormatString("Element '%s' does not have floating point attribute '%s'", element->Value(), attribute), element);
 	return retval;
 }
@@ -77,17 +77,17 @@ float StdMeshXML::RequireFloatAttribute(TiXmlElement* element, const char* attri
 TiXmlElement* StdMeshXML::RequireFirstChild(TiXmlElement* element, const char* child)
 {
 	TiXmlElement* retval;
-	
-	if(element)
+
+	if (element)
 	{
 		retval = element->FirstChildElement(child);
-		if(!retval)
+		if (!retval)
 			Error(FormatString("Element '%s' does not contain '%s' child", element->Value(), child), element);
 	}
 	else
 	{
 		retval = Document.RootElement();
-		if(strcmp(retval->Value(), child) != 0)
+		if (strcmp(retval->Value(), child) != 0)
 			Error(FormatString("Root element is not '%s'", child), retval);
 	}
 
@@ -114,16 +114,16 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 	TiXmlElement* submeshes_elem = xml.RequireFirstChild(mesh_elem, "submeshes");
 
 	TiXmlElement* submesh_elem_base = xml.RequireFirstChild(submeshes_elem, "submesh");
-	for(TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"))
+	for (TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"))
 	{
 		TiXmlElement* geometry_elem = xml.RequireFirstChild(submesh_elem, "geometry");
-		
+
 		mesh->SubMeshes.push_back(StdSubMesh());
 		StdSubMesh& submesh = mesh->SubMeshes.back();
 
 		const char* material = xml.RequireStrAttribute(submesh_elem, "material");
 		submesh.Material = manager.GetMaterial(material);
-		if(!submesh.Material)
+		if (!submesh.Material)
 			xml.Error(FormatString("There is no such material named '%s'", material), submesh_elem);
 
 		int VertexCount = xml.RequireIntAttribute(geometry_elem, "vertexcount");
@@ -132,7 +132,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		TiXmlElement* buffer_elem = xml.RequireFirstChild(geometry_elem, "vertexbuffer");
 
 		unsigned int i = 0;
-		for(TiXmlElement* vertex_elem = buffer_elem->FirstChildElement("vertex"); vertex_elem != NULL && i < submesh.Vertices.size(); vertex_elem = vertex_elem->NextSiblingElement("vertex"), ++i)
+		for (TiXmlElement* vertex_elem = buffer_elem->FirstChildElement("vertex"); vertex_elem != NULL && i < submesh.Vertices.size(); vertex_elem = vertex_elem->NextSiblingElement("vertex"), ++i)
 		{
 			TiXmlElement* position_elem = xml.RequireFirstChild(vertex_elem, "position");
 			TiXmlElement* normal_elem = xml.RequireFirstChild(vertex_elem, "normal");
@@ -148,12 +148,12 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 			submesh.Vertices[i].v = xml.RequireFloatAttribute(texcoord_elem, "v");
 
 			const float d = std::sqrt(submesh.Vertices[i].x*submesh.Vertices[i].x
-			                        + submesh.Vertices[i].y*submesh.Vertices[i].y
-			                        + submesh.Vertices[i].z*submesh.Vertices[i].z);
+			                          + submesh.Vertices[i].y*submesh.Vertices[i].y
+			                          + submesh.Vertices[i].z*submesh.Vertices[i].z);
 
 			// Construct BoundingBox
 			StdMeshBox &BoundingBox = mesh->BoundingBox;
-			if(i == 0 && mesh->SubMeshes.size() == 1)
+			if (i == 0 && mesh->SubMeshes.size() == 1)
 			{
 				// First vertex
 				BoundingBox.x1 = BoundingBox.x2 = submesh.Vertices[i].x;
@@ -178,7 +178,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		submesh.Faces.resize(FaceCount);
 
 		i = 0;
-		for(TiXmlElement* face_elem = faces_elem->FirstChildElement("face"); face_elem != NULL && i < submesh.Faces.size(); face_elem = face_elem->NextSiblingElement("face"), ++i)
+		for (TiXmlElement* face_elem = faces_elem->FirstChildElement("face"); face_elem != NULL && i < submesh.Faces.size(); face_elem = face_elem->NextSiblingElement("face"), ++i)
 		{
 			int v[3];
 
@@ -186,9 +186,9 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 			v[1] = xml.RequireIntAttribute(face_elem, "v2");
 			v[2] = xml.RequireIntAttribute(face_elem, "v3");
 
-			for(unsigned int j = 0; j < 3; ++j)
+			for (unsigned int j = 0; j < 3; ++j)
 			{
-				if(v[j] < 0 || static_cast<unsigned int>(v[j]) >= submesh.Vertices.size())
+				if (v[j] < 0 || static_cast<unsigned int>(v[j]) >= submesh.Vertices.size())
 					xml.Error(FormatString("Vertex index v%u (%d) is out of range", j+1, v[j]), face_elem);
 				submesh.Faces[i].Vertices[j] = v[j];
 			}
@@ -197,13 +197,13 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 
 	// Read skeleton, if any
 	TiXmlElement* skeletonlink_elem = mesh_elem->FirstChildElement("skeletonlink");
-	if(skeletonlink_elem)
+	if (skeletonlink_elem)
 	{
 		const char* name = xml.RequireStrAttribute(skeletonlink_elem, "name");
 		StdCopyStrBuf xml_filename(name); xml_filename.Append(".xml");
 
 		StdStrBuf skeleton_xml_data = skel_loader.LoadSkeleton(xml_filename.getData());
-		if(skeleton_xml_data.isNull()) xml.Error(FormatString("Failed to load '%s'", xml_filename.getData()), skeletonlink_elem);
+		if (skeleton_xml_data.isNull()) xml.Error(FormatString("Failed to load '%s'", xml_filename.getData()), skeletonlink_elem);
 
 		StdMeshXML skeleton(xml_filename.getData(), skeleton_xml_data.getData());
 		TiXmlElement* skeleton_elem = skeleton.RequireFirstChild(NULL, "skeleton");
@@ -213,7 +213,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		// table is sorted hierarchically, and we will read the hierarchy only
 		// afterwards.
 		std::vector<StdMeshBone*> bones;
-		for(TiXmlElement* bone_elem = bones_elem->FirstChildElement("bone"); bone_elem != NULL; bone_elem = bone_elem->NextSiblingElement("bone"))
+		for (TiXmlElement* bone_elem = bones_elem->FirstChildElement("bone"); bone_elem != NULL; bone_elem = bone_elem->NextSiblingElement("bone"))
 		{
 			StdMeshBone* bone = new StdMeshBone;
 			bones.push_back(bone);
@@ -248,7 +248,7 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 
 		// Bone hierarchy
 		TiXmlElement* bonehierarchy_elem = skeleton.RequireFirstChild(skeleton_elem, "bonehierarchy");
-		for(TiXmlElement* boneparent_elem = bonehierarchy_elem->FirstChildElement("boneparent"); boneparent_elem != NULL; boneparent_elem = boneparent_elem->NextSiblingElement("boneparent"))
+		for (TiXmlElement* boneparent_elem = bonehierarchy_elem->FirstChildElement("boneparent"); boneparent_elem != NULL; boneparent_elem = boneparent_elem->NextSiblingElement("boneparent"))
 		{
 			const char* child_name = skeleton.RequireStrAttribute(boneparent_elem, "bone");
 			const char* parent_name = skeleton.RequireStrAttribute(boneparent_elem, "parent");
@@ -256,48 +256,48 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 			// Lookup the two bones
 			StdMeshBone* child = NULL;
 			StdMeshBone* parent = NULL;
-			for(unsigned int i = 0; i < bones.size() && (!child || !parent); ++i)
+			for (unsigned int i = 0; i < bones.size() && (!child || !parent); ++i)
 			{
-				if(!child && bones[i]->Name == child_name)
+				if (!child && bones[i]->Name == child_name)
 					child = bones[i];
-				if(!parent && bones[i]->Name == parent_name)
+				if (!parent && bones[i]->Name == parent_name)
 					parent = bones[i];
 			}
 
-			if(!child) skeleton.Error(FormatString("There is no such bone with name '%s'", child_name), boneparent_elem);
-			if(!parent) skeleton.Error(FormatString("There is no such bone with name '%s'", parent_name), boneparent_elem);
+			if (!child) skeleton.Error(FormatString("There is no such bone with name '%s'", child_name), boneparent_elem);
+			if (!parent) skeleton.Error(FormatString("There is no such bone with name '%s'", parent_name), boneparent_elem);
 
 			child->Parent = parent;
 			parent->Children.push_back(child);
 		}
 
 		// Fill master bone table in hierarchical order:
-		for(unsigned int i = 0; i < bones.size(); ++i)
-			if(bones[i]->Parent == NULL)
+		for (unsigned int i = 0; i < bones.size(); ++i)
+			if (bones[i]->Parent == NULL)
 				mesh->AddMasterBone(bones[i]);
 
 		// Vertex<->Bone assignments for all vertices (need to go through SubMeshes again...)
 		unsigned int submesh_index = 0;
-		for(TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"), ++submesh_index)
+		for (TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"), ++submesh_index)
 		{
 			StdSubMesh& submesh = mesh->SubMeshes[submesh_index];
 
 			TiXmlElement* boneassignments_elem = xml.RequireFirstChild(submesh_elem, "boneassignments");
-			for(TiXmlElement* vertexboneassignment_elem = boneassignments_elem->FirstChildElement("vertexboneassignment"); vertexboneassignment_elem != NULL; vertexboneassignment_elem = vertexboneassignment_elem->NextSiblingElement("vertexboneassignment"))
+			for (TiXmlElement* vertexboneassignment_elem = boneassignments_elem->FirstChildElement("vertexboneassignment"); vertexboneassignment_elem != NULL; vertexboneassignment_elem = vertexboneassignment_elem->NextSiblingElement("vertexboneassignment"))
 			{
 				int BoneID = xml.RequireIntAttribute(vertexboneassignment_elem, "boneindex");
 				int VertexIndex = xml.RequireIntAttribute(vertexboneassignment_elem, "vertexindex");
 				float weight = xml.RequireFloatAttribute(vertexboneassignment_elem, "weight");
 
-				if(VertexIndex < 0 || static_cast<unsigned int>(VertexIndex) >= submesh.Vertices.size())
+				if (VertexIndex < 0 || static_cast<unsigned int>(VertexIndex) >= submesh.Vertices.size())
 					xml.Error(FormatString("Vertex index in bone assignment (%d) is out of range", VertexIndex), vertexboneassignment_elem);
 
 				StdMeshBone* bone = NULL;
-				for(unsigned int i = 0; !bone && i < bones.size(); ++i)
-					if(bones[i]->ID == BoneID)
+				for (unsigned int i = 0; !bone && i < bones.size(); ++i)
+					if (bones[i]->ID == BoneID)
 						bone = bones[i];
 
-				if(!bone) xml.Error(FormatString("There is no such bone with index %d", BoneID), vertexboneassignment_elem);
+				if (!bone) xml.Error(FormatString("There is no such bone with index %d", BoneID), vertexboneassignment_elem);
 
 				StdSubMesh::Vertex& vertex = submesh.Vertices[VertexIndex];
 				vertex.BoneAssignments.push_back(StdMeshVertexBoneAssignment());
@@ -308,13 +308,13 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 
 			// Normalize vertex bone assignment weights (this is not guaranteed in the
 			// Ogre file format).
-			for(unsigned int i = 0; i < submesh.Vertices.size(); ++i)
+			for (unsigned int i = 0; i < submesh.Vertices.size(); ++i)
 			{
 				StdSubMesh::Vertex& vertex = submesh.Vertices[i];
 				float sum = 0.0f;
-				for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+				for (unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
 					sum += vertex.BoneAssignments[j].Weight;
-				for(unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
+				for (unsigned int j = 0; j < vertex.BoneAssignments.size(); ++j)
 					vertex.BoneAssignments[j].Weight /= sum;
 			}
 		}
@@ -323,11 +323,11 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 		TiXmlElement* animations_elem = skeleton_elem->FirstChildElement("animations");
 		if (animations_elem)
 		{
-			for(TiXmlElement* animation_elem = animations_elem->FirstChildElement("animation"); animation_elem != NULL; animation_elem = animation_elem->NextSiblingElement("animation"))
+			for (TiXmlElement* animation_elem = animations_elem->FirstChildElement("animation"); animation_elem != NULL; animation_elem = animation_elem->NextSiblingElement("animation"))
 			{
 				StdCopyStrBuf name(skeleton.RequireStrAttribute(animation_elem, "name"));
-				if(mesh->Animations.find(name) != mesh->Animations.end())
-				skeleton.Error(FormatString("There is already an animation with name '%s'", name.getData()), animation_elem);
+				if (mesh->Animations.find(name) != mesh->Animations.end())
+					skeleton.Error(FormatString("There is already an animation with name '%s'", name.getData()), animation_elem);
 
 				StdMeshAnimation& animation = mesh->Animations.insert(std::make_pair(name, StdMeshAnimation())).first->second;
 				animation.Name = name;
@@ -335,22 +335,22 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 				animation.Tracks.resize(mesh->Bones.size());
 
 				TiXmlElement* tracks_elem = skeleton.RequireFirstChild(animation_elem, "tracks");
-				for(TiXmlElement* track_elem = tracks_elem->FirstChildElement("track"); track_elem != NULL; track_elem = track_elem->NextSiblingElement("track"))
+				for (TiXmlElement* track_elem = tracks_elem->FirstChildElement("track"); track_elem != NULL; track_elem = track_elem->NextSiblingElement("track"))
 				{
 					const char* bone_name = skeleton.RequireStrAttribute(track_elem, "bone");
 					StdMeshBone* bone = NULL;
-					for(unsigned int i = 0; !bone && i < mesh->Bones.size(); ++i)
-						if(mesh->Bones[i]->Name == bone_name)
+					for (unsigned int i = 0; !bone && i < mesh->Bones.size(); ++i)
+						if (mesh->Bones[i]->Name == bone_name)
 							bone = mesh->Bones[i];
-					if(!bone) skeleton.Error(FormatString("There is no such bone with name '%s'", bone_name), track_elem);
+					if (!bone) skeleton.Error(FormatString("There is no such bone with name '%s'", bone_name), track_elem);
 
-					if(animation.Tracks[bone->Index] != NULL) skeleton.Error(FormatString("There is already a track for bone '%s' in animation '%s'", bone_name, animation.Name.getData()), track_elem);
+					if (animation.Tracks[bone->Index] != NULL) skeleton.Error(FormatString("There is already a track for bone '%s' in animation '%s'", bone_name, animation.Name.getData()), track_elem);
 
 					StdMeshTrack* track = new StdMeshTrack;
 					animation.Tracks[bone->Index] = track;
 
 					TiXmlElement* keyframes_elem = skeleton.RequireFirstChild(track_elem, "keyframes");
-					for(TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
+					for (TiXmlElement* keyframe_elem = keyframes_elem->FirstChildElement("keyframe"); keyframe_elem != NULL; keyframe_elem = keyframe_elem->NextSiblingElement("keyframe"))
 					{
 						float time = skeleton.RequireFloatAttribute(keyframe_elem, "time");
 						StdMeshKeyFrame& frame = track->Frames[time];
@@ -383,10 +383,10 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 	else
 	{
 		// Mesh has no skeleton
-		for(TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"))
+		for (TiXmlElement* submesh_elem = submesh_elem_base; submesh_elem != NULL; submesh_elem = submesh_elem->NextSiblingElement("submesh"))
 		{
 			TiXmlElement* boneassignments_elem = submesh_elem->FirstChildElement("boneassignments");
-			if(boneassignments_elem)
+			if (boneassignments_elem)
 			{
 				// Bone assignements do not make sense then, as the
 				// actual bones are defined in the skeleton file.
@@ -398,11 +398,11 @@ StdMesh *StdMeshLoader::LoadMeshXml(const char* xml_data, size_t size, const Std
 	// Apply parent transformation to each bone transformation. We need to
 	// do this late since animation keyframe computation needs the bone
 	// transformations, not bone+parent.
-	for(unsigned int i = 0; i < mesh->Bones.size(); ++i)
+	for (unsigned int i = 0; i < mesh->Bones.size(); ++i)
 	{
-		if(mesh->Bones[i]->Parent)
+		if (mesh->Bones[i]->Parent)
 		{
-			// Apply parent transformation			
+			// Apply parent transformation
 			mesh->Bones[i]->Transformation = mesh->Bones[i]->Parent->Transformation * mesh->Bones[i]->Transformation;
 			// Update inverse
 			mesh->Bones[i]->InverseTransformation = StdMeshTransformation::Inverse(mesh->Bones[i]->Transformation);

@@ -39,7 +39,7 @@
 // --- C4StartupOptionsDlg::SmallButton
 
 void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
-	{
+{
 	// draw the button
 	CStdFont &rUseFont = C4Startup::Get()->Graphics.BookFont;
 	// get text pos
@@ -62,28 +62,28 @@ void C4StartupOptionsDlg::SmallButton::DrawElement(C4TargetFacet &cgo)
 	int32_t iTxtOff = fDown ? iIndent : 0;
 	if (fEnabled) if (HasDrawFocus() || (fMouseOver && IsInActiveDlg(false)))
 		{
-		lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-		C4GUI::GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0+5+iTxtOff, y0+3+iTxtOff, rcBounds.Wdt-10, rcBounds.Hgt-6);
-		lpDDraw->ResetBlitMode();
+			lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+			C4GUI::GetRes()->fctButtonHighlight.DrawX(cgo.Surface, x0+5+iTxtOff, y0+3+iTxtOff, rcBounds.Wdt-10, rcBounds.Hgt-6);
+			lpDDraw->ResetBlitMode();
 		}
 	// draw button text
 	lpDDraw->TextOut(sText.getData(), rUseFont, 1.0f, cgo.Surface, (x0+x1)/2 + iTxtOff, (y0+y1-iTextHgt)/2 + iTxtOff, C4StartupBtnFontClr, ACenter, true);
-	}
+}
 
 int32_t C4StartupOptionsDlg::SmallButton::GetDefaultButtonHeight()
-	{
+{
 	// button height is used font height plus a small indent
 	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
 	return pUseFont->GetLineHeight()*6/5+6;
-	}
+}
 
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::ResChangeConfirmDlg
 
 C4StartupOptionsDlg::ResChangeConfirmDlg::ResChangeConfirmDlg()
-: C4GUI::Dialog(C4GUI_MessageDlgWdt, 100 /* will be resized */, LoadResStr("IDS_MNU_SWITCHRESOLUTION"), false)
-	{
+		: C4GUI::Dialog(C4GUI_MessageDlgWdt, 100 /* will be resized */, LoadResStr("IDS_MNU_SWITCHRESOLUTION"), false)
+{
 	// update-timer
 	Application.Add(this);
 	// An independant group of fourteen highly trained apes and one blind lawnmower have determined
@@ -105,8 +105,8 @@ C4StartupOptionsDlg::ResChangeConfirmDlg::ResChangeConfirmDlg()
 	C4GUI::Label *pLblMessage = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iMsgHeight), ACenter, C4GUI_MessageFontClr, &C4GUI::GetRes()->TextFont, false);
 	AddElement(pLblMessage);
 	iMsgHeight = C4GUI::GetRes()->TextFont.BreakMessage(FormatString(LoadResStr("IDS_MNU_SWITCHRESOLUTION_UNDO"),
-																																		(int)iResChangeSwitchTime).getData(),
-																											 caMain.GetInnerWidth(), &sMsgBroken, true);
+	             (int)iResChangeSwitchTime).getData(),
+	             caMain.GetInnerWidth(), &sMsgBroken, true);
 	pOperationCancelLabel = new C4GUI::Label(sMsgBroken.getData(), caMain.GetFromTop(iMsgHeight), ACenter, C4GUI_MessageFontClr, &C4GUI::GetRes()->TextFont, false, false);
 	AddElement(pOperationCancelLabel);
 	// place buttons
@@ -125,58 +125,59 @@ C4StartupOptionsDlg::ResChangeConfirmDlg::ResChangeConfirmDlg()
 	SetFocus(pBtnNo, false);
 	// resize to actually needed size
 	SetClientSize(GetClientRect().Wdt, GetClientRect().Hgt - caMain.GetHeight());
-	}
+}
 
 C4StartupOptionsDlg::ResChangeConfirmDlg::~ResChangeConfirmDlg()
-	{
+{
 	Application.Remove(this);
-	}
+}
 
 void C4StartupOptionsDlg::ResChangeConfirmDlg::OnSec1Timer()
-	{
+{
 	// timer ran out? Then cancel dlg
 	if (!--iResChangeSwitchTime)
-		{
+	{
 		Close(false); return;
-		}
+	}
 	// update timer label
 	StdStrBuf sTimerText;
 	C4GUI::GetRes()->TextFont.BreakMessage(FormatString(LoadResStr("IDS_MNU_SWITCHRESOLUTION_UNDO"),
-																											 (int)iResChangeSwitchTime).getData(),
-																					pOperationCancelLabel->GetBounds().Wdt, &sTimerText, true);
+	                                       (int)iResChangeSwitchTime).getData(),
+	                                       pOperationCancelLabel->GetBounds().Wdt, &sTimerText, true);
 	pOperationCancelLabel->SetText(sTimerText.getData());
-	}
+}
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::KeySelDialog
 
 const char *KeyID2Desc(int32_t iKeyID)
-	{
+{
 	const char *KeyIDStringIDs[C4MaxKey] =
-		{ "IDS_CTL_SELECTLEFT", "IDS_CTL_SELECTTOGGLE", "IDS_CTL_SELECTRIGHT",
-		  "IDS_CTL_THROW"     , "IDS_CTL_UPJUMP"      , "IDS_CTL_DIG"        ,
-			"IDS_CTL_LEFT"      , "IDS_CTL_DOWNSTOP"    , "IDS_CTL_RIGHT"      ,
-			"IDS_CTL_PLAYERMENU", "IDS_CTL_SPECIAL1"    , "IDS_CTL_SPECIAL2" };
+	  { "IDS_CTL_SELECTLEFT", "IDS_CTL_SELECTTOGGLE", "IDS_CTL_SELECTRIGHT",
+	    "IDS_CTL_THROW"     , "IDS_CTL_UPJUMP"      , "IDS_CTL_DIG"        ,
+	    "IDS_CTL_LEFT"      , "IDS_CTL_DOWNSTOP"    , "IDS_CTL_RIGHT"      ,
+	    "IDS_CTL_PLAYERMENU", "IDS_CTL_SPECIAL1"    , "IDS_CTL_SPECIAL2"
+	  };
 	if (!Inside<int32_t>(iKeyID, 0, C4MaxKey)) return NULL;
 	return LoadResStr(KeyIDStringIDs[iKeyID]);
-	}
+}
 
 C4StartupOptionsDlg::KeySelDialog::KeySelDialog(int32_t iKeyID, int32_t iCtrlSet, bool fGamepad)
-: C4GUI::MessageDialog(FormatString(LoadResStr(!fGamepad ? "IDS_MSG_PRESSKEY" : "IDS_MSG_PRESSBTN"),
-																		KeyID2Desc(iKeyID), iCtrlSet+1).getData(), LoadResStr("IDS_MSG_DEFINEKEY"),
-																		C4GUI::MessageDialog::btnAbort, fGamepad ? C4GUI::Ico_Gamepad : C4GUI::Ico_Keyboard, C4GUI::MessageDialog::dsRegular),
-	key(KEY_Undefined), fGamepad(fGamepad), iCtrlSet(iCtrlSet)
-	{
+		: C4GUI::MessageDialog(FormatString(LoadResStr(!fGamepad ? "IDS_MSG_PRESSKEY" : "IDS_MSG_PRESSBTN"),
+		                                    KeyID2Desc(iKeyID), iCtrlSet+1).getData(), LoadResStr("IDS_MSG_DEFINEKEY"),
+		                       C4GUI::MessageDialog::btnAbort, fGamepad ? C4GUI::Ico_Gamepad : C4GUI::Ico_Keyboard, C4GUI::MessageDialog::dsRegular),
+		key(KEY_Undefined), fGamepad(fGamepad), iCtrlSet(iCtrlSet)
+{
 	pKeyListener = new C4KeyBinding(C4KeyCodeEx(KEY_Any, KEYS_None), "DefineKey", KEYSCOPE_Gui, new C4GUI::DlgKeyCBPassKey<C4StartupOptionsDlg::KeySelDialog>(*this, &C4StartupOptionsDlg::KeySelDialog::KeyDown), C4CustomKey::PRIO_PlrControl);
-	}
+}
 
 C4StartupOptionsDlg::KeySelDialog::~KeySelDialog()
-	{
+{
 	delete pKeyListener;
-	}
+}
 
 bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
-	{
+{
 	// check if key is valid for this set
 	// do not mix gamepad and keyboard keys
 	if (Key_IsGamepad(key.Key) != fGamepad) return false;
@@ -186,7 +187,7 @@ bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 	this->key=key.Key;
 	Close(true);
 	return true;
-	}
+}
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::KeySelButton
@@ -194,15 +195,17 @@ bool C4StartupOptionsDlg::KeySelDialog::KeyDown(const C4KeyCodeEx &key)
 // key display arrangement - -1 denotes no key
 // every key from 0 to C4MaxKey-1 MUST BE present here, or the engine will crash
 const int32_t iKeyPosMaxX = 3, iKeyPosMaxY = 4; // arrange keys in a 4-by-5-array
-const int32_t iKeyPosis[iKeyPosMaxY][iKeyPosMaxX] = {
+const int32_t iKeyPosis[iKeyPosMaxY][iKeyPosMaxX] =
+{
 	{ 0, 1, 2 },
 	{ 3, 4, 5 },
 	{ 6, 7, 8 },
-	{ 9,10,11 } };
+	{ 9,10,11 }
+};
 
 
 void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
-	{
+{
 	// draw key
 	C4Facet cgoDraw(cgo.Surface, rcBounds.x+cgo.TargetX, rcBounds.y+cgo.TargetY, rcBounds.Wdt, rcBounds.Hgt);
 	::GraphicsResource.fctKey.Draw(cgoDraw, true, fDown);
@@ -213,40 +216,40 @@ void C4StartupOptionsDlg::KeySelButton::DrawElement(C4TargetFacet &cgo)
 	bool fDoHightlight = fHighlight || HasDrawFocus() || (fMouseOver && IsInActiveDlg(false));
 	bool fHadBlitMod=false; DWORD dwOldBlitModClr=0xffffffff;
 	if (!fDoHightlight)
-		{
+	{
 		DWORD dwModClr = 0xff7f7f7f;
 		if ((fHadBlitMod = lpDDraw->GetBlitModulation(dwOldBlitModClr)))
 			ModulateClr(dwModClr, dwOldBlitModClr);
 		lpDDraw->ActivateBlitModulation(dwModClr);
-		}
+	}
 	::GraphicsResource.fctCommand.Draw(cgoDraw, true, iKeyID, 0);
 	if (!fDoHightlight)
-		{
+	{
 		if (fHadBlitMod)
 			lpDDraw->ActivateBlitModulation(dwOldBlitModClr);
 		else
 			lpDDraw->DeactivateBlitModulation();
-		}
+	}
 	// draw the labels - beside the key
 	float fZoom;
 	CStdFont &rUseFont = C4Startup::Get()->Graphics.GetBlackFontByHeight(cgoDraw.Hgt/2+5, &fZoom);
 	lpDDraw->TextOut(KeyID2Desc(iKeyID), rUseFont, fZoom, cgo.Surface, cgo.TargetX+rcBounds.x+rcBounds.Wdt+5, cgoDraw.Y-3, fDoHightlight ? 0xffff0000 : C4StartupFontClr, ALeft, false);
 	StdStrBuf strKey; strKey.Copy(C4KeyCodeEx::KeyCode2String(key, true, false));
 	lpDDraw->TextOut(strKey.getData(), rUseFont, fZoom, cgo.Surface, cgo.TargetX+rcBounds.x+rcBounds.Wdt+5, cgoDraw.Y+cgoDraw.Hgt/2, fDoHightlight ? 0xffff0000 : C4StartupFontClr, ALeft, false);
-	}
+}
 
 
 C4StartupOptionsDlg::KeySelButton::KeySelButton(int32_t iKeyID, const C4Rect &rcBounds, char cHotkey)
-: C4GUI::IconButton(C4GUI::Ico_None, rcBounds, cHotkey), iKeyID(iKeyID), key(KEY_Undefined)
-	{
-	}
+		: C4GUI::IconButton(C4GUI::Ico_None, rcBounds, cHotkey), iKeyID(iKeyID), key(KEY_Undefined)
+{
+}
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::ControlConfigArea
 
 C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, int32_t iHMargin, int32_t iVMargin, bool fGamepad, C4StartupOptionsDlg *pOptionsDlg)
-: C4GUI::Window(), fGamepad(fGamepad), pGamepadOpener(NULL), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
-	{
+		: C4GUI::Window(), fGamepad(fGamepad), pGamepadOpener(NULL), pOptionsDlg(pOptionsDlg), pGUICtrl(NULL)
+{
 	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
 	SetBounds(rcArea);
 	C4GUI::ComponentAligner caArea(rcArea, iHMargin, iVMargin, true);
@@ -268,7 +271,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	const char *szCtrlSetHotkeys = "1234567890"; /* 2do */
 	uint32_t i;
 	for (i = 0; i < (uint32_t)iMaxControlSets; ++i)
-		{
+	{
 		char cCtrlSetHotkey = 0;
 		if (i <= strlen(szCtrlSetHotkeys)) cCtrlSetHotkey = szCtrlSetHotkeys[i];
 		C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, C4GUI::IconButton> *pBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, C4GUI::IconButton>(C4GUI::Ico_None, caKeyboardSetSel.GetFromLeft(iCtrlSetBtnWdt), cCtrlSetHotkey, &C4StartupOptionsDlg::ControlConfigArea::OnCtrlSetBtn, this);
@@ -276,7 +279,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 		fctCtrlPic.X += fctCtrlPic.Wdt;
 		AddElement(ppKeyControlSetBtns[i] = pBtn);
 		pBtn->SetToolTip(LoadResStr("IDS_MSG_SELECTKEYSET"));
-		}
+	}
 	iSelectedCtrlSet = fGamepad ? 0 : C4P_Control_Keyboard1;
 	caArea.ExpandTop(caArea.GetVMargin());
 	AddElement(new C4GUI::HorizontalLine(caArea.GetFromTop(2)));
@@ -288,10 +291,10 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	int32_t iKeyMargin = 20;
 	int32_t iKeyAreaWdt = (iKeyUseWdt+2*iKeyMargin) * iKeyPosMaxX, iKeyAreaHgt = (iKeyHgt+2*iKeyMargin) * iKeyPosMaxY;
 	if (iKeyAreaWdt > iKeyAreaMaxWdt || iKeyAreaHgt > iKeyAreaMaxHgt)
-		{
+	{
 		// scale down
 		float fScaleX = float(iKeyAreaMaxWdt) / float(Max<int32_t>(iKeyAreaWdt,1)),
-		      fScaleY = float(iKeyAreaMaxHgt) / float(Max<int32_t>(iKeyAreaHgt,1)), fScale;
+		                fScaleY = float(iKeyAreaMaxHgt) / float(Max<int32_t>(iKeyAreaHgt,1)), fScale;
 		if (fScaleX > fScaleY) fScale = fScaleY; else fScale = fScaleX;
 		iKeyMargin = int32_t(fScale*iKeyMargin);
 		iKeyWdt = int32_t(fScale*iKeyWdt);
@@ -299,28 +302,28 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 		iKeyHgt = int32_t(fScale*iKeyHgt);
 		iKeyAreaWdt = int32_t(fScale*iKeyAreaWdt);
 		iKeyAreaHgt = int32_t(fScale*iKeyAreaHgt);
-		}
+	}
 	C4GUI::ComponentAligner caCtrlKeys(caArea.GetFromTop(iKeyAreaHgt, iKeyAreaWdt), 0,iKeyMargin);
 	int32_t iKeyNum;
 	for (int iY = 0; iY < iKeyPosMaxY; ++iY)
-		{
+	{
 		C4GUI::ComponentAligner caCtrlKeysLine(caCtrlKeys.GetFromTop(iKeyHgt), iKeyMargin,0);
 		for (int iX = 0; iX < iKeyPosMaxX; ++iX)
-			{
+		{
 			C4Rect rcKey = caCtrlKeysLine.GetFromLeft(iKeyWdt);
 			caCtrlKeysLine.ExpandLeft(iKeyWdt - iKeyUseWdt);
 			if ((iKeyNum=iKeyPosis[iY][iX])<0) continue;
 			KeySelButton *pKeyBtn = new C4GUI::CallbackButton<C4StartupOptionsDlg::ControlConfigArea, KeySelButton>(iKeyNum, rcKey, 0 /* no hotkey :( */, &C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn, this);
 			AddElement(KeyControlBtns[iKeyNum] = pKeyBtn);
 			pKeyBtn->SetToolTip(KeyID2Desc(iKeyNum));
-			}
 		}
+	}
 	// bottom area controls
 	caArea.ExpandBottom(-iKeyHgt/2);
 	C4GUI::ComponentAligner caKeyBottomBtns(caArea.GetFromBottom(C4GUI_ButtonHgt), 2,0);
 	// gamepad: Use for GUI
 	if (fGamepad)
-		{
+	{
 		int iWdt=100,iHgt=20;
 		const char *szResetText = LoadResStr("IDS_CTL_GAMEPADFORMENU");
 		C4GUI::CheckBox::GetStandardCheckBoxSize(&iWdt, &iHgt, szResetText, pUseFont);
@@ -329,7 +332,7 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 		pGUICtrl->SetToolTip(LoadResStr("IDS_DESC_GAMEPADFORMENU"));
 		pGUICtrl->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 		AddElement(pGUICtrl);
-		}
+	}
 	// reset button
 	const char *szBtnText = LoadResStr("IDS_BTN_RESETKEYBOARD");
 	int32_t iButtonWidth=100, iButtonHeight=20; C4GUI::Button *btn;
@@ -339,56 +342,56 @@ C4StartupOptionsDlg::ControlConfigArea::ControlConfigArea(const C4Rect &rcArea, 
 	btn->SetToolTip(LoadResStr("IDS_MSG_RESETKEYSETS"));
 
 	UpdateCtrlSet();
-	}
+}
 
 C4StartupOptionsDlg::ControlConfigArea::~ControlConfigArea()
-	{
+{
 	delete [] ppKeyControlSetBtns;
 	if (pGamepadOpener) delete pGamepadOpener;
-	}
+}
 
 void C4StartupOptionsDlg::ControlConfigArea::OnCtrlSetBtn(C4GUI::Control *btn)
-	{
+{
 	// select Ctrl set of pressed btn
 	int i;
 	for (i = 0; i < iMaxControlSets; ++i)
 		if (btn == ppKeyControlSetBtns[i])
-			{
+		{
 			iSelectedCtrlSet = i;
 			break;
-			}
+		}
 	// update shown keys
 	UpdateCtrlSet();
-	}
+}
 
 void C4StartupOptionsDlg::ControlConfigArea::UpdateCtrlSet()
-	{
+{
 	// selected keyboard set btn gets a highlight
 	int i;
 	for (i = 0; i < iMaxControlSets; ++i)
 		ppKeyControlSetBtns[i]->SetHighlight(i == iSelectedCtrlSet);
 	// update keys by config
 	if (fGamepad)
-		{
+	{
 		for (i = 0; i < C4MaxKey; ++i)
 			KeyControlBtns[i]->SetKey(Config.Gamepads[iSelectedCtrlSet].Button[i]);
-		}
+	}
 	else
 		for (i = 0; i < C4MaxKey; ++i)
 			KeyControlBtns[i]->SetKey(Config.Controls.Keyboard[iSelectedCtrlSet][i]);
 	// open gamepad
 	if (fGamepad && Config.General.GamepadEnabled)
-		{
+	{
 		if (!pGamepadOpener) pGamepadOpener = new C4GamePadOpener(iSelectedCtrlSet);
 		else pGamepadOpener->SetGamePad(iSelectedCtrlSet);
-		}
+	}
 	// show/hide gamepad-gui-control checkbox
 	if (fGamepad && pGUICtrl)
 		pGUICtrl->SetVisibility(iSelectedCtrlSet == 0);
-	}
+}
 
 void C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn(C4GUI::Control *btn)
-	{
+{
 	// determine which key has been pressed
 	int32_t idKey;
 	for (idKey = 0; idKey < C4MaxKey; ++idKey) if (KeyControlBtns[idKey] == btn) break;
@@ -407,23 +410,23 @@ void C4StartupOptionsDlg::ControlConfigArea::OnCtrlKeyBtn(C4GUI::Control *btn)
 		Config.Gamepads[iSelectedCtrlSet].Button[idKey] = key;
 	else
 		Config.Controls.Keyboard[iSelectedCtrlSet][idKey] = key;
-	}
+}
 
 void C4StartupOptionsDlg::ControlConfigArea::OnResetKeysBtn(C4GUI::Control *btn)
-	{
+{
 	// default keys and axis reset
 	if (fGamepad)
-		{
+	{
 		for (int i = 0; i < C4ConfigMaxGamepads; ++i)
 			Config.Gamepads[i].Reset();
-		}
+	}
 	else
 		Config.Controls.ResetKeys();
 	UpdateCtrlSet();
-	}
+}
 
 void C4StartupOptionsDlg::ControlConfigArea::OnGUIGamepadCheckChange(C4GUI::Element *pCheckBox)
-	{
+{
 	// same as before?
 	bool fChecked = ((C4GUI::CheckBox *)(pCheckBox))->GetChecked();
 	if (fChecked == !!Config.Controls.GamepadGuiControl) return;
@@ -431,7 +434,7 @@ void C4StartupOptionsDlg::ControlConfigArea::OnGUIGamepadCheckChange(C4GUI::Elem
 	Config.Controls.GamepadGuiControl = fChecked;
 	::pGUI->UpdateGamepadGUIControlEnabled();
 	pOptionsDlg->RecreateDialog(false);
-	}
+}
 
 
 
@@ -439,8 +442,8 @@ void C4StartupOptionsDlg::ControlConfigArea::OnGUIGamepadCheckChange(C4GUI::Elem
 // --- C4StartupOptionsDlg::NetworkPortConfig
 
 C4StartupOptionsDlg::NetworkPortConfig::NetworkPortConfig(const C4Rect &rcBounds, const char *szName, int32_t *pConfigValue, int32_t iDefault)
-: C4GUI::Window(), pConfigValue(pConfigValue)
-	{
+		: C4GUI::Window(), pConfigValue(pConfigValue)
+{
 	// ctor
 	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
 	SetBounds(rcBounds);
@@ -464,48 +467,48 @@ C4StartupOptionsDlg::NetworkPortConfig::NetworkPortConfig(const C4Rect &rcBounds
 	pPortEdit->SetVisibility(fEnabled);
 	//pPortEdit->SetEnabled(fEnabled);
 	AddElement(pPortEdit);
-	}
+}
 
 void C4StartupOptionsDlg::NetworkPortConfig::OnEnabledCheckChange(C4GUI::Element *pCheckBox)
-	{
+{
 	pPortEdit->SetVisibility(pEnableCheck->GetChecked());
-	}
+}
 
 void C4StartupOptionsDlg::NetworkPortConfig::SavePort()
-	{
+{
 	*pConfigValue=GetPort();
-	}
+}
 
 int32_t C4StartupOptionsDlg::NetworkPortConfig::GetPort()
-	{
-		// controls to config
+{
+	// controls to config
 	if (!pEnableCheck->GetChecked())
 		return -1;
 	else
 		return atoi(pPortEdit->GetText());
-	}
+}
 
 bool C4StartupOptionsDlg::NetworkPortConfig::GetControlSize(int *piWdt, int *piHgt)
-	{
+{
 	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
 	// get size needed for control
 	if (piWdt)
-		{
+	{
 		const char *szText = LoadResStr("IDS_CTL_ACTIVE");
 		if (!C4GUI::CheckBox::GetStandardCheckBoxSize(piWdt, piHgt, szText, pUseFont)) return false;
 		*piWdt *= 2;
-		}
+	}
 	if (piHgt) *piHgt = C4GUI::Edit::GetCustomEditHeight(pUseFont) + pUseFont->GetLineHeight()+2*4;
 	return true;
-	}
+}
 
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::NetworkServerAddressConfig
 
 C4StartupOptionsDlg::NetworkServerAddressConfig::NetworkServerAddressConfig(const C4Rect &rcBounds, const char *szName, int32_t *piConfigEnableValue, char *szConfigAddressValue, int iTabWidth)
-: C4GUI::Window(), piConfigEnableValue(piConfigEnableValue), szConfigAddressValue(szConfigAddressValue)
-	{
+		: C4GUI::Window(), piConfigEnableValue(piConfigEnableValue), szConfigAddressValue(szConfigAddressValue)
+{
 	// ctor
 	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
 	SetBounds(rcBounds);
@@ -522,28 +525,28 @@ C4StartupOptionsDlg::NetworkServerAddressConfig::NetworkServerAddressConfig(cons
 	pAddressEdit->SetMaxText(CFG_MaxString);
 	pAddressEdit->SetVisibility(!!*piConfigEnableValue);
 	AddElement(pAddressEdit);
-	}
+}
 
 void C4StartupOptionsDlg::NetworkServerAddressConfig::OnEnabledCheckChange(C4GUI::Element *pCheckBox)
-	{
+{
 	// warn about using alternate servers
 	if (pEnableCheck->GetChecked())
-		{
+	{
 		GetScreen()->ShowMessage(LoadResStr("IDS_NET_NOOFFICIALLEAGUE"), LoadResStr("IDS_NET_QUERY_MASTERSRV"), C4GUI::Ico_Notify, &Config.Startup.HideMsgNoOfficialLeague);
-		}
+	}
 	// callback when checkbox is ticked
 	pAddressEdit->SetVisibility(pEnableCheck->GetChecked());
-	}
+}
 
 void C4StartupOptionsDlg::NetworkServerAddressConfig::Save2Config()
-	{
+{
 	// controls to config
 	*piConfigEnableValue = pEnableCheck->GetChecked();
 	SCopy(pAddressEdit->GetText(), szConfigAddressValue, CFG_MaxString);
-	}
+}
 
 bool C4StartupOptionsDlg::NetworkServerAddressConfig::GetControlSize(int *piWdt, int *piHgt, int *piTabPos, const char *szForText)
-	{
+{
 	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
 	int iWdt=120;
 	C4GUI::CheckBox::GetStandardCheckBoxSize(&iWdt, piHgt, szForText, pUseFont);
@@ -553,7 +556,7 @@ bool C4StartupOptionsDlg::NetworkServerAddressConfig::GetControlSize(int *piWdt,
 	if (piTabPos) *piTabPos = iWdt+2;
 	if (piHgt) *piHgt = C4GUI::Edit::GetCustomEditHeight(pUseFont)+2*2;
 	return true;
-	}
+}
 
 
 
@@ -561,52 +564,52 @@ bool C4StartupOptionsDlg::NetworkServerAddressConfig::GetControlSize(int *piWdt,
 // --- C4StartupOptionsDlg::BoolConfig
 
 C4StartupOptionsDlg::BoolConfig::BoolConfig(const C4Rect &rcBounds, const char *szName, bool *pbVal, int32_t *piVal, bool fInvert, int32_t *piRestartChangeCfgVal)
-: C4GUI::CheckBox(rcBounds, szName, fInvert != (pbVal ? *pbVal : !!*piVal)), pbVal(pbVal), fInvert(fInvert), piVal(piVal), piRestartChangeCfgVal(piRestartChangeCfgVal)
-	{
+		: C4GUI::CheckBox(rcBounds, szName, fInvert != (pbVal ? *pbVal : !!*piVal)), pbVal(pbVal), fInvert(fInvert), piVal(piVal), piRestartChangeCfgVal(piRestartChangeCfgVal)
+{
 	SetOnChecked(new C4GUI::CallbackHandler<BoolConfig>(this, &BoolConfig::OnCheckChange));
-	}
+}
 
 void C4StartupOptionsDlg::BoolConfig::OnCheckChange(C4GUI::Element *pCheckBox)
-	{
+{
 	if (pbVal) *pbVal = (GetChecked() != fInvert);
 	if (piVal) *piVal = (GetChecked() != fInvert);
 	if (piRestartChangeCfgVal) GetScreen()->ShowMessage(LoadResStr("IDS_MSG_RESTARTCHANGECFG"), GetText(),
-																											 C4GUI::Ico_Notify, piRestartChangeCfgVal);
-	}
+		    C4GUI::Ico_Notify, piRestartChangeCfgVal);
+}
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg::EditConfig
 
 C4StartupOptionsDlg::EditConfig::EditConfig(const C4Rect &rcBounds, const char *szName, ValidatedStdCopyStrBufBase *psConfigVal, int32_t *piConfigVal, bool fMultiline)
-: C4GUI::LabeledEdit(rcBounds, szName, fMultiline, psConfigVal ? psConfigVal->getData() : NULL, &(C4Startup::Get()->Graphics.BookFont), C4StartupFontClr), psConfigVal(psConfigVal), piConfigVal(piConfigVal)
-	{
+		: C4GUI::LabeledEdit(rcBounds, szName, fMultiline, psConfigVal ? psConfigVal->getData() : NULL, &(C4Startup::Get()->Graphics.BookFont), C4StartupFontClr), psConfigVal(psConfigVal), piConfigVal(piConfigVal)
+{
 	// ctor
 	GetEdit()->SetColors(C4StartupEditBGColor, C4StartupFontClr, C4StartupEditBorderColor);
 	if (piConfigVal) SetIntVal(*piConfigVal);
 	GetEdit()->SetMaxText(CFG_MaxString);
-	}
+}
 
 void C4StartupOptionsDlg::EditConfig::Save2Config()
-	{
+{
 	// controls to config
 	if (psConfigVal)
 		psConfigVal->CopyValidated(GetEdit()->GetText());
 	if (piConfigVal)
 		*piConfigVal = GetIntVal();
-	}
+}
 
 bool C4StartupOptionsDlg::EditConfig::GetControlSize(int *piWdt, int *piHgt, const char *szForText, bool fMultiline)
-	{
+{
 	CStdFont *pUseFont = &(C4Startup::Get()->Graphics.BookFont);
 	typedef C4GUI::LabeledEdit BaseEdit;
 	return BaseEdit::GetControlSize(piWdt, piHgt, szForText, pUseFont, fMultiline);
-	}
+}
 
 // ------------------------------------------------
 // --- C4StartupOptionsDlg
 
 C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_DLG_OPTIONS")), fConfigSaved(false), fCanGoBack(true)
-	{
+{
 	// ctor
 	UpdateSize();
 	bool fSmall = (GetClientRect().Wdt < 750);
@@ -616,11 +619,11 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	C4CustomKey::CodeList keys;
 	keys.push_back(C4KeyCodeEx(K_BACK)); keys.push_back(C4KeyCodeEx(K_LEFT));
 	pKeyBack = new C4KeyBinding(keys, "StartupOptionsBack", KEYSCOPE_Gui,
-		new C4GUI::DlgKeyCB<C4StartupOptionsDlg>(*this, &C4StartupOptionsDlg::KeyBack), C4CustomKey::PRIO_Dlg);
+	                            new C4GUI::DlgKeyCB<C4StartupOptionsDlg>(*this, &C4StartupOptionsDlg::KeyBack), C4CustomKey::PRIO_Dlg);
 	keys.clear();
 	keys.push_back(C4KeyCodeEx(K_F3)); // overloading global toggle with higher priority here, so a new name is required
 	pKeyToggleMusic = new C4KeyBinding(keys, "OptionsMusicToggle", KEYSCOPE_Gui,
-		new C4GUI::DlgKeyCB<C4StartupOptionsDlg>(*this, &C4StartupOptionsDlg::KeyMusicToggle), C4CustomKey::PRIO_Dlg);
+	                                   new C4GUI::DlgKeyCB<C4StartupOptionsDlg>(*this, &C4StartupOptionsDlg::KeyMusicToggle), C4CustomKey::PRIO_Dlg);
 
 	// screen calculations
 	int32_t iButtonWidth,iCaptionFontHgt;
@@ -629,23 +632,23 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	iButtonWidth *= 3;
 	int iIndentX1, iIndentX2, iIndentY1, iIndentY2;
 	if (fSmall)
-		{
+	{
 		iIndentX1=20; iIndentX2=1;
-		}
+	}
 	else
-		{
+	{
 		iIndentX1 = GetClientRect().Wdt/40;
 		iIndentX2 = iIndentX1/2;
-		}
+	}
 	if (fSmall)
-		{
+	{
 		iIndentY1=1; iIndentY2=1;
-		}
+	}
 	else
-		{
+	{
 		iIndentY1 = GetClientRect().Hgt/200;
 		iIndentY2 = Max<int32_t>(1, iIndentY1/2);
-		}
+	}
 	C4GUI::ComponentAligner caMain(GetClientRect(), 0,0, true);
 	C4GUI::ComponentAligner caButtonArea(caMain.GetFromBottom(caMain.GetHeight()/(fSmall ? 20 : 7)),0,0);
 	C4GUI::ComponentAligner caButtons(caButtonArea.GetCentered(caMain.GetWidth()*7/8, iButtonHeight),0,0);
@@ -773,12 +776,12 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	const char *szGfxEngineNames[3] = { "DirectX", "OpenGL", "DirectX Software" };
 	C4GUI::BaseCallbackHandler *pGfxEngineCheckCB = new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxEngineCheck);
 	for (int32_t iGfxEngine = 0; iGfxEngine<3; ++iGfxEngine)
-		{
+	{
 		pCheckGfxEngines[iGfxEngine] = new C4GUI::CheckBox(caGroupEngine.GetGridCell(0,1,iGfxEngine,3,-1,iCheckHgt,true), szGfxEngineNames[iGfxEngine], (Config.Graphics.Engine == iGfxEngine));
 		pCheckGfxEngines[iGfxEngine]->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 		pCheckGfxEngines[iGfxEngine]->SetOnChecked(pGfxEngineCheckCB);
 		pGroupEngine->AddElement(pCheckGfxEngines[iGfxEngine]);
-		}
+	}
 #ifndef USE_DIRECTX
 	pCheckGfxEngines[GFXENGN_DIRECTX]->SetEnabled(false);
 	pCheckGfxEngines[GFXENGN_DIRECTXS]->SetEnabled(false);
@@ -817,14 +820,14 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	// color depth checkboxes
 	C4GUI::BaseCallbackHandler *pGfxClrDepthCheckCB = new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnGfxClrDepthCheck);
 	for (int32_t iBitDepthIdx = 0; iBitDepthIdx<2; ++iBitDepthIdx)
-		{
+	{
 		int iBitDepth = (iBitDepthIdx+1) * 16;
 		pCheckGfxClrDepth[iBitDepthIdx] = new C4GUI::CheckBox(caGroupEngine.GetGridCell(iBitDepthIdx,2,2,4,-1,iCheckHgt,true), FormatString("%d Bit", (int)iBitDepth).getData(), (Config.Graphics.BitDepth == iBitDepth));
 		pCheckGfxClrDepth[iBitDepthIdx]->SetFont(pUseFont, C4StartupFontClr, C4StartupFontClrDisabled);
 		pCheckGfxClrDepth[iBitDepthIdx]->SetOnChecked(pGfxClrDepthCheckCB);
 		pCheckGfxClrDepth[iBitDepthIdx]->SetToolTip(LoadResStr("IDS_CTL_BITDEPTH"));
 		pGroupResolution->AddElement(pCheckGfxClrDepth[iBitDepthIdx]);
-		}
+	}
 	// fullscreen checkbox
 	pCheck = new C4GUI::CheckBox(caGroupResolution.GetGridCell(0,1,3,4,-1,iCheckHgt,true), LoadResStr("IDS_MSG_FULLSCREEN"), !Config.Graphics.Windowed);
 	pCheck->SetOnChecked(new C4GUI::CallbackHandler<C4StartupOptionsDlg>(this, &C4StartupOptionsDlg::OnFullscreenChange));
@@ -948,7 +951,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	// volume sliders
 	int32_t i;
 	for (i=0; i<2; ++i)
-		{
+	{
 		C4GUI::ComponentAligner caVolumeSlider(caGroupVolume.GetGridCell(0,1,i,2, -1, pUseFont->GetLineHeight()+iIndentY2*2+C4GUI_ScrollBarHgt, true), 1,0,false);
 		pGroupVolume->AddElement(new C4GUI::Label(FormatString("%s:", LoadResStr(i ? "IDS_CTL_SOUNDFX" : "IDS_CTL_MUSIC")).getData(), caVolumeSlider.GetFromTop(pUseFont->GetLineHeight()), ALeft, C4StartupFontClr, pUseFont, false, false));
 		sLabelTxt.Copy(LoadResStr("IDS_CTL_SILENT"));
@@ -963,7 +966,7 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 		pSlider->SetToolTip(i ? LoadResStr("IDS_DESC_VOLUMESOUND") : LoadResStr("IDS_DESC_VOLUMEMUSIC"));
 		pSlider->SetScrollPos(i ? Config.Sound.SoundVolume : Config.Sound.MusicVolume);
 		pGroupVolume->AddElement(pSlider);
-		}
+	}
 
 	// --- page keyboard controls
 	//pSheetKeyboard->AddElement(new ControlConfigArea(pSheetKeyboard->GetClientRect(), caMain.GetWidth()/20, caMain.GetHeight()/40, false, this));
@@ -1006,46 +1009,46 @@ C4StartupOptionsDlg::C4StartupOptionsDlg() : C4StartupDlg(LoadResStrNoAmp("IDS_D
 	pSheetNetwork->AddElement(pNetworkNickEdit);
 
 	StdCopyStrBuf NickBuf(Config.Network.Nick);
-	if(!NickBuf.getLength()) NickBuf.Copy(Config.GetRegistrationData("Nick"));
+	if (!NickBuf.getLength()) NickBuf.Copy(Config.GetRegistrationData("Nick"));
 	pNetworkNickEdit->GetEdit()->SetText(NickBuf.getData(), false);
 
 	// initial focus is on tab selection
 	SetFocus(pOptionsTabular, false);
-	}
+}
 
 C4StartupOptionsDlg::~C4StartupOptionsDlg()
-	{
+{
 	delete pKeyToggleMusic;
 	delete pKeyBack;
-	}
+}
 
 void C4StartupOptionsDlg::OnClosed(bool fOK)
-	{
+{
 	// callback when dlg got closed - save config
 	SaveConfig(true, false);
 	C4StartupDlg::OnClosed(fOK);
-	}
+}
 
 int32_t C4StartupOptionsDlg::FairCrewSlider2Strength(int32_t iSliderVal)
-	{
+{
 	// slider linear in rank to value linear in exp
 	return int32_t(pow(double(iSliderVal)/9.5, 1.5) * 1000.0);
-	}
+}
 
 int32_t C4StartupOptionsDlg::FairCrewStrength2Slider(int32_t iStrengthVal)
-	{
+{
 	// value linear in exp to slider linear in rank
 	return int32_t(pow(double(iStrengthVal)/1000.0, 1.0/1.5) * 9.5);
-	}
+}
 
 void C4StartupOptionsDlg::OnFairCrewStrengthSliderChange(int32_t iNewVal)
-	{
+{
 	// fair crew strength determined by exponential fn
 	Config.General.FairCrewStrength = FairCrewSlider2Strength(iNewVal);
-	}
+}
 
 void C4StartupOptionsDlg::OnResetConfigBtn(C4GUI::Control *btn)
-	{
+{
 	// confirmation
 	StdStrBuf sWarningText; sWarningText.Copy(LoadResStr("IDS_MSG_PROMPTRESETCONFIG"));
 	sWarningText.AppendChar('|');
@@ -1058,17 +1061,17 @@ void C4StartupOptionsDlg::OnResetConfigBtn(C4GUI::Control *btn)
 	Config.fConfigLoaded = true;
 	// engine must be restarted now, because some crucial fields such as resolution and used gfx engine do not match their initialization
 	Application.Quit();
-	}
+}
 
 void C4StartupOptionsDlg::OnGfxEngineCheck(C4GUI::Element *pCheckBox)
-	{
+{
 	C4GUI::CheckBox *pCheck = static_cast<C4GUI::CheckBox *>(pCheckBox);
 	// radiogroup: do not allow unchecking!
 	if (!pCheck->GetChecked())
-		{
+	{
 		pCheck->SetChecked(true);
 		return;
-		}
+	}
 	// get new engine
 	int i;
 	for (i=0; i<3; ++i) if (pCheck == pCheckGfxEngines[i]) break;
@@ -1080,10 +1083,10 @@ void C4StartupOptionsDlg::OnGfxEngineCheck(C4GUI::Element *pCheckBox)
 	SaveGfxTroubleshoot();
 	Config.Graphics.Engine = i;
 	LoadGfxTroubleshoot();
-	}
+}
 
 void C4StartupOptionsDlg::OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller)
-	{
+{
 	// clear all old entries first to allow a clean refill
 	pFiller->ClearEntries();
 	// fill with all possible resolutions
@@ -1093,31 +1096,31 @@ void C4StartupOptionsDlg::OnGfxResComboFill(C4GUI::ComboBox_FillCB *pFiller)
 		if (iBitDepth == Config.Graphics.BitDepth)
 			if ((iXRes <= 1024 && iXRes>=600 && iYRes>=460) || Config.Graphics.ShowAllResolutions)
 #endif
-				{
+			{
 				StdStrBuf sGfxString = GetGfxResString(iXRes, iYRes);
 				if (!pFiller->FindEntry(sGfxString.getData()))
 					pFiller->AddEntry(sGfxString.getData(), iXRes + (uint32_t(iYRes)<<16));
-				}
-	}
+			}
+}
 
 bool C4StartupOptionsDlg::OnGfxResComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
-	{
+{
 	// get new resolution from string
 	int iResX=(idNewSelection & 0xffff), iResY=(uint32_t(idNewSelection) & 0xffff0000) >> 16;
 	// different than current?
 	if (iResX == Config.Graphics.ResX && iResY == Config.Graphics.ResY) return true;
 	// try setting it
 	if (!TryNewResolution(iResX, iResY))
-		{
+	{
 		// didn't work or declined by user
 		return true; // do not change label, because dialog might hae been recreated!
-		}
+	}
 	// dialog has been recreated; so do not change the combo label
 	return true;
-	}
+}
 
 bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
-	{
+{
 	int32_t iOldResX = Config.Graphics.ResX, iOldResY = Config.Graphics.ResY;
 	int32_t iOldFontSize = Config.General.RXFontSize;
 	C4GUI::Screen *pScreen = GetScreen();
@@ -1131,63 +1134,63 @@ bool C4StartupOptionsDlg::TryNewResolution(int32_t iResX, int32_t iResY)
 		iNewFontSize = 16;
 	// call application to set it
 	if (!Application.SetVideoMode(iResX, iResY,Config.Graphics.BitDepth, Config.Graphics.Monitor,!Config.Graphics.Windowed))
-		{
+	{
 		StdCopyStrBuf strChRes(LoadResStr("IDS_MNU_SWITCHRESOLUTION"));
 		pScreen->ShowMessage(FormatString(LoadResStr("IDS_ERR_SWITCHRES"), Application.GetLastError()).getData(), strChRes.getData(), C4GUI::Ico_Clonk, NULL);
 		return false;
-		}
+	}
 	// implied font change
 	if (iNewFontSize != iOldFontSize)
 		if (!Application.SetGameFont(Config.General.RXFontName, iNewFontSize))
-			{
+		{
 			// not changing font size is not fatal - just keep old size
 			iNewFontSize = iOldFontSize;
-			}
+		}
 	// since the resolution was changed, everything needs to be moved around a bit
 	RecreateDialog(false);
 	ResChangeConfirmDlg *pConfirmDlg = new ResChangeConfirmDlg();
 	if (!pScreen->ShowModalDlg(pConfirmDlg, true))
-		{
+	{
 		// abort: Restore screen, if this was not some program abort
 		if (C4GUI::IsGUIValid())
-			{
+		{
 			if (Application.SetVideoMode(iOldResX, iOldResY, Config.Graphics.BitDepth, Config.Graphics.Monitor,!Config.Graphics.Windowed))
-				{
+			{
 				if (iNewFontSize != iOldFontSize) Application.SetGameFont(Config.General.RXFontName, iOldFontSize);
 				RecreateDialog(false);
-				}
 			}
+		}
 		else
-			{
+		{
 			// make sure config is restored even if the program is closed during the confirmation dialog
 			Config.Graphics.ResX = iOldResX, Config.Graphics.ResY = iOldResY;
-			}
-		return false;
 		}
+		return false;
+	}
 	// resolution may be kept!
 	Config.Graphics.ResX = iResX;
 	Config.Graphics.ResY = iResY;
 	return true;
-	}
+}
 
 StdStrBuf C4StartupOptionsDlg::GetGfxResString(int32_t iResX, int32_t iResY)
-	{
+{
 	// Display in format like "640 x 480"
 	return FormatString("%d x %d", (int)iResX, (int)iResY);
-	}
+}
 
 void C4StartupOptionsDlg::OnGfxClrDepthCheck(C4GUI::Element *pCheckBox)
-	{
+{
 	// get clr depth being checked
 	int32_t i;
 	for (i=0; i<2; ++i) if (pCheckBox == pCheckGfxClrDepth[i]) break;
 	if (i==2) return;
 	// do not allow unchecking
 	if (!pCheckGfxClrDepth[i]->GetChecked())
-		{
+	{
 		pCheckGfxClrDepth[i]->SetChecked(true);
 		return;
-		}
+	}
 	// change check to this one
 	int32_t iCurrIdx = BoundBy<int32_t>(Config.Graphics.BitDepth / 16-1,0,1);
 	pCheckGfxClrDepth[iCurrIdx]->SetChecked(false);
@@ -1197,39 +1200,39 @@ void C4StartupOptionsDlg::OnGfxClrDepthCheck(C4GUI::Element *pCheckBox)
 	// notify user that he has to restart to see any changes
 	StdStrBuf sTitle; sTitle.Copy(LoadResStrNoAmp("IDS_CTL_BITDEPTH"));
 	GetScreen()->ShowMessage(LoadResStr("IDS_MSG_RESTARTCHANGECFG"), sTitle.getData(), C4GUI::Ico_Notify, &Config.Startup.HideMsgGfxBitDepthChange);
-	}
+}
 
 void C4StartupOptionsDlg::OnFullscreenChange(C4GUI::Element *pCheckBox)
-	{
+{
 	Config.Graphics.Windowed = !static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked();
 	Application.SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed);
-	}
+}
 
 void C4StartupOptionsDlg::OnGfxAllResolutionsChange(C4GUI::Element *pCheckBox)
-	{
+{
 	Config.Graphics.ShowAllResolutions = static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked();
-	}
+}
 
 bool C4StartupOptionsDlg::SaveConfig(bool fForce, bool fKeepOpen)
-	{
+{
 	// prevent double save
 	if (fConfigSaved) return true;
 	// save any config fields that are not stored directly; return whether all values are OK
 	// check port validity
 	if (!fForce)
-		{
+	{
 		StdCopyStrBuf strError(LoadResStr("IDS_ERR_CONFIG"));
 		if (pPortCfgTCP->GetPort()>0 && pPortCfgTCP->GetPort() == pPortCfgRef->GetPort())
-			{
+		{
 			GetScreen()->ShowMessage(LoadResStr("IDS_NET_ERR_PORT_TCPREF"), strError.getData(), C4GUI::Ico_Error);
 			return false;
-			}
+		}
 		if (pPortCfgUDP->GetPort()>0 && pPortCfgUDP->GetPort() == pPortCfgDsc->GetPort())
-			{
+		{
 			GetScreen()->ShowMessage(LoadResStr("IDS_NET_ERR_PORT_UDPDISC"), strError.getData(), C4GUI::Ico_Error);
 			return false;
-			}
 		}
+	}
 	// store some config values
 	SaveGfxTroubleshoot();
 	pPortCfgTCP->SavePort();
@@ -1247,62 +1250,62 @@ bool C4StartupOptionsDlg::SaveConfig(bool fForce, bool fKeepOpen)
 	if (!fKeepOpen) fConfigSaved = true;
 	// done; config OK
 	return true;
-	}
+}
 
 void C4StartupOptionsDlg::DoBack()
-	{
+{
 	if (!SaveConfig(false, false)) return;
 	// back 2 main
 	C4Startup::Get()->SwitchDialog(fCanGoBack ? (C4Startup::SDID_Back) : (C4Startup::SDID_Main));
-	}
+}
 
 void C4StartupOptionsDlg::UpdateLanguage()
-	{
+{
 	// find currently specified language in language list and display its info
 	C4LanguageInfo *pNfo = Languages.FindInfo(Config.General.Language);
 	if (pNfo)
-		{
+	{
 		pLangCombo->SetText(FormatString("%s - %s", pNfo->Code, pNfo->Name).getData());
 		pLangInfoLabel->SetText(pNfo->Info);
-		}
+	}
 	else
-		{
+	{
 		pLangCombo->SetText(FormatString("unknown (%s)", Config.General.Language).getData());
 		pLangInfoLabel->SetText(LoadResStr("IDS_CTL_NOLANGINFO"));
 		return; // no need to mess with fallbacks
-		}
+	}
 	// update language fallbacks
 	char *szLang = Config.General.LanguageEx;
 	SCopy(pNfo->Code, szLang);
 	if (*(pNfo->Fallback))
-		{
+	{
 		SAppend(",", szLang);
 		Config.General.GetLanguageSequence(pNfo->Fallback, szLang + SLen(szLang));
-		}
+	}
 	// internal fallbacks
 	if (!SSearch(Config.General.LanguageEx, "US"))
-		{
+	{
 		if (*szLang) SAppendChar(',', szLang);
 		SAppend("US", szLang);
-		}
+	}
 	if (!SSearch(Config.General.LanguageEx, "DE"))
-		{
+	{
 		if (*szLang) SAppendChar(',', szLang);
 		SAppend("DE", szLang);
-		}
 	}
+}
 
 void C4StartupOptionsDlg::OnLangComboFill(C4GUI::ComboBox_FillCB *pFiller)
-	{
+{
 	// fill with all possible languages
 	C4LanguageInfo *pNfo;
-	for(int i=0; i<Languages.GetInfoCount(); ++i)
+	for (int i=0; i<Languages.GetInfoCount(); ++i)
 		if ((pNfo = Languages.GetInfo(i)))
 			pFiller->AddEntry(FormatString("%s - %s", pNfo->Code, pNfo->Name).getData(), (unsigned char)(pNfo->Code[0]) + ((unsigned char)(pNfo->Code[1])<<8));
-	}
+}
 
 bool C4StartupOptionsDlg::OnLangComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
-	{
+{
 	// set new language by two-character-code
 	Config.General.Language[0] = idNewSelection & 0xff;
 	Config.General.Language[1] = (idNewSelection & 0xff00) >> 8;
@@ -1313,26 +1316,26 @@ bool C4StartupOptionsDlg::OnLangComboSelChange(C4GUI::ComboBox *pForCombo, int32
 	// recreate everything to reflect language changes
 	RecreateDialog(true);
 	return true;
-	}
+}
 
 void C4StartupOptionsDlg::UpdateFontControls()
-	{
+{
 	// display current language and size in comboboxes
 	pFontFaceCombo->SetText(Config.General.RXFontName);
 	StdStrBuf sSize; sSize.Format("%d", (int) Config.General.RXFontSize);
 	pFontSizeCombo->SetText(sSize.getData());
-	}
+}
 
 const char *DefaultFonts[] = { "Arial Unicode MS", "Comic Sans MS", "Endeavour", "Verdana", NULL };
 
 void C4StartupOptionsDlg::OnFontFaceComboFill(C4GUI::ComboBox_FillCB *pFiller)
-	{
+{
 	// 2do: enumerate Fonts.txt fonts; then enumerate system fonts
 	for (int32_t i=0; DefaultFonts[i]; ++i) pFiller->AddEntry(DefaultFonts[i], i);
-	}
+}
 
 void C4StartupOptionsDlg::OnFontSizeComboFill(C4GUI::ComboBox_FillCB *pFiller)
-	{
+{
 	// 2do: enumerate possible font sizes by the font here
 	// 2do: Hide font sizes that would be too large for the selected resolution
 	pFiller->AddEntry("8", 8);
@@ -1346,10 +1349,10 @@ void C4StartupOptionsDlg::OnFontSizeComboFill(C4GUI::ComboBox_FillCB *pFiller)
 	pFiller->AddEntry("28", 28);
 	//pFiller->AddEntry("32", 32);
 	//pFiller->AddEntry("48", 48);
-	}
+}
 
 bool C4StartupOptionsDlg::OnFontComboSelChange(C4GUI::ComboBox *pForCombo, int32_t idNewSelection)
-	{
+{
 	// set new value
 	const char *szNewFontFace = Config.General.RXFontName;
 	int32_t iNewFontSize = Config.General.RXFontSize;
@@ -1362,17 +1365,17 @@ bool C4StartupOptionsDlg::OnFontComboSelChange(C4GUI::ComboBox *pForCombo, int32
 		return true;
 	// set new fonts
 	if (!Application.SetGameFont(szNewFontFace, iNewFontSize))
-		{
+	{
 		GetScreen()->ShowErrorMessage(LoadResStr("IDS_ERR_INITFONTS"));
 		return true;
-		}
+	}
 	// recreate everything to reflect font changes
 	RecreateDialog(true);
 	return true;
-	}
+}
 
 void C4StartupOptionsDlg::RecreateDialog(bool fFade)
-	{
+{
 	// MUST fade for now, or calling function will fail because dialog is deleted immediately
 	fFade = true;
 	// this actually breaks the possibility to go back :(
@@ -1380,90 +1383,90 @@ void C4StartupOptionsDlg::RecreateDialog(bool fFade)
 	C4StartupOptionsDlg *pNewDlg = static_cast<C4StartupOptionsDlg *>(C4Startup::Get()->SwitchDialog(C4Startup::SDID_Options, fFade));
 	pNewDlg->pOptionsTabular->SelectSheet(iPage, false);
 	pNewDlg->fCanGoBack = false;
-	}
+}
 
 void C4StartupOptionsDlg::LoadGfxTroubleshoot()
-	{
+{
 	pShaders->SetChecked(!!DDrawCfg.Shader);
 	// title of troubleshooting-box
 	pGroupTrouble->SetTitle(LoadResStrNoAmp("IDS_CTL_TROUBLE"));
-	}
+}
 
 void C4StartupOptionsDlg::SaveGfxTroubleshoot()
-	{
+{
 	// get it from controls
 	DDrawCfg.Shader=pShaders->GetChecked();
 	// get config set to be used
 	bool fUseGL = (Config.Graphics.Engine == GFXENGN_OPENGL);
 	// and apply them directly, if the engine is current
 	if (fUseGL == lpDDraw->IsOpenGL())
-		{
+	{
 		lpDDraw->RestoreDeviceObjects();
-		}
 	}
+}
 
 void C4StartupOptionsDlg::OnEffectsSliderChange(int32_t iNewVal)
-	{
+{
 	Config.Graphics.SmokeLevel = iNewVal;
-	}
+}
 
 void C4StartupOptionsDlg::OnFEMusicCheck(C4GUI::Element *pCheckBox)
-	{
+{
 	// option change is reflected immediately
 	bool fIsOn = static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked();
 	if ((Config.Sound.FEMusic = fIsOn))
 		Application.MusicSystem.Play();
 	else
 		Application.MusicSystem.Stop();
-	}
+}
 
 void C4StartupOptionsDlg::OnMusicVolumeSliderChange(int32_t iNewVal)
-	{
+{
 	// option change is reflected immediately;
 	Application.MusicSystem.SetVolume(Config.Sound.MusicVolume = iNewVal);
-	}
+}
 
 void C4StartupOptionsDlg::OnSoundVolumeSliderChange(int32_t iNewVal)
-	{
+{
 	// sound system reads this value directly
 	Config.Sound.SoundVolume = iNewVal;
 	// test sound
 	StartSoundEffect("ArrowHit", false, 100, NULL);
-	}
+}
 
 void C4StartupOptionsDlg::OnRXSoundCheck(C4GUI::Element *pCheckBox)
-	{
+{
 	// toggling sounds on off must init/deinit sound system
 	bool fIsOn = static_cast<C4GUI::CheckBox *>(pCheckBox)->GetChecked();
 	if (fIsOn == !!Config.Sound.RXSound) return;
 	if (fIsOn)
-		{
+	{
 		Config.Sound.RXSound = true;
 		if (!Application.SoundSystem.Init())
-			{
+		{
 			GetScreen()->ShowMessage(StdCopyStrBuf(LoadResStr("IDS_PRC_NOSND")).getData(), StdCopyStrBuf(LoadResStr("IDS_DLG_LOG")).getData(), C4GUI::Ico_Error);
 			Application.SoundSystem.Clear();
 			Config.Sound.RXSound = false;
 			static_cast<C4GUI::CheckBox *>(pCheckBox)->SetChecked(false);
 			fIsOn = false;
-			}
 		}
+	}
 	else
-		{
+	{
 		Application.SoundSystem.Clear();
 		Config.Sound.RXSound = false;
-		}
+	}
 	// FE sound only enabled if global sound is enabled
 	pFESoundCheck->SetEnabled(fIsOn);
 	pFESoundCheck->SetChecked(fIsOn ? !!Config.Sound.FESamples : false);
-	}
+}
 
 bool C4StartupOptionsDlg::KeyMusicToggle()
-	{
+{
 	// do toggle
 	Application.MusicSystem.ToggleOnOff();
 	// reflect in checkbox
 	pFEMusicCheck->SetChecked(!!Config.Sound.FEMusic);
 	// key processed
 	return true;
-	}
+}

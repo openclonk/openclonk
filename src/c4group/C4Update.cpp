@@ -33,11 +33,11 @@ bool C4Group_CopyEntry(C4Group *pFrom, C4Group *pTo, const char *strItemName)
 {
 	// read entry
 	char *pData; size_t iSize;
-	if(!pFrom->LoadEntry(strItemName, &pData, &iSize))
+	if (!pFrom->LoadEntry(strItemName, &pData, &iSize))
 		return false;
 	// write entry (keep time)
 	int iEntryTime = pFrom->EntryTime(strItemName);
-	if(!pTo->Add(strItemName, pData, iSize, false, true, iEntryTime))
+	if (!pTo->Add(strItemName, pData, iSize, false, true, iEntryTime))
 		return false;
 	return true;
 }
@@ -51,25 +51,25 @@ bool C4Group_ApplyUpdate(C4Group &hGroup)
 		{
 			// Do update check first (ensure packet has everything it needs in order to perfom the update)
 			int iRes = Upd.Check(&hGroup);
-			switch(iRes)
+			switch (iRes)
 			{
-			// Bad version - checks against version of the applying executable (major version must match, minor version must be equal or higher)
+				// Bad version - checks against version of the applying executable (major version must match, minor version must be equal or higher)
 			case C4UPD_CHK_BAD_VERSION:
 				fprintf(stderr, "This update %s can only be applied using version %d.%d.%d.%d or higher.\n", Upd.Name, Upd.RequireVersion[0], Upd.RequireVersion[1], Upd.RequireVersion[2], Upd.RequireVersion[3]);
 				return false;
-			// Target not found: keep going
+				// Target not found: keep going
 			case C4UPD_CHK_NO_SOURCE:
 				fprintf(stderr, "Target %s for update %s not found. Ignoring.\n", Upd.DestPath, Upd.Name);
 				return true;
-			// Target mismatch: abort updating
+				// Target mismatch: abort updating
 			case C4UPD_CHK_BAD_SOURCE:
 				fprintf(stderr, "Target %s incorrect version for update %s. Ignoring.\n", Upd.DestPath, Upd.Name);
 				return true;
-			// Target already updated: keep going
+				// Target already updated: keep going
 			case C4UPD_CHK_ALREADY_UPDATED:
 				fprintf(stderr,"Target %s already up-to-date at %s.\n", Upd.DestPath, Upd.Name);
 				return true;
-			// Ok to perform update
+				// Ok to perform update
 			case C4UPD_CHK_OK:
 				printf("Updating %s to %s... ", Upd.DestPath, Upd.Name);
 				// Make sure the user sees the message while the work is in progress
@@ -85,7 +85,7 @@ bool C4Group_ApplyUpdate(C4Group &hGroup)
 					printf("Failed\n");
 					return false;
 				}
-			// Unknown return value from update
+				// Unknown return value from update
 			default:
 				fprintf(stderr,"Unknown error while updating.\n");
 				return false;
@@ -174,7 +174,7 @@ public:
 		Head.Entries = pHdr->Entries;
 		// overwrite creation field
 		int Creation = Head.Creation;
-		if(fLax) Head.Creation = pHdr->Creation;
+		if (fLax) Head.Creation = pHdr->Creation;
 		// compare
 		bool fIdentical = !memcmp(&Head, pHdr, sizeof(C4GroupHeader));
 		// restore field values
@@ -201,32 +201,32 @@ public:
 	void SetEntryTime(const char *szEntry, int iEntryTime)
 	{
 		C4GroupEntryCore *pCore = GetEntry(szEntry);
-		if(pCore) pCore->Time = iEntryTime;
+		if (pCore) pCore->Time = iEntryTime;
 	}
 
 	void SetNoSort(const char *szEntry)
 	{
 		C4GroupEntry *pEntry = GetEntry(szEntry);
-		if(pEntry) pEntry->NoSort = true;
+		if (pEntry) pEntry->NoSort = true;
 	}
 
 	// close without header update
 	bool Close(bool fHeaderUpdate)
 	{
-		if(fHeaderUpdate) return C4Group::Close(); else { bool fSuccess = Save(false); Clear(); return fSuccess; }
+		if (fHeaderUpdate) return C4Group::Close(); else { bool fSuccess = Save(false); Clear(); return fSuccess; }
 	}
 };
 
 // *** C4UpdatePackageCore
 
 C4UpdatePackageCore::C4UpdatePackageCore()
-	{
+{
 	// zero fields
 	ZeroMem(this, sizeof(C4UpdatePackageCore));
-	}
+}
 
 void C4UpdatePackageCore::CompileFunc(StdCompiler *pComp)
-	{
+{
 	pComp->Value(mkNamingAdapt(toC4CArr(RequireVersion), "RequireVersion"));
 	pComp->Value(mkNamingAdapt(toC4CStr(Name), "Name", ""));
 	pComp->Value(mkNamingAdapt(toC4CStr(DestPath), "DestPath", ""));
@@ -234,44 +234,44 @@ void C4UpdatePackageCore::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt(UpGrpCnt, "TargetCount", 0));
 	pComp->Value(mkNamingAdapt(toC4CArrU(GrpChks1), "GrpChks1"));
 	pComp->Value(mkNamingAdapt(GrpChks2, "GrpChks2", 0u));
-	}
+}
 
 bool C4UpdatePackageCore::Load(C4Group &hGroup)
-	{
+{
 	// Load from group
 	StdStrBuf Source;
 	if (!hGroup.LoadEntryString(C4CFN_UpdateCore,Source))
 		return false;
 	try
-		{
+	{
 		// Compile data
 		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(*this, "Update"), Source);
-		}
-	catch(StdCompiler::Exception *pExc)
-		{
+	}
+	catch (StdCompiler::Exception *pExc)
+	{
 		delete pExc;
 		return false;
-		}
-	return true;
 	}
+	return true;
+}
 
 bool C4UpdatePackageCore::Save(C4Group &hGroup)
-	{
+{
 	try
-		{
+	{
 		// decompile data
 		StdStrBuf Core = DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*this, "Update"));
 		char *stupid_buffer = new char[Core.getLength() + 1];
 		memcpy(stupid_buffer, Core.getMData(), Core.getLength() + 1);
 		// add to group
 		return hGroup.Add(C4CFN_UpdateCore, stupid_buffer, Core.getLength(), false, true);
-		}
-	catch(StdCompiler::Exception * pExc)
-		{
+	}
+	catch (StdCompiler::Exception * pExc)
+	{
 		delete pExc;
 		return false;
-		}
 	}
+}
 
 // *** C4UpdatePackage
 
@@ -282,17 +282,17 @@ bool C4UpdatePackage::Load(C4Group *pGroup)
 	if (!pGroup->LoadEntryString(C4CFN_UpdateCore,Source))
 		return false;
 	try
-		{
+	{
 		// Compile data
 		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(*this, "Update"), Source);
-		}
-	catch(StdCompiler::Exception *pExc)
-		{
+	}
+	catch (StdCompiler::Exception *pExc)
+	{
 		StdStrBuf Name = pGroup->GetFullName() + DirSep + C4CFN_UpdateCore;
 		WriteLog("ERROR: %s (in %s)", pExc->Msg.getData(), Name.getData());
 		delete pExc;
 		return false;
-		}
+	}
 	return true;
 }
 
@@ -305,30 +305,30 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 	C4GroupEx TargetGrp;
 	char strTarget[_MAX_PATH]; SCopy(DestPath, strTarget, _MAX_PATH);
 	char *p = strTarget, *lp = strTarget;
-	while((p = strchr(p + 1, '\\')))
+	while ((p = strchr(p + 1, '\\')))
 	{
 		*p = 0;
-		if(!*(p + 1)) break;
-		if(!SEqual(lp, ".."))
+		if (!*(p + 1)) break;
+		if (!SEqual(lp, ".."))
 		{
-			if(TargetGrp.Open(strTarget))
+			if (TargetGrp.Open(strTarget))
 			{
 				// packed?
 				bool fPacked = TargetGrp.IsPacked();
 				// maker check (someone might try to unpack directories w/o asking user)
-				if(fPacked)
-					if(!SEqual(TargetGrp.GetMaker(), pGroup->GetMaker()))
+				if (fPacked)
+					if (!SEqual(TargetGrp.GetMaker(), pGroup->GetMaker()))
 						return false;
 				// Close Group
 				TargetGrp.Close(true);
-				if(fPacked)
+				if (fPacked)
 					// Unpack
 					C4Group_UnpackDirectory(strTarget);
 			}
 			else
 			{
 				// GrpUpdate -> file must exist
-				if(GrpUpdate) return false;
+				if (GrpUpdate) return false;
 				// create dir
 				CreatePath(strTarget);
 			}
@@ -337,62 +337,62 @@ bool C4UpdatePackage::Execute(C4Group *pGroup)
 	}
 
 	// try to open it
-	if(!TargetGrp.Open(strTarget, !GrpUpdate))
+	if (!TargetGrp.Open(strTarget, !GrpUpdate))
 		return false;
 
 	// check if the update is allowed
-	if(GrpUpdate)
+	if (GrpUpdate)
 	{
 		// maker must match
 		/*if(!SEqual(TargetGrp.GetMaker(), pGroup->GetMaker())) - now allowing updates from different makers
-			return false;*/
+		  return false;*/
 		// check checksum
 		uint32_t iCRC32;
-		if(!C4Group_GetFileCRC(TargetGrp.GetFullName().getData(), &iCRC32))
+		if (!C4Group_GetFileCRC(TargetGrp.GetFullName().getData(), &iCRC32))
 			return false;
-				int i = 0;
-		for(; i < UpGrpCnt; i++)
-			if(iCRC32 == GrpChks1[i])
+		int i = 0;
+		for (; i < UpGrpCnt; i++)
+			if (iCRC32 == GrpChks1[i])
 				break;
-		if(i >= UpGrpCnt)
+		if (i >= UpGrpCnt)
 			return false;
 	}
 	else
 	{
 		// only allow Extra.c4g-Updates
-		if(!SEqual2(DestPath, "Extra.c4g"))
+		if (!SEqual2(DestPath, "Extra.c4g"))
 			return false;
 	}
 
 	// update children
 	char ItemFileName[_MAX_PATH];
 	pGroup->ResetSearch();
-	while(pGroup->FindNextEntry("*", ItemFileName))
-		if(!SEqual(ItemFileName, C4CFN_UpdateCore) && !SEqual(ItemFileName, C4CFN_UpdateEntries))
+	while (pGroup->FindNextEntry("*", ItemFileName))
+		if (!SEqual(ItemFileName, C4CFN_UpdateCore) && !SEqual(ItemFileName, C4CFN_UpdateEntries))
 			DoUpdate(pGroup, &TargetGrp, ItemFileName);
 
 	// do GrpUpdate
-	if(GrpUpdate)
+	if (GrpUpdate)
 		DoGrpUpdate(pGroup, &TargetGrp);
 
 	// close the group
 	TargetGrp.Close(false);
 
-	if(GrpUpdate)
+	if (GrpUpdate)
 	{
 		// check the result
 		uint32_t iResChks;
-		if(!C4Group_GetFileCRC(strTarget, &iResChks))
+		if (!C4Group_GetFileCRC(strTarget, &iResChks))
 			return false;
-		if(iResChks != GrpChks2)
+		if (iResChks != GrpChks2)
 		{
-	#ifdef UPDATE_DEBUG
+#ifdef UPDATE_DEBUG
 			char *pData; int iSize;
 			CStdFile MyFile; MyFile.Load(strTarget, (BYTE **)&pData, &iSize, 0, true);
 			MyFile.Create("DiesesDingIstMist.txt", false);
 			MyFile.Write(pData, iSize);
 			MyFile.Close();
-	#endif
+#endif
 			return false;
 		}
 	}
@@ -405,25 +405,25 @@ bool C4UpdatePackage::Optimize(C4Group *pGroup, const char *strTarget)
 
 	// Open target group
 	C4GroupEx TargetGrp;
-	if(!TargetGrp.Open(strTarget))
+	if (!TargetGrp.Open(strTarget))
 		return false;
 
 	// Both groups must be packed
-	if(!pGroup->IsPacked() || !TargetGrp.IsPacked())
-		{
+	if (!pGroup->IsPacked() || !TargetGrp.IsPacked())
+	{
 		TargetGrp.Close(false);
 		return false;
-		}
+	}
 
 	// update children
 	char ItemFileName[_MAX_PATH];
 	pGroup->ResetSearch();
-	while(pGroup->FindNextEntry("*", ItemFileName))
-		if(!SEqual(ItemFileName, C4CFN_UpdateCore) && !SEqual(ItemFileName, C4CFN_UpdateEntries))
+	while (pGroup->FindNextEntry("*", ItemFileName))
+		if (!SEqual(ItemFileName, C4CFN_UpdateCore) && !SEqual(ItemFileName, C4CFN_UpdateEntries))
 			Optimize(pGroup, &TargetGrp, ItemFileName);
 
 	// set header
-	if(TargetGrp.HeadIdentical(*pGroup, true))
+	if (TargetGrp.HeadIdentical(*pGroup, true))
 		TargetGrp.SetHead(*pGroup);
 
 	// save
@@ -440,34 +440,34 @@ int C4UpdatePackage::Check(C4Group *pGroup)
 	{
 		// Engine and game version must match (rest ignored)
 		if ((C4XVER1 != RequireVersion[0]) || (C4XVER2 != RequireVersion[1]))
-	    return C4UPD_CHK_BAD_VERSION;
+			return C4UPD_CHK_BAD_VERSION;
 	}
 
 	// only group updates have any special needs
-	if(!GrpUpdate) return C4UPD_CHK_OK;
+	if (!GrpUpdate) return C4UPD_CHK_OK;
 
 	// check source file
 	C4Group TargetGrp;
-	if(!TargetGrp.Open(DestPath))
+	if (!TargetGrp.Open(DestPath))
 		return C4UPD_CHK_NO_SOURCE;
-	if(!TargetGrp.IsPacked())
+	if (!TargetGrp.IsPacked())
 		return C4UPD_CHK_BAD_SOURCE;
 	TargetGrp.Close();
 
 	// check source crc
 	uint32_t iCRC32;
-	if(!C4Group_GetFileCRC(DestPath, &iCRC32))
+	if (!C4Group_GetFileCRC(DestPath, &iCRC32))
 		return C4UPD_CHK_BAD_SOURCE;
 	// equal to destination group?
-	if(iCRC32 == GrpChks2)
+	if (iCRC32 == GrpChks2)
 		// so there's nothing to do
 		return C4UPD_CHK_ALREADY_UPDATED;
 	// check if it's one of our registered sources
-		int i = 0;
-	for(; i < UpGrpCnt; i++)
-		if(iCRC32 == GrpChks1[i])
+	int i = 0;
+	for (; i < UpGrpCnt; i++)
+		if (iCRC32 == GrpChks1[i])
 			break;
-	if(i >= UpGrpCnt)
+	if (i >= UpGrpCnt)
 		return C4UPD_CHK_BAD_SOURCE;
 
 	// ok
@@ -478,22 +478,22 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 {
 	// group file?
 	C4Group ItemGroupFrom;
-	if(ItemGroupFrom.OpenAsChild(pGrpFrom, strFileName))
+	if (ItemGroupFrom.OpenAsChild(pGrpFrom, strFileName))
 	{
 		// try to open target group
 		C4GroupEx ItemGroupTo;
 		char strTempGroup[_MAX_PATH+1]; strTempGroup[0] = 0;
-		if(!ItemGroupTo.OpenAsChild(pGrpTo, strFileName, false, true))
+		if (!ItemGroupTo.OpenAsChild(pGrpTo, strFileName, false, true))
 			return false;
 		// update children
 		char ItemFileName[_MAX_PATH];
 		ItemGroupFrom.ResetSearch();
-		while(ItemGroupFrom.FindNextEntry("*", ItemFileName))
-			if(!SEqual(ItemFileName, C4CFN_UpdateCore) && !SEqual(ItemFileName, C4CFN_UpdateEntries))
+		while (ItemGroupFrom.FindNextEntry("*", ItemFileName))
+			if (!SEqual(ItemFileName, C4CFN_UpdateCore) && !SEqual(ItemFileName, C4CFN_UpdateEntries))
 				DoUpdate(&ItemGroupFrom, &ItemGroupTo, ItemFileName);
 		// set maker (always)
 		ItemGroupTo.SetMaker(ItemGroupFrom.GetMaker());
-		if(GrpUpdate)
+		if (GrpUpdate)
 		{
 			DoGrpUpdate(&ItemGroupFrom, &ItemGroupTo);
 			// write group (do not change any headers set by DoGrpUpdate!)
@@ -509,8 +509,8 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 			// write group
 			ItemGroupTo.Close(true);
 			// temporary group?
-			if(strTempGroup[0])
-				if(!pGrpTo->Move(strTempGroup, strFileName))
+			if (strTempGroup[0])
+				if (!pGrpTo->Move(strTempGroup, strFileName))
 					return false;
 		}
 	}
@@ -521,9 +521,9 @@ bool C4UpdatePackage::DoUpdate(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 #ifdef _MSC_VER
 		OutputDebugString(strMsg);
 #elif _DEBUG
-				puts(strMsg);
+		puts(strMsg);
 #endif
-		if(!C4Group_CopyEntry(pGrpFrom, pGrpTo, strFileName))
+		if (!C4Group_CopyEntry(pGrpFrom, pGrpTo, strFileName))
 			return false;
 		// set core
 		pGrpTo->SaveEntryCore(*pGrpFrom, strFileName);
@@ -537,35 +537,35 @@ bool C4UpdatePackage::DoGrpUpdate(C4Group *pUpdateData, C4GroupEx *pGrpTo)
 {
 	char *pData;
 	// sort entries
-	if(pUpdateData->LoadEntry(C4CFN_UpdateEntries, &pData, NULL, 1))
+	if (pUpdateData->LoadEntry(C4CFN_UpdateEntries, &pData, NULL, 1))
 	{
 		// delete all entries that do not appear in the entries list
 		char strItemName[_MAX_FNAME+1], strItemName2[_MAX_FNAME+1];
 		pGrpTo->ResetSearch();
-		while(pGrpTo->FindNextEntry("*", strItemName))
+		while (pGrpTo->FindNextEntry("*", strItemName))
 		{
 			bool fGotIt = false;
-			for(int i = 0; (fGotIt = SCopySegment(pData, i, strItemName2, '|', _MAX_FNAME)); i++)
+			for (int i = 0; (fGotIt = SCopySegment(pData, i, strItemName2, '|', _MAX_FNAME)); i++)
 			{
 				// remove seperator
 				char *pSep = strchr(strItemName2, '=');
-				if(pSep) *pSep = '\0';
+				if (pSep) *pSep = '\0';
 				// in list?
-				if(SEqual(strItemName, strItemName2))
+				if (SEqual(strItemName, strItemName2))
 					break;
 			}
-			if(!fGotIt)
+			if (!fGotIt)
 				pGrpTo->DeleteEntry(strItemName);
 		}
 		// set entry times, set sort list
 		char strSortList[32767] = "";
-		for(int i = 0; SCopySegment(pData, i, strItemName, '|', _MAX_FNAME); i++)
+		for (int i = 0; SCopySegment(pData, i, strItemName, '|', _MAX_FNAME); i++)
 		{
 			// get time (if given)
 			char *pTime = strchr(strItemName, '=');
-			if(pTime) *pTime++ = '\0';
+			if (pTime) *pTime++ = '\0';
 			// set
-			if(pTime) pGrpTo->SetEntryTime(strItemName, atoi(pTime));
+			if (pTime) pGrpTo->SetEntryTime(strItemName, atoi(pTime));
 			// update EntryCRC32. This will make updates to old groups invalid
 			// however, it's needed so updates will update the EntryCRC of *unchanged* files correctly
 			pGrpTo->EntryCRC32(strItemName);
@@ -587,20 +587,20 @@ bool C4UpdatePackage::Optimize(C4Group *pGrpFrom, C4GroupEx *pGrpTo, const char 
 {
 	// group file?
 	C4Group ItemGroupFrom;
-	if(!ItemGroupFrom.OpenAsChild(pGrpFrom, strFileName))
+	if (!ItemGroupFrom.OpenAsChild(pGrpFrom, strFileName))
 		return true;
 	// try to open target group
 	C4GroupEx ItemGroupTo;
 	char strTempGroup[_MAX_PATH+1]; strTempGroup[0] = 0;
-	if(!ItemGroupTo.OpenAsChild(pGrpTo, strFileName))
+	if (!ItemGroupTo.OpenAsChild(pGrpTo, strFileName))
 		return true;
 	// update children
 	char ItemFileName[_MAX_PATH];
 	ItemGroupFrom.ResetSearch();
-	while(ItemGroupFrom.FindNextEntry("*", ItemFileName))
+	while (ItemGroupFrom.FindNextEntry("*", ItemFileName))
 		Optimize(&ItemGroupFrom, &ItemGroupTo, ItemFileName);
 	// set head
-	if(ItemGroupTo.HeadIdentical(ItemGroupFrom, true))
+	if (ItemGroupTo.HeadIdentical(ItemGroupFrom, true))
 		ItemGroupTo.SetHead(ItemGroupFrom);
 	// write group (do not change any headers set by DoGrpUpdate!)
 	ItemGroupTo.Close(false);
@@ -627,7 +627,7 @@ bool C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 #endif
 
 	// open Log
-	if(!Log.Create("Update.log"))
+	if (!Log.Create("Update.log"))
 		return false;
 
 	// begin message
@@ -635,8 +635,8 @@ bool C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 
 	// open both groups
 	C4Group Group1, Group2;
-	if(!Group1.Open(strFile1)) { WriteLog("Error: could not open %s!\n", strFile1); return false; }
-	if(!Group2.Open(strFile2)) { WriteLog("Error: could not open %s!\n", strFile2); return false; }
+	if (!Group1.Open(strFile1)) { WriteLog("Error: could not open %s!\n", strFile1); return false; }
+	if (!Group2.Open(strFile2)) { WriteLog("Error: could not open %s!\n", strFile2); return false; }
 
 	// All groups to be compared need to be packed
 	if (!Group1.IsPacked()) { WriteLog("Error: source group %s not packed!\n", strFile1); return false; }
@@ -646,7 +646,7 @@ bool C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 
 	// create/open update-group
 	C4GroupEx UpGroup;
-	if(!UpGroup.Open(strUpdateFile, true)) { WriteLog("Error: could not open %s!\n", strUpdateFile); return false; }
+	if (!UpGroup.Open(strUpdateFile, true)) { WriteLog("Error: could not open %s!\n", strUpdateFile); return false; }
 
 	// may be continued update-file -> try to load core
 	UpGrpCnt = 0;
@@ -656,35 +656,35 @@ bool C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 	unsigned int iOldChks2 = GrpChks2;
 
 	// create core info
-	if(strName)
+	if (strName)
 		SCopy(strName, Name, C4MaxName);
 	else
 		sprintf(Name, "%s Update", GetFilename(strFile1));
 	SCopy(strFile1, DestPath, _MAX_PATH);
 	GrpUpdate = true;
-	if(!C4Group_GetFileCRC(strFile1, &GrpChks1[UpGrpCnt]))
+	if (!C4Group_GetFileCRC(strFile1, &GrpChks1[UpGrpCnt]))
 		{ WriteLog("Error: could not calc checksum for %s!\n", strFile1); return false; }
-	if(!C4Group_GetFileCRC(strFile2, &GrpChks2))
+	if (!C4Group_GetFileCRC(strFile2, &GrpChks2))
 		{ WriteLog("Error: could not calc checksum for %s!\n", strFile2); return false; }
-	if(fContinued)
+	if (fContinued)
 	{
 		// continuation check: GrpChks2 matches?
-		if(GrpChks2 != iOldChks2)
-				// that would mess up the update result...
+		if (GrpChks2 != iOldChks2)
+			// that would mess up the update result...
 			{ WriteLog("Error: could not add to update package - target groups don't match (checksum error)\n"); return false; }
 		// already supported by this update?
-				int i = 0;
-		for(; i < UpGrpCnt; i++)
-			if(GrpChks1[UpGrpCnt] == GrpChks1[i])
+		int i = 0;
+		for (; i < UpGrpCnt; i++)
+			if (GrpChks1[UpGrpCnt] == GrpChks1[i])
 				break;
-		if(i < UpGrpCnt)
+		if (i < UpGrpCnt)
 			{ WriteLog("This update already supports the version of the source file.\n"); return false; }
 	}
 
 	UpGrpCnt++;
 
 	// save core
-	if(!C4UpdatePackageCore::Save(UpGroup))
+	if (!C4UpdatePackageCore::Save(UpGroup))
 		{ WriteLog("Could not save update package core!\n"); return false; }
 
 	// compare groups, create update
@@ -693,7 +693,7 @@ bool C4UpdatePackage::MakeUpdate(const char *strFile1, const char *strFile2, con
 	// close (save) it
 	UpGroup.Close(false);
 	// error?
-	if(!fSuccess)
+	if (!fSuccess)
 	{
 		WriteLog("Update package not created.\n");
 		remove(strUpdateFile);
@@ -712,54 +712,53 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 	//           in the base group)
 
 	// compare headers
-	if(!pGrp1 ||
-		 pGrp1->GetCreation() != pGrp2->GetCreation() ||
-		 pGrp1->GetOriginal() != pGrp2->GetOriginal() ||
-		 !SEqual(pGrp1->GetMaker(), pGrp2->GetMaker()) ||
-		 !SEqual(pGrp1->GetPassword(), pGrp2->GetPassword()))
+	if (!pGrp1 ||
+	    pGrp1->GetCreation() != pGrp2->GetCreation() ||
+	    pGrp1->GetOriginal() != pGrp2->GetOriginal() ||
+	    !SEqual(pGrp1->GetMaker(), pGrp2->GetMaker()) ||
+	    !SEqual(pGrp1->GetPassword(), pGrp2->GetPassword()))
 		*fModified = true;
 	// set header
 	pUpGrp->SetHead(*pGrp2);
 	// compare entries
 	char strItemName[_MAX_PATH], strItemName2[_MAX_PATH]; StdStrBuf EntryList;
 	strItemName[0] = strItemName2[0] = 0;
-	pGrp2->ResetSearch(); if(!*fModified) pGrp1->ResetSearch();
+	pGrp2->ResetSearch(); if (!*fModified) pGrp1->ResetSearch();
 	int iChangedEntries = 0;
-	while(pGrp2->FindNextEntry("*", strItemName, NULL, NULL, !! strItemName[0]))
+	while (pGrp2->FindNextEntry("*", strItemName, NULL, NULL, !! strItemName[0]))
 	{
 		// add to entry list
-		if(!!EntryList) EntryList.AppendChar('|');
+		if (!!EntryList) EntryList.AppendChar('|');
 		EntryList.AppendFormat("%s=%d", strItemName, pGrp2->EntryTime(strItemName));
 		// no modification detected yet? then check order
-		if(!*fModified)
+		if (!*fModified)
 		{
-			if(!pGrp1->FindNextEntry("*", strItemName2, NULL, NULL, !! strItemName2[0]))
+			if (!pGrp1->FindNextEntry("*", strItemName2, NULL, NULL, !! strItemName2[0]))
 				*fModified = true;
-			else
-				if(!SEqual(strItemName, strItemName2))
-					*fModified = true;
+			else if (!SEqual(strItemName, strItemName2))
+				*fModified = true;
 		}
 
 		// TODO: write DeleteEntries.txt
 
 		// a child group?
 		C4GroupEx ChildGrp2;
-		if(ChildGrp2.OpenAsChild(pGrp2, strItemName))
+		if (ChildGrp2.OpenAsChild(pGrp2, strItemName))
 		{
 			// open in Grp1
 			C4Group *pChildGrp1 = new C4GroupEx();
-			if(!pGrp1 || !pChildGrp1->OpenAsChild(pGrp1, strItemName))
+			if (!pGrp1 || !pChildGrp1->OpenAsChild(pGrp1, strItemName))
 				{ delete pChildGrp1; pChildGrp1 = NULL; }
 			// open group for update data
 			C4GroupEx UpdGroup; char strTempGroupName[_MAX_FNAME + 1];
 			strTempGroupName[0] = 0;
-			if(!UpdGroup.OpenAsChild(pUpGrp, strItemName))
+			if (!UpdGroup.OpenAsChild(pUpGrp, strItemName))
 			{
 				// create new group (may be temporary)
 				if (C4Group_TempPath[0]) { SCopy(C4Group_TempPath,strTempGroupName,_MAX_FNAME); SAppend("~upd",strTempGroupName,_MAX_FNAME); }
 				else SCopy("~upd",strTempGroupName,_MAX_FNAME);
 				MakeTempFilename(strTempGroupName);
-				if(!UpdGroup.Open(strTempGroupName, true)) { delete pChildGrp1; WriteLog("Error: could not create temp group\n"); return false; }
+				if (!UpdGroup.Open(strTempGroupName, true)) { delete pChildGrp1; WriteLog("Error: could not create temp group\n"); return false; }
 			}
 			// do nested MkUp-search
 			bool Modified = false;
@@ -769,13 +768,13 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 			UpdGroup.SortByList(C4Group_SortList, ChildGrp2.GetName());
 			UpdGroup.Close(false);
 			// check entry times
-			if(!pGrp1 || (pGrp1->EntryTime(strItemName) != pGrp2->EntryTime(strItemName)))
+			if (!pGrp1 || (pGrp1->EntryTime(strItemName) != pGrp2->EntryTime(strItemName)))
 				Modified = true;
 			// add group (if modified)
-			if(fSuccess && Modified)
+			if (fSuccess && Modified)
 			{
-				if(strTempGroupName[0])
-					if(!pUpGrp->Move(strTempGroupName, strItemName))
+				if (strTempGroupName[0])
+					if (!pUpGrp->Move(strTempGroupName, strItemName))
 					{
 						WriteLog("Error: could not add modified group\n");
 						return false;
@@ -789,18 +788,18 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 			}
 			else
 				// delete group (do not remove groups that existed before!)
-				if(strTempGroupName[0])
-					if(remove(strTempGroupName))
-						if(rmdir(strTempGroupName))
-						{ WriteLog("Error: could not delete temporary directory\n"); return false; }
+				if (strTempGroupName[0])
+					if (remove(strTempGroupName))
+						if (rmdir(strTempGroupName))
+							{ WriteLog("Error: could not delete temporary directory\n"); return false; }
 			delete pChildGrp1;
 		}
 		else
 		{
 			// compare them (size & crc32)
-			if(!pGrp1 ||
-				 pGrp1->EntrySize(strItemName) != pGrp2->EntrySize(strItemName) ||
-				 pGrp1->EntryCRC32(strItemName) != pGrp2->EntryCRC32(strItemName))
+			if (!pGrp1 ||
+			    pGrp1->EntrySize(strItemName) != pGrp2->EntrySize(strItemName) ||
+			    pGrp1->EntryCRC32(strItemName) != pGrp2->EntryCRC32(strItemName))
 			{
 				bool fCopied = false;
 
@@ -808,12 +807,12 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 				pUpGrp->SaveEntryCore(*pGrp2, strItemName);
 
 				// already in update grp?
-				if(pUpGrp->EntryTime(strItemName) != pGrp2->EntryTime(strItemName) ||
-					 pUpGrp->EntrySize(strItemName) != pGrp2->EntrySize(strItemName) ||
-					 pUpGrp->EntryCRC32(strItemName) != pGrp2->EntryCRC32(strItemName))
+				if (pUpGrp->EntryTime(strItemName) != pGrp2->EntryTime(strItemName) ||
+				    pUpGrp->EntrySize(strItemName) != pGrp2->EntrySize(strItemName) ||
+				    pUpGrp->EntryCRC32(strItemName) != pGrp2->EntryCRC32(strItemName))
 				{
 					// copy it
-					if(!C4Group_CopyEntry(pGrp2, pUpGrp, strItemName))
+					if (!C4Group_CopyEntry(pGrp2, pUpGrp, strItemName))
 					{
 						WriteLog("Error: could not add changed entry to update group\n");
 						return false;
@@ -831,7 +830,7 @@ bool C4UpdatePackage::MkUp(C4Group *pGrp1, C4Group *pGrp2, C4GroupEx *pUpGrp, bo
 		}
 	}
 	// write entries list (always)
-	if(!pUpGrp->Add(C4CFN_UpdateEntries, EntryList, false, true))
+	if (!pUpGrp->Add(C4CFN_UpdateEntries, EntryList, false, true))
 	{
 		WriteLog("Error: could not save entry list!");
 		return false;

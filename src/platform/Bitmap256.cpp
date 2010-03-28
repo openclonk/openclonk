@@ -23,22 +23,22 @@
 #include <Bitmap256.h>
 
 CBitmapInfo::CBitmapInfo()
-	{
+{
 	Default();
-	}
+}
 
 void CBitmapInfo::Default()
-	{
+{
 	ZeroMem(this,sizeof(CBitmapInfo));
-	}
+}
 
 int CBitmapInfo::FileBitsOffset()
-	{
+{
 	return Head.bfOffBits-sizeof(CBitmapInfo);
-	}
+}
 
 void CBitmapInfo::Set(int iWdt, int iHgt, int iBitDepth)
-	{
+{
 	Default();
 	// Set header
 	Head.bfType=*((WORD*)"BM");
@@ -53,28 +53,28 @@ void CBitmapInfo::Set(int iWdt, int iHgt, int iBitDepth)
 	Info.biCompression=0;
 	Info.biSizeImage=iWdt*iHgt;
 	Info.biClrUsed=Info.biClrImportant=0;
-	}
+}
 
 
 CBitmap256Info::CBitmap256Info()
-	{
+{
 	Default();
-	}
+}
 
 bool CBitmap256Info::Valid()
-	{
+{
 	if (Head.bfType != *((WORD*)"BM") ) return false;
 	if ((Info.biBitCount!=8) || (Info.biCompression!=0)) return false;
 	return true;
-	}
+}
 
 int CBitmap256Info::FileBitsOffset()
-	{
+{
 	return Head.bfOffBits-sizeof(CBitmap256Info);
-	}
+}
 
 void CBitmap256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
-	{
+{
 	Default();
 	// Set header
 	Head.bfType=*((WORD*)"BM");
@@ -91,15 +91,15 @@ void CBitmap256Info::Set(int iWdt, int iHgt, BYTE *bypPalette)
 	Info.biClrUsed=Info.biClrImportant=256;
 	// Set palette
 	for (int cnt=0; cnt<256; cnt++)
-		{
-		Colors[cnt].rgbRed	 = bypPalette[cnt*3+0];
+	{
+		Colors[cnt].rgbRed   = bypPalette[cnt*3+0];
 		Colors[cnt].rgbGreen = bypPalette[cnt*3+1];
 		Colors[cnt].rgbBlue  = bypPalette[cnt*3+2];
-		}
 	}
+}
 
 void CBitmap256Info::Default()
-	{
+{
 	ZeroMem(this,sizeof(CBitmap256Info));
-	}
+}
 

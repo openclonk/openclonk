@@ -35,12 +35,12 @@
 #include <C4GraphicsSystem.h>
 
 bool C4StartupGraphics::LoadFile(C4FacetID &rToFct, const char *szFilename)
-	{
+{
 	return ::GraphicsResource.LoadFile(rToFct, szFilename, ::GraphicsResource.Files);
-	}
+}
 
 bool C4StartupGraphics::Init()
-	{
+{
 	// load startup specific graphics from gfxsys groupset
 	fctScenSelBG.GetFace().SetBackground();
 	if (!LoadFile(fctScenSelBG, "StartupScenSelBG")) return false;
@@ -64,14 +64,14 @@ bool C4StartupGraphics::Init()
 	sfctBookScrollR.Set(fctBookScroll, 1);
 	sfctBookScrollG.Set(fctBookScroll, 2);
 	sfctBookScrollB.Set(fctBookScroll, 3);
-/*	if (!LoadFile(fctCrew, "StartupCrew")) return false; - currently unused
-	if (fctCrew.idSourceGroup != fctCrewClr.idSourceGroup)
-		{
-		if (!fctCrewClr.CreateClrByOwner(fctCrew.Surface)) { LogFatal("ClrByOwner error! (11)"); return false; }
-		fctCrewClr.Wdt=fctCrew.Wdt;
-		fctCrewClr.Hgt=fctCrew.Hgt;
-		fctCrewClr.idSourceGroup = fctCrew.idSourceGroup;
-		}*/
+	/*  if (!LoadFile(fctCrew, "StartupCrew")) return false; - currently unused
+	  if (fctCrew.idSourceGroup != fctCrewClr.idSourceGroup)
+	    {
+	    if (!fctCrewClr.CreateClrByOwner(fctCrew.Surface)) { LogFatal("ClrByOwner error! (11)"); return false; }
+	    fctCrewClr.Wdt=fctCrew.Wdt;
+	    fctCrewClr.Hgt=fctCrew.Hgt;
+	    fctCrewClr.idSourceGroup = fctCrew.idSourceGroup;
+	    }*/
 	Game.SetInitProgress(66);
 	if (!LoadFile(fctContext, "StartupContext")) return false;
 	fctContext.Set(fctContext.Surface,0,0,fctContext.Hgt,fctContext.Hgt);
@@ -96,11 +96,11 @@ bool C4StartupGraphics::Init()
 #endif
 	Game.SetInitProgress(100);
 	return true;
-	}
+}
 
 #ifndef USE_CONSOLE
 bool C4StartupGraphics::InitFonts()
-	{
+{
 	const char *szFont = Config.General.RXFontName;
 	if (!Game.FontLoader.InitFont(BookFontCapt, szFont, C4FontLoader::C4FT_Caption, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (1)"); return false; }
@@ -114,11 +114,11 @@ bool C4StartupGraphics::InitFonts()
 	if (!Game.FontLoader.InitFont(BookSmallFont, szFont, C4FontLoader::C4FT_MainSmall, Config.General.RXFontSize, &::GraphicsResource.Files, false))
 		{ LogFatal("Font Error (4)"); return false; }
 	return true;
-	}
+}
 #endif
 
 CStdFont &C4StartupGraphics::GetBlackFontByHeight(int32_t iHgt, float *pfZoom)
-	{
+{
 	// get optimal font for given control size
 	CStdFont *pUseFont;
 	if (iHgt <= BookSmallFont.GetLineHeight()) pUseFont = &BookSmallFont;
@@ -127,15 +127,15 @@ CStdFont &C4StartupGraphics::GetBlackFontByHeight(int32_t iHgt, float *pfZoom)
 	else pUseFont = &BookFontTitle;
 	// determine zoom
 	if (pfZoom)
-		{
+	{
 		int32_t iLineHgt = pUseFont->GetLineHeight();
 		if (iLineHgt)
 			*pfZoom = (float) iHgt / (float) iLineHgt;
 		else
 			*pfZoom = 1.0f; // error
-		}
-	return *pUseFont;
 	}
+	return *pUseFont;
+}
 
 // statics
 C4Startup::DialogID C4Startup::eLastDlgID = C4Startup::SDID_Main;
@@ -145,24 +145,24 @@ bool C4Startup::fFirstRun = false;
 C4Startup *C4Startup::pInstance = NULL;
 
 C4Startup::C4Startup() : fInStartup(false), fAborted(false), pLastDlg(NULL), pCurrDlg(NULL)
-	{
+{
 	// must be single!
 	assert(!pInstance);
 	pInstance = this;
-	}
+}
 
 C4Startup::~C4Startup()
-	{
+{
 	pInstance = NULL;
 	if (::pGUI)
-		{
+	{
 		if (pLastDlg) delete pLastDlg;
 		if (pCurrDlg) delete pCurrDlg;
-		}
 	}
+}
 
 void C4Startup::Start()
-	{
+{
 	assert(fInStartup);
 	// record if desired
 	if (Config.General.Record) Game.Record = true;
@@ -170,98 +170,98 @@ void C4Startup::Start()
 	fAborted = false;
 	fInStartup = false;
 	fLastDlgWasBack = false;
-	}
+}
 
 void C4Startup::Exit()
-	{
+{
 	assert(fInStartup);
 	// flag game start
 	fAborted = true;
 	fInStartup = false;
-	}
+}
 
 C4StartupDlg *C4Startup::SwitchDialog(DialogID eToDlg, bool fFade)
-	{
+{
 	// can't go back twice, because dialog is not remembered: Always go back to main in this case
 	if (eToDlg == SDID_Back && (fLastDlgWasBack || !pLastDlg)) eToDlg = SDID_Main;
 	fLastDlgWasBack = false;
 	// create new dialog
 	C4StartupDlg *pToDlg = NULL;
 	switch (eToDlg)
-		{
-		case SDID_Main:
-			pToDlg = new C4StartupMainDlg();
-			break;
-		case SDID_ScenSel:
-			pToDlg = new C4StartupScenSelDlg(false);
-			break;
-		case SDID_ScenSelNetwork:
-			pToDlg = new C4StartupScenSelDlg(true);
-			break;
-		case SDID_NetJoin:
-			pToDlg = new C4StartupNetDlg();
-			break;
-		case SDID_Options:
-			pToDlg = new C4StartupOptionsDlg();
-			break;
-		case SDID_About:
-			pToDlg = new C4StartupAboutDlg();
-			break;
-		case SDID_PlrSel:
-			pToDlg = new C4StartupPlrSelDlg();
-			break;
-		case SDID_Back:
-			pToDlg = pLastDlg;
-			fLastDlgWasBack = true;
-			break;
-		};
+	{
+	case SDID_Main:
+		pToDlg = new C4StartupMainDlg();
+		break;
+	case SDID_ScenSel:
+		pToDlg = new C4StartupScenSelDlg(false);
+		break;
+	case SDID_ScenSelNetwork:
+		pToDlg = new C4StartupScenSelDlg(true);
+		break;
+	case SDID_NetJoin:
+		pToDlg = new C4StartupNetDlg();
+		break;
+	case SDID_Options:
+		pToDlg = new C4StartupOptionsDlg();
+		break;
+	case SDID_About:
+		pToDlg = new C4StartupAboutDlg();
+		break;
+	case SDID_PlrSel:
+		pToDlg = new C4StartupPlrSelDlg();
+		break;
+	case SDID_Back:
+		pToDlg = pLastDlg;
+		fLastDlgWasBack = true;
+		break;
+	};
 	assert(pToDlg);
 	if (!pToDlg) return NULL;
 	if (pToDlg != pLastDlg)
-		{
+	{
 		// remember current position
 		eLastDlgID = eToDlg;
 		// kill any old dialog
 		if (pLastDlg) delete pLastDlg;
-		}
+	}
 	// retain current dialog as last, so it can fade out and may be used later
 	if ((pLastDlg = pCurrDlg))
-		{
+	{
 		if (fFade)
-			{
+		{
 			if (!pLastDlg->IsShown()) pLastDlg->Show(::pGUI, false);
 			pLastDlg->FadeOut(true);
-			}
+		}
 		else
-			{
+		{
 			delete pLastDlg;
 			pLastDlg = NULL;
-			}
 		}
+	}
 	// Okay; now using this dialog
 	pCurrDlg = pToDlg;
 	// fade in new dlg
 	if (fFade)
-		{
+	{
 		if (!pToDlg->FadeIn(::pGUI))
-			{
-			delete pToDlg; pCurrDlg=NULL;
-			return NULL;
-			}
-		}
-	else
 		{
-		if (!pToDlg->Show(::pGUI, true))
-			{
 			delete pToDlg; pCurrDlg=NULL;
 			return NULL;
-			}
 		}
-	return pToDlg;
 	}
+	else
+	{
+		if (!pToDlg->Show(::pGUI, true))
+		{
+			delete pToDlg; pCurrDlg=NULL;
+			return NULL;
+		}
+	}
+	return pToDlg;
+}
 
 bool C4Startup::DoStartup()
-	{
+{
 	assert(!fInStartup);
 	assert(::pGUI);
 	// now in startup!
@@ -271,13 +271,13 @@ bool C4Startup::DoStartup()
 	// first run: Splash video
 #ifndef USE_CONSOLE
 	if (!fFirstRun)
-		{
+	{
 		fFirstRun = true;
 		if (!Config.Startup.NoSplash && !Application.NoSplash)
-			{
+		{
 			Game.VideoPlayer.PlayVideo(C4CFN_Splash);
-			}
 		}
+	}
 #endif
 
 	// make sure loader is drawn after splash
@@ -296,27 +296,27 @@ bool C4Startup::DoStartup()
 
 	// show error dlg if restart
 	if (Game.fQuitWithError || GetFatalError())
-		{
+	{
 		Game.fQuitWithError = false;
 		// preferred: Show fatal error
 		const char *szErr = GetFatalError();
 		if (szErr)
-			{
+		{
 			::pGUI->ShowMessage(szErr, LoadResStr("IDS_DLG_LOG"), C4GUI::Ico_Error);
-			}
+		}
 		else
-			{
+		{
 			// fallback to showing complete log
 			StdStrBuf sLastLog;
 			if (GetLogSection(Game.StartupLogPos, Game.QuitLogPos - Game.StartupLogPos, sLastLog))
 				if (!sLastLog.isNull())
 					::pGUI->ShowRemoveDlg(new C4GUI::InfoDialog(LoadResStr("IDS_DLG_LOG"), 10, sLastLog));
-			}
-		ResetFatalError();
 		}
+		ResetFatalError();
+	}
 
 	// while state startup: keep looping
-	while(fInStartup && ::pGUI && !pCurrDlg->IsAborted())
+	while (fInStartup && ::pGUI && !pCurrDlg->IsAborted())
 		if (!Application.ScheduleProcs()) return false;
 
 	// check whether startup was aborted; first checking ::pGUI
@@ -324,20 +324,20 @@ bool C4Startup::DoStartup()
 	if (!::pGUI) return false;
 	if (pLastDlg) { delete pLastDlg; pLastDlg = NULL; }
 	if (pCurrDlg)
-		{
+	{
 		// deinit last shown dlg
 		if (pCurrDlg->IsAborted())
-			{
+		{
 			// force abort flag if dlg abort done by user
 			fAborted = true;
-			}
+		}
 		else if (pCurrDlg->IsShown())
-			{
+		{
 			pCurrDlg->Close(true);
-			}
+		}
 		delete pCurrDlg;
 		pCurrDlg = NULL;
-		}
+	}
 
 	// now no more in startup!
 	fInStartup = false;
@@ -351,41 +351,41 @@ bool C4Startup::DoStartup()
 
 	// all okay; return whether startup finished with a game start selection
 	return !fAborted;
-	}
+}
 
 C4Startup *C4Startup::EnsureLoaded()
-	{
+{
 	// create and load startup data if not done yet
 	assert(::pGUI);
 	if (!pInstance)
-		{
+	{
 		Game.SetInitProgress(40);
 		C4Startup *pStartup = new C4Startup();
 		// load startup specific gfx
 		if (!pStartup->Graphics.Init())
 			{ LogFatal(LoadResStr("IDS_ERR_NOGFXSYS")); delete pStartup; return NULL; }
-		}
-	return pInstance;
 	}
+	return pInstance;
+}
 
 void C4Startup::Unload()
-	{
+{
 	// make sure startup data is destroyed
 	if (pInstance) { delete pInstance; pInstance=NULL; }
-	}
+}
 
 bool C4Startup::Execute()
-	{
+{
 	// ensure gfx are loaded
 	C4Startup *pStartup = EnsureLoaded();
 	if (!pStartup) return false;
 	// exec it
 	bool fResult = pStartup->DoStartup();
 	return fResult;
-	}
+}
 
 bool C4Startup::SetStartScreen(const char *szScreen)
-	{
+{
 	// set dialog ID to be shown to specified value
 	if (SEqualNoCase(szScreen, "main"))
 		eLastDlgID = SDID_Main;
@@ -403,4 +403,4 @@ bool C4Startup::SetStartScreen(const char *szScreen)
 		eLastDlgID = SDID_About;
 	else return false;
 	return true;
-	}
+}

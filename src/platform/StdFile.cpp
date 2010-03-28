@@ -55,19 +55,19 @@ static const char *DirectorySeparators = "/";
 // Return pointer to position after last backslash.
 
 char *GetFilename(char *szPath)
-	{
+{
 	if (!szPath) return NULL;
 	char *pPos,*pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos==DirectorySeparator || *pPos=='/') pFilename = pPos+1;
 	return pFilename;
-	}
+}
 const char *GetFilename(const char *szPath)
-	{
+{
 	if (!szPath) return NULL;
 	const char *pPos,*pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos==DirectorySeparator || *pPos=='/') pFilename = pPos+1;
 	return pFilename;
-	}
+}
 
 const char* GetFilenameOnly(const char *strFilename)
 {
@@ -81,20 +81,20 @@ const char* GetFilenameOnly(const char *strFilename)
 }
 
 const char *GetC4Filename(const char *szPath)
-	{
+{
 	// returns path to file starting at first .c4*-directory.
 	if (!szPath) return NULL;
 	const char *pPos,*pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++)
-		{
+	{
 		if (*pPos==DirectorySeparator || *pPos=='/')
-			{
+		{
 			if (pPos >= szPath+4 && SEqual2NoCase(pPos-4, ".c4")) return pFilename;
 			pFilename = pPos+1;
-			}
 		}
-	return pFilename;
 	}
+	return pFilename;
+}
 
 int GetTrailingNumber(const char *strString)
 {
@@ -114,106 +114,106 @@ int GetTrailingNumber(const char *strString)
 // (unix-style paths)
 
 char *GetFilenameWeb(char *szPath)
-	{
-	if(!szPath) return NULL;
+{
+	if (!szPath) return NULL;
 	char *pPos, *pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos == '/') pFilename = pPos+1;
 	return pFilename;
-	}
+}
 const char *GetFilenameWeb(const char *szPath)
-	{
-	if(!szPath) return NULL;
+{
+	if (!szPath) return NULL;
 	const char *pPos, *pFilename=szPath;
 	for (pPos=szPath; *pPos; pPos++) if (*pPos == '/') pFilename = pPos+1;
 	return pFilename;
-	}
+}
 
 // Return pointer to last file extension.
 
 char *GetExtension(char *szFilename)
-	{
+{
 	int pos, end;
 	for (end=0; szFilename[end]; end++) {}
 	pos = end;
 	while ((pos > 0) && (szFilename[pos-1] != '.') && (szFilename[pos-1] != DirectorySeparator)) --pos;
 	if ((pos > 0) && szFilename[pos-1] == '.') return szFilename + pos;
 	return szFilename + end;
-	}
+}
 const char *GetExtension(const char *szFilename)
-	{
+{
 	int pos, end;
 	for (end=0; szFilename[end]; end++) {}
 	pos = end;
 	while ((pos>0) && (szFilename[pos-1] != '.') && (szFilename[pos-1] != DirectorySeparator)) pos--;
 	if (szFilename[pos-1] == '.') return szFilename+pos;
 	return szFilename+end;
-	}
+}
 
 
 void RealPath(const char *szFilename, char *pFullFilename)
-	{
+{
 #ifdef _WIN32
 	_fullpath(pFullFilename, szFilename, _MAX_PATH);
 #else
 	char *pSuffix = NULL;
 	char szCopy[_MAX_PATH + 1];
-	for(;;)
-		{
+	for (;;)
+	{
 		// Try to convert to full filename. Note this might fail if the given file doesn't exist
-		if(realpath(szFilename, pFullFilename))
+		if (realpath(szFilename, pFullFilename))
 			break;
 		// ... which is undesired behaviour here. Try to reduce the filename until it works.
-		if(!pSuffix)
-			{
+		if (!pSuffix)
+		{
 			SCopy(szFilename, szCopy, _MAX_PATH);
 			szFilename = szCopy;
 			pSuffix = szCopy + SLen(szCopy);
-			}
+		}
 		else
 			*pSuffix = '/';
-		while(pSuffix >= szCopy)
-			if(*--pSuffix == '/')
+		while (pSuffix >= szCopy)
+			if (*--pSuffix == '/')
 				break;
-		if(pSuffix < szCopy)
-			{
+		if (pSuffix < szCopy)
+		{
 			// Give up: Just copy whatever we got
 			SCopy(szFilename, pFullFilename, _MAX_PATH);
 			return;
-			}
+		}
 		*pSuffix = 0;
-		}
-	// Append suffix
-	if(pSuffix)
-	  {
-	  *pSuffix = '/';
-		SAppend(pSuffix, pFullFilename, _MAX_PATH);
-		}
-#endif
 	}
+	// Append suffix
+	if (pSuffix)
+	{
+		*pSuffix = '/';
+		SAppend(pSuffix, pFullFilename, _MAX_PATH);
+	}
+#endif
+}
 
 // Copy (extended) parent path (without backslash) to target buffer.
 
 bool GetParentPath(const char *szFilename, char *szBuffer)
-	{
+{
 	// Prepare filename
 	SCopy(szFilename,szBuffer,_MAX_PATH);
 	// Extend relative single filenames
-	#ifdef _WIN32
+#ifdef _WIN32
 	if (!SCharCount(DirectorySeparator,szFilename)) _fullpath(szBuffer,szFilename,_MAX_PATH);
-	#else
+#else
 	if (!SCharCount(DirectorySeparator,szFilename)) RealPath(szFilename,szBuffer);
-	#endif
+#endif
 	// Truncate path
 	return TruncatePath(szBuffer);
-	}
+}
 
 bool GetParentPath(const char *szFilename, StdStrBuf *outBuf)
-	{
+{
 	char buf[_MAX_PATH+1]; *buf='\0';
 	if (!GetParentPath(szFilename, buf)) return false;
 	outBuf->Copy(buf);
 	return true;
-	}
+}
 
 bool GetRelativePath(const char *strPath, const char *strRelativeTo, char *strBuffer, int iBufferSize)
 {
@@ -228,11 +228,11 @@ bool GetRelativePath(const char *strPath, const char *strRelativeTo, char *strBu
 const char *GetRelativePathS(const char *strPath, const char *strRelativeTo)
 {
 	// Specified path is relative to base path
-	#ifdef _WIN32
+#ifdef _WIN32
 	if (SEqual2NoCase(strPath, strRelativeTo))
-	#else
+#else
 	if (SEqual2(strPath, strRelativeTo))
-	#endif
+#endif
 	{
 		// return relative section
 		return strPath + SLen(strRelativeTo) + ((strPath[SLen(strRelativeTo)] == DirectorySeparator) ? +1 : 0);
@@ -242,7 +242,7 @@ const char *GetRelativePathS(const char *strPath, const char *strRelativeTo)
 }
 
 bool IsGlobalPath(const char *szPath)
-	{
+{
 #ifdef _WIN32
 	// C:\...
 	if (*szPath && szPath[1] == ':') return true;
@@ -250,11 +250,12 @@ bool IsGlobalPath(const char *szPath)
 	// /usr/bin, \Temp\, ...
 	if (*szPath == DirectorySeparator) return true;
 	return false;
-	}
+}
 
 // Truncate string before last backslash.
 
-bool TruncatePath(char *szPath) {
+bool TruncatePath(char *szPath)
+{
 	if (!szPath) return false;
 	int iBSPos;
 	iBSPos=SCharLastPos(DirectorySeparator,szPath);
@@ -271,157 +272,157 @@ bool TruncatePath(char *szPath) {
 // Append terminating backslash if not present.
 
 void AppendBackslash(char *szFilename)
-	{
+{
 	int i=SLen(szFilename);
 	if (i>0) if ((szFilename[i-1]==DirectorySeparator)) return;
 	SAppendChar(DirectorySeparator,szFilename);
-	}
+}
 
 // Remove terminating backslash if present.
 
 void TruncateBackslash(char *szFilename)
-	{
+{
 	int i=SLen(szFilename);
 	if (i>0) if ((szFilename[i-1]==DirectorySeparator)) szFilename[i-1]=0;
-	}
+}
 
 // Append extension if no extension.
 
 void DefaultExtension(char *szFilename, const char *szExtension)
-	{
+{
 	if (!(*GetExtension(szFilename)))
 		{ SAppend(".",szFilename); SAppend(szExtension,szFilename); }
-	}
+}
 
 void DefaultExtension(StdStrBuf *sFilename, const char *szExtension)
-	{
+{
 	assert(sFilename);
 	if (!(*GetExtension(sFilename->getData())))
 		{ sFilename->AppendChar('.'); sFilename->Append(szExtension); }
-	}
+}
 
 // Append or overwrite extension.
 
 void EnforceExtension(char *szFilename, const char *szExtension)
-	{
+{
 	char *ext = GetExtension(szFilename);
-	if (ext[0])	{ SCopy(szExtension,ext); }
+	if (ext[0]) { SCopy(szExtension,ext); }
 	else { SAppend(".",szFilename); SAppend(szExtension,szFilename); }
-	}
+}
 
 void EnforceExtension(StdStrBuf *sFilename, const char *szExtension)
-	{
+{
 	assert(sFilename);
 	const char *ext = GetExtension(sFilename->getData());
-	if (ext[0])	{ sFilename->ReplaceEnd(ext - sFilename->getData(), szExtension); }
+	if (ext[0]) { sFilename->ReplaceEnd(ext - sFilename->getData(), szExtension); }
 	else { sFilename->AppendChar('.'); sFilename->Append(szExtension); }
-	}
+}
 
 // remove extension
 
 void RemoveExtension(char *szFilename)
-	{
+{
 	char *ext = GetExtension(szFilename);
 	if (ext[0]) ext[-1]=0;
-	}
+}
 
 void RemoveExtension(StdStrBuf *psFileName)
-	{
+{
 	if (psFileName && *psFileName)
-		{
+	{
 		RemoveExtension(psFileName->getMData());
 		psFileName->SetLength(strlen(psFileName->getData()));
-		}
 	}
+}
 
 // Enforce indexed extension until item does not exist.
 
 void MakeTempFilename(char *szFilename)
-	{
+{
 	DefaultExtension(szFilename,"tmp");
 	char *fn_ext=GetExtension(szFilename);
 	int cnum=-1;
 	do
-		{
+	{
 		cnum++;
 		osprintf(fn_ext,"%03d",cnum);
-		}
-	while (FileExists(szFilename) && (cnum<999));
 	}
+	while (FileExists(szFilename) && (cnum<999));
+}
 
 void MakeTempFilename(StdStrBuf *sFilename)
-	{
+{
 	assert(sFilename);
 	if (!sFilename->getLength()) sFilename->Copy("temp.tmp");
 	EnforceExtension(sFilename, "tmp");
 	char *fn_ext=GetExtension(sFilename->getMData());
 	int cnum=-1;
 	do
-		{
+	{
 		cnum++;
 		osprintf(fn_ext,"%03d",cnum);
-		}
-	while (FileExists(sFilename->getData()) && (cnum<999));
 	}
+	while (FileExists(sFilename->getData()) && (cnum<999));
+}
 
 bool WildcardListMatch(const char *szWildcardList, const char *szString)
-	{
+{
 	// safety
-	if(!szString || !szWildcardList) return false;
+	if (!szString || !szWildcardList) return false;
 	// match any item in list
 	StdStrBuf sWildcard, sWildcardList(szWildcardList);
 	int32_t i=0;
 	while (sWildcardList.GetSection(i++, &sWildcard, '|'))
-		{
+	{
 		if (WildcardMatch(sWildcard.getData(), szString)) return true;
-		}
+	}
 	// none matched
 	return false;
-	}
+}
 
 bool IsWildcardString(const char *szString)
-	{
+{
 	// safety
-	if(!szString) return false;	
+	if (!szString) return false;
 	// known wildcard characters: *?
 	return (SCharCount('?', szString)>0) || (SCharCount('*', szString)>0);
-	}
+}
 
 bool WildcardMatch(const char *szWildcard, const char *szString)
-	{
+{
 	// safety
-	if(!szString || !szWildcard) return false;
+	if (!szString || !szWildcard) return false;
 	// match char-wise
 	const char *pWild = szWildcard, *pPos = szString;
 	const char *pLWild = NULL, *pLPos = NULL; // backtracking
-	while(*pWild || pLWild)
+	while (*pWild || pLWild)
 		// string wildcard?
-		if(*pWild == '*')
+		if (*pWild == '*')
 			{ pLWild = ++pWild; pLPos = pPos; }
-		// nothing left to match?
-		else if(!*pPos)
+	// nothing left to match?
+		else if (!*pPos)
 			break;
-		// equal or one-character-wildcard? proceed
-		else if(*pWild == '?' || tolower(*pWild) == tolower(*pPos))
+	// equal or one-character-wildcard? proceed
+		else if (*pWild == '?' || tolower(*pWild) == tolower(*pPos))
 			{ pWild++; pPos++; }
-		// backtrack possible?
-		else if(pLPos)
+	// backtrack possible?
+		else if (pLPos)
 			{ pWild = pLWild; pPos = ++pLPos; }
-		// match failed
+	// match failed
 		else
 			return false;
 	// match complete if both strings are fully matched
 	return !*pWild && !*pPos;
-	}
+}
 
 #define SStripChars "!\"§%&/=?+*#:;<>\\."
 // create a valid file name from some title
 void MakeFilenameFromTitle(char *szTitle)
-	{
+{
 	// copy all chars but those to be stripped
 	char *szFilename=szTitle, *szTitle2=szTitle;
 	while (*szTitle2)
-		{
+	{
 		bool fStrip;
 		if (IsWhiteSpace(*szTitle2))
 			fStrip = (szFilename==szTitle);
@@ -429,7 +430,7 @@ void MakeFilenameFromTitle(char *szTitle)
 			fStrip = (SCharPos(*szTitle2, SStripChars)>=0);
 		if (!fStrip) *szFilename++ = *szTitle2;
 		++szTitle2;
-		}
+	}
 	// truncate spaces from end
 	while (IsWhiteSpace(*--szFilename)) if (szFilename==szTitle) { --szFilename; break; }
 	// terminate
@@ -437,25 +438,25 @@ void MakeFilenameFromTitle(char *szTitle)
 	// no name? (only invalid chars)
 	if (!*szTitle) SCopy("unnamed", szTitle, 50);
 	// done
-	}
+}
 
 /* Files */
 
 bool FileExists(const char *szFilename)
-	{
+{
 	return (!access(szFilename,F_OK));
-	}
+}
 
 size_t FileSize(const char *szFilename)
-	{
+{
 	struct stat stStats;
 	if (stat(szFilename,&stStats)) return 0;
 	return stStats.st_size;
-	}
+}
 
 // operates on a filedescriptor from open or fileno
 size_t FileSize(int fdes)
-	{
+{
 #ifdef _WIN32
 	return filelength(fdes);
 #else
@@ -463,121 +464,122 @@ size_t FileSize(int fdes)
 	if (fstat(fdes,&stStats)) return 0;
 	return stStats.st_size;
 #endif
-	}
+}
 
 int FileTime(const char *szFilename)
-	{
+{
 	struct stat stStats;
 	if (stat(szFilename,&stStats)!=0) return 0;
 	return stStats.st_mtime;
-	}
+}
 
 bool EraseFile(const char *szFilename)
-	{
+{
 	//chmod(szFilename,200);
 #ifdef _WIN32
 	SetFileAttributes(szFilename, FILE_ATTRIBUTE_NORMAL);
 #endif
 	// either unlink or remove could be used. Well, stick to ANSI C where possible.
 	if (remove(szFilename))
-		{
+	{
 		if (errno == ENOENT)
-			{
+		{
 			// Hah, here the wrapper actually makes sense:
 			// The engine only cares about the file not being there after this call.
 			return true;
-			}
-		return false;
 		}
-	return true;
+		return false;
 	}
+	return true;
+}
 
 bool EraseFiles(const char *szFilePath)
-	{
+{
 	return ForEachFile(szFilePath,&EraseFile) > 0;
-	}
+}
 
 #ifndef _WIN32
 bool CopyFile(const char *szSource, const char *szTarget, bool FailIfExists)
-	{
+{
 	int fds = open (szSource, O_RDONLY);
 	if (!fds) return false;
 	struct stat info; fstat(fds, &info);
 	int fdt = open (szTarget, O_WRONLY | O_CREAT | (FailIfExists? O_EXCL : O_TRUNC), info.st_mode);
 	if (!fdt)
-		{
+	{
 		close (fds);
 		return false;
-		}
+	}
 	char buffer[1024]; ssize_t l;
 	while ((l = read(fds, buffer, sizeof(buffer))) > 0)
 		if (write(fdt, buffer, l) < l)
-			{
-				l = -1;
-				break;
-			}
+		{
+			l = -1;
+			break;
+		}
 	close (fds);
 	close (fdt);
 	// On error, return false
 	return l != -1;
-	}
+}
 #endif
 
 bool RenameFile(const char *szFilename, const char *szNewFilename)
-	{
+{
 	if (rename(szFilename,szNewFilename) < 0)
-		{
+	{
 		if (CopyFile(szFilename, szNewFilename, false))
-			{
+		{
 			return EraseFile(szFilename);
-			}
-		return false;
 		}
-	return true;
+		return false;
 	}
+	return true;
+}
 
 bool MakeOriginalFilename(char *szFilename)
-	{
+{
 	// safety
 	if (!szFilename) return false;
 #ifdef _WIN32
 	// root-directory?
 	if (Inside(SLen(szFilename), 2, 3)) if (szFilename[1]==':')
 		{
-		szFilename[2]='\\'; szFilename[3]=0;
-		if (GetDriveType(szFilename) == DRIVE_NO_ROOT_DIR) return false;
-		return true;
+			szFilename[2]='\\'; szFilename[3]=0;
+			if (GetDriveType(szFilename) == DRIVE_NO_ROOT_DIR) return false;
+			return true;
 		}
 	struct _finddata_t fdt; long shnd;
 	if ((shnd=_findfirst((char*)szFilename,&fdt))<0) return false;
 	_findclose(shnd);
 	SCopy(GetFilename(fdt.name),GetFilename(szFilename),_MAX_FNAME);
 #else
-	if (SCharPos('*', szFilename) != -1) {
+	if (SCharPos('*', szFilename) != -1)
+	{
 		fputs ("Warning: MakeOriginalFilename with \"", stderr);
 		fputs (szFilename, stderr);
 		fputs ("\"!\n", stderr);
 	}
 #endif
 	return true;
-	}
+}
 
 /* Directories */
 
 const char *GetWorkingDirectory()
-	{
+{
 	static char buf[_MAX_PATH+1];
 	return getcwd(buf,_MAX_PATH);
-	}
+}
 
 bool SetWorkingDirectory(const char *path)
-	{
+{
 #ifdef _WIN32
 	return SetCurrentDirectory(path) != 0;
 #else
 	return (chdir(path)==0);
 #endif
-	}
+}
 
 bool CreatePath(const std::string &path)
 {
@@ -586,9 +588,11 @@ bool CreatePath(const std::string &path)
 	if (CreateDirectory(path.c_str(), NULL))
 	{
 		return true;
-	} else {
+	}
+	else
+	{
 		DWORD err = GetLastError();
-		switch(err)
+		switch (err)
 		{
 		case ERROR_PATH_NOT_FOUND:
 			break;
@@ -596,22 +600,22 @@ bool CreatePath(const std::string &path)
 			return true;
 		default:
 			// Something major has happened: Log
+		{
+			LPSTR str;
+			if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+			                  NULL, err, 0, (LPSTR)&str, 0, NULL))
 			{
-				LPSTR str;
-				if (FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
-					NULL, err, 0, (LPSTR)&str, 0, NULL))
-				{
-					LogF("CreateDirectory failed: %s", str);
-					LocalFree(str);
-				}
-				return false;
+				LogF("CreateDirectory failed: %s", str);
+				LocalFree(str);
 			}
+			return false;
+		}
 		}
 	}
 #else
 	if (!mkdir(path.c_str(), S_IREAD | S_IWRITE | S_IEXEC))
 		return true;
-	switch(errno)
+	switch (errno)
 	{
 	case ENOENT:
 		break;
@@ -630,7 +634,7 @@ bool CreatePath(const std::string &path)
 }
 
 bool DirectoryExists(const char *szFilename)
-	{
+{
 	// Ignore trailing slash or backslash, except when we are probing the
 	// root directory '/'.
 	char bufFilename[_MAX_PATH + 1];
@@ -656,30 +660,33 @@ bool DirectoryExists(const char *szFilename)
 	return (S_ISDIR(stStats.st_mode));
 #endif
 	return false;
-	}
+}
 
-bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttributes) {
+bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttributes)
+{
 	// Source check
 	if (!szSource || !szTarget) return false;
 	if (!DirectoryExists(szSource)) return false;
 	// Do not process system navigation directories
 	if (SEqual(GetFilename(szSource),".")
-		|| SEqual(GetFilename(szSource),".."))
+	    || SEqual(GetFilename(szSource),".."))
 		return true;
 	// Overwrite target
 	//if (ItemExists(szTarget))
 	if (!EraseItem(szTarget)) return false;
 	// Create target directory
 	bool status=true;
-	#ifdef _WIN32
+#ifdef _WIN32
 	if (_mkdir(szTarget)!=0) return false;
 	// Copy contents to target directory
 	char contents[_MAX_PATH+1];
 	SCopy(szSource,contents); AppendBackslash(contents);
 	SAppend("*",contents);
 	_finddata_t fdt; int hfdt;
-	if ( (hfdt=_findfirst(contents,&fdt)) > -1 ) {
-		do {
+	if ( (hfdt=_findfirst(contents,&fdt)) > -1 )
+	{
+		do
+		{
 			char itemsource[_MAX_PATH+1],itemtarget[_MAX_PATH+1];
 			SCopy(szSource,itemsource); AppendBackslash(itemsource); SAppend(fdt.name,itemsource);
 			SCopy(szTarget,itemtarget); AppendBackslash(itemtarget); SAppend(fdt.name,itemtarget);
@@ -688,25 +695,27 @@ bool CopyDirectory(const char *szSource, const char *szTarget, bool fResetAttrib
 		while (_findnext(hfdt,&fdt)==0);
 		_findclose(hfdt);
 	}
-	#else
+#else
 	if (mkdir(szTarget,0777)!=0) return false;
 	DIR * d = opendir(szSource);
 	dirent * ent;
 	char itemsource[_MAX_PATH+1],itemtarget[_MAX_PATH+1];
-	while ((ent = readdir(d))) {
+	while ((ent = readdir(d)))
+	{
 		SCopy(szSource,itemsource); AppendBackslash(itemsource); SAppend(ent->d_name,itemsource);
 		SCopy(szTarget,itemtarget); AppendBackslash(itemtarget); SAppend(ent->d_name,itemtarget);
 		if (!CopyItem(itemsource,itemtarget, fResetAttributes)) status=false;
 	}
 	closedir(d);
-	#endif
+#endif
 	return status;
-	}
+}
 
-bool EraseDirectory(const char *szDirName) {
+bool EraseDirectory(const char *szDirName)
+{
 	// Do not process system navigation directories
 	if (SEqual(GetFilename(szDirName),".")
-		|| SEqual(GetFilename(szDirName),".."))
+	    || SEqual(GetFilename(szDirName),".."))
 		return true;
 	char path[_MAX_PATH+1];
 #ifdef _WIN32
@@ -717,18 +726,21 @@ bool EraseDirectory(const char *szDirName) {
 #else
 	DIR * d = opendir(szDirName);
 	dirent * ent;
-	while ((ent = readdir(d))) {
+	while ((ent = readdir(d)))
+	{
 		SCopy(szDirName,path); AppendBackslash(path); SAppend(ent->d_name,path);
 		if (!EraseItem(path)) return false;
 	}
 	closedir(d);
 #endif
 	// Check working directory
-	if (SEqual(szDirName,GetWorkingDirectory())) {
+	if (SEqual(szDirName,GetWorkingDirectory()))
+	{
 		// Will work only if szDirName is full path and correct case!
 		SCopy(GetWorkingDirectory(),path);
 		int lbacks = SCharLastPos(DirectorySeparator,path);
-		if (lbacks > -1) {
+		if (lbacks > -1)
+		{
 			path[lbacks]=0; SetWorkingDirectory(path);
 		}
 	}
@@ -744,24 +756,24 @@ bool EraseDirectory(const char *szDirName) {
 /* Items */
 
 /*int ItemAttributes(const char *szItemName)
-	{
-	return FileAttributes(szItemName);
-	}*/
+  {
+  return FileAttributes(szItemName);
+  }*/
 
 bool RenameItem(const char *szItemName, const char *szNewItemName)
-	{
+{
 	// FIXME: What if the directory would have to be copied?
 	return RenameFile(szItemName,szNewItemName);
-	}
+}
 
 bool EraseItem(const char *szItemName)
-	{
+{
 	if (!EraseFile(szItemName)) return EraseDirectory(szItemName);
 	else return true;
-	}
+}
 
 bool CreateItem(const char *szItemname)
-	{
+{
 	// Overwrite any old item
 	EraseItem(szItemname);
 	// Create dummy item
@@ -770,15 +782,15 @@ bool CreateItem(const char *szItemname)
 	fclose(fhnd);
 	// Success
 	return true;
-	}
+}
 #ifdef _WIN32
 bool EraseItems(const char *szItemPath)
-	{
+{
 	return ForEachFile(szItemPath,&EraseItem) > 0;
-	}
+}
 #endif
 bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes)
-	{
+{
 	// Check for identical source and target
 	if (ItemIdentical(szSource,szTarget)) return true;
 	// Copy directory
@@ -793,16 +805,16 @@ bool CopyItem(const char *szSource, const char *szTarget, bool fResetAttributes)
 	if (fResetAttributes) if (chmod(szTarget, S_IRWXU)) return false;
 #endif
 	return true;
-	}
+}
 
 bool MoveItem(const char *szSource, const char *szTarget)
-	{
+{
 	if (ItemIdentical(szSource,szTarget)) return true;
 	return RenameFile(szSource, szTarget);
-	}
+}
 
 bool ItemIdentical(const char *szFilename1, const char *szFilename2)
-	{
+{
 	char szFullFile1[_MAX_PATH+1],szFullFile2[_MAX_PATH+1];
 	RealPath(szFilename1, szFullFile1); RealPath(szFilename2, szFullFile2);
 #ifdef _WIN32
@@ -811,7 +823,7 @@ bool ItemIdentical(const char *szFilename1, const char *szFilename2)
 	if (SEqual(szFullFile1,szFullFile2)) return true;
 #endif
 	return false;
-	}
+}
 
 //------------------------- Multi File Processing --------------------------------------------------------------------------------------------------------
 
@@ -824,10 +836,10 @@ struct DirectoryIteratorP
 };
 
 DirectoryIterator::DirectoryIterator()
-	: p(new DirectoryIteratorP), iter(p->files.end())
+		: p(new DirectoryIteratorP), iter(p->files.end())
 {}
 DirectoryIterator::DirectoryIterator(const DirectoryIterator &other)
-	: p(other.p), iter(p->files.begin())
+		: p(other.p), iter(p->files.begin())
 {
 	++p->ref;
 }
@@ -862,7 +874,7 @@ void DirectoryIterator::Reset (const char * dirname)
 }
 
 DirectoryIterator::DirectoryIterator (const char * dirname)
-	: p(new DirectoryIteratorP), iter(p->files.end())
+		: p(new DirectoryIteratorP), iter(p->files.end())
 {
 	Read(dirname);
 }
@@ -895,7 +907,8 @@ void DirectoryIterator::Read(const char *dirname)
 		if (file.cFileName[0] == '.' && (file.cFileName[1] == '\0' || (file.cFileName[1] == '.' && file.cFileName[2] == '\0')))
 			continue;
 		p->files.push_back(file.cFileName);
-	} while (FindNextFile(fh, &file));
+	}
+	while (FindNextFile(fh, &file));
 	FindClose(fh);
 #else
 	DIR *fh = opendir(dirname);
@@ -933,7 +946,7 @@ void DirectoryIterator::Read(const char *dirname)
 
 DirectoryIterator& DirectoryIterator::operator++()
 {
-	if (iter != p->files.end()) 
+	if (iter != p->files.end())
 		++iter;
 	return *this;
 }
@@ -951,7 +964,8 @@ DirectoryIterator DirectoryIterator::operator++(int)
 	return tmp;
 }
 
-int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *)) {
+int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *))
+{
 	if (!szDirName || !fnCallback)
 		return 0;
 	char szFilename[_MAX_PATH+1];
@@ -966,19 +980,22 @@ int ForEachFile(const char *szDirName, bool (*fnCallback)(const char *)) {
 		SAppend("*",szFilename,_MAX_PATH);
 	if ((fdthnd = _findfirst ((char *)szFilename, &fdt)) < 0)
 		return 0;
-	do {
+	do
+	{
 		if (SEqual(fdt.name, ".") || SEqual(fdt.name, "..")) continue;
 		SCopy(fdt.name,GetFilename(szFilename));
 		if ((*fnCallback)(szFilename))
 			iFileCount++;
-	} while (_findnext(fdthnd,&fdt)==0);
+	}
+	while (_findnext(fdthnd,&fdt)==0);
 	_findclose(fdthnd);
 #else
 	if (fHasWildcard) fprintf(stderr, "Warning: ForEachFile with * (%s)\n", szDirName);
 	DIR * d = opendir(szDirName);
 	if (!d) return 0;
 	dirent * ent;
-	while ((ent = readdir(d))) {
+	while ((ent = readdir(d)))
+	{
 		SCopy(ent->d_name,GetFilename(szFilename));
 		if ((*fnCallback)(szFilename))
 			iFileCount++;

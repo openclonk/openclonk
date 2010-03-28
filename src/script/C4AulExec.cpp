@@ -35,73 +35,73 @@
 C4AulExec AulExec;
 
 C4AulExecError::C4AulExecError(C4Object *pObj, const char *szError) : cObj(pObj)
-	{
+{
 	// direct error message string
 	sMessage.Format("ERROR: %s", szError ? szError : "(no error message)");
-	}
+}
 
 void C4AulExecError::show()
-	{
+{
 	// log
 	C4AulError::show();
 	// debug mode object message
 	if (Game.DebugMode)
-		{
+	{
 		if (cObj)
 			::Messages.New(C4GM_Target,sMessage,cObj,NO_OWNER);
 		else
 			::Messages.New(C4GM_Global,sMessage,NULL,ANY_OWNER);
-		}
 	}
+}
 
 StdStrBuf C4AulScriptContext::ReturnDump(StdStrBuf Dump)
-	{
+{
 	if (!Func)
 		return StdStrBuf("");
 	bool fDirectExec = !*Func->Name;
-	if(!fDirectExec)
-		{
+	if (!fDirectExec)
+	{
 		// Function name
 		Dump.Append(Func->Name);
 		// Parameters
 		Dump.AppendChar('(');
 		int iNullPars = 0;
-		for(int i = 0; i < Func->GetParCount(); i++)
-			if(Pars + i < Vars)
-				{
-				if(!Pars[i])
+		for (int i = 0; i < Func->GetParCount(); i++)
+			if (Pars + i < Vars)
+			{
+				if (!Pars[i])
 					iNullPars++;
 				else
-					{
-					if(i > iNullPars)
+				{
+					if (i > iNullPars)
 						Dump.AppendChar(',');
 					// Insert missing null parameters
-					while(iNullPars > 0)
-						{
+					while (iNullPars > 0)
+					{
 						Dump.Append("0,");
 						iNullPars--;
-						}
+					}
 					// Insert parameter
 					Dump.Append(Pars[i].GetDataString());
-					}
 				}
+			}
 		Dump.AppendChar(')');
-		}
+	}
 	else
 		Dump.Append(Func->Owner->ScriptName);
 	// Context
-	if(Obj)
+	if (Obj)
 		Dump.AppendFormat(" (obj %s)", C4VObj(Obj).GetDataString().getData());
-	else if(Func->Owner->Def != NULL)
+	else if (Func->Owner->Def != NULL)
 		Dump.AppendFormat(" (def %s)", Func->Owner->Def->GetName());
 	// Script
-	if(!fDirectExec && Func->Owner)
+	if (!fDirectExec && Func->Owner)
 		Dump.AppendFormat(" (%s:%d)",
-			Func->pOrgScript->ScriptName.getData(),
-			SGetLine(Func->pOrgScript->GetScript(), CPos ? CPos->SPos : Func->Script));
+		                  Func->pOrgScript->ScriptName.getData(),
+		                  SGetLine(Func->pOrgScript->GetScript(), CPos ? CPos->SPos : Func->Script));
 	// Return it
 	return Dump;
-	}
+}
 
 void C4AulScriptContext::dump(StdStrBuf Dump)
 {
@@ -110,12 +110,12 @@ void C4AulScriptContext::dump(StdStrBuf Dump)
 }
 
 C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars, bool fPassErrors, bool fTemporaryScript)
-	{
+{
 
 	// Push parameters
 	C4Value *pPars = pCurVal + 1;
-	if(pnPars)
-		for(int i = 0; i < C4AUL_MAX_Par; i++)
+	if (pnPars)
+		for (int i = 0; i < C4AUL_MAX_Par; i++)
 			PushValue(pnPars[i]);
 
 	// Push variables
@@ -145,10 +145,10 @@ C4Value C4AulExec::Exec(C4AulScriptFunc *pSFunc, C4Object *pObj, C4Value *pnPars
 
 	// Execute
 	return Exec(pSFunc->Code, fPassErrors);
-	}
+}
 
 C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
-	{
+{
 
 #ifndef NOAULDEBUG
 	// Debugger pointer
@@ -161,698 +161,698 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 	C4AulScriptContext *pOldCtx = pCurCtx;
 
 	try
-		{
+	{
 
-		for(;;)
-			{
+		for (;;)
+		{
 
 			bool fJump = false;
-			switch(pCPos->bccType)
+			switch (pCPos->bccType)
+			{
+			case AB_INT:
+				PushValue(C4VInt(pCPos->Par.i));
+				break;
+
+			case AB_BOOL:
+				PushValue(C4VBool(!! pCPos->Par.i));
+				break;
+
+			case AB_STRING:
+				PushString(pCPos->Par.s);
+				break;
+
+			case AB_C4ID:
+				PushValue(C4VPropList(C4Id2Def(C4ID(pCPos->Par.i))));
+				break;
+
+			case AB_NIL:
+				PushValue(C4VNull);
+				break;
+
+			case AB_EOFN:
+				throw new C4AulExecError(pCurCtx->Obj, "function didn't return");
+
+			case AB_ERR:
+				throw new C4AulExecError(pCurCtx->Obj, "syntax error: see previous parser error for details.");
+
+			case AB_PARN_R:
+				PushValueRef(pCurCtx->Pars[pCPos->Par.i]);
+				break;
+			case AB_PARN_V:
+				PushValue(pCurCtx->Pars[pCPos->Par.i]);
+				break;
+
+			case AB_VARN_R:
+				PushValueRef(pCurCtx->Vars[pCPos->Par.i]);
+				break;
+			case AB_VARN_V:
+				PushValue(pCurCtx->Vars[pCPos->Par.i]);
+				break;
+			case AB_LOCALN_R: case AB_LOCALN_V:
+				if (!pCurCtx->Obj)
+					throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call!");
+				PushNullVals(1);
+				pCurCtx->Obj->GetPropertyRef(pCPos->Par.s, pCurVal[0]);
+				break;
+
+			case AB_GLOBALN_R:
+				PushValueRef(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
+				break;
+			case AB_GLOBALN_V:
+				PushValue(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
+				break;
+				// prefix
+			case AB_Inc1: // ++
+				CheckOpPar2(pCPos->Par.i);
+				++(*pCurVal);
+				break;
+			case AB_Dec1: // --
+				CheckOpPar2(pCPos->Par.i);
+				--(*pCurVal);
+				break;
+			case AB_BitNot: // ~
+				CheckOpPar(pCPos->Par.i);
+				pCurVal->SetInt(~pCurVal->_getInt());
+				break;
+			case AB_Not:  // !
+				CheckOpPar(pCPos->Par.i);
+				pCurVal->SetBool(!pCurVal->_getBool());
+				break;
+			case AB_Neg:  // -
+				CheckOpPar(pCPos->Par.i);
+				pCurVal->SetInt(-pCurVal->_getInt());
+				break;
+				// postfix (whithout second statement)
+			case AB_Inc1_Postfix: // ++
+				CheckOpPar2(pCPos->Par.i);
+				pCurVal->Set((*pCurVal)++);
+				break;
+			case AB_Dec1_Postfix: // --
+				CheckOpPar2(pCPos->Par.i);
+				pCurVal->Set((*pCurVal)--);
+				break;
+				// postfix
+			case AB_Pow:  // **
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(Pow(pPar1->_getInt(), pPar2->_getInt()));
+				PopValue();
+				break;
+			}
+			case AB_Div:  // /
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				if (!pPar2->_getInt())
+					throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
+				pPar1->SetInt(pPar1->_getInt() / pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_Mul:  // *
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(pPar1->_getInt() * pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_Mod:  // %
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				if (pPar2->_getInt())
+					pPar1->SetInt(pPar1->_getInt() % pPar2->_getInt());
+				else
+					pPar1->Set0();
+				PopValue();
+				break;
+			}
+			case AB_Sub:  // -
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(pPar1->_getInt() - pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_Sum:  // +
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(pPar1->_getInt() + pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_LeftShift:  // <<
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(pPar1->_getInt() << pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_RightShift: // >>
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(pPar1->_getInt() >> pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_LessThan: // <
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(pPar1->_getInt() < pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_LessThanEqual:  // <=
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(pPar1->_getInt() <= pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_GreaterThan:  // >
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(pPar1->_getInt() > pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_GreaterThanEqual: // >=
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(pPar1->_getInt() >= pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_Equal:  // ==
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(*pPar1 == *pPar2);
+				PopValue();
+				break;
+			}
+			case AB_NotEqual: // !=
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetBool(*pPar1 != *pPar2);
+				PopValue();
+				break;
+			}
+			case AB_BitAnd: // &
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(pPar1->_getInt() & pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_BitXOr: // ^
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(pPar1->_getInt() ^ pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_BitOr:  // |
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				pPar1->SetInt(pPar1->_getInt() | pPar2->_getInt());
+				PopValue();
+				break;
+			}
+			case AB_MulIt:  // *=
+			{
+				CheckOpPars3(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				*pPar1 *= pPar2 ->_getInt();
+				PopValue();
+				break;
+			}
+			case AB_DivIt:  // /=
+			{
+				CheckOpPars3(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				if (!pPar2->_getInt())
+					throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
+				*pPar1 /= pPar2->_getInt();
+				PopValue();
+				break;
+			}
+			case AB_ModIt:  // %=
+			{
+				CheckOpPars3(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				if (!pPar2->_getInt())
+					throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
+				*pPar1 %= pPar2->_getInt();
+				PopValue();
+				break;
+			}
+			case AB_Inc:  // +=
+			{
+				CheckOpPars3(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				*pPar1 += pPar2 ->_getInt();
+				PopValue();
+				break;
+			}
+			case AB_Dec:  // -=
+			{
+				CheckOpPars3(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				*pPar1 -= pPar2 ->_getInt();
+				PopValue();
+				break;
+			}
+			case AB_AndIt:  // &=
+			{
+				CheckOpPars3(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				*pPar1 &= pPar2 ->_getInt();
+				PopValue();
+				break;
+			}
+			case AB_OrIt: // |=
+			{
+				CheckOpPars3(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				*pPar1 |= pPar2 ->_getInt();
+				PopValue();
+				break;
+			}
+			case AB_XOrIt:  // ^=
+			{
+				CheckOpPars3(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				*pPar1 ^= pPar2 ->_getInt();
+				PopValue();
+				break;
+			}
+			case AB_Set:  // =
+			{
+				CheckOpPars(pCPos->Par.i);
+				C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+				*pPar1 = *pPar2;
+				PopValue();
+				break;
+			}
+			/*        case AB_UNOP:
+			          {
+			          int iOpID = pCPos->Par.i;
+
+			          // Typecheck parameter
+			          if(!pCurVal->ConvertTo(C4ScriptOpMap[iOpID].Type1))
+			            throw new C4AulExecError(pCurCtx->Obj,
+			          FormatString("operator \"%s\": got \"%s\", but expected \"%s\"!",
+			            C4ScriptOpMap[iOpID].Identifier, pCurVal->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
+
+			          // Execute operator
+			          if(C4ScriptOpMap[iOpID].Function)
+			            pCurVal->Set((*C4ScriptOpMap[iOpID].Function)(pCurCtx, pCurVal->_getRaw(), 0), C4ScriptOpMap[iOpID].RetType);
+			          else if(C4ScriptOpMap[iOpID].FunctionC4V)
+			            pCurVal->Set((*C4ScriptOpMap[iOpID].FunctionC4V)(pCurCtx, pCurVal, NULL));
+
+			          break;
+			          }
+
+			        case AB_BINOP:
+			          {
+			          int iOpID = pCPos->Par.i;
+
+			          // Get parameters
+			          C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
+
+			          // Typecheck parameters
+			          if(!pPar1->ConvertTo(C4ScriptOpMap[iOpID].Type1))
+			            throw new C4AulExecError(pCurCtx->Obj,
+			              FormatString("operator \"%s\" left side: got \"%s\", but expected \"%s\"!",
+			                C4ScriptOpMap[iOpID].Identifier, pPar1->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
+			          if(!pPar2->ConvertTo(C4ScriptOpMap[iOpID].Type2))
+			            throw new C4AulExecError(pCurCtx->Obj,
+			              FormatString("operator \"%s\" right side: got \"%s\", but expected \"%s\"!",
+			                C4ScriptOpMap[iOpID].Identifier, pPar2->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type2)).getData());
+
+			          // Execute operator
+			          if(C4ScriptOpMap[iOpID].Function)
+			            pPar1->Set((*C4ScriptOpMap[iOpID].Function)(pCurCtx, pPar1->_getRaw(), pPar2->_getRaw()),C4ScriptOpMap[iOpID].RetType);
+			          else if(C4ScriptOpMap[iOpID].FunctionC4V)
+			            pPar1->Set((*C4ScriptOpMap[iOpID].FunctionC4V)(pCurCtx, pPar1, pPar2));
+
+			          // Pop second parameter
+			          PopValue();
+
+			          break;
+			          }
+			*/
+			case AB_ARRAY:
+			{
+				// Create array
+				C4ValueArray *pArray = new C4ValueArray(pCPos->Par.i);
+
+				// Pop values from stack
+				for (int i = 0; i < pCPos->Par.i; i++)
+					pArray->GetItem(i) = pCurVal[i - pCPos->Par.i + 1];
+
+				// Push array
+				if (pCPos->Par.i > 0)
 				{
-				case AB_INT:
-					PushValue(C4VInt(pCPos->Par.i));
-					break;
-
-				case AB_BOOL:
-					PushValue(C4VBool(!! pCPos->Par.i));
-					break;
-
-				case AB_STRING:
-					PushString(pCPos->Par.s);
-					break;
-
-				case AB_C4ID:
-					PushValue(C4VPropList(C4Id2Def(C4ID(pCPos->Par.i))));
-					break;
-
-				case AB_NIL:
-					PushValue(C4VNull);
-					break;
-
-				case AB_EOFN:
-					throw new C4AulExecError(pCurCtx->Obj, "function didn't return");
-
-				case AB_ERR:
-					throw new C4AulExecError(pCurCtx->Obj, "syntax error: see previous parser error for details.");
-
-				case AB_PARN_R:
-					PushValueRef(pCurCtx->Pars[pCPos->Par.i]);
-					break;
-				case AB_PARN_V:
-					PushValue(pCurCtx->Pars[pCPos->Par.i]);
-					break;
-
-				case AB_VARN_R:
-					PushValueRef(pCurCtx->Vars[pCPos->Par.i]);
-					break;
-				case AB_VARN_V:
-					PushValue(pCurCtx->Vars[pCPos->Par.i]);
-					break;
-				case AB_LOCALN_R: case AB_LOCALN_V:
-					if(!pCurCtx->Obj)
-						throw new C4AulExecError(pCurCtx->Obj, "can't access local variables in a definition call!");
-					PushNullVals(1);
-					pCurCtx->Obj->GetPropertyRef(pCPos->Par.s, pCurVal[0]);
-					break;
-
-				case AB_GLOBALN_R:
-					PushValueRef(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
-					break;
-				case AB_GLOBALN_V:
-					PushValue(*::ScriptEngine.GlobalNamed.GetItem(pCPos->Par.i));
-					break;
-			// prefix
-				case AB_Inc1:	// ++
-					CheckOpPar2(pCPos->Par.i);
-					++(*pCurVal);
-					break;
-				case AB_Dec1:	// --
-					CheckOpPar2(pCPos->Par.i);
-					--(*pCurVal);
-					break;
-				case AB_BitNot:	// ~
-					CheckOpPar(pCPos->Par.i);
-					pCurVal->SetInt(~pCurVal->_getInt());
-					break;
-				case AB_Not: 	// !
-					CheckOpPar(pCPos->Par.i);
-					pCurVal->SetBool(!pCurVal->_getBool());
-					break;
-				case AB_Neg: 	// -
-					CheckOpPar(pCPos->Par.i);
-					pCurVal->SetInt(-pCurVal->_getInt());
-					break;
-			// postfix (whithout second statement)
-				case AB_Inc1_Postfix:	// ++
-					CheckOpPar2(pCPos->Par.i);
-					pCurVal->Set((*pCurVal)++);
-					break;
-				case AB_Dec1_Postfix:	// --
-					CheckOpPar2(pCPos->Par.i);
-					pCurVal->Set((*pCurVal)--);
-					break;
-			// postfix
-				case AB_Pow: 	// **
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(Pow(pPar1->_getInt(), pPar2->_getInt()));
-					PopValue();
-					break;
-					}
-				case AB_Div: 	// /
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					if (!pPar2->_getInt())
-						throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
-					pPar1->SetInt(pPar1->_getInt() / pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_Mul: 	// *
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(pPar1->_getInt() * pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_Mod: 	// %
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					if(pPar2->_getInt())
-						pPar1->SetInt(pPar1->_getInt() % pPar2->_getInt());
-					else
-						pPar1->Set0();
-					PopValue();
-					break;
-					}
-				case AB_Sub: 	// -
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(pPar1->_getInt() - pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_Sum:	// +
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(pPar1->_getInt() + pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_LeftShift:	// <<
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(pPar1->_getInt() << pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_RightShift:	// >>
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(pPar1->_getInt() >> pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_LessThan:	// <
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(pPar1->_getInt() < pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_LessThanEqual:	// <=
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(pPar1->_getInt() <= pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_GreaterThan:	// >
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(pPar1->_getInt() > pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_GreaterThanEqual:	// >=
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(pPar1->_getInt() >= pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_Equal:	// ==
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(*pPar1 == *pPar2);
-					PopValue();
-					break;
-					}
-				case AB_NotEqual:	// !=
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetBool(*pPar1 != *pPar2);
-					PopValue();
-					break;
-					}
-				case AB_BitAnd:	// &
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(pPar1->_getInt() & pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_BitXOr:	// ^
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(pPar1->_getInt() ^ pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_BitOr:	// |
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					pPar1->SetInt(pPar1->_getInt() | pPar2->_getInt());
-					PopValue();
-					break;
-					}
-				case AB_MulIt:	// *=
-					{
-					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					*pPar1 *= pPar2 ->_getInt();
-					PopValue();
-					break;
-					}
-				case AB_DivIt:	// /=
-					{
-					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					if (!pPar2->_getInt())
-						throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
-					*pPar1 /= pPar2->_getInt();
-					PopValue();
-					break;
-					}
-				case AB_ModIt:	// %=
-					{
-					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					if (!pPar2->_getInt())
-						throw new C4AulExecError(pCurCtx->Obj, "Division by zero");
-					*pPar1 %= pPar2->_getInt();
-					PopValue();
-					break;
-					}
-				case AB_Inc: 	// +=
-					{
-					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					*pPar1 += pPar2 ->_getInt();
-					PopValue();
-					break;
-					}
-				case AB_Dec: 	// -=
-					{
-					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					*pPar1 -= pPar2 ->_getInt();
-					PopValue();
-					break;
-					}
-				case AB_AndIt:	// &=
-					{
-					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					*pPar1 &= pPar2 ->_getInt();
-					PopValue();
-					break;
-					}
-				case AB_OrIt:	// |=
-					{
-					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					*pPar1 |= pPar2 ->_getInt();
-					PopValue();
-					break;
-					}
-				case AB_XOrIt:	// ^=
-					{
-					CheckOpPars3(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					*pPar1 ^= pPar2 ->_getInt();
-					PopValue();
-					break;
-					}
-				case AB_Set: 	// =
-					{
-					CheckOpPars(pCPos->Par.i);
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-					*pPar1 = *pPar2;
-					PopValue();
-					break;
-					}
-/*				case AB_UNOP:
-					{
-					int iOpID = pCPos->Par.i;
-
-					// Typecheck parameter
-					if(!pCurVal->ConvertTo(C4ScriptOpMap[iOpID].Type1))
-						throw new C4AulExecError(pCurCtx->Obj,
-					FormatString("operator \"%s\": got \"%s\", but expected \"%s\"!",
-						C4ScriptOpMap[iOpID].Identifier, pCurVal->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
-
-					// Execute operator
-					if(C4ScriptOpMap[iOpID].Function)
-						pCurVal->Set((*C4ScriptOpMap[iOpID].Function)(pCurCtx, pCurVal->_getRaw(), 0), C4ScriptOpMap[iOpID].RetType);
-					else if(C4ScriptOpMap[iOpID].FunctionC4V)
-						pCurVal->Set((*C4ScriptOpMap[iOpID].FunctionC4V)(pCurCtx, pCurVal, NULL));
-
-					break;
-					}
-
-				case AB_BINOP:
-					{
-					int iOpID = pCPos->Par.i;
-
-					// Get parameters
-					C4Value *pPar1 = pCurVal - 1, *pPar2 = pCurVal;
-
-					// Typecheck parameters
-					if(!pPar1->ConvertTo(C4ScriptOpMap[iOpID].Type1))
-						throw new C4AulExecError(pCurCtx->Obj,
-							FormatString("operator \"%s\" left side: got \"%s\", but expected \"%s\"!",
-								C4ScriptOpMap[iOpID].Identifier, pPar1->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type1)).getData());
-					if(!pPar2->ConvertTo(C4ScriptOpMap[iOpID].Type2))
-						throw new C4AulExecError(pCurCtx->Obj,
-							FormatString("operator \"%s\" right side: got \"%s\", but expected \"%s\"!",
-								C4ScriptOpMap[iOpID].Identifier, pPar2->GetTypeInfo(), GetC4VName(C4ScriptOpMap[iOpID].Type2)).getData());
-
-					// Execute operator
-					if(C4ScriptOpMap[iOpID].Function)
-						pPar1->Set((*C4ScriptOpMap[iOpID].Function)(pCurCtx, pPar1->_getRaw(), pPar2->_getRaw()),C4ScriptOpMap[iOpID].RetType);
-					else if(C4ScriptOpMap[iOpID].FunctionC4V)
-						pPar1->Set((*C4ScriptOpMap[iOpID].FunctionC4V)(pCurCtx, pPar1, pPar2));
-
-					// Pop second parameter
-					PopValue();
-
-					break;
-					}
-*/
-				case AB_ARRAY:
-					{
-					// Create array
-					C4ValueArray *pArray = new C4ValueArray(pCPos->Par.i);
-
-					// Pop values from stack
-					for(int i = 0; i < pCPos->Par.i; i++)
-						pArray->GetItem(i) = pCurVal[i - pCPos->Par.i + 1];
-
-					// Push array
-					if(pCPos->Par.i > 0)
-						{
-						PopValues(pCPos->Par.i - 1);
-						pCurVal->SetArray(pArray);
-						}
-					else
-						PushArray(pArray);
-
-					break;
-					}
-
-				case AB_PROPLIST:
-					{
-					PushPropList(C4PropList::New());
-					break;
-					}
-				case AB_PROPSET:
-					{
-					C4Value *pPropSet = pCurVal - 2, *pKey = pCurVal -1, *pValue = pCurVal;
-					if(!pPropSet->ConvertTo(C4V_PropList))
-						throw new C4AulExecError(pCurCtx->Obj, FormatString("Propset: proplist expected, got %s!", pPropSet->GetTypeName()).getData());
-					if(!pKey->ConvertTo(C4V_String))
-						throw new C4AulExecError(pCurCtx->Obj, FormatString("Propset: string expected, got %s!", pPropSet->GetTypeName()).getData());
-					pPropSet->_getPropList()->SetProperty(pKey->_getStr(), *pValue);
-					PopValues(2);
-					break;
-					}
-
-				case AB_ARRAYA_R: case AB_ARRAYA_V:
-					{
-					C4Value &Index = pCurVal[0];
-					C4Value &Array = pCurVal[-1].GetRefVal();
-					// Typcheck
-					if((!Array.ConvertTo(C4V_Array) && !Array.ConvertTo(C4V_PropList)) || Array.GetType() == C4V_Any)
-						throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: can't access %s as an array!", Array.GetTypeName()).getData());
-					else if(Array.GetType() == C4V_Array)
-						{
-						if(!Index.ConvertTo(C4V_Int))
-							throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, int expected!", Index.GetTypeName()).getData());
-						// Set reference to array element
-						Array.GetArrayElement(Index._getInt(), pCurVal[-1], pCurCtx, pCPos->bccType == AB_ARRAYA_V);
-						}
-					else
-						{
-						if(!Index.ConvertTo(C4V_String))
-							throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, string expected!", Index.GetTypeName()).getData());
-						C4PropList *proplist = Array.getPropList();
-						assert(proplist);
-						if(pCPos->bccType == AB_ARRAYA_V)
-							{
-							if(!proplist->GetPropertyVal(Index._getStr(), pCurVal[-1]))
-								{
-								pCurVal[-1].Set0();
-								}
-							}
-						else
-							{
-							proplist->GetPropertyRef(Index._getStr(), pCurVal[-1]);
-							}
-						}
-					// Remove index
-					PopValue();
-					break;
-					}
-
-				case AB_STACK:
-					if(pCPos->Par.i < 0)
-						PopValues(-pCPos->Par.i);
-					else
-						PushNullVals(pCPos->Par.i);
-					break;
-
-				case AB_JUMP:
-					fJump = true;
-					pCPos += pCPos->Par.i;
-					break;
-
-				case AB_JUMPAND:
-					if(!pCurVal[0])
-						{
-						fJump = true;
-						pCPos += pCPos->Par.i;
-						}
-					else
-						{
-						PopValue();
-						}
-					break;
-
-				case AB_JUMPOR:
-					if(!!pCurVal[0])
-						{
-						fJump = true;
-						pCPos += pCPos->Par.i;
-						}
-					else
-						{
-						PopValue();
-						}
-					break;
-
-				case AB_CONDN:
-					if(!pCurVal[0])
-						{
-						fJump = true;
-						pCPos += pCPos->Par.i;
-						}
-					PopValue();
-					break;
-
-				case AB_COND:
-					if(pCurVal[0])
-						{
-						fJump = true;
-						pCPos += pCPos->Par.i;
-						}
-					PopValue();
-					break;
-
-				case AB_RETURN:
-					{
-					// Resolve reference
-					if(!pCurCtx->Func->SFunc()->bReturnRef)
-						pCurVal->Deref();
-
-					// Trace
-					if(iTraceStart >= 0)
-						{
-						StdStrBuf Buf("T");
-						Buf.AppendChars('>', ContextStackSize() - iTraceStart);
-						LogF("%s%s returned %s", Buf.getData(), pCurCtx->Func->Name, pCurVal->GetDataString().getData());
-						}
-
-#ifndef NOAULDEBUG
-					// Notify debugger
-					C4Value *pReturn = pCurCtx->Return;
-					if(pDebug)
-						pDebug->DebugStepOut(pReturn ? (pCurCtx-1)->CPos + 1 : NULL, pCurCtx, pCurVal);
-#endif
-
-					// External call?
-					if(!pReturn)
-						{
-						// Get return value and stop executing.
-						C4Value rVal = *pCurVal;
-						PopValuesUntil(pCurCtx->Pars - 1);
-						PopContext();
-						return rVal;
-						}
-
-					// Save return value
-					if(pCurVal != pReturn)
-						pReturn->Set(*pCurVal);
-
-					// Pop context
-					PopContext();
-
-					// Clear value stack, except return value
-					PopValuesUntil(pReturn);
-
-					// Jump back, continue.
-					pCPos = pCurCtx->CPos + 1;
-					fJump = true;
-
-					break;
-					}
-
-				case AB_FUNC:
-					{
-					// Get function call data
-					C4AulFunc *pFunc = pCPos->Par.f;
-					C4Value *pPars = pCurVal - pFunc->GetParCount() + 1;
-					// Save current position
-					pCurCtx->CPos = pCPos;
-					// Do the call
-					C4AulBCC *pJump = Call(pFunc, pPars, pPars, NULL);
-					if(pJump)
-						{
-						pCPos = pJump;
-						fJump = true;
-						}
-					break;
-					}
-
-				case AB_PAR_R: case AB_PAR_V:
-					if(!pCurVal->ConvertTo(C4V_Int))
-						throw new C4AulExecError(pCurCtx->Obj, FormatString("Par: index of type %s, int expected!", pCurVal->GetTypeName()).getData());
-					// Push reference to parameter on the stack
-					if(pCurVal->_getInt() >= 0 && pCurVal->_getInt() < pCurCtx->ParCnt())
-						{
-						if (pCPos->bccType == AB_PAR_R)
-							pCurVal->SetRef(&pCurCtx->Pars[pCurVal->_getInt()]);
-						else
-							pCurVal->Set(pCurCtx->Pars[pCurVal->_getInt()]);
-						}
-					else
-						pCurVal->Set0();
-					break;
-
-				case AB_FOREACH_NEXT:
-					{
-					// This should always hold
-					assert(pCurVal->ConvertTo(C4V_Int));
-					int iItem = pCurVal->_getInt();
-					// Check array the first time only
-					if(!iItem)
-						{
-						if(!pCurVal[-1].ConvertTo(C4V_Array))
-							throw new C4AulExecError(pCurCtx->Obj, FormatString("for: array expected, but got %s!", pCurVal[-1].GetTypeName()).getData());
-						if(!pCurVal[-1]._getArray())
-							throw new C4AulExecError(pCurCtx->Obj, FormatString("for: array expected, but got 0!").getData());
-						}
-					C4ValueArray *pArray = pCurVal[-1]._getArray();
-					// No more entries?
-					if(pCurVal->_getInt() >= pArray->GetSize())
-						break;
-					// Get next
-					pCurCtx->Vars[pCPos->Par.i] = pArray->GetItem(iItem);
-					// Save position
-					pCurVal->SetInt(iItem + 1);
-					// Jump over next instruction
-					pCPos += 2;
-					fJump = true;
-					break;
-					}
-
-				case AB_IVARN:
-					pCurCtx->Vars[pCPos->Par.i] = pCurVal[0];
-					PopValue();
-					break;
-
-				case AB_CALL:
-				case AB_CALLFS:
-					{
-
-					C4Value *pPars = pCurVal - C4AUL_MAX_Par + 1;
-					C4Value *pTargetVal = pCurVal - C4AUL_MAX_Par;
-
-					// Check for call to null
-					if(!*pTargetVal)
-						throw new C4AulExecError(pCurCtx->Obj, "Object call: target is zero!");
-
-					// Get call target - "object" or "id" are allowed
-					C4Object *pDestObj; C4Def *pDestDef;
-					if(pTargetVal->ConvertTo(C4V_C4Object))
-						{
-						// object call
-						pDestObj = pTargetVal->_getObj();
-						pDestDef = pDestObj->Def;
-						}
-					else if(pTargetVal->ConvertTo(C4V_PropList) && pTargetVal->_getPropList())
-						{
-						// definition call
-						pDestObj = NULL;
-						pDestDef = pTargetVal->_getPropList()->GetDef();
-						// definition must be known
-						if(!pDestDef)
-							throw new C4AulExecError(pCurCtx->Obj,
-								FormatString("Definition call: Definition for %s not found!", pTargetVal->_getPropList()->GetName()).getData());
-						}
-					else
-						throw new C4AulExecError(pCurCtx->Obj,
-							FormatString("Object call: Invalid target type %s, expected object or id!", pTargetVal->GetTypeName()).getData());
-
-					// Search function for given context
-					const char * szFuncName = pCPos->Par.s->GetCStr();
-					C4AulFunc * pFunc = pDestDef->Script.GetFuncRecursive(szFuncName);
-					if(!pFunc && pCPos->bccType == AB_CALLFS)
-						{
-						PopValuesUntil(pTargetVal);
-						pTargetVal->Set0();
-						break;
-						}
-
-					// Function not found?
-					if(!pFunc)
-						{
-						if(pDestObj)
-							throw new C4AulExecError(pCurCtx->Obj,
-								FormatString("Object call: No function \"%s\" in object \"%s\"!", szFuncName, pTargetVal->GetDataString().getData()).getData());
-						else
-							throw new C4AulExecError(pCurCtx->Obj,
-								FormatString("Definition call: No function \"%s\" in definition \"%s\"!", szFuncName, pDestDef->GetName()).getData());
-						}
-
-					// Resolve overloads
-					while(pFunc->OverloadedBy)
-						pFunc = pFunc->OverloadedBy;                  
-
-					// Save current position
-					pCurCtx->CPos = pCPos;
-
-					// Call function
-					C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pDestObj, pDestDef);
-					if(pNewCPos)
-						{
-						// Jump
-						pCPos = pNewCPos;
-						fJump = true;
-						}
-
-					break;
-					}
-
-				case AB_DEBUG:
-#ifndef NOAULDEBUG
-					if(pDebug) pDebug->DebugStep(pCPos);
-#endif
-					break;
-
-				default:
-					assert(false);
+					PopValues(pCPos->Par.i - 1);
+					pCurVal->SetArray(pArray);
 				}
+				else
+					PushArray(pArray);
 
-			// Continue
-			if(!fJump)
-				pCPos++;
+				break;
 			}
 
+			case AB_PROPLIST:
+			{
+				PushPropList(C4PropList::New());
+				break;
+			}
+			case AB_PROPSET:
+			{
+				C4Value *pPropSet = pCurVal - 2, *pKey = pCurVal -1, *pValue = pCurVal;
+				if (!pPropSet->ConvertTo(C4V_PropList))
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("Propset: proplist expected, got %s!", pPropSet->GetTypeName()).getData());
+				if (!pKey->ConvertTo(C4V_String))
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("Propset: string expected, got %s!", pPropSet->GetTypeName()).getData());
+				pPropSet->_getPropList()->SetProperty(pKey->_getStr(), *pValue);
+				PopValues(2);
+				break;
+			}
+
+			case AB_ARRAYA_R: case AB_ARRAYA_V:
+			{
+				C4Value &Index = pCurVal[0];
+				C4Value &Array = pCurVal[-1].GetRefVal();
+				// Typcheck
+				if ((!Array.ConvertTo(C4V_Array) && !Array.ConvertTo(C4V_PropList)) || Array.GetType() == C4V_Any)
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: can't access %s as an array!", Array.GetTypeName()).getData());
+				else if (Array.GetType() == C4V_Array)
+				{
+					if (!Index.ConvertTo(C4V_Int))
+						throw new C4AulExecError(pCurCtx->Obj, FormatString("array access: index of type %s, int expected!", Index.GetTypeName()).getData());
+					// Set reference to array element
+					Array.GetArrayElement(Index._getInt(), pCurVal[-1], pCurCtx, pCPos->bccType == AB_ARRAYA_V);
+				}
+				else
+				{
+					if (!Index.ConvertTo(C4V_String))
+						throw new C4AulExecError(pCurCtx->Obj, FormatString("proplist access: index of type %s, string expected!", Index.GetTypeName()).getData());
+					C4PropList *proplist = Array.getPropList();
+					assert(proplist);
+					if (pCPos->bccType == AB_ARRAYA_V)
+					{
+						if (!proplist->GetPropertyVal(Index._getStr(), pCurVal[-1]))
+						{
+							pCurVal[-1].Set0();
+						}
+					}
+					else
+					{
+						proplist->GetPropertyRef(Index._getStr(), pCurVal[-1]);
+					}
+				}
+				// Remove index
+				PopValue();
+				break;
+			}
+
+			case AB_STACK:
+				if (pCPos->Par.i < 0)
+					PopValues(-pCPos->Par.i);
+				else
+					PushNullVals(pCPos->Par.i);
+				break;
+
+			case AB_JUMP:
+				fJump = true;
+				pCPos += pCPos->Par.i;
+				break;
+
+			case AB_JUMPAND:
+				if (!pCurVal[0])
+				{
+					fJump = true;
+					pCPos += pCPos->Par.i;
+				}
+				else
+				{
+					PopValue();
+				}
+				break;
+
+			case AB_JUMPOR:
+				if (!!pCurVal[0])
+				{
+					fJump = true;
+					pCPos += pCPos->Par.i;
+				}
+				else
+				{
+					PopValue();
+				}
+				break;
+
+			case AB_CONDN:
+				if (!pCurVal[0])
+				{
+					fJump = true;
+					pCPos += pCPos->Par.i;
+				}
+				PopValue();
+				break;
+
+			case AB_COND:
+				if (pCurVal[0])
+				{
+					fJump = true;
+					pCPos += pCPos->Par.i;
+				}
+				PopValue();
+				break;
+
+			case AB_RETURN:
+			{
+				// Resolve reference
+				if (!pCurCtx->Func->SFunc()->bReturnRef)
+					pCurVal->Deref();
+
+				// Trace
+				if (iTraceStart >= 0)
+				{
+					StdStrBuf Buf("T");
+					Buf.AppendChars('>', ContextStackSize() - iTraceStart);
+					LogF("%s%s returned %s", Buf.getData(), pCurCtx->Func->Name, pCurVal->GetDataString().getData());
+				}
+
+#ifndef NOAULDEBUG
+				// Notify debugger
+				C4Value *pReturn = pCurCtx->Return;
+				if (pDebug)
+					pDebug->DebugStepOut(pReturn ? (pCurCtx-1)->CPos + 1 : NULL, pCurCtx, pCurVal);
+#endif
+
+				// External call?
+				if (!pReturn)
+				{
+					// Get return value and stop executing.
+					C4Value rVal = *pCurVal;
+					PopValuesUntil(pCurCtx->Pars - 1);
+					PopContext();
+					return rVal;
+				}
+
+				// Save return value
+				if (pCurVal != pReturn)
+					pReturn->Set(*pCurVal);
+
+				// Pop context
+				PopContext();
+
+				// Clear value stack, except return value
+				PopValuesUntil(pReturn);
+
+				// Jump back, continue.
+				pCPos = pCurCtx->CPos + 1;
+				fJump = true;
+
+				break;
+			}
+
+			case AB_FUNC:
+			{
+				// Get function call data
+				C4AulFunc *pFunc = pCPos->Par.f;
+				C4Value *pPars = pCurVal - pFunc->GetParCount() + 1;
+				// Save current position
+				pCurCtx->CPos = pCPos;
+				// Do the call
+				C4AulBCC *pJump = Call(pFunc, pPars, pPars, NULL);
+				if (pJump)
+				{
+					pCPos = pJump;
+					fJump = true;
+				}
+				break;
+			}
+
+			case AB_PAR_R: case AB_PAR_V:
+				if (!pCurVal->ConvertTo(C4V_Int))
+					throw new C4AulExecError(pCurCtx->Obj, FormatString("Par: index of type %s, int expected!", pCurVal->GetTypeName()).getData());
+				// Push reference to parameter on the stack
+				if (pCurVal->_getInt() >= 0 && pCurVal->_getInt() < pCurCtx->ParCnt())
+				{
+					if (pCPos->bccType == AB_PAR_R)
+						pCurVal->SetRef(&pCurCtx->Pars[pCurVal->_getInt()]);
+					else
+						pCurVal->Set(pCurCtx->Pars[pCurVal->_getInt()]);
+				}
+				else
+					pCurVal->Set0();
+				break;
+
+			case AB_FOREACH_NEXT:
+			{
+				// This should always hold
+				assert(pCurVal->ConvertTo(C4V_Int));
+				int iItem = pCurVal->_getInt();
+				// Check array the first time only
+				if (!iItem)
+				{
+					if (!pCurVal[-1].ConvertTo(C4V_Array))
+						throw new C4AulExecError(pCurCtx->Obj, FormatString("for: array expected, but got %s!", pCurVal[-1].GetTypeName()).getData());
+					if (!pCurVal[-1]._getArray())
+						throw new C4AulExecError(pCurCtx->Obj, FormatString("for: array expected, but got 0!").getData());
+				}
+				C4ValueArray *pArray = pCurVal[-1]._getArray();
+				// No more entries?
+				if (pCurVal->_getInt() >= pArray->GetSize())
+					break;
+				// Get next
+				pCurCtx->Vars[pCPos->Par.i] = pArray->GetItem(iItem);
+				// Save position
+				pCurVal->SetInt(iItem + 1);
+				// Jump over next instruction
+				pCPos += 2;
+				fJump = true;
+				break;
+			}
+
+			case AB_IVARN:
+				pCurCtx->Vars[pCPos->Par.i] = pCurVal[0];
+				PopValue();
+				break;
+
+			case AB_CALL:
+			case AB_CALLFS:
+			{
+
+				C4Value *pPars = pCurVal - C4AUL_MAX_Par + 1;
+				C4Value *pTargetVal = pCurVal - C4AUL_MAX_Par;
+
+				// Check for call to null
+				if (!*pTargetVal)
+					throw new C4AulExecError(pCurCtx->Obj, "Object call: target is zero!");
+
+				// Get call target - "object" or "id" are allowed
+				C4Object *pDestObj; C4Def *pDestDef;
+				if (pTargetVal->ConvertTo(C4V_C4Object))
+				{
+					// object call
+					pDestObj = pTargetVal->_getObj();
+					pDestDef = pDestObj->Def;
+				}
+				else if (pTargetVal->ConvertTo(C4V_PropList) && pTargetVal->_getPropList())
+				{
+					// definition call
+					pDestObj = NULL;
+					pDestDef = pTargetVal->_getPropList()->GetDef();
+					// definition must be known
+					if (!pDestDef)
+						throw new C4AulExecError(pCurCtx->Obj,
+						                         FormatString("Definition call: Definition for %s not found!", pTargetVal->_getPropList()->GetName()).getData());
+				}
+				else
+					throw new C4AulExecError(pCurCtx->Obj,
+					                         FormatString("Object call: Invalid target type %s, expected object or id!", pTargetVal->GetTypeName()).getData());
+
+				// Search function for given context
+				const char * szFuncName = pCPos->Par.s->GetCStr();
+				C4AulFunc * pFunc = pDestDef->Script.GetFuncRecursive(szFuncName);
+				if (!pFunc && pCPos->bccType == AB_CALLFS)
+				{
+					PopValuesUntil(pTargetVal);
+					pTargetVal->Set0();
+					break;
+				}
+
+				// Function not found?
+				if (!pFunc)
+				{
+					if (pDestObj)
+						throw new C4AulExecError(pCurCtx->Obj,
+						                         FormatString("Object call: No function \"%s\" in object \"%s\"!", szFuncName, pTargetVal->GetDataString().getData()).getData());
+					else
+						throw new C4AulExecError(pCurCtx->Obj,
+						                         FormatString("Definition call: No function \"%s\" in definition \"%s\"!", szFuncName, pDestDef->GetName()).getData());
+				}
+
+				// Resolve overloads
+				while (pFunc->OverloadedBy)
+					pFunc = pFunc->OverloadedBy;
+
+				// Save current position
+				pCurCtx->CPos = pCPos;
+
+				// Call function
+				C4AulBCC *pNewCPos = Call(pFunc, pTargetVal, pPars, pDestObj, pDestDef);
+				if (pNewCPos)
+				{
+					// Jump
+					pCPos = pNewCPos;
+					fJump = true;
+				}
+
+				break;
+			}
+
+			case AB_DEBUG:
+#ifndef NOAULDEBUG
+				if (pDebug) pDebug->DebugStep(pCPos);
+#endif
+				break;
+
+			default:
+				assert(false);
+			}
+
+			// Continue
+			if (!fJump)
+				pCPos++;
 		}
-	catch(C4AulError *e)
-		{
+
+	}
+	catch (C4AulError *e)
+	{
 		// Save current position
 		pOldCtx->CPos = pCPos;
 		// Pass?
-		if(fPassErrors)
+		if (fPassErrors)
 			throw;
 		// Show
 		e->show();
@@ -862,43 +862,43 @@ C4Value C4AulExec::Exec(C4AulBCC *pCPos, bool fPassErrors)
 			pCtx->dump(StdStrBuf(" by: "));
 		// Unwind stack
 		C4Value *pUntil = NULL;
-		while(pCurCtx >= pOldCtx)
-			{
+		while (pCurCtx >= pOldCtx)
+		{
 			pUntil = pCurCtx->Pars - 1;
 			PopContext();
-			}
-		if(pUntil)
-			PopValuesUntil(pUntil);
 		}
+		if (pUntil)
+			PopValuesUntil(pUntil);
+	}
 
 	// Return nothing
 	return C4VNull;
-	}
+}
 
 C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4Object *pObj, C4Def *pDef)
-	{
+{
 
 	// No object given? Use current context
-	if(!pObj && !pDef)
-		{
+	if (!pObj && !pDef)
+	{
 		assert(pCurCtx >= Contexts);
 		pObj = pCurCtx->Obj;
 		pDef = pCurCtx->Def;
-		}
+	}
 
 	// Convert parameters (typecheck)
 	C4V_Type *pTypes = pFunc->GetParType();
-	for(int i = 0; i < pFunc->GetParCount(); i++)
-		if(!pPars[i].ConvertTo(pTypes[i]))
+	for (int i = 0; i < pFunc->GetParCount(); i++)
+		if (!pPars[i].ConvertTo(pTypes[i]))
 			throw new C4AulExecError(pCurCtx->Obj,
-				FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
-					pFunc->Name, i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
-				).getData());
+			                         FormatString("call to \"%s\" parameter %d: got \"%s\", but expected \"%s\"!",
+			                                      pFunc->Name, i + 1, pPars[i].GetTypeName(), GetC4VName(pTypes[i])
+			                                     ).getData());
 
 	// Script function?
 	C4AulScriptFunc *pSFunc = pFunc->SFunc();
-	if(pSFunc)
-		{
+	if (pSFunc)
+	{
 
 		// Push variables
 		C4Value *pVars = pCurVal + 1;
@@ -922,15 +922,15 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 #ifndef NOAULDEBUG
 		// Notify debugger
-		if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+		if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
 			pDebug->DebugStepIn(pSFunc->Code);
 #endif
 
 		// Jump to code
 		return pSFunc->Code;
-		}
+	}
 	else
-		{
+	{
 
 		// Create new context
 		C4AulContext CallCtx;
@@ -940,42 +940,42 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 #ifdef DEBUGREC_SCRIPT
 		if (Game.FrameCounter >= DEBUGREC_START_FRAME)
-			{
+		{
 			StdStrBuf sCallText;
 			if (pObj)
 				sCallText.AppendFormat("Object(%d): ", pObj->Number);
 			sCallText.Append(pFunc->Name);
 			sCallText.AppendChar('(');
 			for (int i=0; i<C4AUL_MAX_Par; ++i)
-				{
+			{
 				if (i) sCallText.AppendChar(',');
 				C4Value &rV = pPars[i];
 				if (rV.GetType() == C4V_String)
-					{
+				{
 					C4String *s = rV.getStr();
 					if (!s)
 						sCallText.Append("(Snull)");
 					else
-						{
+					{
 						sCallText.Append("\"");
 						sCallText.Append(s->GetData());
 						sCallText.Append("\"");
-						}
 					}
+				}
 				else
 					sCallText.Append(rV.GetDataString());
-				}
+			}
 			sCallText.AppendChar(')');
 			sCallText.AppendChar(';');
 			AddDbgRec(RCT_AulFunc, sCallText.getData(), sCallText.getLength()+1);
-			}
+		}
 #endif
 
 		// Execute
 #ifdef _DEBUG
 		C4AulScriptContext *pCtx = pCurCtx;
-#endif		
-		if(pReturn > pCurVal)
+#endif
+		if (pReturn > pCurVal)
 			PushValue(pFunc->Exec(&CallCtx, pPars, true));
 		else
 			pReturn->Set(pFunc->Exec(&CallCtx, pPars, true));
@@ -985,8 +985,8 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 #ifndef NOAULDEBUG
 		// Notify debugger
-		if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
-			{
+		if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+		{
 			// Make dummy context
 			C4AulScriptContext ctx;
 			ctx.Obj = pObj;
@@ -999,7 +999,7 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 			ctx.TemporaryScript = false;
 			ctx.CPos = NULL;
 			pDebug->DebugStepOut(pCurCtx->CPos + 1, pCurCtx, pReturn);
-			}
+		}
 #endif
 
 		// Remove parameters from stack
@@ -1007,23 +1007,23 @@ C4AulBCC *C4AulExec::Call(C4AulFunc *pFunc, C4Value *pReturn, C4Value *pPars, C4
 
 		// Continue
 		return NULL;
-		}
-
 	}
+
+}
 
 void C4AulStartTrace()
-	{
+{
 	AulExec.StartTrace();
-	}
+}
 
 void C4AulExec::StartTrace()
-	{
-	if(iTraceStart < 0)
+{
+	if (iTraceStart < 0)
 		iTraceStart = ContextStackSize();
-	}
+}
 
 void C4AulExec::StartProfiling(C4AulScript *pProfiledScript)
-	{
+{
 	// stop previous profiler run
 	if (fProfiling) AbortProfiling();
 	fProfiling = true;
@@ -1035,10 +1035,10 @@ void C4AulExec::StartProfiling(C4AulScript *pProfiledScript)
 	pProfiledScript->ResetProfilerTimes();
 	for (C4AulScriptContext *pCtx = Contexts; pCtx <= pCurCtx; ++pCtx)
 		pCtx->tTime = tNow;
-	}
+}
 
 void C4AulExec::StopProfiling()
-	{
+{
 	// stop the profiler and displays results
 	if (!fProfiling) return;
 	fProfiling = false;
@@ -1047,65 +1047,65 @@ void C4AulExec::StopProfiling()
 	Profiler.CollectEntry(NULL, tDirectExecTotal);
 	pProfiledScript->CollectProfilerTimes(Profiler);
 	Profiler.Show();
-	}
+}
 
 void C4AulExec::PushContext(const C4AulScriptContext &rContext)
 {
-	if(pCurCtx >= Contexts + MAX_CONTEXT_STACK - 1)
+	if (pCurCtx >= Contexts + MAX_CONTEXT_STACK - 1)
 		throw new C4AulExecError(pCurCtx->Obj, "context stack overflow!");
 	*++pCurCtx = rContext;
 	// Trace?
-	if(iTraceStart >= 0)
-		{
+	if (iTraceStart >= 0)
+	{
 		StdStrBuf Buf("T");
 		Buf.AppendChars('>', ContextStackSize() - iTraceStart);
 		pCurCtx->dump(Buf);
-		}
+	}
 	// Profiler: Safe time to measure difference afterwards
 	if (fProfiling) pCurCtx->tTime = timeGetTime();
 }
 
 void C4AulExec::PopContext()
 {
-	if(pCurCtx < Contexts)
+	if (pCurCtx < Contexts)
 		throw new C4AulExecError(pCurCtx->Obj, "context stack underflow!");
 	// Profiler adding up times
 	if (fProfiling)
-		{
+	{
 		time_t dt = timeGetTime() - pCurCtx->tTime;
 		if (dt && pCurCtx->Func)
 			pCurCtx->Func->tProfileTime += dt;
-		}
+	}
 	// Trace done?
-	if(iTraceStart >= 0)
+	if (iTraceStart >= 0)
+	{
+		if (ContextStackSize() <= iTraceStart)
 		{
-		if(ContextStackSize() <= iTraceStart)
-			{
 			iTraceStart = -1;
-			}
 		}
-	if(pCurCtx->TemporaryScript)
+	}
+	if (pCurCtx->TemporaryScript)
 		delete pCurCtx->Func->Owner;
 	pCurCtx--;
 }
 
 void C4AulProfiler::StartProfiling(C4AulScript *pScript)
-	{
+{
 	AulExec.StartProfiling(pScript);
-	}
+}
 
 void C4AulProfiler::StopProfiling()
-	{
+{
 	AulExec.StopProfiling();
-	}
+}
 
 void C4AulProfiler::Abort()
-	{
+{
 	AulExec.AbortProfiling();
-	}
+}
 
 void C4AulProfiler::CollectEntry(C4AulScriptFunc *pFunc, time_t tProfileTime)
-	{
+{
 	// zero entries are not collected to have a cleaner list
 	if (!tProfileTime) return;
 	// add entry to list
@@ -1113,10 +1113,10 @@ void C4AulProfiler::CollectEntry(C4AulScriptFunc *pFunc, time_t tProfileTime)
 	e.pFunc = pFunc;
 	e.tProfileTime = tProfileTime;
 	Times.push_back(e);
-	}
+}
 
 void C4AulProfiler::Show()
-	{
+{
 	// sort by time
 	std::sort(Times.rbegin(), Times.rend());
 	// display them
@@ -1124,17 +1124,17 @@ void C4AulProfiler::Show()
 	Log("==============================");
 	typedef std::vector<Entry> EntryList;
 	for (EntryList::iterator i = Times.begin(); i!=Times.end(); ++i)
-		{
+	{
 		Entry &e = (*i);
 		LogF("%05dms\t%s", (int) e.tProfileTime, e.pFunc ? (e.pFunc->GetFullName().getData()) : "Direct exec");
-		}
+	}
 	Log("==============================");
 	// done!
-	}
+}
 
 
 C4Value C4AulFunc::Exec(C4Object *pObj, C4AulParSet* pPars, bool fPassErrors)
-	{
+{
 	// construct a dummy caller context
 	C4AulContext ctx;
 	ctx.Obj = pObj;
@@ -1142,21 +1142,21 @@ C4Value C4AulFunc::Exec(C4Object *pObj, C4AulParSet* pPars, bool fPassErrors)
 	ctx.Caller = NULL;
 	// execute
 	return Exec(&ctx, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
-	}
+}
 
 C4Value C4AulScriptFunc::Exec(C4AulContext *pCtx, C4Value pPars[], bool fPassErrors)
-	{
+{
 	// handle easiest case first
 	if (Owner->State != ASS_PARSED) return C4VNull;
 
 	// execute
 	return AulExec.Exec(this, pCtx->Obj, pPars, fPassErrors);
 
-	}
+}
 
 
 C4Value C4AulScriptFunc::Exec(C4Object *pObj, C4AulParSet *pPars, bool fPassErrors)
-	{
+{
 
 	// handle easiest case first
 	if (Owner->State != ASS_PARSED) return C4VNull;
@@ -1164,30 +1164,30 @@ C4Value C4AulScriptFunc::Exec(C4Object *pObj, C4AulParSet *pPars, bool fPassErro
 	// execute
 	return AulExec.Exec(this, pObj, pPars ? pPars->Par : C4AulParSet().Par, fPassErrors);
 
-	}
+}
 
 
 C4Value C4AulDefFunc::Exec(C4AulContext *pCallerCtx, C4Value pPars[], bool fPassErrors)
-	{
+{
 
 	// Choose function call format to use
-	if(Def->FunctionC4V2 != 0)
+	if (Def->FunctionC4V2 != 0)
 
 		// C4V function
 		return Def->FunctionC4V2(pCallerCtx, pPars);
 
-	if(Def->FunctionC4V != 0)
+	if (Def->FunctionC4V != 0)
 
 		// C4V function
-		return Def->FunctionC4V(pCallerCtx,	&pPars[0], &pPars[1], &pPars[2], &pPars[3], &pPars[4], &pPars[5], &pPars[6], &pPars[7], &pPars[8], &pPars[9]);
+		return Def->FunctionC4V(pCallerCtx, &pPars[0], &pPars[1], &pPars[2], &pPars[3], &pPars[4], &pPars[5], &pPars[6], &pPars[7], &pPars[8], &pPars[9]);
 
 	// should never happen...
 	return C4VNull;
 
-	}
+}
 
 C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char *szContext, bool fPassErrors, enum Strict Strict)
-	{
+{
 #ifdef DEBUGREC_SCRIPT
 	AddDbgRec(RCT_DirectExec, szScript, strlen(szScript)+1);
 	int32_t iObjNumber = pObj ? pObj->Number : -1;
@@ -1204,14 +1204,14 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	pScript->State = ASS_LINKED;
 	pScript->stringTable = stringTable;
 	if (pObj)
-		{
+	{
 		pScript->Def = pObj->Def;
 		pScript->LocalNamed = pObj->Def->Script.LocalNamed;
-		}
+	}
 	else
-		{
+	{
 		pScript->Def = NULL;
-		}
+	}
 	pScript->Reg2List(Engine, this);
 	// Add a new function
 	C4AulScriptFunc *pFunc = new C4AulScriptFunc(pScript, "");
@@ -1219,17 +1219,17 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	pFunc->pOrgScript = pScript;
 	// Parse function
 	try
-		{
+	{
 		pScript->ParseFn(pFunc, true);
-		}
-	catch(C4AulError *ex)
-		{
+	}
+	catch (C4AulError *ex)
+	{
 		ex->show();
 		delete ex;
 		delete pFunc;
 		delete pScript;
 		return C4VNull;
-		}
+	}
 	pFunc->Code = pScript->Code;
 	pScript->State = ASS_PARSED;
 	// Execute. The TemporaryScript-parameter makes sure the script will be deleted later on.
@@ -1237,10 +1237,10 @@ C4Value C4AulScript::DirectExec(C4Object *pObj, const char *szScript, const char
 	// profiler
 	AulExec.StopDirectExec();
 	return vRetVal;
-	}
+}
 
 void C4AulScript::ResetProfilerTimes()
-	{
+{
 	// zero all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
 	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
@@ -1249,10 +1249,10 @@ void C4AulScript::ResetProfilerTimes()
 	// reset sub-scripts
 	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
 		pScript->ResetProfilerTimes();
-	}
+}
 
 void C4AulScript::CollectProfilerTimes(class C4AulProfiler &rProfiler)
-	{
+{
 	// collect all profiler times of owned functions
 	C4AulScriptFunc *pSFunc;
 	for (C4AulFunc *pFn = Func0; pFn; pFn = pFn->Next)
@@ -1261,4 +1261,4 @@ void C4AulScript::CollectProfilerTimes(class C4AulProfiler &rProfiler)
 	// collect sub-scripts
 	for (C4AulScript *pScript = Child0; pScript; pScript = pScript->Next)
 		pScript->CollectProfilerTimes(rProfiler);
-	}
+}

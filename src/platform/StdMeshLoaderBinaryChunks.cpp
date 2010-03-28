@@ -29,10 +29,10 @@ namespace Ogre
 	{
 		const uint32_t ChunkFileHeader::CurrentVersion = 1041; // Major * 1000 + Minor
 		const std::map<std::string, uint32_t> ChunkFileHeader::VersionTable = boost::assign::map_list_of
-			// 1.41: Current version
-			("[MeshSerializer_v1.41]", CurrentVersion)
-			// 1.40: Changes to CID_Mesh_LOD chunks, we ignore those, so no special handling needed
-			("[MeshSerializer_v1.40]", 1040);
+		    // 1.41: Current version
+		    ("[MeshSerializer_v1.41]", CurrentVersion)
+		    // 1.40: Changes to CID_Mesh_LOD chunks, we ignore those, so no special handling needed
+		    ("[MeshSerializer_v1.40]", 1040);
 
 		// Chunk factory
 		Chunk *Chunk::Read(DataStream *stream)
@@ -96,9 +96,9 @@ namespace Ogre
 		{
 			hasAnimatedSkeleton = stream->Read<bool>();
 			for (ChunkID id = Chunk::Peek(stream);
-				id == CID_Geometry || id == CID_Submesh || id == CID_Mesh_Skeleton_Link || id == CID_Mesh_Bone_Assignment || id == CID_Mesh_LOD || id == CID_Submesh_Name_Table || id == CID_Mesh_Bounds || id == CID_Edge_List || id == CID_Pose_List || id == CID_Animation_List;
-				id = Chunk::Peek(stream)
-				)
+			     id == CID_Geometry || id == CID_Submesh || id == CID_Mesh_Skeleton_Link || id == CID_Mesh_Bone_Assignment || id == CID_Mesh_LOD || id == CID_Submesh_Name_Table || id == CID_Mesh_Bounds || id == CID_Edge_List || id == CID_Pose_List || id == CID_Animation_List;
+			     id = Chunk::Peek(stream)
+			    )
 			{
 				Chunk *chunk = Chunk::Read(stream);
 				switch (chunk->GetType())
@@ -155,7 +155,7 @@ namespace Ogre
 			size_t index_count = stream->Read<uint32_t>();
 			bool indexes_are_32bit = stream->Read<bool>();
 			faceVertices.reserve(index_count);
-			while(index_count--)
+			while (index_count--)
 			{
 				size_t index;
 				if (indexes_are_32bit)
@@ -165,9 +165,9 @@ namespace Ogre
 				faceVertices.push_back(index);
 			}
 			for (ChunkID id = Chunk::Peek(stream);
-				id == CID_Geometry || id == CID_Submesh_Op || id == CID_Submesh_Bone_Assignment;
-				id = Chunk::Peek(stream)
-				)
+			     id == CID_Geometry || id == CID_Submesh_Op || id == CID_Submesh_Bone_Assignment;
+			     id = Chunk::Peek(stream)
+			    )
 			{
 				Chunk *chunk = Chunk::Read(stream);
 
@@ -192,13 +192,13 @@ namespace Ogre
 					delete chunk;
 					break;
 				case CID_Submesh_Bone_Assignment:
-					{
-						// Collect bone assignments
-						ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk);
-						boneAssignments.insert(boneAssignments.end(), assignments->assignments.begin(), assignments->assignments.end());
-					}
-					delete chunk;
-					break;
+				{
+					// Collect bone assignments
+					ChunkMeshBoneAssignments *assignments = static_cast<ChunkMeshBoneAssignments*>(chunk);
+					boneAssignments.insert(boneAssignments.end(), assignments->assignments.begin(), assignments->assignments.end());
+				}
+				delete chunk;
+				break;
 				default:
 					LogF("StdMeshLoader: I don't know what to do with a chunk of type 0x%xu inside a CID_Submesh chunk", chunk->GetType());
 					delete chunk;
@@ -244,9 +244,9 @@ namespace Ogre
 		{
 			vertexCount = stream->Read<uint32_t>();
 			for (ChunkID id = Chunk::Peek(stream);
-				id == CID_Geometry_Vertex_Decl || id == CID_Geometry_Vertex_Buffer;
-				id = Chunk::Peek(stream)
-				)
+			     id == CID_Geometry_Vertex_Decl || id == CID_Geometry_Vertex_Buffer;
+			     id = Chunk::Peek(stream)
+			    )
 			{
 				Chunk *chunk = Chunk::Read(stream);
 
@@ -303,7 +303,7 @@ namespace Ogre
 		{
 			index = stream->Read<uint16_t>();
 			vertexSize = stream->Read<uint16_t>();
-			
+
 			while (Chunk::Peek(stream) == CID_Geometry_Vertex_Data)
 			{
 				Chunk *chunk = Chunk::Read(stream);
@@ -430,7 +430,7 @@ namespace Ogre
 				if (stream->AtEof()) break;
 			}
 		}
-	
+
 		void ChunkAnimationTrackKF::ReadImpl(DataStream *stream)
 		{
 			time = stream->Read<float>();

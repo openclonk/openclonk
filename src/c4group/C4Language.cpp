@@ -19,10 +19,10 @@
  */
 
 /*
-	 Language module
-	 - handles external language packs
-	 - provides info on selectable languages by scanning string tables
-	 - loads and sets a language string table (ResStrTable) based on a specified language sequence
+   Language module
+   - handles external language packs
+   - provides info on selectable languages by scanning string tables
+   - loads and sets a language string table (ResStrTable) based on a specified language sequence
 
 */
 
@@ -63,25 +63,25 @@ bool C4Language::Init()
 	// Clear (to allow clean re-init)
 	Clear();
 
-	// Look for available language packs in Language.c4g					Opening Language.c4g as a group and
-	/*C4Group *pPack;																							the packs as children is no good -
-	char strPackFilename[_MAX_FNAME + 1];													C4Group simply cannot handle it. So
-	Log("Registering languages...");															we need to open the pack group files
-	if (PackDirectory.Open(C4CFN_Languages))											directly...
-		while (PackDirectory.FindNextEntry("*.c4g", strPackFilename))
-		{
-			pPack = new C4Group();
-			if (pPack->OpenAsChild(&PackDirectory, strPackFilename))
-			{
-				sprintf(strLog, "  %s...", strPackFilename); Log(strLog);
-				Packs.RegisterGroup(*pPack, true, C4GSCnt_Language, false);
-			}
-			else
-			{
-				sprintf(strLog, "Could not open language pack %s...", strPackFilename); Log(strLog);
-				delete pPack;
-			}
-		}*/
+	// Look for available language packs in Language.c4g          Opening Language.c4g as a group and
+	/*C4Group *pPack;                                             the packs as children is no good -
+	char strPackFilename[_MAX_FNAME + 1];                         C4Group simply cannot handle it. So
+	Log("Registering languages...");                              we need to open the pack group files
+	if (PackDirectory.Open(C4CFN_Languages))                      directly...
+	  while (PackDirectory.FindNextEntry("*.c4g", strPackFilename))
+	  {
+	    pPack = new C4Group();
+	    if (pPack->OpenAsChild(&PackDirectory, strPackFilename))
+	    {
+	      sprintf(strLog, "  %s...", strPackFilename); Log(strLog);
+	      Packs.RegisterGroup(*pPack, true, C4GSCnt_Language, false);
+	    }
+	    else
+	    {
+	      sprintf(strLog, "Could not open language pack %s...", strPackFilename); Log(strLog);
+	      delete pPack;
+	    }
+	  }*/
 
 	// Make sure Language.c4g is unpacked
 	if (ItemExists(C4CFN_Languages))
@@ -158,7 +158,8 @@ void C4Language::Clear()
 #ifdef HAVE_ICONV
 StdStrBuf C4Language::Iconv(const char * string, iconv_t cd)
 {
-	if (cd == iconv_t(-1)) {
+	if (cd == iconv_t(-1))
+	{
 		return StdStrBuf(string, true);
 	}
 	StdStrBuf r;
@@ -176,22 +177,22 @@ StdStrBuf C4Language::Iconv(const char * string, iconv_t cd)
 			switch (errno)
 			{
 				// There is not sufficient room at *outbuf.
-				case E2BIG:
-				{
-					size_t done = outbuf - r.getMData();
-					r.Grow(inlen * 2);
-					outbuf = r.getMData() + done;
-					outlen += inlen * 2;
-					break;
-				}
-				// An invalid multibyte sequence has been encountered in the input.
-				case EILSEQ:
+			case E2BIG:
+			{
+				size_t done = outbuf - r.getMData();
+				r.Grow(inlen * 2);
+				outbuf = r.getMData() + done;
+				outlen += inlen * 2;
+				break;
+			}
+			// An invalid multibyte sequence has been encountered in the input.
+			case EILSEQ:
 				++inbuf;
 				--inlen;
 				break;
 				// An incomplete multibyte sequence has been encountered in the input.
-				case EINVAL:
-				default:
+			case EINVAL:
+			default:
 				if (outlen) r.Shrink(outlen);
 				return r;
 			}
@@ -250,23 +251,23 @@ C4GroupSet& C4Language::GetPackGroups(const char *strRelativePath)
 
 	// Adjust location by scenario origin
 	if (Game.C4S.Head.Origin.getLength() && SEqualNoCase(GetExtension(Game.C4S.Head.Origin.getData()), "c4s"))
-		{
+	{
 		const char *szScenarioRelativePath = GetRelativePathS(strRelativePath, Config.AtRelativePath(Game.ScenarioFilename));
 		if (szScenarioRelativePath != strRelativePath)
-			{
+		{
 			// this is a path within the scenario! Change to origin.
 			size_t iRestPathLen = SLen(szScenarioRelativePath);
 			if (Game.C4S.Head.Origin.getLength() + 1 + iRestPathLen <= _MAX_PATH)
-				{
+			{
 				SCopy(Game.C4S.Head.Origin.getData(), strTargetLocation);
 				if (iRestPathLen)
-					{
+				{
 					SAppendChar(DirectorySeparator, strTargetLocation);
 					SAppend(szScenarioRelativePath, strTargetLocation);
-					}
 				}
 			}
 		}
+	}
 
 	// Target location has not changed: return last list of pack groups
 	if (SEqualNoCase(strTargetLocation, PackGroupLocation))
@@ -286,8 +287,8 @@ C4GroupSet& C4Language::GetPackGroups(const char *strRelativePath)
 
 		// Try to backtrack until we can reach the target location as a relative child
 		while ( strPackGroupLocation[0]
-				 && !GetRelativePath(strTargetLocation, strPackGroupLocation, strAdvance)
-				 && pPackGroup->OpenMother() )
+		        && !GetRelativePath(strTargetLocation, strPackGroupLocation, strAdvance)
+		        && pPackGroup->OpenMother() )
 		{
 			// Update pack group location
 			GetRelativePath(pPackGroup->GetFullName().getData(), strPackPath, strPackGroupLocation);
@@ -317,11 +318,11 @@ C4GroupSet& C4Language::GetPackGroups(const char *strRelativePath)
 			pPackGroup->OpenAsChild(pPack, strTargetLocation);
 			/*if (pPackGroup->OpenAsChild(pPack, strTargetLocation)) // Slow one...
 			{
-				sprintf(strLog, "%s - %s", pPack->GetName(), strTargetLocation); Log(strLog);
+			  sprintf(strLog, "%s - %s", pPack->GetName(), strTargetLocation); Log(strLog);
 			}
 			else
 			{
-				sprintf(strLog, "%s ! %s", pPack->GetName(), strTargetLocation); Log(strLog);
+			  sprintf(strLog, "%s ! %s", pPack->GetName(), strTargetLocation); Log(strLog);
 			}*/
 		}
 
@@ -475,7 +476,7 @@ bool C4Language::LoadStringTable(C4Group &hGroup, const char *strCode)
 		local_to_host = iconv_open (to_set ? to_set : "ASCII", "UTF-8");
 	if (host_to_local == iconv_t(-1))
 		host_to_local = iconv_open ("UTF-8",
-			to_set ? to_set : "ASCII");
+		                            to_set ? to_set : "ASCII");
 #else
 	const char * const to_set = "";
 #endif

@@ -29,22 +29,22 @@
 
 
 void C4TargetFacet::Set(SURFACE nsfc, int nx, int ny, int nwdt, int nhgt, float ntx, float nty)
-	{
+{
 	C4Facet::Set(nsfc,nx,ny,nwdt,nhgt);
 	TargetX=ntx; TargetY=nty;
-	}
+}
 
 void C4TargetFacet::Set(SURFACE nsfc, const C4Rect & r, float ntx, float nty)
-	{
+{
 	Set(nsfc, r.x, r.y, r.Wdt, r.Hgt, ntx, nty);
-	}
+}
 void C4TargetFacet::SetRect(C4TargetRect &rSrc)
-	{
+{
 	X=rSrc.x; Y=rSrc.y; Wdt=rSrc.Wdt; Hgt=rSrc.Hgt; TargetX=rSrc.tx; TargetY=rSrc.ty;
-	}
+}
 
 void C4TargetFacet::DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1, uint32_t col2)
-	{
+{
 	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
 	// Scroll position
 	iX1-=TargetX; iY1-=TargetY; iX2-=TargetX; iY2-=TargetY;
@@ -52,19 +52,19 @@ void C4TargetFacet::DrawLineDw(int iX1, int iY1, int iX2, int iY2, uint32_t col1
 	// Draw line
 	lpDDraw->DrawLineDw(Surface,X+iX1,Y+iY1,X+iX2,Y+iY2,col1);
 	lpDDraw->DrawPix(Surface,(float)(X+iX1),(float)(Y+iY1),col2);
-	}
+}
 
 void C4TargetFacet::DrawLine(int iX1, int iY1, int iX2, int iY2, BYTE bCol1, BYTE bCol2)
-	{
-		DrawLineDw(iX1, iY1, iX2, iY2, lpDDraw->Pal.GetClr(bCol1), lpDDraw->Pal.GetClr(bCol2));
-	}
+{
+	DrawLineDw(iX1, iY1, iX2, iY2, lpDDraw->Pal.GetClr(bCol1), lpDDraw->Pal.GetClr(bCol2));
+}
 
 // bolt random size
 #define DrawBoltR1 7
 #define DrawBoltR2 3
 
 void C4TargetFacet::DrawBolt(int iX1, int iY1, int iX2, int iY2, BYTE bCol, BYTE bCol2)
-	{
+{
 	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
 	// Scroll position
 	iX1-=TargetX; iY1-=TargetY; iX2-=TargetX; iY2-=TargetY;
@@ -81,24 +81,24 @@ void C4TargetFacet::DrawBolt(int iX1, int iY1, int iX2, int iY2, BYTE bCol, BYTE
 	DWORD dwClr1=lpDDraw->Pal.GetClr(bCol),dwClr2;
 	DWORD dwClr3=lpDDraw->Pal.GetClr(bCol2),dwClr4;
 	/*if (DDrawCfg.NoBoxFades)
-		{*/
-		dwClr2=dwClr1;
-		dwClr4=dwClr3;
-		/*}
+	  {*/
+	dwClr2=dwClr1;
+	dwClr4=dwClr3;
+	/*}
 	else
-		{
-		DWORD dwClr2=dwClr1|0xff000000; ...this leads to black and white lightning bolts. Who wants that?
-		DWORD dwClr4=dwClr3|0xff000000;
-		}*/
+	{
+	DWORD dwClr2=dwClr1|0xff000000; ...this leads to black and white lightning bolts. Who wants that?
+	DWORD dwClr4=dwClr3|0xff000000;
+	}*/
 	lpDDraw->DrawQuadDw(Surface,pvtx,dwClr1,dwClr3,dwClr4,dwClr2);
-	}
+}
 
 
 // ------------------------
 // C4FacetSurface
 
 bool C4FacetSurface::Create(int iWdt, int iHgt, int iWdt2, int iHgt2)
-	{
+{
 	Clear();
 	// Create surface
 	Face.Default();
@@ -108,10 +108,10 @@ bool C4FacetSurface::Create(int iWdt, int iHgt, int iWdt2, int iHgt2)
 	if (iHgt2==C4FCT_Full) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Height) iHgt2=Face.Hgt; if (iHgt2==C4FCT_Width) iHgt2=Face.Wdt;
 	Set(&Face,0,0,iWdt2,iHgt2,0,0);
 	return true;
-	}
+}
 
 bool C4FacetSurface::CreateClrByOwner(CSurface *pBySurface)
-	{
+{
 	Clear();
 	// create surface
 	if (!Face.CreateColorByOwner(pBySurface)) return false;
@@ -119,10 +119,10 @@ bool C4FacetSurface::CreateClrByOwner(CSurface *pBySurface)
 	Set(&Face,0,0,Face.Wdt,Face.Hgt,0,0);
 	// success
 	return true;
-	}
+}
 
 bool C4FacetSurface::EnsureSize(int iMinWdt, int iMinHgt)
-	{
+{
 	// safety
 	if (!Surface) return false;
 	// check size
@@ -145,47 +145,47 @@ bool C4FacetSurface::EnsureSize(int iMinWdt, int iMinHgt)
 	delete sfcDup;
 	// done
 	return fSuccess;
-	}
+}
 
 /*bool C4FacetSurface::Save(C4Group &hGroup, const char *szName)
-	{
-	// Empty
-	if (!Wdt || !Hgt) return false;
-	// Full surface
-	if ((Wdt==Face.Wdt) && (Hgt==Face.Hgt))
-		{
-		if (!Face.Save(hGroup,szName)) return false;
-		}
-	// Surface section
-	else
-		{
-		C4Surface sfcFacet;
-		if (!sfcFacet.Create(Wdt,Hgt)) return false;
-		Draw(&sfcFacet,0,0);
-		if (!sfcFacet.Save(hGroup,szName)) return false;
-		}
-	// Success
-	return true;
-	}*/
+  {
+  // Empty
+  if (!Wdt || !Hgt) return false;
+  // Full surface
+  if ((Wdt==Face.Wdt) && (Hgt==Face.Hgt))
+    {
+    if (!Face.Save(hGroup,szName)) return false;
+    }
+  // Surface section
+  else
+    {
+    C4Surface sfcFacet;
+    if (!sfcFacet.Create(Wdt,Hgt)) return false;
+    Draw(&sfcFacet,0,0);
+    if (!sfcFacet.Save(hGroup,szName)) return false;
+    }
+  // Success
+  return true;
+  }*/
 
 bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHgt, bool fOwnPal, bool fNoErrIfNotFound)
-	{
+{
 	Clear();
 	// Entry name
 	char szFilename[_MAX_FNAME+1];
 	SCopy(szName,szFilename,_MAX_FNAME);
 	char *szExt = GetExtension(szFilename);
 	if (!*szExt)
-		{
+	{
 		// no extension: Default to extension that is found as file in group
 		const char * const extensions[] = { "png", "bmp", "jpeg", "jpg", NULL };
 		int i = 0; const char *szExt;
 		while ((szExt = extensions[i++]))
-			{
+		{
 			EnforceExtension(szFilename, szExt);
 			if (hGroup.FindEntry(szFilename)) break;
-			}
 		}
+	}
 	// Load surface
 	if (!Face.Load(hGroup,szFilename,fOwnPal,fNoErrIfNotFound)) return false;
 	// Set facet
@@ -193,69 +193,69 @@ bool C4FacetSurface::Load(C4Group &hGroup, const char *szName, int iWdt, int iHg
 	if (iHgt==C4FCT_Full) iHgt=Face.Hgt; if (iHgt==C4FCT_Height) iHgt=Face.Hgt; if (iHgt==C4FCT_Width) iHgt=Face.Wdt;
 	Set(&Face,0,0,iWdt,iHgt,0,0);
 	return true;
-	}
+}
 
 bool C4FacetSurface::CopyFromSfcMaxSize(C4Surface &srcSfc, int32_t iMaxSize, uint32_t dwColor)
-	{
+{
 	// safety
 	if (!srcSfc.Wdt || !srcSfc.Hgt) return false;
 	Clear();
 	// no scale?
 	bool fNeedsScale = !(srcSfc.Wdt <= iMaxSize && srcSfc.Hgt <= iMaxSize);
 	if (!fNeedsScale && !dwColor)
-		{
+	{
 		// no change necessary; just copy then
 		Face.Copy(srcSfc);
-		}
+	}
 	else
-		{
+	{
 		// must scale down or colorize. Just blit.
 		C4Facet fctSource;
 		fctSource.Set(&srcSfc, 0,0,srcSfc.Wdt,srcSfc.Hgt);
 		int32_t iTargetWdt, iTargetHgt;
 		if (fNeedsScale)
-			{
+		{
 			if (fctSource.Wdt > fctSource.Hgt)
-				{
+			{
 				iTargetWdt = iMaxSize;
 				iTargetHgt = fctSource.Hgt * iTargetWdt / fctSource.Wdt;
-				}
+			}
 			else
-				{
+			{
 				iTargetHgt = iMaxSize;
 				iTargetWdt = fctSource.Wdt * iTargetHgt / fctSource.Hgt;
-				}
 			}
+		}
 		else
-			{
+		{
 			iTargetWdt = fctSource.Wdt;
 			iTargetHgt = fctSource.Hgt;
-			}
+		}
 		if (dwColor) srcSfc.SetClr(dwColor);
 		Create(iTargetWdt, iTargetHgt);
 		lpDDraw->Blit(&srcSfc, 0.0f,0.0f,float(fctSource.Wdt),float(fctSource.Hgt),
 		              &Face, 0,0,iTargetWdt,iTargetHgt);
-		}
+	}
 	Set(&Face, 0,0, Face.Wdt, Face.Hgt);
 	return true;
-	}
+}
 
 void C4FacetSurface::Grayscale(int32_t iOffset)
-	{
+{
 	if (!lpDDraw || !Surface || !Wdt || !Hgt) return;
 	lpDDraw->Grayscale(Surface, iOffset);
-	}
+}
 
 bool C4FacetSurface::EnsureOwnSurface()
-	{
+{
 	// is it a link?
 	if (Surface != &Face)
-		{
+	{
 		// then recreate in same size
 		C4Facet fctOld = *this;
 		if (!Create(fctOld.Wdt, fctOld.Hgt)) return false;
 		fctOld.Draw(*this);
-		}
-	return true;
 	}
+	return true;
+}
 

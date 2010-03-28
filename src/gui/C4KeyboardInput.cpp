@@ -42,12 +42,12 @@
 
 namespace
 {
-		std::string getKeyName(C4KeyCode k)
-		{
-				std::string result = SDL_GetKeyName(static_cast<SDLKey>(k));
+	std::string getKeyName(C4KeyCode k)
+	{
+		std::string result = SDL_GetKeyName(static_cast<SDLKey>(k));
 		// unknown key
-				if (result == "unknown key")
-						result = FormatString("\\x%x", (DWORD) k).getData();
+		if (result == "unknown key")
+			result = FormatString("\\x%x", (DWORD) k).getData();
 		// some special cases
 		if (result == "world 0") result = "´";
 		if (result == "world 1") result = "ß";
@@ -57,52 +57,55 @@ namespace
 		// capitalize first letter
 		result[0] = toupper(result[0]);
 		// return key name
-				return result;
-		}
+		return result;
+	}
 }
 #endif
 
 /* ----------------- Key maps ------------------ */
 
 struct C4KeyShiftMapEntry
-	{
+{
 	C4KeyShiftState eShift;
 	const char *szName;
-	};
+};
 
-const C4KeyShiftMapEntry KeyShiftMap [] = {
+const C4KeyShiftMapEntry KeyShiftMap [] =
+{
 	{ KEYS_Alt,     "Alt" },
 	{ KEYS_Control, "Ctrl" },
 	{ KEYS_Shift,   "Shift" },
-	{ KEYS_Undefined, NULL } };
+	{ KEYS_Undefined, NULL }
+};
 
 C4KeyShiftState C4KeyCodeEx::String2KeyShift(const StdStrBuf &sName)
-	{
+{
 	// query map
 	const C4KeyShiftMapEntry *pCheck = KeyShiftMap;
 	while (pCheck->szName)
-		if (SEqualNoCase(sName.getData(), pCheck->szName)) break; else ++pCheck;
+			if (SEqualNoCase(sName.getData(), pCheck->szName)) break; else ++pCheck;
 	return pCheck->eShift;
-	}
+}
 
 StdStrBuf C4KeyCodeEx::KeyShift2String(C4KeyShiftState eShift)
-	{
+{
 	// query map
 	const C4KeyShiftMapEntry *pCheck = KeyShiftMap;
 	while (pCheck->szName)
-		if (eShift == pCheck->eShift) break; else ++pCheck;
+			if (eShift == pCheck->eShift) break; else ++pCheck;
 	return StdStrBuf(pCheck->szName);
-	}
+}
 
 struct C4KeyCodeMapEntry
-	{
+{
 	C4KeyCode wCode;
 	const char *szName;
 	const char *szShortName;
-	};
+};
 
 #ifdef _WIN32
-const C4KeyCodeMapEntry KeyCodeMap [] = {
+const C4KeyCodeMapEntry KeyCodeMap [] =
+{
 	{ VK_CANCEL         , "Cancel"        , NULL },
 
 	{ VK_BACK           , "Back"          , NULL },
@@ -270,20 +273,20 @@ const C4KeyCodeMapEntry KeyCodeMap [] = {
 	{ VK_LAUNCH_APP2         , "LAUNCH_APP2"          , NULL },
 
 	{ VK_OEM_1          , "OEM Ü"    , "Ü" }, // German hax
-	{ VK_OEM_PLUS       , "OEM +"		, "+" },
-	{ VK_OEM_COMMA      , "OEM ,"		, "," },
-	{ VK_OEM_MINUS      , "OEM -"		, "-" },
-	{ VK_OEM_PERIOD     , "OEM ."		, "." },
+	{ VK_OEM_PLUS       , "OEM +"   , "+" },
+	{ VK_OEM_COMMA      , "OEM ,"   , "," },
+	{ VK_OEM_MINUS      , "OEM -"   , "-" },
+	{ VK_OEM_PERIOD     , "OEM ."   , "." },
 	{ VK_OEM_2          , "OEM 2"    , "2" },
 	{ VK_OEM_3          , "OEM Ö"    , "Ö" }, // German hax
 	{ VK_OEM_4          , "OEM 4"    , "4" },
 	{ VK_OEM_5          , "OEM 5"    , "5" },
 	{ VK_OEM_6          , "OEM 6"    , "6" },
 	{ VK_OEM_7          , "OEM Ä"    , "Ä" }, // German hax
-	{ VK_OEM_8          , "OEM 8"		, "8" },
-	{ VK_OEM_AX         , "AX"			, "AX" },
+	{ VK_OEM_8          , "OEM 8"   , "8" },
+	{ VK_OEM_AX         , "AX"      , "AX" },
 	{ VK_OEM_102        , "< > |"    , "<" }, // German hax
-	{ VK_ICO_HELP       , "Help"		, "Help" },
+	{ VK_ICO_HELP       , "Help"    , "Help" },
 	{ VK_ICO_00         , "ICO_00"   , "00" },
 
 	{ VK_ICO_CLEAR      , "ICO_CLEAR"     , NULL },
@@ -317,7 +320,8 @@ const C4KeyCodeMapEntry KeyCodeMap [] = {
 
 	{ KEY_Any, "Any"     , NULL},
 	{ KEY_Default, "None", NULL},
-	{ KEY_Undefined, NULL, NULL } };
+	{ KEY_Undefined, NULL, NULL }
+};
 #endif
 
 C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
@@ -397,7 +401,7 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 					// check for known mouse button events
 					uint8_t mouseevent_id = 0;
 					key_str += 6;
-					     if (SEqualNoCase(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
+					if (SEqualNoCase(key_str, "Left",4)) { mouseevent_id=KEY_MOUSE_ButtonLeft; key_str += 4; }
 					else if (SEqualNoCase(key_str, "Right",5)) { mouseevent_id=KEY_MOUSE_ButtonRight; key_str += 5; }
 					else if (SEqualNoCase(key_str, "Middle",6)) { mouseevent_id=KEY_MOUSE_ButtonMiddle; key_str += 6; }
 					else if (isdigit(*key_str))
@@ -426,12 +430,12 @@ C4KeyCode C4KeyCodeEx::String2KeyCode(const StdStrBuf &sName)
 	// query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
 	while (pCheck->szName)
-		if (SEqualNoCase(sName.getData(), pCheck->szName)) break; else ++pCheck;
+			if (SEqualNoCase(sName.getData(), pCheck->szName)) break; else ++pCheck;
 	return pCheck->wCode;
 #elif defined(USE_X11)
 	KeySym result = XStringToKeysym(sName.getData());
 	// Some keysysm strings start with a lowercase letter, so also check that.
-	if(!result)
+	if (!result)
 	{
 		StdCopyStrBuf sName2(sName);
 		sName2.ToLowerCase();
@@ -464,28 +468,28 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		int gamepad_event = Key_GetGamepadEvent(wCode);
 		switch (gamepad_event)
 		{
-			case KEY_JOY_Left:  return FormatString("Joy%dLeft", iGamepad+1);
-			case KEY_JOY_Up:    return FormatString("Joy%dUp", iGamepad+1);
-			case KEY_JOY_Down:  return FormatString("Joy%dDown", iGamepad+1);
-			case KEY_JOY_Right: return FormatString("Joy%dRight", iGamepad+1);
-			default:
-				if (Key_IsGamepadAxis(wCode))
-				{
-					if (fHumanReadable)
-						// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
-						return FormatString("[%d] %s", int(1 + Key_GetGamepadAxisIndex(wCode)), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-					else
-						return FormatString("Joy%dAxis%d%s", iGamepad+1, static_cast<int>(Key_GetGamepadAxisIndex(wCode)+1), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
-				}
+		case KEY_JOY_Left:  return FormatString("Joy%dLeft", iGamepad+1);
+		case KEY_JOY_Up:    return FormatString("Joy%dUp", iGamepad+1);
+		case KEY_JOY_Down:  return FormatString("Joy%dDown", iGamepad+1);
+		case KEY_JOY_Right: return FormatString("Joy%dRight", iGamepad+1);
+		default:
+			if (Key_IsGamepadAxis(wCode))
+			{
+				if (fHumanReadable)
+					// This is still not great, but it is not really possible to assign unknown axes to "left/right" "up/down"...
+					return FormatString("[%d] %s", int(1 + Key_GetGamepadAxisIndex(wCode)), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
 				else
-				{
-					// button
-					if (fHumanReadable)
-						// If there should be gamepads around with A B C D... on the buttons, we might create a display option to show letters instead...
-						return FormatString("< %d >", int(1 + Key_GetGamepadButtonIndex(wCode)));
-					else
-						return FormatString("Joy%d%c", iGamepad+1, static_cast<char>(Key_GetGamepadButtonIndex(wCode) + 'A'));
-				}
+					return FormatString("Joy%dAxis%d%s", iGamepad+1, static_cast<int>(Key_GetGamepadAxisIndex(wCode)+1), Key_IsGamepadAxisHigh(wCode) ? "Max" : "Min");
+			}
+			else
+			{
+				// button
+				if (fHumanReadable)
+					// If there should be gamepads around with A B C D... on the buttons, we might create a display option to show letters instead...
+					return FormatString("< %d >", int(1 + Key_GetGamepadButtonIndex(wCode)));
+				else
+					return FormatString("Joy%d%c", iGamepad+1, static_cast<char>(Key_GetGamepadButtonIndex(wCode) + 'A'));
+			}
 		}
 	}
 	// Mouse keys
@@ -497,43 +501,43 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 		const char *mouse_is_game_str = mouse_is_game ? "GameMouse" : "Mouse";
 		switch (mouse_event)
 		{
-			case KEY_MOUSE_Move:              return FormatString("%s%dMove", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_Wheel1Up:          return FormatString("%s%dWheel1Up", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_Wheel1Down:        return FormatString("%s%dWheel1Down", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_is_game_str, mouse_id);
-			case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_is_game_str, mouse_id);
-			default:
-				// extended mouse button
-				{
-					uint8_t btn = Key_GetMouseEvent(wCode);
-					if (btn >= KEY_MOUSE_Button1Double)
-						return FormatString("%s%dButton%dDouble", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1Double));
-					else
-						return FormatString("%s%dButton%d", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1));
-				}
+		case KEY_MOUSE_Move:              return FormatString("%s%dMove", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_Wheel1Up:          return FormatString("%s%dWheel1Up", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_Wheel1Down:        return FormatString("%s%dWheel1Down", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_ButtonLeft:        return FormatString("%s%dLeft", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_ButtonRight:       return FormatString("%s%dRight", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_ButtonMiddle:      return FormatString("%s%dMiddle", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_ButtonLeftDouble:  return FormatString("%s%dLeftDouble", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_ButtonRightDouble: return FormatString("%s%dRightDouble", mouse_is_game_str, mouse_id);
+		case KEY_MOUSE_ButtonMiddleDouble:return FormatString("%s%dMiddleDouble", mouse_is_game_str, mouse_id);
+		default:
+			// extended mouse button
+		{
+			uint8_t btn = Key_GetMouseEvent(wCode);
+			if (btn >= KEY_MOUSE_Button1Double)
+				return FormatString("%s%dButton%dDouble", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1Double));
+			else
+				return FormatString("%s%dButton%d", mouse_is_game_str, mouse_id, int(btn-KEY_MOUSE_Button1));
+		}
 		}
 	}
 
 #ifdef _WIN32
 
-//	TODO: Works?
-//	StdStrBuf Name; Name.SetLength(1000);
-//	int res = GetKeyNameText(wCode, Name.getMData(), Name.getSize());
-//	if(!res)
-//		// not found: Compose as direct code
-//		return FormatString("\\x%x", (DWORD) wCode);
-//	// Set size
-//	Name.SetLength(res);
-//	return Name;
+//  TODO: Works?
+//  StdStrBuf Name; Name.SetLength(1000);
+//  int res = GetKeyNameText(wCode, Name.getMData(), Name.getSize());
+//  if(!res)
+//    // not found: Compose as direct code
+//    return FormatString("\\x%x", (DWORD) wCode);
+//  // Set size
+//  Name.SetLength(res);
+//  return Name;
 
 	// query map
 	const C4KeyCodeMapEntry *pCheck = KeyCodeMap;
 	while (pCheck->szName)
-		if (wCode == pCheck->wCode) return StdStrBuf((pCheck->szShortName && fShort) ? pCheck->szShortName : pCheck->szName); else ++pCheck;
+			if (wCode == pCheck->wCode) return StdStrBuf((pCheck->szShortName && fShort) ? pCheck->szShortName : pCheck->szName); else ++pCheck;
 	// not found: Compose as direct code
 	return FormatString("\\x%x", (DWORD) wCode);
 #elif defined(USE_X11)
@@ -546,41 +550,41 @@ StdStrBuf C4KeyCodeEx::KeyCode2String(C4KeyCode wCode, bool fHumanReadable, bool
 }
 
 StdStrBuf C4KeyCodeEx::ToString(bool fHumanReadable, bool fShort)
-	{
+{
 	static StdStrBuf sResult;
 	sResult.Clear();
 	// Add shift
 	for (DWORD dwShiftCheck = KEYS_First; dwShiftCheck <= KEYS_Max; dwShiftCheck <<= 1)
 		if (dwShiftCheck & dwShift)
-			{
+		{
 			sResult.Append(KeyShift2String((C4KeyShiftState) dwShiftCheck));
 			sResult.AppendChar('+');
-			}
+		}
 	// Add key
 	if (sResult.getLength())
-		{
+	{
 		sResult.Append(KeyCode2String(Key, fHumanReadable, fShort));
 		return sResult;
-		}
-	else
-		{
-		return KeyCode2String(Key, fHumanReadable, fShort);
-		}
 	}
+	else
+	{
+		return KeyCode2String(Key, fHumanReadable, fShort);
+	}
+}
 
 
 
 /* ----------------- C4KeyCodeEx ------------------ */
 
 void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
-	{
+{
 	if (pComp->isCompiler())
-		{
+	{
 		// reading from file
 		StdStrBuf sCode;
 		DWORD dwSetShift = 0;
-		for(;;)
-			{
+		for (;;)
+		{
 			pComp->Value(mkParAdapt(sCode, StdCompiler::RCT_Idtf));
 			if (!pComp->Seperator(StdCompiler::SEP_PLUS)) break; // no more seperator: Parse this as keyboard code
 			// try to convert to shift state
@@ -588,119 +592,119 @@ void C4KeyCodeEx::CompileFunc(StdCompiler *pComp, StdStrBuf *pOutBufIfUndefined)
 			if (eAddState == KEYS_Undefined)
 				pComp->excCorrupt("undefined key shift state: %s", sCode.getData());
 			dwSetShift |= eAddState;
-			}
+		}
 		// any code given? Otherwise, keep default
 		if (sCode.getLength())
-			{
+		{
 			// last section: convert to key code
 			C4KeyCode eCode = String2KeyCode(sCode);
 			if (eCode == KEY_Undefined)
-				{
+			{
 				if (pOutBufIfUndefined)
-					{
+				{
 					// unknown key, but an output buffer for unknown keys was provided. Use it.
 					pOutBufIfUndefined->Take(std::move(sCode));
 					eCode = KEY_Default;
-					}
-				else
-					{
-					pComp->excCorrupt("undefined key code: %s", sCode.getData());
-					}
 				}
+				else
+				{
+					pComp->excCorrupt("undefined key code: %s", sCode.getData());
+				}
+			}
 			dwShift = dwSetShift;
 			Key = eCode;
-			}
 		}
+	}
 	else
-		{
+	{
 		// write shift states
 		for (DWORD dwShiftCheck = KEYS_First; dwShiftCheck <= KEYS_Max; dwShiftCheck <<= 1)
 			if (dwShiftCheck & dwShift)
-				{
+			{
 				pComp->Value(mkDecompileAdapt(KeyShift2String((C4KeyShiftState) dwShiftCheck)));
 				pComp->Seperator(StdCompiler::SEP_PLUS);
-				}
+			}
 		// write key
 		pComp->Value(mkDecompileAdapt(KeyCode2String(Key, false, false)));
-		}
 	}
+}
 
 void C4KeyEventData::CompileFunc(StdCompiler *pComp)
-	{
+{
 	pComp->Value(iStrength);
 	pComp->Seperator();
 	pComp->Value(x);
 	pComp->Seperator();
 	pComp->Value(y);
-	}
+}
 
 bool C4KeyEventData::operator ==(const struct C4KeyEventData &cmp) const
-	{
+{
 	return iStrength == cmp.iStrength
-	    && x == cmp.x && y == cmp.y;
-	}
+	       && x == cmp.x && y == cmp.y;
+}
 
 /* ----------------- C4CustomKey------------------ */
 
 C4CustomKey::C4CustomKey(const C4KeyCodeEx &DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
-: Scope(Scope), Name(), uiPriority(uiPriority), iRef(0)
-	{
+		: Scope(Scope), Name(), uiPriority(uiPriority), iRef(0)
+{
 	// generate code
 	if (DefCode.Key != KEY_Default) DefaultCodes.push_back(DefCode);
 	// ctor for default key
 	Name.Copy(szName);
 	if (pCallback)
-		{
+	{
 		pCallback->Ref();
 		vecCallbacks.push_back(pCallback);
 		pCallback->pOriginalKey = this;
-		}
 	}
+}
 
 C4CustomKey::C4CustomKey(const CodeList &rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
-: DefaultCodes(rDefCodes), Scope(Scope), Name(), uiPriority(uiPriority), iRef(0)
-	{
+		: DefaultCodes(rDefCodes), Scope(Scope), Name(), uiPriority(uiPriority), iRef(0)
+{
 	// ctor for default key
 	Name.Copy(szName);
 	if (pCallback)
-		{
+	{
 		pCallback->Ref();
 		vecCallbacks.push_back(pCallback);
 		pCallback->pOriginalKey = this;
-		}
 	}
+}
 
 C4CustomKey::C4CustomKey(const C4KeyCodeEx &Code, const StdStrBuf &rName)
-: Codes(), DefaultCodes(), Scope(KEYSCOPE_None), Name(), uiPriority(PRIO_None), iRef(0)
-	{
+		: Codes(), DefaultCodes(), Scope(KEYSCOPE_None), Name(), uiPriority(PRIO_None), iRef(0)
+{
 	// ctor for custom key override
 	if (Code.Key != KEY_Default) Codes.push_back(Code);
 	Name.Copy(rName);
-	}
+}
 
 C4CustomKey::C4CustomKey(const C4CustomKey &rCpy, bool fCopyCallbacks)
-: Codes(rCpy.Codes), DefaultCodes(rCpy.DefaultCodes), Scope(rCpy.Scope), Name(), uiPriority(rCpy.uiPriority), iRef(0)
-	{
+		: Codes(rCpy.Codes), DefaultCodes(rCpy.DefaultCodes), Scope(rCpy.Scope), Name(), uiPriority(rCpy.uiPriority), iRef(0)
+{
 	Name.Copy(rCpy.GetName());
 	if (fCopyCallbacks)
+	{
+		for (CBVec::const_iterator i = rCpy.vecCallbacks.begin(); i != rCpy.vecCallbacks.end(); ++i)
 		{
-		for(CBVec::const_iterator i = rCpy.vecCallbacks.begin(); i != rCpy.vecCallbacks.end(); ++i)
-			{
 			(*i)->Ref();
 			vecCallbacks.push_back(*i);
-			}
 		}
 	}
+}
 
 C4CustomKey::~C4CustomKey()
-	{
+{
 	// free callback handles
-	for(CBVec::const_iterator i = vecCallbacks.begin(); i != vecCallbacks.end(); ++i)
+	for (CBVec::const_iterator i = vecCallbacks.begin(); i != vecCallbacks.end(); ++i)
 		(*i)->Deref();
-	}
+}
 
 void C4CustomKey::Update(const C4CustomKey *pByKey)
-	{
+{
 	assert(pByKey);
 	assert(Name == pByKey->Name);
 	// transfer any assigned data, except name which should be equal anyway
@@ -708,76 +712,76 @@ void C4CustomKey::Update(const C4CustomKey *pByKey)
 	if (pByKey->Codes.size()) Codes = pByKey->Codes;
 	if (pByKey->Scope != KEYSCOPE_None) Scope = pByKey->Scope;
 	if (pByKey->uiPriority != PRIO_None) uiPriority = pByKey->uiPriority;
-	for(CBVec::const_iterator i = pByKey->vecCallbacks.begin(); i != pByKey->vecCallbacks.end(); ++i)
-		{
+	for (CBVec::const_iterator i = pByKey->vecCallbacks.begin(); i != pByKey->vecCallbacks.end(); ++i)
+	{
 		(*i)->Ref();
 		vecCallbacks.push_back(*i);
-		}
 	}
+}
 
 bool C4KeyboardCallbackInterfaceHasOriginalKey(C4KeyboardCallbackInterface *pIntfc, const C4CustomKey *pCheckKey)
-	{
+{
 	return pIntfc->IsOriginalKey(pCheckKey);
-	}
+}
 
 void C4CustomKey::KillCallbacks(const C4CustomKey *pOfKey)
-	{
+{
 	// remove all instances from list
 	CBVec::iterator i;
 	while ((i = std::find_if(vecCallbacks.begin(), vecCallbacks.end(), std::bind2nd(std::ptr_fun(&C4KeyboardCallbackInterfaceHasOriginalKey), pOfKey))) != vecCallbacks.end())
-		{
+	{
 		C4KeyboardCallbackInterface *pItfc = *i;
 		vecCallbacks.erase(i);
 		pItfc->Deref();
-		}
 	}
+}
 
 void C4CustomKey::CompileFunc(StdCompiler *pComp)
-	{
+{
 	pComp->Value(mkNamingAdapt(mkSTLContainerAdapt(Codes), Name.getData(), DefaultCodes));
-	}
+}
 
 bool C4CustomKey::Execute(C4KeyEventType eEv, C4KeyCodeEx key)
-	{
+{
 	// execute all callbacks
-	for(CBVec::iterator i = vecCallbacks.begin(); i != vecCallbacks.end(); ++i)
+	for (CBVec::iterator i = vecCallbacks.begin(); i != vecCallbacks.end(); ++i)
 		if ((*i)->OnKeyEvent(key, eEv))
 			return true;
 	// no event processed it
 	return false;
-	}
+}
 
 
 
 /* ----------------- C4KeyBinding ------------------ */
 
 C4KeyBinding::C4KeyBinding(const C4KeyCodeEx &DefCode, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
-: C4CustomKey(DefCode, szName, Scope, pCallback, uiPriority)
-	{
+		: C4CustomKey(DefCode, szName, Scope, pCallback, uiPriority)
+{
 	// self holds a ref
 	Ref();
 	// register into keyboard input class
 	C4KeyboardInput_Init().RegisterKey(this);
-	}
+}
 
 C4KeyBinding::C4KeyBinding(const CodeList &rDefCodes, const char *szName, C4KeyScope Scope, C4KeyboardCallbackInterface *pCallback, unsigned int uiPriority)
-: C4CustomKey(rDefCodes, szName, Scope, pCallback, uiPriority)
-	{
+		: C4CustomKey(rDefCodes, szName, Scope, pCallback, uiPriority)
+{
 	// self holds a ref
 	Ref();
 	// register into keyboard input class
 	C4KeyboardInput_Init().RegisterKey(this);
-	}
+}
 
 C4KeyBinding::~C4KeyBinding()
-	{
+{
 	// deregister from keyboard input class, if that class still exists
 	if (C4KeyboardInput::IsValid)
 		Game.KeyboardInput.UnregisterKeyBinding(this);
 	// shouldn't be refed now
 	assert(iRef==1);
 	iRef = 0;
-	}
+}
 
 
 /* ----------------- C4KeyboardInput ------------------ */
@@ -785,7 +789,7 @@ C4KeyBinding::~C4KeyBinding()
 bool C4KeyboardInput::IsValid = false;
 
 void C4KeyboardInput::Clear()
-	{
+{
 	LastKeyExtraData = C4KeyEventData();
 	// release all keys - name map is guarantueed to contain them all
 	for (KeyNameMap::const_iterator i = KeysByName.begin(); i != KeysByName.end(); ++i)
@@ -793,34 +797,34 @@ void C4KeyboardInput::Clear()
 	// clear maps
 	KeysByCode.clear();
 	KeysByName.clear();
-	}
+}
 
 void C4KeyboardInput::UpdateKeyCodes(C4CustomKey *pKey, const C4CustomKey::CodeList &rOldCodes, const C4CustomKey::CodeList &rNewCodes)
-	{
+{
 	// new key codes must be the new current key codes
 	assert(pKey->GetCodes() == rNewCodes);
 	// kill from old list
 	C4CustomKey::CodeList::const_iterator iCode;
 	for (iCode = rOldCodes.begin(); iCode != rOldCodes.end(); ++iCode)
-		{
+	{
 		// no need to kill if code stayed
 		if (std::find(rNewCodes.begin(), rNewCodes.end(), *iCode) != rNewCodes.end()) continue;
 		std::pair<KeyCodeMap::iterator, KeyCodeMap::iterator> KeyRange = KeysByCode.equal_range((*iCode).Key);
 		for (KeyCodeMap::iterator i = KeyRange.first; i != KeyRange.second; ++i)
 			if (i->second == pKey)
-				{
+			{
 				KeysByCode.erase(i);
 				break;
-				}
-		}
+			}
+	}
 	// readd new codes
 	for (iCode = rNewCodes.begin(); iCode != rNewCodes.end(); ++iCode)
-		{
+	{
 		// no double-add if it was in old list already
 		if (std::find(rOldCodes.begin(), rOldCodes.end(), *iCode) != rOldCodes.end()) continue;
 		KeysByCode.insert(std::make_pair((*iCode).Key, pKey));
-		}
 	}
+}
 
 void C4KeyboardInput::RegisterKey(C4CustomKey *pRegKey)
 {
@@ -874,18 +878,18 @@ void C4KeyboardInput::UnregisterKey(const StdStrBuf &rsName)
 }
 
 void C4KeyboardInput::UnregisterKeyBinding(C4CustomKey *pUnregKey)
-	{
+{
 	// find key in name map
 	KeyNameMap::iterator in = KeysByName.find(pUnregKey->GetName().getData());
 	if (in == KeysByName.end()) return;
 	C4CustomKey *pKey = in->second;
 	// is this key in the map?
 	if (pKey != pUnregKey)
-		{
+	{
 		// Other key is in the list: Just remove the callbacks
 		pKey->KillCallbacks(pUnregKey);
 		return;
-		}
+	}
 	// this key is in the list: Replace by a duplicate...
 	C4CustomKey *pNewKey = new C4CustomKey(*pUnregKey, true);
 	// ...without the own callbacks
@@ -893,10 +897,10 @@ void C4KeyboardInput::UnregisterKeyBinding(C4CustomKey *pUnregKey)
 	// and replace current key by duplicate
 	UnregisterKey(pUnregKey->GetName());
 	RegisterKey(pNewKey);
-	}
+}
 
 bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, DWORD InScope, int32_t iStrength)
-	{
+{
 	// store last-key-info
 	LastKeyExtraData.iStrength = (iStrength >= 0) ? iStrength : ((InEvent != KEYEV_Up) * 100);
 	LastKeyExtraData.x = LastKeyExtraData.y = 0;
@@ -906,31 +910,30 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 	C4KeyCode FallbackKeys[iKeyRangeMax];
 	FallbackKeys[iKeyRangeCnt++] = InKey.Key;
 	if (Key_IsGamepadButton(InKey.Key))
-		{
+	{
 		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
 		uint8_t byBtnIndex = Key_GetGamepadButtonIndex(InKey.Key);
 		// even/odd button events: Add even button indices as odd events, because byBtnIndex is zero-based and the event naming scheme is for one-based button indices
 		if (byBtnIndex % 2) FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyEvenButton);
-		               else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyOddButton);
+		else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyOddButton);
 		// high/low button events
 		if (byBtnIndex < 4) FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyLowButton);
-		               else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyHighButton);
+		else FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyHighButton);
 		// "any gamepad button"-event
 		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, KEY_JOY_AnyButton);
-		}
+	}
 	else if (Key_IsGamepadAxis(InKey.Key))
-		{
+	{
 		// xy-axis-events for all even/odd axises
 		uint8_t byGamepad = Key_GetGamepad(InKey.Key);
 		uint8_t byAxis = Key_GetGamepadAxisIndex(InKey.Key);
 		bool fHigh = Key_IsGamepadAxisHigh(InKey.Key);
 		C4KeyCode keyAxisDir;
 		if (byAxis % 2)
-			if (fHigh) keyAxisDir = KEY_JOY_Down; else keyAxisDir = KEY_JOY_Up;
-		else
-			if (fHigh) keyAxisDir = KEY_JOY_Right; else keyAxisDir = KEY_JOY_Left;
+				if (fHigh) keyAxisDir = KEY_JOY_Down; else keyAxisDir = KEY_JOY_Up;
+		else if (fHigh) keyAxisDir = KEY_JOY_Right; else keyAxisDir = KEY_JOY_Left;
 		FallbackKeys[iKeyRangeCnt++] = KEY_Gamepad(byGamepad, (uint8_t)keyAxisDir);
-		}
+	}
 	if (InKey.Key != KEY_Any) FallbackKeys[iKeyRangeCnt++] = KEY_Any;
 	// now get key ranges for fallback chain
 	std::pair<KeyCodeMap::iterator, KeyCodeMap::iterator> KeyRanges[iKeyRangeMax];
@@ -942,23 +945,23 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 	// check all assigned keys
 	// exec from highest to lowest priority
 	unsigned int uiLastPrio = C4CustomKey::PRIO_MoreThanMax;
-	for(;;)
-		{
+	for (;;)
+	{
 		KeyCodeMap::const_iterator i;
 		// get priority to exec
 		unsigned int uiExecPrio = C4CustomKey::PRIO_None, uiCurr;
 		for (j = 0; j < iKeyRangeCnt; ++j)
 			for (i = KeyRanges[j].first; i != KeyRanges[j].second; ++i)
-				{
+			{
 				uiCurr = i->second->GetPriority();
 				if (uiCurr > uiExecPrio && uiCurr < uiLastPrio) uiExecPrio = uiCurr;
-				}
+			}
 		// nothing with correct priority set left?
 		if (uiExecPrio == C4CustomKey::PRIO_None) break;
 		// exec all of this priority
 		for (j = 0; j < iKeyRangeCnt; ++j)
 			for (i = KeyRanges[j].first; i != KeyRanges[j].second; ++i)
-				{
+			{
 				C4CustomKey *pKey = i->second;
 				assert(pKey);
 				// check priority
@@ -970,80 +973,80 @@ bool C4KeyboardInput::DoInput(const C4KeyCodeEx &InKey, C4KeyEventType InEvent, 
 							// exec it
 							if (pKey->Execute(InEvent, InKey))
 								return true;
-				}
+			}
 		// nothing found in this priority: exec next
 		uiLastPrio = uiExecPrio;
-		}
+	}
 	// no key matched or all returned false in Execute: Not processed
 	return false;
-	}
+}
 
 void C4KeyboardInput::CompileFunc(StdCompiler *pComp)
-	{
+{
 	// compile all keys that are already defined
 	// no definition of new keys with current compiler...
 	pComp->Name("Keys");
 	try
-		{
+	{
 		for (KeyNameMap::const_iterator i = KeysByName.begin(); i != KeysByName.end(); ++i)
-			{
+		{
 			// naming done in C4CustomKey, because default is determined by key only
 			C4CustomKey::CodeList OldCodes = i->second->GetCodes();
 			pComp->Value(*i->second);
 			// resort in secondary map if key changed
 			if (pComp->isCompiler())
-				{
+			{
 				const C4CustomKey::CodeList &rNewCodes = i->second->GetCodes();
 				if (!(OldCodes == rNewCodes)) UpdateKeyCodes(i->second, OldCodes, rNewCodes);
-				}
 			}
 		}
-	catch(StdCompiler::Exception *pEx)
-		{
+	}
+	catch (StdCompiler::Exception *pEx)
+	{
 		pComp->NameEnd(true);
 		throw pEx;
-		}
-	pComp->NameEnd();
 	}
+	pComp->NameEnd();
+}
 
 bool C4KeyboardInput::LoadCustomConfig()
-	{
+{
 	// load from INI file (2do: load from registry)
 	C4Group GrpExtra;
 	if (!GrpExtra.Open(C4CFN_Extra)) return false;
 	StdBuf sFileContents;
 	if (!GrpExtra.LoadEntry(C4CFN_KeyConfig, sFileContents)) return false;
 	StdStrBuf sFileContentsString((const char *) sFileContents.getData());
-	if(!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, sFileContentsString, "Custom keys from" C4CFN_Extra DirSep C4CFN_KeyConfig))
+	if (!CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, sFileContentsString, "Custom keys from" C4CFN_Extra DirSep C4CFN_KeyConfig))
 		return false;
 	LogF(LoadResStr("IDS_PRC_LOADEDKEYCONF"), C4CFN_Extra DirSep C4CFN_KeyConfig);
 	return true;
-	}
+}
 
 C4CustomKey *C4KeyboardInput::GetKeyByName(const char *szKeyName)
-	{
+{
 	KeyNameMap::const_iterator i = KeysByName.find(szKeyName);
 	if (i == KeysByName.end()) return NULL; else return (*i).second;
-	}
+}
 
 StdStrBuf C4KeyboardInput::GetKeyCodeNameByKeyName(const char *szKeyName, bool fShort, int32_t iIndex)
-	{
+{
 	C4CustomKey *pKey = GetKeyByName(szKeyName);
 	if (pKey)
-		{
+	{
 		const C4CustomKey::CodeList &codes = pKey->GetCodes();
 		if ((size_t)iIndex < codes.size())
-			{
+		{
 			C4KeyCodeEx code = codes[iIndex];
 			return code.ToString(true, fShort);
-			}
 		}
+	}
 	// Error
 	return StdStrBuf();
-	}
+}
 
 C4KeyboardInput &C4KeyboardInput_Init()
-	{
+{
 	static C4KeyboardInput keyinp;
 	return keyinp;
-	}
+}

@@ -48,48 +48,48 @@ StdStrBuf sLogFileName;
 StdStrBuf sFatalError;
 
 bool OpenLog()
-	{
+{
 	// open
 	sLogFileName = C4CFN_Log; int iLog = 2;
 #ifdef _WIN32
-	while(!(C4LogFile = _fsopen(Config.AtUserDataPath(sLogFileName.getData()), "wt", _SH_DENYWR)))
+	while (!(C4LogFile = _fsopen(Config.AtUserDataPath(sLogFileName.getData()), "wt", _SH_DENYWR)))
 #else
-	while(!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")))
+	while (!(C4LogFile = fopen(Config.AtUserDataPath(sLogFileName.getData()), "wb")))
 #endif
-		{
+	{
 		// If the file does not yet exist, the directory is r/o
 		// don't go on then, or we have an infinite loop
 		if (access(Config.AtUserDataPath(sLogFileName.getData()), 0))
 			return false;
 		// try different name
 		sLogFileName.Format(C4CFN_LogEx, iLog++);
-		}
+	}
 	// save start time
 	time(&C4LogStartTime);
 	return true;
-	}
+}
 
 bool CloseLog()
-	{
+{
 	// close
-	if(C4LogFile) fclose(C4LogFile); C4LogFile = NULL;
+	if (C4LogFile) fclose(C4LogFile); C4LogFile = NULL;
 	// ok
 	return true;
-	}
+}
 
 int GetLogFD()
-	{
+{
 	if (C4LogFile)
 		return fileno(C4LogFile);
 	else
 		return -1;
-	}
+}
 
 bool LogSilent(const char *szMessage, bool fConsole)
-	{
+{
 	if (!Application.AssertMainThread()) return false;
 	// security
-	if(!szMessage) return false;
+	if (!szMessage) return false;
 
 	// add timestamp
 	time_t timenow; time(&timenow);
@@ -100,21 +100,21 @@ bool LogSilent(const char *szMessage, bool fConsole)
 	// output until all data is written
 	const char *pSrc = szMessage;
 	do
-		{
+	{
 		// timestamp will always be that length
 		char *pDest = TimeMessage.getMData() + 11;
 
 		// copy rest of message, skip tags
 		CMarkup Markup(false);
 		while (*pSrc)
-			{
+		{
 			Markup.SkipTags(&pSrc);
 			// break on crlf
 			while (*pSrc == '\r') pSrc++;
 			if (*pSrc == '\n') { pSrc++; break; }
 			// copy otherwise
 			if (*pSrc) *pDest++ = *pSrc++;
-			}
+		}
 		*pDest++='\n'; *pDest = '\0';
 
 #ifdef HAVE_ICONV
@@ -125,44 +125,44 @@ bool LogSilent(const char *szMessage, bool fConsole)
 
 		// Save into log file
 		if (C4LogFile)
-			{
+		{
 			fputs(Line.getData(),C4LogFile);
 			fflush(C4LogFile);
-			}
+		}
 
 		// Write to console
-		if(fConsole)
-			{
+		if (fConsole)
+		{
 #if defined(_DEBUG) && defined(_WIN32)
 			// debug: output to VC console
 			OutputDebugString(Line.getData());
 #endif
 			fputs(Line.getData(),stdout);
-			}
-
 		}
-	while(*pSrc);
+
+	}
+	while (*pSrc);
 
 	return true;
-	}
+}
 
 bool LogSilent(const char *szMessage)
-	{
+{
 	return LogSilent(szMessage, false);
-	}
+}
 
 int iDisableLog = 0;
 
 bool Log(const char *szMessage)
-	{
+{
 	if (!Application.AssertMainThread()) return false;
 	if (iDisableLog) return true;
 	// security
-	if(!szMessage) return false;
+	if (!szMessage) return false;
 
 #ifndef NOAULDEBUG
 	// Pass on to debugger
-	if(C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
+	if (C4AulDebug *pDebug = ::ScriptEngine.GetDebugger())
 		pDebug->OnLog(szMessage);
 #endif
 	// Pass on to console
@@ -174,22 +174,22 @@ bool Log(const char *szMessage)
 	// Add message to log buffer
 	bool fNotifyMsgBoard = false;
 	if (::GraphicsSystem.MessageBoard.Active)
-		{
+	{
 		::GraphicsSystem.MessageBoard.AddLog(szMessage);
 		fNotifyMsgBoard = true;
-		}
+	}
 
 	// log
 	LogSilent(szMessage, true);
 
 	// Notify message board
-	if(fNotifyMsgBoard) ::GraphicsSystem.MessageBoard.LogNotify();
+	if (fNotifyMsgBoard) ::GraphicsSystem.MessageBoard.LogNotify();
 
 	return true;
-	}
+}
 
 bool LogFatal(const char *szMessage)
-	{
+{
 	if (!szMessage) szMessage = "(null)";
 	// add to fatal error message stack - if not already in there (avoid duplication)
 	if (!SSearch(sFatalError.getData(), szMessage))
@@ -199,17 +199,17 @@ bool LogFatal(const char *szMessage)
 	}
 	// write to log - note that Log might overwrite a static buffer also used in szMessage
 	return !!Log(FormatString(LoadResStr("IDS_ERR_FATAL"), szMessage).getData());
-	}
+}
 
 void ResetFatalError()
-	{
+{
 	sFatalError.Clear();
-	}
+}
 
 const char *GetFatalError()
-	{
+{
 	return sFatalError.getData();
-	}
+}
 
 bool LogF(const char *strMessage, ...)
 {
@@ -233,7 +233,7 @@ bool LogSilentF(const char *strMessage, ...)
 
 bool DebugLog(const char *strMessage)
 {
-	if(Game.DebugMode)
+	if (Game.DebugMode)
 		return Log(strMessage);
 	else
 		return LogSilent(strMessage);
@@ -248,13 +248,13 @@ bool DebugLogF(const char *strMessage ...)
 }
 
 size_t GetLogPos()
-	{
+{
 	// get current log position
 	return FileSize(sLogFileName.getData());
-	}
+}
 
 bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut)
-	{
+{
 	if (!iLength) { rsOut.Clear(); return true; }
 	// read section from log file
 	CStdFile LogFileRead;
@@ -268,7 +268,7 @@ bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut)
 	// strip timestamps; convert linebreaks to Clonk-linebreaks '|'
 	char *szPosWrite=szBuf; const char *szPosRead=szBuf;
 	while (*szPosRead)
-		{
+	{
 		// skip timestamp
 		if (*szPosRead == '[')
 			while (*szPosRead && *szPosRead != ']') { --iSize; ++szPosRead; }
@@ -285,11 +285,11 @@ bool GetLogSection(size_t iStart, size_t iLength, StdStrBuf &rsOut)
 		while (*szPosRead == 0x0d || *szPosRead == 0x0a) ++szPosRead;
 		// write a Clonk-linebreak
 		if (*szPosRead) *szPosWrite++ = '|';
-		}
+	}
 	// done; create string buffer from data
 	rsOut.Copy(szBuf, szPosWrite - szBuf);
 	// old buf no longer used
 	delete [] szBufOrig;
 	// done, success
 	return true;
-	}
+}

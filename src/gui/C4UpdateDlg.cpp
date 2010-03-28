@@ -44,35 +44,35 @@ bool C4UpdateDlg::succeeded;
 // C4UpdateDlg
 
 C4UpdateDlg::C4UpdateDlg() : C4GUI::InfoDialog(LoadResStr("IDS_TYPE_UPDATE"), 10)
-	{
+{
 	// initial text update
 	UpdateText();
 	// assume update running
 	UpdateRunning = true;
-	}
+}
 
 void C4UpdateDlg::UserClose(bool fOK)
-	{
+{
 	// Update not done yet: can't close
 	if (UpdateRunning)
-		{
+	{
 		GetScreen()->ShowMessage(LoadResStr("IDS_MSG_UPDATEINPROGRESS"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 		return;
-		}
+	}
 	// Okay to close
 	Dialog::UserClose(fOK);
 #ifndef _WIN32
 	if (succeeded)
-		{
+	{
 		// ready for restart
 		Application.restartAtEnd = true;
 		Application.Quit();
-		}
-#endif
 	}
+#endif
+}
 
 void C4UpdateDlg::UpdateText()
-	{
+{
 	if (!UpdateRunning)
 		return;
 #ifdef _WIN32
@@ -85,7 +85,7 @@ void C4UpdateDlg::UpdateText()
 	amount_read = read(c4group_output[0], c4group_output_buf, 512);
 	// error
 	if (amount_read == -1)
-		{
+	{
 		if (errno == EAGAIN)
 			return;
 		StdStrBuf Errormessage = FormatString("read error from c4group: %s", strerror(errno));
@@ -93,62 +93,62 @@ void C4UpdateDlg::UpdateText()
 		AddLine(Errormessage.getData());
 		UpdateRunning = false;
 		succeeded = false;
-		}
+	}
 	// EOF: Update done.
 	else if (amount_read == 0)
-		{
+	{
 		// Close c4group output
 		close(c4group_output[0]);
 		// If c4group did not exit but something else caused EOF, then that's bad. But don't hang.
 		int child_status = 0;
 		if (waitpid(pid, &child_status, WNOHANG) == -1)
-			{
+		{
 			LogF("error in waitpid: %s", strerror(errno));
 			AddLineFmt("error in waitpid: %s", strerror(errno));
 			succeeded = false;
-			}
+		}
 		// check if c4group failed.
 		else if (WIFEXITED(child_status) && WEXITSTATUS(child_status))
-			{
+		{
 			LogF("c4group returned status %d", WEXITSTATUS(child_status));
 			AddLineFmt("c4group returned status %d", WEXITSTATUS(child_status));
 			succeeded = false;
-			}
+		}
 		else if (WIFSIGNALED(child_status))
-			{
+		{
 			LogF("c4group killed with signal %d", WTERMSIG(child_status));
 			AddLineFmt("c4group killed with signal %d", WTERMSIG(child_status));
 			succeeded = false;
-			}
+		}
 		else
-			{
+		{
 			Log("Done.");
 			AddLine("Done.");
-			}
-		UpdateRunning = false;
 		}
+		UpdateRunning = false;
+	}
 	else
-		{
+	{
 		c4group_output_buf[amount_read] = 0;
 		// Fixme: This adds spurious newlines in the middle of the output.
 		LogF("%s", c4group_output_buf);
 		AddLineFmt("%s", c4group_output_buf);
-		}
+	}
 #endif
 
 	// Scroll to bottom
 	if (pTextWin)
-		{
+	{
 		pTextWin->UpdateHeight();
 		pTextWin->ScrollToBottom();
-		}
 	}
+}
 
 // --------------------------------------------------
 // static update application function
 
 static bool IsWindowsVista()
-	{
+{
 #ifdef _WIN32
 	// Determine windows version
 	OSVERSIONINFO ver;
@@ -158,10 +158,10 @@ static bool IsWindowsVista()
 		return ((ver.dwMajorVersion == 6) && (ver.dwMinorVersion == 0));
 #endif
 	return false;
-	}
+}
 
 bool C4UpdateDlg::DoUpdate(const C4GameVersion &rUpdateVersion, C4GUI::Screen *pScreen)
-	{
+{
 	StdStrBuf strUpdateURL;
 	// Double check for valid update
 	if (!IsValidUpdate(rUpdateVersion)) return false;
@@ -184,10 +184,10 @@ bool C4UpdateDlg::DoUpdate(const C4GameVersion &rUpdateVersion, C4GUI::Screen *p
 		return true;
 	// Apply downloaded update
 	return ApplyUpdate(strLocalFilename.getData(), true, pScreen);
-	}
+}
 
 bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4GUI::Screen *pScreen)
-	{
+{
 	// Determine name of update program
 	StdStrBuf strUpdateProg; strUpdateProg.Copy(C4CFN_UpdateProgram);
 	// Windows: manually append extension because ExtractEntry() cannot properly glob and Extract() doesn't return failure values
@@ -206,10 +206,10 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 		if (UpdateGroup.FindEntry(FormatString("cr_*_%s.c4u", C4_OS).getData(), strSubGroup))
 			// Extract update program from sub group
 			if (SubGroup.OpenAsChild(&UpdateGroup, strSubGroup))
-				{
+			{
 				SubGroup.ExtractEntry(strUpdateProg.getData(), strUpdateProgEx.getData());
 				SubGroup.Close();
-				}
+			}
 	UpdateGroup.Close();
 	// Execute update program
 	Log(LoadResStr("IDS_PRC_LAUNCHINGUPDATE"));
@@ -226,42 +226,42 @@ bool C4UpdateDlg::ApplyUpdate(const char *strUpdateFile, bool fDeleteUpdate, C4G
 	if (succeeded) Application.Quit();
 #else
 	if (pipe(c4group_output) == -1)
-		{
+	{
 		Log("Error creating pipe");
 		return false;
-		}
+	}
 	switch (pid = fork())
-		{
+	{
 		// Error
-		case -1:
-			Log("Error creating update child process.");
-			return false;
+	case -1:
+		Log("Error creating update child process.");
+		return false;
 		// Child process
-		case 0:
-			// Close unused read end
-			close(c4group_output[0]);
-			// redirect stdout and stderr to the parent
-			dup2(c4group_output[1], STDOUT_FILENO);
-			dup2(c4group_output[1], STDERR_FILENO);
-			if (c4group_output[1] != STDOUT_FILENO && c4group_output[1] != STDERR_FILENO)
-				close(c4group_output[1]);
-			execl(C4CFN_UpdateProgram, C4CFN_UpdateProgram, "-v", strUpdateFile, (fDeleteUpdate ? "-yd" : "-y"), static_cast<char *>(0));
-			printf("execl failed: %s\n", strerror(errno));
-			exit(1);
-		// Parent process
-		default:
-			// Close unused write end
+	case 0:
+		// Close unused read end
+		close(c4group_output[0]);
+		// redirect stdout and stderr to the parent
+		dup2(c4group_output[1], STDOUT_FILENO);
+		dup2(c4group_output[1], STDERR_FILENO);
+		if (c4group_output[1] != STDOUT_FILENO && c4group_output[1] != STDERR_FILENO)
 			close(c4group_output[1]);
-			// disable blocking
-			fcntl(c4group_output[0], F_SETFL, O_NONBLOCK);
-			// Open the update log dialog (this will update itself automatically from c4group_output)
-			pScreen->ShowRemoveDlg(new C4UpdateDlg());
-			break;
-		}
+		execl(C4CFN_UpdateProgram, C4CFN_UpdateProgram, "-v", strUpdateFile, (fDeleteUpdate ? "-yd" : "-y"), static_cast<char *>(0));
+		printf("execl failed: %s\n", strerror(errno));
+		exit(1);
+		// Parent process
+	default:
+		// Close unused write end
+		close(c4group_output[1]);
+		// disable blocking
+		fcntl(c4group_output[0], F_SETFL, O_NONBLOCK);
+		// Open the update log dialog (this will update itself automatically from c4group_output)
+		pScreen->ShowRemoveDlg(new C4UpdateDlg());
+		break;
+	}
 #endif
 	// done
 	return succeeded;
-	}
+}
 
 bool C4UpdateDlg::IsValidUpdate(const C4GameVersion &rNewVer)
 {
@@ -269,10 +269,10 @@ bool C4UpdateDlg::IsValidUpdate(const C4GameVersion &rNewVer)
 	if ( (rNewVer.iVer[0] != C4XVER1) || (rNewVer.iVer[1] != C4XVER2) ) return false;
 	// Objects major is higher...
 	if ( (rNewVer.iVer[2] > C4XVER3)
-	// ...or objects major is the same and objects minor is higher...
-		|| ((rNewVer.iVer[2] == C4XVER3) && (rNewVer.iVer[3] > C4XVER4))
-	// ...or build number is higher
-		|| (rNewVer.iBuild > C4XVERBUILD) )
+	     // ...or objects major is the same and objects minor is higher...
+	     || ((rNewVer.iVer[2] == C4XVER3) && (rNewVer.iVer[3] > C4XVER4))
+	     // ...or build number is higher
+	     || (rNewVer.iBuild > C4XVERBUILD) )
 		// Update okay
 		return true;
 	// Otherwise
@@ -291,61 +291,61 @@ bool C4UpdateDlg::CheckForUpdates(C4GUI::Screen *pScreen, bool fAutomatic)
 	C4GameVersion UpdateVersion;
 	C4GUI::Dialog *pWaitDlg = NULL;
 	if (C4GUI::IsGUIValid())
-		{
+	{
 		pWaitDlg = new C4GUI::MessageDialog(LoadResStr("IDS_MSG_LOOKINGFORUPDATES"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnAbort, C4GUI::Ico_Ex_Update, C4GUI::MessageDialog::dsRegular);
 		pWaitDlg->SetDelOnClose(false);
 		pScreen->ShowDialog(pWaitDlg, false);
-		}
+	}
 	C4Network2VersionInfoClient VerChecker;
 	bool fSuccess = false, fAborted = false;
 	StdStrBuf strQuery; strQuery.Format("%s?action=version", Config.Network.UpdateServerAddress);
 	if (VerChecker.Init() && VerChecker.SetServer(strQuery.getData()) && VerChecker.QueryVersion())
-		{
+	{
 		VerChecker.SetNotify(&Application.InteractiveThread);
 		Application.InteractiveThread.AddProc(&VerChecker);
 		// wait for version check to terminate
 		while (VerChecker.isBusy())
-			{
+		{
 			// wait, check for program abort
 			if (!Application.ScheduleProcs()) { fAborted = true; break; }
 			// check for dialog close
 			if (pWaitDlg) if (!C4GUI::IsGUIValid() || !pWaitDlg->IsShown())  { fAborted = true; break; }
-			}
+		}
 		if (!fAborted) fSuccess = VerChecker.GetVersion(&UpdateVersion);
 		Application.InteractiveThread.RemoveProc(&VerChecker);
 		VerChecker.SetNotify(NULL);
-		}
+	}
 	if (C4GUI::IsGUIValid() && pWaitDlg) delete pWaitDlg;
 	// User abort
 	if (fAborted)
-		{
+	{
 		return false;
-		}
+	}
 	// Error during update check
 	if (!fSuccess)
-		{
+	{
 		StdStrBuf sError; sError.Copy(LoadResStr("IDS_MSG_UPDATEFAILED"));
 		const char *szErrMsg = VerChecker.GetError();
 		if (szErrMsg)
-			{
+		{
 			sError.Append(": ");
 			sError.Append(szErrMsg);
-			}
+		}
 		pScreen->ShowMessage(sError.getData(), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 		return false;
-		}
+	}
 	// Applicable update available
 	if (C4UpdateDlg::IsValidUpdate(UpdateVersion))
 	{
 		// Prompt user, then apply update
 		StdStrBuf strMsg; strMsg.Format(LoadResStr("IDS_MSG_ANUPDATETOVERSIONISAVAILA"), UpdateVersion.GetString().getData());
 		if (pScreen->ShowMessageModal(strMsg.getData(), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::MessageDialog::btnYesNo, C4GUI::Ico_Ex_Update))
-			{
+		{
 			if (!DoUpdate(UpdateVersion, pScreen))
 				pScreen->ShowMessage(LoadResStr("IDS_MSG_UPDATEFAILED"), LoadResStr("IDS_TYPE_UPDATE"), C4GUI::Ico_Ex_Update);
 			else
 				return true;
-			}
+		}
 	}
 	// No applicable update available
 	else
@@ -368,30 +368,30 @@ bool C4Network2VersionInfoClient::QueryVersion()
 }
 
 bool C4Network2VersionInfoClient::GetVersion(C4GameVersion *piVerOut)
-	{
+{
 	// Sanity check
-	if(isBusy() || !isSuccess()) return false;
+	if (isBusy() || !isSuccess()) return false;
 	// Parse response
 	piVerOut->Set("", 0,0,0,0, 0);;
 	try
 	{
 		CompileFromBuf<StdCompilerINIRead>(mkNamingAdapt(
-				mkNamingAdapt(
-					mkParAdapt(*piVerOut, false),
-				"Version"),
-			C4ENGINENAME), ResultString);
+		                                     mkNamingAdapt(
+		                                       mkParAdapt(*piVerOut, false),
+		                                       "Version"),
+		                                     C4ENGINENAME), ResultString);
 	}
-	catch(StdCompiler::Exception *pExc)
+	catch (StdCompiler::Exception *pExc)
 	{
 		SetError(pExc->Msg.getData());
 		return false;
 	}
 	// validate version
 	if (!piVerOut->iVer[0])
-		{
+	{
 		SetError(LoadResStr("IDS_ERR_INVALIDREPLYFROMSERVER"));
 		return false;
-		}
+	}
 	// done; version OK!
 	return true;
-	}
+}

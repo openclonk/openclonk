@@ -25,47 +25,47 @@
 StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, C4ValueArray& Data)
 {
 	int32_t type = Data[0].getInt();
-	switch(type)
+	switch (type)
 	{
 	case C4AVP_Const:
 		return new C4ValueProviderConst(itofix(Data[1].getInt(), 1000));
 	case C4AVP_Linear:
 		return new C4ValueProviderLinear(itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt(), static_cast<C4AnimationEnding>(Data[5].getInt()));
 	case C4AVP_X:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderX(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_Y:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderY(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_AbsX:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderAbsX(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_AbsY:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderAbsY(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(), 1000), Data[4].getInt());
 	case C4AVP_XDir:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderXDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_YDir:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderYDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_RDir:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderRDir(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_CosR:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderCosR(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_SinR:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderSinR(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_CosV:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderCosV(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_SinV:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderSinV(pForObj, itofix(Data[1].getInt(), 1000), itofix(Data[2].getInt(), 1000), itofix(Data[3].getInt(),Data[4].getInt()));
 	case C4AVP_Action:
-		if(!pForObj) return NULL;
+		if (!pForObj) return NULL;
 		return new C4ValueProviderAction(pForObj);
 	default:
 		return NULL;
@@ -84,7 +84,7 @@ bool C4ValueProviderConst::Execute()
 }
 
 C4ValueProviderLinear::C4ValueProviderLinear(FIXED pos, FIXED begin, FIXED end, int32_t length, C4AnimationEnding ending):
-	Begin(begin), End(end), Length(length), Ending(ending), LastTick(Game.FrameCounter)
+		Begin(begin), End(end), Length(length), Ending(ending), LastTick(Game.FrameCounter)
 {
 	Value = pos;
 }
@@ -95,9 +95,9 @@ bool C4ValueProviderLinear::Execute()
 	LastTick = Game.FrameCounter;
 
 	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
-	while( (End > Begin && Value > End) || (End < Begin && Value < End))
+	while ( (End > Begin && Value > End) || (End < Begin && Value < End))
 	{
-		switch(Ending)
+		switch (Ending)
 		{
 		case ANIM_Loop:
 			Value -= (End - Begin);
@@ -115,7 +115,7 @@ bool C4ValueProviderLinear::Execute()
 }
 
 C4ValueProviderX::C4ValueProviderX(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
-	Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
+		Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
 {
 	Value = pos;
 }
@@ -126,18 +126,18 @@ bool C4ValueProviderX::Execute()
 	Value += (End - Begin) * (Object->fix_x - LastX) / Length; // TODO: Use xdir instead?
 	LastX = Object->fix_x;
 
-	if(End > Begin)
+	if (End > Begin)
 	{
-		while(Value > End)
+		while (Value > End)
 			Value -= (End - Begin);
-		while(Value < Begin)
+		while (Value < Begin)
 			Value += (End - Begin);
 	}
 	else
 	{
-		while(Value > Begin)
+		while (Value > Begin)
 			Value -= (Begin - End);
-		while(Value < End)
+		while (Value < End)
 			Value += (Begin - End);
 	}
 
@@ -145,7 +145,7 @@ bool C4ValueProviderX::Execute()
 }
 
 C4ValueProviderY::C4ValueProviderY(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
-	Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
+		Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
 {
 	Value = pos;
 }
@@ -156,18 +156,18 @@ bool C4ValueProviderY::Execute()
 	Value += (End - Begin) * (Object->fix_y - LastY) / Length; // TODO: Use ydir instead?
 	LastY = Object->fix_y;
 
-	if(End > Begin)
+	if (End > Begin)
 	{
-		while(Value > End)
+		while (Value > End)
 			Value -= (End - Begin);
-		while(Value < Begin)
+		while (Value < Begin)
 			Value += (End - Begin);
 	}
 	else
 	{
-		while(Value > Begin)
+		while (Value > Begin)
 			Value -= (Begin - End);
-		while(Value < End)
+		while (Value < End)
 			Value += (Begin - End);
 	}
 
@@ -175,7 +175,7 @@ bool C4ValueProviderY::Execute()
 }
 
 C4ValueProviderAbsX::C4ValueProviderAbsX(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
-	Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
+		Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
 {
 	Value = pos;
 }
@@ -186,14 +186,14 @@ bool C4ValueProviderAbsX::Execute()
 	LastX = Object->fix_x;
 
 	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
-	while( (End > Begin && Value > End) || (End < Begin && Value < End))
+	while ( (End > Begin && Value > End) || (End < Begin && Value < End))
 		Value -= (End - Begin);
 
 	return true;
 }
 
 C4ValueProviderAbsY::C4ValueProviderAbsY(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
-	Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
+		Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
 {
 	Value = pos;
 }
@@ -204,14 +204,14 @@ bool C4ValueProviderAbsY::Execute()
 	LastY = Object->fix_y;
 
 	assert( (End >= Begin && Value >= Begin) || (End <= Begin && Value <= Begin));
-	while( (End > Begin && Value > End) || (End < Begin && Value < End))
+	while ( (End > Begin && Value > End) || (End < Begin && Value < End))
 		Value -= (End - Begin);
 
 	return true;
 }
 
 C4ValueProviderXDir::C4ValueProviderXDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_xdir):
-	Object(object), Begin(begin), End(end), MaxXDir(max_xdir)
+		Object(object), Begin(begin), End(end), MaxXDir(max_xdir)
 {
 	Execute();
 }
@@ -224,7 +224,7 @@ bool C4ValueProviderXDir::Execute()
 }
 
 C4ValueProviderYDir::C4ValueProviderYDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_ydir):
-	Object(object), Begin(begin), End(end), MaxYDir(max_ydir)
+		Object(object), Begin(begin), End(end), MaxYDir(max_ydir)
 {
 	Execute();
 }
@@ -236,7 +236,7 @@ bool C4ValueProviderYDir::Execute()
 }
 
 C4ValueProviderRDir::C4ValueProviderRDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_rdir):
-	Object(object), Begin(begin), End(end), MaxRDir(max_rdir)
+		Object(object), Begin(begin), End(end), MaxRDir(max_rdir)
 {
 	Execute();
 }
@@ -248,7 +248,7 @@ bool C4ValueProviderRDir::Execute()
 }
 
 C4ValueProviderCosR::C4ValueProviderCosR(const C4Object* object, FIXED begin, FIXED end, FIXED offset):
-	Object(object), Begin(begin), End(end), Offset(offset)
+		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
 }
@@ -260,7 +260,7 @@ bool C4ValueProviderCosR::Execute()
 }
 
 C4ValueProviderSinR::C4ValueProviderSinR(const C4Object* object, FIXED begin, FIXED end, FIXED offset):
-	Object(object), Begin(begin), End(end), Offset(offset)
+		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
 }
@@ -272,7 +272,7 @@ bool C4ValueProviderSinR::Execute()
 }
 
 C4ValueProviderCosV::C4ValueProviderCosV(const C4Object* object, FIXED begin, FIXED end, FIXED offset):
-	Object(object), Begin(begin), End(end), Offset(offset)
+		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
 }
@@ -288,7 +288,7 @@ bool C4ValueProviderCosV::Execute()
 }
 
 C4ValueProviderSinV::C4ValueProviderSinV(const C4Object* object, FIXED begin, FIXED end, FIXED offset):
-	Object(object), Begin(begin), End(end), Offset(offset)
+		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
 }
@@ -304,7 +304,7 @@ bool C4ValueProviderSinV::Execute()
 }
 
 C4ValueProviderAction::C4ValueProviderAction(C4Object* object):
-	Object(object)
+		Object(object)
 {
 }
 
@@ -318,7 +318,7 @@ bool C4ValueProviderAction::Execute()
 	const int32_t length = pActionDef->GetPropertyInt(P_Length);
 	const int32_t delay = pActionDef->GetPropertyInt(P_Delay);
 
-	if(delay)
+	if (delay)
 		Value = itofix(Action.Phase * delay + Action.PhaseDelay) / (delay * length) * ftofix(animation->Length);
 	else
 		Value = itofix(Action.Phase) / length * ftofix(animation->Length);

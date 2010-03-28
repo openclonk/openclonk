@@ -29,8 +29,8 @@
 // *** C4Network2Reference
 
 C4Network2Reference::C4Network2Reference()
-	: Icon(0), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
-	  JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
+		: Icon(0), Time(0), Frame(0), StartTime(0), LeaguePerformance(0),
+		JoinAllowed(true), ObservingAllowed(true), PasswordNeeded(false), OfficialServer(false),
 		RegJoinOnly(false), iAddrCnt(0)
 {
 
@@ -43,8 +43,8 @@ C4Network2Reference::~C4Network2Reference()
 
 void C4Network2Reference::SetSourceIP(in_addr ip)
 {
-	for(int i = 0; i < iAddrCnt; i++)
-		if(Addrs[i].isIPNull())
+	for (int i = 0; i < iAddrCnt; i++)
+		if (Addrs[i].isIPNull())
 			Addrs[i].SetIP(ip);
 }
 
@@ -56,8 +56,8 @@ void C4Network2Reference::InitLocal()
 	// Discard player resources (we don't want these infos in the reference)
 	C4ClientPlayerInfos *pClientInfos; C4PlayerInfo *pPlayerInfo;
 	int32_t i, j;
-	for(i = 0; (pClientInfos = Parameters.PlayerInfos.GetIndexedInfo(i)); i++)
-		for(j = 0; (pPlayerInfo = pClientInfos->GetPlayerInfo(j)); j++)
+	for (i = 0; (pClientInfos = Parameters.PlayerInfos.GetIndexedInfo(i)); i++)
+		for (j = 0; (pPlayerInfo = pClientInfos->GetPlayerInfo(j)); j++)
 			pPlayerInfo->DiscardResource();
 
 	// Special additional information in reference
@@ -78,7 +78,7 @@ void C4Network2Reference::InitLocal()
 	// Addresses
 	C4Network2Client *pLocalNetClient = ::Game.Clients.getLocal()->getNetClient();
 	iAddrCnt = pLocalNetClient->getAddrCnt();
-	for(i = 0; i < iAddrCnt; i++)
+	for (i = 0; i < iAddrCnt; i++)
 		Addrs[i] = pLocalNetClient->getAddr(i);
 
 }
@@ -87,11 +87,11 @@ void C4Network2Reference::SortNullIPsBack()
 {
 	// Sort all addresses with zero IP to back of list
 	int iSortAddrCnt = iAddrCnt;
-	for(int i = 0; i < iSortAddrCnt; i++)
-		if(Addrs[i].isIPNull())
+	for (int i = 0; i < iSortAddrCnt; i++)
+		if (Addrs[i].isIPNull())
 		{
 			C4Network2Address Addr = Addrs[i];
-			for(int j = i + 1; j < iAddrCnt; j++)
+			for (int j = i + 1; j < iAddrCnt; j++)
 				Addrs[j - 1] = Addrs[j];
 			Addrs[iAddrCnt - 1] = Addr;
 			// Correct position
@@ -101,25 +101,25 @@ void C4Network2Reference::SortNullIPsBack()
 
 void C4Network2Reference::CompileFunc(StdCompiler *pComp)
 {
-	pComp->Value(mkNamingAdapt(Icon,							"Icon",							0));
-	pComp->Value(mkNamingAdapt(Title,							"Title",						"No title"));
-	pComp->Value(mkParAdapt(GameStatus,	true));
-	pComp->Value(mkNamingAdapt(Time,							"Time",							0));
-	pComp->Value(mkNamingAdapt(Frame,							"Frame",						0));
-	pComp->Value(mkNamingAdapt(StartTime,					"StartTime",				0));
+	pComp->Value(mkNamingAdapt(Icon,              "Icon",             0));
+	pComp->Value(mkNamingAdapt(Title,             "Title",            "No title"));
+	pComp->Value(mkParAdapt(GameStatus, true));
+	pComp->Value(mkNamingAdapt(Time,              "Time",             0));
+	pComp->Value(mkNamingAdapt(Frame,             "Frame",            0));
+	pComp->Value(mkNamingAdapt(StartTime,         "StartTime",        0));
 	pComp->Value(mkNamingAdapt(LeaguePerformance, "LeaguePerformance",0));
-	pComp->Value(mkNamingAdapt(Comment,						"Comment",					""));
-	pComp->Value(mkNamingAdapt(JoinAllowed,				"JoinAllowed",			true));
-	pComp->Value(mkNamingAdapt(ObservingAllowed,	"ObservingAllowed",	true));
-	pComp->Value(mkNamingAdapt(PasswordNeeded,		"PasswordNeeded",		false));
-	pComp->Value(mkNamingAdapt(RegJoinOnly,				"RegJoinOnly",			false));
+	pComp->Value(mkNamingAdapt(Comment,           "Comment",          ""));
+	pComp->Value(mkNamingAdapt(JoinAllowed,       "JoinAllowed",      true));
+	pComp->Value(mkNamingAdapt(ObservingAllowed,  "ObservingAllowed", true));
+	pComp->Value(mkNamingAdapt(PasswordNeeded,    "PasswordNeeded",   false));
+	pComp->Value(mkNamingAdapt(RegJoinOnly,       "RegJoinOnly",      false));
 	pComp->Value(mkNamingAdapt(mkIntPackAdapt(iAddrCnt), "AddressCount", 0));
 	iAddrCnt = Min<uint8_t>(C4ClientMaxAddr, iAddrCnt);
 	pComp->Value(mkNamingAdapt(mkArrayAdapt(Addrs, iAddrCnt, C4Network2Address()), "Address"));
-	pComp->Value(mkNamingAdapt(Game.sEngineName,			"Game",							"None"));
-	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Game.iVer,0),"Version"		));
-	pComp->Value(mkNamingAdapt(Game.iBuild,							"Build",						-1));
-	pComp->Value(mkNamingAdapt(OfficialServer,	"OfficialServer",	false));
+	pComp->Value(mkNamingAdapt(Game.sEngineName,      "Game",             "None"));
+	pComp->Value(mkNamingAdapt(mkArrayAdaptDM(Game.iVer,0),"Version"    ));
+	pComp->Value(mkNamingAdapt(Game.iBuild,             "Build",            -1));
+	pComp->Value(mkNamingAdapt(OfficialServer,  "OfficialServer", false));
 
 	pComp->Value(Parameters);
 }
@@ -146,7 +146,7 @@ int32_t C4Network2Reference::getSortOrder() const // Don't go over 100, because 
 // *** C4Network2RefServer
 
 C4Network2RefServer::C4Network2RefServer()
-	: pReference(NULL)
+		: pReference(NULL)
 {
 }
 
@@ -178,10 +178,10 @@ size_t C4Network2RefServer::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::ad
 	const char *pData = getBufPtr<char>(rInBuf);
 	// Check for complete header
 	const char *pHeaderEnd = strstr(pData, "\r\n\r\n");
-	if(!pHeaderEnd)
+	if (!pHeaderEnd)
 		return 0;
 	// Check method (only GET is allowed for now)
-	if(!SEqual2(pData, "GET "))
+	if (!SEqual2(pData, "GET "))
 	{
 		RespondNotImplemented(addr, "Method not implemented");
 		return rInBuf.getSize();
@@ -208,12 +208,12 @@ void C4Network2RefServer::RespondReference(const C4NetIO::addr_t &addr)
 	StdStrBuf PacketData = DecompileToBuf<StdCompilerINIWrite>(mkNamingPtrAdapt(pReference, "Reference"));
 	// Create header
 	StdStrBuf Header = FormatString(
-		  "HTTP/1.1 200 Found\r\n"
-			"Content-Length: %lu\r\n"
-			"Content-Type: text/plain; charset=UTF-8\r\n"
-			"Server: " C4ENGINENAME "/" C4VERSION "\r\n"
-			"\r\n",
-		static_cast<unsigned long>(PacketData.getLength()));
+	                     "HTTP/1.1 200 Found\r\n"
+	                     "Content-Length: %lu\r\n"
+	                     "Content-Type: text/plain; charset=UTF-8\r\n"
+	                     "Server: " C4ENGINENAME "/" C4VERSION "\r\n"
+	                     "\r\n",
+	                     static_cast<unsigned long>(PacketData.getLength()));
 	// Send back
 	Send(C4NetIOPacket(Header, Header.getLength(), false, addr));
 	Send(C4NetIOPacket(PacketData, PacketData.getLength(), false, addr));
@@ -224,7 +224,7 @@ void C4Network2RefServer::RespondReference(const C4NetIO::addr_t &addr)
 // *** C4Network2HTTPClient
 
 C4Network2HTTPClient::C4Network2HTTPClient()
-	: fBinary(false), fBusy(false), fSuccess(false), fConnected(false), iDataOffset(0), iDownloadedSize(0), iTotalSize(0),
+		: fBinary(false), fBusy(false), fSuccess(false), fConnected(false), iDataOffset(0), iDownloadedSize(0), iTotalSize(0),
 		pNotify(NULL)
 {
 	C4NetIOTCP::SetCallback(this);
@@ -252,10 +252,10 @@ size_t C4Network2HTTPClient::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::a
 		const char *pData = Data.getData();
 		// Header complete?
 		const char *pContent = SSearch(pData, "\r\n\r\n");
-		if(!pContent)
+		if (!pContent)
 			return 0;
 		// Read the header
-		if(!ReadHeader(Data))
+		if (!ReadHeader(Data))
 		{
 			fBusy = fSuccess = false;
 			Close(addr);
@@ -264,14 +264,14 @@ size_t C4Network2HTTPClient::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::a
 	}
 	iDownloadedSize = rInBuf.getSize() - iDataOffset;
 	// Check if the packet is complete
-	if(iTotalSize > iDownloadedSize)
+	if (iTotalSize > iDownloadedSize)
 	{
 		return 0;
 	}
 	// Get data, uncompress it if needed
 	StdBuf Data = rInBuf.getPart(iDataOffset, iTotalSize);
-	if(fCompressed)
-		if(!Decompress(&Data))
+	if (fCompressed)
+		if (!Decompress(&Data))
 		{
 			fBusy = fSuccess = false;
 			Close(addr);
@@ -294,23 +294,23 @@ bool C4Network2HTTPClient::ReadHeader(StdStrBuf Data)
 {
 	const char *pData = Data.getData();
 	const char *pContent = SSearch(pData, "\r\n\r\n");
-	if(!pContent)
+	if (!pContent)
 		return 0;
 	// Parse header line
 	int iHTTPVer1, iHTTPVer2, iResponseCode, iStatusStringPtr;
-	if(sscanf(pData, "HTTP/%d.%d %d %n", &iHTTPVer1, &iHTTPVer2, &iResponseCode, &iStatusStringPtr) != 3)
+	if (sscanf(pData, "HTTP/%d.%d %d %n", &iHTTPVer1, &iHTTPVer2, &iResponseCode, &iStatusStringPtr) != 3)
 	{
 		Error = "Invalid status line!";
 		return false;
 	}
 	// Check HTTP version
-	if(iHTTPVer1 != 1)
+	if (iHTTPVer1 != 1)
 	{
 		Error.Format("Unsupported HTTP version: %d.%d!", iHTTPVer1, iHTTPVer2);
 		return false;
 	}
 	// Check code
-	if(iResponseCode != 200)
+	if (iResponseCode != 200)
 	{
 		// Get status string
 		StdStrBuf StatusString; StatusString.CopyUntil(pData + iStatusStringPtr, '\r');
@@ -321,8 +321,8 @@ bool C4Network2HTTPClient::ReadHeader(StdStrBuf Data)
 	// Get content length
 	const char *pContentLength = SSearch(pData, "\r\nContent-Length:");
 	int iContentLength;
-	if(!pContentLength || pContentLength > pContent ||
-			sscanf(pContentLength, "%d", &iContentLength) != 1)
+	if (!pContentLength || pContentLength > pContent ||
+	    sscanf(pContentLength, "%d", &iContentLength) != 1)
 	{
 		Error.Format("Invalid server response: Content-Length is missing!");
 		return false;
@@ -331,15 +331,15 @@ bool C4Network2HTTPClient::ReadHeader(StdStrBuf Data)
 	iDataOffset = (pContent - pData);
 	// Get content encoding
 	const char *pContentEncoding = SSearch(pData, "\r\nContent-Encoding:");
-	if(pContentEncoding)
-		{
-		while(*pContentEncoding == ' ') pContentEncoding++;
+	if (pContentEncoding)
+	{
+		while (*pContentEncoding == ' ') pContentEncoding++;
 		StdStrBuf Encoding; Encoding.CopyUntil(pContentEncoding, '\r');
-		if(Encoding == "gzip")
+		if (Encoding == "gzip")
 			fCompressed = true;
 		else
 			fCompressed = false;
-		}
+	}
 	else
 		fCompressed = false;
 	// Okay
@@ -361,13 +361,13 @@ bool C4Network2HTTPClient::Decompress(StdBuf *pData)
 	zstrm.next_out = getMBufPtr<Byte>(Out);
 	zstrm.avail_out = Out.getSize();
 	// Inflate...
-	if(inflateInit2(&zstrm, 15 + 16) != Z_OK)
+	if (inflateInit2(&zstrm, 15 + 16) != Z_OK)
 	{
 		Error.Format("Could not decompress data!");
 		return false;
 	}
 	// Inflate!
-	if(inflate(&zstrm, Z_FINISH) != Z_STREAM_END)
+	if (inflate(&zstrm, Z_FINISH) != Z_STREAM_END)
 	{
 		inflateEnd(&zstrm);
 		Error.Format("Could not decompress data!");
@@ -384,7 +384,7 @@ bool C4Network2HTTPClient::Decompress(StdBuf *pData)
 bool C4Network2HTTPClient::OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO::addr_t &AddrConnect, const C4NetIO::addr_t *pOwnAddr, C4NetIO *pNetIO)
 {
 	// Make sure we're actually waiting for this connection
-	if(!AddrEqual(AddrConnect, ServerAddr))
+	if (!AddrEqual(AddrConnect, ServerAddr))
 		return false;
 	// Save pack peer address
 	PeerAddr = AddrPeer;
@@ -398,28 +398,28 @@ bool C4Network2HTTPClient::OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO
 void C4Network2HTTPClient::OnDisconn(const C4NetIO::addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason)
 {
 	// Got no complete packet? Failure...
-	if(!fSuccess && Error.isNull())
+	if (!fSuccess && Error.isNull())
 	{
 		fBusy = false;
 		Error.Format("Unexpected disconnect: %s", szReason);
 	}
 	fConnected = false;
 	// Notify
-	if(pNotify)
+	if (pNotify)
 		pNotify->PushEvent(Ev_HTTP_Response, this);
 }
 
 void C4Network2HTTPClient::OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
 {
 	// Everything worthwhile was already done in UnpackPacket. Only do notify callback
-	if(pNotify)
+	if (pNotify)
 		pNotify->PushEvent(Ev_HTTP_Response, this);
 }
 
 bool C4Network2HTTPClient::Execute(int iMaxTime)
 {
 	// Check timeout
-	if(fBusy && time(NULL) > iRequestTimeout)
+	if (fBusy && time(NULL) > iRequestTimeout)
 	{
 		Cancel("Request timeout");
 		return true;
@@ -430,16 +430,16 @@ bool C4Network2HTTPClient::Execute(int iMaxTime)
 
 int C4Network2HTTPClient::GetNextTick(int Now)
 {
-	if(!fBusy)
+	if (!fBusy)
 		return C4NetIOTCP::GetNextTick(Now);
 	return MaxTimeout(C4NetIOTCP::GetNextTick(Now), Now + 1000 * Max<int>(iRequestTimeout - time(NULL), 0));
 }
 
 bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
 {
-	if(Server.isNull()) return false;
+	if (Server.isNull()) return false;
 	// Cancel previous request
-	if(fBusy)
+	if (fBusy)
 		Cancel("Cancelled");
 	// No result known yet
 	ResultString.Clear();
@@ -448,43 +448,43 @@ bool C4Network2HTTPClient::Query(const StdBuf &Data, bool fBinary)
 	// Create request
 	const char *szCharset = GetCharsetCodeName(LoadResStr("IDS_LANG_CHARSET"));
 	StdStrBuf Header;
-	if(Data.getSize())
+	if (Data.getSize())
 		Header.Format(
-				"POST %s HTTP/1.0\r\n"
-				"Host: %s\r\n"
-				"Connection: Close\r\n"
-				"Content-Length: %lu\r\n"
-				"Content-Type: text/plain; encoding=%s\r\n"
-				"Accept-Charset: %s\r\n"
-				"Accept-Encoding: gzip\r\n"
-				"Accept-Language: %s\r\n"
-				"User-Agent: " C4ENGINENAME "/" C4VERSION "\r\n"
-				"\r\n",
-			RequestPath.getData(),
-			Server.getData(),
-			static_cast<unsigned long>(Data.getSize()),
-			szCharset,
-			szCharset,
-			Config.General.LanguageEx);
+		  "POST %s HTTP/1.0\r\n"
+		  "Host: %s\r\n"
+		  "Connection: Close\r\n"
+		  "Content-Length: %lu\r\n"
+		  "Content-Type: text/plain; encoding=%s\r\n"
+		  "Accept-Charset: %s\r\n"
+		  "Accept-Encoding: gzip\r\n"
+		  "Accept-Language: %s\r\n"
+		  "User-Agent: " C4ENGINENAME "/" C4VERSION "\r\n"
+		  "\r\n",
+		  RequestPath.getData(),
+		  Server.getData(),
+		  static_cast<unsigned long>(Data.getSize()),
+		  szCharset,
+		  szCharset,
+		  Config.General.LanguageEx);
 	else
 		Header.Format(
-				"GET %s HTTP/1.0\r\n"
-				"Host: %s\r\n"
-				"Connection: Close\r\n"
-				"Accept-Charset: %s\r\n"
-				"Accept-Encoding: gzip\r\n"
-				"Accept-Language: %s\r\n"
-				"User-Agent: " C4ENGINENAME "/" C4VERSION "\r\n"
-				"\r\n",
-			RequestPath.getData(),
-			Server.getData(),
-			szCharset,
-			Config.General.LanguageEx);
+		  "GET %s HTTP/1.0\r\n"
+		  "Host: %s\r\n"
+		  "Connection: Close\r\n"
+		  "Accept-Charset: %s\r\n"
+		  "Accept-Encoding: gzip\r\n"
+		  "Accept-Language: %s\r\n"
+		  "User-Agent: " C4ENGINENAME "/" C4VERSION "\r\n"
+		  "\r\n",
+		  RequestPath.getData(),
+		  Server.getData(),
+		  szCharset,
+		  Config.General.LanguageEx);
 	// Compose query
 	Request.Take(Header.GrabPointer(), Header.getLength());
 	Request.Append(Data);
 	// Start connecting
-	if(!Connect(ServerAddr))
+	if (!Connect(ServerAddr))
 		return false;
 	// Okay, request will be performed when connection is complete
 	fBusy = true;
@@ -523,7 +523,7 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 {
 	// Split address
 	const char *pRequestPath;
-	if((pRequestPath = strchr(szServerAddress, '/')))
+	if ((pRequestPath = strchr(szServerAddress, '/')))
 	{
 		Server.CopyUntil(szServerAddress, '/');
 		RequestPath = pRequestPath;
@@ -534,14 +534,14 @@ bool C4Network2HTTPClient::SetServer(const char *szServerAddress)
 		RequestPath = "/";
 	}
 	// Resolve address
-	if(!ResolveAddress(Server.getData(), &ServerAddr, GetDefaultPort()))
+	if (!ResolveAddress(Server.getData(), &ServerAddr, GetDefaultPort()))
 	{
 		SetError(FormatString("Could not resolve server address %s!", Server.getData()).getData());
 		return false;
 	}
 	// Remove port
 	const char *pColon = strchr(Server.getData(), ':');
-	if(pColon)
+	if (pColon)
 		Server.SetLength(pColon - Server.getData());
 	// Done
 	ResetError();
@@ -562,7 +562,7 @@ bool C4Network2RefClient::QueryReferences()
 bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int32_t &rRefCount)
 {
 	// Sanity check
-	if(isBusy() || !isSuccess()) return false;
+	if (isBusy() || !isSuccess()) return false;
 	// Parse response
 	MasterVersion.Set("", 0,0,0,0, 0);
 	fVerSet = false;
@@ -575,15 +575,15 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 		Comp.Begin();
 		// get current version
 		Comp.Value(mkNamingAdapt(
-				mkNamingAdapt(
-					mkParAdapt(MasterVersion, false),
-				"Version"),
-			C4ENGINENAME));
+		             mkNamingAdapt(
+		               mkParAdapt(MasterVersion, false),
+		               "Version"),
+		             C4ENGINENAME));
 		// Read reference count
 		Comp.Value(mkNamingCountAdapt(rRefCount, "Reference"));
 		// Create reference array and initialize
 		rpReferences = new C4Network2Reference *[rRefCount];
-		for(int i = 0; i < rRefCount; i++)
+		for (int i = 0; i < rRefCount; i++)
 			rpReferences[i] = NULL;
 		// Get references
 		Comp.Value(mkNamingAdapt(mkArrayAdaptMap(rpReferences, rRefCount, mkPtrAdaptNoNull<C4Network2Reference>), "Reference"));
@@ -591,13 +591,13 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 		// Done
 		Comp.End();
 	}
-	catch(StdCompiler::Exception *pExc)
+	catch (StdCompiler::Exception *pExc)
 	{
 		SetError(pExc->Msg.getData());
 		return false;
 	}
 	// Set source ip
-	for(int i = 0; i < rRefCount; i++)
+	for (int i = 0; i < rRefCount; i++)
 		rpReferences[i]->SetSourceIP(getServerAddress().sin_addr);
 	// validate version
 	if (MasterVersion.iVer[0]) fVerSet = true;
@@ -607,10 +607,10 @@ bool C4Network2RefClient::GetReferences(C4Network2Reference **&rpReferences, int
 }
 
 bool C4Network2RefClient::GetMasterVersion(C4GameVersion *piVerOut)
-	{
+{
 	// call only after GetReferences
 	if (!fVerSet) return false;
 	*piVerOut = MasterVersion;
 	return true;
-	}
+}
 

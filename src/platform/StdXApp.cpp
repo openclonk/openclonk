@@ -83,9 +83,9 @@ namespace
 		// We need to correct the keymask since the event.xkey.state
 		// is the state _before_ the event, but we want to store the
 		// current state.
-		if(sym == XK_Control_L || sym == XK_Control_R) mask ^= MK_CONTROL;
-		if(sym == XK_Shift_L || sym == XK_Shift_L) mask ^= MK_SHIFT;
-		if(sym == XK_Alt_L || sym == XK_Alt_R) mask ^= (1 << 3);
+		if (sym == XK_Control_L || sym == XK_Control_R) mask ^= MK_CONTROL;
+		if (sym == XK_Shift_L || sym == XK_Shift_L) mask ^= MK_SHIFT;
+		if (sym == XK_Alt_L || sym == XK_Alt_R) mask ^= (1 << 3);
 		return mask;
 	}
 }
@@ -93,11 +93,11 @@ namespace
 CStdAppPrivate::WindowListT CStdAppPrivate::WindowList;
 
 CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), dpy(0), Location(""),
-	// main thread
+		// main thread
 #ifdef HAVE_PTHREAD
-	MainThread (pthread_self()),
+		MainThread (pthread_self()),
 #endif
-	DoNotDelay(false), Priv(new CStdAppPrivate(this)), fDspModeSet(false)
+		DoNotDelay(false), Priv(new CStdAppPrivate(this)), fDspModeSet(false)
 {
 	Add(&Priv->X11Proc);
 #ifdef WITH_GLIB
@@ -105,7 +105,8 @@ CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false), dpy(0), Location("")
 #endif
 }
 
-CStdApp::~CStdApp() {
+CStdApp::~CStdApp()
+{
 	Remove(&Priv->X11Proc);
 #ifdef WITH_GLIB
 	Remove(&Priv->GLibProc);
@@ -113,43 +114,51 @@ CStdApp::~CStdApp() {
 	delete Priv;
 }
 
-bool CStdApp::Init(int argc, char * argv[]) {
+bool CStdApp::Init(int argc, char * argv[])
+{
 	// Set locale
 	setlocale(LC_ALL,"");
 	// Try to figure out the location of the executable
 	Priv->argc=argc; Priv->argv=argv;
 	static char dir[PATH_MAX];
 	SCopy(argv[0], dir);
-	if (dir[0] != '/') {
+	if (dir[0] != '/')
+	{
 		SInsert(dir, "/");
 		SInsert(dir, GetWorkingDirectory());
 		Location = dir;
-	} else {
+	}
+	else
+	{
 		Location = dir;
 	}
 	// botch arguments
 	static std::string s("\"");
-	for (int i = 1; i < argc; ++i) {
+	for (int i = 1; i < argc; ++i)
+	{
 		s.append(argv[i]);
 		s.append("\" \"");
 	}
 	s.append("\"");
 	szCmdLine = s.c_str();
 
-	if(!(dpy = XOpenDisplay (0))) {
+	if (!(dpy = XOpenDisplay (0)))
+	{
 		Log("Error opening display.");
 		return false;
 	}
 
 	int xf86vmode_event_base, xf86vmode_error_base;
 	if (!XF86VidModeQueryExtension(dpy, &xf86vmode_event_base, &xf86vmode_error_base)
-		|| !XF86VidModeQueryVersion(dpy, &xf86vmode_major_version, &xf86vmode_minor_version)) {
+	    || !XF86VidModeQueryVersion(dpy, &xf86vmode_major_version, &xf86vmode_minor_version))
+	{
 		xf86vmode_major_version = -1;
 		xf86vmode_minor_version = 0;
 	}
 	int xrandr_error_base;
 	if (!XRRQueryExtension(dpy, &Priv->xrandr_event, &xrandr_error_base)
-	    || !XRRQueryVersion(dpy, &xrandr_major_version, &xrandr_minor_version)) {
+	    || !XRRQueryVersion(dpy, &xrandr_major_version, &xrandr_minor_version))
+	{
 		xrandr_major_version = -1;
 		xrandr_minor_version = 0;
 	}
@@ -170,8 +179,9 @@ bool CStdApp::Init(int argc, char * argv[]) {
 	// Get the Atoms for the Clipboard
 	Atom PrefetchAtoms[8];
 	const char * PrefetchAtomnames[] = { "CLIPBOARD", "WM_CHANGE_STATE", "WM_DELETE_WINDOW",
-		"_NET_WM_STATE", "_NET_WM_STATE_FULLSCREEN", "_NET_WM_PING", "_NET_WM_PID",
-		"_NET_WM_STATE_DEMANDS_ATTENTION" };
+	                                     "_NET_WM_STATE", "_NET_WM_STATE_FULLSCREEN", "_NET_WM_PING", "_NET_WM_PID",
+	                                     "_NET_WM_STATE_DEMANDS_ATTENTION"
+	                                   };
 	XInternAtoms(dpy, const_cast<char **>(PrefetchAtomnames), 8, true, PrefetchAtoms);
 
 #if USE_CONSOLE && HAVE_LIBREADLINE
@@ -188,7 +198,8 @@ bool CStdApp::Init(int argc, char * argv[]) {
 	return DoInit ();
 }
 
-void CStdApp::Clear() {
+void CStdApp::Clear()
+{
 	XCloseDisplay(dpy);
 	dpy = 0;
 #if USE_CONSOLE && HAVE_LIBREADLINE
@@ -196,14 +207,16 @@ void CStdApp::Clear() {
 #endif
 }
 
-void CStdApp::Quit() {
+void CStdApp::Quit()
+{
 	fQuitMsgReceived = true;
 }
 
-bool CStdApp::FlushMessages() {
+bool CStdApp::FlushMessages()
+{
 
 	// Always fail after quit message
-	if(fQuitMsgReceived)
+	if (fQuitMsgReceived)
 		return false;
 
 #ifdef WITH_GLIB
@@ -213,124 +226,146 @@ bool CStdApp::FlushMessages() {
 	return Priv->X11Proc.Execute(0);
 }
 
-void CStdApp::HandleXMessage() {
+void CStdApp::HandleXMessage()
+{
 	XEvent event;
 	XNextEvent(dpy, &event);
 	bool filtered = XFilterEvent(&event, event.xany.window);
-	switch (event.type) {
-		case EnterNotify:
+	switch (event.type)
+	{
+	case EnterNotify:
 		KeyMask = event.xcrossing.state;
 		break;
-		case KeyPress:
+	case KeyPress:
 		// Needed for input methods
-		if (!filtered) {
+		if (!filtered)
+		{
 			char c[10] = "";
-			if (Priv->xic) {
+			if (Priv->xic)
+			{
 				Status lsret;
 				Xutf8LookupString(Priv->xic, &event.xkey, c, 10, 0, &lsret);
 				if (lsret == XLookupKeySym) fprintf(stderr, "FIXME: XmbLookupString returned XLookupKeySym\n");
 				if (lsret == XBufferOverflow) fprintf(stderr, "FIXME: XmbLookupString returned XBufferOverflow\n");
-			} else {
+			}
+			else
+			{
 				static XComposeStatus state;
 				XLookupString(&event.xkey, c, 10, 0, &state);
 			}
-			if (c[0]) {
+			if (c[0])
+			{
 				CStdWindow * pWindow = Priv->GetWindow(event.xany.window);
-				if (pWindow) {
+				if (pWindow)
+				{
 					pWindow->CharIn(c);
 				}
 			}
-		// Fallthrough
+			// Fallthrough
 		}
-		case KeyRelease:
+	case KeyRelease:
 		KeyMask = KeyMaskFromKeyEvent(dpy, &event.xkey);
 		Priv->LastEventTime = event.xkey.time;
 		break;
-		case ButtonPress:
+	case ButtonPress:
 		// We can take this directly since there are no key presses
 		// involved. TODO: We probably need to correct button state
 		// here though.
 		KeyMask = event.xbutton.state;
 		Priv->LastEventTime = event.xbutton.time;
 		break;
-		case SelectionRequest: {
+	case SelectionRequest:
+	{
 		// We should compare the timestamp with the timespan when we owned the selection
 		// But slow network connections are not supported anyway, so do not bother
-			CStdAppPrivate::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
-				Priv->PrimarySelection : Priv->ClipboardSelection;
-			XEvent responseevent;
-			XSelectionEvent & re = responseevent.xselection;
-			re.type = SelectionNotify;
-			re.display = dpy;
-			re.selection = event.xselectionrequest.selection;
-			re.target = event.xselectionrequest.target;
-			re.time = event.xselectionrequest.time;
-			re.requestor = event.xselectionrequest.requestor;
-			// Note: we're implementing the spec only partially here
-			if (d.Text.getData()) {
-				re.property = event.xselectionrequest.property;
-				XChangeProperty(dpy, re.requestor, re.property, re.target, 8, PropModeReplace,
-					(const unsigned char *) d.Text.getData(), d.Text.getLength());
-			} else {
-				re.property = None;
-			}
-			XSendEvent(dpy, re.requestor, false, NoEventMask, &responseevent);
-			break;
+		CStdAppPrivate::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
+		                                    Priv->PrimarySelection : Priv->ClipboardSelection;
+		XEvent responseevent;
+		XSelectionEvent & re = responseevent.xselection;
+		re.type = SelectionNotify;
+		re.display = dpy;
+		re.selection = event.xselectionrequest.selection;
+		re.target = event.xselectionrequest.target;
+		re.time = event.xselectionrequest.time;
+		re.requestor = event.xselectionrequest.requestor;
+		// Note: we're implementing the spec only partially here
+		if (d.Text.getData())
+		{
+			re.property = event.xselectionrequest.property;
+			XChangeProperty(dpy, re.requestor, re.property, re.target, 8, PropModeReplace,
+			                (const unsigned char *) d.Text.getData(), d.Text.getLength());
 		}
-		case SelectionClear: {
-			CStdAppPrivate::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
-				Priv->PrimarySelection : Priv->ClipboardSelection;
-			d.Text.Clear();
-			break;
+		else
+		{
+			re.property = None;
 		}
-		case ClientMessage:
-		if (!strcmp(XGetAtomName(dpy, event.xclient.message_type), "WM_PROTOCOLS")) {
-			if (!strcmp(XGetAtomName(dpy, event.xclient.data.l[0]), "WM_DELETE_WINDOW")) {
+		XSendEvent(dpy, re.requestor, false, NoEventMask, &responseevent);
+		break;
+	}
+	case SelectionClear:
+	{
+		CStdAppPrivate::ClipboardData & d = (event.xselectionrequest.selection == XA_PRIMARY) ?
+		                                    Priv->PrimarySelection : Priv->ClipboardSelection;
+		d.Text.Clear();
+		break;
+	}
+	case ClientMessage:
+		if (!strcmp(XGetAtomName(dpy, event.xclient.message_type), "WM_PROTOCOLS"))
+		{
+			if (!strcmp(XGetAtomName(dpy, event.xclient.data.l[0]), "WM_DELETE_WINDOW"))
+			{
 				CStdWindow * pWindow = Priv->GetWindow(event.xclient.window);
 				if (pWindow) pWindow->Close();
-			} else if (!strcmp(XGetAtomName(dpy, event.xclient.data.l[0]), "_NET_WM_PING")) {
+			}
+			else if (!strcmp(XGetAtomName(dpy, event.xclient.data.l[0]), "_NET_WM_PING"))
+			{
 				// We're still alive
 				event.xclient.window = DefaultRootWindow(dpy);
 				XSendEvent(dpy, DefaultRootWindow(dpy), false,
-					SubstructureNotifyMask | SubstructureRedirectMask, &event);
+				           SubstructureNotifyMask | SubstructureRedirectMask, &event);
 			}
 		}
 		break;
-		case MappingNotify:
+	case MappingNotify:
 		XRefreshKeyboardMapping(&event.xmapping);
 		break;
-		case DestroyNotify: {
-			CStdWindow * pWindow = Priv->GetWindow(event.xany.window);
-			if (pWindow) {
-				pWindow->wnd = 0;
-				pWindow->Clear();
-			}
-			Priv->SetWindow(event.xany.window, 0);
-			break;
+	case DestroyNotify:
+	{
+		CStdWindow * pWindow = Priv->GetWindow(event.xany.window);
+		if (pWindow)
+		{
+			pWindow->wnd = 0;
+			pWindow->Clear();
 		}
-		case FocusIn:
+		Priv->SetWindow(event.xany.window, 0);
+		break;
+	}
+	case FocusIn:
 		if (Priv->xic) XSetICFocus(Priv->xic);
 		if (Priv->pending_desktop)
 			Priv->pending_desktop = false;
-		if (pWindow && event.xany.window == pWindow->wnd && Priv->tasked_out) {
+		if (pWindow && event.xany.window == pWindow->wnd && Priv->tasked_out)
+		{
 			fDspModeSet = Priv->SwitchToFullscreen(this, pWindow->wnd);
 			Priv->tasked_out = false;
 		}
 		break;
-		case FocusOut:
+	case FocusOut:
 		if (Priv->xic) XUnsetICFocus(Priv->xic);
 		// fallthrough
-		case UnmapNotify:
-		if (pWindow && event.xany.window == pWindow->wnd && fDspModeSet) {
+	case UnmapNotify:
+		if (pWindow && event.xany.window == pWindow->wnd && fDspModeSet)
+		{
 			Priv->pending_desktop = true;
 		}
 		break;
-		case ConfigureNotify:
-		if (pWindow && event.xany.window == pWindow->wnd) {
+	case ConfigureNotify:
+		if (pWindow && event.xany.window == pWindow->wnd)
+		{
 			OnResolutionChanged(event.xconfigure.width, event.xconfigure.height);
 		}
 		break;
-		default:
+	default:
 		if (event.type == Priv->xrandr_event)
 			XRRUpdateConfiguration(&event);
 		break;
@@ -340,15 +375,18 @@ void CStdApp::HandleXMessage() {
 		pWindow->HandleMessage(event);
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen) {
+bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
+{
 	if (Priv->tasked_out)
 		return false;
 	bool modefound = false;
-	if (fDspModeSet) {
+	if (fDspModeSet)
+	{
 		Priv->SwitchToDesktop(this, pWindow->wnd);
 		fDspModeSet = false;
 	}
-	if (!fFullScreen) {
+	if (!fFullScreen)
+	{
 		XResizeWindow(dpy, pWindow->wnd, iXRes, iYRes);
 		OnResolutionChanged(iXRes, iYRes);
 		return true;
@@ -356,23 +394,27 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	if (Priv->xf86vmode_targetmode.hdisplay == iXRes && Priv->xf86vmode_targetmode.vdisplay == iYRes)
 		modefound = true;
 	// randr spec says to always get fresh info, so don't cache.
-	if (xrandr_major_version >= 0) {
+	if (xrandr_major_version >= 0)
+	{
 		modefound = true;
 		Priv->wdt = iXRes; Priv->hgt = iYRes;
 	}
-	if (xf86vmode_major_version >= 0 && !modefound) {
+	if (xf86vmode_major_version >= 0 && !modefound)
+	{
 		// save desktop-resolution before switching modes
 		// XF86VidMode has a really weird API.
 		XF86VidModeGetModeLine(dpy, DefaultScreen(dpy), (int*)&Priv->xf86vmode_oldmode.dotclock,
-			(XF86VidModeModeLine*)(((char *)&Priv->xf86vmode_oldmode) + sizeof(Priv->xf86vmode_oldmode.dotclock)));
+		                       (XF86VidModeModeLine*)(((char *)&Priv->xf86vmode_oldmode) + sizeof(Priv->xf86vmode_oldmode.dotclock)));
 		//Priv->oldmode = *modes[0];
 		// Change resolution
 		int mode_num;
 		XF86VidModeModeInfo **modes;
 		XF86VidModeGetAllModeLines(dpy, DefaultScreen(dpy), &mode_num, &modes);
 		// look for mode with requested resolution
-		for (int i = 0; i < mode_num; i++) {
-			if ((modes[i]->hdisplay == iXRes) && (modes[i]->vdisplay == iYRes)) {
+		for (int i = 0; i < mode_num; i++)
+		{
+			if ((modes[i]->hdisplay == iXRes) && (modes[i]->vdisplay == iYRes))
+			{
 				if (!modefound) Priv->xf86vmode_targetmode = *modes[i];
 				modefound = true;
 			}
@@ -384,12 +426,15 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	return fDspModeSet;
 }
 
-void CStdApp::RestoreVideoMode() {
-	if (fDspModeSet) {
+void CStdApp::RestoreVideoMode()
+{
+	if (fDspModeSet)
+	{
 		Priv->SwitchToDesktop(this, pWindow->wnd);
 		fDspModeSet = false;
 		// Minimize
-		if (pWindow->wnd) {
+		if (pWindow->wnd)
+		{
 			XEvent e;
 			e.xclient.type = ClientMessage;
 			e.xclient.window = pWindow->wnd;
@@ -401,13 +446,15 @@ void CStdApp::RestoreVideoMode() {
 	}
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor) {
+bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
+{
 	if (xf86vmode_major_version < 0) return false;
 	bool r = false;
 	int mode_num;
 	XF86VidModeModeInfo **modes;
 	XF86VidModeGetAllModeLines(dpy, DefaultScreen(dpy), &mode_num, &modes);
-	if (iIndex < mode_num) {
+	if (iIndex < mode_num)
+	{
 		*piXRes = modes[iIndex]->hdisplay;
 		*piYRes = modes[iIndex]->vdisplay;
 		*piBitDepth = 32;
@@ -417,7 +464,8 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return r;
 }
 
-void CStdAppPrivate::SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window wnd) {
+void CStdAppPrivate::SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window wnd)
+{
 	static Atom atoms[2];
 	static const char * names[] = { "_NET_WM_STATE", "_NET_WM_STATE_FULLSCREEN" };
 	if (!atoms[0]) XInternAtoms(pApp->dpy, const_cast<char **>(names), 2, false, atoms);
@@ -426,9 +474,12 @@ void CStdAppPrivate::SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window
 	e.xclient.window = wnd;
 	e.xclient.message_type = atoms[0];
 	e.xclient.format = 32;
-	if (fFullScreen) {
+	if (fFullScreen)
+	{
 		e.xclient.data.l[0] = 1; //_NET_WM_STATE_ADD
-	} else {
+	}
+	else
+	{
 		e.xclient.data.l[0] = 0; //_NET_WM_STATE_REMOVE
 	}
 	e.xclient.data.l[1] = atoms[1];
@@ -438,14 +489,18 @@ void CStdAppPrivate::SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window
 	XSendEvent(pApp->dpy, DefaultRootWindow(pApp->dpy), false, SubstructureNotifyMask | SubstructureRedirectMask, &e);
 }
 
-bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd) {
-	if (pApp->xrandr_major_version >= 0) {
+bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd)
+{
+	if (pApp->xrandr_major_version >= 0)
+	{
 		XRRScreenConfiguration * conf = XRRGetScreenInfo (pApp->dpy, wnd);
 		xrandr_oldmode = XRRConfigCurrentConfiguration (conf, &xrandr_rot);
 		int n;
 		XRRScreenSize * sizes = XRRConfigSizes(conf, &n);
-		for (int i = 0; i < n; ++i) {
-			if (sizes[i].width == wdt && sizes[i].height == hgt) {
+		for (int i = 0; i < n; ++i)
+		{
+			if (sizes[i].width == wdt && sizes[i].height == hgt)
+			{
 #ifdef _DEBUG
 				LogF("XRRSetScreenConfig %d", i);
 #endif
@@ -455,7 +510,9 @@ bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd) {
 		}
 		XRRFreeScreenConfigInfo(conf);
 		SetEWMHFullscreen(pApp, true, wnd);
-	} else if (pApp->xf86vmode_major_version >= 0) {
+	}
+	else if (pApp->xf86vmode_major_version >= 0)
+	{
 		XF86VidModeModeInfo & mode = xf86vmode_targetmode;
 		XResizeWindow(pApp->dpy, wnd, mode.hdisplay, mode.vdisplay);
 		XSizeHints hints;
@@ -466,10 +523,13 @@ bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd) {
 		hints.max_height = mode.vdisplay;
 		XSetWMNormalHints(pApp->dpy, wnd, &hints);
 		// Changing not necessary
-		if (!memcmp(&xf86vmode_targetmode, &xf86vmode_oldmode, sizeof(XF86VidModeModeInfo))) {
+		if (!memcmp(&xf86vmode_targetmode, &xf86vmode_oldmode, sizeof(XF86VidModeModeInfo)))
+		{
 			// Set the window to fullscreen mode to get rid of window manager decorations
 			SetEWMHFullscreen(pApp, true, wnd);
-		} else {
+		}
+		else
+		{
 			XF86VidModeSwitchToMode(pApp->dpy, DefaultScreen(pApp->dpy), &mode);
 			// Move the viewport on the virtual screen
 			Window bla; int wnd_x = 0; int wnd_y = 0;
@@ -482,17 +542,21 @@ bool CStdAppPrivate::SwitchToFullscreen(CStdApp * pApp, Window wnd) {
 	return true;
 }
 
-void CStdAppPrivate::SwitchToDesktop(CStdApp * pApp, Window wnd) {
+void CStdAppPrivate::SwitchToDesktop(CStdApp * pApp, Window wnd)
+{
 	XUngrabPointer(pApp->dpy, LastEventTime);
 	// Restore resolution
-	if (pApp->xrandr_major_version >= 0) {
+	if (pApp->xrandr_major_version >= 0)
+	{
 		XRRScreenConfiguration * conf = XRRGetScreenInfo (pApp->dpy, wnd);
 #ifdef _DEBUG
 		LogF("XRRSetScreenConfig %d (back)", xrandr_oldmode);
 #endif
 		XRRSetScreenConfig (pApp->dpy, conf, wnd, xrandr_oldmode, xrandr_rot, CurrentTime);
 		XRRFreeScreenConfigInfo(conf);
-	} else if (pApp->xf86vmode_major_version >= 0) {
+	}
+	else if (pApp->xf86vmode_major_version >= 0)
+	{
 		XF86VidModeModeInfo & mode = xf86vmode_oldmode;
 		XF86VidModeSwitchToMode(pApp->dpy, DefaultScreen(pApp->dpy), &mode);
 		XF86VidModeSetViewPort(pApp->dpy, DefaultScreen(pApp->dpy), 0, 0);
@@ -504,7 +568,8 @@ void CStdAppPrivate::SwitchToDesktop(CStdApp * pApp, Window wnd) {
 }
 
 // Copy the text to the clipboard or the primary selection
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
+void CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+{
 	CStdAppPrivate::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
 	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY, pWindow->wnd, Priv->LastEventTime);
 	Window owner = XGetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
@@ -513,12 +578,13 @@ void CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
 	d.AcquirationTime = Priv->LastEventTime;
 }
 // Paste the text from the clipboard or the primary selection
-StdStrBuf CStdApp::Paste(bool fClipboard) {
+StdStrBuf CStdApp::Paste(bool fClipboard)
+{
 	Window owner = XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
 	if (owner == None) return StdStrBuf(0);
 	// Retrieve the selection into the XA_STRING property of our main window
 	XConvertSelection (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY, XA_STRING, XA_STRING,
-					pWindow->wnd, Priv->LastEventTime);
+	                   pWindow->wnd, Priv->LastEventTime);
 	// Give the owner some time to respond
 	Priv->X11Proc.ExecuteUntil(50);
 	// Get the length of the data, so we can request it all at once
@@ -527,80 +593,96 @@ StdStrBuf CStdApp::Paste(bool fClipboard) {
 	unsigned long len, bytes_left;
 	unsigned char *data;
 	XGetWindowProperty (dpy, pWindow->wnd,
-		XA_STRING,  // property
-		0, 0,	  	// offset - len
-		0, 	 	    // do not delete it now
-		AnyPropertyType, // flag
-		&type,		  // return type
-		&format,	  // return format
-		&len, &bytes_left, //that
-		&data);
+	                    XA_STRING,  // property
+	                    0, 0,     // offset - len
+	                    0,        // do not delete it now
+	                    AnyPropertyType, // flag
+	                    &type,      // return type
+	                    &format,    // return format
+	                    &len, &bytes_left, //that
+	                    &data);
 	//printf ("type:%i len:%li format:%d byte_left:%ld\n", (int)type, len, format, bytes_left);
 	// nothing to read?
 	if (bytes_left == 0) return StdStrBuf(0);
 	int result = XGetWindowProperty (dpy, pWindow->wnd,
-			XA_STRING, 0, bytes_left,
-			1, // delete it now
-			AnyPropertyType,
-			&type, &format, &len, &bytes_left, &data);
+	                                 XA_STRING, 0, bytes_left,
+	                                 1, // delete it now
+	                                 AnyPropertyType,
+	                                 &type, &format, &len, &bytes_left, &data);
 	if (result != Success) return StdStrBuf(0);
 	StdStrBuf res (reinterpret_cast<char *>(data), true);
 	XFree (data);
 	return res;
 }
 // Is there something in the clipboard?
-bool CStdApp::IsClipboardFull(bool fClipboard) {
+bool CStdApp::IsClipboardFull(bool fClipboard)
+{
 	return None != XGetSelectionOwner (dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY);
 }
 // Give up Selection ownership
-void CStdApp::ClearClipboard(bool fClipboard) {
+void CStdApp::ClearClipboard(bool fClipboard)
+{
 	CStdAppPrivate::ClipboardData & d = fClipboard ? Priv->ClipboardSelection : Priv->PrimarySelection;
 	if (!d.Text.getData()) return;
 	XSetSelectionOwner(dpy, fClipboard ? XInternAtom(dpy,"CLIPBOARD",false) : XA_PRIMARY,
-		None, d.AcquirationTime);
+	                   None, d.AcquirationTime);
 	d.Text.Clear();
 }
 
-CStdWindow * CStdAppPrivate::GetWindow(unsigned long wnd) {
+CStdWindow * CStdAppPrivate::GetWindow(unsigned long wnd)
+{
 	WindowListT::iterator i = WindowList.find(wnd);
 	if (i != WindowList.end()) return i->second;
 	return 0;
 }
-void CStdAppPrivate::SetWindow(unsigned long wnd, CStdWindow * pWindow) {
-	if (!pWindow) {
+void CStdAppPrivate::SetWindow(unsigned long wnd, CStdWindow * pWindow)
+{
+	if (!pWindow)
+	{
 		WindowList.erase(wnd);
-	} else {
+	}
+	else
+	{
 		WindowList[wnd] = pWindow;
 	}
 }
 
-bool CStdApp::ReadStdInCommand() {
+bool CStdApp::ReadStdInCommand()
+{
 #if HAVE_LIBREADLINE
 	rl_callback_read_char();
 	return true;
 #else
 	// Surely not the most efficient way to do it, but we won't have to read much data anyway.
 	char c;
-	if(read(0, &c, 1) != 1)
+	if (read(0, &c, 1) != 1)
 		return false;
-	if(c == '\n') {
-		if(!CmdBuf.isNull()) {
+	if (c == '\n')
+	{
+		if (!CmdBuf.isNull())
+		{
 			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
 		}
-	} else if(isprint((unsigned char)c))
+	}
+	else if (isprint((unsigned char)c))
 		CmdBuf.AppendChar(c);
 	return true;
 #endif
 }
 #if HAVE_LIBREADLINE
-static void readline_callback (char * line) {
-	if (!line) {
+static void readline_callback (char * line)
+{
+	if (!line)
+	{
 		readline_callback_use_this_app->Quit();
-	} else {
+	}
+	else
+	{
 		readline_callback_use_this_app->OnCommand(line);
 	}
 #if HAVE_READLINE_HISTORY
-	if (line && *line) {
+	if (line && *line)
+	{
 		add_history (line);
 	}
 #endif
@@ -610,10 +692,12 @@ static void readline_callback (char * line) {
 
 void CStdApp::OnXInput()
 {
-	while (XEventsQueued(dpy, QueuedAfterReading)) {
+	while (XEventsQueued(dpy, QueuedAfterReading))
+	{
 		HandleXMessage();
 	}
-	if (Priv->pending_desktop) {
+	if (Priv->pending_desktop)
+	{
 		RestoreVideoMode();
 		fDspModeSet = false;
 		Priv->tasked_out = true;
@@ -628,13 +712,14 @@ void CStdApp::OnXInput()
 
 void CStdApp::OnStdInInput()
 {
-	if(!ReadStdInCommand())
+	if (!ReadStdInCommand())
 	{
 		Quit();
 	}
 }
 
-void CStdApp::MessageDialog(const char * message) {
+void CStdApp::MessageDialog(const char * message)
+{
 #ifdef WITH_DEVELOPER_MODE
 	GtkWidget * dialog = gtk_message_dialog_new (NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", message);
 	gtk_window_set_title(GTK_WINDOW(dialog), "OpenClonk Error");

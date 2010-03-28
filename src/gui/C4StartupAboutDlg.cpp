@@ -28,7 +28,7 @@
 // --- C4StartupAboutDlg
 
 C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
-	{
+{
 	// ctor
 	UpdateSize();
 
@@ -37,7 +37,7 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 	//C4CustomKey::CodeList keys;
 	//keys.push_back(C4KeyCodeEx(KEY_Any)); keys.push_back(C4KeyCodeEx(KEY_JOY_AnyButton));
 	//pKeyBack = new C4KeyBinding(keys, "StartupAboutBack", KEYSCOPE_Gui,
-	//	new C4GUI::DlgKeyCB<C4StartupAboutDlg>(*this, &C4StartupAboutDlg::KeyBack), C4CustomKey::PRIO_Dlg);
+	//  new C4GUI::DlgKeyCB<C4StartupAboutDlg>(*this, &C4StartupAboutDlg::KeyBack), C4CustomKey::PRIO_Dlg);
 
 	// version and registration info in topright corner
 	C4Rect rcClient = GetContainedClientRect();
@@ -59,51 +59,51 @@ C4StartupAboutDlg::C4StartupAboutDlg() : C4StartupDlg("")
 	btn->SetToolTip(LoadResStr("IDS_DLGTIP_BACKMAIN"));
 	AddElement(btn = new C4GUI::CallbackButton<C4StartupAboutDlg>(LoadResStr("IDS_BTN_CHECKFORUPDATES"), caButtons.GetGridCell(2,3,0,1,iButtonWidth,C4GUI_ButtonHgt,true), &C4StartupAboutDlg::OnUpdateBtn));
 	btn->SetToolTip(LoadResStr("IDS_DESC_CHECKONLINEFORNEWVERSIONS"));
-	}
+}
 
 C4StartupAboutDlg::~C4StartupAboutDlg()
-	{
+{
 	Application.Remove(this);
 	delete pKeyBack;
-	}
+}
 
 void C4StartupAboutDlg::DoBack()
-	{
+{
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_Main);
-	}
+}
 
 void C4StartupAboutDlg::OnSec1Timer()
-	{
-	}
+{
+}
 
 void C4StartupAboutDlg::DrawElement(C4TargetFacet &cgo)
-	{
+{
 	// draw background - do not use bg drawing proc, because it stretches
 	// pre-clear background instead to prevent blinking borders
 	if (!IsFading()) lpDDraw->FillBG();
 	C4Startup::Get()->Graphics.fctAboutBG.Draw(cgo, false);
-	}
+}
 
 void C4StartupAboutDlg::MouseInput(C4GUI::CMouse &rMouse, int32_t iButton, int32_t iX, int32_t iY, DWORD dwKeyParam)
-	{
+{
 	// back on any mouse button? Better not, because mouse input is required
 	/*if (iButton == C4MC_Button_LeftDown || iButton == C4MC_Button_RightDown || iButton == C4MC_Button_MiddleDown)
-		DoBack();
+	  DoBack();
 	else*/
-		// otherwise, inherited for tooltips
-		C4StartupDlg::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
-	}
+	// otherwise, inherited for tooltips
+	C4StartupDlg::MouseInput(rMouse, iButton, iX, iY, dwKeyParam);
+}
 
 void C4StartupAboutDlg::OnRegisterBtn(C4GUI::Control *btn)
-	{
+{
 	// open hardcoded registration URL
 	// URL needs lowercase language code, two-character code only
 	StdStrBuf sLangCode; sLangCode.Format("%.2s", Config.General.Language);
 	sLangCode.ToLowerCase();
 	OpenURL(FormatString("http://www.clonk.de/register.php?lng=%s&product=cr", sLangCode.getData()).getData());
-	}
+}
 
 void C4StartupAboutDlg::OnUpdateBtn(C4GUI::Control *btn)
-	{
+{
 	C4UpdateDlg::CheckForUpdates(GetScreen());
-	}
+}

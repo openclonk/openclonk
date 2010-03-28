@@ -36,7 +36,7 @@ const C4Value C4VFalse = C4VBool(false);
 C4Value::~C4Value()
 {
 	// resolve all C4Values referencing this Value
-	while(FirstRef)
+	while (FirstRef)
 		FirstRef->Set(*this);
 
 	// delete contents
@@ -56,22 +56,22 @@ void C4Value::AddDataRef()
 	assert(Type != C4V_Any || !Data);
 	switch (Type)
 	{
-		case C4V_Ref: Data.Ref->AddRef(this); break;
-		case C4V_PropListRef: Data.PropList->IncElementRef(); PropListRefKey->IncRef(); break;
-		case C4V_Array: Data.Array = Data.Array->IncRef(); break;
-		case C4V_String: Data.Str->IncRef(); break;
-		case C4V_C4Object:
-		case C4V_PropList:
+	case C4V_Ref: Data.Ref->AddRef(this); break;
+	case C4V_PropListRef: Data.PropList->IncElementRef(); PropListRefKey->IncRef(); break;
+	case C4V_Array: Data.Array = Data.Array->IncRef(); break;
+	case C4V_String: Data.Str->IncRef(); break;
+	case C4V_C4Object:
+	case C4V_PropList:
 		Data.PropList->AddRef(this);
 #ifdef _DEBUG
 		// check if the object actually exists
-		if(Data.PropList->GetPropListNumbered() && !::Objects.ObjectNumber(Data.PropList))
+		if (Data.PropList->GetPropListNumbered() && !::Objects.ObjectNumber(Data.PropList))
 			{ LogF("Warning: using wild object ptr %p!", static_cast<void*>(Data.PropList)); }
-		else if(!Data.PropList->Status)
+		else if (!Data.PropList->Status)
 			{ LogF("Warning: using ptr on deleted object %p (%s)!", static_cast<void*>(Data.PropList), Data.PropList->GetName()); }
 #endif
 		break;
-		default: break;
+	default: break;
 	}
 }
 
@@ -80,16 +80,16 @@ void C4Value::DelDataRef(C4V_Data Data, C4V_Type Type, C4Value * pNextRef, C4Val
 	// clean up
 	switch (Type)
 	{
-		case C4V_Ref:
+	case C4V_Ref:
 		// Save because AddDataRef does not set this flag
 		HasBaseArray = false;
 		Data.Ref->DelRef(this, pNextRef, pBaseArray);
 		break;
-		case C4V_PropListRef: Data.PropList->DecElementRef(); Key->DecRef(); break;
-		case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
-		case C4V_Array: Data.Array->DecRef(); break;
-		case C4V_String: Data.Str->DecRef(); break;
-		default: break;
+	case C4V_PropListRef: Data.PropList->DecElementRef(); Key->DecRef(); break;
+	case C4V_C4Object: case C4V_PropList: Data.PropList->DelRef(this, pNextRef); break;
+	case C4V_Array: Data.Array->DecRef(); break;
+	case C4V_String: Data.Str->DecRef(); break;
+	default: break;
 	}
 }
 
@@ -151,7 +151,7 @@ void C4Value::Move(C4Value *nValue)
 	nValue->Set(*this);
 
 	// change references
-	for(C4Value *pVal = FirstRef; pVal; pVal = pVal->GetNextRef())
+	for (C4Value *pVal = FirstRef; pVal; pVal = pVal->GetNextRef())
 		pVal->Data.Ref = nValue;
 
 	// copy ref list
@@ -215,15 +215,15 @@ void C4Value::SetArrayLength(int32_t size, C4AulContext *cthr)
 const C4Value & C4Value::GetRefVal() const
 {
 	const C4Value* pVal = this;
-	while(1)
+	while (1)
 	{
-		if(pVal->Type == C4V_Ref)
+		if (pVal->Type == C4V_Ref)
 			pVal = pVal->Data.Ref;
-		else if(pVal->Type == C4V_PropListRef)
-			{
+		else if (pVal->Type == C4V_PropListRef)
+		{
 			pVal = pVal->Data.PropList->GetRefToPropertyConst(pVal->PropListRefKey);
-			if(!pVal) return C4VNull;
-			}
+			if (!pVal) return C4VNull;
+		}
 		else
 			return *pVal;
 	}
@@ -232,11 +232,11 @@ const C4Value & C4Value::GetRefVal() const
 C4Value &C4Value::GetRefVal()
 {
 	C4Value* pVal = this;
-	while(1)
+	while (1)
 	{
-		if(pVal->Type == C4V_Ref)
+		if (pVal->Type == C4V_Ref)
 			pVal = pVal->Data.Ref;
-		else if(pVal->Type == C4V_PropListRef)
+		else if (pVal->Type == C4V_PropListRef)
 			pVal = pVal->Data.PropList->GetRefToProperty(pVal->PropListRefKey);
 		else
 			return *pVal;
@@ -251,12 +251,12 @@ void C4Value::AddRef(C4Value *pRef)
 
 void C4Value::DelRef(const C4Value *pRef, C4Value * pNextRef, C4ValueArray * pBaseArray)
 {
-	if(pRef == FirstRef)
+	if (pRef == FirstRef)
 		FirstRef = pNextRef;
 	else
 	{
 		C4Value* pVal = FirstRef;
-		while(pVal->NextRef != pRef)
+		while (pVal->NextRef != pRef)
 		{
 			// assert that pRef really was in the list
 			assert(pVal->NextRef && !pVal->HasBaseArray);
@@ -278,7 +278,7 @@ void C4Value::DelRef(const C4Value *pRef, C4Value * pNextRef, C4ValueArray * pBa
 
 const char* GetC4VName(const C4V_Type Type)
 {
-	switch(Type)
+	switch (Type)
 	{
 	case C4V_Any:
 		return "nil";
@@ -303,7 +303,7 @@ const char* GetC4VName(const C4V_Type Type)
 
 char GetC4VID(const C4V_Type Type)
 {
-	switch(Type)
+	switch (Type)
 	{
 	case C4V_Any:
 		return 'A';
@@ -332,7 +332,7 @@ char GetC4VID(const C4V_Type Type)
 
 C4V_Type GetC4VFromID(const char C4VID)
 {
-	switch(C4VID)
+	switch (C4VID)
 	{
 	case 'A':
 		return C4V_Any;
@@ -366,39 +366,39 @@ const char* C4Value::GetTypeInfo()
 // converter functions ----------------
 
 static bool FnCnvError(C4Value *Val, C4V_Type toType)
-	{
+{
 	// deny convert
 	return false;
-	}
+}
 
 static bool FnCnvDeref(C4Value *Val, C4V_Type toType)
-	{
+{
 	// resolve reference of Value
 	Val->Deref();
 	// retry to check convert
 	return Val->ConvertTo(toType);
-	}
+}
 
 bool C4Value::FnCnvPLR(C4Value *Val, C4V_Type toType)
-	{
+{
 	// resolve reference of Value
 	Val->SetRef(Val->Data.PropList->GetRefToProperty(Val->PropListRefKey));
 	// retry to check convert
 	return Val->ConvertTo(toType);
-	}
+}
 
 static bool FnOk0(C4Value *Val, C4V_Type toType)
-	{
+{
 	// 0 can be treated as nil, but every other integer can't
 	return !*Val;
-	}
+}
 
 bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType)
-	{
+{
 	// try casting
 	if (dynamic_cast<C4Object *>(Val->Data.PropList)) return true;
 	return false;
-	}
+}
 
 // Type conversion table
 #define CnvOK        0, false           // allow conversion by same value
@@ -408,105 +408,106 @@ bool C4Value::FnCnvObject(C4Value *Val, C4V_Type toType)
 #define CnvPLR       FnCnvPLR, false
 #define CnvObject    FnCnvObject, false
 
-C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] = {
+C4VCnvFn C4Value::C4ScriptCnvMap[C4V_Last+1][C4V_Last+1] =
+{
 	{ // C4V_Any - is always 0, convertible to everything
-		{ CnvOK		}, // any        same
-		{ CnvOK		}, // int
-		{ CnvOK		}, // Bool
-		{ CnvOK		}, // PropList
-		{ CnvOK		}, // C4Object
-		{ CnvOK		}, // String
-		{ CnvOK		}, // Array
-		{ CnvError	}, // Ref
-		{ CnvError	}, // PropListRef
+		{ CnvOK   }, // any        same
+		{ CnvOK   }, // int
+		{ CnvOK   }, // Bool
+		{ CnvOK   }, // PropList
+		{ CnvOK   }, // C4Object
+		{ CnvOK   }, // String
+		{ CnvOK   }, // Array
+		{ CnvError  }, // Ref
+		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Int
-		{ CnvOK		}, // any
-		{ CnvOK		}, // int        same
-		{ CnvOK		}, // Bool
-		{ CnvOK0	}, // PropList   only if 0
-		{ CnvOK0	}, // C4Object   only if 0
-		{ CnvOK0	}, // String     only if 0
-		{ CnvOK0	}, // Array      only if 0
-		{ CnvError	}, // Ref
-		{ CnvError	}, // PropListRef
+		{ CnvOK   }, // any
+		{ CnvOK   }, // int        same
+		{ CnvOK   }, // Bool
+		{ CnvOK0  }, // PropList   only if 0
+		{ CnvOK0  }, // C4Object   only if 0
+		{ CnvOK0  }, // String     only if 0
+		{ CnvOK0  }, // Array      only if 0
+		{ CnvError  }, // Ref
+		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Bool
-		{ CnvOK		}, // any
-		{ CnvOK		}, // int        might be used
-		{ CnvOK		}, // Bool       same
-		{ CnvError	}, // PropList   NEVER!
-		{ CnvError	}, // C4Object   NEVER!
-		{ CnvError	}, // String     NEVER!
-		{ CnvError	}, // Array      NEVER!
-		{ CnvError	}, // Ref
-		{ CnvError	}, // PropListRef
+		{ CnvOK   }, // any
+		{ CnvOK   }, // int        might be used
+		{ CnvOK   }, // Bool       same
+		{ CnvError  }, // PropList   NEVER!
+		{ CnvError  }, // C4Object   NEVER!
+		{ CnvError  }, // String     NEVER!
+		{ CnvError  }, // Array      NEVER!
+		{ CnvError  }, // Ref
+		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_PropList
-		{ CnvOK		}, // any
-		{ CnvError	}, // int        NEVER!
-		{ CnvOK		}, // Bool
-		{ CnvOK		}, // PropList   same
-		{ CnvObject	}, // C4Object
-		{ CnvError	}, // String     NEVER!
-		{ CnvError	}, // Array      NEVER!
-		{ CnvError	}, // Ref   NEVER!
-		{ CnvError	}, // PropListRef
+		{ CnvOK   }, // any
+		{ CnvError  }, // int        NEVER!
+		{ CnvOK   }, // Bool
+		{ CnvOK   }, // PropList   same
+		{ CnvObject }, // C4Object
+		{ CnvError  }, // String     NEVER!
+		{ CnvError  }, // Array      NEVER!
+		{ CnvError  }, // Ref   NEVER!
+		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Object
-		{ CnvOK		}, // any
-		{ CnvError	}, // int        NEVER!
-		{ CnvOK		}, // Bool
-		{ CnvOK		}, // PropList
-		{ CnvOK		}, // C4Object   same
-		{ CnvError	}, // String     NEVER!
-		{ CnvError	}, // Array      NEVER!
-		{ CnvError	}, // Ref   NEVER!
-		{ CnvError	}, // PropListRef
+		{ CnvOK   }, // any
+		{ CnvError  }, // int        NEVER!
+		{ CnvOK   }, // Bool
+		{ CnvOK   }, // PropList
+		{ CnvOK   }, // C4Object   same
+		{ CnvError  }, // String     NEVER!
+		{ CnvError  }, // Array      NEVER!
+		{ CnvError  }, // Ref   NEVER!
+		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_String
-		{ CnvOK		}, // any
-		{ CnvError	}, // int        NEVER!
-		{ CnvOK		}, // Bool
-		{ CnvError	}, // PropList   NEVER!
-		{ CnvError	}, // C4Object   NEVER!
-		{ CnvOK		}, // String     same
-		{ CnvError	}, // Array      NEVER!
-		{ CnvError	}, // Ref   NEVER!
-		{ CnvError	}, // PropListRef
+		{ CnvOK   }, // any
+		{ CnvError  }, // int        NEVER!
+		{ CnvOK   }, // Bool
+		{ CnvError  }, // PropList   NEVER!
+		{ CnvError  }, // C4Object   NEVER!
+		{ CnvOK   }, // String     same
+		{ CnvError  }, // Array      NEVER!
+		{ CnvError  }, // Ref   NEVER!
+		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Array
-		{ CnvOK		}, // any
-		{ CnvError	}, // int        NEVER!
-		{ CnvOK		}, // Bool
-		{ CnvError	}, // PropList   NEVER!
-		{ CnvError	}, // C4Object   NEVER!
-		{ CnvError	}, // String     NEVER!
-		{ CnvOK		}, // Array      same
-		{ CnvError	}, // Ref   NEVER!
-		{ CnvError	}, // PropListRef
+		{ CnvOK   }, // any
+		{ CnvError  }, // int        NEVER!
+		{ CnvOK   }, // Bool
+		{ CnvError  }, // PropList   NEVER!
+		{ CnvError  }, // C4Object   NEVER!
+		{ CnvError  }, // String     NEVER!
+		{ CnvOK   }, // Array      same
+		{ CnvError  }, // Ref   NEVER!
+		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Ref - resolve reference and retry type check
-		{ CnvDeref	}, // any
-		{ CnvDeref	}, // int
-		{ CnvDeref	}, // Bool
-		{ CnvDeref	}, // PropList
-		{ CnvDeref	}, // C4Object
-		{ CnvDeref	}, // String
-		{ CnvDeref	}, // Array
-		{ CnvOK		}, // Ref   same
-		{ CnvError	}, // PropListRef
+		{ CnvDeref  }, // any
+		{ CnvDeref  }, // int
+		{ CnvDeref  }, // Bool
+		{ CnvDeref  }, // PropList
+		{ CnvDeref  }, // C4Object
+		{ CnvDeref  }, // String
+		{ CnvDeref  }, // Array
+		{ CnvOK   }, // Ref   same
+		{ CnvError  }, // PropListRef
 	},
 	{ // C4V_Ref - resolve reference and retry type check
-		{ CnvPLR	}, // any
-		{ CnvPLR	}, // int
-		{ CnvPLR	}, // Bool
-		{ CnvPLR	}, // PropList
-		{ CnvPLR	}, // C4Object
-		{ CnvPLR	}, // String
-		{ CnvPLR	}, // Array
-		{ CnvPLR	}, // Ref
-		{ CnvOK		}, // PropListRef   same
+		{ CnvPLR  }, // any
+		{ CnvPLR  }, // int
+		{ CnvPLR  }, // Bool
+		{ CnvPLR  }, // PropList
+		{ CnvPLR  }, // C4Object
+		{ CnvPLR  }, // String
+		{ CnvPLR  }, // Array
+		{ CnvPLR  }, // Ref
+		{ CnvOK   }, // PropListRef   same
 	},
 };
 
@@ -524,7 +525,7 @@ StdStrBuf C4Value::GetDataString()
 		return GetRefVal().GetDataString() + "*";
 
 	// ouput by type info
-	switch(GetType())
+	switch (GetType())
 	{
 	case C4V_Int:
 		return FormatString("%ld", Data.Int);
@@ -532,33 +533,32 @@ StdStrBuf C4Value::GetDataString()
 		return StdStrBuf(Data ? "true" : "false");
 	case C4V_C4Object:
 	case C4V_PropList:
-		{
+	{
 		// obj exists?
-		if(!::Objects.ObjectNumber(Data.PropList))
+		if (!::Objects.ObjectNumber(Data.PropList))
 			return FormatString("%ld", Data.Int);
-		else
-			if (Data.PropList)
-				if (Data.Obj->Status == C4OS_NORMAL)
-					return FormatString("%s #%d", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
-				else
-					return FormatString("{%s #%d}", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
+		else if (Data.PropList)
+			if (Data.Obj->Status == C4OS_NORMAL)
+				return FormatString("%s #%d", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
 			else
-				return StdStrBuf("0"); // (impossible)
-		}
+				return FormatString("{%s #%d}", Data.PropList->GetName(), Objects.ObjectNumber(Data.PropList));
+		else
+			return StdStrBuf("0"); // (impossible)
+	}
 	case C4V_String:
 		return (Data.Str && Data.Str->GetCStr()) ? FormatString("\"%s\"", Data.Str->GetCStr()) : StdStrBuf("(nullstring)");
 	case C4V_Array:
+	{
+		StdStrBuf DataString;
+		DataString = "[";
+		for (int32_t i = 0; i < Data.Array->GetSize(); i++)
 		{
-			StdStrBuf DataString;
-			DataString = "[";
-			for(int32_t i = 0; i < Data.Array->GetSize(); i++)
-			{
-				if(i) DataString.Append(", ");
-				DataString.Append(static_cast<const StdStrBuf &>(Data.Array->GetItem(i).GetDataString()));
-			}
-			DataString.AppendChar(']');
-			return DataString;
+			if (i) DataString.Append(", ");
+			DataString.Append(static_cast<const StdStrBuf &>(Data.Array->GetItem(i).GetDataString()));
 		}
+		DataString.AppendChar(']');
+		return DataString;
+	}
 	case C4V_Any:
 		return StdStrBuf("nil");
 	default:
@@ -569,14 +569,14 @@ StdStrBuf C4Value::GetDataString()
 C4Value C4VString(const char *strString)
 {
 	// safety
-	if(!strString) return C4Value();
+	if (!strString) return C4Value();
 	return C4Value(::Strings.RegString(strString));
 }
 
 C4Value C4VString(StdStrBuf Str)
 {
 	// safety
-	if(Str.isNull()) return C4Value();
+	if (Str.isNull()) return C4Value();
 	return C4Value(::Strings.RegString(Str));
 }
 
@@ -589,11 +589,11 @@ void C4Value::DenumeratePointer()
 		return;
 	}
 	// object types only
-	if(Type != C4V_C4ObjectEnum) return;
+	if (Type != C4V_C4ObjectEnum) return;
 	// get obj id, search object
 	int iObjID = Data.Int;
 	C4PropList *pObj = Objects.PropListPointer(iObjID);
-	if(pObj)
+	if (pObj)
 		// set
 		SetPropList(pObj);
 	else
@@ -605,63 +605,63 @@ void C4Value::DenumeratePointer()
 }
 
 void C4Value::CompileFunc(StdCompiler *pComp)
-	{
+{
 	// Type
 	bool fCompiler = pComp->isCompiler();
-	if(!fCompiler)
-		{
+	if (!fCompiler)
+	{
 		// Get type
 		assert(Type != C4V_Any || !Data);
 		char cC4VID = GetC4VID(Type);
 		// Object reference is saved enumerated
-		if(Type == C4V_C4Object)
+		if (Type == C4V_C4Object)
 			cC4VID = GetC4VID(C4V_C4ObjectEnum);
-		if(Type == C4V_PropList && getPropList()->GetDef())
+		if (Type == C4V_PropList && getPropList()->GetDef())
 			cC4VID = GetC4VID(C4V_C4DefEnum);
-		else if(Type == C4V_PropList)
+		else if (Type == C4V_PropList)
 			cC4VID = GetC4VID(C4V_C4ObjectEnum);
 		// Write
 		pComp->Character(cC4VID);
-		}
+	}
 	else
-		{
+	{
 		// Clear
 		Set0();
 		// Read type
 		char cC4VID;
 		try
-			{
+		{
 			pComp->Character(cC4VID);
-			}
-		catch(StdCompiler::NotFoundException *pExc)
-			{
+		}
+		catch (StdCompiler::NotFoundException *pExc)
+		{
 			delete pExc;
 			cC4VID = 'A';
-			}
+		}
 		// old style string
 		if (cC4VID == 'S')
-			{
+		{
 			int32_t iTmp;
 			pComp->Value(iTmp);
 			// search
 			C4String *pString = ::Strings.FindString(iTmp);
-			if(pString)
-				{
+			if (pString)
+			{
 				Data.Str = pString;
 				pString->IncRef();
-				}
+			}
 			else
 				Type = C4V_Any;
 			return;
-			}
-		Type = GetC4VFromID(cC4VID);
 		}
+		Type = GetC4VFromID(cC4VID);
+	}
 	// Data
 	int32_t iTmp;
-	switch(Type)
-		{
+	switch (Type)
+	{
 
-	// simple data types: just save
+		// simple data types: just save
 	case C4V_Int:
 	case C4V_Bool:
 
@@ -672,20 +672,20 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 
 		break;
 
-	// object: save object number instead
+		// object: save object number instead
 	case C4V_C4Object: case C4V_PropList:
-		{
+	{
 		assert(!fCompiler);
 		C4PropList * p = getPropList();
 		if (Type == C4V_PropList && p->GetDef())
 			pComp->Value(p->GetDef()->id);
 		else
-			{
+		{
 			iTmp = ::Objects.ObjectNumber(getPropList());
 			pComp->Value(iTmp);
-			}
-		break;
 		}
+		break;
+	}
 
 	case C4V_C4ObjectEnum:
 		assert(fCompiler);
@@ -694,44 +694,44 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		break;
 
 	case C4V_C4DefEnum:
-		{
+	{
 		assert(fCompiler);
 		C4ID id;
 		pComp->Value(id); // must be denumerated later
 		Data.PropList = Definitions.ID2Def(id);
 		Type = C4V_PropList;
-		if(!Data.PropList)
-			{
+		if (!Data.PropList)
+		{
 			LogF("ERROR: Definition %s is missing.", id.ToString());
 			Type = C4V_Any;
-			}
-		else
-			{
-			Data.PropList->AddRef(this);
-			}
-		break;
 		}
+		else
+		{
+			Data.PropList->AddRef(this);
+		}
+		break;
+	}
 
 	// string: save string number
 	case C4V_String:
-		{
+	{
 		// search
 		StdStrBuf s;
 		if (!fCompiler) s = Data.Str->GetData();
 		pComp->Value(s);
-		if(fCompiler)
-			{
+		if (fCompiler)
+		{
 			C4String *pString = ::Strings.RegString(s);
-			if(pString)
-				{
+			if (pString)
+			{
 				Data.Str = pString;
 				pString->IncRef();
-				}
+			}
 			else
 				Type = C4V_Any;
-			}
-		break;
 		}
+		break;
+	}
 
 	case C4V_Array:
 		pComp->Seperator(StdCompiler::SEP_START2);
@@ -745,51 +745,51 @@ void C4Value::CompileFunc(StdCompiler *pComp)
 		// doesn't have a value, so nothing to store
 		break;
 
-	// shouldn't happen
+		// shouldn't happen
 	case C4V_Ref:
 	default:
 		assert(false);
 		break;
-		}
 	}
+}
 
 bool C4Value::operator == (const C4Value& Value2) const
-	{
+{
 	switch (Type)
+	{
+	case C4V_Any:
+		assert(!Data);
+		return Value2.Type == Type;
+	case C4V_Int:
+		switch (Value2.Type)
 		{
-		case C4V_Any:
-			assert(!Data);
-			return Value2.Type == Type;
 		case C4V_Int:
-			switch (Value2.Type)
-				{
-				case C4V_Int:
-				case C4V_Bool:
-					return Data == Value2.Data;
-				default:
-					return false;
-				}
 		case C4V_Bool:
-			switch (Value2.Type)
-				{
-				case C4V_Int:
-				case C4V_Bool:
-					return Data == Value2.Data;
-					default:
-					return false;
-				}
-		case C4V_C4Object: case C4V_PropList:
-			return Data == Value2.Data && Type == Value2.Type;
-		case C4V_String:
-			return Type == Value2.Type && Data.Str == Value2.Data.Str;
-		case C4V_Array:
-			return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
-		default:
-			// C4AulExec should have dereferenced both values, no need to implement comparison here
 			return Data == Value2.Data;
+		default:
+			return false;
 		}
-	return GetData() == Value2.GetData();
+	case C4V_Bool:
+		switch (Value2.Type)
+		{
+		case C4V_Int:
+		case C4V_Bool:
+			return Data == Value2.Data;
+		default:
+			return false;
+		}
+	case C4V_C4Object: case C4V_PropList:
+		return Data == Value2.Data && Type == Value2.Type;
+	case C4V_String:
+		return Type == Value2.Type && Data.Str == Value2.Data.Str;
+	case C4V_Array:
+		return Type == Value2.Type && *(Data.Array) == *(Value2.Data.Array);
+	default:
+		// C4AulExec should have dereferenced both values, no need to implement comparison here
+		return Data == Value2.Data;
 	}
+	return GetData() == Value2.GetData();
+}
 
 bool C4Value::operator != (const C4Value& Value2) const
 {
@@ -800,7 +800,7 @@ C4Value C4VID(C4ID iVal) { return C4Value(::Definitions.ID2Def(iVal)); }
 C4ID C4Value::getC4ID()
 {
 	C4PropList * p = getPropList();
-	if(!p) return C4ID::None;
+	if (!p) return C4ID::None;
 	C4Def * d = p->GetDef();
 	if (!d) return C4ID::None;
 	return d->id;

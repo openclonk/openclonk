@@ -56,28 +56,31 @@ char strExecuteAtEnd[_MAX_PATH + 1] = "";
 
 int iResult = 0;
 
-bool EraseItemSafe(const char *szFilename) {
+bool EraseItemSafe(const char *szFilename)
+{
 	return false;
 }
 
-bool Log(const char *msg) {
+bool Log(const char *msg)
+{
 	if (!fQuiet)
 		printf("%s\n", msg);
 	return 1;
 }
 #define IMPLEMENT_LOGF(func) \
-	bool func(const char *msg, ...) { \
-		va_list args; va_start(args, msg); \
-		StdStrBuf Buf; \
-		Buf.FormatV(msg, args); \
-		return Log(Buf.getData()); \
-	}
+  bool func(const char *msg, ...) { \
+    va_list args; va_start(args, msg); \
+    StdStrBuf Buf; \
+    Buf.FormatV(msg, args); \
+    return Log(Buf.getData()); \
+  }
 
 IMPLEMENT_LOGF(DebugLogF)
 IMPLEMENT_LOGF(LogF)
 IMPLEMENT_LOGF(LogSilentF)
 
-bool ProcessGroup(const char *FilenamePar) {
+bool ProcessGroup(const char *FilenamePar)
+{
 
 	C4Group hGroup;
 	hGroup.SetStdOutput(!fQuiet);
@@ -94,34 +97,48 @@ bool ProcessGroup(const char *FilenamePar) {
 	LogF("Group: %s", szFilename);
 
 	// Open group file
-	if (hGroup.Open(szFilename, true)) {
+	if (hGroup.Open(szFilename, true))
+	{
 		// No commands: display contents
-		if (iFirstCommand >= argc) {
+		if (iFirstCommand >= argc)
+		{
 			hGroup.SetStdOutput(true);
-				hGroup.View("*");
+			hGroup.View("*");
 			hGroup.SetStdOutput(!fQuiet);
 		}
 		// Process commands
-		else {
-			for (int iArg = iFirstCommand; iArg < argc; ++iArg) {
+		else
+		{
+			for (int iArg = iFirstCommand; iArg < argc; ++iArg)
+			{
 				// This argument is a command
-				if (argv[iArg][0] == '-') {
+				if (argv[iArg][0] == '-')
+				{
 					// Handle commands
-					switch (argv[iArg][1]) {
+					switch (argv[iArg][1])
+					{
 						// Add
 					case 'a':
 						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
 							fprintf(stderr, "Missing argument for add command\n");
-						else {
-							if ((argv[iArg][2] == 's') || (argv[iArg][2] && (argv[iArg][3] == 's'))) {
-								if ((iArg + 2 >= argc) || (argv[iArg + 2][0] == '-')) {
+						else
+						{
+							if ((argv[iArg][2] == 's') || (argv[iArg][2] && (argv[iArg][3] == 's')))
+							{
+								if ((iArg + 2 >= argc) || (argv[iArg + 2][0] == '-'))
+								{
 									fprintf(stderr, "Missing argument for add as command\n");
-								} else {
+								}
+								else
+								{
 									hGroup.Add(argv[iArg + 1], argv[iArg + 2]);
 									iArg += 2;
 								}
-							} else {
-								while (iArg + 1 < argc && argv[iArg + 1][0] != '-') {
+							}
+							else
+							{
+								while (iArg + 1 < argc && argv[iArg + 1][0] != '-')
+								{
 									++iArg;
 #ifdef _WIN32
 									// manually expand wildcards
@@ -135,10 +152,14 @@ bool ProcessGroup(const char *FilenamePar) {
 						break;
 						// Move
 					case 'm':
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-')) {
+						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
+						{
 							fprintf(stderr, "Missing argument for move command\n");
-						} else {
-							while (iArg + 1 < argc && argv[iArg + 1][0] != '-') {
+						}
+						else
+						{
+							while (iArg + 1 < argc && argv[iArg + 1][0] != '-')
+							{
 								++iArg;
 #ifdef _WIN32
 								// manually expand wildcards
@@ -151,17 +172,26 @@ bool ProcessGroup(const char *FilenamePar) {
 						break;
 						// Extract
 					case 'e':
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-')) {
+						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
+						{
 							fprintf(stderr, "Missing argument for extract command\n");
-						} else {
-							if ((argv[iArg][2] == 't') || (argv[iArg][2] && (argv[iArg][3] == 's'))) {
-								if ((iArg + 2 >= argc) || (argv[iArg + 2][0] == '-')) {
+						}
+						else
+						{
+							if ((argv[iArg][2] == 't') || (argv[iArg][2] && (argv[iArg][3] == 's')))
+							{
+								if ((iArg + 2 >= argc) || (argv[iArg + 2][0] == '-'))
+								{
 									fprintf(stderr, "Missing argument for extract as command\n");
-								} else {
+								}
+								else
+								{
 									hGroup.Extract(argv[iArg + 1], argv[iArg + 2]);
 									iArg += 2;
 								}
-							} else {
+							}
+							else
+							{
 								hGroup.Extract(argv[iArg + 1]);
 								iArg++;
 							}
@@ -169,9 +199,12 @@ bool ProcessGroup(const char *FilenamePar) {
 						break;
 						// Delete
 					case 'd':
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-')) {
+						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
+						{
 							fprintf(stderr, "Missing argument for delete command\n");
-						} else {
+						}
+						else
+						{
 							hGroup.Delete(argv[iArg + 1], fRecursive);
 							iArg++;
 						}
@@ -181,11 +214,13 @@ bool ProcessGroup(const char *FilenamePar) {
 						// First sort parameter overrides default Clonk sort list
 						C4Group_SetSortList(NULL);
 						// Missing argument
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-')) {
+						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
+						{
 							fprintf(stderr, "Missing argument for sort command\n");
 						}
 						// Sort, advance to next argument
-						else {
+						else
+						{
 							hGroup.Sort(argv[iArg + 1]);
 							iArg++;
 						}
@@ -193,9 +228,12 @@ bool ProcessGroup(const char *FilenamePar) {
 						// Rename
 					case 'r':
 						if ((iArg + 2 >= argc) || (argv[iArg + 1][0] == '-')
-								|| (argv[iArg + 2][0] == '-')) {
+						    || (argv[iArg + 2][0] == '-'))
+						{
 							fprintf(stderr, "Missing argument(s) for rename command\n");
-						} else {
+						}
+						else
+						{
 							hGroup.Rename(argv[iArg + 1], argv[iArg + 2]);
 							iArg += 2;
 						}
@@ -203,9 +241,12 @@ bool ProcessGroup(const char *FilenamePar) {
 						// View
 					case 'l':
 						hGroup.SetStdOutput(true);
-						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-')) {
+						if ((iArg + 1 >= argc) || (argv[iArg + 1][0] == '-'))
+						{
 							hGroup.View("*");
-						} else {
+						}
+						else
+						{
 							hGroup.View(argv[iArg + 1]);
 							iArg++;
 						}
@@ -219,15 +260,18 @@ bool ProcessGroup(const char *FilenamePar) {
 					case 'p':
 						Log("Packing...");
 						// Close
-						if (!hGroup.Close()) {
+						if (!hGroup.Close())
+						{
 							fprintf(stderr, "Closing failed: %s\n", hGroup.GetError());
 						}
 						// Pack
-						else if (!C4Group_PackDirectory(szFilename)) {
+						else if (!C4Group_PackDirectory(szFilename))
+						{
 							fprintf(stderr, "Pack failed\n");
 						}
 						// Reopen
-						else if (!hGroup.Open(szFilename)) {
+						else if (!hGroup.Open(szFilename))
+						{
 							fprintf(stderr, "Reopen failed: %s\n", hGroup.GetError());
 						}
 						break;
@@ -235,15 +279,18 @@ bool ProcessGroup(const char *FilenamePar) {
 					case 'u':
 						LogF("Unpacking...");
 						// Close
-						if (!hGroup.Close()) {
+						if (!hGroup.Close())
+						{
 							fprintf(stderr, "Closing failed: %s\n", hGroup.GetError());
 						}
 						// Pack
-						else if (!C4Group_UnpackDirectory(szFilename)) {
+						else if (!C4Group_UnpackDirectory(szFilename))
+						{
 							fprintf(stderr, "Unpack failed\n");
 						}
 						// Reopen
-						else if (!hGroup.Open(szFilename)) {
+						else if (!hGroup.Open(szFilename))
+						{
 							fprintf(stderr, "Reopen failed: %s\n", hGroup.GetError());
 						}
 						break;
@@ -251,15 +298,18 @@ bool ProcessGroup(const char *FilenamePar) {
 					case 'x':
 						Log("Exploding...");
 						// Close
-						if (!hGroup.Close()) {
+						if (!hGroup.Close())
+						{
 							fprintf(stderr, "Closing failed: %s\n", hGroup.GetError());
 						}
 						// Pack
-						else if (!C4Group_ExplodeDirectory(szFilename)) {
+						else if (!C4Group_ExplodeDirectory(szFilename))
+						{
 							fprintf(stderr, "Unpack failed\n");
 						}
 						// Reopen
-						else if (!hGroup.Open(szFilename)) {
+						else if (!hGroup.Open(szFilename))
+						{
 							fprintf(stderr, "Reopen failed: %s\n", hGroup.GetError());
 						}
 						break;
@@ -270,21 +320,27 @@ bool ProcessGroup(const char *FilenamePar) {
 						// Generate update
 					case 'g':
 						if ((iArg + 3 >= argc) || (argv[iArg + 1][0] == '-')
-								|| (argv[iArg + 2][0] == '-')
-								|| (argv[iArg + 3][0] == '-')) {
+						    || (argv[iArg + 2][0] == '-')
+						    || (argv[iArg + 3][0] == '-'))
+						{
 							fprintf(stderr, "Update generation failed: too few arguments\n");
-						} else {
+						}
+						else
+						{
 							C4UpdatePackage Upd;
 							// Close
-							if (!hGroup.Close()) {
+							if (!hGroup.Close())
+							{
 								fprintf(stderr, "Closing failed: %s\n", hGroup.GetError());
 							}
 							// generate
-							else if (!Upd.MakeUpdate(argv[iArg + 1], argv[iArg + 2], szFilename, argv[iArg + 3])) {
+							else if (!Upd.MakeUpdate(argv[iArg + 1], argv[iArg + 2], szFilename, argv[iArg + 3]))
+							{
 								fprintf(stderr, "Update generation failed.\n");
 							}
 							// Reopen
-							else if (!hGroup.Open(szFilename)) {
+							else if (!hGroup.Open(szFilename))
+							{
 								fprintf(stderr, "Reopen failed: %s\n", hGroup.GetError());
 							}
 							iArg += 3;
@@ -304,33 +360,39 @@ bool ProcessGroup(const char *FilenamePar) {
 						hGroup.PrintInternals();
 						break;
 #endif
-					// Undefined
+						// Undefined
 					default:
 						fprintf(stderr, "Unknown command: %s\n", argv[iArg]);
 						break;
 					}
-				} else {
+				}
+				else
+				{
 					fprintf(stderr, "Invalid parameter %s\n", argv[iArg]);
 				}
 
 			}
 		}
 		// Error: output status
-		if (!SEqual(hGroup.GetError(), "No Error")) {
+		if (!SEqual(hGroup.GetError(), "No Error"))
+		{
 			fprintf(stderr, "Status: %s\n", hGroup.GetError());
 		}
 		// Close group file
-		if (!hGroup.Close()) {
+		if (!hGroup.Close())
+		{
 			fprintf(stderr, "Closing: %s\n", hGroup.GetError());
 		}
 		// Delete group file if desired (i.e. after apply update)
-		if (fDeleteGroup) {
+		if (fDeleteGroup)
+		{
 			LogF("Deleting %s...\n", GetFilename(szFilename));
 			EraseItem(szFilename);
 		}
 	}
 	// Couldn't open group
-	else {
+	else
+	{
 		fprintf(stderr, "Status: %s\n", hGroup.GetError());
 	}
 	free(szFilename);
@@ -338,7 +400,8 @@ bool ProcessGroup(const char *FilenamePar) {
 	return true;
 }
 
-int RegisterShellExtensions() {
+int RegisterShellExtensions()
+{
 #ifdef _WIN32
 	char strModule[2048];
 	char strCommand[2048];
@@ -347,8 +410,9 @@ int RegisterShellExtensions() {
 	GetModuleFileName(NULL, strModule, 2048);
 	// Groups
 	const char *strClasses =
-		"Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
-	for (i = 0; SCopySegment(strClasses, i, strClass); i++) {
+	  "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
+	for (i = 0; SCopySegment(strClasses, i, strClass); i++)
+	{
 		// Unpack
 		sprintf(strCommand, "\"%s\" \"%%1\" \"-u\"", strModule);
 		if (!SetRegShell(strClass, "MakeFolder", "C4Group Unpack", strCommand))
@@ -360,7 +424,8 @@ int RegisterShellExtensions() {
 	}
 	// Directories
 	const char *strClasses2 = "Directory";
-	for (i = 0; SCopySegment(strClasses2, i, strClass); i++) {
+	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
+	{
 		// Pack
 		sprintf(strCommand, "\"%s\" \"%%1\" \"-p\"", strModule);
 		if (!SetRegShell(strClass, "MakeGroupFile", "C4Group Pack", strCommand))
@@ -371,7 +436,8 @@ int RegisterShellExtensions() {
 	return 1;
 }
 
-int UnregisterShellExtensions() {
+int UnregisterShellExtensions()
+{
 #ifdef _WIN32
 	char strModule[2048];
 	char strClass[128];
@@ -379,8 +445,9 @@ int UnregisterShellExtensions() {
 	GetModuleFileName(NULL, strModule, 2048);
 	// Groups
 	const char *strClasses =
-		"Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
-	for (i = 0; SCopySegment(strClasses, i, strClass); i++) {
+	  "Clonk4.Definition;Clonk4.Folder;Clonk4.Group;Clonk4.Player;Clonk4.Scenario;Clonk4.Update;Clonk4.Weblink";
+	for (i = 0; SCopySegment(strClasses, i, strClass); i++)
+	{
 		// Unpack
 		if (!RemoveRegShell(strClass, "MakeFolder"))
 			return 0;
@@ -390,7 +457,8 @@ int UnregisterShellExtensions() {
 	}
 	// Directories
 	const char *strClasses2 = "Directory";
-	for (i = 0; SCopySegment(strClasses2, i, strClass); i++) {
+	for (i = 0; SCopySegment(strClasses2, i, strClass); i++)
+	{
 		// Pack
 		if (!RemoveRegShell(strClass, "MakeGroupFile"))
 			return 0;
@@ -400,17 +468,21 @@ int UnregisterShellExtensions() {
 	return 1;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
 #ifndef WIN32
 	// Always line buffer mode, even if the output is not sent to a terminal
 	setvbuf(stdout, NULL, _IOLBF, 0);
 #endif
 	// Scan options
 	int iFirstGroup = 0;
-	for (int i = 1; i < argc; ++i) {
+	for (int i = 1; i < argc; ++i)
+	{
 		// Option encountered
-		if (argv[i][0] == '-') {
-			switch (argv[i][1]) {
+		if (argv[i][0] == '-')
+		{
+			switch (argv[i][1])
+			{
 				// Quiet mode
 			case 'v':
 				fQuiet = false;
@@ -436,7 +508,9 @@ int main(int argc, char *argv[]) {
 				fprintf(stderr, "Unknown option %s\n", argv[i]);
 				break;
 			}
-		} else {
+		}
+		else
+		{
 			// filename encountered: no more options expected
 			iFirstGroup = i;
 			break;
@@ -450,12 +524,12 @@ int main(int argc, char *argv[]) {
 	LogF("RedWolf Design C4Group %s", C4VERSION);
 
 	// Registration check
-/*  Config.Init();
-	Config.Load(false);*/
+	/*  Config.Init();
+	  Config.Load(false);*/
 
 	// Init C4Group
-/*  C4Group_SetMaker(Config.General.Name);
-	C4Group_SetTempPath(Config.General.TempPath);*/
+	/*  C4Group_SetMaker(Config.General.Name);
+	  C4Group_SetTempPath(Config.General.TempPath);*/
 	C4Group_SetSortList(C4CFN_FLS);
 
 	// Store command line parameters
@@ -463,14 +537,16 @@ int main(int argc, char *argv[]) {
 	globalArgV = argv;
 
 	// Register shell
-	if (fRegisterShell) {
+	if (fRegisterShell)
+	{
 		if (RegisterShellExtensions())
 			printf("Shell extensions registered.\n");
 		else
 			printf("Error registering shell extensions.\n");
 	}
 	// Unregister shell
-	if (fUnregisterShell) {
+	if (fUnregisterShell)
+	{
 		if (UnregisterShellExtensions())
 			printf("Shell extensions removed.\n");
 		else
@@ -478,7 +554,8 @@ int main(int argc, char *argv[]) {
 	}
 
 	// At least one parameter (filename, not option or command): process file(s)
-	if (iFirstGroup) {
+	if (iFirstGroup)
+	{
 #ifdef _WIN32
 		// Wildcard in filename: use file search
 		if (SCharCount('*', argv[1]))
@@ -492,7 +569,8 @@ int main(int argc, char *argv[]) {
 #endif
 	}
 	// Too few parameters: output help (if we didn't register stuff)
-	else if (!fRegisterShell && !fUnregisterShell) {
+	else if (!fRegisterShell && !fUnregisterShell)
+	{
 		printf("\n");
 		printf("Usage:    c4group [options] group(s) command(s)\n\n");
 		printf("Commands: -a[s] Add [as]  -m Move  -e[t] Extract [to]\n");
@@ -519,7 +597,7 @@ int main(int argc, char *argv[]) {
 
 	// Execute when done
 	if (strExecuteAtEnd[0])
-		{
+	{
 		printf("Executing: %s\n", strExecuteAtEnd);
 #ifdef _WIN32
 
@@ -532,21 +610,21 @@ int main(int argc, char *argv[]) {
 		CreateProcess(strExecuteAtEnd, NULL, NULL, NULL, false, 0, NULL, NULL, &startInfo, &procInfo);
 #else
 		switch (fork())
-		  {
-		  // Error
-		  case -1:
-		    fprintf(stderr, "Error forking.\n");
-		    break;
-		  // Child process
-		  case 0:
-		    execl(strExecuteAtEnd, strExecuteAtEnd, static_cast<char *>(0)); // currently no parameters are passed to the executed program
-		    exit(1);
-		  // Parent process
-		  default:
-		    break;
-		  }
-#endif
+		{
+			// Error
+		case -1:
+			fprintf(stderr, "Error forking.\n");
+			break;
+			// Child process
+		case 0:
+			execl(strExecuteAtEnd, strExecuteAtEnd, static_cast<char *>(0)); // currently no parameters are passed to the executed program
+			exit(1);
+			// Parent process
+		default:
+			break;
 		}
+#endif
+	}
 	// Done
 	return iResult;
 

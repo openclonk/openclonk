@@ -46,14 +46,14 @@ int main(int argc, char * argv[])
 
 	// Get port
 	uint16_t iPort = C4PuncherPort;
-	if(argc)
+	if (argc)
 	{
 		iPort = atoi(*argv);
-		if(!iPort) iPort = C4PuncherPort;
+		if (!iPort) iPort = C4PuncherPort;
 	}
 
 	// Initialize
-	if(!Puncher.Init(iPort))
+	if (!Puncher.Init(iPort))
 	{
 		fprintf(stderr, "Could not initialize puncher: %s", Puncher.GetError());
 		return 1;

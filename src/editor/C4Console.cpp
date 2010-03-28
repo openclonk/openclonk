@@ -48,7 +48,8 @@
 
 bool SetMenuItemText(HMENU hMenu, WORD id, const char *szText);
 #else
-namespace {
+namespace
+{
 	const DWORD OFN_HIDEREADONLY = 1 << 0;
 	const DWORD OFN_OVERWRITEPROMPT = 1 << 1;
 	const DWORD OFN_FILEMUSTEXIST = 1 << 2;
@@ -90,7 +91,8 @@ namespace {
 # include <res/Cursor.h>
 # include <res/Brush.h>
 
-namespace {
+namespace
+{
 	GtkWidget* CreateImageFromInlinedPixbuf(const guint8* pixbuf_data)
 	{
 		GdkPixbuf* pixbuf = gdk_pixbuf_new_from_inline(-1, pixbuf_data, false, NULL);
@@ -102,11 +104,11 @@ namespace {
 #endif
 
 #define FILE_SELECT_FILTER_FOR_C4S "Clonk 4 Scenario\0"         \
-																	 "*.c4s;*.c4f;Scenario.txt\0" \
-																	 "\0"
+                                   "*.c4s;*.c4f;Scenario.txt\0" \
+                                   "\0"
 
 C4Console::C4Console()
-	{
+{
 	Active = false;
 	Editing = true;
 	ScriptCounter=0;
@@ -131,16 +133,16 @@ C4Console::C4Console()
 	txtScript = NULL;
 #endif // WITH_DEVELOPER_MODE / _WIN32
 
-	MenuIndexFile				=  0,
-	MenuIndexComponents =  1,
-	MenuIndexPlayer			=  2,
-	MenuIndexViewport		=  3,
-	MenuIndexNet				= -1,
-	MenuIndexHelp				=  4;
-	}
+	MenuIndexFile       =  0,
+	                       MenuIndexComponents =  1,
+	                                              MenuIndexPlayer     =  2,
+	                                                                     MenuIndexViewport   =  3,
+	                                                                                            MenuIndexNet        = -1,
+	                                                                                                                  MenuIndexHelp       =  4;
+}
 
 C4Console::~C4Console()
-	{
+{
 #ifdef _WIN32
 	if (hbmCursor) DeleteObject(hbmCursor);
 	if (hbmCursor2) DeleteObject(hbmCursor2);
@@ -151,158 +153,159 @@ C4Console::~C4Console()
 	if (hbmHalt) DeleteObject(hbmHalt);
 	if (hbmHalt2) DeleteObject(hbmHalt2);
 #elif defined(WITH_DEVELOPER_MODE)
-	if(cursorDefault) gdk_cursor_unref(cursorDefault);
-	if(cursorWait) gdk_cursor_unref(cursorWait);
+	if (cursorDefault) gdk_cursor_unref(cursorDefault);
+	if (cursorWait) gdk_cursor_unref(cursorWait);
 #endif // WITH_DEVELOPER_MODE / _WIN32
-	}
+}
 
 #ifdef _WIN32
 INT_PTR CALLBACK ConsoleDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	switch (Msg)
+	{
+		//------------------------------------------------------------------------------------------------------------
+	case WM_ACTIVATEAPP:
+		Application.Active = wParam != 0;
+		return true;
+		//------------------------------------------------------------------------------------------------------------
+	case WM_DESTROY:
+		StoreWindowPosition(hDlg, "Main", Config.GetSubkeyPath("Console"), false);
+		Application.Quit();
+		return true;
+		//------------------------------------------------------------------------------------------------------------
+	case WM_CLOSE:
+		Console.Close();
+		return true;
+		//------------------------------------------------------------------------------------------------------------
+	case MM_MCINOTIFY:
+		if (wParam == MCI_NOTIFY_SUCCESSFUL)
+			Application.MusicSystem.NotifySuccess();
+		return true;
+		//------------------------------------------------------------------------------------------------------------
+	case WM_INITDIALOG:
+		SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
+		Console.UpdateMenuText(GetMenu(hDlg));
+		return true;
+		//------------------------------------------------------------------------------------------------------------
+	case WM_COMMAND:
+		// Evaluate command
+		switch (LOWORD(wParam))
 		{
-		//------------------------------------------------------------------------------------------------------------
-		case WM_ACTIVATEAPP:
-			Application.Active = wParam != 0;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDOK:
+			// IDC_COMBOINPUT to Console.In()
+			char buffer[16000];
+			GetDlgItemText(hDlg,IDC_COMBOINPUT,buffer,16000);
+			if (buffer[0])
+				Console.In(buffer);
 			return true;
-		//------------------------------------------------------------------------------------------------------------
-		case WM_DESTROY:
-			StoreWindowPosition(hDlg, "Main", Config.GetSubkeyPath("Console"), false);
-			Application.Quit();
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONHALT:
+			Console.DoHalt();
 			return true;
-		//------------------------------------------------------------------------------------------------------------
-		case WM_CLOSE:
-			Console.Close();
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONPLAY:
+			Console.DoPlay();
 			return true;
-		//------------------------------------------------------------------------------------------------------------
-		case MM_MCINOTIFY:
-			if (wParam == MCI_NOTIFY_SUCCESSFUL)
-				Application.MusicSystem.NotifySuccess();
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONMODEPLAY:
+			Console.EditCursor.SetMode(C4CNS_ModePlay);
 			return true;
-		//------------------------------------------------------------------------------------------------------------
-		case WM_INITDIALOG:
-			SendMessage(hDlg,DM_SETDEFID,(WPARAM)IDOK,(LPARAM)0);
-			Console.UpdateMenuText(GetMenu(hDlg));
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONMODEEDIT:
+			Console.EditCursor.SetMode(C4CNS_ModeEdit);
 			return true;
-		//------------------------------------------------------------------------------------------------------------
-		case WM_COMMAND:
-			// Evaluate command
-			switch (LOWORD(wParam))
-				{
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDOK:
-					// IDC_COMBOINPUT to Console.In()
-					char buffer[16000];
-					GetDlgItemText(hDlg,IDC_COMBOINPUT,buffer,16000);
-					if (buffer[0])
-						Console.In(buffer);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONHALT:
-					Console.DoHalt();
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONPLAY:
-					Console.DoPlay();
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONMODEPLAY:
-					Console.EditCursor.SetMode(C4CNS_ModePlay);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONMODEEDIT:
-					Console.EditCursor.SetMode(C4CNS_ModeEdit);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONMODEDRAW:
-					Console.EditCursor.SetMode(C4CNS_ModeDraw);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_QUIT:	Console.FileQuit();	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_SAVEAS:	Console.FileSaveAs(false);	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_SAVE:	Console.FileSave(false);	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_SAVEGAMEAS:	Console.FileSaveAs(true);	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_SAVEGAME:	Console.FileSave(true);	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_OPEN:	Console.FileOpen();	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_RECORD:	Console.FileRecord();	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_OPENWPLRS:	Console.FileOpenWPlrs(); return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_FILE_CLOSE: Console.FileClose();	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_HELP_ABOUT: Console.HelpAbout();	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_PLAYER_JOIN: Console.PlayerJoin();	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_VIEWPORT_NEW: Console.ViewportNew();	return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_COMPONENTS_TITLE: Console.EditTitle(); return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_COMPONENTS_INFO: Console.EditInfo(); return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDM_COMPONENTS_SCRIPT: Console.EditScript(); return true;
-				}
-			// New player viewport
-			if (Inside((int) LOWORD(wParam),IDM_VIEWPORT_NEW1,IDM_VIEWPORT_NEW2))
-				{
-				Game.CreateViewport(LOWORD(wParam)-IDM_VIEWPORT_NEW1);
-				return true;
-				}
-			// Remove player
-			if (Inside((int) LOWORD(wParam),IDM_PLAYER_QUIT1,IDM_PLAYER_QUIT2))
-				{
-				::Control.Input.Add(CID_Script, new C4ControlScript(
-					FormatString("EliminatePlayer(%d)", LOWORD(wParam)-IDM_PLAYER_QUIT1).getData()));
-				return true;
-				}
-			// Remove client
-			if (Inside((int) LOWORD(wParam),IDM_NET_CLIENT1,IDM_NET_CLIENT2))
-				{
-				if(!::Control.isCtrlHost()) return false;
-				Game.Clients.CtrlRemove(Game.Clients.getClientByID(LOWORD(wParam)-IDM_NET_CLIENT1), LoadResStr("IDS_MSG_KICKBYMENU"));
-				return true;
-				}
-			return false;
-		//------------------------------------------------------------------------------------------------------------
-		case WM_USER_LOG:
-			if (SEqual2((const char *)lParam, "IDS_"))
-				Log(LoadResStr((const char *)lParam));
-			else
-				Log((const char *)lParam);
-			return false;
-		//------------------------------------------------------------------------------------------------------------
-		case WM_COPYDATA:
-			COPYDATASTRUCT* pcds = reinterpret_cast<COPYDATASTRUCT *>(lParam);
-			if(pcds->dwData == WM_USER_RELOADFILE)
-			{
-				// get path, ensure proper termination
-				const char *szPath = reinterpret_cast<const char *>(pcds->lpData);
-				if(szPath[pcds->cbData - 1]) break;
-				// reload
-				Game.ReloadFile(szPath);
-			}
-			return false;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONMODEDRAW:
+			Console.EditCursor.SetMode(C4CNS_ModeDraw);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_QUIT: Console.FileQuit(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_SAVEAS: Console.FileSaveAs(false);  return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_SAVE: Console.FileSave(false);  return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_SAVEGAMEAS: Console.FileSaveAs(true); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_SAVEGAME: Console.FileSave(true); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_OPEN: Console.FileOpen(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_RECORD: Console.FileRecord(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_OPENWPLRS:  Console.FileOpenWPlrs(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_FILE_CLOSE: Console.FileClose(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_HELP_ABOUT: Console.HelpAbout(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_PLAYER_JOIN: Console.PlayerJoin(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_VIEWPORT_NEW: Console.ViewportNew(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_COMPONENTS_TITLE: Console.EditTitle(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_COMPONENTS_INFO: Console.EditInfo(); return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDM_COMPONENTS_SCRIPT: Console.EditScript(); return true;
 		}
+		// New player viewport
+		if (Inside((int) LOWORD(wParam),IDM_VIEWPORT_NEW1,IDM_VIEWPORT_NEW2))
+		{
+			Game.CreateViewport(LOWORD(wParam)-IDM_VIEWPORT_NEW1);
+			return true;
+		}
+		// Remove player
+		if (Inside((int) LOWORD(wParam),IDM_PLAYER_QUIT1,IDM_PLAYER_QUIT2))
+		{
+			::Control.Input.Add(CID_Script, new C4ControlScript(
+			                      FormatString("EliminatePlayer(%d)", LOWORD(wParam)-IDM_PLAYER_QUIT1).getData()));
+			return true;
+		}
+		// Remove client
+		if (Inside((int) LOWORD(wParam),IDM_NET_CLIENT1,IDM_NET_CLIENT2))
+		{
+			if (!::Control.isCtrlHost()) return false;
+			Game.Clients.CtrlRemove(Game.Clients.getClientByID(LOWORD(wParam)-IDM_NET_CLIENT1), LoadResStr("IDS_MSG_KICKBYMENU"));
+			return true;
+		}
+		return false;
+		//------------------------------------------------------------------------------------------------------------
+	case WM_USER_LOG:
+		if (SEqual2((const char *)lParam, "IDS_"))
+			Log(LoadResStr((const char *)lParam));
+		else
+			Log((const char *)lParam);
+		return false;
+		//------------------------------------------------------------------------------------------------------------
+	case WM_COPYDATA:
+		COPYDATASTRUCT* pcds = reinterpret_cast<COPYDATASTRUCT *>(lParam);
+		if (pcds->dwData == WM_USER_RELOADFILE)
+		{
+			// get path, ensure proper termination
+			const char *szPath = reinterpret_cast<const char *>(pcds->lpData);
+			if (szPath[pcds->cbData - 1]) break;
+			// reload
+			Game.ReloadFile(szPath);
+		}
+		return false;
+	}
 
 	return false;
-	}
+}
 #elif defined(USE_X11) && !defined(WITH_DEVELOPER_MODE)
 void C4Console::HandleMessage (XEvent & e)
 {
 	// Parent handling
 	C4ConsoleBase::HandleMessage(e);
 
-	switch (e.type) {
-		case FocusIn:
+	switch (e.type)
+	{
+	case FocusIn:
 		Application.Active = true;
 		break;
-		case FocusOut:
+	case FocusOut:
 		Application.Active = false;
 		break;
 	}
@@ -310,7 +313,7 @@ void C4Console::HandleMessage (XEvent & e)
 #endif // _WIN32/USE_X11
 
 CStdWindow * C4Console::Init(CStdApp * pApp)
-	{
+{
 	// Active
 	Active = true;
 	// Editing (enable even if network)
@@ -319,23 +322,23 @@ CStdWindow * C4Console::Init(CStdApp * pApp)
 #ifdef _WIN32
 	hWindow = CreateDialog(pApp->GetInstance(), MAKEINTRESOURCE(IDD_CONSOLE), NULL, ConsoleDlgProc);
 	if (!hWindow)
-		{
+	{
 		char * lpMsgBuf;
 		FormatMessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER |
-			FORMAT_MESSAGE_FROM_SYSTEM |
-			FORMAT_MESSAGE_IGNORE_INSERTS,
-			NULL,
-			GetLastError(),
-			0,
-			(LPTSTR) &lpMsgBuf,
-			0,
-			NULL);
+		  FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		  FORMAT_MESSAGE_FROM_SYSTEM |
+		  FORMAT_MESSAGE_IGNORE_INSERTS,
+		  NULL,
+		  GetLastError(),
+		  0,
+		  (LPTSTR) &lpMsgBuf,
+		  0,
+		  NULL);
 		Log(FormatString("Error creating dialog window: %s", lpMsgBuf).getData());
 		// Free the buffer.
 		LocalFree(lpMsgBuf);
 		return NULL;
-		}
+	}
 	// Restore window position
 	RestoreWindowPosition(hWindow, "Main", Config.GetSubkeyPath("Console"));
 	// Set icon
@@ -378,7 +381,7 @@ CStdWindow * C4Console::Init(CStdApp * pApp)
 #else
 	return C4ConsoleBase::Init(pApp, LoadResStr("IDS_CNS_CONSOLE"), NULL, false);
 #endif // WITH_DEVELOPER_MODE / _WIN32
-	}
+}
 
 #ifdef WITH_DEVELOPER_MODE
 GtkWidget* C4Console::InitGUI()
@@ -584,30 +587,30 @@ GtkWidget* C4Console::InitGUI()
 #endif // WITH_DEVELOPER_MODE
 
 bool C4Console::In(const char *szText)
-	{
+{
 	if (!Active || !szText) return false;
 	// begins with '/'? then it's a command
 	if (*szText == '/')
-		{
+	{
 		::MessageInput.ProcessCommand(szText);
 		// done
 		return true;
-		}
+	}
 	// begins with '#'? then it's a message. Route cia ProcessInput to allow #/sound
 	if (*szText == '#')
-		{
+	{
 		::MessageInput.ProcessInput(szText + 1);
 		return true;
-		}
+	}
 	// editing enabled?
 	if (!EditCursor.EditingOK()) return false;
 	// pass through network queue
 	::Control.DoInput(CID_Script, new C4ControlScript(szText, C4ControlScript::SCOPE_Console, false), CDT_Decide);
 	return true;
-	}
+}
 
 bool C4Console::Out(const char *szText)
-	{
+{
 #ifdef _WIN32
 	if (!Active) return false;
 	if (!szText || !*szText) return true;
@@ -627,7 +630,7 @@ bool C4Console::Out(const char *szText)
 	UpdateWindow(hWindow);
 #elif defined(WITH_DEVELOPER_MODE)
 	// Append text to log
-	if(!window) return true;
+	if (!window) return true;
 
 	GtkTextIter end;
 	GtkTextBuffer* buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtLog));
@@ -639,10 +642,10 @@ bool C4Console::Out(const char *szText)
 	gtk_text_view_scroll_to_mark(GTK_TEXT_VIEW(txtLog), gtk_text_buffer_get_insert(buffer), 0.0, false, 0.0, 0.0);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	return true;
-	}
+}
 
 bool C4Console::ClearLog()
-	{
+{
 #ifdef _WIN32
 	SetDlgItemText(hWindow,IDC_EDITOUTPUT,"");
 	SendDlgItemMessage(hWindow,IDC_EDITOUTPUT,EM_LINESCROLL,(WPARAM)0,0);
@@ -651,7 +654,7 @@ bool C4Console::ClearLog()
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW(txtLog)), "", 0);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	return true;
-	}
+}
 
 // Someone defines Status as int....
 #ifdef Status
@@ -669,11 +672,11 @@ void C4Console::DoHalt()
 }
 
 bool C4Console::UpdateStatusBars()
-	{
+{
 	if (!Active) return false;
 	// Frame counter
 	if (Game.FrameCounter!=FrameCounter)
-		{
+	{
 		FrameCounter=Game.FrameCounter;
 		StdStrBuf str;
 		str.Format("Frame: %i",FrameCounter);
@@ -683,10 +686,10 @@ bool C4Console::UpdateStatusBars()
 #elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblFrame), str.getData());
 #endif // WITH_DEVELOPER_MODE / _WIN32
-		}
+	}
 	// Script counter
 	if (Game.Script.Counter!=ScriptCounter)
-		{
+	{
 		ScriptCounter=Game.Script.Counter;
 		StdStrBuf str;
 		str.Format("Script: %i",ScriptCounter);
@@ -696,10 +699,10 @@ bool C4Console::UpdateStatusBars()
 #elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblScript), str.getData());
 #endif // WITH_DEVELOPER_MODE / _WIN32
-		}
+	}
 	// Time & FPS
 	if ((Game.Time!=Time) || (Game.FPS!=FPS))
-		{
+	{
 		Time=Game.Time;
 		FPS=Game.FPS;
 		StdStrBuf str;
@@ -710,12 +713,12 @@ bool C4Console::UpdateStatusBars()
 #elif defined(WITH_DEVELOPER_MODE)
 		gtk_label_set_label(GTK_LABEL(lblTime), str.getData());
 #endif // WITH_DEVELOPER_MODE
-		}
-	return true;
 	}
+	return true;
+}
 
 bool C4Console::UpdateHaltCtrls(bool fHalt)
-	{
+{
 	if (!Active) return false;
 #ifdef _WIN32
 	SendDlgItemMessage(hWindow,IDC_BUTTONPLAY,BM_SETSTATE,!fHalt,0);
@@ -737,10 +740,10 @@ bool C4Console::UpdateHaltCtrls(bool fHalt)
 
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	return true;
-	}
+}
 
 bool C4Console::SaveGame(bool fSaveGame)
-	{
+{
 	// Network hosts only
 	if (::Network.isEnabled() && !::Network.isHost())
 		{ Message(LoadResStr("IDS_GAME_NOCLIENTSAVE")); return false; }
@@ -748,13 +751,13 @@ bool C4Console::SaveGame(bool fSaveGame)
 
 	// Can't save to child groups
 	if (Game.ScenarioFile.GetMother())
-		{
+	{
 		StdStrBuf str;
 		str.Format(LoadResStr("IDS_CNS_NOCHILDSAVE"),
-						GetFilename(Game.ScenarioFile.GetName()));
+		           GetFilename(Game.ScenarioFile.GetName()));
 		Message(str.getData());
 		return false;
-		}
+	}
 
 	// Save game to open scenario file
 	bool fOkay=true;
@@ -789,42 +792,42 @@ bool C4Console::SaveGame(bool fSaveGame)
 	// Initialize/script notification
 	if (Game.fScriptCreatedObjects)
 		if (!fSaveGame)
-			{
+		{
 			StdStrBuf str(LoadResStr("IDS_CNS_SCRIPTCREATEDOBJECTS"));
 			str += LoadResStr("IDS_CNS_WARNDOUBLE");
 			Message(str.getData());
 			Game.fScriptCreatedObjects=false;
-			}
+		}
 
 	// Status report
 	if (!fOkay) Message(LoadResStr("IDS_CNS_SAVERROR"));
 	else Out(LoadResStr(fSaveGame ? "IDS_CNS_GAMESAVED" : "IDS_CNS_SCENARIOSAVED"));
 
 	return fOkay;
-	}
+}
 
 bool C4Console::FileSave(bool fSaveGame)
-	{
+{
 	// Don't quicksave games over scenarios
 	if (fSaveGame)
 		if (!Game.C4S.Head.SaveGame)
-			{
+		{
 			Message(LoadResStr("IDS_CNS_NOGAMEOVERSCEN"));
 			return false;
-			}
+		}
 	// Save game
 	return SaveGame(fSaveGame);
-	}
+}
 
 bool C4Console::FileSaveAs(bool fSaveGame)
-	{
+{
 	// Do save-as dialog
 	char filename[512+1];
 	SCopy(Game.ScenarioFile.GetName(),filename);
 	if (!FileSelect(filename,512,
-									"Clonk 4 Scenario\0*.c4s\0\0",
-									OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
-									true)) return false;
+	                "Clonk 4 Scenario\0*.c4s\0\0",
+	                OFN_OVERWRITEPROMPT | OFN_HIDEREADONLY,
+	                true)) return false;
 	DefaultExtension(filename,"c4s");
 	bool fOkay=true;
 	// Close current scenario file
@@ -838,15 +841,15 @@ bool C4Console::FileSaveAs(bool fSaveGame)
 	if (!Game.ScenarioFile.Open(Game.ScenarioFilename)) fOkay=false;
 	// Failure message
 	if (!fOkay)
-		{
+	{
 		Message(FormatString(LoadResStr("IDS_CNS_SAVEASERROR"),Game.ScenarioFilename).getData()); return false;
-		}
+	}
 	// Save game
 	return SaveGame(fSaveGame);
-	}
+}
 
 bool C4Console::Message(const char *szMessage, bool fQuery)
-	{
+{
 	if (!Active) return false;
 #ifdef _WIN32
 	return (IDOK==MessageBox(hWindow,szMessage,C4ENGINECAPTION,fQuery ? (MB_OKCANCEL | MB_ICONEXCLAMATION) : MB_ICONEXCLAMATION));
@@ -857,10 +860,10 @@ bool C4Console::Message(const char *szMessage, bool fQuery)
 	return response == GTK_RESPONSE_OK;
 #endif
 	return false;
-	}
+}
 
 void C4Console::EnableControls(bool fEnable)
-	{
+{
 	if (!Active) return;
 	// disable Editing if no input allowed
 	Editing &= !::Control.NoInput();
@@ -939,10 +942,10 @@ void C4Console::EnableControls(bool fEnable)
 	gtk_widget_set_sensitive(plrJoin, fEnable && Editing);
 	gtk_widget_set_sensitive(viewNew, fEnable);
 #endif // WITH_DEVELOPER_MODE / _WIN32
-	}
+}
 
 bool C4Console::FileOpen()
-	{
+{
 	// Get scenario file name
 	char c4sfile[512+1]="";
 	if (!FileSelect(c4sfile,512,
@@ -955,10 +958,10 @@ bool C4Console::FileOpen()
 	// Open game
 	OpenGame(cmdline);
 	return true;
-	}
+}
 
 bool C4Console::FileOpenWPlrs()
-	{
+{
 	// Get scenario file name
 	char c4sfile[512+1]="";
 	if (!FileSelect(c4sfile,512,
@@ -968,39 +971,39 @@ bool C4Console::FileOpenWPlrs()
 	// Get player file name(s)
 	char c4pfile[4096+1]="";
 	if (!FileSelect(c4pfile,4096,
-									"Clonk 4 Player\0*.c4p\0\0",
-									OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
-									)) return false;
+	                "Clonk 4 Player\0*.c4p\0\0",
+	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
+	               )) return false;
 	// Compose command line
 	char cmdline[6000]="";
 	SAppend("\"",cmdline,5999); SAppend(c4sfile,cmdline,5999); SAppend("\" ",cmdline,5999);
 	if (DirectoryExists(c4pfile)) // Multiplayer
-		{
+	{
 		const char *cptr = c4pfile+SLen(c4pfile)+1;
 		while (*cptr)
-			{
+		{
 			SAppend("\"",cmdline,5999);
 			SAppend(c4pfile,cmdline,5999); SAppend(DirSep,cmdline,5999);
 			SAppend(cptr,cmdline,5999); SAppend("\" ",cmdline,5999);
 			cptr += SLen(cptr)+1;
-			}
 		}
+	}
 	else // Single player
-		{
+	{
 		SAppend("\"",cmdline,5999); SAppend(c4pfile,cmdline,5999); SAppend("\" ",cmdline,5999);
-		}
+	}
 	// Open game
 	OpenGame(cmdline);
 	return true;
-	}
+}
 
 bool C4Console::FileClose()
-	{
+{
 	return CloseGame();
-	}
+}
 
 bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DWORD dwFlags, bool fSave)
-	{
+{
 #ifdef _WIN32
 	OPENFILENAME ofn;
 	ZeroMem(&ofn,sizeof(ofn));
@@ -1028,13 +1031,13 @@ bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 
 	// TODO: Set dialog modal?
 
-	if(g_path_is_absolute(sFilename) )
+	if (g_path_is_absolute(sFilename) )
 		gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), sFilename);
-	else if(fSave)
+	else if (fSave)
 		gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(dialog), sFilename);
 
 	// Install file filter
-	while(*szFilter)
+	while (*szFilter)
 	{
 		char pattern[16 + 1];
 
@@ -1042,7 +1045,7 @@ bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 		gtk_file_filter_set_name(filter, szFilter);
 		szFilter+=SLen(szFilter)+1;
 
-		while(true)
+		while (true)
 		{
 			SCopyUntil(szFilter, pattern, ';', 16);
 
@@ -1052,39 +1055,39 @@ bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 			szFilter += (len + 1);
 
 			// Got not all of the filter, try again.
-			if(last_c != ';' && last_c != '\0')
+			if (last_c != ';' && last_c != '\0')
 				continue;
 
 			gtk_file_filter_add_pattern(filter, pattern);
-			if(last_c == '\0') break;
+			if (last_c == '\0') break;
 		}
 
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(dialog), filter);
 	}
 
 	// TODO: Not in GTK+ 2.4, we could check GTK+ version at runtime and rely on lazy bindung
-//	gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_OVERWRITEPROMPT) != 0);
+//  gtk_file_chooser_set_do_overwrite_confirmation(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_OVERWRITEPROMPT) != 0);
 
 	// TODO: Not in GTK+ 2.4, we could check GTK+ version at runtime and rely on lazy binding
-//	gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_HIDEREADONLY) == 0);
+//  gtk_file_chooser_set_show_hidden(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_HIDEREADONLY) == 0);
 
 	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(dialog), (dwFlags & OFN_ALLOWMULTISELECT) != 0);
 	gtk_file_chooser_set_local_only(GTK_FILE_CHOOSER(dialog), true);
 
 	int response;
-	while(true)
+	while (true)
 	{
 		response = gtk_dialog_run(GTK_DIALOG(dialog));
-		if(response == GTK_RESPONSE_CANCEL || response == GTK_RESPONSE_DELETE_EVENT) break;
+		if (response == GTK_RESPONSE_CANCEL || response == GTK_RESPONSE_DELETE_EVENT) break;
 
 		bool error = false;
 
 		// Check for OFN_FILEMUSTEXIST
-		if((dwFlags & OFN_ALLOWMULTISELECT) == 0)
+		if ((dwFlags & OFN_ALLOWMULTISELECT) == 0)
 		{
 			char* filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
 
-			if((dwFlags & OFN_FILEMUSTEXIST) && !g_file_test(filename, G_FILE_TEST_IS_REGULAR))
+			if ((dwFlags & OFN_FILEMUSTEXIST) && !g_file_test(filename, G_FILE_TEST_IS_REGULAR))
 			{
 				Message(FormatString("File \"%s\" does not exist", filename).getData(), false);
 				error = true;
@@ -1093,17 +1096,17 @@ bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 			g_free(filename);
 		}
 
-		if(!error) break;
+		if (!error) break;
 	}
 
-	if(response != GTK_RESPONSE_ACCEPT)
+	if (response != GTK_RESPONSE_ACCEPT)
 	{
 		gtk_widget_destroy(dialog);
 		return false;
 	}
 
 	// Build result string
-	if((dwFlags & OFN_ALLOWMULTISELECT) == 0)
+	if ((dwFlags & OFN_ALLOWMULTISELECT) == 0)
 	{
 		// Just the file name without multiselect
 		char* filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
@@ -1117,18 +1120,18 @@ bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 		char* folder = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(dialog));
 		int len = SLen(folder);
 
-		if(iSize > 0) SCopy(folder, sFilename, Min(len + 1, iSize));
+		if (iSize > 0) SCopy(folder, sFilename, Min(len + 1, iSize));
 		iSize -= (len + 1); sFilename += (len + 1);
 		g_free(folder);
 
 		GSList* files = gtk_file_chooser_get_filenames(GTK_FILE_CHOOSER(dialog));
-		for(GSList* item = files; item != NULL; item = item->next)
+		for (GSList* item = files; item != NULL; item = item->next)
 		{
 			const char* file = static_cast<const char*>(item->data);
 			char* basefile = g_path_get_basename(file);
 
 			int len = SLen(basefile);
-			if(iSize > 0) SCopy(basefile, sFilename, Min(len + 1, iSize));
+			if (iSize > 0) SCopy(basefile, sFilename, Min(len + 1, iSize));
 			iSize -= (len + 1); sFilename += (len + 1);
 
 			g_free(basefile);
@@ -1144,10 +1147,10 @@ bool C4Console::FileSelect(char *sFilename, int iSize, const char * szFilter, DW
 	return true;
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	return 0;
-	}
+}
 
 bool C4Console::FileRecord()
-	{
+{
 	// only in running mode
 	if (!Game.IsRunning || !::Control.IsRuntimeRecordPossible()) return false;
 	// start record!
@@ -1159,30 +1162,30 @@ bool C4Console::FileRecord()
 	gtk_widget_set_sensitive(fileRecord, false);
 #endif
 	return true;
-	}
+}
 
 void C4Console::ClearPointers(C4Object *pObj)
-	{
+{
 	EditCursor.ClearPointers(pObj);
 	PropertyDlg.ClearPointers(pObj);
-	}
+}
 
 void C4Console::Default()
-	{
+{
 	EditCursor.Default();
 	PropertyDlg.Default();
 	ToolsDlg.Default();
-	}
+}
 
 void C4Console::Clear()
-	{
+{
 	C4ConsoleBase::Clear();
 
 #ifdef WITH_DEVELOPER_MODE
-//	txtLog = NULL;
-//	txtScript = NULL;
-//	btnPlay = NULL;
-//	btnHalt = NULL;
+//  txtLog = NULL;
+//  txtScript = NULL;
+//  btnPlay = NULL;
+//  btnHalt = NULL;
 #endif
 	EditCursor.Clear();
 	PropertyDlg.Clear();
@@ -1190,26 +1193,26 @@ void C4Console::Clear()
 	ClearViewportMenu();
 	ClearPlayerMenu();
 	ClearNetMenu();
-	if(pSurface) delete pSurface;
+	if (pSurface) delete pSurface;
 	pSurface = 0;
 #ifndef _WIN32
 	Application.Quit();
 #endif
-	}
+}
 
 void C4Console::Close()
-	{
+{
 	Application.Quit();
-	}
+}
 
 bool C4Console::FileQuit()
-	{
+{
 	Close();
 	return true;
-	}
+}
 
 void C4Console::HelpAbout()
-	{
+{
 	StdStrBuf strCopyright;
 	strCopyright.Format("Copyright (c) %s %s", C4COPYRIGHT_YEAR, C4COPYRIGHT_COMPANY);
 #ifdef _WIN32
@@ -1218,15 +1221,15 @@ void C4Console::HelpAbout()
 #elif defined(WITH_DEVELOPER_MODE)
 	gtk_show_about_dialog(GTK_WINDOW(window), "name", C4ENGINECAPTION, "version", C4VERSION, "copyright", strCopyright.getData(), NULL);
 #endif // WITH_DEVELOPER_MODE / _WIN32
-	}
+}
 
 void C4Console::ViewportNew()
-	{
+{
 	Game.CreateViewport(NO_OWNER);
-	}
+}
 
 bool C4Console::UpdateCursorBar(const char *szCursor)
-	{
+{
 	if (!Active) return false;
 #ifdef _WIN32
 	// Cursor
@@ -1236,17 +1239,17 @@ bool C4Console::UpdateCursorBar(const char *szCursor)
 	gtk_label_set_label(GTK_LABEL(lblCursor), szCursor);
 #endif
 	return true;
-	}
+}
 
 bool C4Console::UpdateViewportMenu()
-	{
+{
 	if (!Active) return false;
 	ClearViewportMenu();
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexViewport);
 #endif
 	for (C4Player *pPlr=::Players.First; pPlr; pPlr=pPlr->Next)
-		{
+	{
 		StdStrBuf sText;
 		sText.Format(LoadResStr("IDS_CNS_NEWPLRVIEWPORT"),pPlr->GetName());
 #ifdef _WIN32
@@ -1257,30 +1260,30 @@ bool C4Console::UpdateViewportMenu()
 		g_signal_connect(G_OBJECT(menuItem), "activate", G_CALLBACK(OnViewNewPlr), GINT_TO_POINTER(pPlr->Number));
 		gtk_widget_show(menuItem);
 #endif // WITH_DEVELOPER_MODE / _WIN32
-		}
-	return true;
 	}
+	return true;
+}
 
 void C4Console::ClearViewportMenu()
-	{
+{
 	if (!Active) return;
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexViewport);
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
 #elif defined(WITH_DEVELOPER_MODE)
 	GList* children = gtk_container_get_children(GTK_CONTAINER(menuViewport));
-	for(GList* item = children; item != NULL; item = item->next)
+	for (GList* item = children; item != NULL; item = item->next)
 	{
-		if(item->data != viewNew)
+		if (item->data != viewNew)
 			gtk_container_remove(GTK_CONTAINER(menuViewport), GTK_WIDGET(item->data));
 	}
 	g_list_free(children);
 #endif // WITH_DEVELOPER_MODE / _WIN32
-	}
+}
 
 #ifdef _WIN32
 bool C4Console::AddMenuItem(HMENU hMenu, DWORD dwID, const char *szString, bool fEnabled)
-	{
+{
 	if (!Active) return false;
 	MENUITEMINFO minfo;
 	ZeroMem(&minfo,sizeof(minfo));
@@ -1292,11 +1295,11 @@ bool C4Console::AddMenuItem(HMENU hMenu, DWORD dwID, const char *szString, bool 
 	minfo.cch = SLen(szString);
 	if (!fEnabled) minfo.fState|=MFS_GRAYED;
 	return !!InsertMenuItem(hMenu,0,false,&minfo);
-	}
+}
 
 #endif // _WIN32
 bool C4Console::UpdateModeCtrls(int iMode)
-	{
+{
 	if (!Active) return false;
 
 #ifdef _WIN32
@@ -1321,34 +1324,34 @@ bool C4Console::UpdateModeCtrls(int iMode)
 	g_signal_handler_unblock(btnModeDraw, handlerModeDraw);
 #endif // WITH_DEVELOPER_MODE / _WIN32
 	return true;
-	}
+}
 
 void C4Console::EditTitle()
-	{
+{
 	if (::Network.isEnabled()) return;
 	Game.Title.Open();
-	}
+}
 
 void C4Console::EditScript()
-	{
+{
 	if (::Network.isEnabled()) return;
 	Game.Script.Open();
 	::ScriptEngine.ReLink(&::Definitions);
-	}
+}
 
 void C4Console::EditInfo()
-	{
+{
 	if (::Network.isEnabled()) return;
 	Game.Info.Open();
-	}
+}
 
 void C4Console::EditObjects()
-	{
+{
 	ObjectListDlg.Open();
-	}
+}
 
 void C4Console::UpdateInputCtrl()
-	{
+{
 	int cnt;
 	C4AulScriptFunc *pRef;
 #ifdef _WIN32
@@ -1357,7 +1360,7 @@ void C4Console::UpdateInputCtrl()
 	SendMessage(hCombo,CB_RESETCONTENT,0,0);
 #elif defined(WITH_DEVELOPER_MODE)
 	GtkEntryCompletion* completion = gtk_entry_get_completion(GTK_ENTRY(txtScript));
-	if(!completion)
+	if (!completion)
 	{
 		completion = gtk_entry_completion_new();
 		GtkListStore* store = gtk_list_store_new(1, G_TYPE_STRING);
@@ -1376,7 +1379,7 @@ void C4Console::UpdateInputCtrl()
 	// add global and standard functions
 	for (C4AulFunc *pFn = ::ScriptEngine.GetFirstFunc(); pFn; pFn = ::ScriptEngine.GetNextFunc(pFn))
 		if (pFn->GetPublic())
-			{
+		{
 #ifdef _WIN32
 			SendMessage(hCombo,CB_ADDSTRING,0,(LPARAM)pFn->Name);
 #else
@@ -1385,32 +1388,32 @@ void C4Console::UpdateInputCtrl()
 			gtk_list_store_set(store, &iter, 0, pFn->Name, -1);
 #endif
 #endif
-			}
+		}
 	// Add scenario script functions
 #ifdef _WIN32
 	if (pRef=Game.Script.GetSFunc(0))
 		SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)"----------");
 #endif
 	for (cnt=0; (pRef=Game.Script.GetSFunc(cnt)); cnt++)
-		{
+	{
 #ifdef _WIN32
 		SendMessage(hCombo,CB_INSERTSTRING,0,(LPARAM)pRef->Name);
 #elif defined(WITH_DEVELOPER_MODE)
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, pRef->Name, -1);
 #endif
-		}
 	}
+}
 
 bool C4Console::UpdatePlayerMenu()
-	{
+{
 	if (!Active) return false;
 	ClearPlayerMenu();
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexPlayer);
 #endif
 	for (C4Player *pPlr=::Players.First; pPlr; pPlr=pPlr->Next)
-		{
+	{
 		StdStrBuf sText;
 		if (::Network.isEnabled())
 			sText.Format(LoadResStr("IDS_CNS_PLRQUITNET"),pPlr->GetName(),pPlr->AtClientName);
@@ -1427,81 +1430,81 @@ bool C4Console::UpdatePlayerMenu()
 
 		gtk_widget_set_sensitive(menuItem, (!::Network.isEnabled() || ::Network.isHost()) && Editing);
 #endif // WITH_DEVELOPER_MODE / _WIN32
-		}
-	return true;
 	}
+	return true;
+}
 
 void C4Console::ClearPlayerMenu()
-	{
+{
 	if (!Active) return;
 #ifdef _WIN32
 	HMENU hMenu = GetSubMenu(GetMenu(hWindow),MenuIndexPlayer);
 	while (DeleteMenu(hMenu,1,MF_BYPOSITION));
 #elif defined(WITH_DEVELOPER_MODE)
 	GList* children = gtk_container_get_children(GTK_CONTAINER(menuPlayer));
-	for(GList* item = children; item != NULL; item = item->next)
+	for (GList* item = children; item != NULL; item = item->next)
 	{
-		if(item->data != plrJoin)
+		if (item->data != plrJoin)
 			gtk_container_remove(GTK_CONTAINER(menuPlayer), GTK_WIDGET(item->data));
 	}
 	g_list_free(children);
 #endif // _WIN32
-	}
+}
 
 void C4Console::UpdateMenus()
-	{
+{
 	if (!Active) return;
 	EnableControls(fGameOpen);
 	UpdatePlayerMenu();
 	UpdateViewportMenu();
 	UpdateNetMenu();
-	}
+}
 
 void C4Console::PlayerJoin()
-	{
+{
 
 	// Get player file name(s)
 	char c4pfile[4096+1]="";
 	if (!FileSelect(c4pfile,4096,
-									"Clonk 4 Player\0*.c4p\0\0",
-									OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
-									)) return;
+	                "Clonk 4 Player\0*.c4p\0\0",
+	                OFN_HIDEREADONLY | OFN_ALLOWMULTISELECT | OFN_EXPLORER
+	               )) return;
 
 	// Compose player file list
 	char c4plist[6000]="";
 	// Multiple players
 	if (DirectoryExists(c4pfile))
-		{
+	{
 		const char *cptr = c4pfile+SLen(c4pfile)+1;
 		while (*cptr)
-			{
+		{
 			SNewSegment(c4plist);
-			SAppend(c4pfile,c4plist);	SAppend(DirSep ,c4plist); SAppend(cptr,c4plist);
+			SAppend(c4pfile,c4plist); SAppend(DirSep ,c4plist); SAppend(cptr,c4plist);
 			cptr += SLen(cptr)+1;
-			}
 		}
+	}
 	// Single player
 	else
-		{
+	{
 		SAppend(c4pfile,c4plist);
-		}
+	}
 
 	// Join players (via network/ctrl queue)
 	char szPlayerFilename[_MAX_PATH+1];
 	for (int iPar=0; SCopySegment(c4plist,iPar,szPlayerFilename,';',_MAX_PATH); iPar++)
 		if (szPlayerFilename[0])
-			{
+		{
 			if (::Network.isEnabled())
 				::Network.Players.JoinLocalPlayer(szPlayerFilename, true);
 			else
 				::Players.CtrlJoinLocalNoNetwork(szPlayerFilename, Game.Clients.getLocalID(), Game.Clients.getLocalName());
-			}
+		}
 
-	}
+}
 
 #ifdef _WIN32
 void C4Console::UpdateMenuText(HMENU hMenu)
-	{
+{
 	HMENU hSubMenu;
 	if (!Active) return;
 	// File
@@ -1533,11 +1536,11 @@ void C4Console::UpdateMenuText(HMENU hMenu)
 	// Help
 	hSubMenu = GetSubMenu(hMenu,MenuIndexHelp);
 	SetMenuItemText(hSubMenu,IDM_HELP_ABOUT,LoadResStr("IDS_MENU_ABOUT"));
-	}
+}
 #endif // _WIN32
 
 void C4Console::UpdateNetMenu()
-	{
+{
 	// Active & network hosting check
 	if (!Active) return;
 	if (!::Network.isHost() || !::Network.isEnabled()) return;
@@ -1573,9 +1576,9 @@ void C4Console::UpdateNetMenu()
 #endif
 	// Clients
 	for (C4Network2Client *pClient=::Network.Clients.GetNextClient(NULL); pClient; pClient=::Network.Clients.GetNextClient(pClient))
-		{
-			str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT" : "IDS_MNU_NETCLIENTDE"),
-			           pClient->getName(), pClient->getID());
+	{
+		str.Format(LoadResStr(pClient->isActivated() ? "IDS_MNU_NETCLIENT" : "IDS_MNU_NETCLIENTDE"),
+		           pClient->getName(), pClient->getID());
 #ifdef _WIN32
 		AddMenuItem(hMenu,IDM_NET_CLIENT1+pClient->getID(), str.getData());
 #elif defined(WITH_DEVELOPER_MODE)
@@ -1583,15 +1586,15 @@ void C4Console::UpdateNetMenu()
 		gtk_menu_shell_append(GTK_MENU_SHELL(menuNet), item);
 		g_signal_connect(G_OBJECT(item), "activate", G_CALLBACK(OnNetClient), GINT_TO_POINTER(pClient->getID()));
 #endif
-		}
+	}
 #ifdef WITH_DEVELOPER_MODE
 	gtk_widget_show_all(itemNet);
 #endif
 	return;
-	}
+}
 
 void C4Console::ClearNetMenu()
-	{
+{
 	if (!Active) return;
 	if (MenuIndexNet<0) return;
 #ifdef _WIN32
@@ -1605,10 +1608,10 @@ void C4Console::ClearNetMenu()
 #ifdef _WIN32
 	DrawMenuBar(hWindow);
 #endif
-	}
+}
 
 void C4Console::SetCaption(const char *szCaption)
-	{
+{
 	if (!Active) return;
 #ifdef _WIN32
 	// Sorry, the window caption needs to be constant so
@@ -1617,19 +1620,19 @@ void C4Console::SetCaption(const char *szCaption)
 #else
 	SetTitle(szCaption);
 #endif
-	}
+}
 
 void C4Console::Execute()
-	{
+{
 	EditCursor.Execute();
 	PropertyDlg.Execute();
 	ObjectListDlg.Execute();
 	UpdateStatusBars();
 	::GraphicsSystem.Execute();
-	}
+}
 
 bool C4Console::OpenGame(const char *szCmdLine)
-	{
+{
 	bool fGameWasOpen = fGameOpen;
 	// Close any old game
 	CloseGame();
@@ -1647,14 +1650,14 @@ bool C4Console::OpenGame(const char *szCmdLine)
 		Game.ParseCommandLine(szCmdLine);
 
 	// PreInit is required because GUI has been deleted
-	if(!Game.PreInit() ) { Game.Clear(); return false; }
+	if (!Game.PreInit() ) { Game.Clear(); return false; }
 
 	// Init game
 	if (!Game.Init())
-		{
+	{
 		Game.Clear();
 		return false;
-		}
+	}
 
 	// Console updates
 	fGameOpen=true;
@@ -1664,10 +1667,10 @@ bool C4Console::OpenGame(const char *szCmdLine)
 	UpdateViewportMenu();
 
 	return true;
-	}
+}
 
 bool C4Console::CloseGame()
-	{
+{
 	if (!fGameOpen) return false;
 	Game.Clear();
 	Game.GameOver=false; // No leftover values when exiting on closed game
@@ -1676,12 +1679,12 @@ bool C4Console::CloseGame()
 	EnableControls(fGameOpen);
 	SetCaption(LoadResStr("IDS_CNS_CONSOLE"));
 	return true;
-	}
+}
 
 bool C4Console::TogglePause()
-	{
+{
 	return Game.TogglePause();
-	}
+}
 
 // GTK+ callbacks
 #ifdef WITH_DEVELOPER_MODE
@@ -1817,7 +1820,7 @@ void C4Console::OnHelpAbout(GtkWidget* item, gpointer data)
 
 void C4Console::OnNetClient(GtkWidget* item, gpointer data)
 {
-	if(!::Control.isCtrlHost()) return;
+	if (!::Control.isCtrlHost()) return;
 	Game.Clients.CtrlRemove(Game.Clients.getClientByID(GPOINTER_TO_INT(data)), LoadResStr("IDS_MSG_KICKBYMENU"));
 }
 #endif // WITH_DEVELOPER_MODE

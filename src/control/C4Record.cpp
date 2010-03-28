@@ -45,87 +45,87 @@ CStdFile DbgRecFile;
 int DoNoDebugRec=0; // debugrec disable counter
 
 void AddDbgRec(C4RecordChunkType eType, const void *pData, int iSize)
-	{
+{
 	::Control.DbgRec(eType, (const uint8_t *) pData, iSize);
-	}
+}
 #else
 bool DoDebugRec=false;
 #endif
 
 C4DebugRecOff::C4DebugRecOff() : fDoOff(true)
-	{
+{
 	DEBUGREC_OFF;
-	}
+}
 
 C4DebugRecOff::C4DebugRecOff(bool fDoOff) : fDoOff(fDoOff)
-	{
+{
 	if (fDoOff) { DEBUGREC_OFF; }
-	}
+}
 
 C4DebugRecOff::~C4DebugRecOff()
-	{
+{
 	if (fDoOff) { DEBUGREC_ON; }
-	}
+}
 
 void C4DebugRecOff::Clear()
-	{
+{
 	DEBUGREC_ON;
 	fDoOff = false;
-	}
+}
 
 void C4PktDebugRec::CompileFunc(StdCompiler *pComp)
-	{
+{
 	// type
 	pComp->Value(mkNamingAdapt(mkIntAdapt(eType), "Type"));
 	// Packet data
 	C4PktBuf::CompileFunc(pComp);
-	}
+}
 
 C4RecordChunk::C4RecordChunk()
-	: pCtrl(NULL)
-	{
+		: pCtrl(NULL)
+{
 
-	}
+}
 
 void C4RecordChunk::Delete()
+{
+	switch (Type)
 	{
-	switch(Type)
-		{
-		case RCT_Ctrl: delete pCtrl; pCtrl = NULL; break;
-		case RCT_CtrlPkt: delete pPkt; pPkt = NULL; break;
-		case RCT_End: break;
-		case RCT_Frame: break;
-		case RCT_File: delete pFileData; break;
-		default: delete pDbg; pDbg = NULL; break;
-		}
+	case RCT_Ctrl: delete pCtrl; pCtrl = NULL; break;
+	case RCT_CtrlPkt: delete pPkt; pPkt = NULL; break;
+	case RCT_End: break;
+	case RCT_Frame: break;
+	case RCT_File: delete pFileData; break;
+	default: delete pDbg; pDbg = NULL; break;
 	}
+}
 
 void C4RecordChunk::CompileFunc(StdCompiler *pComp)
-	{
+{
 	pComp->Value(mkNamingAdapt(Frame, "Frame"));
 	pComp->Value(mkNamingAdapt(mkIntAdapt(Type), "Type"));
-	switch(Type)
-		{
-		case RCT_Ctrl: pComp->Value(mkPtrAdaptNoNull(pCtrl)); break;
-		case RCT_CtrlPkt: pComp->Value(mkPtrAdaptNoNull(pPkt)); break;
-		case RCT_End: break;
-		case RCT_Frame: break;
-		case RCT_File: pComp->Value(Filename); pComp->Value(mkPtrAdaptNoNull(pFileData)); break;
-		default: pComp->Value(mkPtrAdaptNoNull(pDbg)); break;
-		}
+	switch (Type)
+	{
+	case RCT_Ctrl: pComp->Value(mkPtrAdaptNoNull(pCtrl)); break;
+	case RCT_CtrlPkt: pComp->Value(mkPtrAdaptNoNull(pPkt)); break;
+	case RCT_End: break;
+	case RCT_Frame: break;
+	case RCT_File: pComp->Value(Filename); pComp->Value(mkPtrAdaptNoNull(pFileData)); break;
+	default: pComp->Value(mkPtrAdaptNoNull(pDbg)); break;
 	}
+}
 
 C4Record::C4Record()
-	: fRecording(false), fStreaming(false)
-	{
-	}
+		: fRecording(false), fStreaming(false)
+{
+}
 
 C4Record::~C4Record()
-	{
-	}
+{
+}
 
 bool C4Record::Start(bool fInitial)
-	{
+{
 	// no double record
 	if (fRecording) return false;
 
@@ -164,8 +164,8 @@ bool C4Record::Start(bool fInitial)
 	saveRec.Close();
 
 	// unpack group, if neccessary
-	if( !DirectoryExists(sFilename.getData()) &&
-		  !C4Group_UnpackDirectory(sFilename.getData()) )
+	if ( !DirectoryExists(sFilename.getData()) &&
+	     !C4Group_UnpackDirectory(sFilename.getData()) )
 		return false;
 
 	// open control record file
@@ -174,7 +174,7 @@ bool C4Record::Start(bool fInitial)
 	if (!CtrlRec.Create(szCtrlRecFilename)) return false;
 
 	// open record group
-	if(!RecordGrp.Open(sFilename.getData()))
+	if (!RecordGrp.Open(sFilename.getData()))
 		return false;
 
 	// record go
@@ -182,10 +182,10 @@ bool C4Record::Start(bool fInitial)
 	fRecording = true;
 	iLastFrame = 0;
 	return true;
-	}
+}
 
 bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
-	{
+{
 	// safety
 	if (!fRecording) return false;
 	if (!DirectoryExists(sFilename.getData())) return false;
@@ -210,50 +210,50 @@ bool C4Record::Stop(StdStrBuf *pRecordName, BYTE *pRecordSHA1)
 
 	// pack group
 #ifndef DEBUGREC
-	if(!C4Group_PackDirectory(sFilename.getData())) return false;
+	if (!C4Group_PackDirectory(sFilename.getData())) return false;
 #endif
 
 	// return record data
-	if(pRecordName)
+	if (pRecordName)
 		pRecordName->Copy(sFilename);
-	if(pRecordSHA1)
-		if(!C4Group_GetFileSHA1(sFilename.getData(), pRecordSHA1))
+	if (pRecordSHA1)
+		if (!C4Group_GetFileSHA1(sFilename.getData(), pRecordSHA1))
 			return false;
 
 	// ok
 	fRecording = false;
 	return true;
-	}
+}
 
 bool C4Record::Rec(const C4Control &Ctrl, int iFrame)
-	{
-	if(!fRecording) return false;
+{
+	if (!fRecording) return false;
 	// don't record empty control
-	if(!Ctrl.firstPkt()) return true;
+	if (!Ctrl.firstPkt()) return true;
 	// create copy
 	C4Control Cpy; Cpy.Copy(Ctrl);
 	// prepare it for record
 	Cpy.PreRec(this);
 	// record it
 	return Rec(iFrame, DecompileToBuf<StdCompilerBinWrite>(Cpy), RCT_Ctrl);
-	}
+}
 
 bool C4Record::Rec(C4PacketType eCtrlType, C4ControlPacket *pCtrl, int iFrame)
-	{
-	if(!fRecording) return false;
+{
+	if (!fRecording) return false;
 	// create copy
-	C4IDPacket Pkt = C4IDPacket(eCtrlType, pCtrl, false); if(!Pkt.getPkt()) return false;
+	C4IDPacket Pkt = C4IDPacket(eCtrlType, pCtrl, false); if (!Pkt.getPkt()) return false;
 	C4ControlPacket *pCtrlCpy = static_cast<C4ControlPacket *>(Pkt.getPkt());
 	// prepare for recording
 	pCtrlCpy->PreRec(this);
 	// record it
 	return Rec(iFrame, DecompileToBuf<StdCompilerBinWrite>(Pkt), RCT_CtrlPkt);
-	}
+}
 
 bool C4Record::Rec(int iFrame, const StdBuf &sBuf, C4RecordChunkType eType)
-	{
+{
 	// filler chunks (this should never be necessary, though)
-	while(iFrame > int(iLastFrame + 0xff))
+	while (iFrame > int(iLastFrame + 0xff))
 		Rec(iLastFrame + 0xff, StdBuf(), RCT_Frame);
 	// get frame difference
 	uint8_t iFrameDiff = Max<uint8_t>(0, iFrame - iLastFrame);
@@ -268,67 +268,67 @@ bool C4Record::Rec(int iFrame, const StdBuf &sBuf, C4RecordChunkType eType)
 	CtrlRec.Flush();
 #endif
 	// Stream
-	if(fStreaming)
+	if (fStreaming)
 		Stream(Head, sBuf);
 	return true;
-	}
+}
 
 void C4Record::Stream(const C4RecordChunkHead &Head, const StdBuf &sBuf)
-	{
-	if(!fStreaming) return;
+{
+	if (!fStreaming) return;
 	StreamingData.Append(&Head, sizeof(Head));
 	StreamingData.Append(sBuf.getData(), sBuf.getSize());
-	}
+}
 
 bool C4Record::AddFile(const char *szLocalFilename, const char *szAddAs, bool fDelete)
-	{
-	if(!fRecording) return false;
+{
+	if (!fRecording) return false;
 
 	// Streaming?
-	if(fStreaming)
-		{
+	if (fStreaming)
+	{
 
 		// Special stripping for streaming
 		StdCopyStrBuf szFile(szLocalFilename);
-		if(SEqualNoCase(GetExtension(szAddAs), "c4p"))
-			{
+		if (SEqualNoCase(GetExtension(szAddAs), "c4p"))
+		{
 			// Create a copy
 			MakeTempFilename(&szFile);
-			if(!CopyItem(szLocalFilename, szFile.getData()))
+			if (!CopyItem(szLocalFilename, szFile.getData()))
 				return false;
 			// Strip it
-			if(!C4Player::Strip(szFile.getData(), true))
+			if (!C4Player::Strip(szFile.getData(), true))
 				return false;
-			}
+		}
 
 		// Add to stream
-		if(!StreamFile(szFile.getData(), szAddAs))
+		if (!StreamFile(szFile.getData(), szAddAs))
 			return false;
 
 		// Remove temporary file
-		if(szFile != szLocalFilename)
+		if (szFile != szLocalFilename)
 			EraseItem(szFile.getData());
-		}
-
-	// Add to record group
-	if(fDelete)
-		{
-		if(!RecordGrp.Move(szLocalFilename, szAddAs))
-			return false;
-		}
-	else
-		{
-		if(!RecordGrp.Add(szLocalFilename, szAddAs))
-			return false;
-		}
-
-	return true;
 	}
 
-bool C4Record::StartStreaming(bool fInitial)
+	// Add to record group
+	if (fDelete)
 	{
-	if(!fRecording) return false;
-	if(fStreaming) return false;
+		if (!RecordGrp.Move(szLocalFilename, szAddAs))
+			return false;
+	}
+	else
+	{
+		if (!RecordGrp.Add(szLocalFilename, szAddAs))
+			return false;
+	}
+
+	return true;
+}
+
+bool C4Record::StartStreaming(bool fInitial)
+{
+	if (!fRecording) return false;
+	if (fStreaming) return false;
 
 	// Get temporary file name
 	StdCopyStrBuf sTempFilename(sFilename);
@@ -341,155 +341,155 @@ bool C4Record::StartStreaming(bool fInitial)
 
 	// Add file into stream, delete file
 	fStreaming = true;
-	if(!StreamFile(sTempFilename.getData(), sFilename.getData()))
-		{
+	if (!StreamFile(sTempFilename.getData(), sFilename.getData()))
+	{
 		fStreaming = false;
 		return false;
-		}
+	}
 
 	// Okay
 	EraseFile(sTempFilename.getData());
 	iStreamingPos = 0;
 	return true;
-	}
+}
 
 void C4Record::ClearStreamingBuf(unsigned int iAmount)
-	{
+{
 	iStreamingPos += iAmount;
-	if(iAmount == StreamingData.getSize())
+	if (iAmount == StreamingData.getSize())
 		StreamingData.Clear();
 	else
-		{
+	{
 		StreamingData.Move(iAmount, StreamingData.getSize() - iAmount);
 		StreamingData.SetSize(StreamingData.getSize() - iAmount);
-		}
 	}
+}
 
 void C4Record::StopStreaming()
-	{
+{
 	fStreaming = false;
-	}
+}
 
 bool C4Record::StreamFile(const char *szLocalFilename, const char *szAddAs)
-	{
+{
 
 	// Load file into memory
 	StdBuf FileData;
-	if(!FileData.LoadFromFile(szLocalFilename))
+	if (!FileData.LoadFromFile(szLocalFilename))
 		return false;
 
 	// Prepend name
 	StdBuf Packed = DecompileToBuf<StdCompilerBinWrite>(
-		mkInsertAdapt(StdStrBuf(szAddAs), FileData, false));
+	                  mkInsertAdapt(StdStrBuf(szAddAs), FileData, false));
 
 	// Add to stream
 	C4RecordChunkHead Head = { 0, RCT_File };
 	Stream(Head, Packed);
 	return true;
-	}
+}
 
 // set defaults
 C4Playback::C4Playback():  Finished(true), fLoadSequential(false)
-	{
-	}
+{
+}
 
 C4Playback::~C4Playback()
-	{
+{
 	Clear();
-	}
+}
 
 bool C4Playback::Open(C4Group &rGrp)
-	{
+{
 	// clean up
- 	Clear();
+	Clear();
 	fLoadSequential = !rGrp.IsPacked();
 	iLastSequentialFrame = 0;
 	bool fStrip = false;
 	// get text record file
 	StdStrBuf TextBuf;
 	if (rGrp.LoadEntryString(C4CFN_CtrlRecText, TextBuf))
-		{
+	{
 		if (!ReadText(TextBuf))
 			return false;
-		}
+	}
 	else
-		{
+	{
 		// open group? Then do some sequential reading for large files
 		// Can't do this when a dump is forced, because the dump needs all data
 		// Also can't do this when stripping is desired
 		if (!rGrp.IsPacked()) if (!Game.RecordDumpFile.getLength()) if (!fStrip) fLoadSequential = true;
 		// get record file
 		if (fLoadSequential)
-			{
+		{
 			if (!rGrp.FindEntry(C4CFN_CtrlRec)) return false;
 			if (!playbackFile.Open(FormatString("%s%c%s", rGrp.GetFullName().getData(), (char) DirectorySeparator, (const char *) C4CFN_CtrlRec).getData())) return false;
 			// forcing first chunk to be read; will call ReadBinary
 			currChunk = chunks.end();
 			if (!NextSequentialChunk())
-				{
+			{
 				// empty replay??!
 				LogFatal("Record: Binary read error.");
 				return false;
-				}
 			}
+		}
 		else
-			{
+		{
 			// non-sequential reading: Just read as a whole
 			StdBuf BinaryBuf;
 			if (rGrp.LoadEntry(C4CFN_CtrlRec, BinaryBuf))
-				{
+			{
 				if (!ReadBinary(BinaryBuf))
 					return false;
-				}
+			}
 			else
-				{
+			{
 				// file too large? Try sequential loading and parsing
-/*				size_t iSize;
-				if (rGrp.AccessEntry(C4CFN_CtrlRec, &iSize))
-					{
-					CStdFile fOut; fOut.Create(Game.RecordDumpFile.getData());
-					fLoadSequential = true;
-					const size_t iChunkSize = 1024*1024*16; // 16M
-					while (iSize)
-						{
-						size_t iLoadSize = Min<size_t>(iChunkSize, iSize);
-						BinaryBuf.SetSize(iLoadSize);
-						if (!rGrp.Read(BinaryBuf.getMData(), iLoadSize))
-							{
-							LogFatal("Record: Binary load error!");
-							return false;
-							}
-						iSize -= iLoadSize;
-						if (!ReadBinary(BinaryBuf)) return false;
-						LogF("%d binary remaining", iSize);
-						currChunk = chunks.begin();
-						if (fStrip) Strip();
-						StdStrBuf s(ReWriteText());
-						fOut.WriteString(s.getData());
-						LogF("Wrote %d text bytes (%d binary remaining)", s.getLength(), iSize);
-						chunks.clear();
-						}
-					fOut.Close();
-					fLoadSequential = false;
-					}
-				else*/
-					{
+				/*        size_t iSize;
+				        if (rGrp.AccessEntry(C4CFN_CtrlRec, &iSize))
+				          {
+				          CStdFile fOut; fOut.Create(Game.RecordDumpFile.getData());
+				          fLoadSequential = true;
+				          const size_t iChunkSize = 1024*1024*16; // 16M
+				          while (iSize)
+				            {
+				            size_t iLoadSize = Min<size_t>(iChunkSize, iSize);
+				            BinaryBuf.SetSize(iLoadSize);
+				            if (!rGrp.Read(BinaryBuf.getMData(), iLoadSize))
+				              {
+				              LogFatal("Record: Binary load error!");
+				              return false;
+				              }
+				            iSize -= iLoadSize;
+				            if (!ReadBinary(BinaryBuf)) return false;
+				            LogF("%d binary remaining", iSize);
+				            currChunk = chunks.begin();
+				            if (fStrip) Strip();
+				            StdStrBuf s(ReWriteText());
+				            fOut.WriteString(s.getData());
+				            LogF("Wrote %d text bytes (%d binary remaining)", s.getLength(), iSize);
+				            chunks.clear();
+				            }
+				          fOut.Close();
+				          fLoadSequential = false;
+				          }
+				        else*/
+				{
 					// no control data?
 					LogFatal("Record: No control data found!");
 					return false;
-					}
 				}
 			}
 		}
+	}
 	// rewrite record
 	if (fStrip) Strip();
 	if (Game.RecordDumpFile.getLength())
-		{
+	{
 		if (SEqualNoCase(GetExtension(Game.RecordDumpFile.getData()), "txt"))
 			ReWriteText().SaveToFile(Game.RecordDumpFile.getData());
 		else
 			ReWriteBinary().SaveToFile(Game.RecordDumpFile.getData());
-		}
+	}
 	// reset status
 	currChunk = chunks.begin();
 	Finished = false;
@@ -497,42 +497,42 @@ bool C4Playback::Open(C4Group &rGrp)
 #if defined(DEBUGREC_EXTFILE) && defined(DEBUGREC)
 #ifdef DEBUGREC_EXTFILE_WRITE
 	if (!DbgRecFile.Create(DEBUGREC_EXTFILE))
-		{
+	{
 		LogFatal("DbgRec: Creation of external file \"" DEBUGREC_EXTFILE "\" failed!");
 		return false;
-		}
+	}
 	else Log("DbgRec: Writing to \"" DEBUGREC_EXTFILE "\"...");
 #else
 	if (!DbgRecFile.Open(DEBUGREC_EXTFILE))
-		{
+	{
 		LogFatal("DbgRec: Opening of external file \"" DEBUGREC_EXTFILE "\" failed!");
 		return false;
-		}
+	}
 	else Log("DbgRec: Checking against \"" DEBUGREC_EXTFILE "\"...");
 #endif
 #endif
 	// ok
 	return true;
-	}
+}
 
 bool C4Playback::ReadBinary(const StdBuf &Buf)
-	{
+{
 	// sequential reading: Take over rest from last buffer
 	const StdBuf *pUseBuf; uint32_t iFrame = 0;
 	if (fLoadSequential)
-		{
+	{
 		sequentialBuffer.Append(Buf);
 		pUseBuf = &sequentialBuffer;
 		iFrame = iLastSequentialFrame;
-		}
+	}
 	else
 		pUseBuf = &Buf;
 	// get buffer data
 	size_t iPos = 0; bool fFinished = false;
 	do
-		{
+	{
 		// unpack header
-		if(pUseBuf->getSize() - iPos < sizeof(C4RecordChunkHead)) break;
+		if (pUseBuf->getSize() - iPos < sizeof(C4RecordChunkHead)) break;
 		const C4RecordChunkHead *pHead = getBufPtr<C4RecordChunkHead>(*pUseBuf, iPos);
 		// get chunk
 		iPos += sizeof(C4RecordChunkHead);
@@ -543,100 +543,100 @@ bool C4Playback::ReadBinary(const StdBuf &Buf)
 		c.Type = pHead->Type;
 		// Unpack data
 		try
-			{
+		{
 			// Initialize compiler
 			StdCompilerBinRead Compiler;
 			Compiler.setInput(Chunk.getRef());
 			Compiler.Begin();
 			// Read chunk
 			switch (pHead->Type)
-				{
-				case RCT_Ctrl:
-					Compiler.Value(mkPtrAdaptNoNull(c.pCtrl));
-					break;
-				case RCT_CtrlPkt:
-					Compiler.Value(mkPtrAdaptNoNull(c.pPkt));
-					break;
-				case RCT_End:
-					fFinished = true;
-					break;
-				case RCT_File:
-					Compiler.Value(c.Filename);
-					Compiler.Value(mkPtrAdaptNoNull(c.pFileData));
-					break;
-				default:
-					// debugrec
-					if(pHead->Type >= 0x80)
-						Compiler.Value(mkPtrAdaptNoNull(c.pDbg));
-				}
+			{
+			case RCT_Ctrl:
+				Compiler.Value(mkPtrAdaptNoNull(c.pCtrl));
+				break;
+			case RCT_CtrlPkt:
+				Compiler.Value(mkPtrAdaptNoNull(c.pPkt));
+				break;
+			case RCT_End:
+				fFinished = true;
+				break;
+			case RCT_File:
+				Compiler.Value(c.Filename);
+				Compiler.Value(mkPtrAdaptNoNull(c.pFileData));
+				break;
+			default:
+				// debugrec
+				if (pHead->Type >= 0x80)
+					Compiler.Value(mkPtrAdaptNoNull(c.pDbg));
+			}
 			// Advance over data
 			Compiler.End();
 			iPos += Compiler.getPosition();
-			}
-		catch(StdCompiler::EOFException *pEx)
-			{
+		}
+		catch (StdCompiler::EOFException *pEx)
+		{
 			// This is to be expected for sequential reading
-			if(fLoadSequential)
-				{
+			if (fLoadSequential)
+			{
 				iPos -= sizeof(C4RecordChunkHead);
 				delete pEx;
 				break;
-				}
+			}
 			LogF("Record: Binary unpack error: %s", pEx->Msg.getData());
 			c.Delete();
 			delete pEx;
 			return false;
-			}
-		catch(StdCompiler::Exception *pEx)
-			{
+		}
+		catch (StdCompiler::Exception *pEx)
+		{
 			LogF("Record: Binary unpack error: %s", pEx->Msg.getData());
 			c.Delete();
 			delete pEx;
 			return false;
-			}
+		}
 		// Add to list
 		chunks.push_back(c); c.pPkt = NULL;
-		}
+	}
 	while (!fFinished);
 	// erase everything but the trailing part from sequential buffer
 	if (fLoadSequential)
-		{
+	{
 		if (iPos >= sequentialBuffer.getSize())
 			sequentialBuffer.Clear();
 		else if (iPos)
-			{
+		{
 			sequentialBuffer.Move(iPos, sequentialBuffer.getSize() - iPos);
 			sequentialBuffer.Shrink(iPos);
-			}
 		}
-	return true;
 	}
+	return true;
+}
 
 bool C4Playback::ReadText(const StdStrBuf &Buf)
-	{
+{
 	return CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(mkSTLContainerAdapt(chunks), "Rec"), Buf, C4CFN_CtrlRecText);
-	}
+}
 
 void C4Playback::NextChunk()
-	{
+{
 	assert(currChunk != chunks.end());
 	++currChunk;
 	if (currChunk != chunks.end()) return;
 	// end of all chunks if not loading sequential here
 	if (!fLoadSequential) return;
 	// otherwise, get next few chunks
-	for(chunks_t::iterator i = chunks.begin(); i != chunks.end(); i++) i->Delete();
+	for (chunks_t::iterator i = chunks.begin(); i != chunks.end(); i++) i->Delete();
 	chunks.clear(); currChunk = chunks.end();
 	NextSequentialChunk();
-	}
+}
 
 bool C4Playback::NextSequentialChunk()
-	{
+{
 	StdBuf BinaryBuf; size_t iRealSize;
 	BinaryBuf.New(4096);
 	// load data until a chunk could be filled
-	for(;;)
-		{
+	for (;;)
+	{
 		iRealSize = 0;
 		playbackFile.Read(BinaryBuf.getMData(), 4096, &iRealSize);
 		if (!iRealSize) return false;
@@ -644,68 +644,68 @@ bool C4Playback::NextSequentialChunk()
 		if (!ReadBinary(BinaryBuf)) return false;
 		// okay, at least one chunk has been read!
 		if (chunks.size())
-			{
+		{
 			currChunk = chunks.begin();
 			return true;
-			}
 		}
+	}
 	// playback file reading failed - looks like we're done
 	return false;
-	}
+}
 
 StdStrBuf C4Playback::ReWriteText()
-	{
+{
 	// Would work, too, but is currently too slow due to bad buffering inside StdCompilerINIWrite:
 	// return DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(mkSTLContainerAdapt(chunks), "Rec"));
 	StdStrBuf Output;
-	for(chunks_t::const_iterator i = chunks.begin(); i != chunks.end(); i++)
-		{
+	for (chunks_t::const_iterator i = chunks.begin(); i != chunks.end(); i++)
+	{
 		Output.Append(static_cast<const StdStrBuf&>(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(mkDecompileAdapt(*i), "Rec"))));
 		Output.Append("\n\n");
-		}
-	return Output;
 	}
+	return Output;
+}
 
 StdBuf C4Playback::ReWriteBinary()
-	{
+{
 	const int OUTPUT_GROW = 16 * 1024;
 	StdBuf Output; int iPos = 0;
 	bool fFinished = false;
 	int32_t iFrame = 0;
-	for(chunks_t::const_iterator i = chunks.begin(); !fFinished && i != chunks.end(); i++)
-		{
+	for (chunks_t::const_iterator i = chunks.begin(); !fFinished && i != chunks.end(); i++)
+	{
 		// Check frame difference
-		if(i->Frame - iFrame < 0 || i->Frame - iFrame > 0xff)
+		if (i->Frame - iFrame < 0 || i->Frame - iFrame > 0xff)
 			LogF("ERROR: Invalid frame difference between chunks (0-255 allowed)! Data will be invalid!");
 		// Pack data
 		StdBuf Chunk;
 		try
-			{
+		{
 			switch (i->Type)
-				{
-				case RCT_Ctrl:
-					Chunk = DecompileToBuf<StdCompilerBinWrite>(*i->pCtrl);
-					break;
-				case RCT_CtrlPkt:
-					Chunk = DecompileToBuf<StdCompilerBinWrite>(*i->pPkt);
-					break;
-				case RCT_End:
-					fFinished = true;
-					break;
-				default: // debugrec
-					if(i->pDbg)
-						Chunk = DecompileToBuf<StdCompilerBinWrite>(*i->pDbg);
-					break;
-				}
-			}
-		catch(StdCompiler::Exception *pEx)
 			{
+			case RCT_Ctrl:
+				Chunk = DecompileToBuf<StdCompilerBinWrite>(*i->pCtrl);
+				break;
+			case RCT_CtrlPkt:
+				Chunk = DecompileToBuf<StdCompilerBinWrite>(*i->pPkt);
+				break;
+			case RCT_End:
+				fFinished = true;
+				break;
+			default: // debugrec
+				if (i->pDbg)
+					Chunk = DecompileToBuf<StdCompilerBinWrite>(*i->pDbg);
+				break;
+			}
+		}
+		catch (StdCompiler::Exception *pEx)
+		{
 			LogF("Record: Binary unpack error: %s", pEx->Msg.getData());
 			delete pEx;
 			return StdBuf();
-			}
+		}
 		// Grow output
-		while(Output.getSize() - iPos < sizeof(C4RecordChunkHead) + Chunk.getSize())
+		while (Output.getSize() - iPos < sizeof(C4RecordChunkHead) + Chunk.getSize())
 			Output.Grow(OUTPUT_GROW);
 		// Write header
 		C4RecordChunkHead *pHead = getMBufPtr<C4RecordChunkHead>(Output, iPos);
@@ -716,13 +716,13 @@ StdBuf C4Playback::ReWriteBinary()
 		// Write chunk
 		Output.Write(Chunk, iPos);
 		iPos += Chunk.getSize();
-		}
+	}
 	Output.SetSize(iPos);
 	return Output;
-	}
+}
 
 void C4Playback::Strip()
-	{
+{
 	// Strip what?
 	const bool fStripPlayers = false;
 	const bool fStripSyncChecks = false;
@@ -732,13 +732,13 @@ void C4Playback::Strip()
 	//const bool fCheckEMControl = true;
 	const int32_t iEndFrame = -1;
 	// Iterate over chunk list
-	for(chunks_t::iterator i = chunks.begin(); i != chunks.end(); )
-		{
+	for (chunks_t::iterator i = chunks.begin(); i != chunks.end(); )
+	{
 		// Strip rest of record?
-		if(iEndFrame >= 0 && i->Frame > iEndFrame)
-			{
+		if (iEndFrame >= 0 && i->Frame > iEndFrame)
+		{
 			// Remove this and all remaining chunks
-			while(i != chunks.end())
+			while (i != chunks.end())
 			{
 				i->Delete();
 				i = chunks.erase(i);
@@ -750,149 +750,149 @@ void C4Playback::Strip()
 			chunks.push_back(EndChunk);
 			// Done
 			break;
-			}
+		}
 		switch (i->Type)
+		{
+		case RCT_Ctrl:
+		{
+			// Iterate over controls
+			C4Control *pCtrl = i->pCtrl;
+			for (C4IDPacket *pPkt = pCtrl->firstPkt(), *pNext; pPkt; pPkt = pNext)
 			{
-			case RCT_Ctrl:
+				pNext = pCtrl->nextPkt(pPkt);
+				switch (pPkt->getPktType())
 				{
-				// Iterate over controls
-				C4Control *pCtrl = i->pCtrl;
-				for(C4IDPacket *pPkt = pCtrl->firstPkt(), *pNext; pPkt; pPkt = pNext)
+					// Player join: Strip player file (if possible)
+				case CID_JoinPlr:
+					if (fStripPlayers)
 					{
-					pNext = pCtrl->nextPkt(pPkt);
-					switch(pPkt->getPktType())
-						{
-						// Player join: Strip player file (if possible)
-						case CID_JoinPlr:
-							if(fStripPlayers)
-								{
-								C4ControlJoinPlayer *pJoinPlr = static_cast<C4ControlJoinPlayer *>(pPkt->getPkt());
-								pJoinPlr->Strip();
-								}
-							break;
-						// EM commands: May be cheats, so log them
-						case CID_Script:
-						case CID_EMMoveObj:
-						case CID_EMDrawTool:
-							if (fCheckCheat) Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*pPkt, FormatString("Frame %d", i->Frame).getData())).getData());
-							break;
-						// Strip sync check
-						case CID_SyncCheck:
-							if(fStripSyncChecks)
-								{
-								i->pCtrl->Remove(pPkt);
-								}
-							break;
-						default:
-																												// TODO
-							break;
-						}
+						C4ControlJoinPlayer *pJoinPlr = static_cast<C4ControlJoinPlayer *>(pPkt->getPkt());
+						pJoinPlr->Strip();
 					}
-				// Strip empty control lists (always)
-				if(!pCtrl->firstPkt())
-					{
-					i->Delete();
-					i = chunks.erase(i);
-					}
-				else
-					i++;
-				}
-				break;
-			case RCT_CtrlPkt:
-				{
-				bool fStripThis=false;
-				switch(i->pPkt->getPktType())
-					{
+					break;
 					// EM commands: May be cheats, so log them
-					case CID_Script:
-					case CID_EMMoveObj:
-					case CID_EMDrawTool:
-						if (fCheckCheat) Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*i->pPkt, FormatString("Frame %d", i->Frame).getData())).getData());
-						break;
-					// Strip some stuff
-					case CID_SyncCheck:
-						if(fStripSyncChecks) fStripThis = true;
-						break;
-					case CID_Message:
-						if (fStripMessages) fStripThis=true;
-						break;
-					default:
-																								// TODO
-						break;
-					}
-				if (fStripThis)
+				case CID_Script:
+				case CID_EMMoveObj:
+				case CID_EMDrawTool:
+					if (fCheckCheat) Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*pPkt, FormatString("Frame %d", i->Frame).getData())).getData());
+					break;
+					// Strip sync check
+				case CID_SyncCheck:
+					if (fStripSyncChecks)
 					{
-					i->Delete();
-					i = chunks.erase(i);
+						i->pCtrl->Remove(pPkt);
 					}
-				else i++;
+					break;
+				default:
+					// TODO
+					break;
 				}
-				break;
-			case RCT_End:
+			}
+			// Strip empty control lists (always)
+			if (!pCtrl->firstPkt())
+			{
+				i->Delete();
+				i = chunks.erase(i);
+			}
+			else
 				i++;
+		}
+		break;
+		case RCT_CtrlPkt:
+		{
+			bool fStripThis=false;
+			switch (i->pPkt->getPktType())
+			{
+				// EM commands: May be cheats, so log them
+			case CID_Script:
+			case CID_EMMoveObj:
+			case CID_EMDrawTool:
+				if (fCheckCheat) Log(DecompileToBuf<StdCompilerINIWrite>(mkNamingAdapt(*i->pPkt, FormatString("Frame %d", i->Frame).getData())).getData());
+				break;
+				// Strip some stuff
+			case CID_SyncCheck:
+				if (fStripSyncChecks) fStripThis = true;
+				break;
+			case CID_Message:
+				if (fStripMessages) fStripThis=true;
 				break;
 			default:
-				// Strip debugrec
-				if(fStripDebugRec)
-				{
-					i->Delete();
-					i = chunks.erase(i);
-				}
-				else
-					i++;
+				// TODO
+				break;
 			}
+			if (fStripThis)
+			{
+				i->Delete();
+				i = chunks.erase(i);
+			}
+			else i++;
+		}
+		break;
+		case RCT_End:
+			i++;
+			break;
+		default:
+			// Strip debugrec
+			if (fStripDebugRec)
+			{
+				i->Delete();
+				i = chunks.erase(i);
+			}
+			else
+				i++;
 		}
 	}
+}
 
 
 bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
-	{
+{
 	// still playbacking?
 	if (currChunk == chunks.end()) return false;
 	if (Finished) { Finish(); return false; }
 #ifdef DEBUGREC
-	if(DebugRec.firstPkt())
+	if (DebugRec.firstPkt())
 		DebugRecError("Debug rec overflow!");
 	DebugRec.Clear();
 #endif
 	// return all control until this frame
-	while(currChunk != chunks.end() && currChunk->Frame <= iFrame)
-		{
+	while (currChunk != chunks.end() && currChunk->Frame <= iFrame)
+	{
 		switch (currChunk->Type)
-			{
-			case RCT_Ctrl:
-				pCtrl->Append(*currChunk->pCtrl);
-				break;
+		{
+		case RCT_Ctrl:
+			pCtrl->Append(*currChunk->pCtrl);
+			break;
 
-			case RCT_CtrlPkt:
-				{
-				C4IDPacket Packet(*currChunk->pPkt);
-				pCtrl->Add(Packet.getPktType(), static_cast<C4ControlPacket *>(Packet.getPkt()));
-				Packet.Default();
-				break;
-				}
+		case RCT_CtrlPkt:
+		{
+			C4IDPacket Packet(*currChunk->pPkt);
+			pCtrl->Add(Packet.getPktType(), static_cast<C4ControlPacket *>(Packet.getPkt()));
+			Packet.Default();
+			break;
+		}
 
-			case RCT_End:
-				// end of playback; stop it!
-				Finished=true;
-				break;
+		case RCT_End:
+			// end of playback; stop it!
+			Finished=true;
+			break;
 
 #ifdef DEBUGREC
-			default: // expect it to be debug rec
-				// append to debug rec buffer
-				if (currChunk->pDbg)
-					{
-					DebugRec.Add(CID_DebugRec, currChunk->pDbg);
-					// the debugrec buffer is now responsible for deleting the packet
-					currChunk->pDbg = NULL;
-					}
-				break;
+		default: // expect it to be debug rec
+			// append to debug rec buffer
+			if (currChunk->pDbg)
+			{
+				DebugRec.Add(CID_DebugRec, currChunk->pDbg);
+				// the debugrec buffer is now responsible for deleting the packet
+				currChunk->pDbg = NULL;
+			}
+			break;
 #endif
 
-			}
+		}
 		// next chunk
 		NextChunk();
-		}
+	}
 	// Debug log
 #ifdef DEBUGREC
 	//sprintf(OSTR, "-- Frame %d:", Game.FrameCounter); Log(OSTR);
@@ -900,29 +900,29 @@ bool C4Playback::ExecuteControl(C4Control *pCtrl, int iFrame)
 	//pCtrl->deb_print(Indent);
 #endif
 	return true;
-	}
+}
 
 void C4Playback::Finish()
-	{
+{
 	Clear();
 	// finished playback: end game
 	if (Console.Active)
-		{
+	{
 		++Game.HaltCount;
 		Console.UpdateHaltCtrls(!!Game.HaltCount);
-		}
+	}
 	else
-		{
+	{
 		Game.DoGameOver();
-		}
+	}
 	// finish playback: enable controls
 	::Control.ChangeToLocal();
-	}
+}
 
 void C4Playback::Clear()
-	{
+{
 	// free stuff
-	for(chunks_t::iterator i = chunks.begin(); i != chunks.end(); i++) i->Delete();
+	for (chunks_t::iterator i = chunks.begin(); i != chunks.end(); i++) i->Delete();
 	chunks.clear(); currChunk = chunks.end();
 	playbackFile.Close();
 	sequentialBuffer.Clear();
@@ -936,24 +936,24 @@ void C4Playback::Clear()
 #endif
 	// done
 	Finished = true;
-	}
+}
 
 const char * GetRecordChunkTypeName(C4RecordChunkType eType)
-	{
-	switch(eType)
+{
+	switch (eType)
 	{
 	case RCT_Ctrl: return "Ctrl";  // control
 	case RCT_CtrlPkt: return "CtrlPkt";  // control packet
 	case RCT_Frame: return "Frame";  // beginning frame
-	case RCT_End: return "End";	// --- the end ---
+	case RCT_End: return "End"; // --- the end ---
 	case RCT_Log: return "Log";  // log message
 	case RCT_File: return "File"; // file data
-	// DEBUGREC
+		// DEBUGREC
 	case RCT_Block: return "Block";  // point in Game::Execute
 	case RCT_SetPix: return "SetPix";  // set landscape pixel
 	case RCT_ExecObj: return "ExecObj";  // exec object
 	case RCT_Random: return "Random";  // Random()-call
-	case RCT_Rn3: return "Rn3";	 // Rn3()-call
+	case RCT_Rn3: return "Rn3";  // Rn3()-call
 	case RCT_MMC: return "MMC";  // create MassMover
 	case RCT_MMD: return "MMD";  // destroy MassMover
 	case RCT_CrObj: return "CrObj";  // create object
@@ -982,28 +982,28 @@ const char * GetRecordChunkTypeName(C4RecordChunkType eType)
 
 	case RCT_Custom: return "Custom"; // varies
 
-	case RCT_Undefined: default: return "Undefined";
+case RCT_Undefined: default: return "Undefined";
 	};
-	}
+}
 
 StdStrBuf GetDbgRecPktData(C4RecordChunkType eType, const StdBuf & RawData)
-	{
+{
 	StdStrBuf r;
 	switch (eType)
-		{
-		case RCT_AulFunc: r.Ref(reinterpret_cast<const char*>(RawData.getData()), RawData.getSize()-1);
+	{
+	case RCT_AulFunc: r.Ref(reinterpret_cast<const char*>(RawData.getData()), RawData.getSize()-1);
 		break;
-		default:
+	default:
 		for (unsigned int i=0; i<RawData.getSize(); ++i)
 			r.AppendFormat("%02x ", (uint32_t) ((uint8_t *)RawData.getData())[i]);
 		break;
-		}
-	return r;
 	}
+	return r;
+}
 
 #ifdef DEBUGREC
 void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
-	{
+{
 	// only if enabled
 	if (DoNoDebugRec>0) return;
 	if (Game.FrameCounter < DEBUGREC_START_FRAME) return;
@@ -1024,70 +1024,70 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 	DbgRecFile.Read(&eTypeRec, sizeof eTypeRec);
 	DbgRecFile.Read(&iSize32, sizeof iSize32);
 	if (iSize32)
-		{
+	{
 		StdBuf buf;
 		buf.SetSize(iSize32);
 		DbgRecFile.Read(buf.getMData(), iSize32);
 		PktInReplay = C4PktDebugRec(eTypeRec, buf);
-		}
+	}
 #endif
 #else
 	// check debug rec in list
 	C4IDPacket *pkt;
 	if (pkt = DebugRec.firstPkt())
-		{
+	{
 		// copy from list
 		PktInReplay = *static_cast<C4PktDebugRec *>(pkt->getPkt());
 		DebugRec.Delete(pkt);
-		}
+	}
 	else
-		{
+	{
 		// special sync check skip...
 		while (currChunk != chunks.end() && currChunk->Type == RCT_CtrlPkt)
-			{
+		{
 			C4IDPacket Packet(*currChunk->pPkt);
 			C4ControlPacket *pCtrlPck = static_cast<C4ControlPacket *>(Packet.getPkt());
 			assert(!pCtrlPck->Sync());
 			::Control.ExecControlPacket(Packet.getPktType(), pCtrlPck);
 			NextChunk();
-			}
+		}
 		// record end?
 		if (currChunk == chunks.end() || currChunk->Type == RCT_End || Finished)
-			{
+		{
 			Log("DebugRec end: All in sync!");
 			++DoNoDebugRec;
 			return;
-			}
+		}
 		// unpack directly from head
 		if (currChunk->Type != eType)
-			{
+		{
 			DebugRecError(FormatString("Playback type %x, this type %x", currChunk->Type, eType).getData());
 			return;
-			}
+		}
 		PktInReplay = *currChunk->pDbg;
 		fHasPacketFromHead = true;
-		}
+	}
 #endif // DEBUGREC_EXTFILE
 	// record end?
 	if (PktInReplay.getType() == RCT_End)
-		{
+	{
 		Log("DebugRec end: All in sync (2)!");
 		++DoNoDebugRec;
 		return;
-		}
+	}
 	// replay packet is unpacked to PktInReplay now; check it
 	if (PktInReplay.getType() != eType)
-		{
+	{
 		DebugRecError(FormatString("Type %s != %s", GetRecordChunkTypeName(PktInReplay.getType()), GetRecordChunkTypeName(eType)).getData());
 		return;
-		}
+	}
 	if (PktInReplay.getSize() != iSize)
-		{
+	{
 		DebugRecError(FormatString("Size %d != %d", (int) PktInReplay.getSize(), (int) iSize).getData());
-		}
+	}
 	// check packet data
-	if(memcmp(PktInReplay.getData(), pData, iSize))
-		{
+	if (memcmp(PktInReplay.getData(), pData, iSize))
+	{
 		StdStrBuf sErr;
 		sErr.Format("DbgRecPkt Type %s, size %d", GetRecordChunkTypeName(eType), iSize);
 		int i;
@@ -1098,33 +1098,33 @@ void C4Playback::Check(C4RecordChunkType eType, const uint8_t *pData, int iSize)
 		StdBuf here(pData, iSize);
 		sErr.Append(GetDbgRecPktData(eType, here));
 		DebugRecError(sErr.getData());
-		}
+	}
 	// packet is fine, jump over it
 	if (fHasPacketFromHead)
 		NextChunk();
-	}
+}
 
 void C4Playback::DebugRecError(const char *szError)
-	{
+{
 	LogF("Playback error: %s", szError);
 	BREAKPOINT_HERE;
-	}
+}
 #endif
 
 bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
-	{
+{
 
 	// Load data
 	StdBuf CompressedData;
 	Log("Reading stream...");
-	if(!CompressedData.LoadFromFile(szStream))
+	if (!CompressedData.LoadFromFile(szStream))
 		return false;
 
 	// Decompress
 	unsigned long iStreamSize = CompressedData.getSize() * 5;
 	StdBuf StreamData; StreamData.New(iStreamSize);
-	while(true)
-		{
+	while (true)
+	{
 
 		// Initialize stream
 		z_stream strm;
@@ -1135,29 +1135,29 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 		strm.avail_out = StreamData.getSize();
 
 		// Decompress
-		if(inflateInit(&strm) != Z_OK)
+		if (inflateInit(&strm) != Z_OK)
 			return false;
 		int ret = inflate(&strm, Z_FINISH);
-		if(ret == Z_OK)
-			{
+		if (ret == Z_OK)
+		{
 			inflateEnd(&strm);
 			break;
-			}
-		if(ret != Z_BUF_ERROR)
+		}
+		if (ret != Z_BUF_ERROR)
 			return false;
 
 		// All input consumed?
 		iStreamSize = strm.total_out;
-		if(strm.avail_in == 0)
-			{
+		if (strm.avail_in == 0)
+		{
 			Log("Stream data incomplete, using as much data as possible");
 			break;
-			}
+		}
 
 		// Larger buffer needed
 		StreamData.Grow(CompressedData.getSize());
 		iStreamSize = StreamData.getSize();
-		}
+	}
 	StreamData.SetSize(iStreamSize);
 
 	// Parse
@@ -1167,7 +1167,7 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 
 	// Get first chunk, which must contain the initial
 	chunks_t::iterator chunkIter = Playback.chunks.begin();
-	if(chunkIter == Playback.chunks.end() || chunkIter->Type != RCT_File)
+	if (chunkIter == Playback.chunks.end() || chunkIter->Type != RCT_File)
 		return false;
 
 	// Get initial chunk, go over file name
@@ -1176,54 +1176,54 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 	// Put to temporary file and unpack
 	char szInitial[_MAX_PATH+1] = "~initial.tmp";
 	MakeTempFilename(szInitial);
-	if(!InitialData.SaveToFile(szInitial) ||
-		 !C4Group_UnpackDirectory(szInitial))
+	if (!InitialData.SaveToFile(szInitial) ||
+	    !C4Group_UnpackDirectory(szInitial))
 		return false;
 
 	// Load Scenario.txt from Initial
 	C4Group Grp; C4Scenario Initial;
-	if(!Grp.Open(szInitial) ||
-		 !Initial.Load(Grp) ||
-		 !Grp.Close())
+	if (!Grp.Open(szInitial) ||
+	    !Initial.Load(Grp) ||
+	    !Grp.Close())
 		return false;
 
 	// Copy original scenario
 	const char *szOrigin = Initial.Head.Origin.getData();
 	char szRecord[_MAX_PATH + 1];
 	SCopy(szStream, szRecord, _MAX_PATH);
-	if(GetExtension(szRecord))
+	if (GetExtension(szRecord))
 		*(GetExtension(szRecord) - 1) = 0;
 	SAppend(".c4s", szRecord, _MAX_PATH);
 	LogF("Original scenario is %s, creating %s.", szOrigin, szRecord);
-	if(!C4Group_CopyItem(szOrigin, szRecord, false, false))
+	if (!C4Group_CopyItem(szOrigin, szRecord, false, false))
 		return false;
 
 	// Merge initial
-	if(!Grp.Open(szRecord) ||
-		 !Grp.Merge(szInitial))
+	if (!Grp.Open(szRecord) ||
+	    !Grp.Merge(szInitial))
 		return false;
 
 	// Process other files in stream
 	chunkIter->Delete();
 	chunkIter = Playback.chunks.erase(chunkIter);
-	while(chunkIter != Playback.chunks.end())
-		if(chunkIter->Type == RCT_File)
-			{
+	while (chunkIter != Playback.chunks.end())
+		if (chunkIter->Type == RCT_File)
+		{
 			LogF("Inserting %s...", chunkIter->Filename.getData());
 			StdStrBuf Temp; Temp.Copy(chunkIter->Filename);
 			MakeTempFilename(&Temp);
-			if(!chunkIter->pFileData->SaveToFile(Temp.getData()))
+			if (!chunkIter->pFileData->SaveToFile(Temp.getData()))
 				return false;
-			if(!Grp.Move(Temp.getData(), chunkIter->Filename.getData()))
+			if (!Grp.Move(Temp.getData(), chunkIter->Filename.getData()))
 				return false;
 			chunkIter = Playback.chunks.erase(chunkIter);
-			}
+		}
 		else
 			chunkIter++;
 
 	// Write record data
 	StdBuf RecordData = Playback.ReWriteBinary();
-	if(!Grp.Add(C4CFN_CtrlRec, RecordData, false, true))
+	if (!Grp.Add(C4CFN_CtrlRec, RecordData, false, true))
 		return false;
 
 	// Done
@@ -1231,4 +1231,4 @@ bool C4Playback::StreamToRecord(const char *szStream, StdStrBuf *pRecordFile)
 	Grp.Close();
 	pRecordFile->Copy(szRecord);
 	return true;
-	}
+}

@@ -68,18 +68,19 @@
 # include <res/Ift.h>
 # include <res/NoIft.h>
 
-namespace {
+namespace
+{
 	void SelectComboBoxText(GtkComboBox* combobox, const char* text)
 	{
 		GtkTreeModel* model = gtk_combo_box_get_model(combobox);
 
 		GtkTreeIter iter;
-		for(gboolean ret = gtk_tree_model_get_iter_first(model, &iter); ret; ret = gtk_tree_model_iter_next(model, &iter))
+		for (gboolean ret = gtk_tree_model_get_iter_first(model, &iter); ret; ret = gtk_tree_model_iter_next(model, &iter))
 		{
 			gchar* col_text;
 			gtk_tree_model_get(model, &iter, 0, &col_text, -1);
 
-			if(SEqualNoCase(text, col_text))
+			if (SEqualNoCase(text, col_text))
 			{
 				g_free(col_text);
 				gtk_combo_box_set_active_iter(combobox, &iter);
@@ -95,7 +96,7 @@ namespace {
 		gchar* text;
 		gtk_tree_model_get(model, iter, 0, &text, -1);
 
-		if(SEqual(text, "------")) { g_free(text); return true; }
+		if (SEqual(text, "------")) { g_free(text); return true; }
 		g_free(text);
 		return false;
 	}
@@ -113,142 +114,142 @@ namespace {
 #ifdef _WIN32
 #include <commctrl.h>
 BOOL CALLBACK ToolsDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam)
-	{
+{
 	int32_t iValue;
 	switch (Msg)
+	{
+		//----------------------------------------------------------------------------------------------
+	case WM_CLOSE:
+		Console.ToolsDlg.Clear();
+		break;
+		//----------------------------------------------------------------------------------------------
+	case WM_DESTROY:
+		StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), false);
+		break;
+		//----------------------------------------------------------------------------------------------
+	case WM_INITDIALOG:
+		return true;
+		//----------------------------------------------------------------------------------------------
+	case WM_PAINT:
+		PostMessage(hDlg,WM_USER,0,0); // For user paint
+		return false;
+		//----------------------------------------------------------------------------------------------
+	case WM_USER:
+		Console.ToolsDlg.UpdatePreview();
+		return true;
+		//----------------------------------------------------------------------------------------------
+	case WM_VSCROLL:
+		switch (LOWORD(wParam))
 		{
-		//----------------------------------------------------------------------------------------------
-		case WM_CLOSE:
-			Console.ToolsDlg.Clear();
+		case SB_THUMBTRACK: case SB_THUMBPOSITION:
+			iValue=HIWORD(wParam);
+			Console.ToolsDlg.SetGrade(C4TLS_GradeMax-iValue);
 			break;
-		//----------------------------------------------------------------------------------------------
-		case WM_DESTROY:
-			StoreWindowPosition(hDlg, "Property", Config.GetSubkeyPath("Console"), false);
+		case SB_PAGEUP: case SB_PAGEDOWN:
+		case SB_LINEUP: case SB_LINEDOWN:
+			iValue=SendDlgItemMessage(hDlg,IDC_SLIDERGRADE,TBM_GETPOS,0,0);
+			Console.ToolsDlg.SetGrade(C4TLS_GradeMax-iValue);
 			break;
-		//----------------------------------------------------------------------------------------------
-		case WM_INITDIALOG:
-			return true;
-		//----------------------------------------------------------------------------------------------
-		case WM_PAINT:
-			PostMessage(hDlg,WM_USER,0,0); // For user paint
-			return false;
-		//----------------------------------------------------------------------------------------------
-		case WM_USER:
-			Console.ToolsDlg.UpdatePreview();
-			return true;
-		//----------------------------------------------------------------------------------------------
-		case WM_VSCROLL:
-			switch (LOWORD(wParam))
-				{
-				case SB_THUMBTRACK: case SB_THUMBPOSITION:
-					iValue=HIWORD(wParam);
-					Console.ToolsDlg.SetGrade(C4TLS_GradeMax-iValue);
-					break;
-				case SB_PAGEUP: case SB_PAGEDOWN:
-				case SB_LINEUP: case SB_LINEDOWN:
-					iValue=SendDlgItemMessage(hDlg,IDC_SLIDERGRADE,TBM_GETPOS,0,0);
-					Console.ToolsDlg.SetGrade(C4TLS_GradeMax-iValue);
-					break;
-				}
-			return true;
-		//----------------------------------------------------------------------------------------------
-		case WM_COMMAND:
-			// Evaluate command
-			switch (LOWORD(wParam))
-				{
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDOK:
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONMODEDYNAMIC:
-					Console.ToolsDlg.SetLandscapeMode(C4LSC_Dynamic);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONMODESTATIC:
-					Console.ToolsDlg.SetLandscapeMode(C4LSC_Static);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONMODEEXACT:
-					Console.ToolsDlg.SetLandscapeMode(C4LSC_Exact);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONBRUSH:
-					Console.ToolsDlg.SetTool(C4TLS_Brush, false);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONLINE:
-					Console.ToolsDlg.SetTool(C4TLS_Line, false);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONRECT:
-					Console.ToolsDlg.SetTool(C4TLS_Rect, false);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONFILL:
-					Console.ToolsDlg.SetTool(C4TLS_Fill, false);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONPICKER:
-					Console.ToolsDlg.SetTool(C4TLS_Picker, false);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONIFT:
-					Console.ToolsDlg.SetIFT(true);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_BUTTONNOIFT:
-					Console.ToolsDlg.SetIFT(false);
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_COMBOMATERIAL:
-					switch (HIWORD(wParam))
-						{
-						case CBN_SELCHANGE:
-							{
-							char str[100];
-							int32_t cursel = SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETCURSEL,0,0);
-							SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETLBTEXT,cursel,(LPARAM)str);
-							Console.ToolsDlg.SetMaterial(str);
-							break;
-							}
-						}
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				case IDC_COMBOTEXTURE:
-					switch (HIWORD(wParam))
-						{
-						case CBN_SELCHANGE:
-							{
-							char str[100];
-							int32_t cursel = SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETCURSEL,0,0);
-							SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETLBTEXT,cursel,(LPARAM)str);
-							Console.ToolsDlg.SetTexture(str);
-							break;
-							}
-						}
-					return true;
-				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-				}
-			return false;
-		//----------------------------------------------------------------------------------------
 		}
-	return false;
+		return true;
+		//----------------------------------------------------------------------------------------------
+	case WM_COMMAND:
+		// Evaluate command
+		switch (LOWORD(wParam))
+		{
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDOK:
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONMODEDYNAMIC:
+			Console.ToolsDlg.SetLandscapeMode(C4LSC_Dynamic);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONMODESTATIC:
+			Console.ToolsDlg.SetLandscapeMode(C4LSC_Static);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONMODEEXACT:
+			Console.ToolsDlg.SetLandscapeMode(C4LSC_Exact);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONBRUSH:
+			Console.ToolsDlg.SetTool(C4TLS_Brush, false);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONLINE:
+			Console.ToolsDlg.SetTool(C4TLS_Line, false);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONRECT:
+			Console.ToolsDlg.SetTool(C4TLS_Rect, false);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONFILL:
+			Console.ToolsDlg.SetTool(C4TLS_Fill, false);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONPICKER:
+			Console.ToolsDlg.SetTool(C4TLS_Picker, false);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONIFT:
+			Console.ToolsDlg.SetIFT(true);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_BUTTONNOIFT:
+			Console.ToolsDlg.SetIFT(false);
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_COMBOMATERIAL:
+			switch (HIWORD(wParam))
+			{
+			case CBN_SELCHANGE:
+			{
+				char str[100];
+				int32_t cursel = SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETCURSEL,0,0);
+				SendDlgItemMessage(hDlg,IDC_COMBOMATERIAL,CB_GETLBTEXT,cursel,(LPARAM)str);
+				Console.ToolsDlg.SetMaterial(str);
+				break;
+			}
+			}
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		case IDC_COMBOTEXTURE:
+			switch (HIWORD(wParam))
+			{
+			case CBN_SELCHANGE:
+			{
+				char str[100];
+				int32_t cursel = SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETCURSEL,0,0);
+				SendDlgItemMessage(hDlg,IDC_COMBOTEXTURE,CB_GETLBTEXT,cursel,(LPARAM)str);
+				Console.ToolsDlg.SetTexture(str);
+				break;
+			}
+			}
+			return true;
+			// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+		}
+		return false;
+		//----------------------------------------------------------------------------------------
 	}
+	return false;
+}
 #endif
 C4ToolsDlg::C4ToolsDlg()
-	{
+{
 	Default();
 #ifdef _WIN32
 	hbmBrush=hbmLine=hbmRect=hbmFill=NULL;
 	hbmIFT=hbmNoIFT=NULL;
 #endif
-	}
+}
 
 C4ToolsDlg::~C4ToolsDlg()
-	{
+{
 	Clear();
 #ifdef WITH_DEVELOPER_MODE
-	if(hbox != NULL)
+	if (hbox != NULL)
 	{
 		g_signal_handler_disconnect(G_OBJECT(C4DevmodeDlg::GetWindow()), handlerHide);
 		C4DevmodeDlg::RemovePage(hbox);
@@ -265,17 +266,17 @@ C4ToolsDlg::~C4ToolsDlg()
 	if (hbmIFT) DeleteObject(hbmIFT);
 	if (hbmNoIFT) DeleteObject(hbmNoIFT);
 #endif
-	}
+}
 
 bool C4ToolsDlg::Open()
-	{
+{
 	// Create dialog window
 #ifdef _WIN32
 	if (hDialog) return true;
 	hDialog = CreateDialog(Application.GetInstance(),
-												 MAKEINTRESOURCE(IDD_TOOLS),
-												 Console.hWindow,
-												 (DLGPROC) ToolsDlgProc);
+	                       MAKEINTRESOURCE(IDD_TOOLS),
+	                       Console.hWindow,
+	                       (DLGPROC) ToolsDlgProc);
 	if (!hDialog) return false;
 	// Set text
 	SetWindowText(hDialog,LoadResStr("IDS_DLG_TOOLS"));
@@ -293,7 +294,7 @@ bool C4ToolsDlg::Open()
 	ShowWindow(hDialog,SW_SHOWNOACTIVATE);
 #else
 #ifdef WITH_DEVELOPER_MODE
-	if(hbox == NULL)
+	if (hbox == NULL)
 	{
 		hbox = gtk_hbox_new(false, 12);
 		GtkWidget* vbox = gtk_vbox_new(false, 6);
@@ -416,10 +417,10 @@ bool C4ToolsDlg::Open()
 	InitMaterialCtrls();
 	EnableControls();
 	return true;
-	}
+}
 
 void C4ToolsDlg::Default()
-	{
+{
 #ifdef _WIN32
 	hDialog=NULL;
 #ifdef USE_GL
@@ -436,10 +437,10 @@ void C4ToolsDlg::Default()
 	ModeIFT = true;
 	SCopy("Earth",Material);
 	SCopy("earth",Texture);
-	}
+}
 
 void C4ToolsDlg::Clear()
-	{
+{
 #ifdef _WIN32
 #ifdef USE_GL
 	delete pGLCtx; pGLCtx = NULL;
@@ -448,23 +449,23 @@ void C4ToolsDlg::Clear()
 #else
 #ifdef WITH_DEVELOPER_MODE
 	//if(hbox != NULL)
-	//	C4DevmodeDlg::switch_page(NULL);
+	//  C4DevmodeDlg::switch_page(NULL);
 #endif
 #endif
 	Active = false;
-	}
+}
 
 bool C4ToolsDlg::SetTool(int32_t iTool, bool fTemp)
-	{
+{
 	Tool=iTool;
 	if (!fTemp) SelectedTool = Tool;
 	UpdateToolCtrls();
 	UpdatePreview();
 	return true;
-	}
+}
 
 void C4ToolsDlg::UpdateToolCtrls()
-	{
+{
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_BUTTONBRUSH,BM_SETSTATE,(Tool==C4TLS_Brush),0);
 	UpdateWindow(GetDlgItem(hDialog,IDC_BUTTONBRUSH));
@@ -497,10 +498,10 @@ void C4ToolsDlg::UpdateToolCtrls()
 	g_signal_handler_unblock(picker, handlerPicker);
 #endif
 #endif
-	}
+}
 
 void C4ToolsDlg::InitMaterialCtrls()
-	{
+{
 	// Materials
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_ADDSTRING,0,(LPARAM)C4TLS_MatSky);
@@ -515,7 +516,7 @@ void C4ToolsDlg::InitMaterialCtrls()
 	gtk_list_store_clear(list);
 
 	gtk_combo_box_append_text(GTK_COMBO_BOX(materials), C4TLS_MatSky);
-	for(int32_t cnt = 0; cnt < ::MaterialMap.Num; cnt++)
+	for (int32_t cnt = 0; cnt < ::MaterialMap.Num; cnt++)
 	{
 		gtk_combo_box_append_text(GTK_COMBO_BOX(materials), ::MaterialMap.Map[cnt].Name);
 	}
@@ -525,10 +526,10 @@ void C4ToolsDlg::InitMaterialCtrls()
 #endif
 	// Textures
 	UpdateTextures();
-	}
+}
 
 void C4ToolsDlg::UpdateTextures()
-	{
+{
 	// Refill dlg
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_RESETCONTENT,0,(LPARAM)0);
@@ -542,9 +543,9 @@ void C4ToolsDlg::UpdateTextures()
 	bool fAnyEntry = false; int32_t cnt; const char *szTexture;
 	if (::Landscape.Mode!=C4LSC_Exact)
 		for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
-			{
+		{
 			if (!::TextureMap.GetIndex(Material, szTexture, false))
-				{
+			{
 				fAnyEntry = true;
 #ifdef _WIN32
 				SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,(LPARAM)szTexture);
@@ -553,8 +554,8 @@ void C4ToolsDlg::UpdateTextures()
 				gtk_combo_box_prepend_text(GTK_COMBO_BOX(textures), szTexture);
 #endif
 #endif
-				}
 			}
+		}
 	// seperator
 	if (fAnyEntry)
 	{
@@ -569,10 +570,10 @@ void C4ToolsDlg::UpdateTextures()
 
 	// atop: valid textures
 	for (cnt=0; (szTexture=::TextureMap.GetTexture(cnt)); cnt++)
-		{
+	{
 		// Current material-texture valid? Always valid for exact mode
 		if (::TextureMap.GetIndex(Material,szTexture,false) || ::Landscape.Mode==C4LSC_Exact)
-			{
+		{
 #ifdef _WIN32
 			SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_INSERTSTRING,0,(LPARAM)szTexture);
 #else
@@ -580,8 +581,8 @@ void C4ToolsDlg::UpdateTextures()
 			gtk_combo_box_prepend_text(GTK_COMBO_BOX(textures), szTexture);
 #endif
 #endif
-			}
 		}
+	}
 	// reselect current
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,(LPARAM)Texture);
@@ -592,22 +593,22 @@ void C4ToolsDlg::UpdateTextures()
 	g_signal_handler_unblock(textures, handlerTextures);
 #endif
 #endif
-	}
+}
 
 void C4ToolsDlg::SetMaterial(const char *szMaterial)
-	{
+{
 	SCopy(szMaterial,Material,C4M_MaxName);
 	AssertValidTexture();
 	EnableControls();
 	if (::Landscape.Mode==C4LSC_Static) UpdateTextures();
 	UpdatePreview();
-	}
+}
 
 void C4ToolsDlg::SetTexture(const char *szTexture)
-	{
+{
 	// assert valid (for seperator selection)
 	if (!::TextureMap.GetTexture(szTexture))
-		{
+	{
 		// ensure correct texture is in dlg
 #ifdef _WIN32
 		SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,(LPARAM)Texture);
@@ -619,30 +620,30 @@ void C4ToolsDlg::SetTexture(const char *szTexture)
 #endif
 #endif
 		return;
-		}
+	}
 	SCopy(szTexture,Texture,C4M_MaxName);
 	UpdatePreview();
-	}
+}
 
 bool C4ToolsDlg::SetIFT(bool fIFT)
-	{
+{
 	if (fIFT) ModeIFT = 1; else ModeIFT=0;
 	UpdateIFTControls();
 	UpdatePreview();
 	return true;
-	}
+}
 
 void C4ToolsDlg::SetColorPattern(const char *szMaterial, const char *szTexture)
-	{
-	}
+{
+}
 
 void C4ToolsDlg::UpdatePreview()
-	{
+{
 #ifdef _WIN32
 	if (!hDialog) return;
 #else
 #ifdef WITH_DEVELOPER_MODE
-	if(!hbox) return;
+	if (!hbox) return;
 #endif
 #endif
 
@@ -674,27 +675,27 @@ void C4ToolsDlg::UpdatePreview()
 	CPattern Pattern;
 	// Sky material: sky as pattern only
 	if (SEqual(Material,C4TLS_MatSky))
-		{
+	{
 		Pattern.Set(::Landscape.Sky.Surface, 0);
-		}
+	}
 	// Material-Texture
 	else
-		{
+	{
 		bCol=Mat2PixColDefault(::MaterialMap.Get(Material));
 		// Get/Create TexMap entry
 		BYTE iTex = ::TextureMap.GetIndex(Material, Texture, true);
 		if (iTex)
-			{
+		{
 			// Define texture pattern
 			const C4TexMapEntry *pTex = ::TextureMap.GetEntry(iTex);
 			// Security
-			if(pTex)
-				{
+			if (pTex)
+			{
 				// Set drawing pattern
 				Pattern = pTex->GetPattern();
-				}
 			}
 		}
+	}
 #ifdef _WIN32
 	if (IsWindowEnabled(GetDlgItem(hDialog,IDC_PREVIEW)))
 #else
@@ -702,10 +703,10 @@ void C4ToolsDlg::UpdatePreview()
 	if (GTK_WIDGET_SENSITIVE(preview))
 #endif
 #endif
-		Application.DDraw->DrawPatternedCircle(	sfcPreview,
-							iPrvWdt/2,iPrvHgt/2,
-							Grade,
-							bCol, Pattern, *::Landscape.GetPal());
+		Application.DDraw->DrawPatternedCircle( sfcPreview,
+		                                        iPrvWdt/2,iPrvHgt/2,
+		                                        Grade,
+		                                        bCol, Pattern, *::Landscape.GetPal());
 
 	Application.DDraw->AttachPrimaryPalette(sfcPreview);
 
@@ -713,19 +714,19 @@ void C4ToolsDlg::UpdatePreview()
 #ifdef USE_DIRECTX
 	if (pD3D)
 		pD3D->BlitSurface2Window( sfcPreview,
-							0,0,iPrvWdt,iPrvHgt,
-							GetDlgItem(hDialog,IDC_PREVIEW),
-							rect.left,rect.top,rect.right,rect.bottom);
+		                          0,0,iPrvWdt,iPrvHgt,
+		                          GetDlgItem(hDialog,IDC_PREVIEW),
+		                          rect.left,rect.top,rect.right,rect.bottom);
 #endif
 #ifdef USE_GL
 	if (pGL && pGLCtx)
-		{
+	{
 		if (pGLCtx->Select())
-			{
+		{
 			pGL->Blit(sfcPreview, 0,0,(float)iPrvWdt,(float)iPrvHgt, Application.pWindow->pSurface, rect.left,rect.top, iPrvWdt,iPrvHgt);
 			Application.pWindow->pSurface->PageFlip();
-			}
 		}
+	}
 #endif
 #else
 #ifdef WITH_DEVELOPER_MODE
@@ -733,14 +734,14 @@ void C4ToolsDlg::UpdatePreview()
 	GdkPixbuf* pixbuf = gdk_pixbuf_new(GDK_COLORSPACE_RGB, true, 8, 64, 64);
 	guchar* data = gdk_pixbuf_get_pixels(pixbuf);
 	sfcPreview->Lock();
-	for(int x = 0; x < 64; ++ x) for(int y = 0; y < 64; ++ y)
-	{
-		DWORD dw = sfcPreview->GetPixDw(x, y, true);
-		*data = (dw >> 16) & 0xff; ++ data;
-		*data = (dw >> 8 ) & 0xff; ++ data;
-		*data = (dw      ) & 0xff; ++ data;
-		*data = 0xff - ((dw >> 24) & 0xff); ++ data;
-	}
+	for (int x = 0; x < 64; ++ x) for (int y = 0; y < 64; ++ y)
+		{
+			DWORD dw = sfcPreview->GetPixDw(x, y, true);
+			*data = (dw >> 16) & 0xff; ++ data;
+			*data = (dw >> 8 ) & 0xff; ++ data;
+			*data = (dw      ) & 0xff; ++ data;
+			*data = 0xff - ((dw >> 24) & 0xff); ++ data;
+		}
 
 	sfcPreview->Unlock();
 	gtk_image_set_from_pixbuf(GTK_IMAGE(preview), pixbuf);
@@ -748,22 +749,22 @@ void C4ToolsDlg::UpdatePreview()
 #endif
 #endif
 	delete sfcPreview;
-	}
+}
 
 void C4ToolsDlg::InitGradeCtrl()
-	{
+{
 #ifdef _WIN32
 	if (!hDialog) return;
 	HWND hwndTrack = GetDlgItem(hDialog,IDC_SLIDERGRADE);
 	SendMessage(hwndTrack,TBM_SETPAGESIZE,0,(LPARAM)5);
 	SendMessage(hwndTrack,TBM_SETLINESIZE,0,(LPARAM)1);
 	SendMessage(hwndTrack,TBM_SETRANGE,(WPARAM)false,
-			(LPARAM) MAKELONG(C4TLS_GradeMin,C4TLS_GradeMax));
+	            (LPARAM) MAKELONG(C4TLS_GradeMin,C4TLS_GradeMax));
 	SendMessage(hwndTrack,TBM_SETPOS,(WPARAM)true,(LPARAM)C4TLS_GradeMax-Grade);
 	UpdateWindow(hwndTrack);
 #else
 #ifdef WITH_DEVELOPER_MODE
-	if(!hbox) return;
+	if (!hbox) return;
 	g_signal_handler_block(scale, handlerScale);
 	gtk_range_set_increments(GTK_RANGE(scale), 1, 5);
 	gtk_range_set_range(GTK_RANGE(scale), C4TLS_GradeMin, C4TLS_GradeMax);
@@ -772,57 +773,57 @@ void C4ToolsDlg::InitGradeCtrl()
 	g_signal_handler_unblock(scale, handlerScale);
 #endif
 #endif
-	}
+}
 
 bool C4ToolsDlg::SetGrade(int32_t iGrade)
-	{
+{
 	Grade = BoundBy(iGrade,C4TLS_GradeMin,C4TLS_GradeMax);
 	UpdatePreview();
 	return true;
-	}
+}
 
 bool C4ToolsDlg::ChangeGrade(int32_t iChange)
-	{
+{
 	Grade = BoundBy(Grade+iChange,C4TLS_GradeMin,C4TLS_GradeMax);
 	UpdatePreview();
 	InitGradeCtrl();
 	return true;
-	}
+}
 
 bool C4ToolsDlg::PopMaterial()
-	{
+{
 #ifdef _WIN32
 	if (!hDialog) return false;
 	SetFocus(GetDlgItem(hDialog,IDC_COMBOMATERIAL));
 	SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_SHOWDROPDOWN,true,0);
 #else
 #ifdef WITH_DEVELOPER_MODE
-	if(!hbox) return false;
+	if (!hbox) return false;
 	gtk_widget_grab_focus(materials);
 	gtk_combo_box_popup(GTK_COMBO_BOX(materials));
 #endif
 #endif
 	return true;
-	}
+}
 
 bool C4ToolsDlg::PopTextures()
-	{
+{
 #ifdef _WIN32
 	if (!hDialog) return false;
 	SetFocus(GetDlgItem(hDialog,IDC_COMBOTEXTURE));
 	SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_SHOWDROPDOWN,true,0);
 #else
 #ifdef WITH_DEVELOPER_MODE
-	if(!hbox) return false;
+	if (!hbox) return false;
 	gtk_widget_grab_focus(textures);
 	gtk_combo_box_popup(GTK_COMBO_BOX(textures));
 #endif
 #endif
 	return true;
-	}
+}
 
 void C4ToolsDlg::UpdateIFTControls()
-	{
+{
 #ifdef _WIN32
 	if (!hDialog) return;
 	SendDlgItemMessage(hDialog,IDC_BUTTONNOIFT,BM_SETSTATE,(ModeIFT==0),0);
@@ -831,7 +832,7 @@ void C4ToolsDlg::UpdateIFTControls()
 	UpdateWindow(GetDlgItem(hDialog,IDC_BUTTONIFT));
 #else
 #ifdef WITH_DEVELOPER_MODE
-	if(!hbox) return;
+	if (!hbox) return;
 	g_signal_handler_block(no_ift, handlerNoIft);
 	g_signal_handler_block(ift, handlerIft);
 
@@ -842,10 +843,10 @@ void C4ToolsDlg::UpdateIFTControls()
 	g_signal_handler_unblock(ift, handlerIft);
 #endif
 #endif
-	}
+}
 
 void C4ToolsDlg::UpdateLandscapeModeCtrls()
-	{
+{
 	int32_t iMode = ::Landscape.Mode;
 #ifdef _WIN32
 	// Dynamic: enable only if dynamic anyway
@@ -882,10 +883,10 @@ void C4ToolsDlg::UpdateLandscapeModeCtrls()
 	C4DevmodeDlg::SetTitle(hbox, LoadResStr(iMode==C4LSC_Dynamic ? "IDS_DLG_DYNAMIC" : iMode==C4LSC_Static ? "IDS_DLG_STATIC" : "IDS_DLG_EXACT"));
 #endif
 #endif
-	}
+}
 
 bool C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
-	{
+{
 	int32_t iLastMode=::Landscape.Mode;
 	// Exact to static: confirm data loss warning
 	if (iLastMode==C4LSC_Exact)
@@ -895,10 +896,10 @@ bool C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
 					return false;
 	// send as control
 	if (!fThroughControl)
-		{
+	{
 		::Control.DoInput(CID_EMDrawTool, new C4ControlEMDrawTool(EMDT_SetMode, iMode), CDT_Decide);
 		return true;
-		}
+	}
 	// Set landscape mode
 	::Landscape.SetMode(iMode);
 	// Exact to static: redraw landscape from map
@@ -915,10 +916,10 @@ bool C4ToolsDlg::SetLandscapeMode(int32_t iMode, bool fThroughControl)
 	UpdateTextures();
 	// Success
 	return true;
-	}
+}
 
 void C4ToolsDlg::EnableControls()
-	{
+{
 	int32_t iLandscapeMode=::Landscape.Mode;
 #ifdef _WIN32
 	// Set bitmap buttons
@@ -962,11 +963,11 @@ void C4ToolsDlg::EnableControls()
 #endif // WITH_DEVELOPER_MODE
 #endif // _WIN32
 	UpdatePreview();
-	}
+}
 
 #ifdef _WIN32
 void C4ToolsDlg::LoadBitmaps()
-	{
+{
 	HINSTANCE hInst = Application.GetInstance();
 	if (!hbmBrush) hbmBrush=(HBITMAP)LoadBitmap(hInst,MAKEINTRESOURCE(IDB_BRUSH));
 	if (!hbmLine) hbmLine=(HBITMAP)LoadBitmap(hInst,MAKEINTRESOURCE(IDB_LINE));
@@ -983,10 +984,10 @@ void C4ToolsDlg::LoadBitmaps()
 	if (!hbmDynamic) hbmDynamic=(HBITMAP)LoadBitmap(hInst,MAKEINTRESOURCE(IDB_DYNAMIC));
 	if (!hbmStatic) hbmStatic=(HBITMAP)LoadBitmap(hInst,MAKEINTRESOURCE(IDB_STATIC));
 	if (!hbmExact) hbmExact=(HBITMAP)LoadBitmap(hInst,MAKEINTRESOURCE(IDB_EXACT));
-	}
+}
 #endif
 void C4ToolsDlg::AssertValidTexture()
-	{
+{
 	// Static map mode only
 	if (::Landscape.Mode!=C4LSC_Static) return;
 	// Ignore if sky
@@ -996,15 +997,15 @@ void C4ToolsDlg::AssertValidTexture()
 	// Find valid material-texture
 	const char *szTexture;
 	for (int32_t iTexture=0; (szTexture=::TextureMap.GetTexture(iTexture)); iTexture++)
-		{
+	{
 		if (::TextureMap.GetIndex(Material,szTexture,false))
 			{ SelectTexture(szTexture); return; }
-		}
-	// No valid texture found
 	}
+	// No valid texture found
+}
 
 bool C4ToolsDlg::SelectTexture(const char *szTexture)
-	{
+{
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_COMBOTEXTURE,CB_SELECTSTRING,0,(LPARAM)szTexture);
 #else
@@ -1016,10 +1017,10 @@ bool C4ToolsDlg::SelectTexture(const char *szTexture)
 #endif
 	SetTexture(szTexture);
 	return true;
-	}
+}
 
 bool C4ToolsDlg::SelectMaterial(const char *szMaterial)
-	{
+{
 #ifdef _WIN32
 	SendDlgItemMessage(hDialog,IDC_COMBOMATERIAL,CB_SELECTSTRING,0,(LPARAM)szMaterial);
 #else
@@ -1031,26 +1032,26 @@ bool C4ToolsDlg::SelectMaterial(const char *szMaterial)
 #endif
 	SetMaterial(szMaterial);
 	return true;
-	}
+}
 
 void C4ToolsDlg::SetAlternateTool()
-	{
+{
 	// alternate tool is the picker in any mode
 	SetTool(C4TLS_Picker, true);
-	}
+}
 
 void C4ToolsDlg::ResetAlternateTool()
-	{
+{
 	// reset tool to selected tool in case alternate tool was set
 	SetTool(SelectedTool, true);
-	}
+}
 
 #ifdef WITH_DEVELOPER_MODE
 // GTK+ callbacks
 /*void C4ToolsDlg::OnDestroy(GtkWidget* widget, gpointer data)
 {
-	static_cast<C4ToolsDlg*>(data)->window = NULL;
-	static_cast<C4ToolsDlg*>(data)->Active = false;
+  static_cast<C4ToolsDlg*>(data)->window = NULL;
+  static_cast<C4ToolsDlg*>(data)->Active = false;
 }*/
 
 void C4ToolsDlg::OnButtonModeDynamic(GtkWidget* widget, gpointer data)

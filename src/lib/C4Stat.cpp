@@ -24,7 +24,7 @@
 // ** implemetation of C4MainStat
 
 C4MainStat::C4MainStat()
-: pFirst(0)
+		: pFirst(0)
 {
 }
 
@@ -35,7 +35,7 @@ C4MainStat::~C4MainStat()
 void C4MainStat::RegisterStat(C4Stat* pStat)
 {
 	// add to list
-	if(!pFirst)
+	if (!pFirst)
 	{
 		pFirst = pStat;
 		pStat->pNext = 0;
@@ -53,13 +53,13 @@ void C4MainStat::RegisterStat(C4Stat* pStat)
 void C4MainStat::UnRegStat(C4Stat* pStat)
 {
 	// first item?
-	if(!pStat->pPrev)
+	if (!pStat->pPrev)
 	{
 		pFirst = pStat->pNext;
 		pStat->pNext = 0;
 	}
 	// last item?
-	else if(!pStat->pNext)
+	else if (!pStat->pNext)
 	{
 		pStat->pPrev->pNext = 0;
 		pStat->pPrev = 0;
@@ -75,13 +75,13 @@ void C4MainStat::UnRegStat(C4Stat* pStat)
 
 void C4MainStat::Reset()
 {
-	for(C4Stat* pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
+	for (C4Stat* pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
 		pAkt->Reset();
 }
 
 void C4MainStat::ResetPart()
 {
-	for(C4Stat* pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
+	for (C4Stat* pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
 		pAkt->ResetPart();
 }
 
@@ -92,7 +92,7 @@ void C4MainStat::Show()
 	// count stats
 	unsigned int iCnt = 0;
 	C4Stat* pAkt;
-	for(pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
+	for (pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
 		iCnt++;
 
 	// create array
@@ -101,28 +101,28 @@ void C4MainStat::Show()
 
 	// sort it
 	unsigned int i,ii;
-	for(ii=0;ii<iCnt;ii++) bHS[ii] = false;
-	for(i=0;i<iCnt;i++)
+	for (ii=0; ii<iCnt; ii++) bHS[ii] = false;
+	for (i=0; i<iCnt; i++)
 	{
 		C4Stat* pBestStat = NULL;
 		unsigned int iBestNr = ~0;
 
-		for(ii=0, pAkt = pFirst; ii<iCnt; ii++, pAkt = pAkt->pNext)
-			if(!bHS[ii])
+		for (ii=0, pAkt = pFirst; ii<iCnt; ii++, pAkt = pAkt->pNext)
+			if (!bHS[ii])
 			{
-				if(iBestNr == ~0u)
+				if (iBestNr == ~0u)
 				{
 					iBestNr = ii;
 					pBestStat = pAkt;
 				}
-				else if(stricmp(pBestStat->strName, pAkt->strName) > 0)
+				else if (stricmp(pBestStat->strName, pAkt->strName) > 0)
 				{
 					iBestNr = ii;
 					pBestStat = pAkt;
 				}
 			}
 
-		if(iBestNr == (unsigned int) -1)
+		if (iBestNr == (unsigned int) -1)
 			break;
 		bHS[iBestNr] = true;
 
@@ -134,15 +134,15 @@ void C4MainStat::Show()
 	LogSilent("** Stat");
 
 	// output in order
-	for(i=0; i<iCnt; i++)
+	for (i=0; i<iCnt; i++)
 	{
 		pAkt = StatArray[i];
 
 		// output it!
-		if(pAkt->iCount)
+		if (pAkt->iCount)
 			LogSilentF("%s: n = %d, t = %d, td = %.2f",
-				pAkt->strName, pAkt->iCount, pAkt->iTimeSum,
-				double(pAkt->iTimeSum) / /*Max<int>(1,*/ pAkt->iCount /*- 100)*/ * 1000);
+			           pAkt->strName, pAkt->iCount, pAkt->iTimeSum,
+			           double(pAkt->iTimeSum) / /*Max<int>(1,*/ pAkt->iCount /*- 100)*/ * 1000);
 
 	}
 
@@ -161,7 +161,7 @@ void C4MainStat::ShowPart(int FrameCounter)
 	LogSilentF("** PartStat begin %d", FrameCounter);
 
 	// insert all stats
-	for(pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
+	for (pAkt = pFirst; pAkt; pAkt = pAkt->pNext)
 		LogSilentF("%s: n=%d, t=%d", pAkt->strName, pAkt->iCountPart, pAkt->iTimeSumPart);
 
 	// insert part stat end idtf
@@ -171,7 +171,7 @@ void C4MainStat::ShowPart(int FrameCounter)
 // ** implemetation of C4Stat
 
 C4Stat::C4Stat(const char* strnName)
-: strName(strnName)
+		: strName(strnName)
 {
 	Reset();
 	getMainStat()->RegisterStat(this);

@@ -29,7 +29,7 @@
 #include <C4Log.h>
 
 C4GroupSetNode::C4GroupSetNode(C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Group &rGroup, bool fGrpOwned, int32_t id)
-	{
+{
 	// set parent
 	pParent = &rParent;
 	// link into list
@@ -42,57 +42,57 @@ C4GroupSetNode::C4GroupSetNode(C4GroupSet &rParent, C4GroupSetNode *pPrev, C4Gro
 	this->fGrpOwned = fGrpOwned;
 	// set id
 	this->id = id;
-	}
+}
 
 C4GroupSetNode::~C4GroupSetNode()
-	{
+{
 	// remove group
 	if (fGrpOwned) delete pGroup;
 	// unlink from list
 	(pPrev ? pPrev->pNext : pParent->pFirst) = pNext;
 	(pNext ? pNext->pPrev : pParent->pLast ) = pPrev;
-	}
+}
 
 void C4GroupSet::Clear()
-	{
+{
 	// clear nodes
 	while (pFirst) delete pFirst;
 	pFirst = NULL;
-	}
+}
 
 void C4GroupSet::Default()
-	{
+{
 	// zero fields
 	pFirst=pLast=NULL;
 	// do not reset index here, because group set IDs are meant to be unique
 	// for each instance of the engine
 	// see also C4GraphicsResource::RegisterGlobalGraphics
-	}
+}
 
 C4GroupSet::C4GroupSet()
-	{
+{
 	// zero fields
 	Default();
 	iIndex=0;
-	}
+}
 
 C4GroupSet::C4GroupSet(C4GroupSet &rCopy)
-	{
+{
 	// zero fields
 	Default();
 	iIndex=0;
 	// copy from other group set
 	RegisterGroups(rCopy, C4GSCnt_All);
-	}
+}
 
 C4GroupSet::~C4GroupSet()
-	{
+{
 	// clear nodes
 	Clear();
-	}
+}
 
 bool C4GroupSet::RegisterGroup(C4Group &rGroup, bool fOwnGrp, int32_t Priority, int32_t Contents, bool fCheckContent)
-	{
+{
 	// get node to sort in
 	// begin at back end and search for higher priority
 	C4GroupSetNode *pNode;
@@ -114,43 +114,43 @@ bool C4GroupSet::RegisterGroup(C4Group &rGroup, bool fOwnGrp, int32_t Priority, 
 #endif
 
 	return true;
-	}
+}
 
 int32_t C4GroupSet::CheckGroupContents(C4Group &rGroup, int32_t Contents)
-	{
+{
 	// update mask
 	if (Contents & C4GSCnt_Graphics) if (!rGroup.FindEntry(C4CFN_Graphics)) Contents=Contents&~C4GSCnt_Graphics;
 	if (Contents & C4GSCnt_Loaders)
-		{
+	{
 		if (!rGroup.FindEntry("Loader*.bmp")
-			&& !rGroup.FindEntry("Loader*.png")
-			&& !rGroup.FindEntry("Loader*.jpg")
-			&& !rGroup.FindEntry("Loader*.jpeg"))
-			{
+		    && !rGroup.FindEntry("Loader*.png")
+		    && !rGroup.FindEntry("Loader*.jpg")
+		    && !rGroup.FindEntry("Loader*.jpeg"))
+		{
 			Contents=Contents&~C4GSCnt_Loaders;
-			}
 		}
+	}
 	if (Contents & C4GSCnt_Material) if (!rGroup.FindEntry(C4CFN_Material)) Contents=Contents&~C4GSCnt_Material;
 	if (Contents & C4GSCnt_Music) if (!rGroup.FindEntry(C4CFN_Music)) Contents=Contents&~C4GSCnt_Music;
 	if (Contents & C4GSCnt_Definitions) if (!rGroup.FindEntry(C4CFN_DefFiles)) Contents=Contents&~C4GSCnt_Definitions;
 	if (Contents & C4GSCnt_FontDefs) if (!rGroup.FindEntry(C4CFN_FontFiles)) if (!rGroup.FindEntry(C4CFN_FontDefs)) Contents=Contents&~C4GSCnt_FontDefs;
 	// return it
 	return Contents;
-	}
+}
 
 bool C4GroupSet::RegisterGroups(C4GroupSet &rCopy, int32_t Contents, const char *szFilename, int32_t iMaxSkipID)
-	{
+{
 	// get all groups of rCopy
 	int32_t Contents2;
 	for (C4GroupSetNode *pNode=rCopy.pFirst; pNode; pNode=pNode->pNext)
 		if ((Contents2 = pNode->Contents & Contents))
 			if (pNode->id > iMaxSkipID)
-				{
+			{
 				if (!szFilename)
 					// add group but don't check the content again!
 					RegisterGroup(*pNode->pGroup, false, pNode->Priority, Contents2, false);
 				else
-					{
+				{
 					// if a filename is given, open the child group
 					C4Group *pGroup = new C4Group();
 					if (!pGroup->OpenAsChild(pNode->pGroup, szFilename))
@@ -159,19 +159,19 @@ bool C4GroupSet::RegisterGroups(C4GroupSet &rCopy, int32_t Contents, const char 
 					// but this flag is not likely to be used
 					if (!RegisterGroup(*pGroup, true, pNode->Priority, Contents2, false))
 						delete pGroup;
-					}
 				}
-		// done, success
-		return true;
-	}
+			}
+	// done, success
+	return true;
+}
 
 C4Group *C4GroupSet::FindGroup(int32_t Contents, C4Group *pAfter, bool fSamePrio)
-	{
+{
 	// get priority
 	int32_t iPriority=-1;
 	// find group by matching content mask
 	for (C4GroupSetNode *pNode=pFirst; pNode; pNode=pNode->pNext)
-		{
+	{
 		// check contents
 		if (!pAfter && (pNode->Contents & Contents))
 			// check priority
@@ -180,26 +180,26 @@ C4Group *C4GroupSet::FindGroup(int32_t Contents, C4Group *pAfter, bool fSamePrio
 				return pNode->pGroup;
 		// find next clear flag
 		if (pNode->pGroup == pAfter) { pAfter=NULL; if (fSamePrio) iPriority=pNode->Priority; }
-		}
+	}
 	// nothing found
 	return NULL;
-	}
+}
 
 C4Group *C4GroupSet::FindEntry(const char *szWildcard, int32_t *pPriority, int32_t *pID)
-	{
+{
 	// find group that has this entry
 	for (C4GroupSetNode *pNode=pFirst; pNode; pNode=pNode->pNext)
 		if (pNode->pGroup->FindEntry(szWildcard))
-			{
+		{
 			// assign priority and ID, if ptrs is given
 			if (pPriority) *pPriority=pNode->Priority;
 			if (pID) *pID=pNode->id;
 			// return found group
 			return pNode->pGroup;
-			}
+		}
 	// nothing found
 	return NULL;
-	}
+}
 
 bool C4GroupSet::LoadEntry(const char *szEntryName, char **lpbpBuf, size_t *ipSize, int32_t iAppendZeros)
 {
@@ -222,20 +222,20 @@ bool C4GroupSet::LoadEntryString(const char *szEntryName, StdStrBuf & rBuf)
 }
 
 bool C4GroupSet::CloseFolders()
-	{
+{
 	// close everything that has folder-priority
 	for (C4GroupSetNode *pNode=pFirst,*pNext; pNode; pNode=pNext)
-		{
+	{
 		// get next, as pNode might be destroyed
 		pNext=pNode->pNext;
 		// check if priority matches
 		if (Inside<int32_t>(pNode->Priority, C4GSPrio_Folder, C4GSPrio_Folder2) || pNode->Priority==C4GSPrio_Scenario)
 			// clear it!
 			delete pNode;
-		}
+	}
 	// done, success
 	return true;
-	}
+}
 
 int32_t C4GroupSet::GetGroupCount()
 {
@@ -281,29 +281,29 @@ bool C4GroupSet::UnregisterGroup(int32_t iIndex)
 }
 
 C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
-	{
+{
 	// the scenario filename may be a scenario or directly a group folder
 	C4Group *pParentGroup=NULL; bool fParentC4F;
 	char szParentfolder[_MAX_PATH+1];
 	if (SEqualNoCase(GetExtension(szScenFilename), "c4f"))
-		{
+	{
 		fParentC4F = true;
 		SCopy(szScenFilename, szParentfolder, _MAX_PATH);
-		}
+	}
 	else
-		{
+	{
 		GetParentPath(szScenFilename,szParentfolder);
 		fParentC4F = SEqualNoCase(GetExtension(szParentfolder), "c4f");
-		}
+	}
 	if (fParentC4F)
-		{
+	{
 		// replace all (back)slashes with zero-fields
 		int32_t iOriginalLen=SLen(szParentfolder);
 		for (int32_t i=0; i<iOriginalLen; ++i) if (szParentfolder[i]==DirectorySeparator || szParentfolder[i]=='/') szParentfolder[i]=0;
 		// trace back until the file extension is no more .c4f
 		int32_t iPos=iOriginalLen-1;
 		while (iPos)
-			{
+		{
 			// ignore additional zero fields (double-backslashes)
 			while (iPos && !szParentfolder[iPos]) --iPos;
 			// break if end has been reached
@@ -313,18 +313,18 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 			// check extension of this folder
 			if (!SEqualNoCase(GetExtension(szParentfolder+iPos+1), "c4f", 3)) break;
 			// continue
-			}
+		}
 		// trace backwards, putting the (back)slashes in place again
 		if (iPos)
-			{
+		{
 			szParentfolder[iPos+1+SLen(szParentfolder+iPos+1)]=szParentfolder[iPos]=DirectorySeparator;
 			while (iPos--) if (!szParentfolder[iPos]) szParentfolder[iPos]=DirectorySeparator;
 			++iPos;
-			}
+		}
 		// trace forward again, opening all folders (iPos is 0 again)
 		int32_t iGroupIndex=0;
 		while (iPos<iOriginalLen)
-			{
+		{
 			// ignore additional zero-fields
 			while (iPos<iOriginalLen && !szParentfolder[iPos]) ++iPos;
 			// break if end has been reached
@@ -332,19 +332,18 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 			// open this folder
 			C4Group *pGroup = new C4Group();
 			if (pParentGroup)
-				{
+			{
 				if (!pGroup->OpenAsChild(pParentGroup, szParentfolder+iPos))
-					{
+				{
 					LogFatal(FormatString("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), szParentfolder+iPos).getData());
 					delete pGroup; return false;
-					}
 				}
-			else
-				if (!pGroup->Open(szParentfolder+iPos))
-					{
-					LogFatal(FormatString("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), szParentfolder+iPos).getData());
-					delete pGroup; return false;
-					}
+			}
+			else if (!pGroup->Open(szParentfolder+iPos))
+			{
+				LogFatal(FormatString("%s: %s", LoadResStr("IDS_PRC_FILENOTFOUND"), szParentfolder+iPos).getData());
+				delete pGroup; return false;
+			}
 			// set this group as new parent
 			pParentGroup=pGroup;
 			// add to group set, if this is a true scenario folder
@@ -357,7 +356,7 @@ C4Group *C4GroupSet::RegisterParentFolders(const char *szScenFilename)
 				{ delete pParentGroup; LogFatal ("RegGrp: internal error"); return false; }
 			// advance by file name length
 			iPos+=SLen(szParentfolder+iPos);
-			}
 		}
-	return pParentGroup;
 	}
+	return pParentGroup;
+}

@@ -31,7 +31,7 @@
 /* CStdGtkWindow */
 
 CStdGtkWindow::CStdGtkWindow():
-	CStdWindow(), window(NULL)
+		CStdWindow(), window(NULL)
 {
 }
 
@@ -45,14 +45,14 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 	Active = true;
 	dpy = pApp->dpy;
 
-	if(!FindInfo()) return 0;
+	if (!FindInfo()) return 0;
 
-	 assert(!window);
+	assert(!window);
 
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
 	// Override gtk's default to match name/class of the XLib windows
-	 gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
+	gtk_window_set_wmclass(GTK_WINDOW(window), C4ENGINENAME, C4ENGINENAME);
 
 	handlerDestroy = g_signal_connect(G_OBJECT(window), "destroy", G_CALLBACK(OnDestroyStatic), this);
 	g_signal_connect(G_OBJECT(window), "key-press-event", G_CALLBACK(OnUpdateKeyMask), pApp);
@@ -64,13 +64,13 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 
 	gtk_widget_show_all(window);
 
-//	XVisualInfo vitmpl; int blub;
-//	vitmpl.visual = gdk_x11_visual_get_xvisual(gtk_widget_get_visual(window));
-//	vitmpl.visualid = XVisualIDFromVisual(vitmpl.visual);
-//	Info = XGetVisualInfo(dpy, VisualIDMask, &vitmpl, &blub);
+//  XVisualInfo vitmpl; int blub;
+//  vitmpl.visual = gdk_x11_visual_get_xvisual(gtk_widget_get_visual(window));
+//  vitmpl.visualid = XVisualIDFromVisual(vitmpl.visual);
+//  Info = XGetVisualInfo(dpy, VisualIDMask, &vitmpl, &blub);
 
-//	printf("%p\n", gtk_widget_get_visual(render_widget));
-//	Info = gdk_x11_visual_get_xvisual(gtk_widget_get_visual(render_widget));
+//  printf("%p\n", gtk_widget_get_visual(render_widget));
+//  Info = gdk_x11_visual_get_xvisual(gtk_widget_get_visual(render_widget));
 
 	// Default icon has been set right after gtk_init(),
 	// so we don't need to take care about setting the icon here.
@@ -83,20 +83,20 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 	gdk_window_add_filter(window->window, OnFilter, this);
 
 	XWMHints * wm_hint = XGetWMHints(dpy, wnd);
-	if(!wm_hint) wm_hint = XAllocWMHints();
+	if (!wm_hint) wm_hint = XAllocWMHints();
 	Hints = wm_hint;
 
-	if(GTK_IS_LAYOUT(render_widget))
+	if (GTK_IS_LAYOUT(render_widget))
 		renderwnd = GDK_WINDOW_XWINDOW(GTK_LAYOUT(render_widget)->bin_window);
 	else
 		renderwnd = GDK_WINDOW_XWINDOW(render_widget->window);
 
-	if(pParent) XSetTransientForHint(dpy, wnd, pParent->wnd);
+	if (pParent) XSetTransientForHint(dpy, wnd, pParent->wnd);
 
-	if(HideCursor)
+	if (HideCursor)
 	{
 		// TODO!
-//		GdkCursor* cursor = gdk_cursor_new_from_pixmap(NULL, NULL, NULL, NULL, 0, 0);
+//    GdkCursor* cursor = gdk_cursor_new_from_pixmap(NULL, NULL, NULL, NULL, 0, 0);
 		gdk_window_set_cursor(window->window, NULL);
 	}
 
@@ -109,7 +109,7 @@ CStdWindow* CStdGtkWindow::Init(CStdApp * pApp, const char * Title, CStdWindow *
 
 void CStdGtkWindow::Clear()
 {
-	if(window != NULL)
+	if (window != NULL)
 	{
 		g_signal_handler_disconnect(window, handlerDestroy);
 		gtk_widget_destroy(window);
@@ -123,7 +123,7 @@ void CStdGtkWindow::Clear()
 	Active = false;
 
 	// We must free it here since we do not call CStdWindow::Clear()
-	if(Info)
+	if (Info)
 	{
 		XFree(Info);
 		Info = 0;
@@ -156,15 +156,15 @@ gboolean CStdGtkWindow::OnUpdateKeyMask(GtkWidget* widget, GdkEventKey* event, g
 	// Update mask so that Application.IsShiftDown,
 	// Application.IsControlDown etc. work.
 	unsigned int mask = 0;
-	if(event->state & GDK_SHIFT_MASK) mask |= MK_SHIFT;
-	if(event->state & GDK_CONTROL_MASK) mask |= MK_CONTROL;
-	if(event->state & GDK_MOD1_MASK) mask |= (1 << 3);
+	if (event->state & GDK_SHIFT_MASK) mask |= MK_SHIFT;
+	if (event->state & GDK_CONTROL_MASK) mask |= MK_CONTROL;
+	if (event->state & GDK_MOD1_MASK) mask |= (1 << 3);
 
 	// For keypress/relases, event->state contains the state _before_
 	// the event, but we need to store the current state.
-	if(event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R) mask ^= MK_SHIFT;
-	if(event->keyval == GDK_Control_L || event->keyval == GDK_Control_R) mask ^= MK_CONTROL;
-	if(event->keyval == GDK_Alt_L || event->keyval == GDK_Alt_R) mask ^= (1 << 3);
+	if (event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R) mask ^= MK_SHIFT;
+	if (event->keyval == GDK_Control_L || event->keyval == GDK_Control_R) mask ^= MK_CONTROL;
+	if (event->keyval == GDK_Alt_L || event->keyval == GDK_Alt_R) mask ^= (1 << 3);
 
 	static_cast<CStdApp*>(user_data)->KeyMask = mask;
 	return false;

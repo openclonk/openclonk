@@ -30,31 +30,31 @@
 //================= C4FolderHead ====================
 
 void C4FolderHead::Default()
-	{
+{
 	Index = 0;
 	Sort[0] = 0;
-	}
+}
 
 void C4FolderHead::CompileFunc(StdCompiler *pComp)
-	{
+{
 	pComp->Value(mkNamingAdapt(Index,                     "Index",                0));
 	pComp->Value(mkNamingAdapt(mkStringAdaptMA(Sort),     "Sort",                 ""));
-	}
+}
 
 //=================== C4Folder ======================
 
 C4Folder::C4Folder()
-	{
+{
 	Default();
-	}
+}
 
 void C4Folder::Default()
-	{
+{
 	Head.Default();
-	}
+}
 
 bool C4Folder::Load(C4Group &hGroup)
-	{
+{
 	char *pSource;
 	// Load
 	if (!hGroup.LoadEntry(C4CFN_FolderCore, &pSource, NULL, 1)) return false;
@@ -63,26 +63,26 @@ bool C4Folder::Load(C4Group &hGroup)
 	delete [] pSource;
 	// Success
 	return true;
-	}
+}
 
 /*bool C4Folder::Save(C4Group &hGroup)
-	{
-	char *Buffer; int32_t BufferSize;
-	if (!Decompile(&Buffer,&BufferSize))
-		return false;
-	if (!hGroup.Add(C4Folder, Buffer, BufferSize, false, true))
-		{ StdBuf Buf; Buf.Take(Buffer, BufferSize); return false; }
-	return true;
-	}*/
+  {
+  char *Buffer; int32_t BufferSize;
+  if (!Decompile(&Buffer,&BufferSize))
+    return false;
+  if (!hGroup.Add(C4Folder, Buffer, BufferSize, false, true))
+    { StdBuf Buf; Buf.Take(Buffer, BufferSize); return false; }
+  return true;
+  }*/
 
 void C4Folder::CompileFunc(StdCompiler *pComp)
-	{
+{
 	pComp->Value(mkNamingAdapt(Head, "Head"));
-	}
+}
 
 bool C4Folder::Compile(const char *szSource)
-	{
+{
 	Default();
 	return CompileFromBuf_LogWarn<StdCompilerINIRead>(*this, StdStrBuf(szSource), C4CFN_FolderCore);
-	}
+}
 

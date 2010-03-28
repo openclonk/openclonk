@@ -37,21 +37,21 @@
 #include <limits.h>
 
 CStdD3D::CStdD3D(bool fSoftware)
-	{
+{
 	this->fSoftware = fSoftware;
 	Default();
 	// global ptr
 	pD3D = this;
-	}
+}
 
 CStdD3D::~CStdD3D()
-	{
+{
 	Clear();
 	pD3D=NULL;
-	}
+}
 
 void CStdD3D::Default()
-	{
+{
 	CStdDDraw::Default();
 	SceneOpen=false;
 	lpD3D=NULL;
@@ -63,31 +63,31 @@ void CStdD3D::Default()
 	drawSolidState[0] = drawSolidState[1] = 0;
 	pSavedState = 0;
 	for (int i=0; i<SHIDX_Size; ++i) pShaders[i]=NULL;
-	}
+}
 
 void CStdD3D::Clear()
-	{
+{
 	NoPrimaryClipper();
 	if (pTexMgr) pTexMgr->IntUnlock();
 	if (lpDevice)
-		{
+	{
 		EndScene();
 		DeleteDeviceObjects();
-		}
+	}
 	if (lpD3D)
-		{
+	{
 		if (lpDevice) { lpDevice->Release(); lpDevice=NULL; }
 		lpD3D->Release(); lpD3D=NULL;
-		}
+	}
 	SceneOpen=false;
 	CStdDDraw::Clear();
-	}
+}
 
 
 /* Direct3D initialization */
 
 bool CStdD3D::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
-	{
+{
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// safety
@@ -95,17 +95,17 @@ bool CStdD3D::PageFlip(RECT *pSrcRt, RECT *pDstRt, CStdWindow * pWindow)
 	// end the scene and present it
 	EndScene();
 	if (lpDevice->Present(pSrcRt, pDstRt, pWindow ? pWindow->hWindow : 0, NULL) == D3DERR_DEVICELOST)
-		{
+	{
 		if (lpDevice->TestCooperativeLevel() == D3DERR_DEVICELOST) return false;
 		if (!RestoreDeviceObjects()) return false;
 		lpDevice->Present(NULL, NULL, NULL, NULL);
-		}
-	return true;
 	}
+	return true;
+}
 
 
 bool CStdD3D::BeginScene()
-	{
+{
 	// already open?
 	if (SceneOpen) return true;
 	// not active?
@@ -120,23 +120,23 @@ bool CStdD3D::BeginScene()
 	// set some def values
 	// success
 	return true;
-	}
+}
 
 void CStdD3D::FillBG(DWORD dwClr)
-	{
+{
 	if (lpDevice) lpDevice->Clear( 0, NULL, D3DCLEAR_TARGET, dwClr, 1.0f, 0L );
-	}
+}
 
 void CStdD3D::EndScene()
-	{
+{
 	// end scene, if open
 	if (!SceneOpen) return;
 	lpDevice->EndScene();
 	SceneOpen=false;
-	}
+}
 
 bool CStdD3D::UpdateClipper()
-	{
+{
 	// no render target? do nothing
 	if (!RenderTarget || !Active) return true;
 	// negative/zero?
@@ -145,10 +145,10 @@ bool CStdD3D::UpdateClipper()
 	int iX=iClipX1; if (iX<0) { iWdt+=iX; iX=0; }
 	int iY=iClipY1; if (iY<0) { iHgt+=iY; iY=0; }
 	if (iWdt<=0 || iHgt<=0)
-		{
+	{
 		ClipAll=true;
 		return true;
-		}
+	}
 	ClipAll=false;
 	// bound clipper to surface size
 	D3DVIEWPORT9 Clipper;
@@ -157,7 +157,7 @@ bool CStdD3D::UpdateClipper()
 	// set it
 	lpDevice->SetViewport(&Clipper);
 	return true;
-	}
+}
 
 
 bool CStdD3D::PrepareMaterial(StdMeshMaterial &mat)
@@ -167,7 +167,7 @@ bool CStdD3D::PrepareMaterial(StdMeshMaterial &mat)
 }
 
 bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
-	{
+{
 	// call from gfx thread only!
 	if (!pApp || !pApp->AssertMainThread()) return false;
 	// do not render to inactive fullscreen
@@ -180,7 +180,7 @@ bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 	if (sfcToSurface->Locked) return false;
 	// target is already set as render target?
 	if (sfcToSurface != RenderTarget)
-		{
+	{
 		// target is a render-target?
 		if (!sfcToSurface->IsRenderTarget()) return false;
 		IDirect3DSurface9 *pDest=sfcToSurface->GetSurface();
@@ -188,20 +188,20 @@ bool CStdD3D::PrepareRendering(SURFACE sfcToSurface)
 		// set target
 		EndScene();
 		if (lpDevice->SetRenderTarget(0, pDest) != D3D_OK)
-			{
+		{
 			pDest->Release();
 			return false;
-			}
+		}
 		RenderTarget=sfcToSurface;
 		pDest->Release();
 		// new target might need new clipping
 		UpdateClipper();
-		}
+	}
 	// start scene, if not already done
 	BeginScene();
 	// done
 	return true;
-	}
+}
 
 void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool fMod2, bool fExact)
 {
@@ -234,7 +234,7 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 	// color mod map by pixel shader?
 	CStdD3DShader *pShader = NULL;
 	if (fUseClrModMap && HasShaders())
-		{
+	{
 		bool fColoredFoW = pClrModMap->IsColored();
 		pShader = pShaders[fMod2 * SHIDX_Mod2 + fColoredFoW * SHIDX_ColoredFoW];
 		lpDevice->SetPixelShader(pShader->GetInterface());
@@ -242,32 +242,33 @@ void CStdD3D::PerformBlt(CBltData &rBltData, CTexRef *pTex, DWORD dwModClr, bool
 		CSurface * pModSurface = pClrModMap->GetSurface();
 		if (pModSurface->ppTex) lpDevice->SetTexture(pShader->iFoWTexIndex, (*(pModSurface->ppTex))->pTex);
 		const float mod_proj[4] = { 1.0f/(pClrModMap->GetResolutionX()*pModSurface->iTexSize),
-			                        1.0f/(pClrModMap->GetResolutionY()*pModSurface->iTexSize),
-									float(pClrModMap->OffX), float(pClrModMap->OffY) };
+		                            1.0f/(pClrModMap->GetResolutionY()*pModSurface->iTexSize),
+		                            float(pClrModMap->OffX), float(pClrModMap->OffY)
+		                          };
 		lpDevice->SetPixelShaderConstantF(pShader->iFoWTransformIndex, mod_proj, 1);
 		lpDevice->SetSamplerState( pShader->iFoWTexIndex, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR  );
-		}
+	}
 	else
-		{
+	{
 		// set texture
 		lpDevice->SetTexture(0, pTex->pTex);
-		}
+	}
 	// override linear filter mode for exact blits
 	if (fExact)
-		{
+	{
 		lpDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_POINT);
 		lpDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-		}
+	}
 	// draw!
 	lpDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, rBltData.byNumVertices-2, bltClrVertices, sizeof(bltClrVertices[0]) );
 	// done, cleanup
 	if (pShader)
-		{
+	{
 		lpDevice->SetPixelShader(NULL);
 		lpDevice->SetTexture(pShader->iInTexIndex, NULL);
 		lpDevice->SetTexture(pShader->iFoWTexIndex, NULL);
-		}
 	}
+}
 
 void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float twdt, float thgt, DWORD dwPlayerColor, CBltTransform *pTransform)
 {
@@ -275,30 +276,30 @@ void CStdD3D::PerformMesh(StdMeshInstance &instance, float tx, float ty, float t
 	for (int x = 0; x < twdt; x += 10)
 		for (int y = 0; y < thgt; y += 10)
 			this->DrawBoxDw(0, tx+x, ty+y, tx+Min(twdt, x+10.0f), ty+Min(thgt, y+10.0f),
-			(((x+y)/10)&1)?0xff00ff:0x00ff00);
+			                (((x+y)/10)&1)?0xff00ff:0x00ff00);
 }
 
 // get bit depth from surface format
 unsigned int Format2BitDepth(D3DFORMAT format)
-	{
+{
 	switch (format)
-		{
-		case D3DFMT_X1R5G5B5:
-		case D3DFMT_R5G6B5:
-			return 16;
+	{
+	case D3DFMT_X1R5G5B5:
+	case D3DFMT_R5G6B5:
+		return 16;
 
-		case D3DFMT_X8R8G8B8:
-		case D3DFMT_A8R8G8B8:
-			return 32;
+	case D3DFMT_X8R8G8B8:
+	case D3DFMT_A8R8G8B8:
+		return 32;
 
-		default:
-			// unknown
-			return 0;
-		}
+	default:
+		// unknown
+		return 0;
 	}
+}
 
 bool CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT &rtTo)
-	{
+{
 	// lock
 	if (!pTexRef->Lock()) return false;
 	// get bits
@@ -319,18 +320,18 @@ bool CStdD3D::BlitTex2Window(CTexRef *pTexRef, HDC hdcTarget, RECT &rtFrom, RECT
 	int i = StretchDIBits(hdcTarget, rtTo.left, rtTo.top, tWdt, tHgt, rtFrom.left, rtFrom.top, fWdt, fHgt, pBits, &sfcBmpInfo, DIB_RGB_COLORS, SRCCOPY);
 	if (i == GDI_ERROR) return false;
 	return true;
-	}
+}
 
 bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
-																	 int fX, int fY, int fWdt, int fHgt,
-																	 HWND hWnd,
-																	 int tX, int tY, int tWdt, int tHgt)
-	{
+                                 int fX, int fY, int fWdt, int fHgt,
+                                 HWND hWnd,
+                                 int tX, int tY, int tWdt, int tHgt)
+{
 	bool fOkay = false;
 	if (!sfcSource->Lock()) return false;
 	HDC hdcTarget=GetDC(hWnd);
 	if (hdcTarget)
-		{
+	{
 		// blit textures
 		// blit with basesfc?
 		bool fBaseSfc=false;
@@ -348,10 +349,10 @@ bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
 		// blit from all these textures
 		CTexRef **ppTexRow, *pBaseTex=NULL;
 		for (int iY=iTexY; iY<iTexY2; ++iY)
-			{
+		{
 			ppTexRow=ppTex;
 			for (int iX=iTexX; iX<iTexX2; ++iX)
-				{
+			{
 				// get current blitting offset in texture
 				int iBlitX=iTexSize*iX;
 				int iBlitY=iTexSize*iY;
@@ -369,52 +370,52 @@ bool CStdD3D::BlitSurface2Window(SURFACE sfcSource,
 				tTexBlt.bottom= (long) ((fTexBlt.bottom+iBlitY-fY)*scaleY+tY);
 				// is there a base-surface to be blitted first?
 				if (fBaseSfc)
-					{
+				{
 					// then get this surface as same offset as from other surface
 					// assuming this is only valid as long as there's no texture management,
 					// organizing partially used textures together!
 					pBaseTex=*(sfcSource->pMainSfc->ppTex+(ppTex-sfcSource->ppTex));
 					BlitTex2Window(pBaseTex, hdcTarget, fTexBlt, tTexBlt);
-					}
+				}
 				// blit this texture
 				BlitTex2Window(*ppTex, hdcTarget, fTexBlt, tTexBlt);
 				// next col
 				++ppTex;
-				}
+			}
 			// next row
 			ppTex=ppTexRow+sfcSource->iTexX;
-			}
+		}
 		// done, release DC
 		ReleaseDC(hWnd,hdcTarget);
-		}
+	}
 	sfcSource->Unlock();
 	return fOkay;
-	}
+}
 
 bool CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor)
-	{
-	if(iColorDepth == 32)
+{
+	if (iColorDepth == 32)
 		return FindDisplayMode(iXRes, iYRes, D3DFMT_A8R8G8B8, iMonitor) ||
 		       FindDisplayMode(iXRes, iYRes, D3DFMT_X8R8G8B8, iMonitor);
-	else if(iColorDepth == 16)
+	else if (iColorDepth == 16)
 		return FindDisplayMode(iXRes, iYRes, D3DFMT_R5G6B5, iMonitor) ||
 		       FindDisplayMode(iXRes, iYRes, D3DFMT_A1R5G5B5, iMonitor);
 	else
 		return false;
-	}
+}
 
 bool CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, D3DFORMAT format, unsigned int iMonitor)
-	{
+{
 	bool fFound=false;
 	D3DDISPLAYMODE dmode;
 	// enumerate modes
 	int iNumModes=lpD3D->GetAdapterModeCount(iMonitor, format);
 	for (int i=0; i<iNumModes; i++)
 		if (lpD3D->EnumAdapterModes(iMonitor, format, i, &dmode) == D3D_OK)
-			{
+		{
 			// size is OK?
 			if (dmode.Width==iXRes && dmode.Height==iYRes)
-				{
+			{
 				// compare with found one
 				if (fFound)
 					// try getting a mode that is close to 85Hz, rather than taking the one with highest refresh rate
@@ -425,13 +426,13 @@ bool CStdD3D::FindDisplayMode(unsigned int iXRes, unsigned int iYRes, D3DFORMAT 
 				// choose this one
 				fFound=true;
 				dspMode=dmode;
-				}
 			}
+		}
 	return fFound;
-	}
+}
 
 bool CStdD3D::SetOutputAdapter(unsigned int iMonitor)
-	{
+{
 	// get associated monitor rect
 	HMONITOR hMon = lpD3D->GetAdapterMonitor(iMonitor);
 	if (!hMon) return Error("GetAdapterMonitor error");
@@ -439,10 +440,10 @@ bool CStdD3D::SetOutputAdapter(unsigned int iMonitor)
 	nfo.cbSize = sizeof(MONITORINFO);
 	if (!GetMonitorInfo(hMon, &nfo)) return Error("GetMonitorInfo error");
 	return true;
-	}
+}
 
 bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigned int iYRes, int iColorDepth, unsigned int iMonitor)
-	{
+{
 	DebugLog("Init DX");
 	DebugLog("  Create Direct3D9...");
 	if ((lpD3D=Direct3DCreate9(D3D_SDK_VERSION))==NULL) return Error("  Direct3DCreate9 failure.");
@@ -455,16 +456,16 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 	ZeroMemory( &d3dpp, sizeof(d3dpp) );
 	// set needed surface type
 	switch (iColorDepth)
-		{
-		case 16: dwSurfaceType=D3DFMT_A4R4G4B4; break;
-		case 32: dwSurfaceType=D3DFMT_A8R8G8B8; break;
-		}
+	{
+	case 16: dwSurfaceType=D3DFMT_A4R4G4B4; break;
+	case 32: dwSurfaceType=D3DFMT_A8R8G8B8; break;
+	}
 
 	HRESULT hr;
 	HWND hWindow = pApp->pWindow->hWindow;
 	DebugLog("  Create Device...");
 	if (Fullscreen)
-		{
+	{
 		// fullscreen mode
 		// pick a display mode
 		if (0)
@@ -477,11 +478,11 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 			d3dpp.Windowed = true;
 		}
 		else
-			{
+		{
 			// true fullscreen
 			if (!FindDisplayMode(iXRes, iYRes, iColorDepth, iMonitor))
 				return Error("Display mode not supported");
-			}
+		}
 		// fill present structure
 		d3dpp.BackBufferWidth = iXRes;
 		d3dpp.BackBufferHeight= iYRes;
@@ -490,11 +491,11 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 		d3dpp.SwapEffect      = D3DSWAPEFFECT_FLIP;
 		d3dpp.Flags           = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 		hr = lpD3D->CreateDevice(iMonitor, fSoftware ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL, hWindow,
-												D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
-												&d3dpp, &lpDevice);
-		}
+		                         D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
+		                         &d3dpp, &lpDevice);
+	}
 	else
-		{
+	{
 		// windowed mode
 		// get current display mode
 		if (lpD3D->GetAdapterDisplayMode(iMonitor, &dspMode) != D3D_OK)
@@ -509,14 +510,14 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 		d3dpp.Flags = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 		// create primary surface
 		hr = lpD3D->CreateDevice(iMonitor, fSoftware ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL, hWindow,
-												D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
-												&d3dpp, &lpDevice);
+		                         D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
+		                         &d3dpp, &lpDevice);
 		// windowed mode: Try dfault adapter as well
 		if (hr != D3D_OK && iMonitor != D3DADAPTER_DEFAULT)
 			hr = lpD3D->CreateDevice(D3DADAPTER_DEFAULT, fSoftware ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL, hWindow,
-												D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
-												&d3dpp, &lpDevice);
-		}
+			                         D3DCREATE_SOFTWARE_VERTEXPROCESSING | D3DCREATE_FPU_PRESERVE,
+			                         &d3dpp, &lpDevice);
+	}
 	switch (hr)
 	{
 	case D3DERR_INVALIDCALL: return Error("CreateDevice: D3DERR_INVALIDCALL");
@@ -526,7 +527,7 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 	case D3D_OK: break;
 	default: return Error("CreateDevice: unknown error");
 	}
-	
+
 	// device successfully created?
 	if (!lpDevice) return Error("CreateDevice: unreported error");
 	// store color depth
@@ -534,25 +535,25 @@ bool CStdD3D::CreatePrimarySurfaces(bool Fullscreen, unsigned int iXRes, unsigne
 	PrimarySrfcFormat=d3dpp.BackBufferFormat;
 	// create bmi-header
 	ZeroMemory(&sfcBmpInfo, sizeof(sfcBmpInfo));
-	sfcBmpInfo.bmiHeader.biSize					= sizeof(BITMAPINFOHEADER);
-	sfcBmpInfo.bmiHeader.biWidth				= iXRes;
-	sfcBmpInfo.bmiHeader.biHeight				= -int(iYRes);
-	sfcBmpInfo.bmiHeader.biPlanes				= 1;
-	sfcBmpInfo.bmiHeader.biBitCount			= Format2BitDepth(dspMode.Format);
+	sfcBmpInfo.bmiHeader.biSize         = sizeof(BITMAPINFOHEADER);
+	sfcBmpInfo.bmiHeader.biWidth        = iXRes;
+	sfcBmpInfo.bmiHeader.biHeight       = -int(iYRes);
+	sfcBmpInfo.bmiHeader.biPlanes       = 1;
+	sfcBmpInfo.bmiHeader.biBitCount     = Format2BitDepth(dspMode.Format);
 	sfcBmpInfo.bmiHeader.biCompression  = BI_RGB;
 	// initialize device-dependent objects
-	if(!InitDeviceObjects())
-		{
+	if (!InitDeviceObjects())
+	{
 		// cleanup
 		DeleteDeviceObjects();
 		// failure
 		return false;
-		}
+	}
 	// update monitor rect by new screen size
 	if (!SetOutputAdapter(iMonitor)) return false;
 	// success!
 	return true;
-	}
+}
 
 bool CStdD3D::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 {
@@ -572,7 +573,7 @@ bool CStdD3D::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
 }
 
 bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepthFIXME, unsigned int iMonitor, bool fFullScreen)
-	{
+{
 	// note that this should happen in fullscreen mode only!
 	// do not mess with real presetn parameters until resolution change worked
 	D3DPRESENT_PARAMETERS d3dpp;
@@ -583,53 +584,53 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	HWND hWindow = pApp->pWindow->hWindow;
 	// pick a display mode
 	if (!fFullScreen)
-		{
+	{
 		// "Windowed fullscreen"
 		if (lpD3D->GetAdapterDisplayMode(iMonitor, &dspMode) != D3D_OK)
 			if (lpD3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &dspMode) != D3D_OK)
 				return Error("Could not get current display mode");
 		SetWindowPos(hWindow, HWND_TOP, 0, 0, iXRes, iYRes, SWP_NOOWNERZORDER | SWP_SHOWWINDOW | SWP_NOMOVE);
 		d3dpp.Windowed = true;
-		}
+	}
 	else
-		{
+	{
 		// true fullscreen
 		if (!FindDisplayMode(iXRes, iYRes, iColorDepth, iMonitor))
 			return Error("Display mode not supported");
-		}
+	}
 	// fill present structure
 	d3dpp.BackBufferWidth = iXRes;
 	d3dpp.BackBufferHeight= iYRes;
 	d3dpp.BackBufferFormat= dspMode.Format;
 	d3dpp.BackBufferCount = 0;
-	d3dpp.SwapEffect			= D3DSWAPEFFECT_FLIP;
-	d3dpp.Flags						= D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+	d3dpp.SwapEffect      = D3DSWAPEFFECT_FLIP;
+	d3dpp.Flags           = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
 	// reset device to these parameters
 	DeleteDeviceObjects();
 	hr = lpDevice->Reset(&d3dpp);
 	if (hr != D3D_OK)
-		{
+	{
 		// reset failed
 		if (InitDeviceObjects())
 			RestoreDeviceObjects(); // try restore at old resolution
 		switch (hr)
-			{
-			case D3DERR_INVALIDCALL: return Error("    CreateDevice: D3DERR_INVALIDCALL");
-			case D3DERR_NOTAVAILABLE: return Error("    CreateDevice: D3DERR_NOTAVAILABLE");
-			case D3DERR_OUTOFVIDEOMEMORY: return Error("    CreateDevice: D3DERR_OUTOFVIDEOMEMORY");
-			case D3DERR_DRIVERINTERNALERROR: return Error("    CreateDevice: D3DERR_DRIVERINTERNALERROR");
-			default: return Error("    CreateDevice: unknown error");
-			}
+		{
+		case D3DERR_INVALIDCALL: return Error("    CreateDevice: D3DERR_INVALIDCALL");
+		case D3DERR_NOTAVAILABLE: return Error("    CreateDevice: D3DERR_NOTAVAILABLE");
+		case D3DERR_OUTOFVIDEOMEMORY: return Error("    CreateDevice: D3DERR_OUTOFVIDEOMEMORY");
+		case D3DERR_DRIVERINTERNALERROR: return Error("    CreateDevice: D3DERR_DRIVERINTERNALERROR");
+		default: return Error("    CreateDevice: unknown error");
 		}
+	}
 	// device successfully reset! Reflect changes
 	this->d3dpp = d3dpp;
 	// store color depth
 	byByteCnt=iColorDepth/8;
 	PrimarySrfcFormat=d3dpp.BackBufferFormat;
 	// update bmi-header
-	sfcBmpInfo.bmiHeader.biWidth				= iXRes;
-	sfcBmpInfo.bmiHeader.biHeight				= -int(iYRes);
-	sfcBmpInfo.bmiHeader.biBitCount			= Format2BitDepth(dspMode.Format);
+	sfcBmpInfo.bmiHeader.biWidth        = iXRes;
+	sfcBmpInfo.bmiHeader.biHeight       = -int(iYRes);
+	sfcBmpInfo.bmiHeader.biBitCount     = Format2BitDepth(dspMode.Format);
 	// reinit device-dependant objects
 	InitDeviceObjects();
 	RestoreDeviceObjects();
@@ -637,22 +638,22 @@ bool CStdD3D::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	if (!SetOutputAdapter(iMonitor)) return false;
 	// success!
 	return true;
-	}
+}
 
 void CStdD3D::PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
-	{
+{
 	// is render target?
 	if (!sfcDest->IsRenderTarget())
 		// on non-rendertargets, just set using locks
-		{
+	{
 		sfcDest->SetPixDw((int)tx, (int)ty, dwClr);
 		return;
-		}
-	else if(sfcDest->IsLocked())
-		{
+	}
+	else if (sfcDest->IsLocked())
+	{
 		DrawPixPrimary(sfcDest, int(tx), int(ty), dwClr);
 		return;
-		}
+	}
 	// on a render target, blit as a box (ugh!)
 	// set vertex buffer data
 	// vertex order:
@@ -666,44 +667,44 @@ void CStdD3D::PerformPix(SURFACE sfcDest, float tx, float ty, DWORD dwClr)
 	vtx[4] = tx+1.0f; vtx[5] = ty+1.0f;
 	vtx[6] = tx+1.0f; vtx[7] = ty;
 	DrawQuadDw(sfcDest, vtx, dwClr, dwClr, dwClr, dwClr);
-	}
+}
 
 void CStdD3D::DrawPixPrimary(SURFACE sfcDest, int iX, int iY, DWORD dwClr)
-	{
+{
 	// Must be render target and locked
-	if(!sfcDest->IsRenderTarget() || !sfcDest->IsLocked()) return;
+	if (!sfcDest->IsRenderTarget() || !sfcDest->IsLocked()) return;
 	// set according to pixel format
 	BYTE *pBits = sfcDest->PrimarySurfaceLockBits;
 	int iPitch = sfcDest->PrimarySurfaceLockPitch;
 	DWORD *pPix32; WORD *pPix16;
 	switch (sfcDest->dwClrFormat)
-		{
-		case D3DFMT_X1R5G5B5:
-			// 16 bit 5-5-5
-			pPix16=(WORD *) (pBits+iY*iPitch+iX*2);
-			*pPix16=WORD((dwClr & 0x000000f8) >> 3)
-						| WORD((dwClr & 0x0000f800) >> 6)
-						| WORD((dwClr & 0x00f80000) >> 9);
-			break;
+	{
+	case D3DFMT_X1R5G5B5:
+		// 16 bit 5-5-5
+		pPix16=(WORD *) (pBits+iY*iPitch+iX*2);
+		*pPix16=WORD((dwClr & 0x000000f8) >> 3)
+		        | WORD((dwClr & 0x0000f800) >> 6)
+		        | WORD((dwClr & 0x00f80000) >> 9);
+		break;
 
-		case D3DFMT_R5G6B5:
-			// 16 bit 5-6-5
-			pPix16=(WORD *) (pBits+iY*iPitch+iX*2);
-			*pPix16=WORD((dwClr & 0x000000f8) >> 3)
-						| WORD((dwClr & 0x0000fc00) >> 5)
-						| WORD((dwClr & 0x00f80000) >> 8);
-			break;
+	case D3DFMT_R5G6B5:
+		// 16 bit 5-6-5
+		pPix16=(WORD *) (pBits+iY*iPitch+iX*2);
+		*pPix16=WORD((dwClr & 0x000000f8) >> 3)
+		        | WORD((dwClr & 0x0000fc00) >> 5)
+		        | WORD((dwClr & 0x00f80000) >> 8);
+		break;
 
-		case D3DFMT_X8R8G8B8:
-			// 32 bit
-			pPix32=(DWORD *) (pBits+iY*iPitch+iX*4);
-			BltAlpha(*pPix32, dwClr);
-			break;
-		}
+	case D3DFMT_X8R8G8B8:
+		// 32 bit
+		pPix32=(DWORD *) (pBits+iY*iPitch+iX*4);
+		BltAlpha(*pPix32, dwClr);
+		break;
 	}
+}
 
 void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dwClr2, DWORD dwClr3, DWORD dwClr4)
-	{
+{
 	// prepare rendering to target
 	if (!PrepareRendering(sfcTarget)) return;
 	// set blitting state
@@ -724,12 +725,12 @@ void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dw
 	float fY4 = (float) ipVtx[7] - 0.5f;
 	// apply color modulation
 	if (BlitModulated)
-		{
+	{
 		ModulateClr(dwClr1, BlitModulateClr);
 		ModulateClr(dwClr2, BlitModulateClr);
 		ModulateClr(dwClr3, BlitModulateClr);
 		ModulateClr(dwClr4, BlitModulateClr);
-		}
+	}
 	// set vertices
 	clrVertices[0].x = fX1; clrVertices[0].y = fY1; clrVertices[0].color=dwClr1;
 	clrVertices[1].x = fX2; clrVertices[1].y = fY2; clrVertices[1].color=dwClr2;
@@ -741,21 +742,21 @@ void CStdD3D::DrawQuadDw(SURFACE sfcTarget, float *ipVtx, DWORD dwClr1, DWORD dw
 		for (int i = 0; i < 6; ++i) ModulateClr(clrVertices[i].color, pClrModMap->GetModAt((int)clrVertices[i].x, (int)clrVertices[i].y));
 	// copy into vertex buffer
 	VOID* pVertices;
-	if( pVBClr->Lock(0, sizeof(clrVertices), &pVertices, 0) != D3D_OK ) return;
+	if ( pVBClr->Lock(0, sizeof(clrVertices), &pVertices, 0) != D3D_OK ) return;
 	memcpy(pVertices, clrVertices, sizeof(clrVertices));
 	pVBClr->Unlock();
 	// draw
 	lpDevice->DrawPrimitive( D3DPT_TRIANGLELIST, 0, 2 );
-	}
+}
 
 void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float y2, DWORD dwClr)
-	{
+{
 	// FIXME: zoom width
 	//dwClr |= 0xf0000000;
 	// render target?
 	if (sfcTarget->IsRenderTarget())
-		if(!sfcTarget->IsLocked())
-			{
+		if (!sfcTarget->IsLocked())
+		{
 			// draw as primitive
 			if (!PrepareRendering(sfcTarget)) return;
 			// set blitting state - use src alpha channel als opacity because some systems cannot antialias otherwise
@@ -780,32 +781,32 @@ void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float
 				for (int i = 0; i < 4; ++i) ModulateClr(clrVertices[i].color, pClrModMap->GetModAt((int)clrVertices[i].x, (int)clrVertices[i].y));
 			// copy into vertex buffer
 			VOID* pVertices;
-			if( pVBClr->Lock(0, sizeof(clrVertices[0])*4, &pVertices, 0) != D3D_OK ) return;
+			if ( pVBClr->Lock(0, sizeof(clrVertices[0])*4, &pVertices, 0) != D3D_OK ) return;
 			memcpy(pVertices, clrVertices, sizeof(clrVertices[0])*4);
 			pVBClr->Unlock();
 			// draw - actually two lines, to ensure that the last pixels are drawn, too...
 			lpDevice->DrawPrimitive(D3DPT_LINELIST, 0, 2 );
-			}
+		}
 		else
-			{
+		{
 			if (fUseClrModMap)
 				ModulateClr(dwClr, pClrModMap->GetModAt((int)((x1+x2)/2), (int)((y1+y2)/2)));
-			if(Abs(x1 - x2) > Abs(y1 - y2))
-				{
+			if (Abs(x1 - x2) > Abs(y1 - y2))
+			{
 				// flip line direction
-				if(x2 < x1)
-					{
+				if (x2 < x1)
+				{
 					float tmp = x2; x2 = x1; x1 = tmp;
 					tmp = y2; y2 = y1; y1 = tmp;
-					}
+				}
 				// round coordinates
 				int32_t iX1 = BoundBy<int32_t>(int32_t(x1+.5f),0,sfcTarget->Wdt-1),
-				        iX2 = BoundBy<int32_t>(int32_t(x2+.5f),0,sfcTarget->Wdt-1),
-				        iY1 = BoundBy<int32_t>(int32_t(y1+.5f),0,sfcTarget->Hgt-1),
-				        iY2 = BoundBy<int32_t>(int32_t(y2+.5f),0,sfcTarget->Hgt-1),
-				        iDX = iX2 - iX1;
+				              iX2 = BoundBy<int32_t>(int32_t(x2+.5f),0,sfcTarget->Wdt-1),
+				                    iY1 = BoundBy<int32_t>(int32_t(y1+.5f),0,sfcTarget->Hgt-1),
+				                          iY2 = BoundBy<int32_t>(int32_t(y2+.5f),0,sfcTarget->Hgt-1),
+				                                iDX = iX2 - iX1;
 				// single pixel case?
-				if(!iDX) { DrawPixPrimary(sfcTarget, iX1, iY1, dwClr); return; }
+				if (!iDX) { DrawPixPrimary(sfcTarget, iX1, iY1, dwClr); return; }
 				// calculate gradient
 				uint32_t g = ((uint32_t(Abs(iY2 - iY1)) << 16) / uint32_t(iX2 - iX1)) << 16;
 				// alpha divisor
@@ -815,55 +816,55 @@ void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float
 				DWORD dwClrBase = dwClr & 0x00FFFFFF;
 				// current position
 				uint32_t sp = 0;
-				if(y2 > y1)
-					for(int32_t iX = 0, iY = 0; ; iX++)
-						{
-						// draw pixels
-						DWORD dwClr1 = dwClrBase + ((alpha + sp / div) << 24),
-									dwClr2 = dwClrBase + ((255 - sp / div) << 24);
-						DrawPixPrimary(sfcTarget, iX1+iX, iY1+iY,   dwClr1);
-						if(sp) DrawPixPrimary(sfcTarget, iX1+iX, iY1+iY+1, dwClr2);
-						if(iX * 2 >= iDX) break;
-						DrawPixPrimary(sfcTarget, iX2-iX, iY2-iY,	  dwClr1);
-						if(sp) DrawPixPrimary(sfcTarget, iX2-iX, iY2-iY-1, dwClr2);
-						if(iX * 2 + 1 >= iDX) break;
-						// next pixel
-						sp += g; if(sp < g) iY++;
-						}
-				else
-					for(int32_t iX = 0, iY = 0; ; iX++)
-						{
-						// draw pixels
-						DWORD dwClr1 = dwClrBase + ((alpha + sp / div) << 24),
-									dwClr2 = dwClrBase + ((255 - sp / div) << 24);
-						DrawPixPrimary(sfcTarget, iX1+iX, iY1+iY,   dwClr1);
-						if(sp) DrawPixPrimary(sfcTarget, iX1+iX, iY1+iY-1, dwClr2);
-						if(iX * 2 >= iDX) break;
-						DrawPixPrimary(sfcTarget, iX2-iX, iY2-iY,	  dwClr1);
-						if(sp) DrawPixPrimary(sfcTarget, iX2-iX, iY2-iY+1, dwClr2);
-						if(iX * 2 + 1 >= iDX) break;
-						// next pixel
-						sp += g; if(sp < g) iY--;
-						}
-				}
-			else
-				{
-				// flip line direction
-				if(y2 < y1)
+				if (y2 > y1)
+					for (int32_t iX = 0, iY = 0; ; iX++)
 					{
+						// draw pixels
+						DWORD dwClr1 = dwClrBase + ((alpha + sp / div) << 24),
+						               dwClr2 = dwClrBase + ((255 - sp / div) << 24);
+						DrawPixPrimary(sfcTarget, iX1+iX, iY1+iY,   dwClr1);
+						if (sp) DrawPixPrimary(sfcTarget, iX1+iX, iY1+iY+1, dwClr2);
+						if (iX * 2 >= iDX) break;
+						DrawPixPrimary(sfcTarget, iX2-iX, iY2-iY,   dwClr1);
+						if (sp) DrawPixPrimary(sfcTarget, iX2-iX, iY2-iY-1, dwClr2);
+						if (iX * 2 + 1 >= iDX) break;
+						// next pixel
+						sp += g; if (sp < g) iY++;
+					}
+				else
+					for (int32_t iX = 0, iY = 0; ; iX++)
+					{
+						// draw pixels
+						DWORD dwClr1 = dwClrBase + ((alpha + sp / div) << 24),
+						               dwClr2 = dwClrBase + ((255 - sp / div) << 24);
+						DrawPixPrimary(sfcTarget, iX1+iX, iY1+iY,   dwClr1);
+						if (sp) DrawPixPrimary(sfcTarget, iX1+iX, iY1+iY-1, dwClr2);
+						if (iX * 2 >= iDX) break;
+						DrawPixPrimary(sfcTarget, iX2-iX, iY2-iY,   dwClr1);
+						if (sp) DrawPixPrimary(sfcTarget, iX2-iX, iY2-iY+1, dwClr2);
+						if (iX * 2 + 1 >= iDX) break;
+						// next pixel
+						sp += g; if (sp < g) iY--;
+					}
+			}
+			else
+			{
+				// flip line direction
+				if (y2 < y1)
+				{
 					float tmp = y2; y2 = y1; y1 = tmp;
 					tmp = x2; x2 = x1; x1 = tmp;
-					}
+				}
 				// calculate gradient
 				uint32_t g = uint32_t( Abs(x2 - x1) / (y2 - y1) * 4294967296.0f );
 				// round coordinates
 				int32_t iX1 = BoundBy<int32_t>(int32_t(x1+.5f),0,sfcTarget->Wdt-1),
-				        iX2 = BoundBy<int32_t>(int32_t(x2+.5f),0,sfcTarget->Wdt-1),
-				        iY1 = BoundBy<int32_t>(int32_t(y1+.5f),0,sfcTarget->Hgt-1),
-				        iY2 = BoundBy<int32_t>(int32_t(y2+.5f),0,sfcTarget->Hgt-1),
-				        iDY = iY2 - iY1;
+				              iX2 = BoundBy<int32_t>(int32_t(x2+.5f),0,sfcTarget->Wdt-1),
+				                    iY1 = BoundBy<int32_t>(int32_t(y1+.5f),0,sfcTarget->Hgt-1),
+				                          iY2 = BoundBy<int32_t>(int32_t(y2+.5f),0,sfcTarget->Hgt-1),
+				                                iDY = iY2 - iY1;
 				// single pixel case?
-				if(!iDY) { DrawPixPrimary(sfcTarget, iX1, iY1, dwClr); return; }
+				if (!iDY) { DrawPixPrimary(sfcTarget, iX1, iY1, dwClr); return; }
 				// alpha divisor
 				uint32_t alpha = dwClr >> 24;
 				if (alpha == 0) return; // invisible line
@@ -871,48 +872,48 @@ void CStdD3D::PerformLine(SURFACE sfcTarget, float x1, float y1, float x2, float
 				DWORD dwClrBase = dwClr & 0x00FFFFFF;
 				// current position
 				uint32_t sp = 0;
-				if(x2 > x1)
-					for(int32_t iY = 0, iX = 0; ; iY++)
-						{
+				if (x2 > x1)
+					for (int32_t iY = 0, iX = 0; ; iY++)
+					{
 						// draw pixels
 						DWORD dwClr1 = dwClrBase + ((alpha + sp / div) << 24),
-									dwClr2 = dwClrBase + ((255 - sp / div) << 24);
+						               dwClr2 = dwClrBase + ((255 - sp / div) << 24);
 						DrawPixPrimary(sfcTarget, iX1+iX,   iY1+iY, dwClr1);
-						if(sp) DrawPixPrimary(sfcTarget, iX1+iX+1, iY1+iY, dwClr2);
-						if(iY * 2 >= iDY) break;
-						DrawPixPrimary(sfcTarget, iX2-iX,	  iY2-iY, dwClr1);
-						if(sp) DrawPixPrimary(sfcTarget, iX2-iX-1, iY2-iY, dwClr2);
-						if(iY * 2 + 1 >= iDY) break;
+						if (sp) DrawPixPrimary(sfcTarget, iX1+iX+1, iY1+iY, dwClr2);
+						if (iY * 2 >= iDY) break;
+						DrawPixPrimary(sfcTarget, iX2-iX,   iY2-iY, dwClr1);
+						if (sp) DrawPixPrimary(sfcTarget, iX2-iX-1, iY2-iY, dwClr2);
+						if (iY * 2 + 1 >= iDY) break;
 						// next pixel
-						sp += g; if(sp < g) iX++;
-						}
+						sp += g; if (sp < g) iX++;
+					}
 				else
-					for(int32_t iY = 0, iX = 0; ; iY++)
-						{
+					for (int32_t iY = 0, iX = 0; ; iY++)
+					{
 						// draw pixels
 						DWORD dwClr1 = dwClrBase + ((alpha + sp / div) << 24),
-									dwClr2 = dwClrBase + ((255 - sp / div) << 24);
+						               dwClr2 = dwClrBase + ((255 - sp / div) << 24);
 						DrawPixPrimary(sfcTarget, iX1+iX,   iY1+iY, dwClr1);
-						if(sp) DrawPixPrimary(sfcTarget, iX1+iX-1, iY1+iY, dwClr2);
-						if(iY * 2 >= iDY) break;
-						DrawPixPrimary(sfcTarget, iX2-iX,	  iY2-iY, dwClr1);
-						if(sp) DrawPixPrimary(sfcTarget, iX2-iX+1, iY2-iY, dwClr2);
-						if(iY * 2 + 1 >= iDY) break;
+						if (sp) DrawPixPrimary(sfcTarget, iX1+iX-1, iY1+iY, dwClr2);
+						if (iY * 2 >= iDY) break;
+						DrawPixPrimary(sfcTarget, iX2-iX,   iY2-iY, dwClr1);
+						if (sp) DrawPixPrimary(sfcTarget, iX2-iX+1, iY2-iY, dwClr2);
+						if (iY * 2 + 1 >= iDY) break;
 						// next pixel
-						sp += g; if(sp < g) iX--;
-						}
-				}
+						sp += g; if (sp < g) iX--;
+					}
 			}
+		}
 	else /* if(!sfcTarget->IsRenderTarget()) */
-		{
+	{
 		if (!LockSurfaceGlobal(sfcTarget)) return;
 		ForLine((int)x1,(int)y1,(int)x2,(int)y2,&DLineSPixDw,dwClr);
 		UnLockSurfaceGlobal(sfcTarget);
-		}
 	}
+}
 
 bool CStdD3D::InitDeviceObjects()
-	{
+{
 	D3DCAPS9 d3dCaps;
 	pD3D->lpDevice->GetDeviceCaps(&d3dCaps);
 	MaxTexSize = d3dCaps.MaxTextureWidth;
@@ -920,18 +921,18 @@ bool CStdD3D::InitDeviceObjects()
 	// Create shaders
 	for (int i=0; i<SHIDX_Size; ++i) if (pShaders[i]) { delete pShaders[i]; pShaders[i]=NULL; }
 	if (DDrawCfg.Shader)
-		{
+	{
 		if (!InitShaders())
-			{
+		{
 			Error("    Shader initizlization failed - reverting to no-shader-mode.");
-			}
 		}
+	}
 	// restore everything
 	return fSuccess && RestoreDeviceObjects();
-	}
+}
 
 bool CStdD3D::InitShaders()
-	{
+{
 	// safety?
 	if (!lpDevice) return false;
 	return false;
@@ -939,15 +940,15 @@ bool CStdD3D::InitShaders()
 	for (int i=0; i<SHIDX_Size; ++i) pShaders[i] = new CStdD3DShader();
 	bool fOK = true;
 	for (int i=0; i<SHIDX_Size; ++i)
-		{
+	{
 		if (!pShaders[i]->Init(lpDevice, !!(i&SHIDX_Mod2), !!(i&SHIDX_ColoredFoW))) { fOK = false; break; }
-		}
+	}
 	if (!fOK) for (int i=0; i<SHIDX_Size; ++i) if (pShaders[i]) { delete pShaders[i]; pShaders[i]=NULL; }
 	return fOK;
-	}
+}
 
 bool CStdD3D::RestoreDeviceObjects()
-	{
+{
 	// any device?
 	if (!lpDevice) return false;
 	// delete any previous objects
@@ -958,38 +959,38 @@ bool CStdD3D::RestoreDeviceObjects()
 	if (lpDevice->TestCooperativeLevel() != D3D_OK) return false;
 	bool fSuccess=true;
 	// restore primary/back
-/*	IDirect3DSurface9 *pPrimarySfc;
-	if (lpDevice->GetRenderTarget(0, &pPrimarySfc) != D3D_OK)
-		{ Error("Could not get primary surface"); fSuccess=false; }
-	RenderTarget=lpPrimary;
-	lpPrimary->AttachSfc(pPrimarySfc,0,0);
-	lpPrimary->dwClrFormat=PrimarySrfcFormat;
-	lpPrimary->byBytesPP=Format2BitDepth(PrimarySrfcFormat)/8;*/
+	/*  IDirect3DSurface9 *pPrimarySfc;
+	  if (lpDevice->GetRenderTarget(0, &pPrimarySfc) != D3D_OK)
+	    { Error("Could not get primary surface"); fSuccess=false; }
+	  RenderTarget=lpPrimary;
+	  lpPrimary->AttachSfc(pPrimarySfc,0,0);
+	  lpPrimary->dwClrFormat=PrimarySrfcFormat;
+	  lpPrimary->byBytesPP=Format2BitDepth(PrimarySrfcFormat)/8;*/
 	// create vertex buffer
-	if( lpDevice->CreateVertexBuffer(sizeof(bltVertices), 0, D3DFVF_C4VERTEX, D3DPOOL_DEFAULT, &pVB, NULL) != D3D_OK ) return false;
+	if ( lpDevice->CreateVertexBuffer(sizeof(bltVertices), 0, D3DFVF_C4VERTEX, D3DPOOL_DEFAULT, &pVB, NULL) != D3D_OK ) return false;
 	// fill initial data for vertex buffer
 	int i;
 	for (i=0; i<6; ++i)
-		{
+	{
 		bltVertices[i].z=0.9f;
 		bltVertices[i].rhw=1.0f;
-		}
+	}
 	// create solid color vertex buffer
-	if( lpDevice->CreateVertexBuffer(sizeof(clrVertices), 0, D3DFVF_C4CLRVERTEX, D3DPOOL_DEFAULT, &pVBClr, NULL) != D3D_OK ) return false;
+	if ( lpDevice->CreateVertexBuffer(sizeof(clrVertices), 0, D3DFVF_C4CLRVERTEX, D3DPOOL_DEFAULT, &pVBClr, NULL) != D3D_OK ) return false;
 	// fill initial data for vertex buffer
 	for (i=0; i<6; ++i)
-		{
+	{
 		clrVertices[i].z=0.9f;
 		clrVertices[i].rhw=1.0f;
-		}
+	}
 	// create color-texblit vertices
-	if( lpDevice->CreateVertexBuffer(sizeof(bltClrVertices), 0, D3DFVF_C4CTVERTEX, D3DPOOL_DEFAULT, &pVBClrTex, NULL) != D3D_OK ) return false;
+	if ( lpDevice->CreateVertexBuffer(sizeof(bltClrVertices), 0, D3DFVF_C4CTVERTEX, D3DPOOL_DEFAULT, &pVBClrTex, NULL) != D3D_OK ) return false;
 	// fill initial data for vertex buffer
 	for (i=0; i<6; ++i)
-		{
+	{
 		bltClrVertices[i].z=0.9f;
 		bltClrVertices[i].rhw=1.0f;
-		}
+	}
 	// create state blocks
 	CreateStateBlock(&bltState[0], false, false, false, false, false);
 	CreateStateBlock(&bltState[1], true, false, false, false, false);
@@ -1008,14 +1009,14 @@ bool CStdD3D::RestoreDeviceObjects()
 	dwBlitMode = 0;
 	// done
 	return Active;
-	}
+}
 
 template<class IF> static inline void SafeRelease(IF *&pInterface)
-	{
+{
 	if (pInterface)
 		pInterface->Release();
 	pInterface = 0;
-	}
+}
 
 bool CStdD3D::InvalidateDeviceObjects()
 {
@@ -1054,7 +1055,7 @@ bool CStdD3D::DeleteDeviceObjects()
 }
 
 bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent, bool fSolid, bool fBaseTex, bool fAdditive, bool fMod2)
-	{
+{
 	// begin capturing
 	lpDevice->BeginStateBlock();
 	// set states
@@ -1063,11 +1064,11 @@ bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent,
 	lpDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, true );
 	lpDevice->SetRenderState( D3DRS_SRCBLEND,   D3DBLEND_SRCALPHA );
 	lpDevice->SetRenderState( D3DRS_DESTBLEND,  fAdditive ? D3DBLEND_ONE : D3DBLEND_INVSRCALPHA );
-/*	// This isn't necessary, as a>=0 is equal to no alpha testing anyway
-	lpDevice->SetRenderState( D3DRS_ALPHATESTENABLE,  true );
-	lpDevice->SetRenderState( D3DRS_ALPHAREF,         0x00 );
-	lpDevice->SetRenderState( D3DRS_ALPHAFUNC,  D3DCMP_GREATEREQUAL );
-*/
+	/*  // This isn't necessary, as a>=0 is equal to no alpha testing anyway
+	  lpDevice->SetRenderState( D3DRS_ALPHATESTENABLE,  true );
+	  lpDevice->SetRenderState( D3DRS_ALPHAREF,         0x00 );
+	  lpDevice->SetRenderState( D3DRS_ALPHAFUNC,  D3DCMP_GREATEREQUAL );
+	*/
 	lpDevice->SetRenderState( D3DRS_FILLMODE,   D3DFILL_SOLID );
 	lpDevice->SetRenderState( D3DRS_CULLMODE,   D3DCULL_NONE );
 	lpDevice->SetRenderState( D3DRS_ZENABLE,          false );
@@ -1079,21 +1080,21 @@ bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent,
 	lpDevice->SetRenderState( D3DRS_INDEXEDVERTEXBLENDENABLE, false );
 	lpDevice->SetRenderState( D3DRS_FOGENABLE,        false );
 	if (!fBaseTex)
-		{
+	{
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_SELECTARG1 );
 		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_SELECTARG1 );
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, fSolid ? D3DTA_DIFFUSE : D3DTA_TEXTURE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, fSolid ? D3DTA_DIFFUSE : D3DTA_TEXTURE );
-		}
+	}
 	else
-		{
+	{
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   fMod2 ? D3DTOP_ADDSIGNED2X : D3DTOP_MODULATE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP,   D3DTOP_MODULATE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
 		lpDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
-		}
+	}
 	lpDevice->SetTextureStageState( 1, D3DTSS_COLOROP,   D3DTOP_DISABLE );
 	lpDevice->SetTextureStageState( 1, D3DTSS_ALPHAOP,   D3DTOP_DISABLE );
 	lpDevice->SetSamplerState( 0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR );
@@ -1105,40 +1106,40 @@ bool CStdD3D::CreateStateBlock(IDirect3DStateBlock9 **pBlock, bool fTransparent,
 	lpDevice->SetSamplerState( 0, D3DSAMP_ADDRESSV , D3DTADDRESS_CLAMP );
 	// capture
 	return lpDevice->EndStateBlock(pBlock) == D3D_OK;
-	}
+}
 
 void CStdD3D::SetTexture()
-	{
-	}
+{
+}
 
 void CStdD3D::ResetTexture()
-	{
+{
 	if (Active) lpDevice->SetTexture(0, NULL);
-	}
+}
 
 bool CStdD3D::ApplyGammaRamp(D3DGAMMARAMP &ramp, bool fForce)
-	{
+{
 	if (!lpDevice || (!Active && !fForce)) return false;
 	lpDevice->SetGammaRamp(0, D3DSGR_CALIBRATE, &ramp);
 	return true;
-	}
+}
 
 bool CStdD3D::SaveDefaultGammaRamp(CStdWindow * pWindow)
-	{
+{
 	if (!lpDevice) return false;
 	lpDevice->GetGammaRamp(0, &DefRamp.ramp);
 	return true;
-	}
+}
 
 void CStdD3D::TaskOut()
-	{
+{
 	InvalidateDeviceObjects();
-	}
+}
 
 void CStdD3D::TaskIn()
-	{
+{
 	RestoreDeviceObjects();
-	}
+}
 
 CStdD3D *pD3D=NULL;
 

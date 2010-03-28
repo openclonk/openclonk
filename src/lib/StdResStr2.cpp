@@ -25,26 +25,32 @@
 
 #include <stdio.h>
 
-class ResTable {
+class ResTable
+{
 public:
-	ResTable(const char * table): Capacity(int(1.10 * SCharCount('\n', table))), Count(0), Entries(new Entry[Capacity]) {
+	ResTable(const char * table): Capacity(int(1.10 * SCharCount('\n', table))), Count(0), Entries(new Entry[Capacity])
+	{
 		// reduce the capacity so that there is always an empty entry to mark the end of the search for an nonexistant key
 		--Capacity;
-		while (Count < Capacity) {
+		while (Count < Capacity)
+		{
 			// search '='
 			const char * pos = table;
 			const char * equalpos = 0;
-			while (*pos && *pos != '\n' && *pos != '\r') {
+			while (*pos && *pos != '\n' && *pos != '\r')
+			{
 				if (*pos == '=') equalpos = pos;
 				++pos;
 			}
-			if (equalpos) {
+			if (equalpos)
+			{
 				unsigned int h = Hash(table);
 				// Get a pointer to the bucket
 				Entry * e = &(Entries[h % Capacity]);
 				// Search an empty spot
 				int i = 0;
-				while (*e) {
+				while (*e)
+				{
 #ifdef _DEBUG
 					if (e->Hash == h) printf("Hash Collision: %d (\"%.50s\")\nSTRINGTABLE WILL BREAK\n", h, table);
 #endif
@@ -55,8 +61,8 @@ public:
 				e->Data.CopyUntil(equalpos + 1, *pos);
 				// Compile line feeds ("\n" -> 0D0A)
 				for (i = 0; i < pos - equalpos; ++i)
-				if (e->Data.getMData()[i] == '\\' && e->Data.getMData()[i + 1] == 'n')
-					{ e->Data.getMData()[i] = 0x0D; e->Data.getMData()[i + 1] = 0x0A; }
+					if (e->Data.getMData()[i] == '\\' && e->Data.getMData()[i + 1] == 'n')
+						{ e->Data.getMData()[i] = 0x0D; e->Data.getMData()[i + 1] = 0x0A; }
 				// Count!
 				++Count;
 			}
@@ -66,11 +72,13 @@ public:
 		}
 	}
 
-	~ResTable() {
+	~ResTable()
+	{
 		delete[] Entries;
 	}
 
-	const char * GetEntry(const char * Key) {
+	const char * GetEntry(const char * Key)
+	{
 		if (!Key) return NULL;
 		unsigned int h = Hash(Key);
 		Entry * e = &(Entries[h % Capacity]);
@@ -80,7 +88,8 @@ public:
 	}
 
 private:
-	struct Entry {
+	struct Entry
+	{
 		StdCopyStrBuf Data;
 		unsigned int Hash;
 		Entry(): Data(), Hash(0) { }
@@ -90,7 +99,8 @@ private:
 	int Capacity;
 	int Count;
 	Entry * Entries;
-	static unsigned int Hash(const char * Key) {
+	static unsigned int Hash(const char * Key)
+	{
 		// Fowler/Noll/Vo hash
 		unsigned int h = 2166136261u;
 		while (*Key && *Key != '=')
@@ -118,10 +128,12 @@ void ClearResStrTable()
 
 bool IsResStrTableLoaded() { return Table != 0; }
 
-const char *GetResStr(const char *id, ResTable * Table) {
+const char *GetResStr(const char *id, ResTable * Table)
+{
 	if (!Table) return "Language string table not loaded.";
 	const char * r = Table->GetEntry(id);
-	if (!r) {
+	if (!r)
+	{
 		static char strResult[1024];
 		// Default
 		sprintf(strResult, "[Undefined:%s]", id);
@@ -143,12 +155,12 @@ char *LoadResStrNoAmp(const char *id)
 	const char * str = LoadResStr(id);
 	char * cpd = strResult;
 	for (const char * cps = str; *cps; ++cps, ++cpd)
-		{
+	{
 		if (*cps == '&')
 			--cpd;
 		else
 			*cpd = *cps;
-		}
+	}
 	*cpd = 0;
 	return strResult;
 }

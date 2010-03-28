@@ -38,14 +38,16 @@
 /* CStdApp */
 
 CStdApp::CStdApp(): Active(false), fQuitMsgReceived(false),
-	Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
+		Location(""), DoNotDelay(false), MainThread(pthread_self()), fDspModeSet(false)
 {
 }
 
-CStdApp::~CStdApp() {
+CStdApp::~CStdApp()
+{
 }
 
-bool CStdApp::Init(int argc, char * argv[]) {
+bool CStdApp::Init(int argc, char * argv[])
+{
 	// Set locale
 	setlocale(LC_ALL,"");
 
@@ -59,15 +61,17 @@ bool CStdApp::Init(int argc, char * argv[]) {
 
 	// Build command line.
 	static std::string s("\"");
-	for (int i = 1; i < argc; ++i) {
+	for (int i = 1; i < argc; ++i)
+	{
 		s.append(argv[i]);
 		s.append("\" \"");
 	}
 	s.append("\"");
 	szCmdLine = s.c_str();
 
-	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
-				Log("Error initializing SDL.");
+	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0)
+	{
+		Log("Error initializing SDL.");
 		return false;
 	}
 
@@ -83,52 +87,60 @@ bool CStdApp::Init(int argc, char * argv[]) {
 }
 
 
-void CStdApp::Clear() {
+void CStdApp::Clear()
+{
 	SDL_Quit();
-	}
+}
 
-void CStdApp::Quit() {
+void CStdApp::Quit()
+{
 	fQuitMsgReceived = true;
 }
 
-bool CStdApp::FlushMessages() {
+bool CStdApp::FlushMessages()
+{
 	// Always fail after quit message
-	if(fQuitMsgReceived)
+	if (fQuitMsgReceived)
 		return false;
 
 	// Handle pending SDL messages
 	SDL_Event event;
-	while (SDL_PollEvent(&event)) {
+	while (SDL_PollEvent(&event))
+	{
 		HandleSDLEvent(event);
 	}
 	return true;
 }
 
-void CStdApp::HandleSDLEvent(SDL_Event& event) {
-		// Directly handle QUIT messages.
-	switch (event.type) {
-		case SDL_QUIT:
-		  Quit();
-		  break;
+void CStdApp::HandleSDLEvent(SDL_Event& event)
+{
+	// Directly handle QUIT messages.
+	switch (event.type)
+	{
+	case SDL_QUIT:
+		Quit();
+		break;
 	}
-	
+
 #ifdef __APPLE__
 	MacUtility::ensureWindowInFront();
 #endif
 
-		// Everything else goes to the window.
+	// Everything else goes to the window.
 	if (pWindow)
 		pWindow->HandleMessage(event);
 }
 
-bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor) {
+bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor)
+{
 	// No support for multiple monitors.
 	if (iMonitor != 0)
 		return false;
 
 	static SDL_Rect** modes = 0;
 	static unsigned modeCount = 0;
-	if (!modes) {
+	if (!modes)
+	{
 		modes = SDL_ListModes(NULL, SDL_OPENGL | SDL_FULLSCREEN);
 		// -1 means "all modes allowed". Clonk is not prepared
 		// for this; should probably give some random resolutions
@@ -137,9 +149,9 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 		if (!modes)
 			modeCount = 0;
 		else
-		// Count available modes.
-		for (SDL_Rect** iter = modes; *iter; ++iter)
-			++modeCount;
+			// Count available modes.
+			for (SDL_Rect** iter = modes; *iter; ++iter)
+				++modeCount;
 	}
 
 	if (iIndex >= modeCount)
@@ -151,9 +163,11 @@ bool CStdApp::GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *pi
 	return true;
 }
 
-bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen) {
+bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen)
+{
 	// SDL doesn't support multiple monitors.
-	if(!SDL_SetVideoMode(iXRes, iYRes, iColorDepth, SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0))) {
+	if (!SDL_SetVideoMode(iXRes, iYRes, iColorDepth, SDL_OPENGL | (fFullScreen ? SDL_FULLSCREEN : 0)))
+	{
 		sLastError.Copy(SDL_GetError());
 		return false;
 	}
@@ -163,25 +177,30 @@ bool CStdApp::SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int 
 	return true;
 }
 
-void CStdApp::RestoreVideoMode() {
+void CStdApp::RestoreVideoMode()
+{
 }
 
 // For Max OS X, the implementation resides in StdMacApp.mm
 #ifndef __APPLE__
 
 // stubs
-void CStdApp::Copy(const StdStrBuf & text, bool fClipboard) {
+void CStdApp::Copy(const StdStrBuf & text, bool fClipboard)
+{
 }
 
-StdStrBuf CStdApp::Paste(bool fClipboard) {
+StdStrBuf CStdApp::Paste(bool fClipboard)
+{
 	return StdStrBuf(0);
 }
 
-bool CStdApp::IsClipboardFull(bool fClipboard) {
+bool CStdApp::IsClipboardFull(bool fClipboard)
+{
 	return false;
 }
 
-void CStdApp::ClearClipboard(bool fClipboard) {
+void CStdApp::ClearClipboard(bool fClipboard)
+{
 }
 
 void CStdApp::MessageDialog(const char * message)
@@ -192,15 +211,19 @@ void CStdApp::MessageDialog(const char * message)
 
 // Event-pipe-whatever stuff I do not understand.
 
-bool CStdApp::ReadStdInCommand() {
+bool CStdApp::ReadStdInCommand()
+{
 	char c;
-	if(read(0, &c, 1) != 1)
+	if (read(0, &c, 1) != 1)
 		return false;
-	if(c == '\n') {
-		if(!CmdBuf.isNull()) {
+	if (c == '\n')
+	{
+		if (!CmdBuf.isNull())
+		{
 			OnCommand(CmdBuf.getData()); CmdBuf.Clear();
 		}
-	} else if(isprint((unsigned char)c))
+	}
+	else if (isprint((unsigned char)c))
 		CmdBuf.AppendChar(c);
 	return true;
 }

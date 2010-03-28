@@ -28,19 +28,19 @@
 #include <C4Log.h>
 
 void C4Extra::Default()
-	{
+{
 	// zero fields
-	}
+}
 
 void C4Extra::Clear()
-	{
+{
 	// free class members
 	ExtraSysGrp.Close();
 	ExtraUserGrp.Close();
-	}
+}
 
 bool C4Extra::InitGroup()
-	{
+{
 	// register extra root into game group set
 	if (ItemExists(Config.AtSystemDataPath(C4CFN_Extra)) && ExtraSysGrp.Open(Config.AtSystemDataPath(C4CFN_Extra)))
 		Game.GroupSet.RegisterGroup(ExtraSysGrp, false, C4GSPrio_ExtraRoot, C4GSCnt_ExtraRoot);
@@ -50,10 +50,10 @@ bool C4Extra::InitGroup()
 
 	// done, success
 	return true;
-	}
+}
 
 bool C4Extra::Init()
-	{
+{
 	// no group: OK
 	if (!ExtraSysGrp.IsOpen() && !ExtraUserGrp.IsOpen()) return true;
 	// load from all definitions that are activated
@@ -66,10 +66,10 @@ bool C4Extra::Init()
 			fAnythingLoaded=true;
 	// done, success
 	return true;
-	}
+}
 
 bool C4Extra::LoadDef(C4Group &hGroup, const char *szName)
-	{
+{
 	// check if file exists
 	if (!hGroup.FindEntry(szName)) return false;
 	// log that extra group is loaded
@@ -80,4 +80,4 @@ bool C4Extra::LoadDef(C4Group &hGroup, const char *szName)
 	Game.GroupSet.RegisterGroup(*pGrp, true, C4GSPrio_Extra, C4GSCnt_Extra);
 	// done, success
 	return true;
-	}
+}

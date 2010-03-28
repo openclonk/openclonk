@@ -51,7 +51,7 @@ void C4DevmodeDlg::OnDestroy(GtkWidget* window, gpointer user_data)
 void C4DevmodeDlg::AddPage(GtkWidget* widget, GtkWindow* parent, const char* title)
 {
 	// Create Window if necessary
-	if(window == NULL)
+	if (window == NULL)
 	{
 		notebook = gtk_notebook_new();
 		gtk_notebook_set_show_tabs(GTK_NOTEBOOK(notebook), false);
@@ -84,7 +84,7 @@ void C4DevmodeDlg::RemovePage(GtkWidget* widget)
 
 	gtk_notebook_remove_page(GTK_NOTEBOOK(notebook), page_num);
 
-	if(gtk_notebook_get_n_pages(GTK_NOTEBOOK(notebook)) == 0)
+	if (gtk_notebook_get_n_pages(GTK_NOTEBOOK(notebook)) == 0)
 		gtk_widget_destroy(window);
 }
 
@@ -93,10 +93,10 @@ void C4DevmodeDlg::SwitchPage(GtkWidget* widget)
 	bool is_visible = GTK_WIDGET_VISIBLE(GTK_WIDGET(window));
 
 	// Remember window position
-	if(window != NULL && is_visible)
+	if (window != NULL && is_visible)
 		gtk_window_get_position(GTK_WINDOW(window), &x, &y);
 
-	if(widget != NULL)
+	if (widget != NULL)
 	{
 		assert(window != NULL);
 
@@ -108,16 +108,16 @@ void C4DevmodeDlg::SwitchPage(GtkWidget* widget)
 		gtk_window_set_title(GTK_WINDOW(window), gtk_notebook_get_tab_label_text(GTK_NOTEBOOK(notebook), widget));
 
 		// Show window if not visible
-		if(!is_visible)
+		if (!is_visible)
 		{
 			gtk_widget_show(window);
-			if(x != -1 || y != -1)
+			if (x != -1 || y != -1)
 				gtk_window_move(GTK_WINDOW(window), x, y);
 		}
 	}
 	else
 	{
-		if(window != NULL && is_visible)
+		if (window != NULL && is_visible)
 			gtk_widget_hide(window);
 	}
 }
@@ -126,7 +126,7 @@ void C4DevmodeDlg::SetTitle(GtkWidget* widget, const char* title)
 {
 	gtk_notebook_set_tab_label_text(GTK_NOTEBOOK(notebook), widget, title);
 	int page_num = gtk_notebook_get_current_page(GTK_NOTEBOOK(notebook));
-	if(gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num) == widget)
+	if (gtk_notebook_get_nth_page(GTK_NOTEBOOK(notebook), page_num) == widget)
 		gtk_window_set_title(GTK_WINDOW(window), title);
 }
 

@@ -38,7 +38,7 @@
 
 
 C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; it is drawn in custom draw proc
-	{
+{
 	// ctor
 	fFirstShown = true;
 	// screen calculations
@@ -80,37 +80,37 @@ C4StartupMainDlg::C4StartupMainDlg() : C4StartupDlg(NULL) // create w/o title; i
 	C4CustomKey::CodeList keys;
 	keys.push_back(C4KeyCodeEx(K_DOWN)); keys.push_back(C4KeyCodeEx(K_RIGHT));
 	if (Config.Controls.GamepadGuiControl)
-		{
+	{
 		keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Down))); // right will be done by Dialog already
-		}
+	}
 	pKeyDown = new C4KeyBinding(keys, "StartupMainCtrlNext", KEYSCOPE_Gui,
-		new C4GUI::DlgKeyCBEx<C4StartupMainDlg, bool>(*this, false, &C4StartupMainDlg::KeyAdvanceFocus), C4CustomKey::PRIO_CtrlOverride);
+	                            new C4GUI::DlgKeyCBEx<C4StartupMainDlg, bool>(*this, false, &C4StartupMainDlg::KeyAdvanceFocus), C4CustomKey::PRIO_CtrlOverride);
 	keys.clear(); keys.push_back(C4KeyCodeEx(K_UP)); keys.push_back(C4KeyCodeEx(K_LEFT));
 	if (Config.Controls.GamepadGuiControl)
-		{
+	{
 		keys.push_back(C4KeyCodeEx(KEY_Gamepad(0, KEY_JOY_Up))); // left will be done by Dialog already
-		}
+	}
 	pKeyUp = new C4KeyBinding(keys, "StartupMainCtrlPrev", KEYSCOPE_Gui,
-		new C4GUI::DlgKeyCBEx<C4StartupMainDlg, bool>(*this, true, &C4StartupMainDlg::KeyAdvanceFocus), C4CustomKey::PRIO_CtrlOverride);
+	                          new C4GUI::DlgKeyCBEx<C4StartupMainDlg, bool>(*this, true, &C4StartupMainDlg::KeyAdvanceFocus), C4CustomKey::PRIO_CtrlOverride);
 	keys.clear(); keys.push_back(C4KeyCodeEx(K_RETURN));
 	pKeyEnter = new C4KeyBinding(keys, "StartupMainOK", KEYSCOPE_Gui,
-		new C4GUI::DlgKeyCB<C4StartupMainDlg>(*this, &C4StartupMainDlg::KeyEnterDown, &C4StartupMainDlg::KeyEnterUp), C4CustomKey::PRIO_CtrlOverride);
+	                             new C4GUI::DlgKeyCB<C4StartupMainDlg>(*this, &C4StartupMainDlg::KeyEnterDown, &C4StartupMainDlg::KeyEnterUp), C4CustomKey::PRIO_CtrlOverride);
 	keys.clear(); keys.push_back(C4KeyCodeEx(K_F6));
 	pKeyEditor = new C4KeyBinding(keys, "StartupMainEditor", KEYSCOPE_Gui,
-		new C4GUI::DlgKeyCB<C4StartupMainDlg>(*this, &C4StartupMainDlg::SwitchToEditor, false), C4CustomKey::PRIO_CtrlOverride);
-	}
+	                              new C4GUI::DlgKeyCB<C4StartupMainDlg>(*this, &C4StartupMainDlg::SwitchToEditor, false), C4CustomKey::PRIO_CtrlOverride);
+}
 
 C4StartupMainDlg::~C4StartupMainDlg()
-	{
+{
 	// dtor
 	delete pKeyEnter;
 	delete pKeyUp;
 	delete pKeyDown;
 	delete pKeyEditor;
-	}
+}
 
 void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
-	{
+{
 	// inherited
 	typedef C4GUI::FullscreenDialog Base;
 	Base::DrawElement(cgo);
@@ -122,68 +122,68 @@ void C4StartupMainDlg::DrawElement(C4TargetFacet &cgo)
 	StdStrBuf sVer;
 	sVer.Format(LoadResStr("IDS_DLG_VERSION"), C4VERSION);
 	lpDDraw->TextOut(sVer.getData(), C4GUI::GetRes()->TextFont, 1.0f, cgo.Surface, rcBounds.Wdt*1/40, rcBounds.Hgt/12 + int32_t(fLogoZoom*fctLogo.Hgt) - 10, 0xffffffff, ALeft, true);
-	}
+}
 
 C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContext(C4GUI::Element *pBtn, int32_t iX, int32_t iY)
-	{
+{
 	// preliminary player selection via simple context menu
 	C4GUI::ContextMenu *pCtx = new C4GUI::ContextMenu();
 	pCtx->AddItem("Add", "Add participant", C4GUI::Ico_None, NULL, new C4GUI::CBContextHandler<C4StartupMainDlg>(this, &C4StartupMainDlg::OnPlayerSelContextAdd));
 	pCtx->AddItem("Remove", "Remove participant", C4GUI::Ico_None, NULL, new C4GUI::CBContextHandler<C4StartupMainDlg>(this, &C4StartupMainDlg::OnPlayerSelContextRemove));
 	return pCtx;
-	}
+}
 
 C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContextAdd(C4GUI::Element *pBtn, int32_t iX, int32_t iY)
-	{
+{
 	C4GUI::ContextMenu *pCtx = new C4GUI::ContextMenu();
 	const char *szFn;
 	StdStrBuf sSearchPath(Config.General.UserDataPath);
-//	sSearchPath.Format("%s%s", (const char *) Config.General.ExePath, (const char *) Config.General.PlayerPath);
+//  sSearchPath.Format("%s%s", (const char *) Config.General.ExePath, (const char *) Config.General.PlayerPath);
 	for (DirectoryIterator i(sSearchPath.getData()); (szFn=*i); i++)
-		{
+	{
 		szFn = Config.AtRelativePath(szFn);
 		if (*GetFilename(szFn) == '.') continue;
 		if (!WildcardMatch(C4CFN_PlayerFiles, GetFilename(szFn))) continue;
 		if (!SIsModule(Config.General.Participants, szFn, NULL, false))
 			pCtx->AddItem(C4Language::IconvClonk(GetFilenameOnly(szFn)).getData(), "Let this player join in next game", C4GUI::Ico_Player,
-				new C4GUI::CBMenuHandlerEx<C4StartupMainDlg, StdCopyStrBuf>(this, &C4StartupMainDlg::OnPlayerSelContextAddPlr, StdCopyStrBuf(szFn)), NULL);
-		}
-	return pCtx;
+			              new C4GUI::CBMenuHandlerEx<C4StartupMainDlg, StdCopyStrBuf>(this, &C4StartupMainDlg::OnPlayerSelContextAddPlr, StdCopyStrBuf(szFn)), NULL);
 	}
+	return pCtx;
+}
 
 C4GUI::ContextMenu *C4StartupMainDlg::OnPlayerSelContextRemove(C4GUI::Element *pBtn, int32_t iX, int32_t iY)
-	{
+{
 	C4GUI::ContextMenu *pCtx = new C4GUI::ContextMenu();
 	char szPlayer[1024+1];
 	for (int i = 0; SCopySegment(Config.General.Participants, i, szPlayer, ';', 1024, true); i++)
 		if (*szPlayer)
 			pCtx->AddItem(GetFilenameOnly(szPlayer), "Remove this player from participation list", C4GUI::Ico_Player, new C4GUI::CBMenuHandlerEx<C4StartupMainDlg, int>(this, &C4StartupMainDlg::OnPlayerSelContextRemovePlr, i), NULL);
 	return pCtx;
-	}
+}
 
 void C4StartupMainDlg::OnPlayerSelContextAddPlr(C4GUI::Element *pTarget, const StdCopyStrBuf &rsFilename)
-	{
+{
 	SAddModule(Config.General.Participants, rsFilename.getData());
 	UpdateParticipants();
-	}
+}
 
 void C4StartupMainDlg::OnPlayerSelContextRemovePlr(C4GUI::Element *pTarget, const int &iIndex)
-	{
+{
 	char szPlayer[1024+1];
 	if (SCopySegment(Config.General.Participants, iIndex, szPlayer, ';', 1024, true))
 		SRemoveModule(Config.General.Participants, szPlayer, false);
 	UpdateParticipants();
-	}
+}
 
 void C4StartupMainDlg::UpdateParticipants()
-	{
+{
 	// First validate all participants (files must exist)
 	std::string strPlayers(Config.General.Participants);
 	std::string strPlayer;
 	strPlayer.reserve(1025);
 	*Config.General.Participants=0;
 	for (int i = 0; SCopySegment(strPlayers.c_str(), i, &strPlayer[0], ';', 1024, true); i++)
-		{
+	{
 		const char *szPlayer = strPlayer.c_str();
 		std::string strPlayerFile(Config.General.UserDataPath);
 		strPlayerFile.append(szPlayer);
@@ -191,7 +191,7 @@ void C4StartupMainDlg::UpdateParticipants()
 		if (!FileExists(strPlayerFile.c_str())) continue;
 		if (!SEqualNoCase(GetExtension(szPlayer), "c4p")) continue; // additional sanity check to clear strange exe-path-only entries in player list?
 		SAddModule(Config.General.Participants, szPlayer);
-		}
+	}
 	// Draw selected players - we are currently displaying the players stored in Config.General.Participants.
 	// Existence of the player files is not validated and player filenames are displayed directly
 	// (names are not loaded from the player core).
@@ -200,51 +200,51 @@ void C4StartupMainDlg::UpdateParticipants()
 		strPlayers.append(LoadResStr("IDS_DLG_NOPLAYERSSELECTED"));
 	else
 		for (int i = 0; SCopySegment(Config.General.Participants, i, &strPlayer[0], ';', 1024, true); i++)
-			{
+		{
 			if (i > 0) strPlayers.append(", ");
 			strPlayers.append(C4Language::IconvClonk(GetFilenameOnly(strPlayer.c_str())).getData());
-			}
+		}
 	pParticipantsLbl->SetText(strPlayers.c_str());
-	}
+}
 
 void C4StartupMainDlg::OnClosed(bool fOK)
-	{
+{
 	// if dlg got aborted (by user), quit startup
 	// if it got closed with OK, the user pressed one of the buttons and dialog switching has been done already
 	if (!fOK) C4Startup::Get()->Exit();
-	}
+}
 
 void C4StartupMainDlg::OnStartBtn(C4GUI::Control *btn)
-	{
+{
 	// no regular game start if no players were selected
 	/*if (!*Config.General.Participants)
-		{
-		StdStrBuf buf(LoadResStrNoAmp("IDS_DLG_STARTGAME"), true);
-		GetScreen()->ShowMessageModal(LoadResStr("IDS_MSG_NOPLAYERSELECTED"), buf.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
-		// let's go to the player selection dlg then instead
-		OnPlayerSelectionBtn(NULL);
-		return;
-		}*/
+	  {
+	  StdStrBuf buf(LoadResStrNoAmp("IDS_DLG_STARTGAME"), true);
+	  GetScreen()->ShowMessageModal(LoadResStr("IDS_MSG_NOPLAYERSELECTED"), buf.getData(), C4GUI::MessageDialog::btnOK, C4GUI::Ico_Notify);
+	  // let's go to the player selection dlg then instead
+	  OnPlayerSelectionBtn(NULL);
+	  return;
+	  }*/
 	// advance to scenario selection screen
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_ScenSel);
-	}
+}
 
 void C4StartupMainDlg::OnPlayerSelectionBtn(C4GUI::Control *btn)
-	{
+{
 	// advance to player selection screen
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_PlrSel);
-	}
+}
 
 void C4StartupMainDlg::OnNetJoinBtn(C4GUI::Control *btn)
-	{
+{
 	// simple net join dlg
 	//GetScreen()->ShowDialog(new C4GUI::InputDialog("Enter host IP", "Direct join", C4GUI::Ico_Host, new C4GUI::InputCallback<C4StartupMainDlg>(this, &C4StartupMainDlg::OnNetJoin)), false);
 	// advanced net join and host dlg!
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_NetJoin);
-	}
+}
 
 void C4StartupMainDlg::OnNetJoin(const StdStrBuf &rsHostAddress)
-	{
+{
 	// no IP given: No join
 	if (!rsHostAddress || !*rsHostAddress.getData()) return;
 	// set default startup parameters
@@ -256,102 +256,102 @@ void C4StartupMainDlg::OnNetJoin(const StdStrBuf &rsHostAddress)
 	SCopy(rsHostAddress.getData(), Game.DirectJoinAddress, sizeof(Game.DirectJoinAddress)-1);
 	// start with this set!
 	C4Startup::Get()->Start();
-	}
+}
 
 void C4StartupMainDlg::OnOptionsBtn(C4GUI::Control *btn)
-	{
+{
 	// advance to options screen
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_Options);
-	}
+}
 
 void C4StartupMainDlg::OnAboutBtn(C4GUI::Control *btn)
-	{
+{
 	// advance to about screen
 	C4Startup::Get()->SwitchDialog(C4Startup::SDID_About);
-	}
+}
 
 void C4StartupMainDlg::OnExitBtn(C4GUI::Control *btn)
-	{
+{
 	// callback: exit button pressed
 	C4Startup::Get()->Exit();
-	}
+}
 
 void C4StartupMainDlg::OnTODO(C4GUI::Control *btn)
-	{
+{
 	GetScreen()->ShowMessage("not yet implemented", "2do", C4GUI::Ico_Error);
-	}
+}
 
 bool C4StartupMainDlg::KeyEnterDown()
-	{
+{
 	// just execute selected button: Re-Send as space
 	return Game.DoKeyboardInput(K_SPACE, KEYEV_Down, false, false, false, false, this);
-	}
+}
 
 bool C4StartupMainDlg::KeyEnterUp()
-	{
+{
 	// just execute selected button: Re-Send as space
 	return Game.DoKeyboardInput(K_SPACE, KEYEV_Up, false, false, false, false, this);
-	}
+}
 
 void C4StartupMainDlg::OnShown()
-	{
+{
 
 	// Incoming update
 	if (Application.IncomingUpdate)
-		{
+	{
 		C4UpdateDlg::ApplyUpdate(Application.IncomingUpdate.getData(), false, GetScreen());
 		Application.IncomingUpdate.Clear();
-		}
+	}
 	// Manual update by command line or url
 	if (Application.CheckForUpdates)
-		{
+	{
 		C4UpdateDlg::CheckForUpdates(GetScreen(), false);
 		Application.CheckForUpdates = false;
-		}
+	}
 	// Automatic update
 	else
-		{
+	{
 		if (Config.Network.AutomaticUpdate)
 			C4UpdateDlg::CheckForUpdates(GetScreen(), true);
-		}
+	}
 
 	// first start evaluation
 	if (Config.General.FirstStart)
-		{
+	{
 		Config.General.FirstStart = false;
-		}
+	}
 	// first thing that's needed is a new player, if there's none - independent of first start
 	bool fHasPlayer = false;
 	StdStrBuf sSearchPath(Config.General.UserDataPath);
 	const char *szFn;
-//	sSearchPath.Format("%s%s", (const char *) Config.General.ExePath, (const char *) Config.General.PlayerPath);
+//  sSearchPath.Format("%s%s", (const char *) Config.General.ExePath, (const char *) Config.General.PlayerPath);
 	for (DirectoryIterator i(sSearchPath.getData()); (szFn=*i); i++)
-		{
+	{
 		szFn = Config.AtRelativePath(szFn);
 		if (*GetFilename(szFn) == '.') continue; // ignore ".", ".." and private files (".*")
 		if (!WildcardMatch(C4CFN_PlayerFiles, GetFilename(szFn))) continue;
 		fHasPlayer = true;
 		break;
-		}
+	}
 	if (!fHasPlayer)
-		{
+	{
 		// no player created yet: Create one
 		C4GUI::Dialog *pDlg;
 		GetScreen()->ShowModalDlg(pDlg=new C4StartupPlrPropertiesDlg(NULL, NULL), true);
-		}
+	}
 	// make sure participants are updated after switching back from player selection
 	UpdateParticipants();
 
 	// First show
 	if (fFirstShown)
-		{
+	{
 		// Activate the application (trying to prevent flickering half-focus in win32...)
 		Application.Activate();
 		// Set the focus to the start button (we might still not have the focus after the update-check sometimes... :/)
 		SetFocus(pStartButton, false);
-		}
-	fFirstShown = false;
 	}
+	fFirstShown = false;
+}
 
 bool C4StartupMainDlg::SwitchToEditor()
 {
