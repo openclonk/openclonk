@@ -21,6 +21,7 @@
 #define STDCOMPILER_H
 
 #include "StdBuf.h"
+#include "C4Log.h"
 
 #include <assert.h>
 

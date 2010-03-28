@@ -25,6 +25,8 @@
 #ifndef INC_STANDARD
 #define INC_STANDARD
 
+#include "PlatformAbstraction.h"
+
 // Color triplets
 #define C4RGB(r, g, b) (((DWORD)(0xff)<<24)|(((DWORD)(r)&0xff)<<16)|(((DWORD)(g)&0xff)<<8)|((b)&0xff))
 
