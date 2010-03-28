@@ -65,7 +65,7 @@ func FxIntBridgeTimer(clonk, number)
 
 	// bridge speed: Build in smaller steps when briding upwards so Clonk moves up with bridge
 	var min_dt = 3;
-	if (y < -20 && !Abs(x*5/y)) min_dt=1;
+	if (y < -20 && !Abs(x*5/y)) min_dt=2;
 
 	// get global drawing coordinates
 	x += GetX(); y += GetY();
