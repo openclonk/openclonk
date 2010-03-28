@@ -18,14 +18,15 @@
  * See clonk_trademark_license.txt for full license.
  */
 
-#ifdef __APPLE__ 
-namespace MacUtility {
+#ifdef __APPLE__
+namespace MacUtility
+{
 	bool isGerman();
 	bool sendFileToTrash(const char* szFilename);
 	void restart(char*[]);
 	int keyRepeatDelay(int defaultValue);
 	int keyRepeatInterval(int defaultValue);
-	
+
 	void ensureWindowInFront();
 }
 #endif

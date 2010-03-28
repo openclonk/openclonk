@@ -52,13 +52,13 @@ struct StdDefaultAdapt
 		try
 		{
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
-			if(!pComp->ValueSafe(rValue))
+			if (!pComp->ValueSafe(rValue))
 				rValue = rDefault;
 #else
 			pComp->Value(rValue);
 #endif
 		}
-		catch(StdCompiler::NotFoundException *pEx)
+		catch (StdCompiler::NotFoundException *pEx)
 		{
 			rValue = rDefault;
 			delete pEx;
@@ -67,7 +67,7 @@ struct StdDefaultAdapt
 	ALLOW_TEMP_TO_REF(StdDefaultAdapt)
 };
 template <class T, class D>
-	inline StdDefaultAdapt<T, D> mkDefaultAdapt(T RREF rValue, const D &rDefault) { return StdDefaultAdapt<T, D>(rValue, rDefault); }
+inline StdDefaultAdapt<T, D> mkDefaultAdapt(T RREF rValue, const D &rDefault) { return StdDefaultAdapt<T, D>(rValue, rDefault); }
 
 // * Naming Adaptor
 // Embeds a value into a named section, failsafe
@@ -84,7 +84,7 @@ struct StdNamingAdapt
 		{
 			pComp->Value(rValue);
 		}
-		catch(StdCompiler::Exception *)
+		catch (StdCompiler::Exception *)
 		{
 			pComp->NameEnd(true);
 			throw;
@@ -96,7 +96,7 @@ struct StdNamingAdapt
 	ALLOW_TEMP_TO_REF(StdNamingAdapt)
 };
 template <class T>
-	inline StdNamingAdapt<T> mkNamingAdapt(T RREF rValue, const char *szName) { return StdNamingAdapt<T>(rValue, szName); }
+inline StdNamingAdapt<T> mkNamingAdapt(T RREF rValue, const char *szName) { return StdNamingAdapt<T>(rValue, szName); }
 
 // * Naming Adaptor (defaulting)
 // Embeds a value into a named section, sets default on fail
@@ -108,22 +108,22 @@ struct StdNamingDefaultAdapt
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		// Default check
-		if(pComp->hasNaming() && pComp->isDecompiler() && rValue == rDefault && !fStoreDefault)
+		if (pComp->hasNaming() && pComp->isDecompiler() && rValue == rDefault && !fStoreDefault)
 		{
 			if (pComp->Default(szName)) return;
 		}
 		try
 		{
 			// Search named section, set default if not found
-			if(pComp->Name(szName))
-				{
+			if (pComp->Name(szName))
+			{
 				if (fPrefillDefault && pComp->isCompiler()) rValue = rDefault; // default prefill if desired
 				pComp->Value(mkDefaultAdapt(rValue, rDefault));
-				}
+			}
 			else
 				rValue = rDefault;
 		}
-		catch(StdCompiler::Exception *)
+		catch (StdCompiler::Exception *)
 		{
 			pComp->NameEnd(true);
 			throw;
@@ -134,7 +134,7 @@ struct StdNamingDefaultAdapt
 	ALLOW_TEMP_TO_REF(StdNamingDefaultAdapt)
 };
 template <class T, class D>
-	inline StdNamingDefaultAdapt<T,D> mkNamingAdapt(T RREF rValue, const char *szName, const D &rDefault, bool fPrefillDefault=false, bool fStoreDefault=false) { return StdNamingDefaultAdapt<T,D>(rValue, szName, rDefault, fPrefillDefault, fStoreDefault); }
+inline StdNamingDefaultAdapt<T,D> mkNamingAdapt(T RREF rValue, const char *szName, const D &rDefault, bool fPrefillDefault=false, bool fStoreDefault=false) { return StdNamingDefaultAdapt<T,D>(rValue, szName, rDefault, fPrefillDefault, fStoreDefault); }
 
 // * Decompiling Adaptor
 // Allows to use const objects if the compiler won't change the targets
@@ -151,7 +151,7 @@ struct StdDecompileAdapt
 	ALLOW_TEMP_TO_REF(StdDecompileAdapt)
 };
 template <class T>
-	inline StdDecompileAdapt<T> mkDecompileAdapt(const T &rValue) { return StdDecompileAdapt<T>(rValue); }
+inline StdDecompileAdapt<T> mkDecompileAdapt(const T &rValue) { return StdDecompileAdapt<T>(rValue); }
 
 // * Runtime value Adaptor
 // Allows the C4ValueSetCompiler to set the value
@@ -171,14 +171,14 @@ struct StdRuntimeValueAdapt
 	ALLOW_TEMP_TO_REF(StdRuntimeValueAdapt)
 };
 template <class T>
-	inline StdRuntimeValueAdapt<T> mkRuntimeValueAdapt(T RREF rValue) { return StdRuntimeValueAdapt<T>(rValue); }
+inline StdRuntimeValueAdapt<T> mkRuntimeValueAdapt(T RREF rValue) { return StdRuntimeValueAdapt<T>(rValue); }
 
 // * String adaptor
 struct StdStringAdapt
 {
 	char *szString; int iMaxLength; StdCompiler::RawCompileType eRawType;
 	StdStringAdapt(char *szString, int iMaxLength, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
-		: szString(szString), iMaxLength(iMaxLength), eRawType(eRawType) { }
+			: szString(szString), iMaxLength(iMaxLength), eRawType(eRawType) { }
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		pComp->String(szString, iMaxLength, eRawType);
@@ -188,7 +188,7 @@ struct StdStringAdapt
 	ALLOW_TEMP_TO_REF(StdStringAdapt)
 };
 inline StdStringAdapt mkStringAdapt(char *szString, int iMaxLength, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
-	{ return StdStringAdapt(szString, iMaxLength, eRawType); }
+{ return StdStringAdapt(szString, iMaxLength, eRawType); }
 #define mkStringAdaptM(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1)
 #define mkStringAdaptMA(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_All)
 #define mkStringAdaptMI(szString) mkStringAdapt(szString, (sizeof(szString) / sizeof(*szString)) - 1, StdCompiler::RCT_Idtf)
@@ -199,7 +199,7 @@ struct StdRawAdapt
 {
 	void *pData; size_t iSize; StdCompiler::RawCompileType eRawType;
 	StdRawAdapt(void *pData, size_t iSize, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
-		: pData(pData), iSize(iSize), eRawType(eRawType) { }
+			: pData(pData), iSize(iSize), eRawType(eRawType) { }
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
 		pComp->Raw(pData, iSize, eRawType);
@@ -208,7 +208,7 @@ struct StdRawAdapt
 	inline StdRawAdapt &operator = (const void *pDefault) { memcpy(pData, pDefault, iSize); return *this; }
 };
 inline StdRawAdapt mkRawAdapt(void *pData, size_t iSize, StdCompiler::RawCompileType eRawType = StdCompiler::RCT_Escaped)
-	{ return StdRawAdapt(pData, iSize, eRawType); }
+{ return StdRawAdapt(pData, iSize, eRawType); }
 #define mkRawAdaptM(X) mkRawAdapt(&X, sizeof(X))
 
 // * Integer Adaptor
@@ -271,51 +271,51 @@ template <class T, class M = _IdFuncClass<T> >
 struct StdArrayAdapt
 {
 	StdArrayAdapt(T *pArray, int iSize, M map = M())
-		: pArray(pArray), iSize(iSize), map(map)
+			: pArray(pArray), iSize(iSize), map(map)
 	{ }
 	T *pArray; int iSize; M map;
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
-		for(int i = 0; i < iSize; i++)
+		for (int i = 0; i < iSize; i++)
 		{
-			if(i) pComp->Seperator(StdCompiler::SEP_SEP);
+			if (i) pComp->Seperator(StdCompiler::SEP_SEP);
 			pComp->Value(map(pArray[i]));
 		}
 	}
 	// Operators for default checking/setting
 	inline bool operator == (const T &rDefault) const
 	{
-		for(int i = 0; i < iSize; i++)
-			if(pArray[i] != rDefault)
+		for (int i = 0; i < iSize; i++)
+			if (pArray[i] != rDefault)
 				return false;
 		return true;
 	}
 	inline StdArrayAdapt &operator = (const T &rDefault)
 	{
-		for(int i = 0; i < iSize; i++)
+		for (int i = 0; i < iSize; i++)
 			pArray[i] = rDefault;
 		return *this;
 	}
 	inline bool operator == (const T *pDefaults) const
 	{
-		for(int i = 0; i < iSize; i++)
-			if(pArray[i] != pDefaults[i])
+		for (int i = 0; i < iSize; i++)
+			if (pArray[i] != pDefaults[i])
 				return false;
 		return true;
 	}
 	inline StdArrayAdapt &operator = (const T *pDefaults)
 	{
-		for(int i = 0; i < iSize; i++)
+		for (int i = 0; i < iSize; i++)
 			pArray[i] = pDefaults[i];
 		return *this;
 	}
 	ALLOW_TEMP_TO_REF(StdArrayAdapt)
 };
 template <class T>
-	inline StdArrayAdapt<T> mkArrayAdapt(T *pArray, int iSize) { return StdArrayAdapt<T>(pArray, iSize); }
+inline StdArrayAdapt<T> mkArrayAdapt(T *pArray, int iSize) { return StdArrayAdapt<T>(pArray, iSize); }
 #define mkArrayAdaptM(A) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)))
 template <class T, class M>
-	inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M map) { return StdArrayAdapt<T, M>(pArray, iSize, map); }
+inline StdArrayAdapt<T, M> mkArrayAdaptMap(T *pArray, int iSize, M map) { return StdArrayAdapt<T, M>(pArray, iSize, map); }
 #define mkArrayAdaptMapM(A, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), M)
 
 // * Array Adaptor (defaulting)
@@ -324,7 +324,7 @@ template <class T, class D, class M = _IdFuncClass<T> >
 struct StdArrayDefaultAdapt
 {
 	StdArrayDefaultAdapt(T *pArray, size_t iSize, const D &rDefault, const M &map = M())
-		: pArray(pArray), iSize(iSize), rDefault(rDefault), map(map)
+			: pArray(pArray), iSize(iSize), rDefault(rDefault), map(map)
 	{ }
 	T *pArray; size_t iSize; const D &rDefault; const M map;
 	inline void CompileFunc(StdCompiler *pComp) const
@@ -332,43 +332,43 @@ struct StdArrayDefaultAdapt
 		size_t i, iWrite = iSize;
 		bool fCompiler = pComp->isCompiler();
 		// Decompiling: Omit defaults
-		if(!fCompiler && pComp->hasNaming())
-			while(iWrite > 0 && pArray[iWrite - 1] == rDefault)
+		if (!fCompiler && pComp->hasNaming())
+			while (iWrite > 0 && pArray[iWrite - 1] == rDefault)
 				iWrite--;
 		// Read/write values
-		for(i = 0; i < iWrite; i++)
+		for (i = 0; i < iWrite; i++)
 		{
 			// Seperator?
-			if(i) if(!pComp->Seperator(StdCompiler::SEP_SEP)) break;
+			if (i) if (!pComp->Seperator(StdCompiler::SEP_SEP)) break;
 			// Expect a value. Default if not found.
 			pComp->Value(mkDefaultAdapt(map(pArray[i]), rDefault));
 		}
 		// Fill rest of array
-		if(fCompiler)
-			for(; i < iSize; i++)
+		if (fCompiler)
+			for (; i < iSize; i++)
 				pArray[i] = rDefault;
 	}
 	// Additional defaulting (whole array)
 	inline bool operator == (const T *pDefaults) const
 	{
-		for(size_t i = 0; i < iSize; i++)
-			if(pArray[i] != pDefaults[i])
+		for (size_t i = 0; i < iSize; i++)
+			if (pArray[i] != pDefaults[i])
 				return false;
 		return true;
 	}
 	inline StdArrayDefaultAdapt &operator = (const T *pDefaults)
 	{
-		for(size_t i = 0; i < iSize; i++)
+		for (size_t i = 0; i < iSize; i++)
 			pArray[i] = pDefaults[i];
 		return *this;
 	}
 	ALLOW_TEMP_TO_REF(StdArrayDefaultAdapt)
 };
 template <class T, class D>
-	inline StdArrayDefaultAdapt<T, D> mkArrayAdapt(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultAdapt<T, D>(pArray, iSize, rDefault); }
+inline StdArrayDefaultAdapt<T, D> mkArrayAdapt(T *pArray, size_t iSize, const D &rDefault) { return StdArrayDefaultAdapt<T, D>(pArray, iSize, rDefault); }
 #define mkArrayAdaptDM(A, D) mkArrayAdapt(A, sizeof(A) / sizeof(*(A)), D)
 template <class T, class D, class M>
-	inline StdArrayDefaultAdapt<T, D, M> mkArrayAdaptMap(T *pArray, size_t iSize, const D &rDefault, M map) { return StdArrayDefaultAdapt<T, D, M>(pArray, iSize, rDefault, map); }
+inline StdArrayDefaultAdapt<T, D, M> mkArrayAdaptMap(T *pArray, size_t iSize, const D &rDefault, M map) { return StdArrayDefaultAdapt<T, D, M>(pArray, iSize, rDefault, map); }
 #define mkArrayAdaptMapDM(A, D, M) mkArrayAdaptMap(A, sizeof(A) / sizeof(*(A)), D, M)
 
 // * Insertion Adaptor
@@ -377,19 +377,19 @@ template <class T, class I>
 struct StdInsertAdapt
 {
 	StdInsertAdapt(T &rObj, I &rIns, bool fBefore = true)
-		: rObj(rObj), rIns(rIns), fBefore(fBefore)
+			: rObj(rObj), rIns(rIns), fBefore(fBefore)
 	{ }
 	T &rObj; I &rIns; bool fBefore;
 	void CompileFunc(StdCompiler *pComp) const
 	{
-		if(fBefore) pComp->Value(rIns);
+		if (fBefore) pComp->Value(rIns);
 		pComp->Value(rObj);
-		if(!fBefore) pComp->Value(rIns);
+		if (!fBefore) pComp->Value(rIns);
 	}
 	ALLOW_TEMP_TO_REF(StdInsertAdapt)
 };
 template <class T, class I>
-	inline StdInsertAdapt<T, I> mkInsertAdapt(T RREF rObj, I RREF rIns, bool fBefore = true) { return StdInsertAdapt<T,I>(rObj, rIns, fBefore); }
+inline StdInsertAdapt<T, I> mkInsertAdapt(T RREF rObj, I RREF rIns, bool fBefore = true) { return StdInsertAdapt<T,I>(rObj, rIns, fBefore); }
 
 // * Parameter Adaptor
 // Specify a second parameter for the CompileFunc
@@ -412,7 +412,7 @@ struct StdParameterAdapt
 	ALLOW_TEMP_TO_REF(StdParameterAdapt)
 };
 template <class T, class P>
-	inline StdParameterAdapt<T, P> mkParAdapt(T &rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
+inline StdParameterAdapt<T, P> mkParAdapt(T &rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
 
 // * Parameter Adaptor 2
 // Specify a second and a third parameter for the CompileFunc
@@ -431,7 +431,7 @@ struct StdParameter2Adapt
 	ALLOW_TEMP_TO_REF(StdParameter2Adapt)
 };
 template <class T, class P1, class P2>
-	inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const P2 &rPar2) { return StdParameter2Adapt<T, P1, P2>(rObj, rPar1, rPar2); }
+inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const P2 &rPar2) { return StdParameter2Adapt<T, P1, P2>(rObj, rPar1, rPar2); }
 
 
 // * Store pointer (contents)
@@ -440,44 +440,44 @@ template <class T>
 struct StdPtrAdapt
 {
 	StdPtrAdapt(T *&rpObj, bool fAllowNull = true, const char *szNaming = "Data")
-		: rpObj(rpObj), fAllowNull(fAllowNull), szNaming(szNaming)
+			: rpObj(rpObj), fAllowNull(fAllowNull), szNaming(szNaming)
 	{ }
 	T *&rpObj; bool fAllowNull; const char *szNaming;
 	void CompileFunc(StdCompiler *pComp) const
 	{
 		bool fCompiler = pComp->isCompiler(),
-				 fNaming = pComp->hasNaming();
+		                 fNaming = pComp->hasNaming();
 		// Compiling? Clear object before
-		if(fCompiler) { delete rpObj; rpObj = NULL; }
+		if (fCompiler) { delete rpObj; rpObj = NULL; }
 		// Null checks - different with naming support.
-		if(fAllowNull)
-			if(fNaming)
+		if (fAllowNull)
+			if (fNaming)
 			{
 				// Null check: just omit when writing
-				if(!fCompiler && !rpObj) return;
+				if (!fCompiler && !rpObj) return;
 				// Set up naming
-				if(!pComp->Name(szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
+				if (!pComp->Name(szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
 			}
 			else
 			{
 				bool fNull = !! rpObj;
 				pComp->Value(fNull);
 				// Null? Nothing further to do
-				if(fNull) return;
+				if (fNull) return;
 			}
-		else if(!fCompiler)
+		else if (!fCompiler)
 			assert(rpObj);
 		// Compile value
-		if(fCompiler)
-			{
+		if (fCompiler)
+		{
 			T *rpnObj;
 			CompileNewFunc(rpnObj, pComp);
 			rpObj = rpnObj;
-			}
+		}
 		else
 			pComp->Value(mkDecompileAdapt(*rpObj));
 		// Close naming
-		if(fAllowNull && fNaming) pComp->NameEnd();
+		if (fAllowNull && fNaming) pComp->NameEnd();
 	}
 	// Operators for default checking/setting
 	inline bool operator == (const T &nValue) const { return rpObj && *rpObj == nValue; }
@@ -487,11 +487,11 @@ struct StdPtrAdapt
 	ALLOW_TEMP_TO_REF(StdPtrAdapt)
 };
 template <class T>
-	inline StdPtrAdapt<T> mkPtrAdapt(T *&rpObj, bool fAllowNull = true) { return StdPtrAdapt<T>(rpObj, fAllowNull); }
+inline StdPtrAdapt<T> mkPtrAdapt(T *&rpObj, bool fAllowNull = true) { return StdPtrAdapt<T>(rpObj, fAllowNull); }
 template <class T>
-	inline StdPtrAdapt<T> mkNamingPtrAdapt(T *&rpObj, const char *szNaming) { return StdPtrAdapt<T>(rpObj, true, szNaming); }
+inline StdPtrAdapt<T> mkNamingPtrAdapt(T *&rpObj, const char *szNaming) { return StdPtrAdapt<T>(rpObj, true, szNaming); }
 template <class T>
-	inline StdPtrAdapt<T> mkPtrAdaptNoNull(T *&rpObj) { return mkPtrAdapt<T>(rpObj, false); }
+inline StdPtrAdapt<T> mkPtrAdaptNoNull(T *&rpObj) { return mkPtrAdapt<T>(rpObj, false); }
 
 // * Adaptor for STL containers
 // Writes a comma-seperated list for compilers that support it. Otherwise, the size is calculated and safed.
@@ -500,7 +500,7 @@ template <class C>
 struct StdSTLContainerAdapt
 {
 	StdSTLContainerAdapt(C &rStruct, StdCompiler::Sep eSep = StdCompiler::SEP_SEP)
-		: rStruct(rStruct), eSep(eSep) { }
+			: rStruct(rStruct), eSep(eSep) { }
 	C &rStruct; const StdCompiler::Sep eSep;
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
@@ -509,10 +509,10 @@ struct StdSTLContainerAdapt
 		bool fCompiler = pComp->isCompiler();
 		bool fNaming = pComp->hasNaming();
 		// Decompiling?
-		if(!fCompiler)
+		if (!fCompiler)
 		{
 			// Write size (binary only)
-			if(!fNaming)
+			if (!fNaming)
 			{
 				int32_t iSize = rStruct.size();
 				pComp->Value(iSize);
@@ -530,12 +530,12 @@ struct StdSTLContainerAdapt
 			rStruct.clear();
 			// Read size (binary only)
 			uint32_t iSize;
-			if(!fNaming) pComp->Value(iSize);
+			if (!fNaming) pComp->Value(iSize);
 			// Read new
 			do
 			{
 				// No entries left to read?
-				if(!fNaming && !iSize--)
+				if (!fNaming && !iSize--)
 					break;
 				// Read entries
 				try
@@ -544,14 +544,14 @@ struct StdSTLContainerAdapt
 					pComp->Value(val);
 					rStruct.push_back(val);
 				}
-				catch(StdCompiler::NotFoundException *pEx)
+				catch (StdCompiler::NotFoundException *pEx)
 				{
 					// No value found: Stop reading loop
 					delete pEx;
 					break;
 				}
 			}
-			while(!eSep || pComp->Seperator(eSep));
+			while (!eSep || pComp->Seperator(eSep));
 		}
 	}
 	// Operators for default checking/setting
@@ -560,17 +560,17 @@ struct StdSTLContainerAdapt
 	ALLOW_TEMP_TO_REF(StdSTLContainerAdapt)
 };
 template <class C>
-	inline StdSTLContainerAdapt<C> mkSTLContainerAdapt(C &rTarget, StdCompiler::Sep eSep = StdCompiler::SEP_SEP) { return StdSTLContainerAdapt<C>(rTarget, eSep); }
+inline StdSTLContainerAdapt<C> mkSTLContainerAdapt(C &rTarget, StdCompiler::Sep eSep = StdCompiler::SEP_SEP) { return StdSTLContainerAdapt<C>(rTarget, eSep); }
 
 // Write an integer that is supposed to be small most of the time. The adaptor writes it in
 // 7-bit-pieces, bit 8 being a continuation marker: If it's set, more data is following, if not,
 // all following bits are 0.
 // Code lengths for uint32_t:
-// 0x00000000 (0)					- 0x0000007F (127)				: 1 byte
-// 0x00000080 (128)				- 0x00003FFF (16383)			: 2 byte
-// 0x00004000	(16384)			- 0x001FFFFF (2097151)		: 3 byte
-// 0x00200000	(2097152)		- 0x0FFFFFFF (268435456)	: 4 byte
-// 0x10000000	(268435456)	- 0xFFFFFFFF (4294967295) : 5 byte
+// 0x00000000 (0)         - 0x0000007F (127)        : 1 byte
+// 0x00000080 (128)       - 0x00003FFF (16383)      : 2 byte
+// 0x00004000 (16384)     - 0x001FFFFF (2097151)    : 3 byte
+// 0x00200000 (2097152)   - 0x0FFFFFFF (268435456)  : 4 byte
+// 0x10000000 (268435456) - 0xFFFFFFFF (4294967295) : 5 byte
 // So this sort of packing is always useful when the integer in question is almost impossible to
 // grow bigger than 2,097,151.
 template <class T>
@@ -588,21 +588,21 @@ struct StdIntPackAdapt
 	void CompileFunc(StdCompiler *pComp) const
 	{
 		// simply write for textual compilers
-		if(pComp->hasNaming())
+		if (pComp->hasNaming())
 		{
 			pComp->Value(rVal);
 			return;
 		}
 		T val; uint8_t tmp;
 		// writing?
-		if(!pComp->isCompiler())
+		if (!pComp->isCompiler())
 		{
 			val = rVal;
-			for(;;)
+			for (;;)
 			{
 				tmp = uint8_t(clearUpper(val));
 				// last byte?
-				if(clearUpper(val) == val)
+				if (clearUpper(val) == val)
 					break;
 				// write byte
 				tmp ^= 0x80; pComp->Value(tmp);
@@ -620,7 +620,7 @@ struct StdIntPackAdapt
 			val = clearUpper(T(tmp));
 			// read remaining bytes
 			int i = 7; T data = val;
-			while( uint8_t(data) != tmp )
+			while ( uint8_t(data) != tmp )
 			{
 				// read byte
 				pComp->Value(tmp);
@@ -639,13 +639,14 @@ struct StdIntPackAdapt
 	ALLOW_TEMP_TO_REF(StdIntPackAdapt)
 };
 template <class T>
-	StdIntPackAdapt<T> mkIntPackAdapt(T &rVal) { return StdIntPackAdapt<T>(rVal); }
+StdIntPackAdapt<T> mkIntPackAdapt(T &rVal) { return StdIntPackAdapt<T>(rVal); }
 
 template <class T>
-	struct StdEnumEntry {
-		const char *Name;
-		T Val;
-	};
+struct StdEnumEntry
+{
+	const char *Name;
+	T Val;
+};
 
 // Enumeration: For text compilers, write a given name for a value.
 // For everything else, just write an integer of given type.
@@ -660,25 +661,25 @@ struct StdEnumAdapt
 	void CompileFunc(StdCompiler *pComp) const
 	{
 		// Write as int
-		if(!pComp->isVerbose())
+		if (!pComp->isVerbose())
 		{
 			pComp->Value(mkIntAdaptT<int_t>(rVal));
 			return;
 		}
 		// writing?
-		if(!pComp->isCompiler())
+		if (!pComp->isCompiler())
 		{
 			// Find value
 			const Entry *pName = pNames;
-			for(; pName->Name; pName++)
-				if(pName->Val == rVal)
+			for (; pName->Name; pName++)
+				if (pName->Val == rVal)
 				{
 					// Put name
 					pComp->String(const_cast<char **>(&pName->Name), StdCompiler::RCT_Idtf);
 					break;
 				}
 			// No name found?
-			if(!pName->Name)
+			if (!pName->Name)
 				// Put value as integer
 				pComp->Value(mkIntAdaptT<int_t>(rVal));
 		}
@@ -688,7 +689,7 @@ struct StdEnumAdapt
 			int_t val = 0;
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
 			// Try to read as number
-			if(!pComp->ValueSafe(val))
+			if (!pComp->ValueSafe(val))
 			{
 				rVal = T(val);
 #else
@@ -698,7 +699,7 @@ struct StdEnumAdapt
 				pComp->Value(val);
 				rVal = T(val);
 			}
-			catch(StdCompiler::NotFoundException *pEx)
+			catch (StdCompiler::NotFoundException *pEx)
 			{
 				delete pEx;
 #endif
@@ -707,14 +708,14 @@ struct StdEnumAdapt
 				pComp->Value(mkParAdapt(Name, StdCompiler::RCT_Idtf));
 				// Search in name list
 				const Entry *pName = pNames;
-				for(; pName->Name; pName++)
-					if(Name == pName->Name)
+				for (; pName->Name; pName++)
+					if (Name == pName->Name)
 					{
 						rVal = pName->Val;
 						break;
 					}
 				// Not found? Warn
-				if(!pName->Name)
+				if (!pName->Name)
 					pComp->Warn("Unknown bit name: %s", Name.getData());
 			}
 		}
@@ -726,15 +727,16 @@ struct StdEnumAdapt
 	ALLOW_TEMP_TO_REF(StdEnumAdapt)
 };
 template <class T, class int_t>
-	StdEnumAdapt<T, int_t> mkEnumAdapt(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
+StdEnumAdapt<T, int_t> mkEnumAdapt(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
 template <class int_t, class T>
-	StdEnumAdapt<T, int_t> mkEnumAdaptT(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
+StdEnumAdapt<T, int_t> mkEnumAdaptT(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
 
 template <class T>
-	struct StdBitfieldEntry {
-		const char *Name;
-		T Val;
-	};
+struct StdBitfieldEntry
+{
+	const char *Name;
+	T Val;
+};
 
 // Convert a bitfield into/from something like "foo | bar | baz", where "foo", "bar" and "baz" are given constants.
 template <class T>
@@ -748,22 +750,22 @@ struct StdBitfieldAdapt
 	void CompileFunc(StdCompiler *pComp) const
 	{
 		// simply write for non-verbose compilers
-		if(!pComp->isVerbose())
+		if (!pComp->isVerbose())
 		{
 			pComp->Value(rVal);
 			return;
 		}
 		// writing?
-		if(!pComp->isCompiler())
+		if (!pComp->isCompiler())
 		{
 			T val = rVal;
 			// Write until value is comsumed
 			bool fFirst = true;
-			for(const Entry *pName = pNames; val && pName->Name; pName++)
-				if((pName->Val & val) == pName->Val)
+			for (const Entry *pName = pNames; val && pName->Name; pName++)
+				if ((pName->Val & val) == pName->Val)
 				{
 					// Put "|"
-					if(!fFirst) pComp->Seperator(StdCompiler::SEP_VLINE);
+					if (!fFirst) pComp->Seperator(StdCompiler::SEP_VLINE);
 					// Put name
 					pComp->String(const_cast<char **>(&pName->Name), StdCompiler::RCT_Idtf);
 					fFirst = false;
@@ -771,10 +773,10 @@ struct StdBitfieldAdapt
 					val &= ~pName->Val;
 				}
 			// Anything left is written as number
-			if(val)
+			if (val)
 			{
 				// Put "|"
-				if(!fFirst) pComp->Seperator(StdCompiler::SEP_VLINE);
+				if (!fFirst) pComp->Seperator(StdCompiler::SEP_VLINE);
 				// Put value
 				pComp->Value(val);
 			}
@@ -789,7 +791,7 @@ struct StdBitfieldAdapt
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
 				T tmp;
 				// Try to read as number
-				if(pComp->ValueSafe(tmp))
+				if (pComp->ValueSafe(tmp))
 					val |= tmp;
 				else
 				{
@@ -801,7 +803,7 @@ struct StdBitfieldAdapt
 					pComp->Value(tmp);
 					val |= tmp;
 				}
-				catch(StdCompiler::NotFoundException *pEx)
+				catch (StdCompiler::NotFoundException *pEx)
 				{
 					delete pEx;
 #endif
@@ -810,18 +812,18 @@ struct StdBitfieldAdapt
 					pComp->Value(mkParAdapt(Name, StdCompiler::RCT_Idtf));
 					// Search in name list
 					const Entry *pName = pNames;
-					for(; pName->Name; pName++)
-						if(Name == pName->Name)
+					for (; pName->Name; pName++)
+						if (Name == pName->Name)
 						{
 							val |= pName->Val;
 							break;
 						}
 					// Not found? Warn
-					if(!pName->Name)
+					if (!pName->Name)
 						pComp->Warn("Unknown bit name: %s", Name.getData());
 				}
 				// Expect seperation
-			} while(pComp->Seperator(StdCompiler::SEP_VLINE));
+			} while (pComp->Seperator(StdCompiler::SEP_VLINE));
 			// Write value back
 			rVal = val;
 		}
@@ -833,7 +835,7 @@ struct StdBitfieldAdapt
 	ALLOW_TEMP_TO_REF(StdBitfieldAdapt)
 };
 template <class T>
-	StdBitfieldAdapt<T> mkBitfieldAdapt(T &rVal, const StdBitfieldEntry<T> *pNames) { return StdBitfieldAdapt<T>(rVal, pNames); }
+StdBitfieldAdapt<T> mkBitfieldAdapt(T &rVal, const StdBitfieldEntry<T> *pNames) { return StdBitfieldAdapt<T>(rVal, pNames); }
 
 // * Name count adapter
 // For compilers without name support, this just compiles the given value. Otherwise, the count
@@ -846,9 +848,9 @@ struct StdNamingCountAdapt
 	StdNamingCountAdapt(int_t &iCount, const char *szName) : iCount(iCount), szName(szName) { }
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
-		if(pComp->hasNaming())
+		if (pComp->hasNaming())
 		{
-			if(pComp->isCompiler())
+			if (pComp->isCompiler())
 				iCount = pComp->NameCount(szName);
 		}
 		else
@@ -857,7 +859,7 @@ struct StdNamingCountAdapt
 	ALLOW_TEMP_TO_REF(StdNamingCountAdapt)
 };
 template <class int_t>
-	inline StdNamingCountAdapt<int_t> mkNamingCountAdapt(int_t &iCount, const char *szName) { return StdNamingCountAdapt<int_t>(iCount, szName); }
+inline StdNamingCountAdapt<int_t> mkNamingCountAdapt(int_t &iCount, const char *szName) { return StdNamingCountAdapt<int_t>(iCount, szName); }
 
 // * Hex adapter
 // Writes raw binary data in hexadecimal
@@ -868,18 +870,18 @@ public:
 	StdHexAdapt(void *pData, size_t iSize) : pData(pData), iSize(iSize) { }
 	inline void CompileFunc(StdCompiler *pComp) const
 	{
-		if(!pComp->isVerbose())
+		if (!pComp->isVerbose())
 			pComp->Raw(pData, iSize);
 		char szData[2+1]; bool fCompiler = pComp->isCompiler();
-		for(size_t i = 0; i < iSize; i++)
+		for (size_t i = 0; i < iSize; i++)
 		{
 			uint8_t *pByte = reinterpret_cast<uint8_t *>(pData) + i;
-			if(!fCompiler) sprintf(szData, "%02x", *pByte);
+			if (!fCompiler) sprintf(szData, "%02x", *pByte);
 			pComp->String(szData, 2, StdCompiler::RCT_Idtf);
-			if(fCompiler)
+			if (fCompiler)
 			{
 				unsigned int b;
-				if(sscanf(szData, "%02x", &b) != 1)
+				if (sscanf(szData, "%02x", &b) != 1)
 					pComp->excNotFound(i ? "hexadecimal data: bytes missing!" : "hexadecimal data missing!");
 				*pByte = b;
 			}
@@ -889,7 +891,7 @@ public:
 };
 inline StdHexAdapt mkHexAdapt(void *pData, size_t iSize) { return StdHexAdapt(pData, iSize); }
 template <class T>
-	inline StdHexAdapt mkHexAdapt(T &rData) { return StdHexAdapt(&rData, sizeof(rData)); }
+inline StdHexAdapt mkHexAdapt(T &rData) { return StdHexAdapt(&rData, sizeof(rData)); }
 
 
 #endif //STDADAPTORS_H

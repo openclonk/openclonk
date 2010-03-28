@@ -42,230 +42,230 @@ enum C4LeagueAction
 	C4LA_PlrAuthCheck,// [host] Player authentication check
 
 	C4LA_RefQuery,  // [client] Query reference list
-	C4LA_PlrAuth,		// [client] Player authentication request
+	C4LA_PlrAuth,   // [client] Player authentication request
 
 	C4LA_ReportDisconnect // [both] Sent by host and client when a client is disconnected irregularly
 };
 
 class C4LeagueRequestHead
-	{
-	public:
-		C4LeagueRequestHead(C4LeagueAction eAction, const char *szCSID = "", const char *szAUID = "")
+{
+public:
+	C4LeagueRequestHead(C4LeagueAction eAction, const char *szCSID = "", const char *szAUID = "")
 			: eAction(eAction), CSID(szCSID), AUID(szAUID)
-		{ }
+	{ }
 
-	private:
-		C4LeagueAction eAction;
-		StdCopyStrBuf CSID;
-		StdCopyStrBuf AUID;
+private:
+	C4LeagueAction eAction;
+	StdCopyStrBuf CSID;
+	StdCopyStrBuf AUID;
 
-		// Auth
-		StdCopyStrBuf Account;
-		StdCopyStrBuf Password;
-		StdCopyStrBuf NewAccount;
-		StdCopyStrBuf NewPassword;
+	// Auth
+	StdCopyStrBuf Account;
+	StdCopyStrBuf Password;
+	StdCopyStrBuf NewAccount;
+	StdCopyStrBuf NewPassword;
 
-	public:
-		void SetAuth(const char *szAccount, const char *szPassword);
-		void SetNewAccount(const char *szNewAccount);
-		void SetNewPassword(const char *szNewPassword);
+public:
+	void SetAuth(const char *szAccount, const char *szPassword);
+	void SetNewAccount(const char *szNewAccount);
+	void SetNewPassword(const char *szNewPassword);
 
-		void CompileFunc(StdCompiler *pComp);
-	};
+	void CompileFunc(StdCompiler *pComp);
+};
 
 class C4LeagueReportDisconnectHead : public C4LeagueRequestHead
-	{
-	private:
-		C4LeagueDisconnectReason eReason;
-	public:
-		C4LeagueReportDisconnectHead(const char *szCSID, C4LeagueDisconnectReason eReason) : C4LeagueRequestHead(C4LA_ReportDisconnect, szCSID, NULL), eReason(eReason) {}
+{
+private:
+	C4LeagueDisconnectReason eReason;
+public:
+	C4LeagueReportDisconnectHead(const char *szCSID, C4LeagueDisconnectReason eReason) : C4LeagueRequestHead(C4LA_ReportDisconnect, szCSID, NULL), eReason(eReason) {}
 
-	public:
-		void CompileFunc(StdCompiler *pComp);
-	};
+public:
+	void CompileFunc(StdCompiler *pComp);
+};
 
 class C4LeagueRequestHeadEnd : public C4LeagueRequestHead
-	{
-	public:
-		C4LeagueRequestHeadEnd(C4LeagueAction eAction, const char *szCSID, const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL)
+{
+public:
+	C4LeagueRequestHeadEnd(C4LeagueAction eAction, const char *szCSID, const char *szRecordName = NULL, const BYTE *pRecordSHA = NULL)
 			: C4LeagueRequestHead(eAction, szCSID), RecordName(szRecordName)
-			{
-			if(pRecordSHA)
-				memcpy(RecordSHA, pRecordSHA, SHA_DIGEST_LENGTH);
-			}
+	{
+		if (pRecordSHA)
+			memcpy(RecordSHA, pRecordSHA, SHA_DIGEST_LENGTH);
+	}
 
-	private:
-		StdCopyStrBuf RecordName;
-		uint8_t RecordSHA[SHA_DIGEST_LENGTH];
+private:
+	StdCopyStrBuf RecordName;
+	uint8_t RecordSHA[SHA_DIGEST_LENGTH];
 
-	public:
-		void CompileFunc(StdCompiler *pComp);
-	};
+public:
+	void CompileFunc(StdCompiler *pComp);
+};
 
 class C4LeagueResponseHead
-	{
-	public:
-		C4LeagueResponseHead() { }
+{
+public:
+	C4LeagueResponseHead() { }
 
-	private:
-		StdCopyStrBuf Status;
-		StdCopyStrBuf CSID;
-		StdCopyStrBuf Message;
+private:
+	StdCopyStrBuf Status;
+	StdCopyStrBuf CSID;
+	StdCopyStrBuf Message;
 
-		// Auth
-		StdCopyStrBuf Account;
-		StdCopyStrBuf AUID;
-		StdCopyStrBuf FBID;
+	// Auth
+	StdCopyStrBuf Account;
+	StdCopyStrBuf AUID;
+	StdCopyStrBuf FBID;
 
-	public:
-		const char *getCSID() const { return CSID.getData(); }
-		const char *getMessage() const { return Message.getData(); }
-		bool isSuccess() const { return SEqualNoCase(Status.getData(), "Success"); }
-		bool isStatusRegister() const { return SEqualNoCase(Status.getData(), "Register"); }
-		const char *getAccount() const { return Account.getData(); }
-		const char *getAUID() const { return AUID.getData(); }
-		const char *getFBID() const { return FBID.getData(); }
+public:
+	const char *getCSID() const { return CSID.getData(); }
+	const char *getMessage() const { return Message.getData(); }
+	bool isSuccess() const { return SEqualNoCase(Status.getData(), "Success"); }
+	bool isStatusRegister() const { return SEqualNoCase(Status.getData(), "Register"); }
+	const char *getAccount() const { return Account.getData(); }
+	const char *getAUID() const { return AUID.getData(); }
+	const char *getFBID() const { return FBID.getData(); }
 
-		void CompileFunc(StdCompiler *pComp);
-	};
+	void CompileFunc(StdCompiler *pComp);
+};
 
 class C4LeagueResponseHeadStart : public C4LeagueResponseHead
-	{
-	private:
-		StdCopyStrBuf League;
-		StdCopyStrBuf StreamingAddr;
-		int32_t fHaveSeed;
-		int32_t iSeed;
-		int32_t iMaxPlayers;
+{
+private:
+	StdCopyStrBuf League;
+	StdCopyStrBuf StreamingAddr;
+	int32_t fHaveSeed;
+	int32_t iSeed;
+	int32_t iMaxPlayers;
 
-	public:
-		const char *getLeague() const { return League.getData(); }
-		const char *getStreamingAddr() const { return StreamingAddr.getData(); }
-		bool haveSeed() const { return !!fHaveSeed; }
-		int32_t getSeed() const { return iSeed; }
-		int32_t getMaxPlayers() const { return iMaxPlayers; }
+public:
+	const char *getLeague() const { return League.getData(); }
+	const char *getStreamingAddr() const { return StreamingAddr.getData(); }
+	bool haveSeed() const { return !!fHaveSeed; }
+	int32_t getSeed() const { return iSeed; }
+	int32_t getMaxPlayers() const { return iMaxPlayers; }
 
-		void CompileFunc(StdCompiler *pComp);
-	};
+	void CompileFunc(StdCompiler *pComp);
+};
 
 class C4LeagueResponseHeadUpdate : public C4LeagueResponseHead
-	{
-	private:
-		StdCopyStrBuf League;
-		C4ClientPlayerInfos PlrInfos;
+{
+private:
+	StdCopyStrBuf League;
+	C4ClientPlayerInfos PlrInfos;
 
-	public:
-		const char *getLeague() const { return League.getData(); }
-		const C4ClientPlayerInfos &GetPlrInfos() const { return PlrInfos; }
+public:
+	const char *getLeague() const { return League.getData(); }
+	const C4ClientPlayerInfos &GetPlrInfos() const { return PlrInfos; }
 
-		void CompileFunc(StdCompiler *pComp);
-	};
+	void CompileFunc(StdCompiler *pComp);
+};
 
 class C4LeagueResponseHeadAuthCheck : public C4LeagueResponseHead
-	{
+{
 
-	private:
-		StdCopyStrBuf Leagues[C4NetMaxLeagues];
-		int32_t Scores[C4NetMaxLeagues];
-		int32_t Ranks[C4NetMaxLeagues];
-		int32_t RankSymbols[C4NetMaxLeagues];
-		StdCopyStrBuf ClanTag;
+private:
+	StdCopyStrBuf Leagues[C4NetMaxLeagues];
+	int32_t Scores[C4NetMaxLeagues];
+	int32_t Ranks[C4NetMaxLeagues];
+	int32_t RankSymbols[C4NetMaxLeagues];
+	StdCopyStrBuf ClanTag;
 
-	public:
-		int32_t getScore(const char *szLeague) const;
-		int32_t getRank(const char *szLeague) const;
-		int32_t getRankSymbol(const char *szLeague) const;
-		const char *getClanTag() const { return ClanTag.getData(); }
+public:
+	int32_t getScore(const char *szLeague) const;
+	int32_t getRank(const char *szLeague) const;
+	int32_t getRankSymbol(const char *szLeague) const;
+	const char *getClanTag() const { return ClanTag.getData(); }
 
-		void CompileFunc(StdCompiler *pComp);
-	};
+	void CompileFunc(StdCompiler *pComp);
+};
 
 // a linked list of all known feedback IDs, associated to player IDs
 class C4LeagueFBIDList
+{
+private:
+	struct FBIDItem
 	{
-	private:
-		struct FBIDItem
-			{
-			StdCopyStrBuf Account;
-			StdCopyStrBuf FBID;
-			FBIDItem *pNext;
-			} *pFirst;
+		StdCopyStrBuf Account;
+		StdCopyStrBuf FBID;
+		FBIDItem *pNext;
+	} *pFirst;
 
-	public:
-		C4LeagueFBIDList() : pFirst(NULL) {}
-		~C4LeagueFBIDList() { Clear(); }
-		void Clear();
-		void RemoveFBIDByAccount(const char *szAccount);
-		bool FindFBIDByAccount(const char *szAccount, StdStrBuf *pFBIDOut);
+public:
+	C4LeagueFBIDList() : pFirst(NULL) {}
+	~C4LeagueFBIDList() { Clear(); }
+	void Clear();
+	void RemoveFBIDByAccount(const char *szAccount);
+	bool FindFBIDByAccount(const char *szAccount, StdStrBuf *pFBIDOut);
 
-		void AddFBID(const char *szFBID, const char *szAccount);
-	};
+	void AddFBID(const char *szFBID, const char *szAccount);
+};
 
 class C4LeagueClient : public C4Network2RefClient
-	{
+{
 
-	private:
-		StdCopyStrBuf CSID;
-		C4LeagueAction eCurrAction;
-		C4LeagueFBIDList FBIDList;
+private:
+	StdCopyStrBuf CSID;
+	C4LeagueAction eCurrAction;
+	C4LeagueFBIDList FBIDList;
 
-	public:
-		C4LeagueClient() : C4Network2RefClient(), CSID(), eCurrAction(C4LA_None) { }
-		const char *getCSID() const { return CSID.getData(); }
-		C4LeagueAction getCurrentAction() const { return eCurrAction; }
-		void ResetCurrentAction() { eCurrAction = C4LA_None; }
+public:
+	C4LeagueClient() : C4Network2RefClient(), CSID(), eCurrAction(C4LA_None) { }
+	const char *getCSID() const { return CSID.getData(); }
+	C4LeagueAction getCurrentAction() const { return eCurrAction; }
+	void ResetCurrentAction() { eCurrAction = C4LA_None; }
 
-		// Action "Start"
-		bool Start(const C4Network2Reference &Ref);
-		bool GetStartReply(StdStrBuf *pMessage, StdStrBuf *pLeague, StdStrBuf *pStreamingAddr, int32_t *pSeed, int32_t *pMaxPlayers);
+	// Action "Start"
+	bool Start(const C4Network2Reference &Ref);
+	bool GetStartReply(StdStrBuf *pMessage, StdStrBuf *pLeague, StdStrBuf *pStreamingAddr, int32_t *pSeed, int32_t *pMaxPlayers);
 
-		// Action "Update"
-		bool Update(const C4Network2Reference &Ref);
-		bool GetUpdateReply(StdStrBuf *pMessage, C4ClientPlayerInfos *pPlayerLeagueInfos);
+	// Action "Update"
+	bool Update(const C4Network2Reference &Ref);
+	bool GetUpdateReply(StdStrBuf *pMessage, C4ClientPlayerInfos *pPlayerLeagueInfos);
 
-		// Action "End"
-		bool End(const C4Network2Reference &Ref, const char *szRecordName, const BYTE *pRecordSHA);
-		bool GetEndReply(StdStrBuf *pMessage, class C4RoundResultsPlayers *pRoundResults);
+	// Action "End"
+	bool End(const C4Network2Reference &Ref, const char *szRecordName, const BYTE *pRecordSHA);
+	bool GetEndReply(StdStrBuf *pMessage, class C4RoundResultsPlayers *pRoundResults);
 
-		// Action "Auth"
-		bool Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount = NULL, const char *szNewPassword = NULL);
-		bool GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister);
+	// Action "Auth"
+	bool Auth(const C4PlayerInfo &PlrInfo, const char *szAccount, const char *szPassword, const char *szNewAccount = NULL, const char *szNewPassword = NULL);
+	bool GetAuthReply(StdStrBuf *pMessage, StdStrBuf *pAUID, StdStrBuf *pAccount, bool *pRegister);
 
-		// Action "Join"
-		bool AuthCheck(const C4PlayerInfo &PlrInfo);
-		bool GetAuthCheckReply(StdStrBuf *pMessage, const char *szLeague, class C4PlayerInfo *pPlrInfo);
+	// Action "Join"
+	bool AuthCheck(const C4PlayerInfo &PlrInfo);
+	bool GetAuthCheckReply(StdStrBuf *pMessage, const char *szLeague, class C4PlayerInfo *pPlrInfo);
 
-		// Action "Disconnect" - sent by host and client when one or more clients are disconnected irregularly
-		bool ReportDisconnect(const C4ClientPlayerInfos &rSendPlayerFBIDs, C4LeagueDisconnectReason eReason);
-		bool GetReportDisconnectReply(StdStrBuf *pMessage);
-	};
+	// Action "Disconnect" - sent by host and client when one or more clients are disconnected irregularly
+	bool ReportDisconnect(const C4ClientPlayerInfos &rSendPlayerFBIDs, C4LeagueDisconnectReason eReason);
+	bool GetReportDisconnectReply(StdStrBuf *pMessage);
+};
 
 // dialog shown for each participating player to enter league authentication data
 class C4LeagueSignupDialog : public C4GUI::Dialog
-	{
-	private:
-		C4GUI::CheckBox *pChkPassword;
-		C4GUI::LabeledEdit *pEdtAccount, *pEdtPass, *pEdtPass2;
-		C4GUI::Button *pBtnOK, *pBtnAbort;
-		int32_t iEdtPassSpace;
-		StdStrBuf strPlayerName;
-	public:
-		C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister);
-		~C4LeagueSignupDialog() {}
+{
+private:
+	C4GUI::CheckBox *pChkPassword;
+	C4GUI::LabeledEdit *pEdtAccount, *pEdtPass, *pEdtPass2;
+	C4GUI::Button *pBtnOK, *pBtnAbort;
+	int32_t iEdtPassSpace;
+	StdStrBuf strPlayerName;
+public:
+	C4LeagueSignupDialog(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, const char *szAccountPref, const char *szPassPref, bool fWarnThirdParty, bool fRegister);
+	~C4LeagueSignupDialog() {}
 
-		const char *GetAccount() { return pEdtAccount->GetText(); }
-		bool HasPass() { return !pChkPassword || pChkPassword->GetChecked(); }
-		const char *GetPass() { return pEdtPass->GetText(); }
+	const char *GetAccount() { return pEdtAccount->GetText(); }
+	bool HasPass() { return !pChkPassword || pChkPassword->GetChecked(); }
+	const char *GetPass() { return pEdtPass->GetText(); }
 
-		// check for errors (overridden)
-		virtual void UserClose(bool fOK);
+	// check for errors (overridden)
+	virtual void UserClose(bool fOK);
 
-		// show modal league dialog to query password for player; return
-		static bool ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psAccount, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister);
+	// show modal league dialog to query password for player; return
+	static bool ShowModal(const char *szPlayerName, const char *szLeagueName, const char *szLeagueServerName, StdStrBuf *psAccount, StdStrBuf *psPass, bool fWarnThirdParty, bool fRegister);
 
-	private:
-		void OnChkPassword();
-	};
+private:
+	void OnChkPassword();
+};
 
 
 #endif // C4LEAGUE_H_INCLUDED

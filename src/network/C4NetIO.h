@@ -77,28 +77,28 @@ public:
 
 	// used to explicitly callback to a specific class
 	template <class T>
-		class CBProxy : public CBClass
-		{
-			T *pTarget;
-		public:
-			CBProxy *operator () (T *pnTarget) { pTarget = pnTarget; return this; }
-			virtual bool OnConn(const addr_t &AddrPeer, const addr_t &AddrConnect, const addr_t *pOwnAddr, C4NetIO *pNetIO)
-				{ return pTarget->T::OnConn(AddrPeer, AddrConnect, pOwnAddr, pNetIO); }
-			virtual void OnDisconn(const addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason)
-				{ pTarget->T::OnDisconn(AddrPeer, pNetIO, szReason); }
-			virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
-				{ pTarget->T::OnPacket(rPacket, pNetIO); }
-		};
+	class CBProxy : public CBClass
+	{
+		T *pTarget;
+	public:
+		CBProxy *operator () (T *pnTarget) { pTarget = pnTarget; return this; }
+		virtual bool OnConn(const addr_t &AddrPeer, const addr_t &AddrConnect, const addr_t *pOwnAddr, C4NetIO *pNetIO)
+		{ return pTarget->T::OnConn(AddrPeer, AddrConnect, pOwnAddr, pNetIO); }
+		virtual void OnDisconn(const addr_t &AddrPeer, C4NetIO *pNetIO, const char *szReason)
+		{ pTarget->T::OnDisconn(AddrPeer, pNetIO, szReason); }
+		virtual void OnPacket(const class C4NetIOPacket &rPacket, C4NetIO *pNetIO)
+		{ pTarget->T::OnPacket(rPacket, pNetIO); }
+	};
 
 #ifdef _MSC_VER
 #define NETIO_CREATE_CALLBACK_PROXY(ForClass, ProxyName) \
-		typedef class C4NetIO::CBProxy<ForClass> CBProxyT; \
-		friend CBProxyT; \
-		CBProxyT ProxyName;
+    typedef class C4NetIO::CBProxy<ForClass> CBProxyT; \
+    friend CBProxyT; \
+    CBProxyT ProxyName;
 #else
 #define NETIO_CREATE_CALLBACK_PROXY(ForClass, ProxyName) \
-		friend class C4NetIO::CBProxy<ForClass>; \
-		C4NetIO::CBProxy<ForClass> ProxyName;
+    friend class C4NetIO::CBProxy<ForClass>; \
+    C4NetIO::CBProxy<ForClass> ProxyName;
 #endif
 
 	// *** interface
@@ -162,9 +162,9 @@ public:
 
 	const C4NetIO::addr_t &getAddr() const { return addr; }
 
-	uint8_t			getStatus()const { return getSize() ? *getBufPtr<char>(*this) : 0; }
+	uint8_t     getStatus()const { return getSize() ? *getBufPtr<char>(*this) : 0; }
 	const char *getPData() const { return getSize() ? getBufPtr<char>(*this, 1) : NULL; }
-	size_t			getPSize() const { return getSize() ? getSize() - 1 : 0; }
+	size_t      getPSize() const { return getSize() ? getSize() - 1 : 0; }
 	StdBuf      getPBuf()  const { return getSize() ? getPart(1, getSize() - 1) : getRef(); }
 
 	// Some overloads
@@ -261,7 +261,7 @@ protected:
 	public:
 		// data access
 		const C4NetIO::addr_t &GetAddr() const { return addr; }
-		SOCKET								 GetSocket() const { return sock; }
+		SOCKET                 GetSocket() const { return sock; }
 		int                    GetIRate() const { return iIRate; }
 		int                    GetORate() const { return iORate; }
 		// send a packet to this peer
@@ -300,7 +300,7 @@ protected:
 
 		ConnectWait *Next;
 	}
-		*pConnectWaits;
+	*pConnectWaits;
 
 	CStdCSecEx PeerListCSec;
 	CStdCSec PeerListAddCSec;
@@ -376,7 +376,7 @@ public:
 
 	virtual bool GetStatistic(int *pBroadcastRate) { assert(false); return false; }
 	virtual bool GetConnStatistic(const addr_t &addr, int *pIRate, int *pORate, int *pLoss)
-		{ assert(false); return false; }
+	{ assert(false); return false; }
 	virtual void ClearStatistic() { assert(false); }
 
 private:
@@ -484,7 +484,7 @@ protected:
 	static const unsigned int iVersion; // = 2;
 
 	static const unsigned int iStdTimeout, // = 1000, // (ms)
-		                        iCheckInterval; // = 1000 // (ms)
+	iCheckInterval; // = 1000 // (ms)
 
 	static const unsigned int iMaxOPacketBacklog; // = 100;
 
@@ -517,20 +517,20 @@ protected:
 
 	public:
 		// data access
-		C4NetIOPacket				&GetData()				  { return Data; }
-		const C4NetIOPacket	&GetData()		const { return Data; }
-		nr_t				         GetNr()			const { return iNr; }
-		bool								 Empty()			const { return Data.isNull(); }
-		bool								 Multicast()	const { return !!(Data.getStatus() & 0x80); }
+		C4NetIOPacket       &GetData()          { return Data; }
+		const C4NetIOPacket &GetData()    const { return Data; }
+		nr_t                 GetNr()      const { return iNr; }
+		bool                 Empty()      const { return Data.isNull(); }
+		bool                 Multicast()  const { return !!(Data.getStatus() & 0x80); }
 
 		// fragmention
-		nr_t				         FragmentCnt() const;
-		C4NetIOPacket				 GetFragment(nr_t iFNr, bool fBroadcastFlag = false) const;
-		bool								 Complete() const;
-		bool								 FragmentPresent(nr_t iFNr) const;
-		bool								 AddFragment(const C4NetIOPacket &Packet, const C4NetIO::addr_t &addr);
+		nr_t                 FragmentCnt() const;
+		C4NetIOPacket        GetFragment(nr_t iFNr, bool fBroadcastFlag = false) const;
+		bool                 Complete() const;
+		bool                 FragmentPresent(nr_t iFNr) const;
+		bool                 AddFragment(const C4NetIOPacket &Packet, const C4NetIO::addr_t &addr);
 	protected:
-		::size_t		         FragmentSize(nr_t iFNr) const;
+		::size_t             FragmentSize(nr_t iFNr) const;
 		// list
 		Packet *Next, *Prev;
 	};
@@ -592,7 +592,7 @@ protected:
 		{
 			CS_None, CS_Conn, CS_Works, CS_Closed
 		}
-			eStatus;
+		eStatus;
 		// does multicast work?
 		bool fMultiCast;
 		// selected for broadcast?
@@ -809,14 +809,15 @@ private:
 inline bool AddrEqual(const C4NetIO::addr_t addr1, const C4NetIO::addr_t addr2)
 {
 	return addr1.sin_addr.s_addr == addr2.sin_addr.s_addr &&
-		     addr1.sin_family      == addr2.sin_family      &&
-				 addr1.sin_port        == addr2.sin_port;
+	       addr1.sin_family      == addr2.sin_family      &&
+	       addr1.sin_port        == addr2.sin_port;
 }
 inline bool operator == (const C4NetIO::addr_t addr1, const C4NetIO::addr_t addr2) { return AddrEqual(addr1, addr2); }
 inline bool operator != (const C4NetIO::addr_t addr1, const C4NetIO::addr_t addr2) { return !AddrEqual(addr1, addr2); }
 
 // there seems to be no standard way to get these numbers, so let's do it the dirty way...
-inline uint8_t &in_addr_b(in_addr &addr, int i) {
+inline uint8_t &in_addr_b(in_addr &addr, int i)
+{
 	assert(0 <= i && i < 4);
 	return *(reinterpret_cast<uint8_t *>(&addr.s_addr) + i);
 }
@@ -835,7 +836,7 @@ inline void CompileFunc(C4NetIO::addr_t &addr, StdCompiler *pComp)
 	uint16_t iPort = htons(addr.sin_port);
 	pComp->Value(iPort);
 	addr.sin_port = htons(iPort);
-	if(pComp->isCompiler())
+	if (pComp->isCompiler())
 	{
 		addr.sin_family = AF_INET;
 		ZeroMem(addr.sin_zero, sizeof(addr.sin_zero));

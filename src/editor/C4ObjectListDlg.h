@@ -31,7 +31,7 @@
 
 class C4ObjectListDlg: public C4ObjectListChangeListener
 {
-	public:
+public:
 	C4ObjectListDlg();
 	virtual ~C4ObjectListDlg();
 	void Execute();
@@ -43,7 +43,7 @@ class C4ObjectListDlg: public C4ObjectListChangeListener
 	virtual void OnObjectRename(C4ObjectList * pList, C4ObjectLink * pLnk);
 
 #ifdef WITH_DEVELOPER_MODE
-	private:
+private:
 	GtkWidget * window;
 	GtkWidget * treeview;
 	GObject * model;

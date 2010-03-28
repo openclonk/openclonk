@@ -23,7 +23,8 @@
 # include <glib.h>
 #endif
 
-class CX11Proc: public StdSchedulerProc {
+class CX11Proc: public StdSchedulerProc
+{
 
 public:
 	CX11Proc(CStdApp *pApp): pApp(pApp) { }
@@ -32,7 +33,8 @@ public:
 	CStdApp *pApp;
 
 	// StdSchedulerProc override
-	virtual void GetFDs(std::vector<struct pollfd> & fds) {
+	virtual void GetFDs(std::vector<struct pollfd> & fds)
+	{
 		pollfd pfd = { XConnectionNumber(pApp->dpy), POLLIN, 0 };
 		fds.push_back(pfd);
 	}
@@ -40,7 +42,8 @@ public:
 	{
 		return XEventsQueued(pApp->dpy, QueuedAlready) ? Now : -1;
 	}
-	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0) {
+	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
+	{
 		pApp->OnXInput();
 		return true;
 	}
@@ -70,7 +73,7 @@ private:
 
 		g_main_context_prepare (context, &max_priority);
 		unsigned int fd_count;
-		if(fds.empty()) fds.resize(1);
+		if (fds.empty()) fds.resize(1);
 		while ((fd_count = g_main_context_query(context, max_priority, &timeout, (GPollFD*) &fds[0], fds.size())) > fds.size())
 		{
 			fds.resize(fd_count);
@@ -91,18 +94,18 @@ public:
 
 		// Finish current iteration first
 		int old_query_time = query_time;
-		if(query_time >= 0)
+		if (query_time >= 0)
 		{
 			g_main_context_check(context, max_priority, (GPollFD*) &fds[0], fds.size());
 			query_time = -1;
 		}
 
 		// Run the loop
-	        while (g_main_context_pending(context))
-		                g_main_context_iteration(context, false);
+		while (g_main_context_pending(context))
+			g_main_context_iteration(context, false);
 
 		// Return to original state
-		if(old_query_time >= 0)
+		if (old_query_time >= 0)
 			query(old_query_time);
 	}
 
@@ -115,10 +118,11 @@ public:
 	virtual int GetNextTick(int Now)
 	{
 		query(Now);
-		if(timeout < 0) return timeout;
+		if (timeout < 0) return timeout;
 		return query_time + timeout;
 	}
-	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0) {
+	virtual bool Execute(int iTimeout = -1, pollfd * readyfds = 0)
+	{
 		if (query_time < 0) return true;
 		g_main_context_check(context, max_priority, readyfds ? (GPollFD*) readyfds : (GPollFD*) &fds[0], fds.size());
 		g_main_context_dispatch(context);
@@ -128,26 +132,28 @@ public:
 };
 #endif // WITH_GLIB
 
-class CStdAppPrivate {
-	public:
+class CStdAppPrivate
+{
+public:
 #ifdef WITH_GLIB
 	CGLibProc GLibProc;
 #endif
 
 	CStdAppPrivate(CStdApp *pApp):
 #ifdef WITH_GLIB
-		GLibProc(g_main_context_default()),
+			GLibProc(g_main_context_default()),
 #endif // WITH_GLIB
-		PrimarySelection(), ClipboardSelection(),
-		LastEventTime(CurrentTime), tasked_out(false), pending_desktop(false),
-		xim(0), xic(0), X11Proc(pApp),
-		argc(0), argv(0) { }
+			PrimarySelection(), ClipboardSelection(),
+			LastEventTime(CurrentTime), tasked_out(false), pending_desktop(false),
+			xim(0), xic(0), X11Proc(pApp),
+			argc(0), argv(0) { }
 	static CStdWindow * GetWindow(unsigned long wnd);
 	static void SetWindow(unsigned long wnd, CStdWindow * pWindow);
 	bool SwitchToFullscreen(CStdApp * pApp, Window wnd);
 	void SwitchToDesktop(CStdApp * pApp, Window wnd);
 	void SetEWMHFullscreen (CStdApp * pApp, bool fFullScreen, Window wnd);
-	struct ClipboardData {
+	struct ClipboardData
+	{
 		StdStrBuf Text;
 		unsigned long AcquirationTime;
 	} PrimarySelection, ClipboardSelection;

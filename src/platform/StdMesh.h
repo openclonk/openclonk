@@ -346,7 +346,8 @@ public:
 	StdMeshInstance(const StdMesh& mesh);
 	~StdMeshInstance();
 
-	enum FaceOrdering {
+	enum FaceOrdering
+	{
 		FO_Fixed, // don't reorder, keep faces as in mesh
 		FO_FarthestToNearest,
 		FO_NearestToFarthest
@@ -426,7 +427,7 @@ public:
 
 	AnimationNode* GetAnimationNodeByNumber(unsigned int number);
 	AnimationNode* GetRootAnimationForSlot(int slot);
-			// child bone transforms are dirty (saves matrix inversion for unanimated attach children).
+	// child bone transforms are dirty (saves matrix inversion for unanimated attach children).
 	// Set new value providers for a node's position or weight - cannot be in
 	// class AnimationNode since we need to mark BoneTransforms dirty.
 	void SetAnimationPosition(AnimationNode* node, ValueProvider* position);

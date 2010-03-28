@@ -28,7 +28,7 @@ class C4Network2IODiscover : public C4NetIOSimpleUDP, private C4NetIO::CBClass
 {
 public:
 	C4Network2IODiscover(int16_t iRefServerPort) : iRefServerPort(iRefServerPort), fEnabled(false)
-		{ C4NetIOSimpleUDP::SetCallback(this); }
+	{ C4NetIOSimpleUDP::SetCallback(this); }
 
 protected:
 
@@ -51,7 +51,7 @@ class C4Network2IODiscoverClient : public C4NetIOSimpleUDP, private C4NetIO::CBC
 {
 public:
 	C4Network2IODiscoverClient() : iDiscoverCount(0)
-		{ C4NetIOSimpleUDP::SetCallback(this); }
+	{ C4NetIOSimpleUDP::SetCallback(this); }
 
 protected:
 

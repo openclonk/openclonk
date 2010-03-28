@@ -24,14 +24,14 @@
 
 // special ids
 const int32_t C4ClientIDUnknown = -1,
-							C4ClientIDHost = 0,
-							C4ClientIDStart = 1;
+                                  C4ClientIDHost = 0,
+                                                   C4ClientIDStart = 1;
 
 // client core difference levels
-const int32_t C4ClientCoreDL_None = 0,			// identical
-							C4ClientCoreDL_IDMatch = 1,		// status change
-							C4ClientCoreDL_IDChange = 2,	// identification changed (host only!)
-							C4ClientCoreDL_Different = 3;	// really different
+const int32_t C4ClientCoreDL_None = 0,      // identical
+                                    C4ClientCoreDL_IDMatch = 1,   // status change
+                                                             C4ClientCoreDL_IDChange = 2,  // identification changed (host only!)
+                                                                                       C4ClientCoreDL_Different = 3; // really different
 
 class C4ClientCore : public C4PacketBase
 {
@@ -56,21 +56,21 @@ protected:
 public:
 
 	// status data
-	int32_t			getID()						const { return iID; }
-	bool				isHost()					const { return iID == C4ClientIDHost; }
-	bool				isActivated()			const	{ return fActivated; }
-	bool				isObserver()			const	{ return fObserver; }
-	void SetID(int32_t inID)						{ iID = inID; }
-	void SetName(const char *sznName)		{ Name.CopyValidated(sznName); }
+	int32_t     getID()           const { return iID; }
+	bool        isHost()          const { return iID == C4ClientIDHost; }
+	bool        isActivated()     const { return fActivated; }
+	bool        isObserver()      const { return fObserver; }
+	void SetID(int32_t inID)            { iID = inID; }
+	void SetName(const char *sznName)   { Name.CopyValidated(sznName); }
 	void SetActivated(bool fnActivated) { fActivated = fnActivated; fObserver = false; }
 	void SetObserver(bool fnObserver)   { fActivated &= !(fObserver = fnObserver); }
 
 	// misc
-	const char *getName()			const { return Name.getData(); }
-	const char *getCUID()			const { return CUID.getData(); }
-	const char *getNick()			const { return Nick.getData(); }
-	const char *getRevision()		const { return Revision.getData(); }
-	bool				isRegistered()const	{ return CUID.getLength()>0; }
+	const char *getName()     const { return Name.getData(); }
+	const char *getCUID()     const { return CUID.getData(); }
+	const char *getNick()     const { return Nick.getData(); }
+	const char *getRevision()   const { return Revision.getData(); }
+	bool        isRegistered()const { return CUID.getLength()>0; }
 
 	// initialization
 	void SetLocal(int32_t iID, bool fnActivated, bool fnObserver);
@@ -99,16 +99,16 @@ private:
 
 public:
 	const C4ClientCore &getCore() const { return Core; }
-	int32_t			getID()				const { return Core.getID(); }
-	bool				isHost()			const { return Core.isHost(); }
-	const char *getName()			const { return Core.getName(); }
-	const char *getCUID()			const { return Core.getCUID(); }
-	const char *getNick()			const { return Core.getNick(); }
-	bool				isActivated() const { return Core.isActivated(); }
-	bool				isObserver()	const { return Core.isObserver(); }
+	int32_t     getID()       const { return Core.getID(); }
+	bool        isHost()      const { return Core.isHost(); }
+	const char *getName()     const { return Core.getName(); }
+	const char *getCUID()     const { return Core.getCUID(); }
+	const char *getNick()     const { return Core.getNick(); }
+	bool        isActivated() const { return Core.isActivated(); }
+	bool        isObserver()  const { return Core.isObserver(); }
 	bool        isRegistered()const { return Core.isRegistered(); }
 
-	bool				isLocal()			const { return fLocal; }
+	bool        isLocal()     const { return fLocal; }
 	C4Network2Client *getNetClient() const { return pNetClient; }
 
 	void SetCore(const C4ClientCore &NewCore) { Core = NewCore; }

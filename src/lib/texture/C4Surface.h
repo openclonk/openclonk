@@ -29,27 +29,27 @@ class C4Group;
 class C4GroupSet;
 
 class C4Surface: public CSurface
-	{
-	private:
-		C4Surface(const C4Surface &rCpy);		// do NOT copy
-		C4Surface &operator = (const C4Surface &rCpy);	// do NOT copy
-	public:
-		C4Surface() : CSurface() {};	// ctor
+{
+private:
+	C4Surface(const C4Surface &rCpy);   // do NOT copy
+	C4Surface &operator = (const C4Surface &rCpy);  // do NOT copy
+public:
+	C4Surface() : CSurface() {};  // ctor
 #ifdef _DEBUG
-		~C4Surface();
+	~C4Surface();
 #endif
 
-		C4Surface *Duplicate();	// create identical copy
+	C4Surface *Duplicate(); // create identical copy
 
-		bool LoadAny(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-		bool LoadAny(C4GroupSet &hGroupset, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-		bool Load(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
-		bool Save(C4Group &hGroup, const char *szFilename);
-		bool SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
-		bool Copy(C4Surface &fromSfc);
-		bool Read(CStdStream &hGroup, const char * extension, bool fOwnPal=false);
-		bool ReadPNG(CStdStream &hGroup);
-		bool ReadJPEG(CStdStream &hGroup);
-	};
+	bool LoadAny(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+	bool LoadAny(C4GroupSet &hGroupset, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+	bool Load(C4Group &hGroup, const char *szFilename, bool fOwnPal=false, bool fNoErrIfNotFound=false);
+	bool Save(C4Group &hGroup, const char *szFilename);
+	bool SavePNG(C4Group &hGroup, const char *szFilename, bool fSaveAlpha=true, bool fApplyGamma=false, bool fSaveOverlayOnly=false);
+	bool Copy(C4Surface &fromSfc);
+	bool Read(CStdStream &hGroup, const char * extension, bool fOwnPal=false);
+	bool ReadPNG(CStdStream &hGroup);
+	bool ReadJPEG(CStdStream &hGroup);
+};
 
 #endif

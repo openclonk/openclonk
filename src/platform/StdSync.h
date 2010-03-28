@@ -67,7 +67,8 @@ public:
 class CStdCSec
 {
 public:
-	CStdCSec() {
+	CStdCSec()
+	{
 		pthread_mutexattr_t attr;
 		pthread_mutexattr_init(&attr);
 		pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
@@ -124,12 +125,12 @@ public:
 	{
 		pthread_mutex_lock(&mutex);
 		// Already set?
-		while(!fSet)
+		while (!fSet)
 		{
 			// Use pthread_cond_wait or pthread_cond_timedwait depending on wait length. Check return value.
 			// Note this will temporarily unlock the mutex, so no deadlock should occur.
 			timespec ts = { iMillis / 1000, (iMillis % 1000) * 1000000 };
-			if(0 != (iMillis != INFINITE ? pthread_cond_timedwait(&cond, &mutex, &ts) : pthread_cond_wait(&cond, &mutex)))
+			if (0 != (iMillis != INFINITE ? pthread_cond_timedwait(&cond, &mutex, &ts) : pthread_cond_wait(&cond, &mutex)))
 			{
 				pthread_mutex_unlock(&mutex);
 				return false;
@@ -178,16 +179,16 @@ class CStdLock
 {
 public:
 	CStdLock(CStdCSec *pSec) : sec(pSec)
-		{ sec->Enter(); }
+	{ sec->Enter(); }
 	~CStdLock()
-		{ Clear(); }
+	{ Clear(); }
 
 protected:
 	CStdCSec *sec;
 
 public:
 	void Clear()
-		{ if(sec) sec->Leave(); sec = NULL; }
+	{ if (sec) sec->Leave(); sec = NULL; }
 };
 
 class CStdCSecExCallback
@@ -202,10 +203,10 @@ class CStdCSecEx : public CStdCSec
 {
 public:
 	CStdCSecEx()
-		: lShareCnt(0), ShareFreeEvent(false), pCallbClass(NULL)
+			: lShareCnt(0), ShareFreeEvent(false), pCallbClass(NULL)
 	{ }
 	CStdCSecEx(CStdCSecExCallback *pCallb)
-		: lShareCnt(0), ShareFreeEvent(false), pCallbClass(pCallb)
+			: lShareCnt(0), ShareFreeEvent(false), pCallbClass(pCallb)
 	{ }
 	~CStdCSecEx()
 	{ }
@@ -226,7 +227,7 @@ public:
 		// lock
 		CStdCSec::Enter();
 		// wait for share-free
-		while(lShareCnt)
+		while (lShareCnt)
 		{
 			// reset event
 			ShareFreeEvent.Reset();
@@ -262,10 +263,10 @@ public:
 		// lock
 		CStdCSec::Enter();
 		// remove share
-		if(!--lShareCnt)
+		if (!--lShareCnt)
 		{
 			// do callback
-			if(pCallbClass)
+			if (pCallbClass)
 				pCallbClass->OnShareFree(this);
 			// set event
 			ShareFreeEvent.Set();
@@ -279,16 +280,16 @@ class CStdShareLock
 {
 public:
 	CStdShareLock(CStdCSecEx *pSec) : sec(pSec)
-		{ sec->EnterShared(); }
+	{ sec->EnterShared(); }
 	~CStdShareLock()
-		{ Clear(); }
+	{ Clear(); }
 
 protected:
 	CStdCSecEx *sec;
 
 public:
 	void Clear()
-		{ if(sec) sec->LeaveShared(); sec = NULL; }
+	{ if (sec) sec->LeaveShared(); sec = NULL; }
 };
 
 #endif // INC_StdSync

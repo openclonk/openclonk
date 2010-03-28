@@ -29,10 +29,10 @@ const unsigned int C4MaxLongName = 120; // scenario titles, etc. - may include m
 const unsigned int C4MaxComment = 256; // network game and player comments
 
 namespace C4InVal
-	{
+{
 	// validation options
 	enum ValidationOption
-		{
+	{
 		VAL_Filename,        // regular filenames only (Sven2.c4p)
 		VAL_SubPathFilename, // filenames and optional subpath (Spieler\Sven2.c4p)
 		VAL_FullPath,        // full filename paths (C:\Clonk\Sven2.c4p; ..\..\..\..\AutoExec.bat)
@@ -44,7 +44,7 @@ namespace C4InVal
 		VAL_IRCPass,         // password for IRC
 		VAL_IRCChannel,      // IRC channel name
 		VAL_Comment         // comment - just a length limit
-		};
+	};
 	// input validation functions: Validate input by changing it to an allowed value if possible
 	// issues warnings in log and returns true if such an action is performed
 	bool ValidateString(char *szString, ValidationOption eOption, size_t iMaxSize);
@@ -52,7 +52,7 @@ namespace C4InVal
 	bool ValidateInt(int32_t &riVal, int32_t iMinVal, int32_t iMaxVal);
 
 	inline bool ValidateFilename(char *szFilename, size_t iMaxSize=_MAX_PATH) { return ValidateString(szFilename, VAL_Filename, iMaxSize); }
-	}
+}
 
 // Validation adapter: Call ValidateString on string after compiling it
 template <class T> struct C4StrValAdapt
@@ -72,7 +72,7 @@ template <class T> inline C4StrValAdapt<T> mkStrValAdapt(T RREF rValue, C4InVal:
 
 // StdStrBuf that validates on compilation
 struct ValidatedStdCopyStrBufBase : public StdCopyStrBuf
-	{
+{
 	ValidatedStdCopyStrBufBase(const char *szCopy) : StdCopyStrBuf(szCopy) {}
 	ValidatedStdCopyStrBufBase() : StdCopyStrBuf() {}
 
@@ -85,31 +85,31 @@ struct ValidatedStdCopyStrBufBase : public StdCopyStrBuf
 	virtual bool Validate() = 0;
 
 	void CopyValidated(const char *szFromVal)
-		{
+	{
 		Copy(szFromVal);
 		Validate();
-		}
+	}
 	void CopyValidated(const StdStrBuf &sFromVal)
-		{
+	{
 		Copy(sFromVal);
 		Validate();
-		}
+	}
 
 	virtual ~ValidatedStdCopyStrBufBase() { }
-	};
+};
 
 template <int V> struct ValidatedStdCopyStrBuf : public ValidatedStdCopyStrBufBase
-	{
+{
 	ValidatedStdCopyStrBuf(const char *szCopy) : ValidatedStdCopyStrBufBase(szCopy) {}
 	ValidatedStdCopyStrBuf() : ValidatedStdCopyStrBufBase() {}
 
 	virtual bool Validate()
-		{
+	{
 		return C4InVal::ValidateString(*this, (C4InVal::ValidationOption) V);
-		}
+	}
 
 	template <class D> inline bool operator == (const D &nValue) const { return static_cast<const StdCopyStrBuf &>(*this) == nValue; }
 	template <class D> inline ValidatedStdCopyStrBuf<V> &operator = (const D &nValue) { static_cast<StdCopyStrBuf &>(*this) = nValue; return *this; }
-	};
+};
 
 #endif // INC_C4InputValidation

@@ -62,17 +62,17 @@ protected:
 };
 #if defined HAVE_FMOD
 class C4MusicFileMID : public C4MusicFile
-	{
-	public:
-	  bool Play(bool loop = false);
-		bool Extract();
-		void Stop(int fadeout_ms = 0);
-		void CheckIfPlaying();
-		//C4MusicFileMID();
-		void SetVolume(int);
-	protected:
-		FMUSIC_MODULE *mod;
-	};
+{
+public:
+	bool Play(bool loop = false);
+	bool Extract();
+	void Stop(int fadeout_ms = 0);
+	void CheckIfPlaying();
+	//C4MusicFileMID();
+	void SetVolume(int);
+protected:
+	FMUSIC_MODULE *mod;
+};
 
 /* MOD class */
 
@@ -102,7 +102,7 @@ public:
 	void CheckIfPlaying();
 	void SetVolume(int);
 protected:
-	FSOUND_STREAM	*stream;
+	FSOUND_STREAM *stream;
 	char *Data;
 	int Channel;
 };
@@ -121,7 +121,7 @@ public:
 
 	static signed char __stdcall OnEnd(FSOUND_STREAM* stream, void* buff, int length, void* param);
 protected:
-	FSOUND_STREAM	*stream;
+	FSOUND_STREAM *stream;
 	char *Data;
 	int Channel;
 

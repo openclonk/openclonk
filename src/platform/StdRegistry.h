@@ -27,16 +27,16 @@
 #include <windows.h>
 #include "StdCompiler.h"
 bool DeleteRegistryValue(HKEY hKey, const char *szSubKey,
-												 const char *szValueName);
+                         const char *szValueName);
 bool DeleteRegistryValue(const char *szSubKey, const char *szValueName);
 
 bool GetRegistryDWord(HKEY hKey, const char *szSubKey,
-											const char *szValueName, DWORD *lpdwValue);
+                      const char *szValueName, DWORD *lpdwValue);
 bool GetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD *lpdwValue);
 
 
 bool SetRegistryDWord(HKEY hKey, const char *szSubKey,
-											const char *szValueName, DWORD dwValue);
+                      const char *szValueName, DWORD dwValue);
 bool SetRegistryDWord(const char *szSubKey, const char *szValueName, DWORD dwValue);
 
 
@@ -47,33 +47,33 @@ bool DeleteRegistryKey(HKEY hKey, const char *szSubKey);
 bool DeleteRegistryKey(const char *szSubKey);
 
 bool SetRegClassesRoot(const char *szSubKey,
-											 const char *szValueName,
-											 const char *szStringValue);
+                       const char *szValueName,
+                       const char *szStringValue);
 
 bool SetRegShell(const char *szClassName,
-								 const char *szShellName,
-								 const char *szShellCaption,
-								 const char *szCommand,
-								 bool fMakeDefault = false);
+                 const char *szShellName,
+                 const char *szShellCaption,
+                 const char *szCommand,
+                 bool fMakeDefault = false);
 
 bool RemoveRegShell(const char *szClassName,
-										const char *szShellName);
+                    const char *szShellName);
 
 bool SetRegFileClass(const char *szClassRoot,
-										 const char *szExtension,
-										 const char *szClassName,
-										 const char *szIconPath, int iIconNum,
-										 const char *szContentType);
+                     const char *szExtension,
+                     const char *szClassName,
+                     const char *szIconPath, int iIconNum,
+                     const char *szContentType);
 
 bool StoreWindowPosition(HWND hwnd,
-												 const char *szWindowName,
-												 const char *szSubKey,
-												 bool fStoreSize = true);
+                         const char *szWindowName,
+                         const char *szSubKey,
+                         bool fStoreSize = true);
 
 bool RestoreWindowPosition(HWND hwnd,
-													 const char *szWindowName,
-													 const char *szSubKey,
-													 bool fHidden = false);
+                           const char *szWindowName,
+                           const char *szSubKey,
+                           bool fHidden = false);
 
 // config writer
 class StdCompilerConfigWrite : public StdCompiler
@@ -118,7 +118,8 @@ private:
 
 	// Key stack
 	int iDepth;
-	struct Key {
+	struct Key
+	{
 		StdStrBuf Name;
 		HKEY Handle;
 		Key *Parent;
@@ -173,7 +174,8 @@ private:
 
 	// Key stack
 	int iDepth;
-	struct Key {
+	struct Key
+	{
 		StdStrBuf Name;
 		HKEY Handle; // for keys only
 		Key *Parent;

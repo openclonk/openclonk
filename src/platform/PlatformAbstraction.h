@@ -58,9 +58,9 @@
 #include <crtdbg.h>
 #include <malloc.h>
 inline void *operator new(unsigned int s, const char *szFile, long iLine)
-	{ return ::operator new(s, _NORMAL_BLOCK, szFile, iLine); }
+{ return ::operator new(s, _NORMAL_BLOCK, szFile, iLine); }
 inline void operator delete(void *p, const char *, long)
-	{ ::operator delete(p); }
+{ ::operator delete(p); }
 #define new new(__FILE__, __LINE__)
 #define malloc(size) ::_malloc_dbg(size, _NORMAL_BLOCK, __FILE__, __LINE__)
 #else
@@ -136,10 +136,10 @@ typedef ptrdiff_t ssize_t;
 #endif
 
 #ifdef HAVE_RVALUE_REF
-#	define RREF &&
+# define RREF &&
 #else
-#	define RREF &
-	namespace std { template<typename T> inline T &move (T &t) { return t; } }
+# define RREF &
+namespace std { template<typename T> inline T &move (T &t) { return t; } }
 #endif
 
 
@@ -182,14 +182,16 @@ typedef uint32_t       DWORD;
 typedef uint8_t        BYTE;
 typedef uint16_t       WORD;
 
-typedef struct {
-		long left; long top; long right; long bottom;
+typedef struct
+{
+	long left; long top; long right; long bottom;
 } RECT;
 
 unsigned long timeGetTime(void);
 
 #include <strings.h>
-inline int stricmp(const char *s1, const char *s2) {
+inline int stricmp(const char *s1, const char *s2)
+{
 	return strcasecmp(s1, s2);
 }
 
@@ -203,13 +205,13 @@ inline int stricmp(const char *s1, const char *s2) {
 
 
 #ifdef _WIN32
-	#define C4_OS "win32"
+#define C4_OS "win32"
 #elif defined(__linux__)
-	#define C4_OS "linux"
+#define C4_OS "linux"
 #elif defined(__APPLE__)
-	#define C4_OS "mac"
+#define C4_OS "mac"
 #else
-	#define C4_OS "unknown";
+#define C4_OS "unknown";
 #endif
 
 

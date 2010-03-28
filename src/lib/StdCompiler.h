@@ -49,9 +49,9 @@ public:
 
 	StdCompiler() : pWarnCB(NULL)
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
-		, fFailSafe(false), fFail(false)
+			, fFailSafe(false), fFail(false)
 #endif
-		{}
+	{}
 
 	// *** Overridables (Interface)
 	virtual ~StdCompiler() {}
@@ -71,7 +71,7 @@ public:
 
 	// Does the compiler encourage verbosity (like producing more text instead of
 	// just a numerical value)?
-	virtual bool isVerbose()											{ return hasNaming(); }
+	virtual bool isVerbose()                      { return hasNaming(); }
 
 	// callback by runtime-write-allowed adaptor used by compilers that may set runtime values only
 	virtual void setRuntimeWritesAllowed(int32_t iChange) { }
@@ -89,11 +89,11 @@ public:
 	// Special: A naming that follows to the currently active naming (on the same level).
 	// Note this will end the current naming, so no additional NameEnd() is needed.
 	// Only used to maintain backwards compatibility, should not be used in new code.
-	virtual bool FollowName(const char *szName)		{ NameEnd(); return Name(szName); }
+	virtual bool FollowName(const char *szName)   { NameEnd(); return Name(szName); }
 
 	// Called when a named value omitted because of defaulting (compiler only)
 	// Returns whether the value has been handled
-	virtual bool Default(const char *szName)			{ return true; }
+	virtual bool Default(const char *szName)      { return true; }
 
 	// Return count of sub-namings. May be unimplemented.
 	virtual int NameCount(const char *szName = NULL) { assert(false); return 0; }
@@ -155,7 +155,7 @@ public:
 
 	// * Position
 	// May return information about the current position of compilation (used for errors and warnings)
-	virtual StdStrBuf getPosition()					const	{ return StdStrBuf(); }
+	virtual StdStrBuf getPosition()         const { return StdStrBuf(); }
 
 	// * Passes
 	virtual void Begin()                          { }
@@ -165,47 +165,47 @@ public:
 	// *** Composed
 
 	// Generic compiler function (plus specializations)
-	template <class T> void Value(const T &rStruct)		{ rStruct.CompileFunc(this); }
-	template <class T> void Value(T &rStruct)			{ CompileFunc(rStruct, this); }
+	template <class T> void Value(const T &rStruct)   { rStruct.CompileFunc(this); }
+	template <class T> void Value(T &rStruct)     { CompileFunc(rStruct, this); }
 
-	void Value(int32_t &rInt)	 { DWord(rInt); }
+	void Value(int32_t &rInt)  { DWord(rInt); }
 	void Value(uint32_t &rInt) { DWord(rInt); }
-	void Value(int16_t &rInt)	 { Word(rInt); }
+	void Value(int16_t &rInt)  { Word(rInt); }
 	void Value(uint16_t &rInt) { Word(rInt); }
-	void Value(int8_t &rInt)	 { Byte(rInt); }
-	void Value(uint8_t &rInt)	 { Byte(rInt); }
-	void Value(bool &rBool)		 { Boolean(rBool); }
+	void Value(int8_t &rInt)   { Byte(rInt); }
+	void Value(uint8_t &rInt)  { Byte(rInt); }
+	void Value(bool &rBool)    { Boolean(rBool); }
 
 	// Compiling/Decompiling (may throw a data format exception!)
 	template <class T> inline void Compile(T RREF rStruct)
-		{
+	{
 		assert(isCompiler());
 		DoCompilation(rStruct);
-		}
+	}
 	template <class T> inline void Decompile(const T &rStruct)
-		{
+	{
 		assert(!isCompiler());
 		DoCompilation(const_cast<T &>(rStruct));
-		}
+	}
 
 protected:
 
 	// Compilation process
 	template <class T>
-		inline void DoCompilation(T &rStruct)
+	inline void DoCompilation(T &rStruct)
+	{
+		// Start compilation, do first pass
+		Begin();
+		Value(rStruct);
+		// Second pass needed?
+		if (isDoublePass())
 		{
-			// Start compilation, do first pass
-			Begin();
+			BeginSecond();
 			Value(rStruct);
-			// Second pass needed?
-			if(isDoublePass())
-			{
-				BeginSecond();
-				Value(rStruct);
-			}
-			// Finish
-			End();
 		}
+		// Finish
+		End();
+	}
 
 public:
 
@@ -214,9 +214,9 @@ public:
 	{
 		StdStrBuf Pos;
 		StdStrBuf Msg;
-	protected:
+protected:
 		Exception(StdStrBuf Pos, StdStrBuf Msg) : Pos(Pos), Msg(Msg) { }
-	private:
+private:
 		// do not copy
 		Exception(const Exception &Exc) { }
 	};
@@ -241,7 +241,7 @@ public:
 	{
 #ifdef STDCOMPILER_EXCEPTION_WORKAROUND
 		// Exception workaround: Just set a flag in failesafe mode.
-		if(fFailSafe) { fFail = true; return; }
+		if (fFailSafe) { fFail = true; return; }
 #endif
 		// Throw the appropriate exception
 		va_list args; va_start(args, szMessage);
@@ -270,16 +270,16 @@ protected:
 	bool endFailSafe() { fFailSafe = false; return !fFail; }
 
 public:
-	template <class T> bool ValueSafe(const T &rStruct)	{ rStruct.CompileFunc(this); return true; }
-	template <class T> bool ValueSafe(T &rStruct)				{ CompileFunc(rStruct, this); return true; }
+	template <class T> bool ValueSafe(const T &rStruct) { rStruct.CompileFunc(this); return true; }
+	template <class T> bool ValueSafe(T &rStruct)       { CompileFunc(rStruct, this); return true; }
 
-	bool ValueSafe(int32_t &rInt)	 { beginFailSafe(); DWord(rInt);		return endFailSafe(); }
-	bool ValueSafe(uint32_t &rInt) { beginFailSafe(); DWord(rInt);		return endFailSafe(); }
-	bool ValueSafe(int16_t &rInt)	 { beginFailSafe(); Word(rInt);			return endFailSafe(); }
-	bool ValueSafe(uint16_t &rInt) { beginFailSafe(); Word(rInt);			return endFailSafe(); }
-	bool ValueSafe(int8_t &rInt)	 { beginFailSafe(); Byte(rInt);			return endFailSafe(); }
-	bool ValueSafe(uint8_t &rInt)	 { beginFailSafe(); Byte(rInt);			return endFailSafe(); }
-	bool ValueSafe(bool &rBool)		 { beginFailSafe(); Boolean(rBool); return endFailSafe(); }
+	bool ValueSafe(int32_t &rInt)  { beginFailSafe(); DWord(rInt);    return endFailSafe(); }
+	bool ValueSafe(uint32_t &rInt) { beginFailSafe(); DWord(rInt);    return endFailSafe(); }
+	bool ValueSafe(int16_t &rInt)  { beginFailSafe(); Word(rInt);     return endFailSafe(); }
+	bool ValueSafe(uint16_t &rInt) { beginFailSafe(); Word(rInt);     return endFailSafe(); }
+	bool ValueSafe(int8_t &rInt)   { beginFailSafe(); Byte(rInt);     return endFailSafe(); }
+	bool ValueSafe(uint8_t &rInt)  { beginFailSafe(); Byte(rInt);     return endFailSafe(); }
+	bool ValueSafe(bool &rBool)    { beginFailSafe(); Boolean(rBool); return endFailSafe(); }
 #endif
 
 public:
@@ -304,69 +304,69 @@ protected:
 
 // Standard compile funcs
 template <class T>
-	inline void CompileFunc(T &rStruct, StdCompiler *pComp)
-	{
-		// If the compiler doesn't like this line, you tried to compile
-		// something the compiler doesn't know how to handle.
-		// Possible reasons:
-		// a) You are compiling a class/structure without a CompileFunc
-		//    (you may add a specialization of this function, too)
-		// b) You are trying to compile a pointer. Use a PtrAdapt instead.
-		// c) You are trying to compile a simple value that has no
-		//    fixed representation (float, int). Use safe types instead.
-		rStruct.CompileFunc(pComp);
-	}
+inline void CompileFunc(T &rStruct, StdCompiler *pComp)
+{
+	// If the compiler doesn't like this line, you tried to compile
+	// something the compiler doesn't know how to handle.
+	// Possible reasons:
+	// a) You are compiling a class/structure without a CompileFunc
+	//    (you may add a specialization of this function, too)
+	// b) You are trying to compile a pointer. Use a PtrAdapt instead.
+	// c) You are trying to compile a simple value that has no
+	//    fixed representation (float, int). Use safe types instead.
+	rStruct.CompileFunc(pComp);
+}
 
 template <class T>
-	void CompileNewFunc(T *&pStruct, StdCompiler *pComp)
+void CompileNewFunc(T *&pStruct, StdCompiler *pComp)
+{
+	// Create new object.
+	// If this line doesn't compile, you either have to
+	// a) Define a standard constructor for T
+	// b) Specialize this function to do whatever the correct
+	//    behaviour is to construct the object from compiler data
+	pStruct = new T();
+	// Compile
+	try
 	{
-		// Create new object.
-		// If this line doesn't compile, you either have to
-		// a) Define a standard constructor for T
-		// b) Specialize this function to do whatever the correct
-		//    behaviour is to construct the object from compiler data
-		pStruct = new T();
-		// Compile
-		try
-		{
-			pComp->Value(*pStruct);
-		}
-		catch(StdCompiler::Exception *)
-		{
-			delete pStruct;
-			throw;
-		}
+		pComp->Value(*pStruct);
 	}
+	catch (StdCompiler::Exception *)
+	{
+		delete pStruct;
+		throw;
+	}
+}
 
 // Helpers for buffer-based compiling (may throw a data format exception!)
 template <class CompT, class StructT>
-	void CompileFromBuf(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf)
-	{
-		CompT Compiler;
-		Compiler.setInput(SrcBuf.getRef());
-		Compiler.Compile(TargetStruct);
-	}
+void CompileFromBuf(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf)
+{
+	CompT Compiler;
+	Compiler.setInput(SrcBuf.getRef());
+	Compiler.Compile(TargetStruct);
+}
 template <class CompT, class StructT>
-	StructT * CompileFromBufToNew(const typename CompT::InT &SrcBuf)
-	{
-		StructT *pStruct = NULL;
-		CompileFromBuf<CompT>(mkPtrAdaptNoNull(pStruct), SrcBuf);
-		return pStruct;
-	}
+StructT * CompileFromBufToNew(const typename CompT::InT &SrcBuf)
+{
+	StructT *pStruct = NULL;
+	CompileFromBuf<CompT>(mkPtrAdaptNoNull(pStruct), SrcBuf);
+	return pStruct;
+}
 template <class CompT, class StructT>
-	StructT * CompileFromBufToNewNamed(const typename CompT::InT &SrcBuf, const char *szName)
-	{
-		StructT *pStruct = NULL;
-		CompileFromBuf<CompT>(mkNamingAdapt(mkPtrAdaptNoNull(pStruct), szName), SrcBuf);
-		return pStruct;
-	}
+StructT * CompileFromBufToNewNamed(const typename CompT::InT &SrcBuf, const char *szName)
+{
+	StructT *pStruct = NULL;
+	CompileFromBuf<CompT>(mkNamingAdapt(mkPtrAdaptNoNull(pStruct), szName), SrcBuf);
+	return pStruct;
+}
 template <class CompT, class StructT>
-	typename CompT::OutT DecompileToBuf(const StructT &SrcStruct)
-	{
-		CompT Compiler;
-		Compiler.Decompile(SrcStruct);
-		return Compiler.getOutput();
-	}
+typename CompT::OutT DecompileToBuf(const StructT &SrcStruct)
+{
+	CompT Compiler;
+	Compiler.Decompile(SrcStruct);
+	return Compiler.getOutput();
+}
 
 // *** Null compiler
 
@@ -378,21 +378,21 @@ public:
 
 	// Properties
 	virtual bool isCompiler()                     { return true; }
-	virtual bool hasNaming()								      { return true; }
+	virtual bool hasNaming()                      { return true; }
 
 	// Naming
 	virtual bool Name(const char *szName)         { return false; }
 	virtual int NameCount(const char *szName = NULL) { return 0; }
 
 	// Data readers
-	virtual void DWord(int32_t &rInt)							{ }
-	virtual void DWord(uint32_t &rInt)						{ }
-	virtual void Word(int16_t &rShort)						{ }
-	virtual void Word(uint16_t &rShort)						{ }
-	virtual void Byte(int8_t &rByte)							{ }
-	virtual void Byte(uint8_t &rByte)							{ }
-	virtual void Boolean(bool &rBool)							{ }
-	virtual void Character(char &rChar)						{ }
+	virtual void DWord(int32_t &rInt)             { }
+	virtual void DWord(uint32_t &rInt)            { }
+	virtual void Word(int16_t &rShort)            { }
+	virtual void Word(uint16_t &rShort)           { }
+	virtual void Byte(int8_t &rByte)              { }
+	virtual void Byte(uint8_t &rByte)             { }
+	virtual void Boolean(bool &rBool)             { }
+	virtual void Character(char &rChar)           { }
 	virtual void String(char *szString, size_t iMaxLength, RawCompileType eType = RCT_Escaped) { }
 	virtual void String(char **pszString, RawCompileType eType = RCT_Escaped) { }
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped) { }
@@ -470,7 +470,7 @@ public:
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
 
 	// Position
-	virtual StdStrBuf getPosition()	const;
+	virtual StdStrBuf getPosition() const;
 
 	// Passes
 	virtual void Begin();
@@ -569,7 +569,7 @@ protected:
 	// Name not put yet (it's not clear wether it is a value or a section)
 	bool fPutName,
 	// Currently inside a section, so raw data can't be printed
-			 fInSection;
+	fInSection;
 
 	void PrepareForValue();
 	void WriteEscaped(const char *szString, const char *pEnd);
@@ -619,7 +619,7 @@ public:
 	virtual void Raw(void *pData, size_t iSize, RawCompileType eType = RCT_Escaped);
 
 	// Position
-	virtual StdStrBuf getPosition()	const;
+	virtual StdStrBuf getPosition() const;
 
 	// Passes
 	virtual void Begin();
@@ -638,14 +638,14 @@ protected:
 		bool Section;
 		// Tree structure
 		NameNode *Parent,
-						 *FirstChild, *PrevChild, *NextChild, *LastChild;
+		*FirstChild, *PrevChild, *NextChild, *LastChild;
 		// Indent level
 		int Indent;
 		// Name number in parent map
 		const char *Pos;
 		// Constructor
 		NameNode(NameNode *pParent = NULL)
-			: Parent(pParent), FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
+				: Parent(pParent), FirstChild(NULL), PrevChild(NULL), NextChild(NULL), LastChild(NULL),
 				Indent(-1)
 		{ }
 	};
@@ -690,56 +690,56 @@ protected:
 void StdCompilerWarnCallback(void *pData, const char *szPosition, const char *szError);
 
 template <class CompT, class StructT>
-	bool CompileFromBuf_Log(StructT &TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+bool CompileFromBuf_Log(StructT &TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+{
+	try
 	{
-		try
-		{
-			CompileFromBuf<CompT>(TargetStruct, SrcBuf);
-			return true;
-		}
-		catch(StdCompiler::Exception *pExc)
-		{
-			LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
-			delete pExc;
-			return false;
-		}
+		CompileFromBuf<CompT>(TargetStruct, SrcBuf);
+		return true;
 	}
+	catch (StdCompiler::Exception *pExc)
+	{
+		LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
+		delete pExc;
+		return false;
+	}
+}
 template <class CompT, class StructT>
-	bool CompileFromBuf_LogWarn(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+bool CompileFromBuf_LogWarn(StructT RREF TargetStruct, const typename CompT::InT &SrcBuf, const char *szName)
+{
+	try
 	{
-		try
-		{
-			CompT Compiler;
-			Compiler.setInput(SrcBuf.getRef());
-			Compiler.setWarnCallback(StdCompilerWarnCallback, reinterpret_cast<void *>(const_cast<char *>(szName)));
-			Compiler.Compile(TargetStruct);
-			return true;
-		}
-		catch(StdCompiler::Exception *pExc)
-		{
-			if(!pExc->Pos.getLength())
-				LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
-			else
-				LogF("ERROR: %s (in %s, %s)", pExc->Msg.getData(), pExc->Pos.getData(), szName);
-			delete pExc;
-			return false;
-		}
+		CompT Compiler;
+		Compiler.setInput(SrcBuf.getRef());
+		Compiler.setWarnCallback(StdCompilerWarnCallback, reinterpret_cast<void *>(const_cast<char *>(szName)));
+		Compiler.Compile(TargetStruct);
+		return true;
 	}
-template <class CompT, class StructT>
-	bool DecompileToBuf_Log(StructT RREF TargetStruct, typename CompT::OutT *pOut, const char *szName)
+	catch (StdCompiler::Exception *pExc)
 	{
-		if(!pOut) return false;
-		try
-		{
-			pOut->Take(DecompileToBuf<CompT>(TargetStruct));
-			return true;
-		}
-		catch(StdCompiler::Exception *pExc)
-		{
+		if (!pExc->Pos.getLength())
 			LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
-			delete pExc;
-			return false;
-		}
+		else
+			LogF("ERROR: %s (in %s, %s)", pExc->Msg.getData(), pExc->Pos.getData(), szName);
+		delete pExc;
+		return false;
 	}
+}
+template <class CompT, class StructT>
+bool DecompileToBuf_Log(StructT RREF TargetStruct, typename CompT::OutT *pOut, const char *szName)
+{
+	if (!pOut) return false;
+	try
+	{
+		pOut->Take(DecompileToBuf<CompT>(TargetStruct));
+		return true;
+	}
+	catch (StdCompiler::Exception *pExc)
+	{
+		LogF("ERROR: %s (in %s)", pExc->Msg.getData(), szName);
+		delete pExc;
+		return false;
+	}
+}
 
 #endif // STDCOMPILER_H

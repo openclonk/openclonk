@@ -28,7 +28,7 @@
 #define C4EDITORCAPTION       "Clonk Editor"
 
 #define C4CFG_Company "Redwolf Design"
-#define C4COPYRIGHT_YEAR	 "2010" // might make this dynamic some time...
+#define C4COPYRIGHT_YEAR   "2010" // might make this dynamic some time...
 #define C4COPYRIGHT_COMPANY "OpenClonk Project"
 
 #define C4VERSIONBUILDNAME "Cerulean"
@@ -42,16 +42,16 @@
 
 // Prepend space to version extra
 #ifdef C4VERSIONEXTRA
-	#define C4VERSIONEX " " C4VERSIONEXTRA
+#define C4VERSIONEX " " C4VERSIONEXTRA
 #else
-	#define C4VERSIONEX
+#define C4VERSIONEX
 #endif
 
 // Build Options
 #ifdef _DEBUG
-	#define C4BUILDDEBUG " dbg"
+#define C4BUILDDEBUG " dbg"
 #else
-	#define C4BUILDDEBUG
+#define C4BUILDDEBUG
 #endif
 
 #define C4BUILDOPT C4BUILDDEBUG

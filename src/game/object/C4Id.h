@@ -45,7 +45,7 @@ private:
 	static NamesList names;
 	void assign(const std::string &s);
 public:
-	static const C4ID None;	// Invalid ID
+	static const C4ID None; // Invalid ID
 	static const C4ID Contents; // Not-ID for funny stuff
 	DEPRECATED static const C4ID Energy; // Buildings need energy
 	DEPRECATED static const C4ID CnMaterial; // Buildings need construction material

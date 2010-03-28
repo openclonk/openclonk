@@ -26,7 +26,8 @@
 #include <C4InteractiveThread.h>
 #include <map>
 
-class C4FileMonitor: public StdSchedulerProc, public C4InteractiveThread::Callback {
+class C4FileMonitor: public StdSchedulerProc, public C4InteractiveThread::Callback
+{
 
 public:
 
@@ -66,13 +67,13 @@ private:
 	HANDLE hEvent;
 
 	struct TreeWatch
-		{
+	{
 		HANDLE hDir;
 		StdCopyStrBuf DirName;
 		OVERLAPPED ov;
 		char Buffer[1024];
 		TreeWatch *Next;
-		};
+	};
 	TreeWatch *pWatches;
 
 	void HandleNotify(const char *szDir, const struct _FILE_NOTIFY_INFORMATION *pNotify);

@@ -55,28 +55,32 @@ public:
 class StdMeshMaterialTextureUnit
 {
 public:
-	enum TexAddressModeType {
+	enum TexAddressModeType
+	{
 		AM_Wrap,
 		AM_Clamp,
 		AM_Mirror,
 		AM_Border
 	};
-	
-	enum FilteringType {
+
+	enum FilteringType
+	{
 		F_None,
 		F_Point,
 		F_Linear,
 		F_Anisotropic
 	};
-	
-	enum BlendOpType {
+
+	enum BlendOpType
+	{
 		BO_Replace,
 		BO_Add,
 		BO_Modulate,
 		BO_AlphaBlend
 	};
 
-	enum BlendOpExType {
+	enum BlendOpExType
+	{
 		BOX_Source1,
 		BOX_Source2,
 		BOX_Modulate,
@@ -94,7 +98,8 @@ public:
 		BOX_BlendDiffuseColor
 	};
 
-	enum BlendOpSourceType {
+	enum BlendOpSourceType
+	{
 		BOS_Current,
 		BOS_Texture,
 		BOS_Diffuse,
@@ -105,7 +110,8 @@ public:
 
 	struct Transformation
 	{
-		enum Type {
+		enum Type
+		{
 			T_SCROLL,
 			T_SCROLL_ANIM,
 			T_ROTATE,
@@ -114,8 +120,9 @@ public:
 			T_TRANSFORM,
 			T_WAVE_XFORM
 		};
-		
-		enum XFormType {
+
+		enum XFormType
+		{
 			XF_SCROLL_X,
 			XF_SCROLL_Y,
 			XF_ROTATE,
@@ -123,7 +130,8 @@ public:
 			XF_SCALE_Y
 		};
 
-		enum WaveType {
+		enum WaveType
+		{
 			W_SINE,
 			W_TRIANGLE,
 			W_SQUARE,
@@ -143,7 +151,7 @@ public:
 			struct { float M[16]; } Transform;
 			struct { XFormType XForm; WaveType Wave; float Base; float Frequency; float Phase; float Amplitude; } WaveXForm;
 		};
-		
+
 		double GetScrollX(double t) const { assert(TransformType == T_SCROLL_ANIM); return ScrollAnim.XSpeed * t; }
 		double GetScrollY(double t) const { assert(TransformType == T_SCROLL_ANIM); return ScrollAnim.YSpeed * t; }
 		double GetRotate(double t) const { assert(TransformType == T_ROTATE_ANIM); return fmod(RotateAnim.RevsPerSec * t, 1.0) * 360.0; }
@@ -192,13 +200,13 @@ public:
 	TexAddressModeType TexAddressMode;
 	float TexBorderColor[4];
 	FilteringType Filtering[3]; // min, max, mipmap
-	
+
 	BlendOpExType ColorOpEx;
 	BlendOpSourceType ColorOpSources[2];
 	float ColorOpManualFactor;
 	float ColorOpManualColor1[3];
 	float ColorOpManualColor2[3];
-	
+
 	BlendOpExType AlphaOpEx;
 	BlendOpSourceType AlphaOpSources[2];
 	float AlphaOpManualFactor;
@@ -215,7 +223,8 @@ private:
 class StdMeshMaterialPass
 {
 public:
-	enum CullHardwareType {
+	enum CullHardwareType
+	{
 		CH_Clockwise,
 		CH_CounterClockwise,
 		CH_None
@@ -244,7 +253,7 @@ public:
 	void Load(StdMeshMaterialParserCtx& ctx);
 
 	std::vector<StdMeshMaterialPass> Passes;
-	
+
 	// Filled in by gfx implementation: Whether this technique is available on
 	// the hardware and gfx engine (DX/GL) we are running on
 	bool Available;
@@ -269,7 +278,7 @@ public:
 
 	// Available techniques
 	std::vector<StdMeshMaterialTechnique> Techniques;
-	
+
 	// Filled in by gfx implementation: Best technique to use
 	int BestTechniqueIndex; // Don't use a pointer into the Technique vector to save us from implementing a copyctor
 };

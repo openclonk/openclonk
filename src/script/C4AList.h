@@ -27,34 +27,34 @@
 
 // table entry
 struct C4AListEntry
-	{
+{
 	C4ID Var; void *Val;
 	C4AListEntry *next(); // get entry after the given one
-	};
+};
 
 // bunch of table entries
 struct C4AListChunk
-	{
+{
 	C4AListEntry Entries[C4AListChunkSize]; // table entries
 	void *Stop; // stop entry; should always be NULL
 	C4AListChunk *Next; // next chunk
-	};
+};
 
 // associative list
 class C4AList
-	{
-	protected:
-		C4AListChunk *Table, *CurrC; // first/last table chunk
-		int CCount; // number of entries in current chunk
-		C4AListEntry *Curr; // next available entry to be used
-		void Grow(); // append chunk
+{
+protected:
+	C4AListChunk *Table, *CurrC; // first/last table chunk
+	int CCount; // number of entries in current chunk
+	C4AListEntry *Curr; // next available entry to be used
+	void Grow(); // append chunk
 
-	public:
-		C4AList(); // constructor
-		~C4AList(); // destructor
-		void Clear(); // clear the list
+public:
+	C4AList(); // constructor
+	~C4AList(); // destructor
+	void Clear(); // clear the list
 
-		C4AListEntry *push(C4ID Var = C4ID::None, void *pVal = NULL); // push var/value pair to end of list
-	};
+	C4AListEntry *push(C4ID Var = C4ID::None, void *pVal = NULL); // push var/value pair to end of list
+};
 
 #endif

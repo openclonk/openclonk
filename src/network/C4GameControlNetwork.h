@@ -27,9 +27,9 @@
 
 // constants
 const int32_t C4ControlBacklog = 100, // (ctrl ticks)
-							C4ClientIDAll = C4ClientIDUnknown,
-							C4ControlOverflowLimit = 3, // (ctrl ticks)
-							C4MaxPreSend = 15; // (frames) - must be smaller than C4ControlBacklog!
+                                 C4ClientIDAll = C4ClientIDUnknown,
+                                                 C4ControlOverflowLimit = 3, // (ctrl ticks)
+                                                                          C4MaxPreSend = 15; // (frames) - must be smaller than C4ControlBacklog!
 
 const uint32_t C4ControlRequestInterval = 2000; // (ms)
 
@@ -37,7 +37,7 @@ enum C4GameControlNetworkMode
 {
 	CNM_Decentral = 0, // 0 is the standard mode set in config
 	CNM_Central   = 1,
-	CNM_Async			= 2
+	CNM_Async     = 2
 };
 
 // declarations
@@ -190,10 +190,10 @@ protected:
 	C4GameControlPacket *pNext;
 
 public:
-	int32_t					 getClientID()	const { return iClientID; }
-	int32_t					 getCtrlTick()	const { return iCtrlTick; }
+	int32_t          getClientID()  const { return iClientID; }
+	int32_t          getCtrlTick()  const { return iCtrlTick; }
 	int32_t          getTime()      const { return iTime; }
-	const C4Control &getControl()		const { return Ctrl; }
+	const C4Control &getControl()   const { return Ctrl; }
 
 	void Set(int32_t iClientID, int32_t iCtrlTick);
 	void Set(int32_t iClientID, int32_t iCtrlTick, const C4Control &Ctrl);
@@ -223,8 +223,8 @@ protected:
 	C4GameControlClient *pNext;
 
 public:
-	int32_t			getClientID() const { return iClientID; }
-	const char *getName()			const { return szName; }
+	int32_t     getClientID() const { return iClientID; }
+	const char *getName()     const { return szName; }
 	int32_t     getNextControl() const { return iNextControl; }
 	int32_t     getPerfStat() const;
 
@@ -244,7 +244,7 @@ protected:
 	int32_t iCtrlTick;
 
 public:
-	int32_t getCtrlTick()	const { return iCtrlTick; }
+	int32_t getCtrlTick() const { return iCtrlTick; }
 
 	virtual void CompileFunc(StdCompiler *pComp);
 };
@@ -254,7 +254,7 @@ class C4PacketControlPkt : public C4PacketBase
 public:
 	C4PacketControlPkt() { }
 	C4PacketControlPkt(enum C4ControlDeliveryType eDelivery, const C4IDPacket &Ctrl)
-		: eDelivery(eDelivery), Ctrl(Ctrl)
+			: eDelivery(eDelivery), Ctrl(Ctrl)
 	{ }
 
 protected:

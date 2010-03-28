@@ -28,9 +28,9 @@
 class C4AulScriptEngine;
 class StdMeshMatrix;
 
-const int C4SCR_Access_Public			= 0,
-					C4SCR_Access_Protected	= 1,
-					C4SCR_Access_Private		= 2;
+const int C4SCR_Access_Public     = 0,
+                                    C4SCR_Access_Protected  = 1,
+                                                              C4SCR_Access_Private    = 2;
 
 #define C4SCR_Public    "public"
 #define C4SCR_Protected "protected"
@@ -38,11 +38,11 @@ const int C4SCR_Access_Public			= 0,
 
 // ** a definition of a script constant
 struct C4ScriptConstDef
-	{
+{
 	const char *Identifier; // constant name
 	C4V_Type ValType;       // type value
 	long Data;               // raw data
-	};
+};
 
 
 
@@ -52,15 +52,15 @@ struct C4ScriptConstDef
 // * the second (C4V2) takes an array of 10 parameters
 // only one may be set.
 struct C4ScriptFnDef
-	{
+{
 	const char* Identifier; // the name of the func in the script
 	bool Public;
 	C4V_Type RetType; // type returned. ignored when C4V
 	C4V_Type ParType[10];// type of the parameters. error when wrong parameter type.
 	C4Value (*FunctionC4V)(C4AulContext *cthr, C4Value*, C4Value*, C4Value*, C4Value*, C4Value*,
-	                                           C4Value*, C4Value*, C4Value*, C4Value*, C4Value*);
+	                       C4Value*, C4Value*, C4Value*, C4Value*, C4Value*);
 	C4Value (*FunctionC4V2)(struct C4AulContext *, C4Value *);
-	};
+};
 
 extern C4ScriptConstDef C4ScriptConstMap[];
 extern C4ScriptFnDef C4ScriptFnMap[];
@@ -72,60 +72,60 @@ bool C4ValueToMatrix(const C4ValueArray& array, StdMeshMatrix* matrix);
 
 /* Engine-Calls */
 
-#define PSF_Script							"~Script%i"
-#define PSF_Initialize					"~Initialize"
-#define PSF_Construction				"~Construction"
-#define PSF_Destruction					"~Destruction"
+#define PSF_Script              "~Script%i"
+#define PSF_Initialize          "~Initialize"
+#define PSF_Construction        "~Construction"
+#define PSF_Destruction         "~Destruction"
 #define PSF_ContentsDestruction "~ContentsDestruction" // C4Object *pContents
-#define PSF_InitializePlayer		"~InitializePlayer" // iPlayer, iX, iY, pBase, iTeam, idExtra
-#define PSF_InitializeScriptPlayer		"~InitializeScriptPlayer" // iPlayer, idTeam
-#define PSF_PreInitializePlayer	"~PreInitializePlayer" // iPlayer
+#define PSF_InitializePlayer    "~InitializePlayer" // iPlayer, iX, iY, pBase, iTeam, idExtra
+#define PSF_InitializeScriptPlayer    "~InitializeScriptPlayer" // iPlayer, idTeam
+#define PSF_PreInitializePlayer "~PreInitializePlayer" // iPlayer
 #define PSF_InitializePlayerControl "~InitializePlayerControl" // iPlayer, szControlSet, hasKeyboard, hasMouse, hasGamepad
-#define PSF_RemovePlayer				"~RemovePlayer" // iPlayer
-#define PSF_Time1								"~Time1"
-#define PSF_Hit									"~Hit"
-#define PSF_Hit2								"~Hit2"
-#define PSF_Hit3								"~Hit3"
-#define PSF_Grab								"~Grab"
-#define PSF_Grabbed							"~Grabbed"
-#define PSF_Get									"~Get"
-#define PSF_Put									"~Put"
-#define PSF_Collection					"~Collection" // pObject, fPut
-#define PSF_Collection2					"~Collection2" // pObject
-#define PSF_Ejection						"~Ejection" // pObject
-#define PSF_Entrance						"~Entrance" // pContainer
-#define PSF_Departure						"~Departure" // pContainer
-#define PSF_Completion					"~Completion"
-#define PSF_Purchase						"~Purchase" // iPlayer, pBuyObj
-#define PSF_Sale								"~Sale" // iPlayer
-#define PSF_Damage							"~Damage" // iChange, iCausedBy
-#define PSF_Incineration				"~Incineration" // iCausedBy
-#define PSF_IncinerationEx			"~IncinerationEx" // iCausedBy
-#define PSF_Death								"~Death" // iCausedBy
-#define PSF_ActivateEntrance		"~ActivateEntrance" // pByObject
-#define PSF_Activate						"~Activate" // pByObject
-#define PSF_LiftTop							"~LiftTop"
-#define PSF_Control							"~Control%s"	// pByObject
-#define PSF_ContainedControl		"~Contained%s"	// pByObject
+#define PSF_RemovePlayer        "~RemovePlayer" // iPlayer
+#define PSF_Time1               "~Time1"
+#define PSF_Hit                 "~Hit"
+#define PSF_Hit2                "~Hit2"
+#define PSF_Hit3                "~Hit3"
+#define PSF_Grab                "~Grab"
+#define PSF_Grabbed             "~Grabbed"
+#define PSF_Get                 "~Get"
+#define PSF_Put                 "~Put"
+#define PSF_Collection          "~Collection" // pObject, fPut
+#define PSF_Collection2         "~Collection2" // pObject
+#define PSF_Ejection            "~Ejection" // pObject
+#define PSF_Entrance            "~Entrance" // pContainer
+#define PSF_Departure           "~Departure" // pContainer
+#define PSF_Completion          "~Completion"
+#define PSF_Purchase            "~Purchase" // iPlayer, pBuyObj
+#define PSF_Sale                "~Sale" // iPlayer
+#define PSF_Damage              "~Damage" // iChange, iCausedBy
+#define PSF_Incineration        "~Incineration" // iCausedBy
+#define PSF_IncinerationEx      "~IncinerationEx" // iCausedBy
+#define PSF_Death               "~Death" // iCausedBy
+#define PSF_ActivateEntrance    "~ActivateEntrance" // pByObject
+#define PSF_Activate            "~Activate" // pByObject
+#define PSF_LiftTop             "~LiftTop"
+#define PSF_Control             "~Control%s"  // pByObject
+#define PSF_ContainedControl    "~Contained%s"  // pByObject
 #define PSF_ControlUpdate       "~ControlUpdate" // pByObject, iComs
 #define PSF_ContainedControlUpdate "~ContainedUpdate" // pByObject, iComs
-#define PSF_Contact							"~Contact%s"
-#define PSF_ControlCommand			"~ControlCommand" // szCommand, pTarget, iTx, iTy
+#define PSF_Contact             "~Contact%s"
+#define PSF_ControlCommand      "~ControlCommand" // szCommand, pTarget, iTx, iTy
 #define PSF_ControlCommandFinished "~ControlCommandFinished" // szCommand, pTarget, iTx, iTy, pTarget2, iData
-#define PSF_CatchBlow						"~CatchBlow" // iLevel, pByObject
-#define PSF_QueryCatchBlow			"~QueryCatchBlow" // pByObject
-#define PSF_Stuck								"~Stuck"
-#define PSF_GrabLost						"~GrabLost"
-#define PSF_LineBreak						"~LineBreak" // iCause
-#define PSF_BuildNeedsMaterial	"~BuildNeedsMaterial" // idMat1, iAmount1, idMat2, iAmount2...
-#define PSF_ControlTransfer			"~ControlTransfer" // C4Object* pObj, int iTx, int iTy
-#define PSF_UpdateTransferZone	"~UpdateTransferZone"
-#define PSF_CalcValue						"~CalcValue" // C4Object *pInBase, int iForPlayer
-#define PSF_CalcDefValue				"~CalcDefValue" // C4Object *pInBase, int iForPlayer
-#define PSF_SellTo							"~SellTo" // int iByPlr
-#define PSF_InputCallback				"InputCallback" // const char *szText
-#define PSF_MenuQueryCancel			"~MenuQueryCancel" // int iSelection
-#define PSF_IsFulfilled					"~IsFulfilled"
+#define PSF_CatchBlow           "~CatchBlow" // iLevel, pByObject
+#define PSF_QueryCatchBlow      "~QueryCatchBlow" // pByObject
+#define PSF_Stuck               "~Stuck"
+#define PSF_GrabLost            "~GrabLost"
+#define PSF_LineBreak           "~LineBreak" // iCause
+#define PSF_BuildNeedsMaterial  "~BuildNeedsMaterial" // idMat1, iAmount1, idMat2, iAmount2...
+#define PSF_ControlTransfer     "~ControlTransfer" // C4Object* pObj, int iTx, int iTy
+#define PSF_UpdateTransferZone  "~UpdateTransferZone"
+#define PSF_CalcValue           "~CalcValue" // C4Object *pInBase, int iForPlayer
+#define PSF_CalcDefValue        "~CalcDefValue" // C4Object *pInBase, int iForPlayer
+#define PSF_SellTo              "~SellTo" // int iByPlr
+#define PSF_InputCallback       "InputCallback" // const char *szText
+#define PSF_MenuQueryCancel     "~MenuQueryCancel" // int iSelection
+#define PSF_IsFulfilled         "~IsFulfilled"
 #define PSF_IsFulfilledforPlr   "~IsFulfilledforPlr" // int iCallPlayer
 #define PSF_AttachTargetLost    "~AttachTargetLost"
 #define PSF_CrewSelection       "~CrewSelection" // bool fDeselect, bool fCursorOnly

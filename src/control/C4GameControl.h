@@ -28,19 +28,19 @@
 enum C4ControlMode
 {
 	CM_None,
-	CM_Local,					// control = input
-	CM_Network,				// control = input + network input
-	CM_Replay				// control = replay
+	CM_Local,         // control = input
+	CM_Network,       // control = input + network input
+	CM_Replay       // control = replay
 };
 
 enum C4ControlDeliveryType
 {
-	CDT_Queue		= 0,	// Send in control queue (sync)
-	CDT_Sync		= 1,	// Send, delay execution until net is sync (sync)
-	CDT_Direct	= 2,	// Send directly to all clients (not sync)
-	CDT_Private	= 3,  // Send only to some clients (not sync, obviously)
+	CDT_Queue   = 0,  // Send in control queue (sync)
+	CDT_Sync    = 1,  // Send, delay execution until net is sync (sync)
+	CDT_Direct  = 2,  // Send directly to all clients (not sync)
+	CDT_Private = 3,  // Send only to some clients (not sync, obviously)
 
-	CDT_Decide				// Use whatever sync mode seems fastest atm (sync)
+	CDT_Decide        // Use whatever sync mode seems fastest atm (sync)
 };
 
 // Additional notes / requirements:
@@ -56,7 +56,7 @@ const int32_t C4SyncCheckRate = 1,
 #else
 const int32_t C4SyncCheckRate = 100,
 #endif
-					C4SyncCheckMaxKeep = 50;
+                                C4SyncCheckMaxKeep = 50;
 
 class C4GameControl
 {
@@ -67,21 +67,21 @@ public:
 	~C4GameControl();
 
 public:
-	C4Control						Input;
+	C4Control           Input;
 	C4GameControlNetwork Network;
 
 protected:
-	C4ControlMode				eMode;
+	C4ControlMode       eMode;
 	bool                fPreInit, fInitComplete;
-	bool								fHost;							// (set for local, too)
-	bool								fActivated;
+	bool                fHost;              // (set for local, too)
+	bool                fActivated;
 	bool                fRecordNeeded;
-	int32_t							iClientID;
+	int32_t             iClientID;
 
-	C4Record						*pRecord;
-	C4Playback					*pPlayback;
+	C4Record            *pRecord;
+	C4Playback          *pPlayback;
 
-	C4Control						SyncChecks;
+	C4Control           SyncChecks;
 
 	C4GameControlClient *pClients;
 
@@ -89,10 +89,10 @@ protected:
 
 public:
 	// ticks
-	int32_t							ControlRate;
-	int32_t							ControlTick;
-	int32_t							SyncRate;
-	bool								DoSync;
+	int32_t             ControlRate;
+	int32_t             ControlTick;
+	int32_t             SyncRate;
+	bool                DoSync;
 
 public:
 
@@ -141,7 +141,7 @@ public:
 	// control rate
 	void AdjustControlRate(int32_t iBy);
 	bool KeyAdjustControlRate(int32_t iBy)
-		{ AdjustControlRate(iBy); return true; }
+	{ AdjustControlRate(iBy); return true; }
 
 	// activation
 	void SetActivated(bool fActivated);

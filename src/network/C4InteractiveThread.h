@@ -24,7 +24,7 @@
 
 // Event types
 enum C4InteractiveEventType
-	{
+{
 	Ev_None = 0,
 
 	Ev_Log,
@@ -42,81 +42,81 @@ enum C4InteractiveEventType
 	Ev_Net_Packet,
 
 	Ev_Last = Ev_Net_Packet
-	};
+};
 
 class C4InteractiveThreadNotifyProc : public CStdNotifyProc
-	{
-	private:
-		class C4InteractiveThread *pNotify;
-	public:
-		void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
-		virtual bool Execute(int iTimeout, pollfd * readyfds);
-	};
+{
+private:
+	class C4InteractiveThread *pNotify;
+public:
+	void SetNotify(class C4InteractiveThread *pnNotify) { pNotify = pnNotify; }
+	virtual bool Execute(int iTimeout, pollfd * readyfds);
+};
 
 // Collects StdSchedulerProc objects and executes them in a seperate thread
 // Provides an event queue for the procs to communicate with the main thread
 class C4InteractiveThread
+{
+public:
+	C4InteractiveThread();
+	~C4InteractiveThread();
+
+	// Event callback interface
+	class Callback
 	{
 	public:
-		C4InteractiveThread();
-		~C4InteractiveThread();
-
-		// Event callback interface
-		class Callback
-			{
-			public:
-				virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) = 0;
-				virtual ~Callback() { }
-			};
-
-	private:
-
-		// the thread itself
-		StdSchedulerThread Scheduler;
-
-	  // event queue (signals to main thread)
-	  struct Event
-	  {
-		  C4InteractiveEventType Type;
-		  void *Data;
-#ifdef _DEBUG
-			int Time;
-#endif
-		  Event *Next;
-	  };
-	  Event *pFirstEvent, *pLastEvent;
-	  CStdCSec EventPushCSec, EventPopCSec;
-
-		// callback objects for events of special types
-		Callback *pCallbacks[Ev_Last + 1];
-
-		// proc that is added to the main thread to receive messages from our thread
-		C4InteractiveThreadNotifyProc NotifyProc;
-
-	public:
-
-		// process management
-	  bool AddProc(StdSchedulerProc *pProc);
-	  void RemoveProc(StdSchedulerProc *pProc);
-
-		// event queue
-	  bool PushEvent(C4InteractiveEventType eEventType, void *pData = NULL);
-		void ProcessEvents(); // by main thread
-
-	  // special events
-	  bool ThreadLog(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
-	  bool ThreadLogFatal(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
-	  bool ThreadLogS(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
-
-		// event handlers
-		void SetCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
-			{ pCallbacks[eEvent] = pnNetworkCallback; }
-		void ClearCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
-			{ if(pCallbacks[eEvent] == pnNetworkCallback) pCallbacks[eEvent] = NULL; }
-
-	private:
-	  bool PopEvent(C4InteractiveEventType *pEventType, void **ppData); // by main thread
-
+		virtual void OnThreadEvent(C4InteractiveEventType eEvent, void *pEventData) = 0;
+		virtual ~Callback() { }
 	};
+
+private:
+
+	// the thread itself
+	StdSchedulerThread Scheduler;
+
+	// event queue (signals to main thread)
+	struct Event
+	{
+		C4InteractiveEventType Type;
+		void *Data;
+#ifdef _DEBUG
+		int Time;
+#endif
+		Event *Next;
+	};
+	Event *pFirstEvent, *pLastEvent;
+	CStdCSec EventPushCSec, EventPopCSec;
+
+	// callback objects for events of special types
+	Callback *pCallbacks[Ev_Last + 1];
+
+	// proc that is added to the main thread to receive messages from our thread
+	C4InteractiveThreadNotifyProc NotifyProc;
+
+public:
+
+	// process management
+	bool AddProc(StdSchedulerProc *pProc);
+	void RemoveProc(StdSchedulerProc *pProc);
+
+	// event queue
+	bool PushEvent(C4InteractiveEventType eEventType, void *pData = NULL);
+	void ProcessEvents(); // by main thread
+
+	// special events
+	bool ThreadLog(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	bool ThreadLogFatal(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
+	bool ThreadLogS(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
+
+	// event handlers
+	void SetCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
+	{ pCallbacks[eEvent] = pnNetworkCallback; }
+	void ClearCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
+	{ if (pCallbacks[eEvent] == pnNetworkCallback) pCallbacks[eEvent] = NULL; }
+
+private:
+	bool PopEvent(C4InteractiveEventType *pEventType, void **ppData); // by main thread
+
+};
 
 #endif // C4INTERACTIVETHREAD_H

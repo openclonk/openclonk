@@ -32,35 +32,35 @@ const int32_t C4ClientMaxAddr = 20;
 
 // retry count and interval for connecting a client
 const int32_t C4NetClientConnectAttempts = 3,
-							C4NetClientConnectInterval = 6; // s
+    C4NetClientConnectInterval = 6; // s
 
 // network client status (host only)
 enum C4Network2ClientStatus
 {
-	NCS_Joining,		// waiting for join data
-	NCS_Chasing,		// client is behind (status not acknowledged, isn't waited for)
-	NCS_NotReady,		// client is behind (status not acknowledged)
-	NCS_Ready,			// client acknowledged network status
-	NCS_Remove			// client is to be removed
+	NCS_Joining,    // waiting for join data
+	NCS_Chasing,    // client is behind (status not acknowledged, isn't waited for)
+	NCS_NotReady,   // client is behind (status not acknowledged)
+	NCS_Ready,      // client acknowledged network status
+	NCS_Remove      // client is to be removed
 };
 
 class C4Network2Address
 {
 public:
 	C4Network2Address()
-		: eProtocol(P_NONE)
+			: eProtocol(P_NONE)
 	{ ZeroMem(&addr, sizeof(addr)); }
 
 	C4Network2Address(C4NetIO::addr_t addr, C4Network2IOProtocol eProtocol)
-		: addr(addr), eProtocol(eProtocol)
+			: addr(addr), eProtocol(eProtocol)
 	{ }
 
 	C4Network2Address(const C4Network2Address &addr)
-		: addr(addr.getAddr()), eProtocol(addr.getProtocol())
+			: addr(addr.getAddr()), eProtocol(addr.getProtocol())
 	{ }
 
 	void operator = (const C4Network2Address &addr)
-		{ SetAddr(addr.getAddr()); SetProtocol(addr.getProtocol()); }
+	{ SetAddr(addr.getAddr()); SetProtocol(addr.getProtocol()); }
 
 	bool operator == (const C4Network2Address &addr) const;
 
@@ -70,10 +70,10 @@ protected:
 
 public:
 	const C4NetIO::addr_t &getAddr() const { return addr; }
-	in_addr								getIPAddr() const { return addr.sin_addr; }
-	bool									isIPNull() const { return !addr.sin_addr.s_addr; }
-	uint16_t							getPort() const { return htons(addr.sin_port); }
-	C4Network2IOProtocol	getProtocol() const { return eProtocol; }
+	in_addr               getIPAddr() const { return addr.sin_addr; }
+	bool                  isIPNull() const { return !addr.sin_addr.s_addr; }
+	uint16_t              getPort() const { return htons(addr.sin_port); }
+	C4Network2IOProtocol  getProtocol() const { return eProtocol; }
 
 	StdStrBuf toString() const;
 
@@ -120,27 +120,27 @@ protected:
 
 public:
 
-	C4Client   *getClient()			const { return pClient; }
+	C4Client   *getClient()     const { return pClient; }
 	const C4ClientCore &getCore() const { return getClient()->getCore(); }
-	int32_t			getID()					const { return getCore().getID(); }
-	bool				isLocal()				const { return pClient->isLocal(); }
-	bool				isHost()				const { return getID() == C4ClientIDHost; }
-	const char *getName()				const { return getCore().getName(); }
-	bool				isActivated()		const { return getCore().isActivated(); }
-	bool				isObserver()		const { return getCore().isObserver(); }
+	int32_t     getID()         const { return getCore().getID(); }
+	bool        isLocal()       const { return pClient->isLocal(); }
+	bool        isHost()        const { return getID() == C4ClientIDHost; }
+	const char *getName()       const { return getCore().getName(); }
+	bool        isActivated()   const { return getCore().isActivated(); }
+	bool        isObserver()    const { return getCore().isObserver(); }
 
-	int32_t			getAddrCnt()		const { return iAddrCnt; }
+	int32_t     getAddrCnt()    const { return iAddrCnt; }
 	const C4Network2Address &getAddr(int32_t i) const { return Addr[i]; }
 
 	C4Network2ClientStatus getStatus() const { return eStatus; }
-	bool				hasJoinData()		const { return getStatus() != NCS_Joining; }
-	bool				isChasing()			const { return getStatus() == NCS_Chasing; }
-	bool				isReady()				const { return getStatus() == NCS_Ready; }
-	bool				isWaitedFor()		const { return getStatus() == NCS_NotReady || getStatus() == NCS_Ready; }
-	bool				isRemoved()			const { return getStatus() == NCS_Remove; }
+	bool        hasJoinData()   const { return getStatus() != NCS_Joining; }
+	bool        isChasing()     const { return getStatus() == NCS_Chasing; }
+	bool        isReady()       const { return getStatus() == NCS_Ready; }
+	bool        isWaitedFor()   const { return getStatus() == NCS_NotReady || getStatus() == NCS_Ready; }
+	bool        isRemoved()     const { return getStatus() == NCS_Remove; }
 
-	bool				isConnected()		const { return !! pMsgConn; }
-	time_t			getNextConnAttempt() const { return iNextConnAttempt; }
+	bool        isConnected()   const { return !! pMsgConn; }
+	time_t      getNextConnAttempt() const { return iNextConnAttempt; }
 	int32_t     getLastActivity() const { return iLastActivity; }
 	class C4TableGraph *getStatPing() const { return pstatPing; }
 
@@ -233,7 +233,7 @@ class C4PacketAddr : public C4PacketBase
 public:
 	C4PacketAddr() { }
 	C4PacketAddr(int32_t iClientID, const C4Network2Address &addr)
-		: iClientID(iClientID), addr(addr)
+			: iClientID(iClientID), addr(addr)
 	{ }
 
 protected:
@@ -242,7 +242,7 @@ protected:
 
 public:
 	int32_t getClientID() const { return iClientID; }
-	const C4Network2Address	&getAddr() const { return addr; }
+	const C4Network2Address &getAddr() const { return addr; }
 
 	virtual void CompileFunc(StdCompiler *pComp);
 };

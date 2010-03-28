@@ -52,7 +52,8 @@ const char* GetC4VName(const C4V_Type Type);
 char GetC4VID(const C4V_Type Type);
 C4V_Type GetC4VFromID(char C4VID);
 
-union C4V_Data {
+union C4V_Data
+{
 	intptr_t Int;
 	C4Object * Obj;
 	C4PropList * PropList;
@@ -68,10 +69,10 @@ union C4V_Data {
 
 // converter function, used in converter table
 struct C4VCnvFn
-	{
+{
 	bool (*Function) (C4Value*, C4V_Type); // function to be called; returns whether possible
 	bool Warn;
-	};
+};
 
 template <typename T> struct C4ValueConv;
 
@@ -82,22 +83,22 @@ public:
 	C4Value() : NextRef(NULL), FirstRef(NULL), Type(C4V_Any), HasBaseArray(false) { Data.Ref = 0; }
 
 	C4Value(const C4Value &nValue) : Data(nValue.Data), PropListRefKey(nValue.PropListRefKey), FirstRef(NULL), Type(nValue.Type), HasBaseArray(false)
-		{ AddDataRef(); }
+	{ AddDataRef(); }
 
 	explicit C4Value(bool data): NextRef(NULL), FirstRef(NULL), Type(C4V_Bool), HasBaseArray(false)
-		{ Data.Int = data; AddDataRef(); }
+	{ Data.Int = data; AddDataRef(); }
 	explicit C4Value(int32_t data): NextRef(NULL), FirstRef(NULL), Type(C4V_Int), HasBaseArray(false)
-		{ Data.Int = data; AddDataRef(); }
+	{ Data.Int = data; AddDataRef(); }
 	explicit C4Value(C4Object *pObj): NextRef(NULL), FirstRef(NULL), Type(pObj ? C4V_C4Object : C4V_Any), HasBaseArray(false)
-		{ Data.Obj = pObj; AddDataRef(); }
+	{ Data.Obj = pObj; AddDataRef(); }
 	explicit C4Value(C4String *pStr): NextRef(NULL), FirstRef(NULL), Type(pStr ? C4V_String : C4V_Any), HasBaseArray(false)
-		{ Data.Str = pStr; AddDataRef(); }
+	{ Data.Str = pStr; AddDataRef(); }
 	explicit C4Value(C4ValueArray *pArray): NextRef(NULL), FirstRef(NULL), Type(pArray ? C4V_Array : C4V_Any), HasBaseArray(false)
-		{ Data.Array = pArray; AddDataRef(); }
+	{ Data.Array = pArray; AddDataRef(); }
 	explicit C4Value(C4PropList *p): NextRef(NULL), FirstRef(NULL), Type(p ? C4V_PropList : C4V_Any), HasBaseArray(false)
-		{ Data.PropList = p; AddDataRef(); }
+	{ Data.PropList = p; AddDataRef(); }
 	explicit C4Value(C4Value *pVal): NextRef(NULL), FirstRef(NULL), Type(pVal ? C4V_Ref : C4V_Any), HasBaseArray(false)
-		{ Data.Ref = pVal; AddDataRef(); }
+	{ Data.Ref = pVal; AddDataRef(); }
 
 	C4Value& operator = (const C4Value& nValue);
 
@@ -182,11 +183,11 @@ public:
 	// return referenced value
 	const C4Value & GetRefVal() const;
 	const C4Value & GetRefValConst() const { return GetRefVal(); }
-	protected:
+protected:
 	// This also creates a new entry in a proplist if the referenced value was previously only in the prototype
 	C4Value & GetRefVal();
 
-	public:
+public:
 	// Get the Value at the index. Throws C4AulExecError if not an array
 	void GetArrayElement(int32_t index, C4Value & to, struct C4AulContext *pctx, bool noref);
 	// Set the length of the array. Throws C4AulExecError if not an array
@@ -200,32 +201,33 @@ public:
 	StdStrBuf GetDataString();
 
 	inline bool ConvertTo(C4V_Type vtToType) // convert to dest type
-		{
+	{
 		C4VCnvFn Fn = C4ScriptCnvMap[Type][vtToType];
 		if (Fn.Function)
 			return (*Fn.Function)(this, vtToType);
 		return true;
-		}
+	}
 	inline static bool WarnAboutConversion(C4V_Type vtFromType, C4V_Type vtToType)
-		{
+	{
 		return C4ScriptCnvMap[vtFromType][vtToType].Warn;
-		}
+	}
 
 	// Compilation
 	void CompileFunc(StdCompiler *pComp);
 
 	static inline bool IsNullableType(C4V_Type Type)
-		{ return Type == C4V_Int || Type == C4V_Bool; }
+	{ return Type == C4V_Int || Type == C4V_Bool; }
 
 protected:
 	// data
 	C4V_Data Data;
 
 	// reference-list
-	union {
-	C4Value * NextRef;
-	C4ValueArray * BaseArray;
-	C4String * PropListRefKey;
+	union
+	{
+		C4Value * NextRef;
+		C4ValueArray * BaseArray;
+		C4String * PropListRefKey;
 	};
 	C4Value * FirstRef;
 
@@ -245,7 +247,7 @@ protected:
 	C4ValueArray * GetBaseArray() { if (HasBaseArray) return BaseArray; else return 0; }
 
 	C4Value(C4V_Data nData, C4V_Type nType): Data(nData), NextRef(NULL), FirstRef(NULL), HasBaseArray(false)
-		{ Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
+	{ Type = nData || IsNullableType(nType) ? nType : C4V_Any; AddDataRef(); }
 
 	void Set(C4V_Data nData, C4V_Type nType, C4String * PropListRefKey = 0);
 

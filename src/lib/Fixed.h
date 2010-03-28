@@ -23,7 +23,7 @@
 
 /* The Clonk engine uses fixed point math for exact object positions.
    This is rather silly. Nowadays we should simply use floats. However,
-	 I never dared changing the whole thing. */
+   I never dared changing the whole thing. */
 /* 01-17-2002: I think the whole, ugly fixed-thing has to be revived,
    because floating point calculations are not guaranteed to be network
    safe...however, it can be solved as a data type with operator
@@ -57,206 +57,206 @@ extern long SineTable[9001]; // external table of sine values
 #define FIXED_FPF int32_t(1 << FIXED_SHIFT)
 
 class C4Fixed
-	{
+{
 #ifdef USE_FIXED
-		friend int fixtoi(const C4Fixed &x);
-		friend int fixtoi(const C4Fixed &x, int32_t prec);
-		friend C4Fixed itofix(int32_t x);
-		friend C4Fixed itofix(int32_t x, int32_t prec);
-		friend float fixtof(const C4Fixed &x);
-		friend C4Fixed ftofix(float x);
+	friend int fixtoi(const C4Fixed &x);
+	friend int fixtoi(const C4Fixed &x, int32_t prec);
+	friend C4Fixed itofix(int32_t x);
+	friend C4Fixed itofix(int32_t x, int32_t prec);
+	friend float fixtof(const C4Fixed &x);
+	friend C4Fixed ftofix(float x);
 #else
-		friend void FIXED_TO_FLOAT(float *pVal);
+	friend void FIXED_TO_FLOAT(float *pVal);
 #endif
-		friend void CompileFunc(C4Fixed &rValue, StdCompiler *pComp);
+	friend void CompileFunc(C4Fixed &rValue, StdCompiler *pComp);
 
-	public:
-		int32_t val;	// internal value
+public:
+	int32_t val;  // internal value
 
-	public:
-		// constructors
-		inline C4Fixed () { /*val=0;*/ } // why initialize?
-		inline C4Fixed (const C4Fixed &rCpy): val(rCpy.val) { }
+public:
+	// constructors
+	inline C4Fixed () { /*val=0;*/ } // why initialize?
+	inline C4Fixed (const C4Fixed &rCpy): val(rCpy.val) { }
 
-		// Conversion must be done by the conversion routines itofix, fixtoi, ftofix and fixtof
-		// in order to be backward compatible, so everything is private.
-	private:
-		explicit inline C4Fixed(int32_t iVal)
+	// Conversion must be done by the conversion routines itofix, fixtoi, ftofix and fixtof
+	// in order to be backward compatible, so everything is private.
+private:
+	explicit inline C4Fixed(int32_t iVal)
 			: val (iVal * FIXED_FPF)
-		{ }
-		explicit inline C4Fixed(int32_t iVal, int32_t iPrec)
+	{ }
+	explicit inline C4Fixed(int32_t iVal, int32_t iPrec)
 			: val( iPrec < FIXED_FPF
-							?	iVal * (FIXED_FPF / iPrec) + (iVal * (FIXED_FPF % iPrec)) / iPrec
-							: int32_t( int64_t(iVal) * FIXED_FPF / iPrec )
-						)
-		{ }
-		explicit inline C4Fixed(float fVal)
+			       ? iVal * (FIXED_FPF / iPrec) + (iVal * (FIXED_FPF % iPrec)) / iPrec
+			       : int32_t( int64_t(iVal) * FIXED_FPF / iPrec )
+			     )
+	{ }
+	explicit inline C4Fixed(float fVal)
 			: val(static_cast<int32_t>(fVal * float(FIXED_FPF)))
-		{ }
+	{ }
 
-		// round to int
-		int32_t to_int() const
-			{
-			int32_t r = val;
-			// be careful not to overflow
-			r += (val <= 0x7fffffff - FIXED_FPF / 2) * FIXED_FPF / 2;
-			// ensure that -x.50 is rounded to -(x+1)
-			r -= (val < 0);
-			r >>= FIXED_SHIFT;
-			// round 32767.5 to 32768 (not that anybody cares)
-			r += (val > 0x7fffffff - FIXED_FPF / 2);
-			return r;
-			}
-		int32_t to_int(int32_t prec) const
-			{
-			int64_t r = val;
-			r *= prec;
-			r += FIXED_FPF / 2;
-			r -= (val < 0);
-			r >>= FIXED_SHIFT;
-			return int32_t(r);
-			}
-		// convert to floating point value
-		float to_float() const
-			{
-			return float(val) / float(FIXED_FPF);
-			}
+	// round to int
+	int32_t to_int() const
+	{
+		int32_t r = val;
+		// be careful not to overflow
+		r += (val <= 0x7fffffff - FIXED_FPF / 2) * FIXED_FPF / 2;
+		// ensure that -x.50 is rounded to -(x+1)
+		r -= (val < 0);
+		r >>= FIXED_SHIFT;
+		// round 32767.5 to 32768 (not that anybody cares)
+		r += (val > 0x7fffffff - FIXED_FPF / 2);
+		return r;
+	}
+	int32_t to_int(int32_t prec) const
+	{
+		int64_t r = val;
+		r *= prec;
+		r += FIXED_FPF / 2;
+		r -= (val < 0);
+		r >>= FIXED_SHIFT;
+		return int32_t(r);
+	}
+	// convert to floating point value
+	float to_float() const
+	{
+		return float(val) / float(FIXED_FPF);
+	}
 
-	public:
+public:
 
-		// set integer (allowed for historic reasons)
-		inline C4Fixed &operator = (int32_t x) { return *this = C4Fixed(x); }
+	// set integer (allowed for historic reasons)
+	inline C4Fixed &operator = (int32_t x) { return *this = C4Fixed(x); }
 
-		// test value
-		inline operator bool () const { return !! val; }
-		inline bool operator ! () const { return ! val; }
+	// test value
+	inline operator bool () const { return !! val; }
+	inline bool operator ! () const { return ! val; }
 
-		// arithmetic operations
-		inline C4Fixed &operator += (const C4Fixed &fVal2)
-			{
-			val += fVal2.val;
-			return *this;
-			}
-		inline C4Fixed &operator -= (const C4Fixed &fVal2)
-			{
-			val -= fVal2.val;
-			return *this;
-			}
-		inline C4Fixed &operator *= (const C4Fixed &fVal2)
-			{
+	// arithmetic operations
+	inline C4Fixed &operator += (const C4Fixed &fVal2)
+	{
+		val += fVal2.val;
+		return *this;
+	}
+	inline C4Fixed &operator -= (const C4Fixed &fVal2)
+	{
+		val -= fVal2.val;
+		return *this;
+	}
+	inline C4Fixed &operator *= (const C4Fixed &fVal2)
+	{
 #ifndef FIXED_EMULATE_64BIT
-			val = int32_t( (int64_t(val) * fVal2.val) / FIXED_FPF );
+		val = int32_t( (int64_t(val) * fVal2.val) / FIXED_FPF );
 #else
-			int32_t x0 = val & (FIXED_FPF - 1), 
-			        x1 = val >> FIXED_SHIFT;
-			int32_t y0 = fVal2.val & (FIXED_FPF - 1), 
-			        y1 = fVal2.val >> FIXED_SHIFT;
-			val = x0*y0/FIXED_FPF + x0*y1 + x1*y0 + x1*y1*FIXED_FPF;
+		int32_t x0 = val & (FIXED_FPF - 1),
+		             x1 = val >> FIXED_SHIFT;
+		int32_t y0 = fVal2.val & (FIXED_FPF - 1),
+		             y1 = fVal2.val >> FIXED_SHIFT;
+		val = x0*y0/FIXED_FPF + x0*y1 + x1*y0 + x1*y1*FIXED_FPF;
 #endif
-			return *this;
-			}
-		inline C4Fixed &operator *= (int32_t iVal2)
-			{
-			val *= iVal2;
-			return *this;
-			}
-		inline C4Fixed &operator /= (const C4Fixed &fVal2)
-			{
-			val = int32_t( (int64_t(val) * FIXED_FPF) / fVal2.val );
-			return *this;
-			}
-		inline C4Fixed &operator /= (int32_t iVal2)
-			{
-			val /= iVal2;
-			return *this;
-			}
-		inline C4Fixed operator - () const
-			{
-			C4Fixed fr; fr.val=-val; return fr;
-			}
-		inline C4Fixed operator + () const
-			{
-			return *this;
-			}
+		return *this;
+	}
+	inline C4Fixed &operator *= (int32_t iVal2)
+	{
+		val *= iVal2;
+		return *this;
+	}
+	inline C4Fixed &operator /= (const C4Fixed &fVal2)
+	{
+		val = int32_t( (int64_t(val) * FIXED_FPF) / fVal2.val );
+		return *this;
+	}
+	inline C4Fixed &operator /= (int32_t iVal2)
+	{
+		val /= iVal2;
+		return *this;
+	}
+	inline C4Fixed operator - () const
+	{
+		C4Fixed fr; fr.val=-val; return fr;
+	}
+	inline C4Fixed operator + () const
+	{
+		return *this;
+	}
 
-		inline bool operator == (const C4Fixed &fVal2) const { return val==fVal2.val; }
-		inline bool operator < (const C4Fixed &fVal2) const { return val<fVal2.val; }
-		inline bool operator > (const C4Fixed &fVal2) const { return val>fVal2.val; }
-		inline bool operator <= (const C4Fixed &fVal2) const { return val<=fVal2.val; }
-		inline bool operator >= (const C4Fixed &fVal2) const { return val>=fVal2.val; }
-		inline bool operator != (const C4Fixed &fVal2) const { return val!=fVal2.val; }
+	inline bool operator == (const C4Fixed &fVal2) const { return val==fVal2.val; }
+	inline bool operator < (const C4Fixed &fVal2) const { return val<fVal2.val; }
+	inline bool operator > (const C4Fixed &fVal2) const { return val>fVal2.val; }
+	inline bool operator <= (const C4Fixed &fVal2) const { return val<=fVal2.val; }
+	inline bool operator >= (const C4Fixed &fVal2) const { return val>=fVal2.val; }
+	inline bool operator != (const C4Fixed &fVal2) const { return val!=fVal2.val; }
 
-		// and wrappers
-		inline C4Fixed &operator += (int32_t iVal2) { return operator += (C4Fixed(iVal2)); }
-		inline C4Fixed &operator -= (int32_t iVal2) { return operator -= (C4Fixed(iVal2)); }
+	// and wrappers
+	inline C4Fixed &operator += (int32_t iVal2) { return operator += (C4Fixed(iVal2)); }
+	inline C4Fixed &operator -= (int32_t iVal2) { return operator -= (C4Fixed(iVal2)); }
 
-		inline C4Fixed operator + (const C4Fixed &fVal2) const { return C4Fixed(*this) += fVal2; }
-		inline C4Fixed operator - (const C4Fixed &fVal2) const { return C4Fixed(*this) -= fVal2; }
-		inline C4Fixed operator * (const C4Fixed &fVal2) const { return C4Fixed(*this) *= fVal2; }
-		inline C4Fixed operator / (const C4Fixed &fVal2) const { return C4Fixed(*this) /= fVal2; }
+	inline C4Fixed operator + (const C4Fixed &fVal2) const { return C4Fixed(*this) += fVal2; }
+	inline C4Fixed operator - (const C4Fixed &fVal2) const { return C4Fixed(*this) -= fVal2; }
+	inline C4Fixed operator * (const C4Fixed &fVal2) const { return C4Fixed(*this) *= fVal2; }
+	inline C4Fixed operator / (const C4Fixed &fVal2) const { return C4Fixed(*this) /= fVal2; }
 
-		inline C4Fixed operator + (int32_t iVal2) const { return C4Fixed(*this) += iVal2; }
-		inline C4Fixed operator - (int32_t iVal2) const { return C4Fixed(*this) -= iVal2; }
-		inline C4Fixed operator * (int32_t iVal2) const { return C4Fixed(*this) *= iVal2; }
-		inline C4Fixed operator / (int32_t iVal2) const { return C4Fixed(*this) /= iVal2; }
+	inline C4Fixed operator + (int32_t iVal2) const { return C4Fixed(*this) += iVal2; }
+	inline C4Fixed operator - (int32_t iVal2) const { return C4Fixed(*this) -= iVal2; }
+	inline C4Fixed operator * (int32_t iVal2) const { return C4Fixed(*this) *= iVal2; }
+	inline C4Fixed operator / (int32_t iVal2) const { return C4Fixed(*this) /= iVal2; }
 
 #if defined(_MSC_VER) && _MSC_VER <= 1200
-		inline C4Fixed operator + (int iVal2) const { return operator + (int32_t(iVal2)); }
-		inline C4Fixed operator - (int iVal2) const { return operator - (int32_t(iVal2)); }
-		inline C4Fixed operator * (int iVal2) const { return operator * (int32_t(iVal2)); }
-		inline C4Fixed operator / (int iVal2) const { return operator / (int32_t(iVal2)); }
+	inline C4Fixed operator + (int iVal2) const { return operator + (int32_t(iVal2)); }
+	inline C4Fixed operator - (int iVal2) const { return operator - (int32_t(iVal2)); }
+	inline C4Fixed operator * (int iVal2) const { return operator * (int32_t(iVal2)); }
+	inline C4Fixed operator / (int iVal2) const { return operator / (int32_t(iVal2)); }
 #endif
 
-		inline bool operator == (int32_t iVal2) const { return operator == (C4Fixed(iVal2)); }
-		inline bool operator < (int32_t iVal2) const { return operator < (C4Fixed(iVal2)); }
-		inline bool operator > (int32_t iVal2) const { return operator > (C4Fixed(iVal2)); }
-		inline bool operator <= (int32_t iVal2) const { return operator <= (C4Fixed(iVal2)); }
-		inline bool operator >= (int32_t iVal2) const { return operator >= (C4Fixed(iVal2)); }
-		inline bool operator != (int32_t iVal2) const { return operator != (C4Fixed(iVal2)); }
+	inline bool operator == (int32_t iVal2) const { return operator == (C4Fixed(iVal2)); }
+	inline bool operator < (int32_t iVal2) const { return operator < (C4Fixed(iVal2)); }
+	inline bool operator > (int32_t iVal2) const { return operator > (C4Fixed(iVal2)); }
+	inline bool operator <= (int32_t iVal2) const { return operator <= (C4Fixed(iVal2)); }
+	inline bool operator >= (int32_t iVal2) const { return operator >= (C4Fixed(iVal2)); }
+	inline bool operator != (int32_t iVal2) const { return operator != (C4Fixed(iVal2)); }
 
 #if defined(_MSC_VER) && _MSC_VER <= 1200
-		inline bool operator == (int iVal2) const { return operator == (C4Fixed(int32_t(iVal2))); }
-		inline bool operator < (int iVal2) const { return operator < (C4Fixed(int32_t(iVal2))); }
-		inline bool operator > (int iVal2) const { return operator > (C4Fixed(int32_t(iVal2))); }
-		inline bool operator <= (int iVal2) const { return operator <= (C4Fixed(int32_t(iVal2))); }
-		inline bool operator >= (int iVal2) const { return operator >= (C4Fixed(int32_t(iVal2))); }
-		inline bool operator != (int iVal2) const { return operator != (C4Fixed(int32_t(iVal2))); }
+	inline bool operator == (int iVal2) const { return operator == (C4Fixed(int32_t(iVal2))); }
+	inline bool operator < (int iVal2) const { return operator < (C4Fixed(int32_t(iVal2))); }
+	inline bool operator > (int iVal2) const { return operator > (C4Fixed(int32_t(iVal2))); }
+	inline bool operator <= (int iVal2) const { return operator <= (C4Fixed(int32_t(iVal2))); }
+	inline bool operator >= (int iVal2) const { return operator >= (C4Fixed(int32_t(iVal2))); }
+	inline bool operator != (int iVal2) const { return operator != (C4Fixed(int32_t(iVal2))); }
 #endif
 
 #ifdef USE_FIXED
-		C4Fixed sin_deg() const
-			{
-			// adjust angle
-			int32_t v=int32_t((int64_t(val)*100)/FIXED_FPF); if (v<0) v=18000-v; v%=36000;
-			// get sine
-			C4Fixed fr;
-			switch (v/9000)
-				{
-				case 0: fr.val=+SineTable[v];       break;
-				case 1: fr.val=+SineTable[18000-v]; break;
-				case 2: fr.val=-SineTable[v-18000]; break;
-				case 3: fr.val=-SineTable[36000-v]; break;
-				}
-			return fr;
-			}
-		C4Fixed cos_deg() const
-			{
-			// adjust angle
-			int32_t v=int32_t((int64_t(val)*100)/FIXED_FPF); if (v<0) v=-v; v%=36000;
-			// get cosine
-			C4Fixed fr;
-			switch (v/9000)
-				{
-				case 0: fr.val=+SineTable[9000-v]; break;
-				case 1: fr.val=-SineTable[v-9000]; break;
-				case 2: fr.val=-SineTable[27000-v]; break;
-				case 3: fr.val=+SineTable[v-27000]; break;
-				}
-			return fr;
-			}
+	C4Fixed sin_deg() const
+	{
+		// adjust angle
+		int32_t v=int32_t((int64_t(val)*100)/FIXED_FPF); if (v<0) v=18000-v; v%=36000;
+		// get sine
+		C4Fixed fr;
+		switch (v/9000)
+		{
+		case 0: fr.val=+SineTable[v];       break;
+		case 1: fr.val=+SineTable[18000-v]; break;
+		case 2: fr.val=-SineTable[v-18000]; break;
+		case 3: fr.val=-SineTable[36000-v]; break;
+		}
+		return fr;
+	}
+	C4Fixed cos_deg() const
+	{
+		// adjust angle
+		int32_t v=int32_t((int64_t(val)*100)/FIXED_FPF); if (v<0) v=-v; v%=36000;
+		// get cosine
+		C4Fixed fr;
+		switch (v/9000)
+		{
+		case 0: fr.val=+SineTable[9000-v]; break;
+		case 1: fr.val=-SineTable[v-9000]; break;
+		case 2: fr.val=-SineTable[27000-v]; break;
+		case 3: fr.val=+SineTable[v-27000]; break;
+		}
+		return fr;
+	}
 #endif
 
-	};
+};
 
 #ifdef USE_FIXED
 
@@ -292,14 +292,15 @@ inline int fixtoi(FIXED x)
 	int e;
 #ifdef _MSC_VER
 	float y = x;
-	_asm {
+	_asm
+	{
 		or y,1;
 		fld y;
 		fistp e;
-		}
+	}
 #else
-	asm ("or $1, %0" : "+rom" (x));
-	asm ("fistp%z0 %0" : "=om" (e) : "t" (x) : "st");
+asm ("or $1, %0" : "+rom" (x));
+asm ("fistp%z0 %0" : "=om" (e) : "t" (x) : "st");
 #endif
 	return e;
 }

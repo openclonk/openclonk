@@ -58,7 +58,7 @@ public:
 
 	inline void Start()
 	{
-		if(!iStartCalled)
+		if (!iStartCalled)
 			iStartTick = timeGetTime();
 		iCount ++;
 		iCountPart ++;
@@ -69,7 +69,7 @@ public:
 	{
 		assert(iStartCalled);
 		iStartCalled --;
-		if(!iStartCalled && iCount >= 100)
+		if (!iStartCalled && iCount >= 100)
 		{
 			unsigned int iTime = timeGetTime() - iStartTick;
 
@@ -125,40 +125,40 @@ protected:
 // *** some directives
 #ifdef STAT
 
-	// used to create and start a new C4Stat object
-	#define C4ST_STARTNEW(StatName, strName) static C4Stat StatName(strName); StatName.Start();
+// used to create and start a new C4Stat object
+#define C4ST_STARTNEW(StatName, strName) static C4Stat StatName(strName); StatName.Start();
 
-	// used to create a new C4Stat object
-	#define C4ST_NEW(StatName, strName) C4Stat StatName(strName);
+// used to create a new C4Stat object
+#define C4ST_NEW(StatName, strName) C4Stat StatName(strName);
 
-	// used to start an existing C4Stat object
-	#define C4ST_START(StatName) StatName.Start();
+// used to start an existing C4Stat object
+#define C4ST_START(StatName) StatName.Start();
 
-	// used to stop an existing C4Stat object
-	#define C4ST_STOP(StatName) StatName.Stop();
+// used to stop an existing C4Stat object
+#define C4ST_STOP(StatName) StatName.Stop();
 
-	// shows the statistic (to log)
-	#define C4ST_SHOWSTAT C4Stat::getMainStat()->Show();
+// shows the statistic (to log)
+#define C4ST_SHOWSTAT C4Stat::getMainStat()->Show();
 
-	// shows the statistic (to log)
-	#define C4ST_SHOWPARTSTAT(FrameCounter) C4Stat::getMainStat()->ShowPart(FrameCounter);
+// shows the statistic (to log)
+#define C4ST_SHOWPARTSTAT(FrameCounter) C4Stat::getMainStat()->ShowPart(FrameCounter);
 
-	// resets the whole statistic
-	#define C4ST_RESET C4Stat::getMainStat()->Reset();
+// resets the whole statistic
+#define C4ST_RESET C4Stat::getMainStat()->Reset();
 
-	// resets the partial statistic
+// resets the partial statistic
 #define C4ST_RESETPART C4Stat::getMainStat()->ResetPart();
 
 #else
 
-	#define C4ST_STARTNEW(StatName, strName)
-	#define C4ST_NEW(StatName, strName)
-	#define C4ST_START(StatName)
-	#define C4ST_STOP(StatName)
-	#define C4ST_SHOWSTAT
-	#define C4ST_SHOWPARTSTAT(FrameCounter)
-	#define C4ST_RESET
-	#define C4ST_RESETPART
+#define C4ST_STARTNEW(StatName, strName)
+#define C4ST_NEW(StatName, strName)
+#define C4ST_START(StatName)
+#define C4ST_STOP(StatName)
+#define C4ST_SHOWSTAT
+#define C4ST_SHOWPARTSTAT(FrameCounter)
+#define C4ST_RESET
+#define C4ST_RESETPART
 
 #endif
 

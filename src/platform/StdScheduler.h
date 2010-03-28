@@ -85,7 +85,7 @@ public:
 
 // A simple timer proc
 class CStdTimerProc : public StdSchedulerProc
-	{
+{
 public:
 	CStdTimerProc(uint32_t iDelay) : iLastTimer(0), iDelay(iDelay) { }
 	~CStdTimerProc() { }
@@ -98,25 +98,25 @@ public:
 	void SetDelay(uint32_t inDelay) { iDelay = inDelay; }
 	bool Check() { return timeGetTime() >= iLastTimer + iDelay; }
 	bool CheckAndReset()
-		{
-		if(!Check()) return false;
+	{
+		if (!Check()) return false;
 		// Compensate light drifting
 		uint32_t iTime = timeGetTime();
 		uint32_t iDrift = iTime - iLastTimer - iDelay; // >= 0 because of Check()
 		iLastTimer = iTime - Min(iDrift, iDelay / 2);
 		return true;
-		}
+	}
 
 	// StdSchedulerProc override
 	virtual int GetNextTick(int Now)
-		{
+	{
 		return iLastTimer + iDelay;
-		}
-	};
+	}
+};
 
 // A simple alertable proc
 class CStdNotifyProc : public StdSchedulerProc
-	{
+{
 public:
 	CStdNotifyProc();
 	~CStdNotifyProc() { }
@@ -141,13 +141,13 @@ private:
 public:
 	// StdSchedulerProc override
 	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
-		{
+	{
 		pollfd pfd = { fds[0], POLLIN, 0 };
 		checkfds.push_back(pfd);
-		}
+	}
 
 #endif
-	};
+};
 
 // A simple process scheduler
 class StdScheduler
@@ -163,9 +163,9 @@ private:
 
 	// Unblocker
 	class NoopNotifyProc : public CStdNotifyProc
-		{
-		public: virtual bool Execute(int, pollfd * readyfds) { CheckAndReset(); return true; }
-		};
+	{
+	public: virtual bool Execute(int, pollfd * readyfds) { CheckAndReset(); return true; }
+	};
 	NoopNotifyProc Unblocker;
 
 	// Dummy lists (preserved to reduce allocs)

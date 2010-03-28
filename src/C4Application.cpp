@@ -48,26 +48,26 @@
 
 
 C4Application::C4Application():
-	isFullScreen(true),
-	UseStartupDialog(true),
-	CheckForUpdates(false),
-	NoSplash(false),
-	launchEditor(false),
-	restartAtEnd(false),
-	pGamePadControl(NULL),
-	DDraw(NULL), AppState(C4AS_None)
-	{
-	}
+		isFullScreen(true),
+		UseStartupDialog(true),
+		CheckForUpdates(false),
+		NoSplash(false),
+		launchEditor(false),
+		restartAtEnd(false),
+		pGamePadControl(NULL),
+		DDraw(NULL), AppState(C4AS_None)
+{
+}
 
 C4Application::~C4Application()
-	{
+{
 	// clear gamepad
 	if (pGamePadControl) delete pGamePadControl;
 	// Close log
 	CloseLog();
 	// Launch editor
 	if (launchEditor)
-		{
+	{
 #ifdef _WIN32
 		char strCommandLine[_MAX_PATH + 1]; SCopy(Config.AtExePath(C4CFN_Editor), strCommandLine);
 		STARTUPINFO StartupInfo; ZeroMemory(&StartupInfo, sizeof StartupInfo);
@@ -75,11 +75,11 @@ C4Application::~C4Application()
 		PROCESS_INFORMATION ProcessInfo; ZeroMemory(&ProcessInfo, sizeof ProcessInfo);
 		CreateProcess(NULL, strCommandLine, NULL, NULL, true, 0, NULL, NULL, &StartupInfo, &ProcessInfo);
 #endif
-		}
 	}
+}
 
 bool C4Application::DoInit()
-	{
+{
 	assert(AppState == C4AS_None);
 	// Config overwrite by parameter
 	StdStrBuf sConfigFilename;
@@ -94,22 +94,22 @@ bool C4Application::DoInit()
 	// sometimes, the configuration can become corrupted due to loading errors or w/e
 	// check this and reset defaults if necessary
 	if (Config.IsCorrupted())
-		{
+	{
 		if (sConfigFilename)
-			{
+		{
 			// custom config corrupted: Fail
 			Log("Warning: Custom configuration corrupted - program abort!\n");
 			return false;
-			}
+		}
 		else
-			{
+		{
 			// default config corrupted: Restore default
 			Log("Warning: Configuration corrupted - restoring default!\n");
 			Config.Default();
 			Config.Save();
 			Config.Load();
-			}
 		}
+	}
 	// Init C4Group
 	C4Group_SetMaker(Config.General.Name);
 	C4Group_SetProcessCallback(&ProcessCallback);
@@ -123,7 +123,7 @@ bool C4Application::DoInit()
 
 	// init system group
 	if (!SystemGroup.Open(C4CFN_System))
-		{
+	{
 		// Error opening system group - no LogFatal, because it needs language table.
 		// This will *not* use the FatalErrors stack, but this will cause the game
 		// to instantly halt, anyway.
@@ -132,7 +132,7 @@ bool C4Application::DoInit()
 		// Fatal error, game cannot start - have player notice
 		MessageDialog(szMessage);
 		return false;
-		}
+	}
 
 	// Language override by parameter
 	const char *pLanguage;
@@ -172,15 +172,15 @@ bool C4Application::DoInit()
 
 	// Init carrier window
 	if (isFullScreen)
-		{
+	{
 		if (!(pWindow = FullScreen.Init(this)))
 			{ Clear(); return false; }
-		}
+	}
 	else
-		{
+	{
 		if (!(pWindow = Console.Init(this)))
 			{ Clear(); return false; }
-		}
+	}
 
 	// init timers (needs window)
 	Add(pGameTimer = new C4ApplicationGameTimer());
@@ -194,10 +194,10 @@ bool C4Application::DoInit()
 	if (!DDraw) { LogFatal(LoadResStr("IDS_ERR_DDRAW")); Clear(); return false; }
 
 	if (isFullScreen)
-		{
+	{
 		if (!SetVideoMode(Config.Graphics.ResX, Config.Graphics.ResY, Config.Graphics.BitDepth, Config.Graphics.Monitor, !Config.Graphics.Windowed))
 			pWindow->SetSize(Config.Graphics.ResX, Config.Graphics.ResY);
-		}
+	}
 
 #if defined(_WIN32) && !defined(USE_CONSOLE)
 	// Register clonk file classes - notice: under Vista this will only work if we have administrator rights
@@ -212,7 +212,7 @@ bool C4Application::DoInit()
 	AppState = C4AS_PreInit;
 
 	return true;
-	}
+}
 
 
 void C4Application::ApplyResolutionConstraints()
@@ -246,7 +246,7 @@ void C4Application::ApplyResolutionConstraints()
 }
 
 bool C4Application::PreInit()
-	{
+{
 	if (!Game.PreInit()) return false;
 
 	// startup dialog: Only use if no next mission has been provided
@@ -254,12 +254,12 @@ bool C4Application::PreInit()
 
 	// init loader: Black screen for first start if a video is to be shown; otherwise default spec
 	if (fDoUseStartupDialog)
-		{
+	{
 		//Log(LoadResStr("IDS_PRC_INITLOADER"));
 		bool fUseBlackScreenLoader = UseStartupDialog && !C4Startup::WasFirstRun() && !Config.Startup.NoSplash && !NoSplash && FileExists(C4CFN_Splash);
 		if (!::GraphicsSystem.InitLoaderScreen(C4CFN_StartupBackgroundMain, fUseBlackScreenLoader))
 			{ LogFatal(LoadResStr("IDS_PRC_ERRLOADER")); return false; }
-		}
+	}
 
 	Game.SetInitProgress(fDoUseStartupDialog ? 10.0f : 1.0f);
 
@@ -278,16 +278,16 @@ bool C4Application::PreInit()
 	AppState = fDoUseStartupDialog ? C4AS_Startup : C4AS_StartGame;
 
 	return true;
-	}
+}
 
 bool C4Application::ProcessCallback(const char *szMessage, int iProcess)
-	{
+{
 	Console.Out(szMessage);
 	return true;
-	}
+}
 
 void C4Application::Clear()
-	{
+{
 	Game.Clear();
 	NextMission.Clear();
 	// stop timer
@@ -314,27 +314,27 @@ void C4Application::Clear()
 	Console.Clear();
 	// The very final stuff
 	CStdApp::Clear();
-	}
+}
 
 bool C4Application::OpenGame()
-	{
+{
 	if (isFullScreen)
-		{
+	{
 		// Open game
 		return Game.Init();
-		}
+	}
 	else
-		{
+	{
 		// Execute command line
 		if (Game.ScenarioFilename[0] || Game.DirectJoinAddress[0])
 			return Console.OpenGame(szCmdLine);
-		}
+	}
 	// done; success
 	return true;
-	}
+}
 
 void C4Application::Quit()
-	{
+{
 	// Clear definitions passed by frontend for this round
 	Config.General.Definitions[0] = 0;
 	// Participants should not be cleared for usual startup dialog
@@ -348,13 +348,13 @@ void C4Application::Quit()
 	// quit app
 	CStdApp::Quit();
 	AppState = C4AS_Quit;
-	}
+}
 
 void C4Application::QuitGame()
-	{
+{
 	// reinit desired? Do restart
 	if (UseStartupDialog || NextMission)
-		{
+	{
 		// backup last start params
 		bool fWasNetworkActive = Game.NetworkActive;
 		// stop game
@@ -363,102 +363,102 @@ void C4Application::QuitGame()
 		AppState = C4AS_PreInit;
 		// if a next mission is desired, set to start it
 		if (NextMission)
-			{
+		{
 			SCopy(NextMission.getData(), Game.ScenarioFilename, _MAX_PATH);
 			SReplaceChar(Game.ScenarioFilename, '\\', DirSep[0]); // linux/mac: make sure we are using forward slashes
 			Game.fLobby = Game.NetworkActive = fWasNetworkActive;
 			Game.fObserve = false;
 			Game.Record = !!Config.General.Record;
 			NextMission.Clear();
-			}
-		}
-	else
-		{
-		Quit();
 		}
 	}
+	else
+	{
+		Quit();
+	}
+}
 
 void C4Application::GameTick()
-	{
+{
 	// Exec depending on game state
 	switch (AppState)
+	{
+	case C4AS_None:
+		assert(AppState != C4AS_None);
+		break;
+	case C4AS_Quit:
+		// Do nothing, the main loop will exit soon
+		break;
+	case C4AS_PreInit:
+		if (!PreInit()) Quit();
+		break;
+	case C4AS_Startup:
+		AppState = C4AS_Game;
+		// if no scenario or direct join has been specified, get game startup parameters by startup dialog
+		Game.ScenarioTitle.Copy(LoadResStr("IDS_PRC_INITIALIZE"));
+		if (!C4Startup::Execute()) { Quit(); return; }
+		AppState = C4AS_StartGame;
+		break;
+	case C4AS_StartGame:
+		// immediate progress to next state; OpenGame will enter HandleMessage-loops in startup and lobby!
+		AppState = C4AS_Game;
+		// first-time game initialization
+		if (!OpenGame())
 		{
-		case C4AS_None:
-			assert(AppState != C4AS_None);
-			break;
-		case C4AS_Quit:
-			// Do nothing, the main loop will exit soon
-			break;
-		case C4AS_PreInit:
-			if (!PreInit()) Quit();
-			break;
-		case C4AS_Startup:
-			AppState = C4AS_Game;
-			// if no scenario or direct join has been specified, get game startup parameters by startup dialog
-			Game.ScenarioTitle.Copy(LoadResStr("IDS_PRC_INITIALIZE"));
-			if (!C4Startup::Execute()) { Quit(); return; }
-			AppState = C4AS_StartGame;
-			break;
-		case C4AS_StartGame:
-			// immediate progress to next state; OpenGame will enter HandleMessage-loops in startup and lobby!
-			AppState = C4AS_Game;
-			// first-time game initialization
-			if (!OpenGame())
-				{
-				// set error flag (unless this was a lobby user abort)
-				if (!C4GameLobby::UserAbort)
-					Game.fQuitWithError = true;
-				// no start: Regular QuitGame; this may reset the engine to startup mode if desired
-				QuitGame();
-				}
-			break;
-		case C4AS_Game:
-			// Game
-			if (Game.IsRunning)
-				Game.Execute();
-			Game.DoSkipFrame = false;
-			// Sound
-			SoundSystem.Execute();
-			// Gamepad
-			if (pGamePadControl) pGamePadControl->Execute();
-			break;
+			// set error flag (unless this was a lobby user abort)
+			if (!C4GameLobby::UserAbort)
+				Game.fQuitWithError = true;
+			// no start: Regular QuitGame; this may reset the engine to startup mode if desired
+			QuitGame();
 		}
+		break;
+	case C4AS_Game:
+		// Game
+		if (Game.IsRunning)
+			Game.Execute();
+		Game.DoSkipFrame = false;
+		// Sound
+		SoundSystem.Execute();
+		// Gamepad
+		if (pGamePadControl) pGamePadControl->Execute();
+		break;
 	}
+}
 
 void C4Application::Draw()
-	{
+{
 	// Graphics
-	if(!Game.DoSkipFrame)
-		{
+	if (!Game.DoSkipFrame)
+	{
 		// Fullscreen mode
 		if (isFullScreen)
 			FullScreen.Execute();
 		// Console mode
 		else
 			Console.Execute();
-		}
 	}
+}
 
 void C4Application::SetGameTickDelay(int iDelay)
-	{
-	if(!pGameTimer) return;
+{
+	if (!pGameTimer) return;
 	pGameTimer->SetGameTickDelay(iDelay);
-	}
+}
 
 void C4Application::OnResolutionChanged(unsigned int iXRes, unsigned int iYRes)
-	{
+{
 	// notify game
 	if (DDraw)
-		{
+	{
 		Game.OnResolutionChanged(iXRes, iYRes);
 		DDraw->OnResolutionChanged(iXRes, iYRes);
-		}
-	if(pWindow && pWindow->pSurface)
-		pWindow->pSurface->UpdateSize(iXRes, iYRes);
 	}
+	if (pWindow && pWindow->pSurface)
+		pWindow->pSurface->UpdateSize(iXRes, iYRes);
+}
 
 bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
-	{
+{
 #ifndef USE_CONSOLE
 	// safety
 	if (!szFontFace || !*szFontFace || iFontSize<1 || SLen(szFontFace)>=static_cast<int>(sizeof Config.General.RXFontName)) return false;
@@ -473,27 +473,27 @@ bool C4Application::SetGameFont(const char *szFontFace, int32_t iFontSize)
 	SCopy(szFontFace, Config.General.RXFontName);
 	Config.General.RXFontSize = iFontSize;
 	if (!::GraphicsResource.InitFonts() || !C4Startup::Get()->Graphics.InitFonts())
-		{
+	{
 		// failed :o
 		// shouldn't happen. Better restore config.
 		SCopy(sOldFont.getData(), Config.General.RXFontName);
 		Config.General.RXFontSize = iOldFontSize;
 		return false;
-		}
+	}
 #endif
 	// save changes
 	return true;
-	}
+}
 
 void C4Application::OnCommand(const char *szCmd)
-	{
+{
 	// reroute to whatever seems to take commands at the moment
-	if(AppState == C4AS_Game)
+	if (AppState == C4AS_Game)
 		::MessageInput.ProcessInput(szCmd);
-	}
+}
 
 void C4Application::Activate()
-	{
+{
 #ifdef WIN32
 	// Activate the application to regain focus if it has been lost during loading.
 	// As this is officially not possible any more in new versions of Windows
@@ -502,55 +502,55 @@ void C4Application::Activate()
 	DWORD nForeThread = GetWindowThreadProcessId(GetForegroundWindow(), 0);
 	DWORD nAppThread = GetCurrentThreadId();
 	if (nForeThread != nAppThread)
-		{
+	{
 		AttachThreadInput(nForeThread, nAppThread, true);
 		BringWindowToTop(FullScreen.hWindow);
 		ShowWindow(FullScreen.hWindow, SW_SHOW);
 		AttachThreadInput(nForeThread, nAppThread, false);
-		}
+	}
 	else
-		{
+	{
 		BringWindowToTop(FullScreen.hWindow);
 		ShowWindow(FullScreen.hWindow, SW_SHOW);
-		}
-#endif
 	}
+#endif
+}
 
 void C4Application::SetNextMission(const char *szMissionFilename)
-	{
+{
 	// set next mission if any is desired
 	if (szMissionFilename)
 		NextMission.Copy(szMissionFilename);
 	else
 		NextMission.Clear();
-	}
+}
 
 void C4Application::NextTick()
-	{
-	if(!pGameTimer) return;
+{
+	if (!pGameTimer) return;
 	pGameTimer->Set();
-	}
+}
 
 // *** C4ApplicationGameTimer
 
 C4ApplicationGameTimer::C4ApplicationGameTimer()
-	: CStdMultimediaTimerProc(26),
+		: CStdMultimediaTimerProc(26),
 		iLastGameTick(0), iGameTickDelay(0)
-	{
-	}
+{
+}
 
 void C4ApplicationGameTimer::SetGameTickDelay(uint32_t iDelay)
-	{
+{
 	// Smaller than minimum refresh delay?
 	if (iDelay < uint32_t(Config.Graphics.MaxRefreshDelay))
-		{
+	{
 		// Set critical timer
 		SetDelay(iDelay);
 		// No additional breaking needed
 		iGameTickDelay = 0;
-		}
+	}
 	else
-		{
+	{
 		// Do some magic to get as near as possible to the requested delay
 		int iGraphDelay = Max<uint32_t>(1, iDelay);
 		iGraphDelay /= (iGraphDelay + Config.Graphics.MaxRefreshDelay - 1) / Config.Graphics.MaxRefreshDelay;
@@ -558,25 +558,25 @@ void C4ApplicationGameTimer::SetGameTickDelay(uint32_t iDelay)
 		SetDelay(iGraphDelay);
 		// Slow down game tick
 		iGameTickDelay = iDelay - iGraphDelay / 2;
-		}
 	}
+}
 
 bool C4ApplicationGameTimer::Execute(int iTimeout, pollfd *)
-	{
+{
 	// Check timer and reset
 	if (!CheckAndReset()) return true;
 	unsigned int Now = timeGetTime();
 	// Execute
-	if(Now >= iLastGameTick + iGameTickDelay || Game.GameGo)
-		{
+	if (Now >= iLastGameTick + iGameTickDelay || Game.GameGo)
+	{
 		iLastGameTick += iGameTickDelay;
 		// Compensate if things get too slow
 		if (Now >= iLastGameTick + iGameTickDelay)
 			iLastGameTick += (Now - iLastGameTick) / 2;
 		Application.GameTick();
-		}
+	}
 	// Draw always
 	Application.Draw();
 	return true;
-	}
+}
 

@@ -44,8 +44,8 @@ private:
 
 public:
 	C4Network2ResType  getType() const { return eType; }
-	const char			  *getFile() const { return File.getData(); }
-	bool							 isPresent() const { return !! File; }
+	const char        *getFile() const { return File.getData(); }
+	bool               isPresent() const { return !! File; }
 	const C4Network2ResCore *getResCore() const { return pResCore; }
 	C4Network2Res::Ref getNetRes() const { return pNetRes; }
 

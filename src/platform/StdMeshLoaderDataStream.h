@@ -46,12 +46,12 @@ namespace Ogre
 				throw InsufficientData();
 			cursor += offset;
 		}
-		
+
 		// Only read directly into T when T is trivially copyable (i.e., allows bit-wise copy)
-		template<class T> 
-			typename boost::enable_if<boost::has_trivial_copy<T>, 
-			typename boost::disable_if<boost::is_pointer<T>, T>::type>::type
-			Peek() const
+		template<class T>
+		typename boost::enable_if<boost::has_trivial_copy<T>,
+		typename boost::disable_if<boost::is_pointer<T>, T>::type>::type
+		Peek() const
 		{
 			if (GetRemainingBytes() < sizeof(T))
 				throw InsufficientData();
@@ -62,7 +62,7 @@ namespace Ogre
 
 		// declaration for non-trivially copyable types
 		template<class T> typename boost::disable_if<boost::has_trivial_copy<T>, T>::type
-			Peek() const;
+		Peek() const;
 
 		template<class T> T Read()
 		{
@@ -84,27 +84,27 @@ namespace Ogre
 	};
 
 	template<> inline bool DataStream::Peek<bool>() const
-		{
-			if (GetRemainingBytes() < 1)
-				throw InsufficientData();
-			return *cursor != '\0';
-		}
+	{
+		if (GetRemainingBytes() < 1)
+			throw InsufficientData();
+		return *cursor != '\0';
+	}
 
 	template<> inline std::string DataStream::Peek<std::string>() const
-		{
-			// Ogre terminates strings with \n
-			const char *terminator = static_cast<const char*>(std::memchr(cursor, '\n', GetRemainingBytes()));
-			if (!terminator)
-				throw InsufficientData("Unterminated string");
-			return std::string(cursor, terminator);
-		}
+	{
+		// Ogre terminates strings with \n
+		const char *terminator = static_cast<const char*>(std::memchr(cursor, '\n', GetRemainingBytes()));
+		if (!terminator)
+			throw InsufficientData("Unterminated string");
+		return std::string(cursor, terminator);
+	}
 
 	template<> inline std::string DataStream::Read<std::string>()
-		{
-			std::string temp = Peek<std::string>();
-			Seek(temp.size() + 1);
-			return temp;
-		}
+	{
+		std::string temp = Peek<std::string>();
+		Seek(temp.size() + 1);
+		return temp;
+	}
 
 }
 

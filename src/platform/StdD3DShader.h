@@ -22,34 +22,34 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <StdD3D.h>
 
 class CStdD3DShader
-	{
-	private:
-		IDirect3DDevice9 *pDevice; // DX device parenting shader
-		IDirect3DPixelShader9 *pInterface; // DX interface
-		ID3DXConstantTable *pConstTable; // offsets of shader inputs
-		ID3DXBuffer *pCodeBuffer; // buffer containing shader bytecode
+{
+private:
+	IDirect3DDevice9 *pDevice; // DX device parenting shader
+	IDirect3DPixelShader9 *pInterface; // DX interface
+	ID3DXConstantTable *pConstTable; // offsets of shader inputs
+	ID3DXBuffer *pCodeBuffer; // buffer containing shader bytecode
 
-		void ReleaseCode(); // release init-time members only
+	void ReleaseCode(); // release init-time members only
 
-		bool Compile(bool fMod22, bool fColoredFoW); // create shader byte code
-		int GetConstRegister(const char *szName, D3DXREGISTER_SET eRegType); // get named register index for shader input
-		bool CreateShader(); // create actual DX pixel shader object
+	bool Compile(bool fMod22, bool fColoredFoW); // create shader byte code
+	int GetConstRegister(const char *szName, D3DXREGISTER_SET eRegType); // get named register index for shader input
+	bool CreateShader(); // create actual DX pixel shader object
 
-		bool Error(const char *szMsg); // error to ddraw; always return false
+	bool Error(const char *szMsg); // error to ddraw; always return false
 
-	public:
-		// todo: Make those constants in the shader
-		int iInTexIndex, iFoWTexIndex, iFoWTransformIndex; // constant indices used to pass data to the shader
+public:
+	// todo: Make those constants in the shader
+	int iInTexIndex, iFoWTexIndex, iFoWTransformIndex; // constant indices used to pass data to the shader
 
-		CStdD3DShader();
-		~CStdD3DShader();
+	CStdD3DShader();
+	~CStdD3DShader();
 
-		void Release(); // properly release interfaces
-		void Discard(); // zero members (e.g. after device has been destroyed)
+	void Release(); // properly release interfaces
+	void Discard(); // zero members (e.g. after device has been destroyed)
 
-		bool Init(IDirect3DDevice9 *pDevice, bool fMod2, bool fColoredFoW);
+	bool Init(IDirect3DDevice9 *pDevice, bool fMod2, bool fColoredFoW);
 
-		IDirect3DPixelShader9 *GetInterface() const { return pInterface; }
-	};
+	IDirect3DPixelShader9 *GetInterface() const { return pInterface; }
+};
 
 #endif // defined(USE_DIRECTX) && !defined(INC_STDD3DSHADER)

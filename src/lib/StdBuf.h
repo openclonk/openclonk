@@ -48,20 +48,20 @@ public:
 	// Will take over buffer ownership. Copies data if specified.
 	// Note: Construct with Buf2.getRef() to construct a reference (This will work for a constant Buf2, too)
 	StdBuf(StdBuf RREF Buf2, bool fCopy = false)
-		: fRef(true), pData(NULL), iSize(0)
+			: fRef(true), pData(NULL), iSize(0)
 	{
-		if(fCopy)
+		if (fCopy)
 			Copy(Buf2);
-		else if(!Buf2.isRef())
-		Take(std::move(Buf2));
+		else if (!Buf2.isRef())
+			Take(std::move(Buf2));
 		else
 			Ref(Buf2);
 	}
 #ifdef HAVE_RVALUE_REF
 	StdBuf(const StdBuf & Buf2, bool fCopy = true)
-		: fRef(true), pData(NULL), iSize(0)
+			: fRef(true), pData(NULL), iSize(0)
 	{
-		if(fCopy)
+		if (fCopy)
 			Copy(Buf2);
 		else
 			Ref(Buf2);
@@ -70,9 +70,9 @@ public:
 
 	// Set by constant data. Copies data if desired.
 	StdBuf(const void *pData, size_t iSize, bool fCopy = false)
-		: fRef(true), pData(pData), iSize(iSize)
+			: fRef(true), pData(pData), iSize(iSize)
 	{
-		if(fCopy) Copy();
+		if (fCopy) Copy();
 	}
 
 	~StdBuf()
@@ -130,7 +130,7 @@ public:
 	void Take(void *pnData, size_t inSize)
 	{
 		Clear();
-		if(pnData)
+		if (pnData)
 		{
 			fRef = false; pMData = pnData; iSize = inSize;
 		}
@@ -138,7 +138,7 @@ public:
 	// Transfer puffer ownership to the caller
 	void *GrabPointer()
 	{
-		if(isNull()) return NULL;
+		if (isNull()) return NULL;
 		// Do not give out a buffer which someone else will free
 		if (fRef) Copy();
 		void *pMData = getMData();
@@ -159,7 +159,7 @@ public:
 	void Write(const void *pnData, size_t inSize, size_t iAt = 0)
 	{
 		assert(iAt + inSize <= iSize);
-		if(pnData && inSize) memcpy(getMPtr(iAt), pnData, inSize);
+		if (pnData && inSize) memcpy(getMPtr(iAt), pnData, inSize);
 	}
 	// Move data around inside the buffer (checks overlap)
 	void Move(size_t iFrom, size_t inSize, size_t iTo = 0)
@@ -177,8 +177,8 @@ public:
 	void Grow(size_t iGrow)
 	{
 		// Grow dereferences
-		if(fRef) { Copy(iSize + iGrow); return; }
-		if(!iGrow) return;
+		if (fRef) { Copy(iSize + iGrow); return; }
+		if (!iGrow) return;
 		// Realloc
 		pMData = realloc(pMData, iSize += iGrow);
 	}
@@ -187,15 +187,15 @@ public:
 	{
 		assert(iSize >= iShrink);
 		// Shrink dereferences
-		if(fRef) { Copy(iSize - iShrink); return; }
-		if(!iShrink) return;
+		if (fRef) { Copy(iSize - iShrink); return; }
+		if (!iShrink) return;
 		// Realloc
 		pMData = realloc(pMData, iSize -= iShrink);
 	}
 	// Clear buffer
 	void Clear()
 	{
-		if(!fRef) free(pMData);
+		if (!fRef) free(pMData);
 		pMData = NULL; fRef = true; iSize = 0;
 	}
 	// Free buffer that had been grabbed
@@ -209,7 +209,7 @@ public:
 	// Set buffer size (dereferences)
 	void SetSize(size_t inSize)
 	{
-		if(inSize > iSize)
+		if (inSize > iSize)
 			Grow(inSize - iSize);
 		else
 			Shrink(iSize - inSize);
@@ -230,7 +230,7 @@ public:
 	// Create a copy of the data (dereferences, obviously)
 	void Copy(size_t inSize)
 	{
-		if(isNull() && !inSize) return;
+		if (isNull() && !inSize) return;
 		const void *pOldData = getData();
 		size_t iOldSize = iSize;
 		New(inSize);
@@ -294,7 +294,8 @@ public:
 	bool operator ! () const { return isNull(); }
 
 	// Appending
-	StdBuf operator += (const StdBuf &Buf2) {
+	StdBuf operator += (const StdBuf &Buf2)
+	{
 		Append(Buf2);
 		return *this;
 	}
@@ -315,14 +316,14 @@ public:
 	// Set (as constructor: take if possible)
 	StdBuf &operator = (StdBuf RREF Buf2)
 	{
-		if(Buf2.isRef()) Ref(Buf2); else Take(std::move(Buf2));
+		if (Buf2.isRef()) Ref(Buf2); else Take(std::move(Buf2));
 		return *this;
 	}
 
 	// build a simple hash
 	int GetHash() const
 	{
-		if(isNull()) return 0;
+		if (isNull()) return 0;
 		return crc32(0, reinterpret_cast<const Bytef *>(getData()), getSize());
 	}
 
@@ -334,19 +335,19 @@ public:
 
 // Cast Hide Helpers - MSVC doesn't allow this as member template
 template <class elem_t>
-	const elem_t *getBufPtr(const StdBuf &Buf, size_t iPos = 0)
-	{
-		// assert(iPos + sizeof(elem_t) <= Buf.getSize());
-		const void *pPos = reinterpret_cast<const char *>(Buf.getData()) + iPos;
-		return reinterpret_cast<const elem_t *>(pPos);
-	}
+const elem_t *getBufPtr(const StdBuf &Buf, size_t iPos = 0)
+{
+	// assert(iPos + sizeof(elem_t) <= Buf.getSize());
+	const void *pPos = reinterpret_cast<const char *>(Buf.getData()) + iPos;
+	return reinterpret_cast<const elem_t *>(pPos);
+}
 template <class elem_t>
-	elem_t *getMBufPtr(StdBuf &Buf, size_t iPos = 0)
-	{
-		// assert(iPos + sizeof(elem_t) <= Buf.getSize());
-		void *pPos = reinterpret_cast<char *>(Buf.getMData()) + iPos;
-		return reinterpret_cast<elem_t *>(pPos);
-	}
+elem_t *getMBufPtr(StdBuf &Buf, size_t iPos = 0)
+{
+	// assert(iPos + sizeof(elem_t) <= Buf.getSize());
+	void *pPos = reinterpret_cast<char *>(Buf.getMData()) + iPos;
+	return reinterpret_cast<elem_t *>(pPos);
+}
 
 // Copy-Buffer - Just copies data in the copy constructor.
 class StdCopyBuf : public StdBuf
@@ -358,17 +359,17 @@ public:
 
 	// Set by buffer. Copies data by default.
 	StdCopyBuf(const StdBuf &Buf2, bool fCopy = true)
-		: StdBuf(Buf2.getRef(), fCopy)
+			: StdBuf(Buf2.getRef(), fCopy)
 	{ }
 
 	// Set by buffer. Copies data by default.
 	StdCopyBuf(const StdCopyBuf &Buf2, bool fCopy = true)
-		: StdBuf(Buf2.getRef(), fCopy)
+			: StdBuf(Buf2.getRef(), fCopy)
 	{ }
 
 	// Set by constant data. Copies data by default.
 	StdCopyBuf(const void *pData, size_t iSize, bool fCopy = true)
-		: StdBuf(pData, iSize, fCopy)
+			: StdBuf(pData, iSize, fCopy)
 	{ }
 
 	StdCopyBuf &operator = (const StdBuf &Buf2) { Copy(Buf2); return *this; }
@@ -384,7 +385,7 @@ public:
 	// *** Construction
 
 	StdStrBuf()
-		: StdBuf()
+			: StdBuf()
 	{ }
 
 	// See StdBuf::StdBuf. Will take data if possible.
@@ -393,26 +394,26 @@ public:
 	// StdBuf constructor will be used, which will ref the contents
 	// instead of moving them.
 	StdStrBuf(StdStrBuf RREF Buf2, bool fCopy = false)
-		: StdBuf(static_cast<StdStrBuf RREF>(Buf2), fCopy)
+			: StdBuf(static_cast<StdStrBuf RREF>(Buf2), fCopy)
 	{ }
 
 #ifdef HAVE_RVALUE_REF
 	StdStrBuf(const StdStrBuf & Buf2, bool fCopy = true)
-		: StdBuf(Buf2, fCopy)
+			: StdBuf(Buf2, fCopy)
 	{ }
 #endif
 
 	// Set by constant data. References data by default, copies if specified.
 	explicit StdStrBuf(const char *pData, bool fCopy = false)
-		: StdBuf(pData, pData ? strlen(pData) + 1 : 0, fCopy)
+			: StdBuf(pData, pData ? strlen(pData) + 1 : 0, fCopy)
 	{ }
 
 	// As previous constructor, but set length manually.
 	StdStrBuf(const char *pData, long int iLength)
-		: StdBuf(pData, pData ? iLength + 1 : 0, false)
+			: StdBuf(pData, pData ? iLength + 1 : 0, false)
 	{ }
 	StdStrBuf(const char *pData, size_t iLength, bool fCopy = false)
-		: StdBuf(pData, pData ? iLength + 1 : 0, fCopy)
+			: StdBuf(pData, pData ? iLength + 1 : 0, fCopy)
 	{ }
 
 	ALLOW_TEMP_TO_REF(StdStrBuf)
@@ -479,8 +480,8 @@ public:
 	}
 	void SetLength(size_t iLength)
 	{
-		if(iLength == getLength() && !isNull()) return;
-		if(iLength >= getLength())
+		if (iLength == getLength() && !isNull()) return;
+		if (iLength >= getLength())
 			Grow(iLength - getLength());
 		else
 			Shrink(getLength() - iLength);
@@ -553,7 +554,7 @@ public:
 	void AppendChars(char cChar, size_t iCnt)
 	{
 		Grow(iCnt);
-		for(size_t i = getLength() - iCnt; i < getLength(); i++)
+		for (size_t i = getLength() - iCnt; i < getLength(); i++)
 			*getMPtr(i) = cChar;
 	}
 	void AppendChar(char cChar)
@@ -562,9 +563,9 @@ public:
 	}
 	void InsertChar(char cChar, size_t insert_before)
 	{
-	  assert(insert_before <= getLength());
+		assert(insert_before <= getLength());
 		Grow(1);
-		for(size_t i = getLength()-1; i > insert_before; --i)
+		for (size_t i = getLength()-1; i > insert_before; --i)
 			*getMPtr(i) = *getPtr(i-1);
 		*getMPtr(insert_before) = cChar;
 	}
@@ -573,7 +574,7 @@ public:
 	void AppendUntil(const char *szString, char cUntil)
 	{
 		const char *pPos = strchr(szString, cUntil);
-		if(pPos)
+		if (pPos)
 			Append(szString, pPos - szString);
 		else
 			Append(szString);
@@ -658,16 +659,16 @@ public:
 	{ }
 
 	explicit StdCopyStrBuf(const StdStrBuf &Buf2, bool fCopy = true)
-		: StdStrBuf(Buf2.getRef(), fCopy)
+			: StdStrBuf(Buf2.getRef(), fCopy)
 	{ }
 
 	StdCopyStrBuf(const StdCopyStrBuf &Buf2, bool fCopy = true)
-		: StdStrBuf(Buf2.getRef(), fCopy)
+			: StdStrBuf(Buf2.getRef(), fCopy)
 	{ }
 
 	// Set by constant data. Copies data if desired.
 	explicit StdCopyStrBuf(const char *pData, bool fCopy = true)
-		: StdStrBuf(pData, fCopy)
+			: StdStrBuf(pData, fCopy)
 	{ }
 
 	StdCopyStrBuf &operator = (const StdStrBuf &Buf2) { Copy(Buf2); return *this; }

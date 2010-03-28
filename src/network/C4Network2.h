@@ -35,19 +35,19 @@ class C4PacketJoinData;
 
 // standard ports
 const int16_t C4NetStdPortTCP = 11112,
-							C4NetStdPortUDP = 11113,
-							C4NetStdPortDiscovery = 11114,
-							C4NetStdPortRefServer = 11111,
-							C4NetStdPortPuncher = 11115,
-							C4NetStdPortHTTP = 80;
+                                C4NetStdPortUDP = 11113,
+                                                  C4NetStdPortDiscovery = 11114,
+                                                                          C4NetStdPortRefServer = 11111,
+                                                                                                  C4NetStdPortPuncher = 11115,
+                                                                                                                        C4NetStdPortHTTP = 80;
 
 // ressource retrieve wait timeout
 const int C4NetResRetrieveTimeout = 100000; // (ms)
 
 // client (de)activation
 const int C4NetActivationReqInterval = 5000, // (ms)
-					C4NetMaxBehind4Activation = 20, // (ticks)
-					C4NetDeactivationDelay = 500; // (ticks)
+                                       C4NetMaxBehind4Activation = 20, // (ticks)
+                                                                   C4NetDeactivationDelay = 500; // (ticks)
 
 // client chase
 const unsigned int C4NetChaseTargetUpdateInterval = 5; // (s)
@@ -67,11 +67,11 @@ const int C4NetStreamingInterval = 30; // (s)
 
 enum C4NetGameState
 {
-	GS_None,		// network not active
-	GS_Init,		// connecting to host, waiting for join data
-	GS_Lobby,		// lobby mode
-	GS_Pause,		// game paused
-	GS_Go			// game running
+	GS_None,    // network not active
+	GS_Init,    // connecting to host, waiting for join data
+	GS_Lobby,   // lobby mode
+	GS_Pause,   // game paused
+	GS_Go     // game running
 };
 
 class C4Network2Status : public C4PacketBase
@@ -85,17 +85,17 @@ protected:
 	int32_t iTargetCtrlTick;
 
 public:
-	C4NetGameState	getState()			      const { return eState; }
-	int32_t					getCtrlMode()					const { return iCtrlMode; }
-	int32_t					getTargetCtrlTick()		const { return iTargetCtrlTick; }
-	const char		 *getStateName()				const;
-	const char     *getDescription()			const;
+	C4NetGameState  getState()            const { return eState; }
+	int32_t         getCtrlMode()         const { return iCtrlMode; }
+	int32_t         getTargetCtrlTick()   const { return iTargetCtrlTick; }
+	const char     *getStateName()        const;
+	const char     *getDescription()      const;
 
-	bool						isEnabled()			const { return eState != GS_None; }
-	bool						isLobbyActive()	const { return eState == GS_Lobby; }
-	bool						isPastLobby()	  const { return eState  > GS_Lobby; }
-	bool						isPaused()			const { return eState == GS_Pause; }
-	bool						isRunning()			const { return eState == GS_Go; }
+	bool            isEnabled()     const { return eState != GS_None; }
+	bool            isLobbyActive() const { return eState == GS_Lobby; }
+	bool            isPastLobby()   const { return eState  > GS_Lobby; }
+	bool            isPaused()      const { return eState == GS_Pause; }
+	bool            isRunning()     const { return eState == GS_Go; }
 
 	void Set(C4NetGameState eState, int32_t iTargetCtrlTick);
 	void SetCtrlMode(int32_t iCtrlMode);
@@ -204,15 +204,15 @@ protected:
 public:
 
 	// data access
-	bool isEnabled()		const { return Status.isEnabled(); }
+	bool isEnabled()    const { return Status.isEnabled(); }
 	bool isLobbyActive()const { return Status.isLobbyActive(); }
 	bool isPastLobby()  const { return Status.isPastLobby(); }
-	bool isRunning()		const { return Status.isRunning() && isStatusAck(); }
-	bool isPaused()			const { return Status.isPaused() && isStatusAck(); }
-	bool isPausing()		const { return Status.isPaused() && !fStatusAck; }
-	bool isHost()				const { return fHost; }
-	bool isStatusAck()	const { return fStatusAck; }
-	bool isFrozen()			const;
+	bool isRunning()    const { return Status.isRunning() && isStatusAck(); }
+	bool isPaused()     const { return Status.isPaused() && isStatusAck(); }
+	bool isPausing()    const { return Status.isPaused() && !fStatusAck; }
+	bool isHost()       const { return fHost; }
+	bool isStatusAck()  const { return fStatusAck; }
+	bool isFrozen()     const;
 
 	bool isJoinAllowed() const { return fAllowJoin; }
 	bool isObservingAllowed() const { return fAllowObserve; }
@@ -411,15 +411,15 @@ public:
 	C4GameParameters Parameters;
 
 public:
-	const int32_t					 &getClientID()				const { return iClientID; }
-	const C4Network2ResCore&getDynamicCore()		const { return Dynamic; }
-	const C4Network2Status &getStatus()					const { return GameStatus; }
-	int32_t									getStartCtrlTick()	const { return iStartCtrlTick; }
+	const int32_t          &getClientID()       const { return iClientID; }
+	const C4Network2ResCore&getDynamicCore()    const { return Dynamic; }
+	const C4Network2Status &getStatus()         const { return GameStatus; }
+	int32_t                 getStartCtrlTick()  const { return iStartCtrlTick; }
 
 	void SetClientID(int32_t inClientID) { iClientID = inClientID; }
 	void SetGameStatus(const C4Network2Status &Status) { GameStatus = Status; }
 	void SetDynamicCore(const C4Network2ResCore &Core) { Dynamic = Core; }
-	void SetStartCtrlTick(int32_t iTick)							 { iStartCtrlTick = iTick; }
+	void SetStartCtrlTick(int32_t iTick)               { iStartCtrlTick = iTick; }
 
 	virtual void CompileFunc(StdCompiler *pComp);
 };

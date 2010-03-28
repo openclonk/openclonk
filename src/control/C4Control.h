@@ -44,7 +44,7 @@ protected:
 	int32_t iByClient;
 
 public:
-	int32_t	getByClient() const { return iByClient; }
+	int32_t getByClient() const { return iByClient; }
 	bool LocalControl() const;
 	bool HostControl() const { return iByClient == C4ClientIDHost; }
 
@@ -63,8 +63,8 @@ public:
 };
 
 #define DECLARE_C4CONTROL_VIRTUALS \
-	virtual void Execute() const;	\
-	virtual void CompileFunc(StdCompiler *pComp);
+  virtual void Execute() const; \
+  virtual void CompileFunc(StdCompiler *pComp);
 
 class C4Control : public C4PacketBase
 {
@@ -117,10 +117,10 @@ class C4ControlSet : public C4ControlPacket // sync, lobby
 {
 public:
 	C4ControlSet()
-		: eValType(C4CVT_None), iData(0)
+			: eValType(C4CVT_None), iData(0)
 	{ }
 	C4ControlSet(C4CtrlValueType eValType, int32_t iData)
-		: eValType(eValType), iData(iData)
+			: eValType(eValType), iData(iData)
 	{ }
 protected:
 	C4CtrlValueType eValType;
@@ -138,14 +138,14 @@ public:
 	enum { SCOPE_Console=-2, SCOPE_Global=-1 }; // special scopes to be passed as target objects
 
 	C4ControlScript()
-		: iTargetObj(-1), fInternal(true)
+			: iTargetObj(-1), fInternal(true)
 	{ }
 	C4ControlScript(const char *szScript, int32_t iTargetObj = SCOPE_Global, bool fInternal = true)
-		: iTargetObj(iTargetObj), fInternal(fInternal), Script(szScript, true)
+			: iTargetObj(iTargetObj), fInternal(fInternal), Script(szScript, true)
 	{ }
 protected:
 	int32_t iTargetObj;
-	bool fInternal;					// silent execute
+	bool fInternal;         // silent execute
 	StdStrBuf Script;
 public:
 	void SetTargetObj(int32_t iObj) { iTargetObj = iObj; }
@@ -156,7 +156,7 @@ class C4ControlPlayerSelect : public C4ControlPacket // sync
 {
 public:
 	C4ControlPlayerSelect()
-		: iPlr(-1), fIsAlt(false), iObjCnt(0), pObjNrs(NULL) { }
+			: iPlr(-1), fIsAlt(false), iObjCnt(0), pObjNrs(NULL) { }
 	C4ControlPlayerSelect(int32_t iPlr, const C4ObjectList &Objs, bool fIsAlt);
 	~C4ControlPlayerSelect() { delete[] pObjNrs; }
 protected:
@@ -173,9 +173,9 @@ class C4ControlPlayerControl : public C4ControlPacket // sync
 public:
 	C4ControlPlayerControl() : iPlr(-1), fRelease(false) {}
 	C4ControlPlayerControl(int32_t iPlr, bool fRelease, const C4KeyEventData &rExtraData)
-		: iPlr(iPlr), fRelease(fRelease), ExtraData(rExtraData) { }
+			: iPlr(iPlr), fRelease(fRelease), ExtraData(rExtraData) { }
 	C4ControlPlayerControl(int32_t iPlr, int32_t iControl, int32_t iExtraData) // old-style menu com emulation
-		: iPlr(iPlr), fRelease(false), ExtraData(iExtraData,0,0) { AddControl(iControl,0); }
+			: iPlr(iPlr), fRelease(false), ExtraData(iExtraData,0,0) { AddControl(iControl,0); }
 
 	struct ControlItem
 	{
@@ -195,7 +195,7 @@ protected:
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 	void AddControl(int32_t iControl, int32_t iTriggerMode)
-		{ ControlItems.push_back(ControlItem(iControl, iTriggerMode)); }
+	{ ControlItems.push_back(ControlItem(iControl, iTriggerMode)); }
 	const ControlItemVec &GetControlItems() const { return ControlItems; }
 	bool IsReleaseControl() const { return fRelease; }
 	const C4KeyEventData &GetExtraData() const { return ExtraData; }
@@ -205,9 +205,9 @@ class C4ControlPlayerCommand : public C4ControlPacket // sync
 {
 public:
 	C4ControlPlayerCommand()
-		: iPlr(-1), iCmd(-1) { }
+			: iPlr(-1), iCmd(-1) { }
 	C4ControlPlayerCommand(int32_t iPlr, int32_t iCmd, int32_t iX, int32_t iY,
-												 C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode);
+	                       C4Object *pTarget, C4Object *pTarget2, int32_t iData, int32_t iAddMode);
 protected:
 	int32_t iPlr, iCmd, iX, iY, iTarget, iTarget2, iData, iAddMode;
 public:
@@ -242,7 +242,7 @@ class C4ControlSynchronize : public C4ControlPacket // sync
 {
 public:
 	C4ControlSynchronize(bool fSavePlrFiles = false, bool fSyncClearance = false)
-		: fSavePlrFiles(fSavePlrFiles), fSyncClearance(fSyncClearance)
+			: fSavePlrFiles(fSavePlrFiles), fSyncClearance(fSyncClearance)
 	{ }
 protected:
 	bool fSavePlrFiles, fSyncClearance;
@@ -273,7 +273,7 @@ class C4ControlClientUpdate : public C4ControlPacket // sync, lobby
 public:
 	C4ControlClientUpdate() { }
 	C4ControlClientUpdate(int32_t iID, C4ControlClientUpdType eType, int32_t iData = 0)
-		: iID(iID), eType(eType), iData(iData)
+			: iID(iID), eType(eType), iData(iData)
 	{ }
 public:
 	int32_t iID;
@@ -306,7 +306,7 @@ public:
 	C4ControlPlayerInfo()
 	{ }
 	C4ControlPlayerInfo(const C4ClientPlayerInfos &PlrInfo)
-		: PlrInfo(PlrInfo)
+			: PlrInfo(PlrInfo)
 	{ }
 protected:
 	C4ClientPlayerInfos PlrInfo;
@@ -328,8 +328,8 @@ protected:
 	int32_t iAtClient;
 	int32_t idInfo;
 	bool fByRes;
-	StdBuf PlrData;				   			// for fByRes == false
-	C4Network2ResCore ResCore;		// for fByRes == true
+	StdBuf PlrData;               // for fByRes == false
+	C4Network2ResCore ResCore;    // for fByRes == true
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 	virtual bool PreExecute() const;
@@ -338,54 +338,54 @@ public:
 };
 
 enum C4ControlEMObjectAction
-	{
-	EMMO_Move,			// move objects by offset
-	EMMO_Enter,			// enter objects into iTargetObj
-	EMMO_Duplicate,	// duplicate objects at same position; reset EditCursor
-	EMMO_Script,		// execute Script
-	EMMO_Remove,		// remove objects
-	EMMO_Exit		// exit objects
-	};
+{
+	EMMO_Move,      // move objects by offset
+	EMMO_Enter,     // enter objects into iTargetObj
+	EMMO_Duplicate, // duplicate objects at same position; reset EditCursor
+	EMMO_Script,    // execute Script
+	EMMO_Remove,    // remove objects
+	EMMO_Exit   // exit objects
+};
 
 class C4ControlEMMoveObject : public C4ControlPacket // sync
 {
 public:
 	C4ControlEMMoveObject() : pObjects(NULL) { }
 	C4ControlEMMoveObject(C4ControlEMObjectAction eAction, int32_t tx, int32_t ty, C4Object *pTargetObj,
-												int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
+	                      int32_t iObjectNum = 0, int32_t *pObjects = NULL, const char *szScript = NULL);
 	~C4ControlEMMoveObject();
 protected:
 	C4ControlEMObjectAction eAction; // action to be performed
-	int32_t tx,ty;				// target position
-	int32_t iTargetObj;		// enumerated ptr to target object
-	int32_t iObjectNum;		// number of objects moved
-	int32_t *pObjects;		// pointer on array of objects moved
+	int32_t tx,ty;        // target position
+	int32_t iTargetObj;   // enumerated ptr to target object
+	int32_t iObjectNum;   // number of objects moved
+	int32_t *pObjects;    // pointer on array of objects moved
 	StdStrBuf Script; // script to execute
 public:
 	DECLARE_C4CONTROL_VIRTUALS
 };
 
 enum C4ControlEMDrawAction
-	{
-	EMDT_SetMode,			// set new landscape mode
-	EMDT_Brush,				// drawing tool
-	EMDT_Fill,				// drawing tool
-	EMDT_Line,				// drawing tool
-	EMDT_Rect				// drawing tool
-	};
+{
+	EMDT_SetMode,     // set new landscape mode
+	EMDT_Brush,       // drawing tool
+	EMDT_Fill,        // drawing tool
+	EMDT_Line,        // drawing tool
+	EMDT_Rect       // drawing tool
+};
 
 class C4ControlEMDrawTool : public C4ControlPacket // sync
 {
 public:
 	C4ControlEMDrawTool() { }
 	C4ControlEMDrawTool(C4ControlEMDrawAction eAction, int32_t iMode,
-										  int32_t iX=-1, int32_t iY=-1, int32_t iX2=-1, int32_t iY2=-1, int32_t iGrade=-1,
-									    bool fIFT=true, const char *szMaterial=NULL, const char *szTexture=NULL);
+	                    int32_t iX=-1, int32_t iY=-1, int32_t iX2=-1, int32_t iY2=-1, int32_t iGrade=-1,
+	                    bool fIFT=true, const char *szMaterial=NULL, const char *szTexture=NULL);
 protected:
-	C4ControlEMDrawAction eAction;	// action to be performed
-	int32_t iMode;				// new mode, or mode action was performed in (action will fail if changed)
+	C4ControlEMDrawAction eAction;  // action to be performed
+	int32_t iMode;        // new mode, or mode action was performed in (action will fail if changed)
 	int32_t iX,iY,iX2,iY2,iGrade; // drawing parameters
-	bool fIFT;				// sky/tunnel-background
+	bool fIFT;        // sky/tunnel-background
 	StdStrBuf Material; // used material
 	StdStrBuf Texture;  // used texture
 public:
@@ -394,23 +394,23 @@ public:
 
 enum C4ControlMessageType
 {
-	C4CMT_Normal		= 0,
-	C4CMT_Me    		= 1,
-	C4CMT_Say				= 2,
-	C4CMT_Team			= 3,
-	C4CMT_Private		= 4,
-	C4CMT_Sound			= 5, // "message" is played as a sound instead
+	C4CMT_Normal    = 0,
+	C4CMT_Me        = 1,
+	C4CMT_Say       = 2,
+	C4CMT_Team      = 3,
+	C4CMT_Private   = 4,
+	C4CMT_Sound     = 5, // "message" is played as a sound instead
 	C4CMT_Alert     = 6, // no message. just flash taskbar for inactive clients.
-	C4CMT_System		= 10
+	C4CMT_System    = 10
 };
 
 class C4ControlMessage : public C4ControlPacket // not sync, lobby
 {
 public:
 	C4ControlMessage()
-		: eType(C4CMT_Normal), iPlayer(-1) { }
+			: eType(C4CMT_Normal), iPlayer(-1) { }
 	C4ControlMessage(C4ControlMessageType eType, const char *szMessage, int32_t iPlayer = -1, int32_t iToPlayer = -1)
-		: eType(eType), iPlayer(iPlayer), iToPlayer(iToPlayer), Message(szMessage, true)
+			: eType(eType), iPlayer(iPlayer), iToPlayer(iToPlayer), Message(szMessage, true)
 	{ }
 protected:
 	C4ControlMessageType eType;
@@ -426,9 +426,9 @@ class C4ControlRemovePlr : public C4ControlPacket // sync
 {
 public:
 	C4ControlRemovePlr()
-		: iPlr(-1) { }
+			: iPlr(-1) { }
 	C4ControlRemovePlr(int32_t iPlr, bool fDisconnected)
-		: iPlr(iPlr), fDisconnected(fDisconnected) { }
+			: iPlr(iPlr), fDisconnected(fDisconnected) { }
 protected:
 	int32_t iPlr;
 	bool fDisconnected;
@@ -440,9 +440,9 @@ class C4ControlDebugRec : public C4ControlPacket // sync
 {
 public:
 	C4ControlDebugRec()
-		{ }
+	{ }
 	C4ControlDebugRec(StdBuf &Data)
-		: Data(Data) { }
+			: Data(Data) { }
 protected:
 	StdBuf Data;
 public:
@@ -461,8 +461,8 @@ class C4ControlVote : public C4ControlPacket
 {
 public:
 	C4ControlVote(C4ControlVoteType eType = VT_None, bool fApprove = true, int iData = 0)
-		: eType(eType), fApprove(fApprove), iData(iData)
-		{ }
+			: eType(eType), fApprove(fApprove), iData(iData)
+	{ }
 
 private:
 	C4ControlVoteType eType;
@@ -486,8 +486,8 @@ class C4ControlVoteEnd : public C4ControlVote
 {
 public:
 	C4ControlVoteEnd(C4ControlVoteType eType = VT_None, bool fApprove = true, int iData = 0)
-		: C4ControlVote(eType, fApprove, iData)
-		{ }
+			: C4ControlVote(eType, fApprove, iData)
+	{ }
 
 	virtual bool Sync() const { return true; }
 

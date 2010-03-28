@@ -243,7 +243,7 @@ class C4ValueProviderRef: public StdMeshInstance::ValueProvider
 {
 public:
 	C4ValueProviderRef(const SourceT& ref, FIXED scale):
-		Ref(ref), Scale(scale) {}
+			Ref(ref), Scale(scale) {}
 
 	virtual bool Execute()
 	{

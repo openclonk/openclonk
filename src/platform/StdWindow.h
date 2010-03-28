@@ -126,8 +126,8 @@ const int SEC1_TIMER=1,SEC1_MSEC=1000;
 #define KEY_W XK_w // console mode control key
 #define KEY_X XK_x // cut from GUI-editbox
 // from X.h:
-//#define ShiftMask		(1<<0)
-//#define ControlMask		(1<<2)
+//#define ShiftMask   (1<<0)
+//#define ControlMask   (1<<2)
 #define MK_CONTROL (1<<2)
 #define MK_SHIFT (1<<0)
 #elif defined(USE_SDL_MAINLOOP)
@@ -224,12 +224,12 @@ const int SEC1_TIMER=1,SEC1_MSEC=1000;
 #endif
 
 enum C4AppHandleResult
-	{
+{
 	HR_Timeout,
 	HR_Message,         // handled a message
 	HR_Timer,           // got timer event
 	HR_Failure          // error, or quit message received
-	};
+};
 
 class CStdApp;
 #ifdef USE_X11
@@ -239,7 +239,7 @@ typedef struct _XDisplay Display;
 #endif
 
 class CStdWindow
-	{
+{
 public:
 	CStdWindow ();
 	virtual ~CStdWindow ();
@@ -283,7 +283,7 @@ protected:
 	void * Info;
 #elif defined(USE_SDL_MAINLOOP)
 private:
-		int width, height;
+	int width, height;
 protected:
 	virtual void HandleMessage(SDL_Event&) {}
 #endif
@@ -292,11 +292,11 @@ protected:
 	friend class CStdGLCtx;
 	friend class CStdApp;
 	friend class CStdGtkWindow;
-	};
+};
 
 #ifdef _WIN32
 class CStdMultimediaTimerProc : public CStdNotifyProc
-	{
+{
 public:
 	CStdMultimediaTimerProc(uint32_t iDelay);
 	~CStdMultimediaTimerProc();
@@ -318,10 +318,10 @@ public:
 	// StdSchedulerProc overrides
 	virtual HANDLE GetEvent() { return Event.GetEvent(); }
 
-	};
+};
 
 class CStdMessageProc : public StdSchedulerProc
-	{
+{
 public:
 	CStdMessageProc() : pApp(NULL) { }
 	~CStdMessageProc() { }
@@ -336,7 +336,7 @@ public:
 	virtual bool Execute(int iTimeout = -1, pollfd *dummy=0);
 	virtual HANDLE GetEvent() { return STDSCHEDULER_EVENT_MESSAGE; }
 
-	};
+};
 #else
 #define CStdMultimediaTimerProc CStdTimerProc
 #endif
@@ -344,7 +344,7 @@ public:
 #ifdef USE_CONSOLE
 // A simple alertable proc
 class CStdInProc : public StdSchedulerProc
-	{
+{
 public:
 	CStdInProc();
 	~CStdInProc() { }
@@ -357,15 +357,15 @@ public:
 	// StdSchedulerProc override
 	virtual bool Execute(int iTimeout, pollfd *);
 	virtual void GetFDs(std::vector<struct pollfd> & checkfds)
-		{
+	{
 		pollfd pfd = { 0, POLLIN, 0 };
 		checkfds.push_back(pfd);
-		}
-	};
+	}
+};
 #endif
 
 class CStdApp : public StdScheduler
-	{
+{
 public:
 	CStdApp ();
 	virtual ~CStdApp ();
@@ -374,7 +374,8 @@ public:
 
 	virtual void Clear();
 
-	void Run() {
+	void Run()
+	{
 		// Main message loop
 		while (!fQuitMsgReceived)
 			ScheduleProcs();
@@ -384,9 +385,10 @@ public:
 	bool GetIndexedDisplayMode(int32_t iIndex, int32_t *piXRes, int32_t *piYRes, int32_t *piBitDepth, uint32_t iMonitor);
 	bool SetVideoMode(unsigned int iXRes, unsigned int iYRes, unsigned int iColorDepth, unsigned int iMonitor, bool fFullScreen);
 	void RestoreVideoMode();
-	bool ScheduleProcs(int iTimeout = -1) {
+	bool ScheduleProcs(int iTimeout = -1)
+	{
 		// Always fail after quit message
-		if(fQuitMsgReceived)
+		if (fQuitMsgReceived)
 			return false;
 #if defined(USE_SDL_MAINLOOP)
 		// Unfortunately, the SDL event loop needs to be polled
@@ -415,9 +417,9 @@ public:
 	void NotifyUserIfInactive()
 	{
 #ifdef _WIN32
-	   if (!Active && pWindow) pWindow->FlashWindow();
+		if (!Active && pWindow) pWindow->FlashWindow();
 #else
-	   if (pWindow) pWindow->FlashWindow();
+		if (pWindow) pWindow->FlashWindow();
 #endif
 	}
 	void MessageDialog(const char * message);
@@ -439,21 +441,21 @@ public:
 	HINSTANCE GetInstance() const { return hInstance; }
 	bool DialogMessageHandling(MSG *pMsg) { return pWindow ? pWindow->Win32DialogMessageHandling(pMsg) : false; }
 	bool AssertMainThread()
-		{
+	{
 #ifdef _DEBUG
 		if (hMainThread && hMainThread != ::GetCurrentThread())
-			{
+		{
 			assert(false);
 			return false;
-			}
+		}
 #endif
 		return true;
-		}
+	}
 	PIXELFORMATDESCRIPTOR &GetPFD() { return pfd; }
 	HMONITOR hMon; // monitor handle of used monitor
 	RECT MonitorRect;     // output window rect
 protected:
-	PIXELFORMATDESCRIPTOR pfd;	// desired pixel format
+	PIXELFORMATDESCRIPTOR pfd;  // desired pixel format
 	DEVMODE dspMode, OldDspMode;// display mode for fullscreen
 #else
 #if defined(USE_X11)
@@ -473,10 +475,10 @@ protected:
 	bool IsControlDown() { return KeyMask & MK_CONTROL; }
 	bool IsAltDown() { return KeyMask & (1<<3); }
 	bool AssertMainThread()
-		{
+	{
 		assert(MainThread == pthread_self());
 		return MainThread == pthread_self();
-		}
+	}
 	// These must be public to be callable from callback functions from
 	// the glib main loop that are in an anonymous namespace in
 	// StdXApp.cpp.
@@ -497,7 +499,7 @@ protected:
 #endif
 	const char *szCmdLine;
 	StdStrBuf sLastError;
-	bool fDspModeSet;						// true if display mode was changed
+	bool fDspModeSet;           // true if display mode was changed
 	virtual bool DoInit() = 0;
 
 	// commands from stdin (console only)
@@ -507,6 +509,6 @@ protected:
 	friend class CStdGL;
 	friend class CStdWindow;
 	friend class CStdGtkWindow;
-	};
+};
 
 #endif // INC_STDWINDOW

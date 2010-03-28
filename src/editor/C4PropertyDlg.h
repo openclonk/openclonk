@@ -31,39 +31,39 @@
 #endif
 
 class C4PropertyDlg
-	{
-	public:
-		C4PropertyDlg();
-		~C4PropertyDlg();
-		void Default();
-		void Clear();
-		void Execute();
-		void ClearPointers(C4Object *pObj);
-		void UpdateInputCtrl(C4Object *pObj);
-		bool Open();
-		bool Update();
-		bool Update(C4ObjectList &rSelection);
-		bool Active;
+{
+public:
+	C4PropertyDlg();
+	~C4PropertyDlg();
+	void Default();
+	void Clear();
+	void Execute();
+	void ClearPointers(C4Object *pObj);
+	void UpdateInputCtrl(C4Object *pObj);
+	bool Open();
+	bool Update();
+	bool Update(C4ObjectList &rSelection);
+	bool Active;
 #ifdef _WIN32
-		HWND hDialog;
+	HWND hDialog;
 	friend BOOL CALLBACK PropertyDlgProc(HWND hDlg, UINT Msg, WPARAM wParam, LPARAM lParam);
 #else
 #ifdef WITH_DEVELOPER_MODE
-//		GtkWidget* window;
-		GtkWidget* vbox;
-		GtkWidget* textview;
-		GtkWidget* entry;
+//    GtkWidget* window;
+	GtkWidget* vbox;
+	GtkWidget* textview;
+	GtkWidget* entry;
 
-		gulong handlerHide;
+	gulong handlerHide;
 
-		static void OnScriptActivate(GtkWidget* widget, gpointer data);
-		static void OnWindowHide(GtkWidget* widget, gpointer data);
-//		static void OnDestroy(GtkWidget* widget, gpointer data);
+	static void OnScriptActivate(GtkWidget* widget, gpointer data);
+	static void OnWindowHide(GtkWidget* widget, gpointer data);
+//    static void OnDestroy(GtkWidget* widget, gpointer data);
 #endif
 #endif
-	protected:
-		C4ID idSelectedDef;
-		C4ObjectList Selection;
-	};
+protected:
+	C4ID idSelectedDef;
+	C4ObjectList Selection;
+};
 
 #endif

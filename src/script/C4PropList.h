@@ -26,24 +26,26 @@
 
 class C4Def;
 
-class C4Property {
-	public:
+class C4Property
+{
+public:
 	C4Property() : Key(0) {}
 	C4Property(C4String *Key, const C4Value &Value) : Key(Key), Value(Value)
-		{ assert(Key); Key->IncRef(); assert(Strings.Set.Has(Key)); }
-	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if(Key) Key->IncRef(); }
+	{ assert(Key); Key->IncRef(); assert(Strings.Set.Has(Key)); }
+	C4Property(const C4Property &o) : Key(o.Key), Value(o.Value) { if (Key) Key->IncRef(); }
 	C4Property & operator = (const C4Property &o)
-		{ assert(o.Key); o.Key->IncRef(); if(Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
-	~C4Property() { if(Key) Key->DecRef(); }
+	{ assert(o.Key); o.Key->IncRef(); if (Key) Key->DecRef(); Key = o.Key; Value = o.Value; return *this; }
+	~C4Property() { if (Key) Key->DecRef(); }
 	void CompileFunc(StdCompiler *pComp);
 	C4String * Key;
 	C4Value Value;
 	operator const void * () const { return Key; }
-	C4Property & operator = (void * p) { assert(!p); if(Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
+	C4Property & operator = (void * p) { assert(!p); if (Key) Key->DecRef(); Key = 0; Value.Set0(); return *this; }
 };
 class C4PropListNumbered;
-class C4PropList {
-	public:
+class C4PropList
+{
+public:
 	int32_t Status;
 	void AddRef(C4Value *pRef);
 	void DelRef(const C4Value *pRef, C4Value * pNextRef);
@@ -76,11 +78,11 @@ class C4PropList {
 	// Every proplist has to be initialized by either Init or CompileFunc.
 	void CompileFunc(StdCompiler *pComp);
 
-	protected:
+protected:
 	C4PropList(C4PropList * prototype = 0);
 	C4Set<C4Property> Properties;
 
-	private:
+private:
 	C4Value *FirstRef; // No-Save
 	bool constant; // if true, this proplist is neither saved nor changeable FIXME: implement
 	unsigned int iElementReferences;
@@ -89,8 +91,9 @@ class C4PropList {
 	friend void CompileNewFunc<C4PropList>(C4PropList *&pStruct, StdCompiler *pComp);
 };
 
-class C4PropListNumbered: public C4PropList {
-	public:
+class C4PropListNumbered: public C4PropList
+{
+public:
 	int32_t Number;
 	C4PropListNumbered(C4PropList * prototype = 0);
 	~C4PropListNumbered();
