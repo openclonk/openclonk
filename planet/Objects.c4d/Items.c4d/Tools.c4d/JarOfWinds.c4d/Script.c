@@ -60,7 +60,7 @@ public func ControlUseHolding(object pClonk, ix, iy)
 	 
 	 	Message("Loading...|%3.0d",pClonk,(Amount*99)/MaxCap);	
 	 
-	 	CreateParticle("Air",
+	 	CreateParticle("AirIntake",
 					SX,SY,
 					Sin(180-Angle(0,0,ix,iy)+R,-D/2),
 					Cos(180-Angle(0,0,ix,iy)+R,-D/2),
@@ -100,7 +100,7 @@ private func FireWeapon(object pClonk,iX,iY)
 	
 	var iAngle=Angle(0,0,iX,iY);
 
-	Message("Bang!", pClonk); //For debug.
+	Sound("WindGust.ogg");
 
 	//Find Victims to push
 	for(var i=10; i<32; i++)
@@ -116,7 +116,7 @@ private func FireWeapon(object pClonk,iX,iY)
 					SX,SY,
 					Sin(180-Angle(0,0,iX,iY)+(R),(Amount/2)+25),
 					Cos(180-Angle(0,0,iX,iY)+(R),(Amount/2)+25),
-					Max(i,60),
+					Max(i+30,90),
 					);	
 		
 	 }

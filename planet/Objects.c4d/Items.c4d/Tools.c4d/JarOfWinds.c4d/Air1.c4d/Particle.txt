@@ -1,11 +1,11 @@
 [Particle]
-Name=Air
+Name=AirIntake
 MaxCount=1500
 InitFn=StdInit
 ExecFn=StdExec
-CollisionFn=Bounce
+CollisionFn=Die
 DrawFn=Std
-Face=0,0,32,32,-16,-16
+Face=0,0,128,128,-64,-64
 Delay=0
 Repeats=1
 GravityAcc=-15
