@@ -168,7 +168,7 @@ class C4PlayerControlAssignment
 		bool fRefsResolved; // set to true after sControlName and sKeyNames have been resolved to runtime values
 
 	public:
-		C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), iTriggerMode(CTM_Default), fRefsResolved(false), fOverrideAssignments(false) {}
+		C4PlayerControlAssignment() : TriggerKey(), iControl(CON_None), iPriority(0), fOverrideAssignments(false), iTriggerMode(CTM_Default), fRefsResolved(false) {}
 		~C4PlayerControlAssignment() {}
 
 		void CompileFunc(StdCompiler *pComp);
