@@ -55,14 +55,24 @@ void C4ClientCore::SetLocal(int32_t inID, bool fnActivated, bool fnObserver)
 	fActivated = fnActivated;
 	fObserver = fnObserver;
 	// misc
-	Name.CopyValidated(Config.Network.Nick);
 	CUID.CopyValidated(Config.GetRegistrationData("Cuid"));
 	Revision.CopyValidated(Application.GetRevision());
-	ValidatedStdCopyStrBuf<C4InVal::VAL_NameNoEmpty> NickBuf;
-	NickBuf.Copy(Config.Network.Nick);
-	if (!NickBuf.getLength()) NickBuf.CopyValidated(Config.GetRegistrationData("Nick"));
-	if (!NickBuf.getLength()) NickBuf.CopyValidated(Name);
-	Nick.CopyValidated(NickBuf);
+	if (Config.Network.Nick.getLength())
+	{
+		Name.CopyValidated(Config.Network.Nick);
+		Nick.Copy(Name);
+	}
+	else
+	{
+		const char* position = std::strchr(Config.General.Participants, ';');
+		if (!position)
+			position = Config.General.Participants + std::strlen(Config.General.Participants);
+		if (Config.General.Participants + 4 <= position && std::strncmp(position - 4, ".c4p", 4) == 0)
+			Name.CopyValidated(std::string(Config.General.Participants, position - Config.General.Participants - 4).c_str());
+		else
+			Name.Copy("empty");
+		Nick.Copy(Name);
+	}
 }
 
 void C4ClientCore::SetUnknown(int32_t inID)
