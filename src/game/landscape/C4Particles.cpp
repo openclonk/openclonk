@@ -161,7 +161,7 @@ bool C4ParticleDef::Load(C4Group &rGrp)
 		// if phase num is 1, no reverse is allowed
 		if (Length==1) Reverse=0;
 		// calc aspect
-		Aspect=(float) Gfx.Wdt/Gfx.Hgt;
+		Aspect=(float) Gfx.Hgt/Gfx.Wdt;
 		// get proc pointers
 		if (!(InitProc=ParticleSystem.GetProc(InitFn.getData())))
 			{
