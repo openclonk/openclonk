@@ -5,6 +5,7 @@
  * Copyright (c) 2005, 2009  Peter Wortmann
  * Copyright (c) 2005-2008  Günther Brammer
  * Copyright (c) 2007  Matthes Bender
+ * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -695,6 +696,7 @@ namespace C4GUI
 		Ico_Disconnect     = 49,
 		Ico_View           = 50,
 		Ico_RegJoinOnly    = 51,
+		Ico_Ignored        = 52,
 
 		Ico_Ex_RecordOff     = Ico_Extended + 0,
 		Ico_Ex_RecordOn      = Ico_Extended + 1,

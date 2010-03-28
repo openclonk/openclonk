@@ -2,6 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2008  Sven Eberhardt
+ * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -211,6 +212,7 @@ private:
 		void OnCtxKick(C4GUI::Element *pListItem); // kick item selected in client ctx menu
 		void OnCtxActivate(C4GUI::Element *pListItem); // toggle player/observer
 		void OnCtxInfo(C4GUI::Element *pListItem); // show info dlg (modal)
+		void OnCtxIgnore(C4GUI::Element *pListItem);
 		void OnBtnAddPlr(C4GUI::Control *btn);
 	};
 

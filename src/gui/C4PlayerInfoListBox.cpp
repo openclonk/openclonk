@@ -4,6 +4,7 @@
  * Copyright (c) 2008  Sven Eberhardt
  * Copyright (c) 2008  Matthes Bender
  * Copyright (c) 2009  Nicolas Hake
+ * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2008-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -825,6 +826,8 @@ bool C4PlayerInfoListBox::ClientListItem::IsLocal() const
 
 C4GUI::Icons C4PlayerInfoListBox::ClientListItem::GetCurrentStatusIcon()
 {
+	if (GetClient()->IsIgnored()) return C4GUI::Ico_Ignored;
+
 	// sound icon?
 	if (tLastSoundTime)
 	{
@@ -909,8 +912,21 @@ C4GUI::ContextMenu *C4PlayerInfoListBox::ClientListItem::OnContext(C4GUI::Elemen
 	StdCopyStrBuf strClientInfoDesc(LoadResStr("IDS_NET_CLIENTINFO_DESC"));
 	pMenu->AddItem(LoadResStr("IDS_NET_CLIENTINFO"), strClientInfoDesc.getData(), C4GUI::Ico_None,
 	               new C4GUI::CBMenuHandler<ClientListItem>(this, &ClientListItem::OnCtxInfo));
+	//Ignore button
+	if(!pClient->isLocal())
+	{
+		StdCopyStrBuf strNewColor(LoadResStr(pClient->IsIgnored() ? "IDS_NET_CLIENT_UNIGNORE" : "IDS_NET_CLIENT_IGNORE"));
+		pMenu->AddItem(strNewColor.getData(), FormatString(LoadResStr("IDS_NET_CLIENT_IGNORE_DESC"), pClient->getName()).getData(),
+			C4GUI::Ico_None, new C4GUI::CBMenuHandler<ClientListItem>(this, &ClientListItem::OnCtxIgnore), NULL);
+	}
+	
 	// open it
 	return pMenu;
+}
+
+void C4PlayerInfoListBox::ClientListItem::OnCtxIgnore(C4GUI::Element *pListItem)
+{
+	GetClient()->ToggleIgnore();
 }
 
 void C4PlayerInfoListBox::ClientListItem::OnCtxKick(C4GUI::Element *pListItem)

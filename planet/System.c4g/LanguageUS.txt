@@ -1332,3 +1332,6 @@ IDS_VOTE_SURRENDERWARNING=It was decided that you cannot leave the game. However
 IDS_VOTE_VOTEDOUT=voted out
 IDS_VOTE_WANTSTO=%s wants to %s
 IDS_VOTE_WANTSTOALLOW=%s wants to %s. Allow?
+IDS_NET_CLIENT_IGNORE_DESC=Ignores %s. You will not be able to see messages from this client.
+IDS_NET_CLIENT_IGNORE=Ignore
+IDS_NET_CLIENT_UNIGNORE=Unignore

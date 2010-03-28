@@ -6,6 +6,7 @@
  * Copyright (c) 2005-2006  Günther Brammer
  * Copyright (c) 2006  Florian Groß
  * Copyright (c) 2007-2008  Matthes Bender
+ * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -664,7 +665,7 @@ namespace C4GameLobby
 		// output message should be prefixed with client already
 		const char *szMsgBuf = szMessage;
 		// 2do: log with player colors?
-		if (pChatBox && C4GUI::GetRes())
+		if (pChatBox && C4GUI::GetRes() && !pOfClient->IsIgnored())
 		{
 			pChatBox->AddTextLine(szMsgBuf, &C4GUI::GetRes()->TextFont, ::Network.Players.GetClientChatColor(pOfClient ? pOfClient->getID() : Game.Clients.getLocalID(), true) | C4GUI_MessageFontAlpha, true, true);
 			pChatBox->ScrollToBottom();

@@ -1332,4 +1332,6 @@ IDS_VOTE_SURRENDERWARNING=Es wurde entschieden, dass du das Spiel nicht verlasse
 IDS_VOTE_VOTEDOUT=rausgeworfen
 IDS_VOTE_WANTSTO=%s möchte %s
 IDS_VOTE_WANTSTOALLOW=%s möchte %s. Zulassen?
-
+IDS_NET_CLIENT_IGNORE_DESC=%s ignorieren. Du kannst Nachrichten von diesem Client dann in der Lobby nicht mehr lesen.
+IDS_NET_CLIENT_IGNORE=Ignorieren
+IDS_NET_CLIENT_UNIGNORE=Nicht mehr ignorieren

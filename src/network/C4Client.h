@@ -2,6 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2005-2006  Peter Wortmann
+ * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -95,6 +96,8 @@ private:
 	bool fLocal; // Local, NoSync
 	class C4Network2Client *pNetClient; // Local, NoSync
 
+	bool fIsIgnored; // Local, NoSync: chat messages from this client are suppressed
+
 	C4Client *pNext;
 
 public:
@@ -107,6 +110,7 @@ public:
 	bool        isActivated() const { return Core.isActivated(); }
 	bool        isObserver()  const { return Core.isObserver(); }
 	bool        isRegistered()const { return Core.isRegistered(); }
+	bool IsIgnored() const { return fIsIgnored; }
 
 	bool        isLocal()     const { return fLocal; }
 	C4Network2Client *getNetClient() const { return pNetClient; }
@@ -118,11 +122,14 @@ public:
 	void SetObserver() { Core.SetObserver(true); }
 	void SetLocal();
 
+	void ToggleIgnore() { fIsIgnored = !fIsIgnored; }
+
 	void UnlinkNetClient() { pNetClient = NULL; }
 
 	void Remove();
 
 	void CompileFunc(StdCompiler *pComp);
+	
 };
 
 class C4ClientList

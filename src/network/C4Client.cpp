@@ -4,6 +4,7 @@
  * Copyright (c) 2005-2006  Peter Wortmann
  * Copyright (c) 2006  Günther Brammer
  * Copyright (c) 2008  Armin Burgmeier
+ * Copyright (c) 2010  Carl-Philip Hänsch
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
  *
  * Portions might be copyrighted by other authors who have contributed
@@ -105,12 +106,12 @@ void C4ClientCore::CompileFunc(StdCompiler *pComp)
 // *** C4Client
 
 C4Client::C4Client()
-		: pNetClient(NULL)
+		: pNetClient(NULL), fIsIgnored(false)
 {
 }
 
 C4Client::C4Client(const C4ClientCore &Core)
-		: Core(Core), fLocal(false), pNetClient(NULL), pNext(NULL)
+		: Core(Core), fLocal(false), pNetClient(NULL), fIsIgnored(false), pNext(NULL)
 {
 
 }
