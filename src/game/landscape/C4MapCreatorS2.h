@@ -201,29 +201,6 @@ public:
 	friend class C4MCParser;
 };
 
-// node attribute entry for SetField search
-enum C4MCValueType
-{
-	C4MCV_None,
-	C4MCV_Integer,
-	C4MCV_Percent,
-	C4MCV_Pixels,
-	C4MCV_Material,
-	C4MCV_Texture,
-	C4MCV_Algorithm,
-	C4MCV_Boolean,
-	C4MCV_Zoom,
-	C4MCV_ScriptFunc
-};
-
-struct C4MCNodeAttr
-{
-	char Name[C4MaxName]; // name of field
-	C4MCValueType Type; // type of field
-	int32_t iOff; // offset of field in overlay MCOverlay-class
-};
-extern C4MCNodeAttr C4MCOvrlMap[];
-
 // overlay node
 class C4MCOverlay : public C4MCNode
 {
