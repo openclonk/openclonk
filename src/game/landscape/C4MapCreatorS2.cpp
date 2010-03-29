@@ -404,7 +404,7 @@ bool C4MCOverlay::SetField(C4MCParser *pParser, const char *szField, const char 
 				if (!MapCreator->TexMap->CheckTexture(StrPar))
 					throw C4MCParserErr(pParser, C4MCErr_TexNotFound, StrPar);
 				// store
-				SCopy(StrPar, Target.As<char []>(), C4MaxName);
+				SCopy(StrPar, Target.As<char [C4M_MaxName + 1]>(), C4M_MaxName);
 				break;
 			case C4MCV_Algorithm:
 				// get algo
