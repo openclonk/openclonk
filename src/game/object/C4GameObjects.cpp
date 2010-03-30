@@ -426,23 +426,6 @@ C4Object *C4GameObjects::SafeObjectPointer(int32_t iNumber)
 	return pObj;
 }
 
-const uint32_t C4EnumPointer1 = 1000000000;
-C4Object* C4GameObjects::Enumerated(C4Object *pObj)
-{
-	uint32_t iPtrNum;
-	// If object is enumerated, convert to enumerated pointer
-	if ((iPtrNum = ObjectNumber(pObj)))
-		return (C4Object*) (C4EnumPointer1 + iPtrNum);
-	// Oops!
-	return (C4Object*)-1;
-}
-
-C4Object* C4GameObjects::Denumerated(C4Object *pObj)
-{
-	// convert to pointer
-	return ObjectPointer((uint32_t)(intptr_t) pObj - C4EnumPointer1);
-}
-
 C4ObjectList &C4GameObjects::ObjectsInt()
 {
 	// some time ago, only objects in the topleft corner used to be recognized

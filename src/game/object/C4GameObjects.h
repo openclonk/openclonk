@@ -63,8 +63,6 @@ public:
 	virtual C4PropList *PropListPointer(int32_t iNumber); // object pointer by number
 	int32_t ObjectNumber(C4PropList *pObj); // object number by pointer
 	C4Object* SafeObjectPointer(int32_t iNumber);
-	C4Object* Denumerated(C4Object *pObj);
-	C4Object* Enumerated(C4Object *pObj);
 
 	C4ObjectList &ObjectsInt(); // return object list containing system objects
 
