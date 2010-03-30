@@ -1109,14 +1109,14 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 	C4Object *cObj; C4ObjectLink *clnk;
 
 	// layer check: Blast in same layer only
-	if (pByObj) pByObj = pByObj->pLayer;
+	if (pByObj) pByObj = pByObj->Layer;
 
 	// Contained blast
 	if (inobj)
 	{
 		inobj->Blast(level,iCausedBy);
 		for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-			if (cObj->Status) if (cObj->Contained==inobj) if (cObj->pLayer==pByObj)
+			if (cObj->Status) if (cObj->Contained==inobj) if (cObj->Layer==pByObj)
 						cObj->Blast(level,iCausedBy);
 	}
 
@@ -1124,7 +1124,7 @@ void C4Game::BlastObjects(int32_t tx, int32_t ty, int32_t level, C4Object *inobj
 	else
 	{
 		for (clnk=Objects.First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-			if (cObj->Status) if (!cObj->Contained) if (cObj->pLayer==pByObj)
+			if (cObj->Status) if (!cObj->Contained) if (cObj->Layer==pByObj)
 					{
 						// Direct hit (5 pixel range to all sides)
 						if (Inside<int32_t>( ty-(cObj->GetY()+cObj->Shape.y), -5, cObj->Shape.Hgt-1+10 ))
@@ -1300,7 +1300,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 	// determine layer to search in
 	C4Object *layer_object = NULL;
 	C4Player *plr = ::Players.Get(iPlr);
-	if (plr && plr->Cursor) layer_object = plr->Cursor->pLayer;
+	if (plr && plr->Cursor) layer_object = plr->Cursor->Layer;
 	// scan all object lists seperately
 	C4ObjectList *pLst = &::Objects.ForeObjects;
 	while (pLst)
@@ -1324,7 +1324,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 									// Layer check: Layered objects are invisible to players whose cursor is in another layer
 									// except for GUI: GUI always visible
 								{
-									if (cObj->pLayer != layer_object)
+									if (cObj->Layer != layer_object)
 										if (pLst != &::Objects.ForeObjects)
 											continue;
 									// Area

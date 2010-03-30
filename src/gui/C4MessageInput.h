@@ -22,6 +22,7 @@
 
 #include "C4Gui.h"
 #include "C4KeyboardInput.h"
+#include "C4ObjectPtr.h"
 
 const int32_t C4MSGB_BackBufferMax  = 20;
 
@@ -153,26 +154,22 @@ extern C4MessageInput MessageInput;
 class C4MessageBoardQuery
 {
 public:
-	union
-	{
-		C4Object *pCallbackObj; // callback target object
-		int32_t nCallbackObj; // callback target object (enumerated)
-	};
-	StdStrBuf sInputQuery;  // question being asked to the player
-	bool fAnswered;         // if set, an answer packet is in the queue (NOSAVE, as the queue isn't saved either!)
-	bool fIsUppercase;      // if set, any input is converted to uppercase be4 sending to script
+	C4ObjectPtr CallbackObj; // callback target object
+	StdStrBuf sInputQuery;   // question being asked to the player
+	bool fAnswered;          // if set, an answer packet is in the queue (NOSAVE, as the queue isn't saved either!)
+	bool fIsUppercase;       // if set, any input is converted to uppercase be4 sending to script
 
 	// linked list to allow for multiple queries
 	C4MessageBoardQuery *pNext;
 
 	// ctors
 	C4MessageBoardQuery(C4Object *pCallbackObj, const StdStrBuf &rsInputQuery, bool fIsUppercase)
-			: pCallbackObj(pCallbackObj), fAnswered(false), fIsUppercase(fIsUppercase), pNext(NULL)
+			: CallbackObj(pCallbackObj), fAnswered(false), fIsUppercase(fIsUppercase), pNext(NULL)
 	{
 		sInputQuery.Copy(rsInputQuery);
 	}
 
-	C4MessageBoardQuery() : pCallbackObj(NULL), fAnswered(false), fIsUppercase(false), pNext(NULL) {}
+	C4MessageBoardQuery() : CallbackObj(NULL), fAnswered(false), fIsUppercase(false), pNext(NULL) {}
 
 	// use default copy ctor
 

@@ -24,6 +24,7 @@
 
 #include "C4FacetEx.h"
 #include "C4Surface.h"
+#include "C4ObjectPtr.h"
 #include "C4InputValidation.h"
 #include "C4Id.h"
 
@@ -32,7 +33,6 @@
 #define C4Portrait_Custom "custom"
 
 class C4Def;
-class C4Object;
 
 // defintion graphics
 class C4AdditionalDefGraphics;
@@ -200,8 +200,7 @@ protected:
 	StdMeshInstance* pMeshInstance; // current blit data for mesh graphics
 	uint32_t dwBlitMode;          // extra parameters for additive blits, etc.
 	uint32_t dwClrModulation;        // colormod for this overlay
-	C4Object *pOverlayObj; // object to be drawn as overlay in MODE_Object
-	int32_t nOverlayObj; // compiled ptr
+	C4ObjectPtr OverlayObj; // object to be drawn as overlay in MODE_Object
 	C4DrawTransform Transform; // drawing transformation: Rotation, zoom, etc.
 	int32_t iPhase;                // action face for MODE_Action
 	bool fZoomToShape;             // if true, overlay will be zoomed to match the target object shape
@@ -215,7 +214,7 @@ protected:
 
 public:
 	C4GraphicsOverlay() : eMode(MODE_None), pSourceGfx(NULL), fctBlit(), pMeshInstance(NULL), dwBlitMode(0), dwClrModulation(0xffffff),
-			pOverlayObj(NULL), nOverlayObj(0), Transform(+1),
+			OverlayObj(NULL), Transform(+1),
 			iPhase(0), fZoomToShape(false), iID(0), pNext(NULL) { *Action=0; } // std ctor
 	~C4GraphicsOverlay(); // dtor
 
@@ -247,7 +246,7 @@ public:
 	bool IsValid(const C4Object *pForObj) const;
 
 	C4DrawTransform *GetTransform() { return &Transform; }
-	C4Object *GetOverlayObject() const { return pOverlayObj; }
+	C4Object *GetOverlayObject() const { return OverlayObj; }
 	int32_t GetID() const { return iID; }
 	void SetID(int32_t aID) { iID = aID; }
 	void SetPhase(int32_t iToPhase);

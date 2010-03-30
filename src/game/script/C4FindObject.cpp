@@ -707,7 +707,7 @@ bool C4FindObjectFunc::IsImpossible()
 
 bool C4FindObjectLayer::Check(C4Object *pObj)
 {
-	return pObj->pLayer == pLayer;
+	return pObj->Layer == pLayer;
 }
 
 bool C4FindObjectLayer::IsImpossible()

@@ -269,7 +269,7 @@ void C4GameObjects::CrossCheck() // Every Tick1 by ExecObjects
 						if (obj2->Status && !obj2->Contained && (obj2!=obj1) && (obj2->OCF & tocf))
 							if (Inside<int32_t>(obj2->GetX()-(obj1->GetX()+obj1->Shape.x),0,obj1->Shape.Wdt-1))
 								if (Inside<int32_t>(obj2->GetY()-(obj1->GetY()+obj1->Shape.y),0,obj1->Shape.Hgt-1))
-									if (obj1->pLayer == obj2->pLayer)
+									if (obj1->Layer == obj2->Layer)
 									{
 										// handle collision only once
 										if (obj2->Marker == Marker) continue;
@@ -335,7 +335,7 @@ out1: ;
 			{
 				for (C4ObjectList::iterator iter2 = obj1->Contained->Contents.begin(); iter2 != end() && (obj2=*iter2); ++iter2)
 					if (obj2->Status && obj2->Contained && (obj2!=obj1) && (obj2->OCF & tocf))
-						if (obj1->pLayer == obj2->pLayer)
+						if (obj1->Layer == obj2->Layer)
 						{
 							ocf1=obj1->OCF; ocf2=obj2->OCF;
 							// Fight
@@ -360,7 +360,7 @@ C4Object* C4GameObjects::AtObject(int ctx, int cty, DWORD &ocf, C4Object *exclud
 	C4Object *cObj; C4ObjectLink *clnk;
 
 	for (clnk=ObjectsAt(ctx,cty).First; clnk && (cObj=clnk->Obj); clnk=clnk->Next)
-		if (!exclude || (cObj!=exclude && exclude->pLayer == cObj->pLayer)) if (cObj->Status)
+		if (!exclude || (cObj!=exclude && exclude->Layer == cObj->Layer)) if (cObj->Status)
 			{
 				cocf=ocf | OCF_Exclusive;
 				if (cObj->At(ctx,cty,cocf))

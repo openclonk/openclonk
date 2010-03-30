@@ -453,11 +453,11 @@ int32_t C4ObjectMenu::AddContextFunctions(C4Object *pTarget, bool fCountOnly)
 			if (pEffScript)
 				for (iFunction=0; (pFunction=pEffScript->GetSFunc(iFunction, sPattern.getData())); iFunction++)
 					if (!pFunction->OverloadedBy)
-						if (!pFunction->Condition || !!pFunction->Condition->Exec(pEff->pCommandTarget, &C4AulParSet(C4VObj(pTarget), C4VInt(pEff->iNumber), C4VObj(Object), C4VID(pFunction->idImage))))
+						if (!pFunction->Condition || !!pFunction->Condition->Exec(pEff->CommandTarget, &C4AulParSet(C4VObj(pTarget), C4VInt(pEff->iNumber), C4VObj(Object), C4VID(pFunction->idImage))))
 						{
 							if (!fCountOnly)
 							{
-								sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",Object(%d),%d,Object(%d),%s)",pEff->pCommandTarget->Number,pFunction->Name,pTarget->Number,(int)pEff->iNumber,Object->Number,pFunction->idImage.ToString());
+								sprintf(szCommand,"ProtectedCall(Object(%d),\"%s\",Object(%d),%d,Object(%d),%s)",pEff->CommandTarget->Number,pFunction->Name,pTarget->Number,(int)pEff->iNumber,Object->Number,pFunction->idImage.ToString());
 								fctSymbol.Create(16,16); if ((pDef=C4Id2Def(pFunction->idImage))) pDef->Draw(fctSymbol, false, 0, NULL, pFunction->iImagePhase);
 								Add(pFunction->DescText.getData(),fctSymbol,szCommand,C4MN_Item_NoCount,NULL,pFunction->DescLong.getData());
 								fctSymbol.Default();

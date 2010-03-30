@@ -181,15 +181,15 @@ int32_t C4Object::ContactCheck(int32_t iAtX, int32_t iAtY)
 void C4Object::SideBounds(FIXED &ctcox)
 {
 	// layer bounds
-	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
+	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
 		{
 			C4PropList* pActionDef = GetAction();
 			if (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			{
 				if (Category & C4D_StaticBack)
-					TargetBounds(ctcox,pLayer->GetX()+pLayer->Shape.GetX(),pLayer->GetX()+pLayer->Shape.GetX()+pLayer->Shape.Wdt,CNAT_Left,CNAT_Right);
+					TargetBounds(ctcox,Layer->GetX()+Layer->Shape.GetX(),Layer->GetX()+Layer->Shape.GetX()+Layer->Shape.Wdt,CNAT_Left,CNAT_Right);
 				else
-					TargetBounds(ctcox,pLayer->GetX()+pLayer->Shape.GetX()-Shape.GetX(),pLayer->GetX()+pLayer->Shape.GetX()+pLayer->Shape.Wdt+Shape.GetX(),CNAT_Left,CNAT_Right);
+					TargetBounds(ctcox,Layer->GetX()+Layer->Shape.GetX()-Shape.GetX(),Layer->GetX()+Layer->Shape.GetX()+Layer->Shape.Wdt+Shape.GetX(),CNAT_Left,CNAT_Right);
 			}
 		}
 	// landscape bounds
@@ -200,15 +200,15 @@ void C4Object::SideBounds(FIXED &ctcox)
 void C4Object::VerticalBounds(FIXED &ctcoy)
 {
 	// layer bounds
-	if (pLayer) if (pLayer->Def->BorderBound & C4D_Border_Layer)
+	if (Layer) if (Layer->Def->BorderBound & C4D_Border_Layer)
 		{
 			C4PropList* pActionDef = GetAction();
 			if (!pActionDef || pActionDef->GetPropertyInt(P_Procedure) != DFA_ATTACH)
 			{
 				if (Category & C4D_StaticBack)
-					TargetBounds(ctcoy,pLayer->GetY()+pLayer->Shape.GetY(),pLayer->GetY()+pLayer->Shape.GetY()+pLayer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
+					TargetBounds(ctcoy,Layer->GetY()+Layer->Shape.GetY(),Layer->GetY()+Layer->Shape.GetY()+Layer->Shape.Hgt,CNAT_Top,CNAT_Bottom);
 				else
-					TargetBounds(ctcoy,pLayer->GetY()+pLayer->Shape.GetY()-Shape.GetY(),pLayer->GetY()+pLayer->Shape.GetY()+pLayer->Shape.Hgt+Shape.GetY(),CNAT_Top,CNAT_Bottom);
+					TargetBounds(ctcoy,Layer->GetY()+Layer->Shape.GetY()-Shape.GetY(),Layer->GetY()+Layer->Shape.GetY()+Layer->Shape.Hgt+Shape.GetY(),CNAT_Top,CNAT_Bottom);
 			}
 		}
 	// landscape bounds

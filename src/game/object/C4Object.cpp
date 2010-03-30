@@ -137,7 +137,6 @@ void C4Object::Default()
 	Command=NULL;
 	Contained=NULL;
 	TopFace.Default();
-	nContained=nActionTarget1=nActionTarget2=0;
 	Menu=NULL;
 	PhysicalTemporary=false;
 	TemporaryPhysical.Default();
@@ -146,7 +145,7 @@ void C4Object::Default()
 	ColorMod=0xffffffff;
 	BlitMode=0;
 	CrewDisabled=false;
-	pLayer=NULL;
+	Layer=NULL;
 	pSolidMaskData=NULL;
 	pGraphics=NULL;
 	pMeshInstance=NULL;
@@ -176,7 +175,7 @@ bool C4Object::Init(C4PropList *pDef, C4Object *pCreator,
 	if (Info) SetName(pInfo->Name);
 	Category=Def->Category;
 	Def->Count++;
-	if (pCreator) pLayer=pCreator->pLayer;
+	if (pCreator) Layer=pCreator->Layer;
 
 	// graphics
 	pGraphics = &Def->Graphics;
@@ -2175,7 +2174,7 @@ void C4Object::ClearPointers(C4Object *pObj)
 	// Menu
 	if (Menu) Menu->ClearPointers(pObj);
 	// Layer
-	if (pLayer==pObj) pLayer=NULL;
+	if (Layer==pObj) Layer=NULL;
 	// gfx overlays
 	if (pGfxOverlay)
 	{
@@ -2694,16 +2693,16 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingAdapt( NeedEnergy,                       "NeedEnergy",         false             ));
 	pComp->Value(mkNamingAdapt( OCF,                              "OCF",                0u                  ));
 	pComp->Value(Action);
-	pComp->Value(mkNamingAdapt( nContained,                       "Contained",          0                 ));
-	pComp->Value(mkNamingAdapt( nActionTarget1,                   "ActionTarget1",      0                 ));
-	pComp->Value(mkNamingAdapt( nActionTarget2,                   "ActionTarget2",      0                 ));
+	pComp->Value(mkNamingAdapt( Contained,                        "Contained",          C4ObjectPtr::Null ));
+	pComp->Value(mkNamingAdapt( Action.Target,                    "ActionTarget1",      C4ObjectPtr::Null ));
+	pComp->Value(mkNamingAdapt( Action.Target2,                   "ActionTarget2",      C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( Component,                        "Component"                             ));
 	pComp->Value(mkNamingAdapt( Contents,                         "Contents"                              ));
 	pComp->Value(mkNamingAdapt( PlrViewRange,                     "PlrViewRange",       0                 ));
 	pComp->Value(mkNamingAdapt( ColorMod,                         "ColorMod",           0xffffffffu               ));
 	pComp->Value(mkNamingAdapt( BlitMode,                         "BlitMode",           0u                ));
 	pComp->Value(mkNamingAdapt( CrewDisabled,                     "CrewDisabled",       false             ));
-	pComp->Value(mkNamingAdapt( nLayer,                           "Layer",              0                 ));
+	pComp->Value(mkNamingAdapt( Layer,                            "Layer",              C4ObjectPtr::Null ));
 	pComp->Value(mkNamingAdapt( C4DefGraphicsAdapt(pGraphics),    "Graphics",           &Def->Graphics    ));
 	pComp->Value(mkNamingPtrAdapt( pDrawTransform,                "DrawTransform"                         ));
 	pComp->Value(mkNamingPtrAdapt( pEffects,                      "Effects"                               ));
@@ -2786,12 +2785,11 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 
 void C4Object::EnumeratePointers()
 {
-
 	// Standard enumerated pointers
-	nContained = ::Objects.ObjectNumber(Contained);
-	nActionTarget1 = ::Objects.ObjectNumber(Action.Target);
-	nActionTarget2 = ::Objects.ObjectNumber(Action.Target2);
-	nLayer = ::Objects.ObjectNumber(pLayer);
+	Contained.EnumeratePointers();
+	Action.Target.EnumeratePointers();
+	Action.Target2.EnumeratePointers();
+	Layer.EnumeratePointers();
 
 	// Info by name
 	//if (Info) SCopy(Info->Name,nInfo,C4MaxName);
@@ -2814,10 +2812,10 @@ void C4Object::DenumeratePointers()
 {
 	C4PropList::DenumeratePointers();
 	// Standard enumerated pointers
-	Contained = ::Objects.ObjectPointer(nContained);
-	Action.Target = ::Objects.ObjectPointer(nActionTarget1);
-	Action.Target2 = ::Objects.ObjectPointer(nActionTarget2);
-	pLayer = ::Objects.ObjectPointer(nLayer);
+	Contained.DenumeratePointers();
+	Action.Target.DenumeratePointers();
+	Action.Target2.DenumeratePointers();
+	Layer.DenumeratePointers();
 
 	// Post-compile object list
 	Contents.DenumerateRead();
@@ -4764,10 +4762,10 @@ bool C4Object::IsVisible(int32_t iForPlr, bool fAsOverlay)
 		if (Visibility == VIS_OverlayOnly) return true;
 	}
 	// check layer
-	if (pLayer && pLayer != this && !fAsOverlay)
+	if (Layer && Layer != this && !fAsOverlay)
 	{
-		fDraw = pLayer->IsVisible(iForPlr, false);
-		if (pLayer->GetPropertyInt(P_Visibility) & VIS_LayerToggle) fDraw = !fDraw;
+		fDraw = Layer->IsVisible(iForPlr, false);
+		if (Layer->GetPropertyInt(P_Visibility) & VIS_LayerToggle) fDraw = !fDraw;
 		if (!fDraw) return false;
 	}
 	// no flags set?

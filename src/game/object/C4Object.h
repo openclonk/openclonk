@@ -32,6 +32,7 @@
 #include "C4Effects.h"
 #include "C4Particles.h"
 #include "C4PropList.h"
+#include "C4ObjectPtr.h"
 #include "StdMesh.h"
 
 /* Object status */
@@ -98,7 +99,7 @@ public:
 	int32_t Data;
 	int32_t Phase,PhaseDelay;
 	int32_t t_attach; // SyncClearance-NoSave //
-	C4Object *Target,*Target2;
+	C4ObjectPtr Target,Target2;
 	C4Facet Facet; // NoSave //
 	int32_t FacetX,FacetY; // NoSave //
 	StdMeshInstance::AnimationNode* Animation; // NoSave //
@@ -150,11 +151,7 @@ public:
 	uint32_t t_contact; // SyncClearance-NoSave //
 	uint32_t OCF;
 	unsigned int Marker; // state var used by Objects::CrossCheck and C4FindObject - NoSave
-	union
-	{
-		C4Object *pLayer; // layer-object containing this object
-		int32_t nLayer;       // enumerated ptr
-	};
+	C4ObjectPtr Layer;
 	C4DrawTransform *pDrawTransform; // assigned drawing transformation
 
 	// Menu
@@ -162,7 +159,7 @@ public:
 
 	C4Facet TopFace; // NoSave //
 	C4Def *Def;
-	C4Object *Contained;
+	C4ObjectPtr Contained;
 	C4ObjectInfo *Info;
 
 	C4Action Action;
@@ -189,8 +186,6 @@ public:
 	// Commands
 	C4Command *Command;
 
-	int32_t nActionTarget1,nActionTarget2;
-	int32_t nContained;
 	StdCopyStrBuf nInfo;
 
 	class C4GraphicsOverlay *pGfxOverlay;  // singly linked list of overlay graphics

@@ -797,7 +797,7 @@ void C4GraphicsOverlay::Set(Mode aMode, C4DefGraphics *pGfx, const char *szActio
 	pSourceGfx = pGfx;
 	if (szAction) SCopy(szAction, Action, C4MaxName); else *Action=0;
 	dwBlitMode = dwBMode;
-	pOverlayObj = pOvrlObj;
+	OverlayObj = pOvrlObj;
 	// (keep transform)
 	// reset phase
 	iPhase = 0;
@@ -810,8 +810,8 @@ bool C4GraphicsOverlay::IsValid(const C4Object *pForObj) const
 	assert(pForObj);
 	if (eMode == MODE_Object || eMode == MODE_Rank || eMode == MODE_ObjectPicture)
 	{
-		if (!pOverlayObj || !pOverlayObj->Status) return false;
-		return (eMode == MODE_Rank) || !pOverlayObj->HasGraphicsOverlayRecursion(pForObj);
+		if (!OverlayObj || !OverlayObj->Status) return false;
+		return (eMode == MODE_Rank) || !OverlayObj->HasGraphicsOverlayRecursion(pForObj);
 	}
 	else if (eMode == MODE_ExtraGraphics)
 	{
@@ -961,22 +961,22 @@ void C4GraphicsOverlay::CompileFunc(StdCompiler *pComp)
 		if (pComp->isCompiler()) dwClrModulation = 0xffffff;
 	// read overlay target object
 	if (pComp->Seperator())
-		pComp->Value(nOverlayObj);
+		pComp->Value(OverlayObj);
 	else
 		// default
-		if (pComp->isCompiler()) nOverlayObj = 0;
+		if (pComp->isCompiler()) OverlayObj = NULL;
 	// update used facet according to read data
 	if (pComp->isCompiler()) UpdateFacet();
 }
 
 void C4GraphicsOverlay::EnumeratePointers()
 {
-	nOverlayObj = ::Objects.ObjectNumber(pOverlayObj);
+	OverlayObj.EnumeratePointers();
 }
 
 void C4GraphicsOverlay::DenumeratePointers()
 {
-	pOverlayObj = ::Objects.ObjectPointer(nOverlayObj);
+	OverlayObj.DenumeratePointers();
 }
 
 void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByPlayer)
@@ -989,7 +989,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	            iTy = fixtof(pForObj->fix_y) - coty + cgo.Y;
 	// special blit mode
 	if (dwBlitMode == C4GFXBLIT_PARENT)
-		(pOverlayObj ? pOverlayObj : pForObj)->PrepareDrawing();
+		(OverlayObj ? static_cast<C4Object*>(OverlayObj) : pForObj)->PrepareDrawing();
 	else
 	{
 		Application.DDraw->SetBlitMode(dwBlitMode);
@@ -1007,17 +1007,17 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 	{
 		C4TargetFacet ccgo;
 		ccgo.Set(cgo.Surface, iTx+pForObj->Shape.x,iTy+pForObj->Shape.y,pForObj->Shape.Wdt,pForObj->Shape.Hgt, cgo.TargetX, cgo.TargetY);
-		DrawRankSymbol(ccgo, pOverlayObj);
+		DrawRankSymbol(ccgo, OverlayObj);
 	}
 	// drawing specific object?
-	else if (pOverlayObj)
+	else if (OverlayObj)
 	{
 		if (eMode == MODE_ObjectPicture)
 		{
 			C4Facet fctTarget;
 			fctTarget.Set(cgo.Surface, iTx+pForObj->Shape.x, iTy+pForObj->Shape.y, pForObj->Shape.Wdt, pForObj->Shape.Hgt);
 
-			pOverlayObj->DrawPicture(fctTarget, false, NULL);
+			OverlayObj->DrawPicture(fctTarget, false, NULL);
 		}
 		else
 		{
@@ -1025,10 +1025,10 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 			// This ignores any other transform than offset, and it doesn't work with parallax overlay objects yet
 			// (But any parallaxity of pForObj is regarded in calculation of cotx/y!)
 			int32_t oldTx = cgo.TargetX, oldTy = cgo.TargetY;
-			cgo.TargetX = cotx - pForObj->GetX() + pOverlayObj->GetX() - Transform.GetXOffset();
-			cgo.TargetY = coty - pForObj->GetY() + pOverlayObj->GetY() - Transform.GetYOffset();
-			pOverlayObj->Draw(cgo, iByPlayer, C4Object::ODM_Overlay);
-			pOverlayObj->DrawTopFace(cgo, iByPlayer, C4Object::ODM_Overlay);
+			cgo.TargetX = cotx - pForObj->GetX() + OverlayObj->GetX() - Transform.GetXOffset();
+			cgo.TargetY = coty - pForObj->GetY() + OverlayObj->GetY() - Transform.GetYOffset();
+			OverlayObj->Draw(cgo, iByPlayer, C4Object::ODM_Overlay);
+			OverlayObj->DrawTopFace(cgo, iByPlayer, C4Object::ODM_Overlay);
 			cgo.TargetX = oldTx;
 			cgo.TargetY = oldTy;
 		}
@@ -1108,7 +1108,7 @@ void C4GraphicsOverlay::Draw(C4TargetFacet &cgo, C4Object *pForObj, int32_t iByP
 
 	// cleanup
 	if (dwBlitMode == C4GFXBLIT_PARENT)
-		(pOverlayObj ? pOverlayObj : pForObj)->FinishedDrawing();
+		(OverlayObj ? static_cast<C4Object*>(OverlayObj) : pForObj)->FinishedDrawing();
 	else
 	{
 		Application.DDraw->ResetBlitMode();
@@ -1203,7 +1203,7 @@ bool C4GraphicsOverlay::operator == (const C4GraphicsOverlay &rCmp) const
 	       && (dwBlitMode == rCmp.dwBlitMode)
 	       && (dwClrModulation == rCmp.dwClrModulation)
 	       && (Transform == rCmp.Transform)
-	       && (pOverlayObj == rCmp.pOverlayObj);
+	       && (OverlayObj == rCmp.OverlayObj);
 }
 
 void C4GraphicsOverlayListAdapt::CompileFunc(StdCompiler *pComp)

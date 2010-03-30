@@ -4561,17 +4561,17 @@ static bool FnClearMenuItems(C4AulObjectContext *ctx)
 static C4Object *FnGetObjectLayer(C4AulObjectContext *ctx)
 {
 	// get layer object
-	return ctx->Obj->pLayer;
+	return ctx->Obj->Layer;
 }
 
 static C4Void FnSetObjectLayer(C4AulObjectContext *ctx, C4Object *pNewLayer)
 {
 	// set layer object
-	ctx->Obj->pLayer = pNewLayer;
+	ctx->Obj->Layer = pNewLayer;
 	// set for all contents as well
 	for (C4ObjectLink *pLnk=ctx->Obj->Contents.First; pLnk; pLnk=pLnk->Next)
 		if ((ctx->Obj=pLnk->Obj) && ctx->Obj->Status)
-			ctx->Obj->pLayer = pNewLayer;
+			ctx->Obj->Layer = pNewLayer;
 	// success
 	return C4VNull;
 }
@@ -4880,7 +4880,7 @@ static C4Value FnGetEffect_C4V(C4AulContext *ctx, C4Value *pvsEffectName, C4Valu
 	case 1: return C4VString(pEffect->Name);        // 1: name
 	case 2: return C4VInt(Abs(pEffect->iPriority)); // 2: priority (may be negative for deactivated effects)
 	case 3: return C4VInt(pEffect->iIntervall);     // 3: timer intervall
-	case 4: return C4VObj(pEffect->pCommandTarget); // 4: command target
+	case 4: return C4VObj(pEffect->CommandTarget);  // 4: command target
 	case 5: return C4VID(pEffect->idCommandTarget); // 5: command target ID
 	case 6: return C4VInt(pEffect->iTime);          // 6: effect time
 	}

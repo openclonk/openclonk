@@ -240,6 +240,8 @@ set(OC_CLONK_SOURCES
 	src/game/object/C4ObjectList.h
 	src/game/object/C4ObjectMenu.cpp
 	src/game/object/C4ObjectMenu.h
+	src/game/object/C4ObjectPtr.cpp
+	src/game/object/C4ObjectPtr.h
 	src/game/object/C4Sector.cpp
 	src/game/object/C4Sector.h
 	src/game/object/C4Shape.cpp

@@ -29,6 +29,7 @@
 
 #include <C4Constants.h>
 #include <C4ValueList.h>
+#include <C4ObjectPtr.h>
 
 // callback return values
 #define C4Fx_OK                      0 // generic standard behaviour for all effect callbacks
@@ -81,9 +82,8 @@ class C4Effect
 {
 public:
 	char Name[C4MaxDefString+1]; // name of effect
-	C4Object *pCommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
+	C4ObjectPtr CommandTarget; // target object for script callbacks - if deleted, the effect is removed without callbacks
 	C4ID idCommandTarget;     // ID of command target definition
-	int32_t nCommandTarget;       // enumerated ptr for target object (argh, when will this system be changed?)
 
 	int32_t iPriority;          // effect priority for sorting into effect list; -1 indicates a dead effect
 	C4ValueList EffectVars; // custom effect variables

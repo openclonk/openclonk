@@ -1405,17 +1405,12 @@ void C4Player::CompileFunc(StdCompiler *pComp, bool fExact)
 	pComp->Value(mkNamingAdapt(SelectCount,         "SelectCount",          0));
 	pComp->Value(mkNamingAdapt(SelectFlash,         "SelectFlash",          0));
 	pComp->Value(mkNamingAdapt(CursorFlash,         "CursorFlash",          0));
-	int32_t iPtr;
-	iPtr = reinterpret_cast<intptr_t>(Cursor);
-	pComp->Value(mkNamingAdapt(iPtr,                "Cursor",               0));
-	Cursor = reinterpret_cast<C4Object*>(iPtr);
-	iPtr = reinterpret_cast<intptr_t>(ViewCursor);
-	pComp->Value(mkNamingAdapt(iPtr,                "ViewCursor",           0));
-	ViewCursor = reinterpret_cast<C4Object*>(iPtr);
+	pComp->Value(mkNamingAdapt(Cursor,              "Cursor",               C4ObjectPtr::Null));
+	pComp->Value(mkNamingAdapt(ViewCursor,          "ViewCursor",           C4ObjectPtr::Null));
 	pComp->Value(mkNamingAdapt(CursorSelection,     "CursorSelection",      0));
 	pComp->Value(mkNamingAdapt(CursorToggled,       "CursorToggled",        0));
 	pComp->Value(mkNamingAdapt(MessageStatus,       "MessageStatus",        0));
-	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",            ""));
+	pComp->Value(mkNamingAdapt(toC4CStr(MessageBuf),"MessageBuf",           ""));
 	pComp->Value(mkNamingAdapt(HomeBaseMaterial,    "HomeBaseMaterial"      ));
 	pComp->Value(mkNamingAdapt(HomeBaseProduction,  "HomeBaseProduction"    ));
 	pComp->Value(mkNamingAdapt(Knowledge,           "Knowledge"             ));
@@ -1576,12 +1571,12 @@ void C4Player::DoTeamSelection(int32_t idTeam)
 void C4Player::EnumeratePointers()
 {
 	// Cursor
-	Cursor = ::Objects.Enumerated(Cursor);
+	Cursor.EnumeratePointers();
 	// ViewCursor
-	ViewCursor = ::Objects.Enumerated(ViewCursor);
+	ViewCursor.EnumeratePointers();
 	// messageboard-queries
 	for (C4MessageBoardQuery *pCheck = pMsgBoardQuery; pCheck; pCheck = pCheck->pNext)
-		pCheck->nCallbackObj = pCheck->pCallbackObj ? ::Objects.ObjectNumber(pCheck->pCallbackObj) : 0;
+		pCheck->CallbackObj.EnumeratePointers();
 }
 
 void C4Player::DenumeratePointers()
@@ -1589,12 +1584,12 @@ void C4Player::DenumeratePointers()
 	// Crew
 	Crew.DenumerateRead();
 	// Cursor
-	Cursor = ::Objects.Denumerated(Cursor);
+	Cursor.DenumeratePointers();
 	// ViewCursor
-	ViewCursor = ::Objects.Denumerated(ViewCursor);
+	ViewCursor.DenumeratePointers();
 	// messageboard-queries
 	for (C4MessageBoardQuery *pCheck = pMsgBoardQuery; pCheck; pCheck = pCheck->pNext)
-		pCheck->pCallbackObj = pCheck->nCallbackObj ? ::Objects.ObjectPointer(pCheck->nCallbackObj) : NULL;
+		pCheck->CallbackObj.DenumeratePointers();
 }
 
 void C4Player::RemoveCrewObjects()
@@ -2048,7 +2043,7 @@ void C4Player::ExecMsgBoardQueries()
 		while (pCheck) if (!pCheck->fAnswered) break; else pCheck = pCheck->pNext;
 	if (!pCheck) return;
 	// open it
-	::MessageInput.StartTypeIn(true, pCheck->pCallbackObj, pCheck->fIsUppercase, false, Number, pCheck->sInputQuery);
+	::MessageInput.StartTypeIn(true, pCheck->CallbackObj, pCheck->fIsUppercase, false, Number, pCheck->sInputQuery);
 }
 
 void C4Player::CallMessageBoard(C4Object *pForObj, const StdStrBuf &sQueryString, bool fIsUppercase)
@@ -2065,7 +2060,7 @@ bool C4Player::RemoveMessageBoardQuery(C4Object *pForObj)
 {
 	// get matching query
 	C4MessageBoardQuery **ppCheck = &pMsgBoardQuery, *pFound;
-		while (*ppCheck) if ((*ppCheck)->pCallbackObj == pForObj) break; else ppCheck = &((*ppCheck)->pNext);
+		while (*ppCheck) if ((*ppCheck)->CallbackObj == pForObj) break; else ppCheck = &((*ppCheck)->pNext);
 	pFound = *ppCheck;
 	if (!pFound) return false;
 	// remove it
@@ -2078,7 +2073,7 @@ bool C4Player::MarkMessageBoardQueryAnswered(C4Object *pForObj)
 {
 	// get matching query
 	C4MessageBoardQuery *pCheck = pMsgBoardQuery;
-		while (pCheck) if (pCheck->pCallbackObj == pForObj && !pCheck->fAnswered) break; else pCheck = pCheck->pNext;
+		while (pCheck) if (pCheck->CallbackObj == pForObj && !pCheck->fAnswered) break; else pCheck = pCheck->pNext;
 	if (!pCheck) return false;
 	// mark it
 	pCheck->fAnswered = true;

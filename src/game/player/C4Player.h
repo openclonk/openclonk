@@ -26,6 +26,7 @@
 #include "C4ObjectInfoList.h"
 #include "C4InfoCore.h"
 #include "C4ObjectList.h"
+#include "C4ObjectPtr.h"
 #include "C4PlayerControl.h"
 
 #include <set>
@@ -123,7 +124,7 @@ public:
 	C4IDList Magic;
 	// Control
 	C4PlayerControl Control;
-	C4Object *Cursor, *ViewCursor;
+	C4ObjectPtr Cursor, ViewCursor;
 	int32_t SelectCount;
 	int32_t SelectFlash,CursorFlash;
 	int32_t CursorSelection,CursorToggled;
