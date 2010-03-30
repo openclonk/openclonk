@@ -258,7 +258,7 @@ bool C4Network2IRCClient::OnConn(const C4NetIO::addr_t &AddrPeer, const C4NetIO:
 	if (!Password.isNull())
 		Send("PASS", Password.getData());
 	Send("NICK", Nick.getData());
-	Send("USER", FormatString("clonk x x :%s", RealName.getData()).getData());
+	Send("USER", FormatString("clonk x x :%s", RealName.getLength() ? RealName.getData() : " ").getData());
 	// Okay
 	return true;
 }
