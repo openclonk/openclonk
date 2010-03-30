@@ -178,6 +178,12 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 			if (iTimeout == -1 || iTimeout + Now > iProcTick)
 				iTimeout = Max(iProcTick - Now, 0);
 
+	// We only process timeouts if no other events were processed to make
+	// sure all pending events have been executed before triggering the
+	// next timeout (which might cause a quite lengthy screen redraw).
+	// See also bug #207.
+	bool fProcessTimeouts = true;
+
 #ifdef STDSCHEDULER_USE_EVENTS
 
 	// Collect event handles
@@ -216,6 +222,8 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 			OnError(pProc);
 			fSuccess = false;
 		}
+
+		fProcessTimeouts = false;
 	}
 
 #else
@@ -254,24 +262,29 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 					break;
 				}
 		}
+
+		fProcessTimeouts = false;
 	}
 	else if (cnt < 0)
 	{
-		printf("StdScheduler::Execute: poll failed %s\n",strerror(errno));
+		printf("StdScheduler::Execute: poll failed: %s\n",strerror(errno));
 	}
 #endif
 
-	// Execute all processes with timeout
-	Now = timeGetTime();
-	for (i = 0; i < iProcCnt; i++)
+	if (fProcessTimeouts)
 	{
-		iProcTick = ppProcs[i]->GetNextTick(Now);
-		if (iProcTick >= 0 && iProcTick <= Now)
-			if (!ppProcs[i]->Execute(0))
-			{
-				OnError(ppProcs[i]);
-				fSuccess = false;
-			}
+		// Execute all processes with timeout
+		Now = timeGetTime();
+		for (i = 0; i < iProcCnt; i++)
+		{
+			iProcTick = ppProcs[i]->GetNextTick(Now);
+			if (iProcTick >= 0 && iProcTick <= Now)
+				if (!ppProcs[i]->Execute(0))
+				{
+					OnError(ppProcs[i]);
+					fSuccess = false;
+				}
+		}
 	}
 
 	return fSuccess;
