@@ -3,7 +3,7 @@
 protected func Initialize()
 {
 	DoCon(Random(50));
-	//SetGraphics(Format("%d.10",Random(2))); //commented out for now due to SG("1.5") bug
+	if(Random(2)) SetGraphics("1");
 }
 
 public func Incineration()
