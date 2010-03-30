@@ -21,45 +21,45 @@ global func DoRGBaValue(int val, int chng, int sel) { return val + (chng << ((3 
 
 global func SetRGBaValue(int val, int newval, int sel) 
 {
-    // 'delete' old color
-    val = val & ~(255 << ((3 - sel) * 8));
-    // add new
-    return val | newval << ((3 - sel) * 8);
+	// 'delete' old color
+	val = val & ~(255 << ((3 - sel) * 8));
+	// add new
+	return val | newval << ((3 - sel) * 8);
 }
 
 global func SplitRGBaValue(int rgb, int &red, int &green, int &blue, int &alpha) {
-    red = GetRGBaValue(rgb, 1);
-    green = GetRGBaValue(rgb, 2);
-    blue = GetRGBaValue(rgb, 3);
-    alpha = GetRGBaValue(rgb, 0);
+	red = GetRGBaValue(rgb, 1);
+	green = GetRGBaValue(rgb, 2);
+	blue = GetRGBaValue(rgb, 3);
+	alpha = GetRGBaValue(rgb, 0);
 	return;
 }
 
 global func HSL2RGB(int hsl)
 {
-    var hue = GetRGBaValue(hsl, 1), sat = GetRGBaValue(hsl, 2), lightness = GetRGBaValue(hsl, 3);
-    var red, green, blue;
-    var var1, var2;
-    
-    if (sat == 0)
+	var hue = GetRGBaValue(hsl, 1), sat = GetRGBaValue(hsl, 2), lightness = GetRGBaValue(hsl, 3);
+	var red, green, blue;
+	var var1, var2;
+	
+	if (sat == 0)
 	{
-        red = green = blue = lightness;
-    } 
+		red = green = blue = lightness;
+	} 
 	else
 	{
-        if (lightness < 128) 
+		if (lightness < 128) 
 			var2 = lightness * (255 + sat) / 255;
-        else
+		else
 			var2 = lightness + sat - lightness * sat / 255;
-                
-        var1 = 2 * lightness - var2;
-            
-        red = Hue_2_RGB(var1, var2, hue + 85);
-        green = Hue_2_RGB(var1, var2, hue);
-        blue = Hue_2_RGB(var1, var2, hue - 85);
-    }
-    
-    return RGB(red, green, blue);
+			
+		var1 = 2 * lightness - var2;
+			
+		red = Hue_2_RGB(var1, var2, hue + 85);
+		green = Hue_2_RGB(var1, var2, hue);
+		blue = Hue_2_RGB(var1, var2, hue - 85);
+	}
+	
+	return RGB(red, green, blue);
 }
 
 global func Hue_2_RGB(int var1, int var2, int hue)
@@ -79,40 +79,40 @@ global func Hue_2_RGB(int var1, int var2, int hue)
 
 global func RGB2HSL(int rgb)
 {
-    var red = GetRGBaValue(rgb, 1), green = GetRGBaValue(rgb, 2), blue = GetRGBaValue(rgb, 3);
-    var min_val = Min(red, Min(green, blue)), max_val = Max(red, Max(green, blue));
-    var diff_val = max_val - min_val;
-    var lightness = (max_val + min_val) / 2;
-    var hue, sat, diff_red, diff_green, diff_blue;
-    
-    if (diff_val==0)
+	var red = GetRGBaValue(rgb, 1), green = GetRGBaValue(rgb, 2), blue = GetRGBaValue(rgb, 3);
+	var min_val = Min(red, Min(green, blue)), max_val = Max(red, Max(green, blue));
+	var diff_val = max_val - min_val;
+	var lightness = (max_val + min_val) / 2;
+	var hue, sat, diff_red, diff_green, diff_blue;
+	
+	if (diff_val==0)
 	{
-		hue = 0;                             
+		hue = 0;
 		sat = 0;
-    } 
+	} 
 	else
 	{
 		if (lightness < 128) 
 			sat = 255 * diff_val / (max_val + min_val);
-        else 
+		else 
 			sat = 255 * diff_val / (510 - (max_val + min_val));
 
-        diff_red = ((255 * (max_val - red)) / 6 + (255 * diff_val) / 2) / diff_val;
-        diff_green = ((255 * (max_val - green)) / 6 + (255 * diff_val) / 2) / diff_val;
-        diff_blue = ((255 * (max_val - blue )) / 6 + (255 * diff_val) / 2) / diff_val;
-            
-        if (red == max_val) 
+		diff_red = ((255 * (max_val - red)) / 6 + (255 * diff_val) / 2) / diff_val;
+		diff_green = ((255 * (max_val - green)) / 6 + (255 * diff_val) / 2) / diff_val;
+		diff_blue = ((255 * (max_val - blue )) / 6 + (255 * diff_val) / 2) / diff_val;
+			
+		if (red == max_val) 
 			hue = diff_blue -diff_green;
-        else if (green == max_val) 
+		else if (green == max_val) 
 			hue = 255 / 3 + diff_red - diff_blue;
-        else if (blue == max_val)
+		else if (blue == max_val)
 			hue = 510 / 3 + diff_green - diff_red;
-        
-        if (hue < 0) 
+		
+		if (hue < 0) 
 			hue += 255;
-        if (hue > 255) 
+		if (hue > 255) 
 			hue -= 255;
-    }
-    
-    return RGB(hue,sat,lightness);
+	}
+	
+	return RGB(hue,sat,lightness);
 }

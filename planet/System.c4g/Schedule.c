@@ -60,7 +60,7 @@ global func FxIntScheduleCallTimer(object obj, int effect)
 	var done = --EffectVar(1, obj, effect) <= 0;
 	// Execute.
 	Call(EffectVar(0, obj, effect), EffectVar(3, obj, effect), EffectVar(4, obj, effect), EffectVar(5, obj, effect), EffectVar(6, obj, effect), EffectVar(7, obj, effect));
- 	return -done;
+	return -done;
 }
 
 global func ClearScheduleCall(object obj, string function)
@@ -72,7 +72,7 @@ global func ClearScheduleCall(object obj, string function)
 		// Check All ScheduleCall-Effects.
 		if (effect = GetEffect("IntScheduleCall", obj, i))
 			// Found right function.
-			if (EffectVar(0, obj, effect) == function)      
+			if (EffectVar(0, obj, effect) == function)
 				// Remove effect.
 				RemoveEffect(0, obj, effect);
 	return;

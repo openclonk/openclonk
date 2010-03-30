@@ -99,13 +99,13 @@ global func ExplosionEffect(int level, int x, int y)
 global func BlastObjects(int x, int y, int level, object container, int cause_plr, object layer)
 {
 	var obj;
-  
+	
 	// Coordinates are always supplied globally, convert to local coordinates.
 	var l_x = x - GetX(), l_y = y - GetY();
-  
+	
 	// In a container?
 	if (container)
-    {
+	{
 		if (container->GetObjectLayer() == layer)
 		{
 			container->BlastObject(level, cause_plr);
@@ -115,16 +115,16 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 				if (obj) 
 					obj->BlastObject(level, cause_plr);
 		}
-    }
+	}
 	else
-    {
+	{
 		// Object is outside.
 		// Damage objects at point of explosion.
 		for (var obj in FindObjects(Find_AtRect(l_x - 5, l_y - 5, 10,10), Find_NoContainer(), Find_Layer(layer)))
 			if (obj) obj->BlastObject(level, cause_plr);
 
 		// TODO: -> Shockwave in own global func(?)
- 
+
 		// Hurl objects in explosion radius.
 		var shockwave_objs = FindObjects(Find_Distance(level, l_x, l_y), Find_NoContainer(), Find_Layer(layer),
 			Find_Or(Find_Category(C4D_Object|C4D_Living|C4D_Vehicle), Find_Func("CanBeHitByShockwaves")), Find_Func("BlastObjectsShockwaveCheck", x, y));
@@ -177,11 +177,11 @@ global func BlastObjects(int x, int y, int level, object container, int cause_pl
 					obj->Fling(vx, vy, 100, true);
 				}
 		}
-    }
+	}
 	// Done.
 	return true;
 }
-  
+
 global func BlastObjectsShockwaveCheck(int x, int y)
 {
 	var def = GetID();
@@ -189,19 +189,19 @@ global func BlastObjectsShockwaveCheck(int x, int y)
 	if (def->GetDefHorizontalFix()) 
 		return false;
 	if (def->GetDefGrab() != 1)
-    {
+	{
 		if (GetCategory() & C4D_Vehicle) 
 			return false;
 		if (GetProcedure() == "FLOAT") 
 			return false;
-    }
+	}
 	// Projectiles not when they fly downwards or are exactly in the explosion point.
 	// This will catch the most cases in which multiple clonks throw flints at the same time.
 	if (GetCategory() & C4D_Object)
-    {
+	{
 		if (GetX() == x && GetY() == y) return false;
 		if (GetYDir() > 5) return false;
-    }
+	}
 	// No stuck objects.
 	if (Stuck()) 
 		return false;
@@ -296,10 +296,10 @@ global func FxShakeEffectStop()
 /*-- Smoke trails --*/
 
 global func CreateSmokeTrail(int strength, int angle, int x, int y, int color, bool noblast) {
-    x += GetX();
-    y += GetY();
+	x += GetX();
+	y += GetY();
 	var num = AddEffect("SmokeTrail", nil, 300, 1, nil, nil, strength, angle, x, y);
-    if (!color) 
+	if (!color) 
 		color = RGBa(130, 130, 130, 70);
 	EffectVar(6, nil, num) = color;
 	EffectVar(7, nil, num) = noblast;
@@ -319,7 +319,7 @@ global func FxSmokeTrailStart(object target, int fxnum, int temp, strength, angl
 {
 	if (temp)
 		return;
-  
+	
 	if (angle % 90 == 1) 
 		angle += 1;
 	strength = Max(strength, 5);
@@ -352,7 +352,7 @@ global func FxSmokeTrailTimer(object target, int fxnum, int fxtime)
 	// new: random
 	x += RandomX(-3,3);
 	y += RandomX(-3,3);
-  
+	
 	// draw
 	CreateParticle("ExploSmoke", x, y, RandomX(-2, 2), RandomX(-2, 4), 150 + str * 12, color);
 	if (!EffectVar(7, target, fxnum))
@@ -361,12 +361,12 @@ global func FxSmokeTrailTimer(object target, int fxnum, int fxtime)
 	// then calc next position
 	x += x_dir / 100;
 	y += y_dir / 100;
-   
+	
 	if (GBackSemiSolid(x, y))
 		return -1;
 	if (str <= 3)
 		return -1;
-    
+	
 	EffectVar(1, target, fxnum) = str;
 	EffectVar(2, target, fxnum) = x;
 	EffectVar(3, target, fxnum) = y;

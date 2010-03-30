@@ -39,11 +39,11 @@ protected func Initialize()
 
 public func Precipitation()
 {
-  var iLaunch;
+	var iLaunch;
 
-  if (GetTemperature() < 0 && iAcidity==0) szMat="Snow";
-  if (GetTemperature()>=1 && iAcidity==0) szMat="Water";
-  if (iAcidity>=1) szMat="Acid";
+	if (GetTemperature() < 0 && iAcidity==0) szMat="Snow";
+	if (GetTemperature()>=1 && iAcidity==0) szMat="Water";
+	if (iAcidity>=1) szMat="Acid";
 
 	//Reroute function to Evaporation if cloud is growing
 	if(iCondensing == 1) return(Evaporation());
@@ -149,32 +149,32 @@ private func WindDirection()
 }
 
 func Definition(def) {
-  SetProperty("ActMap", {
+	SetProperty("ActMap", {
 Fly = {
-Prototype = Action,
-Name = "Fly",
-Procedure = DFA_FLOAT,
-X = 0,
-Y = 0,
-Wdt = 220,
-Hgt = 110,
-Length = 1,
-Delay = 15,
-NextAction = "Fly",
-TurnAction = "Turn",
-StartCall = "Precipitation",
+	Prototype = Action,
+	Name = "Fly",
+	Procedure = DFA_FLOAT,
+	X = 0,
+	Y = 0,
+	Wdt = 220,
+	Hgt = 110,
+	Length = 1,
+	Delay = 15,
+	NextAction = "Fly",
+	TurnAction = "Turn",
+	StartCall = "Precipitation",
 },
 Turn = {
-Prototype = Action,
-Name = "Turn",
-Procedure = DFA_FLOAT,
-Length = 1,
-Delay = 1,
-X = 0,
-Y = 0,
-Wdt = 220,
-Hgt = 110,
-NextAction = "Fly",
+	Prototype = Action,
+	Name = "Turn",
+	Procedure = DFA_FLOAT,
+	Length = 1,
+	Delay = 1,
+	X = 0,
+	Y = 0,
+	Wdt = 220,
+	Hgt = 110,
+	NextAction = "Fly",
 },  }, def);
-  SetProperty("Name", "Cloud", def);
+	SetProperty("Name", "Cloud", def);
 }

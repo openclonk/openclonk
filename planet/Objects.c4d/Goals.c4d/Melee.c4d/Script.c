@@ -12,7 +12,7 @@ protected func InitializePlayer(int newplr, int x, int y, object base, int team)
 	{
 		var plr = GetPlayerByIndex(i);
 		if(plr == newplr) continue;
-	    
+		
 		SetHostility(newplr, plr, true, true);
 		SetHostility(plr, newplr, true, true);
 	}
@@ -45,7 +45,7 @@ public func IsFulfilled()
 			if(CheckTeamHostile(plr, plr2cmp) ) return false;
 		}
 	}
-  
+	
 	// No enemy players, goal fulfilled.
 	return true;
 }
@@ -58,7 +58,7 @@ public func Activate(int byplr)
 	{
 		var plr = GetPlayerByIndex(i);
 		if(plr == byplr)
-			continue;    
+			continue;
 		if(Hostile(plr, byplr) ) 
 			hostile_count++;
 	}
@@ -77,5 +77,5 @@ public func GetShortDescription(int plr)
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

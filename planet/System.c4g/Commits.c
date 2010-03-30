@@ -36,7 +36,7 @@ global func RandomX(int start, int end)
 // Tangens.
 global func Tan(int angle, int radius, int prec)
 {
-    return radius * Sin(angle, radius * 100, prec) / Cos(angle, radius * 100, prec);
+	return radius * Sin(angle, radius * 100, prec) / Cos(angle, radius * 100, prec);
 }
 
 global func Normalize(int angle, int start, int precision)
@@ -44,7 +44,7 @@ global func Normalize(int angle, int start, int precision)
 	if (!precision) 
 		precision = 1;
 	var end = precision * 360 + start;
-  
+	
 	while (angle < start)
 		angle += precision * 360;
 	while (angle >= end) 
@@ -122,13 +122,13 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 	var rndx, rndy, obj;
 	var mtype, mat;
 	var func, objhgt = GetDefCoreVal("Height", "DefCore", id);
-  
+	
 	mat = Material(mat_str);
 	// Some failsavety.
 	if (mat == -1)
-		if (mat_str != "GBackSolid" && mat_str != "GBackSemiSolid" && mat_str != "GBackLiquid" && mat_str != "GBackSky") 
+		if (mat_str != "GBackSolid" && mat_str != "GBackSemiSolid" && mat_str != "GBackLiquid" && mat_str != "GBackSky")
 			return -1;
-  
+	
 	// Optional parameters wdt and hgt.
 	if (!wdt) 
 		wdt = LandscapeWidth() - x - GetX();
@@ -239,7 +239,7 @@ global func CheckVisibility(int plr)
 
 	// Object is owned by the indicated player.
 	if (GetOwner() == plr)
-    { 
+	{ 
 		if (visible & VIS_Owner) 
 			return true; 
 	}
@@ -251,7 +251,7 @@ global func CheckVisibility(int plr)
 	}
 	// Object belongs to a player, friendly to plr.
 	else
-    { 
+	{ 
 		if (visible & VIS_Allies)
 			return true;
 	}

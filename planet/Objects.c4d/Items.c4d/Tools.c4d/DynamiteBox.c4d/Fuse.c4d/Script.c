@@ -5,9 +5,9 @@ local fHasMessage;
 protected func Initialize ()
 {
 	SetProperty("LineColors", [RGB(100,50,0), RGB(1,1,1)]);
-  // Put the first to vertices on the actual position
-  SetVertex(0,0,GetX()); SetVertex(0,1,GetY());
-  SetVertex(1,0,GetX()); SetVertex(1,1,GetY());
+	// Put the first to vertices on the actual position
+	SetVertex(0,0,GetX()); SetVertex(0,1,GetY());
+	SetVertex(1,0,GetX()); SetVertex(1,1,GetY());
 }
 
 public func SetColorWarning(fOn)
@@ -20,23 +20,23 @@ public func SetColorWarning(fOn)
 
 public func Connect(pTarget1, pTarget2)
 {
-  SetAction("Connect", pTarget1, pTarget2);  
+	SetAction("Connect", pTarget1, pTarget2);	
 }
 
 private func GetLineLength()
 {
-  var i = GetVertexNum()-1;
-  var iDist = 0;
-  while(i--)
-  {
-    // Calculate the length between the vertices
-    iDist += Distance(GetVertex(i,0),GetVertex(i,1),GetVertex(i+1,0),GetVertex(i+1,1));
-  }
-  return iDist;
+	var i = GetVertexNum()-1;
+	var iDist = 0;
+	while(i--)
+	{
+		// Calculate the length between the vertices
+		iDist += Distance(GetVertex(i,0),GetVertex(i,1),GetVertex(i+1,0),GetVertex(i+1,1));
+	}
+	return iDist;
 }
 
 func Definition(def) {
-  SetProperty("ActMap", {
+	SetProperty("ActMap", {
 		Connect = {
 		Prototype = Action,
 		Name = "Connect",
@@ -45,5 +45,5 @@ func Definition(def) {
 		Procedure = DFA_CONNECT,
 		NextAction = "Connect",
 	},  }, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

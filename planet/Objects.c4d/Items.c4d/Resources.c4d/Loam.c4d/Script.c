@@ -13,14 +13,14 @@ protected func Construction()
 }
 
 func Definition(def) {
-  SetProperty("Collectible", 1, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
 }
 
 // Impact sound
 func Hit()
 {
-  Sound("WoodHit");
+	Sound("WoodHit");
 }
 
 // Item activation

@@ -4,10 +4,10 @@
 
 protected func Activate(int iByPlayer)
 {
-  MessageWindow(GetDesc(), iByPlayer);
-  return true;
+	MessageWindow(GetDesc(), iByPlayer);
+	return true;
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

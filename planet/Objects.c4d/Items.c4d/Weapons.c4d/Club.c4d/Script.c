@@ -4,7 +4,7 @@
 
 private func Hit()
 {
-  Sound("WoodHit");
+	Sound("WoodHit");
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }
@@ -111,7 +111,7 @@ public func IsTool() { return 1; }
 public func IsToolProduct() { return 1; }
 
 func Definition(def) {
-  SetProperty("Collectible", 1, def);
-  SetProperty("Name", "$Name$", def);
-  SetProperty("PictureTransformation",Trans_Rotate(-30,0,0,1),def);
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
+	SetProperty("PictureTransformation",Trans_Rotate(-30,0,0,1),def);
 }

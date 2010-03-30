@@ -52,11 +52,11 @@ public func SetSymbol(id obj)
 
 }
 
-public func GetAmount() 	{ return amnt; 	}
-public func GetExtraData()	{ return data;	}
-public func GetSymbol()		{ return myid;	}
-public func GetHotkey()		{ return hot;	}
-public func GetSize()		{ return size; 	}
+public func GetAmount()    { return amnt; }
+public func GetExtraData() { return data; }
+public func GetSymbol()    { return myid; }
+public func GetHotkey()    { return hot;  }
+public func GetSize()      { return size; }
 
 public func SetHotkey(int hotkey)
 {

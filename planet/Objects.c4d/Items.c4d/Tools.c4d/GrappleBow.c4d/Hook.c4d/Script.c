@@ -136,5 +136,5 @@ public func OnRopeBreak()
 }
 
 protected func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

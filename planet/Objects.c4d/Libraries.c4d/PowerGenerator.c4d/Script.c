@@ -65,8 +65,8 @@ public func IsPowerGeneratorFor(object pConsumer, object pNext, object pOldLine)
 // Finds all power lines connected to pObject (can be nil in local calls).
 private func Find_PowerLine(object pObject)
 {
-  if(!pObject) pObject = this;
-  return [C4FO_Func, "IsConnectedTo", pObject];
+	if(!pObject) pObject = this;
+	return [C4FO_Func, "IsConnectedTo", pObject];
 }
 
 /*-- Power generation --*/
@@ -82,14 +82,14 @@ public func GetPower()
 public func SetPower(int iSetPower)
 {
 	iPower = BoundBy(iSetPower, 0, GetCapacity());
-  return;
+	return;
 }
 
 // Adds to the current power level of this object.
 public func DoPower(int iDoPower)
 {
 	iPower = BoundBy(iPower + iDoPower, 0, GetCapacity());
-  return;
+	return;
 }
 
 /*-- Debug --*/

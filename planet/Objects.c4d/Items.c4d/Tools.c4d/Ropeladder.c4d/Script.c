@@ -67,24 +67,24 @@ func FxIntHangTimer() { TimeStep(); }
 func Verlet(fFirst)
 {
 	var fTimeStep = 1;
-  for(var i = 1; i < Ladder_MaxParticles; i++)
+	for(var i = 1; i < Ladder_MaxParticles; i++)
 	{
-    var x = particles[i][0];
-    var temp = x;
-    var oldx = particles[i][1];
-    var a = particles[i][2];
+		var x = particles[i][0];
+		var temp = x;
+		var oldx = particles[i][1];
+		var a = particles[i][2];
 
 		// Verlet step, get speed out of distance moved relativ to the last position
 		particles[i][0][0] += x[0]-oldx[0]+a[0]*fTimeStep*fTimeStep;
 		particles[i][0][1] += x[1]-oldx[1]+a[1]*fTimeStep*fTimeStep;
 		particles[i][1] = temp;
-  }
+	}
 }
 
 func UpdateLines()
 {
 	var fTimeStep = 1;
-  for(var i=0; i < Ladder_MaxParticles; i++)
+	for(var i=0; i < Ladder_MaxParticles; i++)
 	{
 		segments[i]->SetPosition(GetPartX(i), GetPartY(i));
 
@@ -93,16 +93,16 @@ func UpdateLines()
 			angle = Angle(particles[i][0][0], particles[i][0][1], particles[i-1][0][0], particles[i-1][0][1]);
 		SetSegmentTransform(segments[i], -angle, particles[i][0][0]*10-GetPartX(i)*1000,particles[i][0][1]*10-GetPartY(i)*1000 );
 //		segments[i]->SetR(angle);
-  }
+	}
 }
 
 func SetSegmentTransform(obj, int r, int xoff, int yoff) {
-  var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
-  // set matrix values
-  obj->SetObjDrawTransform (
-    +fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
-    -fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
-  );
+	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+	// set matrix values
+	obj->SetObjDrawTransform (
+		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
+		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
+	);
 }
 
 func LogSpeed()
@@ -112,7 +112,7 @@ func LogSpeed()
 	for(var i=0; i < Ladder_MaxParticles; i++)
 	{
 		var x = particles[i][0];
-    var oldx = particles[i][1];
+		var oldx = particles[i][1];
 		array[GetLength(array)] = Distance(x[0]-oldx[0], x[1]-oldx[1]);
 	}
 	Log("%v", array);
@@ -240,16 +240,16 @@ func TimeStep() {
 // Some vector math
 func Vec_Sub(array x, array y) { return [x[0]-y[0], x[1]-y[1]]; }
 func Vec_Add(array x, array y) { return [x[0]+y[0], x[1]+y[1]]; }
-func Vec_Mul(array x, int   i) { return [x[0]*i,	  x[1]*i];    }
-func Vec_Div(array x, int   i) { return [x[0]/i,	  x[1]/i];    }
+func Vec_Mul(array x, int   i) { return [x[0]*i,    x[1]*i];    }
+func Vec_Div(array x, int   i) { return [x[0]/i,    x[1]/i];    }
 func Vec_Dot(array x, array y) { return x[0]*y[0]+x[1]*y[1];    }
 
 func Definition(def) {
-	 SetProperty("ActMap", {
+	SetProperty("ActMap", {
 
 Hanging = {
 	Prototype = Action,
 	Name = "Hanging"
 },}, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

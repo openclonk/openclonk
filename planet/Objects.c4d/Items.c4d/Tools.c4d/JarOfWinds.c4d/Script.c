@@ -52,27 +52,27 @@ public func ControlUseHolding(object pClonk, ix, iy)
 		var SY=Cos(180-Angle(0,0,ix,iy)+R,D);
 		
 		if(!GBackSolid(SX,SY) && !GBackLiquid(SX,SY)) //when on a random spot in front is air...
-	 	{
-	 	Amount+=2; 				//Air is sucked in.
-	 
-	 	Message("Loading...|%3.0d",pClonk,(Amount*99)/MaxCap);	
-	 
-	 	CreateParticle("AirIntake",
-					SX,SY,
-					Sin(180-Angle(0,0,ix,iy)+R,-D/2),
-					Cos(180-Angle(0,0,ix,iy)+R,-D/2),
-					RandomX(35,80),
-					RGBa(255,255,255,128)
-					);
- 		}
- 	}
- 	
- 	else //Is it full? Say so!
- 	{
- 		Message("Full!",pClonk);
+		{
+			Amount+=2; //Air is sucked in.
+
+			Message("Loading...|%3.0d",pClonk,(Amount*99)/MaxCap);	
+
+			CreateParticle("AirIntake",
+				SX,SY,
+				Sin(180-Angle(0,0,ix,iy)+R,-D/2),
+				Cos(180-Angle(0,0,ix,iy)+R,-D/2),
+				RandomX(35,80),
+				RGBa(255,255,255,128)
+			);
+		}
+	}
+	
+	else //Is it full? Say so!
+	{
+		Message("Full!",pClonk);
 		if(charging==1) ChargeSoundStop();
 		charging=0;
- 	}    
+	}
 }
 
 protected func ControlUseStop(object pClonk, ix, iy)
@@ -80,9 +80,9 @@ protected func ControlUseStop(object pClonk, ix, iy)
 	JarTrans = Trans_Translate(-1500,2000,0);
 	if(Amount>(MaxCap/5)) //Is there enough air to fire?
 	{
-	 // Fire	
+		// Fire	
 		FireWeapon(pClonk, ix, iy);
-		return 1;	 
+		return 1;
 	}
 	ChargeSoundStop();
 	charging=0;
@@ -109,16 +109,16 @@ private func FireWeapon(object pClonk,iX,iY)
 		var SX=Sin(180-Angle(0,0,iX,iY)+R,i);
 		var SY=Cos(180-Angle(0,0,iX,iY)+R,i);
 		
-	 if(!GBackSolid(SX,SY))
-	 {
-	 CreateParticle("Air",
+	if(!GBackSolid(SX,SY))
+	{
+		CreateParticle("Air",
 					SX,SY,
 					Sin(180-Angle(0,0,iX,iY)+(R),(Amount/2)+25),
 					Cos(180-Angle(0,0,iX,iY)+(R),(Amount/2)+25),
 					Max(i+30,90),
 					);	
-	 }
-	}	
+	}
+	}
 	
 	var sinspeed=Sin(180-Angle(0,0,iX,iY)+(R/2),(Amount)+15);
 	var cosspeed=Cos(180-Angle(0,0,iX,iY)+(R/2),(Amount)+15);
@@ -132,28 +132,25 @@ private func FireWeapon(object pClonk,iX,iY)
 	}
 	
 	for( var obj in FindObjects(
-					Find_Or(
-						Find_Distance(10,Sin(180-Angle(0,0,iX,iY),20),Cos(180-Angle(0,0,iX,iY),20)),
-						Find_Distance(18,Sin(180-Angle(0,0,iX,iY),40),Cos(180-Angle(0,0,iX,iY),40)),
-						Find_Distance(25,Sin(180-Angle(0,0,iX,iY),70),Cos(180-Angle(0,0,iX,iY),70))
-						   ),
-						Find_Not(Find_Category(C4D_Structure))			
-					     )
-	   )
-	      
-	{
+		Find_Or(
+			Find_Distance(10,Sin(180-Angle(0,0,iX,iY),20),Cos(180-Angle(0,0,iX,iY),20)),
+			Find_Distance(18,Sin(180-Angle(0,0,iX,iY),40),Cos(180-Angle(0,0,iX,iY),40)),
+			Find_Distance(25,Sin(180-Angle(0,0,iX,iY),70),Cos(180-Angle(0,0,iX,iY),70))
+		),
+		Find_Not(Find_Category(C4D_Structure))
+	)) {
 		if(obj!=pClonk && PathFree(pClonk->GetX(),pClonk->GetY(),obj->GetX(),obj->GetY()))
-	    {
+		{
 		//enemys are pushed back
-		  var x=obj->GetXDir();
-		  var y=obj->GetYDir();
-		  obj->SetXDir((x)+sinspeed);
-		  obj->SetYDir((y)+cosspeed);
-	    }	
+			var x=obj->GetXDir();
+			var y=obj->GetYDir();
+			obj->SetXDir((x)+sinspeed);
+			obj->SetYDir((y)+cosspeed);
+		}
 	}
 }
 
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

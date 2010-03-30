@@ -9,13 +9,13 @@ protected func Construction()
 
 protected func Hit()
 {
-  CastPXS("Earth", 200, 18);
-  Sound("EarthHit*");
-  RemoveObject();
-  return 1;
+	CastPXS("Earth", 200, 18);
+	Sound("EarthHit*");
+	RemoveObject();
+	return 1;
 }
 
 func Definition(def) {
-  SetProperty("Collectible", 1, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
 }

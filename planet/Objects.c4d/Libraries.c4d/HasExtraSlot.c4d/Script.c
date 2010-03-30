@@ -20,5 +20,5 @@ func Ejection() { NotifyHUD(); return _inherited(...); }
 func Departure() { if(Contents(0)) Contents(0)->Exit(); return _inherited(...); }
 
 func Definition(def) {
-  SetProperty("Name", "ExtraSlot", def);
+	SetProperty("Name", "ExtraSlot", def);
 }

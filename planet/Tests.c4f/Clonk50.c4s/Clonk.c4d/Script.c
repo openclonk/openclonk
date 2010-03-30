@@ -5,8 +5,8 @@
 /* Act Map */
 
 func Definition(def) {
-  inherited();
-  SetProperty("ActMap", {
+	inherited();
+	SetProperty("ActMap", {
 	Walk = {
 		Prototype = Action,
 		Name = "Walk",
@@ -27,7 +27,7 @@ func Definition(def) {
 		Prototype = Action,
 		Name = "Scale",
 		Procedure = DFA_SCALE,
-	  Attach = CNAT_MultiAttach,
+		Attach = CNAT_MultiAttach,
 		Directions = 2,
 		Length = 1,
 		Delay = 0,

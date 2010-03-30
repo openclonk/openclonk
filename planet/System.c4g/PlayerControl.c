@@ -128,8 +128,8 @@ global func Control2Player(int plr, int ctrl, int x, int y, int strength, bool r
 	/*
 	if (ctrl == CON_Test)
 	{
-	  Message(Format("%d %d (%d %d) %d [%d %d]", plr, ctrl, x, y, strength, repeat, release));
-	  return true;
+		Message(Format("%d %d (%d %d) %d [%d %d]", plr, ctrl, x, y, strength, repeat, release));
+		return true;
 	}
 	*/
 	return false;

@@ -82,6 +82,6 @@ public func IsTool() { return 0; }
 public func IsToolProduct() { return 1; }
 
 func Definition(def) {
-  SetProperty("Collectible", 1, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
 }

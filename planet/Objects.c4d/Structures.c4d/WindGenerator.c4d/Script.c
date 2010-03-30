@@ -54,5 +54,5 @@ func Wind2Turn()
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

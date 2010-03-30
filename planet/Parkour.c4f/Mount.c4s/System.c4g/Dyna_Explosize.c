@@ -4,5 +4,5 @@
 
 func Explode(size)
 {
-  return _inherited(size+3, ...);
+	return _inherited(size+3, ...);
 }

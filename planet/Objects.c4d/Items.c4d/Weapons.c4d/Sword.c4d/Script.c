@@ -4,7 +4,7 @@
 
 private func Hit()
 {
-  Sound("WoodHit"); //TODO Some metal sond
+	Sound("WoodHit"); //TODO Some metal sond
 }
 
 public func GetCarryMode() { return CARRY_HandBack; }
@@ -16,9 +16,9 @@ public func IsTool() { return 1; }
 public func IsToolProduct() { return 1; }
 
 func Definition(def) {
-  SetProperty("Collectible", 1, def);
-  SetProperty("Name", "$Name$", def);
-  SetProperty("PictureTransformation",Trans_Rotate(20, 0, 0, 1),def);
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
+	SetProperty("PictureTransformation",Trans_Rotate(20, 0, 0, 1),def);
 }
 
 public func ControlUseStart(object clonk, int x, int y)
@@ -33,7 +33,7 @@ public func ControlUseStart(object clonk, int x, int y)
 	{
 		length=20;
 		if(!GetEffect("SwordStrikeSpeedUp", clonk) && !slow)
-			AddEffect("SwordStrikeSpeedUp", clonk,  1, 5, this);
+			AddEffect("SwordStrikeSpeedUp", clonk, 1, 5, this);
 	} else
 	if(clonk->IsJumping())
 	{
@@ -119,7 +119,7 @@ func CheckStrike(iTime)
 			continue;
 		
 		var damage=((100-shield)*(5000 * velocity) / 100) / 100;
-		obj->DoEnergy(-damage,  true, 0, Contained()->GetOwner());
+		obj->DoEnergy(-damage, true, 0, Contained()->GetOwner());
 		if(doBash)
 			ApplyWeaponBash(obj, velocity, Angle(0, 0, angle, Contained()->GetYDir()));
 		

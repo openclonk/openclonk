@@ -63,7 +63,7 @@ global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, i
 	var i = prtnum;
 	// Create particles.
 	while (i >= 0)
-    {
+	{
 		var i1, i2, b;
 		i2 = i * 256 / prtnum;
 		i1 = 256 - i2;
@@ -73,7 +73,7 @@ global func DrawParticleLine (string particle, int x0, int y0, int x1, int y1, i
 		if (!b && (b0 | b1)) 
 			b++;
 		CreateParticle(particle, x0 + (x1 - x0) * i / prtnum, y0 + (y1 - y0) * i-- / prtnum, 0, ydir, a, b);
-    }
+	}
 	// Succes, return number of created particles.
 	return prtnum;
 }

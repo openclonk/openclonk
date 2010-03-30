@@ -7,25 +7,25 @@
 
 
 // Stuff for the proplist changes.
-static const DFA_NONE    =-1;
-static const DFA_WALK    = 0;
-static const DFA_FLIGHT  = 1;
-static const DFA_KNEEL   = 2;
-static const DFA_SCALE   = 3;
-static const DFA_HANGLE  = 4;
-static const DFA_DIG     = 5;
-static const DFA_SWIM    = 6;
-static const DFA_THROW   = 7;
-static const DFA_BRIDGE  = 8;
-static const DFA_BUILD   = 9; 
-static const DFA_PUSH    =10;
-static const DFA_CHOP    =11;
-static const DFA_LIFT    =12;
-static const DFA_FLOAT   =13;
-static const DFA_ATTACH  =14;
-static const DFA_FIGHT   =15;
-static const DFA_CONNECT =16;
-static const DFA_PULL    =17;
+static const DFA_NONE    = -1;
+static const DFA_WALK    =  0;
+static const DFA_FLIGHT  =  1;
+static const DFA_KNEEL   =  2;
+static const DFA_SCALE   =  3;
+static const DFA_HANGLE  =  4;
+static const DFA_DIG     =  5;
+static const DFA_SWIM    =  6;
+static const DFA_THROW   =  7;
+static const DFA_BRIDGE  =  8;
+static const DFA_BUILD   =  9; 
+static const DFA_PUSH    = 10;
+static const DFA_CHOP    = 11;
+static const DFA_LIFT    = 12;
+static const DFA_FLOAT   = 13;
+static const DFA_ATTACH  = 14;
+static const DFA_FIGHT   = 15;
+static const DFA_CONNECT = 16;
+static const DFA_PULL    = 17;
 static Action;
 
 global func GetActMapVal(string entry, string action, id def, int num)
@@ -36,7 +36,7 @@ global func GetActMapVal(string entry, string action, id def, int num)
 		entry = ["X", "Y", "Wdt", "Hgt", "OffX", "OffY"][num];
 	return GetProperty(entry, GetProperty(action, def));
 }
- 
+
 global func ShowNeededMaterial(object of_obj)
 {
 	MessageWindow(GetNeededMatStr(of_obj), GetOwner(), CXCN, of_obj->GetName());

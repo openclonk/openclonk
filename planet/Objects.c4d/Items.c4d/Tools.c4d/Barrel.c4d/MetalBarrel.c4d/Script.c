@@ -5,14 +5,14 @@
 
 private func Hit()
 {
-  if(iVolume< 50) Sound(" "); //Hollow clonk sound
-  if(iVolume> 51) Sound(" "); //Solid clonk sound
-  if(iVolume>=1 && Closed==false) 
-  {
-	if(GBackLiquid(0,iDrain) && GetMaterial(0,iDrain)!=szLiquid) return 0;
-	else EmptyBarrel(GetR());
-	Sound(" "); //water splash sound should be added when available -Ringwaul
-  }
+	if(iVolume< 50) Sound(" "); //Hollow clonk sound
+	if(iVolume> 51) Sound(" "); //Solid clonk sound
+	if(iVolume>=1 && Closed==false) 
+	{
+		if(GBackLiquid(0,iDrain) && GetMaterial(0,iDrain)!=szLiquid) return 0;
+		else EmptyBarrel(GetR());
+		Sound(" "); //water splash sound should be added when available -Ringwaul
+	}
 }
 
 private func Check()

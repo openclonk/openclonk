@@ -31,7 +31,7 @@ public func CanStrikeWithWeapon(clonk)
 	return true;
 }
 
-func FxDelayTranslateVelocityStart(pTarget, iEffectNumber,  temp, p1)
+func FxDelayTranslateVelocityStart(pTarget, iEffectNumber, temp, p1)
 {
 	if(temp) return;
 	EffectVar(0, pTarget, iEffectNumber) = p1;
@@ -65,7 +65,7 @@ func FxIntWeaponChargeStart(pTarget, iEffectNumber, iTemp, length)
 
 func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
 {
-	// check whether the Clonk  is still striking
+	// check whether the Clonk is still striking
 	/*if(this->GetChargeType() == L_WN_straight)
 	{
 		if(!pTarget->IsWalking())
@@ -85,66 +85,64 @@ func FxIntWeaponChargeTimer(pTarget, iEffectNumber, iEffectTime)
 	}
 	this->CheckStrike(iEffectTime);
 	
-	/* var x, y;
-	 var time = Min(iEffectTime, strikeTime);
-	 var step=(((time*100) / GetStrikeTime()) * 180) / 100;
-	 x=-Cos(step, 10);
-	 y=-Sin(step, 6)-3;
-	 if(GetChargeType() == L_WN_down) y*=-1;
-	 if(pTarget->GetDir() == DIR_Left) x *= -1;
-	 CreateParticle("Blast", x, y, 0, 0, 20);
-	 
-	 var strength = 0;
-	 if(iEffectTime <= GetStrikeTime())
-	 	strength = (((iEffectTime*100)/GetStrikeTime()) * this->WeaponSharpness()) / 100;
-	 var bash = EffectCall(pTarget, iEffectNumber, "GetBash");
-	 var bashAngle = Angle(0, 0, pTarget->GetXDir(), pTarget->GetYDir());
-	 var found = false;
-	 for(var obj in FindObjects(Find_AtPoint(x, y), Find_OCF(OCF_Alive), Find_Exclude(pTarget)))
-	 {
-	 	var b = bash;
-	 	var b2;
-	 	var effect;
-	 	if(effect = GetEffect("IntWeaponCharge", obj))
-	 		if(pTarget->GetDir() != obj->GetDir()) // facing each other
-	 		{
-	 			b2 = EffectCall(0, effect, "GetBash");
-	 		}
-	 		
-	 	var xVel=Abs(pTarget->GetXDir());
-	 	if(BoundBy(pTarget->GetXDir(), -1, 1) != BoundBy(obj->GetXDir(), -1, 1))
-	 		xVel+=Abs(obj->GetXDir());
-	 	else xVel-=Abs(obj->GetXDir());
-	 	
-	 	var yVel=Abs(pTarget->GetYDir());
-	 	if(BoundBy(pTarget->GetYDir(), -1, 1) != BoundBy(obj->GetYDir(), -1, 1))
-	 		yVel+=Abs(obj->GetYDir());
-	 	else yVel-=Abs(obj->GetYDir());
-	 	b = (b*Sqrt((xVel**2)+(yVel**2)));
-	 	
-	 	var dmg = ((2*strength) + b) / 3;
-	 	if(b > strength) dmg = ((2*b) + strength) / 3;
-	 	var angle = 0;
-	 	if(bash != 0) angle = bashAngle;
-	 	dmg = Max(0, dmg - b2);
-	 	
-	 	if(dmg)
-	 		AddEffect("IntIsBeingStruck", obj, 1, 1, 0, GetID(), dmg, angle);
-	 	Log("b: %d  strength: %d  b2: %d dmg: %d xVel: %d yVel: %d", b, strength, b2, dmg);
-		found = true;
-	 }
-	 
-	 if(found)
-	 {
-	 	var velocity = Sqrt((pTarget->GetXDir())**2 + (pTarget->GetYDir())**2);
-	 	velocity = Min(1, velocity-1);
-	 	pTarget->SetSpeed(Sin(bashAngle, velocity), -Cos(bashAngle, velocity));
-	 }
-	 
-	if(iEffectTime == GetStrikeTime()+1)
-	{
-		ChangeEffect(0, 0, iEffectNumber, "IntWeaponCharge", 3);
-	}*/
+	/*	var x, y;
+		var time = Min(iEffectTime, strikeTime);
+		var step=(((time*100) / GetStrikeTime()) * 180) / 100;
+		x=-Cos(step, 10);
+		y=-Sin(step, 6)-3;
+		if(GetChargeType() == L_WN_down) y*=-1;
+		if(pTarget->GetDir() == DIR_Left) x *= -1;
+		CreateParticle("Blast", x, y, 0, 0, 20);
+		
+		var strength = 0;
+		if(iEffectTime <= GetStrikeTime())
+			strength = (((iEffectTime*100)/GetStrikeTime()) * this->WeaponSharpness()) / 100;
+		var bash = EffectCall(pTarget, iEffectNumber, "GetBash");
+		var bashAngle = Angle(0, 0, pTarget->GetXDir(), pTarget->GetYDir());
+		var found = false;
+		for(var obj in FindObjects(Find_AtPoint(x, y), Find_OCF(OCF_Alive), Find_Exclude(pTarget)))
+		{
+			var b = bash;
+			var b2;
+			var effect;
+			if(effect = GetEffect("IntWeaponCharge", obj))
+				if(pTarget->GetDir() != obj->GetDir()) // facing each other
+									b2 = EffectCall(0, effect, "GetBash");
+		
+			var xVel=Abs(pTarget->GetXDir());
+			if(BoundBy(pTarget->GetXDir(), -1, 1) != BoundBy(obj->GetXDir(), -1, 1))
+				xVel+=Abs(obj->GetXDir());
+			else xVel-=Abs(obj->GetXDir());
+			
+			var yVel=Abs(pTarget->GetYDir());
+			if(BoundBy(pTarget->GetYDir(), -1, 1) != BoundBy(obj->GetYDir(), -1, 1))
+				yVel+=Abs(obj->GetYDir());
+			else yVel-=Abs(obj->GetYDir());
+			b = (b*Sqrt((xVel**2)+(yVel**2)));
+			
+			var dmg = ((2*strength) + b) / 3;
+			if(b > strength) dmg = ((2*b) + strength) / 3;
+			var angle = 0;
+			if(bash != 0) angle = bashAngle;
+			dmg = Max(0, dmg - b2);
+			
+			if(dmg)
+				AddEffect("IntIsBeingStruck", obj, 1, 1, 0, GetID(), dmg, angle);
+			Log("b: %d  strength: %d  b2: %d dmg: %d xVel: %d yVel: %d", b, strength, b2, dmg);
+			found = true;
+		}
+		
+		if(found)
+		{
+			var velocity = Sqrt((pTarget->GetXDir())**2 + (pTarget->GetYDir())**2);
+			velocity = Min(1, velocity-1);
+			pTarget->SetSpeed(Sin(bashAngle, velocity), -Cos(bashAngle, velocity));
+		}
+		
+		if(iEffectTime == GetStrikeTime()+1)
+		{
+			ChangeEffect(0, 0, iEffectNumber, "IntWeaponCharge", 3);
+		}*/
 }
 
 func FxIntWeaponChargeStop(pTarget, iEffectNumber, iTemp)
@@ -204,7 +202,7 @@ func FxIntIsBeingStruckTimer(pTarget, iEffectNumber, iEffectTime)
 			if(EffectVar(1, pTarget, iEffectNumber) > 60)
 				pTarget->Fling();
 		}
-		//if(EffectVar(1, pTarget, iEffectNumber) > 20) EffectVar(1, pTarget, iEffectNumber)  = 20;
+		//if(EffectVar(1, pTarget, iEffectNumber) > 20) EffectVar(1, pTarget, iEffectNumber) = 20;
 		pTarget->SetXDir(Sin(EffectVar(2, pTarget, iEffectNumber), EffectVar(1, pTarget, iEffectNumber) ), 100);
 		pTarget->SetYDir(-Abs(Cos(EffectVar(2, pTarget, iEffectNumber), EffectVar(1, pTarget, iEffectNumber) )), 100);
 		return -1;
@@ -272,16 +270,16 @@ func GetRelativeVelocity(pObject1, pObject2)
 {
 	var b=0;
 	var xVel=Abs(pObject1->GetXDir());
-	 if(BoundBy(pObject1->GetXDir(), -1, 1) != BoundBy(pObject2->GetXDir(), -1, 1))
-	 	xVel+=Abs(pObject2->GetXDir());
-	 else xVel-=Abs(pObject2->GetXDir());
-	 
-	 var yVel=Abs(pObject1->GetYDir());
-	 if(BoundBy(pObject1->GetYDir(), -1, 1) != BoundBy(pObject2->GetYDir(), -1, 1))
-	 	yVel+=Abs(pObject2->GetYDir());
-	 else yVel-=Abs(pObject2->GetYDir());
-	 b = Sqrt((xVel**2)+(yVel**2));
-	 return b;
+	if(BoundBy(pObject1->GetXDir(), -1, 1) != BoundBy(pObject2->GetXDir(), -1, 1))
+		xVel+=Abs(pObject2->GetXDir());
+	else xVel-=Abs(pObject2->GetXDir());
+	
+	var yVel=Abs(pObject1->GetYDir());
+	if(BoundBy(pObject1->GetYDir(), -1, 1) != BoundBy(pObject2->GetYDir(), -1, 1))
+		yVel+=Abs(pObject2->GetYDir());
+	else yVel-=Abs(pObject2->GetYDir());
+	b = Sqrt((xVel**2)+(yVel**2));
+	return b;
 }
 
 
@@ -328,25 +326,24 @@ func ApplyShieldFactor(pFrom, pTo, damage)
 	var shield=-1;
 	for(var i = GetEffectCount(0, pTo); i--;)
 	{
-    		var iEffect;
-    		iEffect = GetEffect("*Shield*", pTo, i);
-    		if(!iEffect) iEffect = GetEffect("IntWeaponCharge", pTo, i);
-    		
-    		if(iEffect)
-    		{
-    			var s=EffectCall(pTo, iEffect, "HitByWeapon", pFrom, damage);
-    			if(s && shield == -1) shield=s;
-    			else if(s)
-    			{
-    				shield=(100-(((100-s)*(100-shield))/100));
-    			}
-    		}
-    	}
-    	
+		var iEffect;
+		iEffect = GetEffect("*Shield*", pTo, i);
+		if(!iEffect) iEffect = GetEffect("IntWeaponCharge", pTo, i);
+		
+		if(iEffect)
+		{
+			var s=EffectCall(pTo, iEffect, "HitByWeapon", pFrom, damage);
+			if(s && shield == -1) shield=s;
+			else if(s)
+			{
+				shield=(100-(((100-s)*(100-shield))/100));
+			}
+		}
+	}
 	
-
-    	if(shield == -1) return 0;
-   	 return shield;
+	
+	if(shield == -1) return 0;
+	return shield;
 }
 
 func StartWeaponHitCheckEffect(pClonk, iLength, iInterval)

@@ -45,7 +45,7 @@ private func GetWall(iAngle, &iX, &iY)
 	for(var iDist = 8; iDist < 18; iDist++)
 	{
 		iX = Sin(iAngle, iDist);
-	  iY = -Cos(iAngle, iDist);
+		iY = -Cos(iAngle, iDist);
 		if(GBackSolid(iX, iY))
 		{
 			iX = Sin(iAngle, iDist-5);
@@ -62,7 +62,7 @@ protected func Incineration() { Extinguish(); Fuse(); }
 
 protected func RejectEntrance()
 {
-  return GetAction() == "Fuse" || GetAction() == "Ready";
+	return GetAction() == "Fuse" || GetAction() == "Ready";
 }
 
 // Controle of the Dynamite box

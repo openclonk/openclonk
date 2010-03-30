@@ -248,11 +248,11 @@ private func UpdateScoreboard(int plr, bool show)
 	SetScoreboardData(plrid, SBRD_Score, Format("%d", score_list[plr]), score_list[plr]);
 
 	// Show scoreboard.
-	if (show)
+	if(show)
 	{
 		DoScoreboardShow(1, plr+1);
 		Schedule(Format("DoScoreboardShow(-1, %d)", plr+1), 35 * MIME_ShowBoardTime);
-    }
+	}
 	return;
 }
 

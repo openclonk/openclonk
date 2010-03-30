@@ -4,10 +4,10 @@
 
 protected func Initialize()
 {
-  SetAction("Connect");  
-  SetVertexXY(0, GetX(), GetY());
-  SetVertexXY(1, GetX(), GetY());
-  SetPosition(0, 0);
+	SetAction("Connect");
+	SetVertexXY(0, GetX(), GetY());
+	SetVertexXY(1, GetX(), GetY());
+	SetPosition(0, 0);
 }
 
 // Returns true if this object is a functioning power line.
@@ -34,20 +34,20 @@ public func GetConnectedObject(object pObject)
 
 protected func LineBreak(bool fNoMsg)
 {
-  Sound("LineBreak");
-  if(!fNoMsg) BreakMessage();
+	Sound("LineBreak");
+	if(!fNoMsg) BreakMessage();
 }
-  
+
 private func BreakMessage()
 {
-  var pLine = GetActionTarget(0);
-  if(pLine->GetID() != CableReel) pLine = GetActionTarget(1);
+	var pLine = GetActionTarget(0);
+	if(pLine->GetID() != CableReel) pLine = GetActionTarget(1);
 
-  Message("$TxtLinebroke$", pLine);
+	Message("$TxtLinebroke$", pLine);
 }
 
 func Definition(def) {
-  SetProperty("ActMap", {
+	SetProperty("ActMap", {
 Connect = {
 Prototype = Action,
 Name = "Connect",
@@ -56,5 +56,5 @@ Delay = 0,
 Procedure = DFA_CONNECT,
 NextAction = "Connect",
 },  }, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

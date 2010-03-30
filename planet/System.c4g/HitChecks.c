@@ -166,7 +166,7 @@ global func ProjectileHit(object obj, int dmg, bool tumble)
 	if (obj->GetAlive())
 	{
 		obj->DoEnergy(-dmg, false, FX_Call_EngObjHit, GetOwner());
-	    obj->~CatchBlow(-dmg, this);
+		obj->~CatchBlow(-dmg, this);
 	}
 	else
 	{
@@ -177,10 +177,10 @@ global func ProjectileHit(object obj, int dmg, bool tumble)
 		return;
 	
 	// Tumble target.
-    if (obj->GetAlive() && tumble)
-    {
+	if (obj->GetAlive() && tumble)
+	{
 		obj->SetAction("Tumble");
 		obj->SetSpeed(obj->GetXDir() + GetXDir() / 3 , obj->GetYDir() + GetYDir() / 3 - 1);
-    }
+	}
 	return; 
 }

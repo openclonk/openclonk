@@ -20,8 +20,8 @@ public func WeaponMenu(object clonk)
 		menu = clonk->CreateRingMenu(Clonk, 0, 0, this);
 		for (var weapon in WeaponList())
 			menu->AddItem(weapon);
-		menu->Show();    		
-    }
+		menu->Show();
+	}
 	AddEffect("IntTimeLimit", this, 100, 10, this);
 	return true;
 }
@@ -55,7 +55,7 @@ public func Selected(object menu, object selector)
 	if (choses > 0)
 	{
 		RelaunchClonk();
-      	this->RemoveObject();
+		this->RemoveObject();
 		return 1;
 	}
 	choses++;
@@ -72,5 +72,5 @@ private func RelaunchClonk()
 
 
 func Definition(def) {
-        SetProperty("Name", "relaunch", def);
+	SetProperty("Name", "relaunch", def);
 }

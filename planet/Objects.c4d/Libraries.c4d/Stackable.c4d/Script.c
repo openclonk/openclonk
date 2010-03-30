@@ -154,8 +154,8 @@ protected func RejectEntrance(object into)
 
 public func CalcValue(object pInBase, int iForPlayer)
 {
-  // Je nach Anzahl
-  return GetID()->GetValue()*Max(GetStackCount(),1)/MaxStackCount();
+	// Je nach Anzahl
+	return GetID()->GetValue()*Max(GetStackCount(),1)/MaxStackCount();
 }
 
 private func TryPutInto( object into )

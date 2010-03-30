@@ -9,11 +9,11 @@ protected func Construction()
 
 protected func Hit()
 {
-  Sound("RockHit*");
-  return 1;
+	Sound("RockHit*");
+	return 1;
 }
 
 func Definition(def) {
-  SetProperty("Collectible", 1, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
 }

@@ -38,7 +38,7 @@ public func CheckPower(int iPowerCheck, bool fNoSubstract)
 	// Check all power generators connected to this consumer and sort them according to priority.
 	for(var pGenerator in FindObjects(Find_PowerGenerator(), Sort_GeneratorPriority())) 
 	{
-		var iPower =  pGenerator -> GetPower();
+		var iPower = pGenerator -> GetPower();
 		if(iPower > iPowerCheck)
 		{
 			if(!fNoSubstract)
@@ -54,8 +54,8 @@ public func CheckPower(int iPowerCheck, bool fNoSubstract)
 // Finds all power generators connected to pConsumer (can be nil in local calls).
 private func Find_PowerGenerator(object pConsumer)
 {
-  if(!pConsumer) pConsumer = this;
-  return [C4FO_Func, "IsPowerGeneratorFor", pConsumer];
+	if(!pConsumer) pConsumer = this;
+	return [C4FO_Func, "IsPowerGeneratorFor", pConsumer];
 }
 
 // Sorts power generators according to GetGeneratorPriority(), highest return value -> first in array.

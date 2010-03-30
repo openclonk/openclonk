@@ -204,5 +204,5 @@ global func Intersect(int Ax, int Ay, int Bx, int By, int Px, int Py, int Qx, in
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

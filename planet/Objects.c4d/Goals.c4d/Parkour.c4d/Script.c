@@ -295,7 +295,7 @@ protected func RelaunchPlayer(int plr)
 
 private func RndRespawnMsg()
 {
-  return Translate(Format("MsgRespawn%d", Random(4)));
+	return Translate(Format("MsgRespawn%d", Random(4)));
 }
 
 protected func JoinPlayer(int plr)

@@ -73,7 +73,7 @@ global func GetDefNoFight()     { return GetDefCoreVal("NoFight", "DefCore"); }
 global func GetObjOwnMass()    { return GetObjectVal("OwnMass", 0); }
 global func GetObjFixX()       { return GetObjectVal("FixX", 0); }
 global func GetObjFixY()       { return GetObjectVal("FixY", 0); }
-global func GetObjWidth()		   { return GetObjectVal("Width", 0); }
+global func GetObjWidth()      { return GetObjectVal("Width", 0); }
 global func GetObjHeight()     { return GetObjectVal("Height", 0); }
 global func GetObjFireTop()    { return GetObjectVal("FireTop", 0); }
 global func GetObjMobile()     { return GetObjectVal("Mobile", 0); }
@@ -143,7 +143,7 @@ global func GetObjCoreRounds()    { return GetObjectInfoCoreVal("Rounds", "Objec
 global func GetAge()              { return GetObjectInfoCoreVal("Age", "ObjectInfo"); }
 
 // GetPlayerInfoCoreVal
-global func GetPlrCoreName(int plr)	    { return GetPlayerInfoCoreVal("Name", "Player", plr); }
+global func GetPlrCoreName(int plr)      { return GetPlayerInfoCoreVal("Name", "Player", plr); }
 global func GetPlrCoreComment(int plr)   { return GetPlayerInfoCoreVal("Comment", "Player", plr); }
 global func GetPlrCoreRank(int plr)      { return GetPlayerInfoCoreVal("Rank", "Player", plr); }
 global func GetPlrCoreRankName(int plr)  { return GetPlayerInfoCoreVal("RankName", "Player", plr); }

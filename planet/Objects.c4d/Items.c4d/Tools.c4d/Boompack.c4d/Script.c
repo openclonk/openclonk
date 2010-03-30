@@ -104,7 +104,7 @@ protected func FxFlightTimer(object pTarget, int iEffectNumber, int iEffectTime)
 	var y = +Cos(GetR(),22);
 	
 	CreateParticle("ExploSmoke",x,y,RandomX(-1,1),RandomX(-1,2),RandomX(120,280),RGBa(130,130,130,75));
-    CreateParticle("Thrust",x,y,GetXDir()/2,GetYDir()/2,RandomX(80,120)+sizemod,RGBa(255,200,200,160));
+	CreateParticle("Thrust",x,y,GetXDir()/2,GetYDir()/2,RandomX(80,120)+sizemod,RGBa(255,200,200,160));
 	
 	fuel--;
 }
@@ -172,13 +172,13 @@ func Launch(int angle, object clonk)
 	var level = 16;
 	var i=0, count = 3+level/8, r = Random(360);
 	while(count > 0 && ++i < count*6) {
-	  r += RandomX(40,80);
-	  var smokex = +Sin(r,RandomX(level/4,level/2));
-	  var smokey = -Cos(r,RandomX(level/4,level/2));
-	  if(GBackSolid(smokex,smokey))
-	    continue;
-	  CreateSmokeTrail(2*level,r,smokex,smokey,nil,true);
-	  count--;
+		r += RandomX(40,80);
+		var smokex = +Sin(r,RandomX(level/4,level/2));
+		var smokey = -Cos(r,RandomX(level/4,level/2));
+		if(GBackSolid(smokex,smokey))
+			continue;
+		CreateSmokeTrail(2*level,r,smokex,smokey,nil,true);
+		count--;
 	}
 	
 	SetR(angle);
@@ -207,4 +207,4 @@ func Definition(def) {
 	SetProperty("Collectible",1, def);
 	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,0,1),Trans_Rotate(-30,1,0,0),Trans_Scale(1300)),def);
 }
-		  							
+

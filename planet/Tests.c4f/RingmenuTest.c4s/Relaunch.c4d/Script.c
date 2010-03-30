@@ -6,7 +6,7 @@ func ChooseMenu(object clonk)
 {
 	if(!menuitem)
 	{
-       	menuitem=clonk->CreateRingMenu(Clonk,0,0,this);
+		menuitem=clonk->CreateRingMenu(Clonk,0,0,this);
 		menuitem->AddItem(Bow);
 		menuitem->AddItem(Arrow);
 		menuitem->AddItem(Musket);
@@ -23,8 +23,8 @@ func ChooseMenu(object clonk)
 		menuitem->AddItem(Firestone,5);
 		menuitem->AddItem(Fireglobe,3);
 		menuitem->AddItem(Blackpowder,3); 
-       	menuitem->Show();       		
-    }
+		menuitem->Show();
+	}
 	return true;
 }
 
@@ -43,10 +43,10 @@ public func Selected(object menu, object selector)
 	menu->Show();
 	if(choses==2)
 	{
-      	var clonk=Contents();
-      	clonk->Exit();
-      	clonk->SetPosition(RandomX(30,LandscapeWidth()-30),-20);
-      	this->RemoveObject();
+		var clonk=Contents();
+		clonk->Exit();
+		clonk->SetPosition(RandomX(30,LandscapeWidth()-30),-20);
+		this->RemoveObject();
 		return 1;
 	}
 	choses++;
@@ -55,5 +55,5 @@ public func Selected(object menu, object selector)
 
 
 func Definition(def) {
-        SetProperty("Name", "relaunch", def);
+	SetProperty("Name", "relaunch", def);
 }

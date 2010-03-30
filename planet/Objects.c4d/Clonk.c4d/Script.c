@@ -34,20 +34,20 @@ local pInventory;
 
 protected func Construction()
 {
-  _inherited(...);
-  // shovel...
-  var shov = CreateObject(Shovel,0,0,GetOwner());
-  if (!Collect(shov,false,1))
-    shov->RemoveObject();
+	_inherited(...);
+	// shovel...
+	var shov = CreateObject(Shovel,0,0,GetOwner());
+	if (!Collect(shov,false,1))
+		shov->RemoveObject();
 
-  // Clonks mit Magiephysikal aus fehlerhaften Szenarien korrigieren
-  if (GetID () == Clonk)
-    if (GetPhysical ("Magic", 1))
-      SetPhysical ("Magic", 0, 1);
-  SetAction("Walk");
-  SetDir(Random(2));
-  // Broadcast für Spielregeln
-  GameCallEx("OnClonkCreation", this);
+	// Clonks mit Magiephysikal aus fehlerhaften Szenarien korrigieren
+	if (GetID () == Clonk)
+		if (GetPhysical ("Magic", 1))
+			SetPhysical ("Magic", 0, 1);
+	SetAction("Walk");
+	SetDir(Random(2));
+	// Broadcast für Spielregeln
+	GameCallEx("OnClonkCreation", this);
 
 	AddEffect("IntTurn", this, 1, 1, this);
 }
@@ -57,43 +57,43 @@ protected func Construction()
 /* Bei Hinzuf�gen zu der Crew eines Spielers */
 
 protected func Recruitment(int iPlr) {
-  // Broadcast f�r Crew
-  GameCallEx("OnClonkRecruitment", this, iPlr);
-  
-  return _inherited(iPlr,...);
+	// Broadcast f�r Crew
+	GameCallEx("OnClonkRecruitment", this, iPlr);
+	
+	return _inherited(iPlr,...);
 }
 
 protected func DeRecruitment(int iPlr) {
-  // Broadcast f�r Crew
-  GameCallEx("OnClonkDeRecruitment", this, iPlr);
-  
-  return _inherited(iPlr,...);
+	// Broadcast f�r Crew
+	GameCallEx("OnClonkDeRecruitment", this, iPlr);
+	
+	return _inherited(iPlr,...);
 }
 
 
 protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 {
-/*  // Kommando MoveTo an Pferd weiterleiten
-  if (szCommand == "MoveTo")
-    if (IsRiding())
-      return GetActionTarget()->~ControlCommand(szCommand, pTarget, iTx, iTy);
-  // Anderes Kommando beim Reiten: absteigen (Ausnahme: Context)
-  if (IsRiding() && szCommand != "Context")
-  {
-    GetActionTarget()->SetComDir(COMD_Stop);
-    GetActionTarget()->~ControlDownDouble(this);
-  }
-  */
-  // RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
-  if(szCommand == "Construct")
-  {
-    if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
-    {
-      return 1;
-    }
-  }
-  // Kein �berladenes Kommando
-  return 0;
+/*	// Kommando MoveTo an Pferd weiterleiten
+	if (szCommand == "MoveTo")
+		if (IsRiding())
+			return GetActionTarget()->~ControlCommand(szCommand, pTarget, iTx, iTy);
+	// Anderes Kommando beim Reiten: absteigen (Ausnahme: Context)
+	if (IsRiding() && szCommand != "Context")
+	{
+		GetActionTarget()->SetComDir(COMD_Stop);
+		GetActionTarget()->~ControlDownDouble(this);
+	}
+	*/
+	// RejectConstruction Callback beim Bauen durch Drag'n'Drop aus einem Gebaeude-Menu
+	if(szCommand == "Construct")
+	{
+		if(Data->~RejectConstruction(iTx - GetX(), iTy - GetY(), this) )
+		{
+			return 1;
+		}
+	}
+	// Kein �berladenes Kommando
+	return 0;
 }
 
 
@@ -101,195 +101,195 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy, pTarget2, Data)
 
 private func RedefinePhysical(szPhys, idTo)
 {
-  // Physical-Werte ermitteln
-  var physDefFrom = GetID()->GetPhysical(szPhys),
-      physDefTo   = idTo->GetPhysical(szPhys),
-      physCurr    = GetPhysical(szPhys);
-  // Neuen Wert berechnen
-  var physNew; if (physDefTo) physNew=BoundBy(physDefTo-physDefFrom+physCurr, 0, 100000);
-  // Neuen Wert f�r den Reset immer tempor�r setzen, selbst wenn keine �nderung besteht, damit der Reset richtig funktioniert
-  SetPhysical(szPhys, physNew, PHYS_StackTemporary);
-  // Fertig
-  return 1;
+	// Physical-Werte ermitteln
+	var physDefFrom = GetID()->GetPhysical(szPhys),
+	    physDefTo   = idTo->GetPhysical(szPhys),
+	    physCurr    = GetPhysical(szPhys);
+	// Neuen Wert berechnen
+	var physNew; if (physDefTo) physNew=BoundBy(physDefTo-physDefFrom+physCurr, 0, 100000);
+	// Neuen Wert f�r den Reset immer tempor�r setzen, selbst wenn keine �nderung besteht, damit der Reset richtig funktioniert
+	SetPhysical(szPhys, physNew, PHYS_StackTemporary);
+	// Fertig
+	return 1;
 }
 
 protected func FxIntRedefineStart(object trg, int num, int tmp, id idTo)
-  {
-  // Ziel-ID in Effektvariable
-  if (tmp)
-    idTo = EffectVar(0, trg, num);
-  else
-    {
-    EffectVar(0, trg, num) = idTo;
-    EffectVar(1, trg, num) = GetID();
-    }
-  // Physicals anpassen
-  RedefinePhysical("Energy", idTo);
-  RedefinePhysical("Breath", idTo);
-  RedefinePhysical("Walk", idTo);
-  RedefinePhysical("Jump", idTo);
-  RedefinePhysical("Scale", idTo);
-  RedefinePhysical("Hangle", idTo);
-  RedefinePhysical("Dig", idTo);
-  RedefinePhysical("Swim", idTo);
-  RedefinePhysical("Throw", idTo);
-  RedefinePhysical("Push", idTo);
-  RedefinePhysical("Fight", idTo);
-  RedefinePhysical("Magic", idTo);
-  RedefinePhysical("Float", idTo);
-  /*if (GetRank()<4) RedefinePhysical("CanScale", idTo);
-  if (GetRank()<6) RedefinePhysical("CanHangle", idTo);*/ // z.Z. k�nnen es alle
-  RedefinePhysical("CanDig", idTo);
-  RedefinePhysical("CanConstruct", idTo);
-  RedefinePhysical("CanChop", idTo);
-  RedefinePhysical("CanSwimDig", idTo);
-  RedefinePhysical("CorrosionResist", idTo);
-  RedefinePhysical("BreatheWater", idTo);
-  // Damit Aufwertungen zu nicht-Magiern keine Zauberenergie �brig lassen
-  if (GetPhysical("Magic")/1000 < GetMagicEnergy()) DoMagicEnergy(GetPhysical("Magic")/1000-GetMagicEnergy());
-  // Echtes Redefine nur bei echten Aufrufen (hat zu viele Nebenwirkungen)
-  if (tmp) return FX_OK;
-  Redefine(idTo);
-  // Fertig
-  return FX_OK;
-  }
-  
+{
+	// Ziel-ID in Effektvariable
+	if (tmp)
+		idTo = EffectVar(0, trg, num);
+	else
+	{
+		EffectVar(0, trg, num) = idTo;
+		EffectVar(1, trg, num) = GetID();
+	}
+	// Physicals anpassen
+	RedefinePhysical("Energy", idTo);
+	RedefinePhysical("Breath", idTo);
+	RedefinePhysical("Walk", idTo);
+	RedefinePhysical("Jump", idTo);
+	RedefinePhysical("Scale", idTo);
+	RedefinePhysical("Hangle", idTo);
+	RedefinePhysical("Dig", idTo);
+	RedefinePhysical("Swim", idTo);
+	RedefinePhysical("Throw", idTo);
+	RedefinePhysical("Push", idTo);
+	RedefinePhysical("Fight", idTo);
+	RedefinePhysical("Magic", idTo);
+	RedefinePhysical("Float", idTo);
+	/*if (GetRank()<4) RedefinePhysical("CanScale", idTo);
+	if (GetRank()<6) RedefinePhysical("CanHangle", idTo);*/ // z.Z. k�nnen es alle
+	RedefinePhysical("CanDig", idTo);
+	RedefinePhysical("CanConstruct", idTo);
+	RedefinePhysical("CanChop", idTo);
+	RedefinePhysical("CanSwimDig", idTo);
+	RedefinePhysical("CorrosionResist", idTo);
+	RedefinePhysical("BreatheWater", idTo);
+	// Damit Aufwertungen zu nicht-Magiern keine Zauberenergie �brig lassen
+	if (GetPhysical("Magic")/1000 < GetMagicEnergy()) DoMagicEnergy(GetPhysical("Magic")/1000-GetMagicEnergy());
+	// Echtes Redefine nur bei echten Aufrufen (hat zu viele Nebenwirkungen)
+	if (tmp) return FX_OK;
+	Redefine(idTo);
+	// Fertig
+	return FX_OK;
+}
+
 protected func FxIntRedefineStop(object trg, int num, int iReason, bool tmp)
-  {
-  // Physicals wiederherstellen
-  ResetPhysical("BreatheWater");
-  ResetPhysical("CorrosionResist");
-  ResetPhysical("CanSwimDig");
-  ResetPhysical("CanChop");
-  ResetPhysical("CanConstruct");
-  ResetPhysical("CanDig");
-  ResetPhysical("Float");
-  ResetPhysical("Magic");
-  ResetPhysical("Fight");
-  ResetPhysical("Push");
-  ResetPhysical("Throw");
-  ResetPhysical("Swim");
-  ResetPhysical("Dig");
-  ResetPhysical("Hangle");
-  ResetPhysical("Scale");
-  ResetPhysical("Jump");
-  ResetPhysical("Walk");
-  ResetPhysical("Breath");
-  ResetPhysical("Energy");
-  // Keine R�ck�nderung bei tempor�ren Aufrufen oder beim Tod/L�schen
-  if (tmp || iReason) return;
-  // Damit Aufwertungen von nicht-Magiern keine Zauberenergie �brig lassen
-  if (GetPhysical("Magic")/1000 < GetMagicEnergy()) DoMagicEnergy(GetPhysical("Magic")/1000-GetMagicEnergy());
-  // OK; alte Definition wiederherstellen
-  Redefine(EffectVar(1, trg, num));
-  }
+{
+	// Physicals wiederherstellen
+	ResetPhysical("BreatheWater");
+	ResetPhysical("CorrosionResist");
+	ResetPhysical("CanSwimDig");
+	ResetPhysical("CanChop");
+	ResetPhysical("CanConstruct");
+	ResetPhysical("CanDig");
+	ResetPhysical("Float");
+	ResetPhysical("Magic");
+	ResetPhysical("Fight");
+	ResetPhysical("Push");
+	ResetPhysical("Throw");
+	ResetPhysical("Swim");
+	ResetPhysical("Dig");
+	ResetPhysical("Hangle");
+	ResetPhysical("Scale");
+	ResetPhysical("Jump");
+	ResetPhysical("Walk");
+	ResetPhysical("Breath");
+	ResetPhysical("Energy");
+	// Keine R�ck�nderung bei tempor�ren Aufrufen oder beim Tod/L�schen
+	if (tmp || iReason) return;
+	// Damit Aufwertungen von nicht-Magiern keine Zauberenergie �brig lassen
+	if (GetPhysical("Magic")/1000 < GetMagicEnergy()) DoMagicEnergy(GetPhysical("Magic")/1000-GetMagicEnergy());
+	// OK; alte Definition wiederherstellen
+	Redefine(EffectVar(1, trg, num));
+}
 
 public func Redefine2(idTo)
 {
-  if (GetID() == idTo) return true;
-  RemoveEffect("IntRedefine", this);
-  if (GetID() == idTo) return true;
-  return !!AddEffect("IntRedefine", this, 10, 0, this, 0, idTo);
+	if (GetID() == idTo) return true;
+	RemoveEffect("IntRedefine", this);
+	if (GetID() == idTo) return true;
+	return !!AddEffect("IntRedefine", this, 10, 0, this, 0, idTo);
 }
 
 public func Redefine(idTo)
 {
-  // Aktivit�tsdaten sichern
-  var phs=GetPhase(),act=GetAction();
-  // Umwandeln
-  ChangeDef(idTo);
-  // Aktivit�t wiederherstellen
-  var chg=SetAction(act);
-  if (!chg) SetAction("Walk");
-  if (chg) SetPhase(phs);
-  // Fertig
-  return 1;
+	// Aktivit�tsdaten sichern
+	var phs=GetPhase(),act=GetAction();
+	// Umwandeln
+	ChangeDef(idTo);
+	// Aktivit�t wiederherstellen
+	var chg=SetAction(act);
+	if (!chg) SetAction("Walk");
+	if (chg) SetPhase(phs);
+	// Fertig
+	return 1;
 }
 
 
-/* Food and drinks :-) */  
+/* Food and drinks :-) */
 
 public func Drink(object pDrink)
 {
-  // Trinkaktion setzen, wenn vorhanden
-  if (GetActMapVal("Name", "Drink"))
-    SetAction("Drink");
-  // Attention: don't do anything with the potion
-  // normally it deletes itself.
+	// Trinkaktion setzen, wenn vorhanden
+	if (GetActMapVal("Name", "Drink"))
+		SetAction("Drink");
+	// Attention: don't do anything with the potion
+	// normally it deletes itself.
 }
 
 /* Actions */
 
 private func Fighting()
 {
-  if (!Random(2)) SetAction("Punch");
+	if (!Random(2)) SetAction("Punch");
 }
 
 private func Punching()
 {
-  if (!Random(3)) Sound("Kime*");
-  if (!Random(5)) Sound("Punch*");
-  if (!Random(2)) return;
-  GetActionTarget()->Punch();
-  return;
+	if (!Random(3)) Sound("Kime*");
+	if (!Random(5)) Sound("Punch*");
+	if (!Random(2)) return;
+	GetActionTarget()->Punch();
+	return;
 }
-  
+
 private func Chopping()
 {
-  if (!GetActTime()) return;
-  Sound("Chop*");
-  CastParticles("Dust",Random(3)+1,6,-8+16*GetDir(),1,10,12);
+	if (!GetActTime()) return;
+	Sound("Chop*");
+	CastParticles("Dust",Random(3)+1,6,-8+16*GetDir(),1,10,12);
 }
-  
+
 private func Building()
 {
-  if (!Random(2)) Sound("Build*");
+	if (!Random(2)) Sound("Build*");
 }
 
 private func Processing()
 {
-  Sound("Build1");
+	Sound("Build1");
 }
 
 private func Digging()
 {
-  Sound("Dig*");
+	Sound("Dig*");
 }
 
 protected func Scaling()
 {
-  var szDesiredAction;
-  if (GetYDir()>0) szDesiredAction = "ScaleDown"; else szDesiredAction = "Scale";
-  if (GetAction() != szDesiredAction) SetAction(szDesiredAction);
+	var szDesiredAction;
+	if (GetYDir()>0) szDesiredAction = "ScaleDown"; else szDesiredAction = "Scale";
+	if (GetAction() != szDesiredAction) SetAction(szDesiredAction);
 }
 
 
 /* Ereignisse */
-  
+
 protected func CatchBlow()
 {
-  if (GetAction() == "Dead") return;
-  if (!Random(5)) Hurt();
+	if (GetAction() == "Dead") return;
+	if (!Random(5)) Hurt();
 }
-  
+	
 protected func Hurt()
 {
-  Sound("Hurt*");
+	Sound("Hurt*");
 }
-  
+	
 protected func Grab(object pTarget, bool fGrab)
 {
-  Sound("Grab");
+	Sound("Grab");
 }
 
 protected func Get()
 {
-  Sound("Grab");
+	Sound("Grab");
 }
 
 protected func Put()
 {
-  Sound("Grab");
+	Sound("Grab");
 }
 
 protected func Death(int killed_by)
@@ -300,12 +300,12 @@ protected func Death(int killed_by)
 	// The broadcast could have revived the clonk.
 	if (GetAlive()) 
 		return;
-  
+	
 	Sound("Die");
 	DeathAnnounce();
 	// If the last crewmember died, do another broadcast.
 	if (!GetCrew(GetOwner()))
-    	GameCallEx("RelaunchPlayer", GetOwner(), killed_by);
+		GameCallEx("RelaunchPlayer", GetOwner(), killed_by);
 	return;
 }
 
@@ -313,27 +313,27 @@ protected func Destruction()
 {
 	// If the clonk wasn't dead yet, he will be now. 
 	if (GetAlive())
-    	GameCallEx("OnClonkDeath", this, GetKiller());
-  	// If this is the last crewmember, do broadcast.
-  	if (GetCrew(GetOwner()) == this)
-    	if (GetCrewCount(GetOwner()) == 1)
-      		// Only if the player is still alive and not yet elimnated.
-    		if (GetPlayerName(GetOwner()))
-        		GameCallEx("RelaunchPlayer", GetOwner(), GetKiller());
+		GameCallEx("OnClonkDeath", this, GetKiller());
+	// If this is the last crewmember, do broadcast.
+	if (GetCrew(GetOwner()) == this)
+	if (GetCrewCount(GetOwner()) == 1)
+		// Only if the player is still alive and not yet elimnated.
+			if (GetPlayerName(GetOwner()))
+				GameCallEx("RelaunchPlayer", GetOwner(), GetKiller());
 	return;
 }
 
 protected func DeepBreath()
 {
-  Sound("Breath");
+	Sound("Breath");
 }
-  
+
 protected func CheckStuck()
-{                   
-  // Verhindert Festh�ngen am Mittelvertex
-  if(!GetXDir()) if(Abs(GetYDir()) < 5)
-    if(GBackSolid(0, 3))
-      SetPosition(GetX(), GetY() + 1);
+{
+	// Verhindert Festh�ngen am Mittelvertex
+	if(!GetXDir()) if(Abs(GetYDir()) < 5)
+		if(GBackSolid(0, 3))
+			SetPosition(GetX(), GetY() + 1);
 }
 
 /* Status */
@@ -408,7 +408,7 @@ func DoUpdateAttach(bool sec)
 
 	if(iHandMesh[sec])
 	{
-  	DetachMesh(iHandMesh[sec]);
+		DetachMesh(iHandMesh[sec]);
 		iHandMesh[sec] = 0;
 	}
 
@@ -438,7 +438,7 @@ func DoUpdateAttach(bool sec)
 	{
 		if(HasHandAction(sec))
 		{
-  		iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
+			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
 		}
 		else
@@ -448,7 +448,7 @@ func DoUpdateAttach(bool sec)
 	{
 		if(HasHandAction(sec))
 		{
-  		iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
+			iHandMesh[sec] = AttachMesh(obj, pos_hand, bone, trans);
 			PlayAnimation(closehand, 6, Anim_Const(GetAnimationLength(closehand)), Anim_Const(1000));
 		}
 		else
@@ -500,9 +500,9 @@ func DoUpdateAttach(bool sec)
 public func GetHandMesh(object obj)
 {
 	if(GetSelectedItem() == obj)
-	  return iHandMesh[0];
+		return iHandMesh[0];
 	if(GetSelectedItem(1) == obj)
-	  return iHandMesh[1];
+		return iHandMesh[1];
 }
 
 static const CARRY_None         = 0;
@@ -593,7 +593,7 @@ func FxIntTurnStart(pTarget, iNumber, fTmp)
 func FxIntTurnTimer(pTarget, iNumber, iTime)
 {
 	// Check wether the clonk wants to turn (Not when he wants to stop)
-  if(EffectVar(0, pTarget, iNumber) != GetDirection())
+	if(EffectVar(0, pTarget, iNumber) != GetDirection())
 	{
 		if(EffectVar(0, pTarget, iNumber) == COMD_Right)
 		{
@@ -892,10 +892,10 @@ func FxIntWalkStop(pTarget, iNumber, iReason, fTmp)
 func FxIntWalkTimer(pTarget, iNumber, iTime)
 {
 	var iSpeed = Distance(0,0,GetXDir(),GetYDir());
-  var iState = 0;
+	var iState = 0;
 
 	// Check wether the clonk wants to turn
-  if(EffectVar(17, pTarget, iNumber) != GetComDir())
+	if(EffectVar(17, pTarget, iNumber) != GetComDir())
 	{
 		// Not when he wants to stop
 		if(GetComDir()!= COMD_Stop)
@@ -957,18 +957,18 @@ func FxIntWalkTimer(pTarget, iNumber, iTime)
 			if(EffectVar(14, pTarget, iNumber) == 5)
 				EffectVar(0, pTarget, iNumber) = 60; // start with frame 190 (feet on the floor)
 			else
-  			EffectVar(0, pTarget, iNumber) = 190; // start with frame 190 (feet on the floor)
+				EffectVar(0, pTarget, iNumber) = 190; // start with frame 190 (feet on the floor)
 		}
 		else
-  		EffectVar(0, pTarget, iNumber) += iSpeed*25/(16*3);
+			EffectVar(0, pTarget, iNumber) += iSpeed*25/(16*3);
 		if(EffectVar(0, pTarget, iNumber) > 250) EffectVar(0, pTarget, iNumber) -= 250;
 
 		AnimationSetState("Run", EffectVar(0, pTarget, iNumber)*10, nil);
 		iState = 3;
 	}
 
-  // Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
-  if(GetComDir() == COMD_Stop) EffectVar(15, pTarget, iNumber) = 1;
+	// Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
+	if(GetComDir() == COMD_Stop) EffectVar(15, pTarget, iNumber) = 1;
 	else EffectVar(15, pTarget, iNumber) = 0;
 	
 	// Blend between the animations: The actuall animations gains weight till it reaches 1000
@@ -1148,7 +1148,7 @@ func FxIntSwimStart(pTarget, iNumber, fTmp)
 	EffectVar(1, pTarget, iNumber) = PlayAnimation("SwimStand", 5, Anim_Linear(0, 0, GetAnimationLength("SwimStand"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 /*
 	for(var i = 0; i < GetLength(Clonk_SwimStates); i++)
-  	AnimationPlay(Clonk_SwimStates[i], 0);
+	AnimationPlay(Clonk_SwimStates[i], 0);
 	EffectVar(0, pTarget, iNumber) = 0; // Phase
 	EffectVar(1, pTarget, iNumber) = 1000; // Stand weight
 	EffectVar(2, pTarget, iNumber) = 0; // Walk weight
@@ -1250,7 +1250,7 @@ func FxIntScaleTimer(pTarget, iNumber, iTime)
 {
 //	if(GetAction() != "Walk") return -1;
 	var iSpeed = -GetYDir();
-  var iState = 0;
+	var iState = 0;
 
 	// Play stand animation when not moving
 	if(iSpeed < 1 && EffectVar(5, pTarget, iNumber))
@@ -1269,8 +1269,8 @@ func FxIntScaleTimer(pTarget, iNumber, iTime)
 		iState = 2;
 	}
 
-  // Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
-  if(GetComDir() == COMD_Stop) EffectVar(5, pTarget, iNumber) = 1;
+	// Save wether he have COMD_Stop or not. So a single frame with COMD_Stop keeps the movement
+	if(GetComDir() == COMD_Stop) EffectVar(5, pTarget, iNumber) = 1;
 	else EffectVar(5, pTarget, iNumber) = 0;
 
 	// Blend between the animations: The actuall animations gains weight till it reaches 1000
@@ -1327,7 +1327,7 @@ func FxIntDigStart(pTarget, iNumber, fTmp)
 	// Update carried items
 	UpdateAttach();
 
-  // Sound
+	// Sound
 	Digging();
 
 	// Set proper turn type
@@ -1465,7 +1465,7 @@ func FxIntRidingStop(pTarget, iNumber, fTmp)
 /* Act Map */
 
 func Definition(def) {
-  SetProperty("ActMap", {
+	SetProperty("ActMap", {
 
 Walk = {
 	Prototype = Action,
@@ -1517,7 +1517,7 @@ Scale = {
 	Prototype = Action,
 	Name = "Scale",
 	Procedure = DFA_SCALE,
-  Attach = CNAT_MultiAttach,
+	Attach = CNAT_MultiAttach,
 	Directions = 2,
 	Length = 1,
 	Delay = 0,
@@ -1721,10 +1721,10 @@ HangOnto = {
 	InLiquidAction = "Swim",
 },
 }, def);
-  SetProperty("Name", "Clonk", def);
+	SetProperty("Name", "Clonk", def);
 
-  // Set perspective
-  SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), def);
+	// Set perspective
+	SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), def);
 
 	_inherited(def);
 }

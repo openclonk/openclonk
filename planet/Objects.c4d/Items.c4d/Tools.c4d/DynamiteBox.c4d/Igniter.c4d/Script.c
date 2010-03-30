@@ -4,7 +4,7 @@
 
 private func Hit()
 {
-  Sound("WoodHit"); //TODO Some metal sond
+	Sound("WoodHit"); //TODO Some metal sond
 }
 
 public func HoldingEnabled() { return true; }
@@ -29,8 +29,8 @@ public func ControlUse(object clonk, int x, int y)
 	clonk->SetXDir(0);
 
 	var iIgniteTime = 35*2;
-	clonk->PlayAnimation("DoIgnite", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("DoIgnite"),  iIgniteTime, ANIM_Hold), Anim_Const(1000));
-	PlayAnimation("Ignite", 1, Anim_Linear(0, 0, GetAnimationLength("Ignite"),  iIgniteTime, ANIM_Hold), Anim_Const(1000));
+	clonk->PlayAnimation("DoIgnite", 10, Anim_Linear(0, 0, clonk->GetAnimationLength("DoIgnite"), iIgniteTime, ANIM_Hold), Anim_Const(1000));
+	PlayAnimation("Ignite", 1, Anim_Linear(0, 0, GetAnimationLength("Ignite"), iIgniteTime, ANIM_Hold), Anim_Const(1000));
 
 	ScheduleCall(this, "Ignite", iIgniteTime, 1, clonk);
 
@@ -112,7 +112,7 @@ public func ResetClonk(clonk)
 	StopAnimation(GetRootAnimation(1));
 	
 	// Reset animation
-  clonk->StopAnimation(clonk->GetRootAnimation(10));
+	clonk->StopAnimation(clonk->GetRootAnimation(10));
 	clonk->SetAction("Walk");
 	clonk->DetachObject(this);
 
@@ -122,6 +122,6 @@ public func ResetClonk(clonk)
 }
 
 func Definition(def) {
-  SetProperty("Collectible", 1, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
 }

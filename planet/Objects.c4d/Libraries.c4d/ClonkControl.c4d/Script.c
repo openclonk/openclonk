@@ -16,7 +16,7 @@
 	following callbacks (if defined):
 		Construction, Collection2, Ejection, RejectCollect, Departure,
 		Entrance, AttachTargetLost, GrabLost, CrewSelection
- 
+	
 	The following callbacks are made to other objects:
 		*Stop
 		*Left, *Right, *Up, *Down
@@ -595,10 +595,10 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 			// throw
 			if (ctrl == CON_Throw)
 			{
-			    if (proc == "SCALE" || proc == "HANGLE")
-			      return PlayerObjectCommand(plr, false, "Drop", contents);
-			    else
-			      return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
+				if (proc == "SCALE" || proc == "HANGLE")
+					return PlayerObjectCommand(plr, false, "Drop", contents);
+				else
+					return PlayerObjectCommand(plr, false, "Throw", contents, x, y);
 			}
 			// throw delayed
 			if (ctrl == CON_ThrowDelayed)
@@ -608,9 +608,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					VirtualCursor()->StopAim();
 				
 					if (proc == "SCALE" || proc == "HANGLE")
-					  return PlayerObjectCommand(plr, false, "Drop", contents);
+						return PlayerObjectCommand(plr, false, "Drop", contents);
 					else
-					  return PlayerObjectCommand(plr, false, "Throw", contents, mlastx, mlasty);
+						return PlayerObjectCommand(plr, false, "Throw", contents, mlastx, mlasty);
 				}
 				else
 				{
@@ -642,9 +642,9 @@ public func ObjectControl(int plr, int ctrl, int x, int y, int strength, bool re
 					VirtualCursor()->StopAim();
 				
 					if (proc == "SCALE" || proc == "HANGLE")
-					  return PlayerObjectCommand(plr, false, "Drop", contents2);
+						return PlayerObjectCommand(plr, false, "Drop", contents2);
 					else
-					  return PlayerObjectCommand(plr, false, "Throw", contents2, mlastx, mlasty);
+						return PlayerObjectCommand(plr, false, "Throw", contents2, mlastx, mlasty);
 				}
 				else
 				{
@@ -1250,31 +1250,31 @@ func Selected(object mnu, object mnu_item, bool alt)
 // Throwing
 private func DoThrow(object obj, int angle)
 {
-  // parameters...
-  var iX, iY, iR, iXDir, iYDir, iRDir;
-  iX = 8; if (!GetDir()) iX = -iX;
-  iY = Cos(angle,-8);
-  iR = Random(360);
-  iRDir = RandomX(-10,10);
+	// parameters...
+	var iX, iY, iR, iXDir, iYDir, iRDir;
+	iX = 8; if (!GetDir()) iX = -iX;
+	iY = Cos(angle,-8);
+	iR = Random(360);
+	iRDir = RandomX(-10,10);
 
-  var speed = GetPhysical("Throw");
+	var speed = GetPhysical("Throw");
 
-  iXDir = speed * Sin(angle,1000) / 17000;
-  iYDir = speed * Cos(angle,-1000) / 17000;
-  // throw boost (throws stronger upwards than downwards)
-  if (iYDir < 0) iYDir = iYDir * 13/10;
-  if (iYDir > 0) iYDir = iYDir * 8/10;
-  
-  // add own velocity
-  iXDir += GetXDir(1000)/2;
-  iYDir += GetYDir(1000)/2;
+	iXDir = speed * Sin(angle,1000) / 17000;
+	iYDir = speed * Cos(angle,-1000) / 17000;
+	// throw boost (throws stronger upwards than downwards)
+	if (iYDir < 0) iYDir = iYDir * 13/10;
+	if (iYDir > 0) iYDir = iYDir * 8/10;
+	
+	// add own velocity
+	iXDir += GetXDir(1000)/2;
+	iYDir += GetYDir(1000)/2;
 
-  // throw
-  obj->Exit(iX, iY, iR, 0, 0, iRDir);  
-  obj->SetXDir(iXDir,1000);
-  obj->SetYDir(iYDir,1000);
-  
-  return true;
+	// throw
+	obj->Exit(iX, iY, iR, 0, 0, iRDir);	
+	obj->SetXDir(iXDir,1000);
+	obj->SetYDir(iYDir,1000);
+	
+	return true;
 }
 
 // custom throw

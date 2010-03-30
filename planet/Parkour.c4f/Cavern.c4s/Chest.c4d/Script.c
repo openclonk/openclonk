@@ -82,5 +82,5 @@ protected func RejectCollect(id def, object obj)
 
 protected func Definition(def) 
 {
-        SetProperty("Name", "Chest", def);
+	SetProperty("Name", "Chest", def);
 }

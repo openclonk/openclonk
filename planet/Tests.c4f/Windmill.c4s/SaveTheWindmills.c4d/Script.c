@@ -56,5 +56,5 @@ public func GetShortDescription(int plr)
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

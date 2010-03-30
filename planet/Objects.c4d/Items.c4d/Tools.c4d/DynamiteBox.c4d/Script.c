@@ -18,7 +18,7 @@ public func Initialize()
 
 private func Hit()
 {
-  Sound("WoodHit"); //TODO Some metal sond
+	Sound("WoodHit"); //TODO Some metal sond
 }
 
 public func HoldingEnabled() { return true; }
@@ -50,7 +50,7 @@ public func ControlUse(object clonk, int x, int y)
 
 	pWire = CreateObject(Fuse);
 	pWire->Connect(pDyna, this);
-  Sound("Connect");
+	Sound("Connect");
 	aWires[iCount-1] = pWire;
 	
 	iCount--;
@@ -124,6 +124,6 @@ func FxIntLengthStop(pTarget, iNumber, iReason, fTmp)
 }
 
 func Definition(def) {
-  SetProperty("Collectible", 1, def);
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Collectible", 1, def);
+	SetProperty("Name", "$Name$", def);
 }

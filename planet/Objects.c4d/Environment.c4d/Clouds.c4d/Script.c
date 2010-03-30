@@ -5,22 +5,22 @@
 //Great thanks to Maikel for the following function provided 
 global func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
 {
-  var iX, iY;
-  for(var i = 0; i < 500; i++)
-  {
-    iX = iXStart+Random(iWidth);
-    iY = iYStart+Random(iHeight);
-    if(GetMaterial(AbsX(iX),AbsY(iY))==Material(sMat) &&
-       GetMaterial(AbsX(iX+iSize),AbsY(iY+iSize))==Material(sMat) &&
-       GetMaterial(AbsX(iX+iSize),AbsY(iY-iSize))==Material(sMat) &&
-       GetMaterial(AbsX(iX-iSize),AbsY(iY-iSize))==Material(sMat) &&
-       GetMaterial(AbsX(iX-iSize),AbsY(iY+iSize))==Material(sMat))
-                {
-      iToX = iX; iToY = iY;
-      return true; // Location found.
-    }
-  }
-  return false; // No location found.
+	var iX, iY;
+	for(var i = 0; i < 500; i++)
+	{
+		iX = iXStart+Random(iWidth);
+		iY = iYStart+Random(iHeight);
+		if(GetMaterial(AbsX(iX),AbsY(iY))==Material(sMat) &&
+		   GetMaterial(AbsX(iX+iSize),AbsY(iY+iSize))==Material(sMat) &&
+		   GetMaterial(AbsX(iX+iSize),AbsY(iY-iSize))==Material(sMat) &&
+		   GetMaterial(AbsX(iX-iSize),AbsY(iY-iSize))==Material(sMat) &&
+		   GetMaterial(AbsX(iX-iSize),AbsY(iY+iSize))==Material(sMat)
+		) {
+			iToX = iX; iToY = iY;
+			return true; // Location found.
+		}
+	}
+	return false; // No location found.
 }
 protected func Initialize()
 {
@@ -35,5 +35,5 @@ protected func Initialize()
 }
 
 func Definition(def) {
-  SetProperty("Name", "$Name$", def);
+	SetProperty("Name", "$Name$", def);
 }

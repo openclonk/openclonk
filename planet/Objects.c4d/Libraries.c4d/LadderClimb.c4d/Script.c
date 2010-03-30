@@ -302,10 +302,10 @@ func FxIntClimbControlControl(target, number, ctrl, x,y,strength, repeat, releas
 }
 
 func SetLadderRotation (int r, int xoff, int yoff) {
-  var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
-  // set matrix values
-  SetObjDrawTransform (
-    +fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
-    -fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
-  );
+	var fsin=Sin(r, 1000), fcos=Cos(r, 1000);
+	// set matrix values
+	SetObjDrawTransform (
+		+fcos, +fsin, xoff, //(1000-fcos)*xoff - fsin*yoff,
+		-fsin, +fcos, yoff, //(1000-fcos)*yoff + fsin*xoff,
+	);
 }
