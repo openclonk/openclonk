@@ -8,7 +8,8 @@ protected func Initialize()
 
 /*-- Proplist --*/
 
-func Definition(def) {
+protected func Definition(def) 
+{
 	SetProperty("Name", "$Name$", def);
 	SetProperty("ActMap", {
 		Show = {

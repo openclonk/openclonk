@@ -1,5 +1,5 @@
 /*--
-		MeshAnimation.c done
+		MeshAnimation.c
 		Authors: ck
 		
 		Wrappers for convenient calls to PlayAnimation.

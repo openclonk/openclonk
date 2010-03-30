@@ -1,5 +1,5 @@
 /*-- 
-		Colors.c done
+		Colors.c
 		Authors: Tyron
 		
 		All sorts of operations on colors.

@@ -1,5 +1,5 @@
 /*-- 
-		Player.c done
+		Player.c
 		Authors: timi, Maikel
 
 		Player and team related functions.

@@ -1,5 +1,5 @@
 /*--
-		Commits.c done
+		Commits.c
 		Authors: flgr, Joern, Tyron, Newton, Ringwaul, Sven2
 		
 		Useful user committed functions, this should really be organized into more sensible categories.

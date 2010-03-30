@@ -1,20 +1,20 @@
-/*-- Parkour --*/
+/*-- 
+		Parkour 
+		Authors: Maikel
+		
+		The goal is to be the first to reach the finish, the team or player to do so wins the round.
+		Checkpoints can be added to make the path more interesting and more complex.
+		Checkpoints can have different functionalities:
+			* Respawn: On/Off - The clonk respawns at the last passed checkpoint.
+			* Check: On/Off - The clonk must pass through these checkpoints before being able to finish.
+			* Ordered: On/Off - The checkpoints mussed be passed in the order specified.
+			* The start and finish are also checkpoints.
+			
+		TODO: 
+			* Update CP Graphics -> looks satisfactory atm but cpu intensive.
+			* Add significant message under goal, done.
+--*/
 
-/*
-	The goal is to be the first to reach the finish, the team or player to do so wins the round.
-	Checkpoints can be added to make the path more interesting and more complex.
-	Checkpoints can have different functionalities:
-		* Respawn: On/Off - The clonk respawns at the last passed checkpoint.
-		* Check: On/Off - The clonk must pass through these checkpoints before being able to finish.
-		* Ordered: On/Off - The checkpoints mussed be passed in the order specified.
-		* The start and finish are also checkpoints.
-	ToDo: 
-		* Update CP Graphics -> looks satisfactory atm but cpu intensive.
-		* Relative distance to next CP in scoreboard -> done.
-		* Arrow showing direction to next CP -> partially done.
-		* maybe update array access to plrID -> done.
-		* Add evaluation data -> done.
-*/
 
 #include Library_Goal
 
@@ -42,7 +42,6 @@ protected func Initialize()
 	// Activate restart rule, if there isn't any.
 	if (!ObjectCount(Find_ID(Rule_Restart)))
 		CreateObject(Rule_Restart, 0, 0, NO_OWNER);
-
 	// Scoreboard.
 	InitScoreboard();
 	return _inherited(...);
@@ -175,7 +174,7 @@ public func Activate(int plr)
 		}
 	}
 	else
-		msg = Format("$MsgRace$", cp_count + 1);
+		msg = Format("$MsgRace$", cp_count);
 	// Show goal message.
 	MessageWindow(msg, plr);
 	return;
@@ -183,7 +182,52 @@ public func Activate(int plr)
 
 public func GetShortDescription(int plr)
 {
-	return "$MsgDesc$";
+	var team = GetPlayerTeam(plr);
+	var msg, pos;
+	if (team)
+	{
+		pos = GetTeamPosition(team);
+		if (pos == 1)
+			msg = "$MsgDescTeamFirst$";
+		if (pos == 2)
+			msg = "$MsgDescTeamSecond$";	
+		if (pos == 3)
+			msg = "$MsgDescTeamThird$";
+		if (pos >= 4)
+			msg = Format("$MsgDescTeamNth$", pos);
+	}
+	else
+	{
+		pos = GetPlayerPosition(plr);
+		if (pos == 1)
+			msg = "$MsgDescFirst$";
+		if (pos == 2)
+			msg = "$MsgDescSecond$";	
+		if (pos == 3)
+			msg = "$MsgDescThird$";
+		if (pos >= 4)
+			msg = Format("$MsgDescNth$", pos);	
+	}	
+	return msg;
+}
+
+private func GetPlayerPosition(int plr)
+{
+	var pos = 1;
+	var plrid = GetPlayerID(plr); 
+	for (var i = 0; i < GetPlayerCount(); i++)
+		if (plr_list[plrid] < plr_list[GetPlayerID(GetPlayerByIndex(i))])
+			pos++;
+	return pos;
+}
+
+private func GetTeamPosition(int team)
+{
+	var pos = 1;
+	for (var i = 0; i < GetTeamCount(); i++)
+		if (team_list[team] < team_list[GetTeamByIndex(i)])
+			pos++;
+	return pos;
 }
 
 private func IsWinner(int plr)
@@ -330,17 +374,17 @@ protected func FxIntDirNextCPTimer(object target, int fxnum)
 	var team = GetPlayerTeam(plr);
 	// Find nearest CP.
 	var nextcp;
-	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Check | RACE_CP_Finish), Sort_Distance(target->GetX()-GetX(), target->GetY()-GetY())))
+	for (var cp in FindObjects(Find_ID(ParkourCheckpoint), Find_Func("FindCPMode", RACE_CP_Check | RACE_CP_Finish), Sort_Distance(target->GetX() - GetX(), target->GetY() - GetY())))
 		if (!cp->ClearedByPlr(plr) && (cp->IsActiveForPlr(plr) || cp->IsActiveForTeam(GetPlayerTeam(plr))))
 		{
 			nextcp = cp;
 			break;
 		}	
 	if (!nextcp)
-		return EffectVar(0, target, fxnum)->SetClrModulation(RGBa(0,0,0,0));
+		return EffectVar(0, target, fxnum)->SetClrModulation(RGBa(0, 0, 0, 0));
 	// Calculate parameters.
 	var angle = Angle(target->GetX(), target->GetY(), nextcp->GetX(), nextcp->GetY());
-	var dist = Min(510*ObjectDistance(GetCrew(plr), nextcp)/400, 510); 
+	var dist = Min(510 * ObjectDistance(GetCrew(plr), nextcp) / 400, 510); 
 	var red = BoundBy(dist, 0, 255);
 	var green = BoundBy(510 - dist, 0, 255);
 	var color = RGBa(red, green, 0, 128);
@@ -383,12 +427,12 @@ private func TimeToString(int time)
 {
 	if (!time) // No time.
 		return "N/A";
-	if (time > 36*60*60) // Longer than an hour.
-		return Format("%d:%.2d:%.2d.%.1d", (time/60/60/36)%24, (time/60/36)%60, (time/36)%60, (10*time/36)%10);
-	if (time > 36*60) // Longer than a minute.
-		return Format("%d:%.2d.%.1d", (time/60/36)%60, (time/36)%60, (10*time/36)%10);
+	if (time > 36 * 60 * 60) // Longer than an hour.
+		return Format("%d:%.2d:%.2d.%.1d", (time / 60 / 60 / 36) % 24, (time / 60 / 36) % 60, (time / 36) % 60, (10 * time / 36) % 10);
+	if (time > 36 * 60) // Longer than a minute.
+		return Format("%d:%.2d.%.1d", (time / 60 / 36) % 60, (time / 36) % 60, (10 * time / 36) % 10);
 	else // Only seconds.
-		return Format("%d.%.1d", (time/36)%60, (10*time/36)%10);
+		return Format("%d.%.1d", (time / 36) % 60, (10 * time / 36) % 10);
 }
 
 /*-- Evaluation data --*/
@@ -430,6 +474,7 @@ private func AddEvalData(int plr)
 
 /*-- Proplist --*/
 
-func Definition(def) {
+protected func Definition(def)
+{
 	SetProperty("Name", "$Name$", def);
 }

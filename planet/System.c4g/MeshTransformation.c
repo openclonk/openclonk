@@ -1,5 +1,5 @@
 /*--
-		MeshTransformation.c done
+		MeshTransformation.c
 		Authors: ck
 		
 		Some common transformation matrices, and a function to multiply them together to produce more complex transformations.

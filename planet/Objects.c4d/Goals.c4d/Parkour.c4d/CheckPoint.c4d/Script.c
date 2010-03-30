@@ -1,15 +1,18 @@
-/*-- CheckPoint --*/
+/*-- 
+		CheckPoint
+		Author: Maikel
 
-/* 
-	A checkpoint can have different modes, indicated with a bitmask:
-		*None - Not a Checkpoint.
-		*Start - Start of the parkour.
-		*Finish - End of the parkour.
-		*Respawn - The clonk can respawn at this CP.
-		*Check - This checkpoint must be cleared in order to complete the parkour.
-		*Ordered - These checkpoints must be cleared in the right order.
-		*Bonus - Player receives a bonus if he cleares this CP.
-*/
+		The parkour goal uses checkpoints to allow for user defined routes.
+		A checkpoint can have different modes, indicated with a bitmask:
+			*None - Not a Checkpoint.
+			*Start - Start of the parkour.
+			*Finish - End of the parkour.
+			*Respawn - The clonk can respawn at this CP.
+			*Check - This checkpoint must be cleared in order to complete the parkour.
+			*Ordered - These checkpoints must be cleared in the right order.
+			*Bonus - Player receives a bonus if he cleares this CP.
+--*/
+
 
 /*-- Checkpoint modes --*/
 local cp_mode;
@@ -238,7 +241,7 @@ protected func GetColorByAngle(int angle)
 		if (ClearedByPlr(GetPlayerByIndex(i)) || (cp_mode & RACE_CP_Start))
 			cnt++;
 	if (!cnt) 
-		return RGBa(255,255,255,192);
+		return RGBa(255, 255, 255, 192);
 
 	var prt = 360 / cnt;
 	var j = 0;
@@ -255,11 +258,12 @@ protected func GetColorByAngle(int angle)
 	}
 	
 	// Should not happen...
-	return RGBa(255,255,255,192);
+	return RGBa(255, 255, 255, 192);
 }
 
 /*-- Proplist --*/
 
-func Definition(def) {
+protected func Definition(def)
+{
 	SetProperty("Name", "$Name$", def);
 }

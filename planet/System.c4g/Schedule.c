@@ -1,8 +1,8 @@
 /*--
-		Schedule.c done
+		Schedule.c
 		Authors:
 		
-		Schedule can be used to execute scripts of functions repetitively with delay. 
+		Schedule can be used to execute scripts or functions repetitively with delay. 
 --*/
 
 // Executes a script repetitively with delay.

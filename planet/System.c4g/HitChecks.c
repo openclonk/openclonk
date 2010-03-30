@@ -1,5 +1,5 @@
 /*--
-		HitCheck.c done
+		HitCheck.c
 		Authors: Newton, Boni
 	
 		Effect for hit checking.

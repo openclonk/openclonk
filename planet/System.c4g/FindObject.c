@@ -1,5 +1,5 @@
 /*--  
-		FindObject.c done
+		FindObject.c
 		Authors: 
 
 		Wrappers for convenient calls to the FindObject family.

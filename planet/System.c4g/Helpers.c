@@ -1,5 +1,5 @@
 /*-- 
-		Helpers.c done
+		Helpers.c
 		Authors:
 		
 		Some useful helper functions.

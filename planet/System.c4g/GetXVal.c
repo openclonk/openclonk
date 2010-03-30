@@ -1,5 +1,5 @@
 /*--
-		GetXVal.c done
+		GetXVal.c
 		Authors: 
 		
 		Some functions which request information from the GetXVal family.

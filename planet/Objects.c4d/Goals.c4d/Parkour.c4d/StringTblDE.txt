@@ -1,11 +1,11 @@
 Name=Parkour
 
 #Goal window
-MsgRace=This is race over %d checkpoints, check the scoreboard for the number of completed checkpoints per team/player.
-MsgRaceWon=Congratulations, you have won the race!
-MsgRaceWonTeam=Congratulations, your team has won the race!
-MsgRaceLost=You have lost the race.
-MsgRaceLostTeam=Your team has lost the race.
+MsgRace=This parkour is over %d checkpoints, check the scoreboard for the number of completed checkpoints per player.
+MsgRaceWon=Congratulations, you have won this parkour!
+MsgRaceWonTeam=Congratulations, your team has won this parkour!
+MsgRaceLost=You have lost this parkour.
+MsgRaceLostTeam=Your team has lost this parkour.
 
 #Respawn
 MsgRespawn0=%s tries again.
@@ -15,11 +15,18 @@ MsgRespawn3=We're mourning %s.
 MsgNewRespawn=You'll now respawn here.
 
 #Description
-MsgDesc=You are in a race.
+MsgDescFirst=You are in| first place.
+MsgDescSecond=You are in| second place.
+MsgDescThird=You are in| third place.
+MsgDescNth=You are in| %dth place.
+MsgDescTeamFirst=Your team is| in first place.
+MsgDescTeamSecond=Your team is| in second place.
+MsgDescTeamThird=Your team is| in third place.
+MsgDescTeamNth=Your team is |in %dth place.
 
 #Scoreboard
-MsgCaptionX=Race over %d checkpoints.
-MsgCaptionNone=Race without checkpoints.
+MsgCaptionX=Parkour over %d checkpoints.
+MsgCaptionNone=Parkour without checkpoints.
 
 #Best time
 MsgBestTime=%s has set a new personal best time of %s.
