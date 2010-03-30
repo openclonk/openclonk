@@ -68,8 +68,8 @@ Amplitude=10,10,0,100
 Phase=50,50,0,100
 Period=10,10,0,100
 Random=20,20,0,100
-Liquid=Water-Smooth
-LiquidLevel=20,30,0,100
+Liquid=Water-water
+LiquidLevel=25,30,40,100
 Layers=Rock=7;Rock=7;Gold=7;Granite=4;Water=5;Earth-earth=50;Earth-earth_dry=50
 SkyScrollMode=2
 
