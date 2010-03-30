@@ -1,1 +1,2 @@
+This folder contains all kinds of helper functions.
 Dieser Ordner enthält Hilfsfunktionen aller Art.

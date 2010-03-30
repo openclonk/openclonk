@@ -1,9 +1,13 @@
+/*--
+		PlayerControl.c
+		Authors: Newton
+		
+		Functions to handle player controls (i.e. input keys)
+--*/
 
 
 static const CON_Gamepad_Deadzone = 60;
 static CON_VC_Players;
-
-// Functions to handle player controls (i.e., input keys)
 
 // PlayerControlRelease
 // Called by engine whenever a control is issued
@@ -467,13 +471,13 @@ global func ObjectComLetGo(int vx, int vy)
 
 global func MouseDragDrop(int plr, object source, object target)
 {
-  //Log("MouseDragDrop(%d, %v, %v)", plr, source, target);
-  var src_drag = source->MouseDrag(plr);
-  if (!src_drag) return false;
-  if (target)
-  {
-    if (!target->MouseDrop(plr, src_drag)) return false;
-  }
-  if (source) source->MouseDragDone(src_drag, target);
-  return true;
+	//Log("MouseDragDrop(%d, %v, %v)", plr, source, target);
+	var src_drag = source->MouseDrag(plr);
+	if (!src_drag) return false;
+	if (target)
+	{
+		if (!target->MouseDrop(plr, src_drag)) return false;
+	}
+	if (source) source->MouseDragDone(src_drag, target);
+	return true;
 }

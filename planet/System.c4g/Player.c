@@ -1,28 +1,33 @@
-/*-- Player related functions --*/
+/*-- 
+		Player.c done
+		Authors: timi, Maikel
+
+		Player and team related functions.
+--*/
 
 
-// Returns the player number of szPlrName, or none if there is no such player. (written by timi for CR/CE/CP)
-global func GetPlayerByName(string szPlrName)
+// Returns the player number of plr_name, or none if there is no such player. (written by timi for CR/CE/CP)
+global func GetPlayerByName(string plr_name)
 {
 	// Loop through all players.
 	var i = GetPlayerCount();
 	while (i--)
 		// Does the player's name match the one searched for?
-		if (WildcardMatch(GetPlayerName(GetPlayerByIndex(i)), szPlrName))
+		if (WildcardMatch(GetPlayerName(GetPlayerByIndex(i)), plr_name))
 			// It does -> return player number.
 			return GetPlayerByIndex(i); 
 	// There is no player with that name.
 	return NO_OWNER;
 }
 
-// Returns the team number of szTeamName, or none if there is no such team.
-global func GetTeamByName(string szTeamName)
+// Returns the team number of team_name, or none if there is no such team.
+global func GetTeamByName(string team_name)
 {
 	// Loop through all teams.
 	var i = GetTeamCount();
 	while (i--)
 		// Does the team's name match the one searched for?
-		if (WildcardMatch(GetTeamName(GetTeamByIndex(i)), szTeamName))
+		if (WildcardMatch(GetTeamName(GetTeamByIndex(i)), team_name))
 			// It does -> return team number.
 			return GetTeamByIndex(i); 
 	// There is no team with that name.
@@ -30,46 +35,46 @@ global func GetTeamByName(string szTeamName)
 }
 
 // Returns the name of a player, including color markup using the player color.
-global func GetTaggedPlayerName(int iPlr)
+global func GetTaggedPlayerName(int plr)
 {
-	var szPlrName = GetPlayerName(iPlr);
-	if (!szPlrName) 
+	var plr_name = GetPlayerName(plr);
+	if (!plr_name) 
 		return;
-	var iPlrColor = MakeColorReadable(GetPlrColor(iPlr));
-	var szTaggedPlrName = Format("<c %x>%s</c>", iPlrColor, szPlrName);
-	return szTaggedPlrName;
+	var plr_color = MakeColorReadable(GetPlrColor(plr));
+	var tagged_plr_name = Format("<c %x>%s</c>", plr_color, plr_name);
+	return tagged_plr_name;
 }
 
 // Returns the name of a team, including color markup using the team color.
-global func GetTaggedTeamName(int iTeam)
+global func GetTaggedTeamName(int team)
 {
-	var szTeamName = GetTeamName(iTeam);
-	if (!szTeamName) 
+	var team_name = GetTeamName(team);
+	if (!team_name) 
 		return;
-	var iTeamColor = MakeColorReadable(GetTeamColor(iTeam));
-	var szTaggedTeamName = Format("<c %x>%s</c>", iTeamColor, szTeamName);
-	return szTaggedTeamName;
+	var team_color = MakeColorReadable(GetTeamColor(team));
+	var tagged_team_name = Format("<c %x>%s</c>", team_color, team_name);
+	return tagged_team_name;
 }
 
 // Brightens dark colors, to be readable on dark backgrounds.
-global func MakeColorReadable(int dwColor)
+global func MakeColorReadable(int color)
 {
 	// Determine alpha.
-	var a = ((dwColor >> 24 & 255) << 24);
+	var a = ((color >> 24 & 255) << 24);
 	// Strip alpha.
-	dwColor = dwColor & 16777215;
+	color = color & 16777215;
 	// Calculate brightness: 50% red, 87% green, 27% blue (Max 164 * 255).
-	var r = (dwColor >> 16 & 255), g = (dwColor >> 8 & 255), b = (dwColor & 255);
-	var iLightness = r*50 + g*87 + b*27;
-	// Above 55/164 (*255) is okay.
-	if (iLightness < 14025) 
+	var r = (color >> 16 & 255), g = (color >> 8 & 255), b = (color & 255);
+	var lightness = r * 50 + g * 87 + b * 27;
+	// Above 55 / 164 (*255) is okay.
+	if (lightness < 14025) 
 	{
 		// Brighten up.
-		var inc = (14025 - iLightness) / 164;
-		dwColor = (Min(r+inc, 255)<<16) | (Min(g+inc, 255)<<8) | (Min(b+inc, 255));
+		var inc = (14025 - lightness) / 164;
+		color = (Min(r + inc, 255) << 16) | (Min(g + inc, 255) << 8) | (Min(b + inc, 255));
 		
 	}
 	// Add alpha. not needed at the moment.
-	// dwColor = dwColor | a;
-	return dwColor;
+	// color = color | a;
+	return color;
 }

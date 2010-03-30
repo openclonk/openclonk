@@ -1,29 +1,33 @@
+/*--
+		MeshTransformation.c done
+		Authors: ck
+		
+		Some common transformation matrices, and a function to multiply them together to produce more complex transformations.
+--*/
 
-// Some common transformation matrices, and a function to multiple them
-// together to produce more complex transformations.
 
 global func Trans_Identity()
 {
 	return [1000, 0,    0,    0,
 	        0,    1000, 0,    0,
-		0,    0,    1000, 0];
+			0,    0,    1000, 0];
 }
 
 global func Trans_Translate(int dx, int dy, int dz)
 {
 	return [1000, 0,    0,    dx,
 	        0,    1000, 0,    dy,
-		0,    0,    1000, dz];
+			0,    0,    1000, dz];
 }
 
 global func Trans_Scale(int sx, int sy, int sz)
 {
-	if(sy==nil && sz==nil)
+	if (sy == nil && sz == nil)
 		sz = sy = sx;
 
 	return [sx, 0,  0,  0,
 	        0,  sy, 0,  0,
-		0,  0,  sz, 0];
+			0,  0,  sz, 0];
 }
 
 global func Trans_Rotate(int angle, int rx, int ry, int rz)
@@ -35,7 +39,7 @@ global func Trans_Rotate(int angle, int rx, int ry, int rz)
 	ry = 1000 * ry / n;
 	rz = 1000 * rz / n;
 
-	// Note that 0 <= rx,ry,rz,c,s <= 1000, so we don't overflow here
+	// Note that 0 <= rx,ry,rz,c,s <= 1000, so we don't overflow here.
 	return [
 		rx*rx*(1000-c)/1000000+c,         rx*ry*(1000-c)/1000000-rz*s/1000, rx*rz*(1000-c)/1000000+ry*s/1000, 0,
 		ry*rx*(1000-c)/1000000+rz*s/1000, ry*ry*(1000-c)/1000000+c,         ry*rz*(1000-c)/1000000-rx*s/1000, 0,
@@ -44,7 +48,8 @@ global func Trans_Rotate(int angle, int rx, int ry, int rz)
 
 global func Trans_Mul(array lhs, array rhs)
 {
-	if(!rhs) return lhs;
+	if (!rhs) 
+		return lhs;
 
 	var result = [
 		lhs[0]*rhs[0]/1000 + lhs[1]*rhs[4]/1000 + lhs[ 2]*rhs[ 8]/1000,

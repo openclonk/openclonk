@@ -1,69 +1,79 @@
+/*--
+		Schedule.c done
+		Authors:
+		
+		Schedule can be used to execute scripts of functions repetitively with delay. 
+--*/
 
-
-// Einen Script zeitverzögert und ggf. wiederholt ausführen
-global func Schedule(string strScript, int iInterval, int iRepeat, object pObj)
+// Executes a script repetitively with delay.
+global func Schedule(string script, int interval, int repeats, object obj)
 {
-  
-  // Default
-  if(!iRepeat) iRepeat = 1;
-  if(!pObj) pObj = this;
-  // Effekt erzeugen
-  var iEffect = AddEffect("IntSchedule", pObj, 1, iInterval, pObj);
-  if(iEffect <= 0) return false;
-  // Variablen setzen
-  EffectVar(0, pObj, iEffect) = strScript;
-  EffectVar(1, pObj, iEffect) = iRepeat;
-  return true;
+	// Defaults.
+	if (!repeats) 
+		repeats = 1;
+	if (!obj) 
+		obj = this;
+	// Create effect.
+	var effect = AddEffect("IntSchedule", obj, 1, interval, obj);
+	if (effect <= 0) 
+		return false;
+	// Set variables.
+	EffectVar(0, obj, effect) = script;
+	EffectVar(1, obj, effect) = repeats;
+	return true;
 }
 
-global func FxIntScheduleTimer(object pObj,  int iEffect)
+global func FxIntScheduleTimer(object obj, int effect)
 {
-  // Nur eine bestimmte Anzahl Ausführungen
-  var fDone = (--EffectVar(1, pObj, iEffect) <= 0);
-  // Ausführen
-  eval(EffectVar(0, pObj, iEffect));
-  return -fDone;
+	// Just a specific number of repeats.
+	var done = --EffectVar(1, obj, effect) <= 0;
+	// Execute.
+	eval(EffectVar(0, obj, effect));
+	return -done;
 }
 
-// Eine Funktion zeitverzögert und ggf. wiederholt aufrufen
-global func ScheduleCall(object pObj, string strFunction, int iInterval, int iRepeat, par0, par1, par2, par3, par4)
+// Executes a function repetitively with delay.
+global func ScheduleCall(object obj, string function, int interval, int repeats, par0, par1, par2, par3, par4)
 {
-  // Default
-  if(!iRepeat) iRepeat = 1;
-  if(!pObj) pObj = this;
-  // Effekt erzeugen
-  var iEffect = AddEffect("IntScheduleCall", pObj, 1, iInterval, pObj);
-  if(iEffect <= 0) return false;
-  // Variablen setzen
-  EffectVar(0, pObj, iEffect) = strFunction;
-  EffectVar(1, pObj, iEffect) = iRepeat;
-  // EffectVar(2): Nur zur Abwärtskompatibilität reserviert
-  EffectVar(2, pObj, iEffect) = pObj; 
-  for(var i = 0; i < 5; i++)
-    EffectVar(i + 3, pObj, iEffect) = Par(i + 4);
-  return true;
+	// Defaults.
+	if (!repeats) 
+		repeats = 1;
+	if (!obj) 
+		obj = this;
+	// Create effect.
+	var effect = AddEffect("IntScheduleCall", obj, 1, interval, obj);
+	if (effect <= 0) 
+		return false;
+	// Set variables.
+	EffectVar(0, obj, effect) = function;
+	EffectVar(1, obj, effect) = repeats;
+	// EffectVar(2): Just there for backwards compatibility.
+	EffectVar(2, obj, effect) = obj; 
+	for (var i = 0; i < 5; i++)
+		EffectVar(i + 3, obj, effect) = Par(i + 4);
+	return true;
 }
 
-global func FxIntScheduleCallTimer(object pObj, int iEffect)
+global func FxIntScheduleCallTimer(object obj, int effect)
 {
-  // Nur eine bestimmte Anzahl Ausführungen
-  var fDone = (--EffectVar(1, pObj, iEffect) <= 0);
-  // Ausführen
-  Call(EffectVar(0, pObj, iEffect), EffectVar(3, pObj, iEffect), EffectVar(4, pObj, iEffect), EffectVar(5, pObj, iEffect), EffectVar(6, pObj, iEffect), EffectVar(7, pObj, iEffect));
-  // Nur eine bestimmte Anzahl Ausführungen
-  return (-fDone);
+	// Just a specific number of repeats.
+	var done = --EffectVar(1, obj, effect) <= 0;
+	// Execute.
+	Call(EffectVar(0, obj, effect), EffectVar(3, obj, effect), EffectVar(4, obj, effect), EffectVar(5, obj, effect), EffectVar(6, obj, effect), EffectVar(7, obj, effect));
+ 	return -done;
 }
 
-global func ClearScheduleCall(object pObj, string strFunction)
+global func ClearScheduleCall(object obj, string function)
 {
-  var i, iEffect;
-  // Von Effektzahl abwärts zählen, da Effekte entfernt werden
-  i = GetEffectCount("IntScheduleCall", pObj);
-  while (i--)
-    // Alle ScheduleCall-Effekte prüfen
-    if (iEffect = GetEffect("IntScheduleCall", pObj, i))
-      // Gesuchte Zielfunktion
-      if (EffectVar(0, pObj, iEffect) == strFunction)      
-        // Effekt löschen
-        RemoveEffect(0, pObj, iEffect);
+	var i, effect;
+	// Count downwards from effectnumber, to remove effects.
+	i = GetEffectCount("IntScheduleCall", obj);
+	while (i--)
+		// Check All ScheduleCall-Effects.
+		if (effect = GetEffect("IntScheduleCall", obj, i))
+			// Found right function.
+			if (EffectVar(0, obj, effect) == function)      
+				// Remove effect.
+				RemoveEffect(0, obj, effect);
+	return;
 }

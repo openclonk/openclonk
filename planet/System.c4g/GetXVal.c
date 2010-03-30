@@ -1,14 +1,16 @@
+/*--
+		GetXVal.c done
+		Authors: 
+		
+		Some functions which request information from the GetXVal family.
+		Attention: These functions directly access internal values of the engine. 
+		The usage might, under certain circumstances, lead to desynchronisation in
+		either network games or save games. The most dangerous functions are marked 
+		with //(!).
+--*/
 
-// *** einige Funktionen, die Informationen über die
-//     GetXVal-Familie abfragen
-
-// Achtung: Diese Funktionen greifen direkt auf interne Werte der Engine zu. Die Benutzung
-//          kann unter Umständen zu Desynchronisation in Netzwerkspielen oder aufgenommenen
-//          Spielen führen. Einige besonders gefährliche Funktionen sind im Folgenden mit
-//          "/*(!)*/" gekennzeichnet.
 
 // GetDefCoreVal
-
 global func GetDefCategory()    { return GetDefCoreVal("Category", "DefCore"); }
 global func GetDefMaxUserSelect() { return GetDefCoreVal("MaxUserSelect", "DefCore"); }
 global func GetDefWidth()       { return GetDefCoreVal("Width", "DefCore"); }
@@ -68,7 +70,6 @@ global func GetDefNoSell()      { return GetDefCoreVal("NoSell", "DefCore"); }
 global func GetDefNoFight()     { return GetDefCoreVal("NoFight", "DefCore"); }
 
 // GetObjectVal
-
 global func GetObjOwnMass()    { return GetObjectVal("OwnMass", 0); }
 global func GetObjFixX()       { return GetObjectVal("FixX", 0); }
 global func GetObjFixY()       { return GetObjectVal("FixY", 0); }
@@ -89,13 +90,12 @@ global func GetObjActionTarget2() { return GetObjectVal("ActionTarget2", 0); }
 global func GetObjPlrViewRange() { return GetObjectVal("PlrViewRange", 0); }
 
 // GetPlayerVal
-
 global func GetPlrClientNr(int plr)   { return GetPlayerVal("AtClient", 0, plr); }
 global func GetPlrClientName(int plr) { return GetPlayerVal("AtClientName", 0, plr); }
 global func GetPlrColor(int plr)      { return GetPlayerVal("ColorDw", 0, plr); }
-global func GetPlrViewX(int plr)      { return GetPlayerVal("ViewX", 0, plr); } /*(!)*/
-global func GetPlrViewY(int plr)      { return GetPlayerVal("ViewY", 0, plr); } /*(!)*/
-global func GetPlrFogOfWar(int plr)   { return GetPlayerVal("FogOfWar", 0, plr); } /*(!)*/
+global func GetPlrViewX(int plr)      { return GetPlayerVal("ViewX", 0, plr); } //(!)
+global func GetPlrViewY(int plr)      { return GetPlayerVal("ViewY", 0, plr); } //(!)
+global func GetPlrFogOfWar(int plr)   { return GetPlayerVal("FogOfWar", 0, plr); } //(!)
 global func GetPlrWealth(int plr)     { return GetPlayerVal("Wealth", 0, plr); }
 global func GetPlrPoints(int plr)     { return GetPlayerVal("Points", 0, plr); }
 global func GetPlrValue(int plr)      { return GetPlayerVal("Value", 0, plr); }
@@ -104,24 +104,23 @@ global func GetPlrValueGain(int plr)  { return GetPlayerVal("ValueGain", 0, plr)
 global func GetPlrObjectsOwned(int plr) { return GetPlayerVal("GetPlrObjectsOwned", 0, plr); }
 
 // GetScenarioVal
-
-global func GetScenTitle()     { return GetScenarioVal("Title", "Head"); } /*(!)*/
-global func GetScenVersion()   { return GetScenarioVal("Version", "Head"); } /*(!)*/
-global func GetScenMaxPlayer() { return GetScenarioVal("MaxPlayer", "Head"); } /*(!)*/
-global func GetScenSaveGame()  { return GetScenarioVal("SaveGame", "Head"); } /*(!)*/
-global func GetScenReplay()    { return GetScenarioVal("Replay", "Head"); } /*(!)*/
-global func GetScenFilm()      { return GetScenarioVal("Film", "Head"); } /*(!)*/
-global func GetScenMissionAccess() { return GetScenarioVal("MissionAccess", "Head"); } /*(!)*/
-global func GetScenNetworkGame() { return GetScenarioVal("NetworkGame", "Head"); } /*(!)*/
-global func GetScenNetworkClients() { return GetScenarioVal("StartupPlayerCount", "Head"); } /*(!)*/
+global func GetScenTitle()     { return GetScenarioVal("Title", "Head"); } //(!)
+global func GetScenVersion()   { return GetScenarioVal("Version", "Head"); } //(!)
+global func GetScenMaxPlayer() { return GetScenarioVal("MaxPlayer", "Head"); }//(!)
+global func GetScenSaveGame()  { return GetScenarioVal("SaveGame", "Head"); } //(!)
+global func GetScenReplay()    { return GetScenarioVal("Replay", "Head"); } //(!)
+global func GetScenFilm()      { return GetScenarioVal("Film", "Head"); } //(!)
+global func GetScenMissionAccess() { return GetScenarioVal("MissionAccess", "Head"); } //(!)
+global func GetScenNetworkGame() { return GetScenarioVal("NetworkGame", "Head"); } //(!)
+global func GetScenNetworkClients() { return GetScenarioVal("StartupPlayerCount", "Head"); } //(!)
 global func GetScenNoSky()     { return GetScenarioVal("NoSky", "Landscape"); }
 global func GetScenBottomOpen() { return GetScenarioVal("BottomOpen", "Landscape"); }
 global func GetScenTopOpen()   { return GetScenarioVal("TopOpen", "Landscape"); }
 global func GetScenLeftOpen()  { return GetScenarioVal("LeftOpen", "Landscape"); }
 global func GetScenRightOpen() { return GetScenarioVal("RightOpen", "Landscape"); }
-global func GetScenMapWidth()  { return GetScenarioVal("MapWidth", "Landscape"); } /*(!)*/
-global func GetScenMapHeight() { return GetScenarioVal("MapHeight", "Landscape"); } /*(!)*/
-global func GetScenMapZoom()   { return GetScenarioVal("MapZoom", "Landscape"); } /*(!)*/
+global func GetScenMapWidth()  { return GetScenarioVal("MapWidth", "Landscape"); } //(!)
+global func GetScenMapHeight() { return GetScenarioVal("MapHeight", "Landscape"); } //(!)
+global func GetScenMapZoom()   { return GetScenarioVal("MapZoom", "Landscape"); } //(!)
 global func GetScenClimate()   { return GetScenarioVal("Climate", "Weather"); }
 global func GetScenYearSpeed() { return GetScenarioVal("YearSpeed", "Weather"); }
 global func GetScenRain()      { return GetScenarioVal("Rain", "Weather"); }
@@ -129,7 +128,6 @@ global func GetScenWind()      { return GetScenarioVal("Wind", "Weather"); }
 global func GetScenPrecipitation() { return GetScenarioVal("Precipitation", "Weather"); }
 
 // GetObjectInfoCoreVal
-
 global func GetObjCoreName()      { return GetObjectInfoCoreVal("Name", "ObjectInfo"); }
 global func GetObjCoreDeathMessage() { return GetObjectInfoCoreVal("DeathMessage", "ObjectInfo"); }
 global func GetObjCoreRank()      { return GetObjectInfoCoreVal("Rank", "ObjectInfo"); }
@@ -145,7 +143,6 @@ global func GetObjCoreRounds()    { return GetObjectInfoCoreVal("Rounds", "Objec
 global func GetAge()              { return GetObjectInfoCoreVal("Age", "ObjectInfo"); }
 
 // GetPlayerInfoCoreVal
-
 global func GetPlrCoreName(int plr)	    { return GetPlayerInfoCoreVal("Name", "Player", plr); }
 global func GetPlrCoreComment(int plr)   { return GetPlayerInfoCoreVal("Comment", "Player", plr); }
 global func GetPlrCoreRank(int plr)      { return GetPlayerInfoCoreVal("Rank", "Player", plr); }
