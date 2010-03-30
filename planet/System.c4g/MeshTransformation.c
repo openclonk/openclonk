@@ -10,14 +10,14 @@ global func Trans_Identity()
 {
 	return [1000, 0,    0,    0,
 	        0,    1000, 0,    0,
-			0,    0,    1000, 0];
+	        0,    0,    1000, 0];
 }
 
 global func Trans_Translate(int dx, int dy, int dz)
 {
 	return [1000, 0,    0,    dx,
 	        0,    1000, 0,    dy,
-			0,    0,    1000, dz];
+	        0,    0,    1000, dz];
 }
 
 global func Trans_Scale(int sx, int sy, int sz)
@@ -27,7 +27,7 @@ global func Trans_Scale(int sx, int sy, int sz)
 
 	return [sx, 0,  0,  0,
 	        0,  sy, 0,  0,
-			0,  0,  sz, 0];
+	        0,  0,  sz, 0];
 }
 
 global func Trans_Rotate(int angle, int rx, int ry, int rz)
@@ -48,7 +48,7 @@ global func Trans_Rotate(int angle, int rx, int ry, int rz)
 
 global func Trans_Mul(array lhs, array rhs)
 {
-	if (!rhs) 
+	if (!rhs)
 		return lhs;
 
 	var result = [
