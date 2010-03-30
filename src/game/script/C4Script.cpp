@@ -3647,7 +3647,11 @@ static C4Value FnGetObjectVal(C4AulObjectContext* cthr, C4Value* strEntry_C4V, C
 	long iEntryNr = iEntryNr_C4V->getInt();
 
 	// get value
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*cthr->Obj, "Object"));
+	cthr->Obj->EnumeratePointers();
+	C4Value retval = GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(*cthr->Obj, "Object"));
+	cthr->Obj->DenumeratePointers();
+	retval.DenumeratePointer();
+	return retval;
 }
 
 static C4Value FnGetObjectInfoCoreVal(C4AulObjectContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value *iEntryNr_C4V)
@@ -3694,7 +3698,11 @@ static C4Value FnGetPlayerVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value
 	C4Player* pPlayer = ::Players.Get(iPlr);
 
 	// get value
-	return GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*pPlayer, true), "Player"));
+	pPlayer->EnumeratePointers();
+	C4Value retval = GetValByStdCompiler(strEntry, strSection, iEntryNr, mkNamingAdapt(mkParAdapt(*pPlayer, true), "Player"));
+	pPlayer->DenumeratePointers();
+	retval.DenumeratePointer();
+	return retval;
 }
 
 static C4Value FnGetPlayerInfoCoreVal(C4AulContext* cthr, C4Value* strEntry_C4V, C4Value* strSection_C4V, C4Value* iPlayer_C4V, C4Value *iEntryNr_C4V)

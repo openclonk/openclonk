@@ -67,6 +67,7 @@ public:
 		PS_TeamSelectionPending = 3 // waiting for team selection packet to come through
 	};
 	friend class C4PlayerList;
+
 public:
 	C4Player();
 	~C4Player();
@@ -197,6 +198,8 @@ public:
 	bool SetHostility(int32_t iOpponent, int32_t iHostility, bool fSilent=false);
 	bool IsHostileTowards(const C4Player *opponent) const;
 	void CompileFunc(StdCompiler *pComp, bool fExact);
+	void DenumeratePointers();
+	void EnumeratePointers();
 	bool LoadRuntimeData(C4Group &hGroup);
 	bool ActivateMenuMain();
 	bool ActivateMenuTeamSelection(bool fFromMain);
@@ -210,11 +213,10 @@ public:
 	bool SetObjectCrewStatus(C4Object *pCrew, bool fNewStatus); // add/remove object from crew
 	bool IsChosingTeam() const { return Status==PS_TeamSelection || Status==PS_TeamSelectionPending; }
 	bool IsInvisible() const;
+
 protected:
 	void ClearControl();
 	void InitControl();
-	void DenumeratePointers();
-	void EnumeratePointers();
 	void UpdateView();
 	void CheckElimination();
 	void UpdateCounts();
