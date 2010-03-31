@@ -1,4 +1,11 @@
-#strict 2
+/*
+	Dynamite
+	Author: Newton
+
+	A volatile tool that can be pressed into walls 
+	for accurate mining, burning a short fuse before exploding.
+*/
+	
 
 // The dynamite is not a weapon but a mining tool
 public func ControlUse(object clonk, int iX, int iY, bool fBox)
@@ -41,11 +48,11 @@ public func Fuse()
 // and puts the offset to the wall into "xo, yo" - looking from the clonk
 private func GetWall(iAngle, &iX, &iY)
 {
-	var iDist = 8;
-	for(var iDist = 8; iDist < 18; iDist++)
+	var iDist = 12;
+	for(var iDist = 12; iDist < 18; iDist++)
 	{
 		iX = Sin(iAngle, iDist);
-		iY = -Cos(iAngle, iDist);
+	  iY = -Cos(iAngle, iDist);
 		if(GBackSolid(iX, iY))
 		{
 			iX = Sin(iAngle, iDist-5);
@@ -62,7 +69,7 @@ protected func Incineration() { Extinguish(); Fuse(); }
 
 protected func RejectEntrance()
 {
-	return GetAction() == "Fuse" || GetAction() == "Ready";
+  return GetAction() == "Fuse" || GetAction() == "Ready";
 }
 
 // Controle of the Dynamite box
@@ -88,6 +95,7 @@ private func Fusing()
 
 	if(Contained()!=nil)
 	{
+		//If the dynamite is held, sparks come from clonk's center.
 		sin=0;
 		cos=0;
 	}
