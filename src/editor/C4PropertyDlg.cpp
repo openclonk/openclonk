@@ -203,7 +203,9 @@ bool C4PropertyDlg::Update()
 	case 1:
 	{
 		C4Object *cobj=Selection.GetObject();
+		cobj->EnumeratePointers();
 		DecompileToBuf_Log<StdCompilerINIWrite>(mkNamingAdapt(*cobj, "Object"), &Output, "C4PropertyDlg::Update");
+		cobj->DenumeratePointers();
 		// Type
 		Output.AppendFormat(LoadResStr("IDS_CNS_TYPE"),cobj->GetName(),cobj->Def->id.ToString());
 		// Owner
