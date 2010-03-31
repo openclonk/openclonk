@@ -1,7 +1,5 @@
 /*-- Wooden Barrel --*/
 
-#strict 2
-
 local szLiquid;
 local iVolume;
 local Closed;

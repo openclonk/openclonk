@@ -6,8 +6,6 @@
 
 --*/
 
-#strict 2
-
 local Amount;
 local MaxCap;
 local charging;

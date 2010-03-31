@@ -1,7 +1,5 @@
 /*-- Power line --*/
 
-#strict 2
-
 protected func Initialize()
 {
 	SetAction("Connect");

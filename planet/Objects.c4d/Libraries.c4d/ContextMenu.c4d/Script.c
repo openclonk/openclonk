@@ -1,7 +1,5 @@
 /*--- Context menu ---*/
 
-#strict 2
-
 /* Control */
 
 protected func ControlSpecial2()

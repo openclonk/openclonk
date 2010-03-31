@@ -5,8 +5,6 @@
 	A small fluttering being.
 */
 
-#strict 2
-
 protected func Initialize()
 {
 	// TODO: Fix mesh extents?

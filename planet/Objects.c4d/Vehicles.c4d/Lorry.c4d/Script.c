@@ -1,7 +1,5 @@
 /*-- Lore --*/
 
-#strict 2
-
 /* Status */
 
 public func IsLorry() { return 1; }

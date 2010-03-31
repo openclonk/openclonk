@@ -1,7 +1,5 @@
 /*-- Cloud Placer --*/
 
-#strict 2
-
 //Great thanks to Maikel for the following function provided 
 global func FindPosInMat(int &iToX, int &iToY, string sMat, int iXStart, int iYStart, int iWidth, int iHeight, int iSize)
 {

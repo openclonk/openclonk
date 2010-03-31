@@ -1,7 +1,5 @@
 /*-- Animal reproduction --*/
 
-#strict 2
-
 // Status
 public func IsAnimal() { return true; }
 

@@ -1,6 +1,5 @@
 /*-- Metal Barrel --*/
 
-#strict 2
 #include WoodenBarrel
 
 private func Hit()

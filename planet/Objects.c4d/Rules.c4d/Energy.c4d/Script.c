@@ -1,7 +1,5 @@
 /*-- Power usage --*/
 
-#strict 2
-
 protected func Activate(int iByPlayer)
 {
 	MessageWindow(GetDesc(), iByPlayer);

@@ -1,7 +1,5 @@
 /*-- Black Powder --*/
 
-#strict 2
-
 protected func Incineration()
 {
 	Schedule("Explode(20)", 90);

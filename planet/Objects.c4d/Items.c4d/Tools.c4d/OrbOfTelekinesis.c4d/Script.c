@@ -5,8 +5,6 @@
 	Move objects with the force of magic!
 --*/
 
-#strict 2
-
 local hz;
 local magic;
 

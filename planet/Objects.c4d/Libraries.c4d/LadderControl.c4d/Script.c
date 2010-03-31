@@ -5,8 +5,6 @@
 	Containes the basic functionality for ladders.
 --*/
 
-#strict 2
-
 local next_segment;
 local prev_segment;
 

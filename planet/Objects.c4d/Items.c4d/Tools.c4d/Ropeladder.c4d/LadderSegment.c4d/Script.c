@@ -1,7 +1,5 @@
 /*-- Ropeladder_Segment --*/
 
-#strict 2
-
 #include Library_Ladder
 
 local master, index;

@@ -1,7 +1,5 @@
 /*-- Axe --*/
 
-#strict 2
-
 private func Hit()
 {
 	Sound("RockHit");
