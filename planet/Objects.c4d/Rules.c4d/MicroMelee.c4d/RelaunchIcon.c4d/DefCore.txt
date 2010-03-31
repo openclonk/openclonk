@@ -1,5 +1,5 @@
 [DefCore]
-id=MicroMelee_Relaunch
+id=MicroMelee_RelaunchIcon
 Version=4,10,0,0
 Category=C4D_StaticBack
 Picture=0,0,128,128

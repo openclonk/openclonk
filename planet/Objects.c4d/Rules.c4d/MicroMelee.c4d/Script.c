@@ -227,11 +227,11 @@ private func InitScoreboard(int plr)
 	var plrid = GetPlayerID(plr);
 	// The above row.
 	SetScoreboardData(SBRD_Caption, SBRD_Caption, "Scoreboard", SBRD_Caption);
-	SetScoreboardData(SBRD_Caption, SBRD_Relaunch, "{{MicroMelee_Relaunch}}", SBRD_Caption);
+	SetScoreboardData(SBRD_Caption, SBRD_Relaunch, "{{MicroMelee_RelaunchIcon}}", SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, SBRD_Death, "{{MicroMelee_Death}}", SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, SBRD_Kill, "{{MicroMelee_Kill}}", SBRD_Caption);
 	SetScoreboardData(SBRD_Caption, SBRD_Streak, "{{MicroMelee_Streak}}", SBRD_Caption);
-	SetScoreboardData(SBRD_Caption, SBRD_Score, "{{MicroMelee_Relaunch}}", SBRD_Caption);
+	SetScoreboardData(SBRD_Caption, SBRD_Score, "{{MicroMelee_RelaunchIcon}}", SBRD_Caption);
 	// Player name.
 	SetScoreboardData(plrid, SBRD_Caption, GetTaggedPlayerName(plr), plrid);
 	return;

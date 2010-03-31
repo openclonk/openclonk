@@ -38,3 +38,15 @@ global func FxIntFillChestsTimer()
 		chest->CreateContents(w_list[Random(GetLength(w_list))]);
 	return;
 }
+
+// The weapons available to the players. Needed by MicroMelee_Relaunch
+func GetMicroMeleeWeaponList()
+{
+	return[Shovel,Bow,Arrow,Musket,LeadShot,Shield,Sword,Club,Javelin,Boompack,DynamiteBox,Dynamite,Loam,Firestone,Fireglobe];
+}
+
+// GameCall from MicroMelee_Relaunch
+func OnClonkLeftRelaunchObject(clonk)
+{
+	clonk->SetPosition(RandomX(30,LandscapeWidth()-30),-20);
+}

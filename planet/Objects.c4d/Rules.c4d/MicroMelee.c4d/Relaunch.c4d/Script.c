@@ -10,7 +10,7 @@ local choses;
 
 private func WeaponList()
 {
-	return[Shovel,Bow,Arrow,Musket,LeadShot,Shield,Sword,Club,Javelin,Boompack,DynamiteBox,Dynamite,Loam,Firestone,Fireglobe];
+	return GameCall("GetMicroMeleeWeaponList");
 }
 
 public func WeaponMenu(object clonk)
@@ -66,7 +66,7 @@ private func RelaunchClonk()
 {
 	var clonk = Contents();
 	clonk->Exit();
-	clonk->SetPosition(RandomX(30,LandscapeWidth()-30),-20);
+	GameCall("OnClonkLeftRelaunchObject", clonk);
 	return;
 }
 
