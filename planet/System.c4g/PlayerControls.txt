@@ -607,7 +607,7 @@
 		# Menu
 
 		[Assignment]
-		Key=I
+		Key=U
 		Control=PlayerMenu
 		
 		[Assignment]
