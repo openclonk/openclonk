@@ -113,7 +113,7 @@ if ($lang == 'de') {
 <ul class="nav">
 <li><a href="sdk/index.html">Einleitung</a></li>
 <li><a href="sdk/content.html">Inhalt</a></li>
-<li><a href="search.html">Suche</a></li>
+<li><a href="search.php">Suche</a></li>
 <li><a href="sdk/console.html">Engine</a></li>
 <li><a href="sdk/cmdline.html">Kommandozeile</a></li>
 <li><a href="sdk/files.html">Spieldaten</a></li>
@@ -128,7 +128,7 @@ HEADER;
 <ul class="nav">
 <li><a href="sdk/index.html">Introduction</a></li>
 <li><a href="sdk/content.html">Contents</a></li>
-<li><a href="search.html">Search</a></li>
+<li><a href="search.php">Search</a></li>
 <li><a href="sdk/console.html">Engine</a></li>
 <li><a href="sdk/cmdline.html">Command Line</a></li>
 <li><a href="sdk/files.html">Game Data</a></li>
