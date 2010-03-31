@@ -146,12 +146,8 @@ void C4FileMonitor::AddDirectory(const char * file)
 
 bool C4FileMonitor::Execute(int iTimeout, pollfd * pfd) // some other thread
 {
-	// pfd is NULL here since it is not passed from StdScheduler::ScheduleProcs
-	// Note that simply changing that breaks other ScheduleProcs which rely
-	// on it being NULL (e.g. C4NetIOTCP).
-
-	//if ((pfd->revents & pfd->events) != POLLIN || pfd->fd != fd)
-	//  LogF("C4FileMonitor::Execute unexpectedly called %d %d %hd %hd", fd, pfd->fd, pfd->events, pfd->revents);
+	if ((pfd->revents & pfd->events) != POLLIN || pfd->fd != fd)
+	  LogF("C4FileMonitor::Execute unexpectedly called %d %d %hd %hd", fd, pfd->fd, pfd->events, pfd->revents);
 	char buf[sizeof(inotify_event) + _MAX_FNAME + 1];
 	inotify_event* event = new (buf) inotify_event;
 	if (read(fd, buf, sizeof(buf)) > 0)

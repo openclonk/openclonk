@@ -404,7 +404,7 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 
 	WSANETWORKEVENTS wsaEvents;
 #else
-	assert(fds == 0);
+
 	std::vector<pollfd> fdvec;
 	std::map<SOCKET, const pollfd*> fdmap;
 	if (!fds)
@@ -423,15 +423,24 @@ bool C4NetIOTCP::Execute(int iMaxTime, pollfd *fds) // (mt-safe)
 		// nothing happened
 		if (ret == 0)
 			return true;
-		// flush pipe
-		assert(fdvec[0].fd == Pipe[0]);
-		if (fdvec[0].events & fdvec[0].revents)
-		{
-			char c;
-			if (::read(Pipe[0], &c, 1) == -1)
-				SetError("read failed");
-		}
 	}
+	else
+	{
+		// We need to know the size of fdvec, so construct the vector
+		GetFDs(fdvec);
+		// Now overwrite with the poll result
+		std::copy(fds, fds + fdvec.size(), fdvec.begin());
+	}
+
+	// flush pipe
+	assert(fdvec[0].fd == Pipe[0]);
+	if (fdvec[0].events & fdvec[0].revents)
+	{
+		char c;
+		if (::read(Pipe[0], &c, 1) == -1)
+			SetError("read failed");
+	}
+
 	for (std::vector<pollfd>::const_iterator i = fdvec.begin(); i != fdvec.end(); ++i)
 		fdmap[i->fd] = &*i;
 	std::map<SOCKET, const pollfd*>::const_iterator cur_fd;

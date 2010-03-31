@@ -230,10 +230,15 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 
 	// Initialize file descriptor sets
 	std::vector<struct pollfd> fds;
+	std::vector<unsigned int> first_fd_for_proc(iProcCnt + 1);
 
 	// Collect file descriptors
 	for (i = 0; i < iProcCnt; i++)
+	{
+		first_fd_for_proc[i] = fds.size();
 		ppProcs[i]->GetFDs(fds);
+	}
+	first_fd_for_proc[iProcCnt] = fds.size();
 
 	// Wait for something to happen
 	int cnt = poll(&fds[0], fds.size(), iTimeout);
@@ -243,24 +248,21 @@ bool StdScheduler::ScheduleProcs(int iTimeout)
 	if (cnt > 0)
 	{
 		// Which process?
-		std::vector<struct pollfd> test_fds;
-		test_fds.reserve(fds.size());
 		for (i = 0; i < iProcCnt; i++)
 		{
-			// Get FDs for this process alone
-			int prev_fds = test_fds.size();
-			ppProcs[i]->GetFDs(test_fds);
-
 			// Check intersection
-			for (unsigned int j = prev_fds; j < test_fds.size(); ++j) if (fds[j].events & fds[j].revents)
+			for (unsigned int j = first_fd_for_proc[i]; j < first_fd_for_proc[i + 1]; ++j)
+			{
+				if (fds[j].events & fds[j].revents)
 				{
-					if (!ppProcs[i]->Execute(0))
+					if (!ppProcs[i]->Execute(0, &fds[first_fd_for_proc[i]]))
 					{
 						OnError(ppProcs[i]);
 						fSuccess = false;
 					}
 					break;
 				}
+			}
 		}
 
 		fProcessTimeouts = false;
