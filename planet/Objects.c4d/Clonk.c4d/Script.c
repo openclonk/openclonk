@@ -50,6 +50,7 @@ protected func Construction()
 	GameCallEx("OnClonkCreation", this);
 
 	AddEffect("IntTurn", this, 1, 1, this);
+	AddEffect("IntEyes", this, 1, 35*3, this);
 }
 
 
@@ -738,6 +739,32 @@ public func GetAnimationLength(string animation)
 	return inherited(animation, ...);
 }
 
+/* Eyes */
+func FxIntEyesTimer(target, number, time)
+{
+	AddEffect("IntEyesClosed", this, 10, 5, this);
+}
+
+func FxIntEyesClosedStart(target, number, tmp)
+{
+	CloseEyes(1);
+}
+
+func FxIntEyesClosedStop(target, number, reason, tmp)
+{
+	CloseEyes(-1);
+}
+
+local closed_eyes;
+func CloseEyes(iCounter)
+{
+	closed_eyes += iCounter;
+	if(closed_eyes >= 1)
+		SetMeshMaterial("Clonk_Body_EyesClosed");
+	else
+		SetMeshMaterial("Clonk_Body");
+}
+
 /* Walk */
 
 static const Clonk_WalkStand = "Stand";
@@ -1402,6 +1429,8 @@ func StartDead()
 func StartTumble()
 {
 	if(GetEffect("IntTumble", this)) return;
+	// Close eyes
+	CloseEyes(1);
 	PlayAnimation("Tumble", 5, Anim_Linear(0, 0, GetAnimationLength("Tumble"), 20, ANIM_Loop), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
 	// Update carried items
 	UpdateAttach();
@@ -1413,7 +1442,10 @@ func StartTumble()
 func StopTumble()
 {
 	if(GetAction() != "Tumble")
+	{
 		RemoveEffect("IntTumble", this);
+		CloseEyes(-1);
+	}
 }
 
 /* Riding */
