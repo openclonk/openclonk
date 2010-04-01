@@ -24,6 +24,7 @@
 #include "C4Log.h"
 
 #include <assert.h>
+#include <memory>
 
 // Try to avoid casting NotFoundExceptions for trivial cases (MSVC log flood workaround)
 #if defined(_MSC_VER)
@@ -326,17 +327,56 @@ void CompileNewFunc(T *&pStruct, StdCompiler *pComp)
 	// a) Define a standard constructor for T
 	// b) Specialize this function to do whatever the correct
 	//    behaviour is to construct the object from compiler data
-	pStruct = new T();
+	std::auto_ptr<T> temp(new T); // exception-safety
 	// Compile
-	try
-	{
-		pComp->Value(*pStruct);
-	}
-	catch (StdCompiler::Exception *)
-	{
-		delete pStruct;
-		throw;
-	}
+	pComp->Value(*temp);
+	pStruct = temp.release();
+}
+
+template <class T, class P>
+void CompileNewFunc(T *&pStruct, StdCompiler *pComp, const P& rPar)
+{
+	// Create new object.
+	// If this line doesn't compile, you either have to
+	// a) Define a standard constructor for T
+	// b) Specialize this function to do whatever the correct
+	//    behaviour is to construct the object from compiler data
+	std::auto_ptr<T> temp(new T); // exception-safety
+	// Compile
+	//temp->CompileFunc(pComp, rPar);
+	pComp->Value(mkParAdapt(*temp, rPar));
+	pStruct = temp.release();
+}
+
+template <class T, class ContextT>
+void CompileNewFuncCtx(T *&pStruct, StdCompiler *pComp, const ContextT& rCtx)
+{
+	// Create new object.
+	// If this line doesn't compile, you either have to
+	// a) Define an appropriate constructor for T
+	// b) Specialize this function to do whatever the correct
+	//    behaviour is to construct the object from compiler data
+	//    and context
+	std::auto_ptr<T> temp(new T(rCtx)); // exception-safety
+	// Compile
+	pComp->Value(*temp);
+	pStruct = temp.release();
+}
+
+template <class T, class ContextT, class P>
+void CompileNewFuncCtx(T *&pStruct, StdCompiler *pComp, const ContextT& rCtx, const P& rPar)
+{
+	// Create new object.
+	// If this line doesn't compile, you either have to
+	// a) Define an appropriate constructor for T
+	// b) Specialize this function to do whatever the correct
+	//    behaviour is to construct the object from compiler data
+	//    and context
+	std::auto_ptr<T> temp(new T(rCtx));  // exception-safety
+	// Compile
+	//temp->CompileFunc(pComp, rPar);
+	pComp->Value(mkParAdapt(*temp, rPar));
+	pStruct = temp.release();
 }
 
 // Helpers for buffer-based compiling (may throw a data format exception!)

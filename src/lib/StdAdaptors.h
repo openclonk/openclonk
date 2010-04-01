@@ -149,10 +149,19 @@ struct StdDecompileAdapt
 		assert(pComp->isDecompiler());
 		pComp->Value(const_cast<T &>(rValue));
 	}
+	
+	// make this work with in combination with StdParameterAdapt
+	template<class P>
+	inline void CompileFunc(StdCompiler* pComp, const P& par) const
+	{
+		assert(pComp->isDecompiler());
+		pComp->Value(mkParAdapt(const_cast<T &>(rValue), par));
+	}
+
 	ALLOW_TEMP_TO_REF(StdDecompileAdapt)
 };
 template <class T>
-inline StdDecompileAdapt<T> mkDecompileAdapt(const T &rValue) { return StdDecompileAdapt<T>(rValue); }
+inline StdDecompileAdapt<T> mkDecompileAdapt(const T& rValue) { return StdDecompileAdapt<T>(rValue); }
 
 // * Runtime value Adaptor
 // Allows the C4ValueSetCompiler to set the value
@@ -413,7 +422,7 @@ struct StdParameterAdapt
 	ALLOW_TEMP_TO_REF(StdParameterAdapt)
 };
 template <class T, class P>
-inline StdParameterAdapt<T, P> mkParAdapt(T &rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
+inline StdParameterAdapt<T, P> mkParAdapt(T RREF rObj, const P &rPar) { return StdParameterAdapt<T, P>(rObj, rPar); }
 
 // * Parameter Adaptor 2
 // Specify a second and a third parameter for the CompileFunc
@@ -434,65 +443,173 @@ struct StdParameter2Adapt
 template <class T, class P1, class P2>
 inline StdParameter2Adapt<T, P1, P2> mkParAdapt(T &rObj, const P1 &rPar1, const P2 &rPar2) { return StdParameter2Adapt<T, P1, P2>(rObj, rPar1, rPar2); }
 
+template <class T>
+struct StdBasicPtrAdapt
+{
+	//typedef T TargetType;
+
+	StdBasicPtrAdapt(T *&rpObj, bool fAllowNull = true, const char *szNaming = "Data")
+		: rpObj(rpObj), fAllowNull(fAllowNull), szNaming(szNaming) {}
+	T *&rpObj; bool fAllowNull; const char *szNaming;
+
+	// Operators for default checking/setting
+	inline bool operator == (const T &nValue) const { return rpObj && *rpObj == nValue; }
+	inline StdBasicPtrAdapt &operator = (const T &nValue) { delete rpObj; rpObj = new T(nValue); return *this; }
+	inline bool operator == (const T *pValue) const { return rpObj == pValue; }
+	inline StdBasicPtrAdapt &operator = (const T *pValue) { delete rpObj; rpObj = pValue; return *this; }
+};
 
 // * Store pointer (contents)
 // Defaults to null
 template <class T>
-struct StdPtrAdapt
+struct StdPtrAdapt: StdBasicPtrAdapt<T>
 {
 	StdPtrAdapt(T *&rpObj, bool fAllowNull = true, const char *szNaming = "Data")
-			: rpObj(rpObj), fAllowNull(fAllowNull), szNaming(szNaming)
+			: StdBasicPtrAdapt<T>(rpObj, fAllowNull, szNaming)
 	{ }
-	T *&rpObj; bool fAllowNull; const char *szNaming;
+
 	void CompileFunc(StdCompiler *pComp) const
 	{
-		bool fCompiler = pComp->isCompiler(),
-		                 fNaming = pComp->hasNaming();
-		// Compiling? Clear object before
-		if (fCompiler) { delete rpObj; rpObj = NULL; }
-		// Null checks - different with naming support.
-		if (fAllowNull)
-			if (fNaming)
-			{
-				// Null check: just omit when writing
-				if (!fCompiler && !rpObj) return;
-				// Set up naming
-				if (!pComp->Name(szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
-			}
-			else
-			{
-				bool fNull = !! rpObj;
-				pComp->Value(fNull);
-				// Null? Nothing further to do
-				if (fNull) return;
-			}
-		else if (!fCompiler)
-			assert(rpObj);
-		// Compile value
-		if (fCompiler)
-		{
-			T *rpnObj;
-			CompileNewFunc(rpnObj, pComp);
-			rpObj = rpnObj;
-		}
-		else
-			pComp->Value(mkDecompileAdapt(*rpObj));
-		// Close naming
-		if (fAllowNull && fNaming) pComp->NameEnd();
+		StdPtrAdaptCompileFunc(pComp, *this);
 	}
-	// Operators for default checking/setting
-	inline bool operator == (const T &nValue) const { return rpObj && *rpObj == nValue; }
-	inline StdPtrAdapt &operator = (const T &nValue) { delete rpObj; rpObj = new T(nValue); return *this; }
-	inline bool operator == (const T *pValue) const { return rpObj == pValue; }
-	inline StdPtrAdapt &operator = (const T *pValue) { delete rpObj; rpObj = pValue; return *this; }
+
+	// For use with StdParAdapt
+	template<class P>
+	void CompileFunc(StdCompiler *pComp, const P& p)
+	{
+		StdPtrAdaptCompileFunc(pComp, *this, p);
+	}
+
 	ALLOW_TEMP_TO_REF(StdPtrAdapt)
 };
+
+template <class T, class ContextT>
+struct StdContextPtrAdapt: StdBasicPtrAdapt<T>
+{
+	StdContextPtrAdapt(T *&rpObj, const ContextT& rCtx, bool fAllowNull = true, const char *szNaming = "Data")
+		: StdBasicPtrAdapt<T>(rpObj, fAllowNull, szNaming), pCtx(&rCtx)
+	{ }
+
+	const ContextT* pCtx;
+
+	void CompileFunc(StdCompiler *pComp) const
+	{
+		StdPtrAdaptCompileFunc(pComp, *this);
+	}
+
+	// For use with StdParAdapt
+	template<class P>
+	void CompileFunc(StdCompiler *pComp, const P& p)
+	{
+		StdPtrAdaptCompileFunc(pComp, *this, p);
+	}
+
+	ALLOW_TEMP_TO_REF(StdContextPtrAdapt)
+};
+
+template <class T>
+void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt)
+{
+	bool fCompiler = pComp->isCompiler(),
+		fNaming = pComp->hasNaming();
+	// Compiling? Clear object before
+	if(fCompiler) { delete adapt.rpObj; adapt.rpObj = NULL; }
+	// Null checks - different with naming support.
+	if(adapt.fAllowNull)
+		if(fNaming)
+		{
+			// Null check: just omit when writing
+			if(!fCompiler && !adapt.rpObj) return;
+			// Set up naming
+			if(!pComp->Name(adapt.szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
+		}
+		else
+		{
+			bool fNull = !! adapt.rpObj;
+			pComp->Value(fNull);
+			// Null? Nothing further to do
+			if(fNull) return;
+		}
+	else if(!fCompiler)
+		assert(adapt.rpObj);
+	// Compile value
+	if(fCompiler)
+		StdPtrAdaptCompileNewFunc(adapt, pComp);
+	else
+		StdPtrAdaptDecompileNewFunc(adapt, pComp);
+
+	// Close naming
+	if(adapt.fAllowNull && fNaming) pComp->NameEnd();
+}
+
+// TODO: Avoid code duplication with the above function
+template <class T, class P>
+void StdPtrAdaptCompileFunc(StdCompiler* pComp, const T& adapt, const P& par)
+{
+	bool fCompiler = pComp->isCompiler(),
+		fNaming = pComp->hasNaming();
+	// Compiling? Clear object before
+	if(fCompiler) { delete adapt.rpObj; adapt.rpObj = NULL; }
+	// Null checks - different with naming support.
+	if(adapt.fAllowNull)
+		if(fNaming)
+		{
+			// Null check: just omit when writing
+			if(!fCompiler && !adapt.rpObj) return;
+			// Set up naming
+			if(!pComp->Name(adapt.szNaming)) { assert(fCompiler); pComp->NameEnd(); return; }
+		}
+		else
+		{
+			bool fNull = !! adapt.rpObj;
+			pComp->Value(fNull);
+			// Null? Nothing further to do
+			if(fNull) return;
+		}
+	else if(!fCompiler)
+		assert(adapt.rpObj);
+	// Compile value
+	if(fCompiler)
+		StdPtrAdaptCompileNewFunc(adapt, pComp, par);
+	else
+		StdPtrAdaptDecompileNewFunc(adapt, pComp, par);
+
+	// Close naming
+	if(adapt.fAllowNull && fNaming) pComp->NameEnd();
+}
+
+template <class T>
+void StdPtrAdaptCompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp) { CompileNewFunc(adapt.rpObj, pComp); }
+template <class T, class ContextT>
+void StdPtrAdaptCompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp) { CompileNewFuncCtx(adapt.rpObj, pComp, *adapt.pCtx); }
+template <class T, class P>
+void StdPtrAdaptCompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, const P& par) { CompileNewFunc(adapt.rpObj, pComp, par); }
+template <class T, class ContextT, class P>
+void StdPtrAdaptCompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, const P& par) { CompileNewFuncCtx(adapt.rpObj, pComp, *adapt.pCtx, par); }
+
+
+template <class T>
+void StdPtrAdaptDecompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp) { pComp->Value(mkDecompileAdapt(*adapt.rpObj)); }
+template <class T, class ContextT>
+void StdPtrAdaptDecompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp) { pComp->Value(mkDecompileAdapt(*adapt.rpObj)); }
+template <class T, class P>
+void StdPtrAdaptDecompileNewFunc(const StdPtrAdapt<T>& adapt, StdCompiler* pComp, const P& par) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), par)); }
+template <class T, class ContextT, class P>
+void StdPtrAdaptDecompileNewFunc(const StdContextPtrAdapt<T, ContextT>& adapt, StdCompiler* pComp, const P& par) { pComp->Value(mkParAdapt(mkDecompileAdapt(*adapt.rpObj), par)); }
+
 template <class T>
 inline StdPtrAdapt<T> mkPtrAdapt(T *&rpObj, bool fAllowNull = true) { return StdPtrAdapt<T>(rpObj, fAllowNull); }
 template <class T>
 inline StdPtrAdapt<T> mkNamingPtrAdapt(T *&rpObj, const char *szNaming) { return StdPtrAdapt<T>(rpObj, true, szNaming); }
 template <class T>
 inline StdPtrAdapt<T> mkPtrAdaptNoNull(T *&rpObj) { return mkPtrAdapt<T>(rpObj, false); }
+
+template <class T, class ContextT>
+inline StdContextPtrAdapt<T, ContextT> mkContextPtrAdapt(T *&rpObj, const ContextT& ctx, bool fAllowNull = true) { return StdContextPtrAdapt<T, ContextT>(rpObj, ctx, fAllowNull); }
+template <class T, class ContextT>
+inline StdContextPtrAdapt<T, ContextT> mkNamingContextPtrAdapt(T *&rpObj, const ContextT& ctx, const char* szNaming) { return StdContextPtrAdapt<T, ContextT>(rpObj, ctx, true, szNaming); }
+template <class T, class ContextT>
+inline StdContextPtrAdapt<T, ContextT> mkContextPtrAdaptNoNull(T *&rpObj, const ContextT& ctx) { return mkContextPtrAdapt<T, ContextT>(rpObj, ctx, false); }
 
 // * Adaptor for STL containers
 // Writes a comma-seperated list for compilers that support it. Otherwise, the size is calculated and safed.
@@ -727,7 +844,7 @@ struct StdEnumAdapt
 
 	ALLOW_TEMP_TO_REF(StdEnumAdapt)
 };
-template <class T, class int_t>
+template <class T, class int_t = int32_t>
 StdEnumAdapt<T, int_t> mkEnumAdapt(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
 template <class int_t, class T>
 StdEnumAdapt<T, int_t> mkEnumAdaptT(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
