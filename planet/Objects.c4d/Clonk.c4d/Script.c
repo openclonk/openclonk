@@ -770,9 +770,12 @@ func CloseEyes(iCounter)
 static const Clonk_WalkStand = "Stand";
 static const Clonk_WalkWalk  = "Walk";
 static const Clonk_WalkRun   = "Run";
+static Clonk_IdleActions;
 
 func StartWalk()
 {
+	if(Clonk_IdleActions == nil)
+		Clonk_IdleActions = [["IdleLookAround", 60], ["IdleHandwatch", 100], ["IdleScratch", 70], ["IdleStrech", 100], ["IdleShoe", 120], ["IdleShoeSole", 200], ["IdleHandstrech", 100]];
 	if(!GetEffect("IntWalk", this))
 		AddEffect("IntWalk", this, 1, 1, this);
 }
@@ -825,6 +828,7 @@ func FxIntWalkStart(pTarget, iNumber, fTmp)
 	var anim = "Stand";  //GetCurrentWalkAnimation();
 	EffectVar(0, pTarget, iNumber) = anim;
 	EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	EffectVar(2, pTarget, iNumber) = 0;
 	// Update carried items
 	UpdateAttach();
 	// Set proper turn
@@ -839,11 +843,26 @@ func FxIntWalkTimer(pTarget, iNumber)
 		if(EffectVar(4, pTarget, iNumber) == 0)
 			SetAnimationPosition(iTurnAction, Anim_Const(1200*(GetDirection()==COMD_Right)));
 	}*/
+	if(EffectVar(2, pTarget, iNumber))
+	{
+		EffectVar(2, pTarget, iNumber)--;
+		if(EffectVar(2, pTarget, iNumber) == 0)
+			EffectVar(0, pTarget, iNumber) = 0;
+	}
 	var anim = GetCurrentWalkAnimation();
 	if(anim != EffectVar(0, pTarget, iNumber) && !EffectVar(4, pTarget, iNumber))
 	{
 		EffectVar(0, pTarget, iNumber) = anim;
 		EffectVar(1, pTarget, iNumber) = PlayAnimation(anim, 5, GetWalkAnimationPosition(anim, 0), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+	}
+	else if(anim == Clonk_WalkStand && !EffectVar(2, pTarget, iNumber))
+	{
+		if(Random(200) == 0)
+		{
+			var rand = Random(GetLength(Clonk_IdleActions));
+			PlayAnimation(Clonk_IdleActions[rand][0], 5, Anim_Linear(0, 0, GetAnimationLength(Clonk_IdleActions[rand][0]), Clonk_IdleActions[rand][1], ANIM_Remove), Anim_Linear(0, 0, 1000, 5, ANIM_Remove));
+			EffectVar(2, pTarget, iNumber) = Clonk_IdleActions[rand][1]-5;
+		}
 	}
 /*	// Check wether the clonk wants to turn (Not when he wants to stop)
 	if(EffectVar(17, pTarget, iNumber) != GetDirection())
