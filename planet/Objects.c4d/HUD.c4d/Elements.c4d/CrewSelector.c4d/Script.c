@@ -75,7 +75,7 @@ public func MouseSelection(int plr)
 {
 	if(!crew) return false;
 	if(plr != GetOwner()) return false;
-	if(!(crew->GetCrewEnabled())) false;
+	if(!(crew->GetCrewEnabled())) return false;
 	
 	// stop previously selected crew
 	StopSelected();
