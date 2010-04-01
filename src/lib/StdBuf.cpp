@@ -111,7 +111,7 @@ void StdBuf::CompileFunc(StdCompiler *pComp, int iType)
 {
 	// Size (guess it is a small value most of the time - if it's big, an extra byte won't hurt anyway)
 	uint32_t tmp = iSize; pComp->Value(mkIntPackAdapt(tmp)); iSize = tmp;
-	pComp->Seperator(StdCompiler::SEP_PART2);
+	pComp->Separator(StdCompiler::SEP_PART2);
 	// Read/write data
 	if (pComp->isCompiler())
 	{

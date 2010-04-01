@@ -94,8 +94,8 @@ public:
 	virtual bool FollowName(const char *szName);
 	virtual bool Default(const char *szName);
 
-	// Seperators
-	virtual bool Seperator(Sep eSep);
+	// Separators
+	virtual bool Separator(Sep eSep);
 
 	// Data writers
 	virtual void DWord(int32_t &rInt);
@@ -150,8 +150,8 @@ public:
 	virtual void NameEnd(bool fBreak = false);
 	virtual bool FollowName(const char *szName);
 
-	// Seperators
-	virtual bool Seperator(Sep eSep);
+	// Separators
+	virtual bool Separator(Sep eSep);
 
 	// Data writers
 	virtual void DWord(int32_t &rInt);

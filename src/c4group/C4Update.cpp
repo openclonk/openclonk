@@ -547,7 +547,7 @@ bool C4UpdatePackage::DoGrpUpdate(C4Group *pUpdateData, C4GroupEx *pGrpTo)
 			bool fGotIt = false;
 			for (int i = 0; (fGotIt = SCopySegment(pData, i, strItemName2, '|', _MAX_FNAME)); i++)
 			{
-				// remove seperator
+				// remove separator
 				char *pSep = strchr(strItemName2, '=');
 				if (pSep) *pSep = '\0';
 				// in list?

@@ -54,12 +54,12 @@ void C4Network2Address::CompileFunc(StdCompiler *pComp)
 		{ NULL,  P_NONE },
 	};
 	pComp->Value(mkEnumAdaptT<uint8_t>(eProtocol, Protocols));
-	pComp->Seperator(StdCompiler::SEP_PART2); // ':'
+	pComp->Separator(StdCompiler::SEP_PART2); // ':'
 
 	// Write IP (no IP = 0.0.0.0)
 	in_addr zero; zero.s_addr = INADDR_ANY;
 	pComp->Value(mkDefaultAdapt(addr.sin_addr, zero));
-	pComp->Seperator(StdCompiler::SEP_PART2); // ':'
+	pComp->Separator(StdCompiler::SEP_PART2); // ':'
 
 	// Write port
 	uint16_t iPort = htons(addr.sin_port);

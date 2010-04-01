@@ -2172,44 +2172,44 @@ void C4Command::CompileFunc(StdCompiler *pComp)
 {
 	// Version
 	int32_t iVersion = 0;
-	if (pComp->Seperator(StdCompiler::SEP_DOLLAR))
+	if (pComp->Separator(StdCompiler::SEP_DOLLAR))
 	{
 		iVersion = 1;
 		pComp->Value(mkIntPackAdapt(iVersion));
-		pComp->Seperator(StdCompiler::SEP_SEP);
+		pComp->Separator(StdCompiler::SEP_SEP);
 	}
 	else
-		pComp->NoSeperator();
+		pComp->NoSeparator();
 	// Command name
 	pComp->Value(mkEnumAdaptT<uint8_t>(Command, EnumAdaptCommandEntries));
-	pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Separator(StdCompiler::SEP_SEP);
 	// Target X/Y
-	pComp->Value(Tx); pComp->Seperator(StdCompiler::SEP_SEP);
-	pComp->Value(mkIntPackAdapt(Ty)); pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Value(Tx); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(Ty)); pComp->Separator(StdCompiler::SEP_SEP);
 	int32_t iPtr;
 	// Target
 	iPtr = reinterpret_cast<intptr_t>(Target);
-	pComp->Value(mkIntPackAdapt(iPtr)); pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(iPtr)); pComp->Separator(StdCompiler::SEP_SEP);
 	Target = reinterpret_cast<C4Object*>(iPtr);
 	iPtr = reinterpret_cast<intptr_t>(Target2);
-	pComp->Value(mkIntPackAdapt(iPtr)); pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(iPtr)); pComp->Separator(StdCompiler::SEP_SEP);
 	Target2 = reinterpret_cast<C4Object*>(iPtr);
 	// Data
-	pComp->Value(Data); pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Value(Data); pComp->Separator(StdCompiler::SEP_SEP);
 	// Update interval
-	pComp->Value(mkIntPackAdapt(UpdateInterval)); pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(UpdateInterval)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Flags
-	pComp->Value(mkIntPackAdapt(Evaluated)); pComp->Seperator(StdCompiler::SEP_SEP);
-	pComp->Value(mkIntPackAdapt(PathChecked)); pComp->Seperator(StdCompiler::SEP_SEP);
-	pComp->Value(mkIntPackAdapt(Finished)); pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(Evaluated)); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(PathChecked)); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(Finished)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Retries
-	pComp->Value(mkIntPackAdapt(Failures)); pComp->Seperator(StdCompiler::SEP_SEP);
-	pComp->Value(mkIntPackAdapt(Retries)); pComp->Seperator(StdCompiler::SEP_SEP);
-	pComp->Value(mkIntPackAdapt(Permit)); pComp->Seperator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(Failures)); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(Retries)); pComp->Separator(StdCompiler::SEP_SEP);
+	pComp->Value(mkIntPackAdapt(Permit)); pComp->Separator(StdCompiler::SEP_SEP);
 	// Base mode
 	if (iVersion > 0)
 	{
-		pComp->Value(mkIntPackAdapt(BaseMode)); pComp->Seperator(StdCompiler::SEP_SEP);
+		pComp->Value(mkIntPackAdapt(BaseMode)); pComp->Separator(StdCompiler::SEP_SEP);
 	}
 	// Text
 	StdStrBuf TextBuf;

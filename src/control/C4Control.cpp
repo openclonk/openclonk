@@ -401,7 +401,7 @@ void C4ControlPlayerControl::Execute() const
 void C4ControlPlayerControl::ControlItem::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(iControl);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(iTriggerMode);
 }
 

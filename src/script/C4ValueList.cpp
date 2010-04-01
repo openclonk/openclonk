@@ -186,8 +186,8 @@ void C4ValueList::CompileFunc(class StdCompiler *pComp)
 		{ pComp->Value(inSize); }
 	catch (StdCompiler::NotFoundException *pExc)
 		{ Reset(); delete pExc; return; }
-	// Seperator
-	pComp->Seperator(StdCompiler::SEP_SEP2);
+	// Separator
+	pComp->Separator(StdCompiler::SEP_SEP2);
 	// Allocate
 	if (pComp->isCompiler()) this->SetSize(inSize);
 	// Values

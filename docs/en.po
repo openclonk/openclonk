@@ -19681,7 +19681,7 @@ msgstr "/recdump:&lt;<em>File name</em>&gt;"
 
 #: sdk/cmdline.xml:54(text)
 msgid "Nur für die Wiedergabe von Aufnahmen: Vor dem Start der Wiedergabe werden die Wiedergabedaten (Spielerkommandos) in eine Datei mit dem Namen &lt;<em>Dateiname</em>&gt; im Clonkverzeichnis geschrieben. Endet der Dateiname auf .txt, werden die Daten als Text geschrieben; sonst binär. Die abzuspielende Aufnahme muss trotzdem als Szenariendatei angegeben werden (Zum Beispiel Clonk.exe Aufnahmen.c4f\\Record001.c4s /recdump:CtrlRec.txt)."
-msgstr "Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified seperately as a scenario file (e.g. Clonk.exe Records.c4f\\Record001.c4s /recdump:CtrlRec.txt)."
+msgstr "Only for replay of recorded games: Before the replay is started, all replay data (player controls) are dumped into a file called &lt;<em>File name</em>&gt; in the Clonk folder. If the file name extension is .txt, the controls will be dumped in text mode, otherwise binary. The replay file must be specified separately as a scenario file (e.g. Clonk.exe Records.c4f\\Record001.c4s /recdump:CtrlRec.txt)."
 
 #: sdk/cmdline.xml:55(dt)
 msgid "/startup:&lt;<em>Name</em>&gt;"

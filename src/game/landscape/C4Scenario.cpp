@@ -55,11 +55,11 @@ void C4SVal::Default()
 void C4SVal::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(mkDefaultAdapt(Std, 0));
-	if (!pComp->Seperator()) return;
+	if (!pComp->Separator()) return;
 	pComp->Value(mkDefaultAdapt(Rnd, 0));
-	if (!pComp->Seperator()) return;
+	if (!pComp->Separator()) return;
 	pComp->Value(mkDefaultAdapt(Min, 0));
-	if (!pComp->Seperator()) return;
+	if (!pComp->Separator()) return;
 	pComp->Value(mkDefaultAdapt(Max, 100));
 }
 

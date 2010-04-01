@@ -145,15 +145,15 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 	};
 
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(mkEnumAdapt(Ending, Endings));
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(LastTick);
 }
 
@@ -190,15 +190,15 @@ bool C4ValueProviderX::Execute()
 void C4ValueProviderX::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(LastX);
 }
 
@@ -235,15 +235,15 @@ bool C4ValueProviderY::Execute()
 void C4ValueProviderY::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(LastY);
 }
 
@@ -268,15 +268,15 @@ bool C4ValueProviderAbsX::Execute()
 void C4ValueProviderAbsX::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(LastX);
 }
 
@@ -301,15 +301,15 @@ bool C4ValueProviderAbsY::Execute()
 void C4ValueProviderAbsY::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Length);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(LastY);
 }
 
@@ -328,13 +328,13 @@ bool C4ValueProviderXDir::Execute()
 void C4ValueProviderXDir::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(MaxXDir);
 }
 
@@ -353,13 +353,13 @@ bool C4ValueProviderYDir::Execute()
 void C4ValueProviderYDir::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(MaxYDir);
 }
 
@@ -378,13 +378,13 @@ bool C4ValueProviderRDir::Execute()
 void C4ValueProviderRDir::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(MaxRDir);
 }
 
@@ -403,13 +403,13 @@ bool C4ValueProviderCosR::Execute()
 void C4ValueProviderCosR::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Offset);
 }
 
@@ -428,13 +428,13 @@ bool C4ValueProviderSinR::Execute()
 void C4ValueProviderSinR::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Offset);
 }
 
@@ -457,13 +457,13 @@ bool C4ValueProviderCosV::Execute()
 void C4ValueProviderCosV::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Offset);
 }
 
@@ -486,13 +486,13 @@ bool C4ValueProviderSinV::Execute()
 void C4ValueProviderSinV::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Begin);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(End);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Offset);
 }
 
@@ -522,6 +522,6 @@ bool C4ValueProviderAction::Execute()
 void C4ValueProviderAction::CompileFunc(StdCompiler* pComp)
 {
 	SerializableValueProvider::CompileFunc(pComp);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(Object);
 }

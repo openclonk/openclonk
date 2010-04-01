@@ -289,7 +289,7 @@ bool SCopySegmentEx(const char *szString, int iSegment, char *sTarget,
 	// Advance to indexed segment
 	while (iSegment>0)
 	{
-		// use the seperator that's closer
+		// use the separator that's closer
 		int iPos1 = SCharPos(cSep1,szString), iPos2 = SCharPos(cSep2,szString);
 		if (iPos1 == -1)
 			if (iPos2 == -1)
@@ -304,7 +304,7 @@ bool SCopySegmentEx(const char *szString, int iSegment, char *sTarget,
 	// Advance whitespace
 	if (fSkipWhitespace)
 		szString = SAdvanceSpace(szString);
-	// Copy segment contents; use seperator that's closer
+	// Copy segment contents; use separator that's closer
 	int iPos1 = SCharPos(cSep1,szString), iPos2 = SCharPos(cSep2,szString);
 	if (iPos2 != -1 && (iPos2 < iPos1 || iPos1 == -1)) cSep1 = cSep2;
 	SCopyUntil(szString,sTarget,cSep1,iMaxL);

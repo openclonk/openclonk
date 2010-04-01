@@ -6,7 +6,7 @@
 	
 	TODO:
 	+ You should write a lot about the functioning of the animations-system,
-	holding weapons etc. and/or put that into a seperate library - Newton
+	holding weapons etc. and/or put that into a separate library - Newton
 	
 	+ replace German comments
 */

@@ -270,8 +270,8 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkDefaultAdapt(iValueCnt, 0));
 	// nuthing 2do for no items
 	if (!iValueCnt) return;
-	// Seperator (';')
-	pComp->Seperator(StdCompiler::SEP_SEP2);
+	// Separator (';')
+	pComp->Separator(StdCompiler::SEP_SEP2);
 	// Data
 	char **ppNames = !fCompiler ? pNames->pNames : new char * [iValueCnt];
 	if (fCompiler) for (int32_t i = 0; i < iValueCnt; i++) ppNames[i] = 0;
@@ -281,15 +281,15 @@ void C4ValueMapData::CompileFunc(StdCompiler *pComp)
 	{
 		for (int32_t i = 0; i < iValueCnt; i++)
 		{
-			// Seperate
-			if (i) pComp->Seperator();
+			// Separate
+			if (i) pComp->Separator();
 			// Name
 			StdStrBuf Name;
 			if (!fCompiler) Name.Ref(ppNames[i]);
 			pComp->Value(mkParAdapt(Name, StdCompiler::RCT_Idtf));
 			if (fCompiler) ppNames[i] = Name.GrabPointer();
-			// Seperator ('=')
-			pComp->Seperator(StdCompiler::SEP_SET);
+			// Separator ('=')
+			pComp->Separator(StdCompiler::SEP_SET);
 			// Value
 			pComp->Value(pValues[i]);
 		}

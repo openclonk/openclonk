@@ -39,7 +39,7 @@ void StdCompiler::Warn(const char *szWarning, ...)
 	(*pWarnCB)(pWarnData, getPosition().getData(), Msg.getData());
 }
 
-char StdCompiler::SeperatorToChar(Sep eSep)
+char StdCompiler::SeparatorToChar(Sep eSep)
 {
 	switch (eSep)
 	{
@@ -55,7 +55,7 @@ char StdCompiler::SeperatorToChar(Sep eSep)
 	case SEP_END2: return ']';
 	case SEP_VLINE: return '|';
 	case SEP_DOLLAR: return '$';
-	default: assert(!"Unhandled Seperator value");
+	default: assert(!"Unhandled Separator value");
 	}
 	return ' ';
 }
@@ -226,7 +226,7 @@ void StdCompilerINIWrite::NameEnd(bool fBreak)
 	fInSection = true;
 }
 
-bool StdCompilerINIWrite::Seperator(Sep eSep)
+bool StdCompilerINIWrite::Separator(Sep eSep)
 {
 	if (fInSection)
 	{
@@ -236,7 +236,7 @@ bool StdCompilerINIWrite::Seperator(Sep eSep)
 	else
 	{
 		PrepareForValue();
-		Buf.AppendChar(SeperatorToChar(eSep));
+		Buf.AppendChar(SeparatorToChar(eSep));
 	}
 	return true;
 }
@@ -507,8 +507,8 @@ bool StdCompilerINIRead::FollowName(const char *szName)
 	return true;
 }
 
-// Seperators
-bool StdCompilerINIRead::Seperator(Sep eSep)
+// Separators
+bool StdCompilerINIRead::Separator(Sep eSep)
 {
 	if (iDepth > iRealDepth) return false;
 	// In section?
@@ -519,22 +519,22 @@ bool StdCompilerINIRead::Seperator(Sep eSep)
 		NameEnd();
 		return Name(CurrName.getData());
 	}
-	// Position saved back from seperator mismatch?
+	// Position saved back from separator mismatch?
 	if (pReenter) { pPos = pReenter; pReenter = NULL; }
 	// Nothing to read?
 	if (!pPos) return false;
 	// Read (while skipping over whitespace)
 	SkipWhitespace();
-	// Seperator mismatch? Let all read attempts fail until the correct seperator is found or the naming ends.
-	if (*pPos != SeperatorToChar(eSep)) { pReenter = pPos; pPos = NULL; return false; }
-	// Go over seperator, success
+	// Separator mismatch? Let all read attempts fail until the correct separator is found or the naming ends.
+	if (*pPos != SeparatorToChar(eSep)) { pReenter = pPos; pPos = NULL; return false; }
+	// Go over separator, success
 	pPos++;
 	return true;
 }
 
-void StdCompilerINIRead::NoSeperator()
+void StdCompilerINIRead::NoSeparator()
 {
-	// Position saved back from seperator mismatch?
+	// Position saved back from separator mismatch?
 	if (pReenter) { pPos = pReenter; pReenter = NULL; }
 }
 

@@ -556,7 +556,7 @@ void C4ToolsDlg::UpdateTextures()
 #endif
 			}
 		}
-	// seperator
+	// separator
 	if (fAnyEntry)
 	{
 #ifdef _WIN32
@@ -606,7 +606,7 @@ void C4ToolsDlg::SetMaterial(const char *szMaterial)
 
 void C4ToolsDlg::SetTexture(const char *szTexture)
 {
-	// assert valid (for seperator selection)
+	// assert valid (for separator selection)
 	if (!::TextureMap.GetTexture(szTexture))
 	{
 		// ensure correct texture is in dlg

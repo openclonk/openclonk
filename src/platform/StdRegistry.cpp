@@ -462,9 +462,9 @@ bool StdCompilerConfigWrite::Default(const char *szName)
 	return true;
 }
 
-bool StdCompilerConfigWrite::Seperator(Sep eSep)
+bool StdCompilerConfigWrite::Separator(Sep eSep)
 {
-	excCorrupt("Seperators not supported by registry compiler!");
+	excCorrupt("Separators not supported by registry compiler!");
 	return false;
 }
 
@@ -624,9 +624,9 @@ bool StdCompilerConfigRead::FollowName(const char *szName)
 	NameEnd(); return Name(szName);
 }
 
-bool StdCompilerConfigRead::Seperator(Sep eSep)
+bool StdCompilerConfigRead::Separator(Sep eSep)
 {
-	excCorrupt(0, "Seperators not supported by registry compiler!");
+	excCorrupt(0, "Separators not supported by registry compiler!");
 	return false;
 }
 

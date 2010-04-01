@@ -18,7 +18,7 @@
  */
 // permanent player information management
 //
-// A seperate list of all local and remote player infos is held here,
+// A separate list of all local and remote player infos is held here,
 // independantely of the global C4PlayerList.
 // This list is used for:
 // -player information to be known before actual join
@@ -366,7 +366,7 @@ public:
 	int32_t GetPlayerCount() const;                           // get number of players on all clients
 	int32_t GetJoinIssuedPlayerCount() const;                 // get number of players with PIF_JoinIssued-flag set
 	int32_t GetActivePlayerCount(bool fCountInvisible) const;                     // get number of players that have not been removed
-	StdStrBuf GetActivePlayerNames(bool fCountInvisible, int32_t iAtClientID=-1) const;                   // get a comma-seperated list of players that have not been removed yet
+	StdStrBuf GetActivePlayerNames(bool fCountInvisible, int32_t iAtClientID=-1) const;                   // get a comma-separated list of players that have not been removed yet
 	int32_t GetActiveScriptPlayerCount(bool fCountSavegameResumes, bool fCountInvisible) const;               // get number of script players that have not been removed
 	C4PlayerInfo *GetPrimaryInfoByClientID(int32_t iClientID) const
 	{

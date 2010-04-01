@@ -37,7 +37,7 @@
 // The interface is designed to allow both text-type (INI) and binary
 // compilation. Structures that want to support StdCompiler must provide
 // a function "void CompileFunc(StdCompiler *)" and therein issue calls
-// to the data, naming and seperation functions as appropriate. If the structure
+// to the data, naming and separation functions as appropriate. If the structure
 // in question cannot be changed, it is equally valid to define a function
 // void CompileFunc(StdCompiler *, T *) where T is the type of the structure.
 
@@ -68,7 +68,7 @@ public:
 	inline  bool isDecompiler()                   { return !isCompiler(); }
 
 	// Does the compiler support naming, so values can be omitted without harm to
-	// the data structure? Is seperation implemented?
+	// the data structure? Is separation implemented?
 	virtual bool hasNaming()                      { return false; }
 
 	// Does the compiler encourage verbosity (like producing more text instead of
@@ -101,42 +101,42 @@ public:
 	virtual int NameCount(const char *szName = NULL) { assert(false); return 0; }
 
 
-	// * Seperation
-	// Some data types need seperation (note that naming makes this unnecessary).
-	// Compilers that implement naming must implement seperation. Others may just
+	// * Separation
+	// Some data types need separation (note that naming makes this unnecessary).
+	// Compilers that implement naming must implement separation. Others may just
 	// always return success.
-	// If a seperator wasn't found, some compilers might react by throwing a
+	// If a separator wasn't found, some compilers might react by throwing a
 	// NotFound exception for all attempts to read a value. This behaviour will
-	// stop when NoSeperator() is called (which just resets this state) or
-	// Seperator() is called successfully. This behaviour will reset after
+	// stop when NoSeparator() is called (which just resets this state) or
+	// Separator() is called successfully. This behaviour will reset after
 	// ending the naming, too.
 	enum Sep
 	{
-		SEP_NONE=0, // No seperator ("")
-		SEP_SEP, // Array seperation (",")
-		SEP_SEP2, // Array seperation 2 (";")
-		SEP_SET, // Map pair seperation ("=")
-		SEP_PART, // Value part seperation (".")
-		SEP_PART2, // Value part seperation 2 (":")
-		SEP_PLUS, // Value seperation with a '+' char ("+")
+		SEP_NONE=0, // No separator ("")
+		SEP_SEP, // Array separation (",")
+		SEP_SEP2, // Array separation 2 (";")
+		SEP_SET, // Map pair separation ("=")
+		SEP_PART, // Value part separation (".")
+		SEP_PART2, // Value part separation 2 (":")
+		SEP_PLUS, // Value separation with a '+' char ("+")
 		SEP_START, // Start some sort of list ('(')
 		SEP_END, // End some sort of list ('(')
 		SEP_START2, // Start some sort of list ('[')
 		SEP_END2, // End some sort of list (']')
-		SEP_VLINE, // Vertical line seperator ('|')
+		SEP_VLINE, // Vertical line separator ('|')
 		SEP_DOLLAR // Dollar sign ('$')
 	};
-	virtual bool Seperator(Sep eSep = SEP_SEP)    { return true; }
-	virtual void NoSeperator()                    { }
+	virtual bool Separator(Sep eSep = SEP_SEP)    { return true; }
+	virtual void NoSeparator()                    { }
 
 	// * Data
 	// Compiling functions for different data types
-	virtual void DWord(int32_t &rInt)             = 0; // Needs seperator!
-	virtual void DWord(uint32_t &rInt)            = 0; // Needs seperator!
-	virtual void Word(int16_t &rShort)            = 0; // Needs seperator!
-	virtual void Word(uint16_t &rShort)           = 0; // Needs seperator!
-	virtual void Byte(int8_t &rByte)              = 0; // Needs seperator!
-	virtual void Byte(uint8_t &rByte)             = 0; // Needs seperator!
+	virtual void DWord(int32_t &rInt)             = 0; // Needs separator!
+	virtual void DWord(uint32_t &rInt)            = 0; // Needs separator!
+	virtual void Word(int16_t &rShort)            = 0; // Needs separator!
+	virtual void Word(uint16_t &rShort)           = 0; // Needs separator!
+	virtual void Byte(int8_t &rByte)              = 0; // Needs separator!
+	virtual void Byte(uint8_t &rByte)             = 0; // Needs separator!
 	virtual void Boolean(bool &rBool)             = 0;
 	virtual void Character(char &rChar)           = 0; // Alphanumerical only!
 
@@ -144,9 +144,9 @@ public:
 	// Compile raw data (strings)
 	enum RawCompileType
 	{
-		RCT_Escaped=0,// Any data allowed, no seperator needed (default)
+		RCT_Escaped=0,// Any data allowed, no separator needed (default)
 		RCT_All,      // Printable characters only, must be last element in naming.
-		RCT_Idtf,     // Alphanumerical characters or '_', seperator needed.
+		RCT_Idtf,     // Alphanumerical characters or '_', separator needed.
 		RCT_IdtfAllowEmpty, // Like RCT_Idtf, but empty strings are also allowed
 		RCT_ID        // Like RCT_Idtf (only used for special compilers that treat IDs differently)
 	};
@@ -299,8 +299,8 @@ private:
 
 protected:
 
-	// Standard seperator character
-	static char SeperatorToChar(Sep eSep);
+	// Standard separator character
+	static char SeparatorToChar(Sep eSep);
 
 };
 
@@ -531,7 +531,7 @@ protected:
 
 // *** INI compiler
 
-// Naming and seperators supported, so defaulting can be used through
+// Naming and separators supported, so defaulting can be used through
 // the appropriate adaptors.
 
 // Example:
@@ -572,8 +572,8 @@ public:
 	virtual bool Name(const char *szName);
 	virtual void NameEnd(bool fBreak = false);
 
-	// Seperators
-	virtual bool Seperator(Sep eSep);
+	// Separators
+	virtual bool Separator(Sep eSep);
 
 	// Data writers
 	virtual void DWord(int32_t &rInt);
@@ -639,9 +639,9 @@ public:
 	virtual void NameEnd(bool fBreak = false);
 	virtual bool FollowName(const char *szName);
 
-	// Seperators
-	virtual bool Seperator(Sep eSep);
-	virtual void NoSeperator();
+	// Separators
+	virtual bool Separator(Sep eSep);
+	virtual void NoSeparator();
 
 	// Counters
 	virtual int NameCount(const char *szName = NULL);
@@ -701,7 +701,7 @@ protected:
 	// Position
 	const char *pPos;
 
-	// Reenter position (if an nonexistant seperator was specified)
+	// Reenter position (if an nonexistant separator was specified)
 	const char *pReenter;
 
 	// Uppermost name that wasn't found

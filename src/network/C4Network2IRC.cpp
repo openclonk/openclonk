@@ -211,11 +211,11 @@ void C4Network2IRCClient::PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutB
 
 size_t C4Network2IRCClient::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &addr)
 {
-	// Find line seperation
+	// Find line separation
 	const char *pSep = reinterpret_cast<const char *>(memchr(rInBuf.getData(), '\n', rInBuf.getSize()));
 	if (!pSep)
 		return 0;
-	// Check if it's actually correct seperation (rarely the case)
+	// Check if it's actually correct separation (rarely the case)
 	int iSize = pSep - getBufPtr<char>(rInBuf) + 1,
 	            iLength = iSize - 1;
 	if (iLength && *(pSep - 1) == '\r')

@@ -96,9 +96,9 @@ namespace
 				pComp->Value(mkParAdapt(id_str, StdCompiler::RCT_Idtf));
 			}
 
-			pComp->Seperator(StdCompiler::SEP_START);
+			pComp->Separator(StdCompiler::SEP_START);
 			pComp->Value(mkContextPtrAdapt(svp, *id, false));
-			pComp->Seperator(StdCompiler::SEP_END);
+			pComp->Separator(StdCompiler::SEP_END);
 
 			if(pComp->isCompiler())
 				*ValueProvider = svp;
@@ -115,12 +115,12 @@ namespace
 
 		void CompileFunc(StdCompiler* pComp)
 		{
-			pComp->Seperator(StdCompiler::SEP_START);
+			pComp->Separator(StdCompiler::SEP_START);
 			for(unsigned int i = 0; i < 3; ++i)
 			{
 				for(unsigned int j = 0; j < 4; ++j)
 				{
-					if(i != 0 || j != 0) pComp->Seperator();
+					if(i != 0 || j != 0) pComp->Separator();
 					// TODO: Teach StdCompiler how to handle float
 //					pComp->Value(Matrix(i, j));
 					
@@ -138,7 +138,7 @@ namespace
 				}
 			}
 
-			pComp->Seperator(StdCompiler::SEP_END);
+			pComp->Separator(StdCompiler::SEP_END);
 		}
 	};
 	

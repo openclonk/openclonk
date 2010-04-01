@@ -647,9 +647,9 @@ void C4PlayerControlFile::Clear()
 void C4PlayerControl::CSync::ControlDownState::CompileFunc(StdCompiler *pComp)
 {
 	pComp->Value(DownState);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(iDownFrame);
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(fDownByUser);
 }
 

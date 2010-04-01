@@ -1301,7 +1301,7 @@ C4Object *C4Game::FindVisObject(float tx, float ty, int32_t iPlr, const C4Facet 
 	C4Object *layer_object = NULL;
 	C4Player *plr = ::Players.Get(iPlr);
 	if (plr && plr->Cursor) layer_object = plr->Cursor->Layer;
-	// scan all object lists seperately
+	// scan all object lists separately
 	C4ObjectList *pLst = &::Objects.ForeObjects;
 	while (pLst)
 	{

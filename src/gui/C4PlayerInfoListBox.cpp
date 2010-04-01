@@ -153,7 +153,7 @@ C4PlayerInfoListBox::PlayerListItem::PlayerListItem(C4PlayerInfoListBox *pForLis
 	if (pTeamCombo) AddElement(pTeamCombo);
 	if (pRankIcon) AddElement(pRankIcon);
 	if (pExtraLabel) AddElement(pExtraLabel);
-	// tooltip? (same for all components for now. seperate tooltip for status icon later?)
+	// tooltip? (same for all components for now. separate tooltip for status icon later?)
 	//SetToolTip(FormatString("%s %s", LoadResStr("IDS_CTL_PLAYER"), sPlayerName.getData()).getData()); hat so keine nennenswerte Aussage...
 	// add to listbox (will get resized horizontally and moved)
 	pForListBox->InsertElement(this, pInsertBeforeElement, PlayerListBoxIndent);
@@ -747,7 +747,7 @@ C4PlayerInfoListBox::ClientListItem::ClientListItem(C4PlayerInfoListBox *pForLis
 	// add components
 	AddElement(pStatusIcon); AddElement(pNameLabel);
 	if (btnAddPlayer) AddElement(btnAddPlayer);
-	// tooltip (same for all components for now. seperate tooltip for status icon later?)
+	// tooltip (same for all components for now. separate tooltip for status icon later?)
 	SetToolTip(FormatString("Client %s (%s)", rClientInfo.getName(), rClientInfo.getNick()).getData());
 	// insert into listbox at correct order
 	// (will eventually get resized horizontally and moved)

@@ -333,7 +333,7 @@ StdStrBuf C4FileSelDlg::GetSelection(const char *szFixedSelection, bool fFilenam
 	{
 		// force fixed selection first
 		if (szFixedSelection) sResult.Append(szFixedSelection);
-		//  get ';'-seperated list for multi selection dlg
+		//  get ';'-separated list for multi selection dlg
 		for (ListItem *pFileItem = static_cast<ListItem *>(pFileListBox->GetFirst()); pFileItem; pFileItem = static_cast<ListItem *>(pFileItem->GetNext()))
 			if (pFileItem->IsChecked())
 			{

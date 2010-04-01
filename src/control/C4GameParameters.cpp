@@ -499,7 +499,7 @@ void C4GameParameters::CompileFunc(StdCompiler *pComp, C4Scenario *pScenario)
 	pComp->Value(mkNamingAdapt(Goals,             "Goals",            !pScenario ? C4IDList() : pScenario->Game.Goals));
 	pComp->Value(mkNamingAdapt(League,          "League",             StdStrBuf()));
 
-	// These values are either stored seperately (see Load/Save) or
+	// These values are either stored separately (see Load/Save) or
 	// don't make sense for savegames.
 	if (!pScenario)
 	{

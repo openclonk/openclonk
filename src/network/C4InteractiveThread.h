@@ -53,7 +53,7 @@ public:
 	virtual bool Execute(int iTimeout, pollfd * readyfds);
 };
 
-// Collects StdSchedulerProc objects and executes them in a seperate thread
+// Collects StdSchedulerProc objects and executes them in a separate thread
 // Provides an event queue for the procs to communicate with the main thread
 class C4InteractiveThread
 {

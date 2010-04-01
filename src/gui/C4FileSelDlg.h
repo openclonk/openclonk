@@ -162,7 +162,7 @@ public:
 
 	void SetPath(const char *szNewPath, bool fRefresh=true);
 	void SetSelection(const char *szNewSelection, bool fFilenameOnly);
-	StdStrBuf GetSelection(const char *szFixedSelection, bool fFilenameOnly) const; // get single selected file for single selection dlg ';'-seperated list for multi selection dlg
+	StdStrBuf GetSelection(const char *szFixedSelection, bool fFilenameOnly) const; // get single selected file for single selection dlg ';'-separated list for multi selection dlg
 };
 
 // dialog to select a player file

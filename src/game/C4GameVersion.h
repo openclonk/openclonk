@@ -42,12 +42,12 @@ struct C4GameVersion
 		if (fEngineName)
 		{
 			pComp->Value(mkDefaultAdapt(sEngineName, ""));
-			pComp->Seperator();
+			pComp->Separator();
 		}
 		else if (pComp->isCompiler())
 			sEngineName = "";
 		pComp->Value(mkArrayAdapt(iVer,4,0));
-		pComp->Seperator();
+		pComp->Separator();
 		pComp->Value(mkDefaultAdapt(iBuild, 0));
 	}
 };

@@ -474,7 +474,7 @@ bool C4Network2::FinalInit()
 		C4GUI::Dialog *pDlg = NULL;
 		if (::pGUI && !Console.Active)
 		{
-			// seperate dlgs for host/client
+			// separate dlgs for host/client
 			if (isHost())
 				pDlg = new C4Network2StartWaitDlg();
 			else

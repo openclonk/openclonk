@@ -346,11 +346,11 @@ void C4Network2ResChunkData::CompileFunc(StdCompiler *pComp)
 			pRange = (pRange ? pRange->Next : pChunkRanges) = new ChunkRange;
 		else
 			pRange = pRange ? pRange->Next : pChunkRanges;
-		// Seperate
-		if (i) pComp->Seperator();
+		// Separate
+		if (i) pComp->Separator();
 		// Compile range
 		pComp->Value(mkIntPackAdapt(pRange->Start));
-		pComp->Seperator(StdCompiler::SEP_PART2);
+		pComp->Separator(StdCompiler::SEP_PART2);
 		pComp->Value(mkIntPackAdapt(pRange->Length));
 	}
 	// Terminate list

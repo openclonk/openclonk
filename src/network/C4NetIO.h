@@ -824,15 +824,15 @@ inline uint8_t &in_addr_b(in_addr &addr, int i)
 
 inline void CompileFunc(in_addr &ip, StdCompiler *pComp)
 {
-	pComp->Value(in_addr_b(ip, 0)); pComp->Seperator(StdCompiler::SEP_PART);
-	pComp->Value(in_addr_b(ip, 1)); pComp->Seperator(StdCompiler::SEP_PART);
-	pComp->Value(in_addr_b(ip, 2)); pComp->Seperator(StdCompiler::SEP_PART);
+	pComp->Value(in_addr_b(ip, 0)); pComp->Separator(StdCompiler::SEP_PART);
+	pComp->Value(in_addr_b(ip, 1)); pComp->Separator(StdCompiler::SEP_PART);
+	pComp->Value(in_addr_b(ip, 2)); pComp->Separator(StdCompiler::SEP_PART);
 	pComp->Value(in_addr_b(ip, 3));
 }
 
 inline void CompileFunc(C4NetIO::addr_t &addr, StdCompiler *pComp)
 {
-	pComp->Value(addr.sin_addr); pComp->Seperator(StdCompiler::SEP_PART2);
+	pComp->Value(addr.sin_addr); pComp->Separator(StdCompiler::SEP_PART2);
 	uint16_t iPort = htons(addr.sin_port);
 	pComp->Value(iPort);
 	addr.sin_port = htons(iPort);

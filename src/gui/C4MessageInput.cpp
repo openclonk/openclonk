@@ -820,15 +820,15 @@ C4MessageBoardCommand::C4MessageBoardCommand()
 void C4MessageBoardQuery::CompileFunc(StdCompiler *pComp)
 {
 	// note that this CompileFunc does not save the fAnswered-flag, so pending message board queries will be re-asked when resuming SaveGames
-	pComp->Seperator(StdCompiler::SEP_START); // '('
+	pComp->Separator(StdCompiler::SEP_START); // '('
 	// callback object number
-	pComp->Value(CallbackObj); pComp->Seperator();
+	pComp->Value(CallbackObj); pComp->Separator();
 	// input query string
-	pComp->Value(sInputQuery); pComp->Seperator();
+	pComp->Value(sInputQuery); pComp->Separator();
 	// options
 	pComp->Value(fIsUppercase);
 	// list end
-	pComp->Seperator(StdCompiler::SEP_END); // ')'
+	pComp->Separator(StdCompiler::SEP_END); // ')'
 }
 
 C4MessageInput MessageInput;

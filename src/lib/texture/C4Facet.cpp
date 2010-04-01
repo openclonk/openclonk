@@ -518,7 +518,7 @@ void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 	// hacky. StdCompiler doesn't allow floats to be safed directly.
 	for (i = 0; i < 6; i++)
 	{
-		if (i) pComp->Seperator();
+		if (i) pComp->Separator();
 		StdStrBuf val;
 		if (!fCompiler)
 		{
@@ -532,7 +532,7 @@ void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 		}
 		pComp->Value(mkParAdapt(val, StdCompiler::RCT_Idtf));
 		if (fCompiler && pComp->hasNaming())
-			if (pComp->Seperator(StdCompiler::SEP_PART))
+			if (pComp->Separator(StdCompiler::SEP_PART))
 			{
 				StdStrBuf val2;
 				pComp->Value(mkParAdapt(val2, StdCompiler::RCT_Idtf));
@@ -544,13 +544,13 @@ void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 		if (fCompiler) sscanf(val.getData(), "%g", &mat[i]);
 #endif
 	}
-	pComp->Seperator();
+	pComp->Separator();
 	pComp->Value(FlipDir);
 	if (!fCompiler && mat[6] == 0 && mat[7] == 0 && mat[8] == 1) return;
 	// because of backwards-compatibility, the last row comes after flipdir
 	for (i = 6; i < 9; ++i)
 	{
-		if (!pComp->Seperator())
+		if (!pComp->Separator())
 		{
 			mat[i] = (i == 8) ? 1.0f : 0.0f;
 		}
@@ -559,7 +559,7 @@ void C4DrawTransform::CompileFunc(StdCompiler *pComp)
 			StdStrBuf val; if (!fCompiler) val.Format("%g", mat[i]);
 			pComp->Value(mkParAdapt(val, StdCompiler::RCT_Idtf));
 			if (fCompiler && pComp->hasNaming())
-				if (pComp->Seperator(StdCompiler::SEP_PART))
+				if (pComp->Separator(StdCompiler::SEP_PART))
 				{
 					StdStrBuf val2;
 					pComp->Value(mkParAdapt(val2, StdCompiler::RCT_Idtf));

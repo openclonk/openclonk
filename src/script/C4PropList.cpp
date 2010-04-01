@@ -179,7 +179,7 @@ void C4Set<T>::CompileFunc(StdCompiler *pComp)
 				break;
 			}
 		}
-		while (pComp->Seperator(StdCompiler::SEP_SEP2));
+		while (pComp->Separator(StdCompiler::SEP_SEP2));
 	}
 	else
 	{
@@ -195,7 +195,7 @@ void C4Set<T>::CompileFunc(StdCompiler *pComp)
 		{
 			pComp->Value(*const_cast<T *>(p));
 			p = Next(p);
-			if (p) pComp->Seperator(StdCompiler::SEP_SEP2);
+			if (p) pComp->Separator(StdCompiler::SEP_SEP2);
 		}
 	}
 }
@@ -212,7 +212,7 @@ void C4Property::CompileFunc(StdCompiler *pComp)
 		Key = ::Strings.RegString(s);
 		Key->IncRef();
 	}
-	pComp->Seperator(StdCompiler::SEP_SET);
+	pComp->Separator(StdCompiler::SEP_SET);
 	pComp->Value(Value);
 }
 

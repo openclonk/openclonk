@@ -1011,7 +1011,7 @@ StdStrBuf C4PlayerInfoList::GetActivePlayerNames(bool fCountInvisible, int32_t i
 				{
 					if (iCount++)
 					{
-						// not first name: Add seperator
+						// not first name: Add separator
 						sPlr.Append(", ");
 					}
 					sPlr.Append(pInfo->GetName());

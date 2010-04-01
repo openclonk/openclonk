@@ -39,11 +39,11 @@ void C4AulDebug::PackPacket(const C4NetIOPacket &rPacket, StdBuf &rOutBuf)
 
 size_t C4AulDebug::UnpackPacket(const StdBuf &rInBuf, const C4NetIO::addr_t &addr)
 {
-	// Find line seperation
+	// Find line separation
 	const char *pSep = reinterpret_cast<const char *>(memchr(rInBuf.getData(), '\n', rInBuf.getSize()));
 	if (!pSep)
 		return 0;
-	// Check if it's windows-style seperation
+	// Check if it's windows-style separation
 	int iSize = pSep - getBufPtr<char>(rInBuf) + 1,
 	            iLength = iSize - 1;
 	if (iLength && *(pSep - 1) == '\r')
