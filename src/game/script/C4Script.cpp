@@ -5822,7 +5822,7 @@ static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
 	if (pObj)
 	{
 		if (!pObj->pMeshInstance) return C4VNull;
-		attach = ctx->Obj->pMeshInstance->AttachMesh(*pObj->pMeshInstance, szParentBone->GetData(), szChildBone->GetData(), trans);
+		attach = ctx->Obj->pMeshInstance->AttachMesh(*pObj->pMeshInstance, new C4MeshDenumerator(pObj), szParentBone->GetData(), szChildBone->GetData(), trans);
 	}
 	else
 	{
@@ -5831,7 +5831,7 @@ static C4Value FnAttachMesh(C4AulContext *ctx, C4Value* pPars)
 
 		C4Def* pDef = C4Id2Def(id);
 		if (pDef->Graphics.Type != C4DefGraphics::TYPE_Mesh) return C4VNull;
-		attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, szParentBone->GetData(), szChildBone->GetData(), trans);
+		attach = ctx->Obj->pMeshInstance->AttachMesh(*pDef->Graphics.Mesh, new C4MeshDenumerator(pDef), szParentBone->GetData(), szChildBone->GetData(), trans);
 	}
 
 	if (!attach) return C4VNull;

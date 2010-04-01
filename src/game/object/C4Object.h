@@ -85,6 +85,23 @@ class C4Command;
 class C4MaterialList;
 class C4Player;
 
+// Helper struct to serialize an object's mesh instance with other object's mesh instances attached
+class C4MeshDenumerator: public StdMeshInstance::AttachedMesh::Denumerator
+{
+private:
+	C4Def* Def; // Set if a definition mesh was attached
+	C4ObjectPtr Object; // Set if an instance mesh was attached
+
+public:
+	C4MeshDenumerator(): Def(NULL), Object(NULL) {}
+	C4MeshDenumerator(C4Def* def): Def(def), Object(NULL) {}
+	C4MeshDenumerator(C4Object* object): Def(NULL), Object(object) {}
+
+	virtual void CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach);
+	virtual void EnumeratePointers(StdMeshInstance::AttachedMesh* attach);
+	virtual void DenumeratePointers(StdMeshInstance::AttachedMesh* attach);
+};
+
 class C4Action
 {
 public:

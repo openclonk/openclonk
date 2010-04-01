@@ -197,7 +197,7 @@ protected:
 	C4DefGraphics *pSourceGfx; // source graphics - used for savegame saving and comparisons in ReloadDef
 	char Action[C4MaxName+1];  // action used as overlay in source gfx
 	C4TargetFacet fctBlit; // current blit data for bitmap graphics
-	StdMeshInstance* pMeshInstance; // current blit data for mesh graphics
+	StdMeshInstance* pMeshInstance; // NoSave // - current blit data for mesh graphics 
 	uint32_t dwBlitMode;          // extra parameters for additive blits, etc.
 	uint32_t dwClrModulation;        // colormod for this overlay
 	C4ObjectPtr OverlayObj; // object to be drawn as overlay in MODE_Object

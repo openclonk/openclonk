@@ -53,6 +53,75 @@
 #include <C4Record.h>
 #include <C4MeshAnimation.h>
 
+namespace
+{
+	const StdMeshInstance::AttachedMesh::DenumeratorFactoryFunc C4MeshDenumeratorFactory = StdMeshInstance::AttachedMesh::DenumeratorFactory<C4MeshDenumerator>;
+}
+
+void C4MeshDenumerator::CompileFunc(StdCompiler* pComp, StdMeshInstance::AttachedMesh* attach)
+{
+	if(pComp->isCompiler())
+	{
+		int32_t def;
+		pComp->Value(mkNamingCountAdapt(def, "ChildInstance"));
+
+		if(def)
+		{
+			C4DefGraphics* pGfx = NULL;
+			pComp->Value(mkNamingAdapt(C4DefGraphicsAdapt(pGfx), "ChildMesh"));
+			if(pGfx->Type != C4DefGraphics::TYPE_Mesh)
+				pComp->excCorrupt("ChildMesh points to non-mesh graphics");
+			assert(!attach->Child);
+			pComp->Value(mkParAdapt(mkNamingContextPtrAdapt(attach->Child, *pGfx->Mesh, "ChildInstance"), C4MeshDenumeratorFactory));
+			attach->OwnChild = true; // Delete the newly allocated child instance when the parent instance is gone
+		}
+		else
+		{
+			pComp->Value(mkNamingAdapt(Object, "ChildObject"));
+			attach->OwnChild = false; // Keep child instance when parent instance is gone since it belongs to a different object
+		}
+	}
+	else
+	{
+		int32_t def = 0;
+		if(Def) ++def;
+		pComp->Value(mkNamingCountAdapt(def, "ChildInstance"));
+
+		if(Def)
+		{
+			assert(attach->OwnChild);
+			C4DefGraphics* pGfx = &Def->Graphics;
+			assert(pGfx->Type != C4DefGraphics::TYPE_Mesh);
+			pComp->Value(mkNamingAdapt(C4DefGraphicsAdapt(pGfx), "ChildMesh"));
+			pComp->Value(mkParAdapt(mkNamingContextPtrAdapt(attach->Child, *pGfx->Mesh, "ChildInstance"), C4MeshDenumeratorFactory));
+		}
+		else
+		{
+			assert(!attach->OwnChild);
+			pComp->Value(mkNamingAdapt(Object, "ChildObject"));
+		}
+	}
+}
+
+void C4MeshDenumerator::EnumeratePointers(StdMeshInstance::AttachedMesh* attach)
+{
+	Object.EnumeratePointers();
+}
+
+void C4MeshDenumerator::DenumeratePointers(StdMeshInstance::AttachedMesh* attach)
+{
+	Object.DenumeratePointers();
+
+	// Set child instance of attach after denumeration
+	if(Object)
+	{
+		assert(!attach->OwnChild);
+		assert(!attach->Child || attach->Child == Object->pMeshInstance);
+		if(!attach->Child)
+			attach->Child = Object->pMeshInstance;
+	}
+}
+
 void DrawVertex(C4Facet &cgo, int32_t tx, int32_t ty, int32_t col, int32_t contact)
 {
 	if (Inside<int32_t>(tx,1,cgo.Wdt-2) && Inside<int32_t>(ty,1,cgo.Hgt-2))
@@ -2708,6 +2777,24 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 	pComp->Value(mkNamingPtrAdapt( pEffects,                      "Effects"                               ));
 	pComp->Value(mkNamingAdapt( C4GraphicsOverlayListAdapt(pGfxOverlay),"GfxOverlay",   (C4GraphicsOverlay *)NULL));
 
+	// Serialize mesh instance if we have a mesh graphics
+	if(pGraphics->Type == C4DefGraphics::TYPE_Mesh)
+	{
+		if(pComp->isCompiler())
+		{
+			assert(!pMeshInstance);
+			pMeshInstance = new StdMeshInstance(*pGraphics->Mesh);
+		}
+
+		pComp->Value(mkNamingAdapt(mkParAdapt(*pMeshInstance, C4MeshDenumeratorFactory), "Mesh"));
+
+		// Does not work because unanimated meshes without attached meshes
+		// do not even write a [Mesh] header so this does not create a mesh instance in that case
+/*		pComp->Value(mkNamingContextPtrAdapt( pMeshInstance, *pGraphics->Mesh, "Mesh"));
+		if(!pMeshInstance)
+			pComp->excCorrupt("Mesh graphics without mesh instance");*/
+	}
+
 	if (PhysicalTemporary)
 	{
 		pComp->FollowName("Physical");
@@ -2766,7 +2853,11 @@ void C4Object::CompileFunc(StdCompiler *pComp)
 
 		// Set Action animation by slot 0
 		if (pMeshInstance)
+		{
 			Action.Animation = pMeshInstance->GetRootAnimationForSlot(0);
+			if ( ((ColorMod >> 24) & 0xff) != 0xff) // Sort faces if the object is transparent
+				pMeshInstance->SetFaceOrdering(StdMeshInstance::FO_NearestToFarthest);
+		}
 
 		// if on fire but no effect is present (old-style savegames), re-incinerate
 		int32_t iFireNumber;
@@ -2806,6 +2897,9 @@ void C4Object::EnumeratePointers()
 	if (pGfxOverlay)
 		for (C4GraphicsOverlay *pGfxOvrl = pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
 			pGfxOvrl->EnumeratePointers();
+
+	// mesh instance
+	if (pMeshInstance) pMeshInstance->EnumeratePointers();
 }
 
 void C4Object::DenumeratePointers()
@@ -2831,6 +2925,9 @@ void C4Object::DenumeratePointers()
 	if (pGfxOverlay)
 		for (C4GraphicsOverlay *pGfxOvrl = pGfxOverlay; pGfxOvrl; pGfxOvrl = pGfxOvrl->GetNext())
 			pGfxOvrl->DenumeratePointers();
+
+	// mesh instance
+	if (pMeshInstance) pMeshInstance->DenumeratePointers();
 }
 
 void C4Object::DrawPicture(C4Facet &cgo, bool fSelected, C4RegionList *pRegions)

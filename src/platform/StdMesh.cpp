@@ -26,6 +26,8 @@
 
 #include <algorithm>
 
+std::vector<StdMeshInstance::SerializableValueProvider::IDBase*>* StdMeshInstance::SerializableValueProvider::IDs = NULL;
+
 namespace
 {
 	// Helper to sort faces for FaceOrdering
@@ -61,6 +63,86 @@ namespace
 			}
 		}
 	};
+
+	// Seralize a ValueProvider with StdCompiler
+	struct ValueProviderAdapt
+	{
+		ValueProviderAdapt(StdMeshInstance::ValueProvider** Provider):
+				ValueProvider(Provider) {}
+
+		StdMeshInstance::ValueProvider** ValueProvider;
+
+		void CompileFunc(StdCompiler* pComp)
+		{
+			const StdMeshInstance::SerializableValueProvider::IDBase* id;
+			StdMeshInstance::SerializableValueProvider* svp = NULL;
+
+			if(pComp->isCompiler())
+			{
+				StdCopyStrBuf id_str;
+				pComp->Value(mkParAdapt(id_str, StdCompiler::RCT_Idtf));
+
+				id = StdMeshInstance::SerializableValueProvider::Lookup(id_str.getData());
+				if(!id) pComp->excCorrupt("No value provider for ID \"%s\"", id_str.getData());
+			}
+			else
+			{
+				svp = dynamic_cast<StdMeshInstance::SerializableValueProvider*>(*ValueProvider);
+				if(!svp) pComp->excCorrupt("Value provider cannot be compiled");
+				id = StdMeshInstance::SerializableValueProvider::Lookup(typeid(*svp));
+				if(!id) pComp->excCorrupt("No ID for value provider registered");
+
+				StdCopyStrBuf id_str(id->name);
+				pComp->Value(mkParAdapt(id_str, StdCompiler::RCT_Idtf));
+			}
+
+			pComp->Seperator(StdCompiler::SEP_START);
+			pComp->Value(mkContextPtrAdapt(svp, *id, false));
+			pComp->Seperator(StdCompiler::SEP_END);
+
+			if(pComp->isCompiler())
+				*ValueProvider = svp;
+		}
+	};
+	
+	ValueProviderAdapt mkValueProviderAdapt(StdMeshInstance::ValueProvider** ValueProvider) { return ValueProviderAdapt(ValueProvider); }
+
+	// Serialize a bone index by name with StdCompiler
+	struct TransformAdapt
+	{
+		StdMeshMatrix& Matrix;
+		TransformAdapt(StdMeshMatrix& matrix): Matrix(matrix) {}
+
+		void CompileFunc(StdCompiler* pComp)
+		{
+			pComp->Seperator(StdCompiler::SEP_START);
+			for(unsigned int i = 0; i < 3; ++i)
+			{
+				for(unsigned int j = 0; j < 4; ++j)
+				{
+					if(i != 0 || j != 0) pComp->Seperator();
+					// TODO: Teach StdCompiler how to handle float
+//					pComp->Value(Matrix(i, j));
+					
+					if(pComp->isCompiler())
+					{
+						FIXED f;
+						pComp->Value(f);
+						Matrix(i,j) = fixtof(f);
+					}
+					else
+					{
+						FIXED f = ftofix(Matrix(i,j));
+						pComp->Value(f);
+					}
+				}
+			}
+
+			pComp->Seperator(StdCompiler::SEP_END);
+		}
+	};
+	
+	TransformAdapt mkTransformAdapt(StdMeshMatrix& Matrix) { return TransformAdapt(Matrix); }
 
 	// Reset all animation list entries corresponding to node or its children
 	void ClearAnimationListRecursively(std::vector<StdMeshInstance::AnimationNode*>& list, StdMeshInstance::AnimationNode* node)
@@ -832,6 +914,18 @@ void StdSubMeshInstance::SetMaterial(const StdMeshMaterial& material)
 	}
 }
 
+void StdMeshInstance::SerializableValueProvider::CompileFunc(StdCompiler* pComp)
+{
+	pComp->Value(Value);
+}
+
+StdMeshInstance::AnimationNode::AnimationNode():
+		Type(LeafNode), Parent(NULL)
+{
+	Leaf.Animation = NULL;
+	Leaf.Position = NULL;
+}
+
 StdMeshInstance::AnimationNode::AnimationNode(const StdMeshAnimation* animation, ValueProvider* position):
 		Type(LeafNode), Parent(NULL)
 {
@@ -889,9 +983,97 @@ bool StdMeshInstance::AnimationNode::GetBoneTransform(unsigned int bone, StdMesh
 	}
 }
 
-StdMeshInstance::AttachedMesh::AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child,
-    unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform):
-		Number(number), Parent(parent), Child(child), OwnChild(own_child),
+void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMesh* Mesh)
+{
+	static const StdEnumEntry<NodeType> NodeTypes[] =
+	{
+		{ "Leaf",                  LeafNode                      },
+		{ "LinearInterpolation",   LinearInterpolationNode       },
+
+		{ NULL,     static_cast<NodeType>(0)  }
+	};
+
+	pComp->Value(mkNamingAdapt(Slot, "Slot"));
+	pComp->Value(mkNamingAdapt(Number, "Number"));
+	pComp->Value(mkNamingAdapt(mkEnumAdapt(Type, NodeTypes), "Type"));
+
+	switch(Type)
+	{
+	case LeafNode:
+		if(pComp->isCompiler())
+		{
+			StdCopyStrBuf anim_name;
+			pComp->Value(mkNamingAdapt(toC4CStrBuf(anim_name), "Animation"));
+			Leaf.Animation = Mesh->GetAnimationByName(anim_name);
+			if(!Leaf.Animation) pComp->excCorrupt("No such animation: \"%s\"", anim_name.getData());
+		}
+		else
+		{
+			pComp->Value(mkNamingAdapt(mkParAdapt(mkDecompileAdapt(Leaf.Animation->Name), StdCompiler::RCT_All), "Animation"));
+		}
+
+		pComp->Value(mkNamingAdapt(mkValueProviderAdapt(&Leaf.Position), "Position"));
+		break;
+	case LinearInterpolationNode:
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(LinearInterpolation.ChildLeft, "ChildLeft"), Mesh));
+		pComp->Value(mkParAdapt(mkNamingPtrAdapt(LinearInterpolation.ChildRight, "ChildRight"), Mesh));
+		pComp->Value(mkNamingAdapt(mkValueProviderAdapt(&LinearInterpolation.Weight), "Weight"));
+		if(pComp->isCompiler())
+		{
+			if(LinearInterpolation.ChildLeft->Slot != Slot)
+				pComp->excCorrupt("Slot of left child does not match parent slot");
+			if(LinearInterpolation.ChildRight->Slot != Slot)
+				pComp->excCorrupt("Slof of right child does not match parent slot");
+			LinearInterpolation.ChildRight->Parent = this;
+			LinearInterpolation.ChildRight->Parent = this;
+		}
+		break;
+	default:
+		pComp->excCorrupt("Invalid animation node type");
+		break;
+	}
+}
+
+void StdMeshInstance::AnimationNode::EnumeratePointers()
+{
+	SerializableValueProvider* value_provider = NULL;
+	switch(Type)
+	{
+	case LeafNode:
+		value_provider = dynamic_cast<SerializableValueProvider*>(Leaf.Position);
+		break;
+	case LinearInterpolationNode:
+		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
+		break;
+	}
+
+	if(value_provider) value_provider->EnumeratePointers();
+}
+
+void StdMeshInstance::AnimationNode::DenumeratePointers()
+{
+	SerializableValueProvider* value_provider = NULL;
+	switch(Type)
+	{
+	case LeafNode:
+		value_provider = dynamic_cast<SerializableValueProvider*>(Leaf.Position);
+		break;
+	case LinearInterpolationNode:
+		value_provider = dynamic_cast<SerializableValueProvider*>(LinearInterpolation.Weight);
+		break;
+	}
+
+	if(value_provider) value_provider->DenumeratePointers();
+}
+
+StdMeshInstance::AttachedMesh::AttachedMesh():
+	Number(0), Parent(NULL), Child(NULL), OwnChild(true), ChildDenumerator(NULL), ParentBone(0), ChildBone(0), FinalTransformDirty(false)
+{
+}
+
+StdMeshInstance::AttachedMesh::AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child, Denumerator* denumerator,
+		unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform):
+		Number(number), Parent(parent), Child(child), OwnChild(own_child), ChildDenumerator(denumerator),
 		ParentBone(parent_bone), ChildBone(child_bone), AttachTrans(transform),
 		FinalTransformDirty(true)
 {
@@ -901,6 +1083,7 @@ StdMeshInstance::AttachedMesh::~AttachedMesh()
 {
 	if (OwnChild)
 		delete Child;
+	delete ChildDenumerator;
 }
 
 bool StdMeshInstance::AttachedMesh::SetParentBone(const StdStrBuf& bone)
@@ -927,6 +1110,32 @@ void StdMeshInstance::AttachedMesh::SetAttachTransformation(const StdMeshMatrix&
 {
 	AttachTrans = transformation;
 	FinalTransformDirty = true;
+}
+
+void StdMeshInstance::AttachedMesh::CompileFunc(StdCompiler* pComp, DenumeratorFactoryFunc Factory)
+{
+	if(pComp->isCompiler())
+	{
+		FinalTransformDirty = true;
+		ChildDenumerator = Factory();
+	}
+
+	pComp->Value(mkNamingAdapt(Number, "Number"));
+	pComp->Value(mkNamingAdapt(ParentBone, "ParentBone")); // TODO: Save as string
+	pComp->Value(mkNamingAdapt(ChildBone, "ChildBone")); // TODO: Save as string (note we can only resolve this in DenumeratePointers then!)
+	pComp->Value(mkNamingAdapt(mkTransformAdapt(AttachTrans), "AttachTransformation"));
+
+	pComp->Value(mkParAdapt(*ChildDenumerator, this));
+}
+
+void StdMeshInstance::AttachedMesh::EnumeratePointers()
+{
+	ChildDenumerator->EnumeratePointers(this);
+}
+
+void StdMeshInstance::AttachedMesh::DenumeratePointers()
+{
+	ChildDenumerator->DenumeratePointers(this);
 }
 
 StdMeshInstance::StdMeshInstance(const StdMesh& mesh):
@@ -1198,17 +1407,19 @@ void StdMeshInstance::ExecuteAnimation(float dt)
 		(*iter)->Child->ExecuteAnimation(dt);
 }
 
-StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation)
+StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(const StdMesh& mesh, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation)
 {
 	StdMeshInstance* instance = new StdMeshInstance(mesh);
 	instance->SetFaceOrdering(CurrentFaceOrdering);
-	AttachedMesh* attach = AttachMesh(*instance, parent_bone, child_bone, transformation, true);
-	if (!attach) { delete instance; return NULL; }
+	AttachedMesh* attach = AttachMesh(*instance, denumerator, parent_bone, child_bone, transformation, true);
+	if (!attach) { delete instance; delete denumerator; return NULL; }
 	return attach;
 }
 
-StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& instance, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, bool own_child)
+StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& instance, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation, bool own_child)
 {
+	std::auto_ptr<AttachedMesh::Denumerator> auto_denumerator(denumerator);
+
 	// We don't allow an instance to be attached to multiple parent instances for now
 	if (instance.AttachParent) return NULL;
 
@@ -1230,7 +1441,7 @@ StdMeshInstance::AttachedMesh* StdMeshInstance::AttachMesh(StdMeshInstance& inst
 	if (!parent_bone_obj || !child_bone_obj) return NULL;
 
 	// TODO: Face Ordering is not lined up... can't do that properly here
-	attach = new AttachedMesh(number, this, &instance, own_child, parent_bone_obj->Index, child_bone_obj->Index, transformation);
+	attach = new AttachedMesh(number, this, &instance, own_child, auto_denumerator.release(), parent_bone_obj->Index, child_bone_obj->Index, transformation);
 	instance.AttachParent = attach;
 	AttachChildren.push_back(attach);
 
@@ -1375,6 +1586,94 @@ void StdMeshInstance::UpdateBoneTransforms()
 	}
 
 	BoneTransformsDirty = false;
+}
+
+void StdMeshInstance::CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory)
+{
+	if(pComp->isCompiler())
+	{
+		// Only initially created instances can be compiled
+		assert(!AttachParent);
+		assert(AttachChildren.empty());
+		assert(AnimationStack.empty());
+		BoneTransformsDirty = true;
+
+		int32_t iAnimCnt = AnimationStack.size();
+		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
+
+		for(int32_t i = 0; i < iAnimCnt; ++i)
+		{
+			AnimationNode* node = NULL;
+			pComp->Value(mkParAdapt(mkNamingPtrAdapt(node, "AnimationNode"), &Mesh));
+			AnimationNodeList::iterator iter = GetStackIterForSlot(node->Slot, true);
+			if(*iter != NULL) { delete node; pComp->excCorrupt("Duplicate animation slot index"); }
+			*iter = node;
+
+			// Add nodes into lookup table
+			std::vector<AnimationNode*> nodes(1, node);
+			while(!nodes.empty())
+			{
+				node = nodes.back();
+				nodes.erase(nodes.end()-1);
+
+				AnimationNodes.resize(node->Number+1);
+				if(AnimationNodes[node->Number] != NULL) pComp->excCorrupt("Duplicate animation node number");
+				AnimationNodes[node->Number] = node;
+
+				if(node->Type == AnimationNode::LinearInterpolationNode)
+				{
+					nodes.push_back(node->LinearInterpolation.ChildLeft);
+					nodes.push_back(node->LinearInterpolation.ChildRight);
+				}
+			}
+		}
+
+		int32_t iAttachedCnt;
+		pComp->Value(mkNamingCountAdapt(iAttachedCnt, "Attached"));
+
+		for(int32_t i = 0; i < iAttachedCnt; ++i)
+		{
+			AttachChildren.push_back(new AttachedMesh);
+			AttachedMesh* attach = AttachChildren.back();
+
+			attach->Parent = this;
+			pComp->Value(mkNamingAdapt(mkParAdapt(*attach, Factory), "Attached"));
+		}
+	}
+	else
+	{
+		int32_t iAnimCnt = AnimationStack.size();
+		pComp->Value(mkNamingCountAdapt(iAnimCnt, "AnimationNode"));
+
+		for(AnimationNodeList::iterator iter = AnimationStack.begin(); iter != AnimationStack.end(); ++iter)
+			pComp->Value(mkParAdapt(mkNamingPtrAdapt(*iter, "AnimationNode"), &Mesh));
+
+		int32_t iAttachedCnt = AttachChildren.size();
+		pComp->Value(mkNamingCountAdapt(iAttachedCnt, "Attached"));
+		
+		for(unsigned int i = 0; i < AttachChildren.size(); ++i)
+			pComp->Value(mkNamingAdapt(mkParAdapt(*AttachChildren[i], Factory), "Attached"));
+	}
+}
+
+void StdMeshInstance::EnumeratePointers()
+{
+	for(unsigned int i = 0; i < AnimationNodes.size(); ++i)
+		if(AnimationNodes[i])
+			AnimationNodes[i]->EnumeratePointers();
+
+	for(unsigned int i = 0; i < AttachChildren.size(); ++i)
+		AttachChildren[i]->EnumeratePointers();
+}
+
+void StdMeshInstance::DenumeratePointers()
+{
+	for(unsigned int i = 0; i < AnimationNodes.size(); ++i)
+		if(AnimationNodes[i])
+			AnimationNodes[i]->DenumeratePointers();
+
+	for(unsigned int i = 0; i < AttachChildren.size(); ++i)
+		AttachChildren[i]->DenumeratePointers();
 }
 
 StdMeshInstance::AnimationNodeList::iterator StdMeshInstance::GetStackIterForSlot(int slot, bool create)

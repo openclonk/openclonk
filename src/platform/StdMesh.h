@@ -21,6 +21,8 @@
 
 #include <StdMeshMaterial.h>
 
+class StdCompiler;
+
 // OGRE mesh
 
 struct StdMeshVector
@@ -370,6 +372,71 @@ public:
 		FIXED Value; // Current provider value
 	};
 
+	// Serializable value providers need to be registered with SerializeableValueProvider::Register.
+	// They also need to implement a default constructor and a compile func
+	class SerializableValueProvider: public ValueProvider
+	{
+	public:
+		struct IDBase;
+
+	private:
+		// Pointer for deterministic initialization
+		static std::vector<IDBase*>* IDs;
+
+	public:
+		struct IDBase
+		{
+			typedef SerializableValueProvider*(*NewFunc)();
+		protected:
+			IDBase(const char* name, const std::type_info& type, NewFunc newfunc):
+				name(name), type(type), newfunc(newfunc)
+			{
+				if(!IDs) IDs = new std::vector<IDBase*>;
+				IDs->push_back(this);
+			}
+
+		public:
+			const char* name;
+			const std::type_info& type;
+			NewFunc newfunc;
+		};
+
+		
+
+		template<typename T>
+		struct ID: IDBase
+		{
+		private:
+			static SerializableValueProvider* CreateFunc() { return new T; }
+
+		public:
+			ID(const char* name):
+				IDBase(name, typeid(T), CreateFunc) {}
+		};
+
+		static const IDBase* Lookup(const char* name)
+		{
+			if(!IDs) return NULL;
+			for(unsigned int i = 0; i < IDs->size(); ++i)
+				if(strcmp((*IDs)[i]->name, name) == 0)
+					return (*IDs)[i];
+			return NULL;
+		}
+
+		static const IDBase* Lookup(const std::type_info& type)
+		{
+			if(!IDs) return NULL;
+			for(unsigned int i = 0; i < IDs->size(); ++i)
+				if((*IDs)[i]->type == type)
+					return (*IDs)[i];
+			return NULL;
+		}
+
+		virtual void CompileFunc(StdCompiler* pComp);
+		virtual void EnumeratePointers() {}
+		virtual void DenumeratePointers() {}
+	};
+
 	// A node in the animation tree
 	// Can be either a leaf node, or interpolation between two other nodes
 	class AnimationNode
@@ -378,6 +445,7 @@ public:
 	public:
 		enum NodeType { LeafNode, LinearInterpolationNode };
 
+		AnimationNode();
 		AnimationNode(const StdMeshAnimation* animation, ValueProvider* position);
 		AnimationNode(AnimationNode* child_left, AnimationNode* child_right, ValueProvider* weight);
 		~AnimationNode();
@@ -398,11 +466,15 @@ public:
 		ValueProvider* GetWeightProvider() { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight; }
 		FIXED GetWeight() const { assert(Type == LinearInterpolationNode); return LinearInterpolation.Weight->Value; }
 
+		void CompileFunc(StdCompiler* pComp, const StdMesh* Mesh);
+		void EnumeratePointers();
+		void DenumeratePointers();
+
 	protected:
 		int Slot;
 		unsigned int Number;
 		NodeType Type;
-		AnimationNode* Parent;
+		AnimationNode* Parent; // NoSave
 
 		union
 		{
@@ -441,19 +513,41 @@ public:
 	{
 		friend class StdMeshInstance;
 	public:
-		AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child,
+		// The job of this class is to help serialize the Child and OwnChild members of AttachedMesh
+		class Denumerator
+		{
+		public:
+			virtual ~Denumerator() {}
+
+			virtual void CompileFunc(StdCompiler* pComp, AttachedMesh* attach) = 0;
+			virtual void EnumeratePointers(AttachedMesh* attach) {}
+			virtual void DenumeratePointers(AttachedMesh* attach) {}
+		};
+
+		typedef Denumerator*(*DenumeratorFactoryFunc)();
+
+		template<typename T>
+		static Denumerator* DenumeratorFactory() { return new T; }
+
+		AttachedMesh();
+		AttachedMesh(unsigned int number, StdMeshInstance* parent, StdMeshInstance* child, bool own_child, Denumerator* denumerator,
 		             unsigned int parent_bone, unsigned int child_bone, const StdMeshMatrix& transform);
 		~AttachedMesh();
 
-		const unsigned int Number;
-		StdMeshInstance* const Parent;
-		StdMeshInstance* const Child;
-		const bool OwnChild; // Whether to delete child on destruction
+		uint32_t Number;
+		StdMeshInstance* Parent; // NoSave (set by parent)
+		StdMeshInstance* Child;
+		bool OwnChild; // NoSave
+		Denumerator* ChildDenumerator;
 
 		bool SetParentBone(const StdStrBuf& bone);
 		bool SetChildBone(const StdStrBuf& bone);
 		void SetAttachTransformation(const StdMeshMatrix& transformation);
 		const StdMeshMatrix& GetFinalTransformation() const { return FinalTrans; }
+
+		void CompileFunc(StdCompiler* pComp, DenumeratorFactoryFunc Factory);
+		void EnumeratePointers();
+		void DenumeratePointers();
 
 	private:
 		unsigned int ParentBone;
@@ -461,17 +555,17 @@ public:
 		StdMeshMatrix AttachTrans;
 
 		// Cache final attach transformation, updated in UpdateBoneTransform
-		StdMeshMatrix FinalTrans;
-		bool FinalTransformDirty; // Whether FinalTrans is up to date or not
+		StdMeshMatrix FinalTrans; // NoSave
+		bool FinalTransformDirty; // NoSave; Whether FinalTrans is up to date or not
 	};
 
 	typedef std::vector<AttachedMesh*> AttachedMeshList;
 	typedef AttachedMeshList::const_iterator AttachedMeshIter;
 
-	// Create a new instance and attach it to this mesh.
-	AttachedMesh* AttachMesh(const StdMesh& mesh, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity());
-	// Attach an instance to this instance. If own_child is true then take ownership of instance, deleting it when the mesh is detached.
-	AttachedMesh* AttachMesh(StdMeshInstance& instance, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity(), bool own_child = false);
+	// Create a new instance and attach it to this mesh. Takes ownership of denumerator
+	AttachedMesh* AttachMesh(const StdMesh& mesh, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity());
+	// Attach an instance to this instance. Takes ownership of denumerator. If own_child is true deletes instance on detach.
+	AttachedMesh* AttachMesh(StdMeshInstance& instance, AttachedMesh::Denumerator* denumerator, const StdStrBuf& parent_bone, const StdStrBuf& child_bone, const StdMeshMatrix& transformation = StdMeshMatrix::Identity(), bool own_child = false);
 	// Removes attachment with given number
 	bool DetachMesh(unsigned int number);
 	// Returns attached mesh with given number
@@ -492,6 +586,10 @@ public:
 	// This is called recursively for attached children, so there is no need to call it on attached children only
 	// which would also not update its attach transformation. Call this once before rendering.
 	void UpdateBoneTransforms();
+
+	void CompileFunc(StdCompiler* pComp, AttachedMesh::DenumeratorFactoryFunc Factory);
+	void EnumeratePointers();
+	void DenumeratePointers();
 
 	const StdMesh& Mesh;
 
@@ -520,5 +618,12 @@ private:
 	StdMeshInstance(const StdMeshInstance& other); // noncopyable
 	StdMeshInstance& operator=(const StdMeshInstance& other); // noncopyable
 };
+
+inline void CompileNewFuncCtx(StdMeshInstance::SerializableValueProvider *&pStruct, StdCompiler *pComp, const StdMeshInstance::SerializableValueProvider::IDBase& rID)
+{
+	std::auto_ptr<StdMeshInstance::SerializableValueProvider> temp(rID.newfunc());
+	pComp->Value(*temp);
+	pStruct = temp.release();
+}
 
 #endif

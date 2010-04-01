@@ -22,6 +22,25 @@
 #include "C4ValueList.h"
 #include "C4Game.h"
 
+namespace
+{
+	// Register value providers for serialization
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderConst> C4ValueProviderConstID("const");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderLinear> C4ValueProviderLinearID("linear");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderX> C4ValueProviderXID("x"); 
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderY> C4ValueProviderYID("y");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAbsX> C4ValueProviderAbsXID("absx");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAbsY> C4ValueProviderAbsYID("absy");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderXDir> C4ValueProviderXDirID("xdir"); 
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderYDir> C4ValueProviderYDirID("ydir"); 
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderRDir> C4ValueProviderRDirID("rdir");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderCosR> C4ValueProviderCosRID("cosr");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderSinR> C4ValueProviderSinRID("sinr");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderCosV> C4ValueProviderCosVID("cosv");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderSinV> C4ValueProviderSinVID("sinv");
+	const StdMeshInstance::SerializableValueProvider::ID<C4ValueProviderAction> C4ValueProviderActionID("action");
+}
+
 StdMeshInstance::ValueProvider* CreateValueProviderFromArray(C4Object* pForObj, C4ValueArray& Data)
 {
 	int32_t type = Data[0].getInt();
@@ -114,7 +133,31 @@ bool C4ValueProviderLinear::Execute()
 	return true;
 }
 
-C4ValueProviderX::C4ValueProviderX(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
+void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
+{
+	const StdEnumEntry<C4AnimationEnding> Endings[] =
+	{
+		{ "Loop",   ANIM_Loop                          },
+		{ "Hold",   ANIM_Hold                          },
+		{ "Remove", ANIM_Remove                        },
+
+		{ NULL,     static_cast<C4AnimationEnding>(0)  }
+	};
+
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Length);
+	pComp->Seperator();
+	pComp->Value(mkEnumAdapt(Ending, Endings));
+	pComp->Seperator();
+	pComp->Value(LastTick);
+}
+
+C4ValueProviderX::C4ValueProviderX(C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
 		Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
 {
 	Value = pos;
@@ -144,7 +187,22 @@ bool C4ValueProviderX::Execute()
 	return true;
 }
 
-C4ValueProviderY::C4ValueProviderY(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
+void C4ValueProviderX::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Length);
+	pComp->Seperator();
+	pComp->Value(LastX);
+}
+
+C4ValueProviderY::C4ValueProviderY(C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
 		Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
 {
 	Value = pos;
@@ -174,7 +232,22 @@ bool C4ValueProviderY::Execute()
 	return true;
 }
 
-C4ValueProviderAbsX::C4ValueProviderAbsX(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
+void C4ValueProviderY::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Length);
+	pComp->Seperator();
+	pComp->Value(LastY);
+}
+
+C4ValueProviderAbsX::C4ValueProviderAbsX(C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
 		Object(object), Begin(begin), End(end), Length(length), LastX(object->fix_x)
 {
 	Value = pos;
@@ -192,7 +265,22 @@ bool C4ValueProviderAbsX::Execute()
 	return true;
 }
 
-C4ValueProviderAbsY::C4ValueProviderAbsY(const C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
+void C4ValueProviderAbsX::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Length);
+	pComp->Seperator();
+	pComp->Value(LastX);
+}
+
+C4ValueProviderAbsY::C4ValueProviderAbsY(C4Object* object, FIXED pos, FIXED begin, FIXED end, int32_t length):
 		Object(object), Begin(begin), End(end), Length(length), LastY(object->fix_y)
 {
 	Value = pos;
@@ -210,12 +298,26 @@ bool C4ValueProviderAbsY::Execute()
 	return true;
 }
 
-C4ValueProviderXDir::C4ValueProviderXDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_xdir):
+void C4ValueProviderAbsY::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Length);
+	pComp->Seperator();
+	pComp->Value(LastY);
+}
+
+C4ValueProviderXDir::C4ValueProviderXDir(C4Object* object, FIXED begin, FIXED end, FIXED max_xdir):
 		Object(object), Begin(begin), End(end), MaxXDir(max_xdir)
 {
 	Execute();
 }
-
 
 bool C4ValueProviderXDir::Execute()
 {
@@ -223,7 +325,20 @@ bool C4ValueProviderXDir::Execute()
 	return true;
 }
 
-C4ValueProviderYDir::C4ValueProviderYDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_ydir):
+void C4ValueProviderXDir::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(MaxXDir);
+}
+
+C4ValueProviderYDir::C4ValueProviderYDir(C4Object* object, FIXED begin, FIXED end, FIXED max_ydir):
 		Object(object), Begin(begin), End(end), MaxYDir(max_ydir)
 {
 	Execute();
@@ -235,7 +350,20 @@ bool C4ValueProviderYDir::Execute()
 	return true;
 }
 
-C4ValueProviderRDir::C4ValueProviderRDir(const C4Object* object, FIXED begin, FIXED end, FIXED max_rdir):
+void C4ValueProviderYDir::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(MaxYDir);
+}
+
+C4ValueProviderRDir::C4ValueProviderRDir(C4Object* object, FIXED begin, FIXED end, FIXED max_rdir):
 		Object(object), Begin(begin), End(end), MaxRDir(max_rdir)
 {
 	Execute();
@@ -247,7 +375,20 @@ bool C4ValueProviderRDir::Execute()
 	return true;
 }
 
-C4ValueProviderCosR::C4ValueProviderCosR(const C4Object* object, FIXED begin, FIXED end, FIXED offset):
+void C4ValueProviderRDir::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(MaxRDir);
+}
+
+C4ValueProviderCosR::C4ValueProviderCosR(C4Object* object, FIXED begin, FIXED end, FIXED offset):
 		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
@@ -259,7 +400,20 @@ bool C4ValueProviderCosR::Execute()
 	return true;
 }
 
-C4ValueProviderSinR::C4ValueProviderSinR(const C4Object* object, FIXED begin, FIXED end, FIXED offset):
+void C4ValueProviderCosR::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Offset);
+}
+
+C4ValueProviderSinR::C4ValueProviderSinR(C4Object* object, FIXED begin, FIXED end, FIXED offset):
 		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
@@ -271,7 +425,20 @@ bool C4ValueProviderSinR::Execute()
 	return true;
 }
 
-C4ValueProviderCosV::C4ValueProviderCosV(const C4Object* object, FIXED begin, FIXED end, FIXED offset):
+void C4ValueProviderSinR::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Offset);
+}
+
+C4ValueProviderCosV::C4ValueProviderCosV(C4Object* object, FIXED begin, FIXED end, FIXED offset):
 		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
@@ -287,7 +454,20 @@ bool C4ValueProviderCosV::Execute()
 	return true;
 }
 
-C4ValueProviderSinV::C4ValueProviderSinV(const C4Object* object, FIXED begin, FIXED end, FIXED offset):
+void C4ValueProviderCosV::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Offset);
+}
+
+C4ValueProviderSinV::C4ValueProviderSinV(C4Object* object, FIXED begin, FIXED end, FIXED offset):
 		Object(object), Begin(begin), End(end), Offset(offset)
 {
 	Execute();
@@ -301,6 +481,19 @@ bool C4ValueProviderSinV::Execute()
 	int angle = Angle(0, 0, fixtoi(Object->xdir, 256), fixtoi(Object->ydir, 256));
 	Value = Begin + (End - Begin) * Sin(itofix(angle) + Offset);
 	return true;
+}
+
+void C4ValueProviderSinV::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
+	pComp->Seperator();
+	pComp->Value(Begin);
+	pComp->Seperator();
+	pComp->Value(End);
+	pComp->Seperator();
+	pComp->Value(Offset);
 }
 
 C4ValueProviderAction::C4ValueProviderAction(C4Object* object):
@@ -324,4 +517,11 @@ bool C4ValueProviderAction::Execute()
 		Value = itofix(Action.Phase) / length * ftofix(animation->Length);
 
 	return true;
+}
+
+void C4ValueProviderAction::CompileFunc(StdCompiler* pComp)
+{
+	SerializableValueProvider::CompileFunc(pComp);
+	pComp->Seperator();
+	pComp->Value(Object);
 }
