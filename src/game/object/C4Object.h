@@ -319,6 +319,8 @@ public:
 	inline int32_t Height() { return Shape.Hgt+addtop(); } // height of shape (+build-top)
 	inline int32_t GetX() { return fixtoi(fix_x); }
 	inline int32_t GetY() { return fixtoi(fix_y); }
+	inline FIXED GetFixedX() { return fix_x; }
+	inline FIXED GetFixedY() { return fix_y; }
 	BYTE GetEntranceArea(int32_t &aX, int32_t &aY, int32_t &aWdt, int32_t &aHgt);
 	BYTE GetMomentum(FIXED &rxdir, FIXED &rydir);
 	FIXED GetSpeed();

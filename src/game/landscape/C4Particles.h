@@ -54,16 +54,16 @@ typedef void (*C4ParticleDrawProc)(C4Particle *, C4TargetFacet &, C4Object *); /
 #define ParticleSystem ::Particles
 
 const int
-C4Px_MaxParticle = 256,     // maximum number of particles of one type
-                   C4Px_BufSize = 128,     // number of particles in one buffer
-                                  C4Px_MaxIDLen = 30;     // maximum length of internal identifiers
+C4Px_MaxParticle = 256, // maximum number of particles of one type
+C4Px_BufSize = 128,     // number of particles in one buffer
+C4Px_MaxIDLen = 30;     // maximum length of internal identifiers
 
 // core for particle defs
 class C4ParticleDefCore
 {
 public:
-	StdStrBuf Name;   // name
-	C4TargetRect GfxFace;         // target rect for graphics; used because stup
+	StdStrBuf Name;                   // name
+	C4TargetRect GfxFace;             // target rect for graphics; used because stup
 	int32_t MaxCount;                 // maximum number of particles that may coexist of this type
 	int32_t MinLifetime, MaxLifetime; // used by exec proc; number of frames this particle can exist
 	int32_t YOff;                     // Y-Offset for Std-particles
@@ -89,9 +89,9 @@ public:
 	StdStrBuf CollisionFn;  // proc to be called upon collision with the landscape; may be left out
 
 	C4ParticleDefCore();          // ctor
-	void CompileFunc(StdCompiler * pComp);
+	void CompileFunc(StdCompiler * compiler);
 
-	bool Compile(char *szSource, const char *szName); // compile from def file
+	bool Compile(char *particle_source, const char *name); // compile from def file
 };
 
 // one particle definition
@@ -105,7 +105,7 @@ public:
 	C4FacetSurface Gfx;               // graphics
 	int32_t Length;                   // number of phases in gfx
 	int32_t PhasesX;                  // number of phases per line in gfx
-	float Aspect;                 // height:width
+	float Aspect;                     // height:width
 
 	C4ParticleInitProc InitProc;  // procedure called once upon creation of the particle
 	C4ParticleExecProc ExecProc;  // procedure used for execution of one particle
@@ -119,7 +119,7 @@ public:
 
 	void Clear();             // free mem associated with this class
 
-	bool Load(C4Group &rGrp);   // load particle from group; assume file to be accessed already
+	bool Load(C4Group &group);   // load particle from group; assume file to be accessed already
 	bool Reload();              // reload particle from stored position
 };
 
@@ -131,11 +131,11 @@ class C4Particle
 protected:
 	C4Particle *pPrev,*pNext; // previous/next particle of the same list in the buffer
 
-	void MoveList(C4ParticleList &rFrom, C4ParticleList &rTo); // move from one list to another
+	void MoveList(C4ParticleList &from, C4ParticleList &to); // move from one list to another
 
 public:
-	C4ParticleDef *pDef;    // kind of particle
-	float x,y,xdir,ydir;    // position and movement
+	C4ParticleDef *pDef;        // kind of particle
+	float x,y,xdir,ydir;        // position and movement
 	int32_t life;               // lifetime remaining for this particle
 	float a; int32_t b;         // all-purpose values
 
@@ -152,14 +152,14 @@ protected:
 	C4ParticleChunk *pNext;           // single linked list
 	C4Particle Data[C4Px_BufSize];    // the particles
 
-	int32_t iNumFree;     // number of free particles
+	int32_t NumFree;                 // number of free particles
 
 public:
 	C4ParticleChunk();        // ctor
 	~C4ParticleChunk();       // dtor
 
-	C4Particle *Create(C4ParticleDef *pOfDef); // get a particle from this chunk
-	void Destroy(C4Particle *pPrt);   // remove particle from this chunk
+	C4Particle *Create(C4ParticleDef *of_def); // get a particle from this chunk
+	void Destroy(C4Particle *particle);   // remove particle from this chunk
 
 	void Clear();             // clear all particles
 
@@ -172,12 +172,12 @@ class C4ParticleList
 public:
 	C4Particle *pFirst; // first particle in list - others follow in linked list
 
-	C4ParticleList() { pFirst=NULL; } // ctor
+	C4ParticleList() { pFirst = NULL; } // ctor
 
-	void Exec(C4Object *pObj=NULL);                  // execute all particles
-	void Draw(C4TargetFacet &cgo, C4Object *pObj=NULL);  // draw all particles
+	void Exec(C4Object *object = NULL);                  // execute all particles
+	void Draw(C4TargetFacet &cgo, C4Object *object = NULL);  // draw all particles
 	void Clear();                                    // remove all particles
-	int32_t Remove(C4ParticleDef *pOfDef);               // remove all particles of def
+	int32_t Remove(C4ParticleDef *of_def);               // remove all particles of def
 
 	operator bool() { return !!pFirst; } // checks whether list contains particles
 };
@@ -192,8 +192,8 @@ protected:
 	C4ParticleChunk *AddChunk();  // add a new chunk to the list
 	void PruneChunks();           // check if all chunks are needed; remove unused
 
-	C4ParticleProc GetProc(const char *szName);         // get init/exec proc for a particle type
-	C4ParticleDrawProc GetDrawProc(const char *szName); // get draw proc for a particle type
+	C4ParticleProc GetProc(const char *name);         // get init/exec proc for a particle type
+	C4ParticleDrawProc GetDrawProc(const char *name); // get draw proc for a particle type
 
 public:
 	C4ParticleList FreeParticles; // list of free particles
@@ -201,7 +201,7 @@ public:
 
 	C4ParticleDef *pSmoke;      // default particle: smoke
 	C4ParticleDef *pBlast;      // default particle: blast
-	C4ParticleDef *pFSpark;     // default particle: firy spark
+	C4ParticleDef *pFSpark;     // default particle: fiery spark
 	C4ParticleDef *pFire1;      // default particle: fire base
 	C4ParticleDef *pFire2;      // default particle: fire additive
 
@@ -211,19 +211,19 @@ public:
 	void ClearParticles();    // remove all particles
 	void Clear();             // remove all particle definitions and particles
 
-	C4Particle *Create(C4ParticleDef *pOfDef, // create one particle of given type
+	C4Particle *Create(C4ParticleDef *of_def, // create one particle of given type
 	                   float x, float y, float xdir=0.0f, float ydir=0.0f,
-	                   float a=0.0f, int32_t b=0, C4ParticleList *pPxList=NULL, C4Object *pObj=NULL);
-	bool Cast(C4ParticleDef *pOfDef, // create several particles with different speeds and params
-	          int32_t iAmount,
+	                   float a=0.0f, int32_t b=0, C4ParticleList *pxList=NULL, C4Object *object=NULL);
+	bool Cast(C4ParticleDef *of_def, // create several particles with different speeds and params
+	          int32_t amount,
 	          float x, float y, int32_t level,
 	          float a0=0.0f, DWORD b0=0, float a1=0.0f, DWORD b1=0,
-	          C4ParticleList *pPxList=NULL, C4Object *pObj=NULL);
+	          C4ParticleList *pxList=NULL, C4Object *object=NULL);
 
-	C4ParticleDef *GetDef(const char *szName, C4ParticleDef *pExclude=NULL);  // get particle def by name
+	C4ParticleDef *GetDef(const char *name, C4ParticleDef *exclude=NULL);  // get particle def by name
 	void SetDefParticles();   // seek and assign default particels (smoke, etc.)
 
-	int32_t Push(C4ParticleDef *pOfDef, float dxdir, float dydir); // add movement to all particles of type
+	int32_t Push(C4ParticleDef *of_def, float dxdir, float dydir); // add movement to all particles of type
 
 	bool IsFireParticleLoaded() { return pFire1 && pFire2; }
 
@@ -235,9 +235,9 @@ public:
 extern C4ParticleSystem Particles;
 
 // default particle execution/drawing functions
-bool fxStdInit(C4Particle *pPrt, C4Object *pTarget);
-bool fxStdExec(C4Particle *pPrt, C4Object *pTarget);
-void fxStdDraw(C4Particle *pPrt, C4TargetFacet &cgo, C4Object *pTarget);
+bool fxStdInit(C4Particle *particle, C4Object *target);
+bool fxStdExec(C4Particle *particle, C4Object *target);
+void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target);
 
 // structures used for static function maps
 struct C4ParticleProcRec

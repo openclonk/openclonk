@@ -2,7 +2,7 @@
  * OpenClonk, http://www.openclonk.org
  *
  * Copyright (c) 2002, 2004-2005  Sven Eberhardt
- * Copyright (c) 2005  Tobias Zwick
+ * Copyright (c) 2005,2010  Tobias Zwick
  * Copyright (c) 2005-2006, 2008  Günther Brammer
  * Copyright (c) 2008  Peter Wortmann
  * Copyright (c) 2001-2009, RedWolf Design GmbH, http://www.clonk.de
@@ -80,10 +80,10 @@ C4ParticleDefCore::C4ParticleDefCore():
 	Parallaxity[0] = Parallaxity[1] = 100;
 }
 
-bool C4ParticleDefCore::Compile(char *szSource, const char *szName)
+bool C4ParticleDefCore::Compile(char *particle_source, const char *name)
 {
 	return CompileFromBuf_LogWarn<StdCompilerINIRead>(mkNamingAdapt(*this, "Particle"),
-	       StdStrBuf(szSource), szName);
+	       StdStrBuf(particle_source), name);
 }
 
 C4ParticleDef::C4ParticleDef():
@@ -99,13 +99,16 @@ C4ParticleDef::C4ParticleDef():
 	// link into list
 	if (!ParticleSystem.pDef0)
 	{
-		pPrev=NULL;
-		ParticleSystem.pDef0=this;
+		pPrev = NULL;
+		ParticleSystem.pDef0 = this;
 	}
 	else
-		(pPrev=ParticleSystem.pDefL)->pNext=this;
-	ParticleSystem.pDefL=this;
-	pNext=NULL;
+	{
+		pPrev = ParticleSystem.pDefL;
+		pPrev->pNext = this;
+	}
+	ParticleSystem.pDefL = this;
+	pNext = NULL;
 }
 
 C4ParticleDef::~C4ParticleDef()
@@ -113,8 +116,8 @@ C4ParticleDef::~C4ParticleDef()
 	// clear
 	Clear();
 	// unlink from list
-	if (pPrev) pPrev->pNext=pNext; else ParticleSystem.pDef0=pNext;
-	if (pNext) pNext->pPrev=pPrev; else ParticleSystem.pDefL=pPrev;
+	if (pPrev) pPrev->pNext = pNext; else ParticleSystem.pDef0 = pNext;
+	if (pNext) pNext->pPrev = pPrev; else ParticleSystem.pDefL = pPrev;
 }
 
 void C4ParticleDef::Clear()
@@ -122,22 +125,22 @@ void C4ParticleDef::Clear()
 	Name.Clear();
 }
 
-bool C4ParticleDef::Load(C4Group &rGrp)
+bool C4ParticleDef::Load(C4Group &group)
 {
 	// store file
-	Filename.Copy(rGrp.GetFullName());
+	Filename.Copy(group.GetFullName());
 	// load
-	char *pSource;
-	if (rGrp.LoadEntry(C4CFN_ParticleCore,&pSource,NULL,1))
+	char *particle_source;
+	if (group.LoadEntry(C4CFN_ParticleCore,&particle_source,NULL,1))
 	{
-		if (!Compile(pSource, Filename.getData()))
+		if (!Compile(particle_source, Filename.getData()))
 		{
-			DebugLogF("invalid particle def at '%s'", rGrp.GetFullName().getData());
-			delete [] pSource; return false;
+			DebugLogF("invalid particle def at '%s'", group.GetFullName().getData());
+			delete [] particle_source; return false;
 		}
-		delete [] pSource;
+		delete [] particle_source;
 		// load graphics
-		if (!Gfx.Load(rGrp, C4CFN_DefGraphicsPNG))
+		if (!Gfx.Load(group, C4CFN_DefGraphicsPNG))
 		{
 			DebugLogF("particle %s has no valid graphics defined", Name.getData());
 			return false;
@@ -155,41 +158,41 @@ bool C4ParticleDef::Load(C4Group &rGrp)
 		// case fadeout from length
 		if (FadeOutLen)
 		{
-			Length=Max<int32_t>(Length-FadeOutLen, 1);
+			Length = Max<int32_t>(Length - FadeOutLen, 1);
 			if (!FadeOutDelay) FadeOutDelay=1;
 		}
 		// if phase num is 1, no reverse is allowed
-		if (Length==1) Reverse=0;
+		if (Length == 1) Reverse = 0;
 		// calc aspect
 		Aspect=(float) Gfx.Hgt/Gfx.Wdt;
 		// get proc pointers
-		if (!(InitProc=ParticleSystem.GetProc(InitFn.getData())))
+		if (!(InitProc = ParticleSystem.GetProc(InitFn.getData())))
 		{
 			DebugLogF("init proc for particle '%s' not found: '%s'", Name.getData(), InitFn.getData());
 			return false;
 		}
-		if (!(ExecProc=ParticleSystem.GetProc(ExecFn.getData())))
+		if (!(ExecProc = ParticleSystem.GetProc(ExecFn.getData())))
 		{
 			DebugLogF("exec proc for particle '%s' not found: '%s'", Name.getData(), ExecFn.getData());
 			return false;
 		}
-		if (CollisionFn && CollisionFn[0]) if (!(CollisionProc=ParticleSystem.GetProc(CollisionFn.getData())))
+		if (CollisionFn && CollisionFn[0]) if (!(CollisionProc = ParticleSystem.GetProc(CollisionFn.getData())))
 			{
 				DebugLogF("collision proc for particle '%s' not found: '%s'", Name.getData(), CollisionFn.getData());
 				return false;
 			}
-		if (!(DrawProc=ParticleSystem.GetDrawProc(DrawFn.getData())))
+		if (!(DrawProc = ParticleSystem.GetDrawProc(DrawFn.getData())))
 		{
 			DebugLogF("draw proc for particle '%s' not found: '%s'", Name.getData(), DrawFn.getData());
 			return false;
 		}
 		// particle overloading
-		C4ParticleDef *pDefOverload;
-		if ((pDefOverload=ParticleSystem.GetDef(Name.getData(), this)))
+		C4ParticleDef *def_overload;
+		if ((def_overload = ParticleSystem.GetDef(Name.getData(), this)))
 		{
-			if (Config.Graphics.VerboseObjectLoading>=1)
-				{ char ostr[250]; sprintf(ostr,LoadResStr("IDS_PRC_DEFOVERLOAD"),pDefOverload->Name.getData(),"<particle>"); Log(ostr); }
-			delete pDefOverload;
+			if (Config.Graphics.VerboseObjectLoading >= 1)
+				{ char ostr[250]; sprintf(ostr,LoadResStr("IDS_PRC_DEFOVERLOAD"),def_overload->Name.getData(),"<particle>"); Log(ostr); }
+			delete def_overload;
 		}
 		// success
 		return true;
@@ -202,26 +205,26 @@ bool C4ParticleDef::Reload()
 	// no file?
 	if (!Filename[0]) return false;
 	// open group
-	C4Group hGroup;
-	if (!hGroup.Open(Filename.getData())) return false;
+	C4Group group;
+	if (!group.Open(Filename.getData())) return false;
 	// reset class
 	Clear();
 	// load
-	return Load(hGroup);
+	return Load(group);
 }
 
-void C4Particle::MoveList(C4ParticleList &rFrom, C4ParticleList &rTo)
+void C4Particle::MoveList(C4ParticleList &from, C4ParticleList &to)
 {
 	// remove from current list
 	if (pPrev)
-		pPrev->pNext=pNext;
+		pPrev->pNext = pNext;
 	else
 		// is it the first item in the list? then set this to the next one
-		if (rFrom.pFirst == this) rFrom.pFirst=pNext;
-	if (pNext) pNext->pPrev=pPrev;
+		if (from.pFirst == this) from.pFirst = pNext;
+	if (pNext) pNext->pPrev = pPrev;
 	// add to the other list - insert before first
-	if ((pNext = rTo.pFirst)) pNext->pPrev = this;
-	rTo.pFirst = this; pPrev = NULL;
+	if ((pNext = to.pFirst)) pNext->pPrev = this;
+	to.pFirst = this; pPrev = NULL;
 }
 
 C4ParticleChunk::C4ParticleChunk()
@@ -243,78 +246,78 @@ void C4ParticleChunk::Clear()
 	// simply clear mem - this won't adjust any counts!
 	ZeroMemory(Data, sizeof(Data));
 	// init list
-	C4Particle *pPrt=Data;
-	for (int32_t i=0; i<C4Px_BufSize; ++i)
+	C4Particle *particle=Data;
+	for (int32_t i=0; i < C4Px_BufSize; ++i)
 	{
-		pPrt->pPrev=pPrt-1;
-		pPrt->pNext=pPrt+1;
-		++pPrt;
+		particle->pPrev = particle-1;
+		particle->pNext = particle+1;
+		++particle;
 	}
 	Data[0].pPrev=Data[C4Px_BufSize-1].pNext=NULL;
 	// all free
-	iNumFree = C4Px_BufSize;
+	NumFree = C4Px_BufSize;
 }
 
-void C4ParticleList::Exec(C4Object *pObj)
+void C4ParticleList::Exec(C4Object *object)
 {
 	// execute all particles
-	C4Particle *pPrtNext=pFirst, *pPrt;
-	while ((pPrt = pPrtNext))
+	C4Particle *next_particle = pFirst, *particle;
+	while ((particle = next_particle))
 	{
 		// get next now, because destruction could corrupt the list
-		pPrtNext=pPrt->pNext;
+		next_particle = particle->pNext;
 		// execute it
-		if (!pPrt->pDef->ExecProc(pPrt,pObj))
+		if (!particle->pDef->ExecProc(particle,object))
 		{
 			// sorry, life is over for you :P
-			--pPrt->pDef->Count;
-			pPrt->MoveList(*this, ::Particles.FreeParticles);
+			--particle->pDef->Count;
+			particle->MoveList(*this, ::Particles.FreeParticles);
 		}
 	}
 	// done
 }
 
-void C4ParticleList::Draw(C4TargetFacet &cgo, C4Object *pObj)
+void C4ParticleList::Draw(C4TargetFacet &cgo, C4Object *object)
 {
 	// draw all particles
-	for (C4Particle *pPrt=pFirst; pPrt; pPrt=pPrt->pNext)
-		pPrt->pDef->DrawProc(pPrt, cgo, pObj);
+	for (C4Particle *particle = pFirst; particle; particle = particle->pNext)
+		particle->pDef->DrawProc(particle, cgo, object);
 	// done
 }
 
 void C4ParticleList::Clear()
 {
 	// remove all particles
-	C4Particle *pPrtNext=pFirst, *pPrt;
-	while ((pPrt = pPrtNext))
+	C4Particle *next_particle = pFirst, *particle;
+	while ((particle = next_particle))
 	{
 		// get next now, because destruction could corrupt the list
-		pPrtNext=pPrt->pNext;
+		next_particle = particle->pNext;
 		// sorry, life is over for you :P
-		--pPrt->pDef->Count;
-		pPrt->MoveList(*this, ::Particles.FreeParticles);
+		--particle->pDef->Count;
+		particle->MoveList(*this, ::Particles.FreeParticles);
 	}
 }
 
-int32_t C4ParticleList::Remove(C4ParticleDef *pOfDef)
+int32_t C4ParticleList::Remove(C4ParticleDef *of_def)
 {
-	int32_t iNumRemoved=0;
+	int32_t num_removed = 0;
 	// check all particles for def
-	C4Particle *pPrtNext=pFirst, *pPrt;
-	while ((pPrt = pPrtNext))
+	C4Particle *next_particle = pFirst, *particle;
+	while ((particle = next_particle))
 	{
 		// get next now, because destruction could corrupt the list
-		pPrtNext=pPrt->pNext;
+		next_particle = particle->pNext;
 		// execute it
-		if (!pOfDef || pPrt->pDef == pOfDef)
+		if (!of_def || particle->pDef == of_def)
 		{
 			// sorry, life is over for you :P
-			--pPrt->pDef->Count;
-			pPrt->MoveList(*this, ::Particles.FreeParticles);
+			--particle->pDef->Count;
+			particle->MoveList(*this, ::Particles.FreeParticles);
 		}
 	}
 	// done
-	return iNumRemoved;
+	return num_removed;
 }
 
 C4ParticleSystem::C4ParticleSystem()
@@ -337,68 +340,68 @@ C4ParticleSystem::~C4ParticleSystem()
 C4ParticleChunk *C4ParticleSystem::AddChunk()
 {
 	// add another chunk
-	C4ParticleChunk *pNewChnk=new C4ParticleChunk();
-	pNewChnk->pNext = Chunk.pNext;
-	Chunk.pNext = pNewChnk;
+	C4ParticleChunk *new_chunk = new C4ParticleChunk();
+	new_chunk->pNext = Chunk.pNext;
+	Chunk.pNext = new_chunk;
 	// register into free-particle-list
-	if ((pNewChnk->Data[C4Px_BufSize-1].pNext = FreeParticles.pFirst))
-		FreeParticles.pFirst->pPrev = &pNewChnk->Data[C4Px_BufSize-1];
-	FreeParticles.pFirst = &pNewChnk->Data[0];
+	if ((new_chunk->Data[C4Px_BufSize-1].pNext = FreeParticles.pFirst))
+		FreeParticles.pFirst->pPrev = &new_chunk->Data[C4Px_BufSize-1];
+	FreeParticles.pFirst = &new_chunk->Data[0];
 	// return it
-	return pNewChnk;
+	return new_chunk;
 }
 
 void C4ParticleSystem::PruneChunks()
 {
 	// check all chunks, but not the first
 	// that cannot be removed anyway
-	C4ParticleChunk *pChnk = Chunk.pNext, *pChnkNext, **ppChnkPrev;
-	ppChnkPrev = &Chunk.pNext;
+	C4ParticleChunk *chunk = Chunk.pNext, *next_chunk, **previous_chunk_p;
+	previous_chunk_p = &Chunk.pNext;
 	do
 	{
-		pChnkNext = pChnk->pNext;
+		next_chunk = chunk->pNext;
 		// chunk empty?
-		if (pChnk->iNumFree == C4Px_BufSize)
+		if (chunk->NumFree == C4Px_BufSize)
 		{
 			// move out all particles
 			C4ParticleList tmp;
-			for (int32_t i=0; i<C4Px_BufSize; ++i)
-				pChnk->Data[i].MoveList(FreeParticles, tmp);
+			for (int32_t i = 0; i < C4Px_BufSize; ++i)
+				chunk->Data[i].MoveList(FreeParticles, tmp);
 			// and remove the chunk
-			*ppChnkPrev = pChnkNext;
-			delete pChnk;
+			*previous_chunk_p = next_chunk;
+			delete chunk;
 		}
 		else
 		{
 			// keep this chunk
-			ppChnkPrev = &pChnk->pNext;
+			previous_chunk_p = &chunk->pNext;
 		}
 	}
-	while ((pChnk = pChnkNext));
+	while ((chunk = next_chunk));
 }
 
 void C4ParticleSystem::ClearParticles()
 {
 	// clear particle lists
-	C4ObjectLink *pLnk;
-	for (pLnk = ::Objects.First; pLnk; pLnk = pLnk->Next)
-		pLnk->Obj->FrontParticles.pFirst = pLnk->Obj->BackParticles.pFirst = NULL;
-	for (pLnk = ::Objects.InactiveObjects.First; pLnk; pLnk = pLnk->Next)
-		pLnk->Obj->FrontParticles.pFirst = pLnk->Obj->BackParticles.pFirst = NULL;
+	C4ObjectLink *link;
+	for (link = ::Objects.First; link; link = link->Next)
+		link->Obj->FrontParticles.pFirst = link->Obj->BackParticles.pFirst = NULL;
+	for (link = ::Objects.InactiveObjects.First; link; link = link->Next)
+		link->Obj->FrontParticles.pFirst = link->Obj->BackParticles.pFirst = NULL;
 	GlobalParticles.pFirst = NULL;
 	// reset chunks
-	C4ParticleChunk *pNextChnk=Chunk.pNext, *pChnk;
-	while ((pChnk = pNextChnk))
+	C4ParticleChunk *next_chunk = Chunk.pNext, *chunk;
+	while ((chunk = next_chunk))
 	{
-		pNextChnk = pChnk->pNext;
-		delete pChnk;
+		next_chunk = chunk->pNext;
+		delete chunk;
 	}
 	Chunk.pNext = NULL;
 	Chunk.Clear();
 	FreeParticles.pFirst = Chunk.Data;
 	// adjust counts
-	for (C4ParticleDef *pDef=pDef0; pDef; pDef=pDef->pNext)
-		pDef->Count=0;
+	for (C4ParticleDef *def=pDef0; def; def=def->pNext)
+		def->Count=0;
 }
 
 void C4ParticleSystem::Clear()
@@ -408,59 +411,59 @@ void C4ParticleSystem::Clear()
 	// clear defs
 	while (pDef0) delete pDef0;
 	// clear system particles
-	pSmoke=pBlast=pFSpark=pFire1=pFire2=NULL;
+	pSmoke = pBlast = pFSpark = pFire1 = pFire2 = NULL;
 	// done
 }
 
-C4Particle *C4ParticleSystem::Create(C4ParticleDef *pOfDef,
+C4Particle *C4ParticleSystem::Create(C4ParticleDef *of_def,
                                      float x, float y,
                                      float xdir, float ydir,
-                                     float a, int32_t b, C4ParticleList *pPxList,
-                                     C4Object *pObj)
+                                     float a, int32_t b, C4ParticleList *pxList,
+                                     C4Object *object)
 {
 	// safety
-	if (!pOfDef) return NULL;
+	if (!of_def) return NULL;
 	// default to global list
-	if (!pPxList) pPxList = &GlobalParticles;
+	if (!pxList) pxList = &GlobalParticles;
 	// check count
-	int32_t MaxCount=pOfDef->MaxCount*(Config.Graphics.SmokeLevel+20)/150;
-	int32_t iRoom=MaxCount-pOfDef->Count;
-	if (iRoom<=0) return NULL;
+	int32_t max_count = of_def->MaxCount * (Config.Graphics.SmokeLevel + 20) / 150;
+	int32_t room = max_count - of_def->Count;
+	if (room <= 0) return NULL;
 	// reduce creation if limit is nearly reached
-	if (iRoom<(MaxCount>>1))
-		if (SafeRandom(iRoom)<SafeRandom(MaxCount)) return NULL;
+	if (room < (max_count >> 1))
+		if (SafeRandom(room) < SafeRandom(max_count)) return NULL;
 	// get free particle
 	if (!FreeParticles.pFirst) AddChunk();
-	C4Particle *pPrt = FreeParticles.pFirst;
-	if (!pPrt) return NULL;
+	C4Particle *particle = FreeParticles.pFirst;
+	if (!particle) return NULL;
 	// set values
-	pPrt->x=x; pPrt->y=y;
-	pPrt->xdir=xdir; pPrt->ydir=ydir;
-	pPrt->a=a; pPrt->b=b;
-	pPrt->pDef = pOfDef;
-	if (pPrt->pDef->Attach && pObj != NULL)
+	particle->x = x; particle->y = y;
+	particle->xdir = xdir; particle->ydir = ydir;
+	particle->a = a; particle->b = b;
+	particle->pDef = of_def;
+	if (particle->pDef->Attach && object != NULL)
 	{
-		pPrt->x -= pObj->GetX();
-		pPrt->y -= pObj->GetY();
+		particle->x -= fixtof(object->GetFixedX());
+		particle->y -= fixtof(object->GetFixedY());
 	}
 	// call initialization
-	if (!pOfDef->InitProc(pPrt,pObj))
+	if (!of_def->InitProc(particle,object))
 		// failed :(
 		return NULL;
 	// count particle
-	++pOfDef->Count;
+	++of_def->Count;
 	// more to desired list
-	pPrt->MoveList(::Particles.FreeParticles, *pPxList);
+	particle->MoveList(::Particles.FreeParticles, *pxList);
 	// return newly created particle
-	return pPrt;
+	return particle;
 }
 
-bool C4ParticleSystem::Cast(C4ParticleDef *pOfDef, int32_t iAmount,
+bool C4ParticleSystem::Cast(C4ParticleDef *of_def, int32_t amount,
                             float x, float y, int32_t level,
-                            float a0, DWORD b0, float a1, DWORD b1, C4ParticleList *pPxList, C4Object *pObj)
+                            float a0, DWORD b0, float a1, DWORD b1, C4ParticleList *pxList, C4Object *object)
 {
 	// safety
-	if (!pOfDef) return false;
+	if (!of_def) return false;
 	// get range for a and b
 	int32_t iA0=(int32_t)(a0*100),iA1=(int32_t)(a1*100);
 	if (iA1<iA0) Swap(iA0, iA1);
@@ -469,42 +472,42 @@ bool C4ParticleSystem::Cast(C4ParticleDef *pOfDef, int32_t iAmount,
 	DWORD db=b1-b0;
 	BYTE db1=BYTE(db>>24), db2=BYTE(db>>16), db3=BYTE(db>>8), db4=BYTE(db);
 	// create them
-	for (int32_t i=iAmount; i > 0; --i)
-		Create(pOfDef, x, y,
+	for (int32_t i=amount; i > 0; --i)
+		Create(of_def, x, y,
 		       (float)(SafeRandom(level+1)-level/2)/10.0f,
 		       (float)(SafeRandom(level+1)-level/2)/10.0f,
 		       (float)(iA0+SafeRandom(iAd))/100.0f,
-		       b0+(SafeRandom(db1)<<24)+(SafeRandom(db2)<<16)+(SafeRandom(db3)<<8)+SafeRandom(db4), pPxList, pObj);
+		       b0+(SafeRandom(db1)<<24)+(SafeRandom(db2)<<16)+(SafeRandom(db3)<<8)+SafeRandom(db4), pxList, object);
 	// success
 	return true;
 }
 
-C4ParticleProc C4ParticleSystem::GetProc(const char *szName)
+C4ParticleProc C4ParticleSystem::GetProc(const char *name)
 {
 	// seek in map
-	for (int32_t i=0; C4ParticleProcMap[i].Name[0]; ++i)
-		if (SEqual(C4ParticleProcMap[i].Name, szName))
+	for (int32_t i = 0; C4ParticleProcMap[i].Name[0]; ++i)
+		if (SEqual(C4ParticleProcMap[i].Name, name))
 			return C4ParticleProcMap[i].Proc;
 	// nothing found...
 	return NULL;
 }
 
-C4ParticleDrawProc C4ParticleSystem::GetDrawProc(const char *szName)
+C4ParticleDrawProc C4ParticleSystem::GetDrawProc(const char *name)
 {
 	// seek in map
-	for (int32_t i=0; C4ParticleDrawProcMap[i].Name[0]; ++i)
-		if (SEqual(C4ParticleDrawProcMap[i].Name, szName))
+	for (int32_t i = 0; C4ParticleDrawProcMap[i].Name[0]; ++i)
+		if (SEqual(C4ParticleDrawProcMap[i].Name, name))
 			return C4ParticleDrawProcMap[i].Proc;
 	// nothing found...
 	return NULL;
 }
 
-C4ParticleDef *C4ParticleSystem::GetDef(const char *szName, C4ParticleDef *pExclude)
+C4ParticleDef *C4ParticleSystem::GetDef(const char *name, C4ParticleDef *exclude)
 {
 	// seek list
-	for (C4ParticleDef *pDef=pDef0; pDef; pDef=pDef->pNext)
-		if (pDef != pExclude && pDef->Name == szName)
-			return pDef;
+	for (C4ParticleDef *def = pDef0; def; def=def->pNext)
+		if (def != exclude && def->Name == name)
+			return def;
 	// nothing found
 	return NULL;
 }
@@ -512,171 +515,190 @@ C4ParticleDef *C4ParticleSystem::GetDef(const char *szName, C4ParticleDef *pExcl
 void C4ParticleSystem::SetDefParticles()
 {
 	// get smoke
-	pSmoke=GetDef("Smoke");
+	pSmoke = GetDef("Smoke");
 	// get blast
-	pBlast=GetDef("Blast");
-	pFSpark=GetDef("FSpark");
+	pBlast = GetDef("Blast");
+	pFSpark = GetDef("FSpark");
 	// get fire, if fire particles are desired
 	if (Config.Graphics.FireParticles)
 	{
-		pFire1=GetDef("Fire");
-		pFire2=GetDef("Fire2");
+		pFire1 = GetDef("Fire");
+		pFire2 = GetDef("Fire2");
 	}
 	else
-		pFire1=pFire2=NULL;
+		pFire1 = pFire2 = NULL;
 	// if fire is drawn w/o background fct: unload fire face if both fire particles are assigned
 	// but this is not done here
 	//if (IsFireParticleLoaded())
 	//  ::GraphicsResource.fctFire.Clear();
 }
 
-int32_t C4ParticleSystem::Push(C4ParticleDef *pOfDef, float dxdir, float dydir)
+int32_t C4ParticleSystem::Push(C4ParticleDef *of_def, float dxdir, float dydir)
 {
-	int32_t iNumPushed=0;
+	int32_t num_pushed = 0;
 	// go through all particle chunks
-	for (C4ParticleChunk *pChnk=&Chunk; pChnk; pChnk=pChnk->pNext)
+	for (C4ParticleChunk *a_chunk = &Chunk; a_chunk; a_chunk = a_chunk->pNext)
 	{
 		// go through all particles
-		C4Particle *pPrt = pChnk->Data; int32_t i=C4Px_BufSize;
+		C4Particle *particle = a_chunk->Data; int32_t i=C4Px_BufSize;
 		while (i--)
 		{
 			// def fits?
-			if (!pOfDef || pPrt->pDef==pOfDef)
+			if (!of_def || particle->pDef == of_def)
 			{
 				// push it!
-				pPrt->xdir+=dxdir;
-				pPrt->ydir+=dydir;
+				particle->xdir += dxdir;
+				particle->ydir += dydir;
 				// count pushed
-				++iNumPushed;
+				++num_pushed;
 			}
 			// next particle
-			++pPrt;
+			++particle;
 		}
 	}
 	// done
-	return iNumPushed;
+	return num_pushed;
 }
 
-bool fxSmokeInit(C4Particle *pPrt, C4Object *pTarget)
+bool fxSmokeInit(C4Particle *particle, C4Object *target)
 {
 	// init lifetime
-	pPrt->life=pPrt->pDef->MinLifetime;
-	int32_t iLD=pPrt->pDef->MaxLifetime-pPrt->pDef->MinLifetime;
-	if (iLD) pPrt->life += SafeRandom(iLD);
+	particle->life = particle->pDef->MinLifetime;
+	int32_t lifetime = particle->pDef->MaxLifetime - particle->pDef->MinLifetime;
+	if (lifetime)
+		particle->life += SafeRandom(lifetime);
 	// use high-word of life to store init-status
-	pPrt->life |= (pPrt->life/17)<<16;
+	particle->life |= (particle->life/17)<<16;
 	// set kind - ydir is unused anyway; set last kind reeeaaally seldom
-	pPrt->ydir=(float) SafeRandom(15)+SafeRandom(300)/299;
+	particle->ydir = (float) SafeRandom(15) + SafeRandom(300)/299;
 	// set color
-	if (!pPrt->b) pPrt->b=0x004b4b4b; else pPrt->b&=~0xff000000;
+	if (!particle->b)
+		particle->b = 0x004b4b4b;
+	else
+		particle->b &= ~0xff000000;
 	// always OK
 	return true;
 }
 
-bool fxSmokeExec(C4Particle *pPrt, C4Object *pTarget)
+bool fxSmokeExec(C4Particle *particle, C4Object *target)
 {
 	// lifetime
-	if (!--pPrt->life) return false;
-	bool fBuilding = !!(pPrt->life&0x7fff0000);
+	if (!--particle->life) return false;
+	bool is_building = !!(particle->life&0x7fff0000);
 	// still building?
-	if (fBuilding)
+	if (is_building)
 	{
 		// decrease init-time
-		pPrt->life-=0x010000;
+		particle->life -= 0x010000;
 		// increase color value
-		pPrt->b+=0x10000000;
+		particle->b += 0x10000000;
 		// if full-grown, adjust to lifetime
-		if (!(pPrt->life&0x7fff0000))
-			pPrt->b=(pPrt->b&0xffffff)|((pPrt->life)<<24);
+		if (!(particle->life&0x7fff0000))
+			particle->b = (particle->b&0xffffff)|((particle->life)<<24);
 	}
 	// color change
-	DWORD dwClr = pPrt->b;
-	pPrt->b = (LightenClrBy(dwClr, 1)&0xffffff) | Min<int32_t>((dwClr>>24)-1, 255)<<24;
+	DWORD color = particle->b;
+	particle->b = (LightenClrBy(color, 1)&0xffffff) | Min<int32_t>((color>>24)-1, 255)<<24;
 	// wind to float
-	if (!(pPrt->b%12) || fBuilding)
+	if (!(particle->b % 12) || is_building)
 	{
-		pPrt->xdir=0.025f*::Weather.GetWind(int32_t(pPrt->x),int32_t(pPrt->y));
-		if (pPrt->xdir<-2.0f) pPrt->xdir=-2.0f; else if (pPrt->xdir>2.0f) pPrt->xdir=2.0f;
-		pPrt->xdir+=0.1f*SafeRandom(41)-2.0f;
+		particle->xdir = 0.025f*::Weather.GetWind(int32_t(particle->x),int32_t(particle->y));
+		if (particle->xdir < -2.0f)
+			particle->xdir = -2.0f;
+		else if (particle->xdir > 2.0f)
+			particle->xdir = 2.0f;
+		particle->xdir += 0.1f * SafeRandom(41) - 2.0f;
 	}
 	// float
-	if (GBackSolid(int32_t(pPrt->x), int32_t(pPrt->y-pPrt->a)))
+	if (GBackSolid(int32_t(particle->x), int32_t(particle->y-particle->a)))
 	{
 		// if stuck, decay; otherwise, move down
-		if (!GBackSolid(int32_t(pPrt->x), int32_t(pPrt->y))) pPrt->y+=0.4f; else pPrt->a-=2;
+		if (!GBackSolid(int32_t(particle->x), int32_t(particle->y)))
+			particle->y+=0.4f;
+		else
+			particle->a-=2;
 	}
 	else
-		--pPrt->y;
-	pPrt->x+=pPrt->xdir;
+		--particle->y;
+	particle->x += particle->xdir;
 	// increase in size
-	pPrt->a *= 1.01f;
+	particle->a *= 1.01f;
 	// done, keep
 	return true;
 }
 
-void fxSmokeDraw(C4Particle *pPrt, C4TargetFacet &cgo, C4Object *pTarget)
+void fxSmokeDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 {
-	C4ParticleDef *pDef = pPrt->pDef;
+	C4ParticleDef *def = particle->pDef;
 	// apply parallaxity to target pos
-	int32_t tx=cgo.TargetX*pDef->Parallaxity[0]/100;
-	int32_t ty=cgo.TargetY*pDef->Parallaxity[1]/100;
+	int32_t tx = cgo.TargetX * def->Parallaxity[0]/100;
+	int32_t ty = cgo.TargetY * def->Parallaxity[1]/100;
 	// check if it's in screen range
-	if (!Inside(pPrt->x, tx-pPrt->a, tx+cgo.Wdt+pPrt->a)) return;
-	if (!Inside(pPrt->y, ty-pPrt->a, ty+cgo.Hgt+pPrt->a)) return;
+	if (!Inside(particle->x, tx-particle->a, tx+cgo.Wdt+particle->a)) return;
+	if (!Inside(particle->y, ty-particle->a, ty+cgo.Hgt+particle->a)) return;
 	// get pos
-	int32_t cx=int32_t(pPrt->x)+cgo.X-tx;
-	int32_t cy=int32_t(pPrt->y)+cgo.Y-ty;
+	float cx = particle->x + cgo.X - tx;
+	float cy = particle->y + cgo.Y - ty;
 	// get phase by particle index
-	int32_t i=(int32_t) pPrt->ydir;
-	int32_t ipx=i/4;
-	int32_t ipy=i%4;
+	int32_t i = (int32_t) particle->ydir;
+	int32_t px = i/4;
+	int32_t py = i%4;
 	// draw at pos
-	Application.DDraw->ActivateBlitModulation(pPrt->b);
-	pDef->Gfx.DrawX(cgo.Surface, int32_t(cx-pPrt->a), int32_t(cy-pPrt->a), int32_t(pPrt->a*2), int32_t(pPrt->a*2), ipx, ipy);
+	Application.DDraw->ActivateBlitModulation(particle->b);
+
+	float fx = float(def->Gfx.X + def->Gfx.Wdt * px);
+	float fy = float(def->Gfx.Y + def->Gfx.Hgt * py);
+	float fwdt = float(def->Gfx.Wdt);
+	float fhgt = float(def->Gfx.Hgt);
+
+	lpDDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
+	              cgo.Surface, cx - particle->a, cy - particle->a, particle->a * 2, particle->a * 2,
+	              true);
+
 	Application.DDraw->DeactivateBlitModulation();
 }
 
-bool fxStdInit(C4Particle *pPrt, C4Object *pTarget)
+bool fxStdInit(C4Particle *particle, C4Object *target)
 {
-	if (pPrt->pDef->Delay)
+	if (particle->pDef->Delay)
 		// delay given: lifetime starts at zero
-		pPrt->life=0;
+		particle->life=0;
 	else
 		// init lifetime as phase
-		pPrt->life=SafeRandom(pPrt->pDef->Length);
+		particle->life=SafeRandom(particle->pDef->Length);
 	// default color
-	if (!pPrt->b) pPrt->b=0xffffffff;
+	if (!particle->b) particle->b=0xffffffff;
 	// always OK
 	return true;
 }
 
-bool fxStdExec(C4Particle *pPrt, C4Object *pTarget)
+bool fxStdExec(C4Particle *particle, C4Object *target)
 {
 
-	float dx = pPrt->x, dy = pPrt->y;
-	float dxdir = pPrt->xdir, dydir = pPrt->ydir;
+	float dx = particle->x, dy = particle->y;
+	float dxdir = particle->xdir, dydir = particle->ydir;
 	// rel. position & movement
-	if (pPrt->pDef->Attach && pTarget != NULL)
+	if (particle->pDef->Attach && target != NULL)
 	{
-		dx += pTarget->GetX();
-		dy += pTarget->GetY();
-		dxdir += fixtof(pTarget->xdir);
-		dydir += fixtof(pTarget->ydir);
+		dx += fixtof(target->GetFixedX());
+		dy += fixtof(target->GetFixedY());
+		dxdir += fixtof(target->xdir);
+		dydir += fixtof(target->ydir);
 	}
 
 	// move
-	if (pPrt->xdir || pPrt->ydir)
+	if (particle->xdir || particle->ydir)
 	{
-		if (pPrt->pDef->VertexCount && GBackSolid(int32_t( dx + pPrt->xdir),int32_t( dy + pPrt->ydir + pPrt->pDef->VertexY* pPrt->a/100.0f) ))
+		if (particle->pDef->VertexCount && GBackSolid(int32_t( dx + particle->xdir),int32_t( dy + particle->ydir + particle->pDef->VertexY* particle->a/100.0f) ))
 		{
 			// collision
-			if (pPrt->pDef->CollisionProc)
-				if (!pPrt->pDef->CollisionProc(pPrt,pTarget)) return false;
+			if (particle->pDef->CollisionProc)
+				if (!particle->pDef->CollisionProc(particle,target)) return false;
 		}
-		else if (pPrt->pDef->RByV != 2)
+		else if (particle->pDef->RByV != 2)
 		{
-			pPrt->x += pPrt->xdir;
-			pPrt->y += pPrt->ydir;
+			particle->x += particle->xdir;
+			particle->y += particle->ydir;
 		}
 		else
 		{
@@ -684,157 +706,199 @@ bool fxStdExec(C4Particle *pPrt, C4Object *pTarget)
 		}
 	}
 	// apply gravity
-	if (pPrt->pDef->GravityAcc) pPrt->ydir+=fixtof(GravAccel * pPrt->pDef->GravityAcc)/100.0f;
+	if (particle->pDef->GravityAcc) particle->ydir+=fixtof(GravAccel * particle->pDef->GravityAcc)/100.0f;
 	// apply WindDrift
-	if (pPrt->pDef->WindDrift && !GBackSolid(int32_t(dx), int32_t(dy)))
+	if (particle->pDef->WindDrift && !GBackSolid(int32_t(dx), int32_t(dy)))
 	{
 		// Air speed: Wind plus some random
-		int32_t iWind = GBackWind(int32_t(dx), int32_t(dy));
-		//FIXED txdir = itofix(iWind, 15) + FIXED256(Random(1200) - 600);
-		float txdir = iWind / 15.0f;
+		int32_t wind_speed = GBackWind(int32_t(dx), int32_t(dy));
+		//FIXED txdir = itofix(wind_speed, 15) + FIXED256(Random(1200) - 600);
+		float txdir = wind_speed / 15.0f;
 		//FIXED tydir = FIXED256(Random(1200) - 600);
 		float tydir = 0;
 
 		// Air friction, based on WindDrift.
-		int32_t iWindDrift = Max(pPrt->pDef->WindDrift - 20, 0);
-		pPrt->xdir += ((txdir - dxdir) * iWindDrift) / 800;
-		pPrt->ydir += ((tydir - dydir) * iWindDrift) / 800;
+		int32_t wind_drift = Max(particle->pDef->WindDrift - 20, 0);
+		particle->xdir += ((txdir - dxdir) * wind_drift) / 800;
+		particle->ydir += ((tydir - dydir) * wind_drift) / 800;
 	}
 	// fade out
-	int32_t iFade = pPrt->pDef->AlphaFade;
-	if (iFade < 0)
+	int32_t fade = particle->pDef->AlphaFade;
+	if (fade < 0)
 	{
-		if (Game.FrameCounter % -iFade == 0) iFade = 1;
-		else iFade = 0;
+		if (Game.FrameCounter % -fade == 0) fade = 1;
+		else fade = 0;
 	}
-	if (iFade)
+	if (fade)
 	{
-		if (pPrt->pDef->FadeDelay == 0 || Game.FrameCounter % pPrt->pDef->FadeDelay == 0)
+		if (particle->pDef->FadeDelay == 0 || Game.FrameCounter % particle->pDef->FadeDelay == 0)
 		{
-			DWORD dwClr=pPrt->b;
-			int32_t iAlpha=dwClr>>24;
-			iAlpha-=pPrt->pDef->AlphaFade;
-			if (iAlpha<=0x00) return false;
-			pPrt->b=(dwClr&0xffffff) | (iAlpha<<24);
+			DWORD color = particle->b;
+			int32_t alpha = color>>24;
+			alpha -= particle->pDef->AlphaFade;
+			if (alpha <= 0x00) return false;
+			particle->b = (color&0xffffff) | (alpha<<24);
 		}
 	}
 	// if delay is given, advance lifetime
-	if (pPrt->pDef->Delay)
+	if (particle->pDef->Delay)
 	{
-		if (pPrt->life<0)
+		if (particle->life < 0)
 		{
 			// decay
-			return pPrt->life-->=-pPrt->pDef->FadeOutLen*pPrt->pDef->FadeOutDelay;
+			return particle->life-- >= -particle->pDef->FadeOutLen * particle->pDef->FadeOutDelay;
 		}
-		++pPrt->life;
+		++particle->life;
 		// check if still alive
-		int32_t iPhase=pPrt->life/pPrt->pDef->Delay;
-		int32_t length=pPrt->pDef->Length-pPrt->pDef->Reverse;
-		if (iPhase>=length*pPrt->pDef->Repeats+pPrt->pDef->Reverse)
+		int32_t phase = particle->life / particle->pDef->Delay;
+		int32_t length = particle->pDef->Length - particle->pDef->Reverse;
+		if (phase >= length * particle->pDef->Repeats + particle->pDef->Reverse)
 		{
 			// do fadeout, if assigned
-			if (!pPrt->pDef->FadeOutLen) return false;
-			pPrt->life=-1;
+			if (!particle->pDef->FadeOutLen) return false;
+			particle->life = -1;
 		}
 		return true;
 	}
 	// outside landscape range?
 	bool kp;
-	if (dxdir>0) kp=(dx-pPrt->a<GBackWdt);     else kp=(dx+pPrt->a>0);
-	if (dydir>0) kp=kp&&(dy-pPrt->a<GBackHgt); else kp=kp&&(dy+pPrt->a>pPrt->pDef->YOff);
+	if (dxdir > 0)
+		kp = (dx - (particle->a < GBackWdt));
+	else
+		kp = (dx + (particle->a > 0));
+
+	if (dydir > 0)
+		kp = kp && (dy - particle->a < GBackHgt);
+	else
+		kp = kp && (dy + particle->a > particle->pDef->YOff);
+
 	return kp;
 }
 
-bool fxBounce(C4Particle *pPrt, C4Object *pTarget)
+bool fxBounce(C4Particle *particle, C4Object *target)
 {
 	// reverse xdir/ydir
-	pPrt->xdir=-pPrt->xdir;
-	pPrt->ydir=-pPrt->ydir;
+	particle->xdir=-particle->xdir;
+	particle->ydir=-particle->ydir;
 	return true;
 }
 
-bool fxBounceY(C4Particle *pPrt, C4Object *pTarget)
+bool fxBounceY(C4Particle *particle, C4Object *target)
 {
 	// reverse ydir only
-	pPrt->ydir=-pPrt->ydir;
+	particle->ydir = -particle->ydir;
 	return true;
 }
 
-bool fxStop(C4Particle *pPrt, C4Object *pTarget)
+bool fxStop(C4Particle *particle, C4Object *target)
 {
 	// zero xdir/ydir
-	pPrt->xdir=pPrt->ydir=0;
+	particle->xdir = particle->ydir = 0;
 	return true;
 }
 
-bool fxDie(C4Particle *pPrt, C4Object *pTarget)
+bool fxDie(C4Particle *particle, C4Object *target)
 {
 	// DIEEEEEE
 	return false;
 }
 
-void fxStdDraw(C4Particle *pPrt, C4TargetFacet &cgo, C4Object *pTarget)
+void fxStdDraw(C4Particle *particle, C4TargetFacet &cgo, C4Object *target)
 {
 	// get def
-	C4ParticleDef *pDef = pPrt->pDef;
+	C4ParticleDef *def = particle->pDef;
+
 	// apply parallaxity to target pos
-	int32_t tx=cgo.TargetX*pDef->Parallaxity[0]/100;
-	int32_t ty=cgo.TargetY*pDef->Parallaxity[1]/100;
+	int32_t tax = cgo.TargetX * def->Parallaxity[0] / 100;
+	int32_t tay = cgo.TargetY * def->Parallaxity[1] / 100;
 
-	int32_t phases = pDef->PhasesX;
+	// get the phases per row
+	int32_t phases = def->PhasesX;
 
-	float dx = pPrt->x, dy = pPrt->y;
-	float dxdir = pPrt->xdir, dydir = pPrt->ydir;
+	float dx = particle->x, dy = particle->y;
+	float dxdir = particle->xdir, dydir = particle->ydir;
+
 	// relative position & movement
-	if (pPrt->pDef->Attach && pTarget != NULL)
+	if (def->Attach && target != NULL)
 	{
-		dx += pTarget->GetX();
-		dy += pTarget->GetY();
-		dxdir += fixtof(pTarget->xdir);
-		dydir += fixtof(pTarget->ydir);
+		dx += fixtof(target->GetFixedX());
+		dy += fixtof(target->GetFixedY());
+		dxdir += fixtof(target->xdir);
+		dydir += fixtof(target->ydir);
 	}
 
 	// check if it's in screen range
-	if (!Inside(dx, tx-pPrt->a, tx+cgo.Wdt+pPrt->a)) return;
-	if (!Inside(dy, ty-pPrt->a, ty+cgo.Hgt+pPrt->a)) return;
+	if (!Inside(dx, tax-particle->a, tax + cgo.Wdt + particle->a)) return;
+	if (!Inside(dy, tay-particle->a, tay + cgo.Hgt + particle->a)) return;
+
 	// get pos
-	int32_t cgox=cgo.X-tx,cgoy=cgo.Y-ty;
-	int32_t cx=int32_t(dx+cgox);
-	int32_t cy=int32_t(dy+cgoy);
+	int32_t cgox = cgo.X - tax, cgoy = cgo.Y - tay;
+	float cx = dx + cgox;
+	float cy = dy + cgoy;
+
 	// get phase
-	int32_t iPhase=pPrt->life;
-	if (pDef->Delay)
+	int32_t phase = particle->life;
+	if (def->Delay)
 	{
-		if (iPhase >= 0)
+		if (phase >= 0)
 		{
-			iPhase/=pDef->Delay;
-			int32_t length=pDef->Length;
-			if (pDef->Reverse)
+			phase /= def->Delay;
+			int32_t length = def->Length;
+			if (def->Reverse)
 			{
-				--length; iPhase%=length*2;
-				if (iPhase>length) iPhase=length*2+1-iPhase;
+				--length;
+				phase %= length*2;
+				if (phase > length)
+					phase = length*2 + 1 - phase;
 			}
-			else iPhase%=length;
+			else phase %= length;
 		}
-		else iPhase=(iPhase+1)/-pDef->FadeOutDelay+pDef->Length;
+		else phase = (phase+1) / -def->FadeOutDelay + def->Length;
 	}
 	// get rotation
 	int32_t r=0;
-	if ((pDef->RByV==1) || (pDef->RByV==2)) // rotation by direction
-		r=Angle(0,0, (int32_t) (dxdir*10.0f), (int32_t) (dydir*10.0f))*100;
-	if (pDef->RByV==3) // random rotation - currently a pseudo random rotation by x/y position
-		r = (((int32_t)(pPrt->x*23 + pPrt->y*12)) % 360) * 100;
+	if ((def->RByV == 1) || (def->RByV == 2)) // rotation by direction
+		r = Angle(0,0, (int32_t) (dxdir*10.0f), (int32_t) (dydir*10.0f))*100;
+	if (def->RByV == 3) // random rotation - currently a pseudo random rotation by x/y position
+		r = (((int32_t)(particle->x * 23 + particle->y * 12)) % 360) * 100;
 	// draw at pos
-	Application.DDraw->ActivateBlitModulation(pPrt->b);
+	Application.DDraw->ActivateBlitModulation(particle->b);
 	Application.DDraw->StorePrimaryClipper();
-	Application.DDraw->SubPrimaryClipper(cgox, cgoy+pDef->YOff, 100000, 100000);
-	if (pDef->Additive) lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
-	int32_t iDrawWdt=int32_t(pPrt->a);
-	int32_t iDrawHgt=int32_t(pDef->Aspect*iDrawWdt);
+	Application.DDraw->SubPrimaryClipper(cgox, cgoy+def->YOff, 100000, 100000);
+	if (def->Additive)
+		lpDDraw->SetBlitMode(C4GFXBLIT_ADDITIVE);
+
+	// draw
+	float draw_width = particle->a;
+	float draw_height = def->Aspect * draw_width;
+
+	int32_t phaseX = phase%phases;
+	int32_t phaseY = phase/phases;
+
+	float fx = float(def->Gfx.X + def->Gfx.Wdt * phaseX);
+	float fy = float(def->Gfx.Y + def->Gfx.Hgt * phaseY);
+	float fwdt = float(def->Gfx.Wdt);
+	float fhgt = float(def->Gfx.Hgt);
+	float tx = cx-draw_width;
+	float ty = cy-draw_height;
+	float twdt = draw_width*2;
+	float thgt = draw_height*2;
+
 	if (r)
-		pDef->Gfx.DrawXR(cgo.Surface, cx-iDrawWdt, cy-iDrawHgt, iDrawWdt*2, iDrawHgt*2, iPhase%phases, iPhase/phases, r);
+	{
+		CBltTransform rot;
+		rot.SetRotate(r, (float) (tx+tx+twdt)/2, (float) (ty+ty+thgt)/2);
+		lpDDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
+		                    cgo.Surface,tx,ty,twdt,thgt,
+		                    true,&rot);
+	}
 	else
-		pDef->Gfx.DrawX(cgo.Surface, cx-iDrawWdt, cy-iDrawHgt, iDrawWdt*2, iDrawHgt*2, iPhase%phases, iPhase/phases);
+	{
+		lpDDraw->Blit(def->Gfx.Surface,fx,fy,fwdt,fhgt,
+		              cgo.Surface,tx,ty,twdt,thgt,
+		              true);
+	}
+
 	Application.DDraw->ResetBlitMode();
 	Application.DDraw->RestorePrimaryClipper();
 	Application.DDraw->DeactivateBlitModulation();
