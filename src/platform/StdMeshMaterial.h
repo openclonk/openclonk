@@ -160,11 +160,11 @@ public:
 
 	// Ref-counted texture. When a meterial inherits from one which contains
 	// a TextureUnit, then they will share the same CTexRef.
-	class TexRef
+	class Tex
 	{
 	public:
-		TexRef(C4Surface* Surface); // Takes ownership
-		~TexRef();
+		Tex(C4Surface* Surface); // Takes ownership
+		~Tex();
 
 		unsigned int RefCount;
 
@@ -177,24 +177,34 @@ public:
 		// loading/saving should be decoupled from the surfaces, so we
 		// can skip the surface here and simply use a CTexRef. armin.
 		C4Surface* Surf;
-		CTexRef& Tex;
+		CTexRef& Texture;
+	};
+
+	// Simple wrapper which handles refcounting of Tex
+	class TexPtr
+	{
+	public:
+		TexPtr(C4Surface* Surface);
+		TexPtr(const TexPtr& other);
+		~TexPtr();
+		
+		TexPtr& operator=(const TexPtr& other);
+		
+		Tex* pTex;
 	};
 
 	StdMeshMaterialTextureUnit();
-	StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other);
-	~StdMeshMaterialTextureUnit();
-
-	StdMeshMaterialTextureUnit& operator=(const StdMeshMaterialTextureUnit&);
 
 	void LoadTexture(StdMeshMaterialParserCtx& ctx, const char* texname);
 	void Load(StdMeshMaterialParserCtx& ctx);
 
 	bool HasTexture() const { return !Textures.empty(); }
 	unsigned int GetNumTextures() const { return Textures.size(); }
-	const CTexRef& GetTexture(unsigned int i) const { return Textures[i]->Tex; }
+	const CTexRef& GetTexture(unsigned int i) const { return Textures[i].pTex->Texture; }
 	bool HasFrameAnimation() const { return Duration > 0; }
 	bool HasTexCoordAnimation() const { return !Transformations.empty(); }
 
+	StdCopyStrBuf Name;
 	float Duration; // Duration of texture animation, if any.
 
 	TexAddressModeType TexAddressMode;
@@ -217,7 +227,7 @@ public:
 	std::vector<Transformation> Transformations;
 
 private:
-	std::vector<TexRef*> Textures;
+	std::vector<TexPtr> Textures;
 };
 
 class StdMeshMaterialPass
@@ -233,6 +243,7 @@ public:
 	StdMeshMaterialPass();
 	void Load(StdMeshMaterialParserCtx& ctx);
 
+	StdCopyStrBuf Name;
 	std::vector<StdMeshMaterialTextureUnit> TextureUnits;
 
 	float Ambient[4];
@@ -252,6 +263,7 @@ public:
 
 	void Load(StdMeshMaterialParserCtx& ctx);
 
+	StdCopyStrBuf Name;
 	std::vector<StdMeshMaterialPass> Passes;
 
 	// Filled in by gfx implementation: Whether this technique is available on

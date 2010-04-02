@@ -191,8 +191,18 @@ public:
 	StdMeshMaterialTextureLoader& TextureLoader;
 };
 
+class StdMeshMaterialSubLoader
+{
+public:
+	StdMeshMaterialSubLoader();
+
+	template<typename SubT> void Load(StdMeshMaterialParserCtx& ctx, std::vector<SubT>& vec);
+private:
+	unsigned int CurIndex;
+};
+
 StdMeshMaterialParserCtx::StdMeshMaterialParserCtx(const char* mat_script, const char* filename, StdMeshMaterialTextureLoader& tex_loader):
-		Line(0), Script(mat_script), FileName(filename), TextureLoader(tex_loader)
+		Line(1), Script(mat_script), FileName(filename), TextureLoader(tex_loader)
 {
 }
 
@@ -462,6 +472,76 @@ void StdMeshMaterialParserCtx::ErrorUnexpectedIdentifier(const StdStrBuf& identi
 	Error(StdCopyStrBuf("Unexpected identifier: '") + identifier + "'");
 }
 
+
+StdMeshMaterialSubLoader::StdMeshMaterialSubLoader()
+		: CurIndex(0)
+{
+}
+
+template<typename SubT>
+void StdMeshMaterialSubLoader::Load(StdMeshMaterialParserCtx& ctx, std::vector<SubT>& vec)
+{
+	std::vector<unsigned int> indices;
+
+	StdCopyStrBuf token_name;
+	Token tok = ctx.AdvanceRequired(token_name, TOKEN_IDTF, TOKEN_BRACE_OPEN);
+	if(tok == TOKEN_BRACE_OPEN)
+	{
+		// Unnamed section, name by running index
+		indices.push_back(CurIndex);
+		assert(CurIndex <= vec.size());
+		if(CurIndex == vec.size())
+		{
+			vec.push_back(SubT());
+			vec.back().Name.Format("%u", CurIndex);
+		}
+
+		++CurIndex;
+	}
+	else
+	{
+		unsigned int size_before = indices.size();
+		for(unsigned int i = 0; i < vec.size(); ++i)
+			if(SWildcardMatchEx(vec[i].Name.getData(), token_name.getData()))
+				indices.push_back(i);
+
+		// Only add new SubSection if no wildcard was given
+		if(indices.size() == size_before)
+		{
+			if(std::strchr(token_name.getData(), '*') == NULL && std::strchr(token_name.getData(), '?') == NULL)
+			{
+				indices.push_back(vec.size());
+				vec.push_back(SubT());
+				vec.back().Name = token_name;
+			}
+		}
+
+		ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
+	}
+	
+	if(indices.empty())
+	{
+		// Section is not used, parse anyway to advance script position
+		// This can happen if there is inheritance by a non-matching wildcard
+		SubT().Load(ctx);
+	}
+	else
+	{
+		// Parse section multiple times in case there is more than one match.
+		// Not particularly elegant but working.
+		for(unsigned int i = 0; i < indices.size()-1; ++i)
+		{
+			unsigned int old_line = ctx.Line;
+			const char* old_pos = ctx.Script;
+			vec[indices[i]].Load(ctx);
+			ctx.Line = old_line;
+			ctx.Script = old_pos;
+		}
+
+		vec[indices.back()].Load(ctx);
+	}	
+}
+
 double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
 {
 	assert(TransformType == T_WAVE_XFORM);
@@ -477,16 +557,46 @@ double StdMeshMaterialTextureUnit::Transformation::GetWaveXForm(double t) const
 	}
 }
 
-StdMeshMaterialTextureUnit::TexRef::TexRef(C4Surface* Surface):
-		RefCount(1), Surf(Surface), Tex(*Surface->ppTex[0])
+StdMeshMaterialTextureUnit::Tex::Tex(C4Surface* Surface):
+		RefCount(1), Surf(Surface), Texture(*Surface->ppTex[0])
 {
 	assert(Surface->ppTex != NULL);
 }
 
-StdMeshMaterialTextureUnit::TexRef::~TexRef()
+StdMeshMaterialTextureUnit::Tex::~Tex()
 {
 	assert(RefCount == 0);
 	delete Surf;
+}
+
+StdMeshMaterialTextureUnit::TexPtr::TexPtr(C4Surface* Surface)
+		: pTex(new Tex(Surface))
+{
+}
+
+StdMeshMaterialTextureUnit::TexPtr::TexPtr(const TexPtr& other)
+		: pTex(other.pTex)
+{
+	++pTex->RefCount;
+}
+
+StdMeshMaterialTextureUnit::TexPtr::~TexPtr()
+{
+	if(!--pTex->RefCount)
+		delete pTex;
+}
+
+StdMeshMaterialTextureUnit::TexPtr& StdMeshMaterialTextureUnit::TexPtr::operator=(const TexPtr& other)
+{
+	if(&other == this) return *this;
+
+	if(!--pTex->RefCount)
+		delete pTex;
+
+	pTex = other.pTex;
+	++pTex->RefCount;
+
+	return *this;
 }
 
 StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
@@ -501,82 +611,6 @@ StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit():
 	ColorOpManualColor2[0] = ColorOpManualColor2[1] = ColorOpManualColor2[2] = AlphaOpManualAlpha2 = 0.0f;
 }
 
-StdMeshMaterialTextureUnit::StdMeshMaterialTextureUnit(const StdMeshMaterialTextureUnit& other):
-		Duration(other.Duration), TexAddressMode(other.TexAddressMode),
-		ColorOpEx(other.ColorOpEx), ColorOpManualFactor(other.ColorOpManualFactor),
-		AlphaOpEx(other.AlphaOpEx), AlphaOpManualFactor(other.AlphaOpManualFactor),
-		Transformations(other.Transformations), Textures(other.Textures)
-{
-	for (unsigned int i = 0; i < Textures.size(); ++i)
-		++Textures[i]->RefCount;
-
-	for (unsigned int i = 0; i < 4; ++i)
-		TexBorderColor[i] = other.TexBorderColor[i];
-
-	for (unsigned int i = 0; i < 3; ++i)
-		Filtering[i] = other.Filtering[i];
-
-	ColorOpSources[0] = other.ColorOpSources[0];
-	ColorOpSources[1] = other.ColorOpSources[1];
-	for (unsigned int i = 0; i < 3; ++i)
-	{
-		ColorOpManualColor1[i] = other.ColorOpManualColor1[i];
-		ColorOpManualColor2[i] = other.ColorOpManualColor2[i];
-	}
-
-	AlphaOpSources[0] = other.AlphaOpSources[0];
-	AlphaOpSources[1] = other.AlphaOpSources[1];
-	AlphaOpManualAlpha1 = other.AlphaOpManualAlpha1;
-	AlphaOpManualAlpha2 = other.AlphaOpManualAlpha2;
-}
-
-StdMeshMaterialTextureUnit::~StdMeshMaterialTextureUnit()
-{
-	for (unsigned int i = 0; i < Textures.size(); ++i)
-	{
-		if (!--Textures[i]->RefCount)
-			delete Textures[i];
-	}
-}
-
-StdMeshMaterialTextureUnit& StdMeshMaterialTextureUnit::operator=(const StdMeshMaterialTextureUnit& other)
-{
-	if (this == &other) return *this;
-
-	for (unsigned int i = 0; i < Textures.size(); ++i)
-		if (!--Textures[i]->RefCount) delete Textures[i];
-	Textures = other.Textures;
-	for (unsigned int i = 0; i < Textures.size(); ++i)
-		++Textures[i]->RefCount;
-
-	Duration = other.Duration;
-	TexAddressMode = other.TexAddressMode;
-	for (unsigned int i = 0; i < 4; ++i)
-		TexBorderColor[i] = other.TexBorderColor[i];
-	for (unsigned int i = 0; i < 3; ++i)
-		Filtering[i] = other.Filtering[i];
-
-	ColorOpEx = other.ColorOpEx;
-	ColorOpSources[0] = other.ColorOpSources[0];
-	ColorOpSources[1] = other.ColorOpSources[1];
-	ColorOpManualFactor = other.ColorOpManualFactor;
-	for (unsigned int i = 0; i < 3; ++i)
-	{
-		ColorOpManualColor1[i] = other.ColorOpManualColor1[i];
-		ColorOpManualColor2[i] = other.ColorOpManualColor2[i];
-	}
-
-	AlphaOpEx = other.AlphaOpEx;
-	AlphaOpSources[0] = other.AlphaOpSources[0];
-	AlphaOpSources[1] = other.AlphaOpSources[1];
-	AlphaOpManualFactor = other.AlphaOpManualFactor;
-	AlphaOpManualAlpha1 = other.AlphaOpManualAlpha1;
-	AlphaOpManualAlpha2 = other.AlphaOpManualAlpha1;
-
-	Transformations = other.Transformations;
-	return *this;
-}
-
 void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, const char* texname)
 {
 	std::auto_ptr<C4Surface> surface(ctx.TextureLoader.LoadTexture(texname)); // be exception-safe
@@ -588,7 +622,7 @@ void StdMeshMaterialTextureUnit::LoadTexture(StdMeshMaterialParserCtx& ctx, cons
 	if (surface->iTexX > 1 || surface->iTexY > 1)
 		ctx.Error(StdCopyStrBuf("Texture '") + texname + "' is too large");
 
-	Textures.push_back(new TexRef(surface.release()));
+	Textures.push_back(TexPtr(surface.release()));
 }
 
 void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
@@ -599,17 +633,13 @@ void StdMeshMaterialTextureUnit::Load(StdMeshMaterialParserCtx& ctx)
 	{
 		if (token_name == "texture")
 		{
-			if (!Textures.empty())
-				ctx.Error(StdCopyStrBuf("There can only be a single texture or texture_anim statement per texture unit"));
-
+			Textures.clear();
 			ctx.AdvanceRequired(token_name, TOKEN_IDTF);
-
 			LoadTexture(ctx, token_name.getData());
 		}
 		else if (token_name == "anim_texture")
 		{
-			if (!Textures.empty())
-				ctx.Error(StdCopyStrBuf("There can only be a single texture or texture_anim statement per texture unit"));
+			Textures.clear();
 
 			StdCopyStrBuf base_name;
 			ctx.AdvanceRequired(base_name, TOKEN_IDTF);
@@ -778,14 +808,12 @@ void StdMeshMaterialPass::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
 	StdCopyStrBuf token_name;
+	StdMeshMaterialSubLoader texture_unit_loader;
 	while ((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
 	{
 		if (token_name == "texture_unit")
 		{
-			// TODO: Can there be an optional name?
-			ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
-			TextureUnits.push_back(StdMeshMaterialTextureUnit());
-			TextureUnits.back().Load(ctx);
+			texture_unit_loader.Load(ctx, TextureUnits);
 		}
 		else if (token_name == "ambient")
 		{
@@ -844,14 +872,12 @@ void StdMeshMaterialTechnique::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
 	StdCopyStrBuf token_name;
+	StdMeshMaterialSubLoader pass_loader;
 	while ((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
 	{
 		if (token_name == "pass")
 		{
-			// TODO: Can there be an optional name?
-			ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
-			Passes.push_back(StdMeshMaterialPass());
-			Passes.back().Load(ctx);
+			pass_loader.Load(ctx, Passes);
 		}
 		else
 			ctx.ErrorUnexpectedIdentifier(token_name);
@@ -870,14 +896,12 @@ void StdMeshMaterial::Load(StdMeshMaterialParserCtx& ctx)
 {
 	Token token;
 	StdCopyStrBuf token_name;
+	StdMeshMaterialSubLoader technique_loader;
 	while ((token = ctx.AdvanceNonEOF(token_name)) == TOKEN_IDTF)
 	{
 		if (token_name == "technique")
 		{
-			// TODO: Can there be an optional name?
-			ctx.AdvanceRequired(token_name, TOKEN_BRACE_OPEN);
-			Techniques.push_back(StdMeshMaterialTechnique());
-			Techniques.back().Load(ctx);
+			technique_loader.Load(ctx, Techniques);
 		}
 		else if (token_name == "receive_shadows")
 		{
