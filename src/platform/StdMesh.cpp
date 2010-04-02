@@ -995,7 +995,7 @@ void StdMeshInstance::AnimationNode::CompileFunc(StdCompiler* pComp, const StdMe
 
 	pComp->Value(mkNamingAdapt(Slot, "Slot"));
 	pComp->Value(mkNamingAdapt(Number, "Number"));
-	pComp->Value(mkNamingAdapt(mkEnumAdapt(Type, NodeTypes), "Type"));
+	pComp->Value(mkNamingAdapt(mkEnumAdaptT<uint8_t>(Type, NodeTypes), "Type"));
 
 	switch(Type)
 	{

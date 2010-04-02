@@ -152,7 +152,7 @@ void C4ValueProviderLinear::CompileFunc(StdCompiler* pComp)
 	pComp->Separator();
 	pComp->Value(Length);
 	pComp->Separator();
-	pComp->Value(mkEnumAdapt(Ending, Endings));
+	pComp->Value(mkEnumAdaptT<uint8_t>(Ending, Endings));
 	pComp->Separator();
 	pComp->Value(LastTick);
 }

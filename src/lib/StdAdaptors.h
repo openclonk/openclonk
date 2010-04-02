@@ -844,7 +844,7 @@ struct StdEnumAdapt
 
 	ALLOW_TEMP_TO_REF(StdEnumAdapt)
 };
-template <class T, class int_t = int32_t>
+template <class T, class int_t>
 StdEnumAdapt<T, int_t> mkEnumAdapt(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
 template <class int_t, class T>
 StdEnumAdapt<T, int_t> mkEnumAdaptT(T &rVal, const StdEnumEntry<T> *pNames) { return StdEnumAdapt<T, int_t>(rVal, pNames); }
