@@ -21,6 +21,8 @@
 #include "C4Application.h"
 #include "C4Log.h"
 
+#include <boost/function.hpp>
+
 #include <C4Game.h>
 
 // *** C4InteractiveThread
@@ -148,6 +150,12 @@ void C4InteractiveThread::ProcessEvents() // by main thread
 
 		}
 		break;
+
+	case Ev_Function:
+		{
+			std::auto_ptr<boost::function<void ()> > func(static_cast<boost::function<void()>*>(pEventData));
+			(*func)();
+		}
 
 		// Other events: check for a registered handler
 		default:

@@ -22,10 +22,14 @@
 #include "StdSync.h"
 #include "StdWindow.h"
 
+#include <boost/function.hpp>
+
 // Event types
 enum C4InteractiveEventType
 {
 	Ev_None = 0,
+
+	Ev_Function,
 
 	Ev_Log,
 	Ev_LogSilent,
@@ -107,6 +111,12 @@ public:
 	bool ThreadLog(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	bool ThreadLogFatal(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
 	bool ThreadLogS(const char *szMessage, ...) GNUC_FORMAT_ATTRIBUTE_O;
+
+	template<typename Functor>
+	bool ThreadPostAsync(Functor function)
+	{
+		return PushEvent(Ev_Function, new boost::function<void ()>(function));
+	}
 
 	// event handlers
 	void SetCallback(C4InteractiveEventType eEvent, Callback *pnNetworkCallback)
