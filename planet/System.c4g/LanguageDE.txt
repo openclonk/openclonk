@@ -566,6 +566,7 @@ IDS_ERR_GFX_REGISTERMAIN=Fehler beim Laden der Grafikdatei
 IDS_ERR_INITFONTS=Fehler bei der Schriftinitialisierung
 IDS_ERR_INSUFFICIENTPARAMETERS=/%s: fehlende Parameter
 IDS_ERR_INVALIDCHANNELNAME=Kein gültiger Chat-Kanal.
+IDS_ERR_CHANNELNOTALLOWED=Kann nur Chat-Kanäle betreten, die mit #clonk beginnen.
 IDS_ERR_INVALIDID=   Definition %s nicht geladen: Ungültige ID
 IDS_ERR_INVALIDNICKNAME2=/%s: unzulässiger Kurzname
 IDS_ERR_INVALIDNICKNAME=Unzulässiger Kurzname.

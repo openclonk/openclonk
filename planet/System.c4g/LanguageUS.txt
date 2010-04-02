@@ -566,6 +566,7 @@ IDS_ERR_GFX_REGISTERMAIN=Could not register main graphic groups
 IDS_ERR_INITFONTS=Error initializing fonts
 IDS_ERR_INSUFFICIENTPARAMETERS=/%s: insufficient parameters
 IDS_ERR_INVALIDCHANNELNAME=Invalid channel name.
+IDS_ERR_CHANNELNOTALLOWED=Can only join channels beginning with #clonk.
 IDS_ERR_INVALIDID=   Definition %s not loaded: Invalid ID
 IDS_ERR_INVALIDNICKNAME2=/%s: invalid nick name
 IDS_ERR_INVALIDNICKNAME=Invalid nickname.
