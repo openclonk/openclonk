@@ -767,6 +767,7 @@ func CloseEyes(iCounter)
 
 /* Walk */
 
+static const Clonk_WalkInside = "Inside";
 static const Clonk_WalkStand = "Stand";
 static const Clonk_WalkWalk  = "Walk";
 static const Clonk_WalkRun   = "Run";
@@ -787,6 +788,13 @@ func StopWalk()
 
 func GetCurrentWalkAnimation()
 {
+	if(Contained())
+	{
+		SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(30,0,1,0),Trans_Scale(1200)), this);
+		if(GetDirection() == COMD_Right) SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(-110,0,1,0),Trans_Scale(1200)), this);
+		return Clonk_WalkInside;
+	}
+	else SetProperty("PictureTransformation", Trans_Mul(Trans_Rotate(70,0,1,0),Trans_Scale(1300)), this);
 	var velocity = Distance(0,0,GetXDir(),GetYDir());
 	if(velocity < 1) return Clonk_WalkStand;
 	if(velocity < 10) return Clonk_WalkWalk;
@@ -813,6 +821,8 @@ func GetWalkAnimationPosition(string anim, int pos)
 	// GetAnimationPosition()). Walk->Stand is arbitrary I guess.
 	// First parameter of Anim_Linear/Anim_AbsX is initial position.
 	// Movement synchronization might also be tweaked somewhat as well.
+	if(anim == Clonk_WalkInside)
+		return Anim_Const(0);
 	if(anim == Clonk_WalkStand)
 		return Anim_Linear(pos, 0, GetAnimationLength(anim), 35, ANIM_Loop);
 	else if(anim == Clonk_WalkWalk)
