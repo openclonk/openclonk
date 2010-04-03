@@ -18,8 +18,8 @@ protected func Initialize()
 
 private func Hit()
 {
-Sound("WoodHit");
-if(iVolume>=1 && Closed==false) {
+	Sound("WoodHit");
+	if(iVolume>=1 && Closed==false) {
 		if(GBackLiquid(0,iDrain) && GetMaterial(0,iDrain)!=szLiquid) return 0;
 		EmptyBarrel(GetR());
 		Sound(" "); //water splash sound should be added when available -Ringwaul
@@ -34,8 +34,10 @@ private func Check()
 	if(GetMaterial(0,iSource)== Material("Water") && Closed==false) FillBarrel("Water");
 	//if(GetMaterial(0,iSource)== Material("Oil") && Closed==false) FillBarrel("Oil"); //No oil material in current build -Ringwaul/Dec10
 
-	if(iVolume==0) SetGraphics() && szLiquid=nil;
-
+	if(iVolume==0) {
+		SetGraphics();
+		szLiquid=nil;
+	}
 	//Debug/Testing Purposes
 	if(debug == 1) Message("Volume:|%d|Liquid:|%s", this(), iVolume, szLiquid);
 }
@@ -63,7 +65,10 @@ private func EmptyBarrel(int iAngle, int iStrength)
 
 public func ControlUse(object pByClonk, int iX, int iY)
 {
-	if(Closed==true) Closed=false && Sound(" "); //Wood scrape sound
+	if(Closed==true) {
+		Closed=false;
+		Sound(" "); //Wood scrape sound
+	}
 
 	var AimAngle=Angle(0,0, iX, iY);
 	if(iVolume>=1)

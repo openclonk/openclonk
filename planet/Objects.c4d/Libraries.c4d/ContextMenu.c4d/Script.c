@@ -43,7 +43,7 @@ public func ContextEnergy(pCaller)
 	[$TxtEnergysupply$|Image=CXEC|Condition=AtEnergySite]
 	var pSite; 
 	if (pSite = FindEnergySite())
-		SetCommand(this, "Energy", pSite);
+		SetCommand("Energy", pSite);
 	return 1;
 }
 

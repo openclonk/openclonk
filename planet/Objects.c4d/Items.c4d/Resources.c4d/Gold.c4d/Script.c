@@ -7,7 +7,7 @@ protected func Construction()
 		SetGraphics(Format("%d",graphic));
 }
 
-protected func Hit()
+protected func Hit()
 {
 	Sound("RockHit*");
 	return 1;

@@ -27,7 +27,10 @@ protected func Initialize()
 
 	while(iCount!=0)
 	{
-		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()) && MaterialDepthCheck(iX,iY,"Sky",200)==true) CreateObject(Cloud, iX, iY, NO_OWNER) && (iCount=--iCount);
+		if(FindPosInMat(iX, iY, "Sky", 0,0,LandscapeWidth(), LandscapeHeight()) && MaterialDepthCheck(iX,iY,"Sky",200)==true) {
+			CreateObject(Cloud, iX, iY, NO_OWNER);
+			iCount--;
+		}
 	}
 	AdjustLightningFrequency(GetScenarioVal("Lightning"));
 }

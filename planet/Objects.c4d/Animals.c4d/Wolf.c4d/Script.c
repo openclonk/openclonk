@@ -114,28 +114,28 @@ protected func ControlCommand(szCommand, pTarget, iTx, iTy)
 {
 	// Move command
 	if (szCommand == "MoveTo")
-		return SetCommand(this(),szCommand, pTarget, iTx, iTy);
+		return SetCommand(szCommand, pTarget, iTx, iTy);
 	return 0;
 }
 
 protected func ContainedLeft(object caller)
 {
 	[$TxtMovement$]
-	SetCommand(this(), "None");
+	SetCommand("None");
 	return 1;
 }
 
 protected func ContainedRight(object caller)
 {
 	[$TxtMovement$]
-	SetCommand(this(), "None");
+	SetCommand("None");
 	return 1;
 }
 
 protected func ContainedUp(object caller)
 {
 	[$TxtMovement$]
-	SetCommand(this(), "None");
+	SetCommand("None");
 	
 	if (GetAction() == "Swim")
 	{
@@ -149,8 +149,8 @@ protected func ContainedUp(object caller)
 protected func ContainedDown(object caller)
 {
 	[$TxtMovement$]
-	SetCommand(this(), "None");
-	if(Contained()) SetCommand(this, "Exit");
+	SetCommand("None");
+	if(Contained()) SetCommand("Exit");
 	if (GetAction() == "Swim")
 	{
 		return 1;

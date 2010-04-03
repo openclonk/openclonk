@@ -95,11 +95,13 @@ protected func Evaporation() //Creates a search line every x-amount(currently fi
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid") && GetMaterial(0, iSearchY) != Material("Sky")) return(iSearchY=0);
 	if(GetMaterial(0, iSearchY) == Material("Water")) 
 	{
-		ExtractMaterialAmount(0, iSearchY,Material("Water"), 3) &&
-		(iSize = iSize+3);
+		ExtractMaterialAmount(0, iSearchY,Material("Water"), 3);
+		iSize = iSize+3;
 	}
-	if(ObjectCount(Find_ID(Environment_AcidRain))>=1 && GetMaterial(0, iSearchY) == Material("Acid")) ExtractMaterialAmount(0, iSearchY,Material("Acid"), 3) &&
-		(iAcidity = iAcidity+3);
+	if(ObjectCount(Find_ID(Environment_AcidRain))>=1 && GetMaterial(0, iSearchY) == Material("Acid")) {
+		ExtractMaterialAmount(0, iSearchY,Material("Acid"), 3);
+		iAcidity = iAcidity+3;
+	}
 	if(GetMaterial(0, iSearchY) != Material("Water") && GetMaterial(0, iSearchY) != Material("Acid"))
 		iSearchY = iSearchY + iPrecision;
 	if(iSearchY >= LandscapeHeight()-GetY()) (iSearchY = 0);

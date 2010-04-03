@@ -109,9 +109,7 @@ global func VerticesStuck()
 // Checks whether the indicated definition is available.
 global func FindDefinition(id def)
 {
-	if (GetDefCoreVal("id", "DefCore", def)) 
-		return true;
-	return false;
+	return def->GetDefCoreVal("id", "DefCore");
 }
 
 // Creates amount objects of type id inside the indicated rectangle(optional) in the indicated material. 
@@ -121,7 +119,7 @@ global func PlaceObjects(id id, int amount, string mat_str, int x, int y, int wd
 	var i, j;
 	var rndx, rndy, obj;
 	var mtype, mat;
-	var func, objhgt = GetDefCoreVal("Height", "DefCore", id);
+	var func, objhgt = id->GetDefCoreVal("Height", "DefCore");
 	
 	mat = Material(mat_str);
 	// Some failsavety.

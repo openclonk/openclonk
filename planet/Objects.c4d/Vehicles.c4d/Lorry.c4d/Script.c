@@ -82,7 +82,7 @@ protected func RejectCollect(id idObj,object pObj)
 {
 	if(ContentsCount() < MaxContents()) { Sound("Clonk"); return 0; }
 	if(pObj->Contained()) return Message("$TxtLorryisfull$", this);
-	if(Abs(GetXDir(pObj))>6) SetYDir(-5,pObj);
+	if(Abs(pObj->GetXDir())>6) pObj->SetYDir(-5);
 	Sound("WoodHit*");
 	return 1;
 }
