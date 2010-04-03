@@ -48,5 +48,7 @@ func GetMicroMeleeWeaponList()
 // GameCall from MicroMelee_Relaunch
 func OnClonkLeftRelaunchObject(clonk)
 {
-	clonk->SetPosition(RandomX(30,LandscapeWidth()-30),-20);
+	clonk->SetPosition(RandomX(30, LandscapeWidth() - 30), -20);
 }
+
+func KillsToRelaunch() { return 0; }
