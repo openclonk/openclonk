@@ -293,7 +293,7 @@ void C4PropList::GetPropertyRef(C4String * k, C4Value & to)
 	// The prototype is special
 	if (k == Strings.P[P_Prototype])
 	{
-		to = C4VPropList(prototype);
+		to.SetPropList(prototype);
 		return;
 	}
 	to.SetPropListRef(this, k);
@@ -341,7 +341,7 @@ bool C4PropList::GetPropertyVal(C4String * k, C4Value & to)
 {
 	if (Properties.Has(k))
 	{
-		to = Properties.Get(k).Value;
+		to.Set(Properties.Get(k).Value);
 		return true;
 	}
 	if (prototype)
