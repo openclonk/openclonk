@@ -20,7 +20,7 @@ private func Melt()
 
 private func Hit()
 {
-	CastPXS("Snow", 400,18);
+	CastPXS("Snow", GetCon()*4,18);
 	RemoveObject();
 }
 
